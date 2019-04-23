@@ -464,12 +464,27 @@
             </message_arguments>
         </filter>
     </resource>
-    <resource path="Eclipse SWT/win32/org/eclipse/swt/graphics/GCData.java" type="org.eclipse.swt.graphics.GCData">
-        <filter id="627060751">
+    <resource path="META-INF/MANIFEST.MF" type="org.eclipse.swt.custom.TableTree">
+        <filter comment="Planned deletion via &#10;Bug 475833" id="305324134">
             <message_arguments>
-                <message_argument value="PAINTSTRUCT"/>
-                <message_argument value="GCData"/>
-                <message_argument value="ps"/>
+                <message_argument value="org.eclipse.swt.custom.TableTree"/>
+                <message_argument value="org.eclipse.swt_3.110.100"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="META-INF/MANIFEST.MF" type="org.eclipse.swt.custom.TableTreeEditor">
+        <filter comment="Planned deletion via &#10;Bug 475833" id="305324134">
+            <message_arguments>
+                <message_argument value="org.eclipse.swt.custom.TableTreeEditor"/>
+                <message_argument value="org.eclipse.swt_3.110.100"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="META-INF/MANIFEST.MF" type="org.eclipse.swt.custom.TableTreeItem">
+        <filter comment="Planned deletion via &#10;Bug 475833" id="305324134">
+            <message_arguments>
+                <message_argument value="org.eclipse.swt.custom.TableTreeItem"/>
+                <message_argument value="org.eclipse.swt_3.110.100"/>
             </message_arguments>
         </filter>
     </resource>
