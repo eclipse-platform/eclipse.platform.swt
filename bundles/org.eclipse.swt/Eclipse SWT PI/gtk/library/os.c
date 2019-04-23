@@ -2747,6 +2747,26 @@ JNIEXPORT jint JNICALL GDK_NATIVE(_1gdk_1visual_1get_1depth)
 }
 #endif
 
+#ifndef NO__1gdk_1window_1begin_1draw_1frame
+JNIEXPORT jlong JNICALL GDK_NATIVE(_1gdk_1window_1begin_1draw_1frame)
+	(JNIEnv *env, jclass that, jlong arg0, jlong arg1)
+{
+	jlong rc = 0;
+	GDK_NATIVE_ENTER(env, that, _1gdk_1window_1begin_1draw_1frame_FUNC);
+/*
+	rc = (jlong)gdk_window_begin_draw_frame((GdkWindow *)arg0, (cairo_region_t *)arg1);
+*/
+	{
+		GDK_LOAD_FUNCTION(fp, gdk_window_begin_draw_frame)
+		if (fp) {
+			rc = (jlong)((jlong (CALLING_CONVENTION*)(GdkWindow *, cairo_region_t *))fp)((GdkWindow *)arg0, (cairo_region_t *)arg1);
+		}
+	}
+	GDK_NATIVE_EXIT(env, that, _1gdk_1window_1begin_1draw_1frame_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO__1gdk_1window_1create_1similar_1surface
 JNIEXPORT jlong JNICALL GDK_NATIVE(_1gdk_1window_1create_1similar_1surface)
 	(JNIEnv *env, jclass that, jlong arg0, jint arg1, jint arg2, jint arg3)
@@ -2766,6 +2786,26 @@ JNIEXPORT void JNICALL GDK_NATIVE(_1gdk_1window_1destroy)
 	GDK_NATIVE_ENTER(env, that, _1gdk_1window_1destroy_FUNC);
 	gdk_window_destroy((GdkWindow *)arg0);
 	GDK_NATIVE_EXIT(env, that, _1gdk_1window_1destroy_FUNC);
+}
+#endif
+
+#ifndef NO__1gdk_1window_1end_1draw_1frame
+JNIEXPORT jlong JNICALL GDK_NATIVE(_1gdk_1window_1end_1draw_1frame)
+	(JNIEnv *env, jclass that, jlong arg0, jlong arg1)
+{
+	jlong rc = 0;
+	GDK_NATIVE_ENTER(env, that, _1gdk_1window_1end_1draw_1frame_FUNC);
+/*
+	rc = (jlong)gdk_window_end_draw_frame((GdkWindow *)arg0, (GdkDrawingContext *)arg1);
+*/
+	{
+		GDK_LOAD_FUNCTION(fp, gdk_window_end_draw_frame)
+		if (fp) {
+			rc = (jlong)((jlong (CALLING_CONVENTION*)(GdkWindow *, GdkDrawingContext *))fp)((GdkWindow *)arg0, (GdkDrawingContext *)arg1);
+		}
+	}
+	GDK_NATIVE_EXIT(env, that, _1gdk_1window_1end_1draw_1frame_FUNC);
+	return rc;
 }
 #endif
 

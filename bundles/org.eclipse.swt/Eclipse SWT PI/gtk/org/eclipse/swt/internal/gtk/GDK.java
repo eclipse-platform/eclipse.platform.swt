@@ -524,6 +524,34 @@ public class GDK extends OS {
 	}
 	/**
 	 * @param window cast=(GdkWindow *)
+	 * @param region cast=(cairo_region_t *)
+	 * @method flags=dynamic
+	 */
+	public static final native long _gdk_window_begin_draw_frame(long window, long region);
+	public static final long gdk_window_begin_draw_frame(long window, long region) {
+		lock.lock();
+		try {
+			return _gdk_window_begin_draw_frame(window, region);
+		} finally {
+			lock.unlock();
+		}
+	}
+	/**
+	 * @param window cast=(GdkWindow *)
+	 * @param context cast=(GdkDrawingContext *)
+	 * @method flags=dynamic
+	 */
+	public static final native long _gdk_window_end_draw_frame(long window, long context);
+	public static final long gdk_window_end_draw_frame(long window, long context) {
+		lock.lock();
+		try {
+			return _gdk_window_end_draw_frame(window, context);
+		} finally {
+			lock.unlock();
+		}
+	}
+	/**
+	 * @param window cast=(GdkWindow *)
 	 */
 	public static final native int _gdk_window_get_state(long window);
 	/** [GTK3 only, if-def'd in os.h] */

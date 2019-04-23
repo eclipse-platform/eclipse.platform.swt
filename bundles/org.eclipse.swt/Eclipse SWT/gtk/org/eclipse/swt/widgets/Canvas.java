@@ -45,7 +45,6 @@ import org.eclipse.swt.internal.gtk.*;
 public class Canvas extends Composite {
 	Caret caret;
 	IME ime;
-	long cachedCairo;
 	boolean blink, drawFlag;
 
 Canvas () {}
@@ -179,7 +178,6 @@ long gtk_draw (long widget, long cairo) {
 		 result = super.gtk_draw (widget, cairo);
 		if (isFocus) caret.setFocus ();
 	} else {
-		this.cachedCairo = cairo;
 		result = super.gtk_draw (widget, cairo);
 		/*
 		 *  blink is needed to be checked as gtk_draw() signals sent from other parts of the canvas
@@ -313,14 +311,19 @@ void reskinChildren (int flags) {
 public void scroll (int destX, int destY, int x, int y, int width, int height, boolean all) {
 	checkWidget();
 	if (width <= 0 || height <= 0) return;
+	/*
+	 * scrollInPixels() doesn't seem to be needed on GTK4, so we can return early.
+	 * In fact it doesn't seem to be needed on GTK3 either, but it's been left
+	 * here for stability on older GTK3 versions. The investigation
+	 * as to why it's unneeded is left as a TODO. See bug 546274.
+	 */
+	if (GTK.GTK4) return;
 	Point destination = DPIUtil.autoScaleUp (new Point (destX, destY));
 	Rectangle srcRect = DPIUtil.autoScaleUp (new Rectangle (x, y, width, height));
 	scrollInPixels(destination.x, destination.y, srcRect.x, srcRect.y, srcRect.width, srcRect.height, all);
 }
 
 void scrollInPixels (int destX, int destY, int x, int y, int width, int height, boolean all) {
-	long cairo = this.cachedCairo;
-	if (cairo == 0) return;
 	if ((style & SWT.MIRRORED) != 0) {
 		int clientWidth = getClientWidth ();
 		x = clientWidth - width - x;
@@ -331,12 +334,9 @@ void scrollInPixels (int destX, int destY, int x, int y, int width, int height, 
 	if (!isVisible ()) return;
 	boolean isFocus = caret != null && caret.isFocusCaret ();
 	if (isFocus) caret.killFocus ();
-	GdkRectangle clipRect = new GdkRectangle ();
-	GDK.gdk_cairo_get_clip_rectangle (cairo, clipRect);
+	long window = paintWindow ();
+	long visibleRegion = GDK.gdk_window_get_visible_region (window);
 	cairo_rectangle_int_t srcRect = new cairo_rectangle_int_t ();
-	srcRect.convertFromGdkRectangle(clipRect);
-	long gdkResource = GTK.GTK4? paintSurface () : paintWindow ();
-	long visibleRegion = Cairo.cairo_region_create_rectangle(srcRect);
 	srcRect.x = x;
 	srcRect.y = y;
 	/*
@@ -384,48 +384,63 @@ void scrollInPixels (int destX, int destY, int x, int y, int width, int height, 
 		redrawWidget (x, y, width, height, false, false, false);
 		redrawWidget (destX, destY, width, height, false, false, false);
 	} else {
-		Cairo.cairo_push_group(cairo);
-		Cairo.cairo_paint(cairo);
-		Cairo.cairo_pop_group_to_source(cairo);
+		long cairo = 0;
+		long context = 0;
+		if (GTK.GTK_VERSION >= OS.VERSION(3, 22, 0)) {
+			long cairo_region = GDK.gdk_window_get_visible_region(window);
+			context = GDK.gdk_window_begin_draw_frame(window, cairo_region);
+			cairo = GDK.gdk_drawing_context_get_cairo_context(context);
+		} else {
+			cairo = GDK.gdk_cairo_create(window);
+		}
+		if (Cairo.cairo_version() < Cairo.CAIRO_VERSION_ENCODE(1, 12, 0)) {
+			GDK.gdk_cairo_set_source_window(cairo, window, 0, 0);
+		} else {
+			Cairo.cairo_push_group(cairo);
+			GDK.gdk_cairo_set_source_window(cairo, window, 0, 0);
+			Cairo.cairo_paint(cairo);
+			Cairo.cairo_pop_group_to_source(cairo);
+		}
 		double[] matrix = {1, 0, 0, 1, -deltaX, -deltaY};
 		Cairo.cairo_pattern_set_matrix(Cairo.cairo_get_source(cairo), matrix);
 		Cairo.cairo_rectangle(cairo, copyRect.x + deltaX, copyRect.y + deltaY, copyRect.width, copyRect.height);
 		Cairo.cairo_clip(cairo);
 		Cairo.cairo_paint(cairo);
+		if (GTK.GTK_VERSION >= OS.VERSION(3, 22, 0)) {
+			if (context != 0) GDK.gdk_window_end_draw_frame(window, context);
+		} else {
+			Cairo.cairo_destroy(cairo);
+		}
 		boolean disjoint = (destX + width < x) || (x + width < destX) || (destY + height < y) || (y + height < destY);
 		if (disjoint) {
-			cairo_rectangle_int_t cairoRect = new cairo_rectangle_int_t();
-			cairoRect.x = x;
-			cairoRect.y = y;
-			cairoRect.width = width;
-			cairoRect.height = height;
-			Cairo.cairo_region_union_rectangle (invalidateRegion, cairoRect);
+			cairo_rectangle_int_t rect = new cairo_rectangle_int_t();
+			rect.x = x;
+			rect.y = y;
+			rect.width = width;
+			rect.height = height;
+			Cairo.cairo_region_union_rectangle (invalidateRegion, rect);
 		} else {
-			cairo_rectangle_int_t cairoRect = new cairo_rectangle_int_t();
+			cairo_rectangle_int_t rect = new cairo_rectangle_int_t();
 			if (deltaX != 0) {
 				int newX = destX - deltaX;
 				if (deltaX < 0) newX = destX + width;
-				cairoRect.x = newX;
-				cairoRect.y = y;
-				cairoRect.width = Math.abs(deltaX);
-				cairoRect.height = height;
-				Cairo.cairo_region_union_rectangle (invalidateRegion, cairoRect);
+				rect.x = newX;
+				rect.y = y;
+				rect.width = Math.abs(deltaX);
+				rect.height = height;
+				Cairo.cairo_region_union_rectangle (invalidateRegion, rect);
 			}
 			if (deltaY != 0) {
 				int newY = destY - deltaY;
 				if (deltaY < 0) newY = destY + height;
-				cairoRect.x = x;
-				cairoRect.y = newY;
-				cairoRect.width = width;
-				cairoRect.height = Math.abs(deltaY);
-				Cairo.cairo_region_union_rectangle (invalidateRegion, cairoRect);
+				rect.x = x;
+				rect.y = newY;
+				rect.width = width;
+				rect.height = Math.abs(deltaY);
+				Cairo.cairo_region_union_rectangle (invalidateRegion, rect);
 			}
 		}
-		if (GTK.GTK4) {
-			GDK.gdk_surface_invalidate_region(gdkResource, invalidateRegion);
-		} else {
-			GDK.gdk_window_invalidate_region(gdkResource, invalidateRegion, all);
-		}
+		GDK.gdk_window_invalidate_region(window, invalidateRegion, all);
 	}
 	Cairo.cairo_region_destroy (visibleRegion);
 	Cairo.cairo_region_destroy (copyRegion);
@@ -434,10 +449,10 @@ void scrollInPixels (int destX, int destY, int x, int y, int width, int height, 
 		Control [] children = _getChildren ();
 		for (int i=0; i<children.length; i++) {
 			Control child = children [i];
-			Rectangle childBounds = child.getBoundsInPixels ();
-			if (Math.min(x + width, childBounds.x + childBounds.width) >= Math.max (x, childBounds.x) &&
-				Math.min(y + height, childBounds.y + childBounds.height) >= Math.max (y, childBounds.y)) {
-					child.setLocationInPixels (childBounds.x + deltaX, childBounds.y + deltaY);
+			Rectangle rect = child.getBoundsInPixels ();
+			if (Math.min(x + width, rect.x + rect.width) >= Math.max (x, rect.x) &&
+				Math.min(y + height, rect.y + rect.height) >= Math.max (y, rect.y)) {
+					child.setLocationInPixels (rect.x + deltaX, rect.y + deltaY);
 			}
 		}
 	}
