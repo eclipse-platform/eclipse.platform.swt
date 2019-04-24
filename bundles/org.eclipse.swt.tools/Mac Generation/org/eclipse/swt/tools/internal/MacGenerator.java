@@ -16,35 +16,25 @@ package org.eclipse.swt.tools.internal;
 import java.io.*;
 import java.util.*;
 import java.util.Map.*;
-import java.util.stream.*;
 
 import javax.xml.parsers.*;
 
 import org.w3c.dom.*;
-import org.w3c.dom.Node;
 import org.xml.sax.*;
+
 @SuppressWarnings("unchecked")
 public class MacGenerator {
 	String[] xmls;
 	Document[] documents;
 	String outputDir, outputLibDir, extrasDir, mainClassName, selectorEnumName;
 	String delimiter = System.getProperty("line.separator");
-	boolean generate64Code;
 	PrintWriter out;
+	HashSet<String> knownConstTypes = new HashSet<>();
 
 	public static boolean BUILD_C_SOURCE = true;
 	public static boolean GENERATE_ALLOC = true;
 	public static boolean GENERATE_STRUCTS = true;
 	public static boolean USE_SYSTEM_BRIDGE_FILES = false;
-
-	static final char[] INT_LONG = "int /*long*/".toCharArray();
-	static final char[] INT_LONG_ARRAY = "int[] /*long[]*/".toCharArray();
-	static final char[] FLOAT_DOUBLE = "float /*double*/".toCharArray();
-	static final char[] FLOAT_DOUBLE_ARRAY = "float[] /*double[]*/".toCharArray();
-	static final char[] LONG_INT = "long /*int*/".toCharArray();
-	static final char[] LONG_INT_ARRAY = "long[] /*int[]*/".toCharArray();
-	static final char[] DOUBLE_FLOAT = "double /*float*/".toCharArray();
-	static final char[] DOUBLE_FLOAT_ARRAY = "double[] /*float[]*/".toCharArray();
 
 public MacGenerator() {
 }
@@ -66,55 +56,9 @@ static void list(File path, ArrayList<String> list) {
 	}
 }
 
-static int indexOf(final char[] toBeFound, final char[] array, final int start) {
-	final int arrayLength = array.length;
-	final int toBeFoundLength = toBeFound.length;
-	if (toBeFoundLength > arrayLength || start < 0) return -1;
-	if (toBeFoundLength == 0) return 0;
-	if (toBeFoundLength == arrayLength) {
-		for (int i = start; i < arrayLength; i++) {
-			if (array[i] != toBeFound[i]) return -1;
-		}
-		return 0;
-	}
-	arrayLoop: for (int i = start, max = arrayLength - toBeFoundLength + 1; i < max; i++) {
-		if (array[i] == toBeFound[0]) {
-			for (int j = 1; j < toBeFoundLength; j++) {
-				if (array[i + j] != toBeFound[j]) continue arrayLoop;
-			}
-			return i;
-		}
-	}
-	return -1;
-}
-
-static boolean replace(char[] source, char[] src, char[] dest) {
-	boolean changed = false;
-	int start = 0;
-	while (start < source.length) {
-		int index = indexOf(src, source, start);
-		if (index == -1) break;
-		changed |= true;
-		System.arraycopy(dest, 0, source, index, dest.length);
-		start = index + 1;
-	}
-	return changed;
-}
-
 void output(String fileName, char[] source) {
 	try {
 		if (source.length > 0) {
-			if (generate64Code) {
-				replace(source, INT_LONG, LONG_INT);
-				replace(source, INT_LONG_ARRAY, LONG_INT_ARRAY);
-				replace(source, FLOAT_DOUBLE, DOUBLE_FLOAT);
-				replace(source, FLOAT_DOUBLE_ARRAY, DOUBLE_FLOAT_ARRAY);
-			} else {
-				replace(source, LONG_INT, INT_LONG);
-				replace(source, LONG_INT_ARRAY, INT_LONG_ARRAY);
-				replace(source, DOUBLE_FLOAT, FLOAT_DOUBLE);
-				replace(source, DOUBLE_FLOAT_ARRAY, FLOAT_DOUBLE_ARRAY);
-			}
 			ByteArrayOutputStream out = new ByteArrayOutputStream();
 			PrintStream stream = new PrintStream(out);
 			stream.print(source);
@@ -277,7 +221,7 @@ void generateFields(ArrayList<Node> fields) {
 	for (Node field : fields) {
 		NamedNodeMap fieldAttributes = field.getAttributes();
 		String fieldName = fieldAttributes.getNamedItem("name").getNodeValue();
-		String type = getJavaType(field), type64 = getJavaType64(field);
+		String fieldType = getJavaType(field);
 		if (!isStruct(field)) {
 			out("\t/** @field cast=(");
 			out(getCType(field));
@@ -285,17 +229,12 @@ void generateFields(ArrayList<Node> fields) {
 			outln();
 		}
 		out("\tpublic ");
-		out(type);
-		if (!type.equals(type64)) {
-			out(" /*");
-			out(type64);
-			out("*/");
-		}
+		out(fieldType);
 		out(" ");
 		out(fieldName);
 		if (isStruct(field)) {
 			out(" = new ");
-			out(getDeclaredType(fieldAttributes, field));
+			out(fieldType);
 			out("()");
 		}
 		out(";");
@@ -330,12 +269,13 @@ void generateToString(String className, ArrayList<Node> fields) {
 }
 
 private String getDeclaredType(NamedNodeMap map, Node location) {
-	Node declaredType = map.getNamedItem("declared_type");
-	String value = declaredType != null ? declaredType.getNodeValue() : null;
-	if(value == null) {
+	Node declaredType = map.getNamedItem("declared_type64");
+	if (declaredType == null) declaredType = map.getNamedItem("declared_type");
+	if (declaredType == null) {
 		System.err.printf("Unable to detect declared_type. Check bridge file! It might have been removed, inheritance changed, etc. It could also be an issue with gen_bridge_metadata. Location: %s %n", toDebugLocation(location));
 		return "nodeclaredtype";
 	}
+	String value = declaredType.getNodeValue();
 
 	// strip any _Nullable and _Nonnull annotations
 	value = value.replace("_Nullable", "").replace("_Nonnull", "").replace("_Null_unspecified", "");
@@ -354,7 +294,7 @@ private String getDeclaredType(NamedNodeMap map, Node location) {
 	value = value.replace("struct ", "");
 
 	// also remove any white spaces
-	value = value.chars().filter((c)->!Character.isWhitespace(c)).mapToObj(c -> String.valueOf((char)c)).collect(Collectors.joining());
+	value = value.replaceAll("\\s", "");
 
 	return value;
 }
@@ -364,33 +304,19 @@ void generateMethods(String className, ArrayList<Node> methods) {
 		NamedNodeMap mthAttributes = method.getAttributes();
 		String sel = mthAttributes.getNamedItem("selector").getNodeValue();
 		if ("NSObject".equals(className)) {
-		    if ("alloc".equals(sel) || "dealloc".equals(sel)) continue;
+			if ("alloc".equals(sel) || "dealloc".equals(sel)) continue;
 		}
 		out("public ");
 		boolean isStatic = isStatic(method);
 		if (isStatic) out("static ");
-		Node returnNode = getReturnNode(method.getChildNodes());
-		if (getType(returnNode).equals("void")) returnNode = null;
-		String returnType = "", returnType64 = "";
-		if (returnNode != null) {
-			String type = returnType = getJavaType(returnNode), type64 = returnType64 = getJavaType64(returnNode);
-
-			// convert "instancetype" to class name
-			if(type.equals("instancetype")) {
-				type = returnType = className;
-				type64 = returnType64 = className;
-			}
-
-			out(type);
-			if (!type.equals(type64)) {
-				out(" /*");
-				out(type64);
-				out("*/");
-			}
-			out(" ");
-		} else {
-			out("void ");
+		Node returnNode = getReturnNode(method);
+		String returnType = getJavaType(returnNode);
+		// convert "instancetype" to class name
+		if (returnType.equals("instancetype")) {
+			returnType = className;
 		}
+		out(returnType);
+		out(" ");
 		String methodName = sel;
 		if (isUnique(method, methods)) {
 			int index = methodName.indexOf(":");
@@ -409,21 +335,15 @@ void generateMethods(String className, ArrayList<Node> methods) {
 			Node param = params.item(k);
 			if ("arg".equals(param.getNodeName())) {
 				if (!first) out(", ");
-				String type = getJavaType(param), type64 = getJavaType64(param);
-				out( type);
-				if (!type.equals(type64)) {
-					out(" /*");
-					out(type64);
-					out("*/");
-				}
 				first = false;
+				out(getJavaType(param));
 				out(" ");
 				out(getParamName(param, argIndex++));
 			}
 		}
 		out(") {");
 		outln();
-		if (returnNode != null && isStruct(returnNode)) {
+		if (isStruct(returnNode)) {
 			out("\t");
 			out(returnType);
 			out(" result = new ");
@@ -431,33 +351,22 @@ void generateMethods(String className, ArrayList<Node> methods) {
 			out("();");
 			outln();
 			out("\tOS.objc_msgSend_stret(result, ");
-		} else if (returnNode != null && isBoolean(returnNode)) {
-			out("\treturn ");
-			out("OS.objc_msgSend_bool(");
-		} else if (returnNode != null && isFloatingPoint(returnNode)) {
-			out("\treturn ");
-			String type = getType(returnNode), type64 = getType64(returnNode);
-			if (type.equals(type64) && type.equals("float")) {
-				out("OS.objc_msgSend_floatret(");
-			} else {
-				if (returnType.equals("float")) out("(float /*double*/)");
-				out("OS.objc_msgSend_fpret(");
-			}
-		} else if (returnNode != null && isObject(returnNode)) {
-			out("\tint /*long*/ result = OS.objc_msgSend(");
+		} else if (isObject(returnNode)) {
+			out("\tlong result = OS.objc_msgSend(");
+		} else if (returnType.equals("void")) {
+			out("\tOS.objc_msgSend(");
+		} else if (returnType.equals("boolean")) {
+			out("\treturn OS.objc_msgSend_bool(");
+		} else if (returnType.equals("float")) {
+			out("\treturn OS.objc_msgSend_floatret(");
+		} else if (returnType.equals("double")) {
+			out("\treturn OS.objc_msgSend_fpret(");
 		} else {
-			if (returnNode != null) {
-				out("\treturn ");
-				if ((returnType.equals("int") && returnType64.equals("int")) || !returnType.equals("int")) {
-					out("(");
-					out(returnType);
-					out(")");
-				}
-				if (returnType.equals("int") && returnType64.equals("int")) {
-					out("/*64*/");
-				}
-			} else {
-				out("\t");
+			out("\treturn ");
+			if (!returnType.equals("long")) {
+				out("(");
+				out(returnType);
+				out(")");
 			}
 			out("OS.objc_msgSend(");
 		}
@@ -490,7 +399,7 @@ void generateMethods(String className, ArrayList<Node> methods) {
 		out(")");
 		out(";");
 		outln();
-		if (returnNode != null && isObject(returnNode)) {
+		if (isObject(returnNode)) {
 			if (!isStatic && returnType.equals(className)) {
 				out("\treturn result == this.id ? this : (result != 0 ? new ");
 				out(returnType);
@@ -507,7 +416,7 @@ void generateMethods(String className, ArrayList<Node> methods) {
 				out("(result) : null;");
 			}
 			outln();
-		} else if (returnNode != null && isStruct(returnNode)) {
+		} else if (isStruct(returnNode)) {
 			out("\treturn result;");
 			outln();
 		}
@@ -538,7 +447,7 @@ void generateExtraMethods(String className) {
 	/* pointer constructor */
 	out("public ");
 	out(className);
-	out("(int /*long*/ id) {");
+	out("(long id) {");
 	outln();
 	out("\tsuper(id);");
 	outln();
@@ -574,7 +483,7 @@ void generateExtraMethods(String className) {
 		/* Get java string */
 		out("public String getString() {");
 		outln();
-		out("\tchar[] buffer = new char[(int)/*64*/length()];");
+		out("\tchar[] buffer = new char[(int)length()];");
 		outln();
 		out("\tgetCharacters(buffer);");
 		outln();
@@ -823,7 +732,6 @@ void generateMainClass() {
 		int end = str.indexOf(section, start);
 		header = str.substring(0, start);
 		footer = end == -1 ? "\n}" : str.substring(end);
-		generate64Code = str.indexOf("long /*int*/") != -1;
 		input.close();
 	} catch (IOException e) {
 	}
@@ -1172,7 +1080,7 @@ void out(String str) {
 
 void outln() {
 	PrintWriter out = this.out;
-	out.println();
+	out.print(delimiter);
 }
 
 void generateConstants() {
@@ -1189,18 +1097,13 @@ void generateConstants() {
 					out("/** @method flags=const */");
 					outln();
 					out("public static final native ");
-					String type = getType(node), type64 = getType64(node);
-					out(type);
-					if (!type.equals(type64)) {
-						out(" /*");
-						out(type64);
-						out("*/");
-					}
+					out(getType(node));
 					out(" ");
 					out(constName);
 					out("();");
 					outln();
-					if (getDeclaredType(attributes, node).equals("NSString*")) {
+					// Assume that all object-typed constants are strings
+					if (isObject(node)) {
 						out("public static final NSString ");
 						out(constName);
 						out(" = new NSString(");
@@ -1209,9 +1112,13 @@ void generateConstants() {
 						outln();
 					}
 				}
+				if (isObject(node)) {
+					knownConstTypes.add(getCType(node));
+				}
 			}
 		}
 	}
+	knownConstTypes.remove("id");
 }
 
 void generateEnums() {
@@ -1224,7 +1131,8 @@ void generateEnums() {
 			if ("enum".equals(node.getNodeName())) {
 				if (getGen(node)) {
 					NamedNodeMap attributes = node.getAttributes();
-					Node valueNode = attributes.getNamedItem("value");
+					Node valueNode = attributes.getNamedItem("value64");
+					if (valueNode == null) valueNode = attributes.getNamedItem("value");
 					if (valueNode != null) {
 						String value = valueNode.getNodeValue();
 						out("public static final ");
@@ -1235,6 +1143,9 @@ void generateEnums() {
 							if (value.equals("4294967295")) {
 								out("int ");
 								value = "-1";
+							} else if (value.equals("18446744073709551615")) {
+								out("long ");
+								value = "-1L";
 							} else {
 								try {
 									Integer.parseInt(value);
@@ -1302,43 +1213,15 @@ boolean isStatic(Node node) {
 }
 
 boolean isStruct(Node node) {
-	NamedNodeMap attributes = node.getAttributes();
-	Node type = attributes.getNamedItem("type");
-	if (type == null) return false;
-	String code = type.getNodeValue();
-	return code.startsWith("{");
+	return getTypeCode(node) == '{';
 }
 
 boolean isPointer(Node node) {
-	NamedNodeMap attributes = node.getAttributes();
-	Node type = attributes.getNamedItem("type");
-	if (type == null) return false;
-	String code = type.getNodeValue();
-	return code.startsWith("^");
-}
-
-boolean isFloatingPoint(Node node) {
-	NamedNodeMap attributes = node.getAttributes();
-	Node type = attributes.getNamedItem("type");
-	if (type == null) return false;
-	String code = type.getNodeValue();
-	return code.equals("f") || code.equals("d");
+	return getTypeCode(node) == '^';
 }
 
 boolean isObject(Node node) {
-	NamedNodeMap attributes = node.getAttributes();
-	Node type = attributes.getNamedItem("type");
-	if (type == null) return false;
-	String code = type.getNodeValue();
-	return code.equals("@");
-}
-
-boolean isBoolean(Node node) {
-	NamedNodeMap attributes = node.getAttributes();
-	Node type = attributes.getNamedItem("type");
-	if (type == null) return false;
-	String code = type.getNodeValue();
-	return code.equals("B");
+	return getTypeCode(node) == '@';
 }
 
 void buildLookup(Node node, HashMap<String, Node> table) {
@@ -1430,7 +1313,7 @@ void generateSelectorsConst() {
 	out ("}"); outln();
 	for (String sel : set) {
 		String selConst = getSelConst(sel);
-		out("public static final int /*long*/ ");
+		out("public static final long ");
 		out(selConst);
 		out(" = ");
 		out("Selector."+selConst+".value;");
@@ -1517,9 +1400,9 @@ void generateStructNatives() {
 		out(" */");
 		outln();
 		out("public static final native void memmove(");
-		out("int /*long*/ dest, ");
+		out("long dest, ");
 		out(struct);
-		out(" src, int /*long*/ size);");
+		out(" src, long size);");
 		outln();
 		out("/**");
 		outln();
@@ -1532,69 +1415,44 @@ void generateStructNatives() {
 		outln();
 		out("public static final native void memmove(");
 		out(struct);
-		out(" dest, int /*long*/ src, int /*long*/ size);");
+		out(" dest, long src, long size);");
 		outln();
 	}
 }
 
-String buildSend(Node method, boolean tags, boolean only64, boolean superCall) {
-	Node returnNode = getReturnNode(method.getChildNodes());
+String buildSend(Node method, boolean superCall) {
+	Node returnNode = getReturnNode(method);
+	String returnType = getJavaType(returnNode);
 	StringBuilder buffer = new StringBuilder();
 	buffer.append("public static final native ");
-	if (returnNode != null && isStruct(returnNode)) {
+	if (isStruct(returnNode)) {
 		buffer.append("void ");
 		buffer.append(superCall ? "objc_msgSendSuper_stret" : "objc_msgSend_stret");
 		buffer.append("(");
-		buffer.append(getJavaType(returnNode));
+		buffer.append(returnType);
 		buffer.append(" result, ");
-	} else if (returnNode != null && isFloatingPoint(returnNode)) {
-		String type = getType(returnNode), type64 = getType64(returnNode);
-		if (type.equals(type64) && type.equals("float")) {
-			buffer.append("float ");
-			buffer.append(superCall ? "objc_msgSendSuper_floatret" : "objc_msgSend_floatret");
-		} else {
-			buffer.append("double ");
-			buffer.append(superCall ? "objc_msgSendSuper_fpret" : "objc_msgSend_fpret");
-		}
+	} else if (returnType.equals("float")) {
+		buffer.append("float ");
+		buffer.append(superCall ? "objc_msgSendSuper_floatret" : "objc_msgSend_floatret");
 		buffer.append("(");
-	} else if (returnNode != null && isBoolean(returnNode)) {
+	} else if (returnType.equals("double")) {
+		buffer.append("double ");
+		buffer.append(superCall ? "objc_msgSendSuper_fpret" : "objc_msgSend_fpret");
+		buffer.append("(");
+	} else if (returnType.equals("boolean")) {
 		buffer.append("boolean ");
 		buffer.append(superCall ? "objc_msgSendSuper_bool" : "objc_msgSend_bool");
 		buffer.append("(");
 	} else {
-		if (only64) {
-			buffer.append("long");
-		} else {
-			if (tags) {
-				buffer.append("int /*long*/");
-			} else {
-				buffer.append("int");
-			}
-		}
+		buffer.append("long");
 		buffer.append(" ");
 		buffer.append(superCall ? "objc_msgSendSuper" : "objc_msgSend");
 		buffer.append("(");
 	}
 	if (superCall) {
-		if (only64) {
-			buffer.append("objc_super superId, long sel");
-		} else {
-			if (tags) {
-				buffer.append("objc_super superId, int /*long*/ sel");
-			} else {
-				buffer.append("objc_super superId, int sel");
-			}
-		}
+		buffer.append("objc_super superId, long sel");
 	} else {
-		if (only64) {
-			buffer.append("long id, long sel");
-		} else {
-			if (tags) {
-				buffer.append("int /*long*/ id, int /*long*/ sel");
-			} else {
-				buffer.append("int id, int sel");
-			}
-		}
+		buffer.append("long id, long sel");
 	}
 	NodeList params = method.getChildNodes();
 	boolean first = false;
@@ -1603,20 +1461,10 @@ String buildSend(Node method, boolean tags, boolean only64, boolean superCall) {
 		Node param = params.item(k);
 		if ("arg".equals(param.getNodeName())) {
 			if (!first) buffer.append(", ");
-			if (isStruct(param)) {
-				buffer.append(getJavaType(param));
-			} else {
-				String type = getType(param), type64 = getType64(param);
-				buffer.append(only64 ? type64 : type);
-				if (!only64 && tags && !type.equals(type64)) {
-					buffer.append(" /*");
-					buffer.append(type64);
-					buffer.append("*/");
-				}
-			}
 			first = false;
+			buffer.append(getType(param));
 			buffer.append(" arg");
-			buffer.append(String.valueOf(count++));
+			buffer.append(count++);
 		}
 	}
 	buffer.append(");");
@@ -1683,8 +1531,8 @@ void generateCustomCallbacks() {
 		}
 		String nativeMth = key.replaceAll(":", "_");
 		out("/** @method callback_types=");
-		Node returnNode = getReturnNode(method.getChildNodes());
-		out(returnNode == null ? "void" : getCType(returnNode));
+		Node returnNode = getReturnNode(method);
+		out(getCType(returnNode));
 		out(";id;SEL;");
 		NodeList params = method.getChildNodes();
 		for (int k = 0; k < params.getLength(); k++) {
@@ -1695,7 +1543,7 @@ void generateCustomCallbacks() {
 			}
 		}
 		out(",callback_flags=");
-		out(returnNode != null && isStruct(returnNode) ? "struct" : "none");
+		out(isStruct(returnNode) ? "struct" : "none");
 		out(";none;none;");
 		for (int k = 0; k < params.getLength(); k++) {
 			Node param = params.item(k);
@@ -1706,16 +1554,15 @@ void generateCustomCallbacks() {
 		}
 		out(" */");
 		outln();
-		out("public static final native int /*long*/ CALLBACK_");
+		out("public static final native long CALLBACK_");
 		out(nativeMth);
-		out("(int /*long*/ func);");
+		out("(long func);");
 		outln();
 	}
 }
 
 void generateSends(boolean superCall) {
 	TreeMap<String, Node> set = new TreeMap<>();
-	TreeMap<String, Node> set64 = new TreeMap<>();
 	for (int x = 0; x < xmls.length; x++) {
 		Document document = documents[x];
 		if (document == null) continue;
@@ -1727,13 +1574,9 @@ void generateSends(boolean superCall) {
 				for (int j = 0; j < methods.getLength(); j++) {
 					Node method = methods.item(j);
 					if ("method".equals(method.getNodeName()) && getGen(method) && (!superCall || getGenSuper(method))) {
-						String code = buildSend(method, false, false, superCall);
-						String code64 = buildSend(method, false, true, superCall);
+						String code = buildSend(method, superCall);
 						if (set.get(code) == null) {
 							set.put(code, method);
-						}
-						if (set64.get(code64) == null) {
-							set64.put(code64, method);
 						}
 					}
 				}
@@ -1741,30 +1584,8 @@ void generateSends(boolean superCall) {
 		}
 	}
 	outln();
-	TreeMap<String, Node> tagsSet = new TreeMap<>();
-	for (Iterator<String> iterator = set.keySet().iterator(); iterator.hasNext();) {
-		String key = iterator.next();
-		Node method = set.get(key);
-		String tagCode = buildSend(method, false, true, superCall);
-		if (set64.get(tagCode) != null) {
-			tagsSet.put(key, method);
-			iterator.remove();
-			set64.remove(tagCode);
-		}
-	}
-	TreeMap<String, Node> all = new TreeMap<>();
-	for (String key : tagsSet.keySet()) {
-		Node method = tagsSet.get(key);
-		all.put(buildSend(method, true, false, superCall), method);
-	}
 	for (String key : set.keySet()) {
-		all.put(key, set.get(key));
-	}
-	for (String key : set64.keySet()) {
-		all.put(key, set64.get(key));
-	}
-	for (String key : all.keySet()) {
-		Node method = all.get(key);
+		Node method = set.get(key);
 		NodeList params = method.getChildNodes();
 		ArrayList<String> tags = new ArrayList<>();
 		int count = 0;
@@ -1818,7 +1639,7 @@ void generateClassesConst() {
 	}
 	for (String cls : set) {
 		String clsConst = "class_" + cls;
-		out("public static final int /*long*/ ");
+		out("public static final long ");
 		out(clsConst);
 		out(" = ");
 		out("objc_getClass(\"");
@@ -1847,7 +1668,7 @@ void generateProtocolsConst() {
 	}
 	for (String cls : set) {
 		String clsConst = "protocol_" + cls;
-		out("public static final int /*long*/ ");
+		out("public static final long ");
 		out(clsConst);
 		out(" = ");
 		out("objc_getProtocol(\"");
@@ -1869,33 +1690,41 @@ String getClassName() {
 	return mainClassName.substring(dot + 1);
 }
 
-Node getReturnNode(NodeList list) {
+Node getReturnNode(Node method) {
+	NodeList list = method.getChildNodes();
 	for (int j = 0; j < list.getLength(); j++) {
 		Node node = list.item(j);
 		if ("retval".equals(node.getNodeName())) {
 			return node;
 		}
 	}
-	return null;
+	return method;
 }
 
+
 String getType(Node node) {
+	return getType(node, false);
+}
+
+String getJavaType(Node node) {
+	return getType(node, true);
+}
+
+char getTypeCode(Node node) {
 	NamedNodeMap attributes = node.getAttributes();
-	Node javaType = attributes.getNamedItem("swt_java_type");
-	if (javaType != null) return javaType.getNodeValue();
-	Node type = attributes.getNamedItem("type");
-	if (type == null) {
-		System.err.printf("Unable to detect type. Check bridge file! It might have been removed, inheritance changed, etc. Location: %s %n", toDebugLocation(node));
-		return "notype";
-	}
+	Node type = attributes.getNamedItem("type64");
+	if (type == null) type = attributes.getNamedItem("type");
+	if (type == null) return '?';
 	String code = type.getNodeValue();
-	return getType(code, attributes, false, node);
+	if (code.startsWith("V")) code = code.substring(1);
+	if (code.isEmpty()) return '?';
+	return code.charAt(0);
 }
 
 private String toDebugLocation(Node location) {
 	StringBuilder result = new StringBuilder();
-	while(location != null) {
-		if(result.length() > 0) {
+	while (location != null) {
+		if (result.length() > 0) {
 			result.insert(0, " > ");
 		}
 		result.insert(0, getNodeInfo(location));
@@ -1925,147 +1754,46 @@ private String getNodeInfo(Node location) {
 	return location.toString();
 }
 
-String getType64(Node node) {
+String getType(Node node, boolean withObjects) {
+	char typeCode = getTypeCode(node);
+	if (typeCode == '@' && !withObjects) return "long";
+
 	NamedNodeMap attributes = node.getAttributes();
-	Node javaType = attributes.getNamedItem("swt_java_type");
-	if (javaType != null) {
-		Node javaType64 = attributes.getNamedItem("swt_java_type64");
-		return javaType64 != null ? javaType64.getNodeValue() : javaType.getNodeValue();
-	}
-	Node attrib = attributes.getNamedItem("type");
-	if (attrib == null) return "notype";
-	String code = attrib.getNodeValue();
-	Node attrib64 = attributes.getNamedItem("type64");
-	if (attrib64 != null) code = attrib64.getNodeValue();
-	return getType(code, attributes, true, node);
-}
+	Node javaType = attributes.getNamedItem("swt_java_type64");
+	if (javaType == null) javaType = attributes.getNamedItem("swt_java_type");
+	if (javaType != null) return javaType.getNodeValue();
 
-String getType(String code, NamedNodeMap attributes, boolean is64, Node location) {
-	if (code.equals("c")) return "byte";
-	if (code.equals("i")) return "int";
-	if (code.equals("s")) return "short";
-	if (code.equals("l")) return "int";
-	if (code.equals("q")) return "long";
-	if (code.equals("C")) return "byte";
-	if (code.equals("I")) return "int";
-	if (code.equals("S")) return "short";
-	if (code.equals("L")) return "int";
-	if (code.equals("Q")) return "long";
-	if (code.equals("f")) return "float";
-	if (code.equals("d")) return "double";
-	if (code.equals("B")) return "boolean";
-	if (code.equals("v")) return "void";
-	if (code.equals("*")) return is64 ? "long" : "int";
-	if (code.equals("@")) return is64 ? "long" : "int";
-	if (code.equals("#")) return is64 ? "long" : "int";
-	if (code.equals(":")) return is64 ? "long" : "int";
-	if (code.startsWith("^")) return is64 ? "long" : "int";
-	if (code.startsWith("{")) {
-		return getDeclaredType(attributes, location);
-	}
-    if (code.startsWith("@?")) {
-        return is64 ? "long" : "int";
-    }
-	return "BAD " + code;
-}
-
-String getJNIType(Node node) {
-	NamedNodeMap attributes = node.getAttributes();
-	String code = attributes.getNamedItem("type").getNodeValue();
-	if (code.equals("c")) return "B";
-	if (code.equals("i")) return "I";
-	if (code.equals("s")) return "S";
-	if (code.equals("l")) return "I";
-	if (code.equals("q")) return "J";
-	if (code.equals("C")) return "B";
-	if (code.equals("I")) return "I";
-	if (code.equals("S")) return "S";
-	if (code.equals("L")) return "I";
-	if (code.equals("Q")) return "J";
-	if (code.equals("f")) return "F";
-	if (code.equals("d")) return "D";
-	if (code.equals("B")) return "Z";
-	if (code.equals("v")) return "V";
-	if (code.equals("*")) return "I";
-	if (code.equals("@")) return "I";
-	if (code.equals("#")) return "I";
-	if (code.equals(":")) return "I";
-	if (code.startsWith("^")) return "I";
-    if (code.startsWith("@?")) return "I";
-	if (code.startsWith("[")) return "BAD " + code;
-	if (code.startsWith("{")) {
-		return "BAD " + code;
-	}
-	if (code.startsWith("(")) return "BAD " + code;
-	return "BAD " + code;
-}
-
-String getJavaType(Node node) {
-	NamedNodeMap attributes = node.getAttributes();
-	Node javaType = attributes.getNamedItem("swt_java_type");
-	if (javaType != null) return javaType.getNodeValue().trim();
-	Node type = attributes.getNamedItem("type");
-	if (type == null) return "notype";
-	String code = type.getNodeValue();
-	return getJavaType(code, attributes, false, node);
-}
-
-String getJavaType64(Node node) {
-	NamedNodeMap attributes = node.getAttributes();
-	Node javaType = attributes.getNamedItem("swt_java_type");
-	if (javaType != null) {
-		Node javaType64 = attributes.getNamedItem("swt_java_type64");
-		return javaType64 != null ? javaType64.getNodeValue() : javaType.getNodeValue();
-	}
-	Node attrib = attributes.getNamedItem("type");
-	if (attrib == null) return "notype";
-	String code = attrib.getNodeValue();
-	Node attrib64 = attributes.getNamedItem("type64");
-	if (attrib64 != null) code = attrib64.getNodeValue();
-	return getJavaType(code, attributes, true, node);
-}
-
-String getJavaType(String code, NamedNodeMap attributes, boolean is64, Node location) {
-	if (code.equals("c")) return "byte";
-	if (code.equals("i")) return "int";
-	if (code.equals("s")) return "short";
-	if (code.equals("l")) return "int";
-	if (code.equals("q")) return "long";
-	if (code.equals("C")) return "byte";
-	if (code.equals("I")) return "int";
-	if (code.equals("S")) return "short";
-	if (code.equals("L")) return "int";
-	if (code.equals("Q")) return "long";
-	if (code.equals("f")) return "float";
-	if (code.equals("d")) return "double";
-	if (code.equals("B")) return "boolean";
-	if (code.equals("v")) return "void";
-	if (code.equals("*")) return is64 ? "long" : "int";
-	if (code.equals("#")) return is64 ? "long" : "int";
-	if (code.equals(":")) return is64 ? "long" : "int";
-	if (code.startsWith("^")) return is64 ? "long" : "int";
-	if (code.equals("@")) {
-		String type = getDeclaredType(attributes, location);
+	switch (typeCode) {
+	case 'v': return "void";
+	case 'B': return "boolean";
+	case 'c': return "byte";
+	case 'C': return "byte";
+	case 's': return "short";
+	case 'S': return "short";
+	case 'i': return "int";
+	case 'I': return "int";
+	case 'l': return "int";
+	case 'L': return "int";
+	case 'q': return "long";
+	case 'Q': return "long";
+	case 'f': return "float";
+	case 'd': return "double";
+	case '*': return "long";
+	case '#': return "long";
+	case ':': return "long";
+	case '^': return "long";
+	case '{': return getDeclaredType(attributes, node);
+	case '@': {
+		String type = getDeclaredType(attributes, node);
 		int index = type.indexOf('*');
 		if (index != -1) type = type.substring(0, index);
 		index = type.indexOf('<');
 		if (index != -1) type = type.substring(0, index);
-		return type.trim();
+		type = type.trim();
+		return knownConstTypes.contains(type) ? "NSString" : type;
 	}
-	if (code.startsWith("{")) {
-		return getDeclaredType(attributes, location).trim();
+	default: return "notype";
 	}
-    if (code.startsWith("@?")) return is64 ? "long" : "int";
-	return "BAD " + code;
-}
-
-static String[] split(String str, String separator) {
-	StringTokenizer tk = new StringTokenizer(str, separator);
-	ArrayList<String> result = new ArrayList<>();
-	while (tk.hasMoreTokens()) {
-		result.add(tk.nextToken());
-	}
-	return result.toArray(new String[result.size()]);
 }
 
 void generateFunctions() {
@@ -2116,19 +1844,9 @@ void generateFunctions() {
 						outln();
 					}
 					out("public static final native ");
-					Node returnNode = getReturnNode(node.getChildNodes());
-					if (returnNode != null) {
-						String type = getType(returnNode), type64 = getType64(returnNode);
-						out(type);
-						if (!type.equals(type64)) {
-							out(" /*");
-							out(type64);
-							out("*/");
-						}
-						out(" ");
-					} else {
-						out("void ");
-					}
+					Node returnNode = getReturnNode(node);
+					out(getType(returnNode));
+					out(" ");
 					out(name);
 					out("(");
 					params = node.getChildNodes();
@@ -2139,13 +1857,7 @@ void generateFunctions() {
 						if ("arg".equals(param.getNodeName())) {
 							if (!first) out(", ");
 							first = false;
-							String type = getType(param), type64 = getType64(param);
-							out(type);
-							if (!type.equals(type64)) {
-								out(" /*");
-								out(type64);
-								out("*/");
-							}
+							out(getType(param));
 							out(" ");
 							out(getParamName(param, argIndex++));
 						}
@@ -2166,7 +1878,7 @@ void generateVariadics(Node node) {
 		Node variadicTypes = attributes.getNamedItem("swt_variadic_java_types");
 		String[] types = null;
 		if (variadicTypes != null) {
-			types = split(variadicTypes.getNodeValue(), ",");
+			types = variadicTypes.getNodeValue().split(",");
 		}
 		int varCount = 0;
 		try {
@@ -2179,7 +1891,7 @@ void generateVariadics(Node node) {
 			} else if (types != null && types[types.length - 1].equals("*")) {
 				out(types[types.length - 2]);
 			} else {
-				out("int /*long*/");
+				out("long");
 			}
 			out(" varArg");
 			out("" + j);
