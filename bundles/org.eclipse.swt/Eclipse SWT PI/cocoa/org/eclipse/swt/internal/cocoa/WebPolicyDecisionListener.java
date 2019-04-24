@@ -19,7 +19,7 @@ public WebPolicyDecisionListener() {
 	super();
 }
 
-public WebPolicyDecisionListener(long /*int*/ id) {
+public WebPolicyDecisionListener(long id) {
 	super(id);
 }
 

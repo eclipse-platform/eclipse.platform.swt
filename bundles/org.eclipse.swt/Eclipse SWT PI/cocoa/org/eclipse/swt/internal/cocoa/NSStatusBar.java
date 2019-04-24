@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others.
+ * Copyright (c) 2000, 2019 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -19,7 +19,7 @@ public NSStatusBar() {
 	super();
 }
 
-public NSStatusBar(long /*int*/ id) {
+public NSStatusBar(long id) {
 	super(id);
 }
 
@@ -31,18 +31,18 @@ public void removeStatusItem(NSStatusItem item) {
 	OS.objc_msgSend(this.id, OS.sel_removeStatusItem_, item != null ? item.id : 0);
 }
 
-public NSStatusItem statusItemWithLength(double /*float*/ length) {
-	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_statusItemWithLength_, length);
+public NSStatusItem statusItemWithLength(double length) {
+	long result = OS.objc_msgSend(this.id, OS.sel_statusItemWithLength_, length);
 	return result != 0 ? new NSStatusItem(result) : null;
 }
 
 public static NSStatusBar systemStatusBar() {
-	long /*int*/ result = OS.objc_msgSend(OS.class_NSStatusBar, OS.sel_systemStatusBar);
+	long result = OS.objc_msgSend(OS.class_NSStatusBar, OS.sel_systemStatusBar);
 	return result != 0 ? new NSStatusBar(result) : null;
 }
 
-public double /*float*/ thickness() {
-	return (double /*float*/)OS.objc_msgSend_fpret(this.id, OS.sel_thickness);
+public double thickness() {
+	return OS.objc_msgSend_fpret(this.id, OS.sel_thickness);
 }
 
 }

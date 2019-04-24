@@ -19,7 +19,7 @@ public NSColorSpace() {
 	super();
 }
 
-public NSColorSpace(long /*int*/ id) {
+public NSColorSpace(long id) {
 	super(id);
 }
 
@@ -27,12 +27,12 @@ public NSColorSpace(id id) {
 	super(id);
 }
 
-public long /*int*/ colorSpaceModel() {
+public long colorSpaceModel() {
 	return OS.objc_msgSend(this.id, OS.sel_colorSpaceModel);
 }
 
 public static NSColorSpace genericRGBColorSpace() {
-	long /*int*/ result = OS.objc_msgSend(OS.class_NSColorSpace, OS.sel_genericRGBColorSpace);
+	long result = OS.objc_msgSend(OS.class_NSColorSpace, OS.sel_genericRGBColorSpace);
 	return result != 0 ? new NSColorSpace(result) : null;
 }
 

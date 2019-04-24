@@ -31,24 +31,24 @@ void cacheCFRangeFields(JNIEnv *env, jobject lpObject)
 {
 	if (CFRangeFc.cached) return;
 	CFRangeFc.clazz = (*env)->GetObjectClass(env, lpObject);
-	CFRangeFc.location = (*env)->GetFieldID(env, CFRangeFc.clazz, "location", I_J);
-	CFRangeFc.length = (*env)->GetFieldID(env, CFRangeFc.clazz, "length", I_J);
+	CFRangeFc.location = (*env)->GetFieldID(env, CFRangeFc.clazz, "location", "J");
+	CFRangeFc.length = (*env)->GetFieldID(env, CFRangeFc.clazz, "length", "J");
 	CFRangeFc.cached = 1;
 }
 
 CFRange *getCFRangeFields(JNIEnv *env, jobject lpObject, CFRange *lpStruct)
 {
 	if (!CFRangeFc.cached) cacheCFRangeFields(env, lpObject);
-	lpStruct->location = (CFIndex)(*env)->GetIntLongField(env, lpObject, CFRangeFc.location);
-	lpStruct->length = (CFIndex)(*env)->GetIntLongField(env, lpObject, CFRangeFc.length);
+	lpStruct->location = (CFIndex)(*env)->GetLongField(env, lpObject, CFRangeFc.location);
+	lpStruct->length = (CFIndex)(*env)->GetLongField(env, lpObject, CFRangeFc.length);
 	return lpStruct;
 }
 
 void setCFRangeFields(JNIEnv *env, jobject lpObject, CFRange *lpStruct)
 {
 	if (!CFRangeFc.cached) cacheCFRangeFields(env, lpObject);
-	(*env)->SetIntLongField(env, lpObject, CFRangeFc.location, (jintLong)lpStruct->location);
-	(*env)->SetIntLongField(env, lpObject, CFRangeFc.length, (jintLong)lpStruct->length);
+	(*env)->SetLongField(env, lpObject, CFRangeFc.location, (jlong)lpStruct->location);
+	(*env)->SetLongField(env, lpObject, CFRangeFc.length, (jlong)lpStruct->length);
 }
 #endif
 
@@ -65,36 +65,36 @@ void cacheCGAffineTransformFields(JNIEnv *env, jobject lpObject)
 {
 	if (CGAffineTransformFc.cached) return;
 	CGAffineTransformFc.clazz = (*env)->GetObjectClass(env, lpObject);
-	CGAffineTransformFc.a = (*env)->GetFieldID(env, CGAffineTransformFc.clazz, "a", F_D);
-	CGAffineTransformFc.b = (*env)->GetFieldID(env, CGAffineTransformFc.clazz, "b", F_D);
-	CGAffineTransformFc.c = (*env)->GetFieldID(env, CGAffineTransformFc.clazz, "c", F_D);
-	CGAffineTransformFc.d = (*env)->GetFieldID(env, CGAffineTransformFc.clazz, "d", F_D);
-	CGAffineTransformFc.tx = (*env)->GetFieldID(env, CGAffineTransformFc.clazz, "tx", F_D);
-	CGAffineTransformFc.ty = (*env)->GetFieldID(env, CGAffineTransformFc.clazz, "ty", F_D);
+	CGAffineTransformFc.a = (*env)->GetFieldID(env, CGAffineTransformFc.clazz, "a", "D");
+	CGAffineTransformFc.b = (*env)->GetFieldID(env, CGAffineTransformFc.clazz, "b", "D");
+	CGAffineTransformFc.c = (*env)->GetFieldID(env, CGAffineTransformFc.clazz, "c", "D");
+	CGAffineTransformFc.d = (*env)->GetFieldID(env, CGAffineTransformFc.clazz, "d", "D");
+	CGAffineTransformFc.tx = (*env)->GetFieldID(env, CGAffineTransformFc.clazz, "tx", "D");
+	CGAffineTransformFc.ty = (*env)->GetFieldID(env, CGAffineTransformFc.clazz, "ty", "D");
 	CGAffineTransformFc.cached = 1;
 }
 
 CGAffineTransform *getCGAffineTransformFields(JNIEnv *env, jobject lpObject, CGAffineTransform *lpStruct)
 {
 	if (!CGAffineTransformFc.cached) cacheCGAffineTransformFields(env, lpObject);
-	lpStruct->a = (CGFloat)(*env)->GetFloatDoubleField(env, lpObject, CGAffineTransformFc.a);
-	lpStruct->b = (CGFloat)(*env)->GetFloatDoubleField(env, lpObject, CGAffineTransformFc.b);
-	lpStruct->c = (CGFloat)(*env)->GetFloatDoubleField(env, lpObject, CGAffineTransformFc.c);
-	lpStruct->d = (CGFloat)(*env)->GetFloatDoubleField(env, lpObject, CGAffineTransformFc.d);
-	lpStruct->tx = (CGFloat)(*env)->GetFloatDoubleField(env, lpObject, CGAffineTransformFc.tx);
-	lpStruct->ty = (CGFloat)(*env)->GetFloatDoubleField(env, lpObject, CGAffineTransformFc.ty);
+	lpStruct->a = (CGFloat)(*env)->GetDoubleField(env, lpObject, CGAffineTransformFc.a);
+	lpStruct->b = (CGFloat)(*env)->GetDoubleField(env, lpObject, CGAffineTransformFc.b);
+	lpStruct->c = (CGFloat)(*env)->GetDoubleField(env, lpObject, CGAffineTransformFc.c);
+	lpStruct->d = (CGFloat)(*env)->GetDoubleField(env, lpObject, CGAffineTransformFc.d);
+	lpStruct->tx = (CGFloat)(*env)->GetDoubleField(env, lpObject, CGAffineTransformFc.tx);
+	lpStruct->ty = (CGFloat)(*env)->GetDoubleField(env, lpObject, CGAffineTransformFc.ty);
 	return lpStruct;
 }
 
 void setCGAffineTransformFields(JNIEnv *env, jobject lpObject, CGAffineTransform *lpStruct)
 {
 	if (!CGAffineTransformFc.cached) cacheCGAffineTransformFields(env, lpObject);
-	(*env)->SetFloatDoubleField(env, lpObject, CGAffineTransformFc.a, (jfloatDouble)lpStruct->a);
-	(*env)->SetFloatDoubleField(env, lpObject, CGAffineTransformFc.b, (jfloatDouble)lpStruct->b);
-	(*env)->SetFloatDoubleField(env, lpObject, CGAffineTransformFc.c, (jfloatDouble)lpStruct->c);
-	(*env)->SetFloatDoubleField(env, lpObject, CGAffineTransformFc.d, (jfloatDouble)lpStruct->d);
-	(*env)->SetFloatDoubleField(env, lpObject, CGAffineTransformFc.tx, (jfloatDouble)lpStruct->tx);
-	(*env)->SetFloatDoubleField(env, lpObject, CGAffineTransformFc.ty, (jfloatDouble)lpStruct->ty);
+	(*env)->SetDoubleField(env, lpObject, CGAffineTransformFc.a, (jdouble)lpStruct->a);
+	(*env)->SetDoubleField(env, lpObject, CGAffineTransformFc.b, (jdouble)lpStruct->b);
+	(*env)->SetDoubleField(env, lpObject, CGAffineTransformFc.c, (jdouble)lpStruct->c);
+	(*env)->SetDoubleField(env, lpObject, CGAffineTransformFc.d, (jdouble)lpStruct->d);
+	(*env)->SetDoubleField(env, lpObject, CGAffineTransformFc.tx, (jdouble)lpStruct->tx);
+	(*env)->SetDoubleField(env, lpObject, CGAffineTransformFc.ty, (jdouble)lpStruct->ty);
 }
 #endif
 
@@ -112,7 +112,7 @@ void cacheCGPathElementFields(JNIEnv *env, jobject lpObject)
 	if (CGPathElementFc.cached) return;
 	CGPathElementFc.clazz = (*env)->GetObjectClass(env, lpObject);
 	CGPathElementFc.type = (*env)->GetFieldID(env, CGPathElementFc.clazz, "type", "I");
-	CGPathElementFc.points = (*env)->GetFieldID(env, CGPathElementFc.clazz, "points", I_J);
+	CGPathElementFc.points = (*env)->GetFieldID(env, CGPathElementFc.clazz, "points", "J");
 	CGPathElementFc.cached = 1;
 }
 
@@ -120,7 +120,7 @@ CGPathElement *getCGPathElementFields(JNIEnv *env, jobject lpObject, CGPathEleme
 {
 	if (!CGPathElementFc.cached) cacheCGPathElementFields(env, lpObject);
 	lpStruct->type = (CGPathElementType)(*env)->GetIntField(env, lpObject, CGPathElementFc.type);
-	lpStruct->points = (CGPoint*)(*env)->GetIntLongField(env, lpObject, CGPathElementFc.points);
+	lpStruct->points = (CGPoint*)(*env)->GetLongField(env, lpObject, CGPathElementFc.points);
 	return lpStruct;
 }
 
@@ -128,7 +128,7 @@ void setCGPathElementFields(JNIEnv *env, jobject lpObject, CGPathElement *lpStru
 {
 	if (!CGPathElementFc.cached) cacheCGPathElementFields(env, lpObject);
 	(*env)->SetIntField(env, lpObject, CGPathElementFc.type, (jint)lpStruct->type);
-	(*env)->SetIntLongField(env, lpObject, CGPathElementFc.points, (jintLong)lpStruct->points);
+	(*env)->SetLongField(env, lpObject, CGPathElementFc.points, (jlong)lpStruct->points);
 }
 #endif
 
@@ -145,24 +145,24 @@ void cacheCGPointFields(JNIEnv *env, jobject lpObject)
 {
 	if (CGPointFc.cached) return;
 	CGPointFc.clazz = (*env)->GetObjectClass(env, lpObject);
-	CGPointFc.x = (*env)->GetFieldID(env, CGPointFc.clazz, "x", F_D);
-	CGPointFc.y = (*env)->GetFieldID(env, CGPointFc.clazz, "y", F_D);
+	CGPointFc.x = (*env)->GetFieldID(env, CGPointFc.clazz, "x", "D");
+	CGPointFc.y = (*env)->GetFieldID(env, CGPointFc.clazz, "y", "D");
 	CGPointFc.cached = 1;
 }
 
 CGPoint *getCGPointFields(JNIEnv *env, jobject lpObject, CGPoint *lpStruct)
 {
 	if (!CGPointFc.cached) cacheCGPointFields(env, lpObject);
-	lpStruct->x = (CGFloat)(*env)->GetFloatDoubleField(env, lpObject, CGPointFc.x);
-	lpStruct->y = (CGFloat)(*env)->GetFloatDoubleField(env, lpObject, CGPointFc.y);
+	lpStruct->x = (CGFloat)(*env)->GetDoubleField(env, lpObject, CGPointFc.x);
+	lpStruct->y = (CGFloat)(*env)->GetDoubleField(env, lpObject, CGPointFc.y);
 	return lpStruct;
 }
 
 void setCGPointFields(JNIEnv *env, jobject lpObject, CGPoint *lpStruct)
 {
 	if (!CGPointFc.cached) cacheCGPointFields(env, lpObject);
-	(*env)->SetFloatDoubleField(env, lpObject, CGPointFc.x, (jfloatDouble)lpStruct->x);
-	(*env)->SetFloatDoubleField(env, lpObject, CGPointFc.y, (jfloatDouble)lpStruct->y);
+	(*env)->SetDoubleField(env, lpObject, CGPointFc.x, (jdouble)lpStruct->x);
+	(*env)->SetDoubleField(env, lpObject, CGPointFc.y, (jdouble)lpStruct->y);
 }
 #endif
 
@@ -225,24 +225,24 @@ void cacheCGSizeFields(JNIEnv *env, jobject lpObject)
 {
 	if (CGSizeFc.cached) return;
 	CGSizeFc.clazz = (*env)->GetObjectClass(env, lpObject);
-	CGSizeFc.width = (*env)->GetFieldID(env, CGSizeFc.clazz, "width", F_D);
-	CGSizeFc.height = (*env)->GetFieldID(env, CGSizeFc.clazz, "height", F_D);
+	CGSizeFc.width = (*env)->GetFieldID(env, CGSizeFc.clazz, "width", "D");
+	CGSizeFc.height = (*env)->GetFieldID(env, CGSizeFc.clazz, "height", "D");
 	CGSizeFc.cached = 1;
 }
 
 CGSize *getCGSizeFields(JNIEnv *env, jobject lpObject, CGSize *lpStruct)
 {
 	if (!CGSizeFc.cached) cacheCGSizeFields(env, lpObject);
-	lpStruct->width = (CGFloat)(*env)->GetFloatDoubleField(env, lpObject, CGSizeFc.width);
-	lpStruct->height = (CGFloat)(*env)->GetFloatDoubleField(env, lpObject, CGSizeFc.height);
+	lpStruct->width = (CGFloat)(*env)->GetDoubleField(env, lpObject, CGSizeFc.width);
+	lpStruct->height = (CGFloat)(*env)->GetDoubleField(env, lpObject, CGSizeFc.height);
 	return lpStruct;
 }
 
 void setCGSizeFields(JNIEnv *env, jobject lpObject, CGSize *lpStruct)
 {
 	if (!CGSizeFc.cached) cacheCGSizeFields(env, lpObject);
-	(*env)->SetFloatDoubleField(env, lpObject, CGSizeFc.width, (jfloatDouble)lpStruct->width);
-	(*env)->SetFloatDoubleField(env, lpObject, CGSizeFc.height, (jfloatDouble)lpStruct->height);
+	(*env)->SetDoubleField(env, lpObject, CGSizeFc.width, (jdouble)lpStruct->width);
+	(*env)->SetDoubleField(env, lpObject, CGSizeFc.height, (jdouble)lpStruct->height);
 }
 #endif
 
@@ -260,8 +260,8 @@ void cacheCTParagraphStyleSettingFields(JNIEnv *env, jobject lpObject)
 	if (CTParagraphStyleSettingFc.cached) return;
 	CTParagraphStyleSettingFc.clazz = (*env)->GetObjectClass(env, lpObject);
 	CTParagraphStyleSettingFc.spec = (*env)->GetFieldID(env, CTParagraphStyleSettingFc.clazz, "spec", "I");
-	CTParagraphStyleSettingFc.valueSize = (*env)->GetFieldID(env, CTParagraphStyleSettingFc.clazz, "valueSize", I_J);
-	CTParagraphStyleSettingFc.value = (*env)->GetFieldID(env, CTParagraphStyleSettingFc.clazz, "value", I_J);
+	CTParagraphStyleSettingFc.valueSize = (*env)->GetFieldID(env, CTParagraphStyleSettingFc.clazz, "valueSize", "J");
+	CTParagraphStyleSettingFc.value = (*env)->GetFieldID(env, CTParagraphStyleSettingFc.clazz, "value", "J");
 	CTParagraphStyleSettingFc.cached = 1;
 }
 
@@ -269,8 +269,8 @@ CTParagraphStyleSetting *getCTParagraphStyleSettingFields(JNIEnv *env, jobject l
 {
 	if (!CTParagraphStyleSettingFc.cached) cacheCTParagraphStyleSettingFields(env, lpObject);
 	lpStruct->spec = (CTParagraphStyleSpecifier)(*env)->GetIntField(env, lpObject, CTParagraphStyleSettingFc.spec);
-	lpStruct->valueSize = (size_t)(*env)->GetIntLongField(env, lpObject, CTParagraphStyleSettingFc.valueSize);
-	lpStruct->value = (void*)(*env)->GetIntLongField(env, lpObject, CTParagraphStyleSettingFc.value);
+	lpStruct->valueSize = (size_t)(*env)->GetLongField(env, lpObject, CTParagraphStyleSettingFc.valueSize);
+	lpStruct->value = (void*)(*env)->GetLongField(env, lpObject, CTParagraphStyleSettingFc.value);
 	return lpStruct;
 }
 
@@ -278,8 +278,8 @@ void setCTParagraphStyleSettingFields(JNIEnv *env, jobject lpObject, CTParagraph
 {
 	if (!CTParagraphStyleSettingFc.cached) cacheCTParagraphStyleSettingFields(env, lpObject);
 	(*env)->SetIntField(env, lpObject, CTParagraphStyleSettingFc.spec, (jint)lpStruct->spec);
-	(*env)->SetIntLongField(env, lpObject, CTParagraphStyleSettingFc.valueSize, (jintLong)lpStruct->valueSize);
-	(*env)->SetIntLongField(env, lpObject, CTParagraphStyleSettingFc.value, (jintLong)lpStruct->value);
+	(*env)->SetLongField(env, lpObject, CTParagraphStyleSettingFc.valueSize, (jlong)lpStruct->valueSize);
+	(*env)->SetLongField(env, lpObject, CTParagraphStyleSettingFc.value, (jlong)lpStruct->value);
 }
 #endif
 
@@ -296,36 +296,36 @@ void cacheNSAffineTransformStructFields(JNIEnv *env, jobject lpObject)
 {
 	if (NSAffineTransformStructFc.cached) return;
 	NSAffineTransformStructFc.clazz = (*env)->GetObjectClass(env, lpObject);
-	NSAffineTransformStructFc.m11 = (*env)->GetFieldID(env, NSAffineTransformStructFc.clazz, "m11", F_D);
-	NSAffineTransformStructFc.m12 = (*env)->GetFieldID(env, NSAffineTransformStructFc.clazz, "m12", F_D);
-	NSAffineTransformStructFc.m21 = (*env)->GetFieldID(env, NSAffineTransformStructFc.clazz, "m21", F_D);
-	NSAffineTransformStructFc.m22 = (*env)->GetFieldID(env, NSAffineTransformStructFc.clazz, "m22", F_D);
-	NSAffineTransformStructFc.tX = (*env)->GetFieldID(env, NSAffineTransformStructFc.clazz, "tX", F_D);
-	NSAffineTransformStructFc.tY = (*env)->GetFieldID(env, NSAffineTransformStructFc.clazz, "tY", F_D);
+	NSAffineTransformStructFc.m11 = (*env)->GetFieldID(env, NSAffineTransformStructFc.clazz, "m11", "D");
+	NSAffineTransformStructFc.m12 = (*env)->GetFieldID(env, NSAffineTransformStructFc.clazz, "m12", "D");
+	NSAffineTransformStructFc.m21 = (*env)->GetFieldID(env, NSAffineTransformStructFc.clazz, "m21", "D");
+	NSAffineTransformStructFc.m22 = (*env)->GetFieldID(env, NSAffineTransformStructFc.clazz, "m22", "D");
+	NSAffineTransformStructFc.tX = (*env)->GetFieldID(env, NSAffineTransformStructFc.clazz, "tX", "D");
+	NSAffineTransformStructFc.tY = (*env)->GetFieldID(env, NSAffineTransformStructFc.clazz, "tY", "D");
 	NSAffineTransformStructFc.cached = 1;
 }
 
 NSAffineTransformStruct *getNSAffineTransformStructFields(JNIEnv *env, jobject lpObject, NSAffineTransformStruct *lpStruct)
 {
 	if (!NSAffineTransformStructFc.cached) cacheNSAffineTransformStructFields(env, lpObject);
-	lpStruct->m11 = (CGFloat)(*env)->GetFloatDoubleField(env, lpObject, NSAffineTransformStructFc.m11);
-	lpStruct->m12 = (CGFloat)(*env)->GetFloatDoubleField(env, lpObject, NSAffineTransformStructFc.m12);
-	lpStruct->m21 = (CGFloat)(*env)->GetFloatDoubleField(env, lpObject, NSAffineTransformStructFc.m21);
-	lpStruct->m22 = (CGFloat)(*env)->GetFloatDoubleField(env, lpObject, NSAffineTransformStructFc.m22);
-	lpStruct->tX = (CGFloat)(*env)->GetFloatDoubleField(env, lpObject, NSAffineTransformStructFc.tX);
-	lpStruct->tY = (CGFloat)(*env)->GetFloatDoubleField(env, lpObject, NSAffineTransformStructFc.tY);
+	lpStruct->m11 = (CGFloat)(*env)->GetDoubleField(env, lpObject, NSAffineTransformStructFc.m11);
+	lpStruct->m12 = (CGFloat)(*env)->GetDoubleField(env, lpObject, NSAffineTransformStructFc.m12);
+	lpStruct->m21 = (CGFloat)(*env)->GetDoubleField(env, lpObject, NSAffineTransformStructFc.m21);
+	lpStruct->m22 = (CGFloat)(*env)->GetDoubleField(env, lpObject, NSAffineTransformStructFc.m22);
+	lpStruct->tX = (CGFloat)(*env)->GetDoubleField(env, lpObject, NSAffineTransformStructFc.tX);
+	lpStruct->tY = (CGFloat)(*env)->GetDoubleField(env, lpObject, NSAffineTransformStructFc.tY);
 	return lpStruct;
 }
 
 void setNSAffineTransformStructFields(JNIEnv *env, jobject lpObject, NSAffineTransformStruct *lpStruct)
 {
 	if (!NSAffineTransformStructFc.cached) cacheNSAffineTransformStructFields(env, lpObject);
-	(*env)->SetFloatDoubleField(env, lpObject, NSAffineTransformStructFc.m11, (jfloatDouble)lpStruct->m11);
-	(*env)->SetFloatDoubleField(env, lpObject, NSAffineTransformStructFc.m12, (jfloatDouble)lpStruct->m12);
-	(*env)->SetFloatDoubleField(env, lpObject, NSAffineTransformStructFc.m21, (jfloatDouble)lpStruct->m21);
-	(*env)->SetFloatDoubleField(env, lpObject, NSAffineTransformStructFc.m22, (jfloatDouble)lpStruct->m22);
-	(*env)->SetFloatDoubleField(env, lpObject, NSAffineTransformStructFc.tX, (jfloatDouble)lpStruct->tX);
-	(*env)->SetFloatDoubleField(env, lpObject, NSAffineTransformStructFc.tY, (jfloatDouble)lpStruct->tY);
+	(*env)->SetDoubleField(env, lpObject, NSAffineTransformStructFc.m11, (jdouble)lpStruct->m11);
+	(*env)->SetDoubleField(env, lpObject, NSAffineTransformStructFc.m12, (jdouble)lpStruct->m12);
+	(*env)->SetDoubleField(env, lpObject, NSAffineTransformStructFc.m21, (jdouble)lpStruct->m21);
+	(*env)->SetDoubleField(env, lpObject, NSAffineTransformStructFc.m22, (jdouble)lpStruct->m22);
+	(*env)->SetDoubleField(env, lpObject, NSAffineTransformStructFc.tX, (jdouble)lpStruct->tX);
+	(*env)->SetDoubleField(env, lpObject, NSAffineTransformStructFc.tY, (jdouble)lpStruct->tY);
 }
 #endif
 
@@ -342,24 +342,24 @@ void cacheNSPointFields(JNIEnv *env, jobject lpObject)
 {
 	if (NSPointFc.cached) return;
 	NSPointFc.clazz = (*env)->GetObjectClass(env, lpObject);
-	NSPointFc.x = (*env)->GetFieldID(env, NSPointFc.clazz, "x", F_D);
-	NSPointFc.y = (*env)->GetFieldID(env, NSPointFc.clazz, "y", F_D);
+	NSPointFc.x = (*env)->GetFieldID(env, NSPointFc.clazz, "x", "D");
+	NSPointFc.y = (*env)->GetFieldID(env, NSPointFc.clazz, "y", "D");
 	NSPointFc.cached = 1;
 }
 
 NSPoint *getNSPointFields(JNIEnv *env, jobject lpObject, NSPoint *lpStruct)
 {
 	if (!NSPointFc.cached) cacheNSPointFields(env, lpObject);
-	lpStruct->x = (CGFloat)(*env)->GetFloatDoubleField(env, lpObject, NSPointFc.x);
-	lpStruct->y = (CGFloat)(*env)->GetFloatDoubleField(env, lpObject, NSPointFc.y);
+	lpStruct->x = (CGFloat)(*env)->GetDoubleField(env, lpObject, NSPointFc.x);
+	lpStruct->y = (CGFloat)(*env)->GetDoubleField(env, lpObject, NSPointFc.y);
 	return lpStruct;
 }
 
 void setNSPointFields(JNIEnv *env, jobject lpObject, NSPoint *lpStruct)
 {
 	if (!NSPointFc.cached) cacheNSPointFields(env, lpObject);
-	(*env)->SetFloatDoubleField(env, lpObject, NSPointFc.x, (jfloatDouble)lpStruct->x);
-	(*env)->SetFloatDoubleField(env, lpObject, NSPointFc.y, (jfloatDouble)lpStruct->y);
+	(*env)->SetDoubleField(env, lpObject, NSPointFc.x, (jdouble)lpStruct->x);
+	(*env)->SetDoubleField(env, lpObject, NSPointFc.y, (jdouble)lpStruct->y);
 }
 #endif
 
@@ -376,24 +376,24 @@ void cacheNSRangeFields(JNIEnv *env, jobject lpObject)
 {
 	if (NSRangeFc.cached) return;
 	NSRangeFc.clazz = (*env)->GetObjectClass(env, lpObject);
-	NSRangeFc.location = (*env)->GetFieldID(env, NSRangeFc.clazz, "location", I_J);
-	NSRangeFc.length = (*env)->GetFieldID(env, NSRangeFc.clazz, "length", I_J);
+	NSRangeFc.location = (*env)->GetFieldID(env, NSRangeFc.clazz, "location", "J");
+	NSRangeFc.length = (*env)->GetFieldID(env, NSRangeFc.clazz, "length", "J");
 	NSRangeFc.cached = 1;
 }
 
 NSRange *getNSRangeFields(JNIEnv *env, jobject lpObject, NSRange *lpStruct)
 {
 	if (!NSRangeFc.cached) cacheNSRangeFields(env, lpObject);
-	lpStruct->location = (NSUInteger)(*env)->GetIntLongField(env, lpObject, NSRangeFc.location);
-	lpStruct->length = (NSUInteger)(*env)->GetIntLongField(env, lpObject, NSRangeFc.length);
+	lpStruct->location = (NSUInteger)(*env)->GetLongField(env, lpObject, NSRangeFc.location);
+	lpStruct->length = (NSUInteger)(*env)->GetLongField(env, lpObject, NSRangeFc.length);
 	return lpStruct;
 }
 
 void setNSRangeFields(JNIEnv *env, jobject lpObject, NSRange *lpStruct)
 {
 	if (!NSRangeFc.cached) cacheNSRangeFields(env, lpObject);
-	(*env)->SetIntLongField(env, lpObject, NSRangeFc.location, (jintLong)lpStruct->location);
-	(*env)->SetIntLongField(env, lpObject, NSRangeFc.length, (jintLong)lpStruct->length);
+	(*env)->SetLongField(env, lpObject, NSRangeFc.location, (jlong)lpStruct->location);
+	(*env)->SetLongField(env, lpObject, NSRangeFc.length, (jlong)lpStruct->length);
 }
 #endif
 
@@ -410,30 +410,30 @@ void cacheNSRectFields(JNIEnv *env, jobject lpObject)
 {
 	if (NSRectFc.cached) return;
 	NSRectFc.clazz = (*env)->GetObjectClass(env, lpObject);
-	NSRectFc.x = (*env)->GetFieldID(env, NSRectFc.clazz, "x", F_D);
-	NSRectFc.y = (*env)->GetFieldID(env, NSRectFc.clazz, "y", F_D);
-	NSRectFc.width = (*env)->GetFieldID(env, NSRectFc.clazz, "width", F_D);
-	NSRectFc.height = (*env)->GetFieldID(env, NSRectFc.clazz, "height", F_D);
+	NSRectFc.x = (*env)->GetFieldID(env, NSRectFc.clazz, "x", "D");
+	NSRectFc.y = (*env)->GetFieldID(env, NSRectFc.clazz, "y", "D");
+	NSRectFc.width = (*env)->GetFieldID(env, NSRectFc.clazz, "width", "D");
+	NSRectFc.height = (*env)->GetFieldID(env, NSRectFc.clazz, "height", "D");
 	NSRectFc.cached = 1;
 }
 
 NSRect *getNSRectFields(JNIEnv *env, jobject lpObject, NSRect *lpStruct)
 {
 	if (!NSRectFc.cached) cacheNSRectFields(env, lpObject);
-	lpStruct->origin.x = (*env)->GetFloatDoubleField(env, lpObject, NSRectFc.x);
-	lpStruct->origin.y = (*env)->GetFloatDoubleField(env, lpObject, NSRectFc.y);
-	lpStruct->size.width = (*env)->GetFloatDoubleField(env, lpObject, NSRectFc.width);
-	lpStruct->size.height = (*env)->GetFloatDoubleField(env, lpObject, NSRectFc.height);
+	lpStruct->origin.x = (*env)->GetDoubleField(env, lpObject, NSRectFc.x);
+	lpStruct->origin.y = (*env)->GetDoubleField(env, lpObject, NSRectFc.y);
+	lpStruct->size.width = (*env)->GetDoubleField(env, lpObject, NSRectFc.width);
+	lpStruct->size.height = (*env)->GetDoubleField(env, lpObject, NSRectFc.height);
 	return lpStruct;
 }
 
 void setNSRectFields(JNIEnv *env, jobject lpObject, NSRect *lpStruct)
 {
 	if (!NSRectFc.cached) cacheNSRectFields(env, lpObject);
-	(*env)->SetFloatDoubleField(env, lpObject, NSRectFc.x, (jfloatDouble)lpStruct->origin.x);
-	(*env)->SetFloatDoubleField(env, lpObject, NSRectFc.y, (jfloatDouble)lpStruct->origin.y);
-	(*env)->SetFloatDoubleField(env, lpObject, NSRectFc.width, (jfloatDouble)lpStruct->size.width);
-	(*env)->SetFloatDoubleField(env, lpObject, NSRectFc.height, (jfloatDouble)lpStruct->size.height);
+	(*env)->SetDoubleField(env, lpObject, NSRectFc.x, (jdouble)lpStruct->origin.x);
+	(*env)->SetDoubleField(env, lpObject, NSRectFc.y, (jdouble)lpStruct->origin.y);
+	(*env)->SetDoubleField(env, lpObject, NSRectFc.width, (jdouble)lpStruct->size.width);
+	(*env)->SetDoubleField(env, lpObject, NSRectFc.height, (jdouble)lpStruct->size.height);
 }
 #endif
 
@@ -450,24 +450,24 @@ void cacheNSSizeFields(JNIEnv *env, jobject lpObject)
 {
 	if (NSSizeFc.cached) return;
 	NSSizeFc.clazz = (*env)->GetObjectClass(env, lpObject);
-	NSSizeFc.width = (*env)->GetFieldID(env, NSSizeFc.clazz, "width", F_D);
-	NSSizeFc.height = (*env)->GetFieldID(env, NSSizeFc.clazz, "height", F_D);
+	NSSizeFc.width = (*env)->GetFieldID(env, NSSizeFc.clazz, "width", "D");
+	NSSizeFc.height = (*env)->GetFieldID(env, NSSizeFc.clazz, "height", "D");
 	NSSizeFc.cached = 1;
 }
 
 NSSize *getNSSizeFields(JNIEnv *env, jobject lpObject, NSSize *lpStruct)
 {
 	if (!NSSizeFc.cached) cacheNSSizeFields(env, lpObject);
-	lpStruct->width = (CGFloat)(*env)->GetFloatDoubleField(env, lpObject, NSSizeFc.width);
-	lpStruct->height = (CGFloat)(*env)->GetFloatDoubleField(env, lpObject, NSSizeFc.height);
+	lpStruct->width = (CGFloat)(*env)->GetDoubleField(env, lpObject, NSSizeFc.width);
+	lpStruct->height = (CGFloat)(*env)->GetDoubleField(env, lpObject, NSSizeFc.height);
 	return lpStruct;
 }
 
 void setNSSizeFields(JNIEnv *env, jobject lpObject, NSSize *lpStruct)
 {
 	if (!NSSizeFc.cached) cacheNSSizeFields(env, lpObject);
-	(*env)->SetFloatDoubleField(env, lpObject, NSSizeFc.width, (jfloatDouble)lpStruct->width);
-	(*env)->SetFloatDoubleField(env, lpObject, NSSizeFc.height, (jfloatDouble)lpStruct->height);
+	(*env)->SetDoubleField(env, lpObject, NSSizeFc.width, (jdouble)lpStruct->width);
+	(*env)->SetDoubleField(env, lpObject, NSSizeFc.height, (jdouble)lpStruct->height);
 }
 #endif
 
@@ -518,24 +518,24 @@ void cacheobjc_superFields(JNIEnv *env, jobject lpObject)
 {
 	if (objc_superFc.cached) return;
 	objc_superFc.clazz = (*env)->GetObjectClass(env, lpObject);
-	objc_superFc.receiver = (*env)->GetFieldID(env, objc_superFc.clazz, "receiver", I_J);
-	objc_superFc.super_class = (*env)->GetFieldID(env, objc_superFc.clazz, "super_class", I_J);
+	objc_superFc.receiver = (*env)->GetFieldID(env, objc_superFc.clazz, "receiver", "J");
+	objc_superFc.super_class = (*env)->GetFieldID(env, objc_superFc.clazz, "super_class", "J");
 	objc_superFc.cached = 1;
 }
 
 struct objc_super *getobjc_superFields(JNIEnv *env, jobject lpObject, struct objc_super *lpStruct)
 {
 	if (!objc_superFc.cached) cacheobjc_superFields(env, lpObject);
-	lpStruct->receiver = (id)(*env)->GetIntLongField(env, lpObject, objc_superFc.receiver);
-	lpStruct->swt_super_class = (Class)(*env)->GetIntLongField(env, lpObject, objc_superFc.super_class);
+	lpStruct->receiver = (id)(*env)->GetLongField(env, lpObject, objc_superFc.receiver);
+	lpStruct->swt_super_class = (Class)(*env)->GetLongField(env, lpObject, objc_superFc.super_class);
 	return lpStruct;
 }
 
 void setobjc_superFields(JNIEnv *env, jobject lpObject, struct objc_super *lpStruct)
 {
 	if (!objc_superFc.cached) cacheobjc_superFields(env, lpObject);
-	(*env)->SetIntLongField(env, lpObject, objc_superFc.receiver, (jintLong)lpStruct->receiver);
-	(*env)->SetIntLongField(env, lpObject, objc_superFc.super_class, (jintLong)lpStruct->swt_super_class);
+	(*env)->SetLongField(env, lpObject, objc_superFc.receiver, (jlong)lpStruct->receiver);
+	(*env)->SetLongField(env, lpObject, objc_superFc.super_class, (jlong)lpStruct->swt_super_class);
 }
 #endif
 

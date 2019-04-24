@@ -19,7 +19,7 @@ public NSURLAuthenticationChallenge() {
 	super();
 }
 
-public NSURLAuthenticationChallenge(long /*int*/ id) {
+public NSURLAuthenticationChallenge(long id) {
 	super(id);
 }
 
@@ -27,22 +27,22 @@ public NSURLAuthenticationChallenge(id id) {
 	super(id);
 }
 
-public long /*int*/ previousFailureCount() {
+public long previousFailureCount() {
 	return OS.objc_msgSend(this.id, OS.sel_previousFailureCount);
 }
 
 public NSURLCredential proposedCredential() {
-	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_proposedCredential);
+	long result = OS.objc_msgSend(this.id, OS.sel_proposedCredential);
 	return result != 0 ? new NSURLCredential(result) : null;
 }
 
 public NSURLProtectionSpace protectionSpace() {
-	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_protectionSpace);
+	long result = OS.objc_msgSend(this.id, OS.sel_protectionSpace);
 	return result != 0 ? new NSURLProtectionSpace(result) : null;
 }
 
 public id sender() {
-	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_sender);
+	long result = OS.objc_msgSend(this.id, OS.sel_sender);
 	return result != 0 ? new id(result) : null;
 }
 

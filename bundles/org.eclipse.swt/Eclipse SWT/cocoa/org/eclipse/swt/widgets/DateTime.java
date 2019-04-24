@@ -282,7 +282,7 @@ void disposePopupShell() {
 }
 
 @Override
-void drawBackground (long /*int*/ id, NSGraphicsContext context, NSRect rect) {
+void drawBackground (long id, NSGraphicsContext context, NSRect rect) {
 	if (id != view.id) return;
 	fillBackground (view, context, rect, -1);
 }
@@ -359,7 +359,7 @@ public Control [] getChildren () {
  */
 public int getDay () {
 	checkWidget ();
-	return (int)/*64*/getCalendarDate().dayOfMonth();
+	return (int)getCalendarDate().dayOfMonth();
 }
 
 /**
@@ -377,7 +377,7 @@ public int getDay () {
  */
 public int getHours () {
 	checkWidget ();
-	return (int)/*64*/getCalendarDate().hourOfDay();
+	return (int)getCalendarDate().hourOfDay();
 }
 
 /**
@@ -395,7 +395,7 @@ public int getHours () {
  */
 public int getMinutes () {
 	checkWidget ();
-	return (int)/*64*/getCalendarDate().minuteOfHour();
+	return (int)getCalendarDate().minuteOfHour();
 }
 
 /**
@@ -413,7 +413,7 @@ public int getMinutes () {
  */
 public int getMonth () {
 	checkWidget ();
-	return (int)/*64*/getCalendarDate().monthOfYear() - 1;
+	return (int)getCalendarDate().monthOfYear() - 1;
 }
 
 @Override
@@ -437,7 +437,7 @@ String getNameText() {
  */
 public int getSeconds () {
 	checkWidget ();
-	return (int)/*64*/getCalendarDate().secondOfMinute();
+	return (int)getCalendarDate().secondOfMinute();
 }
 
 /**
@@ -455,7 +455,7 @@ public int getSeconds () {
  */
 public int getYear () {
 	checkWidget ();
-	return (int)/*64*/getCalendarDate().yearOfCommonEra();
+	return (int)getCalendarDate().yearOfCommonEra();
 }
 
 boolean isDropped () {
@@ -463,18 +463,18 @@ boolean isDropped () {
 }
 
 @Override
-boolean isEventView (long /*int*/ id) {
+boolean isEventView (long id) {
 	return true;
 }
 
 @Override
-boolean isFlipped (long /*int*/ id, long /*int*/ sel) {
+boolean isFlipped (long id, long sel) {
 	if ((style & SWT.CALENDAR) != 0) return super.isFlipped (id, sel);
 	return true;
 }
 
 @Override
-void keyDown(long /*int*/ id, long /*int*/ sel, long /*int*/ theEvent) {
+void keyDown(long id, long sel, long theEvent) {
 	if ((style & SWT.DROP_DOWN) != 0) {
 		NSEvent nsEvent = new NSEvent (theEvent);
 		int keyCode = Display.translateKey (nsEvent.keyCode ());
@@ -676,7 +676,7 @@ public void setDay (int day) {
 }
 
 @Override
-void setForeground (double /*float*/ [] color) {
+void setForeground (double [] color) {
 	NSColor nsColor;
 	if (color == null) {
 		if ((style & SWT.CALENDAR) != 0) {

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2017 IBM Corporation and others.
+ * Copyright (c) 2000, 2019 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -19,7 +19,7 @@ public NSTableView() {
 	super();
 }
 
-public NSTableView(long /*int*/ id) {
+public NSTableView(long id) {
 	super(id);
 }
 
@@ -39,24 +39,24 @@ public boolean canDragRowsWithIndexes(NSIndexSet rowIndexes, NSPoint mouseDownPo
 	return OS.objc_msgSend_bool(this.id, OS.sel_canDragRowsWithIndexes_atPoint_, rowIndexes != null ? rowIndexes.id : 0, mouseDownPoint);
 }
 
-public long /*int*/ clickedColumn() {
+public long clickedColumn() {
 	return OS.objc_msgSend(this.id, OS.sel_clickedColumn);
 }
 
-public long /*int*/ clickedRow() {
+public long clickedRow() {
 	return OS.objc_msgSend(this.id, OS.sel_clickedRow);
 }
 
-public long /*int*/ columnAtPoint(NSPoint point) {
+public long columnAtPoint(NSPoint point) {
 	return OS.objc_msgSend(this.id, OS.sel_columnAtPoint_, point);
 }
 
 public NSIndexSet columnIndexesInRect(NSRect rect) {
-	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_columnIndexesInRect_, rect);
+	long result = OS.objc_msgSend(this.id, OS.sel_columnIndexesInRect_, rect);
 	return result != 0 ? new NSIndexSet(result) : null;
 }
 
-public long /*int*/ columnWithIdentifier(NSString identifier) {
+public long columnWithIdentifier(NSString identifier) {
 	return OS.objc_msgSend(this.id, OS.sel_columnWithIdentifier_, identifier != null ? identifier.id : 0);
 }
 
@@ -64,12 +64,12 @@ public void deselectAll(id sender) {
 	OS.objc_msgSend(this.id, OS.sel_deselectAll_, sender != null ? sender.id : 0);
 }
 
-public void deselectRow(long /*int*/ row) {
+public void deselectRow(long row) {
 	OS.objc_msgSend(this.id, OS.sel_deselectRow_, row);
 }
 
-public NSImage dragImageForRowsWithIndexes(NSIndexSet dragRows, NSArray tableColumns, NSEvent dragEvent, long /*int*/ dragImageOffset) {
-	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_dragImageForRowsWithIndexes_tableColumns_event_offset_, dragRows != null ? dragRows.id : 0, tableColumns != null ? tableColumns.id : 0, dragEvent != null ? dragEvent.id : 0, dragImageOffset);
+public NSImage dragImageForRowsWithIndexes(NSIndexSet dragRows, NSArray tableColumns, NSEvent dragEvent, long dragImageOffset) {
+	long result = OS.objc_msgSend(this.id, OS.sel_dragImageForRowsWithIndexes_tableColumns_event_offset_, dragRows != null ? dragRows.id : 0, tableColumns != null ? tableColumns.id : 0, dragEvent != null ? dragEvent.id : 0, dragImageOffset);
 	return result != 0 ? new NSImage(result) : null;
 }
 
@@ -77,14 +77,14 @@ public void drawBackgroundInClipRect(NSRect clipRect) {
 	OS.objc_msgSend(this.id, OS.sel_drawBackgroundInClipRect_, clipRect);
 }
 
-public NSRect frameOfCellAtColumn(long /*int*/ column, long /*int*/ row) {
+public NSRect frameOfCellAtColumn(long column, long row) {
 	NSRect result = new NSRect();
 	OS.objc_msgSend_stret(result, this.id, OS.sel_frameOfCellAtColumn_row_, column, row);
 	return result;
 }
 
 public NSTableHeaderView headerView() {
-	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_headerView);
+	long result = OS.objc_msgSend(this.id, OS.sel_headerView);
 	return result != 0 ? new NSTableHeaderView(result) : null;
 }
 
@@ -98,11 +98,11 @@ public NSSize intercellSpacing() {
 	return result;
 }
 
-public boolean isRowSelected(long /*int*/ row) {
+public boolean isRowSelected(long row) {
 	return OS.objc_msgSend_bool(this.id, OS.sel_isRowSelected_, row);
 }
 
-public void moveColumn(long /*int*/ column, long /*int*/ newIndex) {
+public void moveColumn(long column, long newIndex) {
 	OS.objc_msgSend(this.id, OS.sel_moveColumn_toColumn_, column, newIndex);
 }
 
@@ -110,30 +110,30 @@ public void noteNumberOfRowsChanged() {
 	OS.objc_msgSend(this.id, OS.sel_noteNumberOfRowsChanged);
 }
 
-public long /*int*/ numberOfColumns() {
+public long numberOfColumns() {
 	return OS.objc_msgSend(this.id, OS.sel_numberOfColumns);
 }
 
-public long /*int*/ numberOfRows() {
+public long numberOfRows() {
 	return OS.objc_msgSend(this.id, OS.sel_numberOfRows);
 }
 
-public long /*int*/ numberOfSelectedRows() {
+public long numberOfSelectedRows() {
 	return OS.objc_msgSend(this.id, OS.sel_numberOfSelectedRows);
 }
 
-public NSCell preparedCellAtColumn(long /*int*/ column, long /*int*/ row) {
-	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_preparedCellAtColumn_row_, column, row);
+public NSCell preparedCellAtColumn(long column, long row) {
+	long result = OS.objc_msgSend(this.id, OS.sel_preparedCellAtColumn_row_, column, row);
 	return result != 0 ? new NSCell(result) : null;
 }
 
-public NSRect rectOfColumn(long /*int*/ column) {
+public NSRect rectOfColumn(long column) {
 	NSRect result = new NSRect();
 	OS.objc_msgSend_stret(result, this.id, OS.sel_rectOfColumn_, column);
 	return result;
 }
 
-public NSRect rectOfRow(long /*int*/ row) {
+public NSRect rectOfRow(long row) {
 	NSRect result = new NSRect();
 	OS.objc_msgSend_stret(result, this.id, OS.sel_rectOfRow_, row);
 	return result;
@@ -147,12 +147,12 @@ public void removeTableColumn(NSTableColumn column) {
 	OS.objc_msgSend(this.id, OS.sel_removeTableColumn_, column != null ? column.id : 0);
 }
 
-public long /*int*/ rowAtPoint(NSPoint point) {
+public long rowAtPoint(NSPoint point) {
 	return OS.objc_msgSend(this.id, OS.sel_rowAtPoint_, point);
 }
 
-public double /*float*/ rowHeight() {
-	return (double /*float*/)OS.objc_msgSend_fpret(this.id, OS.sel_rowHeight);
+public double rowHeight() {
+	return OS.objc_msgSend_fpret(this.id, OS.sel_rowHeight);
 }
 
 public NSRange rowsInRect(NSRect rect) {
@@ -161,11 +161,11 @@ public NSRange rowsInRect(NSRect rect) {
 	return result;
 }
 
-public void scrollColumnToVisible(long /*int*/ column) {
+public void scrollColumnToVisible(long column) {
 	OS.objc_msgSend(this.id, OS.sel_scrollColumnToVisible_, column);
 }
 
-public void scrollRowToVisible(long /*int*/ row) {
+public void scrollRowToVisible(long row) {
 	OS.objc_msgSend(this.id, OS.sel_scrollRowToVisible_, row);
 }
 
@@ -177,12 +177,12 @@ public void selectRowIndexes(NSIndexSet indexes, boolean extend) {
 	OS.objc_msgSend(this.id, OS.sel_selectRowIndexes_byExtendingSelection_, indexes != null ? indexes.id : 0, extend);
 }
 
-public long /*int*/ selectedRow() {
+public long selectedRow() {
 	return OS.objc_msgSend(this.id, OS.sel_selectedRow);
 }
 
 public NSIndexSet selectedRowIndexes() {
-	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_selectedRowIndexes);
+	long result = OS.objc_msgSend(this.id, OS.sel_selectedRowIndexes);
 	return result != 0 ? new NSIndexSet(result) : null;
 }
 
@@ -198,7 +198,7 @@ public void setBackgroundColor(NSColor backgroundColor) {
 	OS.objc_msgSend(this.id, OS.sel_setBackgroundColor_, backgroundColor != null ? backgroundColor.id : 0);
 }
 
-public void setColumnAutoresizingStyle(long /*int*/ columnAutoresizingStyle) {
+public void setColumnAutoresizingStyle(long columnAutoresizingStyle) {
 	OS.objc_msgSend(this.id, OS.sel_setColumnAutoresizingStyle_, columnAutoresizingStyle);
 }
 
@@ -210,15 +210,15 @@ public void setDelegate(id delegate) {
 	OS.objc_msgSend(this.id, OS.sel_setDelegate_, delegate != null ? delegate.id : 0);
 }
 
-public void setDoubleAction(long /*int*/ doubleAction) {
+public void setDoubleAction(long doubleAction) {
 	OS.objc_msgSend(this.id, OS.sel_setDoubleAction_, doubleAction);
 }
 
-public void setDropRow(long /*int*/ row, long /*int*/ op) {
+public void setDropRow(long row, long op) {
 	OS.objc_msgSend(this.id, OS.sel_setDropRow_dropOperation_, row, op);
 }
 
-public void setGridStyleMask(long /*int*/ gridStyle) {
+public void setGridStyleMask(long gridStyle) {
 	OS.objc_msgSend(this.id, OS.sel_setGridStyleMask_, gridStyle);
 }
 
@@ -238,7 +238,7 @@ public void setIntercellSpacing(NSSize intercellSpacing) {
 	OS.objc_msgSend(this.id, OS.sel_setIntercellSpacing_, intercellSpacing);
 }
 
-public void setRowHeight(double /*float*/ rowHeight) {
+public void setRowHeight(double rowHeight) {
 	OS.objc_msgSend(this.id, OS.sel_setRowHeight_, rowHeight);
 }
 
@@ -247,7 +247,7 @@ public void setUsesAlternatingRowBackgroundColors(boolean usesAlternatingRowBack
 }
 
 public NSArray tableColumns() {
-	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_tableColumns);
+	long result = OS.objc_msgSend(this.id, OS.sel_tableColumns);
 	return result != 0 ? new NSArray(result) : null;
 }
 
@@ -259,11 +259,11 @@ public boolean usesAlternatingRowBackgroundColors() {
 	return OS.objc_msgSend_bool(this.id, OS.sel_usesAlternatingRowBackgroundColors);
 }
 
-public static long /*int*/ cellClass() {
+public static long cellClass() {
 	return OS.objc_msgSend(OS.class_NSTableView, OS.sel_cellClass);
 }
 
-public static void setCellClass(long /*int*/ factoryId) {
+public static void setCellClass(long factoryId) {
 	OS.objc_msgSend(OS.class_NSTableView, OS.sel_setCellClass_, factoryId);
 }
 

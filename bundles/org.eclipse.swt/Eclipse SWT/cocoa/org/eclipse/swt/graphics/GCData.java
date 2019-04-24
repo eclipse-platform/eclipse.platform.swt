@@ -33,7 +33,7 @@ public final class GCData {
 	public Device device;
 	public int style, state = -1;
 
-	public double /*float*/ [] foreground, background;
+	public double [] foreground, background;
 	public Pattern foregroundPattern;
 	public Pattern backgroundPattern;
 	public Font font;
@@ -55,12 +55,12 @@ public final class GCData {
 	public NSLayoutManager layoutManager;
 	public NSTextContainer textContainer;
 	public NSColor fg, bg;
-	public double /*float*/ drawXOffset, drawYOffset;
+	public double drawXOffset, drawYOffset;
 	public NSRect paintRect;
 	public NSBezierPath path;
 	public NSAffineTransform transform, inverseTransform;
 	public NSBezierPath clipPath, visiblePath;
-	public long /*int*/ visibleRgn;
+	public long visibleRgn;
 	public NSView view;
 	public NSSize size;
 	public Thread thread;

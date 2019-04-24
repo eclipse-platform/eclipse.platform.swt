@@ -19,7 +19,7 @@ public NSText() {
 	super();
 }
 
-public NSText(long /*int*/ id) {
+public NSText(long id) {
 	super(id);
 }
 
@@ -36,12 +36,12 @@ public void cut(id sender) {
 }
 
 public id delegate() {
-	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_delegate);
+	long result = OS.objc_msgSend(this.id, OS.sel_delegate);
 	return result != 0 ? new id(result) : null;
 }
 
 public NSFont font() {
-	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_font);
+	long result = OS.objc_msgSend(this.id, OS.sel_font);
 	return result != 0 ? new NSFont(result) : null;
 }
 
@@ -71,7 +71,7 @@ public NSRange selectedRange() {
 	return result;
 }
 
-public void setAlignment(long /*int*/ alignment) {
+public void setAlignment(long alignment) {
 	OS.objc_msgSend(this.id, OS.sel_setAlignment_, alignment);
 }
 
@@ -79,7 +79,7 @@ public void setBackgroundColor(NSColor backgroundColor) {
 	OS.objc_msgSend(this.id, OS.sel_setBackgroundColor_, backgroundColor != null ? backgroundColor.id : 0);
 }
 
-public void setBaseWritingDirection(long /*int*/ baseWritingDirection) {
+public void setBaseWritingDirection(long baseWritingDirection) {
 	OS.objc_msgSend(this.id, OS.sel_setBaseWritingDirection_, baseWritingDirection);
 }
 
@@ -132,7 +132,7 @@ public void sizeToFit() {
 }
 
 public NSString string() {
-	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_string);
+	long result = OS.objc_msgSend(this.id, OS.sel_string);
 	return result != 0 ? new NSString(result) : null;
 }
 

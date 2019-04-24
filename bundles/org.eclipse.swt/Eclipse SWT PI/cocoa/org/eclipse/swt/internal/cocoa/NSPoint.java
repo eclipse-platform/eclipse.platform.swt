@@ -15,9 +15,9 @@ package org.eclipse.swt.internal.cocoa;
 
 public class NSPoint {
 	/** @field cast=(CGFloat) */
-	public double /*float*/ x;
+	public double x;
 	/** @field cast=(CGFloat) */
-	public double /*float*/ y;
+	public double y;
 	public static final int sizeof = OS.NSPoint_sizeof();
 
 	@Override

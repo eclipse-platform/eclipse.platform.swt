@@ -19,7 +19,7 @@ public WebScriptObject() {
 	super();
 }
 
-public WebScriptObject(long /*int*/ id) {
+public WebScriptObject(long id) {
 	super(id);
 }
 
@@ -28,7 +28,7 @@ public WebScriptObject(id id) {
 }
 
 public id webScriptValueAtIndex(int index) {
-	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_webScriptValueAtIndex_, index);
+	long result = OS.objc_msgSend(this.id, OS.sel_webScriptValueAtIndex_, index);
 	return result != 0 ? new id(result) : null;
 }
 

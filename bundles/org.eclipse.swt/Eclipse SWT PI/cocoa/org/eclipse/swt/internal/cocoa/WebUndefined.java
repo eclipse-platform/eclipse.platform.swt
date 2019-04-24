@@ -19,7 +19,7 @@ public WebUndefined() {
 	super();
 }
 
-public WebUndefined(long /*int*/ id) {
+public WebUndefined(long id) {
 	super(id);
 }
 
@@ -28,7 +28,7 @@ public WebUndefined(id id) {
 }
 
 public static WebUndefined undefined() {
-	long /*int*/ result = OS.objc_msgSend(OS.class_WebUndefined, OS.sel_undefined);
+	long result = OS.objc_msgSend(OS.class_WebUndefined, OS.sel_undefined);
 	return result != 0 ? new WebUndefined(result) : null;
 }
 

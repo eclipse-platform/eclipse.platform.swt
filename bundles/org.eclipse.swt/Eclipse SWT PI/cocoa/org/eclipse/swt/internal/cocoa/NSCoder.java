@@ -19,7 +19,7 @@ public NSCoder() {
 	super();
 }
 
-public NSCoder(long /*int*/ id) {
+public NSCoder(long id) {
 	super(id);
 }
 
@@ -28,7 +28,7 @@ public NSCoder(id id) {
 }
 
 public int systemVersion() {
-	return (int)/*64*/OS.objc_msgSend(this.id, OS.sel_systemVersion);
+	return (int)OS.objc_msgSend(this.id, OS.sel_systemVersion);
 }
 
 }

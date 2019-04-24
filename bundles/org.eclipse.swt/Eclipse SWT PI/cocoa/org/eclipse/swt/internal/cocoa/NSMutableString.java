@@ -19,7 +19,7 @@ public NSMutableString() {
 	super();
 }
 
-public NSMutableString(long /*int*/ id) {
+public NSMutableString(long id) {
 	super(id);
 }
 
@@ -40,17 +40,17 @@ public void setString(NSString aString) {
 }
 
 public static NSString string() {
-	long /*int*/ result = OS.objc_msgSend(OS.class_NSMutableString, OS.sel_string);
+	long result = OS.objc_msgSend(OS.class_NSMutableString, OS.sel_string);
 	return result != 0 ? new NSString(result) : null;
 }
 
-public static NSString stringWithCharacters(char[] characters, long /*int*/ length) {
-	long /*int*/ result = OS.objc_msgSend(OS.class_NSMutableString, OS.sel_stringWithCharacters_length_, characters, length);
+public static NSString stringWithCharacters(char[] characters, long length) {
+	long result = OS.objc_msgSend(OS.class_NSMutableString, OS.sel_stringWithCharacters_length_, characters, length);
 	return result != 0 ? new NSMutableString(result) : null;
 }
 
-public static NSString stringWithUTF8String(long /*int*/ nullTerminatedCString) {
-	long /*int*/ result = OS.objc_msgSend(OS.class_NSMutableString, OS.sel_stringWithUTF8String_, nullTerminatedCString);
+public static NSString stringWithUTF8String(long nullTerminatedCString) {
+	long result = OS.objc_msgSend(OS.class_NSMutableString, OS.sel_stringWithUTF8String_, nullTerminatedCString);
 	return result != 0 ? new NSString(result) : null;
 }
 

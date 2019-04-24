@@ -19,7 +19,7 @@ public NSTextView() {
 	super();
 }
 
-public NSTextView(long /*int*/ id) {
+public NSTextView(long id) {
 	super(id);
 }
 
@@ -27,12 +27,12 @@ public NSTextView(id id) {
 	super(id);
 }
 
-public long /*int*/ characterIndexForInsertionAtPoint(NSPoint point) {
+public long characterIndexForInsertionAtPoint(NSPoint point) {
 	return OS.objc_msgSend(this.id, OS.sel_characterIndexForInsertionAtPoint_, point);
 }
 
 public NSParagraphStyle defaultParagraphStyle() {
-	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_defaultParagraphStyle);
+	long result = OS.objc_msgSend(this.id, OS.sel_defaultParagraphStyle);
 	return result != 0 ? new NSParagraphStyle(result) : null;
 }
 
@@ -45,22 +45,22 @@ public void drawViewBackgroundInRect(NSRect rect) {
 }
 
 public NSLayoutManager layoutManager() {
-	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_layoutManager);
+	long result = OS.objc_msgSend(this.id, OS.sel_layoutManager);
 	return result != 0 ? new NSLayoutManager(result) : null;
 }
 
 public NSDictionary linkTextAttributes() {
-	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_linkTextAttributes);
+	long result = OS.objc_msgSend(this.id, OS.sel_linkTextAttributes);
 	return result != 0 ? new NSDictionary(result) : null;
 }
 
 public NSDictionary markedTextAttributes() {
-	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_markedTextAttributes);
+	long result = OS.objc_msgSend(this.id, OS.sel_markedTextAttributes);
 	return result != 0 ? new NSDictionary(result) : null;
 }
 
 public NSDictionary selectedTextAttributes() {
-	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_selectedTextAttributes);
+	long result = OS.objc_msgSend(this.id, OS.sel_selectedTextAttributes);
 	return result != 0 ? new NSDictionary(result) : null;
 }
 
@@ -68,7 +68,7 @@ public void setAllowsUndo(boolean allowsUndo) {
 	OS.objc_msgSend(this.id, OS.sel_setAllowsUndo_, allowsUndo);
 }
 
-public void setBaseWritingDirection(long /*int*/ writingDirection, NSRange range) {
+public void setBaseWritingDirection(long writingDirection, NSRange range) {
 	OS.objc_msgSend(this.id, OS.sel_setBaseWritingDirection_range_, writingDirection, range);
 }
 
@@ -105,12 +105,12 @@ public boolean shouldDrawInsertionPoint() {
 }
 
 public NSTextContainer textContainer() {
-	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_textContainer);
+	long result = OS.objc_msgSend(this.id, OS.sel_textContainer);
 	return result != 0 ? new NSTextContainer(result) : null;
 }
 
 public NSTextStorage textStorage() {
-	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_textStorage);
+	long result = OS.objc_msgSend(this.id, OS.sel_textStorage);
 	return result != 0 ? new NSTextStorage(result) : null;
 }
 

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others.
+ * Copyright (c) 2000, 2019 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -19,7 +19,7 @@ public NSScroller() {
 	super();
 }
 
-public NSScroller(long /*int*/ id) {
+public NSScroller(long id) {
 	super(id);
 }
 
@@ -27,49 +27,49 @@ public NSScroller(id id) {
 	super(id);
 }
 
-public long /*int*/ controlSize() {
+public long controlSize() {
 	return OS.objc_msgSend(this.id, OS.sel_controlSize);
 }
 
-public long /*int*/ hitPart() {
+public long hitPart() {
 	return OS.objc_msgSend(this.id, OS.sel_hitPart);
 }
 
-public double /*float*/ knobProportion() {
-	return (double /*float*/)OS.objc_msgSend_fpret(this.id, OS.sel_knobProportion);
+public double knobProportion() {
+	return OS.objc_msgSend_fpret(this.id, OS.sel_knobProportion);
 }
 
-public NSRect rectForPart(long /*int*/ partCode) {
+public NSRect rectForPart(long partCode) {
 	NSRect result = new NSRect();
 	OS.objc_msgSend_stret(result, this.id, OS.sel_rectForPart_, partCode);
 	return result;
 }
 
-public static double /*float*/ scrollerWidth() {
-	return (double /*float*/)OS.objc_msgSend_fpret(OS.class_NSScroller, OS.sel_scrollerWidth);
+public static double scrollerWidth() {
+	return OS.objc_msgSend_fpret(OS.class_NSScroller, OS.sel_scrollerWidth);
 }
 
-public static double /*float*/ scrollerWidthForControlSize(long /*int*/ controlSize) {
-	return (double /*float*/)OS.objc_msgSend_fpret(OS.class_NSScroller, OS.sel_scrollerWidthForControlSize_, controlSize);
+public static double scrollerWidthForControlSize(long controlSize) {
+	return OS.objc_msgSend_fpret(OS.class_NSScroller, OS.sel_scrollerWidthForControlSize_, controlSize);
 }
 
-public void setControlSize(long /*int*/ controlSize) {
+public void setControlSize(long controlSize) {
 	OS.objc_msgSend(this.id, OS.sel_setControlSize_, controlSize);
 }
 
-public void setKnobProportion(double /*float*/ proportion) {
+public void setKnobProportion(double proportion) {
 	OS.objc_msgSend(this.id, OS.sel_setKnobProportion_, proportion);
 }
 
-public long /*int*/ testPart(NSPoint thePoint) {
+public long testPart(NSPoint thePoint) {
 	return OS.objc_msgSend(this.id, OS.sel_testPart_, thePoint);
 }
 
-public static long /*int*/ cellClass() {
+public static long cellClass() {
 	return OS.objc_msgSend(OS.class_NSScroller, OS.sel_cellClass);
 }
 
-public static void setCellClass(long /*int*/ factoryId) {
+public static void setCellClass(long factoryId) {
 	OS.objc_msgSend(OS.class_NSScroller, OS.sel_setCellClass_, factoryId);
 }
 

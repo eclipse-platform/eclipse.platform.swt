@@ -210,7 +210,7 @@ public int open () {
 	NSString message = NSString.stringWith(this.message != null ? this.message : "");
 	alert.setMessageText(message);
 	int response = 0;
-	long /*int*/ jniRef = 0;
+	long jniRef = 0;
 	SWTPanelDelegate delegate = null;
 	Display display = parent != null ? parent.getDisplay() : Display.getCurrent();
 	if ((style & SWT.SHEET) != 0) {
@@ -221,7 +221,7 @@ public int open () {
 		alert.beginSheetModalForWindow(parent.view.window (), delegate, OS.sel_panelDidEnd_returnCode_contextInfo_, 0);
 		display.setModalDialog(this, panel);
 		if ((style & SWT.APPLICATION_MODAL) != 0) {
-			response = (int)/*64*/alert.runModal();
+			response = (int)alert.runModal();
 		} else {
 			this.returnCode = 0;
 			NSWindow window = alert.window();
@@ -232,7 +232,7 @@ public int open () {
 		}
 	} else {
 		display.setModalDialog(this, panel);
-		response = (int)/*64*/alert.runModal();
+		response = (int)alert.runModal();
 	}
 	display.setModalDialog(null);
 	if (delegate != null) delegate.release();
@@ -311,8 +311,8 @@ public int open () {
 	return SWT.CANCEL;
 }
 
-void panelDidEnd_returnCode_contextInfo(long /*int*/ id, long /*int*/ sel, long /*int*/ alert, long /*int*/ returnCode, long /*int*/ contextInfo) {
-	this.returnCode = (int)/*64*/returnCode;
+void panelDidEnd_returnCode_contextInfo(long id, long sel, long alert, long returnCode, long contextInfo) {
+	this.returnCode = (int)returnCode;
 	NSApplication application = NSApplication.sharedApplication();
 	application.endSheet(new NSAlert(alert).window(), returnCode);
 }

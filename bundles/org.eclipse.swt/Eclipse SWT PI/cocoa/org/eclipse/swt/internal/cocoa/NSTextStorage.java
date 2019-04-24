@@ -19,7 +19,7 @@ public NSTextStorage() {
 	super();
 }
 
-public NSTextStorage(long /*int*/ id) {
+public NSTextStorage(long id) {
 	super(id);
 }
 
@@ -32,12 +32,12 @@ public void addLayoutManager(NSLayoutManager aLayoutManager) {
 }
 
 public NSArray paragraphs() {
-	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_paragraphs);
+	long result = OS.objc_msgSend(this.id, OS.sel_paragraphs);
 	return result != 0 ? new NSArray(result) : null;
 }
 
 public static NSAttributedString attributedStringWithAttachment(NSTextAttachment attachment) {
-	long /*int*/ result = OS.objc_msgSend(OS.class_NSTextStorage, OS.sel_attributedStringWithAttachment_, attachment != null ? attachment.id : 0);
+	long result = OS.objc_msgSend(OS.class_NSTextStorage, OS.sel_attributedStringWithAttachment_, attachment != null ? attachment.id : 0);
 	return result != 0 ? new NSAttributedString(result) : null;
 }
 

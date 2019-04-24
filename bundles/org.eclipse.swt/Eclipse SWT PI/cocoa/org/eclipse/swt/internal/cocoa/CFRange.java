@@ -15,8 +15,8 @@ package org.eclipse.swt.internal.cocoa;
 
 public class CFRange {
 	/** @field cast=(CFIndex) */
-	public long /*int*/ location;
+	public long location;
 	/** @field cast=(CFIndex) */
-	public long /*int*/ length;
+	public long length;
 	public static final int sizeof = OS.CFRange_sizeof();
 }

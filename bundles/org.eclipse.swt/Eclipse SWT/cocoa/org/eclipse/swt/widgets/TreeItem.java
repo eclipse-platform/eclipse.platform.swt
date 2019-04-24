@@ -382,7 +382,7 @@ NSObject createString(int index) {
 }
 
 @Override
-void dealloc (long /*int*/ id, long /*int*/ sel) {
+void dealloc (long id, long sel) {
 	OS.object_setInstanceVariable(id, Display.SWT_OBJECT, 0);
 	super.destroyJNIRef();
 	super.dealloc(id, sel);
@@ -464,7 +464,7 @@ public Rectangle getBounds () {
 	parent.checkItems ();
 
 	NSOutlineView widget = (NSOutlineView) parent.view;
-	int rowIndex = (int)/*64*/widget.rowForItem (handle);
+	int rowIndex = (int)widget.rowForItem (handle);
 	if (rowIndex == -1) return new Rectangle (0, 0, 0, 0);
 
 	NSTableColumn column = parent.columnCount == 0 ? parent.firstColumn : parent.columns [0].nsColumn;

@@ -19,7 +19,7 @@ public NSFormatter() {
 	super();
 }
 
-public NSFormatter(long /*int*/ id) {
+public NSFormatter(long id) {
 	super(id);
 }
 
@@ -28,7 +28,7 @@ public NSFormatter(id id) {
 }
 
 public NSString stringForObjectValue(id obj) {
-	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_stringForObjectValue_, obj != null ? obj.id : 0);
+	long result = OS.objc_msgSend(this.id, OS.sel_stringForObjectValue_, obj != null ? obj.id : 0);
 	return result != 0 ? new NSString(result) : null;
 }
 

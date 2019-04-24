@@ -19,7 +19,7 @@ public NSArray() {
 	super();
 }
 
-public NSArray(long /*int*/ id) {
+public NSArray(long id) {
 	super(id);
 }
 
@@ -28,12 +28,12 @@ public NSArray(id id) {
 }
 
 public static NSArray array() {
-	long /*int*/ result = OS.objc_msgSend(OS.class_NSArray, OS.sel_array);
+	long result = OS.objc_msgSend(OS.class_NSArray, OS.sel_array);
 	return result != 0 ? new NSArray(result) : null;
 }
 
 public static NSArray arrayWithObject(id anObject) {
-	long /*int*/ result = OS.objc_msgSend(OS.class_NSArray, OS.sel_arrayWithObject_, anObject != null ? anObject.id : 0);
+	long result = OS.objc_msgSend(OS.class_NSArray, OS.sel_arrayWithObject_, anObject != null ? anObject.id : 0);
 	return result != 0 ? new NSArray(result) : null;
 }
 
@@ -41,16 +41,16 @@ public boolean containsObject(id anObject) {
 	return OS.objc_msgSend_bool(this.id, OS.sel_containsObject_, anObject != null ? anObject.id : 0);
 }
 
-public long /*int*/ count() {
+public long count() {
 	return OS.objc_msgSend(this.id, OS.sel_count);
 }
 
-public long /*int*/ indexOfObjectIdenticalTo(id anObject) {
+public long indexOfObjectIdenticalTo(id anObject) {
 	return OS.objc_msgSend(this.id, OS.sel_indexOfObjectIdenticalTo_, anObject != null ? anObject.id : 0);
 }
 
-public id objectAtIndex(long /*int*/ index) {
-	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_objectAtIndex_, index);
+public id objectAtIndex(long index) {
+	long result = OS.objc_msgSend(this.id, OS.sel_objectAtIndex_, index);
 	return result != 0 ? new id(result) : null;
 }
 

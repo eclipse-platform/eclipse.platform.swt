@@ -48,7 +48,7 @@ public class Link extends Control {
 	Point [] offsets;
 	String [] ids;
 	int [] mnemonics;
-	double /*float*/ [] linkForeground;
+	double [] linkForeground;
 	NSColor defaultLinkColor;
 	int focusIndex;
 	boolean ignoreNextMouseUp;
@@ -223,7 +223,7 @@ void deregister () {
 }
 
 @Override
-void drawBackground (long /*int*/ id, NSGraphicsContext context, NSRect rectangle) {
+void drawBackground (long id, NSGraphicsContext context, NSRect rectangle) {
 	fillBackground (view, context, rectangle, -1);
 	if (!hasFocus() || focusIndex == -1) return;
 	int [] outMetric = new int [1];
@@ -317,13 +317,13 @@ NSRect[] getRectangles(int linkIndex) {
 	range.length = offsets[linkIndex].y - offsets[linkIndex].x + 1;
 	NSRange glyphRange = layoutManager.glyphRangeForCharacterRange(range, 0);
 
-	long /*int*/ rangePtr = C.malloc(NSRange.sizeof);
+	long rangePtr = C.malloc(NSRange.sizeof);
 	NSRange lineRange = new NSRange();
 
 	/* compute number of lines in the link */
 	int numberOfLines = 0;
-	long /*int*/ index = glyphRange.location;
-	long /*int*/ glyphEndIndex = glyphRange.location + glyphRange.length;
+	long index = glyphRange.location;
+	long glyphEndIndex = glyphRange.location + glyphRange.length;
 	while (index < glyphEndIndex) {
 		numberOfLines++;
 		layoutManager.lineFragmentUsedRectForGlyphAtIndex(index, rangePtr, true);
@@ -380,7 +380,7 @@ NSColor getTextColor (boolean enabled) {
 }
 
 @Override
-void mouseUp(long /*int*/ id, long /*int*/ sel, long /*int*/ theEvent) {
+void mouseUp(long id, long sel, long theEvent) {
 	/*
 	 * Feature in Cocoa: Link click notices are sent on mouseDown, but for some reason, Cocoa
 	 * re-sends the mouseUp that follows the click on a link. Fix is to ignore the next mouseUp
@@ -592,7 +592,7 @@ public void removeSelectionListener (SelectionListener listener) {
 }
 
 @Override
-void scrollWheel(long /*int*/ id, long /*int*/ sel, long /*int*/ theEvent) {
+void scrollWheel(long id, long sel, long theEvent) {
 	super.scrollWheel(id, sel, theEvent);
 	parent.scrollWheel(parent.view.id, sel, theEvent);
 }
@@ -685,7 +685,7 @@ void setFont(NSFont font) {
 }
 
 @Override
-void setForeground (double /*float*/ [] color) {
+void setForeground (double [] color) {
 	if (!getEnabled ()) return;
 	((NSTextView) view).setTextColor (getTextColor (true));
 }
@@ -693,7 +693,7 @@ void setForeground (double /*float*/ [] color) {
 void setLinkColor (boolean enabled) {
 	NSTextView widget = (NSTextView) view;
 	NSDictionary linkTextAttributes = widget.linkTextAttributes ();
-	int count = (int)/*64*/linkTextAttributes.count ();
+	int count = (int)linkTextAttributes.count ();
 	NSMutableDictionary dict = NSMutableDictionary.dictionaryWithCapacity (count);
 	dict.setDictionary (linkTextAttributes);
 	dict.setValue (enabled ? getLinkForegroundColor () : getTextColor (false), OS.NSForegroundColorAttributeName);
@@ -723,7 +723,7 @@ public void setLinkForeground (Color color) {
 	if (color != null) {
 		if (color.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
 	}
-	double /*float*/ [] linkForeground = color != null ? color.handle : null;
+	double [] linkForeground = color != null ? color.handle : null;
 	if (equals (linkForeground, this.linkForeground)) return;
 	this.linkForeground = linkForeground;
 	if (getEnabled ()) {
@@ -804,12 +804,12 @@ void setZOrder () {
 }
 
 @Override
-boolean shouldDrawInsertionPoint(long /*int*/ id, long /*int*/ sel) {
+boolean shouldDrawInsertionPoint(long id, long sel) {
 	return false;
 }
 
 @Override
-boolean textView_clickOnLink_atIndex(long /*int*/ id, long /*int*/ sel, long /*int*/ textView, long /*int*/ link, long /*int*/ charIndex) {
+boolean textView_clickOnLink_atIndex(long id, long sel, long textView, long link, long charIndex) {
 	NSString str = new NSString (link);
 	Event event = new Event ();
 	event.text = str.getString();
@@ -837,7 +837,7 @@ int traversalCode (int key, NSEvent theEvent) {
 	if (offsets.length == 0) return  0;
 	int bits = super.traversalCode (key, theEvent);
 	if (key == 48 /* Tab */ && theEvent != null) {
-		long /*int*/ modifierFlags = theEvent.modifierFlags();
+		long modifierFlags = theEvent.modifierFlags();
 		boolean next = (modifierFlags & OS.NSShiftKeyMask) == 0;
 		if (next && focusIndex < offsets.length - 1) {
 			return bits & ~ SWT.TRAVERSE_TAB_NEXT;

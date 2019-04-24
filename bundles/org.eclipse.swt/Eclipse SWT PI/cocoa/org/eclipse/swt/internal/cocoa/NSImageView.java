@@ -19,7 +19,7 @@ public NSImageView() {
 	super();
 }
 
-public NSImageView(long /*int*/ id) {
+public NSImageView(long id) {
 	super(id);
 }
 
@@ -28,7 +28,7 @@ public NSImageView(id id) {
 }
 
 public NSImage image() {
-	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_image);
+	long result = OS.objc_msgSend(this.id, OS.sel_image);
 	return result != 0 ? new NSImage(result) : null;
 }
 
@@ -36,19 +36,19 @@ public void setImage(NSImage image) {
 	OS.objc_msgSend(this.id, OS.sel_setImage_, image != null ? image.id : 0);
 }
 
-public void setImageAlignment(long /*int*/ imageAlignment) {
+public void setImageAlignment(long imageAlignment) {
 	OS.objc_msgSend(this.id, OS.sel_setImageAlignment_, imageAlignment);
 }
 
-public void setImageScaling(long /*int*/ imageScaling) {
+public void setImageScaling(long imageScaling) {
 	OS.objc_msgSend(this.id, OS.sel_setImageScaling_, imageScaling);
 }
 
-public static long /*int*/ cellClass() {
+public static long cellClass() {
 	return OS.objc_msgSend(OS.class_NSImageView, OS.sel_cellClass);
 }
 
-public static void setCellClass(long /*int*/ factoryId) {
+public static void setCellClass(long factoryId) {
 	OS.objc_msgSend(OS.class_NSImageView, OS.sel_setCellClass_, factoryId);
 }
 

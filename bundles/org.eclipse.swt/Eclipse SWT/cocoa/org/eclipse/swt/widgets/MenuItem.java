@@ -42,7 +42,7 @@ public class MenuItem extends Item {
 	NSMenuItem nsItem;
 	Menu parent, menu;
 	int accelerator;
-	long /*int*/ nsItemAction;
+	long nsItemAction;
 	id nsItemTarget;
 	String toolTipText;
 

@@ -191,12 +191,12 @@ public void getElements(float[] elements) {
 	if (!NSThread.isMainThread()) pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
 	try {
 		NSAffineTransformStruct struct = handle.transformStruct();
-		elements[0] = (float)/*64*/struct.m11;
-		elements[1] = (float)/*64*/struct.m12;
-		elements[2] = (float)/*64*/struct.m21;
-		elements[3] = (float)/*64*/struct.m22;
-		elements[4] = (float)/*64*/struct.tX;
-		elements[5] = (float)/*64*/struct.tY;
+		elements[0] = (float)struct.m11;
+		elements[1] = (float)struct.m12;
+		elements[2] = (float)struct.m21;
+		elements[3] = (float)struct.m22;
+		elements[4] = (float)struct.tX;
+		elements[5] = (float)struct.tY;
 	} finally {
 		if (pool != null) pool.release();
 	}
@@ -447,8 +447,8 @@ public void transform(float[] pointArray) {
 			point.x = pointArray[j];
 			point.y = pointArray[j + 1];
 			point = handle.transformPoint(point);
-			pointArray[j] = (float)/*64*/point.x;
-			pointArray[j + 1] = (float)/*64*/point.y;
+			pointArray[j] = (float)point.x;
+			pointArray[j + 1] = (float)point.y;
 		}
 	} finally {
 		if (pool != null) pool.release();

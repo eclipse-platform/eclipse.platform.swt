@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2018 IBM Corporation and others.
+ * Copyright (c) 2000, 2019 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -19,7 +19,7 @@ public NSTableColumn() {
 	super();
 }
 
-public NSTableColumn(long /*int*/ id) {
+public NSTableColumn(long id) {
 	super(id);
 }
 
@@ -28,21 +28,21 @@ public NSTableColumn(id id) {
 }
 
 public NSCell dataCell() {
-	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_dataCell);
+	long result = OS.objc_msgSend(this.id, OS.sel_dataCell);
 	return result != 0 ? new NSCell(result) : null;
 }
 
 public NSTableHeaderCell headerCell() {
-	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_headerCell);
+	long result = OS.objc_msgSend(this.id, OS.sel_headerCell);
 	return result != 0 ? new NSTableHeaderCell(result) : null;
 }
 
 public NSTableColumn initWithIdentifier(NSString identifier) {
-	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_initWithIdentifier_, identifier != null ? identifier.id : 0);
+	long result = OS.objc_msgSend(this.id, OS.sel_initWithIdentifier_, identifier != null ? identifier.id : 0);
 	return result == this.id ? this : (result != 0 ? new NSTableColumn(result) : null);
 }
 
-public long /*int*/ resizingMask() {
+public long resizingMask() {
 	return OS.objc_msgSend(this.id, OS.sel_resizingMask);
 }
 
@@ -62,20 +62,20 @@ public void setIdentifier(NSString identifier) {
 	OS.objc_msgSend(this.id, OS.sel_setIdentifier_, identifier != null ? identifier.id : 0);
 }
 
-public void setMinWidth(double /*float*/ minWidth) {
+public void setMinWidth(double minWidth) {
 	OS.objc_msgSend(this.id, OS.sel_setMinWidth_, minWidth);
 }
 
-public void setResizingMask(long /*int*/ resizingMask) {
+public void setResizingMask(long resizingMask) {
 	OS.objc_msgSend(this.id, OS.sel_setResizingMask_, resizingMask);
 }
 
-public void setWidth(double /*float*/ width) {
+public void setWidth(double width) {
 	OS.objc_msgSend(this.id, OS.sel_setWidth_, width);
 }
 
-public double /*float*/ width() {
-	return (double /*float*/)OS.objc_msgSend_fpret(this.id, OS.sel_width);
+public double width() {
+	return OS.objc_msgSend_fpret(this.id, OS.sel_width);
 }
 
 }

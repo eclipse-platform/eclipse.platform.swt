@@ -335,7 +335,7 @@ public void removeSelectionListener(SelectionListener listener) {
 @Override
 void sendSelection () {
 	Event event = new Event();
-	int hitPart = (int)/*64*/((NSScroller)view).hitPart();
+	int hitPart = (int)((NSScroller)view).hitPart();
 	int value = getSelection ();
 	switch (hitPart) {
 	    case OS.NSScrollerDecrementLine:

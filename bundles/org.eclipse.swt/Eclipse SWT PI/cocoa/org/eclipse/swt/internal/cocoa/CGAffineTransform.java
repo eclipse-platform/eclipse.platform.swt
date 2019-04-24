@@ -15,16 +15,16 @@ package org.eclipse.swt.internal.cocoa;
 
 public class CGAffineTransform {
 	/** @field cast=(CGFloat) */
-	public double /*float*/ a;
+	public double a;
 	/** @field cast=(CGFloat) */
-	public double /*float*/ b;
+	public double b;
 	/** @field cast=(CGFloat) */
-	public double /*float*/ c;
+	public double c;
 	/** @field cast=(CGFloat) */
-	public double /*float*/ d;
+	public double d;
 	/** @field cast=(CGFloat) */
-	public double /*float*/ tx;
+	public double tx;
 	/** @field cast=(CGFloat) */
-	public double /*float*/ ty;
+	public double ty;
 	public static final int sizeof = OS.CGAffineTransform_sizeof();
 }

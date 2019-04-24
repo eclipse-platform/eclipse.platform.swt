@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others.
+ * Copyright (c) 2000, 2019 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -19,7 +19,7 @@ public NSTypesetter() {
 	super();
 }
 
-public NSTypesetter(long /*int*/ id) {
+public NSTypesetter(long id) {
 	super(id);
 }
 
@@ -27,8 +27,8 @@ public NSTypesetter(id id) {
 	super(id);
 }
 
-public double /*float*/ baselineOffsetInLayoutManager(NSLayoutManager layoutMgr, long /*int*/ glyphIndex) {
-	return (double /*float*/)OS.objc_msgSend_fpret(this.id, OS.sel_baselineOffsetInLayoutManager_glyphIndex_, layoutMgr != null ? layoutMgr.id : 0, glyphIndex);
+public double baselineOffsetInLayoutManager(NSLayoutManager layoutMgr, long glyphIndex) {
+	return OS.objc_msgSend_fpret(this.id, OS.sel_baselineOffsetInLayoutManager_glyphIndex_, layoutMgr != null ? layoutMgr.id : 0, glyphIndex);
 }
 
 }

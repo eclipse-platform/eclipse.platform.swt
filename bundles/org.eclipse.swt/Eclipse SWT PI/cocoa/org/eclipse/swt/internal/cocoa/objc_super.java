@@ -18,8 +18,8 @@ package org.eclipse.swt.internal.cocoa;
  */
 public class objc_super {
 	/** @field cast=(id) */
-	public long /*int*/ receiver;
+	public long receiver;
 	/** @field accessor=swt_super_class,cast=(Class) */
-	public long /*int*/ super_class;
+	public long super_class;
 	public static final int sizeof = OS.objc_super_sizeof();
 }

@@ -19,7 +19,7 @@ public NSOpenGLContext() {
 	super();
 }
 
-public NSOpenGLContext(long /*int*/ id) {
+public NSOpenGLContext(long id) {
 	super(id);
 }
 
@@ -36,7 +36,7 @@ public void clearDrawable() {
 }
 
 public static NSOpenGLContext currentContext() {
-	long /*int*/ result = OS.objc_msgSend(OS.class_NSOpenGLContext, OS.sel_currentContext);
+	long result = OS.objc_msgSend(OS.class_NSOpenGLContext, OS.sel_currentContext);
 	return result != 0 ? new NSOpenGLContext(result) : null;
 }
 
@@ -45,7 +45,7 @@ public void flushBuffer() {
 }
 
 public NSOpenGLContext initWithFormat(NSOpenGLPixelFormat format, NSOpenGLContext share) {
-	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_initWithFormat_shareContext_, format != null ? format.id : 0, share != null ? share.id : 0);
+	long result = OS.objc_msgSend(this.id, OS.sel_initWithFormat_shareContext_, format != null ? format.id : 0, share != null ? share.id : 0);
 	return result == this.id ? this : (result != 0 ? new NSOpenGLContext(result) : null);
 }
 
@@ -53,7 +53,7 @@ public void makeCurrentContext() {
 	OS.objc_msgSend(this.id, OS.sel_makeCurrentContext);
 }
 
-public void setValues(int[] vals, long /*int*/ param) {
+public void setValues(int[] vals, long param) {
 	OS.objc_msgSend(this.id, OS.sel_setValues_forParameter_, vals, param);
 }
 
@@ -66,7 +66,7 @@ public void update() {
 }
 
 public NSView view() {
-	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_view);
+	long result = OS.objc_msgSend(this.id, OS.sel_view);
 	return result != 0 ? new NSView(result) : null;
 }
 

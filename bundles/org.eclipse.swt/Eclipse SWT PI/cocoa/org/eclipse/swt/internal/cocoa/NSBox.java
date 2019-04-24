@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2018 IBM Corporation and others.
+ * Copyright (c) 2000, 2019 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -19,7 +19,7 @@ public NSBox() {
 	super();
 }
 
-public NSBox(long /*int*/ id) {
+public NSBox(long id) {
 	super(id);
 }
 
@@ -27,12 +27,12 @@ public NSBox(id id) {
 	super(id);
 }
 
-public double /*float*/ borderWidth() {
-	return (double /*float*/)OS.objc_msgSend_fpret(this.id, OS.sel_borderWidth);
+public double borderWidth() {
+	return OS.objc_msgSend_fpret(this.id, OS.sel_borderWidth);
 }
 
 public NSView contentView() {
-	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_contentView);
+	long result = OS.objc_msgSend(this.id, OS.sel_contentView);
 	return result != 0 ? new NSView(result) : null;
 }
 
@@ -42,15 +42,15 @@ public NSSize contentViewMargins() {
 	return result;
 }
 
-public void setBorderType(long /*int*/ borderType) {
+public void setBorderType(long borderType) {
 	OS.objc_msgSend(this.id, OS.sel_setBorderType_, borderType);
 }
 
-public void setBorderWidth(double /*float*/ borderWidth) {
+public void setBorderWidth(double borderWidth) {
 	OS.objc_msgSend(this.id, OS.sel_setBorderWidth_, borderWidth);
 }
 
-public void setBoxType(long /*int*/ boxType) {
+public void setBoxType(long boxType) {
 	OS.objc_msgSend(this.id, OS.sel_setBoxType_, boxType);
 }
 
@@ -78,7 +78,7 @@ public void setTitleFont(NSFont titleFont) {
 	OS.objc_msgSend(this.id, OS.sel_setTitleFont_, titleFont != null ? titleFont.id : 0);
 }
 
-public void setTitlePosition(long /*int*/ titlePosition) {
+public void setTitlePosition(long titlePosition) {
 	OS.objc_msgSend(this.id, OS.sel_setTitlePosition_, titlePosition);
 }
 
@@ -87,12 +87,12 @@ public void sizeToFit() {
 }
 
 public NSCell titleCell() {
-	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_titleCell);
+	long result = OS.objc_msgSend(this.id, OS.sel_titleCell);
 	return result != 0 ? new NSCell(result) : null;
 }
 
 public NSFont titleFont() {
-	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_titleFont);
+	long result = OS.objc_msgSend(this.id, OS.sel_titleFont);
 	return result != 0 ? new NSFont(result) : null;
 }
 

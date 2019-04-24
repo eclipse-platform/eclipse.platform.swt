@@ -19,7 +19,7 @@ public WebView() {
 	super();
 }
 
-public WebView(long /*int*/ id) {
+public WebView(long id) {
 	super(id);
 }
 
@@ -56,12 +56,12 @@ public boolean goForward() {
 }
 
 public WebView initWithFrame(NSRect frame, NSString frameName, NSString groupName) {
-	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_initWithFrame_frameName_groupName_, frame, frameName != null ? frameName.id : 0, groupName != null ? groupName.id : 0);
+	long result = OS.objc_msgSend(this.id, OS.sel_initWithFrame_frameName_groupName_, frame, frameName != null ? frameName.id : 0, groupName != null ? groupName.id : 0);
 	return result == this.id ? this : (result != 0 ? new WebView(result) : null);
 }
 
 public WebFrame mainFrame() {
-	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_mainFrame);
+	long result = OS.objc_msgSend(this.id, OS.sel_mainFrame);
 	return result != 0 ? new WebFrame(result) : null;
 }
 

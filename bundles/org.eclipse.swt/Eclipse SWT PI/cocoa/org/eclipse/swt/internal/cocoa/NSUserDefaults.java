@@ -19,7 +19,7 @@ public NSUserDefaults() {
 	super();
 }
 
-public NSUserDefaults(long /*int*/ id) {
+public NSUserDefaults(long id) {
 	super(id);
 }
 
@@ -28,21 +28,21 @@ public NSUserDefaults(id id) {
 }
 
 public id objectForKey(NSString defaultName) {
-	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_objectForKey_, defaultName != null ? defaultName.id : 0);
+	long result = OS.objc_msgSend(this.id, OS.sel_objectForKey_, defaultName != null ? defaultName.id : 0);
 	return result != 0 ? new id(result) : null;
 }
 
-public void setInteger(long /*int*/ value, NSString defaultName) {
+public void setInteger(long value, NSString defaultName) {
 	OS.objc_msgSend(this.id, OS.sel_setInteger_forKey_, value, defaultName != null ? defaultName.id : 0);
 }
 
 public static NSUserDefaults standardUserDefaults() {
-	long /*int*/ result = OS.objc_msgSend(OS.class_NSUserDefaults, OS.sel_standardUserDefaults);
+	long result = OS.objc_msgSend(OS.class_NSUserDefaults, OS.sel_standardUserDefaults);
 	return result != 0 ? new NSUserDefaults(result) : null;
 }
 
 public NSString stringForKey(NSString defaultName) {
-	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_stringForKey_, defaultName != null ? defaultName.id : 0);
+	long result = OS.objc_msgSend(this.id, OS.sel_stringForKey_, defaultName != null ? defaultName.id : 0);
 	return result != 0 ? new NSString(result) : null;
 }
 

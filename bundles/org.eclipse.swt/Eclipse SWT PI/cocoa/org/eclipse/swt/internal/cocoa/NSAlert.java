@@ -19,7 +19,7 @@ public NSAlert() {
 	super();
 }
 
-public NSAlert(long /*int*/ id) {
+public NSAlert(long id) {
 	super(id);
 }
 
@@ -28,19 +28,19 @@ public NSAlert(id id) {
 }
 
 public NSButton addButtonWithTitle(NSString title) {
-	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_addButtonWithTitle_, title != null ? title.id : 0);
+	long result = OS.objc_msgSend(this.id, OS.sel_addButtonWithTitle_, title != null ? title.id : 0);
 	return result != 0 ? new NSButton(result) : null;
 }
 
-public void beginSheetModalForWindow(NSWindow window, id delegate, long /*int*/ didEndSelector, long /*int*/ contextInfo) {
+public void beginSheetModalForWindow(NSWindow window, id delegate, long didEndSelector, long contextInfo) {
 	OS.objc_msgSend(this.id, OS.sel_beginSheetModalForWindow_modalDelegate_didEndSelector_contextInfo_, window != null ? window.id : 0, delegate != null ? delegate.id : 0, didEndSelector, contextInfo);
 }
 
-public long /*int*/ runModal() {
+public long runModal() {
 	return OS.objc_msgSend(this.id, OS.sel_runModal);
 }
 
-public void setAlertStyle(long /*int*/ alertStyle) {
+public void setAlertStyle(long alertStyle) {
 	OS.objc_msgSend(this.id, OS.sel_setAlertStyle_, alertStyle);
 }
 
@@ -49,7 +49,7 @@ public void setMessageText(NSString messageText) {
 }
 
 public NSPanel window() {
-	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_window);
+	long result = OS.objc_msgSend(this.id, OS.sel_window);
 	return result != 0 ? new NSPanel(result) : null;
 }
 

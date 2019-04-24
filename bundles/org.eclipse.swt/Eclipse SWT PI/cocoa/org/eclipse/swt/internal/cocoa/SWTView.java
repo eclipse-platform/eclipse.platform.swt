@@ -20,7 +20,7 @@ public SWTView() {
 	super(0);
 }
 
-public SWTView(long /*int*/ id) {
+public SWTView(long id) {
 	super(id);
 }
 

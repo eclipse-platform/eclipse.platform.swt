@@ -19,7 +19,7 @@ public NSView() {
 	super();
 }
 
-public NSView(long /*int*/ id) {
+public NSView(long id) {
 	super(id);
 }
 
@@ -35,11 +35,11 @@ public void addSubview(NSView aView) {
 	OS.objc_msgSend(this.id, OS.sel_addSubview_, aView != null ? aView.id : 0);
 }
 
-public void addSubview(NSView aView, long /*int*/ place, NSView otherView) {
+public void addSubview(NSView aView, long place, NSView otherView) {
 	OS.objc_msgSend(this.id, OS.sel_addSubview_positioned_relativeTo_, aView != null ? aView.id : 0, place, otherView != null ? otherView.id : 0);
 }
 
-public long /*int*/ addToolTipRect(NSRect aRect, id anObject, long /*int*/ data) {
+public long addToolTipRect(NSRect aRect, id anObject, long data) {
 	return OS.objc_msgSend(this.id, OS.sel_addToolTipRect_owner_userData_, aRect, anObject != null ? anObject.id : 0, data);
 }
 
@@ -52,7 +52,7 @@ public void beginPageInRect(NSRect aRect, NSPoint location) {
 }
 
 public NSBitmapImageRep bitmapImageRepForCachingDisplayInRect(NSRect rect) {
-	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_bitmapImageRepForCachingDisplayInRect_, rect);
+	long result = OS.objc_msgSend(this.id, OS.sel_bitmapImageRepForCachingDisplayInRect_, rect);
 	return result != 0 ? new NSBitmapImageRep(result) : null;
 }
 
@@ -181,12 +181,12 @@ public NSRect frame() {
 }
 
 public NSView hitTest(NSPoint aPoint) {
-	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_hitTest_, aPoint);
+	long result = OS.objc_msgSend(this.id, OS.sel_hitTest_, aPoint);
 	return result == this.id ? this : (result != 0 ? new NSView(result) : null);
 }
 
 public NSView initWithFrame(NSRect frameRect) {
-	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_initWithFrame_, frameRect);
+	long result = OS.objc_msgSend(this.id, OS.sel_initWithFrame_, frameRect);
 	return result == this.id ? this : (result != 0 ? new NSView(result) : null);
 }
 
@@ -215,7 +215,7 @@ public void lockFocus() {
 }
 
 public NSMenu menuForEvent(NSEvent event) {
-	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_menuForEvent_, event != null ? event.id : 0);
+	long result = OS.objc_msgSend(this.id, OS.sel_menuForEvent_, event != null ? event.id : 0);
 	return result != 0 ? new NSMenu(result) : null;
 }
 
@@ -239,7 +239,7 @@ public void removeFromSuperview() {
 	OS.objc_msgSend(this.id, OS.sel_removeFromSuperview);
 }
 
-public void removeToolTip(long /*int*/ tag) {
+public void removeToolTip(long tag) {
 	OS.objc_msgSend(this.id, OS.sel_removeToolTip_, tag);
 }
 
@@ -275,15 +275,15 @@ public void setAutoresizesSubviews(boolean autoresizesSubviews) {
 	OS.objc_msgSend(this.id, OS.sel_setAutoresizesSubviews_, autoresizesSubviews);
 }
 
-public void setAutoresizingMask(long /*int*/ autoresizingMask) {
+public void setAutoresizingMask(long autoresizingMask) {
 	OS.objc_msgSend(this.id, OS.sel_setAutoresizingMask_, autoresizingMask);
 }
 
-public void setBoundsRotation(double /*float*/ boundsRotation) {
+public void setBoundsRotation(double boundsRotation) {
 	OS.objc_msgSend(this.id, OS.sel_setBoundsRotation_, boundsRotation);
 }
 
-public void setFocusRingType(long /*int*/ focusRingType) {
+public void setFocusRingType(long focusRingType) {
 	OS.objc_msgSend(this.id, OS.sel_setFocusRingType_, focusRingType);
 }
 
@@ -324,17 +324,17 @@ public boolean shouldDelayWindowOrderingForEvent(NSEvent theEvent) {
 }
 
 public NSArray subviews() {
-	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_subviews);
+	long result = OS.objc_msgSend(this.id, OS.sel_subviews);
 	return result != 0 ? new NSArray(result) : null;
 }
 
 public NSView superview() {
-	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_superview);
+	long result = OS.objc_msgSend(this.id, OS.sel_superview);
 	return result == this.id ? this : (result != 0 ? new NSView(result) : null);
 }
 
 public NSArray trackingAreas() {
-	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_trackingAreas);
+	long result = OS.objc_msgSend(this.id, OS.sel_trackingAreas);
 	return result != 0 ? new NSArray(result) : null;
 }
 
@@ -365,7 +365,7 @@ public NSRect visibleRect() {
 }
 
 public NSWindow window() {
-	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_window);
+	long result = OS.objc_msgSend(this.id, OS.sel_window);
 	return result != 0 ? new NSWindow(result) : null;
 }
 

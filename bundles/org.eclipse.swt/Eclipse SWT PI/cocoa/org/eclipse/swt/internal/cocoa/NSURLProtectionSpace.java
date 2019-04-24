@@ -19,7 +19,7 @@ public NSURLProtectionSpace() {
 	super();
 }
 
-public NSURLProtectionSpace(long /*int*/ id) {
+public NSURLProtectionSpace(long id) {
 	super(id);
 }
 
@@ -28,16 +28,16 @@ public NSURLProtectionSpace(id id) {
 }
 
 public NSString host() {
-	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_host);
+	long result = OS.objc_msgSend(this.id, OS.sel_host);
 	return result != 0 ? new NSString(result) : null;
 }
 
-public long /*int*/ port() {
+public long port() {
 	return OS.objc_msgSend(this.id, OS.sel_port);
 }
 
 public NSString realm() {
-	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_realm);
+	long result = OS.objc_msgSend(this.id, OS.sel_realm);
 	return result != 0 ? new NSString(result) : null;
 }
 

@@ -103,13 +103,13 @@ public Spinner (Composite parent, int style) {
 }
 
 @Override
-boolean acceptsFirstResponder(long /*int*/ id, long /*int*/ sel) {
+boolean acceptsFirstResponder(long id, long sel) {
 	if (id == view.id) return false;
 	return super.acceptsFirstResponder (id, sel);
 }
 
 @Override
-boolean accessibilityIsIgnored(long /*int*/ id, long /*int*/ sel) {
+boolean accessibilityIsIgnored(long id, long sel) {
 	if (id == view.id) return true;
 	return super.accessibilityIsIgnored(id, sel);
 }
@@ -217,14 +217,14 @@ protected void checkSubclass () {
 @Override
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget ();
-	double /*float*/ width = 0, height = 0;
+	double width = 0, height = 0;
 	String string = Double.toString (buttonView.maxValue ());
 	Font font = Font.cocoa_new(display, textView.font ());
 	NSAttributedString str = parent.createString(string, font, null, 0, false, true, false);
 	NSSize size = str.size ();
 	str.release ();
-	width = (float)/*64*/size.width;
-	height = (float)/*64*/size.height;
+	width = (float)size.width;
+	height = (float)size.height;
 	if (wHint != SWT.DEFAULT) width = wHint;
 	if (hHint != SWT.DEFAULT) height = hHint;
 	Rectangle trim = computeTrim (0, 0, (int)Math.ceil (width), (int)Math.ceil (height));
@@ -244,7 +244,7 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 	height += frameRect.height - cellRect.height;
 	width += GAP;
 	NSSize size = buttonView.cell ().cellSize ();
-	width += (int)/*64*/size.width;
+	width += (int)size.width;
 	return new Rectangle (x, y, width, height);
 }
 
@@ -348,7 +348,7 @@ void deregister () {
 }
 
 @Override
-void drawBackground (long /*int*/ id, NSGraphicsContext context, NSRect rect) {
+void drawBackground (long id, NSGraphicsContext context, NSRect rect) {
 	if (backgroundImage == null) return;
 	if (new NSView(id).isKindOfClass(OS.class_NSText)) {
 		NSText text = new NSText(id);
@@ -358,7 +358,7 @@ void drawBackground (long /*int*/ id, NSGraphicsContext context, NSRect rect) {
 }
 
 @Override
-void drawInteriorWithFrame_inView(long /*int*/ id, long /*int*/ sel, NSRect cellFrame, long /*int*/ viewid) {
+void drawInteriorWithFrame_inView(long id, long sel, NSRect cellFrame, long viewid) {
 	Control control = findBackgroundControl();
 	if (control == null) control = this;
 	Image image = control.backgroundImage;
@@ -555,14 +555,14 @@ public int getTextLimit () {
 }
 
 @Override
-boolean handleIsAccessible(long /*int*/ id) {
+boolean handleIsAccessible(long id) {
 	// All subviews of a Spinner can have their accessible properties overridden.
 	// The top-level NSView is already ignored, so we don't need to test for that.
 	return true;
 }
 
 @Override
-boolean isEventView (long /*int*/ id) {
+boolean isEventView (long id) {
 	return true;
 }
 
@@ -812,7 +812,7 @@ void setFont(NSFont font) {
 }
 
 @Override
-void setForeground (double /*float*/ [] color) {
+void setForeground (double [] color) {
 	NSColor nsColor;
 	if (color == null) {
 		nsColor = NSColor.textColor ();
@@ -953,7 +953,7 @@ void setSelection (int value, boolean setPos, boolean setText, boolean notify) {
 		}
 		NSCell cell = new NSCell(textView.cell());
 		if (hooks (SWT.Verify) || filters (SWT.Verify)) {
-			int length = (int)/*64*/cell.title().length();
+			int length = (int)cell.title().length();
 			string = verifyText (string, 0, length, null);
 			if (string == null) return;
 		}
@@ -1041,16 +1041,16 @@ public void setValues (int selection, int minimum, int maximum, int digits, int 
 }
 
 @Override
-boolean shouldChangeTextInRange_replacementString(long /*int*/ id, long /*int*/ sel, long /*int*/ affectedCharRange, long /*int*/ replacementString) {
+boolean shouldChangeTextInRange_replacementString(long id, long sel, long affectedCharRange, long replacementString) {
 	NSRange range = new NSRange();
 	OS.memmove(range, affectedCharRange, NSRange.sizeof);
 	boolean result = callSuperBoolean(id, sel, range, replacementString);
 	if (hooks (SWT.Verify)) {
 		String text = new NSString(replacementString).getString();
 		NSEvent currentEvent = display.application.currentEvent();
-		long /*int*/ type = currentEvent.type();
+		long type = currentEvent.type();
 		if (type != OS.NSKeyDown && type != OS.NSKeyUp) currentEvent = null;
-		String newText = verifyText(text, (int)/*64*/range.location, (int)/*64*/(range.location+range.length), currentEvent);
+		String newText = verifyText(text, (int)range.location, (int)(range.location+range.length), currentEvent);
 		if (newText == null) return false;
 		if (text != newText) {
 			int length = newText.length();
@@ -1058,9 +1058,9 @@ boolean shouldChangeTextInRange_replacementString(long /*int*/ id, long /*int*/ 
 			if (fieldEditor != null) {
 				NSRange selectedRange = fieldEditor.selectedRange();
 				if (textLimit != LIMIT) {
-					long /*int*/ charCount = fieldEditor.string().length();
+					long charCount = fieldEditor.string().length();
 					if (charCount - selectedRange.length + length > textLimit) {
-						length = (int)/*64*/(textLimit - charCount + selectedRange.length);
+						length = (int)(textLimit - charCount + selectedRange.length);
 					}
 				}
 				char [] buffer = new char [length];
@@ -1076,7 +1076,7 @@ boolean shouldChangeTextInRange_replacementString(long /*int*/ id, long /*int*/ 
 }
 
 @Override
-void textDidChange (long /*int*/ id, long /*int*/ sel, long /*int*/ aNotification) {
+void textDidChange (long id, long sel, long aNotification) {
 	super.textDidChange (id, sel, aNotification);
 	boolean [] parseFail = new boolean [1];
 	int value = getSelectionText (parseFail);
@@ -1090,7 +1090,7 @@ void textDidChange (long /*int*/ id, long /*int*/ sel, long /*int*/ aNotificatio
 }
 
 @Override
-NSRange textView_willChangeSelectionFromCharacterRange_toCharacterRange (long /*int*/ id, long /*int*/ sel, long /*int*/ aTextView, long /*int*/ oldSelectedCharRange, long /*int*/ newSelectedCharRange) {
+NSRange textView_willChangeSelectionFromCharacterRange_toCharacterRange (long id, long sel, long aTextView, long oldSelectedCharRange, long newSelectedCharRange) {
 	/* allow the selection change to proceed */
 	NSRange result = new NSRange ();
 	OS.memmove(result, newSelectedCharRange, NSRange.sizeof);
@@ -1098,7 +1098,7 @@ NSRange textView_willChangeSelectionFromCharacterRange_toCharacterRange (long /*
 }
 
 @Override
-void textDidEndEditing(long /*int*/ id, long /*int*/ sel, long /*int*/ aNotification) {
+void textDidEndEditing(long id, long sel, long aNotification) {
 	boolean [] parseFail = new boolean [1];
 	int value = getSelectionText (parseFail);
 	if (parseFail [0]) {

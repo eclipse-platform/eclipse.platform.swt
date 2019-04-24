@@ -19,7 +19,7 @@ public SWTTabView() {
 	super(0);
 }
 
-public SWTTabView(long /*int*/ id) {
+public SWTTabView(long id) {
 	super(id);
 }
 

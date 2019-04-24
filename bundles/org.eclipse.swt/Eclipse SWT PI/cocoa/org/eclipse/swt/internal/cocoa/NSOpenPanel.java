@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2017 IBM Corporation and others.
+ * Copyright (c) 2000, 2019 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -19,7 +19,7 @@ public NSOpenPanel() {
 	super();
 }
 
-public NSOpenPanel(long /*int*/ id) {
+public NSOpenPanel(long id) {
 	super(id);
 }
 
@@ -28,12 +28,12 @@ public NSOpenPanel(id id) {
 }
 
 public NSArray filenames() {
-	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_filenames);
+	long result = OS.objc_msgSend(this.id, OS.sel_filenames);
 	return result != 0 ? new NSArray(result) : null;
 }
 
 public static NSOpenPanel openPanel() {
-	long /*int*/ result = OS.objc_msgSend(OS.class_NSOpenPanel, OS.sel_openPanel);
+	long result = OS.objc_msgSend(OS.class_NSOpenPanel, OS.sel_openPanel);
 	return result != 0 ? new NSOpenPanel(result) : null;
 }
 
@@ -50,15 +50,15 @@ public void setCanChooseFiles(boolean canChooseFiles) {
 }
 
 public static NSSavePanel savePanel() {
-	long /*int*/ result = OS.objc_msgSend(OS.class_NSOpenPanel, OS.sel_savePanel);
+	long result = OS.objc_msgSend(OS.class_NSOpenPanel, OS.sel_savePanel);
 	return result != 0 ? new NSSavePanel(result) : null;
 }
 
-public static double /*float*/ minFrameWidthWithTitle(NSString aTitle, long /*int*/ aStyle) {
-	return (double /*float*/)OS.objc_msgSend_fpret(OS.class_NSOpenPanel, OS.sel_minFrameWidthWithTitle_styleMask_, aTitle != null ? aTitle.id : 0, aStyle);
+public static double minFrameWidthWithTitle(NSString aTitle, long aStyle) {
+	return OS.objc_msgSend_fpret(OS.class_NSOpenPanel, OS.sel_minFrameWidthWithTitle_styleMask_, aTitle != null ? aTitle.id : 0, aStyle);
 }
 
-public static long /*int*/ windowNumberAtPoint(NSPoint point, long /*int*/ windowNumber) {
+public static long windowNumberAtPoint(NSPoint point, long windowNumber) {
 	return OS.objc_msgSend(OS.class_NSOpenPanel, OS.sel_windowNumberAtPoint_belowWindowWithWindowNumber_, point, windowNumber);
 }
 

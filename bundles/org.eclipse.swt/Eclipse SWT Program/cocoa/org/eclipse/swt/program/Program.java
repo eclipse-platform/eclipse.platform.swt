@@ -75,7 +75,7 @@ public static Program findProgram (String extension) {
 		if (ext != null) {
 			byte[] fsRef = new byte[80];
 			if (OS.LSGetApplicationForInfo(OS.kLSUnknownType, OS.kLSUnknownCreator, ext.id, OS.kLSRolesAll, fsRef, null) == OS.noErr) {
-				long /*int*/ url = OS.CFURLCreateFromFSRef(OS.kCFAllocatorDefault(), fsRef);
+				long url = OS.CFURLCreateFromFSRef(OS.kCFAllocatorDefault(), fsRef);
 				if (url != 0) {
 					NSString bundlePath = new NSURL(url).path();
 					NSBundle bundle = NSBundle.bundleWithPath(bundlePath);
@@ -105,7 +105,7 @@ public static String [] getExtensions () {
 		NSString CFBundleDocumentTypes = NSString.stringWith("CFBundleDocumentTypes");
 		NSString CFBundleTypeExtensions = NSString.stringWith("CFBundleTypeExtensions");
 		NSArray array = new NSArray(OS.NSSearchPathForDirectoriesInDomains(OS.NSAllApplicationsDirectory, OS.NSAllDomainsMask, true));
-		int count = (int)/*64*/array.count();
+		int count = (int)array.count();
 		for (int i = 0; i < count; i++) {
 			NSString path = new NSString(array.objectAtIndex(i));
 			NSFileManager fileManager = NSFileManager.defaultManager();
@@ -135,7 +135,7 @@ public static String [] getExtensions () {
 			}
 		}
 		int i = 0;
-		String[] exts = new String[(int)/*64*/supportedDocumentTypes.count()];
+		String[] exts = new String[(int)supportedDocumentTypes.count()];
 		NSEnumerator enumerator = supportedDocumentTypes.objectEnumerator();
 		id id;
 		while ((id = enumerator.nextObject()) != null) {
@@ -187,7 +187,7 @@ public static Program [] getPrograms () {
 		LinkedHashSet<Program> programs = new LinkedHashSet<>();
 		NSWorkspace workspace = NSWorkspace.sharedWorkspace();
 		NSArray array = new NSArray(OS.NSSearchPathForDirectoriesInDomains(OS.NSAllApplicationsDirectory, OS.NSAllDomainsMask, true));
-		int count = (int)/*64*/array.count();
+		int count = (int)array.count();
 		for (int i = 0; i < count; i++) {
 			NSString path = new NSString(array.objectAtIndex(i));
 			NSFileManager fileManager = NSFileManager.defaultManager();
@@ -225,7 +225,7 @@ static NSURL getURL (String fileName) {
 	if (NSFileManager.defaultManager().fileExistsAtPath(fullPath)) {
 		fullPath = NSURL.fileURLWithPath(fullPath).absoluteString();
 	}
-	long /*int*/ ptr = OS.CFURLCreateStringByAddingPercentEscapes(0, fullPath.id, unescapedStr.id, 0, OS.kCFStringEncodingUTF8);
+	long ptr = OS.CFURLCreateStringByAddingPercentEscapes(0, fullPath.id, unescapedStr.id, 0, OS.kCFStringEncodingUTF8);
 	NSString escapedString = new NSString(ptr);
 	NSURL url = NSURL.URLWithString(escapedString);
 	OS.CFRelease(ptr);
@@ -233,7 +233,7 @@ static NSURL getURL (String fileName) {
 }
 
 static boolean isExecutable (String fileName) {
-	long /*int*/ ptr = C.malloc(1);
+	long ptr = C.malloc(1);
 	NSString path = NSString.stringWith(fileName);
 	boolean result = false;
 	NSFileManager manager = NSFileManager.defaultManager();

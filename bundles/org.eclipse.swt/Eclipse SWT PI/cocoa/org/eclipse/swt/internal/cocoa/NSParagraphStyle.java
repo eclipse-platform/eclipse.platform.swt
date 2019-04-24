@@ -19,7 +19,7 @@ public NSParagraphStyle() {
 	super();
 }
 
-public NSParagraphStyle(long /*int*/ id) {
+public NSParagraphStyle(long id) {
 	super(id);
 }
 
@@ -27,12 +27,12 @@ public NSParagraphStyle(id id) {
 	super(id);
 }
 
-public long /*int*/ alignment() {
+public long alignment() {
 	return OS.objc_msgSend(this.id, OS.sel_alignment);
 }
 
 public NSArray tabStops() {
-	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_tabStops);
+	long result = OS.objc_msgSend(this.id, OS.sel_tabStops);
 	return result != 0 ? new NSArray(result) : null;
 }
 

@@ -62,7 +62,7 @@ public static PrinterData[] getPrinterList() {
 	if (!NSThread.isMainThread()) pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
 	try {
 		NSArray printers = NSPrinter.printerNames();
-		int count = (int)/*64*/printers.count();
+		int count = (int)printers.count();
 		PrinterData[] result = new PrinterData[count];
 		for (int i = 0; i < count; i++) {
 			NSString str = new NSString(printers.objectAtIndex(i));
@@ -216,7 +216,7 @@ protected void create(DeviceData deviceData) {
 			printInfo.setPrinter(printer);
 		}
 		if (data.duplex != SWT.DEFAULT) {
-			long /*int*/ settings = printInfo.PMPrintSettings();
+			long settings = printInfo.PMPrintSettings();
 			int duplex = data.duplex == PrinterData.DUPLEX_SHORT_EDGE ? OS.kPMDuplexTumble
 					: data.duplex == PrinterData.DUPLEX_LONG_EDGE ? OS.kPMDuplexNoTumble
 					: OS.kPMDuplexNone;
@@ -245,7 +245,7 @@ protected void create(DeviceData deviceData) {
 		window.initWithContentRect(rect, OS.NSBorderlessWindowMask, OS.NSBackingStoreBuffered, false);
 		String className = "SWTPrinterView"; //$NON-NLS-1$
 		if (OS.objc_lookUpClass(className) == 0) {
-			long /*int*/ cls = OS.objc_allocateClassPair(OS.class_NSView, className, 0);
+			long cls = OS.objc_allocateClassPair(OS.class_NSView, className, 0);
 			OS.class_addMethod(cls, OS.sel_isFlipped, OS.isFlipped_CALLBACK(), "@:");
 			OS.objc_registerClassPair(cls);
 		}
@@ -302,7 +302,7 @@ protected void destroy() {
  * @noreference This method is not intended to be referenced by clients.
  */
 @Override
-public long /*int*/ internal_new_GC(GCData data) {
+public long internal_new_GC(GCData data) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	NSAutoreleasePool pool = null;
 	if (!NSThread.isMainThread()) pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
@@ -367,7 +367,7 @@ protected void init () {
  * @noreference This method is not intended to be referenced by clients.
  */
 @Override
-public void internal_dispose_GC(long /*int*/ hDC, GCData data) {
+public void internal_dispose_GC(long hDC, GCData data) {
 	if (data != null) isGCCreated = false;
 }
 
@@ -584,12 +584,12 @@ public Point getDPI() {
 	NSAutoreleasePool pool = null;
 	if (!NSThread.isMainThread()) pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
 	try {
-		long /*int*/ pmPrintSession = printInfo.PMPrintSession();
-		long /*int*/ printer[] = new long /*int*/ [1];
-		long /*int*/ err = OS.PMSessionGetCurrentPrinter(pmPrintSession, printer);
+		long pmPrintSession = printInfo.PMPrintSession();
+		long printer[] = new long [1];
+		long err = OS.PMSessionGetCurrentPrinter(pmPrintSession, printer);
 
 		if (err == OS.noErr) {
-			long /*int*/ printSettings = printInfo.PMPrintSettings();
+			long printSettings = printInfo.PMPrintSettings();
 			short[] destType = new short[1];
 			if (OS.PMSessionGetDestinationType(pmPrintSession, printSettings, destType) == OS.noErr) {
 				if (destType[0] == OS.kPMDestinationPrinter) {

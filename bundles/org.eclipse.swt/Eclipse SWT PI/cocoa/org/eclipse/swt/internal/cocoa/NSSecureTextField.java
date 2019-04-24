@@ -19,7 +19,7 @@ public NSSecureTextField() {
 	super();
 }
 
-public NSSecureTextField(long /*int*/ id) {
+public NSSecureTextField(long id) {
 	super(id);
 }
 
@@ -27,11 +27,11 @@ public NSSecureTextField(id id) {
 	super(id);
 }
 
-public static long /*int*/ cellClass() {
+public static long cellClass() {
 	return OS.objc_msgSend(OS.class_NSSecureTextField, OS.sel_cellClass);
 }
 
-public static void setCellClass(long /*int*/ factoryId) {
+public static void setCellClass(long factoryId) {
 	OS.objc_msgSend(OS.class_NSSecureTextField, OS.sel_setCellClass_, factoryId);
 }
 

@@ -19,7 +19,7 @@ public NSButtonCell() {
 	super();
 }
 
-public NSButtonCell(long /*int*/ id) {
+public NSButtonCell(long id) {
 	super(id);
 }
 
@@ -28,7 +28,7 @@ public NSButtonCell(id id) {
 }
 
 public NSColor backgroundColor() {
-	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_backgroundColor);
+	long result = OS.objc_msgSend(this.id, OS.sel_backgroundColor);
 	return result != 0 ? new NSColor(result) : null;
 }
 
@@ -50,20 +50,20 @@ public void setBackgroundColor(NSColor backgroundColor) {
 	OS.objc_msgSend(this.id, OS.sel_setBackgroundColor_, backgroundColor != null ? backgroundColor.id : 0);
 }
 
-public void setButtonType(long /*int*/ aType) {
+public void setButtonType(long aType) {
 	OS.objc_msgSend(this.id, OS.sel_setButtonType_, aType);
 }
 
-public void setHighlightsBy(long /*int*/ highlightsBy) {
+public void setHighlightsBy(long highlightsBy) {
 	OS.objc_msgSend(this.id, OS.sel_setHighlightsBy_, highlightsBy);
 }
 
-public void setImagePosition(long /*int*/ imagePosition) {
+public void setImagePosition(long imagePosition) {
 	OS.objc_msgSend(this.id, OS.sel_setImagePosition_, imagePosition);
 }
 
 public NSString title() {
-	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_title);
+	long result = OS.objc_msgSend(this.id, OS.sel_title);
 	return result != 0 ? new NSString(result) : null;
 }
 

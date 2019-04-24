@@ -84,7 +84,7 @@ public class TreeDragSourceEffect extends DragSourceEffect {
 		if (dragSourceImage != null) dragSourceImage.dispose();
 		dragSourceImage = null;
 		NSPoint point = new NSPoint();
-		long /*int*/ ptr = C.malloc(NSPoint.sizeof);
+		long ptr = C.malloc(NSPoint.sizeof);
 		OS.memmove(ptr, point, NSPoint.sizeof);
 		NSEvent nsEvent = NSApplication.sharedApplication().currentEvent();
 		NSTableView widget = (NSTableView)control.view;

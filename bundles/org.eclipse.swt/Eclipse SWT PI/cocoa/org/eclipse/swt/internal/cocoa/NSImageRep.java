@@ -19,7 +19,7 @@ public NSImageRep() {
 	super();
 }
 
-public NSImageRep(long /*int*/ id) {
+public NSImageRep(long id) {
 	super(id);
 }
 
@@ -27,12 +27,12 @@ public NSImageRep(id id) {
 	super(id);
 }
 
-public long /*int*/ bitsPerSample() {
+public long bitsPerSample() {
 	return OS.objc_msgSend(this.id, OS.sel_bitsPerSample);
 }
 
 public NSString colorSpaceName() {
-	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_colorSpaceName);
+	long result = OS.objc_msgSend(this.id, OS.sel_colorSpaceName);
 	return result != 0 ? new NSString(result) : null;
 }
 
@@ -45,15 +45,15 @@ public boolean hasAlpha() {
 }
 
 public static NSImageRep imageRepWithContentsOfFile(NSString filename) {
-	long /*int*/ result = OS.objc_msgSend(OS.class_NSImageRep, OS.sel_imageRepWithContentsOfFile_, filename != null ? filename.id : 0);
+	long result = OS.objc_msgSend(OS.class_NSImageRep, OS.sel_imageRepWithContentsOfFile_, filename != null ? filename.id : 0);
 	return result != 0 ? new NSImageRep(result) : null;
 }
 
-public long /*int*/ pixelsHigh() {
+public long pixelsHigh() {
 	return OS.objc_msgSend(this.id, OS.sel_pixelsHigh);
 }
 
-public long /*int*/ pixelsWide() {
+public long pixelsWide() {
 	return OS.objc_msgSend(this.id, OS.sel_pixelsWide);
 }
 

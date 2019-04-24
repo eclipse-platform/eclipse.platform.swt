@@ -19,7 +19,7 @@ public NSCursor() {
 	super();
 }
 
-public NSCursor(long /*int*/ id) {
+public NSCursor(long id) {
 	super(id);
 }
 
@@ -28,22 +28,22 @@ public NSCursor(id id) {
 }
 
 public static NSCursor IBeamCursor() {
-	long /*int*/ result = OS.objc_msgSend(OS.class_NSCursor, OS.sel_IBeamCursor);
+	long result = OS.objc_msgSend(OS.class_NSCursor, OS.sel_IBeamCursor);
 	return result != 0 ? new NSCursor(result) : null;
 }
 
 public static NSCursor arrowCursor() {
-	long /*int*/ result = OS.objc_msgSend(OS.class_NSCursor, OS.sel_arrowCursor);
+	long result = OS.objc_msgSend(OS.class_NSCursor, OS.sel_arrowCursor);
 	return result != 0 ? new NSCursor(result) : null;
 }
 
 public static NSCursor crosshairCursor() {
-	long /*int*/ result = OS.objc_msgSend(OS.class_NSCursor, OS.sel_crosshairCursor);
+	long result = OS.objc_msgSend(OS.class_NSCursor, OS.sel_crosshairCursor);
 	return result != 0 ? new NSCursor(result) : null;
 }
 
 public static NSCursor currentCursor() {
-	long /*int*/ result = OS.objc_msgSend(OS.class_NSCursor, OS.sel_currentCursor);
+	long result = OS.objc_msgSend(OS.class_NSCursor, OS.sel_currentCursor);
 	return result != 0 ? new NSCursor(result) : null;
 }
 
@@ -54,17 +54,17 @@ public NSPoint hotSpot() {
 }
 
 public NSCursor initWithImage(NSImage newImage, NSPoint aPoint) {
-	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_initWithImage_hotSpot_, newImage != null ? newImage.id : 0, aPoint);
+	long result = OS.objc_msgSend(this.id, OS.sel_initWithImage_hotSpot_, newImage != null ? newImage.id : 0, aPoint);
 	return result == this.id ? this : (result != 0 ? new NSCursor(result) : null);
 }
 
 public static NSCursor operationNotAllowedCursor() {
-	long /*int*/ result = OS.objc_msgSend(OS.class_NSCursor, OS.sel_operationNotAllowedCursor);
+	long result = OS.objc_msgSend(OS.class_NSCursor, OS.sel_operationNotAllowedCursor);
 	return result != 0 ? new NSCursor(result) : null;
 }
 
 public static NSCursor pointingHandCursor() {
-	long /*int*/ result = OS.objc_msgSend(OS.class_NSCursor, OS.sel_pointingHandCursor);
+	long result = OS.objc_msgSend(OS.class_NSCursor, OS.sel_pointingHandCursor);
 	return result != 0 ? new NSCursor(result) : null;
 }
 
@@ -77,32 +77,32 @@ public void push() {
 }
 
 public static NSCursor resizeDownCursor() {
-	long /*int*/ result = OS.objc_msgSend(OS.class_NSCursor, OS.sel_resizeDownCursor);
+	long result = OS.objc_msgSend(OS.class_NSCursor, OS.sel_resizeDownCursor);
 	return result != 0 ? new NSCursor(result) : null;
 }
 
 public static NSCursor resizeLeftCursor() {
-	long /*int*/ result = OS.objc_msgSend(OS.class_NSCursor, OS.sel_resizeLeftCursor);
+	long result = OS.objc_msgSend(OS.class_NSCursor, OS.sel_resizeLeftCursor);
 	return result != 0 ? new NSCursor(result) : null;
 }
 
 public static NSCursor resizeLeftRightCursor() {
-	long /*int*/ result = OS.objc_msgSend(OS.class_NSCursor, OS.sel_resizeLeftRightCursor);
+	long result = OS.objc_msgSend(OS.class_NSCursor, OS.sel_resizeLeftRightCursor);
 	return result != 0 ? new NSCursor(result) : null;
 }
 
 public static NSCursor resizeRightCursor() {
-	long /*int*/ result = OS.objc_msgSend(OS.class_NSCursor, OS.sel_resizeRightCursor);
+	long result = OS.objc_msgSend(OS.class_NSCursor, OS.sel_resizeRightCursor);
 	return result != 0 ? new NSCursor(result) : null;
 }
 
 public static NSCursor resizeUpCursor() {
-	long /*int*/ result = OS.objc_msgSend(OS.class_NSCursor, OS.sel_resizeUpCursor);
+	long result = OS.objc_msgSend(OS.class_NSCursor, OS.sel_resizeUpCursor);
 	return result != 0 ? new NSCursor(result) : null;
 }
 
 public static NSCursor resizeUpDownCursor() {
-	long /*int*/ result = OS.objc_msgSend(OS.class_NSCursor, OS.sel_resizeUpDownCursor);
+	long result = OS.objc_msgSend(OS.class_NSCursor, OS.sel_resizeUpDownCursor);
 	return result != 0 ? new NSCursor(result) : null;
 }
 

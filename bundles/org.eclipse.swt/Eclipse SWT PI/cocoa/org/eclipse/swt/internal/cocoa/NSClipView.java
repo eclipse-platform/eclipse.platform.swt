@@ -19,7 +19,7 @@ public NSClipView() {
 	super();
 }
 
-public NSClipView(long /*int*/ id) {
+public NSClipView(long id) {
 	super(id);
 }
 
@@ -32,7 +32,7 @@ public boolean copiesOnScroll() {
 }
 
 public NSCursor documentCursor() {
-	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_documentCursor);
+	long result = OS.objc_msgSend(this.id, OS.sel_documentCursor);
 	return result != 0 ? new NSCursor(result) : null;
 }
 

@@ -19,7 +19,7 @@ public NSToolbarItem() {
 	super();
 }
 
-public NSToolbarItem(long /*int*/ id) {
+public NSToolbarItem(long id) {
 	super(id);
 }
 
@@ -28,16 +28,16 @@ public NSToolbarItem(id id) {
 }
 
 public NSToolbarItem initWithItemIdentifier(NSString itemIdentifier) {
-	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_initWithItemIdentifier_, itemIdentifier != null ? itemIdentifier.id : 0);
+	long result = OS.objc_msgSend(this.id, OS.sel_initWithItemIdentifier_, itemIdentifier != null ? itemIdentifier.id : 0);
 	return result == this.id ? this : (result != 0 ? new NSToolbarItem(result) : null);
 }
 
 public NSString itemIdentifier() {
-	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_itemIdentifier);
+	long result = OS.objc_msgSend(this.id, OS.sel_itemIdentifier);
 	return result != 0 ? new NSString(result) : null;
 }
 
-public void setAction(long /*int*/ action) {
+public void setAction(long action) {
 	OS.objc_msgSend(this.id, OS.sel_setAction_, action);
 }
 

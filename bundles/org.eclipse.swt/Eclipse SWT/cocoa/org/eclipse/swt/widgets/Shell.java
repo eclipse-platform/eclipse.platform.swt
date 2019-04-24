@@ -124,9 +124,9 @@ import org.eclipse.swt.internal.cocoa.*;
 public class Shell extends Decorations {
 	NSWindow window;
 	SWTWindowDelegate windowDelegate;
-	long /*int*/ hostWindowClass;
+	long hostWindowClass;
 	NSWindow hostWindow;
-	long /*int*/ tooltipOwner, tooltipTag, tooltipUserData;
+	long tooltipOwner, tooltipTag, tooltipUserData;
 	int glContextCount;
 	boolean opened, moved, resized, fullScreen, center, deferFlushing, scrolling, isPopup;
 	Control lastActive;
@@ -271,7 +271,7 @@ public Shell (Display display, int style) {
 	this (display, null, style, 0, false);
 }
 
-Shell (Display display, Shell parent, int style, long /*int*/handle, boolean embedded) {
+Shell (Display display, Shell parent, int style, long handle, boolean embedded) {
 	super ();
 	checkSubclass ();
 	if (display == null) display = Display.getCurrent ();
@@ -398,7 +398,7 @@ public Shell (Shell parent, int style) {
  *
  * @since 3.3
  */
-public static Shell internal_new (Display display, long /*int*/ handle) {
+public static Shell internal_new (Display display, long handle) {
 	return new Shell (display, null, SWT.NO_TRIM, handle, false);
 }
 
@@ -422,7 +422,7 @@ public static Shell internal_new (Display display, long /*int*/ handle) {
  *
  * @since 3.5
  */
-public static Shell cocoa_new (Display display, long /*int*/ handle) {
+public static Shell cocoa_new (Display display, long handle) {
 	return new Shell (display, null, SWT.NO_TRIM, handle, true);
 }
 
@@ -453,7 +453,7 @@ static int checkStyle (Shell parent, int style) {
 }
 
 @Override
-boolean accessibilityIsIgnored(long /*int*/ id, long /*int*/ sel) {
+boolean accessibilityIsIgnored(long id, long sel) {
 	// The content view of a shell is always ignored.
 	if (id == view.id) return true;
 	return super.accessibilityIsIgnored(id, sel);
@@ -491,12 +491,12 @@ public void addShellListener(ShellListener listener) {
 
 void attachObserversToWindow(NSWindow newWindow) {
 	if (newWindow == null || newWindow.id == 0) return;
-	long /*int*/ newHostWindowClass = OS.object_getClass(newWindow.id);
-	long /*int*/ sendEventImpl = OS.class_getMethodImplementation(newHostWindowClass, OS.sel_sendEvent_);
+	long newHostWindowClass = OS.object_getClass(newWindow.id);
+	long sendEventImpl = OS.class_getMethodImplementation(newHostWindowClass, OS.sel_sendEvent_);
 	if (sendEventImpl == Display.windowCallback3.getAddress()) return;
 	hostWindow = newWindow;
 	hostWindow.retain();
-	long /*int*/ embeddedSubclass = display.createWindowSubclass(newHostWindowClass, "SWTAWTWindow", true);
+	long embeddedSubclass = display.createWindowSubclass(newHostWindowClass, "SWTAWTWindow", true);
 	OS.object_setClass(hostWindow.id, embeddedSubclass);
 	display.addWidget (hostWindow, this);
 	hostWindowClass = newHostWindowClass;
@@ -522,7 +522,7 @@ void attachObserversToWindow(NSWindow newWindow) {
 }
 
 @Override
-void becomeKeyWindow (long /*int*/ id, long /*int*/ sel) {
+void becomeKeyWindow (long id, long sel) {
 	Shell modal = getModalShell();
 	if (modal != null && modal.window != null) {
 		modal.window.makeKeyAndOrderFront(null);
@@ -546,7 +546,7 @@ void bringToTop (boolean force) {
 }
 
 @Override
-boolean canBecomeKeyWindow (long /*int*/ id, long /*int*/ sel) {
+boolean canBecomeKeyWindow (long id, long sel) {
 	if (isPopup) return false;
 	// Only answer if SWT created the window.
 	if (window != null) {
@@ -560,7 +560,7 @@ boolean canBecomeKeyWindow (long /*int*/ id, long /*int*/ sel) {
 				}
 			}
 		}
-		long /*int*/ styleMask = window.styleMask();
+		long styleMask = window.styleMask();
 		if (styleMask == OS.NSBorderlessWindowMask || (styleMask & (OS.NSNonactivatingPanelMask | OS.NSDocModalWindowMask | OS.NSResizableWindowMask)) != 0) return true;
 	}
 	return super.canBecomeKeyWindow (id, sel);
@@ -592,7 +592,7 @@ void center () {
 }
 
 @Override
-void clearDeferFlushing (long /*int*/ id, long /*int*/ sel) {
+void clearDeferFlushing (long id, long sel) {
 	deferFlushing = false;
 	scrolling = false;
 	if (window != null) window.flushWindowIfNeeded();
@@ -648,7 +648,7 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 	rect.height = trim.height;
 	if (window != null) {
 		if (!_getFullScreen() && !fixResize()) {
-			double /*float*/ h = rect.height;
+			double h = rect.height;
 			rect = window.frameRectForContentRect(rect);
 			rect.y += h-rect.height;
 		}
@@ -721,7 +721,7 @@ void createHandle () {
 		}
 		display.cascadeWindow(window, screen);
 		NSRect screenFrame = screen.frame();
-		double /*float*/ width = screenFrame.width * 5 / 8, height = screenFrame.height * 5 / 8;;
+		double width = screenFrame.width * 5 / 8, height = screenFrame.height * 5 / 8;;
 		NSRect frame = window.frame();
 		NSRect primaryFrame = primaryScreen.frame();
 		frame.y = primaryFrame.height - ((primaryFrame.height - (frame.y + frame.height)) + height);
@@ -842,7 +842,7 @@ void destroyWidget () {
 }
 
 @Override
-void drawBackground (long /*int*/ id, NSGraphicsContext context, NSRect rect) {
+void drawBackground (long id, NSGraphicsContext context, NSRect rect) {
 	if (id != view.id) return;
 	if (regionPath != null && background == null) {
 		context.saveGraphicsState();
@@ -945,7 +945,7 @@ public Rectangle getBounds () {
 	checkWidget();
 	if (window != null) {
 		NSRect frame = window.frame();
-		double /*float*/ y = display.getPrimaryFrame().height - (int)(frame.y + frame.height);
+		double y = display.getPrimaryFrame().height - (int)(frame.y + frame.height);
 		return new Rectangle ((int)frame.x, (int)y, (int)frame.width, (int)frame.height);
 	} else {
 		NSRect frame = view.frame();
@@ -1041,7 +1041,7 @@ public Point getLocation () {
 
 	if (window != null) {
 		NSRect frame = window.frame();
-		double /*float*/ y = display.getPrimaryFrame().height - (int)(frame.y + frame.height);
+		double y = display.getPrimaryFrame().height - (int)(frame.y + frame.height);
 		return new Point ((int)frame.x, (int)y);
 	} else {
 		// Start from view's origin, (0, 0)
@@ -1249,7 +1249,7 @@ boolean hasRegion () {
 }
 
 @Override
-void helpRequested(long /*int*/ id, long /*int*/ sel, long /*int*/ theEvent) {
+void helpRequested(long id, long sel, long theEvent) {
 	Control control = display.getFocusControl();
 	while (control != null) {
 		if (control.hooks (SWT.Help)) {
@@ -1300,7 +1300,7 @@ public boolean isVisible () {
 }
 
 @Override
-boolean makeFirstResponder (long /*int*/ id, long /*int*/ sel, long /*int*/ responder) {
+boolean makeFirstResponder (long id, long sel, long responder) {
 	Display display = this.display;
 	boolean result = super.makeFirstResponder(id, sel, responder);
 	if (!display.isDisposed()) display.checkFocus();
@@ -1325,7 +1325,7 @@ void makeKeyAndOrderFront() {
 }
 
 @Override
-void mouseMoved(long /*int*/ id, long /*int*/ sel, long /*int*/ theEvent) {
+void mouseMoved(long id, long sel, long theEvent) {
 	super.mouseMoved(id, sel, theEvent);
 
 	/**
@@ -1341,7 +1341,7 @@ void mouseMoved(long /*int*/ id, long /*int*/ sel, long /*int*/ theEvent) {
 }
 
 @Override
-void noResponderFor(long /*int*/ id, long /*int*/ sel, long /*int*/ selector) {
+void noResponderFor(long id, long sel, long selector) {
 	/**
 	 * Feature in Cocoa.  If the selector is keyDown and nothing has handled the event
 	 * a system beep is generated.  There's no need to beep, as many keystrokes in the SWT
@@ -1543,7 +1543,7 @@ void sendToolTipEvent (boolean enter) {
 			if (userInfo != null) {
 				tooltipUserData = userInfo.id;
 			} else {
-				long /*int*/ [] value = new long /*int*/ [1];
+				long [] value = new long [1];
 				OS.object_getInstanceVariable(tooltipTag, new byte[]{'_','u', 's', 'e', 'r', 'I', 'n', 'f', 'o'}, value);
 				tooltipUserData = value[0];
 			}
@@ -1766,7 +1766,7 @@ public void setFullScreen (boolean fullScreen) {
 		fullScreenFrame = NSScreen.mainScreen().frame();
 		if (getMonitor().equals(display.getPrimaryMonitor ())) {
 			if (menuBar != null) {
-				double /*float*/ menuBarHt = NSStatusBar.systemStatusBar().thickness();
+				double menuBarHt = NSStatusBar.systemStatusBar().thickness();
 				fullScreenFrame.height -= menuBarHt;
 				OS.SetSystemUIMode(OS.kUIModeContentHidden, 0);
 			}
@@ -2204,7 +2204,7 @@ void updateSystemUIMode () {
 }
 
 @Override
-long /*int*/ view_stringForToolTip_point_userData (long /*int*/ id, long /*int*/ sel, long /*int*/ view, long /*int*/ tag, long /*int*/ point, long /*int*/ userData) {
+long view_stringForToolTip_point_userData (long id, long sel, long view, long tag, long point, long userData) {
 	NSPoint pt = new NSPoint();
 	OS.memmove (pt, point, NSPoint.sizeof);
 	Control control = display.findControl (false);
@@ -2219,9 +2219,9 @@ long /*int*/ view_stringForToolTip_point_userData (long /*int*/ id, long /*int*/
 }
 
 @Override
-void viewWillMoveToWindow(long /*int*/ id, long /*int*/ sel, long /*int*/ newWindow) {
+void viewWillMoveToWindow(long id, long sel, long newWindow) {
 	if (window == null) {
-		long /*int*/ currentWindow = hostWindow != null ? hostWindow.id : 0;
+		long currentWindow = hostWindow != null ? hostWindow.id : 0;
 		if (currentWindow != 0) {
 			removeObserversFromWindow();
 		}
@@ -2232,7 +2232,7 @@ void viewWillMoveToWindow(long /*int*/ id, long /*int*/ sel, long /*int*/ newWin
 }
 
 @Override
-void windowDidBecomeKey(long /*int*/ id, long /*int*/ sel, long /*int*/ notification) {
+void windowDidBecomeKey(long id, long sel, long notification) {
 	if (window != null) {
 		Display display = this.display;
 		display.setMenuBar (menuBar);
@@ -2258,25 +2258,25 @@ void windowDidBecomeKey(long /*int*/ id, long /*int*/ sel, long /*int*/ notifica
 }
 
 @Override
-void windowDidDeminiturize(long /*int*/ id, long /*int*/ sel, long /*int*/ notification) {
+void windowDidDeminiturize(long id, long sel, long notification) {
 	minimized = false;
 	sendEvent(SWT.Deiconify);
 }
 
 @Override
-void windowDidMiniturize(long /*int*/ id, long /*int*/ sel, long /*int*/ notification) {
+void windowDidMiniturize(long id, long sel, long notification) {
 	minimized = true;
 	sendEvent(SWT.Iconify);
 }
 
 @Override
-void windowDidMove(long /*int*/ id, long /*int*/ sel, long /*int*/ notification) {
+void windowDidMove(long id, long sel, long notification) {
 	moved = true;
 	sendEvent(SWT.Move);
 }
 
 @Override
-void windowDidResize(long /*int*/ id, long /*int*/ sel, long /*int*/ notification) {
+void windowDidResize(long id, long sel, long notification) {
 	if (((window.collectionBehavior() & OS.NSWindowCollectionBehaviorFullScreenPrimary) == 0) && fullScreen) {
 		window.setFrame(fullScreenFrame, true);
 		NSRect contentViewFrame = new NSRect();
@@ -2299,7 +2299,7 @@ void windowDidResize(long /*int*/ id, long /*int*/ sel, long /*int*/ notificatio
 }
 
 @Override
-void windowDidResignKey(long /*int*/ id, long /*int*/ sel, long /*int*/ notification) {
+void windowDidResignKey(long id, long sel, long notification) {
 	if (display.isDisposed()) return;
 	sendEvent (SWT.Deactivate);
 	if (isDisposed ()) return;
@@ -2309,9 +2309,9 @@ void windowDidResignKey(long /*int*/ id, long /*int*/ sel, long /*int*/ notifica
 }
 
 @Override
-void windowSendEvent (long /*int*/ id, long /*int*/ sel, long /*int*/ event) {
+void windowSendEvent (long id, long sel, long event) {
 	NSEvent nsEvent = new NSEvent (event);
-	int type = (int)/*64*/nsEvent.type ();
+	int type = (int)nsEvent.type ();
 	switch (type) {
 		case OS.NSLeftMouseDown:
 		case OS.NSRightMouseDown:
@@ -2392,7 +2392,7 @@ void windowSendEvent (long /*int*/ id, long /*int*/ sel, long /*int*/ event) {
 				NSString chars = nsEvent.characters();
 
 				if (chars != null && chars.length() == 1) {
-					int firstChar = (int)/*64*/chars.characterAtIndex(0);
+					int firstChar = (int)chars.characterAtIndex(0);
 
 					// Shift-tab appears as control-Y.
 					switch (firstChar) {
@@ -2440,13 +2440,13 @@ private boolean searchForEscMenuItem(Menu menu) {
 }
 
 @Override
-boolean windowShouldClose(long /*int*/ id, long /*int*/ sel, long /*int*/ window) {
+boolean windowShouldClose(long id, long sel, long window) {
 	if (isEnabled()) closeWidget (false);
 	return false;
 }
 
 @Override
-void windowWillClose(long /*int*/ id, long /*int*/ sel, long /*int*/ notification) {
+void windowWillClose(long id, long sel, long notification) {
 	closeWidget(true);
 }
 

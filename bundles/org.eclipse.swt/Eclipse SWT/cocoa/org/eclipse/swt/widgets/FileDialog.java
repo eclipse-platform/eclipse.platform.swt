@@ -52,9 +52,9 @@ public class FileDialog extends Dialog {
 	String fullPath;
 	SWTPanelDelegate delegate = null;
 	int filterIndex = -1;
-	long /*int*/ jniRef = 0;
-	long /*int*/ method = 0;
-	long /*int*/ methodImpl = 0;
+	long jniRef = 0;
+	long method = 0;
+	long methodImpl = 0;
 	boolean overwrite = false;
 	static final char EXTENSION_SEPARATOR = ';';
 
@@ -116,7 +116,7 @@ long _completionHandler (long result) {
 	return result;
 }
 
-long /*int*/ _overwriteExistingFileCheck (long /*int*/ id, long /*int*/ sel, long /*int*/ str) {
+long _overwriteExistingFileCheck (long id, long sel, long str) {
 	return 1;
 }
 
@@ -215,7 +215,7 @@ void handleResponse (long response) {
 	display.setModalDialog(null);
 
 	if (popup != null) {
-		filterIndex = (int)/*64*/popup.indexOfSelectedItem();
+		filterIndex = (int)popup.indexOfSelectedItem();
 	} else {
 		filterIndex = -1;
 	}
@@ -230,7 +230,7 @@ void handleResponse (long response) {
 		} else {
 			fullPath = filename.getString();
 			NSArray filenames = ((NSOpenPanel)panel).filenames();
-			int count = (int)/*64*/filenames.count();
+			int count = (int)filenames.count();
 			fileNames = new String[count];
 
 			for (int i = 0; i < count; i++) {
@@ -276,7 +276,7 @@ public String open () {
 		panel = savePanel;
 		if (!overwrite) {
 			callback_overwrite_existing_file = new Callback(this, "_overwriteExistingFileCheck", 3);
-			long /*int*/ proc = callback_overwrite_existing_file.getAddress();
+			long proc = callback_overwrite_existing_file.getAddress();
 			if (proc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 			method = OS.class_getInstanceMethod(OS.class_NSSavePanel, OS.sel_overwriteExistingFileCheck);
 			if (method != 0) methodImpl = OS.method_setImplementation(method, proc);
@@ -353,7 +353,7 @@ public String open () {
 	return fullPath;
 }
 
-long /*int*/ panel_shouldShowFilename (long /*int*/ id, long /*int*/ sel, long /*int*/ arg0, long /*int*/ arg1) {
+long panel_shouldShowFilename (long id, long sel, long arg0, long arg1) {
 	if ((style & SWT.SAVE) != 0) {
 		/* All filenames are always disabled in the NSSavePanel, so return from here. */
 		return 1;
@@ -361,7 +361,7 @@ long /*int*/ panel_shouldShowFilename (long /*int*/ id, long /*int*/ sel, long /
 	NSString path = new NSString(arg1);
 	if (filterExtensions != null && filterExtensions.length != 0) {
 		NSFileManager manager = NSFileManager.defaultManager();
-		long /*int*/ ptr = C.malloc(1);
+		long ptr = C.malloc(1);
 		boolean found = manager.fileExistsAtPath(path, ptr);
 		byte[] isDirectory = new byte[1];
 		C.memmove(isDirectory, ptr, 1);
@@ -371,7 +371,7 @@ long /*int*/ panel_shouldShowFilename (long /*int*/ id, long /*int*/ sel, long /
 				return 1;
 			} else if (popup != null) {
 				String fileName = path.lastPathComponent().getString();
-				int filterIndex = (int)/*64*/popup.indexOfSelectedItem();
+				int filterIndex = (int)popup.indexOfSelectedItem();
 				String extensions = filterExtensions [filterIndex];
 				int start = 0, length = extensions.length ();
 				while (start < length) {
@@ -420,9 +420,9 @@ void releaseHandles() {
 	panel = null;
 }
 
-void sendSelection (long /*int*/ id, long /*int*/ sel, long /*int*/ arg) {
+void sendSelection (long id, long sel, long arg) {
 	if (filterExtensions != null && filterExtensions.length > 0) {
-		String fileTypes = filterExtensions[(int)/*64*/popup.indexOfSelectedItem ()];
+		String fileTypes = filterExtensions[(int)popup.indexOfSelectedItem ()];
 		panel.setTreatsFilePackagesAsDirectories (shouldTreatAppAsDirectory (fileTypes));
 		setAllowedFileType (fileTypes);
 	}

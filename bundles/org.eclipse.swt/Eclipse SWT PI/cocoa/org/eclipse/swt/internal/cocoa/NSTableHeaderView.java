@@ -19,7 +19,7 @@ public NSTableHeaderView() {
 	super();
 }
 
-public NSTableHeaderView(long /*int*/ id) {
+public NSTableHeaderView(long id) {
 	super(id);
 }
 
@@ -27,11 +27,11 @@ public NSTableHeaderView(id id) {
 	super(id);
 }
 
-public long /*int*/ columnAtPoint(NSPoint point) {
+public long columnAtPoint(NSPoint point) {
 	return OS.objc_msgSend(this.id, OS.sel_columnAtPoint_, point);
 }
 
-public NSRect headerRectOfColumn(long /*int*/ column) {
+public NSRect headerRectOfColumn(long column) {
 	NSRect result = new NSRect();
 	OS.objc_msgSend_stret(result, this.id, OS.sel_headerRectOfColumn_, column);
 	return result;

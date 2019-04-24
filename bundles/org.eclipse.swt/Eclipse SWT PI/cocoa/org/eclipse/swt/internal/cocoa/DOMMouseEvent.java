@@ -19,7 +19,7 @@ public DOMMouseEvent() {
 	super();
 }
 
-public DOMMouseEvent(long /*int*/ id) {
+public DOMMouseEvent(long id) {
 	super(id);
 }
 
@@ -44,11 +44,11 @@ public boolean metaKey() {
 }
 
 public int screenX() {
-	return (int)/*64*/OS.objc_msgSend(this.id, OS.sel_screenX);
+	return (int)OS.objc_msgSend(this.id, OS.sel_screenX);
 }
 
 public int screenY() {
-	return (int)/*64*/OS.objc_msgSend(this.id, OS.sel_screenY);
+	return (int)OS.objc_msgSend(this.id, OS.sel_screenY);
 }
 
 public boolean shiftKey() {

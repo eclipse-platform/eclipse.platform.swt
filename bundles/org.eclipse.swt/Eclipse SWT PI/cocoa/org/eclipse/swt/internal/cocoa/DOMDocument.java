@@ -19,7 +19,7 @@ public DOMDocument() {
 	super();
 }
 
-public DOMDocument(long /*int*/ id) {
+public DOMDocument(long id) {
 	super(id);
 }
 
@@ -28,7 +28,7 @@ public DOMDocument(id id) {
 }
 
 public WebFrame webFrame() {
-	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_webFrame);
+	long result = OS.objc_msgSend(this.id, OS.sel_webFrame);
 	return result != 0 ? new WebFrame(result) : null;
 }
 

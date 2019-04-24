@@ -19,7 +19,7 @@ public NSAppearance() {
 	super();
 }
 
-public NSAppearance(long /*int*/ id) {
+public NSAppearance(long id) {
 	super(id);
 }
 
@@ -28,17 +28,17 @@ public NSAppearance(id id) {
 }
 
 public static NSAppearance appearanceNamed(NSString name) {
-	long /*int*/ result = OS.objc_msgSend(OS.class_NSAppearance, OS.sel_appearanceNamed_, name != null ? name.id : 0);
+	long result = OS.objc_msgSend(OS.class_NSAppearance, OS.sel_appearanceNamed_, name != null ? name.id : 0);
 	return result != 0 ? new NSAppearance(result) : null;
 }
 
 public static NSAppearance currentAppearance() {
-	long /*int*/ result = OS.objc_msgSend(OS.class_NSAppearance, OS.sel_currentAppearance);
+	long result = OS.objc_msgSend(OS.class_NSAppearance, OS.sel_currentAppearance);
 	return result != 0 ? new NSAppearance(result) : null;
 }
 
 public NSString name() {
-	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_name);
+	long result = OS.objc_msgSend(this.id, OS.sel_name);
 	return result != 0 ? new NSString(result) : null;
 }
 

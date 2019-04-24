@@ -91,7 +91,7 @@ public class Tree extends Composite {
 	Rectangle imageBounds;
 	TreeItem insertItem;
 	boolean insertBefore;
-	double /*float*/ [] headerBackground, headerForeground;
+	double [] headerBackground, headerForeground;
 
 	/* Used to control drop feedback when DND.FEEDBACK_EXPAND and DND.FEEDBACK_SCROLL is set/not set */
 	boolean shouldExpand = true, shouldScroll = true;
@@ -166,20 +166,20 @@ TreeItem _getItem (TreeItem parentItem, int index, boolean create) {
 }
 
 @Override
-boolean acceptsFirstResponder (long /*int*/ id, long /*int*/ sel) {
+boolean acceptsFirstResponder (long id, long sel) {
 	return true;
 }
 
 @Override
-long /*int*/ accessibilityAttributeValue(long /*int*/ id, long /*int*/ sel, long /*int*/ arg0) {
-	long /*int*/ returnValue = 0;
+long accessibilityAttributeValue(long id, long sel, long arg0) {
+	long returnValue = 0;
 	NSString attributeName = new NSString(arg0);
 
 	// If the check column is visible, don't report it back as a column for accessibility purposes.
 	// The check column is meant to appear as a part of the first column.
 	if (attributeName.isEqualToString (OS.NSAccessibilityColumnsAttribute) || attributeName.isEqualToString(OS.NSAccessibilityVisibleColumnsAttribute)) {
 		if ((style & SWT.CHECK) != 0) {
-			long /*int*/ superValue = super.accessibilityAttributeValue(id, sel, arg0);
+			long superValue = super.accessibilityAttributeValue(id, sel, arg0);
 			if (superValue != 0) {
 				NSArray columns = new NSArray(superValue);
 				NSMutableArray columnsWithoutCheck = NSMutableArray.arrayWithCapacity(columns.count() - 1);
@@ -276,17 +276,17 @@ int calculateWidth (TreeItem[] items, int index, GC gc, boolean recurse) {
 }
 
 @Override
-NSSize cellSize (long /*int*/ id, long /*int*/ sel) {
+NSSize cellSize (long id, long sel) {
 	NSSize size = super.cellSize(id, sel);
 	NSCell cell = new NSCell(id);
 	NSImage image = cell.image();
 	if (image != null) size.width += imageBounds.width + IMAGE_GAP;
 	if (hooks(SWT.MeasureItem)) {
-		long /*int*/ [] outValue = new long /*int*/ [1];
+		long [] outValue = new long [1];
 		OS.object_getInstanceVariable(id, Display.SWT_ROW, outValue);
 		TreeItem item = (TreeItem) display.getWidget (outValue [0]);
 		OS.object_getInstanceVariable(id, Display.SWT_COLUMN, outValue);
-		long /*int*/ tableColumn = outValue[0];
+		long tableColumn = outValue[0];
 		int columnIndex = 0;
 		for (int i=0; i<columnCount; i++) {
 			if (columns [i].nsColumn.id == tableColumn) {
@@ -300,13 +300,13 @@ NSSize cellSize (long /*int*/ id, long /*int*/ sel) {
 }
 
 @Override
-boolean canDragRowsWithIndexes_atPoint(long /*int*/ id, long /*int*/ sel, long /*int*/ rowIndexes, NSPoint mouseDownPoint) {
+boolean canDragRowsWithIndexes_atPoint(long id, long sel, long rowIndexes, NSPoint mouseDownPoint) {
 	if (!super.canDragRowsWithIndexes_atPoint(id, sel, rowIndexes, mouseDownPoint)) return false;
 
 	// If the current row is not selected and the user is not attempting to modify the selection, select the row first.
 	NSTableView widget = (NSTableView)view;
-	long /*int*/ row = widget.rowAtPoint(mouseDownPoint);
-	long /*int*/ modifiers = NSApplication.sharedApplication().currentEvent().modifierFlags();
+	long row = widget.rowAtPoint(mouseDownPoint);
+	long modifiers = NSApplication.sharedApplication().currentEvent().modifierFlags();
 
 	boolean drag = (state & DRAG_DETECT) != 0 && hooks (SWT.DragDetect);
 	if (drag) {
@@ -466,7 +466,7 @@ void clearCachedWidth (TreeItem[] items) {
 }
 
 @Override
-void collapseItem_collapseChildren (long /*int*/ id, long /*int*/ sel, long /*int*/ itemID, boolean children) {
+void collapseItem_collapseChildren (long id, long sel, long itemID, boolean children) {
 	TreeItem item = (TreeItem)display.getWidget(itemID);
 	if (item == null) return;
 	if (!ignoreExpand) item.sendExpand (false, children);
@@ -478,7 +478,7 @@ void collapseItem_collapseChildren (long /*int*/ id, long /*int*/ sel, long /*in
 }
 
 @Override
-long /*int*/ columnAtPoint(long /*int*/ id, long /*int*/ sel, NSPoint point) {
+long columnAtPoint(long id, long sel, NSPoint point) {
 	if ((style & SWT.CHECK) != 0) {
 		if (point.x <= getCheckColumnWidth() && point.y < headerView.frame().height) return 1;
 	}
@@ -505,7 +505,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 		width = wHint;
 	}
 	if (hHint == SWT.DEFAULT) {
-		height = (int)/*64*/((NSOutlineView) view).numberOfRows () * getItemHeight () + getHeaderHeight ();
+		height = (int)((NSOutlineView) view).numberOfRows () * getItemHeight () + getHeaderHeight ();
 	} else {
 		height = hHint;
 	}
@@ -604,7 +604,7 @@ void createHandle () {
 		widget.setOutlineTableColumn (checkColumn);
 		checkColumn.setResizingMask (OS.NSTableColumnNoResizing);
 		checkColumn.setEditable (false);
-		long /*int*/ cls = NSButton.cellClass (); /* use our custom cell class */
+		long cls = NSButton.cellClass (); /* use our custom cell class */
 		buttonCell = new NSButtonCell (OS.class_createInstance (cls, 0));
 		buttonCell.init ();
 		checkColumn.setDataCell (buttonCell);
@@ -773,7 +773,7 @@ Color defaultForeground () {
 }
 
 @Override
-void deselectAll(long /*int*/ id, long /*int*/ sel, long /*int*/ sender) {
+void deselectAll(long id, long sel, long sender) {
 	if (preventSelect && !ignoreSelect) return;
 	if ((style & SWT.SINGLE) != 0 && !ignoreSelect) {
 		if ( ((NSTableView)view).selectedRow() != -1) return;
@@ -782,7 +782,7 @@ void deselectAll(long /*int*/ id, long /*int*/ sel, long /*int*/ sender) {
 }
 
 @Override
-void deselectRow (long /*int*/ id, long /*int*/ sel, long /*int*/ index) {
+void deselectRow (long id, long sel, long index) {
 	if (preventSelect && !ignoreSelect) return;
 	if ((style & SWT.SINGLE) != 0 && !ignoreSelect) {
 		if ( ((NSTableView)view).selectedRow() == index) return;
@@ -836,7 +836,7 @@ public void deselect (TreeItem item) {
 	if (item == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (item.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
 	NSOutlineView widget = (NSOutlineView)view;
-	long /*int*/ row = widget.rowForItem(item.handle);
+	long row = widget.rowForItem(item.handle);
 	ignoreSelect = true;
 	widget.deselectRow (row);
 	ignoreSelect = false;
@@ -931,9 +931,9 @@ void destroyItem (TreeColumn column) {
 	}
 
 	NSArray array = ((NSOutlineView)view).tableColumns ();
-	int arraySize = (int)/*64*/array.count ();
+	int arraySize = (int)array.count ();
 	for (int i = oldIndex; i < arraySize; i++) {
-		long /*int*/ columnId = array.objectAtIndex (i).id;
+		long columnId = array.objectAtIndex (i).id;
 		for (int j = 0; j < columnCount; j++) {
 			if (columns[j].nsColumn.id == columnId) {
 				columns [j].sendEvent (SWT.Move);
@@ -988,14 +988,14 @@ boolean dragDetect(int x, int y, boolean filter, boolean[] consume) {
 }
 
 @Override
-void drawBackgroundInClipRect(long /*int*/ id, long /*int*/ sel, NSRect rect) {
+void drawBackgroundInClipRect(long id, long sel, NSRect rect) {
 	super.drawViewBackgroundInRect(id, sel, rect);
 	if (id != view.id) return;
 	fillBackground (view, NSGraphicsContext.currentContext(), rect, -1);
 }
 
 @Override
-void drawInteriorWithFrame_inView (long /*int*/ id, long /*int*/ sel, NSRect rect, long /*int*/ view) {
+void drawInteriorWithFrame_inView (long id, long sel, NSRect rect, long view) {
 	boolean hooksErase = hooks (SWT.EraseItem);
 	boolean hooksPaint = hooks (SWT.PaintItem);
 	boolean hooksMeasure = hooks (SWT.MeasureItem);
@@ -1003,17 +1003,17 @@ void drawInteriorWithFrame_inView (long /*int*/ id, long /*int*/ sel, NSRect rec
 	NSTextFieldCell cell = new NSTextFieldCell (id);
 
 	NSOutlineView widget = (NSOutlineView)this.view;
-	long /*int*/ [] outValue = new long /*int*/ [1];
+	long [] outValue = new long [1];
 	OS.object_getInstanceVariable(id, Display.SWT_ROW, outValue);
-	long /*int*/ rowIndex = widget.rowForItem(new id(outValue [0]));
+	long rowIndex = widget.rowForItem(new id(outValue [0]));
 	if (rowIndex == -1) {
 		return;	// the row item doesn't exist or has been disposed
 	}
 	TreeItem item = (TreeItem) display.getWidget (outValue [0]);
 	if (item == null) return;
 	OS.object_getInstanceVariable(id, Display.SWT_COLUMN, outValue);
-	long /*int*/ tableColumn = outValue[0];
-	long /*int*/ nsColumnIndex = widget.tableColumns().indexOfObjectIdenticalTo(new id(tableColumn));
+	long tableColumn = outValue[0];
+	long nsColumnIndex = widget.tableColumns().indexOfObjectIdenticalTo(new id(tableColumn));
 	int columnIndex = 0;
 	for (int i=0; i<columnCount; i++) {
 		if (columns [i].nsColumn.id == tableColumn) {
@@ -1050,7 +1050,7 @@ void drawInteriorWithFrame_inView (long /*int*/ id, long /*int*/ sel, NSRect rec
 		NSRect rowRect = widget.rectOfRow (rowIndex);
 		cellRect.width = rowRect.width;
 	}
-	double /*float*/ offsetX = 0, offsetY = 0;
+	double offsetX = 0, offsetY = 0;
 	if (hooksPaint || hooksErase) {
 		NSRect frameCell = widget.frameOfCellAtColumn(nsColumnIndex, rowIndex);
 		offsetX = rect.x - frameCell.x;
@@ -1132,7 +1132,7 @@ void drawInteriorWithFrame_inView (long /*int*/ id, long /*int*/ sel, NSRect rec
 
 	if (drawBackground && !drawSelection) {
 		context.saveGraphicsState ();
-		double /*float*/ [] colorRGB = background.handle;
+		double [] colorRGB = background.handle;
 		NSColor color = NSColor.colorWithDeviceRed (colorRGB[0], colorRGB[1], colorRGB[2], 1f);
 		color.setFill ();
 		NSBezierPath.fillRect (cellRect);
@@ -1186,7 +1186,7 @@ void drawInteriorWithFrame_inView (long /*int*/ id, long /*int*/ sel, NSRect rec
 			* foreground color to black when the cell is highlighted. The text
 			* still draws white.  The fix is to draw the text and not call super.
 			*/
-			double /*float*/ [] color = userForeground.handle;
+			double [] color = userForeground.handle;
 			if (color[0] == 0 && color[1] == 0 && color[2] == 0 && color[3] == 1) {
 				NSMutableAttributedString newStr = new NSMutableAttributedString(cell.attributedStringValue().mutableCopy());
 				NSRange range = new NSRange();
@@ -1270,14 +1270,14 @@ void drawInteriorWithFrame_inView (long /*int*/ id, long /*int*/ sel, NSRect rec
 }
 
 @Override
-void drawWithExpansionFrame_inView (long /*int*/ id, long /*int*/ sel, NSRect cellFrame, long /*int*/ view) {
+void drawWithExpansionFrame_inView (long id, long sel, NSRect cellFrame, long view) {
 	drawExpansion = true;
 	super.drawWithExpansionFrame_inView(id, sel, cellFrame, view);
 	drawExpansion = false;
 }
 
 @Override
-void expandItem_expandChildren (long /*int*/ id, long /*int*/ sel, long /*int*/ itemID, boolean children) {
+void expandItem_expandChildren (long id, long sel, long itemID, boolean children) {
 	TreeItem item = (TreeItem)display.getWidget(itemID);
 	if (item == null) return;
 	if (!ignoreExpand) item.sendExpand (true, children);
@@ -1297,7 +1297,7 @@ void expandItem_expandChildren (long /*int*/ id, long /*int*/ sel, long /*int*/ 
 }
 
 @Override
-NSRect expansionFrameWithFrame_inView(long /*int*/ id, long /*int*/ sel, NSRect cellRect, long /*int*/ view) {
+NSRect expansionFrameWithFrame_inView(long id, long sel, NSRect cellRect, long view) {
 	if (toolTipText == null) {
 		NSRect rect = super.expansionFrameWithFrame_inView(id, sel, cellRect, view);
 		NSCell cell = new NSCell(id);
@@ -1346,7 +1346,7 @@ Widget findTooltip (NSPoint pt) {
 	NSTableHeaderView headerView = widget.headerView();
 	if (headerView != null) {
 		pt = headerView.convertPoint_fromView_ (pt, null);
-		long /*int*/ index = headerView.columnAtPoint (pt);
+		long index = headerView.columnAtPoint (pt);
 		if (index != -1) {
 			NSArray nsColumns = widget.tableColumns ();
 			id nsColumn = nsColumns.objectAtIndex (index);
@@ -1684,7 +1684,7 @@ public TreeItem getItem (Point point) {
 	NSPoint pt = new NSPoint();
 	pt.x = point.x;
 	pt.y = point.y;
-	int row = (int)/*64*/widget.rowAtPoint(pt);
+	int row = (int)widget.rowAtPoint(pt);
 	if (row == -1) return null;
 	NSRect rect = widget.frameOfOutlineCellAtRow(row);
 	if (OS.NSPointInRect(pt, rect)) return null;
@@ -1825,8 +1825,8 @@ public TreeItem [] getSelection () {
 		return new TreeItem [0];
 	}
 	NSIndexSet selection = widget.selectedRowIndexes ();
-	int count = (int)/*64*/selection.count ();
-	long /*int*/ [] indexBuffer = new long /*int*/ [count];
+	int count = (int)selection.count ();
+	long [] indexBuffer = new long [count];
 	selection.getIndexes (indexBuffer, count, 0);
 	TreeItem [] result = new TreeItem [count];
 	for (int i=0; i<count; i++) {
@@ -1851,7 +1851,7 @@ public TreeItem [] getSelection () {
  */
 public int getSelectionCount () {
 	checkWidget ();
-	return (int)/*64*/((NSOutlineView) view).numberOfSelectedRows ();
+	return (int)((NSOutlineView) view).numberOfSelectedRows ();
 }
 
 /**
@@ -1929,14 +1929,14 @@ public TreeItem getTopItem () {
 		}
 	}
 	NSOutlineView outlineView = (NSOutlineView)view;
-	long /*int*/ index = outlineView.rowAtPoint (point);
+	long index = outlineView.rowAtPoint (point);
 	if (index == -1) return null; /* empty */
 	id item = outlineView.itemAtRow (index);
 	return (TreeItem)display.getWidget (item.id);
 }
 
 @Override
-NSRect headerRectOfColumn (long /*int*/ id, long /*int*/ sel, long /*int*/ column) {
+NSRect headerRectOfColumn (long id, long sel, long column) {
 	if ((style & SWT.CHECK) == 0) return callSuperRect(id, sel, column);
 
 	if (column == 0) {
@@ -1955,7 +1955,7 @@ NSRect headerRectOfColumn (long /*int*/ id, long /*int*/ sel, long /*int*/ colum
 }
 
 @Override
-void highlightSelectionInClipRect(long /*int*/ id, long /*int*/ sel, long /*int*/ rect) {
+void highlightSelectionInClipRect(long id, long sel, long rect) {
 	if (hooks (SWT.EraseItem)) return;
 	if ((style & SWT.HIDE_SELECTION) != 0 && !hasFocus()) return;
 	NSRect clipRect = new NSRect ();
@@ -1964,7 +1964,7 @@ void highlightSelectionInClipRect(long /*int*/ id, long /*int*/ sel, long /*int*
 }
 
 @Override
-long /*int*/ hitTestForEvent (long /*int*/ id, long /*int*/ sel, long /*int*/ event, NSRect rect, long /*int*/ controlView) {
+long hitTestForEvent (long id, long sel, long event, NSRect rect, long controlView) {
 	/*
 	* For some reason, the cell class needs to implement hitTestForEvent:inRect:ofView:,
 	* otherwise the double action selector is not called properly.
@@ -1973,14 +1973,14 @@ long /*int*/ hitTestForEvent (long /*int*/ id, long /*int*/ sel, long /*int*/ ev
 }
 
 @Override
-long /*int*/ image (long /*int*/ id, long /*int*/ sel) {
-	long /*int*/ [] image = new long /*int*/ [1];
+long image (long id, long sel) {
+	long [] image = new long [1];
 	OS.object_getInstanceVariable(id, Display.SWT_IMAGE, image);
 	return image[0];
 }
 
 @Override
-NSRect imageRectForBounds (long /*int*/ id, long /*int*/ sel, NSRect cellFrame) {
+NSRect imageRectForBounds (long id, long sel, NSRect cellFrame) {
 	NSImage image = new NSCell(id).image();
 	if (image != null) {
 		cellFrame.x += IMAGE_GAP;
@@ -1991,7 +1991,7 @@ NSRect imageRectForBounds (long /*int*/ id, long /*int*/ sel, NSRect cellFrame) 
 }
 
 int indexOf (NSTableColumn column) {
-	return (int)/*64*/((NSTableView)view).tableColumns().indexOfObjectIdenticalTo(column);
+	return (int)((NSTableView)view).tableColumns().indexOfObjectIdenticalTo(column);
 }
 
 /**
@@ -2066,13 +2066,13 @@ boolean isTrim (NSView view) {
 }
 
 @Override
-void keyDown(long /*int*/ id, long /*int*/ sel, long /*int*/ theEvent) {
+void keyDown(long id, long sel, long theEvent) {
 	ignoreSelect = preventSelect = false;
 	super.keyDown(id, sel, theEvent);
 }
 
 @Override
-long /*int*/ menuForEvent(long /*int*/ id, long /*int*/ sel, long /*int*/ theEvent) {
+long menuForEvent(long id, long sel, long theEvent) {
 	if (display.lastHandledMenuForEventId == theEvent) return 0;
 	if (id != headerView.id) {
 		/*
@@ -2088,7 +2088,7 @@ long /*int*/ menuForEvent(long /*int*/ id, long /*int*/ sel, long /*int*/ theEve
 
 		// select the row that was clicked before showing the menu for the event
 		NSPoint mousePoint = view.convertPoint_fromView_(event.locationInWindow(), null);
-		long /*int*/ row = tree.rowAtPoint(mousePoint);
+		long row = tree.rowAtPoint(mousePoint);
 
 		// figure out if the row that was just clicked on is currently selected
 		if (selectedRowIndexes.containsIndex(row) == false) {
@@ -2104,7 +2104,7 @@ long /*int*/ menuForEvent(long /*int*/ id, long /*int*/ sel, long /*int*/ theEve
 }
 
 @Override
-void mouseDown (long /*int*/ id, long /*int*/ sel, long /*int*/ theEvent) {
+void mouseDown (long id, long sel, long theEvent) {
 	if (id == view.id) {
 		// Bug/feature in Cocoa:  If the tree has a context menu we just set it visible instead of returning
 		// it from menuForEvent:.  This has the side effect, however, of sending control-click to the NSTableView,
@@ -2116,17 +2116,17 @@ void mouseDown (long /*int*/ id, long /*int*/ sel, long /*int*/ theEvent) {
 }
 
 @Override
-void mouseDownSuper(long /*int*/ id, long /*int*/ sel, long /*int*/ theEvent) {
+void mouseDownSuper(long id, long sel, long theEvent) {
 	ignoreSelect = preventSelect = false;
 	boolean check = false;
 	NSEvent nsEvent = new NSEvent(theEvent);
 	NSOutlineView widget = (NSOutlineView)view;
 	NSPoint pt = view.convertPoint_fromView_(nsEvent.locationInWindow(), null);
-	int row = (int)/*64*/widget.rowAtPoint(pt);
+	int row = (int)widget.rowAtPoint(pt);
 	NSObject itemID = null;
 	if (row != -1) itemID = new NSObject(widget.itemAtRow(row));
 	if (row != -1 && (style & SWT.CHECK) != 0) {
-		int column = (int)/*64*/widget.columnAtPoint(pt);
+		int column = (int)widget.columnAtPoint(pt);
 		NSCell cell = widget.preparedCellAtColumn(column, row);
 		if (cell != null && cell.isKindOfClass(OS.class_NSButtonCell) && cell.isEnabled()) {
 			NSRect checkRect = cell.imageRectForBounds(widget.frameOfCellAtColumn(column, row));
@@ -2151,7 +2151,7 @@ void mouseDownSuper(long /*int*/ id, long /*int*/ sel, long /*int*/ theEvent) {
 }
 
 @Override
-boolean needsPanelToBecomeKey (long /*int*/ id, long /*int*/ sel) {
+boolean needsPanelToBecomeKey (long id, long sel) {
 	return false;
 }
 
@@ -2162,10 +2162,10 @@ boolean needsPanelToBecomeKey (long /*int*/ id, long /*int*/ sel) {
  * override [NSCell nextState] to go directly to the desired state.
  */
 @Override
-long /*int*/ nextState (long /*int*/ id, long /*int*/ sel) {
+long nextState (long id, long sel) {
 	NSOutlineView outlineView = (NSOutlineView)view;
-	int index = (int)/*64*/outlineView.clickedRow();
-	if (index == -1) index = (int)/*64*/outlineView.selectedRow ();
+	int index = (int)outlineView.clickedRow();
+	if (index == -1) index = (int)outlineView.selectedRow ();
 	TreeItem item = (TreeItem)display.getWidget (outlineView.itemAtRow (index).id);
 	if (item.grayed) {
 		return item.checked ? OS.NSOffState : OS.NSMixedState;
@@ -2174,9 +2174,9 @@ long /*int*/ nextState (long /*int*/ id, long /*int*/ sel) {
 }
 
 @Override
-long /*int*/ outlineView_child_ofItem (long /*int*/ id, long /*int*/ sel, long /*int*/ outlineView, long /*int*/ index, long /*int*/ itemID) {
+long outlineView_child_ofItem (long id, long sel, long outlineView, long index, long itemID) {
 	TreeItem parent = (TreeItem) display.getWidget (itemID);
-	TreeItem item = _getItem (parent, (int)/*64*/index, true);
+	TreeItem item = _getItem (parent, (int)index, true);
 	if (item != null && item.handle != null) {
 		return item.handle.id;
 	}
@@ -2184,14 +2184,14 @@ long /*int*/ outlineView_child_ofItem (long /*int*/ id, long /*int*/ sel, long /
 }
 
 @Override
-void outlineView_didClickTableColumn (long /*int*/ id, long /*int*/ sel, long /*int*/ outlineView, long /*int*/ tableColumn) {
+void outlineView_didClickTableColumn (long id, long sel, long outlineView, long tableColumn) {
 	TreeColumn column = getColumn (new id (tableColumn));
 	if (column == null) return; /* either CHECK column or firstColumn in 0-column Tree */
 	column.sendSelectionEvent (SWT.Selection);
 }
 
 @Override
-long /*int*/ outlineView_objectValueForTableColumn_byItem (long /*int*/ id, long /*int*/ sel, long /*int*/ outlineView, long /*int*/ tableColumn, long /*int*/ itemID) {
+long outlineView_objectValueForTableColumn_byItem (long id, long sel, long outlineView, long tableColumn, long itemID) {
 	TreeItem item = (TreeItem) display.getWidget (itemID);
 	checkData (item);
 	if (checkColumn != null && tableColumn == checkColumn.id) {
@@ -2212,24 +2212,24 @@ long /*int*/ outlineView_objectValueForTableColumn_byItem (long /*int*/ id, long
 }
 
 @Override
-boolean outlineView_isItemExpandable (long /*int*/ id, long /*int*/ sel, long /*int*/ outlineView, long /*int*/ item) {
+boolean outlineView_isItemExpandable (long id, long sel, long outlineView, long item) {
 	if (item == 0) return true;
 	return ((TreeItem) display.getWidget (item)).itemCount != 0;
 }
 
 @Override
-long /*int*/ outlineView_numberOfChildrenOfItem (long /*int*/ id, long /*int*/ sel, long /*int*/ outlineView, long /*int*/ item) {
+long outlineView_numberOfChildrenOfItem (long id, long sel, long outlineView, long item) {
 	if (item == 0) return itemCount;
 	return ((TreeItem) display.getWidget (item)).itemCount;
 }
 
 @Override
-boolean outlineView_shouldExpandItem_item (long /*int*/ id, long /*int*/ sel, long /*int*/ arg0, long /*int*/ arg1) {
+boolean outlineView_shouldExpandItem_item (long id, long sel, long arg0, long arg1) {
 	return shouldExpand;
 }
 
 @Override
-boolean outlineView_shouldReorderColumn_toColumn(long /*int*/ id, long /*int*/ sel, long /*int*/ aTableView, long /*int*/ currentColIndex, long /*int*/ newColIndex) {
+boolean outlineView_shouldReorderColumn_toColumn(long id, long sel, long aTableView, long currentColIndex, long newColIndex) {
 	// Check column should never move and no column can be dragged to the left of it, if present.
 	if ((style & SWT.CHECK) != 0) {
 		if (currentColIndex == 0) return false;
@@ -2248,17 +2248,17 @@ boolean outlineView_shouldReorderColumn_toColumn(long /*int*/ id, long /*int*/ s
 }
 
 @Override
-boolean outlineView_shouldTrackCell_forTableColumn_item(long /*int*/ id, long /*int*/ sel, long /*int*/ table, long /*int*/ cell, long /*int*/ tableColumn, long /*int*/ item) {
+boolean outlineView_shouldTrackCell_forTableColumn_item(long id, long sel, long table, long cell, long tableColumn, long item) {
 	if ((style & SWT.CHECK) != 0) {
 		if (new NSCell(cell).isKindOfClass(OS.class_NSButtonCell)) return true;
 	}
 	NSOutlineView widget = (NSOutlineView)view;
-	long /*int*/ rowIndex = widget.rowForItem(new id(item));
+	long rowIndex = widget.rowForItem(new id(item));
 	return widget.isRowSelected(rowIndex);
 }
 
 @Override
-void outlineView_willDisplayCell_forTableColumn_item (long /*int*/ id, long /*int*/ sel, long /*int*/ outlineView, long /*int*/ cell, long /*int*/ tableColumn, long /*int*/ itemID) {
+void outlineView_willDisplayCell_forTableColumn_item (long id, long sel, long outlineView, long cell, long tableColumn, long itemID) {
 	if (checkColumn != null && tableColumn == checkColumn.id) return;
 	TreeItem item = (TreeItem) display.getWidget(itemID);
 	int index = 0;
@@ -2324,7 +2324,7 @@ void outlineView_willDisplayCell_forTableColumn_item (long /*int*/ id, long /*in
 }
 
 @Override
-void outlineViewColumnDidMove (long /*int*/ id, long /*int*/ sel, long /*int*/ aNotification) {
+void outlineViewColumnDidMove (long id, long sel, long aNotification) {
 	NSNotification notification = new NSNotification (aNotification);
 	NSDictionary userInfo = notification.userInfo ();
 	NSString nsstring = (NSString) new NSString().alloc();
@@ -2353,7 +2353,7 @@ void outlineViewColumnDidMove (long /*int*/ id, long /*int*/ sel, long /*int*/ a
 }
 
 @Override
-void outlineViewColumnDidResize (long /*int*/ id, long /*int*/ sel, long /*int*/ aNotification) {
+void outlineViewColumnDidResize (long id, long sel, long aNotification) {
 	NSNotification notification = new NSNotification (aNotification);
 	NSDictionary userInfo = notification.userInfo ();
 	NSString nsstring = (NSString) new NSString().alloc();
@@ -2371,7 +2371,7 @@ void outlineViewColumnDidResize (long /*int*/ id, long /*int*/ sel, long /*int*/
 	if (index == -1) return; /* column was disposed in Resize callback */
 
 	NSArray nsColumns = outlineView.tableColumns ();
-	int columnCount = (int)/*64*/outlineView.numberOfColumns ();
+	int columnCount = (int)outlineView.numberOfColumns ();
 	for (int i = index + 1; i < columnCount; i++) {
 		columnId = nsColumns.objectAtIndex (i);
 		column = getColumn (columnId);
@@ -2383,7 +2383,7 @@ void outlineViewColumnDidResize (long /*int*/ id, long /*int*/ sel, long /*int*/
 }
 
 @Override
-void scrollClipViewToPoint (long /*int*/ id, long /*int*/ sel, long /*int*/ clipView, NSPoint point) {
+void scrollClipViewToPoint (long id, long sel, long clipView, NSPoint point) {
 	if (shouldScroll) {
 		super.scrollClipViewToPoint(id, sel, clipView, point);
 		if ((style & SWT.CHECK) != 0 && columnCount > 0 && ((NSOutlineView) view).headerView () != null) {
@@ -2402,7 +2402,7 @@ void scrollClipViewToPoint (long /*int*/ id, long /*int*/ sel, long /*int*/ clip
 void sendSelection () {
 	if (ignoreSelect) return;
 	NSOutlineView widget = (NSOutlineView) view;
-	int row = (int)/*64*/widget.selectedRow ();
+	int row = (int)widget.selectedRow ();
 	if (row == -1)
 		sendSelectionEvent (SWT.Selection);
 	else {
@@ -2416,19 +2416,19 @@ void sendSelection () {
 }
 
 @Override
-void outlineViewSelectionDidChange (long /*int*/ id, long /*int*/ sel, long /*int*/ notification) {
+void outlineViewSelectionDidChange (long id, long sel, long notification) {
 	if (didSelect) return;
 	sendSelection ();
 }
 
 @Override
-void outlineViewSelectionIsChanging (long /*int*/ id, long /*int*/ sel, long /*int*/ notification) {
+void outlineViewSelectionIsChanging (long id, long sel, long notification) {
 	didSelect = true;
 	sendSelection ();
 }
 
 @Override
-void outlineView_setObjectValue_forTableColumn_byItem (long /*int*/ id, long /*int*/ sel, long /*int*/ outlineView, long /*int*/ object, long /*int*/ tableColumn, long /*int*/ itemID) {
+void outlineView_setObjectValue_forTableColumn_byItem (long id, long sel, long outlineView, long object, long tableColumn, long itemID) {
 	if (checkColumn != null && tableColumn == checkColumn.id)  {
 		TreeItem item = (TreeItem) display.getWidget (itemID);
 		item.checked = !item.checked;
@@ -2441,7 +2441,7 @@ void outlineView_setObjectValue_forTableColumn_byItem (long /*int*/ id, long /*i
 }
 
 @Override
-boolean outlineView_writeItems_toPasteboard(long /*int*/ id, long /*int*/ sel, long /*int*/ arg0, long /*int*/ arg1, long /*int*/ arg2) {
+boolean outlineView_writeItems_toPasteboard(long id, long sel, long arg0, long arg1, long arg2) {
 	return sendMouseEvent(NSApplication.sharedApplication().currentEvent(), SWT.DragDetect, true);
 }
 
@@ -2586,7 +2586,7 @@ void reskinChildren (int flags) {
 }
 
 @Override
-void setImage (long /*int*/ id, long /*int*/ sel, long /*int*/ arg0) {
+void setImage (long id, long sel, long arg0) {
 	OS.object_setInstanceVariable(id, Display.SWT_IMAGE, arg0);
 }
 
@@ -2662,7 +2662,7 @@ public void select (TreeItem item) {
 	checkItems ();
 	showItem (item);
 	NSOutlineView outlineView = (NSOutlineView) view;
-	long /*int*/ row = outlineView.rowForItem (item.handle);
+	long row = outlineView.rowForItem (item.handle);
 	NSIndexSet set = (NSIndexSet)new NSIndexSet().alloc();
 	set = set.initWithIndex(row);
 	ignoreSelect = true;
@@ -2672,7 +2672,7 @@ public void select (TreeItem item) {
 }
 
 @Override
-void selectRowIndexes_byExtendingSelection (long /*int*/ id, long /*int*/ sel, long /*int*/ indexes, boolean extend) {
+void selectRowIndexes_byExtendingSelection (long id, long sel, long indexes, boolean extend) {
 	if (preventSelect && !ignoreSelect) return;
 	if ((style & SWT.SINGLE) != 0 && !ignoreSelect) {
 		NSIndexSet set = new NSIndexSet(indexes);
@@ -2684,12 +2684,12 @@ void selectRowIndexes_byExtendingSelection (long /*int*/ id, long /*int*/ sel, l
 @Override
 void sendDoubleSelection() {
 	NSOutlineView outlineView = (NSOutlineView)view;
-	int rowIndex = (int)/*64*/outlineView.clickedRow ();
-	if (rowIndex == -1) rowIndex = (int)/*64*/outlineView.selectedRow ();
+	int rowIndex = (int)outlineView.clickedRow ();
+	if (rowIndex == -1) rowIndex = (int)outlineView.selectedRow ();
 	if (rowIndex != -1) {
 		if ((style & SWT.CHECK) != 0) {
 			NSArray columns = outlineView.tableColumns ();
-			int columnIndex = (int)/*64*/outlineView.clickedColumn ();
+			int columnIndex = (int)outlineView.clickedColumn ();
 			if (columnIndex != -1) {
 				id column = columns.objectAtIndex (columnIndex);
 				if (column.id == checkColumn.id) return;
@@ -2767,8 +2767,8 @@ boolean sendMouseEvent(NSEvent nsEvent, int type, boolean send) {
 		if (!dragDetected && selectedRowIndex != -1) {
 			NSOutlineView widget = (NSOutlineView)view;
 			NSIndexSet selectedRows = widget.selectedRowIndexes ();
-			int count = (int)/*64*/selectedRows.count();
-			long /*int*/ [] indexBuffer = new long /*int*/ [count];
+			int count = (int)selectedRows.count();
+			long [] indexBuffer = new long [count];
 			selectedRows.getIndexes(indexBuffer, count, 0);
 			for (int i = 0; i < count; i++) {
 				if (indexBuffer[i] == selectedRowIndex) continue;
@@ -2817,7 +2817,7 @@ void selectItems (TreeItem[] items, boolean ignoreDisposed) {
 }
 
 @Override
-NSRect titleRectForBounds (long /*int*/ id, long /*int*/ sel, NSRect cellFrame) {
+NSRect titleRectForBounds (long id, long sel, NSRect cellFrame) {
 	NSImage image = new NSCell(id).image();
 	if (image != null) {
 		int imageWidth = imageBounds.width + IMAGE_GAP;
@@ -2938,7 +2938,7 @@ public void setHeaderBackground (Color color) {
 	if (color != null) {
 		if (color.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
 	}
-	double /*float*/ [] headerBackground = color != null ? color.handle : null;
+	double [] headerBackground = color != null ? color.handle : null;
 	if (equals (headerBackground, this.headerBackground)) return;
 	this.headerBackground = headerBackground;
 	if (getHeaderVisible()) {
@@ -2970,7 +2970,7 @@ public void setHeaderForeground (Color color) {
 	if (color != null) {
 		if (color.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
 	}
-	double /*float*/ [] headerForeground = color != null ? color.handle : null;
+	double [] headerForeground = color != null ? color.handle : null;
 	if (equals (headerForeground, this.headerForeground)) return;
 	this.headerForeground = headerForeground;
 	if (getHeaderVisible()) {
@@ -3098,8 +3098,8 @@ void setItemCount (TreeItem parentItem, int count) {
 
 void setItemHeight (Image image, NSFont font, boolean set) {
 	if (font == null) font = getFont ().handle;
-	double /*float*/ ascent = font.ascender ();
-	double /*float*/ descent = -font.descender () + font.leading ();
+	double ascent = font.ascender ();
+	double descent = -font.descender () + font.leading ();
 	int height = (int)Math.ceil (ascent + descent) + 1;
 	Rectangle bounds = image != null ? image.getBounds () : imageBounds;
 	if (bounds != null) {
@@ -3185,12 +3185,12 @@ boolean setScrollWidth (TreeItem item) {
 }
 
 @Override
-void setShouldExpandItem (long /*int*/ id, long /*int*/ sel, boolean shouldExpand) {
+void setShouldExpandItem (long id, long sel, boolean shouldExpand) {
 	this.shouldExpand = shouldExpand;
 }
 
 @Override
-void setShouldScrollClipView (long /*int*/ id, long /*int*/ sel, boolean shouldScroll) {
+void setShouldScrollClipView (long id, long sel, boolean shouldScroll) {
 	this.shouldScroll = shouldScroll;
 }
 
@@ -3352,7 +3352,7 @@ public void setTopItem (TreeItem item) {
 	checkItems ();
 	showItem (item, false);
 	NSOutlineView widget = (NSOutlineView) view;
-	long /*int*/ row = widget.rowForItem (item.handle);
+	long row = widget.rowForItem (item.handle);
 	if (row == -1) return;
 	NSPoint pt = new NSPoint();
 	pt.x = scrollView.contentView().bounds().x;

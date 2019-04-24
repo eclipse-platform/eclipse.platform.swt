@@ -19,7 +19,7 @@ public NSSegmentedCell() {
 	super();
 }
 
-public NSSegmentedCell(long /*int*/ id) {
+public NSSegmentedCell(long id) {
 	super(id);
 }
 
@@ -27,51 +27,51 @@ public NSSegmentedCell(id id) {
 	super(id);
 }
 
-public void setEnabled(boolean enabled, long /*int*/ segment) {
+public void setEnabled(boolean enabled, long segment) {
 	OS.objc_msgSend(this.id, OS.sel_setEnabled_forSegment_, enabled, segment);
 }
 
-public void setImage(NSImage image, long /*int*/ segment) {
+public void setImage(NSImage image, long segment) {
 	OS.objc_msgSend(this.id, OS.sel_setImage_forSegment_, image != null ? image.id : 0, segment);
 }
 
-public void setLabel(NSString label, long /*int*/ segment) {
+public void setLabel(NSString label, long segment) {
 	OS.objc_msgSend(this.id, OS.sel_setLabel_forSegment_, label != null ? label.id : 0, segment);
 }
 
-public void setMenu(NSMenu menu, long /*int*/ segment) {
+public void setMenu(NSMenu menu, long segment) {
 	OS.objc_msgSend(this.id, OS.sel_setMenu_forSegment_, menu != null ? menu.id : 0, segment);
 }
 
-public void setSegmentCount(long /*int*/ segmentCount) {
+public void setSegmentCount(long segmentCount) {
 	OS.objc_msgSend(this.id, OS.sel_setSegmentCount_, segmentCount);
 }
 
-public void setSegmentStyle(long /*int*/ segmentStyle) {
+public void setSegmentStyle(long segmentStyle) {
 	OS.objc_msgSend(this.id, OS.sel_setSegmentStyle_, segmentStyle);
 }
 
-public void setSelected(boolean selected, long /*int*/ segment) {
+public void setSelected(boolean selected, long segment) {
 	OS.objc_msgSend(this.id, OS.sel_setSelected_forSegment_, selected, segment);
 }
 
-public void setSelectedSegment(long /*int*/ selectedSegment) {
+public void setSelectedSegment(long selectedSegment) {
 	OS.objc_msgSend(this.id, OS.sel_setSelectedSegment_, selectedSegment);
 }
 
-public void setTag(long /*int*/ tag, long /*int*/ segment) {
+public void setTag(long tag, long segment) {
 	OS.objc_msgSend(this.id, OS.sel_setTag_forSegment_, tag, segment);
 }
 
-public void setToolTip(NSString toolTip, long /*int*/ segment) {
+public void setToolTip(NSString toolTip, long segment) {
 	OS.objc_msgSend(this.id, OS.sel_setToolTip_forSegment_, toolTip != null ? toolTip.id : 0, segment);
 }
 
-public void setTrackingMode(long /*int*/ trackingMode) {
+public void setTrackingMode(long trackingMode) {
 	OS.objc_msgSend(this.id, OS.sel_setTrackingMode_, trackingMode);
 }
 
-public void setWidth(double /*float*/ width, long /*int*/ segment) {
+public void setWidth(double width, long segment) {
 	OS.objc_msgSend(this.id, OS.sel_setWidth_forSegment_, width, segment);
 }
 

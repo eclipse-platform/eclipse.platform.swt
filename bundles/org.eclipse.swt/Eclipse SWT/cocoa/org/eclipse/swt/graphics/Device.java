@@ -324,7 +324,7 @@ public int getDepth () {
 	checkDevice ();
 	NSScreen primaryScreen = getPrimaryScreen();
 	if (primaryScreen == null) return 0;
-	return (int)/*64*/OS.NSBitsPerPixelFromDepth(primaryScreen.depth());
+	return (int)OS.NSBitsPerPixelFromDepth(primaryScreen.depth());
 }
 
 /**
@@ -370,19 +370,19 @@ public FontData[] getFontList (String faceName, boolean scalable) {
 	NSArray families = NSFontManager.sharedFontManager().availableFontFamilies();
 	FontData[] fds = new FontData[100];
 	if (families != null) {
-		long /*int*/ familyCount = families.count();
+		long familyCount = families.count();
 		for (int i = 0; i < familyCount; i++) {
 			NSString nsFamily = new NSString(families.objectAtIndex(i));
 			String name = nsFamily.getString();
 			NSArray fonts = NSFontManager.sharedFontManager().availableMembersOfFontFamily(nsFamily);
 
 			if (fonts != null) {
-				int fontCount = (int)/*64*/fonts.count();
+				int fontCount = (int)fonts.count();
 				for (int j = 0; j < fontCount; j++) {
 					NSArray fontDetails = new NSArray(fonts.objectAtIndex(j));
 					String nsName = new NSString(fontDetails.objectAtIndex(0)).getString();
-					long /*int*/ weight = new NSNumber(fontDetails.objectAtIndex(2)).integerValue();
-					long /*int*/ traits = new NSNumber(fontDetails.objectAtIndex(3)).integerValue();
+					long weight = new NSNumber(fontDetails.objectAtIndex(2)).integerValue();
+					long traits = new NSNumber(fontDetails.objectAtIndex(3)).integerValue();
 					int style = SWT.NORMAL;
 					if ((traits & OS.NSItalicFontMask) != 0) style |= SWT.ITALIC;
 					if (weight == 9) style |= SWT.BOLD;
@@ -428,7 +428,7 @@ Point getScreenDPI () {
 	NSDictionary dictionary = screen.deviceDescription();
 	NSValue value = new NSValue(dictionary.objectForKey(new id(OS.NSDeviceResolution())).id);
 	NSSize size = value.sizeValue();
-	double /*float*/ scaling = 1;
+	double scaling = 1;
 	if (OS.VERSION >= 0x1070) {
 		scaling = screen.backingScaleFactor();
 	}
@@ -559,7 +559,7 @@ protected void init () {
 
 	/* Initialize the system font slot */
 	boolean smallFonts = System.getProperty("org.eclipse.swt.internal.carbon.smallFonts") != null;
-	double /*float*/ systemFontSize = smallFonts ? NSFont.smallSystemFontSize() : NSFont.systemFontSize();
+	double systemFontSize = smallFonts ? NSFont.smallSystemFontSize() : NSFont.systemFontSize();
 	Point dpi = this.dpi = getDPI(), screenDPI = getScreenDPI();
 	NSFont font = NSFont.systemFontOfSize(systemFontSize * dpi.y / screenDPI.y);
 	font.retain();
@@ -582,7 +582,7 @@ protected void init () {
  * @noreference This method is not intended to be referenced by clients.
  */
 @Override
-public abstract long /*int*/ internal_new_GC (GCData data);
+public abstract long internal_new_GC (GCData data);
 
 /**
  * Invokes platform specific functionality to dispose a GC handle.
@@ -600,7 +600,7 @@ public abstract long /*int*/ internal_new_GC (GCData data);
  * @noreference This method is not intended to be referenced by clients.
  */
 @Override
-public abstract void internal_dispose_GC (long /*int*/ hDC, GCData data);
+public abstract void internal_dispose_GC (long hDC, GCData data);
 
 /**
  * Returns <code>true</code> if the device has been disposed,
@@ -639,7 +639,7 @@ public boolean loadFont (String path) {
 	if (path == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	boolean result = false;
 	NSString nsPath = NSString.stringWith(path);
-	long /*int*/ fsRepresentation = nsPath.fileSystemRepresentation();
+	long fsRepresentation = nsPath.fileSystemRepresentation();
 
 	if (fsRepresentation != 0) {
 		byte [] fsRef = new byte [80];

@@ -155,14 +155,14 @@ public GLCanvas (Composite parent, int style, GLData data) {
 public GLData getGLData () {
 	checkWidget ();
 	GLData data = new GLData ();
-	long /*int*/ [] value = new long /*int*/ [1];
+	long [] value = new long [1];
 	pixelFormat.getValues(value, OS.NSOpenGLPFADoubleBuffer, 0);
 	data.doubleBuffer = value [0] != 0;
 	pixelFormat.getValues(value, OS.NSOpenGLPFAStereo, 0);
 	data.stereo = value [0] != 0;
 
 	pixelFormat.getValues(value, OS.NSOpenGLPFAAlphaSize, 0);
-	data.alphaSize = (int/*64*/)value [0];
+	data.alphaSize = (int)value [0];
 
 	/*
 	 * Feature in Cocoa: NSOpenGL/CoreOpenGL only supports specifying the total number of bits
@@ -171,16 +171,16 @@ public GLData getGLData () {
 	 */
 	pixelFormat.getValues(value, OS.NSOpenGLPFAColorSize, 0);
 
-	int colorSize = ((int/*64*/)(value[0] - data.alphaSize)) / 3;
+	int colorSize = ((int)(value[0] - data.alphaSize)) / 3;
 
 	data.redSize = colorSize;
 	data.greenSize = colorSize;
 	data.blueSize = colorSize;
 
 	pixelFormat.getValues(value, OS.NSOpenGLPFADepthSize, 0);
-	data.depthSize = (int/*64*/)value [0];
+	data.depthSize = (int)value [0];
 	pixelFormat.getValues(value, OS.NSOpenGLPFAStencilSize, 0);
-	data.stencilSize = (int/*64*/)value [0];
+	data.stencilSize = (int)value [0];
 
 	/*
 	 * Feature(?) in Cocoa: NSOpenGL/CoreOpenGL doesn't support setting an accumulation buffer alpha, but
@@ -189,16 +189,16 @@ public GLData getGLData () {
 	 */
 	pixelFormat.getValues(value, OS.NSOpenGLPFAAccumSize, 0);
 
-	int accumColorSize = (int/*64*/)(value[0]) / 4;
+	int accumColorSize = (int)(value[0]) / 4;
 	data.accumRedSize = accumColorSize;
 	data.accumGreenSize = accumColorSize;
 	data.accumBlueSize = accumColorSize;
 	data.accumAlphaSize = accumColorSize;
 
 	pixelFormat.getValues(value, OS.NSOpenGLPFASampleBuffers, 0);
-	data.sampleBuffers = (int/*64*/)value [0];
+	data.sampleBuffers = (int)value [0];
 	pixelFormat.getValues(value, OS.NSOpenGLPFASamples, 0);
-	data.samples = (int/*64*/)value [0];
+	data.samples = (int)value [0];
 	return data;
 }
 

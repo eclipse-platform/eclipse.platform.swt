@@ -19,7 +19,7 @@ public WebPreferences() {
 	super();
 }
 
-public WebPreferences(long /*int*/ id) {
+public WebPreferences(long id) {
 	super(id);
 }
 
@@ -36,7 +36,7 @@ public void setJavaScriptEnabled(boolean javaScriptEnabled) {
 }
 
 public static WebPreferences standardPreferences() {
-	long /*int*/ result = OS.objc_msgSend(OS.class_WebPreferences, OS.sel_standardPreferences);
+	long result = OS.objc_msgSend(OS.class_WebPreferences, OS.sel_standardPreferences);
 	return result != 0 ? new WebPreferences(result) : null;
 }
 

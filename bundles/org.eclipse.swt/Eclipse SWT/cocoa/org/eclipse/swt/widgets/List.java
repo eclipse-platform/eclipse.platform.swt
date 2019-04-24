@@ -84,7 +84,7 @@ public List (Composite parent, int style) {
 }
 
 @Override
-long /*int*/ accessibilityAttributeValue (long /*int*/ id, long /*int*/ sel, long /*int*/ arg0) {
+long accessibilityAttributeValue (long id, long sel, long arg0) {
 //	if (attributeName.isEqualToString(OS.NSAccessibilityHeaderAttribute)) {
 //		/*
 //		* Bug in the Macintosh.  Even when the header is not visible,
@@ -100,7 +100,7 @@ long /*int*/ accessibilityAttributeValue (long /*int*/ id, long /*int*/ sel, lon
 }
 
 @Override
-boolean acceptsFirstResponder (long /*int*/ id, long /*int*/ sel) {
+boolean acceptsFirstResponder (long id, long sel) {
 	return true;
 }
 
@@ -404,7 +404,7 @@ boolean dragDetect(int x, int y, boolean filter, boolean[] consume) {
 	NSPoint pt = new NSPoint();
 	pt.x = x;
 	pt.y = y;
-	long /*int*/ row = widget.rowAtPoint(pt);
+	long row = widget.rowAtPoint(pt);
 	if (row == -1) return false;
 	boolean dragging = super.dragDetect(x, y, filter, consume);
 	if (dragging) {
@@ -421,7 +421,7 @@ boolean dragDetect(int x, int y, boolean filter, boolean[] consume) {
 }
 
 @Override
-void drawBackgroundInClipRect(long /*int*/ id, long /*int*/ sel, NSRect rect) {
+void drawBackgroundInClipRect(long id, long sel, NSRect rect) {
 	super.drawViewBackgroundInRect(id, sel, rect);
 	if (id != view.id) return;
 	fillBackground (view, NSGraphicsContext.currentContext(), rect, -1);
@@ -460,7 +460,7 @@ void fixSelection (int index, boolean add) {
  */
 public int getFocusIndex () {
 	checkWidget();
-	return (int)/*64*/((NSTableView)view).selectedRow();
+	return (int)((NSTableView)view).selectedRow();
 }
 
 /**
@@ -561,12 +561,12 @@ public String [] getSelection () {
 		return new String [0];
 	}
 	NSIndexSet selection = widget.selectedRowIndexes();
-	int count = (int)/*64*/selection.count();
-	long /*int*/ [] indexBuffer = new long /*int*/ [count];
+	int count = (int)selection.count();
+	long [] indexBuffer = new long [count];
 	selection.getIndexes(indexBuffer, count, 0);
 	String [] result = new String  [count];
 	for (int i=0; i<count; i++) {
-		result [i] = items [(int)/*64*/indexBuffer [i]];
+		result [i] = items [(int)indexBuffer [i]];
 	}
 	return result;
 }
@@ -583,7 +583,7 @@ public String [] getSelection () {
  */
 public int getSelectionCount () {
 	checkWidget ();
-	return (int)/*64*/((NSTableView)view).numberOfSelectedRows();
+	return (int)((NSTableView)view).numberOfSelectedRows();
 }
 
 /**
@@ -604,10 +604,10 @@ public int getSelectionIndex () {
 		return -1;
 	}
 	NSIndexSet selection = widget.selectedRowIndexes();
-	int count = (int)/*64*/selection.count();
-	long /*int*/ [] result = new long /*int*/ [count];
+	int count = (int)selection.count();
+	long [] result = new long [count];
 	selection.getIndexes(result, count, 0);
-	return (int)/*64*/result [0];
+	return (int)result [0];
 }
 
 /**
@@ -633,12 +633,12 @@ public int [] getSelectionIndices () {
 		return new int [0];
 	}
 	NSIndexSet selection = widget.selectedRowIndexes();
-	int count = (int)/*64*/selection.count();
-	long /*int*/ [] indices = new long /*int*/ [count];
+	int count = (int)selection.count();
+	long [] indices = new long [count];
 	selection.getIndexes(indices, count, 0);
 	int [] result = new int [count];
 	for (int i = 0; i < result.length; i++) {
-		result [i] = (int)/*64*/indices [i];
+		result [i] = (int)indices [i];
 	}
 	return result;
 }
@@ -662,7 +662,7 @@ public int getTopIndex () {
 	NSPoint point = new NSPoint();
 	point.x = rect.x;
 	point.y = rect.y;
-    int result = (int)/*64*/((NSTableView)view).rowAtPoint(point);
+    int result = (int)((NSTableView)view).rowAtPoint(point);
     if (result == -1) result = 0;
     return result;
 }
@@ -748,7 +748,7 @@ public boolean isSelected (int index) {
  * clicked-on row ourselves.
  */
 @Override
-long /*int*/ menuForEvent(long /*int*/ id, long /*int*/ sel, long /*int*/ theEvent) {
+long menuForEvent(long id, long sel, long theEvent) {
 	if (display.lastHandledMenuForEventId == theEvent) return 0;
 	NSEvent event = new NSEvent(theEvent);
 	NSTableView table = (NSTableView)view;
@@ -758,7 +758,7 @@ long /*int*/ menuForEvent(long /*int*/ id, long /*int*/ sel, long /*int*/ theEve
 
 	// select the row that was clicked before showing the menu for the event
 	NSPoint mousePoint = view.convertPoint_fromView_(event.locationInWindow(), null);
-	long /*int*/ row = table.rowAtPoint(mousePoint);
+	long row = table.rowAtPoint(mousePoint);
 
 	// figure out if the row that was just clicked on is currently selected
 	if (selectedRowIndexes.containsIndex(row) == false) {
@@ -773,12 +773,12 @@ long /*int*/ menuForEvent(long /*int*/ id, long /*int*/ sel, long /*int*/ theEve
 }
 
 @Override
-void mouseDownSuper(long /*int*/ id, long /*int*/ sel, long /*int*/ theEvent) {
+void mouseDownSuper(long id, long sel, long theEvent) {
 	ignoreSelect = false;
 	NSTableView widget = (NSTableView)view;
 	NSEvent nsEvent = new NSEvent(theEvent);
 	NSPoint pt = view.convertPoint_fromView_(nsEvent.locationInWindow(), null);
-	int row = (int)/*64*/widget.rowAtPoint(pt);
+	int row = (int)widget.rowAtPoint(pt);
 	if (row != -1 && (nsEvent.modifierFlags() & OS.NSDeviceIndependentModifierFlagsMask) == 0 && nsEvent.clickCount() == 1) {
 		if (widget.isRowSelected(row) && widget.selectedRowIndexes().count() == 1) {
 			if (0 <= row && row < itemCount) {
@@ -792,12 +792,12 @@ void mouseDownSuper(long /*int*/ id, long /*int*/ sel, long /*int*/ theEvent) {
 }
 
 @Override
-boolean needsPanelToBecomeKey (long /*int*/ id, long /*int*/ sel) {
+boolean needsPanelToBecomeKey (long id, long sel) {
 	return false;
 }
 
 @Override
-long /*int*/ numberOfRowsInTableView(long /*int*/ id, long /*int*/ sel, long /*int*/ aTableView) {
+long numberOfRowsInTableView(long id, long sel, long aTableView) {
 	return itemCount;
 }
 
@@ -1142,7 +1142,7 @@ boolean sendKeyEvent (NSEvent nsEvent, int type) {
 boolean sendMouseEvent (NSEvent nsEvent, int type, boolean send) {
 	boolean handleMouseDown = true;
 	if (nsEvent != null) {
-		long /*int*/ nsType = nsEvent.type();
+		long nsType = nsEvent.type();
 		handleMouseDown = nsType == OS.NSLeftMouseDown || nsType == OS.NSLeftMouseUp;
 	}
 	if (handleMouseDown) {
@@ -1174,8 +1174,8 @@ void setBackgroundColor(NSColor nsColor) {
 @Override
 void setFont (NSFont font) {
 	super.setFont (font);
-	double /*float*/ ascent = font.ascender ();
-	double /*float*/ descent = -font.descender () + font.leading ();
+	double ascent = font.ascender ();
+	double descent = -font.descender () + font.leading ();
 	((NSTableView)view).setRowHeight ((int)Math.ceil (ascent + descent) + 1);
 	setScrollWidth();
 }
@@ -1241,7 +1241,7 @@ boolean setScrollWidth (String item) {
 	cell.setFont (font.handle);
 	cell.setTitle (NSString.stringWith (item));
 	NSSize size = cell.cellSize ();
-	double /*float*/ oldWidth = column.width ();
+	double oldWidth = column.width ();
 	if (oldWidth < size.width) {
 		column.setWidth (size.width);
 		return true;
@@ -1255,7 +1255,7 @@ boolean setScrollWidth () {
 	NSCell cell = column.dataCell ();
 	Font font = this.font != null ? this.font : defaultFont ();
 	cell.setFont (font.handle);
-	double /*float*/ width = 0;
+	double width = 0;
 	for (int i = 0; i < itemCount; i++) {
 		cell.setTitle (NSString.stringWith (items[i]));
 		NSSize size = cell.cellSize ();
@@ -1483,26 +1483,26 @@ public void showSelection () {
 }
 
 @Override
-void tableViewSelectionDidChange (long /*int*/ id, long /*int*/ sel, long /*int*/ aNotification) {
+void tableViewSelectionDidChange (long id, long sel, long aNotification) {
 	if (didSelect) return;
 	sendSelection();
 }
 
 @Override
-void tableViewSelectionIsChanging (long /*int*/ id, long /*int*/ sel, long /*int*/ aNotification) {
+void tableViewSelectionIsChanging (long id, long sel, long aNotification) {
 	didSelect = true;
 	sendSelection();
 }
 
 @Override
-long /*int*/ tableView_objectValueForTableColumn_row(long /*int*/ id, long /*int*/ sel, long /*int*/ aTableView, long /*int*/ aTableColumn, long /*int*/ rowIndex) {
-	double /*float*/ [] fg = ((NSTableView)view).isRowSelected(rowIndex) ? null : foreground;
-	NSAttributedString attribStr = createString(items[(int)/*64*/rowIndex], null, fg, SWT.LEFT, false, getEnabled(), false);
+long tableView_objectValueForTableColumn_row(long id, long sel, long aTableView, long aTableColumn, long rowIndex) {
+	double [] fg = ((NSTableView)view).isRowSelected(rowIndex) ? null : foreground;
+	NSAttributedString attribStr = createString(items[(int)rowIndex], null, fg, SWT.LEFT, false, getEnabled(), false);
 	attribStr.autorelease();
 	return attribStr.id;
 }
 
-long /*int*/ tableView_selectionIndexesForProposedSelection (long /*int*/ id, long /*int*/ sel, long /*int*/ aTableView, long /*int*/ indexSet) {
+long tableView_selectionIndexesForProposedSelection (long id, long sel, long aTableView, long indexSet) {
 	if ((style & SWT.SINGLE) != 0) {
 		/*
 		 * Feature in Cocoa.  Calling setAllowsEmptySelection will automatically select the first row of the list.

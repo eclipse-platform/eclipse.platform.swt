@@ -57,7 +57,7 @@ public class Button extends Control {
 	 */
 	private SWTView radioParent;
 
-	private static final double /*float*/ [] DEFAULT_DISABLED_FOREGROUND = new double /*float*/ [] { 0.6745f, 0.6745f, 0.6745f, 1.0f };
+	private static final double [] DEFAULT_DISABLED_FOREGROUND = new double [] { 0.6745f, 0.6745f, 0.6745f, 1.0f };
 
 	static final int EXTRA_HEIGHT = 2;
 	static final int EXTRA_WIDTH = 6;
@@ -147,7 +147,7 @@ public void addSelectionListener(SelectionListener listener) {
 }
 
 @Override
-NSSize cellSizeForBounds (long /*int*/ id, long /*int*/ sel, NSRect cellFrame) {
+NSSize cellSizeForBounds (long id, long sel, NSRect cellFrame) {
 	NSSize size = super.cellSizeForBounds(id, sel, cellFrame);
 	if (image != null && ((style & (SWT.CHECK|SWT.RADIO)) !=0)) {
 		NSSize imageSize = image.handle.size();
@@ -173,7 +173,7 @@ NSSize cellSizeForBounds (long /*int*/ id, long /*int*/ sel, NSRect cellFrame) {
 		NSAttributedString attribStr = createString(text, null, foreground, style, true, true, true);
 		NSRect rect = attribStr.boundingRectWithSize(wrapSize, OS.NSStringDrawingUsesLineFragmentOrigin);
 		attribStr.release();
-		double /*float*/ trimHeight = size.height - titleRect.height;
+		double trimHeight = size.height - titleRect.height;
 		size.height = rect.height;
 		if (image != null && ((style & (SWT.CHECK|SWT.RADIO)) !=0)) {
 			NSSize imageSize = image.handle.size();
@@ -316,7 +316,7 @@ boolean dragDetect(int x, int y, boolean filter, boolean[] consume) {
 }
 
 @Override
-void drawImageWithFrameInView (long /*int*/ id, long /*int*/ sel, long /*int*/ image, NSRect rect, long /*int*/ view) {
+void drawImageWithFrameInView (long id, long sel, long image, NSRect rect, long view) {
 	/*
 	* Feature in Cocoa.  Images touch the edge of rounded buttons
 	* when set to small size. The fix to subclass the button cell
@@ -359,7 +359,7 @@ private static NSRect smallerRect (NSRect cellFrame, double dx, double dy1, doub
 }
 
 @Override
-void drawBezelWithFrame_inView (long /*int*/ id, long /*int*/ sel, NSRect cellFrame, long /*int*/ viewid) {
+void drawBezelWithFrame_inView (long id, long sel, NSRect cellFrame, long viewid) {
 	if (this.background != null) {
 		NSButton button = (NSButton) view;
 
@@ -369,7 +369,7 @@ void drawBezelWithFrame_inView (long /*int*/ id, long /*int*/ sel, NSRect cellFr
 		final NSButtonCell defaultButtonCell = window == null ? null : window.defaultButtonCell();
 		final boolean isDefault = defaultButtonCell != null && defaultButtonCell.id == id;
 
-		double /*float*/ [] borderRGB = getLighterOrDarkerColor(this.background, 0.3, luma(background) >= 0.5);
+		double [] borderRGB = getLighterOrDarkerColor(this.background, 0.3, luma(background) >= 0.5);
 		if (isHighlighted && (style & SWT.FLAT) != 0) {
 			borderRGB = getLighterOrDarkerColor(borderRGB, 0.2, true);
 		}
@@ -398,13 +398,13 @@ void drawBezelWithFrame_inView (long /*int*/ id, long /*int*/ sel, NSRect cellFr
 			path = NSBezierPath.bezierPathWithRect(rect2);
 		}
 		if (!isHighlighted) {
-			double /*float*/ [] backgroundRGB = this.background;
+			double [] backgroundRGB = this.background;
 			NSColor backgroundNSColor = NSColor.colorWithDeviceRed(backgroundRGB[0], backgroundRGB[1], backgroundRGB[2], 1f);
 
 			if((style & SWT.FLAT) == 0) {
-				double /*float*/ [] topRGB = getLighterOrDarkerColor(this.background, 0.2, false);
+				double [] topRGB = getLighterOrDarkerColor(this.background, 0.2, false);
 				NSColor topColor = NSColor.colorWithDeviceRed(topRGB[0], topRGB[1], topRGB[2], 1f);
-				double /*float*/ [] bottomRGB = getLighterOrDarkerColor(this.background, 0.1, true);
+				double [] bottomRGB = getLighterOrDarkerColor(this.background, 0.1, true);
 				NSColor bottomColor = NSColor.colorWithDeviceRed(bottomRGB[0], bottomRGB[1], bottomRGB[2], 1f);
 
 				NSMutableArray ma = NSMutableArray.arrayWithCapacity(4);
@@ -420,7 +420,7 @@ void drawBezelWithFrame_inView (long /*int*/ id, long /*int*/ sel, NSRect cellFr
 				path.fill();
 			}
 		} else {
-			double /*float*/ [] colorRGB0 = getLighterOrDarkerColor(this.background, 0.1f, true);
+			double [] colorRGB0 = getLighterOrDarkerColor(this.background, 0.1f, true);
 			NSColor color0 = NSColor.colorWithDeviceRed(colorRGB0[0], colorRGB0[1], colorRGB0[2], 1f);
 			color0.setFill();
 			path.fill();
@@ -439,7 +439,7 @@ void drawBezelWithFrame_inView (long /*int*/ id, long /*int*/ sel, NSRect cellFr
 }
 
 @Override
-void drawInteriorWithFrame_inView (long /*int*/ id, long /*int*/ sel, NSRect cellRect, long /*int*/ viewid) {
+void drawInteriorWithFrame_inView (long id, long sel, NSRect cellRect, long viewid) {
 	if ((style & (SWT.CHECK|SWT.RADIO)) != 0 && backgroundImage != null) {
 		fillBackground (new NSView(viewid), NSGraphicsContext.currentContext(), cellRect, -1);
 	}
@@ -447,8 +447,8 @@ void drawInteriorWithFrame_inView (long /*int*/ id, long /*int*/ sel, NSRect cel
 	if (image != null && ((style & (SWT.CHECK|SWT.RADIO)) !=0)) {
 		NSSize imageSize = image.handle.size();
 		NSCell nsCell = new NSCell(id);
-		double /*float*/ x = 0;
-		double /*float*/ y = (imageSize.height - cellRect.height)/2f;
+		double x = 0;
+		double y = (imageSize.height - cellRect.height)/2f;
 		NSRect imageRect = nsCell.imageRectForBounds(cellRect);
 		NSSize stringSize = ((NSButton)view).attributedTitle().size();
 		switch (style & (SWT.LEFT|SWT.RIGHT|SWT.CENTER)) {
@@ -479,7 +479,7 @@ void drawInteriorWithFrame_inView (long /*int*/ id, long /*int*/ sel, NSRect cel
 }
 
 @Override
-NSRect drawTitleWithFrameInView (long /*int*/ id, long /*int*/ sel, long /*int*/ title, NSRect titleRect, long /*int*/ view) {
+NSRect drawTitleWithFrameInView (long id, long sel, long title, NSRect titleRect, long view) {
 	boolean wrap = (style & SWT.WRAP) != 0 && text.length() != 0;
 	boolean isEnabled = isEnabled();
 	if (wrap) {
@@ -527,7 +527,7 @@ boolean drawsBackground() {
 }
 
 @Override
-void drawWidget (long /*int*/ id, NSGraphicsContext context, NSRect rect) {
+void drawWidget (long id, NSGraphicsContext context, NSRect rect) {
 	if ((style & SWT.ARROW) != 0) {
 		NSRect frame = view.frame();
 		int arrowSize = Math.min((int)frame.height, (int)frame.width) / 2;
@@ -569,7 +569,7 @@ void drawWidget (long /*int*/ id, NSGraphicsContext context, NSRect rect) {
 }
 
 @Override
-NSRect focusRingMaskBoundsForFrame (long /*int*/ id, long /*int*/ sel, NSRect cellFrame, long /*int*/ view) {
+NSRect focusRingMaskBoundsForFrame (long id, long sel, NSRect cellFrame, long view) {
 	return cellFrame;
 }
 
@@ -696,7 +696,7 @@ boolean isDescribedByLabel () {
  * to go directly to the desired state if we have a grayed checkbox.
  */
 @Override
-long /*int*/ nextState(long /*int*/ id, long /*int*/ sel) {
+long nextState(long id, long sel) {
 	if ((style & SWT.CHECK) != 0 && grayed) {
 		return ((NSButton)view).state() == OS.NSMixedState ? OS.NSOffState : OS.NSMixedState;
 	}
@@ -876,7 +876,7 @@ void setFont (NSFont font) {
 }
 
 @Override
-void setForeground (double /*float*/ [] color) {
+void setForeground (double [] color) {
 	((NSButton)view).setAttributedTitle(createString());
 }
 
@@ -1047,7 +1047,7 @@ public void setText (String string) {
 }
 
 @Override
-NSRect titleRectForBounds (long /*int*/ id, long /*int*/ sel, NSRect cellFrame) {
+NSRect titleRectForBounds (long id, long sel, NSRect cellFrame) {
 	NSRect rect = super.titleRectForBounds(id, sel, cellFrame);
 	if (image != null && ((style & (SWT.CHECK|SWT.RADIO)) !=0)) {
 		NSSize imageSize = image.handle.size();

@@ -85,7 +85,7 @@ public Sash (Composite parent, int style) {
 }
 
 @Override
-long /*int*/ accessibilityAttributeNames(long /*int*/ id, long /*int*/ sel) {
+long accessibilityAttributeNames(long id, long sel) {
 	if (accessibilityAttributes == null) {
 		NSMutableArray ourAttributes = NSMutableArray.arrayWithCapacity(10);
 		ourAttributes.addObject(OS.NSAccessibilityRoleAttribute);
@@ -113,7 +113,7 @@ long /*int*/ accessibilityAttributeNames(long /*int*/ id, long /*int*/ sel) {
 			extraAttributes.addObject(OS.NSAccessibilityDescriptionAttribute);
 			extraAttributes.addObject(OS.NSAccessibilityTitleAttribute);
 
-			for (int i = (int)/*64*/extraAttributes.count() - 1; i >= 0; i--) {
+			for (int i = (int)extraAttributes.count() - 1; i >= 0; i--) {
 				NSString attribute = new NSString(extraAttributes.objectAtIndex(i).id);
 				if (accessible.internal_accessibilityAttributeValue(attribute, ACC.CHILDID_SELF) != null) {
 					ourAttributes.addObject(extraAttributes.objectAtIndex(i));
@@ -129,8 +129,8 @@ long /*int*/ accessibilityAttributeNames(long /*int*/ id, long /*int*/ sel) {
 }
 
 @Override
-long /*int*/ accessibilityAttributeValue(long /*int*/ id, long /*int*/ sel, long /*int*/ arg0) {
-	long /*int*/ returnValue = 0;
+long accessibilityAttributeValue(long id, long sel, long arg0) {
+	long returnValue = 0;
 	NSString attributeName = new NSString(arg0);
 
 	if (accessible != null) {
@@ -160,7 +160,7 @@ long /*int*/ accessibilityAttributeValue(long /*int*/ id, long /*int*/ sel, long
 		return NSNumber.numberWithInt(value).id;
 	} else if (attributeName.isEqualToString (OS.NSAccessibilityMaxValueAttribute)) {
 		NSRect parentFrame = parent.topView().frame();
-		double /*float*/ maxValue = (style & SWT.VERTICAL) != 0 ?
+		double maxValue = (style & SWT.VERTICAL) != 0 ?
 							parentFrame.width :
 							parentFrame.height;
 		return NSNumber.numberWithDouble(maxValue).id;
@@ -204,7 +204,7 @@ long /*int*/ accessibilityAttributeValue(long /*int*/ id, long /*int*/ sel, long
 }
 
 @Override
-boolean accessibilityIsIgnored(long /*int*/ id, long /*int*/ sel) {
+boolean accessibilityIsIgnored(long id, long sel) {
 	return false;
 }
 
@@ -250,7 +250,7 @@ static int checkStyle (int style) {
 }
 
 @Override
-boolean becomeFirstResponder (long /*int*/ id, long /*int*/ sel) {
+boolean becomeFirstResponder (long id, long sel) {
 	boolean result = super.becomeFirstResponder(id, sel);
 	NSRect frame = view.frame();
 	lastX = (int)frame.x;
@@ -281,7 +281,7 @@ void createHandle () {
 }
 
 @Override
-void drawBackground (long /*int*/ id, NSGraphicsContext context, NSRect rect) {
+void drawBackground (long id, NSGraphicsContext context, NSRect rect) {
 	if (id != view.id) return;
 	fillBackground (view, context, rect, -1);
 }
@@ -308,7 +308,7 @@ boolean sendKeyEvent(NSEvent nsEvent, int type) {
 			case 124: /* Right arrow */ {
 				int xChange = 0, yChange = 0;
 				int stepSize = PAGE_INCREMENT;
-				long /*int*/ modifiers = nsEvent.modifierFlags();
+				long modifiers = nsEvent.modifierFlags();
 				if ((modifiers & OS.NSControlKeyMask) != 0) stepSize = INCREMENT;
 				if ((style & SWT.VERTICAL) != 0) {
 					if (keyCode == 126 || keyCode == 125) break;
@@ -359,7 +359,7 @@ boolean sendKeyEvent(NSEvent nsEvent, int type) {
 }
 
 @Override
-void mouseDown(long /*int*/ id, long /*int*/ sel, long /*int*/ theEvent) {
+void mouseDown(long id, long sel, long theEvent) {
 	//TODO use sendMouseEvent
 	super.mouseDown(id, sel, theEvent);
 	if (isDisposed()) return;
@@ -386,13 +386,13 @@ void mouseDown(long /*int*/ id, long /*int*/ sel, long /*int*/ theEvent) {
 }
 
 @Override
-boolean mouseEvent (long /*int*/ id, long /*int*/ sel, long /*int*/ theEvent, int type) {
+boolean mouseEvent (long id, long sel, long theEvent, int type) {
 	super.mouseEvent (id, sel, theEvent, type);
 	return new NSEvent (theEvent).type () != OS.NSLeftMouseDown;
 }
 
 @Override
-void mouseDragged(long /*int*/ id, long /*int*/ sel, long /*int*/ theEvent) {
+void mouseDragged(long id, long sel, long theEvent) {
 	//TODO use sendMouseEvent
 	super.mouseDragged(id, sel, theEvent);
 	if (isDisposed()) return;
@@ -424,7 +424,7 @@ void mouseDragged(long /*int*/ id, long /*int*/ sel, long /*int*/ theEvent) {
 }
 
 @Override
-void mouseUp(long /*int*/ id, long /*int*/ sel, long /*int*/ theEvent) {
+void mouseUp(long id, long sel, long theEvent) {
 	//TODO use sendMouseEvent
 	super.mouseUp(id, sel, theEvent);
 	if (isDisposed()) return;
@@ -483,11 +483,11 @@ public void removeSelectionListener(SelectionListener listener) {
 }
 
 @Override
-void superKeyDown (long /*int*/ id, long /*int*/ sel, long /*int*/ theEvent) {
+void superKeyDown (long id, long sel, long theEvent) {
 }
 
 @Override
-void superKeyUp (long /*int*/ id, long /*int*/ sel, long /*int*/ theEvent) {
+void superKeyUp (long id, long sel, long theEvent) {
 }
 
 @Override

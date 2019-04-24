@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2017 IBM Corporation and others.
+ * Copyright (c) 2000, 2019 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -19,7 +19,7 @@ public NSSavePanel() {
 	super();
 }
 
-public NSSavePanel(long /*int*/ id) {
+public NSSavePanel(long id) {
 	super(id);
 }
 
@@ -28,20 +28,20 @@ public NSSavePanel(id id) {
 }
 
 public NSString filename() {
-	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_filename);
+	long result = OS.objc_msgSend(this.id, OS.sel_filename);
 	return result != 0 ? new NSString(result) : null;
 }
 
-public long /*int*/ runModal() {
+public long runModal() {
 	return OS.objc_msgSend(this.id, OS.sel_runModal);
 }
 
-public long /*int*/ runModalForDirectory(NSString path, NSString name) {
+public long runModalForDirectory(NSString path, NSString name) {
 	return OS.objc_msgSend(this.id, OS.sel_runModalForDirectory_file_, path != null ? path.id : 0, name != null ? name.id : 0);
 }
 
 public static NSSavePanel savePanel() {
-	long /*int*/ result = OS.objc_msgSend(OS.class_NSSavePanel, OS.sel_savePanel);
+	long result = OS.objc_msgSend(OS.class_NSSavePanel, OS.sel_savePanel);
 	return result != 0 ? new NSSavePanel(result) : null;
 }
 
@@ -89,11 +89,11 @@ public void validateVisibleColumns() {
 	OS.objc_msgSend(this.id, OS.sel_validateVisibleColumns);
 }
 
-public static double /*float*/ minFrameWidthWithTitle(NSString aTitle, long /*int*/ aStyle) {
-	return (double /*float*/)OS.objc_msgSend_fpret(OS.class_NSSavePanel, OS.sel_minFrameWidthWithTitle_styleMask_, aTitle != null ? aTitle.id : 0, aStyle);
+public static double minFrameWidthWithTitle(NSString aTitle, long aStyle) {
+	return OS.objc_msgSend_fpret(OS.class_NSSavePanel, OS.sel_minFrameWidthWithTitle_styleMask_, aTitle != null ? aTitle.id : 0, aStyle);
 }
 
-public static long /*int*/ windowNumberAtPoint(NSPoint point, long /*int*/ windowNumber) {
+public static long windowNumberAtPoint(NSPoint point, long windowNumber) {
 	return OS.objc_msgSend(OS.class_NSSavePanel, OS.sel_windowNumberAtPoint_belowWindowWithWindowNumber_, point, windowNumber);
 }
 

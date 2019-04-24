@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2017 IBM Corporation and others.
+ * Copyright (c) 2000, 2019 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -19,7 +19,7 @@ public NSComboBox() {
 	super();
 }
 
-public NSComboBox(long /*int*/ id) {
+public NSComboBox(long id) {
 	super(id);
 }
 
@@ -31,32 +31,32 @@ public void addItemWithObjectValue(id object) {
 	OS.objc_msgSend(this.id, OS.sel_addItemWithObjectValue_, object != null ? object.id : 0);
 }
 
-public void deselectItemAtIndex(long /*int*/ index) {
+public void deselectItemAtIndex(long index) {
 	OS.objc_msgSend(this.id, OS.sel_deselectItemAtIndex_, index);
 }
 
-public long /*int*/ indexOfSelectedItem() {
+public long indexOfSelectedItem() {
 	return OS.objc_msgSend(this.id, OS.sel_indexOfSelectedItem);
 }
 
-public void insertItemWithObjectValue(id object, long /*int*/ index) {
+public void insertItemWithObjectValue(id object, long index) {
 	OS.objc_msgSend(this.id, OS.sel_insertItemWithObjectValue_atIndex_, object != null ? object.id : 0, index);
 }
 
-public double /*float*/ itemHeight() {
-	return (double /*float*/)OS.objc_msgSend_fpret(this.id, OS.sel_itemHeight);
+public double itemHeight() {
+	return OS.objc_msgSend_fpret(this.id, OS.sel_itemHeight);
 }
 
-public id itemObjectValueAtIndex(long /*int*/ index) {
-	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_itemObjectValueAtIndex_, index);
+public id itemObjectValueAtIndex(long index) {
+	long result = OS.objc_msgSend(this.id, OS.sel_itemObjectValueAtIndex_, index);
 	return result != 0 ? new id(result) : null;
 }
 
-public long /*int*/ numberOfItems() {
+public long numberOfItems() {
 	return OS.objc_msgSend(this.id, OS.sel_numberOfItems);
 }
 
-public long /*int*/ numberOfVisibleItems() {
+public long numberOfVisibleItems() {
 	return OS.objc_msgSend(this.id, OS.sel_numberOfVisibleItems);
 }
 
@@ -64,23 +64,23 @@ public void removeAllItems() {
 	OS.objc_msgSend(this.id, OS.sel_removeAllItems);
 }
 
-public void removeItemAtIndex(long /*int*/ index) {
+public void removeItemAtIndex(long index) {
 	OS.objc_msgSend(this.id, OS.sel_removeItemAtIndex_, index);
 }
 
-public void selectItemAtIndex(long /*int*/ index) {
+public void selectItemAtIndex(long index) {
 	OS.objc_msgSend(this.id, OS.sel_selectItemAtIndex_, index);
 }
 
-public void setNumberOfVisibleItems(long /*int*/ numberOfVisibleItems) {
+public void setNumberOfVisibleItems(long numberOfVisibleItems) {
 	OS.objc_msgSend(this.id, OS.sel_setNumberOfVisibleItems_, numberOfVisibleItems);
 }
 
-public static long /*int*/ cellClass() {
+public static long cellClass() {
 	return OS.objc_msgSend(OS.class_NSComboBox, OS.sel_cellClass);
 }
 
-public static void setCellClass(long /*int*/ factoryId) {
+public static void setCellClass(long factoryId) {
 	OS.objc_msgSend(OS.class_NSComboBox, OS.sel_setCellClass_, factoryId);
 }
 

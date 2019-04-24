@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others.
+ * Copyright (c) 2000, 2019 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -19,7 +19,7 @@ public NSTextTab() {
 	super();
 }
 
-public NSTextTab(long /*int*/ id) {
+public NSTextTab(long id) {
 	super(id);
 }
 
@@ -27,16 +27,16 @@ public NSTextTab(id id) {
 	super(id);
 }
 
-public NSTextTab initWithType(long /*int*/ type, double /*float*/ loc) {
-	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_initWithType_location_, type, loc);
+public NSTextTab initWithType(long type, double loc) {
+	long result = OS.objc_msgSend(this.id, OS.sel_initWithType_location_, type, loc);
 	return result == this.id ? this : (result != 0 ? new NSTextTab(result) : null);
 }
 
-public double /*float*/ location() {
-	return (double /*float*/)OS.objc_msgSend_fpret(this.id, OS.sel_location);
+public double location() {
+	return OS.objc_msgSend_fpret(this.id, OS.sel_location);
 }
 
-public long /*int*/ tabStopType() {
+public long tabStopType() {
 	return OS.objc_msgSend(this.id, OS.sel_tabStopType);
 }
 

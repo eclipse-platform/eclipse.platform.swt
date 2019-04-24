@@ -19,7 +19,7 @@ public NSImage() {
 	super();
 }
 
-public NSImage(long /*int*/ id) {
+public NSImage(long id) {
 	super(id);
 }
 
@@ -28,7 +28,7 @@ public NSImage(id id) {
 }
 
 public NSData TIFFRepresentation() {
-	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_TIFFRepresentation);
+	long result = OS.objc_msgSend(this.id, OS.sel_TIFFRepresentation);
 	return result != 0 ? new NSData(result) : null;
 }
 
@@ -37,45 +37,45 @@ public void addRepresentation(NSImageRep imageRep) {
 }
 
 public NSImageRep bestRepresentationForDevice(NSDictionary deviceDescription) {
-	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_bestRepresentationForDevice_, deviceDescription != null ? deviceDescription.id : 0);
+	long result = OS.objc_msgSend(this.id, OS.sel_bestRepresentationForDevice_, deviceDescription != null ? deviceDescription.id : 0);
 	return result != 0 ? new NSImageRep(result) : null;
 }
 
-public void drawAtPoint(NSPoint point, NSRect fromRect, long /*int*/ op, double /*float*/ delta) {
+public void drawAtPoint(NSPoint point, NSRect fromRect, long op, double delta) {
 	OS.objc_msgSend(this.id, OS.sel_drawAtPoint_fromRect_operation_fraction_, point, fromRect, op, delta);
 }
 
-public void drawInRect(NSRect rect, NSRect fromRect, long /*int*/ op, double /*float*/ delta) {
+public void drawInRect(NSRect rect, NSRect fromRect, long op, double delta) {
 	OS.objc_msgSend(this.id, OS.sel_drawInRect_fromRect_operation_fraction_, rect, fromRect, op, delta);
 }
 
 public static NSImage imageNamed(NSString name) {
-	long /*int*/ result = OS.objc_msgSend(OS.class_NSImage, OS.sel_imageNamed_, name != null ? name.id : 0);
+	long result = OS.objc_msgSend(OS.class_NSImage, OS.sel_imageNamed_, name != null ? name.id : 0);
 	return result != 0 ? new NSImage(result) : null;
 }
 
 public NSImage initByReferencingFile(NSString fileName) {
-	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_initByReferencingFile_, fileName != null ? fileName.id : 0);
+	long result = OS.objc_msgSend(this.id, OS.sel_initByReferencingFile_, fileName != null ? fileName.id : 0);
 	return result == this.id ? this : (result != 0 ? new NSImage(result) : null);
 }
 
 public NSImage initWithContentsOfFile(NSString fileName) {
-	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_initWithContentsOfFile_, fileName != null ? fileName.id : 0);
+	long result = OS.objc_msgSend(this.id, OS.sel_initWithContentsOfFile_, fileName != null ? fileName.id : 0);
 	return result == this.id ? this : (result != 0 ? new NSImage(result) : null);
 }
 
 public NSImage initWithData(NSData data) {
-	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_initWithData_, data != null ? data.id : 0);
+	long result = OS.objc_msgSend(this.id, OS.sel_initWithData_, data != null ? data.id : 0);
 	return result == this.id ? this : (result != 0 ? new NSImage(result) : null);
 }
 
-public NSImage initWithIconRef(long /*int*/ iconRef) {
-	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_initWithIconRef_, iconRef);
+public NSImage initWithIconRef(long iconRef) {
+	long result = OS.objc_msgSend(this.id, OS.sel_initWithIconRef_, iconRef);
 	return result == this.id ? this : (result != 0 ? new NSImage(result) : null);
 }
 
 public NSImage initWithSize(NSSize aSize) {
-	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_initWithSize_, aSize);
+	long result = OS.objc_msgSend(this.id, OS.sel_initWithSize_, aSize);
 	return result == this.id ? this : (result != 0 ? new NSImage(result) : null);
 }
 
@@ -88,11 +88,11 @@ public void removeRepresentation(NSImageRep imageRep) {
 }
 
 public NSArray representations() {
-	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_representations);
+	long result = OS.objc_msgSend(this.id, OS.sel_representations);
 	return result != 0 ? new NSArray(result) : null;
 }
 
-public void setCacheMode(long /*int*/ cacheMode) {
+public void setCacheMode(long cacheMode) {
 	OS.objc_msgSend(this.id, OS.sel_setCacheMode_, cacheMode);
 }
 

@@ -19,7 +19,7 @@ public NSValue() {
 	super();
 }
 
-public NSValue(long /*int*/ id) {
+public NSValue(long id) {
 	super(id);
 }
 
@@ -27,7 +27,7 @@ public NSValue(id id) {
 	super(id);
 }
 
-public long /*int*/ objCType() {
+public long objCType() {
 	return OS.objc_msgSend(this.id, OS.sel_objCType);
 }
 
@@ -56,22 +56,22 @@ public NSSize sizeValue() {
 }
 
 public static NSValue valueWithPoint(NSPoint point) {
-	long /*int*/ result = OS.objc_msgSend(OS.class_NSValue, OS.sel_valueWithPoint_, point);
+	long result = OS.objc_msgSend(OS.class_NSValue, OS.sel_valueWithPoint_, point);
 	return result != 0 ? new NSValue(result) : null;
 }
 
 public static NSValue valueWithRange(NSRange range) {
-	long /*int*/ result = OS.objc_msgSend(OS.class_NSValue, OS.sel_valueWithRange_, range);
+	long result = OS.objc_msgSend(OS.class_NSValue, OS.sel_valueWithRange_, range);
 	return result != 0 ? new NSValue(result) : null;
 }
 
 public static NSValue valueWithRect(NSRect rect) {
-	long /*int*/ result = OS.objc_msgSend(OS.class_NSValue, OS.sel_valueWithRect_, rect);
+	long result = OS.objc_msgSend(OS.class_NSValue, OS.sel_valueWithRect_, rect);
 	return result != 0 ? new NSValue(result) : null;
 }
 
 public static NSValue valueWithSize(NSSize size) {
-	long /*int*/ result = OS.objc_msgSend(OS.class_NSValue, OS.sel_valueWithSize_, size);
+	long result = OS.objc_msgSend(OS.class_NSValue, OS.sel_valueWithSize_, size);
 	return result != 0 ? new NSValue(result) : null;
 }
 

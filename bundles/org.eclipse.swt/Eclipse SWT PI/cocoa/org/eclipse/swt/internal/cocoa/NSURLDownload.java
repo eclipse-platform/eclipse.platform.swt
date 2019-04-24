@@ -19,7 +19,7 @@ public NSURLDownload() {
 	super();
 }
 
-public NSURLDownload(long /*int*/ id) {
+public NSURLDownload(long id) {
 	super(id);
 }
 

@@ -19,7 +19,7 @@ public NSProgressIndicator() {
 	super();
 }
 
-public NSProgressIndicator(long /*int*/ id) {
+public NSProgressIndicator(long id) {
 	super(id);
 }
 
@@ -27,7 +27,7 @@ public NSProgressIndicator(id id) {
 	super(id);
 }
 
-public long /*int*/ controlSize() {
+public long controlSize() {
 	return OS.objc_msgSend(this.id, OS.sel_controlSize);
 }
 
@@ -43,7 +43,7 @@ public double minValue() {
 	return OS.objc_msgSend_fpret(this.id, OS.sel_minValue);
 }
 
-public void setControlSize(long /*int*/ controlSize) {
+public void setControlSize(long controlSize) {
 	OS.objc_msgSend(this.id, OS.sel_setControlSize_, controlSize);
 }
 

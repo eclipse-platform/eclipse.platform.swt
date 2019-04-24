@@ -339,8 +339,8 @@ void createHandle () {
 		nsMenu = widget;
 	} else {
 		nsMenu.retain();
-		long /*int*/ cls = OS.object_getClass(nsMenu.id);
-		long /*int*/ dynNSMenu_class = display.createMenuSubclass(cls, "SWTSystemMenu", true);
+		long cls = OS.object_getClass(nsMenu.id);
+		long dynNSMenu_class = display.createMenuSubclass(cls, "SWTSystemMenu", true);
 		if (cls != dynNSMenu_class) {
 			OS.object_setClass(nsMenu.id, dynNSMenu_class);
 		}
@@ -365,8 +365,8 @@ void createItem (MenuItem item, int index) {
 		}
 		item.nsItem = nsItem;
 	} else {
-		long /*int*/ cls = OS.object_getClass(nsItem.id);
-		long /*int*/ dynNSMenuItem_class = display.createMenuItemSubclass(cls, "SWTSystemMenuItem", true);
+		long cls = OS.object_getClass(nsItem.id);
+		long dynNSMenuItem_class = display.createMenuItemSubclass(cls, "SWTSystemMenuItem", true);
 		if (cls != dynNSMenuItem_class) {
 			OS.object_setClass(nsItem.id, dynNSMenuItem_class);
 		}
@@ -388,9 +388,9 @@ void createItem (MenuItem item, int index) {
 		// Sync native key equivalent to MenuItem's accelerator.
 		// The system menu on OS X only uses command and option, so it's
 		// safe to just check for those two key masks.
-		long /*int*/ keyMask = nsItem.keyEquivalentModifierMask();
+		long keyMask = nsItem.keyEquivalentModifierMask();
 		NSString keyEquivString = nsItem.keyEquivalent();
-		long /*int*/ keyEquiv = 0;
+		long keyEquiv = 0;
 		if (keyEquivString != null) {
 			keyEquiv = keyEquivString.characterAtIndex(0);
 			if ((keyMask & OS.NSCommandKeyMask) != 0) keyEquiv |= SWT.COMMAND;
@@ -788,7 +788,7 @@ public boolean isVisible () {
 }
 
 @Override
-void menu_willHighlightItem(long /*int*/ id, long /*int*/ sel, long /*int*/ menu, long /*int*/ itemID) {
+void menu_willHighlightItem(long id, long sel, long menu, long itemID) {
 	Widget widget = display.getWidget(itemID);
 	if (widget instanceof MenuItem) {
 		MenuItem item = (MenuItem)widget;
@@ -797,24 +797,24 @@ void menu_willHighlightItem(long /*int*/ id, long /*int*/ sel, long /*int*/ menu
 }
 
 @Override
-void menuNeedsUpdate(long /*int*/ id, long /*int*/ sel, long /*int*/ menu) {
+void menuNeedsUpdate(long id, long sel, long menu) {
 	//This code is intentionally commented
 	//sendEvent (SWT.Show);
 }
 
 @Override
-void menuWillOpen(long /*int*/ id, long /*int*/ sel, long /*int*/ menu) {
+void menuWillOpen(long id, long sel, long menu) {
 	visible = true;
 	sendEvent (SWT.Show);
 	if (isDisposed()) return;
-	double /*float*/ width = 0;
+	double width = 0;
 	NSAttributedString[] strs = new NSAttributedString[itemCount];
 	for (int i=0; i<itemCount; i++) {
 		MenuItem item = items [i];
 		NSMenuItem nsItem = item.nsItem;
 		strs[i] = nsItem.attributedTitle();
 		NSImage nsImage = nsItem.image();
-		double /*float*/ w = GAP;
+		double w = GAP;
 		if (strs[i] != null) {
 			w += strs[i].size().width;
 		}
@@ -834,7 +834,7 @@ void menuWillOpen(long /*int*/ id, long /*int*/ sel, long /*int*/ menu) {
 			if (length > 1) {
 				NSMenuItem nsItem = item.nsItem;
 				NSImage nsImage = nsItem.image();
-				double /*float*/ tab = width;
+				double tab = width;
 				if (nsImage != null) {
 					tab -= (nsImage.size().width + GAP);
 				}
@@ -871,7 +871,7 @@ void menuWillOpen(long /*int*/ id, long /*int*/ sel, long /*int*/ menu) {
 }
 
 @Override
-void menuDidClose(long /*int*/ id, long /*int*/ sel, long /*int*/ menu) {
+void menuDidClose(long id, long sel, long menu) {
 	sendEvent (SWT.Hide);
 	if (isDisposed()) return;
 	visible = false;

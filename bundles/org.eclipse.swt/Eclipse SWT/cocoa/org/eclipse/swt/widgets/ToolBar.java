@@ -111,7 +111,7 @@ ToolBar(Composite parent, int style, boolean internal) {
 }
 
 @Override
-long /*int*/ accessibilityAttributeValue (long /*int*/ id, long /*int*/ sel, long /*int*/ arg0) {
+long accessibilityAttributeValue (long id, long sel, long arg0) {
 	NSString nsAttributeName = new NSString(arg0);
 
 	if (id == accessibleHandle() && accessible != null) {
@@ -125,7 +125,7 @@ long /*int*/ accessibilityAttributeValue (long /*int*/ id, long /*int*/ sel, lon
 		if (nsAttributeName.isEqualToString (OS.NSAccessibilityRoleAttribute))
 			return role.id;
 		else {
-			long /*int*/ roleDescription = OS.NSAccessibilityRoleDescription(role.id, 0);
+			long roleDescription = OS.NSAccessibilityRoleDescription(role.id, 0);
 			return roleDescription;
 		}
 	} else if (nsAttributeName.isEqualToString(OS.NSAccessibilityChildrenAttribute)) {
@@ -146,7 +146,7 @@ long /*int*/ accessibilityAttributeValue (long /*int*/ id, long /*int*/ sel, lon
 }
 
 @Override
-boolean accessibilityIsIgnored(long /*int*/ id, long /*int*/ sel) {
+boolean accessibilityIsIgnored(long id, long sel) {
 	// Toolbars aren't ignored.
 	if (id == view.id) return false;
 	return super.accessibilityIsIgnored(id, sel);
@@ -326,7 +326,7 @@ void destroyItem (ToolItem item) {
 }
 
 @Override
-void drawBackground (long /*int*/ id, NSGraphicsContext context, NSRect rect) {
+void drawBackground (long id, NSGraphicsContext context, NSRect rect) {
 	if (id != view.id) return;
 	if (background != null) {
 		fillBackground (view, context, rect, -1);
@@ -495,7 +495,7 @@ public int getRowCount () {
 }
 
 @Override
-boolean hasKeyboardFocus(long /*int*/ inId) {
+boolean hasKeyboardFocus(long inId) {
 	return hasFocus();
 }
 
@@ -773,7 +773,7 @@ public void setVisible(boolean visible) {
 }
 
 @Override
-long /*int*/ toolbar_itemForItemIdentifier_willBeInsertedIntoToolbar(long /*int*/ id, long /*int*/ sel, long /*int*/ toolbar, long /*int*/ itemIdentifier, boolean flag) {
+long toolbar_itemForItemIdentifier_willBeInsertedIntoToolbar(long id, long sel, long toolbar, long itemIdentifier, boolean flag) {
 	NSString itemID = new NSString(itemIdentifier);
 	for (int j = 0; j < itemCount; j++) {
 		ToolItem item = items[j];
@@ -789,7 +789,7 @@ long /*int*/ toolbar_itemForItemIdentifier_willBeInsertedIntoToolbar(long /*int*
  * return all of the item IDs.
  */
 @Override
-long /*int*/ toolbarAllowedItemIdentifiers(long /*int*/ id, long /*int*/ sel, long /*int*/ toolbar) {
+long toolbarAllowedItemIdentifiers(long id, long sel, long toolbar) {
 	NSMutableArray array = NSMutableArray.arrayWithCapacity(itemCount);
 	for (int i = 0; i < itemCount; i++) {
 		array.addObject(items[i].nsItem.itemIdentifier());
@@ -801,7 +801,7 @@ long /*int*/ toolbarAllowedItemIdentifiers(long /*int*/ id, long /*int*/ sel, lo
  * This delegate method isn't really needed because ToolBars aren't customizable, but it's required according to the documentation.
  */
 @Override
-long /*int*/ toolbarDefaultItemIdentifiers(long /*int*/ id, long /*int*/ sel, long /*int*/ toolbar) {
+long toolbarDefaultItemIdentifiers(long id, long sel, long toolbar) {
 	return toolbarAllowedItemIdentifiers(id, sel, toolbar);
 }
 
@@ -810,7 +810,7 @@ long /*int*/ toolbarDefaultItemIdentifiers(long /*int*/ id, long /*int*/ sel, lo
  * by setSelectedItemIdentifier.
  */
 @Override
-long /*int*/ toolbarSelectableItemIdentifiers(long /*int*/ id, long /*int*/ sel, long /*int*/ toolbar) {
+long toolbarSelectableItemIdentifiers(long id, long sel, long toolbar) {
 	NSMutableArray array = NSMutableArray.arrayWithCapacity(itemCount);
 	for (int i = 0; i < itemCount; i++) {
 		if ((items[i].style & SWT.RADIO) != 0) array.addObject(items[i].nsItem.itemIdentifier());

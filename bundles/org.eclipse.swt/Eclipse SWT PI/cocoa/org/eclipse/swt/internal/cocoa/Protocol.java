@@ -19,7 +19,7 @@ public Protocol() {
 	super();
 }
 
-public Protocol(long /*int*/ id) {
+public Protocol(long id) {
 	super(id);
 }
 

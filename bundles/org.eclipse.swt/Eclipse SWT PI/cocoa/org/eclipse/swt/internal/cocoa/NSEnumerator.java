@@ -19,7 +19,7 @@ public NSEnumerator() {
 	super();
 }
 
-public NSEnumerator(long /*int*/ id) {
+public NSEnumerator(long id) {
 	super(id);
 }
 
@@ -28,7 +28,7 @@ public NSEnumerator(id id) {
 }
 
 public id nextObject() {
-	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_nextObject);
+	long result = OS.objc_msgSend(this.id, OS.sel_nextObject);
 	return result != 0 ? new id(result) : null;
 }
 

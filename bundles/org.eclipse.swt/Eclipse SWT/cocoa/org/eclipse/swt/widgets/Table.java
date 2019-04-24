@@ -80,7 +80,7 @@ public class Table extends Composite {
 	int columnCount, itemCount, lastIndexOf, sortDirection, selectedRowIndex = -1;
 	boolean ignoreSelect, fixScrollWidth, drawExpansion, didSelect, preventSelect, dragDetected;
 	Rectangle imageBounds;
-	double /*float*/ [] headerBackground, headerForeground;
+	double [] headerBackground, headerForeground;
 
 	/* Used to control drop feedback when FEEDBACK_SCROLL is set/not set */
 	boolean shouldScroll = true;
@@ -131,20 +131,20 @@ public Table (Composite parent, int style) {
 }
 
 @Override
-boolean acceptsFirstResponder (long /*int*/ id, long /*int*/ sel) {
+boolean acceptsFirstResponder (long id, long sel) {
 	return true;
 }
 
 @Override
-long /*int*/ accessibilityAttributeValue(long /*int*/ id, long /*int*/ sel, long /*int*/ arg0) {
-	long /*int*/ returnValue = 0;
+long accessibilityAttributeValue(long id, long sel, long arg0) {
+	long returnValue = 0;
 	NSString attributeName = new NSString(arg0);
 
 	// If the check column is visible, don't report it back as a column for accessibility purposes.
 	// The check column is meant to appear as a part of the first column.
 	if (attributeName.isEqualToString (OS.NSAccessibilityColumnsAttribute) || attributeName.isEqualToString(OS.NSAccessibilityVisibleColumnsAttribute)) {
 		if ((style & SWT.CHECK) != 0) {
-			long /*int*/ superValue = super.accessibilityAttributeValue(id, sel, arg0);
+			long superValue = super.accessibilityAttributeValue(id, sel, arg0);
 			if (superValue != 0) {
 				NSArray columns = new NSArray(superValue);
 				NSMutableArray columnsWithoutCheck = NSMutableArray.arrayWithCapacity(columns.count() - 1);
@@ -221,18 +221,18 @@ int calculateWidth (TableItem[] items, int index, GC gc) {
 }
 
 @Override
-NSSize cellSize (long /*int*/ id, long /*int*/ sel) {
+NSSize cellSize (long id, long sel) {
 	NSSize size = super.cellSize(id, sel);
 	NSCell cell = new NSCell(id);
 	NSImage image = cell.image();
 	if (image != null) size.width += imageBounds.width + IMAGE_GAP;
 	if (hooks(SWT.MeasureItem)) {
-		long /*int*/ [] outValue = new long /*int*/ [1];
+		long [] outValue = new long [1];
 		OS.object_getInstanceVariable(id, Display.SWT_ROW, outValue);
-		long /*int*/ rowIndex = outValue [0];
-		TableItem item = _getItem((int)/*64*/rowIndex);
+		long rowIndex = outValue [0];
+		TableItem item = _getItem((int)rowIndex);
 		OS.object_getInstanceVariable(id, Display.SWT_COLUMN, outValue);
-		long /*int*/ tableColumn = outValue[0];
+		long tableColumn = outValue[0];
 		int columnIndex = 0;
 		for (int i=0; i<columnCount; i++) {
 			if (columns [i].nsColumn.id == tableColumn) {
@@ -246,13 +246,13 @@ NSSize cellSize (long /*int*/ id, long /*int*/ sel) {
 }
 
 @Override
-boolean canDragRowsWithIndexes_atPoint(long /*int*/ id, long /*int*/ sel, long /*int*/ rowIndexes, NSPoint mouseDownPoint) {
+boolean canDragRowsWithIndexes_atPoint(long id, long sel, long rowIndexes, NSPoint mouseDownPoint) {
 	if (!super.canDragRowsWithIndexes_atPoint(id, sel, rowIndexes, mouseDownPoint)) return false;
 
 	// If the current row is not selected and the user is not attempting to modify the selection, select the row first.
 	NSTableView widget = (NSTableView)view;
-	long /*int*/ row = widget.rowAtPoint(mouseDownPoint);
-	long /*int*/ modifiers = NSApplication.sharedApplication().currentEvent().modifierFlags();
+	long row = widget.rowAtPoint(mouseDownPoint);
+	long modifiers = NSApplication.sharedApplication().currentEvent().modifierFlags();
 
 	boolean drag = (state & DRAG_DETECT) != 0 && hooks (SWT.DragDetect);
 	if (drag) {
@@ -453,7 +453,7 @@ void clearCachedWidth (TableItem[] items) {
 }
 
 @Override
-long /*int*/ columnAtPoint(long /*int*/ id, long /*int*/ sel, NSPoint point) {
+long columnAtPoint(long id, long sel, NSPoint point) {
 	if ((style & SWT.CHECK) != 0) {
 		if (point.x <= getCheckColumnWidth() && point.y < headerView.frame().height) return 1;
 	}
@@ -567,7 +567,7 @@ void createHandle () {
 		widget.addTableColumn (checkColumn);
 		checkColumn.setResizingMask(OS.NSTableColumnNoResizing);
 		checkColumn.setEditable(false);
-		long /*int*/ cls = NSButton.cellClass (); /* use our custom cell class */
+		long cls = NSButton.cellClass (); /* use our custom cell class */
 		buttonCell = new NSButtonCell (OS.class_createInstance (cls, 0));
 		buttonCell.init ();
 		checkColumn.setDataCell (buttonCell);
@@ -694,7 +694,7 @@ void deregister () {
 }
 
 @Override
-void deselectAll(long /*int*/ id, long /*int*/ sel, long /*int*/ sender) {
+void deselectAll(long id, long sel, long sender) {
 	if (preventSelect && !ignoreSelect) return;
 	if ((style & SWT.SINGLE) != 0 && !ignoreSelect) {
 		if ( ((NSTableView)view).selectedRow() != -1) return;
@@ -703,7 +703,7 @@ void deselectAll(long /*int*/ id, long /*int*/ sel, long /*int*/ sender) {
 }
 
 @Override
-void deselectRow (long /*int*/ id, long /*int*/ sel, long /*int*/ index) {
+void deselectRow (long id, long sel, long index) {
 	if (preventSelect && !ignoreSelect) return;
 	if ((style & SWT.SINGLE) != 0 && !ignoreSelect) {
 		if ( ((NSTableView)view).selectedRow() == index) return;
@@ -896,9 +896,9 @@ void destroyItem (TableColumn column) {
 	}
 
 	NSArray array = ((NSTableView)view).tableColumns ();
-	int arraySize = (int)/*64*/array.count ();
+	int arraySize = (int)array.count ();
 	for (int i = oldIndex; i < arraySize; i++) {
-		long /*int*/ columnId = array.objectAtIndex (i).id;
+		long columnId = array.objectAtIndex (i).id;
 		for (int j = 0; j < columnCount; j++) {
 			if (columns[j].nsColumn.id == columnId) {
 				columns [j].sendEvent (SWT.Move);
@@ -928,14 +928,14 @@ boolean dragDetect(int x, int y, boolean filter, boolean[] consume) {
 }
 
 @Override
-void drawBackgroundInClipRect(long /*int*/ id, long /*int*/ sel, NSRect rect) {
+void drawBackgroundInClipRect(long id, long sel, NSRect rect) {
 	super.drawViewBackgroundInRect(id, sel, rect);
 	if (id != view.id) return;
 	fillBackground (view, NSGraphicsContext.currentContext(), rect, -1);
 }
 
 @Override
-void drawInteriorWithFrame_inView (long /*int*/ id, long /*int*/ sel, NSRect rect, long /*int*/ view) {
+void drawInteriorWithFrame_inView (long id, long sel, NSRect rect, long view) {
 	boolean hooksErase = hooks (SWT.EraseItem);
 	boolean hooksPaint = hooks (SWT.PaintItem);
 	boolean hooksMeasure = hooks (SWT.MeasureItem);
@@ -943,13 +943,13 @@ void drawInteriorWithFrame_inView (long /*int*/ id, long /*int*/ sel, NSRect rec
 	NSTextFieldCell cell = new NSTextFieldCell (id);
 
 	NSTableView widget = (NSTableView)this.view;
-	long /*int*/ [] outValue = new long /*int*/ [1];
+	long [] outValue = new long [1];
 	OS.object_getInstanceVariable(id, Display.SWT_ROW, outValue);
-	long /*int*/ rowIndex = outValue [0];
-	TableItem item = _getItem((int)/*64*/rowIndex);
+	long rowIndex = outValue [0];
+	TableItem item = _getItem((int)rowIndex);
 	OS.object_getInstanceVariable(id, Display.SWT_COLUMN, outValue);
-	long /*int*/ tableColumn = outValue[0];
-	long /*int*/ nsColumnIndex = widget.tableColumns().indexOfObjectIdenticalTo(new id(tableColumn));
+	long tableColumn = outValue[0];
+	long nsColumnIndex = widget.tableColumns().indexOfObjectIdenticalTo(new id(tableColumn));
 	int columnIndex = 0;
 	for (int i=0; i<columnCount; i++) {
 		if (columns [i].nsColumn.id == tableColumn) {
@@ -986,7 +986,7 @@ void drawInteriorWithFrame_inView (long /*int*/ id, long /*int*/ sel, NSRect rec
 		NSRect rowRect = widget.rectOfRow (rowIndex);
 		cellRect.width = rowRect.width;
 	}
-	double /*float*/ offsetX = 0, offsetY = 0;
+	double offsetX = 0, offsetY = 0;
 	if (hooksPaint || hooksErase) {
 		NSRect frameCell = widget.frameOfCellAtColumn(nsColumnIndex, rowIndex);
 		offsetX = rect.x - frameCell.x;
@@ -1067,7 +1067,7 @@ void drawInteriorWithFrame_inView (long /*int*/ id, long /*int*/ sel, NSRect rec
 
 	if (drawBackground && !drawSelection) {
 		context.saveGraphicsState ();
-		double /*float*/ [] colorRGB = background.handle;
+		double [] colorRGB = background.handle;
 		NSColor color = NSColor.colorWithDeviceRed (colorRGB[0], colorRGB[1], colorRGB[2], 1f);
 		color.setFill ();
 		NSBezierPath.fillRect (cellRect);
@@ -1101,7 +1101,7 @@ void drawInteriorWithFrame_inView (long /*int*/ id, long /*int*/ sel, NSRect rec
 			* foreground color to black when the cell is highlighted. The text
 			* still draws white.  The fix is to draw the text and not call super.
 			*/
-			double /*float*/ [] color = userForeground.handle;
+			double [] color = userForeground.handle;
 			if (color[0] == 0 && color[1] == 0 && color[2] == 0 && color[3] == 1) {
 				NSMutableAttributedString newStr = new NSMutableAttributedString(cell.attributedStringValue().mutableCopy());
 				NSRange range = new NSRange();
@@ -1185,14 +1185,14 @@ void drawInteriorWithFrame_inView (long /*int*/ id, long /*int*/ sel, NSRect rec
 }
 
 @Override
-void drawWithExpansionFrame_inView (long /*int*/ id, long /*int*/ sel, NSRect cellFrame, long /*int*/ view) {
+void drawWithExpansionFrame_inView (long id, long sel, NSRect cellFrame, long view) {
 	drawExpansion = true;
 	super.drawWithExpansionFrame_inView(id, sel, cellFrame, view);
 	drawExpansion = false;
 }
 
 @Override
-void drawRect(long /*int*/ id, long /*int*/ sel, NSRect rect) {
+void drawRect(long id, long sel, NSRect rect) {
 	fixScrollWidth = false;
 	super.drawRect(id, sel, rect);
 	if (isDisposed ()) return;
@@ -1203,7 +1203,7 @@ void drawRect(long /*int*/ id, long /*int*/ sel, NSRect rect) {
 }
 
 @Override
-NSRect expansionFrameWithFrame_inView(long /*int*/ id, long /*int*/ sel, NSRect cellRect, long /*int*/ view) {
+NSRect expansionFrameWithFrame_inView(long id, long sel, NSRect cellRect, long view) {
 	if (toolTipText == null) {
 		NSRect rect = super.expansionFrameWithFrame_inView(id, sel, cellRect, view);
 		NSCell cell = new NSCell(id);
@@ -1252,7 +1252,7 @@ Widget findTooltip (NSPoint pt) {
 	NSTableHeaderView headerView = widget.headerView();
 	if (headerView != null) {
 		pt = headerView.convertPoint_fromView_ (pt, null);
-		long /*int*/ index = headerView.columnAtPoint (pt);
+		long index = headerView.columnAtPoint (pt);
 		if (index != -1) {
 			NSArray nsColumns = widget.tableColumns ();
 			id nsColumn = nsColumns.objectAtIndex (index);
@@ -1595,7 +1595,7 @@ public TableItem getItem (Point point) {
 	NSPoint pt = new NSPoint();
 	pt.x = point.x;
 	pt.y = point.y;
-	int row = (int)/*64*/widget.rowAtPoint(pt);
+	int row = (int)widget.rowAtPoint(pt);
 	if (row == -1) return null;
 	return items[row];
 }
@@ -1706,12 +1706,12 @@ public TableItem [] getSelection () {
 		return new TableItem [0];
 	}
 	NSIndexSet selection = widget.selectedRowIndexes();
-	int count = (int)/*64*/selection.count();
-	long /*int*/ [] indexBuffer = new long /*int*/ [count];
+	int count = (int)selection.count();
+	long [] indexBuffer = new long [count];
 	selection.getIndexes(indexBuffer, count, 0);
 	TableItem [] result = new TableItem  [count];
 	for (int i=0; i<count; i++) {
-		result [i] = _getItem ((int)/*64*/indexBuffer [i]);
+		result [i] = _getItem ((int)indexBuffer [i]);
 	}
 	return result;
 }
@@ -1728,7 +1728,7 @@ public TableItem [] getSelection () {
  */
 public int getSelectionCount () {
 	checkWidget ();
-	return (int)/*64*/((NSTableView)view).numberOfSelectedRows();
+	return (int)((NSTableView)view).numberOfSelectedRows();
 }
 
 /**
@@ -1749,10 +1749,10 @@ public int getSelectionIndex () {
 		return -1;
 	}
 	NSIndexSet selection = widget.selectedRowIndexes();
-	int count = (int)/*64*/selection.count();
-	long /*int*/ [] result = new long /*int*/ [count];
+	int count = (int)selection.count();
+	long [] result = new long [count];
 	selection.getIndexes(result, count, 0);
-	return (int)/*64*/result [0];
+	return (int)result [0];
 }
 
 /**
@@ -1778,12 +1778,12 @@ public int [] getSelectionIndices () {
 		return new int [0];
 	}
 	NSIndexSet selection = widget.selectedRowIndexes();
-	int count = (int)/*64*/selection.count();
-	long /*int*/ [] indices = new long /*int*/ [count];
+	int count = (int)selection.count();
+	long [] indices = new long [count];
 	selection.getIndexes(indices, count, 0);
 	int [] result = new int [count];
 	for (int i = 0; i < indices.length; i++) {
-		result [i] = (int)/*64*/indices [i];
+		result [i] = (int)indices [i];
 	}
 	return result;
 }
@@ -1861,13 +1861,13 @@ public int getTopIndex () {
 			point.y += height;
 		}
 	}
-	int /*64*/ rowAtPoint = (int)/*64*/((NSTableView)view).rowAtPoint(point);
+	int /*64*/ rowAtPoint = (int)((NSTableView)view).rowAtPoint(point);
 	if (rowAtPoint == -1) return 0; /* Empty table */
 	return rowAtPoint;
 }
 
 @Override
-NSRect headerRectOfColumn (long /*int*/ id, long /*int*/ sel, long /*int*/ column) {
+NSRect headerRectOfColumn (long id, long sel, long column) {
 	if ((style & SWT.CHECK) == 0) return callSuperRect(id, sel, column);
 
 	if (column == 0) {
@@ -1886,7 +1886,7 @@ NSRect headerRectOfColumn (long /*int*/ id, long /*int*/ sel, long /*int*/ colum
 }
 
 @Override
-void highlightSelectionInClipRect(long /*int*/ id, long /*int*/ sel, long /*int*/ rect) {
+void highlightSelectionInClipRect(long id, long sel, long rect) {
 	if (hooks (SWT.EraseItem)) return;
 	if ((style & SWT.HIDE_SELECTION) != 0 && !hasFocus()) return;
 	NSRect clipRect = new NSRect ();
@@ -1895,7 +1895,7 @@ void highlightSelectionInClipRect(long /*int*/ id, long /*int*/ sel, long /*int*
 }
 
 @Override
-long /*int*/ hitTestForEvent (long /*int*/ id, long /*int*/ sel, long /*int*/ event, NSRect rect, long /*int*/ controlView) {
+long hitTestForEvent (long id, long sel, long event, NSRect rect, long controlView) {
 	/*
 	* For some reason, the cell class needs to implement hitTestForEvent:inRect:ofView:,
 	* otherwise the double action selector is not called properly.
@@ -1904,14 +1904,14 @@ long /*int*/ hitTestForEvent (long /*int*/ id, long /*int*/ sel, long /*int*/ ev
 }
 
 @Override
-long /*int*/ image (long /*int*/ id, long /*int*/ sel) {
-	long /*int*/ [] image = new long /*int*/ [1];
+long image (long id, long sel) {
+	long [] image = new long [1];
 	OS.object_getInstanceVariable(id, Display.SWT_IMAGE, image);
 	return image[0];
 }
 
 @Override
-NSRect imageRectForBounds (long /*int*/ id, long /*int*/ sel, NSRect cellFrame) {
+NSRect imageRectForBounds (long id, long sel, NSRect cellFrame) {
 	NSImage image = new NSCell(id).image();
 	if (image != null) {
 		cellFrame.x += IMAGE_GAP;
@@ -1922,7 +1922,7 @@ NSRect imageRectForBounds (long /*int*/ id, long /*int*/ sel, NSRect cellFrame) 
 }
 
 int indexOf (NSTableColumn column) {
-	return (int)/*64*/((NSTableView)view).tableColumns().indexOfObjectIdenticalTo(column);
+	return (int)((NSTableView)view).tableColumns().indexOfObjectIdenticalTo(column);
 }
 
 /**
@@ -2013,7 +2013,7 @@ boolean isTransparent() {
 }
 
 @Override
-void keyDown(long /*int*/ id, long /*int*/ sel, long /*int*/ theEvent) {
+void keyDown(long id, long sel, long theEvent) {
 	ignoreSelect = preventSelect = false;
 	super.keyDown(id, sel, theEvent);
 }
@@ -2025,7 +2025,7 @@ boolean isTrim (NSView view) {
 }
 
 @Override
-long /*int*/ menuForEvent(long /*int*/ id, long /*int*/ sel, long /*int*/ theEvent) {
+long menuForEvent(long id, long sel, long theEvent) {
 	if (display.lastHandledMenuForEventId == theEvent) return 0;
 	if (id != headerView.id) {
 		/*
@@ -2041,7 +2041,7 @@ long /*int*/ menuForEvent(long /*int*/ id, long /*int*/ sel, long /*int*/ theEve
 
 		// select the row that was clicked before showing the menu for the event
 		NSPoint mousePoint = view.convertPoint_fromView_(event.locationInWindow(), null);
-		long /*int*/ row = table.rowAtPoint(mousePoint);
+		long row = table.rowAtPoint(mousePoint);
 
 		// figure out if the row that was just clicked on is currently selected
 		if (selectedRowIndexes.containsIndex(row) == false) {
@@ -2056,7 +2056,7 @@ long /*int*/ menuForEvent(long /*int*/ id, long /*int*/ sel, long /*int*/ theEve
 }
 
 @Override
-void mouseDown (long /*int*/ id, long /*int*/ sel, long /*int*/ theEvent) {
+void mouseDown (long id, long sel, long theEvent) {
 	if (id == view.id) {
 		// Bug/feature in Cocoa:  If the table has a context menu we just set it visible instead of returning
 		// it from menuForEvent:.  This has the side effect, however, of sending control-click to the NSTableView,
@@ -2069,15 +2069,15 @@ void mouseDown (long /*int*/ id, long /*int*/ sel, long /*int*/ theEvent) {
 }
 
 @Override
-void mouseDownSuper(long /*int*/ id, long /*int*/ sel, long /*int*/ theEvent) {
+void mouseDownSuper(long id, long sel, long theEvent) {
 	ignoreSelect = preventSelect = false;
 	boolean check = false;
 	NSEvent nsEvent = new NSEvent(theEvent);
 	NSTableView widget = (NSTableView)view;
 	NSPoint pt = view.convertPoint_fromView_(nsEvent.locationInWindow(), null);
-	int row = (int)/*64*/widget.rowAtPoint(pt);
+	int row = (int)widget.rowAtPoint(pt);
 	if (row != -1 && (style & SWT.CHECK) != 0) {
-		int column = (int)/*64*/widget.columnAtPoint(pt);
+		int column = (int)widget.columnAtPoint(pt);
 		NSCell cell = widget.preparedCellAtColumn(column, row);
 		if (cell != null && cell.isKindOfClass(OS.class_NSButtonCell) && cell.isEnabled()) {
 			NSRect checkRect = cell.imageRectForBounds(widget.frameOfCellAtColumn(column, row));
@@ -2099,7 +2099,7 @@ void mouseDownSuper(long /*int*/ id, long /*int*/ sel, long /*int*/ theEvent) {
 }
 
 @Override
-boolean needsPanelToBecomeKey (long /*int*/ id, long /*int*/ sel) {
+boolean needsPanelToBecomeKey (long id, long sel) {
 	return false;
 }
 
@@ -2110,10 +2110,10 @@ boolean needsPanelToBecomeKey (long /*int*/ id, long /*int*/ sel) {
  * override [NSCell nextState] to go directly to the desired state.
  */
 @Override
-long /*int*/ nextState (long /*int*/ id, long /*int*/ sel) {
+long nextState (long id, long sel) {
 	NSTableView tableView = (NSTableView)view;
-	int index = (int)/*64*/tableView.clickedRow();
-	if (index == -1) index = (int)/*64*/tableView.selectedRow ();
+	int index = (int)tableView.clickedRow();
+	if (index == -1) index = (int)tableView.selectedRow ();
 	TableItem item = items[index];
 	if (item.grayed) {
 		return item.checked ? OS.NSOffState : OS.NSMixedState;
@@ -2122,7 +2122,7 @@ long /*int*/ nextState (long /*int*/ id, long /*int*/ sel) {
 }
 
 @Override
-long /*int*/ numberOfRowsInTableView(long /*int*/ id, long /*int*/ sel, long /*int*/ aTableView) {
+long numberOfRowsInTableView(long id, long sel, long aTableView) {
 	return itemCount;
 }
 
@@ -2374,7 +2374,7 @@ void reskinChildren (int flags) {
 }
 
 @Override
-void scrollClipViewToPoint(long /*int*/ id, long /*int*/ sel, long /*int*/ clipView, NSPoint point) {
+void scrollClipViewToPoint(long id, long sel, long clipView, NSPoint point) {
 	if (shouldScroll) {
 		super.scrollClipViewToPoint(id, sel, clipView, point);
 		if ((style & SWT.CHECK) != 0 && columnCount > 0 && ((NSTableView)view).headerView() != null) {
@@ -2645,7 +2645,7 @@ public void setHeaderBackground (Color color) {
 	if (color != null) {
 		if (color.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
 	}
-	double /*float*/ [] headerBackground = color != null ? color.handle : null;
+	double [] headerBackground = color != null ? color.handle : null;
 	if (equals (headerBackground, this.headerBackground)) return;
 	this.headerBackground = headerBackground;
 	if (getHeaderVisible()) {
@@ -2677,7 +2677,7 @@ public void setHeaderForeground (Color color) {
 	if (color != null) {
 		if (color.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
 	}
-	double /*float*/ [] headerForeground = color != null ? color.handle : null;
+	double [] headerForeground = color != null ? color.handle : null;
 	if (equals (headerForeground, this.headerForeground)) return;
 	this.headerForeground = headerForeground;
 	if (getHeaderVisible()) {
@@ -2708,7 +2708,7 @@ public void setHeaderVisible (boolean show) {
 }
 
 @Override
-void setImage (long /*int*/ id, long /*int*/ sel, long /*int*/ arg0) {
+void setImage (long id, long sel, long arg0) {
 	OS.object_setInstanceVariable(id, Display.SWT_IMAGE, arg0);
 }
 
@@ -2766,8 +2766,8 @@ public void setItemCount (int count) {
 
 void setItemHeight (Image image, NSFont font, boolean set) {
 	if (font == null) font = getFont ().handle;
-	double /*float*/ ascent = font.ascender ();
-	double /*float*/ descent = -font.descender () + font.leading ();
+	double ascent = font.ascender ();
+	double descent = -font.descender () + font.leading ();
 	int height = (int)Math.ceil (ascent + descent) + 1;
 	Rectangle bounds = image != null ? image.getBounds () : imageBounds;
 	if (bounds != null) {
@@ -3036,7 +3036,7 @@ public void setSelection (TableItem [] items) {
 }
 
 @Override
-void setShouldScrollClipView(long /*int*/ id, long /*int*/ sel, boolean shouldScroll) {
+void setShouldScrollClipView(long id, long sel, boolean shouldScroll) {
 	this.shouldScroll = shouldScroll;
 }
 
@@ -3223,7 +3223,7 @@ public void showSelection () {
 }
 
 @Override
-void selectRowIndexes_byExtendingSelection (long /*int*/ id, long /*int*/ sel, long /*int*/ indexes, boolean extend) {
+void selectRowIndexes_byExtendingSelection (long id, long sel, long indexes, boolean extend) {
 	if (preventSelect && !ignoreSelect) return;
 	if ((style & SWT.SINGLE) != 0 && !ignoreSelect) {
 		NSIndexSet set = new NSIndexSet(indexes);
@@ -3235,12 +3235,12 @@ void selectRowIndexes_byExtendingSelection (long /*int*/ id, long /*int*/ sel, l
 @Override
 void sendDoubleSelection() {
 	NSTableView tableView = (NSTableView)view;
-	int rowIndex = (int)/*64*/tableView.clickedRow ();
-	if (rowIndex == -1) rowIndex = (int)/*64*/tableView.selectedRow();
+	int rowIndex = (int)tableView.clickedRow ();
+	if (rowIndex == -1) rowIndex = (int)tableView.selectedRow();
 	if (rowIndex != -1) {
 		if ((style & SWT.CHECK) != 0) {
 			NSArray columns = tableView.tableColumns ();
-			int columnIndex = (int)/*64*/tableView.clickedColumn ();
+			int columnIndex = (int)tableView.clickedColumn ();
 			if (columnIndex != -1) {
 				id column = columns.objectAtIndex (columnIndex);
 				if (column.id == checkColumn.id) return;
@@ -3304,7 +3304,7 @@ void sendMeasureItem (TableItem item, int columnIndex, NSSize size, boolean isSe
 }
 
 @Override
-void tableViewColumnDidMove (long /*int*/ id, long /*int*/ sel, long /*int*/ aNotification) {
+void tableViewColumnDidMove (long id, long sel, long aNotification) {
 	NSNotification notification = new NSNotification (aNotification);
 	NSDictionary userInfo = notification.userInfo ();
 	NSString nsstring = (NSString) new NSString().alloc();
@@ -3333,7 +3333,7 @@ void tableViewColumnDidMove (long /*int*/ id, long /*int*/ sel, long /*int*/ aNo
 }
 
 @Override
-void tableViewColumnDidResize (long /*int*/ id, long /*int*/ sel, long /*int*/ aNotification) {
+void tableViewColumnDidResize (long id, long sel, long aNotification) {
 	NSNotification notification = new NSNotification (aNotification);
 	NSDictionary userInfo = notification.userInfo ();
 	NSString nsstring = (NSString) new NSString().alloc();
@@ -3351,7 +3351,7 @@ void tableViewColumnDidResize (long /*int*/ id, long /*int*/ sel, long /*int*/ a
 	if (index == -1) return; /* column was disposed in Resize callback */
 
 	NSArray nsColumns = tableView.tableColumns ();
-	int columnCount = (int)/*64*/tableView.numberOfColumns ();
+	int columnCount = (int)tableView.numberOfColumns ();
 	for (int i = index + 1; i < columnCount; i++) {
 		columnId = nsColumns.objectAtIndex (i);
 		column = getColumn (columnId);
@@ -3366,7 +3366,7 @@ void tableViewColumnDidResize (long /*int*/ id, long /*int*/ sel, long /*int*/ a
 void sendSelection () {
 	if (ignoreSelect) return;
 	NSTableView widget = (NSTableView) view;
-	int row = (int)/*64*/widget.selectedRow ();
+	int row = (int)widget.selectedRow ();
 	if(row == -1)
 		sendSelectionEvent (SWT.Selection);
 	else {
@@ -3379,27 +3379,27 @@ void sendSelection () {
 }
 
 @Override
-void tableViewSelectionDidChange (long /*int*/ id, long /*int*/ sel, long /*int*/ aNotification) {
+void tableViewSelectionDidChange (long id, long sel, long aNotification) {
 	if (didSelect) return;
 	sendSelection();
 }
 
 @Override
-void tableViewSelectionIsChanging (long /*int*/ id, long /*int*/ sel, long /*int*/ aNotification) {
+void tableViewSelectionIsChanging (long id, long sel, long aNotification) {
 	didSelect = true;
 	sendSelection();
 }
 
 @Override
-void tableView_didClickTableColumn (long /*int*/ id, long /*int*/ sel, long /*int*/ tableView, long /*int*/ tableColumn) {
+void tableView_didClickTableColumn (long id, long sel, long tableView, long tableColumn) {
 	TableColumn column = getColumn (new id (tableColumn));
 	if (column == null) return; /* either CHECK column or firstColumn in 0-column Table */
 	column.sendSelectionEvent (SWT.Selection);
 }
 
 @Override
-long /*int*/ tableView_objectValueForTableColumn_row (long /*int*/ id, long /*int*/ sel, long /*int*/ aTableView, long /*int*/ aTableColumn, long /*int*/ rowIndex) {
-	int index = (int)/*64*/rowIndex;
+long tableView_objectValueForTableColumn_row (long id, long sel, long aTableView, long aTableColumn, long rowIndex) {
+	int index = (int)rowIndex;
 	TableItem item = _getItem (index);
 	checkData (item, index);
 	if (checkColumn != null && aTableColumn == checkColumn.id) {
@@ -3420,7 +3420,7 @@ long /*int*/ tableView_objectValueForTableColumn_row (long /*int*/ id, long /*in
 }
 
 @Override
-boolean tableView_shouldReorderColumn_toColumn(long /*int*/ id, long /*int*/ sel, long /*int*/ aTableView, long /*int*/ currentColIndex, long /*int*/ newColIndex) {
+boolean tableView_shouldReorderColumn_toColumn(long id, long sel, long aTableView, long currentColIndex, long newColIndex) {
 	// Check column should never move and no column can be dragged to the left of it, if present.
 	if ((style & SWT.CHECK) != 0) {
 		if (currentColIndex == 0) return false;
@@ -3439,7 +3439,7 @@ boolean tableView_shouldReorderColumn_toColumn(long /*int*/ id, long /*int*/ sel
 }
 
 @Override
-boolean tableView_shouldTrackCell_forTableColumn_row(long /*int*/ id, long /*int*/ sel, long /*int*/ table, long /*int*/ cell, /*long*/ long /*int*/ tableColumn, long /*int*/ rowIndex) {
+boolean tableView_shouldTrackCell_forTableColumn_row(long id, long sel, long table, long cell, /*long*/ long tableColumn, long rowIndex) {
 	if ((style & SWT.CHECK) != 0) {
 		if (new NSCell(cell).isKindOfClass(OS.class_NSButtonCell)) return true;
 	}
@@ -3448,23 +3448,23 @@ boolean tableView_shouldTrackCell_forTableColumn_row(long /*int*/ id, long /*int
 }
 
 @Override
-void tableView_setObjectValue_forTableColumn_row (long /*int*/ id, long /*int*/ sel, long /*int*/ aTableView, long /*int*/ anObject, long /*int*/ aTableColumn, long /*int*/ rowIndex) {
+void tableView_setObjectValue_forTableColumn_row (long id, long sel, long aTableView, long anObject, long aTableColumn, long rowIndex) {
 	if (checkColumn != null && aTableColumn == checkColumn.id)  {
-		TableItem item = items [(int)/*64*/rowIndex];
+		TableItem item = items [(int)rowIndex];
 		item.checked = !item.checked;
 		Event event = new Event ();
 		event.detail = SWT.CHECK;
 		event.item = item;
-		event.index = (int)/*64*/rowIndex;
+		event.index = (int)rowIndex;
 		sendSelectionEvent (SWT.Selection, event, false);
 		item.redraw (-1);
 	}
 }
 
 @Override
-void tableView_willDisplayCell_forTableColumn_row (long /*int*/ id, long /*int*/ sel, long /*int*/ aTableView, long /*int*/ cell, long /*int*/ tableColumn, long /*int*/ rowIndex) {
+void tableView_willDisplayCell_forTableColumn_row (long id, long sel, long aTableView, long cell, long tableColumn, long rowIndex) {
 	if (checkColumn != null && tableColumn == checkColumn.id) return;
-	TableItem item = items [(int)/*64*/rowIndex];
+	TableItem item = items [(int)rowIndex];
 	int index = 0;
 	for (int i=0; i<columnCount; i++) {
 		if (columns [i].nsColumn.id == tableColumn) {
@@ -3528,7 +3528,7 @@ void tableView_willDisplayCell_forTableColumn_row (long /*int*/ id, long /*int*/
 }
 
 @Override
-boolean tableView_writeRowsWithIndexes_toPasteboard(long /*int*/ id, long /*int*/ sel, long /*int*/ arg0, long /*int*/ arg1, long /*int*/ arg2) {
+boolean tableView_writeRowsWithIndexes_toPasteboard(long id, long sel, long arg0, long arg1, long arg2) {
 	return sendMouseEvent(NSApplication.sharedApplication().currentEvent(), SWT.DragDetect, true);
 }
 
@@ -3545,8 +3545,8 @@ boolean sendMouseEvent(NSEvent nsEvent, int type, boolean send) {
 		if (!dragDetected && selectedRowIndex != -1) {
 			NSTableView widget = (NSTableView)view;
 			NSIndexSet selectedRows = widget.selectedRowIndexes ();
-			int count = (int)/*64*/selectedRows.count();
-			long /*int*/ [] indexBuffer = new long /*int*/ [count];
+			int count = (int)selectedRows.count();
+			long [] indexBuffer = new long [count];
 			selectedRows.getIndexes(indexBuffer, count, 0);
 			for (int i = 0; i < count; i++) {
 				if (indexBuffer[i] == selectedRowIndex) continue;
@@ -3556,7 +3556,7 @@ boolean sendMouseEvent(NSEvent nsEvent, int type, boolean send) {
 			}
 
 			Event event = new Event ();
-			event.item = _getItem ((int)/*64*/selectedRowIndex);
+			event.item = _getItem ((int)selectedRowIndex);
 			selectedRowIndex = -1;
 			sendSelectionEvent (SWT.Selection, event, false);
 			ignoreSelect = true;
@@ -3568,7 +3568,7 @@ boolean sendMouseEvent(NSEvent nsEvent, int type, boolean send) {
 }
 
 @Override
-NSRect titleRectForBounds (long /*int*/ id, long /*int*/ sel, NSRect cellFrame) {
+NSRect titleRectForBounds (long id, long sel, NSRect cellFrame) {
 	NSImage image = new NSCell(id).image();
 	if (image != null) {
 		int imageWidth = imageBounds.width + IMAGE_GAP;

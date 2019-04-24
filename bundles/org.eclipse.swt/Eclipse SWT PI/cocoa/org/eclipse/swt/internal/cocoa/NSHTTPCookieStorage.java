@@ -19,7 +19,7 @@ public NSHTTPCookieStorage() {
 	super();
 }
 
-public NSHTTPCookieStorage(long /*int*/ id) {
+public NSHTTPCookieStorage(long id) {
 	super(id);
 }
 
@@ -28,12 +28,12 @@ public NSHTTPCookieStorage(id id) {
 }
 
 public NSArray cookies() {
-	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_cookies);
+	long result = OS.objc_msgSend(this.id, OS.sel_cookies);
 	return result != 0 ? new NSArray(result) : null;
 }
 
 public NSArray cookiesForURL(NSURL URL) {
-	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_cookiesForURL_, URL != null ? URL.id : 0);
+	long result = OS.objc_msgSend(this.id, OS.sel_cookiesForURL_, URL != null ? URL.id : 0);
 	return result != 0 ? new NSArray(result) : null;
 }
 
@@ -46,7 +46,7 @@ public void setCookie(NSHTTPCookie cookie) {
 }
 
 public static NSHTTPCookieStorage sharedHTTPCookieStorage() {
-	long /*int*/ result = OS.objc_msgSend(OS.class_NSHTTPCookieStorage, OS.sel_sharedHTTPCookieStorage);
+	long result = OS.objc_msgSend(OS.class_NSHTTPCookieStorage, OS.sel_sharedHTTPCookieStorage);
 	return result != 0 ? new NSHTTPCookieStorage(result) : null;
 }
 

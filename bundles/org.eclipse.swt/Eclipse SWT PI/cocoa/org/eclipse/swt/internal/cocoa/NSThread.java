@@ -19,7 +19,7 @@ public NSThread() {
 	super();
 }
 
-public NSThread(long /*int*/ id) {
+public NSThread(long id) {
 	super(id);
 }
 
@@ -28,7 +28,7 @@ public NSThread(id id) {
 }
 
 public static NSThread currentThread() {
-	long /*int*/ result = OS.objc_msgSend(OS.class_NSThread, OS.sel_currentThread);
+	long result = OS.objc_msgSend(OS.class_NSThread, OS.sel_currentThread);
 	return result != 0 ? new NSThread(result) : null;
 }
 
@@ -37,7 +37,7 @@ public static boolean isMainThread() {
 }
 
 public NSMutableDictionary threadDictionary() {
-	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_threadDictionary);
+	long result = OS.objc_msgSend(this.id, OS.sel_threadDictionary);
 	return result != 0 ? new NSMutableDictionary(result) : null;
 }
 

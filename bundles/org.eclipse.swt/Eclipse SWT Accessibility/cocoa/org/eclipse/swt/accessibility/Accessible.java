@@ -150,7 +150,7 @@ public class Accessible {
 		if (accessible.delegate != null) return accessible.delegate;
 		if (accessible.control != null) {
 			NSView view = accessible.control.view;
-			long /*int*/ handle = OS.objc_msgSend(view.id, OS.sel_accessibleHandle);
+			long handle = OS.objc_msgSend(view.id, OS.sel_accessibleHandle);
 			return new id(handle);
 		}
 		return null;
@@ -444,9 +444,9 @@ public class Accessible {
 		accessibleAttributeListeners.add(listener);
 	}
 
-	void addCGColor(double /*float*/ [] comps, NSMutableAttributedString inAttribString, NSString inAttribute, NSRange inRange) {
-		long /*int*/ cgColorSpace = OS.CGColorSpaceCreateDeviceRGB();
-		long /*int*/ cgColor = OS.CGColorCreate(cgColorSpace, comps);
+	void addCGColor(double [] comps, NSMutableAttributedString inAttribString, NSString inAttribute, NSRange inRange) {
+		long cgColorSpace = OS.CGColorSpaceCreateDeviceRGB();
+		long cgColor = OS.CGColorCreate(cgColorSpace, comps);
 		OS.CGColorSpaceRelease(cgColorSpace);
 		inAttribString.addAttribute(inAttribute, new id(cgColor), inRange);
 	    OS.CGColorRelease(cgColor);
@@ -1608,7 +1608,7 @@ public class Accessible {
 
 		AccessibleTextAttributeEvent event = new AccessibleTextAttributeEvent(this);
 
-		event.offset = (int) /*64*/ range.location;
+		event.offset = (int) range.location;
 		event.start = event.end = -1;
 
 		NSRange attributeRange = new NSRange();
@@ -1653,7 +1653,7 @@ public class Accessible {
 					fontInfoDict.setValue(familyName, OS.NSAccessibilityFontFamilyKey);
 					NSString displayName = fontUsed.displayName();
 					fontInfoDict.setValue(displayName, OS.NSAccessibilityVisibleNameKey);
-					double /*float*/ fontSize = fontUsed.pointSize();
+					double fontSize = fontUsed.pointSize();
 					fontInfoDict.setValue(NSNumber.numberWithDouble(fontSize), OS.NSAccessibilityFontSizeKey);
 
 					attribString.addAttribute(OS.NSAccessibilityFontTextAttribute, fontInfoDict, attributeRange);
@@ -1753,8 +1753,8 @@ public class Accessible {
 		if (accessibleTextExtendedListenersSize() > 0) {
 			AccessibleTextEvent event  = new AccessibleTextEvent(this);
 			event.childID = childID;
-			event.start = (int)/*64*/range.location;
-			event.end = (int)/*64*/(range.location + range.length);
+			event.start = (int)range.location;
+			event.end = (int)(range.location + range.length);
 			for (int i = 0; i < accessibleTextExtendedListenersSize(); i++) {
 				AccessibleTextExtendedListener listener = accessibleTextExtendedListeners.get(i);
 				listener.getTextBounds(event);
@@ -2604,8 +2604,8 @@ public class Accessible {
 		if (accessibleTextExtendedListenersSize() > 0) {
 			AccessibleTextEvent event = new AccessibleTextEvent(this);
 			event.childID = childID;
-			event.start = (int) /*64*/ range.location;
-			event.end = (int) /*64*/ (range.location + range.length);
+			event.start = (int) range.location;
+			event.end = (int) (range.location + range.length);
 			event.type = ACC.TEXT_BOUNDARY_ALL;
 			for (int i = 0; i < accessibleTextExtendedListenersSize(); i++) {
 				AccessibleTextExtendedListener listener = accessibleTextExtendedListeners.get(i);
@@ -2623,7 +2623,7 @@ public class Accessible {
 			String appValue = event.result;
 
 			if (appValue != null) {
-				returnValue = NSString.stringWith(appValue.substring((int)/*64*/range.location, (int)/*64*/(range.location + range.length)));
+				returnValue = NSString.stringWith(appValue.substring((int)range.location, (int)(range.location + range.length)));
 			}
 		}
 		return returnValue;
@@ -2683,7 +2683,7 @@ public class Accessible {
 		int index = parameterObject.intValue();
 
 		AccessibleTextAttributeEvent event = new AccessibleTextAttributeEvent(this);
-		event.offset = (int) /*64*/ index;
+		event.offset = (int) index;
 
 		// Marker values -- if -1 after calling getTextAttributes, no one implemented it.
 		event.start = event.end = -1;
@@ -3345,8 +3345,8 @@ public class Accessible {
 
 		if (rangeObj != null) {
 			NSRange range = new NSValue(rangeObj).rangeValue();
-			rangeStart = (int)/*64*/range.location;
-			rangeEnd = (int)/*64*/(range.location + range.length);
+			rangeStart = (int)range.location;
+			rangeEnd = (int)(range.location + range.length);
 		}
 
 		if (accessibleEditableTextListenersSize() > 0) {
@@ -3578,7 +3578,7 @@ public class Accessible {
 	 *
 	 * @noreference This method is not intended to be referenced by clients.
 	 */
-	public long /*int*/ internal_addRelationAttributes(long /*int*/ defaultAttributes) {
+	public long internal_addRelationAttributes(long defaultAttributes) {
 		NSArray attributes = new NSArray(defaultAttributes);
 		NSMutableArray returnArray = NSMutableArray.arrayWithCapacity(attributes.count());
 		returnArray.addObjectsFromArray(attributes);

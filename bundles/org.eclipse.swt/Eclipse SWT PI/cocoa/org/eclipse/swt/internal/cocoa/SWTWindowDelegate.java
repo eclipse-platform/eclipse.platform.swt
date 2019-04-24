@@ -19,7 +19,7 @@ public SWTWindowDelegate() {
 	super(0);
 }
 
-public SWTWindowDelegate(long /*int*/ id) {
+public SWTWindowDelegate(long id) {
 	super(id);
 }
 

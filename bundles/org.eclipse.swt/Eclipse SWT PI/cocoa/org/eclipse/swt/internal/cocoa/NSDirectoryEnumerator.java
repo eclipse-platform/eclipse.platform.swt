@@ -19,7 +19,7 @@ public NSDirectoryEnumerator() {
 	super();
 }
 
-public NSDirectoryEnumerator(long /*int*/ id) {
+public NSDirectoryEnumerator(long id) {
 	super(id);
 }
 

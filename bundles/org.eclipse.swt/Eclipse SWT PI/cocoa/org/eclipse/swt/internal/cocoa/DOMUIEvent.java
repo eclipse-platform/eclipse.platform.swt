@@ -19,7 +19,7 @@ public DOMUIEvent() {
 	super();
 }
 
-public DOMUIEvent(long /*int*/ id) {
+public DOMUIEvent(long id) {
 	super(id);
 }
 
@@ -28,7 +28,7 @@ public DOMUIEvent(id id) {
 }
 
 public int detail() {
-	return (int)/*64*/OS.objc_msgSend(this.id, OS.sel_detail);
+	return (int)OS.objc_msgSend(this.id, OS.sel_detail);
 }
 
 }

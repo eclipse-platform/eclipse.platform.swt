@@ -98,7 +98,7 @@ public Object nativeToJava(TransferData transferData) {
 	if (!isSupportedType(transferData) || transferData.data == null) return null;
 	NSArray array = (NSArray) transferData.data;
 	if (array.count() == 0) return null;
-	int count = (int)/*64*/array.count();
+	int count = (int)array.count();
 	String[] fileNames = new String[count];
 	for (int i=0; i<count; i++) {
 		NSString string = new NSString(array.objectAtIndex(i));

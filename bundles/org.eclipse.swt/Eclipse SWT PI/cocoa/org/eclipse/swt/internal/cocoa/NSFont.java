@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2016 IBM Corporation and others.
+ * Copyright (c) 2000, 2019 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -19,7 +19,7 @@ public NSFont() {
 	super();
 }
 
-public NSFont(long /*int*/ id) {
+public NSFont(long id) {
 	super(id);
 }
 
@@ -27,77 +27,77 @@ public NSFont(id id) {
 	super(id);
 }
 
-public double /*float*/ ascender() {
-	return (double /*float*/)OS.objc_msgSend_fpret(this.id, OS.sel_ascender);
+public double ascender() {
+	return OS.objc_msgSend_fpret(this.id, OS.sel_ascender);
 }
 
-public static NSFont boldSystemFontOfSize(double /*float*/ fontSize) {
-	long /*int*/ result = OS.objc_msgSend(OS.class_NSFont, OS.sel_boldSystemFontOfSize_, fontSize);
+public static NSFont boldSystemFontOfSize(double fontSize) {
+	long result = OS.objc_msgSend(OS.class_NSFont, OS.sel_boldSystemFontOfSize_, fontSize);
 	return result != 0 ? new NSFont(result) : null;
 }
 
-public static NSFont controlContentFontOfSize(double /*float*/ fontSize) {
-	long /*int*/ result = OS.objc_msgSend(OS.class_NSFont, OS.sel_controlContentFontOfSize_, fontSize);
+public static NSFont controlContentFontOfSize(double fontSize) {
+	long result = OS.objc_msgSend(OS.class_NSFont, OS.sel_controlContentFontOfSize_, fontSize);
 	return result != 0 ? new NSFont(result) : null;
 }
 
-public double /*float*/ descender() {
-	return (double /*float*/)OS.objc_msgSend_fpret(this.id, OS.sel_descender);
+public double descender() {
+	return OS.objc_msgSend_fpret(this.id, OS.sel_descender);
 }
 
 public NSString displayName() {
-	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_displayName);
+	long result = OS.objc_msgSend(this.id, OS.sel_displayName);
 	return result != 0 ? new NSString(result) : null;
 }
 
 public NSString familyName() {
-	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_familyName);
+	long result = OS.objc_msgSend(this.id, OS.sel_familyName);
 	return result != 0 ? new NSString(result) : null;
 }
 
 public NSString fontName() {
-	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_fontName);
+	long result = OS.objc_msgSend(this.id, OS.sel_fontName);
 	return result != 0 ? new NSString(result) : null;
 }
 
-public static NSFont fontWithName(NSString fontName, double /*float*/ fontSize) {
-	long /*int*/ result = OS.objc_msgSend(OS.class_NSFont, OS.sel_fontWithName_size_, fontName != null ? fontName.id : 0, fontSize);
+public static NSFont fontWithName(NSString fontName, double fontSize) {
+	long result = OS.objc_msgSend(OS.class_NSFont, OS.sel_fontWithName_size_, fontName != null ? fontName.id : 0, fontSize);
 	return result != 0 ? new NSFont(result) : null;
 }
 
-public double /*float*/ leading() {
-	return (double /*float*/)OS.objc_msgSend_fpret(this.id, OS.sel_leading);
+public double leading() {
+	return OS.objc_msgSend_fpret(this.id, OS.sel_leading);
 }
 
-public static NSFont menuBarFontOfSize(double /*float*/ fontSize) {
-	long /*int*/ result = OS.objc_msgSend(OS.class_NSFont, OS.sel_menuBarFontOfSize_, fontSize);
+public static NSFont menuBarFontOfSize(double fontSize) {
+	long result = OS.objc_msgSend(OS.class_NSFont, OS.sel_menuBarFontOfSize_, fontSize);
 	return result != 0 ? new NSFont(result) : null;
 }
 
-public static NSFont menuFontOfSize(double /*float*/ fontSize) {
-	long /*int*/ result = OS.objc_msgSend(OS.class_NSFont, OS.sel_menuFontOfSize_, fontSize);
+public static NSFont menuFontOfSize(double fontSize) {
+	long result = OS.objc_msgSend(OS.class_NSFont, OS.sel_menuFontOfSize_, fontSize);
 	return result != 0 ? new NSFont(result) : null;
 }
 
-public double /*float*/ pointSize() {
-	return (double /*float*/)OS.objc_msgSend_fpret(this.id, OS.sel_pointSize);
+public double pointSize() {
+	return OS.objc_msgSend_fpret(this.id, OS.sel_pointSize);
 }
 
-public static double /*float*/ smallSystemFontSize() {
-	return (double /*float*/)OS.objc_msgSend_fpret(OS.class_NSFont, OS.sel_smallSystemFontSize);
+public static double smallSystemFontSize() {
+	return OS.objc_msgSend_fpret(OS.class_NSFont, OS.sel_smallSystemFontSize);
 }
 
-public static NSFont systemFontOfSize(double /*float*/ fontSize) {
-	long /*int*/ result = OS.objc_msgSend(OS.class_NSFont, OS.sel_systemFontOfSize_, fontSize);
+public static NSFont systemFontOfSize(double fontSize) {
+	long result = OS.objc_msgSend(OS.class_NSFont, OS.sel_systemFontOfSize_, fontSize);
 	return result != 0 ? new NSFont(result) : null;
 }
 
-public static double /*float*/ systemFontSize() {
-	return (double /*float*/)OS.objc_msgSend_fpret(OS.class_NSFont, OS.sel_systemFontSize);
+public static double systemFontSize() {
+	return OS.objc_msgSend_fpret(OS.class_NSFont, OS.sel_systemFontSize);
 }
 
-public static double /*float*/ systemFontSizeForControlSize(long /*int*/ controlSize) {
-	return (double /*float*/)OS.objc_msgSend_fpret(OS.class_NSFont, OS.sel_systemFontSizeForControlSize_, controlSize);
+public static double systemFontSizeForControlSize(long controlSize) {
+	return OS.objc_msgSend_fpret(OS.class_NSFont, OS.sel_systemFontSizeForControlSize_, controlSize);
 }
 
 }

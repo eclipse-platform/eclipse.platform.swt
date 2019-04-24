@@ -19,7 +19,7 @@ public NSHTTPCookie() {
 	super();
 }
 
-public NSHTTPCookie(long /*int*/ id) {
+public NSHTTPCookie(long id) {
 	super(id);
 }
 
@@ -28,7 +28,7 @@ public NSHTTPCookie(id id) {
 }
 
 public static NSArray cookiesWithResponseHeaderFields(NSDictionary headerFields, NSURL URL) {
-	long /*int*/ result = OS.objc_msgSend(OS.class_NSHTTPCookie, OS.sel_cookiesWithResponseHeaderFields_forURL_, headerFields != null ? headerFields.id : 0, URL != null ? URL.id : 0);
+	long result = OS.objc_msgSend(OS.class_NSHTTPCookie, OS.sel_cookiesWithResponseHeaderFields_forURL_, headerFields != null ? headerFields.id : 0, URL != null ? URL.id : 0);
 	return result != 0 ? new NSArray(result) : null;
 }
 
@@ -37,12 +37,12 @@ public boolean isSessionOnly() {
 }
 
 public NSString name() {
-	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_name);
+	long result = OS.objc_msgSend(this.id, OS.sel_name);
 	return result != 0 ? new NSString(result) : null;
 }
 
 public NSString value() {
-	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_value);
+	long result = OS.objc_msgSend(this.id, OS.sel_value);
 	return result != 0 ? new NSString(result) : null;
 }
 

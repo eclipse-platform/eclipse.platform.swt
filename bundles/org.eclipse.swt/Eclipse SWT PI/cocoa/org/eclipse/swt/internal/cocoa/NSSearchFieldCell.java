@@ -19,7 +19,7 @@ public NSSearchFieldCell() {
 	super();
 }
 
-public NSSearchFieldCell(long /*int*/ id) {
+public NSSearchFieldCell(long id) {
 	super(id);
 }
 
@@ -28,7 +28,7 @@ public NSSearchFieldCell(id id) {
 }
 
 public NSButtonCell cancelButtonCell() {
-	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_cancelButtonCell);
+	long result = OS.objc_msgSend(this.id, OS.sel_cancelButtonCell);
 	return result != 0 ? new NSButtonCell(result) : null;
 }
 
@@ -39,7 +39,7 @@ public NSRect cancelButtonRectForBounds(NSRect rect) {
 }
 
 public NSButtonCell searchButtonCell() {
-	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_searchButtonCell);
+	long result = OS.objc_msgSend(this.id, OS.sel_searchButtonCell);
 	return result != 0 ? new NSButtonCell(result) : null;
 }
 

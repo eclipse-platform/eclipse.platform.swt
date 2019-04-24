@@ -93,7 +93,7 @@ public class ScrollBar extends Widget {
 	int increment = 1;
 	int pageIncrement = 10;
 	id target;
-	long /*int*/ actionSelector;
+	long actionSelector;
 
 ScrollBar () {
 	/* Do nothing */
@@ -482,7 +482,7 @@ void sendSelection () {
 	} else {
 		point = window.mouseLocationOutsideOfEventStream();
 	}
-	int hitPart = (int)/*64*/((NSScroller)view).testPart(point);
+	int hitPart = (int)((NSScroller)view).testPart(point);
 	Event event = new Event();
 	switch (hitPart) {
 	case OS.NSScrollerDecrementLine:
@@ -743,7 +743,7 @@ void updateBar (int selection, int minimum, int maximum, int thumb) {
 	float fraction = range <= 0 ? 1 : (float) (selection - minimum) / range;
 	float knob = range <= 0 ? 1 : (float) thumb / (maximum - minimum);
 	double oldFraction = widget.doubleValue();
-	double /*float*/ oldKnob = widget.knobProportion();
+	double oldKnob = widget.knobProportion();
 	widget.setDoubleValue(fraction);
 	widget.setKnobProportion(knob);
 	widget.setEnabled (range > 0);

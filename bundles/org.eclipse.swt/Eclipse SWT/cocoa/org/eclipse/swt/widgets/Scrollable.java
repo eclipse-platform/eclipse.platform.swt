@@ -137,7 +137,7 @@ ScrollBar createScrollBar (int style) {
 	bar.style = style;
 	bar.display = display;
 	NSScroller scroller;
-	long /*int*/ actionSelector;
+	long actionSelector;
 	NSRect rect = new NSRect();
 	if ((style & SWT.H_SCROLL) != 0) {
 		rect.width = 1;
@@ -279,7 +279,7 @@ boolean hooksKeys () {
 }
 
 @Override
-boolean isEventView (long /*int*/ id) {
+boolean isEventView (long id) {
 	return id == eventView ().id;
 }
 
@@ -307,7 +307,7 @@ void redrawBackgroundImage () {
 }
 
 @Override
-void reflectScrolledClipView(long /*int*/ id, long /*int*/ sel, long /*int*/ aClipView) {
+void reflectScrolledClipView(long id, long sel, long aClipView) {
 	super.reflectScrolledClipView(id, sel, aClipView);
 	redrawBackgroundImage();
 }
@@ -346,7 +346,7 @@ void reskinChildren (int flags) {
 }
 
 @Override
-void scrollClipViewToPoint (long /*int*/ id, long /*int*/ sel, long /*int*/ clipView, NSPoint point) {
+void scrollClipViewToPoint (long id, long sel, long clipView, NSPoint point) {
 	if ((state & CANVAS) == 0 && scrollView != null) {
 		NSClipView clip = new NSClipView (clipView);
 		boolean oldCopies = clip.copiesOnScroll (), copies = oldCopies;

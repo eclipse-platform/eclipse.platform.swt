@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2017 IBM Corporation and others.
+ * Copyright (c) 2000, 2019 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -19,7 +19,7 @@ public NSSlider() {
 	super();
 }
 
-public NSSlider(long /*int*/ id) {
+public NSSlider(long id) {
 	super(id);
 }
 
@@ -27,8 +27,8 @@ public NSSlider(id id) {
 	super(id);
 }
 
-public double /*float*/ knobThickness() {
-	return (double /*float*/)OS.objc_msgSend_fpret(this.id, OS.sel_knobThickness);
+public double knobThickness() {
+	return OS.objc_msgSend_fpret(this.id, OS.sel_knobThickness);
 }
 
 public double maxValue() {
@@ -47,11 +47,11 @@ public void setMinValue(double minValue) {
 	OS.objc_msgSend(this.id, OS.sel_setMinValue_, minValue);
 }
 
-public static long /*int*/ cellClass() {
+public static long cellClass() {
 	return OS.objc_msgSend(OS.class_NSSlider, OS.sel_cellClass);
 }
 
-public static void setCellClass(long /*int*/ factoryId) {
+public static void setCellClass(long factoryId) {
 	OS.objc_msgSend(OS.class_NSSlider, OS.sel_setCellClass_, factoryId);
 }
 

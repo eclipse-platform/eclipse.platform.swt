@@ -141,7 +141,7 @@ public Path (Device device, Path path, float flatness) {
 		if (flatness == 0) {
 			handle = new NSBezierPath(path.handle.copy().id);
 		} else {
-			double /*float*/ defaultFlatness = NSBezierPath.defaultFlatness();
+			double defaultFlatness = NSBezierPath.defaultFlatness();
 			NSBezierPath.setDefaultFlatness(flatness);
 			handle = path.handle.bezierPathByFlatteningPath();
 			handle.retain();
@@ -248,14 +248,14 @@ public void addArc(float x, float y, float width, float height, float startAngle
 }
 
 void appendBezierPath (NSBezierPath path) {
-	int count = (int)/*64*/path.elementCount();
-	long /*int*/ points = C.malloc(3 * NSPoint.sizeof);
+	int count = (int)path.elementCount();
+	long points = C.malloc(3 * NSPoint.sizeof);
 	if (points == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	NSPoint pt1 = new NSPoint();
 	NSPoint pt2 = new NSPoint();
 	NSPoint pt3 = new NSPoint();
 	for (int i = 0; i < count; i++) {
-		int element = (int)/*64*/path.elementAtIndex(i, points);
+		int element = (int)path.elementAtIndex(i, points);
 		switch (element) {
 			case OS.NSMoveToBezierPathElement:
 				OS.memmove(pt1, points, NSPoint.sizeof);
@@ -396,8 +396,8 @@ public void addString(String string, float x, float y, Font font) {
 		attrStr.release();
 		range = layoutManager.glyphRangeForTextContainer(textContainer);
 		if (range.length != 0) {
-			long /*int*/ glyphs = C.malloc((range.length + 1) * 4);
-			long /*int*/ count = layoutManager.getGlyphs(glyphs, range);
+			long glyphs = C.malloc((range.length + 1) * 4);
+			long count = layoutManager.getGlyphs(glyphs, range);
 			NSBezierPath path = NSBezierPath.bezierPath();
 			for (int i = 0; i < count; i++) {
 				NSPoint pt = layoutManager.locationForGlyphAtIndex(i);
@@ -475,12 +475,12 @@ public boolean contains(float x, float y, GC gc, boolean outline) {
 	try {
 		//TODO - see windows
 		if (outline) {
-			long /*int*/ pixel = C.malloc(4);
+			long pixel = C.malloc(4);
 			if (pixel == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 			int[] buffer = new int[]{0xFFFFFFFF};
 			C.memmove(pixel, buffer, 4);
-			long /*int*/ colorspace = OS.CGColorSpaceCreateDeviceRGB();
-			long /*int*/ context = OS.CGBitmapContextCreate(pixel, 1, 1, 8, 4, colorspace, OS.kCGImageAlphaNoneSkipFirst);
+			long colorspace = OS.CGColorSpaceCreateDeviceRGB();
+			long context = OS.CGBitmapContextCreate(pixel, 1, 1, 8, 4, colorspace, OS.kCGImageAlphaNoneSkipFirst);
 			OS.CGColorSpaceRelease(colorspace);
 			if (context == 0) {
 				C.free(pixel);
@@ -503,7 +503,7 @@ public boolean contains(float x, float y, GC gc, boolean outline) {
 			OS.CGContextSetLineJoin(context, joinStyle);
 			OS.CGContextSetLineWidth(context, data.lineWidth);
 			OS.CGContextTranslateCTM(context, -x + 0.5f, -y + 0.5f);
-			long /*int*/ path = GC.createCGPathRef(handle);
+			long path = GC.createCGPathRef(handle);
 			OS.CGContextAddPath(context, path);
 			OS.CGPathRelease(path);
 			OS.CGContextStrokePath(context);
@@ -586,10 +586,10 @@ public void getBounds(float[] bounds) {
 	if (!NSThread.isMainThread()) pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
 	try {
 		NSRect rect = handle.controlPointBounds();
-		bounds[0] = (float)/*64*/rect.x;
-		bounds[1] = (float)/*64*/rect.y;
-		bounds[2] = (float)/*64*/rect.width;
-		bounds[3] = (float)/*64*/rect.height;
+		bounds[0] = (float)rect.x;
+		bounds[1] = (float)rect.y;
+		bounds[2] = (float)rect.width;
+		bounds[3] = (float)rect.height;
 	} finally {
 		if (pool != null) pool.release();
 	}
@@ -617,8 +617,8 @@ public void getCurrentPoint(float[] point) {
 	if (!NSThread.isMainThread()) pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
 	try {
 		NSPoint pt = handle.currentPoint();
-		point[0] = (float)/*64*/pt.x;
-		point[1] = (float)/*64*/pt.y;
+		point[0] = (float)pt.x;
+		point[1] = (float)pt.y;
 	} finally {
 		if (pool != null) pool.release();
 	}
@@ -640,15 +640,15 @@ public PathData getPathData() {
 	NSAutoreleasePool pool = null;
 	if (!NSThread.isMainThread()) pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
 	try {
-		int count = (int)/*64*/handle.elementCount();
+		int count = (int)handle.elementCount();
 		int pointCount = 0, typeCount = 0;
 		byte[] types = new byte[count];
 		float[] pointArray = new float[count * 6];
-		long /*int*/ points = C.malloc(3 * NSPoint.sizeof);
+		long points = C.malloc(3 * NSPoint.sizeof);
 		if (points == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 		NSPoint pt = new NSPoint();
 		for (int i = 0; i < count; i++) {
-			int element = (int)/*64*/handle.elementAtIndex(i, points);
+			int element = (int)handle.elementAtIndex(i, points);
 			switch (element) {
 				case OS.NSMoveToBezierPathElement:
 					types[typeCount++] = SWT.PATH_MOVE_TO;

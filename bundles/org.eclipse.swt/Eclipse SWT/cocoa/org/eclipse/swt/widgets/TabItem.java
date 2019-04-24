@@ -118,7 +118,7 @@ public TabItem (TabFolder parent, int style, int index) {
 }
 
 @Override
-long /*int*/ accessibilityAttributeValue (long /*int*/ id, long /*int*/ sel, long /*int*/ arg0) {
+long accessibilityAttributeValue (long id, long sel, long arg0) {
 
 	if (id == nsItem.id) {
 		NSString nsAttributeName = new NSString(arg0);
@@ -155,7 +155,7 @@ void destroyWidget () {
 }
 
 @Override
-void drawLabelInRect(long /*int*/ id, long /*int*/ sel, boolean shouldTruncateLabel, NSRect rect) {
+void drawLabelInRect(long id, long sel, boolean shouldTruncateLabel, NSRect rect) {
 	if (image != null && !image.isDisposed()) {
 		NSSize imageSize = image.handle.size();
 		NSRect destRect = new NSRect();
@@ -196,8 +196,8 @@ public Rectangle getBounds() {
 	checkWidget();
 	Rectangle result = new Rectangle (0, 0, 0, 0);
 	if (nsItem.respondsToSelector (OS.sel_accessibilityAttributeValue_)) {
-		long /*int*/ posValue = OS.objc_msgSend (nsItem.id, OS.sel_accessibilityAttributeValue_, OS.NSAccessibilityPositionAttribute ());
-		long /*int*/ sizeValue = OS.objc_msgSend (nsItem.id, OS.sel_accessibilityAttributeValue_, OS.NSAccessibilitySizeAttribute ());
+		long posValue = OS.objc_msgSend (nsItem.id, OS.sel_accessibilityAttributeValue_, OS.NSAccessibilityPositionAttribute ());
+		long sizeValue = OS.objc_msgSend (nsItem.id, OS.sel_accessibilityAttributeValue_, OS.NSAccessibilitySizeAttribute ());
 		NSValue val = new NSValue (posValue);
 		NSPoint pt = val.pointValue ();
 		NSWindow window = parent.view.window ();
@@ -436,7 +436,7 @@ public void setToolTipText (String string) {
 }
 
 @Override
-NSSize sizeOfLabel(long /*int*/ id, long /*int*/ sel, boolean shouldTruncateLabel) {
+NSSize sizeOfLabel(long id, long sel, boolean shouldTruncateLabel) {
 	NSSize size = super.sizeOfLabel(id, sel, shouldTruncateLabel);
 	if (image != null && !image.isDisposed()) {
 		NSSize imageSize = image.handle.size();
@@ -463,7 +463,7 @@ void updateText (boolean selected) {
 	if (attriStr != null) {
 		attriStr.release();
 	}
-	double /*float*/ [] foreground = parent.foreground;
+	double [] foreground = parent.foreground;
 	if (foreground == null) {
 		if (selected && OS.VERSION >= 0x1070) {
 			foreground = display.getNSColorRGB(NSColor.alternateSelectedControlTextColor());

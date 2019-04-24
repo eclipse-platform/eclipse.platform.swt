@@ -19,7 +19,7 @@ public DOMWheelEvent() {
 	super();
 }
 
-public DOMWheelEvent(long /*int*/ id) {
+public DOMWheelEvent(long id) {
 	super(id);
 }
 
@@ -28,15 +28,15 @@ public DOMWheelEvent(id id) {
 }
 
 public int wheelDelta() {
-	return (int)/*64*/OS.objc_msgSend(this.id, OS.sel_wheelDelta);
+	return (int)OS.objc_msgSend(this.id, OS.sel_wheelDelta);
 }
 
 public int wheelDeltaX() {
-	return (int)/*64*/OS.objc_msgSend(this.id, OS.sel_wheelDeltaX);
+	return (int)OS.objc_msgSend(this.id, OS.sel_wheelDeltaX);
 }
 
 public int wheelDeltaY() {
-	return (int)/*64*/OS.objc_msgSend(this.id, OS.sel_wheelDeltaY);
+	return (int)OS.objc_msgSend(this.id, OS.sel_wheelDeltaY);
 }
 
 }

@@ -112,7 +112,7 @@ public final class Cursor extends Resource {
 		if (!new NSObject(OS.class_NSCursor).respondsToSelector(OS.sel_busyButClickableCursor)) {
 			return null;
 		}
-		long /*int*/ result = OS.objc_msgSend(OS.class_NSCursor, OS.sel_busyButClickableCursor);
+		long result = OS.objc_msgSend(OS.class_NSCursor, OS.sel_busyButClickableCursor);
 		return result != 0 ? new NSCursor(result) : null;
 	}
 
@@ -479,7 +479,7 @@ public boolean equals (Object object) {
  */
 @Override
 public int hashCode () {
-	return handle != null ? (int)/*64*/handle.id : 0;
+	return handle != null ? (int)handle.id : 0;
 }
 
 /**

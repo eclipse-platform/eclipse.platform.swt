@@ -17,8 +17,8 @@ public class CTParagraphStyleSetting {
 	/** @field cast=(CTParagraphStyleSpecifier) */
 	public int spec;
 	/** @field cast=(size_t) */
-	public long /*int*/ valueSize;
+	public long valueSize;
 	/** @field cast=(void*) */
-	public long /*int*/ value;
+	public long value;
 	public static final int sizeof = OS.CTParagraphStyleSetting_sizeof();
 }

@@ -180,7 +180,7 @@ protected Object nativeToJava(TransferData transferData) {
 	if (transferData.data == null) return null;
 	NSData data = (NSData) transferData.data;
 	if (data.length() == 0) return null;
-	byte[] bytes = new byte[(int)/*64*/data.length()];
+	byte[] bytes = new byte[(int)data.length()];
 	data.getBytes(bytes);
 	return bytes;
 }

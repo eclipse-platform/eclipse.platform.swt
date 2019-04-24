@@ -511,7 +511,7 @@ void displayMenu () {
 
 boolean shouldShowMenu (NSEvent event) {
 	if (!hooks(SWT.MenuDetect)) return false;
-	switch ((int)/*64*/event.type()) {
+	switch ((int)event.type()) {
 		case OS.NSRightMouseDown: return true;
 		case OS.NSLeftMouseDown:
 			if (!(hooks(SWT.Selection) || hooks(SWT.DefaultSelection))) {
@@ -529,7 +529,7 @@ boolean shouldShowMenu (NSEvent event) {
 }
 
 @Override
-void mouseDown(long /*int*/ id, long /*int*/ sel, long /*int*/ theEvent) {
+void mouseDown(long id, long sel, long theEvent) {
 	NSEvent nsEvent = new NSEvent(theEvent);
 	highlight = true;
 	updateImage();
@@ -541,7 +541,7 @@ void mouseDown(long /*int*/ id, long /*int*/ sel, long /*int*/ theEvent) {
 }
 
 @Override
-void mouseDragged(long /*int*/ id, long /*int*/ sel, long /*int*/ theEvent) {
+void mouseDragged(long id, long sel, long theEvent) {
 	NSEvent nsEvent = new NSEvent(theEvent);
 	NSRect frame = view.frame();
 	boolean oldHighlight = highlight;
@@ -557,7 +557,7 @@ void mouseDragged(long /*int*/ id, long /*int*/ sel, long /*int*/ theEvent) {
 }
 
 @Override
-void mouseUp(long /*int*/ id, long /*int*/ sel, long /*int*/ theEvent) {
+void mouseUp(long id, long sel, long theEvent) {
 	if (highlight) {
 		NSEvent nsEvent = new NSEvent(theEvent);
 		if (nsEvent.type() == OS.NSLeftMouseUp) {
@@ -570,28 +570,28 @@ void mouseUp(long /*int*/ id, long /*int*/ sel, long /*int*/ theEvent) {
 }
 
 @Override
-void rightMouseDown(long /*int*/ id, long /*int*/ sel, long /*int*/ theEvent) {
+void rightMouseDown(long id, long sel, long theEvent) {
 	mouseDown(id, sel, theEvent);
 }
 
 @Override
-void rightMouseUp(long /*int*/ id, long /*int*/ sel, long /*int*/ theEvent) {
+void rightMouseUp(long id, long sel, long theEvent) {
 	mouseUp(id, sel, theEvent);
 }
 
 @Override
-void rightMouseDragged(long /*int*/ id, long /*int*/ sel, long /*int*/ theEvent) {
+void rightMouseDragged(long id, long sel, long theEvent) {
 	mouseDragged(id, sel, theEvent);
 }
 
 @Override
-void drawRect(long /*int*/ id, long /*int*/ sel, NSRect rect) {
+void drawRect(long id, long sel, NSRect rect) {
 	item.drawStatusBarBackgroundInRect(rect, highlight);
 	super.drawRect(id, sel, rect);
 }
 
 void updateImage () {
-	double /*float*/ width = 0;
+	double width = 0;
 	Image image = this.image;
 	if (highlight && highlightImage != null) image = highlightImage;
 	if (image == null) {

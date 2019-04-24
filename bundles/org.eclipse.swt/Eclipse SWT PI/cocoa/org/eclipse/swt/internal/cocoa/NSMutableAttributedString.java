@@ -19,7 +19,7 @@ public NSMutableAttributedString() {
 	super();
 }
 
-public NSMutableAttributedString(long /*int*/ id) {
+public NSMutableAttributedString(long id) {
 	super(id);
 }
 
@@ -27,7 +27,7 @@ public NSMutableAttributedString(id id) {
 	super(id);
 }
 
-public void setBaseWritingDirection(long /*int*/ writingDirection, NSRange range) {
+public void setBaseWritingDirection(long writingDirection, NSRange range) {
 	OS.objc_msgSend(this.id, OS.sel_setBaseWritingDirection_range_, writingDirection, range);
 }
 
@@ -48,7 +48,7 @@ public void endEditing() {
 }
 
 public NSMutableString mutableString() {
-	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_mutableString);
+	long result = OS.objc_msgSend(this.id, OS.sel_mutableString);
 	return result != 0 ? new NSMutableString(result) : null;
 }
 
@@ -65,7 +65,7 @@ public void setAttributedString(NSAttributedString attrString) {
 }
 
 public static NSAttributedString attributedStringWithAttachment(NSTextAttachment attachment) {
-	long /*int*/ result = OS.objc_msgSend(OS.class_NSMutableAttributedString, OS.sel_attributedStringWithAttachment_, attachment != null ? attachment.id : 0);
+	long result = OS.objc_msgSend(OS.class_NSMutableAttributedString, OS.sel_attributedStringWithAttachment_, attachment != null ? attachment.id : 0);
 	return result != 0 ? new NSAttributedString(result) : null;
 }
 

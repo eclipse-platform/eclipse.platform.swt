@@ -19,7 +19,7 @@ public NSMutableSet() {
 	super();
 }
 
-public NSMutableSet(long /*int*/ id) {
+public NSMutableSet(long id) {
 	super(id);
 }
 
@@ -32,7 +32,7 @@ public void addObjectsFromArray(NSArray array) {
 }
 
 public static NSSet set() {
-	long /*int*/ result = OS.objc_msgSend(OS.class_NSMutableSet, OS.sel_set);
+	long result = OS.objc_msgSend(OS.class_NSMutableSet, OS.sel_set);
 	return result != 0 ? new NSMutableSet(result) : null;
 }
 

@@ -19,7 +19,7 @@ public SWTPrintPanelDelegate() {
 	super(0);
 }
 
-public SWTPrintPanelDelegate(long /*int*/ id) {
+public SWTPrintPanelDelegate(long id) {
 	super(id);
 }
 

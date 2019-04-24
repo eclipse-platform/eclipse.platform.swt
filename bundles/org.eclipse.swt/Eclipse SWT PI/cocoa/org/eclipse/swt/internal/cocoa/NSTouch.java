@@ -19,7 +19,7 @@ public NSTouch() {
 	super();
 }
 
-public NSTouch(long /*int*/ id) {
+public NSTouch(long id) {
 	super(id);
 }
 
@@ -28,7 +28,7 @@ public NSTouch(id id) {
 }
 
 public id device() {
-	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_device);
+	long result = OS.objc_msgSend(this.id, OS.sel_device);
 	return result != 0 ? new id(result) : null;
 }
 
@@ -48,7 +48,7 @@ public NSPoint normalizedPosition() {
 	return result;
 }
 
-public long /*int*/ phase() {
+public long phase() {
 	return OS.objc_msgSend(this.id, OS.sel_phase);
 }
 

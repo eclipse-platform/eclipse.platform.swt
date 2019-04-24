@@ -19,7 +19,7 @@ public NSTabViewItem() {
 	super();
 }
 
-public NSTabViewItem(long /*int*/ id) {
+public NSTabViewItem(long id) {
 	super(id);
 }
 
@@ -32,7 +32,7 @@ public void drawLabel(boolean shouldTruncateLabel, NSRect labelRect) {
 }
 
 public NSTabViewItem initWithIdentifier(id identifier) {
-	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_initWithIdentifier_, identifier != null ? identifier.id : 0);
+	long result = OS.objc_msgSend(this.id, OS.sel_initWithIdentifier_, identifier != null ? identifier.id : 0);
 	return result == this.id ? this : (result != 0 ? new NSTabViewItem(result) : null);
 }
 

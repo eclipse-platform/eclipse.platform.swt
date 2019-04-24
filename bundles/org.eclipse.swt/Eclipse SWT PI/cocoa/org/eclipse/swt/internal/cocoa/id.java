@@ -18,12 +18,12 @@ package org.eclipse.swt.internal.cocoa;
  */
 public class id {
 
-public long /*int*/ id;
+public long id;
 
 public id() {
 }
 
-public id(long /*int*/ id) {
+public id(long id) {
 	this.id = id;
 }
 
@@ -41,7 +41,7 @@ public boolean equals(Object other) {
 	return (this.id == ((id)other).id);
 }
 
-public long /*int*/ objc_getClass() {
+public long objc_getClass() {
 	String name = getClass().getName();
 	int index = name.lastIndexOf('.');
 	if (index != -1) name = name.substring(index + 1);

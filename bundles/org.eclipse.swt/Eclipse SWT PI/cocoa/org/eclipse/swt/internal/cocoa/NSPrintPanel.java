@@ -19,7 +19,7 @@ public NSPrintPanel() {
 	super();
 }
 
-public NSPrintPanel(long /*int*/ id) {
+public NSPrintPanel(long id) {
 	super(id);
 }
 
@@ -27,24 +27,24 @@ public NSPrintPanel(id id) {
 	super(id);
 }
 
-public void beginSheetWithPrintInfo(NSPrintInfo printInfo, NSWindow docWindow, id delegate, long /*int*/ didEndSelector, long /*int*/ contextInfo) {
+public void beginSheetWithPrintInfo(NSPrintInfo printInfo, NSWindow docWindow, id delegate, long didEndSelector, long contextInfo) {
 	OS.objc_msgSend(this.id, OS.sel_beginSheetWithPrintInfo_modalForWindow_delegate_didEndSelector_contextInfo_, printInfo != null ? printInfo.id : 0, docWindow != null ? docWindow.id : 0, delegate != null ? delegate.id : 0, didEndSelector, contextInfo);
 }
 
-public long /*int*/ options() {
+public long options() {
 	return OS.objc_msgSend(this.id, OS.sel_options);
 }
 
 public static NSPrintPanel printPanel() {
-	long /*int*/ result = OS.objc_msgSend(OS.class_NSPrintPanel, OS.sel_printPanel);
+	long result = OS.objc_msgSend(OS.class_NSPrintPanel, OS.sel_printPanel);
 	return result != 0 ? new NSPrintPanel(result) : null;
 }
 
-public long /*int*/ runModalWithPrintInfo(NSPrintInfo printInfo) {
+public long runModalWithPrintInfo(NSPrintInfo printInfo) {
 	return OS.objc_msgSend(this.id, OS.sel_runModalWithPrintInfo_, printInfo != null ? printInfo.id : 0);
 }
 
-public void setOptions(long /*int*/ options) {
+public void setOptions(long options) {
 	OS.objc_msgSend(this.id, OS.sel_setOptions_, options);
 }
 

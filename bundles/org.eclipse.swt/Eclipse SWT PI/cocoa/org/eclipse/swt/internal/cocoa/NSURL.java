@@ -19,7 +19,7 @@ public NSURL() {
 	super();
 }
 
-public NSURL(long /*int*/ id) {
+public NSURL(long id) {
 	super(id);
 }
 
@@ -28,27 +28,27 @@ public NSURL(id id) {
 }
 
 public static NSURL URLFromPasteboard(NSPasteboard pasteBoard) {
-	long /*int*/ result = OS.objc_msgSend(OS.class_NSURL, OS.sel_URLFromPasteboard_, pasteBoard != null ? pasteBoard.id : 0);
+	long result = OS.objc_msgSend(OS.class_NSURL, OS.sel_URLFromPasteboard_, pasteBoard != null ? pasteBoard.id : 0);
 	return result != 0 ? new NSURL(result) : null;
 }
 
 public static NSURL URLWithString(NSString URLString) {
-	long /*int*/ result = OS.objc_msgSend(OS.class_NSURL, OS.sel_URLWithString_, URLString != null ? URLString.id : 0);
+	long result = OS.objc_msgSend(OS.class_NSURL, OS.sel_URLWithString_, URLString != null ? URLString.id : 0);
 	return result != 0 ? new NSURL(result) : null;
 }
 
 public NSString absoluteString() {
-	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_absoluteString);
+	long result = OS.objc_msgSend(this.id, OS.sel_absoluteString);
 	return result != 0 ? new NSString(result) : null;
 }
 
 public static NSURL fileURLWithPath(NSString path) {
-	long /*int*/ result = OS.objc_msgSend(OS.class_NSURL, OS.sel_fileURLWithPath_, path != null ? path.id : 0);
+	long result = OS.objc_msgSend(OS.class_NSURL, OS.sel_fileURLWithPath_, path != null ? path.id : 0);
 	return result != 0 ? new NSURL(result) : null;
 }
 
 public NSString host() {
-	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_host);
+	long result = OS.objc_msgSend(this.id, OS.sel_host);
 	return result != 0 ? new NSString(result) : null;
 }
 
@@ -57,7 +57,7 @@ public boolean isFileURL() {
 }
 
 public NSString path() {
-	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_path);
+	long result = OS.objc_msgSend(this.id, OS.sel_path);
 	return result != 0 ? new NSString(result) : null;
 }
 

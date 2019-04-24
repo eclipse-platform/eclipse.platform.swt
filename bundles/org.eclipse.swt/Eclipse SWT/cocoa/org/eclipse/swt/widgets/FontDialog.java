@@ -88,7 +88,7 @@ public FontDialog (Shell parent, int style) {
 	checkSubclass ();
 }
 
-void changeFont(long /*int*/ id, long /*int*/ sel, long /*int*/ arg0) {
+void changeFont(long id, long sel, long arg0) {
 	selected = true;
 }
 
@@ -169,7 +169,7 @@ public FontData open () {
 	Font font = create ? new Font(display, fontData) : display.getSystemFont();
 	panel.setPanelFont(font.handle, false);
 	SWTPanelDelegate delegate = (SWTPanelDelegate)new SWTPanelDelegate().alloc().init();
-	long /*int*/ jniRef = OS.NewGlobalRef(this);
+	long jniRef = OS.NewGlobalRef(this);
 	if (jniRef == 0) error(SWT.ERROR_NO_HANDLES);
 	OS.object_setInstanceVariable(delegate.id, Display.SWT_OBJECT, jniRef);
 	panel.setDelegate(delegate);
@@ -192,12 +192,12 @@ public FontData open () {
 	return fontData;
 }
 
-void setColor_forAttribute(long /*int*/ id, long /*int*/ sel, long /*int*/ colorArg, long /*int*/ attribute) {
+void setColor_forAttribute(long id, long sel, long colorArg, long attribute) {
 	if (attribute != 0 && NSString.stringWith("NSColor").isEqualToString(new NSString(attribute))) { //$NON-NLS-1$
 		if (colorArg != 0) {
 			NSColor color = new NSColor(colorArg);
 			Display display = parent != null ? parent.getDisplay() : Display.getCurrent();
-			double /*float*/ [] handle = display.getNSColorRGB(color);
+			double [] handle = display.getNSColorRGB(color);
 			if (handle != null) {
 				rgb = new RGB((int)(handle[0] * 255), (int)(handle[1] * 255), (int)(handle[2] * 255));
 			}
@@ -271,11 +271,11 @@ public void setRGB (RGB rgb) {
 	this.rgb = rgb;
 }
 
-int validModesForFontPanel(long /*int*/ id, long /*int*/ sel, long /*int*/ arg0) {
+int validModesForFontPanel(long id, long sel, long arg0) {
 	return effectsVisible ? OS.NSFontPanelAllModesMask : OS.NSFontPanelAllModesMask & ~OS.NSFontPanelAllEffectsModeMask;
 }
 
-void windowWillClose(long /*int*/ id, long /*int*/ sel, long /*int*/ sender) {
+void windowWillClose(long id, long sel, long sender) {
 	NSApplication.sharedApplication().stop(null);
 }
 

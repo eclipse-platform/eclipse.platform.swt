@@ -99,12 +99,12 @@ public Label (Composite parent, int style) {
 }
 
 @Override
-long /*int*/ accessibleHandle() {
+long accessibleHandle() {
 	return eventView().id;
 }
 
 @Override
-boolean accessibilityIsIgnored(long /*int*/ id, long /*int*/ sel) {
+boolean accessibilityIsIgnored(long id, long sel) {
 	if (id == view.id) return true;
 	return super.accessibilityIsIgnored(id, sel);
 }
@@ -142,7 +142,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	int width = DEFAULT_WIDTH;
 	int height = DEFAULT_HEIGHT;
 	if ((style & SWT.SEPARATOR) != 0) {
-		double /*float*/ lineWidth = ((NSBox)view).borderWidth ();
+		double lineWidth = ((NSBox)view).borderWidth ();
 		if ((style & SWT.HORIZONTAL) != 0) {
 			height = (int)Math.ceil (lineWidth * 2);
 		} else {
@@ -205,7 +205,7 @@ void createHandle () {
 		widget.setBoxType (OS.NSBoxCustom);
 		widget.setContentViewMargins (new NSSize());
 
-		double /*float*/ lineWidth = widget.borderWidth ();
+		double lineWidth = widget.borderWidth ();
 		if ((style & SWT.HORIZONTAL) != 0) {
 			rect.height = (int)Math.ceil (lineWidth * 2);
 			rect.y = (DEFAULT_HEIGHT / 2) - (rect.height / 2);
@@ -293,13 +293,13 @@ void deregister () {
 }
 
 @Override
-void drawBackground (long /*int*/ id, NSGraphicsContext context, NSRect rect) {
+void drawBackground (long id, NSGraphicsContext context, NSRect rect) {
 	if (id != view.id) return;
 	fillBackground(view, context, rect, -1);
 }
 
 @Override
-long /*int*/ imageView() {
+long imageView() {
 	return imageView.id;
 };
 
@@ -458,7 +458,7 @@ void setFont(NSFont font) {
 }
 
 @Override
-void setForeground (double /*float*/ [] color) {
+void setForeground (double [] color) {
 	if ((style & SWT.SEPARATOR) != 0) return;
 	NSCell cell = new NSCell(textView.cell());
 	cell.setAttributedStringValue(createString());

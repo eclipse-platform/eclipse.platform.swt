@@ -19,7 +19,7 @@ public DOMEvent() {
 	super();
 }
 
-public DOMEvent(long /*int*/ id) {
+public DOMEvent(long id) {
 	super(id);
 }
 

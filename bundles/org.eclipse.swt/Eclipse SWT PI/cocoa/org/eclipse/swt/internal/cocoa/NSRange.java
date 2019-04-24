@@ -15,8 +15,8 @@ package org.eclipse.swt.internal.cocoa;
 
 public class NSRange {
 	/** @field cast=(NSUInteger) */
-	public long /*int*/ location;
+	public long location;
 	/** @field cast=(NSUInteger) */
-	public long /*int*/ length;
+	public long length;
 	public static final int sizeof = OS.NSRange_sizeof();
 }

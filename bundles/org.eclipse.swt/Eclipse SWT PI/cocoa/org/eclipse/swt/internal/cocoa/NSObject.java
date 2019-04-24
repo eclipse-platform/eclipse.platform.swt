@@ -19,7 +19,7 @@ public NSObject() {
 	super();
 }
 
-public NSObject(long /*int*/ id) {
+public NSObject(long id) {
 	super(id);
 }
 
@@ -33,7 +33,7 @@ public NSObject alloc() {
 }
 
 public id accessibilityAttributeValue(NSString attribute, id parameter) {
-	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_accessibilityAttributeValue_forParameter_, attribute != null ? attribute.id : 0, parameter != null ? parameter.id : 0);
+	long result = OS.objc_msgSend(this.id, OS.sel_accessibilityAttributeValue_forParameter_, attribute != null ? attribute.id : 0, parameter != null ? parameter.id : 0);
 	return result != 0 ? new id(result) : null;
 }
 
@@ -41,12 +41,12 @@ public boolean accessibilitySetOverrideValue(id value, NSString attribute) {
 	return OS.objc_msgSend_bool(this.id, OS.sel_accessibilitySetOverrideValue_forAttribute_, value != null ? value.id : 0, attribute != null ? attribute.id : 0);
 }
 
-public void draggedImage(NSImage image, NSPoint screenPoint, long /*int*/ operation) {
+public void draggedImage(NSImage image, NSPoint screenPoint, long operation) {
 	OS.objc_msgSend(this.id, OS.sel_draggedImage_endedAt_operation_, image != null ? image.id : 0, screenPoint, operation);
 }
 
 public NSWindow draggingDestinationWindow() {
-	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_draggingDestinationWindow);
+	long result = OS.objc_msgSend(this.id, OS.sel_draggingDestinationWindow);
 	return result != 0 ? new NSWindow(result) : null;
 }
 
@@ -57,11 +57,11 @@ public NSPoint draggingLocation() {
 }
 
 public NSPasteboard draggingPasteboard() {
-	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_draggingPasteboard);
+	long result = OS.objc_msgSend(this.id, OS.sel_draggingPasteboard);
 	return result != 0 ? new NSPasteboard(result) : null;
 }
 
-public long /*int*/ draggingSourceOperationMask() {
+public long draggingSourceOperationMask() {
 	return OS.objc_msgSend(this.id, OS.sel_draggingSourceOperationMask);
 }
 
@@ -69,7 +69,7 @@ public boolean outlineView(NSOutlineView outlineView, NSTableColumn tableColumn,
 	return OS.objc_msgSend_bool(this.id, OS.sel_outlineView_shouldEditTableColumn_item_, outlineView != null ? outlineView.id : 0, tableColumn != null ? tableColumn.id : 0, item != null ? item.id : 0);
 }
 
-public boolean outlineView(NSOutlineView outlineView, long /*int*/ columnIndex, long /*int*/ newColumnIndex) {
+public boolean outlineView(NSOutlineView outlineView, long columnIndex, long newColumnIndex) {
 	return OS.objc_msgSend_bool(this.id, OS.sel_outlineView_shouldReorderColumn_toColumn_, outlineView != null ? outlineView.id : 0, columnIndex, newColumnIndex);
 }
 
@@ -85,15 +85,15 @@ public boolean readSelectionFromPasteboard(NSPasteboard pboard) {
 	return OS.objc_msgSend_bool(this.id, OS.sel_readSelectionFromPasteboard_, pboard != null ? pboard.id : 0);
 }
 
-public boolean tableView(NSTableView tableView, long /*int*/ columnIndex, long /*int*/ newColumnIndex) {
+public boolean tableView(NSTableView tableView, long columnIndex, long newColumnIndex) {
 	return OS.objc_msgSend_bool(this.id, OS.sel_tableView_shouldReorderColumn_toColumn_, tableView != null ? tableView.id : 0, columnIndex, newColumnIndex);
 }
 
-public boolean tableView(NSTableView tableView, long /*int*/ row) {
+public boolean tableView(NSTableView tableView, long row) {
 	return OS.objc_msgSend_bool(this.id, OS.sel_tableView_shouldSelectRow_, tableView != null ? tableView.id : 0, row);
 }
 
-public boolean tableView(NSTableView tableView, NSCell cell, NSTableColumn tableColumn, long /*int*/ row) {
+public boolean tableView(NSTableView tableView, NSCell cell, NSTableColumn tableColumn, long row) {
 	return OS.objc_msgSend_bool(this.id, OS.sel_tableView_shouldTrackCell_forTableColumn_row_, tableView != null ? tableView.id : 0, cell != null ? cell.id : 0, tableColumn != null ? tableColumn.id : 0, row);
 }
 
@@ -102,7 +102,7 @@ public boolean writeSelectionToPasteboard(NSPasteboard pboard, NSArray types) {
 }
 
 public NSObject autorelease() {
-	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_autorelease);
+	long result = OS.objc_msgSend(this.id, OS.sel_autorelease);
 	return result == this.id ? this : (result != 0 ? new NSObject(result) : null);
 }
 
@@ -111,7 +111,7 @@ public void cancelAuthenticationChallenge(NSURLAuthenticationChallenge challenge
 }
 
 public NSString className() {
-	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_className);
+	long result = OS.objc_msgSend(this.id, OS.sel_className);
 	return result != 0 ? new NSString(result) : null;
 }
 
@@ -120,17 +120,17 @@ public boolean conformsToProtocol(Protocol aProtocol) {
 }
 
 public id copy() {
-	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_copy);
+	long result = OS.objc_msgSend(this.id, OS.sel_copy);
 	return result != 0 ? new id(result) : null;
 }
 
 public NSString description() {
-	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_description);
+	long result = OS.objc_msgSend(this.id, OS.sel_description);
 	return result != 0 ? new NSString(result) : null;
 }
 
 public NSObject init() {
-	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_init);
+	long result = OS.objc_msgSend(this.id, OS.sel_init);
 	return result == this.id ? this : (result != 0 ? new NSObject(result) : null);
 }
 
@@ -142,20 +142,20 @@ public boolean isEqualTo(id object) {
 	return OS.objc_msgSend_bool(this.id, OS.sel_isEqualTo_, object != null ? object.id : 0);
 }
 
-public boolean isKindOfClass(long /*int*/ aClass) {
+public boolean isKindOfClass(long aClass) {
 	return OS.objc_msgSend_bool(this.id, OS.sel_isKindOfClass_, aClass);
 }
 
 public id mutableCopy() {
-	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_mutableCopy);
+	long result = OS.objc_msgSend(this.id, OS.sel_mutableCopy);
 	return result != 0 ? new id(result) : null;
 }
 
-public void performSelector(long /*int*/ aSelector, id anArgument, double delay, NSArray modes) {
+public void performSelector(long aSelector, id anArgument, double delay, NSArray modes) {
 	OS.objc_msgSend(this.id, OS.sel_performSelector_withObject_afterDelay_inModes_, aSelector, anArgument != null ? anArgument.id : 0, delay, modes != null ? modes.id : 0);
 }
 
-public void performSelectorOnMainThread(long /*int*/ aSelector, id arg, boolean wait) {
+public void performSelectorOnMainThread(long aSelector, id arg, boolean wait) {
 	OS.objc_msgSend(this.id, OS.sel_performSelectorOnMainThread_withObject_waitUntilDone_, aSelector, arg != null ? arg.id : 0, wait);
 }
 
@@ -163,16 +163,16 @@ public void release() {
 	OS.objc_msgSend(this.id, OS.sel_release);
 }
 
-public boolean respondsToSelector(long /*int*/ aSelector) {
+public boolean respondsToSelector(long aSelector) {
 	return OS.objc_msgSend_bool(this.id, OS.sel_respondsToSelector_, aSelector);
 }
 
 public NSObject retain() {
-	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_retain);
+	long result = OS.objc_msgSend(this.id, OS.sel_retain);
 	return result == this.id ? this : (result != 0 ? new NSObject(result) : null);
 }
 
-public long /*int*/ retainCount() {
+public long retainCount() {
 	return OS.objc_msgSend(this.id, OS.sel_retainCount);
 }
 
@@ -180,7 +180,7 @@ public void setValue(id value, NSString key) {
 	OS.objc_msgSend(this.id, OS.sel_setValue_forKey_, value != null ? value.id : 0, key != null ? key.id : 0);
 }
 
-public long /*int*/ superclass() {
+public long superclass() {
 	return OS.objc_msgSend(this.id, OS.sel_superclass);
 }
 
@@ -189,7 +189,7 @@ public void useCredential(NSURLCredential credential, NSURLAuthenticationChallen
 }
 
 public id valueForKey(NSString key) {
-	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_valueForKey_, key != null ? key.id : 0);
+	long result = OS.objc_msgSend(this.id, OS.sel_valueForKey_, key != null ? key.id : 0);
 	return result != 0 ? new id(result) : null;
 }
 

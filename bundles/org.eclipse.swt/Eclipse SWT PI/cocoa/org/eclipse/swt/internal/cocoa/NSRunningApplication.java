@@ -19,7 +19,7 @@ public NSRunningApplication() {
 	super();
 }
 
-public NSRunningApplication(long /*int*/ id) {
+public NSRunningApplication(long id) {
 	super(id);
 }
 
@@ -27,12 +27,12 @@ public NSRunningApplication(id id) {
 	super(id);
 }
 
-public boolean activateWithOptions(long /*int*/ options) {
+public boolean activateWithOptions(long options) {
 	return OS.objc_msgSend_bool(this.id, OS.sel_activateWithOptions_, options);
 }
 
 public static NSRunningApplication currentApplication() {
-	long /*int*/ result = OS.objc_msgSend(OS.class_NSRunningApplication, OS.sel_currentApplication);
+	long result = OS.objc_msgSend(OS.class_NSRunningApplication, OS.sel_currentApplication);
 	return result != 0 ? new NSRunningApplication(result) : null;
 }
 

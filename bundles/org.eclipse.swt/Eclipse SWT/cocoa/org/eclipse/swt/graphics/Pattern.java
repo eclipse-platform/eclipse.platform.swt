@@ -40,7 +40,7 @@ public class Pattern extends Resource {
 	NSGradient gradient;
 	NSPoint pt1, pt2;
 	Image image;
-	double /*float*/ [] color1, color2;
+	double [] color1, color2;
 	int alpha1, alpha2;
 
 /**

@@ -19,7 +19,7 @@ public NSBrowserCell() {
 	super();
 }
 
-public NSBrowserCell(long /*int*/ id) {
+public NSBrowserCell(long id) {
 	super(id);
 }
 
@@ -28,7 +28,7 @@ public NSBrowserCell(id id) {
 }
 
 public NSColor highlightColorInView(NSView controlView) {
-	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_highlightColorInView_, controlView != null ? controlView.id : 0);
+	long result = OS.objc_msgSend(this.id, OS.sel_highlightColorInView_, controlView != null ? controlView.id : 0);
 	return result != 0 ? new NSColor(result) : null;
 }
 

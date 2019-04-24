@@ -259,14 +259,14 @@ public FontData[] getFontData() {
 		NSString str = handle.fontName();
 		String nsName = str.getString();
 		NSFontManager manager = NSFontManager.sharedFontManager();
-		long /*int*/ traits = manager.traitsOfFont(handle);
+		long traits = manager.traitsOfFont(handle);
 		int style = SWT.NORMAL;
 		if ((traits & OS.NSItalicFontMask) != 0) style |= SWT.ITALIC;
 		if ((traits & OS.NSBoldFontMask) != 0) style |= SWT.BOLD;
 		if ((extraTraits & OS.NSItalicFontMask) != 0) style |= SWT.ITALIC;
 		if ((extraTraits & OS.NSBoldFontMask) != 0) style |= SWT.BOLD;
 		Point dpi = device.dpi, screenDPI = device.getScreenDPI();
-		FontData data = new FontData(name, (float)/*64*/handle.pointSize() * screenDPI.y / dpi.y, style);
+		FontData data = new FontData(name, (float)handle.pointSize() * screenDPI.y / dpi.y, style);
 		data.nsName = nsName;
 		return new FontData[]{data};
 	} finally {
@@ -307,7 +307,7 @@ public static Font cocoa_new(Device device, NSFont handle) {
  */
 @Override
 public int hashCode() {
-	return handle != null ? (int)/*64*/handle.id : 0;
+	return handle != null ? (int)handle.id : 0;
 }
 
 void init(String name, float height, int style, String nsName) {

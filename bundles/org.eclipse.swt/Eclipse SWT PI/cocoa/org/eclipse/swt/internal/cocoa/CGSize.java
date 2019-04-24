@@ -15,8 +15,8 @@ package org.eclipse.swt.internal.cocoa;
 
 public class CGSize {
 	/** @field cast=(CGFloat) */
-	public double /*float*/ width;
+	public double width;
 	/** @field cast=(CGFloat) */
-	public double /*float*/ height;
+	public double height;
 	public static final int sizeof = OS.CGSize_sizeof();
 }

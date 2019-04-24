@@ -15,16 +15,16 @@ package org.eclipse.swt.internal.cocoa;
 
 public class NSAffineTransformStruct {
 	/** @field cast=(CGFloat) */
-	public double /*float*/ m11;
+	public double m11;
 	/** @field cast=(CGFloat) */
-	public double /*float*/ m12;
+	public double m12;
 	/** @field cast=(CGFloat) */
-	public double /*float*/ m21;
+	public double m21;
 	/** @field cast=(CGFloat) */
-	public double /*float*/ m22;
+	public double m22;
 	/** @field cast=(CGFloat) */
-	public double /*float*/ tX;
+	public double tX;
 	/** @field cast=(CGFloat) */
-	public double /*float*/ tY;
+	public double tY;
 	public static final int sizeof = OS.NSAffineTransformStruct_sizeof();
 }

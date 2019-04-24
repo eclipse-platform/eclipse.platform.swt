@@ -47,7 +47,7 @@ public final class Color extends Resource {
 	 *
 	 * @noreference This field is not intended to be referenced by clients.
 	 */
-	public double /*float*/ [] handle;
+	public double [] handle;
 
 Color(Device device) {
 	super(device);
@@ -226,7 +226,7 @@ public boolean equals(Object object) {
 	if (object == this) return true;
 	if (!(object instanceof Color)) return false;
 	Color color = (Color)object;
-	double /*float*/ [] rgbColor = color.handle;
+	double [] rgbColor = color.handle;
 	if (handle == rgbColor) return true;
 	return device == color.device &&
 		(int)(handle[0] * 255) == (int)(rgbColor[0] * 255) &&
@@ -353,8 +353,8 @@ public RGBA getRGBA () {
  *
  * @noreference This method is not intended to be referenced by clients.
  */
-public static Color cocoa_new(Device device, double /*float*/ [] handle) {
-	double /*float*/ [] rgbColor = handle;
+public static Color cocoa_new(Device device, double [] handle) {
+	double [] rgbColor = handle;
 	Color color = new Color(device);
 	color.handle = rgbColor;
 	return color;
@@ -376,8 +376,8 @@ public static Color cocoa_new(Device device, double /*float*/ [] handle) {
  *
  * @noreference This method is not intended to be referenced by clients.
  */
-public static Color cocoa_new(Device device, double /*float*/ [] handle, int alpha) {
-	double /*float*/ [] rgbColor = handle;
+public static Color cocoa_new(Device device, double [] handle, int alpha) {
+	double [] rgbColor = handle;
 	Color color = new Color(device);
 	color.handle = rgbColor;
 	color.handle[3] = alpha / 255f;
@@ -407,7 +407,7 @@ void init(int red, int green, int blue, int alpha) {
 		(alpha > 255) || (alpha < 0)) {
 			SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
-	double /*float*/ [] rgbColor = new double /*float*/ [4];
+	double [] rgbColor = new double [4];
 	rgbColor[0] = red / 255f;
 	rgbColor[1] = green / 255f;
 	rgbColor[2] = blue / 255f;

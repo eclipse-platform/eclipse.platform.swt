@@ -19,7 +19,7 @@ public NSAppleEventDescriptor() {
 	super();
 }
 
-public NSAppleEventDescriptor(long /*int*/ id) {
+public NSAppleEventDescriptor(long id) {
 	super(id);
 }
 
@@ -28,7 +28,7 @@ public NSAppleEventDescriptor(id id) {
 }
 
 public NSAppleEventDescriptor initListDescriptor() {
-	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_initListDescriptor);
+	long result = OS.objc_msgSend(this.id, OS.sel_initListDescriptor);
 	return result == this.id ? this : (result != 0 ? new NSAppleEventDescriptor(result) : null);
 }
 

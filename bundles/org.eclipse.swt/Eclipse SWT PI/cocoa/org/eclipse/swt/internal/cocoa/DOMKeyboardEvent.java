@@ -19,7 +19,7 @@ public DOMKeyboardEvent() {
 	super();
 }
 
-public DOMKeyboardEvent(long /*int*/ id) {
+public DOMKeyboardEvent(long id) {
 	super(id);
 }
 
@@ -32,7 +32,7 @@ public boolean altKey() {
 }
 
 public int charCode() {
-	return (int)/*64*/OS.objc_msgSend(this.id, OS.sel_charCode);
+	return (int)OS.objc_msgSend(this.id, OS.sel_charCode);
 }
 
 public boolean ctrlKey() {
@@ -40,7 +40,7 @@ public boolean ctrlKey() {
 }
 
 public int keyCode() {
-	return (int)/*64*/OS.objc_msgSend(this.id, OS.sel_keyCode);
+	return (int)OS.objc_msgSend(this.id, OS.sel_keyCode);
 }
 
 public boolean metaKey() {

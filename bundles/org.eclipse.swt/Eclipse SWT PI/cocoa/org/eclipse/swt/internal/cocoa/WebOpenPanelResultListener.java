@@ -19,7 +19,7 @@ public WebOpenPanelResultListener() {
 	super();
 }
 
-public WebOpenPanelResultListener(long /*int*/ id) {
+public WebOpenPanelResultListener(long id) {
 	super(id);
 }
 

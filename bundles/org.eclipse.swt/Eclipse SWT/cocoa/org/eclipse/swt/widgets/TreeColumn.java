@@ -209,7 +209,7 @@ void destroyWidget () {
 }
 
 @Override
-void drawInteriorWithFrame_inView (long /*int*/ id, long /*int*/ sel, NSRect cellRect, long /*int*/ view) {
+void drawInteriorWithFrame_inView (long id, long sel, NSRect cellRect, long view) {
 	/*
 	 * Feature in Cocoa.  When the last column in a tree does not reach the
 	 * rightmost edge of the tree view, the cell that draws the rightmost-
@@ -224,7 +224,7 @@ void drawInteriorWithFrame_inView (long /*int*/ id, long /*int*/ sel, NSRect cel
 		if (parent.headerBackground != null) {
 			NSGraphicsContext context = NSGraphicsContext.currentContext ();
 			context.saveGraphicsState ();
-			double /*float*/ [] colorRGB = parent.headerBackground;
+			double [] colorRGB = parent.headerBackground;
 			NSColor color = NSColor.colorWithDeviceRed(colorRGB[0], colorRGB[1], colorRGB[2], 1f);
 			color.setFill();
 			/*
@@ -263,7 +263,7 @@ void drawInteriorWithFrame_inView (long /*int*/ id, long /*int*/ sel, NSRect cel
 	if (parent.headerBackground != null) {
 		// fill header background
 		context.saveGraphicsState();
-		double /*float*/ [] colorRGB = parent.headerBackground;
+		double [] colorRGB = parent.headerBackground;
 		NSColor color1 = NSColor.colorWithDeviceRed(colorRGB[0], colorRGB[1], colorRGB[2], 1f);
 		color1.setFill();
 		/*
@@ -308,7 +308,7 @@ void drawInteriorWithFrame_inView (long /*int*/ id, long /*int*/ sel, NSRect cel
 			NSRect sortIndicatorRect = headerCell.sortIndicatorRectForBounds(cellRect);
 			context.saveGraphicsState();
 			if(parent.headerForeground != null) {
-				double /*float*/ [] colorRGB = parent.headerForeground;
+				double [] colorRGB = parent.headerForeground;
 				NSColor color = NSColor.colorWithDeviceRed(colorRGB[0], colorRGB[1], colorRGB[2], 0.9f);
 				color.setStroke();
 			}

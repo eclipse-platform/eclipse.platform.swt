@@ -19,7 +19,7 @@ public NSPrinter() {
 	super();
 }
 
-public NSPrinter(long /*int*/ id) {
+public NSPrinter(long id) {
 	super(id);
 }
 
@@ -28,17 +28,17 @@ public NSPrinter(id id) {
 }
 
 public NSString name() {
-	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_name);
+	long result = OS.objc_msgSend(this.id, OS.sel_name);
 	return result != 0 ? new NSString(result) : null;
 }
 
 public static NSArray printerNames() {
-	long /*int*/ result = OS.objc_msgSend(OS.class_NSPrinter, OS.sel_printerNames);
+	long result = OS.objc_msgSend(OS.class_NSPrinter, OS.sel_printerNames);
 	return result != 0 ? new NSArray(result) : null;
 }
 
 public static NSPrinter printerWithName(NSString name) {
-	long /*int*/ result = OS.objc_msgSend(OS.class_NSPrinter, OS.sel_printerWithName_, name != null ? name.id : 0);
+	long result = OS.objc_msgSend(OS.class_NSPrinter, OS.sel_printerWithName_, name != null ? name.id : 0);
 	return result != 0 ? new NSPrinter(result) : null;
 }
 

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2018 IBM Corporation and others.
+ * Copyright (c) 2000, 2019 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -19,7 +19,7 @@ public NSWindow() {
 	super();
 }
 
-public NSWindow(long /*int*/ id) {
+public NSWindow(long id) {
 	super(id);
 }
 
@@ -27,12 +27,12 @@ public NSWindow(id id) {
 	super(id);
 }
 
-public void addChildWindow(NSWindow childWin, long /*int*/ place) {
+public void addChildWindow(NSWindow childWin, long place) {
 	OS.objc_msgSend(this.id, OS.sel_addChildWindow_ordered_, childWin != null ? childWin.id : 0, place);
 }
 
-public double /*float*/ alphaValue() {
-	return (double /*float*/)OS.objc_msgSend_fpret(this.id, OS.sel_alphaValue);
+public double alphaValue() {
+	return OS.objc_msgSend_fpret(this.id, OS.sel_alphaValue);
 }
 
 public boolean areCursorRectsEnabled() {
@@ -57,12 +57,12 @@ public void close() {
 	OS.objc_msgSend(this.id, OS.sel_close);
 }
 
-public long /*int*/ collectionBehavior() {
+public long collectionBehavior() {
 	return OS.objc_msgSend(this.id, OS.sel_collectionBehavior);
 }
 
 public NSView contentView() {
-	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_contentView);
+	long result = OS.objc_msgSend(this.id, OS.sel_contentView);
 	return result != 0 ? new NSView(result) : null;
 }
 
@@ -79,12 +79,12 @@ public NSPoint convertScreenToBase(NSPoint aPoint) {
 }
 
 public NSButtonCell defaultButtonCell() {
-	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_defaultButtonCell);
+	long result = OS.objc_msgSend(this.id, OS.sel_defaultButtonCell);
 	return result != 0 ? new NSButtonCell(result) : null;
 }
 
 public id delegate() {
-	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_delegate);
+	long result = OS.objc_msgSend(this.id, OS.sel_delegate);
 	return result != 0 ? new id(result) : null;
 }
 
@@ -117,12 +117,12 @@ public void endEditingFor(id anObject) {
 }
 
 public NSText fieldEditor(boolean createFlag, id anObject) {
-	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_fieldEditor_forObject_, createFlag, anObject != null ? anObject.id : 0);
+	long result = OS.objc_msgSend(this.id, OS.sel_fieldEditor_forObject_, createFlag, anObject != null ? anObject.id : 0);
 	return result != 0 ? new NSText(result) : null;
 }
 
 public NSResponder firstResponder() {
-	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_firstResponder);
+	long result = OS.objc_msgSend(this.id, OS.sel_firstResponder);
 	return result != 0 ? new NSResponder(result) : null;
 }
 
@@ -143,7 +143,7 @@ public NSRect frameRectForContentRect(NSRect contentRect) {
 }
 
 public NSGraphicsContext graphicsContext() {
-	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_graphicsContext);
+	long result = OS.objc_msgSend(this.id, OS.sel_graphicsContext);
 	return result != 0 ? new NSGraphicsContext(result) : null;
 }
 
@@ -151,13 +151,13 @@ public boolean hasShadow() {
 	return OS.objc_msgSend_bool(this.id, OS.sel_hasShadow);
 }
 
-public NSWindow initWithContentRect(NSRect contentRect, long /*int*/ aStyle, long /*int*/ bufferingType, boolean flag) {
-	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_initWithContentRect_styleMask_backing_defer_, contentRect, aStyle, bufferingType, flag);
+public NSWindow initWithContentRect(NSRect contentRect, long aStyle, long bufferingType, boolean flag) {
+	long result = OS.objc_msgSend(this.id, OS.sel_initWithContentRect_styleMask_backing_defer_, contentRect, aStyle, bufferingType, flag);
 	return result == this.id ? this : (result != 0 ? new NSWindow(result) : null);
 }
 
-public NSWindow initWithContentRect(NSRect contentRect, long /*int*/ aStyle, long /*int*/ bufferingType, boolean flag, NSScreen screen) {
-	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_initWithContentRect_styleMask_backing_defer_screen_, contentRect, aStyle, bufferingType, flag, screen != null ? screen.id : 0);
+public NSWindow initWithContentRect(NSRect contentRect, long aStyle, long bufferingType, boolean flag, NSScreen screen) {
+	long result = OS.objc_msgSend(this.id, OS.sel_initWithContentRect_styleMask_backing_defer_screen_, contentRect, aStyle, bufferingType, flag, screen != null ? screen.id : 0);
 	return result == this.id ? this : (result != 0 ? new NSWindow(result) : null);
 }
 
@@ -193,7 +193,7 @@ public boolean isZoomed() {
 	return OS.objc_msgSend_bool(this.id, OS.sel_isZoomed);
 }
 
-public long /*int*/ level() {
+public long level() {
 	return OS.objc_msgSend(this.id, OS.sel_level);
 }
 
@@ -205,8 +205,8 @@ public void makeKeyAndOrderFront(id sender) {
 	OS.objc_msgSend(this.id, OS.sel_makeKeyAndOrderFront_, sender != null ? sender.id : 0);
 }
 
-public static double /*float*/ minFrameWidthWithTitle(NSString aTitle, long /*int*/ aStyle) {
-	return (double /*float*/)OS.objc_msgSend_fpret(OS.class_NSWindow, OS.sel_minFrameWidthWithTitle_styleMask_, aTitle != null ? aTitle.id : 0, aStyle);
+public static double minFrameWidthWithTitle(NSString aTitle, long aStyle) {
+	return OS.objc_msgSend_fpret(OS.class_NSWindow, OS.sel_minFrameWidthWithTitle_styleMask_, aTitle != null ? aTitle.id : 0, aStyle);
 }
 
 public NSSize minSize() {
@@ -241,12 +241,12 @@ public void orderOut(id sender) {
 	OS.objc_msgSend(this.id, OS.sel_orderOut_, sender != null ? sender.id : 0);
 }
 
-public void orderWindow(long /*int*/ place, long /*int*/ otherWin) {
+public void orderWindow(long place, long otherWin) {
 	OS.objc_msgSend(this.id, OS.sel_orderWindow_relativeTo_, place, otherWin);
 }
 
 public NSWindow parentWindow() {
-	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_parentWindow);
+	long result = OS.objc_msgSend(this.id, OS.sel_parentWindow);
 	return result == this.id ? this : (result != 0 ? new NSWindow(result) : null);
 }
 
@@ -255,7 +255,7 @@ public void removeChildWindow(NSWindow childWin) {
 }
 
 public NSScreen screen() {
-	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_screen);
+	long result = OS.objc_msgSend(this.id, OS.sel_screen);
 	return result != 0 ? new NSScreen(result) : null;
 }
 
@@ -267,7 +267,7 @@ public void setAcceptsMouseMovedEvents(boolean acceptsMouseMovedEvents) {
 	OS.objc_msgSend(this.id, OS.sel_setAcceptsMouseMovedEvents_, acceptsMouseMovedEvents);
 }
 
-public void setAlphaValue(double /*float*/ alphaValue) {
+public void setAlphaValue(double alphaValue) {
 	OS.objc_msgSend(this.id, OS.sel_setAlphaValue_, alphaValue);
 }
 
@@ -275,7 +275,7 @@ public void setBackgroundColor(NSColor backgroundColor) {
 	OS.objc_msgSend(this.id, OS.sel_setBackgroundColor_, backgroundColor != null ? backgroundColor.id : 0);
 }
 
-public void setCollectionBehavior(long /*int*/ collectionBehavior) {
+public void setCollectionBehavior(long collectionBehavior) {
 	OS.objc_msgSend(this.id, OS.sel_setCollectionBehavior_, collectionBehavior);
 }
 
@@ -311,7 +311,7 @@ public void setHidesOnDeactivate(boolean hidesOnDeactivate) {
 	OS.objc_msgSend(this.id, OS.sel_setHidesOnDeactivate_, hidesOnDeactivate);
 }
 
-public void setLevel(long /*int*/ level) {
+public void setLevel(long level) {
 	OS.objc_msgSend(this.id, OS.sel_setLevel_, level);
 }
 
@@ -355,12 +355,12 @@ public void setToolbar(NSToolbar toolbar) {
 	OS.objc_msgSend(this.id, OS.sel_setToolbar_, toolbar != null ? toolbar.id : 0);
 }
 
-public NSButton standardWindowButton(long /*int*/ b) {
-	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_standardWindowButton_, b);
+public NSButton standardWindowButton(long b) {
+	long result = OS.objc_msgSend(this.id, OS.sel_standardWindowButton_, b);
 	return result != 0 ? new NSButton(result) : null;
 }
 
-public long /*int*/ styleMask() {
+public long styleMask() {
 	return OS.objc_msgSend(this.id, OS.sel_styleMask);
 }
 
@@ -369,19 +369,19 @@ public void toggleToolbarShown(id sender) {
 }
 
 public NSToolbar toolbar() {
-	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_toolbar);
+	long result = OS.objc_msgSend(this.id, OS.sel_toolbar);
 	return result != 0 ? new NSToolbar(result) : null;
 }
 
-public long /*int*/ windowNumber() {
+public long windowNumber() {
 	return OS.objc_msgSend(this.id, OS.sel_windowNumber);
 }
 
-public static long /*int*/ windowNumberAtPoint(NSPoint point, long /*int*/ windowNumber) {
+public static long windowNumberAtPoint(NSPoint point, long windowNumber) {
 	return OS.objc_msgSend(OS.class_NSWindow, OS.sel_windowNumberAtPoint_belowWindowWithWindowNumber_, point, windowNumber);
 }
 
-public long /*int*/ windowRef() {
+public long windowRef() {
 	return OS.objc_msgSend(this.id, OS.sel_windowRef);
 }
 

@@ -19,7 +19,7 @@ public NSError() {
 	super();
 }
 
-public NSError(long /*int*/ id) {
+public NSError(long id) {
 	super(id);
 }
 
@@ -27,17 +27,17 @@ public NSError(id id) {
 	super(id);
 }
 
-public long /*int*/ code() {
+public long code() {
 	return OS.objc_msgSend(this.id, OS.sel_code);
 }
 
 public NSString localizedDescription() {
-	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_localizedDescription);
+	long result = OS.objc_msgSend(this.id, OS.sel_localizedDescription);
 	return result != 0 ? new NSString(result) : null;
 }
 
 public NSDictionary userInfo() {
-	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_userInfo);
+	long result = OS.objc_msgSend(this.id, OS.sel_userInfo);
 	return result != 0 ? new NSDictionary(result) : null;
 }
 
