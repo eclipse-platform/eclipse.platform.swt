@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2009, 2012 IBM Corporation and others.
+ * Copyright (c) 2000, 2019 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -9,16 +9,22 @@
  * SPDX-License-Identifier: EPL-2.0
  *
  * Contributors:
- *     IBM Corporation - initial API and implementation
+ *    IBM Corporation - initial API and implementation
  *******************************************************************************/
 package org.eclipse.swt.internal.cocoa;
 
 public class CGAffineTransform {
+	/** @field cast=(CGFloat) */
 	public double /*float*/ a;
+	/** @field cast=(CGFloat) */
 	public double /*float*/ b;
+	/** @field cast=(CGFloat) */
 	public double /*float*/ c;
+	/** @field cast=(CGFloat) */
 	public double /*float*/ d;
+	/** @field cast=(CGFloat) */
 	public double /*float*/ tx;
+	/** @field cast=(CGFloat) */
 	public double /*float*/ ty;
-	public static int sizeof = OS.CGAffineTransform_sizeof();
+	public static final int sizeof = OS.CGAffineTransform_sizeof();
 }

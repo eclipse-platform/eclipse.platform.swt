@@ -34,7 +34,7 @@ public class MacGenerator {
 
 	public static boolean BUILD_C_SOURCE = true;
 	public static boolean GENERATE_ALLOC = true;
-	public static boolean GENERATE_STRUCTS = false;
+	public static boolean GENERATE_STRUCTS = true;
 	public static boolean USE_SYSTEM_BRIDGE_FILES = false;
 
 	static final char[] INT_LONG = "int /*long*/".toCharArray();
@@ -278,8 +278,13 @@ void generateFields(ArrayList<Node> fields) {
 		NamedNodeMap fieldAttributes = field.getAttributes();
 		String fieldName = fieldAttributes.getNamedItem("name").getNodeValue();
 		String type = getJavaType(field), type64 = getJavaType64(field);
-		out("\t");
-		out("public ");
+		if (!isStruct(field)) {
+			out("\t/** @field cast=(");
+			out(getCType(field));
+			out(") */");
+			outln();
+		}
+		out("\tpublic ");
 		out(type);
 		if (!type.equals(type64)) {
 			out(" /*");
@@ -290,13 +295,38 @@ void generateFields(ArrayList<Node> fields) {
 		out(fieldName);
 		if (isStruct(field)) {
 			out(" = new ");
-			String clazz = getDeclaredType(fieldAttributes, field);
-			out (clazz);
-			out ("()");
+			out(getDeclaredType(fieldAttributes, field));
+			out("()");
 		}
 		out(";");
 		outln();
 	}
+}
+
+void generateToString(String className, ArrayList<Node> fields) {
+	outln();
+	out("\t@Override");
+	outln();
+	out("\tpublic String toString() {");
+	outln();
+	out("\t\treturn \"");
+	out(className);
+	out("{\"");
+	boolean first = true;
+	for (Node field : fields) {
+		if (!first) {
+			out(" + \",\"");
+		}
+		NamedNodeMap fieldAttributes = field.getAttributes();
+		String fieldName = fieldAttributes.getNamedItem("name").getNodeValue();
+		out(" + ");
+		out(fieldName);
+		first = false;
+	}
+	out(" + \"}\";");
+	outln();
+	out("\t}");
+	outln();
 }
 
 private String getDeclaredType(NamedNodeMap map, Node location) {
@@ -309,7 +339,7 @@ private String getDeclaredType(NamedNodeMap map, Node location) {
 
 	// strip any _Nullable and _Nonnull annotations
 	value = value.replace("_Nullable", "").replace("_Nonnull", "").replace("_Null_unspecified", "");
-	
+
 	// strip greater-than (>) sign
 	value = value.replace(">", "");
 
@@ -490,35 +520,8 @@ void generateMethods(String className, ArrayList<Node> methods) {
 void generateExtraFields(String className) {
 	/* sizeof field */
 	out("\t");
-	out("public static int sizeof = OS." + className + "_sizeof();");
+	out("public static final int sizeof = OS." + className + "_sizeof();");
 	outln();
-	if ("CGSize".equals(className)) {
-		outln();
-		out("\tpublic String toString () {");
-		outln();
-		out("\t\treturn \"CGSize {\" + width + \" \" + height + \"}\";");
-		outln();
-		out("\t}");
-		outln();
-	}
-	if ("CGRect".equals(className)) {
-		outln();
-		out("\tpublic String toString () {");
-		outln();
-		out("\t\treturn \"CGRect {\" + origin.x + \" \" + origin.y + \" \" + size.width + \" \" + size.height + \"}\";");
-		outln();
-		out("\t}");
-		outln();
-	}
-	if ("CGPoint".equals(className)) {
-		outln();
-		out("\tpublic String toString () {");
-		outln();
-		out("\t\treturn \"CGPoint {\" + x + \" \" + y + \"}\";");
-		outln();
-		out("\t}");
-		outln();
-	}
 }
 
 void generateExtraMethods(String className) {
@@ -705,7 +708,7 @@ String getSuperclassName (Node node) {
 	Node superclass = attributes.getNamedItem("swt_superclass");
 	if (superclass != null) {
 		return superclass.getNodeValue();
-	} 
+	}
 	Node name = attributes.getNamedItem("name");
 	if (name.getNodeValue().equals("NSObject")) {
 		return "id";
@@ -765,7 +768,8 @@ void generateStructs() {
 
 		String className = structEntry.getKey();
 		Object[] clazz = structEntry.getValue();
-		ArrayList<Node> methods = (ArrayList<Node>)clazz[1];
+		Node field = (Node) clazz[0];
+		ArrayList<Node> fields = (ArrayList<Node>)clazz[1];
 		out("package ");
 		String packageName = getPackageName();
 		out(packageName);
@@ -776,8 +780,11 @@ void generateStructs() {
 		out(className);
 		out(" {");
 		outln();
-		generateFields(methods);
+		generateFields(fields);
 		generateExtraFields(className);
+		if (getGenToString(field)) {
+			generateToString(className, fields);
+		}
 		out("}");
 		outln();
 
@@ -899,9 +906,9 @@ void generateSelectorEnum() {
 	outln();
 
 	generateSelectorsEnumLiteral();
-	
+
 	out(";"); outln();
-	
+
 	String mainClassShortName = mainClassName.substring(mainClassName.lastIndexOf('.')+1);
 	out("	final String name;"); outln();
 	out("	final long value;"); outln();
@@ -915,7 +922,7 @@ void generateSelectorEnum() {
 	out("	public static Selector valueOf(long value) {"); outln();
 	out("		return "+mainClassShortName+".getSelector(value);"); outln();
 	out("	}"); outln();
-	
+
 	out(footer);
 	this.out.flush();
 	output(fileName, out.toCharArray());
@@ -1059,6 +1066,8 @@ public String[] getExtraAttributeNames(Node node) {
 		}
 	} else if (name.equals("class")) {
 		return new String[]{"swt_superclass"};
+	} else if (name.equals("struct")) {
+		return new String[]{"swt_gen_memmove", "swt_gen_tostring"};
 	} else if (name.equals("retval")) {
 		return new String[]{"swt_java_type", "swt_java_type64", "swt_alloc"};
 	} else if (name.equals("arg")) {
@@ -1272,6 +1281,20 @@ boolean getGenCallback(Node node) {
 	return gen != null && !gen.getNodeValue().equals("false");
 }
 
+boolean getGenMemmove(Node node) {
+	NamedNodeMap attributes = node.getAttributes();
+	if (attributes == null) return false;
+	Node gen = attributes.getNamedItem("swt_gen_memmove");
+	return gen != null && !gen.getNodeValue().equals("false");
+}
+
+boolean getGenToString(Node node) {
+	NamedNodeMap attributes = node.getAttributes();
+	if (attributes == null) return false;
+	Node gen = attributes.getNamedItem("swt_gen_tostring");
+	return gen != null && !gen.getNodeValue().equals("false");
+}
+
 boolean isStatic(Node node) {
 	NamedNodeMap attributes = node.getAttributes();
 	Node isStatic = attributes.getNamedItem("class_method");
@@ -1284,6 +1307,14 @@ boolean isStruct(Node node) {
 	if (type == null) return false;
 	String code = type.getNodeValue();
 	return code.startsWith("{");
+}
+
+boolean isPointer(Node node) {
+	NamedNodeMap attributes = node.getAttributes();
+	Node type = attributes.getNamedItem("type");
+	if (type == null) return false;
+	String code = type.getNodeValue();
+	return code.startsWith("^");
 }
 
 boolean isFloatingPoint(Node node) {
@@ -1443,17 +1474,26 @@ void generateSelectorsEnumLiteral() {
 
 void generateStructNatives() {
 	TreeSet<String> set = new TreeSet<>();
+	TreeSet<String> memmoveSet = new TreeSet<>();
 	for (int x = 0; x < xmls.length; x++) {
 		Document document = documents[x];
 		if (document == null) continue;
 		NodeList list = document.getDocumentElement().getChildNodes();
 		for (int i = 0; i < list.getLength(); i++) {
 			Node node = list.item(i);
-			if ("struct".equals(node.getNodeName()) && getGen(node)) {
-				set.add(getIDAttribute(node).getNodeValue());
+			if ("struct".equals(node.getNodeName())) {
+				String className = getIDAttribute(node).getNodeValue();
+				if (getGen(node)) {
+					set.add(className);
+				}
+				if (getGenMemmove(node)) {
+					memmoveSet.add(className);
+				}
 			}
 		}
 	}
+	set.addAll(memmoveSet);
+
 	out("/** Sizeof natives */");
 	outln();
 	for (String struct : set) {
@@ -1466,7 +1506,7 @@ void generateStructNatives() {
 	out("/** Memmove natives */");
 	outln();
 	outln();
-	for (String struct : set) {
+	for (String struct : memmoveSet) {
 		out("/**");
 		outln();
 		out(" * @param dest cast=(void *),flags=no_in critical");

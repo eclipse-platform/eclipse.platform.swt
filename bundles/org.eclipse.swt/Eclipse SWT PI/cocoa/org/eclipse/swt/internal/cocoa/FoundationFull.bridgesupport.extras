@@ -1227,19 +1227,17 @@
 		<field name="tX" swt_gen="true"></field>
 		<field name="tY" swt_gen="true"></field>
 	</struct>
-	<struct name="NSPoint" swt_gen="true">
+	<struct name="NSPoint" swt_gen="true" swt_gen_memmove="true" swt_gen_tostring="true">
 		<field name="x" swt_gen="true"></field>
 		<field name="y" swt_gen="true"></field>
 	</struct>
-	<struct name="NSRange" swt_gen="true">
+	<struct name="NSRange" swt_gen="true" swt_gen_memmove="true">
 		<field name="length" swt_gen="true"></field>
 		<field name="location" swt_gen="true"></field>
 	</struct>
-	<struct name="NSRect" swt_gen="true">
-		<field name="origin" swt_gen="true"></field>
-		<field name="size" swt_gen="true"></field>
+	<struct name="NSRect" swt_gen_memmove="true">
 	</struct>
-	<struct name="NSSize" swt_gen="true">
+	<struct name="NSSize" swt_gen="true" swt_gen_memmove="true" swt_gen_tostring="true">
 		<field name="height" swt_gen="true"></field>
 		<field name="width" swt_gen="true"></field>
 	</struct>

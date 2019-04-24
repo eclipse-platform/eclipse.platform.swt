@@ -4351,82 +4351,12 @@ public static final native int NSSize_sizeof();
  * @param dest cast=(void *),flags=no_in critical
  * @param src cast=(void *),flags=critical
  */
-public static final native void memmove(long /*int*/ dest, CFRange src, long /*int*/ size);
-/**
- * @param dest cast=(void *),flags=no_in critical
- * @param src cast=(void *),flags=critical
- */
-public static final native void memmove(CFRange dest, long /*int*/ src, long /*int*/ size);
-/**
- * @param dest cast=(void *),flags=no_in critical
- * @param src cast=(void *),flags=critical
- */
-public static final native void memmove(long /*int*/ dest, CGAffineTransform src, long /*int*/ size);
-/**
- * @param dest cast=(void *),flags=no_in critical
- * @param src cast=(void *),flags=critical
- */
-public static final native void memmove(CGAffineTransform dest, long /*int*/ src, long /*int*/ size);
-/**
- * @param dest cast=(void *),flags=no_in critical
- * @param src cast=(void *),flags=critical
- */
 public static final native void memmove(long /*int*/ dest, CGPathElement src, long /*int*/ size);
 /**
  * @param dest cast=(void *),flags=no_in critical
  * @param src cast=(void *),flags=critical
  */
 public static final native void memmove(CGPathElement dest, long /*int*/ src, long /*int*/ size);
-/**
- * @param dest cast=(void *),flags=no_in critical
- * @param src cast=(void *),flags=critical
- */
-public static final native void memmove(long /*int*/ dest, CGPoint src, long /*int*/ size);
-/**
- * @param dest cast=(void *),flags=no_in critical
- * @param src cast=(void *),flags=critical
- */
-public static final native void memmove(CGPoint dest, long /*int*/ src, long /*int*/ size);
-/**
- * @param dest cast=(void *),flags=no_in critical
- * @param src cast=(void *),flags=critical
- */
-public static final native void memmove(long /*int*/ dest, CGRect src, long /*int*/ size);
-/**
- * @param dest cast=(void *),flags=no_in critical
- * @param src cast=(void *),flags=critical
- */
-public static final native void memmove(CGRect dest, long /*int*/ src, long /*int*/ size);
-/**
- * @param dest cast=(void *),flags=no_in critical
- * @param src cast=(void *),flags=critical
- */
-public static final native void memmove(long /*int*/ dest, CGSize src, long /*int*/ size);
-/**
- * @param dest cast=(void *),flags=no_in critical
- * @param src cast=(void *),flags=critical
- */
-public static final native void memmove(CGSize dest, long /*int*/ src, long /*int*/ size);
-/**
- * @param dest cast=(void *),flags=no_in critical
- * @param src cast=(void *),flags=critical
- */
-public static final native void memmove(long /*int*/ dest, CTParagraphStyleSetting src, long /*int*/ size);
-/**
- * @param dest cast=(void *),flags=no_in critical
- * @param src cast=(void *),flags=critical
- */
-public static final native void memmove(CTParagraphStyleSetting dest, long /*int*/ src, long /*int*/ size);
-/**
- * @param dest cast=(void *),flags=no_in critical
- * @param src cast=(void *),flags=critical
- */
-public static final native void memmove(long /*int*/ dest, NSAffineTransformStruct src, long /*int*/ size);
-/**
- * @param dest cast=(void *),flags=no_in critical
- * @param src cast=(void *),flags=critical
- */
-public static final native void memmove(NSAffineTransformStruct dest, long /*int*/ src, long /*int*/ size);
 /**
  * @param dest cast=(void *),flags=no_in critical
  * @param src cast=(void *),flags=critical

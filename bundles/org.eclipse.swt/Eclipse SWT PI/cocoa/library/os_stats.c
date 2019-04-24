@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2018 IBM Corporation and others.
+ * Copyright (c) 2000, 2019 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -477,44 +477,9 @@ char * OS_nativeFunctionNames[] = {
 	"kUTTypeFileURL",
 	"kUTTypeURL",
 #ifndef JNI64
-	"memmove__ILorg_eclipse_swt_internal_cocoa_CFRange_2I",
-#else
-	"memmove__JLorg_eclipse_swt_internal_cocoa_CFRange_2J",
-#endif
-#ifndef JNI64
-	"memmove__ILorg_eclipse_swt_internal_cocoa_CGAffineTransform_2I",
-#else
-	"memmove__JLorg_eclipse_swt_internal_cocoa_CGAffineTransform_2J",
-#endif
-#ifndef JNI64
 	"memmove__ILorg_eclipse_swt_internal_cocoa_CGPathElement_2I",
 #else
 	"memmove__JLorg_eclipse_swt_internal_cocoa_CGPathElement_2J",
-#endif
-#ifndef JNI64
-	"memmove__ILorg_eclipse_swt_internal_cocoa_CGPoint_2I",
-#else
-	"memmove__JLorg_eclipse_swt_internal_cocoa_CGPoint_2J",
-#endif
-#ifndef JNI64
-	"memmove__ILorg_eclipse_swt_internal_cocoa_CGRect_2I",
-#else
-	"memmove__JLorg_eclipse_swt_internal_cocoa_CGRect_2J",
-#endif
-#ifndef JNI64
-	"memmove__ILorg_eclipse_swt_internal_cocoa_CGSize_2I",
-#else
-	"memmove__JLorg_eclipse_swt_internal_cocoa_CGSize_2J",
-#endif
-#ifndef JNI64
-	"memmove__ILorg_eclipse_swt_internal_cocoa_CTParagraphStyleSetting_2I",
-#else
-	"memmove__JLorg_eclipse_swt_internal_cocoa_CTParagraphStyleSetting_2J",
-#endif
-#ifndef JNI64
-	"memmove__ILorg_eclipse_swt_internal_cocoa_NSAffineTransformStruct_2I",
-#else
-	"memmove__JLorg_eclipse_swt_internal_cocoa_NSAffineTransformStruct_2J",
 #endif
 #ifndef JNI64
 	"memmove__ILorg_eclipse_swt_internal_cocoa_NSPoint_2I",
@@ -537,44 +502,9 @@ char * OS_nativeFunctionNames[] = {
 	"memmove__JLorg_eclipse_swt_internal_cocoa_NSSize_2J",
 #endif
 #ifndef JNI64
-	"memmove__Lorg_eclipse_swt_internal_cocoa_CFRange_2II",
-#else
-	"memmove__Lorg_eclipse_swt_internal_cocoa_CFRange_2JJ",
-#endif
-#ifndef JNI64
-	"memmove__Lorg_eclipse_swt_internal_cocoa_CGAffineTransform_2II",
-#else
-	"memmove__Lorg_eclipse_swt_internal_cocoa_CGAffineTransform_2JJ",
-#endif
-#ifndef JNI64
 	"memmove__Lorg_eclipse_swt_internal_cocoa_CGPathElement_2II",
 #else
 	"memmove__Lorg_eclipse_swt_internal_cocoa_CGPathElement_2JJ",
-#endif
-#ifndef JNI64
-	"memmove__Lorg_eclipse_swt_internal_cocoa_CGPoint_2II",
-#else
-	"memmove__Lorg_eclipse_swt_internal_cocoa_CGPoint_2JJ",
-#endif
-#ifndef JNI64
-	"memmove__Lorg_eclipse_swt_internal_cocoa_CGRect_2II",
-#else
-	"memmove__Lorg_eclipse_swt_internal_cocoa_CGRect_2JJ",
-#endif
-#ifndef JNI64
-	"memmove__Lorg_eclipse_swt_internal_cocoa_CGSize_2II",
-#else
-	"memmove__Lorg_eclipse_swt_internal_cocoa_CGSize_2JJ",
-#endif
-#ifndef JNI64
-	"memmove__Lorg_eclipse_swt_internal_cocoa_CTParagraphStyleSetting_2II",
-#else
-	"memmove__Lorg_eclipse_swt_internal_cocoa_CTParagraphStyleSetting_2JJ",
-#endif
-#ifndef JNI64
-	"memmove__Lorg_eclipse_swt_internal_cocoa_NSAffineTransformStruct_2II",
-#else
-	"memmove__Lorg_eclipse_swt_internal_cocoa_NSAffineTransformStruct_2JJ",
 #endif
 #ifndef JNI64
 	"memmove__Lorg_eclipse_swt_internal_cocoa_NSPoint_2II",

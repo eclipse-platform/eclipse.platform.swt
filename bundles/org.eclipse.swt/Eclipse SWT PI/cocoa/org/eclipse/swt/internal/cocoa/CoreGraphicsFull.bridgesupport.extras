@@ -376,7 +376,7 @@
 		<field name="tx" swt_gen="true"></field>
 		<field name="ty" swt_gen="true"></field>
 	</struct>
-	<struct name="CGPathElement" swt_gen="true">
+	<struct name="CGPathElement" swt_gen="true" swt_gen_memmove="true">
 		<field name="points" swt_gen="true"></field>
 		<field name="type" swt_gen="true"></field>
 	</struct>

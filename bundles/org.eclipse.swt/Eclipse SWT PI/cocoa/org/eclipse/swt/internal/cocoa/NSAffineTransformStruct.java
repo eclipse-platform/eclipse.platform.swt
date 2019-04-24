@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2007, 2012 IBM Corporation and others.
+ * Copyright (c) 2000, 2019 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -9,12 +9,22 @@
  * SPDX-License-Identifier: EPL-2.0
  *
  * Contributors:
- *     IBM Corporation - initial API and implementation
+ *    IBM Corporation - initial API and implementation
  *******************************************************************************/
 package org.eclipse.swt.internal.cocoa;
 
 public class NSAffineTransformStruct {
-	public double /*float*/ m11, m12, m21, m22;
-	public double /*float*/ tX, tY;
+	/** @field cast=(CGFloat) */
+	public double /*float*/ m11;
+	/** @field cast=(CGFloat) */
+	public double /*float*/ m12;
+	/** @field cast=(CGFloat) */
+	public double /*float*/ m21;
+	/** @field cast=(CGFloat) */
+	public double /*float*/ m22;
+	/** @field cast=(CGFloat) */
+	public double /*float*/ tX;
+	/** @field cast=(CGFloat) */
+	public double /*float*/ tY;
 	public static final int sizeof = OS.NSAffineTransformStruct_sizeof();
 }
