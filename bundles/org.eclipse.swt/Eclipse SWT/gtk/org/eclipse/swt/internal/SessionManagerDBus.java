@@ -25,7 +25,10 @@ import java.util.ArrayList;
  * However, it requires GtkApplication, and SWT doesn't use that.
  *
  * Current session manager clients can be seen in:
- *   dbus-send --print-reply --dest=org.gnome.SessionManager /org/gnome/SessionManager org.gnome.SessionManager.GetClients
+ *   Gnome:
+ *     dbus-send --print-reply --dest=org.gnome.SessionManager /org/gnome/SessionManager org.gnome.SessionManager.GetClients
+ *   XFCE:
+ *     dbus-send --print-reply --dest=org.xfce.SessionManager /org/xfce/SessionManager org.xfce.Session.Manager.ListClients
  *
  * If you know clientObjectPath, you can send Stop signal with:
  *   dbus-send --print-reply --dest=org.gnome.SessionManager /org/gnome/SessionManager/ClientXX org.gnome.SessionManager.Client.Stop
@@ -49,48 +52,8 @@ public class SessionManagerDBus {
 		void stop();
 	}
 
-	private static class ShutdownHook extends Thread {
-		private SessionManagerDBus parent;
-
-		public ShutdownHook(SessionManagerDBus parent) {
-			this.parent = parent;
-		}
-
-		public void run() {
-			parent.stop();
-		}
-
-		public void install() {
-			try {
-				Runtime.getRuntime().addShutdownHook(this);
-			} catch (IllegalArgumentException ex) {
-				// Shouldn't happen
-				ex.printStackTrace();
-			} catch (IllegalStateException ex) {
-				// Shouldn't happen
-				ex.printStackTrace();
-			} catch (SecurityException ex) {
-				// That's pity, but not too much of a problem.
-				// Client will stay registered, contributing to clutter a little bit.
-			}
-		}
-
-		public void remove() {
-			try {
-				Runtime.getRuntime().removeShutdownHook(this);
-			} catch (IllegalStateException ex) {
-				// The virtual machine is already in the process of shutting down.
-				// That's expected.
-			} catch (SecurityException ex) {
-				// Shouldn't happen if 'addShutdownHook' worked.
-				ex.printStackTrace();
-			}
-		}
-	}
-
 	private ArrayList<IListener> listeners = new ArrayList<IListener>();
 	private Callback g_signal_callback;
-	private ShutdownHook shutdownHook = new ShutdownHook(this);
 	private long sessionManagerProxy;
 	private long clientProxy;
 	private String clientObjectPath;
@@ -105,6 +68,10 @@ public class SessionManagerDBus {
 		if (isDisabled) return;
 
 		start();
+	}
+
+	public void dispose() {
+		stop();
 	}
 
 	/**
@@ -131,16 +98,17 @@ public class SessionManagerDBus {
 			return false;
 		}
 
-		// Both XFCE and Gnome will automatically unregister client on exit.
-		// However, to be on the correct side, we should also do it.
-		// Shutdown hook is used, because there's no other exit callback in SWT.
-		// Display.dispose() isn't good because there could be many displays.
-		// Also, in theory Displays can be created and disposed multiple times.
-		shutdownHook.install();
-
 		return true;
 	}
 
+	/**
+	 * Un-subscribes from session manager events.
+	 *
+	 * NOTE: Both Gnome and XFCE will automatically remove client record
+	 * when client's process ends, so it's not a big deal if this is not
+	 * called at all. See comments for this class to find 'dbus-send'
+	 * commands to verify that.
+	 */
 	private void stop() {
 		if ((sessionManagerProxy != 0) && (clientObjectPath != null)) {
 			long args = OS.g_variant_new(
@@ -180,8 +148,6 @@ public class SessionManagerDBus {
 			g_signal_callback.dispose();
 			g_signal_callback = null;
 		}
-
-		shutdownHook.remove();
 	}
 
 	private void sendEndSessionResponse(boolean is_ok, String reason) {
@@ -356,6 +322,11 @@ public class SessionManagerDBus {
 	 *
 	 * Once used, 'DESKTOP_AUTOSTART_ID' must not leak into child
 	 * processes, or they will fail to 'RegisterClient'.
+	 *
+	 * NOTE: calling this function twice will give empty ID on
+	 * second call. I think this is reasonable. If second object
+	 * is created for whatever reason, it's OK to consider it to
+	 * be a separate client.
 	 */
 	private String claimDesktopAutostartID() {
 		byte[] DESKTOP_AUTOSTART_ID = Converter.javaStringToCString("DESKTOP_AUTOSTART_ID");	//$NON-NLS-1$

@@ -210,7 +210,7 @@ public class Display extends Device {
 		}
 	}
 
-	static SessionManagerDBus sessionManagerDBus = new SessionManagerDBus();
+	SessionManagerDBus sessionManagerDBus;
 	SessionManagerListener sessionManagerListener;
 	Runnable [] disposeList;
 
@@ -3982,8 +3982,18 @@ void initializeWindowManager () {
 }
 
 void initializeSessionManager() {
+	sessionManagerDBus = new SessionManagerDBus();
 	sessionManagerListener = new SessionManagerListener(this);
 	sessionManagerDBus.addListener(sessionManagerListener);
+}
+
+void releaseSessionManager() {
+	if (sessionManagerDBus != null) {
+		sessionManagerDBus.dispose();
+		sessionManagerDBus = null;
+	}
+
+	sessionManagerListener = null;
 }
 
 /**
@@ -4718,7 +4728,7 @@ protected void release () {
 	disposeList = null;
 	synchronizer.releaseSynchronizer ();
 	synchronizer = null;
-	sessionManagerDBus.removeListener(sessionManagerListener);
+	releaseSessionManager ();
 	releaseDisplay ();
 	super.release ();
 }

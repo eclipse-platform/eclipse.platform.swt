@@ -19,6 +19,8 @@ import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.*;
 
 public class Bug531634_LogoffListener {
+	private static boolean isUserClosed = false;
+
 	public static void main (String [] args) {
 		Display display = new Display ();
 
@@ -34,7 +36,7 @@ public class Bug531634_LogoffListener {
 		});
 
 		display.addListener(SWT.Dispose, event -> {
-			if (!shell.isDisposed()) {
+			if (!isUserClosed && !shell.isDisposed()) {
 				MessageBox dialog = new MessageBox(shell, SWT.ICON_INFORMATION);
 				dialog.setMessage("EndSession received.\nI will exit when you close this box. Time limit is 10 sec.");
 				dialog.open();
@@ -43,6 +45,15 @@ public class Bug531634_LogoffListener {
 
 		final Label label = new Label(shell, SWT.WRAP | SWT.CENTER);
 		label.setText("\n\n\nWhen you logoff/shutdown, I will give you messages on 'QueryEndSession' and 'EndSession'");
+
+		// The first version of the patch had deadlock when System.exit() was called in response to UI action.
+		// This happened because 'SWT.Close' is called from inside 'OS.g_main_context_iteration' and
+		// Platform.lock is held by main thread, locking all OS.xxx calls from other threads.
+		shell.addListener(SWT.Close, event -> {
+			isUserClosed = true;
+			display.dispose();
+			System.exit(0);
+		});
 
 		shell.open ();
 
