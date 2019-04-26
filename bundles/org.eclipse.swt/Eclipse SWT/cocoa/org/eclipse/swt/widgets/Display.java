@@ -111,6 +111,8 @@ public class Display extends Device {
 		Dark, Light,
 	}
 	APPEARANCE appAppearance;
+	/* System property to be set for SWT application to use the system's theme */
+	static final String USE_SYSTEM_THEME = "org.eclipse.swt.display.useSystemTheme";
 
 	/* Windows and Events */
 	Event [] eventQueue;
@@ -2225,8 +2227,10 @@ boolean hasDefaultButton () {
 protected void init () {
 	super.init ();
 
-	if (OS.isSystemDarkAppearance()) {
-		setAppAppearance(APPEARANCE.Dark);
+	if ("true".equalsIgnoreCase(System.getProperty(USE_SYSTEM_THEME))) {
+		if (OS.isSystemDarkAppearance()) {
+			setAppAppearance(APPEARANCE.Dark);
+		}
 	}
 
 	initClasses ();
