@@ -244,10 +244,9 @@ public class SessionManagerDBus {
 	/**
 	 * Creates a connection to the session manager.
 	 *
-	 * Saves result to member variable when successful.
-	 * @return Error string in case of error, null if successful.
+	 * @return Pointer to dbus proxy, 0 if failed.
 	 */
-	private String connectSessionManager(String dbusName, String objectPath, String interfaceName) {
+	private long connectSessionManager(String dbusName, String objectPath, String interfaceName) {
 		int sessionManagerFlags =
 				OS.G_DBUS_PROXY_FLAGS_DO_NOT_AUTO_START |
 				OS.G_DBUS_PROXY_FLAGS_DO_NOT_LOAD_PROPERTIES |
@@ -265,46 +264,54 @@ public class SessionManagerDBus {
 				error);
 
 		// Proxy is usually created even for non-existent service names.
-		if (proxy == 0) return extractFreeGError(error[0]);
+		// Errors are not really expected here.
+		if (proxy == 0) {
+			String errorText = extractFreeGError(error[0]);
+			System.err.format(
+					"SWT SessionManagerDBus: Failed to connect to %s: %s%n",
+					dbusName,
+					errorText);
 
-		// Is the service actually present?
+			return 0;
+		}
+
+		// Proxy was created, but is the service actually present?
+		// This is what fails if service is not supported.
 		long owner = OS.g_dbus_proxy_get_name_owner(proxy);
 		if (owner == 0) {
+			// It's expected that not every Linux will support it.
+			// Do not print errors, because there's nothing wrong.
 			OS.g_object_unref(proxy);
-			return "Service not present";
+			return 0;
 		}
 		OS.g_free(owner);
 
 		// Success
-		sessionManagerProxy = proxy;
-		return null;
+		return proxy;
 	}
 
 	private boolean connectSessionManager() {
-		String errorGnome = connectSessionManager(
+		long proxyGnome = connectSessionManager(
 				"org.gnome.SessionManager",     //$NON-NLS-1$
 				"/org/gnome/SessionManager",    //$NON-NLS-1$
 				"org.gnome.SessionManager");	//$NON-NLS-1$
 
-		if (errorGnome == null) {
+		if (proxyGnome != 0) {
+			sessionManagerProxy = proxyGnome;
 			isGnome = true;
 			return true;
 		}
 
-		String errorXCFE = connectSessionManager(
+		long proxyXFCE = connectSessionManager(
 				"org.xfce.SessionManager",		//$NON-NLS-1$
 				"/org/xfce/SessionManager",		//$NON-NLS-1$
 				"org.xfce.Session.Manager");	//$NON-NLS-1$
 
-		if (errorXCFE == null) {
+		if (proxyXFCE != 0) {
+			sessionManagerProxy = proxyXFCE;
 			isGnome = false;
 			return true;
 		}
-
-		System.err.format(
-				"SWT SessionManagerDBus: Failed to connect to SessionManager (gnome: %s, xcfe: %s)%n",
-				errorGnome,
-				errorXCFE);
 
 		return false;
 	}
