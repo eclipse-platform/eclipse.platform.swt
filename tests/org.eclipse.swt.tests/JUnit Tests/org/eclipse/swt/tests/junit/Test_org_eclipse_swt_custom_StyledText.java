@@ -3423,6 +3423,64 @@ public void test_setDoubleClickEnabledZ(){
 }
 
 @Test
+public void test_setEnabled(){
+	// Get colors
+	Color disabledBg = text.getDisplay().getSystemColor(SWT.COLOR_TEXT_DISABLED_BACKGROUND);
+	Color disabledFg = text.getDisplay().getSystemColor(SWT.COLOR_WIDGET_DISABLED_FOREGROUND);
+	Color enabledBg = text.getDisplay().getSystemColor(SWT.COLOR_LIST_BACKGROUND);
+	Color enabledFg = text.getDisplay().getSystemColor(SWT.COLOR_LIST_FOREGROUND);
+
+	// Test basic enabled/disabled functionality twice
+	text.setEnabled(false);
+	assertEquals(disabledBg, text.getBackground());
+	assertEquals(disabledFg, text.getForeground());
+	text.setEnabled(true);
+	assertEquals(enabledBg, text.getBackground());
+	assertEquals(enabledFg, text.getForeground());
+	text.setEnabled(false);
+	assertEquals(disabledBg, text.getBackground());
+	assertEquals(disabledFg, text.getForeground());
+	text.setEnabled(true);
+	assertEquals(enabledBg, text.getBackground());
+	assertEquals(enabledFg, text.getForeground());
+
+	// Test color preservation
+	text.setBackground(getColor(BLUE));
+	text.setForeground(getColor(RED));
+	text.setEnabled(false);
+	assertEquals(getColor(BLUE), text.getBackground());
+	assertEquals(getColor(RED), text.getForeground());
+	text.setEnabled(true);
+	assertEquals(getColor(BLUE), text.getBackground());
+	assertEquals(getColor(RED), text.getForeground());
+
+	// Test color reset
+	text.setBackground(null);
+	text.setForeground(null);
+	assertEquals(enabledBg, text.getBackground());
+	assertEquals(enabledFg, text.getForeground());
+	text.setEnabled(false);
+	text.setBackground(null);
+	text.setForeground(null);
+	assertEquals(disabledBg, text.getBackground());
+	assertEquals(disabledFg, text.getForeground());
+	text.setBackground(getColor(GREEN));
+	text.setForeground(getColor(CYAN));
+	assertEquals(getColor(GREEN), text.getBackground());
+	assertEquals(getColor(CYAN), text.getForeground());
+	text.setBackground(null);
+	text.setForeground(null);
+	assertEquals(disabledBg, text.getBackground());
+	assertEquals(disabledFg, text.getForeground());
+
+	// Dispose colors
+	disabledBg.dispose();
+	disabledFg.dispose();
+	enabledBg.dispose();
+	enabledFg.dispose();
+}
+
+@Test
 public void test_setEditableZ(){
 	text.setEditable(true);
 	assertTrue(":a:", text.getEditable());

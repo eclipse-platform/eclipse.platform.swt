@@ -137,6 +137,14 @@ public class StyledText extends Canvas {
 	Map<Integer, Integer> keyActionMap = new HashMap<>();
 	Color background = null;			// workaround for bug 4791
 	Color foreground = null;			//
+	/** True if a non-default background color is set */
+	boolean customBackground;
+	/** True if a non-default foreground color is set */
+	boolean customForeground;
+	/** False iff the widget is disabled */
+	boolean enabled = true;
+	/** True iff the widget is in the midst of being enabled or disabled */
+	boolean insideSetEnableCall;
 	Clipboard clipboard;
 	int clickCount;
 	int autoScrollDirection = SWT.NULL;	// the direction of autoscrolling (up, down, right, left)
@@ -8490,6 +8498,19 @@ public void setAlwaysShowScrollBars(boolean show) {
 @Override
 public void setBackground(Color color) {
 	checkWidget();
+	boolean backgroundDisabled = false;
+	if (!this.enabled && color == null) {
+		if (background != null) {
+			Color disabledBg = getDisplay().getSystemColor(SWT.COLOR_TEXT_DISABLED_BACKGROUND);
+			if (background.equals(disabledBg)) {
+				return;
+			} else {
+				color = new Color (getDisplay(), disabledBg.getRGBA());
+				backgroundDisabled = true;
+			}
+		}
+	}
+	customBackground = color != null && !this.insideSetEnableCall && !backgroundDisabled;
 	background = color;
 	super.setBackground(color);
 	resetCache(0, content.getLineCount());
@@ -8934,6 +8955,22 @@ public void setEditable(boolean editable) {
 	checkWidget();
 	this.editable = editable;
 }
+@Override
+public void setEnabled (boolean enabled) {
+	super.setEnabled(enabled);
+	Display display = getDisplay();
+	this.enabled = enabled;
+	this.insideSetEnableCall = true;
+	if (enabled) {
+		if (!customBackground) setBackground(display.getSystemColor(SWT.COLOR_LIST_BACKGROUND));
+		if (!customForeground) setForeground(display.getSystemColor(SWT.COLOR_LIST_FOREGROUND));
+	} else {
+		setSelectionRange(0,0);
+		if (!customBackground) setBackground(display.getSystemColor(SWT.COLOR_TEXT_DISABLED_BACKGROUND));
+		if (!customForeground) setForeground(display.getSystemColor(SWT.COLOR_WIDGET_DISABLED_FOREGROUND));
+	}
+	this.insideSetEnableCall = false;
+}
 /**
  * Sets a new font to render text with.
  * <p>
@@ -8972,8 +9009,21 @@ public void setFont(Font font) {
 @Override
 public void setForeground(Color color) {
 	checkWidget();
+	boolean foregroundDisabled = false;
+	if (!this.enabled && color == null) {
+		if (foreground != null) {
+			Color disabledFg = getDisplay().getSystemColor(SWT.COLOR_WIDGET_DISABLED_FOREGROUND);
+			if (foreground.equals(disabledFg)) {
+				return;
+			} else {
+				color = new Color (getDisplay(), disabledFg.getRGBA());
+				foregroundDisabled = true;
+			}
+		}
+	}
+	customForeground = color != null && !this.insideSetEnableCall && !foregroundDisabled;
 	foreground = color;
-	super.setForeground(getForeground());
+	super.setForeground(color);
 	resetCache(0, content.getLineCount());
 	setCaretLocation();
 	super.redraw();
