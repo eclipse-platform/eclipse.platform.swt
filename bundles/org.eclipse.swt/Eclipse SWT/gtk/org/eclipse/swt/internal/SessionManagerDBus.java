@@ -52,14 +52,62 @@ public class SessionManagerDBus {
 		void stop();
 	}
 
+	private static class ShutdownHook extends Thread {
+		private SessionManagerDBus parent;
+
+		public ShutdownHook(SessionManagerDBus parent) {
+			this.parent = parent;
+		}
+
+		public void run() {
+			parent.stop();
+		}
+
+		public void install() {
+			try {
+				Runtime.getRuntime().addShutdownHook(this);
+			} catch (IllegalArgumentException ex) {
+				// Shouldn't happen
+				ex.printStackTrace();
+			} catch (IllegalStateException ex) {
+				// Shouldn't happen
+				ex.printStackTrace();
+			} catch (SecurityException ex) {
+				// That's pity, but not too much of a problem.
+			}
+		}
+
+		public void remove() {
+			try {
+				Runtime.getRuntime().removeShutdownHook(this);
+			} catch (IllegalStateException ex) {
+				// JVM is already in the process of shutting down.
+				// That's expected when called from shutdown hook.
+			} catch (SecurityException ex) {
+				// Shouldn't happen if 'addShutdownHook' worked.
+				ex.printStackTrace();
+			}
+		}
+	}
+
 	private ArrayList<IListener> listeners = new ArrayList<IListener>();
 	private Callback g_signal_callback;
+	private ShutdownHook shutdownHook = new ShutdownHook(this);
 	private long sessionManagerProxy;
 	private long clientProxy;
 	private String clientObjectPath;
 	private boolean isGnome;
 
 	private static int dbusTimeoutMsec = 10000;
+
+	/**
+	 * 1) Prevents old answers to new signals. For example, if
+	 * signal's handler asks user, it can stay for a while and when
+	 * it's closed it could be the other signal already.
+	 * 2) Makes sure answer is given on System.exit()
+	 */
+	private long endSessionResponseCounter = 1;
+	private long endSessionResponseWanted  = 0;
 
 	public SessionManagerDBus() {
 		// Allow to disable session manager, for example in case it conflicts with
@@ -98,6 +146,11 @@ public class SessionManagerDBus {
 			return false;
 		}
 
+		 // If application uses System.exit() while processing 'EndSession' signal
+		 // then GNOME session can get stuck, see Bug 547093. The workaround
+		 // is to install java shutdown hook that will still call .stop().
+		shutdownHook.install();
+
 		return true;
 	}
 
@@ -108,8 +161,18 @@ public class SessionManagerDBus {
 	 * when client's process ends, so it's not a big deal if this is not
 	 * called at all. See comments for this class to find 'dbus-send'
 	 * commands to verify that.
+	 *
+	 * 'synchronized' guards against the rare possible case where some
+	 * thread calls System.exit() while main thread is in Display.dispose()
+	 * and both main thread and my 'ShutdownHook' try to run .stop().
 	 */
-	private void stop() {
+	private synchronized void stop() {
+		if (endSessionResponseWanted != 0) {
+			// Happens when application exits with System.exit()
+			// while still in 'QueryEndSession' or 'EndSession'
+			sendEndSessionResponse(true, "", endSessionResponseWanted);
+		}
+
 		if ((sessionManagerProxy != 0) && (clientObjectPath != null)) {
 			long args = OS.g_variant_new(
 					Converter.javaStringToCString("(o)"), //$NON-NLS-1$
@@ -148,9 +211,27 @@ public class SessionManagerDBus {
 			g_signal_callback.dispose();
 			g_signal_callback = null;
 		}
+
+		shutdownHook.remove();
 	}
 
-	private void sendEndSessionResponse(boolean is_ok, String reason) {
+	private long wantEndSessionResponse() {
+		long responseID = endSessionResponseCounter;
+		endSessionResponseCounter++;
+		endSessionResponseWanted = responseID;
+		return responseID;
+	}
+
+	private void sendEndSessionResponse(boolean is_ok, String reason, long responseID) {
+		if (responseID != endSessionResponseWanted) {
+			// A new signal has arrived while response was being prepared.
+			// Old response is no longer expected.
+			return;
+		}
+
+		// Mark as replied
+		endSessionResponseWanted = 0;
+
 		long args = OS.g_variant_new(
 				Converter.javaStringToCString("(bs)"), //$NON-NLS-1$
 				is_ok,
@@ -174,7 +255,7 @@ public class SessionManagerDBus {
 		}
 	}
 
-	private boolean isReadyToExit() {
+	private boolean queryReadyToExit() {
 		boolean isReady = true;
 
 		// Inform everyone even if someone is not ready.
@@ -184,6 +265,28 @@ public class SessionManagerDBus {
 		}
 
 		return isReady;
+	}
+
+	private void handleQueryEndSession() {
+		// Save current ID before potential recursion
+		long responseID = wantEndSessionResponse();
+
+		// This can block/recurse if handler asks user
+		boolean isReady = queryReadyToExit();
+
+		sendEndSessionResponse(isReady, "", responseID);
+	}
+
+	private void handleEndSession() {
+		// Save current ID before potential recursion
+		long responseID = wantEndSessionResponse();
+
+		// This can block/recurse if handler asks user
+		handleStop();
+
+		// Only respond after we've done, or session can end while we're still working.
+		// Even if we don't want the session to end, I don't think sending 'false' here can be of any help.
+		sendEndSessionResponse(true, "", responseID);
 	}
 
 	private void handleStop() {
@@ -207,13 +310,10 @@ public class SessionManagerDBus {
 
 		switch (signalName) {
 			case "QueryEndSession": //$NON-NLS-1$
-				sendEndSessionResponse(isReadyToExit(), "");
+				handleQueryEndSession();
 				break;
 			case "EndSession": //$NON-NLS-1$
-				handleStop();
-				// Only respond after we've done, or session can end while we're still working.
-				// Even if we don't want the session to end, I don't think sending 'false' here can be of any help.
-				sendEndSessionResponse(true, "");
+				handleEndSession();
 				break;
 			case "Stop":
 				handleStop();

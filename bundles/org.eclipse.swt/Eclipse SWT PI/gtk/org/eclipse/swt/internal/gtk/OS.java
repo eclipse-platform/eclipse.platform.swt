@@ -1731,15 +1731,8 @@ public static final long g_filename_from_uri(long uri, long [] hostname, long []
 	}
 }
 /** @param mem cast=(gpointer) */
-public static final native void _g_free(long mem);
-public static final void g_free(long mem) {
-	lock.lock();
-	try {
-		_g_free(mem);
-	} finally {
-		lock.unlock();
-	}
-}
+// NOTE: Lock is not used, see Bug 546743 and Bug 547093
+public static final native void g_free(long mem);
 /**
  * @param variable cast=(const gchar *),flags=no_out
  */
@@ -2184,16 +2177,8 @@ public static final void g_object_set_qdata(long object, int quark, long data) {
 	}
 }
 /** @param object cast=(gpointer) */
-public static final native void _g_object_unref(long object);
-public static final void g_object_unref(long object) {
-	lock.lock();
-	try {
-		_g_object_unref(object);
-	} finally {
-		lock.unlock();
-	}
-}
-
+// NOTE: Lock is not used, see Bug 546743 and Bug 547093
+public static final native void g_object_unref(long object);
 
 /**
  * @param data cast=(gconstpointer)
@@ -2706,15 +2691,8 @@ public static final long g_type_register_static (long parent_type, byte[] type_n
  * @param items_written cast=(glong *),flags=critical
  * @param error cast=(GError **),flags=critical
  */
-public static final native long _g_utf16_to_utf8(char[] str, long len, long [] items_read, long [] items_written, long [] error);
-public static final long g_utf16_to_utf8(char[] str, long len, long [] items_read, long [] items_written, long [] error) {
-	lock.lock();
-	try {
-		return _g_utf16_to_utf8(str, len, items_read, items_written, error);
-	} finally {
-		lock.unlock();
-	}
-}
+// NOTE: Lock is not used, see Bug 546743 and Bug 547093
+public static final native long g_utf16_to_utf8(char[] str, long len, long [] items_read, long [] items_written, long [] error);
 /**
  * @param str cast=(const gchar *)
  * @param pos cast=(const gchar *)
@@ -4229,15 +4207,8 @@ public static final long g_dbus_proxy_new_for_bus_sync (int bus_type, int flags,
  * @param error cast=(GError **)
  * @category gdbus
  */
-public static final native long _g_dbus_proxy_call_sync (long proxy, byte[] method_name, long parameters, int flags, int timeout_msec, long cancellable, long [] error);
-public static final long g_dbus_proxy_call_sync (long proxy, byte[] method_name, long parameters, int flags, int timeout_msec, long cancellable, long [] error) {
-	lock.lock();
-	try {
-		return _g_dbus_proxy_call_sync (proxy, method_name, parameters, flags, timeout_msec, cancellable, error);
-	} finally {
-		lock.unlock();
-	}
-}
+// NOTE: Lock is not used, see Bug 546743 and Bug 547093
+public static final native long g_dbus_proxy_call_sync (long proxy, byte[] method_name, long parameters, int flags, int timeout_msec, long cancellable, long [] error);
 
 /**
  * @param proxy cast=(GDBusProxy *)
@@ -4248,15 +4219,8 @@ public static final long g_dbus_proxy_call_sync (long proxy, byte[] method_name,
  * @param error cast=(GError **)
  * @category gdbus
  */
-public static final native void _g_dbus_proxy_call (long proxy, byte[] method_name, long parameters, int flags, int timeout_msec, long cancellable, long callback, long [] error);
-public static final void g_dbus_proxy_call (long proxy, byte[] method_name, long parameters, int flags, int timeout_msec, long cancellable, long callback, long [] error) {
-	lock.lock();
-	try {
-		_g_dbus_proxy_call (proxy, method_name, parameters, flags, timeout_msec, cancellable, callback, error);
-	} finally {
-		lock.unlock();
-	}
-}
+// NOTE: Lock is not used, see Bug 546743 and Bug 547093
+public static final native void g_dbus_proxy_call (long proxy, byte[] method_name, long parameters, int flags, int timeout_msec, long cancellable, long callback, long [] error);
 
 /**
  * @param proxy cast=(GDBusProxy *)
@@ -4475,16 +4439,8 @@ public static final void g_variant_builder_unref (long builder) {
  * @param arg0 cast=(const gchar *),flags=no_out
  * @category gdbus
  */
-public static final native long _g_variant_new (byte[] format_string, byte[] arg0);
-/** @category gdbus */
-public static final long g_variant_new (byte[] format_string, byte[] arg0) {
-	lock.lock();
-	try {
-		return _g_variant_new(format_string, arg0);
-	} finally {
-		lock.unlock();
-	}
-}
+// NOTE: Lock is not used, see Bug 546743 and Bug 547093
+public static final native long g_variant_new (byte[] format_string, byte[] arg0);
 
 /**
  * @param format_string cast=(const gchar *),flags=no_out
@@ -4492,16 +4448,8 @@ public static final long g_variant_new (byte[] format_string, byte[] arg0) {
  * @param arg1 cast=(const gchar *),flags=no_out
  * @category gdbus
  */
-public static final native long _g_variant_new (byte[] format_string, boolean arg0, byte[] arg1);
-/** @category gdbus */
-public static final long g_variant_new (byte[] format_string, boolean arg0, byte[] arg1) {
-	lock.lock();
-	try {
-		return _g_variant_new(format_string, arg0, arg1);
-	} finally {
-		lock.unlock();
-	}
-}
+// NOTE: Lock is not used, see Bug 546743 and Bug 547093
+public static final native long g_variant_new (byte[] format_string, boolean arg0, byte[] arg1);
 
 /**
  * @param format_string cast=(const gchar *),flags=no_out
@@ -4509,16 +4457,8 @@ public static final long g_variant_new (byte[] format_string, boolean arg0, byte
  * @param arg1 cast=(const gchar *),flags=no_out
  * @category gdbus
  */
-public static final native long _g_variant_new (byte[] format_string, byte[] arg0, byte[] arg1);
-/** @category gdbus */
-public static final long g_variant_new (byte[] format_string, byte[] arg0, byte[] arg1) {
-	lock.lock();
-	try {
-		return _g_variant_new(format_string, arg0, arg1);
-	} finally {
-		lock.unlock();
-	}
-}
+// NOTE: Lock is not used, see Bug 546743 and Bug 547093
+public static final native long g_variant_new (byte[] format_string, byte[] arg0, byte[] arg1);
 
 /**
  * @param intval cast=(gint32)
