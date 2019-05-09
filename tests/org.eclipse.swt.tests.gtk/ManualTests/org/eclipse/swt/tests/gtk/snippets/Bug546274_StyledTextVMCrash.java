@@ -17,6 +17,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.internal.C;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
@@ -65,7 +66,7 @@ public class Bug546274_StyledTextVMCrash {
 			// Make sure the same malloc() block can't be used again
 			for (int i = 1; i < 1024; i++) {
 				// Intentional leak
-				org.eclipse.swt.internal.gtk.GTK.malloc(i);
+				C.malloc(i);
 			}
 
 			super.scroll(destX, destY, x, y, width, height, all);
