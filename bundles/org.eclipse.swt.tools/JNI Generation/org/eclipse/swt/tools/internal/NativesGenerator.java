@@ -262,7 +262,7 @@ void generateNativeMacro(JNIClass clazz) {
 	outputln();
 }
 
-boolean generateGetParameter(JNIMethod method, JNIParameter param, boolean critical, int indent) {
+boolean generateGetParameter(JNIParameter param, boolean critical, int indent) {
 	JNIType paramType = param.getType(), paramType64 = param.getType64();
 	if (paramType.isPrimitive() || isSystemClass(paramType)) return false;
 	String iStr = String.valueOf(param.getParameter());
@@ -505,13 +505,13 @@ boolean generateLocalVars(JNIParameter[] params, JNIType returnType, JNIType ret
 	return needsReturn;
 }
 
-boolean generateGetters(JNIMethod method, JNIParameter[] params) {
+boolean generateGetters(JNIParameter[] params) {
 	boolean genFailTag = false;
 	int criticalCount = 0;
 	for (int i = 0; i < params.length; i++) {
 		JNIParameter param = params[i];
 		if (!isCritical(param)) {
-			genFailTag |= generateGetParameter(method, param, false, 1);
+			genFailTag |= generateGetParameter(param, false, 1);
 		} else {
 			criticalCount++;
 		}
@@ -520,7 +520,7 @@ boolean generateGetters(JNIMethod method, JNIParameter[] params) {
 		for (int i = 0; i < params.length; i++) {
 			JNIParameter param = params[i];
 			if (isCritical(param)) {
-				genFailTag |= generateGetParameter(method, param, true, 2);
+				genFailTag |= generateGetParameter(param, true, 2);
 			}
 		}
 	}
@@ -912,7 +912,7 @@ void generateFunctionBody(JNIMethod method, String function, String function64, 
 	} else {
 		boolean needsReturn = generateLocalVars(params, returnType, returnType64);
 		generateEnterExitMacro(method, function, function64, true);
-		boolean genFailTag = generateGetters(method, params);
+		boolean genFailTag = generateGetters(params);
 		if (method.getFlag(FLAG_DYNAMIC)) {
 			generateDynamicFunctionCall(method, params, returnType, returnType64, needsReturn);
 		} else {
