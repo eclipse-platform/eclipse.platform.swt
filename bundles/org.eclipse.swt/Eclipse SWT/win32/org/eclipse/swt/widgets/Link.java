@@ -203,6 +203,8 @@ void createHandle () {
 void createWidget () {
 	super.createWidget ();
 	text = "";
+	ids = new String[0];
+	mnemonics = new char[0];
 }
 
 @Override
@@ -270,12 +272,10 @@ public String getText () {
 
 @Override
 boolean mnemonicHit (char key) {
-	if (mnemonics != null) {
-		char uckey = Character.toUpperCase (key);
-		for (int i = 0; i < mnemonics.length; i++) {
-			if (uckey == mnemonics[i]) {
-				return setFocus () && setFocusItem (i);
-			}
+	char uckey = Character.toUpperCase (key);
+	for (int i = 0; i < mnemonics.length; i++) {
+		if (uckey == mnemonics[i]) {
+			return setFocus () && setFocusItem (i);
 		}
 	}
 	return false;
@@ -283,12 +283,10 @@ boolean mnemonicHit (char key) {
 
 @Override
 boolean mnemonicMatch (char key) {
-	if (mnemonics != null) {
-		char uckey = Character.toUpperCase (key);
-		for (int i = 0; i < mnemonics.length; i++) {
-			if (uckey == mnemonics[i]) {
-				return true;
-			}
+	char uckey = Character.toUpperCase (key);
+	for (int i = 0; i < mnemonics.length; i++) {
+		if (uckey == mnemonics[i]) {
+			return true;
 		}
 	}
 	return false;
@@ -643,7 +641,7 @@ LRESULT WM_KEYDOWN (long /*int*/ wParam, long /*int*/ lParam) {
 LRESULT WM_KILLFOCUS (long /*int*/ wParam, long /*int*/ lParam) {
 	int focusItem = getFocusItem();
 	LRESULT result = super.WM_KILLFOCUS(wParam, lParam);
-	setFocusItem(focusItem);
+	if (focusItem != -1) setFocusItem(focusItem);
 	return result;
 }
 
