@@ -58,10 +58,10 @@ public class Accessible {
 	static int UniqueID = -0x10;
 	int refCount = 0, enumIndex = 0;
 	Runnable timer;
-	COMObject objIAccessible, objIEnumVARIANT, objIServiceProvider, objIAccessible2, objIAccessibleAction,
+	COMObject objIAccessible, objIEnumVARIANT, objIServiceProvider,
 		objIAccessibleApplication, /*objIAccessibleComponent,*/ objIAccessibleEditableText, objIAccessibleHyperlink,
 		objIAccessibleHypertext, /*objIAccessibleImage,*/ objIAccessibleTable2, objIAccessibleTableCell,
-		objIAccessibleText, objIAccessibleValue; /* objIAccessibleRelation is defined in Relation class */
+		objIAccessibleValue; /* objIAccessibleRelation is defined in Relation class */
 	IAccessible iaccessible;
 	List<AccessibleListener> accessibleListeners;
 	List<AccessibleControlListener> accessibleControlListeners;
@@ -149,102 +149,13 @@ public class Accessible {
 	}
 
 	void createIAccessible() {
-		objIAccessible = new COMObject(new int[] {2,0,0,1,3,5,8,1,1,2,2,2,2,2,2,2,3,2,1,1,2,2,5,3,3,1,2,2}) {
+		objIAccessible = new COMObject(new int[] {2,0,0,/*IA>>*/1,3,5,8,1,1,2,2,2,2,2,2,2,3,2,1,1,2,2,5,3,3,1,2,2,/*<<IA*/1,2,3,1,1,3,3,1,1,1,1,3,3,1,1,1,1,1}) {
 			@Override
 			public long /*int*/ method0(long /*int*/[] args) {return QueryInterface(args[0], args[1]);}
 			@Override
 			public long /*int*/ method1(long /*int*/[] args) {return AddRef();}
 			@Override
 			public long /*int*/ method2(long /*int*/[] args) {return Release();}
-			// method3 GetTypeInfoCount - not implemented
-			// method4 GetTypeInfo - not implemented
-			// method5 GetIDsOfNames - not implemented
-			// method6 Invoke - not implemented
-			@Override
-			public long /*int*/ method7(long /*int*/[] args) {return get_accParent(args[0]);}
-			@Override
-			public long /*int*/ method8(long /*int*/[] args) {return get_accChildCount(args[0]);}
-			@Override
-			public long /*int*/ method9(long /*int*/[] args) {return get_accChild(args[0], args[1]);}
-			@Override
-			public long /*int*/ method10(long /*int*/[] args) {return get_accName(args[0], args[1]);}
-			@Override
-			public long /*int*/ method11(long /*int*/[] args) {return get_accValue(args[0], args[1]);}
-			@Override
-			public long /*int*/ method12(long /*int*/[] args) {return get_accDescription(args[0], args[1]);}
-			@Override
-			public long /*int*/ method13(long /*int*/[] args) {return get_accRole(args[0], args[1]);}
-			@Override
-			public long /*int*/ method14(long /*int*/[] args) {return get_accState(args[0], args[1]);}
-			@Override
-			public long /*int*/ method15(long /*int*/[] args) {return get_accHelp(args[0], args[1]);}
-			@Override
-			public long /*int*/ method16(long /*int*/[] args) {return get_accHelpTopic(args[0], args[1], args[2]);}
-			@Override
-			public long /*int*/ method17(long /*int*/[] args) {return get_accKeyboardShortcut(args[0], args[1]);}
-			@Override
-			public long /*int*/ method18(long /*int*/[] args) {return get_accFocus(args[0]);}
-			@Override
-			public long /*int*/ method19(long /*int*/[] args) {return get_accSelection(args[0]);}
-			@Override
-			public long /*int*/ method20(long /*int*/[] args) {return get_accDefaultAction(args[0], args[1]);}
-			@Override
-			public long /*int*/ method21(long /*int*/[] args) {return accSelect((int)/*64*/args[0], args[1]);}
-			@Override
-			public long /*int*/ method22(long /*int*/[] args) {return accLocation(args[0], args[1], args[2], args[3], args[4]);}
-			@Override
-			public long /*int*/ method23(long /*int*/[] args) {return accNavigate((int)/*64*/args[0], args[1], args[2]);}
-			@Override
-			public long /*int*/ method24(long /*int*/[] args) {return accHitTest((int)/*64*/args[0], (int)/*64*/args[1], args[2]);}
-			@Override
-			public long /*int*/ method25(long /*int*/[] args) {return accDoDefaultAction(args[0]);}
-			@Override
-			public long /*int*/ method26(long /*int*/[] args) {return put_accName(args[0], args[1]);}
-			@Override
-			public long /*int*/ method27(long /*int*/[] args) {return put_accValue(args[0], args[1]);}
-		};
-
-		/* If the callback takes a struct parameter (for example, a VARIANT),
-		 * then create a custom callback that dereferences the struct and
-		 * passes a pointer to the original callback.
-		 */
-		long /*int*/ ppVtable = objIAccessible.ppVtable;
-		long /*int*/[] pVtable = new long /*int*/[1];
-		OS.MoveMemory(pVtable, ppVtable, C.PTR_SIZEOF);
-		long /*int*/[] funcs = new long /*int*/[28];
-		OS.MoveMemory(funcs, pVtable[0], C.PTR_SIZEOF * funcs.length);
-		funcs[9] = COM.get_accChild_CALLBACK(funcs[9]);
-		funcs[10] = COM.get_accName_CALLBACK(funcs[10]);
-		funcs[11] = COM.get_accValue_CALLBACK(funcs[11]);
-		funcs[12] = COM.get_accDescription_CALLBACK(funcs[12]);
-		funcs[13] = COM.get_accRole_CALLBACK(funcs[13]);
-		funcs[14] = COM.get_accState_CALLBACK(funcs[14]);
-		funcs[15] = COM.get_accHelp_CALLBACK(funcs[15]);
-		funcs[16] = COM.get_accHelpTopic_CALLBACK(funcs[16]);
-		funcs[17] = COM.get_accKeyboardShortcut_CALLBACK(funcs[17]);
-		funcs[20] = COM.get_accDefaultAction_CALLBACK(funcs[20]);
-		funcs[21] = COM.accSelect_CALLBACK(funcs[21]);
-		funcs[22] = COM.accLocation_CALLBACK(funcs[22]);
-		funcs[23] = COM.accNavigate_CALLBACK(funcs[23]);
-		funcs[25] = COM.accDoDefaultAction_CALLBACK(funcs[25]);
-		funcs[26] = COM.put_accName_CALLBACK(funcs[26]);
-		funcs[27] = COM.put_accValue_CALLBACK(funcs[27]);
-		OS.MoveMemory(pVtable[0], funcs, C.PTR_SIZEOF * funcs.length);
-	}
-
-	void createIAccessible2() {
-		objIAccessible2 = new COMObject(new int[] {2,0,0,/*IA>>*/1,3,5,8,1,1,2,2,2,2,2,2,2,3,2,1,1,2,2,5,3,3,1,2,2,/*<<IA*/1,2,3,1,1,3,3,1,1,1,1,3,3,1,1,1,1,1}) {
-			@Override
-			public long /*int*/ method0(long /*int*/[] args) {return QueryInterface(args[0], args[1]);}
-			@Override
-			public long /*int*/ method1(long /*int*/[] args) {return AddRef();}
-			@Override
-			public long /*int*/ method2(long /*int*/[] args) {return Release();}
-
-			/*
-			 * Even though the IA2 spec says "AT's should not rely on IA inheritance",
-			 * some AT's do rely on it, so we need to implement the IAccessible methods here.
-			 */
 			// method3 GetTypeInfoCount - not implemented
 			// method4 GetTypeInfo - not implemented
 			// method5 GetIDsOfNames - not implemented
@@ -335,7 +246,7 @@ public class Accessible {
 		 * then create a custom callback that dereferences the struct and
 		 * passes a pointer to the original callback.
 		 */
-		long /*int*/ ppVtable = objIAccessible2.ppVtable;
+		long /*int*/ ppVtable = objIAccessible.ppVtable;
 		long /*int*/[] pVtable = new long /*int*/[1];
 		OS.MoveMemory(pVtable, ppVtable, C.PTR_SIZEOF);
 		long /*int*/[] funcs = new long /*int*/[28];
@@ -357,29 +268,6 @@ public class Accessible {
 		funcs[26] = COM.put_accName_CALLBACK(funcs[26]);
 		funcs[27] = COM.put_accValue_CALLBACK(funcs[27]);
 		OS.MoveMemory(pVtable[0], funcs, C.PTR_SIZEOF * funcs.length);
-	}
-
-	void createIAccessibleAction() {
-		objIAccessibleAction = new COMObject(new int[] {2,0,0,1,1,2,4,2,2}) {
-			@Override
-			public long /*int*/ method0(long /*int*/[] args) {return QueryInterface(args[0], args[1]);}
-			@Override
-			public long /*int*/ method1(long /*int*/[] args) {return AddRef();}
-			@Override
-			public long /*int*/ method2(long /*int*/[] args) {return Release();}
-			@Override
-			public long /*int*/ method3(long /*int*/[] args) {return get_nActions(args[0]);}
-			@Override
-			public long /*int*/ method4(long /*int*/[] args) {return doAction((int)/*64*/args[0]);}
-			@Override
-			public long /*int*/ method5(long /*int*/[] args) {return get_description((int)/*64*/args[0], args[1]);}
-			@Override
-			public long /*int*/ method6(long /*int*/[] args) {return get_keyBinding((int)/*64*/args[0], (int)/*64*/args[1], args[2], args[3]);}
-			@Override
-			public long /*int*/ method7(long /*int*/[] args) {return get_name((int)/*64*/args[0], args[1]);}
-			@Override
-			public long /*int*/ method8(long /*int*/[] args) {return get_localizedName((int)/*64*/args[0], args[1]);}
-		};
 	}
 
 	void createIAccessibleApplication() {
@@ -619,55 +507,6 @@ public class Accessible {
 			public long /*int*/ method10(long /*int*/[] args) {return get_rowColumnExtents(args[0], args[1], args[2], args[3], args[4]);}
 			@Override
 			public long /*int*/ method11(long /*int*/[] args) {return get_table(args[0]);}
-		};
-	}
-
-	void createIAccessibleText() {
-		objIAccessibleText = new COMObject(new int[] {2,0,0,2,4,1,6,1,4,3,3,5,5,5,1,1,3,1,3,5,1,1}) {
-			@Override
-			public long /*int*/ method0(long /*int*/[] args) {return QueryInterface(args[0], args[1]);}
-			@Override
-			public long /*int*/ method1(long /*int*/[] args) {return AddRef();}
-			@Override
-			public long /*int*/ method2(long /*int*/[] args) {return Release();}
-			@Override
-			public long /*int*/ method3(long /*int*/[] args) {return addSelection((int)/*64*/args[0], (int)/*64*/args[1]);}
-			@Override
-			public long /*int*/ method4(long /*int*/[] args) {return get_attributes((int)/*64*/args[0], args[1], args[2], args[3]);}
-			@Override
-			public long /*int*/ method5(long /*int*/[] args) {return get_caretOffset(args[0]);}
-			@Override
-			public long /*int*/ method6(long /*int*/[] args) {return get_characterExtents((int)/*64*/args[0], (int)/*64*/args[1], args[2], args[3], args[4], args[5]);}
-			@Override
-			public long /*int*/ method7(long /*int*/[] args) {return get_nSelections(args[0]);}
-			@Override
-			public long /*int*/ method8(long /*int*/[] args) {return get_offsetAtPoint((int)/*64*/args[0], (int)/*64*/args[1], (int)/*64*/args[2], args[3]);}
-			@Override
-			public long /*int*/ method9(long /*int*/[] args) {return get_selection((int)/*64*/args[0], args[1], args[2]);}
-			@Override
-			public long /*int*/ method10(long /*int*/[] args) {return get_text((int)/*64*/args[0], (int)/*64*/args[1], args[2]);}
-			@Override
-			public long /*int*/ method11(long /*int*/[] args) {return get_textBeforeOffset((int)/*64*/args[0], (int)/*64*/args[1], args[2], args[3], args[4]);}
-			@Override
-			public long /*int*/ method12(long /*int*/[] args) {return get_textAfterOffset((int)/*64*/args[0], (int)/*64*/args[1], args[2], args[3], args[4]);}
-			@Override
-			public long /*int*/ method13(long /*int*/[] args) {return get_textAtOffset((int)/*64*/args[0], (int)/*64*/args[1], args[2], args[3], args[4]);}
-			@Override
-			public long /*int*/ method14(long /*int*/[] args) {return removeSelection((int)/*64*/args[0]);}
-			@Override
-			public long /*int*/ method15(long /*int*/[] args) {return setCaretOffset((int)/*64*/args[0]);}
-			@Override
-			public long /*int*/ method16(long /*int*/[] args) {return setSelection((int)/*64*/args[0], (int)/*64*/args[1], (int)/*64*/args[2]);}
-			@Override
-			public long /*int*/ method17(long /*int*/[] args) {return get_nCharacters(args[0]);}
-			@Override
-			public long /*int*/ method18(long /*int*/[] args) {return scrollSubstringTo((int)/*64*/args[0], (int)/*64*/args[1], (int)/*64*/args[2]);}
-			@Override
-			public long /*int*/ method19(long /*int*/[] args) {return scrollSubstringToPoint((int)/*64*/args[0], (int)/*64*/args[1], (int)/*64*/args[2], (int)/*64*/args[3], (int)/*64*/args[4]);}
-			@Override
-			public long /*int*/ method20(long /*int*/[] args) {return get_newText(args[0]);}
-			@Override
-			public long /*int*/ method21(long /*int*/[] args) {return get_oldText(args[0]);}
 		};
 	}
 
@@ -1805,14 +1644,7 @@ public class Accessible {
 		GUID guid = new GUID();
 		COM.MoveMemory(guid, iid, GUID.sizeof);
 
-		if (COM.IsEqualGUID(guid, COM.IIDIUnknown)) {
-			OS.MoveMemory(ppvObject, new long /*int*/[] { getAddress() }, C.PTR_SIZEOF);
-			AddRef();
-			if (DEBUG) print(this + ".QueryInterface guid=" + guidString(guid) + " returning " + getAddress() + hresult(COM.S_OK));
-			return COM.S_OK;
-		}
-
-		if (COM.IsEqualGUID(guid, COM.IIDIDispatch) || COM.IsEqualGUID(guid, COM.IIDIAccessible)) {
+		if (COM.IsEqualGUID(guid, COM.IIDIUnknown) || COM.IsEqualGUID(guid, COM.IIDIDispatch) || COM.IsEqualGUID(guid, COM.IIDIAccessible)) {
 			if (objIAccessible == null) createIAccessible();
 			OS.MoveMemory(ppvObject, new long /*int*/[] { objIAccessible.getAddress() }, C.PTR_SIZEOF);
 			AddRef();
@@ -1930,14 +1762,6 @@ public class Accessible {
 				objIServiceProvider.dispose();
 			objIServiceProvider = null;
 
-			if (objIAccessible2 != null)
-				objIAccessible2.dispose();
-			objIAccessible2 = null;
-
-			if (objIAccessibleAction != null)
-				objIAccessibleAction.dispose();
-			objIAccessibleAction = null;
-
 			if (objIAccessibleApplication != null)
 				objIAccessibleApplication.dispose();
 			objIAccessibleApplication = null;
@@ -1972,10 +1796,6 @@ public class Accessible {
 				objIAccessibleTableCell.dispose();
 			objIAccessibleTableCell = null;
 
-			if (objIAccessibleText != null)
-				objIAccessibleText.dispose();
-			objIAccessibleText = null;
-
 			if (objIAccessibleValue != null)
 				objIAccessibleValue.dispose();
 			objIAccessibleValue = null;
@@ -1997,7 +1817,7 @@ public class Accessible {
 		COM.MoveMemory(guid, riid, GUID.sizeof);
 
 		if (COM.IsEqualGUID(service, COM.IIDIAccessible)) {
-			if (COM.IsEqualGUID(guid, COM.IIDIUnknown) || COM.IsEqualGUID(guid, COM.IIDIDispatch) | COM.IsEqualGUID(guid, COM.IIDIAccessible)) {
+			if (COM.IsEqualGUID(guid, COM.IIDIUnknown) || COM.IsEqualGUID(guid, COM.IIDIDispatch) || COM.IsEqualGUID(guid, COM.IIDIAccessible)) {
 				if (objIAccessible == null) createIAccessible();
 				if (DEBUG) print(this + ".QueryService service=" + guidString(service) + " guid=" + guidString(guid) + " returning " + objIAccessible.getAddress() + hresult(COM.S_OK));
 				OS.MoveMemory(ppvObject, new long /*int*/[] { objIAccessible.getAddress() }, C.PTR_SIZEOF);
@@ -2045,8 +1865,9 @@ public class Accessible {
 					accessibleTableCellListenersSize() > 0 || accessibleTextExtendedListenersSize() > 0 ||
 					accessibleValueListenersSize() > 0 || accessibleControlListenersSize() > 0 || getRelationCount() > 0
 					|| (control instanceof Button && ((control.getStyle() & SWT.RADIO) != 0)) || (control instanceof Composite)) {
-				if (objIAccessible2 == null) createIAccessible2();
-				OS.MoveMemory(ppvObject, new long /*int*/[] { objIAccessible2.getAddress() }, C.PTR_SIZEOF);
+				// NOTE: IAccessible2 vtable is shared with IAccessible
+				if (objIAccessible == null) createIAccessible();
+				OS.MoveMemory(ppvObject, new long /*int*/[] { objIAccessible.getAddress() }, C.PTR_SIZEOF);
 				AddRef();
 				return COM.S_OK;
 			}
@@ -2055,8 +1876,9 @@ public class Accessible {
 
 		if (COM.IsEqualGUID(guid, COM.IIDIAccessibleAction)) {
 			if (accessibleActionListenersSize() > 0) {
-				if (objIAccessibleAction == null) createIAccessibleAction();
-				OS.MoveMemory(ppvObject, new long /*int*/[] { objIAccessibleAction.getAddress() }, C.PTR_SIZEOF);
+				// NOTE: IAccessibleAction vtable is shared with IAccessibleHyperlink
+				if (objIAccessibleHyperlink == null) createIAccessibleHyperlink();
+				OS.MoveMemory(ppvObject, new long /*int*/[] { objIAccessibleHyperlink.getAddress() }, C.PTR_SIZEOF);
 				AddRef();
 				return COM.S_OK;
 			}
@@ -2149,8 +1971,9 @@ public class Accessible {
 
 		if (COM.IsEqualGUID(guid, COM.IIDIAccessibleText)) {
 			if (accessibleTextExtendedListenersSize() > 0 || accessibleAttributeListenersSize() > 0) {
-				if (objIAccessibleText == null) createIAccessibleText();
-				OS.MoveMemory(ppvObject, new long /*int*/[] { objIAccessibleText.getAddress() }, C.PTR_SIZEOF);
+				// NOTE: IAccessibleText vtable is shared with IAccessibleHypertext
+				if (objIAccessibleHypertext == null) createIAccessibleHypertext();
+				OS.MoveMemory(ppvObject, new long /*int*/[] { objIAccessibleHypertext.getAddress() }, C.PTR_SIZEOF);
 				AddRef();
 				return COM.S_OK;
 			}

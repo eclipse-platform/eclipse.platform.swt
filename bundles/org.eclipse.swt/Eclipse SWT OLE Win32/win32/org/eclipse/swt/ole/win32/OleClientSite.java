@@ -50,7 +50,6 @@ import org.eclipse.swt.widgets.*;
 public class OleClientSite extends Composite {
 
 	// Interfaces for this Ole Client Container
-	private COMObject  iUnknown;
 	COMObject  iOleClientSite;
 	private COMObject  iAdviseSink;
 	private COMObject  iOleInPlaceSite;
@@ -503,15 +502,6 @@ private int ContextSensitiveHelp(int fEnterMode) {
 }
 protected void createCOMInterfaces() {
 
-	iUnknown = new COMObject(new int[]{2, 0, 0}){
-		@Override
-		public long /*int*/ method0(long /*int*/[] args) {return QueryInterface(args[0], args[1]);}
-		@Override
-		public long /*int*/ method1(long /*int*/[] args) {return AddRef();}
-		@Override
-		public long /*int*/ method2(long /*int*/[] args) {return Release();}
-	};
-
 	iOleClientSite = new COMObject(new int[]{2, 0, 0, 0, 3, 1, 0, 1, 0}){
 		@Override
 		public long /*int*/ method0(long /*int*/[] args) {return QueryInterface(args[0], args[1]);}
@@ -620,12 +610,8 @@ private void deleteTempStorage() {
 	tempStorage = null;
 }
 protected void disposeCOMInterfaces() {
-	if (iUnknown != null)
-		iUnknown.dispose();
-	iUnknown = null;
-
 	if (iOleClientSite != null)
-	iOleClientSite.dispose();
+		iOleClientSite.dispose();
 	iOleClientSite = null;
 
 	if (iAdviseSink != null)
@@ -1092,18 +1078,13 @@ protected int QueryInterface(long /*int*/ riid, long /*int*/ ppvObject) {
 	GUID guid = new GUID();
 	COM.MoveMemory(guid, riid, GUID.sizeof);
 
-	if (COM.IsEqualGUID(guid, COM.IIDIUnknown)) {
-		OS.MoveMemory(ppvObject, new long /*int*/[] {iUnknown.getAddress()}, C.PTR_SIZEOF);
+	if (COM.IsEqualGUID(guid, COM.IIDIUnknown) || COM.IsEqualGUID(guid, COM.IIDIOleClientSite)) {
+		OS.MoveMemory(ppvObject, new long /*int*/[] {iOleClientSite.getAddress()}, C.PTR_SIZEOF);
 		AddRef();
 		return COM.S_OK;
 	}
 	if (COM.IsEqualGUID(guid, COM.IIDIAdviseSink)) {
 		OS.MoveMemory(ppvObject, new long /*int*/[] {iAdviseSink.getAddress()}, C.PTR_SIZEOF);
-		AddRef();
-		return COM.S_OK;
-	}
-	if (COM.IsEqualGUID(guid, COM.IIDIOleClientSite)) {
-		OS.MoveMemory(ppvObject, new long /*int*/[] {iOleClientSite.getAddress()}, C.PTR_SIZEOF);
 		AddRef();
 		return COM.S_OK;
 	}

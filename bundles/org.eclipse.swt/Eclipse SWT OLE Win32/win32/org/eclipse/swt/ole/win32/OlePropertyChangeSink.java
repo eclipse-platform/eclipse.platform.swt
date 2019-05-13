@@ -24,7 +24,6 @@ final class OlePropertyChangeSink {
 	private OleControlSite controlSite;
 	//private IUnknown objIUnknown;
 
-	private COMObject iUnknown;
 	private COMObject iPropertyNotifySink;
 
 	private int refCount;
@@ -66,16 +65,6 @@ void connect(IUnknown objIUnknown) {
 	}
 }
 private void createCOMInterfaces() {
-	// register each of the interfaces that this object implements
-	iUnknown = new COMObject(new int[]{2, 0, 0}){
-		@Override
-		public long /*int*/ method0(long /*int*/[] args) {return QueryInterface(args[0], args[1]);}
-		@Override
-		public long /*int*/ method1(long /*int*/[] args) {return AddRef();}
-		@Override
-		public long /*int*/ method2(long /*int*/[] args) {return Release();}
-	};
-
 	iPropertyNotifySink = new COMObject(new int[]{2, 0, 0, 1, 1}){
 		@Override
 		public long /*int*/ method0(long /*int*/[] args) {return QueryInterface(args[0], args[1]);}
@@ -108,8 +97,6 @@ void disconnect(IUnknown objIUnknown) {
 	}
 }
 private void disposeCOMInterfaces() {
-	if (iUnknown != null) iUnknown.dispose();
-	iUnknown = null;
 	if (iPropertyNotifySink != null) iPropertyNotifySink.dispose();
 	iPropertyNotifySink = null;
 }
@@ -157,12 +144,7 @@ private int QueryInterface(long /*int*/ riid, long /*int*/ ppvObject) {
 		return COM.E_INVALIDARG;
 	GUID guid = new GUID();
 	COM.MoveMemory(guid, riid, GUID.sizeof);
-	if (COM.IsEqualGUID(guid, COM.IIDIUnknown)) {
-		OS.MoveMemory(ppvObject, new long /*int*/[] {iUnknown.getAddress()}, C.PTR_SIZEOF);
-		AddRef();
-		return COM.S_OK;
-	}
-	if (COM.IsEqualGUID(guid, COM.IIDIPropertyNotifySink)) {
+	if (COM.IsEqualGUID(guid, COM.IIDIUnknown) || COM.IsEqualGUID(guid, COM.IIDIPropertyNotifySink)) {
 		OS.MoveMemory(ppvObject, new long /*int*/[] {iPropertyNotifySink.getAddress()}, C.PTR_SIZEOF);
 		AddRef();
 		return COM.S_OK;
