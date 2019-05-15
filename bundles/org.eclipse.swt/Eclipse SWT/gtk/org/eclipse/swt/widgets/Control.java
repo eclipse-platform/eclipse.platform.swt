@@ -3586,7 +3586,9 @@ long gtk_button_press_event (long widget, long event, boolean sendMouseDown) {
 			} else {
 				mouseEventSent = !sendMouseEvent (SWT.MouseDown, eventButton[0], display.clickCount, 0, false, eventTime, eventRX[0], eventRY[0], false, eventState[0]);
 			}
-			result = mouseEventSent ? 1 : 0;
+			if (mouseEventSent) {
+				result = 1;
+			}
 		}
 		if (isDisposed ()) return 1;
 		/*
