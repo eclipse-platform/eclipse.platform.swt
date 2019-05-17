@@ -681,6 +681,7 @@ void createItem (TreeColumn column, int index) {
 	}
 	column.createJNIRef ();
 	NSTableHeaderCell headerCell = (NSTableHeaderCell)new SWTTableHeaderCell ().alloc ().init ();
+	if (font != null) headerCell.setFont(font.handle);
 	nsColumn.setHeaderCell (headerCell);
 	display.addWidget (headerCell, column);
 	column.nsColumn = nsColumn;
@@ -2908,6 +2909,9 @@ public void setColumnOrder (int [] order) {
 @Override
 void setFont (NSFont font) {
 	super.setFont (font);
+	for (int i = 0; i < columnCount; i++) {
+		columns[i].nsColumn.headerCell().setFont(font);
+	}
 	setItemHeight (null, font, !hooks (SWT.MeasureItem));
 	view.setNeedsDisplay (true);
 	clearCachedWidth (items);
@@ -3109,6 +3113,11 @@ void setItemHeight (Image image, NSFont font, boolean set) {
 	NSTableView widget = (NSTableView)view;
 	if (set || widget.rowHeight () < height) {
 		widget.setRowHeight (height);
+		if (headerView != null) {
+			NSRect frame = headerView.frame();
+			frame.height = height;
+			headerView.setFrame(frame);
+		}
 	}
 }
 
