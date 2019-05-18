@@ -47,8 +47,8 @@ public class LayoutExample {
 		};
 		for (Tab tab : tabs) {
 			TabItem item = new TabItem (tabFolder, SWT.NONE);
-		    item.setText (tab.getTabText ());
-		    item.setControl (tab.createTabFolderPage (tabFolder));
+			item.setText (tab.getTabText ());
+			item.setControl (tab.createTabFolderPage (tabFolder));
 		}
 	}
 

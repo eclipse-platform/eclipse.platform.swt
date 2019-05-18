@@ -26,8 +26,8 @@ import org.eclipse.swt.widgets.*;
  * http://www.eclipse.org/swt/snippets/
  */
 public class Snippet366 {
-	  static Display display;
-	  static Shell shell;
+	static Display display;
+	static Shell shell;
 
 	public static void main (String [] args) {
 		display = new Display();

@@ -76,17 +76,17 @@ private static void printTypeInfo(OleAutomation auto) {
 				if ( j < data.args.length - 1) argList += ", ";
 			}
 			System.out.println(getInvokeKind(data.invokeKind)+" (id = "+data.id+") : "
-					        +"\n\tSignature   : "+getTypeName(data.returnType)+" "+data.name+"("+argList+")"
-			                    +"\n\tDescription : "+data.documentation
-			                    +"\n\tHelp File   : "+data.helpFile+"\n");
+							+"\n\tSignature   : "+getTypeName(data.returnType)+" "+data.name+"("+argList+")"
+								+"\n\tDescription : "+data.documentation
+								+"\n\tHelp File   : "+data.helpFile+"\n");
 		}
 
 		if (typeattr.cVars > 0) System.out.println("\n\nVariables  :\n");
 		for (int i = 0; i < typeattr.cVars; i++) {
 			OlePropertyDescription data = auto.getPropertyDescription(i);
 			System.out.println("PROPERTY (id = "+data.id+") :"
-			                    +"\n\tName : "+data.name
-			                    +"\n\tType : "+getTypeName(data.type)+"\n");
+								+"\n\tName : "+data.name
+								+"\n\tType : "+getTypeName(data.type)+"\n");
 		}
 	}
 }

@@ -32,43 +32,43 @@ import org.eclipse.swt.widgets.TableItem;
  * GTK Version(s): GTK2.x, GTK3.x
  */
 public class Bug287038_TableKeyEvent {
-    public static void main(String[] args) {
-        Display display = new Display();
-        Shell shell = new Shell(display);
-        shell.setLayout(new FillLayout());
-        final Table table = new Table(shell, SWT.BORDER | SWT.MULTI | SWT.FULL_SELECTION);
-        table.setLinesVisible(true);
-        for (int i = 0; i < 2; i++) {
-            TableColumn column = new TableColumn(table, SWT.NONE);
-            column.setWidth(100);
-        }
-        String[] itemsToAdd = new String[] {
-                "Cheese", "Potatoes", "Rocks", "Bacon", "Tree", "Forest", "Chocolate", "Broccoli", "Turnip",
-                "Squash", "Carrot"
-        };
-        int i = 0;
-        for (String s : itemsToAdd) {
-            TableItem item = new TableItem(table, SWT.NONE);
-            item.setText(new String[] {
-                    s, "" + i++
-            });
-        }
-        table.addKeyListener(new KeyListener() {
-            @Override
+	public static void main(String[] args) {
+		Display display = new Display();
+		Shell shell = new Shell(display);
+		shell.setLayout(new FillLayout());
+		final Table table = new Table(shell, SWT.BORDER | SWT.MULTI | SWT.FULL_SELECTION);
+		table.setLinesVisible(true);
+		for (int i = 0; i < 2; i++) {
+			TableColumn column = new TableColumn(table, SWT.NONE);
+			column.setWidth(100);
+		}
+		String[] itemsToAdd = new String[] {
+				"Cheese", "Potatoes", "Rocks", "Bacon", "Tree", "Forest", "Chocolate", "Broccoli", "Turnip",
+				"Squash", "Carrot"
+		};
+		int i = 0;
+		for (String s : itemsToAdd) {
+			TableItem item = new TableItem(table, SWT.NONE);
+			item.setText(new String[] {
+					s, "" + i++
+			});
+		}
+		table.addKeyListener(new KeyListener() {
+			@Override
 			public void keyPressed(KeyEvent e) {
-                System.out.println(e.character);
-            }
+				System.out.println(e.character);
+			}
 
-            @Override
+			@Override
 			public void keyReleased(KeyEvent e) {
-                System.out.println(e.character);
-            }
-        });
-        shell.pack();
-        shell.open();
-        while (!shell.isDisposed()) {
-            if (!display.readAndDispatch()) display.sleep();
-        }
-        display.dispose();
-    }
+				System.out.println(e.character);
+			}
+		});
+		shell.pack();
+		shell.open();
+		while (!shell.isDisposed()) {
+			if (!display.readAndDispatch()) display.sleep();
+		}
+		display.dispose();
+	}
 }

@@ -1677,7 +1677,7 @@ LRESULT wmKeyDown (long /*int*/ hwnd, long /*int*/ wParam, long /*int*/ lParam) 
 		* upper case values in WM_KEYDOWN despite the fact that the
 		* Shift was not pressed.
 		*/
-	 	display.lastKey = (int)/*64*/OS.CharLower ((short) mapKey);
+		display.lastKey = (int)/*64*/OS.CharLower ((short) mapKey);
 
 		/*
 		* Feature in Windows. The virtual key VK_CANCEL is treated
@@ -1732,12 +1732,12 @@ LRESULT wmKeyDown (long /*int*/ hwnd, long /*int*/ wParam, long /*int*/ lParam) 
 		* If the user types Ctrl+Shift+6, the value of LastAscii will
 		* depend on the international keyboard.
 		*/
-	 	if (OS.GetKeyState (OS.VK_SHIFT) < 0) {
+		if (OS.GetKeyState (OS.VK_SHIFT) < 0) {
 			display.lastAscii = display.shiftedKey ((int)/*64*/wParam);
 			if (display.lastAscii == 0) display.lastAscii = mapKey;
-	 	} else {
-	 		display.lastAscii = (int)/*64*/OS.CharLower ((short) mapKey);
-	 	}
+		} else {
+			display.lastAscii = (int)/*64*/OS.CharLower ((short) mapKey);
+		}
 
 		/* Note that Ctrl+'@' is ASCII NUL and is delivered in WM_CHAR */
 		if (display.lastAscii == '@') return null;
@@ -2318,7 +2318,7 @@ LRESULT wmSysKeyDown (long /*int*/ hwnd, long /*int*/ wParam, long /*int*/ lPara
 
 	display.lastVirtual = mapKey == 0 || display.numpadKey ((int)/*64*/wParam) != 0;
 	if (display.lastVirtual) {
-	 	display.lastKey = (int)/*64*/wParam;
+		display.lastKey = (int)/*64*/wParam;
 		/*
 		* Feature in Windows.  The virtual key VK_DELETE is not
 		* treated as both a virtual key and an ASCII key by Windows.
@@ -2355,7 +2355,7 @@ LRESULT wmSysKeyDown (long /*int*/ hwnd, long /*int*/ wParam, long /*int*/ lPara
 		* upper case values in WM_SYSKEYDOWN despite the fact that the
 		* Shift was not pressed.
 		*/
-	 	display.lastKey = (int)/*64*/OS.CharLower ((short) mapKey);
+		display.lastKey = (int)/*64*/OS.CharLower ((short) mapKey);
 		return null;
 	}
 

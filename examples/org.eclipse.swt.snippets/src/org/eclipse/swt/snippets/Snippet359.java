@@ -32,9 +32,9 @@ public class Snippet359 {
 		combo.addKeyListener(new KeyListener() {
 			@Override
 			public void keyReleased(KeyEvent e) {
-			   if (e.keyCode == SWT.CR) {
-				   combo.add(combo.getText());
-			   }
+				if (e.keyCode == SWT.CR) {
+					combo.add(combo.getText());
+				}
 			}
 			@Override
 			public void keyPressed(KeyEvent e) {
@@ -42,11 +42,11 @@ public class Snippet359 {
 				System.out.println("caret location: " + combo.getCaretLocation());
 			}
 		});
-	  shell.pack();
-	  shell.open ();
-	  while (!shell.isDisposed()) {
-	   if (!display.readAndDispatch ()) display.sleep ();
-	  }
-	  display.dispose ();
+		shell.pack();
+		shell.open ();
+		while (!shell.isDisposed()) {
+			if (!display.readAndDispatch ()) display.sleep ();
+		}
+		display.dispose ();
 	}
 }

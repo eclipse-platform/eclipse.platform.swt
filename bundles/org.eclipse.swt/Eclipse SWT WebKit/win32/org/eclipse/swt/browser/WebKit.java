@@ -348,8 +348,8 @@ static String readInstallDir (String keyString) {
 			}
 		}
 		OS.RegCloseKey (phkResult[0]);
-    }
-    return null;
+	}
+	return null;
 }
 
 static String stringFromCFString (long /*int*/ cfString) {

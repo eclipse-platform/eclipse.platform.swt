@@ -153,15 +153,15 @@ void createHandle () {
 	if ((style & SWT.READ_ONLY) != 0) textStyle |= OS.ES_READONLY;
 	if ((style & SWT.RIGHT_TO_LEFT) != 0) textExStyle |= OS.WS_EX_LAYOUTRTL;
 	hwndText = OS.CreateWindowEx (
-        textExStyle,
-        EditClass,
-        null,
-        textStyle,
-        0, 0, 0, 0,
-        handle,
-        0,
-        hInstance,
-        null);
+		textExStyle,
+		EditClass,
+		null,
+		textStyle,
+		0, 0, 0, 0,
+		handle,
+		0,
+		hInstance,
+		null);
 	if (hwndText == 0) error (SWT.ERROR_NO_HANDLES);
 	OS.SetWindowLongPtr (hwndText, OS.GWLP_ID, hwndText);
 	int upDownStyle = OS.WS_CHILD | OS.WS_VISIBLE | OS.UDS_AUTOBUDDY;
@@ -174,15 +174,15 @@ void createHandle () {
 		}
 	}
 	hwndUpDown = OS.CreateWindowEx (
-        0,
-        UpDownClass,
-        null,
-        upDownStyle,
-        0, 0, 0, 0,
-        handle,
-        0,
-        hInstance,
-        null);
+		0,
+		UpDownClass,
+		null,
+		upDownStyle,
+		0, 0, 0, 0,
+		handle,
+		0,
+		hInstance,
+		null);
 	if (hwndUpDown == 0) error (SWT.ERROR_NO_HANDLES);
 	int flags = OS.SWP_NOSIZE | OS.SWP_NOMOVE | OS.SWP_NOACTIVATE;
 	OS.SetWindowPos (hwndText, hwndUpDown, 0, 0, 0, 0, flags);

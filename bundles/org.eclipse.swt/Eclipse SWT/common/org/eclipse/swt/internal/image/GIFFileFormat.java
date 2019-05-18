@@ -412,7 +412,7 @@ public final class GIFFileFormat extends FileFormat {
 	@Override
 	void unloadIntoByteStream(ImageLoader loader) {
 
- 		/* Step 1: Acquire GIF parameters. */
+		/* Step 1: Acquire GIF parameters. */
 		ImageData[] data = loader.data;
 		int frameCount = data.length;
 		boolean multi = frameCount > 1;
@@ -454,7 +454,7 @@ public final class GIFFileFormat extends FileFormat {
 		}
 
 		try {
- 			/* Step 3: Write the GIF89a Header and Logical Screen Descriptor. */
+			/* Step 3: Write the GIF89a Header and Logical Screen Descriptor. */
 			outputStream.write(GIF89a);
 			int bitField = globalTable*128 + (depth-1)*16 + depth-1;
 			outputStream.writeShort((short)logicalScreenWidth);

@@ -34,11 +34,11 @@ public class Bug519996_focusDisposeIssue {
 		Button button = new Button(shell, SWT.PUSH);
 		button.setText("focus and close");
 		button.addSelectionListener(new SelectionAdapter() {
-		 @Override
-		 public void widgetSelected(SelectionEvent e) {
-		  combo.setFocus();
-		  shell.close();
-		 }
+		@Override
+		public void widgetSelected(SelectionEvent e) {
+			combo.setFocus();
+			shell.close();
+		}
 		});
 
 		shell.layout();

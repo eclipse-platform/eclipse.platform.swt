@@ -1235,7 +1235,7 @@ public void setExpanded (boolean expanded) {
 	RECT [] rects = null;
 	SCROLLINFO oldInfo = null;
 	int count = 0;
- 	long /*int*/ hBottomItem = 0;
+	long /*int*/ hBottomItem = 0;
 	boolean redraw = false, noScroll = true;
 	long /*int*/ hTopItem = OS.SendMessage (hwnd, OS.TVM_GETNEXTITEM, OS.TVGN_FIRSTVISIBLE, 0);
 	if (noScroll && hTopItem != 0) {

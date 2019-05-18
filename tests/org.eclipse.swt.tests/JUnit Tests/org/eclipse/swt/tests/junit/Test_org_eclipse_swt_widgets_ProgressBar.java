@@ -564,12 +564,12 @@ return new int[][] {
 
 @Test
 public void test_consistency_MenuDetect () {
-    consistencyEvent(10, 5, 3, 0, ConsistencyUtility.MOUSE_CLICK);
+	consistencyEvent(10, 5, 3, 0, ConsistencyUtility.MOUSE_CLICK);
 }
 
 @Test
 public void test_consistency_DragDetect () {
-    consistencyEvent(10, 5, 20, 10, ConsistencyUtility.MOUSE_DRAG);
+	consistencyEvent(10, 5, 20, 10, ConsistencyUtility.MOUSE_DRAG);
 }
 
 }

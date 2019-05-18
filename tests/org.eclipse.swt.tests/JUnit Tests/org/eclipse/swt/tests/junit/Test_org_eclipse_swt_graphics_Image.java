@@ -471,7 +471,7 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLjava_lang_String() 
 
 @Test
 public void test_ConstructorLorg_eclipse_swt_graphics_Device_ImageFileNameProvider() {
-	 // Null provider
+	// Null provider
 	ImageFileNameProvider provider = null;
 	try {
 		Image image = new Image(display, provider);
@@ -534,7 +534,7 @@ public void test_ConstructorLorg_eclipse_swt_graphics_Device_ImageFileNameProvid
 
 @Test
 public void test_ConstructorLorg_eclipse_swt_graphics_Device_ImageDataProvider() {
-	 // Null provider
+	// Null provider
 	ImageDataProvider provider = null;
 	try {
 		Image image = new Image(display, provider);

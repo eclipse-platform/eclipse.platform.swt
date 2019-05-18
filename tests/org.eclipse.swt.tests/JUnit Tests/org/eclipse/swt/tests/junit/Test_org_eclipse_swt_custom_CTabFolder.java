@@ -106,48 +106,48 @@ private void createTabFolder(List<String> events) {
 
 @Test
 public void test_consistency_KeySelection() {
-    List<String> events = new ArrayList<>();
-    createTabFolder(events);
-    consistencyEvent(0, SWT.ARROW_RIGHT, 0, 0, ConsistencyUtility.KEY_PRESS, events, false);
+	List<String> events = new ArrayList<>();
+	createTabFolder(events);
+	consistencyEvent(0, SWT.ARROW_RIGHT, 0, 0, ConsistencyUtility.KEY_PRESS, events, false);
 }
 
 @Test
 public void test_consistency_MouseSelection() {
-    List<String> events = new ArrayList<>();
-    createTabFolder(events);
-    consistencyPrePackShell();
-    consistencyEvent(ctabFolder.getSize().x/2, 5, 1, 0, ConsistencyUtility.MOUSE_CLICK, events);
+	List<String> events = new ArrayList<>();
+	createTabFolder(events);
+	consistencyPrePackShell();
+	consistencyEvent(ctabFolder.getSize().x/2, 5, 1, 0, ConsistencyUtility.MOUSE_CLICK, events);
 }
 
 @Test
 public void test_consistency_PgdwnSelection () {
-    List<String> events = new ArrayList<>();
-    createTabFolder(events);
-    consistencyEvent(0, SWT.CTRL, 0, SWT.PAGE_DOWN, ConsistencyUtility.DOUBLE_KEY_PRESS, events, false);
+	List<String> events = new ArrayList<>();
+	createTabFolder(events);
+	consistencyEvent(0, SWT.CTRL, 0, SWT.PAGE_DOWN, ConsistencyUtility.DOUBLE_KEY_PRESS, events, false);
 }
 
 @Test
 public void test_consistency_PgupSelection () {
-    List<String> events = new ArrayList<>();
-    createTabFolder(events);
-    ctabFolder.setSelection(2);
-    consistencyEvent(0, SWT.CTRL, 0, SWT.PAGE_UP, ConsistencyUtility.DOUBLE_KEY_PRESS, events, false);
+	List<String> events = new ArrayList<>();
+	createTabFolder(events);
+	ctabFolder.setSelection(2);
+	consistencyEvent(0, SWT.CTRL, 0, SWT.PAGE_UP, ConsistencyUtility.DOUBLE_KEY_PRESS, events, false);
 }
 
 @Test
 public void test_consistency_MenuDetect () {
-    List<String> events = new ArrayList<>();
-    createTabFolder(events);
-    ctabFolder.setSelection(1);
-    consistencyEvent(50, 5, 3, 0, ConsistencyUtility.MOUSE_CLICK, events);
+	List<String> events = new ArrayList<>();
+	createTabFolder(events);
+	ctabFolder.setSelection(1);
+	consistencyEvent(50, 5, 3, 0, ConsistencyUtility.MOUSE_CLICK, events);
 }
 
 @Test
 public void test_consistency_DragDetect () {
-    List<String> events = new ArrayList<>();
-    createTabFolder(events);
-    ctabFolder.setSelection(1);
-    consistencyEvent(50, 5, 70, 10, ConsistencyUtility.MOUSE_DRAG, events);
+	List<String> events = new ArrayList<>();
+	createTabFolder(events);
+	ctabFolder.setSelection(1);
+	consistencyEvent(50, 5, 70, 10, ConsistencyUtility.MOUSE_DRAG, events);
 }
 
 @Test

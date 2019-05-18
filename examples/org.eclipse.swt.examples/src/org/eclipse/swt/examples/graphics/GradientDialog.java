@@ -74,13 +74,13 @@ public class GradientDialog extends Dialog {
 		dialog.setText(GraphicsExample.getResourceString("Gradient")); //$NON-NLS-1$
 
 		GridLayout gridLayout = new GridLayout();
-	    gridLayout.numColumns = 2;
-	    gridLayout.marginHeight = 10;
-	    gridLayout.marginWidth = 10;
-	    dialog.setLayout(gridLayout);
+		gridLayout.numColumns = 2;
+		gridLayout.marginHeight = 10;
+		gridLayout.marginWidth = 10;
+		dialog.setLayout(gridLayout);
 
-	    // create the controls in the dialog
-	    createDialogControls(dialog);
+		// create the controls in the dialog
+		createDialogControls(dialog);
 
 		dialog.addListener(SWT.Close, event -> {
 			for (int i = 0; i < resources.size(); i++) {
@@ -169,7 +169,7 @@ public class GradientDialog extends Dialog {
 
 		// position composite
 		gridData = new GridData(GridData.VERTICAL_ALIGN_BEGINNING);
-	    colorButtonComp.setLayoutData(gridData);
+		colorButtonComp.setLayoutData(gridData);
 
 		ColorMenu colorMenu = new ColorMenu();
 
@@ -228,10 +228,10 @@ public class GradientDialog extends Dialog {
 
 		// position composite
 		gridData = new GridData(GridData.HORIZONTAL_ALIGN_END);
-	    gridData.horizontalSpan = 2;
-	    okCancelComp.setLayoutData(gridData);
+		gridData.horizontalSpan = 2;
+		okCancelComp.setLayoutData(gridData);
 
-	    // OK button
+		// OK button
 		okButton = new Button (okCancelComp, SWT.PUSH);
 		okButton.setText("&OK");
 		okButton.addListener(SWT.Selection, event -> {

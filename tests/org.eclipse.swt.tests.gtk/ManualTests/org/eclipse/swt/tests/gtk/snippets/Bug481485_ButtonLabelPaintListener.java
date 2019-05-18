@@ -23,23 +23,23 @@ import org.eclipse.swt.widgets.Shell;
 
 public class Bug481485_ButtonLabelPaintListener {
 
-    public static void main(String[] args) {
-        Display display = new Display();
-        Shell shell = new Shell(display);
-        shell.setLayout(new GridLayout());
+	public static void main(String[] args) {
+		Display display = new Display();
+		Shell shell = new Shell(display);
+		shell.setLayout(new GridLayout());
 
-        Button button = new Button(shell, SWT.PUSH);
+		Button button = new Button(shell, SWT.PUSH);
 //        the bug happens with Label as well
 //        Label button = new Label(shell, SWT.None);
-        button.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-        button.addPaintListener(e -> e.gc.drawString("Button", 100, 100, true));
+		button.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+		button.addPaintListener(e -> e.gc.drawString("Button", 100, 100, true));
 
-        shell.setSize(300, 300);
-        shell.open();
-        while (!shell.isDisposed()) {
-            if (!display.readAndDispatch())
-                display.sleep();
-        }
-        display.dispose();
-    }
+		shell.setSize(300, 300);
+		shell.open();
+		while (!shell.isDisposed()) {
+			if (!display.readAndDispatch())
+				display.sleep();
+		}
+		display.dispose();
+	}
 }

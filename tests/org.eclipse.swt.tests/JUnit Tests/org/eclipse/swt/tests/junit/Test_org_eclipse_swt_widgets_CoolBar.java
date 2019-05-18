@@ -61,10 +61,10 @@ public void test_computeSizeIIZ() {
 CoolBar coolBar;
 
 private void createCoolBar(List<String> events) {
-    tearDown();
-    super.setUp();
-    String test = getTestName();
-    coolBar = new CoolBar(shell, SWT.FLAT);
+	tearDown();
+	super.setUp();
+	String test = getTestName();
+	coolBar = new CoolBar(shell, SWT.FLAT);
 	ToolBar[] coolItemToolBar = new ToolBar[2];
 	for (int i = 0; i < 2; i++) {
 		CoolItem coolItem = new CoolItem(coolBar, SWT.DROP_DOWN);
@@ -77,68 +77,68 @@ private void createCoolBar(List<String> events) {
 			item.setText("CB" + ((i*2) + j));
 			item.setToolTipText("ToolItem ToolTip" + i + j);
 			if (item.getWidth() > toolItemWidth)
-			    toolItemWidth = item.getWidth();
+				toolItemWidth = item.getWidth();
 			hookExpectedEvents(item, test, events);
 		}
-        coolItem.setControl(coolItemToolBar[i]);
-        Point size;
-        if(i == 1)
-            size = coolItemToolBar[i].computeSize(20, SWT.DEFAULT);
-        else
-            size = coolItemToolBar[i].computeSize(SWT.DEFAULT, SWT.DEFAULT);
-        Point coolSize = coolItem.computeSize (size.x, size.y);
-        coolItem.setMinimumSize(toolItemWidth/3, coolSize.y);
-        coolItem.setPreferredSize(coolSize);
-        coolItem.setSize(coolSize.x/3, coolSize.y);
-        coolItem.addSelectionListener(new CoolItemSelectionListener());
+		coolItem.setControl(coolItemToolBar[i]);
+		Point size;
+		if(i == 1)
+			size = coolItemToolBar[i].computeSize(20, SWT.DEFAULT);
+		else
+			size = coolItemToolBar[i].computeSize(SWT.DEFAULT, SWT.DEFAULT);
+		Point coolSize = coolItem.computeSize (size.x, size.y);
+		coolItem.setMinimumSize(toolItemWidth/3, coolSize.y);
+		coolItem.setPreferredSize(coolSize);
+		coolItem.setSize(coolSize.x/3, coolSize.y);
+		coolItem.addSelectionListener(new CoolItemSelectionListener());
 	}
 	setWidget(coolBar);
 }
 
 @Test
 public void test_consistency_ChevronMenuDetect () {
-    List<String> events = new ArrayList<>();
-    createCoolBar(events);
-    consistencyPrePackShell();
-    Point[] points = coolBar.getItemSizes();
-    //chevron
-    consistencyEvent(points[0].x-12, 0, 3, ConsistencyUtility.ESCAPE_MENU, ConsistencyUtility.MOUSE_CLICK, events);
+	List<String> events = new ArrayList<>();
+	createCoolBar(events);
+	consistencyPrePackShell();
+	Point[] points = coolBar.getItemSizes();
+	//chevron
+	consistencyEvent(points[0].x-12, 0, 3, ConsistencyUtility.ESCAPE_MENU, ConsistencyUtility.MOUSE_CLICK, events);
 }
 
 @Test
 public void test_consistency_MenuDetect () {
-    List<String> events = new ArrayList<>();
-    createCoolBar(events);
-    consistencyPrePackShell();
-    Point[] points = coolBar.getItemSizes();
-    consistencyEvent(points[0].x, 2, 3, 0, ConsistencyUtility.MOUSE_CLICK, events);
+	List<String> events = new ArrayList<>();
+	createCoolBar(events);
+	consistencyPrePackShell();
+	Point[] points = coolBar.getItemSizes();
+	consistencyEvent(points[0].x, 2, 3, 0, ConsistencyUtility.MOUSE_CLICK, events);
 }
 
 @Test
 public void test_consistency_ChevronDragDetect () {
-    List<String> events = new ArrayList<>();
-    createCoolBar(events);
-    consistencyPrePackShell();
-    Point[] points = coolBar.getItemSizes();
-    consistencyEvent(points[0].x-12, 0, points[0].x-12, 5, ConsistencyUtility.MOUSE_DRAG, events);
+	List<String> events = new ArrayList<>();
+	createCoolBar(events);
+	consistencyPrePackShell();
+	Point[] points = coolBar.getItemSizes();
+	consistencyEvent(points[0].x-12, 0, points[0].x-12, 5, ConsistencyUtility.MOUSE_DRAG, events);
 }
 
 @Test
 public void test_consistency_DragDetect () {
-    List<String> events = new ArrayList<>();
-    createCoolBar(events);
-    consistencyPrePackShell();
-    Point[] points = coolBar.getItemSizes();
-    consistencyEvent(points[0].x, 0, points[0].x, 5, ConsistencyUtility.MOUSE_DRAG, events);
+	List<String> events = new ArrayList<>();
+	createCoolBar(events);
+	consistencyPrePackShell();
+	Point[] points = coolBar.getItemSizes();
+	consistencyEvent(points[0].x, 0, points[0].x, 5, ConsistencyUtility.MOUSE_DRAG, events);
 }
 
 @Test
 public void test_consistency_ChevronMouseSelection() {
-    List<String> events = new ArrayList<>();
-    createCoolBar(events);
-    consistencyPrePackShell();
-    Point[] points = coolBar.getItemSizes();
-    consistencyEvent(points[0].x-12, 0, points[0].x-8, 30, ConsistencyUtility.SELECTION, events);
+	List<String> events = new ArrayList<>();
+	createCoolBar(events);
+	consistencyPrePackShell();
+	Point[] points = coolBar.getItemSizes();
+	consistencyEvent(points[0].x-12, 0, points[0].x-8, 30, ConsistencyUtility.SELECTION, events);
 }
 
 class CoolItemSelectionListener extends SelectionAdapter {
@@ -184,9 +184,9 @@ class CoolItemSelectionListener extends SelectionAdapter {
 				pt = toolBar.toDisplay(new Point(toolBounds.x, toolBounds.y));
 				toolBounds.x = pt.x;
 				toolBounds.y = pt.y;
-		  		Rectangle intersection = itemBounds.intersection (toolBounds);
-		  		if (!intersection.equals (toolBounds)) break;
-		  		i++;
+				Rectangle intersection = itemBounds.intersection (toolBounds);
+				if (!intersection.equals (toolBounds)) break;
+				i++;
 			}
 
 			/* Create a pop-up menu with items for each of the hidden buttons. */

@@ -33,46 +33,46 @@ public class Bug443185_ToolbarCroppingIssue {
 		shell.setSize(200, 400);
 		shell.setLayout(new GridLayout());
 		
-	    // Create the tabs
-	    CTabFolder tabFolder = new CTabFolder(shell, SWT.TOP|SWT.BORDER);
-	    tabFolder.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true) );
-	    tabFolder.setMaximizeVisible(true);
-	    tabFolder.setMinimizeVisible(true);
-	    
-	    CTabItem item=new CTabItem(tabFolder, SWT.BORDER);
-	    item.setText("Tab (1)");
-	    item.setShowClose(true);
-	    Label content=new Label(tabFolder,SWT.NONE);
-	    content.setText("bla");
-	    item.setControl(content);
-	    
-	    //intermediate composite with possible different layouts
+		// Create the tabs
+		CTabFolder tabFolder = new CTabFolder(shell, SWT.TOP|SWT.BORDER);
+		tabFolder.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true) );
+		tabFolder.setMaximizeVisible(true);
+		tabFolder.setMinimizeVisible(true);
+		
+		CTabItem item=new CTabItem(tabFolder, SWT.BORDER);
+		item.setText("Tab (1)");
+		item.setShowClose(true);
+		Label content=new Label(tabFolder,SWT.NONE);
+		content.setText("bla");
+		item.setControl(content);
+		
+		//intermediate composite with possible different layouts
 //	    Composite composite = new Composite(tabFolder, SWT.NONE);
 //	    composite.setLayout(new FillLayout(SWT.HORIZONTAL));
 //	    composite.setLayout(new GridLayout());
 //	    composite.setLayout(new RowLayout());
-	    
-	    
-	    ToolBar toolBar=new ToolBar(tabFolder, SWT.FLAT|SWT.RIGHT|SWT.WRAP);
+		
+		
+		ToolBar toolBar=new ToolBar(tabFolder, SWT.FLAT|SWT.RIGHT|SWT.WRAP);
 //	    toolBar.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
 //	    toolBar.setLayoutData(new RowData());
-	    for(int i=0;i<15;i++){
-		    ToolItem toolItem=new ToolItem(toolBar, SWT.PUSH);
-		    toolItem.setText("test_"+i);
-		    if(i%5==0){
-		    	new ToolItem(toolBar, SWT.SEPARATOR);
-		    }
-	    }
-	    tabFolder.setTopRight(toolBar,SWT.RIGHT | SWT.WRAP);
-	    
-	    
-	    //SWT Loop
+		for(int i=0;i<15;i++){
+			ToolItem toolItem=new ToolItem(toolBar, SWT.PUSH);
+			toolItem.setText("test_"+i);
+			if(i%5==0){
+				new ToolItem(toolBar, SWT.SEPARATOR);
+			}
+		}
+		tabFolder.setTopRight(toolBar,SWT.RIGHT | SWT.WRAP);
+		
+		
+		//SWT Loop
 		shell.open();
 		while (!shell.isDisposed()) {
-		  if (!display.readAndDispatch())
-		   {
-		    display.sleep();
-		   }
+			if (!display.readAndDispatch())
+			{
+				display.sleep();
+			}
 		}
 		display.dispose(); 
 	}

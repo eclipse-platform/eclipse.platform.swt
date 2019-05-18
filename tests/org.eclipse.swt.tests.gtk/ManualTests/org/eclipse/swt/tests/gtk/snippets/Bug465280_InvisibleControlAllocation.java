@@ -30,19 +30,19 @@ import org.eclipse.swt.widgets.Shell;
  */
 public class Bug465280_InvisibleControlAllocation {
 	public static void main(String[] args) {
-        Display display = new Display ();
-        Shell shell = new Shell(display);
-        shell.setLayout(new FillLayout());
-        Label descriptionHint = new Label(shell, SWT.WRAP);
-        descriptionHint.setText("This is a very very very very very very long string");
-        descriptionHint.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
-        descriptionHint.setVisible(false);
-        shell.open();
-        System.err.println(descriptionHint.getSize());
-        while (!shell.isDisposed ()) {
-                if (!display.readAndDispatch ()) display.sleep ();
-        }
-        display.dispose ();
+		Display display = new Display ();
+		Shell shell = new Shell(display);
+		shell.setLayout(new FillLayout());
+		Label descriptionHint = new Label(shell, SWT.WRAP);
+		descriptionHint.setText("This is a very very very very very very long string");
+		descriptionHint.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+		descriptionHint.setVisible(false);
+		shell.open();
+		System.err.println(descriptionHint.getSize());
+		while (!shell.isDisposed ()) {
+				if (!display.readAndDispatch ()) display.sleep ();
+		}
+		display.dispose ();
 }
 
 }

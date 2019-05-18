@@ -184,7 +184,7 @@ char _findMnemonic (String string) {
 		if (string.charAt (index) != '&') return Character.toLowerCase (string.charAt (index));
 		index++;
 	} while (index < length);
- 	return '\0';
+	return '\0';
 }
 /**
  * Returns the horizontal alignment.
@@ -443,15 +443,15 @@ void onPaint(PaintEvent event) {
 	// shorten the text
 	if (shortenText) {
 		extent.x = 0;
-	    for(int i = 0; i < lines.length; i++) {
-	    	Point e = gc.textExtent(lines[i], DRAW_FLAGS);
-	    	if (e.x > availableWidth) {
-	    		lines[i] = shortenText(gc, lines[i], availableWidth);
-	    		extent.x = Math.max(extent.x, getTotalSize(null, lines[i]).x);
-	    	} else {
-	    		extent.x = Math.max(extent.x, e.x);
-	    	}
-	    }
+		for(int i = 0; i < lines.length; i++) {
+			Point e = gc.textExtent(lines[i], DRAW_FLAGS);
+			if (e.x > availableWidth) {
+				lines[i] = shortenText(gc, lines[i], availableWidth);
+				extent.x = Math.max(extent.x, getTotalSize(null, lines[i]).x);
+			} else {
+				extent.x = Math.max(extent.x, e.x);
+			}
+		}
 		if (appToolTipText == null) {
 			super.setToolTipText(text);
 		}
@@ -550,32 +550,32 @@ void onPaint(PaintEvent event) {
 	int lineHeight = 0, textHeight = 0, imageHeight = 0;
 
 	if (img != null) {
-	    imageRect = img.getBounds();
-	    imageHeight = imageRect.height;
+		imageRect = img.getBounds();
+		imageHeight = imageRect.height;
 	}
 	if (lines != null) {
-	    lineHeight = gc.getFontMetrics().getHeight();
-	    textHeight = lines.length * lineHeight;
+		lineHeight = gc.getFontMetrics().getHeight();
+		textHeight = lines.length * lineHeight;
 	}
 
 	int imageY = 0, midPoint = 0, lineY = 0;
 	if (imageHeight > textHeight ) {
-	    if (topMargin == DEFAULT_MARGIN && bottomMargin == DEFAULT_MARGIN) imageY = rect.y + (rect.height - imageHeight) / 2;
-	    else imageY = topMargin;
-	    midPoint = imageY + imageHeight/2;
-	    lineY = midPoint - textHeight / 2;
+		if (topMargin == DEFAULT_MARGIN && bottomMargin == DEFAULT_MARGIN) imageY = rect.y + (rect.height - imageHeight) / 2;
+		else imageY = topMargin;
+		midPoint = imageY + imageHeight/2;
+		lineY = midPoint - textHeight / 2;
 	}
 	else {
-	    if (topMargin == DEFAULT_MARGIN && bottomMargin == DEFAULT_MARGIN) lineY = rect.y + (rect.height - textHeight) / 2;
-	    else lineY = topMargin;
-	    midPoint = lineY + textHeight/2;
-	    imageY = midPoint - imageHeight / 2;
+		if (topMargin == DEFAULT_MARGIN && bottomMargin == DEFAULT_MARGIN) lineY = rect.y + (rect.height - textHeight) / 2;
+		else lineY = topMargin;
+		midPoint = lineY + textHeight/2;
+		imageY = midPoint - imageHeight / 2;
 	}
 
 	// draw the image
 	if (img != null) {
 		gc.drawImage(img, 0, 0, imageRect.width, imageHeight,
-		                x, imageY, imageRect.width, imageHeight);
+						x, imageY, imageRect.width, imageHeight);
 		x +=  imageRect.width + GAP;
 		extent.x -= imageRect.width + GAP;
 	}
@@ -820,10 +820,10 @@ public void setBackground(Image image) {
  * @since 3.6
  */
 public void setBottomMargin(int bottomMargin) {
-    checkWidget();
-    if (this.bottomMargin == bottomMargin || bottomMargin < 0) return;
-    this.bottomMargin = bottomMargin;
-    redraw();
+	checkWidget();
+	if (this.bottomMargin == bottomMargin || bottomMargin < 0) return;
+	this.bottomMargin = bottomMargin;
+	redraw();
 }
 @Override
 public void setFont(Font font) {
@@ -861,10 +861,10 @@ public void setImage(Image image) {
  * @since 3.6
  */
 public void setLeftMargin(int leftMargin) {
-    checkWidget();
-    if (this.leftMargin == leftMargin || leftMargin < 0) return;
-    this.leftMargin = leftMargin;
-    redraw();
+	checkWidget();
+	if (this.leftMargin == leftMargin || leftMargin < 0) return;
+	this.leftMargin = leftMargin;
+	redraw();
 }
 /**
  * Set the label's margins, in points.
@@ -901,10 +901,10 @@ public void setMargins (int leftMargin, int topMargin, int rightMargin, int bott
  * @since 3.6
  */
 public void setRightMargin(int rightMargin) {
-    checkWidget();
-    if (this.rightMargin == rightMargin || rightMargin < 0) return;
-    this.rightMargin = rightMargin;
-    redraw();
+	checkWidget();
+	if (this.rightMargin == rightMargin || rightMargin < 0) return;
+	this.rightMargin = rightMargin;
+	redraw();
 }
 /**
  * Set the label's text.
@@ -956,10 +956,10 @@ public void setToolTipText (String string) {
  * @since 3.6
  */
 public void setTopMargin(int topMargin) {
-    checkWidget();
-    if (this.topMargin == topMargin || topMargin < 0) return;
-    this.topMargin = topMargin;
-    redraw();
+	checkWidget();
+	if (this.topMargin == topMargin || topMargin < 0) return;
+	this.topMargin = topMargin;
+	redraw();
 }
 /**
  * Shorten the given text <code>t</code> so that its length doesn't exceed
@@ -1001,7 +1001,7 @@ protected String shortenText(GC gc, String t, int width) {
 	}
 	String result = mid == 0 ? t : t.substring(0, mid) + ELLIPSIS + t.substring(validateOffset(layout, l-mid), l);
 	layout.dispose();
- 	return result;
+	return result;
 }
 int validateOffset(TextLayout layout, int offset) {
 	int nextOffset = layout.getNextOffset(offset, SWT.MOVEMENT_CLUSTER);
@@ -1009,21 +1009,21 @@ int validateOffset(TextLayout layout, int offset) {
 	return offset;
 }
 private String[] splitString(String text) {
-    String[] lines = new String[1];
-    int start = 0, pos;
-    do {
-        pos = text.indexOf('\n', start);
-        if (pos == -1) {
-        	lines[lines.length - 1] = text.substring(start);
-        } else {
-            boolean crlf = (pos > 0) && (text.charAt(pos - 1) == '\r');
-            lines[lines.length - 1] = text.substring(start, pos - (crlf ? 1 : 0));
-            start = pos + 1;
-            String[] newLines = new String[lines.length+1];
-            System.arraycopy(lines, 0, newLines, 0, lines.length);
-       		lines = newLines;
-        }
-    } while (pos != -1);
-    return lines;
+	String[] lines = new String[1];
+	int start = 0, pos;
+	do {
+		pos = text.indexOf('\n', start);
+		if (pos == -1) {
+			lines[lines.length - 1] = text.substring(start);
+		} else {
+			boolean crlf = (pos > 0) && (text.charAt(pos - 1) == '\r');
+			lines[lines.length - 1] = text.substring(start, pos - (crlf ? 1 : 0));
+			start = pos + 1;
+			String[] newLines = new String[lines.length+1];
+			System.arraycopy(lines, 0, newLines, 0, lines.length);
+			lines = newLines;
+		}
+	} while (pos != -1);
+	return lines;
 }
 }

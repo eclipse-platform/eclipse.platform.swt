@@ -23,7 +23,7 @@ package org.eclipse.swt.snippets;
  */
 	
 import java.applet.*;
-	 
+	
 public class Snippet157 extends Applet {
 	
 	org.eclipse.swt.widgets.Display display;
@@ -63,15 +63,15 @@ public void init () {
 }
  @Override
 public void stop (){
- 	if (display != null && !display.isDisposed ()){
- 		display.syncExec(() -> {
+	if (display != null && !display.isDisposed ()){
+		display.syncExec(() -> {
 			if (swtParent != null && !swtParent.isDisposed ()) swtParent.dispose ();
 			swtParent = null;
 			display.dispose ();
 			display = null;
 		});
- 		remove (awtParent);
- 		awtParent = null;
- 	}
+		remove (awtParent);
+		awtParent = null;
+	}
  }
 }

@@ -84,7 +84,7 @@ public void test_createComposites() {
 	PerformanceMeter meter = createMeter("Create composites");
 	int samples;
 
-    Performance.getDefault();
+	Performance.getDefault();
 
 	// Warm up.
 	for(samples = 0; samples < 2; samples++) {
@@ -119,8 +119,8 @@ public void test_createWidgets() {
 	PerformanceMeter meter = createMeter("Create composites and widgets");
 	int samples;
 
-    Performance performance = Performance.getDefault();
-    performance.tagAsGlobalSummary(meter, "Create composites and widgets", Dimension.ELAPSED_PROCESS);
+	Performance performance = Performance.getDefault();
+	performance.tagAsGlobalSummary(meter, "Create composites and widgets", Dimension.ELAPSED_PROCESS);
 
 	for(samples = 0; samples < 10; samples++) {
 		Shell shell = new Shell(display);

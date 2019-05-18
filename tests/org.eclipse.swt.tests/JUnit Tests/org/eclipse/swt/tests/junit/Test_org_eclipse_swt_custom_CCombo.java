@@ -289,45 +289,45 @@ public void test_setVisibleZ() {
 CCombo ccombo;
 
 private void add() {
-    ccombo.add("this");
-    ccombo.add("is");
-    ccombo.add("SWT");
+	ccombo.add("this");
+	ccombo.add("is");
+	ccombo.add("SWT");
 }
 
 @Test
 public void test_consistency_MouseSelection () {
-    add();
-    consistencyPrePackShell();
-    consistencyEvent(ccombo.getSize().x-10, 5, 30, ccombo.getItemHeight()*2,
-            		 ConsistencyUtility.SELECTION);
+	add();
+	consistencyPrePackShell();
+	consistencyEvent(ccombo.getSize().x-10, 5, 30, ccombo.getItemHeight()*2,
+					 ConsistencyUtility.SELECTION);
 }
 
 @Test
 public void test_consistency_KeySelection () {
-    add();
-    consistencyEvent(0, SWT.ARROW_DOWN, 0, 0, ConsistencyUtility.KEY_PRESS);
+	add();
+	consistencyEvent(0, SWT.ARROW_DOWN, 0, 0, ConsistencyUtility.KEY_PRESS);
 }
 
 @Test
 public void test_consistency_EnterSelection () {
-    add();
-    consistencyEvent(10, 13, 0, 0, ConsistencyUtility.KEY_PRESS);
+	add();
+	consistencyEvent(10, 13, 0, 0, ConsistencyUtility.KEY_PRESS);
 }
 
 @Test
 public void test_consistency_MenuDetect () {
-    add();
-    consistencyPrePackShell();
-    //on arrow
-    consistencyEvent(ccombo.getSize().x-10, 5, 3, 0, ConsistencyUtility.MOUSE_CLICK);
-    //on text
-    consistencyEvent(10, 5, 3, ConsistencyUtility.ESCAPE_MENU, ConsistencyUtility.MOUSE_CLICK);
+	add();
+	consistencyPrePackShell();
+	//on arrow
+	consistencyEvent(ccombo.getSize().x-10, 5, 3, 0, ConsistencyUtility.MOUSE_CLICK);
+	//on text
+	consistencyEvent(10, 5, 3, ConsistencyUtility.ESCAPE_MENU, ConsistencyUtility.MOUSE_CLICK);
 }
 
 @Test
 public void test_consistency_DragDetect () {
-    add();
-    consistencyEvent(10, 5, 20, 10, ConsistencyUtility.MOUSE_DRAG);
+	add();
+	consistencyEvent(10, 5, 20, 10, ConsistencyUtility.MOUSE_DRAG);
 }
 
 @Test

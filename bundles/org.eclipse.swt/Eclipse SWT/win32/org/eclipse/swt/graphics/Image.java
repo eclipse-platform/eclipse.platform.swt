@@ -940,16 +940,16 @@ void initNative(String filename) {
 									OS.MoveMemory(data, pixels, data.length);
 									switch (bitmapData.PixelFormat) {
 										case Gdip.PixelFormat16bppARGB1555:
-							 		 		alphaData = new byte[width * height];
-							 		 		for (int i = 1, j = 0; i < data.length; i += 2, j++) {
-							 		 			alphaData[j] = (byte)((data[i] & 0x80) != 0 ? 255 : 0);
-							 		 		}
+											alphaData = new byte[width * height];
+											for (int i = 1, j = 0; i < data.length; i += 2, j++) {
+												alphaData[j] = (byte)((data[i] & 0x80) != 0 ? 255 : 0);
+											}
 											break;
 										case Gdip.PixelFormat32bppARGB:
-							 		 		alphaData = new byte[width * height];
-							 		 		for (int i = 3, j = 0; i < data.length; i += 4, j++) {
-							 		 			alphaData[j] = data[i];
-							 		 		}
+											alphaData = new byte[width * height];
+											for (int i = 3, j = 0; i < data.length; i += 4, j++) {
+												alphaData[j] = data[i];
+											}
 											break;
 									}
 									ImageData img = new ImageData(width, height, depth, paletteData, scanlinePad, data);
@@ -957,7 +957,7 @@ void initNative(String filename) {
 									img.alphaData = alphaData;
 									init(img);
 								}
-				 		 		Gdip.Bitmap_UnlockBits(bitmap, lockedBitmapData);
+								Gdip.Bitmap_UnlockBits(bitmap, lockedBitmapData);
 							} else {
 								error = SWT.ERROR_INVALID_IMAGE;
 							}
@@ -992,9 +992,9 @@ long /*int*/ [] createGdipImage() {
 				BITMAP dibBM = new BITMAP();
 				OS.GetObject(memDib, BITMAP.sizeof, dibBM);
 				int sizeInBytes = dibBM.bmWidthBytes * dibBM.bmHeight;
-			 	OS.BitBlt(memHdc, 0, 0, imgWidth, imgHeight, srcHdc, 0, 0, OS.SRCCOPY);
-			 	byte red = 0, green = 0, blue = 0;
-			 	if (transparentPixel != -1) {
+				OS.BitBlt(memHdc, 0, 0, imgWidth, imgHeight, srcHdc, 0, 0, OS.SRCCOPY);
+				byte red = 0, green = 0, blue = 0;
+				if (transparentPixel != -1) {
 					if (bm.bmBitsPixel <= 8)  {
 						byte[] color = new byte[4];
 						OS.GetDIBColorTable(srcHdc, transparentPixel, 1, color);
@@ -1029,12 +1029,12 @@ long /*int*/ [] createGdipImage() {
 								break;
 						}
 					}
-			 	}
+				}
 				OS.SelectObject(srcHdc, oldSrcBitmap);
 				OS.SelectObject(memHdc, oldMemBitmap);
 				OS.DeleteObject(srcHdc);
 				OS.DeleteObject(memHdc);
-			 	byte[] srcData = new byte[sizeInBytes];
+				byte[] srcData = new byte[sizeInBytes];
 				OS.MoveMemory(srcData, dibBM.bmBits, sizeInBytes);
 				OS.DeleteObject(memDib);
 				device.internal_dispose_GC(hDC, null);
@@ -1104,10 +1104,10 @@ long /*int*/ [] createGdipImage() {
 				long /*int*/ oldMemBitmap = OS.SelectObject(memHdc, memDib);
 				BITMAP dibBM = new BITMAP();
 				OS.GetObject(memDib, BITMAP.sizeof, dibBM);
-			 	OS.BitBlt(memHdc, 0, 0, imgWidth, imgHeight, srcHdc, 0, hBitmap == iconInfo.hbmMask ? imgHeight : 0, OS.SRCCOPY);
+				OS.BitBlt(memHdc, 0, 0, imgWidth, imgHeight, srcHdc, 0, hBitmap == iconInfo.hbmMask ? imgHeight : 0, OS.SRCCOPY);
 				OS.SelectObject(memHdc, oldMemBitmap);
 				OS.DeleteObject(memHdc);
-			 	byte[] srcData = new byte[dibBM.bmWidthBytes * dibBM.bmHeight];
+				byte[] srcData = new byte[dibBM.bmWidthBytes * dibBM.bmHeight];
 				OS.MoveMemory(srcData, dibBM.bmBits, srcData.length);
 				OS.DeleteObject(memDib);
 				OS.SelectObject(srcHdc, iconInfo.hbmMask);

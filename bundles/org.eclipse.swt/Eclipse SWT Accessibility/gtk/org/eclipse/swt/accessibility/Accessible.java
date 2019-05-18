@@ -264,10 +264,10 @@ public class Accessible {
 	 * @since 3.7
 	 */
 	public void addAccessibleEditableTextListener(AccessibleEditableTextListener listener) {
-	    checkWidget();
-	    if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+		checkWidget();
+		if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 		if (accessibleEditableTextListeners == null) accessibleEditableTextListeners = new ArrayList<>();
-	    accessibleEditableTextListeners.add(listener);
+		accessibleEditableTextListeners.add(listener);
 	}
 
 	/**
@@ -710,12 +710,12 @@ public class Accessible {
 	 * @since 3.7
 	 */
 	public void removeAccessibleEditableTextListener(AccessibleEditableTextListener listener) {
-	    checkWidget();
-	    if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	    if (accessibleEditableTextListeners != null) {
-	    	accessibleEditableTextListeners.remove(listener);
+		checkWidget();
+		if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+		if (accessibleEditableTextListeners != null) {
+			accessibleEditableTextListeners.remove(listener);
 			if (accessibleEditableTextListeners.isEmpty()) accessibleEditableTextListeners = null;
-	    }
+		}
 	}
 
 	/**

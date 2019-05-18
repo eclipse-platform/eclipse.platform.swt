@@ -112,9 +112,9 @@ static long GtkPrinterFunc_List (long printer, long user_data) {
 	* Bug in GTK. While performing a gtk_enumerate_printers(), GTK finds all of the
 	* available printers from each backend and can hang. If a backend requires more
 	* time to gather printer info, GTK will start an event loop waiting for a done
-    * signal before continuing. For the Lpr backend, GTK does not send a done signal
-    * which means the event loop never ends. The fix is to check to see if the driver
-    * is of type Lpr, and stop the enumeration, which exits the event loop.
+	* signal before continuing. For the Lpr backend, GTK does not send a done signal
+	* which means the event loop never ends. The fix is to check to see if the driver
+	* is of type Lpr, and stop the enumeration, which exits the event loop.
 	*/
 	if (printerList[length].driver.equals (GTK_LPR_BACKEND)) return 1;
 	return 0;

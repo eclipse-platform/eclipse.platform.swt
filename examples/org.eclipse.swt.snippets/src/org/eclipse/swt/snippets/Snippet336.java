@@ -147,7 +147,7 @@ public static void main(String[] args) {
 		button.setText(images[i]);
 		button.addListener(SWT.Selection, listener3);
 	}
-    shell.pack();
+	shell.pack();
 	shell.open();
 	while (!shell.isDisposed()) {
 		if (!display.readAndDispatch()) display.sleep();

@@ -109,7 +109,7 @@ public class DropTarget extends Widget {
 	static Callback Drag_Data_Received;
 	static Callback Drag_Drop;
 
-	 static {
+	static {
 		Drag_Motion = new Callback(DropTarget.class, "Drag_Motion", 5); //$NON-NLS-1$
 		if (Drag_Motion.getAddress() == 0) SWT.error(SWT.ERROR_NO_MORE_CALLBACKS);
 		Drag_Leave = new Callback(DropTarget.class, "Drag_Leave", 3); //$NON-NLS-1$
@@ -155,7 +155,7 @@ public DropTarget(Control control, int style) {
 	super(control, checkStyle(style));
 	this.control = control;
 	if (Drag_Motion == null || Drag_Leave == null || Drag_Data_Received == null || Drag_Drop == null) {
-		 DND.error(DND.ERROR_CANNOT_INIT_DROP);
+		DND.error(DND.ERROR_CANNOT_INIT_DROP);
 	}
 	if (control.getData(DND.DROP_TARGET_KEY) != null) {
 		DND.error(DND.ERROR_CANNOT_INIT_DROP);

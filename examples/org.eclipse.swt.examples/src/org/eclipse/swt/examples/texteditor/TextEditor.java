@@ -244,14 +244,14 @@ public class TextEditor {
 			FileDialog dialog = new FileDialog(shell, SWT.OPEN);
 			dialog.setFilterNames(new String [] {getResourceString("Text_Documents")}); //$NON-NLS-1$
 			dialog.setFilterExtensions (new String [] {"*.txt"}); //$NON-NLS-1$
-		    String name = dialog.open();
-		    if (name == null)  return;
-		    fileName = name;
-		    try (FileInputStream file = new FileInputStream(name);){
-		    	styledText.setText(openFile(file));
-		    } catch (IOException e) {
-		    	showError(getResourceString("Error"), e.getMessage()); //$NON-NLS-1$
-		    }
+			String name = dialog.open();
+			if (name == null)  return;
+			fileName = name;
+			try (FileInputStream file = new FileInputStream(name);){
+				styledText.setText(openFile(file));
+			} catch (IOException e) {
+				showError(getResourceString("Error"), e.getMessage()); //$NON-NLS-1$
+			}
 		}));
 
 		final MenuItem saveItem = new MenuItem(fileMenu, SWT.PUSH);
@@ -1251,10 +1251,10 @@ public class TextEditor {
 	void saveFile() {
 		if (fileName != null) {
 			try (FileWriter file = new FileWriter(fileName);) {
-		       	file.write(styledText.getText());
+				file.write(styledText.getText());
 			} catch (IOException e) {
-	        	showError(getResourceString("Error"), e.getMessage());
-	        }
+				showError(getResourceString("Error"), e.getMessage());
+			}
 		}
 	}
 

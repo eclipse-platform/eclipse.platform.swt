@@ -112,12 +112,12 @@ public void test_setFontLorg_eclipse_swt_graphics_Font() {
 /* custom*/
 @Test
 public void test_consistency_MenuDetect() {
-    consistencyEvent(10, 10, 3, 0, ConsistencyUtility.MOUSE_CLICK);
+	consistencyEvent(10, 10, 3, 0, ConsistencyUtility.MOUSE_CLICK);
 }
 
 @Test
 public void test_consistency_DragDetect() {
-    consistencyEvent(10, 10, 20, 20, ConsistencyUtility.MOUSE_DRAG);
+	consistencyEvent(10, 10, 20, 20, ConsistencyUtility.MOUSE_DRAG);
 }
 
 }

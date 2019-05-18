@@ -32,13 +32,13 @@ public class Bug486068_ExpandBarTest {
 		shell.setLayout(new FillLayout());
 		shell.setText("ExpandBar Example");
 		ExpandBar bar = new ExpandBar (shell, SWT.V_SCROLL);
-		  
+		
 		
 		// First item
 		Composite composite = new Composite (bar, SWT.NONE);
 		GridLayout layout = new GridLayout ();
 		layout.marginLeft = layout.marginTop = layout.marginRight = layout.marginBottom = 10;
-	 	layout.verticalSpacing = 10;
+		layout.verticalSpacing = 10;
 		composite.setLayout(layout);
 		
 		

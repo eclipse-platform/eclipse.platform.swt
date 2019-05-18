@@ -210,7 +210,7 @@ public void test_getItemCount() {
 	int number = 10;
 	for (int i = 0; i<number ; i++){
 		assertEquals(menu.getItemCount(), i);
-	  	new MenuItem(menu, 0);
+		new MenuItem(menu, 0);
 	}
 }
 
@@ -227,7 +227,7 @@ public void test_getItems() {
 	int number = 5;
 	MenuItem[] items = new MenuItem[number];
 	for (int i = 0; i<number ; i++){
-	  	items[i] = new MenuItem(menu, 0);
+		items[i] = new MenuItem(menu, 0);
 	}
 	assertArrayEquals(":a:", items, menu.getItems());
 
@@ -274,7 +274,7 @@ public void test_indexOfLorg_eclipse_swt_widgets_MenuItem() {
 	int number = 10;
 	MenuItem[] mis = new MenuItem[number];
 	for (int i = 0; i<number ; i++){
-	  	mis[i] = new MenuItem(menu, SWT.NULL);
+		mis[i] = new MenuItem(menu, SWT.NULL);
 	}
 	for (int i = 0; i<number ; i++){
 		assertEquals(menu.indexOf(mis[i]), i);

@@ -340,12 +340,12 @@ void destroy () {
 		OS.DestroyIcon(handle);
 	} else {
 		/*
-	 	* The MSDN states that one should not destroy a shared
-	 	* cursor, that is, one obtained from LoadCursor.
-	 	* However, it does not appear to do any harm, so rather
-	 	* than keep track of how a cursor was created, we just
-	 	* destroy them all. If this causes problems in the future,
-	 	* put the flag back in.
+		* The MSDN states that one should not destroy a shared
+		* cursor, that is, one obtained from LoadCursor.
+		* However, it does not appear to do any harm, so rather
+		* than keep track of how a cursor was created, we just
+		* destroy them all. If this causes problems in the future,
+		* put the flag back in.
 		*/
 		OS.DestroyCursor(handle);
 	}

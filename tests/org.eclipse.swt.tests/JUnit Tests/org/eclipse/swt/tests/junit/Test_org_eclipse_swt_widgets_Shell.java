@@ -826,93 +826,93 @@ public void test_setSizeLorg_eclipse_swt_graphics_Point() {
 Shell testShell;
 
 private void createShell() {
-    tearDown();
-    shell = new Shell();
-    testShell = new Shell(shell, SWT.DIALOG_TRIM | SWT.MIN);
+	tearDown();
+	shell = new Shell();
+	testShell = new Shell(shell, SWT.DIALOG_TRIM | SWT.MIN);
 	testShell.setSize(100,300);
 	testShell.setText("Shell");
-    testShell.setLayout(new FillLayout());
-    setWidget(testShell);
+	testShell.setLayout(new FillLayout());
+	setWidget(testShell);
 
 }
 
 @Test
 public void test_consistency_Open() {
 	if (SwtTestUtil.fTestConsistency) {
-	    createShell();
-	    final Display display = shell.getDisplay();
-	    List<String> events = new ArrayList<>();
-	    String[] temp = hookExpectedEvents(testShell, getTestName(), events);
-	    shell.pack();
-	    shell.open();
-	    testShell.pack();
-	    testShell.open();
-	    new Thread() {
-	        @Override
+		createShell();
+		final Display display = shell.getDisplay();
+		List<String> events = new ArrayList<>();
+		String[] temp = hookExpectedEvents(testShell, getTestName(), events);
+		shell.pack();
+		shell.open();
+		testShell.pack();
+		testShell.open();
+		new Thread() {
+			@Override
 			public void run() {
-	            display.asyncExec(new Thread() {
-				    @Override
+				display.asyncExec(new Thread() {
+					@Override
 					public void run() {
-				        shell.dispose();
-				    }
+						shell.dispose();
+					}
 				});
-	    }}.start();
+		}}.start();
 
-	    while(!shell.isDisposed()) {
-	        if(!display.readAndDispatch()) display.sleep();
-	    }
-	    setUp();
-	    String[] results = events.toArray(new String[events.size()]);
-	    assertArrayEquals(getTestName() + " event ordering", temp, results);
+		while(!shell.isDisposed()) {
+			if(!display.readAndDispatch()) display.sleep();
+		}
+		setUp();
+		String[] results = events.toArray(new String[events.size()]);
+		assertArrayEquals(getTestName() + " event ordering", temp, results);
 	}
 }
 
 @Test
 public void test_consistency_Iconify() {
-    createShell();
-    consistencyEvent(1, 0, 0, 0, ConsistencyUtility.SHELL_ICONIFY, null, false);
+	createShell();
+	consistencyEvent(1, 0, 0, 0, ConsistencyUtility.SHELL_ICONIFY, null, false);
 }
 
 @Test
 public void test_consistency_Close() {
-    createShell();
-    consistencyPrePackShell();
-    consistencyEvent(0, SWT.ALT, 0, SWT.F4, ConsistencyUtility.DOUBLE_KEY_PRESS);
-    createShell();
+	createShell();
+	consistencyPrePackShell();
+	consistencyEvent(0, SWT.ALT, 0, SWT.F4, ConsistencyUtility.DOUBLE_KEY_PRESS);
+	createShell();
 }
 
 @Test
 public void test_consistency_Dispose() {
-    createShell();
+	createShell();
 
-    final Button button = new Button(testShell, SWT.PUSH);
-    button.setText("dispose");
-    button.addSelectionListener( new SelectionAdapter() {
-        @Override
+	final Button button = new Button(testShell, SWT.PUSH);
+	button.setText("dispose");
+	button.addSelectionListener( new SelectionAdapter() {
+		@Override
 		public void widgetSelected(SelectionEvent se) {
-            button.dispose();
-            testShell.dispose();
-        }
-    });
-    List<String> events = new ArrayList<>();
-    consistencyPrePackShell(testShell);
-    Point pt = button.getLocation();
-    consistencyEvent(pt.x, pt.y, 1, 0, ConsistencyUtility.MOUSE_CLICK, events);
-    createShell();
+			button.dispose();
+			testShell.dispose();
+		}
+	});
+	List<String> events = new ArrayList<>();
+	consistencyPrePackShell(testShell);
+	Point pt = button.getLocation();
+	consistencyEvent(pt.x, pt.y, 1, 0, ConsistencyUtility.MOUSE_CLICK, events);
+	createShell();
 }
 
 @Test
 public void test_setAlpha() {
-    createShell();
-    testShell.setAlpha(128);
-    int alpha = testShell.getAlpha();
-    if (SwtTestUtil.isGTK && alpha == 255) {
-    	System.out.println("Test_org_eclipse_swt_widgets_Shell.test_setAlpha(): expected 128, but was 255. "
-    			+ "Probably missing window manager functionality, see bug 498208.");
-    } else {
-    	assertEquals(128, alpha);
-    }
-    testShell.setAlpha(255);
-    assertEquals(255, testShell.getAlpha());
+	createShell();
+	testShell.setAlpha(128);
+	int alpha = testShell.getAlpha();
+	if (SwtTestUtil.isGTK && alpha == 255) {
+		System.out.println("Test_org_eclipse_swt_widgets_Shell.test_setAlpha(): expected 128, but was 255. "
+				+ "Probably missing window manager functionality, see bug 498208.");
+	} else {
+		assertEquals(128, alpha);
+	}
+	testShell.setAlpha(255);
+	assertEquals(255, testShell.getAlpha());
 }
 }

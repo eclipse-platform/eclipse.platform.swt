@@ -440,15 +440,15 @@ void applyListSegments () {
 	}
 	while (index-- > 0) {
 		buffer = null;
-	 	if (add) {
+		if (add) {
 			int length = (int)/*64*/OS.SendMessage (handle, OS.CB_GETLBTEXTLEN, index, 0);
 			if (length == OS.CB_ERR) error (SWT.ERROR);
 			buffer = new TCHAR (cp, length + 1);
 			if (OS.SendMessage (handle, OS.CB_GETLBTEXT, index, buffer) == OS.CB_ERR) return;
 			items [index] = string = buffer.toString (0, length);
-	 	} else {
-	 		string = items [index];
-	 	}
+		} else {
+			string = items [index];
+		}
 		if (OS.SendMessage (handle, OS.CB_DELETESTRING, index, 0) == OS.CB_ERR) return;
 		if (buffer == null) buffer = new TCHAR (cp, string, true);
 		if (OS.SendMessage (handle, OS.CB_INSERTSTRING, index, buffer) == OS.CB_ERR) return;
@@ -556,7 +556,7 @@ void clearSegments (boolean applyText) {
 	if (nSegments == 0) return;
 	long /*int*/ hwndText = OS.GetDlgItem (handle, CBID_EDIT);
 	int/*64*/ limit = (int/*64*/)OS.SendMessage (hwndText, OS.EM_GETLIMITTEXT, 0, 0) & 0x7fffffff;
- 	if (limit < LIMIT) {
+	if (limit < LIMIT) {
 		OS.SendMessage (hwndText, OS.EM_SETLIMITTEXT, Math.max (1, limit - nSegments), 0);
 	}
 	if (!applyText) {

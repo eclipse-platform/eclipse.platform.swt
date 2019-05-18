@@ -475,7 +475,7 @@ LRESULT WM_KEYDOWN (long /*int*/ wParam, long /*int*/ lParam) {
 			* The fix is to replace VK_LEFT by VK_RIGHT and VK_RIGHT by VK_LEFT
 			* when the current orientation differs from the orientation used to
 			* create the control.
-		    */
+			*/
 			boolean isRTL = (style & SWT.RIGHT_TO_LEFT) != 0;
 			if (isRTL != createdAsRTL) {
 				long /*int*/ code = callWindowProc (handle, OS.WM_KEYDOWN, wParam == OS.VK_RIGHT ? OS.VK_LEFT : OS.VK_RIGHT, lParam);

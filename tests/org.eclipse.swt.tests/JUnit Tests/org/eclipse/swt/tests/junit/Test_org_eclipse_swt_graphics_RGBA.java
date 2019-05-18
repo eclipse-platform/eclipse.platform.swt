@@ -265,10 +265,10 @@ public void test_equalsLjava_lang_Object() {
 	}
 
 	if (rgba1.equals(new RGBA(r+1, g, b, a)) ||
-	    rgba1.equals(new RGBA(r, g+1, b, a)) ||
-	    rgba1.equals(new RGBA(r, g, b+1, a)) ||
-	    rgba1.equals(new RGBA(r, g, b, a+1)) ||
-	    rgba1.equals(new RGBA(r+1, g+1, b+1, a+1))) {
+		rgba1.equals(new RGBA(r, g+1, b, a)) ||
+		rgba1.equals(new RGBA(r, g, b+1, a)) ||
+		rgba1.equals(new RGBA(r, g, b, a+1)) ||
+		rgba1.equals(new RGBA(r+1, g+1, b+1, a+1))) {
 		fail("Comparing two RGBA instances with different combination of R G B A parameters found equal");
 	}
 
@@ -285,10 +285,10 @@ public void test_equalsLjava_lang_Object() {
 	}
 
 	if (rgba1.equals(new RGBA(hue+1, sat, bright, alpha)) ||
-	    rgba1.equals(new RGBA(hue, sat+0.1f, bright, alpha)) ||
-	    rgba1.equals(new RGBA(hue, sat, bright+0.1f, alpha)) ||
-	    rgba1.equals(new RGBA(hue, sat, bright, alpha+1f)) ||
-	    rgba1.equals(new RGBA(hue+1, sat+0.1f, bright+0.1f, alpha+1f))) {
+		rgba1.equals(new RGBA(hue, sat+0.1f, bright, alpha)) ||
+		rgba1.equals(new RGBA(hue, sat, bright+0.1f, alpha)) ||
+		rgba1.equals(new RGBA(hue, sat, bright, alpha+1f)) ||
+		rgba1.equals(new RGBA(hue+1, sat+0.1f, bright+0.1f, alpha+1f))) {
 		fail("Comparing two RGBA instances with different combination of H S B A parameters found equal");
 	}
 }

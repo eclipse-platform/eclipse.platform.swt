@@ -558,13 +558,13 @@ public class Accessible {
 
 	void createIServiceProvider() {
 		objIServiceProvider = new COMObject(new int[] {2,0,0,3}) {
-		    @Override
+			@Override
 			public long /*int*/ method0(long /*int*/[] args) {return QueryInterface(args[0], args[1]);}
-		    @Override
+			@Override
 			public long /*int*/ method1(long /*int*/[] args) {return AddRef();}
-		    @Override
+			@Override
 			public long /*int*/ method2(long /*int*/[] args) {return Release();}
-		    @Override
+			@Override
 			public long /*int*/ method3(long /*int*/[] args) {return QueryService(args[0], args[1], args[2]);}
 		};
 	}
@@ -730,10 +730,10 @@ public class Accessible {
 	 * @since 3.7
 	 */
 	public void addAccessibleEditableTextListener(AccessibleEditableTextListener listener) {
-	    checkWidget();
-	    if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+		checkWidget();
+		if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 		if (accessibleEditableTextListeners == null) accessibleEditableTextListeners = new ArrayList<>();
-	    accessibleEditableTextListeners.add(listener);
+		accessibleEditableTextListeners.add(listener);
 	}
 
 	/**
@@ -1127,12 +1127,12 @@ public class Accessible {
 	 * @since 3.7
 	 */
 	public void removeAccessibleEditableTextListener(AccessibleEditableTextListener listener) {
-	    checkWidget();
-	    if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	    if (accessibleEditableTextListeners != null) {
-	    	accessibleEditableTextListeners.remove(listener);
-	    	if (accessibleEditableTextListeners.isEmpty()) accessibleEditableTextListeners = null;
-	    }
+		checkWidget();
+		if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+		if (accessibleEditableTextListeners != null) {
+			accessibleEditableTextListeners.remove(listener);
+			if (accessibleEditableTextListeners.isEmpty()) accessibleEditableTextListeners = null;
+		}
 	}
 
 	/**

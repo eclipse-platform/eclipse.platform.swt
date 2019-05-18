@@ -27,27 +27,27 @@ public class Bug293581_NO_REDRAW_RESIZE_noeffect {
 
 	static int counter = 0;
 	public static void main(String[] args) {
-	    final String IMAGE_FILENAME = "/home/ipun/Desktop/0ba.jpg";
-	    final Display display = new Display();
-	    Image image = new Image(display, IMAGE_FILENAME);
-	    Shell shell = new Shell(display);
-	    shell.setLayout(new FillLayout());
-	    shell.setBackgroundMode(SWT.INHERIT_DEFAULT);
-	    shell.setBackgroundImage(image);
-	    Canvas canvas = new Canvas(shell, SWT.NO_REDRAW_RESIZE);
-	    canvas.addListener(SWT.Paint, new Listener() {
-	        @Override
+		final String IMAGE_FILENAME = "/home/ipun/Desktop/0ba.jpg";
+		final Display display = new Display();
+		Image image = new Image(display, IMAGE_FILENAME);
+		Shell shell = new Shell(display);
+		shell.setLayout(new FillLayout());
+		shell.setBackgroundMode(SWT.INHERIT_DEFAULT);
+		shell.setBackgroundImage(image);
+		Canvas canvas = new Canvas(shell, SWT.NO_REDRAW_RESIZE);
+		canvas.addListener(SWT.Paint, new Listener() {
+			@Override
 			public void handleEvent(Event event) {
-	            event.gc.drawString(String.valueOf(counter++), 0, 0);
-	        }
-	    });
-	    shell.setBounds(10,10,200,200);
-	    shell.open();
-	    while (!shell.isDisposed()) {
-	        if (!display.readAndDispatch()) display.sleep();
-	    }
-	    image.dispose();
-	    display.dispose();
+				event.gc.drawString(String.valueOf(counter++), 0, 0);
+			}
+		});
+		shell.setBounds(10,10,200,200);
+		shell.open();
+		while (!shell.isDisposed()) {
+			if (!display.readAndDispatch()) display.sleep();
+		}
+		image.dispose();
+		display.dispose();
 	}
 }
 

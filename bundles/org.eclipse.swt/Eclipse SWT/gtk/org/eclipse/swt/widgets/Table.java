@@ -728,8 +728,8 @@ void createItem (TableColumn column, int index) {
 	/*
 	 * Feature in GTK. The tree view does not resize immediately if a table
 	 * column is created when the table is not visible. If the width of the
- 	 * new column is queried, GTK returns an incorrect value. The fix is to
- 	 * ensure that the columns are resized before any queries.
+	 * new column is queried, GTK returns an incorrect value. The fix is to
+	 * ensure that the columns are resized before any queries.
 	 */
 	if(!isVisible ()) {
 		forceResize();
@@ -1958,7 +1958,7 @@ long getTextRenderer (long column) {
 	long textRenderer = 0;
 	while (list != 0) {
 		long renderer = OS.g_list_data (list);
-		 if (GTK.GTK_IS_CELL_RENDERER_TEXT (renderer)) {
+		if (GTK.GTK_IS_CELL_RENDERER_TEXT (renderer)) {
 			textRenderer = renderer;
 			break;
 		}
@@ -2226,8 +2226,8 @@ long gtk_button_release_event (long widget, long event) {
 			if ((eventState[0] & (GDK.GDK_CONTROL_MASK|GDK.GDK_SHIFT_MASK)) == 0) {
 				GTK.gtk_tree_view_set_cursor(handle, path[0], 0,  false);
 			}
-			 // Check to see if there has been a new tree item selected when holding Control in Path.
-			 // If not, deselect the item.
+			// Check to see if there has been a new tree item selected when holding Control in Path.
+			// If not, deselect the item.
 			if ((eventState[0] & GDK.GDK_CONTROL_MASK) != 0 && selectionCountOnRelease == selectionCountOnPress) {
 				GTK.gtk_tree_selection_unselect_path (selection,path[0]);
 			}
@@ -3398,7 +3398,7 @@ void setBackgroundGdkRGBA (long context, long handle, GdkRGBA rgba) {
 	if (GTK.GTK_VERSION >= OS.VERSION(3, 14, 0)) {
 		String name = GTK.GTK_VERSION >= OS.VERSION(3, 20, 0) ? "treeview" : "GtkTreeView";
 		String css = name + " {background-color: " + display.gtk_rgba_to_css_string(background) + ";}\n"
-                + name + ":selected {background-color: " + display.gtk_rgba_to_css_string(selectedBackground) + ";}";
+				+ name + ":selected {background-color: " + display.gtk_rgba_to_css_string(selectedBackground) + ";}";
 
 		// Cache background color
 		cssBackground = css;

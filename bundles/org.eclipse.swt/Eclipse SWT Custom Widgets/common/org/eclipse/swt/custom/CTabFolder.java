@@ -62,16 +62,16 @@ public class CTabFolder extends Composite {
 	 *
 	 * The default value is 0.
 	 */
- 	public int marginWidth = 0;
+	public int marginWidth = 0;
 	/**
 	 * marginHeight specifies the number of points of vertical margin
 	 * that will be placed along the top and bottom edges of the form.
 	 *
 	 * The default value is 0.
 	 */
- 	public int marginHeight = 0;
+	public int marginHeight = 0;
 
- 	/**
+	/**
 	 * A multiple of the tab height that specifies the minimum width to which a tab
 	 * will be compressed before scrolling arrows are used to navigate the tabs.
 	 *
@@ -611,7 +611,7 @@ Rectangle[] computeControlBounds (Point size, boolean[][] position) {
 		for (int i = 0; i < controls.length; i++) {
 			int alignment = controlAlignments[i];
 			if ((alignment & SWT.TRAIL) != 0 && (alignment & SWT.FILL) != 0 && !overflow[i]) {
-				 fillCount++;
+				fillCount++;
 			}
 		}
 		if (fillCount != 0) {
@@ -996,7 +996,7 @@ char _findMnemonic (String string) {
 		if (string.charAt (index) != '&') return Character.toLowerCase (string.charAt (index));
 		index++;
 	} while (index < length);
- 	return '\0';
+	return '\0';
 }
 String stripMnemonic (String string) {
 	int index = 0;
@@ -1009,7 +1009,7 @@ String stripMnemonic (String string) {
 		}
 		index++;
 	} while (index < length);
- 	return string;
+	return string;
 }
 /**
  * Returns <code>true</code> if the receiver is minimized.
@@ -1742,8 +1742,8 @@ boolean onMnemonic (Event event, boolean doit) {
 			if (mnemonic != '\0') {
 				if (Character.toLowerCase (key) == mnemonic) {
 					if (doit) {
-					    setSelection(i, true);
-					    forceFocus();
+						setSelection(i, true);
+						forceFocus();
 					}
 					return true;
 				}
@@ -1872,12 +1872,12 @@ void onMouse(Event event) {
 				}
 				int index = indexOf(item);
 				if (item.showing){
-				    	int oldSelectedIndex = selectedIndex;
-				    	setSelection(index, true);
-				    	if (oldSelectedIndex == selectedIndex) {
-				    	    /* If the click is on the selected tabitem, then set focus to the tabfolder */
-				    	    forceFocus();
-				    	}
+					int oldSelectedIndex = selectedIndex;
+					setSelection(index, true);
+					if (oldSelectedIndex == selectedIndex) {
+						/* If the click is on the selected tabitem, then set focus to the tabfolder */
+						forceFocus();
+					}
 				}
 				return;
 			}
@@ -2436,18 +2436,18 @@ public void setBackground(Color[] colors, int[] percents, boolean vertical) {
 		(gradientColors.length == colors.length)) {
 		boolean same = false;
 		for (int i = 0; i < gradientColors.length; i++) {
-		    if (gradientColors[i] == null) {
+			if (gradientColors[i] == null) {
 			same = colors[i] == null;
-		    } else {
+			} else {
 			same = gradientColors[i].equals(colors[i]);
-		    }
-		    if (!same) break;
+			}
+			if (!same) break;
 		}
 		if (same) {
-		    for (int i = 0; i < gradientPercents.length; i++) {
+			for (int i = 0; i < gradientPercents.length; i++) {
 			same = gradientPercents[i] == percents[i];
 			if (!same) break;
-		    }
+			}
 		}
 		if (same && this.gradientVertical == vertical) return;
 	}
@@ -2475,9 +2475,9 @@ public void setBackground(Color[] colors, int[] percents, boolean vertical) {
 }
 @Override
 public void setBackgroundImage(Image image) {
-    	super.setBackgroundImage(image);
-    	renderer.createAntialiasColors(); //TODO: need better caching strategy
-    	redraw();
+		super.setBackgroundImage(image);
+		renderer.createAntialiasColors(); //TODO: need better caching strategy
+		redraw();
 }
 /**
  * Toggle the visibility of the border
@@ -2567,7 +2567,7 @@ void setButtonBounds(GC gc) {
 			chevronImage = createButtonImage(display, CTabFolderRenderer.PART_CHEVRON_BUTTON);
 			chevronItem.setImage(chevronImage);
 		}
-    }
+	}
 
 	boolean[][] overflow = new boolean[1][0];
 	Rectangle[] rects = computeControlBounds(size, overflow);

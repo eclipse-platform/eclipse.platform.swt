@@ -44,7 +44,7 @@ public static void main (String [] args) {
 	list.addListener (SWT.DefaultSelection, e -> {
 		int [] selection = list.getSelectionIndices ();
 		for (int i=0; i<selection.length; i++)
-		 {
+		{
 		}
 	});
 	list.addListener (SWT.MouseWheel, e -> {

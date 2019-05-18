@@ -29,37 +29,37 @@ import org.eclipse.swt.widgets.TreeItem;
 
 public class Bug538114_ExpandBarEmptyAll {
 	public static void main(String[] args) {
-	    final Display display = new Display();
-	    Shell shell = new Shell(display);
-	    shell.setSize(400, 600);
-	    shell.setLayout(new FillLayout());
-	    shell.setText("ExpandBar Bug");
+		final Display display = new Display();
+		Shell shell = new Shell(display);
+		shell.setSize(400, 600);
+		shell.setLayout(new FillLayout());
+		shell.setText("ExpandBar Bug");
 
-	    expandBar(shell);
+		expandBar(shell);
 
-	    shell.open();
+		shell.open();
 
-	    while (!shell.isDisposed()) {
-	            if (!display.readAndDispatch())
-	                    display.sleep();
-	    }
-	    display.dispose();
+		while (!shell.isDisposed()) {
+				if (!display.readAndDispatch())
+						display.sleep();
+		}
+		display.dispose();
 	}
 
 	private static void expandBar(Shell shell) {
-        ExpandBar bar = new ExpandBar(shell, SWT.NONE);
+		ExpandBar bar = new ExpandBar(shell, SWT.NONE);
 
-        Composite expandControl = new Composite(bar, SWT.NONE);
-        expandControl.setLayout(new FillLayout(SWT.VERTICAL));
+		Composite expandControl = new Composite(bar, SWT.NONE);
+		expandControl.setLayout(new FillLayout(SWT.VERTICAL));
 
-        ExpandItem expandItem = new ExpandItem(bar, SWT.NONE, 0);
-        expandItem.setText("expand");
-        expandItem.setControl(expandControl);
-        expandItem.setExpanded(false);
-        expandItem.setHeight(shell.getSize().y - 50);
+		ExpandItem expandItem = new ExpandItem(bar, SWT.NONE, 0);
+		expandItem.setText("expand");
+		expandItem.setControl(expandControl);
+		expandItem.setExpanded(false);
+		expandItem.setHeight(shell.getSize().y - 50);
 
-        Label listLabel = new Label(expandControl, SWT.NONE);
-        listLabel.setText("List");
+		Label listLabel = new Label(expandControl, SWT.NONE);
+		listLabel.setText("List");
 		List list = new List(expandControl, SWT.NONE);
 		for (int i = 0; i < 3; ++i) {
 			list.add("list item " + i);

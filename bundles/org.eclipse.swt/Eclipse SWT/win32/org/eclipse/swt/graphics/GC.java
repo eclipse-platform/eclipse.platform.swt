@@ -452,7 +452,7 @@ void copyAreaInPixels(Image image, int x, int y) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (image == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (image.type != SWT.BITMAP || image.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
- 	/* Copy the bitmap area */
+	/* Copy the bitmap area */
 	Rectangle rect = image.getBoundsInPixels();
 	long /*int*/ memHdc = OS.CreateCompatibleDC(handle);
 	long /*int*/ hOldBitmap = OS.SelectObject(memHdc, image.handle);
@@ -1067,7 +1067,7 @@ void drawIcon(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, i
 			OS.DrawIconEx(handle, destX - offsetX, destY - offsetY, srcImage.handle, 0, 0, 0, 0, flags);
 			if (offsetX != 0 || offsetY != 0) OS.SetWindowOrgEx(handle, offsetX, offsetY, null);
 		} else {
- 			/* Create the icon info and HDC's */
+			/* Create the icon info and HDC's */
 			ICONINFO newIconInfo = new ICONINFO();
 			newIconInfo.fIcon = true;
 			long /*int*/ srcHdc = OS.CreateCompatibleDC(handle);
@@ -1287,9 +1287,9 @@ void drawBitmapAlpha(Image srcImage, int srcX, int srcY, int srcWidth, int srcHe
 	byte[] destData = new byte[sizeInBytes];
 	OS.MoveMemory(destData, dibBM.bmBits, sizeInBytes);
 
- 	/* Get the foreground pixels */
- 	OS.BitBlt(memHdc, 0, 0, srcWidth, srcHeight, srcHdc, srcX, srcY, OS.SRCCOPY);
- 	byte[] srcData = new byte[sizeInBytes];
+	/* Get the foreground pixels */
+	OS.BitBlt(memHdc, 0, 0, srcWidth, srcHeight, srcHdc, srcX, srcY, OS.SRCCOPY);
+	byte[] srcData = new byte[sizeInBytes];
 	OS.MoveMemory(srcData, dibBM.bmBits, sizeInBytes);
 
 	/* Merge the alpha channel in place */
@@ -4830,7 +4830,7 @@ public void setTransform(Transform transform) {
 	initGdip();
 	long /*int*/ identity = identity();
 	if (transform != null) {
-		 Gdip.Matrix_Multiply(identity, transform.handle, Gdip.MatrixOrderPrepend);
+		Gdip.Matrix_Multiply(identity, transform.handle, Gdip.MatrixOrderPrepend);
 	}
 	Gdip.Graphics_SetTransform(data.gdipGraphics, identity);
 	Gdip.Matrix_delete(identity);

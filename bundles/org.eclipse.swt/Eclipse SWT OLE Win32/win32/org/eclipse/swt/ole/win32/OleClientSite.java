@@ -1391,7 +1391,7 @@ void setBorderSpace(RECT newBorderwidth) {
 void setBounds() {
 	Rectangle area = DPIUtil.autoScaleUp(frame.getClientArea()); // To Pixels
 	setBounds(DPIUtil.autoScaleDown(borderWidths.left),
-		      DPIUtil.autoScaleDown(borderWidths.top),
+			  DPIUtil.autoScaleDown(borderWidths.top),
 			  DPIUtil.autoScaleDown(area.width - borderWidths.left - borderWidths.right),
 			  DPIUtil.autoScaleDown(area.height - borderWidths.top - borderWidths.bottom));
 	setObjectRects();
@@ -1408,7 +1408,7 @@ private void setExtent(int width, int height){
 	newExtent.cx = width; newExtent.cy = height;
 	newExtent = xFormPixelsToHimetric(newExtent);
 
-   // Get the server running first, then do a SetExtent, then show it
+	// Get the server running first, then do a SetExtent, then show it
 	boolean alreadyRunning = COM.OleIsRunning(objIOleObject.getAddress());
 	if (!alreadyRunning)
 		COM.OleRun(objIOleObject.getAddress());

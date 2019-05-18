@@ -307,14 +307,14 @@ public void setControl (Control control) {
 			this.control.setBounds(parent.getClientArea ());
 			this.control.setVisible(true);
 		} else {
-		    int selectedIndex = parent.getSelectionIndex();
-		    Control selectedControl = null;
-		    if (selectedIndex != -1) {
-		    	selectedControl = parent.getItem(selectedIndex).control;
-		    }
-		    if (this.control != selectedControl) {
-		    	this.control.setVisible(false);
-		    }
+			int selectedIndex = parent.getSelectionIndex();
+			Control selectedControl = null;
+			if (selectedIndex != -1) {
+				selectedControl = parent.getItem(selectedIndex).control;
+			}
+			if (this.control != selectedControl) {
+				this.control.setVisible(false);
+			}
 		}
 	}
 }

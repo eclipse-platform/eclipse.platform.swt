@@ -182,18 +182,18 @@ public class OLEExample {
 					try {
 						clientSite = createSite(oleFrame, "PDF.PdfCtrl.5");
 						clientSite.doVerb(OLE.OLEIVERB_INPLACEACTIVATE);
-					    OleAutomation pdf = new OleAutomation (clientSite);
-					    int loadFile[] = pdf.getIDsOfNames (new String [] {"LoadFile"});
-					    if (loadFile != null) {
-					    	Variant result = pdf.invoke(loadFile[0], new Variant[] {new Variant(fileName)});
+						OleAutomation pdf = new OleAutomation (clientSite);
+						int loadFile[] = pdf.getIDsOfNames (new String [] {"LoadFile"});
+						if (loadFile != null) {
+							Variant result = pdf.invoke(loadFile[0], new Variant[] {new Variant(fileName)});
 							if (result == null)
 								disposeClient();
 							else
 								result.dispose();
-					    } else {
+						} else {
 							disposeClient();
-					    }
-					    pdf.dispose();
+						}
+						pdf.dispose();
 					} catch (SWTException error2) {
 						disposeClient();
 					}

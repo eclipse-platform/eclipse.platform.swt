@@ -102,20 +102,20 @@ public class MJ_root {
 		}
 	};
 
-    @Rule
-    public TestName testName = new TestName();
-    private String getCurrentTestName() {
-    	return testName.getMethodName ();
-    }
+	@Rule
+	public TestName testName = new TestName();
+	private String getCurrentTestName() {
+		return testName.getMethodName ();
+	}
 
 
-    // Util functions.
-    public void knownToBeBrokenGtk3(String msg) {
-    	System.err.println(" info:" + getCurrentTestName() + " is known to be broken at the moment. Additional info: " + msg);
-    }
+	// Util functions.
+	public void knownToBeBrokenGtk3(String msg) {
+		System.err.println(" info:" + getCurrentTestName() + " is known to be broken at the moment. Additional info: " + msg);
+	}
 
-    public void knownToBeBrokenGtk(String msg) {
-    	System.err.println(" info:" + getCurrentTestName() + " is known to be broken at the moment. Additional info: " + msg);
-    }
+	public void knownToBeBrokenGtk(String msg) {
+		System.err.println(" info:" + getCurrentTestName() + " is known to be broken at the moment. Additional info: " + msg);
+	}
 
 }

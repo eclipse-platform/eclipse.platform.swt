@@ -86,11 +86,11 @@ public void test_getBoundsI() {
 	Rectangle bounds2;
 
 	// no columns
- 	bounds = tableItem.getBounds(0);
+	bounds = tableItem.getBounds(0);
 	assertTrue(":1a:", bounds.x > 0 && bounds.height > 0);
 	bounds = tableItem.getBounds(-1);
 	assertTrue(":1b:", bounds.equals(new Rectangle(0, 0, 0, 0)));
- 	bounds = tableItem.getBounds(1);
+	bounds = tableItem.getBounds(1);
 	assertTrue(":1c:", bounds.equals(new Rectangle(0, 0, 0, 0)));
 
 	tableItem.setText("hello");
@@ -130,7 +130,7 @@ public void test_getBoundsI() {
 	assertTrue(":2a:", bounds.x > 0 && bounds.height > 0);
 	bounds = tableItem2.getBounds(-1);
 	assertTrue(":2b:", bounds.equals(new Rectangle(0, 0, 0, 0)));
- 	bounds = tableItem2.getBounds(1);
+	bounds = tableItem2.getBounds(1);
 	assertTrue(":2c:", bounds.equals(new Rectangle(0, 0, 0, 0)));
 
 	tableItem2.setText("hello");
@@ -178,7 +178,7 @@ public void test_getBoundsI() {
 	assertTrue(":3b:", /*bounds.x > 0 &&*/ bounds.height > 0 && bounds.width == 0); // TODO bounds.x == 0 Is this right?
 	bounds = tableItem.getBounds(-1);
 	assertTrue(":3c:", bounds.equals(new Rectangle(0, 0, 0, 0)));
- 	bounds = tableItem.getBounds(2);
+	bounds = tableItem.getBounds(2);
 	assertTrue(":3d:", bounds.equals(new Rectangle(0, 0, 0, 0)));
 
 	column0.setWidth(100);
@@ -216,7 +216,7 @@ public void test_getBoundsI() {
 	assertTrue(":3m:", bounds.x > 0 && bounds.height > 0 && bounds.width > 0 && bounds.width < 100);
 	bounds = tableItem.getBounds(1);
 	assertTrue(":3n:", bounds.x >= 100 && bounds.height > 0 && bounds.width  == 200);
- 	tableItem.setImage(new Image[] {null, null});
+	tableItem.setImage(new Image[] {null, null});
 	bounds = tableItem.getBounds(0);
 	assertTrue(":3o:", bounds.x > 0 && bounds.height > 0 && bounds.width > 0 && bounds.width < 100);
 	bounds = tableItem.getBounds(1);
@@ -257,7 +257,7 @@ public void test_getBoundsI() {
 	assertTrue(":4b:", /*bounds.x > 0 &&*/ bounds.height > 0 && bounds.width == 0); // TODO bounds.x == 0 Is this right?
 	bounds = tableItem2.getBounds(-1);
 	assertTrue(":4c:", bounds.equals(new Rectangle(0, 0, 0, 0)));
- 	bounds = tableItem2.getBounds(2);
+	bounds = tableItem2.getBounds(2);
 	assertTrue(":4d:", bounds.equals(new Rectangle(0, 0, 0, 0)));
 
 	column0.setWidth(100);
@@ -297,7 +297,7 @@ public void test_getBoundsI() {
 	assertTrue(":4m:", bounds.x > 0 && bounds.height > 0 && bounds.width > 0 && bounds.width < 100);
 	bounds = tableItem2.getBounds(1);
 	assertTrue(":4n:", bounds.x >= 100 && bounds.height > 0 && bounds.width  == 200);
- 	tableItem2.setImage(new Image[] {null, null});
+	tableItem2.setImage(new Image[] {null, null});
 	bounds = tableItem2.getBounds(0);
 	assertTrue(":4o:", bounds.x > 0 && bounds.height > 0 && bounds.width > 0 && bounds.width < 100);
 	bounds = tableItem2.getBounds(1);
@@ -352,7 +352,7 @@ public void test_getImageBoundsI() {
 	assertTrue(":e:", bounds.width == 0);
 
 	assertEquals(new Rectangle(0, 0, 0, 0), tableItem2.getImageBounds(1));
- 	//
+	//
 	makeCleanEnvironment();
 
 	Image image = images[0];
@@ -395,12 +395,12 @@ public void test_getImageBoundsI() {
 	image = images[1];
 //	imageBounds = image.getBounds();
 //	imageWidth = imageBounds.width;
- 	tableItem2.setImage(0, image);
+	tableItem2.setImage(0, image);
 //	imageHeight = table2.getItemHeight() - table2.getGridLineWidth();
 	assertEquals(new Rectangle(0, 0, 0, 0), tableItem2.getImageBounds(-1));
- 	bounds = tableItem2.getImageBounds(0);	// bounds.width should be check box width if check box is wider than image
+	bounds = tableItem2.getImageBounds(0);	// bounds.width should be check box width if check box is wider than image
 //	assertTrue(":b:", bounds.x > 0 && bounds.width > 0 && bounds.height == imageHeight);
- 	assertEquals(new Rectangle(0, 0, 0, 0), tableItem2.getImageBounds(1));
+	assertEquals(new Rectangle(0, 0, 0, 0), tableItem2.getImageBounds(1));
 }
 
 @Test
@@ -477,7 +477,7 @@ public void test_setCheckedZ() {
 
 	tableItem.setChecked(true);
 	assertFalse(tableItem.getChecked());
- 	Table t = new Table(shell, SWT.CHECK);
+	Table t = new Table(shell, SWT.CHECK);
 	TableItem ti = new TableItem(t, SWT.NULL);
 	ti.setChecked(true);
 	assertTrue(ti.getChecked());
@@ -639,12 +639,12 @@ public void test_setGrayedZ() {
 @Test
 public void test_setImage$Lorg_eclipse_swt_graphics_Image() {
 	assertNull(tableItem.getImage(1));
- 	tableItem.setImage(-1, null);
+	tableItem.setImage(-1, null);
 	assertNull(tableItem.getImage(-1));
 
 	tableItem.setImage(0, images[0]);
 	assertEquals(images[0], tableItem.getImage(0));
- 	String texts[] = new String[images.length];
+	String texts[] = new String[images.length];
 	for (int i = 0; i < texts.length; i++) {
 		texts[i] = String.valueOf(i);
 	}
@@ -662,7 +662,7 @@ public void test_setImage$Lorg_eclipse_swt_graphics_Image() {
 	}
 	tableItem.setImage(1, images[1]);
 	assertEquals(images[1], tableItem.getImage(1));
- 	tableItem.setImage(images);
+	tableItem.setImage(images);
 	for (int i = 0; i < images.length; i++) {
 		assertEquals(images[i], tableItem.getImage(i));
 	}
@@ -723,9 +723,9 @@ public void test_setImageIndentI() {
 		return;
 	}
 	assertEquals(0, tableItem.getImageIndent());
- 	tableItem.setImageIndent(1);
+	tableItem.setImageIndent(1);
 	assertEquals(1, tableItem.getImageIndent());
- 	tableItem.setImageIndent(-1);
+	tableItem.setImageIndent(-1);
 	assertEquals(1, tableItem.getImageIndent());
 }
 
@@ -741,10 +741,10 @@ public void test_setText$Ljava_lang_String() {
 	catch (IllegalArgumentException e) {
 	}
 
-   /*
- 	* Test the getText/setText API with a Table that has only
- 	* the default column.
- 	*/
+	/*
+	* Test the getText/setText API with a Table that has only
+	* the default column.
+	*/
 
 	assertEquals(0, tableItem.getText(1).length());
 
@@ -755,10 +755,10 @@ public void test_setText$Ljava_lang_String() {
 	}
 
 
-   /*
- 	* Test the getText/setText API with a Table that enough
- 	* columns to fit all test item texts.
- 	*/
+	/*
+	* Test the getText/setText API with a Table that enough
+	* columns to fit all test item texts.
+	*/
 
 	int columnCount = table.getColumnCount();
 	if (columnCount < images.length) {
@@ -779,25 +779,25 @@ public void test_setTextILjava_lang_String(){
 	final String TestString = "test";
 	final String TestStrings[] = new String[] {TestString, TestString + "1", TestString + "2"};
 
-   /*
- 	* Test the getText/setText API with a Table that has only
- 	* the default column.
- 	*/
+	/*
+	* Test the getText/setText API with a Table that has only
+	* the default column.
+	*/
 
 	assertEquals(0, tableItem.getText(1).length());
- 	tableItem.setText(1, TestString);
+	tableItem.setText(1, TestString);
 	assertEquals(0, tableItem.getText(1).length());
 	assertEquals(0, tableItem.getText(0).length());
 
 	tableItem.setText(0, TestString);
 	assertEquals(TestString, tableItem.getText(0));
- 	tableItem.setText(-1, TestStrings[1]);
+	tableItem.setText(-1, TestStrings[1]);
 	assertEquals(0, tableItem.getText(-1).length());
 
-   /*
- 	* Test the getText/setText API with a Table that enough
- 	* columns to fit all test item texts.
- 	*/
+	/*
+	* Test the getText/setText API with a Table that enough
+	* columns to fit all test item texts.
+	*/
 
 	makeCleanEnvironment();
 
@@ -843,12 +843,12 @@ public void test_setTextILjava_lang_String(){
 
 
 	/*
- 	* Test the getText/setText API with a small table that
- 	* will be extended by a column:
- 	* First the table has only one column and one row (TableItem) with text.
+	* Test the getText/setText API with a small table that
+	* will be extended by a column:
+	* First the table has only one column and one row (TableItem) with text.
 	* Then it is extended by one more column.
 	* After this the existing row gets one more text for the new column.
- 	*/
+	*/
 
 	makeCleanEnvironment();
 

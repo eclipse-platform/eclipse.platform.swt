@@ -98,7 +98,7 @@ public void createControlPanel(Composite parent) {
 	comp = new Composite(parent, SWT.NONE);
 	comp.setLayout(new GridLayout());
 
-    // initialize the background to the 5th item in the menu (blue)
+	// initialize the background to the 5th item in the menu (blue)
 	ovalColorGB = (GraphicsBackground)menu.getItem(4).getData();
 
 	// color button

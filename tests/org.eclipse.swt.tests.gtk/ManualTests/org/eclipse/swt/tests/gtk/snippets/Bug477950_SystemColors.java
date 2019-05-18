@@ -119,23 +119,23 @@ public class Bug477950_SystemColors {
 		colArray = new Color [] {display.getSystemColor(SWT.COLOR_LINK_FOREGROUND), new Color (display, 42,118,198)};
 		map.put("COLOR_LINK_FOREGROUND", colArray);
 
-        for (Entry<String, Color[]> entry : map.entrySet()) {
-        	String s = entry.getKey();
-        	Color gtk = entry.getValue()[1];
-        	Color current = entry.getValue()[0];
-            TableItem item = new TableItem(table, SWT.NONE);
-            item.setText(0, s);
-            item.setText(1, "rgb(" + gtk.getRed() + ", " + gtk.getGreen() + ", " + gtk.getBlue() + ")");
-            item.setBackground(2, gtk);
-            item.setBackground(3, current);
-            item.setText(4, "rgba(" + current.getRed() + ", " + current.getGreen() + ", " + current.getBlue() + ", " +
-            		current.getAlpha() + ")");
-        }
+		for (Entry<String, Color[]> entry : map.entrySet()) {
+			String s = entry.getKey();
+			Color gtk = entry.getValue()[1];
+			Color current = entry.getValue()[0];
+			TableItem item = new TableItem(table, SWT.NONE);
+			item.setText(0, s);
+			item.setText(1, "rgb(" + gtk.getRed() + ", " + gtk.getGreen() + ", " + gtk.getBlue() + ")");
+			item.setBackground(2, gtk);
+			item.setBackground(3, current);
+			item.setText(4, "rgba(" + current.getRed() + ", " + current.getGreen() + ", " + current.getBlue() + ", " +
+					current.getAlpha() + ")");
+		}
 
-        shell.open();
-        while (!shell.isDisposed()) {
-            if (!display.readAndDispatch()) display.sleep();
-        }
-        display.dispose();
+		shell.open();
+		while (!shell.isDisposed()) {
+			if (!display.readAndDispatch()) display.sleep();
+		}
+		display.dispose();
 	}
 }

@@ -48,7 +48,7 @@ import org.eclipse.swt.widgets.Text;
  */
 public class Bug74739_TableTopIndex {
 
-	  public static void main(String[] args) {
+	public static void main(String[] args) {
 		Display display = new Display();
 		Shell shell = new Shell(display);
 		shell.setLayout(new GridLayout());
@@ -122,9 +122,9 @@ public class Bug74739_TableTopIndex {
 			@Override
 			public void keyPressed(KeyEvent e) {
 				if (e.keyCode == SWT.MOD1 || 
-				    e.keyCode == SWT.MOD2 || 
-				    (e.stateMask & SWT.MOD1) != 0 || 
-				    (e.stateMask & SWT.MOD2) != 0) {
+					e.keyCode == SWT.MOD2 || 
+					(e.stateMask & SWT.MOD1) != 0 || 
+					(e.stateMask & SWT.MOD2) != 0) {
 					cursor.setVisible(false);
 				}
 			}

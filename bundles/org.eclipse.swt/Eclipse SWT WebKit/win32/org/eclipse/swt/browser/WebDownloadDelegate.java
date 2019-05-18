@@ -130,8 +130,8 @@ int didFinish (long /*int*/ download) {
 }
 
 int didReceiveDataOfLength (long /*int*/ download, int length) {
-	 size += length;
-	 return COM.S_OK;
+	size += length;
+	return COM.S_OK;
 }
 
 int didReceiveResponse (long /*int*/ download, long /*int*/ response) {

@@ -202,7 +202,7 @@ Point adjustMoveCursor () {
 	int newY = bounds.y;
 	/*
 	 * Convert to screen coordinates if needed
- 	 */
+	 */
 	if (parent != null) {
 		Point pt = parent.toDisplay (newX, newY);
 		newX = pt.x;
@@ -234,7 +234,7 @@ Point adjustResizeCursor (boolean movePointer) {
 
 	/*
 	 * Convert to screen coordinates if needed
- 	 */
+	 */
 	if (parent != null) {
 		Point pt = parent.toDisplay (newX, newY);
 		newX = pt.x;

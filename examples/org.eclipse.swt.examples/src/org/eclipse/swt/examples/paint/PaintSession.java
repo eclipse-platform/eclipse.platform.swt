@@ -38,9 +38,9 @@ public interface PaintSession extends MouseListener, MouseMoveListener {
 
 	/**
 	 * Deactivates the session.
-     *
+	 *
 	 * Note: When overriding this method, call super.endSession() at method exit.
-     */
+	 */
 	public abstract void endSession();
 
 	/**

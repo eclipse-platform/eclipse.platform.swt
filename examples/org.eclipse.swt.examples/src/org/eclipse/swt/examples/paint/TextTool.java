@@ -76,7 +76,7 @@ public class TextTool extends BasicPaintSession implements PaintTool {
 
 	/**
 	 * Deactivates the tool.
-     */
+	 */
 	@Override
 	public void endSession() {
 		getPaintSurface().clearRubberbandSelection();

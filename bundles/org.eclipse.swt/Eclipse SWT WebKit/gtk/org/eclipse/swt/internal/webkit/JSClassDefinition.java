@@ -16,38 +16,38 @@ package org.eclipse.swt.internal.webkit;
 
 
 public class JSClassDefinition {
-    public int version;
-    public int attributes;
-    /** @field cast=(const char*) */
-    public long className;
-    /** @field cast=(void*) */
-    public long parentClass;
-    /** @field cast=(const void*) */
-    public long staticValues;
-    /** @field cast=(const void*) */
-    public long staticFunctions;
-    /** @field cast=(void*) */
-    public long initialize;
-    /** @field cast=(void*) */
-    public long finalize;
-    /** @field cast=(void*) */
-    public long hasProperty;
-    /** @field cast=(void*) */
-    public long getProperty;
-    /** @field cast=(void*) */
-    public long setProperty;
-    /** @field cast=(void*) */
-    public long deleteProperty;
-    /** @field cast=(void*) */
-    public long getPropertyNames;
-    /** @field cast=(void*) */
-    public long callAsFunction;
-    /** @field cast=(void*) */
-    public long callAsConstructor;
-    /** @field cast=(void*) */
-    public long hasInstance;
-    /** @field cast=(void*) */
-    public long convertToType;
+	public int version;
+	public int attributes;
+	/** @field cast=(const char*) */
+	public long className;
+	/** @field cast=(void*) */
+	public long parentClass;
+	/** @field cast=(const void*) */
+	public long staticValues;
+	/** @field cast=(const void*) */
+	public long staticFunctions;
+	/** @field cast=(void*) */
+	public long initialize;
+	/** @field cast=(void*) */
+	public long finalize;
+	/** @field cast=(void*) */
+	public long hasProperty;
+	/** @field cast=(void*) */
+	public long getProperty;
+	/** @field cast=(void*) */
+	public long setProperty;
+	/** @field cast=(void*) */
+	public long deleteProperty;
+	/** @field cast=(void*) */
+	public long getPropertyNames;
+	/** @field cast=(void*) */
+	public long callAsFunction;
+	/** @field cast=(void*) */
+	public long callAsConstructor;
+	/** @field cast=(void*) */
+	public long hasInstance;
+	/** @field cast=(void*) */
+	public long convertToType;
 
-    public static final int sizeof = WebKitGTK.JSClassDefinition_sizeof();
+	public static final int sizeof = WebKitGTK.JSClassDefinition_sizeof();
 }

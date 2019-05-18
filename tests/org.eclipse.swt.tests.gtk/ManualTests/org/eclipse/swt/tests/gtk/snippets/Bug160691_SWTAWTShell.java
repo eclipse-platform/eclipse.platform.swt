@@ -31,26 +31,26 @@ import org.eclipse.swt.widgets.Shell;
 public class Bug160691_SWTAWTShell {
 
 	public static void main(String[] args) {
-        java.awt.Frame frame = new java.awt.Frame("AWT Frame");
-        java.awt.Button button = new java.awt.Button("AWT Button");
-        frame.add(button, java.awt.BorderLayout.NORTH);
-        java.awt.Canvas canvas = new java.awt.Canvas();
-        frame.add(canvas, java.awt.BorderLayout.CENTER);
+		java.awt.Frame frame = new java.awt.Frame("AWT Frame");
+		java.awt.Button button = new java.awt.Button("AWT Button");
+		frame.add(button, java.awt.BorderLayout.NORTH);
+		java.awt.Canvas canvas = new java.awt.Canvas();
+		frame.add(canvas, java.awt.BorderLayout.CENTER);
 
-        frame.addNotify();
+		frame.addNotify();
 
-        Display display = new Display();
-        Shell shell = SWT_AWT.new_Shell(display, canvas);
-        shell.setLayout(new FillLayout());
-        Button swtButton = new Button(shell, SWT.PUSH);
-        swtButton.setText("SWT Button");
+		Display display = new Display();
+		Shell shell = SWT_AWT.new_Shell(display, canvas);
+		shell.setLayout(new FillLayout());
+		Button swtButton = new Button(shell, SWT.PUSH);
+		swtButton.setText("SWT Button");
 
-        frame.setBounds(20, 20, 300, 300);
-        shell.layout();
-        frame.setVisible(true);
+		frame.setBounds(20, 20, 300, 300);
+		shell.layout();
+		frame.setVisible(true);
 
-        while (!shell.isDisposed()) {
-                if (!display.readAndDispatch()) display.sleep();
-        }
+		while (!shell.isDisposed()) {
+				if (!display.readAndDispatch()) display.sleep();
+		}
 }
 }

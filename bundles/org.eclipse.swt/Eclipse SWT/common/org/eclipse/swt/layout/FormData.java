@@ -333,15 +333,15 @@ FormAttachment getTopAttachment (Control control, int spacing, boolean flushCach
  */
 @Override
 public String toString () {
- 	String string = getName()+" {";
- 	if (width != SWT.DEFAULT) string += "width="+width+" ";
+	String string = getName()+" {";
+	if (width != SWT.DEFAULT) string += "width="+width+" ";
 	if (height != SWT.DEFAULT) string += "height="+height+" ";
- 	if (left != null) string += "left="+left+" ";
- 	if (right != null) string += "right="+right+" ";
- 	if (top != null) string += "top="+top+" ";
- 	if (bottom != null) string += "bottom="+bottom+" ";
- 	string = string.trim();
- 	string += "}";
+	if (left != null) string += "left="+left+" ";
+	if (right != null) string += "right="+right+" ";
+	if (top != null) string += "top="+top+" ";
+	if (bottom != null) string += "bottom="+bottom+" ";
+	string = string.trim();
+	string += "}";
 	return string;
 }
 

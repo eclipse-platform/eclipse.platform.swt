@@ -66,9 +66,9 @@ class TreeTab extends ScrollableTab {
 	Font itemFont, cellFont;
 
 	static String [] columnTitles	= {ControlExample.getResourceString("TableTitle_0"),
-		   ControlExample.getResourceString("TableTitle_1"),
-		   ControlExample.getResourceString("TableTitle_2"),
-		   ControlExample.getResourceString("TableTitle_3")};
+			ControlExample.getResourceString("TableTitle_1"),
+			ControlExample.getResourceString("TableTitle_2"),
+			ControlExample.getResourceString("TableTitle_3")};
 
 	static String[][] tableData = {
 			{ ControlExample.getResourceString("TableLine0_0"),
@@ -535,7 +535,7 @@ class TreeTab extends ScrollableTab {
 		}
 		/* Set the header background color item's image to match the header background color. */
 		Color color = headerBackgroundColor;
- 		if (color == null) color = tree1.getHeaderBackground();
+		if (color == null) color = tree1.getHeaderBackground();
 		TableItem item = colorAndFontTable.getItem(HEADER_BACKGROUND_COLOR);
 		Image oldImage1 = item.getImage();
 		if (oldImage1 != null) oldImage1.dispose();
@@ -840,11 +840,11 @@ class TreeTab extends ScrollableTab {
 
 	@Override
 	protected void specialPopupMenuItems(Menu menu, Event event) {
-    	MenuItem item = new MenuItem(menu, SWT.PUSH);
-    	item.setText("getItem(Point) on mouse coordinates");
-    	final Tree t = (Tree) event.widget;
-    	menuMouseCoords = t.toControl(new Point(event.x, event.y));
-    	item.addSelectionListener(widgetSelectedAdapter(e -> {
+		MenuItem item = new MenuItem(menu, SWT.PUSH);
+		item.setText("getItem(Point) on mouse coordinates");
+		final Tree t = (Tree) event.widget;
+		menuMouseCoords = t.toControl(new Point(event.x, event.y));
+		item.addSelectionListener(widgetSelectedAdapter(e -> {
 			eventConsole.append ("getItem(Point(" + menuMouseCoords + ")) returned: " + t.getItem(menuMouseCoords));
 			eventConsole.append ("\n");
 		}));

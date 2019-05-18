@@ -298,10 +298,10 @@ public class Accessible {
 	 * @since 3.7
 	 */
 	public void addAccessibleEditableTextListener(AccessibleEditableTextListener listener) {
-	    checkWidget();
-	    if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+		checkWidget();
+		if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 		if (accessibleEditableTextListeners == null) accessibleEditableTextListeners = new ArrayList<>();
-	    accessibleEditableTextListeners.add(listener);
+		accessibleEditableTextListeners.add(listener);
 	}
 
 	/**
@@ -449,7 +449,7 @@ public class Accessible {
 		long cgColor = OS.CGColorCreate(cgColorSpace, comps);
 		OS.CGColorSpaceRelease(cgColorSpace);
 		inAttribString.addAttribute(inAttribute, new id(cgColor), inRange);
-	    OS.CGColorRelease(cgColor);
+		OS.CGColorRelease(cgColor);
 	}
 
 	/**
@@ -1991,12 +1991,12 @@ public class Accessible {
 					}
 					if (ace.childID >= ACC.CHILDID_SELF) {
 						if (role == ACC.ROLE_TABITEM) {
-					 		returnValue = NSNumber.numberWithBool(ace.childID == childID);
+							returnValue = NSNumber.numberWithBool(ace.childID == childID);
 						} else {
 							returnValue = new id(OS.NSAccessibilityUnignoredAncestor(childIDToOs(ace.childID).id));
 						}
 					} else {
-				 		returnValue = NSNumber.numberWithBool(false);
+						returnValue = NSNumber.numberWithBool(false);
 					}
 					break;
 				case ACC.ROLE_COMBOBOX: // text of the currently selected item
@@ -2924,8 +2924,8 @@ public class Accessible {
 	 * @since 3.7
 	 */
 	public void removeAccessibleEditableTextListener(AccessibleEditableTextListener listener) {
-	    checkWidget();
-	    if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+		checkWidget();
+		if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 		if (accessibleEditableTextListeners != null) {
 			accessibleEditableTextListeners.remove(listener);
 			if (accessibleEditableTextListeners.isEmpty()) accessibleEditableTextListeners = null;

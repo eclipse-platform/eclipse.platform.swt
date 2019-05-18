@@ -16,7 +16,7 @@ package org.eclipse.swt.internal.win32;
 public class MEASUREITEMSTRUCT {
 	public int CtlType;
 	public int CtlID;
-  	public int itemID;
+	public int itemID;
 	public int itemWidth;
 	public int itemHeight;
 	public long /*int*/ itemData;

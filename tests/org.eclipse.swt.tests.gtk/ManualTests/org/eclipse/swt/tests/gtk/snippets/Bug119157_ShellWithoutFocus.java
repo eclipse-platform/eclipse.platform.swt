@@ -30,41 +30,41 @@ import org.eclipse.swt.widgets.Text;
 public class Bug119157_ShellWithoutFocus {
 	static Shell dialog = null;
 	public static void main(String[] args) {
-	    final Display display = new Display();
-	    final Shell main = new Shell(display);
-	    main.setLayout(new FillLayout());
-	    Button button = new Button(main, SWT.PUSH);
-	    button.setText("Press me");
-	    button.addListener(SWT.Selection, new Listener() {
-	        @Override
+		final Display display = new Display();
+		final Shell main = new Shell(display);
+		main.setLayout(new FillLayout());
+		Button button = new Button(main, SWT.PUSH);
+		button.setText("Press me");
+		button.addListener(SWT.Selection, new Listener() {
+			@Override
 			public void handleEvent(Event event) {
-	            if (dialog == null) {
-	                dialog = new Shell(main);
-	                dialog.setLayout(new FillLayout());
-	                Text text = new Text(dialog, SWT.MULTI);
-	                text.setText("No focus");
-	                List list = new List(dialog, SWT.MULTI);
-	                list.add("Multi-select will");
-	                list.add("not work");
-	                list.add("the second time.");
-	                Button button = new Button(dialog, SWT.PUSH);
-	                button.setText("OK");
-	                button.addListener(SWT.Selection, new Listener() {
-	                    @Override
+				if (dialog == null) {
+					dialog = new Shell(main);
+					dialog.setLayout(new FillLayout());
+					Text text = new Text(dialog, SWT.MULTI);
+					text.setText("No focus");
+					List list = new List(dialog, SWT.MULTI);
+					list.add("Multi-select will");
+					list.add("not work");
+					list.add("the second time.");
+					Button button = new Button(dialog, SWT.PUSH);
+					button.setText("OK");
+					button.addListener(SWT.Selection, new Listener() {
+						@Override
 						public void handleEvent(Event event) {
-	                        dialog.setVisible(false);
-	                    }
-	                });
-	                dialog.setSize(400, 200);
-	            }
-	            dialog.setVisible(true);
-	        }
-	    });
-	    main.setSize(200, 200);
-	    main.open();
-	    while (!main.isDisposed()) {
-	        if (!display.readAndDispatch()) display.sleep();
-	    }
-	    display.dispose();
+							dialog.setVisible(false);
+						}
+					});
+					dialog.setSize(400, 200);
+				}
+				dialog.setVisible(true);
+			}
+		});
+		main.setSize(200, 200);
+		main.open();
+		while (!main.isDisposed()) {
+			if (!display.readAndDispatch()) display.sleep();
+		}
+		display.dispose();
 	}
 }

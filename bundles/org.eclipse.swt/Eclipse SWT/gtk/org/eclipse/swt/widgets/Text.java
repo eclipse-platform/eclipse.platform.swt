@@ -834,7 +834,7 @@ int getBorderWidthInPixels () {
 	checkWidget();
 	if ((style & SWT.MULTI) != 0) return super.getBorderWidthInPixels ();
 	if ((this.style & SWT.BORDER) != 0) {
-		 return getThickness (handle).x;
+		return getThickness (handle).x;
 	}
 	return 0;
 }
@@ -2275,20 +2275,20 @@ void setBackgroundGdkRGBA (long context, long handle, GdkRGBA rgba) {
 	String properties;
 	String name;
 	String selection = GTK.GTK_VERSION >= OS.VERSION(3, 20, 0) ? " selection" : ":selected";
-    if ((style & SWT.SINGLE) != 0) {
-      	name = GTK.GTK_VERSION >= OS.VERSION(3, 20, 0) ? "entry" : "GtkEntry";
-       	properties = " {background: " + display.gtk_rgba_to_css_string(background) + ";}\n"
-       			+ name + ":selected {background-color: " + display.gtk_rgba_to_css_string(selectedBackground) + ";}\n"
-       			+ name + selection + " {color: " + display.gtk_rgba_to_css_string(selectedForeground) + ";}";
-    } else {
-       	name = GTK.GTK_VERSION >= OS.VERSION(3, 20, 0) ? "textview text" : "GtkTextView";
-       	properties = " {background-color: " + display.gtk_rgba_to_css_string(background) + ";}\n"
-       			+ name + ":selected {background-color: " + display.gtk_rgba_to_css_string(selectedBackground) + ";}\n"
-       			+ name + selection + " {color: " + display.gtk_rgba_to_css_string(selectedForeground) + ";}";
-    }
-    css = name + properties;
+	if ((style & SWT.SINGLE) != 0) {
+		name = GTK.GTK_VERSION >= OS.VERSION(3, 20, 0) ? "entry" : "GtkEntry";
+		properties = " {background: " + display.gtk_rgba_to_css_string(background) + ";}\n"
+				+ name + ":selected {background-color: " + display.gtk_rgba_to_css_string(selectedBackground) + ";}\n"
+				+ name + selection + " {color: " + display.gtk_rgba_to_css_string(selectedForeground) + ";}";
+	} else {
+		name = GTK.GTK_VERSION >= OS.VERSION(3, 20, 0) ? "textview text" : "GtkTextView";
+		properties = " {background-color: " + display.gtk_rgba_to_css_string(background) + ";}\n"
+				+ name + ":selected {background-color: " + display.gtk_rgba_to_css_string(selectedBackground) + ";}\n"
+				+ name + selection + " {color: " + display.gtk_rgba_to_css_string(selectedForeground) + ";}";
+	}
+	css = name + properties;
 
-    // Cache background color
+	// Cache background color
 	cssBackground = css;
 
 	// Apply background color and any foreground color

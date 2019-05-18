@@ -971,7 +971,7 @@ public void test_Text_Changed_Event() {
 	catch (IllegalArgumentException ex) {assertTrue(":17:", true);}
 
 	verify = 18;
- 	content.setText("L1\r");
+	content.setText("L1\r");
 	content.replaceTextRange(3, 0, "\ntest\r\n");
 
 	verify = 19;

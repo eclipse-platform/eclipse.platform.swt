@@ -21,9 +21,9 @@ public class TVITEM {
 	public int stateMask;
 	/** @field cast=(LPTSTR) */
 	public long /*int*/ pszText;
-  	public int cchTextMax;
-  	public int iImage;
-  	public int iSelectedImage;
+	public int cchTextMax;
+	public int iImage;
+	public int iSelectedImage;
 	public int cChildren;
 	public long /*int*/ lParam;
 	public static final int sizeof = OS.TVITEM_sizeof ();

@@ -61,9 +61,9 @@ public class Bug225725_GCDrawing {
 		
 		menuBarItem.setMenu(menu1);
 		shell.setMenuBar( menuBar );
-	    
+		
 		ToolBar toolBar = new ToolBar(shell, SWT.FLAT | SWT.WRAP | SWT.RIGHT);
-	    
+		
 		ToolItem item1 = new ToolItem(toolBar, SWT.PUSH);
 		item1.setText("Item1");
 
@@ -82,33 +82,33 @@ public class Bug225725_GCDrawing {
 			}
 		});
 		
-        final ScrollBar hBar = composite.getHorizontalBar();
-        hBar.addListener(SWT.Selection, new Listener() {
-        	@Override
+		final ScrollBar hBar = composite.getHorizontalBar();
+		hBar.addListener(SWT.Selection, new Listener() {
+			@Override
 			public void handleEvent(Event e) {        	  
-        		composite.redraw();
-        	}
-        });
-        
-        final ScrollBar vBar = composite.getVerticalBar();
-        vBar.addListener(SWT.Selection, new Listener() {
-        	@Override
+				composite.redraw();
+			}
+		});
+		
+		final ScrollBar vBar = composite.getVerticalBar();
+		vBar.addListener(SWT.Selection, new Listener() {
+			@Override
 			public void handleEvent(Event e) {            
-        		composite.redraw();
-        	}
-        });
+				composite.redraw();
+			}
+		});
 
-        composite.addControlListener(new ControlAdapter() {		
-        	@Override
+		composite.addControlListener(new ControlAdapter() {		
+			@Override
 			public void controlResized(ControlEvent arg0) {
-        		Rectangle bounds = composite.getBounds();
-        		Rectangle client = composite.getClientArea();        
-                ScrollBar hBar = composite.getHorizontalBar();
-                ScrollBar vBar = composite.getVerticalBar();
-        		hBar.setMaximum(500);
-        		vBar.setMaximum(500);
-        		hBar.setThumb(Math.min(bounds.width, client.width));
-        		vBar.setThumb(Math.min(bounds.height, client.height));
+				Rectangle bounds = composite.getBounds();
+				Rectangle client = composite.getClientArea();        
+				ScrollBar hBar = composite.getHorizontalBar();
+				ScrollBar vBar = composite.getVerticalBar();
+				hBar.setMaximum(500);
+				vBar.setMaximum(500);
+				hBar.setThumb(Math.min(bounds.width, client.width));
+				vBar.setThumb(Math.min(bounds.height, client.height));
 			}		
 		});
 		

@@ -68,7 +68,7 @@ public final class FillLayout extends Layout {
 	 *
 	 * @since 3.0
 	 */
- 	public int marginWidth = 0;
+	public int marginWidth = 0;
 
 	/**
 	 * marginHeight specifies the number of points of vertical margin
@@ -78,9 +78,9 @@ public final class FillLayout extends Layout {
 	 *
 	 * @since 3.0
 	 */
- 	public int marginHeight = 0;
+	public int marginHeight = 0;
 
- 	/**
+	/**
 	 * spacing specifies the number of points between the edge of one cell
 	 * and the edge of its neighbouring cell.
 	 *
@@ -233,13 +233,13 @@ protected void layout (Composite composite, boolean flushCache) {
  */
 @Override
 public String toString () {
- 	String string = getName ()+" {";
- 	string += "type="+((type == SWT.VERTICAL) ? "SWT.VERTICAL" : "SWT.HORIZONTAL")+" ";
- 	if (marginWidth != 0) string += "marginWidth="+marginWidth+" ";
- 	if (marginHeight != 0) string += "marginHeight="+marginHeight+" ";
- 	if (spacing != 0) string += "spacing="+spacing+" ";
- 	string = string.trim();
- 	string += "}";
- 	return string;
+	String string = getName ()+" {";
+	string += "type="+((type == SWT.VERTICAL) ? "SWT.VERTICAL" : "SWT.HORIZONTAL")+" ";
+	if (marginWidth != 0) string += "marginWidth="+marginWidth+" ";
+	if (marginHeight != 0) string += "marginHeight="+marginHeight+" ";
+	if (spacing != 0) string += "spacing="+spacing+" ";
+	string = string.trim();
+	string += "}";
+	return string;
 }
 }

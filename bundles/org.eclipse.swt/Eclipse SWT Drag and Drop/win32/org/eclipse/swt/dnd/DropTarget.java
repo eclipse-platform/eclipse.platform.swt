@@ -626,12 +626,12 @@ int QueryInterface(long /*int*/ riid, long /*int*/ ppvObject) {
 	GUID guid = new GUID();
 	COM.MoveMemory(guid, riid, GUID.sizeof);
 	if (COM.IsEqualGUID(guid, COM.IIDIUnknown) || COM.IsEqualGUID(guid, COM.IIDIDropTarget)) {
-        OS.MoveMemory(ppvObject, new long /*int*/[] {iDropTarget.getAddress()}, C.PTR_SIZEOF);
+		OS.MoveMemory(ppvObject, new long /*int*/[] {iDropTarget.getAddress()}, C.PTR_SIZEOF);
 		AddRef();
 		return COM.S_OK;
 	}
 
-    OS.MoveMemory(ppvObject, new long /*int*/[] {0}, C.PTR_SIZEOF);
+	OS.MoveMemory(ppvObject, new long /*int*/[] {0}, C.PTR_SIZEOF);
 	return COM.E_NOINTERFACE;
 }
 
@@ -726,14 +726,14 @@ boolean setEventData(DNDEvent event, long /*int*/ pDataObject, int grfKeyState, 
 	IDataObject dataObject = new IDataObject(pDataObject);
 	dataObject.AddRef();
 	try {
-        long /*int*/[] address = new long /*int*/[1];
+		long /*int*/[] address = new long /*int*/[1];
 		if (dataObject.EnumFormatEtc(COM.DATADIR_GET, address) != COM.S_OK) {
 			return false;
 		}
 		IEnumFORMATETC enumFormatetc = new IEnumFORMATETC(address[0]);
 		try {
 			// Loop over enumerator and save any types that match what we are looking for
-            long /*int*/ rgelt = OS.GlobalAlloc(OS.GMEM_FIXED | OS.GMEM_ZEROINIT, FORMATETC.sizeof);
+			long /*int*/ rgelt = OS.GlobalAlloc(OS.GMEM_FIXED | OS.GMEM_ZEROINIT, FORMATETC.sizeof);
 			try {
 				int[] pceltFetched = new int[1];
 				enumFormatetc.Reset();

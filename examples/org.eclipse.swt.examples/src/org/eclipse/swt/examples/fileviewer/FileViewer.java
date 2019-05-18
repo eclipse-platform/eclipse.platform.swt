@@ -73,7 +73,7 @@ import org.eclipse.swt.widgets.TreeItem;
  * File Viewer example
  */
 public class FileViewer {
- 	private static ResourceBundle resourceBundle = ResourceBundle.getBundle("examples_fileviewer");
+	private static ResourceBundle resourceBundle = ResourceBundle.getBundle("examples_fileviewer");
 
 	private final static String DRIVE_A = "a:" + File.separator;
 	private final static String DRIVE_B = "b:" + File.separator;
@@ -1428,11 +1428,11 @@ public class FileViewer {
 			for (int i = end; i > start; --i) {
 				for (int j = end; j > start; --j)  {
 					if (compareFiles(files[j - 1], files[j]) > 0) {
-					    final File temp = files[j];
-					    files[j] = files[j-1];
-					    files[j-1] = temp;
+						final File temp = files[j];
+						files[j] = files[j-1];
+						files[j-1] = temp;
 					}
-			    }
+				}
 			}
 			return;
 		}

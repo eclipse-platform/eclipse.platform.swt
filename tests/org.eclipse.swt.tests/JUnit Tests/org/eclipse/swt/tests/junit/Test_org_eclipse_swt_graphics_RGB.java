@@ -238,9 +238,9 @@ public void test_equalsLjava_lang_Object() {
 	}
 
 	if (rgb1.equals(new RGB(r+1, g, b)) ||
-	    rgb1.equals(new RGB(r, g+1, b)) ||
-	    rgb1.equals(new RGB(r, g, b+1)) ||
-	    rgb1.equals(new RGB(r+1, g+1, b+1))) {
+		rgb1.equals(new RGB(r, g+1, b)) ||
+		rgb1.equals(new RGB(r, g, b+1)) ||
+		rgb1.equals(new RGB(r+1, g+1, b+1))) {
 		fail("Comparing two RGB instances with different combination of R G B parameters found equal");
 	}
 
@@ -257,9 +257,9 @@ public void test_equalsLjava_lang_Object() {
 	}
 
 	if (rgb1.equals(new RGB(hue+1, sat, bright)) ||
-	    rgb1.equals(new RGB(hue, sat+0.1f, bright)) ||
-	    rgb1.equals(new RGB(hue, sat, bright+0.1f)) ||
-	    rgb1.equals(new RGB(hue+1, sat+0.1f, bright+0.1f))) {
+		rgb1.equals(new RGB(hue, sat+0.1f, bright)) ||
+		rgb1.equals(new RGB(hue, sat, bright+0.1f)) ||
+		rgb1.equals(new RGB(hue+1, sat+0.1f, bright+0.1f))) {
 		fail("Comparing two RGB instances with different combination of H S B parameters found equal");
 	}
 }

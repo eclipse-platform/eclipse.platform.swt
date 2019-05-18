@@ -305,11 +305,11 @@ abstract class Tab {
 		combo.addTraverseListener(e -> {
 			if (e.detail == SWT.TRAVERSE_TAB_NEXT || e.detail == SWT.TRAVERSE_RETURN) {
 				comboReset = true;
-		        resetEditors ();
-		    }
-		    if (e.detail == SWT.TRAVERSE_ESCAPE) {
-		    	disposeEditors ();
-		    }
+				resetEditors ();
+			}
+			if (e.detail == SWT.TRAVERSE_ESCAPE) {
+				disposeEditors ();
+			}
 		});
 	}
 
@@ -429,11 +429,11 @@ abstract class Tab {
 
 		text.addTraverseListener(e -> {
 			if (e.detail == SWT.TRAVERSE_TAB_NEXT) {
-		        resetEditors (true);
-		    }
-		    if (e.detail == SWT.TRAVERSE_ESCAPE) {
-		    	disposeEditors ();
-		    }
+				resetEditors (true);
+			}
+			if (e.detail == SWT.TRAVERSE_ESCAPE) {
+				disposeEditors ();
+			}
 		});
 	}
 
@@ -642,28 +642,28 @@ abstract class Tab {
 			} else if (control.equals ("Composite")) {
 				Composite composite = new Composite (layoutComposite, SWT.BORDER);
 				children [i] = composite;
-		    } else if (control.equals ("CoolBar")) {
-		    	CoolBar coolBar = new CoolBar (layoutComposite, SWT.NONE);
-		    	ToolBar toolBar = new ToolBar (coolBar, SWT.BORDER);
+			} else if (control.equals ("CoolBar")) {
+				CoolBar coolBar = new CoolBar (layoutComposite, SWT.NONE);
+				ToolBar toolBar = new ToolBar (coolBar, SWT.BORDER);
 				ToolItem item = new ToolItem (toolBar, 0);
 				item.setText (LayoutExample.getResourceString ("Item",new String [] {"1"}));
 				item = new ToolItem (toolBar, 0);
 				item.setText (LayoutExample.getResourceString ("Item",new String [] {"2"}));
-		    	CoolItem coolItem1 = new CoolItem (coolBar, 0);
-		    	coolItem1.setControl (toolBar);
+				CoolItem coolItem1 = new CoolItem (coolBar, 0);
+				coolItem1.setControl (toolBar);
 				toolBar = new ToolBar (coolBar, SWT.BORDER);
 				item = new ToolItem (toolBar, 0);
 				item.setText (LayoutExample.getResourceString ("Item",new String [] {"3"}));
 				item = new ToolItem (toolBar, 0);
 				item.setText (LayoutExample.getResourceString ("Item",new String [] {"4"}));
-		    	CoolItem coolItem2 = new CoolItem (coolBar, 0);
-		    	coolItem2.setControl (toolBar);
-		    	Point size = toolBar.computeSize(SWT.DEFAULT, SWT.DEFAULT);
-        		coolItem1.setSize(coolItem1.computeSize (size.x, size.y));
-        		coolItem2.setSize(coolItem2.computeSize (size.x, size.y));
-       			coolBar.setSize(coolBar.computeSize(SWT.DEFAULT, SWT.DEFAULT));
+				CoolItem coolItem2 = new CoolItem (coolBar, 0);
+				coolItem2.setControl (toolBar);
+				Point size = toolBar.computeSize(SWT.DEFAULT, SWT.DEFAULT);
+				coolItem1.setSize(coolItem1.computeSize (size.x, size.y));
+				coolItem2.setSize(coolItem2.computeSize (size.x, size.y));
+				coolBar.setSize(coolBar.computeSize(SWT.DEFAULT, SWT.DEFAULT));
 				children [i] = coolBar;
-		    } else if (control.equals ("Group")) {
+			} else if (control.equals ("Group")) {
 				Group group = new Group (layoutComposite, SWT.NONE);
 				group.setText (controlName);
 				children [i] = group;

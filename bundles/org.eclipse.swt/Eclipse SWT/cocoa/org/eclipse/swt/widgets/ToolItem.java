@@ -459,11 +459,11 @@ void drawImageWithFrameInView (long id, long sel, long image, NSRect rect, long 
 
 @Override
 NSRect drawTitleWithFrameInView (long id, long sel, long title, NSRect titleRect, long view) {
-    boolean hiliteShadow = new NSButtonCell(id).isHighlighted() && text.length() > 0 && image == null;
+	boolean hiliteShadow = new NSButtonCell(id).isHighlighted() && text.length() > 0 && image == null;
 
-    // An unbordered cell doesn't draw any highlighting when pushed or selected, so we have to do it here.
-    if (hiliteShadow) {
-    	NSColor transWhiteColor = NSColor.colorWithDeviceRed(1.0f, 1.0f, 1.0f, .8f);
+	// An unbordered cell doesn't draw any highlighting when pushed or selected, so we have to do it here.
+	if (hiliteShadow) {
+		NSColor transWhiteColor = NSColor.colorWithDeviceRed(1.0f, 1.0f, 1.0f, .8f);
 		NSAttributedString attribStr = new NSAttributedString(title);
 		NSMutableAttributedString tmpString = new NSMutableAttributedString(attribStr.mutableCopy());
 		NSRange range = new NSRange();
@@ -472,7 +472,7 @@ NSRect drawTitleWithFrameInView (long id, long sel, long title, NSRect titleRect
 		tmpString.addAttribute(OS.NSForegroundColorAttributeName, transWhiteColor, range);
 		tmpString.autorelease();
 		title = tmpString.id;
-    }
+	}
 	return super.drawTitleWithFrameInView(id, sel, title, titleRect, view);
 }
 
@@ -873,12 +873,12 @@ void releaseHandle () {
 	if (button != null) button.release ();
 	view = button = null;
 	if (nsItem != null) {
-	    nsItem.release();
-	    nsItem = null;
+		nsItem.release();
+		nsItem = null;
 	}
 	if (id != null) {
-	    id.release();
-	    id = null;
+		id.release();
+		id = null;
 	}
 	if (nsMenuRep != null) {
 		nsMenuRep.release();
@@ -976,12 +976,12 @@ public void setControl (Control control) {
 	if (this.control == control) return;
 
 	if (parent.nsToolbar == null) {
-        NSBox widget = (NSBox)view;
-        if (control == null) {
-        	widget.setBoxType(OS.NSBoxSeparator);
-        } else {
-        	widget.setBoxType(OS.NSBoxCustom);
-        }
+		NSBox widget = (NSBox)view;
+		if (control == null) {
+			widget.setBoxType(OS.NSBoxSeparator);
+		} else {
+			widget.setBoxType(OS.NSBoxCustom);
+		}
 	} else {
 		nsItem.setMenuFormRepresentation(control == null ? nsMenuRep : NSMenuItem.separatorItem());
 	}
@@ -1211,14 +1211,14 @@ public void setToolTipText (String string) {
 	checkWidget();
 	if (string == null && toolTipText == null) return;
 	if (string != null && string.equals (toolTipText)) return;
-    toolTipText = string;
+	toolTipText = string;
 	if (parent.nsToolbar != null) {
-        char[] chars = new char [toolTipText.length ()];
-        string.getChars (0, chars.length, chars, 0);
-        int length = fixMnemonic (chars);
-        nsItem.setToolTip(NSString.stringWithCharacters (chars, length));
+		char[] chars = new char [toolTipText.length ()];
+		string.getChars (0, chars.length, chars, 0);
+		int length = fixMnemonic (chars);
+		nsItem.setToolTip(NSString.stringWithCharacters (chars, length));
 	} else {
-        parent.checkToolTip (this);
+		parent.checkToolTip (this);
 	}
 }
 

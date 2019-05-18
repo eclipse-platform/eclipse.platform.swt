@@ -21,26 +21,26 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 
 public class Bug542475_DateTimeWrongIncrement {
-	 public static void main(String args[]) {
+	public static void main(String args[]) {
 
-	        Display display = Display.getDefault();
-	        Shell shell = new Shell(display, SWT.SHELL_TRIM);
+			Display display = Display.getDefault();
+			Shell shell = new Shell(display, SWT.SHELL_TRIM);
 
-	        shell.setLayout(new GridLayout());
+			shell.setLayout(new GridLayout());
 
-	        new DateTime(shell, SWT.DATE | SWT.SHORT);
+			new DateTime(shell, SWT.DATE | SWT.SHORT);
 
-	        new DateTime(shell, SWT.DATE | SWT.MEDIUM);
+			new DateTime(shell, SWT.DATE | SWT.MEDIUM);
 
-	        new DateTime(shell, SWT.DATE | SWT.LONG);
+			new DateTime(shell, SWT.DATE | SWT.LONG);
 
-	        shell.pack();
-	        shell.open();
+			shell.pack();
+			shell.open();
 
-	        while (!shell.isDisposed()) {
-	            if (!display.readAndDispatch()) {
-	                display.sleep();
-	            }
-	        }
-	    }
+			while (!shell.isDisposed()) {
+				if (!display.readAndDispatch()) {
+					display.sleep();
+				}
+			}
+		}
 }

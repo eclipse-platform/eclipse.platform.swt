@@ -34,42 +34,42 @@ public class Bug443185_ToolbarTestGridLayout {
 		shell.setSize(200, 400);
 		shell.setLayout(new GridLayout());
 		
-	    // Create the tabs
-	    CTabFolder tabFolder = new CTabFolder(shell, SWT.TOP|SWT.BORDER);
-	    tabFolder.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true) );
-	    tabFolder.setMaximizeVisible(true);
-	    tabFolder.setMinimizeVisible(true);
-	    
-	    CTabItem item=new CTabItem(tabFolder, SWT.BORDER);
-	    item.setText("Tab (1)");
-	    item.setShowClose(true);
-	    Label content=new Label(tabFolder,SWT.NONE);
-	    content.setText("bla");
-	    item.setControl(content);
-	    
-	    Composite composite = new Composite(tabFolder, SWT.NONE);
-	    composite.setLayout(new GridLayout());
-	    
-	    
-	    ToolBar toolBar=new ToolBar(composite, SWT.FLAT|SWT.RIGHT|SWT.WRAP);
-	    toolBar.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
-	    for(int i=0;i<15;i++){
-		    ToolItem toolItem=new ToolItem(toolBar, SWT.PUSH);
-		    toolItem.setText("test_"+i);
-		    if(i%5==0){
-		    	new ToolItem(toolBar, SWT.SEPARATOR);
-		    }
-	    }
-	    tabFolder.setTopRight(composite,SWT.RIGHT | SWT.WRAP);
-	    
-	    
-	    //SWT Loop
+		// Create the tabs
+		CTabFolder tabFolder = new CTabFolder(shell, SWT.TOP|SWT.BORDER);
+		tabFolder.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true) );
+		tabFolder.setMaximizeVisible(true);
+		tabFolder.setMinimizeVisible(true);
+		
+		CTabItem item=new CTabItem(tabFolder, SWT.BORDER);
+		item.setText("Tab (1)");
+		item.setShowClose(true);
+		Label content=new Label(tabFolder,SWT.NONE);
+		content.setText("bla");
+		item.setControl(content);
+		
+		Composite composite = new Composite(tabFolder, SWT.NONE);
+		composite.setLayout(new GridLayout());
+		
+		
+		ToolBar toolBar=new ToolBar(composite, SWT.FLAT|SWT.RIGHT|SWT.WRAP);
+		toolBar.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
+		for(int i=0;i<15;i++){
+			ToolItem toolItem=new ToolItem(toolBar, SWT.PUSH);
+			toolItem.setText("test_"+i);
+			if(i%5==0){
+				new ToolItem(toolBar, SWT.SEPARATOR);
+			}
+		}
+		tabFolder.setTopRight(composite,SWT.RIGHT | SWT.WRAP);
+		
+		
+		//SWT Loop
 		shell.open();
 		while (!shell.isDisposed()) {
-		  if (!display.readAndDispatch())
-		   {
-		    display.sleep();
-		   }
+			if (!display.readAndDispatch())
+			{
+				display.sleep();
+			}
 		}
 		display.dispose(); 
 	}

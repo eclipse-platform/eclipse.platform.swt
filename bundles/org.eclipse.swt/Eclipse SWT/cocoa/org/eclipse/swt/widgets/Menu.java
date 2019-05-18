@@ -1116,7 +1116,7 @@ public void setLocation (Point location) {
  * @since 3.7
  */
 public void setOrientation (int orientation) {
-    checkWidget ();
+	checkWidget ();
 }
 
 /**

@@ -696,28 +696,28 @@ public void test_computeSizeIIZ() {
 
 @Test
 public void test_computeSizeAlignment(){
-    shell.setLayout(new GridLayout());
-    StyledText singleText = new StyledText(shell, SWT.SINGLE);
-    shell.layout(true);
-    Point beforeAlignment = singleText.computeSize(100, SWT.DEFAULT);
-    //Should not change the computed size
-    singleText.setAlignment(SWT.RIGHT);
-    Point afterAlignment = singleText.computeSize(100, SWT.DEFAULT);
-    assertEquals(beforeAlignment, afterAlignment);
-    singleText.dispose();
+	shell.setLayout(new GridLayout());
+	StyledText singleText = new StyledText(shell, SWT.SINGLE);
+	shell.layout(true);
+	Point beforeAlignment = singleText.computeSize(100, SWT.DEFAULT);
+	//Should not change the computed size
+	singleText.setAlignment(SWT.RIGHT);
+	Point afterAlignment = singleText.computeSize(100, SWT.DEFAULT);
+	assertEquals(beforeAlignment, afterAlignment);
+	singleText.dispose();
 }
 @Test
 public void test_marginsCorrect(){
-    shell.setLayout(new GridLayout());
-    StyledText singleText = new StyledText(shell, SWT.SINGLE);
-    int leftMargin = 10;
-    singleText.setLeftMargin(leftMargin);
-    shell.layout(true);
-    singleText.setAlignment(SWT.RIGHT);
-    assertEquals(leftMargin, singleText.getLeftMargin());
-    singleText.setLeftMargin(leftMargin);
-    assertEquals(leftMargin, singleText.getLeftMargin());
-    singleText.dispose();
+	shell.setLayout(new GridLayout());
+	StyledText singleText = new StyledText(shell, SWT.SINGLE);
+	int leftMargin = 10;
+	singleText.setLeftMargin(leftMargin);
+	shell.layout(true);
+	singleText.setAlignment(SWT.RIGHT);
+	assertEquals(leftMargin, singleText.getLeftMargin());
+	singleText.setLeftMargin(leftMargin);
+	assertEquals(leftMargin, singleText.getLeftMargin());
+	singleText.dispose();
 }
 @Test
 public void test_copy() {
@@ -1888,8 +1888,8 @@ public void test_getStyleRanges() {
 	text.setStyleRange(getStyle(14,23,RED,null));
 	text.setStyleRange(getStyle(38,6,BLUE,null));
 	text.setStyleRange(getStyle(45,5,BLUE,null));
- 	text.replaceTextRange(14, 23, "\t/*Line 1\n\t * Line 2\n\t */");
- 	String newText = text.getTextRange(0, text.getCharCount());
+	text.replaceTextRange(14, 23, "\t/*Line 1\n\t * Line 2\n\t */");
+	String newText = text.getTextRange(0, text.getCharCount());
 	assertTrue(":1:", newText.equals("package test;\n\t/*Line 1\n\t * Line 2\n\t */\npublic class SimpleClass {\n}"));
 	StyleRange[] styles = text.getStyleRanges();
 	assertTrue(":1:", styles.length == 3);
@@ -5345,19 +5345,19 @@ protected void rtfCopy() {
 
 @Test
 public void test_consistency_Modify() {
-    consistencyEvent('a', 0, 0, 0, ConsistencyUtility.KEY_PRESS);
+	consistencyEvent('a', 0, 0, 0, ConsistencyUtility.KEY_PRESS);
 }
 
 @Override
 @Test
 public void test_consistency_MenuDetect () {
-    consistencyEvent(10, 10, 3, ConsistencyUtility.ESCAPE_MENU, ConsistencyUtility.MOUSE_CLICK);
+	consistencyEvent(10, 10, 3, ConsistencyUtility.ESCAPE_MENU, ConsistencyUtility.MOUSE_CLICK);
 }
 
 @Override
 @Test
 public void test_consistency_DragDetect () {
-    consistencyEvent(30, 10, 50, 0, ConsistencyUtility.MOUSE_DRAG);
+	consistencyEvent(30, 10, 50, 0, ConsistencyUtility.MOUSE_DRAG);
 }
 
 }

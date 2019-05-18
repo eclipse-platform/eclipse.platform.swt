@@ -739,10 +739,10 @@ class TableTab extends ScrollableTab {
 
 	@Override
 	protected void specialPopupMenuItems(Menu menu, Event event) {
-    	MenuItem item = new MenuItem(menu, SWT.PUSH);
-    	item.setText("getItem(Point) on mouse coordinates");
-    	menuMouseCoords = table1.toControl(new Point(event.x, event.y));
-    	item.addSelectionListener(widgetSelectedAdapter(e -> {
+		MenuItem item = new MenuItem(menu, SWT.PUSH);
+		item.setText("getItem(Point) on mouse coordinates");
+		menuMouseCoords = table1.toControl(new Point(event.x, event.y));
+		item.addSelectionListener(widgetSelectedAdapter(e -> {
 			eventConsole.append ("getItem(Point(" + menuMouseCoords + ")) returned: " + table1.getItem(menuMouseCoords));
 			eventConsole.append ("\n");
 		}));

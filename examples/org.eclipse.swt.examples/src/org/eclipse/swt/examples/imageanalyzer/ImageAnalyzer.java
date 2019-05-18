@@ -1451,8 +1451,8 @@ public class ImageAnalyzer {
 						animateLoop();
 					} catch (final SWTException e) {
 						display.syncExec(() -> showErrorDialog(createMsg(bundle.getString("Creating_image"),
-								    Integer.valueOf(imageDataIndex+1)),
-								    currentName, e));
+									Integer.valueOf(imageDataIndex+1)),
+									currentName, e));
 					}
 
 					// Post animation widget reset.
@@ -1696,7 +1696,7 @@ public class ImageAnalyzer {
 
 		string = createMsg(bundle.getString("Size_value"),
 					 new Object[] {Integer.valueOf(imageData.width),
-							   Integer.valueOf(imageData.height)});
+								Integer.valueOf(imageData.height)});
 		sizeLabel.setText(string);
 
 		string = createMsg(bundle.getString("Depth_value"),
@@ -1723,7 +1723,7 @@ public class ImageAnalyzer {
 
 		string = createMsg(bundle.getString("Disposal_value"),
 		                      new Object[] {Integer.valueOf(imageData.disposalMethod),
-							      disposalString(imageData.disposalMethod)});
+		                          disposalString(imageData.disposalMethod)});
 		disposalMethodLabel.setText(string);
 
 		int delay = imageData.delayTime * 10;

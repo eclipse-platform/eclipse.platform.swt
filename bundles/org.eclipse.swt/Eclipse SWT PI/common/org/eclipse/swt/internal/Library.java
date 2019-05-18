@@ -27,12 +27,12 @@ public class Library {
 	/**
 	 * SWT Major version number (must be >= 0)
 	 */
-    static int MAJOR_VERSION = 4;
+	static int MAJOR_VERSION = 4;
 
 	/**
 	 * SWT Minor version number (must be in the range 0..999)
 	 */
-    static int MINOR_VERSION = 928;
+	static int MINOR_VERSION = 928;
 
 	/**
 	 * SWT revision number (must be >= 0)
@@ -168,14 +168,14 @@ static boolean extract (String extractToFilePath, String mappedName) {
 		tempFile = File.createTempFile (file.getName(), ".tmp", file.getParentFile()); //$NON-NLS-1$
 	} catch (Throwable e) {
 		return false;
-	}
+				}
 
 	// Extract resource
 	String resourceName = "/" + mappedName; //$NON-NLS-1$
 	if (!extractResource (resourceName, tempFile)) {
 		tempFile.delete();
 		return false;
-	}
+			}
 
 	// Make it executable
 	chmod ("755", tempFile.getPath()); //$NON-NLS-1$
@@ -459,7 +459,7 @@ public static File findResource(String subDir, String resourceName, boolean mapR
 			// Create temp directory if it doesn't exist
 			File tempDir = new File (USER_HOME, SWT_LIB_DIR + maybeSubDirPathWithPrefix);
 			if ((!tempDir.exists () || tempDir.isDirectory ())) {
-				 tempDir.mkdirs ();
+				tempDir.mkdirs ();
 			}
 
 			if (extract(file.getPath(), maybeSubDirPath + finalResourceName)) {

@@ -762,7 +762,7 @@ private void makeCleanEnvironment(boolean single) {
 }
 
 private void createTree(List<String> events) {
-    makeCleanEnvironment(true);
+	makeCleanEnvironment(true);
 	for (int i = 0; i < 3; i++) {
 		TreeItem item = new TreeItem(tree, SWT.NONE);
 		item.setText("TreeItem" + i);
@@ -777,70 +777,70 @@ private void createTree(List<String> events) {
 
 @Test
 public void test_consistency_KeySelection() {
-    List<String> events = new ArrayList<>();
-    createTree(events);
-    consistencyEvent(0, SWT.ARROW_DOWN, 0, 0, ConsistencyUtility.KEY_PRESS, events);
+	List<String> events = new ArrayList<>();
+	createTree(events);
+	consistencyEvent(0, SWT.ARROW_DOWN, 0, 0, ConsistencyUtility.KEY_PRESS, events);
 }
 
 @Test
 public void test_consistency_MouseSelection() {
-    List<String> events = new ArrayList<>();
-    createTree(events);
-    consistencyEvent(30, 30, 1, 0, ConsistencyUtility.MOUSE_CLICK, events);
+	List<String> events = new ArrayList<>();
+	createTree(events);
+	consistencyEvent(30, 30, 1, 0, ConsistencyUtility.MOUSE_CLICK, events);
 }
 
 @Test
 public void test_consistency_MouseExpand() {
-    List<String> events = new ArrayList<>();
-    createTree(events);
-    consistencyEvent(11, 10, 1, 0, ConsistencyUtility.MOUSE_CLICK, events);
+	List<String> events = new ArrayList<>();
+	createTree(events);
+	consistencyEvent(11, 10, 1, 0, ConsistencyUtility.MOUSE_CLICK, events);
 }
 
 @Test
 public void test_consistency_KeyExpand() {
-    List<String> events = new ArrayList<>();
-    createTree(events);
-    int code=SWT.ARROW_RIGHT;
-    if(SwtTestUtil.isGTK)
-        code = SWT.KEYPAD_ADD;
-    consistencyEvent(0, code, 0, 0, ConsistencyUtility.KEY_PRESS, events);
+	List<String> events = new ArrayList<>();
+	createTree(events);
+	int code=SWT.ARROW_RIGHT;
+	if(SwtTestUtil.isGTK)
+		code = SWT.KEYPAD_ADD;
+	consistencyEvent(0, code, 0, 0, ConsistencyUtility.KEY_PRESS, events);
 }
 
 @Test
 public void test_consistency_DoubleClick () {
-    List<String> events = new ArrayList<>();
-    createTree(events);
-    consistencyPrePackShell();
-    consistencyEvent(20, tree.getItemHeight()*2, 1, 0,
-            	     ConsistencyUtility.MOUSE_DOUBLECLICK, events);
+	List<String> events = new ArrayList<>();
+	createTree(events);
+	consistencyPrePackShell();
+	consistencyEvent(20, tree.getItemHeight()*2, 1, 0,
+					 ConsistencyUtility.MOUSE_DOUBLECLICK, events);
 }
 
 @Test
 public void test_consistency_EnterSelection () {
-    List<String> events = new ArrayList<>();
-    createTree(events);
-    consistencyEvent(13, 10, 0, 0, ConsistencyUtility.KEY_PRESS, events);
+	List<String> events = new ArrayList<>();
+	createTree(events);
+	consistencyEvent(13, 10, 0, 0, ConsistencyUtility.KEY_PRESS, events);
 }
 
 @Test
 public void test_consistency_SpaceSelection () {
-    List<String> events = new ArrayList<>();
-    createTree(events);
-    consistencyEvent(' ', 32, 0, 0, ConsistencyUtility.KEY_PRESS, events);
+	List<String> events = new ArrayList<>();
+	createTree(events);
+	consistencyEvent(' ', 32, 0, 0, ConsistencyUtility.KEY_PRESS, events);
 }
 
 @Test
 public void test_consistency_MenuDetect () {
-    List<String> events = new ArrayList<>();
-    createTree(events);
-    consistencyEvent(50, 25, 3, 0, ConsistencyUtility.MOUSE_CLICK, events);
+	List<String> events = new ArrayList<>();
+	createTree(events);
+	consistencyEvent(50, 25, 3, 0, ConsistencyUtility.MOUSE_CLICK, events);
 }
 
 @Test
 public void test_consistency_DragDetect () {
-    List<String> events = new ArrayList<>();
-    createTree(events);
-    consistencyEvent(30, 20, 50, 30, ConsistencyUtility.MOUSE_DRAG, events);
+	List<String> events = new ArrayList<>();
+	createTree(events);
+	consistencyEvent(30, 20, 50, 30, ConsistencyUtility.MOUSE_DRAG, events);
 }
 
 @Test

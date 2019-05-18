@@ -207,7 +207,7 @@ Point adjustMoveCursor () {
 	pt.x = newX;  pt.y = newY;
 	/*
 	 * Convert to screen coordinates iff needed
- 	 */
+	 */
 	if (parent != null) {
 		OS.ClientToScreen (parent.handle, pt);
 	}
@@ -1139,9 +1139,9 @@ LRESULT wmMouse (int message, long /*int*/ wParam, long /*int*/ lParam) {
 		event.setLocationInPixels(newX, newY);
 		if ((style & SWT.RESIZE) != 0) {
 			if (isMirrored) {
-			   resizeRectangles (oldX - newX, newY - oldY);
+				resizeRectangles (oldX - newX, newY - oldY);
 			} else {
-			   resizeRectangles (newX - oldX, newY - oldY);
+				resizeRectangles (newX - oldX, newY - oldY);
 			}
 			inEvent = true;
 			sendEvent (SWT.Resize, event);

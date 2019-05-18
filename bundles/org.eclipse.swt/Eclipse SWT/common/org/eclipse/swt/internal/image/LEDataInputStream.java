@@ -103,13 +103,13 @@ final class LEDataInputStream extends InputStream {
 	}
 
 	/**
- 	 * Reads at most <code>length</code> bytes from this LEDataInputStream and
- 	 * stores them in byte array <code>buffer</code> starting at <code>offset</code>.
- 	 * <p>
- 	 * Answer the number of bytes actually read or -1 if no bytes were read and
- 	 * end of stream was encountered.  This implementation reads bytes from
- 	 * the pushback buffer first, then the target stream if more bytes are required
- 	 * to satisfy <code>count</code>.
+	 * Reads at most <code>length</code> bytes from this LEDataInputStream and
+	 * stores them in byte array <code>buffer</code> starting at <code>offset</code>.
+	 * <p>
+	 * Answer the number of bytes actually read or -1 if no bytes were read and
+	 * end of stream was encountered.  This implementation reads bytes from
+	 * the pushback buffer first, then the target stream if more bytes are required
+	 * to satisfy <code>count</code>.
 	 * </p>
 	 * @param buffer the byte array in which to store the read bytes.
 	 * @param offset the offset in <code>buffer</code> to store the read bytes.
@@ -122,9 +122,9 @@ final class LEDataInputStream extends InputStream {
 	private int readData(byte[] buffer, int offset, int length) throws IOException {
 		if (buf == null) throw new IOException();
 		if (offset < 0 || offset > buffer.length ||
-  		 	length < 0 || (length > buffer.length - offset)) {
-	 		throw new ArrayIndexOutOfBoundsException();
-		 	}
+			length < 0 || (length > buffer.length - offset)) {
+			throw new ArrayIndexOutOfBoundsException();
+			}
 
 		int cacheCopied = 0;
 		int newOffset = offset;

@@ -137,7 +137,7 @@ public class JPEGDecoder {
 	static final int M_APP13 = 0xed;
 	static final int M_APP14 = 0xee;
 	static final int M_APP15 = 0xef;
- 	static final int M_JPG0 = 0xf0;
+	static final int M_JPG0 = 0xf0;
 	static final int M_JPG13 = 0xfd;
 	static final int M_COM = 0xfe;
 	static final int M_TEM = 0x01;
@@ -832,7 +832,7 @@ public class JPEGDecoder {
 				{
 				if (bits_left < (1)) {
 					if (!jpeg_fill_bit_buffer(br_state,get_buffer,bits_left,1)) {
-						 return false;
+						return false;
 					}
 					get_buffer = (br_state).get_buffer; bits_left = (br_state).bits_left;
 				}
@@ -1716,7 +1716,7 @@ public class JPEGDecoder {
 //		JMETHOD(void, start_pass, (j_decompress_ptr cinfo, J_BUF_MODE pass_mode));
 		int process_data;
 
-		 /* Pointer to allocated workspace (M or M+2 row groups). */
+		/* Pointer to allocated workspace (M or M+2 row groups). */
 		byte[][][] buffer = new byte[MAX_COMPONENTS][][];
 		int[] buffer_offset = new int[MAX_COMPONENTS];
 
@@ -2325,8 +2325,8 @@ static void jinit_d_coef_controller (jpeg_decompress_struct cinfo, boolean need_
 			coef.whole_image[ci] =
 				new short
 					[(int)jround_up( compptr.height_in_blocks, compptr.v_samp_factor)]
-				    [(int)jround_up( compptr.width_in_blocks, compptr.h_samp_factor)]
-				    [DCTSIZE2];
+					[(int)jround_up( compptr.width_in_blocks, compptr.h_samp_factor)]
+					[DCTSIZE2];
 		}
 //		coef.consume_data = consume_data;
 		coef.decompress_data = DECOMPRESS_DATA;
@@ -3400,18 +3400,18 @@ jcopy_sample_rows (byte[][] input_array, int source_row,
  * The source and destination arrays must be at least as wide as num_cols.
  */
 {
-  byte[] inptr, outptr;
-  int count = num_cols;
-  int row;
+	byte[] inptr, outptr;
+	int count = num_cols;
+	int row;
 
-  int input_array_offset = source_row;
-  int output_array_offset = dest_row;
+	int input_array_offset = source_row;
+	int output_array_offset = dest_row;
 
-  for (row = num_rows; row > 0; row--) {
-    inptr = input_array[input_array_offset++];
-    outptr = output_array[output_array_offset++];
-    System.arraycopy(inptr, 0, outptr, 0, count);
-  }
+	for (row = num_rows; row > 0; row--) {
+		inptr = input_array[input_array_offset++];
+		outptr = output_array[output_array_offset++];
+		System.arraycopy(inptr, 0, outptr, 0, count);
+	}
 }
 
 static boolean jpeg_start_decompress (jpeg_decompress_struct cinfo) {
@@ -4418,8 +4418,8 @@ static boolean get_dht (jpeg_decompress_struct cinfo)
 //			ERREXIT(cinfo, JERR_BAD_HUFF_TABLE);
 
 		for (i = 0; i < count; i++) {
-	 		if (cinfo.bytes_offset == cinfo.bytes_in_buffer) fill_input_buffer(cinfo);
-	 		huffval[i] = cinfo.buffer[cinfo.bytes_offset++];
+			if (cinfo.bytes_offset == cinfo.bytes_in_buffer) fill_input_buffer(cinfo);
+			huffval[i] = cinfo.buffer[cinfo.bytes_offset++];
 		}
 
 		length -= count;
@@ -5012,8 +5012,8 @@ static void grayscale_convert (jpeg_decompress_struct cinfo,
 	byte[][][] input_buf, int[] input_buf_offset, int input_row,
 	byte[][] output_buf, int output_buf_offset, int num_rows)
 {
-  jcopy_sample_rows(input_buf[0], input_row+input_buf_offset[0], output_buf, output_buf_offset,
-		    num_rows, cinfo.output_width);
+	jcopy_sample_rows(input_buf[0], input_row+input_buf_offset[0], output_buf, output_buf_offset,
+				num_rows, cinfo.output_width);
 }
 
 static void gray_rgb_convert (jpeg_decompress_struct cinfo,
@@ -5535,12 +5535,12 @@ static int consume_data (jpeg_decompress_struct cinfo) {
 static int consume_input (jpeg_decompress_struct cinfo) {
 	switch (cinfo.inputctl.consume_input) {
 		case COEF_CONSUME_INPUT:
-			 switch (cinfo.coef.consume_data) {
+			switch (cinfo.coef.consume_data) {
 				case CONSUME_DATA: return consume_data(cinfo);
 				case DUMMY_CONSUME_DATA: return dummy_consume_data(cinfo);
 				default: error();
-			 }
-			 break;
+			}
+			break;
 		case INPUT_CONSUME_INPUT:
 			return consume_markers(cinfo);
 		default:
@@ -5617,7 +5617,7 @@ static boolean next_marker (jpeg_decompress_struct cinfo) {
 		 * data source's input buffer.
 		 */
 		do {
-			 if (cinfo.bytes_offset == cinfo.bytes_in_buffer) fill_input_buffer(cinfo);
+			if (cinfo.bytes_offset == cinfo.bytes_in_buffer) fill_input_buffer(cinfo);
 				c = cinfo.buffer[cinfo.bytes_offset++] & 0xFF;
 		} while (c == 0xFF);
 		if (c != 0)

@@ -438,45 +438,45 @@ public void test_setTextLjava_lang_String() {
 //custom
 
 protected void setUp(int style) {
-    super.setUp();
-    button = new Button(shell, style);
-    setWidget(button);
+	super.setUp();
+	button = new Button(shell, style);
+	setWidget(button);
 }
 
 @Test
 public void test_consistency_MenuDetect () {
-    consistencyEvent(10, 10, 3, 0, ConsistencyUtility.MOUSE_CLICK);
-    tearDown();
-    setUp(SWT.CHECK);
-    consistencyEvent(5, 5, 3, 0, ConsistencyUtility.MOUSE_CLICK);
-    tearDown();
-    setUp(SWT.RADIO);
-    consistencyEvent(5, 5, 3, 0, ConsistencyUtility.MOUSE_CLICK);
-    tearDown();
-    setUp(SWT.TOGGLE);
-    consistencyEvent(5, 5, 3, 0, ConsistencyUtility.MOUSE_CLICK);
-    tearDown();
-    setUp(SWT.ARROW);
-    consistencyEvent(5, 5, 3, 0, ConsistencyUtility.MOUSE_CLICK);
+	consistencyEvent(10, 10, 3, 0, ConsistencyUtility.MOUSE_CLICK);
+	tearDown();
+	setUp(SWT.CHECK);
+	consistencyEvent(5, 5, 3, 0, ConsistencyUtility.MOUSE_CLICK);
+	tearDown();
+	setUp(SWT.RADIO);
+	consistencyEvent(5, 5, 3, 0, ConsistencyUtility.MOUSE_CLICK);
+	tearDown();
+	setUp(SWT.TOGGLE);
+	consistencyEvent(5, 5, 3, 0, ConsistencyUtility.MOUSE_CLICK);
+	tearDown();
+	setUp(SWT.ARROW);
+	consistencyEvent(5, 5, 3, 0, ConsistencyUtility.MOUSE_CLICK);
 
 }
 
 @Test
 public void test_consistency_MouseSelection () {
-    consistencyEvent(10, 10, 1, 0, ConsistencyUtility.MOUSE_CLICK);
-    tearDown();
-    setUp(SWT.CHECK);
-    consistencyEvent(5, 5, 1, 0, ConsistencyUtility.MOUSE_CLICK);
-    tearDown();
-    setUp(SWT.RADIO);
-    button.setSelection(true);
-    consistencyEvent(5, 5, 1, 0, ConsistencyUtility.MOUSE_CLICK);
-    tearDown();
-    setUp(SWT.TOGGLE);
-    consistencyEvent(5, 5, 1, 0, ConsistencyUtility.MOUSE_CLICK);
-    tearDown();
-    setUp(SWT.ARROW);
-    consistencyEvent(5, 5, 1, 0, ConsistencyUtility.MOUSE_CLICK);
+	consistencyEvent(10, 10, 1, 0, ConsistencyUtility.MOUSE_CLICK);
+	tearDown();
+	setUp(SWT.CHECK);
+	consistencyEvent(5, 5, 1, 0, ConsistencyUtility.MOUSE_CLICK);
+	tearDown();
+	setUp(SWT.RADIO);
+	button.setSelection(true);
+	consistencyEvent(5, 5, 1, 0, ConsistencyUtility.MOUSE_CLICK);
+	tearDown();
+	setUp(SWT.TOGGLE);
+	consistencyEvent(5, 5, 1, 0, ConsistencyUtility.MOUSE_CLICK);
+	tearDown();
+	setUp(SWT.ARROW);
+	consistencyEvent(5, 5, 1, 0, ConsistencyUtility.MOUSE_CLICK);
 }
 
 @Test
@@ -484,54 +484,54 @@ public void test_consistency_EnterSelection () {
 //    differences between push and the rest of the buttons
 //	  different across platforms
 //    consistencyEvent(10, 13, 0, 0, ConsistencyUtility.KEY_PRESS);
-    tearDown();
-    setUp(SWT.CHECK);
-    consistencyEvent(10, 13, 0, 0, ConsistencyUtility.KEY_PRESS);
-    tearDown();
-    setUp(SWT.RADIO);
-    consistencyEvent(10, 13, 0, 0, ConsistencyUtility.KEY_PRESS);
-    tearDown();
-    setUp(SWT.TOGGLE);
-    consistencyEvent(10, 13, 0, 0, ConsistencyUtility.KEY_PRESS);
-    tearDown();
-    setUp(SWT.ARROW);
-    consistencyEvent(10, 13, 0, 0, ConsistencyUtility.KEY_PRESS);
+	tearDown();
+	setUp(SWT.CHECK);
+	consistencyEvent(10, 13, 0, 0, ConsistencyUtility.KEY_PRESS);
+	tearDown();
+	setUp(SWT.RADIO);
+	consistencyEvent(10, 13, 0, 0, ConsistencyUtility.KEY_PRESS);
+	tearDown();
+	setUp(SWT.TOGGLE);
+	consistencyEvent(10, 13, 0, 0, ConsistencyUtility.KEY_PRESS);
+	tearDown();
+	setUp(SWT.ARROW);
+	consistencyEvent(10, 13, 0, 0, ConsistencyUtility.KEY_PRESS);
 }
 
 @Test
 public void test_consistency_SpaceSelection () {
-    consistencyEvent(' ', 32, 0, 0, ConsistencyUtility.KEY_PRESS);
-    tearDown();
-    setUp(SWT.CHECK);
-    consistencyEvent(' ', 32, 0, 0, ConsistencyUtility.KEY_PRESS);
-    tearDown();
-    setUp(SWT.RADIO);
-    button.setSelection(true);
-    consistencyEvent(' ', 32, 0, 0, ConsistencyUtility.KEY_PRESS);
-    tearDown();
-    setUp(SWT.TOGGLE);
-    consistencyEvent(' ', 32, 0, 0, ConsistencyUtility.KEY_PRESS);
-    tearDown();
-    //arrow does not produce a traverse mnemonic on xp
-    setUp(SWT.ARROW);
-    consistencyEvent(' ', 32, 0, 0, ConsistencyUtility.KEY_PRESS);
+	consistencyEvent(' ', 32, 0, 0, ConsistencyUtility.KEY_PRESS);
+	tearDown();
+	setUp(SWT.CHECK);
+	consistencyEvent(' ', 32, 0, 0, ConsistencyUtility.KEY_PRESS);
+	tearDown();
+	setUp(SWT.RADIO);
+	button.setSelection(true);
+	consistencyEvent(' ', 32, 0, 0, ConsistencyUtility.KEY_PRESS);
+	tearDown();
+	setUp(SWT.TOGGLE);
+	consistencyEvent(' ', 32, 0, 0, ConsistencyUtility.KEY_PRESS);
+	tearDown();
+	//arrow does not produce a traverse mnemonic on xp
+	setUp(SWT.ARROW);
+	consistencyEvent(' ', 32, 0, 0, ConsistencyUtility.KEY_PRESS);
 }
 
 @Test
 public void test_consistency_DragDetect () {
-    consistencyEvent(10, 10, 20, 20, ConsistencyUtility.MOUSE_DRAG);
-    tearDown();
-    setUp(SWT.CHECK);
-    consistencyEvent(5, 5, 15, 15, ConsistencyUtility.MOUSE_DRAG);
-    tearDown();
-    setUp(SWT.RADIO);
-    consistencyEvent(5, 5, 15, 15, ConsistencyUtility.MOUSE_DRAG);
-    tearDown();
-    setUp(SWT.TOGGLE);
-    consistencyEvent(5, 5, 15, 15, ConsistencyUtility.MOUSE_DRAG);
-    tearDown();
-    setUp(SWT.ARROW);
-    consistencyEvent(5, 5, 15, 15, ConsistencyUtility.MOUSE_DRAG);
+	consistencyEvent(10, 10, 20, 20, ConsistencyUtility.MOUSE_DRAG);
+	tearDown();
+	setUp(SWT.CHECK);
+	consistencyEvent(5, 5, 15, 15, ConsistencyUtility.MOUSE_DRAG);
+	tearDown();
+	setUp(SWT.RADIO);
+	consistencyEvent(5, 5, 15, 15, ConsistencyUtility.MOUSE_DRAG);
+	tearDown();
+	setUp(SWT.TOGGLE);
+	consistencyEvent(5, 5, 15, 15, ConsistencyUtility.MOUSE_DRAG);
+	tearDown();
+	setUp(SWT.ARROW);
+	consistencyEvent(5, 5, 15, 15, ConsistencyUtility.MOUSE_DRAG);
 }
 
 

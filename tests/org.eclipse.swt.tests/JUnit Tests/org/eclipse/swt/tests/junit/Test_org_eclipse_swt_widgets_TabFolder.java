@@ -93,7 +93,7 @@ public void test_getItemCount() {
 	int number = 10;
 	for (int i = 0; i<number ; i++){
 		assertTrue(":a:" + i, tabFolder.getItemCount()==i);
-	  	new TabItem(tabFolder, 0);
+		new TabItem(tabFolder, 0);
 	}
 }
 
@@ -138,7 +138,7 @@ public void test_getItems() {
 	assertEquals(0, tabFolder.getItems().length);
 
 	for (int i = 0; i<number ; i++){
-	  	items[i] = new TabItem(tabFolder, 0);
+		items[i] = new TabItem(tabFolder, 0);
 	}
 	assertArrayEquals(items, tabFolder.getItems());
 
@@ -158,21 +158,21 @@ public void test_getItems() {
  */
 @Test
 public void test_setControl() {
-    int number = 5;
-    TabItem[] items = new TabItem[number];
+	int number = 5;
+	TabItem[] items = new TabItem[number];
 
-    final Button setControlButton = new Button (tabFolder, SWT.None);
-    setControlButton.setText ("test button");
+	final Button setControlButton = new Button (tabFolder, SWT.None);
+	setControlButton.setText ("test button");
 
-    for (int i = 0; i < number; i++) {
-        items[i] = new TabItem(tabFolder, 0);
-        items[i].setControl (setControlButton);
-        assertEquals (items[i].getControl (), setControlButton);
-        assertTrue(setControlButton.getVisible());
-    }
-    items[0].setControl (setControlButton);
-    assertEquals (items[0].getControl (), setControlButton);
-    assertTrue(setControlButton.getVisible());
+	for (int i = 0; i < number; i++) {
+		items[i] = new TabItem(tabFolder, 0);
+		items[i].setControl (setControlButton);
+		assertEquals (items[i].getControl (), setControlButton);
+		assertTrue(setControlButton.getVisible());
+	}
+	items[0].setControl (setControlButton);
+	assertEquals (items[0].getControl (), setControlButton);
+	assertTrue(setControlButton.getVisible());
 }
 
 @Test
@@ -180,7 +180,7 @@ public void test_getSelection() {
 	int number = 10;
 	TabItem[] tis = new TabItem[number];
 	for (int i = 0; i<number ; i++){
-	  	tis[i] = new TabItem(tabFolder, 0);
+		tis[i] = new TabItem(tabFolder, 0);
 	}
 	assertTrue(":a:", tabFolder.getSelection()[0] == tis[0]);
 	for (int i = 0; i<number ; i++){
@@ -213,7 +213,7 @@ public void test_indexOfLorg_eclipse_swt_widgets_TabItem() {
 	int number = 10;
 	TabItem[] tis = new TabItem[number];
 	for (int i = 0; i<number ; i++){
-	  	tis[i] = new TabItem(tabFolder, 0);
+		tis[i] = new TabItem(tabFolder, 0);
 	}
 	for (int i = 0; i<number ; i++){
 		assertTrue(":a:" + i, tabFolder.indexOf(tis[i])==i);
@@ -223,7 +223,7 @@ public void test_indexOfLorg_eclipse_swt_widgets_TabItem() {
 	makeCleanEnvironment();
 
 	for (int i = 0; i<number ; i++){
-	  	tis[i] = new TabItem(tabFolder, 0);
+		tis[i] = new TabItem(tabFolder, 0);
 	}
 	for (int i = 0; i<number ; i++){
 		try {
@@ -274,7 +274,7 @@ public void test_setSelectionEmpty() {
 	}
 	int number = 10;
 	for (int i = 0; i<number ; i++){
-	  	new TabItem(tabFolder, 0);
+		new TabItem(tabFolder, 0);
 	}
 	for (int i = 0; i<number ; i++){
 		tabFolder.setSelection(i);
@@ -290,7 +290,7 @@ public void test_setSelectionEmpty() {
 public void test_setSelectionI() {
 	int number = 10;
 	for (int i = 0; i<number ; i++){
-	  	new TabItem(tabFolder, 0);
+		new TabItem(tabFolder, 0);
 	}
 	for (int i = 0; i<number ; i++){
 		tabFolder.setSelection(i);
@@ -301,8 +301,8 @@ public void test_setSelectionI() {
 	makeCleanEnvironment();
 
 	for (int i = 0; i<number ; i++){
-	  	new TabItem(tabFolder, 0);
-	  	assertEquals("i=" + i, 0, tabFolder.getSelectionIndex());
+		new TabItem(tabFolder, 0);
+		assertEquals("i=" + i, 0, tabFolder.getSelectionIndex());
 	}
 
 	//
@@ -430,47 +430,47 @@ private void createTabFolder(List<String> events) {
 
 @Test
 public void test_consistency_KeySelection() {
-    List<String> events = new ArrayList<>();
-    createTabFolder(events);
-    consistencyEvent(0, SWT.ARROW_RIGHT, 0, 0, ConsistencyUtility.KEY_PRESS, events, false);
+	List<String> events = new ArrayList<>();
+	createTabFolder(events);
+	consistencyEvent(0, SWT.ARROW_RIGHT, 0, 0, ConsistencyUtility.KEY_PRESS, events, false);
 }
 
 @Test
 public void test_consistency_MouseSelection() {
-    List<String> events = new ArrayList<>();
-    createTabFolder(events);
-    consistencyPrePackShell();
-    consistencyEvent(tabFolder.getSize().x/2, 5, 1, 0, ConsistencyUtility.MOUSE_CLICK, events);
+	List<String> events = new ArrayList<>();
+	createTabFolder(events);
+	consistencyPrePackShell();
+	consistencyEvent(tabFolder.getSize().x/2, 5, 1, 0, ConsistencyUtility.MOUSE_CLICK, events);
 }
 
 @Test
 public void test_consistency_PgdwnSelection () {
-    List<String> events = new ArrayList<>();
-    createTabFolder(events);
-    consistencyEvent(0, SWT.CTRL, 0, SWT.PAGE_DOWN, ConsistencyUtility.DOUBLE_KEY_PRESS, events, false);
+	List<String> events = new ArrayList<>();
+	createTabFolder(events);
+	consistencyEvent(0, SWT.CTRL, 0, SWT.PAGE_DOWN, ConsistencyUtility.DOUBLE_KEY_PRESS, events, false);
 }
 
 @Test
 public void test_consistency_PgupSelection () {
-    List<String> events = new ArrayList<>();
-    createTabFolder(events);
-    tabFolder.setSelection(2);
-    consistencyEvent(0, SWT.CTRL, 0, SWT.PAGE_UP, ConsistencyUtility.DOUBLE_KEY_PRESS, events, false);
+	List<String> events = new ArrayList<>();
+	createTabFolder(events);
+	tabFolder.setSelection(2);
+	consistencyEvent(0, SWT.CTRL, 0, SWT.PAGE_UP, ConsistencyUtility.DOUBLE_KEY_PRESS, events, false);
 }
 
 @Test
 public void test_consistency_MenuDetect () {
-    List<String> events = new ArrayList<>();
-    createTabFolder(events);
-    tabFolder.setSelection(1);
-    consistencyEvent(50, 5, 3, 0, ConsistencyUtility.MOUSE_CLICK, events);
+	List<String> events = new ArrayList<>();
+	createTabFolder(events);
+	tabFolder.setSelection(1);
+	consistencyEvent(50, 5, 3, 0, ConsistencyUtility.MOUSE_CLICK, events);
 }
 
 @Test
 public void test_consistency_DragDetect () {
-    List<String> events = new ArrayList<>();
-    createTabFolder(events);
-    tabFolder.setSelection(1);
-    consistencyEvent(50, 5, 70, 10, ConsistencyUtility.MOUSE_DRAG, events);
+	List<String> events = new ArrayList<>();
+	createTabFolder(events);
+	tabFolder.setSelection(1);
+	consistencyEvent(50, 5, 70, 10, ConsistencyUtility.MOUSE_DRAG, events);
 }
 }

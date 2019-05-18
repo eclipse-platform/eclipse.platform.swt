@@ -368,9 +368,9 @@ void drawInteriorWithFrame_inView (long id, long sel, NSRect cellRect, long view
 		if (isFlipped) {
 			context.saveGraphicsState ();
 			NSAffineTransform transform = NSAffineTransform.transform ();
-		 	transform.scaleXBy (1, -1);
-		 	transform.translateXBy (0, -(destRect.height + 2 * destRect.y));
-		 	transform.concat ();
+			transform.scaleXBy (1, -1);
+			transform.translateXBy (0, -(destRect.height + 2 * destRect.y));
+			transform.concat ();
 		}
 		NSRect sourceRect = new NSRect ();
 		sourceRect.width = destRect.width;

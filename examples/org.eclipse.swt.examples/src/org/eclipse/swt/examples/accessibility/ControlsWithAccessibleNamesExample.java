@@ -372,12 +372,12 @@ public class ControlsWithAccessibleNamesExample {
 				item.setToolTipText("ToolItem ToolTip" + i + j);
 				if (item.getWidth() > toolItemWidth) toolItemWidth = item.getWidth();
 			}
-	        coolItem.setControl(coolItemToolBar);
-	        Point size = coolItemToolBar.computeSize(SWT.DEFAULT, SWT.DEFAULT);
-	        Point coolSize = coolItem.computeSize (size.x, size.y);
-	        coolItem.setMinimumSize(toolItemWidth, coolSize.y);
-	        coolItem.setPreferredSize(coolSize);
-	        coolItem.setSize(coolSize);
+			coolItem.setControl(coolItemToolBar);
+			Point size = coolItemToolBar.computeSize(SWT.DEFAULT, SWT.DEFAULT);
+			Point coolSize = coolItem.computeSize (size.x, size.y);
+			coolItem.setMinimumSize(toolItemWidth, coolSize.y);
+			coolItem.setPreferredSize(coolSize);
+			coolItem.setSize(coolSize);
 		}
 
 		overrideCoolBar = new CoolBar(shell, SWT.FLAT);
@@ -391,12 +391,12 @@ public class ControlsWithAccessibleNamesExample {
 				item.setToolTipText("ToolItem ToolTip" + i + j);
 				if (item.getWidth() > toolItemWidth) toolItemWidth = item.getWidth();
 			}
-	        coolItem.setControl(coolItemToolBar);
-	        Point size = coolItemToolBar.computeSize(SWT.DEFAULT, SWT.DEFAULT);
-	        Point coolSize = coolItem.computeSize (size.x, size.y);
-	        coolItem.setMinimumSize(toolItemWidth, coolSize.y);
-	        coolItem.setPreferredSize(coolSize);
-	        coolItem.setSize(coolSize);
+			coolItem.setControl(coolItemToolBar);
+			Point size = coolItemToolBar.computeSize(SWT.DEFAULT, SWT.DEFAULT);
+			Point coolSize = coolItem.computeSize (size.x, size.y);
+			coolItem.setMinimumSize(toolItemWidth, coolSize.y);
+			coolItem.setPreferredSize(coolSize);
+			coolItem.setSize(coolSize);
 		}
 		overrideCoolBar.setData("name", "CoolBar");
 		overrideCoolBar.setData("child", "CoolBar Item");

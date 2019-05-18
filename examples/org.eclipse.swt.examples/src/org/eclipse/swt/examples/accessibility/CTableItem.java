@@ -508,7 +508,7 @@ Accessible getAccessible(final Accessible accessibleTable, final int columnIndex
 			}
 			@Override
 			public void getRowHeaders(AccessibleTableCellEvent e) {
-				 /* CTable does not support row headers. */
+				/* CTable does not support row headers. */
 			}
 			@Override
 			public void getRowIndex(AccessibleTableCellEvent e) {

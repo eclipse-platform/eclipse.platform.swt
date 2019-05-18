@@ -496,7 +496,7 @@ void getData(long /*int*/ pData){
 	switch (type) {
 		case COM.VT_EMPTY :
 		case COM.VT_NULL :
-            OS.MoveMemory(pData, new short[] {type}, 2);
+			OS.MoveMemory(pData, new short[] {type}, 2);
 			break;
 		case COM.VT_BOOL :
 			OS.MoveMemory(pData, new short[] {type}, 2);
@@ -566,30 +566,30 @@ void getData(long /*int*/ pData){
  * @since 3.2
  */
 public double getDouble() {
-    if (type == COM.VT_EMPTY) {
-        OLE.error(OLE.ERROR_CANNOT_CHANGE_VARIANT_TYPE, -1);
-    }
-    if (type == COM.VT_R8) {
-        return doubleData;
-    }
+	if (type == COM.VT_EMPTY) {
+		OLE.error(OLE.ERROR_CANNOT_CHANGE_VARIANT_TYPE, -1);
+	}
+	if (type == COM.VT_R8) {
+		return doubleData;
+	}
 
-    // try to coerce the value to the desired type
-    long /*int*/ oldPtr = OS.GlobalAlloc(COM.GMEM_FIXED | COM.GMEM_ZEROINIT, sizeof);
-    long /*int*/ newPtr = OS.GlobalAlloc(COM.GMEM_FIXED | COM.GMEM_ZEROINIT, sizeof);
-    try {
-        getData(oldPtr);
-        int result = COM.VariantChangeType(newPtr, oldPtr, (short) 0, COM.VT_R8);
-        if (result != COM.S_OK)
-            OLE.error(OLE.ERROR_CANNOT_CHANGE_VARIANT_TYPE, result);
-        Variant doubleVar = new Variant();
-        doubleVar.setData(newPtr);
-        return doubleVar.getDouble();
-    } finally {
-        COM.VariantClear(oldPtr);
-        OS.GlobalFree(oldPtr);
-        COM.VariantClear(newPtr);
-        OS.GlobalFree(newPtr);
-    }
+	// try to coerce the value to the desired type
+	long /*int*/ oldPtr = OS.GlobalAlloc(COM.GMEM_FIXED | COM.GMEM_ZEROINIT, sizeof);
+	long /*int*/ newPtr = OS.GlobalAlloc(COM.GMEM_FIXED | COM.GMEM_ZEROINIT, sizeof);
+	try {
+		getData(oldPtr);
+		int result = COM.VariantChangeType(newPtr, oldPtr, (short) 0, COM.VT_R8);
+		if (result != COM.S_OK)
+			OLE.error(OLE.ERROR_CANNOT_CHANGE_VARIANT_TYPE, result);
+		Variant doubleVar = new Variant();
+		doubleVar.setData(newPtr);
+		return doubleVar.getDouble();
+	} finally {
+		COM.VariantClear(oldPtr);
+		OS.GlobalFree(oldPtr);
+		COM.VariantClear(newPtr);
+		OS.GlobalFree(newPtr);
+	}
 }
 
 /**
@@ -972,7 +972,7 @@ void setData(long /*int*/ pData){
 		case COM.VT_R8 :
 			double[] newDoubleData = new double[1];
 			OS.MoveMemory(newDoubleData, pData + 8, 8);
- 			doubleData = newDoubleData[0];
+			doubleData = newDoubleData[0];
 			break;
 		case COM.VT_DISPATCH : {
 			long /*int*/[] ppvObject = new long /*int*/[1];
@@ -1040,37 +1040,37 @@ void setData(long /*int*/ pData){
  */
 @Override
 public String toString () {
-    switch (type) {
-	    case COM.VT_BOOL :
-	        return "VT_BOOL{"+booleanData+"}";
-	    case COM.VT_I1 :
-	        return "VT_I1{"+byteData+"}";
-	    case COM.VT_I2 :
-	        return "VT_I2{"+shortData+"}";
-	    case COM.VT_UI2 :
-	        return "VT_UI2{"+charData+"}";
-	    case COM.VT_I4 :
-	        return "VT_I4{"+intData+"}";
-	    case COM.VT_I8 :
-	        return "VT_I8{"+longData+"}";
-	    case COM.VT_R4 :
-	        return "VT_R4{"+floatData+"}";
-   	    case COM.VT_R8 :
-	        return "VT_R8{"+doubleData+"}";
-	    case COM.VT_BSTR :
-	        return "VT_BSTR{"+stringData+"}";
-	    case COM.VT_DISPATCH :
-	        return "VT_DISPATCH{"+(dispatchData == null ? 0 : dispatchData.getAddress())+"}";
-	    case COM.VT_UNKNOWN :
-	        return "VT_UNKNOWN{"+(unknownData == null ? 0 : unknownData.getAddress())+"}";
-	    case COM.VT_EMPTY :
-	        return "VT_EMPTY";
-	    case COM.VT_NULL :
-	        return "VT_NULL";
-	 }
-    if ((type & COM.VT_BYREF) != 0) {
-        return "VT_BYREF|"+(type & ~COM.VT_BYREF)+"{"+byRefPtr+"}";
-    }
-    return "Unsupported Type "+type;
+	switch (type) {
+		case COM.VT_BOOL :
+			return "VT_BOOL{"+booleanData+"}";
+		case COM.VT_I1 :
+			return "VT_I1{"+byteData+"}";
+		case COM.VT_I2 :
+			return "VT_I2{"+shortData+"}";
+		case COM.VT_UI2 :
+			return "VT_UI2{"+charData+"}";
+		case COM.VT_I4 :
+			return "VT_I4{"+intData+"}";
+		case COM.VT_I8 :
+			return "VT_I8{"+longData+"}";
+		case COM.VT_R4 :
+			return "VT_R4{"+floatData+"}";
+		case COM.VT_R8 :
+			return "VT_R8{"+doubleData+"}";
+		case COM.VT_BSTR :
+			return "VT_BSTR{"+stringData+"}";
+		case COM.VT_DISPATCH :
+			return "VT_DISPATCH{"+(dispatchData == null ? 0 : dispatchData.getAddress())+"}";
+		case COM.VT_UNKNOWN :
+			return "VT_UNKNOWN{"+(unknownData == null ? 0 : unknownData.getAddress())+"}";
+		case COM.VT_EMPTY :
+			return "VT_EMPTY";
+		case COM.VT_NULL :
+			return "VT_NULL";
+	}
+	if ((type & COM.VT_BYREF) != 0) {
+		return "VT_BYREF|"+(type & ~COM.VT_BYREF)+"{"+byRefPtr+"}";
+	}
+	return "Unsupported Type "+type;
 }
 }

@@ -102,7 +102,7 @@ int getNextValue(PngDecodingDataStream stream) throws IOException {
 	// a prefix to the longer codeValues.
 	while (codelength < MAX_CODE_LENGTH && code > codeLengthInfo[codelength].max) {
 		code = ((code << 1) | stream.getNextIdatBit());
-        codelength++;
+		codelength++;
 	}
 	if (codelength >= MAX_CODE_LENGTH) stream.error();
 

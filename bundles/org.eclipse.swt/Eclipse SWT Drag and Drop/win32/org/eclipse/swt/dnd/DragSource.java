@@ -347,14 +347,14 @@ private void drag(Event dragEvent) {
 			OS.ShowWindow (hwndDrag, OS.SW_SHOW);
 		}
 		OS.ImageList_BeginDrag(imagelist.getHandle(), 0, offsetX, event.offsetY);
-        /*
-        * Feature in Windows. When ImageList_DragEnter() is called,
-        * it takes a snapshot of the screen  If a drag is started
-        * when another window is in front, then the snapshot will
-        * contain part of the other window, causing pixel corruption.
-        * The fix is to force all paints to be delivered before
-        * calling ImageList_DragEnter().
-        */
+		/*
+		* Feature in Windows. When ImageList_DragEnter() is called,
+		* it takes a snapshot of the screen  If a drag is started
+		* when another window is in front, then the snapshot will
+		* contain part of the other window, causing pixel corruption.
+		* The fix is to force all paints to be delivered before
+		* calling ImageList_DragEnter().
+		*/
 		int flags = OS.RDW_UPDATENOW | OS.RDW_ALLCHILDREN;
 		OS.RedrawWindow (topControl.handle, null, 0, flags);
 		POINT pt = new POINT ();

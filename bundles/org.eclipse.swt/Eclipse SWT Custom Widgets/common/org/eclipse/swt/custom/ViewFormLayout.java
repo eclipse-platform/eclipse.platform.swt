@@ -38,16 +38,16 @@ protected Point computeSize(Composite composite, int wHint, int hHint, boolean f
 	}
 	Point centerSize = new Point(0, 0);
 	if (center != null) {
-		 centerSize = computeChildSize(center, SWT.DEFAULT, SWT.DEFAULT, flushCache);
+		centerSize = computeChildSize(center, SWT.DEFAULT, SWT.DEFAULT, flushCache);
 	}
 	Point rightSize = new Point(0, 0);
 	if (right != null) {
-		 rightSize = computeChildSize(right, SWT.DEFAULT, SWT.DEFAULT, flushCache);
+		rightSize = computeChildSize(right, SWT.DEFAULT, SWT.DEFAULT, flushCache);
 	}
 	Point size = new Point(0, 0);
 	// calculate width of title bar
 	if (form.separateTopCenter ||
-	    (wHint != SWT.DEFAULT &&  leftSize.x + centerSize.x + rightSize.x > wHint)) {
+		(wHint != SWT.DEFAULT &&  leftSize.x + centerSize.x + rightSize.x > wHint)) {
 		size.x = leftSize.x + rightSize.x;
 		if (leftSize.x > 0 && rightSize.x > 0) size.x += form.horizontalSpacing;
 		size.x = Math.max(centerSize.x, size.x);
@@ -124,11 +124,11 @@ protected void layout(Composite composite, boolean flushCache) {
 	}
 	Point centerSize = new Point(0, 0);
 	if (center != null && !center.isDisposed()) {
-		 centerSize = computeChildSize(center, SWT.DEFAULT, SWT.DEFAULT, flushCache);
+		centerSize = computeChildSize(center, SWT.DEFAULT, SWT.DEFAULT, flushCache);
 	}
 	Point rightSize = new Point(0, 0);
 	if (right != null && !right.isDisposed()) {
-		 rightSize = computeChildSize(right, SWT.DEFAULT, SWT.DEFAULT, flushCache);
+		rightSize = computeChildSize(right, SWT.DEFAULT, SWT.DEFAULT, flushCache);
 	}
 
 	int minTopWidth = leftSize.x + centerSize.x + rightSize.x + 2*form.marginWidth + 2*form.highlight;
@@ -200,7 +200,7 @@ protected void layout(Composite composite, boolean flushCache) {
 			form.separator = y;
 			y++;
 		}
-		 content.setBounds(rect.x + form.marginWidth + form.highlight, y, rect.width - 2 * form.marginWidth - 2*form.highlight, rect.y + rect.height - y - form.marginHeight - form.highlight);
+		content.setBounds(rect.x + form.marginWidth + form.highlight, y, rect.width - 2 * form.marginWidth - 2*form.highlight, rect.y + rect.height - y - form.marginHeight - form.highlight);
 	}
 	if (oldSeperator != form.separator) {
 		int t, b;

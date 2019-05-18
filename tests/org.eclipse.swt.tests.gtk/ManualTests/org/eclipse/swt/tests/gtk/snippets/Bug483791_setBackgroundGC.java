@@ -33,42 +33,42 @@ import org.eclipse.swt.widgets.Shell;
  */
 public final class Bug483791_setBackgroundGC {
 
-    public static void main(String[] args) {
-        final Display display = new Display();
-        final Shell shell = new Shell(display);
-        shell.setLayout(new GridLayout());
+	public static void main(String[] args) {
+		final Display display = new Display();
+		final Shell shell = new Shell(display);
+		shell.setLayout(new GridLayout());
 
-        final Label l = new Label(shell, SWT.None);
-        l.setText("ASDQWE");
-        l.addPaintListener(arg0 -> arg0.gc.drawLine(0, 0, arg0.width, arg0.height));
+		final Label l = new Label(shell, SWT.None);
+		l.setText("ASDQWE");
+		l.addPaintListener(arg0 -> arg0.gc.drawLine(0, 0, arg0.width, arg0.height));
 
-        final Button b = new Button(shell, SWT.PUSH);
-        b.setText("CLICK");
-        b.addSelectionListener(new SelectionAdapter() {
+		final Button b = new Button(shell, SWT.PUSH);
+		b.setText("CLICK");
+		b.addSelectionListener(new SelectionAdapter() {
 
-            @Override
-            public void widgetSelected(SelectionEvent arg0) {
-                l.setBackground(display.getSystemColor(SWT.COLOR_CYAN));
-                // these don't help
-                /*
-                l.redraw();
-                l.update();
-                 */
-                MessageBox mb = new MessageBox(shell);
-                mb.setMessage("Background should not override GC drawing, but it does");
-                mb.open();
-            }
-        });
+			@Override
+			public void widgetSelected(SelectionEvent arg0) {
+				l.setBackground(display.getSystemColor(SWT.COLOR_CYAN));
+				// these don't help
+				/*
+				l.redraw();
+				l.update();
+				 */
+				MessageBox mb = new MessageBox(shell);
+				mb.setMessage("Background should not override GC drawing, but it does");
+				mb.open();
+			}
+		});
 
-        shell.open();
-        while (!shell.isDisposed()) {
-            if (!display.readAndDispatch()) {
-                display.sleep();
-            }
-        }
-        display.dispose();
-    }
+		shell.open();
+		while (!shell.isDisposed()) {
+			if (!display.readAndDispatch()) {
+				display.sleep();
+			}
+		}
+		display.dispose();
+	}
 
-    private Bug483791_setBackgroundGC() {
-    }
+	private Bug483791_setBackgroundGC() {
+	}
 }

@@ -75,8 +75,8 @@ class OleWebBrowser {
 	 * OleWebBrowser webBrowser = new OleWebBrowser(oleControlSite, oleAutomation);<br>
 	 * </code>
 	 * 
-     * @param oleAutomation the OleAutomation object for this control.
-     * @param oleControlSite the OleControlSite object for this control.
+	 * @param oleAutomation the OleAutomation object for this control.
+	 * @param oleControlSite the OleControlSite object for this control.
 	 */
 	public OleWebBrowser(OleAutomation oleAutomation) {
 		this.oleAutomation = oleAutomation;
@@ -98,7 +98,7 @@ class OleWebBrowser {
 	 *       this is of course the fastest way, but you increase coupling
 	 *       to the control.
 	 */
-	 
+	
 	/**
 	 * Returns the current web page title.
 	 * 

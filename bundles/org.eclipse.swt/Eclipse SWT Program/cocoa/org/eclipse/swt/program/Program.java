@@ -159,19 +159,19 @@ static Program getProgram(NSBundle bundle) {
 	NSString fullPath = bundle.bundlePath();
 	NSString identifier = bundle.bundleIdentifier();
 	id bundleName = bundle.objectForInfoDictionaryKey(CFBundleDisplayName);
-    if (bundleName == null) {
-        bundleName = bundle.objectForInfoDictionaryKey(CFBundleName);
-    }
-    if (bundleName == null) {
-       if (fullPath == null) return null;
-       bundleName = fullPath.lastPathComponent().stringByDeletingPathExtension();
-    }
-    NSString name = new NSString(bundleName.id);
-    Program program = new Program();
-    program.name = name.getString();
-    if (fullPath != null) program.fullPath = fullPath.getString();
-    program.identifier = identifier != null ? identifier.getString() : "";
-    return program;
+	if (bundleName == null) {
+		bundleName = bundle.objectForInfoDictionaryKey(CFBundleName);
+	}
+	if (bundleName == null) {
+		if (fullPath == null) return null;
+		bundleName = fullPath.lastPathComponent().stringByDeletingPathExtension();
+	}
+	NSString name = new NSString(bundleName.id);
+	Program program = new Program();
+	program.name = name.getString();
+	if (fullPath != null) program.fullPath = fullPath.getString();
+	program.identifier = identifier != null ? identifier.getString() : "";
+	return program;
 }
 
 /**

@@ -833,9 +833,9 @@ boolean setEventData(NSObject draggingState, DNDEvent event) {
 	int operation = getOperationFromKeyState();
 	keyOperation = operation;
 	if (operation == DND.DROP_DEFAULT) {
-		 if ((style & DND.DROP_DEFAULT) == 0) {
+		if ((style & DND.DROP_DEFAULT) == 0) {
 			operation = (operations & DND.DROP_MOVE) != 0 ? DND.DROP_MOVE : DND.DROP_NONE;
-		 }
+		}
 	} else {
 		if ((operation & operations) == 0) operation = DND.DROP_NONE;
 	}

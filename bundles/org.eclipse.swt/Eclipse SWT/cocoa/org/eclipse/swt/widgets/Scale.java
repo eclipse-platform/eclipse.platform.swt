@@ -216,7 +216,7 @@ public int getMinimum () {
  */
 public int getPageIncrement () {
 	checkWidget();
-    return pageIncrement;
+	return pageIncrement;
 }
 
 /**
@@ -231,7 +231,7 @@ public int getPageIncrement () {
  */
 public int getSelection () {
 	checkWidget();
-    return (int)((NSSlider)view).doubleValue();
+	return (int)((NSSlider)view).doubleValue();
 }
 
 @Override

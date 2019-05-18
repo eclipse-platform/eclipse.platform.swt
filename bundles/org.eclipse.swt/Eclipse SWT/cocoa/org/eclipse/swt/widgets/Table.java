@@ -2084,7 +2084,7 @@ void mouseDownSuper(long id, long sel, long theEvent) {
 			NSRect checkRect = cell.imageRectForBounds(widget.frameOfCellAtColumn(column, row));
 			if (OS.NSPointInRect(pt, checkRect)) {
 				check = preventSelect = true;
-		    }
+			}
 		}
 	}
 	if (!check && row != -1 && (nsEvent.modifierFlags() & OS.NSDeviceIndependentModifierFlagsMask) == 0 && nsEvent.clickCount() == 1) {
@@ -2796,7 +2796,7 @@ public void setRedraw (boolean redraw) {
 	checkWidget ();
 	super.setRedraw (redraw);
 	if (redraw && drawCount == 0) {
-	 	/* Resize the item array to match the item count */
+		/* Resize the item array to match the item count */
 		if (items.length > 4 && items.length - itemCount > 3) {
 			int length = Math.max (4, (itemCount + 3) / 4 * 4);
 			TableItem [] newItems = new TableItem [length];

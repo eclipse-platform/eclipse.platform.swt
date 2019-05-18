@@ -68,25 +68,25 @@ public class MacGeneratorUI {
 	}
 	
 	void checkPath(TreeItem item, boolean checked, boolean grayed) {
-	    if (item == null) return;
-	    if (grayed) {
-	        checked = true;
-	    } else {
-	        int index = 0;
-	        TreeItem[] items = item.getItems();
-	        while (index < items.length) {
-	            TreeItem child = items[index];
-	            if (child.getGrayed() || checked != child.getChecked()) {
-	                checked = grayed = true;
-	                break;
-	            }
-	            index++;
-	        }
-	    }
-	    item.setChecked(checked);
-	    item.setGrayed(grayed);
-	    updateGenAttribute(item);
-	    checkPath(item.getParentItem(), checked, grayed);
+		if (item == null) return;
+		if (grayed) {
+			checked = true;
+		} else {
+			int index = 0;
+			TreeItem[] items = item.getItems();
+			while (index < items.length) {
+				TreeItem child = items[index];
+				if (child.getGrayed() || checked != child.getChecked()) {
+					checked = grayed = true;
+					break;
+				}
+				index++;
+			}
+		}
+		item.setChecked(checked);
+		item.setGrayed(grayed);
+		updateGenAttribute(item);
+		checkPath(item.getParentItem(), checked, grayed);
 	}
 	
 	void checkItem(Node node, TreeItem item) {
@@ -139,22 +139,22 @@ public class MacGeneratorUI {
 	}
 	
 	void checkItems(TreeItem item, boolean checked) {
-	    item.setGrayed(false);
-	    item.setChecked(checked);
-	    updateGenAttribute(item);
-	    TreeItem[] items = item.getItems();
-	    if (items.length == 1 && items[0].getData() == null) {
-	    	/* Update model only if view is not created */
+		item.setGrayed(false);
+		item.setChecked(checked);
+		updateGenAttribute(item);
+		TreeItem[] items = item.getItems();
+		if (items.length == 1 && items[0].getData() == null) {
+			/* Update model only if view is not created */
 			Node node = (Node)item.getData();
 			NodeList childNodes = node.getChildNodes();
 			for (int i = 0, length = childNodes.getLength(); i < length; i++) {
 				checkNodes(childNodes.item(i), checked);
 			}
-	    } else {
-		    for (int i = 0; i < items.length; i++) {
-		        checkItems(items[i], checked);
-		    }
-	    }
+		} else {
+			for (int i = 0; i < items.length; i++) {
+				checkItems(items[i], checked);
+			}
+		}
 	}
 	
 	void checkNodes(Node node, boolean checked) {
@@ -209,9 +209,9 @@ public class MacGeneratorUI {
 			}
 			boolean checked = item.getChecked();
 			item.getParent().setRedraw(false);
-		    checkItems(item, checked);
-		    checkPath(item.getParentItem(), checked, false);
-		    item.getParent().setRedraw(true);
+			checkItems(item, checked);
+			checkPath(item.getParentItem(), checked, false);
+			item.getParent().setRedraw(true);
 		});
 		nodesTree.addListener(SWT.Expand, event -> checkChildren((TreeItem)event.item));
 		
@@ -403,8 +403,8 @@ public class MacGeneratorUI {
 		}
 		Document[] documents = gen.getDocuments();
 		if (node == null && documents.length > 0) {
-	        int index = 0;
-		    while (index < documents.length && (node = documents[index]) == null) index++;
+			int index = 0;
+			while (index < documents.length && (node = documents[index]) == null) index++;
 		}
 		if (flatNodes == null) {
 			flatNodes = new ArrayList<>();
@@ -564,10 +564,10 @@ public class MacGeneratorUI {
 		gen.setXmls(null);
 		flatNodes = null;
 		nodesTree.getDisplay().asyncExec(() -> {
-			 if (nodesTree == null || nodesTree.isDisposed()) return;
-			 nodesTree.removeAll();
-			 attribTable.removeAll();
-			 updateNodes();
+			if (nodesTree == null || nodesTree.isDisposed()) return;
+			nodesTree.removeAll();
+			attribTable.removeAll();
+			updateNodes();
 		});
 	}
 	

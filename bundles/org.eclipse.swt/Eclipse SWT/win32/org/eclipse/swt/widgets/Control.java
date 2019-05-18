@@ -1046,7 +1046,7 @@ char findMnemonic (String string) {
 		if (string.charAt (index) != '&') return string.charAt (index);
 		index++;
 	} while (index < length);
- 	return '\0';
+	return '\0';
 }
 
 void fixChildren (Shell newShell, Shell oldShell, Decorations newDecorations, Decorations oldDecorations, Menu [] menus) {
@@ -3046,7 +3046,7 @@ boolean sendGestureEvent (GESTUREINFO gi) {
 			break;
 	}
 
-    if (type == 0) return true;
+	if (type == 0) return true;
 	setInputState (event, type);
 	sendEvent (type, event);
 	return event.doit;
@@ -3968,13 +3968,13 @@ void sort (int [] items) {
 	for (int gap=length/2; gap>0; gap/=2) {
 		for (int i=gap; i<length; i++) {
 			for (int j=i-gap; j>=0; j-=gap) {
-		   		if (items [j] <= items [j + gap]) {
+				if (items [j] <= items [j + gap]) {
 					int swap = items [j];
 					items [j] = items [j + gap];
 					items [j + gap] = swap;
-		   		}
-	    	}
-	    }
+				}
+			}
+		}
 	}
 }
 
@@ -5394,7 +5394,7 @@ LRESULT WM_RBUTTONUP (long /*int*/ wParam, long /*int*/ lParam) {
 
 LRESULT WM_SETCURSOR (long /*int*/ wParam, long /*int*/ lParam) {
 	int hitTest = (short) OS.LOWORD (lParam);
- 	if (hitTest == OS.HTCLIENT) {
+	if (hitTest == OS.HTCLIENT) {
 		Control control = display.getControl (wParam);
 		if (control == null) return null;
 		Cursor cursor = control.findCursor ();

@@ -26,24 +26,24 @@ import org.eclipse.swt.widgets.TreeItem;
 
 public class Bug483112_TreeColumnsTest {
 	public static void main (String [] args) {
-		 Display display = Display.getDefault();
-		    Shell shell = new Shell(display);
-		    shell.setLayout(new FillLayout());
+		Display display = Display.getDefault();
+			Shell shell = new Shell(display);
+			shell.setLayout(new FillLayout());
 
-		    Tree tree = new Tree(shell, SWT.NONE);
-		    tree.setHeaderVisible(true);        
+			Tree tree = new Tree(shell, SWT.NONE);
+			tree.setHeaderVisible(true);        
 
-		    TreeColumn column1 = new TreeColumn(tree, SWT.LEFT);
-		    column1.setText("Column 1");
-		    column1.setWidth(50);
-		    TreeColumn column2 = new TreeColumn(tree, SWT.LEFT);
-		    column2.setText("Column 2");
-		    column2.setWidth(50);
-		    TreeColumn column3 = new TreeColumn(tree, SWT.LEFT);
-		    column3.setText("Column 3");
-		    column3.setWidth(50);
+			TreeColumn column1 = new TreeColumn(tree, SWT.LEFT);
+			column1.setText("Column 1");
+			column1.setWidth(50);
+			TreeColumn column2 = new TreeColumn(tree, SWT.LEFT);
+			column2.setText("Column 2");
+			column2.setWidth(50);
+			TreeColumn column3 = new TreeColumn(tree, SWT.LEFT);
+			column3.setText("Column 3");
+			column3.setWidth(50);
 
-		    int W = 100, H = 100;
+			int W = 100, H = 100;
 			final Image xImage = new Image (display, W, H);
 			GC gc = new GC(xImage);
 			gc.setForeground(display.getSystemColor(SWT.COLOR_RED));
@@ -62,24 +62,24 @@ public class Bug483112_TreeColumnsTest {
 			gcz.dispose();
 			
 
-		    TreeItem item = new TreeItem(tree, SWT.NONE);
-		    System.out.println("Image dimensions and size of column renderers is " + xImage.getBounds());
-		    item.setImage(0, xImage);
-		    item.setImage(1, xImage);
-		    item.setImage(2, zImage);
-		    item.setText(2, "Test");
-		    System.out.println("column 0 getImageBounds() is " + item.getImageBounds(0));
-		    System.out.println("column 1 getImageBounds() is " + item.getImageBounds(1));
-		    System.out.println("column 2 getImageBounds() is " + item.getImageBounds(2));
-		    
-		    shell.pack();
-		    shell.open();
+			TreeItem item = new TreeItem(tree, SWT.NONE);
+			System.out.println("Image dimensions and size of column renderers is " + xImage.getBounds());
+			item.setImage(0, xImage);
+			item.setImage(1, xImage);
+			item.setImage(2, zImage);
+			item.setText(2, "Test");
+			System.out.println("column 0 getImageBounds() is " + item.getImageBounds(0));
+			System.out.println("column 1 getImageBounds() is " + item.getImageBounds(1));
+			System.out.println("column 2 getImageBounds() is " + item.getImageBounds(2));
+			
+			shell.pack();
+			shell.open();
 
-		    while(!shell.isDisposed())
-		    {
-		        if(!display.readAndDispatch())
-		            display.sleep();
-		    }
+			while(!shell.isDisposed())
+			{
+				if(!display.readAndDispatch())
+					display.sleep();
+			}
 	}
 
 }

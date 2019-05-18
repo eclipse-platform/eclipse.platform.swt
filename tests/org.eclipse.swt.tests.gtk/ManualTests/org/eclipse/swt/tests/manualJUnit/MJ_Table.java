@@ -328,23 +328,23 @@ public class MJ_Table extends MJ_root {
 		shell.setSize(SWIDTH, SHEIGHT);
 		shell.setLayout(new FillLayout());
 
-	    final Table tt = new Table(shell, SWT.FULL_SELECTION | SWT.MULTI | SWT.VIRTUAL);
-	    tt.setLinesVisible(true);
-	    tt.setHeaderVisible(true);
+		final Table tt = new Table(shell, SWT.FULL_SELECTION | SWT.MULTI | SWT.VIRTUAL);
+		tt.setLinesVisible(true);
+		tt.setHeaderVisible(true);
 
-	    for (int i = 0; i < 10; i++) {
-	      TableColumn tc = new TableColumn(tt, SWT.NONE);
-	      tc.setWidth(100);
-	      System.out.println(tc.getWidth());
-	      tc.setWidth(tc.getWidth());
-	      tc.setText("Column " + i);
-	    }
+		for (int i = 0; i < 10; i++) {
+			TableColumn tc = new TableColumn(tt, SWT.NONE);
+			tc.setWidth(100);
+			System.out.println(tc.getWidth());
+			tc.setWidth(tc.getWidth());
+			tc.setText("Column " + i);
+		}
 
-	    for (int i = 0; i < 100; i++) {
-	      new TableItem(tt, SWT.NONE);
-	    }
+		for (int i = 0; i < 100; i++) {
+			new TableItem(tt, SWT.NONE);
+		}
 
-	    shell.open();
+		shell.open();
 		mainLoop(shell);
 	}
 
@@ -357,74 +357,74 @@ public class MJ_Table extends MJ_root {
 		Shell shell = mkShell("column SetGet Width : Make shell smaller and bigger. If you don't see COL_SIZE_ERROR in console, all is well.");
 		shell.setSize(SWIDTH, SHEIGHT);
 		shell.setLayout(new FillLayout());
-	      StringBuffer sbBuffer = new StringBuffer();
+		StringBuffer sbBuffer = new StringBuffer();
 
-	      final Composite comp = new Composite(shell, SWT.NONE);
-	      final Table table = new Table(comp, SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL | SWT.SINGLE | SWT.FULL_SELECTION);
-	      table.setHeaderVisible(true);
-	      table.setLinesVisible(true);
-	      final TableColumn column1 = new TableColumn(table, SWT.NONE);
-	      column1.setText("Column 1");
-	      column1.setResizable(false);
-	      final TableColumn column2 = new TableColumn(table, SWT.NONE);
-	      column2.setText("Column 2");
-	      column2.setResizable(false);
-	      for (int i = 0; i < 60; i++) {
-	         TableItem item = new TableItem(table, SWT.NONE);
-	         sbBuffer.append("M");
-	         item.setText(new String[] { "item 0 " + sbBuffer.toString() + " " + i, "item 1 " + i });
-	      }
+		final Composite comp = new Composite(shell, SWT.NONE);
+		final Table table = new Table(comp, SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL | SWT.SINGLE | SWT.FULL_SELECTION);
+		table.setHeaderVisible(true);
+		table.setLinesVisible(true);
+		final TableColumn column1 = new TableColumn(table, SWT.NONE);
+		column1.setText("Column 1");
+		column1.setResizable(false);
+		final TableColumn column2 = new TableColumn(table, SWT.NONE);
+		column2.setText("Column 2");
+		column2.setResizable(false);
+		for (int i = 0; i < 60; i++) {
+			TableItem item = new TableItem(table, SWT.NONE);
+			sbBuffer.append("M");
+			item.setText(new String[] { "item 0 " + sbBuffer.toString() + " " + i, "item 1 " + i });
+		}
 
-	      Consumer<Integer> setColumnWidths = (width) -> {
-	    	  int c1w = (int)(width * 0.9);
-	          column1.setWidth(c1w);
-	          int c1wPost = column1.getWidth();
-	          if (c1w != c1wPost)
-	       	   System.err.println("COL_SIZE_ERROR 1 Expected:" + c1w + " actual:" + c1wPost);
+		Consumer<Integer> setColumnWidths = (width) -> {
+			int c1w = (int)(width * 0.9);
+			column1.setWidth(c1w);
+			int c1wPost = column1.getWidth();
+			if (c1w != c1wPost)
+				System.err.println("COL_SIZE_ERROR 1 Expected:" + c1w + " actual:" + c1wPost);
 
-	          int c2w = width - column1.getWidth();
-	          column2.setWidth(c2w);
-	          int c2wPost = column2.getWidth();
-	          if (c2w != c2wPost)
-	               System.err.println("COL_SIZE_ERROR 2 Expected:" + c2w + " actual:" + column2.getWidth());
-	      };
+			int c2w = width - column1.getWidth();
+			column2.setWidth(c2w);
+			int c2wPost = column2.getWidth();
+			if (c2w != c2wPost)
+				System.err.println("COL_SIZE_ERROR 2 Expected:" + c2w + " actual:" + column2.getWidth());
+		};
 
-	      comp.addControlListener(new ControlAdapter()
-	      {
-	         @Override
+		comp.addControlListener(new ControlAdapter()
+		{
+			@Override
 			public void controlResized(ControlEvent e)
-	         {
-	            Rectangle area = table.getParent().getClientArea();
-	            Point preferredSize = table.computeSize(SWT.DEFAULT, SWT.DEFAULT);
-	            int width = area.width - 2 * table.getBorderWidth();
-	            if (preferredSize.y > area.height)
-	            {
-	               // Subtract the scrollbar width from the total column width
-	               // if a vertical scrollbar will be required
-	               Point vBarSize = table.getVerticalBar().getSize();
-	               width -= vBarSize.x;
-	            }
-	            Point oldSize = table.getSize();
-	            if (oldSize.x > area.width)
-	            {
-	               // table is getting smaller so make the columns
-	               // smaller first and then resize the table to
-	               // match the client area width
-	               setColumnWidths.accept(width);
-	               table.setSize(area.width, area.height);
-	            }
-	            else
-	            {
-	               // table is getting bigger so make the table
-	               // bigger first and then make the columns wider
-	               // to match the client area width
-	               table.setSize(area.width, area.height);
-	               setColumnWidths.accept(width);
-	            }
-	         }
-	      });
-	      shell.open();
-	      mainLoop(shell);
+			{
+				Rectangle area = table.getParent().getClientArea();
+				Point preferredSize = table.computeSize(SWT.DEFAULT, SWT.DEFAULT);
+				int width = area.width - 2 * table.getBorderWidth();
+				if (preferredSize.y > area.height)
+				{
+					// Subtract the scrollbar width from the total column width
+					// if a vertical scrollbar will be required
+					Point vBarSize = table.getVerticalBar().getSize();
+					width -= vBarSize.x;
+				}
+				Point oldSize = table.getSize();
+				if (oldSize.x > area.width)
+				{
+					// table is getting smaller so make the columns
+					// smaller first and then resize the table to
+					// match the client area width
+					setColumnWidths.accept(width);
+					table.setSize(area.width, area.height);
+				}
+				else
+				{
+					// table is getting bigger so make the table
+					// bigger first and then make the columns wider
+					// to match the client area width
+					table.setSize(area.width, area.height);
+					setColumnWidths.accept(width);
+				}
+			}
+		});
+		shell.open();
+		mainLoop(shell);
 	}
 
 	@Test
@@ -515,8 +515,8 @@ public class MJ_Table extends MJ_root {
 		column2.setWidth(200);
 		String[] labels = new String[]{"Resolved", "New", "Won't Fix", "Invalid"};
 		for (int i=0; i<labels.length; i++) {
-			 TableItem item = new TableItem(table, SWT.NONE);
-			 item.setText(labels[i]);
+			TableItem item = new TableItem(table, SWT.NONE);
+			item.setText(labels[i]);
 		}
 
 		/*
@@ -1049,51 +1049,51 @@ public class MJ_Table extends MJ_root {
 
 	@Test
 	public void sort_by_column_Snippet2() {
-	    Shell shell = mkShell("Click on columns to verify items are sorted properly");
-	    shell.setLayout(new FillLayout());
+		Shell shell = mkShell("Click on columns to verify items are sorted properly");
+		shell.setLayout(new FillLayout());
 
-	    final Table table = new Table(shell, SWT.BORDER);
-	    table.setHeaderVisible(true);
-	    final TableColumn column1 = new TableColumn(table, SWT.NONE);
-	    column1.setText("Column 1");
-	    final TableColumn column2 = new TableColumn(table, SWT.NONE);
-	    column2.setText("Column 2");
-	    TableItem item = new TableItem(table, SWT.NONE);
-	    item.setText(new String[] {"a", "3"});
-	    item = new TableItem(table, SWT.NONE);
-	    item.setText(new String[] {"b", "2"});
-	    item = new TableItem(table, SWT.NONE);
-	    item.setText(new String[] {"c", "1"});
-	    column1.setWidth(100);
-	    column2.setWidth(100);
-	    Listener sortListener = e -> {
-		    TableItem[] items = table.getItems();
-		    Collator collator = Collator.getInstance(Locale.getDefault());
-		    TableColumn column = (TableColumn)e.widget;
-		    int index = column == column1 ? 0 : 1;
-		    for (int i = 1; i < items.length; i++) {
-		        String value1 = items[i].getText(index);
-		        for (int j = 0; j < i; j++){
-		            String value2 = items[j].getText(index);
-		            if (collator.compare(value1, value2) < 0) {
-		                String[] values = {items[i].getText(0), items[i].getText(1)};
-		                items[i].dispose();
-		                TableItem item1 = new TableItem(table, SWT.NONE, j);
-		                item1.setText(values);
-		                items = table.getItems();
-		                break;
-		            }
-		        }
-		    }
-		    table.setSortColumn(column);
+		final Table table = new Table(shell, SWT.BORDER);
+		table.setHeaderVisible(true);
+		final TableColumn column1 = new TableColumn(table, SWT.NONE);
+		column1.setText("Column 1");
+		final TableColumn column2 = new TableColumn(table, SWT.NONE);
+		column2.setText("Column 2");
+		TableItem item = new TableItem(table, SWT.NONE);
+		item.setText(new String[] {"a", "3"});
+		item = new TableItem(table, SWT.NONE);
+		item.setText(new String[] {"b", "2"});
+		item = new TableItem(table, SWT.NONE);
+		item.setText(new String[] {"c", "1"});
+		column1.setWidth(100);
+		column2.setWidth(100);
+		Listener sortListener = e -> {
+			TableItem[] items = table.getItems();
+			Collator collator = Collator.getInstance(Locale.getDefault());
+			TableColumn column = (TableColumn)e.widget;
+			int index = column == column1 ? 0 : 1;
+			for (int i = 1; i < items.length; i++) {
+				String value1 = items[i].getText(index);
+				for (int j = 0; j < i; j++){
+					String value2 = items[j].getText(index);
+					if (collator.compare(value1, value2) < 0) {
+						String[] values = {items[i].getText(0), items[i].getText(1)};
+						items[i].dispose();
+						TableItem item1 = new TableItem(table, SWT.NONE, j);
+						item1.setText(values);
+						items = table.getItems();
+						break;
+					}
+				}
+			}
+			table.setSortColumn(column);
 		};
-	    column1.addListener(SWT.Selection, sortListener);
-	    column2.addListener(SWT.Selection, sortListener);
-	    table.setSortColumn(column1);
-	    table.setSortDirection(SWT.UP);
-	    shell.setSize(SWIDTH, SHEIGHT);
-	    shell.open();
-	    mainLoop(shell);
+		column1.addListener(SWT.Selection, sortListener);
+		column2.addListener(SWT.Selection, sortListener);
+		table.setSortColumn(column1);
+		table.setSortDirection(SWT.UP);
+		shell.setSize(SWIDTH, SHEIGHT);
+		shell.open();
+		mainLoop(shell);
 	}
 
 	@Test

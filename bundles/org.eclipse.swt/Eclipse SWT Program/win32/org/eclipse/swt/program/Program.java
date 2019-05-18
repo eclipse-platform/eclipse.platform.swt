@@ -252,7 +252,7 @@ public static Program [] getPrograms () {
  * </ul>
  */
 public static boolean launch (String fileName) {
-    return launch(fileName, null);
+	return launch(fileName, null);
 }
 
 /**
@@ -286,10 +286,10 @@ public static boolean launch (String fileName, String workingDir) {
 
 	long /*int*/ lpDirectory = 0;
 	if (workingDir != null && OS.PathIsExe(lpFile)) {
-	    TCHAR buffer1 = new TCHAR (0, workingDir, true);
-	    byteCount = buffer1.length () * TCHAR.sizeof;
-	    lpDirectory = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
-	    OS.MoveMemory (lpDirectory, buffer1, byteCount);
+		TCHAR buffer1 = new TCHAR (0, workingDir, true);
+		byteCount = buffer1.length () * TCHAR.sizeof;
+		lpDirectory = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
+		OS.MoveMemory (lpDirectory, buffer1, byteCount);
 	}
 
 	SHELLEXECUTEINFO info = new SHELLEXECUTEINFO ();

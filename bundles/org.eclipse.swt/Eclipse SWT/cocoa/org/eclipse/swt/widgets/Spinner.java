@@ -364,7 +364,7 @@ void drawInteriorWithFrame_inView(long id, long sel, NSRect cellFrame, long view
 	Image image = control.backgroundImage;
 	if (image != null && !image.isDisposed()) {
 		NSGraphicsContext context = NSGraphicsContext.currentContext();
- 	 	control.fillBackground (view, context, cellFrame, -1);
+		control.fillBackground (view, context, cellFrame, -1);
 	}
 	super.drawInteriorWithFrame_inView(id, sel, cellFrame, viewid);
 }
@@ -551,7 +551,7 @@ public String getText () {
  */
 public int getTextLimit () {
 	checkWidget();
-    return textLimit;
+	return textLimit;
 }
 
 @Override
@@ -725,39 +725,39 @@ boolean sendKeyEvent (NSEvent nsEvent, int type) {
 			return true;
 		}
 
-	    case 116: delta = pageIncrement; break; /* Page Up */
-	    case 121: delta = -pageIncrement; break; /* Page Down */
-	    case 125: delta = -getIncrement(); break; /* Down arrow */
-	    case 126: delta = getIncrement(); break; /* Up arrow */
-    }
+		case 116: delta = pageIncrement; break; /* Page Up */
+		case 121: delta = -pageIncrement; break; /* Page Down */
+		case 125: delta = -getIncrement(); break; /* Down arrow */
+		case 126: delta = getIncrement(); break; /* Up arrow */
+	}
 
-    if (delta != 0) {
-    	boolean [] parseFail = new boolean [1];
-    	int value = getSelectionText (parseFail);
-    	if (parseFail [0]) {
-    		value = (int)buttonView.doubleValue();
-    	}
-    	int newValue = value + delta;
-    	int max = (int)buttonView.maxValue();
-    	int min = (int)buttonView.minValue();
-    	if ((style & SWT.WRAP) != 0) {
-    		if (newValue > max) newValue = min;
-    		if (newValue < min) newValue = max;
-    	}
-    	newValue = Math.min (Math.max (min, newValue), max);
-    	if (value != newValue) setSelection (newValue, true, true, true);
-    	// Prevent the arrow or page up/down from being handled by the text field.
-    	result = false;
-    } else {
-    	boolean [] parseFail = new boolean [1];
-    	int value = getSelectionText (parseFail);
-    	if (!parseFail [0]) {
-    		int pos = (int)buttonView.doubleValue();
-    		if (pos != value) setSelection (value, true, false, true);
-    	}
-    }
+	if (delta != 0) {
+		boolean [] parseFail = new boolean [1];
+		int value = getSelectionText (parseFail);
+		if (parseFail [0]) {
+			value = (int)buttonView.doubleValue();
+		}
+		int newValue = value + delta;
+		int max = (int)buttonView.maxValue();
+		int min = (int)buttonView.minValue();
+		if ((style & SWT.WRAP) != 0) {
+			if (newValue > max) newValue = min;
+			if (newValue < min) newValue = max;
+		}
+		newValue = Math.min (Math.max (min, newValue), max);
+		if (value != newValue) setSelection (newValue, true, true, true);
+		// Prevent the arrow or page up/down from being handled by the text field.
+		result = false;
+	} else {
+		boolean [] parseFail = new boolean [1];
+		int value = getSelectionText (parseFail);
+		if (!parseFail [0]) {
+			int pos = (int)buttonView.doubleValue();
+			if (pos != value) setSelection (value, true, false, true);
+		}
+	}
 
-    return result;
+	return result;
 }
 
 @Override

@@ -640,7 +640,7 @@ char _findMnemonic (String string) {
 		if (string.charAt (index) != '&') return Character.toLowerCase (string.charAt (index));
 		index++;
 	} while (index < length);
- 	return '\0';
+	return '\0';
 }
 /*
  * Return the Label immediately preceding the receiver in the z-order,
@@ -1098,7 +1098,7 @@ public boolean isFocusControl () {
 	checkWidget();
 	Predicate<Control> checkFocusControl = (control) -> (control != null && !control.isDisposed() && control.isFocusControl ());
 	if (checkFocusControl.test(text) || checkFocusControl.test(arrow) ||
-            checkFocusControl.test(list) || checkFocusControl.test(popup)) {
+			checkFocusControl.test(list) || checkFocusControl.test(popup)) {
 		return true;
 	}
 	return super.isFocusControl ();
@@ -1732,7 +1732,7 @@ String stripMnemonic (String string) {
 		}
 		index++;
 	} while (index < length);
- 	return string;
+	return string;
 }
 void textEvent (Event event) {
 	switch (event.type) {
@@ -1939,15 +1939,15 @@ void textEvent (Event event) {
 }
 @Override
 public boolean traverse(int event){
-    /*
-     * When the traverse event is sent to the CCombo, it will create a list of
-     * controls to tab to next. Since the CCombo is a composite, the next control is
-     * the Text field which is a child of the CCombo. It will set focus to the text
-     * field which really is itself. So, call the traverse next events directly on the text.
-     */
-    if (event == SWT.TRAVERSE_ARROW_NEXT || event == SWT.TRAVERSE_TAB_NEXT) {
-    	return text.traverse(event);
-    }
-    return super.traverse(event);
+	/*
+	 * When the traverse event is sent to the CCombo, it will create a list of
+	 * controls to tab to next. Since the CCombo is a composite, the next control is
+	 * the Text field which is a child of the CCombo. It will set focus to the text
+	 * field which really is itself. So, call the traverse next events directly on the text.
+	 */
+	if (event == SWT.TRAVERSE_ARROW_NEXT || event == SWT.TRAVERSE_TAB_NEXT) {
+		return text.traverse(event);
+	}
+	return super.traverse(event);
 }
 }

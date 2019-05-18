@@ -336,10 +336,10 @@ public class OleBrowserView extends ViewPart {
 			
 			switch (commandID) {
 				case OleWebBrowser.CSC_NAVIGATEBACK:
-				 	webCommandBackward.setEnabled(commandEnabled);
-				 	break;
+					webCommandBackward.setEnabled(commandEnabled);
+					break;
 				case OleWebBrowser.CSC_NAVIGATEFORWARD:
-				 	webCommandForward.setEnabled(commandEnabled);
+					webCommandForward.setEnabled(commandEnabled);
 					break;
 			}
 		});

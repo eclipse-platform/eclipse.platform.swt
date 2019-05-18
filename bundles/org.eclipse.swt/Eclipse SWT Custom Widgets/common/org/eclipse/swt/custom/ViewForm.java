@@ -49,29 +49,29 @@ public class ViewForm extends Composite {
 	 *
 	 * The default value is 0.
 	 */
- 	public int marginWidth = 0;
+	public int marginWidth = 0;
 	/**
 	 * marginHeight specifies the number of points of vertical margin
 	 * that will be placed along the top and bottom edges of the form.
 	 *
 	 * The default value is 0.
 	 */
- 	public int marginHeight = 0;
- 	/**
+	public int marginHeight = 0;
+	/**
 	 * horizontalSpacing specifies the number of points between the right
 	 * edge of one cell and the left edge of its neighbouring cell to
 	 * the right.
 	 *
 	 * The default value is 1.
 	 */
- 	public int horizontalSpacing = 1;
+	public int horizontalSpacing = 1;
 	/**
 	 * verticalSpacing specifies the number of points between the bottom
 	 * edge of one cell and the top edge of its neighbouring cell underneath.
 	 *
 	 * The default value is 1.
 	 */
- 	public int verticalSpacing = 1;
+	public int verticalSpacing = 1;
 
 	/**
 	 * Color of innermost line of drop shadow border.
@@ -288,7 +288,7 @@ void onPaint(GC gc) {
 			int x2 = size.x - 1;
 			int y2 = size.y - 1;
 			int[] shape = new int[] {x1,y1, x2,y1, x2,y2, x1,y2, x1,y1+highlight,
-					           x1+highlight,y1+highlight, x1+highlight,y2-highlight,
+							   x1+highlight,y1+highlight, x1+highlight,y2-highlight,
 							   x2-highlight,y2-highlight, x2-highlight,y1+highlight, x1,y1+highlight};
 			Color highlightColor = getDisplay().getSystemColor(SWT.COLOR_LIST_SELECTION);
 			gc.setBackground(highlightColor);

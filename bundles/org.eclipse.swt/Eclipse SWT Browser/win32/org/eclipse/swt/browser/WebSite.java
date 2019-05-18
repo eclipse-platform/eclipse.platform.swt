@@ -250,11 +250,11 @@ protected int QueryInterface(long /*int*/ riid, long /*int*/ ppvObject) {
 		AddRef();
 		return COM.S_OK;
 	}
-    if (COM.IsEqualGUID(guid, COM.IIDIInternetSecurityManager)) {
-        OS.MoveMemory(ppvObject, new long /*int*/[] {iInternetSecurityManager.getAddress()}, C.PTR_SIZEOF);
-        AddRef();
-        return COM.S_OK;
-    }
+	if (COM.IsEqualGUID(guid, COM.IIDIInternetSecurityManager)) {
+		OS.MoveMemory(ppvObject, new long /*int*/[] {iInternetSecurityManager.getAddress()}, C.PTR_SIZEOF);
+		AddRef();
+		return COM.S_OK;
+	}
 	if (COM.IsEqualGUID(guid, COM.IIDIOleCommandTarget)) {
 		OS.MoveMemory(ppvObject, new long /*int*/[] {iOleCommandTarget.getAddress()}, C.PTR_SIZEOF);
 		AddRef();
@@ -579,11 +579,11 @@ int ProcessUrlAction(long /*int*/ pwszUrl, int dwAction, long /*int*/ pPolicy, i
 	* override default zone elevation settings to allow the action.
 	*/
 	if (dwAction == IE.URLACTION_FEATURE_ZONE_ELEVATION) {
-	    IE ie = (IE)((Browser)getParent().getParent()).webBrowser;
-	    if (ie.auto != null && ie._getUrl().startsWith(IE.ABOUT_BLANK) && !ie.untrustedText) {
+		IE ie = (IE)((Browser)getParent().getParent()).webBrowser;
+		if (ie.auto != null && ie._getUrl().startsWith(IE.ABOUT_BLANK) && !ie.untrustedText) {
 			if (cbPolicy >= 4) OS.MoveMemory(pPolicy, new int[] {IE.URLPOLICY_ALLOW}, 4);
 			return COM.S_OK;
-	    }
+		}
 	}
 
 	int policy = IE.INET_E_DEFAULT_ACTION;
@@ -741,25 +741,25 @@ int GetTypeInfo (int iTInfo, int lcid, long /*int*/ ppTInfo) {
 }
 
 int GetIDsOfNames (int riid, long /*int*/ rgszNames, int cNames, int lcid, long /*int*/ rgDispId) {
-    long /*int*/[] ptr = new long /*int*/[1];
-    OS.MoveMemory (ptr, rgszNames, C.PTR_SIZEOF);
-    int length = OS.wcslen (ptr[0]);
-    char[] buffer = new char[length];
-    OS.MoveMemory (buffer, ptr[0], length * 2);
-    String functionName = String.valueOf (buffer);
-    int result = COM.S_OK;
-    int[] ids = new int[cNames];	/* DISPIDs */
-    if (functionName.equals ("callJava")) { //$NON-NLS-1$
-	    for (int i = 0; i < cNames; i++) {
-	        ids[i] = i + 1;
-	    }
-    } else {
-    	result = COM.DISP_E_UNKNOWNNAME;
-	    for (int i = 0; i < cNames; i++) {
-	        ids[i] = COM.DISPID_UNKNOWN;
-	    }
-    }
-    OS.MoveMemory (rgDispId, ids, cNames * 4);
+	long /*int*/[] ptr = new long /*int*/[1];
+	OS.MoveMemory (ptr, rgszNames, C.PTR_SIZEOF);
+	int length = OS.wcslen (ptr[0]);
+	char[] buffer = new char[length];
+	OS.MoveMemory (buffer, ptr[0], length * 2);
+	String functionName = String.valueOf (buffer);
+	int result = COM.S_OK;
+	int[] ids = new int[cNames];	/* DISPIDs */
+	if (functionName.equals ("callJava")) { //$NON-NLS-1$
+		for (int i = 0; i < cNames; i++) {
+			ids[i] = i + 1;
+		}
+	} else {
+		result = COM.DISP_E_UNKNOWNNAME;
+		for (int i = 0; i < cNames; i++) {
+			ids[i] = COM.DISPID_UNKNOWN;
+		}
+	}
+	OS.MoveMemory (rgDispId, ids, cNames * 4);
 	return result;
 }
 

@@ -172,7 +172,7 @@ public void test_getSegments() {
 		assertEquals("hit test to the right (trailing)", 1, trailing[0]);
 	}
 
-    /* wrong: internal testing */
+	/* wrong: internal testing */
 //	String text = "AB";
 //	int textLength = text.length();
 //	layout.setText(text);
@@ -763,26 +763,26 @@ public void test_getNextOffset2() {
 	//for gtk, testing machine (rhel4) is too old to
 	//support thai.
 
-    TextLayout layout = new TextLayout(display);
-    layout.setText("A\u0E19\u0E49\u0E33B");
-    String[] messages = {"no segments", "segments", "segments (duplicate at 0)", "segments (duplicate at 1)", "segments (duplicate at 2)",
-    					"segments (duplicate at 3)", "segments (duplicate at 4)", "segments (duplicate at 5)"};
+	TextLayout layout = new TextLayout(display);
+	layout.setText("A\u0E19\u0E49\u0E33B");
+	String[] messages = {"no segments", "segments", "segments (duplicate at 0)", "segments (duplicate at 1)", "segments (duplicate at 2)",
+						"segments (duplicate at 3)", "segments (duplicate at 4)", "segments (duplicate at 5)"};
 //    int[][] segments = {null, {0, 1, 2, 3, 4, 5}, {0, 0, 1, 2, 3, 4, 5}, {0, 1, 1, 2, 3, 4, 5}, {0, 1, 2, 2, 3, 4, 5}, {0, 1, 2, 3, 3, 4, 5},
 //            			{0, 1, 2, 3, 4, 4, 5}, {0, 1, 2, 3, 4, 5, 5}};
 
-    int[][] segments = {null};
+	int[][] segments = {null};
 
-    for (int i = 0; i < segments.length; i++) {
-        String m = messages[i];
-        layout.setSegments(segments[i]);
-        assertEquals(m, 1, layout.getNextOffset(0, SWT.MOVEMENT_CLUSTER));
-        assertEquals(m, 4, layout.getNextOffset(1, SWT.MOVEMENT_CLUSTER));
-        assertEquals(m, 5, layout.getNextOffset(4, SWT.MOVEMENT_CLUSTER));
-        assertEquals(m, 4, layout.getPreviousOffset(5, SWT.MOVEMENT_CLUSTER));
-        assertEquals(m, 1, layout.getPreviousOffset(4, SWT.MOVEMENT_CLUSTER));
-        assertEquals(m, 0, layout.getPreviousOffset(1, SWT.MOVEMENT_CLUSTER));
-    }
-    layout.dispose();
+	for (int i = 0; i < segments.length; i++) {
+		String m = messages[i];
+		layout.setSegments(segments[i]);
+		assertEquals(m, 1, layout.getNextOffset(0, SWT.MOVEMENT_CLUSTER));
+		assertEquals(m, 4, layout.getNextOffset(1, SWT.MOVEMENT_CLUSTER));
+		assertEquals(m, 5, layout.getNextOffset(4, SWT.MOVEMENT_CLUSTER));
+		assertEquals(m, 4, layout.getPreviousOffset(5, SWT.MOVEMENT_CLUSTER));
+		assertEquals(m, 1, layout.getPreviousOffset(4, SWT.MOVEMENT_CLUSTER));
+		assertEquals(m, 0, layout.getPreviousOffset(1, SWT.MOVEMENT_CLUSTER));
+	}
+	layout.dispose();
 }
 
 @Test

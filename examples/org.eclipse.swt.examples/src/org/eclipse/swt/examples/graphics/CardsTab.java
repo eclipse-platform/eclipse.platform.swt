@@ -91,40 +91,40 @@ public void next(int width, int height) {
 
 	scaleWidth = (float) ((movClubY/height)*0.35 + 0.15);
 	movClubY = 2*height/5 * (float)Math.sin(0.01*movClubX - 90) + 2*height/5;
-    movDiamondY = 2*height/5 * (float)Math.cos(0.01*movDiamondX) + 2*height/5;
+	movDiamondY = 2*height/5 * (float)Math.cos(0.01*movDiamondX) + 2*height/5;
 
-    if (movClubX + clubWidth*scaleWidth > width) {
-    	movClubX = width - clubWidth*scaleWidth;
-        inc_club = -inc_club;
-    }
-    if (movClubX < 0) {
-        movClubX = 0;
-        inc_club = -inc_club;
-    }
-    if (movDiamondX + diamondWidth*scaleWidth > width) {
-	    movDiamondX = width - diamondWidth*scaleWidth;
-        inc_diamond = -inc_diamond;
-    }
-    if (movDiamondX < 0) {
-	    movDiamondX = 0;
-        inc_diamond = -inc_diamond;
-    }
-    if (movHeart + heartWidth*heartScale > width) {
-    	movHeart = width - heartWidth*heartScale;
-    	inc_hearts = -inc_hearts;
-    }
-    if (movHeart < 0) {
-    	movHeart = 0;
-    	inc_hearts = -inc_hearts;
-    }
-    if (movSpade + spadeHeight*spadeScale > height) {
-    	movSpade = height - spadeHeight*spadeScale;
-    	inc_spade = -inc_spade;
-    }
-    if (movSpade < 0) {
-    	movSpade = 0;
-    	inc_spade = -inc_spade;
-    }
+	if (movClubX + clubWidth*scaleWidth > width) {
+		movClubX = width - clubWidth*scaleWidth;
+		inc_club = -inc_club;
+	}
+	if (movClubX < 0) {
+		movClubX = 0;
+		inc_club = -inc_club;
+	}
+	if (movDiamondX + diamondWidth*scaleWidth > width) {
+		movDiamondX = width - diamondWidth*scaleWidth;
+		inc_diamond = -inc_diamond;
+	}
+	if (movDiamondX < 0) {
+		movDiamondX = 0;
+		inc_diamond = -inc_diamond;
+	}
+	if (movHeart + heartWidth*heartScale > width) {
+		movHeart = width - heartWidth*heartScale;
+		inc_hearts = -inc_hearts;
+	}
+	if (movHeart < 0) {
+		movHeart = 0;
+		inc_hearts = -inc_hearts;
+	}
+	if (movSpade + spadeHeight*spadeScale > height) {
+		movSpade = height - spadeHeight*spadeScale;
+		inc_spade = -inc_spade;
+	}
+	if (movSpade < 0) {
+		movSpade = 0;
+		inc_spade = -inc_spade;
+	}
 }
 
 @Override

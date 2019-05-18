@@ -43,7 +43,7 @@ public abstract class Scrollable extends Control {
 	 * The regular expression used to determine the string which should be deleted
 	 * when Ctrl+Bs is hit.
 	 */
-    static final java.util.regex.Pattern CTRL_BS_PATTERN =
+	static final java.util.regex.Pattern CTRL_BS_PATTERN =
 			java.util.regex.Pattern.compile ("\\r?\\n\\z|[\\p{Punct}]+[\\t ]*\\z|[^\\p{Punct}\\s\\n\\r]*[\\t ]*\\z");
 
 /**

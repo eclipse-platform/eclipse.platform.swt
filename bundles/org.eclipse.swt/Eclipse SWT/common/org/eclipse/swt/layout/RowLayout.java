@@ -82,7 +82,7 @@ public final class RowLayout extends Layout {
 	 *
 	 * @since 3.0
 	 */
- 	public int marginWidth = 0;
+	public int marginWidth = 0;
 
 	/**
 	 * marginHeight specifies the number of points of vertical margin
@@ -92,7 +92,7 @@ public final class RowLayout extends Layout {
 	 *
 	 * @since 3.0
 	 */
- 	public int marginHeight = 0;
+	public int marginHeight = 0;
 
 	/**
 	 * spacing specifies the number of points between the edge of one cell
@@ -502,21 +502,21 @@ Point layoutVertical (Composite composite, boolean move, boolean wrap, int heigh
  */
 @Override
 public String toString () {
- 	String string = getName ()+" {";
- 	string += "type="+((type != SWT.HORIZONTAL) ? "SWT.VERTICAL" : "SWT.HORIZONTAL")+" ";
- 	if (marginWidth != 0) string += "marginWidth="+marginWidth+" ";
- 	if (marginHeight != 0) string += "marginHeight="+marginHeight+" ";
- 	if (marginLeft != 0) string += "marginLeft="+marginLeft+" ";
- 	if (marginTop != 0) string += "marginTop="+marginTop+" ";
- 	if (marginRight != 0) string += "marginRight="+marginRight+" ";
- 	if (marginBottom != 0) string += "marginBottom="+marginBottom+" ";
- 	if (spacing != 0) string += "spacing="+spacing+" ";
- 	string += "wrap="+wrap+" ";
+	String string = getName ()+" {";
+	string += "type="+((type != SWT.HORIZONTAL) ? "SWT.VERTICAL" : "SWT.HORIZONTAL")+" ";
+	if (marginWidth != 0) string += "marginWidth="+marginWidth+" ";
+	if (marginHeight != 0) string += "marginHeight="+marginHeight+" ";
+	if (marginLeft != 0) string += "marginLeft="+marginLeft+" ";
+	if (marginTop != 0) string += "marginTop="+marginTop+" ";
+	if (marginRight != 0) string += "marginRight="+marginRight+" ";
+	if (marginBottom != 0) string += "marginBottom="+marginBottom+" ";
+	if (spacing != 0) string += "spacing="+spacing+" ";
+	string += "wrap="+wrap+" ";
 	string += "pack="+pack+" ";
 	string += "fill="+fill+" ";
 	string += "justify="+justify+" ";
 	string = string.trim();
 	string += "}";
- 	return string;
+	return string;
 }
 }

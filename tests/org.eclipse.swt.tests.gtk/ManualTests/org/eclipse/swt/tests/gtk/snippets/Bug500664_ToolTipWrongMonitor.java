@@ -23,15 +23,15 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.ToolTip;
 
 public class Bug500664_ToolTipWrongMonitor {
-	 public static void main(String[] args) {
-	    	Display display = new Display();
-	    	Shell shell = new Shell(display);
-	    	shell.setBounds(10,10,200,200);
-	    	final Text text = new Text(shell, SWT.MULTI | SWT.WRAP |
-	    SWT.V_SCROLL);
-	    	text.setBounds(10,10,150,150);
-	    	text.setText("TextField");
-	    	text.addModifyListener(new ModifyListener(){
+	public static void main(String[] args) {
+			Display display = new Display();
+			Shell shell = new Shell(display);
+			shell.setBounds(10,10,200,200);
+			final Text text = new Text(shell, SWT.MULTI | SWT.WRAP |
+		SWT.V_SCROLL);
+			text.setBounds(10,10,150,150);
+			text.setText("TextField");
+			text.addModifyListener(new ModifyListener(){
 
 				@Override
 				public void modifyText(ModifyEvent e) {
@@ -41,12 +41,12 @@ public class Bug500664_ToolTipWrongMonitor {
 					t.setVisible(true);
 				}
 
-	    	});
-	    	shell.open();
-	    	while (!shell.isDisposed()) {
-	    		if (!display.readAndDispatch()) display.sleep();
-	    	}
-	    	display.dispose();
-	    }
+			});
+			shell.open();
+			while (!shell.isDisposed()) {
+				if (!display.readAndDispatch()) display.sleep();
+			}
+			display.dispose();
+		}
 
 }

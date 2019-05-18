@@ -831,7 +831,7 @@ public void test_indexOfLjava_lang_StringI() {
 	assertEquals(list.indexOf("text2", 2), 2);
 
 	try {
-		 list.indexOf(null, 0);
+		list.indexOf(null, 0);
 		fail("No exception thrown for string == null");
 	} catch (IllegalArgumentException e) {
 	}
@@ -2442,43 +2442,43 @@ protected void select$I_helper(
 }
 
 private void add() {
-    list.add("this");
-    list.add("is");
-    list.add("SWT");
+	list.add("this");
+	list.add("is");
+	list.add("SWT");
 }
 
 @Test
 public void test_consistency_MouseSelection () {
-    add();
-    consistencyEvent(27, 10, 1, 0, ConsistencyUtility.MOUSE_CLICK);
+	add();
+	consistencyEvent(27, 10, 1, 0, ConsistencyUtility.MOUSE_CLICK);
 }
 
 @Test
 public void test_consistency_KeySelection () {
-    add();
-    consistencyEvent(0, SWT.ARROW_DOWN, 0, 0, ConsistencyUtility.KEY_PRESS);
+	add();
+	consistencyEvent(0, SWT.ARROW_DOWN, 0, 0, ConsistencyUtility.KEY_PRESS);
 }
 
 @Test
 public void test_consistency_SpaceSelection () {
-    add();
-    consistencyEvent(' ', 32, 0, 0, ConsistencyUtility.KEY_PRESS);
+	add();
+	consistencyEvent(' ', 32, 0, 0, ConsistencyUtility.KEY_PRESS);
 }
 
 @Test
 public void test_consistency_DoubleClick () {
-    add();
-    consistencyEvent(27, 10, 1, 0, ConsistencyUtility.MOUSE_DOUBLECLICK);
+	add();
+	consistencyEvent(27, 10, 1, 0, ConsistencyUtility.MOUSE_DOUBLECLICK);
 }
 
 @Test
 public void test_consistency_MenuDetect () {
-    add();
-    consistencyEvent(27, 5, 3, 0, ConsistencyUtility.MOUSE_CLICK);
+	add();
+	consistencyEvent(27, 5, 3, 0, ConsistencyUtility.MOUSE_CLICK);
 }
 @Test
 public void test_consistency_DragDetect () {
-    add();
-    consistencyEvent(20, 5, 30, 10, ConsistencyUtility.MOUSE_DRAG);
+	add();
+	consistencyEvent(20, 5, 30, 10, ConsistencyUtility.MOUSE_DRAG);
 }
 }

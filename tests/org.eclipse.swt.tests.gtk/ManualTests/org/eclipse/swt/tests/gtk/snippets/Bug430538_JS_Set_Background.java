@@ -102,10 +102,10 @@ public class Bug430538_JS_Set_Background {
 		});
 		
 		
- 	    shell.open();
-	    while (!shell.isDisposed ()) {
-	        if (!display.readAndDispatch ()) display.sleep ();
-	    }
-	    display.dispose ();
+		shell.open();
+		while (!shell.isDisposed ()) {
+			if (!display.readAndDispatch ()) display.sleep ();
+		}
+		display.dispose ();
 	}
 }

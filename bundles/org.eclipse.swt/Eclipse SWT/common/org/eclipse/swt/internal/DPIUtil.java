@@ -453,7 +453,7 @@ public static boolean useCairoAutoScale() {
 
 public static int getZoomForAutoscaleProperty (int nativeDeviceZoom) {
 	int zoom = 0;
- 	if (autoScaleValue != null) {
+	if (autoScaleValue != null) {
 		if ("false".equalsIgnoreCase (autoScaleValue)) {
 			zoom = 100;
 		} else if ("quarter".equalsIgnoreCase (autoScaleValue)) {
@@ -469,7 +469,7 @@ public static int getZoomForAutoscaleProperty (int nativeDeviceZoom) {
 			}
 		}
 	}
- 	if (zoom == 0) { // || "integer".equalsIgnoreCase (value) || "integer200".equalsIgnoreCase (value)
+	if (zoom == 0) { // || "integer".equalsIgnoreCase (value) || "integer200".equalsIgnoreCase (value)
 		zoom = Math.max ((nativeDeviceZoom + 25) / 100 * 100, 100);
 		if (!"integer".equalsIgnoreCase(autoScaleValue)) {
 			// integer200, or default

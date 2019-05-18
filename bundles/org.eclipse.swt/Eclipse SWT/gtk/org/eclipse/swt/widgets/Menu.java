@@ -241,8 +241,8 @@ void _setVisible (boolean visible) {
 				*/
 				TrayItem item = display.currentTrayItem;
 				if (item != null && !item.isDisposed()) {
-					 data = item.handle;
-					 address = GTK.gtk_status_icon_position_menu_func ();
+					data = item.handle;
+					address = GTK.gtk_status_icon_position_menu_func ();
 				}
 				/*
 				* Bug in GTK.  The timestamp passed into gtk_menu_popup is used
@@ -1170,29 +1170,29 @@ void setLocationInPixels (Point location) {
  * @since 3.7
  */
 public void setOrientation (int orientation) {
-    checkWidget ();
-    if ((style & (SWT.BAR | SWT.DROP_DOWN)) != 0) return;
-    _setOrientation (orientation);
+	checkWidget ();
+	if ((style & (SWT.BAR | SWT.DROP_DOWN)) != 0) return;
+	_setOrientation (orientation);
 }
 
 void _setOrientation (int orientation) {
-    int flags = SWT.RIGHT_TO_LEFT | SWT.LEFT_TO_RIGHT;
-    if ((orientation & flags) == 0 || (orientation & flags) == flags) return;
-    style &= ~flags;
-    style |= orientation & flags;
-    setOrientation (false);
+	int flags = SWT.RIGHT_TO_LEFT | SWT.LEFT_TO_RIGHT;
+	if ((orientation & flags) == 0 || (orientation & flags) == flags) return;
+	style &= ~flags;
+	style |= orientation & flags;
+	setOrientation (false);
 }
 
 @Override
 void setOrientation (boolean create) {
-    if ((style & SWT.RIGHT_TO_LEFT) != 0 || !create) {
-    	int dir = (style & SWT.RIGHT_TO_LEFT) != 0 ? GTK.GTK_TEXT_DIR_RTL : GTK.GTK_TEXT_DIR_LTR;
-        if (handle != 0) GTK.gtk_widget_set_direction (handle, dir);
-        MenuItem [] items = getItems ();
-        for (int i = 0; i < items.length; i++) {
-            items [i].setOrientation (create);
-        }
-    }
+	if ((style & SWT.RIGHT_TO_LEFT) != 0 || !create) {
+		int dir = (style & SWT.RIGHT_TO_LEFT) != 0 ? GTK.GTK_TEXT_DIR_RTL : GTK.GTK_TEXT_DIR_LTR;
+		if (handle != 0) GTK.gtk_widget_set_direction (handle, dir);
+		MenuItem [] items = getItems ();
+		for (int i = 0; i < items.length; i++) {
+			items [i].setOrientation (create);
+		}
+	}
 }
 
 /**

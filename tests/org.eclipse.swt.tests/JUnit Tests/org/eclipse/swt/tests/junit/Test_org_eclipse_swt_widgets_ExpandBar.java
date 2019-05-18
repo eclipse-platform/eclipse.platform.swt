@@ -150,7 +150,7 @@ public void test_getItemCount() {
 	int number = 10;
 	for (int i = 0; i < number; i++) {
 		assertTrue(":a:" + i, expandBar.getItemCount() == i);
-	  	new ExpandItem(expandBar, 0);
+		new ExpandItem(expandBar, 0);
 	}
 }
 
@@ -159,7 +159,7 @@ public void test_getItemI() {
 	int number = 5;
 	ExpandItem[] items = new ExpandItem[number];
 	for (int i = 0; i<number ; i++){
-	  	items[i] = new ExpandItem(expandBar, 0);
+		items[i] = new ExpandItem(expandBar, 0);
 	}
 	for (int i = 0; i<number ; i++){
 		assertTrue(":a:", expandBar.getItem(i)==items[i]);
@@ -169,7 +169,7 @@ public void test_getItemI() {
 	number = 5;
 	items = new ExpandItem[number];
 	for (int i = 0; i<number ; i++){
-	  	items[i] = new ExpandItem(expandBar, 0);
+		items[i] = new ExpandItem(expandBar, 0);
 	}
 	try {
 		expandBar.getItem(number);
@@ -184,7 +184,7 @@ public void test_getItems() {
 	int number = 5;
 	ExpandItem[] items = new ExpandItem[number];
 	for (int i = 0; i<number ; i++) {
-	  	items[i] = new ExpandItem(expandBar, 0);
+		items[i] = new ExpandItem(expandBar, 0);
 	}
 	assertArrayEquals(items, expandBar.getItems());
 
@@ -203,7 +203,7 @@ public void test_indexOfLorg_eclipse_swt_widgets_ExpandItem() {
 	int number = 10;
 	ExpandItem[] items = new ExpandItem[number];
 	for (int i = 0; i < number; i++) {
-	  	items[i] = new ExpandItem(expandBar, 0);
+		items[i] = new ExpandItem(expandBar, 0);
 	}
 	for (int i = 0; i < number; i++) {
 		assertTrue(":a:" + i, expandBar.indexOf(items[i] ) == i);
@@ -211,7 +211,7 @@ public void test_indexOfLorg_eclipse_swt_widgets_ExpandItem() {
 
 	items = new ExpandItem[number];
 	for (int i = 0; i < number; i++) {
-	  	items[i] = new ExpandItem(expandBar, 0);
+		items[i] = new ExpandItem(expandBar, 0);
 	}
 	for (int i = 0; i < number; i++) {
 		try {
@@ -247,37 +247,37 @@ private void createExpandBar(List<String> events) {
 
 @Test
 public void test_consistency_MouseSelection() {
-    List<String> events = new ArrayList<>();
-    createExpandBar(events);
-    consistencyEvent(30, 10, 1, 0, ConsistencyUtility.MOUSE_CLICK, events);
+	List<String> events = new ArrayList<>();
+	createExpandBar(events);
+	consistencyEvent(30, 10, 1, 0, ConsistencyUtility.MOUSE_CLICK, events);
 }
 
 @Test
 public void test_consistency_EnterSelection() {
-    List<String> events = new ArrayList<>();
-    createExpandBar(events);
-    consistencyEvent(13, 10, 0, 0, ConsistencyUtility.KEY_PRESS, events);
+	List<String> events = new ArrayList<>();
+	createExpandBar(events);
+	consistencyEvent(13, 10, 0, 0, ConsistencyUtility.KEY_PRESS, events);
 }
 
 @Test
 public void test_consistency_SpaceSelection () {
-    List<String> events = new ArrayList<>();
-    createExpandBar(events);
-    consistencyEvent(' ', 32, 0, 0, ConsistencyUtility.KEY_PRESS, events);
+	List<String> events = new ArrayList<>();
+	createExpandBar(events);
+	consistencyEvent(' ', 32, 0, 0, ConsistencyUtility.KEY_PRESS, events);
 }
 
 @Test
 public void test_consistency_MenuDetect () {
-    List<String> events = new ArrayList<>();
-    createExpandBar(events);
-    consistencyEvent(50, 15, 3, 0, ConsistencyUtility.MOUSE_CLICK, events);
+	List<String> events = new ArrayList<>();
+	createExpandBar(events);
+	consistencyEvent(50, 15, 3, 0, ConsistencyUtility.MOUSE_CLICK, events);
 }
 
 @Test
 public void test_consistency_DragDetect () {
-    List<String> events = new ArrayList<>();
-    createExpandBar(events);
-    consistencyEvent(30, 20, 50, 20, ConsistencyUtility.MOUSE_DRAG, events);
+	List<String> events = new ArrayList<>();
+	createExpandBar(events);
+	consistencyEvent(30, 20, 50, 20, ConsistencyUtility.MOUSE_DRAG, events);
 }
 
 /* custom */

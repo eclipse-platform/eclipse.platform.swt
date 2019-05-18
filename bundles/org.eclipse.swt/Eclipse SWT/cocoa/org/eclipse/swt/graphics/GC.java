@@ -532,7 +532,7 @@ public void copyArea(Image image, int x, int y) {
 			destRect.width = destWidth;
 			destRect.height = destHeight;
 			data.image.handle.drawInRect(destRect, srcRect, OS.NSCompositeCopy, 1);
-	 		NSGraphicsContext.static_restoreGraphicsState();
+			NSGraphicsContext.static_restoreGraphicsState();
 			return;
 		}
 		if (data.view != null) {
@@ -631,10 +631,10 @@ void copyArea (Image image, int x, int y, long srcImage) {
 	long context = OS.CGBitmapContextCreate(data, width, height, bpc, bpr, colorspace, alphaInfo);
 	OS.CGColorSpaceRelease(colorspace);
 	if (context != 0) {
-	 	CGRect rect = new CGRect();
-	 	rect.origin.x = -x;
-	 	rect.origin.y = y;
-	 	rect.size.width = OS.CGImageGetWidth(srcImage);
+		CGRect rect = new CGRect();
+		rect.origin.x = -x;
+		rect.origin.y = y;
+		rect.size.width = OS.CGImageGetWidth(srcImage);
 		rect.size.height = OS.CGImageGetHeight(srcImage);
 		OS.CGContextTranslateCTM(context, 0, -(rect.size.height - height));
 		OS.CGContextDrawImage(context, rect, srcImage);
@@ -689,7 +689,7 @@ public void copyArea(int srcX, int srcY, int width, int height, int destX, int d
 		if (image != null) {
 			NSImage imageHandle = image.handle;
 			NSSize size = imageHandle.size();
-		 	int imgHeight = (int)size.height;
+			int imgHeight = (int)size.height;
 			handle.saveGraphicsState();
 			NSAffineTransform transform = NSAffineTransform.transform();
 			transform.scaleXBy(1, -1);
@@ -707,7 +707,7 @@ public void copyArea(int srcX, int srcY, int width, int height, int destX, int d
 			destRect.height = height;
 			imageHandle.drawInRect(destRect, srcRect, OS.NSCompositeCopy, 1);
 			handle.restoreGraphicsState();
-	 		return;
+			return;
 		}
 		if (data.view != null) {
 			NSView view = data.view;
@@ -813,16 +813,16 @@ static long createCGPathRef(NSBezierPath nsPath) {
 					OS.CGPathMoveToPoint(cgPath, 0, pt[0], pt[1]);
 					break;
 				case OS.NSLineToBezierPathElement:
-                	C.memmove(pt, points, NSPoint.sizeof);
-                    OS.CGPathAddLineToPoint(cgPath, 0, pt[0], pt[1]);
+					C.memmove(pt, points, NSPoint.sizeof);
+					OS.CGPathAddLineToPoint(cgPath, 0, pt[0], pt[1]);
 					break;
-				 case OS.NSCurveToBezierPathElement:
-					 C.memmove(pt, points, NSPoint.sizeof * 3);
-					 OS.CGPathAddCurveToPoint(cgPath, 0, pt[0], pt[1], pt[2], pt[3], pt[4], pt[5]);
-					 break;
-                case OS.NSClosePathBezierPathElement:
-                     OS.CGPathCloseSubpath(cgPath);
-					 break;
+				case OS.NSCurveToBezierPathElement:
+					C.memmove(pt, points, NSPoint.sizeof * 3);
+					OS.CGPathAddCurveToPoint(cgPath, 0, pt[0], pt[1], pt[2], pt[3], pt[4], pt[5]);
+					break;
+				case OS.NSClosePathBezierPathElement:
+					OS.CGPathCloseSubpath(cgPath);
+					break;
 			}
 		}
 		C.free(points);
@@ -1186,19 +1186,19 @@ public void drawImage(Image image, int srcX, int srcY, int srcWidth, int srcHeig
 void drawImage(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, int destX, int destY, int destWidth, int destHeight, boolean simple) {
 	NSImage imageHandle = srcImage.handle;
 	NSSize size = imageHandle.size();
- 	int imgWidth = (int)size.width;
- 	int imgHeight = (int)size.height;
- 	if (simple) {
- 		srcWidth = destWidth = imgWidth;
- 		srcHeight = destHeight = imgHeight;
- 	} else {
- 		simple = srcX == 0 && srcY == 0 &&
- 			srcWidth == destWidth && destWidth == imgWidth &&
- 			srcHeight == destHeight && destHeight == imgHeight;
+	int imgWidth = (int)size.width;
+	int imgHeight = (int)size.height;
+	if (simple) {
+		srcWidth = destWidth = imgWidth;
+		srcHeight = destHeight = imgHeight;
+	} else {
+		simple = srcX == 0 && srcY == 0 &&
+			srcWidth == destWidth && destWidth == imgWidth &&
+			srcHeight == destHeight && destHeight == imgHeight;
 		if (srcX + srcWidth > imgWidth || srcY + srcHeight > imgHeight) {
 			SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 		}
- 	}
+	}
 	NSAutoreleasePool pool = checkGC(CLIPPING | TRANSFORM);
 	try {
 		if (srcImage.memGC != null) {
@@ -1596,7 +1596,7 @@ public void drawRoundRectangle(int x, int y, int width, int height, int arcWidth
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (arcWidth == 0 || arcHeight == 0) {
 		drawRectangle(x, y, width, height);
-    	return;
+		return;
 	}
 	NSAutoreleasePool pool = checkGC(DRAW);
 	try {
@@ -2288,7 +2288,7 @@ public void fillRoundRectangle(int x, int y, int width, int height, int arcWidth
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (arcWidth == 0 || arcHeight == 0) {
 		fillRectangle(x, y, width, height);
-    	return;
+		return;
 	}
 	NSAutoreleasePool pool = checkGC(FILL);
 	try {
@@ -3142,7 +3142,7 @@ public boolean isDisposed() {
 
 boolean isIdentity(float[] transform) {
 	return transform[0] == 1 && transform[1] == 0 && transform[2] == 0
-	 	&& transform[3] == 1 && transform[4] == 0 && transform[5] == 0;
+		&& transform[3] == 1 && transform[4] == 0 && transform[5] == 0;
 }
 
 /**

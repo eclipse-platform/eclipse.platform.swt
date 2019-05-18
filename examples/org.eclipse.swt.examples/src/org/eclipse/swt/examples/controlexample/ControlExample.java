@@ -67,9 +67,9 @@ public class ControlExample {
 		tabs = createTabs();
 		for (Tab tab : tabs) {
 			TabItem item = new TabItem (tabFolder, SWT.NONE);
-		    item.setText (tab.getTabText ());
-		    item.setControl (tab.createTabFolderPage (tabFolder));
-		    item.setData (tab);
+			item.setText (tab.getTabText ());
+			item.setControl (tab.createTabFolderPage (tabFolder));
+			item.setData (tab);
 		}
 
 		/* Workaround: if the tab folder is wider than the screen,

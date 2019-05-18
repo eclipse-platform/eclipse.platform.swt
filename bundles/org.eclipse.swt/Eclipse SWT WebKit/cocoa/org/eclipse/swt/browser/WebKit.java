@@ -189,7 +189,7 @@ public void create (Composite parent, int style) {
 		OS.class_addMethod(delegateClass, OS.sel_createPanelDidEnd, proc5, "@:@@@"); //$NON-NLS-1$
 		OS.objc_registerClassPair(delegateClass);
 
- 		long metaClass = OS.objc_getMetaClass (className);
+		long metaClass = OS.objc_getMetaClass (className);
 		OS.class_addMethod(metaClass, OS.sel_isSelectorExcludedFromWebScript_, proc3, "@:@"); //$NON-NLS-1$
 		OS.class_addMethod(metaClass, OS.sel_webScriptNameForSelector_, proc3, "@:@"); //$NON-NLS-1$
 	}

@@ -21,16 +21,16 @@ import org.eclipse.swt.widgets.Text;
 public class Bug436085_TextEntryTabs {
 
 	public static void main (String [] args) {
-		  Display display = new Display ();
-		  Shell shell = new Shell(display);
-		  Text text = new Text(shell, SWT.SINGLE | SWT.BORDER);
-		  text.setBounds (10, 10, 1000, 60);
-		  text.setTabs(1);
-		  text.append("1\t12\t123\t1234\t12345\t123456\t1234567\t12345678\t12345678");
-		  shell.open ();
-		  while (!shell.isDisposed()) {
-		     if (!display.readAndDispatch()) display.sleep();
-		   }
-		  display.dispose();
+		Display display = new Display ();
+		Shell shell = new Shell(display);
+		Text text = new Text(shell, SWT.SINGLE | SWT.BORDER);
+		text.setBounds (10, 10, 1000, 60);
+		text.setTabs(1);
+		text.append("1\t12\t123\t1234\t12345\t123456\t1234567\t12345678\t12345678");
+		shell.open ();
+		while (!shell.isDisposed()) {
+			if (!display.readAndDispatch()) display.sleep();
+		}
+		display.dispose();
 }
 }

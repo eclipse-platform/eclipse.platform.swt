@@ -59,49 +59,49 @@ public String getDescription() {
 @Override
 public void next(int width, int height) {
 	x += incX;
-    y += incY;
+	y += incY;
 	float random = (float)Math.random();
 
 	// collision with right side of screen
-    if (x + textWidth > width) {
-        x = width - textWidth;
-        incX = random * -width / 16 - 1;
-        fontFace = 0;
-        fontSize = 125;
-        fillColor = SWT.COLOR_DARK_BLUE;
-        foreGrdColor = SWT.COLOR_YELLOW;
-        fontStyle = SWT.ITALIC;
-    }
+	if (x + textWidth > width) {
+		x = width - textWidth;
+		incX = random * -width / 16 - 1;
+		fontFace = 0;
+		fontSize = 125;
+		fillColor = SWT.COLOR_DARK_BLUE;
+		foreGrdColor = SWT.COLOR_YELLOW;
+		fontStyle = SWT.ITALIC;
+	}
 	// collision with left side of screen
-    if (x < 0) {
-        x = 0;
-        incX = random * width / 16 + 1;
-        fontFace = 1;
-        fontSize = 80;
-        fillColor = SWT.COLOR_DARK_MAGENTA;
-        foreGrdColor = SWT.COLOR_CYAN;
-        fontStyle = SWT.NONE;
-    }
+	if (x < 0) {
+		x = 0;
+		incX = random * width / 16 + 1;
+		fontFace = 1;
+		fontSize = 80;
+		fillColor = SWT.COLOR_DARK_MAGENTA;
+		foreGrdColor = SWT.COLOR_CYAN;
+		fontStyle = SWT.NONE;
+	}
 	// collision with bottom side of screen
-    if (y + textHeight > height) {
-        y = (height - textHeight)- 2;
-        incY = random * -height / 16 - 1;
-        fontFace = 2;
-        fontSize = 100;
-        fillColor = SWT.COLOR_YELLOW;
-        foreGrdColor = SWT.COLOR_BLACK;
-        fontStyle = SWT.BOLD;
-    }
+	if (y + textHeight > height) {
+		y = (height - textHeight)- 2;
+		incY = random * -height / 16 - 1;
+		fontFace = 2;
+		fontSize = 100;
+		fillColor = SWT.COLOR_YELLOW;
+		foreGrdColor = SWT.COLOR_BLACK;
+		fontStyle = SWT.BOLD;
+	}
 	// collision with top side of screen
-    if (y < 0) {
-        y = 0;
-        incY = random * height / 16 + 1;
-        fontFace = 3;
-        fontSize = 120;
-        fillColor = SWT.COLOR_GREEN;
-        foreGrdColor = SWT.COLOR_GRAY;
-        fontStyle = SWT.NONE;
-    }
+	if (y < 0) {
+		y = 0;
+		incY = random * height / 16 + 1;
+		fontFace = 3;
+		fontSize = 120;
+		fillColor = SWT.COLOR_GREEN;
+		foreGrdColor = SWT.COLOR_GRAY;
+		fontStyle = SWT.NONE;
+	}
 }
 
 

@@ -34,10 +34,10 @@ static String toHex (int v, int length) {
 @Override
 public String toString () {
 	return '{' + toHex (Data1, 8) + '-' +
-    	toHex (Data2, 4) + '-' +
-    	toHex (Data3, 4) + '-' +
-    	toHex (Data4[0], 2) + toHex (Data4[1], 2) + '-' +
-    	toHex (Data4[2], 2) + toHex (Data4[3], 2) + toHex (Data4[4], 2) + toHex (Data4[5], 2) + toHex (Data4[6], 2) + toHex (Data4[7], 2) + '}';
+		toHex (Data2, 4) + '-' +
+		toHex (Data3, 4) + '-' +
+		toHex (Data4[0], 2) + toHex (Data4[1], 2) + '-' +
+		toHex (Data4[2], 2) + toHex (Data4[3], 2) + toHex (Data4[4], 2) + toHex (Data4[5], 2) + toHex (Data4[6], 2) + toHex (Data4[7], 2) + '}';
 }
 
 }

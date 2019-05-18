@@ -1232,21 +1232,21 @@ public void setLocation (Point location) {
  * @since 3.7
  */
 public void setOrientation (int orientation) {
-    checkWidget ();
-    if ((style & (SWT.BAR | SWT.DROP_DOWN)) != 0) return;
-    _setOrientation (orientation);
+	checkWidget ();
+	if ((style & (SWT.BAR | SWT.DROP_DOWN)) != 0) return;
+	_setOrientation (orientation);
 }
 
 void _setOrientation (int orientation) {
-   int flags = SWT.RIGHT_TO_LEFT | SWT.LEFT_TO_RIGHT;
-   if ((orientation & flags) == 0 || (orientation & flags) == flags) return;
-   style &= ~flags;
-   style |= orientation & flags;
-   style &= ~SWT.FLIP_TEXT_DIRECTION;
-   MenuItem [] itms = getItems ();
-   for (int i=0; i<itms.length; i++) {
-       itms [i].setOrientation (orientation);
-   }
+	int flags = SWT.RIGHT_TO_LEFT | SWT.LEFT_TO_RIGHT;
+	if ((orientation & flags) == 0 || (orientation & flags) == flags) return;
+	style &= ~flags;
+	style |= orientation & flags;
+	style &= ~SWT.FLIP_TEXT_DIRECTION;
+	MenuItem [] itms = getItems ();
+	for (int i=0; i<itms.length; i++) {
+		itms [i].setOrientation (orientation);
+	}
 }
 
 /**

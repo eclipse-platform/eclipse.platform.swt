@@ -288,26 +288,26 @@ TableItem _getItem (int index, boolean create, int count) {
 		if ((style & SWT.VIRTUAL) == 0 || !create) {
 			return keyIndex < 0 ? null : items [keyIndex];
 		}
-        if (keyIndex < 0) {
-        	if (count == -1) {
-        		count = (int)/*64*/OS.SendMessage (handle, OS.LVM_GETITEMCOUNT, 0, 0);
-        	}
-        	//TODO - _checkGrow() doesn't return a value, check keys == null instead
-	        if (_checkGrow (count)) {
-	    		if (items [index] != null) return items [index];
-	    		return items [index] = new TableItem (this, SWT.NONE, -1, false);
-	        }
-	        keyIndex = -keyIndex - 1;
-	        if (keyIndex < keyCount) {
-	        	System.arraycopy(keys, keyIndex, keys, keyIndex + 1, keyCount - keyIndex);
-	        	System.arraycopy(items, keyIndex, items, keyIndex + 1, keyCount - keyIndex);
-	        }
-	        keyCount++;
-	        keys [keyIndex] = index;
-        } else {
-    		if (items [keyIndex] != null) return items [keyIndex];
-        }
-        return items [keyIndex] = new TableItem (this, SWT.NONE, -1, false);
+		if (keyIndex < 0) {
+			if (count == -1) {
+				count = (int)/*64*/OS.SendMessage (handle, OS.LVM_GETITEMCOUNT, 0, 0);
+			}
+			//TODO - _checkGrow() doesn't return a value, check keys == null instead
+			if (_checkGrow (count)) {
+				if (items [index] != null) return items [index];
+				return items [index] = new TableItem (this, SWT.NONE, -1, false);
+			}
+			keyIndex = -keyIndex - 1;
+			if (keyIndex < keyCount) {
+				System.arraycopy(keys, keyIndex, keys, keyIndex + 1, keyCount - keyIndex);
+				System.arraycopy(items, keyIndex, items, keyIndex + 1, keyCount - keyIndex);
+			}
+			keyCount++;
+			keys [keyIndex] = index;
+		} else {
+			if (items [keyIndex] != null) return items [keyIndex];
+		}
+		return items [keyIndex] = new TableItem (this, SWT.NONE, -1, false);
 	}
 }
 
@@ -344,13 +344,13 @@ void _insertItem (int index, TableItem item, int count) {
 		items [index] = item;
 	} else {
 		int keyIndex = binarySearch (keys, 0, keyCount, index);
-        if (keyIndex < 0) keyIndex = -keyIndex - 1;
-        System.arraycopy(keys, keyIndex, keys, keyIndex + 1, keyCount - keyIndex);
-        keys [keyIndex] = index;
-        System.arraycopy(items, keyIndex, items, keyIndex + 1, keyCount - keyIndex);
-        items [keyIndex] = item;
-        keyCount++;
-        for (int i=keyIndex + 1; i<keyCount; i++) keys[i]++;
+		if (keyIndex < 0) keyIndex = -keyIndex - 1;
+		System.arraycopy(keys, keyIndex, keys, keyIndex + 1, keyCount - keyIndex);
+		keys [keyIndex] = index;
+		System.arraycopy(items, keyIndex, items, keyIndex + 1, keyCount - keyIndex);
+		items [keyIndex] = item;
+		keyCount++;
+		for (int i=keyIndex + 1; i<keyCount; i++) keys[i]++;
 	}
 }
 
@@ -360,16 +360,16 @@ void _removeItem (int index, int count) {
 		items [count] = null;
 	} else {
 		int keyIndex = binarySearch (keys, 0, keyCount, index);
-        if (keyIndex < 0) {
-        	keyIndex = -keyIndex - 1;
-        } else {
-        	--keyCount;
-    		System.arraycopy (keys, keyIndex + 1, keys, keyIndex, keyCount - keyIndex);
-    		keys [keyCount] = 0;
-    		System.arraycopy (items, keyIndex + 1, items, keyIndex, keyCount - keyIndex);
-    		items [keyCount] = null;
-        }
-        for (int i=keyIndex; i<keyCount; i++) --keys[i];
+		if (keyIndex < 0) {
+			keyIndex = -keyIndex - 1;
+		} else {
+			--keyCount;
+			System.arraycopy (keys, keyIndex + 1, keys, keyIndex, keyCount - keyIndex);
+			keys [keyCount] = 0;
+			System.arraycopy (items, keyIndex + 1, items, keyIndex, keyCount - keyIndex);
+			items [keyCount] = null;
+		}
+		for (int i=keyIndex; i<keyCount; i++) --keys[i];
 	}
 }
 
@@ -403,9 +403,9 @@ void _setItemCount (int count, int itemCount) {
 	} else {
 		int index = Math.min (count, itemCount);
 		keyCount = binarySearch (keys, 0, keyCount, index);
-	    if (keyCount < 0) keyCount = -keyCount - 1;
-	    int length = Math.max (4, (keyCount + 3) / 4 * 4);
-	    int [] newKeys = new int [length];
+		if (keyCount < 0) keyCount = -keyCount - 1;
+		int length = Math.max (4, (keyCount + 3) / 4 * 4);
+		int [] newKeys = new int [length];
 		System.arraycopy (keys, 0, newKeys, 0, keyCount);
 		keys = newKeys;
 		TableItem [] newItems = new TableItem [length];
@@ -3278,8 +3278,8 @@ public void select (int [] indices) {
 	for (int i=length-1; i>=0; --i) {
 		/*
 		* An index of -1 will apply the change to all
-	 	* items.  Ensure that indices are greater than -1.
-	 	*/
+		* items.  Ensure that indices are greater than -1.
+		*/
 		if (indices [i] >= 0) {
 			ignoreSelect = true;
 			OS.SendMessage (handle, OS.LVM_SETITEMSTATE, indices [i], lvItem);
@@ -5600,7 +5600,7 @@ void updateOrientation () {
 		imageList = display.getImageList (style & SWT.RIGHT_TO_LEFT, size.x, size.y);
 		int count = (int)/*64*/OS.SendMessage (handle, OS.LVM_GETITEMCOUNT, 0, 0);
 		for (int i = 0; i < count; i++) {
-		    TableItem item = _getItem (i, false);
+			TableItem item = _getItem (i, false);
 			if (item != null) {
 				Image image = item.image;
 				if (image != null) {
@@ -7070,7 +7070,7 @@ LRESULT wmNotifyHeader (NMHDR hdr, long /*int*/ wParam, long /*int*/ lParam) {
 					OS.SendMessage (handle, OS.LVM_GETCOLUMNORDERARRAY, columnCount, order);
 					int index = 0;
 					while (index < order.length) {
-					 	if (order [index] == phdn.iItem) break;
+						if (order [index] == phdn.iItem) break;
 						index++;
 					}
 					if (index == order.length) index = 0;

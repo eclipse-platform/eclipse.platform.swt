@@ -783,9 +783,9 @@ public void setLinkForeground (Color color) {
 
 @Override
 void setOrientation (boolean create) {
-    super.setOrientation (create);
-    layout.setOrientation (style & (SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT));
-    if (!create) redraw (true);
+	super.setOrientation (create);
+	layout.setOrientation (style & (SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT));
+	if (!create) redraw (true);
 }
 
 /**

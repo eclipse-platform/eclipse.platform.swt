@@ -64,7 +64,7 @@ public class Bug306490_SwingDisposeError {
 	}
 
 	public static void main(String[] args) throws Exception {
-		 //remark 2: change order of following two instantiations and all works fine
+		//remark 2: change order of following two instantiations and all works fine
 		createSwing();
 		Thread.sleep(1000);
 		new Thread() { @Override

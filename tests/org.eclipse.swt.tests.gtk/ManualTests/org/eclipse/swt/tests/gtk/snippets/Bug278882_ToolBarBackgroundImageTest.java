@@ -51,15 +51,15 @@ public class Bug278882_ToolBarBackgroundImageTest {
 			if (originalImage != null) {
 				originalImage.dispose();
 			}
-		}	    	
+		}		
 	});
 	shell.setSize( 400, 300 );
 	shell.open();
 
 	while( !shell.isDisposed() ) {
-	  if( !display.readAndDispatch() )
-	    display.sleep();
-	}
-	display.dispose();
+		if( !display.readAndDispatch() )
+			display.sleep();
+		}
+		display.dispose();
 	}
 }

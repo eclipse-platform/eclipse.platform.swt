@@ -249,7 +249,7 @@ public void paint(GC gc, int width, int height) {
 		pattern = new Pattern(device, background.getBgImage());
 		gc.setBackgroundPattern(pattern);
 	}
-    gc.fillRectangle(0, 0, width, height);
-    if (pattern != null) pattern.dispose();
+	gc.fillRectangle(0, 0, width, height);
+	if (pattern != null) pattern.dispose();
 }
 }

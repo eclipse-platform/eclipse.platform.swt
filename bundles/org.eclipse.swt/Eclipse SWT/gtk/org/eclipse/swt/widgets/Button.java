@@ -116,26 +116,26 @@ static int checkStyle (int style) {
 }
 
 GtkBorder getBorder (byte[] border, long handle, int defaultBorder) {
-    GtkBorder gtkBorder = new GtkBorder();
-    long []  borderPtr = new long [1];
-    if (GTK.GTK4) {
+	GtkBorder gtkBorder = new GtkBorder();
+	long []  borderPtr = new long [1];
+	if (GTK.GTK4) {
 		long context = GTK.gtk_widget_get_style_context (handle);
 		int stateFlag = GTK.gtk_widget_get_state_flags(handle);
 		gtk_style_context_get_border(context, stateFlag, gtkBorder);
 		return gtkBorder;
-    } else {
-    	GTK.gtk_widget_style_get (handle, border, borderPtr,0);
-    	if (borderPtr[0] != 0) {
-            OS.memmove (gtkBorder, borderPtr[0], GtkBorder.sizeof);
-            GTK.gtk_border_free(borderPtr[0]);
-            return gtkBorder;
-        }
-    }
-    gtkBorder.left = defaultBorder;
-    gtkBorder.top = defaultBorder;
-    gtkBorder.right = defaultBorder;
-    gtkBorder.bottom = defaultBorder;
-    return gtkBorder;
+	} else {
+		GTK.gtk_widget_style_get (handle, border, borderPtr,0);
+		if (borderPtr[0] != 0) {
+			OS.memmove (gtkBorder, borderPtr[0], GtkBorder.sizeof);
+			GTK.gtk_border_free(borderPtr[0]);
+			return gtkBorder;
+		}
+	}
+	gtkBorder.left = defaultBorder;
+	gtkBorder.top = defaultBorder;
+	gtkBorder.right = defaultBorder;
+	gtkBorder.bottom = defaultBorder;
+	return gtkBorder;
 }
 
 @Override

@@ -649,13 +649,13 @@ public class GDK extends OS {
 	 */
 	public static final native void _gdk_cairo_set_source_pixbuf(long cairo, long pixbuf, double pixbuf_x, double pixbuf_y);
 	public static final void gdk_cairo_set_source_pixbuf(long cairo, long pixbuf, double pixbuf_x, double pixbuf_y) {
-	        lock.lock();
-	        try {
-	                _gdk_cairo_set_source_pixbuf(cairo,pixbuf,pixbuf_x,pixbuf_y);
-	        }
-	        finally {
-	                lock.unlock();
-	        }
+			lock.lock();
+			try {
+					_gdk_cairo_set_source_pixbuf(cairo,pixbuf,pixbuf_x,pixbuf_y);
+			}
+			finally {
+					lock.unlock();
+			}
 	}
 	/**
 	 * @param cairo cast=(cairo_t *)
@@ -666,13 +666,13 @@ public class GDK extends OS {
 	public static final native void _gdk_cairo_set_source_window(long cairo, long window, int x, int y);
 	/** [GTK3 only, if-def'd in os.h] */
 	public static final void gdk_cairo_set_source_window(long cairo, long window, int x, int y) {
-	        lock.lock();
-	        try {
-	                _gdk_cairo_set_source_window(cairo, window, x, y);
-	        }
-	        finally {
-	                lock.unlock();
-	        }
+			lock.lock();
+			try {
+					_gdk_cairo_set_source_window(cairo, window, x, y);
+			}
+			finally {
+					lock.unlock();
+			}
 	}
 	/** @param display cast=(GdkDisplay *)
 	 *  @param cursor_type cast=(GdkCursorType)
@@ -1411,9 +1411,9 @@ public class GDK extends OS {
 		lock.lock();
 		try {
 			return _gdk_keymap_get_entries_for_keyval(keymap, keyval, keys, n_keys);
-	 	} finally {
-	 		lock.unlock();
-	 	}
+		} finally {
+			lock.unlock();
+		}
 	}
 	public static final native long _gdk_keyval_to_lower(long keyval);
 	public static final long gdk_keyval_to_lower(long keyval) {

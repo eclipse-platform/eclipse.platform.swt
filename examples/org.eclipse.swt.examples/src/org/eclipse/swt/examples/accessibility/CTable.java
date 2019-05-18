@@ -889,9 +889,9 @@ public Control[] getChildren () {
 	/* remove the Header from the returned set of children */
 	int index = 0;
 	for (Control control : controls) {
-		 if (control != header) {
-		 	result [index++] = control;
-		 }
+		if (control != header) {
+			result [index++] = control;
+		}
 	}
 	return result;
 }

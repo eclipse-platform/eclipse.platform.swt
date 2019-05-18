@@ -1496,7 +1496,7 @@ public static final native void _g_signal_remove_emission_hook(int signal_id, lo
 public static final void g_signal_remove_emission_hook(int signal_id, long hook_id) {
 	lock.lock();
 	try {
-		 _g_signal_remove_emission_hook (signal_id, hook_id);
+		_g_signal_remove_emission_hook (signal_id, hook_id);
 	} finally {
 		lock.unlock();
 	}
@@ -4190,12 +4190,12 @@ public static final native long _g_dbus_proxy_new_for_bus_sync (int bus_type, in
 		long cancellable, long [] error);
 public static final long g_dbus_proxy_new_for_bus_sync (int bus_type, int flags, long info, byte [] name, byte [] object_path, byte [] interface_name,
 		long cancellable, long [] error) {
-  lock.lock();
-  try {
-    return _g_dbus_proxy_new_for_bus_sync (bus_type, flags, info, name, object_path, interface_name, cancellable, error);
-  } finally {
-    lock.unlock();
-  }
+	lock.lock();
+	try {
+		return _g_dbus_proxy_new_for_bus_sync (bus_type, flags, info, name, object_path, interface_name, cancellable, error);
+	} finally {
+		lock.unlock();
+	}
 }
 
 /**
@@ -4259,12 +4259,12 @@ public static final long g_dbus_proxy_call_finish (long proxy, long res, long []
 public static final native long _g_dbus_node_info_new_for_xml (byte[] xml_data, long [] error);
 /** @category gdbus */
 public static final long g_dbus_node_info_new_for_xml (byte[] xml_data, long [] error) {
-  lock.lock();
-  try {
-    return _g_dbus_node_info_new_for_xml (xml_data, error);
-  } finally {
-    lock.unlock();
-  }
+	lock.lock();
+	try {
+		return _g_dbus_node_info_new_for_xml (xml_data, error);
+	} finally {
+		lock.unlock();
+	}
 }
 
 /**

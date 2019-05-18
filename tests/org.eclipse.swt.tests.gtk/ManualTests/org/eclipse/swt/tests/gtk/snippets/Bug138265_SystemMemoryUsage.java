@@ -109,7 +109,7 @@ gridData.grabExcessVerticalSpace = true;
 gridData.horizontalAlignment = SWT.FILL;
 gridData.verticalAlignment = SWT.FILL;
 return gridData;
-    }
+	}
 
 
 public static void main(String[] args) {

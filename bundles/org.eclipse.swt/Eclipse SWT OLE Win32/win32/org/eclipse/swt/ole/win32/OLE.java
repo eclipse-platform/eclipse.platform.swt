@@ -246,7 +246,7 @@ public class OLE extends SWT {
 	public static final short FUNCFLAG_FREQUESTEDIT = 0x8;
 	public static final short FUNCFLAG_FDISPLAYBIND = 0x10;
 	public static final short FUNCFLAG_FDEFAULTBIND = 0x20;
-  	public static final short FUNCFLAG_FHIDDEN = 0x40;
+	public static final short FUNCFLAG_FHIDDEN = 0x40;
 	public static final short FUNCFLAG_FUSESGETLASTERROR = 0x80;
 	public static final short FUNCFLAG_FDEFAULTCOLLELEM = 0x100;
 	public static final short FUNCFLAG_FUIDEFAULT = 0x200;

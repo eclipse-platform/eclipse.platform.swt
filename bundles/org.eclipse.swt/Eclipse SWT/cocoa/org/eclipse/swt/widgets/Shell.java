@@ -668,9 +668,9 @@ void createHandle () {
 			} else {
 				styleMask |= OS.NSUtilityWindowMask | OS.NSNonactivatingPanelMask;
 			}
- 		} else {
- 			window = (NSWindow) new SWTWindow().alloc ();
- 		}
+		} else {
+			window = (NSWindow) new SWTWindow().alloc ();
+		}
 		if ((style & SWT.NO_TRIM) == 0) {
 			if ((style & SWT.TITLE) != 0) styleMask |= OS.NSTitledWindowMask;
 			if ((style & SWT.CLOSE) != 0) styleMask |= OS.NSClosableWindowMask;

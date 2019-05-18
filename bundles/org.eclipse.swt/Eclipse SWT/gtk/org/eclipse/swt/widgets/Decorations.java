@@ -720,10 +720,10 @@ public void setMinimized (boolean minimized) {
 
 @Override
 void setOrientation (boolean create) {
-    super.setOrientation (create);
-    if (!create) {
-        if (menuBar != null) menuBar._setOrientation (style & (SWT.RIGHT_TO_LEFT | SWT.LEFT_TO_RIGHT));
-    }
+	super.setOrientation (create);
+	if (!create) {
+		if (menuBar != null) menuBar._setOrientation (style & (SWT.RIGHT_TO_LEFT | SWT.LEFT_TO_RIGHT));
+	}
 }
 
 void setSavedFocus (Control control) {
@@ -767,16 +767,16 @@ void sort (Image [] images) {
 	for (int gap=length/2; gap>0; gap/=2) {
 		for (int i=gap; i<length; i++) {
 			for (int j=i-gap; j>=0; j-=gap) {
-		   		if (compare (datas [j], datas [j + gap]) >= 0) {
+				if (compare (datas [j], datas [j + gap]) >= 0) {
 					Image swap = images [j];
 					images [j] = images [j + gap];
 					images [j + gap] = swap;
 					ImageData swapData = datas [j];
 					datas [j] = datas [j + gap];
 					datas [j + gap] = swapData;
-		   		}
-	    	}
-	    }
+				}
+			}
+		}
 	}
 }
 

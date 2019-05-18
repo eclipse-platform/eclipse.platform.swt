@@ -63,7 +63,7 @@ public abstract class SegmentedPaintSession extends BasicPaintSession {
 
 	/**
 	 * Deactivates the tool.
-     */
+	 */
 	@Override
 	public void endSession() {
 		getPaintSurface().clearRubberbandSelection();

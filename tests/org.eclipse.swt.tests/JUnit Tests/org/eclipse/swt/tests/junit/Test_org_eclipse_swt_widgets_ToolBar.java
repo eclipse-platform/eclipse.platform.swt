@@ -67,7 +67,7 @@ public void test_getItemCount() {
 	int number = 10;
 	for (int i = 0; i<number ; i++){
 		assertTrue(":a:" + i, toolBar.getItemCount()==i);
-	  	new ToolItem(toolBar, 0);
+		new ToolItem(toolBar, 0);
 	}
 }
 
@@ -76,7 +76,7 @@ public void test_getItemI() {
 	int number = 5;
 	ToolItem[] items = new ToolItem[number];
 	for (int i = 0; i<number ; i++){
-	  	items[i] = new ToolItem(toolBar, 0);
+		items[i] = new ToolItem(toolBar, 0);
 	}
 	for (int i = 0; i<number ; i++){
 		assertTrue(":a:", toolBar.getItem(i)==items[i]);
@@ -86,7 +86,7 @@ public void test_getItemI() {
 	number = 5;
 	items = new ToolItem[number];
 	for (int i = 0; i<number ; i++){
-	  	items[i] = new ToolItem(toolBar, 0);
+		items[i] = new ToolItem(toolBar, 0);
 	}
 	try {
 		toolBar.getItem(number);
@@ -101,7 +101,7 @@ public void test_getItems() {
 	int number = 5;
 	ToolItem[] items = new ToolItem[number];
 	for (int i = 0; i<number ; i++){
-	  	items[i] = new ToolItem(toolBar, 0);
+		items[i] = new ToolItem(toolBar, 0);
 	}
 	assertArrayEquals(items, toolBar.getItems());
 
@@ -128,7 +128,7 @@ public void test_getRowCount() {
 	int number = 5;
 	ToolItem[] items = new ToolItem[number];
 	for (int i = 0; i<number ; i++){
-	  	items[i] = new ToolItem(toolBar, 0);
+		items[i] = new ToolItem(toolBar, 0);
 	}
 	assertTrue(":a:" + toolBar.getRowCount(), toolBar.getRowCount()==number);  //????  because of Size(0, 0)
 
@@ -136,7 +136,7 @@ public void test_getRowCount() {
 	number = 5;
 	items = new ToolItem[number];
 	for (int i = 0; i<number ; i++){
-	  	items[i] = new ToolItem(toolBar, 0);
+		items[i] = new ToolItem(toolBar, 0);
 	}
 	assertTrue(":a:", toolBar.getRowCount()==1);
 }
@@ -146,7 +146,7 @@ public void test_indexOfLorg_eclipse_swt_widgets_ToolItem() {
 	int number = 10;
 	ToolItem[] tis = new ToolItem[number];
 	for (int i = 0; i<number ; i++){
-	  	tis[i] = new ToolItem(toolBar, 0);
+		tis[i] = new ToolItem(toolBar, 0);
 	}
 	for (int i = 0; i<number ; i++){
 		assertTrue(":a:" + i, toolBar.indexOf(tis[i])==i);
@@ -155,7 +155,7 @@ public void test_indexOfLorg_eclipse_swt_widgets_ToolItem() {
 	number = 10;
 	tis = new ToolItem[number];
 	for (int i = 0; i<number ; i++){
-	  	tis[i] = new ToolItem(toolBar, 0);
+		tis[i] = new ToolItem(toolBar, 0);
 	}
 	for (int i = 0; i<number ; i++){
 		try {
@@ -183,36 +183,36 @@ private void createToolBar(List<String> events) {
 
 @Test
 public void test_consistency_MouseSelection() {
-    List<String> events = new ArrayList<>();
-    createToolBar(events);
-    consistencyEvent(30, 10, 1, 0, ConsistencyUtility.MOUSE_CLICK, events);
+	List<String> events = new ArrayList<>();
+	createToolBar(events);
+	consistencyEvent(30, 10, 1, 0, ConsistencyUtility.MOUSE_CLICK, events);
 }
 
 @Test
 public void test_consistency_EnterSelection () {
-    List<String> events = new ArrayList<>();
-    createToolBar(events);
-    consistencyEvent(13, 10, 0, 0, ConsistencyUtility.KEY_PRESS, events);
+	List<String> events = new ArrayList<>();
+	createToolBar(events);
+	consistencyEvent(13, 10, 0, 0, ConsistencyUtility.KEY_PRESS, events);
 }
 
 @Test
 public void test_consistency_SpaceSelection () {
-    List<String> events = new ArrayList<>();
-    createToolBar(events);
-    consistencyEvent(' ', 32, 0, 0, ConsistencyUtility.KEY_PRESS, events);
+	List<String> events = new ArrayList<>();
+	createToolBar(events);
+	consistencyEvent(' ', 32, 0, 0, ConsistencyUtility.KEY_PRESS, events);
 }
 
 @Test
 public void test_consistency_MenuDetect () {
-    List<String> events = new ArrayList<>();
-    createToolBar(events);
-    consistencyEvent(50, 15, 3, 0, ConsistencyUtility.MOUSE_CLICK, events);
+	List<String> events = new ArrayList<>();
+	createToolBar(events);
+	consistencyEvent(50, 15, 3, 0, ConsistencyUtility.MOUSE_CLICK, events);
 }
 @Test
 public void test_consistency_DragDetect () {
-    List<String> events = new ArrayList<>();
-    createToolBar(events);
-    consistencyEvent(30, 20, 50, 20, ConsistencyUtility.MOUSE_DRAG, events);
+	List<String> events = new ArrayList<>();
+	createToolBar(events);
+	consistencyEvent(30, 20, 50, 20, ConsistencyUtility.MOUSE_DRAG, events);
 }
 
 }

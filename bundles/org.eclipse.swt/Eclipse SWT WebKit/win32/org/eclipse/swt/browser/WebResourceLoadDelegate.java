@@ -145,7 +145,7 @@ int didReceiveAuthenticationChallenge (long /*int*/ webView, long /*int*/ identi
 	hr = authenticationChallenge.protectionSpace (result);
 	if (hr != COM.S_OK || result[0] == 0) {
 		return COM.S_OK;
-    }
+	}
 	IWebURLProtectionSpace space = new IWebURLProtectionSpace (result[0]);
 	String host = null, realm = null;
 	result[0] = 0;
@@ -162,7 +162,7 @@ int didReceiveAuthenticationChallenge (long /*int*/ webView, long /*int*/ identi
 			if (hr == COM.S_OK && result[0] != 0) {
 				realm = WebKit.extractBSTR (result[0]);
 				COM.SysFreeString (result[0]);
-		    }
+			}
 		}
 	}
 	space.Release ();
@@ -212,15 +212,15 @@ int identifierForInitialRequest (long /*int*/ webView, long /*int*/ request, lon
 	long /*int*/[] frame = new long /*int*/[1];
 	int hr = source.webFrame (frame);
 	if (hr != COM.S_OK || frame[0] == 0) {
-    	return COM.S_OK;
-    }
+		return COM.S_OK;
+	}
 	new IWebFrame (frame[0]).Release ();
 	long /*int*/[] mainFrame = new long /*int*/[1];
 	IWebView iWebView = new IWebView (webView);
 	hr = iWebView.mainFrame (mainFrame);
 	if (hr != COM.S_OK || mainFrame[0] == 0) {
-    	return COM.S_OK;
-    }
+		return COM.S_OK;
+	}
 	new IWebFrame (mainFrame[0]).Release ();
 	if (frame[0] == mainFrame[0]) {
 		long /*int*/ ptr = C.malloc (8);

@@ -387,7 +387,7 @@ ToolItem [] _getItems () {
  */
 public int getRowCount () {
 	checkWidget();
-	 /* On GTK, toolbars cannot wrap */
+	/* On GTK, toolbars cannot wrap */
 	return 1;
 }
 
@@ -626,7 +626,7 @@ void setForegroundGdkRGBA (long handle, GdkRGBA rgba) {
 		// Form foreground string
 		String color = display.gtk_rgba_to_css_string(toSet);
 		String name = GTK.GTK_VERSION >= OS.VERSION(3, 20, 0) ? display.gtk_widget_class_get_css_name(handle)
-	    		: display.gtk_widget_get_name(handle);
+				: display.gtk_widget_get_name(handle);
 		GdkRGBA selectedForeground = display.COLOR_LIST_SELECTION_TEXT_RGBA;
 		String selection = GTK.GTK_VERSION >= OS.VERSION(3, 20, 0) ? " selection" : ":selected";
 		String css = "* {color: " + color + ";}\n"

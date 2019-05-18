@@ -6102,13 +6102,13 @@ LRESULT WM_KEYDOWN (long /*int*/ wParam, long /*int*/ lParam) {
 			* The fix is to replace VK_LEFT by VK_RIGHT and VK_RIGHT by VK_LEFT
 			* when the current orientation differs from the orientation used to
 			* create the control.
-		    */
-		    boolean isRTL = (style & SWT.RIGHT_TO_LEFT) != 0;
-		    if (isRTL != createdAsRTL) {
-			   long /*int*/ code = callWindowProc (handle, OS.WM_KEYDOWN, wParam == OS.VK_RIGHT ? OS.VK_LEFT : OS.VK_RIGHT, lParam);
-			   return new LRESULT (code);
-		    }
-		    break;
+			*/
+			boolean isRTL = (style & SWT.RIGHT_TO_LEFT) != 0;
+			if (isRTL != createdAsRTL) {
+				long /*int*/ code = callWindowProc (handle, OS.WM_KEYDOWN, wParam == OS.VK_RIGHT ? OS.VK_LEFT : OS.VK_RIGHT, lParam);
+				return new LRESULT (code);
+			}
+			break;
 		case OS.VK_SPACE:
 			/*
 			* Ensure that the window proc does not process VK_SPACE
@@ -7816,7 +7816,7 @@ LRESULT wmNotifyHeader (NMHDR hdr, long /*int*/ wParam, long /*int*/ lParam) {
 					OS.SendMessage (hwndHeader, OS.HDM_GETORDERARRAY, columnCount, order);
 					int index = 0;
 					while (index < order.length) {
-					 	if (order [index] == phdn.iItem) break;
+						if (order [index] == phdn.iItem) break;
 						index++;
 					}
 					if (index == order.length) index = 0;

@@ -67,25 +67,25 @@ public class LWJGLExample {
 
 		canvas.setCurrent();
 		try {
-       		GLContext.useContext(canvas);
-        } catch(LWJGLException e) { e.printStackTrace(); }
-        
-        canvas.addListener(SWT.Resize, new Listener() {
-        	public void handleEvent(Event event) {
-        		Rectangle bounds = canvas.getBounds();
-        		float fAspect = (float) bounds.width / (float) bounds.height;
+			GLContext.useContext(canvas);
+		} catch(LWJGLException e) { e.printStackTrace(); }
+		
+		canvas.addListener(SWT.Resize, new Listener() {
+			public void handleEvent(Event event) {
+				Rectangle bounds = canvas.getBounds();
+				float fAspect = (float) bounds.width / (float) bounds.height;
 				canvas.setCurrent();
 				try {
 					GLContext.useContext(canvas);
-		        } catch(LWJGLException e) { e.printStackTrace(); }
-        		GL11.glViewport(0, 0, bounds.width, bounds.height);
-        		GL11.glMatrixMode(GL11.GL_PROJECTION);
-        		GL11.glLoadIdentity();
-        		GLU.gluPerspective(45.0f, fAspect, 0.5f, 400.0f);
-        		GL11.glMatrixMode(GL11.GL_MODELVIEW);
-        		GL11.glLoadIdentity();
-        	}
-        });
+				} catch(LWJGLException e) { e.printStackTrace(); }
+				GL11.glViewport(0, 0, bounds.width, bounds.height);
+				GL11.glMatrixMode(GL11.GL_PROJECTION);
+				GL11.glLoadIdentity();
+				GLU.gluPerspective(45.0f, fAspect, 0.5f, 400.0f);
+				GL11.glMatrixMode(GL11.GL_MODELVIEW);
+				GL11.glLoadIdentity();
+			}
+		});
 
 		GL11.glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 		GL11.glColor3f(1.0f, 0.0f, 0.0f);
@@ -98,14 +98,14 @@ public class LWJGLExample {
 		shell.setSize(640, 480);
 		shell.open();
 
-	    display.asyncExec(new Runnable() {
-	    	int rot = 0;
+		display.asyncExec(new Runnable() {
+			int rot = 0;
 			public void run() {
 				if (!canvas.isDisposed()) {
 					canvas.setCurrent();
 					try {
 						GLContext.useContext(canvas);
-			        } catch(LWJGLException e) { e.printStackTrace(); }
+					} catch(LWJGLException e) { e.printStackTrace(); }
 					GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
 					GL11.glClearColor(.3f, .5f, .8f, 1.0f);
 					GL11.glLoadIdentity();

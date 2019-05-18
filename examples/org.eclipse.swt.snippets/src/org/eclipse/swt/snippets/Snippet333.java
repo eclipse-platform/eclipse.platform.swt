@@ -104,9 +104,9 @@ public class Snippet333 {
 	}
 
 	protected static void setBackground(Display display, Control control) {
-		 Random randomGenerator = new Random();
-		 int nextColor = randomGenerator.nextInt(100) + randomGenerator.nextInt(100);
-		 control.setBackground(display.getSystemColor(colors[nextColor % colors.length]));
+		Random randomGenerator = new Random();
+		int nextColor = randomGenerator.nextInt(100) + randomGenerator.nextInt(100);
+		control.setBackground(display.getSystemColor(colors[nextColor % colors.length]));
 	}
 
 

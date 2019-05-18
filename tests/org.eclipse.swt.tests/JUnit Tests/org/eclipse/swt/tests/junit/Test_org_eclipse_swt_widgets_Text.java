@@ -1485,26 +1485,26 @@ protected void setWidget(Widget w) {
 
 @Test
 public void test_consistency_EnterSelection () {
-    makeCleanEnvironment(true);
-    consistencyEvent(13, 10, 0, 0, ConsistencyUtility.KEY_PRESS);
+	makeCleanEnvironment(true);
+	consistencyEvent(13, 10, 0, 0, ConsistencyUtility.KEY_PRESS);
 }
 
 @Test
 public void test_consistency_Modify() {
-    makeCleanEnvironment(true);
-    consistencyEvent('a', 0, 0, 0, ConsistencyUtility.KEY_PRESS);
+	makeCleanEnvironment(true);
+	consistencyEvent('a', 0, 0, 0, ConsistencyUtility.KEY_PRESS);
 }
 
 @Test
 public void test_consistency_MenuDetect () {
-    makeCleanEnvironment(true);
-    consistencyEvent(10, 10, 3, ConsistencyUtility.ESCAPE_MENU, ConsistencyUtility.MOUSE_CLICK);
+	makeCleanEnvironment(true);
+	consistencyEvent(10, 10, 3, ConsistencyUtility.ESCAPE_MENU, ConsistencyUtility.MOUSE_CLICK);
 }
 
 @Test
 public void test_consistency_DragDetect () {
-    makeCleanEnvironment(true);
-    consistencyEvent(30, 10, 50, 0, ConsistencyUtility.MOUSE_DRAG);
+	makeCleanEnvironment(true);
+	consistencyEvent(30, 10, 50, 0, ConsistencyUtility.MOUSE_DRAG);
 }
 
 @Test

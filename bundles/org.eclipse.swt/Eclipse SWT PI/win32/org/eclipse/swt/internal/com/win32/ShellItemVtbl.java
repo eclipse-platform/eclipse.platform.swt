@@ -17,12 +17,12 @@ package org.eclipse.swt.internal.com.win32;
  * Function number constants for IShellItem COM interface
  */
 public class ShellItemVtbl{
-    public static final int QUERY_INTERFACE = 0;
-    public static final int ADD_REF = 1;
-    public static final int RELEASE = 2;
-    public static final int BIND_TO_HANDLER = 3;
-    public static final int GET_PARENT = 4;
-    public static final int GET_DISPLAY_NAME = 5;
-    public static final int GET_ATTRIBUTES = 6;
-    public static final int COMPARE = 7;
+	public static final int QUERY_INTERFACE = 0;
+	public static final int ADD_REF = 1;
+	public static final int RELEASE = 2;
+	public static final int BIND_TO_HANDLER = 3;
+	public static final int GET_PARENT = 4;
+	public static final int GET_DISPLAY_NAME = 5;
+	public static final int GET_ATTRIBUTES = 6;
+	public static final int COMPARE = 7;
 }

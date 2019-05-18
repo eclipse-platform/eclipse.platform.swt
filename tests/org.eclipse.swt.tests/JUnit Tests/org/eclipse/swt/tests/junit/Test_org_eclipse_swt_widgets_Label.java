@@ -65,8 +65,8 @@ public void test_getAlignment(){
 	int[] cases = {SWT.LEFT, SWT.RIGHT, SWT.CENTER};
 	for (int i=0; i<cases.length; i++)
 	{
- 	  label = new Label(shell, cases[i]);
-	  assertEquals(label.getAlignment(), cases[i]);
+		label = new Label(shell, cases[i]);
+		assertEquals(label.getAlignment(), cases[i]);
 	}
 }
 
@@ -74,10 +74,10 @@ public void test_getAlignment(){
 public void test_getImage(){
 	Image[] cases = {null, new Image(null, 100, 100)};
 	for(int i=0; i<cases.length; i++){
-	 label.setImage(cases[i]);
-	 assertEquals(label.getImage(), cases[i]);
-	 if (cases[i]!=null)
-	  cases[i].dispose();
+		label.setImage(cases[i]);
+		assertEquals(label.getImage(), cases[i]);
+		if (cases[i]!=null)
+			cases[i].dispose();
 	}
 }
 
@@ -85,8 +85,8 @@ public void test_getImage(){
 public void test_getText(){
 	String[] cases = {"", "some name", "sdasdlkjshcdascecoewcwe"};
 	for(int i=0; i<cases.length; i++){
-	 label.setText(cases[i]);
-	 assertEquals(label.getText(), cases[i]);
+		label.setText(cases[i]);
+		assertEquals(label.getText(), cases[i]);
 	}
 }
 
@@ -95,8 +95,8 @@ public void test_setAlignmentI(){
 	int[] cases = {SWT.LEFT, SWT.RIGHT, SWT.CENTER};
 	for (int i=0; i<cases.length; i++)
 	{
- 	  label.setAlignment(cases[i]);
-	  assertEquals(label.getAlignment(), cases[i]);
+		label.setAlignment(cases[i]);
+		assertEquals(label.getAlignment(), cases[i]);
 	}
 }
 
@@ -121,11 +121,11 @@ Label label;
 
 @Test
 public void test_consistency_MenuDetect () {
-    consistencyEvent(10, 5, 3, 0, ConsistencyUtility.MOUSE_CLICK);
+	consistencyEvent(10, 5, 3, 0, ConsistencyUtility.MOUSE_CLICK);
 }
 
 @Test
 public void test_consistency_DragDetect () {
-    consistencyEvent(10, 5, 20, 10, ConsistencyUtility.MOUSE_DRAG);
+	consistencyEvent(10, 5, 20, 10, ConsistencyUtility.MOUSE_DRAG);
 }
 }

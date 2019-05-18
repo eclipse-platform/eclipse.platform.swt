@@ -773,10 +773,10 @@ private void createDropTarget() {
 			printEvent(event);
 			String[] strings = null;
 			if (TextTransfer.getInstance().isSupportedType(event.currentDataType) ||
-			    RTFTransfer.getInstance().isSupportedType(event.currentDataType) ||
-			    HTMLTransfer.getInstance().isSupportedType(event.currentDataType) ||
-			    URLTransfer.getInstance().isSupportedType(event.currentDataType)) {
-			    strings = new String[] {(String)event.data};
+				RTFTransfer.getInstance().isSupportedType(event.currentDataType) ||
+				HTMLTransfer.getInstance().isSupportedType(event.currentDataType) ||
+				URLTransfer.getInstance().isSupportedType(event.currentDataType)) {
+				strings = new String[] {(String)event.data};
 			}
 			if (FileTransfer.getInstance().isSupportedType(event.currentDataType)) {
 				strings = (String[])event.data;
@@ -787,8 +787,8 @@ private void createDropTarget() {
 			}
 
 			if (strings.length == 1 && (dropControlType == TABLE ||
-			                            dropControlType == TREE ||
-			                            dropControlType == LIST)) {
+										dropControlType == TREE ||
+										dropControlType == LIST)) {
 				// convert string separated by "\n" into an array of strings
 				String string = strings[0];
 				int count = 0;

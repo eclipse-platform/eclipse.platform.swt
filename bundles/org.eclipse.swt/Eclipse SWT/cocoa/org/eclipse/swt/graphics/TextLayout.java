@@ -335,9 +335,9 @@ void computeRuns() {
 	long rangePtr = C.malloc(NSRange.sizeof);
 	NSRange lineRange = new NSRange();
 	for (numberOfLines = 0, index = 0; index < numberOfGlyphs; numberOfLines++){
-	    layoutManager.lineFragmentUsedRectForGlyphAtIndex(index, rangePtr, true);
-	    OS.memmove(lineRange, rangePtr, NSRange.sizeof);
-	    index = lineRange.location + lineRange.length;
+		layoutManager.lineFragmentUsedRectForGlyphAtIndex(index, rangePtr, true);
+		OS.memmove(lineRange, rangePtr, NSRange.sizeof);
+		index = lineRange.location + lineRange.length;
 	}
 	if (numberOfLines == 0) numberOfLines++;
 	int[] offsets = new int[numberOfLines + 1];
@@ -345,9 +345,9 @@ void computeRuns() {
 	for (numberOfLines = 0, index = 0; index < numberOfGlyphs; numberOfLines++){
 		bounds[numberOfLines] = layoutManager.lineFragmentUsedRectForGlyphAtIndex(index, rangePtr, true);
 		if (numberOfLines < bounds.length - 1) bounds[numberOfLines].height -= spacing;
-	    OS.memmove(lineRange, rangePtr, NSRange.sizeof);
-	    offsets[numberOfLines] = (int)lineRange.location;
-	    index = lineRange.location + lineRange.length;
+		OS.memmove(lineRange, rangePtr, NSRange.sizeof);
+		offsets[numberOfLines] = (int)lineRange.location;
+		index = lineRange.location + lineRange.length;
 	}
 	if (numberOfLines == 0) {
 		Font font = this.font != null ? this.font : device.systemFont;

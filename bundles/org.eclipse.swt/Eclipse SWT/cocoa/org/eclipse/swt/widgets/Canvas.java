@@ -182,7 +182,7 @@ void drawWidget (long id, NSGraphicsContext context, NSRect rect) {
 		Image image = caret.image;
 		if (image != null) {
 			NSImage imageHandle = image.handle;
-		 	NSSize size = imageHandle.size();
+			NSSize size = imageHandle.size();
 			NSImageRep imageRep = ImageUtil.createImageRep(image, size);
 			if (!imageRep.isKindOfClass(OS.class_NSBitmapImageRep)) return;
 			NSBitmapImageRep rep = new NSBitmapImageRep(imageRep);
@@ -191,25 +191,25 @@ void drawWidget (long id, NSGraphicsContext context, NSRect rect) {
 			destRect.origin.y = caret.y;
 			destRect.size.width = size.width;
 			destRect.size.height = size.height;
-		 	long data = rep.bitmapData();
+			long data = rep.bitmapData();
 			long format = rep.bitmapFormat();
-		 	long bpr = rep.bytesPerRow();
+			long bpr = rep.bytesPerRow();
 			int alphaInfo;
 			if (rep.hasAlpha()) {
 				alphaInfo = (format & OS.NSAlphaFirstBitmapFormat) != 0 ? OS.kCGImageAlphaFirst : OS.kCGImageAlphaLast;
 			} else {
 				alphaInfo = (format & OS.NSAlphaFirstBitmapFormat) != 0 ? OS.kCGImageAlphaNoneSkipFirst : OS.kCGImageAlphaNoneSkipLast;
 			}
-		 	long provider = OS.CGDataProviderCreateWithData(0, data, bpr * (int)size.height, 0);
+			long provider = OS.CGDataProviderCreateWithData(0, data, bpr * (int)size.height, 0);
 			long colorspace = OS.CGColorSpaceCreateDeviceRGB();
 			long cgImage = OS.CGImageCreate((int)size.width, (int)size.height, rep.bitsPerSample(), rep.bitsPerPixel(), bpr, colorspace, alphaInfo, provider, 0, true, 0);
 			OS.CGColorSpaceRelease(colorspace);
 			OS.CGDataProviderRelease(provider);
-		 	OS.CGContextScaleCTM (ctx, 1, -1);
-		 	OS.CGContextTranslateCTM (ctx, 0, -(size.height + 2 * destRect.origin.y));
+			OS.CGContextScaleCTM (ctx, 1, -1);
+			OS.CGContextTranslateCTM (ctx, 0, -(size.height + 2 * destRect.origin.y));
 			OS.CGContextSetBlendMode (ctx, OS.kCGBlendModeDifference);
 			OS.CGContextDrawImage (ctx, destRect, cgImage);
-		 	OS.CGImageRelease(cgImage);
+			OS.CGImageRelease(cgImage);
 		} else {
 			CGRect drawRect = new CGRect();
 			drawRect.origin.x = caret.x;
@@ -252,7 +252,7 @@ NSRect firstRectForCharacterRange (long id, long sel, long range) {
  */
 public Caret getCaret () {
 	checkWidget();
-    return caret;
+	return caret;
 }
 
 /**
@@ -269,7 +269,7 @@ public Caret getCaret () {
  */
 public IME getIME () {
 	checkWidget();
-    return ime;
+	return ime;
 }
 
 @Override
@@ -305,38 +305,38 @@ NSRange markedRange (long id, long sel) {
 
 @Override
 boolean readSelectionFromPasteboard(long id, long sel, long pasteboard) {
-    boolean result = false;
-    NSPasteboard pboard = new NSPasteboard(pasteboard);
-    NSArray availableTypes = pboard.types();
-    NSString type;
+	boolean result = false;
+	NSPasteboard pboard = new NSPasteboard(pasteboard);
+	NSArray availableTypes = pboard.types();
+	NSString type;
 
-    for (long i = 0; i < supportedPboardTypes.count(); i++) {
-    	if (result) break;
-    	type = new NSString(supportedPboardTypes.objectAtIndex(i));
-        if (availableTypes.containsObject(type)) {
-            result = readSelectionFromPasteboard(pboard, type);
-        }
-    }
-    return result;
+	for (long i = 0; i < supportedPboardTypes.count(); i++) {
+		if (result) break;
+		type = new NSString(supportedPboardTypes.objectAtIndex(i));
+		if (availableTypes.containsObject(type)) {
+			result = readSelectionFromPasteboard(pboard, type);
+		}
+	}
+	return result;
 }
 
 boolean readSelectionFromPasteboard(NSPasteboard pboard, NSString type) {
-    boolean result = false;
-    NSString newSelection = null;
-    if (type.isEqualToString(OS.NSPasteboardTypeString)) {
-        NSString string = pboard.stringForType(OS.NSPasteboardTypeString);
-        if (string != null && string.length() > 0) {
-        	newSelection = string;
-        }
-    }
+	boolean result = false;
+	NSString newSelection = null;
+	if (type.isEqualToString(OS.NSPasteboardTypeString)) {
+		NSString string = pboard.stringForType(OS.NSPasteboardTypeString);
+		if (string != null && string.length() > 0) {
+			newSelection = string;
+		}
+	}
 
-    if (newSelection != null) {
-    	Accessible acc = getAccessible();
-    	acc.internal_accessibilitySetValue_forAttribute(newSelection, OS.NSAccessibilitySelectedTextAttribute, ACC.CHILDID_SELF);
-    	result = true;
-    }
+	if (newSelection != null) {
+		Accessible acc = getAccessible();
+		acc.internal_accessibilitySetValue_forAttribute(newSelection, OS.NSAccessibilitySelectedTextAttribute, ACC.CHILDID_SELF);
+		result = true;
+	}
 
-    return result;
+	return result;
 }
 
 @Override
@@ -496,7 +496,7 @@ public void scroll (int destX, int destY, int x, int y, int width, int height, b
 		}
 	}
 
-    if (all) {
+	if (all) {
 		Control [] children = _getChildren ();
 		for (int i=0; i<children.length; i++) {
 			Control child = children [i];
@@ -659,26 +659,26 @@ void viewWillMoveToWindow(long id, long sel, long arg0) {
 
 @Override
 boolean writeSelectionToPasteboard(long id, long sel, long pasteboardObj, long typesObj) {
-    boolean result = false;
-    NSPasteboard pboard = new NSPasteboard(pasteboardObj);
-    NSArray types = new NSArray(typesObj);
-    NSMutableArray typesToDeclare = NSMutableArray.arrayWithCapacity(2);
-    NSString type;
+	boolean result = false;
+	NSPasteboard pboard = new NSPasteboard(pasteboardObj);
+	NSArray types = new NSArray(typesObj);
+	NSMutableArray typesToDeclare = NSMutableArray.arrayWithCapacity(2);
+	NSString type;
 
-    for (long i = 0; i < supportedPboardTypes.count(); i++) {
-    	type = new NSString(supportedPboardTypes.objectAtIndex(i));
-        if (types.containsObject(type)) typesToDeclare.addObject(type);
-    }
+	for (long i = 0; i < supportedPboardTypes.count(); i++) {
+		type = new NSString(supportedPboardTypes.objectAtIndex(i));
+		if (types.containsObject(type)) typesToDeclare.addObject(type);
+	}
 
-    if (typesToDeclare.count() > 0) {
-        pboard.declareTypes(typesToDeclare, view);
-        for (long i = 0; i < typesToDeclare.count(); i++) {
-        	type = new NSString(typesToDeclare.objectAtIndex(i));
-            if (writeSelectionToPasteboard(pboard, type)) result = true;
-        }
-    }
+	if (typesToDeclare.count() > 0) {
+		pboard.declareTypes(typesToDeclare, view);
+		for (long i = 0; i < typesToDeclare.count(); i++) {
+			type = new NSString(typesToDeclare.objectAtIndex(i));
+			if (writeSelectionToPasteboard(pboard, type)) result = true;
+		}
+	}
 
-    return result;
+	return result;
 }
 
 boolean writeSelectionToPasteboard(NSPasteboard pboard, NSString type) {

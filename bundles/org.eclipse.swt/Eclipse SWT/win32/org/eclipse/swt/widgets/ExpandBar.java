@@ -821,7 +821,7 @@ LRESULT WM_SETCURSOR (long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.WM_SETCURSOR (wParam, lParam);
 	if (result != null) return result;
 	int hitTest = (short) OS.LOWORD (lParam);
- 	if (hitTest == OS.HTCLIENT) {
+	if (hitTest == OS.HTCLIENT) {
 		for (int i = 0; i < itemCount; i++) {
 			ExpandItem item = items [i];
 			if (item.hover) {

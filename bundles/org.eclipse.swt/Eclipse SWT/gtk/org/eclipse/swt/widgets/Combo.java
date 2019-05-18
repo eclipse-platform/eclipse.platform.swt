@@ -764,7 +764,7 @@ long findMenuHandle() {
 	long result = 0;
 	GTK.gtk_container_forall (popupHandle, display.allChildrenProc, 0);
 	if (display.allChildren != 0) {
-	    long list = display.allChildren;
+		long list = display.allChildren;
 		while (list != 0) {
 			long widget = OS.g_list_data (list);
 			if (OS.G_OBJECT_TYPE (widget) == GTK.GTK_TYPE_MENU ()) {
@@ -773,8 +773,8 @@ long findMenuHandle() {
 			}
 			list = OS.g_list_next (list);
 		}
-	    OS.g_list_free (display.allChildren);
-	    display.allChildren = 0;
+		OS.g_list_free (display.allChildren);
+		display.allChildren = 0;
 	}
 	return result;
 }
@@ -1662,9 +1662,9 @@ long gtk_insert_text (long widget, long new_text, long new_text_length, long pos
 long gtk_key_press_event (long widget, long event) {
 	long result = super.gtk_key_press_event (widget, event);
 	if (result != 0) {
-	    gdkEventKey = 0;
-	    fixIM ();
-	    return result;
+		gdkEventKey = 0;
+		fixIM ();
+		return result;
 	}
 	if (gdkEventKey == -1) result = 1;
 	gdkEventKey = 0;
@@ -1676,10 +1676,10 @@ long gtk_key_press_event (long widget, long event) {
 		switch (eventKeyval[0]) {
 			case GDK.GDK_Down:
 			case GDK.GDK_KP_Down:
-				 if (oldIndex != (items.length - 1)) {
+				if (oldIndex != (items.length - 1)) {
 					newIndex = oldIndex + 1;
-				 }
-				 break;
+				}
+				break;
 			case GDK.GDK_Up:
 			case GDK.GDK_KP_Up:
 				if (oldIndex != -1 && oldIndex != 0) {
@@ -1693,13 +1693,13 @@ long gtk_key_press_event (long widget, long event) {
 			* gtk_combo_box_entry.
 			*/
 			case GDK.GDK_Page_Up:
-		    case GDK.GDK_KP_Page_Up:
-		    	newIndex = 0;
-		    	break;
-		    case GDK.GDK_Page_Down:
-		    case GDK.GDK_KP_Page_Down:
-		    	newIndex = items.length - 1;
-		    	break;
+			case GDK.GDK_KP_Page_Up:
+				newIndex = 0;
+				break;
+			case GDK.GDK_Page_Down:
+			case GDK.GDK_KP_Page_Down:
+				newIndex = items.length - 1;
+				break;
 		}
 		if (newIndex != oldIndex) {
 			GTK.gtk_combo_box_set_active (handle, newIndex);

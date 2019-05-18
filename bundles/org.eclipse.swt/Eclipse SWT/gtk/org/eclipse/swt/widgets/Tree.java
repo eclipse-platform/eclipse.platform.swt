@@ -2060,7 +2060,7 @@ TreeItem _getCachedTopItem() {
 		long iter = OS.g_malloc (GTK.GtkTreeIter_sizeof ());
 		long data = OS.g_list_data (list);
 		if (GTK.gtk_tree_model_get_iter (modelHandle, iter, data)) {
-			 treeSelection = _getItem (iter);
+			treeSelection = _getItem (iter);
 		}
 		OS.g_free (iter);
 		GTK.gtk_tree_path_free (data);
@@ -2306,8 +2306,8 @@ long gtk_button_release_event (long widget, long event) {
 			if ((eventState[0] & (GDK.GDK_CONTROL_MASK|GDK.GDK_SHIFT_MASK)) == 0) {
 				GTK.gtk_tree_view_set_cursor(handle, path[0], 0,  false);
 			}
-			 // Check to see if there has been a new tree item selected when holding Control in Path.
-			 // If not, deselect the item.
+			// Check to see if there has been a new tree item selected when holding Control in Path.
+			// If not, deselect the item.
 			if ((eventState[0] & GDK.GDK_CONTROL_MASK) != 0 && selectionCountOnRelease == selectionCountOnPress) {
 				GTK.gtk_tree_selection_unselect_path (selection,path[0]);
 			}
@@ -3485,7 +3485,7 @@ void setBackgroundGdkRGBA (long context, long handle, GdkRGBA rgba) {
 	if (GTK.GTK_VERSION >= OS.VERSION(3, 14, 0)) {
 		String name = GTK.GTK_VERSION >= OS.VERSION(3, 20, 0) ? "treeview" : "GtkTreeView";
 		String css = name + " {background-color: " + display.gtk_rgba_to_css_string(background) + ";}\n"
-                + name + ":selected {background-color: " + display.gtk_rgba_to_css_string(selectedBackground) + ";}";
+				+ name + ":selected {background-color: " + display.gtk_rgba_to_css_string(selectedBackground) + ";}";
 
 		// Cache background color
 		cssBackground = css;

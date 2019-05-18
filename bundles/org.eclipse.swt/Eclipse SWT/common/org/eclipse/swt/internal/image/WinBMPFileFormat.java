@@ -424,14 +424,14 @@ boolean isFileFormat(LEDataInputStream stream) {
 boolean isPaletteBMP(PaletteData pal, int depth) {
 	switch(depth) {
 		case 32:
-		    if ((pal.redMask == 0xFF00) && (pal.greenMask == 0xFF0000) && (pal.blueMask == 0xFF000000)) return true;
-		    return false;
+			if ((pal.redMask == 0xFF00) && (pal.greenMask == 0xFF0000) && (pal.blueMask == 0xFF000000)) return true;
+			return false;
 		case 24:
 			if ((pal.redMask == 0xFF) && (pal.greenMask == 0xFF00) && (pal.blueMask == 0xFF0000)) return true;
 			return false;
 		case 16:
-		    if ((pal.redMask == 0x7C00) && (pal.greenMask == 0x3E0) && (pal.blueMask == 0x1F)) return true;
-		    return false;
+			if ((pal.redMask == 0x7C00) && (pal.greenMask == 0x3E0) && (pal.blueMask == 0x1F)) return true;
+			return false;
 		default:
 			return true;
 	}
@@ -735,7 +735,7 @@ void unloadIntoByteStream(ImageLoader loader) {
 	// If the pixels are not in the expected BMP format, convert them.
 	if (pal.isDirect && !isPaletteBMP(pal, image.depth)) {
 		// array to store the converted pixels
-	    iData = new byte[image.data.length];
+		iData = new byte[image.data.length];
 		convertPixelsToBGR(image, iData);
 	}
 

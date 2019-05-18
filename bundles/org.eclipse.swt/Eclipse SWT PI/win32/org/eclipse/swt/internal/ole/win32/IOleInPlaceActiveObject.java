@@ -21,8 +21,8 @@ public IOleInPlaceActiveObject(long /*int*/ address) {
 	super(address);
 }
 public int TranslateAccelerator(MSG lpmsg) {
-	  //lpmsg - Pointer to message that may need translating
-	  return COM.VtblCall(5, address, lpmsg);
+	//lpmsg - Pointer to message that may need translating
+	return COM.VtblCall(5, address, lpmsg);
 }
 public void OnFrameWindowActivate(boolean fActivate) {
 	COM.VtblCall(6, getAddress(), fActivate);

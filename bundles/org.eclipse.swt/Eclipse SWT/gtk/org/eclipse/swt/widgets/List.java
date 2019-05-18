@@ -266,11 +266,11 @@ Point computeSizeInPixels (int wHint, int hHint, boolean changed) {
 	 * So if the height is returned as zero calculate the table height
 	 * based on the number of items in the table
 	 */
-	 if (size.y == 0 && hHint == SWT.DEFAULT) {
-		 size.y = getItemCount() * getItemHeightInPixels();
-	 }
+	if (size.y == 0 && hHint == SWT.DEFAULT) {
+		size.y = getItemCount() * getItemHeightInPixels();
+	}
 
-	 /*
+	/*
 	 * In case the table doesn't contain any elements,
 	 * getItemCount returns 0 and size.y will be 0
 	 * so need to assign default height
@@ -950,8 +950,8 @@ long gtk_button_release_event (long widget, long event) {
 			if ((eventState[0] & (GDK.GDK_CONTROL_MASK|GDK.GDK_SHIFT_MASK)) == 0) {
 				GTK.gtk_tree_view_set_cursor(handle, path[0], 0,  false);
 			}
-			 // Check to see if there has been a new tree item selected when holding Control in Path.
-			 // If not, deselect the item.
+			// Check to see if there has been a new tree item selected when holding Control in Path.
+			// If not, deselect the item.
 			if ((eventState[0] & GDK.GDK_CONTROL_MASK) != 0 && selectionCountOnRelease == selectionCountOnPress) {
 				GTK.gtk_tree_selection_unselect_path (selection,path[0]);
 			}

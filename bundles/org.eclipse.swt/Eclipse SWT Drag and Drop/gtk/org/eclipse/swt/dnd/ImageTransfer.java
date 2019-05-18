@@ -91,7 +91,7 @@ public void javaToNative(Object object, TransferData transferData) {
 	ImageData imgData = (ImageData)object;
 	if (imgData == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	Image image = new Image(Display.getCurrent(), imgData);
- 	long pixbuf = ImageList.createPixbuf(image);
+	long pixbuf = ImageList.createPixbuf(image);
 	if (pixbuf != 0) {
 		String typeStr = "";
 		if (transferData.type ==  JPEG_ID) typeStr = "jpeg";

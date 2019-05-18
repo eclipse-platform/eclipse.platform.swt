@@ -43,46 +43,46 @@ public class Bug262974_ModalBrowserDialog extends JFrame {
 
 
 public Bug262974_ModalBrowserDialog() {
-    setDefaultCloseOperation(EXIT_ON_CLOSE);
-    Canvas canvas = new Canvas() {
+	setDefaultCloseOperation(EXIT_ON_CLOSE);
+	Canvas canvas = new Canvas() {
 
 	private static final long serialVersionUID = -8128631529339936684L;
 
 	@Override
-      public void addNotify() {
-        super.addNotify();
-        final Canvas canvas_ = this;
-        display.asyncExec(() -> {
-            final Shell shell = SWT_AWT.new_Shell(display, canvas_);
-            shell.setLayout(new FillLayout());
-            final Browser browser = new Browser(shell, SWT.NONE);
-            browser.setUrl("http://www.google.com");
-            browser.addLocationListener(LocationListener.changedAdapter(e ->
-                display.asyncExec(() -> browser.execute("alert('some dialog');")))
-            );
-            // The initial size is wrong on Windows so we have to force it
-            shell.setSize(canvas_.getWidth(), canvas_.getHeight());
-          });
-      }
-    };
-    Container contentPane = getContentPane();
-    contentPane.add(canvas, BorderLayout.CENTER);
-    contentPane.add(new JButton("Some Swing Button"), BorderLayout.SOUTH);
-    setSize(400, 300);
-  }
+	public void addNotify() {
+		super.addNotify();
+		final Canvas canvas_ = this;
+		display.asyncExec(() -> {
+			final Shell shell = SWT_AWT.new_Shell(display, canvas_);
+			shell.setLayout(new FillLayout());
+			final Browser browser = new Browser(shell, SWT.NONE);
+			browser.setUrl("http://www.google.com");
+			browser.addLocationListener(LocationListener.changedAdapter(e ->
+				display.asyncExec(() -> browser.execute("alert('some dialog');")))
+			);
+			// The initial size is wrong on Windows so we have to force it
+			shell.setSize(canvas_.getWidth(), canvas_.getHeight());
+		});
+	}
+	};
+	Container contentPane = getContentPane();
+	contentPane.add(canvas, BorderLayout.CENTER);
+	contentPane.add(new JButton("Some Swing Button"), BorderLayout.SOUTH);
+	setSize(400, 300);
+	}
 
-  private static Display display;
+	private static Display display;
 
-  public static void main(String[] args) {
-    System.setProperty("sun.awt.noerasebackground", "true");
-    System.setProperty("sun.awt.xembedserver", "true");
-    display = new Display();
-    SwingUtilities.invokeLater(() -> new Bug262974_ModalBrowserDialog().setVisible(true));
-    while(true) {
-      if(!display.readAndDispatch()) {
-        display.sleep();
-      }
-    }
-  }
+	public static void main(String[] args) {
+		System.setProperty("sun.awt.noerasebackground", "true");
+		System.setProperty("sun.awt.xembedserver", "true");
+		display = new Display();
+		SwingUtilities.invokeLater(() -> new Bug262974_ModalBrowserDialog().setVisible(true));
+		while(true) {
+			if(!display.readAndDispatch()) {
+				display.sleep();
+			}
+		}
+	}
 
 }

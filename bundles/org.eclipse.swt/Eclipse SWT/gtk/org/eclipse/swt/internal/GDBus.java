@@ -67,7 +67,7 @@ public class GDBus {
 		 *      // From command line, it can be called like this:
 		 *      //   gdbus call --session --dest org.eclipse.swt --object-path /org/eclipse/swt --method org.eclipse.swt.typeTest true "world" 1234
 		 *      // The call will return a tuple (struct) like: (true, 'world', 5678)
- 		 * 		GDBusMethod typeTest = new GDBusMethod(
+		 * 		GDBusMethod typeTest = new GDBusMethod(
 		 * 		"typeTest",
 		 * 		new String [][] {{OS.DBUS_TYPE_BOOLEAN, "boolean Test Val"}, {OS.DBUS_TYPE_STRING, "string Test Val"}, {OS.DBUS_TYPE_INT32, "int Test Val"}},
 		 * 		new String [][] {{OS.DBUS_TYPE_BOOLEAN, "boolean Response"}, {OS.DBUS_TYPE_STRING, "string Test Response"}, {OS.DBUS_TYPE_INT32, "int Test Response"}},

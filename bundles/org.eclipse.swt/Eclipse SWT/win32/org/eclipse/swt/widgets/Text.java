@@ -2651,8 +2651,8 @@ LRESULT WM_CHAR (long /*int*/ wParam, long /*int*/ lParam) {
 				int x = selection.x;
 				int y = selection.y;
 				if (x == y) {
-				    String actText = getText (0, x - 1);
-				    java.util.regex.Matcher m = CTRL_BS_PATTERN.matcher (actText);
+					String actText = getText (0, x - 1);
+					java.util.regex.Matcher m = CTRL_BS_PATTERN.matcher (actText);
 					if (m.find ()) {
 						x = m.start ();
 						y = m.end ();

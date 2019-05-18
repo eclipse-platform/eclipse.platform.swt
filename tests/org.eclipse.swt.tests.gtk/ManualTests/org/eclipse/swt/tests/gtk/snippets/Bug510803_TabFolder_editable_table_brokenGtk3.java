@@ -57,20 +57,20 @@ public class Bug510803_TabFolder_editable_table_brokenGtk3 {
 
 //		 Listeners that make typing into Table edit controls. Useful to test
 //		 functionality, but errors occur without the listeners also.
-		 table.addMouseListener(new MouseAdapter() {
-		 @Override
+		table.addMouseListener(new MouseAdapter() {
+		@Override
 		public void mouseUp(MouseEvent e) {
-		 cellEditorText.setFocus();
-		 }
-		 });
+		cellEditorText.setFocus();
+		}
+		});
 
-		 cellEditorText.addKeyListener(new KeyAdapter() {
-		 @Override
+		cellEditorText.addKeyListener(new KeyAdapter() {
+		@Override
 		public void keyPressed(KeyEvent e) {
-		 TableItem selectedItem = table.getSelection()[0];
-		 selectedItem.setText(selectedItem.getText() + e.character);
-		 }
-		 });
+		TableItem selectedItem = table.getSelection()[0];
+		selectedItem.setText(selectedItem.getText() + e.character);
+		}
+		});
 
 		// Location of setControl() method call has an impact.
 		// If it's before 'Text' creation, no errors are thrown into the

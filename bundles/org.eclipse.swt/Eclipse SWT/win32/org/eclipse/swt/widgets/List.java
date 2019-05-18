@@ -253,7 +253,7 @@ static int checkStyle (int style) {
 	if (hHint == SWT.DEFAULT) {
 		int count = (int)/*64*/OS.SendMessage (handle, OS.LB_GETCOUNT, 0, 0);
 		int itemHeight = (int)/*64*/OS.SendMessage (handle, OS.LB_GETITEMHEIGHT, 0, 0);
-	 	height = count * itemHeight;
+		height = count * itemHeight;
 	}
 	if (width == 0) width = DEFAULT_WIDTH;
 	if (height == 0) height = DEFAULT_HEIGHT;

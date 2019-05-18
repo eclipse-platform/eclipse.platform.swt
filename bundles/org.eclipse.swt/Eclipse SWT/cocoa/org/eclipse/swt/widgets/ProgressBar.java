@@ -188,7 +188,7 @@ public int getMinimum () {
  */
 public int getSelection () {
 	checkWidget();
-    return (int)((NSProgressIndicator)view).doubleValue();
+	return (int)((NSProgressIndicator)view).doubleValue();
 }
 
 /**

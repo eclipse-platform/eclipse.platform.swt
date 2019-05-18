@@ -92,14 +92,14 @@ class StackLayoutTab extends Tab {
 	 */
 	@Override
 	void createControlWidgets() {
-        /* Controls the topControl in the StackLayout */
+		/* Controls the topControl in the StackLayout */
 		Group columnGroup = new Group (controlGroup, SWT.NONE);
 		columnGroup.setText ("topControl");//(LayoutExample.getResourceString ("Top_Control"));
 		columnGroup.setLayout(new GridLayout(3, false));
 		columnGroup.setLayoutData(new GridData (SWT.FILL, SWT.FILL, false, false));
 		backButton = new Button(columnGroup, SWT.PUSH);
-	    backButton.setText("<<");
-	    backButton.setEnabled(false);
+		backButton.setText("<<");
+		backButton.setEnabled(false);
 		backButton.setLayoutData(new GridData (SWT.END, SWT.CENTER, false, false));
 		backButton.addSelectionListener(SelectionListener.widgetSelectedAdapter( e ->setTopControl (currentLayer - 1)));
 		topControl = new Label (columnGroup, SWT.BORDER);

@@ -15,8 +15,8 @@ package org.eclipse.swt.internal.win32;
 
 
 public class CERT_PUBLIC_KEY_INFO {
-	 public CRYPT_ALGORITHM_IDENTIFIER Algorithm = new CRYPT_ALGORITHM_IDENTIFIER ();
-	 public CRYPT_BIT_BLOB PublicKey = new CRYPT_BIT_BLOB ();
+	public CRYPT_ALGORITHM_IDENTIFIER Algorithm = new CRYPT_ALGORITHM_IDENTIFIER ();
+	public CRYPT_BIT_BLOB PublicKey = new CRYPT_BIT_BLOB ();
 
-	 static final public int sizeof = OS.CERT_PUBLIC_KEY_INFO_sizeof ();
+	static final public int sizeof = OS.CERT_PUBLIC_KEY_INFO_sizeof ();
 }

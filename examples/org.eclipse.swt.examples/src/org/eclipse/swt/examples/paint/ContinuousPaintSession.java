@@ -76,7 +76,7 @@ public abstract class ContinuousPaintSession extends BasicPaintSession {
 
 	/**
 	 * Deactivates the tool.
-     */
+	 */
 	@Override
 	public void endSession() {
 		abortRetrigger();

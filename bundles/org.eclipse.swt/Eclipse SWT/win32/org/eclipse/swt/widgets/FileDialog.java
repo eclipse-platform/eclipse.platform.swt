@@ -218,9 +218,9 @@ long /*int*/ OFNHookProc (long /*int*/ hdlg, long /*int*/ uiMsg, long /*int*/ wP
 							OS.MoveMemory (ofn.lpOFN, lpofn, OPENFILENAME.sizeof);
 						}
 					}
-			  }
-		  }
-		  break;
+				}
+			}
+		break;
 	}
 	return 0;
 }

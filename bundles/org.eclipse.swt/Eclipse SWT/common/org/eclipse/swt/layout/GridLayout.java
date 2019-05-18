@@ -50,13 +50,13 @@ import org.eclipse.swt.widgets.*;
  */
 public final class GridLayout extends Layout {
 
- 	/**
- 	 * numColumns specifies the number of cell columns in the layout.
- 	 * If numColumns has a value less than 1, the layout will not
- 	 * set the size and position of any controls.
- 	 *
- 	 * The default value is 1.
- 	 */
+	/**
+	 * numColumns specifies the number of cell columns in the layout.
+	 * If numColumns has a value less than 1, the layout will not
+	 * set the size and position of any controls.
+	 *
+	 * The default value is 1.
+	 */
 	public int numColumns = 1;
 
 	/**
@@ -73,7 +73,7 @@ public final class GridLayout extends Layout {
 	 *
 	 * The default value is 5.
 	 */
- 	public int marginWidth = 5;
+	public int marginWidth = 5;
 
 	/**
 	 * marginHeight specifies the number of points of vertical margin
@@ -81,9 +81,9 @@ public final class GridLayout extends Layout {
 	 *
 	 * The default value is 5.
 	 */
- 	public int marginHeight = 5;
+	public int marginHeight = 5;
 
- 	/**
+	/**
 	 * marginLeft specifies the number of points of horizontal margin
 	 * that will be placed along the left edge of the layout.
 	 *
@@ -130,7 +130,7 @@ public final class GridLayout extends Layout {
 	 *
 	 * The default value is 5.
 	 */
- 	public int horizontalSpacing = 5;
+	public int horizontalSpacing = 5;
 
 	/**
 	 * verticalSpacing specifies the number of points between the bottom
@@ -138,7 +138,7 @@ public final class GridLayout extends Layout {
 	 *
 	 * The default value is 5.
 	 */
- 	public int verticalSpacing = 5;
+	public int verticalSpacing = 5;
 
 /**
  * Constructs a new instance of this class
@@ -736,19 +736,19 @@ String getName () {
  */
 @Override
 public String toString () {
- 	String string = getName ()+" {";
- 	if (numColumns != 1) string += "numColumns="+numColumns+" ";
- 	if (makeColumnsEqualWidth) string += "makeColumnsEqualWidth="+makeColumnsEqualWidth+" ";
- 	if (marginWidth != 0) string += "marginWidth="+marginWidth+" ";
- 	if (marginHeight != 0) string += "marginHeight="+marginHeight+" ";
- 	if (marginLeft != 0) string += "marginLeft="+marginLeft+" ";
- 	if (marginRight != 0) string += "marginRight="+marginRight+" ";
- 	if (marginTop != 0) string += "marginTop="+marginTop+" ";
- 	if (marginBottom != 0) string += "marginBottom="+marginBottom+" ";
- 	if (horizontalSpacing != 0) string += "horizontalSpacing="+horizontalSpacing+" ";
- 	if (verticalSpacing != 0) string += "verticalSpacing="+verticalSpacing+" ";
- 	string = string.trim();
- 	string += "}";
- 	return string;
+	String string = getName ()+" {";
+	if (numColumns != 1) string += "numColumns="+numColumns+" ";
+	if (makeColumnsEqualWidth) string += "makeColumnsEqualWidth="+makeColumnsEqualWidth+" ";
+	if (marginWidth != 0) string += "marginWidth="+marginWidth+" ";
+	if (marginHeight != 0) string += "marginHeight="+marginHeight+" ";
+	if (marginLeft != 0) string += "marginLeft="+marginLeft+" ";
+	if (marginRight != 0) string += "marginRight="+marginRight+" ";
+	if (marginTop != 0) string += "marginTop="+marginTop+" ";
+	if (marginBottom != 0) string += "marginBottom="+marginBottom+" ";
+	if (horizontalSpacing != 0) string += "horizontalSpacing="+horizontalSpacing+" ";
+	if (verticalSpacing != 0) string += "verticalSpacing="+verticalSpacing+" ";
+	string = string.trim();
+	string += "}";
+	return string;
 }
 }

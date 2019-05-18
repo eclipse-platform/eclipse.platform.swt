@@ -79,12 +79,12 @@ public class LauncherPlugin extends AbstractUIPlugin {
 		plugin = this;
 	}
 
-    @Override
+	@Override
 	public void start(BundleContext context) throws Exception {
-        super.start(context);
-        resourceBundle = Platform.getResourceBundle(getBundle());
-    }
-    
+		super.start(context);
+		resourceBundle = Platform.getResourceBundle(getBundle());
+	}
+	
 	/**
 	 * Clean up
 	 */
@@ -173,9 +173,9 @@ public class LauncherPlugin extends AbstractUIPlugin {
 	}
 
 	/**
-     * Constructs a list of available programs from registered extensions.
-     * 
-     * @return an ItemTreeNode representing the root of a tree of items (the root is not to be displayed)
+	 * Constructs a list of available programs from registered extensions.
+	 * 
+	 * @return an ItemTreeNode representing the root of a tree of items (the root is not to be displayed)
 	 */
 	public static ItemTreeNode getLaunchItemTree() {
 		ItemTreeNode categoryTree =

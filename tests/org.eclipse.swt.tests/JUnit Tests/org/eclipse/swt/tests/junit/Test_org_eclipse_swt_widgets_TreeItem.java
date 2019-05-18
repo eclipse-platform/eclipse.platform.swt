@@ -110,7 +110,7 @@ public void test_getBounds() {
 	String string = "hello";
 
 	// no columns
- 	bounds = treeItem.getBounds();
+	bounds = treeItem.getBounds();
 	assertTrue(":1a:", bounds.x > 0 && bounds.height > 0);
 
 	treeItem.setText(string);
@@ -179,11 +179,11 @@ void getBoundsIA() {
 	//
 	makeCleanEnvironment();
 
- 	bounds = treeItem.getBounds(0);
+	bounds = treeItem.getBounds(0);
 	assertTrue(":1a:", bounds.x > 0 && bounds.height > 0);
 	bounds = treeItem.getBounds(-1);
 	assertTrue(":1b:", bounds.equals(new Rectangle(0, 0, 0, 0)));
- 	bounds = treeItem.getBounds(1);
+	bounds = treeItem.getBounds(1);
 	assertTrue(":1c:", bounds.equals(new Rectangle(0, 0, 0, 0)));
 	// unexpanded item
 	TreeItem subItem = new TreeItem(treeItem, SWT.NONE);
@@ -252,7 +252,7 @@ void getBoundsIB() {
 	assertTrue(":2a:", bounds.x > 0 && bounds.height > 0);
 	bounds = treeItem2.getBounds(-1);
 	assertTrue(":2b:", bounds.equals(new Rectangle(0, 0, 0, 0)));
- 	bounds = treeItem2.getBounds(1);
+	bounds = treeItem2.getBounds(1);
 	assertTrue(":2c:", bounds.equals(new Rectangle(0, 0, 0, 0)));
 	// unexpanded item
 	TreeItem subItem2 = new TreeItem(treeItem2, SWT.NONE);
@@ -331,7 +331,7 @@ void getBoundsIC() {
 	assertTrue(":3b:", /*bounds.x > 0 &&*/ bounds.height > 0 && bounds.width == 0); // TODO bounds.x == 0 Is this right?
 	bounds = treeItem.getBounds(-1);
 	assertTrue(":3c:", bounds.equals(new Rectangle(0, 0, 0, 0)));
- 	bounds = treeItem.getBounds(2);
+	bounds = treeItem.getBounds(2);
 	assertTrue(":3d:", bounds.equals(new Rectangle(0, 0, 0, 0)));
 	// unexpanded item
 	TreeItem subItem = new TreeItem(treeItem, SWT.NONE);
@@ -387,7 +387,7 @@ void getBoundsIC() {
 	assertTrue(":3r:", bounds.x > 0 && bounds.height >= imageBounds.height && bounds.width > 0 && bounds.width < 100);
 	bounds = treeItem.getBounds(1);
 	assertTrue(":3s:", bounds.x >= 100 && bounds.height >= imageBounds.height && bounds.width  == 200);
- 	treeItem.setImage(new Image[] {null, null});
+	treeItem.setImage(new Image[] {null, null});
 	bounds = treeItem.getBounds(0);
 	assertTrue(":3t:", bounds.x > 0 && bounds.height > 0 && bounds.width > 0 && bounds.width < 100);
 	bounds = treeItem.getBounds(1);
@@ -441,7 +441,7 @@ void getBoundsID() {
 	assertTrue(":4b:", /*bounds.x > 0 &&*/ bounds.height > 0 && bounds.width == 0); // TODO bounds.x == 0 Is this right?
 	bounds = treeItem2.getBounds(-1);
 	assertTrue(":4c:", bounds.equals(new Rectangle(0, 0, 0, 0)));
- 	bounds = treeItem2.getBounds(2);
+	bounds = treeItem2.getBounds(2);
 	assertTrue(":4d:", bounds.equals(new Rectangle(0, 0, 0, 0)));
 	// unexpanded item
 	TreeItem subItem2 = new TreeItem(treeItem2, SWT.NONE);
@@ -500,7 +500,7 @@ void getBoundsID() {
 	assertTrue(":4r:", bounds.x > 0 && bounds.height >= imageBounds.height && bounds.width > 0 && bounds.width < 100);
 	bounds = treeItem2.getBounds(1);
 	assertTrue(":4s:", bounds.x >= 100 && bounds.height >= imageBounds.height && bounds.width  == 200);
- 	treeItem2.setImage(new Image[] {null, null});
+	treeItem2.setImage(new Image[] {null, null});
 	bounds = treeItem2.getBounds(0);
 	assertTrue(":4t:", bounds.x > 0 && bounds.height > 0 && bounds.width > 0 && bounds.width < 100);
 	bounds = treeItem2.getBounds(1);
@@ -583,7 +583,7 @@ public void test_getImageBoundsI() {
 	//assertTrue(":e:", bounds.width == 0);
 
 	assertEquals(new Rectangle(0, 0, 0, 0), treeItem2.getImageBounds(1));
- 	//
+	//
 	makeCleanEnvironment();
 
 	Image image = images[0];
@@ -626,12 +626,12 @@ public void test_getImageBoundsI() {
 	image = images[1];
 //	imageBounds = image.getBounds();
 //	imageWidth = imageBounds.width;
- 	treeItem2.setImage(0, image);
+	treeItem2.setImage(0, image);
 //	imageHeight = tree2.getItemHeight() - tree2.getGridLineWidth();
 	assertEquals(new Rectangle(0, 0, 0, 0), treeItem2.getImageBounds(-1));
- 	bounds = treeItem2.getImageBounds(0);	// bounds.width should be check box width if check box is wider than image
+	bounds = treeItem2.getImageBounds(0);	// bounds.width should be check box width if check box is wider than image
 //	assertTrue(":b:", bounds.x > 0 && bounds.width > 0 && bounds.height == imageHeight);
- 	assertEquals(new Rectangle(0, 0, 0, 0), treeItem2.getImageBounds(1));
+	assertEquals(new Rectangle(0, 0, 0, 0), treeItem2.getImageBounds(1));
 }
 
 @Test
@@ -957,12 +957,12 @@ public void test_setGrayedZ() {
 @Test
 public void test_setImage$Lorg_eclipse_swt_graphics_Image() {
 	assertNull(treeItem.getImage(1));
- 	treeItem.setImage(-1, null);
+	treeItem.setImage(-1, null);
 	assertNull(treeItem.getImage(-1));
 
 	treeItem.setImage(0, images[0]);
 	assertEquals(images[0], treeItem.getImage(0));
- 	String texts[] = new String[images.length];
+	String texts[] = new String[images.length];
 	for (int i = 0; i < texts.length; i++) {
 		texts[i] = String.valueOf(i);
 	}
@@ -980,7 +980,7 @@ public void test_setImage$Lorg_eclipse_swt_graphics_Image() {
 	}
 	treeItem.setImage(1, images[1]);
 	assertEquals(images[1], treeItem.getImage(1));
- 	treeItem.setImage(images);
+	treeItem.setImage(images);
 	for (int i = 0; i < images.length; i++) {
 		assertEquals(images[i], treeItem.getImage(i));
 	}
@@ -1045,10 +1045,10 @@ public void test_setText$Ljava_lang_String() {
 	catch (IllegalArgumentException e) {
 	}
 
-   /*
- 	* Test the getText/setText API with a Tree that has only
- 	* the default column.
- 	*/
+	/*
+	* Test the getText/setText API with a Tree that has only
+	* the default column.
+	*/
 
 	assertEquals(0, treeItem.getText(1).length());
 
@@ -1059,10 +1059,10 @@ public void test_setText$Ljava_lang_String() {
 	}
 
 
-   /*
- 	* Test the getText/setText API with a Tree that enough
- 	* columns to fit all test item texts.
- 	*/
+	/*
+	* Test the getText/setText API with a Tree that enough
+	* columns to fit all test item texts.
+	*/
 
 	int columnCount = tree.getColumnCount();
 	if (columnCount < images.length) {
@@ -1083,25 +1083,25 @@ public void test_setTextILjava_lang_String(){
 	final String TestString = "test";
 	final String TestStrings[] = new String[] {TestString, TestString + "1", TestString + "2"};
 
-   /*
- 	* Test the getText/setText API with a Tree that has only
- 	* the default column.
- 	*/
+	/*
+	* Test the getText/setText API with a Tree that has only
+	* the default column.
+	*/
 
 	assertEquals(0, treeItem.getText(1).length());
- 	treeItem.setText(1, TestString);
+	treeItem.setText(1, TestString);
 	assertEquals(0, treeItem.getText(1).length());
 	assertEquals(0, treeItem.getText(0).length());
 
 	treeItem.setText(0, TestString);
 	assertEquals(TestString, treeItem.getText(0));
- 	treeItem.setText(-1, TestStrings[1]);
+	treeItem.setText(-1, TestStrings[1]);
 	assertEquals(0, treeItem.getText(-1).length());
 
-   /*
- 	* Test the getText/setText API with a Tree that enough
- 	* columns to fit all test item texts.
- 	*/
+	/*
+	* Test the getText/setText API with a Tree that enough
+	* columns to fit all test item texts.
+	*/
 
 	makeCleanEnvironment();
 
@@ -1146,12 +1146,12 @@ public void test_setTextILjava_lang_String(){
 	}
 
 	/*
- 	* Test the getText/setText API with a small table that
- 	* will be extended by a column:
- 	* First the table has only one column and one row (TableItem) with text.
+	* Test the getText/setText API with a small table that
+	* will be extended by a column:
+	* First the table has only one column and one row (TableItem) with text.
 	* Then it is extended by one more column.
 	* After this the existing row gets one more text for the new column.
- 	*/
+	*/
 
 	makeCleanEnvironment();
 

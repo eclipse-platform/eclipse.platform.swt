@@ -61,7 +61,7 @@ public final class PaintEvent extends TypedEvent {
 
 	/**
 	 * the number of following paint events which
-     * are pending which may always be zero on
+	 * are pending which may always be zero on
 	 * some platforms
 	 */
 	public int count;

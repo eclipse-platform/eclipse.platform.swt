@@ -239,21 +239,21 @@ public void setRGBs(RGB[] rgbs) {
 	this.rgbs = rgbs;
 }
 static String[] splitString(String text, char ch) {
-    String[] substrings = new String[1];
-    int start = 0, pos = 0;
-    while (pos != -1) {
-        pos = text.indexOf(ch, start);
-        if (pos == -1) {
-        	substrings[substrings.length - 1] = text.substring(start);
-        } else {
-            substrings[substrings.length - 1] = text.substring(start, pos);
-            start = pos + 1;
-            String[] newSubstrings = new String[substrings.length+1];
-            System.arraycopy(substrings, 0, newSubstrings, 0, substrings.length);
-       		substrings = newSubstrings;
-        }
-    }
-    return substrings;
+	String[] substrings = new String[1];
+	int start = 0, pos = 0;
+	while (pos != -1) {
+		pos = text.indexOf(ch, start);
+		if (pos == -1) {
+			substrings[substrings.length - 1] = text.substring(start);
+		} else {
+			substrings[substrings.length - 1] = text.substring(start, pos);
+			start = pos + 1;
+			String[] newSubstrings = new String[substrings.length+1];
+			System.arraycopy(substrings, 0, newSubstrings, 0, substrings.length);
+			substrings = newSubstrings;
+		}
+	}
+	return substrings;
 }
 }
 

@@ -22,55 +22,55 @@ import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.*;
 
 public class Bug480926_CellEditorPosition {
-    public static void main(String[] args) {
-        Display display = new Display();
-        Shell shell = new Shell(display);
-        shell.setLayout(new FillLayout());
+	public static void main(String[] args) {
+		Display display = new Display();
+		Shell shell = new Shell(display);
+		shell.setLayout(new FillLayout());
 
-        final Tree tree = new Tree(shell, SWT.FULL_SELECTION);
-        tree.setLinesVisible(true);
-        tree.setHeaderVisible(true);
+		final Tree tree = new Tree(shell, SWT.FULL_SELECTION);
+		tree.setLinesVisible(true);
+		tree.setHeaderVisible(true);
 
-        TreeColumn column1 = new TreeColumn(tree, 0);
-        column1.setText("Column 1");
-        column1.setWidth(150);
+		TreeColumn column1 = new TreeColumn(tree, 0);
+		column1.setText("Column 1");
+		column1.setWidth(150);
 
-        TreeColumn column2 = new TreeColumn(tree, 0);
-        column2.setText("Column 2");
-        column2.setWidth(150);
+		TreeColumn column2 = new TreeColumn(tree, 0);
+		column2.setText("Column 2");
+		column2.setWidth(150);
 
-        TreeItem item = new TreeItem(tree, SWT.NONE, 0);
-        item.setText("Row 1");
+		TreeItem item = new TreeItem(tree, SWT.NONE, 0);
+		item.setText("Row 1");
 
-        final TreeEditor treeEditor = new TreeEditor(tree);
-        treeEditor.horizontalAlignment = SWT.LEFT;
-        treeEditor.grabHorizontal = true;
+		final TreeEditor treeEditor = new TreeEditor(tree);
+		treeEditor.horizontalAlignment = SWT.LEFT;
+		treeEditor.grabHorizontal = true;
 
-        tree.addMouseListener(new MouseAdapter() {
-            @Override
+		tree.addMouseListener(new MouseAdapter() {
+			@Override
 			public void mouseUp(MouseEvent e) {
-                TreeItem item = tree.getSelection()[0];
-                Text text = new Text(tree, SWT.NONE);
-                treeEditor.setEditor(text, item, 1);
-            }
-        });
+				TreeItem item = tree.getSelection()[0];
+				Text text = new Text(tree, SWT.NONE);
+				treeEditor.setEditor(text, item, 1);
+			}
+		});
 
-        tree.addListener(SWT.PaintItem, new Listener() {
-            @Override
-            public void handleEvent(Event event) {
+		tree.addListener(SWT.PaintItem, new Listener() {
+			@Override
+			public void handleEvent(Event event) {
 
-            }
-        });
+			}
+		});
 
-        shell.setSize(600, 400);
-        shell.open();
+		shell.setSize(600, 400);
+		shell.open();
 
-        while (!shell.isDisposed()) {
-            if (!display.readAndDispatch()) {
-                display.sleep();
-            }
-        }
+		while (!shell.isDisposed()) {
+			if (!display.readAndDispatch()) {
+				display.sleep();
+			}
+		}
 
-        display.dispose();
-    }
+		display.dispose();
+	}
 }

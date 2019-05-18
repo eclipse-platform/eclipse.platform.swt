@@ -57,8 +57,8 @@ public class Bug531667_Group_drawing_with_paint_listener_is_wrong {
 		class DrawSquare implements PaintListener {
 			@Override
 			public void paintControl(PaintEvent e) {
-			    GC gc = e.gc;
-			    gc.drawImage(image, 0, 0);
+				GC gc = e.gc;
+				gc.drawImage(image, 0, 0);
 			}
 		}
 		group.addPaintListener(new DrawSquare());

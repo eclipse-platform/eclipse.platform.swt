@@ -48,7 +48,7 @@ public class Bug531667_CTabFolder_right_to_left_tabs_are_not_painted_nested {
 		Composite c1 = new Composite(shell, SWT.NONE);
 		c1.setLayout(new FillLayout(SWT.HORIZONTAL));
 		Composite c2 = new Composite(shell, SWT.NONE);
-     	c2.setLayout(new FillLayout(SWT.HORIZONTAL));
+		c2.setLayout(new FillLayout(SWT.HORIZONTAL));
 
 		Composite c3 = new Composite(c1, SWT.NONE);
 		c3.setLayout(new FillLayout());

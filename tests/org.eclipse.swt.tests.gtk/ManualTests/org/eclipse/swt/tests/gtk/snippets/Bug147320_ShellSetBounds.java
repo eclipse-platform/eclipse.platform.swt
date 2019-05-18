@@ -32,12 +32,12 @@ public class Bug147320_ShellSetBounds {
 			new Rectangle (240, 212, 800, 600)};
 		static int counter = 0;
 		public static void main(String[] args) {
-		    Display display = new Display();
-		    final Shell shell = new Shell(display, SWT.NONE);
-		    Button button = new Button(shell, SWT.PUSH);
-		    button.setBounds(10,10,50,30);
-		    button.setText("Push");
-		    button.addListener(SWT.Selection, new Listener() {
+			Display display = new Display();
+			final Shell shell = new Shell(display, SWT.NONE);
+			Button button = new Button(shell, SWT.PUSH);
+			button.setBounds(10,10,50,30);
+			button.setText("Push");
+			button.addListener(SWT.Selection, new Listener() {
 				@Override
 				public void handleEvent(Event event) {
 					Rectangle bounds = DIMENSIONS[counter++];
@@ -46,11 +46,11 @@ public class Bug147320_ShellSetBounds {
 					shell.setBounds(bounds);
 				}
 			});
-		    shell.setBounds(DIMENSIONS[counter++]);
-		    shell.open();
-		    while (!shell.isDisposed()) {
-		        if (!display.readAndDispatch()) display.sleep();
-		    }
-		    display.dispose();
+			shell.setBounds(DIMENSIONS[counter++]);
+			shell.open();
+			while (!shell.isDisposed()) {
+				if (!display.readAndDispatch()) display.sleep();
+			}
+			display.dispose();
 		}
 }

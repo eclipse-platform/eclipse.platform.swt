@@ -25,10 +25,10 @@ public int Commit(int grfCommitFlag) {
 }
 public int CopyTo(
 	int ciidExclude,     //Number of elements in rgiidExclude
-  	GUID rgiidExclude,   //Array of interface identifiers (IIDs)
-  	String[] snbExclude, //Points to a block of stream names in the storage object
+	GUID rgiidExclude,   //Array of interface identifiers (IIDs)
+	String[] snbExclude, //Points to a block of stream names in the storage object
 	long /*int*/ pstgDest         //Points to destination storage object
-  ){
+	){
 	// we only support snbExclude = null
 	if (snbExclude != null) {
 		return COM.E_INVALIDARG;

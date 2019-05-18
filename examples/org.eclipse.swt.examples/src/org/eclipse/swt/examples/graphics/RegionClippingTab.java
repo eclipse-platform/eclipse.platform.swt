@@ -206,10 +206,10 @@ public void paint(GC gc, int width, int height) {
 		gc.fillPolygon(polygon1);
 
 		gc.setBackground(colorGB2.getBgColor1());
-	    gc.fillPolygon(polygon2);
+		gc.fillPolygon(polygon2);
 	}
 
 	region1.dispose();
 	region2.dispose();
-    }
+	}
 }

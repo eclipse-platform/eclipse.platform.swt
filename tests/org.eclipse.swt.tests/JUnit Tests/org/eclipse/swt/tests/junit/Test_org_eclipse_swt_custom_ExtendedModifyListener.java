@@ -278,7 +278,7 @@ public void test_modifyTextLorg_eclipse_swt_custom_ExtendedModifyEvent() {
 	exceptionHandled = false;
 
 	verify = 0;
- 	styledText.setText("L1\r");
+	styledText.setText("L1\r");
 	verify = 18;
 	styledText.replaceTextRange(3, 0, "\ntest\r\n");
 

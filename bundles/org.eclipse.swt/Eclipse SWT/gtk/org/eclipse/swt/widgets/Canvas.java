@@ -175,7 +175,7 @@ long gtk_draw (long widget, long cairo) {
 	if ( GTK.GTK_VERSION < OS.VERSION(3, 22, 0)) {
 		boolean isFocus = caret != null && caret.isFocusCaret ();
 		if (isFocus) caret.killFocus ();
-		 result = super.gtk_draw (widget, cairo);
+		result = super.gtk_draw (widget, cairo);
 		if (isFocus) caret.setFocus ();
 	} else {
 		result = super.gtk_draw (widget, cairo);

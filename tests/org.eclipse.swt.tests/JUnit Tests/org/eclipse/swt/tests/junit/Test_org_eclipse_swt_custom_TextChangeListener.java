@@ -258,7 +258,7 @@ public void test_textChangedLorg_eclipse_swt_custom_TextChangedEvent() {
 	exceptionHandled = false;
 
 	verify = 0;
- 	styledText.setText("L1\r");
+	styledText.setText("L1\r");
 	verify = 18;
 	styledText.replaceTextRange(3, 0, "\ntest\r\n");
 
@@ -490,7 +490,7 @@ public void test_textChangingLorg_eclipse_swt_custom_TextChangingEvent() {
 	exceptionHandled = false;
 
 	verify = 18;
- 	styledText.setText("L1\r");
+	styledText.setText("L1\r");
 	styledText.replaceTextRange(3, 0, "\ntest\r\n");
 
 	verify = 19;

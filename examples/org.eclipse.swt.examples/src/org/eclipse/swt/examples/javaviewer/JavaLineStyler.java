@@ -377,7 +377,7 @@ public class JavaScanner {
 
 	protected void unread(int c) {
 		if (c != EOF)
-	    	fPos--;
+			fPos--;
 	}
 }
 

@@ -366,7 +366,7 @@ public Menu getParent () {
 public boolean getSelection () {
 	checkWidget ();
 	if ((style & (SWT.CHECK | SWT.RADIO)) == 0) return false;
-    return nsItem.state() == OS.NSOnState;
+	return nsItem.state() == OS.NSOnState;
 }
 
 /**
@@ -894,12 +894,12 @@ public void setToolTipText (String toolTip) {
 	}
 	if (toolTip == null || toolTip.trim().length() == 0 || toolTip.equals(toolTipText)) return;
 
-    toolTipText = toolTip;
+	toolTipText = toolTip;
 
-    char[] chars = new char [toolTipText.length ()];
-    toolTipText.getChars (0, chars.length, chars, 0);
-    int length = fixMnemonic (chars);
-    nsItem.setToolTip (NSString.stringWithCharacters (chars, length));
+	char[] chars = new char [toolTipText.length ()];
+	toolTipText.getChars (0, chars.length, chars, 0);
+	int length = fixMnemonic (chars);
+	nsItem.setToolTip (NSString.stringWithCharacters (chars, length));
 }
 
 void updateText () {

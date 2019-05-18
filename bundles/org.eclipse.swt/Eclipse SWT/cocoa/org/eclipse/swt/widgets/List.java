@@ -533,7 +533,7 @@ public int getItemHeight () {
  */
 public String [] getItems () {
 	checkWidget();
-    String [] result = new String [itemCount];
+	String [] result = new String [itemCount];
 	System.arraycopy (items, 0, result, 0, itemCount);
 	return result;
 }
@@ -662,9 +662,9 @@ public int getTopIndex () {
 	NSPoint point = new NSPoint();
 	point.x = rect.x;
 	point.y = rect.y;
-    int result = (int)((NSTableView)view).rowAtPoint(point);
-    if (result == -1) result = 0;
-    return result;
+	int result = (int)((NSTableView)view).rowAtPoint(point);
+	if (result == -1) result = 0;
+	return result;
 }
 
 /**

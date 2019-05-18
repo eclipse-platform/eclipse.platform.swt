@@ -32,9 +32,9 @@ public class GdkEventKey extends GdkEvent {
 	public long string;
 	/** @field cast=(guint16) */
 	public short hardware_keycode;
-    /** @field cast=(guint8) */
+	/** @field cast=(guint8) */
 	public byte group;
 	/** @field cast=(guint) */
 	public int is_modifier;
-   	public static final int sizeof = GDK.GdkEventKey_sizeof();
+	public static final int sizeof = GDK.GdkEventKey_sizeof();
 }

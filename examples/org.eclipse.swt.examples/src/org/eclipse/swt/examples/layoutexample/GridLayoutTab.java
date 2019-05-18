@@ -277,7 +277,7 @@ class GridLayoutTab extends Tab {
 	 */
 	@Override
 	void createControlWidgets () {
-        /* Controls the columns in the GridLayout */
+		/* Controls the columns in the GridLayout */
 		Group columnGroup = new Group (controlGroup, SWT.NONE);
 		columnGroup.setText (LayoutExample.getResourceString ("Columns"));
 		columnGroup.setLayout(new GridLayout(2, false));

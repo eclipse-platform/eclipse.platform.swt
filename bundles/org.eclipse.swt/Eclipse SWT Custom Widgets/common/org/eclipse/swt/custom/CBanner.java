@@ -550,11 +550,11 @@ void updateCurve(int height) {
 	int h = height - BORDER_STRIPE;
 	if (simple) {
 		curve = new int[] {0,h, 1,h, 2,h-1, 3,h-2,
-			                       3,2, 4,1, 5,0,};
+								   3,2, 4,1, 5,0,};
 	} else {
 		curve = bezier(0, h+1, BEZIER_LEFT, h+1,
-				             curve_width-BEZIER_RIGHT, 0, curve_width, 0,
-		                     curve_width);
+							 curve_width-BEZIER_RIGHT, 0, curve_width, 0,
+							 curve_width);
 	}
 }
 }

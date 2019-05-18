@@ -459,45 +459,45 @@ public class CTabFolderRenderer {
 	}
 
 	void createAntialiasColors() {
-	    disposeAntialiasColors();
-	    lastBorderColor = parent.getDisplay().getSystemColor(BORDER1_COLOR);
-	    RGB lineRGB = lastBorderColor.getRGB();
-	    /* compute the selected color */
-	    RGB innerRGB = parent.selectionBackground.getRGB();
-	    if (parent.selectionBgImage != null ||
-		    (parent.selectionGradientColors != null && parent.selectionGradientColors.length > 1)) {
-		    innerRGB = null;
-	    }
-	    RGB outerRGB = parent.getBackground().getRGB();
-	    if (parent.gradientColors != null && parent.gradientColors.length > 1) {
-		    outerRGB = null;
-	    }
-	    if (outerRGB != null) {
+		disposeAntialiasColors();
+		lastBorderColor = parent.getDisplay().getSystemColor(BORDER1_COLOR);
+		RGB lineRGB = lastBorderColor.getRGB();
+		/* compute the selected color */
+		RGB innerRGB = parent.selectionBackground.getRGB();
+		if (parent.selectionBgImage != null ||
+			(parent.selectionGradientColors != null && parent.selectionGradientColors.length > 1)) {
+			innerRGB = null;
+		}
+		RGB outerRGB = parent.getBackground().getRGB();
+		if (parent.gradientColors != null && parent.gradientColors.length > 1) {
+			outerRGB = null;
+		}
+		if (outerRGB != null) {
 			RGB from = lineRGB;
 			RGB to = outerRGB;
 			int red = from.red + 2*(to.red - from.red)/3;
 			int green = from.green + 2*(to.green - from.green)/3;
 			int blue = from.blue + 2*(to.blue - from.blue)/3;
 			selectedOuterColor = new Color(parent.getDisplay(), red, green, blue);
-	    }
-	    if (innerRGB != null) {
+		}
+		if (innerRGB != null) {
 			RGB from = lineRGB;
 			RGB to = innerRGB;
 			int red = from.red + 2*(to.red - from.red)/3;
 			int green = from.green + 2*(to.green - from.green)/3;
 			int blue = from.blue + 2*(to.blue - from.blue)/3;
 			selectedInnerColor = new Color(parent.getDisplay(), red, green, blue);
-	    }
-	    /* compute the tabArea color */
-	    outerRGB = parent.getParent().getBackground().getRGB();
-	    if (outerRGB != null) {
+		}
+		/* compute the tabArea color */
+		outerRGB = parent.getParent().getBackground().getRGB();
+		if (outerRGB != null) {
 			RGB from = lineRGB;
 			RGB to = outerRGB;
 			int red = from.red + 2*(to.red - from.red)/3;
 			int green = from.green + 2*(to.green - from.green)/3;
 			int blue = from.blue + 2*(to.blue - from.blue)/3;
 			tabAreaColor = new Color(parent.getDisplay(), red, green, blue);
-	    }
+		}
 	}
 
 	/*
@@ -543,8 +543,8 @@ public class CTabFolderRenderer {
 		disposeAntialiasColors();
 		disposeSelectionHighlightGradientColors();
 		if (fillColor != null) {
-		    fillColor.dispose();
-		    fillColor = null;
+			fillColor.dispose();
+			fillColor = null;
 		}
 		if (chevronFont != null) {
 			chevronFont.dispose();
@@ -557,10 +557,10 @@ public class CTabFolderRenderer {
 	}
 
 	void disposeAntialiasColors() {
-	    if (tabAreaColor != null) tabAreaColor.dispose();
-	    if (selectedInnerColor != null) selectedInnerColor.dispose();
-	    if (selectedOuterColor != null) selectedOuterColor.dispose();
-	    tabAreaColor = selectedInnerColor = selectedOuterColor = null;
+		if (tabAreaColor != null) tabAreaColor.dispose();
+		if (selectedInnerColor != null) selectedInnerColor.dispose();
+		if (selectedOuterColor != null) selectedOuterColor.dispose();
+		tabAreaColor = selectedInnerColor = selectedOuterColor = null;
 	}
 
 	void disposeSelectionHighlightGradientColors() {
@@ -812,7 +812,7 @@ public class CTabFolderRenderer {
 					int x2 = size.x - borderRight;
 					int y2 = size.y - borderBottom - tabHeight - highlight_header;
 					shape = new int[] {x1,y1, x2,y1, x2,y2, x2-highlight_margin,y2,
-							           x2-highlight_margin, y1+highlight_margin, x1+highlight_margin,y1+highlight_margin,
+									   x2-highlight_margin, y1+highlight_margin, x1+highlight_margin,y1+highlight_margin,
 									   x1+highlight_margin,y2, x1,y2};
 				} else {
 					int x1 = borderLeft;
@@ -820,7 +820,7 @@ public class CTabFolderRenderer {
 					int x2 = size.x - borderRight;
 					int y2 = size.y - borderBottom;
 					shape = new int[] {x1,y1, x1+highlight_margin,y1, x1+highlight_margin,y2-highlight_margin,
-							           x2-highlight_margin,y2-highlight_margin, x2-highlight_margin,y1,
+									   x2-highlight_margin,y2-highlight_margin, x2-highlight_margin,y1,
 									   x2,y1, x2,y2, x1,y2};
 				}
 				// If horizontal gradient, show gradient across the whole area
@@ -886,9 +886,9 @@ public class CTabFolderRenderer {
 		switch (closeImageState & (SWT.HOT | SWT.SELECTED | SWT.BACKGROUND)) {
 			case SWT.NONE: {
 				int[] shape = new int[] {x,y, x+2,y, x+4,y+2, x+5,y+2, x+7,y, x+9,y,
-						                 x+9,y+2, x+7,y+4, x+7,y+5, x+9,y+7, x+9,y+9,
-				                         x+7,y+9, x+5,y+7, x+4,y+7, x+2,y+9, x,y+9,
-				                         x,y+7, x+2,y+5, x+2,y+4, x,y+2};
+										 x+9,y+2, x+7,y+4, x+7,y+5, x+9,y+7, x+9,y+9,
+										 x+7,y+9, x+5,y+7, x+4,y+7, x+2,y+9, x,y+9,
+										 x,y+7, x+2,y+5, x+2,y+4, x,y+2};
 				gc.setBackground(display.getSystemColor(BUTTON_FILL));
 				gc.fillPolygon(shape);
 				gc.setForeground(closeBorder);
@@ -897,9 +897,9 @@ public class CTabFolderRenderer {
 			}
 			case SWT.HOT: {
 				int[] shape = new int[] {x,y, x+2,y, x+4,y+2, x+5,y+2, x+7,y, x+9,y,
-						                 x+9,y+2, x+7,y+4, x+7,y+5, x+9,y+7, x+9,y+9,
-				                         x+7,y+9, x+5,y+7, x+4,y+7, x+2,y+9, x,y+9,
-				                         x,y+7, x+2,y+5, x+2,y+4, x,y+2};
+										 x+9,y+2, x+7,y+4, x+7,y+5, x+9,y+7, x+9,y+9,
+										 x+7,y+9, x+5,y+7, x+4,y+7, x+2,y+9, x,y+9,
+										 x,y+7, x+2,y+5, x+2,y+4, x,y+2};
 				gc.setBackground(getFillColor());
 				gc.fillPolygon(shape);
 				gc.setForeground(closeBorder);
@@ -908,9 +908,9 @@ public class CTabFolderRenderer {
 			}
 			case SWT.SELECTED: {
 				int[] shape = new int[] {x+1,y+1, x+3,y+1, x+5,y+3, x+6,y+3, x+8,y+1, x+10,y+1,
-						                 x+10,y+3, x+8,y+5, x+8,y+6, x+10,y+8, x+10,y+10,
-				                         x+8,y+10, x+6,y+8, x+5,y+8, x+3,y+10, x+1,y+10,
-				                         x+1,y+8, x+3,y+6, x+3,y+5, x+1,y+3};
+										 x+10,y+3, x+8,y+5, x+8,y+6, x+10,y+8, x+10,y+10,
+										 x+8,y+10, x+6,y+8, x+5,y+8, x+3,y+10, x+1,y+10,
+										 x+1,y+8, x+3,y+6, x+3,y+5, x+1,y+3};
 				gc.setBackground(getFillColor());
 				gc.fillPolygon(shape);
 				gc.setForeground(closeBorder);
@@ -1617,8 +1617,8 @@ public class CTabFolderRenderer {
 
 		// Draw border line
 		if (borderLeft > 0) {
-	    	if (! borderColor.equals(lastBorderColor)) createAntialiasColors();
-	    	antialias(shape, null, tabAreaColor, gc);
+			if (! borderColor.equals(lastBorderColor)) createAntialiasColors();
+			antialias(shape, null, tabAreaColor, gc);
 			gc.setForeground(borderColor);
 			gc.drawPolyline(shape);
 		}
@@ -1664,8 +1664,8 @@ public class CTabFolderRenderer {
 					imageY += parent.onBottom ? -1 : 1;
 					int imageWidth = imageBounds.width * imageHeight / imageBounds.height;
 					gc.drawImage(image,
-						         imageBounds.x, imageBounds.y, imageBounds.width, imageBounds.height,
-						         imageX, imageY, imageWidth, imageHeight);
+								 imageBounds.x, imageBounds.y, imageBounds.width, imageBounds.height,
+								 imageX, imageY, imageWidth, imageHeight);
 					xDraw += imageWidth + INTERNAL_SPACING;
 				}
 			}
@@ -1809,15 +1809,15 @@ public class CTabFolderRenderer {
 		if (parent.onBottom) {
 			int d = tabHeight - 12;
 			curve = new int[]{0,13+d, 0,12+d, 2,12+d, 3,11+d, 5,11+d, 6,10+d, 7,10+d, 9,8+d, 10,8+d,
-					          11,7+d, 11+d,7,
-							  12+d,6, 13+d,6, 15+d,4, 16+d,4, 17+d,3, 19+d,3, 20+d,2, 22+d,2, 23+d,1};
+								11,7+d, 11+d,7,
+								12+d,6, 13+d,6, 15+d,4, 16+d,4, 17+d,3, 19+d,3, 20+d,2, 22+d,2, 23+d,1};
 			curveWidth = 26+d;
 			curveIndent = curveWidth/3;
 		} else {
 			int d = tabHeight - 12;
 			curve = new int[]{0,0, 0,1, 2,1, 3,2, 5,2, 6,3, 7,3, 9,5, 10,5,
-					          11,6, 11+d,6+d,
-					          12+d,7+d, 13+d,7+d, 15+d,9+d, 16+d,9+d, 17+d,10+d, 19+d,10+d, 20+d,11+d, 22+d,11+d, 23+d,12+d};
+								11,6, 11+d,6+d,
+								12+d,7+d, 13+d,7+d, 15+d,9+d, 16+d,9+d, 17+d,10+d, 19+d,10+d, 20+d,11+d, 22+d,11+d, 23+d,12+d};
 			curveWidth = 26+d;
 			curveIndent = curveWidth/3;
 

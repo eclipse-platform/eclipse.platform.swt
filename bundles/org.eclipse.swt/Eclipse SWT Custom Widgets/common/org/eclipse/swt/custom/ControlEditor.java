@@ -213,8 +213,8 @@ public void layout () {
 	if (editor.getVisible ()) {
 		hadFocus = editor.isFocusControl();
 	} // this doesn't work because
-	  // resizing the column takes the focus away
-	  // before we get here
+	// resizing the column takes the focus away
+	// before we get here
 	editor.setBounds (computeBounds ());
 	if (hadFocus) {
 		if (editor == null || editor.isDisposed()) return;

@@ -66,18 +66,18 @@ public class Cairo extends Platform {
 	public static final int CAIRO_STATUS_NULL_POINTER =7;
 	public static final int CAIRO_SURFACE_TYPE_IMAGE = 0;
 	public static final int CAIRO_SURFACE_TYPE_PDF = 1;
-    public static final int CAIRO_SURFACE_TYPE_PS = 2;
-    public static final int CAIRO_SURFACE_TYPE_XLIB = 3;
-    public static final int CAIRO_SURFACE_TYPE_XCB = 4;
-    public static final int CAIRO_SURFACE_TYPE_GLITZ = 5;
-    public static final int CAIRO_SURFACE_TYPE_QUARTZ = 6;
-    public static final int CAIRO_SURFACE_TYPE_WIN32 = 7;
-    public static final int CAIRO_SURFACE_TYPE_BEOS = 8;
-    public static final int CAIRO_SURFACE_TYPE_DIRECTFB = 9;
-    public static final int CAIRO_SURFACE_TYPE_SVG = 10;
-    public static final int CAIRO_REGION_OVERLAP_IN = 0;
-    public static final int CAIRO_REGION_OVERLAP_OUT = 1;
-    public static final int CAIRO_REGION_OVERLAP_PART = 2;
+	public static final int CAIRO_SURFACE_TYPE_PS = 2;
+	public static final int CAIRO_SURFACE_TYPE_XLIB = 3;
+	public static final int CAIRO_SURFACE_TYPE_XCB = 4;
+	public static final int CAIRO_SURFACE_TYPE_GLITZ = 5;
+	public static final int CAIRO_SURFACE_TYPE_QUARTZ = 6;
+	public static final int CAIRO_SURFACE_TYPE_WIN32 = 7;
+	public static final int CAIRO_SURFACE_TYPE_BEOS = 8;
+	public static final int CAIRO_SURFACE_TYPE_DIRECTFB = 9;
+	public static final int CAIRO_SURFACE_TYPE_SVG = 10;
+	public static final int CAIRO_REGION_OVERLAP_IN = 0;
+	public static final int CAIRO_REGION_OVERLAP_OUT = 1;
+	public static final int CAIRO_REGION_OVERLAP_PART = 2;
 	public static final int CAIRO_FILTER_FAST = 0;
 	public static final int CAIRO_FILTER_GOOD = 1;
 	public static final int CAIRO_FILTER_BEST = 2;
@@ -1285,7 +1285,7 @@ public static final native long _cairo_region_copy(long region);
 public static final long cairo_region_copy(long region) {
 	lock.lock();
 	try {
-		 return _cairo_region_copy(region);
+		return _cairo_region_copy(region);
 	} finally {
 		lock.unlock();
 	}
@@ -1356,7 +1356,7 @@ public static final native void _cairo_region_get_rectangle(long region, int nth
 public static final void cairo_region_get_rectangle(long region, int nth, long rectangle) {
 	lock.lock();
 	try {
-		 _cairo_region_get_rectangle(region, nth, rectangle);
+		_cairo_region_get_rectangle(region, nth, rectangle);
 	} finally {
 		lock.unlock();
 	}
@@ -1406,7 +1406,7 @@ public static final native void _cairo_region_translate(long region, int dx, int
 public static final void cairo_region_translate(long region, int dx, int dy) {
 	lock.lock();
 	try {
-		 _cairo_region_translate(region,dx,dy);
+		_cairo_region_translate(region,dx,dy);
 	} finally {
 		lock.unlock();
 	}

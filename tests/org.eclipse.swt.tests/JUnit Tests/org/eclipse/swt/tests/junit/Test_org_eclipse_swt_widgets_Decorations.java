@@ -72,9 +72,9 @@ public void test_getImage() {
 	Image[] cases = {null, new Image(null, 100, 100)};
 	for(int i=0; i<cases.length; i++){
 		decorations.setImage(cases[i]);
-	 	assertEquals(decorations.getImage(), cases[i]);
-	 	if (cases[i]!=null)
-	  		cases[i].dispose();
+		assertEquals(decorations.getImage(), cases[i]);
+		if (cases[i]!=null)
+			cases[i].dispose();
 	}
 }
 

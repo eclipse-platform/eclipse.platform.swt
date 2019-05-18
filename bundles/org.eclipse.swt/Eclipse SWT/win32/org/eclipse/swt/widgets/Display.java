@@ -865,9 +865,9 @@ static long /*int*/ create32bitDIB (Image image) {
 	BITMAP dibBM = new BITMAP ();
 	OS.GetObject (memDib, BITMAP.sizeof, dibBM);
 	int sizeInBytes = dibBM.bmWidthBytes * dibBM.bmHeight;
- 	OS.BitBlt (memHdc, 0, 0, imgWidth, imgHeight, srcHdc, 0, 0, OS.SRCCOPY);
- 	byte red = 0, green = 0, blue = 0;
- 	if (transparentPixel != -1) {
+	OS.BitBlt (memHdc, 0, 0, imgWidth, imgHeight, srcHdc, 0, 0, OS.SRCCOPY);
+	byte red = 0, green = 0, blue = 0;
+	if (transparentPixel != -1) {
 		if (bm.bmBitsPixel <= 8) {
 			byte [] color = new byte [4];
 			OS.GetDIBColorTable (srcHdc, transparentPixel, 1, color);
@@ -893,8 +893,8 @@ static long /*int*/ create32bitDIB (Image image) {
 					break;
 			}
 		}
- 	}
- 	byte [] srcData = new byte [sizeInBytes];
+	}
+	byte [] srcData = new byte [sizeInBytes];
 	OS.MoveMemory (srcData, pBits [0], sizeInBytes);
 	if (hMask != 0) {
 		OS.SelectObject(srcHdc, hMask);
@@ -995,9 +995,9 @@ static long /*int*/ create32bitDIB (long /*int*/ hBitmap, int alpha, byte [] alp
 	BITMAP dibBM = new BITMAP ();
 	OS.GetObject (memDib, BITMAP.sizeof, dibBM);
 	int sizeInBytes = dibBM.bmWidthBytes * dibBM.bmHeight;
- 	OS.BitBlt (memHdc, 0, 0, imgWidth, imgHeight, srcHdc, 0, 0, OS.SRCCOPY);
- 	byte red = 0, green = 0, blue = 0;
- 	if (transparentPixel != -1) {
+	OS.BitBlt (memHdc, 0, 0, imgWidth, imgHeight, srcHdc, 0, 0, OS.SRCCOPY);
+	byte red = 0, green = 0, blue = 0;
+	if (transparentPixel != -1) {
 		if (bm.bmBitsPixel <= 8) {
 			byte [] color = new byte [4];
 			OS.GetDIBColorTable (srcHdc, transparentPixel, 1, color);
@@ -1023,13 +1023,13 @@ static long /*int*/ create32bitDIB (long /*int*/ hBitmap, int alpha, byte [] alp
 					break;
 			}
 		}
- 	}
+	}
 	OS.SelectObject (srcHdc, oldSrcBitmap);
 	OS.SelectObject (memHdc, oldMemBitmap);
 	OS.DeleteObject (srcHdc);
 	OS.DeleteObject (memHdc);
 	OS.ReleaseDC (0, hDC);
- 	byte [] srcData = new byte [sizeInBytes];
+	byte [] srcData = new byte [sizeInBytes];
 	OS.MoveMemory (srcData, pBits [0], sizeInBytes);
 	if (alpha != -1) {
 		for (int y = 0, dp = 0; y < imgHeight; ++y) {
@@ -2738,7 +2738,7 @@ public void internal_dispose_GC (long /*int*/ hDC, GCData data) {
 boolean isXMouseActive () {
 	/*
 	* NOTE: X-Mouse is active when bit 1 of the UserPreferencesMask is set.
-  	*/
+	*/
 	boolean xMouseActive = false;
 	TCHAR key = new TCHAR (0, "Control Panel\\Desktop", true); //$NON-NLS-1$
 	long /*int*/ [] phKey = new long /*int*/ [1];

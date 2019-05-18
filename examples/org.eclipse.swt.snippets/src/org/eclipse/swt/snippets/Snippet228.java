@@ -48,8 +48,8 @@ public static void main(String [] args) {
 	column2.setWidth(200);
 	String[] labels = new String[]{"Resolved", "New", "Won't Fix", "Invalid"};
 	for (int i=0; i<labels.length; i++) {
-		 TableItem item = new TableItem(table, SWT.NONE);
-		 item.setText(labels[i]);
+		TableItem item = new TableItem(table, SWT.NONE);
+		item.setText(labels[i]);
 	}
 
 	/*

@@ -166,6 +166,6 @@ public void paint(GC gc, int width, int height) {
 	gc.fillPath(path);
 	path.dispose();
 
-    if (pattern != null) pattern.dispose();
+	if (pattern != null) pattern.dispose();
 }
 }

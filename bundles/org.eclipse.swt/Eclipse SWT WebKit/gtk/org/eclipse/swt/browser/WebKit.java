@@ -309,7 +309,7 @@ class WebKit extends WebBrowser {
 				if (WEBKIT2) {
 					if (WebKitGTK.webkit_get_minor_version() >= 16) {
 						// TODO: webkit_website_data_manager_clear currently does not
-						 // support more fine grained removals. (I.e, session vs all cookies)
+						// support more fine grained removals. (I.e, session vs all cookies)
 						long context = WebKitGTK.webkit_web_context_get_default();
 						long manager = WebKitGTK.webkit_web_context_get_website_data_manager (context);
 						WebKitGTK.webkit_website_data_manager_clear(manager, WebKitGTK.WEBKIT_WEBSITE_DATA_COOKIES, 0, 0, 0, 0);
@@ -899,7 +899,7 @@ static long Proc (long handle, long arg0, long user_data) {
 			return 0;
 		}
 
-		 if (WEBKIT2 && user_data == DECIDE_DESTINATION) {
+		if (WEBKIT2 && user_data == DECIDE_DESTINATION) {
 			// This callback comes from WebKitDownload, so handle is WebKitDownload not webview.
 			// gboolean  user_function (WebKitDownload *download, gchar   *suggested_filename, gpointer  user_data)
 			long webKitDownload = handle;
@@ -911,7 +911,7 @@ static long Proc (long handle, long arg0, long user_data) {
 			// void user_function (WebKitDownload *download, GError *error, gpointer user_data)
 			long webKitDownload = handle;
 			return webkit_download_failed(webKitDownload);
-		 }
+		}
 	}
 
 	{ // Callbacks connected with a WebView.
@@ -1621,11 +1621,11 @@ private boolean webkit_extension_modify_function (long pageId, String function, 
 @Override
 public boolean execute (String script) {
 	if (WEBKIT2){
-        if (!isJavascriptEnabled()) {
-        	System.err.println("SWT Webkit Warning: Attempting to execute javascript when javascript is dissabled."
-        			+ "Execution has no effect. Script:\n" + script);
-        	return false;
-        }
+		if (!isJavascriptEnabled()) {
+			System.err.println("SWT Webkit Warning: Attempting to execute javascript when javascript is dissabled."
+					+ "Execution has no effect. Script:\n" + script);
+			return false;
+		}
 		try {
 			Webkit2AsyncToSync.runjavascript(script, this.browser, webView);
 		} catch (SWTException e) {
@@ -1925,9 +1925,9 @@ public Object evaluate (String script) throws SWTException {
 		return null; // A litte optimization. Sometimes evaluate() is called with a generated script, where the generated script is sometimes empty.
 	}
 	if (WEBKIT2){
-        if (!isJavascriptEnabled()) {
-        	return null;
-        }
+		if (!isJavascriptEnabled()) {
+			return null;
+		}
 		return Webkit2AsyncToSync.evaluate(script, this.browser, webView);
 	} else {
 		return super.evaluate(script);
@@ -3015,8 +3015,8 @@ long webkit_close_web_view (long web_view) {
 		browser.dispose ();
 	};
 	if (WEBKIT2) {
-		 // There is a subtle difference in Webkit1 vs Webkit2, in that on webkit2 this signal doesn't expect a return value.
-		 // As such, we can safley execute the SWT listeners later to avoid deadlocks. See bug 512001
+		// There is a subtle difference in Webkit1 vs Webkit2, in that on webkit2 this signal doesn't expect a return value.
+		// As such, we can safley execute the SWT listeners later to avoid deadlocks. See bug 512001
 		browser.getDisplay().asyncExec(fireCloseWindowListeners);
 	} else {
 		fireCloseWindowListeners.run();
@@ -3289,71 +3289,71 @@ long webkit_navigation_policy_decision_requested (long web_view, long frame, lon
 long webkit_decide_policy (long web_view, long decision, int decision_type, long user_data) {
 	assert WEBKIT2 : WebKitGTK.Webkit2AssertMsg;
 	switch (decision_type) {
-    case WebKitGTK.WEBKIT_POLICY_DECISION_TYPE_NAVIGATION_ACTION:
-       long request = WebKitGTK. webkit_navigation_policy_decision_get_request(decision);
-       if (request == 0){
-          return 0;
-       }
-       long uri = WebKitGTK.webkit_uri_request_get_uri (request);
-       String url = getString(uri);
-       /*
-        * If the URI indicates that the page is being rendered from memory
-        * (via setText()) then set it to about:blank to be consistent with IE.
-        */
-       if (url.equals (URI_FILEROOT)) {
-          url = ABOUT_BLANK;
-       } else {
-          int length = URI_FILEROOT.length ();
-          if (url.startsWith (URI_FILEROOT) && url.charAt (length) == '#') {
-             url = ABOUT_BLANK + url.substring (length);
-          }
-       }
+	case WebKitGTK.WEBKIT_POLICY_DECISION_TYPE_NAVIGATION_ACTION:
+		long request = WebKitGTK. webkit_navigation_policy_decision_get_request(decision);
+		if (request == 0){
+			return 0;
+		}
+		long uri = WebKitGTK.webkit_uri_request_get_uri (request);
+		String url = getString(uri);
+		/*
+		* If the URI indicates that the page is being rendered from memory
+		* (via setText()) then set it to about:blank to be consistent with IE.
+		*/
+		if (url.equals (URI_FILEROOT)) {
+			url = ABOUT_BLANK;
+		} else {
+			int length = URI_FILEROOT.length ();
+			if (url.startsWith (URI_FILEROOT) && url.charAt (length) == '#') {
+				url = ABOUT_BLANK + url.substring (length);
+			}
+		}
 
-       LocationEvent newEvent = new LocationEvent (browser);
-       newEvent.display = browser.getDisplay ();
-       newEvent.widget = browser;
-       newEvent.location = url;
-       newEvent.doit = true;
+		LocationEvent newEvent = new LocationEvent (browser);
+		newEvent.display = browser.getDisplay ();
+		newEvent.widget = browser;
+		newEvent.location = url;
+		newEvent.doit = true;
 
-       try {
-	       nonBlockingEvaluate++;
-	       if (locationListeners != null) {
-	          for (int i = 0; i < locationListeners.length; i++) {
-	             locationListeners[i].changing (newEvent);
-	          }
-	       }
-       } catch (Exception e) {
-    	   throw e;
-       } finally {
-    	  nonBlockingEvaluate--;
-       }
+		try {
+			nonBlockingEvaluate++;
+			if (locationListeners != null) {
+				for (int i = 0; i < locationListeners.length; i++) {
+					locationListeners[i].changing (newEvent);
+				}
+			}
+		} catch (Exception e) {
+			throw e;
+		} finally {
+			nonBlockingEvaluate--;
+		}
 
-       if (newEvent.doit && !browser.isDisposed ()) {
-          if (jsEnabled != jsEnabledOnNextPage) {
-             jsEnabled = jsEnabledOnNextPage;
-             webkit_settings_set(WebKitGTK.enable_javascript, jsEnabled ? 1 : 0);
-          }
-       }
-       if(!newEvent.doit){
-         WebKitGTK.webkit_policy_decision_ignore (decision);
-       }
-       break;
-    case WebKitGTK.WEBKIT_POLICY_DECISION_TYPE_NEW_WINDOW_ACTION:
-        break;
-    case WebKitGTK.WEBKIT_POLICY_DECISION_TYPE_RESPONSE:
-       long response = WebKitGTK.webkit_response_policy_decision_get_response(decision);
-       long mime_type = WebKitGTK.webkit_uri_response_get_mime_type(response);
-       boolean canShow = WebKitGTK.webkit_web_view_can_show_mime_type (webView, mime_type) != 0;
-       if (!canShow) {
-         WebKitGTK.webkit_policy_decision_download (decision);
-         return 1;
-       }
-       break;
-    default:
-        /* Making no decision results in webkit_policy_decision_use(). */
-        return 0;
-    }
-    return 0;
+		if (newEvent.doit && !browser.isDisposed ()) {
+			if (jsEnabled != jsEnabledOnNextPage) {
+				jsEnabled = jsEnabledOnNextPage;
+				webkit_settings_set(WebKitGTK.enable_javascript, jsEnabled ? 1 : 0);
+			}
+		}
+		if(!newEvent.doit){
+			WebKitGTK.webkit_policy_decision_ignore (decision);
+		}
+		break;
+	case WebKitGTK.WEBKIT_POLICY_DECISION_TYPE_NEW_WINDOW_ACTION:
+		break;
+	case WebKitGTK.WEBKIT_POLICY_DECISION_TYPE_RESPONSE:
+		long response = WebKitGTK.webkit_response_policy_decision_get_response(decision);
+		long mime_type = WebKitGTK.webkit_uri_response_get_mime_type(response);
+		boolean canShow = WebKitGTK.webkit_web_view_can_show_mime_type (webView, mime_type) != 0;
+		if (!canShow) {
+			WebKitGTK.webkit_policy_decision_download (decision);
+			return 1;
+		}
+		break;
+	default:
+		/* Making no decision results in webkit_policy_decision_use(). */
+		return 0;
+	}
+	return 0;
 }
 
 long webkit_notify_load_status (long web_view, long pspec) {

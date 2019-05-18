@@ -913,13 +913,13 @@ boolean setRadioSelection (boolean value) {
 }
 
 void setOrientation (int orientation) {
-    long /*int*/ hMenu = parent.handle;
-    MENUITEMINFO info = new MENUITEMINFO ();
-    info.cbSize = MENUITEMINFO.sizeof;
-    info.fMask = OS.MIIM_FTYPE;
-    info.fType = widgetStyle ();
-    OS.SetMenuItemInfo (hMenu, id, false, info);
-    if (menu != null) menu._setOrientation (orientation);
+	long /*int*/ hMenu = parent.handle;
+	MENUITEMINFO info = new MENUITEMINFO ();
+	info.cbSize = MENUITEMINFO.sizeof;
+	info.fMask = OS.MIIM_FTYPE;
+	info.fType = widgetStyle ();
+	OS.SetMenuItemInfo (hMenu, id, false, info);
+	if (menu != null) menu._setOrientation (orientation);
 }
 
 /**

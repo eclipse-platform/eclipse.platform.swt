@@ -32,29 +32,29 @@ public class Bug85131_ToolTipSetNull
 {
 	public static void main(String[]v)
 	{
-		 Display disp = Display.getDefault();
-	     final Shell shell = new Shell(disp, SWT.DIALOG_TRIM|SWT.RESIZE );
-	     shell.setText( "Test Tooltip" );
-	     
-	     shell.setLayout( new FillLayout() );
-	     
-	     final Canvas canvas = new Canvas( shell, SWT.NONE );
-	     canvas.addPaintListener( new PaintListener() {
-	       @Override
+		Display disp = Display.getDefault();
+		final Shell shell = new Shell(disp, SWT.DIALOG_TRIM|SWT.RESIZE );
+		shell.setText( "Test Tooltip" );
+		
+		shell.setLayout( new FillLayout() );
+		
+		final Canvas canvas = new Canvas( shell, SWT.NONE );
+		canvas.addPaintListener( new PaintListener() {
+		@Override
 		public void paintControl(PaintEvent e)
-	       {
-	       	 Rectangle r = canvas.getClientArea();
-	       	 int wm = r.width/8, w2 = r.width/2;
-	       	 int hm = r.height/8;
-	       	 int rw = w2-wm, rh = r.height-2*hm;
-	       	 
-	       	 e.gc.setBackground( new Color(null,200,0,0) );
-	       	 e.gc.fillRectangle( 0,hm,w2,rh);
-	       	 e.gc.setBackground( new Color(null,0,0,200) );
-	       	 e.gc.fillRectangle( w2,hm+hm,rw+wm,rh-hm);
-	       }
-	     });
-	     canvas.addMouseMoveListener( new MouseMoveListener() {
+		{
+			Rectangle r = canvas.getClientArea();
+			int wm = r.width/8, w2 = r.width/2;
+			int hm = r.height/8;
+			int rw = w2-wm, rh = r.height-2*hm;
+			
+			e.gc.setBackground( new Color(null,200,0,0) );
+			e.gc.fillRectangle( 0,hm,w2,rh);
+			e.gc.setBackground( new Color(null,0,0,200) );
+			e.gc.fillRectangle( w2,hm+hm,rw+wm,rh-hm);
+		}
+		});
+		canvas.addMouseMoveListener( new MouseMoveListener() {
 			@Override
 			public void mouseMove(org.eclipse.swt.events.MouseEvent 
 e) {
@@ -62,30 +62,30 @@ e) {
 				int my = e.y;
 				
 				Rectangle r = canvas.getClientArea();
-		       	int wm = r.width/8, w2 = r.width/2;
-		       	int hm = r.height/8;
-	       	    int rw = w2-wm, rh = r.height-2*hm;
-		       	
-		       	String tip = null;
- 	       	    if( mx>=0 && mx <= 0+w2 && my >= hm && my <= hm+rh )
- 	       	    {
- 	       	      tip = "Red Rectangle";
- 	       	    }
- 	       	    else if( mx>=w2 && mx <= w2+rw+wm && my >= hm+hm && my <= 
+				int wm = r.width/8, w2 = r.width/2;
+				int hm = r.height/8;
+				int rw = w2-wm, rh = r.height-2*hm;
+				
+				String tip = null;
+				if( mx>=0 && mx <= 0+w2 && my >= hm && my <= hm+rh )
+				{
+					tip = "Red Rectangle";
+				}
+				else if( mx>=w2 && mx <= w2+rw+wm && my >= hm+hm && my <= 
 hm+rh )
- 	       	    {
- 	       	      tip = "Blue Rectangle";
- 	       	    }
-System.out.println("setToolTipText("+tip+")"); 	       	    
- 	       	    canvas.setToolTipText( tip );
+				{
+					tip = "Blue Rectangle";
+				}
+System.out.println("setToolTipText("+tip+")"); 
+				canvas.setToolTipText( tip );
 			}
-	     });
+		});
 
-	     shell.setSize( 300, 200 );
-	     shell.open();
-	      
-	      while (!shell.isDisposed())
-	        if (!disp.readAndDispatch())
-	        	disp.sleep();
+		shell.setSize( 300, 200 );
+		shell.open();
+		
+		while (!shell.isDisposed())
+			if (!disp.readAndDispatch())
+				disp.sleep();
 	}
 }

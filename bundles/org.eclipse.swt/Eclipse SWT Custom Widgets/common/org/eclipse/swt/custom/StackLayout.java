@@ -71,13 +71,13 @@ import org.eclipse.swt.widgets.*;
 
 public class StackLayout extends Layout {
 
- 	/**
+	/**
 	 * marginWidth specifies the number of points of horizontal margin
 	 * that will be placed along the left and right edges of the layout.
 	 *
 	 * The default value is 0.
 	 */
- 	public int marginWidth = 0;
+	public int marginWidth = 0;
 	/**
 	 * marginHeight specifies the number of points of vertical margin
 	 * that will be placed along the top and bottom edges of the layout.
@@ -86,11 +86,11 @@ public class StackLayout extends Layout {
 	 */
 	public int marginHeight = 0;
 
- 	/**
- 	 * topControl the Control that is displayed at the top of the stack.
- 	 * All other controls that are children of the parent composite will not be visible.
- 	 */
- 	public Control topControl;
+	/**
+	 * topControl the Control that is displayed at the top of the stack.
+	 * All other controls that are children of the parent composite will not be visible.
+	 */
+	public Control topControl;
 
 @Override
 protected Point computeSize(Composite composite, int wHint, int hHint, boolean flushCache) {
@@ -143,12 +143,12 @@ String getName () {
  */
 @Override
 public String toString () {
- 	String string = getName ()+" {";
- 	if (marginWidth != 0) string += "marginWidth="+marginWidth+" ";
- 	if (marginHeight != 0) string += "marginHeight="+marginHeight+" ";
- 	if (topControl != null) string += "topControl="+topControl+" ";
- 	string = string.trim();
- 	string += "}";
- 	return string;
+	String string = getName ()+" {";
+	if (marginWidth != 0) string += "marginWidth="+marginWidth+" ";
+	if (marginHeight != 0) string += "marginHeight="+marginHeight+" ";
+	if (topControl != null) string += "topControl="+topControl+" ";
+	string = string.trim();
+	string += "}";
+	return string;
 }
 }

@@ -1090,15 +1090,15 @@ public void setMinimized (boolean minimized) {
 
 @Override
 public void setOrientation (int orientation) {
-    super.setOrientation (orientation);
-    if (menus != null) {
-        for (int i=0; i<menus.length; i++) {
-            Menu menu = menus [i];
-            if (menu != null && !menu.isDisposed () && (menu.getStyle () & SWT.POP_UP) != 0) {
-                menu._setOrientation (menu.getOrientation ());
-            }
-        }
-    }
+	super.setOrientation (orientation);
+	if (menus != null) {
+		for (int i=0; i<menus.length; i++) {
+			Menu menu = menus [i];
+			if (menu != null && !menu.isDisposed () && (menu.getStyle () & SWT.POP_UP) != 0) {
+				menu._setOrientation (menu.getOrientation ());
+			}
+		}
+	}
 }
 
 void setParent () {
@@ -1339,16 +1339,16 @@ void sort (Image [] images, ImageData [] datas, int width, int height, int depth
 	for (int gap=length/2; gap>0; gap/=2) {
 		for (int i=gap; i<length; i++) {
 			for (int j=i-gap; j>=0; j-=gap) {
-		   		if (compare (datas [j], datas [j + gap], width, height, depth) >= 0) {
+				if (compare (datas [j], datas [j + gap], width, height, depth) >= 0) {
 					Image swap = images [j];
 					images [j] = images [j + gap];
 					images [j + gap] = swap;
 					ImageData swapData = datas [j];
 					datas [j] = datas [j + gap];
 					datas [j + gap] = swapData;
-		   		}
-	    	}
-	    }
+				}
+			}
+		}
 	}
 }
 

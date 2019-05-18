@@ -448,9 +448,9 @@ class CoolBarTab extends Tab {
 					pt = toolBar.toDisplay(new Point(toolBounds.x, toolBounds.y));
 					toolBounds.x = pt.x;
 					toolBounds.y = pt.y;
-			  		Rectangle intersection = itemBounds.intersection (toolBounds);
-			  		if (!intersection.equals (toolBounds)) break;
-			  		i++;
+					Rectangle intersection = itemBounds.intersection (toolBounds);
+					if (!intersection.equals (toolBounds)) break;
+					i++;
 				}
 
 				/* Create a pop-up menu with items for each of the hidden buttons. */

@@ -49,7 +49,7 @@ public class OlePlugin extends AbstractUIPlugin {
 		"icons/search_nav.gif" };
 	static Image images[];
 	static Font  browserFont;
-   
+	
 	/**
 	 * Constructs an OLE plugin.
 	 */
@@ -58,12 +58,12 @@ public class OlePlugin extends AbstractUIPlugin {
 		plugin = this;
 	}
 	
-    @Override
+	@Override
 	public void start(BundleContext context) throws Exception {
-        super.start(context);
-        resourceBundle = Platform.getResourceBundle(getBundle());
-    }
-    
+		super.start(context);
+		resourceBundle = Platform.getResourceBundle(getBundle());
+	}
+	
 	/**
 	 * Clean up
 	 */

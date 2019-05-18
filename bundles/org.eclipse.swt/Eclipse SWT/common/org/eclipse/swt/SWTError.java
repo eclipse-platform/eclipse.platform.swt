@@ -41,9 +41,9 @@ package org.eclipse.swt;
  */
 
 public class SWTError extends Error {
-    /**
-     * The SWT error code, one of SWT.ERROR_*.
-     */
+	/**
+	 * The SWT error code, one of SWT.ERROR_*.
+	 */
 	public int code;
 
 	/**
@@ -52,7 +52,7 @@ public class SWTError extends Error {
 	 */
 	public Throwable throwable;
 
-    static final long serialVersionUID = 3833467327105808433L;
+	static final long serialVersionUID = 3833467327105808433L;
 
 /**
  * Constructs a new instance of this class with its

@@ -1280,10 +1280,10 @@ abstract class Tab {
 				}
 				if (menu == null && popupMenuButton.getSelection()) {
 					menu = new Menu(shell, SWT.POP_UP | (control.getStyle() & (SWT.RIGHT_TO_LEFT | SWT.LEFT_TO_RIGHT)));
-			    	MenuItem item = new MenuItem(menu, SWT.PUSH);
-			    	item.setText("Sample popup menu item");
-			    	specialPopupMenuItems(menu, event);
-			    	control.setMenu(menu);
+					MenuItem item = new MenuItem(menu, SWT.PUSH);
+					item.setText("Sample popup menu item");
+					specialPopupMenuItems(menu, event);
+					control.setMenu(menu);
 					samplePopup = true;
 				}
 			});

@@ -175,7 +175,7 @@ public final class PrinterData extends DeviceData {
 	 */
 	public static final int LANDSCAPE = 2;
 
- 	/**
+	/**
 	 * <code>duplex</code> field value indicating
 	 * single-sided printing.
 	 * <p>

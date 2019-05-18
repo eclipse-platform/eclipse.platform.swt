@@ -587,7 +587,7 @@ public void test_OpenWindowListener_open_ChildPopup() {
 		childShell.open();
 		browserChild.setText("Child Browser");
 	}));
-	 //Triggers test to finish.
+	//Triggers test to finish.
 	browserChild.addProgressListener(completedAdapter(event -> childCompleted.set(true)));
 
 	shell.open();
@@ -1306,7 +1306,7 @@ public void test_LocationListener_evaluateInCallback() {
 
 
 	String errMsg = "\n  changing:  fired:" +  changingFinished.get() + "    evaluated:" + changing +
-				    "\n  changed:   fired:" + changedFinished.get() + "    evaluated:" + changed;
+					"\n  changed:   fired:" + changedFinished.get() + "    evaluated:" + changed;
 	boolean passed = false;
 
 	if (isWebkit2) {
@@ -1666,7 +1666,7 @@ public void test_evaluate_boolean() {
 @Test
 public void test_evaluate_null() {
 	assumeFalse(webkit1SkipMsg(), isWebkit1); // Bug 509411
-	 // Boolen only used as dummy placeholder so the object is not null.
+	// Boolen only used as dummy placeholder so the object is not null.
 	final AtomicReference<Object> returnValue = new AtomicReference<>(true);
 	browser.addProgressListener(completedAdapter(event -> {
 		Object evalResult = browser.evaluate("return null");
@@ -1999,7 +1999,7 @@ public void test_BrowserFunction_callback_with_boolean () {
 		@Override
 		public Object function(Object[] arguments) {
 			Boolean returnBool = (Boolean) arguments[0];
- 			javaCallbackExecuted.set(returnBool);
+			javaCallbackExecuted.set(returnBool);
 			return null;
 		}
 	}
@@ -2332,23 +2332,23 @@ private String webkit1SkipMsg() {
  */
 private static Boolean checkInternet(String url) {
 	HttpURLConnection connection = null;
-    try {
-        connection = (HttpURLConnection) new URL(url).openConnection();
-        connection.setRequestMethod("HEAD");
-        int code = connection.getResponseCode(); // 200 is success. See https://tools.ietf.org/html/rfc7231#section-6.3.1.
-        if (code == 200)
-        	return true;
-    } catch (MalformedURLException e) {
-    	System.err.println("Given url is malformed: " + url + "Try a fully formed url like: http://www.example.com");
-    	e.printStackTrace();
-    } catch (IOException e) {
-    	// No connection was made.
-    } finally {
-        if (connection != null) {
-            connection.disconnect();
-        }
-    }
-    return false;
+	try {
+		connection = (HttpURLConnection) new URL(url).openConnection();
+		connection.setRequestMethod("HEAD");
+		int code = connection.getResponseCode(); // 200 is success. See https://tools.ietf.org/html/rfc7231#section-6.3.1.
+		if (code == 200)
+			return true;
+	} catch (MalformedURLException e) {
+		System.err.println("Given url is malformed: " + url + "Try a fully formed url like: http://www.example.com");
+		e.printStackTrace();
+	} catch (IOException e) {
+		// No connection was made.
+	} finally {
+		if (connection != null) {
+			connection.disconnect();
+		}
+	}
+	return false;
 }
 
 }

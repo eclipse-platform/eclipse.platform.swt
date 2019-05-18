@@ -240,26 +240,26 @@ void keyDown(Event event) {
 		case SWT.ARROW_DOWN :
 			setRowColumn(Math.min(rowIndex + 1, table.getItemCount() - 1), columnIndex, true);
 			break;
-        case SWT.ARROW_LEFT :
-        case SWT.ARROW_RIGHT :
-        	{
-        		int columnCount = table.getColumnCount();
-        		if (columnCount == 0) break;
-        		int[] order = table.getColumnOrder();
-        		int index = 0;
-        		while (index < order.length) {
-        			if (order[index] == columnIndex) break;
-        			index++;
+		case SWT.ARROW_LEFT :
+		case SWT.ARROW_RIGHT :
+			{
+				int columnCount = table.getColumnCount();
+				if (columnCount == 0) break;
+				int[] order = table.getColumnOrder();
+				int index = 0;
+				while (index < order.length) {
+					if (order[index] == columnIndex) break;
+					index++;
 				}
 				if (index == order.length) index = 0;
-		        int leadKey = (getStyle() & SWT.RIGHT_TO_LEFT) != 0 ? SWT.ARROW_RIGHT : SWT.ARROW_LEFT;
-		        if (event.keyCode == leadKey) {
-		           setRowColumn(rowIndex, order[Math.max(0, index - 1)], true);
-		        } else {
-		           setRowColumn(rowIndex, order[Math.min(columnCount - 1, index + 1)], true);
-		        }
-		        break;
-        	}
+				int leadKey = (getStyle() & SWT.RIGHT_TO_LEFT) != 0 ? SWT.ARROW_RIGHT : SWT.ARROW_LEFT;
+				if (event.keyCode == leadKey) {
+					setRowColumn(rowIndex, order[Math.max(0, index - 1)], true);
+				} else {
+					setRowColumn(rowIndex, order[Math.min(columnCount - 1, index + 1)], true);
+				}
+				break;
+			}
 		case SWT.HOME :
 			setRowColumn(0, columnIndex, true);
 			break;
@@ -633,7 +633,7 @@ public void setSelection(int row, int column) {
 	int columnCount = table.getColumnCount();
 	int maxColumnIndex =  columnCount == 0 ? 0 : columnCount - 1;
 	if (row < 0
-	    || row >= table.getItemCount()
+		|| row >= table.getItemCount()
 		|| column < 0
 		|| column > maxColumnIndex)
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);

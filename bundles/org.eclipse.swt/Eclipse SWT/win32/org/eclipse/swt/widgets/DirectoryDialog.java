@@ -46,7 +46,7 @@ public class DirectoryDialog extends Dialog {
 		OS.IIDFromString("{DC1C5A9C-E88A-4dde-A5A1-60F82A20AEF7}\0".toCharArray(), CLSID_FileOpenDialog); //$NON-NLS-1$
 		OS.IIDFromString("{d57c7288-d4ad-4768-be02-9d969532d960}\0".toCharArray(), IID_IFileOpenDialog); //$NON-NLS-1$
 		OS.IIDFromString("{43826d1e-e718-42ee-bc55-a1e261c37bfe}\0".toCharArray(), IID_IShellItem); //$NON-NLS-1$
- 	}
+	}
 
 	String message = "", filterPath = "";  //$NON-NLS-1$//$NON-NLS-2$
 	String directoryPath;

@@ -40,9 +40,9 @@ public class Bug221962_CTabFolderCorrupted {
 		shell.pack();
 		shell.open();
 		while (!shell.isDisposed()) {
-		  if (!display.readAndDispatch()) {
-		    display.sleep();
-		  }
+		if (!display.readAndDispatch()) {
+			display.sleep();
+		}
 		}
 
 	}

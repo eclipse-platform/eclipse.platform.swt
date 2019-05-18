@@ -1818,48 +1818,48 @@ private void createTable(List<String> events) {
 
 @Test
 public void test_consistency_KeySelection() {
-    List<String> events = new ArrayList<>();
-    createTable(events);
-    consistencyEvent(0, SWT.ARROW_DOWN, 0, 0, ConsistencyUtility.KEY_PRESS, events);
+	List<String> events = new ArrayList<>();
+	createTable(events);
+	consistencyEvent(0, SWT.ARROW_DOWN, 0, 0, ConsistencyUtility.KEY_PRESS, events);
 }
 
 @Test
 public void test_consistency_MouseSelection() {
-    List<String> events = new ArrayList<>();
-    createTable(events);
-    consistencyPrePackShell();
-    consistencyEvent(20, table.getHeaderHeight() + table.getItemHeight()*2,
-            		 1, 0, ConsistencyUtility.MOUSE_CLICK, events);
+	List<String> events = new ArrayList<>();
+	createTable(events);
+	consistencyPrePackShell();
+	consistencyEvent(20, table.getHeaderHeight() + table.getItemHeight()*2,
+					 1, 0, ConsistencyUtility.MOUSE_CLICK, events);
 }
 
 @Test
 public void test_consistency_DoubleClick () {
-    List<String> events = new ArrayList<>();
-    createTable(events);
-    consistencyPrePackShell();
-    consistencyEvent(20, table.getHeaderHeight()+ table.getItemHeight() + 5, 1, 0,
-            	     ConsistencyUtility.MOUSE_DOUBLECLICK, events);
+	List<String> events = new ArrayList<>();
+	createTable(events);
+	consistencyPrePackShell();
+	consistencyEvent(20, table.getHeaderHeight()+ table.getItemHeight() + 5, 1, 0,
+					 ConsistencyUtility.MOUSE_DOUBLECLICK, events);
 }
 
 @Test
 public void test_consistency_EnterSelection () {
-    List<String> events = new ArrayList<>();
-    createTable(events);
-    consistencyEvent(13, 10, 0, 0, ConsistencyUtility.KEY_PRESS, events);
+	List<String> events = new ArrayList<>();
+	createTable(events);
+	consistencyEvent(13, 10, 0, 0, ConsistencyUtility.KEY_PRESS, events);
 }
 
 @Test
 public void test_consistency_MenuDetect () {
-    List<String> events = new ArrayList<>();
-    createTable(events);
-    consistencyEvent(20, 25, 3, 0, ConsistencyUtility.MOUSE_CLICK, events);
+	List<String> events = new ArrayList<>();
+	createTable(events);
+	consistencyEvent(20, 25, 3, 0, ConsistencyUtility.MOUSE_CLICK, events);
 }
 
 @Test
 public void test_consistency_DragDetect () {
-    List<String> events = new ArrayList<>();
-    createTable(events);
-    consistencyEvent(30, 20, 50, 30, ConsistencyUtility.MOUSE_DRAG, events);
+	List<String> events = new ArrayList<>();
+	createTable(events);
+	consistencyEvent(30, 20, 50, 30, ConsistencyUtility.MOUSE_DRAG, events);
 }
 
 @Test

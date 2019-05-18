@@ -1016,132 +1016,132 @@ protected void setWidget(Widget w) {
  * 			invokes ConsistencyUtility.postShellIconify(Display, Point, int)
  */
 protected void consistencyEvent(final int paramA, final int paramB,
-        						final int paramC, final int paramD,
-        						final int method, List<String> events, boolean focus) {
-    if(SwtTestUtil.fTestConsistency) {
-        final Display display = shell.getDisplay();
-        if(events == null)
-            events = new ArrayList<>();
-        final String test = getTestName();
+								final int paramC, final int paramD,
+								final int method, List<String> events, boolean focus) {
+	if(SwtTestUtil.fTestConsistency) {
+		final Display display = shell.getDisplay();
+		if(events == null)
+			events = new ArrayList<>();
+		final String test = getTestName();
 
-        shell.setLayout(new org.eclipse.swt.layout.FillLayout());
-        shell.setText("Parent");
+		shell.setLayout(new org.eclipse.swt.layout.FillLayout());
+		shell.setText("Parent");
 
-        shell.pack();
-    	shell.open();
-    	if(control instanceof Shell) {
-    	    ((Shell)control).pack();
-        	((Shell)control).open();
-    	}
-    	final Point[] pt = determineLocations(paramA, paramB, paramC, paramD, method);
-        if(focus && !control.setFocus())
-            control.forceFocus();
-        String[] expectedEvents = hookExpectedEvents(test, events);
-        new Thread() {
-            @Override
+		shell.pack();
+		shell.open();
+		if(control instanceof Shell) {
+			((Shell)control).pack();
+			((Shell)control).open();
+		}
+		final Point[] pt = determineLocations(paramA, paramB, paramC, paramD, method);
+		if(focus && !control.setFocus())
+			control.forceFocus();
+		String[] expectedEvents = hookExpectedEvents(test, events);
+		new Thread() {
+			@Override
 			public void run() {
-                display.wake();
-                switch(method) {
-                	case ConsistencyUtility.MOUSE_CLICK:
-                		Assert.assertTrue(test,
-                            ConsistencyUtility.postClick(display, pt[0], paramC));
-                		if(paramD == ConsistencyUtility.ESCAPE_MENU) {
-                		    Assert.assertTrue(test,
-	                            ConsistencyUtility.postClick(display, pt[1], 1));
-                		}
-                		break;
-                    case ConsistencyUtility.MOUSE_DOUBLECLICK:
-                        Assert.assertTrue(test,
-                                ConsistencyUtility.postDoubleClick(display, pt[0], paramC));
-                    	break;
-                    case ConsistencyUtility.KEY_PRESS:
-                        Assert.assertTrue(test,
-                            ConsistencyUtility.postKeyPress(display, paramA, paramB));
-                    	break;
-                    case ConsistencyUtility.DOUBLE_KEY_PRESS:
-                        Assert.assertTrue(test,
-                            ConsistencyUtility.postDoubleKeyPress(display, paramA, paramB, paramC, paramD));
-                    	break;
-                    case ConsistencyUtility.MOUSE_DRAG:
-                        Assert.assertTrue(test,
-                            ConsistencyUtility.postDrag(display,
-                                    pt[0], pt[1]));
-                        break;
-                    case ConsistencyUtility.SELECTION:
+				display.wake();
+				switch(method) {
+					case ConsistencyUtility.MOUSE_CLICK:
+						Assert.assertTrue(test,
+							ConsistencyUtility.postClick(display, pt[0], paramC));
+						if(paramD == ConsistencyUtility.ESCAPE_MENU) {
+							Assert.assertTrue(test,
+								ConsistencyUtility.postClick(display, pt[1], 1));
+						}
+						break;
+					case ConsistencyUtility.MOUSE_DOUBLECLICK:
+						Assert.assertTrue(test,
+								ConsistencyUtility.postDoubleClick(display, pt[0], paramC));
+						break;
+					case ConsistencyUtility.KEY_PRESS:
+						Assert.assertTrue(test,
+							ConsistencyUtility.postKeyPress(display, paramA, paramB));
+						break;
+					case ConsistencyUtility.DOUBLE_KEY_PRESS:
+						Assert.assertTrue(test,
+							ConsistencyUtility.postDoubleKeyPress(display, paramA, paramB, paramC, paramD));
+						break;
+					case ConsistencyUtility.MOUSE_DRAG:
+						Assert.assertTrue(test,
+							ConsistencyUtility.postDrag(display,
+									pt[0], pt[1]));
+						break;
+					case ConsistencyUtility.SELECTION:
 
-                        Assert.assertTrue(test,
-                            ConsistencyUtility.postSelection(display,
-                                    pt[0], pt[1]));
-                        break;
-                    case ConsistencyUtility.SHELL_ICONIFY:
-                        Assert.assertTrue(test,
-                            ConsistencyUtility.postShellIconify(display, pt[1], paramA));
-                    	if(control instanceof Shell) {
-                    	    display.syncExec(new Thread() {
-                    	        @Override
+						Assert.assertTrue(test,
+							ConsistencyUtility.postSelection(display,
+									pt[0], pt[1]));
+						break;
+					case ConsistencyUtility.SHELL_ICONIFY:
+						Assert.assertTrue(test,
+							ConsistencyUtility.postShellIconify(display, pt[1], paramA));
+						if(control instanceof Shell) {
+							display.syncExec(new Thread() {
+								@Override
 								public void run() {
-                    	            ((Shell)control).setMinimized(false);
-                    	        }});
-                    	} else
-                    	    fail("Iconifying a non shell control");
-                    	break;
-                }
+									((Shell)control).setMinimized(false);
+								}});
+						} else
+							fail("Iconifying a non shell control");
+						break;
+				}
 				display.asyncExec(new Thread() {
-				    @Override
+					@Override
 					public void run() {
-				        shell.dispose();
-				    }
+						shell.dispose();
+					}
 				});
-             }
-        }.start();
+			}
+		}.start();
 
-        while(!shell.isDisposed()) {
-            if(!display.readAndDispatch()) display.sleep();
-        }
-        setUp();
-        String[] results = new String[events.size()];
-        results = events.toArray(results);
-        assertArrayEquals(test + " event ordering", expectedEvents, results);
-    }
+		while(!shell.isDisposed()) {
+			if(!display.readAndDispatch()) display.sleep();
+		}
+		setUp();
+		String[] results = new String[events.size()];
+		results = events.toArray(results);
+		assertArrayEquals(test + " event ordering", expectedEvents, results);
+	}
 }
 
 protected void consistencyEvent(int paramA, int paramB,
 								int paramC, int paramD,
 								int method, List<String> events) {
-    consistencyEvent(paramA, paramB, paramC, paramD, method, events, true);
+	consistencyEvent(paramA, paramB, paramC, paramD, method, events, true);
 }
 
 protected void consistencyEvent(int paramA, int paramB,
 								int paramC, int paramD,
 								int method) {
-    consistencyEvent(paramA, paramB, paramC, paramD, method, null, true);
+	consistencyEvent(paramA, paramB, paramC, paramD, method, null, true);
 }
 
 protected void consistencyPrePackShell() {
-    shell.setLayout(new org.eclipse.swt.layout.FillLayout());
-    shell.pack();
+	shell.setLayout(new org.eclipse.swt.layout.FillLayout());
+	shell.pack();
 }
 
 protected void consistencyPrePackShell(Shell shell) {
-    consistencyPrePackShell();
-    shell.pack();
+	consistencyPrePackShell();
+	shell.pack();
 }
 
 
 protected Point[] determineLocations(int paramA, int paramB,
-        						     int paramC, int paramD, int method) {
-    Point[] array = new Point[2];
-    if(method >= ConsistencyUtility.MOUSE_CLICK)
-        array[0] = control.toDisplay(paramA, paramB);
-    if(method >= ConsistencyUtility.MOUSE_DRAG)
-        array[1] = control.toDisplay(paramC, paramD);
-    if(method == ConsistencyUtility.MOUSE_CLICK && paramD == ConsistencyUtility.ESCAPE_MENU)
-        array[1] = shell.toDisplay(25, -10);
-    else if(method == ConsistencyUtility.SHELL_ICONIFY) {
-        array[0] = control.toDisplay(0,0);
-        array[1] = control.toDisplay(control.getSize().x -20, 0);
-    }
-    return array;
+									 int paramC, int paramD, int method) {
+	Point[] array = new Point[2];
+	if(method >= ConsistencyUtility.MOUSE_CLICK)
+		array[0] = control.toDisplay(paramA, paramB);
+	if(method >= ConsistencyUtility.MOUSE_DRAG)
+		array[1] = control.toDisplay(paramC, paramD);
+	if(method == ConsistencyUtility.MOUSE_CLICK && paramD == ConsistencyUtility.ESCAPE_MENU)
+		array[1] = shell.toDisplay(25, -10);
+	else if(method == ConsistencyUtility.SHELL_ICONIFY) {
+		array[0] = control.toDisplay(0,0);
+		array[1] = control.toDisplay(control.getSize().x -20, 0);
+	}
+	return array;
 }
 
 @Test

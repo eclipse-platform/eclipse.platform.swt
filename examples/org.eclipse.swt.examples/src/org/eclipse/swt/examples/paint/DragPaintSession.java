@@ -59,7 +59,7 @@ public abstract class DragPaintSession extends BasicPaintSession {
 
 	/**
 	 * Deactivates the tool.
-     */
+	 */
 	@Override
 	public void endSession() {
 	}

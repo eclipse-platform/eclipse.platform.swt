@@ -133,30 +133,30 @@ static String readSafeArray(Variant variantByRef) {
 	// Read a safearray that contains data of
 	// type VT_UI1 (unsigned shorts) which contains
 	// a text stream.
-    long /*int*/ pPostData = variantByRef.getByRef();
-    short[] vt_type = new short[1];
-    OS.MoveMemory(vt_type, pPostData, 2);
-    String result = null;
-    if (vt_type[0] == (short)(OLE.VT_BYREF | OLE.VT_VARIANT)) {
-        int[] pVariant = new int[1];
-        OS.MoveMemory(pVariant, pPostData + 8, 4);
-        vt_type = new short[1];
-        OS.MoveMemory(vt_type, pVariant[0], 2);
-        if (vt_type[0] == (short)(OLE.VT_ARRAY | OLE.VT_UI1)) {
-            long /*int*/ [] pSafearray = new long /*int*/[1];
-            OS.MoveMemory(pSafearray, pVariant[0] + 8, OS.PTR_SIZEOF);
-            SAFEARRAY safeArray = new SAFEARRAY();
-            OS.MoveMemory(safeArray, pSafearray[0], SAFEARRAY.sizeof);
-            for (int i = 0; i < safeArray.cDims; i++) {
-                int cchWideChar = OS.MultiByteToWideChar (CodePage, OS.MB_PRECOMPOSED,  safeArray.pvData, -1, null, 0);
+	long /*int*/ pPostData = variantByRef.getByRef();
+	short[] vt_type = new short[1];
+	OS.MoveMemory(vt_type, pPostData, 2);
+	String result = null;
+	if (vt_type[0] == (short)(OLE.VT_BYREF | OLE.VT_VARIANT)) {
+		int[] pVariant = new int[1];
+		OS.MoveMemory(pVariant, pPostData + 8, 4);
+		vt_type = new short[1];
+		OS.MoveMemory(vt_type, pVariant[0], 2);
+		if (vt_type[0] == (short)(OLE.VT_ARRAY | OLE.VT_UI1)) {
+			long /*int*/ [] pSafearray = new long /*int*/[1];
+			OS.MoveMemory(pSafearray, pVariant[0] + 8, OS.PTR_SIZEOF);
+			SAFEARRAY safeArray = new SAFEARRAY();
+			OS.MoveMemory(safeArray, pSafearray[0], SAFEARRAY.sizeof);
+			for (int i = 0; i < safeArray.cDims; i++) {
+				int cchWideChar = OS.MultiByteToWideChar (CodePage, OS.MB_PRECOMPOSED,  safeArray.pvData, -1, null, 0);
 				if (cchWideChar == 0) return null;
 				char[] lpWideCharStr = new char [cchWideChar - 1];
 				OS.MultiByteToWideChar (CodePage, OS.MB_PRECOMPOSED,  safeArray.pvData, -1, lpWideCharStr, lpWideCharStr.length);
 				result = new String(lpWideCharStr);
-            }
-        }
-    }
-    return result;
+			}
+		}
+	}
+	return result;
 }
 
 static Variant writeSafeArray (String string) {

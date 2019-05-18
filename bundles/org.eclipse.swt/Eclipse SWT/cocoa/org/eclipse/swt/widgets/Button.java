@@ -644,7 +644,7 @@ public boolean getSelection () {
 	checkWidget ();
 	if ((style & (SWT.CHECK | SWT.RADIO | SWT.TOGGLE)) == 0) return false;
 	if ((style & SWT.CHECK) != 0 && grayed) return ((NSButton)view).state() == OS.NSMixedState;
-    return ((NSButton)view).state() == OS.NSOnState;
+	return ((NSButton)view).state() == OS.NSOnState;
 }
 
 /**

@@ -30,17 +30,17 @@ import org.eclipse.swt.widgets.*;
 
 public class Snippet210 {
 	static String string1 = "A drag source is the provider of data in a Drag and Drop data transfer as well as "+
-                           "the originator of the Drag and Drop operation. The data provided by the drag source "+
-                           "may be transferred to another location in the same widget, to a different widget "+
-                           "within the same application, or to a different application altogether. For example, "+
-                           "you can drag text from your application and drop it on an email application, or you "+
-                           "could drag an item in a tree and drop it below a different node in the same tree.";
+							"the originator of the Drag and Drop operation. The data provided by the drag source "+
+							"may be transferred to another location in the same widget, to a different widget "+
+							"within the same application, or to a different application altogether. For example, "+
+							"you can drag text from your application and drop it on an email application, or you "+
+							"could drag an item in a tree and drop it below a different node in the same tree.";
 
 	static String string2 = "A drop target receives data in a Drag and Drop operation. The data received by "+
-	                        "the drop target may have come from the same widget, from a different widget within "+
-	                        "the same application, or from a different application altogether. For example, you "+
-	                        "can drag text from an email application and drop it on your application, or you could "+
-	                        "drag an item in a tree and drop it below a different node in the same tree.";
+							"the drop target may have come from the same widget, from a different widget within "+
+							"the same application, or from a different application altogether. For example, you "+
+							"can drag text from an email application and drop it on your application, or you could "+
+							"drag an item in a tree and drop it below a different node in the same tree.";
 
 public static void main (String [] args) {
 	final Display display = new Display ();

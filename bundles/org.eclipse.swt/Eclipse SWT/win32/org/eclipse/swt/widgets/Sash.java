@@ -397,13 +397,13 @@ LRESULT WM_SETCURSOR (long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.WM_SETCURSOR (wParam, lParam);
 	if (result != null) return result;
 	int hitTest = (short) OS.LOWORD (lParam);
- 	if (hitTest == OS.HTCLIENT) {
-	 	long /*int*/ hCursor = 0;
-	 	if ((style & SWT.HORIZONTAL) != 0) {
+	if (hitTest == OS.HTCLIENT) {
+		long /*int*/ hCursor = 0;
+		if ((style & SWT.HORIZONTAL) != 0) {
 			hCursor = OS.LoadCursor (0, OS.IDC_SIZENS);
-	 	} else {
+		} else {
 			hCursor = OS.LoadCursor (0, OS.IDC_SIZEWE);
-	 	}
+		}
 		OS.SetCursor (hCursor);
 		return LRESULT.ONE;
 	}

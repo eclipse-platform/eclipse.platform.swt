@@ -67,30 +67,30 @@ public void test_setFontLorg_eclipse_swt_graphics_Font() {
 Sash sash;
 
 private void createSash() {
-    tearDown();
-    super.setUp();
-    new Button(shell, SWT.PUSH);
-    Sash sash = new Sash(shell, SWT.VERTICAL);
-    new Button(shell, SWT.PUSH);
-    setWidget(sash);
+	tearDown();
+	super.setUp();
+	new Button(shell, SWT.PUSH);
+	Sash sash = new Sash(shell, SWT.VERTICAL);
+	new Button(shell, SWT.PUSH);
+	setWidget(sash);
 }
 
 @Test
 public void test_consistency_MenuDetect () {
-    createSash();
-    consistencyEvent(0, 5, 3, 0, ConsistencyUtility.MOUSE_CLICK);
+	createSash();
+	consistencyEvent(0, 5, 3, 0, ConsistencyUtility.MOUSE_CLICK);
 }
 
 @Test
 public void test_consistency_DragDetect () {
-    createSash();
-    consistencyEvent(0, 5, 20, 10, ConsistencyUtility.MOUSE_DRAG);
+	createSash();
+	consistencyEvent(0, 5, 20, 10, ConsistencyUtility.MOUSE_DRAG);
 }
 
 @Test
 public void test_consistency_MouseSelection() {
-    createSash();
-    consistencyEvent(0, 5, 1, 0, ConsistencyUtility.MOUSE_CLICK);
+	createSash();
+	consistencyEvent(0, 5, 1, 0, ConsistencyUtility.MOUSE_CLICK);
 }
 
 }

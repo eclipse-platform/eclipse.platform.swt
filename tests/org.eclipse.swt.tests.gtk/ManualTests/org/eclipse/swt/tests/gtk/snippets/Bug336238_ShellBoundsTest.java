@@ -21,29 +21,29 @@ import org.eclipse.swt.widgets.Shell;
 
 public class Bug336238_ShellBoundsTest {
 
-  static int cycles = 5;
+	static int cycles = 5;
 
 //  @Test
-  public void testSetBounds() {
+	public void testSetBounds() {
 
-    int x;
-    int y;
-    int width = 100;
-    int height = 100;
+		int x;
+		int y;
+		int width = 100;
+		int height = 100;
 
-    for (int i=0; i < cycles; i++) {
+		for (int i=0; i < cycles; i++) {
 
-      x = (Double.valueOf(Math.random()*1000)).intValue();
-      y = (Double.valueOf(Math.random()*1000)).intValue();
+		x = (Double.valueOf(Math.random()*1000)).intValue();
+		y = (Double.valueOf(Math.random()*1000)).intValue();
 
-      Shell testShell = new Shell();
-      testShell.open();
+			Shell testShell = new Shell();
+			testShell.open();
 
-      testShell.setBounds(x, y, width, height);
+			testShell.setBounds(x, y, width, height);
 
 //      assertEquals(x, testShell.getLocation().x);
 //      assertEquals(y, testShell.getLocation().y);
-      testShell.close();
-    }
-  }
+			testShell.close();
+		}
+	}
 }

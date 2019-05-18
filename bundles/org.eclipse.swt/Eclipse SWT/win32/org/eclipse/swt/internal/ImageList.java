@@ -143,9 +143,9 @@ long /*int*/ copyWithAlpha (long /*int*/ hBitmap, int background, byte[] alphaDa
 	OS.GetObject (memDib, BITMAP.sizeof, dibBM);
 	int sizeInBytes = dibBM.bmWidthBytes * dibBM.bmHeight;
 
- 	/* Get the foreground pixels */
- 	OS.BitBlt (memHdc, 0, 0, srcWidth, srcHeight, srcHdc, 0, 0, OS.SRCCOPY);
- 	byte[] srcData = new byte [sizeInBytes];
+	/* Get the foreground pixels */
+	OS.BitBlt (memHdc, 0, 0, srcWidth, srcHeight, srcHdc, 0, 0, OS.SRCCOPY);
+	byte[] srcData = new byte [sizeInBytes];
 	OS.MoveMemory (srcData, dibBM.bmBits, sizeInBytes);
 
 	/* Merge the alpha channel in place */

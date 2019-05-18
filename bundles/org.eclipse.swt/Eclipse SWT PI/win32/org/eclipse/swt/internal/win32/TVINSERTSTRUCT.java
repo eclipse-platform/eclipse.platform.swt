@@ -29,11 +29,11 @@ public class TVINSERTSTRUCT {
 	public int stateMask;
 	/** @field accessor=item.pszText,cast=(LPTSTR) */
 	public long /*int*/ pszText;
-  	/** @field accessor=item.cchTextMax */
+	/** @field accessor=item.cchTextMax */
 	public int cchTextMax;
-  	/** @field accessor=item.iImage */
+	/** @field accessor=item.iImage */
 	public int iImage;
-  	/** @field accessor=item.iSelectedImage */
+	/** @field accessor=item.iSelectedImage */
 	public int iSelectedImage;
 	/** @field accessor=item.cChildren */
 	public int cChildren;

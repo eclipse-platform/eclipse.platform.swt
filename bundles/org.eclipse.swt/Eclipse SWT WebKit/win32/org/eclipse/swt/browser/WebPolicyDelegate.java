@@ -201,8 +201,8 @@ int unableToImplementPolicyWithError (long /*int*/ webView, long /*int*/ error, 
 	result[0] = 0;
 	hr = iweberror.localizedDescription (result);
 	if (hr != COM.S_OK || result[0] == 0) {
-    	return COM.S_OK;
-    }
+		return COM.S_OK;
+	}
 	String description = WebKit.extractBSTR (result[0]);
 	COM.SysFreeString (result[0]);
 

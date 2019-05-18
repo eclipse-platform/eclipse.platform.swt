@@ -446,12 +446,12 @@ public FontData[] getFontList (String faceName, boolean scalable) {
 			match = faceName.equalsIgnoreCase(name);
 		}
 		if (match) {
-		    OS.pango_font_family_list_faces(family[0], faces, n_faces);
-		    for (int j=0; j<n_faces[0]; j++) {
-		        C.memmove(face, faces[0] + j * C.PTR_SIZEOF, C.PTR_SIZEOF);
-		        long fontDesc = OS.pango_font_face_describe(face[0]);
-		        Font font = Font.gtk_new(this, fontDesc);
-		        FontData data = font.getFontData()[0];
+			OS.pango_font_family_list_faces(family[0], faces, n_faces);
+			for (int j=0; j<n_faces[0]; j++) {
+				C.memmove(face, faces[0] + j * C.PTR_SIZEOF, C.PTR_SIZEOF);
+				long fontDesc = OS.pango_font_face_describe(face[0]);
+				Font font = Font.gtk_new(this, fontDesc);
+				FontData data = font.getFontData()[0];
 				if (nFds == fds.length) {
 					FontData[] newFds = new FontData[fds.length + n_families[0]];
 					System.arraycopy(fds, 0, newFds, 0, nFds);
@@ -459,9 +459,9 @@ public FontData[] getFontList (String faceName, boolean scalable) {
 				}
 				fds[nFds++] = data;
 				OS.pango_font_description_free(fontDesc);
-		    }
-		    OS.g_free(faces[0]);
-		    if (faceName != null) break;
+			}
+			OS.g_free(faces[0]);
+			if (faceName != null) break;
 		}
 	}
 	OS.g_free(families[0]);

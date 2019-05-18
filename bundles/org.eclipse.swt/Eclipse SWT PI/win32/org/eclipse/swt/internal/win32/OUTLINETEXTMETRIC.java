@@ -16,58 +16,58 @@ package org.eclipse.swt.internal.win32;
 public class OUTLINETEXTMETRIC {
 	public int otmSize;
 	public TEXTMETRIC otmTextMetrics = new TEXTMETRIC ();
-    public byte otmFiller;
-    /** @field accessor=otmPanoseNumber.bFamilyType */
+	public byte otmFiller;
+	/** @field accessor=otmPanoseNumber.bFamilyType */
 	public byte otmPanoseNumber_bFamilyType;
-    /** @field accessor=otmPanoseNumber.bSerifStyle */
+	/** @field accessor=otmPanoseNumber.bSerifStyle */
 	public byte otmPanoseNumber_bSerifStyle;
-    /** @field accessor=otmPanoseNumber.bWeight */
+	/** @field accessor=otmPanoseNumber.bWeight */
 	public byte otmPanoseNumber_bWeight;
-    /** @field accessor=otmPanoseNumber.bProportion */
+	/** @field accessor=otmPanoseNumber.bProportion */
 	public byte otmPanoseNumber_bProportion;
-    /** @field accessor=otmPanoseNumber.bContrast */
+	/** @field accessor=otmPanoseNumber.bContrast */
 	public byte otmPanoseNumber_bContrast;
-    /** @field accessor=otmPanoseNumber.bStrokeVariation */
+	/** @field accessor=otmPanoseNumber.bStrokeVariation */
 	public byte otmPanoseNumber_bStrokeVariation;
-    /** @field accessor=otmPanoseNumber.bArmStyle */
+	/** @field accessor=otmPanoseNumber.bArmStyle */
 	public byte otmPanoseNumber_bArmStyle;
-    /** @field accessor=otmPanoseNumber.bLetterform */
+	/** @field accessor=otmPanoseNumber.bLetterform */
 	public byte otmPanoseNumber_bLetterform;
-    /** @field accessor=otmPanoseNumber.bMidline */
+	/** @field accessor=otmPanoseNumber.bMidline */
 	public byte otmPanoseNumber_bMidline;
-    /** @field accessor=otmPanoseNumber.bXHeight */
+	/** @field accessor=otmPanoseNumber.bXHeight */
 	public byte otmPanoseNumber_bXHeight;
-    public int otmfsSelection;
-    public int otmfsType;
-    public int otmsCharSlopeRise;
-    public int otmsCharSlopeRun;
-    public int otmItalicAngle;
-    public int otmEMSquare;
-    public int otmAscent;
-    public int otmDescent;
-    public int otmLineGap;
-    public int otmsCapEmHeight;
-    public int otmsXHeight;
+	public int otmfsSelection;
+	public int otmfsType;
+	public int otmsCharSlopeRise;
+	public int otmsCharSlopeRun;
+	public int otmItalicAngle;
+	public int otmEMSquare;
+	public int otmAscent;
+	public int otmDescent;
+	public int otmLineGap;
+	public int otmsCapEmHeight;
+	public int otmsXHeight;
 	public RECT otmrcFontBox = new RECT();
-    public int otmMacAscent;
-    public int otmMacDescent;
-    public int otmMacLineGap;
-    public int otmusMinimumPPEM;
+	public int otmMacAscent;
+	public int otmMacDescent;
+	public int otmMacLineGap;
+	public int otmusMinimumPPEM;
 	public POINT otmptSubscriptSize = new POINT();
 	public POINT otmptSubscriptOffset = new POINT();
 	public POINT otmptSuperscriptSize = new POINT();
 	public POINT otmptSuperscriptOffset = new POINT();
-    public int otmsStrikeoutSize;
-    public int otmsStrikeoutPosition;
-    public int otmsUnderscoreSize;
-    public int otmsUnderscorePosition;
-    /** @field cast=(PSTR) */
+	public int otmsStrikeoutSize;
+	public int otmsStrikeoutPosition;
+	public int otmsUnderscoreSize;
+	public int otmsUnderscorePosition;
+	/** @field cast=(PSTR) */
 	public long /*int*/ otmpFamilyName;
-    /** @field cast=(PSTR) */
+	/** @field cast=(PSTR) */
 	public long /*int*/ otmpFaceName;
-    /** @field cast=(PSTR) */
+	/** @field cast=(PSTR) */
 	public long /*int*/ otmpStyleName;
-    /** @field cast=(PSTR) */
+	/** @field cast=(PSTR) */
 	public long /*int*/ otmpFullName;
 	public static final int sizeof = OS.OUTLINETEXTMETRIC_sizeof ();
 }

@@ -188,7 +188,7 @@ public boolean getEnabled () {
  */
 public int getIncrement () {
 	checkWidget();
-    return increment;
+	return increment;
 }
 
 /**
@@ -235,7 +235,7 @@ public int getMinimum () {
  */
 public int getPageIncrement () {
 	checkWidget();
-    return pageIncrement;
+	return pageIncrement;
 }
 
 /**
@@ -267,7 +267,7 @@ public int getSelection () {
 	checkWidget();
 	NSScroller widget = (NSScroller)view;
 	double value = widget.doubleValue();
-    return (int)(0.5f + ((maximum - thumb - minimum) * value + minimum));
+	return (int)(0.5f + ((maximum - thumb - minimum) * value + minimum));
 }
 
 /**

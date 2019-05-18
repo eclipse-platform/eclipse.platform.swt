@@ -97,7 +97,7 @@ public final class FormLayout extends Layout {
 	 *
 	 * The default value is 0.
 	 */
- 	public int marginWidth = 0;
+	public int marginWidth = 0;
 
 	/**
 	 * marginHeight specifies the number of points of vertical margin
@@ -105,10 +105,10 @@ public final class FormLayout extends Layout {
 	 *
 	 * The default value is 0.
 	 */
- 	public int marginHeight = 0;
+	public int marginHeight = 0;
 
 
- 	/**
+	/**
 	 * marginLeft specifies the number of points of horizontal margin
 	 * that will be placed along the left edge of the layout.
 	 *
@@ -377,16 +377,16 @@ Point layout (Composite composite, boolean move, int x, int y, int width, int he
  */
 @Override
 public String toString () {
- 	String string =  getName ()+" {";
- 	if (marginWidth != 0) string += "marginWidth="+marginWidth+" ";
- 	if (marginHeight != 0) string += "marginHeight="+marginHeight+" ";
- 	if (marginLeft != 0) string += "marginLeft="+marginLeft+" ";
- 	if (marginRight != 0) string += "marginRight="+marginRight+" ";
- 	if (marginTop != 0) string += "marginTop="+marginTop+" ";
- 	if (marginBottom != 0) string += "marginBottom="+marginBottom+" ";
- 	if (spacing != 0) string += "spacing="+spacing+" ";
- 	string = string.trim();
- 	string += "}";
- 	return string;
+	String string =  getName ()+" {";
+	if (marginWidth != 0) string += "marginWidth="+marginWidth+" ";
+	if (marginHeight != 0) string += "marginHeight="+marginHeight+" ";
+	if (marginLeft != 0) string += "marginLeft="+marginLeft+" ";
+	if (marginRight != 0) string += "marginRight="+marginRight+" ";
+	if (marginTop != 0) string += "marginTop="+marginTop+" ";
+	if (marginBottom != 0) string += "marginBottom="+marginBottom+" ";
+	if (spacing != 0) string += "spacing="+spacing+" ";
+	string = string.trim();
+	string += "}";
+	return string;
 }
 }

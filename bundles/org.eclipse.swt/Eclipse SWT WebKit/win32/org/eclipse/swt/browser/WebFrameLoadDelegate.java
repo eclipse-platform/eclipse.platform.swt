@@ -229,7 +229,7 @@ int didCommitLoadForFrame (long /*int*/ webview, long /*int*/ frame) {
 	int hr = iWebFrame.dataSource (result);
 	if (hr != COM.S_OK || result[0] == 0) {
 		return COM.S_OK;
-    }
+	}
 	IWebDataSource dataSource = new IWebDataSource (result[0]);
 	result[0] = 0;
 	hr = dataSource.request (result);

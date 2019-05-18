@@ -598,7 +598,7 @@ public void cut () {
 
 @Override
 Color defaultBackground () {
-    return display.getWidgetColor (SWT.COLOR_LIST_BACKGROUND);
+	return display.getWidgetColor (SWT.COLOR_LIST_BACKGROUND);
 }
 
 @Override
@@ -609,7 +609,7 @@ NSFont defaultNSFont() {
 
 @Override
 Color defaultForeground () {
-    return display.getWidgetColor (SWT.COLOR_LIST_FOREGROUND);
+	return display.getWidgetColor (SWT.COLOR_LIST_FOREGROUND);
 }
 
 @Override
@@ -888,7 +888,7 @@ public boolean getListVisible () {
 
 @Override
 String getNameText () {
-    return getText ();
+	return getText ();
 }
 
 @Override
@@ -1042,7 +1042,7 @@ public int getTextHeight () {
  */
 public int getTextLimit () {
 	checkWidget();
-    return textLimit;
+	return textLimit;
 }
 
 /**

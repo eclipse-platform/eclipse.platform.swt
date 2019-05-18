@@ -1015,7 +1015,7 @@ void setBackgroundRGBA (long handle, GdkRGBA rgba) {
 		// Form background string
 		long context = GTK.gtk_widget_get_style_context(handle);
 		String name = GTK.GTK_VERSION >= OS.VERSION(3,	 20, 0) ? display.gtk_widget_class_get_css_name(handle)
-        		: display.gtk_widget_get_name(handle);
+				: display.gtk_widget_get_name(handle);
 		String css = name + " {background-color: " + display.gtk_rgba_to_css_string(rgba) + "}";
 
 

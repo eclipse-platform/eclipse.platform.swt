@@ -36,7 +36,7 @@ import org.eclipse.swt.internal.cocoa.*;
  * @noextend This class is not intended to be subclassed by clients.
  */
 public abstract class Scrollable extends Control {
- 	NSScrollView scrollView;
+	NSScrollView scrollView;
 	ScrollBar horizontalBar, verticalBar;
 
 Scrollable () {

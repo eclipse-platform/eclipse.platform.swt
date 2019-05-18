@@ -539,7 +539,7 @@ void drawInPixels(GC gc, int x, int y, int selectionStart, int selectionEnd, Col
 		OS.pango_cairo_show_layout(cairo, layout);
 		drawBorder(gc, x, y, null);
 		if ((data.style & SWT.MIRRORED) != 0) {
-		    Cairo.cairo_restore(cairo);
+			Cairo.cairo_restore(cairo);
 		}
 	} else {
 		selectionStart = Math.min(Math.max(0, selectionStart), length - 1);

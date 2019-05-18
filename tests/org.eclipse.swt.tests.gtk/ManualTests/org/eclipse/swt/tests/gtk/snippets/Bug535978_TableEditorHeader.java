@@ -31,45 +31,45 @@ import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 
 public class Bug535978_TableEditorHeader {
-  public static void main(String[] args) {
-    Display display = new Display();
-    Shell shell = new Shell(display);
-    shell.setLayout(new FillLayout());
-    Table table = new Table(shell, SWT.BORDER | SWT.MULTI);
-    table.setLinesVisible(true);
-    table.setHeaderVisible(true);
-    for (int i = 0; i < 3; i++) {
-      TableColumn column = new TableColumn(table, SWT.NONE);
-      column.setText("C"+i);
-      column.setWidth(100);
-    }
-    for (int i = 0; i < 12; i++) {
-      new TableItem(table, SWT.NONE);
-    }
-    TableItem[] items = table.getItems();
-    for (int i = 0; i < items.length; i++) {
-    	if (i < 6) {
-    	      TableEditor editor = new TableEditor(table);
-    	      Text text = new Text(table, SWT.NONE);
-    	      text.setText("Text");
-    	      editor.grabHorizontal = true;
-    	      editor.setEditor(text, items[i], 1);
-    	      editor = new TableEditor(table);
-    	      Button button = new Button(table, SWT.CHECK);
-    	      button.pack();
-    	      editor.minimumWidth = button.getSize().x;
-    	      editor.horizontalAlignment = SWT.LEFT;
-    	      editor.setEditor(button, items[i], 0);
-    	} else {
-    		items[i].setText("item text");
-    	}
-    }
-    shell.pack();
-    shell.open();
-    while (!shell.isDisposed()) {
-      if (!display.readAndDispatch())
-        display.sleep();
-    }
-    display.dispose();
-  }
+	public static void main(String[] args) {
+		Display display = new Display();
+		Shell shell = new Shell(display);
+		shell.setLayout(new FillLayout());
+		Table table = new Table(shell, SWT.BORDER | SWT.MULTI);
+		table.setLinesVisible(true);
+		table.setHeaderVisible(true);
+		for (int i = 0; i < 3; i++) {
+			TableColumn column = new TableColumn(table, SWT.NONE);
+			column.setText("C"+i);
+			column.setWidth(100);
+		}
+		for (int i = 0; i < 12; i++) {
+			new TableItem(table, SWT.NONE);
+		}
+		TableItem[] items = table.getItems();
+		for (int i = 0; i < items.length; i++) {
+			if (i < 6) {
+				TableEditor editor = new TableEditor(table);
+				Text text = new Text(table, SWT.NONE);
+				text.setText("Text");
+				editor.grabHorizontal = true;
+				editor.setEditor(text, items[i], 1);
+				editor = new TableEditor(table);
+				Button button = new Button(table, SWT.CHECK);
+				button.pack();
+				editor.minimumWidth = button.getSize().x;
+				editor.horizontalAlignment = SWT.LEFT;
+				editor.setEditor(button, items[i], 0);
+			} else {
+				items[i].setText("item text");
+			}
+		}
+		shell.pack();
+		shell.open();
+		while (!shell.isDisposed()) {
+			if (!display.readAndDispatch())
+				display.sleep();
+		}
+		display.dispose();
+	}
 }

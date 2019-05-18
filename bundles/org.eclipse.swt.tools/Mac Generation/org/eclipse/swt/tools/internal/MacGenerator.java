@@ -200,8 +200,8 @@ String getParamName(Node param, int i) {
 	if (swtName != null) {
 		paramName = swtName.getNodeValue();
 	} else {
-		 Node node = paramAttributes.getNamedItem("name");
-		 if (node != null) paramName = node.getNodeValue();
+		Node node = paramAttributes.getNamedItem("name");
+		if (node != null) paramName = node.getNodeValue();
 	}
 	if (paramName.length() == 0) {
 		Node node = paramAttributes.getNamedItem("index");

@@ -26,24 +26,24 @@ public class CTabFolderEvent extends TypedEvent {
 	/**
 	 * The tab item for the operation.
 	 */
- 	public Widget item;
+	public Widget item;
 
- 	/**
+	/**
 	 * A flag indicating whether the operation should be allowed.
 	 * Setting this field to <code>false</code> will cancel the operation.
 	 * Applies to the close and showList events.
 	 */
- 	public boolean doit;
+	public boolean doit;
 
 	/**
 	 * The widget-relative, x coordinate of the chevron button
 	 * at the time of the event.  Applies to the showList event.
 	 *
- 	 * @since 3.0
+	 * @since 3.0
 	 */
- 	public int x;
- 	/**
- 	 * The widget-relative, y coordinate of the chevron button
+	public int x;
+	/**
+	 * The widget-relative, y coordinate of the chevron button
 	 * at the time of the event.  Applies to the showList event.
 	 *
 	 * @since 3.0

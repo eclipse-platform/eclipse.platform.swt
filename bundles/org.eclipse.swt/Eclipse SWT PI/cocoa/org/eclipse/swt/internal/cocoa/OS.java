@@ -256,13 +256,13 @@ public static final native int GetDblTime();
 	@param outIconRef cast=(IconRef *) */
 public static final native int GetIconRefFromTypeInfo(int inCreator, int inType, long inExtension, long inMIMEType, int inUsageFlags, long outIconRef[]);
 /** @method flags=dynamic
-    @param context cast=(CGContextRef) */
+	@param context cast=(CGContextRef) */
 public static final native long CGContextCopyPath(long context);
 /** @method flags=dynamic */
 public static final native long TISCopyCurrentKeyboardInputSource();
 /** @method flags=dynamic
-    @param inputSource cast=(TISInputSourceRef)
-    @param propertyKey cast=(CFStringRef) */
+	@param inputSource cast=(TISInputSourceRef)
+	@param propertyKey cast=(CFStringRef) */
 public static final native long TISGetInputSourceProperty (long inputSource, long propertyKey);
 /** @method flags=no_gen */
 public static final native long kTISPropertyUnicodeKeyLayoutData();

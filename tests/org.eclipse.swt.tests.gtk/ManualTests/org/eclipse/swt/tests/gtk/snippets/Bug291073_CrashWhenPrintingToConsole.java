@@ -35,12 +35,12 @@ public class Bug291073_CrashWhenPrintingToConsole {
 		final TextLayout layout = new TextLayout(display);
 		TextStyle style1 = new TextStyle(font1, yellow, blue);
 		
-        BitSet bs = new BitSet();
-        bs.set(2894298, true);
-        bs.set(324832893, true);
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        ObjectOutputStream oos = new ObjectOutputStream(out);
-        oos.writeObject(bs);
+		BitSet bs = new BitSet();
+		bs.set(2894298, true);
+		bs.set(324832893, true);
+		ByteArrayOutputStream out = new ByteArrayOutputStream();
+		ObjectOutputStream oos = new ObjectOutputStream(out);
+		oos.writeObject(bs);
 
 		layout.setText(out.toString());
 		System.out.println("length:"+out.toString());

@@ -121,7 +121,7 @@ class FogTab extends OpenGLTab {
 	/**
 	 * Creates a cube at 0,0 in the viewport.
 	 */
- 	void createCube() {
+	void createCube() {
 		GL.glNewList(cubeListIndexBase, GL.GL_COMPILE);
 		GL.glBegin(GL.GL_QUADS);
 		// front

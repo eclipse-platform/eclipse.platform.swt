@@ -35,27 +35,27 @@ public class Bug535124_TreeSelection {
 		new TreeColumn(tree, SWT.NONE).setWidth(100);
 		new TreeColumn(tree, SWT.NONE).setWidth(100);
 		for (int i = 0; i < 5; i++) {
-		    TreeItem item = new TreeItem(tree, SWT.NONE);
-		    item.setText(0, "item " + i + " col 0");
-		    item.setText(1, "item " + i + " col 1");
-		    item.setText(2, "item " + i + " col 2");
+			TreeItem item = new TreeItem(tree, SWT.NONE);
+			item.setText(0, "item " + i + " col 0");
+			item.setText(1, "item " + i + " col 1");
+			item.setText(2, "item " + i + " col 2");
 		}
 		tree.pack();
 		tree.addListener(SWT.EraseItem, event -> {
-		    event.detail &= ~SWT.HOT;
-		    if ((event.detail & SWT.SELECTED) == 0) {
-		        return; /* item not selected */
-		    }
-		    int clientWidth = tree.getClientArea().width;
-		    GC gc = event.gc;
-		    Color oldForeground = gc.getForeground();
-		    Color oldBackground = gc.getBackground();
-		    gc.setForeground(red);
-		    gc.setBackground(yellow);
-		    gc.fillGradientRectangle(0, event.y, clientWidth, event.height, false);
-		    gc.setForeground(oldForeground);
-		    gc.setBackground(oldBackground);
-		    event.detail &= ~SWT.SELECTED;
+			event.detail &= ~SWT.HOT;
+			if ((event.detail & SWT.SELECTED) == 0) {
+				return; /* item not selected */
+			}
+			int clientWidth = tree.getClientArea().width;
+			GC gc = event.gc;
+			Color oldForeground = gc.getForeground();
+			Color oldBackground = gc.getBackground();
+			gc.setForeground(red);
+			gc.setBackground(yellow);
+			gc.fillGradientRectangle(0, event.y, clientWidth, event.height, false);
+			gc.setForeground(oldForeground);
+			gc.setBackground(oldBackground);
+			event.detail &= ~SWT.SELECTED;
 		});
 		shell.pack();
 		shell.open();

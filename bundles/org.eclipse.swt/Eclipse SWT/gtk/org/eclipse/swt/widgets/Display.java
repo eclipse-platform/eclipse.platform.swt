@@ -887,7 +887,7 @@ public void asyncExec (Runnable runnable) {
 		if (isDisposed ()) error (SWT.ERROR_DEVICE_DISPOSED);
 		synchronized (idleLock) {
 			if (idleNeeded && idleHandle == 0) {
-	 			//NOTE: calling unlocked function in OS
+				//NOTE: calling unlocked function in OS
 				idleHandle = OS._g_idle_add (idleProc, 0);
 			}
 		}

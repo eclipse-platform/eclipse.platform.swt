@@ -1025,7 +1025,7 @@ void forwardDCT(int[] dataUnit) {
 		dataUnit[rIndex + 2] = n >> 11;
 		if ((n < 0) && ((n & 0x07FF) != 0)) dataUnit[rIndex + 2]--;
 		n = z1 + (tmp12 * (0 - FIX_1_847759065)) + 1024;
- 		dataUnit[rIndex + 6] = n >> 11;
+		dataUnit[rIndex + 6] = n >> 11;
 		if ((n < 0) && ((n & 0x07FF) != 0)) dataUnit[rIndex + 6]--;
 
 		/**
@@ -1277,7 +1277,7 @@ void inverseDCT(int[] dataUnit) {
 			dataUnit[rIndex + 5] = (tmp12 - tmp1 + 1024) >> 11;
 			dataUnit[rIndex + 3] = (tmp13 + tmp0 + 1024) >> 11;
 			dataUnit[rIndex + 4] = (tmp13 - tmp0 + 1024) >> 11;
-		 }
+		}
 	}
 	/**
 	 * Pass 2: process columns.

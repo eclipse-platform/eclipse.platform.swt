@@ -46,10 +46,10 @@ public class Test_org_eclipse_swt_widgets_DateTime extends Test_org_eclipse_swt_
 	int style = SWT.DATE;
 
 	@Parameters
-	 public static Collection<Object[]> data() {
-	   Object[][] data = new Object[][] { { SWT.DATE }, { SWT.TIME}, { SWT.CALENDAR }};
-	   return Arrays.asList(data);
-	 }
+	public static Collection<Object[]> data() {
+		Object[][] data = new Object[][] { { SWT.DATE }, { SWT.TIME}, { SWT.CALENDAR }};
+		return Arrays.asList(data);
+	}
 
 public Test_org_eclipse_swt_widgets_DateTime(int style) {
 	this.style = style;
@@ -716,63 +716,63 @@ public void test_removeSelectionListenerLorg_eclipse_swt_events_SelectionListene
 }
 
 protected void setUp(int style) {
-    super.setUp();
-    datetime = new DateTime(shell, style);
-    setWidget(datetime);
+	super.setUp();
+	datetime = new DateTime(shell, style);
+	setWidget(datetime);
 }
 
 @Test
 public void test_consistency_MenuDetect () {
-    consistencyEvent(10, 10, 3, 0, ConsistencyUtility.MOUSE_CLICK);
-    tearDown();
-    setUp(SWT.DATE);
-    consistencyEvent(5, 5, 3, 0, ConsistencyUtility.MOUSE_CLICK);
-    tearDown();
-    setUp(SWT.TIME);
-    consistencyEvent(5, 5, 3, 0, ConsistencyUtility.MOUSE_CLICK);
-    tearDown();
-    setUp(SWT.CALENDAR);
-    consistencyEvent(5, 5, 3, 0, ConsistencyUtility.MOUSE_CLICK);
+	consistencyEvent(10, 10, 3, 0, ConsistencyUtility.MOUSE_CLICK);
+	tearDown();
+	setUp(SWT.DATE);
+	consistencyEvent(5, 5, 3, 0, ConsistencyUtility.MOUSE_CLICK);
+	tearDown();
+	setUp(SWT.TIME);
+	consistencyEvent(5, 5, 3, 0, ConsistencyUtility.MOUSE_CLICK);
+	tearDown();
+	setUp(SWT.CALENDAR);
+	consistencyEvent(5, 5, 3, 0, ConsistencyUtility.MOUSE_CLICK);
 
 }
 
 @Test
 public void test_consistency_MouseSelection () {
-    consistencyEvent(10, 10, 1, 0, ConsistencyUtility.MOUSE_CLICK);
-    tearDown();
-    setUp(SWT.DATE);
-    consistencyEvent(5, 5, 1, 0, ConsistencyUtility.MOUSE_CLICK);
-    tearDown();
-    setUp(SWT.TIME);
-    consistencyEvent(5, 5, 1, 0, ConsistencyUtility.MOUSE_CLICK);
-    tearDown();
-    setUp(SWT.CALENDAR);
-    consistencyEvent(5, 5, 1, 0, ConsistencyUtility.MOUSE_CLICK);
+	consistencyEvent(10, 10, 1, 0, ConsistencyUtility.MOUSE_CLICK);
+	tearDown();
+	setUp(SWT.DATE);
+	consistencyEvent(5, 5, 1, 0, ConsistencyUtility.MOUSE_CLICK);
+	tearDown();
+	setUp(SWT.TIME);
+	consistencyEvent(5, 5, 1, 0, ConsistencyUtility.MOUSE_CLICK);
+	tearDown();
+	setUp(SWT.CALENDAR);
+	consistencyEvent(5, 5, 1, 0, ConsistencyUtility.MOUSE_CLICK);
 }
 @Test
 public void test_consistency_EnterSelection () {
-    tearDown();
-    setUp(SWT.DATE);
-    consistencyEvent(10, 13, 0, 0, ConsistencyUtility.KEY_PRESS);
-    tearDown();
-    setUp(SWT.TIME);
-    consistencyEvent(10, 13, 0, 0, ConsistencyUtility.KEY_PRESS);
-    tearDown();
-    setUp(SWT.CALENDAR);
-    consistencyEvent(10, 13, 0, 0, ConsistencyUtility.KEY_PRESS);
+	tearDown();
+	setUp(SWT.DATE);
+	consistencyEvent(10, 13, 0, 0, ConsistencyUtility.KEY_PRESS);
+	tearDown();
+	setUp(SWT.TIME);
+	consistencyEvent(10, 13, 0, 0, ConsistencyUtility.KEY_PRESS);
+	tearDown();
+	setUp(SWT.CALENDAR);
+	consistencyEvent(10, 13, 0, 0, ConsistencyUtility.KEY_PRESS);
 }
 @Test
 public void test_consistency_DragDetect () {
-    consistencyEvent(10, 10, 20, 20, ConsistencyUtility.MOUSE_DRAG);
-    tearDown();
-    setUp(SWT.DATE);
-    consistencyEvent(5, 5, 15, 15, ConsistencyUtility.MOUSE_DRAG);
-    tearDown();
-    setUp(SWT.TIME);
-    consistencyEvent(5, 5, 15, 15, ConsistencyUtility.MOUSE_DRAG);
-    tearDown();
-    setUp(SWT.CALENDAR);
-    consistencyEvent(5, 5, 15, 15, ConsistencyUtility.MOUSE_DRAG);
+	consistencyEvent(10, 10, 20, 20, ConsistencyUtility.MOUSE_DRAG);
+	tearDown();
+	setUp(SWT.DATE);
+	consistencyEvent(5, 5, 15, 15, ConsistencyUtility.MOUSE_DRAG);
+	tearDown();
+	setUp(SWT.TIME);
+	consistencyEvent(5, 5, 15, 15, ConsistencyUtility.MOUSE_DRAG);
+	tearDown();
+	setUp(SWT.CALENDAR);
+	consistencyEvent(5, 5, 15, 15, ConsistencyUtility.MOUSE_DRAG);
 }
 
 

@@ -26,10 +26,10 @@ import org.eclipse.swt.widgets.TableItem;
 public class Bug191137_ActiveSelectionLost {
 
 	public static void main(String[] args) {
-	    Display display = new Display();
-	    Shell shell = new Shell(display);
-	    Table table = new Table(shell, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL | SWT.BORDER);
-	    
+		Display display = new Display();
+		Shell shell = new Shell(display);
+		Table table = new Table(shell, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL | SWT.BORDER);
+		
 		TableItem item1 = new TableItem(table, SWT.NONE);
 		item1.setText("First select this Item (click me first)");
 		TableItem item2 = new TableItem(table, SWT.NONE);
@@ -41,25 +41,25 @@ public class Bug191137_ActiveSelectionLost {
 		dItem.setText("Second select this item (notice first selection is gray)");
 		Button button = new Button(dTable, SWT.NONE);
 		button.setText("Third click me to dispose this widget.table.");
-	    button.setBounds(10,40,350,60);
-	    button.addMouseListener( new MouseListener(){
+		button.setBounds(10,40,350,60);
+		button.addMouseListener( new MouseListener(){
 			@Override
 			public void mouseDoubleClick(MouseEvent arg0) {}
 			@Override
 			public void mouseDown(MouseEvent arg0) {
-		        dTable.dispose();
+				dTable.dispose();
 			}
 			@Override
 			public void mouseUp(MouseEvent arg0) {}
-	    });
+		});
 		
-	    table.setBounds(0,0,400,200);
+		table.setBounds(0,0,400,200);
 
-	    shell.open();
-	    while (!shell.isDisposed()) {
-	        if (!display.readAndDispatch())
-	                display.sleep();
-	    }
-	    display.dispose();
+		shell.open();
+		while (!shell.isDisposed()) {
+			if (!display.readAndDispatch())
+					display.sleep();
+		}
+		display.dispose();
 	}
 }

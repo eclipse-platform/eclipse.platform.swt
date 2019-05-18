@@ -721,20 +721,20 @@ void drawArcInPixels(int x, int y, int width, int height, int startAngle, int ar
 	long cairo = data.cairo;
 	double xOffset = data.cairoXoffset, yOffset = data.cairoYoffset;
 	if (width == height) {
-        if (arcAngle >= 0) {
-            Cairo.cairo_arc_negative(cairo, x + xOffset + width / 2f, y + yOffset + height / 2f, width / 2f, -startAngle * (float)Math.PI / 180, -(startAngle + arcAngle) * (float)Math.PI / 180);
-        } else {
-            Cairo.cairo_arc(cairo, x + xOffset + width / 2f, y + yOffset + height / 2f, width / 2f, -startAngle * (float)Math.PI / 180, -(startAngle + arcAngle) * (float)Math.PI / 180);
-        }
+		if (arcAngle >= 0) {
+			Cairo.cairo_arc_negative(cairo, x + xOffset + width / 2f, y + yOffset + height / 2f, width / 2f, -startAngle * (float)Math.PI / 180, -(startAngle + arcAngle) * (float)Math.PI / 180);
+		} else {
+			Cairo.cairo_arc(cairo, x + xOffset + width / 2f, y + yOffset + height / 2f, width / 2f, -startAngle * (float)Math.PI / 180, -(startAngle + arcAngle) * (float)Math.PI / 180);
+		}
 	} else {
 		Cairo.cairo_save(cairo);
 		Cairo.cairo_translate(cairo, x + xOffset + width / 2f, y + yOffset + height / 2f);
 		Cairo.cairo_scale(cairo, width / 2f, height / 2f);
-        if (arcAngle >= 0) {
-            Cairo.cairo_arc_negative(cairo, 0, 0, 1, -startAngle * (float)Math.PI / 180, -(startAngle + arcAngle) * (float)Math.PI / 180);
-        } else {
-            Cairo.cairo_arc(cairo, 0, 0, 1, -startAngle * (float)Math.PI / 180, -(startAngle + arcAngle) * (float)Math.PI / 180);
-        }
+		if (arcAngle >= 0) {
+			Cairo.cairo_arc_negative(cairo, 0, 0, 1, -startAngle * (float)Math.PI / 180, -(startAngle + arcAngle) * (float)Math.PI / 180);
+		} else {
+			Cairo.cairo_arc(cairo, 0, 0, 1, -startAngle * (float)Math.PI / 180, -(startAngle + arcAngle) * (float)Math.PI / 180);
+		}
 		Cairo.cairo_restore(cairo);
 	}
 	Cairo.cairo_stroke(cairo);
@@ -849,17 +849,17 @@ void drawImage(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, 
 
 	int	imgWidth = srcImage.width;
 	int	imgHeight = srcImage.height;
- 	if (simple) {
- 		srcWidth = destWidth = imgWidth;
- 		srcHeight = destHeight = imgHeight;
- 	} else {
- 		simple = srcX == 0 && srcY == 0 &&
- 			srcWidth == destWidth && destWidth == imgWidth &&
- 			srcHeight == destHeight && destHeight == imgHeight;
+	if (simple) {
+		srcWidth = destWidth = imgWidth;
+		srcHeight = destHeight = imgHeight;
+	} else {
+		simple = srcX == 0 && srcY == 0 &&
+			srcWidth == destWidth && destWidth == imgWidth &&
+			srcHeight == destHeight && destHeight == imgHeight;
 		if (srcX + srcWidth > imgWidth + 1 || srcY + srcHeight > imgHeight + 1) { //rounding error correction for hidpi
 			SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 		}
- 	}
+	}
 	long cairo = data.cairo;
 	if (data.alpha != 0) {
 		srcImage.createSurface();
@@ -1240,10 +1240,10 @@ void drawRoundRectangleInPixels(int x, int y, int width, int height, int arcWidt
 		Cairo.cairo_translate(cairo, nx + xOffset, ny + yOffset);
 		Cairo.cairo_scale(cairo, naw2, nah2);
 		Cairo.cairo_move_to(cairo, fw - 1, 0);
-	    Cairo.cairo_arc(cairo, fw - 1, 1, 1, Math.PI + Math.PI/2.0, Math.PI*2.0);
-	    Cairo.cairo_arc(cairo, fw - 1, fh - 1, 1, 0, Math.PI/2.0);
-	    Cairo.cairo_arc(cairo, 1, fh - 1, 1, Math.PI/2, Math.PI);
-	    Cairo.cairo_arc(cairo, 1, 1, 1, Math.PI, 270.0*Math.PI/180.0);
+		Cairo.cairo_arc(cairo, fw - 1, 1, 1, Math.PI + Math.PI/2.0, Math.PI*2.0);
+		Cairo.cairo_arc(cairo, fw - 1, fh - 1, 1, 0, Math.PI/2.0);
+		Cairo.cairo_arc(cairo, 1, fh - 1, 1, Math.PI/2, Math.PI);
+		Cairo.cairo_arc(cairo, 1, 1, 1, Math.PI, 270.0*Math.PI/180.0);
 		Cairo.cairo_close_path(cairo);
 		Cairo.cairo_restore(cairo);
 	}
@@ -1500,11 +1500,11 @@ void fillArcInPixels(int x, int y, int width, int height, int startAngle, int ar
 	if (width == 0 || height == 0 || arcAngle == 0) return;
 	long cairo = data.cairo;
 	if (width == height) {
-        if (arcAngle >= 0) {
-        	Cairo.cairo_arc_negative(cairo, x + width / 2f, y + height / 2f, width / 2f, -startAngle * (float)Math.PI / 180,  -(startAngle + arcAngle) * (float)Math.PI / 180);
-        } else {
-        	Cairo.cairo_arc(cairo, x + width / 2f, y + height / 2f, width / 2f, -startAngle * (float)Math.PI / 180,  -(startAngle + arcAngle) * (float)Math.PI / 180);
-        }
+		if (arcAngle >= 0) {
+			Cairo.cairo_arc_negative(cairo, x + width / 2f, y + height / 2f, width / 2f, -startAngle * (float)Math.PI / 180,  -(startAngle + arcAngle) * (float)Math.PI / 180);
+		} else {
+			Cairo.cairo_arc(cairo, x + width / 2f, y + height / 2f, width / 2f, -startAngle * (float)Math.PI / 180,  -(startAngle + arcAngle) * (float)Math.PI / 180);
+		}
 		Cairo.cairo_line_to(cairo, x + width / 2f, y + height / 2f);
 	} else {
 		Cairo.cairo_save(cairo);
@@ -1839,10 +1839,10 @@ void fillRoundRectangleInPixels(int x, int y, int width, int height, int arcWidt
 		Cairo.cairo_translate(cairo, nx, ny);
 		Cairo.cairo_scale(cairo, naw2, nah2);
 		Cairo.cairo_move_to(cairo, fw - 1, 0);
-	    Cairo.cairo_arc(cairo, fw - 1, 1, 1, Math.PI + Math.PI/2.0, Math.PI*2.0);
-	    Cairo.cairo_arc(cairo, fw - 1, fh - 1, 1, 0, Math.PI/2.0);
-	    Cairo.cairo_arc(cairo, 1, fh - 1, 1, Math.PI/2, Math.PI);
-	    Cairo.cairo_arc(cairo, 1, 1, 1, Math.PI, 270.0*Math.PI/180.0);
+		Cairo.cairo_arc(cairo, fw - 1, 1, 1, Math.PI + Math.PI/2.0, Math.PI*2.0);
+		Cairo.cairo_arc(cairo, fw - 1, fh - 1, 1, 0, Math.PI/2.0);
+		Cairo.cairo_arc(cairo, 1, fh - 1, 1, Math.PI/2, Math.PI);
+		Cairo.cairo_arc(cairo, 1, 1, 1, Math.PI, 270.0*Math.PI/180.0);
 		Cairo.cairo_close_path(cairo);
 		Cairo.cairo_restore(cairo);
 	}
@@ -1950,8 +1950,8 @@ public int getAlpha() {
  */
 public int getAntialias() {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-    if (data.cairo == 0) return SWT.DEFAULT;
-    int antialias = Cairo.cairo_get_antialias(data.cairo);
+	if (data.cairo == 0) return SWT.DEFAULT;
+	int antialias = Cairo.cairo_get_antialias(data.cairo);
 	switch (antialias) {
 		case Cairo.CAIRO_ANTIALIAS_DEFAULT: return SWT.DEFAULT;
 		case Cairo.CAIRO_ANTIALIAS_NONE: return SWT.OFF;
@@ -2515,9 +2515,9 @@ void getSize(int[] width, int[] height) {
  * @since 3.1
  */
 public int getTextAntialias() {
-    if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-    if (data.cairo == 0) return SWT.DEFAULT;
-    int antialias = Cairo.CAIRO_ANTIALIAS_DEFAULT;
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (data.cairo == 0) return SWT.DEFAULT;
+	int antialias = Cairo.CAIRO_ANTIALIAS_DEFAULT;
 	if (data.context != 0) {
 		long options = OS.pango_cairo_context_get_font_options(data.context);
 		if (options != 0) antialias = Cairo.cairo_font_options_get_antialias(options);
@@ -2855,13 +2855,13 @@ public void setAntialias(int antialias) {
 		case SWT.DEFAULT: mode = Cairo.CAIRO_ANTIALIAS_DEFAULT; break;
 		case SWT.OFF: mode = Cairo.CAIRO_ANTIALIAS_NONE; break;
 		case SWT.ON: mode = Cairo.CAIRO_ANTIALIAS_GRAY;
-            break;
+			break;
 		default:
 			SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
-    initCairo();
-    long cairo = data.cairo;
-    Cairo.cairo_set_antialias(cairo, mode);
+	initCairo();
+	long cairo = data.cairo;
+	Cairo.cairo_set_antialias(cairo, mode);
 }
 
 /**
@@ -3761,23 +3761,23 @@ void setString(String string, int flags) {
  * @since 3.1
  */
 public void setTextAntialias(int antialias) {
-    if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (data.cairo == 0 && antialias == SWT.DEFAULT) return;
 	int mode = 0;
 	switch (antialias) {
 		case SWT.DEFAULT: mode = Cairo.CAIRO_ANTIALIAS_DEFAULT; break;
 		case SWT.OFF: mode = Cairo.CAIRO_ANTIALIAS_NONE; break;
 		case SWT.ON: mode = Cairo.CAIRO_ANTIALIAS_GRAY;
-            break;
+			break;
 		default:
 			SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
-    initCairo();
-    long options = Cairo.cairo_font_options_create();
-    Cairo.cairo_font_options_set_antialias(options, mode);
+	initCairo();
+	long options = Cairo.cairo_font_options_create();
+	Cairo.cairo_font_options_set_antialias(options, mode);
 	if (data.context == 0) createLayout();
 	OS.pango_cairo_context_set_font_options(data.context, options);
-    Cairo.cairo_font_options_destroy(options);
+	Cairo.cairo_font_options_destroy(options);
 }
 
 /**
