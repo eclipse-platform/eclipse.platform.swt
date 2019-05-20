@@ -1862,7 +1862,7 @@ public int getTopIndex () {
 			point.y += height;
 		}
 	}
-	int /*64*/ rowAtPoint = (int)((NSTableView)view).rowAtPoint(point);
+	int rowAtPoint = (int)((NSTableView)view).rowAtPoint(point);
 	if (rowAtPoint == -1) return 0; /* Empty table */
 	return rowAtPoint;
 }
