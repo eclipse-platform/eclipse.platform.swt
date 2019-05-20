@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2015 IBM Corporation and others.
+ * Copyright (c) 2000, 2019 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -10,6 +10,7 @@
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
+ *     Paul Pazderski - Bug 205199: setImage(null) on Label overrides text
  *******************************************************************************/
 package org.eclipse.swt.widgets;
 
@@ -354,12 +355,7 @@ public void setImage (Image image) {
 	if ((style & SWT.SEPARATOR) != 0) return;
 	if (image != null && image.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
 	this.image = image;
-	int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
-	if ((bits & OS.SS_OWNERDRAW) != OS.SS_OWNERDRAW) {
-		bits &= ~(OS.SS_LEFTNOWORDWRAP | OS.SS_CENTER | OS.SS_RIGHT);
-		bits |= OS.SS_OWNERDRAW;
-		OS.SetWindowLong (handle, OS.GWL_STYLE, bits);
-	}
+	updateStyleBits(image == null);
 	OS.InvalidateRect (handle, null, true);
 }
 
@@ -398,6 +394,7 @@ public void setText (String string) {
 	checkWidget ();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if ((style & SWT.SEPARATOR) != 0) return;
+	updateStyleBits(true);
 	/*
 	* Feature in Windows.  For some reason, SetWindowText() for
 	* static controls redraws the control, even when the text has
@@ -406,7 +403,23 @@ public void setText (String string) {
 	*/
 	if (string.equals (text)) return;
 	text = string;
-	if (image == null || !IMAGE_AND_TEXT) {
+	string = Display.withCrLf (string);
+	TCHAR buffer = new TCHAR (getCodePage (), string, true);
+	OS.SetWindowText (handle, buffer);
+	if ((state & HAS_AUTO_DIRECTION) != 0) {
+		updateTextDirection (AUTO_TEXT_DIRECTION);
+	}
+}
+
+/**
+ * Update the control's static style bits to reflect the changed image vs. text
+ * situation.
+ *
+ * @param showText if <code>true</code> set required style bits to render text
+ *                 otherwise to render the image
+ */
+void updateStyleBits(boolean showText) {
+	if (showText) {
 		int oldBits = OS.GetWindowLong (handle, OS.GWL_STYLE), newBits = oldBits;
 		newBits &= ~OS.SS_OWNERDRAW;
 		if ((style & SWT.LEFT) != 0) {
@@ -419,12 +432,13 @@ public void setText (String string) {
 		if ((style & SWT.CENTER) != 0) newBits |= OS.SS_CENTER;
 		if ((style & SWT.RIGHT) != 0) newBits |= OS.SS_RIGHT;
 		if (oldBits != newBits) OS.SetWindowLong (handle, OS.GWL_STYLE, newBits);
-	}
-	string = Display.withCrLf (string);
-	TCHAR buffer = new TCHAR (getCodePage (), string, true);
-	OS.SetWindowText (handle, buffer);
-	if ((state & HAS_AUTO_DIRECTION) != 0) {
-		updateTextDirection (AUTO_TEXT_DIRECTION);
+	} else {
+		int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
+		if ((bits & OS.SS_OWNERDRAW) != OS.SS_OWNERDRAW) {
+			bits &= ~(OS.SS_LEFTNOWORDWRAP | OS.SS_CENTER | OS.SS_RIGHT);
+			bits |= OS.SS_OWNERDRAW;
+			OS.SetWindowLong (handle, OS.GWL_STYLE, bits);
+		}
 	}
 }
 
