@@ -13,13 +13,18 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.manual;
 
-import org.eclipse.swt.*;
-import org.eclipse.swt.internal.*;
-import org.eclipse.swt.layout.*;
-import org.eclipse.swt.widgets.*;
+import java.io.File;
+import java.io.InputStream;
+import java.util.Arrays;
 
-import java.io.*;
-import java.util.*;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.internal.Library;
+import org.eclipse.swt.internal.Platform;
+import org.eclipse.swt.layout.FillLayout;
+import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.MessageBox;
+import org.eclipse.swt.widgets.Shell;
 
 public class Bug547109_JvmCrashNativeLibraryLoad {
 	private static final String ARG_NO_UI = "-noUI";
@@ -100,7 +105,7 @@ public class Bug547109_JvmCrashNativeLibraryLoad {
 		}
 	}
 
-	public static void main(String[] args) throws Exception {
+	public static void main(String[] args) {
 		final Display display = new Display();
 
 		if (Arrays.asList(args).contains(ARG_NO_UI)) {
