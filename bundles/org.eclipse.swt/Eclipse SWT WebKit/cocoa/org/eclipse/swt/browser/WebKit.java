@@ -705,34 +705,35 @@ void webView_didFailProvisionalLoadWithError_forFrame(long sender, long error, l
 	if (failingURL != null && OS.NSURLErrorServerCertificateNotYetValid <= errorCode && errorCode <= OS.NSURLErrorSecureConnectionFailed) {
 		/* handle invalid certificate error */
 		id certificates = info.objectForKey(NSString.stringWith("NSErrorPeerCertificateChainKey")); //$NON-NLS-1$
-
-		long[] policySearch = new long[1];
-		long[] policyRef = new long[1];
-		long[] trustRef = new long[1];
-		boolean success = false;
-		int result = OS.SecPolicySearchCreate(OS.CSSM_CERT_X_509v3, 0, 0, policySearch);
-		if (result == 0 && policySearch[0] != 0) {
-			result = OS.SecPolicySearchCopyNext(policySearch[0], policyRef);
-			if (result == 0 && policyRef[0] != 0) {
-				result = OS.SecTrustCreateWithCertificates(certificates.id, policyRef[0], trustRef);
-				if (result == 0 && trustRef[0] != 0) {
-					SFCertificateTrustPanel panel = SFCertificateTrustPanel.sharedCertificateTrustPanel();
-					String failingUrlString = failingURL.absoluteString().getString();
-					String message = Compatibility.getMessage("SWT_InvalidCert_Message", new Object[] {failingUrlString}); //$NON-NLS-1$
-					panel.setAlternateButtonTitle(NSString.stringWith(Compatibility.getMessage("SWT_Cancel"))); //$NON-NLS-1$
-					panel.setShowsHelp(true);
-					failingURL.retain();
-					NSWindow window = browser.getShell().view.window();
-					panel.beginSheetForWindow(window, delegate, OS.sel_createPanelDidEnd, failingURL.id, trustRef[0], NSString.stringWith(message));
-					success = true;
+		if (certificates != null) {
+			long[] policySearch = new long[1];
+			long[] policyRef = new long[1];
+			long[] trustRef = new long[1];
+			boolean success = false;
+			int result = OS.SecPolicySearchCreate(OS.CSSM_CERT_X_509v3, 0, 0, policySearch);
+			if (result == 0 && policySearch[0] != 0) {
+				result = OS.SecPolicySearchCopyNext(policySearch[0], policyRef);
+				if (result == 0 && policyRef[0] != 0) {
+					result = OS.SecTrustCreateWithCertificates(certificates.id, policyRef[0], trustRef);
+					if (result == 0 && trustRef[0] != 0) {
+						SFCertificateTrustPanel panel = SFCertificateTrustPanel.sharedCertificateTrustPanel();
+						String failingUrlString = failingURL.absoluteString().getString();
+						String message = Compatibility.getMessage("SWT_InvalidCert_Message", new Object[] {failingUrlString}); //$NON-NLS-1$
+						panel.setAlternateButtonTitle(NSString.stringWith(Compatibility.getMessage("SWT_Cancel"))); //$NON-NLS-1$
+						panel.setShowsHelp(true);
+						failingURL.retain();
+						NSWindow window = browser.getShell().view.window();
+						panel.beginSheetForWindow(window, delegate, OS.sel_createPanelDidEnd, failingURL.id, trustRef[0], NSString.stringWith(message));
+						success = true;
+					}
 				}
 			}
-		}
 
-		if (trustRef[0] != 0) OS.CFRelease(trustRef[0]);
-		if (policyRef[0] != 0) OS.CFRelease(policyRef[0]);
-		if (policySearch[0] != 0) OS.CFRelease(policySearch[0]);
-		if (success) return;
+			if (trustRef[0] != 0) OS.CFRelease(trustRef[0]);
+			if (policyRef[0] != 0) OS.CFRelease(policyRef[0]);
+			if (policySearch[0] != 0) OS.CFRelease(policySearch[0]);
+			if (success) return;
+		}
 	}
 
 	/* handle other types of errors */
