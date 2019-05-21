@@ -191,22 +191,39 @@ void deregister () {
 	if (imHandle != 0) display.removeWidget (imHandle);
 }
 
-void drawBackground (Control control, long gdkResource, long cr, long region, int x, int y, int width, int height) {
-	long cairo = cr;
-	if (region == 0 && gdkResource != 0) {
-		cairo_rectangle_int_t regionRect = new cairo_rectangle_int_t ();
-		int [] fetchedHeight = new int [1];
-		int [] fetchedWidth = new int [1];
-		if (GTK.GTK4) {
-			gdk_surface_get_size(gdkResource, fetchedWidth, fetchedHeight);
-		} else {
-			gdk_window_get_size(gdkResource, fetchedWidth, fetchedHeight);
+void drawBackground (Control control, long gdkResource, long cr, int x, int y, int width, int height) {
+	long cairo, context = 0;
+	long region = 0;
+	if (GTK.GTK4) {
+		// TODO: once Eclipse runs on GTK4, check for bug 547466.
+		cairo = cr;
+		if (gdkResource != 0) {
+			cairo_rectangle_int_t regionRect = new cairo_rectangle_int_t ();
+			int [] fetchedHeight = new int [1];
+			int [] fetchedWidth = new int [1];
+			if (GTK.GTK4) {
+				gdk_surface_get_size(gdkResource, fetchedWidth, fetchedHeight);
+			} else {
+				gdk_window_get_size(gdkResource, fetchedWidth, fetchedHeight);
+			}
+			regionRect.x = 0;
+			regionRect.y = 0;
+			regionRect.width = fetchedWidth[0];
+			regionRect.height = fetchedHeight[0];
+			region = Cairo.cairo_region_create_rectangle(regionRect);
 		}
-		regionRect.x = 0;
-		regionRect.y = 0;
-		regionRect.width = fetchedWidth[0];
-		regionRect.height = fetchedHeight[0];
-		region = Cairo.cairo_region_create_rectangle(regionRect);
+	} else {
+		if (GTK.GTK_VERSION >= OS.VERSION(3, 22, 0)) {
+			if (cr == 0) {
+				long cairo_region = GDK.gdk_window_get_visible_region(gdkResource);
+				context = GDK.gdk_window_begin_draw_frame(gdkResource, cairo_region);
+				cairo = GDK.gdk_drawing_context_get_cairo_context(context);
+			} else {
+				cairo = cr;
+			}
+		} else {
+			cairo = cr != 0 ? cr : GDK.gdk_cairo_create(gdkResource);
+		}
 	}
 	/*
 	 * It's possible that a client is using an SWT.NO_BACKGROUND Composite with custom painting
@@ -244,6 +261,13 @@ void drawBackground (Control control, long gdkResource, long cr, long region, in
 	}
 	Cairo.cairo_rectangle (cairo, x, y, width, height);
 	Cairo.cairo_fill (cairo);
+	if (!GTK.GTK4 ) {
+		if (GTK.GTK_VERSION >= OS.VERSION(3, 22, 0)) {
+			if (cairo != cr && context != 0) GDK.gdk_window_end_draw_frame(gdkResource, context);
+		} else {
+			if (cairo != cr) Cairo.cairo_destroy(cairo);
+		}
+	}
 }
 
 boolean drawGripper (GC gc, int x, int y, int width, int height, boolean vertical) {
@@ -6766,9 +6790,18 @@ long windowProc (long handle, long arg0, long user_data) {
 				GdkRectangle rect = new GdkRectangle ();
 				GDK.gdk_cairo_get_clip_rectangle (cairo, rect);
 				if (control == null) control = this;
-				long gdkResource = GTK.GTK4 ? GTK.gtk_widget_get_surface(handle) :
-					GTK.gtk_widget_get_window(handle);
-				drawBackground (control, gdkResource, cairo, 0, rect.x, rect.y, rect.width, rect.height);
+				long gdkResource;
+				if (GTK.GTK4) {
+					gdkResource = GTK.gtk_widget_get_surface(handle);
+					drawBackground (control, gdkResource, cairo, rect.x, rect.y, rect.width, rect.height);
+				} else {
+					gdkResource = GTK.gtk_widget_get_window(handle);
+					if (gdkResource != 0) {
+						drawBackground (control, gdkResource, 0, rect.x, rect.y, rect.width, rect.height);
+					} else {
+						drawBackground (control, 0, cairo, rect.x, rect.y, rect.width, rect.height);
+					}
+				}
 			}
 			break;
 		}

@@ -2364,7 +2364,7 @@ void drawInheritedBackground (long cairo) {
 			}
 			if (parent != 0) OS.g_free (parent);
 			if (height [0] > (rect.y + rect.height)) {
-				drawBackground (control, gdkResource, cairo, 0, 0, rect.y + rect.height, width [0], height [0] - (rect.y + rect.height));
+				drawBackground (control, gdkResource, cairo, 0, rect.y + rect.height, width [0], height [0] - (rect.y + rect.height));
 			}
 		}
 	}
@@ -3106,7 +3106,7 @@ void rendererRender (long cell, long cr, long snapshot, long widget, long backgr
 						if (cr != 0) {
 							Cairo.cairo_save (cr);
 						}
-						drawBackground (control, 0, cr, 0, rect.x, rect.y, rect.width, rect.height);
+						drawBackground (control, 0, cr, rect.x, rect.y, rect.width, rect.height);
 						if (cr != 0) {
 							Cairo.cairo_restore (cr);
 						}
@@ -4178,7 +4178,7 @@ long windowProc (long handle, long arg0, long user_data) {
 						if (window == GTK.gtk_widget_get_window(handle)) {
 							GdkRectangle rect = new GdkRectangle ();
 							GDK.gdk_cairo_get_clip_rectangle (arg0, rect);
-							drawBackground (control, window, arg0, 0, rect.x, rect.y, rect.width, rect.height);
+							drawBackground (control, window, arg0, rect.x, rect.y, rect.width, rect.height);
 						}
 					}
 				}
