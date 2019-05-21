@@ -13,6 +13,8 @@
  *******************************************************************************/
 package org.eclipse.swt.graphics;
 
+import java.util.*;
+
 import org.eclipse.swt.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.cairo.*;
@@ -2054,7 +2056,53 @@ Rectangle getClippingInPixels() {
 		if (clipRgn != 0) {
 			/* Convert clipping to device space if needed */
 			if (data.clippingTransform != null && GTK.GTK_VERSION < OS.VERSION (3, 14, 0)) {
-				clipRgn = convertRgn(clipRgn, data.clippingTransform);
+					clipRgn = convertRgn(clipRgn, data.clippingTransform);
+					Cairo.cairo_region_intersect(rgn, clipRgn);
+					Cairo.cairo_region_destroy(clipRgn);
+			} else if (!Arrays.equals(data.clippingTransform, currentTransform) && GTK.GTK_VERSION >= OS.VERSION (3, 14, 0)) {
+				double[] clippingTransform;
+				if (currentTransform != null && data.clippingTransform == null) {
+					/*
+					 * User actions in this case are:
+					 * 1. Set clipping.
+					 * 2. Set a transformation B.
+		             *
+					 * The clipping was specified before transformation B was set.
+					 * So to convert it to the new space, we just invert the transformation B.
+					 */
+					clippingTransform = currentTransform.clone();
+					Cairo.cairo_matrix_invert(clippingTransform);
+				} else if (currentTransform != null && data.clippingTransform != null) {
+					/*
+					 * User actions in this case are:
+					 * 1. Set a transformation A.
+					 * 2. Set clipping.
+					 * 3. Set a different transformation B. This is global and wipes out transformation A.
+					 *
+					 * Since step 3. wipes out transformation A, we must apply A on the clipping rectangle to have
+					 * the correct clipping rectangle after transformation A is wiped.
+					 * Then, we apply the inverted transformation B on the resulting clipping,
+					 * to convert it to the new space (which results after applying B).
+					 */
+					clippingTransform = new double[6];
+					double[] invertedCurrentTransform = currentTransform.clone();
+					Cairo.cairo_matrix_invert(invertedCurrentTransform);
+					Cairo.cairo_matrix_multiply(clippingTransform, data.clippingTransform, invertedCurrentTransform);
+				} else {
+					/*
+					 * User actions in this case are:
+					 * 1. Set a transformation A.
+					 * 2. Set clipping.
+					 * 3. Wipe the transformation A (i.e. call GC.setTransformation(A)).
+					 *
+					 * We must apply transformation A on the clipping, to convert it to the new space.
+					 */
+					clippingTransform = data.clippingTransform.clone();
+				}
+				long oldRgn = rgn;
+				rgn = convertRgn(rgn, clippingTransform);
+				Cairo.cairo_region_destroy(oldRgn);
+				clipRgn = convertRgn(clipRgn, clippingTransform);
 				Cairo.cairo_region_intersect(rgn, clipRgn);
 				Cairo.cairo_region_destroy(clipRgn);
 			} else {
@@ -3047,6 +3095,11 @@ void setClipping(long clipRgn) {
 		if (GTK.GTK_VERSION < OS.VERSION (3, 14, 0)) {
 			if (data.clippingTransform == null) data.clippingTransform = new double[6];
 			Cairo.cairo_get_matrix(cairo, data.clippingTransform);
+		} else if (currentTransform != null) {
+			// store the current transformation, to use it when the user requests clipping bounds
+			data.clippingTransform = currentTransform.clone();
+		} else {
+			data.clippingTransform = null;
 		}
 		setCairoClip(data.damageRgn, clipRgn);
 	}
