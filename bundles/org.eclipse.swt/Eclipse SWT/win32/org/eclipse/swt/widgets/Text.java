@@ -68,9 +68,14 @@ public class Text extends Scrollable {
 	String message;
 	int[] segments;
 	int clearSegmentsCount = 0;
+	long /*int*/ hwndSearch, hwndCancel, hwndActive;
 
 	static final char LTR_MARK = '\u200e';
 	static final char RTL_MARK = '\u200f';
+
+	/* Custom icons defined in swt.rc */
+	static final int IDI_SEARCH = 101;
+	static final int IDI_CANCEL = 102;
 
 	/**
 	* The maximum number of characters that can be entered
@@ -262,6 +267,49 @@ long /*int*/ callWindowProc (long /*int*/ hwnd, int msg, long /*int*/ wParam, lo
 			break;
 		}
 	}
+	if ((style & SWT.SEARCH) != 0) {
+		switch (msg) {
+			case OS.WM_MOUSEMOVE: {
+				POINT pt = new POINT ();
+				OS.POINTSTOPOINT(pt, lParam);
+				long /*int*/ prevActive = hwndActive;
+				hwndActive = OS.ChildWindowFromPointEx (handle, pt, OS.CWP_SKIPINVISIBLE);
+				if (hwndActive == handle) hwndActive = 0;
+				if (prevActive != hwndActive) {
+					if (prevActive != 0) OS.InvalidateRect (prevActive, null, false);
+					if (hwndActive != 0) OS.InvalidateRect (hwndActive, null, false);
+				}
+				break;
+			}
+			case OS.WM_MOUSELEAVE:
+				if (hwndActive != 0) {
+					OS.InvalidateRect (hwndActive, null, false);
+					hwndActive = 0;
+				}
+				break;
+			case OS.WM_LBUTTONDOWN:
+				if (hwndActive != 0) {
+					OS.InvalidateRect (hwndActive, null, false);
+					return 0; // prevent mouse selection
+				}
+				break;
+			case OS.WM_LBUTTONUP: {
+				if (hwndActive != 0) {
+					Event e = new Event();
+					if (hwndActive == hwndSearch) {
+						e.detail = SWT.ICON_SEARCH;
+					} else {
+						e.detail = SWT.ICON_CANCEL;
+						setText ("");
+					}
+					setFocus ();
+					selectAll ();
+					sendSelectionEvent (SWT.DefaultSelection, e, false);
+				}
+				break;
+			}
+		}
+	}
 	long /*int*/ code = OS.CallWindowProc (EditProc, hwnd, msg, wParam, lParam);
 	switch (msg) {
 		case OS.WM_HSCROLL:
@@ -283,6 +331,30 @@ void createHandle () {
 	if ((style & SWT.READ_ONLY) != 0) {
 		if (applyThemeBackground () == 1) {
 			state |= THEME_BACKGROUND;
+		}
+	}
+	if ((style & SWT.SEARCH) != 0) {
+		if (display.hIconSearch == 0) {
+			long /*int*/ [] phicon = new long /*int*/ [1];
+			int hresult = OS.LoadIconMetric (OS.GetLibraryHandle (), IDI_SEARCH, OS.LIM_SMALL, phicon);
+			if (hresult != OS.S_OK) error (SWT.ERROR_NO_HANDLES);
+			display.hIconSearch = phicon [0];
+			hresult = OS.LoadIconMetric (OS.GetLibraryHandle (), IDI_CANCEL, OS.LIM_SMALL, phicon);
+			if (hresult != OS.S_OK) error (SWT.ERROR_NO_HANDLES);
+			display.hIconCancel = phicon [0];
+		}
+		if ((style & SWT.ICON_SEARCH) != 0) {
+			hwndSearch = OS.CreateWindowEx (0, Label.LabelClass, null,
+					OS.WS_CHILD | OS.WS_VISIBLE | OS.WS_CLIPSIBLINGS | OS.SS_OWNERDRAW,
+					0, 0, 0, 0, handle, 0, OS.GetModuleHandle (null), null);
+			if (hwndSearch == 0) error (SWT.ERROR_NO_HANDLES);
+		}
+		if ((style & SWT.ICON_CANCEL) != 0) {
+			state |= TRACK_MOUSE;
+			hwndCancel = OS.CreateWindowEx (0, Label.LabelClass, null,
+					OS.WS_CHILD | OS.WS_CLIPSIBLINGS | OS.SS_OWNERDRAW,
+					0, 0, 0, 0, handle, 0, OS.GetModuleHandle (null), null);
+			if (hwndCancel == 0) error (SWT.ERROR_NO_HANDLES);
 		}
 	}
 }
@@ -559,20 +631,20 @@ void applySegments () {
 }
 
 static int checkStyle (int style) {
-	if ((style & SWT.SEARCH) != 0) {
-		style |= SWT.SINGLE | SWT.BORDER;
-		style &= ~SWT.PASSWORD;
-		/*
-		* NOTE: ICON_CANCEL has the same value as H_SCROLL and
-		* ICON_SEARCH has the same value as V_SCROLL so they are
-		* cleared because SWT.SINGLE is set.
-		*/
-	}
 	if ((style & SWT.SINGLE) != 0 && (style & SWT.MULTI) != 0) {
 		style &= ~SWT.MULTI;
 	}
 	style = checkBits (style, SWT.LEFT, SWT.CENTER, SWT.RIGHT, 0, 0, 0);
-	if ((style & SWT.SINGLE) != 0) style &= ~(SWT.H_SCROLL | SWT.V_SCROLL | SWT.WRAP);
+	/*
+	 * NOTE: ICON_CANCEL and ICON_SEARCH have the same value as H_SCROLL and
+	 * V_SCROLL. The meaning is determined by whether SWT.SEARCH is set.
+	 */
+	if ((style & SWT.SEARCH) != 0) {
+		style |= SWT.SINGLE | SWT.BORDER;
+		style &= ~(SWT.PASSWORD | SWT.WRAP);
+	} else if ((style & SWT.SINGLE) != 0) {
+		style &= ~(SWT.H_SCROLL | SWT.V_SCROLL | SWT.WRAP);
+	}
 	if ((style & SWT.WRAP) != 0) {
 		style |= SWT.MULTI;
 		style &= ~SWT.H_SCROLL;
@@ -751,7 +823,10 @@ public void cut () {
 @Override
 int defaultBackground () {
 	int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
-	return OS.GetSysColor ((bits & OS.ES_READONLY) != 0 ? OS.COLOR_3DFACE : OS.COLOR_WINDOW);
+	if ((bits & OS.ES_READONLY) != 0 || !OS.IsWindowEnabled (handle)) {
+		return OS.GetSysColor (OS.COLOR_3DFACE);
+	}
+	return OS.GetSysColor (OS.COLOR_WINDOW);
 }
 
 TCHAR deprocessText (TCHAR text, int start, int end, boolean terminate) {
@@ -1792,6 +1867,18 @@ boolean sendKeyEvent (int type, int msg, long /*int*/ wParam, long /*int*/ lPara
 }
 
 @Override
+void setBackgroundImage (long /*int*/ hBitmap) {
+	int flags = OS.RDW_ERASE | OS.RDW_ALLCHILDREN | OS.RDW_INVALIDATE;
+	OS.RedrawWindow (handle, null, 0, flags);
+}
+
+@Override
+void setBackgroundPixel (int pixel) {
+	int flags = OS.RDW_ERASE | OS.RDW_ALLCHILDREN | OS.RDW_INVALIDATE;
+	OS.RedrawWindow (handle, null, 0, flags);
+}
+
+@Override
 void setBoundsInPixels (int x, int y, int width, int height, int flags) {
 	/*
 	* Feature in Windows.  When the caret is moved,
@@ -1947,14 +2034,16 @@ public void setFont (Font font) {
 }
 
 void setMargins () {
-	/*
-	* Bug in Windows.  When EM_SETCUEBANNER is used to set the
-	* banner text, the control does not take into account the
-	* margins, causing the first character to be clipped.  The
-	* fix is to set the margins to zero.
-	*/
 	if ((style & SWT.SEARCH) != 0) {
-		OS.SendMessage (handle, OS.EM_SETMARGINS, OS.EC_LEFTMARGIN | OS.EC_RIGHTMARGIN, 0);
+		int flags = 0;
+		int fLeading = (style & SWT.LEFT_TO_RIGHT) != 0 ? OS.EC_LEFTMARGIN : OS.EC_RIGHTMARGIN;
+		int fTrailing = (style & SWT.LEFT_TO_RIGHT) != 0 ? OS.EC_RIGHTMARGIN : OS.EC_LEFTMARGIN;
+		if ((style & SWT.ICON_SEARCH) != 0) flags |= fLeading;
+		if ((style & SWT.ICON_CANCEL) != 0) flags |= fTrailing;
+		if (flags != 0) {
+			int iconWidth = OS.GetSystemMetrics (OS.SM_CXSMICON);
+			OS.SendMessage (handle, OS.EM_SETMARGINS, flags, OS.MAKELPARAM(iconWidth, iconWidth));
+		}
 	}
 }
 
@@ -2428,6 +2517,7 @@ int widgetStyle () {
 	if ((style & SWT.CENTER) != 0) bits |= OS.ES_CENTER;
 	if ((style & SWT.RIGHT) != 0) bits |= OS.ES_RIGHT;
 	if ((style & SWT.READ_ONLY) != 0) bits |= OS.ES_READONLY;
+	if ((style & SWT.SEARCH) != 0) bits |= OS.WS_CLIPCHILDREN;
 	if ((style & SWT.SINGLE) != 0) {
 		/*
 		* Feature in Windows.  When a text control is read-only,
@@ -2614,6 +2704,25 @@ LRESULT WM_CUT (long /*int*/ wParam, long /*int*/ lParam) {
 }
 
 @Override
+LRESULT WM_DRAWITEM (long wParam, long lParam) {
+	DRAWITEMSTRUCT struct = new DRAWITEMSTRUCT ();
+	OS.MoveMemory (struct, lParam, DRAWITEMSTRUCT.sizeof);
+	RECT rect = new RECT ();
+	OS.SetRect (rect, struct.left, struct.top, struct.right, struct.bottom);
+	POINT pt = new POINT ();
+	OS.MapWindowPoints (struct.hwndItem, handle, pt, 1);
+	drawBackground (struct.hDC, rect, -1, pt.x, pt.y);
+	if (struct.hwndItem == hwndCancel && struct.hwndItem == hwndActive && OS.IsAppThemed()) {
+		int state = OS.GetKeyState (OS.VK_LBUTTON) < 0 ? OS.PBS_PRESSED : OS.PBS_HOT;
+		OS.DrawThemeBackground (display.hButtonTheme (), struct.hDC, OS.BP_PUSHBUTTON, state, rect, null);
+	}
+	long /*int*/ hIcon = (struct.hwndItem == hwndSearch) ? display.hIconSearch : display.hIconCancel;
+	int y = (rect.bottom - rect.right) / 2;
+	OS.DrawIconEx (struct.hDC, 0, y, hIcon, 0, 0, 0, 0, OS.DI_NORMAL);
+	return LRESULT.ONE;
+}
+
+@Override
 LRESULT WM_ERASEBKGND (long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.WM_ERASEBKGND (wParam, lParam);
 	if ((style & SWT.READ_ONLY) != 0) {
@@ -2757,6 +2866,24 @@ LRESULT WM_PASTE (long /*int*/ wParam, long /*int*/ lParam) {
 }
 
 @Override
+LRESULT WM_SIZE(long wParam, long lParam) {
+	LRESULT result = super.WM_SIZE (wParam, lParam);
+	if (isDisposed ()) return result;
+	if ((style & SWT.SEARCH) != 0) {
+		/* NOTE: EDIT controls don't support mirrored layout. */
+		long /*int*/ hwndLeading = (style & SWT.LEFT_TO_RIGHT) != 0 ? hwndSearch : hwndCancel;
+		long /*int*/ hwndTrailing = (style & SWT.LEFT_TO_RIGHT) != 0 ? hwndCancel : hwndSearch;
+		int width = OS.LOWORD (lParam);
+		int height = OS.HIWORD (lParam);
+		int iconWidth = OS.GetSystemMetrics (OS.SM_CXSMICON);
+		int flags = OS.SWP_NOZORDER | OS.SWP_NOACTIVATE | OS.SWP_NOCOPYBITS;
+		if (hwndLeading != 0) OS.SetWindowPos (hwndLeading, 0, 0, 0, iconWidth, height, flags);
+		if (hwndTrailing != 0) OS.SetWindowPos (hwndTrailing, 0, width - iconWidth, 0, iconWidth, height, flags);
+	}
+	return result;
+}
+
+@Override
 LRESULT WM_UNDO (long /*int*/ wParam, long /*int*/ lParam) {
 	LRESULT result = super.WM_UNDO (wParam, lParam);
 	if (result != null) return result;
@@ -2872,6 +2999,9 @@ LRESULT wmCommandChild (long /*int*/ wParam, long /*int*/ lParam) {
 		case OS.EN_CHANGE:
 			if (findImageControl () != null) {
 				OS.InvalidateRect (handle, null, true);
+			}
+			if ((style & SWT.SEARCH) != 0 && hwndCancel != 0) {
+				OS.ShowWindow (hwndCancel, OS.GetWindowTextLength (handle) != 0 ? OS.SW_SHOW : OS.SW_HIDE);
 			}
 			if (ignoreModify) break;
 			/*
