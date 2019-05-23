@@ -2783,8 +2783,10 @@ void setItemHeight (Image image, NSFont font, boolean set) {
 		widget.setRowHeight (height);
 		if (headerView != null) {
 			NSRect frame = headerView.frame();
-			frame.height = height;
-			headerView.setFrame(frame);
+			if (frame.height < height) {
+				frame.height = height;
+				headerView.setFrame(frame);
+			}
 		}
 	}
 }
