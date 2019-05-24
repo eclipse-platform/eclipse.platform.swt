@@ -15,18 +15,25 @@
 package org.eclipse.swt.tests.junit;
 
 
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTException;
+import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.graphics.ImageLoader;
 import org.eclipse.swt.graphics.ImageLoaderEvent;
 import org.eclipse.swt.graphics.ImageLoaderListener;
+import org.eclipse.swt.graphics.PaletteData;
+import org.eclipse.swt.widgets.Display;
 import org.junit.Test;
 
 /**
@@ -168,6 +175,57 @@ public void test_saveLjava_lang_StringI() {
 		loader.save(filename, 0);
 		fail("No exception thrown for save filename == null");
 	} catch (IllegalArgumentException e) {
+	}
+}
+
+/**
+ * Ensure that saving and loading an image with {@link ImageLoader}
+ * does not result in different {@link ImageData#data} arrays.
+ */
+@Test
+public void test_bug547529() {
+	Display display = Display.getDefault();
+	try {
+		int imageWidth = 8;
+		int imageHeight = 8;
+		int imageDepth = 24;
+
+		int RED = 0xFF0000;
+		int GREEN = 0x00FF00;
+		int BLUE = 0x0000FF;
+		PaletteData palette = new PaletteData(RED, GREEN, BLUE);
+		ImageData imageData = new ImageData(imageWidth, imageHeight, imageDepth, palette);
+		int w = imageWidth / 2;
+		int h = imageHeight / 2;
+
+		for (int y = 0; y < imageHeight; ++y) {
+			for (int x = 0; x < imageWidth; ++x) {
+				int color = 0x000000;
+				if (x < w && y < h) {
+					color = RED;
+				} else if (x < w && y >= h) {
+					color = GREEN;
+				} else if (x >= w && y < h) {
+					color = BLUE;
+				}
+				imageData.setPixel(x, y, color);
+			}
+		}
+
+		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+		ImageLoader saver = new ImageLoader();
+		saver.data = new ImageData[] { imageData };
+		saver.save(outputStream, SWT.IMAGE_PNG);
+		byte[] savedBytes = imageData.data;
+		ByteArrayInputStream inputStream = new ByteArrayInputStream(outputStream.toByteArray());
+		ImageLoader loader = new ImageLoader();
+		loader.load(inputStream);
+		ImageData[] loadedData = loader.data;
+		assertEquals("ImageLoader loaded incorrect number of ImageData objects", 1, loadedData.length);
+		byte[] loadedBytes = loadedData[0].data;
+		assertArrayEquals(savedBytes, loadedBytes);
+	} finally {
+		display.dispose();
 	}
 }
 
