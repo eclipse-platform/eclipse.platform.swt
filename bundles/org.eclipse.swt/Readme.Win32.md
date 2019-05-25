@@ -37,16 +37,16 @@ libraries in the binary repository.
 ## (Advanced) Building Natives.
 
 ### Building just 64bit natives with no Webkit
-(Last Tested on Win10 64 bit & Java 9. March 2018):
+(Last tested on Win10 64 bit & Java 11. May 2019):
 
 You need to install the following on your system:  
 
 * Microsoft Visual Studio - Community and Windows 10 SDK:  (1*)
-  https://www.visualstudio.com/thank-you-downloading-visual-studio/?sku=Community&rel=15
-  (I can't remember which components I installed, I cliked on items that seemed relevant for C/C++ development.
-   I also installed the linux, but that might not be needed. My installation was around 20GB).
+  https://visualstudio.microsoft.com/vs/community/
+  Either select the components "MSVC C++-x64/x86-Buildtools" and "Windows 10 SDK"
+  or the workload "Desktop development with C++" which includes the required components and some more.
 * (Optional) Install Cygwin
-* Install Java 8 or 9. Oracle JDK or IBM JDK:  
+* Install Java 8 or 11. Oracle JDK or IBM JDK:  
   http://www.oracle.com/technetwork/java/javase/overview/java8-2100321.html  
   https://developer.ibm.com/javasdk/downloads/  
 
@@ -56,7 +56,7 @@ In the binary git repo, in the windows project, you can build the natives via th
 
 * In Eclipse, in the binary project org.eclipse.swt.win32.win32.x86_64, right click on build.xml:  
 * Run As -> Ant Build ...
-* on the Targets tab check the build_libraries target  (it should be the only one check for just the natives).
+* On the Targets tab check the build_libraries target  (it should be the only one check for just the natives).
 * On the JRE tab select "Run in the same JRE as the workspace"
 * On the Refresh tab check "Refresh resources upon completion" to refresh your workspace after running the build; this ensures that Eclipse will pick up the fresh binaries
 * Press the "Run" button to begin.
