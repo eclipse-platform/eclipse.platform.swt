@@ -131,7 +131,7 @@ case $SWT_OS.$SWT_ARCH in
 			#   java-1.8.0-openjdk-........i386
 			#   java-9-openjdk....i386
 			JAVA_FOLDER=$(ls /usr/lib/jvm | grep java | grep -i openjdk | grep i386 | sort | tail -n 1)
-			if [ "${JAVA_FOLDER}" == "" ]; then
+			if [ "${JAVA_FOLDER}" = "" ]; then
 				func_echo_error "ERROR: Could not find JAVA_HOME/AWT_LIB_PATH on 32bit build system automatically. Expecting it to be in /usr/lib/jvm/ but none was found. See also Bug 533496"
 			fi
 
@@ -190,7 +190,7 @@ case $SWT_OS.$SWT_ARCH in
 			export PKG_CONFIG_PATH="/usr/lib64/pkgconfig"
 		fi
 		;;
-esac	
+esac
 
 
 # For 64-bit CPUs, we have a switch
@@ -250,7 +250,7 @@ fi
 
 ## Interaction(s) with makefile(s) below:
 
-# Configure OUTPUT_DIR 
+# Configure OUTPUT_DIR
 if [ "x${OUTPUT_DIR}" = "x" ]; then
 	OUTPUT_DIR=../../../../../eclipse.platform.swt.binaries/bundles/org.eclipse.swt.gtk.${SWT_OS}.${SWT_ARCH}
 	if [ -d "$OUTPUT_DIR" ]; then
@@ -307,10 +307,10 @@ func_build_gtk4 () {
 
 	# Dictate Webkit2 Extension only if pkg-config flags exist
 	pkg-config --exists webkit2gtk-web-extension-4.0
-	if [ $? == 0 ]; then
+	if [ $? = 0 ]; then
 		export BUILD_WEBKIT2EXTENSION="yes";
 	else
-		func_echo_error "Warning: Cannot compile Webkit2 Extension because 'pkg-config --exists webkit2gtk-web-extension-4-0' check failed. Please install webkitgtk4-devel.ARCH on your system."
+		func_echo_error "Warning: Cannot compile Webkit2 Extension because 'pkg-config --exists webkit2gtk-web-extension-4.0' check failed. Please install webkitgtk4-devel.ARCH on your system."
 	fi
 
 	func_echo_plus "Building GTK4 bindings:"
@@ -329,10 +329,10 @@ func_build_gtk3 () {
 
 	# Dictate Webkit2 Extension only if pkg-config flags exist
 	pkg-config --exists webkit2gtk-web-extension-4.0
-	if [ $? == 0 ]; then
+	if [ $? = 0 ]; then
 		export BUILD_WEBKIT2EXTENSION="yes";
 	else
-		func_echo_error "Warning: Cannot compile Webkit2 Extension because 'pkg-config --exists webkit2gtk-web-extension-4-0' check failed. Please install webkitgtk4-devel.ARCH on your system."
+		func_echo_error "Warning: Cannot compile Webkit2 Extension because 'pkg-config --exists webkit2gtk-web-extension-4.0' check failed. Please install webkitgtk4-devel.ARCH on your system."
 	fi
 
 	func_echo_plus "Building GTK3 bindings:"
