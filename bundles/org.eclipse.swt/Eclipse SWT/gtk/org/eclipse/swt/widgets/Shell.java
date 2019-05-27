@@ -1978,6 +1978,27 @@ public boolean print (GC gc) {
 	checkWidget ();
 	if (gc == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (gc.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
+	// Needs to be implemented on GTK4/Wayland
+	if (!GTK.GTK4 && OS.isX11()) {
+		Rectangle clipping = gc.getClipping();
+		long shellWindow = gtk_widget_get_window(shellHandle);
+		GdkRectangle rect = new GdkRectangle ();
+		GDK.gdk_window_get_frame_extents (shellWindow, rect);
+		if (clipping.height < rect.height || clipping.width < rect.width) {
+			System.err.println("Warning: the GC provided to Shell.print() has a smaller"
+					+ " clipping than what is needed to print the Shell trimmings"
+					+ " and content. Only the client area will be printed.");
+			return super.print(gc);
+		}
+		long rootWindow = GDK.gdk_get_default_root_window();
+		long pixbuf = GDK.gdk_pixbuf_get_from_window(rootWindow, rect.x, rect.y, rect.width, rect.height);
+		if (pixbuf != 0) {
+			GDK.gdk_cairo_set_source_pixbuf(gc.handle, pixbuf, 0, 0);
+			Cairo.cairo_paint(gc.handle);
+			OS.g_object_unref(pixbuf);
+			return true;
+		}
+	}
 	return false;
 }
 

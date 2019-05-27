@@ -274,6 +274,7 @@
 #define NO__1gtk_1widget_1style_1get__J_3B_3JJ
 #define NO__1gtk_1css_1provider_1load_1from_1data__I_3BI_3I
 #define NO__1gtk_1css_1provider_1load_1from_1data__J_3BJ_3J
+#define NO__1gdk_1pixbuf_1get_1from_1window
 
 // Some GtkContainer functions don't exist on GTK4
 #define NO__1gtk_1container_1propagate_1draw

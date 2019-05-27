@@ -1657,6 +1657,18 @@ JNIEXPORT jlong JNICALL GDK_NATIVE(_1gdk_1pixbuf_1get_1byte_1length)
 }
 #endif
 
+#ifndef NO__1gdk_1pixbuf_1get_1from_1window
+JNIEXPORT jlong JNICALL GDK_NATIVE(_1gdk_1pixbuf_1get_1from_1window)
+	(JNIEnv *env, jclass that, jlong arg0, jint arg1, jint arg2, jint arg3, jint arg4)
+{
+	jlong rc = 0;
+	GDK_NATIVE_ENTER(env, that, _1gdk_1pixbuf_1get_1from_1window_FUNC);
+	rc = (jlong)gdk_pixbuf_get_from_window((GdkWindow *)arg0, arg1, arg2, arg3, arg4);
+	GDK_NATIVE_EXIT(env, that, _1gdk_1pixbuf_1get_1from_1window_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO__1gdk_1pixbuf_1get_1has_1alpha
 JNIEXPORT jboolean JNICALL GDK_NATIVE(_1gdk_1pixbuf_1get_1has_1alpha)
 	(JNIEnv *env, jclass that, jlong arg0)

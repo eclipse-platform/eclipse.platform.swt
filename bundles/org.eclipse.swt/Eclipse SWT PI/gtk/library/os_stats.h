@@ -146,6 +146,7 @@ typedef enum {
 	_1gdk_1pixbuf_1format_1get_1name_FUNC,
 	_1gdk_1pixbuf_1get_1bits_1per_1sample_FUNC,
 	_1gdk_1pixbuf_1get_1byte_1length_FUNC,
+	_1gdk_1pixbuf_1get_1from_1window_FUNC,
 	_1gdk_1pixbuf_1get_1has_1alpha_FUNC,
 	_1gdk_1pixbuf_1get_1height_FUNC,
 	_1gdk_1pixbuf_1get_1n_1channels_FUNC,

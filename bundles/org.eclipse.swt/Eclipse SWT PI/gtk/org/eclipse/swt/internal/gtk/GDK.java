@@ -1548,6 +1548,19 @@ public class GDK extends OS {
 			lock.unlock();
 		}
 	}
+	/**
+	 * @param window cast=(GdkWindow *)
+	 */
+	public static final native long _gdk_pixbuf_get_from_window(long window, int x, int y, int width, int height);
+	/** [GTK3 only, if-def'd in os.h] */
+	public static final long gdk_pixbuf_get_from_window(long window, int x, int y, int width, int height) {
+		lock.lock();
+		try {
+			return _gdk_pixbuf_get_from_window(window, x, y, width, height);
+		} finally {
+			lock.unlock();
+		}
+	}
 	/** @param pixbuf cast=(const GdkPixbuf *) */
 	public static final native int _gdk_pixbuf_get_height(long pixbuf);
 	public static final int gdk_pixbuf_get_height(long pixbuf) {

@@ -136,6 +136,7 @@ char * GDK_nativeFunctionNames[] = {
 	"_1gdk_1pixbuf_1format_1get_1name",
 	"_1gdk_1pixbuf_1get_1bits_1per_1sample",
 	"_1gdk_1pixbuf_1get_1byte_1length",
+	"_1gdk_1pixbuf_1get_1from_1window",
 	"_1gdk_1pixbuf_1get_1has_1alpha",
 	"_1gdk_1pixbuf_1get_1height",
 	"_1gdk_1pixbuf_1get_1n_1channels",
