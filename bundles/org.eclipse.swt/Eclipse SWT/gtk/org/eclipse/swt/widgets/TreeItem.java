@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2018 IBM Corporation and others.
+ * Copyright (c) 2000, 2019 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -1537,33 +1537,42 @@ public void setImage (int index, Image image) {
 		ImageList imageList = parent.imageList;
 		if (imageList == null) imageList = parent.imageList = new ImageList ();
 		int imageIndex = imageList.indexOf (image);
-		if (imageIndex == -1) imageIndex = imageList.add (image);
-		pixbuf = imageList.getPixbuf (imageIndex);
-	}
-	int modelIndex = parent.columnCount == 0 ? Tree.FIRST_COLUMN : parent.columns [index].modelIndex;
-	/*
-	 * Reset size of pixbufRenderer if we have an image being set that is larger
-	 * than the current size of the pixbufRenderer. Fix for Bug 469277 & 476419.
-	 * We only do this if the size of the pixbufRenderer has not yet been set.
-	 * Otherwise, the pixbufRenderer retains the same size as the first image added.
-	 * See comment #4, Bug 478560. Note that all columns need to have their
-	 * pixbufRenderer set to this size after the initial image is set. NOTE: this
-	 * change has been ported to Tables since Tables/Trees both use the same
-	 * underlying GTK structure.
-	 */
-	if (DPIUtil.useCairoAutoScale()) {
-		/*
-		 * Bug in GTK the default renderer does scale again on pixbuf.
-		 * Need to scaledown here and no need to scaledown id device scale is 1
-		 */
-		if ((!parent.ownerDraw) && (image != null) && (DPIUtil.getDeviceZoom() != 100)) {
-			Rectangle imgSize = image.getBounds();
-			long scaledPixbuf = GDK.gdk_pixbuf_scale_simple(pixbuf, imgSize.width, imgSize.height, GDK.GDK_INTERP_BILINEAR);
-			if (scaledPixbuf !=0) {
-				pixbuf = scaledPixbuf;
+		if (imageIndex == -1) {
+			imageIndex = imageList.add (image);
+			pixbuf = imageList.getPixbuf (imageIndex);
+			/*
+			 * Reset size of pixbufRenderer if we have an image being set that is larger
+			 * than the current size of the pixbufRenderer. Fix for Bug 469277 & 476419.
+			 * We only do this if the size of the pixbufRenderer has not yet been set.
+			 * Otherwise, the pixbufRenderer retains the same size as the first image added.
+			 * See comment #4, Bug 478560. Note that all columns need to have their
+			 * pixbufRenderer set to this size after the initial image is set. NOTE: this
+			 * change has been ported to Tables since Tables/Trees both use the same
+			 * underlying GTK structure.
+			 */
+			if (DPIUtil.useCairoAutoScale()) {
+				/*
+				 * Bug in GTK the default renderer does scale again on pixbuf.
+				 * Need to scaledown here and no need to scaledown id device scale is 1
+				 *
+				 * We should resize pixbuf and update pixbuf array in the imagelist only if
+				 * the image is added to the imagelist in this call. If the image is already
+				 * add imageList.getPixbuf returns resized pixbuf.
+				 */
+				if ((!parent.ownerDraw) && (image != null) && (DPIUtil.getDeviceZoom() != 100)) {
+					Rectangle imgSize = image.getBounds();
+					long scaledPixbuf = GDK.gdk_pixbuf_scale_simple(pixbuf, imgSize.width, imgSize.height, GDK.GDK_INTERP_BILINEAR);
+					if (scaledPixbuf !=0) {
+						pixbuf = scaledPixbuf;
+					}
+					imageList.replacePixbuf(imageIndex, pixbuf);
+				}
 			}
+		} else {
+			pixbuf = imageList.getPixbuf (imageIndex);
 		}
 	}
+	int modelIndex = parent.columnCount == 0 ? Tree.FIRST_COLUMN : parent.columns [index].modelIndex;
 	long parentHandle = parent.handle;
 	long column = GTK.gtk_tree_view_get_column (parentHandle, index);
 	long pixbufRenderer = parent.getPixbufRenderer (column);
