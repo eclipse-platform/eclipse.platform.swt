@@ -100,6 +100,7 @@ void createWidget () {
 
 /**
  * Returns the offset of the caret from the start of the document.
+ * -1 means that there is currently no active composition.
  * The caret is within the current composition.
  *
  * @return the caret offset
