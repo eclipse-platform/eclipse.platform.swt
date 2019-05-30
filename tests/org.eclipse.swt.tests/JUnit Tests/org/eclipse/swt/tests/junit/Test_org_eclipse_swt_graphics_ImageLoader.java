@@ -188,8 +188,22 @@ public void test_bug547529() {
 	try {
 		int imageWidth = 8;
 		int imageHeight = 8;
-		int imageDepth = 24;
+		int imageDepth;
+		/*
+		 * Native ImageLoader on GTK uses GdkPixbuf, which only supports
+		 * 3/4 channels with 8 bits per channel. Since we use the alpha channel
+		 * in all cases, ImageData loaded by GdkPixbuf will be 32 bit color depth.
+		 * Furthermore, loaded images will result have direct PaletteData with RGB masks, since
+		 * there is no way to determine indexed PaletteData info.
+		 *
+		 *  Because of this, adjust the image depth for this test case accordingly.
+		 */
+		if (SwtTestUtil.isGTK) {
+			imageDepth = 32;
 
+		} else {
+			imageDepth = 24;
+		}
 		int RED = 0xFF0000;
 		int GREEN = 0x00FF00;
 		int BLUE = 0x0000FF;

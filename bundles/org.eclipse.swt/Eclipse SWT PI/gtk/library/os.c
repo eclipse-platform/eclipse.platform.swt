@@ -1527,6 +1527,90 @@ fail:
 }
 #endif
 
+#ifndef NO__1gdk_1pixbuf_1animation_1get_1iter
+JNIEXPORT jlong JNICALL GDK_NATIVE(_1gdk_1pixbuf_1animation_1get_1iter)
+	(JNIEnv *env, jclass that, jlong arg0, jlong arg1)
+{
+	jlong rc = 0;
+	GDK_NATIVE_ENTER(env, that, _1gdk_1pixbuf_1animation_1get_1iter_FUNC);
+	rc = (jlong)gdk_pixbuf_animation_get_iter((GdkPixbufAnimation *)arg0, (const GTimeVal *)arg1);
+	GDK_NATIVE_EXIT(env, that, _1gdk_1pixbuf_1animation_1get_1iter_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1gdk_1pixbuf_1animation_1get_1static_1image
+JNIEXPORT jlong JNICALL GDK_NATIVE(_1gdk_1pixbuf_1animation_1get_1static_1image)
+	(JNIEnv *env, jclass that, jlong arg0)
+{
+	jlong rc = 0;
+	GDK_NATIVE_ENTER(env, that, _1gdk_1pixbuf_1animation_1get_1static_1image_FUNC);
+	rc = (jlong)gdk_pixbuf_animation_get_static_image((GdkPixbufAnimation *)arg0);
+	GDK_NATIVE_EXIT(env, that, _1gdk_1pixbuf_1animation_1get_1static_1image_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1gdk_1pixbuf_1animation_1is_1static_1image
+JNIEXPORT jboolean JNICALL GDK_NATIVE(_1gdk_1pixbuf_1animation_1is_1static_1image)
+	(JNIEnv *env, jclass that, jlong arg0)
+{
+	jboolean rc = 0;
+	GDK_NATIVE_ENTER(env, that, _1gdk_1pixbuf_1animation_1is_1static_1image_FUNC);
+	rc = (jboolean)gdk_pixbuf_animation_is_static_image((GdkPixbufAnimation *)arg0);
+	GDK_NATIVE_EXIT(env, that, _1gdk_1pixbuf_1animation_1is_1static_1image_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1gdk_1pixbuf_1animation_1iter_1advance
+JNIEXPORT jboolean JNICALL GDK_NATIVE(_1gdk_1pixbuf_1animation_1iter_1advance)
+	(JNIEnv *env, jclass that, jlong arg0, jlong arg1)
+{
+	jboolean rc = 0;
+	GDK_NATIVE_ENTER(env, that, _1gdk_1pixbuf_1animation_1iter_1advance_FUNC);
+	rc = (jboolean)gdk_pixbuf_animation_iter_advance((GdkPixbufAnimationIter *)arg0, (const GTimeVal *)arg1);
+	GDK_NATIVE_EXIT(env, that, _1gdk_1pixbuf_1animation_1iter_1advance_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1gdk_1pixbuf_1animation_1iter_1get_1delay_1time
+JNIEXPORT jint JNICALL GDK_NATIVE(_1gdk_1pixbuf_1animation_1iter_1get_1delay_1time)
+	(JNIEnv *env, jclass that, jlong arg0)
+{
+	jint rc = 0;
+	GDK_NATIVE_ENTER(env, that, _1gdk_1pixbuf_1animation_1iter_1get_1delay_1time_FUNC);
+	rc = (jint)gdk_pixbuf_animation_iter_get_delay_time((GdkPixbufAnimationIter *)arg0);
+	GDK_NATIVE_EXIT(env, that, _1gdk_1pixbuf_1animation_1iter_1get_1delay_1time_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1gdk_1pixbuf_1animation_1iter_1get_1pixbuf
+JNIEXPORT jlong JNICALL GDK_NATIVE(_1gdk_1pixbuf_1animation_1iter_1get_1pixbuf)
+	(JNIEnv *env, jclass that, jlong arg0)
+{
+	jlong rc = 0;
+	GDK_NATIVE_ENTER(env, that, _1gdk_1pixbuf_1animation_1iter_1get_1pixbuf_FUNC);
+	rc = (jlong)gdk_pixbuf_animation_iter_get_pixbuf((GdkPixbufAnimationIter *)arg0);
+	GDK_NATIVE_EXIT(env, that, _1gdk_1pixbuf_1animation_1iter_1get_1pixbuf_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1gdk_1pixbuf_1copy
+JNIEXPORT jlong JNICALL GDK_NATIVE(_1gdk_1pixbuf_1copy)
+	(JNIEnv *env, jclass that, jlong arg0)
+{
+	jlong rc = 0;
+	GDK_NATIVE_ENTER(env, that, _1gdk_1pixbuf_1copy_FUNC);
+	rc = (jlong)gdk_pixbuf_copy((const GdkPixbuf *)arg0);
+	GDK_NATIVE_EXIT(env, that, _1gdk_1pixbuf_1copy_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO__1gdk_1pixbuf_1copy_1area
 JNIEXPORT void JNICALL GDK_NATIVE(_1gdk_1pixbuf_1copy_1area)
 	(JNIEnv *env, jclass that, jlong arg0, jint arg1, jint arg2, jint arg3, jint arg4, jlong arg5, jint arg6, jint arg7)
@@ -1534,6 +1618,42 @@ JNIEXPORT void JNICALL GDK_NATIVE(_1gdk_1pixbuf_1copy_1area)
 	GDK_NATIVE_ENTER(env, that, _1gdk_1pixbuf_1copy_1area_FUNC);
 	gdk_pixbuf_copy_area((GdkPixbuf *)arg0, arg1, arg2, arg3, arg4, (GdkPixbuf *)arg5, arg6, arg7);
 	GDK_NATIVE_EXIT(env, that, _1gdk_1pixbuf_1copy_1area_FUNC);
+}
+#endif
+
+#ifndef NO__1gdk_1pixbuf_1format_1get_1name
+JNIEXPORT jlong JNICALL GDK_NATIVE(_1gdk_1pixbuf_1format_1get_1name)
+	(JNIEnv *env, jclass that, jlong arg0)
+{
+	jlong rc = 0;
+	GDK_NATIVE_ENTER(env, that, _1gdk_1pixbuf_1format_1get_1name_FUNC);
+	rc = (jlong)gdk_pixbuf_format_get_name((GdkPixbufFormat *)arg0);
+	GDK_NATIVE_EXIT(env, that, _1gdk_1pixbuf_1format_1get_1name_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1gdk_1pixbuf_1get_1bits_1per_1sample
+JNIEXPORT jint JNICALL GDK_NATIVE(_1gdk_1pixbuf_1get_1bits_1per_1sample)
+	(JNIEnv *env, jclass that, jlong arg0)
+{
+	jint rc = 0;
+	GDK_NATIVE_ENTER(env, that, _1gdk_1pixbuf_1get_1bits_1per_1sample_FUNC);
+	rc = (jint)gdk_pixbuf_get_bits_per_sample((const GdkPixbuf *)arg0);
+	GDK_NATIVE_EXIT(env, that, _1gdk_1pixbuf_1get_1bits_1per_1sample_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1gdk_1pixbuf_1get_1byte_1length
+JNIEXPORT jlong JNICALL GDK_NATIVE(_1gdk_1pixbuf_1get_1byte_1length)
+	(JNIEnv *env, jclass that, jlong arg0)
+{
+	jlong rc = 0;
+	GDK_NATIVE_ENTER(env, that, _1gdk_1pixbuf_1get_1byte_1length_FUNC);
+	rc = (jlong)gdk_pixbuf_get_byte_length((const GdkPixbuf *)arg0);
+	GDK_NATIVE_EXIT(env, that, _1gdk_1pixbuf_1get_1byte_1length_FUNC);
+	return rc;
 }
 #endif
 
@@ -1557,6 +1677,18 @@ JNIEXPORT jint JNICALL GDK_NATIVE(_1gdk_1pixbuf_1get_1height)
 	GDK_NATIVE_ENTER(env, that, _1gdk_1pixbuf_1get_1height_FUNC);
 	rc = (jint)gdk_pixbuf_get_height((const GdkPixbuf *)arg0);
 	GDK_NATIVE_EXIT(env, that, _1gdk_1pixbuf_1get_1height_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1gdk_1pixbuf_1get_1n_1channels
+JNIEXPORT jint JNICALL GDK_NATIVE(_1gdk_1pixbuf_1get_1n_1channels)
+	(JNIEnv *env, jclass that, jlong arg0)
+{
+	jint rc = 0;
+	GDK_NATIVE_ENTER(env, that, _1gdk_1pixbuf_1get_1n_1channels_FUNC);
+	rc = (jint)gdk_pixbuf_get_n_channels((const GdkPixbuf *)arg0);
+	GDK_NATIVE_EXIT(env, that, _1gdk_1pixbuf_1get_1n_1channels_FUNC);
 	return rc;
 }
 #endif
@@ -1613,6 +1745,30 @@ fail:
 }
 #endif
 
+#ifndef NO__1gdk_1pixbuf_1loader_1get_1animation
+JNIEXPORT jlong JNICALL GDK_NATIVE(_1gdk_1pixbuf_1loader_1get_1animation)
+	(JNIEnv *env, jclass that, jlong arg0)
+{
+	jlong rc = 0;
+	GDK_NATIVE_ENTER(env, that, _1gdk_1pixbuf_1loader_1get_1animation_FUNC);
+	rc = (jlong)gdk_pixbuf_loader_get_animation((GdkPixbufLoader *)arg0);
+	GDK_NATIVE_EXIT(env, that, _1gdk_1pixbuf_1loader_1get_1animation_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1gdk_1pixbuf_1loader_1get_1format
+JNIEXPORT jlong JNICALL GDK_NATIVE(_1gdk_1pixbuf_1loader_1get_1format)
+	(JNIEnv *env, jclass that, jlong arg0)
+{
+	jlong rc = 0;
+	GDK_NATIVE_ENTER(env, that, _1gdk_1pixbuf_1loader_1get_1format_FUNC);
+	rc = (jlong)gdk_pixbuf_loader_get_format((GdkPixbufLoader *)arg0);
+	GDK_NATIVE_EXIT(env, that, _1gdk_1pixbuf_1loader_1get_1format_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO__1gdk_1pixbuf_1loader_1get_1pixbuf
 JNIEXPORT jlong JNICALL GDK_NATIVE(_1gdk_1pixbuf_1loader_1get_1pixbuf)
 	(JNIEnv *env, jclass that, jlong arg0)
@@ -1661,6 +1817,18 @@ JNIEXPORT jlong JNICALL GDK_NATIVE(_1gdk_1pixbuf_1new)
 	GDK_NATIVE_ENTER(env, that, _1gdk_1pixbuf_1new_FUNC);
 	rc = (jlong)gdk_pixbuf_new((GdkColorspace)arg0, (gboolean)arg1, arg2, arg3, arg4);
 	GDK_NATIVE_EXIT(env, that, _1gdk_1pixbuf_1new_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1gdk_1pixbuf_1new_1from_1data
+JNIEXPORT jlong JNICALL GDK_NATIVE(_1gdk_1pixbuf_1new_1from_1data)
+	(JNIEnv *env, jclass that, jlong arg0, jint arg1, jboolean arg2, jint arg3, jint arg4, jint arg5, jint arg6, jlong arg7, jlong arg8)
+{
+	jlong rc = 0;
+	GDK_NATIVE_ENTER(env, that, _1gdk_1pixbuf_1new_1from_1data_FUNC);
+	rc = (jlong)gdk_pixbuf_new_from_data((const guchar *)arg0, (GdkColorspace)arg1, (gboolean)arg2, arg3, arg4, arg5, arg6, (GdkPixbufDestroyNotify)arg7, (gpointer)arg8);
+	GDK_NATIVE_EXIT(env, that, _1gdk_1pixbuf_1new_1from_1data_FUNC);
 	return rc;
 }
 #endif
@@ -14856,6 +15024,16 @@ fail:
 }
 #endif
 
+#ifndef NO__1g_1get_1current_1time
+JNIEXPORT void JNICALL OS_NATIVE(_1g_1get_1current_1time)
+	(JNIEnv *env, jclass that, jlong arg0)
+{
+	OS_NATIVE_ENTER(env, that, _1g_1get_1current_1time_FUNC);
+	g_get_current_time((GTimeVal *)arg0);
+	OS_NATIVE_EXIT(env, that, _1g_1get_1current_1time_FUNC);
+}
+#endif
+
 #ifndef NO__1g_1getenv
 JNIEXPORT jlong JNICALL OS_NATIVE(_1g_1getenv)
 	(JNIEnv *env, jclass that, jbyteArray arg0)
@@ -15818,6 +15996,16 @@ fail:
 	if (arg1 && lparg1) (*env)->ReleaseLongArrayElements(env, arg1, lparg1, 0);
 	OS_NATIVE_EXIT(env, that, _1g_1strtod_FUNC);
 	return rc;
+}
+#endif
+
+#ifndef NO__1g_1time_1val_1add
+JNIEXPORT void JNICALL OS_NATIVE(_1g_1time_1val_1add)
+	(JNIEnv *env, jclass that, jlong arg0, jlong arg1)
+{
+	OS_NATIVE_ENTER(env, that, _1g_1time_1val_1add_FUNC);
+	g_time_val_add((GTimeVal *)arg0, (glong)arg1);
+	OS_NATIVE_EXIT(env, that, _1g_1time_1val_1add_FUNC);
 }
 #endif
 
