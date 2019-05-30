@@ -1024,7 +1024,7 @@ JNIEXPORT jintLong JNICALL CALLBACK_NATIVE(bind)
 			{
 			int j = 0, k;
 			unsigned char* code;
-#ifdef __APPLE__
+#ifndef _WIN32
 			int pad = 0;
 #endif
 			if (callbackCode == NULL) {
@@ -1045,7 +1045,7 @@ JNIEXPORT jintLong JNICALL CALLBACK_NATIVE(bind)
 			code[j++] = 0x8b;
 			code[j++] = 0xec;
 
-#ifdef __APPLE__
+#ifndef _WIN32
 			/* darwin calling conventions require that the stack be aligned on a 16-byte boundary. */
 			k = (argCount+3)*sizeof(jintLong);
 			pad = ((k + 15) & ~15) - k;
@@ -1090,7 +1090,7 @@ JNIEXPORT jintLong JNICALL CALLBACK_NATIVE(bind)
 			//ADD ESP,(argCount + 1) * sizeof(jintLong) - 3 bytes
 			code[j++] = 0x83;
 			code[j++] = 0xc4;
-#ifdef __APPLE__
+#ifndef _WIN32
 			code[j++] = (unsigned char)(pad + ((argCount + 1) * sizeof(jintLong)));
 #else
 			code[j++] = (unsigned char)((argCount + 1) * sizeof(jintLong));
