@@ -21,6 +21,8 @@ package org.eclipse.swt.snippets;
  */
 import java.awt.*;
 import java.awt.Canvas;
+import java.awt.event.*;
+import java.awt.event.WindowEvent;
 
 import javax.swing.*;
 
@@ -32,12 +34,14 @@ import org.eclipse.swt.widgets.*;
 
 public class Snippet337 {
 
-public static void main(String args[]) {
-	final Display display = new Display();
+static Display display;
 
+public static void main(String args[]) {
+	display = new Display();
 	EventQueue.invokeLater(() -> {
 		JFrame mainFrame = new JFrame("Main Window");
-		mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		mainFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		mainFrame.addWindowListener(new Snippet337.CloseListener());
 		JPanel mainPanel = new JPanel();
 		mainPanel.setLayout(new FlowLayout());
 		JButton launchBrowserButton = new JButton("Launch Browser");
@@ -74,5 +78,28 @@ public static void main(String args[]) {
 		if (!display.readAndDispatch()) display.sleep();
 	}
 }
-
+private static class CloseListener implements WindowListener {
+	@Override
+	public void windowClosed(WindowEvent e) {
+		display.asyncExec(() -> display.dispose());
+	}
+	@Override
+	public void windowOpened(WindowEvent e) {
+	}
+	@Override
+	public void windowClosing(WindowEvent e) {
+	}
+	@Override
+	public void windowIconified(WindowEvent e) {
+	}
+	@Override
+	public void windowDeiconified(WindowEvent e) {
+	}
+	@Override
+	public void windowActivated(WindowEvent e) {
+	}
+	@Override
+	public void windowDeactivated(WindowEvent e) {
+}
+}
 }

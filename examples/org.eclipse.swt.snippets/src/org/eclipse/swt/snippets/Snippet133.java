@@ -90,7 +90,7 @@ public class Snippet133 {
 		new MenuItem(fileMenu, SWT.SEPARATOR);
 		item = new MenuItem(fileMenu, SWT.PUSH);
 		item.setText("E&xit");
-		item.addSelectionListener(widgetSelectedAdapter(e->	System.exit(0)));
+		item.addSelectionListener(widgetSelectedAdapter(e->	shell.dispose()));
 
 		shell.open();
 		while (!shell.isDisposed()) {
