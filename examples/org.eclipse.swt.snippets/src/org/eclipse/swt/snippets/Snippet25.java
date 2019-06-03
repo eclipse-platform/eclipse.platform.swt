@@ -22,6 +22,7 @@ package org.eclipse.swt.snippets;
  * @since 3.0
  */
 import org.eclipse.swt.*;
+import org.eclipse.swt.layout.*;
 import org.eclipse.swt.widgets.*;
 
 public class Snippet25 {
@@ -143,7 +144,10 @@ public static void main (String [] args) {
 	};
 	shell.addListener (SWT.KeyDown, listener);
 	shell.addListener (SWT.KeyUp, listener);
+	shell.setLayout(new FillLayout());
 	shell.setSize (200, 200);
+	Label label = new Label(shell, SWT.WRAP);
+	label.setText("Start typing to see key state, code and character in console.");
 	shell.open ();
 	while (!shell.isDisposed ()) {
 		if (!display.readAndDispatch ()) display.sleep ();
