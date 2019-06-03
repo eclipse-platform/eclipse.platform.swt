@@ -20,13 +20,14 @@ package org.eclipse.swt.snippets;
  * http://www.eclipse.org/swt/snippets/
  */
 import org.eclipse.swt.*;
-import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
 
 public class Snippet18 {
 
 public static void main (String [] args) {
-	Shell shell = new Shell ();
+	Display display = new Display();
+	Shell shell = new Shell (display);
 	ToolBar bar = new ToolBar (shell, SWT.BORDER);
 	for (int i=0; i<8; i++) {
 		ToolItem item = new ToolItem (bar, SWT.PUSH);
@@ -36,7 +37,6 @@ public static void main (String [] args) {
 	bar.setLocation (clientArea.x, clientArea.y);
 	bar.pack ();
 	shell.open ();
-	Display display = shell.getDisplay ();
 	while (!shell.isDisposed ()) {
 		if (!display.readAndDispatch ()) display.sleep ();
 	}
