@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2016 IBM Corporation and others.
+ * Copyright (c) 2000, 2019 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -15,13 +15,13 @@ package org.eclipse.swt.snippets;
 
 /*
  * SWT OpenGL snippet: capture a LWJGL drawing to an SWT Image
- * 
+ *
  * This example is essentially Snippet195 with the capture() method
  * added.  It should be easily adaptable to other OpenGL packages.
  *
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
- * 
+ *
  * @since 3.2
  */
 import java.nio.*;
@@ -31,10 +31,7 @@ import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.layout.*;
 import org.eclipse.swt.opengl.*;
 import org.eclipse.swt.widgets.*;
-import org.eclipse.swt.widgets.Display;
-import org.lwjgl.*;
 import org.lwjgl.opengl.*;
-import org.lwjgl.util.glu.*;
 
 public class Snippet341 {
 	static void drawTorus(float r, float R, int nsides, int rings) {
@@ -67,29 +64,26 @@ public class Snippet341 {
 	public static void main(String [] args) {
 		final Display display = new Display();
 		Shell shell = new Shell(display);
-		shell.setText("Snippet 341");
-		shell.setLayout(new GridLayout());
+		shell.setLayout(new FormLayout());
 		GLData data = new GLData ();
 		data.doubleBuffer = true;
 		final GLCanvas canvas = new GLCanvas(shell, SWT.NONE, data);
-		canvas.setLayoutData(new GridData(640,480));
 
 		canvas.setCurrent();
-		try {
-			GLContext.useContext(canvas);
-		} catch(LWJGLException e) { e.printStackTrace(); }
+		GL.createCapabilities();
 
 		canvas.addListener(SWT.Resize, event -> {
 			Rectangle bounds = canvas.getBounds();
 			float fAspect = (float) bounds.width / (float) bounds.height;
 			canvas.setCurrent();
-			try {
-				GLContext.useContext(canvas);
-			} catch(LWJGLException e) { e.printStackTrace(); }
+			GL.createCapabilities();
 			GL11.glViewport(0, 0, bounds.width, bounds.height);
 			GL11.glMatrixMode(GL11.GL_PROJECTION);
 			GL11.glLoadIdentity();
-			GLU.gluPerspective(45.0f, fAspect, 0.5f, 400.0f);
+			float near = 0.5f;
+			float bottom = -near * (float) Math.tan(45.f / 2);
+			float left = fAspect * bottom;
+			GL11.glFrustum(left, -left, bottom, -bottom, near, 400.f);
 			GL11.glMatrixMode(GL11.GL_MODELVIEW);
 			GL11.glLoadIdentity();
 		});
@@ -104,6 +98,19 @@ public class Snippet341 {
 		Button button = new Button(shell, SWT.PUSH);
 		button.setText("Capture");
 		button.addListener(SWT.Selection, event -> capture(canvas));
+
+		FormData formData = new FormData(640, 480);
+		formData.top = new FormAttachment(0, 0);
+		formData.left = new FormAttachment(0, 0);
+		formData.bottom = new FormAttachment(button, 0);
+		formData.right = new FormAttachment(100, 0);
+		canvas.setLayoutData(formData);
+		formData = new FormData();
+		formData.left = new FormAttachment(0, 0);
+		formData.bottom = new FormAttachment(100, 0);
+		formData.right = new FormAttachment(100, 0);
+		button.setLayoutData(formData);
+
 		shell.pack();
 		shell.open();
 
@@ -113,9 +120,7 @@ public class Snippet341 {
 			public void run() {
 				if (!canvas.isDisposed()) {
 					canvas.setCurrent();
-					try {
-						GLContext.useContext(canvas);
-					} catch(LWJGLException e) { e.printStackTrace(); }
+					GL.createCapabilities();
 					GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
 					GL11.glClearColor(.3f, .5f, .8f, 1.0f);
 					GL11.glLoadIdentity();
@@ -139,7 +144,7 @@ public class Snippet341 {
 		}
 		display.dispose();
 	}
-	
+
 	static void capture(GLCanvas glCanvas) {
 		final int PAD = 4;
 		Display display = glCanvas.getDisplay();
@@ -150,11 +155,11 @@ public class Snippet341 {
 		GL11.glReadPixels(0, 0, bounds.width, bounds.height, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, buffer);
 		byte[] bytes = new byte[size];
 		buffer.get(bytes);
-		/* 
+		/*
 		 * In OpenGL (0,0) is at the bottom-left corner, and y values ascend in the upward
 		 * direction.  This is opposite to SWT which defines (0,0) to be at the top-left
 		 * corner with y values ascendingin the downwards direction.  Re-order the OpenGL-
-		 * provided bytes to SWT's expected order so that the Image will not appear inverted.  
+		 * provided bytes to SWT's expected order so that the Image will not appear inverted.
 		 */
 		byte[] temp = new byte[bytes.length];
 		for (int i = 0; i < bytes.length; i += bounds.width * PAD) {
@@ -165,7 +170,6 @@ public class Snippet341 {
 		final Image image = new Image(display, data);
 
 		Shell shell = new Shell(display);
-		shell.setText("Capture");
 		shell.setLayout(new GridLayout());
 		Canvas canvas = new Canvas(shell, SWT.NONE);
 		canvas.setLayoutData(new GridData(bounds.width, bounds.height));

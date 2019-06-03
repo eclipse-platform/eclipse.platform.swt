@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2016 IBM Corporation and others.
+ * Copyright (c) 2000, 2019 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -18,7 +18,7 @@ package org.eclipse.swt.snippets;
  *
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
- * 
+ *
  * @since 3.2
  */
 import org.eclipse.swt.*;
@@ -26,10 +26,7 @@ import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.layout.*;
 import org.eclipse.swt.opengl.*;
 import org.eclipse.swt.widgets.*;
-import org.eclipse.swt.widgets.Display;
-import org.lwjgl.*;
 import org.lwjgl.opengl.*;
-import org.lwjgl.util.glu.*;
 
 public class Snippet195 {
 	static void drawTorus(float r, float R, int nsides, int rings) {
@@ -70,21 +67,20 @@ public class Snippet195 {
 		final GLCanvas canvas = new GLCanvas(comp, SWT.NONE, data);
 
 		canvas.setCurrent();
-		try {
-			GLContext.useContext(canvas);
-		} catch(LWJGLException e) { e.printStackTrace(); }
+		GL.createCapabilities();
 
 		canvas.addListener(SWT.Resize, event -> {
 			Rectangle bounds = canvas.getBounds();
 			float fAspect = (float) bounds.width / (float) bounds.height;
 			canvas.setCurrent();
-			try {
-				GLContext.useContext(canvas);
-			} catch(LWJGLException e) { e.printStackTrace(); }
+			GL.createCapabilities();
 			GL11.glViewport(0, 0, bounds.width, bounds.height);
 			GL11.glMatrixMode(GL11.GL_PROJECTION);
 			GL11.glLoadIdentity();
-			GLU.gluPerspective(45.0f, fAspect, 0.5f, 400.0f);
+			float near = 0.5f;
+			float bottom = -near * (float) Math.tan(45.f / 2);
+			float left = fAspect * bottom;
+			GL11.glFrustum(left, -left, bottom, -bottom, near, 400.f);
 			GL11.glMatrixMode(GL11.GL_MODELVIEW);
 			GL11.glLoadIdentity();
 		});
@@ -106,9 +102,7 @@ public class Snippet195 {
 			public void run() {
 				if (!canvas.isDisposed()) {
 					canvas.setCurrent();
-					try {
-						GLContext.useContext(canvas);
-					} catch(LWJGLException e) { e.printStackTrace(); }
+					GL.createCapabilities();
 					GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
 					GL11.glClearColor(.3f, .5f, .8f, 1.0f);
 					GL11.glLoadIdentity();
