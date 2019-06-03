@@ -23,6 +23,7 @@ package org.eclipse.swt.snippets;
  */
 import org.eclipse.swt.*;
 import org.eclipse.swt.custom.*;
+import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.layout.*;
 import org.eclipse.swt.widgets.*;
 
@@ -40,6 +41,14 @@ public static void main(String[] args) {
 	styledText.setText(multiLineString);
 	shell.setSize(styledText.computeSize(SWT.DEFAULT, 400));
 	shell.open();
+	// move cursor over styled text
+	Rectangle clientArea = shell.getClientArea();
+	Point location = shell.getLocation();
+	Event event = new Event();
+	event.type = SWT.MouseMove;
+	event.x = location.x + clientArea.width / 2;
+	event.y = location.y + clientArea.height / 2;
+	display.post(event);
 	styledText.addListener(SWT.MouseWheel, e -> System.out.println("Mouse Wheel event " + e));
 	new Thread(){
 		Event event;
