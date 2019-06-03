@@ -32,6 +32,7 @@ public class Snippet251 {
 public static void main (String [] args) {
 	Display display = new Display ();
 	final Shell shell = new Shell (display);
+	shell.setText("Snippet 251");
 	shell.setLayout(new FillLayout());
 
 	Button open = new Button (shell, SWT.PUSH);

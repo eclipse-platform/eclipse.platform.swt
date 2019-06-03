@@ -28,6 +28,7 @@ public class Snippet26 {
 public static void main (String [] args) {
 	Display display = new Display ();
 	Shell shell = new Shell (display);
+	shell.setText("Snippet 26");
 	Combo combo = new Combo (shell, SWT.READ_ONLY);
 	combo.setItems ("Alpha", "Bravo", "Charlie");
 	Rectangle clientArea = shell.getClientArea ();

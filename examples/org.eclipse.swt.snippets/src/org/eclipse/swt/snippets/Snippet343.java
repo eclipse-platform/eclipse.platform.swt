@@ -31,6 +31,7 @@ public class Snippet343 {
 public static void main(String[] args) {
 	final Display display = new Display();
 	Shell shell = new Shell(display);
+	shell.setText("Snippet 343");
 	shell.setLayout(new FillLayout());
 	shell.setSize(400, 400);
 	SashForm sashForm = new SashForm(shell, SWT.HORIZONTAL);

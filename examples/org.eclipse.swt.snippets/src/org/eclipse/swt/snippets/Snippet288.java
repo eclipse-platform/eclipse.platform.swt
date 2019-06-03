@@ -41,6 +41,7 @@ public class Snippet288 {
 	public static void main (String [] args) {
 		display = new Display();
 		Shell shell = new Shell (display);
+		shell.setText("Snippet 288");
 		shellBackground = shell.getBackground();
 		FileDialog dialog = new FileDialog(shell, SWT.OPEN | SWT.MULTI);
 		dialog.setText("Select Multiple Animated GIFs");

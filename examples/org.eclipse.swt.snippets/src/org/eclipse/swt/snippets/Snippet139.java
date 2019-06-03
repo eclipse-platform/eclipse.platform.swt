@@ -108,6 +108,7 @@ public static void main(String[] args) {
 	final Image image5 = new Image(display, flip(data, false));
 
 	Shell shell = new Shell(display);
+	shell.setText("Snippet 139");
 	// draw the results on the shell
 	shell.addPaintListener(e -> {
 		e.gc.drawText("Original Image:", 10, 10, true);

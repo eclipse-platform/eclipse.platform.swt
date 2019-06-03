@@ -30,6 +30,7 @@ public class Snippet225 {
 public static void main(String[] args) {
 	Display display = new Display();
 	Shell shell = new Shell(display);
+	shell.setText("Snippet 225");
 	Image image = null;
 	final ToolTip tip = new ToolTip(shell, SWT.BALLOON | SWT.ICON_INFORMATION);
 	tip.setMessage("Here is a message for the user. When the message is too long it wraps. I should say something cool but nothing comes to my mind.");

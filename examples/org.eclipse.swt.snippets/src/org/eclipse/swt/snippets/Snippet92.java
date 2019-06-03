@@ -51,6 +51,7 @@ public static void main (String [] args) {
 	Cursor cursor = new Cursor(display, sourceData, maskData, 10, 10);
 
 	Shell shell = new Shell(display);
+	shell.setText("Snippet 92");
 	final Image source = new Image (display,sourceData);
 	final Image mask = new Image (display, maskData);
 	//Draw source and mask just to show what they look like

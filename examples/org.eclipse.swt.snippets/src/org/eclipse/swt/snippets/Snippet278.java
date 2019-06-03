@@ -29,6 +29,7 @@ public class Snippet278 {
 public static void main (String [] args) {
 	final Display display = new Display ();
 	Shell shell = new Shell (display);
+	shell.setText("Snippet 278");
 	shell.setBounds (10, 10, 300, 100);
 	shell.setLayout (new FillLayout ());
 	final Label label = new Label (shell, SWT.NONE);

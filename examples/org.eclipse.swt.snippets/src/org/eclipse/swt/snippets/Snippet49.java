@@ -28,6 +28,7 @@ public class Snippet49 {
 public static void main (String [] args) {
 	Display display = new Display ();
 	final Shell shell = new Shell (display);
+	shell.setText("Snippet 49");
 	final ToolBar toolBar = new ToolBar (shell, SWT.WRAP);
 	for (int i=0; i<12; i++) {
 		ToolItem item = new ToolItem (toolBar, SWT.PUSH);

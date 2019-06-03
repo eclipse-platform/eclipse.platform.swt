@@ -19,17 +19,18 @@ package org.eclipse.swt.snippets;
  * http://www.eclipse.org/swt/snippets/
  */
 import org.eclipse.swt.*;
-import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.accessibility.*;
 import org.eclipse.swt.custom.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.layout.*;
+import org.eclipse.swt.widgets.*;
 
 public class Snippet357 {
 
 	public static void main(String[] args) {
 		final Display display = new Display();
 		Shell shell = new Shell(display);
+		shell.setText("Snippet 357");
 		shell.setLayout(new FillLayout());
 
 		final StyledText text = new StyledText(shell, SWT.BORDER | SWT.MULTI);

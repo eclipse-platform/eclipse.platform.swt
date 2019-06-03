@@ -29,6 +29,7 @@ public class Snippet191 {
 public static void main(String[] args) {
 	Display display = new Display ();
 	Shell shell = new Shell (display);
+	shell.setText("Snippet 191");
 	shell.setLayout (new FillLayout ());
 	final Text text = new Text (shell, SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL);
 	for (int i=0; i<32; i++) {

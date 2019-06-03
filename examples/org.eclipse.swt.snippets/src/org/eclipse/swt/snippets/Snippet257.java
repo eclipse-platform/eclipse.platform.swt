@@ -42,6 +42,7 @@ public class Snippet257 {
 public static void main (String [] args) {
 	final Display display = new Display ();
 	Shell shell = new Shell (display);
+	shell.setText("Snippet 257");
 	shell.setLayout(new FillLayout());
 	shell.setSize(100, 300);
 	int style = SWT.MULTI | SWT.WRAP | SWT.H_SCROLL | SWT.V_SCROLL | SWT.BORDER;

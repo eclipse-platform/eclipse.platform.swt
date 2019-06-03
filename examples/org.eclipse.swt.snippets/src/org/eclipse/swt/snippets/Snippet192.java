@@ -40,6 +40,7 @@ public static void main(String[] args) {
 	// create a virtual table to display data
 	Display display = new Display();
 	Shell shell = new Shell(display);
+	shell.setText("Snippet 192");
 	shell.setLayout(new FillLayout());
 	final Table table = new Table(shell, SWT.VIRTUAL);
 	table.setHeaderVisible(true);

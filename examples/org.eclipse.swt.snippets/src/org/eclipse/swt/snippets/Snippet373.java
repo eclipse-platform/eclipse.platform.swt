@@ -76,6 +76,7 @@ public class Snippet373 {
 		final Image eclipseCTab2 = new Image(display, filenameProvider);
 
 		Shell shell = new Shell(display);
+		shell.setText("Snippet 373");
 		shell.setImage(eclipse);
 		shell.setText("DynamicDPI @ " + DPIUtil.getDeviceZoom());
 		shell.setLayout(new RowLayout(SWT.VERTICAL));

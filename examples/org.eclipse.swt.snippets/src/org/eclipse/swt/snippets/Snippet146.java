@@ -29,6 +29,7 @@ public class Snippet146 {
 public static void main(String[] args) {
 	final Display display = new Display();
 	final Shell shell = new Shell(display);
+	shell.setText("Snippet 146");
 	final Text text = new Text(shell, SWT.BORDER);
 	text.setSize(text.computeSize(150, SWT.DEFAULT));
 	shell.pack();

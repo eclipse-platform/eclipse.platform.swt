@@ -28,6 +28,7 @@ public class Snippet252 {
 	public static void main(String[] args) {
 		final Display display = new Display();
 		final Shell shell = new Shell(display);
+		shell.setText("Snippet 252");
 
 		shell.addListener(SWT.Paint, event -> {
 			GC gc = event.gc;

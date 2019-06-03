@@ -30,6 +30,7 @@ public class Snippet179 {
 public static void main(String[] args) {
 	Display display = new Display();
 	Shell shell = new Shell(display);
+	shell.setText("Snippet 179");
 	shell.setLayout(new GridLayout());
 	final Text text = new Text(shell, SWT.BORDER);
 	text.setText("YYYY/MM/DD");

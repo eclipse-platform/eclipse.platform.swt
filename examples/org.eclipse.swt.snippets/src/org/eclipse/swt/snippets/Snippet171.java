@@ -219,6 +219,7 @@ static class MyTransfer2 extends MyTransfer {
 public static void main(String[] args) {
 	Display display = new Display();
 	Shell shell = new Shell(display);
+	shell.setText("Snippet 171");
 	shell.setLayout(new FillLayout());
 	final Label label1 = new Label(shell, SWT.BORDER | SWT.WRAP);
 	label1.setText("Drag Source for MyData and MyData2");

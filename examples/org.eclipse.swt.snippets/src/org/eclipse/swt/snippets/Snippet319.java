@@ -62,6 +62,7 @@ public static void main(String[] args) {
 public void go() {
 	Display display = new Display();
 	Shell shell = new Shell(display);
+	shell.setText("Snippet 319");
 	shell.setBounds(10,10,600,200);
 
 	/* Create SWT controls and add drag source */

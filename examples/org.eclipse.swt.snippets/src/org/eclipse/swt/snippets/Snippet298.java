@@ -28,6 +28,7 @@ public class Snippet298 {
 public static void main (String [] args) {
 	final Display display = new Display();
 	final Shell shell = new Shell(display);
+	shell.setText("Snippet 298");
 	shell.addListener(SWT.Paint, event -> {
 		int[] icons = new int[]{SWT.ICON_ERROR, SWT.ICON_WARNING, SWT.ICON_INFORMATION, SWT.ICON_QUESTION, SWT.ICON_WORKING};
 		int x = 10;

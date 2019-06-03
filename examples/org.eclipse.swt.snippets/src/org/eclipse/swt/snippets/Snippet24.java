@@ -28,6 +28,7 @@ public class Snippet24 {
 public static void main (String [] args) {
 	Display display = new Display ();
 	Shell shell = new Shell (display);
+	shell.setText("Snippet 24");
 	shell.setLayout (new RowLayout ());
 	Combo combo = new Combo (shell, SWT.NONE);
 	combo.setItems ("A-1", "B-1", "C-1");

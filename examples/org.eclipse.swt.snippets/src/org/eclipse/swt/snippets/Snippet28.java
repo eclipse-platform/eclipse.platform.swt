@@ -26,6 +26,7 @@ public class Snippet28 {
 public static void main (String [] args) {
 	Display display = new Display ();
 	Shell shell = new Shell (display);
+	shell.setText("Snippet 28");
 	shell.setMaximized (true);
 	shell.open ();
 	while (!shell.isDisposed ()) {

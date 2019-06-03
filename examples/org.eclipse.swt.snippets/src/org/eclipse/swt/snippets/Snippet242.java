@@ -28,6 +28,7 @@ public class Snippet242 {
 public static void main(String [] args) {
 	Display display = new Display();
 	Shell shell = new Shell(display);
+	shell.setText("Snippet 242");
 	shell.setBounds(10, 10, 200, 200);
 	Canvas canvas = new Canvas(shell, SWT.BORDER);
 	canvas.setBounds(10,50,150,100);

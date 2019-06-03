@@ -28,6 +28,7 @@ public class Snippet76 {
 public static void main (String [] args) {
 	Display display = new Display ();
 	final Shell shell = new Shell (display);
+	shell.setText("Snippet 76");
 	final TabFolder tabFolder = new TabFolder (shell, SWT.BORDER);
 	Rectangle clientArea = shell.getClientArea ();
 	tabFolder.setLocation (clientArea.x, clientArea.y);

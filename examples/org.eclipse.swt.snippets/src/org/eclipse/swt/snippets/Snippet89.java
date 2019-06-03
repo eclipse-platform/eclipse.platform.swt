@@ -31,6 +31,7 @@ public class Snippet89 {
 public static void main (String [] args) {
 	Display display = new Display ();
 	Shell shell = new Shell (display);
+	shell.setText("Snippet 89");
 	Menu menu = new Menu (shell, SWT.POP_UP);
 	for (int i = 0; i < 4; i++) {
 			MenuItem item = new MenuItem(menu, SWT.RADIO);

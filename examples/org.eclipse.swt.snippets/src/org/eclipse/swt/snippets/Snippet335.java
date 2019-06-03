@@ -29,6 +29,7 @@ public class Snippet335 {
 public static void main(String[] args) {
 	Display display = new Display();
 	Shell shell = new Shell(display);
+	shell.setText("Snippet 335");
 	shell.setLayout(new GridLayout());
 
 	Label label = new Label(shell, SWT.WRAP | SWT.BORDER);

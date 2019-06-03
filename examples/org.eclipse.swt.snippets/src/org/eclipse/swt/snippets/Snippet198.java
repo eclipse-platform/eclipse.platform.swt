@@ -44,6 +44,7 @@ public static void main(String[] args) {
 		return;
 	}
 	Shell shell = new Shell(display);
+	shell.setText("Snippet 198");
 	shell.addListener(SWT.Paint, e -> {
 		GC gc = e.gc;
 		gc.setBackground(green);

@@ -57,6 +57,7 @@ static void createMenuItem(Menu parent, final TableColumn column) {
 public static void main (String[] args) {
 	final Display display = new Display();
 	Shell shell = new Shell(display);
+	shell.setText("Snippet 311");
 	shell.setLayout(new FillLayout());
 
 	final Table table = new Table(shell, SWT.V_SCROLL|SWT.H_SCROLL| SWT.BORDER);

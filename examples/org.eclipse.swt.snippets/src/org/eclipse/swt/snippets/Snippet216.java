@@ -37,6 +37,7 @@ public class Snippet216 {
 			new Rectangle (80, 80, 10, 10),
 		};
 		final Shell shell = new Shell (display);
+		shell.setText("Snippet 216");
 		Listener mouseListener = event -> {
 			switch (event.type) {
 				case SWT.MouseEnter:

@@ -34,6 +34,7 @@ public class Snippet330 {
 
 		Display display = new Display();
 		Shell shell = new Shell(display);
+		shell.setText("Snippet 330");
 		shell.setLayout(new GridLayout(BUTTONS_PER_ROW, true));
 
 		final Browser browser;

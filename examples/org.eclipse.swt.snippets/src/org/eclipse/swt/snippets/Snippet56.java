@@ -28,6 +28,7 @@ public class Snippet56 {
 	public static void main(String[] args) {
 		final Display display = new Display();
 		Shell shell = new Shell(display);
+		shell.setText("Snippet 56");
 		final ProgressBar bar = new ProgressBar(shell, SWT.SMOOTH);
 		Rectangle clientArea = shell.getClientArea ();
 		bar.setBounds (clientArea.x, clientArea.y, 200, 32);

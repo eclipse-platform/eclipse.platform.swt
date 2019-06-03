@@ -12,7 +12,7 @@
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
 package org.eclipse.swt.snippets;
- 
+
 /*
  * OLE and ActiveX example snippet: browse the typelibinfo for a program id (win32 only)
  * NOTE: This snippet uses internal SWT packages that are
@@ -27,33 +27,34 @@ import org.eclipse.swt.ole.win32.*;
 import org.eclipse.swt.widgets.*;
 
 public class Snippet81 {
-	
+
 public static void main(String[] args) {
-	
+
 	if (args.length == 0) {
 		System.out.println("Usage: java Main <program id>");
 		return;
 	}
 
 	String progID = args[0];
-	
+
 	Display display = new Display();
 	Shell shell = new Shell(display);
+	shell.setText("Snippet 81");
 
 	OleFrame frame = new OleFrame(shell, SWT.NONE);
 	OleControlSite site = null;
 	OleAutomation auto = null;
 	try {
-		site = new OleControlSite(frame, SWT.NONE, progID);	
+		site = new OleControlSite(frame, SWT.NONE, progID);
 		auto = new OleAutomation(site);
 	} catch (SWTException ex) {
 		System.out.println("Unable to open type library for "+progID);
 		display.dispose();
 		return;
 	}
-		
+
 	printTypeInfo(auto);
-	
+
 	auto.dispose();
 	shell.dispose();
 	display.dispose();
@@ -62,9 +63,9 @@ public static void main(String[] args) {
 
 private static void printTypeInfo(OleAutomation auto) {
 	TYPEATTR typeattr = auto.getTypeInfoAttributes();
-	if (typeattr != null) {		
+	if (typeattr != null) {
 		if (typeattr.cFuncs > 0) System.out.println("Functions :\n");
-		for (int i = 0; i < typeattr.cFuncs; i++) {			
+		for (int i = 0; i < typeattr.cFuncs; i++) {
 			OleFunctionDescription data = auto.getFunctionDescription(i);
 			String argList = "";
 			int firstOptionalArgIndex = data.args.length - data.optionalArgCount;
@@ -73,13 +74,13 @@ private static void printTypeInfo(OleAutomation auto) {
 				if (j >= firstOptionalArgIndex) argList += "optional, ";
 				argList += getDirection(data.args[j].flags)+"] "+getTypeName(data.args[j].type)+" "+data.args[j].name;
 				if ( j < data.args.length - 1) argList += ", ";
-			}			
+			}
 			System.out.println(getInvokeKind(data.invokeKind)+" (id = "+data.id+") : "
 					        +"\n\tSignature   : "+getTypeName(data.returnType)+" "+data.name+"("+argList+")"
 			                    +"\n\tDescription : "+data.documentation
 			                    +"\n\tHelp File   : "+data.helpFile+"\n");
 		}
-		
+
 		if (typeattr.cVars > 0) System.out.println("\n\nVariables  :\n");
 		for (int i = 0; i < typeattr.cVars; i++) {
 			OlePropertyDescription data = auto.getPropertyDescription(i);
@@ -107,7 +108,7 @@ private static String getTypeName(int type) {
 		case OLE.VT_USERDEFINED : return "UserDefined";
 		case OLE.VT_HRESULT : return "int";
 		case OLE.VT_VOID : return "void";
-		
+
 		case OLE.VT_BYREF | OLE.VT_BOOL : return "boolean *";
 		case OLE.VT_BYREF | OLE.VT_R4 : return "float *";
 		case OLE.VT_BYREF | OLE.VT_R8 : return "double *";
@@ -123,7 +124,7 @@ private static String getTypeName(int type) {
 		case OLE.VT_BYREF | OLE.VT_UI4 : return "unsigned int *";
 		case OLE.VT_BYREF | OLE.VT_USERDEFINED : return "UserDefined *";
 	}
-	return "unknown "+ type;	
+	return "unknown "+ type;
 }
 private static String getDirection(int direction){
 	String dirString = "";
@@ -143,10 +144,10 @@ private static String getDirection(int direction){
 		comma = true;
 	}
 	if ((direction & OLE.IDLFLAG_FRETVAL) != 0){
-		if (comma) dirString += ", "; 
+		if (comma) dirString += ", ";
 		dirString += "retval";
 	}
-	
+
 	return dirString;
 }
 private static String getInvokeKind(int invKind) {

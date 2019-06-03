@@ -37,6 +37,7 @@ public static void main(String [] args) {
     Display display = new Display();
     errorIcon = display.getSystemImage(SWT.ICON_ERROR);
     Shell shell = new Shell(display);
+	shell.setText("Snippet 363");
     shell.setLayout(new GridLayout(2, false));
     shell.setText("LiveRegion Test");
 

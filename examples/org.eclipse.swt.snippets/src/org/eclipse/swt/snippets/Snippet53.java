@@ -28,6 +28,7 @@ public class Snippet53 {
 public static void main (String [] args) {
 	Display display = new Display ();
 	Shell shell = new Shell (display);
+	shell.setText("Snippet 53");
 	final Table table = new Table (shell, SWT.BORDER | SWT.MULTI);
 	Rectangle clientArea = shell.getClientArea ();
 	table.setBounds (clientArea.x, clientArea.y, 200, 200);

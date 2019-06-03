@@ -32,6 +32,7 @@ public class Snippet282 {
 		final Display display = new Display();
 		final Clipboard clipboard = new Clipboard(display);
 		final Shell shell = new Shell(display, SWT.SHELL_TRIM);
+		shell.setText("Snippet 282");
 		shell.setLayout(new GridLayout());
 		shell.setText("Clipboard ImageTransfer");
 

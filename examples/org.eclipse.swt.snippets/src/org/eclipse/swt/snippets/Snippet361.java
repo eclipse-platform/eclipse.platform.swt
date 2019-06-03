@@ -13,10 +13,6 @@
  *******************************************************************************/
 package org.eclipse.swt.snippets;
 
-import static org.eclipse.swt.events.SelectionListener.*;
-
-import java.awt.*;
-import java.awt.Canvas;
 /*
  * example snippet: use Java2D to modify an image being displayed in an SWT GUI.
  * Take a screen snapshot to print the image to a printer.
@@ -26,6 +22,10 @@ import java.awt.Canvas;
  *
  * @since 3.8
  */
+import static org.eclipse.swt.events.SelectionListener.*;
+
+import java.awt.*;
+import java.awt.Canvas;
 import java.awt.Color;
 import java.awt.Image;
 import java.awt.geom.*;
@@ -55,6 +55,7 @@ public class Snippet361 {
 	public static void main(String[] args) {
 		final Display display = new Display();
 		final Shell shell = new Shell(display);
+		shell.setText("Snippet 361");
 		shell.setText("Translate and Rotate an AWT Image in an SWT GUI");
 		shell.setLayout(new GridLayout(8, false));
 

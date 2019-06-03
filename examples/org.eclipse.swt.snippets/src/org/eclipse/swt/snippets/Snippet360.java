@@ -37,6 +37,7 @@ public class Snippet360 {
 public static void main(String[] args) {
 	Display display = new Display();
 	Shell shell = new Shell(display);
+	shell.setText("Snippet 360");
 	shell.setLayout(new GridLayout());
 
 	// create a a tree with 3 columns and fill with data

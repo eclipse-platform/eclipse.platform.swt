@@ -27,6 +27,7 @@ public class Snippet356 {
 	public static void main (String [] args) {
 		Display display = new Display ();
 		Shell shell = new Shell (display);
+		shell.setText("Snippet 356");
 		FillLayout layout = new FillLayout();
 		layout.marginHeight = layout.marginWidth = 10;
 		shell.setLayout(layout);

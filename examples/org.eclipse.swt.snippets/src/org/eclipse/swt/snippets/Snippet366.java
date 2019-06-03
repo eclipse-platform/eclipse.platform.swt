@@ -32,6 +32,7 @@ public class Snippet366 {
 	public static void main (String [] args) {
 		display = new Display();
 		shell = new Shell(display);
+		shell.setText("Snippet 366");
 		shell.setLayout (new RowLayout ());
 
 		makeArrowGroup ();

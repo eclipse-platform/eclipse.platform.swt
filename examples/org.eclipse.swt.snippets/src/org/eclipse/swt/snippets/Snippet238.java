@@ -20,7 +20,7 @@ package org.eclipse.swt.snippets;
  * http://www.eclipse.org/swt/snippets/
  */
 import org.eclipse.swt.*;
-import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
 
 public class Snippet238 {
@@ -28,6 +28,7 @@ public class Snippet238 {
 public static void main(String[] args) {
 	Display display = new Display ();
 	Shell shell = new Shell (display);
+	shell.setText("Snippet 238");
 	Composite composite = new Composite (shell, SWT.BORDER);
 	Rectangle clientArea = shell.getClientArea();
 	composite.setBounds (clientArea.x, clientArea.y, 100, 100);

@@ -28,6 +28,7 @@ public class Snippet67 {
 public static void main (String [] args) {
 	final Display display = new Display ();
 	final Shell shell = new Shell (display);
+	shell.setText("Snippet 67");
 	final ToolBar toolBar = new ToolBar (shell, SWT.NONE);
 	Rectangle clientArea = shell.getClientArea ();
 	toolBar.setLocation(clientArea.x, clientArea.y);

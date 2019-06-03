@@ -29,6 +29,7 @@ public class Snippet109 {
 public static void main (String [] args) {
 	final Display display = new Display ();
 	Shell shell = new Shell(display);
+	shell.setText("Snippet 109");
 	shell.setLayout (new FillLayout());
 
 	SashForm form = new SashForm(shell,SWT.HORIZONTAL);

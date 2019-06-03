@@ -32,6 +32,7 @@ public class Snippet370 {
 	public static void main(String[] args) {
 		Display display = new Display();
 		Shell shell = new Shell(display);
+		shell.setText("Snippet 370");
 		shell.setLayout(new RowLayout(SWT.VERTICAL));
 		Locale[] locales = Locale.getAvailableLocales();
 		for (Locale locale : locales) {

@@ -29,6 +29,7 @@ public class Snippet124 {
 public static void main (String[] args) {
 	Display display = new Display ();
 	Shell shell = new Shell (display);
+	shell.setText("Snippet 124");
 	shell.setLayout (new FillLayout ());
 	final Table table = new Table(shell, SWT.BORDER | SWT.MULTI);
 	table.setLinesVisible (true);

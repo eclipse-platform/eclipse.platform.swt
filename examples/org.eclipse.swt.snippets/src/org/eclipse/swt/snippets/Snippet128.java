@@ -30,6 +30,7 @@ public class Snippet128 {
 	public static void main(String [] args) {
 		Display display = new Display();
 		final Shell shell = new Shell(display);
+		shell.setText("Snippet 128");
 		GridLayout gridLayout = new GridLayout();
 		gridLayout.numColumns = 3;
 		shell.setLayout(gridLayout);

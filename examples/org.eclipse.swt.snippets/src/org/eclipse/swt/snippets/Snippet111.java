@@ -31,6 +31,7 @@ public static void main (String [] args) {
 	final Display display = new Display ();
 	final Color black = display.getSystemColor (SWT.COLOR_BLACK);
 	Shell shell = new Shell (display);
+	shell.setText("Snippet 111");
 	shell.setLayout (new FillLayout ());
 	final Tree tree = new Tree (shell, SWT.BORDER);
 	for (int i=0; i<16; i++) {

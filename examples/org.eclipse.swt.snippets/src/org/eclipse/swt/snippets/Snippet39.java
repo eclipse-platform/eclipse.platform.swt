@@ -33,6 +33,7 @@ public class Snippet39 {
 	public static void main(String[] args) {
 		Display display = new Display();
 		Shell shell = new Shell(display);
+		shell.setText("Snippet 39");
 		shell.setLayout(new GridLayout());
 
 		CCombo combo = new CCombo(shell, SWT.READ_ONLY | SWT.FLAT | SWT.BORDER);

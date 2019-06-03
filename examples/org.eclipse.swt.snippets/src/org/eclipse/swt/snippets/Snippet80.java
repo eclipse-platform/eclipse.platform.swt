@@ -33,6 +33,7 @@ public class Snippet80 {
 public static void main(String[] args) {
 	final Display display = new Display();
 	final Shell shell = new Shell(display);
+	shell.setText("Snippet 80");
 	shell.setLayout(new FillLayout());
 	final Tree tree = new Tree(shell, SWT.BORDER | SWT.MULTI);
 	for (int i = 0; i < 2; i++) {

@@ -41,6 +41,7 @@ public static void main(String[] args) {
 
 	Display display = new Display();
 	Shell shell = new Shell(display);
+	shell.setText("Snippet 196");
 	shell.setLayout(new GridLayout());
 	final Text text = new Text(shell, SWT.BORDER);
 	Font font = new Font(display, "Courier New", 10, SWT.NONE); //$NON-NLS-1$

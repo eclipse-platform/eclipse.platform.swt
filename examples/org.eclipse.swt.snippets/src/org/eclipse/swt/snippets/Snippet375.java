@@ -13,8 +13,6 @@
  */
 package org.eclipse.swt.snippets;
 
-import java.util.*;
-
 /*
  * Example snippet: mouse navigation for Styled Text Widget
  *
@@ -22,6 +20,8 @@ import java.util.*;
  * http://www.eclipse.org/swt/snippets/
  * @since 3.110
  */
+import java.util.*;
+
 import org.eclipse.swt.*;
 import org.eclipse.swt.custom.*;
 import org.eclipse.swt.layout.*;
@@ -32,6 +32,7 @@ public class Snippet375 {
 	public static void main(String[] args) throws Exception {
 		final Display display = new Display();
 		final Shell shell = new Shell(display);
+		shell.setText("Snippet 375");
 		shell.setLayout(new GridLayout(1, false));
 
 		final StringBuilder sb = new StringBuilder();

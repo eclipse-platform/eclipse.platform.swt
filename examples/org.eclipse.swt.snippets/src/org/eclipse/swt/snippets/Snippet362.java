@@ -31,6 +31,7 @@ public static void main(String [] args) {
 	final String SCRIPT = "document.onmousedown = function(e) {if (!e) {e = window.event;} if (e) {mouseDownHappened(e.clientX, e.clientY);}}";
 	Display display = new Display();
 	final Shell shell = new Shell(display);
+	shell.setText("Snippet 362");
 	shell.setLayout(new FillLayout());
 	final Browser browser;
 	try {

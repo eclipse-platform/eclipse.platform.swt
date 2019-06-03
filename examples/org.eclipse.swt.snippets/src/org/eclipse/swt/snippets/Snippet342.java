@@ -31,6 +31,7 @@ public static void main(String[] args) {
 
 	Display display = new Display();
 	final Shell shell = new Shell(display);
+	shell.setText("Snippet 342");
 	shell.setLayout(new GridLayout());
 	final Text text = new Text(shell, SWT.MULTI | SWT.WRAP | SWT.BORDER);
 	text.setLayoutData(new GridData(TEXT_WIDTH, SWT.DEFAULT));

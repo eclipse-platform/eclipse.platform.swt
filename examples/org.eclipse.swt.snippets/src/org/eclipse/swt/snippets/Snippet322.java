@@ -34,6 +34,7 @@ public class Snippet322 {
 public static void main (String[] args) {
 	final Display display = new Display ();
 	Shell shell = new Shell (display);
+	shell.setText("Snippet 322");
 	shell.setBounds (10, 10, 300, 300);
 	final ScrolledComposite sc = new ScrolledComposite (shell, SWT.VERTICAL);
 	sc.setBounds (10, 10, 280, 200);

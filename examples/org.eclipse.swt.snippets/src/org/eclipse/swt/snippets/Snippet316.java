@@ -31,6 +31,7 @@ public class Snippet316 {
 	public static void main(String[] args) {
 		Display display = new Display ();
 		Shell shell = new Shell (display);
+		shell.setText("Snippet 316");
 		shell.setLayout(new FillLayout());
 		StyledText text = new StyledText(shell, SWT.V_SCROLL | SWT.H_SCROLL);
 		text.setText("StyledText with margins.");

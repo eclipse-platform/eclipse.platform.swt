@@ -28,6 +28,7 @@ public class Snippet59 {
 public static void main (String [] args) {
 	Display display = new Display ();
 	Shell shell = new Shell (display);
+	shell.setText("Snippet 59");
 	final List list = new List (shell, SWT.BORDER | SWT.MULTI | SWT.V_SCROLL);
 	for (int i=0; i<128; i++) list.add ("Item " + i);
 	Rectangle clientArea = shell.getClientArea ();

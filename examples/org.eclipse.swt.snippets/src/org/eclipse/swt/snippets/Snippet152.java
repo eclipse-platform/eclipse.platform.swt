@@ -31,6 +31,7 @@ public class Snippet152 {
 public static void main(String[] args) {
     Display display = new Display();
     Shell shell = new Shell(display);
+	shell.setText("Snippet 152");
     FormLayout layout = new FormLayout();
     shell.setLayout(layout);
     final Label label = new Label(shell, SWT.BORDER);

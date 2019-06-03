@@ -32,6 +32,7 @@ public class Snippet221 {
 public static void main(String[] args) {
 	final Display display = new Display();
 	Shell shell = new Shell(display);
+	shell.setText("Snippet 221");
 	shell.setLayout(new FillLayout());
 	final Tree tree = new Tree(shell, SWT.FULL_SELECTION | SWT.BORDER);
 	tree.setHeaderVisible(true);

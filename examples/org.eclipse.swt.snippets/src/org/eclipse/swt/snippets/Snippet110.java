@@ -28,6 +28,7 @@ public class Snippet110 {
 public static void main (String [] args) {
 	Display display = new Display ();
 	Shell shell = new Shell (display);
+	shell.setText("Snippet 110");
 	final Table table = new Table (shell, SWT.BORDER | SWT.V_SCROLL);
 	table.setHeaderVisible (true);
 	table.setLinesVisible (true);

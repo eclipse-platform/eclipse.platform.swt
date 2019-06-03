@@ -27,6 +27,7 @@ public class Snippet33 {
 public static void main (String [] args) {
 	Display display = new Display ();
 	Shell shell = new Shell (display);
+	shell.setText("Snippet 33");
 	shell.open ();
 	DirectoryDialog dialog = new DirectoryDialog (shell);
 	String platform = SWT.getPlatform();

@@ -28,6 +28,7 @@ public class Snippet17 {
 public static void main (String [] args) {
 	Display display = new Display ();
 	Shell shell = new Shell (display);
+	shell.setText("Snippet 17");
 	Slider slider = new Slider (shell, SWT.HORIZONTAL);
 	Rectangle clientArea = shell.getClientArea ();
 	slider.setBounds (clientArea.x + 10, clientArea.y + 10, 200, 32);

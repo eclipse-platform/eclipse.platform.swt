@@ -28,6 +28,7 @@ public class Snippet293 {
 	public static void main(java.lang.String[] args) {
 			Display display = new Display();
 			Shell shell = new Shell(display);
+			shell.setText("Snippet 293");
 			shell.setLayout(new GridLayout());
 
 			Button b1 = new Button (shell, SWT.CHECK);

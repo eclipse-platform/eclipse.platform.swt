@@ -28,6 +28,7 @@ public class Snippet107 {
 public static void main (String [] args) {
 	Display display = new Display ();
 	final Shell shell = new Shell (display);
+	shell.setText("Snippet 107");
 	Button button1 = new Button (shell, SWT.PUSH);
 	button1.setText ("Button 1");
 	final Sash sash = new Sash (shell, SWT.VERTICAL);

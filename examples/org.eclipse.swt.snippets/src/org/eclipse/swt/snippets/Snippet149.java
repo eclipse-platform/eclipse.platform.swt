@@ -20,14 +20,15 @@ package org.eclipse.swt.snippets;
  * http://www.eclipse.org/swt/snippets/
  */
 import org.eclipse.swt.*;
+import org.eclipse.swt.custom.*;
 import org.eclipse.swt.layout.*;
 import org.eclipse.swt.widgets.*;
-import org.eclipse.swt.custom.*;
 
 public class Snippet149 {
 	public static void main(String[] args) {
 		Display display = new Display();
 		Shell shell = new Shell(display);
+		shell.setText("Snippet 149");
 		shell.setLayout (new FillLayout ());
 		Table table = new Table (shell, SWT.BORDER);
 		table.setHeaderVisible (true);

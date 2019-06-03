@@ -29,6 +29,7 @@ static char content = 'a';
 public static void main(String[] args) {
 	final Display display = new Display();
 	Shell shell = new Shell(display);
+	shell.setText("Snippet 103");
 	shell.setBounds(10, 10, 200, 240);
 	Table table = new Table(shell, SWT.NONE);
 	Rectangle clientArea = shell.getClientArea ();

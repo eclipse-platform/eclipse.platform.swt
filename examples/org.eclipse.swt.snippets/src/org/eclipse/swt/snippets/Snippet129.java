@@ -35,6 +35,7 @@ public static void main(String[] args) {
 	Color white = display.getSystemColor(SWT.COLOR_WHITE);
 	Color gray = display.getSystemColor(SWT.COLOR_GRAY);
 	Shell shell = new Shell(display);
+	shell.setText("Snippet 129");
 	shell.setLayout(new FillLayout());
 	Table table = new Table(shell, SWT.BORDER | SWT.FULL_SELECTION);
 	table.setBackground(gray);

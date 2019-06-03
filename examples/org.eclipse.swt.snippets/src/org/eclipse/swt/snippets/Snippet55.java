@@ -28,6 +28,7 @@ public class Snippet55 {
 public static void main (String [] args) {
 	Display display = new Display ();
 	Shell shell = new Shell (display);
+	shell.setText("Snippet 55");
 	Text text = new Text (shell, SWT.BORDER);
 	text.setFont (new Font (display, "Courier", 13, SWT.NORMAL)); // Use a fixed size font
 	Rectangle clientArea = shell.getClientArea ();

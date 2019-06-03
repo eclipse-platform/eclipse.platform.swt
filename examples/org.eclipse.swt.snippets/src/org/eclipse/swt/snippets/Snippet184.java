@@ -22,7 +22,7 @@ package org.eclipse.swt.snippets;
  * @since 3.1
  */
 import org.eclipse.swt.*;
-import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
 
 public class Snippet184 {
@@ -30,6 +30,7 @@ public class Snippet184 {
 	public static void main(String[] args) {
 		Display display = new Display();
 		Shell shell = new Shell(display);
+		shell.setText("Snippet 184");
 		Spinner spinner = new Spinner (shell, SWT.BORDER);
 		spinner.setMinimum(0);
 		spinner.setMaximum(1000);

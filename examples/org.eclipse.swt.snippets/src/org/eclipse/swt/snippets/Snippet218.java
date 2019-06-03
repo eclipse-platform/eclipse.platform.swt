@@ -40,6 +40,7 @@ public class Snippet218 {
 	public static void main(String [] args) {
 		final Display display = new Display();
 		final Shell shell = new Shell(display);
+		shell.setText("Snippet 218");
 		shell.setLayout(new FillLayout());
 		final StyledText styledText = new StyledText(shell, SWT.WRAP | SWT.BORDER);
 		styledText.setText(text);

@@ -48,6 +48,7 @@ public class Snippet212 {
 	public static void main(String [] args) {
 		final Display display = new Display();
 		final Shell shell = new Shell(display);
+		shell.setText("Snippet 212");
 		shell.setLayout(new GridLayout());
 		styledText = new StyledText(shell, SWT.WRAP | SWT.BORDER);
 		styledText.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));

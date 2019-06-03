@@ -37,6 +37,7 @@ public class Snippet182 {
 	public static void main(String[] args) {
 		Display display = new Display();
 		Shell shell = new Shell(display);
+		shell.setText("Snippet 182");
 		shell.setLayout(new RowLayout());
 
 		Link link = new Link(shell, SWT.BORDER);

@@ -29,6 +29,7 @@ public class Snippet281 {
 public static void main (String [] args) {
 	final Display display = new Display ();
 	final Shell shell = new Shell (display, SWT.SHELL_TRIM | SWT.NO_BACKGROUND);
+	shell.setText("Snippet 281");
 	shell.setLayout(new FillLayout ());
 	shell.addListener (SWT.Paint, e -> {
 		GC gc = e.gc;

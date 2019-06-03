@@ -37,6 +37,7 @@ public static void main(String[] args) {
 	Image image3 = display.getSystemImage(SWT.ICON_ERROR);
 
 	Shell shell = new Shell(display);
+	shell.setText("Snippet 166");
 	shell.setLayout(new FillLayout());
 
 	final ScrolledComposite scrollComposite = new ScrolledComposite(shell, SWT.V_SCROLL | SWT.BORDER);

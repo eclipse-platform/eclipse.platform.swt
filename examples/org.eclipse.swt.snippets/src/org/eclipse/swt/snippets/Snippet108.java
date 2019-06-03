@@ -31,6 +31,7 @@ public class Snippet108 {
 public static void main (String [] args) {
 	Display display = new Display ();
 	Shell shell = new Shell (display);
+	shell.setText("Snippet 108");
 	Label label = new Label (shell, SWT.NONE);
 	label.setText ("Enter your name:");
 	Text text = new Text (shell, SWT.BORDER);

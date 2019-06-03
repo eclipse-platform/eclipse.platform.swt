@@ -13,14 +13,14 @@
  *******************************************************************************/
 package org.eclipse.swt.snippets;
 
-import java.io.*;
-
 /*
  * Tree example snippet: create a tree (lazy)
  *
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
  */
+import java.io.*;
+
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.layout.*;

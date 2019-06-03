@@ -42,6 +42,7 @@ public class Snippet334 {
 public static void main(String[] arg) {
 		display = new Display();
 		shell = new Shell(display);
+		shell.setText("Snippet 334");
 		shell.setLayout(new GridLayout(2, false));
 		Label label = new Label(shell, SWT.NONE);
 		label.setText("Test:");

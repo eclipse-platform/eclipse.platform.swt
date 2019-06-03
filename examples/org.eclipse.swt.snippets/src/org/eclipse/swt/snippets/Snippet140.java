@@ -38,6 +38,7 @@ public class Snippet140 {
 public static void main (String [] args) {
 	display = new Display ();
 	shell = new Shell (display);
+	shell.setText("Snippet 140");
 	shell.setLayout(new GridLayout());
 	coolBar = new CoolBar(shell, SWT.FLAT | SWT.BORDER);
 	coolBar.setLayoutData(new GridData(GridData.FILL_BOTH));

@@ -37,6 +37,7 @@ public static void main(String [] args) {
 
 	Display display = new Display();
 	Shell shell = new Shell(display);
+	shell.setText("Snippet 137");
 	shell.setLayout(new FillLayout());
 	Browser browser;
 	try {

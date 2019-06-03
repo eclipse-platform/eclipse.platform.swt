@@ -33,6 +33,7 @@ public class Snippet130 {
 	public static void main(String[] args) {
 		final Display display = new Display();
 		final Shell shell = new Shell(display);
+		shell.setText("Snippet 130");
 		shell.setLayout(new GridLayout());
 		final Text text = new Text(shell, SWT.MULTI | SWT.BORDER | SWT.V_SCROLL);
 		text.setLayoutData(new GridData(GridData.FILL_BOTH));

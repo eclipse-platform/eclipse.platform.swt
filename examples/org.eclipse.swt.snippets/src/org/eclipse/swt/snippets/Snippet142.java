@@ -30,6 +30,7 @@ public class Snippet142 {
 public static void main(String[] args) {
 	final Display display = new Display();
 	final Shell shell = new Shell(display);
+	shell.setText("Snippet 142");
 	final Button button = new Button(shell,SWT.NONE);
 	button.setSize(100,100);
 	button.setText("Click");

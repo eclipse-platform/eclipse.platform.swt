@@ -29,6 +29,7 @@ public class Snippet315 {
 	public static void main(String[] args) {
 		Display display = new Display ();
 		Shell shell = new Shell (display);
+		shell.setText("Snippet 315");
 		shell.setLayout(new GridLayout());
 		final Button button = new Button (shell, SWT.CHECK);
 		button.setLayoutData(new GridData(GridData.GRAB_VERTICAL | GridData.GRAB_HORIZONTAL | GridData.HORIZONTAL_ALIGN_CENTER));

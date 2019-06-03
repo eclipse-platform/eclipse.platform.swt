@@ -34,6 +34,7 @@ public class Snippet88 {
 public static void main(String[] args) {
 	Display display = new Display();
 	Shell shell = new Shell(display);
+	shell.setText("Snippet 88");
 	shell.setLayout(new FillLayout());
 	final Table table = new Table(shell, SWT.FULL_SELECTION | SWT.HIDE_SELECTION);
 	TableColumn column1 = new TableColumn(table, SWT.NONE);

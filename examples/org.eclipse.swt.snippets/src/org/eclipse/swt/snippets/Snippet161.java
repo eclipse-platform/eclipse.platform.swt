@@ -31,6 +31,7 @@ public class Snippet161 {
 		final String html = "<html><title>Snippet</title><body><p id='myid'>Best Friends</p><p id='myid2'>Cat and Dog</p></body></html>";
 		Display display = new Display();
 		final Shell shell = new Shell(display);
+		shell.setText("Snippet 161");
 		shell.setLayout(new FillLayout());
 		final Browser browser;
 		try {

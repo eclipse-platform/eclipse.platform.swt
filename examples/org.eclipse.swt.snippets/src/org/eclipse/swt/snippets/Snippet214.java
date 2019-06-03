@@ -31,6 +31,7 @@ public class Snippet214 {
 	public static void main(String [] args) {
 		final Display display = new Display ();
 		final Shell shell = new Shell (display);
+		shell.setText("Snippet 214");
 		shell.setBackgroundMode (SWT.INHERIT_DEFAULT);
 		FillLayout layout1 = new FillLayout (SWT.VERTICAL);
 		layout1.marginWidth = layout1.marginHeight = 10;

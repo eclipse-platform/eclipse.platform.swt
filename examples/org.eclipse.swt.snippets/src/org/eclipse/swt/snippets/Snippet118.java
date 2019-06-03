@@ -30,6 +30,7 @@ public class Snippet118 {
 public static void main (String [] args) {
 	final Display display = new Display();
 	final Shell shell = new Shell(display);
+	shell.setText("Snippet 118");
 	shell.setSize(150, 150);
 	final Cursor[] cursor = new Cursor[1];
 	Button button = new Button(shell, SWT.PUSH);

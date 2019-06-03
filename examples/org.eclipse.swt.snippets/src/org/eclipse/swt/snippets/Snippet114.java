@@ -28,6 +28,7 @@ public class Snippet114 {
 public static void main (String [] args) {
 	Display display = new Display ();
 	Shell shell = new Shell (display);
+	shell.setText("Snippet 114");
 	Tree tree = new Tree (shell, SWT.CHECK | SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL);
 	for (int i=0; i<12; i++) {
 		TreeItem item = new TreeItem (tree, SWT.NONE);

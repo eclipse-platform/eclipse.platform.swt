@@ -28,6 +28,7 @@ public class Snippet90 {
 public static void main (String [] args) {
 	Display display = new Display ();
 	Shell shell = new Shell (display);
+	shell.setText("Snippet 90");
 	final Tree tree = new Tree (shell, SWT.BORDER | SWT.MULTI);
 	for (int i=0; i<12; i++) {
 		TreeItem treeItem = new TreeItem (tree, SWT.NONE);

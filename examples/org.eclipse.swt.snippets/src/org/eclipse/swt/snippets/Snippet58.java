@@ -28,6 +28,7 @@ public class Snippet58 {
 public static void main (String [] args) {
 	Display display = new Display ();
 	Shell shell = new Shell (display);
+	shell.setText("Snippet 58");
 	ToolBar bar = new ToolBar (shell, SWT.BORDER);
 	Rectangle clientArea = shell.getClientArea ();
 	bar.setLocation (clientArea.x, clientArea.y);

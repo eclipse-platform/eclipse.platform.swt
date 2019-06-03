@@ -25,6 +25,7 @@ public class Snippet355 {
 	public static void main (String [] args) {
 		Display display = new Display ();
 		Shell shell = new Shell (display, SWT.SHELL_TRIM | SWT.DOUBLE_BUFFERED);
+		shell.setText("Snippet 355");
 		final Image image = display.getSystemImage (SWT.ICON_QUESTION);
 		shell.addListener (SWT.Paint, e -> {
 			Rectangle rect = image.getBounds ();

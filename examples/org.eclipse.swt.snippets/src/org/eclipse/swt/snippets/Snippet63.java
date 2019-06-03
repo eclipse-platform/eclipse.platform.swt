@@ -28,6 +28,7 @@ public class Snippet63 {
 public static void main (String [] args) {
 	Display display = new Display ();
 	Shell shell = new Shell (display);
+	shell.setText("Snippet 63");
 	shell.pack ();
 	shell.open ();
 	final boolean [] result = new boolean [1];

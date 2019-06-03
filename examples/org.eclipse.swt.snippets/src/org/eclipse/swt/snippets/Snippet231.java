@@ -37,6 +37,7 @@ public static void main(String [] args) {
 	final int TEXT_MARGIN = 3;
 	Display display = new Display();
 	Shell shell = new Shell(display);
+	shell.setText("Snippet 231");
 	final Table table = new Table(shell, SWT.FULL_SELECTION);
 	table.setHeaderVisible(true);
 	table.setLinesVisible(true);

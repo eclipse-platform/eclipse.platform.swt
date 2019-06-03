@@ -27,6 +27,7 @@ public class Snippet13 {
 public static void main(String[] args) {
 	Display display = new Display();
 	Shell shell = new Shell(display);
+	shell.setText("Snippet 13");
 	shell.addListener(SWT.Paint, e -> {
 		e.gc.setLineWidth(4);
 		e.gc.drawRectangle(20, 20, 100, 100);

@@ -46,6 +46,7 @@ public class Snippet254 {
 	public static void main(String[] args) {
 		final Display display = new Display();
 		final Shell shell = new Shell(display);
+		shell.setText("Snippet 254");
 		RowLayout layout = new RowLayout (SWT.VERTICAL);
 		layout.fill = true;
 		layout.wrap = false;

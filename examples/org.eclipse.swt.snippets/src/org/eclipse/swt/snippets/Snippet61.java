@@ -28,6 +28,7 @@ public class Snippet61 {
 public static void main (String [] args) {
 	Display display = new Display ();
 	Shell shell = new Shell (display);
+	shell.setText("Snippet 61");
 	shell.setLayout (new FillLayout ());
 	final Tree tree = new Tree (shell, SWT.BORDER | SWT.MULTI | SWT.V_SCROLL);
 	for (int i=0; i<4; i++) {

@@ -27,6 +27,7 @@ public class Snippet301 {
 	public static void main (String [] args) {
 		Display display = new Display ();
 		Shell shell = new Shell (display);
+		shell.setText("Snippet 301");
 		FillLayout layout = new FillLayout();
 		layout.marginHeight = 10;
 		layout.marginWidth = 10;

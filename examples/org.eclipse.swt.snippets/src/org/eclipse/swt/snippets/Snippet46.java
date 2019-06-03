@@ -28,6 +28,7 @@ public class Snippet46 {
 public static void main (String [] args) {
 	Display display = new Display ();
 	final Shell shell = new Shell (display);
+	shell.setText("Snippet 46");
 	final Composite composite = new Composite (shell, SWT.NONE);
 	composite.setEnabled (false);
 	composite.setLayout (new FillLayout ());

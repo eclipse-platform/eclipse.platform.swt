@@ -28,6 +28,7 @@ public class Snippet51 {
 public static void main(String [] args) {
 	Display display = new Display();
 	Shell shell = new Shell(display);
+	shell.setText("Snippet 51");
 	shell.setBounds(10,10,300,300);
 	shell.setLayout(new GridLayout(2,true));
 	final Table table = new Table(shell, SWT.NONE);

@@ -31,6 +31,7 @@ public class Snippet307 {
 public static void main (String [] args) {
 	Display display = new Display ();
 	Shell shell = new Shell (display);
+	shell.setText("Snippet 307");
 	shell.setLayout (new FillLayout ());
 	shell.setBounds (10,10,300,200);
 

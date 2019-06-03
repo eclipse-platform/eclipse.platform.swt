@@ -95,6 +95,7 @@ public static void main (String [] args) {
 	sourceData.maskPad = -1;
 
 	Shell shell = new Shell(display);
+	shell.setText("Snippet 119");
 	final Image source = new Image (display,sourceData);
 	final Image mask = new Image (display, maskData);
 	shell.addPaintListener(e -> {

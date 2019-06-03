@@ -129,6 +129,7 @@ static String keyCode (int keyCode) {
 public static void main (String [] args) {
 	Display display = new Display ();
 	Shell shell = new Shell (display);
+	shell.setText("Snippet 25");
 	Listener listener = e -> {
 		String string = e.type == SWT.KeyDown ? "DOWN:" : "UP  :";
 		string += " stateMask=0x" + Integer.toHexString (e.stateMask) + stateMask (e.stateMask) + ",";

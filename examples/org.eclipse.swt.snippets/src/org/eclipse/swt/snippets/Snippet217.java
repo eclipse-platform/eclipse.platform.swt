@@ -52,6 +52,7 @@ public class Snippet217 {
 		final Display display = new Display();
 		Font font = new Font(display, "Tahoma", 16, SWT.NORMAL);
 		final Shell shell = new Shell(display);
+		shell.setText("Snippet 217");
 		shell.setLayout(new GridLayout());
 		styledText = new StyledText(shell, SWT.WRAP | SWT.BORDER);
 		styledText.setFont(font);

@@ -30,6 +30,7 @@ public class Snippet172 {
 public static void main (String [] args) {
 	Display display = new Display ();
 	Shell shell = new Shell (display);
+	shell.setText("Snippet 172");
 	GridLayout layout = new GridLayout(4, false);
 	shell.setLayout(layout);
 

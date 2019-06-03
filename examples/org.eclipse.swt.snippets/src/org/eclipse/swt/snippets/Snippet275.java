@@ -36,6 +36,7 @@ public static void main (String[] args) {
 	gc.dispose ();
 
 	Shell shell = new Shell (display);
+	shell.setText("Snippet 275");
 	shell.setBounds (10, 10, 790, 790);
 	final Canvas canvas = new Canvas (shell, SWT.NONE);
 	canvas.setBounds (10, 10, 750, 750);

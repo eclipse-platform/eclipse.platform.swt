@@ -31,6 +31,7 @@ public class Snippet159 {
 		final String newTitle = "New Value for Title";
 		Display display = new Display();
 		final Shell shell = new Shell(display);
+		shell.setText("Snippet 159");
 		shell.setLayout(new FillLayout());
 		final Browser browser;
 		try {

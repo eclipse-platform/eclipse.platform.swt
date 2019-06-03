@@ -32,6 +32,7 @@ static final int COUNT = 1000000;
 public static void main(String[] args) {
 	Display display = new Display ();
 	final Shell shell = new Shell (display);
+	shell.setText("Snippet 144");
 	shell.setLayout (new RowLayout (SWT.VERTICAL));
 	final Table table = new Table (shell, SWT.VIRTUAL | SWT.BORDER);
 	table.addListener (SWT.SetData, event -> {

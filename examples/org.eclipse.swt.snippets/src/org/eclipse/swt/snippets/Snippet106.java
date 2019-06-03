@@ -28,6 +28,7 @@ public class Snippet106 {
 public static void main (String [] args) {
 	Display display = new Display ();
 	Shell shell = new Shell (display);
+	shell.setText("Snippet 106");
 	shell.setLayout (new RowLayout (SWT.VERTICAL));
 	final Table table = new Table (shell, SWT.BORDER | SWT.MULTI);
 	table.setHeaderVisible (true);

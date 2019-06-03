@@ -42,6 +42,7 @@ public static void main(String[] args) {
 
 	Display display = new Display();
 	Shell shell = new Shell(display);
+	shell.setText("Snippet 273");
 	shell.setBounds(10,10,400,350);
 	shell.setText("Ottawa Average Daily Temperature Ranges");
 	final Color blue = display.getSystemColor(SWT.COLOR_BLUE);

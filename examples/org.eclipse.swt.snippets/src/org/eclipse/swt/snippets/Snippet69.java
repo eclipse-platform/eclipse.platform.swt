@@ -29,6 +29,7 @@ public class Snippet69 {
 public static void main (String [] args) {
 	Display display = new Display ();
 	Shell shell = new Shell (display);
+	shell.setText("Snippet 69");
 	Label label = new Label (shell, SWT.NONE | SWT.BORDER);
 	label.setText ("Name");
 	Text text = new Text (shell, SWT.NONE);

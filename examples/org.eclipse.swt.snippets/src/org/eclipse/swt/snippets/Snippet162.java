@@ -39,6 +39,7 @@ public static void main (String [] args) {
 	final Image uncheckedImage = getStateImage (display, false);
 
 	Shell shell = new Shell (display);
+	shell.setText("Snippet 162");
 	shell.setLayout (new FillLayout ());
 
 	final Table table = new Table (shell, SWT.FULL_SELECTION | SWT.BORDER);

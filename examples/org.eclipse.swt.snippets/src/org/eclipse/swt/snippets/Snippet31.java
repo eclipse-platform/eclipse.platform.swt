@@ -29,6 +29,7 @@ public class Snippet31 {
 public static void main (String [] args) {
 	final Display display = new Display ();
 	final Shell shell = new Shell (display);
+	shell.setText("Snippet 31");
 	shell.setSize (200, 200);
 	shell.open ();
 	Listener listener = new Listener () {

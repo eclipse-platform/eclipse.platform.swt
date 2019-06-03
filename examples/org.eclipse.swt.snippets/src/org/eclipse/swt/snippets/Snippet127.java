@@ -27,6 +27,7 @@ public class Snippet127 {
 public static void main (String [] args) {
 	Display display = new Display ();
 	Shell shell = new Shell (display);
+	shell.setText("Snippet 127");
 	shell.setLayout(new RowLayout ());
 	Button button1 = new Button(shell, SWT.PUSH);
 	button1.setText("Can't Traverse");

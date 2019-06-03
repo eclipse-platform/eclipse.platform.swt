@@ -28,6 +28,7 @@ public class Snippet276 {
 public static void main (String[] args) {
 	final Display display = new Display ();
 	Shell shell = new Shell (display);
+	shell.setText("Snippet 276");
 	shell.setBounds (200, 200, 400, 400);
 	Label label = new Label (shell, SWT.NONE);
 	label.setText ("click in shell to print display-relative coordinate");

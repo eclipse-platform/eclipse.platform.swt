@@ -31,6 +31,7 @@ public class Snippet347 {
 	public static void main(String[] args) {
 		final Display display = new Display();
 		Shell shell = new Shell(display);
+		shell.setText("Snippet 347");
 		shell.setLayout(new GridLayout(1, false));
 		Menu appMenuBar = display.getMenuBar();
 		if (appMenuBar == null) {

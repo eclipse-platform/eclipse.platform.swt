@@ -28,6 +28,7 @@ public class Snippet73 {
 public static void main (String [] args) {
 	Display display = new Display ();
 	Shell shell = new Shell (display);
+	shell.setText("Snippet 73");
 	final Tree tree = new Tree (shell, SWT.BORDER | SWT.MULTI);
 	final Menu menu = new Menu (shell, SWT.POP_UP);
 	tree.setMenu (menu);

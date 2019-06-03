@@ -82,6 +82,7 @@ public class Snippet348 {
 
 	static Shell createShell() {
 		final Shell shell = new Shell(SWT.SHELL_TRIM);
+		shell.setText("Snippet 348");
 		createMenuBar(shell);
 
 		shell.addDisposeListener(e -> {

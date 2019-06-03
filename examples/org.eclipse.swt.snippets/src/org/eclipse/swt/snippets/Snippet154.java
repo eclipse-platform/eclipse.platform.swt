@@ -37,6 +37,7 @@ public class Snippet154 {
 	public static void main(String[] args) {
 		final Display display = new Display();
 		final Shell shell = new Shell(display);
+		shell.setText("Snippet 154");
 		shell.setLayout(new FillLayout());
 
 		Composite composite = new Composite(shell, SWT.NO_BACKGROUND | SWT.EMBEDDED);

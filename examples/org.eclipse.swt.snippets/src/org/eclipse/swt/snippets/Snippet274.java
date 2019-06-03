@@ -60,6 +60,7 @@ public class Snippet274 {
 	public static void main(String[] args) {
 	    Display display = new Display();
 	    Shell shell = new Shell(display);
+		shell.setText("Snippet 274");
 	    Tree tree = new Tree(shell, SWT.BORDER | SWT.CHECK);
 	    tree.addListener(SWT.Selection, event -> {
 		    if (event.detail == SWT.CHECK) {

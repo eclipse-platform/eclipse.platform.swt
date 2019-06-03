@@ -56,6 +56,7 @@ public static void main(String[] args) {
 	}
 
 	Shell shell = new Shell(display);
+	shell.setText("Snippet 200");
 	shell.setLayout(new FillLayout());
 	Composite c = new Composite(shell, SWT.DOUBLE_BUFFERED);
 	c.addListener(SWT.Paint, event -> {

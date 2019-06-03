@@ -39,6 +39,7 @@ static TaskItem getTaskBarItem () {
 public static void main(String[] args) {
 	display = new Display();
 	shell = new Shell(display);
+	shell.setText("Snippet 336");
 	shell.setLayout(new GridLayout());
 	TabFolder folder = new TabFolder(shell, SWT.NONE);
 	folder.setLayoutData(new GridData(GridData.FILL_BOTH));

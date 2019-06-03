@@ -30,6 +30,7 @@ public class Snippet183 {
 	public static void main(String[] args) {
 		Display display = new Display();
 		Shell shell = new Shell(display);
+		shell.setText("Snippet 183");
 		Link link = new Link(shell, SWT.NONE);
 		String text = "The SWT component is designed to provide <a>efficient</a>, <a>portable</a> <a href=\"native\">access to the user-interface facilities of the operating systems</a> on which it is implemented.";
 		link.setText(text);

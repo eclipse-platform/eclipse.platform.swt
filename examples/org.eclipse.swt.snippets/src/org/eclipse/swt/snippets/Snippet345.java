@@ -27,6 +27,7 @@ public class Snippet345 {
 	public static void main (String[] args) {
 		final Display  display = new Display ();
 		final Shell shell = new Shell ();
+		shell.setText("Snippet 345");
 		shell.setLayout(new FillLayout(SWT.VERTICAL));
 		String string = "The quick brown fox jumps over the lazy dog";
 		Button button;

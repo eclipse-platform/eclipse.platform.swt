@@ -27,6 +27,7 @@ public class Snippet99 {
 public static void main (String [] args) {
 	Display display = new Display ();
 	final Shell shell = new Shell (display);
+	shell.setText("Snippet 99");
 	shell.addListener (SWT.Close, event -> {
 		int style = SWT.APPLICATION_MODAL | SWT.YES | SWT.NO;
 		MessageBox messageBox = new MessageBox (shell, style);

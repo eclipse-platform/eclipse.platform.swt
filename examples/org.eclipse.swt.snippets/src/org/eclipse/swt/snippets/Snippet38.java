@@ -28,6 +28,7 @@ public class Snippet38 {
 public static void main (String [] args) {
 	Display display = new Display ();
 	Shell shell = new Shell (display);
+	shell.setText("Snippet 38");
 	shell.setLayout(new GridLayout());
 	Table table = new Table (shell, SWT.MULTI | SWT.BORDER | SWT.FULL_SELECTION);
 	table.setLinesVisible (true);

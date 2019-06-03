@@ -31,6 +31,7 @@ public class Snippet147  {
 public static void main(String[] args) {
 	Display display = new Display();
 	Shell shell = new Shell(display);
+	shell.setText("Snippet 147");
 	shell.setLayout(new GridLayout());
 	Combo combo = new Combo(shell, SWT.NONE);
 	combo.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));

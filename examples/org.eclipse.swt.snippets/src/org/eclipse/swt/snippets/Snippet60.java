@@ -26,6 +26,7 @@ public class Snippet60 {
 public static void main (String [] args) {
 	Display display = new Display ();
 	Shell shell = new Shell (display);
+	shell.setText("Snippet 60");
 	shell.setSize (200, 200);
 	shell.open ();
 	display.timerExec (5000, () -> System.out.println ("5000"));

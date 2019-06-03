@@ -34,6 +34,7 @@ public class Snippet338 {
 public static void main(String[] args) {
 	Display display = new Display();
 	Shell parentShell = new Shell(display);
+	parentShell.setText("Snippet 338");
 	parentShell.setBounds(10,10,100,100);
 	parentShell.open();
 

@@ -27,6 +27,7 @@ public class Snippet248 {
 public static void main (String [] args) {
 	Display display = new Display ();
 	final Shell shell = new Shell (display);
+	shell.setText("Snippet 248");
 	shell.setLayout (new FillLayout ());
 	shell.addListener (SWT.Traverse, event -> {
 		switch (event.detail) {

@@ -29,6 +29,7 @@ public class Snippet320 {
 public static void main(String [] args) {
 	final Display display = new Display();
 	final Shell shell = new Shell(display);
+	shell.setText("Snippet 320");
 	shell.setLayout(new GridLayout());
 	final Text text = new Text(shell, SWT.SINGLE | SWT.BORDER);
 	text.setLayoutData(new GridData(150, SWT.DEFAULT));

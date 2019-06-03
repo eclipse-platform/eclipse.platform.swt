@@ -70,6 +70,7 @@ public static void main(String[] args) {
 		splash.close();
 		image.dispose();
 		for (int i2=0; i2<count[0]; i2++) {
+			shells [i2].setText("SWT Snippet 104 - " + (i2+1));
 			shells [i2].open();
 		}
 	});

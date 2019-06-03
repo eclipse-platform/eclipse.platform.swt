@@ -15,7 +15,7 @@ package org.eclipse.swt.snippets;
 
 /*
  * Listen for events in Excel (win32 only)
- * 
+ *
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
  */
@@ -52,6 +52,7 @@ public class Snippet199 {
  public static void main (String [] args) {
 	Display display = new Display ();
 	Shell shell = new Shell (display);
+	shell.setText("Snippet 199");
 	shell.setLayout(new FillLayout());
 	OleControlSite controlSite;
 	try {
@@ -71,7 +72,7 @@ public class Snippet199 {
 	OleAutomation application = pVarResult.getAutomation();
 	pVarResult.dispose();
 	excelSheet.dispose();
-	
+
 	int eventID = SheetSelectionChange;
 	OleListener listener = new OleListener() {
 		@Override
@@ -84,7 +85,7 @@ public class Snippet199 {
 		}
 	};
 	controlSite.addEventListener(application, IID_AppEvents, eventID, listener);
-	
+
 	while (!shell.isDisposed ()) {
 		if (!display.readAndDispatch ()) display.sleep ();
 	}

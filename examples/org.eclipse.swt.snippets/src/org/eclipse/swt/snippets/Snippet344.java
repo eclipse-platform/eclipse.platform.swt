@@ -30,6 +30,7 @@ public class Snippet344 {
 	public static void main(String[] args) {
 		Display display = new Display();
 		final Shell shell = new Shell(display);
+		shell.setText("Snippet 344");
 		shell.setLayout(new GridLayout(1, false));
 
 		Button button = new Button(shell, SWT.PUSH);

@@ -28,6 +28,7 @@ public class Snippet286 {
 	public static void main(java.lang.String[] args) {
 		Display display = new Display();
 		Shell shell = new Shell(display);
+		shell.setText("Snippet 286");
 		shell.setLayout(new GridLayout());
 
 		Canvas blankCanvas = new Canvas(shell, SWT.BORDER);

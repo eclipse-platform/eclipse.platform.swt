@@ -32,6 +32,7 @@ public class Snippet339 {
 public static void main(String[] args) {
 	Display display = new Display();
 	Shell shell = new Shell(display);
+	shell.setText("Snippet 339");
 	FillLayout fillLayout = new FillLayout ();
 	fillLayout.marginWidth = 20;
 	fillLayout.marginHeight = 20;

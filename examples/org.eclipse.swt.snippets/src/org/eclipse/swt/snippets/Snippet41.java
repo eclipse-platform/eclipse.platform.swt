@@ -20,7 +20,7 @@ package org.eclipse.swt.snippets;
  * http://www.eclipse.org/swt/snippets/
  */
 import org.eclipse.swt.*;
-import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
 
 public class Snippet41 {
@@ -29,6 +29,7 @@ public static void main (String [] args) {
 	String string = "This is a string\nwith a new line.";
 	Display display = new Display ();
 	Shell shell = new Shell (display);
+	shell.setText("Snippet 41");
 	TabFolder folder = new TabFolder (shell, SWT.BORDER);
 	Rectangle clientArea = shell.getClientArea ();
 	folder.setBounds (clientArea.x, clientArea.y, 200, 200);

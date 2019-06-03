@@ -12,7 +12,7 @@
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
 package org.eclipse.swt.snippets;
- 
+
 /*
  * Drag and Drop example snippet: determine data types available (win32 only)
  * NOTE: This snippet uses internal SWT packages that are
@@ -32,10 +32,11 @@ public class Snippet83 extends ByteArrayTransfer {
 private static Snippet83 _instance = new Snippet83();
 private int[] ids;
 private String[] names;
-	
+
 public static void main(String[] args) {
 	Display display = new Display();
 	Shell shell = new Shell(display);
+	shell.setText("Snippet 83");
 	shell.setLayout(new FillLayout());
 	final Table control = new Table(shell, SWT.NONE);
 	TableItem item = new TableItem(control, SWT.NONE);
@@ -44,7 +45,7 @@ public static void main(String[] args) {
 	target.setTransfer(new Transfer[] {Snippet83.getInstance()});
 	target.addDropListener(new DropTargetAdapter() {
 		@Override
-		public void dragEnter(DropTargetEvent event) {			
+		public void dragEnter(DropTargetEvent event) {
 			String ops = "";
 			if ((event.operations & DND.DROP_COPY) != 0) ops += "Copy;";
 			if ((event.operations & DND.DROP_MOVE) != 0) ops += "Move;";
@@ -52,7 +53,7 @@ public static void main(String[] args) {
 			control.removeAll();
 			TableItem item1 = new TableItem(control,SWT.NONE);
 			item1.setText("Allowed Operations are "+ops);
-			
+
 			if (event.detail == DND.DROP_DEFAULT) {
 				if ((event.operations & DND.DROP_COPY) != 0) {
 					event.detail = DND.DROP_COPY;
@@ -62,7 +63,7 @@ public static void main(String[] args) {
 					event.detail = DND.DROP_MOVE;
 				}
 			}
-			
+
 			TransferData[] data = event.dataTypes;
 			for (int i = 0; i < data.length; i++) {
 				int id = data[i].type;
@@ -72,7 +73,7 @@ public static void main(String[] args) {
 			}
 		}
 	});
-	
+
 	shell.setSize(400, 400);
 	shell.open();
 	while (!shell.isDisposed()) {
@@ -169,7 +170,7 @@ static String getNameFromId(int id) {
 				name = "CF_MAX";
 				break;
 		}
-		
+
 	}
 	return name;
 }

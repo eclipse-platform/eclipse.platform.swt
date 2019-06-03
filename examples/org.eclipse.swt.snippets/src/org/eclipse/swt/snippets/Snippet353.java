@@ -35,6 +35,7 @@ public class Snippet353 {
 	public static void main(String [] args) {
 		Display display = new Display();
 		final Shell shell = new Shell(display);
+		shell.setText("Snippet 353");
 
 		GestureListener gl = ge -> {
 			if (ge.detail == SWT.GESTURE_BEGIN) {

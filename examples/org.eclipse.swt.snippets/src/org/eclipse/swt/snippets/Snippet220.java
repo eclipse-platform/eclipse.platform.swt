@@ -33,6 +33,7 @@ public class Snippet220 {
 public static void main(String [] args) {
 	Display display = new Display();
 	Shell shell = new Shell(display);
+	shell.setText("Snippet 220");
 	shell.setBounds(10, 10, 350, 200);
 	Image xImage = new Image (display, 16, 16);
 	GC gc = new GC(xImage);

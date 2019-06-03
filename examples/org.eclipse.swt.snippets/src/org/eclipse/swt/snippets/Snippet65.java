@@ -29,6 +29,7 @@ public class Snippet65 {
 public static void main (String [] args) {
 	Display display = new Display ();
 	final Shell shell = new Shell (display);
+	shell.setText("Snippet 65");
 	Label label = new Label (shell, SWT.WRAP);
 	label.setText ("This is a long text string that will wrap when the dialog is resized.");
 	List list = new List (shell, SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL);

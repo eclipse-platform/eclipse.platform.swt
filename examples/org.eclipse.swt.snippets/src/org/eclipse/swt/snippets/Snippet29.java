@@ -27,6 +27,7 @@ public class Snippet29 {
 public static void main (String [] args) {
 	Display display = new Display ();
 	Shell shell = new Shell (display);
+	shell.setText("Snippet 29");
 	Menu bar = new Menu (shell, SWT.BAR);
 	shell.setMenuBar (bar);
 	MenuItem fileItem = new MenuItem (bar, SWT.CASCADE);

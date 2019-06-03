@@ -32,6 +32,7 @@ public static void main(String[] args) {
 	Display display = new Display();
 	Image image = display.getSystemImage(SWT.ICON_QUESTION);
 	Shell shell = new Shell(display);
+	shell.setText("Snippet 206");
 	shell.setLayout (new GridLayout());
 	Button button = new Button(shell, SWT.PUSH);
 	button.setImage(image);

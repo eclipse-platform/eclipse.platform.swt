@@ -27,6 +27,7 @@ public class Snippet117  {
 public static void main(String[] args) {
 	Display display = new Display();
 	Shell shell = new Shell(display);
+	shell.setText("Snippet 117");
 	shell.setLayout(new FillLayout());
 	final Text t = new Text(shell, SWT.BORDER | SWT.MULTI);
 	t.setText ("here is some text to be selected");

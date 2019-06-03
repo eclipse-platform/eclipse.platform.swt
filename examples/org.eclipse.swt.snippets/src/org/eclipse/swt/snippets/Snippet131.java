@@ -28,6 +28,7 @@ public class Snippet131 {
 public static void main (String [] args) {
 	final Display display = new Display ();
 	final Shell shell = new Shell (display);
+	shell.setText("Snippet 131");
 	shell.addListener (SWT.MenuDetect, event -> {
 		Menu menu = new Menu (shell, SWT.POP_UP);
 		MenuItem item = new MenuItem (menu, SWT.PUSH);

@@ -23,13 +23,14 @@ package org.eclipse.swt.snippets;
  */
 
 import org.eclipse.swt.*;
-import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.layout.*;
+import org.eclipse.swt.widgets.*;
 
 public class Snippet170 {
 	public static void main(String[] args) {
 		Display display = new Display();
 		final Shell shell = new Shell(display);
+		shell.setText("Snippet 170");
 		shell.setLayout(new FillLayout());
 		Tree tree = new Tree(shell, SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL);
 		tree.setHeaderVisible(true);

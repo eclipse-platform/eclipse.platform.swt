@@ -34,6 +34,7 @@ static int[] data = new int[0];
 public static void main (String [] args) {
 	final Display display = new Display ();
 	Shell shell = new Shell (display);
+	shell.setText("Snippet 151");
 	shell.setLayout(new FillLayout());
 	final Table table = new Table(shell, SWT.BORDER | SWT.VIRTUAL);
 	table.addListener(SWT.SetData, e -> {

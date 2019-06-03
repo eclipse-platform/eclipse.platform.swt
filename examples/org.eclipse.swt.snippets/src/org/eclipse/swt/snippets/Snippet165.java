@@ -40,6 +40,7 @@ public static void main (String [] args) {
 	gc.fillRectangle(3, 3, 10, 10);
 	gc.dispose();
 	final Shell shell = new Shell (display);
+	shell.setText("Snippet 165");
 	shell.setLayout(new GridLayout());
 	final CTabFolder folder = new CTabFolder(shell, SWT.BORDER);
 	folder.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));

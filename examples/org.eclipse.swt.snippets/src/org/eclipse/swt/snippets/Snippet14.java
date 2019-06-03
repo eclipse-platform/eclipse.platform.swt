@@ -27,6 +27,7 @@ public class Snippet14 {
 public static void main (String [] args) {
 	Display display = new Display ();
 	Shell shell = new Shell (display);
+	shell.setText("Snippet 14");
 	shell.setSize (100, 100);
 	shell.addListener (SWT.MouseEnter, e -> System.out.println ("ENTER"));
 	shell.addListener (SWT.MouseExit, e -> System.out.println ("EXIT"));

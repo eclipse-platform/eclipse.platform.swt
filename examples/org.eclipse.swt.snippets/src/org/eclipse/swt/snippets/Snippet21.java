@@ -30,6 +30,7 @@ public static void main (String [] args) {
 	final Color red = display.getSystemColor (SWT.COLOR_RED);
 	final Color blue = display.getSystemColor (SWT.COLOR_BLUE);
 	Shell shell = new Shell (display);
+	shell.setText("Snippet 21");
 	Button b = new Button (shell, SWT.PUSH);
 	Rectangle clientArea = shell.getClientArea ();
 	b.setBounds (clientArea.x + 10, clientArea.y + 10, 100, 32);

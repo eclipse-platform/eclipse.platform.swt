@@ -28,6 +28,7 @@ public class Snippet245 {
 public static void main(String [] args) {
 	final Display display = new Display();
 	final Shell shell = new Shell(display);
+	shell.setText("Snippet 245");
 	shell.addPaintListener(event -> {
 		Rectangle rect = shell.getClientArea();
 		event.gc.drawOval(0, 0, rect.width - 1, rect.height - 1);

@@ -28,6 +28,7 @@ public class Snippet64 {
 public static void main (String [] args) {
 	Display display = new Display ();
 	Shell shell = new Shell (display);
+	shell.setText("Snippet 64");
 	final Table table = new Table (shell, SWT.BORDER | SWT.MULTI | SWT.V_SCROLL);
 	for (int i=0; i<16; i++) {
 		TableItem item = new TableItem (table, 0);

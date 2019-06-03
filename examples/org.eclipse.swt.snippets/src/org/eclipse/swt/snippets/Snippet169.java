@@ -28,6 +28,7 @@ public class Snippet169 {
 public static void main (String [] args) {
 	Display display = new Display ();
 	final Shell shell = new Shell (display);
+	shell.setText("Snippet 169");
 	shell.setLayout (new FillLayout ());
 	Listener listener = e -> {
 		Control [] children = shell.getChildren ();

@@ -30,6 +30,7 @@ public class Snippet77 {
 public static void main(String[] args) {
 	Display display = new Display();
 	Shell shell = new Shell(display);
+	shell.setText("Snippet 77");
 	shell.setLayout(new FillLayout());
 
 	final Composite comp = new Composite(shell, SWT.NONE);

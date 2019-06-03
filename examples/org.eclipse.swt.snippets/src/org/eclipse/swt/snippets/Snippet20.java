@@ -28,6 +28,7 @@ public class Snippet20 {
 public static void main (String [] args) {
 	Display display = new Display ();
 	Shell shell = new Shell (display);
+	shell.setText("Snippet 20");
 	CoolBar bar = new CoolBar (shell, SWT.BORDER);
 	for (int i=0; i<2; i++) {
 		CoolItem item = new CoolItem (bar, SWT.NONE);

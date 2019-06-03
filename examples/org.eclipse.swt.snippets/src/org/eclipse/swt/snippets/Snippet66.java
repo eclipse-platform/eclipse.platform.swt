@@ -28,6 +28,7 @@ public class Snippet66 {
 public static void main (String [] args) {
 	Display display = new Display ();
 	final Shell shell = new Shell (display);
+	shell.setText("Snippet 66");
 	Listener listener = new Listener () {
 		int lastX = 0, lastY = 0;
 		@Override

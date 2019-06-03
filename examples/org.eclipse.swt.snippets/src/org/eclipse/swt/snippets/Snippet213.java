@@ -22,9 +22,9 @@ package org.eclipse.swt.snippets;
  * @since 3.2
  */
 import org.eclipse.swt.*;
+import org.eclipse.swt.custom.*;
 import org.eclipse.swt.layout.*;
 import org.eclipse.swt.widgets.*;
-import org.eclipse.swt.custom.*;
 
 public class Snippet213 {
 
@@ -37,6 +37,7 @@ public class Snippet213 {
 	public static void main(String [] args) {
 		Display display = new Display();
 		Shell shell = new Shell(display);
+		shell.setText("Snippet 213");
 		shell.setLayout(new FillLayout());
 		StyledText styledText = new StyledText(shell, SWT.WRAP | SWT.BORDER);
 		styledText.setText(text);

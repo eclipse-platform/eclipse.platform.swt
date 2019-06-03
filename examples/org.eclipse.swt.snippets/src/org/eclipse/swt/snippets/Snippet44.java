@@ -29,6 +29,7 @@ public static void main (String [] args) {
 	Display display = new Display ();
 	final Cursor cursor = display.getSystemCursor(SWT.CURSOR_HAND);
 	Shell shell = new Shell (display);
+	shell.setText("Snippet 44");
 	shell.open ();
 	final Button b = new Button (shell, 0);
 	b.setText("Push to set cursor to hand");

@@ -30,6 +30,7 @@ public class Snippet145 {
 	public static void main(String[] args) {
 		Display display = new Display();
 		Shell shell = new Shell (display);
+		shell.setText("Snippet 145");
 
 		Font font1 = new Font(display, "Tahoma", 14, SWT.BOLD);
 		Font font2 = new Font(display, "MS Mincho", 20, SWT.ITALIC);

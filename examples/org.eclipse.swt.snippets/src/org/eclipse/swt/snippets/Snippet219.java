@@ -31,6 +31,7 @@ public class Snippet219 {
 		final Display display = new Display ();
 		final Image image = display.getSystemImage(SWT.ICON_INFORMATION);
 		final Shell shell = new Shell (display, SWT.NO_TRIM);
+		shell.setText("Snippet 219");
 		Region region = new Region();
 		final ImageData imageData = image.getImageData();
 		if (imageData.alphaData != null) {

@@ -20,16 +20,17 @@ import org.eclipse.swt.widgets.*;
 
 /*
  * Running a script within IE. (win32 only)
- * 
+ *
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
  */
 
 public class Snippet187 {
-	
+
 public static void main(String[] args) {
 	final Display display = new Display();
 	Shell shell = new Shell(display);
+	shell.setText("Snippet 187");
 	shell.setLayout(new FillLayout());
 	OleControlSite controlSite;
 	try {
@@ -41,7 +42,7 @@ public static void main(String[] args) {
 		display.dispose();
 		return;
 	}
-	
+
 	// IWebBrowser
 	final OleAutomation webBrowser = new OleAutomation(controlSite);
 
@@ -51,7 +52,7 @@ public static void main(String[] args) {
 	controlSite.addEventListener(DownloadComplete, new OleListener() {
 		@Override
 		public void handleEvent(OleEvent event) {
-			int[] htmlDocumentID = webBrowser.getIDsOfNames(new String[]{"Document"}); 
+			int[] htmlDocumentID = webBrowser.getIDsOfNames(new String[]{"Document"});
 			if (htmlDocumentID == null) return;
 			Variant pVarResult = webBrowser.getProperty(htmlDocumentID[0]);
 			if (pVarResult == null || pVarResult.getType() == 0) return;
@@ -60,8 +61,8 @@ public static void main(String[] args) {
 			try {
 				htmlDocument = pVarResult.getAutomation();
 				pVarResult.dispose();
-	
-				int[] scriptID = htmlDocument.getIDsOfNames(new String[]{"Script"}); 
+
+				int[] scriptID = htmlDocument.getIDsOfNames(new String[]{"Script"});
 				if (scriptID == null) return;
 				pVarResult = htmlDocument.getProperty(scriptID[0]);
 				if (pVarResult == null || pVarResult.getType() == 0) return;
@@ -85,9 +86,9 @@ public static void main(String[] args) {
 			}
 		}
 	});
-	
+
 	// Navigate to a web site
-	int[] ids = webBrowser.getIDsOfNames(new String[]{"Navigate", "URL"}); 
+	int[] ids = webBrowser.getIDsOfNames(new String[]{"Navigate", "URL"});
 	Variant[] rgvarg = new Variant[] {new Variant("http://dev.eclipse.org/viewcvs/index.cgi/%7Echeckout%7E/org.eclipse.swt.snippets/src/org/eclipse/swt/snippets/Snippet187.html")};
 	int[] rgdispidNamedArgs = new int[]{ids[1]};
 	webBrowser.invoke(ids[0], rgvarg, rgdispidNamedArgs);
@@ -100,6 +101,6 @@ public static void main(String[] args) {
 	//Remember to release OleAutomation Object
 	webBrowser.dispose();
 	display.dispose();
-	
+
 }
 }

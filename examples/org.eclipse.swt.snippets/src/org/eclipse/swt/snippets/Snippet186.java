@@ -15,12 +15,12 @@ package org.eclipse.swt.snippets;
 
 /*
  * Reading and writing to a SAFEARRAY
- * 
+ *
  * This example reads from a PostData object in a BeforeNavigate2 event and
  * creates a PostData object in a call to Navigate (32-bit win32 only).
  * NOTE: This snippet uses internal SWT packages that are
  * subject to change without notice.
- * 
+ *
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
  */
@@ -37,8 +37,9 @@ static int CodePage = OS.GetACP();
 public static void main (String [] args) {
 	Display display = new Display ();
 	Shell shell = new Shell (display);
+	shell.setText("Snippet 186");
 	shell.setLayout(new GridLayout(2, false));
-	
+
 	final Text text = new Text(shell, SWT.BORDER);
 	text.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 	Button go = new Button(shell, SWT.PUSH);
@@ -56,13 +57,13 @@ public static void main (String [] args) {
 		display.dispose();
 		return;
 	}
-	
+
 	final OleAutomation auto = automation;
 	go.addListener(SWT.Selection, new Listener() {
 		@Override
 		public void handleEvent(Event e) {
 			String url = text.getText();
-			int[] rgdispid = auto.getIDsOfNames(new String[]{"Navigate", "URL"}); 
+			int[] rgdispid = auto.getIDsOfNames(new String[]{"Navigate", "URL"});
 			int dispIdMember = rgdispid[0];
 			Variant[] rgvarg = new Variant[1];
 			rgvarg[0] = new Variant(url);
@@ -71,11 +72,12 @@ public static void main (String [] args) {
 			auto.invoke(dispIdMember, rgvarg, rgdispidNamedArgs);
 		}
 	});
-	
-	
+
+
 	// Read PostData whenever we navigate to a site that uses it
 	int BeforeNavigate2 = 0xfa;
 	controlSite.addEventListener(BeforeNavigate2, new OleListener() {
+		@Override
 		public void handleEvent(OleEvent event) {
 			Variant url = event.arguments[1];
 			Variant postData = event.arguments[4];
@@ -84,12 +86,12 @@ public static void main (String [] args) {
 			}
 		}
 	});
-	
+
 	// Navigate to this web site which uses post data to fill in the text field
 	// and put the string "hello world" into the text box
 	text.setText("file://"+Snippet186.class.getResource("Snippet186.html").getFile());
-	int[] rgdispid = automation.getIDsOfNames(new String[]{"Navigate", "URL", "PostData"}); 
-	int dispIdMember = rgdispid[0];	
+	int[] rgdispid = automation.getIDsOfNames(new String[]{"Navigate", "URL", "PostData"});
+	int dispIdMember = rgdispid[0];
 	Variant[] rgvarg = new Variant[2];
 	rgvarg[0] = new Variant(text.getText());
 	rgvarg[1] = writeSafeArray("hello world");
@@ -97,7 +99,7 @@ public static void main (String [] args) {
 	rgdispidNamedArgs[0] = rgdispid[1];
 	rgdispidNamedArgs[1] = rgdispid[2];
 	automation.invoke(dispIdMember, rgvarg, rgdispidNamedArgs);
-		
+
 	shell.open ();
 	while (!shell.isDisposed ()) {
 		if (!display.readAndDispatch ()) display.sleep ();
@@ -125,10 +127,10 @@ public static void main (String [] args) {
 //
 // SAFEARRAYBOUND:
 //      int cElements    // the number of elements in the dimension
-//      int lLbound      // the lower bound of the dimension 
+//      int lLbound      // the lower bound of the dimension
 
 static String readSafeArray(Variant variantByRef) {
-	// Read a safearray that contains data of 
+	// Read a safearray that contains data of
 	// type VT_UI1 (unsigned shorts) which contains
 	// a text stream.
     long /*int*/ pPostData = variantByRef.getByRef();
@@ -160,7 +162,7 @@ static String readSafeArray(Variant variantByRef) {
 static Variant writeSafeArray (String string) {
 	// Create a one dimensional safearray containing two VT_UI1 values
 	// where VT_UI1 is an unsigned char
-	
+
 	// Define cDims, fFeatures and cbElements
 	short cDims = 1;
 	short FADF_FIXEDSIZE = 0x10;
@@ -184,7 +186,7 @@ static Variant writeSafeArray (String string) {
 	safeArray.fFeatures = fFeatures;
 	safeArray.cbElements = cbElements;
 	safeArray.pvData = pvData;
-	SAFEARRAYBOUND safeArrayBound = new SAFEARRAYBOUND(); 
+	SAFEARRAYBOUND safeArrayBound = new SAFEARRAYBOUND();
 	safeArray.rgsabound = safeArrayBound;
 	safeArrayBound.cElements = cElements1;
 	safeArrayBound.lLbound = lLbound1;

@@ -34,6 +34,7 @@ public class Snippet258 {
 	public static void main(String[] args) {
 		Display display = new Display();
 		Shell shell = new Shell(display);
+		shell.setText("Snippet 258");
 		shell.setLayout(new GridLayout(2, false));
 
 		final Text text = new Text(shell, SWT.SEARCH | SWT.ICON_CANCEL);

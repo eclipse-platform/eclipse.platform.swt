@@ -38,6 +38,7 @@ static String stateMask (int stateMask) {
 public static void main (String [] args) {
 	Display display = new Display ();
 	final Shell shell = new Shell (display);
+	shell.setText("Snippet 62");
 	Listener listener = e -> {
 		String string = "Unknown";
 		switch (e.type) {

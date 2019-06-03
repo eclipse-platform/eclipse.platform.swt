@@ -27,6 +27,7 @@ public class Snippet74 {
 public static void main (String [] args) {
 	Display display = new Display ();
 	Shell shell = new Shell (display);
+	shell.setText("Snippet 74");
 	Caret caret = new Caret (shell, SWT.NONE);
 	caret.setBounds (10, 10, 2, 32);
 	shell.open ();

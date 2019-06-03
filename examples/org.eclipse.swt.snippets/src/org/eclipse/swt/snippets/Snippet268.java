@@ -32,6 +32,7 @@ public class Snippet268 {
 public static void main(String[] args) {
 	final Display display = new Display();
 	Shell shell = new Shell(display);
+	shell.setText("Snippet 268");
 	shell.setLayout(new FillLayout());
 	StyledText styledText = new StyledText(shell, SWT.V_SCROLL);
 	String multiLineString = "";

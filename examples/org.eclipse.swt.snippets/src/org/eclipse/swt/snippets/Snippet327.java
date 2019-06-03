@@ -31,6 +31,7 @@ public class Snippet327 {
 public static void main(String[] args) {
 	Display display = new Display();
 	Shell shell = new Shell(display);
+	shell.setText("Snippet 327");
 	shell.setLayout(new FillLayout());
 
 	final Browser browser;

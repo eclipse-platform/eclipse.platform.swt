@@ -39,6 +39,7 @@ public class Snippet141 {
 	public static void main(String[] args) {
 		display = new Display();
 		shell = new Shell(display);
+		shell.setText("Snippet 141");
 		shell.setSize(300, 300);
 		shell.open();
 		shellGC = new GC(shell);

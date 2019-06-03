@@ -38,6 +38,7 @@ public class Snippet372 {
 
 		Display display = new Display();
 		Shell shell = new Shell(display);
+		shell.setText("Snippet 372");
 		shell.setLayout(new FillLayout());
 		Browser browser;
 		try {

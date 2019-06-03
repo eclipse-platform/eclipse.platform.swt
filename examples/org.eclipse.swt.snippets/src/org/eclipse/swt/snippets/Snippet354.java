@@ -41,6 +41,7 @@ public class Snippet354 {
 	public static void main(String[] args) {
 		final Display display = new Display();
 		Shell shell = new Shell(display);
+		shell.setText("Snippet 354");
 		shell.setLayout(new GridLayout(1, false));
 
 		Menu appMenuBar = display.getMenuBar();

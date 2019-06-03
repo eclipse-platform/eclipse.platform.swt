@@ -21,7 +21,7 @@ package org.eclipse.swt.snippets;
  * http://www.eclipse.org/swt/snippets/
  */
 import org.eclipse.swt.*;
-import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
 
 public class Snippet12 {
@@ -29,6 +29,7 @@ public class Snippet12 {
 public static void main (String [] args) {
 	Display display = new Display ();
 	Shell shell = new Shell (display);
+	shell.setText("Snippet 12");
 	Text text = new Text (shell, SWT.BORDER | SWT.V_SCROLL);
 	Rectangle clientArea = shell.getClientArea ();
 	text.setBounds (clientArea.x + 10, clientArea.y + 10, 100, 100);

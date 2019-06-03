@@ -31,6 +31,7 @@ public class Snippet328 {
 	public static void main(String[] args) {
 		Display display = new Display();
 		Shell shell = new Shell(display);
+		shell.setText("Snippet 328");
 		shell.setLayout(new GridLayout());
 		shell.setText("StyledText: Variable tab stops");
 

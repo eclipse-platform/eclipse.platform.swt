@@ -31,6 +31,7 @@ public class Snippet304 {
     public static void main(String[] args) {
         display = new Display();
         Shell shell = new Shell(display);
+    	shell.setText("Snippet 304");
 
         shell.setLayout(new GridLayout());
         Text text = new Text(shell, SWT.MULTI | SWT.BORDER);

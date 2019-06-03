@@ -19,7 +19,7 @@ package org.eclipse.swt.snippets;
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
  */
-import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
 
 public class Snippet22 {
@@ -27,6 +27,7 @@ public class Snippet22 {
 public static void main (String [] args) {
 	Display display = new Display ();
 	Shell shell = new Shell (display);
+	shell.setText("Snippet 22");
 	Text text = new Text (shell, 0);
 	text.setText ("ASDF");
 	Rectangle clientArea = shell.getClientArea ();

@@ -21,14 +21,15 @@ package org.eclipse.swt.snippets;
  */
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.layout.*;
+import org.eclipse.swt.widgets.*;
 
 public class Snippet93 {
 
 public static void main (String [] args) {
 	Display display = new Display ();
 	Shell shell = new Shell (display);
+	shell.setText("Snippet 93");
 	shell.setLayout (new RowLayout ());
 	Label label = new Label (shell, SWT.NONE);
 	GC gc = new GC (label);

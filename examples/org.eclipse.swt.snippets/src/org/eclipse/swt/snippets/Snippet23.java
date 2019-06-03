@@ -28,6 +28,7 @@ public class Snippet23 {
 public static void main (String [] args) {
 	Display display = new Display ();
 	final Shell shell = new Shell (display);
+	shell.setText("Snippet 23");
 	shell.open ();
 	shell.addListener (SWT.MouseDown, e -> {
 		Tracker tracker = new Tracker (shell, SWT.NONE);

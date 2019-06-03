@@ -31,6 +31,7 @@ public class Snippet374 {
 	public static void main(String[] args) throws Exception {
 		Display display = new Display();
 		Shell shell = new Shell(display);
+		shell.setText("Snippet 374");
 		shell.setLayout(new FillLayout());
 		shell.setText("Customize line vertical indent");
 

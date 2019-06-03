@@ -29,6 +29,7 @@ static String statusText = "";
 public static void main(String[] args) {
     final Display display = new Display();
     Shell shell = new Shell(display);
+	shell.setText("Snippet 153");
     shell.setBounds(10, 10, 200, 200);
     final ToolBar bar = new ToolBar(shell, SWT.BORDER);
     bar.setBounds(10, 10, 150, 50);

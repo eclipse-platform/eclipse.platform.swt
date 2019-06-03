@@ -33,6 +33,7 @@ public class Snippet283 {
 		Display display = new Display();
 		Image image = new Image (display, Snippet283.class.getResourceAsStream("eclipse.png"));
 		Shell shell = new Shell(display);
+		shell.setText("Snippet 283");
 		shell.setLayout(new FillLayout());
 		final Table table = new Table(shell, SWT.FULL_SELECTION);
 		for (int i = 0; i < 8; i++) {

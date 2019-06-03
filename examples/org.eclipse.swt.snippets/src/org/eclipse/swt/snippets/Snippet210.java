@@ -45,6 +45,7 @@ public class Snippet210 {
 public static void main (String [] args) {
 	final Display display = new Display ();
 	Shell shell = new Shell (display);
+	shell.setText("Snippet 210");
 	shell.setLayout(new FillLayout());
 	int style = SWT.MULTI | SWT.WRAP | SWT.H_SCROLL | SWT.V_SCROLL | SWT.BORDER;
 	final StyledText text1 = new StyledText(shell, style);

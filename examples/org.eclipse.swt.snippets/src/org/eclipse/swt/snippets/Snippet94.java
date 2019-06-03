@@ -30,6 +30,7 @@ public static void main( String[] args) {
 	Display display = new Display ();
 	final Clipboard cb = new Clipboard(display);
 	final Shell shell = new Shell (display);
+	shell.setText("Snippet 94");
 	shell.setLayout(new FormLayout());
 	final Text text = new Text(shell, SWT.BORDER | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL);
 

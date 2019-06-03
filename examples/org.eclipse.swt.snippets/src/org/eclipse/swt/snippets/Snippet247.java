@@ -31,6 +31,7 @@ public class Snippet247 {
 public static void main (String [] args) {
 	Display display = new Display ();
 	Shell shell = new Shell (display);
+	shell.setText("Snippet 247");
 	shell.setLayout(new RowLayout());
 	Text text = new Text(shell, SWT.MULTI | SWT.BORDER);
 	String modifier = SWT.MOD1 == SWT.CTRL ? "Ctrl" : "Command";

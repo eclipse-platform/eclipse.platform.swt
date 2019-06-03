@@ -32,6 +32,7 @@ public class Snippet249 {
 public static void main (String [] args) {
 	Display display = new Display ();
 	Shell shell = new Shell (display);
+	shell.setText("Snippet 249");
 	Rectangle clientArea = shell.getClientArea();
 	shell.setBounds (clientArea.x + 10, clientArea.y + 10, 300, 200);
 	// create the composite that the pages will share

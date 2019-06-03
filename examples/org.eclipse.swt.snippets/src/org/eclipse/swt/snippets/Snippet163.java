@@ -29,6 +29,7 @@ public class Snippet163 {
 public static void main(String[] args) {
 	Display display = new Display();
 	Shell shell = new Shell(display);
+	shell.setText("Snippet 163");
 	shell.setLayout(new FillLayout());
 	StyledText text = new StyledText (shell, SWT.BORDER);
 	text.setText("0123456789 ABCDEFGHIJKLM NOPQRSTUVWXYZ");

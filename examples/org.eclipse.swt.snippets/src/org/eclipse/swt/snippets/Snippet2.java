@@ -16,6 +16,10 @@ package org.eclipse.swt.snippets;
 import java.text.*;
 import java.util.*;
 
+import org.eclipse.swt.*;
+import org.eclipse.swt.layout.*;
+import org.eclipse.swt.widgets.*;
+
 /*
  * Table example snippet: sort a table by column
  *
@@ -24,15 +28,12 @@ import java.util.*;
  *
  * @since 3.2
  */
-import org.eclipse.swt.*;
-import org.eclipse.swt.layout.*;
-import org.eclipse.swt.widgets.*;
-
 public class Snippet2 {
 
 public static void main (String [] args) {
     Display display = new Display ();
     Shell shell = new Shell (display);
+	shell.setText("Snippet 2");
     shell.setLayout(new FillLayout());
     final Table table = new Table(shell, SWT.BORDER);
     table.setHeaderVisible(true);

@@ -31,6 +31,7 @@ public class Snippet82 {
 public static void main(String[] args) {
 	Display display = new Display();
 	Shell shell = new Shell(display);
+	shell.setText("Snippet 82");
 	shell.setLayout(new FillLayout());
 	CTabFolder folder = new CTabFolder(shell, SWT.BORDER);
 	for (int i = 0; i < 4; i++) {

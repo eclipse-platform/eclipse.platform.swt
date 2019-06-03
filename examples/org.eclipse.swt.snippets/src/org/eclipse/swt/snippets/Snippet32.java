@@ -21,14 +21,15 @@ package org.eclipse.swt.snippets;
  */
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.program.*;
+import org.eclipse.swt.widgets.*;
 
 public class Snippet32 {
 
 public static void main (String [] args) {
 	Display display = new Display ();
 	Shell shell = new Shell (display);
+	shell.setText("Snippet 32");
 	Label label = new Label (shell, SWT.NONE);
 	label.setText ("Can't find icon for .bmp");
 	Image image = null;

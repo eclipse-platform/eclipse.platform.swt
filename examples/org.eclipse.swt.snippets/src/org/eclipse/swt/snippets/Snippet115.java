@@ -28,6 +28,7 @@ public class Snippet115 {
 public static void main (String [] args) {
 	Display display = new Display ();
 	Shell shell = new Shell (display);
+	shell.setText("Snippet 115");
 	shell.setLayout (new RowLayout (SWT.VERTICAL));
 	Composite c1 = new Composite (shell, SWT.BORDER | SWT.NO_RADIO_GROUP);
 	c1.setLayout (new RowLayout ());

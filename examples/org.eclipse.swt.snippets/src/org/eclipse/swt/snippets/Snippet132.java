@@ -20,15 +20,16 @@ package org.eclipse.swt.snippets;
  * http://www.eclipse.org/swt/snippets/
  */
 import org.eclipse.swt.*;
-import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.printing.*;
+import org.eclipse.swt.widgets.*;
 
 public class Snippet132 {
 
 public static void main (String [] args) {
 	Display display = new Display();
 	Shell shell = new Shell(display);
+	shell.setText("Snippet 132");
 	shell.open ();
 	PrinterData data = Printer.getDefaultPrinterData();
 	if (data == null) {

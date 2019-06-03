@@ -32,6 +32,7 @@ public class Snippet250 {
 public static void main (String [] args) {
 	Display display = new Display ();
 	Shell shell = new Shell (display);
+	shell.setText("Snippet 250");
 	shell.setLayout (new RowLayout ());
 
 	DateTime calendar = new DateTime (shell, SWT.CALENDAR | SWT.CALENDAR_WEEKNUMBERS);

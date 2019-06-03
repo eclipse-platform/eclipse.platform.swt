@@ -32,6 +32,7 @@ public class Snippet271 {
 public static void main(String[] args) {
 	Display display = new Display();
 	Shell shell = new Shell(display);
+	shell.setText("Snippet 271");
 	shell.setBounds(10,10,200,250);
 	final Table table = new Table(shell, SWT.NONE);
 	table.setBounds(10,10,150,200);

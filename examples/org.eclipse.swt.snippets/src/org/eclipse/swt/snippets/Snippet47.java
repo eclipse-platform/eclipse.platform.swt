@@ -28,6 +28,7 @@ public class Snippet47 {
 public static void main (String [] args) {
 	Display display = new Display ();
 	Shell shell = new Shell (display);
+	shell.setText("Snippet 47");
 
 	Image image = new Image (display, 20, 20);
 	Color color = display.getSystemColor (SWT.COLOR_BLUE);

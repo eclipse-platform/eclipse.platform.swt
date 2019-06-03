@@ -32,6 +32,7 @@ public class Snippet371 {
 	public static void main(String[] args) {
 		Display display = new Display();
 		Shell shell = new Shell(display);
+		shell.setText("Snippet 371");
 		shell.setLayout(new FillLayout());
 		CTabFolder folder = new CTabFolder(shell, SWT.BORDER);
 

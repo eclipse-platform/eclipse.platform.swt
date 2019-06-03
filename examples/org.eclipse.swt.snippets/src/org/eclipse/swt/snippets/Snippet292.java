@@ -30,6 +30,7 @@ public class Snippet292 {
 	public static void main(String[] args) {
 		final Display display = new Display();
 		final Shell shell = new Shell(display);
+		shell.setText("Snippet 292");
 		final Group group = new Group(shell, SWT.NONE);
 		group.setText("Group");
 		group.setLayout(new GridLayout());

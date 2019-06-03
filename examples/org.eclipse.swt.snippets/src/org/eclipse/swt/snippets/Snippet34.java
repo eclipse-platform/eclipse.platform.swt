@@ -34,6 +34,7 @@ public static void main (String[] args) {
 	gc.fillRectangle (image.getBounds ());
 	gc.dispose ();
 	Shell shell = new Shell (display);
+	shell.setText("Snippet 34");
 	Label label = new Label (shell, SWT.BORDER);
 	Rectangle clientArea = shell.getClientArea ();
 	label.setLocation (clientArea.x, clientArea.y);

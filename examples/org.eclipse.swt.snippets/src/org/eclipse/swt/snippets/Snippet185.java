@@ -31,6 +31,7 @@ public class Snippet185 {
 public static void main (String [] args) {
 	Display display = new Display ();
 	Shell shell = new Shell (display);
+	shell.setText("Snippet 185");
 	shell.setLayout(new FillLayout());
 	Label label1 = new Label(shell, SWT.BORDER);
 	label1.setText("Drag Source");

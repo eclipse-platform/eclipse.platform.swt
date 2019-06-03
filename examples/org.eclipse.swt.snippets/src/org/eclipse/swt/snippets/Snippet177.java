@@ -30,6 +30,7 @@ public class Snippet177 {
 public static void main(String[] args) {
 	Display display = new Display();
 	Shell shell = new Shell(display);
+	shell.setText("Snippet 177");
 	RowLayout layout = new RowLayout(SWT.VERTICAL);
 	layout.wrap = true;
 	layout.fill = true;

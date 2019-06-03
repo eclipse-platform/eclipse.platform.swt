@@ -12,15 +12,15 @@
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
 package org.eclipse.swt.snippets;
- 
+
 /*
  * OLE and ActiveX example snippet: get events from IE control (win32 only)
- * 
+ *
  * This snippet only runs as-is on 32-bit architectures because it uses
  * java integers to represent native pointers.  "long" comments are included
  * throughout the snippet to show where int should be changed to long in
  * order to run on a 64-bit architecture.
- * 
+ *
  * NOTE: This snippet uses internal SWT packages that are
  * subject to change without notice.
  *
@@ -28,17 +28,18 @@ package org.eclipse.swt.snippets;
  * http://www.eclipse.org/swt/snippets/
  */
 import org.eclipse.swt.*;
-import org.eclipse.swt.layout.*;
-import org.eclipse.swt.widgets.*;
-import org.eclipse.swt.ole.win32.*;
 import org.eclipse.swt.internal.ole.win32.*;
-import org.eclipse.swt.internal.win32.OS;
+import org.eclipse.swt.internal.win32.*;
+import org.eclipse.swt.layout.*;
+import org.eclipse.swt.ole.win32.*;
+import org.eclipse.swt.widgets.*;
 
 public class Snippet123 {
 
 public static void main(String[] args) {
 	final Display display = new Display();
 	Shell shell = new Shell(display);
+	shell.setText("Snippet 123");
 	shell.setLayout(new FillLayout());
 	OleControlSite controlSite;
 	try {
@@ -51,15 +52,16 @@ public static void main(String[] args) {
 		return;
 	}
 	shell.open();
-	
+
 	// IWebBrowser
 	final OleAutomation webBrowser = new OleAutomation(controlSite);
 
 	// When a new document is loaded, access the document object for the new page.
 	int DownloadComplete = 104;
 	controlSite.addEventListener(DownloadComplete, new OleListener() {
+		@Override
 		public void handleEvent(OleEvent event) {
-			int[] htmlDocumentID = webBrowser.getIDsOfNames(new String[]{"Document"}); 
+			int[] htmlDocumentID = webBrowser.getIDsOfNames(new String[]{"Document"});
 			if (htmlDocumentID == null) return;
 			Variant pVarResult = webBrowser.getProperty(htmlDocumentID[0]);
 			if (pVarResult == null || pVarResult.getType() == 0) return;
@@ -81,18 +83,18 @@ public static void main(String[] args) {
 			idispatch = new IDispatch(myDispatch.getAddress());
 			dispatch = new Variant(idispatch);
 			htmlDocument.setProperty(EventDispatch.onkeydown, dispatch);
-			
+
 			//Remember to release OleAutomation Object
 			htmlDocument.dispose();
 		}
 	});
-	
+
 	// Navigate to a web site
-	int[] ids = webBrowser.getIDsOfNames(new String[]{"Navigate", "URL"}); 
+	int[] ids = webBrowser.getIDsOfNames(new String[]{"Navigate", "URL"});
 	Variant[] rgvarg = new Variant[] {new Variant("http://www.google.com")};
 	int[] rgdispidNamedArgs = new int[]{ids[1]};
 	webBrowser.invoke(ids[0], rgvarg, rgdispidNamedArgs);
-		
+
 	while (!shell.isDisposed()) {
 		if (!display.readAndDispatch())
 			display.sleep();
@@ -100,16 +102,16 @@ public static void main(String[] args) {
 	//Remember to release OleAutomation Object
 	webBrowser.dispose();
 	display.dispose();
-	
+
 }
 }
-// EventDispatch implements a simple IDispatch interface which will be called 
+// EventDispatch implements a simple IDispatch interface which will be called
 // when the event is fired.
 class EventDispatch {
 	private COMObject iDispatch;
 	private int refCount = 0;
 	private int eventID;
-	
+
 	final static int onhelp = 0x8001177d;
 	final static int onclick = 0x80011778;
 	final static int ondblclick = 0x80011779;
@@ -137,12 +139,16 @@ class EventDispatch {
 	}
 	private void createCOMInterfaces() {
 		iDispatch = new COMObject(new int[]{2, 0, 0, 1, 3, 4, 8}){
+			@Override
 			public long /*int*/ method0(long /*int*/[] args) {return QueryInterface(args[0], args[1]);}
+			@Override
 			public long /*int*/ method1(long /*int*/[] args) {return AddRef();}
+			@Override
 			public long /*int*/ method2(long /*int*/[] args) {return Release();}
 			// method3 GetTypeInfoCount - not implemented
 			// method4 GetTypeInfo - not implemented
 			// method5 GetIDsOfNames - not implemented
+			@Override
 			public long /*int*/ method6(long /*int*/[] args) {return Invoke((int)/*64*/args[0], args[1], (int)/*64*/args[2], (int)/*64*/args[3], args[4], args[5], args[6], args[7]);}
 		};
 	}
@@ -150,7 +156,7 @@ class EventDispatch {
 		if (iDispatch != null)
 			iDispatch.dispose();
 		iDispatch = null;
-		
+
 	}
 	private int AddRef() {
 		refCount++;
@@ -182,7 +188,7 @@ class EventDispatch {
 		if (riid == 0 || ppvObject == 0) return COM.E_INVALIDARG;
 		GUID guid = new GUID();
 		COM.MoveMemory(guid, riid, GUID.sizeof);
-	
+
 		if (COM.IsEqualGUID(guid, COM.IIDIUnknown) || COM.IsEqualGUID(guid, COM.IIDIDispatch)) {
 			COM.MoveMemory(ppvObject, new long /*int*/[] {iDispatch.getAddress()}, OS.PTR_SIZEOF);
 			AddRef();

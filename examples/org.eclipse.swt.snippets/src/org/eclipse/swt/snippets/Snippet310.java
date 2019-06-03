@@ -31,6 +31,7 @@ public class Snippet310 {
 	public static void main (String[] args) {
 		final Display display = new Display();
 		final Shell shell = new Shell(display);
+		shell.setText("Snippet 310");
 		shell.setLayout(new GridLayout());
 		final Spinner spinner = new Spinner (shell, SWT.BORDER);
 		spinner.setValues(0, -100, 100, 0, 1, 10);

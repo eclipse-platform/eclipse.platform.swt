@@ -19,8 +19,7 @@ package org.eclipse.swt.snippets;
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
  */
-
-import org.eclipse.swt.SWT;
+import org.eclipse.swt.*;
 import org.eclipse.swt.custom.*;
 import org.eclipse.swt.layout.*;
 import org.eclipse.swt.widgets.*;
@@ -30,6 +29,7 @@ public class Snippet244 {
     public static void main(String[] args) {
         final Display display = new Display();
         Shell shell = new Shell(display);
+    	shell.setText("Snippet 244");
         shell.setLayout(new FillLayout());
         final StyledText text = new StyledText(shell, SWT.NONE);
         StyleRange style = new StyleRange();

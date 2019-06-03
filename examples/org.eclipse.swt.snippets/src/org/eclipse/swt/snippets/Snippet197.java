@@ -30,6 +30,7 @@ public class Snippet197 {
 public static void main(String[] args) {
 	Display display = new Display();
 	final Shell shell = new Shell(display);
+	shell.setText("Snippet 197");
 	final TextLayout layout = new TextLayout(display);
 	layout.setText(longString);
 	Listener listener = event -> {

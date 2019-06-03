@@ -64,6 +64,7 @@ public class Snippet285 {
 		int width = 250, height = 250;
 		final Display display = new Display();
 		final Shell shell = new Shell(display, SWT.NO_TRIM);
+		shell.setText("Snippet 285");
 		final Path path = new Path(display);
 		path.addArc(0, 0, width, height, 0, 360);
 		Path path2 = new Path(display, path, 0.1f);

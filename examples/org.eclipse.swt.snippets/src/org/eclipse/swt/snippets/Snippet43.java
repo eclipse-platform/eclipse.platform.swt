@@ -28,6 +28,7 @@ public class Snippet43 {
 public static void main (String [] args) {
 	Display display = new Display ();
 	Shell shell = new Shell (display);
+	shell.setText("Snippet 43");
 	Caret caret = new Caret (shell, SWT.NONE);
 	Color white = display.getSystemColor (SWT.COLOR_WHITE);
 	Color black = display.getSystemColor (SWT.COLOR_BLACK);

@@ -51,6 +51,7 @@ public static void main (String [] args) {
 
 	Image icon = new Image (display, imageData, maskData);
 	Shell shell = new Shell (display);
+	shell.setText("Snippet 70");
 	Button button = new Button (shell, SWT.PUSH);
 	button.setImage (icon);
 	button.setSize (60, 60);

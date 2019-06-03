@@ -37,6 +37,7 @@ public class Snippet96 {
 public static void main(String[] args) {
 	Display display = new Display();
 	Shell shell = new Shell(display);
+	shell.setText("Snippet 96");
 	shell.setLayout(new GridLayout());
 
 	// create a table with 3 columns and fill with data

@@ -122,6 +122,7 @@ public void setItems (String [] items) {
 public static void main (String [] args) {
 	Display display = new Display ();
 	Shell shell = new Shell (display);
+	shell.setText("Snippet 259");
 	shell.setLayout (new FillLayout ());
 	MyList t1 = new MyList (shell, SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL);
 	t1.setItems (new String [] {"Some", "items", "in", "the", "list"});

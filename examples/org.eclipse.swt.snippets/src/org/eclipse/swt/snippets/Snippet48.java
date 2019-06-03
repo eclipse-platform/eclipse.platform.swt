@@ -29,6 +29,7 @@ public class Snippet48 {
 public static void main (String [] args) {
 	Display display = new Display ();
 	Shell shell = new Shell (display);
+	shell.setText("Snippet 48");
 	shell.setLayout(new FillLayout());
 	Image originalImage = null;
 	FileDialog dialog = new FileDialog (shell, SWT.OPEN);

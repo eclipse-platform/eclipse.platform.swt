@@ -40,6 +40,7 @@ static String KNOWN_PASSWORD = "anonymousPassword";
 public static void main(String [] args) {
 	Display display = new Display();
 	final Shell shell = new Shell(display);
+	shell.setText("Snippet 317");
 	GridLayout gridLayout = new GridLayout();
 	gridLayout.numColumns = 2;
 	shell.setLayout(gridLayout);

@@ -27,6 +27,7 @@ public class Snippet358 {
 public static void main(String [] args) {
 	Display display = new Display();
 	Shell shell = new Shell(display);
+	shell.setText("Snippet 358");
 	shell.setLayout(new GridLayout ());
 	final Tree tree = new Tree(shell, SWT.NONE);
 	tree.setLayoutData(new GridData(200, 200));

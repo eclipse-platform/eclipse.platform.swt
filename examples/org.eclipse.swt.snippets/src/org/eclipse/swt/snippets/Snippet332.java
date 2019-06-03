@@ -37,6 +37,7 @@ public class Snippet332 {
 	public static void main(String [] args) {
 		final Display display = new Display();
 		Shell shell = new Shell(display);
+		shell.setText("Snippet 332");
 		GridLayout layout = new GridLayout();
 		layout.marginHeight = layout.marginWidth = 10;
 		shell.setLayout(layout);

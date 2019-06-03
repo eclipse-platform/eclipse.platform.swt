@@ -29,6 +29,7 @@ public class Snippet241 {
 public static void main(String [] args) {
 	Display display = new Display();
 	Shell shell = new Shell(display);
+	shell.setText("Snippet 241");
 	shell.setBounds(10,10,200,200);
 	Text text1 = new Text(shell, SWT.MULTI | SWT.WRAP);
 	Rectangle clientArea = shell.getClientArea();

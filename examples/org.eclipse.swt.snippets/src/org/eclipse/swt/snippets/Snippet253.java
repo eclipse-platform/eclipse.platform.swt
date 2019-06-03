@@ -28,6 +28,7 @@ public class Snippet253 {
 	public static void main(String[] args) {
 		final Display display = new Display();
 		final Shell shell = new Shell(display);
+		shell.setText("Snippet 253");
 		FillLayout layout = new FillLayout (SWT.VERTICAL);
 		shell.setLayout (layout);
 		final Table table = new Table (shell, SWT.NONE);

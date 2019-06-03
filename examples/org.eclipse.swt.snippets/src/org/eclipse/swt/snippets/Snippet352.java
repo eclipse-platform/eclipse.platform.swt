@@ -51,6 +51,7 @@ public class Snippet352 {
 	public static void main (String [] args) {
 		final Display display = new Display ();
 		final Shell shell = new Shell (display);
+		shell.setText("Snippet 352");
 		shell.setLayout(new FillLayout(SWT.HORIZONTAL));
 		shell.setText ("Touch demonstration");
 

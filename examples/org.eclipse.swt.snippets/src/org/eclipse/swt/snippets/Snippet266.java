@@ -30,6 +30,7 @@ public class Snippet266 {
 	public static void main(String[] args) {
 		Display display = new Display();
 		Shell shell = new Shell(display);
+		shell.setText("Snippet 266");
 		shell.setLayout(new GridLayout(2, true));
 
 		TabFolder tabFolder = new TabFolder(shell, SWT.NONE);

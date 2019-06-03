@@ -28,6 +28,7 @@ public class Snippet113 {
 public static void main (String [] args) {
 	Display display = new Display ();
 	Shell shell = new Shell (display);
+	shell.setText("Snippet 113");
 	Table table = new Table (shell, SWT.CHECK | SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL);
 	for (int i=0; i<12; i++) {
 		TableItem item = new TableItem (table, SWT.NONE);

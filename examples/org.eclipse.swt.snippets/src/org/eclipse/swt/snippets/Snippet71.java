@@ -28,6 +28,7 @@ public class Snippet71 {
 public static void main (String [] args) {
 	Display display = new Display ();
 	Shell shell = new Shell (display);
+	shell.setText("Snippet 71");
 	shell.pack ();
 	shell.open ();
 	Shell dialog = new Shell (shell, SWT.DIALOG_TRIM);

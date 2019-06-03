@@ -28,6 +28,7 @@ public class Snippet9 {
 public static void main (String [] args) {
 	Display display = new Display ();
 	final Shell shell = new Shell (display, SWT.SHELL_TRIM | SWT.H_SCROLL | SWT.V_SCROLL);
+	shell.setText("Snippet 9");
 	final Composite composite = new Composite (shell, SWT.BORDER);
 	composite.setSize (700, 600);
 	final Color red = display.getSystemColor (SWT.COLOR_RED);

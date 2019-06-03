@@ -28,6 +28,7 @@ public class Snippet279 {
 	public static void main (String [] args) {
 		Display display = new Display ();
 		Shell shell = new Shell (display, SWT.SHELL_TRIM | SWT.DOUBLE_BUFFERED);
+		shell.setText("Snippet 279");
 		shell.setLayout(new FillLayout ());
 		final Image image = display.getSystemImage (SWT.ICON_QUESTION);
 		shell.addListener (SWT.Paint, e -> {

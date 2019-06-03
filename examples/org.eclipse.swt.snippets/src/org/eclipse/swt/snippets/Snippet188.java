@@ -32,6 +32,7 @@ public class Snippet188 {
 public static void main (String [] args) {
 	Display display = new Display ();
 	Shell shell = new Shell (display);
+	shell.setText("Snippet 188");
 	shell.setLayout(new GridLayout());
 	final ScrolledComposite sc = new ScrolledComposite(shell, SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL);
 	sc.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));

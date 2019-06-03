@@ -37,6 +37,7 @@ public static void main (String [] args) {
 	String[] titles = {"Information", "Error", "Question", "Warning"};
 	String[] questions = {"who?", "what?", "where?", "when?", "why?"};
 	Shell shell = new Shell (display);
+	shell.setText("Snippet 297");
 	shell.setLayout(new GridLayout());
 	Table table = new Table (shell, SWT.MULTI | SWT.BORDER | SWT.FULL_SELECTION);
 	GridData data = new GridData (SWT.FILL, SWT.FILL, true, true);

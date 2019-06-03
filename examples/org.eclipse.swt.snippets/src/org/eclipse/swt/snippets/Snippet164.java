@@ -30,6 +30,7 @@ public class Snippet164 {
 public static void main (String[] args) {
 	Display display = new Display( );
 	Shell shell = new Shell (display);
+	shell.setText("Snippet 164");
 	shell.setLayout (new GridLayout ());
 	Image image = new Image (display, Snippet164.class.getResourceAsStream ("eclipse.png"));
 

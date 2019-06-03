@@ -57,6 +57,7 @@ static void createMenuItem(Menu parent, final TreeColumn column) {
 public static void main (String[] args) {
 	final Display display = new Display();
 	Shell shell = new Shell(display);
+	shell.setText("Snippet 312");
 	shell.setLayout(new FillLayout());
 
 	final Tree tree = new Tree(shell, SWT.V_SCROLL|SWT.H_SCROLL| SWT.BORDER);

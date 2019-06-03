@@ -67,6 +67,7 @@ public class Snippet341 {
 	public static void main(String [] args) {
 		final Display display = new Display();
 		Shell shell = new Shell(display);
+		shell.setText("Snippet 341");
 		shell.setLayout(new GridLayout());
 		GLData data = new GLData ();
 		data.doubleBuffer = true;
@@ -164,6 +165,7 @@ public class Snippet341 {
 		final Image image = new Image(display, data);
 
 		Shell shell = new Shell(display);
+		shell.setText("Capture");
 		shell.setLayout(new GridLayout());
 		Canvas canvas = new Canvas(shell, SWT.NONE);
 		canvas.setLayoutData(new GridData(bounds.width, bounds.height));

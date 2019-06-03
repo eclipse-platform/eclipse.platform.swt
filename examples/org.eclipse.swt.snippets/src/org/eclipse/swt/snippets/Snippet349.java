@@ -43,6 +43,7 @@ public static void main(String [] args) {
 	images[2] = createImage(display, 48, 16);
 
 	Shell shell = new Shell(display);
+	shell.setText("Snippet 349");
 	shell.setLayout(new FillLayout());
 	Table table = new Table(shell, SWT.NONE);
 	for (int i = 0; i < COLUMN_COUNT; i++) {

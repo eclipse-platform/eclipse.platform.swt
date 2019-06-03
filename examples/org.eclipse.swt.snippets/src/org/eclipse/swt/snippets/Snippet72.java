@@ -27,6 +27,7 @@ public class Snippet72 {
 public static void main (String [] args) {
 	Display display = new Display ();
 	Shell shell = new Shell (display);
+	shell.setText("Snippet 72");
 	shell.open ();
 	FileDialog dialog = new FileDialog (shell, SWT.SAVE);
 	String [] filterNames = new String [] {"Image Files", "All Files (*)"};

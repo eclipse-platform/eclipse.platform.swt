@@ -30,6 +30,7 @@ public class Snippet19 {
 	public static void main(String[] args) {
 		Display display = new Display();
 		Shell shell = new Shell(display);
+		shell.setText("Snippet 19");
 		Text text = new Text(shell, SWT.BORDER | SWT.V_SCROLL);
 		Rectangle clientArea = shell.getClientArea();
 		text.setBounds(clientArea.x + 10, clientArea.y + 10, 200, 200);

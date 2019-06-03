@@ -28,6 +28,7 @@ public class Snippet54 {
 public static void main (String [] args) {
 	Display display = new Display ();
 	Shell shell = new Shell (display);
+	shell.setText("Snippet 54");
 	shell.setSize(400, 300);
 	final Sash sash = new Sash (shell, SWT.BORDER | SWT.VERTICAL);
 	Rectangle clientArea = shell.getClientArea ();

@@ -35,6 +35,7 @@ public static void main (String [] args) {
 	int columnCount = 15;
 	final Display display = new Display ();
 	Shell shell = new Shell (display);
+	shell.setText("Snippet 234");
 	shell.setLayout(new FillLayout());
 
 	Composite parent = new Composite(shell, SWT.BORDER);

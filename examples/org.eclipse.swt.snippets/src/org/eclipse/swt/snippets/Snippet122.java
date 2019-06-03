@@ -37,6 +37,7 @@ public static void main(String[] args) {
 	Display display = new Display();
 	final Clipboard cb = new Clipboard(display);
 	Shell shell = new Shell(display);
+	shell.setText("Snippet 122");
 	shell.setLayout(new FillLayout());
 	final Text text = new Text(shell, SWT.BORDER | SWT.MULTI | SWT.WRAP);
 	Menu menu = new Menu(shell, SWT.POP_UP);

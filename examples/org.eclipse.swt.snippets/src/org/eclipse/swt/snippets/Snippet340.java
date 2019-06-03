@@ -32,6 +32,7 @@ public class Snippet340 {
 public static void main(String[] args) {
 	Display display = new Display();
 	Shell shell = new Shell(display);
+	shell.setText("Snippet 340");
 	shell.setLayout(new GridLayout());
 	shell.setText("Description Relation Example");
 

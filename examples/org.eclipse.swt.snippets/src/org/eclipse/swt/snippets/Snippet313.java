@@ -31,6 +31,7 @@ public class Snippet313 {
 	public static void main(String[] args) {
 		Display display = new Display();
 		final Shell shell = new Shell(display);
+		shell.setText("Snippet 313");
 		shell.setLayout (new FormLayout());
 
 		final Button button = new Button(shell, SWT.PUSH);

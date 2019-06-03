@@ -27,6 +27,7 @@ public class Snippet16 {
 public static void main (String [] args) {
 	final Display display = new Display ();
 	final Shell shell = new Shell (display);
+	shell.setText("Snippet 16");
 	final int time = 500;
 	Runnable timer = new Runnable () {
 		@Override

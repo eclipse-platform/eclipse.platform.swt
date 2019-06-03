@@ -20,7 +20,7 @@ package org.eclipse.swt.snippets;
  * http://www.eclipse.org/swt/snippets/
  */
 import org.eclipse.swt.*;
-import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
 
 public class Snippet57 {
@@ -28,6 +28,7 @@ public class Snippet57 {
 public static void main (String [] args) {
 	final Display display = new Display ();
 	Shell shell = new Shell (display);
+	shell.setText("Snippet 57");
 	final ProgressBar bar = new ProgressBar (shell, SWT.SMOOTH);
 	Rectangle clientArea = shell.getClientArea ();
 	bar.setBounds (clientArea.x, clientArea.y, 200, 32);

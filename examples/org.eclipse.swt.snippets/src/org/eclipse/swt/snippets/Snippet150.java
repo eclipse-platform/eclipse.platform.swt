@@ -47,6 +47,7 @@ static CoolItem createItem(CoolBar coolBar, int count) {
 public static void main(String[] args) {
     Display display = new Display();
     final Shell shell = new Shell(display);
+	shell.setText("Snippet 150");
     CoolBar coolBar = new CoolBar(shell, SWT.NONE);
     createItem(coolBar, 3);
     createItem(coolBar, 2);

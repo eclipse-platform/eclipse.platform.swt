@@ -36,6 +36,7 @@ public static void main (String [] args) {
 	gc.dispose ();
 
 	Shell shell = new Shell (display);
+	shell.setText("Snippet 112");
 	shell.setLayout (new FillLayout ());
 	Group group = new Group (shell, SWT.NONE);
 	group.setLayout (new FillLayout ());

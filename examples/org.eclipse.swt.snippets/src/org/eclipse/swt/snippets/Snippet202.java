@@ -30,6 +30,7 @@ public class Snippet202 {
 public static void main(String[] args) {
 	Display display = new Display();
 	final Shell shell = new Shell(display);
+	shell.setText("Snippet 202");
 	shell.setLayout (new FillLayout());
 	final Tree tree = new Tree(shell, SWT.VIRTUAL | SWT.BORDER);
 	tree.addListener(SWT.SetData, event -> {

@@ -28,6 +28,7 @@ public class Snippet40 {
 public static void main (String [] args) {
 	Display display = new Display ();
 	Shell shell = new Shell (display);
+	shell.setText("Snippet 40");
 	shell.setLayout(new GridLayout(2, false));
 	Composite c1 = new Composite (shell, SWT.BORDER);
 	c1.setLayoutData(new GridData(100, 100));
