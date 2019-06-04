@@ -13,7 +13,6 @@
  *******************************************************************************/
 package org.eclipse.swt.snippets;
 
-import java.io.*;
 /*
  * Simple "hackable" code that runs all of the SWT Snippets,
  * typically for testing. One example of a useful "hack" is
@@ -23,6 +22,7 @@ import java.io.*;
  *    String source = String.valueOf(buffer);
  * in order to run all of the Table and Tree Snippets.
  */
+import java.io.*;
 import java.lang.reflect.*;
 
 import org.eclipse.swt.*;
@@ -30,7 +30,7 @@ import org.eclipse.swt.*;
 public class SnippetLauncher {
 
 	public static void main (String [] args) {
-		File sourceDir = new File("src/org/eclipse/swt/snippets");
+		File sourceDir = SnippetsConfig.SNIPPETS_SOURCE_DIR;
 		boolean hasSource = sourceDir.exists();
 		int count = 500;
 		if (hasSource) {
@@ -38,11 +38,11 @@ public class SnippetLauncher {
 			if (files.length > 0) count = files.length;
 		}
 		for (int i = 1; i < count; i++) {
-			if (i == 132 || i == 133 || i == 318) continue; // avoid printing to printer
+			if (SnippetsConfig.isPrintingSnippet(i)) continue; // avoid printing to printer
 			String className = "Snippet" + i;
 			Class<?> clazz = null;
 			try {
-				clazz = Class.forName("org.eclipse.swt.snippets." + className);
+				clazz = Class.forName(SnippetsConfig.SNIPPETS_PACKAGE + "." + className);
 			} catch (ClassNotFoundException e) {}
 			if (clazz != null) {
 				System.out.println("\n" + clazz.getName());
@@ -85,8 +85,7 @@ public class SnippetLauncher {
 					}
 				}
 				Method method = null;
-				String [] param = new String [0];
-				if (i == 81) param = new String[] {"Shell.Explorer"};
+				String [] param = SnippetsConfig.getSnippetArguments(i);
 				try {
 					method = clazz.getMethod("main", param.getClass());
 				} catch (NoSuchMethodException e) {
