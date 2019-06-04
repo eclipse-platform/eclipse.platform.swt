@@ -164,6 +164,8 @@ public class Snippet288 {
 									if (!item[i].isDisposed())
 										item[i].setImage(image[i][imageDataIndex]);
 								});
+							} else {
+								break;
 							}
 
 							/* Sleep for the specified delay time (adding commonly-used slow-down fudge factors). */

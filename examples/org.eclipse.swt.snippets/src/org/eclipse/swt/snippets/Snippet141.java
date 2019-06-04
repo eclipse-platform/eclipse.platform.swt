@@ -13,16 +13,18 @@
  *******************************************************************************/
 package org.eclipse.swt.snippets;
 
+import java.util.concurrent.atomic.*;
+
+import org.eclipse.swt.*;
+import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.widgets.*;
+
 /*
  * Image example snippet: display an animated GIF
  *
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
  */
-import org.eclipse.swt.*;
-import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.widgets.*;
-
 public class Snippet141 {
 	static Display display;
 	static Shell shell;
@@ -45,6 +47,7 @@ public class Snippet141 {
 		FileDialog dialog = new FileDialog(shell);
 		dialog.setFilterExtensions(new String[] {"*.gif"});
 		String fileName = dialog.open();
+		final AtomicBoolean stopAnimation = new AtomicBoolean(false);
 		if (fileName != null) {
 			loader = new ImageLoader();
 			try {
@@ -79,7 +82,7 @@ public class Snippet141 {
 								/* Now loop through the images, creating and drawing each one
 								 * on the off-screen image before drawing it on the shell. */
 								int repeatCount = loader.repeatCount;
-								while (loader.repeatCount == 0 || repeatCount > 0) {
+								while ((loader.repeatCount == 0 || repeatCount > 0) && !stopAnimation.get()) {
 									switch (imageData.disposalMethod) {
 									case SWT.DM_FILL_BACKGROUND:
 										/* Fill with the background color before drawing. */
@@ -156,6 +159,7 @@ public class Snippet141 {
 		while (!shell.isDisposed()) {
 			if (!display.readAndDispatch()) display.sleep();
 		}
+		stopAnimation.set(true);
 		display.dispose();
 	}
 }
