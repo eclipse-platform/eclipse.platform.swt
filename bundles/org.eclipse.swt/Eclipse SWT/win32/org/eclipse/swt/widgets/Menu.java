@@ -198,21 +198,6 @@ Menu (Decorations parent, int style, long handle) {
 	super (parent, checkStyle (style));
 	this.parent = parent;
 	this.handle = handle;
-	/*
-	* Bug in IBM JVM 1.3.1.  For some reason, when the checkOrientation() is
-	* called from createWidget(), the JVM issues this error:
-	*
-	* JVM Exception 0x2 (subcode 0x0) occurred in thread "main" (TID:0x9F19D8)
-	*
-	* In addition, on Windows XP, a dialog appears with following error message,
-	* indicating that the problem may be in the JIT:
-	*
-	* AppName: java.exe	 AppVer: 0.0.0.0	 ModName: jitc.dll
-	* ModVer: 0.0.0.0	 Offset: 000b6912
-	*
-	* The fix is to call checkOrientation() from here.
-	*/
-	checkOrientation (parent);
 	createWidget ();
 }
 
@@ -387,21 +372,7 @@ void createItem (MenuItem item, int index) {
 }
 
 void createWidget () {
-	/*
-	* Bug in IBM JVM 1.3.1.  For some reason, when the following code is called
-	* from this method, the JVM issues this error:
-	*
-	* JVM Exception 0x2 (subcode 0x0) occurred in thread "main" (TID:0x9F19D8)
-	*
-	* In addition, on Windows XP, a dialog appears with following error message,
-	* indicating that the problem may be in the JIT:
-	*
-	* AppName: java.exe	 AppVer: 0.0.0.0	 ModName: jitc.dll
-	* ModVer: 0.0.0.0	 Offset: 000b6912
-	*
-	* The fix is to move the code to the caller of this method.
-	*/
-//	checkOrientation (parent);
+	checkOrientation (parent);
 	createHandle ();
 	parent.addMenu (this);
 }
