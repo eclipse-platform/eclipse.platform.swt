@@ -90,13 +90,13 @@ public class Composite extends Scrollable {
 	static final String NO_INPUT_METHOD = "org.eclipse.swt.internal.gtk.noInputMethod"; //$NON-NLS-1$
 	Shell popupChild;
 	/**
-	 * A Rectangle which, if specified, denotes an area where child widgets
-	 * should not be drawn. Only relevant if such child widgets are being
+	 * If set to {@code true}, child widgets with negative y coordinate GTK allocation
+	 * will not be drawn. Only relevant if such child widgets are being
 	 * drawn via propagateDraw(), such as Tree/Table editing widgets.
 	 *
-	 * See bug 535978.
+	 * See bug 535978 and bug 547986.
 	 */
-	Rectangle noChildDrawing = null;
+	boolean noChildDrawing = false;
 	/**
 	 * A HashMap of child widgets that keeps track of which child has had their
 	 * GdkWindow lowered/raised. Only relevant if such child widgets are being
@@ -1433,7 +1433,7 @@ void propagateDraw (long container, long cairo) {
 			if (child != 0) {
 				Widget widget = display.getWidget (child);
 				if (widget != this) {
-					if (noChildDrawing != null) {
+					if (noChildDrawing) {
 						Boolean childLowered = childrenLowered.get(widget);
 						if (childLowered == null) {
 							childrenLowered.put(widget, false);
@@ -1441,7 +1441,7 @@ void propagateDraw (long container, long cairo) {
 						}
 						GtkAllocation allocation = new GtkAllocation ();
 						GTK.gtk_widget_get_allocation(child, allocation);
-						if ((allocation.y + allocation.height) < noChildDrawing.height) {
+						if (allocation.y < 0) {
 							if (!childLowered) {
 								if (GTK.GTK4) {
 									long surface = gtk_widget_get_surface(child);

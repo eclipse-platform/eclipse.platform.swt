@@ -2723,7 +2723,7 @@ void propagateDraw (long container, long cairo) {
 	 * "noChildDrawing" widgets might still be partially drawn.
 	 */
 	super.propagateDraw(container, cairo);
-	if (headerVisible && noChildDrawing != null && wasScrolled) {
+	if (headerVisible && noChildDrawing && wasScrolled) {
 		for (TreeColumn column : columns) {
 			if (column != null) {
 				GTK.gtk_widget_queue_draw(column.buttonHandle);
@@ -4149,15 +4149,12 @@ long windowProc (long handle, long arg0, long user_data) {
 			 */
 			if (hasChildren) {
 				/*
-				 * If headers are visible, set noChildDrawing to their
-				 * dimensions -- this will prevent any child widgets from drawing
+				 * If headers are visible, set noChildDrawing to true
+				 * this will prevent any child widgets from drawing
 				 * over the header buttons. See bug 535978.
 				 */
 				if (headerVisible) {
-					GdkRectangle rect = new GdkRectangle ();
-					GDK.gdk_cairo_get_clip_rectangle (arg0, rect);
-					// -1's is for the 1px of padding between the fixedHandle and handle
-					noChildDrawing = new Rectangle(0, 0, rect.width - 1, this.headerHeight - 1);
+					noChildDrawing = true;
 				}
 				propagateDraw(handle, arg0);
 			}
