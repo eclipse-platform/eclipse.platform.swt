@@ -199,12 +199,14 @@ public class Display extends Device {
 			this.parent = parent;
 		}
 
+		@Override
 		public boolean isReadyToExit() {
 			Event event = new Event ();
 			parent.sendEvent(SWT.Close, event);
 			return event.doit;
 		}
 
+		@Override
 		public void stop() {
 			parent.dispose();
 		}
@@ -1047,20 +1049,31 @@ protected void create (DeviceData data) {
 /**
  * Check if the XIM module is present and generates a warning for potential graphical issues
  * if GTK_IM_MODULE=xim is detected. See Bug 517671.
+ *
+ * Additionally, this method enforces IBus as the input method for SWT-GTK on GNOME.
+ * This is because GNOME forces IBus by default, so any discrepancy can cause crashes on newer
+ * versions of GTK3.
  */
-void checkXimModule () {
+void checkIMModule () {
 	Map<String, String> env = System.getenv();
 	String module = env.get("GTK_IM_MODULE");
 	if (module != null && module.equals("xim")) {
 		System.err.println("***WARNING: Detected: GTK_IM_MODULE=xim. This input method is unsupported and can cause graphical issues.");
 		System.err.println("***WARNING: Unset GTK_IM_MODULE or set GTK_IM_MODULE=ibus if flicking is experienced. ");
 	}
+	// Enforce ibus as the input module on GNOME
+	String desktopEnvironment = env.get("XDG_CURRENT_DESKTOP");
+	if ("GNOME".equals(desktopEnvironment)) {
+		long settings = GTK.gtk_settings_get_default ();
+		byte[] ibus = Converter.wcsToMbcs ("ibus", true);
+		if (settings != 0) OS.g_object_set (settings, GTK.gtk_im_module, ibus, 0);
+	}
 }
 
 void createDisplay (DeviceData data) {
 	boolean init = GTK.GTK4 ? GTK.gtk_init_check () : GTK.gtk_init_check (new long [] {0}, null);
 	if (!init) SWT.error (SWT.ERROR_NO_HANDLES, null, " [gtk_init_check() failed]"); //$NON-NLS-1$
-	checkXimModule();
+	checkIMModule();
 	//set GTK+ Theme name as property for introspection purposes
 	if (OS.GTK_THEME_SET) {
 		String themeName = OS.GTK_THEME_NAME + (OS.GTK_THEME_DARK ? ":dark" : "");

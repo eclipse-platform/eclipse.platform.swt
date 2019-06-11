@@ -205,6 +205,7 @@ public class GTK extends OS {
 	public static final byte[] gtk_menu_bar_accel = OS.ascii("gtk-menu-bar-accel");
 	public static final byte[] gtk_menu_images = OS.ascii("gtk-menu-images");
 	public static final byte[] gtk_theme_name = OS.ascii("gtk-theme-name");
+	public static final byte[] gtk_im_module = OS.ascii("gtk-im-module");
 
 
 	/** Misc **/
