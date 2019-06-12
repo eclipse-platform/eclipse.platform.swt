@@ -50,3 +50,7 @@ BEGIN
         VALUE "Translation", 0x409, 1200
     END
 END
+
+/* Icons for Text widget */
+101 ICON "search.ico"
+102 ICON "cancel.ico"

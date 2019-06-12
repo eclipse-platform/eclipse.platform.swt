@@ -152,8 +152,14 @@ ScrollBar createScrollBar (int type) {
 @Override
 void createWidget () {
 	super.createWidget ();
-	if ((style & SWT.H_SCROLL) != 0) horizontalBar = createScrollBar (SWT.H_SCROLL);
-	if ((style & SWT.V_SCROLL) != 0) verticalBar = createScrollBar (SWT.V_SCROLL);
+	/*
+	 * NOTE: ICON_CANCEL and ICON_SEARCH have the same value as H_SCROLL and
+	 * V_SCROLL. The meaning is determined by whether SWT.SEARCH is set.
+	 */
+	if ((style & SWT.SEARCH) == 0) {
+		if ((style & SWT.H_SCROLL) != 0) horizontalBar = createScrollBar (SWT.H_SCROLL);
+		if ((style & SWT.V_SCROLL) != 0) verticalBar = createScrollBar (SWT.V_SCROLL);
+	}
 }
 
 @Override
@@ -328,8 +334,14 @@ int widgetExtStyle () {
 @Override
 int widgetStyle () {
 	int bits = super.widgetStyle () | OS.WS_TABSTOP;
-	if ((style & SWT.H_SCROLL) != 0) bits |= OS.WS_HSCROLL;
-	if ((style & SWT.V_SCROLL) != 0) bits |= OS.WS_VSCROLL;
+	/*
+	 * NOTE: ICON_CANCEL and ICON_SEARCH have the same value as H_SCROLL and
+	 * V_SCROLL. The meaning is determined by whether SWT.SEARCH is set.
+	 */
+	if ((style & SWT.SEARCH) == 0) {
+		if ((style & SWT.H_SCROLL) != 0) bits |= OS.WS_HSCROLL;
+		if ((style & SWT.V_SCROLL) != 0) bits |= OS.WS_VSCROLL;
+	}
 	return bits;
 }
 

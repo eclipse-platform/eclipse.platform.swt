@@ -347,6 +347,7 @@ public class OS extends C {
 	public static final int CS_VREDRAW = 0x1;
 	public static final int CS_OWNDC = 0x20;
 	public static final int CW_USEDEFAULT = 0x80000000;
+	public static final int CWP_SKIPINVISIBLE = 0x0001;
 	public static final String DATETIMEPICK_CLASS = "SysDateTimePick32"; //$NON-NLS-1$
 	public static final int DCX_CACHE = 0x2;
 	public static final int DCX_CLIPCHILDREN = 0x8;
@@ -770,6 +771,7 @@ public class OS extends C {
 	public static final int LGRPID_INSTALLED = 1;
 	public static final int LIF_ITEMINDEX = 0x1;
 	public static final int LIF_STATE = 0x2;
+	public static final int LIM_SMALL = 0;
 	public static final int LIS_FOCUSED = 0x1;
 	public static final int LIS_ENABLED = 0x2;
 	public static final int LISS_HOT = 0x2;
@@ -2413,6 +2415,12 @@ public static final native int CertNameToStr (int dwCertEncodingType, CERT_NAME_
 public static final native long /*int*/ CharLower (long /*int*/ ch);
 /** @param ch cast=(LPWSTR) */
 public static final native long /*int*/ CharUpper (long /*int*/ ch);
+/**
+ * @param hWndParent cast=(HWND)
+ * @param pt flags=struct
+ * @param flags cast=(UINT)
+ */
+public static final native long /*int*/ ChildWindowFromPointEx (long /*int*/ hWndParent, POINT pt, int flags);
 /** @param lpcc cast=(LPCHOOSECOLORW) */
 public static final native boolean ChooseColor (CHOOSECOLOR lpcc);
 /** @param chooseFont cast=(LPCHOOSEFONTW) */
@@ -3289,6 +3297,12 @@ public static final native long /*int*/ LoadCursor (long /*int*/ hInstance, long
  * @param lpIconName cast=(LPWSTR)
  */
 public static final native long /*int*/ LoadIcon (long /*int*/ hInstance, long /*int*/ lpIconName);
+/**
+ * @param hinst cast=(HINSTANCE)
+ * @param pszName cast=(PCWSTR)
+ * @param phico cast=(HICON *)
+ */
+public static final native int LoadIconMetric (long /*int*/ hinst, long /*int*/ pszName, int lims, long /*int*/ [] phico);
 /**
  * @param hinst cast=(HINSTANCE)
  * @param lpszName cast=(LPWSTR)
