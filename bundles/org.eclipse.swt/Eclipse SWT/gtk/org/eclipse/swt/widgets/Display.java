@@ -1646,39 +1646,34 @@ Rectangle getBoundsInPixels () {
 	checkDevice ();
 	int monitorCount;
 	Rectangle bounds = new Rectangle(0, 0, 0, 0);
+	int maxWidth = 0, maxHeight = 0;
 	if (GTK.GTK_VERSION >= OS.VERSION(3, 22, 0)) {
 		long display = GDK.gdk_display_get_default ();
 		monitorCount = GDK.gdk_display_get_n_monitors (display);
 		if (monitorCount > 0) {
-			GdkRectangle dest = new GdkRectangle ();
 			for (int i = 0; i < monitorCount; i++) {
 				long monitor = GDK.gdk_display_get_monitor(display, i);
+				GdkRectangle dest = new GdkRectangle ();
 				GDK.gdk_monitor_get_geometry (monitor, dest);
-				if (i == 0) {
-					bounds.width = dest.width;
-					bounds.height = dest.height;
-				} else {
-					bounds.width += dest.x;
-					bounds.height += dest.y;
-				}
+				if ((dest.x + dest.width) > maxWidth) maxWidth = dest.x + dest.width;
+				if ((dest.y + dest.height) > maxHeight) maxHeight = dest.y + dest.height;
 			}
+			bounds.width = maxWidth;
+			bounds.height = maxHeight;
 			return bounds;
 		}
 	} else {
 		long screen = GDK.gdk_screen_get_default();
 		monitorCount = GDK.gdk_screen_get_n_monitors(screen);
 		if (monitorCount > 0) {
-			GdkRectangle dest = new GdkRectangle ();
 			for (int i = 0; i < monitorCount; i++) {
+				GdkRectangle dest = new GdkRectangle ();
 				GDK.gdk_screen_get_monitor_geometry (screen, i, dest);
-				if (i == 0) {
-					bounds.width = dest.width;
-					bounds.height = dest.height;
-				} else {
-					bounds.width += dest.x;
-					bounds.height += dest.y;
-				}
+				if ((dest.x + dest.width) > maxWidth) maxWidth = dest.x + dest.width;
+				if ((dest.y + dest.height) > maxHeight) maxHeight = dest.y + dest.height;
 			}
+			bounds.width = maxWidth;
+			bounds.height = maxHeight;
 			return bounds;
 		}
 	}
