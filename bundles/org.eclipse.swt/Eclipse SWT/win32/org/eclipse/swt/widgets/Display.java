@@ -161,6 +161,10 @@ public class Display extends Device {
 	static final char [] TAB = new char [] {'T', 'A', 'B', 0};
 	static final char [] TREEVIEW = new char [] {'T', 'R', 'E', 'E', 'V', 'I', 'E', 'W', 0};
 
+	/* Custom icons */
+	long /*int*/ hIconSearch;
+	long /*int*/ hIconCancel;
+
 	/* Focus */
 	int focusEvent;
 	Control focusControl;
@@ -3627,6 +3631,10 @@ void releaseDisplay () {
 	if (embeddedHwnd != 0) {
 		OS.PostMessage (embeddedHwnd, SWT_DESTROY, 0, 0);
 	}
+
+	/* Free custom icons */
+	if (hIconSearch != 0) OS.DestroyIcon (hIconSearch);
+	if (hIconCancel != 0) OS.DestroyIcon (hIconCancel);
 
 	/* Release XP Themes */
 	if (hButtonTheme != 0) OS.CloseThemeData (hButtonTheme);

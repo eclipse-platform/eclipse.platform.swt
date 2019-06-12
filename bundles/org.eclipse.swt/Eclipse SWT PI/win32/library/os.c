@@ -601,6 +601,22 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(CharUpper)
 }
 #endif
 
+#ifndef NO_ChildWindowFromPointEx
+JNIEXPORT jintLong JNICALL OS_NATIVE(ChildWindowFromPointEx)
+	(JNIEnv *env, jclass that, jintLong arg0, jobject arg1, jint arg2)
+{
+	POINT _arg1, *lparg1=NULL;
+	jintLong rc = 0;
+	OS_NATIVE_ENTER(env, that, ChildWindowFromPointEx_FUNC);
+	if (arg1) if ((lparg1 = getPOINTFields(env, arg1, &_arg1)) == NULL) goto fail;
+	rc = (jintLong)ChildWindowFromPointEx((HWND)arg0, *lparg1, (UINT)arg2);
+fail:
+	if (arg1 && lparg1) setPOINTFields(env, arg1, lparg1);
+	OS_NATIVE_EXIT(env, that, ChildWindowFromPointEx_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_ChooseColor
 JNIEXPORT jboolean JNICALL OS_NATIVE(ChooseColor)
 	(JNIEnv *env, jclass that, jobject arg0)
@@ -5160,6 +5176,22 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(LoadIcon)
 	OS_NATIVE_ENTER(env, that, LoadIcon_FUNC);
 	rc = (jintLong)LoadIcon((HINSTANCE)arg0, (LPWSTR)arg1);
 	OS_NATIVE_EXIT(env, that, LoadIcon_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_LoadIconMetric
+JNIEXPORT jint JNICALL OS_NATIVE(LoadIconMetric)
+	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jint arg2, jintLongArray arg3)
+{
+	jintLong *lparg3=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, LoadIconMetric_FUNC);
+	if (arg3) if ((lparg3 = (*env)->GetIntLongArrayElements(env, arg3, NULL)) == NULL) goto fail;
+	rc = (jint)LoadIconMetric((HINSTANCE)arg0, (PCWSTR)arg1, arg2, (HICON *)lparg3);
+fail:
+	if (arg3 && lparg3) (*env)->ReleaseIntLongArrayElements(env, arg3, lparg3, 0);
+	OS_NATIVE_EXIT(env, that, LoadIconMetric_FUNC);
 	return rc;
 }
 #endif
