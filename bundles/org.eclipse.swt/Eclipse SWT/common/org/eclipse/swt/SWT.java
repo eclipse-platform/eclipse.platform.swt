@@ -3480,6 +3480,20 @@ public class SWT {
 	public static final int COLOR_TRANSPARENT = 37;
 
 	/**
+	 * System color used to paint disabled text background areas (value is 38).
+	 *
+	 * @since 3.112
+	 */
+	public static final int COLOR_TEXT_DISABLED_BACKGROUND = 38;
+
+	/**
+	 * System color used to paint disabled foreground areas (value is 39).
+	 *
+	 * @since 3.112
+	 */
+	public static final int COLOR_WIDGET_DISABLED_FOREGROUND = 39;
+
+	/**
 	 * Draw constant indicating whether the drawing operation
 	 * should fill the background (value is 1&lt;&lt;0).
 	 */
