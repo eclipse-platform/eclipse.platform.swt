@@ -539,7 +539,7 @@ protected void createCOMInterfaces() {
 		public long method7(long[] args) {return OnClose();}
 	};
 
-	iOleInPlaceSite = new COMObject(new int[]{2, 0, 0, 1, 1, 0, 0, 0, 5, C.PTR_SIZEOF == 4 ? 2 : 1, 1, 0, 0, 0, 1}){
+	iOleInPlaceSite = new COMObject(new int[]{2, 0, 0, 1, 1, 0, 0, 0, 5, 1, 1, 0, 0, 0, 1}){
 		@Override
 		public long method0(long[] args) {return QueryInterface(args[0], args[1]);}
 		@Override
@@ -559,13 +559,7 @@ protected void createCOMInterfaces() {
 		@Override
 		public long method8(long[] args) {return GetWindowContext(args[0], args[1], args[2], args[3], args[4]);}
 		@Override
-		public long method9(long[] args) {
-			if (args.length == 2) {
-				return Scroll((int)args[0], (int)args[1]);
-			} else {
-				return Scroll_64(args[0]);
-			}
-		}
+		public long method9(long[] args) {return Scroll(args[0]);}
 		@Override
 		public long method10(long[] args) {return OnUIDeactivate((int)args[0]);}
 		@Override
@@ -1377,10 +1371,7 @@ private boolean saveToTraditionalFile(File file) {
 
 	return false;
 }
-private int Scroll_64(long scrollExtent) {
-	return COM.S_OK;
-}
-private int Scroll(int scrollExtent_cx, int scrollExtent_cy) {
+private int Scroll(long scrollExtent) {
 	return COM.S_OK;
 }
 void setBorderSpace(RECT newBorderwidth) {

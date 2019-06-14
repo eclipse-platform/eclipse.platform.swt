@@ -241,33 +241,6 @@ public class Accessible {
 			@Override
 			public long method45(long[] args) {return get_attributes(args[0]);}
 		};
-
-		/* If the callback takes a struct parameter (for example, a VARIANT),
-		 * then create a custom callback that dereferences the struct and
-		 * passes a pointer to the original callback.
-		 */
-		long ppVtable = objIAccessible.ppVtable;
-		long[] pVtable = new long[1];
-		OS.MoveMemory(pVtable, ppVtable, C.PTR_SIZEOF);
-		long[] funcs = new long[28];
-		OS.MoveMemory(funcs, pVtable[0], C.PTR_SIZEOF * funcs.length);
-		funcs[9] = COM.get_accChild_CALLBACK(funcs[9]);
-		funcs[10] = COM.get_accName_CALLBACK(funcs[10]);
-		funcs[11] = COM.get_accValue_CALLBACK(funcs[11]);
-		funcs[12] = COM.get_accDescription_CALLBACK(funcs[12]);
-		funcs[13] = COM.get_accRole_CALLBACK(funcs[13]);
-		funcs[14] = COM.get_accState_CALLBACK(funcs[14]);
-		funcs[15] = COM.get_accHelp_CALLBACK(funcs[15]);
-		funcs[16] = COM.get_accHelpTopic_CALLBACK(funcs[16]);
-		funcs[17] = COM.get_accKeyboardShortcut_CALLBACK(funcs[17]);
-		funcs[20] = COM.get_accDefaultAction_CALLBACK(funcs[20]);
-		funcs[21] = COM.accSelect_CALLBACK(funcs[21]);
-		funcs[22] = COM.accLocation_CALLBACK(funcs[22]);
-		funcs[23] = COM.accNavigate_CALLBACK(funcs[23]);
-		funcs[25] = COM.accDoDefaultAction_CALLBACK(funcs[25]);
-		funcs[26] = COM.put_accName_CALLBACK(funcs[26]);
-		funcs[27] = COM.put_accValue_CALLBACK(funcs[27]);
-		OS.MoveMemory(pVtable[0], funcs, C.PTR_SIZEOF * funcs.length);
 	}
 
 	void createIAccessibleApplication() {
@@ -527,14 +500,6 @@ public class Accessible {
 			@Override
 			public long method6(long[] args) {return get_minimumValue(args[0]);}
 		};
-		/* Dereference VARIANT struct parameters. */
-		long ppVtable = objIAccessibleValue.ppVtable;
-		long[] pVtable = new long[1];
-		OS.MoveMemory(pVtable, ppVtable, C.PTR_SIZEOF);
-		long[] funcs = new long[7];
-		OS.MoveMemory(funcs, pVtable[0], C.PTR_SIZEOF * funcs.length);
-		funcs[4] = COM.CALLBACK_setCurrentValue(funcs[4]);
-		OS.MoveMemory(pVtable[0], funcs, C.PTR_SIZEOF * funcs.length);
 	}
 
 	void createIEnumVARIANT() {

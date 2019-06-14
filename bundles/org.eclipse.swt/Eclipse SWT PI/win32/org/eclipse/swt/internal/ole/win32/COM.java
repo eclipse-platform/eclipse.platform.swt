@@ -749,6 +749,7 @@ public static final native int VtblCall(int fnNumber, long ppVtbl, LICINFO arg0)
 public static final native int VtblCall(int fnNumber, long ppVtbl, RECT arg0, int arg1, boolean arg2);
 public static final native int VtblCall(int fnNumber, long ppVtbl, RECT arg0, long arg1, boolean arg2);
 
+public static final native int VtblCall(int fnNumber, long ppVtbl, long arg0, long arg1, long arg2, long arg3, long arg4);
 /**
  * @param arg0 flags=struct
  */
@@ -974,62 +975,6 @@ public static final native long LresultFromObject (GUID riid, long wParam, long 
  * @param pcObtained cast=(LONG *)
  */
 public static final native int AccessibleChildren(long paccContainer, int iChildStart, int cChildren, long rgvarChildren, int [] pcObtained);
-
-/*USED*/public static final native int VtblCall(int fnNumber, long ppVtbl, int arg0, int arg1, int arg2, int arg3);
-/*USED*/public static final native int VtblCall(int fnNumber, long ppVtbl, int arg0, int arg1, int arg2, int arg3, int arg4);
-/*USED,NEW*/public static final native int VtblCall(int fnNumber, long ppVtbl, int arg0, int arg1, int arg2, int arg3, long arg4);
-/*USED*/public static final native int VtblCall(int fnNumber, long ppVtbl, int arg0, int arg1, int arg2, int arg3, int arg4, long arg5);
-/*USED,NEW*/public static final native int VtblCall(int fnNumber, long ppVtbl, long arg0, int arg1, int arg2, int arg3, int arg4, long arg5);
-/*USED*/public static final native int VtblCall(int fnNumber, long ppVtbl, long arg0, long arg1, long arg2, long arg3, int arg4, int arg5, int arg6, int arg7);
-
-/** Custom accessibility natives */
-
-/** @method flags=no_gen */
-public static final native int VtblCall_VARIANT(int fnNumber, long ppVtbl, long arg0);
-/** @method flags=no_gen */
-public static final native int VtblCall_VARIANTP(int fnNumber, long ppVtbl, long arg0, long arg1);
-/** @method flags=no_gen */
-public static final native int VtblCall_IVARIANT(int fnNumber, long ppVtbl, int arg0, long arg1);
-/** @method flags=no_gen */
-public static final native int VtblCall_IVARIANTP(int fnNumber, long ppVtbl, int arg0, long arg1, long arg2);
-/** @method flags=no_gen */
-public static final native int VtblCall_PVARIANTP(int fnNumber, long ppVtbl, long arg0, long arg1, long arg2);
-/** @method flags=no_gen */
-public static final native int VtblCall_PPPPVARIANT(int fnNumber, long ppVtbl, long arg0, long arg1, long arg2, long arg3, long arg4);
-/** @method flags=no_gen */
-public static final native long get_accChild_CALLBACK(long func);
-/** @method flags=no_gen */
-public static final native long get_accName_CALLBACK(long func);
-/** @method flags=no_gen */
-public static final native long get_accValue_CALLBACK(long func);
-/** @method flags=no_gen */
-public static final native long get_accDescription_CALLBACK(long func);
-/** @method flags=no_gen */
-public static final native long get_accRole_CALLBACK(long func);
-/** @method flags=no_gen */
-public static final native long get_accState_CALLBACK(long func);
-/** @method flags=no_gen */
-public static final native long get_accHelp_CALLBACK(long func);
-/** @method flags=no_gen */
-public static final native long get_accHelpTopic_CALLBACK(long func);
-/** @method flags=no_gen */
-public static final native long get_accKeyboardShortcut_CALLBACK(long func);
-/** @method flags=no_gen */
-public static final native long get_accDefaultAction_CALLBACK(long func);
-/** @method flags=no_gen */
-public static final native long accSelect_CALLBACK(long func);
-/** @method flags=no_gen */
-public static final native long accLocation_CALLBACK(long func);
-/** @method flags=no_gen */
-public static final native long accNavigate_CALLBACK(long func);
-/** @method flags=no_gen */
-public static final native long accDoDefaultAction_CALLBACK(long func);
-/** @method flags=no_gen */
-public static final native long put_accName_CALLBACK(long func);
-/** @method flags=no_gen */
-public static final native long put_accValue_CALLBACK(long func);
-/** @method flags=no_gen,callback_types=HRESULT;VARIANT;,callback_flags=none;struct; */
-public static final native long CALLBACK_setCurrentValue(long func);
 
 /* sizeof's */
 public static final native int CAUUID_sizeof();

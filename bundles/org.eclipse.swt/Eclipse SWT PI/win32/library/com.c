@@ -1192,54 +1192,6 @@ JNIEXPORT void JNICALL COM_NATIVE(VariantInit)
 }
 #endif
 
-#ifndef NO_VtblCall__IJIIII
-JNIEXPORT jint JNICALL COM_NATIVE(VtblCall__IJIIII)
-	(JNIEnv *env, jclass that, jint arg0, jlong arg1, jint arg2, jint arg3, jint arg4, jint arg5)
-{
-	jint rc = 0;
-	COM_NATIVE_ENTER(env, that, VtblCall__IJIIII_FUNC);
-	rc = (jint)((jint (STDMETHODCALLTYPE *)(jlong, jint, jint, jint, jint))(*(jlong **)arg1)[arg0])(arg1, arg2, arg3, arg4, arg5);
-	COM_NATIVE_EXIT(env, that, VtblCall__IJIIII_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO_VtblCall__IJIIIII
-JNIEXPORT jint JNICALL COM_NATIVE(VtblCall__IJIIIII)
-	(JNIEnv *env, jclass that, jint arg0, jlong arg1, jint arg2, jint arg3, jint arg4, jint arg5, jint arg6)
-{
-	jint rc = 0;
-	COM_NATIVE_ENTER(env, that, VtblCall__IJIIIII_FUNC);
-	rc = (jint)((jint (STDMETHODCALLTYPE *)(jlong, jint, jint, jint, jint, jint))(*(jlong **)arg1)[arg0])(arg1, arg2, arg3, arg4, arg5, arg6);
-	COM_NATIVE_EXIT(env, that, VtblCall__IJIIIII_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO_VtblCall__IJIIIIIJ
-JNIEXPORT jint JNICALL COM_NATIVE(VtblCall__IJIIIIIJ)
-	(JNIEnv *env, jclass that, jint arg0, jlong arg1, jint arg2, jint arg3, jint arg4, jint arg5, jint arg6, jlong arg7)
-{
-	jint rc = 0;
-	COM_NATIVE_ENTER(env, that, VtblCall__IJIIIIIJ_FUNC);
-	rc = (jint)((jint (STDMETHODCALLTYPE *)(jlong, jint, jint, jint, jint, jint, jlong))(*(jlong **)arg1)[arg0])(arg1, arg2, arg3, arg4, arg5, arg6, arg7);
-	COM_NATIVE_EXIT(env, that, VtblCall__IJIIIIIJ_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO_VtblCall__IJIIIIJ
-JNIEXPORT jint JNICALL COM_NATIVE(VtblCall__IJIIIIJ)
-	(JNIEnv *env, jclass that, jint arg0, jlong arg1, jint arg2, jint arg3, jint arg4, jint arg5, jlong arg6)
-{
-	jint rc = 0;
-	COM_NATIVE_ENTER(env, that, VtblCall__IJIIIIJ_FUNC);
-	rc = (jint)((jint (STDMETHODCALLTYPE *)(jlong, jint, jint, jint, jint, jlong))(*(jlong **)arg1)[arg0])(arg1, arg2, arg3, arg4, arg5, arg6);
-	COM_NATIVE_EXIT(env, that, VtblCall__IJIIIIJ_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO_VtblCall__IJIIILorg_eclipse_swt_internal_ole_win32_DISPPARAMS_2ILorg_eclipse_swt_internal_ole_win32_EXCEPINFO_2I
 JNIEXPORT jint JNICALL COM_NATIVE(VtblCall__IJIIILorg_eclipse_swt_internal_ole_win32_DISPPARAMS_2ILorg_eclipse_swt_internal_ole_win32_EXCEPINFO_2I)
 	(JNIEnv *env, jclass that, jint arg0, jlong arg1, jint arg2, jint arg3, jint arg4, jobject arg5, jint arg6, jobject arg7, jint arg8)
@@ -1710,18 +1662,6 @@ fail:
 }
 #endif
 
-#ifndef NO_VtblCall__IJJIIIIJ
-JNIEXPORT jint JNICALL COM_NATIVE(VtblCall__IJJIIIIJ)
-	(JNIEnv *env, jclass that, jint arg0, jlong arg1, jlong arg2, jint arg3, jint arg4, jint arg5, jint arg6, jlong arg7)
-{
-	jint rc = 0;
-	COM_NATIVE_ENTER(env, that, VtblCall__IJJIIIIJ_FUNC);
-	rc = (jint)((jint (STDMETHODCALLTYPE *)(jlong, jlong, jint, jint, jint, jint, jlong))(*(jlong **)arg1)[arg0])(arg1, arg2, arg3, arg4, arg5, arg6, arg7);
-	COM_NATIVE_EXIT(env, that, VtblCall__IJJIIIIJ_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO_VtblCall__IJJI_3I
 JNIEXPORT jint JNICALL COM_NATIVE(VtblCall__IJJI_3I)
 	(JNIEnv *env, jclass that, jint arg0, jlong arg1, jlong arg2, jint arg3, jintArray arg4)
@@ -1754,14 +1694,14 @@ fail:
 }
 #endif
 
-#ifndef NO_VtblCall__IJJJJJIIII
-JNIEXPORT jint JNICALL COM_NATIVE(VtblCall__IJJJJJIIII)
-	(JNIEnv *env, jclass that, jint arg0, jlong arg1, jlong arg2, jlong arg3, jlong arg4, jlong arg5, jint arg6, jint arg7, jint arg8, jint arg9)
+#ifndef NO_VtblCall__IJJJJJJ
+JNIEXPORT jint JNICALL COM_NATIVE(VtblCall__IJJJJJJ)
+	(JNIEnv *env, jclass that, jint arg0, jlong arg1, jlong arg2, jlong arg3, jlong arg4, jlong arg5, jlong arg6)
 {
 	jint rc = 0;
-	COM_NATIVE_ENTER(env, that, VtblCall__IJJJJJIIII_FUNC);
-	rc = (jint)((jint (STDMETHODCALLTYPE *)(jlong, jlong, jlong, jlong, jlong, jint, jint, jint, jint))(*(jlong **)arg1)[arg0])(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9);
-	COM_NATIVE_EXIT(env, that, VtblCall__IJJJJJIIII_FUNC);
+	COM_NATIVE_ENTER(env, that, VtblCall__IJJJJJJ_FUNC);
+	rc = (jint)((jint (STDMETHODCALLTYPE *)(jlong, jlong, jlong, jlong, jlong, jlong))(*(jlong **)arg1)[arg0])(arg1, arg2, arg3, arg4, arg5, arg6);
+	COM_NATIVE_EXIT(env, that, VtblCall__IJJJJJJ_FUNC);
 	return rc;
 }
 #endif

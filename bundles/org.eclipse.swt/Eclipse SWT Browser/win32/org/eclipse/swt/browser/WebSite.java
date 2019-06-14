@@ -83,7 +83,7 @@ protected void createCOMInterfaces () {
 		@Override
 		public long method17(long[] args) {return FilterDataObject(args[0], args[1]);}
 	};
-	iDocHostShowUI = new COMObject(new int[]{2, 0, 0, 7, C.PTR_SIZEOF == 4 ? 7 : 6}){
+	iDocHostShowUI = new COMObject(new int[]{2, 0, 0, 7, 6}){
 		@Override
 		public long method0(long[] args) {return QueryInterface(args[0], args[1]);}
 		@Override
@@ -93,13 +93,7 @@ protected void createCOMInterfaces () {
 		@Override
 		public long method3(long[] args) {return ShowMessage(args[0], args[1], args[2], (int)args[3], args[4], (int)args[5], args[6]);}
 		@Override
-		public long method4(long[] args) {
-			if (args.length == 7) {
-				return ShowHelp(args[0], args[1], (int)args[2], (int)args[3], (int)args[4], (int)args[5], args[6]);
-			} else {
-				return ShowHelp_64(args[0], args[1], (int)args[2], (int)args[3], args[4], args[5]);
-			}
-		}
+		public long method4(long[] args) {return ShowHelp(args[0], args[1], (int)args[2], (int)args[3], args[4], args[5]);}
 	};
 	iServiceProvider = new COMObject(new int[]{2, 0, 0, 3}){
 		@Override
@@ -493,18 +487,7 @@ int ShowMessage(long hwnd, long lpstrText, long lpstrCaption, int dwType, long l
 	return ignore ? COM.S_OK : COM.S_FALSE;
 }
 
-int ShowHelp_64(long hwnd, long pszHelpFile, int uCommand, int dwData, long pt, long pDispatchObjectHit) {
-	POINT point = new POINT();
-	OS.MoveMemory(point, new long[]{pt}, 8);
-	return ShowHelp(hwnd, pszHelpFile, uCommand, dwData, point.x, point.y, pDispatchObjectHit);
-}
-
-/* Note.  One of the arguments of ShowHelp is a POINT struct and not a pointer to a POINT struct. Because
- * of the way Callback gets int parameters from a va_list of C arguments 2 integer arguments must be declared,
- * ptMouse_x and ptMouse_y. Otherwise the Browser crashes when the user presses F1 to invoke
- * the help.
- */
-int ShowHelp(long hwnd, long pszHelpFile, int uCommand, int dwData, int ptMouse_x, int ptMouse_y, long pDispatchObjectHit) {
+int ShowHelp(long hwnd, long pszHelpFile, int uCommand, int dwData, long pt, long pDispatchObjectHit) {
 	Browser browser = (Browser)getParent().getParent();
 	Event event = new Event();
 	event.type = SWT.Help;
