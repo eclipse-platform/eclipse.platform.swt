@@ -29,36 +29,4 @@
       </builder>
    </extension>
 
-   <extension
-         point="org.eclipse.jdt.core.compilationParticipant">
-      <compilationParticipant
-            class="org.eclipse.swt.tools.builders.Check64CompilationParticipant"
-            id="org.eclipse.swt.tools.Check64CompilationParticipant">
-      </compilationParticipant>
-   </extension>
-
-   <extension
-         point="org.eclipse.ui.popupMenus">
-      <objectContribution
-            objectClass="org.eclipse.jdt.core.IJavaProject"
-            id="org.eclipse.swt.tools.contribution">
-         <menu
-               label="%pluginName"
-               path="additions"
-               id="org.eclipse.swt.tools.menu">
-            <separator
-                  name="group1">
-            </separator>
-         </menu>
-         <action
-               label="%enableCheck64Name"
-               class="org.eclipse.swt.tools.builders.Check64EnableAction"
-               menubarPath="org.eclipse.swt.tools.menu/group1"
-               style="toggle"
-               enablesFor="1"
-               id="org.eclipse.swt.tools.check64EnableAction">
-         </action>
-      </objectContribution>
-   </extension>
-
 </plugin>
