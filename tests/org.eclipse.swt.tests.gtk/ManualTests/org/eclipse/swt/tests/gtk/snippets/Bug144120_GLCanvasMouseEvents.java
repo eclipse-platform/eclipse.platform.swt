@@ -45,7 +45,7 @@ public class Bug144120_GLCanvasMouseEvents {
 		@Override
 		public void mouseMove(MouseEvent event) {
 			long time=System.currentTimeMillis();
-			System.out.println(new Long(time).toString() + " mouse move: " + event.x + " " + event.y);
+			System.out.println(Long.valueOf(time).toString() + " mouse move: " + event.x + " " + event.y);
 			try {
 				synchronized(this) {
 					wait(100);
@@ -63,7 +63,7 @@ public class Bug144120_GLCanvasMouseEvents {
 		@Override
 		public void mouseDoubleClick(MouseEvent event) {
 			long time=System.currentTimeMillis();
-			System.out.println(new Long(time).toString() + " mouse doubleclick: " + event.x + " " + event.y);
+			System.out.println(Long.valueOf(time).toString() + " mouse doubleclick: " + event.x + " " + event.y);
 		}
 
 		@Override
@@ -78,13 +78,13 @@ public class Bug144120_GLCanvasMouseEvents {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			System.out.println(new Long(time).toString() + " mouse down: " + event.x + " " + event.y);
+			System.out.println(Long.valueOf(time).toString() + " mouse down: " + event.x + " " + event.y);
 		}
 
 		@Override
 		public void mouseUp(MouseEvent event) {
 			long time=System.currentTimeMillis();
-			System.out.println(new Long(time).toString() + " mouse move: " + event.x + " " + event.y);
+			System.out.println(Long.valueOf(time).toString() + " mouse move: " + event.x + " " + event.y);
 			try {
 				synchronized(this) {
 					wait(100);
@@ -93,7 +93,7 @@ public class Bug144120_GLCanvasMouseEvents {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			System.out.println(new Long(time).toString() + " mouse up: " + event.x + " " + event.y);
+			System.out.println(Long.valueOf(time).toString() + " mouse up: " + event.x + " " + event.y);
 		}
 
 	}

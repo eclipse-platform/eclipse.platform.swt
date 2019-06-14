@@ -927,7 +927,7 @@ public void test_setUrl_remote_with_post() {
 		assertTrue("Expecting setUrl() to return true", opSuccess);
 	};
 
-	final AtomicReference<Boolean> completed = new AtomicReference<>(new Boolean(false));
+	final AtomicReference<Boolean> completed = new AtomicReference<>(false);
 	browser.addProgressListener(completedAdapter(event -> {
 		testLog.append("ProgressListener fired");
 		completed.set(true);
@@ -1667,7 +1667,7 @@ public void test_evaluate_boolean() {
 public void test_evaluate_null() {
 	assumeFalse(webkit1SkipMsg(), isWebkit1); // Bug 509411
 	 // Boolen only used as dummy placeholder so the object is not null.
-	final AtomicReference<Object> returnValue = new AtomicReference<>(new Boolean(true));
+	final AtomicReference<Object> returnValue = new AtomicReference<>(true);
 	browser.addProgressListener(completedAdapter(event -> {
 		Object evalResult = browser.evaluate("return null");
 		returnValue.set(evalResult);

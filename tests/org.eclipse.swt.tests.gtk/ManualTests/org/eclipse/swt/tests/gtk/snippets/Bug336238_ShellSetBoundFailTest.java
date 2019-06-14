@@ -32,8 +32,8 @@ public class Bug336238_ShellSetBoundFailTest {
 
 		for (int i = 0; i < cycles; i++) {
 
-			x = (new Double(Math.random() * 1000)).intValue();
-			y = (new Double(Math.random() * 1000)).intValue() + 27;
+			x = (Double.valueOf(Math.random() * 1000)).intValue();
+			y = (Double.valueOf(Math.random() * 1000)).intValue() + 27;
 
 			Shell testShell = new Shell();
 			testShell.open();
