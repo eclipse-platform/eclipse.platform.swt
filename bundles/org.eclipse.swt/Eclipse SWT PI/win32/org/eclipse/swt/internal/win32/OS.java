@@ -505,7 +505,6 @@ public class OS extends C {
 	public static final int FCONTROL = 0x8;
 	public static final int FE_FONTSMOOTHINGCLEARTYPE = 0x0002;
 	public static final int FEATURE_DISABLE_NAVIGATION_SOUNDS = 21;
-	public static final int FILE_ATTRIBUTE_DIRECTORY = 0x00000010;
 	public static final int FILE_ATTRIBUTE_NORMAL = 0x00000080;
 	public static final int FILE_MAP_READ = 4;
 	public static final int FLICKDIRECTION_RIGHT = 0;
@@ -519,11 +518,6 @@ public class OS extends C {
 	public static final int FLICKDIRECTION_INVALID = 8;
 	public static final int FNERR_INVALIDFILENAME = 0x3002;
 	public static final int FNERR_BUFFERTOOSMALL = 0x3003;
-	public static final int FOF_SILENT = 0x0004;
-	public static final int FOF_NOCONFIRMATION = 0x0010;
-	public static final int FOF_NOCONFIRMMKDIR = 0x0200;
-	public static final int FOF_NOERRORUI = 0x0400;
-	public static final int FOF_NO_UI = (FOF_SILENT | FOF_NOCONFIRMATION | FOF_NOERRORUI | FOF_NOCONFIRMMKDIR);
 	public static final int FORMAT_MESSAGE_ALLOCATE_BUFFER = 0x00000100;
 	public static final int FORMAT_MESSAGE_FROM_SYSTEM = 0x00001000;
 	public static final int FORMAT_MESSAGE_IGNORE_INSERTS = 0x00000200;
@@ -4472,19 +4466,6 @@ public static final native int SHGetMalloc (long [] ppMalloc);
  * @param pszPath cast=(LPWSTR)
  */
 public static final native boolean SHGetPathFromIDList (long pidl, char [] pszPath);
-/**
- * @param kfid cast=(REFKNOWNFOLDERID)
- * @param riid cast=(REFIID)
- * @param ppv cast=(void **)
- */
-public static final native int SHCreateItemInKnownFolder (byte [] kfid, int dwKFFlags, char [] pszItem, byte [] riid, long [] ppv);
-/**
- * @param psiParent cast=(IShellItem *)
- * @param pbc cast=(IBindCtx *)
- * @param riid cast=(REFIID)
- * @param ppv cast=(void **)
- */
-public static final native int SHCreateItemFromRelativeName (long psiParent, char [] pszName, long pbc, byte [] riid, long [] ppv);
 /**
  * @param pbc cast=(IBindCtx *)
  * @param riid cast=(REFIID)

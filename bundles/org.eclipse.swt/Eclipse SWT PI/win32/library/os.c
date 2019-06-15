@@ -7988,53 +7988,6 @@ fail:
 }
 #endif
 
-#ifndef NO_SHCreateItemFromRelativeName
-JNIEXPORT jint JNICALL OS_NATIVE(SHCreateItemFromRelativeName)
-	(JNIEnv *env, jclass that, jlong arg0, jcharArray arg1, jlong arg2, jbyteArray arg3, jlongArray arg4)
-{
-	jchar *lparg1=NULL;
-	jbyte *lparg3=NULL;
-	jlong *lparg4=NULL;
-	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, SHCreateItemFromRelativeName_FUNC);
-	if (arg1) if ((lparg1 = (*env)->GetCharArrayElements(env, arg1, NULL)) == NULL) goto fail;
-	if (arg3) if ((lparg3 = (*env)->GetByteArrayElements(env, arg3, NULL)) == NULL) goto fail;
-	if (arg4) if ((lparg4 = (*env)->GetLongArrayElements(env, arg4, NULL)) == NULL) goto fail;
-	rc = (jint)SHCreateItemFromRelativeName((IShellItem *)arg0, lparg1, (IBindCtx *)arg2, (REFIID)lparg3, (void **)lparg4);
-fail:
-	if (arg4 && lparg4) (*env)->ReleaseLongArrayElements(env, arg4, lparg4, 0);
-	if (arg3 && lparg3) (*env)->ReleaseByteArrayElements(env, arg3, lparg3, 0);
-	if (arg1 && lparg1) (*env)->ReleaseCharArrayElements(env, arg1, lparg1, 0);
-	OS_NATIVE_EXIT(env, that, SHCreateItemFromRelativeName_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO_SHCreateItemInKnownFolder
-JNIEXPORT jint JNICALL OS_NATIVE(SHCreateItemInKnownFolder)
-	(JNIEnv *env, jclass that, jbyteArray arg0, jint arg1, jcharArray arg2, jbyteArray arg3, jlongArray arg4)
-{
-	jbyte *lparg0=NULL;
-	jchar *lparg2=NULL;
-	jbyte *lparg3=NULL;
-	jlong *lparg4=NULL;
-	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, SHCreateItemInKnownFolder_FUNC);
-	if (arg0) if ((lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL)) == NULL) goto fail;
-	if (arg2) if ((lparg2 = (*env)->GetCharArrayElements(env, arg2, NULL)) == NULL) goto fail;
-	if (arg3) if ((lparg3 = (*env)->GetByteArrayElements(env, arg3, NULL)) == NULL) goto fail;
-	if (arg4) if ((lparg4 = (*env)->GetLongArrayElements(env, arg4, NULL)) == NULL) goto fail;
-	rc = (jint)SHCreateItemInKnownFolder((REFKNOWNFOLDERID)lparg0, arg1, lparg2, (REFIID)lparg3, (void **)lparg4);
-fail:
-	if (arg4 && lparg4) (*env)->ReleaseLongArrayElements(env, arg4, lparg4, 0);
-	if (arg3 && lparg3) (*env)->ReleaseByteArrayElements(env, arg3, lparg3, 0);
-	if (arg2 && lparg2) (*env)->ReleaseCharArrayElements(env, arg2, lparg2, 0);
-	if (arg0 && lparg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
-	OS_NATIVE_EXIT(env, that, SHCreateItemInKnownFolder_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO_SHDRAGIMAGE_1sizeof
 JNIEXPORT jint JNICALL OS_NATIVE(SHDRAGIMAGE_1sizeof)
 	(JNIEnv *env, jclass that)

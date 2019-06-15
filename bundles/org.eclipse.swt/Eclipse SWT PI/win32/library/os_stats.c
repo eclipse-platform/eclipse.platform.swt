@@ -598,8 +598,6 @@ char * OS_nativeFunctionNames[] = {
 	"SCROLLINFO_1sizeof",
 	"SHBrowseForFolder",
 	"SHCreateItemFromParsingName",
-	"SHCreateItemFromRelativeName",
-	"SHCreateItemInKnownFolder",
 	"SHDRAGIMAGE_1sizeof",
 	"SHELLEXECUTEINFO_1sizeof",
 	"SHFILEINFO_1sizeof",

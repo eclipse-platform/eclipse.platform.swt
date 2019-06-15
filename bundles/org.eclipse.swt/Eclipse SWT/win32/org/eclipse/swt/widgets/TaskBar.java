@@ -15,6 +15,8 @@
 package org.eclipse.swt.widgets;
 
 
+import java.io.*;
+
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.*;
@@ -41,9 +43,9 @@ public class TaskBar extends Widget {
 	int itemCount;
 	TaskItem [] items = new TaskItem [4];
 	long mTaskbarList3;
+	String iconsDir;
 
 	static final char [] EXE_PATH;
-	static final char [] ICO_DIR = {'i','c','o','_','d','i','r','\0'};
 	static final PROPERTYKEY PKEY_Title = new PROPERTYKEY ();
 	static final PROPERTYKEY PKEY_AppUserModel_IsDestListSeparator = new PROPERTYKEY ();
 	static final String EXE_PATH_KEY = "org.eclipse.swt.win32.taskbar.executable";  //$NON-NLS-1$
@@ -54,7 +56,6 @@ public class TaskBar extends Widget {
 	static final byte [] CLSID_DestinationList = new byte[16];
 	static final byte [] CLSID_EnumerableObjectCollection = new byte[16];
 	static final byte [] CLSID_ShellLink = new byte[16];
-	static final byte [] CLSID_FileOperation = new byte [16];
 	static final byte [] IID_ITaskbarList3 = new byte [16];
 	static final byte [] IID_ICustomDestinationList = new byte[16];
 	static final byte [] IID_IObjectArray = new byte[16];
@@ -62,14 +63,11 @@ public class TaskBar extends Widget {
 	static final byte [] IID_IShellLinkW = new byte[16];
 	static final byte [] IID_IPropertyStore = new byte[16];
 	static final byte [] IID_IShellItem = new byte [16];
-	static final byte [] IID_IFileOperation = new byte [16];
-	static final byte [] FOLDERID_LocalAppData = new byte [16];
 	static {
 		OS.IIDFromString ("{56FDF344-FD6D-11d0-958A-006097C9A090}\0".toCharArray (), CLSID_TaskbarList); //$NON-NLS-1$
 		OS.IIDFromString ("{77f10cf0-3db5-4966-b520-b7c54fd35ed6}\0".toCharArray (), CLSID_DestinationList); //$NON-NLS-1$
 		OS.IIDFromString ("{2d3468c1-36a7-43b6-ac24-d3f02fd9607a}\0".toCharArray (), CLSID_EnumerableObjectCollection); //$NON-NLS-1$
 		OS.IIDFromString ("{00021401-0000-0000-C000-000000000046}\0".toCharArray (), CLSID_ShellLink); //$NON-NLS-1$
-		OS.IIDFromString ("{3ad05575-8857-4850-9277-11b85bdb8e09}\0".toCharArray (), CLSID_FileOperation);
 		OS.IIDFromString ("{EA1AFB91-9E28-4B86-90E9-9E9F8A5EEFAF}\0".toCharArray (), IID_ITaskbarList3); //$NON-NLS-1$
 		OS.IIDFromString ("{6332debf-87b5-4670-90c0-5e57b408a49e}\0".toCharArray (), IID_ICustomDestinationList); //$NON-NLS-1$
 		OS.IIDFromString ("{92CA9DCD-5622-4bba-A805-5E9F541BD8C9}\0".toCharArray (), IID_IObjectArray); //$NON-NLS-1$
@@ -77,8 +75,6 @@ public class TaskBar extends Widget {
 		OS.IIDFromString ("{000214F9-0000-0000-C000-000000000046}\0".toCharArray (), IID_IShellLinkW); //$NON-NLS-1$
 		OS.IIDFromString ("{886d8eeb-8cf2-4446-8d02-cdba1dbdcf99}\0".toCharArray (), IID_IPropertyStore); //$NON-NLS-1$
 		OS.IIDFromString ("{43826d1e-e718-42ee-bc55-a1e261c37bfe}\0".toCharArray (), IID_IShellItem); //$NON-NLS-1$
-		OS.IIDFromString ("{947aab5f-0a5c-4c13-b4d6-4bf7836fc9f8}\0".toCharArray (), IID_IFileOperation); //$NON-NLS-1$
-		OS.IIDFromString ("{F1B32785-6FBA-4FCF-9D55-7B8E7F157091}\0".toCharArray (), FOLDERID_LocalAppData); //$NON-NLS-1$
 		OS.PSPropertyKeyFromString ("{F29F85E0-4FF9-1068-AB91-08002B27B3D9} 2\0".toCharArray (), PKEY_Title); //$NON-NLS-1$
 		OS.PSPropertyKeyFromString ("{9F4C2855-9F79-4B39-A8D0-E1D42DE1D5F3}, 6\0".toCharArray (), PKEY_AppUserModel_IsDestListSeparator); //$NON-NLS-1$
 		char [] buffer = new char [OS.MAX_PATH];
@@ -121,7 +117,7 @@ void createItems () {
 	getItem (null);
 }
 
-long createShellLink (MenuItem item, String directory) {
+long createShellLink (MenuItem item) {
 	int style = item.getStyle ();
 	if ((style & SWT.CASCADE) != 0) return 0;
 	long [] ppv = new long [1];
@@ -186,9 +182,11 @@ long createShellLink (MenuItem item, String directory) {
 			text = (String)item.getData (ICON_INDEX_KEY);
 			if (text != null) index = Integer.parseInt (text);
 		} else {
+			String directory = null;
 			Image image = item.getImage ();
-			if (image != null && directory != null) {
-				icon = directory + "\\menu" + item.id + ".ico" ;
+			if (image != null) directory = getIconsDir ();
+			if (directory != null) {
+				icon = directory + "\\" + "menu" + item.id + ".ico";
 				ImageData data;
 				if (item.hBitmap != 0) {
 					Image image2 = Image.win32_new (display, SWT.BITMAP, item.hBitmap);
@@ -228,7 +226,7 @@ long createShellLink (MenuItem item, String directory) {
 	return pLink;
 }
 
-long createShellLinkArray (MenuItem [] items, String directory) {
+long createShellLinkArray (MenuItem [] items) {
 	if (items == null) return 0;
 	if (items.length == 0) return 0;
 	long [] ppv = new long [1];
@@ -236,7 +234,7 @@ long createShellLinkArray (MenuItem [] items, String directory) {
 	if (hr != OS.S_OK) error (SWT.ERROR_NO_HANDLES);
 	long pObjColl = ppv [0];
 	for (int i = 0; i < items.length; i++) {
-		long pLink = createShellLink (items[i], directory);
+		long pLink = createShellLink (items[i]);
 		if (pLink != 0) {
 			/*IObjectCollection::AddObject*/
 			hr = OS.VtblCall (5, pObjColl, pLink);
@@ -265,108 +263,20 @@ void destroyItem (TaskItem item) {
 	items [itemCount] = null;
 }
 
-String getDirectory (char[] appName) {
-	char [] appDir = new char [appName.length];
-	for (int i = 0; i < appName.length; i++) {
-		char c = appName [i];
-		switch (c) {
-			case '\\':
-			case '/':
-			case ':':
-			case '*':
-			case '?':
-			case '\"':
-			case '<':
-			case '>':
-			case '|':
-				appDir [i] = '_';
-				break;
-			default:
-				appDir [i] = c;
-		}
+String getIconsDir() {
+	if (iconsDir != null) return iconsDir;
+	String appData = System.getenv("LOCALAPPDATA");
+	String appName = Display.APP_NAME;
+	if (appData == null || appName == null) return null;
+	appName = appName.replaceAll("[\\\\/:*?\"<>|]", "_");
+	File dir = new File(appData + "\\" + appName + "\\ico_dir");
+	if (dir.exists()) {
+		// remove old icons
+		for (File file : dir.listFiles()) file.delete();
+	} else if (!dir.mkdirs()) {
+		return null;
 	}
-	String result = null;
-	long [] ppv = new long [1];
-	int hr = OS.SHCreateItemInKnownFolder (FOLDERID_LocalAppData, 0, null, IID_IShellItem, ppv);
-	if (hr == OS.S_OK) {
-		long psiRoot = ppv [0];
-		hr = OS.CoCreateInstance (CLSID_FileOperation, 0, OS.CLSCTX_INPROC_SERVER, IID_IFileOperation, ppv);
-		if (hr == OS.S_OK) {
-			long pfo = ppv [0];
-			/*IFileOperation.SetOperationFlags*/
-			hr = OS.VtblCall (5, pfo, OS.FOF_NO_UI);
-			if (hr == OS.S_OK) {
-				long psiAppDir = getDirectory (psiRoot, pfo, appDir, false);
-				if (psiAppDir != 0) {
-					long psiIcoDir = getDirectory (psiAppDir, pfo, ICO_DIR, true);
-					if (psiIcoDir != 0) {
-						/*IShellItem::GetDisplayName*/
-						hr = OS.VtblCall (5, psiIcoDir, OS.SIGDN_FILESYSPATH, ppv);
-						if (hr == OS.S_OK) {
-							long wstr = ppv [0];
-							int length = OS.wcslen (wstr);
-							char [] buffer = new char [length];
-							OS.MoveMemory (buffer, wstr, length * 2);
-							result = new String (buffer);
-							OS.CoTaskMemFree (wstr);
-						}
-						/*IUnknown::Release*/
-						OS.VtblCall (2, psiIcoDir);
-					}
-					/*IUnknown::Release*/
-					OS.VtblCall (2, psiAppDir);
-				}
-			}
-			/*IUnknown::Release*/
-			OS.VtblCall(2, pfo);
-		}
-		/*IUnknown::Release*/
-		OS.VtblCall (2, psiRoot);
-	}
-	return result;
-}
-
-long getDirectory (long parent, long pfo, char [] name, boolean delete) {
-	long [] ppv = new long [1];
-	int hr = OS.SHCreateItemFromRelativeName (parent, name, 0, IID_IShellItem, ppv);
-	if (hr == OS.S_OK) {
-		if (delete) {
-			/*IFileOperation.Delete*/
-			hr = OS.VtblCall (18, pfo, ppv [0], 0);
-			/*IUnknown::Release*/
-			OS.VtblCall (2, ppv [0]);
-			if (hr == OS.S_OK) {
-				/*IFileOperation.NewItem */
-				hr = OS.VtblCall (20, pfo, parent, OS.FILE_ATTRIBUTE_DIRECTORY, name, null, 0);
-				if (hr == OS.S_OK) {
-					/*IFileOperation.PerformOperations */
-					hr = OS.VtblCall (21, pfo);
-					if (hr == OS.S_OK) {
-						hr = OS.SHCreateItemFromRelativeName (parent, name, 0, IID_IShellItem, ppv);
-						if (hr == OS.S_OK) {
-							return ppv [0];
-						}
-					}
-				}
-			}
-		} else {
-			return ppv [0];
-		}
-	} else {
-		/*IFileOperation.NewItem */
-		hr = OS.VtblCall (20, pfo, parent, OS.FILE_ATTRIBUTE_DIRECTORY, name, null, 0);
-		if (hr == OS.S_OK) {
-			/*IFileOperation.PerformOperations */
-			hr = OS.VtblCall (21, pfo);
-			if (hr == OS.S_OK) {
-				hr = OS.SHCreateItemFromRelativeName (parent, name, 0, IID_IShellItem, ppv);
-				if (hr == OS.S_OK) {
-					return ppv [0];
-				}
-			}
-		}
-	}
-	return 0;
+	return iconsDir = dir.getPath();
 }
 
 /**
@@ -509,20 +419,10 @@ void setMenu (Menu menu) {
 		buffer = new char [length + 1];
 		appName.getChars (0, length, buffer, 0);
 	}
-
 	MenuItem [] items = null;
 	if (menu != null && (items = menu.getItems ()).length != 0) {
-		String directory = null;
-		for (int i = 0; i < items.length; i++) {
-			MenuItem item = items [i];
-			if (item.getImage () != null && item.getData (ICON_KEY) == null) {
-				directory = getDirectory (buffer);
-				break;
-			}
-		}
-		long poa = createShellLinkArray (items, directory);
+		long poa = createShellLinkArray (items);
 		if (poa != 0) {
-
 			/*ICustomDestinationList::SetAppID*/
 			hr = OS.VtblCall (3, pDestList, buffer);
 			if (hr != OS.S_OK) error (SWT.ERROR_INVALID_ARGUMENT);
@@ -548,16 +448,7 @@ void setMenu (Menu menu) {
 					Menu subMenu = item.getMenu ();
 					if (subMenu != null) {
 						MenuItem [] subItems = subMenu.getItems ();
-						if (directory == null) {
-							for (int j = 0; j < subItems.length; j++) {
-								MenuItem subItem = subItems [j];
-								if (subItem.getImage () != null && subItem.getData (ICON_KEY) == null) {
-									directory = getDirectory (buffer);
-									break;
-								}
-							}
-						}
-						long poa2 = createShellLinkArray (subItems, directory);
+						long poa2 = createShellLinkArray (subItems);
 						if (poa2 != 0) {
 							/*IObjectArray::GetCount*/
 							OS.VtblCall (3, poa2, count);

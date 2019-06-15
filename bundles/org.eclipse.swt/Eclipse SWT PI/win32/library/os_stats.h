@@ -608,8 +608,6 @@ typedef enum {
 	SCROLLINFO_1sizeof_FUNC,
 	SHBrowseForFolder_FUNC,
 	SHCreateItemFromParsingName_FUNC,
-	SHCreateItemFromRelativeName_FUNC,
-	SHCreateItemInKnownFolder_FUNC,
 	SHDRAGIMAGE_1sizeof_FUNC,
 	SHELLEXECUTEINFO_1sizeof_FUNC,
 	SHFILEINFO_1sizeof_FUNC,
