@@ -7966,28 +7966,6 @@ fail:
 }
 #endif
 
-#ifndef NO_SHCreateItemFromParsingName
-JNIEXPORT jint JNICALL OS_NATIVE(SHCreateItemFromParsingName)
-	(JNIEnv *env, jclass that, jcharArray arg0, jlong arg1, jbyteArray arg2, jlongArray arg3)
-{
-	jchar *lparg0=NULL;
-	jbyte *lparg2=NULL;
-	jlong *lparg3=NULL;
-	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, SHCreateItemFromParsingName_FUNC);
-	if (arg0) if ((lparg0 = (*env)->GetCharArrayElements(env, arg0, NULL)) == NULL) goto fail;
-	if (arg2) if ((lparg2 = (*env)->GetByteArrayElements(env, arg2, NULL)) == NULL) goto fail;
-	if (arg3) if ((lparg3 = (*env)->GetLongArrayElements(env, arg3, NULL)) == NULL) goto fail;
-	rc = (jint)SHCreateItemFromParsingName(lparg0, (IBindCtx *)arg1, (REFIID)lparg2, (void **)lparg3);
-fail:
-	if (arg3 && lparg3) (*env)->ReleaseLongArrayElements(env, arg3, lparg3, 0);
-	if (arg2 && lparg2) (*env)->ReleaseByteArrayElements(env, arg2, lparg2, 0);
-	if (arg0 && lparg0) (*env)->ReleaseCharArrayElements(env, arg0, lparg0, 0);
-	OS_NATIVE_EXIT(env, that, SHCreateItemFromParsingName_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO_SHDRAGIMAGE_1sizeof
 JNIEXPORT jint JNICALL OS_NATIVE(SHDRAGIMAGE_1sizeof)
 	(JNIEnv *env, jclass that)

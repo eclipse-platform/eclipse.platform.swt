@@ -4466,12 +4466,6 @@ public static final native int SHGetMalloc (long [] ppMalloc);
  * @param pszPath cast=(LPWSTR)
  */
 public static final native boolean SHGetPathFromIDList (long pidl, char [] pszPath);
-/**
- * @param pbc cast=(IBindCtx *)
- * @param riid cast=(REFIID)
- * @param ppv cast=(void **)
- */
-public static final native int SHCreateItemFromParsingName (char [] pszName, long pbc, byte [] riid, long [] ppv);
 /** @param hWnd cast=(HWND) */
 public static final native boolean ShowCaret (long hWnd);
 /** @param hWnd cast=(HWND) */

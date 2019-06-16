@@ -15,9 +15,9 @@
 package org.eclipse.swt.widgets;
 
 
-import org.eclipse.swt.internal.win32.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.internal.win32.*;
 
 /**
  * Instances of this class represent a task item.
@@ -293,10 +293,7 @@ public void setOverlayImage (Image overlayImage) {
 		if (overlayText.length () != 0) {
 			updateText ();
 		} else {
-			long mTaskbarList3 = parent.mTaskbarList3;
-			long hwnd = shell.handle;
-			/* ITaskbarList3::SetOverlayIcon */
-			OS.VtblCall (18, mTaskbarList3, hwnd, 0, 0);
+			parent.mTaskbarList3.SetOverlayIcon(shell.handle, 0, 0);
 		}
 	}
 }
@@ -338,10 +335,7 @@ public void setOverlayText (String overlayText) {
 		if (overlayImage != null) {
 			updateImage ();
 		} else {
-			long mTaskbarList3 = parent.mTaskbarList3;
-			long hwnd = shell.handle;
-			/* ITaskbarList3::SetOverlayIcon */
-			OS.VtblCall (18, mTaskbarList3, hwnd, 0, 0);
+			parent.mTaskbarList3.SetOverlayIcon(shell.handle, 0, 0);
 		}
 	}
 }
@@ -447,20 +441,14 @@ void updateImage () {
 			hIcon = overlayImage.handle;
 			break;
 	}
-	long mTaskbarList3 = parent.mTaskbarList3;
-	long hwnd = shell.handle;
-	/* ITaskbarList3::SetOverlayIcon */
-	OS.VtblCall (18, mTaskbarList3, hwnd, hIcon, 0);
+	parent.mTaskbarList3.SetOverlayIcon(shell.handle, hIcon, 0);
 	if (image2 != null) image2.dispose ();
 }
 
 void updateProgress () {
 	if (progressState == SWT.INDETERMINATE) return;
 	if (progressState == SWT.DEFAULT) return;
-	long mTaskbarList3 = parent.mTaskbarList3;
-	long hwnd = shell.handle;
-	/* ITaskbarList3::SetProgressValue */
-	OS.VtblCall (9, mTaskbarList3, hwnd, (long)progress, (long)PROGRESS_MAX);
+	parent.mTaskbarList3.SetProgressValue(shell.handle, progress, PROGRESS_MAX);
 }
 
 void updateProgressState () {
@@ -471,12 +459,8 @@ void updateProgressState () {
 		case SWT.PAUSED: tbpFlags = OS.TBPF_PAUSED; break;
 		case SWT.INDETERMINATE: tbpFlags = OS.TBPF_INDETERMINATE; break;
 	}
-	long mTaskbarList3 = parent.mTaskbarList3;
-	long hwnd = shell.handle;
-	/* ITaskbarList3::SetProgressValue */
-	OS.VtblCall (9, mTaskbarList3, hwnd, (long)progress, (long)PROGRESS_MAX);
-	/* ITaskbarList3::SetProgressState */
-	OS.VtblCall (10, mTaskbarList3, hwnd, tbpFlags);
+	parent.mTaskbarList3.SetProgressValue(shell.handle, progress, PROGRESS_MAX);
+	parent.mTaskbarList3.SetProgressState(shell.handle, tbpFlags);
 }
 
 void updateText () {
@@ -563,10 +547,7 @@ void updateText () {
 	OS.DeleteObject (hBitmap);
 	OS.DeleteObject (hMask);
 
-	long mTaskbarList3 = parent.mTaskbarList3;
-	long hwnd = shell.handle;
-	/* ITaskbarList3::SetOverlayIcon */
-	OS.VtblCall (18, mTaskbarList3, hwnd, hIcon, 0);
+	parent.mTaskbarList3.SetOverlayIcon(shell.handle, hIcon, 0);
 	OS.DestroyIcon (hIcon);
 }
 

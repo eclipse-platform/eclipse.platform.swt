@@ -82,6 +82,7 @@ char * COM_nativeFunctionNames[] = {
 	"RegisterDragDrop",
 	"ReleaseStgMedium",
 	"RevokeDragDrop",
+	"SHCreateItemFromParsingName",
 	"SHDoDragDrop",
 	"STATSTG_1sizeof",
 	"STGMEDIUM_1sizeof",
@@ -116,6 +117,7 @@ char * COM_nativeFunctionNames[] = {
 	"VtblCall__IJILorg_eclipse_swt_internal_ole_win32_GUID_2IILorg_eclipse_swt_internal_ole_win32_DISPPARAMS_2ILorg_eclipse_swt_internal_ole_win32_EXCEPINFO_2_3I",
 	"VtblCall__IJILorg_eclipse_swt_internal_ole_win32_GUID_2IILorg_eclipse_swt_internal_ole_win32_DISPPARAMS_2JLorg_eclipse_swt_internal_ole_win32_EXCEPINFO_2_3I",
 	"VtblCall__IJILorg_eclipse_swt_internal_ole_win32_GUID_2JJ",
+	"VtblCall__IJILorg_eclipse_swt_internal_ole_win32_GUID_2Lorg_eclipse_swt_internal_ole_win32_GUID_2Lorg_eclipse_swt_internal_ole_win32_GUID_2",
 	"VtblCall__IJILorg_eclipse_swt_internal_ole_win32_STATSTG_2_3I",
 	"VtblCall__IJILorg_eclipse_swt_internal_win32_MSG_2IIILorg_eclipse_swt_internal_win32_RECT_2",
 	"VtblCall__IJILorg_eclipse_swt_internal_win32_MSG_2JIJLorg_eclipse_swt_internal_win32_RECT_2",
@@ -175,6 +177,7 @@ char * COM_nativeFunctionNames[] = {
 	"VtblCall__IJ_3CJII_3J",
 	"VtblCall__IJ_3C_3C",
 	"VtblCall__IJ_3C_3I_3I",
+	"VtblCall__IJ_3ILorg_eclipse_swt_internal_ole_win32_GUID_2_3J",
 	"WriteClassStg",
 };
 #define NATIVE_FUNCTION_COUNT sizeof(COM_nativeFunctionNames) / sizeof(char*)

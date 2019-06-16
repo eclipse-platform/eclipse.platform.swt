@@ -17,10 +17,31 @@ import org.eclipse.swt.internal.win32.*;
 
 public class COM extends OS {
 	/** GUID Constants */
+	public static final GUID CLSID_CMultiLanguage = IIDFromString("{275c23e2-3747-11d0-9fea-00aa003f8646}");
+	public static final GUID CLSID_DestinationList = IIDFromString ("{77f10cf0-3db5-4966-b520-b7c54fd35ed6}"); //$NON-NLS-1$
 	public static final GUID CLSID_DragDropHelper = COM.IIDFromString("{4657278A-411B-11d2-839A-00C04FD918D0}"); //$NON-NLS-1$
-	public static final GUID IID_IDropTargetHelper = COM.IIDFromString("{4657278B-411B-11d2-839A-00C04FD918D0}"); //$NON-NLS-1$
+	public static final GUID CLSID_EnumerableObjectCollection = IIDFromString ("{2d3468c1-36a7-43b6-ac24-d3f02fd9607a}"); //$NON-NLS-1$
+	public static final GUID CLSID_FileOpenDialog = IIDFromString("{DC1C5A9C-E88A-4dde-A5A1-60F82A20AEF7}"); //$NON-NLS-1$
+	public static final GUID CLSID_FileSaveDialog = IIDFromString("{84bccd23-5fde-4cdb-aea4-af64b83d78ab}"); //$NON-NLS-1$
+	public static final GUID CLSID_ShellLink = IIDFromString ("{00021401-0000-0000-C000-000000000046}"); //$NON-NLS-1$
+	public static final GUID CLSID_TaskbarList = IIDFromString ("{56FDF344-FD6D-11d0-958A-006097C9A090}"); //$NON-NLS-1$
+	public static final GUID CLSID_TF_InputProcessorProfiles = IIDFromString("{33C53A50-F456-4884-B049-85FD643ECFED}"); //$NON-NLS-1$
+	public static final GUID GUID_TFCAT_TIP_KEYBOARD = IIDFromString("{34745C63-B2F0-4784-8B67-5E12C8701A31}"); //$NON-NLS-1$
+	public static final GUID IID_ICustomDestinationList = IIDFromString ("{6332debf-87b5-4670-90c0-5e57b408a49e}"); //$NON-NLS-1$
 	public static final GUID IID_IDragSourceHelper = COM.IIDFromString("{DE5BF786-477A-11d2-839D-00C04FD918D0}"); //$NON-NLS-1$
 	public static final GUID IID_IDragSourceHelper2 = COM.IIDFromString("{83E07D0D-0C5F-4163-BF1A-60B274051E40}"); //$NON-NLS-1$
+	public static final GUID IID_IDropTargetHelper = COM.IIDFromString("{4657278B-411B-11D2-839A-00C04FD918D0}"); //$NON-NLS-1$
+	public static final GUID IID_IFileOpenDialog = IIDFromString("{d57c7288-d4ad-4768-be02-9d969532d960}"); //$NON-NLS-1$
+	public static final GUID IID_IFileSaveDialog = IIDFromString("{84bccd23-5fde-4cdb-aea4-af64b83d78ab}"); //$NON-NLS-1$
+	public static final GUID IID_IMLangFontLink2 = IIDFromString("{DCCFC162-2B38-11d2-B7EC-00C04F8F5D9A}");
+	public static final GUID IID_IObjectArray = IIDFromString ("{92CA9DCD-5622-4bba-A805-5E9F541BD8C9}"); //$NON-NLS-1$
+	public static final GUID IID_IObjectCollection = IIDFromString ("{5632b1a4-e38a-400a-928a-d4cd63230295}"); //$NON-NLS-1$
+	public static final GUID IID_IPropertyStore = IIDFromString ("{886d8eeb-8cf2-4446-8d02-cdba1dbdcf99}"); //$NON-NLS-1$
+	public static final GUID IID_IShellItem = IIDFromString("{43826d1e-e718-42ee-bc55-a1e261c37bfe}"); //$NON-NLS-1$
+	public static final GUID IID_IShellLinkW = IIDFromString ("{000214F9-0000-0000-C000-000000000046}"); //$NON-NLS-1$
+	public static final GUID IID_ITaskbarList3 = IIDFromString ("{ea1afb91-9e28-4b86-90e9-9e9f8a5eefaf}"); //$NON-NLS-1$
+	public static final GUID IID_ITfDisplayAttributeProvider = IIDFromString("{fee47777-163c-4769-996a-6e9c50ad8f54}"); //$NON-NLS-1$
+	public static final GUID IID_ITfInputProcessorProfiles = IIDFromString("{1F02B6C5-7842-4EE6-8A0B-9A24183A95CA}"); //$NON-NLS-1$
 	public static final GUID IIDJavaBeansBridge = COM.IIDFromString("{8AD9C840-044E-11D1-B3E9-00805F499D93}"); //$NON-NLS-1$
 	public static final GUID IIDShockwaveActiveXControl = COM.IIDFromString("{166B1BCA-3F9C-11CF-8075-444553540000}"); //$NON-NLS-1$
 	public static final GUID IIDIEditorSiteTime = IIDFromString("{6BD2AEFE-7876-45e6-A6E7-3BFCDF6540AA}"); //$NON-NLS-1$
@@ -624,6 +645,13 @@ public static final native void ReleaseStgMedium(long pmedium);
 /** @param hwnd cast=(HWND) */
 public static final native int RevokeDragDrop(long hwnd);
 /**
+ * @param pszName cast=(PCWSTR)
+ * @param pbc cast=(IBindCtx *)
+ * @param riid cast=(REFIID)
+ * @param ppv cast=(void **)
+ */
+public static final native int SHCreateItemFromParsingName (char [] pszName, long pbc, GUID riid, long [] ppv);
+/**
  * @param hwnd cast=(HWND)
  * @param pDataObject cast=(IDataObject *)
  * @param pDropSource cast=(IDropSource *)
@@ -667,6 +695,7 @@ public static final native int VtblCall(int fnNumber, long ppVtbl, char[] arg0, 
 public static final native int VtblCall(int fnNumber, long ppVtbl, int arg0, int arg1, POINT arg2, int arg3);
 public static final native int VtblCall(int fnNumber, long ppVtbl, long arg0, long arg1, POINT arg2, int arg3);
 public static final native int VtblCall(int fnNumber, long ppVtbl, int arg0, POINT arg1, int arg2);
+public static final native int VtblCall(int fnNumber, long ppVtbl, int[] arg0, GUID arg1, long[] arg2);
 public static final native int VtblCall(int fnNumber, long ppVtbl, long arg0, POINT arg1, long arg2);
 public static final native int VtblCall(int fnNumber, long ppVtbl, POINT arg0, int arg1);
 public static final native int VtblCall(int fnNumber, long ppVtbl, SHDRAGIMAGE arg0, int arg1);
@@ -743,6 +772,8 @@ public static final native int VtblCall(int fnNumber, long ppVtbl, GUID arg0, in
 public static final native int VtblCall(int fnNumber, long ppVtbl, GUID arg0, int arg1, int arg2, long arg3, long arg4);
 
 public static final native int VtblCall(int fnNumber, long ppVtbl, GUID arg0, int arg1, OLECMD arg2, OLECMDTEXT arg3);
+
+public static final native int VtblCall(int fnNumber, long ppVtbl, int arg0, GUID arg1, GUID arg2, GUID arg3);
 
 public static final native int VtblCall(int fnNumber, long ppVtbl, LICINFO arg0);
 
@@ -996,4 +1027,5 @@ public static final native int TYPEATTR_sizeof();
 public static final native int TYPEDESC_sizeof();
 public static final native int VARDESC_sizeof();
 public static final native int VARIANT_sizeof();
+
 }

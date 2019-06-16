@@ -18,6 +18,7 @@ import java.util.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.gdip.*;
+import org.eclipse.swt.internal.ole.win32.*;
 import org.eclipse.swt.internal.win32.*;
 
 /**
@@ -60,19 +61,12 @@ public final class TextLayout extends Resource {
 	StyleItem[] allRuns;
 	StyleItem[][] runs;
 	int[] lineOffset, lineY, lineWidth;
-	long mLangFontLink2;
+	IMLangFontLink2 mLangFontLink2;
 	int verticalIndentInPoints;
 
 	static final char LTR_MARK = '\u200E', RTL_MARK = '\u200F';
 	static final int SCRIPT_VISATTR_SIZEOF = 2;
 	static final int GOFFSET_SIZEOF = 8;
-	static final byte[] CLSID_CMultiLanguage = new byte[16];
-	static final byte[] IID_IMLangFontLink2 = new byte[16];
-	static {
-		OS.IIDFromString("{275c23e2-3747-11d0-9fea-00aa003f8646}\0".toCharArray(), CLSID_CMultiLanguage);
-		OS.IIDFromString("{DCCFC162-2B38-11d2-B7EC-00C04F8F5D9A}\0".toCharArray(), IID_IMLangFontLink2);
-	}
-
 	static final int MERGE_MAX = 512;
 	static final int TOO_MANY_RUNS = 1024;
 
@@ -192,8 +186,8 @@ public TextLayout (Device device) {
 	text = ""; //$NON-NLS-1$
 	long[] ppv = new long[1];
 	OS.OleInitialize(0);
-	if (OS.CoCreateInstance(CLSID_CMultiLanguage, 0, OS.CLSCTX_INPROC_SERVER, IID_IMLangFontLink2, ppv) == OS.S_OK) {
-		mLangFontLink2 = ppv[0];
+	if (COM.CoCreateInstance(COM.CLSID_CMultiLanguage, 0, COM.CLSCTX_INPROC_SERVER, COM.IID_IMLangFontLink2, ppv) == OS.S_OK) {
+		mLangFontLink2 = new IMLangFontLink2(ppv[0]);
 	}
 	init();
 }
@@ -491,10 +485,9 @@ void destroy () {
 	lineWidth = null;
 	segments = null;
 	segmentsChars = null;
-	if (mLangFontLink2 != 0) {
-		/* Release() */
-		OS.VtblCall(2, mLangFontLink2);
-		mLangFontLink2 = 0;
+	if (mLangFontLink2 != null) {
+		mLangFontLink2.Release();
+		mLangFontLink2 = null;
 	}
 	OS.OleUninitialize();
 }
@@ -3614,17 +3607,14 @@ void shape (final long hdc, final StyleItem run) {
 			}
 		}
 		if (!shapeSucceed) {
-			if (mLangFontLink2 != 0) {
-				long[] hNewFont = new long[1];
+			if (mLangFontLink2 != null) {
+				long [] hNewFont = new long [1];
 				int[] dwCodePages = new int[1], cchCodePages = new int[1];
-				/* GetStrCodePages() */
-				OS.VtblCall(4, mLangFontLink2, chars, chars.length, 0, dwCodePages, cchCodePages);
-				/* MapFont() */
-				if (OS.VtblCall(10, mLangFontLink2, hdc, dwCodePages[0], chars[0], hNewFont) == OS.S_OK) {
+				mLangFontLink2.GetStrCodePages(chars, chars.length, 0, dwCodePages, cchCodePages);
+				if (mLangFontLink2.MapFont(hdc, dwCodePages[0], chars[0], hNewFont) == OS.S_OK) {
 					LOGFONT logFont = new LOGFONT ();
 					OS.GetObject(hNewFont[0], LOGFONT.sizeof, logFont);
-					/* ReleaseFont() */
-					OS.VtblCall(8, mLangFontLink2, hNewFont[0]);
+					mLangFontLink2.ReleaseFont(hNewFont[0]);
 					long mLangFont = OS.CreateFontIndirect(logFont);
 					long oldFont = OS.SelectObject(hdc, mLangFont);
 					if (shapeSucceed = shape(hdc, run, chars, buffer,  maxGlyphs, sp)) {

@@ -20,6 +20,7 @@ import java.util.function.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.*;
+import org.eclipse.swt.internal.ole.win32.*;
 import org.eclipse.swt.internal.win32.*;
 
 /**
@@ -2698,12 +2699,11 @@ protected void init () {
 	if (appName != null) {
 		/* Delete any old jump list set for the ID */
 		long [] ppv = new long [1];
-		int hr = OS.CoCreateInstance (TaskBar.CLSID_DestinationList, 0, OS.CLSCTX_INPROC_SERVER, TaskBar.IID_ICustomDestinationList, ppv);
+		int hr = COM.CoCreateInstance (COM.CLSID_DestinationList, 0, COM.CLSCTX_INPROC_SERVER, COM.IID_ICustomDestinationList, ppv);
 		if (hr == OS.S_OK) {
-			/*ICustomDestinationList::DeleteList*/
-			OS.VtblCall (10, ppv [0], appName);
-			/*IUnknown::Release*/
-			OS.VtblCall (2, ppv [0]);
+			ICustomDestinationList pList = new ICustomDestinationList (ppv [0]);
+			pList.DeleteList (appName);
+			pList.Release ();
 		}
 	}
 

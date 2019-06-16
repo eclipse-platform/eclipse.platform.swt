@@ -16,6 +16,7 @@ package org.eclipse.swt.widgets;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.internal.ole.win32.*;
 import org.eclipse.swt.internal.win32.*;
 
 /**
@@ -49,17 +50,6 @@ public class IME extends Widget {
 	TextStyle [] styles;
 
 	static final int WM_MSIME_MOUSE = OS.RegisterWindowMessage (new TCHAR (0, "MSIMEMouseOperation", true)); //$NON-NLS-1$
-
-	static final byte [] IID_ITfInputProcessorProfiles = new byte [16];
-	static final byte [] IID_ITfDisplayAttributeProvider = new byte [16];
-	static final byte [] CLSID_TF_InputProcessorProfiles = new byte [16];
-	static final byte [] GUID_TFCAT_TIP_KEYBOARD = new byte [16];
-	static {
-		OS.IIDFromString ("{1F02B6C5-7842-4EE6-8A0B-9A24183A95CA}\0".toCharArray (), IID_ITfInputProcessorProfiles); //$NON-NLS-1$
-		OS.IIDFromString ("{fee47777-163c-4769-996a-6e9c50ad8f54}\0".toCharArray (), IID_ITfDisplayAttributeProvider); //$NON-NLS-1$
-		OS.IIDFromString ("{33C53A50-F456-4884-B049-85FD643ECFED}\0".toCharArray (), CLSID_TF_InputProcessorProfiles); //$NON-NLS-1$
-		OS.IIDFromString ("{34745C63-B2F0-4784-8B67-5E12C8701A31}\0".toCharArray (), GUID_TFCAT_TIP_KEYBOARD); //$NON-NLS-1$
-	}
 
 	/* TextLayout has a copy of these constants */
 	static final int UNDERLINE_IME_DOT = 1 << 16;
@@ -169,44 +159,37 @@ public int getCompositionOffset () {
 }
 
 TF_DISPLAYATTRIBUTE getDisplayAttribute (short langid, int attInfo) {
-	long [] pProfiles = new long [1];
-	int hr = OS.CoCreateInstance (CLSID_TF_InputProcessorProfiles, 0, OS.CLSCTX_INPROC_SERVER, IID_ITfInputProcessorProfiles, pProfiles);
+	long [] ppv = new long [1];
+	int hr = COM.CoCreateInstance (COM.CLSID_TF_InputProcessorProfiles, 0, COM.CLSCTX_INPROC_SERVER, COM.IID_ITfInputProcessorProfiles, ppv);
 	TF_DISPLAYATTRIBUTE pda = null;
 	if (hr == OS.S_OK) {
-		byte [] pclsid = new byte [16];
-		byte [] pguidProfile = new byte [16];
-		/* pProfiles.GetDefaultLanguageProfile () */
-		hr = OS.VtblCall (8, pProfiles [0], langid, GUID_TFCAT_TIP_KEYBOARD, pclsid, pguidProfile);
+		ITfInputProcessorProfiles pProfiles = new ITfInputProcessorProfiles (ppv [0]);
+		GUID pclsid = new GUID ();
+		GUID pguidProfile = new GUID ();
+		hr = pProfiles.GetDefaultLanguageProfile (langid, COM.GUID_TFCAT_TIP_KEYBOARD, pclsid, pguidProfile);
 		if (hr == OS.S_OK) {
-			long [] pProvider = new long [1];
-			hr = OS.CoCreateInstance (pclsid, 0, OS.CLSCTX_INPROC_SERVER, IID_ITfDisplayAttributeProvider, pProvider);
+			hr = COM.CoCreateInstance (pclsid, 0, COM.CLSCTX_INPROC_SERVER, COM.IID_ITfDisplayAttributeProvider, ppv);
 			if (hr == OS.S_OK) {
-				long [] pEnum = new long [1];
-				/* pProvider.EnumDisplayAttributeInfo () */
-				hr = OS.VtblCall (3, pProvider [0], pEnum);
+				ITfDisplayAttributeProvider pProvider = new ITfDisplayAttributeProvider (ppv [0]);
+				hr = pProvider.EnumDisplayAttributeInfo (ppv);
 				if (hr == OS.S_OK) {
-					long [] pDispInfo = new long [1];
+					IEnumTfDisplayAttributeInfo pEnum = new IEnumTfDisplayAttributeInfo (ppv [0]);
 					TF_DISPLAYATTRIBUTE tempPda = new TF_DISPLAYATTRIBUTE ();
-					/* pEnum.Next () */
-					while ((hr = OS.VtblCall (4, pEnum [0], 1, pDispInfo, (int[])null)) == OS.S_OK) {
-						/* pDispInfo.GetAttributeInfo(); */
-						OS.VtblCall (5, pDispInfo [0], tempPda);
-						/* pDispInfo.Release () */
-						OS.VtblCall (2, pDispInfo [0]);
+					while ((hr = pEnum.Next (1, ppv, null)) == OS.S_OK) {
+						ITfDisplayAttributeInfo pDispInfo = new ITfDisplayAttributeInfo (ppv [0]);
+						pDispInfo.GetAttributeInfo (tempPda);
+						pDispInfo.Release ();
 						if (tempPda.bAttr == attInfo) {
 							pda = tempPda;
 							break;
 						}
 					}
-					/* pEnum.Release () */
-					hr = OS.VtblCall (2, pEnum [0]);
+					pEnum.Release ();
 				}
-				/* pProvider.Release () */
-				hr = OS.VtblCall (2, pProvider [0]);
+				pProvider.Release ();
 			}
 		}
-		/* pProfiles.Release () */
-		hr = OS.VtblCall (2, pProfiles [0]);
+		pProfiles.Release ();
 	}
 	if (pda == null) {
 		pda = new TF_DISPLAYATTRIBUTE ();
