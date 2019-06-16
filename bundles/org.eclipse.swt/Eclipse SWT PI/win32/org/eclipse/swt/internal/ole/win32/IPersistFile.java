@@ -17,22 +17,22 @@ import org.eclipse.swt.internal.win32.*;
 
 public class IPersistFile extends IPersist
 {
-public IPersistFile(long /*int*/ address) {
+public IPersistFile(long address) {
 	super(address);
 }
 public int IsDirty() {
 	return OS.VtblCall(4, address);
 }
-public int Load(long /*int*/ pszFileName, int dwMode) {
+public int Load(long pszFileName, int dwMode) {
 	return OS.VtblCall(5, address, pszFileName, dwMode);
 }
-public int Save(long /*int*/ pszFileName, boolean fRemember) {
+public int Save(long pszFileName, boolean fRemember) {
 	return COM.VtblCall(6, address, pszFileName, fRemember);
 }
-public int SaveCompleted(long /*int*/ pszFileName) {
+public int SaveCompleted(long pszFileName) {
 	return OS.VtblCall(7, address, pszFileName);
 }
-public int GetCurFile(long /*int*/ [] ppszFileName){
+public int GetCurFile(long [] ppszFileName){
 	return OS.VtblCall(8, address, ppszFileName);
 }
 }

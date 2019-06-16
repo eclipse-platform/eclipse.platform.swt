@@ -29,7 +29,7 @@ public class DTTOPTS {
 	public boolean fApplyOverlay;
 	public int iGlowSize;
 	/** @field cast=(DTT_CALLBACK_PROC) */
-	public long /*int*/ pfnDrawTextCallback;
-	public long /*int*/ lParam;
+	public long pfnDrawTextCallback;
+	public long lParam;
 	public static final int sizeof = OS.DTTOPTS_sizeof ();
 }

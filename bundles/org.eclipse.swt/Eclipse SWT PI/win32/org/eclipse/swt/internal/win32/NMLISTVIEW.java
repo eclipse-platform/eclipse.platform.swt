@@ -24,6 +24,6 @@ public class NMLISTVIEW extends NMHDR {
 	public int x;
 	/** @field accessor=ptAction.y */
 	public int y;
-	public long /*int*/ lParam;
+	public long lParam;
 	public static int sizeof = OS.NMLISTVIEW_sizeof ();
 }

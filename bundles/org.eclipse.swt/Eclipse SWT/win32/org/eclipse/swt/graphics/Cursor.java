@@ -58,7 +58,7 @@ public final class Cursor extends Resource {
 	 *
 	 * @noreference This field is not intended to be referenced by clients.
 	 */
-	public long /*int*/ handle;
+	public long handle;
 
 	boolean isIcon;
 
@@ -117,7 +117,7 @@ Cursor(Device device) {
  */
 public Cursor(Device device, int style) {
 	super(device);
-	long /*int*/ lpCursorName = 0;
+	long lpCursorName = 0;
 	switch (style) {
 		case SWT.CURSOR_HAND: 		lpCursorName = OS.IDC_HAND; break;
 		case SWT.CURSOR_ARROW: 		lpCursorName = OS.IDC_ARROW; break;
@@ -209,7 +209,7 @@ public Cursor(Device device, ImageData source, ImageData mask, int hotspotX, int
 	byte[] maskData = ImageData.convertPad(mask.data, mask.width, mask.height, mask.depth, mask.scanlinePad, 2);
 
 	/* Create the cursor */
-	long /*int*/ hInst = OS.GetModuleHandle(null);
+	long hInst = OS.GetModuleHandle(null);
 	handle = OS.CreateCursor(hInst, hotspotX, hotspotY, source.width, source.height, sourceData, maskData);
 	if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	init();
@@ -252,8 +252,8 @@ public Cursor(Device device, ImageData source, int hotspotX, int hotspotY) {
 		hotspotY >= source.height || hotspotY < 0) {
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
-	long /*int*/ hBitmap = 0;
-	long /*int*/ hMask = 0;
+	long hBitmap = 0;
+	long hMask = 0;
 	if (source.maskData == null && source.transparentPixel == -1 && (source.alpha != -1 || source.alphaData != null)) {
 		PaletteData palette = source.palette;
 		PaletteData newPalette = new PaletteData(0xFF00, 0xFF0000, 0xFF000000);
@@ -302,7 +302,7 @@ public Cursor(Device device, ImageData source, int hotspotX, int hotspotY) {
 		if (hMask == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	} else {
 		ImageData mask = source.getTransparencyMask();
-		long /*int*/ [] result = Image.init(this.device, null, source, mask);
+		long [] result = Image.init(this.device, null, source, mask);
 		hBitmap = result[0];
 		hMask = result[1];
 	}
@@ -382,7 +382,7 @@ public boolean equals (Object object) {
  */
 @Override
 public int hashCode () {
-	return (int)/*64*/handle;
+	return (int)handle;
 }
 
 /**

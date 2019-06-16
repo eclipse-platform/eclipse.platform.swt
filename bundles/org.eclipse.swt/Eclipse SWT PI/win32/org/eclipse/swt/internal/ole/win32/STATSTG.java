@@ -15,7 +15,7 @@ package org.eclipse.swt.internal.ole.win32;
 
 public class STATSTG {
 	/** @field cast=(LPWSTR) */
-	public long /*int*/ pwcsName;
+	public long pwcsName;
 	public int type;
 	/** @field accessor=cbSize.QuadPart */
 	public long cbSize;

@@ -17,8 +17,8 @@ public class TOOLINFO {
 	public int cbSize;
 	public int uFlags;
 	/** @field cast=(HWND) */
-	public long /*int*/ hwnd;
-	public long /*int*/ uId;
+	public long hwnd;
+	public long uId;
 //	public RECT rect;
 	/** @field accessor=rect.left */
 	public int left;
@@ -29,11 +29,11 @@ public class TOOLINFO {
 	/** @field accessor=rect.bottom */
 	public int bottom;
 	/** @field cast=(HINSTANCE) */
-	public long /*int*/ hinst;
+	public long hinst;
 	/** @field cast=(LPTSTR) */
-	public long /*int*/ lpszText;
-	public long /*int*/ lParam;
+	public long lpszText;
+	public long lParam;
 	/** @field cast=(void *) */
-	public long /*int*/ lpReserved;
+	public long lpReserved;
 	public static int sizeof = OS.TOOLINFO_sizeof ();
 }

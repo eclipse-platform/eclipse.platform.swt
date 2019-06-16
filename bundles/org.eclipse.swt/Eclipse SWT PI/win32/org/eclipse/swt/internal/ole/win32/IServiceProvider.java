@@ -15,10 +15,10 @@ package org.eclipse.swt.internal.ole.win32;
 
 public class IServiceProvider extends IUnknown
 {
-public IServiceProvider(long /*int*/ address) {
+public IServiceProvider(long address) {
 	super(address);
 }
-public int QueryService(GUID iid1, GUID iid2, long /*int*/ ppvObject[]) {
+public int QueryService(GUID iid1, GUID iid2, long ppvObject[]) {
 	return COM.VtblCall(3, address, iid1, iid2, ppvObject);
 }
 }

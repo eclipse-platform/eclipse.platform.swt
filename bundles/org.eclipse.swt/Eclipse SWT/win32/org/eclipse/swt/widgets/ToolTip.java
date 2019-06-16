@@ -217,7 +217,7 @@ public String getText () {
 public boolean getVisible () {
 	checkWidget();
 	if (item != null) return visible;
-	long /*int*/ hwndToolTip = hwndToolTip ();
+	long hwndToolTip = hwndToolTip ();
 	if (OS.SendMessage (hwndToolTip, OS.TTM_GETCURRENTTOOL, 0, 0) != 0) {
 		TOOLINFO lpti = new TOOLINFO ();
 		lpti.cbSize = TOOLINFO.sizeof;
@@ -229,8 +229,8 @@ public boolean getVisible () {
 }
 
 int getWidth () {
-	long /*int*/ hwnd = parent.handle;
-	long /*int*/ hmonitor = OS.MonitorFromWindow (hwnd, OS.MONITOR_DEFAULTTONEAREST);
+	long hwnd = parent.handle;
+	long hmonitor = OS.MonitorFromWindow (hwnd, OS.MONITOR_DEFAULTTONEAREST);
 	MONITORINFO lpmi = new MONITORINFO ();
 	lpmi.cbSize = MONITORINFO.sizeof;
 	OS.GetMonitorInfo (hmonitor, lpmi);
@@ -238,7 +238,7 @@ int getWidth () {
 	return maxWidth / 4;
 }
 
-long /*int*/ hwndToolTip () {
+long hwndToolTip () {
 	return (style & SWT.BALLOON) != 0 ? parent.balloonTipHandle () : parent.toolTipHandle ();
 }
 
@@ -275,7 +275,7 @@ void releaseWidget () {
 	super.releaseWidget ();
 	if (item == null) {
 		if (autoHide) {
-			long /*int*/ hwndToolTip = hwndToolTip ();
+			long hwndToolTip = hwndToolTip ();
 			if (OS.SendMessage (hwndToolTip, OS.TTM_GETCURRENTTOOL, 0, 0) != 0) {
 				TOOLINFO lpti = new TOOLINFO ();
 				lpti.cbSize = TOOLINFO.sizeof;
@@ -443,13 +443,13 @@ public void setText (String string) {
 }
 
 void updateMessage () {
-	long /*int*/ hwnd = hwndToolTip();
+	long hwnd = hwndToolTip();
 	if (OS.SendMessage (hwnd, OS.TTM_GETCURRENTTOOL, 0, 0) != 0) {
 		TOOLINFO lpti = new TOOLINFO ();
 		lpti.cbSize = TOOLINFO.sizeof;
 		if (OS.SendMessage (hwnd, OS.TTM_GETCURRENTTOOL, 0, lpti) != 0) {
 			if (message != null && message.length() > 0) {
-				long /*int*/ hHeap = OS.GetProcessHeap ();
+				long hHeap = OS.GetProcessHeap ();
 				TCHAR buffer = new TCHAR (0, message, true);
 				int byteCount = buffer.length () * TCHAR.sizeof;
 				lpti.lpszText = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
@@ -493,12 +493,12 @@ public void setVisible (boolean visible) {
 	checkWidget ();
 	if (visible == getVisible ()) return;
 	if (item == null) {
-		long /*int*/ hwnd = parent.handle;
+		long hwnd = parent.handle;
 		TOOLINFO lpti = new TOOLINFO ();
 		lpti.cbSize = TOOLINFO.sizeof;
 		lpti.uId = id;
 		lpti.hwnd = hwnd;
-		long /*int*/ hwndToolTip = hwndToolTip ();
+		long hwndToolTip = hwndToolTip ();
 		Shell shell = parent.getShell ();
 		if (text.length () != 0) {
 			int icon = OS.TTI_NONE;
@@ -519,7 +519,7 @@ public void setVisible (boolean visible) {
 					nY = pt.y;
 				}
 			}
-			long /*int*/ lParam = OS.MAKELPARAM (nX, nY);
+			long lParam = OS.MAKELPARAM (nX, nY);
 			OS.SendMessage (hwndToolTip, OS.TTM_TRACKPOSITION, 0, lParam);
 
 			/*
@@ -535,7 +535,7 @@ public void setVisible (boolean visible) {
 			OS.GetClientRect (hwnd, rect);
 			OS.MapWindowPoints (hwnd, 0, rect, 2);
 			if (!OS.PtInRect (rect, pt)) {
-				long /*int*/ hCursor = OS.GetCursor ();
+				long hCursor = OS.GetCursor ();
 				OS.SetCursor (0);
 				OS.SetCursorPos (rect.left, rect.top);
 				OS.SendMessage (hwndToolTip, OS.TTM_TRACKACTIVATE, 1, lpti);
@@ -545,7 +545,7 @@ public void setVisible (boolean visible) {
 				OS.SendMessage (hwndToolTip, OS.TTM_TRACKACTIVATE, 1, lpti);
 			}
 
-			int time = (int)/*64*/OS.SendMessage (hwndToolTip, OS.TTM_GETDELAYTIME, OS.TTDT_AUTOPOP, 0);
+			int time = (int)OS.SendMessage (hwndToolTip, OS.TTM_GETDELAYTIME, OS.TTDT_AUTOPOP, 0);
 			OS.SetTimer (hwndToolTip, TIMER_ID, time, 0);
 			updateMessage();
 		} else {

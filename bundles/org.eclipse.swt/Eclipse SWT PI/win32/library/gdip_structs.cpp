@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2016 IBM Corporation and others.
+ * Copyright (c) 2000, 2019 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -35,8 +35,8 @@ void cacheBitmapDataFields(JNIEnv *env, jobject lpObject)
 	BitmapDataFc.Height = env->GetFieldID(BitmapDataFc.clazz, "Height", "I");
 	BitmapDataFc.Stride = env->GetFieldID(BitmapDataFc.clazz, "Stride", "I");
 	BitmapDataFc.PixelFormat = env->GetFieldID(BitmapDataFc.clazz, "PixelFormat", "I");
-	BitmapDataFc.Scan0 = env->GetFieldID(BitmapDataFc.clazz, "Scan0", I_J);
-	BitmapDataFc.Reserved = env->GetFieldID(BitmapDataFc.clazz, "Reserved", I_J);
+	BitmapDataFc.Scan0 = env->GetFieldID(BitmapDataFc.clazz, "Scan0", "J");
+	BitmapDataFc.Reserved = env->GetFieldID(BitmapDataFc.clazz, "Reserved", "J");
 	BitmapDataFc.cached = 1;
 }
 
@@ -47,8 +47,8 @@ BitmapData *getBitmapDataFields(JNIEnv *env, jobject lpObject, BitmapData *lpStr
 	lpStruct->Height = env->GetIntField(lpObject, BitmapDataFc.Height);
 	lpStruct->Stride = env->GetIntField(lpObject, BitmapDataFc.Stride);
 	lpStruct->PixelFormat = (PixelFormat)env->GetIntField(lpObject, BitmapDataFc.PixelFormat);
-	lpStruct->Scan0 = (void*)env->GetIntLongField(lpObject, BitmapDataFc.Scan0);
-	lpStruct->Reserved = (UINT_PTR)env->GetIntLongField(lpObject, BitmapDataFc.Reserved);
+	lpStruct->Scan0 = (void*)env->GetLongField(lpObject, BitmapDataFc.Scan0);
+	lpStruct->Reserved = (UINT_PTR)env->GetLongField(lpObject, BitmapDataFc.Reserved);
 	return lpStruct;
 }
 
@@ -59,8 +59,8 @@ void setBitmapDataFields(JNIEnv *env, jobject lpObject, BitmapData *lpStruct)
 	env->SetIntField(lpObject, BitmapDataFc.Height, (jint)lpStruct->Height);
 	env->SetIntField(lpObject, BitmapDataFc.Stride, (jint)lpStruct->Stride);
 	env->SetIntField(lpObject, BitmapDataFc.PixelFormat, (jint)lpStruct->PixelFormat);
-	env->SetIntLongField(lpObject, BitmapDataFc.Scan0, (jintLong)lpStruct->Scan0);
-	env->SetIntLongField(lpObject, BitmapDataFc.Reserved, (jintLong)lpStruct->Reserved);
+	env->SetLongField(lpObject, BitmapDataFc.Scan0, (jlong)lpStruct->Scan0);
+	env->SetLongField(lpObject, BitmapDataFc.Reserved, (jlong)lpStruct->Reserved);
 }
 #endif
 
@@ -121,7 +121,7 @@ void cacheGdiplusStartupInputFields(JNIEnv *env, jobject lpObject)
 	if (GdiplusStartupInputFc.cached) return;
 	GdiplusStartupInputFc.clazz = env->GetObjectClass(lpObject);
 	GdiplusStartupInputFc.GdiplusVersion = env->GetFieldID(GdiplusStartupInputFc.clazz, "GdiplusVersion", "I");
-	GdiplusStartupInputFc.DebugEventCallback = env->GetFieldID(GdiplusStartupInputFc.clazz, "DebugEventCallback", I_J);
+	GdiplusStartupInputFc.DebugEventCallback = env->GetFieldID(GdiplusStartupInputFc.clazz, "DebugEventCallback", "J");
 	GdiplusStartupInputFc.SuppressBackgroundThread = env->GetFieldID(GdiplusStartupInputFc.clazz, "SuppressBackgroundThread", "Z");
 	GdiplusStartupInputFc.SuppressExternalCodecs = env->GetFieldID(GdiplusStartupInputFc.clazz, "SuppressExternalCodecs", "Z");
 	GdiplusStartupInputFc.cached = 1;
@@ -131,7 +131,7 @@ GdiplusStartupInput *getGdiplusStartupInputFields(JNIEnv *env, jobject lpObject,
 {
 	if (!GdiplusStartupInputFc.cached) cacheGdiplusStartupInputFields(env, lpObject);
 	lpStruct->GdiplusVersion = env->GetIntField(lpObject, GdiplusStartupInputFc.GdiplusVersion);
-	lpStruct->DebugEventCallback = (DebugEventProc)env->GetIntLongField(lpObject, GdiplusStartupInputFc.DebugEventCallback);
+	lpStruct->DebugEventCallback = (DebugEventProc)env->GetLongField(lpObject, GdiplusStartupInputFc.DebugEventCallback);
 	lpStruct->SuppressBackgroundThread = (BOOL)env->GetBooleanField(lpObject, GdiplusStartupInputFc.SuppressBackgroundThread);
 	lpStruct->SuppressExternalCodecs = (BOOL)env->GetBooleanField(lpObject, GdiplusStartupInputFc.SuppressExternalCodecs);
 	return lpStruct;
@@ -141,7 +141,7 @@ void setGdiplusStartupInputFields(JNIEnv *env, jobject lpObject, GdiplusStartupI
 {
 	if (!GdiplusStartupInputFc.cached) cacheGdiplusStartupInputFields(env, lpObject);
 	env->SetIntField(lpObject, GdiplusStartupInputFc.GdiplusVersion, (jint)lpStruct->GdiplusVersion);
-	env->SetIntLongField(lpObject, GdiplusStartupInputFc.DebugEventCallback, (jintLong)lpStruct->DebugEventCallback);
+	env->SetLongField(lpObject, GdiplusStartupInputFc.DebugEventCallback, (jlong)lpStruct->DebugEventCallback);
 	env->SetBooleanField(lpObject, GdiplusStartupInputFc.SuppressBackgroundThread, (jboolean)lpStruct->SuppressBackgroundThread);
 	env->SetBooleanField(lpObject, GdiplusStartupInputFc.SuppressExternalCodecs, (jboolean)lpStruct->SuppressExternalCodecs);
 }

@@ -21,9 +21,9 @@ public class TBBUTTONINFO {
 	public byte fsState;
 	public byte fsStyle;
 	public short cx;
-	public long /*int*/ lParam;
+	public long lParam;
 	/** @field cast=(LPTSTR) */
-	public long /*int*/ pszText;
+	public long pszText;
 	public int cchText;
 	public static final int sizeof = OS.TBBUTTONINFO_sizeof ();
 }

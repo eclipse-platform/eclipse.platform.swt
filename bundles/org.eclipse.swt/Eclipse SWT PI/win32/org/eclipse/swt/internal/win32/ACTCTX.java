@@ -17,16 +17,16 @@ public class ACTCTX {
 	public int cbSize;
 	public int dwFlags;
 	/** @field cast=(LPCTSTR) */
-	public long /*int*/ lpSource;
+	public long lpSource;
 	public short wProcessorArchitecture;
 	public short wLangId;
 	/** @field cast=(LPCTSTR) */
-	public long /*int*/ lpAssemblyDirectory;
+	public long lpAssemblyDirectory;
 	/** @field cast=(LPCTSTR) */
-	public long /*int*/ lpResourceName;
+	public long lpResourceName;
 	/** @field cast=(LPCTSTR) */
-	public long /*int*/ lpApplicationName;
+	public long lpApplicationName;
 	/** @field cast=(HMODULE) */
-	public long /*int*/ hModule;
+	public long hModule;
 	public static final int sizeof = OS.ACTCTX_sizeof ();
 }

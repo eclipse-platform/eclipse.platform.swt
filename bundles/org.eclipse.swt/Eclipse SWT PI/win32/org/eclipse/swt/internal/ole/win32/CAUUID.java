@@ -16,6 +16,6 @@ package org.eclipse.swt.internal.ole.win32;
 public final class CAUUID {
 	public int cElems;
 	/** @field cast=(GUID FAR *) */
-	public long /*int*/ pElems;
+	public long pElems;
 	public static final int sizeof = COM.CAUUID_sizeof ();
 }

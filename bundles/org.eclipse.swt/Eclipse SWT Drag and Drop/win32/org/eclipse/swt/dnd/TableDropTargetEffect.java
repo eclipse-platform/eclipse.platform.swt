@@ -110,7 +110,7 @@ public class TableDropTargetEffect extends DropTargetEffect {
 	@Override
 	public void dragLeave(DropTargetEvent event) {
 		Table table = (Table) control;
-		long /*int*/ handle = table.handle;
+		long handle = table.handle;
 		if (dropHighlight != null) {
 			LVITEM lvItem = new LVITEM ();
 			lvItem.stateMask = OS.LVIS_DROPHILITED;
@@ -149,7 +149,7 @@ public class TableDropTargetEffect extends DropTargetEffect {
 	public void dragOver(DropTargetEvent event) {
 		Table table = (Table) getControl();
 		int effect = checkEffect(event.feedback);
-		long /*int*/ handle = table.handle;
+		long handle = table.handle;
 		Point coordinates = new Point(event.x, event.y);
 		coordinates = DPIUtil.autoScaleUp(table.toControl(coordinates)); // To Pixels
 		LVHITTESTINFO pinfo = new LVHITTESTINFO();
@@ -162,8 +162,8 @@ public class TableDropTargetEffect extends DropTargetEffect {
 		} else {
 			if (pinfo.iItem != -1 && scrollIndex == pinfo.iItem && scrollBeginTime != 0) {
 				if (System.currentTimeMillis() >= scrollBeginTime) {
-					int top = Math.max (0, (int)/*64*/OS.SendMessage (handle, OS.LVM_GETTOPINDEX, 0, 0));
-					int count = (int)/*64*/OS.SendMessage (handle, OS.LVM_GETITEMCOUNT, 0, 0);
+					int top = Math.max (0, (int)OS.SendMessage (handle, OS.LVM_GETTOPINDEX, 0, 0));
+					int count = (int)OS.SendMessage (handle, OS.LVM_GETITEMCOUNT, 0, 0);
 					int index = (scrollIndex - 1 < top) ? Math.max(0, scrollIndex - 1) : Math.min(count - 1, scrollIndex + 1);
 					boolean scroll = true;
 					if (pinfo.iItem == top) {

@@ -18,7 +18,7 @@ public class HELPINFO {
 	public int iContextType;
 	public int iCtrlId;
 	/** @field cast=(HANDLE) */
-	public long /*int*/ hItemHandle;
+	public long hItemHandle;
 	public int dwContextId;
 //	POINT MousePos
 	/** @field accessor=MousePos.x */

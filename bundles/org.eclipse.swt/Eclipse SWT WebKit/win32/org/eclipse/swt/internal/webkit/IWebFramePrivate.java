@@ -19,19 +19,19 @@ import org.eclipse.swt.internal.win32.*;
 
 public class IWebFramePrivate extends IUnknown {
 
-public IWebFramePrivate (long /*int*/ address) {
+public IWebFramePrivate (long address) {
 	super (address);
 }
 
-public int setInPrintingMode (int value, long /*int*/ printDC) {
+public int setInPrintingMode (int value, long printDC) {
 	return OS.VtblCall (8, getAddress (), value, printDC);
 }
 
-public int getPrintedPageCount (long /*int*/ printDC, int[] pageCount) {
+public int getPrintedPageCount (long printDC, int[] pageCount) {
 	return OS.VtblCall (9, getAddress (), printDC, pageCount);
 }
 
-public int spoolPages (long /*int*/ printDC, int startPage, int endPage, long /*int*/[] ctx) {
+public int spoolPages (long printDC, int startPage, int endPage, long[] ctx) {
 	return OS.VtblCall (10, getAddress (), printDC, startPage, endPage, ctx);
 }
 

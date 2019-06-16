@@ -15,11 +15,11 @@ package org.eclipse.swt.internal.win32;
 
 public class NMTTDISPINFO extends NMHDR {
 	/** @field cast=(void *) */
-	public long /*int*/ lpszText;
+	public long lpszText;
 	public char[] szText = new char[80];
 	/** @field cast=(HINSTANCE) */
-	public long /*int*/ hinst;
+	public long hinst;
 	public int uFlags;
-	public long /*int*/ lParam;
+	public long lParam;
 	public static final int sizeof = OS.NMTTDISPINFO_sizeof ();
 }

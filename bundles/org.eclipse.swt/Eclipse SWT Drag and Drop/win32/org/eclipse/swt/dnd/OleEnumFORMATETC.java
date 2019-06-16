@@ -38,17 +38,17 @@ int AddRef() {
 private void createCOMInterfaces() {
 	iEnumFORMATETC = new COMObject(new int[] {2, 0, 0, 3, 1, 0, 1}){
 		@Override
-		public long /*int*/ method0(long /*int*/[] args) {return QueryInterface(args[0], args[1]);}
+		public long method0(long[] args) {return QueryInterface(args[0], args[1]);}
 		@Override
-		public long /*int*/ method1(long /*int*/[] args) {return AddRef();}
+		public long method1(long[] args) {return AddRef();}
 		@Override
-		public long /*int*/ method2(long /*int*/[] args) {return Release();}
+		public long method2(long[] args) {return Release();}
 		@Override
-		public long /*int*/ method3(long /*int*/[] args) {return Next((int)/*64*/args[0], args[1], args[2]);}
+		public long method3(long[] args) {return Next((int)args[0], args[1], args[2]);}
 		@Override
-		public long /*int*/ method4(long /*int*/[] args) {return Skip((int)/*64*/args[0]);}
+		public long method4(long[] args) {return Skip((int)args[0]);}
 		@Override
-		public long /*int*/ method5(long /*int*/[] args) {return Reset();}
+		public long method5(long[] args) {return Reset();}
 		// method6 Clone - not implemented
 	};
 }
@@ -57,7 +57,7 @@ private void disposeCOMInterfaces() {
 		iEnumFORMATETC.dispose();
 	iEnumFORMATETC = null;
 }
-long /*int*/ getAddress() {
+long getAddress() {
 	return iEnumFORMATETC.getAddress();
 }
 private FORMATETC[] getNextItems(int numItems){
@@ -76,7 +76,7 @@ private FORMATETC[] getNextItems(int numItems){
 
 	return items;
 }
-private int Next(int celt, long /*int*/ rgelt, long /*int*/ pceltFetched) {
+private int Next(int celt, long rgelt, long pceltFetched) {
 	/* Retrieves the next celt items in the enumeration sequence.
 	   If there are fewer than the requested number of elements left in the sequence,
 	   it retrieves the remaining elements.
@@ -106,7 +106,7 @@ private int Next(int celt, long /*int*/ rgelt, long /*int*/ pceltFetched) {
 	}
 	return COM.S_FALSE;
 }
-private int QueryInterface(long /*int*/ riid, long /*int*/ ppvObject) {
+private int QueryInterface(long riid, long ppvObject) {
 
 	if (riid == 0 || ppvObject == 0) return COM.E_NOINTERFACE;
 
@@ -114,11 +114,11 @@ private int QueryInterface(long /*int*/ riid, long /*int*/ ppvObject) {
 	COM.MoveMemory(guid, riid, GUID.sizeof);
 
 	if (COM.IsEqualGUID(guid, COM.IIDIUnknown) || COM.IsEqualGUID(guid, COM.IIDIEnumFORMATETC)) {
-		OS.MoveMemory(ppvObject, new long /*int*/[] {iEnumFORMATETC.getAddress()}, C.PTR_SIZEOF);
+		OS.MoveMemory(ppvObject, new long[] {iEnumFORMATETC.getAddress()}, C.PTR_SIZEOF);
 		AddRef();
 		return COM.S_OK;
 	}
-	OS.MoveMemory(ppvObject, new long /*int*/[] {0}, C.PTR_SIZEOF);
+	OS.MoveMemory(ppvObject, new long[] {0}, C.PTR_SIZEOF);
 	return COM.E_NOINTERFACE;
 }
 int Release() {

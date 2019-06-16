@@ -15,7 +15,7 @@ package org.eclipse.swt.internal.win32;
 
 public class SHFILEINFO {
 	/** @field cast=(HICON) */
-	public long /*int*/ hIcon;
+	public long hIcon;
 	public int iIcon;
 	public int dwAttributes;
 	public char [] szDisplayName = new char [OS.MAX_PATH];

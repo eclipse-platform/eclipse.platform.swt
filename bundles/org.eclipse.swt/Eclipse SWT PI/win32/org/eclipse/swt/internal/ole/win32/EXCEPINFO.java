@@ -17,16 +17,16 @@ public final class EXCEPINFO {
 	public short wCode;
 	public short wReserved;
 	/** @field cast=(BSTR) */
-	public long /*int*/ bstrSource;
+	public long bstrSource;
 	/** @field cast=(BSTR) */
-	public long /*int*/ bstrDescription;
+	public long bstrDescription;
 	/** @field cast=(BSTR) */
-	public long /*int*/ bstrHelpFile;
+	public long bstrHelpFile;
 	public int dwHelpContext;
 	/** @field cast=(void FAR *) */
-	public long /*int*/ pvReserved;
+	public long pvReserved;
 	/** @field cast=(HRESULT (STDAPICALLTYPE FAR* )(struct tagEXCEPINFO FAR*)) */
-	public long /*int*/ pfnDeferredFillIn;
+	public long pfnDeferredFillIn;
 	public int scode;
 	public static final int sizeof = COM.EXCEPINFO_sizeof ();
 }

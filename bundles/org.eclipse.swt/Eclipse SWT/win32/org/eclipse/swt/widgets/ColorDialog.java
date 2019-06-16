@@ -98,8 +98,8 @@ public ColorDialog (Shell parent, int style) {
 	checkSubclass ();
 }
 
-long /*int*/ CCHookProc (long /*int*/ hdlg, long /*int*/ uiMsg, long /*int*/ lParam, long /*int*/ lpData) {
-	switch ((int)/*64*/uiMsg) {
+long CCHookProc (long hdlg, long uiMsg, long lParam, long lpData) {
+	switch ((int)uiMsg) {
 		case OS.WM_INITDIALOG: {
 			RECT rect = new RECT ();
 			OS.GetWindowRect (hdlg, rect);
@@ -170,8 +170,8 @@ public RGB[] getRGBs() {
 public RGB open () {
 
 	/* Get the owner HWND for the dialog */
-	long /*int*/ hwndOwner = parent.handle;
-	long /*int*/ hwndParent = parent.handle;
+	long hwndOwner = parent.handle;
+	long hwndParent = parent.handle;
 
 	/*
 	* Feature in Windows.  There is no API to set the orientation of a
@@ -201,13 +201,13 @@ public RGB open () {
 
 	/* Create the CCHookProc */
 	Callback callback = new Callback (this, "CCHookProc", 4); //$NON-NLS-1$
-	long /*int*/ lpfnHook = callback.getAddress ();
+	long lpfnHook = callback.getAddress ();
 	if (lpfnHook == 0) error(SWT.ERROR_NO_MORE_CALLBACKS);
 
 	/* Allocate the Custom Colors and initialize to white */
 	display = parent.display;
 	if (display.lpCustColors == 0) {
-		long /*int*/ hHeap = OS.GetProcessHeap ();
+		long hHeap = OS.GetProcessHeap ();
 		display.lpCustColors = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, CUSTOM_COLOR_COUNT * 4);
 		for (int i=0; i < CUSTOM_COLOR_COUNT; i++) {
 			colors[i] = 0x00FFFFFF;

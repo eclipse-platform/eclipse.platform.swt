@@ -19,11 +19,11 @@ import org.eclipse.swt.internal.win32.*;
 
 public class IWebPreferences extends IUnknown {
 
-public IWebPreferences (long /*int*/ address) {
+public IWebPreferences (long address) {
 	super (address);
 }
 
-public int initWithIdentifier (long /*int*/ identifier, long /*int*/[] preferences) {
+public int initWithIdentifier (long identifier, long[] preferences) {
 	return COM.VtblCall (4, getAddress (), identifier, preferences);
 }
 

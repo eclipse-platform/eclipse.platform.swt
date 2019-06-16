@@ -51,7 +51,7 @@ public class Pattern extends Resource {
 	 *
 	 * @noreference This field is not intended to be referenced by clients.
 	 */
-	public long /*int*/ handle;
+	public long handle;
 
 /**
  * Constructs a new Pattern given an image. Drawing with the resulting
@@ -86,14 +86,14 @@ public Pattern(Device device, Image image) {
 	if (image == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (image.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	this.device.checkGDIP();
-	long /*int*/[] gdipImage = image.createGdipImage();
-	long /*int*/ img = gdipImage[0];
+	long[] gdipImage = image.createGdipImage();
+	long img = gdipImage[0];
 	int width = Gdip.Image_GetWidth(img);
 	int height = Gdip.Image_GetHeight(img);
 	handle = Gdip.TextureBrush_new(img, Gdip.WrapModeTile, 0, 0, width, height);
 	Gdip.Bitmap_delete(img);
 	if (gdipImage[1] != 0) {
-		long /*int*/ hHeap = OS.GetProcessHeap ();
+		long hHeap = OS.GetProcessHeap ();
 		OS.HeapFree(hHeap, 0, gdipImage[1]);
 	}
 	if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);

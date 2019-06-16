@@ -49,7 +49,7 @@ public final class GCData {
 	public Image image;
 	public PAINTSTRUCT ps;
 	public int layout = -1;
-	public long /*int*/ hPen, hOldPen, hBrush, hOldBrush, hNullBitmap,
+	public long hPen, hOldPen, hBrush, hOldBrush, hNullBitmap,
 		hwnd, gdipGraphics, gdipPen, gdipBrush, gdipFgBrush, gdipBgBrush,
 		gdipFont, hGDIFont;
 	public float gdipXOffset, gdipYOffset;

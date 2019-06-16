@@ -26,13 +26,13 @@ public class NMLVDISPINFO extends NMHDR {
 	/** @field accessor=item.stateMask */
 	public int stateMask;
 	/** @field accessor=item.pszText,cast=(LPTSTR) */
-	public long /*int*/ pszText;
+	public long pszText;
 	/** @field accessor=item.cchTextMax */
 	public int cchTextMax;
 	/** @field accessor=item.iImage */
 	public int iImage;
 	/** @field accessor=item.lParam */
-	public long /*int*/ lParam;
+	public long lParam;
 	/** @field accessor=item.iIndent */
 	public int iIndent;
 	/** @field accessor=item.iGroupId */
@@ -40,6 +40,6 @@ public class NMLVDISPINFO extends NMHDR {
 	/** @field accessor=item.cColumns */
 	public int cColumns;
 	/** @field accessor=item.puColumns,cast=(PUINT) */
-	public long /*int*/ puColumns;
+	public long puColumns;
 	public static final int sizeof = OS.NMLVDISPINFO_sizeof ();
 }

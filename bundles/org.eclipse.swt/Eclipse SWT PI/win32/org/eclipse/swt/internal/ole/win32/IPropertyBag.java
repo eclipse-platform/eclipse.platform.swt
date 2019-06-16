@@ -16,11 +16,11 @@ package org.eclipse.swt.internal.ole.win32;
 
 public class IPropertyBag extends IUnknown {
 
-public IPropertyBag (long /*int*/ address) {
+public IPropertyBag (long address) {
 	super (address);
 }
 
-public int Read (long /*int*/ pszPropName, long /*int*/ pVar, long /*int*/[] pErrorLog) {
+public int Read (long pszPropName, long pVar, long[] pErrorLog) {
 	return COM.VtblCall (3, getAddress(), pszPropName, pVar, pErrorLog);
 }
 

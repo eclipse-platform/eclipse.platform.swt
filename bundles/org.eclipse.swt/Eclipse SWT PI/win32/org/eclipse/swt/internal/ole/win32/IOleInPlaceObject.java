@@ -17,7 +17,7 @@ import org.eclipse.swt.internal.win32.*;
 
 public class IOleInPlaceObject extends IOleWindow
 {
-public IOleInPlaceObject(long /*int*/ address) {
+public IOleInPlaceObject(long address) {
 	super(address);
 }
 public int InPlaceDeactivate() {

@@ -17,22 +17,22 @@ import org.eclipse.swt.internal.win32.*;
 
 public class IPersistStorage extends IPersist
 {
-public IPersistStorage(long /*int*/ address) {
+public IPersistStorage(long address) {
 	super(address);
 }
 public int IsDirty() {
 	return OS.VtblCall(4, address);
 }
-public int InitNew(long /*int*/ pStg) {
+public int InitNew(long pStg) {
 	return OS.VtblCall(5, address, pStg);
 }
-public int Load(long /*int*/ pStg) {
+public int Load(long pStg) {
 	return OS.VtblCall(6, address, pStg);
 }
-public int Save(long /*int*/ pStgSave, boolean fSameAsLoad) {
+public int Save(long pStgSave, boolean fSameAsLoad) {
 	return COM.VtblCall(7, address, pStgSave, fSameAsLoad);
 }
-public int SaveCompleted(long /*int*/ pStgNew) {
+public int SaveCompleted(long pStgNew) {
 	return OS.VtblCall(8, address, pStgNew);
 }
 public int HandsOffStorage(){

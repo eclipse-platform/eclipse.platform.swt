@@ -15,7 +15,7 @@ package org.eclipse.swt.internal.ole.win32;
 
 public class IPersist extends IUnknown
 {
-public IPersist(long /*int*/ address) {
+public IPersist(long address) {
 	super(address);
 }
 public int GetClassID(GUID pClassID) {

@@ -15,7 +15,7 @@ package org.eclipse.swt.internal.win32;
 
 public class BUTTON_IMAGELIST {
 	/** @field cast=(HIMAGELIST) */
-	public long /*int*/ himl;
+	public long himl;
 	/** @field accessor=margin.left,cast=(LONG) */
 	public int margin_left;
 	/** @field accessor=margin.top,cast=(LONG) */

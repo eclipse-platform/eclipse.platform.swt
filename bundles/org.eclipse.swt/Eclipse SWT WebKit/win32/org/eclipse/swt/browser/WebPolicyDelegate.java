@@ -40,23 +40,23 @@ int AddRef () {
 void createCOMInterfaces () {
 	iWebPolicyDelegate = new COMObject (new int[] {2, 0, 0, 5, 5, 5, 3}) {
 		@Override
-		public long /*int*/ method0 (long /*int*/[] args) {return QueryInterface (args[0], args[1]);}
+		public long method0 (long[] args) {return QueryInterface (args[0], args[1]);}
 		@Override
-		public long /*int*/ method1 (long /*int*/[] args) {return AddRef ();}
+		public long method1 (long[] args) {return AddRef ();}
 		@Override
-		public long /*int*/ method2 (long /*int*/[] args) {return Release ();}
+		public long method2 (long[] args) {return Release ();}
 		@Override
-		public long /*int*/ method3 (long /*int*/[] args) {return decidePolicyForNavigationAction (args[0], args[1], args[2], args[3], args[4]);}
+		public long method3 (long[] args) {return decidePolicyForNavigationAction (args[0], args[1], args[2], args[3], args[4]);}
 		@Override
-		public long /*int*/ method4 (long /*int*/[] args) {return decidePolicyForNewWindowAction (args[0], args[1], args[2], args[3], args[4]);}
+		public long method4 (long[] args) {return decidePolicyForNewWindowAction (args[0], args[1], args[2], args[3], args[4]);}
 		@Override
-		public long /*int*/ method5 (long /*int*/[] args) {return decidePolicyForMIMEType (args[0], args[1], args[2], args[3], args[4]);}
+		public long method5 (long[] args) {return decidePolicyForMIMEType (args[0], args[1], args[2], args[3], args[4]);}
 		@Override
-		public long /*int*/ method6 (long /*int*/[] args) {return unableToImplementPolicyWithError (args[0], args[1], args[2]);}
+		public long method6 (long[] args) {return unableToImplementPolicyWithError (args[0], args[1], args[2]);}
 	};
 }
 
-int decidePolicyForMIMEType (long /*int*/ webView, long /*int*/ type, long /*int*/ request, long /*int*/ frame, long /*int*/ listener) {
+int decidePolicyForMIMEType (long webView, long type, long request, long frame, long listener) {
 	IWebView iwebView = new IWebView (webView);
 	int[] canShow = new int[1];
 	iwebView.canShowMIMEType (type, canShow);
@@ -69,9 +69,9 @@ int decidePolicyForMIMEType (long /*int*/ webView, long /*int*/ type, long /*int
 	return COM.S_OK;
 }
 
-int decidePolicyForNavigationAction (long /*int*/ webView, long /*int*/ actionInformation, long /*int*/ request, long /*int*/ frame, long /*int*/ listener) {
+int decidePolicyForNavigationAction (long webView, long actionInformation, long request, long frame, long listener) {
 	IWebURLRequest iwebUrlRequest = new IWebURLRequest (request);
-	long /*int*/[] result = new long /*int*/[1];
+	long[] result = new long[1];
 	int hr = iwebUrlRequest.URL (result);
 	if (hr != COM.S_OK || result[0] == 0) {
 		return COM.S_OK;
@@ -142,7 +142,7 @@ int decidePolicyForNavigationAction (long /*int*/ webView, long /*int*/ actionIn
 	return COM.S_OK;
 }
 
-int decidePolicyForNewWindowAction (long /*int*/ webView, long /*int*/ actionInformation, long /*int*/ request, long /*int*/ frameName, long /*int*/ listener) {
+int decidePolicyForNewWindowAction (long webView, long actionInformation, long request, long frameName, long listener) {
 	IWebPolicyDecisionListener pdListener = new IWebPolicyDecisionListener (listener);
 	pdListener.use();
 	return COM.S_OK;
@@ -155,27 +155,27 @@ protected void disposeCOMInterfaces () {
 	}
 }
 
-long /*int*/ getAddress () {
+long getAddress () {
 	return iWebPolicyDelegate.getAddress ();
 }
 
-int QueryInterface (long /*int*/ riid, long /*int*/ ppvObject) {
+int QueryInterface (long riid, long ppvObject) {
 	if (riid == 0 || ppvObject == 0) return COM.E_INVALIDARG;
 	GUID guid = new GUID ();
 	COM.MoveMemory (guid, riid, GUID.sizeof);
 
 	if (COM.IsEqualGUID (guid, COM.IIDIUnknown)) {
-		OS.MoveMemory (ppvObject, new long /*int*/[] {iWebPolicyDelegate.getAddress ()}, C.PTR_SIZEOF);
+		OS.MoveMemory (ppvObject, new long[] {iWebPolicyDelegate.getAddress ()}, C.PTR_SIZEOF);
 		new IUnknown (iWebPolicyDelegate.getAddress ()).AddRef ();
 		return COM.S_OK;
 	}
 	if (COM.IsEqualGUID (guid, WebKit_win32.IID_IWebPolicyDelegate)) {
-		OS.MoveMemory (ppvObject, new long /*int*/[] {iWebPolicyDelegate.getAddress ()}, C.PTR_SIZEOF);
+		OS.MoveMemory (ppvObject, new long[] {iWebPolicyDelegate.getAddress ()}, C.PTR_SIZEOF);
 		new IUnknown (iWebPolicyDelegate.getAddress ()).AddRef ();
 		return COM.S_OK;
 	}
 
-	OS.MoveMemory (ppvObject, new long /*int*/[] {0}, C.PTR_SIZEOF);
+	OS.MoveMemory (ppvObject, new long[] {0}, C.PTR_SIZEOF);
 	return COM.E_NOINTERFACE;
 }
 
@@ -187,12 +187,12 @@ int Release () {
 	return refCount;
 }
 
-int unableToImplementPolicyWithError (long /*int*/ webView, long /*int*/ error, long /*int*/ frame) {
+int unableToImplementPolicyWithError (long webView, long error, long frame) {
 	if (browser.isDisposed ()) return COM.S_OK;
 
 	IWebError iweberror = new IWebError (error);
 	String failingURL = null;
-	long /*int*/[] result = new long /*int*/[1];
+	long[] result = new long[1];
 	int hr = iweberror.failingURL (result);
 	if (hr == COM.S_OK && result[0] != 0) {
 		failingURL = WebKit.extractBSTR (result[0]);

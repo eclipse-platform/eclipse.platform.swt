@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2016 IBM Corporation and others.
+ * Copyright (c) 2000, 2019 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -32,7 +32,7 @@ void cacheCAUUIDFields(JNIEnv *env, jobject lpObject)
 	if (CAUUIDFc.cached) return;
 	CAUUIDFc.clazz = (*env)->GetObjectClass(env, lpObject);
 	CAUUIDFc.cElems = (*env)->GetFieldID(env, CAUUIDFc.clazz, "cElems", "I");
-	CAUUIDFc.pElems = (*env)->GetFieldID(env, CAUUIDFc.clazz, "pElems", I_J);
+	CAUUIDFc.pElems = (*env)->GetFieldID(env, CAUUIDFc.clazz, "pElems", "J");
 	CAUUIDFc.cached = 1;
 }
 
@@ -40,7 +40,7 @@ CAUUID *getCAUUIDFields(JNIEnv *env, jobject lpObject, CAUUID *lpStruct)
 {
 	if (!CAUUIDFc.cached) cacheCAUUIDFields(env, lpObject);
 	lpStruct->cElems = (*env)->GetIntField(env, lpObject, CAUUIDFc.cElems);
-	lpStruct->pElems = (GUID FAR *)(*env)->GetIntLongField(env, lpObject, CAUUIDFc.pElems);
+	lpStruct->pElems = (GUID FAR *)(*env)->GetLongField(env, lpObject, CAUUIDFc.pElems);
 	return lpStruct;
 }
 
@@ -48,7 +48,7 @@ void setCAUUIDFields(JNIEnv *env, jobject lpObject, CAUUID *lpStruct)
 {
 	if (!CAUUIDFc.cached) cacheCAUUIDFields(env, lpObject);
 	(*env)->SetIntField(env, lpObject, CAUUIDFc.cElems, (jint)lpStruct->cElems);
-	(*env)->SetIntLongField(env, lpObject, CAUUIDFc.pElems, (jintLong)lpStruct->pElems);
+	(*env)->SetLongField(env, lpObject, CAUUIDFc.pElems, (jlong)lpStruct->pElems);
 }
 #endif
 
@@ -66,7 +66,7 @@ void cacheCONTROLINFOFields(JNIEnv *env, jobject lpObject)
 	if (CONTROLINFOFc.cached) return;
 	CONTROLINFOFc.clazz = (*env)->GetObjectClass(env, lpObject);
 	CONTROLINFOFc.cb = (*env)->GetFieldID(env, CONTROLINFOFc.clazz, "cb", "I");
-	CONTROLINFOFc.hAccel = (*env)->GetFieldID(env, CONTROLINFOFc.clazz, "hAccel", I_J);
+	CONTROLINFOFc.hAccel = (*env)->GetFieldID(env, CONTROLINFOFc.clazz, "hAccel", "J");
 	CONTROLINFOFc.cAccel = (*env)->GetFieldID(env, CONTROLINFOFc.clazz, "cAccel", "S");
 	CONTROLINFOFc.dwFlags = (*env)->GetFieldID(env, CONTROLINFOFc.clazz, "dwFlags", "I");
 	CONTROLINFOFc.cached = 1;
@@ -76,7 +76,7 @@ CONTROLINFO *getCONTROLINFOFields(JNIEnv *env, jobject lpObject, CONTROLINFO *lp
 {
 	if (!CONTROLINFOFc.cached) cacheCONTROLINFOFields(env, lpObject);
 	lpStruct->cb = (*env)->GetIntField(env, lpObject, CONTROLINFOFc.cb);
-	lpStruct->hAccel = (HACCEL)(*env)->GetIntLongField(env, lpObject, CONTROLINFOFc.hAccel);
+	lpStruct->hAccel = (HACCEL)(*env)->GetLongField(env, lpObject, CONTROLINFOFc.hAccel);
 	lpStruct->cAccel = (*env)->GetShortField(env, lpObject, CONTROLINFOFc.cAccel);
 	lpStruct->dwFlags = (*env)->GetIntField(env, lpObject, CONTROLINFOFc.dwFlags);
 	return lpStruct;
@@ -86,7 +86,7 @@ void setCONTROLINFOFields(JNIEnv *env, jobject lpObject, CONTROLINFO *lpStruct)
 {
 	if (!CONTROLINFOFc.cached) cacheCONTROLINFOFields(env, lpObject);
 	(*env)->SetIntField(env, lpObject, CONTROLINFOFc.cb, (jint)lpStruct->cb);
-	(*env)->SetIntLongField(env, lpObject, CONTROLINFOFc.hAccel, (jintLong)lpStruct->hAccel);
+	(*env)->SetLongField(env, lpObject, CONTROLINFOFc.hAccel, (jlong)lpStruct->hAccel);
 	(*env)->SetShortField(env, lpObject, CONTROLINFOFc.cAccel, (jshort)lpStruct->cAccel);
 	(*env)->SetIntField(env, lpObject, CONTROLINFOFc.dwFlags, (jint)lpStruct->dwFlags);
 }
@@ -106,8 +106,8 @@ void cacheCOSERVERINFOFields(JNIEnv *env, jobject lpObject)
 	if (COSERVERINFOFc.cached) return;
 	COSERVERINFOFc.clazz = (*env)->GetObjectClass(env, lpObject);
 	COSERVERINFOFc.dwReserved1 = (*env)->GetFieldID(env, COSERVERINFOFc.clazz, "dwReserved1", "I");
-	COSERVERINFOFc.pwszName = (*env)->GetFieldID(env, COSERVERINFOFc.clazz, "pwszName", I_J);
-	COSERVERINFOFc.pAuthInfo = (*env)->GetFieldID(env, COSERVERINFOFc.clazz, "pAuthInfo", I_J);
+	COSERVERINFOFc.pwszName = (*env)->GetFieldID(env, COSERVERINFOFc.clazz, "pwszName", "J");
+	COSERVERINFOFc.pAuthInfo = (*env)->GetFieldID(env, COSERVERINFOFc.clazz, "pAuthInfo", "J");
 	COSERVERINFOFc.dwReserved2 = (*env)->GetFieldID(env, COSERVERINFOFc.clazz, "dwReserved2", "I");
 	COSERVERINFOFc.cached = 1;
 }
@@ -116,8 +116,8 @@ COSERVERINFO *getCOSERVERINFOFields(JNIEnv *env, jobject lpObject, COSERVERINFO 
 {
 	if (!COSERVERINFOFc.cached) cacheCOSERVERINFOFields(env, lpObject);
 	lpStruct->dwReserved1 = (*env)->GetIntField(env, lpObject, COSERVERINFOFc.dwReserved1);
-	lpStruct->pwszName = (LPWSTR)(*env)->GetIntLongField(env, lpObject, COSERVERINFOFc.pwszName);
-	lpStruct->pAuthInfo = (COAUTHINFO *)(*env)->GetIntLongField(env, lpObject, COSERVERINFOFc.pAuthInfo);
+	lpStruct->pwszName = (LPWSTR)(*env)->GetLongField(env, lpObject, COSERVERINFOFc.pwszName);
+	lpStruct->pAuthInfo = (COAUTHINFO *)(*env)->GetLongField(env, lpObject, COSERVERINFOFc.pAuthInfo);
 	lpStruct->dwReserved2 = (*env)->GetIntField(env, lpObject, COSERVERINFOFc.dwReserved2);
 	return lpStruct;
 }
@@ -126,8 +126,8 @@ void setCOSERVERINFOFields(JNIEnv *env, jobject lpObject, COSERVERINFO *lpStruct
 {
 	if (!COSERVERINFOFc.cached) cacheCOSERVERINFOFields(env, lpObject);
 	(*env)->SetIntField(env, lpObject, COSERVERINFOFc.dwReserved1, (jint)lpStruct->dwReserved1);
-	(*env)->SetIntLongField(env, lpObject, COSERVERINFOFc.pwszName, (jintLong)lpStruct->pwszName);
-	(*env)->SetIntLongField(env, lpObject, COSERVERINFOFc.pAuthInfo, (jintLong)lpStruct->pAuthInfo);
+	(*env)->SetLongField(env, lpObject, COSERVERINFOFc.pwszName, (jlong)lpStruct->pwszName);
+	(*env)->SetLongField(env, lpObject, COSERVERINFOFc.pAuthInfo, (jlong)lpStruct->pAuthInfo);
 	(*env)->SetIntField(env, lpObject, COSERVERINFOFc.dwReserved2, (jint)lpStruct->dwReserved2);
 }
 #endif
@@ -145,8 +145,8 @@ void cacheDISPPARAMSFields(JNIEnv *env, jobject lpObject)
 {
 	if (DISPPARAMSFc.cached) return;
 	DISPPARAMSFc.clazz = (*env)->GetObjectClass(env, lpObject);
-	DISPPARAMSFc.rgvarg = (*env)->GetFieldID(env, DISPPARAMSFc.clazz, "rgvarg", I_J);
-	DISPPARAMSFc.rgdispidNamedArgs = (*env)->GetFieldID(env, DISPPARAMSFc.clazz, "rgdispidNamedArgs", I_J);
+	DISPPARAMSFc.rgvarg = (*env)->GetFieldID(env, DISPPARAMSFc.clazz, "rgvarg", "J");
+	DISPPARAMSFc.rgdispidNamedArgs = (*env)->GetFieldID(env, DISPPARAMSFc.clazz, "rgdispidNamedArgs", "J");
 	DISPPARAMSFc.cArgs = (*env)->GetFieldID(env, DISPPARAMSFc.clazz, "cArgs", "I");
 	DISPPARAMSFc.cNamedArgs = (*env)->GetFieldID(env, DISPPARAMSFc.clazz, "cNamedArgs", "I");
 	DISPPARAMSFc.cached = 1;
@@ -155,8 +155,8 @@ void cacheDISPPARAMSFields(JNIEnv *env, jobject lpObject)
 DISPPARAMS *getDISPPARAMSFields(JNIEnv *env, jobject lpObject, DISPPARAMS *lpStruct)
 {
 	if (!DISPPARAMSFc.cached) cacheDISPPARAMSFields(env, lpObject);
-	lpStruct->rgvarg = (VARIANTARG FAR *)(*env)->GetIntLongField(env, lpObject, DISPPARAMSFc.rgvarg);
-	lpStruct->rgdispidNamedArgs = (DISPID FAR *)(*env)->GetIntLongField(env, lpObject, DISPPARAMSFc.rgdispidNamedArgs);
+	lpStruct->rgvarg = (VARIANTARG FAR *)(*env)->GetLongField(env, lpObject, DISPPARAMSFc.rgvarg);
+	lpStruct->rgdispidNamedArgs = (DISPID FAR *)(*env)->GetLongField(env, lpObject, DISPPARAMSFc.rgdispidNamedArgs);
 	lpStruct->cArgs = (*env)->GetIntField(env, lpObject, DISPPARAMSFc.cArgs);
 	lpStruct->cNamedArgs = (*env)->GetIntField(env, lpObject, DISPPARAMSFc.cNamedArgs);
 	return lpStruct;
@@ -165,8 +165,8 @@ DISPPARAMS *getDISPPARAMSFields(JNIEnv *env, jobject lpObject, DISPPARAMS *lpStr
 void setDISPPARAMSFields(JNIEnv *env, jobject lpObject, DISPPARAMS *lpStruct)
 {
 	if (!DISPPARAMSFc.cached) cacheDISPPARAMSFields(env, lpObject);
-	(*env)->SetIntLongField(env, lpObject, DISPPARAMSFc.rgvarg, (jintLong)lpStruct->rgvarg);
-	(*env)->SetIntLongField(env, lpObject, DISPPARAMSFc.rgdispidNamedArgs, (jintLong)lpStruct->rgdispidNamedArgs);
+	(*env)->SetLongField(env, lpObject, DISPPARAMSFc.rgvarg, (jlong)lpStruct->rgvarg);
+	(*env)->SetLongField(env, lpObject, DISPPARAMSFc.rgdispidNamedArgs, (jlong)lpStruct->rgdispidNamedArgs);
 	(*env)->SetIntField(env, lpObject, DISPPARAMSFc.cArgs, (jint)lpStruct->cArgs);
 	(*env)->SetIntField(env, lpObject, DISPPARAMSFc.cNamedArgs, (jint)lpStruct->cNamedArgs);
 }
@@ -239,12 +239,12 @@ void cacheEXCEPINFOFields(JNIEnv *env, jobject lpObject)
 	EXCEPINFOFc.clazz = (*env)->GetObjectClass(env, lpObject);
 	EXCEPINFOFc.wCode = (*env)->GetFieldID(env, EXCEPINFOFc.clazz, "wCode", "S");
 	EXCEPINFOFc.wReserved = (*env)->GetFieldID(env, EXCEPINFOFc.clazz, "wReserved", "S");
-	EXCEPINFOFc.bstrSource = (*env)->GetFieldID(env, EXCEPINFOFc.clazz, "bstrSource", I_J);
-	EXCEPINFOFc.bstrDescription = (*env)->GetFieldID(env, EXCEPINFOFc.clazz, "bstrDescription", I_J);
-	EXCEPINFOFc.bstrHelpFile = (*env)->GetFieldID(env, EXCEPINFOFc.clazz, "bstrHelpFile", I_J);
+	EXCEPINFOFc.bstrSource = (*env)->GetFieldID(env, EXCEPINFOFc.clazz, "bstrSource", "J");
+	EXCEPINFOFc.bstrDescription = (*env)->GetFieldID(env, EXCEPINFOFc.clazz, "bstrDescription", "J");
+	EXCEPINFOFc.bstrHelpFile = (*env)->GetFieldID(env, EXCEPINFOFc.clazz, "bstrHelpFile", "J");
 	EXCEPINFOFc.dwHelpContext = (*env)->GetFieldID(env, EXCEPINFOFc.clazz, "dwHelpContext", "I");
-	EXCEPINFOFc.pvReserved = (*env)->GetFieldID(env, EXCEPINFOFc.clazz, "pvReserved", I_J);
-	EXCEPINFOFc.pfnDeferredFillIn = (*env)->GetFieldID(env, EXCEPINFOFc.clazz, "pfnDeferredFillIn", I_J);
+	EXCEPINFOFc.pvReserved = (*env)->GetFieldID(env, EXCEPINFOFc.clazz, "pvReserved", "J");
+	EXCEPINFOFc.pfnDeferredFillIn = (*env)->GetFieldID(env, EXCEPINFOFc.clazz, "pfnDeferredFillIn", "J");
 	EXCEPINFOFc.scode = (*env)->GetFieldID(env, EXCEPINFOFc.clazz, "scode", "I");
 	EXCEPINFOFc.cached = 1;
 }
@@ -254,12 +254,12 @@ EXCEPINFO *getEXCEPINFOFields(JNIEnv *env, jobject lpObject, EXCEPINFO *lpStruct
 	if (!EXCEPINFOFc.cached) cacheEXCEPINFOFields(env, lpObject);
 	lpStruct->wCode = (*env)->GetShortField(env, lpObject, EXCEPINFOFc.wCode);
 	lpStruct->wReserved = (*env)->GetShortField(env, lpObject, EXCEPINFOFc.wReserved);
-	lpStruct->bstrSource = (BSTR)(*env)->GetIntLongField(env, lpObject, EXCEPINFOFc.bstrSource);
-	lpStruct->bstrDescription = (BSTR)(*env)->GetIntLongField(env, lpObject, EXCEPINFOFc.bstrDescription);
-	lpStruct->bstrHelpFile = (BSTR)(*env)->GetIntLongField(env, lpObject, EXCEPINFOFc.bstrHelpFile);
+	lpStruct->bstrSource = (BSTR)(*env)->GetLongField(env, lpObject, EXCEPINFOFc.bstrSource);
+	lpStruct->bstrDescription = (BSTR)(*env)->GetLongField(env, lpObject, EXCEPINFOFc.bstrDescription);
+	lpStruct->bstrHelpFile = (BSTR)(*env)->GetLongField(env, lpObject, EXCEPINFOFc.bstrHelpFile);
 	lpStruct->dwHelpContext = (*env)->GetIntField(env, lpObject, EXCEPINFOFc.dwHelpContext);
-	lpStruct->pvReserved = (void FAR *)(*env)->GetIntLongField(env, lpObject, EXCEPINFOFc.pvReserved);
-	lpStruct->pfnDeferredFillIn = (HRESULT (STDAPICALLTYPE FAR* )(struct tagEXCEPINFO FAR*))(*env)->GetIntLongField(env, lpObject, EXCEPINFOFc.pfnDeferredFillIn);
+	lpStruct->pvReserved = (void FAR *)(*env)->GetLongField(env, lpObject, EXCEPINFOFc.pvReserved);
+	lpStruct->pfnDeferredFillIn = (HRESULT (STDAPICALLTYPE FAR* )(struct tagEXCEPINFO FAR*))(*env)->GetLongField(env, lpObject, EXCEPINFOFc.pfnDeferredFillIn);
 	lpStruct->scode = (*env)->GetIntField(env, lpObject, EXCEPINFOFc.scode);
 	return lpStruct;
 }
@@ -269,12 +269,12 @@ void setEXCEPINFOFields(JNIEnv *env, jobject lpObject, EXCEPINFO *lpStruct)
 	if (!EXCEPINFOFc.cached) cacheEXCEPINFOFields(env, lpObject);
 	(*env)->SetShortField(env, lpObject, EXCEPINFOFc.wCode, (jshort)lpStruct->wCode);
 	(*env)->SetShortField(env, lpObject, EXCEPINFOFc.wReserved, (jshort)lpStruct->wReserved);
-	(*env)->SetIntLongField(env, lpObject, EXCEPINFOFc.bstrSource, (jintLong)lpStruct->bstrSource);
-	(*env)->SetIntLongField(env, lpObject, EXCEPINFOFc.bstrDescription, (jintLong)lpStruct->bstrDescription);
-	(*env)->SetIntLongField(env, lpObject, EXCEPINFOFc.bstrHelpFile, (jintLong)lpStruct->bstrHelpFile);
+	(*env)->SetLongField(env, lpObject, EXCEPINFOFc.bstrSource, (jlong)lpStruct->bstrSource);
+	(*env)->SetLongField(env, lpObject, EXCEPINFOFc.bstrDescription, (jlong)lpStruct->bstrDescription);
+	(*env)->SetLongField(env, lpObject, EXCEPINFOFc.bstrHelpFile, (jlong)lpStruct->bstrHelpFile);
 	(*env)->SetIntField(env, lpObject, EXCEPINFOFc.dwHelpContext, (jint)lpStruct->dwHelpContext);
-	(*env)->SetIntLongField(env, lpObject, EXCEPINFOFc.pvReserved, (jintLong)lpStruct->pvReserved);
-	(*env)->SetIntLongField(env, lpObject, EXCEPINFOFc.pfnDeferredFillIn, (jintLong)lpStruct->pfnDeferredFillIn);
+	(*env)->SetLongField(env, lpObject, EXCEPINFOFc.pvReserved, (jlong)lpStruct->pvReserved);
+	(*env)->SetLongField(env, lpObject, EXCEPINFOFc.pfnDeferredFillIn, (jlong)lpStruct->pfnDeferredFillIn);
 	(*env)->SetIntField(env, lpObject, EXCEPINFOFc.scode, (jint)lpStruct->scode);
 }
 #endif
@@ -293,7 +293,7 @@ void cacheFORMATETCFields(JNIEnv *env, jobject lpObject)
 	if (FORMATETCFc.cached) return;
 	FORMATETCFc.clazz = (*env)->GetObjectClass(env, lpObject);
 	FORMATETCFc.cfFormat = (*env)->GetFieldID(env, FORMATETCFc.clazz, "cfFormat", "I");
-	FORMATETCFc.ptd = (*env)->GetFieldID(env, FORMATETCFc.clazz, "ptd", I_J);
+	FORMATETCFc.ptd = (*env)->GetFieldID(env, FORMATETCFc.clazz, "ptd", "J");
 	FORMATETCFc.dwAspect = (*env)->GetFieldID(env, FORMATETCFc.clazz, "dwAspect", "I");
 	FORMATETCFc.lindex = (*env)->GetFieldID(env, FORMATETCFc.clazz, "lindex", "I");
 	FORMATETCFc.tymed = (*env)->GetFieldID(env, FORMATETCFc.clazz, "tymed", "I");
@@ -304,7 +304,7 @@ FORMATETC *getFORMATETCFields(JNIEnv *env, jobject lpObject, FORMATETC *lpStruct
 {
 	if (!FORMATETCFc.cached) cacheFORMATETCFields(env, lpObject);
 	lpStruct->cfFormat = (CLIPFORMAT)(*env)->GetIntField(env, lpObject, FORMATETCFc.cfFormat);
-	lpStruct->ptd = (DVTARGETDEVICE *)(*env)->GetIntLongField(env, lpObject, FORMATETCFc.ptd);
+	lpStruct->ptd = (DVTARGETDEVICE *)(*env)->GetLongField(env, lpObject, FORMATETCFc.ptd);
 	lpStruct->dwAspect = (*env)->GetIntField(env, lpObject, FORMATETCFc.dwAspect);
 	lpStruct->lindex = (*env)->GetIntField(env, lpObject, FORMATETCFc.lindex);
 	lpStruct->tymed = (*env)->GetIntField(env, lpObject, FORMATETCFc.tymed);
@@ -315,7 +315,7 @@ void setFORMATETCFields(JNIEnv *env, jobject lpObject, FORMATETC *lpStruct)
 {
 	if (!FORMATETCFc.cached) cacheFORMATETCFields(env, lpObject);
 	(*env)->SetIntField(env, lpObject, FORMATETCFc.cfFormat, (jint)lpStruct->cfFormat);
-	(*env)->SetIntLongField(env, lpObject, FORMATETCFc.ptd, (jintLong)lpStruct->ptd);
+	(*env)->SetLongField(env, lpObject, FORMATETCFc.ptd, (jlong)lpStruct->ptd);
 	(*env)->SetIntField(env, lpObject, FORMATETCFc.dwAspect, (jint)lpStruct->dwAspect);
 	(*env)->SetIntField(env, lpObject, FORMATETCFc.lindex, (jint)lpStruct->lindex);
 	(*env)->SetIntField(env, lpObject, FORMATETCFc.tymed, (jint)lpStruct->tymed);
@@ -336,8 +336,8 @@ void cacheFUNCDESCFields(JNIEnv *env, jobject lpObject)
 	if (FUNCDESCFc.cached) return;
 	FUNCDESCFc.clazz = (*env)->GetObjectClass(env, lpObject);
 	FUNCDESCFc.memid = (*env)->GetFieldID(env, FUNCDESCFc.clazz, "memid", "I");
-	FUNCDESCFc.lprgscode = (*env)->GetFieldID(env, FUNCDESCFc.clazz, "lprgscode", I_J);
-	FUNCDESCFc.lprgelemdescParam = (*env)->GetFieldID(env, FUNCDESCFc.clazz, "lprgelemdescParam", I_J);
+	FUNCDESCFc.lprgscode = (*env)->GetFieldID(env, FUNCDESCFc.clazz, "lprgscode", "J");
+	FUNCDESCFc.lprgelemdescParam = (*env)->GetFieldID(env, FUNCDESCFc.clazz, "lprgelemdescParam", "J");
 	FUNCDESCFc.funckind = (*env)->GetFieldID(env, FUNCDESCFc.clazz, "funckind", "I");
 	FUNCDESCFc.invkind = (*env)->GetFieldID(env, FUNCDESCFc.clazz, "invkind", "I");
 	FUNCDESCFc.callconv = (*env)->GetFieldID(env, FUNCDESCFc.clazz, "callconv", "I");
@@ -345,9 +345,9 @@ void cacheFUNCDESCFields(JNIEnv *env, jobject lpObject)
 	FUNCDESCFc.cParamsOpt = (*env)->GetFieldID(env, FUNCDESCFc.clazz, "cParamsOpt", "S");
 	FUNCDESCFc.oVft = (*env)->GetFieldID(env, FUNCDESCFc.clazz, "oVft", "S");
 	FUNCDESCFc.cScodes = (*env)->GetFieldID(env, FUNCDESCFc.clazz, "cScodes", "S");
-	FUNCDESCFc.elemdescFunc_tdesc_union = (*env)->GetFieldID(env, FUNCDESCFc.clazz, "elemdescFunc_tdesc_union", I_J);
+	FUNCDESCFc.elemdescFunc_tdesc_union = (*env)->GetFieldID(env, FUNCDESCFc.clazz, "elemdescFunc_tdesc_union", "J");
 	FUNCDESCFc.elemdescFunc_tdesc_vt = (*env)->GetFieldID(env, FUNCDESCFc.clazz, "elemdescFunc_tdesc_vt", "S");
-	FUNCDESCFc.elemdescFunc_paramdesc_pparamdescex = (*env)->GetFieldID(env, FUNCDESCFc.clazz, "elemdescFunc_paramdesc_pparamdescex", I_J);
+	FUNCDESCFc.elemdescFunc_paramdesc_pparamdescex = (*env)->GetFieldID(env, FUNCDESCFc.clazz, "elemdescFunc_paramdesc_pparamdescex", "J");
 	FUNCDESCFc.elemdescFunc_paramdesc_wParamFlags = (*env)->GetFieldID(env, FUNCDESCFc.clazz, "elemdescFunc_paramdesc_wParamFlags", "S");
 	FUNCDESCFc.wFuncFlags = (*env)->GetFieldID(env, FUNCDESCFc.clazz, "wFuncFlags", "S");
 	FUNCDESCFc.cached = 1;
@@ -357,8 +357,8 @@ FUNCDESC *getFUNCDESCFields(JNIEnv *env, jobject lpObject, FUNCDESC *lpStruct)
 {
 	if (!FUNCDESCFc.cached) cacheFUNCDESCFields(env, lpObject);
 	lpStruct->memid = (MEMBERID)(*env)->GetIntField(env, lpObject, FUNCDESCFc.memid);
-	lpStruct->lprgscode = (SCODE FAR *)(*env)->GetIntLongField(env, lpObject, FUNCDESCFc.lprgscode);
-	lpStruct->lprgelemdescParam = (ELEMDESC FAR *)(*env)->GetIntLongField(env, lpObject, FUNCDESCFc.lprgelemdescParam);
+	lpStruct->lprgscode = (SCODE FAR *)(*env)->GetLongField(env, lpObject, FUNCDESCFc.lprgscode);
+	lpStruct->lprgelemdescParam = (ELEMDESC FAR *)(*env)->GetLongField(env, lpObject, FUNCDESCFc.lprgelemdescParam);
 	lpStruct->funckind = (FUNCKIND)(*env)->GetIntField(env, lpObject, FUNCDESCFc.funckind);
 	lpStruct->invkind = (INVOKEKIND)(*env)->GetIntField(env, lpObject, FUNCDESCFc.invkind);
 	lpStruct->callconv = (CALLCONV)(*env)->GetIntField(env, lpObject, FUNCDESCFc.callconv);
@@ -366,9 +366,9 @@ FUNCDESC *getFUNCDESCFields(JNIEnv *env, jobject lpObject, FUNCDESC *lpStruct)
 	lpStruct->cParamsOpt = (*env)->GetShortField(env, lpObject, FUNCDESCFc.cParamsOpt);
 	lpStruct->oVft = (*env)->GetShortField(env, lpObject, FUNCDESCFc.oVft);
 	lpStruct->cScodes = (*env)->GetShortField(env, lpObject, FUNCDESCFc.cScodes);
-	lpStruct->elemdescFunc.tdesc.lptdesc = (struct FARSTRUCT tagTYPEDESC FAR* )(*env)->GetIntLongField(env, lpObject, FUNCDESCFc.elemdescFunc_tdesc_union);
+	lpStruct->elemdescFunc.tdesc.lptdesc = (struct FARSTRUCT tagTYPEDESC FAR* )(*env)->GetLongField(env, lpObject, FUNCDESCFc.elemdescFunc_tdesc_union);
 	lpStruct->elemdescFunc.tdesc.vt = (*env)->GetShortField(env, lpObject, FUNCDESCFc.elemdescFunc_tdesc_vt);
-	lpStruct->elemdescFunc.paramdesc.pparamdescex = (LPPARAMDESCEX)(*env)->GetIntLongField(env, lpObject, FUNCDESCFc.elemdescFunc_paramdesc_pparamdescex);
+	lpStruct->elemdescFunc.paramdesc.pparamdescex = (LPPARAMDESCEX)(*env)->GetLongField(env, lpObject, FUNCDESCFc.elemdescFunc_paramdesc_pparamdescex);
 	lpStruct->elemdescFunc.paramdesc.wParamFlags = (*env)->GetShortField(env, lpObject, FUNCDESCFc.elemdescFunc_paramdesc_wParamFlags);
 	lpStruct->wFuncFlags = (*env)->GetShortField(env, lpObject, FUNCDESCFc.wFuncFlags);
 	return lpStruct;
@@ -378,8 +378,8 @@ void setFUNCDESCFields(JNIEnv *env, jobject lpObject, FUNCDESC *lpStruct)
 {
 	if (!FUNCDESCFc.cached) cacheFUNCDESCFields(env, lpObject);
 	(*env)->SetIntField(env, lpObject, FUNCDESCFc.memid, (jint)lpStruct->memid);
-	(*env)->SetIntLongField(env, lpObject, FUNCDESCFc.lprgscode, (jintLong)lpStruct->lprgscode);
-	(*env)->SetIntLongField(env, lpObject, FUNCDESCFc.lprgelemdescParam, (jintLong)lpStruct->lprgelemdescParam);
+	(*env)->SetLongField(env, lpObject, FUNCDESCFc.lprgscode, (jlong)lpStruct->lprgscode);
+	(*env)->SetLongField(env, lpObject, FUNCDESCFc.lprgelemdescParam, (jlong)lpStruct->lprgelemdescParam);
 	(*env)->SetIntField(env, lpObject, FUNCDESCFc.funckind, (jint)lpStruct->funckind);
 	(*env)->SetIntField(env, lpObject, FUNCDESCFc.invkind, (jint)lpStruct->invkind);
 	(*env)->SetIntField(env, lpObject, FUNCDESCFc.callconv, (jint)lpStruct->callconv);
@@ -387,9 +387,9 @@ void setFUNCDESCFields(JNIEnv *env, jobject lpObject, FUNCDESC *lpStruct)
 	(*env)->SetShortField(env, lpObject, FUNCDESCFc.cParamsOpt, (jshort)lpStruct->cParamsOpt);
 	(*env)->SetShortField(env, lpObject, FUNCDESCFc.oVft, (jshort)lpStruct->oVft);
 	(*env)->SetShortField(env, lpObject, FUNCDESCFc.cScodes, (jshort)lpStruct->cScodes);
-	(*env)->SetIntLongField(env, lpObject, FUNCDESCFc.elemdescFunc_tdesc_union, (jintLong)lpStruct->elemdescFunc.tdesc.lptdesc);
+	(*env)->SetLongField(env, lpObject, FUNCDESCFc.elemdescFunc_tdesc_union, (jlong)lpStruct->elemdescFunc.tdesc.lptdesc);
 	(*env)->SetShortField(env, lpObject, FUNCDESCFc.elemdescFunc_tdesc_vt, (jshort)lpStruct->elemdescFunc.tdesc.vt);
-	(*env)->SetIntLongField(env, lpObject, FUNCDESCFc.elemdescFunc_paramdesc_pparamdescex, (jintLong)lpStruct->elemdescFunc.paramdesc.pparamdescex);
+	(*env)->SetLongField(env, lpObject, FUNCDESCFc.elemdescFunc_paramdesc_pparamdescex, (jlong)lpStruct->elemdescFunc.paramdesc.pparamdescex);
 	(*env)->SetShortField(env, lpObject, FUNCDESCFc.elemdescFunc_paramdesc_wParamFlags, (jshort)lpStruct->elemdescFunc.paramdesc.wParamFlags);
 	(*env)->SetShortField(env, lpObject, FUNCDESCFc.wFuncFlags, (jshort)lpStruct->wFuncFlags);
 }
@@ -573,8 +573,8 @@ void cacheOLEINPLACEFRAMEINFOFields(JNIEnv *env, jobject lpObject)
 	OLEINPLACEFRAMEINFOFc.clazz = (*env)->GetObjectClass(env, lpObject);
 	OLEINPLACEFRAMEINFOFc.cb = (*env)->GetFieldID(env, OLEINPLACEFRAMEINFOFc.clazz, "cb", "I");
 	OLEINPLACEFRAMEINFOFc.fMDIApp = (*env)->GetFieldID(env, OLEINPLACEFRAMEINFOFc.clazz, "fMDIApp", "I");
-	OLEINPLACEFRAMEINFOFc.hwndFrame = (*env)->GetFieldID(env, OLEINPLACEFRAMEINFOFc.clazz, "hwndFrame", I_J);
-	OLEINPLACEFRAMEINFOFc.haccel = (*env)->GetFieldID(env, OLEINPLACEFRAMEINFOFc.clazz, "haccel", I_J);
+	OLEINPLACEFRAMEINFOFc.hwndFrame = (*env)->GetFieldID(env, OLEINPLACEFRAMEINFOFc.clazz, "hwndFrame", "J");
+	OLEINPLACEFRAMEINFOFc.haccel = (*env)->GetFieldID(env, OLEINPLACEFRAMEINFOFc.clazz, "haccel", "J");
 	OLEINPLACEFRAMEINFOFc.cAccelEntries = (*env)->GetFieldID(env, OLEINPLACEFRAMEINFOFc.clazz, "cAccelEntries", "I");
 	OLEINPLACEFRAMEINFOFc.cached = 1;
 }
@@ -584,8 +584,8 @@ OLEINPLACEFRAMEINFO *getOLEINPLACEFRAMEINFOFields(JNIEnv *env, jobject lpObject,
 	if (!OLEINPLACEFRAMEINFOFc.cached) cacheOLEINPLACEFRAMEINFOFields(env, lpObject);
 	lpStruct->cb = (*env)->GetIntField(env, lpObject, OLEINPLACEFRAMEINFOFc.cb);
 	lpStruct->fMDIApp = (*env)->GetIntField(env, lpObject, OLEINPLACEFRAMEINFOFc.fMDIApp);
-	lpStruct->hwndFrame = (HWND)(*env)->GetIntLongField(env, lpObject, OLEINPLACEFRAMEINFOFc.hwndFrame);
-	lpStruct->haccel = (HACCEL)(*env)->GetIntLongField(env, lpObject, OLEINPLACEFRAMEINFOFc.haccel);
+	lpStruct->hwndFrame = (HWND)(*env)->GetLongField(env, lpObject, OLEINPLACEFRAMEINFOFc.hwndFrame);
+	lpStruct->haccel = (HACCEL)(*env)->GetLongField(env, lpObject, OLEINPLACEFRAMEINFOFc.haccel);
 	lpStruct->cAccelEntries = (*env)->GetIntField(env, lpObject, OLEINPLACEFRAMEINFOFc.cAccelEntries);
 	return lpStruct;
 }
@@ -595,8 +595,8 @@ void setOLEINPLACEFRAMEINFOFields(JNIEnv *env, jobject lpObject, OLEINPLACEFRAME
 	if (!OLEINPLACEFRAMEINFOFc.cached) cacheOLEINPLACEFRAMEINFOFields(env, lpObject);
 	(*env)->SetIntField(env, lpObject, OLEINPLACEFRAMEINFOFc.cb, (jint)lpStruct->cb);
 	(*env)->SetIntField(env, lpObject, OLEINPLACEFRAMEINFOFc.fMDIApp, (jint)lpStruct->fMDIApp);
-	(*env)->SetIntLongField(env, lpObject, OLEINPLACEFRAMEINFOFc.hwndFrame, (jintLong)lpStruct->hwndFrame);
-	(*env)->SetIntLongField(env, lpObject, OLEINPLACEFRAMEINFOFc.haccel, (jintLong)lpStruct->haccel);
+	(*env)->SetLongField(env, lpObject, OLEINPLACEFRAMEINFOFc.hwndFrame, (jlong)lpStruct->hwndFrame);
+	(*env)->SetLongField(env, lpObject, OLEINPLACEFRAMEINFOFc.haccel, (jlong)lpStruct->haccel);
 	(*env)->SetIntField(env, lpObject, OLEINPLACEFRAMEINFOFc.cAccelEntries, (jint)lpStruct->cAccelEntries);
 }
 #endif
@@ -614,7 +614,7 @@ void cacheSTATSTGFields(JNIEnv *env, jobject lpObject)
 {
 	if (STATSTGFc.cached) return;
 	STATSTGFc.clazz = (*env)->GetObjectClass(env, lpObject);
-	STATSTGFc.pwcsName = (*env)->GetFieldID(env, STATSTGFc.clazz, "pwcsName", I_J);
+	STATSTGFc.pwcsName = (*env)->GetFieldID(env, STATSTGFc.clazz, "pwcsName", "J");
 	STATSTGFc.type = (*env)->GetFieldID(env, STATSTGFc.clazz, "type", "I");
 	STATSTGFc.cbSize = (*env)->GetFieldID(env, STATSTGFc.clazz, "cbSize", "J");
 	STATSTGFc.mtime_dwLowDateTime = (*env)->GetFieldID(env, STATSTGFc.clazz, "mtime_dwLowDateTime", "I");
@@ -637,7 +637,7 @@ void cacheSTATSTGFields(JNIEnv *env, jobject lpObject)
 STATSTG *getSTATSTGFields(JNIEnv *env, jobject lpObject, STATSTG *lpStruct)
 {
 	if (!STATSTGFc.cached) cacheSTATSTGFields(env, lpObject);
-	lpStruct->pwcsName = (LPWSTR)(*env)->GetIntLongField(env, lpObject, STATSTGFc.pwcsName);
+	lpStruct->pwcsName = (LPWSTR)(*env)->GetLongField(env, lpObject, STATSTGFc.pwcsName);
 	lpStruct->type = (*env)->GetIntField(env, lpObject, STATSTGFc.type);
 	lpStruct->cbSize.QuadPart = (*env)->GetLongField(env, lpObject, STATSTGFc.cbSize);
 	lpStruct->mtime.dwLowDateTime = (*env)->GetIntField(env, lpObject, STATSTGFc.mtime_dwLowDateTime);
@@ -663,7 +663,7 @@ STATSTG *getSTATSTGFields(JNIEnv *env, jobject lpObject, STATSTG *lpStruct)
 void setSTATSTGFields(JNIEnv *env, jobject lpObject, STATSTG *lpStruct)
 {
 	if (!STATSTGFc.cached) cacheSTATSTGFields(env, lpObject);
-	(*env)->SetIntLongField(env, lpObject, STATSTGFc.pwcsName, (jintLong)lpStruct->pwcsName);
+	(*env)->SetLongField(env, lpObject, STATSTGFc.pwcsName, (jlong)lpStruct->pwcsName);
 	(*env)->SetIntField(env, lpObject, STATSTGFc.type, (jint)lpStruct->type);
 	(*env)->SetLongField(env, lpObject, STATSTGFc.cbSize, (jlong)lpStruct->cbSize.QuadPart);
 	(*env)->SetIntField(env, lpObject, STATSTGFc.mtime_dwLowDateTime, (jint)lpStruct->mtime.dwLowDateTime);
@@ -700,8 +700,8 @@ void cacheSTGMEDIUMFields(JNIEnv *env, jobject lpObject)
 	if (STGMEDIUMFc.cached) return;
 	STGMEDIUMFc.clazz = (*env)->GetObjectClass(env, lpObject);
 	STGMEDIUMFc.tymed = (*env)->GetFieldID(env, STGMEDIUMFc.clazz, "tymed", "I");
-	STGMEDIUMFc.unionField = (*env)->GetFieldID(env, STGMEDIUMFc.clazz, "unionField", I_J);
-	STGMEDIUMFc.pUnkForRelease = (*env)->GetFieldID(env, STGMEDIUMFc.clazz, "pUnkForRelease", I_J);
+	STGMEDIUMFc.unionField = (*env)->GetFieldID(env, STGMEDIUMFc.clazz, "unionField", "J");
+	STGMEDIUMFc.pUnkForRelease = (*env)->GetFieldID(env, STGMEDIUMFc.clazz, "pUnkForRelease", "J");
 	STGMEDIUMFc.cached = 1;
 }
 
@@ -709,8 +709,8 @@ STGMEDIUM *getSTGMEDIUMFields(JNIEnv *env, jobject lpObject, STGMEDIUM *lpStruct
 {
 	if (!STGMEDIUMFc.cached) cacheSTGMEDIUMFields(env, lpObject);
 	lpStruct->tymed = (*env)->GetIntField(env, lpObject, STGMEDIUMFc.tymed);
-	lpStruct->hGlobal = (HGLOBAL)(*env)->GetIntLongField(env, lpObject, STGMEDIUMFc.unionField);
-	lpStruct->pUnkForRelease = (IUnknown *)(*env)->GetIntLongField(env, lpObject, STGMEDIUMFc.pUnkForRelease);
+	lpStruct->hGlobal = (HGLOBAL)(*env)->GetLongField(env, lpObject, STGMEDIUMFc.unionField);
+	lpStruct->pUnkForRelease = (IUnknown *)(*env)->GetLongField(env, lpObject, STGMEDIUMFc.pUnkForRelease);
 	return lpStruct;
 }
 
@@ -718,8 +718,8 @@ void setSTGMEDIUMFields(JNIEnv *env, jobject lpObject, STGMEDIUM *lpStruct)
 {
 	if (!STGMEDIUMFc.cached) cacheSTGMEDIUMFields(env, lpObject);
 	(*env)->SetIntField(env, lpObject, STGMEDIUMFc.tymed, (jint)lpStruct->tymed);
-	(*env)->SetIntLongField(env, lpObject, STGMEDIUMFc.unionField, (jintLong)lpStruct->hGlobal);
-	(*env)->SetIntLongField(env, lpObject, STGMEDIUMFc.pUnkForRelease, (jintLong)lpStruct->pUnkForRelease);
+	(*env)->SetLongField(env, lpObject, STGMEDIUMFc.unionField, (jlong)lpStruct->hGlobal);
+	(*env)->SetLongField(env, lpObject, STGMEDIUMFc.pUnkForRelease, (jlong)lpStruct->pUnkForRelease);
 }
 #endif
 
@@ -744,7 +744,7 @@ void cacheTYPEATTRFields(JNIEnv *env, jobject lpObject)
 	TYPEATTRFc.dwReserved = (*env)->GetFieldID(env, TYPEATTRFc.clazz, "dwReserved", "I");
 	TYPEATTRFc.memidConstructor = (*env)->GetFieldID(env, TYPEATTRFc.clazz, "memidConstructor", "I");
 	TYPEATTRFc.memidDestructor = (*env)->GetFieldID(env, TYPEATTRFc.clazz, "memidDestructor", "I");
-	TYPEATTRFc.lpstrSchema = (*env)->GetFieldID(env, TYPEATTRFc.clazz, "lpstrSchema", I_J);
+	TYPEATTRFc.lpstrSchema = (*env)->GetFieldID(env, TYPEATTRFc.clazz, "lpstrSchema", "J");
 	TYPEATTRFc.cbSizeInstance = (*env)->GetFieldID(env, TYPEATTRFc.clazz, "cbSizeInstance", "I");
 	TYPEATTRFc.typekind = (*env)->GetFieldID(env, TYPEATTRFc.clazz, "typekind", "I");
 	TYPEATTRFc.cFuncs = (*env)->GetFieldID(env, TYPEATTRFc.clazz, "cFuncs", "S");
@@ -755,7 +755,7 @@ void cacheTYPEATTRFields(JNIEnv *env, jobject lpObject)
 	TYPEATTRFc.wTypeFlags = (*env)->GetFieldID(env, TYPEATTRFc.clazz, "wTypeFlags", "S");
 	TYPEATTRFc.wMajorVerNum = (*env)->GetFieldID(env, TYPEATTRFc.clazz, "wMajorVerNum", "S");
 	TYPEATTRFc.wMinorVerNum = (*env)->GetFieldID(env, TYPEATTRFc.clazz, "wMinorVerNum", "S");
-	TYPEATTRFc.tdescAlias_unionField = (*env)->GetFieldID(env, TYPEATTRFc.clazz, "tdescAlias_unionField", I_J);
+	TYPEATTRFc.tdescAlias_unionField = (*env)->GetFieldID(env, TYPEATTRFc.clazz, "tdescAlias_unionField", "J");
 	TYPEATTRFc.tdescAlias_vt = (*env)->GetFieldID(env, TYPEATTRFc.clazz, "tdescAlias_vt", "S");
 	TYPEATTRFc.idldescType_dwReserved = (*env)->GetFieldID(env, TYPEATTRFc.clazz, "idldescType_dwReserved", "I");
 	TYPEATTRFc.idldescType_wIDLFlags = (*env)->GetFieldID(env, TYPEATTRFc.clazz, "idldescType_wIDLFlags", "S");
@@ -776,7 +776,7 @@ TYPEATTR *getTYPEATTRFields(JNIEnv *env, jobject lpObject, TYPEATTR *lpStruct)
 	lpStruct->dwReserved = (*env)->GetIntField(env, lpObject, TYPEATTRFc.dwReserved);
 	lpStruct->memidConstructor = (*env)->GetIntField(env, lpObject, TYPEATTRFc.memidConstructor);
 	lpStruct->memidDestructor = (*env)->GetIntField(env, lpObject, TYPEATTRFc.memidDestructor);
-	lpStruct->lpstrSchema = (OLECHAR FAR *)(*env)->GetIntLongField(env, lpObject, TYPEATTRFc.lpstrSchema);
+	lpStruct->lpstrSchema = (OLECHAR FAR *)(*env)->GetLongField(env, lpObject, TYPEATTRFc.lpstrSchema);
 	lpStruct->cbSizeInstance = (*env)->GetIntField(env, lpObject, TYPEATTRFc.cbSizeInstance);
 	lpStruct->typekind = (*env)->GetIntField(env, lpObject, TYPEATTRFc.typekind);
 	lpStruct->cFuncs = (*env)->GetShortField(env, lpObject, TYPEATTRFc.cFuncs);
@@ -787,7 +787,7 @@ TYPEATTR *getTYPEATTRFields(JNIEnv *env, jobject lpObject, TYPEATTR *lpStruct)
 	lpStruct->wTypeFlags = (*env)->GetShortField(env, lpObject, TYPEATTRFc.wTypeFlags);
 	lpStruct->wMajorVerNum = (*env)->GetShortField(env, lpObject, TYPEATTRFc.wMajorVerNum);
 	lpStruct->wMinorVerNum = (*env)->GetShortField(env, lpObject, TYPEATTRFc.wMinorVerNum);
-	lpStruct->tdescAlias.lptdesc = (struct FARSTRUCT tagTYPEDESC FAR *)(*env)->GetIntLongField(env, lpObject, TYPEATTRFc.tdescAlias_unionField);
+	lpStruct->tdescAlias.lptdesc = (struct FARSTRUCT tagTYPEDESC FAR *)(*env)->GetLongField(env, lpObject, TYPEATTRFc.tdescAlias_unionField);
 	lpStruct->tdescAlias.vt = (*env)->GetShortField(env, lpObject, TYPEATTRFc.tdescAlias_vt);
 	lpStruct->idldescType.dwReserved = (*env)->GetIntField(env, lpObject, TYPEATTRFc.idldescType_dwReserved);
 	lpStruct->idldescType.wIDLFlags = (*env)->GetShortField(env, lpObject, TYPEATTRFc.idldescType_wIDLFlags);
@@ -808,7 +808,7 @@ void setTYPEATTRFields(JNIEnv *env, jobject lpObject, TYPEATTR *lpStruct)
 	(*env)->SetIntField(env, lpObject, TYPEATTRFc.dwReserved, (jint)lpStruct->dwReserved);
 	(*env)->SetIntField(env, lpObject, TYPEATTRFc.memidConstructor, (jint)lpStruct->memidConstructor);
 	(*env)->SetIntField(env, lpObject, TYPEATTRFc.memidDestructor, (jint)lpStruct->memidDestructor);
-	(*env)->SetIntLongField(env, lpObject, TYPEATTRFc.lpstrSchema, (jintLong)lpStruct->lpstrSchema);
+	(*env)->SetLongField(env, lpObject, TYPEATTRFc.lpstrSchema, (jlong)lpStruct->lpstrSchema);
 	(*env)->SetIntField(env, lpObject, TYPEATTRFc.cbSizeInstance, (jint)lpStruct->cbSizeInstance);
 	(*env)->SetIntField(env, lpObject, TYPEATTRFc.typekind, (jint)lpStruct->typekind);
 	(*env)->SetShortField(env, lpObject, TYPEATTRFc.cFuncs, (jshort)lpStruct->cFuncs);
@@ -819,7 +819,7 @@ void setTYPEATTRFields(JNIEnv *env, jobject lpObject, TYPEATTR *lpStruct)
 	(*env)->SetShortField(env, lpObject, TYPEATTRFc.wTypeFlags, (jshort)lpStruct->wTypeFlags);
 	(*env)->SetShortField(env, lpObject, TYPEATTRFc.wMajorVerNum, (jshort)lpStruct->wMajorVerNum);
 	(*env)->SetShortField(env, lpObject, TYPEATTRFc.wMinorVerNum, (jshort)lpStruct->wMinorVerNum);
-	(*env)->SetIntLongField(env, lpObject, TYPEATTRFc.tdescAlias_unionField, (jintLong)lpStruct->tdescAlias.lptdesc);
+	(*env)->SetLongField(env, lpObject, TYPEATTRFc.tdescAlias_unionField, (jlong)lpStruct->tdescAlias.lptdesc);
 	(*env)->SetShortField(env, lpObject, TYPEATTRFc.tdescAlias_vt, (jshort)lpStruct->tdescAlias.vt);
 	(*env)->SetIntField(env, lpObject, TYPEATTRFc.idldescType_dwReserved, (jint)lpStruct->idldescType.dwReserved);
 	(*env)->SetShortField(env, lpObject, TYPEATTRFc.idldescType_wIDLFlags, (jshort)lpStruct->idldescType.wIDLFlags);
@@ -840,11 +840,11 @@ void cacheVARDESCFields(JNIEnv *env, jobject lpObject)
 	if (VARDESCFc.cached) return;
 	VARDESCFc.clazz = (*env)->GetObjectClass(env, lpObject);
 	VARDESCFc.memid = (*env)->GetFieldID(env, VARDESCFc.clazz, "memid", "I");
-	VARDESCFc.lpstrSchema = (*env)->GetFieldID(env, VARDESCFc.clazz, "lpstrSchema", I_J);
+	VARDESCFc.lpstrSchema = (*env)->GetFieldID(env, VARDESCFc.clazz, "lpstrSchema", "J");
 	VARDESCFc.oInst = (*env)->GetFieldID(env, VARDESCFc.clazz, "oInst", "I");
-	VARDESCFc.elemdescVar_tdesc_union = (*env)->GetFieldID(env, VARDESCFc.clazz, "elemdescVar_tdesc_union", I_J);
+	VARDESCFc.elemdescVar_tdesc_union = (*env)->GetFieldID(env, VARDESCFc.clazz, "elemdescVar_tdesc_union", "J");
 	VARDESCFc.elemdescVar_tdesc_vt = (*env)->GetFieldID(env, VARDESCFc.clazz, "elemdescVar_tdesc_vt", "S");
-	VARDESCFc.elemdescVar_paramdesc_pparamdescex = (*env)->GetFieldID(env, VARDESCFc.clazz, "elemdescVar_paramdesc_pparamdescex", I_J);
+	VARDESCFc.elemdescVar_paramdesc_pparamdescex = (*env)->GetFieldID(env, VARDESCFc.clazz, "elemdescVar_paramdesc_pparamdescex", "J");
 	VARDESCFc.elemdescVar_paramdesc_wParamFlags = (*env)->GetFieldID(env, VARDESCFc.clazz, "elemdescVar_paramdesc_wParamFlags", "S");
 	VARDESCFc.wVarFlags = (*env)->GetFieldID(env, VARDESCFc.clazz, "wVarFlags", "S");
 	VARDESCFc.varkind = (*env)->GetFieldID(env, VARDESCFc.clazz, "varkind", "I");
@@ -855,11 +855,11 @@ VARDESC *getVARDESCFields(JNIEnv *env, jobject lpObject, VARDESC *lpStruct)
 {
 	if (!VARDESCFc.cached) cacheVARDESCFields(env, lpObject);
 	lpStruct->memid = (*env)->GetIntField(env, lpObject, VARDESCFc.memid);
-	lpStruct->lpstrSchema = (OLECHAR FAR *)(*env)->GetIntLongField(env, lpObject, VARDESCFc.lpstrSchema);
+	lpStruct->lpstrSchema = (OLECHAR FAR *)(*env)->GetLongField(env, lpObject, VARDESCFc.lpstrSchema);
 	lpStruct->oInst = (*env)->GetIntField(env, lpObject, VARDESCFc.oInst);
-	lpStruct->elemdescVar.tdesc.lptdesc = (struct FARSTRUCT tagTYPEDESC FAR *)(*env)->GetIntLongField(env, lpObject, VARDESCFc.elemdescVar_tdesc_union);
+	lpStruct->elemdescVar.tdesc.lptdesc = (struct FARSTRUCT tagTYPEDESC FAR *)(*env)->GetLongField(env, lpObject, VARDESCFc.elemdescVar_tdesc_union);
 	lpStruct->elemdescVar.tdesc.vt = (*env)->GetShortField(env, lpObject, VARDESCFc.elemdescVar_tdesc_vt);
-	lpStruct->elemdescVar.paramdesc.pparamdescex = (LPPARAMDESCEX)(*env)->GetIntLongField(env, lpObject, VARDESCFc.elemdescVar_paramdesc_pparamdescex);
+	lpStruct->elemdescVar.paramdesc.pparamdescex = (LPPARAMDESCEX)(*env)->GetLongField(env, lpObject, VARDESCFc.elemdescVar_paramdesc_pparamdescex);
 	lpStruct->elemdescVar.paramdesc.wParamFlags = (*env)->GetShortField(env, lpObject, VARDESCFc.elemdescVar_paramdesc_wParamFlags);
 	lpStruct->wVarFlags = (*env)->GetShortField(env, lpObject, VARDESCFc.wVarFlags);
 	lpStruct->varkind = (*env)->GetIntField(env, lpObject, VARDESCFc.varkind);
@@ -870,11 +870,11 @@ void setVARDESCFields(JNIEnv *env, jobject lpObject, VARDESC *lpStruct)
 {
 	if (!VARDESCFc.cached) cacheVARDESCFields(env, lpObject);
 	(*env)->SetIntField(env, lpObject, VARDESCFc.memid, (jint)lpStruct->memid);
-	(*env)->SetIntLongField(env, lpObject, VARDESCFc.lpstrSchema, (jintLong)lpStruct->lpstrSchema);
+	(*env)->SetLongField(env, lpObject, VARDESCFc.lpstrSchema, (jlong)lpStruct->lpstrSchema);
 	(*env)->SetIntField(env, lpObject, VARDESCFc.oInst, (jint)lpStruct->oInst);
-	(*env)->SetIntLongField(env, lpObject, VARDESCFc.elemdescVar_tdesc_union, (jintLong)lpStruct->elemdescVar.tdesc.lptdesc);
+	(*env)->SetLongField(env, lpObject, VARDESCFc.elemdescVar_tdesc_union, (jlong)lpStruct->elemdescVar.tdesc.lptdesc);
 	(*env)->SetShortField(env, lpObject, VARDESCFc.elemdescVar_tdesc_vt, (jshort)lpStruct->elemdescVar.tdesc.vt);
-	(*env)->SetIntLongField(env, lpObject, VARDESCFc.elemdescVar_paramdesc_pparamdescex, (jintLong)lpStruct->elemdescVar.paramdesc.pparamdescex);
+	(*env)->SetLongField(env, lpObject, VARDESCFc.elemdescVar_paramdesc_pparamdescex, (jlong)lpStruct->elemdescVar.paramdesc.pparamdescex);
 	(*env)->SetShortField(env, lpObject, VARDESCFc.elemdescVar_paramdesc_wParamFlags, (jshort)lpStruct->elemdescVar.paramdesc.wParamFlags);
 	(*env)->SetShortField(env, lpObject, VARDESCFc.wVarFlags, (jshort)lpStruct->wVarFlags);
 	(*env)->SetIntField(env, lpObject, VARDESCFc.varkind, (jint)lpStruct->varkind);

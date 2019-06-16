@@ -18,7 +18,7 @@ public class LVCOLUMN {
 	public int fmt;
 	public int cx;
 	/** @field cast=(LPTSTR) */
-	public long /*int*/ pszText;
+	public long pszText;
 	public int cchTextMax;
 	public int iSubItem;
 	public int iImage;

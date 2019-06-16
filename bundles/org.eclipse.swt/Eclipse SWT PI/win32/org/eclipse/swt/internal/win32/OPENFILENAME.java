@@ -16,37 +16,37 @@ package org.eclipse.swt.internal.win32;
 public class OPENFILENAME {
 	public int lStructSize;
 	/** @field cast=(HWND) */
-	public long /*int*/ hwndOwner;
+	public long hwndOwner;
 	/** @field cast=(HINSTANCE) */
-	public long /*int*/ hInstance;
+	public long hInstance;
 	/** @field cast=(LPCTSTR) */
-	public long /*int*/ lpstrFilter;
+	public long lpstrFilter;
 	/** @field cast=(LPTSTR) */
-	public long /*int*/ lpstrCustomFilter;
+	public long lpstrCustomFilter;
 	public int nMaxCustFilter;
 	public int nFilterIndex;
 	/** @field cast=(LPTSTR) */
-	public long /*int*/ lpstrFile;
+	public long lpstrFile;
 	public int nMaxFile;
 	/** @field cast=(LPTSTR) */
-	public long /*int*/ lpstrFileTitle;
+	public long lpstrFileTitle;
 	public int nMaxFileTitle;
 	/** @field cast=(LPCTSTR) */
-	public long /*int*/ lpstrInitialDir;
+	public long lpstrInitialDir;
 	/** @field cast=(LPCTSTR) */
-	public long /*int*/ lpstrTitle;
+	public long lpstrTitle;
 	public int Flags;
 	public short nFileOffset;
 	public short nFileExtension;
 	/** @field cast=(LPCTSTR) */
-	public long /*int*/ lpstrDefExt;
-	public long /*int*/ lCustData;
+	public long lpstrDefExt;
+	public long lCustData;
 	/** @field cast=(LPOFNHOOKPROC) */
-	public long /*int*/ lpfnHook;
+	public long lpfnHook;
 	/** @field cast=(LPCTSTR) */
-	public long /*int*/ lpTemplateName;
+	public long lpTemplateName;
 	/** @field cast=(void *) */
-	public long /*int*/ pvReserved;
+	public long pvReserved;
 	public int dwReserved;
 	public int FlagsEx;
 	public static final int sizeof = OS.OPENFILENAME_sizeof ();

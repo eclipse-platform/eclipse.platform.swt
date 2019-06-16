@@ -17,17 +17,17 @@ import org.eclipse.swt.internal.win32.*;
 
 public class IUnknown
 {
-	long /*int*/ address;
-public IUnknown(long /*int*/ address) {
+	long address;
+public IUnknown(long address) {
 	this.address = address;
 }
 public int AddRef() {
 	return OS.VtblCall(1, address);
 }
-public long /*int*/ getAddress() {
+public long getAddress() {
 	return address;
 }
-public int QueryInterface(GUID riid, long /*int*/[] ppvObject) {
+public int QueryInterface(GUID riid, long[] ppvObject) {
 	return COM.VtblCall(0, address, riid, ppvObject);
 }
 public int Release() {

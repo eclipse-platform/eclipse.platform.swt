@@ -17,19 +17,19 @@ import org.eclipse.swt.internal.win32.*;
 
 public class IDispatchEx extends IDispatch {
 
-public IDispatchEx (long /*int*/ address) {
+public IDispatchEx (long address) {
 	super (address);
 }
 
-public int GetDispID (long /*int*/ bstrName, int grfdex, int[] pid) {
+public int GetDispID (long bstrName, int grfdex, int[] pid) {
 	return COM.VtblCall (7, address, bstrName, grfdex, pid);
 }
 
-public int InvokeEx (int id, int lcid, int wFlags, DISPPARAMS pdp, long /*int*/ pvarRes, EXCEPINFO pei, long /*int*/ pspCaller) {
+public int InvokeEx (int id, int lcid, int wFlags, DISPPARAMS pdp, long pvarRes, EXCEPINFO pei, long pspCaller) {
 	return COM.VtblCall (8, address, id, lcid, wFlags, pdp, pvarRes, pei, pspCaller);
 }
 
-public int DeleteMemberByName (long /*int*/ bstrName, int grfdex) {
+public int DeleteMemberByName (long bstrName, int grfdex) {
 	return OS.VtblCall (9, address, bstrName, grfdex);
 }
 
@@ -41,7 +41,7 @@ public int GetMemberProperties (int id, int grfdexFetch, int[] pgrfdex) {
 	return COM.VtblCall (11, address, id, grfdexFetch, pgrfdex);
 }
 
-public int GetMemberName (int id, long /*int*/[] pbstrName) {
+public int GetMemberName (int id, long[] pbstrName) {
 	return OS.VtblCall (12, address, id, pbstrName);
 }
 
@@ -49,7 +49,7 @@ public int GetNextDispID (int grfdex, int id, int[] pid) {
 	return COM.VtblCall (13, address, grfdex, id, pid);
 }
 
-public int GetNameSpaceParent (long /*int*/[] ppunk) {
+public int GetNameSpaceParent (long[] ppunk) {
 	return OS.VtblCall (14, address, ppunk);
 }
 }

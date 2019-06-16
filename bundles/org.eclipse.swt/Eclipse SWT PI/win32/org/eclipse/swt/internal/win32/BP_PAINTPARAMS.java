@@ -17,8 +17,8 @@ public class BP_PAINTPARAMS {
 	public int cbSize;
 	public int dwFlags;
 	/** @field cast=(RECT*) */
-	public long /*int*/ prcExclude;
+	public long prcExclude;
 	/** @field cast=(BLENDFUNCTION*) */
-	public long /*int*/ pBlendFunction;
+	public long pBlendFunction;
 	public static final int sizeof = OS.BP_PAINTPARAMS_sizeof ();
 }

@@ -16,7 +16,7 @@ package org.eclipse.swt.internal.win32;
 
 public class CRYPT_ALGORITHM_IDENTIFIER {
 	/** @field cast=(LPSTR) */
-	public long /*int*/ pszObjId;
+	public long pszObjId;
 	public CRYPT_OBJID_BLOB Parameters = new CRYPT_OBJID_BLOB ();
 
 	static final public int sizeof = OS.CRYPT_ALGORITHM_IDENTIFIER_sizeof ();

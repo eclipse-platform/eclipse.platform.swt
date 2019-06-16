@@ -17,7 +17,7 @@ package org.eclipse.swt.internal.win32;
 public class CRYPT_OBJID_BLOB {
 	public int cbData;
 	/** @field cast=(BYTE *) */
-	public long /*int*/ pbData;
+	public long pbData;
 
 	static final public int sizeof = OS.CRYPT_OBJID_BLOB_sizeof ();
 }

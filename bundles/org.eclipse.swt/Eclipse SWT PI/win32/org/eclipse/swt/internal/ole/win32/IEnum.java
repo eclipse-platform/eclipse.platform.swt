@@ -17,13 +17,13 @@ import org.eclipse.swt.internal.win32.*;
 
 public class IEnum extends IUnknown
 {
-public IEnum(long /*int*/ address) {
+public IEnum(long address) {
 	super(address);
 }
-public int Clone( long /*int*/[] ppenum  ){
+public int Clone( long[] ppenum  ){
 	return OS.VtblCall(6, address, ppenum);
 }
-public int Next(int celt, long /*int*/ rgelt, int[] pceltFetched  ){
+public int Next(int celt, long rgelt, int[] pceltFetched  ){
 	return COM.VtblCall(3, address, celt, rgelt, pceltFetched);
 }
 public int Reset() {

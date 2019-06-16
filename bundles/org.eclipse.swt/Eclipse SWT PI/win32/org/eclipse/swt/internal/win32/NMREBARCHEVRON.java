@@ -16,7 +16,7 @@ package org.eclipse.swt.internal.win32;
 public class NMREBARCHEVRON extends NMHDR {
 	public int uBand;
 	public int wID;
-	public long /*int*/ lParam;
+	public long lParam;
 //	RECT rc;
 	/** @field accessor=rc.left */
 	public int left;
@@ -26,6 +26,6 @@ public class NMREBARCHEVRON extends NMHDR {
 	public int right;
 	/** @field accessor=rc.bottom */
 	public int bottom;
-	public long /*int*/ lParamNM;
+	public long lParamNM;
 	public static int sizeof = OS.NMREBARCHEVRON_sizeof ();
 }

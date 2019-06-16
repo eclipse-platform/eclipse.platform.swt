@@ -98,7 +98,7 @@ OleAutomation(IDispatch idispatch) {
 	objIDispatch = idispatch;
 	objIDispatch.AddRef();
 
-	long /*int*/[] ppv = new long /*int*/[1];
+	long[] ppv = new long[1];
 	/* GetTypeInfo([in] iTInfo, [in] lcid, [out] ppTInfo)
 	 * AddRef has already been called on ppTInfo by the callee and must be released by the caller.
 	 */
@@ -121,7 +121,7 @@ public OleAutomation(OleClientSite clientSite) {
 	if (clientSite == null) OLE.error(OLE.ERROR_INVALID_INTERFACE_ADDRESS);
 	objIDispatch = clientSite.getAutomationObject();
 
-	long /*int*/[] ppv = new long /*int*/[1];
+	long[] ppv = new long[1];
 	/* GetTypeInfo([in] iTInfo, [in] lcid, [out] ppTInfo)
 	 * AddRef has already been called on ppTInfo by the callee and must be released by the caller.
 	 */
@@ -155,7 +155,7 @@ public OleAutomation(String progId) {
 			OLE.error(OLE.ERROR_INVALID_CLASSID);
 		}
 		int flags = COM.CLSCTX_INPROC_SERVER | COM.CLSCTX_LOCAL_SERVER;
-		long /*int*/[] ppvObject = new long /*int*/[1];
+		long[] ppvObject = new long[1];
 		int result = COM.CoCreateInstance(appClsid, 0, flags, COM.IIDIUnknown, ppvObject);
 		if (result != COM.S_OK) {
 			OS.OleUninitialize();
@@ -202,7 +202,7 @@ public void dispose() {
 	}
 	objIUnknown = null;
 }
-long /*int*/ getAddress() {
+long getAddress() {
 	return objIDispatch.getAddress();
 }
 GUID getClassID(String clientName) {
@@ -257,7 +257,7 @@ public String getDocumentation(int dispId) {
  */
 public OlePropertyDescription getPropertyDescription(int index) {
 	if (objITypeInfo == null) return null;
-	long /*int*/[] ppVarDesc = new long /*int*/[1];
+	long[] ppVarDesc = new long[1];
 	int rc = objITypeInfo.GetVarDesc(index, ppVarDesc);
 	if (rc != OLE.S_OK) return null;
 	VARDESC vardesc = new VARDESC();
@@ -288,7 +288,7 @@ public OlePropertyDescription getPropertyDescription(int index) {
  */
 public OleFunctionDescription getFunctionDescription(int index) {
 	if (objITypeInfo == null) return null;
-	long /*int*/[] ppFuncDesc = new long /*int*/[1];
+	long[] ppFuncDesc = new long[1];
 	int rc = objITypeInfo.GetFuncDesc(index, ppFuncDesc);
 	if (rc != OLE.S_OK) return null;
 	FUNCDESC funcdesc = new FUNCDESC();
@@ -319,7 +319,7 @@ public OleFunctionDescription getFunctionDescription(int index) {
 		short[] vt = new short[1];
 		OS.MoveMemory(vt, funcdesc.lprgelemdescParam + i * COM.ELEMDESC_sizeof() + C.PTR_SIZEOF, 2);
 		if (vt[0] == OLE.VT_PTR) {
-			long /*int*/ [] pTypedesc = new long /*int*/ [1];
+			long [] pTypedesc = new long [1];
 			OS.MoveMemory(pTypedesc, funcdesc.lprgelemdescParam + i * COM.ELEMDESC_sizeof(), C.PTR_SIZEOF);
 			short[] vt2 = new short[1];
 			OS.MoveMemory(vt2, pTypedesc[0] + C.PTR_SIZEOF, 2);
@@ -350,7 +350,7 @@ public OleFunctionDescription getFunctionDescription(int index) {
  */
 public TYPEATTR getTypeInfoAttributes() {
 	if (objITypeInfo == null) return null;
-	long /*int*/ [] ppTypeAttr = new long /*int*/ [1];
+	long [] ppTypeAttr = new long [1];
 	int rc = objITypeInfo.GetTypeAttr(ppTypeAttr);
 	if (rc != OLE.S_OK) return null;
 	TYPEATTR typeattr = new TYPEATTR();
@@ -480,8 +480,8 @@ public boolean equals(Object object) {
 		if (objIDispatch == null) return false;
 		OleAutomation oleAutomation = ((OleAutomation) object);
 		if (oleAutomation.objIDispatch == null) return false;
-		long /*int*/ address1 = objIDispatch.getAddress();
-		long /*int*/ address2 = oleAutomation.objIDispatch.getAddress();
+		long address1 = objIDispatch.getAddress();
+		long address2 = oleAutomation.objIDispatch.getAddress();
 		return address1 == address2;
 	}
 	return false;
@@ -570,7 +570,7 @@ private int invoke(int dispIdMember, int wFlags, Variant[] rgvarg, int[] rgdispi
 	// invoke the method
 	EXCEPINFO excepInfo = new EXCEPINFO();
 	int[] pArgErr = new int[1];
-	long /*int*/ pVarResultAddress = 0;
+	long pVarResultAddress = 0;
 	if (pVarResult != null)	pVarResultAddress = OS.GlobalAlloc(OS.GMEM_FIXED | OS.GMEM_ZEROINIT, VARIANT.sizeof);
 	int result = objIDispatch.Invoke(dispIdMember, new GUID(), COM.LOCALE_USER_DEFAULT, wFlags, pDispParams, pVarResultAddress, excepInfo, pArgErr);
 

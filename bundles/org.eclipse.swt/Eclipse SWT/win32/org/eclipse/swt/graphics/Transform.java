@@ -49,7 +49,7 @@ public class Transform extends Resource {
 	 *
 	 * @noreference This field is not intended to be referenced by clients.
 	 */
-	public long /*int*/ handle;
+	public long handle;
 
 /**
  * Constructs a new identity Transform.

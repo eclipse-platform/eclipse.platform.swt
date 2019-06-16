@@ -15,22 +15,22 @@ package org.eclipse.swt.internal.win32;
 
 public class CREATESTRUCT {
 	/** @field cast=(LPVOID) */
-	public long /*int*/ lpCreateParams;
+	public long lpCreateParams;
 	/** @field cast=(HINSTANCE) */
-	public long /*int*/ hInstance;
+	public long hInstance;
 	/** @field cast=(HMENU) */
-	public long /*int*/ hMenu;
+	public long hMenu;
 	/** @field cast=(HWND) */
-	public long /*int*/ hwndParent;
+	public long hwndParent;
 	public int cy;
 	public int cx;
 	public int y;
 	public int x;
 	public int style;
 	/** @field cast=(LPCTSTR) */
-	public long /*int*/ lpszName;
+	public long lpszName;
 	/** @field cast=(LPCTSTR) */
-	public long /*int*/ lpszClass;
+	public long lpszClass;
 	public int dwExStyle;
 	public static final int sizeof = OS.CREATESTRUCT_sizeof ();
 }

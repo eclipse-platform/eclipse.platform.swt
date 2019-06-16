@@ -16,9 +16,9 @@ package org.eclipse.swt.internal.win32;
 public class NMTVITEMCHANGE extends NMHDR {
 	public int uChanged;
 	/** @field cast=(HTREEITEM) */
-	public long /*int*/ hItem;
+	public long hItem;
 	public int uStateNew;
 	public int uStateOld;
-	public long /*int*/ lParam;
+	public long lParam;
 	public static int sizeof = OS.NMTVITEMCHANGE_sizeof ();
 }

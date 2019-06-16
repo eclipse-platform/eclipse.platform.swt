@@ -290,8 +290,8 @@ public PrinterData open() {
 	/* Get the owner HWND for the dialog */
 	Control parent = getParent();
 	int style = getStyle();
-	long /*int*/ hwndOwner = parent.handle;
-	long /*int*/ hwndParent = parent.handle;
+	long hwndOwner = parent.handle;
+	long hwndParent = parent.handle;
 
 	/*
 	* Feature in Windows.  There is no API to set the BIDI orientation
@@ -343,8 +343,8 @@ public PrinterData open() {
 			short[] offsets = new short[4]; // DEVNAMES (4 offsets)
 			int offsetsSize = offsets.length * 2; // 2 bytes each
 			offsets[1] = (short) offsets.length; // offset 1 points to wDeviceOffset
-			long /*int*/ hMem = OS.GlobalAlloc(OS.GMEM_MOVEABLE | OS.GMEM_ZEROINIT, offsetsSize + size);
-			long /*int*/ ptr = OS.GlobalLock(hMem);
+			long hMem = OS.GlobalAlloc(OS.GMEM_MOVEABLE | OS.GMEM_ZEROINIT, offsetsSize + size);
+			long ptr = OS.GlobalLock(hMem);
 			OS.MoveMemory(ptr, offsets, offsetsSize);
 			OS.MoveMemory(ptr + offsetsSize, buffer, size);
 			OS.GlobalUnlock(hMem);
@@ -373,8 +373,8 @@ public PrinterData open() {
 		 */
 		byte devmodeData [] = printerData.otherData;
 		if (devmodeData != null && devmodeData.length != 0) {
-			long /*int*/ hMem = OS.GlobalAlloc(OS.GMEM_MOVEABLE | OS.GMEM_ZEROINIT, devmodeData.length);
-			long /*int*/ ptr = OS.GlobalLock(hMem);
+			long hMem = OS.GlobalAlloc(OS.GMEM_MOVEABLE | OS.GMEM_ZEROINIT, devmodeData.length);
+			long ptr = OS.GlobalLock(hMem);
 			OS.MoveMemory(ptr, devmodeData, devmodeData.length);
 			OS.GlobalUnlock(hMem);
 			if (pd.hDevMode != 0) OS.GlobalFree(pd.hDevMode);
@@ -382,12 +382,12 @@ public PrinterData open() {
 		}
 
 		/* Initialize the DEVMODE struct's fields from the printerData. */
-		long /*int*/ hMem = pd.hDevMode;
+		long hMem = pd.hDevMode;
 		if (hMem == 0) {
 			hMem = OS.GlobalAlloc(OS.GMEM_MOVEABLE | OS.GMEM_ZEROINIT, DEVMODE.sizeof);
 			pd.hDevMode = hMem;
 		}
-		long /*int*/ ptr = OS.GlobalLock(hMem);
+		long ptr = OS.GlobalLock(hMem);
 		DEVMODE devmode = new DEVMODE ();
 		OS.MoveMemory(devmode, ptr, DEVMODE.sizeof);
 		if (printerData.name != null) {

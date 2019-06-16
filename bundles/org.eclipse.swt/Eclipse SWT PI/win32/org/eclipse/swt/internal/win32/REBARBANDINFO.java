@@ -20,22 +20,22 @@ public class REBARBANDINFO {
 	public int clrFore;
 	public int clrBack;
 	/** @field cast=(LPTSTR) */
-	public long /*int*/ lpText;
+	public long lpText;
 	public int cch;
 	public int iImage;
 	/** @field cast=(HWND) */
-	public long /*int*/ hwndChild;
+	public long hwndChild;
 	public int cxMinChild;
 	public int cyMinChild;
 	public int cx;
 	/** @field cast=(HBITMAP) */
-	public long /*int*/ hbmBack;
+	public long hbmBack;
 	public int wID;
 	public int cyChild;
 	public int cyMaxChild;
 	public int cyIntegral;
 	public int cxIdeal;
-	public long /*int*/ lParam;
+	public long lParam;
 	public int cxHeader;
 	public static final int sizeof = OS.REBARBANDINFO_sizeof ();
 }

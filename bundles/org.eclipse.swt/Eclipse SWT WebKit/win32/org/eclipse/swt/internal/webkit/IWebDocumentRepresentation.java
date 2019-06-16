@@ -19,11 +19,11 @@ import org.eclipse.swt.internal.win32.*;
 
 public class IWebDocumentRepresentation extends IUnknown {
 
-public IWebDocumentRepresentation (long /*int*/ address) {
+public IWebDocumentRepresentation (long address) {
 	super (address);
 }
 
-public int documentSource (long /*int*/[] source) {
+public int documentSource (long[] source) {
 	return OS.VtblCall (8, getAddress (), source);
 }
 

@@ -17,6 +17,6 @@ public class HIGHCONTRAST {
 	public int cbSize;
 	public int dwFlags;
 	/** @field cast=(LPTSTR) */
-	public long /*int*/ lpszDefaultScheme;
+	public long lpszDefaultScheme;
 	public static final int sizeof = OS.HIGHCONTRAST_sizeof ();
 }

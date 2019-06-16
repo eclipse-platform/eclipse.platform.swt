@@ -31,7 +31,7 @@ final class OleEventSink
 
 	private OleEventTable eventTable;
 
-OleEventSink(OleControlSite widget, long /*int*/ iUnknown, GUID riid) {
+OleEventSink(OleControlSite widget, long iUnknown, GUID riid) {
 
 	this.widget = widget;
 	this.eventGuid = riid;
@@ -41,10 +41,10 @@ OleEventSink(OleControlSite widget, long /*int*/ iUnknown, GUID riid) {
 }
 
 void connect () {
-	long /*int*/[] ppvObject = new long /*int*/[1];
+	long[] ppvObject = new long[1];
 	if (objIUnknown.QueryInterface(COM.IIDIConnectionPointContainer, ppvObject) == COM.S_OK) {
 		IConnectionPointContainer cpc = new IConnectionPointContainer(ppvObject[0]);
-		long /*int*/[] ppCP = new long /*int*/[1];
+		long[] ppCP = new long[1];
 		if (cpc.FindConnectionPoint(eventGuid, ppCP) == COM.S_OK) {
 			IConnectionPoint cp = new IConnectionPoint(ppCP[0]);
 			int[] pCookie = new int[1];
@@ -67,22 +67,22 @@ int AddRef() {
 private void createCOMInterfaces() {
 	iDispatch = new COMObject(new int[]{2, 0, 0, 1, 3, 4, 8}){
 		@Override
-		public long /*int*/ method0(long /*int*/[] args) {return QueryInterface(args[0], args[1]);}
+		public long method0(long[] args) {return QueryInterface(args[0], args[1]);}
 		@Override
-		public long /*int*/ method1(long /*int*/[] args) {return AddRef();}
+		public long method1(long[] args) {return AddRef();}
 		@Override
-		public long /*int*/ method2(long /*int*/[] args) {return Release();}
+		public long method2(long[] args) {return Release();}
 		// method3 GetTypeInfoCount - not implemented
 		// method4 GetTypeInfo - not implemented
 		// method5 GetIDsOfNames - not implemented
 		@Override
-		public long /*int*/ method6(long /*int*/[] args) {return Invoke((int)/*64*/args[0], args[1], (int)/*64*/args[2], (int)/*64*/args[3], args[4], args[5], args[6], args[7]);}
+		public long method6(long[] args) {return Invoke((int)args[0], args[1], (int)args[2], (int)args[3], args[4], args[5], args[6], args[7]);}
 	};
 }
 void disconnect() {
 	// disconnect event sink
 	if (eventCookie != 0 && objIUnknown != null) {
-		long /*int*/[] ppvObject = new long /*int*/[1];
+		long[] ppvObject = new long[1];
 		if (objIUnknown.QueryInterface(COM.IIDIConnectionPointContainer, ppvObject) == COM.S_OK) {
 			IConnectionPointContainer cpc = new IConnectionPointContainer(ppvObject[0]);
 			if (cpc.FindConnectionPoint(eventGuid, ppvObject) == COM.S_OK) {
@@ -102,7 +102,7 @@ private void disposeCOMInterfaces() {
 	iDispatch = null;
 
 }
-private int Invoke(int dispIdMember, long /*int*/ riid, int lcid, int dwFlags, long /*int*/ pDispParams, long /*int*/ pVarResult, long /*int*/ pExcepInfo, long /*int*/ pArgErr)
+private int Invoke(int dispIdMember, long riid, int lcid, int dwFlags, long pDispParams, long pVarResult, long pExcepInfo, long pArgErr)
 {
 	if (eventTable == null || !eventTable.hooks(dispIdMember)) return COM.S_OK;
 
@@ -114,7 +114,7 @@ private int Invoke(int dispIdMember, long /*int*/ riid, int lcid, int dwFlags, l
 		COM.MoveMemory(dispParams, pDispParams, DISPPARAMS.sizeof);
 		eventInfo = new Variant[dispParams.cArgs];
 		int size = VARIANT.sizeof;
-		long /*int*/ offset = (dispParams.cArgs - 1) * size;
+		long offset = (dispParams.cArgs - 1) * size;
 
 		for (int j = 0; j < dispParams.cArgs; j++){
 			eventInfo[j] = new Variant();
@@ -159,7 +159,7 @@ private void notifyListener (int eventType, OleEvent event) {
 	event.widget = widget;
 	eventTable.sendEvent (event);
 }
-private int QueryInterface(long /*int*/ riid, long /*int*/ ppvObject) {
+private int QueryInterface(long riid, long ppvObject) {
 
 	if (riid == 0 || ppvObject == 0)
 		return COM.E_INVALIDARG;
@@ -168,12 +168,12 @@ private int QueryInterface(long /*int*/ riid, long /*int*/ ppvObject) {
 
 	if ( COM.IsEqualGUID(guid, COM.IIDIUnknown) || COM.IsEqualGUID(guid, COM.IIDIDispatch) ||
 			COM.IsEqualGUID(guid, eventGuid)) {
-		OS.MoveMemory(ppvObject, new long /*int*/[] {iDispatch.getAddress()}, C.PTR_SIZEOF);
+		OS.MoveMemory(ppvObject, new long[] {iDispatch.getAddress()}, C.PTR_SIZEOF);
 		AddRef();
 		return OLE.S_OK;
 	}
 
-	OS.MoveMemory(ppvObject, new long /*int*/[] {0}, C.PTR_SIZEOF);
+	OS.MoveMemory(ppvObject, new long[] {0}, C.PTR_SIZEOF);
 	return COM.E_NOINTERFACE;
 }
 int Release() {

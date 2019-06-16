@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2009, 2016 IBM Corporation and others. All rights reserved.
+ * Copyright (c) 2009, 2019 IBM Corporation and others. All rights reserved.
  * The contents of this file are made available under the terms
  * of the GNU Lesser General Public License (LGPL) Version 2.1 that
  * accompanies this distribution (lgpl-v21.txt).  The LGPL is also
@@ -34,21 +34,21 @@ void cacheJSClassDefinitionFields(JNIEnv *env, jobject lpObject)
 	JSClassDefinitionFc.clazz = env->GetObjectClass(lpObject);
 	JSClassDefinitionFc.version = env->GetFieldID(JSClassDefinitionFc.clazz, "version", "I");
 	JSClassDefinitionFc.attributes = env->GetFieldID(JSClassDefinitionFc.clazz, "attributes", "I");
-	JSClassDefinitionFc.className = env->GetFieldID(JSClassDefinitionFc.clazz, "className", I_J);
-	JSClassDefinitionFc.parentClass = env->GetFieldID(JSClassDefinitionFc.clazz, "parentClass", I_J);
-	JSClassDefinitionFc.staticValues = env->GetFieldID(JSClassDefinitionFc.clazz, "staticValues", I_J);
-	JSClassDefinitionFc.staticFunctions = env->GetFieldID(JSClassDefinitionFc.clazz, "staticFunctions", I_J);
-	JSClassDefinitionFc.initialize = env->GetFieldID(JSClassDefinitionFc.clazz, "initialize", I_J);
-	JSClassDefinitionFc.finalize = env->GetFieldID(JSClassDefinitionFc.clazz, "finalize", I_J);
-	JSClassDefinitionFc.hasProperty = env->GetFieldID(JSClassDefinitionFc.clazz, "hasProperty", I_J);
-	JSClassDefinitionFc.getProperty = env->GetFieldID(JSClassDefinitionFc.clazz, "getProperty", I_J);
-	JSClassDefinitionFc.setProperty = env->GetFieldID(JSClassDefinitionFc.clazz, "setProperty", I_J);
-	JSClassDefinitionFc.deleteProperty = env->GetFieldID(JSClassDefinitionFc.clazz, "deleteProperty", I_J);
-	JSClassDefinitionFc.getPropertyNames = env->GetFieldID(JSClassDefinitionFc.clazz, "getPropertyNames", I_J);
-	JSClassDefinitionFc.callAsFunction = env->GetFieldID(JSClassDefinitionFc.clazz, "callAsFunction", I_J);
-	JSClassDefinitionFc.callAsConstructor = env->GetFieldID(JSClassDefinitionFc.clazz, "callAsConstructor", I_J);
-	JSClassDefinitionFc.hasInstance = env->GetFieldID(JSClassDefinitionFc.clazz, "hasInstance", I_J);
-	JSClassDefinitionFc.convertToType = env->GetFieldID(JSClassDefinitionFc.clazz, "convertToType", I_J);
+	JSClassDefinitionFc.className = env->GetFieldID(JSClassDefinitionFc.clazz, "className", "J");
+	JSClassDefinitionFc.parentClass = env->GetFieldID(JSClassDefinitionFc.clazz, "parentClass", "J");
+	JSClassDefinitionFc.staticValues = env->GetFieldID(JSClassDefinitionFc.clazz, "staticValues", "J");
+	JSClassDefinitionFc.staticFunctions = env->GetFieldID(JSClassDefinitionFc.clazz, "staticFunctions", "J");
+	JSClassDefinitionFc.initialize = env->GetFieldID(JSClassDefinitionFc.clazz, "initialize", "J");
+	JSClassDefinitionFc.finalize = env->GetFieldID(JSClassDefinitionFc.clazz, "finalize", "J");
+	JSClassDefinitionFc.hasProperty = env->GetFieldID(JSClassDefinitionFc.clazz, "hasProperty", "J");
+	JSClassDefinitionFc.getProperty = env->GetFieldID(JSClassDefinitionFc.clazz, "getProperty", "J");
+	JSClassDefinitionFc.setProperty = env->GetFieldID(JSClassDefinitionFc.clazz, "setProperty", "J");
+	JSClassDefinitionFc.deleteProperty = env->GetFieldID(JSClassDefinitionFc.clazz, "deleteProperty", "J");
+	JSClassDefinitionFc.getPropertyNames = env->GetFieldID(JSClassDefinitionFc.clazz, "getPropertyNames", "J");
+	JSClassDefinitionFc.callAsFunction = env->GetFieldID(JSClassDefinitionFc.clazz, "callAsFunction", "J");
+	JSClassDefinitionFc.callAsConstructor = env->GetFieldID(JSClassDefinitionFc.clazz, "callAsConstructor", "J");
+	JSClassDefinitionFc.hasInstance = env->GetFieldID(JSClassDefinitionFc.clazz, "hasInstance", "J");
+	JSClassDefinitionFc.convertToType = env->GetFieldID(JSClassDefinitionFc.clazz, "convertToType", "J");
 	JSClassDefinitionFc.cached = 1;
 }
 
@@ -57,21 +57,21 @@ JSClassDefinition *getJSClassDefinitionFields(JNIEnv *env, jobject lpObject, JSC
 	if (!JSClassDefinitionFc.cached) cacheJSClassDefinitionFields(env, lpObject);
 	lpStruct->version = env->GetIntField(lpObject, JSClassDefinitionFc.version);
 	lpStruct->attributes = (JSClassAttributes)env->GetIntField(lpObject, JSClassDefinitionFc.attributes);
-	lpStruct->className = (const char*)env->GetIntLongField(lpObject, JSClassDefinitionFc.className);
-	lpStruct->parentClass = (JSClassRef)env->GetIntLongField(lpObject, JSClassDefinitionFc.parentClass);
-	lpStruct->staticValues = (const JSStaticValue*)env->GetIntLongField(lpObject, JSClassDefinitionFc.staticValues);
-	lpStruct->staticFunctions = (const JSStaticFunction*)env->GetIntLongField(lpObject, JSClassDefinitionFc.staticFunctions);
-	lpStruct->initialize = (JSObjectInitializeCallback)env->GetIntLongField(lpObject, JSClassDefinitionFc.initialize);
-	lpStruct->finalize = (JSObjectFinalizeCallback)env->GetIntLongField(lpObject, JSClassDefinitionFc.finalize);
-	lpStruct->hasProperty = (JSObjectHasPropertyCallback)env->GetIntLongField(lpObject, JSClassDefinitionFc.hasProperty);
-	lpStruct->getProperty = (JSObjectGetPropertyCallback)env->GetIntLongField(lpObject, JSClassDefinitionFc.getProperty);
-	lpStruct->setProperty = (JSObjectSetPropertyCallback)env->GetIntLongField(lpObject, JSClassDefinitionFc.setProperty);
-	lpStruct->deleteProperty = (JSObjectDeletePropertyCallback)env->GetIntLongField(lpObject, JSClassDefinitionFc.deleteProperty);
-	lpStruct->getPropertyNames = (JSObjectGetPropertyNamesCallback)env->GetIntLongField(lpObject, JSClassDefinitionFc.getPropertyNames);
-	lpStruct->callAsFunction = (JSObjectCallAsFunctionCallback)env->GetIntLongField(lpObject, JSClassDefinitionFc.callAsFunction);
-	lpStruct->callAsConstructor = (JSObjectCallAsConstructorCallback)env->GetIntLongField(lpObject, JSClassDefinitionFc.callAsConstructor);
-	lpStruct->hasInstance = (JSObjectHasInstanceCallback)env->GetIntLongField(lpObject, JSClassDefinitionFc.hasInstance);
-	lpStruct->convertToType = (JSObjectConvertToTypeCallback)env->GetIntLongField(lpObject, JSClassDefinitionFc.convertToType);
+	lpStruct->className = (const char*)env->GetLongField(lpObject, JSClassDefinitionFc.className);
+	lpStruct->parentClass = (JSClassRef)env->GetLongField(lpObject, JSClassDefinitionFc.parentClass);
+	lpStruct->staticValues = (const JSStaticValue*)env->GetLongField(lpObject, JSClassDefinitionFc.staticValues);
+	lpStruct->staticFunctions = (const JSStaticFunction*)env->GetLongField(lpObject, JSClassDefinitionFc.staticFunctions);
+	lpStruct->initialize = (JSObjectInitializeCallback)env->GetLongField(lpObject, JSClassDefinitionFc.initialize);
+	lpStruct->finalize = (JSObjectFinalizeCallback)env->GetLongField(lpObject, JSClassDefinitionFc.finalize);
+	lpStruct->hasProperty = (JSObjectHasPropertyCallback)env->GetLongField(lpObject, JSClassDefinitionFc.hasProperty);
+	lpStruct->getProperty = (JSObjectGetPropertyCallback)env->GetLongField(lpObject, JSClassDefinitionFc.getProperty);
+	lpStruct->setProperty = (JSObjectSetPropertyCallback)env->GetLongField(lpObject, JSClassDefinitionFc.setProperty);
+	lpStruct->deleteProperty = (JSObjectDeletePropertyCallback)env->GetLongField(lpObject, JSClassDefinitionFc.deleteProperty);
+	lpStruct->getPropertyNames = (JSObjectGetPropertyNamesCallback)env->GetLongField(lpObject, JSClassDefinitionFc.getPropertyNames);
+	lpStruct->callAsFunction = (JSObjectCallAsFunctionCallback)env->GetLongField(lpObject, JSClassDefinitionFc.callAsFunction);
+	lpStruct->callAsConstructor = (JSObjectCallAsConstructorCallback)env->GetLongField(lpObject, JSClassDefinitionFc.callAsConstructor);
+	lpStruct->hasInstance = (JSObjectHasInstanceCallback)env->GetLongField(lpObject, JSClassDefinitionFc.hasInstance);
+	lpStruct->convertToType = (JSObjectConvertToTypeCallback)env->GetLongField(lpObject, JSClassDefinitionFc.convertToType);
 	return lpStruct;
 }
 
@@ -80,21 +80,21 @@ void setJSClassDefinitionFields(JNIEnv *env, jobject lpObject, JSClassDefinition
 	if (!JSClassDefinitionFc.cached) cacheJSClassDefinitionFields(env, lpObject);
 	env->SetIntField(lpObject, JSClassDefinitionFc.version, (jint)lpStruct->version);
 	env->SetIntField(lpObject, JSClassDefinitionFc.attributes, (jint)lpStruct->attributes);
-	env->SetIntLongField(lpObject, JSClassDefinitionFc.className, (jintLong)lpStruct->className);
-	env->SetIntLongField(lpObject, JSClassDefinitionFc.parentClass, (jintLong)lpStruct->parentClass);
-	env->SetIntLongField(lpObject, JSClassDefinitionFc.staticValues, (jintLong)lpStruct->staticValues);
-	env->SetIntLongField(lpObject, JSClassDefinitionFc.staticFunctions, (jintLong)lpStruct->staticFunctions);
-	env->SetIntLongField(lpObject, JSClassDefinitionFc.initialize, (jintLong)lpStruct->initialize);
-	env->SetIntLongField(lpObject, JSClassDefinitionFc.finalize, (jintLong)lpStruct->finalize);
-	env->SetIntLongField(lpObject, JSClassDefinitionFc.hasProperty, (jintLong)lpStruct->hasProperty);
-	env->SetIntLongField(lpObject, JSClassDefinitionFc.getProperty, (jintLong)lpStruct->getProperty);
-	env->SetIntLongField(lpObject, JSClassDefinitionFc.setProperty, (jintLong)lpStruct->setProperty);
-	env->SetIntLongField(lpObject, JSClassDefinitionFc.deleteProperty, (jintLong)lpStruct->deleteProperty);
-	env->SetIntLongField(lpObject, JSClassDefinitionFc.getPropertyNames, (jintLong)lpStruct->getPropertyNames);
-	env->SetIntLongField(lpObject, JSClassDefinitionFc.callAsFunction, (jintLong)lpStruct->callAsFunction);
-	env->SetIntLongField(lpObject, JSClassDefinitionFc.callAsConstructor, (jintLong)lpStruct->callAsConstructor);
-	env->SetIntLongField(lpObject, JSClassDefinitionFc.hasInstance, (jintLong)lpStruct->hasInstance);
-	env->SetIntLongField(lpObject, JSClassDefinitionFc.convertToType, (jintLong)lpStruct->convertToType);
+	env->SetLongField(lpObject, JSClassDefinitionFc.className, (jlong)lpStruct->className);
+	env->SetLongField(lpObject, JSClassDefinitionFc.parentClass, (jlong)lpStruct->parentClass);
+	env->SetLongField(lpObject, JSClassDefinitionFc.staticValues, (jlong)lpStruct->staticValues);
+	env->SetLongField(lpObject, JSClassDefinitionFc.staticFunctions, (jlong)lpStruct->staticFunctions);
+	env->SetLongField(lpObject, JSClassDefinitionFc.initialize, (jlong)lpStruct->initialize);
+	env->SetLongField(lpObject, JSClassDefinitionFc.finalize, (jlong)lpStruct->finalize);
+	env->SetLongField(lpObject, JSClassDefinitionFc.hasProperty, (jlong)lpStruct->hasProperty);
+	env->SetLongField(lpObject, JSClassDefinitionFc.getProperty, (jlong)lpStruct->getProperty);
+	env->SetLongField(lpObject, JSClassDefinitionFc.setProperty, (jlong)lpStruct->setProperty);
+	env->SetLongField(lpObject, JSClassDefinitionFc.deleteProperty, (jlong)lpStruct->deleteProperty);
+	env->SetLongField(lpObject, JSClassDefinitionFc.getPropertyNames, (jlong)lpStruct->getPropertyNames);
+	env->SetLongField(lpObject, JSClassDefinitionFc.callAsFunction, (jlong)lpStruct->callAsFunction);
+	env->SetLongField(lpObject, JSClassDefinitionFc.callAsConstructor, (jlong)lpStruct->callAsConstructor);
+	env->SetLongField(lpObject, JSClassDefinitionFc.hasInstance, (jlong)lpStruct->hasInstance);
+	env->SetLongField(lpObject, JSClassDefinitionFc.convertToType, (jlong)lpStruct->convertToType);
 }
 #endif
 

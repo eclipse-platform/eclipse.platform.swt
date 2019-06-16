@@ -86,7 +86,7 @@ void clearArea (int x, int y, int width, int height) {
 	if (OS.IsWindowVisible (handle)) {
 		RECT rect = new RECT ();
 		OS.SetRect (rect, x, y, x + width, y + height);
-		long /*int*/ hDC = OS.GetDCEx (handle, 0, OS.DCX_CACHE | OS.DCX_CLIPCHILDREN | OS.DCX_CLIPSIBLINGS);
+		long hDC = OS.GetDCEx (handle, 0, OS.DCX_CACHE | OS.DCX_CLIPCHILDREN | OS.DCX_CLIPSIBLINGS);
 		drawBackground (hDC, rect);
 		OS.ReleaseDC (handle, hDC);
 	}
@@ -335,7 +335,7 @@ TCHAR windowClass () {
 }
 
 @Override
-long /*int*/ windowProc (long /*int*/ hwnd, int msg, long /*int*/ wParam, long /*int*/ lParam) {
+long windowProc (long hwnd, int msg, long wParam, long lParam) {
 	if (msg == Display.SWT_RESTORECARET) {
 		if ((state & CANVAS) != 0) {
 			if (caret != null) {
@@ -349,11 +349,11 @@ long /*int*/ windowProc (long /*int*/ hwnd, int msg, long /*int*/ wParam, long /
 }
 
 @Override
-LRESULT WM_CHAR (long /*int*/ wParam, long /*int*/ lParam) {
+LRESULT WM_CHAR (long wParam, long lParam) {
 	LRESULT result = super.WM_CHAR (wParam, lParam);
 	if (result != null) return result;
 	if (caret != null) {
-		switch ((int)/*64*/wParam) {
+		switch ((int)wParam) {
 			case SWT.DEL:
 			case SWT.BS:
 			case SWT.ESC:
@@ -372,7 +372,7 @@ LRESULT WM_CHAR (long /*int*/ wParam, long /*int*/ lParam) {
 }
 
 @Override
-LRESULT WM_IME_COMPOSITION (long /*int*/ wParam, long /*int*/ lParam) {
+LRESULT WM_IME_COMPOSITION (long wParam, long lParam) {
 	if (ime != null) {
 		LRESULT result = ime.WM_IME_COMPOSITION (wParam, lParam);
 		if (result != null) return result;
@@ -381,7 +381,7 @@ LRESULT WM_IME_COMPOSITION (long /*int*/ wParam, long /*int*/ lParam) {
 }
 
 @Override
-LRESULT WM_IME_COMPOSITION_START (long /*int*/ wParam, long /*int*/ lParam) {
+LRESULT WM_IME_COMPOSITION_START (long wParam, long lParam) {
 	if (ime != null) {
 		LRESULT result = ime.WM_IME_COMPOSITION_START (wParam, lParam);
 		if (result != null) return result;
@@ -390,7 +390,7 @@ LRESULT WM_IME_COMPOSITION_START (long /*int*/ wParam, long /*int*/ lParam) {
 }
 
 @Override
-LRESULT WM_IME_ENDCOMPOSITION (long /*int*/ wParam, long /*int*/ lParam) {
+LRESULT WM_IME_ENDCOMPOSITION (long wParam, long lParam) {
 	if (ime != null) {
 		LRESULT result = ime.WM_IME_ENDCOMPOSITION (wParam, lParam);
 		if (result != null) return result;
@@ -399,7 +399,7 @@ LRESULT WM_IME_ENDCOMPOSITION (long /*int*/ wParam, long /*int*/ lParam) {
 }
 
 @Override
-LRESULT WM_INPUTLANGCHANGE (long /*int*/ wParam, long /*int*/ lParam) {
+LRESULT WM_INPUTLANGCHANGE (long wParam, long lParam) {
 	LRESULT result  = super.WM_INPUTLANGCHANGE (wParam, lParam);
 	if (caret != null && caret.isFocusCaret ()) {
 		caret.setIMEFont ();
@@ -410,7 +410,7 @@ LRESULT WM_INPUTLANGCHANGE (long /*int*/ wParam, long /*int*/ lParam) {
 
 
 @Override
-LRESULT WM_KEYDOWN (long /*int*/ wParam, long /*int*/ lParam) {
+LRESULT WM_KEYDOWN (long wParam, long lParam) {
 	LRESULT result = super.WM_KEYDOWN (wParam, lParam);
 	if (result != null) return result;
 	if (ime != null) {
@@ -420,7 +420,7 @@ LRESULT WM_KEYDOWN (long /*int*/ wParam, long /*int*/ lParam) {
 }
 
 @Override
-LRESULT WM_KILLFOCUS (long /*int*/ wParam, long /*int*/ lParam) {
+LRESULT WM_KILLFOCUS (long wParam, long lParam) {
 	if (ime != null) {
 		LRESULT result = ime.WM_KILLFOCUS (wParam, lParam);
 		if (result != null) return result;
@@ -432,7 +432,7 @@ LRESULT WM_KILLFOCUS (long /*int*/ wParam, long /*int*/ lParam) {
 }
 
 @Override
-LRESULT WM_LBUTTONDOWN (long /*int*/ wParam, long /*int*/ lParam) {
+LRESULT WM_LBUTTONDOWN (long wParam, long lParam) {
 	if (ime != null) {
 		LRESULT result = ime.WM_LBUTTONDOWN (wParam, lParam);
 		if (result != null) return result;
@@ -441,21 +441,21 @@ LRESULT WM_LBUTTONDOWN (long /*int*/ wParam, long /*int*/ lParam) {
 }
 
 @Override
-LRESULT WM_SETFOCUS (long /*int*/ wParam, long /*int*/ lParam) {
+LRESULT WM_SETFOCUS (long wParam, long lParam) {
 	LRESULT result  = super.WM_SETFOCUS (wParam, lParam);
 	if (caret != null && caret.isFocusCaret ()) caret.setFocus ();
 	return result;
 }
 
 @Override
-LRESULT WM_SIZE (long /*int*/ wParam, long /*int*/ lParam) {
+LRESULT WM_SIZE (long wParam, long lParam) {
 	LRESULT result  = super.WM_SIZE (wParam, lParam);
 	if (caret != null && caret.isFocusCaret ()) caret.resizeIME ();
 	return result;
 }
 
 @Override
-LRESULT WM_WINDOWPOSCHANGED (long /*int*/ wParam, long /*int*/ lParam) {
+LRESULT WM_WINDOWPOSCHANGED (long wParam, long lParam) {
 	LRESULT result  = super.WM_WINDOWPOSCHANGED (wParam, lParam);
 	//if (result != null) return result;
 	/*
@@ -471,7 +471,7 @@ LRESULT WM_WINDOWPOSCHANGED (long /*int*/ wParam, long /*int*/ lParam) {
 }
 
 @Override
-LRESULT WM_WINDOWPOSCHANGING (long /*int*/ wParam, long /*int*/ lParam) {
+LRESULT WM_WINDOWPOSCHANGING (long wParam, long lParam) {
 	LRESULT result  = super.WM_WINDOWPOSCHANGING (wParam, lParam);
 	if (result != null) return result;
 	/*

@@ -55,10 +55,10 @@ public class TreeDropTargetEffect extends DropTargetEffect {
 	static final int SCROLL_HYSTERESIS = 200; // milli seconds
 	static final int EXPAND_HYSTERESIS = 1000; // milli seconds
 
-	long /*int*/ dropIndex;
-	long /*int*/ scrollIndex;
+	long dropIndex;
+	long scrollIndex;
 	long scrollBeginTime;
-	long /*int*/ expandIndex;
+	long expandIndex;
 	long expandBeginTime;
 	TreeItem insertItem;
 	boolean insertBefore;
@@ -121,7 +121,7 @@ public class TreeDropTargetEffect extends DropTargetEffect {
 	@Override
 	public void dragLeave(DropTargetEvent event) {
 		Tree tree = (Tree) control;
-		long /*int*/ handle = tree.handle;
+		long handle = tree.handle;
 		if (dropIndex != -1) {
 			TVITEM tvItem = new TVITEM ();
 			tvItem.hItem = dropIndex;
@@ -163,22 +163,22 @@ public class TreeDropTargetEffect extends DropTargetEffect {
 	public void dragOver(DropTargetEvent event) {
 		Tree tree = (Tree) getControl();
 		int effect = checkEffect(event.feedback);
-		long /*int*/ handle = tree.handle;
+		long handle = tree.handle;
 		Point coordinates = new Point(event.x, event.y);
 		coordinates = DPIUtil.autoScaleUp(tree.toControl(coordinates)); // To Pixels
 		TVHITTESTINFO lpht = new TVHITTESTINFO ();
 		lpht.x = coordinates.x;
 		lpht.y = coordinates.y;
 		OS.SendMessage (handle, OS.TVM_HITTEST, 0, lpht);
-		long /*int*/ hItem = lpht.hItem;
+		long hItem = lpht.hItem;
 		if ((effect & DND.FEEDBACK_SCROLL) == 0) {
 			scrollBeginTime = 0;
 			scrollIndex = -1;
 		} else {
 			if (hItem != -1 && scrollIndex == hItem && scrollBeginTime != 0) {
 				if (System.currentTimeMillis() >= scrollBeginTime) {
-					long /*int*/ topItem = OS.SendMessage(handle, OS.TVM_GETNEXTITEM, OS.TVGN_FIRSTVISIBLE, 0);
-					long /*int*/ nextItem = OS.SendMessage(handle, OS.TVM_GETNEXTITEM, hItem == topItem ? OS.TVGN_PREVIOUSVISIBLE : OS.TVGN_NEXTVISIBLE, hItem);
+					long topItem = OS.SendMessage(handle, OS.TVM_GETNEXTITEM, OS.TVGN_FIRSTVISIBLE, 0);
+					long nextItem = OS.SendMessage(handle, OS.TVM_GETNEXTITEM, hItem == topItem ? OS.TVGN_PREVIOUSVISIBLE : OS.TVGN_NEXTVISIBLE, hItem);
 					boolean scroll = true;
 					if (hItem == topItem) {
 						scroll = nextItem != 0;

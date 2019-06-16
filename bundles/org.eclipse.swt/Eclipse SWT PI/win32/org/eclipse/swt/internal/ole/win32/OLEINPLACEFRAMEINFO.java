@@ -17,9 +17,9 @@ public final class OLEINPLACEFRAMEINFO {
 	public int cb;
 	public int fMDIApp;
 	/** @field cast=(HWND) */
-	public long /*int*/ hwndFrame;
+	public long hwndFrame;
 	/** @field cast=(HACCEL) */
-	public long /*int*/ haccel;
+	public long haccel;
 	public int cAccelEntries;
 	public static final int sizeof = COM.OLEINPLACEFRAMEINFO_sizeof ();
 }

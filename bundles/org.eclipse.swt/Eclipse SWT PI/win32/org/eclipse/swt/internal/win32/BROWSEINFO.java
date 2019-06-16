@@ -15,17 +15,17 @@ package org.eclipse.swt.internal.win32;
 
 public class BROWSEINFO {
 	/** @field cast=(HWND) */
-	public long /*int*/ hwndOwner;
+	public long hwndOwner;
 	/** @field cast=(LPCITEMIDLIST) */
-	public long /*int*/ pidlRoot;
+	public long pidlRoot;
 	/** @field cast=(LPTSTR) */
-	public long /*int*/ pszDisplayName;
+	public long pszDisplayName;
 	/** @field cast=(LPCTSTR) */
-	public long /*int*/ lpszTitle;
+	public long lpszTitle;
 	public int ulFlags;
 	/** @field cast=(BFFCALLBACK) */
-	public long /*int*/ lpfn;
-	public long /*int*/ lParam;
+	public long lpfn;
+	public long lParam;
 	public int iImage;
 	public static final int sizeof = OS.BROWSEINFO_sizeof ();
 }

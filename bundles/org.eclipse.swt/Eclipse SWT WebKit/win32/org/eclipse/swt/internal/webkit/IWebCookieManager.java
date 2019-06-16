@@ -19,11 +19,11 @@ import org.eclipse.swt.internal.win32.*;
 
 public class IWebCookieManager extends IUnknown {
 
-public IWebCookieManager (long /*int*/ address) {
+public IWebCookieManager (long address) {
 	super (address);
 }
 
-public int cookieStorage (long /*int*/[] storage) {
+public int cookieStorage (long[] storage) {
 	return OS.VtblCall (3, getAddress (), storage);
 }
 

@@ -17,12 +17,12 @@ package org.eclipse.swt.internal.win32;
 public class CERT_CONTEXT {
 	public int dwCertEncodingType;
 	/** @field cast=(BYTE *) */
-	public long /*int*/ pbCertEncoded;
+	public long pbCertEncoded;
 	public int cbCertEncoded;
 	/** @field cast=(PCERT_INFO) */
-	public long /*int*/ pCertInfo;
+	public long pCertInfo;
 	/** @field cast=(HCERTSTORE) */
-	public long /*int*/ hCertStore;
+	public long hCertStore;
 
 	public static final int sizeof = OS.CERT_CONTEXT_sizeof ();
 }

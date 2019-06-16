@@ -43,7 +43,7 @@ public class ProgressBar extends Control {
 	static final int DELAY = 100;
 	static final int TIMER_ID = 100;
 	static final int MINIMUM_WIDTH = 100;
-	static final long /*int*/ ProgressBarProc;
+	static final long ProgressBarProc;
 	static final TCHAR ProgressBarClass = new TCHAR (0, OS.PROGRESS_CLASS, true);
 	static {
 		WNDCLASS lpWndClass = new WNDCLASS ();
@@ -108,7 +108,7 @@ public ProgressBar (Composite parent, int style) {
 }
 
 @Override
-long /*int*/ callWindowProc (long /*int*/ hwnd, int msg, long /*int*/ wParam, long /*int*/ lParam) {
+long callWindowProc (long hwnd, int msg, long wParam, long lParam) {
 	if (handle == 0) return 0;
 	return OS.CallWindowProc (ProgressBarProc, hwnd, msg, wParam, lParam);
 }
@@ -157,7 +157,7 @@ int defaultForeground () {
  */
 public int getMaximum () {
 	checkWidget ();
-	return (int)/*64*/OS.SendMessage (handle, OS.PBM_GETRANGE, 0, 0);
+	return (int)OS.SendMessage (handle, OS.PBM_GETRANGE, 0, 0);
 }
 
 /**
@@ -172,7 +172,7 @@ public int getMaximum () {
  */
 public int getMinimum () {
 	checkWidget ();
-	return (int)/*64*/OS.SendMessage (handle, OS.PBM_GETRANGE, 1, 0);
+	return (int)OS.SendMessage (handle, OS.PBM_GETRANGE, 1, 0);
 }
 
 /**
@@ -187,7 +187,7 @@ public int getMinimum () {
  */
 public int getSelection () {
 	checkWidget ();
-	return (int)/*64*/OS.SendMessage (handle, OS.PBM_GETPOS, 0, 0);
+	return (int)OS.SendMessage (handle, OS.PBM_GETPOS, 0, 0);
 }
 
 /**
@@ -209,7 +209,7 @@ public int getSelection () {
  */
 public int getState () {
 	checkWidget ();
-	int state = (int)/*64*/OS.SendMessage (handle, OS.PBM_GETSTATE, 0, 0);
+	int state = (int)OS.SendMessage (handle, OS.PBM_GETSTATE, 0, 0);
 	switch (state) {
 		case OS.PBST_NORMAL: return SWT.NORMAL;
 		case OS.PBST_ERROR: return SWT.ERROR;
@@ -273,7 +273,7 @@ void setForegroundPixel (int pixel) {
  */
 public void setMaximum (int value) {
 	checkWidget ();
-	int minimum = (int)/*64*/OS.SendMessage (handle, OS.PBM_GETRANGE, 1, 0);
+	int minimum = (int)OS.SendMessage (handle, OS.PBM_GETRANGE, 1, 0);
 	if (0 <= minimum && minimum < value) {
 		OS.SendMessage (handle, OS.PBM_SETRANGE32, minimum, value);
 	}
@@ -294,7 +294,7 @@ public void setMaximum (int value) {
  */
 public void setMinimum (int value) {
 	checkWidget ();
-	int maximum = (int)/*64*/OS.SendMessage (handle, OS.PBM_GETRANGE, 0, 0);
+	int maximum = (int)OS.SendMessage (handle, OS.PBM_GETRANGE, 0, 0);
 	if (0 <= value && value < maximum) {
 		OS.SendMessage (handle, OS.PBM_SETRANGE32, value, maximum);
 	}
@@ -322,7 +322,7 @@ public void setSelection (int value) {
 	* PBM_SETPOS. This is undocumented. The fix is to call PBM_SETPOS
 	* a second time.
 	*/
-	long /*int*/ state = OS.SendMessage (handle, OS.PBM_GETSTATE, 0, 0);
+	long state = OS.SendMessage (handle, OS.PBM_GETSTATE, 0, 0);
 	if (state != OS.PBST_NORMAL) {
 		OS.SendMessage (handle, OS.PBM_SETPOS, value, 0);
 	}
@@ -379,12 +379,12 @@ TCHAR windowClass () {
 }
 
 @Override
-long /*int*/ windowProc () {
+long windowProc () {
 	return ProgressBarProc;
 }
 
 @Override
-LRESULT WM_GETDLGCODE (long /*int*/ wParam, long /*int*/ lParam) {
+LRESULT WM_GETDLGCODE (long wParam, long lParam) {
 	LRESULT result = super.WM_GETDLGCODE (wParam, lParam);
 	if (result != null) return result;
 	/*
@@ -400,7 +400,7 @@ LRESULT WM_GETDLGCODE (long /*int*/ wParam, long /*int*/ lParam) {
 }
 
 @Override
-LRESULT WM_SIZE (long /*int*/ wParam, long /*int*/ lParam) {
+LRESULT WM_SIZE (long wParam, long lParam) {
 	LRESULT result = super.WM_SIZE (wParam, lParam);
 	if (result != null) return result;
 	/*
@@ -437,7 +437,7 @@ LRESULT WM_SIZE (long /*int*/ wParam, long /*int*/ lParam) {
 }
 
 @Override
-LRESULT WM_TIMER (long /*int*/ wParam, long /*int*/ lParam) {
+LRESULT WM_TIMER (long wParam, long lParam) {
 	LRESULT result = super.WM_TIMER (wParam, lParam);
 	if (result != null) return result;
 	if ((style & SWT.INDETERMINATE) != 0) {

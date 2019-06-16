@@ -15,8 +15,8 @@ package org.eclipse.swt.internal.win32;
 
 public class HDLAYOUT {
 	/** @field cast=(RECT *) */
-	public long /*int*/ prc;
+	public long prc;
 	/** @field cast=(WINDOWPOS *) */
-	public long /*int*/ pwpos;
+	public long pwpos;
 	public static final int sizeof = OS.HDLAYOUT_sizeof ();
 }

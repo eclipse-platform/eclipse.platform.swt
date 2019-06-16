@@ -19,6 +19,6 @@ public class MOUSEINPUT {
 	public int mouseData;
 	public int dwFlags;
 	public int time;
-	public long /*int*/ dwExtraInfo;
+	public long dwExtraInfo;
 	public static final int sizeof = OS.MOUSEINPUT_sizeof ();
 }

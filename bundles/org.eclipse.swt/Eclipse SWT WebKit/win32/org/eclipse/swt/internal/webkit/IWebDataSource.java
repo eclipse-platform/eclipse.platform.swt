@@ -19,23 +19,23 @@ import org.eclipse.swt.internal.win32.*;
 
 public class IWebDataSource extends IUnknown {
 
-public IWebDataSource (long /*int*/ address) {
+public IWebDataSource (long address) {
 	super (address);
 }
 
-public int representation (long /*int*/[] rep) {
+public int representation (long[] rep) {
 	return OS.VtblCall (5, getAddress (), rep);
 }
 
-public int webFrame (long /*int*/[] frame) {
+public int webFrame (long[] frame) {
 	return OS.VtblCall (6, getAddress (), frame);
 }
 
-public int request (long /*int*/[] request) {
+public int request (long[] request) {
 	return OS.VtblCall (8, getAddress (), request);
 }
 
-public int pageTitle (long /*int*/[] title) {
+public int pageTitle (long[] title) {
 	return OS.VtblCall (12, getAddress (), title);
 }
 

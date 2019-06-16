@@ -60,7 +60,7 @@ public final class TextLayout extends Resource {
 	StyleItem[] allRuns;
 	StyleItem[][] runs;
 	int[] lineOffset, lineY, lineWidth;
-	long /*int*/ mLangFontLink2;
+	long mLangFontLink2;
 	int verticalIndentInPoints;
 
 	static final char LTR_MARK = '\u200E', RTL_MARK = '\u200F';
@@ -88,17 +88,17 @@ public final class TextLayout extends Resource {
 
 		/*Script cache and analysis */
 		SCRIPT_ANALYSIS analysis;
-		long /*int*/ psc = 0;
+		long psc = 0;
 
 		/*Shape info (malloc when the run is shaped) */
-		long /*int*/ glyphs;
+		long glyphs;
 		int glyphCount;
-		long /*int*/ clusters;
-		long /*int*/ visAttrs;
+		long clusters;
+		long visAttrs;
 
 		/*Place info (malloc when the run is placed) */
-		long /*int*/ advances;
-		long /*int*/ goffsets;
+		long advances;
+		long goffsets;
 		int width;
 		int ascentInPoints;
 		int descentInPoints;
@@ -108,15 +108,15 @@ public final class TextLayout extends Resource {
 		int strikeoutPos, strikeoutThickness;
 
 		/* Justify info (malloc during computeRuns) */
-		long /*int*/ justify;
+		long justify;
 
 		/* ScriptBreak */
-		long /*int*/ psla;
+		long psla;
 
-		long /*int*/ fallbackFont;
+		long fallbackFont;
 
 	void free() {
-		long /*int*/ hHeap = OS.GetProcessHeap();
+		long hHeap = OS.GetProcessHeap();
 		if (psc != 0) {
 			OS.ScriptFreeCache (psc);
 			OS.HeapFree(hHeap, 0, psc);
@@ -190,7 +190,7 @@ public TextLayout (Device device) {
 	styles[1] = new StyleItem();
 	stylesCount = 2;
 	text = ""; //$NON-NLS-1$
-	long /*int*/[] ppv = new long /*int*/[1];
+	long[] ppv = new long[1];
 	OS.OleInitialize(0);
 	if (OS.CoCreateInstance(CLSID_CMultiLanguage, 0, OS.CLSCTX_INPROC_SERVER, IID_IMLangFontLink2, ppv) == OS.S_OK) {
 		mLangFontLink2 = ppv[0];
@@ -227,7 +227,7 @@ void breakRun(StyleItem run) {
 	if (run.psla != 0) return;
 	char[] chars = new char[run.length];
 	segmentsText.getChars(run.start, run.start + run.length, chars, 0);
-	long /*int*/ hHeap = OS.GetProcessHeap();
+	long hHeap = OS.GetProcessHeap();
 	run.psla = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, SCRIPT_LOGATTR.sizeof * chars.length);
 	if (run.psla == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	OS.ScriptBreak(chars, chars.length, run.analysis, run.psla);
@@ -243,8 +243,8 @@ void checkLayout () {
 */
 void computeRuns (GC gc) {
 	if (runs != null) return;
-	long /*int*/ hDC = gc != null ? gc.handle : device.internal_new_GC(null);
-	long /*int*/ srcHdc = OS.CreateCompatibleDC(hDC);
+	long hDC = gc != null ? gc.handle : device.internal_new_GC(null);
+	long srcHdc = OS.CreateCompatibleDC(hDC);
 	allRuns = itemize();
 	for (int i=0; i<allRuns.length - 1; i++) {
 		StyleItem run = allRuns[i];
@@ -434,7 +434,7 @@ void computeRuns (GC gc) {
 					}
 				}
 				lineWidth += lineIndent;
-				long /*int*/ hHeap = OS.GetProcessHeap();
+				long hHeap = OS.GetProcessHeap();
 				int newLineWidth = 0;
 				for (int j = 0; j < runs[line].length; j++) {
 					StyleItem item = runs[line][j];
@@ -546,12 +546,12 @@ int[] computePolyline(int left, int top, int right, int bottom) {
 	return coordinates;
 }
 
-long /*int*/ createGdipBrush(int pixel, int alpha) {
+long createGdipBrush(int pixel, int alpha) {
 	int argb = ((alpha & 0xFF) << 24) | ((pixel >> 16) & 0xFF) | (pixel & 0xFF00) | ((pixel & 0xFF) << 16);
 	return Gdip.SolidBrush_new(argb);
 }
 
-long /*int*/ createGdipBrush(Color color, int alpha) {
+long createGdipBrush(Color color, int alpha) {
 	return createGdipBrush(color.handle, alpha);
 }
 
@@ -648,16 +648,16 @@ void drawInPixels (GC gc, int x, int y, int selectionStart, int selectionEnd, Co
 	int length = text.length();
 	if (length == 0 && flags == 0) return;
 	y += getScaledVerticalIndent();
-	long /*int*/ hdc = gc.handle;
+	long hdc = gc.handle;
 	Rectangle clip = gc.getClippingInPixels();
 	GCData data = gc.data;
-	long /*int*/ gdipGraphics = data.gdipGraphics;
+	long gdipGraphics = data.gdipGraphics;
 	int foreground = data.foreground;
 	int linkColor = OS.GetSysColor (OS.COLOR_HOTLIGHT);
 	int alpha = data.alpha;
 	boolean gdip = gdipGraphics != 0;
-	long /*int*/ gdipForeground = 0;
-	long /*int*/ gdipLinkColor = 0;
+	long gdipForeground = 0;
+	long gdipLinkColor = 0;
 	int state = 0;
 	if (gdip) {
 		gc.checkGC(GC.FOREGROUND);
@@ -669,8 +669,8 @@ void drawInPixels (GC gc, int x, int y, int selectionStart, int selectionEnd, Co
 		}
 	}
 	boolean hasSelection = selectionStart <= selectionEnd && selectionStart != -1 && selectionEnd != -1;
-	long /*int*/ gdipSelBackground = 0, gdipSelForeground = 0, gdipFont = 0, lastHFont = 0;
-	long /*int*/ selBackground = 0;
+	long gdipSelBackground = 0, gdipSelForeground = 0, gdipFont = 0, lastHFont = 0;
+	long selBackground = 0;
 	int selForeground = 0;
 	if (hasSelection || ((flags & SWT.LAST_LINE_SELECTION) != 0 && (flags & (SWT.FULL_SELECTION | SWT.DELIMITER_SELECTION)) != 0)) {
 		int fgSel = selectionForeground != null ? selectionForeground.handle : OS.GetSysColor (OS.COLOR_HIGHLIGHTTEXT);
@@ -768,11 +768,11 @@ void drawInPixels (GC gc, int x, int y, int selectionStart, int selectionEnd, Co
 				if (!skipTab && (!run.lineBreak || run.softBreak) && !(style != null && style.metrics != null)) {
 					OS.SetRect(rect, drawX, drawY, drawX + run.width, drawY + lineHeight);
 					if (gdip) {
-						long /*int*/ hFont = getItemFont(run);
+						long hFont = getItemFont(run);
 						if (hFont != lastHFont) {
 							lastHFont = hFont;
 							if (gdipFont != 0) Gdip.Font_delete(gdipFont);
-							long /*int*/ oldFont = OS.SelectObject(hdc, hFont);
+							long oldFont = OS.SelectObject(hdc, hFont);
 							gdipFont = Gdip.Font_new(hdc, hFont);
 							OS.SelectObject(hdc, oldFont);
 							if (gdipFont == 0) SWT.error(SWT.ERROR_NO_HANDLES);
@@ -781,7 +781,7 @@ void drawInPixels (GC gc, int x, int y, int selectionStart, int selectionEnd, Co
 								gdipFont = 0;
 							}
 						}
-						long /*int*/ gdipFg = gdipForeground;
+						long gdipFg = gdipForeground;
 						if (style != null && style.underline && style.underlineStyle == SWT.UNDERLINE_LINK) {
 							if (gdipLinkColor == 0) gdipLinkColor = createGdipBrush(linkColor, alpha);
 							gdipFg = gdipLinkColor;
@@ -815,7 +815,7 @@ void drawInPixels (GC gc, int x, int y, int selectionStart, int selectionEnd, Co
 	if (selBackground != 0) OS.DeleteObject (selBackground);
 }
 
-RECT drawBorder(long /*int*/ hdc, int x, int y, int lineHeight, StyleItem[] line, int index, int color, int selectionColor, RECT clipRect, RECT pRect, int selectionStart, int selectionEnd, Rectangle drawClip) {
+RECT drawBorder(long hdc, int x, int y, int lineHeight, StyleItem[] line, int index, int color, int selectionColor, RECT clipRect, RECT pRect, int selectionStart, int selectionEnd, Rectangle drawClip) {
 	StyleItem run = line[index];
 	TextStyle style = run.style;
 	if (style == null) return null;
@@ -862,12 +862,12 @@ RECT drawBorder(long /*int*/ hdc, int x, int y, int lineHeight, StyleItem[] line
 				break;
 			}
 		}
-		long /*int*/ oldBrush = OS.SelectObject(hdc, OS.GetStockObject(OS.NULL_BRUSH));
+		long oldBrush = OS.SelectObject(hdc, OS.GetStockObject(OS.NULL_BRUSH));
 		LOGBRUSH logBrush = new LOGBRUSH();
 		logBrush.lbStyle = OS.BS_SOLID;
-		logBrush.lbColor = /*64*/(int)color;
-		long /*int*/ newPen = OS.ExtCreatePen(lineStyle | OS.PS_GEOMETRIC, lineWidth, logBrush, 0, null);
-		long /*int*/ oldPen = OS.SelectObject(hdc, newPen);
+		logBrush.lbColor = (int)color;
+		long newPen = OS.ExtCreatePen(lineStyle | OS.PS_GEOMETRIC, lineWidth, logBrush, 0, null);
+		long oldPen = OS.SelectObject(hdc, newPen);
 		RECT drawRect = new RECT();
 		OS.SetRect(drawRect, x + left, y, x + run.x + run.width, y + lineHeight);
 		if (drawClip != null) {
@@ -888,8 +888,8 @@ RECT drawBorder(long /*int*/ hdc, int x, int y, int lineHeight, StyleItem[] line
 			if (clipRect.left == -1) clipRect.left = 0;
 			if (clipRect.right == -1) clipRect.right = 0x7ffff;
 			OS.IntersectClipRect(hdc, clipRect.left, clipRect.top, clipRect.right, clipRect.bottom);
-			logBrush.lbColor = /*64*/(int)selectionColor;
-			long /*int*/ selPen = OS.ExtCreatePen (lineStyle | OS.PS_GEOMETRIC, lineWidth, logBrush, 0, null);
+			logBrush.lbColor = (int)selectionColor;
+			long selPen = OS.ExtCreatePen (lineStyle | OS.PS_GEOMETRIC, lineWidth, logBrush, 0, null);
 			oldPen = OS.SelectObject(hdc, selPen);
 			OS.Rectangle(hdc, drawRect.left, drawRect.top, drawRect.right, drawRect.bottom);
 			OS.RestoreDC(hdc, state);
@@ -902,7 +902,7 @@ RECT drawBorder(long /*int*/ hdc, int x, int y, int lineHeight, StyleItem[] line
 	return clipRect;
 }
 
-RECT drawBorderGDIP(long /*int*/ graphics, int x, int y, int lineHeight, StyleItem[] line, int index, long /*int*/ color, long /*int*/ selectionColor, RECT clipRect, RECT pRect,  int selectionStart, int selectionEnd, int alpha, Rectangle drawClip) {
+RECT drawBorderGDIP(long graphics, int x, int y, int lineHeight, StyleItem[] line, int index, long color, long selectionColor, RECT clipRect, RECT pRect,  int selectionStart, int selectionEnd, int alpha, Rectangle drawClip) {
 	StyleItem run = line[index];
 	TextStyle style = run.style;
 	if (style == null) return null;
@@ -920,7 +920,7 @@ RECT drawBorderGDIP(long /*int*/ graphics, int x, int y, int lineHeight, StyleIt
 		}
 		boolean hasSelection = selectionStart <= selectionEnd && selectionStart != -1 && selectionEnd != -1;
 		boolean fullSelection = hasSelection && selectionStart <= start && end <= selectionEnd;
-		long /*int*/ brush = color;
+		long brush = color;
 		if (style.borderColor != null) {
 			brush = createGdipBrush(style.borderColor, alpha);
 			clipRect = null;
@@ -941,7 +941,7 @@ RECT drawBorderGDIP(long /*int*/ graphics, int x, int y, int lineHeight, StyleIt
 			case SWT.BORDER_DASH: lineStyle = Gdip.DashStyleDash; break;
 			case SWT.BORDER_DOT: lineStyle = Gdip.DashStyleDot; break;
 		}
-		long /*int*/ pen = Gdip.Pen_new(brush, lineWidth);
+		long pen = Gdip.Pen_new(brush, lineWidth);
 		Gdip.Pen_SetDashStyle(pen, lineStyle);
 		Gdip.Graphics_SetPixelOffsetMode(graphics, Gdip.PixelOffsetModeNone);
 		int smoothingMode = Gdip.Graphics_GetSmoothingMode(graphics);
@@ -960,7 +960,7 @@ RECT drawBorderGDIP(long /*int*/ graphics, int x, int y, int lineHeight, StyleIt
 			Gdip.Graphics_Restore(graphics, gstate);
 			gstate = Gdip.Graphics_Save(graphics);
 			Gdip.Graphics_SetClip(graphics, gdipRect, Gdip.CombineModeIntersect);
-			long /*int*/ selPen = Gdip.Pen_new(selectionColor, lineWidth);
+			long selPen = Gdip.Pen_new(selectionColor, lineWidth);
 			Gdip.Pen_SetDashStyle(selPen, lineStyle);
 			Gdip.Graphics_DrawRectangle(graphics, selPen, x + left, y, run.x + run.width - left - 1, lineHeight - 1);
 			Gdip.Pen_delete(selPen);
@@ -977,7 +977,7 @@ RECT drawBorderGDIP(long /*int*/ graphics, int x, int y, int lineHeight, StyleIt
 	return clipRect;
 }
 
-void drawRunBackground(StyleItem run, long /*int*/ hdc, RECT rect, int selectionStart, int selectionEnd, long /*int*/ selBrush, boolean hasSelection) {
+void drawRunBackground(StyleItem run, long hdc, RECT rect, int selectionStart, int selectionEnd, long selBrush, boolean hasSelection) {
 	int end = run.start + run.length - 1;
 	boolean fullSelection = hasSelection && selectionStart <= run.start && selectionEnd >= end;
 	if (fullSelection) {
@@ -986,8 +986,8 @@ void drawRunBackground(StyleItem run, long /*int*/ hdc, RECT rect, int selection
 	} else {
 		if (run.style != null && run.style.background != null) {
 			int bg = run.style.background.handle;
-			long /*int*/ hBrush = OS.CreateSolidBrush (bg);
-			long /*int*/ oldBrush = OS.SelectObject(hdc, hBrush);
+			long hBrush = OS.CreateSolidBrush (bg);
+			long oldBrush = OS.SelectObject(hdc, hBrush);
 			OS.PatBlt(hdc, rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top, OS.PATCOPY);
 			OS.SelectObject(hdc, oldBrush);
 			OS.DeleteObject(hBrush);
@@ -1001,14 +1001,14 @@ void drawRunBackground(StyleItem run, long /*int*/ hdc, RECT rect, int selection
 	}
 }
 
-void drawRunBackgroundGDIP(StyleItem run, long /*int*/ graphics, RECT rect, int selectionStart, int selectionEnd, int alpha, long /*int*/ selBrush, boolean hasSelection) {
+void drawRunBackgroundGDIP(StyleItem run, long graphics, RECT rect, int selectionStart, int selectionEnd, int alpha, long selBrush, boolean hasSelection) {
 	int end = run.start + run.length - 1;
 	boolean fullSelection = hasSelection && selectionStart <= run.start && selectionEnd >= end;
 	if (fullSelection) {
 		Gdip.Graphics_FillRectangle(graphics, selBrush, rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top);
 	} else {
 		if (run.style != null && run.style.background != null) {
-			long /*int*/ brush = createGdipBrush(run.style.background, alpha);
+			long brush = createGdipBrush(run.style.background, alpha);
 			Gdip.Graphics_FillRectangle(graphics, brush, rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top);
 			Gdip.SolidBrush_delete(brush);
 		}
@@ -1025,7 +1025,7 @@ void drawRunBackgroundGDIP(StyleItem run, long /*int*/ graphics, RECT rect, int 
 	}
 }
 
-RECT drawRunText(long /*int*/ hdc, StyleItem run, RECT rect, int baselineInPixels, int color, int selectionColor, int selectionStart, int selectionEnd) {
+RECT drawRunText(long hdc, StyleItem run, RECT rect, int baselineInPixels, int color, int selectionColor, int selectionStart, int selectionEnd) {
 	int end = run.start + run.length - 1;
 	boolean hasSelection = selectionStart <= selectionEnd && selectionStart != -1 && selectionEnd != -1;
 	boolean fullSelection = hasSelection && selectionStart <= run.start && selectionEnd >= end;
@@ -1033,7 +1033,7 @@ RECT drawRunText(long /*int*/ hdc, StyleItem run, RECT rect, int baselineInPixel
 	int offset = (orientation & SWT.RIGHT_TO_LEFT) != 0 ? -1 : 0;
 	int x = rect.left + offset;
 	int y = rect.top + (baselineInPixels - DPIUtil.autoScaleUp(getDevice(), run.ascentInPoints));
-	long /*int*/ hFont = getItemFont(run);
+	long hFont = getItemFont(run);
 	OS.SelectObject(hdc, hFont);
 	if (fullSelection) {
 		color = selectionColor;
@@ -1052,7 +1052,7 @@ RECT drawRunText(long /*int*/ hdc, StyleItem run, RECT rect, int baselineInPixel
 	return fullSelection || partialSelection ? rect : null;
 }
 
-RECT drawRunTextGDIP(long /*int*/ graphics, StyleItem run, RECT rect, long /*int*/ gdipFont, int baselineInPixels, long /*int*/ color, long /*int*/ selectionColor, int selectionStart, int selectionEnd, int alpha) {
+RECT drawRunTextGDIP(long graphics, StyleItem run, RECT rect, long gdipFont, int baselineInPixels, long color, long selectionColor, int selectionStart, int selectionEnd, int alpha) {
 	int end = run.start + run.length - 1;
 	boolean hasSelection = selectionStart <= selectionEnd && selectionStart != -1 && selectionEnd != -1;
 	boolean fullSelection = hasSelection && selectionStart <= run.start && selectionEnd >= end;
@@ -1060,7 +1060,7 @@ RECT drawRunTextGDIP(long /*int*/ graphics, StyleItem run, RECT rect, long /*int
 	int drawY = rect.top + baselineInPixels;
 	if (run.style != null && run.style.rise != 0) drawY -= DPIUtil.autoScaleUp(getDevice(), run.style.rise);
 	int drawX = rect.left;
-	long /*int*/ brush = color;
+	long brush = color;
 	if (fullSelection) {
 		brush = selectionColor;
 	} else {
@@ -1137,10 +1137,10 @@ RECT drawRunTextGDIP(long /*int*/ graphics, StyleItem run, RECT rect, long /*int
 	return fullSelection || partialSelection ? rect : null;
 }
 
-RECT drawRunTextGDIPRaster(long /*int*/ graphics, StyleItem run, RECT rect, int baselineInPixels, int color, int selectionColor, int selectionStart, int selectionEnd) {
-	long /*int*/ clipRgn = 0;
+RECT drawRunTextGDIPRaster(long graphics, StyleItem run, RECT rect, int baselineInPixels, int color, int selectionColor, int selectionStart, int selectionEnd) {
+	long clipRgn = 0;
 	Gdip.Graphics_SetPixelOffsetMode(graphics, Gdip.PixelOffsetModeNone);
-	long /*int*/ rgn = Gdip.Region_new();
+	long rgn = Gdip.Region_new();
 	if (rgn == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	Gdip.Graphics_GetClip(graphics, rgn);
 	if (!Gdip.Region_IsInfinite(rgn, graphics)) {
@@ -1149,7 +1149,7 @@ RECT drawRunTextGDIPRaster(long /*int*/ graphics, StyleItem run, RECT rect, int 
 	Gdip.Region_delete(rgn);
 	Gdip.Graphics_SetPixelOffsetMode(graphics, Gdip.PixelOffsetModeHalf);
 	float[] lpXform = null;
-	long /*int*/ matrix = Gdip.Matrix_new(1, 0, 0, 1, 0, 0);
+	long matrix = Gdip.Matrix_new(1, 0, 0, 1, 0, 0);
 	if (matrix == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	Gdip.Graphics_GetTransform(graphics, matrix);
 	if (!Gdip.Matrix_IsIdentity(matrix)) {
@@ -1157,7 +1157,7 @@ RECT drawRunTextGDIPRaster(long /*int*/ graphics, StyleItem run, RECT rect, int 
 		Gdip.Matrix_GetElements(matrix, lpXform);
 	}
 	Gdip.Matrix_delete(matrix);
-	long /*int*/ hdc = Gdip.Graphics_GetHDC(graphics);
+	long hdc = Gdip.Graphics_GetHDC(graphics);
 	int state = OS.SaveDC(hdc);
 	if (lpXform != null) {
 		OS.SetGraphicsMode(hdc, OS.GM_ADVANCED);
@@ -1177,7 +1177,7 @@ RECT drawRunTextGDIPRaster(long /*int*/ graphics, StyleItem run, RECT rect, int 
 	return pRect;
 }
 
-RECT drawStrikeout(long /*int*/ hdc, int x, int baselineInPixels, StyleItem[] line, int index, int color, int selectionColor, RECT clipRect, RECT pRect, int selectionStart, int selectionEnd, Rectangle drawClip) {
+RECT drawStrikeout(long hdc, int x, int baselineInPixels, StyleItem[] line, int index, int color, int selectionColor, RECT clipRect, RECT pRect, int selectionStart, int selectionEnd, Rectangle drawClip) {
 	StyleItem run = line[index];
 	TextStyle style = run.style;
 	if (style == null) return null;
@@ -1211,11 +1211,11 @@ RECT drawStrikeout(long /*int*/ hdc, int x, int baselineInPixels, StyleItem[] li
 		RECT rect = new RECT();
 		int riseInPixels = DPIUtil.autoScaleUp(getDevice(), style.rise);
 		OS.SetRect(rect, x + left, baselineInPixels - run.strikeoutPos - riseInPixels, x + run.x + run.width, baselineInPixels - run.strikeoutPos + run.strikeoutThickness - riseInPixels);
-		long /*int*/ brush = OS.CreateSolidBrush(color);
+		long brush = OS.CreateSolidBrush(color);
 		OS.FillRect(hdc, rect, brush);
 		OS.DeleteObject(brush);
 		if (clipRect != null) {
-			long /*int*/ selBrush = OS.CreateSolidBrush(selectionColor);
+			long selBrush = OS.CreateSolidBrush(selectionColor);
 			if (clipRect.left == -1) clipRect.left = 0;
 			if (clipRect.right == -1) clipRect.right = 0x7ffff;
 			OS.SetRect(clipRect, Math.max(rect.left, clipRect.left), rect.top, Math.min(rect.right, clipRect.right), rect.bottom);
@@ -1227,7 +1227,7 @@ RECT drawStrikeout(long /*int*/ hdc, int x, int baselineInPixels, StyleItem[] li
 	return clipRect;
 }
 
-RECT drawStrikeoutGDIP(long /*int*/ graphics, int x, int baselineInPixels, StyleItem[] line, int index, long /*int*/ color, long /*int*/ selectionColor, RECT clipRect, RECT pRect, int selectionStart, int selectionEnd, int alpha, Rectangle drawClip) {
+RECT drawStrikeoutGDIP(long graphics, int x, int baselineInPixels, StyleItem[] line, int index, long color, long selectionColor, RECT clipRect, RECT pRect, int selectionStart, int selectionEnd, int alpha, Rectangle drawClip) {
 	StyleItem run = line[index];
 	TextStyle style = run.style;
 	if (style == null) return null;
@@ -1245,7 +1245,7 @@ RECT drawStrikeoutGDIP(long /*int*/ graphics, int x, int baselineInPixels, Style
 		}
 		boolean hasSelection = selectionStart <= selectionEnd && selectionStart != -1 && selectionEnd != -1;
 		boolean fullSelection = hasSelection && selectionStart <= start && end <= selectionEnd;
-		long /*int*/ brush = color;
+		long brush = color;
 		if (style.strikeoutColor != null) {
 			brush = createGdipBrush(style.strikeoutColor, alpha);
 			clipRect = null;
@@ -1285,7 +1285,7 @@ RECT drawStrikeoutGDIP(long /*int*/ graphics, int x, int baselineInPixels, Style
 	return clipRect;
 }
 
-RECT drawUnderline(long /*int*/ hdc, int x, int baselineInPixels, int lineUnderlinePos, int lineBottom, StyleItem[] line, int index, int color, int selectionColor, RECT clipRect, RECT pRect, int selectionStart, int selectionEnd, Rectangle drawClip) {
+RECT drawUnderline(long hdc, int x, int baselineInPixels, int lineUnderlinePos, int lineBottom, StyleItem[] line, int index, int color, int selectionColor, RECT clipRect, RECT pRect, int selectionStart, int selectionEnd, Rectangle drawClip) {
 	StyleItem run = line[index];
 	TextStyle style = run.style;
 	if (style == null) return null;
@@ -1331,8 +1331,8 @@ RECT drawUnderline(long /*int*/ hdc, int x, int baselineInPixels, int lineUnderl
 				int squigglyHeight = 2 * squigglyThickness;
 				int squigglyY = Math.min(rect.top - squigglyHeight / 2, lineBottom - squigglyHeight - 1);
 				int[] points = computePolyline(rect.left, squigglyY, rect.right, squigglyY + squigglyHeight);
-				long /*int*/ pen = OS.CreatePen(OS.PS_SOLID, squigglyThickness, color);
-				long /*int*/ oldPen = OS.SelectObject(hdc, pen);
+				long pen = OS.CreatePen(OS.PS_SOLID, squigglyThickness, color);
+				long oldPen = OS.SelectObject(hdc, pen);
 				int state = OS.SaveDC(hdc);
 				OS.IntersectClipRect(hdc, rect.left, squigglyY, rect.right + 1, squigglyY + squigglyHeight + 1);
 				OS.Polyline(hdc, points, points.length / 2);
@@ -1371,7 +1371,7 @@ RECT drawUnderline(long /*int*/ hdc, int x, int baselineInPixels, int lineUnderl
 					OS.OffsetRect(rect, 0, lineBottom - bottom);
 					if (clipRect != null) OS.OffsetRect(clipRect, 0, lineBottom - bottom);
 				}
-				long /*int*/ brush = OS.CreateSolidBrush(color);
+				long brush = OS.CreateSolidBrush(color);
 				OS.FillRect(hdc, rect, brush);
 				if (style.underlineStyle == SWT.UNDERLINE_DOUBLE) {
 					OS.SetRect(rect, rect.left, rect.top + run.underlineThickness * 2, rect.right, rect.bottom + run.underlineThickness * 2);
@@ -1379,7 +1379,7 @@ RECT drawUnderline(long /*int*/ hdc, int x, int baselineInPixels, int lineUnderl
 				}
 				OS.DeleteObject(brush);
 				if (clipRect != null) {
-					long /*int*/ selBrush = OS.CreateSolidBrush(selectionColor);
+					long selBrush = OS.CreateSolidBrush(selectionColor);
 					OS.FillRect(hdc, clipRect, selBrush);
 					if (style.underlineStyle == SWT.UNDERLINE_DOUBLE) {
 						OS.SetRect(clipRect, clipRect.left, rect.top, clipRect.right, rect.bottom);
@@ -1391,8 +1391,8 @@ RECT drawUnderline(long /*int*/ hdc, int x, int baselineInPixels, int lineUnderl
 			case UNDERLINE_IME_DASH:
 			case UNDERLINE_IME_DOT: {
 				int penStyle = style.underlineStyle == UNDERLINE_IME_DASH ? OS.PS_DASH : OS.PS_DOT;
-				long /*int*/ pen = OS.CreatePen(penStyle, 1, color);
-				long /*int*/ oldPen = OS.SelectObject(hdc, pen);
+				long pen = OS.CreatePen(penStyle, 1, color);
+				long oldPen = OS.SelectObject(hdc, pen);
 				int descentInPixels = DPIUtil.autoScaleUp(getDevice(), run.descentInPoints);
 				OS.SetRect(rect, rect.left, baselineInPixels + descentInPixels, rect.right, baselineInPixels + descentInPixels + run.underlineThickness);
 				OS.MoveToEx(hdc, rect.left, rect.top, 0);
@@ -1416,7 +1416,7 @@ RECT drawUnderline(long /*int*/ hdc, int x, int baselineInPixels, int lineUnderl
 	return clipRect;
 }
 
-RECT drawUnderlineGDIP (long /*int*/ graphics, int x, int baselineInPixels, int lineUnderlinePos, int lineBottom, StyleItem[] line, int index, long /*int*/ color, long /*int*/ selectionColor, RECT clipRect, RECT pRect, int selectionStart, int selectionEnd, int alpha, Rectangle drawClip) {
+RECT drawUnderlineGDIP (long graphics, int x, int baselineInPixels, int lineUnderlinePos, int lineBottom, StyleItem[] line, int index, long color, long selectionColor, RECT clipRect, RECT pRect, int selectionStart, int selectionEnd, int alpha, Rectangle drawClip) {
 	StyleItem run = line[index];
 	TextStyle style = run.style;
 	if (style == null) return null;
@@ -1434,7 +1434,7 @@ RECT drawUnderlineGDIP (long /*int*/ graphics, int x, int baselineInPixels, int 
 		}
 		boolean hasSelection = selectionStart <= selectionEnd && selectionStart != -1 && selectionEnd != -1;
 		boolean fullSelection = hasSelection && selectionStart <= start && end <= selectionEnd;
-		long /*int*/ brush = color;
+		long brush = color;
 		if (style.underlineColor != null) {
 			brush = createGdipBrush(style.underlineColor, alpha);
 			clipRect = null;
@@ -1473,7 +1473,7 @@ RECT drawUnderlineGDIP (long /*int*/ graphics, int x, int baselineInPixels, int 
 				int squigglyHeight = 2 * squigglyThickness;
 				int squigglyY = Math.min(rect.top - squigglyHeight / 2, lineBottom - squigglyHeight - 1);
 				int[] points = computePolyline(rect.left, squigglyY, rect.right, squigglyY + squigglyHeight);
-				long /*int*/ pen = Gdip.Pen_new(brush, squigglyThickness);
+				long pen = Gdip.Pen_new(brush, squigglyThickness);
 				gstate = Gdip.Graphics_Save(graphics);
 				if (gdipRect != null) {
 					Gdip.Graphics_SetClip(graphics, gdipRect, Gdip.CombineModeExclude);
@@ -1487,7 +1487,7 @@ RECT drawUnderlineGDIP (long /*int*/ graphics, int x, int baselineInPixels, int 
 				}
 				Gdip.Graphics_DrawLines(graphics, pen, points, points.length / 2);
 				if (gdipRect != null) {
-					long /*int*/ selPen = Gdip.Pen_new(selectionColor, squigglyThickness);
+					long selPen = Gdip.Pen_new(selectionColor, squigglyThickness);
 					Gdip.Graphics_Restore(graphics, gstate);
 					gstate = Gdip.Graphics_Save(graphics);
 					Gdip.Graphics_SetClip(graphics, gdipRect, Gdip.CombineModeIntersect);
@@ -1538,7 +1538,7 @@ RECT drawUnderlineGDIP (long /*int*/ graphics, int x, int baselineInPixels, int 
 				break;
 			case UNDERLINE_IME_DOT:
 			case UNDERLINE_IME_DASH: {
-				long /*int*/ pen = Gdip.Pen_new(brush, 1);
+				long pen = Gdip.Pen_new(brush, 1);
 				int dashStyle = style.underlineStyle == UNDERLINE_IME_DOT ? Gdip.DashStyleDot : Gdip.DashStyleDash;
 				Gdip.Pen_SetDashStyle(pen, dashStyle);
 				if (gdipRect != null) {
@@ -1551,7 +1551,7 @@ RECT drawUnderlineGDIP (long /*int*/ graphics, int x, int baselineInPixels, int 
 					Gdip.Graphics_Restore(graphics, gstate);
 					gstate = Gdip.Graphics_Save(graphics);
 					Gdip.Graphics_SetClip(graphics, gdipRect, Gdip.CombineModeIntersect);
-					long /*int*/ selPen = Gdip.Pen_new(brush, 1);
+					long selPen = Gdip.Pen_new(brush, 1);
 					Gdip.Pen_SetDashStyle(selPen, dashStyle);
 					Gdip.Graphics_DrawLine(graphics, selPen, rect.left, baselineInPixels + descentInPixels, run.width - run.length, baselineInPixels + descentInPixels);
 					Gdip.Graphics_Restore(graphics, gstate);
@@ -1708,7 +1708,7 @@ Rectangle getBoundsInPixels (int start, int end) {
 				cx = metrics.getWidthInPixels() * (start - run.start);
 			} else if (!run.tab) {
 				int[] piX = new int[1];
-				long /*int*/ advances = run.justify != 0 ? run.justify : run.advances;
+				long advances = run.justify != 0 ? run.justify : run.advances;
 				OS.ScriptCPtoX(start - run.start, false, run.length, run.glyphCount, run.clusters, run.visAttrs, advances, run.analysis, piX);
 				cx = isRTL ? run.width - piX[0] : piX[0];
 			}
@@ -1725,7 +1725,7 @@ Rectangle getBoundsInPixels (int start, int end) {
 				cx = metrics.getWidthInPixels() * (end - run.start + 1);
 			} else if (!run.tab) {
 				int[] piX = new int[1];
-				long /*int*/ advances = run.justify != 0 ? run.justify : run.advances;
+				long advances = run.justify != 0 ? run.justify : run.advances;
 				OS.ScriptCPtoX(end - run.start, true, run.length, run.glyphCount, run.clusters, run.visAttrs, advances, run.analysis, piX);
 				cx = isRTL ? run.width - piX[0] : piX[0];
 			}
@@ -1817,7 +1817,7 @@ public boolean getJustify () {
 	return justify;
 }
 
-long /*int*/ getItemFont (StyleItem item) {
+long getItemFont (StyleItem item) {
 	if (item.fallbackFont != 0) return item.fallbackFont;
 	if (item.style != null && item.style.font != null) {
 		return item.style.font.handle;
@@ -1975,8 +1975,8 @@ public FontMetrics getLineMetrics (int lineIndex) {
 	checkLayout();
 	computeRuns(null);
 	if (!(0 <= lineIndex && lineIndex < runs.length)) SWT.error(SWT.ERROR_INVALID_RANGE);
-	long /*int*/ hDC = device.internal_new_GC(null);
-	long /*int*/ srcHdc = OS.CreateCompatibleDC(hDC);
+	long hDC = device.internal_new_GC(null);
+	long srcHdc = OS.CreateCompatibleDC(hDC);
 	TEXTMETRIC lptm = new TEXTMETRIC();
 	OS.SelectObject(srcHdc, font != null ? font.handle : device.systemFont.handle);
 	OS.GetTextMetrics(srcHdc, lptm);
@@ -2103,7 +2103,7 @@ Point getLocationInPixels (int offset, boolean trailing) {
 				int cChars = run.length;
 				int gGlyphs = run.glyphCount;
 				int[] piX = new int[1];
-				long /*int*/ advances = run.justify != 0 ? run.justify : run.advances;
+				long advances = run.justify != 0 ? run.justify : run.advances;
 				OS.ScriptCPtoX(runOffset, trailing, cChars, gGlyphs, run.clusters, run.visAttrs, advances, run.analysis, piX);
 				width = (orientation & SWT.RIGHT_TO_LEFT) != 0 ? run.width - piX[0] : piX[0];
 			}
@@ -2320,7 +2320,7 @@ int getOffsetInPixels (int x, int y, int[] trailing) {
 			if ((orientation & SWT.RIGHT_TO_LEFT) != 0) {
 				xRun = run.width - xRun;
 			}
-			long /*int*/ advances = run.justify != 0 ? run.justify : run.advances;
+			long advances = run.justify != 0 ? run.justify : run.advances;
 			OS.ScriptXtoCP(xRun, cChars, cGlyphs, run.clusters, run.visAttrs, advances, run.analysis, piCP, piTrailing);
 			int offset = run.start + piCP[0];
 			int length = segmentsText.length();
@@ -2376,7 +2376,7 @@ void getPartialSelection(StyleItem run, int selectionStart, int selectionEnd, RE
 	int gGlyphs = run.glyphCount;
 	int[] piX = new int[1];
 	int x = rect.left;
-	long /*int*/ advances = run.justify != 0 ? run.justify : run.advances;
+	long advances = run.justify != 0 ? run.justify : run.advances;
 	OS.ScriptCPtoX(selStart, false, cChars, gGlyphs, run.clusters, run.visAttrs, advances, run.analysis, piX);
 	int runX = (orientation & SWT.RIGHT_TO_LEFT) != 0 ? run.width - piX[0] : piX[0];
 	rect.left = x + runX;
@@ -2732,8 +2732,8 @@ StyleItem[] itemize () {
 
 	OS.ScriptApplyDigitSubstitution(null, scriptControl, scriptState);
 
-	long /*int*/ hHeap = OS.GetProcessHeap();
-	long /*int*/ pItems = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, MAX_ITEM * SCRIPT_ITEM.sizeof);
+	long hHeap = OS.GetProcessHeap();
+	long pItems = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, MAX_ITEM * SCRIPT_ITEM.sizeof);
 	if (pItems == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	int[] pcItems = new int[1];
 	char[] chars = new char[length];
@@ -2749,7 +2749,7 @@ StyleItem[] itemize () {
 /*
  *  Merge styles ranges and script items
  */
-StyleItem[] merge (long /*int*/ items, int itemCount) {
+StyleItem[] merge (long items, int itemCount) {
 	if (styles.length > stylesCount) {
 		StyleItem[] newStyles = new StyleItem[stylesCount];
 		System.arraycopy(styles, 0, newStyles, 0, stylesCount);
@@ -3414,7 +3414,7 @@ void setWrapIndentInPixels (int wrapIndent) {
 	this.wrapIndent = wrapIndent;
 }
 
-boolean shape (long /*int*/ hdc, StyleItem run, char[] chars, int[] glyphCount, int maxGlyphs, SCRIPT_PROPERTIES sp) {
+boolean shape (long hdc, StyleItem run, char[] chars, int[] glyphCount, int maxGlyphs, SCRIPT_PROPERTIES sp) {
 	boolean useCMAPcheck = !sp.fComplex && !run.analysis.fNoGlyphIndex;
 	if (useCMAPcheck) {
 		short[] glyphs = new short[chars.length];
@@ -3422,7 +3422,7 @@ boolean shape (long /*int*/ hdc, StyleItem run, char[] chars, int[] glyphCount, 
 			if (run.psc != 0) {
 				OS.ScriptFreeCache(run.psc);
 				glyphCount[0] = 0;
-				OS.MoveMemory(run.psc, new long /*int*/ [1], C.PTR_SIZEOF);
+				OS.MoveMemory(run.psc, new long [1], C.PTR_SIZEOF);
 			}
 			return false;
 		}
@@ -3447,14 +3447,14 @@ boolean shape (long /*int*/ hdc, StyleItem run, char[] chars, int[] glyphCount, 
 	if (run.psc != 0) {
 		OS.ScriptFreeCache(run.psc);
 		glyphCount[0] = 0;
-		OS.MoveMemory(run.psc, new long /*int*/ [1], C.PTR_SIZEOF);
+		OS.MoveMemory(run.psc, new long [1], C.PTR_SIZEOF);
 	}
 	run.glyphCount = 0;
 	return false;
 }
 
-long /*int*/ createMetafileWithChars(long /*int*/ hdc, long /*int*/ hFont, char[] chars, int charCount) {
-	long /*int*/ hHeap = OS.GetProcessHeap();
+long createMetafileWithChars(long hdc, long hFont, char[] chars, int charCount) {
+	long hHeap = OS.GetProcessHeap();
 
 	/*
 	 * The native string must remain unchanged between ScriptStringAnalyse and ScriptStringOut.
@@ -3466,12 +3466,12 @@ long /*int*/ createMetafileWithChars(long /*int*/ hdc, long /*int*/ hFont, char[
 	 * temporary native string which will be deallocated upon return from ScriptStringAnalyse.
 	 */
 	int nativeStringSize = charCount * Character.BYTES;
-	long /*int*/ nativeString = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, nativeStringSize);
+	long nativeString = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, nativeStringSize);
 	OS.MoveMemory (nativeString, chars, nativeStringSize);
 
-	long /*int*/ ssa = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, OS.SCRIPT_STRING_ANALYSIS_sizeof());
-	long /*int*/ metaFileDc = OS.CreateEnhMetaFile(hdc, null, null, null);
-	long /*int*/ oldMetaFont = OS.SelectObject(metaFileDc, hFont);
+	long ssa = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, OS.SCRIPT_STRING_ANALYSIS_sizeof());
+	long metaFileDc = OS.CreateEnhMetaFile(hdc, null, null, null);
+	long oldMetaFont = OS.SelectObject(metaFileDc, hFont);
 	int flags = OS.SSA_METAFILE | OS.SSA_FALLBACK | OS.SSA_GLYPHS | OS.SSA_LINK;
 	if (OS.ScriptStringAnalyse(metaFileDc, nativeString, charCount, 0, -1, flags, 0, null, null, 0, 0, 0, ssa) == OS.S_OK) {
 		OS.ScriptStringOut(ssa, 0, 0, 0, null, 0, 0, false);
@@ -3486,7 +3486,7 @@ long /*int*/ createMetafileWithChars(long /*int*/ hdc, long /*int*/ hFont, char[
 /*
  * Generate glyphs for one Run.
  */
-void shape (final long /*int*/ hdc, final StyleItem run) {
+void shape (final long hdc, final StyleItem run) {
 	if (run.lineBreak) return;
 	if (run.glyphs != 0) return;
 	final int[] buffer = new int[1];
@@ -3494,7 +3494,7 @@ void shape (final long /*int*/ hdc, final StyleItem run) {
 	segmentsText.getChars(run.start, run.start + run.length, chars, 0);
 
 	final int maxGlyphs = (chars.length * 3 / 2) + 16;
-	long /*int*/ hHeap = OS.GetProcessHeap();
+	long hHeap = OS.GetProcessHeap();
 	run.glyphs = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, maxGlyphs * 2);
 	if (run.glyphs == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	run.clusters = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, maxGlyphs * 2);
@@ -3514,8 +3514,8 @@ void shape (final long /*int*/ hdc, final StyleItem run) {
 		}
 	}
 	if (!shapeSucceed) {
-		long /*int*/ hFont = OS.GetCurrentObject(hdc, OS.OBJ_FONT);
-		long /*int*/ newFont = 0;
+		long hFont = OS.GetCurrentObject(hdc, OS.OBJ_FONT);
+		long newFont = 0;
 		/*
 		* Bug in Uniscribe. In some version of Uniscribe, ScriptStringAnalyse crashes
 		* when the character array is too long. The fix is to limit the size of character
@@ -3534,10 +3534,10 @@ void shape (final long /*int*/ hdc, final StyleItem run) {
 			}
 		}
 		if (count > 0) {
-			long /*int*/ metaFile = createMetafileWithChars(hdc, hFont, sampleChars, count);
+			long metaFile = createMetafileWithChars(hdc, hFont, sampleChars, count);
 			final EMREXTCREATEFONTINDIRECTW emr = new EMREXTCREATEFONTINDIRECTW();
 			class MetaFileEnumProc {
-				long /*int*/ metaFileEnumProc (long /*int*/ hDC, long /*int*/ table, long /*int*/ record, long /*int*/ nObj, long /*int*/ lpData) {
+				long metaFileEnumProc (long hDC, long table, long record, long nObj, long lpData) {
 					OS.MoveMemory(emr.emr, record, EMR.sizeof);
 					switch (emr.emr.iType) {
 						case OS.EMR_EXTCREATEFONTINDIRECTW:
@@ -3554,7 +3554,7 @@ void shape (final long /*int*/ hdc, final StyleItem run) {
 			boolean compilerWarningWorkaround = false;
 			if (compilerWarningWorkaround) object.metaFileEnumProc(0, 0, 0, 0, 0);
 			Callback callback = new Callback(object, "metaFileEnumProc", 5);
-			long /*int*/ address = callback.getAddress();
+			long address = callback.getAddress();
 			if (address == 0) SWT.error(SWT.ERROR_NO_MORE_CALLBACKS);
 			OS.EnumEnhMetaFile(0, metaFile, address, 0, null);
 			OS.DeleteEnhMetaFile(metaFile);
@@ -3573,7 +3573,7 @@ void shape (final long /*int*/ hdc, final StyleItem run) {
 					if (index > 0) {
 						StyleItem pRun = allRuns[index - 1];
 						if (pRun.analysis.eScript == run.analysis.eScript) {
-							long /*int*/ pFont = getItemFont(pRun);
+							long pFont = getItemFont(pRun);
 							LOGFONT logFont = new LOGFONT ();
 							OS.GetObject(pFont, LOGFONT.sizeof, logFont);
 							newFont = OS.CreateFontIndirect(logFont);
@@ -3585,7 +3585,7 @@ void shape (final long /*int*/ hdc, final StyleItem run) {
 							if (nRun.analysis.eScript == run.analysis.eScript) {
 								OS.SelectObject(hdc, getItemFont(nRun));
 								shape(hdc, nRun);
-								long /*int*/ nFont = getItemFont(nRun);
+								long nFont = getItemFont(nRun);
 								LOGFONT logFont = new LOGFONT ();
 								OS.GetObject(nFont, LOGFONT.sizeof, logFont);
 								newFont = OS.CreateFontIndirect(logFont);
@@ -3615,7 +3615,7 @@ void shape (final long /*int*/ hdc, final StyleItem run) {
 		}
 		if (!shapeSucceed) {
 			if (mLangFontLink2 != 0) {
-				long /*int*/[] hNewFont = new long /*int*/[1];
+				long[] hNewFont = new long[1];
 				int[] dwCodePages = new int[1], cchCodePages = new int[1];
 				/* GetStrCodePages() */
 				OS.VtblCall(4, mLangFontLink2, chars, chars.length, 0, dwCodePages, cchCodePages);
@@ -3625,8 +3625,8 @@ void shape (final long /*int*/ hdc, final StyleItem run) {
 					OS.GetObject(hNewFont[0], LOGFONT.sizeof, logFont);
 					/* ReleaseFont() */
 					OS.VtblCall(8, mLangFontLink2, hNewFont[0]);
-					long /*int*/ mLangFont = OS.CreateFontIndirect(logFont);
-					long /*int*/ oldFont = OS.SelectObject(hdc, mLangFont);
+					long mLangFont = OS.CreateFontIndirect(logFont);
+					long oldFont = OS.SelectObject(hdc, mLangFont);
 					if (shapeSucceed = shape(hdc, run, chars, buffer,  maxGlyphs, sp)) {
 						run.fallbackFont = mLangFont;
 					} else {

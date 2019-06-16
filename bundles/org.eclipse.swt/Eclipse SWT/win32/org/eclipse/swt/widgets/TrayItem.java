@@ -262,7 +262,7 @@ public boolean getVisible () {
 	return visible;
 }
 
-long /*int*/ messageProc (long /*int*/ hwnd, int msg, long /*int*/ wParam, long /*int*/ lParam) {
+long messageProc (long hwnd, int msg, long wParam, long lParam) {
 	/*
 	* Feature in Windows.  When the user clicks on the tray
 	* icon, another application may be the foreground window.
@@ -274,7 +274,7 @@ long /*int*/ messageProc (long /*int*/ hwnd, int msg, long /*int*/ wParam, long 
 	* menu is not hidden.  The fix is to force the tray icon
 	* message window to the foreground when sending an event.
 	*/
-	switch ((int)/*64*/lParam) {
+	switch ((int)lParam) {
 		case OS.WM_LBUTTONDOWN:
 			if (hooks (SWT.Selection)) {
 				OS.SetForegroundWindow (hwnd);
@@ -459,7 +459,7 @@ public void setImage (Image image) {
 	super.setImage (image);
 	if (image2 != null) image2.dispose ();
 	image2 = null;
-	long /*int*/ hIcon = 0;
+	long hIcon = 0;
 	Image icon = image;
 	if (icon != null) {
 		switch (icon.type) {

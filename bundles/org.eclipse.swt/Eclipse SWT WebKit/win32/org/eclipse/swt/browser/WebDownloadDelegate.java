@@ -50,39 +50,39 @@ int AddRef () {
 void createCOMInterfaces () {
 	iWebDownloadDelegate = new COMObject (new int[] {2, 0, 0, 2, 2, 2, 2, 2, 2, 2, 3, 3, 4, 1, 1}) {
 		@Override
-		public long /*int*/ method0 (long /*int*/[] args) {return QueryInterface (args[0], args[1]);}
+		public long method0 (long[] args) {return QueryInterface (args[0], args[1]);}
 		@Override
-		public long /*int*/ method1 (long /*int*/[] args) {return AddRef ();}
+		public long method1 (long[] args) {return AddRef ();}
 		@Override
-		public long /*int*/ method2 (long /*int*/[] args) {return Release ();}
+		public long method2 (long[] args) {return Release ();}
 		@Override
-		public long /*int*/ method3 (long /*int*/[] args) {return decideDestinationWithSuggestedFilename (args[0], args[1]);}
+		public long method3 (long[] args) {return decideDestinationWithSuggestedFilename (args[0], args[1]);}
 		@Override
-		public long /*int*/ method4 (long /*int*/[] args) {return COM.E_NOTIMPL;}
+		public long method4 (long[] args) {return COM.E_NOTIMPL;}
 		@Override
-		public long /*int*/ method5 (long /*int*/[] args) {return COM.E_NOTIMPL;}
+		public long method5 (long[] args) {return COM.E_NOTIMPL;}
 		@Override
-		public long /*int*/ method6 (long /*int*/[] args) {return didFailWithError (args[0], args[1]);}
+		public long method6 (long[] args) {return didFailWithError (args[0], args[1]);}
 		@Override
-		public long /*int*/ method7 (long /*int*/[] args) {return COM.E_NOTIMPL;}
+		public long method7 (long[] args) {return COM.E_NOTIMPL;}
 		@Override
-		public long /*int*/ method8 (long /*int*/[] args) {return didReceiveDataOfLength (args[0], (int)/*64*/args[1]);}
+		public long method8 (long[] args) {return didReceiveDataOfLength (args[0], (int)args[1]);}
 		@Override
-		public long /*int*/ method9 (long /*int*/[] args) {return didReceiveResponse (args[0], args[1]);}
+		public long method9 (long[] args) {return didReceiveResponse (args[0], args[1]);}
 		@Override
-		public long /*int*/ method10 (long /*int*/[] args) {return COM.E_NOTIMPL;}
+		public long method10 (long[] args) {return COM.E_NOTIMPL;}
 		@Override
-		public long /*int*/ method11 (long /*int*/[] args) {return COM.E_NOTIMPL;}
+		public long method11 (long[] args) {return COM.E_NOTIMPL;}
 		@Override
-		public long /*int*/ method12 (long /*int*/[] args) {return willSendRequest (args[0], args[1], args[2], args[3]);}
+		public long method12 (long[] args) {return willSendRequest (args[0], args[1], args[2], args[3]);}
 		@Override
-		public long /*int*/ method13 (long /*int*/[] args) {return didBegin (args[0]);}
+		public long method13 (long[] args) {return didBegin (args[0]);}
 		@Override
-		public long /*int*/ method14 (long /*int*/[] args) {return didFinish (args[0]);}
+		public long method14 (long[] args) {return didFinish (args[0]);}
 	};
 }
 
-int decideDestinationWithSuggestedFilename (long /*int*/ download, long /*int*/ filename) {
+int decideDestinationWithSuggestedFilename (long download, long filename) {
 	String name = WebKit.extractBSTR (filename);
 	FileDialog dialog = new FileDialog (browser.getShell(), SWT.SAVE);
 	dialog.setText (SWT.getMessage ("SWT_FileDownload")); //$NON-NLS-1$
@@ -108,7 +108,7 @@ int decideDestinationWithSuggestedFilename (long /*int*/ download, long /*int*/ 
 	return COM.S_OK;
 }
 
-int didBegin (long /*int*/ download) {
+int didBegin (long download) {
 	new IWebDownload (download).AddRef ();
 	status = -1;
 	size = 0;
@@ -117,30 +117,30 @@ int didBegin (long /*int*/ download) {
 	return COM.S_OK;
 }
 
-int didFailWithError (long /*int*/ download, long /*int*/ error) {
+int didFailWithError (long download, long error) {
 	new IWebDownload (download).Release ();
 	status = DOWNLOAD_ERROR;
 	return COM.S_OK;
 }
 
-int didFinish (long /*int*/ download) {
+int didFinish (long download) {
 	new IWebDownload (download).Release ();
 	status = DOWNLOAD_FINISHED;
 	return COM.S_OK;
 }
 
-int didReceiveDataOfLength (long /*int*/ download, int length) {
+int didReceiveDataOfLength (long download, int length) {
 	size += length;
 	return COM.S_OK;
 }
 
-int didReceiveResponse (long /*int*/ download, long /*int*/ response) {
+int didReceiveResponse (long download, long response) {
 	if (response != 0) {
 		IWebURLResponse urlResponse = new IWebURLResponse (response);
 		long[] size = new long[1];
 		int hr = urlResponse.expectedContentLength (size);
 		if (hr == COM.S_OK) totalSize = size[0];
-		long /*int*/[] result = new long /*int*/[1];
+		long[] result = new long[1];
 		hr = urlResponse.URL (result);
 		if (hr == COM.S_OK && result[0] != 0) {
 			url = WebKit.extractBSTR (result[0]);
@@ -157,7 +157,7 @@ void disposeCOMInterfaces () {
 	}
 }
 
-long /*int*/ getAddress () {
+long getAddress () {
 	return iWebDownloadDelegate.getAddress ();
 }
 
@@ -224,23 +224,23 @@ void openDownloadWindow (final IWebDownload download, String name) {
 	shell.open ();
 }
 
-int QueryInterface (long /*int*/ riid, long /*int*/ ppvObject) {
+int QueryInterface (long riid, long ppvObject) {
 	if (riid == 0 || ppvObject == 0) return COM.E_INVALIDARG;
 	GUID guid = new GUID ();
 	COM.MoveMemory (guid, riid, GUID.sizeof);
 
 	if (COM.IsEqualGUID (guid, COM.IIDIUnknown)) {
-		OS.MoveMemory (ppvObject, new long /*int*/[] {iWebDownloadDelegate.getAddress ()}, C.PTR_SIZEOF);
+		OS.MoveMemory (ppvObject, new long[] {iWebDownloadDelegate.getAddress ()}, C.PTR_SIZEOF);
 		new IUnknown (iWebDownloadDelegate.getAddress ()).AddRef ();
 		return COM.S_OK;
 	}
 	if (COM.IsEqualGUID (guid, WebKit_win32.IID_IWebDownloadDelegate)) {
-		OS.MoveMemory (ppvObject, new long /*int*/[] {iWebDownloadDelegate.getAddress ()}, C.PTR_SIZEOF);
+		OS.MoveMemory (ppvObject, new long[] {iWebDownloadDelegate.getAddress ()}, C.PTR_SIZEOF);
 		new IUnknown (iWebDownloadDelegate.getAddress ()).AddRef ();
 		return COM.S_OK;
 	}
 
-	OS.MoveMemory (ppvObject, new long /*int*/[] {0}, C.PTR_SIZEOF);
+	OS.MoveMemory (ppvObject, new long[] {0}, C.PTR_SIZEOF);
 	return COM.E_NOINTERFACE;
 }
 
@@ -252,10 +252,10 @@ int Release () {
 	return refCount;
 }
 
-int willSendRequest (long /*int*/ download, long /*int*/ request, long /*int*/ redirectResponse, long /*int*/ finalRequest) {
+int willSendRequest (long download, long request, long redirectResponse, long finalRequest) {
 	IWebMutableURLRequest req = new IWebMutableURLRequest (request);
 	req.AddRef ();
-	OS.MoveMemory (finalRequest, new long /*int*/[] {request}, C.PTR_SIZEOF);
+	OS.MoveMemory (finalRequest, new long[] {request}, C.PTR_SIZEOF);
 	return COM.S_OK;
 }
 

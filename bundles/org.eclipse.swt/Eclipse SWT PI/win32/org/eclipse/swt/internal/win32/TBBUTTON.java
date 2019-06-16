@@ -18,7 +18,7 @@ public class TBBUTTON {
 	public int idCommand;
 	public byte fsState;
 	public byte fsStyle;
-	public long /*int*/ dwData;
-	public long /*int*/ iString;
+	public long dwData;
+	public long iString;
 	public static final int sizeof = OS.TBBUTTON_sizeof ();
 }

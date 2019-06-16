@@ -107,7 +107,7 @@ public class TransferData {
 	 *
 	 * @noreference This field is not intended to be referenced by clients.
 	 */
-	public long /*int*/ pIDataObject;
+	public long pIDataObject;
 
 	static boolean sameType(TransferData data1, TransferData data2) {
 		if (data1 == data2) return true;

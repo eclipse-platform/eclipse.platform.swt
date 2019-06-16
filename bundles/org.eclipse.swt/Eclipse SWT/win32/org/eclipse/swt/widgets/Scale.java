@@ -43,7 +43,7 @@ import org.eclipse.swt.internal.win32.*;
  */
 public class Scale extends Control {
 	boolean ignoreResize, ignoreSelection;
-	static final long /*int*/ TrackBarProc;
+	static final long TrackBarProc;
 	static final TCHAR TrackBarClass = new TCHAR (0, OS.TRACKBAR_CLASS, true);
 	boolean createdAsRTL;
 	static {
@@ -138,7 +138,7 @@ public void addSelectionListener(SelectionListener listener) {
 }
 
 @Override
-long /*int*/ callWindowProc (long /*int*/ hwnd, int msg, long /*int*/ wParam, long /*int*/ lParam) {
+long callWindowProc (long hwnd, int msg, long wParam, long lParam) {
 	if (handle == 0) return 0;
 	return OS.CallWindowProc (TrackBarProc, hwnd, msg, wParam, lParam);
 }
@@ -196,7 +196,7 @@ int defaultForeground () {
  */
 public int getIncrement () {
 	checkWidget ();
-	return (int)/*64*/OS.SendMessage (handle, OS.TBM_GETLINESIZE, 0, 0);
+	return (int)OS.SendMessage (handle, OS.TBM_GETLINESIZE, 0, 0);
 }
 
 /**
@@ -211,7 +211,7 @@ public int getIncrement () {
  */
 public int getMaximum () {
 	checkWidget ();
-	return (int)/*64*/OS.SendMessage (handle, OS.TBM_GETRANGEMAX, 0, 0);
+	return (int)OS.SendMessage (handle, OS.TBM_GETRANGEMAX, 0, 0);
 }
 
 /**
@@ -243,7 +243,7 @@ public int getMinimum () {
  */
 public int getPageIncrement () {
 	checkWidget ();
-	return (int)/*64*/OS.SendMessage (handle, OS.TBM_GETPAGESIZE, 0, 0);
+	return (int)OS.SendMessage (handle, OS.TBM_GETPAGESIZE, 0, 0);
 }
 
 /**
@@ -258,7 +258,7 @@ public int getPageIncrement () {
  */
 public int getSelection () {
 	checkWidget ();
-	return (int)/*64*/OS.SendMessage (handle, OS.TBM_GETPOS, 0, 0);
+	return (int)OS.SendMessage (handle, OS.TBM_GETPOS, 0, 0);
 }
 
 /**
@@ -287,7 +287,7 @@ public void removeSelectionListener(SelectionListener listener) {
 }
 
 @Override
-void setBackgroundImage (long /*int*/ hImage) {
+void setBackgroundImage (long hImage) {
 	super.setBackgroundImage (hImage);
 	/*
 	* Bug in Windows.  Changing the background color of the Scale
@@ -358,8 +358,8 @@ void setBoundsInPixels (int x, int y, int width, int height, int flags, boolean 
 public void setIncrement (int increment) {
 	checkWidget ();
 	if (increment < 1) return;
-	int minimum = (int)/*64*/OS.SendMessage (handle, OS.TBM_GETRANGEMIN, 0, 0);
-	int maximum = (int)/*64*/OS.SendMessage (handle, OS.TBM_GETRANGEMAX, 0, 0);
+	int minimum = (int)OS.SendMessage (handle, OS.TBM_GETRANGEMIN, 0, 0);
+	int maximum = (int)OS.SendMessage (handle, OS.TBM_GETRANGEMAX, 0, 0);
 	if (increment > maximum - minimum) return;
 	OS.SendMessage (handle, OS.TBM_SETLINESIZE, 0, increment);
 }
@@ -379,7 +379,7 @@ public void setIncrement (int increment) {
  */
 public void setMaximum (int value) {
 	checkWidget ();
-	int minimum = (int)/*64*/OS.SendMessage (handle, OS.TBM_GETRANGEMIN, 0, 0);
+	int minimum = (int)OS.SendMessage (handle, OS.TBM_GETRANGEMIN, 0, 0);
 	if (0 <= minimum && minimum < value) {
 		OS.SendMessage (handle, OS.TBM_SETRANGEMAX, 1, value);
 	}
@@ -400,7 +400,7 @@ public void setMaximum (int value) {
  */
 public void setMinimum (int value) {
 	checkWidget ();
-	int maximum = (int)/*64*/OS.SendMessage (handle, OS.TBM_GETRANGEMAX, 0, 0);
+	int maximum = (int)OS.SendMessage (handle, OS.TBM_GETRANGEMAX, 0, 0);
 	if (0 <= value && value < maximum) {
 		OS.SendMessage (handle, OS.TBM_SETRANGEMIN, 1, value);
 	}
@@ -422,8 +422,8 @@ public void setMinimum (int value) {
 public void setPageIncrement (int pageIncrement) {
 	checkWidget ();
 	if (pageIncrement < 1) return;
-	int minimum = (int)/*64*/OS.SendMessage (handle, OS.TBM_GETRANGEMIN, 0, 0);
-	int maximum = (int)/*64*/OS.SendMessage (handle, OS.TBM_GETRANGEMAX, 0, 0);
+	int minimum = (int)OS.SendMessage (handle, OS.TBM_GETRANGEMIN, 0, 0);
+	int maximum = (int)OS.SendMessage (handle, OS.TBM_GETRANGEMAX, 0, 0);
 	if (pageIncrement > maximum - minimum) return;
 	OS.SendMessage (handle, OS.TBM_SETPAGESIZE, 0, pageIncrement);
 	OS.SendMessage (handle, OS.TBM_SETTICFREQ, pageIncrement, 0);
@@ -458,15 +458,15 @@ TCHAR windowClass () {
 }
 
 @Override
-long /*int*/ windowProc () {
+long windowProc () {
 	return TrackBarProc;
 }
 
 @Override
-LRESULT WM_KEYDOWN (long /*int*/ wParam, long /*int*/ lParam) {
+LRESULT WM_KEYDOWN (long wParam, long lParam) {
 	LRESULT result = super.WM_KEYDOWN (wParam, lParam);
 	if (result != null) return result;
-	switch ((int)/*64*/wParam) {
+	switch ((int)wParam) {
 		case OS.VK_LEFT:
 		case OS.VK_RIGHT:
 			/*
@@ -478,7 +478,7 @@ LRESULT WM_KEYDOWN (long /*int*/ wParam, long /*int*/ lParam) {
 			*/
 			boolean isRTL = (style & SWT.RIGHT_TO_LEFT) != 0;
 			if (isRTL != createdAsRTL) {
-				long /*int*/ code = callWindowProc (handle, OS.WM_KEYDOWN, wParam == OS.VK_RIGHT ? OS.VK_LEFT : OS.VK_RIGHT, lParam);
+				long code = callWindowProc (handle, OS.WM_KEYDOWN, wParam == OS.VK_RIGHT ? OS.VK_LEFT : OS.VK_RIGHT, lParam);
 				return new LRESULT (code);
 			}
 			break;
@@ -487,7 +487,7 @@ LRESULT WM_KEYDOWN (long /*int*/ wParam, long /*int*/ lParam) {
 }
 
 @Override
-LRESULT WM_MOUSEWHEEL (long /*int*/ wParam, long /*int*/ lParam) {
+LRESULT WM_MOUSEWHEEL (long wParam, long lParam) {
 	LRESULT result = super.WM_MOUSEWHEEL (wParam, lParam);
 	if (result != null) return result;
 	/*
@@ -498,11 +498,11 @@ LRESULT WM_MOUSEWHEEL (long /*int*/ wParam, long /*int*/ lParam) {
 	* has changed and that notification has not been issued
 	* and send the selection event.
 	*/
-	int oldPosition = (int)/*64*/OS.SendMessage (handle, OS.TBM_GETPOS, 0, 0);
+	int oldPosition = (int)OS.SendMessage (handle, OS.TBM_GETPOS, 0, 0);
 	ignoreSelection = true;
-	long /*int*/ code = callWindowProc (handle, OS.WM_MOUSEWHEEL, wParam, lParam);
+	long code = callWindowProc (handle, OS.WM_MOUSEWHEEL, wParam, lParam);
 	ignoreSelection = false;
-	int newPosition = (int)/*64*/OS.SendMessage (handle, OS.TBM_GETPOS, 0, 0);
+	int newPosition = (int)OS.SendMessage (handle, OS.TBM_GETPOS, 0, 0);
 	if (oldPosition != newPosition) {
 		/*
 		* Send the event because WM_HSCROLL and WM_VSCROLL
@@ -516,7 +516,7 @@ LRESULT WM_MOUSEWHEEL (long /*int*/ wParam, long /*int*/ lParam) {
 }
 
 @Override
-LRESULT WM_PAINT (long /*int*/ wParam, long /*int*/ lParam) {
+LRESULT WM_PAINT (long wParam, long lParam) {
 	if ((state & DISPOSE_SENT) != 0) return LRESULT.ZERO;
 
 	/*
@@ -551,13 +551,13 @@ LRESULT WM_PAINT (long /*int*/ wParam, long /*int*/ lParam) {
 }
 
 @Override
-LRESULT WM_SIZE (long /*int*/ wParam, long /*int*/ lParam) {
+LRESULT WM_SIZE (long wParam, long lParam) {
 	if (ignoreResize) return null;
 	return super.WM_SIZE (wParam, lParam);
 }
 
 @Override
-LRESULT wmScrollChild (long /*int*/ wParam, long /*int*/ lParam) {
+LRESULT wmScrollChild (long wParam, long lParam) {
 
 	/* Do nothing when scrolling is ending */
 	int code = OS.LOWORD (wParam);

@@ -55,10 +55,10 @@ public class Menu extends Widget {
 	 *
 	 * @noreference This field is not intended to be referenced by clients.
 	 */
-	public long /*int*/ handle;
+	public long handle;
 
 	int x, y;
-	long /*int*/ hBrush;
+	long hBrush;
 	int id0, id1;
 	int foreground = -1, background = -1;
 	Image backgroundImage;
@@ -195,7 +195,7 @@ public Menu (MenuItem parentItem) {
 	this (checkNull (parentItem).parent);
 }
 
-Menu (Decorations parent, int style, long /*int*/ handle) {
+Menu (Decorations parent, int style, long handle) {
 	super (parent, checkStyle (style));
 	this.parent = parent;
 	this.handle = handle;
@@ -219,7 +219,7 @@ Menu (Decorations parent, int style, long /*int*/ handle) {
 
 void _setVisible (boolean visible) {
 	if ((style & (SWT.BAR | SWT.DROP_DOWN)) != 0) return;
-	long /*int*/ hwndParent = parent.handle;
+	long hwndParent = parent.handle;
 	if (visible) {
 		int flags = OS.TPM_LEFTBUTTON;
 		if (OS.GetKeyState (OS.VK_LBUTTON) >= 0) flags |= OS.TPM_RIGHTBUTTON;
@@ -264,7 +264,7 @@ void _setVisible (boolean visible) {
 	* is not returned to the focus control.  This causes confusion for AT users.
 	* The fix is to explicitly set the accessibility focus back to the focus control.
 	*/
-	long /*int*/ hFocus = OS.GetFocus();
+	long hFocus = OS.GetFocus();
 	if (hFocus != 0) {
 		OS.NotifyWinEvent (OS.EVENT_OBJECT_FOCUS, hFocus, OS.OBJID_CLIENT, 0);
 	}
@@ -368,8 +368,8 @@ void createItem (MenuItem item, int index) {
 	* becomes unexpectedly disabled.  The fix is to insert a
 	* space.
 	*/
-	long /*int*/ hHeap = OS.GetProcessHeap ();
-	long /*int*/ pszText = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, 4);
+	long hHeap = OS.GetProcessHeap ();
+	long pszText = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, 4);
 	OS.MoveMemory (pszText, new char [] {' ', '\0'}, 4);
 	MENUITEMINFO info = new MENUITEMINFO ();
 	info.cbSize = MENUITEMINFO.sizeof;
@@ -429,7 +429,7 @@ void destroyItem (MenuItem item) {
 @Override
 void destroyWidget () {
 	MenuItem cascade = this.cascade;
-	long /*int*/ hMenu = handle;
+	long hMenu = handle;
 	releaseHandle ();
 	if (cascade != null) {
 		cascade.setMenu (null, true);
@@ -511,7 +511,7 @@ void fixMenus (Decorations newParent) {
 		if (parent.menuBar != this) {
 			return new Rectangle (0, 0, 0, 0);
 		}
-		long /*int*/ hwndShell = parent.handle;
+		long hwndShell = parent.handle;
 		MENUBARINFO info = new MENUBARINFO ();
 		info.cbSize = MENUBARINFO.sizeof;
 		if (OS.GetMenuBarInfo (hwndShell, OS.OBJID_MENU, 0, info)) {
@@ -620,7 +620,7 @@ public MenuItem getItem (int index) {
 	if (!OS.GetMenuItemInfo (handle, index, true, info)) {
 		error (SWT.ERROR_INVALID_RANGE);
 	}
-	id = (int)/*64*/info.dwItemData;
+	id = (int)info.dwItemData;
 	return display.getMenuItem (id);
 }
 
@@ -673,7 +673,7 @@ public MenuItem [] getItems () {
 			System.arraycopy (items, 0, newItems, 0, count);
 			items = newItems;
 		}
-		MenuItem item = display.getMenuItem ((int)/*64*/info.dwItemData);
+		MenuItem item = display.getMenuItem ((int)info.dwItemData);
 		if (item != null) items [count++] = item;
 		index++;
 	}
@@ -1334,7 +1334,7 @@ void updateForeground () {
 	redraw ();
 }
 
-LRESULT wmTimer (long /*int*/ wParam, long /*int*/ lParam) {
+LRESULT wmTimer (long wParam, long lParam) {
 	if (wParam == ID_TOOLTIP_TIMER) {
 		POINT pt = new POINT ();
 		OS.GetCursorPos (pt);

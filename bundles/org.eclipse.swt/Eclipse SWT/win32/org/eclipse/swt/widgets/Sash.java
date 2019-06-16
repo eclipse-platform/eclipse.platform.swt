@@ -114,7 +114,7 @@ public void addSelectionListener (SelectionListener listener) {
 }
 
 @Override
-long /*int*/ callWindowProc (long /*int*/ hwnd, int msg, long /*int*/ wParam, long /*int*/ lParam) {
+long callWindowProc (long hwnd, int msg, long wParam, long lParam) {
 	if (handle == 0) return 0;
 	return OS.DefWindowProc (hwnd, msg, wParam, lParam);
 }
@@ -145,12 +145,12 @@ static int checkStyle (int style) {
 
 void drawBand (int x, int y, int width, int height) {
 	if ((style & SWT.SMOOTH) != 0) return;
-	long /*int*/ hwndTrack = parent.handle;
+	long hwndTrack = parent.handle;
 	byte [] bits = {-86, 0, 85, 0, -86, 0, 85, 0, -86, 0, 85, 0, -86, 0, 85, 0};
-	long /*int*/ stippleBitmap = OS.CreateBitmap (8, 8, 1, 1, bits);
-	long /*int*/ stippleBrush = OS.CreatePatternBrush (stippleBitmap);
-	long /*int*/ hDC = OS.GetDCEx (hwndTrack, 0, OS.DCX_CACHE);
-	long /*int*/ oldBrush = OS.SelectObject (hDC, stippleBrush);
+	long stippleBitmap = OS.CreateBitmap (8, 8, 1, 1, bits);
+	long stippleBrush = OS.CreatePatternBrush (stippleBitmap);
+	long hDC = OS.GetDCEx (hwndTrack, 0, OS.DCX_CACHE);
+	long oldBrush = OS.SelectObject (hDC, stippleBrush);
 	OS.PatBlt (hDC, x, y, width, height, OS.PATINVERT);
 	OS.SelectObject (hDC, oldBrush);
 	OS.ReleaseDC (hwndTrack, hDC);
@@ -189,22 +189,22 @@ TCHAR windowClass () {
 }
 
 @Override
-long /*int*/ windowProc () {
+long windowProc () {
 	return display.windowProc;
 }
 
 @Override
-LRESULT WM_ERASEBKGND (long /*int*/ wParam, long /*int*/ lParam) {
+LRESULT WM_ERASEBKGND (long wParam, long lParam) {
 	super.WM_ERASEBKGND (wParam, lParam);
 	drawBackground (wParam);
 	return LRESULT.ONE;
 }
 
 @Override
-LRESULT WM_KEYDOWN (long /*int*/ wParam, long /*int*/ lParam) {
+LRESULT WM_KEYDOWN (long wParam, long lParam) {
 	LRESULT result = super.WM_KEYDOWN (wParam, lParam);
 	if (result != null) return result;
-	switch ((int)/*64*/wParam) {
+	switch ((int)wParam) {
 		case OS.VK_LEFT:
 		case OS.VK_RIGHT:
 		case OS.VK_UP:
@@ -225,7 +225,7 @@ LRESULT WM_KEYDOWN (long /*int*/ wParam, long /*int*/ lParam) {
 			OS.GetWindowRect (handle, rect);
 			int width = rect.right - rect.left;
 			int height = rect.bottom - rect.top;
-			long /*int*/ hwndTrack = parent.handle;
+			long hwndTrack = parent.handle;
 			RECT clientRect = new RECT ();
 			OS.GetClientRect (hwndTrack, clientRect);
 			int clientWidth = clientRect.right - clientRect.left;
@@ -261,17 +261,17 @@ LRESULT WM_KEYDOWN (long /*int*/ wParam, long /*int*/ lParam) {
 }
 
 @Override
-LRESULT WM_GETDLGCODE (long /*int*/ wParam, long /*int*/ lParam) {
+LRESULT WM_GETDLGCODE (long wParam, long lParam) {
 	return new LRESULT (OS.DLGC_STATIC);
 }
 
 @Override
-LRESULT WM_LBUTTONDOWN (long /*int*/ wParam, long /*int*/ lParam) {
+LRESULT WM_LBUTTONDOWN (long wParam, long lParam) {
 	LRESULT result = super.WM_LBUTTONDOWN (wParam, lParam);
 	if (result == LRESULT.ZERO) return result;
 
 	/* Compute the banding rectangle */
-	long /*int*/ hwndTrack = parent.handle;
+	long hwndTrack = parent.handle;
 	POINT pt = new POINT ();
 	OS.POINTSTOPOINT (pt, lParam);
 	RECT rect = new RECT ();
@@ -314,7 +314,7 @@ LRESULT WM_LBUTTONDOWN (long /*int*/ wParam, long /*int*/ lParam) {
 }
 
 @Override
-LRESULT WM_LBUTTONUP (long /*int*/ wParam, long /*int*/ lParam) {
+LRESULT WM_LBUTTONUP (long wParam, long lParam) {
 	LRESULT result = super.WM_LBUTTONUP (wParam, lParam);
 	if (result == LRESULT.ZERO) return result;
 
@@ -343,7 +343,7 @@ LRESULT WM_LBUTTONUP (long /*int*/ wParam, long /*int*/ lParam) {
 }
 
 @Override
-LRESULT WM_MOUSEMOVE (long /*int*/ wParam, long /*int*/ lParam) {
+LRESULT WM_MOUSEMOVE (long wParam, long lParam) {
 	LRESULT result = super.WM_MOUSEMOVE (wParam, lParam);
 	if (result != null) return result;
 	if (!dragging || (wParam & OS.MK_LBUTTON) == 0) return result;
@@ -351,7 +351,7 @@ LRESULT WM_MOUSEMOVE (long /*int*/ wParam, long /*int*/ lParam) {
 	/* Compute the banding rectangle */
 	POINT pt = new POINT ();
 	OS.POINTSTOPOINT (pt, lParam);
-	long /*int*/ hwndTrack = parent.handle;
+	long hwndTrack = parent.handle;
 	OS.MapWindowPoints (handle, hwndTrack, pt, 1);
 	RECT rect = new RECT (), clientRect = new RECT ();
 	OS.GetWindowRect (handle, rect);
@@ -393,12 +393,12 @@ LRESULT WM_MOUSEMOVE (long /*int*/ wParam, long /*int*/ lParam) {
 }
 
 @Override
-LRESULT WM_SETCURSOR (long /*int*/ wParam, long /*int*/ lParam) {
+LRESULT WM_SETCURSOR (long wParam, long lParam) {
 	LRESULT result = super.WM_SETCURSOR (wParam, lParam);
 	if (result != null) return result;
 	int hitTest = (short) OS.LOWORD (lParam);
 	if (hitTest == OS.HTCLIENT) {
-		long /*int*/ hCursor = 0;
+		long hCursor = 0;
 		if ((style & SWT.HORIZONTAL) != 0) {
 			hCursor = OS.LoadCursor (0, OS.IDC_SIZENS);
 		} else {

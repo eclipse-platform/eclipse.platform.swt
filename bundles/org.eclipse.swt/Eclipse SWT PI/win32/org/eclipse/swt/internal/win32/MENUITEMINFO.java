@@ -20,16 +20,16 @@ public class MENUITEMINFO {
 	public int fState;
 	public int wID;
 	/** @field cast=(HMENU) */
-	public long /*int*/ hSubMenu;
+	public long hSubMenu;
 	/** @field cast=(HBITMAP) */
-	public long /*int*/ hbmpChecked;
+	public long hbmpChecked;
 	/** @field cast=(HBITMAP) */
-	public long /*int*/ hbmpUnchecked;
-	public long /*int*/ dwItemData;
+	public long hbmpUnchecked;
+	public long dwItemData;
 	/** @field cast=(LPTSTR) */
-	public long /*int*/ dwTypeData;
+	public long dwTypeData;
 	public int cch;
 	/** @field cast=(HBITMAP) */
-	public long /*int*/ hbmpItem;
+	public long hbmpItem;
 	public static final int sizeof = OS.MENUITEMINFO_sizeof ();
 }

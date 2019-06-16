@@ -110,7 +110,7 @@ public class BidiUtil {
  * @param runnable the code that should be executed when a keyboard language change
  *  occurs
  */
-public static void addLanguageListener (long /*int*/ hwnd, Runnable runnable) {
+public static void addLanguageListener (long hwnd, Runnable runnable) {
 	languageMap.put(new LONG(hwnd), runnable);
 	subclass(hwnd);
 }
@@ -120,12 +120,12 @@ public static void addLanguageListener (Control control, Runnable runnable) {
 /**
  * Proc used for OS.EnumSystemLanguageGroups call during isBidiPlatform test.
  */
-static long /*int*/ EnumSystemLanguageGroupsProc(long /*int*/ lpLangGrpId, long /*int*/ lpLangGrpIdString, long /*int*/ lpLangGrpName, long /*int*/ options, long /*int*/ lParam) {
-	if ((int)/*64*/lpLangGrpId == OS.LGRPID_HEBREW) {
+static long EnumSystemLanguageGroupsProc(long lpLangGrpId, long lpLangGrpIdString, long lpLangGrpName, long options, long lParam) {
+	if ((int)lpLangGrpId == OS.LGRPID_HEBREW) {
 		isBidiPlatform = 1;
 		return 0;
 	}
-	if ((int)/*64*/lpLangGrpId == OS.LGRPID_ARABIC) {
+	if ((int)lpLangGrpId == OS.LGRPID_ARABIC) {
 		isBidiPlatform = 1;
 		return 0;
 	}
@@ -173,7 +173,7 @@ public static void drawGlyphs(GC gc, char[] renderBuffer, int[] renderDx, int x,
  */
 public static char[] getRenderInfo(GC gc, String text, int[] order, byte[] classBuffer, int[] dx, int flags, int [] offsets) {
 	int fontLanguageInfo = OS.GetFontLanguageInfo(gc.handle);
-	long /*int*/ hHeap = OS.GetProcessHeap();
+	long hHeap = OS.GetProcessHeap();
 	boolean isRightOriented = OS.GetLayout(gc.handle) != 0;
 	char [] textBuffer = text.toCharArray();
 	int byteCount = textBuffer.length;
@@ -183,10 +183,10 @@ public static char[] getRenderInfo(GC gc, String text, int[] order, byte[] class
 	GCP_RESULTS result = new GCP_RESULTS();
 	result.lStructSize = GCP_RESULTS.sizeof;
 	result.nGlyphs = byteCount;
-	long /*int*/ lpOrder = result.lpOrder = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, byteCount * 4);
-	long /*int*/ lpDx = result.lpDx = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, byteCount * 4);
-	long /*int*/ lpClass = result.lpClass = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
-	long /*int*/ lpGlyphs = result.lpGlyphs = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, byteCount * 2);
+	long lpOrder = result.lpOrder = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, byteCount * 4);
+	long lpDx = result.lpDx = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, byteCount * 4);
+	long lpClass = result.lpClass = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
+	long lpGlyphs = result.lpGlyphs = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, byteCount * 2);
 
 	// set required dwFlags
 	int dwFlags = 0;
@@ -300,7 +300,7 @@ public static char[] getRenderInfo(GC gc, String text, int[] order, byte[] class
  */
 public static void getOrderInfo(GC gc, String text, int[] order, byte[] classBuffer, int flags, int [] offsets) {
 	int fontLanguageInfo = OS.GetFontLanguageInfo(gc.handle);
-	long /*int*/ hHeap = OS.GetProcessHeap();
+	long hHeap = OS.GetProcessHeap();
 	char [] textBuffer = text.toCharArray();
 	int byteCount = textBuffer.length;
 	boolean isRightOriented = OS.GetLayout(gc.handle) != 0;
@@ -308,8 +308,8 @@ public static void getOrderInfo(GC gc, String text, int[] order, byte[] classBuf
 	GCP_RESULTS result = new GCP_RESULTS();
 	result.lStructSize = GCP_RESULTS.sizeof;
 	result.nGlyphs = byteCount;
-	long /*int*/ lpOrder = result.lpOrder = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, byteCount * 4);
-	long /*int*/ lpClass = result.lpClass = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
+	long lpOrder = result.lpOrder = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, byteCount * 4);
+	long lpClass = result.lpClass = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
 
 	// set required dwFlags, these values will affect how the text gets rendered and
 	// ordered
@@ -396,7 +396,7 @@ public static int getFontBidiAttributes(GC gc) {
  *  KEYBOARD_NON_BIDI)
  */
 public static int getKeyboardLanguage() {
-	long /*int*/ layout = OS.GetKeyboardLayout(0);
+	long layout = OS.GetKeyboardLayout(0);
 	return isBidiLang(layout) ? KEYBOARD_BIDI : KEYBOARD_NON_BIDI;
 }
 /**
@@ -405,15 +405,15 @@ public static int getKeyboardLanguage() {
  *
  * @return integer array with an entry for each installed language
  */
-static long /*int*/[] getKeyboardLanguageList() {
+static long[] getKeyboardLanguageList() {
 	int maxSize = 10;
-	long /*int*/[] tempList = new long /*int*/[maxSize];
+	long[] tempList = new long[maxSize];
 	int size = OS.GetKeyboardLayoutList(maxSize, tempList);
-	long /*int*/[] list = new long /*int*/[size];
+	long[] list = new long[size];
 	System.arraycopy(tempList, 0, list, 0, size);
 	return list;
 }
-static boolean isBidiLang(long /*int*/ lang) {
+static boolean isBidiLang(long lang) {
 	int id = OS.PRIMARYLANGID(OS.LOWORD(lang));
 	return id == LANG_ARABIC || id == LANG_HEBREW || id == LANG_FARSI;
 }
@@ -443,7 +443,7 @@ public static boolean isBidiPlatform() {
 	Callback callback = null;
 	try {
 		callback = new Callback (Class.forName (CLASS_NAME), "EnumSystemLanguageGroupsProc", 5); //$NON-NLS-1$
-		long /*int*/ lpEnumSystemLanguageGroupsProc = callback.getAddress ();
+		long lpEnumSystemLanguageGroupsProc = callback.getAddress ();
 		if (lpEnumSystemLanguageGroupsProc == 0) SWT.error(SWT.ERROR_NO_MORE_CALLBACKS);
 		OS.EnumSystemLanguageGroups(lpEnumSystemLanguageGroupsProc, OS.LGRPID_INSTALLED, 0);
 		callback.dispose ();
@@ -467,7 +467,7 @@ public static boolean isBidiPlatform() {
  * @return true if bidi is supported, false otherwise.
  */
 public static boolean isKeyboardBidi() {
-	long /*int*/[] list = getKeyboardLanguageList();
+	long[] list = getKeyboardLanguageList();
 	for (int i=0; i<list.length; i++) {
 		if (isBidiLang(list[i])) {
 			return true;
@@ -481,7 +481,7 @@ public static boolean isKeyboardBidi() {
  *
  * @param hwnd the handle of the Control that is listening for keyboard language changes
  */
-public static void removeLanguageListener (long /*int*/ hwnd) {
+public static void removeLanguageListener (long hwnd) {
 	languageMap.remove(new LONG(hwnd));
 	unsubclass(hwnd);
 }
@@ -516,9 +516,9 @@ public static int resolveTextDirection (String text) {
 	GCP_RESULTS result = new GCP_RESULTS();
 	result.lStructSize = GCP_RESULTS.sizeof;
 	int nGlyphs = result.nGlyphs = ltrProbe.length;
-	long /*int*/ hHeap = OS.GetProcessHeap();
-	long /*int*/ lpOrder = result.lpOrder = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, nGlyphs * 4);
-	long /*int*/ hdc = OS.GetDC(0);
+	long hHeap = OS.GetProcessHeap();
+	long lpOrder = result.lpOrder = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, nGlyphs * 4);
+	long hdc = OS.GetDC(0);
 	int[] order = new int[1];
 	int textDirection = SWT.NONE;
 	for (int i = 0; i < length; i++) {
@@ -560,7 +560,7 @@ public static int resolveTextDirection (String text) {
 public static void setKeyboardLanguage(int language) {
 	if (language == getKeyboardLanguage()) return;
 	boolean bidi = language == KEYBOARD_BIDI;
-	long /*int*/[] list = getKeyboardLanguageList();
+	long[] list = getKeyboardLanguageList();
 	for (int i=0; i<list.length; i++) {
 		if (bidi == isBidiLang(list[i])) {
 			OS.ActivateKeyboardLayout(list[i], 0);
@@ -578,7 +578,7 @@ public static void setKeyboardLanguage(int language) {
  * @return true if the orientation was changed, false if the orientation
  * 	could not be changed
  */
-public static boolean setOrientation (long /*int*/ hwnd, int orientation) {
+public static boolean setOrientation (long hwnd, int orientation) {
 	int bits = OS.GetWindowLong (hwnd, OS.GWL_EXSTYLE);
 	if ((orientation & SWT.RIGHT_TO_LEFT) != 0) {
 		bits |= OS.WS_EX_LAYOUTRTL;
@@ -596,10 +596,10 @@ public static boolean setOrientation (Control control, int orientation) {
  *
  * @param hwnd control to override the window proc of
  */
-static void subclass(long /*int*/ hwnd) {
+static void subclass(long hwnd) {
 	LONG key = new LONG(hwnd);
 	if (oldProcMap.get(key) == null) {
-		long /*int*/ oldProc = OS.GetWindowLongPtr(hwnd, OS.GWLP_WNDPROC);
+		long oldProc = OS.GetWindowLongPtr(hwnd, OS.GWLP_WNDPROC);
 		oldProcMap.put(key, new LONG(oldProc));
 		OS.SetWindowLongPtr(hwnd, OS.GWLP_WNDPROC, callback.getAddress());
 	}
@@ -656,7 +656,7 @@ static void translateOrder(int[] orderArray, int glyphCount, boolean isRightOrie
  *
  * @param hwnd control to remove the window proc override for
  */
-static void unsubclass(long /*int*/ hwnd) {
+static void unsubclass(long hwnd) {
 	LONG key = new LONG(hwnd);
 	if (languageMap.get(key) == null) {
 		LONG proc = oldProcMap.remove(key);
@@ -673,16 +673,16 @@ static void unsubclass(long /*int*/ hwnd) {
  *  change event
  * @param msg window message
  */
-static long /*int*/ windowProc (long /*int*/ hwnd, long /*int*/ msg, long /*int*/ wParam, long /*int*/ lParam) {
+static long windowProc (long hwnd, long msg, long wParam, long lParam) {
 	LONG key = new LONG (hwnd);
-	switch ((int)/*64*/msg) {
+	switch ((int)msg) {
 		case OS.WM_INPUTLANGCHANGE:
 			Runnable runnable = languageMap.get (key);
 			if (runnable != null) runnable.run ();
 			break;
 		}
 	LONG oldProc = oldProcMap.get(key);
-	return OS.CallWindowProc (oldProc.value, hwnd, (int)/*64*/msg, wParam, lParam);
+	return OS.CallWindowProc (oldProc.value, hwnd, (int)msg, wParam, lParam);
 }
 
 }

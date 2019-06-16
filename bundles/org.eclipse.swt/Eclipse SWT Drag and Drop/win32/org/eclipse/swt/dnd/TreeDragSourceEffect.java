@@ -93,7 +93,7 @@ public class TreeDragSourceEffect extends DragSourceEffect {
 				event.offsetX = shdi.ptOffset.x;
 			}
 			event.offsetY = shdi.ptOffset.y;
-			long /*int*/ hImage = shdi.hbmpDragImage;
+			long hImage = shdi.hbmpDragImage;
 			if (hImage != 0) {
 				BITMAP bm = new BITMAP ();
 				OS.GetObject (hImage, BITMAP.sizeof, bm);
@@ -101,10 +101,10 @@ public class TreeDragSourceEffect extends DragSourceEffect {
 				int srcHeight = bm.bmHeight;
 
 				/* Create resources */
-				long /*int*/ hdc = OS.GetDC (0);
-				long /*int*/ srcHdc = OS.CreateCompatibleDC (hdc);
-				long /*int*/ oldSrcBitmap = OS.SelectObject (srcHdc, hImage);
-				long /*int*/ memHdc = OS.CreateCompatibleDC (hdc);
+				long hdc = OS.GetDC (0);
+				long srcHdc = OS.CreateCompatibleDC (hdc);
+				long oldSrcBitmap = OS.SelectObject (srcHdc, hImage);
+				long memHdc = OS.CreateCompatibleDC (hdc);
 				BITMAPINFOHEADER bmiHeader = new BITMAPINFOHEADER ();
 				bmiHeader.biSize = BITMAPINFOHEADER.sizeof;
 				bmiHeader.biWidth = srcWidth;
@@ -114,10 +114,10 @@ public class TreeDragSourceEffect extends DragSourceEffect {
 				bmiHeader.biCompression = OS.BI_RGB;
 				byte []	bmi = new byte[BITMAPINFOHEADER.sizeof];
 				OS.MoveMemory (bmi, bmiHeader, BITMAPINFOHEADER.sizeof);
-				long /*int*/ [] pBits = new long /*int*/ [1];
-				long /*int*/ memDib = OS.CreateDIBSection (0, bmi, OS.DIB_RGB_COLORS, pBits, 0, 0);
+				long [] pBits = new long [1];
+				long memDib = OS.CreateDIBSection (0, bmi, OS.DIB_RGB_COLORS, pBits, 0, 0);
 				if (memDib == 0) SWT.error (SWT.ERROR_NO_HANDLES);
-				long /*int*/ oldMemBitmap = OS.SelectObject (memHdc, memDib);
+				long oldMemBitmap = OS.SelectObject (memHdc, memDib);
 
 				BITMAP dibBM = new BITMAP ();
 				OS.GetObject (memDib, BITMAP.sizeof, dibBM);

@@ -319,8 +319,8 @@ public int getWidth () {
 int getWidthInPixels () {
 	int index = parent.indexOf (this);
 	if (index == -1) return 0;
-	long /*int*/ hwnd = parent.handle;
-	return (int)/*64*/OS.SendMessage (hwnd, OS.LVM_GETCOLUMNWIDTH, index, 0);
+	long hwnd = parent.handle;
+	return (int)OS.SendMessage (hwnd, OS.LVM_GETCOLUMNWIDTH, index, 0);
 }
 
 /**
@@ -338,10 +338,10 @@ public void pack () {
 	checkWidget ();
 	int index = parent.indexOf (this);
 	if (index == -1) return;
-	long /*int*/ hwnd = parent.handle;
-	int oldWidth = (int)/*64*/OS.SendMessage (hwnd, OS.LVM_GETCOLUMNWIDTH, index, 0);
+	long hwnd = parent.handle;
+	int oldWidth = (int)OS.SendMessage (hwnd, OS.LVM_GETCOLUMNWIDTH, index, 0);
 	TCHAR buffer = new TCHAR (parent.getCodePage (), text, true);
-	int headerWidth = (int)/*64*/OS.SendMessage (hwnd, OS.LVM_GETSTRINGWIDTH, 0, buffer) + Table.HEADER_MARGIN;
+	int headerWidth = (int)OS.SendMessage (hwnd, OS.LVM_GETSTRINGWIDTH, 0, buffer) + Table.HEADER_MARGIN;
 	if (OS.IsAppThemed ()) headerWidth += Table.HEADER_EXTRA;
 	boolean hasHeaderImage = false;
 	if (image != null || parent.sortColumn == this) {
@@ -352,25 +352,25 @@ public void pack () {
 			Rectangle bounds = image.getBoundsInPixels ();
 			headerWidth += bounds.width;
 		}
-		long /*int*/ hwndHeader = OS.SendMessage (hwnd, OS.LVM_GETHEADER, 0, 0);
-		int margin = (int)/*64*/OS.SendMessage (hwndHeader, OS.HDM_GETBITMAPMARGIN, 0, 0);
+		long hwndHeader = OS.SendMessage (hwnd, OS.LVM_GETHEADER, 0, 0);
+		int margin = (int)OS.SendMessage (hwndHeader, OS.HDM_GETBITMAPMARGIN, 0, 0);
 		headerWidth += margin * 4;
 	}
 	parent.ignoreColumnResize = true;
 	int columnWidth = 0;
 	if (parent.hooks (SWT.MeasureItem)) {
 		RECT headerRect = new RECT ();
-		long /*int*/ hwndHeader = OS.SendMessage (hwnd, OS.LVM_GETHEADER, 0, 0);
+		long hwndHeader = OS.SendMessage (hwnd, OS.LVM_GETHEADER, 0, 0);
 		OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, index, headerRect);
 		OS.MapWindowPoints (hwndHeader, hwnd, headerRect, 2);
-		long /*int*/ hDC = OS.GetDC (hwnd);
-		long /*int*/ oldFont = 0, newFont = OS.SendMessage (hwnd, OS.WM_GETFONT, 0, 0);
+		long hDC = OS.GetDC (hwnd);
+		long oldFont = 0, newFont = OS.SendMessage (hwnd, OS.WM_GETFONT, 0, 0);
 		if (newFont != 0) oldFont = OS.SelectObject (hDC, newFont);
-		int count = (int)/*64*/OS.SendMessage (hwnd, OS.LVM_GETITEMCOUNT, 0, 0);
+		int count = (int)OS.SendMessage (hwnd, OS.LVM_GETITEMCOUNT, 0, 0);
 		for (int i=0; i<count; i++) {
 			TableItem item = parent._getItem (i, false);
 			if (item != null) {
-				long /*int*/ hFont = item.fontHandle (index);
+				long hFont = item.fontHandle (index);
 				if (hFont != -1) hFont = OS.SelectObject (hDC, hFont);
 				Event event = parent.sendMeasureItemEvent (item, i, index, hDC);
 				if (hFont != -1) hFont = OS.SelectObject (hDC, hFont);
@@ -384,7 +384,7 @@ public void pack () {
 		OS.SendMessage (hwnd, OS.LVM_SETCOLUMNWIDTH, index, columnWidth);
 	} else {
 		OS.SendMessage (hwnd, OS.LVM_SETCOLUMNWIDTH, index, OS.LVSCW_AUTOSIZE);
-		columnWidth = (int)/*64*/OS.SendMessage (hwnd, OS.LVM_GETCOLUMNWIDTH, index, 0);
+		columnWidth = (int)OS.SendMessage (hwnd, OS.LVM_GETCOLUMNWIDTH, index, 0);
 		if (index == 0) {
 			/*
 			* Bug in Windows.  When LVM_SETCOLUMNWIDTH is used with LVSCW_AUTOSIZE
@@ -401,7 +401,7 @@ public void pack () {
 			* width by the width of the image list.
 			*/
 			if ((parent.style & SWT.CHECK) != 0) {
-				long /*int*/ hStateList = OS.SendMessage (hwnd, OS.LVM_GETIMAGELIST, OS.LVSIL_STATE, 0);
+				long hStateList = OS.SendMessage (hwnd, OS.LVM_GETIMAGELIST, OS.LVSIL_STATE, 0);
 				if (hStateList != 0) {
 					int [] cx = new int [1], cy = new int [1];
 					OS.ImageList_GetIconSize (hStateList, cx, cy);
@@ -442,7 +442,7 @@ public void pack () {
 		}
 	}
 	parent.ignoreColumnResize = false;
-	int newWidth = (int)/*64*/OS.SendMessage (hwnd, OS.LVM_GETCOLUMNWIDTH, index, 0);
+	int newWidth = (int)OS.SendMessage (hwnd, OS.LVM_GETCOLUMNWIDTH, index, 0);
 	if (oldWidth != newWidth) {
 		updateToolTip (index);
 		sendEvent (SWT.Resize);
@@ -547,7 +547,7 @@ public void setAlignment (int alignment) {
 	if (index == -1 || index == 0) return;
 	style &= ~(SWT.LEFT | SWT.RIGHT | SWT.CENTER);
 	style |= alignment & (SWT.LEFT | SWT.RIGHT | SWT.CENTER);
-	long /*int*/ hwnd = parent.handle;
+	long hwnd = parent.handle;
 	LVCOLUMN lvColumn = new LVCOLUMN ();
 	lvColumn.mask = OS.LVCF_FMT;
 	OS.SendMessage (hwnd, OS.LVM_GETCOLUMN, index, lvColumn);
@@ -568,7 +568,7 @@ public void setAlignment (int alignment) {
 		parent.forceResize ();
 		RECT rect = new RECT (), headerRect = new RECT ();
 		OS.GetClientRect (hwnd, rect);
-		long /*int*/ hwndHeader = OS.SendMessage (hwnd, OS.LVM_GETHEADER, 0, 0);
+		long hwndHeader = OS.SendMessage (hwnd, OS.LVM_GETHEADER, 0, 0);
 		OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, index, headerRect);
 		OS.MapWindowPoints (hwndHeader, hwnd, headerRect, 2);
 		rect.left = headerRect.left;
@@ -592,7 +592,7 @@ public void setImage (Image image) {
 void setImage (Image image, boolean sort, boolean right) {
 	int index = parent.indexOf (this);
 	if (index == -1) return;
-	long /*int*/ hwnd = parent.handle;
+	long hwnd = parent.handle;
 	LVCOLUMN lvColumn = new LVCOLUMN ();
 	lvColumn.mask = OS.LVCF_FMT | OS.LVCF_IMAGE;
 	OS.SendMessage (hwnd, OS.LVM_GETCOLUMN, index, lvColumn);
@@ -656,8 +656,8 @@ public void setResizable (boolean resizable) {
 void setSortDirection (int direction) {
 	int index = parent.indexOf (this);
 	if (index == -1) return;
-	long /*int*/ hwnd = parent.handle;
-	long /*int*/ hwndHeader = OS.SendMessage (hwnd, OS.LVM_GETHEADER, 0, 0);
+	long hwnd = parent.handle;
+	long hwndHeader = OS.SendMessage (hwnd, OS.LVM_GETHEADER, 0, 0);
 	HDITEM hdItem = new HDITEM ();
 	hdItem.mask = OS.HDI_FORMAT | OS.HDI_IMAGE;
 	OS.SendMessage (hwndHeader, OS.HDM_GETITEM, index, hdItem);
@@ -700,8 +700,8 @@ void setSortDirection (int direction) {
 	parent.forceResize ();
 	RECT rect = new RECT ();
 	OS.GetClientRect (hwnd, rect);
-	if ((int)/*64*/OS.SendMessage (hwnd, OS.LVM_GETBKCOLOR, 0, 0) != OS.CLR_NONE) {
-		int oldColumn = (int)/*64*/OS.SendMessage (hwnd, OS.LVM_GETSELECTEDCOLUMN, 0, 0);
+	if ((int)OS.SendMessage (hwnd, OS.LVM_GETBKCOLOR, 0, 0) != OS.CLR_NONE) {
+		int oldColumn = (int)OS.SendMessage (hwnd, OS.LVM_GETSELECTEDCOLUMN, 0, 0);
 		int newColumn = direction == SWT.NONE ? -1 : index;
 		OS.SendMessage (hwnd, OS.LVM_SETSELECTEDCOLUMN, newColumn, 0);
 		RECT headerRect = new RECT ();
@@ -739,7 +739,7 @@ public void setText (String string) {
 	* text does not draw.  The fix is to query and then
 	* set the alignment.
 	*/
-	long /*int*/ hwnd = parent.handle;
+	long hwnd = parent.handle;
 	LVCOLUMN lvColumn = new LVCOLUMN ();
 	lvColumn.mask = OS.LVCF_FMT;
 	OS.SendMessage (hwnd, OS.LVM_GETCOLUMN, index, lvColumn);
@@ -751,14 +751,14 @@ public void setText (String string) {
 	* at the end of the text.  The fix is to remove
 	* mnemonic characters.
 	*/
-	long /*int*/ hHeap = OS.GetProcessHeap ();
+	long hHeap = OS.GetProcessHeap ();
 	char [] buffer = fixMnemonic (string);
 	int byteCount = buffer.length * TCHAR.sizeof;
-	long /*int*/ pszText = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
+	long pszText = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
 	OS.MoveMemory (pszText, buffer, byteCount);
 	lvColumn.mask |= OS.LVCF_TEXT;
 	lvColumn.pszText = pszText;
-	long /*int*/ result = OS.SendMessage (hwnd, OS.LVM_SETCOLUMN, index, lvColumn);
+	long result = OS.SendMessage (hwnd, OS.LVM_SETCOLUMN, index, lvColumn);
 	if (pszText != 0) OS.HeapFree (hHeap, 0, pszText);
 	if (result == 0) error (SWT.ERROR_CANNOT_SET_TEXT);
 }
@@ -793,7 +793,7 @@ public void setText (String string) {
 public void setToolTipText (String string) {
 	checkWidget();
 	toolTipText = string;
-	long /*int*/ hwndHeaderToolTip = parent.headerToolTipHandle;
+	long hwndHeaderToolTip = parent.headerToolTipHandle;
 	if (hwndHeaderToolTip == 0) {
 		parent.createHeaderToolTips ();
 		parent.updateHeaderToolTips ();
@@ -819,17 +819,17 @@ void setWidthInPixels (int width) {
 	if (width < 0) return;
 	int index = parent.indexOf (this);
 	if (index == -1) return;
-	long /*int*/ hwnd = parent.handle;
-	if (width != (int)/*64*/OS.SendMessage (hwnd, OS.LVM_GETCOLUMNWIDTH, index, 0)) {
+	long hwnd = parent.handle;
+	if (width != (int)OS.SendMessage (hwnd, OS.LVM_GETCOLUMNWIDTH, index, 0)) {
 		OS.SendMessage (hwnd, OS.LVM_SETCOLUMNWIDTH, index, width);
 	}
 }
 
 void updateToolTip (int index) {
-	long /*int*/ hwndHeaderToolTip = parent.headerToolTipHandle;
+	long hwndHeaderToolTip = parent.headerToolTipHandle;
 	if (hwndHeaderToolTip != 0) {
-		long /*int*/ hwnd = parent.handle;
-		long /*int*/ hwndHeader = OS.SendMessage (hwnd, OS.LVM_GETHEADER, 0, 0);
+		long hwnd = parent.handle;
+		long hwndHeader = OS.SendMessage (hwnd, OS.LVM_GETHEADER, 0, 0);
 		RECT rect = new RECT ();
 		if (OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, index, rect) != 0) {
 			TOOLINFO lpti = new TOOLINFO ();

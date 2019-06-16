@@ -62,12 +62,12 @@ public class OUTLINETEXTMETRIC {
 	public int otmsUnderscoreSize;
 	public int otmsUnderscorePosition;
 	/** @field cast=(PSTR) */
-	public long /*int*/ otmpFamilyName;
+	public long otmpFamilyName;
 	/** @field cast=(PSTR) */
-	public long /*int*/ otmpFaceName;
+	public long otmpFaceName;
 	/** @field cast=(PSTR) */
-	public long /*int*/ otmpStyleName;
+	public long otmpStyleName;
 	/** @field cast=(PSTR) */
-	public long /*int*/ otmpFullName;
+	public long otmpFullName;
 	public static final int sizeof = OS.OUTLINETEXTMETRIC_sizeof ();
 }

@@ -49,8 +49,8 @@ public class OS extends C {
 			pActCtx.dwFlags = ACTCTX_FLAG_RESOURCE_NAME_VALID | ACTCTX_FLAG_HMODULE_VALID | ACTCTX_FLAG_SET_PROCESS_DEFAULT;
 			pActCtx.hModule = OS.GetLibraryHandle ();
 			pActCtx.lpResourceName = MANIFEST_RESOURCE_ID;
-			long /*int*/ hActCtx = OS.CreateActCtx (pActCtx);
-			long /*int*/ [] lpCookie = new long /*int*/ [1];
+			long hActCtx = OS.CreateActCtx (pActCtx);
+			long [] lpCookie = new long [1];
 			OS.ActivateActCtx (hActCtx, lpCookie);
 			/*
 			* NOTE:  A single activation context is created and activated
@@ -1641,10 +1641,10 @@ public class OS extends C {
 	public static final int TVIS_EXPANDED = 0x20;
 	public static final int TVIS_SELECTED = 0x2;
 	public static final int TVIS_STATEIMAGEMASK = 0xf000;
-	public static final long /*int*/ TVI_FIRST = -0x0FFFF;
-	public static final long /*int*/ TVI_LAST = -0x0FFFE;
-	public static final long /*int*/ TVI_ROOT = -0x10000;
-	public static final long /*int*/ TVI_SORT = -0x0FFFD;
+	public static final long TVI_FIRST = -0x0FFFF;
+	public static final long TVI_LAST = -0x0FFFE;
+	public static final long TVI_ROOT = -0x10000;
+	public static final long TVI_SORT = -0x0FFFD;
 	public static final int TVM_CREATEDRAGIMAGE = TV_FIRST + 18;
 	public static final int TVM_DELETEITEM = 0x1101;
 	public static final int TVM_ENSUREVISIBLE = 0x1114;
@@ -2126,7 +2126,7 @@ public static final native int WNDCLASS_sizeof ();
 
 /** Ansi/Unicode wrappers */
 
-public static final long /*int*/ AddFontResourceEx (TCHAR lpszFilename, int fl, long /*int*/ pdv) {
+public static final long AddFontResourceEx (TCHAR lpszFilename, int fl, long pdv) {
 	char [] lpszFilename1 = lpszFilename == null ? null : lpszFilename.chars;
 	return AddFontResourceEx (lpszFilename1, fl, pdv);
 }
@@ -2138,24 +2138,24 @@ public static final int AssocQueryString(int flags, int str, TCHAR pszAssoc, TCH
 	return AssocQueryString (flags, str, pszAssoc1, pszExtra1, pszOut1, pcchOut);
 }
 
-public static final long /*int*/ CreateDC (TCHAR lpszDriver, TCHAR lpszDevice, long /*int*/ lpszOutput, long /*int*/ lpInitData) {
+public static final long CreateDC (TCHAR lpszDriver, TCHAR lpszDevice, long lpszOutput, long lpInitData) {
 	char [] lpszDriver1 = lpszDriver == null ? null : lpszDriver.chars;
 	char [] lpszDevice1 = lpszDevice == null ? null : lpszDevice.chars;
 	return CreateDC (lpszDriver1, lpszDevice1, lpszOutput, lpInitData);
 }
 
-public static final long /*int*/ CreateWindowEx (int dwExStyle, TCHAR lpClassName, TCHAR lpWindowName, int dwStyle, int X, int Y, int nWidth, int nHeight, long /*int*/ hWndParent, long /*int*/ hMenu, long /*int*/ hInstance, CREATESTRUCT lpParam) {
+public static final long CreateWindowEx (int dwExStyle, TCHAR lpClassName, TCHAR lpWindowName, int dwStyle, int X, int Y, int nWidth, int nHeight, long hWndParent, long hMenu, long hInstance, CREATESTRUCT lpParam) {
 	char [] lpClassName1 = lpClassName == null ? null : lpClassName.chars;
 	char [] lpWindowName1 = lpWindowName == null ? null : lpWindowName.chars;
 	return CreateWindowEx (dwExStyle, lpClassName1, lpWindowName1, dwStyle, X, Y, nWidth, nHeight, hWndParent, hMenu, hInstance, lpParam);
 }
 
-public static final int DocumentProperties (long /*int*/ hWnd, long /*int*/ hPrinter, TCHAR pDeviceName, long /*int*/ pDevModeOutput, long /*int*/ pDevModeInput, int fMode) {
+public static final int DocumentProperties (long hWnd, long hPrinter, TCHAR pDeviceName, long pDevModeOutput, long pDevModeInput, int fMode) {
 	char [] pDeviceName1 = pDeviceName == null ? null : pDeviceName.chars;
 	return DocumentProperties (hWnd, hPrinter, pDeviceName1, pDevModeOutput, pDevModeInput, fMode);
 }
 
-public static final int DrawText (long /*int*/ hDC, TCHAR lpString, int nCount, RECT lpRect, int uFormat) {
+public static final int DrawText (long hDC, TCHAR lpString, int nCount, RECT lpRect, int uFormat) {
 	char [] lpString1 = lpString == null ? null : lpString.chars;
 	return DrawText (hDC, lpString1, nCount, lpRect, uFormat);
 }
@@ -2166,12 +2166,12 @@ public static final int ExpandEnvironmentStrings (TCHAR lpSrc, TCHAR lpDst, int 
 	return ExpandEnvironmentStrings (lpSrc1, lpDst1, nSize);
 }
 
-public static final int ExtractIconEx (TCHAR lpszFile, int nIconIndex, long /*int*/ [] phiconLarge, long /*int*/ [] phiconSmall, int nIcons) {
+public static final int ExtractIconEx (TCHAR lpszFile, int nIconIndex, long [] phiconLarge, long [] phiconSmall, int nIcons) {
 	char [] lpszFile1 = lpszFile == null ? null : lpszFile.chars;
 	return ExtractIconEx (lpszFile1, nIconIndex, phiconLarge, phiconSmall, nIcons);
 }
 
-public static final boolean GetClassInfo (long /*int*/ hInstance, TCHAR lpClassName, WNDCLASS lpWndClass) {
+public static final boolean GetClassInfo (long hInstance, TCHAR lpClassName, WNDCLASS lpWndClass) {
 	boolean result;
 
 	char [] lpClassName1 = lpClassName == null ? null : lpClassName.chars;
@@ -2194,7 +2194,7 @@ public static final int GetLocaleInfo (int Locale, int LCType, TCHAR lpLCData, i
 	return GetLocaleInfo (Locale, LCType, lpLCData1, cchData);
 }
 
-public static final int GetModuleFileName (long /*int*/ hModule, TCHAR lpFilename, int inSize) {
+public static final int GetModuleFileName (long hModule, TCHAR lpFilename, int inSize) {
 	char [] lpFilename1 = lpFilename == null ? null : lpFilename.chars;
 	return GetModuleFileName (hModule, lpFilename1, inSize);
 }
@@ -2207,7 +2207,7 @@ public static final int GetProfileString (TCHAR lpAppName, TCHAR lpKeyName, TCHA
 	return GetProfileString (lpAppName1, lpKeyName1, lpDefault1, lpReturnedString1, nSize);
 }
 
-public static final int GetWindowText (long /*int*/ hWnd, TCHAR lpString, int nMaxCount) {
+public static final int GetWindowText (long hWnd, TCHAR lpString, int nMaxCount) {
 	char [] lpString1 = lpString == null ? null : lpString.chars;
 	return GetWindowText (hWnd, lpString1, nMaxCount);
 }
@@ -2217,7 +2217,7 @@ public static final int GlobalAddAtom (TCHAR lpString) {
 	return GlobalAddAtom (lpString1);
 }
 
-public static final long /*int*/ ImmEscape (long /*int*/ hKL,long /*int*/ hIMC, int uEscape, TCHAR lpData) {
+public static final long ImmEscape (long hKL,long hIMC, int uEscape, TCHAR lpData) {
 	char [] lpData1 = lpData == null ? null : lpData.chars;
 	return ImmEscape (hKL, hIMC, uEscape, lpData1);
 }
@@ -2236,39 +2236,39 @@ public static final boolean InternetSetCookie (TCHAR lpszUrl, TCHAR lpszCookieNa
 	return InternetSetCookie (url, cookieName, cookieData);
 }
 
-public static final int MessageBox (long /*int*/ hWnd, TCHAR lpText, TCHAR lpCaption, int uType) {
+public static final int MessageBox (long hWnd, TCHAR lpText, TCHAR lpCaption, int uType) {
 	char [] lpText1 = lpText == null ? null : lpText.chars;
 	char [] lpCaption1 = lpCaption == null ? null : lpCaption.chars;
 	return MessageBox (hWnd, lpText1, lpCaption1, uType);
 }
 
-public static final void MoveMemory (long /*int*/ Destination, TCHAR Source, int Length) {
+public static final void MoveMemory (long Destination, TCHAR Source, int Length) {
 	char [] Source1 = Source == null ? null : Source.chars;
 	MoveMemory (Destination, Source1, Length);
 }
 
-public static final void MoveMemory (TCHAR Destination, long /*int*/ Source, int Length) {
+public static final void MoveMemory (TCHAR Destination, long Source, int Length) {
 	char [] Destination1 = Destination == null ? null : Destination.chars;
 	MoveMemory (Destination1, Source, Length);
 }
 
-public static final boolean OpenPrinter (TCHAR pPrinterName, long /*int*/ [] phPrinter, long /*int*/ pDefault) {
+public static final boolean OpenPrinter (TCHAR pPrinterName, long [] phPrinter, long pDefault) {
 	char [] pPrinterName1 = pPrinterName == null ? null : pPrinterName.chars;
 	return OpenPrinter (pPrinterName1, phPrinter, pDefault);
 }
 
-public static final int RegCreateKeyEx (long /*int*/ hKey, TCHAR lpSubKey, int Reserved, TCHAR lpClass, int dwOptions, int samDesired, long /*int*/ lpSecurityAttributes, long /*int*/[] phkResult, long /*int*/[] lpdwDisposition) {
+public static final int RegCreateKeyEx (long hKey, TCHAR lpSubKey, int Reserved, TCHAR lpClass, int dwOptions, int samDesired, long lpSecurityAttributes, long[] phkResult, long[] lpdwDisposition) {
 	char [] lpClass1 = lpClass == null ? null : lpClass.chars;
 	char [] lpSubKey1 = lpSubKey == null ? null : lpSubKey.chars;
 	return RegCreateKeyEx (hKey, lpSubKey1, Reserved, lpClass1, dwOptions, samDesired, lpSecurityAttributes, phkResult, lpdwDisposition);
 }
 
-public static final int RegDeleteValue (long /*int*/ hKey, TCHAR lpValueName) {
+public static final int RegDeleteValue (long hKey, TCHAR lpValueName) {
 	char [] lpValueName1 = lpValueName == null ? null : lpValueName.chars;
 	return RegDeleteValue (hKey, lpValueName1);
 }
 
-public static final int RegEnumKeyEx (long /*int*/ hKey, int dwIndex, TCHAR lpName, int [] lpcName, int [] lpReserved, TCHAR lpClass, int [] lpcClass, FILETIME lpftLastWriteTime) {
+public static final int RegEnumKeyEx (long hKey, int dwIndex, TCHAR lpName, int [] lpcName, int [] lpReserved, TCHAR lpClass, int [] lpcClass, FILETIME lpftLastWriteTime) {
 	char [] lpName1 = lpName == null ? null : lpName.chars;
 	char [] lpClass1 = lpClass == null ? null : lpClass.chars;
 	return RegEnumKeyEx (hKey, dwIndex, lpName1, lpcName, lpReserved, lpClass1, lpcClass, lpftLastWriteTime);
@@ -2276,7 +2276,7 @@ public static final int RegEnumKeyEx (long /*int*/ hKey, int dwIndex, TCHAR lpNa
 
 public static final int RegisterClass (TCHAR lpszClassName, WNDCLASS lpWndClass) {
 	/* Allocate a native string */
-	long /*int*/ hHeap = OS.GetProcessHeap ();
+	long hHeap = OS.GetProcessHeap ();
 	int byteCount = lpszClassName.length () * TCHAR.sizeof;
 	lpWndClass.lpszClassName = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
 	OS.MoveMemory (lpWndClass.lpszClassName, lpszClassName, byteCount);
@@ -2300,28 +2300,28 @@ public static final int RegisterWindowMessage (TCHAR lpString) {
 	return RegisterWindowMessage (lpString1);
 }
 
-public static final int RegOpenKeyEx (long /*int*/ hKey, TCHAR lpSubKey, int ulOptions, int samDesired, long /*int*/[] phkResult) {
+public static final int RegOpenKeyEx (long hKey, TCHAR lpSubKey, int ulOptions, int samDesired, long[] phkResult) {
 	char [] lpSubKey1 = lpSubKey == null ? null : lpSubKey.chars;
 	return RegOpenKeyEx (hKey, lpSubKey1, ulOptions, samDesired, phkResult);
 }
 
-public static final int RegQueryValueEx (long /*int*/ hKey, TCHAR lpValueName, long /*int*/ lpReserved, int[] lpType, TCHAR lpData, int[] lpcbData) {
+public static final int RegQueryValueEx (long hKey, TCHAR lpValueName, long lpReserved, int[] lpType, TCHAR lpData, int[] lpcbData) {
 	char [] lpValueName1 = lpValueName == null ? null : lpValueName.chars;
 	char [] lpData1 = lpData == null ? null : lpData.chars;
 	return RegQueryValueEx (hKey, lpValueName1, lpReserved, lpType, lpData1, lpcbData);
 }
 
-public static final int RegQueryValueEx (long /*int*/ hKey, TCHAR lpValueName, long /*int*/ lpReserved, int[] lpType, int [] lpData, int[] lpcbData) {
+public static final int RegQueryValueEx (long hKey, TCHAR lpValueName, long lpReserved, int[] lpType, int [] lpData, int[] lpcbData) {
 	char [] lpValueName1 = lpValueName == null ? null : lpValueName.chars;
 	return RegQueryValueEx (hKey, lpValueName1, lpReserved, lpType, lpData, lpcbData);
 }
 
-public static final int RegSetValueEx (long /*int*/ hKey, TCHAR lpValueName, int Reserved, int dwType, int[] lpData, int cbData) {
+public static final int RegSetValueEx (long hKey, TCHAR lpValueName, int Reserved, int dwType, int[] lpData, int cbData) {
 	char [] lpValueName1 = lpValueName == null ? null : lpValueName.chars;
 	return RegSetValueEx (hKey, lpValueName1, Reserved, dwType, lpData, cbData);
 }
 
-public static final long /*int*/ SendMessage (long /*int*/ hWnd, int Msg, long /*int*/ wParam, TCHAR lParam) {
+public static final long SendMessage (long hWnd, int Msg, long wParam, TCHAR lParam) {
 	char [] lParam1 = lParam == null ? null : lParam.chars;
 	return SendMessage (hWnd, Msg, wParam, lParam1);
 }
@@ -2331,17 +2331,17 @@ public static final boolean SetDllDirectory (TCHAR lpPathName) {
 	return SetDllDirectory (lpPathName1);
 }
 
-public static final boolean SetWindowText (long /*int*/ hWnd, TCHAR lpString) {
+public static final boolean SetWindowText (long hWnd, TCHAR lpString) {
 	char [] lpString1 = lpString == null ? null : lpString.chars;
 	return SetWindowText (hWnd, lpString1);
 }
 
-public static final boolean SHGetPathFromIDList (long /*int*/ pidl, TCHAR pszPath) {
+public static final boolean SHGetPathFromIDList (long pidl, TCHAR pszPath) {
 	char [] pszPath1 = pszPath == null ? null : pszPath.chars;
 	return SHGetPathFromIDList (pidl, pszPath1);
 }
 
-public static final boolean UnregisterClass (TCHAR lpClassName, long /*int*/ hInstance) {
+public static final boolean UnregisterClass (TCHAR lpClassName, long hInstance) {
 	char [] lpClassName1 = lpClassName == null ? null : lpClassName.chars;
 	return UnregisterClass (lpClassName1, hInstance);
 }
@@ -2355,16 +2355,16 @@ public static final int UrlCreateFromPath (TCHAR pszPath, TCHAR pszURL, int[] pc
 /** Natives */
 
 /** @param hdc cast=(HDC) */
-public static final native int AbortDoc (long /*int*/ hdc);
+public static final native int AbortDoc (long hdc);
 /**
  * @param hActCtx cast=(HANDLE)
  * @param lpCookie cast=(ULONG_PTR*)
  */
-public static final native boolean ActivateActCtx (long /*int*/ hActCtx, long /*int*/ [] lpCookie);
+public static final native boolean ActivateActCtx (long hActCtx, long [] lpCookie);
 /** @param hkl cast=(HKL) */
-public static final native long /*int*/ ActivateKeyboardLayout(long /*int*/ hkl, int Flags);
+public static final native long ActivateKeyboardLayout(long hkl, int Flags);
 /** @param pdv cast=(PVOID) */
-public static final native int AddFontResourceEx(char[] lpszFilename, int fl, long /*int*/ pdv);
+public static final native int AddFontResourceEx(char[] lpszFilename, int fl, long pdv);
 public static final native boolean AdjustWindowRectEx (RECT lpRect, int dwStyle, boolean bMenu, int dwExStyle);
 public static final native boolean AllowSetForegroundWindow (int dwProcessId);
 /**
@@ -2372,27 +2372,27 @@ public static final native boolean AllowSetForegroundWindow (int dwProcessId);
  * @param hdcSrc cast=(HDC)
  * @param blendFunction flags=struct
  */
-public static final native boolean AlphaBlend(long /*int*/ hdcDest, int nXOriginDest, int nYOriginDest, int nWidthDest, int nHeightDest, long /*int*/ hdcSrc, int nXOriginSrc, int nYOriginSrc, int nWidthSrc, int nHeightSrc, BLENDFUNCTION blendFunction);
+public static final native boolean AlphaBlend(long hdcDest, int nXOriginDest, int nYOriginDest, int nWidthDest, int nHeightDest, long hdcSrc, int nXOriginSrc, int nYOriginSrc, int nWidthSrc, int nHeightSrc, BLENDFUNCTION blendFunction);
 /** @param hdc cast=(HDC) */
-public static final native boolean Arc (long /*int*/ hdc, int nLeftRect, int nTopRect, int nRightRect, int nBottomRect, int nXStartArc, int nYStartArc, int nXEndArc, int nYEndArc);
+public static final native boolean Arc (long hdc, int nLeftRect, int nTopRect, int nRightRect, int nBottomRect, int nXStartArc, int nYStartArc, int nXEndArc, int nYEndArc);
 public static final native int AssocQueryString (int flags, int str, char[] pszAssoc, char[] pszExtra, char[] pszOut, int[] pcchOut);
 /**
  * @param hdcTarget cast=(HDC)
  * @param phdc cast=(HDC*)
  */
-public static final native long /*int*/ BeginBufferedPaint (long /*int*/ hdcTarget, RECT prcTarget, int dwFormat, BP_PAINTPARAMS pPaintParams, long /*int*/ [] phdc);
-public static final native long /*int*/ BeginDeferWindowPos (int nNumWindows);
+public static final native long BeginBufferedPaint (long hdcTarget, RECT prcTarget, int dwFormat, BP_PAINTPARAMS pPaintParams, long [] phdc);
+public static final native long BeginDeferWindowPos (int nNumWindows);
 /** @param hWnd cast=(HWND) */
-public static final native long /*int*/ BeginPaint (long /*int*/ hWnd, PAINTSTRUCT lpPaint);
+public static final native long BeginPaint (long hWnd, PAINTSTRUCT lpPaint);
 /** @param hdc cast=(HDC) */
-public static final native boolean BeginPath(long /*int*/ hdc);
+public static final native boolean BeginPath(long hdc);
 /**
  * @param hdcDest cast=(HDC)
  * @param hdcSrc cast=(HDC)
  */
-public static final native boolean BitBlt (long /*int*/ hdcDest, int nXDest, int nYDest, int nWidth, int nHeight, long /*int*/ hdcSrc, int nXSrc, int nYSrc, int dwRop);
+public static final native boolean BitBlt (long hdcDest, int nXDest, int nYDest, int nWidth, int nHeight, long hdcSrc, int nXSrc, int nYSrc, int dwRop);
 /** @param hWnd cast=(HWND) */
-public static final native boolean BringWindowToTop (long /*int*/ hWnd);
+public static final native boolean BringWindowToTop (long hWnd);
 public static final native int BufferedPaintInit ();
 public static final native int BufferedPaintUnInit ();
 /**
@@ -2400,59 +2400,59 @@ public static final native int BufferedPaintUnInit ();
  * @param wParam cast=(WPARAM)
  * @param lParam cast=(LPARAM)
  */
-public static final native long /*int*/ CallNextHookEx(long /*int*/ hhk, int nCode, long /*int*/ wParam, long /*int*/ lParam);
+public static final native long CallNextHookEx(long hhk, int nCode, long wParam, long lParam);
 /**
  * @param lpPrevWndFunc cast=(WNDPROC)
  * @param hWnd cast=(HWND)
  */
-public static final native long /*int*/ CallWindowProc (long /*int*/ lpPrevWndFunc, long /*int*/ hWnd, int Msg, long /*int*/ wParam, long /*int*/ lParam);
+public static final native long CallWindowProc (long lpPrevWndFunc, long hWnd, int Msg, long wParam, long lParam);
 /**
  * @param pName cast=(PCERT_NAME_BLOB)
  * @param psz cast=(LPWSTR)
  */
 public static final native int CertNameToStr (int dwCertEncodingType, CERT_NAME_BLOB pName, int dwStrType, char[] psz, int csz);
 /** @param ch cast=(LPWSTR) */
-public static final native long /*int*/ CharLower (long /*int*/ ch);
+public static final native long CharLower (long ch);
 /** @param ch cast=(LPWSTR) */
-public static final native long /*int*/ CharUpper (long /*int*/ ch);
+public static final native long CharUpper (long ch);
 /**
  * @param hWndParent cast=(HWND)
  * @param pt flags=struct
  * @param flags cast=(UINT)
  */
-public static final native long /*int*/ ChildWindowFromPointEx (long /*int*/ hWndParent, POINT pt, int flags);
+public static final native long ChildWindowFromPointEx (long hWndParent, POINT pt, int flags);
 /** @param lpcc cast=(LPCHOOSECOLORW) */
 public static final native boolean ChooseColor (CHOOSECOLOR lpcc);
 /** @param chooseFont cast=(LPCHOOSEFONTW) */
 public static final native boolean ChooseFont (CHOOSEFONT chooseFont);
 /** @param hWnd cast=(HWND) */
-public static final native boolean ClientToScreen (long /*int*/ hWnd, POINT lpPoint);
+public static final native boolean ClientToScreen (long hWnd, POINT lpPoint);
 public static final native boolean CloseClipboard ();
 /** @param hdc cast=(HDC) */
-public static final native long /*int*/ CloseEnhMetaFile (long /*int*/ hdc);
+public static final native long CloseEnhMetaFile (long hdc);
 /**
  * @method flags=dynamic
  * @param hGesture cast=(HGESTUREINFO)
  */
-public static final native long /*int*/ CloseGestureInfoHandle (long /*int*/ hGesture);
+public static final native long CloseGestureInfoHandle (long hGesture);
 /** @param hObject cast=(HANDLE) */
-public static final native boolean CloseHandle (long /*int*/ hObject);
+public static final native boolean CloseHandle (long hObject);
 /** @param hPrinter cast=(HANDLE) */
-public static final native boolean ClosePrinter (long /*int*/ hPrinter);
+public static final native boolean ClosePrinter (long hPrinter);
 /** @param hTheme cast=(HTHEME) */
-public static final native int CloseThemeData (long /*int*/ hTheme);
+public static final native int CloseThemeData (long hTheme);
 /**
  * @method flags=dynamic
  * @param hTouchInput cast=(HTOUCHINPUT)
  */
-public static final native boolean CloseTouchInputHandle(long /*int*/ hTouchInput);
+public static final native boolean CloseTouchInputHandle(long hTouchInput);
 /**
  * @param rclsid cast=(REFCLSID)
  * @param pUnkOuter cast=(LPUNKNOWN)
  * @param riid cast=(REFIID)
  * @param ppv cast=(LPVOID *)
  */
-public static final native int CoCreateInstance (byte[] rclsid, long /*int*/ pUnkOuter, int dwClsContext, byte[] riid, long /*int*/[] ppv);
+public static final native int CoCreateInstance (byte[] rclsid, long pUnkOuter, int dwClsContext, byte[] riid, long[] ppv);
 public static final native int CoInternetIsFeatureEnabled (int FeatureEntry, int dwFlags);
 /** @param fEnable cast=(BOOL) */
 public static final native int CoInternetSetFeatureEnabled (int FeatureEntry, int dwFlags, boolean fEnable);
@@ -2461,76 +2461,76 @@ public static final native int CoInternetSetFeatureEnabled (int FeatureEntry, in
  * @param hrgnSrc1 cast=(HRGN)
  * @param hrgnSrc2 cast=(HRGN)
  */
-public static final native int CombineRgn (long /*int*/ hrgnDest, long /*int*/ hrgnSrc1, long /*int*/ hrgnSrc2, int fnCombineMode);
+public static final native int CombineRgn (long hrgnDest, long hrgnSrc1, long hrgnSrc2, int fnCombineMode);
 public static final native int CommDlgExtendedError ();
 /** @param hImage cast=(HANDLE) */
-public static final native long /*int*/ CopyImage (long /*int*/ hImage, int uType, int cxDesired, int cyDesired, int fuFlags);
+public static final native long CopyImage (long hImage, int uType, int cxDesired, int cyDesired, int fuFlags);
 /** @param cb cast=(ULONG) */
-public static final native long /*int*/ CoTaskMemAlloc(int cb);
+public static final native long CoTaskMemAlloc(int cb);
 /** @param pv cast=(LPVOID) */
-public static final native void CoTaskMemFree(long /*int*/ pv);
+public static final native void CoTaskMemFree(long pv);
 /** @param lpaccl cast=(LPACCEL) */
-public static final native long /*int*/ CreateAcceleratorTable (byte [] lpaccl, int cEntries);
+public static final native long CreateAcceleratorTable (byte [] lpaccl, int cEntries);
 /** @param pActCtx flags=no_out */
-public static final native long /*int*/ CreateActCtx (ACTCTX pActCtx);
+public static final native long CreateActCtx (ACTCTX pActCtx);
 /** @param lpvBits cast=(CONST VOID *),flags=no_out critical */
-public static final native long /*int*/ CreateBitmap (int nWidth, int nHeight, int cPlanes, int cBitsPerPel, byte [] lpvBits);
+public static final native long CreateBitmap (int nWidth, int nHeight, int cPlanes, int cBitsPerPel, byte [] lpvBits);
 /**
  * @param hWnd cast=(HWND)
  * @param hBitmap cast=(HBITMAP)
  */
-public static final native boolean CreateCaret (long /*int*/ hWnd, long /*int*/ hBitmap, int nWidth, int nHeight);
+public static final native boolean CreateCaret (long hWnd, long hBitmap, int nWidth, int nHeight);
 /** @param hdc cast=(HDC) */
-public static final native long /*int*/ CreateCompatibleBitmap (long /*int*/ hdc, int nWidth, int nHeight);
+public static final native long CreateCompatibleBitmap (long hdc, int nWidth, int nHeight);
 /** @param hdc cast=(HDC) */
-public static final native long /*int*/ CreateCompatibleDC (long /*int*/ hdc);
+public static final native long CreateCompatibleDC (long hdc);
 /**
  * @param hInst cast=(HINSTANCE)
  * @param pvANDPlane cast=(CONST VOID *),flags=no_out critical
  * @param pvXORPlane cast=(CONST VOID *),flags=no_out critical
  */
-public static final native long /*int*/ CreateCursor (long /*int*/ hInst, int xHotSpot, int yHotSpot, int nWidth, int nHeight, byte [] pvANDPlane, byte [] pvXORPlane);
+public static final native long CreateCursor (long hInst, int xHotSpot, int yHotSpot, int nWidth, int nHeight, byte [] pvANDPlane, byte [] pvXORPlane);
 /**
  * @param lpszDriver cast=(LPWSTR)
  * @param lpszDevice cast=(LPWSTR)
  * @param lpszOutput cast=(LPWSTR)
  * @param lpInitData cast=(CONST DEVMODEW *)
  */
-public static final native long /*int*/ CreateDC (char [] lpszDriver, char [] lpszDevice, long /*int*/ lpszOutput, long /*int*/ lpInitData);
+public static final native long CreateDC (char [] lpszDriver, char [] lpszDevice, long lpszOutput, long lpInitData);
 /**
  * @param hdc cast=(HDC)
  * @param pbmi cast=(BITMAPINFO *),flags=no_out critical
  * @param ppvBits cast=(VOID **),flags=no_in critical
  * @param hSection cast=(HANDLE)
  */
-public static final native long /*int*/ CreateDIBSection(long /*int*/ hdc, byte[] pbmi, int iUsage, long /*int*/[] ppvBits, long /*int*/ hSection, int dwOffset);
+public static final native long CreateDIBSection(long hdc, byte[] pbmi, int iUsage, long[] ppvBits, long hSection, int dwOffset);
 /**
  * @param hdc cast=(HDC)
  * @param pbmi cast=(BITMAPINFO *),flags=no_out critical
  * @param ppvBits cast=(VOID **),flags=no_in critical
  * @param hSection cast=(HANDLE)
  */
-public static final native long /*int*/ CreateDIBSection(long /*int*/ hdc, long /*int*/ pbmi, int iUsage, long /*int*/[] ppvBits, long /*int*/ hSection, int dwOffset);
+public static final native long CreateDIBSection(long hdc, long pbmi, int iUsage, long[] ppvBits, long hSection, int dwOffset);
 /**
  * @param hdcRef cast=(HDC)
  * @param lpFilename cast=(LPCWSTR)
  * @param lpDescription cast=(LPCWSTR)
  */
-public static final native long /*int*/ CreateEnhMetaFile (long /*int*/ hdcRef, char[] lpFilename, RECT lpRect, char[] lpDescription);
+public static final native long CreateEnhMetaFile (long hdcRef, char[] lpFilename, RECT lpRect, char[] lpDescription);
 /** @param lplf cast=(LPLOGFONTW) */
-public static final native long /*int*/ CreateFontIndirect (long /*int*/ lplf);
+public static final native long CreateFontIndirect (long lplf);
 /** @param lplf flags=no_out */
-public static final native long /*int*/ CreateFontIndirect (LOGFONT lplf);
+public static final native long CreateFontIndirect (LOGFONT lplf);
 /** @param lplf flags=no_out */
-public static final native long /*int*/ CreateIconIndirect (ICONINFO lplf);
-public static final native long /*int*/ CreateMenu ();
+public static final native long CreateIconIndirect (ICONINFO lplf);
+public static final native long CreateMenu ();
 /** @param hbmp cast=(HBITMAP) */
-public static final native long /*int*/ CreatePatternBrush (long /*int*/ hbmp);
+public static final native long CreatePatternBrush (long hbmp);
 /** @param crColor cast=(COLORREF) */
-public static final native long /*int*/ CreatePen (int fnPenStyle, int nWidth, int crColor);
+public static final native long CreatePen (int fnPenStyle, int nWidth, int crColor);
 /** @param lppt cast=(CONST POINT *) */
-public static final native long /*int*/ CreatePolygonRgn(int[] lppt, int cPoints, int fnPolyFillMode);
-public static final native long /*int*/ CreatePopupMenu ();
+public static final native long CreatePolygonRgn(int[] lppt, int cPoints, int fnPolyFillMode);
+public static final native long CreatePopupMenu ();
 /**
  * @param lpApplicationName cast=(LPCWSTR)
  * @param lpCommandLine cast=(LPWSTR)
@@ -2541,16 +2541,16 @@ public static final native long /*int*/ CreatePopupMenu ();
  * @param lpStartupInfo cast=(LPSTARTUPINFOW)
  * @param lpProcessInformation cast=(LPPROCESS_INFORMATION)
  */
-public static final native boolean CreateProcess (long /*int*/ lpApplicationName, long /*int*/ lpCommandLine, long /*int*/ lpProcessAttributes, long /*int*/ lpThreadAttributes, boolean bInheritHandles, int dwCreationFlags, long /*int*/ lpEnvironment, long /*int*/ lpCurrentDirectory, STARTUPINFO lpStartupInfo, PROCESS_INFORMATION lpProcessInformation);
-public static final native long /*int*/ CreateRectRgn (int left, int top, int right, int bottom);
+public static final native boolean CreateProcess (long lpApplicationName, long lpCommandLine, long lpProcessAttributes, long lpThreadAttributes, boolean bInheritHandles, int dwCreationFlags, long lpEnvironment, long lpCurrentDirectory, STARTUPINFO lpStartupInfo, PROCESS_INFORMATION lpProcessInformation);
+public static final native long CreateRectRgn (int left, int top, int right, int bottom);
 /** @param colorRef cast=(COLORREF) */
-public static final native long /*int*/ CreateSolidBrush (int colorRef);
+public static final native long CreateSolidBrush (int colorRef);
 /**
  * @param hGlobal cast=(HGLOBAL)
  * @param fDeleteOnRelease cast=(BOOL)
  * @param ppstm cast=(LPSTREAM *)
  */
-public static final native int CreateStreamOnHGlobal(long /*int*/ hGlobal, boolean fDeleteOnRelease, long /*int*/[] ppstm);
+public static final native int CreateStreamOnHGlobal(long hGlobal, boolean fDeleteOnRelease, long[] ppstm);
 /**
  * @param lpClassName cast=(LPWSTR)
  * @param lpWindowName cast=(LPWSTR)
@@ -2558,52 +2558,52 @@ public static final native int CreateStreamOnHGlobal(long /*int*/ hGlobal, boole
  * @param hMenu cast=(HMENU)
  * @param hInstance cast=(HINSTANCE)
  */
-public static final native long /*int*/ CreateWindowEx (int dwExStyle, char [] lpClassName, char [] lpWindowName, int dwStyle, int X, int Y, int nWidth, int nHeight, long /*int*/ hWndParent, long /*int*/ hMenu, long /*int*/ hInstance, CREATESTRUCT lpParam);
+public static final native long CreateWindowEx (int dwExStyle, char [] lpClassName, char [] lpWindowName, int dwStyle, int X, int Y, int nWidth, int nHeight, long hWndParent, long hMenu, long hInstance, CREATESTRUCT lpParam);
 /**
  * @param hWinPosInfo cast=(HDWP)
  * @param hWnd cast=(HWND)
  * @param hWndInsertAfter cast=(HWND)
  */
-public static final native long /*int*/ DeferWindowPos (long /*int*/ hWinPosInfo, long /*int*/ hWnd, long /*int*/ hWndInsertAfter, int X, int Y, int cx, int cy, int uFlags);
+public static final native long DeferWindowPos (long hWinPosInfo, long hWnd, long hWndInsertAfter, int X, int Y, int cx, int cy, int uFlags);
 /**
  * @param hWnd cast=(HWND)
  * @param wParam cast=(WPARAM)
  * @param lParam cast=(LPARAM)
  */
-public static final native long /*int*/ DefMDIChildProc (long /*int*/ hWnd, int Msg, long /*int*/ wParam, long /*int*/ lParam);
+public static final native long DefMDIChildProc (long hWnd, int Msg, long wParam, long lParam);
 /**
  * @param hWnd cast=(HWND)
  * @param hWndMDIClient cast=(HWND)
  * @param wParam cast=(WPARAM)
  * @param lParam cast=(LPARAM)
  */
-public static final native long /*int*/ DefFrameProc (long /*int*/ hWnd, long /*int*/ hWndMDIClient, int Msg, long /*int*/ wParam, long /*int*/ lParam);
+public static final native long DefFrameProc (long hWnd, long hWndMDIClient, int Msg, long wParam, long lParam);
 /**
  * @param hWnd cast=(HWND)
  * @param wParam cast=(WPARAM)
  * @param lParam cast=(LPARAM)
  */
-public static final native long /*int*/ DefWindowProc (long /*int*/ hWnd, int Msg, long /*int*/ wParam, long /*int*/ lParam);
+public static final native long DefWindowProc (long hWnd, int Msg, long wParam, long lParam);
 /** @param hdc cast=(HDC) */
-public static final native boolean DeleteDC (long /*int*/ hdc);
+public static final native boolean DeleteDC (long hdc);
 /** @param hemf cast=(HENHMETAFILE) */
-public static final native boolean DeleteEnhMetaFile (long /*int*/ hemf);
+public static final native boolean DeleteEnhMetaFile (long hemf);
 /** @param hMenu cast=(HMENU) */
-public static final native boolean DeleteMenu (long /*int*/ hMenu, int uPosition, int uFlags);
+public static final native boolean DeleteMenu (long hMenu, int uPosition, int uFlags);
 /** @param hGdiObj cast=(HGDIOBJ) */
-public static final native boolean DeleteObject (long /*int*/ hGdiObj);
+public static final native boolean DeleteObject (long hGdiObj);
 /** @param hAccel cast=(HACCEL) */
-public static final native boolean DestroyAcceleratorTable (long /*int*/ hAccel);
+public static final native boolean DestroyAcceleratorTable (long hAccel);
 public static final native boolean DestroyCaret ();
 /** @param hCursor cast=(HCURSOR) */
-public static final native boolean DestroyCursor (long /*int*/ hCursor);
+public static final native boolean DestroyCursor (long hCursor);
 /** @param hIcon cast=(HICON) */
-public static final native boolean DestroyIcon (long /*int*/ hIcon);
+public static final native boolean DestroyIcon (long hIcon);
 /** @param hMenu cast=(HMENU) */
-public static final native boolean DestroyMenu (long /*int*/ hMenu);
+public static final native boolean DestroyMenu (long hMenu);
 /** @param hWnd cast=(HWND) */
-public static final native boolean DestroyWindow (long /*int*/ hWnd);
-public static final native long /*int*/ DispatchMessage (MSG lpmsg);
+public static final native boolean DestroyWindow (long hWnd);
+public static final native long DispatchMessage (MSG lpmsg);
 /**
  * @param hWnd cast=(HWND)
  * @param hPrinter cast=(HANDLE)
@@ -2611,242 +2611,242 @@ public static final native long /*int*/ DispatchMessage (MSG lpmsg);
  * @param pDevModeOutput cast=(PDEVMODEW)
  * @param pDevModeInput cast=(PDEVMODEW)
  */
-public static final native int DocumentProperties (long /*int*/ hWnd, long /*int*/ hPrinter, char[] pDeviceName, long /*int*/ pDevModeOutput, long /*int*/ pDevModeInput, int fMode);
+public static final native int DocumentProperties (long hWnd, long hPrinter, char[] pDeviceName, long pDevModeOutput, long pDevModeInput, int fMode);
 /**
  * @param hwnd cast=(HWND)
  * @param pt flags=struct
  */
-public static final native boolean DragDetect (long /*int*/ hwnd, POINT pt);
+public static final native boolean DragDetect (long hwnd, POINT pt);
 /** @param hDrop cast=(HDROP) */
-public static final native void DragFinish (long /*int*/ hDrop);
+public static final native void DragFinish (long hDrop);
 /**
  * @param hDrop cast=(HDROP)
  * @param lpszFile cast=(LPWSTR)
  */
-public static final native int DragQueryFile (long /*int*/ hDrop, int iFile, char[] lpszFile, int cch);
+public static final native int DragQueryFile (long hDrop, int iFile, char[] lpszFile, int cch);
 /** @param hdc cast=(HDC) */
-public static final native boolean DrawEdge (long /*int*/ hdc, RECT qrc, int edge, int grfFlags);
+public static final native boolean DrawEdge (long hdc, RECT qrc, int edge, int grfFlags);
 /** @param hDC cast=(HDC) */
-public static final native boolean DrawFocusRect (long /*int*/ hDC, RECT lpRect);
+public static final native boolean DrawFocusRect (long hDC, RECT lpRect);
 /** @param hdc cast=(HDC) */
-public static final native boolean DrawFrameControl (long /*int*/ hdc, RECT lprc, int uType, int uState);
+public static final native boolean DrawFrameControl (long hdc, RECT lprc, int uType, int uState);
 /**
  * @param hdc cast=(HDC)
  * @param hIcon cast=(HICON)
  * @param hbrFlickerFreeDraw cast=(HBRUSH)
  */
-public static final native boolean DrawIconEx (long /*int*/ hdc, int xLeft, int yTop, long /*int*/ hIcon, int cxWidth, int cyWidth, int istepIfAniCur, long /*int*/ hbrFlickerFreeDraw, int diFlags);
+public static final native boolean DrawIconEx (long hdc, int xLeft, int yTop, long hIcon, int cxWidth, int cyWidth, int istepIfAniCur, long hbrFlickerFreeDraw, int diFlags);
 /** @param hWnd cast=(HWND) */
-public static final native boolean DrawMenuBar (long /*int*/ hWnd);
+public static final native boolean DrawMenuBar (long hWnd);
 /**
  * @param hDC cast=(HDC)
  * @param lpString cast=(LPWSTR),flags=no_out critical
  */
-public static final native int DrawText (long /*int*/ hDC, char [] lpString, int nCount, RECT lpRect, int uFormat);
+public static final native int DrawText (long hDC, char [] lpString, int nCount, RECT lpRect, int uFormat);
 /**
  * @param hTheme cast=(HTHEME)
  * @param hdc cast=(HDC)
  * @param pRect cast=(const RECT *)
  * @param pClipRect cast=(const RECT *)
  */
-public static final native int DrawThemeBackground (long /*int*/ hTheme, long /*int*/ hdc, int iPartId, int iStateId, RECT pRect, RECT pClipRect);
+public static final native int DrawThemeBackground (long hTheme, long hdc, int iPartId, int iStateId, RECT pRect, RECT pClipRect);
 /**
  * @param hTheme cast=(HTHEME)
  * @param hdc cast=(HDC)
  */
-public static final native int DrawThemeText (long /*int*/ hTheme, long /*int*/ hdc, int iPartId, int iStateId, char[] pszText, int iCharCount, int dwTextFlags, int dwTextFlags2, RECT pRect);
+public static final native int DrawThemeText (long hTheme, long hdc, int iPartId, int iStateId, char[] pszText, int iCharCount, int dwTextFlags, int dwTextFlags2, RECT pRect);
 /** @param hdc cast=(HDC) */
-public static final native boolean Ellipse (long /*int*/ hdc, int nLeftRect, int nTopRect, int nRightRect, int nBottomRect);
+public static final native boolean Ellipse (long hdc, int nLeftRect, int nTopRect, int nRightRect, int nBottomRect);
 /** @param hMenu cast=(HMENU) */
-public static final native boolean EnableMenuItem (long /*int*/ hMenu, int uIDEnableItem, int uEnable);
+public static final native boolean EnableMenuItem (long hMenu, int uIDEnableItem, int uEnable);
 /** @param hWnd cast=(HWND) */
-public static final native boolean EnableScrollBar (long /*int*/ hWnd, int wSBflags, int wArrows);
+public static final native boolean EnableScrollBar (long hWnd, int wSBflags, int wArrows);
 /** @param hWnd cast=(HWND) */
-public static final native boolean EnableWindow (long /*int*/ hWnd, boolean bEnable);
+public static final native boolean EnableWindow (long hWnd, boolean bEnable);
 /**
  * @param pLangGroupEnumProc cast=(LANGUAGEGROUP_ENUMPROCW)
  * @param lParam cast=(LONG_PTR)
  */
-public static final native boolean EnumSystemLanguageGroups (long /*int*/ pLangGroupEnumProc, int dwFlags, long /*int*/ lParam);
+public static final native boolean EnumSystemLanguageGroups (long pLangGroupEnumProc, int dwFlags, long lParam);
 /** @param lpLocaleEnumProc cast=(LOCALE_ENUMPROCW) */
-public static final native boolean EnumSystemLocales (long /*int*/ lpLocaleEnumProc, int dwFlags);
+public static final native boolean EnumSystemLocales (long lpLocaleEnumProc, int dwFlags);
 /** @param hWinPosInfo cast=(HDWP) */
-public static final native boolean EndDeferWindowPos (long /*int*/ hWinPosInfo);
+public static final native boolean EndDeferWindowPos (long hWinPosInfo);
 /** @param hBufferedPaint cast=(HPAINTBUFFER) */
-public static final native int EndBufferedPaint (long /*int*/ hBufferedPaint, boolean fUpdateTarget);
+public static final native int EndBufferedPaint (long hBufferedPaint, boolean fUpdateTarget);
 /** @param hdc cast=(HDC) */
-public static final native int EndDoc (long /*int*/ hdc);
+public static final native int EndDoc (long hdc);
 /** @param hdc cast=(HDC) */
-public static final native int EndPage (long /*int*/ hdc);
+public static final native int EndPage (long hdc);
 /** @param hWnd cast=(HWND) */
-public static final native int EndPaint (long /*int*/ hWnd, PAINTSTRUCT lpPaint);
+public static final native int EndPaint (long hWnd, PAINTSTRUCT lpPaint);
 /**
  * @param hdc cast=(HDC)
  * @param lprcClip cast=(LPCRECT)
  * @param lpfnEnum cast=(MONITORENUMPROC)
  * @param dwData cast=(LPARAM)
  */
-public static final native boolean EnumDisplayMonitors (long /*int*/ hdc, RECT lprcClip, long /*int*/ lpfnEnum, int dwData);
+public static final native boolean EnumDisplayMonitors (long hdc, RECT lprcClip, long lpfnEnum, int dwData);
 /**
  * @param hdc cast=(HDC)
  * @param hemf cast=(HENHMETAFILE)
  * @param lpEnhMetaFunc cast=(ENHMFENUMPROC)
  * @param lpData cast=(LPVOID)
  */
-public static final native boolean EnumEnhMetaFile(long /*int*/ hdc, long /*int*/ hemf, long /*int*/ lpEnhMetaFunc, long /*int*/ lpData, RECT lpRect);
+public static final native boolean EnumEnhMetaFile(long hdc, long hemf, long lpEnhMetaFunc, long lpData, RECT lpRect);
 /**
  * @param hdc cast=(HDC)
  * @param lpszFamily cast=(LPCWSTR)
  * @param lpEnumFontFamProc cast=(FONTENUMPROCW)
  * @param lParam cast=(LPARAM)
  */
-public static final native int EnumFontFamilies (long /*int*/ hdc, char [] lpszFamily, long /*int*/ lpEnumFontFamProc, long /*int*/ lParam);
+public static final native int EnumFontFamilies (long hdc, char [] lpszFamily, long lpEnumFontFamProc, long lParam);
 /**
  * @param lprc1 cast=(CONST RECT *),flags=no_out
  * @param lprc2 cast=(CONST RECT *),flags=no_out
  */
 public static final native boolean EqualRect (RECT lprc1, RECT lprc2);
 /** @param hdc cast=(HDC) */
-public static final native int ExcludeClipRect (long /*int*/ hdc, int nLeftRect, int nTopRect, int nRightRect, int nBottomRect);
+public static final native int ExcludeClipRect (long hdc, int nLeftRect, int nTopRect, int nRightRect, int nBottomRect);
 public static final native int ExpandEnvironmentStrings (char [] lpSrc, char [] lsDst, int nSize);
 /**
  * @param lplb cast=(CONST LOGBRUSH *)
  * @param lpStyle cast=(CONST DWORD *)
  */
-public static final native long /*int*/ ExtCreatePen (int dwPenStyle, int dwWidth, LOGBRUSH lplb, int dwStyleCount, int[] lpStyle);
+public static final native long ExtCreatePen (int dwPenStyle, int dwWidth, LOGBRUSH lplb, int dwStyleCount, int[] lpStyle);
 /**
  * @param lpXform cast=(XFORM *)
  * @param lpRgnData cast=(CONST RGNDATA *)
  */
-public static final native long /*int*/ ExtCreateRegion (float[] lpXform, int nCount, int[] lpRgnData);
+public static final native long ExtCreateRegion (float[] lpXform, int nCount, int[] lpRgnData);
 /**
  * @param hdc cast=(HDC)
  * @param lprc flags=no_out
  * @param lpString cast=(LPWSTR),flags=no_out critical
  * @param lpDx cast=(CONST INT *),flags=no_out critical
  */
-public static final native boolean ExtTextOut (long /*int*/ hdc, int X, int Y, int fuOptions, RECT lprc, char[] lpString, int cbCount, int[] lpDx);
+public static final native boolean ExtTextOut (long hdc, int X, int Y, int fuOptions, RECT lprc, char[] lpString, int cbCount, int[] lpDx);
 /**
  * @param lpszFile cast=(LPWSTR)
  * @param phiconLarge cast=(HICON FAR *)
  * @param phiconSmall cast=(HICON FAR *)
  */
-public static final native int ExtractIconEx (char [] lpszFile, int nIconIndex, long /*int*/ [] phiconLarge, long /*int*/ [] phiconSmall, int nIcons);
+public static final native int ExtractIconEx (char [] lpszFile, int nIconIndex, long [] phiconLarge, long [] phiconSmall, int nIcons);
 public static final native boolean FileTimeToSystemTime (FILETIME lpFileTime, SYSTEMTIME lpSystemTime);
 /**
  * @param hDC cast=(HDC)
  * @param lprc flags=no_out
  * @param hbr cast=(HBRUSH)
  */
-public static final native int FillRect (long /*int*/ hDC, RECT lprc, long /*int*/ hbr);
+public static final native int FillRect (long hDC, RECT lprc, long hbr);
 /**
  * @param lpSource cast=(LPCVOID)
  * @param lpBuffer cast=(LPWSTR)
  * @param Arguments cast=(va_list*)
  */
-public static final native int FormatMessage (int dwFlags, long /*int*/ lpSource, int dwMessageId, int dwLanguageId, long /*int*/ [] lpBuffer, int nSize, long /*int*/ Arguments);
+public static final native int FormatMessage (int dwFlags, long lpSource, int dwMessageId, int dwLanguageId, long [] lpBuffer, int nSize, long Arguments);
 /** @param dwLimit cast=(DWORD) */
 public static final native int GdiSetBatchLimit (int dwLimit);
-public static final native int GET_WHEEL_DELTA_WPARAM(long /*int*/ wParam);
-public static final native int GET_X_LPARAM(long /*int*/ lp);
-public static final native int GET_Y_LPARAM(long /*int*/ lp);
+public static final native int GET_WHEEL_DELTA_WPARAM(long wParam);
+public static final native int GET_X_LPARAM(long lp);
+public static final native int GET_Y_LPARAM(long lp);
 public static final native int GetACP ();
-public static final native long /*int*/ GetActiveWindow ();
+public static final native long GetActiveWindow ();
 /** @param hDC cast=(HDC) */
-public static final native int GetBkColor (long /*int*/ hDC);
-public static final native long /*int*/ GetCapture ();
+public static final native int GetBkColor (long hDC);
+public static final native long GetCapture ();
 public static final native boolean GetCaretPos (POINT lpPoint);
 /**
  * @param hdc cast=(HDC)
  * @param lpabc cast=(LPABC),flags=no_in critical
  */
-public static final native boolean GetCharABCWidths (long /*int*/ hdc, int iFirstChar, int iLastChar, int [] lpabc);
+public static final native boolean GetCharABCWidths (long hdc, int iFirstChar, int iLastChar, int [] lpabc);
 /**
  * @param hdc cast=(HDC)
  * @param lpString cast=(LPWSTR),flags=no_out critical
  * @param lpResults cast=(LPGCP_RESULTSW)
  */
-public static final native int GetCharacterPlacement (long /*int*/ hdc, char[] lpString, int nCount, int nMaxExtent, GCP_RESULTS lpResults, int dwFlags);
+public static final native int GetCharacterPlacement (long hdc, char[] lpString, int nCount, int nMaxExtent, GCP_RESULTS lpResults, int dwFlags);
 /**
  * @param hdc cast=(HDC)
  * @param lpBuffer cast=(LPINT),flags=no_in critical
  */
-public static final native boolean GetCharWidth (long /*int*/ hdc, int iFirstChar, int iLastChar, int [] lpBuffer);
+public static final native boolean GetCharWidth (long hdc, int iFirstChar, int iLastChar, int [] lpBuffer);
 /**
  * @param hInstance cast=(HINSTANCE)
  * @param lpClassName cast=(LPWSTR)
  * @param lpWndClass cast=(LPWNDCLASSW)
  */
-public static final native boolean GetClassInfo (long /*int*/ hInstance, char [] lpClassName, WNDCLASS lpWndClass);
+public static final native boolean GetClassInfo (long hInstance, char [] lpClassName, WNDCLASS lpWndClass);
 /** @param hWnd cast=(HWND) */
-public static final native int GetClassName (long /*int*/ hWnd, char [] lpClassName, int nMaxCount);
+public static final native int GetClassName (long hWnd, char [] lpClassName, int nMaxCount);
 /** @param hWnd cast=(HWND) */
-public static final native boolean GetClientRect (long /*int*/ hWnd, RECT lpRect);
-public static final native long /*int*/ GetClipboardData (int uFormat);
+public static final native boolean GetClientRect (long hWnd, RECT lpRect);
+public static final native long GetClipboardData (int uFormat);
 /** @param lpszFormatName cast=(LPWSTR) */
 public static final native int GetClipboardFormatName (int format, char[] lpszFormatName, int cchMaxCount);
 /** @param hdc cast=(HDC) */
-public static final native int GetClipBox (long /*int*/ hdc, RECT lprc);
+public static final native int GetClipBox (long hdc, RECT lprc);
 /**
  * @param hdc cast=(HDC)
  * @param hrgn cast=(HRGN)
  */
-public static final native int GetClipRgn (long /*int*/ hdc, long /*int*/ hrgn);
+public static final native int GetClipRgn (long hdc, long hrgn);
 /** @param hwndCombo cast=(HWND) */
-public static final native boolean GetComboBoxInfo (long /*int*/ hwndCombo, COMBOBOXINFO pcbi);
+public static final native boolean GetComboBoxInfo (long hwndCombo, COMBOBOXINFO pcbi);
 /** @param hdc cast=(HDC) */
-public static final native long /*int*/ GetCurrentObject (long /*int*/ hdc, int uObjectType);
+public static final native long GetCurrentObject (long hdc, int uObjectType);
 public static final native int GetCurrentProcessId ();
 public static final native int GetCurrentThreadId ();
 /** @method flags=dynamic */
-public static final native int GetCurrentProcessExplicitAppUserModelID(long /*int*/[] AppID);
-public static final native long /*int*/ GetCursor ();
+public static final native int GetCurrentProcessExplicitAppUserModelID(long[] AppID);
+public static final native long GetCursor ();
 public static final native boolean GetCursorPos (POINT lpPoint);
 /** @param hwnd cast=(HWND) */
-public static final native long /*int*/ GetDC (long /*int*/ hwnd);
+public static final native long GetDC (long hwnd);
 /**
  * @param hWnd cast=(HWND)
  * @param hrgnClip cast=(HRGN)
  */
-public static final native long /*int*/ GetDCEx (long /*int*/ hWnd, long /*int*/ hrgnClip, int flags);
-public static final native long /*int*/ GetDesktopWindow ();
+public static final native long GetDCEx (long hWnd, long hrgnClip, int flags);
+public static final native long GetDesktopWindow ();
 /** @param hdc cast=(HDC) */
-public static final native int GetDeviceCaps (long /*int*/ hdc, int nIndex);
+public static final native int GetDeviceCaps (long hdc, int nIndex);
 public static final native int GetDialogBaseUnits ();
 /**
  * @param hdc cast=(HDC)
  * @param pColors cast=(RGBQUAD *),flags=no_in critical
  */
-public static final native int GetDIBColorTable (long /*int*/ hdc, int uStartIndex, int cEntries, byte[] pColors);
+public static final native int GetDIBColorTable (long hdc, int uStartIndex, int cEntries, byte[] pColors);
 /**
  * @param hdc cast=(HDC)
  * @param hbmp cast=(HBITMAP)
  * @param lpvBits cast=(LPVOID),flags=critical
  * @param lpbi cast=(LPBITMAPINFO),flags=critical
  */
-public static final native int GetDIBits (long /*int*/ hdc, long /*int*/ hbmp, int uStartScan, int cScanLines, byte[] lpvBits, byte[] lpbi, int uUsage);
+public static final native int GetDIBits (long hdc, long hbmp, int uStartScan, int cScanLines, byte[] lpvBits, byte[] lpbi, int uUsage);
 /** @param hDlg cast=(HWND) */
-public static final native long /*int*/ GetDlgItem (long /*int*/ hDlg, int nIDDlgItem);
+public static final native long GetDlgItem (long hDlg, int nIDDlgItem);
 public static final native int GetDoubleClickTime ();
 /** @method flags=dynamic */
-public static final native int GetDpiForMonitor (long /*int*/ hmonitor, int dpiType, int [] dpiX, int [] dpiY);
-public static final native long /*int*/ GetFocus ();
+public static final native int GetDpiForMonitor (long hmonitor, int dpiType, int [] dpiX, int [] dpiY);
+public static final native long GetFocus ();
 /** @param hdc cast=(HDC) */
-public static final native int GetFontLanguageInfo (long /*int*/ hdc);
-public static final native long /*int*/ GetForegroundWindow ();
+public static final native int GetFontLanguageInfo (long hdc);
+public static final native long GetForegroundWindow ();
 /**
  * @method flags=dynamic
  * @param hGestureInfo cast=(HGESTUREINFO)
  * @param pGestureInfo cast=(PGESTUREINFO)
  */
-public static final native boolean GetGestureInfo(long /*int*/ hGestureInfo, GESTUREINFO pGestureInfo);
+public static final native boolean GetGestureInfo(long hGestureInfo, GESTUREINFO pGestureInfo);
 /** @param hdc cast=(HDC) */
-public static final native int GetGraphicsMode (long /*int*/ hdc);
+public static final native int GetGraphicsMode (long hdc);
 /**
  * @param hdc cast=(HDC)
  * @param pgi cast=(LPWORD)
  */
-public static final native int GetGlyphIndices (long /*int*/ hdc, char[] lpstr, int c, short[] pgi, int fl);
+public static final native int GetGlyphIndices (long hdc, char[] lpstr, int c, short[] pgi, int fl);
 /**
  * @param idThread cast=(DWORD)
  * @param lpgui cast=(LPGUITHREADINFO)
@@ -2856,120 +2856,120 @@ public static final native boolean GetGUIThreadInfo (int idThread, GUITHREADINFO
  * @param hIcon cast=(HICON)
  * @param piconinfo flags=no_in
  */
-public static final native boolean GetIconInfo (long /*int*/ hIcon, ICONINFO piconinfo);
+public static final native boolean GetIconInfo (long hIcon, ICONINFO piconinfo);
 /** @param lpList cast=(HKL FAR *) */
-public static final native int GetKeyboardLayoutList (int nBuff, long /*int*/ [] lpList);
-public static final native long /*int*/ GetKeyboardLayout (int idThread);
+public static final native int GetKeyboardLayoutList (int nBuff, long [] lpList);
+public static final native long GetKeyboardLayout (int idThread);
 public static final native short GetKeyState (int nVirtKey);
 /** @param lpKeyState cast=(PBYTE) */
 public static final native boolean GetKeyboardState (byte [] lpKeyState);
 /** @param hWnd cast=(HWND) */
-public static final native long /*int*/ GetLastActivePopup (long /*int*/ hWnd);
+public static final native long GetLastActivePopup (long hWnd);
 public static final native int GetLastError ();
 /** @param hwnd cast=(HWND) */
-public static final native boolean GetLayeredWindowAttributes (long /*int*/ hwnd, int [] pcrKey, byte [] pbAlpha, int [] pdwFlags);
+public static final native boolean GetLayeredWindowAttributes (long hwnd, int [] pcrKey, byte [] pbAlpha, int [] pdwFlags);
 /** @param hdc cast=(HDC) */
-public static final native int GetLayout (long /*int*/ hdc);
+public static final native int GetLayout (long hdc);
 /* returns the instance handle to the swt library */
 /** @method flags=no_gen */
-public static final native long /*int*/ GetLibraryHandle ();
+public static final native long GetLibraryHandle ();
 /** @param lpLCData cast=(LPWSTR) */
 public static final native int GetLocaleInfo (int Locale, int LCType, char [] lpLCData, int cchData);
 /** @param hWnd cast=(HWND) */
-public static final native long /*int*/ GetMenu (long /*int*/ hWnd);
+public static final native long GetMenu (long hWnd);
 /** @param hWnd cast=(HWND) */
-public static final native boolean GetMenuBarInfo (long /*int*/ hWnd, int idObject, int idItem, MENUBARINFO pmbi);
+public static final native boolean GetMenuBarInfo (long hWnd, int idObject, int idItem, MENUBARINFO pmbi);
 /** @param hMenu cast=(HMENU) */
-public static final native int GetMenuDefaultItem (long /*int*/ hMenu, int fByPos, int gmdiFlags);
+public static final native int GetMenuDefaultItem (long hMenu, int fByPos, int gmdiFlags);
 /** @param hmenu cast=(HMENU) */
-public static final native boolean GetMenuInfo (long /*int*/ hmenu, MENUINFO lpcmi);
+public static final native boolean GetMenuInfo (long hmenu, MENUINFO lpcmi);
 /** @param hMenu cast=(HMENU) */
-public static final native int GetMenuItemCount (long /*int*/ hMenu);
+public static final native int GetMenuItemCount (long hMenu);
 /**
  * @param hMenu cast=(HMENU)
  * @param lpmii cast=(LPMENUITEMINFOW)
  */
-public static final native boolean GetMenuItemInfo (long /*int*/ hMenu, int uItem, boolean fByPosition, MENUITEMINFO lpmii);
+public static final native boolean GetMenuItemInfo (long hMenu, int uItem, boolean fByPosition, MENUITEMINFO lpmii);
 /**
  * @param hWnd cast=(HWND)
  * @param hMenu cast=(HMENU)
  */
-public static final native boolean GetMenuItemRect (long /*int*/ hWnd, long /*int*/ hMenu, int uItem, RECT lprcItem);
+public static final native boolean GetMenuItemRect (long hWnd, long hMenu, int uItem, RECT lprcItem);
 /** @param hWnd cast=(HWND) */
-public static final native boolean GetMessage (MSG lpMsg, long /*int*/ hWnd, int wMsgFilterMin, int wMsgFilterMax);
+public static final native boolean GetMessage (MSG lpMsg, long hWnd, int wMsgFilterMin, int wMsgFilterMax);
 public static final native int GetMessagePos ();
 public static final native int GetMessageTime ();
 /**
  * @param hdc cast=(HDC)
  * @param hrgn cast=(HRGN)
  */
-public static final native int GetMetaRgn (long /*int*/ hdc, long /*int*/ hrgn);
+public static final native int GetMetaRgn (long hdc, long hrgn);
 /**
  * @param hTheme cast=(HTHEME)
  * @param hdc cast=(HDC)
  * @param prc flags=no_out
  * @param psz flags=no_in
  */
-public static final native int GetThemePartSize(long /*int*/ hTheme, long /*int*/ hdc, int iPartId, int iStateId, RECT prc, int eSize, SIZE psz);
+public static final native int GetThemePartSize(long hTheme, long hdc, int iPartId, int iStateId, RECT prc, int eSize, SIZE psz);
 /**
  * @param hTheme cast=(HTHEME)
  * @param hdc cast=(HDC)
  */
-public static final native int GetThemeTextExtent (long /*int*/ hTheme, long /*int*/ hdc, int iPartId, int iStateId, char[] pszText, int iCharCount, int dwTextFlags, RECT pBoundingRect, RECT pExtentRect);
+public static final native int GetThemeTextExtent (long hTheme, long hdc, int iPartId, int iStateId, char[] pszText, int iCharCount, int dwTextFlags, RECT pBoundingRect, RECT pExtentRect);
 /**
  * @param hModule cast=(HMODULE)
  * @param lpFilename cast=(LPWSTR)
  */
-public static final native int GetModuleFileName (long /*int*/ hModule, char [] lpFilename, int inSize);
+public static final native int GetModuleFileName (long hModule, char [] lpFilename, int inSize);
 /** @param lpModuleName cast=(LPWSTR) */
-public static final native long /*int*/ GetModuleHandle (char [] lpModuleName);
+public static final native long GetModuleHandle (char [] lpModuleName);
 /**
  * @param hmonitor cast=(HMONITOR)
  * @param lpmi cast=(LPMONITORINFO)
  */
-public static final native boolean GetMonitorInfo (long /*int*/ hmonitor, MONITORINFO lpmi);
+public static final native boolean GetMonitorInfo (long hmonitor, MONITORINFO lpmi);
 /**
  * @param hgdiobj cast=(HGDIOBJ)
  * @param lpvObject flags=no_in
  */
-public static final native int GetObject (long /*int*/ hgdiobj, int cbBuffer, BITMAP lpvObject);
+public static final native int GetObject (long hgdiobj, int cbBuffer, BITMAP lpvObject);
 /**
  * @param hgdiobj cast=(HGDIOBJ)
  * @param lpvObject flags=no_in
  */
-public static final native int GetObject (long /*int*/ hgdiobj, int cbBuffer, DIBSECTION lpvObject);
+public static final native int GetObject (long hgdiobj, int cbBuffer, DIBSECTION lpvObject);
 /**
  * @param hgdiobj cast=(HGDIOBJ)
  * @param lpvObject flags=no_in
  */
-public static final native int GetObject (long /*int*/ hgdiobj, int cbBuffer, LOGBRUSH lpvObject);
+public static final native int GetObject (long hgdiobj, int cbBuffer, LOGBRUSH lpvObject);
 /**
  * @param hgdiobj cast=(HGDIOBJ)
  * @param lpvObject flags=no_in
  */
-public static final native int GetObject (long /*int*/ hgdiobj, int cbBuffer, LOGFONT lpvObject);
+public static final native int GetObject (long hgdiobj, int cbBuffer, LOGFONT lpvObject);
 /**
  * @param hgdiobj cast=(HGDIOBJ)
  * @param lpvObject cast=(LPVOID),flags=no_in
  */
-public static final native int GetObject (long /*int*/ hgdiobj, int cbBuffer, long /*int*/ lpvObject);
+public static final native int GetObject (long hgdiobj, int cbBuffer, long lpvObject);
 /** @param lpofn cast=(LPOPENFILENAMEW) */
 public static final native boolean GetOpenFileName (OPENFILENAME lpofn);
 /** @param hdc cast=(HDC) */
-public static final native int GetOutlineTextMetrics (long /*int*/ hdc, int cbData, OUTLINETEXTMETRIC lpOTM);
+public static final native int GetOutlineTextMetrics (long hdc, int cbData, OUTLINETEXTMETRIC lpOTM);
 /** @param hWnd cast=(HWND) */
-public static final native long /*int*/ GetParent (long /*int*/ hWnd);
+public static final native long GetParent (long hWnd);
 /** @param hdc cast=(HDC) */
-public static final native int GetPixel (long /*int*/ hdc, int x, int y);
+public static final native int GetPixel (long hdc, int x, int y);
 /** @param hdc cast=(HDC) */
-public static final native int GetPolyFillMode (long /*int*/ hdc);
+public static final native int GetPolyFillMode (long hdc);
 /**
  * @param pPrinterName cast=(LPWSTR)
  * @param phPrinter cast=(LPHANDLE)
  * @param pDefault cast=(LPPRINTER_DEFAULTSW)
  */
-public static final native boolean OpenPrinter (char[] pPrinterName, long /*int*/ [] phPrinter, long /*int*/ pDefault);
-public static final native long /*int*/ GetProcessHeap ();
+public static final native boolean OpenPrinter (char[] pPrinterName, long [] phPrinter, long pDefault);
+public static final native long GetProcessHeap ();
 /**
  * @param lpAppName cast=(LPWSTR)
  * @param lpKeyName cast=(LPWSTR)
@@ -2981,114 +2981,114 @@ public static final native int GetProfileString (char [] lpAppName, char [] lpKe
  * @param hWnd cast=(HWND)
  * @param lpString cast=(LPCWSTR)
  */
-public static final native long /*int*/ GetProp (long /*int*/ hWnd, long /*int*/ lpString);
+public static final native long GetProp (long hWnd, long lpString);
 /**
  * @param hdc cast=(HDC)
  * @param hrgn cast=(HRGN)
  */
-public static final native int GetRandomRgn (long /*int*/ hdc, long /*int*/ hrgn, int iNum);
+public static final native int GetRandomRgn (long hdc, long hrgn, int iNum);
 /**
  * @param hRgn cast=(HRGN)
  * @param lpRgnData cast=(RGNDATA *),flags=no_in critical
  */
-public static final native int GetRegionData (long /*int*/ hRgn, int dwCount, int [] lpRgnData);
+public static final native int GetRegionData (long hRgn, int dwCount, int [] lpRgnData);
 /**
  * @param hrgn cast=(HRGN)
  * @param lprc flags=no_in
  */
-public static final native int GetRgnBox (long /*int*/ hrgn, RECT lprc);
+public static final native int GetRgnBox (long hrgn, RECT lprc);
 /** @param hdc cast=(HDC) */
-public static final native int GetROP2 (long /*int*/ hdc);
+public static final native int GetROP2 (long hdc);
 /** @param lpofn cast=(LPOPENFILENAMEW) */
 public static final native boolean GetSaveFileName (OPENFILENAME lpofn);
 /** @param hwnd cast=(HWND) */
-public static final native boolean GetScrollBarInfo (long /*int*/ hwnd, int idObject, SCROLLBARINFO psbi);
+public static final native boolean GetScrollBarInfo (long hwnd, int idObject, SCROLLBARINFO psbi);
 /** @param hwnd cast=(HWND) */
-public static final native boolean GetScrollInfo (long /*int*/ hwnd, int flags, SCROLLINFO info);
+public static final native boolean GetScrollInfo (long hwnd, int flags, SCROLLINFO info);
 /** @param lpStartupInfo cast=(LPSTARTUPINFOW) */
 public static final native void GetStartupInfo (STARTUPINFO lpStartupInfo);
-public static final native long /*int*/ GetStockObject (int fnObject);
+public static final native long GetStockObject (int fnObject);
 public static final native int GetSysColor (int nIndex);
-public static final native long /*int*/ GetSysColorBrush (int nIndex);
+public static final native long GetSysColorBrush (int nIndex);
 public static final native short GetSystemDefaultUILanguage ();
 /** @param hWnd cast=(HWND) */
-public static final native long /*int*/ GetSystemMenu (long /*int*/ hWnd, boolean bRevert);
+public static final native long GetSystemMenu (long hWnd, boolean bRevert);
 public static final native int GetSystemMetrics (int nIndex);
 /** @param hDC cast=(HDC) */
-public static final native int GetTextColor (long /*int*/ hDC);
+public static final native int GetTextColor (long hDC);
 /**
  * @param hdc cast=(HDC)
  * @param lpString cast=(LPWSTR),flags=no_out critical
  * @param lpSize flags=no_in
  */
-public static final native boolean GetTextExtentPoint32 (long /*int*/ hdc, char [] lpString, int cbString, SIZE lpSize);
+public static final native boolean GetTextExtentPoint32 (long hdc, char [] lpString, int cbString, SIZE lpSize);
 /**
  * @param hdc cast=(HDC)
  * @param lptm flags=no_in
  */
-public static final native boolean GetTextMetrics (long /*int*/ hdc, TEXTMETRIC lptm);
+public static final native boolean GetTextMetrics (long hdc, TEXTMETRIC lptm);
 /**
  * @method flags=dynamic
  * @param hTouchInput cast=(HTOUCHINPUT)
  * @param cInputs cast=(UINT)
  * @param pTouchInputs cast=(PTOUCHINPUT)
  */
-public static final native boolean GetTouchInputInfo(long /*int*/ hTouchInput, int cInputs, long /*int*/ pTouchInputs, int cbSize);
+public static final native boolean GetTouchInputInfo(long hTouchInput, int cInputs, long pTouchInputs, int cbSize);
 /**
  * @param hWnd cast=(HWND)
  * @param lpRect cast=(LPRECT)
  * @param bErase cast=(BOOL)
  */
-public static final native boolean GetUpdateRect (long /*int*/ hWnd, RECT lpRect, boolean bErase);
+public static final native boolean GetUpdateRect (long hWnd, RECT lpRect, boolean bErase);
 /**
  * @param hWnd cast=(HWND)
  * @param hRgn cast=(HRGN)
  */
-public static final native int GetUpdateRgn (long /*int*/ hWnd, long /*int*/ hRgn, boolean bErase);
+public static final native int GetUpdateRgn (long hWnd, long hRgn, boolean bErase);
 public static final native int GetVersion ();
 /** @param hWnd cast=(HWND) */
-public static final native long /*int*/ GetWindow (long /*int*/ hWnd, int uCmd);
+public static final native long GetWindow (long hWnd, int uCmd);
 /** @param hWnd cast=(HWND) */
-public static final native int GetWindowLong (long /*int*/ hWnd, int nIndex);
+public static final native int GetWindowLong (long hWnd, int nIndex);
 /** @param hWnd cast=(HWND) */
-public static final native long /*int*/ GetWindowLongPtr (long /*int*/ hWnd, int nIndex);
+public static final native long GetWindowLongPtr (long hWnd, int nIndex);
 /** @param hWnd cast=(HWND) */
-public static final native long /*int*/ GetWindowDC (long /*int*/ hWnd);
+public static final native long GetWindowDC (long hWnd);
 /** @param hdc cast=(HDC) */
-public static final native boolean GetWindowOrgEx (long /*int*/ hdc, POINT lpPoint);
+public static final native boolean GetWindowOrgEx (long hdc, POINT lpPoint);
 /** @param hWnd cast=(HWND) */
-public static final native boolean GetWindowPlacement (long /*int*/ hWnd, WINDOWPLACEMENT lpwndpl);
+public static final native boolean GetWindowPlacement (long hWnd, WINDOWPLACEMENT lpwndpl);
 /** @param hWnd cast=(HWND) */
-public static final native boolean GetWindowRect (long /*int*/ hWnd, RECT lpRect);
+public static final native boolean GetWindowRect (long hWnd, RECT lpRect);
 /**
  * @param hWnd cast=(HWND)
  * @param hRgn cast=(HRGN)
  */
-public static final native int GetWindowRgn (long /*int*/ hWnd, long /*int*/ hRgn);
+public static final native int GetWindowRgn (long hWnd, long hRgn);
 /**
  * @param hWnd cast=(HWND)
  * @param lpString cast=(LPWSTR)
  */
-public static final native int GetWindowText (long /*int*/ hWnd, char [] lpString, int nMaxCount);
+public static final native int GetWindowText (long hWnd, char [] lpString, int nMaxCount);
 /** @param hWnd cast=(HWND) */
-public static final native int GetWindowTextLength (long /*int*/ hWnd);
+public static final native int GetWindowTextLength (long hWnd);
 /**
  * @param hWnd cast=(HWND)
  * @param lpdwProcessId cast=(LPDWORD)
  */
-public static final native int GetWindowThreadProcessId (long /*int*/ hWnd, int [] lpdwProcessId);
+public static final native int GetWindowThreadProcessId (long hWnd, int [] lpdwProcessId);
 public static final native double GID_ROTATE_ANGLE_FROM_ARGUMENT(long dwArgument);
 /** @param lpString cast=(LPCWSTR) */
 public static final native int GlobalAddAtom (char [] lpString);
-public static final native long /*int*/ GlobalAlloc (int uFlags, int dwBytes);
+public static final native long GlobalAlloc (int uFlags, int dwBytes);
 /** @param hMem cast=(HANDLE) */
-public static final native long /*int*/ GlobalFree (long /*int*/ hMem);
+public static final native long GlobalFree (long hMem);
 /** @param hMem cast=(HANDLE) */
-public static final native long /*int*/ GlobalLock (long /*int*/ hMem);
+public static final native long GlobalLock (long hMem);
 /** @param hMem cast=(HANDLE) */
-public static final native int GlobalSize (long /*int*/ hMem);
+public static final native int GlobalSize (long hMem);
 /** @param hMem cast=(HANDLE) */
-public static final native boolean GlobalUnlock (long /*int*/ hMem);
+public static final native boolean GlobalUnlock (long hMem);
 /**
  * @param hdc cast=(HDC)
  * @param pVertex cast=(PTRIVERTEX)
@@ -3097,17 +3097,17 @@ public static final native boolean GlobalUnlock (long /*int*/ hMem);
  * @param dwNumMesh cast=(ULONG)
  * @param dwMode cast=(ULONG)
  */
-public static final native boolean GradientFill (long /*int*/ hdc, long /*int*/ pVertex, int dwNumVertex, long /*int*/ pMesh, int dwNumMesh, int dwMode);
-public static final native int HIWORD(long /*int*/ l);
+public static final native boolean GradientFill (long hdc, long pVertex, int dwNumVertex, long pMesh, int dwNumMesh, int dwMode);
+public static final native int HIWORD(long l);
 /** @param hHeap cast=(HANDLE) */
-public static final native long /*int*/ HeapAlloc (long /*int*/ hHeap, int dwFlags, int dwBytes);
+public static final native long HeapAlloc (long hHeap, int dwFlags, int dwBytes);
 /**
  * @param hHeap cast=(HANDLE)
  * @param lpMem cast=(LPVOID)
  */
-public static final native boolean HeapFree (long /*int*/ hHeap, int dwFlags, long /*int*/ lpMem);
+public static final native boolean HeapFree (long hHeap, int dwFlags, long lpMem);
 /** @param hWnd cast=(HWND) */
-public static final native boolean HideCaret (long /*int*/ hWnd);
+public static final native boolean HideCaret (long hWnd);
 /**
  * @param lpsz cast=(LPOLESTR)
  * @param lpiid cast=(LPIID)
@@ -3118,22 +3118,22 @@ public static final native int IIDFromString (char[] lpsz, byte[] lpiid);
  * @param hbmImage cast=(HBITMAP)
  * @param hbmMask cast=(HBITMAP)
  */
-public static final native int ImageList_Add (long /*int*/ himl, long /*int*/ hbmImage, long /*int*/ hbmMask);
+public static final native int ImageList_Add (long himl, long hbmImage, long hbmMask);
 /**
  * @param himl cast=(HIMAGELIST)
  * @param hbmImage cast=(HBITMAP)
  * @param crMask cast=(COLORREF)
  */
-public static final native int ImageList_AddMasked (long /*int*/ himl, long /*int*/ hbmImage, int crMask);
+public static final native int ImageList_AddMasked (long himl, long hbmImage, int crMask);
 /** @param himl cast=(HIMAGELIST) */
-public static final native boolean ImageList_BeginDrag (long /*int*/ himl, int iTrack, int dxHotspot, int dyHotspot);
-public static final native long /*int*/ ImageList_Create (int cx, int cy, int flags, int cInitial, int cGrow);
+public static final native boolean ImageList_BeginDrag (long himl, int iTrack, int dxHotspot, int dyHotspot);
+public static final native long ImageList_Create (int cx, int cy, int flags, int cInitial, int cGrow);
 /** @param himl cast=(HIMAGELIST) */
-public static final native boolean ImageList_Destroy (long /*int*/ himl);
+public static final native boolean ImageList_Destroy (long himl);
 /** @param hwndLock cast=(HWND) */
-public static final native boolean ImageList_DragEnter (long /*int*/ hwndLock, int x, int y);
+public static final native boolean ImageList_DragEnter (long hwndLock, int x, int y);
 /** @param hwndLock cast=(HWND) */
-public static final native boolean ImageList_DragLeave (long /*int*/ hwndLock);
+public static final native boolean ImageList_DragLeave (long hwndLock);
 public static final native boolean ImageList_DragMove (int x, int y);
 /** @param fShow cast=(BOOL) */
 public static final native boolean ImageList_DragShowNolock (boolean fShow);
@@ -3143,91 +3143,91 @@ public static final native void ImageList_EndDrag ();
  * @param cx cast=(int *)
  * @param cy cast=(int *)
  */
-public static final native boolean ImageList_GetIconSize (long /*int*/ himl, int [] cx, int [] cy);
+public static final native boolean ImageList_GetIconSize (long himl, int [] cx, int [] cy);
 /** @param himl cast=(HIMAGELIST) */
-public static final native int ImageList_GetImageCount (long /*int*/ himl);
+public static final native int ImageList_GetImageCount (long himl);
 /** @param himl cast=(HIMAGELIST) */
-public static final native boolean ImageList_Remove (long /*int*/ himl, int i);
+public static final native boolean ImageList_Remove (long himl, int i);
 /**
  * @param himl cast=(HIMAGELIST)
  * @param hbmImage cast=(HBITMAP)
  * @param hbmMask cast=(HBITMAP)
  */
-public static final native boolean ImageList_Replace (long /*int*/ himl, int i, long /*int*/ hbmImage, long /*int*/ hbmMask);
+public static final native boolean ImageList_Replace (long himl, int i, long hbmImage, long hbmMask);
 /**
  * @param himl cast=(HIMAGELIST)
  * @param hicon cast=(HICON)
  */
-public static final native int ImageList_ReplaceIcon (long /*int*/ himl, int i, long /*int*/ hicon);
+public static final native int ImageList_ReplaceIcon (long himl, int i, long hicon);
 /** @param himl cast=(HIMAGELIST) */
-public static final native boolean ImageList_SetIconSize (long /*int*/ himl, int cx, int cy);
+public static final native boolean ImageList_SetIconSize (long himl, int cx, int cy);
 /**
  * @param hWnd cast=(HWND)
  * @param hIMC cast=(HIMC)
  */
-public static final native long /*int*/ ImmAssociateContext (long /*int*/ hWnd, long /*int*/ hIMC);
-public static final native long /*int*/ ImmCreateContext ();
+public static final native long ImmAssociateContext (long hWnd, long hIMC);
+public static final native long ImmCreateContext ();
 /** @param hIMC cast=(HIMC) */
-public static final native boolean ImmDestroyContext (long /*int*/ hIMC);
+public static final native boolean ImmDestroyContext (long hIMC);
 /**
  * @param hKL cast=(HKL)
  * @param hIMC cast=(HIMC)
  * @param lpData cast=(LPVOID)
  */
-public static final native long /*int*/ ImmEscape (long /*int*/ hKL, long /*int*/ hIMC, int uEscape, char[] lpData);
+public static final native long ImmEscape (long hKL, long hIMC, int uEscape, char[] lpData);
 /** @param hIMC cast=(HIMC) */
-public static final native boolean ImmGetCompositionFont (long /*int*/ hIMC, LOGFONT lplf);
+public static final native boolean ImmGetCompositionFont (long hIMC, LOGFONT lplf);
 /**
  * @param hIMC cast=(HIMC)
  * @param lpBuf cast=(LPWSTR)
  */
-public static final native int ImmGetCompositionString (long /*int*/ hIMC, int dwIndex, char [] lpBuf, int dwBufLen);
+public static final native int ImmGetCompositionString (long hIMC, int dwIndex, char [] lpBuf, int dwBufLen);
 /**
  * @param hIMC cast=(HIMC)
  * @param lpBuf cast=(LPWSTR)
  */
-public static final native int ImmGetCompositionString (long /*int*/ hIMC, int dwIndex, int [] lpBuf, int dwBufLen);
+public static final native int ImmGetCompositionString (long hIMC, int dwIndex, int [] lpBuf, int dwBufLen);
 /**
  * @param hIMC cast=(HIMC)
  * @param lpBuf cast=(LPWSTR)
  */
-public static final native int ImmGetCompositionString (long /*int*/ hIMC, int dwIndex, byte [] lpBuf, int dwBufLen);
+public static final native int ImmGetCompositionString (long hIMC, int dwIndex, byte [] lpBuf, int dwBufLen);
 /** @param hWnd cast=(HWND) */
-public static final native long /*int*/ ImmGetContext (long /*int*/ hWnd);
+public static final native long ImmGetContext (long hWnd);
 /**
  * @param hIMC cast=(HIMC)
  * @param lpfdwConversion cast=(LPDWORD)
  * @param lpfdwSentence cast=(LPDWORD)
  */
-public static final native boolean ImmGetConversionStatus (long /*int*/ hIMC, int [] lpfdwConversion, int [] lpfdwSentence);
+public static final native boolean ImmGetConversionStatus (long hIMC, int [] lpfdwConversion, int [] lpfdwSentence);
 /** @param hWnd cast=(HWND) */
-public static final native long /*int*/ ImmGetDefaultIMEWnd (long /*int*/ hWnd);
+public static final native long ImmGetDefaultIMEWnd (long hWnd);
 /** @param hIMC cast=(HIMC) */
-public static final native boolean ImmGetOpenStatus (long /*int*/ hIMC);
+public static final native boolean ImmGetOpenStatus (long hIMC);
 /** @param hIMC cast=(HIMC) */
-public static final native boolean ImmNotifyIME (long /*int*/ hIMC, int dwAction, int dwIndex, int dwValue);
+public static final native boolean ImmNotifyIME (long hIMC, int dwAction, int dwIndex, int dwValue);
 /**
  * @param hWnd cast=(HWND)
  * @param hIMC cast=(HIMC)
  */
-public static final native boolean ImmReleaseContext (long /*int*/ hWnd, long /*int*/ hIMC);
+public static final native boolean ImmReleaseContext (long hWnd, long hIMC);
 /** @param hIMC cast=(HIMC) */
-public static final native boolean ImmSetCompositionFont (long /*int*/ hIMC, LOGFONT lplf);
+public static final native boolean ImmSetCompositionFont (long hIMC, LOGFONT lplf);
 /** @param hIMC cast=(HIMC) */
-public static final native boolean ImmSetCompositionWindow (long /*int*/ hIMC, COMPOSITIONFORM lpCompForm);
+public static final native boolean ImmSetCompositionWindow (long hIMC, COMPOSITIONFORM lpCompForm);
 /** @param hIMC cast=(HIMC) */
-public static final native boolean ImmSetCandidateWindow (long /*int*/ hIMC, CANDIDATEFORM lpCandidate);
+public static final native boolean ImmSetCandidateWindow (long hIMC, CANDIDATEFORM lpCandidate);
 /** @param hIMC cast=(HIMC) */
-public static final native boolean ImmSetConversionStatus (long /*int*/ hIMC, int fdwConversion, int dwSentence);
+public static final native boolean ImmSetConversionStatus (long hIMC, int fdwConversion, int dwSentence);
 /** @param hIMC cast=(HIMC) */
-public static final native boolean ImmSetOpenStatus (long /*int*/ hIMC, boolean fOpen);
+public static final native boolean ImmSetOpenStatus (long hIMC, boolean fOpen);
 public static final native void InitCommonControls ();
 public static final native boolean InitCommonControlsEx (INITCOMMONCONTROLSEX lpInitCtrls);
 /**
  * @param hMenu cast=(HMENU)
  * @param lpmii cast=(LPMENUITEMINFOW)
  */
-public static final native boolean InsertMenuItem (long /*int*/ hMenu, int uItem, boolean fByPosition, MENUITEMINFO lpmii);
+public static final native boolean InsertMenuItem (long hMenu, int uItem, boolean fByPosition, MENUITEMINFO lpmii);
 /**
  * @param lpszUrl cast=(LPCWSTR)
  * @param lpszCookieName cast=(LPCWSTR)
@@ -3245,9 +3245,9 @@ public static final native boolean InternetSetCookie (char[] lpszUrl, char[] lps
  * @param hInternet cast=(HINTERNET)
  * @param lpBuffer cast=(LPVOID)
  */
-public static final native boolean InternetSetOption (long /*int*/ hInternet, int dwOption, long /*int*/ lpBuffer, int dwBufferLength);
+public static final native boolean InternetSetOption (long hInternet, int dwOption, long lpBuffer, int dwBufferLength);
 /** @param hdc cast=(HDC) */
-public static final native int IntersectClipRect (long /*int*/ hdc, int nLeftRect, int nTopRect, int nRightRect, int nBottomRect);
+public static final native int IntersectClipRect (long hdc, int nLeftRect, int nTopRect, int nRightRect, int nBottomRect);
 /**
  * @param lprcDst flags=no_in
  * @param lprcSrc1 flags=no_out
@@ -3255,106 +3255,106 @@ public static final native int IntersectClipRect (long /*int*/ hdc, int nLeftRec
  */
 public static final native boolean IntersectRect (RECT lprcDst, RECT lprcSrc1, RECT lprcSrc2);
 /** @param hWnd cast=(HWND) */
-public static final native boolean InvalidateRect (long /*int*/ hWnd, RECT lpRect, boolean bErase);
+public static final native boolean InvalidateRect (long hWnd, RECT lpRect, boolean bErase);
 /**
  * @param hWnd cast=(HWND)
  * @param hRgn cast=(HRGN)
  */
-public static final native boolean InvalidateRgn (long /*int*/ hWnd, long /*int*/ hRgn, boolean bErase);
+public static final native boolean InvalidateRgn (long hWnd, long hRgn, boolean bErase);
 public static final native boolean IsAppThemed ();
 /** @param hWnd cast=(HWND) */
-public static final native boolean IsHungAppWindow (long /*int*/ hWnd);
+public static final native boolean IsHungAppWindow (long hWnd);
 /** @param hWnd cast=(HWND) */
-public static final native boolean IsIconic (long /*int*/ hWnd);
+public static final native boolean IsIconic (long hWnd);
 /**
  * @method flags=dynamic
  * @param hWnd cast=(HWND)
  * @param outFlags cast=(PULONG)
  */
-public static final native boolean IsTouchWindow (long /*int*/ hWnd, long[] outFlags);
+public static final native boolean IsTouchWindow (long hWnd, long[] outFlags);
 /** @param hWnd cast=(HWND) */
-public static final native boolean IsWindowEnabled (long /*int*/ hWnd);
+public static final native boolean IsWindowEnabled (long hWnd);
 /** @param hWnd cast=(HWND) */
-public static final native boolean IsWindowVisible (long /*int*/ hWnd);
+public static final native boolean IsWindowVisible (long hWnd);
 /** @param hWnd cast=(HWND) */
-public static final native boolean IsZoomed (long /*int*/ hWnd);
+public static final native boolean IsZoomed (long hWnd);
 /** @param hWnd cast=(HWND) */
-public static final native boolean KillTimer (long /*int*/ hWnd, long /*int*/ uIDEvent);
+public static final native boolean KillTimer (long hWnd, long uIDEvent);
 /** @param hdc cast=(HDC) */
-public static final native boolean LineTo (long /*int*/ hdc, int x1, int x2);
+public static final native boolean LineTo (long hdc, int x1, int x2);
 /**
  * @param hInstance cast=(HINSTANCE)
  * @param lpBitmapName cast=(LPWSTR)
  */
-public static final native long /*int*/ LoadBitmap (long /*int*/ hInstance, long /*int*/ lpBitmapName);
+public static final native long LoadBitmap (long hInstance, long lpBitmapName);
 /**
  * @param hInstance cast=(HINSTANCE)
  * @param lpCursorName cast=(LPWSTR)
  */
-public static final native long /*int*/ LoadCursor (long /*int*/ hInstance, long /*int*/ lpCursorName);
+public static final native long LoadCursor (long hInstance, long lpCursorName);
 /**
  * @param hInstance cast=(HINSTANCE)
  * @param lpIconName cast=(LPWSTR)
  */
-public static final native long /*int*/ LoadIcon (long /*int*/ hInstance, long /*int*/ lpIconName);
+public static final native long LoadIcon (long hInstance, long lpIconName);
 /**
  * @param hinst cast=(HINSTANCE)
  * @param pszName cast=(PCWSTR)
  * @param phico cast=(HICON *)
  */
-public static final native int LoadIconMetric (long /*int*/ hinst, long /*int*/ pszName, int lims, long /*int*/ [] phico);
+public static final native int LoadIconMetric (long hinst, long pszName, int lims, long [] phico);
 /**
  * @param hinst cast=(HINSTANCE)
  * @param lpszName cast=(LPWSTR)
  */
-public static final native long /*int*/ LoadImage (long /*int*/ hinst, long /*int*/ lpszName, int uType, int cxDesired, int cyDesired, int fuLoad);
+public static final native long LoadImage (long hinst, long lpszName, int uType, int cxDesired, int cyDesired, int fuLoad);
 /** @param hMem cast=(HLOCAL) */
-public static final native long /*int*/ LocalFree (long /*int*/ hMem);
+public static final native long LocalFree (long hMem);
 public static final native int LODWORD (long l);
-public static final native int LOWORD (long /*int*/ l);
+public static final native int LOWORD (long l);
 /** @param hdc cast=(HDC) */
-public static final native boolean LPtoDP (long /*int*/ hdc, POINT lpPoints, int nCount);
+public static final native boolean LPtoDP (long hdc, POINT lpPoints, int nCount);
 public static final native int MAKEWORD(int l, int h);
-public static final native long /*int*/ MAKEWPARAM(int l, int h);
-public static final native long /*int*/ MAKELPARAM(int l, int h);
-public static final native long /*int*/ MAKELRESULT(int l, int h);
+public static final native long MAKEWPARAM(int l, int h);
+public static final native long MAKELPARAM(int l, int h);
+public static final native long MAKELRESULT(int l, int h);
 public static final native int MapVirtualKey (int uCode, int uMapType);
 /**
  * @param hWndFrom cast=(HWND)
  * @param hWndTo cast=(HWND)
  * @param lpPoints cast=(LPPOINT)
  */
-public static final native int MapWindowPoints (long /*int*/ hWndFrom, long /*int*/ hWndTo, POINT lpPoints, int cPoints);
+public static final native int MapWindowPoints (long hWndFrom, long hWndTo, POINT lpPoints, int cPoints);
 /**
  * @param hWndFrom cast=(HWND)
  * @param hWndTo cast=(HWND)
  * @param lpPoints cast=(LPPOINT)
  */
-public static final native int MapWindowPoints (long /*int*/ hWndFrom, long /*int*/ hWndTo, RECT lpPoints, int cPoints);
+public static final native int MapWindowPoints (long hWndFrom, long hWndTo, RECT lpPoints, int cPoints);
 public static final native boolean MessageBeep (int uType);
 /**
  * @param hWnd cast=(HWND)
  * @param lpText cast=(LPWSTR)
  * @param lpCaption cast=(LPWSTR)
  */
-public static final native int MessageBox (long /*int*/ hWnd, char [] lpText, char [] lpCaption, int uType);
+public static final native int MessageBox (long hWnd, char [] lpText, char [] lpCaption, int uType);
 /**
  * @param hdc cast=(HDC)
  * @param lpXform cast=(XFORM *)
  */
-public static final native boolean ModifyWorldTransform(long /*int*/ hdc, float [] lpXform, int iMode);
+public static final native boolean ModifyWorldTransform(long hdc, float [] lpXform, int iMode);
 /** @param hwnd cast=(HWND) */
-public static final native long /*int*/ MonitorFromWindow (long /*int*/ hwnd, int dwFlags);
+public static final native long MonitorFromWindow (long hwnd, int dwFlags);
 /**
  * @param Destination cast=(PVOID),flags=no_in critical
  * @param SourcePtr cast=(CONST VOID *)
  */
-public static final native void MoveMemory (char[] Destination, long /*int*/ SourcePtr, int Length);
+public static final native void MoveMemory (char[] Destination, long SourcePtr, int Length);
 /**
  * @param Destination cast=(PVOID),flags=no_in critical
  * @param Source cast=(CONST VOID *)
  */
-public static final native void MoveMemory (byte [] Destination, long /*int*/ Source, int Length);
+public static final native void MoveMemory (byte [] Destination, long Source, int Length);
 /**
  * @param Destination cast=(PVOID),flags=no_in critical
  * @param Source cast=(CONST VOID *),flags=no_out
@@ -3369,122 +3369,122 @@ public static final native void MoveMemory (byte [] Destination, BITMAPINFOHEADE
  * @param Destination cast=(PVOID),flags=no_in critical
  * @param Source cast=(CONST VOID *)
  */
-public static final native void MoveMemory (int [] Destination, long /*int*/ Source, int Length);
+public static final native void MoveMemory (int [] Destination, long Source, int Length);
 /**
  * @param Destination cast=(PVOID),flags=no_in critical
  * @param SourcePtr cast=(CONST VOID *)
  */
-public static final native void MoveMemory (long [] Destination, long /*int*/ SourcePtr, int Length);
+public static final native void MoveMemory (long [] Destination, long SourcePtr, int Length);
 /**
  * @param Destination cast=(PVOID),flags=no_in critical
  * @param SourcePtr cast=(CONST VOID *)
  */
-public static final native void MoveMemory (double[] Destination, long /*int*/ SourcePtr, int Length);
+public static final native void MoveMemory (double[] Destination, long SourcePtr, int Length);
 /**
  * @param Destination cast=(PVOID),flags=no_in critical
  * @param SourcePtr cast=(CONST VOID *)
  */
-public static final native void MoveMemory (float[] Destination, long /*int*/ SourcePtr, int Length);
+public static final native void MoveMemory (float[] Destination, long SourcePtr, int Length);
 /**
  * @param Destination cast=(PVOID),flags=no_in critical
  * @param SourcePtr cast=(CONST VOID *)
  */
-public static final native void MoveMemory (short[] Destination, long /*int*/ SourcePtr, int Length);
+public static final native void MoveMemory (short[] Destination, long SourcePtr, int Length);
 /**
  * @param Destination cast=(PVOID)
  * @param Source cast=(CONST VOID *),flags=no_out critical
  */
-public static final native void MoveMemory (long /*int*/ Destination, byte [] Source, int Length);
+public static final native void MoveMemory (long Destination, byte [] Source, int Length);
 /**
  * @param Destination cast=(PVOID)
  * @param Source cast=(CONST VOID *),flags=no_out critical
  */
-public static final native void MoveMemory (long /*int*/ Destination, char [] Source, int Length);
+public static final native void MoveMemory (long Destination, char [] Source, int Length);
 /**
  * @param Destination cast=(PVOID)
  * @param Source cast=(CONST VOID *),flags=no_out critical
  */
-public static final native void MoveMemory (long /*int*/ Destination, int [] Source, int Length);
+public static final native void MoveMemory (long Destination, int [] Source, int Length);
 /**
  * @param Destination cast=(PVOID)
  * @param Source cast=(CONST VOID *)
  */
-public static final native void MoveMemory (long /*int*/ Destination, long /*int*/ Source, int Length);
+public static final native void MoveMemory (long Destination, long Source, int Length);
 /**
  * @param Destination cast=(PVOID)
  * @param Source cast=(CONST VOID *),flags=no_out
  */
-public static final native void MoveMemory (long /*int*/ Destination, DEVMODE Source, int Length);
+public static final native void MoveMemory (long Destination, DEVMODE Source, int Length);
 /**
  * @param Destination cast=(PVOID)
  * @param Source cast=(CONST VOID *),flags=no_out
  */
-public static final native void MoveMemory (long /*int*/ Destination, DOCHOSTUIINFO Source, int Length);
+public static final native void MoveMemory (long Destination, DOCHOSTUIINFO Source, int Length);
 /**
  * @param Destination cast=(PVOID)
  * @param Source cast=(CONST VOID *),flags=no_out
  */
-public static final native void MoveMemory (long /*int*/ Destination, GRADIENT_RECT Source, int Length);
+public static final native void MoveMemory (long Destination, GRADIENT_RECT Source, int Length);
 /**
  * @param Destination cast=(PVOID)
  * @param Source cast=(CONST VOID *),flags=no_out
  */
-public static final native void MoveMemory (long /*int*/ Destination, LOGFONT Source, int Length);
+public static final native void MoveMemory (long Destination, LOGFONT Source, int Length);
 /**
  * @param Destination cast=(PVOID)
  * @param Source cast=(CONST VOID *),flags=no_out
  */
-public static final native void MoveMemory (long /*int*/ Destination, MEASUREITEMSTRUCT Source, int Length);
+public static final native void MoveMemory (long Destination, MEASUREITEMSTRUCT Source, int Length);
 /**
  * @param Destination cast=(PVOID)
  * @param Source cast=(CONST VOID *),flags=no_out
  */
-public static final native void MoveMemory (long /*int*/ Destination, MINMAXINFO Source, int Length);
+public static final native void MoveMemory (long Destination, MINMAXINFO Source, int Length);
 /**
  * @param Destination cast=(PVOID)
  * @param Source cast=(CONST VOID *),flags=no_out
  */
-public static final native void MoveMemory (long /*int*/ Destination, MSG Source, int Length);
+public static final native void MoveMemory (long Destination, MSG Source, int Length);
 /**
  * @param Destination cast=(PVOID)
  * @param Source cast=(CONST VOID *),flags=no_out
  */
-public static final native void MoveMemory (long /*int*/ Destination, UDACCEL Source, int Length);
+public static final native void MoveMemory (long Destination, UDACCEL Source, int Length);
 /**
  * @param Destination cast=(PVOID)
  * @param Source cast=(CONST VOID *),flags=no_out
  */
-public static final native void MoveMemory (long /*int*/ Destination, NMTTDISPINFO Source, int Length);
+public static final native void MoveMemory (long Destination, NMTTDISPINFO Source, int Length);
 /**
  * @param Destination cast=(PVOID)
  * @param Source cast=(CONST VOID *)
  */
-public static final native void MoveMemory (long /*int*/ Destination, OPENFILENAME Source, int Length);
+public static final native void MoveMemory (long Destination, OPENFILENAME Source, int Length);
 /**
  * @param Destination cast=(PVOID)
  * @param Source cast=(CONST VOID *),flags=no_out
  */
-public static final native void MoveMemory (long /*int*/ Destination, RECT Source, int Length);
+public static final native void MoveMemory (long Destination, RECT Source, int Length);
 /**
  * @param Destination cast=(PVOID)
  * @param Source cast=(CONST VOID *),flags=no_out
  */
-public static final native void MoveMemory (long /*int*/ Destination, SAFEARRAY Source, int Length);
+public static final native void MoveMemory (long Destination, SAFEARRAY Source, int Length);
 /**
  * @param Destination cast=(PVOID)
  * @param Source cast=(CONST VOID *),flags=no_out
  */
-public static final native void MoveMemory (SAFEARRAY Destination, long /*int*/ Source, int Length);
+public static final native void MoveMemory (SAFEARRAY Destination, long Source, int Length);
 /**
  * @param Destination cast=(PVOID)
  * @param Source cast=(CONST VOID *),flags=no_out
  */
-public static final native void MoveMemory (long /*int*/ Destination, TRIVERTEX Source, int Length);
+public static final native void MoveMemory (long Destination, TRIVERTEX Source, int Length);
 /**
  * @param Destination cast=(PVOID)
  * @param Source cast=(CONST VOID *),flags=no_out
  */
-public static final native void MoveMemory (long /*int*/ Destination, WINDOWPOS Source, int Length);
+public static final native void MoveMemory (long Destination, WINDOWPOS Source, int Length);
 /**
  * @param Destination cast=(PVOID),flags=no_in
  * @param Source cast=(CONST VOID *),flags=no_out critical
@@ -3494,82 +3494,82 @@ public static final native void MoveMemory (BITMAPINFOHEADER Destination, byte [
  * @param Destination cast=(PVOID),flags=no_in
  * @param Source cast=(CONST VOID *),flags=no_out critical
  */
-public static final native void MoveMemory (BITMAPINFOHEADER Destination, long /*int*/ Source, int Length);
+public static final native void MoveMemory (BITMAPINFOHEADER Destination, long Source, int Length);
 /**
  * @param Destination cast=(PVOID),flags=no_in
  * @param Source cast=(CONST VOID *)
  */
-public static final native void MoveMemory (CERT_CONTEXT Destination, long /*int*/ Source, int Length);
+public static final native void MoveMemory (CERT_CONTEXT Destination, long Source, int Length);
 /**
  * @param Destination cast=(PVOID),flags=no_in
  * @param Source cast=(CONST VOID *)
  */
-public static final native void MoveMemory (CERT_INFO Destination, long /*int*/ Source, int Length);
+public static final native void MoveMemory (CERT_INFO Destination, long Source, int Length);
 /**
  * @param Destination cast=(PVOID),flags=no_in
  * @param Source cast=(CONST VOID *)
  */
-public static final native void MoveMemory (DEVMODE Destination, long /*int*/ Source, int Length);
+public static final native void MoveMemory (DEVMODE Destination, long Source, int Length);
 /**
  * @param Destination cast=(PVOID),flags=no_in
  * @param Source cast=(CONST VOID *)
  */
-public static final native void MoveMemory (DOCHOSTUIINFO Destination, long /*int*/ Source, int Length);
+public static final native void MoveMemory (DOCHOSTUIINFO Destination, long Source, int Length);
 /**
  * @param Destination cast=(PVOID),flags=no_in
  * @param Source cast=(CONST VOID *)
  */
-public static final native void MoveMemory (DRAWITEMSTRUCT Destination, long /*int*/ Source, int Length);
-/**
- * @param Destination cast=(PVOID),flags=no_in
- * @param Source cast=(CONST VOID *),flags=no_out
- */
-public static final native void MoveMemory (FLICK_DATA Destination, long /*int*/ [] Source, int Length);
+public static final native void MoveMemory (DRAWITEMSTRUCT Destination, long Source, int Length);
 /**
  * @param Destination cast=(PVOID),flags=no_in
  * @param Source cast=(CONST VOID *),flags=no_out
  */
-public static final native void MoveMemory (FLICK_POINT Destination, long /*int*/ [] Source, int Length);
+public static final native void MoveMemory (FLICK_DATA Destination, long [] Source, int Length);
+/**
+ * @param Destination cast=(PVOID),flags=no_in
+ * @param Source cast=(CONST VOID *),flags=no_out
+ */
+public static final native void MoveMemory (FLICK_POINT Destination, long [] Source, int Length);
 /**
  * @param Destination cast=(PVOID),flags=no_in
  * @param Source cast=(CONST VOID *)
  */
-public static final native void MoveMemory (HDITEM Destination, long /*int*/ Source, int Length);
+public static final native void MoveMemory (HDITEM Destination, long Source, int Length);
 /**
  * @param Destination cast=(PVOID),flags=no_in
  * @param Source cast=(CONST VOID *)
  */
-public static final native void MoveMemory (HELPINFO Destination, long /*int*/ Source, int Length);
+public static final native void MoveMemory (HELPINFO Destination, long Source, int Length);
 /**
  * @param Destination cast=(PVOID),flags=no_in
  * @param Source cast=(CONST VOID *)
  */
-public static final native void MoveMemory (LOGFONT Destination, long /*int*/ Source, int Length);
+public static final native void MoveMemory (LOGFONT Destination, long Source, int Length);
 /**
  * @param Destination cast=(PVOID),flags=no_in
  * @param Source cast=(CONST VOID *)
  */
-public static final native void MoveMemory (MEASUREITEMSTRUCT Destination, long /*int*/ Source, int Length);
+public static final native void MoveMemory (MEASUREITEMSTRUCT Destination, long Source, int Length);
 /**
  * @param Destination cast=(PVOID),flags=no_in
  * @param Source cast=(CONST VOID *)
  */
-public static final native void MoveMemory (MINMAXINFO Destination, long /*int*/ Source, int Length);
+public static final native void MoveMemory (MINMAXINFO Destination, long Source, int Length);
 /**
  * @param Destination cast=(PVOID)
  * @param Source cast=(CONST VOID *)
  */
-public static final native void MoveMemory (OFNOTIFY Destination, long /*int*/ Source, int Length);
+public static final native void MoveMemory (OFNOTIFY Destination, long Source, int Length);
 /**
  * @param Destination cast=(PVOID)
  * @param Source cast=(CONST VOID *)
  */
-public static final native void MoveMemory (OPENFILENAME Destination, long /*int*/ Source, int Length);
+public static final native void MoveMemory (OPENFILENAME Destination, long Source, int Length);
 /**
  * @param Destination cast=(PVOID),flags=no_in
  * @param Source cast=(CONST VOID *)
  */
-public static final native void MoveMemory (POINT Destination, long /*int*/ Source, int Length);
+public static final native void MoveMemory (POINT Destination, long Source, int Length);
 /**
  * @param Destination cast=(PVOID),flags=no_in
  * @param Source cast=(CONST VOID *),flags=no_out critical
@@ -3579,227 +3579,227 @@ public static final native void MoveMemory (POINT Destination, long[] Source, in
  * @param Destination cast=(PVOID),flags=no_in
  * @param Source cast=(CONST VOID *)
  */
-public static final native void MoveMemory (NMHDR Destination, long /*int*/ Source, int Length);
+public static final native void MoveMemory (NMHDR Destination, long Source, int Length);
 /**
  * @param Destination cast=(PVOID),flags=no_in
  * @param Source cast=(CONST VOID *)
  */
-public static final native void MoveMemory (NMCUSTOMDRAW Destination, long /*int*/ Source, int Length);
+public static final native void MoveMemory (NMCUSTOMDRAW Destination, long Source, int Length);
 /**
  * @param Destination cast=(PVOID),flags=no_in
  * @param Source cast=(CONST VOID *)
  */
-public static final native void MoveMemory (NMLVCUSTOMDRAW Destination, long /*int*/ Source, int Length);
+public static final native void MoveMemory (NMLVCUSTOMDRAW Destination, long Source, int Length);
 /**
  * @param Destination cast=(PVOID),flags=no_in
  * @param Source cast=(CONST VOID *)
  */
-public static final native void MoveMemory (NMTBCUSTOMDRAW Destination, long /*int*/ Source, int Length);
+public static final native void MoveMemory (NMTBCUSTOMDRAW Destination, long Source, int Length);
 /**
  * @param Destination cast=(PVOID),flags=no_in
  * @param Source cast=(CONST VOID *)
  */
-public static final native void MoveMemory (NMTBHOTITEM Destination, long /*int*/ Source, int Length);
+public static final native void MoveMemory (NMTBHOTITEM Destination, long Source, int Length);
 /**
  * @param Destination cast=(PVOID),flags=no_in
  * @param Source cast=(CONST VOID *)
  */
-public static final native void MoveMemory (NMTREEVIEW Destination, long /*int*/ Source, int Length);
+public static final native void MoveMemory (NMTREEVIEW Destination, long Source, int Length);
 /**
  * @param Destination cast=(PVOID),flags=no_in
  * @param Source cast=(CONST VOID *)
  */
-public static final native void MoveMemory (NMTVCUSTOMDRAW Destination, long /*int*/ Source, int Length);
+public static final native void MoveMemory (NMTVCUSTOMDRAW Destination, long Source, int Length);
 /**
  * @param Destination cast=(PVOID),flags=no_in
  * @param Source cast=(CONST VOID *)
  */
-public static final native void MoveMemory (NMTVITEMCHANGE Destination, long /*int*/ Source, int Length);
+public static final native void MoveMemory (NMTVITEMCHANGE Destination, long Source, int Length);
 /**
  * @param Destination cast=(PVOID),flags=no_in
  * @param Source cast=(CONST VOID *)
  */
-public static final native void MoveMemory (NMUPDOWN Destination, long /*int*/ Source, int Length);
+public static final native void MoveMemory (NMUPDOWN Destination, long Source, int Length);
 /**
  * @param Destination cast=(PVOID)
  * @param Source cast=(CONST VOID *),flags=no_out
  */
-public static final native void MoveMemory (long /*int*/ Destination, NMLVCUSTOMDRAW Source, int Length);
+public static final native void MoveMemory (long Destination, NMLVCUSTOMDRAW Source, int Length);
 /**
  * @param Destination cast=(PVOID)
  * @param Source cast=(CONST VOID *),flags=no_out
  */
-public static final native void MoveMemory (long /*int*/ Destination, NMTBCUSTOMDRAW Source, int Length);
+public static final native void MoveMemory (long Destination, NMTBCUSTOMDRAW Source, int Length);
 /**
  * @param Destination cast=(PVOID)
  * @param Source cast=(CONST VOID *),flags=no_out
  */
-public static final native void MoveMemory (long /*int*/ Destination, NMTVCUSTOMDRAW Source, int Length);
+public static final native void MoveMemory (long Destination, NMTVCUSTOMDRAW Source, int Length);
 /**
  * @param Destination cast=(PVOID)
  * @param Source cast=(CONST VOID *),flags=no_out
  */
-public static final native void MoveMemory (long /*int*/ Destination, NMLVDISPINFO Source, int Length);
+public static final native void MoveMemory (long Destination, NMLVDISPINFO Source, int Length);
 /**
  * @param Destination cast=(PVOID)
  * @param Source cast=(CONST VOID *),flags=no_out
  */
-public static final native void MoveMemory (long /*int*/ Destination, NMTVDISPINFO Source, int Length);
+public static final native void MoveMemory (long Destination, NMTVDISPINFO Source, int Length);
 /**
  * @param Destination cast=(PVOID),flags=no_in
  * @param Source cast=(CONST VOID *)
  */
-public static final native void MoveMemory (NMLVDISPINFO Destination, long /*int*/ Source, int Length);
+public static final native void MoveMemory (NMLVDISPINFO Destination, long Source, int Length);
 /**
  * @param Destination cast=(PVOID),flags=no_in
  * @param Source cast=(CONST VOID *)
  */
-public static final native void MoveMemory (NMTVDISPINFO Destination, long /*int*/ Source, int Length);
+public static final native void MoveMemory (NMTVDISPINFO Destination, long Source, int Length);
 /**
  * @param Destination cast=(PVOID),flags=no_in
  * @param Source cast=(CONST VOID *)
  */
-public static final native void MoveMemory (NMLVODSTATECHANGE Destination, long /*int*/ Source, int Length);
+public static final native void MoveMemory (NMLVODSTATECHANGE Destination, long Source, int Length);
 /**
  * @param Destination cast=(PVOID),flags=no_in
  * @param Source cast=(CONST VOID *)
  */
-public static final native void MoveMemory (NMHEADER Destination, long /*int*/ Source, int Length);
+public static final native void MoveMemory (NMHEADER Destination, long Source, int Length);
 /**
  * @param Destination cast=(PVOID),flags=no_in
  * @param Source cast=(CONST VOID *)
  */
-public static final native void MoveMemory (NMLINK Destination, long /*int*/ Source, int Length);
+public static final native void MoveMemory (NMLINK Destination, long Source, int Length);
 /**
  * @param Destination cast=(PVOID),flags=no_in
  * @param Source cast=(CONST VOID *)
  */
-public static final native void MoveMemory (NMLISTVIEW Destination, long /*int*/ Source, int Length);
+public static final native void MoveMemory (NMLISTVIEW Destination, long Source, int Length);
 /**
  * @param Destination cast=(PVOID),flags=no_in
  * @param Source cast=(CONST VOID *)
  */
-public static final native void MoveMemory (NMREBARCHILDSIZE Destination, long /*int*/ Source, int Length);
+public static final native void MoveMemory (NMREBARCHILDSIZE Destination, long Source, int Length);
 /**
  * @param Destination cast=(PVOID),flags=no_in
  * @param Source cast=(CONST VOID *)
  */
-public static final native void MoveMemory (NMREBARCHEVRON Destination, long /*int*/ Source, int Length);
+public static final native void MoveMemory (NMREBARCHEVRON Destination, long Source, int Length);
 /**
  * @param Destination cast=(PVOID),flags=no_in
  * @param Source cast=(CONST VOID *)
  */
-public static final native void MoveMemory (NMTOOLBAR Destination, long /*int*/ Source, int Length);
+public static final native void MoveMemory (NMTOOLBAR Destination, long Source, int Length);
 /**
  * @param Destination cast=(PVOID),flags=no_in
  * @param Source cast=(CONST VOID *)
  */
-public static final native void MoveMemory (NMTTCUSTOMDRAW Destination, long /*int*/ Source, int Length);
+public static final native void MoveMemory (NMTTCUSTOMDRAW Destination, long Source, int Length);
 /**
  * @param Destination cast=(PVOID),flags=no_in
  * @param Source cast=(CONST VOID *)
  */
-public static final native void MoveMemory (NMTTDISPINFO Destination, long /*int*/ Source, int Length);
+public static final native void MoveMemory (NMTTDISPINFO Destination, long Source, int Length);
 /**
  * @param Destination cast=(PVOID),flags=no_in
  * @param Source cast=(CONST VOID *)
  */
-public static final native void MoveMemory (EMR Destination, long /*int*/ Source, int Length);
+public static final native void MoveMemory (EMR Destination, long Source, int Length);
 /**
  * @param Destination cast=(PVOID),flags=no_in
  * @param Source cast=(CONST VOID *)
  */
-public static final native void MoveMemory (EMREXTCREATEFONTINDIRECTW Destination, long /*int*/ Source, int Length);
+public static final native void MoveMemory (EMREXTCREATEFONTINDIRECTW Destination, long Source, int Length);
 /**
  * @param Destination cast=(PVOID)
  * @param Source cast=(CONST VOID *),flags=no_out
  */
-public static final native void MoveMemory (long /*int*/ Destination, SHDRAGIMAGE Source, int Length);
+public static final native void MoveMemory (long Destination, SHDRAGIMAGE Source, int Length);
 /**
  * @param Destination cast=(PVOID),flags=no_in
  * @param Source cast=(CONST VOID *)
  */
-public static final native void MoveMemory (TEXTMETRIC Destination, long /*int*/ Source, int Length);
+public static final native void MoveMemory (TEXTMETRIC Destination, long Source, int Length);
 /**
  * @param Destination cast=(PVOID),flags=no_in
  * @param Source cast=(CONST VOID *)
  */
-public static final native void MoveMemory (TOUCHINPUT Destination, long /*int*/ Source, int Length);
+public static final native void MoveMemory (TOUCHINPUT Destination, long Source, int Length);
 /**
  * @param Destination cast=(PVOID),flags=no_in
  * @param Source cast=(CONST VOID *)
  */
-public static final native void MoveMemory (WINDOWPOS Destination, long /*int*/ Source, int Length);
+public static final native void MoveMemory (WINDOWPOS Destination, long Source, int Length);
 /**
  * @param Destination cast=(PVOID),flags=no_in
  * @param Source cast=(CONST VOID *)
  */
-public static final native void MoveMemory (MSG Destination, long /*int*/ Source, int Length);
+public static final native void MoveMemory (MSG Destination, long Source, int Length);
 /**
  * @param Destination cast=(PVOID),flags=no_in
  * @param Source cast=(CONST VOID *)
  */
-public static final native void MoveMemory (UDACCEL Destination, long /*int*/ Source, int Length);
+public static final native void MoveMemory (UDACCEL Destination, long Source, int Length);
 /**
  * @param Destination cast=(PVOID)
  * @param Source cast=(CONST VOID *),flags=no_out
  */
-public static final native void MoveMemory (long /*int*/ Destination, DROPFILES Source, int Length);
+public static final native void MoveMemory (long Destination, DROPFILES Source, int Length);
 /**
  * @param DestinationPtr cast=(PVOID)
  * @param Source cast=(CONST VOID *),flags=no_out critical
  */
-public static final native void MoveMemory (long /*int*/ DestinationPtr, double[] Source, int Length);
+public static final native void MoveMemory (long DestinationPtr, double[] Source, int Length);
 /**
  * @param DestinationPtr cast=(PVOID)
  * @param Source cast=(CONST VOID *),flags=no_out critical
  */
-public static final native void MoveMemory (long /*int*/ DestinationPtr, float[] Source, int Length);
+public static final native void MoveMemory (long DestinationPtr, float[] Source, int Length);
 /**
  * @param DestinationPtr cast=(PVOID)
  * @param Source cast=(CONST VOID *),flags=no_out critical
  */
-public static final native void MoveMemory (long /*int*/ DestinationPtr, long[] Source, int Length);
+public static final native void MoveMemory (long DestinationPtr, long[] Source, int Length);
 /**
  * @param DestinationPtr cast=(PVOID)
  * @param Source cast=(CONST VOID *),flags=no_out critical
  */
-public static final native void MoveMemory (long /*int*/ DestinationPtr, short[] Source, int Length);
+public static final native void MoveMemory (long DestinationPtr, short[] Source, int Length);
 /**
  * @param Destination cast=(PVOID),flags=no_in
  * @param SourcePtr cast=(CONST VOID *)
  */
-public static final native void MoveMemory (SCRIPT_ITEM Destination, long /*int*/ SourcePtr, int Length);
+public static final native void MoveMemory (SCRIPT_ITEM Destination, long SourcePtr, int Length);
 /**
  * @param Destination cast=(PVOID),flags=no_in
  * @param SourcePtr cast=(CONST VOID *)
  */
-public static final native void MoveMemory (SCRIPT_LOGATTR Destination, long /*int*/ SourcePtr, int Length);
+public static final native void MoveMemory (SCRIPT_LOGATTR Destination, long SourcePtr, int Length);
 /**
  * @param Destination cast=(PVOID),flags=no_in
  * @param SourcePtr cast=(CONST VOID *)
  */
-public static final native void MoveMemory (SCRIPT_PROPERTIES Destination, long /*int*/ SourcePtr, int Length);
+public static final native void MoveMemory (SCRIPT_PROPERTIES Destination, long SourcePtr, int Length);
 /**
  * @param Destination cast=(PVOID)
  * @param Source cast=(CONST VOID *),flags=no_out
  */
-public static final native void MoveMemory (long /*int*/ Destination, KEYBDINPUT Source, int Length);
+public static final native void MoveMemory (long Destination, KEYBDINPUT Source, int Length);
 /**
  * @param Destination cast=(PVOID)
  * @param Source cast=(CONST VOID *),flags=no_out
  */
-public static final native void MoveMemory (long /*int*/ Destination, MOUSEINPUT Source, int Length);
+public static final native void MoveMemory (long Destination, MOUSEINPUT Source, int Length);
 /**
  * @param Destination cast=(PVOID)
  * @param Source cast=(CONST VOID *),flags=no_out
  */
-public static final native void MoveMemory (long /*int*/ Destination, GESTURECONFIG Source, int Length);
+public static final native void MoveMemory (long Destination, GESTURECONFIG Source, int Length);
 /**
  * @param hdc cast=(HDC)
  * @param lPoint cast=(LPPOINT)
  */
-public static final native boolean MoveToEx (long /*int*/ hdc, int x1, int x2, long /*int*/ lPoint);
+public static final native boolean MoveToEx (long hdc, int x1, int x2, long lPoint);
 /**
  * @param lpMultiByteStr cast=(LPCSTR),flags=no_out critical
  * @param lpWideCharStr cast=(LPWSTR),flags=no_in critical
@@ -3809,58 +3809,58 @@ public static final native int MultiByteToWideChar (int CodePage, int dwFlags, b
  * @param lpMultiByteStr cast=(LPCSTR)
  * @param lpWideCharStr cast=(LPWSTR),flags=no_in critical
  */
-public static final native int MultiByteToWideChar (int CodePage, int dwFlags, long /*int*/ lpMultiByteStr, int cchMultiByte, char [] lpWideCharStr, int cchWideChar);
+public static final native int MultiByteToWideChar (int CodePage, int dwFlags, long lpMultiByteStr, int cchMultiByte, char [] lpWideCharStr, int cchWideChar);
 /**
  * @param event cast=(DWORD)
  * @param hwnd cast=(HWND)
  * @param idObject cast=(LONG)
  * @param idChild cast=(LONG)
  */
-public static final native void NotifyWinEvent (int event, long /*int*/ hwnd, int idObject, int idChild);
+public static final native void NotifyWinEvent (int event, long hwnd, int idObject, int idChild);
 public static final native boolean OffsetRect (RECT lprc, int dx, int dy);
 /** @param hrgn cast=(HRGN) */
-public static final native int OffsetRgn (long /*int*/ hrgn, int nXOffset, int nYOffset);
+public static final native int OffsetRgn (long hrgn, int nXOffset, int nYOffset);
 /** @param pvReserved cast=(LPVOID) */
-public static final native int OleInitialize (long /*int*/ pvReserved);
+public static final native int OleInitialize (long pvReserved);
 public static final native void OleUninitialize ();
 /** @param hWndNewOwner cast=(HWND) */
-public static final native boolean OpenClipboard (long /*int*/ hWndNewOwner);
+public static final native boolean OpenClipboard (long hWndNewOwner);
 /**
  * @param hwnd cast=(HWND)
  * @param pszClassList cast=(LPCWSTR)
  */
-public static final native long /*int*/ OpenThemeData (long /*int*/ hwnd, char[] pszClassList);
+public static final native long OpenThemeData (long hwnd, char[] pszClassList);
 /** @param hdc cast=(HDC) */
-public static final native boolean PatBlt (long /*int*/ hdc, int x1, int x2, int w, int h, int rop);
+public static final native boolean PatBlt (long hdc, int x1, int x2, int w, int h, int rop);
 /** @param szfile cast=(LPCWSTR) */
-public static final native boolean PathIsExe (long /*int*/ szfile);
+public static final native boolean PathIsExe (long szfile);
 /** @param hWnd cast=(HWND) */
-public static final native boolean PeekMessage (MSG lpMsg, long /*int*/ hWnd, int wMsgFilterMin, int wMsgFilterMax, int wRemoveMsg);
+public static final native boolean PeekMessage (MSG lpMsg, long hWnd, int wMsgFilterMin, int wMsgFilterMax, int wRemoveMsg);
 /** @param hdc cast=(HDC) */
-public static final native boolean Pie (long /*int*/ hdc, int nLeftRect, int nTopRect, int nRightRect, int nBottomRect, int nXStartArc, int nYStartArc, int nXEndArc, int nYEndArc);
+public static final native boolean Pie (long hdc, int nLeftRect, int nTopRect, int nRightRect, int nBottomRect, int nXStartArc, int nYStartArc, int nXEndArc, int nYEndArc);
 /** @param pt flags=struct */
-public static final native void POINTSTOPOINT(POINT pt, long /*int*/ pts);
+public static final native void POINTSTOPOINT(POINT pt, long pts);
 /**
  * @param hdc cast=(HDC)
  * @param points cast=(CONST POINT *),flags=no_out critical
  */
-public static final native boolean Polygon (long /*int*/ hdc, int [] points, int nPoints);
+public static final native boolean Polygon (long hdc, int [] points, int nPoints);
 /**
  * @param hdc cast=(HDC)
  * @param points cast=(CONST POINT *),flags=no_out critical
  */
-public static final native boolean Polyline (long /*int*/ hdc, int[] points, int nPoints);
+public static final native boolean Polyline (long hdc, int[] points, int nPoints);
 /**
  * @param hWnd cast=(HWND)
  * @param wParam cast=(WPARAM)
  * @param lParam cast=(LPARAM)
  */
-public static final native boolean PostMessage (long /*int*/ hWnd, int Msg, long /*int*/ wParam, long /*int*/ lParam);
+public static final native boolean PostMessage (long hWnd, int Msg, long wParam, long lParam);
 /**
  * @param wParam cast=(WPARAM)
  * @param lParam cast=(LPARAM)
  */
-public static final native boolean PostThreadMessage (int idThread, int Msg, long /*int*/ wParam, long /*int*/ lParam);
+public static final native boolean PostThreadMessage (int idThread, int Msg, long wParam, long lParam);
 public static final native short PRIMARYLANGID (int lgid);
 /** @param lppd cast=(LPPRINTDLGW) */
 public static final native boolean PrintDlg (PRINTDLG lppd);
@@ -3868,7 +3868,7 @@ public static final native boolean PrintDlg (PRINTDLG lppd);
  * @param hwnd cast=(HWND)
  * @param hdcBlt cast=(HDC)
  */
-public static final native boolean PrintWindow (long /*int*/ hwnd, long /*int*/ hdcBlt, int nFlags);
+public static final native boolean PrintWindow (long hwnd, long hdcBlt, int nFlags);
 public static final native int PSPropertyKeyFromString (char[] pszString, PROPERTYKEY pkey);
 /**
  * @param rect flags=no_out
@@ -3876,21 +3876,21 @@ public static final native int PSPropertyKeyFromString (char[] pszString, PROPER
  */
 public static final native boolean PtInRect (RECT rect, POINT pt);
 /** @param hrgn cast=(HRGN) */
-public static final native boolean PtInRegion (long /*int*/ hrgn, int X, int Y);
+public static final native boolean PtInRegion (long hrgn, int X, int Y);
 /** @param hdc cast=(HDC) */
-public static final native boolean Rectangle (long /*int*/ hdc, int nLeftRect, int nTopRect, int nRightRect, int nBottomRect);
+public static final native boolean Rectangle (long hdc, int nLeftRect, int nTopRect, int nRightRect, int nBottomRect);
 /**
  * @param hrgn cast=(HRGN)
  * @param lprc flags=no_out
  */
-public static final native boolean RectInRegion (long /*int*/ hrgn, RECT lprc);
+public static final native boolean RectInRegion (long hrgn, RECT lprc);
 /**
  * @param hWnd cast=(HWND)
  * @param hrgnUpdate cast=(HRGN)
  */
-public static final native boolean RedrawWindow (long /*int*/ hWnd, RECT lprcUpdate, long /*int*/ hrgnUpdate, int flags);
+public static final native boolean RedrawWindow (long hWnd, RECT lprcUpdate, long hrgnUpdate, int flags);
 /** @param hKey cast=(HKEY) */
-public static final native int RegCloseKey (long /*int*/ hKey);
+public static final native int RegCloseKey (long hKey);
 /**
  * @param hKey cast=(HKEY)
  * @param lpSubKey cast=(LPWSTR)
@@ -3899,12 +3899,12 @@ public static final native int RegCloseKey (long /*int*/ hKey);
  * @param phkResult cast=(PHKEY)
  * @param lpdwDisposition cast=(LPDWORD)
  */
-public static final native int RegCreateKeyEx (long /*int*/ hKey, char[] lpSubKey, int Reserved, char[] lpClass, int dwOptions, int samDesired, long /*int*/ lpSecurityAttributes, long /*int*/[] phkResult, long /*int*/[] lpdwDisposition);
+public static final native int RegCreateKeyEx (long hKey, char[] lpSubKey, int Reserved, char[] lpClass, int dwOptions, int samDesired, long lpSecurityAttributes, long[] phkResult, long[] lpdwDisposition);
 /**
  * @param hKey cast=(HKEY)
  * @param lpValueName cast=(LPWSTR)
  */
-public static final native int RegDeleteValue (long /*int*/ hKey, char[] lpValueName);
+public static final native int RegDeleteValue (long hKey, char[] lpValueName);
 /**
  * @param hKey cast=(HKEY)
  * @param lpName cast=(LPWSTR)
@@ -3913,7 +3913,7 @@ public static final native int RegDeleteValue (long /*int*/ hKey, char[] lpValue
  * @param lpClass cast=(LPWSTR)
  * @param lpcClass cast=(LPDWORD)
  */
-public static final native int RegEnumKeyEx (long /*int*/ hKey, int dwIndex, char [] lpName, int [] lpcName, int [] lpReserved, char [] lpClass, int [] lpcClass, FILETIME lpftLastWriteTime);
+public static final native int RegEnumKeyEx (long hKey, int dwIndex, char [] lpName, int [] lpcName, int [] lpReserved, char [] lpClass, int [] lpcClass, FILETIME lpftLastWriteTime);
 /** @param lpWndClass cast=(LPWNDCLASSW) */
 public static final native int RegisterClass (WNDCLASS lpWndClass);
 /**
@@ -3921,7 +3921,7 @@ public static final native int RegisterClass (WNDCLASS lpWndClass);
  * @param hWnd cast=(HWND)
  * @param ulFlags cast=(ULONG)
  */
-public static final native boolean RegisterTouchWindow(long /*int*/ hWnd, int ulFlags);
+public static final native boolean RegisterTouchWindow(long hWnd, int ulFlags);
 /** @param lpString cast=(LPWSTR) */
 public static final native int RegisterWindowMessage (char [] lpString);
 /** @param lpszFormat cast=(LPWSTR) */
@@ -3931,7 +3931,7 @@ public static final native int RegisterClipboardFormat (char[] lpszFormat);
  * @param lpSubKey cast=(LPWSTR)
  * @param phkResult cast=(PHKEY)
  */
-public static final native int RegOpenKeyEx (long /*int*/ hKey, char[] lpSubKey, int ulOptions, int samDesired, long /*int*/[] phkResult);
+public static final native int RegOpenKeyEx (long hKey, char[] lpSubKey, int ulOptions, int samDesired, long[] phkResult);
 /**
  * @param hKey cast=(HKEY)
  * @param lpValueName cast=(LPWSTR)
@@ -3940,7 +3940,7 @@ public static final native int RegOpenKeyEx (long /*int*/ hKey, char[] lpSubKey,
  * @param lpData cast=(LPBYTE)
  * @param lpcbData cast=(LPDWORD)
  */
-public static final native int RegQueryValueEx (long /*int*/ hKey, char[] lpValueName, long /*int*/ lpReserved, int[] lpType, char [] lpData, int[] lpcbData);
+public static final native int RegQueryValueEx (long hKey, char[] lpValueName, long lpReserved, int[] lpType, char [] lpData, int[] lpcbData);
 /**
  * @param hKey cast=(HKEY)
  * @param lpValueName cast=(LPWSTR)
@@ -3949,38 +3949,38 @@ public static final native int RegQueryValueEx (long /*int*/ hKey, char[] lpValu
  * @param lpData cast=(LPBYTE)
  * @param lpcbData cast=(LPDWORD)
  */
-public static final native int RegQueryValueEx (long /*int*/ hKey, char[] lpValueName, long /*int*/ lpReserved, int[] lpType, int [] lpData, int[] lpcbData);
+public static final native int RegQueryValueEx (long hKey, char[] lpValueName, long lpReserved, int[] lpType, int [] lpData, int[] lpcbData);
 /**
  * @param hKey cast=(HKEY)
  * @param lpValueName cast=(LPWSTR)
  * @param lpData cast=(const BYTE*)
  */
-public static final native int RegSetValueEx (long /*int*/ hKey, char[] lpValueName, int Reserved, int dwType, int[] lpData, int cbData);
+public static final native int RegSetValueEx (long hKey, char[] lpValueName, int Reserved, int dwType, int[] lpData, int cbData);
 public static final native boolean ReleaseCapture ();
 /**
  * @param hWnd cast=(HWND)
  * @param hDC cast=(HDC)
  */
-public static final native int ReleaseDC (long /*int*/ hWnd, long /*int*/ hDC);
+public static final native int ReleaseDC (long hWnd, long hDC);
 /** @param hMenu cast=(HMENU) */
-public static final native boolean RemoveMenu (long /*int*/ hMenu, int uPosition, int uFlags);
+public static final native boolean RemoveMenu (long hMenu, int uPosition, int uFlags);
 /**
  * @param hWnd cast=(HWND)
  * @param lpString cast=(LPCWSTR)
  */
-public static final native long /*int*/ RemoveProp (long /*int*/ hWnd, long /*int*/ lpString);
-public static final native boolean ReplyMessage (long /*int*/ lResult);
+public static final native long RemoveProp (long hWnd, long lpString);
+public static final native boolean ReplyMessage (long lResult);
 /**
  * @param hdc cast=(HDC)
  * @param nSavedDC cast=(int)
  */
-public static final native boolean RestoreDC (long /*int*/ hdc, int nSavedDC);
+public static final native boolean RestoreDC (long hdc, int nSavedDC);
 /** @param hdc cast=(HDC) */
-public static final native boolean RoundRect (long /*int*/ hdc, int nLeftRect, int nTopRect, int nRightRect, int nBottomRect, int nWidth, int nHeight);
+public static final native boolean RoundRect (long hdc, int nLeftRect, int nTopRect, int nRightRect, int nBottomRect, int nWidth, int nHeight);
 /** @param hdc cast=(HDC) */
-public static final native int SaveDC (long /*int*/ hdc);
+public static final native int SaveDC (long hdc);
 /** @param hWnd cast=(HWND) */
-public static final native boolean ScreenToClient (long /*int*/ hWnd, POINT lpPoint);
+public static final native boolean ScreenToClient (long hWnd, POINT lpPoint);
 /**
  * @param psds cast=(const SCRIPT_DIGITSUBSTITUTE*)
  * @param psc cast=(SCRIPT_CONTROL*)
@@ -3992,18 +3992,18 @@ public static final native int ScriptApplyDigitSubstitution (SCRIPT_DIGITSUBSTIT
  * @param psa cast=(const SCRIPT_ANALYSIS *)
  * @param psla cast=(SCRIPT_LOGATTR *)
  */
-public static final native int ScriptBreak (char[] pwcChars, int cChars, SCRIPT_ANALYSIS psa, long /*int*/ psla);
+public static final native int ScriptBreak (char[] pwcChars, int cChars, SCRIPT_ANALYSIS psa, long psla);
 /**
  * @param ppSp cast=(const SCRIPT_PROPERTIES ***)
  * @param piNumScripts cast=(int *)
  */
-public static final native int ScriptGetProperties (long /*int*/[] ppSp, int[] piNumScripts);
+public static final native int ScriptGetProperties (long[] ppSp, int[] piNumScripts);
 /**
  * @param hdc cast=(HDC)
  * @param psc cast=(SCRIPT_CACHE *)
  * @param tmHeight cast=(long *)
  */
-public static final native int ScriptCacheGetHeight (long /*int*/ hdc, long /*int*/ psc, int[] tmHeight);
+public static final native int ScriptCacheGetHeight (long hdc, long psc, int[] tmHeight);
 /**
  * @param pwLogClust cast=(const WORD *)
  * @param psva cast=(const SCRIPT_VISATTR *)
@@ -4011,15 +4011,15 @@ public static final native int ScriptCacheGetHeight (long /*int*/ hdc, long /*in
  * @param psa cast=(const SCRIPT_ANALYSIS *)
  * @param piX cast=(int *)
  */
-public static final native int ScriptCPtoX (int iCP, boolean fTrailing, int cChars, int cGlyphs, long /*int*/ pwLogClust, long /*int*/ psva, long /*int*/ piAdvance, SCRIPT_ANALYSIS psa, int[] piX);
+public static final native int ScriptCPtoX (int iCP, boolean fTrailing, int cChars, int cGlyphs, long pwLogClust, long psva, long piAdvance, SCRIPT_ANALYSIS psa, int[] piX);
 /** @param psc cast=(SCRIPT_CACHE *) */
-public static final native int ScriptFreeCache (long /*int*/ psc);
+public static final native int ScriptFreeCache (long psc);
 /**
  * @param hdc cast=(HDC)
  * @param psc cast=(SCRIPT_CACHE *)
  * @param sfp cast=(SCRIPT_FONTPROPERTIES *)
  */
-public static final native int ScriptGetFontProperties (long /*int*/ hdc, long /*int*/ psc, SCRIPT_FONTPROPERTIES sfp);
+public static final native int ScriptGetFontProperties (long hdc, long psc, SCRIPT_FONTPROPERTIES sfp);
 /**
  * @param psa cast=(const SCRIPT_ANALYSIS *)
  * @param piGlyphWidth cast=(const int *)
@@ -4027,7 +4027,7 @@ public static final native int ScriptGetFontProperties (long /*int*/ hdc, long /
  * @param psva cast=(const SCRIPT_VISATTR *)
  * @param piDx cast=(int *)
  */
-public static final native int ScriptGetLogicalWidths (SCRIPT_ANALYSIS psa, int cChars, int cGlyphs, long /*int*/ piGlyphWidth, long /*int*/ pwLogClust, long /*int*/ psva, int[] piDx);
+public static final native int ScriptGetLogicalWidths (SCRIPT_ANALYSIS psa, int cChars, int cGlyphs, long piGlyphWidth, long pwLogClust, long psva, int[] piDx);
 /**
  * @param pwcInChars cast=(const WCHAR *)
  * @param psControl cast=(const SCRIPT_CONTROL *)
@@ -4035,13 +4035,13 @@ public static final native int ScriptGetLogicalWidths (SCRIPT_ANALYSIS psa, int 
  * @param pItems cast=(SCRIPT_ITEM *)
  * @param pcItems cast=(int *)
  */
-public static final native int ScriptItemize (char[] pwcInChars, int cInChars, int cMaxItems, SCRIPT_CONTROL psControl, SCRIPT_STATE psState, long /*int*/ pItems, int[] pcItems);
+public static final native int ScriptItemize (char[] pwcInChars, int cInChars, int cMaxItems, SCRIPT_CONTROL psControl, SCRIPT_STATE psState, long pItems, int[] pcItems);
 /**
  * @param psva cast=(SCRIPT_VISATTR *)
  * @param piAdvance cast=(const int *)
  * @param piJustify cast=(int *)
  */
-public static final native int ScriptJustify (long /*int*/ psva, long /*int*/ piAdvance, int cGlyphs, int iDx, int iMinKashida, long /*int*/ piJustify);
+public static final native int ScriptJustify (long psva, long piAdvance, int cGlyphs, int iDx, int iMinKashida, long piJustify);
 /**
  * @param pbLevel cast=(const BYTE *)
  * @param piVisualToLogical cast=(int *)
@@ -4058,7 +4058,7 @@ public static final native int ScriptLayout (int cRuns, byte[] pbLevel, int[] pi
  * @param pGoffset cast=(GOFFSET *)
  * @param pABC cast=(ABC *)
  */
-public static final native int ScriptPlace (long /*int*/ hdc, long /*int*/ psc, long /*int*/ pwGlyphs, int cGlyphs, long /*int*/ psva, SCRIPT_ANALYSIS psa, long /*int*/ piAdvance, long /*int*/ pGoffset, int[] pABC);
+public static final native int ScriptPlace (long hdc, long psc, long pwGlyphs, int cGlyphs, long psva, SCRIPT_ANALYSIS psa, long piAdvance, long pGoffset, int[] pABC);
 /**
  * @param Locale cast=(LCID)
  * @param psds cast=(SCRIPT_DIGITSUBSTITUTE*)
@@ -4070,7 +4070,7 @@ public static final native int ScriptRecordDigitSubstitution (int Locale, SCRIPT
  * @param pwcChars cast=(const WCHAR *)
  * @param pwOutGlyphs cast=(WORD*)
  */
-public static final native int ScriptGetCMap (long /*int*/ hdc, long /*int*/ psc, char[] pwcChars, int cChars, int dwFlags, short[] pwOutGlyphs);
+public static final native int ScriptGetCMap (long hdc, long psc, char[] pwcChars, int cChars, int dwFlags, short[] pwOutGlyphs);
 /**
  * @param hdc cast=(HDC)
  * @param psc cast=(SCRIPT_CACHE *)
@@ -4081,7 +4081,7 @@ public static final native int ScriptGetCMap (long /*int*/ hdc, long /*int*/ psc
  * @param psva cast=(SCRIPT_VISATTR *)
  * @param pcGlyphs cast=(int *)
  */
-public static final native int ScriptShape (long /*int*/ hdc, long /*int*/ psc, char[] pwcChars, int cChars, int cMaxGlyphs, SCRIPT_ANALYSIS psa, long /*int*/ pwOutGlyphs, long /*int*/ pwLogClust, long /*int*/ psva, int[] pcGlyphs);
+public static final native int ScriptShape (long hdc, long psc, char[] pwcChars, int cChars, int cMaxGlyphs, SCRIPT_ANALYSIS psa, long pwOutGlyphs, long pwLogClust, long psva, int[] pcGlyphs);
 /**
  * @param hdc cast=(HDC)
  * @param pString cast=(const void*)
@@ -4090,11 +4090,11 @@ public static final native int ScriptShape (long /*int*/ hdc, long /*int*/ psc, 
  * @param pbInClass cast=(const BYTE*)
  * @param pssa cast=(SCRIPT_STRING_ANALYSIS*)
  */
-public static final native int ScriptStringAnalyse (long /*int*/ hdc, long /*int*/ pString, int cString, int cGlyphs, int iCharset, int dwFlags, int iReqWidth, SCRIPT_CONTROL psControl, SCRIPT_STATE psState, long /*int*/ piDx, long /*int*/ pTabdef, long /*int*/ pbInClass, long /*int*/ pssa);
+public static final native int ScriptStringAnalyse (long hdc, long pString, int cString, int cGlyphs, int iCharset, int dwFlags, int iReqWidth, SCRIPT_CONTROL psControl, SCRIPT_STATE psState, long piDx, long pTabdef, long pbInClass, long pssa);
 /** @param ssa cast=(SCRIPT_STRING_ANALYSIS*),flags=struct */
-public static final native int ScriptStringOut(long /*int*/ ssa, int iX, int iY, int uOptions, RECT prc, int iMinSel, int iMaxSel, boolean fDisabled);
+public static final native int ScriptStringOut(long ssa, int iX, int iY, int uOptions, RECT prc, int iMinSel, int iMaxSel, boolean fDisabled);
 /** @param pssa cast=(SCRIPT_STRING_ANALYSIS*) */
-public static final native int ScriptStringFree(long /*int*/ pssa);
+public static final native int ScriptStringFree(long pssa);
 /**
  * @param hdc cast=(const HDC)
  * @param psc cast=(SCRIPT_CACHE *)
@@ -4106,7 +4106,7 @@ public static final native int ScriptStringFree(long /*int*/ pssa);
  * @param piJustify cast=(const int *)
  * @param pGoffset cast=(const GOFFSET *)
  */
-public static final native int ScriptTextOut (long /*int*/ hdc, long /*int*/ psc, int x, int y, int fuOptions, RECT lprc, SCRIPT_ANALYSIS psa, long /*int*/ pwcReserved, int iReserved, long /*int*/ pwGlyphs, int cGlyphs, long /*int*/ piAdvance, long /*int*/ piJustify, long /*int*/ pGoffset);
+public static final native int ScriptTextOut (long hdc, long psc, int x, int y, int fuOptions, RECT lprc, SCRIPT_ANALYSIS psa, long pwcReserved, int iReserved, long pwGlyphs, int cGlyphs, long piAdvance, long piJustify, long pGoffset);
 /**
  * @param pwLogClust cast=(const WORD *)
  * @param psva cast=(const SCRIPT_VISATTR *)
@@ -4115,402 +4115,402 @@ public static final native int ScriptTextOut (long /*int*/ hdc, long /*int*/ psc
  * @param piCP cast=(int *)
  * @param piTrailing cast=(int *)
  */
-public static final native int ScriptXtoCP (int iX, int cChars, int cGlyphs, long /*int*/ pwLogClust, long /*int*/ psva, long /*int*/ piAdvance, SCRIPT_ANALYSIS psa, int[] piCP, int[] piTrailing);
+public static final native int ScriptXtoCP (int iX, int cChars, int cGlyphs, long pwLogClust, long psva, long piAdvance, SCRIPT_ANALYSIS psa, int[] piCP, int[] piTrailing);
 /**
  * @param hWnd cast=(HWND)
  * @param hrgnUpdate cast=(HRGN)
  */
-public static final native int ScrollWindowEx (long /*int*/ hWnd, int dx, int dy, RECT prcScroll, RECT prcClip, long /*int*/ hrgnUpdate, RECT prcUpdate, int flags);
+public static final native int ScrollWindowEx (long hWnd, int dx, int dy, RECT prcScroll, RECT prcClip, long hrgnUpdate, RECT prcUpdate, int flags);
 /**
  * @param hdc cast=(HDC)
  * @param hrgn cast=(HRGN)
  */
-public static final native int SelectClipRgn (long /*int*/ hdc, long /*int*/ hrgn);
+public static final native int SelectClipRgn (long hdc, long hrgn);
 /**
  * @param hDC cast=(HDC)
  * @param HGDIObj cast=(HGDIOBJ)
  */
-public static final native long /*int*/ SelectObject (long /*int*/ hDC, long /*int*/ HGDIObj);
+public static final native long SelectObject (long hDC, long HGDIObj);
 /** @param pInputs cast=(LPINPUT) */
-public static final native int SendInput (int nInputs, long /*int*/ pInputs, int cbSize);
+public static final native int SendInput (int nInputs, long pInputs, int cbSize);
 /**
  * @param hWnd cast=(HWND)
  * @param wParam cast=(WPARAM)
  * @param lParam cast=(LPARAM)
  */
-public static final native long /*int*/ SendMessage (long /*int*/ hWnd, int Msg, int [] wParam, int [] lParam);
+public static final native long SendMessage (long hWnd, int Msg, int [] wParam, int [] lParam);
 /**
  * @param hWnd cast=(HWND)
  * @param wParam cast=(WPARAM)
  * @param lParam cast=(LPARAM)
  */
-public static final native long /*int*/ SendMessage (long /*int*/ hWnd, int Msg, long /*int*/ wParam, char [] lParam);
+public static final native long SendMessage (long hWnd, int Msg, long wParam, char [] lParam);
 /**
  * @param hWnd cast=(HWND)
  * @param wParam cast=(WPARAM)
  * @param lParam cast=(LPARAM)
  */
-public static final native long /*int*/ SendMessage (long /*int*/ hWnd, int Msg, long /*int*/ wParam, int [] lParam);
+public static final native long SendMessage (long hWnd, int Msg, long wParam, int [] lParam);
 /**
  * @param hWnd cast=(HWND)
  * @param wParam cast=(WPARAM)
  * @param lParam cast=(LPARAM)
  */
-public static final native long /*int*/ SendMessage (long /*int*/ hWnd, int Msg, long /*int*/ wParam, long /*int*/ lParam);
+public static final native long SendMessage (long hWnd, int Msg, long wParam, long lParam);
 /**
  * @param hWnd cast=(HWND)
  * @param wParam cast=(WPARAM)
  * @param lParam cast=(LPARAM)
  */
-public static final native long /*int*/ SendMessage (long /*int*/ hWnd, int Msg, long /*int*/ wParam, LVCOLUMN lParam);
+public static final native long SendMessage (long hWnd, int Msg, long wParam, LVCOLUMN lParam);
 /**
  * @param hWnd cast=(HWND)
  * @param wParam cast=(WPARAM)
  * @param lParam cast=(LPARAM)
  */
-public static final native long /*int*/ SendMessage (long /*int*/ hWnd, int Msg, long /*int*/ wParam, LVHITTESTINFO lParam);
+public static final native long SendMessage (long hWnd, int Msg, long wParam, LVHITTESTINFO lParam);
 /**
  * @param hWnd cast=(HWND)
  * @param wParam cast=(WPARAM)
  * @param lParam cast=(LPARAM)
  */
-public static final native long /*int*/ SendMessage (long /*int*/ hWnd, int Msg, long /*int*/ wParam, LITEM lParam);
+public static final native long SendMessage (long hWnd, int Msg, long wParam, LITEM lParam);
 /**
  * @param hWnd cast=(HWND)
  * @param wParam cast=(WPARAM)
  * @param lParam cast=(LPARAM)
  */
-public static final native long /*int*/ SendMessage (long /*int*/ hWnd, int Msg, long /*int*/ wParam, LVITEM lParam);
+public static final native long SendMessage (long hWnd, int Msg, long wParam, LVITEM lParam);
 /**
  * @param hWnd cast=(HWND)
  * @param wParam cast=(WPARAM)
  * @param lParam cast=(LPARAM)
  */
-public static final native long /*int*/ SendMessage (long /*int*/ hWnd, int Msg, long /*int*/ wParam, LVINSERTMARK lParam);
+public static final native long SendMessage (long hWnd, int Msg, long wParam, LVINSERTMARK lParam);
 /**
  * @param hWnd cast=(HWND)
  * @param wParam cast=(WPARAM)
  * @param lParam cast=(LPARAM)
  */
-public static final native long /*int*/ SendMessage (long /*int*/ hWnd, int Msg, long /*int*/ wParam, MARGINS lParam);
+public static final native long SendMessage (long hWnd, int Msg, long wParam, MARGINS lParam);
 /**
  * @param hWnd cast=(HWND)
  * @param wParam cast=(WPARAM)
  * @param lParam cast=(LPARAM)
  */
-public static final native long /*int*/ SendMessage (long /*int*/ hWnd, int Msg, long /*int*/ wParam, MCHITTESTINFO lParam);
+public static final native long SendMessage (long hWnd, int Msg, long wParam, MCHITTESTINFO lParam);
 /**
  * @param hWnd cast=(HWND)
  * @param wParam cast=(WPARAM)
  * @param lParam cast=(LPARAM)
  */
-public static final native long /*int*/ SendMessage (long /*int*/ hWnd, int Msg, long /*int*/ wParam, REBARBANDINFO lParam);
+public static final native long SendMessage (long hWnd, int Msg, long wParam, REBARBANDINFO lParam);
 /**
  * @param hWnd cast=(HWND)
  * @param wParam cast=(WPARAM)
  * @param lParam cast=(LPARAM)
  */
-public static final native long /*int*/ SendMessage (long /*int*/ hWnd, int Msg, long /*int*/ wParam, RECT lParam);
+public static final native long SendMessage (long hWnd, int Msg, long wParam, RECT lParam);
 /**
  * @param hWnd cast=(HWND)
  * @param wParam cast=(WPARAM)
  * @param lParam cast=(LPARAM)
  */
-public static final native long /*int*/ SendMessage (long /*int*/ hWnd, int Msg, long /*int*/ wParam, SYSTEMTIME lParam);
+public static final native long SendMessage (long hWnd, int Msg, long wParam, SYSTEMTIME lParam);
 /**
  * @param hWnd cast=(HWND)
  * @param wParam cast=(WPARAM)
  * @param lParam cast=(LPARAM)
  */
-public static final native long /*int*/ SendMessage (long /*int*/ hWnd, int Msg, long /*int*/ wParam, SHDRAGIMAGE lParam);
+public static final native long SendMessage (long hWnd, int Msg, long wParam, SHDRAGIMAGE lParam);
 /**
  * @param hWnd cast=(HWND)
  * @param wParam cast=(WPARAM)
  * @param lParam cast=(LPARAM)
  */
-public static final native long /*int*/ SendMessage (long /*int*/ hWnd, int Msg, long /*int*/ wParam, TBBUTTON lParam);
+public static final native long SendMessage (long hWnd, int Msg, long wParam, TBBUTTON lParam);
 /**
  * @param hWnd cast=(HWND)
  * @param wParam cast=(WPARAM)
  * @param lParam cast=(LPARAM)
  */
-public static final native long /*int*/ SendMessage (long /*int*/ hWnd, int Msg, long /*int*/ wParam, TBBUTTONINFO lParam);
+public static final native long SendMessage (long hWnd, int Msg, long wParam, TBBUTTONINFO lParam);
 /**
  * @param hWnd cast=(HWND)
  * @param wParam cast=(WPARAM)
  * @param lParam cast=(LPARAM)
  */
-public static final native long /*int*/ SendMessage (long /*int*/ hWnd, int Msg, long /*int*/ wParam, TCITEM lParam);
+public static final native long SendMessage (long hWnd, int Msg, long wParam, TCITEM lParam);
 /**
  * @param hWnd cast=(HWND)
  * @param wParam cast=(WPARAM)
  * @param lParam cast=(LPARAM)
  */
-public static final native long /*int*/ SendMessage (long /*int*/ hWnd, int Msg, long /*int*/ wParam, TCHITTESTINFO lParam);
+public static final native long SendMessage (long hWnd, int Msg, long wParam, TCHITTESTINFO lParam);
 /**
  * @param hWnd cast=(HWND)
  * @param wParam cast=(WPARAM)
  * @param lParam cast=(LPARAM)
  */
-public static final native long /*int*/ SendMessage (long /*int*/ hWnd, int Msg, long /*int*/ wParam, TOOLINFO lParam);
+public static final native long SendMessage (long hWnd, int Msg, long wParam, TOOLINFO lParam);
 /**
  * @param hWnd cast=(HWND)
  * @param wParam cast=(WPARAM)
  * @param lParam cast=(LPARAM)
  */
-public static final native long /*int*/ SendMessage (long /*int*/ hWnd, int Msg, long /*int*/ wParam, TVHITTESTINFO lParam);
+public static final native long SendMessage (long hWnd, int Msg, long wParam, TVHITTESTINFO lParam);
 /**
  * @param hWnd cast=(HWND)
  * @param wParam cast=(WPARAM)
  * @param lParam cast=(LPARAM)
  */
-public static final native long /*int*/ SendMessage (long /*int*/ hWnd, int Msg, long /*int*/ wParam, TVINSERTSTRUCT lParam);
+public static final native long SendMessage (long hWnd, int Msg, long wParam, TVINSERTSTRUCT lParam);
 /**
  * @param hWnd cast=(HWND)
  * @param wParam cast=(WPARAM)
  * @param lParam cast=(LPARAM)
  */
-public static final native long /*int*/ SendMessage (long /*int*/ hWnd, int Msg, long /*int*/ wParam, TVITEM lParam);
+public static final native long SendMessage (long hWnd, int Msg, long wParam, TVITEM lParam);
 /**
  * @param hWnd cast=(HWND)
  * @param wParam cast=(WPARAM)
  * @param lParam cast=(LPARAM)
  */
-public static final native long /*int*/ SendMessage (long /*int*/ hWnd, int Msg, long /*int*/ wParam, TVSORTCB lParam);
+public static final native long SendMessage (long hWnd, int Msg, long wParam, TVSORTCB lParam);
 /**
  * @param hWnd cast=(HWND)
  * @param wParam cast=(WPARAM)
  * @param lParam cast=(LPARAM)
  */
-public static final native long /*int*/ SendMessage (long /*int*/ hWnd, int Msg, long /*int*/ wParam, UDACCEL lParam);
+public static final native long SendMessage (long hWnd, int Msg, long wParam, UDACCEL lParam);
 /**
  * @param hWnd cast=(HWND)
  * @param wParam cast=(WPARAM)
  * @param lParam cast=(LPARAM)
  */
-public static final native long /*int*/ SendMessage (long /*int*/ hWnd, int Msg, long /*int*/ wParam, HDHITTESTINFO lParam);
+public static final native long SendMessage (long hWnd, int Msg, long wParam, HDHITTESTINFO lParam);
 /**
  * @param hWnd cast=(HWND)
  * @param wParam cast=(WPARAM)
  * @param lParam cast=(LPARAM)
  */
-public static final native long /*int*/ SendMessage (long /*int*/ hWnd, int Msg, long /*int*/ wParam, HDITEM lParam);
+public static final native long SendMessage (long hWnd, int Msg, long wParam, HDITEM lParam);
 /**
  * @param hWnd cast=(HWND)
  * @param wParam cast=(WPARAM)
  * @param lParam cast=(LPARAM)
  */
-public static final native long /*int*/ SendMessage (long /*int*/ hWnd, int Msg, long /*int*/ wParam, HDLAYOUT lParam);
+public static final native long SendMessage (long hWnd, int Msg, long wParam, HDLAYOUT lParam);
 /**
  * @param hWnd cast=(HWND)
  * @param wParam cast=(WPARAM)
  * @param lParam cast=(LPARAM)
  */
-public static final native long /*int*/ SendMessage (long /*int*/ hWnd, int Msg, long /*int*/ wParam, BUTTON_IMAGELIST lParam);
+public static final native long SendMessage (long hWnd, int Msg, long wParam, BUTTON_IMAGELIST lParam);
 /**
  * @param hWnd cast=(HWND)
  * @param wParam cast=(WPARAM)
  * @param lParam cast=(LPARAM)
  */
-public static final native long /*int*/ SendMessage (long /*int*/ hWnd, int Msg, long /*int*/ wParam, SIZE lParam);
+public static final native long SendMessage (long hWnd, int Msg, long wParam, SIZE lParam);
 /** @param hWnd cast=(HWND) */
-public static final native long /*int*/ SetActiveWindow (long /*int*/ hWnd);
+public static final native long SetActiveWindow (long hWnd);
 /**
  * @param hdc cast=(HDC)
  * @param colorRef cast=(COLORREF)
  */
-public static final native int SetBkColor (long /*int*/ hdc, int colorRef);
+public static final native int SetBkColor (long hdc, int colorRef);
 /** @param hdc cast=(HDC) */
-public static final native int SetBkMode (long /*int*/ hdc, int mode);
+public static final native int SetBkMode (long hdc, int mode);
 /**
  * @param hdc cast=(HDC)
  * @param lppt cast=(LPPOINT)
  */
-public static final native boolean SetBrushOrgEx (long /*int*/ hdc, int nXOrg, int nYOrg, POINT lppt);
+public static final native boolean SetBrushOrgEx (long hdc, int nXOrg, int nYOrg, POINT lppt);
 /** @param hWnd cast=(HWND) */
-public static final native long /*int*/ SetCapture (long /*int*/ hWnd);
+public static final native long SetCapture (long hWnd);
 public static final native boolean SetCaretPos (int X, int Y);
 /** @method flags=dynamic */
 public static final native int SetCurrentProcessExplicitAppUserModelID (char[] AppID);
 /** @param hCursor cast=(HCURSOR) */
-public static final native long /*int*/ SetCursor (long /*int*/ hCursor);
+public static final native long SetCursor (long hCursor);
 public static final native boolean SetCursorPos (int X, int Y);
 /**
  * @param hdc cast=(HDC)
  * @param pColors cast=(RGBQUAD *),flags=no_out critical
  */
-public static final native int SetDIBColorTable (long /*int*/ hdc, int uStartIndex, int cEntries, byte[] pColors);
+public static final native int SetDIBColorTable (long hdc, int uStartIndex, int cEntries, byte[] pColors);
 public static final native boolean SetDllDirectory (char [] lpString);
 public static final native int SetErrorMode (int uMode);
 /** @param hWnd cast=(HWND) */
-public static final native long /*int*/ SetFocus (long /*int*/ hWnd);
+public static final native long SetFocus (long hWnd);
 /** @param hWnd cast=(HWND) */
-public static final native boolean SetForegroundWindow (long /*int*/ hWnd);
+public static final native boolean SetForegroundWindow (long hWnd);
 /**
  * @method flags=dynamic
  * @param hwnd cast=(HWND)
  * @param pGestureConfig cast=(PGESTURECONFIG)
  */
-public static final native boolean SetGestureConfig(long /*int*/ hwnd, int dwReserved, int cIDs, long /*int*/ pGestureConfig, int cbSize);
+public static final native boolean SetGestureConfig(long hwnd, int dwReserved, int cIDs, long pGestureConfig, int cbSize);
 /** @param hdc cast=(HDC) */
-public static final native int SetGraphicsMode (long /*int*/ hdc, int iMode);
+public static final native int SetGraphicsMode (long hdc, int iMode);
 /** @param hwnd cast=(HWND) */
-public static final native boolean SetLayeredWindowAttributes(long /*int*/ hwnd, int crKey, byte bAlpha, int dwFlags);
+public static final native boolean SetLayeredWindowAttributes(long hwnd, int crKey, byte bAlpha, int dwFlags);
 /**
  * @param hdc cast=(HDC)
  * @param dwLayout cast=(DWORD)
  */
-public static final native int SetLayout (long /*int*/ hdc, int dwLayout);
+public static final native int SetLayout (long hdc, int dwLayout);
 /**
  * @param hWnd cast=(HWND)
  * @param hMenu cast=(HMENU)
  */
-public static final native boolean SetMenu (long /*int*/ hWnd, long /*int*/ hMenu);
+public static final native boolean SetMenu (long hWnd, long hMenu);
 /** @param hMenu cast=(HMENU) */
-public static final native boolean SetMenuDefaultItem (long /*int*/ hMenu, int uItem, int fByPos);
+public static final native boolean SetMenuDefaultItem (long hMenu, int uItem, int fByPos);
 /** @param hmenu cast=(HMENU) */
-public static final native boolean SetMenuInfo (long /*int*/ hmenu, MENUINFO lpcmi);
+public static final native boolean SetMenuInfo (long hmenu, MENUINFO lpcmi);
 /**
  * @param hMenu cast=(HMENU)
  * @param lpmii cast=(LPMENUITEMINFOW)
  */
-public static final native boolean SetMenuItemInfo (long /*int*/ hMenu, int uItem, boolean fByPosition, MENUITEMINFO lpmii);
+public static final native boolean SetMenuItemInfo (long hMenu, int uItem, boolean fByPosition, MENUITEMINFO lpmii);
 /** @param hdc cast=(HDC) */
-public static final native int SetMetaRgn (long /*int*/ hdc);
+public static final native int SetMetaRgn (long hdc);
 /**
  * @param hWndChild cast=(HWND)
  * @param hWndNewParent cast=(HWND)
  */
-public static final native long /*int*/ SetParent (long /*int*/ hWndChild, long /*int*/ hWndNewParent);
+public static final native long SetParent (long hWndChild, long hWndNewParent);
 /** @param hdc cast=(HDC) */
-public static final native int SetPixel (long /*int*/ hdc, int X, int Y, int crColor);
+public static final native int SetPixel (long hdc, int X, int Y, int crColor);
 /** @param hdc cast=(HDC) */
-public static final native int SetPolyFillMode (long /*int*/ hdc, int iPolyFillMode);
+public static final native int SetPolyFillMode (long hdc, int iPolyFillMode);
 public static final native boolean SetProcessDPIAware ();
 /** @param lprc flags=no_in */
 public static final native boolean SetRect (RECT lprc, int xLeft, int yTop, int xRight, int yBottom);
 /** @param hrgn cast=(HRGN) */
-public static final native boolean SetRectRgn (long /*int*/ hrgn, int nLeftRect, int nTopRect, int nRightRect, int nBottomRect);
+public static final native boolean SetRectRgn (long hrgn, int nLeftRect, int nTopRect, int nRightRect, int nBottomRect);
 /** @param hdc cast=(HDC) */
-public static final native int SetROP2 (long /*int*/ hdc, int fnDrawMode);
+public static final native int SetROP2 (long hdc, int fnDrawMode);
 /** @param hwnd cast=(HWND) */
-public static final native boolean SetScrollInfo (long /*int*/ hwnd, int flags, SCROLLINFO info, boolean fRedraw);
+public static final native boolean SetScrollInfo (long hwnd, int flags, SCROLLINFO info, boolean fRedraw);
 /** @param hdc cast=(HDC) */
-public static final native int SetStretchBltMode (long /*int*/ hdc, int iStretchMode);
+public static final native int SetStretchBltMode (long hdc, int iStretchMode);
 /**
  * @param hWnd cast=(HWND)
  * @param lpString cast=(LPCWSTR)
  * @param hData cast=(HANDLE)
  */
-public static final native boolean SetProp (long /*int*/ hWnd, long /*int*/ lpString, long /*int*/ hData);
+public static final native boolean SetProp (long hWnd, long lpString, long hData);
 /**
  * @param hdc cast=(HDC)
  * @param colorRef cast=(COLORREF)
  */
-public static final native int SetTextColor (long /*int*/ hdc, int colorRef);
+public static final native int SetTextColor (long hdc, int colorRef);
 /**
  * @param hWnd cast=(HWND)
  * @param lpTimerFunc cast=(TIMERPROC)
  */
-public static final native long /*int*/ SetTimer (long /*int*/ hWnd, long /*int*/ nIDEvent, int Elapse, long /*int*/ lpTimerFunc);
+public static final native long SetTimer (long hWnd, long nIDEvent, int Elapse, long lpTimerFunc);
 /** @param hWnd cast=(HWND) */
-public static final native int SetWindowLong (long /*int*/ hWnd, int nIndex, int dwNewLong);
+public static final native int SetWindowLong (long hWnd, int nIndex, int dwNewLong);
 /**
  * @param hWnd cast=(HWND)
  * @param dwNewLong cast=(LONG_PTR)
  */
-public static final native long /*int*/ SetWindowLongPtr (long /*int*/ hWnd, int nIndex, long /*int*/ dwNewLong);
+public static final native long SetWindowLongPtr (long hWnd, int nIndex, long dwNewLong);
 /** @param hdc cast=(HDC) */
-public static final native boolean SetWindowOrgEx (long /*int*/ hdc, int X, int Y, POINT lpPoint);
+public static final native boolean SetWindowOrgEx (long hdc, int X, int Y, POINT lpPoint);
 /** @param hWnd cast=(HWND) */
-public static final native boolean SetWindowPlacement (long /*int*/ hWnd, WINDOWPLACEMENT lpwndpl);
+public static final native boolean SetWindowPlacement (long hWnd, WINDOWPLACEMENT lpwndpl);
 /**
  * @param hWnd cast=(HWND)
  * @param hWndInsertAfter cast=(HWND)
  */
-public static final native boolean SetWindowPos(long /*int*/ hWnd, long /*int*/ hWndInsertAfter, int X, int Y, int cx, int cy, int uFlags);
+public static final native boolean SetWindowPos(long hWnd, long hWndInsertAfter, int X, int Y, int cx, int cy, int uFlags);
 /**
  * @param hWnd cast=(HWND)
  * @param hRgn cast=(HRGN)
  */
-public static final native int SetWindowRgn (long /*int*/ hWnd, long /*int*/ hRgn, boolean bRedraw);
+public static final native int SetWindowRgn (long hWnd, long hRgn, boolean bRedraw);
 /**
  * @param hWnd cast=(HWND)
  * @param lpString cast=(LPWSTR)
  */
-public static final native boolean SetWindowText (long /*int*/ hWnd, char [] lpString);
+public static final native boolean SetWindowText (long hWnd, char [] lpString);
 /**
  * @param hwnd cast=(HWND)
  * @param pszSubAppName cast=(LPCWSTR)
  * @param pszSubIdList cast=(LPCWSTR)
  */
-public static final native int SetWindowTheme (long /*int*/ hwnd, char [] pszSubAppName, char [] pszSubIdList);
+public static final native int SetWindowTheme (long hwnd, char [] pszSubAppName, char [] pszSubIdList);
 /**
  * @param lpfn cast=(HOOKPROC)
  * @param hMod cast=(HINSTANCE)
  */
-public static final native long /*int*/ SetWindowsHookEx (int idHook, long /*int*/ lpfn,  long /*int*/ hMod,  int dwThreadId);
+public static final native long SetWindowsHookEx (int idHook, long lpfn,  long hMod,  int dwThreadId);
 /**
  * @param hdc cast=(HDC)
  * @param lpXform cast=(XFORM *)
  */
-public static final native boolean SetWorldTransform(long /*int*/ hdc, float[] lpXform);
+public static final native boolean SetWorldTransform(long hdc, float[] lpXform);
 /** @param lpbi cast=(LPBROWSEINFOW) */
-public static final native long /*int*/ SHBrowseForFolder (BROWSEINFO lpbi);
+public static final native long SHBrowseForFolder (BROWSEINFO lpbi);
 /**
  * @param pszPath cast=(LPCWSTR)
  * @param psfi cast=(SHFILEINFOW *)
  */
-public static final native long /*int*/ SHGetFileInfo (char [] pszPath, int dwFileAttributes, SHFILEINFO psfi, int cbFileInfo, int uFlags);
+public static final native long SHGetFileInfo (char [] pszPath, int dwFileAttributes, SHFILEINFO psfi, int cbFileInfo, int uFlags);
 /** @param lpExecInfo cast=(LPSHELLEXECUTEINFOW) */
 public static final native boolean ShellExecuteEx (SHELLEXECUTEINFO lpExecInfo);
 public static final native boolean Shell_NotifyIcon (int dwMessage, NOTIFYICONDATA lpData);
 /** @param ppMalloc cast=(LPMALLOC *) */
-public static final native int SHGetMalloc (long /*int*/ [] ppMalloc);
+public static final native int SHGetMalloc (long [] ppMalloc);
 /**
  * @param pidl cast=(LPCITEMIDLIST)
  * @param pszPath cast=(LPWSTR)
  */
-public static final native boolean SHGetPathFromIDList (long /*int*/ pidl, char [] pszPath);
+public static final native boolean SHGetPathFromIDList (long pidl, char [] pszPath);
 /**
  * @param kfid cast=(REFKNOWNFOLDERID)
  * @param riid cast=(REFIID)
  * @param ppv cast=(void **)
  */
-public static final native int SHCreateItemInKnownFolder (byte [] kfid, int dwKFFlags, char [] pszItem, byte [] riid, long /*int*/ [] ppv);
+public static final native int SHCreateItemInKnownFolder (byte [] kfid, int dwKFFlags, char [] pszItem, byte [] riid, long [] ppv);
 /**
  * @param psiParent cast=(IShellItem *)
  * @param pbc cast=(IBindCtx *)
  * @param riid cast=(REFIID)
  * @param ppv cast=(void **)
  */
-public static final native int SHCreateItemFromRelativeName (long /*int*/ psiParent, char [] pszName, long /*int*/ pbc, byte [] riid, long /*int*/ [] ppv);
+public static final native int SHCreateItemFromRelativeName (long psiParent, char [] pszName, long pbc, byte [] riid, long [] ppv);
 /**
  * @param pbc cast=(IBindCtx *)
  * @param riid cast=(REFIID)
  * @param ppv cast=(void **)
  */
-public static final native int SHCreateItemFromParsingName (char [] pszName, long /*int*/ pbc, byte [] riid, long /*int*/ [] ppv);
+public static final native int SHCreateItemFromParsingName (char [] pszName, long pbc, byte [] riid, long [] ppv);
 /** @param hWnd cast=(HWND) */
-public static final native boolean ShowCaret (long /*int*/ hWnd);
+public static final native boolean ShowCaret (long hWnd);
 /** @param hWnd cast=(HWND) */
-public static final native boolean ShowOwnedPopups (long /*int*/ hWnd, boolean fShow);
+public static final native boolean ShowOwnedPopups (long hWnd, boolean fShow);
 /** @param hWnd cast=(HWND) */
-public static final native boolean ShowScrollBar (long /*int*/ hWnd, int wBar, boolean bShow);
+public static final native boolean ShowScrollBar (long hWnd, int wBar, boolean bShow);
 /** @param hWnd cast=(HWND) */
-public static final native boolean ShowWindow (long /*int*/ hWnd, int nCmdShow);
+public static final native boolean ShowWindow (long hWnd, int nCmdShow);
 /**
  * @param hdc cast=(HDC)
  * @param lpdi cast=(LPDOCINFOW)
  */
-public static final native int StartDoc (long /*int*/ hdc, DOCINFO lpdi);
+public static final native int StartDoc (long hdc, DOCINFO lpdi);
 /** @param hdc cast=(HDC) */
-public static final native int StartPage (long /*int*/ hdc);
+public static final native int StartPage (long hdc);
 /**
  * @param hdcDest cast=(HDC)
  * @param hdcSrc cast=(HDC)
  */
-public static final native boolean StretchBlt (long /*int*/ hdcDest, int nXOriginDest, int nYOriginDest, int nWidthDest, int nHeightDest, long /*int*/ hdcSrc, int nXOriginSrc, int nYOriginSrc, int nWidthSrc, int nHeightSrc, int dwRop);
+public static final native boolean StretchBlt (long hdcDest, int nXOriginDest, int nYOriginDest, int nWidthDest, int nHeightDest, long hdcSrc, int nXOriginSrc, int nYOriginSrc, int nWidthSrc, int nHeightSrc, int dwRop);
 public static final native boolean SystemParametersInfo (int uiAction, int uiParam, HIGHCONTRAST pvParam, int fWinIni);
 public static final native boolean SystemParametersInfo (int uiAction, int uiParam, RECT pvParam, int fWinIni);
 public static final native boolean SystemParametersInfo (int uiAction, int uiParam, NONCLIENTMETRICS pvParam, int fWinIni);
@@ -4525,101 +4525,101 @@ public static final native long TOUCH_COORD_TO_PIXEL(long touchCoord);
  * @param hwndTV cast=(HWND)
  * @param hitem cast=(HTREEITEM)
  */
-public static final native boolean TreeView_GetItemRect (long /*int*/ hwndTV, long /*int*/ hitem, RECT prc, boolean fItemRect);
+public static final native boolean TreeView_GetItemRect (long hwndTV, long hitem, RECT prc, boolean fItemRect);
 public static final native boolean TrackMouseEvent (TRACKMOUSEEVENT lpEventTrack);
 /**
  * @param hMenu cast=(HMENU)
  * @param hWnd cast=(HWND)
  */
-public static final native boolean TrackPopupMenu (long /*int*/ hMenu, int uFlags, int x, int y, int nReserved, long /*int*/ hWnd, RECT prcRect);
+public static final native boolean TrackPopupMenu (long hMenu, int uFlags, int x, int y, int nReserved, long hWnd, RECT prcRect);
 /**
  * @param hWnd cast=(HWND)
  * @param hAccTable cast=(HACCEL)
  */
-public static final native int TranslateAccelerator (long /*int*/ hWnd, long /*int*/ hAccTable, MSG lpMsg);
+public static final native int TranslateAccelerator (long hWnd, long hAccTable, MSG lpMsg);
 /**
  * @param lpSrc cast=(DWORD *)
  * @param lpCs cast=(LPCHARSETINFO)
  */
-public static final native boolean TranslateCharsetInfo (long /*int*/ lpSrc, int [] lpCs, int dwFlags);
+public static final native boolean TranslateCharsetInfo (long lpSrc, int [] lpCs, int dwFlags);
 /**
  * @param hWndClient cast=(HWND)
  * @param lpMsg cast=(LPMSG)
  */
-public static final native boolean TranslateMDISysAccel (long /*int*/ hWndClient, MSG lpMsg);
+public static final native boolean TranslateMDISysAccel (long hWndClient, MSG lpMsg);
 public static final native boolean TranslateMessage (MSG lpmsg);
 /**
  * @param hdcDest cast=(HDC)
  * @param hdcSrc cast=(HDC)
  */
-public static final native boolean TransparentBlt (long /*int*/ hdcDest, int nXOriginDest, int nYOriginDest, int nWidthDest, int hHeightDest, long /*int*/ hdcSrc, int nXOriginSrc, int nYOriginSrc, int nWidthSrc, int nHeightSrc, int crTransparent);
+public static final native boolean TransparentBlt (long hdcDest, int nXOriginDest, int nYOriginDest, int nWidthDest, int hHeightDest, long hdcSrc, int nXOriginSrc, int nYOriginSrc, int nWidthSrc, int nHeightSrc, int crTransparent);
 /** @param hhk cast=(HHOOK) */
-public static final native boolean UnhookWindowsHookEx (long /*int*/ hhk);
+public static final native boolean UnhookWindowsHookEx (long hhk);
 /**
  * @param lpClassName cast=(LPWSTR)
  * @param hInstance cast=(HINSTANCE)
  */
-public static final native boolean UnregisterClass (char [] lpClassName, long /*int*/ hInstance);
+public static final native boolean UnregisterClass (char [] lpClassName, long hInstance);
 /**
  * @method flags=dynamic
  * @param hwnd cast=(HWND)
  */
-public static final native boolean UnregisterTouchWindow (long /*int*/ hwnd);
+public static final native boolean UnregisterTouchWindow (long hwnd);
 /** @param hWnd cast=(HWND) */
-public static final native boolean UpdateWindow (long /*int*/ hWnd);
+public static final native boolean UpdateWindow (long hWnd);
 /**
  * @param pszPath cast=(LPCWSTR)
  * @param pszURL cast=(LPWSTR)
  */
 public static final native int UrlCreateFromPath (char[] pszPath, char[] pszURL, int[] pcchUrl, int flags);
 /** @param hWnd cast=(HWND) */
-public static final native boolean ValidateRect (long /*int*/ hWnd, RECT lpRect);
+public static final native boolean ValidateRect (long hWnd, RECT lpRect);
 /** @param ch cast=(WCHAR) */
 public static final native short VkKeyScan (short ch);
 
 /** @method flags=trycatch */
-public static final native int VtblCall (int fnNumber, long /*int*/ ppVtbl);
+public static final native int VtblCall (int fnNumber, long ppVtbl);
 
-public static final native int VtblCall (int fnNumber, long /*int*/ ppVtbl, int arg0);
-public static final native int VtblCall (int fnNumber, long /*int*/ ppVtbl, long arg0);
+public static final native int VtblCall (int fnNumber, long ppVtbl, int arg0);
+public static final native int VtblCall (int fnNumber, long ppVtbl, long arg0);
 
-public static final native int VtblCall (int fnNumber, long /*int*/ ppVtbl, int arg0, int arg1, int arg2, int[] arg3);
-public static final native int VtblCall (int fnNumber, long /*int*/ ppVtbl, long arg0, int arg1, int arg2, int[] arg3);
-public static final native int VtblCall (int fnNumber, long /*int*/ ppVtbl, long arg0, long arg1, int arg2, long[] arg3);
-public static final native int VtblCall (int fnNumber, long /*int*/ ppVtbl, int arg0, long arg1, int arg2, long[] arg3);
-public static final native int VtblCall (int fnNumber, long /*int*/ ppVtbl, long arg0, int arg1, int arg2, long[] arg3);
+public static final native int VtblCall (int fnNumber, long ppVtbl, int arg0, int arg1, int arg2, int[] arg3);
+public static final native int VtblCall (int fnNumber, long ppVtbl, long arg0, int arg1, int arg2, int[] arg3);
+public static final native int VtblCall (int fnNumber, long ppVtbl, long arg0, long arg1, int arg2, long[] arg3);
+public static final native int VtblCall (int fnNumber, long ppVtbl, int arg0, long arg1, int arg2, long[] arg3);
+public static final native int VtblCall (int fnNumber, long ppVtbl, long arg0, int arg1, int arg2, long[] arg3);
 
-public static final native int VtblCall (int fnNumber, long /*int*/ ppVtbl, char[] arg0, int arg1, int arg2, int[] arg3, int[] arg4);
-public static final native int VtblCall (int fnNumber, long /*int*/ ppVtbl, short arg0, byte[] arg1, byte[] arg2, byte[] arg3);
-public static final native int VtblCall (int fnNumber, long /*int*/ ppVtbl, int[] arg0);
-public static final native int VtblCall (int fnNumber, long /*int*/ ppVtbl, long[] arg0);
-public static final native int VtblCall (int fnNumber, long /*int*/ ppVtbl, byte[] arg0, int[] arg1);
-public static final native int VtblCall (int fnNumber, long /*int*/ ppVtbl, byte[] arg0, long[] arg1);
-public static final native int VtblCall (int fnNumber, long /*int*/ ppVtbl, int arg0, long /*int*/[] arg1, int[] arg2);
-public static final native int VtblCall (int fnNumber, long /*int*/ ppVtbl, long arg0, int[] arg1, int[] arg2);
-public static final native int VtblCall (int fnNumber, long /*int*/ ppVtbl, long arg0, long[] arg1, long[] arg2);
-public static final native int VtblCall (int fnNumber, long /*int*/ ppVtbl, TF_DISPLAYATTRIBUTE arg0);
+public static final native int VtblCall (int fnNumber, long ppVtbl, char[] arg0, int arg1, int arg2, int[] arg3, int[] arg4);
+public static final native int VtblCall (int fnNumber, long ppVtbl, short arg0, byte[] arg1, byte[] arg2, byte[] arg3);
+public static final native int VtblCall (int fnNumber, long ppVtbl, int[] arg0);
+public static final native int VtblCall (int fnNumber, long ppVtbl, long[] arg0);
+public static final native int VtblCall (int fnNumber, long ppVtbl, byte[] arg0, int[] arg1);
+public static final native int VtblCall (int fnNumber, long ppVtbl, byte[] arg0, long[] arg1);
+public static final native int VtblCall (int fnNumber, long ppVtbl, int arg0, long[] arg1, int[] arg2);
+public static final native int VtblCall (int fnNumber, long ppVtbl, long arg0, int[] arg1, int[] arg2);
+public static final native int VtblCall (int fnNumber, long ppVtbl, long arg0, long[] arg1, long[] arg2);
+public static final native int VtblCall (int fnNumber, long ppVtbl, TF_DISPLAYATTRIBUTE arg0);
 
-public static final native int VtblCall(int fnNumber, long /*int*/ ppVtbl, int arg0, long arg1, long arg2);
-public static final native int VtblCall(int fnNumber, long /*int*/ ppVtbl, long arg0, long arg1, long arg2);
-public static final native int VtblCall (int fnNumber, long /*int*/ ppVtbl, int arg0, int arg1, int arg2);
+public static final native int VtblCall(int fnNumber, long ppVtbl, int arg0, long arg1, long arg2);
+public static final native int VtblCall(int fnNumber, long ppVtbl, long arg0, long arg1, long arg2);
+public static final native int VtblCall (int fnNumber, long ppVtbl, int arg0, int arg1, int arg2);
 
-public static final native int VtblCall (int fnNumber, long /*int*/ ppVtbl, int arg0, int arg1);
-public static final native int VtblCall (int fnNumber, long /*int*/ ppVtbl, int arg0, long arg1);
-public static final native int VtblCall (int fnNumber, long /*int*/ ppVtbl, long arg0, long arg1);
-public static final native int VtblCall (int fnNumber, long /*int*/ ppVtbl, long arg0, int arg1);
-public static final native int VtblCall (int fnNumber, long /*int*/ ppVtbl, int[] arg0, byte[] arg1, int[] arg2);
-public static final native int VtblCall (int fnNumber, long /*int*/ ppVtbl, int[] arg0, byte[] arg1, long[] arg2);
-public static final native int VtblCall (int fnNumber, long /*int*/ ppVtbl, char[] arg0);
-public static final native int VtblCall (int fnNumber, long /*int*/ ppVtbl, char[] arg0, int arg1);
-public static final native int VtblCall (int fnNumber, long /*int*/ ppVtbl, char[] arg0, long arg1);
-public static final native int VtblCall (int fnNumber, long /*int*/ ppVtbl, PROPERTYKEY arg0, int arg1);
-public static final native int VtblCall (int fnNumber, long /*int*/ ppVtbl, PROPERTYKEY arg0, long arg1);
-public static final native int VtblCall (int fnNumber, long /*int*/ ppVtbl, int arg0, int arg1, char[] arg2, char[] arg3, int arg4);
-public static final native int VtblCall (int fnNumber, long /*int*/ ppVtbl, long arg0, int arg1, char[] arg2, char[] arg3, long arg4);
-public static final native int VtblCall (int fnNumber, long /*int*/ ppVtbl, int arg0, int[] arg1);
-public static final native int VtblCall (int fnNumber, long /*int*/ ppVtbl, long arg0, int[] arg1);
-public static final native int VtblCall (int fnNumber, long /*int*/ ppVtbl, int arg0, long[] arg1);
+public static final native int VtblCall (int fnNumber, long ppVtbl, int arg0, int arg1);
+public static final native int VtblCall (int fnNumber, long ppVtbl, int arg0, long arg1);
+public static final native int VtblCall (int fnNumber, long ppVtbl, long arg0, long arg1);
+public static final native int VtblCall (int fnNumber, long ppVtbl, long arg0, int arg1);
+public static final native int VtblCall (int fnNumber, long ppVtbl, int[] arg0, byte[] arg1, int[] arg2);
+public static final native int VtblCall (int fnNumber, long ppVtbl, int[] arg0, byte[] arg1, long[] arg2);
+public static final native int VtblCall (int fnNumber, long ppVtbl, char[] arg0);
+public static final native int VtblCall (int fnNumber, long ppVtbl, char[] arg0, int arg1);
+public static final native int VtblCall (int fnNumber, long ppVtbl, char[] arg0, long arg1);
+public static final native int VtblCall (int fnNumber, long ppVtbl, PROPERTYKEY arg0, int arg1);
+public static final native int VtblCall (int fnNumber, long ppVtbl, PROPERTYKEY arg0, long arg1);
+public static final native int VtblCall (int fnNumber, long ppVtbl, int arg0, int arg1, char[] arg2, char[] arg3, int arg4);
+public static final native int VtblCall (int fnNumber, long ppVtbl, long arg0, int arg1, char[] arg2, char[] arg3, long arg4);
+public static final native int VtblCall (int fnNumber, long ppVtbl, int arg0, int[] arg1);
+public static final native int VtblCall (int fnNumber, long ppVtbl, long arg0, int[] arg1);
+public static final native int VtblCall (int fnNumber, long ppVtbl, int arg0, long[] arg1);
 
 public static final native boolean WaitMessage ();
 /**
@@ -4635,22 +4635,22 @@ public static final native int WideCharToMultiByte (int CodePage, int dwFlags, c
  * @param lpDefaultChar cast=(LPCSTR)
  * @param lpUsedDefaultChar cast=(LPBOOL)
  */
-public static final native int WideCharToMultiByte (int CodePage, int dwFlags, char [] lpWideCharStr, int cchWideChar, long /*int*/ lpMultiByteStr, int cchMultiByte, byte [] lpDefaultChar, boolean [] lpUsedDefaultChar);
+public static final native int WideCharToMultiByte (int CodePage, int dwFlags, char [] lpWideCharStr, int cchWideChar, long lpMultiByteStr, int cchMultiByte, byte [] lpDefaultChar, boolean [] lpUsedDefaultChar);
 /** @param hDC cast=(HDC) */
-public static final native long /*int*/ WindowFromDC (long /*int*/ hDC);
+public static final native long WindowFromDC (long hDC);
 /** @param lpPoint flags=struct */
-public static final native long /*int*/ WindowFromPoint (POINT lpPoint);
+public static final native long WindowFromPoint (POINT lpPoint);
 /** @param string cast=(const wchar_t *) */
-public static final native int wcslen (long /*int*/ string);
+public static final native int wcslen (long string);
 
 /** @param hFileMappingObject cast=(HANDLE)
  *  @param dwDesiredAccess cast=(DWORD)
  *  @param dwFileOffsetHigh cast=(DWORD)
  *  @param dwFileOffsetLow cast=(DWORD)
  */
-public static final native long /*int*/ MapViewOfFile(long /*int*/ hFileMappingObject, int dwDesiredAccess, int dwFileOffsetHigh, int dwFileOffsetLow, int dwNumberOfBytesToMap);
+public static final native long MapViewOfFile(long hFileMappingObject, int dwDesiredAccess, int dwFileOffsetHigh, int dwFileOffsetLow, int dwNumberOfBytesToMap);
 /** @param lpBaseAddress cast=(LPCVOID) */
-public static final native boolean UnmapViewOfFile(long /*int*/ lpBaseAddress);
+public static final native boolean UnmapViewOfFile(long lpBaseAddress);
 
 public static final int PROCESS_DUP_HANDLE = 0x0040;
 public static final int PROCESS_VM_READ = 0x0010;
@@ -4660,9 +4660,9 @@ public static final int DUPLICATE_SAME_ACCESS = 2;
  * @param dwDesiredAccess cast=(DWORD)
  * @param dwProcessId cast=(DWORD)
  */
-public static final native long /*int*/ OpenProcess(int dwDesiredAccess, boolean bInheritHandle, int dwProcessId);
+public static final native long OpenProcess(int dwDesiredAccess, boolean bInheritHandle, int dwProcessId);
 
-public static final native long /*int*/ GetCurrentProcess();
+public static final native long GetCurrentProcess();
 
 /**
  * @param hSourceProcessHandle cast=(HANDLE)
@@ -4672,7 +4672,7 @@ public static final native long /*int*/ GetCurrentProcess();
  * @param dwDesiredAccess cast=(DWORD)
  * @param dwOptions cast=(DWORD)
  */
-public static final native boolean DuplicateHandle(long /*int*/ hSourceProcessHandle, long /*int*/ hSourceHandle, long /*int*/ hTargetProcessHandle,
-		long /*int*/ [] lpTargetHandle, int dwDesiredAccess, boolean b, int dwOptions);
+public static final native boolean DuplicateHandle(long hSourceProcessHandle, long hSourceHandle, long hTargetProcessHandle,
+		long [] lpTargetHandle, int dwDesiredAccess, boolean b, int dwOptions);
 
 }

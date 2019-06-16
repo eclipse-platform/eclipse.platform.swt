@@ -151,50 +151,50 @@ public static final native int GdiplusStartupInput_sizeof();
  * @param input cast=(const GdiplusStartupInput *)
  * @param output cast=(GdiplusStartupOutput *)
  */
-public static final native int GdiplusStartup(long /*int*/[] token, GdiplusStartupInput input, long /*int*/ output);
+public static final native int GdiplusStartup(long[] token, GdiplusStartupInput input, long output);
 /** @param token cast=(ULONG_PTR) */
-public static final native void GdiplusShutdown(long /*int*/ token);
+public static final native void GdiplusShutdown(long token);
 /**
  * @method flags=new
  * @param hbm cast=(HBITMAP)
  * @param hpal cast=(HPALETTE)
  */
-public static final native long /*int*/ Bitmap_new(long /*int*/ hbm, long /*int*/ hpal);
+public static final native long Bitmap_new(long hbm, long hpal);
 /**
  * @method flags=new
  * @param hicon cast=(HICON)
  */
-public static final native long /*int*/ Bitmap_new(long /*int*/ hicon);
+public static final native long Bitmap_new(long hicon);
 /**
  * @method flags=new
  * @param format cast=(PixelFormat)
  * @param scan0 cast=(BYTE *)
  */
-public static final native long /*int*/ Bitmap_new(int width, int height, int stride, int format, long /*int*/ scan0);
+public static final native long Bitmap_new(int width, int height, int stride, int format, long scan0);
 /**
  * @method flags=new
  * @param filename cast=(WCHAR*)
  */
-public static final native long /*int*/ Bitmap_new(char[] filename, boolean useIcm);
+public static final native long Bitmap_new(char[] filename, boolean useIcm);
 /** @method flags=delete */
-public static final native void Bitmap_delete(long /*int*/ bitmap);
+public static final native void Bitmap_delete(long bitmap);
 /**
  * @method flags=cpp
  * @param bitmap cast=(Bitmap*)
  * @param colorBackground cast=(Color)
  * @param hbmReturn cast=(HBITMAP*)
  */
-public static final native int Bitmap_GetHBITMAP(long /*int*/ bitmap, int colorBackground, long /*int*/[] hbmReturn);
+public static final native int Bitmap_GetHBITMAP(long bitmap, int colorBackground, long[] hbmReturn);
 /**
  * @method flags=cpp
  * @param bitmap cast=(Bitmap*)
  * @param hicon cast=(HICON*)
  */
-public static final native int Bitmap_GetHICON(long /*int*/ bitmap, long /*int*/[] hicon);
+public static final native int Bitmap_GetHICON(long bitmap, long[] hicon);
 /** @method flags=new */
-public static final native long /*int*/ BitmapData_new();
+public static final native long BitmapData_new();
 /** @method flags=delete */
-public static final native void BitmapData_delete(long /*int*/ bitmapData);
+public static final native void BitmapData_delete(long bitmapData);
 /**
  * @method flags=cpp
  * @param bitmap cast=(Bitmap*)
@@ -202,39 +202,39 @@ public static final native void BitmapData_delete(long /*int*/ bitmapData);
  * @param pixelFormat cast=(PixelFormat)
  * @param lockedBitmapData cast=(BitmapData*)
  */
-public static final native int Bitmap_LockBits(long /*int*/ bitmap, long /*int*/ rect, int flags, int pixelFormat, long /*int*/ lockedBitmapData);
+public static final native int Bitmap_LockBits(long bitmap, long rect, int flags, int pixelFormat, long lockedBitmapData);
 /**
  * @method flags=cpp
  * @param bitmap cast=(Bitmap*)
  * @param lockedBitmapData cast=(BitmapData*)
  */
-public static final native int Bitmap_UnlockBits(long /*int*/ bitmap, long /*int*/ lockedBitmapData);
+public static final native int Bitmap_UnlockBits(long bitmap, long lockedBitmapData);
 /**
  * @method flags=cpp
  * @param brush cast=(Brush *)
  */
-public static final native long /*int*/ Brush_Clone(long /*int*/ brush);
+public static final native long Brush_Clone(long brush);
 /**
  * @method flags=cpp
  * @param brush cast=(Brush *)
  */
-public static final native int Brush_GetType(long /*int*/ brush);
+public static final native int Brush_GetType(long brush);
 /** @method flags=new */
-public static final native long /*int*/ PrivateFontCollection_new();
+public static final native long PrivateFontCollection_new();
 /** @method flags=delete */
-public static final native void PrivateFontCollection_delete(long /*int*/ collection);
+public static final native void PrivateFontCollection_delete(long collection);
 /**
  * @method flags=cpp
  * @param collection cast=(PrivateFontCollection *)
  * @param filename cast=(const WCHAR *)
  */
-public static final native int PrivateFontCollection_AddFontFile(long /*int*/ collection, char[] filename);
+public static final native int PrivateFontCollection_AddFontFile(long collection, char[] filename);
 /**
  * @method flags=new
  * @param hdc cast=(HDC)
  * @param hfont cast=(HFONT)
  */
-public static final native long /*int*/ Font_new(long /*int*/ hdc, long /*int*/ hfont);
+public static final native long Font_new(long hdc, long hfont);
 /**
  * @method flags=new
  * @param family cast=(const FontFamily *)
@@ -242,7 +242,7 @@ public static final native long /*int*/ Font_new(long /*int*/ hdc, long /*int*/ 
  * @param style cast=(INT)
  * @param unit cast=(Unit)
  */
-public static final native long /*int*/ Font_new(long /*int*/ family, float emSize, int style, int unit);
+public static final native long Font_new(long family, float emSize, int style, int unit);
 /**
  * @method flags=new
  * @param familyName cast=(const WCHAR *)
@@ -251,72 +251,72 @@ public static final native long /*int*/ Font_new(long /*int*/ family, float emSi
  * @param unit cast=(Unit)
  * @param fontCollection cast=(const FontCollection *)
  */
-public static final native long /*int*/ Font_new(char[] familyName, float emSize, int style, int unit, long /*int*/ fontCollection);
+public static final native long Font_new(char[] familyName, float emSize, int style, int unit, long fontCollection);
 /** @method flags=delete */
-public static final native void Font_delete(long /*int*/ font);
+public static final native void Font_delete(long font);
 /**
  * @method flags=cpp
  * @param font cast=(Font *)
  * @param family cast=(FontFamily *)
  */
-public static final native int Font_GetFamily(long /*int*/ font, long /*int*/ family);
+public static final native int Font_GetFamily(long font, long family);
 /**
  * @method flags=cpp
  * @param font cast=(Font *)
  */
-public static final native float Font_GetSize(long /*int*/ font);
+public static final native float Font_GetSize(long font);
 /**
  * @method flags=cpp
  * @param font cast=(Font *)
  */
-public static final native int Font_GetStyle(long /*int*/ font);
+public static final native int Font_GetStyle(long font);
 /**
  * @method flags=cpp
  * @param font cast=(Font *)
  * @param g cast=(const Graphics *)
  * @param logfontW cast=(LOGFONTW *)
  */
-public static final native int Font_GetLogFontW (long /*int*/ font, long /*int*/ g, long /*int*/  logfontW);
+public static final native int Font_GetLogFontW (long font, long g, long  logfontW);
 /**
  * @method flags=cpp
  * @param font cast=(Font *)
  */
-public static final native boolean Font_IsAvailable(long /*int*/ font);
+public static final native boolean Font_IsAvailable(long font);
 /** @method flags=new */
-public static final native long /*int*/ FontFamily_new();
+public static final native long FontFamily_new();
 /**
  * @method flags=new
  * @param name cast=(const WCHAR *)
  * @param fontCollection cast=(const FontCollection *)
  */
-public static final native long /*int*/ FontFamily_new(char[] name, long /*int*/ fontCollection);
+public static final native long FontFamily_new(char[] name, long fontCollection);
 /** @method flags=delete */
-public static final native void FontFamily_delete(long /*int*/ family);
+public static final native void FontFamily_delete(long family);
 /**
  * @method flags=cpp
  * @param family cast=(FontFamily *)
  * @param name cast=(WCHAR *)
  * @param language cast=(WCHAR)
  */
-public static final native int FontFamily_GetFamilyName(long /*int*/ family, char[] name, char language);
+public static final native int FontFamily_GetFamilyName(long family, char[] name, char language);
 /**
  * @method flags=cpp
  * @param family cast=(FontFamily *)
  */
-public static final native boolean FontFamily_IsAvailable(long /*int*/ family);
+public static final native boolean FontFamily_IsAvailable(long family);
 /**
  * @method flags=new
  * @param hdc cast=(HDC)
  */
-public static final native long /*int*/ Graphics_new(long /*int*/ hdc);
+public static final native long Graphics_new(long hdc);
 /** @method flags=delete */
-public static final native void Graphics_delete(long /*int*/ graphics);
+public static final native void Graphics_delete(long graphics);
 /**
  * @method flags=cpp
  * @param graphics cast=(Graphics *)
  * @param pen cast=(Pen *)
  */
-public static final native int Graphics_DrawArc(long /*int*/ graphics, long /*int*/ pen, int x, int y, int width, int height, float startAngle, float sweepAngle);
+public static final native int Graphics_DrawArc(long graphics, long pen, int x, int y, int width, int height, float startAngle, float sweepAngle);
 /**
  * @method flags=cpp
  * @param graphics cast=(Graphics *)
@@ -326,7 +326,7 @@ public static final native int Graphics_DrawArc(long /*int*/ graphics, long /*in
  * @param positions cast=(const PointF *)
  * @param matrix cast=(const Matrix *)
  */
-public static final native int Graphics_DrawDriverString(long /*int*/ graphics, long /*int*/ text, int length, long /*int*/ font, long /*int*/ brush, PointF /*long*/ positions, int flags, long /*int*/ matrix);
+public static final native int Graphics_DrawDriverString(long graphics, long text, int length, long font, long brush, PointF /*long*/ positions, int flags, long matrix);
 /**
  * @method flags=cpp
  * @param graphics cast=(Graphics *)
@@ -336,13 +336,13 @@ public static final native int Graphics_DrawDriverString(long /*int*/ graphics, 
  * @param positions cast=(const PointF *),flags=no_out
  * @param matrix cast=(const Matrix *)
  */
-public static final native int Graphics_DrawDriverString(long /*int*/ graphics, long /*int*/ text, int length, long /*int*/ font, long /*int*/ brush, float[] positions, int flags, long /*int*/ matrix);
+public static final native int Graphics_DrawDriverString(long graphics, long text, int length, long font, long brush, float[] positions, int flags, long matrix);
 /**
  * @method flags=cpp
  * @param graphics cast=(Graphics *)
  * @param pen cast=(Pen *)
  */
-public static final native int Graphics_DrawEllipse(long /*int*/ graphics, long /*int*/ pen, int x, int y, int width, int height);
+public static final native int Graphics_DrawEllipse(long graphics, long pen, int x, int y, int width, int height);
 /**
  * @method flags=cpp
  * @param graphics cast=(Graphics *)
@@ -350,7 +350,7 @@ public static final native int Graphics_DrawEllipse(long /*int*/ graphics, long 
  * @param x cast=(INT)
  * @param y cast=(INT)
  */
-public static final native int Graphics_DrawImage(long /*int*/ graphics, long /*int*/ image, int x, int y);
+public static final native int Graphics_DrawImage(long graphics, long image, int x, int y);
 /**
  * @method flags=cpp
  * @param graphics cast=(Graphics *)
@@ -365,13 +365,13 @@ public static final native int Graphics_DrawImage(long /*int*/ graphics, long /*
  * @param callback cast=(DrawImageAbort)
  * @param callbackData cast=(VOID *)
  */
-public static final native int Graphics_DrawImage(long /*int*/ graphics, long /*int*/ image, Rect destRect, int srcx, int srcy, int srcwidth, int srcheight, int srcUnit, long /*int*/ imageAttributes, long /*int*/ callback, long /*int*/ callbackData);
+public static final native int Graphics_DrawImage(long graphics, long image, Rect destRect, int srcx, int srcy, int srcwidth, int srcheight, int srcUnit, long imageAttributes, long callback, long callbackData);
 /**
  * @method flags=cpp
  * @param graphics cast=(Graphics *)
  * @param pen cast=(Pen *)
  */
-public static final native int Graphics_DrawLine(long /*int*/ graphics, long /*int*/ pen, int x1, int y1, int x2, int y2);
+public static final native int Graphics_DrawLine(long graphics, long pen, int x1, int y1, int x2, int y2);
 /**
  * @method flags=cpp
  * @param graphics cast=(Graphics *)
@@ -379,14 +379,14 @@ public static final native int Graphics_DrawLine(long /*int*/ graphics, long /*i
  * @param points cast=(const Point *),flags=no_out
  * @param count cast=(INT)
  */
-public static final native int Graphics_DrawLines(long /*int*/ graphics, long /*int*/ pen, int[] points, int count);
+public static final native int Graphics_DrawLines(long graphics, long pen, int[] points, int count);
 /**
  * @method flags=cpp
  * @param graphics cast=(Graphics *)
  * @param pen cast=(Pen *)
  * @param path cast=(GraphicsPath *)
  */
-public static final native int Graphics_DrawPath(long /*int*/ graphics, long /*int*/ pen, long /*int*/ path);
+public static final native int Graphics_DrawPath(long graphics, long pen, long path);
 /**
  * @method flags=cpp
  * @param graphics cast=(Graphics *)
@@ -394,13 +394,13 @@ public static final native int Graphics_DrawPath(long /*int*/ graphics, long /*i
  * @param points cast=(Point *)
  * @param count cast=(INT)
  */
-public static final native int Graphics_DrawPolygon(long /*int*/ graphics, long /*int*/ pen, int[] points, int count);
+public static final native int Graphics_DrawPolygon(long graphics, long pen, int[] points, int count);
 /**
  * @method flags=cpp
  * @param graphics cast=(Graphics *)
  * @param pen cast=(Pen *)
  */
-public static final native int Graphics_DrawRectangle(long /*int*/ graphics, long /*int*/ pen, int x, int y, int width, int height);
+public static final native int Graphics_DrawRectangle(long graphics, long pen, int x, int y, int width, int height);
 /**
  * @method flags=cpp
  * @param graphics cast=(Graphics *)
@@ -410,7 +410,7 @@ public static final native int Graphics_DrawRectangle(long /*int*/ graphics, lon
  * @param origin flags=struct
  * @param brush cast=(Brush *)
  */
-public static final native int Graphics_DrawString(long /*int*/ graphics, char[] string, int length, long /*int*/ font, PointF origin, long /*int*/ brush);
+public static final native int Graphics_DrawString(long graphics, char[] string, int length, long font, PointF origin, long brush);
 /**
  * @method flags=cpp
  * @param graphics cast=(Graphics *)
@@ -421,7 +421,7 @@ public static final native int Graphics_DrawString(long /*int*/ graphics, char[]
  * @param format cast=(StringFormat *)
  * @param brush cast=(Brush *)
  */
-public static final native int Graphics_DrawString(long /*int*/ graphics, char[] string, int length, long /*int*/ font, PointF origin, long /*int*/ format, long /*int*/ brush);
+public static final native int Graphics_DrawString(long graphics, char[] string, int length, long font, PointF origin, long format, long brush);
 /**
  * @method flags=cpp
  * @param graphics cast=(Graphics *)
@@ -431,20 +431,20 @@ public static final native int Graphics_DrawString(long /*int*/ graphics, char[]
  * @param width cast=(INT)
  * @param height cast=(INT)
  */
-public static final native int Graphics_FillEllipse(long /*int*/ graphics, long /*int*/ brush, int x, int y, int width, int height);
+public static final native int Graphics_FillEllipse(long graphics, long brush, int x, int y, int width, int height);
 /**
  * @method flags=cpp
  * @param graphics cast=(Graphics *)
  * @param brush cast=(Brush *)
  * @param path cast=(GraphicsPath *)
  */
-public static final native int Graphics_FillPath(long /*int*/ graphics, long /*int*/ brush, long /*int*/ path);
+public static final native int Graphics_FillPath(long graphics, long brush, long path);
 /**
  * @method flags=cpp
  * @param graphics cast=(Graphics *)
  * @param intention cast=(FlushIntention)
  */
-public static final native void Graphics_Flush(long /*int*/ graphics, int intention);
+public static final native void Graphics_Flush(long graphics, int intention);
 /**
  * @method flags=cpp
  * @param graphics cast=(Graphics *)
@@ -456,7 +456,7 @@ public static final native void Graphics_Flush(long /*int*/ graphics, int intent
  * @param startAngle cast=(REAL)
  * @param sweepAngle cast=(REAL)
  */
-public static final native int Graphics_FillPie(long /*int*/ graphics, long /*int*/ brush, int x, int y, int width, int height, float startAngle, float sweepAngle);
+public static final native int Graphics_FillPie(long graphics, long brush, int x, int y, int width, int height, float startAngle, float sweepAngle);
 /**
  * @method flags=cpp
  * @param graphics cast=(Graphics *)
@@ -465,7 +465,7 @@ public static final native int Graphics_FillPie(long /*int*/ graphics, long /*in
  * @param count cast=(INT)
  * @param fillMode cast=(FillMode)
  */
-public static final native int Graphics_FillPolygon(long /*int*/ graphics, long /*int*/ brush, int[] points, int count, int fillMode);
+public static final native int Graphics_FillPolygon(long graphics, long brush, int[] points, int count, int fillMode);
 /**
  * @method flags=cpp
  * @param graphics cast=(Graphics *)
@@ -475,60 +475,60 @@ public static final native int Graphics_FillPolygon(long /*int*/ graphics, long 
  * @param width cast=(INT)
  * @param height cast=(INT)
  */
-public static final native int Graphics_FillRectangle(long /*int*/ graphics, long /*int*/ brush, int x, int y, int width, int height);
+public static final native int Graphics_FillRectangle(long graphics, long brush, int x, int y, int width, int height);
 /**
  * @method flags=cpp
  * @param graphics cast=(Graphics *)
  */
-public static final native int Graphics_GetClipBounds(long /*int*/ graphics, RectF rect);
+public static final native int Graphics_GetClipBounds(long graphics, RectF rect);
 /**
  * @method flags=cpp
  * @param graphics cast=(Graphics *)
  */
-public static final native int Graphics_GetClipBounds(long /*int*/ graphics, Rect rect);
+public static final native int Graphics_GetClipBounds(long graphics, Rect rect);
 /**
  * @method flags=cpp
  * @param graphics cast=(Graphics *)
  * @param region cast=(Region *)
  */
-public static final native int Graphics_GetClip(long /*int*/ graphics, long /*int*/ region);
+public static final native int Graphics_GetClip(long graphics, long region);
 /**
  * @method flags=cpp
  * @param graphics cast=(Graphics *)
  */
-public static final native long /*int*/ Graphics_GetHDC(long /*int*/ graphics);
+public static final native long Graphics_GetHDC(long graphics);
 /**
  * @method flags=cpp
  * @param graphics cast=(Graphics *)
  * @param hdc cast=(HDC)
  */
-public static final native void Graphics_ReleaseHDC(long /*int*/ graphics, long /*int*/ hdc);
+public static final native void Graphics_ReleaseHDC(long graphics, long hdc);
 /**
  * @method flags=cpp
  * @param graphics cast=(Graphics *)
  */
-public static final native int Graphics_GetInterpolationMode(long /*int*/ graphics);
+public static final native int Graphics_GetInterpolationMode(long graphics);
 /**
  * @method flags=cpp
  * @param graphics cast=(Graphics *)
  */
-public static final native int Graphics_GetSmoothingMode(long /*int*/ graphics);
+public static final native int Graphics_GetSmoothingMode(long graphics);
 /**
  * @method flags=cpp
  * @param graphics cast=(Graphics *)
  */
-public static final native int Graphics_GetTextRenderingHint(long /*int*/ graphics);
+public static final native int Graphics_GetTextRenderingHint(long graphics);
 /**
  * @method flags=cpp
  * @param graphics cast=(Graphics *)
  * @param matrix cast=(Matrix *)
  */
-public static final native int Graphics_GetTransform(long /*int*/ graphics, long /*int*/ matrix);
+public static final native int Graphics_GetTransform(long graphics, long matrix);
 /**
  * @method flags=cpp
  * @param graphics cast=(Graphics *)
  */
-public static final native int Graphics_GetVisibleClipBounds(long /*int*/ graphics, Rect rect);
+public static final native int Graphics_GetVisibleClipBounds(long graphics, Rect rect);
 /**
  * @method flags=cpp
  * @param graphics cast=(Graphics *)
@@ -537,7 +537,7 @@ public static final native int Graphics_GetVisibleClipBounds(long /*int*/ graphi
  * @param positions cast=(const PointF *),flags=no_out
  * @param matrix cast=(const Matrix *)
  */
-public static final native int Graphics_MeasureDriverString(long /*int*/ graphics, long /*int*/ text, int length, long /*int*/ font, float[] positions, int flags, long /*int*/ matrix, RectF boundingBox);
+public static final native int Graphics_MeasureDriverString(long graphics, long text, int length, long font, float[] positions, int flags, long matrix, RectF boundingBox);
 /**
  * @method flags=cpp
  * @param graphics cast=(Graphics *)
@@ -547,7 +547,7 @@ public static final native int Graphics_MeasureDriverString(long /*int*/ graphic
  * @param origin cast=(const PointF *),flags=struct
  * @param boundingBox cast=(RectF *)
  */
-public static final native int Graphics_MeasureString(long /*int*/ graphics, char[] string, int length, long /*int*/ font, PointF origin, RectF boundingBox);
+public static final native int Graphics_MeasureString(long graphics, char[] string, int length, long font, PointF origin, RectF boundingBox);
 /**
  * @method flags=cpp
  * @param graphics cast=(Graphics *)
@@ -557,118 +557,118 @@ public static final native int Graphics_MeasureString(long /*int*/ graphics, cha
  * @param origin cast=(const PointF *),flags=struct
  * @param format cast=(StringFormat *)
  */
-public static final native int Graphics_MeasureString(long /*int*/ graphics, char[] string, int length, long /*int*/ font, PointF origin, long /*int*/ format, RectF boundingBox);
+public static final native int Graphics_MeasureString(long graphics, char[] string, int length, long font, PointF origin, long format, RectF boundingBox);
 /**
  * @method flags=cpp
  * @param graphics cast=(Graphics *)
  */
-public static final native int Graphics_ResetClip(long /*int*/ graphics);
+public static final native int Graphics_ResetClip(long graphics);
 /**
  * @method flags=cpp
  * @param graphics cast=(Graphics *)
  * @param gstate cast=(GraphicsState)
  */
-public static final native int Graphics_Restore(long /*int*/ graphics, int gstate);
+public static final native int Graphics_Restore(long graphics, int gstate);
 /**
  * @method flags=cpp
  * @param graphics cast=(Graphics *)
  */
-public static final native int Graphics_Save(long /*int*/ graphics);
+public static final native int Graphics_Save(long graphics);
 /**
  * @method flags=cpp
  * @param graphics cast=(Graphics *)
  * @param order cast=(MatrixOrder)
  */
-public static final native int Graphics_ScaleTransform(long /*int*/ graphics, float sx, float sy, int order);
+public static final native int Graphics_ScaleTransform(long graphics, float sx, float sy, int order);
 /**
  * @method flags=cpp
  * @param graphics cast=(Graphics *)
  * @param hrgn cast=(Region *)
  * @param combineMode cast=(CombineMode)
  */
-public static final native int Graphics_SetClip(long /*int*/ graphics, long /*int*/ hrgn, int combineMode);
+public static final native int Graphics_SetClip(long graphics, long hrgn, int combineMode);
 /**
  * @method flags=cpp
  * @param graphics cast=(Graphics *)
  * @param rect cast=(Rect *),flags=struct
  * @param combineMode cast=(CombineMode)
  */
-public static final native int Graphics_SetClip(long /*int*/ graphics, Rect rect, int combineMode);
+public static final native int Graphics_SetClip(long graphics, Rect rect, int combineMode);
 /**
  * @method accessor=SetClip,flags=cpp
  * @param graphics cast=(Graphics *)
  * @param path cast=(GraphicsPath *)
  */
-public static final native int Graphics_SetClipPath(long /*int*/ graphics, long /*int*/ path);
+public static final native int Graphics_SetClipPath(long graphics, long path);
 /**
  * @method accessor=SetClip,flags=cpp
  * @param graphics cast=(Graphics *)
  * @param path cast=(GraphicsPath *)
  * @param combineMode cast=(CombineMode)
  */
-public static final native int Graphics_SetClipPath(long /*int*/ graphics, long /*int*/ path, int combineMode);
+public static final native int Graphics_SetClipPath(long graphics, long path, int combineMode);
 /**
  * @method flags=cpp
  * @param graphics cast=(Graphics *)
  * @param compositingQuality cast=(CompositingQuality)
  */
-public static final native int Graphics_SetCompositingQuality(long /*int*/ graphics, int compositingQuality);
+public static final native int Graphics_SetCompositingQuality(long graphics, int compositingQuality);
 /**
  * @method flags=cpp
  * @param graphics cast=(Graphics *)
  * @param unit cast=(Unit)
  */
-public static final native int Graphics_SetPageUnit(long /*int*/ graphics, int unit);
+public static final native int Graphics_SetPageUnit(long graphics, int unit);
 /**
  * @method flags=cpp
  * @param graphics cast=(Graphics *)
  * @param pixelOffsetMode cast=(PixelOffsetMode)
  */
-public static final native int Graphics_SetPixelOffsetMode(long /*int*/ graphics, int pixelOffsetMode);
+public static final native int Graphics_SetPixelOffsetMode(long graphics, int pixelOffsetMode);
 /**
  * @method flags=cpp
  * @param graphics cast=(Graphics *)
  * @param smoothingMode cast=(SmoothingMode)
  */
-public static final native int Graphics_SetSmoothingMode(long /*int*/ graphics, int smoothingMode);
+public static final native int Graphics_SetSmoothingMode(long graphics, int smoothingMode);
 /**
  * @method flags=cpp
  * @param graphics cast=(Graphics *)
  * @param matrix cast=(Matrix *)
  */
-public static final native int Graphics_SetTransform(long /*int*/ graphics, long /*int*/ matrix);
+public static final native int Graphics_SetTransform(long graphics, long matrix);
 /**
  * @method flags=cpp
  * @param graphics cast=(Graphics *)
  * @param mode cast=(InterpolationMode)
  */
-public static final native int Graphics_SetInterpolationMode(long /*int*/ graphics, int mode);
+public static final native int Graphics_SetInterpolationMode(long graphics, int mode);
 /**
  * @method flags=cpp
  * @param graphics cast=(Graphics *)
  * @param mode cast=(TextRenderingHint)
  */
-public static final native int Graphics_SetTextRenderingHint(long /*int*/ graphics, int mode);
+public static final native int Graphics_SetTextRenderingHint(long graphics, int mode);
 /**
  * @method flags=cpp
  * @param graphics cast=(Graphics *)
  * @param order cast=(MatrixOrder)
  */
-public static final native int Graphics_TranslateTransform(long /*int*/ graphics, float dx, float dy, int order);
+public static final native int Graphics_TranslateTransform(long graphics, float dx, float dy, int order);
 /**
  * @method flags=new
  * @param fillMode cast=(FillMode)
  */
-public static final native long /*int*/ GraphicsPath_new(int fillMode);
+public static final native long GraphicsPath_new(int fillMode);
 /**
  * @method flags=new
  * @param points cast=(const Point *),flags=no_out
  * @param types cast=(const BYTE *),flags=no_out
  * @param fillMode cast=(FillMode)
  */
-public static final native long /*int*/ GraphicsPath_new(int[] points, byte[] types, int count, int fillMode);
+public static final native long GraphicsPath_new(int[] points, byte[] types, int count, int fillMode);
 /** @method flags=delete */
-public static final native void GraphicsPath_delete(long /*int*/ path);
+public static final native void GraphicsPath_delete(long path);
 /**
  * @method flags=cpp
  * @param path cast=(GraphicsPath *)
@@ -679,7 +679,7 @@ public static final native void GraphicsPath_delete(long /*int*/ path);
  * @param startAngle cast=(REAL)
  * @param sweepAngle cast=(REAL)
  */
-public static final native int GraphicsPath_AddArc(long /*int*/ path, float x, float y, float width, float height, float startAngle, float sweepAngle);
+public static final native int GraphicsPath_AddArc(long path, float x, float y, float width, float height, float startAngle, float sweepAngle);
 /**
  * @method flags=cpp
  * @param path cast=(GraphicsPath *)
@@ -692,7 +692,7 @@ public static final native int GraphicsPath_AddArc(long /*int*/ path, float x, f
  * @param x4 cast=(REAL)
  * @param y4 cast=(REAL)
  */
-public static final native int GraphicsPath_AddBezier(long /*int*/ path, float x1, float y1, float x2, float y2, float x3, float y3, float x4, float y4);
+public static final native int GraphicsPath_AddBezier(long path, float x1, float y1, float x2, float y2, float x3, float y3, float x4, float y4);
 /**
  * @method flags=cpp
  * @param path cast=(GraphicsPath *)
@@ -701,20 +701,20 @@ public static final native int GraphicsPath_AddBezier(long /*int*/ path, float x
  * @param x2 cast=(REAL)
  * @param y2 cast=(REAL)
  */
-public static final native int GraphicsPath_AddLine(long /*int*/ path, float x1, float y1, float x2, float y2);
+public static final native int GraphicsPath_AddLine(long path, float x1, float y1, float x2, float y2);
 /**
  * @method flags=cpp
  * @param path cast=(GraphicsPath *)
  * @param addingPath cast=(GraphicsPath *)
  * @param connect cast=(BOOL)
  */
-public static final native int GraphicsPath_AddPath(long /*int*/ path, long /*int*/ addingPath, boolean connect);
+public static final native int GraphicsPath_AddPath(long path, long addingPath, boolean connect);
 /**
  * @method flags=cpp
  * @param path cast=(GraphicsPath *)
  * @param rect flags=struct
  */
-public static final native int GraphicsPath_AddRectangle(long /*int*/ path, RectF rect);
+public static final native int GraphicsPath_AddRectangle(long path, RectF rect);
 /**
  * @method flags=cpp
  * @param path cast=(GraphicsPath *)
@@ -726,131 +726,131 @@ public static final native int GraphicsPath_AddRectangle(long /*int*/ path, Rect
  * @param origin cast=(const PointF *),flags=struct
  * @param format cast=(const StringFormat *)
  */
-public static final native int GraphicsPath_AddString(long /*int*/ path, char[] string, int length, long /*int*/ family, int style, float emSize, PointF origin, long /*int*/ format);
+public static final native int GraphicsPath_AddString(long path, char[] string, int length, long family, int style, float emSize, PointF origin, long format);
 /**
  * @method flags=cpp
  * @param path cast=(GraphicsPath *)
  */
-public static final native int GraphicsPath_CloseFigure(long /*int*/ path);
+public static final native int GraphicsPath_CloseFigure(long path);
 /**
  * @method flags=cpp
  * @param path cast=(GraphicsPath *)
  */
-public static final native long /*int*/ GraphicsPath_Clone(long /*int*/ path);
+public static final native long GraphicsPath_Clone(long path);
 /**
  * @method flags=cpp
  * @param path cast=(GraphicsPath *)
  * @param matrix cast=(Matrix *)
  */
-public static final native int GraphicsPath_Flatten(long /*int*/ path, long /*int*/ matrix, float flatness);
+public static final native int GraphicsPath_Flatten(long path, long matrix, float flatness);
 /**
  * @method flags=cpp
  * @param path cast=(GraphicsPath *)
  * @param matrix cast=(Matrix *)
  * @param pen cast=(Pen *)
  */
-public static final native int GraphicsPath_GetBounds(long /*int*/ path, RectF bounds, long /*int*/ matrix, long /*int*/ pen);
+public static final native int GraphicsPath_GetBounds(long path, RectF bounds, long matrix, long pen);
 /**
  * @method flags=cpp
  * @param path cast=(GraphicsPath *)
  * @param lastPoint cast=(PointF *)
  */
-public static final native int GraphicsPath_GetLastPoint(long /*int*/ path, PointF lastPoint);
+public static final native int GraphicsPath_GetLastPoint(long path, PointF lastPoint);
 /**
  * @method flags=cpp
  * @param path cast=(GraphicsPath *)
  * @param points cast=(PointF *)
  */
-public static final native int GraphicsPath_GetPathPoints(long /*int*/ path, float[] points, int count);
+public static final native int GraphicsPath_GetPathPoints(long path, float[] points, int count);
 /**
  * @method flags=cpp
  * @param path cast=(GraphicsPath *)
  * @param types cast=(BYTE *)
  */
-public static final native int GraphicsPath_GetPathTypes(long /*int*/ path, byte[] types, int count);
+public static final native int GraphicsPath_GetPathTypes(long path, byte[] types, int count);
 /**
  * @method flags=cpp
  * @param path cast=(GraphicsPath *)
  */
-public static final native int GraphicsPath_GetPointCount(long /*int*/ path);
+public static final native int GraphicsPath_GetPointCount(long path);
 /**
  * @method flags=cpp
  * @param path cast=(GraphicsPath *)
  * @param pen cast=(const Pen *)
  * @param g cast=(const Graphics *)
  */
-public static final native boolean GraphicsPath_IsOutlineVisible(long /*int*/ path, float x, float y, long /*int*/ pen, long /*int*/ g);
+public static final native boolean GraphicsPath_IsOutlineVisible(long path, float x, float y, long pen, long g);
 /**
  * @method flags=cpp
  * @param path cast=(GraphicsPath *)
  * @param g cast=(const Graphics *)
  */
-public static final native boolean GraphicsPath_IsVisible(long /*int*/ path, float x, float y, long /*int*/ g);
+public static final native boolean GraphicsPath_IsVisible(long path, float x, float y, long g);
 /**
  * @method flags=cpp
  * @param path cast=(GraphicsPath *)
  * @param fillmode cast=(FillMode)
  */
-public static final native int GraphicsPath_SetFillMode(long /*int*/ path, int fillmode);
+public static final native int GraphicsPath_SetFillMode(long path, int fillmode);
 /**
  * @method flags=cpp
  * @param path cast=(GraphicsPath *)
  */
-public static final native int GraphicsPath_StartFigure(long /*int*/ path);
+public static final native int GraphicsPath_StartFigure(long path);
 /**
  * @method flags=cpp
  * @param path cast=(GraphicsPath *)
  * @param matrix cast=(Matrix *)
  */
-public static final native int GraphicsPath_Transform(long /*int*/ path, long /*int*/ matrix);
+public static final native int GraphicsPath_Transform(long path, long matrix);
 /**
  * @method flags=new
  * @param hatchStyle cast=(HatchStyle)
  * @param foreColor cast=(Color)
  * @param backColor cast=(Color)
  */
-public static final native long /*int*/ HatchBrush_new(int hatchStyle, int foreColor, int backColor);
+public static final native long HatchBrush_new(int hatchStyle, int foreColor, int backColor);
 /**
  * @method flags=cpp
  * @param image cast=(Image*)
  */
-public static final native int Image_GetLastStatus(long /*int*/ image);
+public static final native int Image_GetLastStatus(long image);
 /**
  * @method flags=cpp
  * @param image cast=(Image*)
  */
-public static final native int Image_GetPixelFormat(long /*int*/ image);
+public static final native int Image_GetPixelFormat(long image);
 /**
  * @method flags=cpp
  * @param image cast=(Image *)
  */
-public static final native int Image_GetWidth(long /*int*/ image);
+public static final native int Image_GetWidth(long image);
 /**
  * @method flags=cpp
  * @param image cast=(Image *)
  */
-public static final native int Image_GetHeight(long /*int*/ image);
+public static final native int Image_GetHeight(long image);
 /**
  * @method flags=cpp
  * @param image cast=(Image*)
  * @param palette cast=(ColorPalette*)
  */
-public static final native int Image_GetPalette(long /*int*/ image, long /*int*/ palette, int size);
+public static final native int Image_GetPalette(long image, long palette, int size);
 /**
  * @method flags=cpp
  * @param image cast=(Image*)
  */
-public static final native int Image_GetPaletteSize(long /*int*/ image);
+public static final native int Image_GetPaletteSize(long image);
 /** @method flags=new */
-public static final native long /*int*/ ImageAttributes_new();
+public static final native long ImageAttributes_new();
 /** @method flags=delete */
-public static final native void ImageAttributes_delete(long /*int*/ attrib);
+public static final native void ImageAttributes_delete(long attrib);
 /**
  * @method flags=cpp
  * @param attrib cast=(ImageAttributes *)
  * @param wrap cast=(WrapMode)
  */
-public static final native int ImageAttributes_SetWrapMode(long /*int*/ attrib, int wrap);
+public static final native int ImageAttributes_SetWrapMode(long attrib, int wrap);
 /**
  * @method flags=cpp
  * @param attrib cast=(ImageAttributes *)
@@ -858,9 +858,9 @@ public static final native int ImageAttributes_SetWrapMode(long /*int*/ attrib, 
  * @param mode cast=(ColorMatrixFlags)
  * @param type cast=(ColorAdjustType)
  */
-public static final native int ImageAttributes_SetColorMatrix(long /*int*/ attrib, float[] matrix, int mode, int type);
+public static final native int ImageAttributes_SetColorMatrix(long attrib, float[] matrix, int mode, int type);
 /** @method flags=delete */
-public static final native void HatchBrush_delete(long /*int*/ brush);
+public static final native void HatchBrush_delete(long brush);
 /**
  * @method flags=new
  * @param point1 flags=struct
@@ -868,39 +868,39 @@ public static final native void HatchBrush_delete(long /*int*/ brush);
  * @param color1 cast=(Color)
  * @param color2 cast=(Color)
  */
-public static final native long /*int*/ LinearGradientBrush_new(PointF point1, PointF point2, int color1, int color2);
+public static final native long LinearGradientBrush_new(PointF point1, PointF point2, int color1, int color2);
 /** @method flags=delete */
-public static final native void LinearGradientBrush_delete(long /*int*/ brush);
+public static final native void LinearGradientBrush_delete(long brush);
 /**
  * @method flags=cpp
  * @param brush cast=(LinearGradientBrush *)
  * @param presetColors cast=(const Color *),flags=no_out
  * @param blendPositions cast=(const REAL *),flags=no_out
  */
-public static final native int LinearGradientBrush_SetInterpolationColors(long /*int*/ brush, int [] presetColors, float[] blendPositions, int count);
+public static final native int LinearGradientBrush_SetInterpolationColors(long brush, int [] presetColors, float[] blendPositions, int count);
 /**
  * @method flags=cpp
  * @param brush cast=(LinearGradientBrush *)
  * @param wrapMode cast=(WrapMode)
  */
-public static final native int LinearGradientBrush_SetWrapMode(long /*int*/ brush, int wrapMode);
+public static final native int LinearGradientBrush_SetWrapMode(long brush, int wrapMode);
 /**
  * @method flags=cpp
  * @param brush cast=(LinearGradientBrush *)
  */
-public static final native int LinearGradientBrush_ResetTransform(long /*int*/ brush);
-/**
- * @method flags=cpp
- * @param brush cast=(LinearGradientBrush *)
- * @param order cast=(MatrixOrder)
- */
-public static final native int LinearGradientBrush_ScaleTransform(long /*int*/ brush, float sx, float sy, int order);
+public static final native int LinearGradientBrush_ResetTransform(long brush);
 /**
  * @method flags=cpp
  * @param brush cast=(LinearGradientBrush *)
  * @param order cast=(MatrixOrder)
  */
-public static final native int LinearGradientBrush_TranslateTransform(long /*int*/ brush, float dx, float dy, int order);
+public static final native int LinearGradientBrush_ScaleTransform(long brush, float sx, float sy, int order);
+/**
+ * @method flags=cpp
+ * @param brush cast=(LinearGradientBrush *)
+ * @param order cast=(MatrixOrder)
+ */
+public static final native int LinearGradientBrush_TranslateTransform(long brush, float dx, float dy, int order);
 /**
  * @method flags=new
  * @param m11 cast=(REAL)
@@ -910,39 +910,39 @@ public static final native int LinearGradientBrush_TranslateTransform(long /*int
  * @param dx cast=(REAL)
  * @param dy cast=(REAL)
  */
-public static final native long /*int*/ Matrix_new(float m11, float m12, float m21, float m22, float dx, float dy);
+public static final native long Matrix_new(float m11, float m12, float m21, float m22, float dx, float dy);
 /** @method flags=delete */
-public static final native void Matrix_delete(long /*int*/ matrix);
+public static final native void Matrix_delete(long matrix);
 /**
  * @method flags=cpp
  * @param matrix cast=(Matrix *)
  * @param m cast=(REAL *)
  */
-public static final native int Matrix_GetElements(long /*int*/ matrix, float[] m);
+public static final native int Matrix_GetElements(long matrix, float[] m);
 /**
  * @method flags=cpp
  * @param matrix cast=(Matrix *)
  */
-public static final native int Matrix_Invert(long /*int*/ matrix);
+public static final native int Matrix_Invert(long matrix);
 /**
  * @method flags=cpp
  * @param matrix cast=(Matrix *)
  */
-public static final native boolean Matrix_IsIdentity(long /*int*/ matrix);
+public static final native boolean Matrix_IsIdentity(long matrix);
 /**
  * @method flags=cpp
  * @param matrix cast=(Matrix *)
  * @param matrix1 cast=(Matrix *)
  * @param order cast=(MatrixOrder)
  */
-public static final native int Matrix_Multiply(long /*int*/ matrix, long /*int*/ matrix1, int order);
+public static final native int Matrix_Multiply(long matrix, long matrix1, int order);
 /**
  * @method flags=cpp
  * @param matrix cast=(Matrix *)
  * @param angle cast=(REAL)
  * @param order cast=(MatrixOrder)
  */
-public static final native int Matrix_Rotate(long /*int*/ matrix, float angle, int order);
+public static final native int Matrix_Rotate(long matrix, float angle, int order);
 /**
  * @method flags=cpp
  * @param matrix cast=(Matrix *)
@@ -950,7 +950,7 @@ public static final native int Matrix_Rotate(long /*int*/ matrix, float angle, i
  * @param scaleY cast=(REAL)
  * @param order cast=(MatrixOrder)
  */
-public static final native int Matrix_Scale(long /*int*/ matrix, float scaleX, float scaleY, int order);
+public static final native int Matrix_Scale(long matrix, float scaleX, float scaleY, int order);
 /**
  * @method flags=cpp
  * @param matrix cast=(Matrix *)
@@ -958,23 +958,23 @@ public static final native int Matrix_Scale(long /*int*/ matrix, float scaleX, f
  * @param shearY cast=(REAL)
  * @param order cast=(MatrixOrder)
  */
-public static final native int Matrix_Shear(long /*int*/ matrix, float shearX, float shearY, int order);
+public static final native int Matrix_Shear(long matrix, float shearX, float shearY, int order);
 /**
  * @method flags=cpp
  * @param matrix cast=(Matrix *)
  */
-public static final native int Matrix_TransformPoints(long /*int*/ matrix, PointF pts, int count);
+public static final native int Matrix_TransformPoints(long matrix, PointF pts, int count);
 /**
  * @method flags=cpp
  * @param matrix cast=(Matrix *)
  * @param pts cast=(PointF *)
  */
-public static final native int Matrix_TransformPoints(long /*int*/ matrix, float[] pts, int count);
+public static final native int Matrix_TransformPoints(long matrix, float[] pts, int count);
 /**
  * @method flags=cpp
  * @param matrix cast=(Matrix *)
  */
-public static final native int Matrix_TransformVectors(long /*int*/ matrix, PointF pts, int count);
+public static final native int Matrix_TransformVectors(long matrix, PointF pts, int count);
 /**
  * @method flags=cpp
  * @param matrix cast=(Matrix *)
@@ -982,7 +982,7 @@ public static final native int Matrix_TransformVectors(long /*int*/ matrix, Poin
  * @param offsetY cast=(REAL)
  * @param order cast=(MatrixOrder)
  */
-public static final native int Matrix_Translate(long /*int*/ matrix, float offsetX, float offsetY, int order);
+public static final native int Matrix_Translate(long matrix, float offsetX, float offsetY, int order);
 /**
  * @method flags=cpp
  * @param matrix cast=(Matrix *)
@@ -993,99 +993,99 @@ public static final native int Matrix_Translate(long /*int*/ matrix, float offse
  * @param dx cast=(REAL)
  * @param dy cast=(REAL)
  */
-public static final native int Matrix_SetElements(long /*int*/ matrix, float m11, float m12, float m21, float m22, float dx, float dy);
+public static final native int Matrix_SetElements(long matrix, float m11, float m12, float m21, float m22, float dx, float dy);
 /**
  * @param Destination cast=(PVOID)
  * @param SourcePtr cast=(CONST VOID*)
  */
-public static final native void MoveMemory(ColorPalette Destination, long /*int*/ SourcePtr, int Length);
+public static final native void MoveMemory(ColorPalette Destination, long SourcePtr, int Length);
 /**
  * @param Destination cast=(PVOID)
  * @param SourcePtr cast=(CONST VOID*)
  */
-public static final native void MoveMemory(BitmapData Destination, long /*int*/ SourcePtr);
+public static final native void MoveMemory(BitmapData Destination, long SourcePtr);
 /**
  * @method flags=new
  * @param path cast=(GraphicsPath *)
  */
-public static final native long /*int*/ PathGradientBrush_new(long /*int*/ path);
+public static final native long PathGradientBrush_new(long path);
 /** @method flags=delete */
-public static final native void PathGradientBrush_delete(long /*int*/ brush);
+public static final native void PathGradientBrush_delete(long brush);
 /**
  * @method flags=cpp
  * @param brush cast=(PathGradientBrush *)
  * @param color cast=(Color)
  */
-public static final native int PathGradientBrush_SetCenterColor(long /*int*/ brush, int color);
+public static final native int PathGradientBrush_SetCenterColor(long brush, int color);
 /**
  * @method flags=cpp
  * @param brush cast=(PathGradientBrush *)
  * @param pt flags=struct
  */
-public static final native int PathGradientBrush_SetCenterPoint(long /*int*/ brush, PointF pt);
+public static final native int PathGradientBrush_SetCenterPoint(long brush, PointF pt);
 /**
  * @method flags=cpp
  * @param brush cast=(PathGradientBrush *)
  * @param presetColors cast=(const Color *),flags=no_out
  * @param blendPositions cast=(const REAL *),flags=no_out
  */
-public static final native int PathGradientBrush_SetInterpolationColors(long /*int*/ brush, int [] presetColors, float[] blendPositions, int count);
+public static final native int PathGradientBrush_SetInterpolationColors(long brush, int [] presetColors, float[] blendPositions, int count);
 /**
  * @method flags=cpp
  * @param brush cast=(PathGradientBrush *)
  * @param colors cast=(const Color *),flags=no_out
  * @param count cast=(INT *)
  */
-public static final native int PathGradientBrush_SetSurroundColors(long /*int*/ brush, int [] colors, int[] count);
+public static final native int PathGradientBrush_SetSurroundColors(long brush, int [] colors, int[] count);
 /**
  * @method flags=cpp
  * @param brush cast=(PathGradientBrush *)
  * @param path cast=(GraphicsPath *)
  */
-public static final native int PathGradientBrush_SetGraphicsPath(long /*int*/ brush, long /*int*/ path);
+public static final native int PathGradientBrush_SetGraphicsPath(long brush, long path);
 /**
  * @method flags=cpp
  * @param brush cast=(PathGradientBrush *)
  * @param wrapMode cast=(WrapMode)
  */
-public static final native int PathGradientBrush_SetWrapMode(long /*int*/ brush, int wrapMode);
+public static final native int PathGradientBrush_SetWrapMode(long brush, int wrapMode);
 /**
  * @method flags=new
  * @param brush cast=(Brush *)
  * @param width cast=(REAL)
  */
-public static final native long /*int*/ Pen_new(long /*int*/ brush, float width);
+public static final native long Pen_new(long brush, float width);
 /** @method flags=delete */
-public static final native void Pen_delete(long /*int*/ pen);
+public static final native void Pen_delete(long pen);
 /**
  * @method flags=cpp
  * @param pen cast=(Pen *)
  */
-public static final native long /*int*/ Pen_GetBrush(long /*int*/ pen);
+public static final native long Pen_GetBrush(long pen);
 /**
  * @method flags=cpp
  * @param pen cast=(Pen *)
  * @param brush cast=(Brush *)
  */
-public static final native int Pen_SetBrush(long /*int*/ pen, long /*int*/ brush);
+public static final native int Pen_SetBrush(long pen, long brush);
 /**
  * @method flags=cpp
  * @param pen cast=(Pen *)
  */
-public static final native int Pen_SetDashOffset(long /*int*/ pen, float dashOffset);
+public static final native int Pen_SetDashOffset(long pen, float dashOffset);
 /**
  * @method flags=cpp
  * @param pen cast=(Pen *)
  * @param dashArray cast=(REAL *)
  * @param count cast=(int)
  */
-public static final native int Pen_SetDashPattern(long /*int*/ pen, float[] dashArray, int count);
+public static final native int Pen_SetDashPattern(long pen, float[] dashArray, int count);
 /**
  * @method flags=cpp
  * @param pen cast=(Pen *)
  * @param dashStyle cast=(DashStyle)
  */
-public static final native int Pen_SetDashStyle(long /*int*/ pen, int dashStyle);
+public static final native int Pen_SetDashStyle(long pen, int dashStyle);
 /**
  * @method flags=cpp
  * @param pen cast=(Pen *)
@@ -1093,123 +1093,123 @@ public static final native int Pen_SetDashStyle(long /*int*/ pen, int dashStyle)
  * @param endCap cast=(LineCap)
  * @param dashCap cast=(DashCap)
  */
-public static final native int Pen_SetLineCap(long /*int*/ pen, int startCap, int endCap, int dashCap);
+public static final native int Pen_SetLineCap(long pen, int startCap, int endCap, int dashCap);
 /**
  * @method flags=cpp
  * @param pen cast=(Pen *)
  * @param lineJoin cast=(LineJoin)
  */
-public static final native int Pen_SetLineJoin(long /*int*/ pen, int lineJoin);
+public static final native int Pen_SetLineJoin(long pen, int lineJoin);
 /**
  * @method flags=cpp
  * @param pen cast=(Pen *)
  */
-public static final native int Pen_SetMiterLimit(long /*int*/ pen, float miterLimit);
+public static final native int Pen_SetMiterLimit(long pen, float miterLimit);
 /**
  * @method flags=cpp
  * @param pen cast=(Pen *)
  * @param width cast=(REAL)
  */
-public static final native int Pen_SetWidth(long /*int*/ pen, float width);
+public static final native int Pen_SetWidth(long pen, float width);
 /** @method flags=new */
-public static final native long /*int*/ Point_new(int x, int y);
+public static final native long Point_new(int x, int y);
 /** @method flags=delete */
-public static final native void Point_delete(long /*int*/ point);
+public static final native void Point_delete(long point);
 /**
  * @method flags=new
  * @param hRgn cast=(HRGN)
  */
-public static final native long /*int*/ Region_new(long /*int*/ hRgn);
+public static final native long Region_new(long hRgn);
 /**
  * @method flags=new
  * @param path cast=(GraphicsPath*)
  */
-public static final native long /*int*/ Region_newGraphicsPath(long /*int*/ path);
+public static final native long Region_newGraphicsPath(long path);
 /** @method flags=new */
-public static final native long /*int*/ Region_new();
+public static final native long Region_new();
 /** @method flags=delete */
-public static final native void Region_delete(long /*int*/ region);
+public static final native void Region_delete(long region);
 /**
  * @method flags=cpp
  * @param region cast=(Region *)
  * @param graphics cast=(Graphics *)
  */
-public static final native long /*int*/ Region_GetHRGN(long /*int*/ region, long /*int*/ graphics);
+public static final native long Region_GetHRGN(long region, long graphics);
 /**
  * @method flags=cpp
  * @param region cast=(Region *)
  * @param graphics cast=(Graphics *)
  */
-public static final native boolean Region_IsInfinite(long /*int*/ region, long /*int*/ graphics);
+public static final native boolean Region_IsInfinite(long region, long graphics);
 /**
  * @method flags=new
  * @param color cast=(Color)
  */
-public static final native long /*int*/ SolidBrush_new(int color);
+public static final native long SolidBrush_new(int color);
 /** @method flags=delete */
-public static final native void SolidBrush_delete(long /*int*/ brush);
+public static final native void SolidBrush_delete(long brush);
 /** @method flags=delete */
-public static final native void StringFormat_delete(long /*int*/ format);
+public static final native void StringFormat_delete(long format);
 /**
  * @method flags=cpp
  * @param format cast=(StringFormat *)
  */
-public static final native long /*int*/ StringFormat_Clone(long /*int*/ format);
+public static final native long StringFormat_Clone(long format);
 /** @method accessor=StringFormat::GenericDefault */
-public static final native long /*int*/ StringFormat_GenericDefault();
+public static final native long StringFormat_GenericDefault();
 /** @method accessor=StringFormat::GenericTypographic */
-public static final native long /*int*/ StringFormat_GenericTypographic();
+public static final native long StringFormat_GenericTypographic();
 /**
  * @method flags=cpp
  * @param format cast=(StringFormat *)
  */
-public static final native int StringFormat_GetFormatFlags(long /*int*/ format);
+public static final native int StringFormat_GetFormatFlags(long format);
 /**
  * @method flags=cpp
  * @param format cast=(StringFormat *)
  * @param hotkeyPrefix cast=(HotkeyPrefix)
  */
-public static final native int StringFormat_SetHotkeyPrefix(long /*int*/ format, int hotkeyPrefix);
+public static final native int StringFormat_SetHotkeyPrefix(long format, int hotkeyPrefix);
 /**
  * @method flags=cpp
  * @param format cast=(StringFormat *)
  * @param flags cast=(StringFormatFlags)
  */
-public static final native int StringFormat_SetFormatFlags(long /*int*/ format, int flags);
+public static final native int StringFormat_SetFormatFlags(long format, int flags);
 /**
  * @method flags=cpp
  * @param format cast=(StringFormat *)
  */
-public static final native int StringFormat_SetTabStops(long /*int*/ format, float firstTabOffset, int count, float[] tabStops);
+public static final native int StringFormat_SetTabStops(long format, float firstTabOffset, int count, float[] tabStops);
 /**
  * @method flags=new
  * @param image cast=(Image *)
  * @param wrapMode cast=(WrapMode)
  */
-public static final native long /*int*/ TextureBrush_new(long /*int*/ image, int wrapMode, float dstX, float dstY, float dstWidth, float dstHeight);
+public static final native long TextureBrush_new(long image, int wrapMode, float dstX, float dstY, float dstWidth, float dstHeight);
 /** @method flags=delete */
-public static final native void TextureBrush_delete(long /*int*/ brush);
+public static final native void TextureBrush_delete(long brush);
 /**
  * @method flags=cpp
  * @param brush cast=(TextureBrush *)
  * @param matrix cast=(Matrix *)
  */
-public static final native int TextureBrush_SetTransform(long /*int*/ brush, long /*int*/ matrix);
+public static final native int TextureBrush_SetTransform(long brush, long matrix);
 /**
  * @method flags=cpp
  * @param brush cast=(TextureBrush *)
  */
-public static final native int TextureBrush_ResetTransform(long /*int*/ brush);
-/**
- * @method flags=cpp
- * @param brush cast=(TextureBrush *)
- * @param order cast=(MatrixOrder)
- */
-public static final native int TextureBrush_ScaleTransform(long /*int*/ brush, float sx, float sy, int order);
+public static final native int TextureBrush_ResetTransform(long brush);
 /**
  * @method flags=cpp
  * @param brush cast=(TextureBrush *)
  * @param order cast=(MatrixOrder)
  */
-public static final native int TextureBrush_TranslateTransform(long /*int*/ brush, float dx, float dy, int order);
+public static final native int TextureBrush_ScaleTransform(long brush, float sx, float sy, int order);
+/**
+ * @method flags=cpp
+ * @param brush cast=(TextureBrush *)
+ * @param order cast=(MatrixOrder)
+ */
+public static final native int TextureBrush_TranslateTransform(long brush, float dx, float dy, int order);
 }

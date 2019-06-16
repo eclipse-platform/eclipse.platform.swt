@@ -56,7 +56,7 @@ public class Label extends Control {
 	Image image;
 	static final int MARGIN = 4;
 	static /*final*/ boolean IMAGE_AND_TEXT = false;
-	static final long /*int*/ LabelProc;
+	static final long LabelProc;
 	static final TCHAR LabelClass = new TCHAR (0, "STATIC", true);
 	static {
 		WNDCLASS lpWndClass = new WNDCLASS ();
@@ -106,7 +106,7 @@ public Label (Composite parent, int style) {
 }
 
 @Override
-long /*int*/ callWindowProc (long /*int*/ hwnd, int msg, long /*int*/ wParam, long /*int*/ lParam) {
+long callWindowProc (long hwnd, int msg, long wParam, long lParam) {
 	if (handle == 0) return 0;
 	/*
 	* Feature in Windows 7.  When the user double clicks
@@ -162,9 +162,9 @@ static int checkStyle (int style) {
 		}
 	}
 	if (drawText) {
-		long /*int*/ hDC = OS.GetDC (handle);
-		long /*int*/ newFont = OS.SendMessage (handle, OS.WM_GETFONT, 0, 0);
-		long /*int*/ oldFont = OS.SelectObject (hDC, newFont);
+		long hDC = OS.GetDC (handle);
+		long newFont = OS.SendMessage (handle, OS.WM_GETFONT, 0, 0);
+		long oldFont = OS.SelectObject (hDC, newFont);
 		int length = OS.GetWindowTextLength (handle);
 		if (length == 0) {
 			TEXTMETRIC tm = new TEXTMETRIC ();
@@ -452,12 +452,12 @@ TCHAR windowClass () {
 }
 
 @Override
-long /*int*/ windowProc () {
+long windowProc () {
 	return LabelProc;
 }
 
 @Override
-LRESULT WM_ERASEBKGND (long /*int*/ wParam, long /*int*/ lParam) {
+LRESULT WM_ERASEBKGND (long wParam, long lParam) {
 	LRESULT result = super.WM_ERASEBKGND (wParam, lParam);
 	if (result != null) return result;
 	int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
@@ -468,7 +468,7 @@ LRESULT WM_ERASEBKGND (long /*int*/ wParam, long /*int*/ lParam) {
 }
 
 @Override
-LRESULT WM_SIZE (long /*int*/ wParam, long /*int*/ lParam) {
+LRESULT WM_SIZE (long wParam, long lParam) {
 	LRESULT result = super.WM_SIZE (wParam, lParam);
 	if (isDisposed ()) return result;
 	if ((style & SWT.SEPARATOR) != 0) {
@@ -495,7 +495,7 @@ LRESULT WM_SIZE (long /*int*/ wParam, long /*int*/ lParam) {
 }
 
 @Override
-LRESULT WM_UPDATEUISTATE (long /*int*/ wParam, long /*int*/ lParam) {
+LRESULT WM_UPDATEUISTATE (long wParam, long lParam) {
 	LRESULT result = super.WM_UPDATEUISTATE (wParam, lParam);
 	if (result != null) return result;
 	/*
@@ -516,14 +516,14 @@ LRESULT WM_UPDATEUISTATE (long /*int*/ wParam, long /*int*/ lParam) {
 	}
 	if (redraw) {
 		OS.InvalidateRect (handle, null, false);
-		long /*int*/ code = OS.DefWindowProc (handle, OS.WM_UPDATEUISTATE, wParam, lParam);
+		long code = OS.DefWindowProc (handle, OS.WM_UPDATEUISTATE, wParam, lParam);
 		return new LRESULT (code);
 	}
 	return result;
 }
 
 @Override
-LRESULT wmDrawChild (long /*int*/ wParam, long /*int*/ lParam) {
+LRESULT wmDrawChild (long wParam, long lParam) {
 	DRAWITEMSTRUCT struct = new DRAWITEMSTRUCT ();
 	OS.MoveMemory (struct, lParam, DRAWITEMSTRUCT.sizeof);
 	drawBackground (struct.hDC);

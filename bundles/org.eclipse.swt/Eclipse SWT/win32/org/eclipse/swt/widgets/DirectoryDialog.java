@@ -97,8 +97,8 @@ public DirectoryDialog (Shell parent, int style) {
 	checkSubclass ();
 }
 
-long /*int*/ BrowseCallbackProc (long /*int*/ hwnd, long /*int*/ uMsg, long /*int*/ lParam, long /*int*/ lpData) {
-	switch ((int)/*64*/uMsg) {
+long BrowseCallbackProc (long hwnd, long uMsg, long lParam, long lpData) {
+	switch ((int)uMsg) {
 		case OS.BFFM_INITIALIZED:
 			if (filterPath != null && filterPath.length () != 0) {
 				/* Use the character encoding for the default locale */
@@ -166,14 +166,14 @@ public String open() {
 }
 
 private String openCommonFileDialog () {
-	long /*int*/ hHeap = OS.GetProcessHeap ();
+	long hHeap = OS.GetProcessHeap ();
 
 	/* Get the owner HWND for the dialog */
-	long /*int*/ hwndOwner = 0;
+	long hwndOwner = 0;
 	if (parent != null) hwndOwner = parent.handle;
 
 	/* Copy the message to OS memory */
-	long /*int*/ lpszTitle = 0;
+	long lpszTitle = 0;
 	if (message.length () != 0) {
 		String string = message;
 		if (string.indexOf ('&') != -1) {
@@ -196,7 +196,7 @@ private String openCommonFileDialog () {
 
 	/* Create the BrowseCallbackProc */
 	Callback callback = new Callback (this, "BrowseCallbackProc", 4); //$NON-NLS-1$
-	long /*int*/ lpfn = callback.getAddress ();
+	long lpfn = callback.getAddress ();
 	if (lpfn == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 
 	/* Make the parent shell be temporary modal */
@@ -233,7 +233,7 @@ private String openCommonFileDialog () {
 	int oldErrorMode = OS.SetErrorMode (OS.SEM_FAILCRITICALERRORS);
 
 	display.sendPreExternalEventDispatchEvent ();
-	long /*int*/ lpItemIdList = OS.SHBrowseForFolder (lpbi);
+	long lpItemIdList = OS.SHBrowseForFolder (lpbi);
 	display.sendPostExternalEventDispatchEvent ();
 	OS.SetErrorMode (oldErrorMode);
 
@@ -259,7 +259,7 @@ private String openCommonFileDialog () {
 	if (lpszTitle != 0) OS.HeapFree (hHeap, 0, lpszTitle);
 
 	/* Free the pointer to the ITEMIDLIST */
-	long /*int*/ [] ppMalloc = new long /*int*/ [1];
+	long [] ppMalloc = new long [1];
 	if (OS.SHGetMalloc (ppMalloc) == OS.S_OK) {
 		/* void Free (struct IMalloc *this, void *pv); */
 		OS.VtblCall (5, ppMalloc [0], lpItemIdList);
@@ -281,9 +281,9 @@ private String openCommonFileDialog () {
 private String openCommonItemDialog() {
 	this.directoryPath = null;
 
-	long /*int*/ [] ppv = new long /*int*/ [1];
+	long [] ppv = new long [1];
 	if (OS.CoCreateInstance(CLSID_FileOpenDialog, 0, OS.CLSCTX_INPROC_SERVER, IID_IFileOpenDialog, ppv) == OS.S_OK) {
-		long /*int*/ fileDialog = ppv[0];
+		long fileDialog = ppv[0];
 
 		int[] options = new int[1];
 		if ((OS.VtblCall(FileDialogVtbl.GET_OPTIONS, fileDialog, options)) == OS.S_OK) {
@@ -304,7 +304,7 @@ private String openCommonItemDialog() {
 			char[] buffer = new char[path.length() + 1];
 			path.getChars(0, path.length(), buffer, 0);
 			if (OS.SHCreateItemFromParsingName(buffer, 0, IID_IShellItem, ppv) == OS.S_OK) {
-				long /*int*/ psi = ppv[0];
+				long psi = ppv[0];
 				/*
 				 * SetDefaultDirectory does not work if the dialog has
 				 * persisted recently used folder. The fix is to clear the
@@ -316,12 +316,12 @@ private String openCommonItemDialog() {
 			}
 		}
 
-		long /*int*/ hwndOwner = parent.handle;
+		long hwndOwner = parent.handle;
 		if (OS.VtblCall(FileDialogVtbl.SHOW, fileDialog, hwndOwner) == OS.S_OK) {
 			if (OS.VtblCall(FileDialogVtbl.GET_RESULT, fileDialog, ppv) == OS.S_OK) {
-				long /*int*/ psi = ppv[0];
+				long psi = ppv[0];
 				if (OS.VtblCall(ShellItemVtbl.GET_DISPLAY_NAME, psi, OS.SIGDN_FILESYSPATH, ppv) == OS.S_OK) {
-					long /*int*/ wstr = ppv[0];
+					long wstr = ppv[0];
 					int length = OS.wcslen(wstr);
 					char[] buffer = new char[length];
 					OS.MoveMemory(buffer, wstr, length * 2);

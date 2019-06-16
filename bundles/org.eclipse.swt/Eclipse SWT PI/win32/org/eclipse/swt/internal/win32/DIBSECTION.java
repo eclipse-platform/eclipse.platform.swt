@@ -43,7 +43,7 @@ public class DIBSECTION extends BITMAP {
 	/** @field accessor=dsBitfields[2] */
 	public int dsBitfields2;
 	/** @field cast=(HANDLE) */
-	public long /*int*/ dshSection;
+	public long dshSection;
 	public int dsOffset;
 	public static final int sizeof = OS.DIBSECTION_sizeof ();
 }

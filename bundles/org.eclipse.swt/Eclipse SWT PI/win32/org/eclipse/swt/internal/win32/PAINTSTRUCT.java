@@ -15,7 +15,7 @@ package org.eclipse.swt.internal.win32;
 
 public class PAINTSTRUCT {
 	/** @field cast=(HDC) */
-	public long /*int*/  hdc;
+	public long  hdc;
 	public boolean fErase;
 //	public RECT rcPaint;
 	/** @field accessor=rcPaint.left */

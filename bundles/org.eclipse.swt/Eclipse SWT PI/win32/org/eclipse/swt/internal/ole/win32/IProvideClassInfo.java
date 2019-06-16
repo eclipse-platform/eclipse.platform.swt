@@ -17,10 +17,10 @@ import org.eclipse.swt.internal.win32.*;
 
 public class IProvideClassInfo extends IUnknown
 {
-public IProvideClassInfo(long /*int*/ address) {
+public IProvideClassInfo(long address) {
 	super(address);
 }
-public int GetClassInfo(long /*int*/[] ppTI) {
+public int GetClassInfo(long[] ppTI) {
 	return OS.VtblCall(3, address, ppTI);
 }
 }

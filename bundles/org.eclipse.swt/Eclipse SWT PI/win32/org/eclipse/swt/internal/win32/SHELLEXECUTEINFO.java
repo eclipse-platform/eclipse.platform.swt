@@ -17,34 +17,34 @@ public class SHELLEXECUTEINFO {
 	public int cbSize;
 	public int fMask;
 	/** @field cast=(HWND) */
-	public long /*int*/ hwnd;
+	public long hwnd;
 	/** @field cast=(LPCTSTR) */
-	public long /*int*/ lpVerb;
+	public long lpVerb;
 	/** @field cast=(LPCTSTR) */
-	public long /*int*/ lpFile;
+	public long lpFile;
 	/** @field cast=(LPCTSTR) */
-	public long /*int*/ lpParameters;
+	public long lpParameters;
 	/** @field cast=(LPCTSTR) */
-	public long /*int*/ lpDirectory;
+	public long lpDirectory;
 	public int nShow;
 	/** @field cast=(HINSTANCE) */
-	public long /*int*/ hInstApp;
+	public long hInstApp;
 	// Optional members
 	/** @field cast=(LPVOID) */
-	public long /*int*/ lpIDList;
+	public long lpIDList;
 	/** @field cast=(LPCTSTR) */
-	public long /*int*/ lpClass;
+	public long lpClass;
 	/** @field cast=(HKEY) */
-	public long /*int*/ hkeyClass;
+	public long hkeyClass;
 	public int dwHotKey;
 //	union {
 //		HANDLE hIcon;
 //		HANDLE hMonitor;
 //	};
 	/** @field cast=(HANDLE) */
-	public long /*int*/ hIcon;
+	public long hIcon;
 	/** @field cast=(HANDLE) */
-	public long /*int*/ hProcess;
+	public long hProcess;
 	public static final int sizeof = OS.SHELLEXECUTEINFO_sizeof ();
 }
 

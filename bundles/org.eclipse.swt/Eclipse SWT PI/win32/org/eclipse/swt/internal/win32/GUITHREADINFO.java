@@ -19,17 +19,17 @@ public class GUITHREADINFO {
 	/** @field cast=(DWORD) */
 	public int flags;
 	/** @field cast=(HWND) */
-	public long /*int*/ hwndActive;
+	public long hwndActive;
 	/** @field cast=(HWND) */
-	public long /*int*/ hwndFocus;
+	public long hwndFocus;
 	/** @field cast=(HWND) */
-	public long /*int*/ hwndCapture;
+	public long hwndCapture;
 	/** @field cast=(HWND) */
-	public long /*int*/ hwndMenuOwner;
+	public long hwndMenuOwner;
 	/** @field cast=(HWND) */
-	public long /*int*/ hwndMoveSize;
+	public long hwndMoveSize;
 	/** @field cast=(HWND) */
-	public long /*int*/ hwndCaret;
+	public long hwndCaret;
 //	RECT rcCaret;
 	/** @field accessor=rcCaret.left */
 	public int left;

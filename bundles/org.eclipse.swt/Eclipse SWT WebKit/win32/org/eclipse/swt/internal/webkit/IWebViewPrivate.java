@@ -19,11 +19,11 @@ import org.eclipse.swt.internal.win32.*;
 
 public class IWebViewPrivate extends IUnknown {
 
-public IWebViewPrivate (long /*int*/ address) {
+public IWebViewPrivate (long address) {
 	super (address);
 }
 
-public int viewWindow (long /*int*/[] window) {
+public int viewWindow (long[] window) {
 	return OS.VtblCall (5, getAddress (), window);
 }
 

@@ -50,7 +50,7 @@ int AddRef() {
 void connect(IUnknown objIUnknown) {
 
 	// Set up property change notification sink
-	long /*int*/[] ppvObject = new long /*int*/[1];
+	long[] ppvObject = new long[1];
 	if (objIUnknown.QueryInterface(COM.IIDIConnectionPointContainer, ppvObject) == COM.S_OK) {
 		IConnectionPointContainer cpc = new IConnectionPointContainer(ppvObject[0]);
 		if (cpc.FindConnectionPoint(COM.IIDIPropertyNotifySink, ppvObject) == COM.S_OK) {
@@ -67,22 +67,22 @@ void connect(IUnknown objIUnknown) {
 private void createCOMInterfaces() {
 	iPropertyNotifySink = new COMObject(new int[]{2, 0, 0, 1, 1}){
 		@Override
-		public long /*int*/ method0(long /*int*/[] args) {return QueryInterface(args[0], args[1]);}
+		public long method0(long[] args) {return QueryInterface(args[0], args[1]);}
 		@Override
-		public long /*int*/ method1(long /*int*/[] args) {return AddRef();}
+		public long method1(long[] args) {return AddRef();}
 		@Override
-		public long /*int*/ method2(long /*int*/[] args) {return Release();}
+		public long method2(long[] args) {return Release();}
 		@Override
-		public long /*int*/ method3(long /*int*/[] args) {return OnChanged((int)/*64*/args[0]);}
+		public long method3(long[] args) {return OnChanged((int)args[0]);}
 		@Override
-		public long /*int*/ method4(long /*int*/[] args) {return OnRequestEdit((int)/*64*/args[0]);}
+		public long method4(long[] args) {return OnRequestEdit((int)args[0]);}
 	};
 }
 void disconnect(IUnknown objIUnknown) {
 
 	// disconnect property notification sink
 	if (propertyCookie != 0 && objIUnknown != null) {
-		long /*int*/[] ppvObject = new long /*int*/[1];
+		long[] ppvObject = new long[1];
 		if (objIUnknown.QueryInterface(COM.IIDIConnectionPointContainer, ppvObject) == COM.S_OK) {
 			IConnectionPointContainer cpc = new IConnectionPointContainer(ppvObject[0]);
 			if (cpc.FindConnectionPoint(COM.IIDIPropertyNotifySink, ppvObject) == COM.S_OK) {
@@ -139,17 +139,17 @@ private int OnRequestEdit(int dispID) {
 	notifyListener(dispID,event);
 	return (event.doit) ? COM.S_OK : COM.S_FALSE;
 }
-private int QueryInterface(long /*int*/ riid, long /*int*/ ppvObject) {
+private int QueryInterface(long riid, long ppvObject) {
 	if (riid == 0 || ppvObject == 0)
 		return COM.E_INVALIDARG;
 	GUID guid = new GUID();
 	COM.MoveMemory(guid, riid, GUID.sizeof);
 	if (COM.IsEqualGUID(guid, COM.IIDIUnknown) || COM.IsEqualGUID(guid, COM.IIDIPropertyNotifySink)) {
-		OS.MoveMemory(ppvObject, new long /*int*/[] {iPropertyNotifySink.getAddress()}, C.PTR_SIZEOF);
+		OS.MoveMemory(ppvObject, new long[] {iPropertyNotifySink.getAddress()}, C.PTR_SIZEOF);
 		AddRef();
 		return COM.S_OK;
 	}
-	OS.MoveMemory(ppvObject, new long /*int*/[] {0}, C.PTR_SIZEOF);
+	OS.MoveMemory(ppvObject, new long[] {0}, C.PTR_SIZEOF);
 	return COM.E_NOINTERFACE;
 }
 int Release() {

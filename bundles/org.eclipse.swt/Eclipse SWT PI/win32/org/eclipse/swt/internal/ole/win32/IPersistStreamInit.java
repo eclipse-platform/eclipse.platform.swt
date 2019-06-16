@@ -17,11 +17,11 @@ import org.eclipse.swt.internal.win32.*;
 
 public class IPersistStreamInit extends IPersist
 {
-public IPersistStreamInit(long /*int*/ address) {
+public IPersistStreamInit(long address) {
 	super(address);
 }
 
-public int Load(long /*int*/ pStm) {
+public int Load(long pStm) {
 	return OS.VtblCall(5, address, pStm);
 }
 

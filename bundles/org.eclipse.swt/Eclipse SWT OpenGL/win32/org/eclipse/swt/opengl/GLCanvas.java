@@ -29,7 +29,7 @@ import org.eclipse.swt.widgets.*;
  */
 
 public class GLCanvas extends Canvas {
-	long /*int*/ context;
+	long context;
 	int pixelFormat;
 	static final String USE_OWNDC_KEY = "org.eclipse.swt.internal.win32.useOwnDC"; //$NON-NLS-1$
 /**
@@ -79,7 +79,7 @@ public GLCanvas (Composite parent, int style, GLData data) {
 //		wglAttrib [pos++] = data.samples;
 //	}
 
-	long /*int*/ hDC = OS.GetDC (handle);
+	long hDC = OS.GetDC (handle);
 	pixelFormat = WGL.ChoosePixelFormat (hDC, pfd);
 	if (pixelFormat == 0 || !WGL.SetPixelFormat (hDC, pixelFormat, pfd)) {
 		OS.ReleaseDC (handle, hDC);
@@ -127,7 +127,7 @@ public GLData getGLData () {
 	GLData data = new GLData ();
 	PIXELFORMATDESCRIPTOR pfd = new PIXELFORMATDESCRIPTOR ();
 	pfd.nSize = (short) PIXELFORMATDESCRIPTOR.sizeof;
-	long /*int*/ hDC = OS.GetDC (handle);
+	long hDC = OS.GetDC (handle);
 	WGL.DescribePixelFormat (hDC, pixelFormat, PIXELFORMATDESCRIPTOR.sizeof, pfd);
 	OS.ReleaseDC (handle, hDC);
 	data.doubleBuffer = (pfd.dwFlags & WGL.PFD_DOUBLEBUFFER) != 0;
@@ -173,7 +173,7 @@ public boolean isCurrent () {
 public void setCurrent () {
 	checkWidget ();
 	if (WGL.wglGetCurrentContext () == context) return;
-	long /*int*/ hDC = OS.GetDC (handle);
+	long hDC = OS.GetDC (handle);
 	WGL.wglMakeCurrent (hDC, context);
 	OS.ReleaseDC (handle, hDC);
 }
@@ -188,7 +188,7 @@ public void setCurrent () {
  */
 public void swapBuffers () {
 	checkWidget ();
-	long /*int*/ hDC = OS.GetDC (handle);
+	long hDC = OS.GetDC (handle);
 	WGL.SwapBuffers (hDC);
 	OS.ReleaseDC (handle, hDC);
 }

@@ -25,12 +25,12 @@ public class NMTOOLBAR extends NMHDR {
 	/** @field accessor=tbButton.fsStyle */
 	public byte fsStyle;
 	/** @field accessor=tbButton.dwData */
-	public long /*int*/ dwData;
+	public long dwData;
 	/** @field accessor=tbButton.iString */
-	public long /*int*/ iString;
+	public long iString;
 	public int cchText;
 	/** @field cast=(LPTSTR) */
-	public long /*int*/ pszText;
+	public long pszText;
 //	RECT rcButton;
 	/** @field accessor=rcButton.left */
 	public int left;

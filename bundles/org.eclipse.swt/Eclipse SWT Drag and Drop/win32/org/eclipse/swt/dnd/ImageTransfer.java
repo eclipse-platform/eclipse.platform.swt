@@ -101,9 +101,9 @@ public void javaToNative(Object object, TransferData transferData) {
 			offset += 4;
 		}
 	}
-	long /*int*/ newPtr = OS.GlobalAlloc(OS.GMEM_FIXED | OS.GMEM_ZEROINIT, BITMAPINFOHEADER.sizeof + colorSize + imageSize);
+	long newPtr = OS.GlobalAlloc(OS.GMEM_FIXED | OS.GMEM_ZEROINIT, BITMAPINFOHEADER.sizeof + colorSize + imageSize);
 	OS.MoveMemory(newPtr, bmi, bmi.length);
-	long /*int*/ pBitDest = newPtr + BITMAPINFOHEADER.sizeof + colorSize;
+	long pBitDest = newPtr + BITMAPINFOHEADER.sizeof + colorSize;
 
 	if (imageHeight <= 0) {
 		OS.MoveMemory(pBitDest, imgData.data, imageSize);
@@ -152,18 +152,18 @@ public Object nativeToJava(TransferData transferData) {
 	transferData.result = getData(dataObject, formatetc, stgmedium);
 
 	if (transferData.result != COM.S_OK) return null;
-	long /*int*/ hMem = stgmedium.unionField;
+	long hMem = stgmedium.unionField;
 	dataObject.Release();
 	try {
-		long /*int*/ ptr = OS.GlobalLock(hMem);
+		long ptr = OS.GlobalLock(hMem);
 		if (ptr == 0) return null;
 		try {
 			BITMAPINFOHEADER bmiHeader = new BITMAPINFOHEADER();
 			OS.MoveMemory(bmiHeader, ptr, BITMAPINFOHEADER.sizeof);
-			long /*int*/[] pBits = new long /*int*/[1];
-			long /*int*/ memDib = OS.CreateDIBSection(0, ptr, OS.DIB_RGB_COLORS, pBits, 0, 0);
+			long[] pBits = new long[1];
+			long memDib = OS.CreateDIBSection(0, ptr, OS.DIB_RGB_COLORS, pBits, 0, 0);
 			if (memDib == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-			long /*int*/ bits = ptr + bmiHeader.biSize;
+			long bits = ptr + bmiHeader.biSize;
 			if (bmiHeader.biBitCount <= 8) {
 				bits += (bmiHeader.biClrUsed == 0 ? (1 << bmiHeader.biBitCount) : bmiHeader.biClrUsed) * 4;
 			} else if (bmiHeader.biCompression == OS.BI_BITFIELDS) {
@@ -176,8 +176,8 @@ public Object nativeToJava(TransferData transferData) {
 				OS.GetObject(memDib, DIBSECTION.sizeof, dib);
 				int biHeight = dib.biHeight;
 				int scanline = dib.biSizeImage / biHeight;
-				long /*int*/ pDestBits = pBits[0];
-				long /*int*/ pSourceBits = bits + scanline * (biHeight - 1);
+				long pDestBits = pBits[0];
+				long pSourceBits = bits + scanline * (biHeight - 1);
 				for (int i = 0; i < biHeight; i++) {
 					OS.MoveMemory(pDestBits, pSourceBits, scanline);
 					pDestBits += scanline;

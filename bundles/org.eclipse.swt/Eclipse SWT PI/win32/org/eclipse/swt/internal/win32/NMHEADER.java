@@ -17,6 +17,6 @@ public class NMHEADER extends NMHDR {
 	public int iItem;
 	public int iButton;
 	/** @field cast=(HDITEM FAR *) */
-	public long /*int*/ pitem;
+	public long pitem;
 	public static int sizeof = OS.NMHEADER_sizeof ();
 }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2009, 2016 IBM Corporation and others. All rights reserved.
+ * Copyright (c) 2009, 2019 IBM Corporation and others. All rights reserved.
  * The contents of this file are made available under the terms
  * of the GNU Lesser General Public License (LGPL) Version 2.1 that
  * accompanies this distribution (lgpl-v21.txt).  The LGPL is also
@@ -25,9 +25,9 @@
 #endif
 
 #ifndef NO_CFArrayGetCount
-extern "C" JNIEXPORT jint JNICALL WebKit_win32_NATIVE(CFArrayGetCount)(JNIEnv *env, jclass that, jintLong arg0);
+extern "C" JNIEXPORT jint JNICALL WebKit_win32_NATIVE(CFArrayGetCount)(JNIEnv *env, jclass that, jlong arg0);
 JNIEXPORT jint JNICALL WebKit_win32_NATIVE(CFArrayGetCount)
-	(JNIEnv *env, jclass that, jintLong arg0)
+	(JNIEnv *env, jclass that, jlong arg0)
 {
 	jint rc = 0;
 	WebKit_win32_NATIVE_ENTER(env, that, CFArrayGetCount_FUNC);
@@ -38,28 +38,28 @@ JNIEXPORT jint JNICALL WebKit_win32_NATIVE(CFArrayGetCount)
 #endif
 
 #ifndef NO_CFArrayGetValueAtIndex
-extern "C" JNIEXPORT jintLong JNICALL WebKit_win32_NATIVE(CFArrayGetValueAtIndex)(JNIEnv *env, jclass that, jintLong arg0, jint arg1);
-JNIEXPORT jintLong JNICALL WebKit_win32_NATIVE(CFArrayGetValueAtIndex)
-	(JNIEnv *env, jclass that, jintLong arg0, jint arg1)
+extern "C" JNIEXPORT jlong JNICALL WebKit_win32_NATIVE(CFArrayGetValueAtIndex)(JNIEnv *env, jclass that, jlong arg0, jint arg1);
+JNIEXPORT jlong JNICALL WebKit_win32_NATIVE(CFArrayGetValueAtIndex)
+	(JNIEnv *env, jclass that, jlong arg0, jint arg1)
 {
-	jintLong rc = 0;
+	jlong rc = 0;
 	WebKit_win32_NATIVE_ENTER(env, that, CFArrayGetValueAtIndex_FUNC);
-	rc = (jintLong)CFArrayGetValueAtIndex((CFArrayRef)arg0, (CFIndex)arg1);
+	rc = (jlong)CFArrayGetValueAtIndex((CFArrayRef)arg0, (CFIndex)arg1);
 	WebKit_win32_NATIVE_EXIT(env, that, CFArrayGetValueAtIndex_FUNC);
 	return rc;
 }
 #endif
 
 #ifndef NO_CFDataCreate
-extern "C" JNIEXPORT jintLong JNICALL WebKit_win32_NATIVE(CFDataCreate)(JNIEnv *env, jclass that, jintLong arg0, jbyteArray arg1, jint arg2);
-JNIEXPORT jintLong JNICALL WebKit_win32_NATIVE(CFDataCreate)
-	(JNIEnv *env, jclass that, jintLong arg0, jbyteArray arg1, jint arg2)
+extern "C" JNIEXPORT jlong JNICALL WebKit_win32_NATIVE(CFDataCreate)(JNIEnv *env, jclass that, jlong arg0, jbyteArray arg1, jint arg2);
+JNIEXPORT jlong JNICALL WebKit_win32_NATIVE(CFDataCreate)
+	(JNIEnv *env, jclass that, jlong arg0, jbyteArray arg1, jint arg2)
 {
 	jbyte *lparg1=NULL;
-	jintLong rc = 0;
+	jlong rc = 0;
 	WebKit_win32_NATIVE_ENTER(env, that, CFDataCreate_FUNC);
 	if (arg1) if ((lparg1 = env->GetByteArrayElements(arg1, NULL)) == NULL) goto fail;
-	rc = (jintLong)CFDataCreate((CFAllocatorRef)arg0, (const UInt8 *)lparg1, (CFIndex)arg2);
+	rc = (jlong)CFDataCreate((CFAllocatorRef)arg0, (const UInt8 *)lparg1, (CFIndex)arg2);
 fail:
 	if (arg1 && lparg1) env->ReleaseByteArrayElements(arg1, lparg1, 0);
 	WebKit_win32_NATIVE_EXIT(env, that, CFDataCreate_FUNC);
@@ -68,22 +68,22 @@ fail:
 #endif
 
 #ifndef NO_CFDataGetBytePtr
-extern "C" JNIEXPORT jintLong JNICALL WebKit_win32_NATIVE(CFDataGetBytePtr)(JNIEnv *env, jclass that, jintLong arg0);
-JNIEXPORT jintLong JNICALL WebKit_win32_NATIVE(CFDataGetBytePtr)
-	(JNIEnv *env, jclass that, jintLong arg0)
+extern "C" JNIEXPORT jlong JNICALL WebKit_win32_NATIVE(CFDataGetBytePtr)(JNIEnv *env, jclass that, jlong arg0);
+JNIEXPORT jlong JNICALL WebKit_win32_NATIVE(CFDataGetBytePtr)
+	(JNIEnv *env, jclass that, jlong arg0)
 {
-	jintLong rc = 0;
+	jlong rc = 0;
 	WebKit_win32_NATIVE_ENTER(env, that, CFDataGetBytePtr_FUNC);
-	rc = (jintLong)CFDataGetBytePtr((CFDataRef)arg0);
+	rc = (jlong)CFDataGetBytePtr((CFDataRef)arg0);
 	WebKit_win32_NATIVE_EXIT(env, that, CFDataGetBytePtr_FUNC);
 	return rc;
 }
 #endif
 
 #ifndef NO_CFDataGetLength
-extern "C" JNIEXPORT jint JNICALL WebKit_win32_NATIVE(CFDataGetLength)(JNIEnv *env, jclass that, jintLong arg0);
+extern "C" JNIEXPORT jint JNICALL WebKit_win32_NATIVE(CFDataGetLength)(JNIEnv *env, jclass that, jlong arg0);
 JNIEXPORT jint JNICALL WebKit_win32_NATIVE(CFDataGetLength)
-	(JNIEnv *env, jclass that, jintLong arg0)
+	(JNIEnv *env, jclass that, jlong arg0)
 {
 	jint rc = 0;
 	WebKit_win32_NATIVE_ENTER(env, that, CFDataGetLength_FUNC);
@@ -94,42 +94,42 @@ JNIEXPORT jint JNICALL WebKit_win32_NATIVE(CFDataGetLength)
 #endif
 
 #ifndef NO_CFDictionaryCreate
-extern "C" JNIEXPORT jintLong JNICALL WebKit_win32_NATIVE(CFDictionaryCreate)(JNIEnv *env, jclass that, jintLong arg0, jintLongArray arg1, jintLongArray arg2, jint arg3, jintLong arg4, jintLong arg5);
-JNIEXPORT jintLong JNICALL WebKit_win32_NATIVE(CFDictionaryCreate)
-	(JNIEnv *env, jclass that, jintLong arg0, jintLongArray arg1, jintLongArray arg2, jint arg3, jintLong arg4, jintLong arg5)
+extern "C" JNIEXPORT jlong JNICALL WebKit_win32_NATIVE(CFDictionaryCreate)(JNIEnv *env, jclass that, jlong arg0, jlongArray arg1, jlongArray arg2, jint arg3, jlong arg4, jlong arg5);
+JNIEXPORT jlong JNICALL WebKit_win32_NATIVE(CFDictionaryCreate)
+	(JNIEnv *env, jclass that, jlong arg0, jlongArray arg1, jlongArray arg2, jint arg3, jlong arg4, jlong arg5)
 {
-	jintLong *lparg1=NULL;
-	jintLong *lparg2=NULL;
-	jintLong rc = 0;
+	jlong *lparg1=NULL;
+	jlong *lparg2=NULL;
+	jlong rc = 0;
 	WebKit_win32_NATIVE_ENTER(env, that, CFDictionaryCreate_FUNC);
-	if (arg1) if ((lparg1 = env->GetIntLongArrayElements(arg1, NULL)) == NULL) goto fail;
-	if (arg2) if ((lparg2 = env->GetIntLongArrayElements(arg2, NULL)) == NULL) goto fail;
-	rc = (jintLong)CFDictionaryCreate((CFAllocatorRef)arg0, (const void **)lparg1, (const void **)lparg2, (CFIndex)arg3, (const CFDictionaryKeyCallBacks *)arg4, (const CFDictionaryValueCallBacks *)arg5);
+	if (arg1) if ((lparg1 = env->GetLongArrayElements(arg1, NULL)) == NULL) goto fail;
+	if (arg2) if ((lparg2 = env->GetLongArrayElements(arg2, NULL)) == NULL) goto fail;
+	rc = (jlong)CFDictionaryCreate((CFAllocatorRef)arg0, (const void **)lparg1, (const void **)lparg2, (CFIndex)arg3, (const CFDictionaryKeyCallBacks *)arg4, (const CFDictionaryValueCallBacks *)arg5);
 fail:
-	if (arg2 && lparg2) env->ReleaseIntLongArrayElements(arg2, lparg2, 0);
-	if (arg1 && lparg1) env->ReleaseIntLongArrayElements(arg1, lparg1, 0);
+	if (arg2 && lparg2) env->ReleaseLongArrayElements(arg2, lparg2, 0);
+	if (arg1 && lparg1) env->ReleaseLongArrayElements(arg1, lparg1, 0);
 	WebKit_win32_NATIVE_EXIT(env, that, CFDictionaryCreate_FUNC);
 	return rc;
 }
 #endif
 
 #ifndef NO_CFHTTPCookieCreateWithResponseHeaderFields
-extern "C" JNIEXPORT jintLong JNICALL WebKit_win32_NATIVE(CFHTTPCookieCreateWithResponseHeaderFields)(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jintLong arg2);
-JNIEXPORT jintLong JNICALL WebKit_win32_NATIVE(CFHTTPCookieCreateWithResponseHeaderFields)
-	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jintLong arg2)
+extern "C" JNIEXPORT jlong JNICALL WebKit_win32_NATIVE(CFHTTPCookieCreateWithResponseHeaderFields)(JNIEnv *env, jclass that, jlong arg0, jlong arg1, jlong arg2);
+JNIEXPORT jlong JNICALL WebKit_win32_NATIVE(CFHTTPCookieCreateWithResponseHeaderFields)
+	(JNIEnv *env, jclass that, jlong arg0, jlong arg1, jlong arg2)
 {
-	jintLong rc = 0;
+	jlong rc = 0;
 	WebKit_win32_NATIVE_ENTER(env, that, CFHTTPCookieCreateWithResponseHeaderFields_FUNC);
-	rc = (jintLong)CFHTTPCookieCreateWithResponseHeaderFields((CFAllocatorRef)arg0, (CFDictionaryRef)arg1, (CFURLRef)arg2);
+	rc = (jlong)CFHTTPCookieCreateWithResponseHeaderFields((CFAllocatorRef)arg0, (CFDictionaryRef)arg1, (CFURLRef)arg2);
 	WebKit_win32_NATIVE_EXIT(env, that, CFHTTPCookieCreateWithResponseHeaderFields_FUNC);
 	return rc;
 }
 #endif
 
 #ifndef NO_CFHTTPCookieGetFlags
-extern "C" JNIEXPORT jint JNICALL WebKit_win32_NATIVE(CFHTTPCookieGetFlags)(JNIEnv *env, jclass that, jintLong arg0);
+extern "C" JNIEXPORT jint JNICALL WebKit_win32_NATIVE(CFHTTPCookieGetFlags)(JNIEnv *env, jclass that, jlong arg0);
 JNIEXPORT jint JNICALL WebKit_win32_NATIVE(CFHTTPCookieGetFlags)
-	(JNIEnv *env, jclass that, jintLong arg0)
+	(JNIEnv *env, jclass that, jlong arg0)
 {
 	jint rc = 0;
 	WebKit_win32_NATIVE_ENTER(env, that, CFHTTPCookieGetFlags_FUNC);
@@ -140,61 +140,61 @@ JNIEXPORT jint JNICALL WebKit_win32_NATIVE(CFHTTPCookieGetFlags)
 #endif
 
 #ifndef NO_CFHTTPCookieGetName
-extern "C" JNIEXPORT jintLong JNICALL WebKit_win32_NATIVE(CFHTTPCookieGetName)(JNIEnv *env, jclass that, jintLong arg0);
-JNIEXPORT jintLong JNICALL WebKit_win32_NATIVE(CFHTTPCookieGetName)
-	(JNIEnv *env, jclass that, jintLong arg0)
+extern "C" JNIEXPORT jlong JNICALL WebKit_win32_NATIVE(CFHTTPCookieGetName)(JNIEnv *env, jclass that, jlong arg0);
+JNIEXPORT jlong JNICALL WebKit_win32_NATIVE(CFHTTPCookieGetName)
+	(JNIEnv *env, jclass that, jlong arg0)
 {
-	jintLong rc = 0;
+	jlong rc = 0;
 	WebKit_win32_NATIVE_ENTER(env, that, CFHTTPCookieGetName_FUNC);
-	rc = (jintLong)CFHTTPCookieGetName((CFHTTPCookieRef)arg0);
+	rc = (jlong)CFHTTPCookieGetName((CFHTTPCookieRef)arg0);
 	WebKit_win32_NATIVE_EXIT(env, that, CFHTTPCookieGetName_FUNC);
 	return rc;
 }
 #endif
 
 #ifndef NO_CFHTTPCookieGetValue
-extern "C" JNIEXPORT jintLong JNICALL WebKit_win32_NATIVE(CFHTTPCookieGetValue)(JNIEnv *env, jclass that, jintLong arg0);
-JNIEXPORT jintLong JNICALL WebKit_win32_NATIVE(CFHTTPCookieGetValue)
-	(JNIEnv *env, jclass that, jintLong arg0)
+extern "C" JNIEXPORT jlong JNICALL WebKit_win32_NATIVE(CFHTTPCookieGetValue)(JNIEnv *env, jclass that, jlong arg0);
+JNIEXPORT jlong JNICALL WebKit_win32_NATIVE(CFHTTPCookieGetValue)
+	(JNIEnv *env, jclass that, jlong arg0)
 {
-	jintLong rc = 0;
+	jlong rc = 0;
 	WebKit_win32_NATIVE_ENTER(env, that, CFHTTPCookieGetValue_FUNC);
-	rc = (jintLong)CFHTTPCookieGetValue((CFHTTPCookieRef)arg0);
+	rc = (jlong)CFHTTPCookieGetValue((CFHTTPCookieRef)arg0);
 	WebKit_win32_NATIVE_EXIT(env, that, CFHTTPCookieGetValue_FUNC);
 	return rc;
 }
 #endif
 
 #ifndef NO_CFHTTPCookieStorageCopyCookies
-extern "C" JNIEXPORT jintLong JNICALL WebKit_win32_NATIVE(CFHTTPCookieStorageCopyCookies)(JNIEnv *env, jclass that, jintLong arg0);
-JNIEXPORT jintLong JNICALL WebKit_win32_NATIVE(CFHTTPCookieStorageCopyCookies)
-	(JNIEnv *env, jclass that, jintLong arg0)
+extern "C" JNIEXPORT jlong JNICALL WebKit_win32_NATIVE(CFHTTPCookieStorageCopyCookies)(JNIEnv *env, jclass that, jlong arg0);
+JNIEXPORT jlong JNICALL WebKit_win32_NATIVE(CFHTTPCookieStorageCopyCookies)
+	(JNIEnv *env, jclass that, jlong arg0)
 {
-	jintLong rc = 0;
+	jlong rc = 0;
 	WebKit_win32_NATIVE_ENTER(env, that, CFHTTPCookieStorageCopyCookies_FUNC);
-	rc = (jintLong)CFHTTPCookieStorageCopyCookies((CFHTTPCookieStorageRef)arg0);
+	rc = (jlong)CFHTTPCookieStorageCopyCookies((CFHTTPCookieStorageRef)arg0);
 	WebKit_win32_NATIVE_EXIT(env, that, CFHTTPCookieStorageCopyCookies_FUNC);
 	return rc;
 }
 #endif
 
 #ifndef NO_CFHTTPCookieStorageCopyCookiesForURL
-extern "C" JNIEXPORT jintLong JNICALL WebKit_win32_NATIVE(CFHTTPCookieStorageCopyCookiesForURL)(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jboolean arg2);
-JNIEXPORT jintLong JNICALL WebKit_win32_NATIVE(CFHTTPCookieStorageCopyCookiesForURL)
-	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jboolean arg2)
+extern "C" JNIEXPORT jlong JNICALL WebKit_win32_NATIVE(CFHTTPCookieStorageCopyCookiesForURL)(JNIEnv *env, jclass that, jlong arg0, jlong arg1, jboolean arg2);
+JNIEXPORT jlong JNICALL WebKit_win32_NATIVE(CFHTTPCookieStorageCopyCookiesForURL)
+	(JNIEnv *env, jclass that, jlong arg0, jlong arg1, jboolean arg2)
 {
-	jintLong rc = 0;
+	jlong rc = 0;
 	WebKit_win32_NATIVE_ENTER(env, that, CFHTTPCookieStorageCopyCookiesForURL_FUNC);
-	rc = (jintLong)CFHTTPCookieStorageCopyCookiesForURL((CFHTTPCookieStorageRef)arg0, (CFURLRef)arg1, (Boolean)arg2);
+	rc = (jlong)CFHTTPCookieStorageCopyCookiesForURL((CFHTTPCookieStorageRef)arg0, (CFURLRef)arg1, (Boolean)arg2);
 	WebKit_win32_NATIVE_EXIT(env, that, CFHTTPCookieStorageCopyCookiesForURL_FUNC);
 	return rc;
 }
 #endif
 
 #ifndef NO_CFHTTPCookieStorageDeleteCookie
-extern "C" JNIEXPORT void JNICALL WebKit_win32_NATIVE(CFHTTPCookieStorageDeleteCookie)(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1);
+extern "C" JNIEXPORT void JNICALL WebKit_win32_NATIVE(CFHTTPCookieStorageDeleteCookie)(JNIEnv *env, jclass that, jlong arg0, jlong arg1);
 JNIEXPORT void JNICALL WebKit_win32_NATIVE(CFHTTPCookieStorageDeleteCookie)
-	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1)
+	(JNIEnv *env, jclass that, jlong arg0, jlong arg1)
 {
 	WebKit_win32_NATIVE_ENTER(env, that, CFHTTPCookieStorageDeleteCookie_FUNC);
 	CFHTTPCookieStorageDeleteCookie((CFHTTPCookieStorageRef)arg0, (CFHTTPCookieRef)arg1);
@@ -203,9 +203,9 @@ JNIEXPORT void JNICALL WebKit_win32_NATIVE(CFHTTPCookieStorageDeleteCookie)
 #endif
 
 #ifndef NO_CFHTTPCookieStorageSetCookie
-extern "C" JNIEXPORT void JNICALL WebKit_win32_NATIVE(CFHTTPCookieStorageSetCookie)(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1);
+extern "C" JNIEXPORT void JNICALL WebKit_win32_NATIVE(CFHTTPCookieStorageSetCookie)(JNIEnv *env, jclass that, jlong arg0, jlong arg1);
 JNIEXPORT void JNICALL WebKit_win32_NATIVE(CFHTTPCookieStorageSetCookie)
-	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1)
+	(JNIEnv *env, jclass that, jlong arg0, jlong arg1)
 {
 	WebKit_win32_NATIVE_ENTER(env, that, CFHTTPCookieStorageSetCookie_FUNC);
 	CFHTTPCookieStorageSetCookie((CFHTTPCookieStorageRef)arg0, (CFHTTPCookieRef)arg1);
@@ -214,9 +214,9 @@ JNIEXPORT void JNICALL WebKit_win32_NATIVE(CFHTTPCookieStorageSetCookie)
 #endif
 
 #ifndef NO_CFRelease
-extern "C" JNIEXPORT void JNICALL WebKit_win32_NATIVE(CFRelease)(JNIEnv *env, jclass that, jintLong arg0);
+extern "C" JNIEXPORT void JNICALL WebKit_win32_NATIVE(CFRelease)(JNIEnv *env, jclass that, jlong arg0);
 JNIEXPORT void JNICALL WebKit_win32_NATIVE(CFRelease)
-	(JNIEnv *env, jclass that, jintLong arg0)
+	(JNIEnv *env, jclass that, jlong arg0)
 {
 	WebKit_win32_NATIVE_ENTER(env, that, CFRelease_FUNC);
 	CFRelease((CFTypeRef)arg0);
@@ -225,9 +225,9 @@ JNIEXPORT void JNICALL WebKit_win32_NATIVE(CFRelease)
 #endif
 
 #ifndef NO_CFStringCreateWithCharacters
-extern "C" JNIEXPORT jint JNICALL WebKit_win32_NATIVE(CFStringCreateWithCharacters)(JNIEnv *env, jclass that, jintLong arg0, jcharArray arg1, jint arg2);
+extern "C" JNIEXPORT jint JNICALL WebKit_win32_NATIVE(CFStringCreateWithCharacters)(JNIEnv *env, jclass that, jlong arg0, jcharArray arg1, jint arg2);
 JNIEXPORT jint JNICALL WebKit_win32_NATIVE(CFStringCreateWithCharacters)
-	(JNIEnv *env, jclass that, jintLong arg0, jcharArray arg1, jint arg2)
+	(JNIEnv *env, jclass that, jlong arg0, jcharArray arg1, jint arg2)
 {
 	jchar *lparg1=NULL;
 	jint rc = 0;
@@ -242,9 +242,9 @@ fail:
 #endif
 
 #ifndef NO_CFStringGetCharacterAtIndex
-extern "C" JNIEXPORT jchar JNICALL WebKit_win32_NATIVE(CFStringGetCharacterAtIndex)(JNIEnv *env, jclass that, jintLong arg0, jint arg1);
+extern "C" JNIEXPORT jchar JNICALL WebKit_win32_NATIVE(CFStringGetCharacterAtIndex)(JNIEnv *env, jclass that, jlong arg0, jint arg1);
 JNIEXPORT jchar JNICALL WebKit_win32_NATIVE(CFStringGetCharacterAtIndex)
-	(JNIEnv *env, jclass that, jintLong arg0, jint arg1)
+	(JNIEnv *env, jclass that, jlong arg0, jint arg1)
 {
 	jchar rc = 0;
 	WebKit_win32_NATIVE_ENTER(env, that, CFStringGetCharacterAtIndex_FUNC);
@@ -255,22 +255,22 @@ JNIEXPORT jchar JNICALL WebKit_win32_NATIVE(CFStringGetCharacterAtIndex)
 #endif
 
 #ifndef NO_CFStringGetCharactersPtr
-extern "C" JNIEXPORT jintLong JNICALL WebKit_win32_NATIVE(CFStringGetCharactersPtr)(JNIEnv *env, jclass that, jintLong arg0);
-JNIEXPORT jintLong JNICALL WebKit_win32_NATIVE(CFStringGetCharactersPtr)
-	(JNIEnv *env, jclass that, jintLong arg0)
+extern "C" JNIEXPORT jlong JNICALL WebKit_win32_NATIVE(CFStringGetCharactersPtr)(JNIEnv *env, jclass that, jlong arg0);
+JNIEXPORT jlong JNICALL WebKit_win32_NATIVE(CFStringGetCharactersPtr)
+	(JNIEnv *env, jclass that, jlong arg0)
 {
-	jintLong rc = 0;
+	jlong rc = 0;
 	WebKit_win32_NATIVE_ENTER(env, that, CFStringGetCharactersPtr_FUNC);
-	rc = (jintLong)CFStringGetCharactersPtr((CFStringRef)arg0);
+	rc = (jlong)CFStringGetCharactersPtr((CFStringRef)arg0);
 	WebKit_win32_NATIVE_EXIT(env, that, CFStringGetCharactersPtr_FUNC);
 	return rc;
 }
 #endif
 
 #ifndef NO_CFStringGetLength
-extern "C" JNIEXPORT jint JNICALL WebKit_win32_NATIVE(CFStringGetLength)(JNIEnv *env, jclass that, jintLong arg0);
+extern "C" JNIEXPORT jint JNICALL WebKit_win32_NATIVE(CFStringGetLength)(JNIEnv *env, jclass that, jlong arg0);
 JNIEXPORT jint JNICALL WebKit_win32_NATIVE(CFStringGetLength)
-	(JNIEnv *env, jclass that, jintLong arg0)
+	(JNIEnv *env, jclass that, jlong arg0)
 {
 	jint rc = 0;
 	WebKit_win32_NATIVE_ENTER(env, that, CFStringGetLength_FUNC);
@@ -281,48 +281,48 @@ JNIEXPORT jint JNICALL WebKit_win32_NATIVE(CFStringGetLength)
 #endif
 
 #ifndef NO_CFURLCreateWithString
-extern "C" JNIEXPORT jintLong JNICALL WebKit_win32_NATIVE(CFURLCreateWithString)(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jintLong arg2);
-JNIEXPORT jintLong JNICALL WebKit_win32_NATIVE(CFURLCreateWithString)
-	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jintLong arg2)
+extern "C" JNIEXPORT jlong JNICALL WebKit_win32_NATIVE(CFURLCreateWithString)(JNIEnv *env, jclass that, jlong arg0, jlong arg1, jlong arg2);
+JNIEXPORT jlong JNICALL WebKit_win32_NATIVE(CFURLCreateWithString)
+	(JNIEnv *env, jclass that, jlong arg0, jlong arg1, jlong arg2)
 {
-	jintLong rc = 0;
+	jlong rc = 0;
 	WebKit_win32_NATIVE_ENTER(env, that, CFURLCreateWithString_FUNC);
-	rc = (jintLong)CFURLCreateWithString((CFAllocatorRef)arg0, (CFStringRef)arg1, (CFURLRef)arg2);
+	rc = (jlong)CFURLCreateWithString((CFAllocatorRef)arg0, (CFStringRef)arg1, (CFURLRef)arg2);
 	WebKit_win32_NATIVE_EXIT(env, that, CFURLCreateWithString_FUNC);
 	return rc;
 }
 #endif
 
 #ifndef NO_CFURLRequestCopyHTTPRequestBody
-extern "C" JNIEXPORT jintLong JNICALL WebKit_win32_NATIVE(CFURLRequestCopyHTTPRequestBody)(JNIEnv *env, jclass that, jintLong arg0);
-JNIEXPORT jintLong JNICALL WebKit_win32_NATIVE(CFURLRequestCopyHTTPRequestBody)
-	(JNIEnv *env, jclass that, jintLong arg0)
+extern "C" JNIEXPORT jlong JNICALL WebKit_win32_NATIVE(CFURLRequestCopyHTTPRequestBody)(JNIEnv *env, jclass that, jlong arg0);
+JNIEXPORT jlong JNICALL WebKit_win32_NATIVE(CFURLRequestCopyHTTPRequestBody)
+	(JNIEnv *env, jclass that, jlong arg0)
 {
-	jintLong rc = 0;
+	jlong rc = 0;
 	WebKit_win32_NATIVE_ENTER(env, that, CFURLRequestCopyHTTPRequestBody_FUNC);
-	rc = (jintLong)CFURLRequestCopyHTTPRequestBody((CFURLRequestRef)arg0);
+	rc = (jlong)CFURLRequestCopyHTTPRequestBody((CFURLRequestRef)arg0);
 	WebKit_win32_NATIVE_EXIT(env, that, CFURLRequestCopyHTTPRequestBody_FUNC);
 	return rc;
 }
 #endif
 
 #ifndef NO_CFURLRequestCreateMutableCopy
-extern "C" JNIEXPORT jintLong JNICALL WebKit_win32_NATIVE(CFURLRequestCreateMutableCopy)(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1);
-JNIEXPORT jintLong JNICALL WebKit_win32_NATIVE(CFURLRequestCreateMutableCopy)
-	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1)
+extern "C" JNIEXPORT jlong JNICALL WebKit_win32_NATIVE(CFURLRequestCreateMutableCopy)(JNIEnv *env, jclass that, jlong arg0, jlong arg1);
+JNIEXPORT jlong JNICALL WebKit_win32_NATIVE(CFURLRequestCreateMutableCopy)
+	(JNIEnv *env, jclass that, jlong arg0, jlong arg1)
 {
-	jintLong rc = 0;
+	jlong rc = 0;
 	WebKit_win32_NATIVE_ENTER(env, that, CFURLRequestCreateMutableCopy_FUNC);
-	rc = (jintLong)CFURLRequestCreateMutableCopy((CFAllocatorRef)arg0, (CFURLRequestRef)arg1);
+	rc = (jlong)CFURLRequestCreateMutableCopy((CFAllocatorRef)arg0, (CFURLRequestRef)arg1);
 	WebKit_win32_NATIVE_EXIT(env, that, CFURLRequestCreateMutableCopy_FUNC);
 	return rc;
 }
 #endif
 
 #ifndef NO_CFURLRequestSetHTTPRequestBody
-extern "C" JNIEXPORT void JNICALL WebKit_win32_NATIVE(CFURLRequestSetHTTPRequestBody)(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1);
+extern "C" JNIEXPORT void JNICALL WebKit_win32_NATIVE(CFURLRequestSetHTTPRequestBody)(JNIEnv *env, jclass that, jlong arg0, jlong arg1);
 JNIEXPORT void JNICALL WebKit_win32_NATIVE(CFURLRequestSetHTTPRequestBody)
-	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1)
+	(JNIEnv *env, jclass that, jlong arg0, jlong arg1)
 {
 	WebKit_win32_NATIVE_ENTER(env, that, CFURLRequestSetHTTPRequestBody_FUNC);
 	CFURLRequestSetHTTPRequestBody((CFMutableURLRequestRef)arg0, (CFDataRef)arg1);
@@ -331,9 +331,9 @@ JNIEXPORT void JNICALL WebKit_win32_NATIVE(CFURLRequestSetHTTPRequestBody)
 #endif
 
 #ifndef NO_CFURLRequestSetURL
-extern "C" JNIEXPORT void JNICALL WebKit_win32_NATIVE(CFURLRequestSetURL)(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1);
+extern "C" JNIEXPORT void JNICALL WebKit_win32_NATIVE(CFURLRequestSetURL)(JNIEnv *env, jclass that, jlong arg0, jlong arg1);
 JNIEXPORT void JNICALL WebKit_win32_NATIVE(CFURLRequestSetURL)
-	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1)
+	(JNIEnv *env, jclass that, jlong arg0, jlong arg1)
 {
 	WebKit_win32_NATIVE_ENTER(env, that, CFURLRequestSetURL_FUNC);
 	CFURLRequestSetURL((CFMutableURLRequestRef)arg0, (CFURLRef)arg1);
@@ -342,13 +342,13 @@ JNIEXPORT void JNICALL WebKit_win32_NATIVE(CFURLRequestSetURL)
 #endif
 
 #ifndef NO_JSClassCreate
-extern "C" JNIEXPORT jintLong JNICALL WebKit_win32_NATIVE(JSClassCreate)(JNIEnv *env, jclass that, jintLong arg0);
-JNIEXPORT jintLong JNICALL WebKit_win32_NATIVE(JSClassCreate)
-	(JNIEnv *env, jclass that, jintLong arg0)
+extern "C" JNIEXPORT jlong JNICALL WebKit_win32_NATIVE(JSClassCreate)(JNIEnv *env, jclass that, jlong arg0);
+JNIEXPORT jlong JNICALL WebKit_win32_NATIVE(JSClassCreate)
+	(JNIEnv *env, jclass that, jlong arg0)
 {
-	jintLong rc = 0;
+	jlong rc = 0;
 	WebKit_win32_NATIVE_ENTER(env, that, JSClassCreate_FUNC);
-	rc = (jintLong)JSClassCreate((const JSClassDefinition*)arg0);
+	rc = (jlong)JSClassCreate((const JSClassDefinition*)arg0);
 	WebKit_win32_NATIVE_EXIT(env, that, JSClassCreate_FUNC);
 	return rc;
 }
@@ -368,52 +368,52 @@ JNIEXPORT jint JNICALL WebKit_win32_NATIVE(JSClassDefinition_1sizeof)
 #endif
 
 #ifndef NO_JSClassRetain
-extern "C" JNIEXPORT jintLong JNICALL WebKit_win32_NATIVE(JSClassRetain)(JNIEnv *env, jclass that, jintLong arg0);
-JNIEXPORT jintLong JNICALL WebKit_win32_NATIVE(JSClassRetain)
-	(JNIEnv *env, jclass that, jintLong arg0)
+extern "C" JNIEXPORT jlong JNICALL WebKit_win32_NATIVE(JSClassRetain)(JNIEnv *env, jclass that, jlong arg0);
+JNIEXPORT jlong JNICALL WebKit_win32_NATIVE(JSClassRetain)
+	(JNIEnv *env, jclass that, jlong arg0)
 {
-	jintLong rc = 0;
+	jlong rc = 0;
 	WebKit_win32_NATIVE_ENTER(env, that, JSClassRetain_FUNC);
-	rc = (jintLong)JSClassRetain((JSClassRef)arg0);
+	rc = (jlong)JSClassRetain((JSClassRef)arg0);
 	WebKit_win32_NATIVE_EXIT(env, that, JSClassRetain_FUNC);
 	return rc;
 }
 #endif
 
 #ifndef NO_JSContextGetGlobalObject
-extern "C" JNIEXPORT jintLong JNICALL WebKit_win32_NATIVE(JSContextGetGlobalObject)(JNIEnv *env, jclass that, jintLong arg0);
-JNIEXPORT jintLong JNICALL WebKit_win32_NATIVE(JSContextGetGlobalObject)
-	(JNIEnv *env, jclass that, jintLong arg0)
+extern "C" JNIEXPORT jlong JNICALL WebKit_win32_NATIVE(JSContextGetGlobalObject)(JNIEnv *env, jclass that, jlong arg0);
+JNIEXPORT jlong JNICALL WebKit_win32_NATIVE(JSContextGetGlobalObject)
+	(JNIEnv *env, jclass that, jlong arg0)
 {
-	jintLong rc = 0;
+	jlong rc = 0;
 	WebKit_win32_NATIVE_ENTER(env, that, JSContextGetGlobalObject_FUNC);
-	rc = (jintLong)JSContextGetGlobalObject((JSContextRef)arg0);
+	rc = (jlong)JSContextGetGlobalObject((JSContextRef)arg0);
 	WebKit_win32_NATIVE_EXIT(env, that, JSContextGetGlobalObject_FUNC);
 	return rc;
 }
 #endif
 
 #ifndef NO_JSEvaluateScript
-extern "C" JNIEXPORT jintLong JNICALL WebKit_win32_NATIVE(JSEvaluateScript)(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jintLong arg2, jintLong arg3, jint arg4, jintLongArray arg5);
-JNIEXPORT jintLong JNICALL WebKit_win32_NATIVE(JSEvaluateScript)
-	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jintLong arg2, jintLong arg3, jint arg4, jintLongArray arg5)
+extern "C" JNIEXPORT jlong JNICALL WebKit_win32_NATIVE(JSEvaluateScript)(JNIEnv *env, jclass that, jlong arg0, jlong arg1, jlong arg2, jlong arg3, jint arg4, jlongArray arg5);
+JNIEXPORT jlong JNICALL WebKit_win32_NATIVE(JSEvaluateScript)
+	(JNIEnv *env, jclass that, jlong arg0, jlong arg1, jlong arg2, jlong arg3, jint arg4, jlongArray arg5)
 {
-	jintLong *lparg5=NULL;
-	jintLong rc = 0;
+	jlong *lparg5=NULL;
+	jlong rc = 0;
 	WebKit_win32_NATIVE_ENTER(env, that, JSEvaluateScript_FUNC);
-	if (arg5) if ((lparg5 = env->GetIntLongArrayElements(arg5, NULL)) == NULL) goto fail;
-	rc = (jintLong)JSEvaluateScript((JSContextRef)arg0, (JSStringRef)arg1, (JSObjectRef)arg2, (JSStringRef)arg3, arg4, (JSValueRef *)lparg5);
+	if (arg5) if ((lparg5 = env->GetLongArrayElements(arg5, NULL)) == NULL) goto fail;
+	rc = (jlong)JSEvaluateScript((JSContextRef)arg0, (JSStringRef)arg1, (JSObjectRef)arg2, (JSStringRef)arg3, arg4, (JSValueRef *)lparg5);
 fail:
-	if (arg5 && lparg5) env->ReleaseIntLongArrayElements(arg5, lparg5, 0);
+	if (arg5 && lparg5) env->ReleaseLongArrayElements(arg5, lparg5, 0);
 	WebKit_win32_NATIVE_EXIT(env, that, JSEvaluateScript_FUNC);
 	return rc;
 }
 #endif
 
 #ifndef NO_JSGlobalContextRetain
-extern "C" JNIEXPORT jint JNICALL WebKit_win32_NATIVE(JSGlobalContextRetain)(JNIEnv *env, jclass that, jintLong arg0);
+extern "C" JNIEXPORT jint JNICALL WebKit_win32_NATIVE(JSGlobalContextRetain)(JNIEnv *env, jclass that, jlong arg0);
 JNIEXPORT jint JNICALL WebKit_win32_NATIVE(JSGlobalContextRetain)
-	(JNIEnv *env, jclass that, jintLong arg0)
+	(JNIEnv *env, jclass that, jlong arg0)
 {
 	jint rc = 0;
 	WebKit_win32_NATIVE_ENTER(env, that, JSGlobalContextRetain_FUNC);
@@ -424,56 +424,56 @@ JNIEXPORT jint JNICALL WebKit_win32_NATIVE(JSGlobalContextRetain)
 #endif
 
 #ifndef NO_JSObjectGetPrivate
-extern "C" JNIEXPORT jintLong JNICALL WebKit_win32_NATIVE(JSObjectGetPrivate)(JNIEnv *env, jclass that, jintLong arg0);
-JNIEXPORT jintLong JNICALL WebKit_win32_NATIVE(JSObjectGetPrivate)
-	(JNIEnv *env, jclass that, jintLong arg0)
+extern "C" JNIEXPORT jlong JNICALL WebKit_win32_NATIVE(JSObjectGetPrivate)(JNIEnv *env, jclass that, jlong arg0);
+JNIEXPORT jlong JNICALL WebKit_win32_NATIVE(JSObjectGetPrivate)
+	(JNIEnv *env, jclass that, jlong arg0)
 {
-	jintLong rc = 0;
+	jlong rc = 0;
 	WebKit_win32_NATIVE_ENTER(env, that, JSObjectGetPrivate_FUNC);
-	rc = (jintLong)JSObjectGetPrivate((JSObjectRef)arg0);
+	rc = (jlong)JSObjectGetPrivate((JSObjectRef)arg0);
 	WebKit_win32_NATIVE_EXIT(env, that, JSObjectGetPrivate_FUNC);
 	return rc;
 }
 #endif
 
 #ifndef NO_JSObjectGetProperty
-extern "C" JNIEXPORT jintLong JNICALL WebKit_win32_NATIVE(JSObjectGetProperty)(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jintLong arg2, jintLongArray arg3);
-JNIEXPORT jintLong JNICALL WebKit_win32_NATIVE(JSObjectGetProperty)
-	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jintLong arg2, jintLongArray arg3)
+extern "C" JNIEXPORT jlong JNICALL WebKit_win32_NATIVE(JSObjectGetProperty)(JNIEnv *env, jclass that, jlong arg0, jlong arg1, jlong arg2, jlongArray arg3);
+JNIEXPORT jlong JNICALL WebKit_win32_NATIVE(JSObjectGetProperty)
+	(JNIEnv *env, jclass that, jlong arg0, jlong arg1, jlong arg2, jlongArray arg3)
 {
-	jintLong *lparg3=NULL;
-	jintLong rc = 0;
+	jlong *lparg3=NULL;
+	jlong rc = 0;
 	WebKit_win32_NATIVE_ENTER(env, that, JSObjectGetProperty_FUNC);
-	if (arg3) if ((lparg3 = env->GetIntLongArrayElements(arg3, NULL)) == NULL) goto fail;
-	rc = (jintLong)JSObjectGetProperty((JSContextRef)arg0, (JSObjectRef)arg1, (JSStringRef)arg2, (JSValueRef*)lparg3);
+	if (arg3) if ((lparg3 = env->GetLongArrayElements(arg3, NULL)) == NULL) goto fail;
+	rc = (jlong)JSObjectGetProperty((JSContextRef)arg0, (JSObjectRef)arg1, (JSStringRef)arg2, (JSValueRef*)lparg3);
 fail:
-	if (arg3 && lparg3) env->ReleaseIntLongArrayElements(arg3, lparg3, 0);
+	if (arg3 && lparg3) env->ReleaseLongArrayElements(arg3, lparg3, 0);
 	WebKit_win32_NATIVE_EXIT(env, that, JSObjectGetProperty_FUNC);
 	return rc;
 }
 #endif
 
 #ifndef NO_JSObjectGetPropertyAtIndex
-extern "C" JNIEXPORT jintLong JNICALL WebKit_win32_NATIVE(JSObjectGetPropertyAtIndex)(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jint arg2, jintLongArray arg3);
-JNIEXPORT jintLong JNICALL WebKit_win32_NATIVE(JSObjectGetPropertyAtIndex)
-	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jint arg2, jintLongArray arg3)
+extern "C" JNIEXPORT jlong JNICALL WebKit_win32_NATIVE(JSObjectGetPropertyAtIndex)(JNIEnv *env, jclass that, jlong arg0, jlong arg1, jint arg2, jlongArray arg3);
+JNIEXPORT jlong JNICALL WebKit_win32_NATIVE(JSObjectGetPropertyAtIndex)
+	(JNIEnv *env, jclass that, jlong arg0, jlong arg1, jint arg2, jlongArray arg3)
 {
-	jintLong *lparg3=NULL;
-	jintLong rc = 0;
+	jlong *lparg3=NULL;
+	jlong rc = 0;
 	WebKit_win32_NATIVE_ENTER(env, that, JSObjectGetPropertyAtIndex_FUNC);
-	if (arg3) if ((lparg3 = env->GetIntLongArrayElements(arg3, NULL)) == NULL) goto fail;
-	rc = (jintLong)JSObjectGetPropertyAtIndex((JSContextRef)arg0, (JSObjectRef)arg1, (unsigned)arg2, (JSValueRef*)lparg3);
+	if (arg3) if ((lparg3 = env->GetLongArrayElements(arg3, NULL)) == NULL) goto fail;
+	rc = (jlong)JSObjectGetPropertyAtIndex((JSContextRef)arg0, (JSObjectRef)arg1, (unsigned)arg2, (JSValueRef*)lparg3);
 fail:
-	if (arg3 && lparg3) env->ReleaseIntLongArrayElements(arg3, lparg3, 0);
+	if (arg3 && lparg3) env->ReleaseLongArrayElements(arg3, lparg3, 0);
 	WebKit_win32_NATIVE_EXIT(env, that, JSObjectGetPropertyAtIndex_FUNC);
 	return rc;
 }
 #endif
 
 #ifndef NO_JSObjectMake
-extern "C" JNIEXPORT jint JNICALL WebKit_win32_NATIVE(JSObjectMake)(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jintLong arg2);
+extern "C" JNIEXPORT jint JNICALL WebKit_win32_NATIVE(JSObjectMake)(JNIEnv *env, jclass that, jlong arg0, jlong arg1, jlong arg2);
 JNIEXPORT jint JNICALL WebKit_win32_NATIVE(JSObjectMake)
-	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jintLong arg2)
+	(JNIEnv *env, jclass that, jlong arg0, jlong arg1, jlong arg2)
 {
 	jint rc = 0;
 	WebKit_win32_NATIVE_ENTER(env, that, JSObjectMake_FUNC);
@@ -484,29 +484,29 @@ JNIEXPORT jint JNICALL WebKit_win32_NATIVE(JSObjectMake)
 #endif
 
 #ifndef NO_JSObjectMakeArray
-extern "C" JNIEXPORT jintLong JNICALL WebKit_win32_NATIVE(JSObjectMakeArray)(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jintLongArray arg2, jintLongArray arg3);
-JNIEXPORT jintLong JNICALL WebKit_win32_NATIVE(JSObjectMakeArray)
-	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jintLongArray arg2, jintLongArray arg3)
+extern "C" JNIEXPORT jlong JNICALL WebKit_win32_NATIVE(JSObjectMakeArray)(JNIEnv *env, jclass that, jlong arg0, jlong arg1, jlongArray arg2, jlongArray arg3);
+JNIEXPORT jlong JNICALL WebKit_win32_NATIVE(JSObjectMakeArray)
+	(JNIEnv *env, jclass that, jlong arg0, jlong arg1, jlongArray arg2, jlongArray arg3)
 {
-	jintLong *lparg2=NULL;
-	jintLong *lparg3=NULL;
-	jintLong rc = 0;
+	jlong *lparg2=NULL;
+	jlong *lparg3=NULL;
+	jlong rc = 0;
 	WebKit_win32_NATIVE_ENTER(env, that, JSObjectMakeArray_FUNC);
-	if (arg2) if ((lparg2 = env->GetIntLongArrayElements(arg2, NULL)) == NULL) goto fail;
-	if (arg3) if ((lparg3 = env->GetIntLongArrayElements(arg3, NULL)) == NULL) goto fail;
-	rc = (jintLong)JSObjectMakeArray((JSContextRef)arg0, (size_t)arg1, (const struct OpaqueJSValue * const*)lparg2, (JSValueRef*)lparg3);
+	if (arg2) if ((lparg2 = env->GetLongArrayElements(arg2, NULL)) == NULL) goto fail;
+	if (arg3) if ((lparg3 = env->GetLongArrayElements(arg3, NULL)) == NULL) goto fail;
+	rc = (jlong)JSObjectMakeArray((JSContextRef)arg0, (size_t)arg1, (const struct OpaqueJSValue * const*)lparg2, (JSValueRef*)lparg3);
 fail:
-	if (arg3 && lparg3) env->ReleaseIntLongArrayElements(arg3, lparg3, 0);
-	if (arg2 && lparg2) env->ReleaseIntLongArrayElements(arg2, lparg2, 0);
+	if (arg3 && lparg3) env->ReleaseLongArrayElements(arg3, lparg3, 0);
+	if (arg2 && lparg2) env->ReleaseLongArrayElements(arg2, lparg2, 0);
 	WebKit_win32_NATIVE_EXIT(env, that, JSObjectMakeArray_FUNC);
 	return rc;
 }
 #endif
 
 #ifndef NO_JSObjectMakeFunctionWithCallback
-extern "C" JNIEXPORT jint JNICALL WebKit_win32_NATIVE(JSObjectMakeFunctionWithCallback)(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jintLong arg2);
+extern "C" JNIEXPORT jint JNICALL WebKit_win32_NATIVE(JSObjectMakeFunctionWithCallback)(JNIEnv *env, jclass that, jlong arg0, jlong arg1, jlong arg2);
 JNIEXPORT jint JNICALL WebKit_win32_NATIVE(JSObjectMakeFunctionWithCallback)
-	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jintLong arg2)
+	(JNIEnv *env, jclass that, jlong arg0, jlong arg1, jlong arg2)
 {
 	jint rc = 0;
 	WebKit_win32_NATIVE_ENTER(env, that, JSObjectMakeFunctionWithCallback_FUNC);
@@ -517,30 +517,30 @@ JNIEXPORT jint JNICALL WebKit_win32_NATIVE(JSObjectMakeFunctionWithCallback)
 #endif
 
 #ifndef NO_JSObjectSetProperty
-extern "C" JNIEXPORT void JNICALL WebKit_win32_NATIVE(JSObjectSetProperty)(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jintLong arg2, jintLong arg3, jintLong arg4, jintLongArray arg5);
+extern "C" JNIEXPORT void JNICALL WebKit_win32_NATIVE(JSObjectSetProperty)(JNIEnv *env, jclass that, jlong arg0, jlong arg1, jlong arg2, jlong arg3, jlong arg4, jlongArray arg5);
 JNIEXPORT void JNICALL WebKit_win32_NATIVE(JSObjectSetProperty)
-	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jintLong arg2, jintLong arg3, jintLong arg4, jintLongArray arg5)
+	(JNIEnv *env, jclass that, jlong arg0, jlong arg1, jlong arg2, jlong arg3, jlong arg4, jlongArray arg5)
 {
-	jintLong *lparg5=NULL;
+	jlong *lparg5=NULL;
 	WebKit_win32_NATIVE_ENTER(env, that, JSObjectSetProperty_FUNC);
-	if (arg5) if ((lparg5 = env->GetIntLongArrayElements(arg5, NULL)) == NULL) goto fail;
+	if (arg5) if ((lparg5 = env->GetLongArrayElements(arg5, NULL)) == NULL) goto fail;
 	JSObjectSetProperty((JSContextRef)arg0, (JSObjectRef)arg1, (JSStringRef)arg2, (JSValueRef)arg3, (JSPropertyAttributes)arg4, (JSValueRef *)lparg5);
 fail:
-	if (arg5 && lparg5) env->ReleaseIntLongArrayElements(arg5, lparg5, 0);
+	if (arg5 && lparg5) env->ReleaseLongArrayElements(arg5, lparg5, 0);
 	WebKit_win32_NATIVE_EXIT(env, that, JSObjectSetProperty_FUNC);
 }
 #endif
 
 #ifndef NO_JSStringCreateWithUTF8CString
-extern "C" JNIEXPORT jintLong JNICALL WebKit_win32_NATIVE(JSStringCreateWithUTF8CString)(JNIEnv *env, jclass that, jbyteArray arg0);
-JNIEXPORT jintLong JNICALL WebKit_win32_NATIVE(JSStringCreateWithUTF8CString)
+extern "C" JNIEXPORT jlong JNICALL WebKit_win32_NATIVE(JSStringCreateWithUTF8CString)(JNIEnv *env, jclass that, jbyteArray arg0);
+JNIEXPORT jlong JNICALL WebKit_win32_NATIVE(JSStringCreateWithUTF8CString)
 	(JNIEnv *env, jclass that, jbyteArray arg0)
 {
 	jbyte *lparg0=NULL;
-	jintLong rc = 0;
+	jlong rc = 0;
 	WebKit_win32_NATIVE_ENTER(env, that, JSStringCreateWithUTF8CString_FUNC);
 	if (arg0) if ((lparg0 = env->GetByteArrayElements(arg0, NULL)) == NULL) goto fail;
-	rc = (jintLong)JSStringCreateWithUTF8CString((const char*)lparg0);
+	rc = (jlong)JSStringCreateWithUTF8CString((const char*)lparg0);
 fail:
 	if (arg0 && lparg0) env->ReleaseByteArrayElements(arg0, lparg0, 0);
 	WebKit_win32_NATIVE_EXIT(env, that, JSStringCreateWithUTF8CString_FUNC);
@@ -549,9 +549,9 @@ fail:
 #endif
 
 #ifndef NO_JSStringGetLength
-extern "C" JNIEXPORT jint JNICALL WebKit_win32_NATIVE(JSStringGetLength)(JNIEnv *env, jclass that, jintLong arg0);
+extern "C" JNIEXPORT jint JNICALL WebKit_win32_NATIVE(JSStringGetLength)(JNIEnv *env, jclass that, jlong arg0);
 JNIEXPORT jint JNICALL WebKit_win32_NATIVE(JSStringGetLength)
-	(JNIEnv *env, jclass that, jintLong arg0)
+	(JNIEnv *env, jclass that, jlong arg0)
 {
 	jint rc = 0;
 	WebKit_win32_NATIVE_ENTER(env, that, JSStringGetLength_FUNC);
@@ -562,22 +562,22 @@ JNIEXPORT jint JNICALL WebKit_win32_NATIVE(JSStringGetLength)
 #endif
 
 #ifndef NO_JSStringGetMaximumUTF8CStringSize
-extern "C" JNIEXPORT jintLong JNICALL WebKit_win32_NATIVE(JSStringGetMaximumUTF8CStringSize)(JNIEnv *env, jclass that, jintLong arg0);
-JNIEXPORT jintLong JNICALL WebKit_win32_NATIVE(JSStringGetMaximumUTF8CStringSize)
-	(JNIEnv *env, jclass that, jintLong arg0)
+extern "C" JNIEXPORT jlong JNICALL WebKit_win32_NATIVE(JSStringGetMaximumUTF8CStringSize)(JNIEnv *env, jclass that, jlong arg0);
+JNIEXPORT jlong JNICALL WebKit_win32_NATIVE(JSStringGetMaximumUTF8CStringSize)
+	(JNIEnv *env, jclass that, jlong arg0)
 {
-	jintLong rc = 0;
+	jlong rc = 0;
 	WebKit_win32_NATIVE_ENTER(env, that, JSStringGetMaximumUTF8CStringSize_FUNC);
-	rc = (jintLong)JSStringGetMaximumUTF8CStringSize((JSStringRef)arg0);
+	rc = (jlong)JSStringGetMaximumUTF8CStringSize((JSStringRef)arg0);
 	WebKit_win32_NATIVE_EXIT(env, that, JSStringGetMaximumUTF8CStringSize_FUNC);
 	return rc;
 }
 #endif
 
 #ifndef NO_JSStringGetUTF8CString
-extern "C" JNIEXPORT jint JNICALL WebKit_win32_NATIVE(JSStringGetUTF8CString)(JNIEnv *env, jclass that, jintLong arg0, jbyteArray arg1, jintLong arg2);
+extern "C" JNIEXPORT jint JNICALL WebKit_win32_NATIVE(JSStringGetUTF8CString)(JNIEnv *env, jclass that, jlong arg0, jbyteArray arg1, jlong arg2);
 JNIEXPORT jint JNICALL WebKit_win32_NATIVE(JSStringGetUTF8CString)
-	(JNIEnv *env, jclass that, jintLong arg0, jbyteArray arg1, jintLong arg2)
+	(JNIEnv *env, jclass that, jlong arg0, jbyteArray arg1, jlong arg2)
 {
 	jbyte *lparg1=NULL;
 	jint rc = 0;
@@ -592,9 +592,9 @@ fail:
 #endif
 
 #ifndef NO_JSStringIsEqualToUTF8CString
-extern "C" JNIEXPORT jint JNICALL WebKit_win32_NATIVE(JSStringIsEqualToUTF8CString)(JNIEnv *env, jclass that, jintLong arg0, jbyteArray arg1);
+extern "C" JNIEXPORT jint JNICALL WebKit_win32_NATIVE(JSStringIsEqualToUTF8CString)(JNIEnv *env, jclass that, jlong arg0, jbyteArray arg1);
 JNIEXPORT jint JNICALL WebKit_win32_NATIVE(JSStringIsEqualToUTF8CString)
-	(JNIEnv *env, jclass that, jintLong arg0, jbyteArray arg1)
+	(JNIEnv *env, jclass that, jlong arg0, jbyteArray arg1)
 {
 	jbyte *lparg1=NULL;
 	jint rc = 0;
@@ -609,9 +609,9 @@ fail:
 #endif
 
 #ifndef NO_JSStringRelease
-extern "C" JNIEXPORT void JNICALL WebKit_win32_NATIVE(JSStringRelease)(JNIEnv *env, jclass that, jintLong arg0);
+extern "C" JNIEXPORT void JNICALL WebKit_win32_NATIVE(JSStringRelease)(JNIEnv *env, jclass that, jlong arg0);
 JNIEXPORT void JNICALL WebKit_win32_NATIVE(JSStringRelease)
-	(JNIEnv *env, jclass that, jintLong arg0)
+	(JNIEnv *env, jclass that, jlong arg0)
 {
 	WebKit_win32_NATIVE_ENTER(env, that, JSStringRelease_FUNC);
 	JSStringRelease((JSStringRef)arg0);
@@ -620,9 +620,9 @@ JNIEXPORT void JNICALL WebKit_win32_NATIVE(JSStringRelease)
 #endif
 
 #ifndef NO_JSValueGetType
-extern "C" JNIEXPORT jint JNICALL WebKit_win32_NATIVE(JSValueGetType)(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1);
+extern "C" JNIEXPORT jint JNICALL WebKit_win32_NATIVE(JSValueGetType)(JNIEnv *env, jclass that, jlong arg0, jlong arg1);
 JNIEXPORT jint JNICALL WebKit_win32_NATIVE(JSValueGetType)
-	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1)
+	(JNIEnv *env, jclass that, jlong arg0, jlong arg1)
 {
 	jint rc = 0;
 	WebKit_win32_NATIVE_ENTER(env, that, JSValueGetType_FUNC);
@@ -633,9 +633,9 @@ JNIEXPORT jint JNICALL WebKit_win32_NATIVE(JSValueGetType)
 #endif
 
 #ifndef NO_JSValueIsObjectOfClass
-extern "C" JNIEXPORT jint JNICALL WebKit_win32_NATIVE(JSValueIsObjectOfClass)(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jintLong arg2);
+extern "C" JNIEXPORT jint JNICALL WebKit_win32_NATIVE(JSValueIsObjectOfClass)(JNIEnv *env, jclass that, jlong arg0, jlong arg1, jlong arg2);
 JNIEXPORT jint JNICALL WebKit_win32_NATIVE(JSValueIsObjectOfClass)
-	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jintLong arg2)
+	(JNIEnv *env, jclass that, jlong arg0, jlong arg1, jlong arg2)
 {
 	jint rc = 0;
 	WebKit_win32_NATIVE_ENTER(env, that, JSValueIsObjectOfClass_FUNC);
@@ -646,134 +646,134 @@ JNIEXPORT jint JNICALL WebKit_win32_NATIVE(JSValueIsObjectOfClass)
 #endif
 
 #ifndef NO_JSValueMakeBoolean
-extern "C" JNIEXPORT jintLong JNICALL WebKit_win32_NATIVE(JSValueMakeBoolean)(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1);
-JNIEXPORT jintLong JNICALL WebKit_win32_NATIVE(JSValueMakeBoolean)
-	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1)
+extern "C" JNIEXPORT jlong JNICALL WebKit_win32_NATIVE(JSValueMakeBoolean)(JNIEnv *env, jclass that, jlong arg0, jlong arg1);
+JNIEXPORT jlong JNICALL WebKit_win32_NATIVE(JSValueMakeBoolean)
+	(JNIEnv *env, jclass that, jlong arg0, jlong arg1)
 {
-	jintLong rc = 0;
+	jlong rc = 0;
 	WebKit_win32_NATIVE_ENTER(env, that, JSValueMakeBoolean_FUNC);
-	rc = (jintLong)JSValueMakeBoolean((JSContextRef)arg0, (bool)arg1);
+	rc = (jlong)JSValueMakeBoolean((JSContextRef)arg0, (bool)arg1);
 	WebKit_win32_NATIVE_EXIT(env, that, JSValueMakeBoolean_FUNC);
 	return rc;
 }
 #endif
 
 #ifndef NO_JSValueMakeNull
-extern "C" JNIEXPORT jintLong JNICALL WebKit_win32_NATIVE(JSValueMakeNull)(JNIEnv *env, jclass that, jintLong arg0);
-JNIEXPORT jintLong JNICALL WebKit_win32_NATIVE(JSValueMakeNull)
-	(JNIEnv *env, jclass that, jintLong arg0)
+extern "C" JNIEXPORT jlong JNICALL WebKit_win32_NATIVE(JSValueMakeNull)(JNIEnv *env, jclass that, jlong arg0);
+JNIEXPORT jlong JNICALL WebKit_win32_NATIVE(JSValueMakeNull)
+	(JNIEnv *env, jclass that, jlong arg0)
 {
-	jintLong rc = 0;
+	jlong rc = 0;
 	WebKit_win32_NATIVE_ENTER(env, that, JSValueMakeNull_FUNC);
-	rc = (jintLong)JSValueMakeNull((JSContextRef)arg0);
+	rc = (jlong)JSValueMakeNull((JSContextRef)arg0);
 	WebKit_win32_NATIVE_EXIT(env, that, JSValueMakeNull_FUNC);
 	return rc;
 }
 #endif
 
 #ifndef NO_JSValueMakeNumber
-extern "C" JNIEXPORT jintLong JNICALL WebKit_win32_NATIVE(JSValueMakeNumber)(JNIEnv *env, jclass that, jintLong arg0, jdouble arg1);
-JNIEXPORT jintLong JNICALL WebKit_win32_NATIVE(JSValueMakeNumber)
-	(JNIEnv *env, jclass that, jintLong arg0, jdouble arg1)
+extern "C" JNIEXPORT jlong JNICALL WebKit_win32_NATIVE(JSValueMakeNumber)(JNIEnv *env, jclass that, jlong arg0, jdouble arg1);
+JNIEXPORT jlong JNICALL WebKit_win32_NATIVE(JSValueMakeNumber)
+	(JNIEnv *env, jclass that, jlong arg0, jdouble arg1)
 {
-	jintLong rc = 0;
+	jlong rc = 0;
 	WebKit_win32_NATIVE_ENTER(env, that, JSValueMakeNumber_FUNC);
-	rc = (jintLong)JSValueMakeNumber((JSContextRef)arg0, (double)arg1);
+	rc = (jlong)JSValueMakeNumber((JSContextRef)arg0, (double)arg1);
 	WebKit_win32_NATIVE_EXIT(env, that, JSValueMakeNumber_FUNC);
 	return rc;
 }
 #endif
 
 #ifndef NO_JSValueMakeString
-extern "C" JNIEXPORT jintLong JNICALL WebKit_win32_NATIVE(JSValueMakeString)(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1);
-JNIEXPORT jintLong JNICALL WebKit_win32_NATIVE(JSValueMakeString)
-	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1)
+extern "C" JNIEXPORT jlong JNICALL WebKit_win32_NATIVE(JSValueMakeString)(JNIEnv *env, jclass that, jlong arg0, jlong arg1);
+JNIEXPORT jlong JNICALL WebKit_win32_NATIVE(JSValueMakeString)
+	(JNIEnv *env, jclass that, jlong arg0, jlong arg1)
 {
-	jintLong rc = 0;
+	jlong rc = 0;
 	WebKit_win32_NATIVE_ENTER(env, that, JSValueMakeString_FUNC);
-	rc = (jintLong)JSValueMakeString((JSContextRef)arg0, (JSStringRef)arg1);
+	rc = (jlong)JSValueMakeString((JSContextRef)arg0, (JSStringRef)arg1);
 	WebKit_win32_NATIVE_EXIT(env, that, JSValueMakeString_FUNC);
 	return rc;
 }
 #endif
 
 #ifndef NO_JSValueMakeUndefined
-extern "C" JNIEXPORT jintLong JNICALL WebKit_win32_NATIVE(JSValueMakeUndefined)(JNIEnv *env, jclass that, jintLong arg0);
-JNIEXPORT jintLong JNICALL WebKit_win32_NATIVE(JSValueMakeUndefined)
-	(JNIEnv *env, jclass that, jintLong arg0)
+extern "C" JNIEXPORT jlong JNICALL WebKit_win32_NATIVE(JSValueMakeUndefined)(JNIEnv *env, jclass that, jlong arg0);
+JNIEXPORT jlong JNICALL WebKit_win32_NATIVE(JSValueMakeUndefined)
+	(JNIEnv *env, jclass that, jlong arg0)
 {
-	jintLong rc = 0;
+	jlong rc = 0;
 	WebKit_win32_NATIVE_ENTER(env, that, JSValueMakeUndefined_FUNC);
-	rc = (jintLong)JSValueMakeUndefined((JSContextRef)arg0);
+	rc = (jlong)JSValueMakeUndefined((JSContextRef)arg0);
 	WebKit_win32_NATIVE_EXIT(env, that, JSValueMakeUndefined_FUNC);
 	return rc;
 }
 #endif
 
 #ifndef NO_JSValueToNumber
-extern "C" JNIEXPORT jdouble JNICALL WebKit_win32_NATIVE(JSValueToNumber)(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jintLongArray arg2);
+extern "C" JNIEXPORT jdouble JNICALL WebKit_win32_NATIVE(JSValueToNumber)(JNIEnv *env, jclass that, jlong arg0, jlong arg1, jlongArray arg2);
 JNIEXPORT jdouble JNICALL WebKit_win32_NATIVE(JSValueToNumber)
-	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jintLongArray arg2)
+	(JNIEnv *env, jclass that, jlong arg0, jlong arg1, jlongArray arg2)
 {
-	jintLong *lparg2=NULL;
+	jlong *lparg2=NULL;
 	jdouble rc = 0;
 	WebKit_win32_NATIVE_ENTER(env, that, JSValueToNumber_FUNC);
-	if (arg2) if ((lparg2 = env->GetIntLongArrayElements(arg2, NULL)) == NULL) goto fail;
+	if (arg2) if ((lparg2 = env->GetLongArrayElements(arg2, NULL)) == NULL) goto fail;
 	rc = (jdouble)JSValueToNumber((JSContextRef)arg0, (JSValueRef)arg1, (JSValueRef*)lparg2);
 fail:
-	if (arg2 && lparg2) env->ReleaseIntLongArrayElements(arg2, lparg2, 0);
+	if (arg2 && lparg2) env->ReleaseLongArrayElements(arg2, lparg2, 0);
 	WebKit_win32_NATIVE_EXIT(env, that, JSValueToNumber_FUNC);
 	return rc;
 }
 #endif
 
 #ifndef NO_JSValueToStringCopy
-extern "C" JNIEXPORT jintLong JNICALL WebKit_win32_NATIVE(JSValueToStringCopy)(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jintLongArray arg2);
-JNIEXPORT jintLong JNICALL WebKit_win32_NATIVE(JSValueToStringCopy)
-	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jintLongArray arg2)
+extern "C" JNIEXPORT jlong JNICALL WebKit_win32_NATIVE(JSValueToStringCopy)(JNIEnv *env, jclass that, jlong arg0, jlong arg1, jlongArray arg2);
+JNIEXPORT jlong JNICALL WebKit_win32_NATIVE(JSValueToStringCopy)
+	(JNIEnv *env, jclass that, jlong arg0, jlong arg1, jlongArray arg2)
 {
-	jintLong *lparg2=NULL;
-	jintLong rc = 0;
+	jlong *lparg2=NULL;
+	jlong rc = 0;
 	WebKit_win32_NATIVE_ENTER(env, that, JSValueToStringCopy_FUNC);
-	if (arg2) if ((lparg2 = env->GetIntLongArrayElements(arg2, NULL)) == NULL) goto fail;
-	rc = (jintLong)JSValueToStringCopy((JSContextRef)arg0, (JSValueRef)arg1, (JSValueRef*)lparg2);
+	if (arg2) if ((lparg2 = env->GetLongArrayElements(arg2, NULL)) == NULL) goto fail;
+	rc = (jlong)JSValueToStringCopy((JSContextRef)arg0, (JSValueRef)arg1, (JSValueRef*)lparg2);
 fail:
-	if (arg2 && lparg2) env->ReleaseIntLongArrayElements(arg2, lparg2, 0);
+	if (arg2 && lparg2) env->ReleaseLongArrayElements(arg2, lparg2, 0);
 	WebKit_win32_NATIVE_EXIT(env, that, JSValueToStringCopy_FUNC);
 	return rc;
 }
 #endif
 
 #ifndef NO_kCFCopyStringDictionaryKeyCallBacks
-extern "C" JNIEXPORT jintLong JNICALL WebKit_win32_NATIVE(kCFCopyStringDictionaryKeyCallBacks)(JNIEnv *env, jclass that);
-JNIEXPORT jintLong JNICALL WebKit_win32_NATIVE(kCFCopyStringDictionaryKeyCallBacks)
+extern "C" JNIEXPORT jlong JNICALL WebKit_win32_NATIVE(kCFCopyStringDictionaryKeyCallBacks)(JNIEnv *env, jclass that);
+JNIEXPORT jlong JNICALL WebKit_win32_NATIVE(kCFCopyStringDictionaryKeyCallBacks)
 	(JNIEnv *env, jclass that)
 {
-	jintLong rc = 0;
+	jlong rc = 0;
 	WebKit_win32_NATIVE_ENTER(env, that, kCFCopyStringDictionaryKeyCallBacks_FUNC);
-	rc = (jintLong)&kCFCopyStringDictionaryKeyCallBacks;
+	rc = (jlong)&kCFCopyStringDictionaryKeyCallBacks;
 	WebKit_win32_NATIVE_EXIT(env, that, kCFCopyStringDictionaryKeyCallBacks_FUNC);
 	return rc;
 }
 #endif
 
 #ifndef NO_kCFTypeDictionaryValueCallBacks
-extern "C" JNIEXPORT jintLong JNICALL WebKit_win32_NATIVE(kCFTypeDictionaryValueCallBacks)(JNIEnv *env, jclass that);
-JNIEXPORT jintLong JNICALL WebKit_win32_NATIVE(kCFTypeDictionaryValueCallBacks)
+extern "C" JNIEXPORT jlong JNICALL WebKit_win32_NATIVE(kCFTypeDictionaryValueCallBacks)(JNIEnv *env, jclass that);
+JNIEXPORT jlong JNICALL WebKit_win32_NATIVE(kCFTypeDictionaryValueCallBacks)
 	(JNIEnv *env, jclass that)
 {
-	jintLong rc = 0;
+	jlong rc = 0;
 	WebKit_win32_NATIVE_ENTER(env, that, kCFTypeDictionaryValueCallBacks_FUNC);
-	rc = (jintLong)&kCFTypeDictionaryValueCallBacks;
+	rc = (jlong)&kCFTypeDictionaryValueCallBacks;
 	WebKit_win32_NATIVE_EXIT(env, that, kCFTypeDictionaryValueCallBacks_FUNC);
 	return rc;
 }
 #endif
 
 #ifndef NO_memmove
-extern "C" JNIEXPORT void JNICALL WebKit_win32_NATIVE(memmove)(JNIEnv *env, jclass that, jintLong arg0, jobject arg1, jintLong arg2);
+extern "C" JNIEXPORT void JNICALL WebKit_win32_NATIVE(memmove)(JNIEnv *env, jclass that, jlong arg0, jobject arg1, jlong arg2);
 JNIEXPORT void JNICALL WebKit_win32_NATIVE(memmove)
-	(JNIEnv *env, jclass that, jintLong arg0, jobject arg1, jintLong arg2)
+	(JNIEnv *env, jclass that, jlong arg0, jobject arg1, jlong arg2)
 {
 	JSClassDefinition _arg1, *lparg1=NULL;
 	WebKit_win32_NATIVE_ENTER(env, that, memmove_FUNC);

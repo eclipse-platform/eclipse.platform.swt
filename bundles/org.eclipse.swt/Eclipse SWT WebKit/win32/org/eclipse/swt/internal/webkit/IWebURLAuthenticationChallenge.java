@@ -19,7 +19,7 @@ import org.eclipse.swt.internal.win32.*;
 
 public class IWebURLAuthenticationChallenge extends IUnknown {
 
-public IWebURLAuthenticationChallenge (long /*int*/ address) {
+public IWebURLAuthenticationChallenge (long address) {
 	super (address);
 }
 
@@ -27,15 +27,15 @@ public int previousFailureCount (int[] result) {
 	return OS.VtblCall (7, getAddress (), result);
 }
 
-public int proposedCredential (long /*int*/[] result) {
+public int proposedCredential (long[] result) {
 	return OS.VtblCall (8, getAddress (), result);
 }
 
-public int protectionSpace (long /*int*/[] result) {
+public int protectionSpace (long[] result) {
 	return OS.VtblCall (9, getAddress (), result);
 }
 
-public int sender (long /*int*/[] sender) {
+public int sender (long[] sender) {
 	return OS.VtblCall (10, getAddress (), sender);
 }
 

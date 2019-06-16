@@ -20,35 +20,35 @@ public class JSClassDefinition {
 	/** @field cast=(JSClassAttributes) */
 	public int attributes;
 	/** @field cast=(const char*) */
-	public long /*int*/ className;
+	public long className;
 	/** @field cast=(JSClassRef) */
-	public long /*int*/ parentClass;
+	public long parentClass;
 	/** @field cast=(const JSStaticValue*) */
-	public long /*int*/ staticValues;
+	public long staticValues;
 	/** @field cast=(const JSStaticFunction*) */
-	public long /*int*/ staticFunctions;
+	public long staticFunctions;
 	/** @field cast=(JSObjectInitializeCallback) */
-	public long /*int*/ initialize;
+	public long initialize;
 	/** @field cast=(JSObjectFinalizeCallback) */
-	public long /*int*/ finalize;
+	public long finalize;
 	/** @field cast=(JSObjectHasPropertyCallback) */
-	public long /*int*/ hasProperty;
+	public long hasProperty;
 	/** @field cast=(JSObjectGetPropertyCallback) */
-	public long /*int*/ getProperty;
+	public long getProperty;
 	/** @field cast=(JSObjectSetPropertyCallback) */
-	public long /*int*/ setProperty;
+	public long setProperty;
 	/** @field cast=(JSObjectDeletePropertyCallback) */
-	public long /*int*/ deleteProperty;
+	public long deleteProperty;
 	/** @field cast=(JSObjectGetPropertyNamesCallback) */
-	public long /*int*/ getPropertyNames;
+	public long getPropertyNames;
 	/** @field cast=(JSObjectCallAsFunctionCallback) */
-	public long /*int*/ callAsFunction;
+	public long callAsFunction;
 	/** @field cast=(JSObjectCallAsConstructorCallback) */
-	public long /*int*/ callAsConstructor;
+	public long callAsConstructor;
 	/** @field cast=(JSObjectHasInstanceCallback) */
-	public long /*int*/ hasInstance;
+	public long hasInstance;
 	/** @field cast=(JSObjectConvertToTypeCallback) */
-	public long /*int*/ convertToType;
+	public long convertToType;
 
 	public static final int sizeof = WebKit_win32.JSClassDefinition_sizeof();
 }

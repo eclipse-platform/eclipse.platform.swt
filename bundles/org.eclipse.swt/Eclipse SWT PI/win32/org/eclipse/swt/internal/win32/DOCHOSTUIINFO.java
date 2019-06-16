@@ -18,8 +18,8 @@ public class DOCHOSTUIINFO {
 	public int dwFlags;
 	public int dwDoubleClick;
 	/** @field cast=(OLECHAR *) */
-	public long /*int*/ pchHostCss;
+	public long pchHostCss;
 	/** @field cast=(OLECHAR *) */
-	public long /*int*/ pchHostNS;
+	public long pchHostNS;
 	public static final int sizeof = OS.DOCHOSTUIINFO_sizeof ();
 }

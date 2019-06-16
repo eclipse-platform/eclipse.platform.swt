@@ -16,13 +16,13 @@ package org.eclipse.swt.internal.ole.win32;
 import org.eclipse.swt.internal.win32.*;
 
 public class IDragSourceHelper extends IUnknown {
-public IDragSourceHelper(long /*int*/ address) {
+public IDragSourceHelper(long address) {
 	super(address);
 }
-public int InitializeFromBitmap(SHDRAGIMAGE pshdi, long /*int*/ pDataObject) {
+public int InitializeFromBitmap(SHDRAGIMAGE pshdi, long pDataObject) {
 	return COM.VtblCall(3, address, pshdi, pDataObject);
 }
-public int InitializeFromWindow(long /*int*/ hwnd, POINT ppt, long /*int*/ pDataObject) {
+public int InitializeFromWindow(long hwnd, POINT ppt, long pDataObject) {
 	return COM.VtblCall(4, address, hwnd, ppt, pDataObject);
 }
 }

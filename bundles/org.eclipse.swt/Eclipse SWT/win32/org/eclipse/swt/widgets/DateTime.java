@@ -53,9 +53,9 @@ public class DateTime extends Composite {
 	boolean doubleClick, ignoreSelection;
 	SYSTEMTIME lastSystemTime;
 	SYSTEMTIME time = new SYSTEMTIME (); // only used in calendar mode
-	static final long /*int*/ DateTimeProc;
+	static final long DateTimeProc;
 	static final TCHAR DateTimeClass = new TCHAR (0, OS.DATETIMEPICK_CLASS, true);
-	static final long /*int*/ CalendarProc;
+	static final long CalendarProc;
 	static final TCHAR CalendarClass = new TCHAR (0, OS.MONTHCAL_CLASS, true);
 	static {
 		INITCOMMONCONTROLSEX icex = new INITCOMMONCONTROLSEX ();
@@ -202,7 +202,7 @@ public void addSelectionListener (SelectionListener listener) {
 }
 
 @Override
-long /*int*/ callWindowProc (long /*int*/ hwnd, int msg, long /*int*/ wParam, long /*int*/ lParam) {
+long callWindowProc (long hwnd, int msg, long wParam, long lParam) {
 	if (handle == 0) return 0;
 	return OS.CallWindowProc (windowProc (), hwnd, msg, wParam, lParam);
 }
@@ -735,12 +735,12 @@ TCHAR windowClass () {
 }
 
 @Override
-long /*int*/ windowProc () {
+long windowProc () {
 	return (style & SWT.CALENDAR) != 0 ? CalendarProc : DateTimeProc;
 }
 
 @Override
-LRESULT wmNotifyChild (NMHDR hdr, long /*int*/ wParam, long /*int*/ lParam) {
+LRESULT wmNotifyChild (NMHDR hdr, long wParam, long lParam) {
 	switch (hdr.code) {
 		case OS.DTN_CLOSEUP: {
 			/*
@@ -776,7 +776,7 @@ LRESULT wmNotifyChild (NMHDR hdr, long /*int*/ wParam, long /*int*/ lParam) {
 }
 
 @Override
-LRESULT WM_CHAR (long /*int*/ wParam, long /*int*/ lParam) {
+LRESULT WM_CHAR (long wParam, long lParam) {
 	LRESULT result = super.WM_CHAR (wParam, lParam);
 	if (result != null) return result;
 	/*
@@ -785,7 +785,7 @@ LRESULT WM_CHAR (long /*int*/ wParam, long /*int*/ lParam) {
 	* The fix is to look for these keys and not call
 	* the window proc.
 	*/
-	switch ((int)/*64*/wParam) {
+	switch ((int)wParam) {
 		case SWT.CR:
 			sendSelectionEvent (SWT.DefaultSelection);
 			// FALL THROUGH
@@ -796,7 +796,7 @@ LRESULT WM_CHAR (long /*int*/ wParam, long /*int*/ lParam) {
 }
 
 @Override
-LRESULT WM_LBUTTONDBLCLK (long /*int*/ wParam, long /*int*/ lParam) {
+LRESULT WM_LBUTTONDBLCLK (long wParam, long lParam) {
 	LRESULT result = super.WM_LBUTTONDBLCLK (wParam, lParam);
 	if (isDisposed ()) return LRESULT.ZERO;
 	if ((style & SWT.CALENDAR) != 0) {
@@ -806,14 +806,14 @@ LRESULT WM_LBUTTONDBLCLK (long /*int*/ wParam, long /*int*/ lParam) {
 		pt.x = OS.GET_X_LPARAM (lParam);
 		pt.y = OS.GET_Y_LPARAM (lParam);
 		pMCHitTest.pt = pt;
-		long /*int*/ code = OS.SendMessage (handle, OS.MCM_HITTEST, 0, pMCHitTest);
+		long code = OS.SendMessage (handle, OS.MCM_HITTEST, 0, pMCHitTest);
 		if ((code & OS.MCHT_CALENDARDATE) == OS.MCHT_CALENDARDATE) doubleClick = true;
 	}
 	return result;
 }
 
 @Override
-LRESULT WM_LBUTTONDOWN (long /*int*/ wParam, long /*int*/ lParam) {
+LRESULT WM_LBUTTONDOWN (long wParam, long lParam) {
 	LRESULT result = super.WM_LBUTTONDOWN (wParam, lParam);
 	if (result == LRESULT.ZERO) return result;
 	doubleClick = false;
@@ -829,7 +829,7 @@ LRESULT WM_LBUTTONDOWN (long /*int*/ wParam, long /*int*/ lParam) {
 }
 
 @Override
-LRESULT WM_LBUTTONUP (long /*int*/ wParam, long /*int*/ lParam) {
+LRESULT WM_LBUTTONUP (long wParam, long lParam) {
 	LRESULT result = super.WM_LBUTTONUP (wParam, lParam);
 	if (isDisposed ()) return LRESULT.ZERO;
 	if (doubleClick) sendSelectionEvent (SWT.DefaultSelection);
@@ -838,7 +838,7 @@ LRESULT WM_LBUTTONUP (long /*int*/ wParam, long /*int*/ lParam) {
 }
 
 @Override
-LRESULT WM_TIMER (long /*int*/ wParam, long /*int*/ lParam) {
+LRESULT WM_TIMER (long wParam, long lParam) {
 	LRESULT result = super.WM_TIMER (wParam, lParam);
 	if (result != null) return result;
 	/*
@@ -847,7 +847,7 @@ LRESULT WM_TIMER (long /*int*/ wParam, long /*int*/ lParam) {
 	* to ignore MCN_SELCHANGE during WM_TIMER.
 	*/
 	ignoreSelection = true;
-	long /*int*/ code = callWindowProc(handle, OS.WM_TIMER, wParam, lParam);
+	long code = callWindowProc(handle, OS.WM_TIMER, wParam, lParam);
 	ignoreSelection = false;
 	return code == 0 ? LRESULT.ZERO : new LRESULT(code);
 }

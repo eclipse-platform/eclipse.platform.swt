@@ -17,13 +17,13 @@ import org.eclipse.swt.internal.win32.*;
 
 public class IOleLink extends IUnknown
 {
-public IOleLink(long /*int*/ address) {
+public IOleLink(long address) {
 	super(address);
 }
 public int BindIfRunning() {
 	return OS.VtblCall(10, address);
 }
-public int GetSourceMoniker(long /*int*/[] ppmk) {
+public int GetSourceMoniker(long[] ppmk) {
 	return OS.VtblCall(6, address, ppmk);
 }
 }

@@ -16,9 +16,9 @@ package org.eclipse.swt.internal.ole.win32;
 public class COSERVERINFO {
 	public int dwReserved1;
 	/** @field cast=(LPWSTR) */
-	public long /*int*/ pwszName;
+	public long pwszName;
 	/** @field cast=(COAUTHINFO *) */
-	public long /*int*/ pAuthInfo;
+	public long pAuthInfo;
 	public int dwReserved2;
 	public static final int sizeof = COM.COSERVERINFO_sizeof ();
 }

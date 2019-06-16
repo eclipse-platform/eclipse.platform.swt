@@ -19,8 +19,8 @@ public class MENUINFO {
 	public int dwStyle;
 	public int cyMax;
 	/** @field cast=(HBRUSH) */
-	public long /*int*/ hbrBack;
+	public long hbrBack;
 	public int dwContextHelpID;
-	public long /*int*/ dwMenuData;
+	public long dwMenuData;
 	public static final int sizeof = OS.MENUINFO_sizeof ();
 }

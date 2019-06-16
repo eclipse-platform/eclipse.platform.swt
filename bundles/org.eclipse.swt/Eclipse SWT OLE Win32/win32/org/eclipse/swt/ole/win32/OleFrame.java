@@ -61,10 +61,10 @@ final public class OleFrame extends Composite
 
 	private Listener listener;
 
-	private long /*int*/ shellHandle;
-	private long /*int*/ oldMenuHandle;
-	private long /*int*/ newMenuHandle;
-	private static long /*int*/ lastActivatedMenuHandle;
+	private long shellHandle;
+	private long oldMenuHandle;
+	private long newMenuHandle;
+	private static long lastActivatedMenuHandle;
 
 	private static String CHECK_FOCUS = "OLE_CHECK_FOCUS"; //$NON-NLS-1$
 	private static String HHOOK = "OLE_HHOOK"; //$NON-NLS-1$
@@ -139,9 +139,9 @@ private static void initCheckFocus (final Display display) {
 	timer[0] = () -> {
 		if (lastFocus[0] instanceof OleClientSite && !lastFocus[0].isDisposed()) {
 			// ignore popup menus and dialogs
-			long /*int*/ hwnd = OS.GetFocus();
+			long hwnd = OS.GetFocus();
 			while (hwnd != 0) {
-				long /*int*/ ownerHwnd = OS.GetWindow(hwnd, OS.GW_OWNER);
+				long ownerHwnd = OS.GetWindow(hwnd, OS.GW_OWNER);
 				if (ownerHwnd != 0) {
 					display.timerExec(time, timer[0]);
 					return;
@@ -173,10 +173,10 @@ private static void initCheckFocus (final Display display) {
 private static void initMsgHook(Display display) {
 	if (display.getData(HHOOK) != null) return;
 	final Callback callback = new Callback(OleFrame.class, "getMsgProc", 3); //$NON-NLS-1$
-	long /*int*/ address = callback.getAddress();
+	long address = callback.getAddress();
 	if (address == 0) SWT.error(SWT.ERROR_NO_MORE_CALLBACKS);
 	int threadId = OS.GetCurrentThreadId();
-	final long /*int*/ hHook = OS.SetWindowsHookEx(OS.WH_GETMESSAGE, address, 0, threadId);
+	final long hHook = OS.SetWindowsHookEx(OS.WH_GETMESSAGE, address, 0, threadId);
 	if (hHook == 0) {
 		callback.dispose();
 		return;
@@ -188,13 +188,13 @@ private static void initMsgHook(Display display) {
 		if (callback != null) callback.dispose();
 	});
 }
-static long /*int*/ getMsgProc(long /*int*/ code, long /*int*/ wParam, long /*int*/ lParam) {
+static long getMsgProc(long code, long wParam, long lParam) {
 	Display display = Display.getCurrent();
 	if (display == null) return 0;
 	LONG hHook = (LONG)display.getData(HHOOK);
 	if (hHook == null) return 0;
 	if (code < 0 || (wParam & OS.PM_REMOVE) == 0) {
-		return OS.CallNextHookEx(hHook.value, (int)/*64*/code, wParam, lParam);
+		return OS.CallNextHookEx(hHook.value, (int)code, wParam, lParam);
 	}
 	MSG msg = (MSG)display.getData(HHOOKMSG);
 	OS.MoveMemory(msg, lParam, MSG.sizeof);
@@ -202,7 +202,7 @@ static long /*int*/ getMsgProc(long /*int*/ code, long /*int*/ wParam, long /*in
 	if (OS.WM_KEYFIRST <= message && message <= OS.WM_KEYLAST) {
 		if (display != null) {
 			Widget widget = null;
-			long /*int*/ hwnd = msg.hwnd;
+			long hwnd = msg.hwnd;
 			while (hwnd != 0) {
 				widget = display.findWidget (hwnd);
 				if (widget != null) break;
@@ -235,7 +235,7 @@ static long /*int*/ getMsgProc(long /*int*/ code, long /*int*/ wParam, long /*in
 					switch (msg.message) {
 						case OS.WM_KEYDOWN:
 						case OS.WM_SYSKEYDOWN: {
-							switch ((int)/*64*/msg.wParam) {
+							switch ((int)msg.wParam) {
 								case OS.VK_SHIFT:
 								case OS.VK_MENU:
 								case OS.VK_CONTROL:
@@ -244,7 +244,7 @@ static long /*int*/ getMsgProc(long /*int*/ code, long /*int*/ wParam, long /*in
 								case OS.VK_SCROLL:
 									break;
 								default: {
-									int mapKey = OS.MapVirtualKey ((int)/*64*/msg.wParam, 2);
+									int mapKey = OS.MapVirtualKey ((int)msg.wParam, 2);
 									if (mapKey != 0) {
 										accentKey = (mapKey & 0x80000000) != 0;
 										if (!accentKey) {
@@ -270,7 +270,7 @@ static long /*int*/ getMsgProc(long /*int*/ code, long /*int*/ wParam, long /*in
 					}
 					/* Allow OleClientSite to process key events before activeX control */
 					if (!consumed && !accentKey && !ignoreNextKey) {
-						long /*int*/ hwndOld = msg.hwnd;
+						long hwndOld = msg.hwnd;
 						msg.hwnd = site.handle;
 						consumed = OS.DispatchMessage (msg) == 1;
 						msg.hwnd = hwndOld;
@@ -278,7 +278,7 @@ static long /*int*/ getMsgProc(long /*int*/ code, long /*int*/ wParam, long /*in
 					switch (msg.message) {
 						case OS.WM_KEYDOWN:
 						case OS.WM_SYSKEYDOWN: {
-							switch ((int)/*64*/msg.wParam) {
+							switch ((int)msg.wParam) {
 								case OS.VK_SHIFT:
 								case OS.VK_MENU:
 								case OS.VK_CONTROL:
@@ -306,7 +306,7 @@ static long /*int*/ getMsgProc(long /*int*/ code, long /*int*/ wParam, long /*in
 			}
 		}
 	}
-	return OS.CallNextHookEx(hHook.value, (int)/*64*/code, wParam, lParam);
+	return OS.CallNextHookEx(hHook.value, (int)code, wParam, lParam);
 }
 /**
  * Increment the count of references to this instance
@@ -323,33 +323,33 @@ private int ContextSensitiveHelp(int fEnterMode) {
 private void createCOMInterfaces() {
 	iOleInPlaceFrame = new COMObject(new int[]{2, 0, 0, 1, 1, 1, 1, 1, 2, 2, 3, 1, 1, 1, 2}){
 		@Override
-		public long /*int*/ method0(long /*int*/[] args) {return QueryInterface(args[0], args[1]);}
+		public long method0(long[] args) {return QueryInterface(args[0], args[1]);}
 		@Override
-		public long /*int*/ method1(long /*int*/[] args) {return AddRef();}
+		public long method1(long[] args) {return AddRef();}
 		@Override
-		public long /*int*/ method2(long /*int*/[] args) {return Release();}
+		public long method2(long[] args) {return Release();}
 		@Override
-		public long /*int*/ method3(long /*int*/[] args) {return GetWindow(args[0]);}
+		public long method3(long[] args) {return GetWindow(args[0]);}
 		@Override
-		public long /*int*/ method4(long /*int*/[] args) {return ContextSensitiveHelp((int)/*64*/args[0]);}
+		public long method4(long[] args) {return ContextSensitiveHelp((int)args[0]);}
 		@Override
-		public long /*int*/ method5(long /*int*/[] args) {return GetBorder(args[0]);}
+		public long method5(long[] args) {return GetBorder(args[0]);}
 		@Override
-		public long /*int*/ method6(long /*int*/[] args) {return RequestBorderSpace(args[0]);}
+		public long method6(long[] args) {return RequestBorderSpace(args[0]);}
 		@Override
-		public long /*int*/ method7(long /*int*/[] args) {return SetBorderSpace(args[0]);}
+		public long method7(long[] args) {return SetBorderSpace(args[0]);}
 		@Override
-		public long /*int*/ method8(long /*int*/[] args) {return SetActiveObject(args[0], args[1]);}
+		public long method8(long[] args) {return SetActiveObject(args[0], args[1]);}
 		@Override
-		public long /*int*/ method9(long /*int*/[] args) {return InsertMenus(args[0], args[1]);}
+		public long method9(long[] args) {return InsertMenus(args[0], args[1]);}
 		@Override
-		public long /*int*/ method10(long /*int*/[] args) {return SetMenu(args[0], args[1], args[2]);}
+		public long method10(long[] args) {return SetMenu(args[0], args[1], args[2]);}
 		@Override
-		public long /*int*/ method11(long /*int*/[] args) {return RemoveMenus(args[0]);}
+		public long method11(long[] args) {return RemoveMenus(args[0]);}
 		// method12 SetStatusText - not implemented
 		// method13 EnableModeless - not implemented
 		@Override
-		public long /*int*/ method14(long /*int*/[] args) {return TranslateAccelerator(args[0], (int)/*64*/args[1]);}
+		public long method14(long[] args) {return TranslateAccelerator(args[0], (int)args[1]);}
 	};
 }
 private void disposeCOMInterfaces () {
@@ -357,7 +357,7 @@ private void disposeCOMInterfaces () {
 		iOleInPlaceFrame.dispose();
 	iOleInPlaceFrame = null;
 }
-private int GetBorder(long /*int*/ lprectBorder) {
+private int GetBorder(long lprectBorder) {
 	/*
 	The IOleInPlaceUIWindow::GetBorder function, when called on a document or frame window
 	object, returns the outer rectangle (relative to the window) where the object can put
@@ -406,11 +406,11 @@ public MenuItem[] getContainerMenus(){
 public MenuItem[] getFileMenus(){
 	return fileMenuItems;
 }
-long /*int*/ getIOleInPlaceFrame() {
+long getIOleInPlaceFrame() {
 	return iOleInPlaceFrame.getAddress();
 }
-private long /*int*/ getMenuItemID(long /*int*/ hMenu, int index) {
-	long /*int*/ id = 0;
+private long getMenuItemID(long hMenu, int index) {
+	long id = 0;
 	MENUITEMINFO lpmii = new MENUITEMINFO();
 	lpmii.cbSize = MENUITEMINFO.sizeof;
 	lpmii.fMask = OS.MIIM_STATE | OS.MIIM_SUBMENU | OS.MIIM_ID;
@@ -422,9 +422,9 @@ private long /*int*/ getMenuItemID(long /*int*/ hMenu, int index) {
 	}
 	return id;
 }
-private int GetWindow(long /*int*/ phwnd) {
+private int GetWindow(long phwnd) {
 	if (phwnd != 0) {
-		OS.MoveMemory(phwnd, new long /*int*/[] {handle}, C.PTR_SIZEOF);
+		OS.MoveMemory(phwnd, new long[] {handle}, C.PTR_SIZEOF);
 	}
 	return COM.S_OK;
 }
@@ -446,22 +446,22 @@ private int GetWindow(long /*int*/ phwnd) {
 public MenuItem[] getWindowMenus(){
 	return windowMenuItems;
 }
-private int InsertMenus(long /*int*/ hmenuShared, long /*int*/ lpMenuWidths) {
+private int InsertMenus(long hmenuShared, long lpMenuWidths) {
 	// locate menu bar
 	Menu menubar = getShell().getMenuBar();
 	if (menubar == null || menubar.isDisposed()) {
 		OS.MoveMemory(lpMenuWidths, new int[] {0}, 4);
 		return COM.S_OK;
 	}
-	long /*int*/ hMenu = menubar.handle;
+	long hMenu = menubar.handle;
 
 	// Create a holder for menu information.  This will be passed down to
 	// the OS and the OS will fill in the requested information for each menu.
 	MENUITEMINFO lpmii = new MENUITEMINFO();
-	long /*int*/ hHeap = OS.GetProcessHeap();
+	long hHeap = OS.GetProcessHeap();
 	int cch = 128;
 	int byteCount = cch * TCHAR.sizeof;
-	long /*int*/ pszText = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
+	long pszText = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
 	lpmii.cbSize = MENUITEMINFO.sizeof;
 	lpmii.fMask = OS.MIIM_STATE | OS.MIIM_ID | OS.MIIM_TYPE | OS.MIIM_SUBMENU | OS.MIIM_DATA;
 	lpmii.dwTypeData = pszText;
@@ -588,19 +588,19 @@ private void onResize(Event e) {
 		objIOleInPlaceActiveObject.ResizeBorder(lpRect, iOleInPlaceFrame.getAddress(), true);
 	}
 }
-private int QueryInterface(long /*int*/ riid, long /*int*/ ppvObject) {
+private int QueryInterface(long riid, long ppvObject) {
 //	implements IUnknown, IOleInPlaceFrame, IOleContainer, IOleInPlaceUIWindow
 	if (riid == 0 || ppvObject == 0)
 		return COM.E_INVALIDARG;
 	GUID guid = new GUID();
 	COM.MoveMemory(guid, riid, GUID.sizeof);
 	if (COM.IsEqualGUID(guid, COM.IIDIUnknown) || COM.IsEqualGUID(guid, COM.IIDIOleInPlaceFrame) ) {
-		OS.MoveMemory(ppvObject, new long /*int*/ [] {iOleInPlaceFrame.getAddress()}, C.PTR_SIZEOF);
+		OS.MoveMemory(ppvObject, new long [] {iOleInPlaceFrame.getAddress()}, C.PTR_SIZEOF);
 		AddRef();
 		return COM.S_OK;
 	}
 
-	OS.MoveMemory(ppvObject, new long /*int*/ [] {0}, C.PTR_SIZEOF);
+	OS.MoveMemory(ppvObject, new long [] {0}, C.PTR_SIZEOF);
 	return COM.E_NOINTERFACE;
 }
 /**
@@ -624,12 +624,12 @@ private void releaseObjectInterfaces() {
 	}
 	objIOleInPlaceActiveObject = null;
 }
-private int RemoveMenus(long /*int*/ hmenuShared) {
+private int RemoveMenus(long hmenuShared) {
 
 	Menu menubar = getShell().getMenuBar();
 	if (menubar == null || menubar.isDisposed()) return COM.S_FALSE;
 
-	long /*int*/ hMenu = menubar.handle;
+	long hMenu = menubar.handle;
 
 	List<LONG> ids = new ArrayList<>();
 	if (this.fileMenuItems != null) {
@@ -638,7 +638,7 @@ private int RemoveMenus(long /*int*/ hmenuShared) {
 			if (item != null && !item.isDisposed()) {
 				int index = item.getParent().indexOf(item);
 				// get Id from original menubar
-				long /*int*/ id = getMenuItemID(hMenu, index);
+				long id = getMenuItemID(hMenu, index);
 				ids.add(new LONG(id));
 			}
 		}
@@ -648,7 +648,7 @@ private int RemoveMenus(long /*int*/ hmenuShared) {
 			MenuItem item = this.containerMenuItems[i];
 			if (item != null && !item.isDisposed()) {
 				int index = item.getParent().indexOf(item);
-				long /*int*/ id = getMenuItemID(hMenu, index);
+				long id = getMenuItemID(hMenu, index);
 				ids.add(new LONG(id));
 			}
 		}
@@ -658,24 +658,24 @@ private int RemoveMenus(long /*int*/ hmenuShared) {
 			MenuItem item = this.windowMenuItems[i];
 			if (item != null && !item.isDisposed()) {
 				int index = item.getParent().indexOf(item);
-				long /*int*/ id = getMenuItemID(hMenu, index);
+				long id = getMenuItemID(hMenu, index);
 				ids.add(new LONG(id));
 			}
 		}
 	}
 	int index = OS.GetMenuItemCount(hmenuShared) - 1;
 	for (int i = index; i >= 0; i--) {
-		long /*int*/ id = getMenuItemID(hmenuShared, i);
+		long id = getMenuItemID(hmenuShared, i);
 		if (ids.contains(new LONG(id))){
 			OS.RemoveMenu(hmenuShared, i, OS.MF_BYPOSITION);
 		}
 	}
 	return COM.S_OK;
 }
-private int RequestBorderSpace(long /*int*/ pborderwidths) {
+private int RequestBorderSpace(long pborderwidths) {
 	return COM.S_OK;
 }
-int SetActiveObject(long /*int*/ pActiveObject, long /*int*/ pszObjName) {
+int SetActiveObject(long pActiveObject, long pszObjName) {
 	if (objIOleInPlaceActiveObject != null) {
 		objIOleInPlaceActiveObject.Release();
 		objIOleInPlaceActiveObject = null;
@@ -687,7 +687,7 @@ int SetActiveObject(long /*int*/ pActiveObject, long /*int*/ pszObjName) {
 
 	return COM.S_OK;
 }
-private int SetBorderSpace(long /*int*/ pborderwidths) {
+private int SetBorderSpace(long pborderwidths) {
 	// A Control/Document can :
 	// Use its own toolbars, requesting border space of a specific size, or,
 	// Use no toolbars, but force the container to remove its toolbars by passing a
@@ -755,8 +755,8 @@ void setCurrentDocument(OleClientSite doc) {
 public void setFileMenus(MenuItem[] fileMenus){
 	fileMenuItems = fileMenus;
 }
-private int SetMenu(long /*int*/ hmenuShared, long /*int*/ holemenu, long /*int*/ hwndActiveObject) {
-	long /*int*/ inPlaceActiveObject = 0;
+private int SetMenu(long hmenuShared, long holemenu, long hwndActiveObject) {
+	long inPlaceActiveObject = 0;
 	if (objIOleInPlaceActiveObject != null)
 		inPlaceActiveObject = objIOleInPlaceActiveObject.getAddress();
 
@@ -765,7 +765,7 @@ private int SetMenu(long /*int*/ hmenuShared, long /*int*/ holemenu, long /*int*
 		return COM.OleSetMenuDescriptor(0, getShell().handle, hwndActiveObject, iOleInPlaceFrame.getAddress(), inPlaceActiveObject);
 	}
 
-	long /*int*/ handle = menubar.getShell().handle;
+	long handle = menubar.getShell().handle;
 
 	if (hmenuShared == 0 && holemenu == 0) {
 		// re-instate the original menu - this occurs on deactivation
@@ -805,14 +805,14 @@ private boolean translateOleAccelerator(MSG msg) {
 	int result = objIOleInPlaceActiveObject.TranslateAccelerator(msg);
 	return (result != COM.S_FALSE && result != COM.E_NOTIMPL);
 }
-private int TranslateAccelerator(long /*int*/ lpmsg, int wID){
+private int TranslateAccelerator(long lpmsg, int wID){
 	Menu menubar = getShell().getMenuBar();
 	if (menubar == null || menubar.isDisposed() || !menubar.isEnabled()) return COM.S_FALSE;
 	if (wID < 0) return COM.S_FALSE;
 
 	Shell shell = menubar.getShell();
-	long /*int*/ hwnd = shell.handle;
-	long /*int*/ hAccel = OS.SendMessage(hwnd, OS.WM_APP+1, 0, 0);
+	long hwnd = shell.handle;
+	long hAccel = OS.SendMessage(hwnd, OS.WM_APP+1, 0, 0);
 	if (hAccel == 0) return COM.S_FALSE;
 
 	MSG msg = new MSG();

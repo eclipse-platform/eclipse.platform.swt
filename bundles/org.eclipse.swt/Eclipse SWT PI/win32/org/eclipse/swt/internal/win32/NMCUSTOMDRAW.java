@@ -16,7 +16,7 @@ package org.eclipse.swt.internal.win32;
 public class NMCUSTOMDRAW extends NMHDR {
 	public int dwDrawStage;
 	/** @field cast=(HDC) */
-	public long /*int*/ hdc;
+	public long hdc;
 //	RECT rc;
 	/** @field accessor=rc.left */
 	public int left;
@@ -26,8 +26,8 @@ public class NMCUSTOMDRAW extends NMHDR {
 	public int right;
 	/** @field accessor=rc.bottom */
 	public int bottom;
-	public long /*int*/ dwItemSpec;
+	public long dwItemSpec;
 	public int uItemState;
-	public long /*int*/ lItemlParam;
+	public long lItemlParam;
 	public static final int sizeof = OS.NMCUSTOMDRAW_sizeof ();
 }

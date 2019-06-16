@@ -45,7 +45,7 @@ public final class Region extends Resource {
 	 *
 	 * @noreference This field is not intended to be referenced by clients.
 	 */
-	public long /*int*/ handle;
+	public long handle;
 
 /**
  * Constructs a new empty region.
@@ -123,7 +123,7 @@ public void add (int[] pointArray) {
 }
 
 void addInPixels (int[] pointArray) {
-	long /*int*/ polyRgn = OS.CreatePolygonRgn(pointArray, pointArray.length / 2, OS.ALTERNATE);
+	long polyRgn = OS.CreatePolygonRgn(pointArray, pointArray.length / 2, OS.ALTERNATE);
 	OS.CombineRgn (handle, handle, polyRgn, OS.RGN_OR);
 	OS.DeleteObject (polyRgn);
 }
@@ -174,7 +174,7 @@ public void add (int x, int y, int width, int height) {
 
 void addInPixels (int x, int y, int width, int height) {
 	if (width < 0 || height < 0) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	long /*int*/ rectRgn = OS.CreateRectRgn (x, y, x + width, y + height);
+	long rectRgn = OS.CreateRectRgn (x, y, x + width, y + height);
 	OS.CombineRgn (handle, handle, rectRgn, OS.RGN_OR);
 	OS.DeleteObject (rectRgn);
 }
@@ -305,7 +305,7 @@ Rectangle getBoundsInPixels() {
  */
 @Override
 public int hashCode () {
-	return (int)/*64*/handle;
+	return (int)handle;
 }
 
 /**
@@ -356,7 +356,7 @@ public void intersect (int x, int y, int width, int height) {
 
 void intersectInPixels (int x, int y, int width, int height) {
 	if (width < 0 || height < 0) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	long /*int*/ rectRgn = OS.CreateRectRgn (x, y, x + width, y + height);
+	long rectRgn = OS.CreateRectRgn (x, y, x + width, y + height);
 	OS.CombineRgn (handle, handle, rectRgn, OS.RGN_AND);
 	OS.DeleteObject (rectRgn);
 }
@@ -493,7 +493,7 @@ public void subtract (int[] pointArray) {
 }
 
 void subtractInPixels (int[] pointArray) {
-	long /*int*/ polyRgn = OS.CreatePolygonRgn(pointArray, pointArray.length / 2, OS.ALTERNATE);
+	long polyRgn = OS.CreatePolygonRgn(pointArray, pointArray.length / 2, OS.ALTERNATE);
 	OS.CombineRgn (handle, handle, polyRgn, OS.RGN_DIFF);
 	OS.DeleteObject (polyRgn);
 }
@@ -546,7 +546,7 @@ public void subtract (int x, int y, int width, int height) {
 
 void subtractInPixels (int x, int y, int width, int height) {
 	if (width < 0 || height < 0) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	long /*int*/ rectRgn = OS.CreateRectRgn (x, y, x + width, y + height);
+	long rectRgn = OS.CreateRectRgn (x, y, x + width, y + height);
 	OS.CombineRgn (handle, handle, rectRgn, OS.RGN_DIFF);
 	OS.DeleteObject (rectRgn);
 }

@@ -21,6 +21,6 @@ public class BITMAP {
 	public short bmPlanes;
 	public short bmBitsPixel;
 	/** @field cast=(LPVOID) */
-	public long /*int*/ bmBits;
+	public long bmBits;
 	public static final int sizeof = OS.BITMAP_sizeof ();
 }

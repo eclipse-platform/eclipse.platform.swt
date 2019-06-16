@@ -17,9 +17,9 @@ public class FUNCDESC {
 	/** @field cast=(MEMBERID) */
 	public int memid;
 	/** @field cast=(SCODE FAR *) */
-	public long /*int*/ lprgscode;
+	public long lprgscode;
 	/** @field cast=(ELEMDESC FAR *) */
-	public long /*int*/ lprgelemdescParam;
+	public long lprgelemdescParam;
 	/** @field cast=(FUNCKIND) */
 	public int funckind;
 	/** @field cast=(INVOKEKIND) */
@@ -33,12 +33,12 @@ public class FUNCDESC {
 //	ELEMDESC elemdescFunc;
 //	TYPEDESC elemdescFunc.tdesc
 	/** @field accessor=elemdescFunc.tdesc.lptdesc,cast=(struct FARSTRUCT tagTYPEDESC FAR* ) */
-	public long /*int*/ elemdescFunc_tdesc_union;
+	public long elemdescFunc_tdesc_union;
 	/** @field accessor=elemdescFunc.tdesc.vt */
 	public short elemdescFunc_tdesc_vt;
 //	PARAMDESC elemdescFunc.paramdesc
 	/** @field accessor=elemdescFunc.paramdesc.pparamdescex,cast=(LPPARAMDESCEX) */
-	public long /*int*/ elemdescFunc_paramdesc_pparamdescex;
+	public long elemdescFunc_paramdesc_pparamdescex;
 	/** @field accessor=elemdescFunc.paramdesc.wParamFlags */
 	public short elemdescFunc_paramdesc_wParamFlags;
 	public short wFuncFlags;

@@ -20,14 +20,14 @@ public class LVITEM {
 	public int state;
 	public int stateMask;
 	/** @field cast=(LPTSTR) */
-	public long /*int*/ pszText;
+	public long pszText;
 	public int cchTextMax;
 	public int iImage;
-	public long /*int*/ lParam;
+	public long lParam;
 	public int iIndent;
 	public int iGroupId;
 	public int cColumns;
 	/** @field cast=(PUINT) */
-	public long /*int*/ puColumns;
+	public long puColumns;
 	public static final int sizeof = OS.LVITEM_sizeof ();
 }

@@ -19,7 +19,7 @@ import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.win32.*;
 
 public class ImageList {
-	long /*int*/ handle;
+	long handle;
 	int style, refCount;
 	Image [] images;
 
@@ -63,13 +63,13 @@ public int addRef() {
 	return ++refCount;
 }
 
-long /*int*/ copyBitmap (long /*int*/ hImage, int width, int height) {
+long copyBitmap (long hImage, int width, int height) {
 	BITMAP bm = new BITMAP ();
 	OS.GetObject (hImage, BITMAP.sizeof, bm);
-	long /*int*/ hDC = OS.GetDC (0);
-	long /*int*/ hdc1 = OS.CreateCompatibleDC (hDC);
+	long hDC = OS.GetDC (0);
+	long hdc1 = OS.CreateCompatibleDC (hDC);
 	OS.SelectObject (hdc1, hImage);
-	long /*int*/ hdc2 = OS.CreateCompatibleDC (hDC);
+	long hdc2 = OS.CreateCompatibleDC (hDC);
 	/*
 	* Feature in Windows.  If a bitmap has a 32-bit depth and any
 	* pixel has an alpha value different than zero, common controls
@@ -80,7 +80,7 @@ long /*int*/ copyBitmap (long /*int*/ hImage, int width, int height) {
 	* remove the alpha channel of opaque images by down sampling
 	* it to 24-bit depth.
 	*/
-	long /*int*/ hBitmap;
+	long hBitmap;
 	if (bm.bmBitsPixel == 32) {
 		BITMAPINFOHEADER bmiHeader = new BITMAPINFOHEADER();
 		bmiHeader.biSize = BITMAPINFOHEADER.sizeof;
@@ -91,7 +91,7 @@ long /*int*/ copyBitmap (long /*int*/ hImage, int width, int height) {
 		bmiHeader.biCompression = OS.BI_RGB;
 		byte[] bmi = new byte[BITMAPINFOHEADER.sizeof];
 		OS.MoveMemory(bmi, bmiHeader, BITMAPINFOHEADER.sizeof);
-		long /*int*/[] pBits = new long /*int*/[1];
+		long[] pBits = new long[1];
 		hBitmap = OS.CreateDIBSection(0, bmi, OS.DIB_RGB_COLORS, pBits, 0, 0);
 	} else {
 		hBitmap = OS.CreateCompatibleBitmap (hDC, width, height);
@@ -109,22 +109,22 @@ long /*int*/ copyBitmap (long /*int*/ hImage, int width, int height) {
 	return hBitmap;
 }
 
-long /*int*/ copyIcon (long /*int*/ hImage, int width, int height) {
-	long /*int*/ hIcon = OS.CopyImage (hImage, OS.IMAGE_ICON, width, height, 0);
+long copyIcon (long hImage, int width, int height) {
+	long hIcon = OS.CopyImage (hImage, OS.IMAGE_ICON, width, height, 0);
 	return hIcon != 0 ? hIcon : hImage;
 }
 
-long /*int*/ copyWithAlpha (long /*int*/ hBitmap, int background, byte[] alphaData, int destWidth, int destHeight) {
+long copyWithAlpha (long hBitmap, int background, byte[] alphaData, int destWidth, int destHeight) {
 	BITMAP bm = new BITMAP ();
 	OS.GetObject (hBitmap, BITMAP.sizeof, bm);
 	int srcWidth = bm.bmWidth;
 	int srcHeight = bm.bmHeight;
 
 	/* Create resources */
-	long /*int*/ hdc = OS.GetDC (0);
-	long /*int*/ srcHdc = OS.CreateCompatibleDC (hdc);
-	long /*int*/ oldSrcBitmap = OS.SelectObject (srcHdc, hBitmap);
-	long /*int*/ memHdc = OS.CreateCompatibleDC (hdc);
+	long hdc = OS.GetDC (0);
+	long srcHdc = OS.CreateCompatibleDC (hdc);
+	long oldSrcBitmap = OS.SelectObject (srcHdc, hBitmap);
+	long memHdc = OS.CreateCompatibleDC (hdc);
 	BITMAPINFOHEADER bmiHeader = new BITMAPINFOHEADER ();
 	bmiHeader.biSize = BITMAPINFOHEADER.sizeof;
 	bmiHeader.biWidth = srcWidth;
@@ -134,10 +134,10 @@ long /*int*/ copyWithAlpha (long /*int*/ hBitmap, int background, byte[] alphaDa
 	bmiHeader.biCompression = OS.BI_RGB;
 	byte []	bmi = new byte[BITMAPINFOHEADER.sizeof];
 	OS.MoveMemory (bmi, bmiHeader, BITMAPINFOHEADER.sizeof);
-	long /*int*/ [] pBits = new long /*int*/ [1];
-	long /*int*/ memDib = OS.CreateDIBSection (0, bmi, OS.DIB_RGB_COLORS, pBits, 0, 0);
+	long [] pBits = new long [1];
+	long memDib = OS.CreateDIBSection (0, bmi, OS.DIB_RGB_COLORS, pBits, 0, 0);
 	if (memDib == 0) SWT.error (SWT.ERROR_NO_HANDLES);
-	long /*int*/ oldMemBitmap = OS.SelectObject (memHdc, memDib);
+	long oldMemBitmap = OS.SelectObject (memHdc, memDib);
 
 	BITMAP dibBM = new BITMAP ();
 	OS.GetObject (memDib, BITMAP.sizeof, dibBM);
@@ -186,10 +186,10 @@ long /*int*/ copyWithAlpha (long /*int*/ hBitmap, int background, byte[] alphaDa
 		bmiHeader2.biCompression = OS.BI_RGB;
 		byte []	bmi2 = new byte[BITMAPINFOHEADER.sizeof];
 		OS.MoveMemory (bmi2, bmiHeader2, BITMAPINFOHEADER.sizeof);
-		long /*int*/ [] pBits2 = new long /*int*/ [1];
-		long /*int*/ memDib2 = OS.CreateDIBSection (0, bmi2, OS.DIB_RGB_COLORS, pBits2, 0, 0);
-		long /*int*/ memHdc2 = OS.CreateCompatibleDC (hdc);
-		long /*int*/ oldMemBitmap2 = OS.SelectObject (memHdc2, memDib2);
+		long [] pBits2 = new long [1];
+		long memDib2 = OS.CreateDIBSection (0, bmi2, OS.DIB_RGB_COLORS, pBits2, 0, 0);
+		long memHdc2 = OS.CreateCompatibleDC (hdc);
+		long oldMemBitmap2 = OS.SelectObject (memHdc2, memDib2);
 		OS.SetStretchBltMode(memHdc2, OS.COLORONCOLOR);
 		OS.StretchBlt (memHdc2, 0, 0, destWidth, destHeight, memHdc, 0, 0, srcWidth, srcHeight, OS.SRCCOPY);
 		OS.SelectObject (memHdc2, oldMemBitmap2);
@@ -208,7 +208,7 @@ long /*int*/ copyWithAlpha (long /*int*/ hBitmap, int background, byte[] alphaDa
 	return memDib;
 }
 
-long /*int*/ createMaskFromAlpha (ImageData data, int destWidth, int destHeight) {
+long createMaskFromAlpha (ImageData data, int destWidth, int destHeight) {
 	int srcWidth = data.width;
 	int srcHeight = data.height;
 	ImageData mask = ImageData.internal_new (srcWidth, srcHeight, 1,
@@ -220,13 +220,13 @@ long /*int*/ createMaskFromAlpha (ImageData data, int destWidth, int destHeight)
 			mask.setPixel (x, y, (data.alphaData [ap++] & 0xff) <= 127 ? 1 : 0);
 		}
 	}
-	long /*int*/ hMask = OS.CreateBitmap (srcWidth, srcHeight, 1, 1, mask.data);
+	long hMask = OS.CreateBitmap (srcWidth, srcHeight, 1, 1, mask.data);
 	if (srcWidth != destWidth || srcHeight != destHeight) {
-		long /*int*/ hdc = OS.GetDC (0);
-		long /*int*/ hdc1 = OS.CreateCompatibleDC (hdc);
+		long hdc = OS.GetDC (0);
+		long hdc1 = OS.CreateCompatibleDC (hdc);
 		OS.SelectObject (hdc1, hMask);
-		long /*int*/ hdc2 = OS.CreateCompatibleDC (hdc);
-		long /*int*/ hMask2 = OS.CreateBitmap (destWidth, destHeight, 1, 1, null);
+		long hdc2 = OS.CreateCompatibleDC (hdc);
+		long hMask2 = OS.CreateBitmap (destWidth, destHeight, 1, 1, null);
 		OS.SelectObject (hdc2, hMask2);
 		OS.SetStretchBltMode(hdc2, OS.COLORONCOLOR);
 		OS.StretchBlt (hdc2, 0, 0, destWidth, destHeight, hdc1, 0, 0, srcWidth, srcHeight, OS.SRCCOPY);
@@ -239,14 +239,14 @@ long /*int*/ createMaskFromAlpha (ImageData data, int destWidth, int destHeight)
 	return hMask;
 }
 
-long /*int*/ createMask (long /*int*/ hBitmap, int destWidth, int destHeight, int background, int transparentPixel) {
+long createMask (long hBitmap, int destWidth, int destHeight, int background, int transparentPixel) {
 	BITMAP bm = new BITMAP ();
 	OS.GetObject (hBitmap, BITMAP.sizeof, bm);
 	int srcWidth = bm.bmWidth;
 	int srcHeight = bm.bmHeight;
-	long /*int*/ hMask = OS.CreateBitmap (destWidth, destHeight, 1, 1, null);
-	long /*int*/ hDC = OS.GetDC (0);
-	long /*int*/ hdc1 = OS.CreateCompatibleDC (hDC);
+	long hMask = OS.CreateBitmap (destWidth, destHeight, 1, 1, null);
+	long hDC = OS.GetDC (0);
+	long hdc1 = OS.CreateCompatibleDC (hDC);
 	if (background != -1) {
 		OS.SelectObject (hdc1, hBitmap);
 
@@ -276,7 +276,7 @@ long /*int*/ createMask (long /*int*/ hBitmap, int destWidth, int destHeight, in
 			OS.SetBkColor (hdc1, background);
 		}
 
-		long /*int*/ hdc2 = OS.CreateCompatibleDC (hDC);
+		long hdc2 = OS.CreateCompatibleDC (hDC);
 		OS.SelectObject (hdc2, hMask);
 		if (destWidth != srcWidth || destHeight != srcHeight) {
 			OS.SetStretchBltMode (hdc2, OS.COLORONCOLOR);
@@ -289,7 +289,7 @@ long /*int*/ createMask (long /*int*/ hBitmap, int destWidth, int destHeight, in
 		/* Put back the original palette */
 		if (originalColors != null) OS.SetDIBColorTable(hdc1, 0, 1 << bm.bmBitsPixel, originalColors);
 	} else {
-		long /*int*/ hOldBitmap = OS.SelectObject (hdc1, hMask);
+		long hOldBitmap = OS.SelectObject (hdc1, hMask);
 		OS.PatBlt (hdc1, 0, 0, destWidth, destHeight, OS.BLACKNESS);
 		OS.SelectObject (hdc1, hOldBitmap);
 	}
@@ -312,7 +312,7 @@ public int getStyle () {
 	return style;
 }
 
-public long /*int*/ getHandle () {
+public long getHandle () {
 	return handle;
 }
 
@@ -353,7 +353,7 @@ public int removeRef() {
 }
 
 void set (int index, Image image, int count) {
-	long /*int*/ hImage = image.handle;
+	long hImage = image.handle;
 	int [] cx = new int [1], cy = new int [1];
 	OS.ImageList_GetIconSize (handle, cx, cy);
 	switch (image.type) {
@@ -361,7 +361,7 @@ void set (int index, Image image, int count) {
 			/*
 			* Note that the image size has to match the image list icon size.
 			*/
-			long /*int*/ hBitmap = 0, hMask = 0;
+			long hBitmap = 0, hMask = 0;
 			ImageData data = image.getImageData (DPIUtil.getDeviceZoom ());
 			switch (data.getTransparencyType ()) {
 				case SWT.TRANSPARENCY_ALPHA:
@@ -416,7 +416,7 @@ void set (int index, Image image, int count) {
 			break;
 		}
 		case SWT.ICON: {
-			long /*int*/ hIcon = copyIcon (hImage, cx [0], cy [0]);
+			long hIcon = copyIcon (hImage, cx [0], cy [0]);
 			OS.ImageList_ReplaceIcon (handle, index == count ? -1 : index, hIcon);
 			OS.DestroyIcon (hIcon);
 			break;

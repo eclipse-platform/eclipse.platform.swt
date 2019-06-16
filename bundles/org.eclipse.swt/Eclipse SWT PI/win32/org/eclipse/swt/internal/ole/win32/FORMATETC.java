@@ -17,7 +17,7 @@ public final class FORMATETC {
 	/** @field cast=(CLIPFORMAT) */
 	public int cfFormat;
 	/** @field cast=(DVTARGETDEVICE *) */
-	public long /*int*/ ptd;
+	public long ptd;
 	public int dwAspect;
 	public int lindex;
 	public int tymed;

@@ -19,11 +19,11 @@ import org.eclipse.swt.internal.win32.*;
 
 public class IWebURLProtectionSpace extends IUnknown {
 
-public IWebURLProtectionSpace(long /*int*/ address) {
+public IWebURLProtectionSpace(long address) {
 	super(address);
 }
 
-public int host (long /*int*/[] result) {
+public int host (long[] result) {
 	return OS.VtblCall (4, getAddress (), result);
 }
 
@@ -31,7 +31,7 @@ public int port (int[] result) {
 	return OS.VtblCall (8, getAddress (), result);
 }
 
-public int realm (long /*int*/[] result) {
+public int realm (long[] result) {
 	return OS.VtblCall (11, getAddress (), result);
 }
 

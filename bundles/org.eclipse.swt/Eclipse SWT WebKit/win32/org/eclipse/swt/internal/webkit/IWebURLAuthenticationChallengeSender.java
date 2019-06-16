@@ -19,15 +19,15 @@ import org.eclipse.swt.internal.win32.*;
 
 public class IWebURLAuthenticationChallengeSender extends IUnknown {
 
-public IWebURLAuthenticationChallengeSender (long /*int*/ address) {
+public IWebURLAuthenticationChallengeSender (long address) {
 	super (address);
 }
 
-public int cancelAuthenticationChallenge (long /*int*/ challenge) {
+public int cancelAuthenticationChallenge (long challenge) {
 	return OS.VtblCall (3, getAddress (), challenge);
 }
 
-public int useCredential (long /*int*/ credential, long /*int*/ challenge) {
+public int useCredential (long credential, long challenge) {
 	return OS.VtblCall (5, getAddress (), credential, challenge);
 }
 

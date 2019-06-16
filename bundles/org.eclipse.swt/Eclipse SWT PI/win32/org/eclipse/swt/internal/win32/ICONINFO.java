@@ -18,8 +18,8 @@ public class ICONINFO {
 	public int xHotspot;
 	public int yHotspot;
 	/** @field cast=(HBITMAP) */
-	public long /*int*/ hbmMask;
+	public long hbmMask;
 	/** @field cast=(HBITMAP) */
-	public long /*int*/ hbmColor;
+	public long hbmColor;
 	public static final int sizeof = OS.ICONINFO_sizeof ();
 }

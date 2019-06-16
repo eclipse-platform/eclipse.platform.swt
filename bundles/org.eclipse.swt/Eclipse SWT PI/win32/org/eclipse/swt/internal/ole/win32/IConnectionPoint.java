@@ -17,10 +17,10 @@ import org.eclipse.swt.internal.win32.*;
 
 public class IConnectionPoint extends IUnknown
 {
-public IConnectionPoint(long /*int*/ address) {
+public IConnectionPoint(long address) {
 	super(address);
 }
-public int Advise(long /*int*/ pUnk, int[] pdwCookie) {
+public int Advise(long pUnk, int[] pdwCookie) {
 	return OS.VtblCall(5, address, pUnk, pdwCookie);
 }
 public int Unadvise(int dwCookie) {

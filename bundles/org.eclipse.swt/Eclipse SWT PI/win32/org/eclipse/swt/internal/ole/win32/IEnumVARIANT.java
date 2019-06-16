@@ -14,7 +14,7 @@
 package org.eclipse.swt.internal.ole.win32;
 
 public class IEnumVARIANT extends IEnum {
-public IEnumVARIANT(long /*int*/ address) {
+public IEnumVARIANT(long address) {
 	super(address);
 }
 }

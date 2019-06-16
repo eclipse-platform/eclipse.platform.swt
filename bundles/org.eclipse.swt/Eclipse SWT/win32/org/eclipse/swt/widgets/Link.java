@@ -48,7 +48,7 @@ public class Link extends Control {
 	int linkForeground = -1;
 	String [] ids;
 	char [] mnemonics;
-	static final long /*int*/ LinkProc;
+	static final long LinkProc;
 	static final TCHAR LinkClass = new TCHAR (0, OS.WC_LINK, true);
 	static {
 		WNDCLASS lpWndClass = new WNDCLASS ();
@@ -141,7 +141,7 @@ public void addSelectionListener (SelectionListener listener) {
 }
 
 @Override
-long /*int*/ callWindowProc (long /*int*/ hwnd, int msg, long /*int*/ wParam, long /*int*/ lParam) {
+long callWindowProc (long hwnd, int msg, long wParam, long lParam) {
 	if (handle == 0) return 0;
 	/*
 	* Feature in Windows.  By convention, native Windows controls
@@ -169,9 +169,9 @@ Point computeSizeInPixels (int wHint, int hHint, boolean changed) {
 	 * but SWT convention is to return zero width and line height.
 	 */
 	if (text.isEmpty()) {
-		long /*int*/ hDC = OS.GetDC (handle);
-		long /*int*/ newFont = OS.SendMessage (handle, OS.WM_GETFONT, 0, 0);
-		long /*int*/ oldFont = OS.SelectObject (hDC, newFont);
+		long hDC = OS.GetDC (handle);
+		long newFont = OS.SendMessage (handle, OS.WM_GETFONT, 0, 0);
+		long oldFont = OS.SelectObject (hDC, newFont);
 		TEXTMETRIC lptm = new TEXTMETRIC ();
 		OS.GetTextMetrics (hDC, lptm);
 		width = 0;
@@ -457,7 +457,7 @@ boolean setFocusItem (int index) {
 	}
 	item.iLink = index;
 	item.state = OS.LIS_FOCUSED;
-	long /*int*/ result = OS.SendMessage (handle, OS.LM_SETITEM, 0, item);
+	long result = OS.SendMessage (handle, OS.LM_SETITEM, 0, item);
 
 	/* Feature in Windows. For some reason, setting the focus to
 	 * any item but first causes the control to clear the WS_TABSTOP
@@ -579,15 +579,15 @@ TCHAR windowClass () {
 }
 
 @Override
-long /*int*/ windowProc () {
+long windowProc () {
 	return LinkProc;
 }
 
 @Override
-LRESULT WM_CHAR (long /*int*/ wParam, long /*int*/ lParam) {
+LRESULT WM_CHAR (long wParam, long lParam) {
 	LRESULT result = super.WM_CHAR (wParam, lParam);
 	if (result != null) return result;
-	switch ((int)/*64*/wParam) {
+	switch ((int)wParam) {
 		case ' ':
 		case SWT.CR:
 		case SWT.TAB:
@@ -597,15 +597,15 @@ LRESULT WM_CHAR (long /*int*/ wParam, long /*int*/ lParam) {
 			* This allows the application to cancel an operation that is normally
 			* performed in WM_KEYDOWN from WM_CHAR.
 			*/
-			long /*int*/ code = callWindowProc (handle, OS.WM_KEYDOWN, wParam, lParam);
+			long code = callWindowProc (handle, OS.WM_KEYDOWN, wParam, lParam);
 			return new LRESULT (code);
 	}
 	return result;
 }
 
 @Override
-LRESULT WM_GETDLGCODE (long /*int*/ wParam, long /*int*/ lParam) {
-	long /*int*/ code = callWindowProc (handle, OS.WM_GETDLGCODE, wParam, lParam);
+LRESULT WM_GETDLGCODE (long wParam, long lParam) {
+	long code = callWindowProc (handle, OS.WM_GETDLGCODE, wParam, lParam);
 	int count = ids.length;
 	if (count == 0) {
 		code |= OS.DLGC_STATIC;
@@ -619,10 +619,10 @@ LRESULT WM_GETDLGCODE (long /*int*/ wParam, long /*int*/ lParam) {
 }
 
 @Override
-LRESULT WM_KEYDOWN (long /*int*/ wParam, long /*int*/ lParam) {
+LRESULT WM_KEYDOWN (long wParam, long lParam) {
 	LRESULT result = super.WM_KEYDOWN (wParam, lParam);
 	if (result != null) return result;
-	switch ((int)/*64*/wParam) {
+	switch ((int)wParam) {
 		case OS.VK_SPACE:
 		case OS.VK_RETURN:
 		case OS.VK_TAB:
@@ -638,7 +638,7 @@ LRESULT WM_KEYDOWN (long /*int*/ wParam, long /*int*/ lParam) {
 }
 
 @Override
-LRESULT WM_KILLFOCUS (long /*int*/ wParam, long /*int*/ lParam) {
+LRESULT WM_KILLFOCUS (long wParam, long lParam) {
 	int focusItem = getFocusItem();
 	LRESULT result = super.WM_KILLFOCUS(wParam, lParam);
 	if (focusItem != -1) setFocusItem(focusItem);
@@ -646,7 +646,7 @@ LRESULT WM_KILLFOCUS (long /*int*/ wParam, long /*int*/ lParam) {
 }
 
 @Override
-LRESULT WM_NCHITTEST (long /*int*/ wParam, long /*int*/ lParam) {
+LRESULT WM_NCHITTEST (long wParam, long lParam) {
 	LRESULT result = super.WM_NCHITTEST (wParam, lParam);
 	if (result != null) return result;
 
@@ -659,17 +659,17 @@ LRESULT WM_NCHITTEST (long /*int*/ wParam, long /*int*/ lParam) {
 }
 
 @Override
-LRESULT WM_SETCURSOR(long /*int*/ wParam, long /*int*/ lParam) {
+LRESULT WM_SETCURSOR(long wParam, long lParam) {
 	LRESULT result = super.WM_SETCURSOR (wParam, lParam);
 	if (result != null) return result;
-	long /*int*/ fDone = callWindowProc (handle, OS.WM_SETCURSOR, wParam, lParam);
+	long fDone = callWindowProc (handle, OS.WM_SETCURSOR, wParam, lParam);
 	/* Take responsibility for cursor over plain text after overriding WM_NCHITTEST. */
 	if (fDone == 0) OS.DefWindowProc (handle, OS.WM_SETCURSOR, wParam, lParam);
 	return LRESULT.ONE;
 }
 
 @Override
-LRESULT WM_SETFOCUS (long /*int*/ wParam, long /*int*/ lParam) {
+LRESULT WM_SETFOCUS (long wParam, long lParam) {
 	/*
 	* Feature in Windows. Upon receiving focus, SysLink control
 	* always activates the first link. This leads to surprising
@@ -685,7 +685,7 @@ LRESULT WM_SETFOCUS (long /*int*/ wParam, long /*int*/ lParam) {
 }
 
 @Override
-LRESULT wmNotifyChild (NMHDR hdr, long /*int*/ wParam, long /*int*/ lParam) {
+LRESULT wmNotifyChild (NMHDR hdr, long wParam, long lParam) {
 	switch (hdr.code) {
 		case OS.NM_RETURN:
 		case OS.NM_CLICK:

@@ -17,7 +17,7 @@ import org.eclipse.swt.internal.win32.*;
 
 public class IStorage extends IUnknown
 {
-public IStorage(long /*int*/ address) {
+public IStorage(long address) {
 	super(address);
 }
 public int Commit(int grfCommitFlag) {
@@ -27,7 +27,7 @@ public int CopyTo(
 	int ciidExclude,     //Number of elements in rgiidExclude
 	GUID rgiidExclude,   //Array of interface identifiers (IIDs)
 	String[] snbExclude, //Points to a block of stream names in the storage object
-	long /*int*/ pstgDest         //Points to destination storage object
+	long pstgDest         //Points to destination storage object
 	){
 	// we only support snbExclude = null
 	if (snbExclude != null) {
@@ -40,7 +40,7 @@ public int CreateStorage(
 	int grfMode,     //Access mode for the new storage object
 	int reserved1,   //Reserved; must be zero
 	int reserved2,   //Reserved; must be zero
-	long /*int*/[] ppStg      //Pointer to new storage object
+	long[] ppStg      //Pointer to new storage object
 ){
 
 	// create a null terminated array of char
@@ -56,7 +56,7 @@ public int CreateStream(
 	int grfMode,     //Access mode for the new stream
 	int reserved1,   //Reserved; must be zero
 	int reserved2,   //Reserved; must be zero
-	long /*int*/[] ppStm      //Pointer to new stream object
+	long[] ppStm      //Pointer to new stream object
 ){
 
 	// create a null terminated array of char
@@ -78,9 +78,9 @@ public int DestroyElement(String pwcsName) {
 }
 public int EnumElements(
 	int reserved1, //Reserved; must be zero
-	long /*int*/ reserved2, //Reserved; must be NULL
+	long reserved2, //Reserved; must be NULL
 	int reserved3, //Reserved; must be zero
-	long /*int*/[] ppenum   //Pointer to output variable that
+	long[] ppenum   //Pointer to output variable that
 				   // receives the IEnumSTATSTG interface
 ){
 	return OS.VtblCall(11, address, reserved1, reserved2, reserved3, ppenum);
@@ -88,11 +88,11 @@ public int EnumElements(
 public int OpenStorage(
 	String pwcsName,     //Pointer to the name of the
 	                     // storage object to open
-	long /*int*/ pstgPriority,    //Must be NULL.
+	long pstgPriority,    //Must be NULL.
 	int grfMode,         //Access mode for the new storage object
 	String snbExclude[], //Must be NULL.
 	int reserved,        //Reserved; must be zero
-	long /*int*/[] ppStg          //Pointer to opened storage object
+	long[] ppStg          //Pointer to opened storage object
 ){
 
 	// create a null terminated array of char
@@ -109,10 +109,10 @@ public int OpenStorage(
 }
 public int OpenStream(
 	String pwcsName, //Pointer to name of stream to open
-	long /*int*/ reserved1,   //Reserved; must be NULL
+	long reserved1,   //Reserved; must be NULL
 	int grfMode,     //Access mode for the new stream
 	int reserved2,   //Reserved; must be zero
-	long /*int*/[] ppStm      //Pointer to output variable
+	long[] ppStm      //Pointer to output variable
 	                 // that receives the IStream interface pointer
 ) {
 

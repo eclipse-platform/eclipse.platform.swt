@@ -19,9 +19,9 @@ public class NMLVFINDITEM extends NMHDR {
 	/** @field accessor=lvfi.flags */
 	public int flags;
 	/** @field accessor=lvfi.psz,cast=(LPCTSTR) */
-	public long /*int*/ psz;
+	public long psz;
 	/** @field accessor=lvfi.lParam */
-	public long /*int*/ lParam;
+	public long lParam;
 //	POINT pt;
 	/** @field accessor=lvfi.pt.x */
 	public int x;

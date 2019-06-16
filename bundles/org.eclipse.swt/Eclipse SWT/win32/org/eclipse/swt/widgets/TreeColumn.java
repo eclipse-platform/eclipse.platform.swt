@@ -321,7 +321,7 @@ public int getWidth () {
 int getWidthInPixels () {
 	int index = parent.indexOf (this);
 	if (index == -1) return 0;
-	long /*int*/ hwndHeader = parent.hwndHeader;
+	long hwndHeader = parent.hwndHeader;
 	if (hwndHeader == 0) return 0;
 	HDITEM hdItem = new HDITEM ();
 	hdItem.mask = OS.HDI_WIDTH;
@@ -345,18 +345,18 @@ public void pack () {
 	int index = parent.indexOf (this);
 	if (index == -1) return;
 	int columnWidth = 0;
-	long /*int*/ hwnd = parent.handle, hwndHeader = parent.hwndHeader;
+	long hwnd = parent.handle, hwndHeader = parent.hwndHeader;
 	RECT headerRect = new RECT ();
 	OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, index, headerRect);
-	long /*int*/ hDC = OS.GetDC (hwnd);
-	long /*int*/ oldFont = 0, newFont = OS.SendMessage (hwnd, OS.WM_GETFONT, 0, 0);
+	long hDC = OS.GetDC (hwnd);
+	long oldFont = 0, newFont = OS.SendMessage (hwnd, OS.WM_GETFONT, 0, 0);
 	if (newFont != 0) oldFont = OS.SelectObject (hDC, newFont);
 	TVITEM tvItem = new TVITEM ();
 	tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_PARAM | OS.TVIF_STATE;
 	tvItem.hItem = OS.SendMessage (hwnd, OS.TVM_GETNEXTITEM, OS.TVGN_ROOT, 0);
 	while (tvItem.hItem != 0) {
 		OS.SendMessage (hwnd, OS.TVM_GETITEM, 0, tvItem);
-		TreeItem item = tvItem.lParam != -1 ? parent.items [(int)/*64*/tvItem.lParam] : null;
+		TreeItem item = tvItem.lParam != -1 ? parent.items [(int)tvItem.lParam] : null;
 		if (item != null) {
 			int itemRight = 0;
 			if (parent.hooks (SWT.MeasureItem)) {
@@ -366,7 +366,7 @@ public void pack () {
 				Rectangle bounds = event.getBoundsInPixels();
 				itemRight = bounds.x + bounds.width;
 			} else {
-				long /*int*/ hFont = item.fontHandle (index);
+				long hFont = item.fontHandle (index);
 				if (hFont != -1) hFont = OS.SelectObject (hDC, hFont);
 				RECT itemRect = item.getBounds (index, true, true, false, false, false, hDC);
 				if (hFont != -1) OS.SelectObject (hDC, hFont);
@@ -395,7 +395,7 @@ public void pack () {
 		}
 		int margin = 0;
 		if (hwndHeader != 0) {
-			margin = (int)/*64*/OS.SendMessage (hwndHeader, OS.HDM_GETBITMAPMARGIN, 0, 0);
+			margin = (int)OS.SendMessage (hwndHeader, OS.HDM_GETBITMAPMARGIN, 0, 0);
 		} else {
 			margin = OS.GetSystemMetrics (OS.SM_CXEDGE) * 3;
 		}
@@ -493,7 +493,7 @@ public void setAlignment (int alignment) {
 	if (index == -1 || index == 0) return;
 	style &= ~(SWT.LEFT | SWT.RIGHT | SWT.CENTER);
 	style |= alignment & (SWT.LEFT | SWT.RIGHT | SWT.CENTER);
-	long /*int*/ hwndHeader = parent.hwndHeader;
+	long hwndHeader = parent.hwndHeader;
 	if (hwndHeader == 0) return;
 	HDITEM hdItem = new HDITEM ();
 	hdItem.mask = OS.HDI_FORMAT;
@@ -504,7 +504,7 @@ public void setAlignment (int alignment) {
 	if ((style & SWT.RIGHT) == SWT.RIGHT) hdItem.fmt |= OS.HDF_RIGHT;
 	OS.SendMessage (hwndHeader, OS.HDM_SETITEM, index, hdItem);
 	if (index != 0) {
-		long /*int*/ hwnd = parent.handle;
+		long hwnd = parent.handle;
 		parent.forceResize ();
 		RECT rect = new RECT (), headerRect = new RECT ();
 		OS.GetClientRect (hwnd, rect);
@@ -530,7 +530,7 @@ public void setImage (Image image) {
 void setImage (Image image, boolean sort, boolean right) {
 	int index = parent.indexOf (this);
 	if (index == -1) return;
-	long /*int*/ hwndHeader = parent.hwndHeader;
+	long hwndHeader = parent.hwndHeader;
 	if (hwndHeader == 0) return;
 	HDITEM hdItem = new HDITEM ();
 	hdItem.mask = OS.HDI_FORMAT | OS.HDI_IMAGE | OS.HDI_BITMAP;
@@ -600,7 +600,7 @@ public void setResizable (boolean resizable) {
 }
 
 void setSortDirection (int direction) {
-	long /*int*/ hwndHeader = parent.hwndHeader;
+	long hwndHeader = parent.hwndHeader;
 	if (hwndHeader != 0) {
 		int index = parent.indexOf (this);
 		if (index == -1) return;
@@ -631,7 +631,7 @@ void setSortDirection (int direction) {
 		}
 		OS.SendMessage (hwndHeader, OS.HDM_SETITEM, index, hdItem);
 		if (OS.IsAppThemed ()) {
-			long /*int*/ hwnd = parent.handle;
+			long hwnd = parent.handle;
 			parent.forceResize ();
 			RECT rect = new RECT (), headerRect = new RECT ();
 			OS.GetClientRect (hwnd, rect);
@@ -658,17 +658,17 @@ public void setText (String string) {
 	* at the end of the text.  The fix is to remove
 	* mnemonic characters.
 	*/
-	long /*int*/ hHeap = OS.GetProcessHeap ();
+	long hHeap = OS.GetProcessHeap ();
 	char [] buffer = fixMnemonic (string);
 	int byteCount = buffer.length * TCHAR.sizeof;
-	long /*int*/ pszText = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
+	long pszText = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
 	OS.MoveMemory (pszText, buffer, byteCount);
-	long /*int*/ hwndHeader = parent.hwndHeader;
+	long hwndHeader = parent.hwndHeader;
 	if (hwndHeader == 0) return;
 	HDITEM hdItem = new HDITEM ();
 	hdItem.mask = OS.HDI_TEXT;
 	hdItem.pszText = pszText;
-	long /*int*/ result = OS.SendMessage (hwndHeader, OS.HDM_SETITEM, index, hdItem);
+	long result = OS.SendMessage (hwndHeader, OS.HDM_SETITEM, index, hdItem);
 	if (pszText != 0) OS.HeapFree (hHeap, 0, pszText);
 	if (result == 0) error (SWT.ERROR_CANNOT_SET_TEXT);
 }
@@ -703,7 +703,7 @@ public void setText (String string) {
 public void setToolTipText (String string) {
 	checkWidget();
 	toolTipText = string;
-	long /*int*/ hwndHeaderToolTip = parent.headerToolTipHandle;
+	long hwndHeaderToolTip = parent.headerToolTipHandle;
 	if (hwndHeaderToolTip == 0) {
 		parent.createHeaderToolTips ();
 		parent.updateHeaderToolTips ();
@@ -729,7 +729,7 @@ void setWidthInPixels (int width) {
 	if (width < 0) return;
 	int index = parent.indexOf (this);
 	if (index == -1) return;
-	long /*int*/ hwndHeader = parent.hwndHeader;
+	long hwndHeader = parent.hwndHeader;
 	if (hwndHeader == 0) return;
 	HDITEM hdItem = new HDITEM ();
 	hdItem.mask = OS.HDI_WIDTH;
@@ -738,7 +738,7 @@ void setWidthInPixels (int width) {
 	RECT headerRect = new RECT ();
 	OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, index, headerRect);
 	parent.forceResize ();
-	long /*int*/ hwnd = parent.handle;
+	long hwnd = parent.handle;
 	RECT rect = new RECT ();
 	OS.GetClientRect (hwnd, rect);
 	rect.left = headerRect.left;
@@ -747,9 +747,9 @@ void setWidthInPixels (int width) {
 }
 
 void updateToolTip (int index) {
-	long /*int*/ hwndHeaderToolTip = parent.headerToolTipHandle;
+	long hwndHeaderToolTip = parent.headerToolTipHandle;
 	if (hwndHeaderToolTip != 0) {
-		long /*int*/ hwndHeader = parent.hwndHeader;
+		long hwndHeader = parent.hwndHeader;
 		RECT rect = new RECT ();
 		if (OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, index, rect) != 0) {
 			TOOLINFO lpti = new TOOLINFO ();
