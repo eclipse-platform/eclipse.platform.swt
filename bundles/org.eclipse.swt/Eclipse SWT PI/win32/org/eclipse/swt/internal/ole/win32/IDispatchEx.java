@@ -19,35 +19,8 @@ public IDispatchEx (long address) {
 	super (address);
 }
 
-public int GetDispID (long bstrName, int grfdex, int[] pid) {
-	return COM.VtblCall (7, address, bstrName, grfdex, pid);
-}
-
 public int InvokeEx (int id, int lcid, int wFlags, DISPPARAMS pdp, long pvarRes, EXCEPINFO pei, long pspCaller) {
 	return COM.VtblCall (8, address, id, lcid, wFlags, pdp, pvarRes, pei, pspCaller);
 }
 
-public int DeleteMemberByName (long bstrName, int grfdex) {
-	return COM.VtblCall (9, address, bstrName, grfdex);
-}
-
-public int DeleteMemberByDispID (int id) {
-	return COM.VtblCall (10, address, id);
-}
-
-public int GetMemberProperties (int id, int grfdexFetch, int[] pgrfdex) {
-	return COM.VtblCall (11, address, id, grfdexFetch, pgrfdex);
-}
-
-public int GetMemberName (int id, long[] pbstrName) {
-	return COM.VtblCall (12, address, id, pbstrName);
-}
-
-public int GetNextDispID (int grfdex, int id, int[] pid) {
-	return COM.VtblCall (13, address, grfdex, id, pid);
-}
-
-public int GetNameSpaceParent (long[] ppunk) {
-	return COM.VtblCall (14, address, ppunk);
-}
 }

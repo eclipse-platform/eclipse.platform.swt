@@ -17,20 +17,12 @@ public class IStream extends IUnknown {
 public IStream(long address) {
 	super(address);
 }
-public int Clone(
-	long[] ppstm  //Pointer to location for pointer to the new stream object
-){
-	return COM.VtblCall(13, address, ppstm);
-}
 public int Commit( int grfCommitFlags  //Specifies how changes are committed
 ){
 	return COM.VtblCall(8, address, grfCommitFlags);
 }
 public int Read(long pv, int cb, int[] pcbWritten) {
 	return COM.VtblCall(3, address, pv, cb, pcbWritten);
-}
-public int Revert(){
-	return COM.VtblCall(9, address);
 }
 public int Write(long pv, int cb, int[] pcbWritten) {
 	return COM.VtblCall(4, address, pv, cb, pcbWritten);

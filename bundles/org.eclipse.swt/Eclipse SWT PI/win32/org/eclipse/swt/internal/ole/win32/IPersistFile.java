@@ -21,16 +21,4 @@ public IPersistFile(long address) {
 public int IsDirty() {
 	return COM.VtblCall(4, address);
 }
-public int Load(long pszFileName, int dwMode) {
-	return COM.VtblCall(5, address, pszFileName, dwMode);
-}
-public int Save(long pszFileName, boolean fRemember) {
-	return COM.VtblCall(6, address, pszFileName, fRemember);
-}
-public int SaveCompleted(long pszFileName) {
-	return COM.VtblCall(7, address, pszFileName);
-}
-public int GetCurFile(long [] ppszFileName){
-	return COM.VtblCall(8, address, ppszFileName);
-}
 }

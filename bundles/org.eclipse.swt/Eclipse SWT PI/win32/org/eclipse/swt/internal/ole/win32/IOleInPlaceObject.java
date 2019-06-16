@@ -29,7 +29,4 @@ public int UIDeactivate() {
 public int SetObjectRects(RECT lprcPosRect, RECT lprcClipRect) {
 	return COM.VtblCall(7, address, lprcPosRect, lprcClipRect);
 }
-public int ReactivateAndUndo() {
-	return COM.VtblCall(8, address);
-}
 }

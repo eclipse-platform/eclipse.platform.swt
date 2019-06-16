@@ -25,12 +25,9 @@ public int TranslateAccelerator(MSG lpmsg) {
 	return COM.VtblCall(5, address, lpmsg);
 }
 public void OnFrameWindowActivate(boolean fActivate) {
-	COM.VtblCall(6, getAddress(), fActivate);
-}
-public void OnDocWindowActivate(boolean fActivate) {
-	COM.VtblCall(7, getAddress(), fActivate);
+	COM.VtblCall(6, address, fActivate ? 1 : 0);
 }
 public int ResizeBorder(RECT prcBorder, long pUIWindow, boolean fFrameWindow) {
-	return COM.VtblCall(8, address, prcBorder, pUIWindow, fFrameWindow);
+	return COM.VtblCall(8, address, prcBorder, pUIWindow, fFrameWindow ? 1 : 0);
 }
 }

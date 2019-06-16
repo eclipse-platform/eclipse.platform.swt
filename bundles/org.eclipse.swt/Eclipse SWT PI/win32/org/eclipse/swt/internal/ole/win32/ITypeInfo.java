@@ -14,7 +14,6 @@
 package org.eclipse.swt.internal.ole.win32;
 
 
-import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.win32.*;
 
 public class ITypeInfo extends IUnknown
@@ -75,44 +74,6 @@ public int GetDocumentation(int index, String[] name, String[] docString, int[] 
 public int GetFuncDesc(int index, long[] ppFuncDesc) {
 	return COM.VtblCall(5, address, index, ppFuncDesc);
 }
-public int GetIDsOfNames(String[] rgszNames, int cNames, int[] pMemId) {
-
-	char[] buffer;
-	int size = rgszNames.length;
-
-	// create an array to hold the addresses
-	long hHeap = OS.GetProcessHeap();
-	long ppNames = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, size * C.PTR_SIZEOF);
-	long[] memTracker = new long[size];
-
-	try {
-		// add the address of each string to the array
-
-		for (int i=0; i<size; i++){
-			// create a null terminated array of char for each String
-			int nameSize = rgszNames[i].length();
-			buffer = new char[nameSize +1];
-			rgszNames[i].getChars(0, nameSize, buffer, 0);
-			// get the address of the start of the array of char
-			long pName = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, buffer.length * 2);
-			OS.MoveMemory(pName, buffer, buffer.length * 2);
-			// copy the address to the array of addresses
-			OS.MoveMemory(ppNames + C.PTR_SIZEOF * i, new long[]{pName}, C.PTR_SIZEOF);
-			// keep track of the Global Memory so we can free it
-			memTracker[i] = pName;
-		}
-
-		return COM.VtblCall(10, address, ppNames, cNames, pMemId);
-
-	} finally {
-		// free the memory
-		for (int i=0; i<memTracker.length; i++){
-			OS.HeapFree(hHeap, 0, memTracker[i]);
-		}
-		OS.HeapFree(hHeap, 0, ppNames);
-	}
-}
-
 public int GetImplTypeFlags(int index, int[] pImplTypeFlags) {
 	return COM.VtblCall(9, address, index, pImplTypeFlags);
 }

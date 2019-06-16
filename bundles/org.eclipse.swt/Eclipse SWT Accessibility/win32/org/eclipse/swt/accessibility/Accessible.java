@@ -5410,16 +5410,8 @@ public class Accessible {
 		final GUID IIDIAccPropServer = IIDFromString("{76C0DBBB-15E0-4E7B-B61B-20EEEA2001E0}"); //$NON-NLS-1$
 		final GUID IIDIAccPropServices = IIDFromString("{6E26E776-04F0-495D-80E4-3330352E3169}"); //$NON-NLS-1$
 		if (COM.IsEqualGUID(guid, COM.IID_IDropTargetHelper)) return "IID_IDropTargetHelper";
-		if (COM.IsEqualGUID(guid, COM.IID_IDragSourceHelper)) return "IID_IDragSourceHelper";
-		if (COM.IsEqualGUID(guid, COM.IID_IDragSourceHelper2)) return "IID_IDragSourceHelper2";
 		if (COM.IsEqualGUID(guid, COM.IIDJavaBeansBridge)) return "IIDJavaBeansBridge";
 		if (COM.IsEqualGUID(guid, COM.IIDShockwaveActiveXControl)) return "IIDShockwaveActiveXControl";
-		if (COM.IsEqualGUID(guid, COM.IIDIEditorSiteTime)) return "IIDIEditorSiteTime";
-		if (COM.IsEqualGUID(guid, COM.IIDIEditorSiteProperty)) return "IIDIEditorSiteProperty";
-		if (COM.IsEqualGUID(guid, COM.IIDIEditorBaseProperty)) return "IIDIEditorBaseProperty";
-		if (COM.IsEqualGUID(guid, COM.IIDIEditorSite)) return "IIDIEditorSite";
-		if (COM.IsEqualGUID(guid, COM.IIDIEditorService)) return "IIDIEditorService";
-		if (COM.IsEqualGUID(guid, COM.IIDIEditorManager)) return "IIDIEditorManager";
 		if (COM.IsEqualGUID(guid, COM.IIDIAccessible)) return "IIDIAccessible";
 		if (COM.IsEqualGUID(guid, IIDIAccessibleHandler)) return "IIDIAccessibleHandler";
 		if (COM.IsEqualGUID(guid, IIDIAccessor)) return "IIDIAccessor";
@@ -5428,7 +5420,6 @@ public class Accessible {
 		if (COM.IsEqualGUID(guid, IIDIBindCtx)) return "IIDIBindCtx";
 		if (COM.IsEqualGUID(guid, COM.IIDIClassFactory)) return "IIDIClassFactory";
 		if (COM.IsEqualGUID(guid, COM.IIDIClassFactory2)) return "IIDIClassFactory2";
-		if (COM.IsEqualGUID(guid, COM.IIDIConnectionPoint)) return "IIDIConnectionPoint";
 		if (COM.IsEqualGUID(guid, COM.IIDIConnectionPointContainer)) return "IIDIConnectionPointContainer";
 		if (COM.IsEqualGUID(guid, IIDICreateErrorInfo)) return "IIDICreateErrorInfo";
 		if (COM.IsEqualGUID(guid, IIDICreateTypeInfo)) return "IIDICreateTypeInfo";
@@ -5454,7 +5445,6 @@ public class Accessible {
 		if (COM.IsEqualGUID(guid, IIDIErrorInfo)) return "IIDIErrorInfo";
 		if (COM.IsEqualGUID(guid, IIDIErrorLog)) return "IIDIErrorLog";
 		if (COM.IsEqualGUID(guid, IIDIExternalConnection)) return "IIDIExternalConnection";
-		if (COM.IsEqualGUID(guid, COM.IIDIFont)) return "IIDIFont";
 		if (COM.IsEqualGUID(guid, IIDIFontDisp)) return "IIDIFontDisp";
 	//	if (COM.IsEqualGUID(guid, COM.IIDIHTMLDocumentEvents2)) return "IIDIHTMLDocumentEvents2";
 		if (COM.IsEqualGUID(guid, COM.IIDIInternetSecurityManager)) return "IIDIInternetSecurityManager";
@@ -5472,20 +5462,16 @@ public class Accessible {
 		if (COM.IsEqualGUID(guid, IIDIOleCacheControl)) return "IIDIOleCacheControl";
 		if (COM.IsEqualGUID(guid, COM.IIDIOleClientSite)) return "IIDIOleClientSite";
 		if (COM.IsEqualGUID(guid, COM.IIDIOleCommandTarget)) return "IIDIOleCommandTarget";
-		if (COM.IsEqualGUID(guid, COM.IIDIOleContainer)) return "IIDIOleContainer";
 		if (COM.IsEqualGUID(guid, COM.IIDIOleControl)) return "IIDIOleControl";
 		if (COM.IsEqualGUID(guid, COM.IIDIOleControlSite)) return "IIDIOleControlSite";
 		if (COM.IsEqualGUID(guid, COM.IIDIOleDocument)) return "IIDIOleDocument";
 		if (COM.IsEqualGUID(guid, COM.IIDIOleDocumentSite)) return "IIDIOleDocumentSite";
-		if (COM.IsEqualGUID(guid, COM.IIDIOleInPlaceActiveObject)) return "IIDIOleInPlaceActiveObject";
 		if (COM.IsEqualGUID(guid, COM.IIDIOleInPlaceFrame)) return "IIDIOleInPlaceFrame";
 		if (COM.IsEqualGUID(guid, COM.IIDIOleInPlaceObject)) return "IIDIOleInPlaceObject";
 		if (COM.IsEqualGUID(guid, COM.IIDIOleInPlaceSite)) return "IIDIOleInPlaceSite";
-		if (COM.IsEqualGUID(guid, COM.IIDIOleInPlaceUIWindow)) return "IIDIOleInPlaceUIWindow";
 		if (COM.IsEqualGUID(guid, IIDIOleItemContainer)) return "IIDIOleItemContainer";
 		if (COM.IsEqualGUID(guid, COM.IIDIOleLink)) return "IIDIOleLink";
 		if (COM.IsEqualGUID(guid, COM.IIDIOleObject)) return "IIDIOleObject";
-		if (COM.IsEqualGUID(guid, COM.IIDIOleWindow)) return "IIDIOleWindow";
 		if (COM.IsEqualGUID(guid, IIDIParseDisplayName)) return "IIDIParseDisplayName";
 		if (COM.IsEqualGUID(guid, IIDIPerPropertyBrowsing)) return "IIDIPerPropertyBrowsing";
 		if (COM.IsEqualGUID(guid, COM.IIDIPersist)) return "IIDIPersist";
@@ -5493,7 +5479,6 @@ public class Accessible {
 		if (COM.IsEqualGUID(guid, IIDIPersistMemory)) return "IIDIPersistMemory";
 		if (COM.IsEqualGUID(guid, IIDIPersistPropertyBag)) return "IIDIPersistPropertyBag";
 		if (COM.IsEqualGUID(guid, COM.IIDIPersistStorage)) return "IIDIPersistStorage";
-		if (COM.IsEqualGUID(guid, COM.IIDIPersistStream)) return "IIDIPersistStream";
 		if (COM.IsEqualGUID(guid, COM.IIDIPersistStreamInit)) return "IIDIPersistStreamInit";
 		if (COM.IsEqualGUID(guid, IIDIPicture)) return "IIDIPicture";
 		if (COM.IsEqualGUID(guid, IIDIPictureDisp)) return "IIDIPictureDisp";
@@ -5516,8 +5501,6 @@ public class Accessible {
 		if (COM.IsEqualGUID(guid, COM.IIDIServiceProvider)) return "IIDIServiceProvider";
 		if (COM.IsEqualGUID(guid, COM.IIDISpecifyPropertyPages)) return "IIDISpecifyPropertyPages";
 		if (COM.IsEqualGUID(guid, IIDIStdMarshalInfo)) return "IIDIStdMarshalInfo";
-		if (COM.IsEqualGUID(guid, COM.IIDIStorage)) return "IIDIStorage";
-		if (COM.IsEqualGUID(guid, COM.IIDIStream)) return "IIDIStream";
 		if (COM.IsEqualGUID(guid, IIDISupportErrorInfo)) return "IIDISupportErrorInfo";
 		if (COM.IsEqualGUID(guid, IIDITypeComp)) return "IIDITypeComp";
 		if (COM.IsEqualGUID(guid, IIDITypeLib)) return "IIDITypeLib";

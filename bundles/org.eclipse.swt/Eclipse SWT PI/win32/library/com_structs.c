@@ -92,46 +92,6 @@ void setCONTROLINFOFields(JNIEnv *env, jobject lpObject, CONTROLINFO *lpStruct)
 }
 #endif
 
-#ifndef NO_COSERVERINFO
-typedef struct COSERVERINFO_FID_CACHE {
-	int cached;
-	jclass clazz;
-	jfieldID dwReserved1, pwszName, pAuthInfo, dwReserved2;
-} COSERVERINFO_FID_CACHE;
-
-COSERVERINFO_FID_CACHE COSERVERINFOFc;
-
-void cacheCOSERVERINFOFields(JNIEnv *env, jobject lpObject)
-{
-	if (COSERVERINFOFc.cached) return;
-	COSERVERINFOFc.clazz = (*env)->GetObjectClass(env, lpObject);
-	COSERVERINFOFc.dwReserved1 = (*env)->GetFieldID(env, COSERVERINFOFc.clazz, "dwReserved1", "I");
-	COSERVERINFOFc.pwszName = (*env)->GetFieldID(env, COSERVERINFOFc.clazz, "pwszName", "J");
-	COSERVERINFOFc.pAuthInfo = (*env)->GetFieldID(env, COSERVERINFOFc.clazz, "pAuthInfo", "J");
-	COSERVERINFOFc.dwReserved2 = (*env)->GetFieldID(env, COSERVERINFOFc.clazz, "dwReserved2", "I");
-	COSERVERINFOFc.cached = 1;
-}
-
-COSERVERINFO *getCOSERVERINFOFields(JNIEnv *env, jobject lpObject, COSERVERINFO *lpStruct)
-{
-	if (!COSERVERINFOFc.cached) cacheCOSERVERINFOFields(env, lpObject);
-	lpStruct->dwReserved1 = (*env)->GetIntField(env, lpObject, COSERVERINFOFc.dwReserved1);
-	lpStruct->pwszName = (LPWSTR)(*env)->GetLongField(env, lpObject, COSERVERINFOFc.pwszName);
-	lpStruct->pAuthInfo = (COAUTHINFO *)(*env)->GetLongField(env, lpObject, COSERVERINFOFc.pAuthInfo);
-	lpStruct->dwReserved2 = (*env)->GetIntField(env, lpObject, COSERVERINFOFc.dwReserved2);
-	return lpStruct;
-}
-
-void setCOSERVERINFOFields(JNIEnv *env, jobject lpObject, COSERVERINFO *lpStruct)
-{
-	if (!COSERVERINFOFc.cached) cacheCOSERVERINFOFields(env, lpObject);
-	(*env)->SetIntField(env, lpObject, COSERVERINFOFc.dwReserved1, (jint)lpStruct->dwReserved1);
-	(*env)->SetLongField(env, lpObject, COSERVERINFOFc.pwszName, (jlong)lpStruct->pwszName);
-	(*env)->SetLongField(env, lpObject, COSERVERINFOFc.pAuthInfo, (jlong)lpStruct->pAuthInfo);
-	(*env)->SetIntField(env, lpObject, COSERVERINFOFc.dwReserved2, (jint)lpStruct->dwReserved2);
-}
-#endif
-
 #ifndef NO_DISPPARAMS
 typedef struct DISPPARAMS_FID_CACHE {
 	int cached;
@@ -169,58 +129,6 @@ void setDISPPARAMSFields(JNIEnv *env, jobject lpObject, DISPPARAMS *lpStruct)
 	(*env)->SetLongField(env, lpObject, DISPPARAMSFc.rgdispidNamedArgs, (jlong)lpStruct->rgdispidNamedArgs);
 	(*env)->SetIntField(env, lpObject, DISPPARAMSFc.cArgs, (jint)lpStruct->cArgs);
 	(*env)->SetIntField(env, lpObject, DISPPARAMSFc.cNamedArgs, (jint)lpStruct->cNamedArgs);
-}
-#endif
-
-#ifndef NO_DVTARGETDEVICE
-typedef struct DVTARGETDEVICE_FID_CACHE {
-	int cached;
-	jclass clazz;
-	jfieldID tdSize, tdDriverNameOffset, tdDeviceNameOffset, tdPortNameOffset, tdExtDevmodeOffset, tdData;
-} DVTARGETDEVICE_FID_CACHE;
-
-DVTARGETDEVICE_FID_CACHE DVTARGETDEVICEFc;
-
-void cacheDVTARGETDEVICEFields(JNIEnv *env, jobject lpObject)
-{
-	if (DVTARGETDEVICEFc.cached) return;
-	DVTARGETDEVICEFc.clazz = (*env)->GetObjectClass(env, lpObject);
-	DVTARGETDEVICEFc.tdSize = (*env)->GetFieldID(env, DVTARGETDEVICEFc.clazz, "tdSize", "I");
-	DVTARGETDEVICEFc.tdDriverNameOffset = (*env)->GetFieldID(env, DVTARGETDEVICEFc.clazz, "tdDriverNameOffset", "S");
-	DVTARGETDEVICEFc.tdDeviceNameOffset = (*env)->GetFieldID(env, DVTARGETDEVICEFc.clazz, "tdDeviceNameOffset", "S");
-	DVTARGETDEVICEFc.tdPortNameOffset = (*env)->GetFieldID(env, DVTARGETDEVICEFc.clazz, "tdPortNameOffset", "S");
-	DVTARGETDEVICEFc.tdExtDevmodeOffset = (*env)->GetFieldID(env, DVTARGETDEVICEFc.clazz, "tdExtDevmodeOffset", "S");
-	DVTARGETDEVICEFc.tdData = (*env)->GetFieldID(env, DVTARGETDEVICEFc.clazz, "tdData", "[B");
-	DVTARGETDEVICEFc.cached = 1;
-}
-
-DVTARGETDEVICE *getDVTARGETDEVICEFields(JNIEnv *env, jobject lpObject, DVTARGETDEVICE *lpStruct)
-{
-	if (!DVTARGETDEVICEFc.cached) cacheDVTARGETDEVICEFields(env, lpObject);
-	lpStruct->tdSize = (*env)->GetIntField(env, lpObject, DVTARGETDEVICEFc.tdSize);
-	lpStruct->tdDriverNameOffset = (*env)->GetShortField(env, lpObject, DVTARGETDEVICEFc.tdDriverNameOffset);
-	lpStruct->tdDeviceNameOffset = (*env)->GetShortField(env, lpObject, DVTARGETDEVICEFc.tdDeviceNameOffset);
-	lpStruct->tdPortNameOffset = (*env)->GetShortField(env, lpObject, DVTARGETDEVICEFc.tdPortNameOffset);
-	lpStruct->tdExtDevmodeOffset = (*env)->GetShortField(env, lpObject, DVTARGETDEVICEFc.tdExtDevmodeOffset);
-	{
-	jbyteArray lpObject1 = (jbyteArray)(*env)->GetObjectField(env, lpObject, DVTARGETDEVICEFc.tdData);
-	(*env)->GetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->tdData), (jbyte *)lpStruct->tdData);
-	}
-	return lpStruct;
-}
-
-void setDVTARGETDEVICEFields(JNIEnv *env, jobject lpObject, DVTARGETDEVICE *lpStruct)
-{
-	if (!DVTARGETDEVICEFc.cached) cacheDVTARGETDEVICEFields(env, lpObject);
-	(*env)->SetIntField(env, lpObject, DVTARGETDEVICEFc.tdSize, (jint)lpStruct->tdSize);
-	(*env)->SetShortField(env, lpObject, DVTARGETDEVICEFc.tdDriverNameOffset, (jshort)lpStruct->tdDriverNameOffset);
-	(*env)->SetShortField(env, lpObject, DVTARGETDEVICEFc.tdDeviceNameOffset, (jshort)lpStruct->tdDeviceNameOffset);
-	(*env)->SetShortField(env, lpObject, DVTARGETDEVICEFc.tdPortNameOffset, (jshort)lpStruct->tdPortNameOffset);
-	(*env)->SetShortField(env, lpObject, DVTARGETDEVICEFc.tdExtDevmodeOffset, (jshort)lpStruct->tdExtDevmodeOffset);
-	{
-	jbyteArray lpObject1 = (jbyteArray)(*env)->GetObjectField(env, lpObject, DVTARGETDEVICEFc.tdData);
-	(*env)->SetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->tdData), (jbyte *)lpStruct->tdData);
-	}
 }
 #endif
 
@@ -512,52 +420,6 @@ void setOLECMDFields(JNIEnv *env, jobject lpObject, OLECMD *lpStruct)
 }
 #endif
 
-#ifndef NO_OLECMDTEXT
-typedef struct OLECMDTEXT_FID_CACHE {
-	int cached;
-	jclass clazz;
-	jfieldID cmdtextf, cwActual, cwBuf, rgwz;
-} OLECMDTEXT_FID_CACHE;
-
-OLECMDTEXT_FID_CACHE OLECMDTEXTFc;
-
-void cacheOLECMDTEXTFields(JNIEnv *env, jobject lpObject)
-{
-	if (OLECMDTEXTFc.cached) return;
-	OLECMDTEXTFc.clazz = (*env)->GetObjectClass(env, lpObject);
-	OLECMDTEXTFc.cmdtextf = (*env)->GetFieldID(env, OLECMDTEXTFc.clazz, "cmdtextf", "I");
-	OLECMDTEXTFc.cwActual = (*env)->GetFieldID(env, OLECMDTEXTFc.clazz, "cwActual", "I");
-	OLECMDTEXTFc.cwBuf = (*env)->GetFieldID(env, OLECMDTEXTFc.clazz, "cwBuf", "I");
-	OLECMDTEXTFc.rgwz = (*env)->GetFieldID(env, OLECMDTEXTFc.clazz, "rgwz", "[S");
-	OLECMDTEXTFc.cached = 1;
-}
-
-OLECMDTEXT *getOLECMDTEXTFields(JNIEnv *env, jobject lpObject, OLECMDTEXT *lpStruct)
-{
-	if (!OLECMDTEXTFc.cached) cacheOLECMDTEXTFields(env, lpObject);
-	lpStruct->cmdtextf = (*env)->GetIntField(env, lpObject, OLECMDTEXTFc.cmdtextf);
-	lpStruct->cwActual = (*env)->GetIntField(env, lpObject, OLECMDTEXTFc.cwActual);
-	lpStruct->cwBuf = (*env)->GetIntField(env, lpObject, OLECMDTEXTFc.cwBuf);
-	{
-	jshortArray lpObject1 = (jshortArray)(*env)->GetObjectField(env, lpObject, OLECMDTEXTFc.rgwz);
-	(*env)->GetShortArrayRegion(env, lpObject1, 0, sizeof(lpStruct->rgwz) / sizeof(jshort), (jshort *)lpStruct->rgwz);
-	}
-	return lpStruct;
-}
-
-void setOLECMDTEXTFields(JNIEnv *env, jobject lpObject, OLECMDTEXT *lpStruct)
-{
-	if (!OLECMDTEXTFc.cached) cacheOLECMDTEXTFields(env, lpObject);
-	(*env)->SetIntField(env, lpObject, OLECMDTEXTFc.cmdtextf, (jint)lpStruct->cmdtextf);
-	(*env)->SetIntField(env, lpObject, OLECMDTEXTFc.cwActual, (jint)lpStruct->cwActual);
-	(*env)->SetIntField(env, lpObject, OLECMDTEXTFc.cwBuf, (jint)lpStruct->cwBuf);
-	{
-	jshortArray lpObject1 = (jshortArray)(*env)->GetObjectField(env, lpObject, OLECMDTEXTFc.rgwz);
-	(*env)->SetShortArrayRegion(env, lpObject1, 0, sizeof(lpStruct->rgwz) / sizeof(jshort), (jshort *)lpStruct->rgwz);
-	}
-}
-#endif
-
 #ifndef NO_OLEINPLACEFRAMEINFO
 typedef struct OLEINPLACEFRAMEINFO_FID_CACHE {
 	int cached;
@@ -598,91 +460,6 @@ void setOLEINPLACEFRAMEINFOFields(JNIEnv *env, jobject lpObject, OLEINPLACEFRAME
 	(*env)->SetLongField(env, lpObject, OLEINPLACEFRAMEINFOFc.hwndFrame, (jlong)lpStruct->hwndFrame);
 	(*env)->SetLongField(env, lpObject, OLEINPLACEFRAMEINFOFc.haccel, (jlong)lpStruct->haccel);
 	(*env)->SetIntField(env, lpObject, OLEINPLACEFRAMEINFOFc.cAccelEntries, (jint)lpStruct->cAccelEntries);
-}
-#endif
-
-#ifndef NO_STATSTG
-typedef struct STATSTG_FID_CACHE {
-	int cached;
-	jclass clazz;
-	jfieldID pwcsName, type, cbSize, mtime_dwLowDateTime, mtime_dwHighDateTime, ctime_dwLowDateTime, ctime_dwHighDateTime, atime_dwLowDateTime, atime_dwHighDateTime, grfMode, grfLocksSupported, clsid_Data1, clsid_Data2, clsid_Data3, clsid_Data4, grfStateBits, reserved;
-} STATSTG_FID_CACHE;
-
-STATSTG_FID_CACHE STATSTGFc;
-
-void cacheSTATSTGFields(JNIEnv *env, jobject lpObject)
-{
-	if (STATSTGFc.cached) return;
-	STATSTGFc.clazz = (*env)->GetObjectClass(env, lpObject);
-	STATSTGFc.pwcsName = (*env)->GetFieldID(env, STATSTGFc.clazz, "pwcsName", "J");
-	STATSTGFc.type = (*env)->GetFieldID(env, STATSTGFc.clazz, "type", "I");
-	STATSTGFc.cbSize = (*env)->GetFieldID(env, STATSTGFc.clazz, "cbSize", "J");
-	STATSTGFc.mtime_dwLowDateTime = (*env)->GetFieldID(env, STATSTGFc.clazz, "mtime_dwLowDateTime", "I");
-	STATSTGFc.mtime_dwHighDateTime = (*env)->GetFieldID(env, STATSTGFc.clazz, "mtime_dwHighDateTime", "I");
-	STATSTGFc.ctime_dwLowDateTime = (*env)->GetFieldID(env, STATSTGFc.clazz, "ctime_dwLowDateTime", "I");
-	STATSTGFc.ctime_dwHighDateTime = (*env)->GetFieldID(env, STATSTGFc.clazz, "ctime_dwHighDateTime", "I");
-	STATSTGFc.atime_dwLowDateTime = (*env)->GetFieldID(env, STATSTGFc.clazz, "atime_dwLowDateTime", "I");
-	STATSTGFc.atime_dwHighDateTime = (*env)->GetFieldID(env, STATSTGFc.clazz, "atime_dwHighDateTime", "I");
-	STATSTGFc.grfMode = (*env)->GetFieldID(env, STATSTGFc.clazz, "grfMode", "I");
-	STATSTGFc.grfLocksSupported = (*env)->GetFieldID(env, STATSTGFc.clazz, "grfLocksSupported", "I");
-	STATSTGFc.clsid_Data1 = (*env)->GetFieldID(env, STATSTGFc.clazz, "clsid_Data1", "I");
-	STATSTGFc.clsid_Data2 = (*env)->GetFieldID(env, STATSTGFc.clazz, "clsid_Data2", "S");
-	STATSTGFc.clsid_Data3 = (*env)->GetFieldID(env, STATSTGFc.clazz, "clsid_Data3", "S");
-	STATSTGFc.clsid_Data4 = (*env)->GetFieldID(env, STATSTGFc.clazz, "clsid_Data4", "[B");
-	STATSTGFc.grfStateBits = (*env)->GetFieldID(env, STATSTGFc.clazz, "grfStateBits", "I");
-	STATSTGFc.reserved = (*env)->GetFieldID(env, STATSTGFc.clazz, "reserved", "I");
-	STATSTGFc.cached = 1;
-}
-
-STATSTG *getSTATSTGFields(JNIEnv *env, jobject lpObject, STATSTG *lpStruct)
-{
-	if (!STATSTGFc.cached) cacheSTATSTGFields(env, lpObject);
-	lpStruct->pwcsName = (LPWSTR)(*env)->GetLongField(env, lpObject, STATSTGFc.pwcsName);
-	lpStruct->type = (*env)->GetIntField(env, lpObject, STATSTGFc.type);
-	lpStruct->cbSize.QuadPart = (*env)->GetLongField(env, lpObject, STATSTGFc.cbSize);
-	lpStruct->mtime.dwLowDateTime = (*env)->GetIntField(env, lpObject, STATSTGFc.mtime_dwLowDateTime);
-	lpStruct->mtime.dwHighDateTime = (*env)->GetIntField(env, lpObject, STATSTGFc.mtime_dwHighDateTime);
-	lpStruct->ctime.dwLowDateTime = (*env)->GetIntField(env, lpObject, STATSTGFc.ctime_dwLowDateTime);
-	lpStruct->ctime.dwHighDateTime = (*env)->GetIntField(env, lpObject, STATSTGFc.ctime_dwHighDateTime);
-	lpStruct->atime.dwLowDateTime = (*env)->GetIntField(env, lpObject, STATSTGFc.atime_dwLowDateTime);
-	lpStruct->atime.dwHighDateTime = (*env)->GetIntField(env, lpObject, STATSTGFc.atime_dwHighDateTime);
-	lpStruct->grfMode = (*env)->GetIntField(env, lpObject, STATSTGFc.grfMode);
-	lpStruct->grfLocksSupported = (*env)->GetIntField(env, lpObject, STATSTGFc.grfLocksSupported);
-	lpStruct->clsid.Data1 = (*env)->GetIntField(env, lpObject, STATSTGFc.clsid_Data1);
-	lpStruct->clsid.Data2 = (*env)->GetShortField(env, lpObject, STATSTGFc.clsid_Data2);
-	lpStruct->clsid.Data3 = (*env)->GetShortField(env, lpObject, STATSTGFc.clsid_Data3);
-	{
-	jbyteArray lpObject1 = (jbyteArray)(*env)->GetObjectField(env, lpObject, STATSTGFc.clsid_Data4);
-	(*env)->GetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->clsid.Data4), (jbyte *)lpStruct->clsid.Data4);
-	}
-	lpStruct->grfStateBits = (*env)->GetIntField(env, lpObject, STATSTGFc.grfStateBits);
-	lpStruct->reserved = (*env)->GetIntField(env, lpObject, STATSTGFc.reserved);
-	return lpStruct;
-}
-
-void setSTATSTGFields(JNIEnv *env, jobject lpObject, STATSTG *lpStruct)
-{
-	if (!STATSTGFc.cached) cacheSTATSTGFields(env, lpObject);
-	(*env)->SetLongField(env, lpObject, STATSTGFc.pwcsName, (jlong)lpStruct->pwcsName);
-	(*env)->SetIntField(env, lpObject, STATSTGFc.type, (jint)lpStruct->type);
-	(*env)->SetLongField(env, lpObject, STATSTGFc.cbSize, (jlong)lpStruct->cbSize.QuadPart);
-	(*env)->SetIntField(env, lpObject, STATSTGFc.mtime_dwLowDateTime, (jint)lpStruct->mtime.dwLowDateTime);
-	(*env)->SetIntField(env, lpObject, STATSTGFc.mtime_dwHighDateTime, (jint)lpStruct->mtime.dwHighDateTime);
-	(*env)->SetIntField(env, lpObject, STATSTGFc.ctime_dwLowDateTime, (jint)lpStruct->ctime.dwLowDateTime);
-	(*env)->SetIntField(env, lpObject, STATSTGFc.ctime_dwHighDateTime, (jint)lpStruct->ctime.dwHighDateTime);
-	(*env)->SetIntField(env, lpObject, STATSTGFc.atime_dwLowDateTime, (jint)lpStruct->atime.dwLowDateTime);
-	(*env)->SetIntField(env, lpObject, STATSTGFc.atime_dwHighDateTime, (jint)lpStruct->atime.dwHighDateTime);
-	(*env)->SetIntField(env, lpObject, STATSTGFc.grfMode, (jint)lpStruct->grfMode);
-	(*env)->SetIntField(env, lpObject, STATSTGFc.grfLocksSupported, (jint)lpStruct->grfLocksSupported);
-	(*env)->SetIntField(env, lpObject, STATSTGFc.clsid_Data1, (jint)lpStruct->clsid.Data1);
-	(*env)->SetShortField(env, lpObject, STATSTGFc.clsid_Data2, (jshort)lpStruct->clsid.Data2);
-	(*env)->SetShortField(env, lpObject, STATSTGFc.clsid_Data3, (jshort)lpStruct->clsid.Data3);
-	{
-	jbyteArray lpObject1 = (jbyteArray)(*env)->GetObjectField(env, lpObject, STATSTGFc.clsid_Data4);
-	(*env)->SetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->clsid.Data4), (jbyte *)lpStruct->clsid.Data4);
-	}
-	(*env)->SetIntField(env, lpObject, STATSTGFc.grfStateBits, (jint)lpStruct->grfStateBits);
-	(*env)->SetIntField(env, lpObject, STATSTGFc.reserved, (jint)lpStruct->reserved);
 }
 #endif
 

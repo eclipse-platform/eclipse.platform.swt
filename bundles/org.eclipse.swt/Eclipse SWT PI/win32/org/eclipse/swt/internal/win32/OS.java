@@ -303,9 +303,6 @@ public class OS extends C {
 	public static final int CLR_DEFAULT = 0xff000000;
 	public static final int CLR_INVALID = 0xffffffff;
 	public static final int CLR_NONE = 0xffffffff;
-	public static final int CLSCTX_INPROC_SERVER = 1;
-	public static final int CSIDL_APPDATA = 0x1a;
-	public static final int CSIDL_LOCAL_APPDATA = 0x1c;
 	public static final int COLORONCOLOR = 0x3;
 	public static final int COLOR_3DDKSHADOW = 0x15;
 	public static final int COLOR_3DFACE = 0xf;
@@ -368,7 +365,6 @@ public class OS extends C {
 	public static final int DFC_BUTTON = 0x4;
 	public static final int DFC_SCROLL = 0x3;
 	public static final int DIB_RGB_COLORS = 0x0;
-	public static final int DISP_E_EXCEPTION = 0x80020009;
 	public static final int DI_NORMAL = 0x3;
 	public static final int DI_NOMIRROR = 0x10;
 	public static final int DLGC_BUTTON = 0x2000;

@@ -20,7 +20,7 @@ public class IViewObject2 extends IUnknown
 public IViewObject2(long address) {
 	super(address);
 }
-public int GetExtent(int dwAspect, int lindex, DVTARGETDEVICE ptd, SIZE lpsizel) {
+public int GetExtent(int dwAspect, int lindex, long ptd, SIZE lpsizel) {
 	return COM.VtblCall(9, address, dwAspect, lindex, ptd, lpsizel);
 }
 public int SetAdvise(int dwAspects, int dwAdvf, long pIAdviseSink) {

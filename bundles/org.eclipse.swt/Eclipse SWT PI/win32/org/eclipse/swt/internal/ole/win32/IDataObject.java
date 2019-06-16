@@ -27,20 +27,7 @@ public int GetData(FORMATETC pFormatetc, STGMEDIUM pmedium) {
 	//The caller then assumes responsibility for releasing the STGMEDIUM structure.
 	return COM.VtblCall(3, address, pFormatetc, pmedium);
 }
-public int GetDataHere(FORMATETC pFormatetc, STGMEDIUM pmedium) {
-	//Called by a data consumer to obtain data from a source data object.
-	//This method differs from the GetData method in that the caller must
-	//allocate and free the specified storage medium.
-	return COM.VtblCall(4, address, pFormatetc, pmedium);
-}
 public int QueryGetData(FORMATETC pFormatetc) {
 	return COM.VtblCall(5, address, pFormatetc);
-}
-public int SetData(
-	FORMATETC pFormatetc,  // Pointer to the FORMATETC structure
-	STGMEDIUM pmedium,     // Pointer to STGMEDIUM structure
-	boolean fRelease     // Indicates which object owns the storage medium after the call is completed
-	){
-	return COM.VtblCall(7, address, pFormatetc, pmedium, fRelease);
 }
 }

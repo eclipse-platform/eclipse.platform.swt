@@ -30,7 +30,7 @@ public int QueryStatus(
 	GUID       pguidCmdGroup, // Pointer to command group
 	int        cCmds,         // Number of commands in prgCmds array
 	OLECMD     prgCmds,       // Array of commands
-	OLECMDTEXT pCmdText       // Pointer to name or status of command
+	long       pCmdText       // Pointer to name or status of command
 ){
 	// we only support querying for one command at a time
 	if (cCmds > 1) return COM.E_INVALIDARG;

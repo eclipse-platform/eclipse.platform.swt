@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2016 IBM Corporation and others.
+ * Copyright (c) 2000, 2019 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -41,18 +41,6 @@ void setCONTROLINFOFields(JNIEnv *env, jobject lpObject, CONTROLINFO *lpStruct);
 #define CONTROLINFO_sizeof() 0
 #endif
 
-#ifndef NO_COSERVERINFO
-void cacheCOSERVERINFOFields(JNIEnv *env, jobject lpObject);
-COSERVERINFO *getCOSERVERINFOFields(JNIEnv *env, jobject lpObject, COSERVERINFO *lpStruct);
-void setCOSERVERINFOFields(JNIEnv *env, jobject lpObject, COSERVERINFO *lpStruct);
-#define COSERVERINFO_sizeof() sizeof(COSERVERINFO)
-#else
-#define cacheCOSERVERINFOFields(a,b)
-#define getCOSERVERINFOFields(a,b,c) NULL
-#define setCOSERVERINFOFields(a,b,c)
-#define COSERVERINFO_sizeof() 0
-#endif
-
 #ifndef NO_DISPPARAMS
 void cacheDISPPARAMSFields(JNIEnv *env, jobject lpObject);
 DISPPARAMS *getDISPPARAMSFields(JNIEnv *env, jobject lpObject, DISPPARAMS *lpStruct);
@@ -63,18 +51,6 @@ void setDISPPARAMSFields(JNIEnv *env, jobject lpObject, DISPPARAMS *lpStruct);
 #define getDISPPARAMSFields(a,b,c) NULL
 #define setDISPPARAMSFields(a,b,c)
 #define DISPPARAMS_sizeof() 0
-#endif
-
-#ifndef NO_DVTARGETDEVICE
-void cacheDVTARGETDEVICEFields(JNIEnv *env, jobject lpObject);
-DVTARGETDEVICE *getDVTARGETDEVICEFields(JNIEnv *env, jobject lpObject, DVTARGETDEVICE *lpStruct);
-void setDVTARGETDEVICEFields(JNIEnv *env, jobject lpObject, DVTARGETDEVICE *lpStruct);
-#define DVTARGETDEVICE_sizeof() sizeof(DVTARGETDEVICE)
-#else
-#define cacheDVTARGETDEVICEFields(a,b)
-#define getDVTARGETDEVICEFields(a,b,c) NULL
-#define setDVTARGETDEVICEFields(a,b,c)
-#define DVTARGETDEVICE_sizeof() 0
 #endif
 
 #ifndef NO_EXCEPINFO
@@ -149,18 +125,6 @@ void setOLECMDFields(JNIEnv *env, jobject lpObject, OLECMD *lpStruct);
 #define OLECMD_sizeof() 0
 #endif
 
-#ifndef NO_OLECMDTEXT
-void cacheOLECMDTEXTFields(JNIEnv *env, jobject lpObject);
-OLECMDTEXT *getOLECMDTEXTFields(JNIEnv *env, jobject lpObject, OLECMDTEXT *lpStruct);
-void setOLECMDTEXTFields(JNIEnv *env, jobject lpObject, OLECMDTEXT *lpStruct);
-#define OLECMDTEXT_sizeof() sizeof(OLECMDTEXT)
-#else
-#define cacheOLECMDTEXTFields(a,b)
-#define getOLECMDTEXTFields(a,b,c) NULL
-#define setOLECMDTEXTFields(a,b,c)
-#define OLECMDTEXT_sizeof() 0
-#endif
-
 #ifndef NO_OLEINPLACEFRAMEINFO
 void cacheOLEINPLACEFRAMEINFOFields(JNIEnv *env, jobject lpObject);
 OLEINPLACEFRAMEINFO *getOLEINPLACEFRAMEINFOFields(JNIEnv *env, jobject lpObject, OLEINPLACEFRAMEINFO *lpStruct);
@@ -171,18 +135,6 @@ void setOLEINPLACEFRAMEINFOFields(JNIEnv *env, jobject lpObject, OLEINPLACEFRAME
 #define getOLEINPLACEFRAMEINFOFields(a,b,c) NULL
 #define setOLEINPLACEFRAMEINFOFields(a,b,c)
 #define OLEINPLACEFRAMEINFO_sizeof() 0
-#endif
-
-#ifndef NO_STATSTG
-void cacheSTATSTGFields(JNIEnv *env, jobject lpObject);
-STATSTG *getSTATSTGFields(JNIEnv *env, jobject lpObject, STATSTG *lpStruct);
-void setSTATSTGFields(JNIEnv *env, jobject lpObject, STATSTG *lpStruct);
-#define STATSTG_sizeof() sizeof(STATSTG)
-#else
-#define cacheSTATSTGFields(a,b)
-#define getSTATSTGFields(a,b,c) NULL
-#define setSTATSTGFields(a,b,c)
-#define STATSTG_sizeof() 0
 #endif
 
 #ifndef NO_STGMEDIUM

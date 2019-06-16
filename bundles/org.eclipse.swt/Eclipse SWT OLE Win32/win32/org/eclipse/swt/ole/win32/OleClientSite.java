@@ -477,8 +477,7 @@ protected void addObjectReferences() {
 		IOleLink objIOleLink = new IOleLink(ppvObject[0]);
 		long[] ppmk = new long[1];
 		if (objIOleLink.GetSourceMoniker(ppmk) == COM.S_OK) {
-			IMoniker objIMoniker = new IMoniker(ppmk[0]);
-			objIMoniker.Release();
+			new IUnknown(ppmk[0]).Release();
 			type = COM.OLELINKED;
 			objIOleLink.BindIfRunning();
 		} else {
@@ -736,7 +735,7 @@ private SIZE getExtent() {
 	// get the current size of the embedded OLENatives object
 	if (objIOleObject != null) {
 		if ( objIViewObject2 != null && !COM.OleIsRunning(objIOleObject.getAddress())) {
-			objIViewObject2.GetExtent(aspect, -1, null, sizel);
+			objIViewObject2.GetExtent(aspect, -1, 0, sizel);
 		} else {
 			objIOleObject.GetExtent(aspect, sizel);
 		}
@@ -1122,7 +1121,7 @@ public int queryStatus(int cmd) {
 	OLECMD olecmd = new OLECMD();
 	olecmd.cmdID = cmd;
 
-	int result = objIOleCommandTarget.QueryStatus(null, 1, olecmd, null);
+	int result = objIOleCommandTarget.QueryStatus(null, 1, olecmd, 0);
 
 	if (result != COM.S_OK) return 0;
 

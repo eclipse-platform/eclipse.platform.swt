@@ -18,9 +18,6 @@ public class IPersistStorage extends IPersist
 public IPersistStorage(long address) {
 	super(address);
 }
-public int IsDirty() {
-	return COM.VtblCall(4, address);
-}
 public int InitNew(long pStg) {
 	return COM.VtblCall(5, address, pStg);
 }
@@ -28,7 +25,7 @@ public int Load(long pStg) {
 	return COM.VtblCall(6, address, pStg);
 }
 public int Save(long pStgSave, boolean fSameAsLoad) {
-	return COM.VtblCall(7, address, pStgSave, fSameAsLoad);
+	return COM.VtblCall(7, address, pStgSave, fSameAsLoad ? 1 : 0);
 }
 public int SaveCompleted(long pStgNew) {
 	return COM.VtblCall(8, address, pStgNew);
