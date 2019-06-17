@@ -334,7 +334,7 @@ public class MJ_Tree extends MJ_root {
 		Shell shell = mkShell("column SetGet Width : Make shell smaller and bigger. If you don't see COL_SIZE_ERROR in console, all is well.");
 		shell.setSize(SWIDTH, SHEIGHT);
 		shell.setLayout(new FillLayout());
-		StringBuffer sbBuffer = new StringBuffer();
+		StringBuilder sbBuffer = new StringBuilder();
 
 		final Composite comp = new Composite(shell, SWT.NONE);
 		final Tree tree = new Tree(comp, SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL | SWT.SINGLE | SWT.FULL_SELECTION);

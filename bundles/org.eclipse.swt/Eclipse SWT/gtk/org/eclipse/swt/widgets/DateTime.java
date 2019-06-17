@@ -1817,7 +1817,7 @@ boolean onNumberKeyInput(int key) {
 		}
 		typeBufferPos++;
 	}
-	StringBuffer newText = new StringBuffer(prefix);
+	StringBuilder newText = new StringBuilder(prefix);
 	newText.append(typeBuffer);
 	newText.append(suffix);
 	setText(newText.toString());
