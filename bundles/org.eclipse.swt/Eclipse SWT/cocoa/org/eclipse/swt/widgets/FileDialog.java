@@ -50,7 +50,7 @@ public class FileDialog extends Dialog {
 	String [] fileNames = new String[0];
 	String filterPath = "", fileName = "";
 	String fullPath;
-	SWTPanelDelegate delegate = null;
+	SWTOpenSavePanelDelegate delegate = null;
 	int filterIndex = -1;
 	long jniRef = 0;
 	long method = 0;
@@ -286,7 +286,6 @@ public String open () {
 		openPanel.setAllowsMultipleSelection((style & SWT.MULTI) != 0);
 		panel = openPanel;
 	}
-
 	panel.setCanCreateDirectories(true);
 	/*
 	 * This line is intentionally commented. Don't show hidden files forcefully,
@@ -296,7 +295,7 @@ public String open () {
 	jniRef = 0;
 	delegate = null;
 	if (filterExtensions != null && filterExtensions.length != 0) {
-		delegate = (SWTPanelDelegate)new SWTPanelDelegate().alloc().init();
+		delegate = (SWTOpenSavePanelDelegate)new SWTOpenSavePanelDelegate().alloc().init();
 		jniRef = OS.NewGlobalRef(this);
 		if (jniRef == 0) error(SWT.ERROR_NO_HANDLES);
 		OS.object_setInstanceVariable(delegate.id, Display.SWT_OBJECT, jniRef);
@@ -353,12 +352,13 @@ public String open () {
 	return fullPath;
 }
 
-long panel_shouldShowFilename (long id, long sel, long arg0, long arg1) {
+long panel_shouldEnableURL (long id, long sel, long arg0, long arg1) {
 	if ((style & SWT.SAVE) != 0) {
 		/* All filenames are always disabled in the NSSavePanel, so return from here. */
 		return 1;
 	}
-	NSString path = new NSString(arg1);
+	NSURL url = new NSURL(arg1);
+	NSString path = url.path();
 	if (filterExtensions != null && filterExtensions.length != 0) {
 		NSFileManager manager = NSFileManager.defaultManager();
 		long ptr = C.malloc(1);

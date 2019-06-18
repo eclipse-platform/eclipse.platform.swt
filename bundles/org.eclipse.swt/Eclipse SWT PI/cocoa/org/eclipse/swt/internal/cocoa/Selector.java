@@ -824,7 +824,7 @@ public enum Selector {
 	, sel_pageDown_("pageDown:")
 	, sel_pageTitle("pageTitle")
 	, sel_pageUp_("pageUp:")
-	, sel_panel_shouldShowFilename_("panel:shouldShowFilename:")
+	, sel_panel_shouldEnableURL_("panel:shouldEnableURL:")
 	, sel_panelConvertFont_("panelConvertFont:")
 	, sel_paperSize("paperSize")
 	, sel_paragraphs("paragraphs")

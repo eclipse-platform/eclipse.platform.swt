@@ -2680,6 +2680,13 @@ void initClasses () {
 	createMenuSubclass(OS.class_NSMenu, "SWTMenu", false);
 	createMenuItemSubclass(OS.class_NSMenuItem, "SWTMenuItem", false);
 
+	className = "SWTOpenSavePanelDelegate";
+	cls = OS.objc_allocateClassPair(OS.class_NSObject, className, 0);
+	OS.class_addIvar(cls, SWT_OBJECT, size, (byte)align, types);
+	OS.class_addMethod(cls, OS.sel_sendSelection_, dialogProc3, "@:@");
+	OS.class_addMethod(cls, OS.sel_panel_shouldEnableURL_, dialogProc4, "@:@@");
+	OS.objc_registerClassPair(cls);
+
 	className = "SWTOutlineView";
 	cls = OS.objc_allocateClassPair(OS.class_NSOutlineView, className, 0);
 	OS.class_addIvar(cls, SWT_OBJECT, size, (byte)align, types);
@@ -2726,7 +2733,6 @@ void initClasses () {
 	OS.class_addMethod(cls, OS.sel_changeFont_, dialogProc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_validModesForFontPanel_, dialogProc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_sendSelection_, dialogProc3, "@:@");
-	OS.class_addMethod(cls, OS.sel_panel_shouldShowFilename_, dialogProc4, "@:@@");
 	OS.class_addMethod(cls, OS.sel_panelDidEnd_returnCode_contextInfo_, dialogProc5, "@:@i@");
 	OS.objc_registerClassPair(cls);
 
@@ -5724,10 +5730,10 @@ static long dialogProc(long id, long sel, long arg0, long arg1) {
 	long [] jniRef = new long [1];
 	OS.object_getInstanceVariable(id, SWT_OBJECT, jniRef);
 	if (jniRef[0] == 0) return 0;
-	if (sel == OS.sel_panel_shouldShowFilename_) {
+	if (sel == OS.sel_panel_shouldEnableURL_) {
 		FileDialog dialog = (FileDialog)OS.JNIGetObject(jniRef[0]);
 		if (dialog == null) return 0;
-		return dialog.panel_shouldShowFilename(id, sel, arg0, arg1);
+		return dialog.panel_shouldEnableURL(id, sel, arg0, arg1);
 	}
 	if (sel == OS.sel_setColor_forAttribute_) {
 		FontDialog dialog = (FontDialog)OS.JNIGetObject(jniRef[0]);
