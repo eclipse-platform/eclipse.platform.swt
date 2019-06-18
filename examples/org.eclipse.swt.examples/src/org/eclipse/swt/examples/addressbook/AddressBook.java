@@ -172,7 +172,7 @@ private String[] decodeLine(String line) {
 		}
 	}
 
-	if (line.indexOf(DELIMITER) != -1) return null;
+	if (line.contains(DELIMITER)) return null;
 
 	parsedLine[parsedLine.length - 1] = line;
 
@@ -247,7 +247,7 @@ private boolean findMatch(String searchString, TableItem item, int column, boole
 		}
 
 	} else {
-		if(tableText!= null && tableText.indexOf(searchString) != -1) {
+		if(tableText!= null && tableText.contains(searchString)) {
 			return true;
 		}
 	}

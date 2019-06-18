@@ -58,19 +58,19 @@ public class SnippetLauncher {
 						System.out.println(source.substring(start, end-3));
 						boolean skip = false;
 						String platform = SWT.getPlatform();
-						if (source.indexOf("PocketPC") != -1) {
+						if (source.contains("PocketPC")) {
 							platform = "PocketPC";
 							skip = true;
-						} else if (source.indexOf("OpenGL") != -1) {
+						} else if (source.contains("OpenGL")) {
 							platform = "OpenGL";
 							skip = true;
-						} else if (source.indexOf("JavaXPCOM") != -1) {
+						} else if (source.contains("JavaXPCOM")) {
 							platform = "JavaXPCOM";
 							skip = true;
 						} else {
 							String [] platforms = {"win32", "gtk"};
 							for (int p = 0; p < platforms.length; p++) {
-								if (!platforms[p].equals(platform) && source.indexOf("." + platforms[p]) != -1) {
+								if (!platforms[p].equals(platform) && source.contains("." + platforms[p])) {
 									platform = platforms[p];
 									skip = true;
 									break;

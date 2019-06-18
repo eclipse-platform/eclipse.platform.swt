@@ -226,7 +226,7 @@ static boolean isLoadable () {
 
 static boolean load (String libName, StringBuilder message) {
 	try {
-		if (libName.indexOf (SEPARATOR) != -1) {
+		if (libName.contains (SEPARATOR)) {
 			System.load (libName);
 		} else {
 			System.loadLibrary (libName);

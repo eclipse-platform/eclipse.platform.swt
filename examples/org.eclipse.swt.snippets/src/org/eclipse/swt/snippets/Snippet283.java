@@ -68,8 +68,8 @@ public class Snippet283 {
 		table.addListener(SWT.EraseItem, event -> {
 			event.detail &= ~SWT.FOREGROUND;
 			String osName = System.getProperty("os.name");
-			if (osName != null && osName.indexOf ("Windows") != -1) {
-				if (osName.indexOf ("Vista") != -1 || osName.indexOf ("unknown") != -1) {
+			if (osName != null && osName.contains ("Windows")) {
+				if (osName.contains ("Vista") || osName.contains ("unknown")) {
 					return;
 				}
 			}

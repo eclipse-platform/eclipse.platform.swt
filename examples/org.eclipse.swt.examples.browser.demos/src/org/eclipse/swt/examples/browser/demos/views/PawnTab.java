@@ -143,8 +143,8 @@ public class PawnTab {
 		public void changing(LocationEvent e) {
 			try {
 			final Browser browser = (Browser)e.widget;
-			if (e.location.indexOf(ACTION_START_1_PLAYER) != -1 || e.location.indexOf(ACTION_START_2_PLAYERS) != -1) {
-				computer = e.location.indexOf(ACTION_START_1_PLAYER) != -1;
+			if (e.location.contains(ACTION_START_1_PLAYER) || e.location.contains(ACTION_START_2_PLAYERS)) {
+				computer = e.location.contains(ACTION_START_1_PLAYER);
 				game = new byte[8][8];
 				if (computer) ttr = new Pawns();
 				for (int i = 0; i < 5; i++) game[(int)(Math.random()*game.length)][(int)(Math.random()*game[0].length)] = WALL;
@@ -152,7 +152,7 @@ public class PawnTab {
 				e.doit = false;
 				return;
 			}
-			if (e.location.indexOf(ACTION_THEME) != -1) {
+			if (e.location.contains(ACTION_THEME)) {
 				int index = e.location.indexOf(ACTION_THEME) + ACTION_THEME.length() + 1;
 				CSS_FOLDER = e.location.substring(index, index + 4);
 				URL_CSS = PLUGIN_PATH+CSS_FOLDER+"/style.css";
@@ -162,8 +162,8 @@ public class PawnTab {
 				return;
 			}
 			byte player = EMPTY;
-			if (e.location.indexOf(ACTION_WHITE) != -1) player = WHITE;
-			else if (e.location.indexOf(ACTION_BLACK) != -1) player = BLACK;
+			if (e.location.contains(ACTION_WHITE)) player = WHITE;
+			else if (e.location.contains(ACTION_BLACK)) player = BLACK;
 			if (player != EMPTY) {
 				int index = e.location.indexOf("xx") + 2;
 				int x = Integer.parseInt(e.location.substring(index, index + 1));

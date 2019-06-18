@@ -65,7 +65,7 @@ public void test_getMessage() {
 	assertTrue (
 		"did not include creation string in result",
 		new SWTException(SWT.ERROR_CANNOT_BE_ZERO, "An interesting message").getMessage()
-			.indexOf("An interesting message") >= 0);
+			.contains("An interesting message"));
 }
 
 @Test
@@ -87,7 +87,7 @@ public void test_printStackTrace() {
 	SWTException error = new SWTException();
 	error.printStackTrace();
 	assertTrue(out.size() > 0);
-	assertTrue(new String(out.toByteArray()).indexOf("test_printStackTrace") != -1);
+	assertTrue(new String(out.toByteArray()).contains("test_printStackTrace"));
 
 	// test SWTException with code
 
@@ -96,6 +96,6 @@ public void test_printStackTrace() {
 	error = new SWTException(SWT.ERROR_INVALID_ARGUMENT);
 	error.printStackTrace();
 	assertTrue(out.size() > 0);
-	assertTrue(new String(out.toByteArray()).indexOf("test_printStackTrace") != -1);
+	assertTrue(new String(out.toByteArray()).contains("test_printStackTrace"));
 }
 }

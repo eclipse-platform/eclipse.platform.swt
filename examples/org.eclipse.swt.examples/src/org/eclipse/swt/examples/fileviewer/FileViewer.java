@@ -1269,7 +1269,7 @@ public class FileViewer {
 		 * On JDK 1.1.7 and beyond...
 		 * -- PORTABILITY ISSUES HERE --
 		 */
-		if (System.getProperty ("os.name").indexOf ("Windows") != -1) {
+		if (System.getProperty ("os.name").contains ("Windows")) {
 			List<File> list = new ArrayList<>();
 			list.add(new File(DRIVE_A));
 			list.add(new File(DRIVE_B));
