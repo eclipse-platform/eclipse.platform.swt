@@ -41,14 +41,14 @@ public ReflectField(ReflectClass declaringClass, Field field, String source, Com
 				VariableDeclarationFragment decl = (VariableDeclarationFragment) iterator.next();
 				if (decl.getName().getIdentifier().equals(field.getName())) {
 					String s = source.substring(node.getStartPosition(), node.getStartPosition() + node.getLength());
-					if (clazz == int.class && s.indexOf("int /*long*/") != -1) type64 = new ReflectType(long.class);
-					else if (clazz == float.class && s.indexOf("float /*double*/") != -1) type64 = new ReflectType(double.class);
-					else if (clazz == int[].class && (s.indexOf("int /*long*/") != -1 || s.indexOf("int[] /*long[]*/") != -1)) type64 = new ReflectType(long[].class);
-					else if (clazz == float[].class && (s.indexOf("float /*double*/") != -1|| s.indexOf("float[] /*double[]*/") != -1)) type = new ReflectType(double[].class);
-					else if (clazz == long.class && s.indexOf("long /*int*/") != -1) type = new ReflectType(int.class);
-					else if (clazz == double.class && s.indexOf("double /*float*/") != -1) type = new ReflectType(float.class);
-					else if (clazz == long[].class && (s.indexOf("long /*int*/") != -1|| s.indexOf("long[] /*int[]*/") != -1)) type = new ReflectType(int[].class);
-					else if (clazz == double[].class && (s.indexOf("double /*float*/") != -1|| s.indexOf("double[] /*float[]*/") != -1)) type = new ReflectType(float[].class);
+					if (clazz == int.class && s.contains("int /*long*/")) type64 = new ReflectType(long.class);
+					else if (clazz == float.class && s.contains("float /*double*/")) type64 = new ReflectType(double.class);
+					else if (clazz == int[].class && (s.contains("int /*long*/") || s.contains("int[] /*long[]*/"))) type64 = new ReflectType(long[].class);
+					else if (clazz == float[].class && (s.contains("float /*double*/")|| s.contains("float[] /*double[]*/"))) type = new ReflectType(double[].class);
+					else if (clazz == long.class && s.contains("long /*int*/")) type = new ReflectType(int.class);
+					else if (clazz == double.class && s.contains("double /*float*/")) type = new ReflectType(float.class);
+					else if (clazz == long[].class && (s.contains("long /*int*/")|| s.contains("long[] /*int[]*/"))) type = new ReflectType(int[].class);
+					else if (clazz == double[].class && (s.contains("double /*float*/")|| s.contains("double[] /*float[]*/"))) type = new ReflectType(float[].class);
 					break;
 				}
 			}

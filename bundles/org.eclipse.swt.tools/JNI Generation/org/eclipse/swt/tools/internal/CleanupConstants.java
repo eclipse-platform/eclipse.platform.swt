@@ -53,7 +53,7 @@ public void generate(JNIField[] fields) {
 public void generate(JNIField field) {
 	String name = field.getName();
 	for (String str : files.values()) {
-		if (str.indexOf(name) != -1) {
+		if (str.contains(name)) {
 			int modifiers = field.getModifiers();
 			String modifiersStr = Modifier.toString(modifiers);
 			output("\t");

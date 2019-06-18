@@ -47,14 +47,14 @@ public ASTField(ASTClass declaringClass, String source, FieldDeclaration field, 
 	type64 =  this.type;
 	if (GEN64) {
 		String s = source.substring(field.getStartPosition(), field.getStartPosition() + field.getLength());
-		if (type.isType("int") && s.indexOf("int /*long*/") != -1) type64 = new ASTType("J");
-		else if (type.isType("float") && s.indexOf("float /*double*/") != -1) type64 = new ASTType("D");
-		else if (type.isType("[I") && (s.indexOf("int /*long*/") != -1 || s.indexOf("int[] /*long[]*/") != -1)) type64 = new ASTType("[J");
-		else if (type.isType("[F") && (s.indexOf("float /*double*/") != -1|| s.indexOf("float[] /*double[]*/") != -1)) type64 = new ASTType("[D");
-		else if (type.isType("long") && s.indexOf("long /*int*/") != -1) type = new ASTType("I");
-		else if (type.isType("double") && s.indexOf("double /*float*/") != -1) type = new ASTType("F");
-		else if (type.isType("[J") && (s.indexOf("long /*int*/") != -1|| s.indexOf("long[] /*int[]*/") != -1)) type = new ASTType("[I");
-		else if (type.isType("[D") && (s.indexOf("double /*float*/") != -1|| s.indexOf("double[] /*float[]*/") != -1)) type = new ASTType("[F");
+		if (type.isType("int") && s.contains("int /*long*/")) type64 = new ASTType("J");
+		else if (type.isType("float") && s.contains("float /*double*/")) type64 = new ASTType("D");
+		else if (type.isType("[I") && (s.contains("int /*long*/") || s.contains("int[] /*long[]*/"))) type64 = new ASTType("[J");
+		else if (type.isType("[F") && (s.contains("float /*double*/")|| s.contains("float[] /*double[]*/"))) type64 = new ASTType("[D");
+		else if (type.isType("long") && s.contains("long /*int*/")) type = new ASTType("I");
+		else if (type.isType("double") && s.contains("double /*float*/")) type = new ASTType("F");
+		else if (type.isType("[J") && (s.contains("long /*int*/")|| s.contains("long[] /*int[]*/"))) type = new ASTType("[I");
+		else if (type.isType("[D") && (s.contains("double /*float*/")|| s.contains("double[] /*float[]*/"))) type = new ASTType("[F");
 	}
 }
 

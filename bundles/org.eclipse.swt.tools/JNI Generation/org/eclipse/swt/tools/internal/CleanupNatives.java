@@ -42,7 +42,7 @@ public void generate(JNIMethod[] methods) {
 public void generate(JNIMethod method) {
 	String name = method.getName();
 	for (String str : files.values()) {
-		if (str.indexOf(name) != -1) {
+		if (str.contains(name)) {
 //			int modifiers = method.getModifiers();
 //			Class clazz = method.getDeclaringClass();
 //			String modifiersStr = Modifier.toString(modifiers);

@@ -73,28 +73,28 @@ public ReflectMethod(ReflectClass declaringClass, Method method, String source, 
 				Class<?> clazz = paramTypes[i];
 				SingleVariableDeclaration node = (SingleVariableDeclaration)decl.parameters().get(i);
 				String s = source.substring(node.getStartPosition(), node.getStartPosition() + node.getLength());
-				if (clazz == int.class && s.indexOf("int /*long*/") != -1) this.paramTypes64[i] = new ReflectType(long.class);
-				else if (clazz == int[].class && (s.indexOf("int /*long*/") != -1 || s.indexOf("int[] /*long[]*/") != -1)) this.paramTypes64[i] = new ReflectType(long[].class);
-				else if (clazz == float.class && s.indexOf("float /*double*/") != -1) this.paramTypes64[i] = new ReflectType(double.class);
-				else if (clazz == float[].class && (s.indexOf("float /*double*/") != -1|| s.indexOf("float[] /*double[]*/") != -1)) this.paramTypes64[i] = new ReflectType(double[].class);
-				else if (clazz == long.class && s.indexOf("long /*int*/") != -1) this.paramTypes[i] = new ReflectType(int.class);
-				else if (clazz == long[].class && (s.indexOf("long /*int*/") != -1|| s.indexOf("long[] /*int[]*/") != -1)) this.paramTypes[i] = new ReflectType(int[].class);
-				else if (clazz == double.class && s.indexOf("double /*float*/") != -1) this.paramTypes[i] = new ReflectType(float.class);
-				else if (clazz == double[].class && (s.indexOf("double /*float*/") != -1|| s.indexOf("double[] /*float[]*/") != -1)) this.paramTypes[i] = new ReflectType(float[].class);
+				if (clazz == int.class && s.contains("int /*long*/")) this.paramTypes64[i] = new ReflectType(long.class);
+				else if (clazz == int[].class && (s.contains("int /*long*/") || s.contains("int[] /*long[]*/"))) this.paramTypes64[i] = new ReflectType(long[].class);
+				else if (clazz == float.class && s.contains("float /*double*/")) this.paramTypes64[i] = new ReflectType(double.class);
+				else if (clazz == float[].class && (s.contains("float /*double*/")|| s.contains("float[] /*double[]*/"))) this.paramTypes64[i] = new ReflectType(double[].class);
+				else if (clazz == long.class && s.contains("long /*int*/")) this.paramTypes[i] = new ReflectType(int.class);
+				else if (clazz == long[].class && (s.contains("long /*int*/")|| s.contains("long[] /*int[]*/"))) this.paramTypes[i] = new ReflectType(int[].class);
+				else if (clazz == double.class && s.contains("double /*float*/")) this.paramTypes[i] = new ReflectType(float.class);
+				else if (clazz == double[].class && (s.contains("double /*float*/")|| s.contains("double[] /*float[]*/"))) this.paramTypes[i] = new ReflectType(float[].class);
 			}
 		}
 		if (canChange64(returnType)) {
 			Class<?> clazz = returnType;
 			ASTNode node = decl.getReturnType2();
 			String s = source.substring(node.getStartPosition(), decl.getName().getStartPosition());
-			if (clazz == int.class && s.indexOf("int /*long*/") != -1) this.returnType64 = new ReflectType(long.class);
-			else if (clazz == int[].class && (s.indexOf("int /*long*/") != -1 || s.indexOf("int[] /*long[]*/") != -1)) this.returnType64 = new ReflectType(long[].class);
-			else if (clazz == float.class && s.indexOf("float /*double*/") != -1) this.returnType64 = new ReflectType(double.class);
-			else if (clazz == float[].class && (s.indexOf("float /*double*/") != -1|| s.indexOf("float[] /*double[]*/") != -1)) this.returnType64 = new ReflectType(double[].class);
-			else if (clazz == long.class && s.indexOf("long /*int*/") != -1) this.returnType = new ReflectType(int.class);
-			else if (clazz == long[].class && (s.indexOf("long /*int*/") != -1|| s.indexOf("long[] /*int[]*/") != -1)) this.returnType = new ReflectType(int[].class);
-			else if (clazz == double.class && s.indexOf("double /*float*/") != -1) this.returnType = new ReflectType(float.class);
-			else if (clazz == double[].class && (s.indexOf("double /*float*/") != -1|| s.indexOf("double[] /*float[]*/") != -1)) this.returnType = new ReflectType(float[].class);
+			if (clazz == int.class && s.contains("int /*long*/")) this.returnType64 = new ReflectType(long.class);
+			else if (clazz == int[].class && (s.contains("int /*long*/") || s.contains("int[] /*long[]*/"))) this.returnType64 = new ReflectType(long[].class);
+			else if (clazz == float.class && s.contains("float /*double*/")) this.returnType64 = new ReflectType(double.class);
+			else if (clazz == float[].class && (s.contains("float /*double*/")|| s.contains("float[] /*double[]*/"))) this.returnType64 = new ReflectType(double[].class);
+			else if (clazz == long.class && s.contains("long /*int*/")) this.returnType = new ReflectType(int.class);
+			else if (clazz == long[].class && (s.contains("long /*int*/")|| s.contains("long[] /*int[]*/"))) this.returnType = new ReflectType(int[].class);
+			else if (clazz == double.class && s.contains("double /*float*/")) this.returnType = new ReflectType(float.class);
+			else if (clazz == double[].class && (s.contains("double /*float*/")|| s.contains("double[] /*float[]*/"))) this.returnType = new ReflectType(float[].class);
 		}		
 	}
 }
