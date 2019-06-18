@@ -191,7 +191,6 @@ void createHandle(int index) {
 
 	labelHandle = GTK.gtk_label_new (null);
 	if (labelHandle == 0) error (SWT.ERROR_NO_HANDLES);
-	OS.g_object_ref (labelHandle);
 	OS.g_object_ref_sink (labelHandle);
 
 	clientHandle = OS.g_object_new (display.gtk_fixed_get_type (), 0);
