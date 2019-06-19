@@ -1899,7 +1899,10 @@ double [] getWidgetColorRGB (int id) {
 		case SWT.COLOR_WIDGET_FOREGROUND: color = NSColor.controlTextColor(); break;
 		case SWT.COLOR_WIDGET_BORDER: color = NSColor.blackColor (); break;
 		case SWT.COLOR_LIST_FOREGROUND: color = NSColor.textColor(); break;
+
+		case SWT.COLOR_TEXT_DISABLED_BACKGROUND:
 		case SWT.COLOR_LIST_BACKGROUND: color = NSColor.textBackgroundColor(); break;
+
 		case SWT.COLOR_LIST_SELECTION_TEXT: color = NSColor.selectedTextColor(); break;
 		case SWT.COLOR_LIST_SELECTION: color = NSColor.selectedTextBackgroundColor(); break;
 		case SWT.COLOR_LINK_FOREGROUND:
@@ -1909,7 +1912,7 @@ double [] getWidgetColorRGB (int id) {
 			color = new NSColor(dict.valueForKey(OS.NSForegroundColorAttributeName));
 			textView.release ();
 			break;
-
+		case SWT.COLOR_WIDGET_DISABLED_FOREGROUND: color = NSColor.disabledControlTextColor(); break;
 	}
 	return getNSColorRGB (color);
 }
@@ -3073,7 +3076,7 @@ void initColors (boolean ignoreColorChange) {
 }
 
 void initColors () {
-	colors = new double [SWT.COLOR_LINK_FOREGROUND + 1][];
+	colors = new double [SWT.COLOR_WIDGET_DISABLED_FOREGROUND + 1][];
 	colors[SWT.COLOR_INFO_FOREGROUND] = getWidgetColorRGB(SWT.COLOR_INFO_FOREGROUND);
 	colors[SWT.COLOR_INFO_BACKGROUND] = getWidgetColorRGB(SWT.COLOR_INFO_BACKGROUND);
 	colors[SWT.COLOR_TITLE_FOREGROUND] = getWidgetColorRGB(SWT.COLOR_TITLE_FOREGROUND);
@@ -3094,6 +3097,8 @@ void initColors () {
 	colors[SWT.COLOR_LIST_SELECTION_TEXT] = getWidgetColorRGB(SWT.COLOR_LIST_SELECTION_TEXT);
 	colors[SWT.COLOR_LIST_SELECTION] = getWidgetColorRGB(SWT.COLOR_LIST_SELECTION);
 	colors[SWT.COLOR_LINK_FOREGROUND] = getWidgetColorRGB(SWT.COLOR_LINK_FOREGROUND);
+	colors[SWT.COLOR_TEXT_DISABLED_BACKGROUND] = getWidgetColorRGB(SWT.COLOR_TEXT_DISABLED_BACKGROUND);
+	colors[SWT.COLOR_WIDGET_DISABLED_FOREGROUND] = getWidgetColorRGB(SWT.COLOR_WIDGET_DISABLED_FOREGROUND);
 
 	alternateSelectedControlColor = getNSColorRGB(NSColor.alternateSelectedControlColor());
 	alternateSelectedControlTextColor = getNSColorRGB(NSColor.alternateSelectedControlTextColor());
