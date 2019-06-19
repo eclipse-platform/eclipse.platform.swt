@@ -32,6 +32,11 @@ public NSString filename() {
 	return result != 0 ? new NSString(result) : null;
 }
 
+public NSString nameFieldStringValue() {
+	long result = OS.objc_msgSend(this.id, OS.sel_nameFieldStringValue);
+	return result != 0 ? new NSString(result) : null;
+}
+
 public long runModal() {
 	return OS.objc_msgSend(this.id, OS.sel_runModal);
 }

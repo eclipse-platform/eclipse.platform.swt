@@ -2688,6 +2688,8 @@ void initClasses () {
 	OS.class_addIvar(cls, SWT_OBJECT, size, (byte)align, types);
 	OS.class_addMethod(cls, OS.sel_sendSelection_, dialogProc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_panel_shouldEnableURL_, dialogProc4, "@:@@");
+	OS.class_addMethod(cls, OS.sel_panel_userEnteredFilename_confirmed_, dialogProc5, "@:@@");
+
 	OS.objc_registerClassPair(cls);
 
 	className = "SWTOutlineView";
@@ -5757,6 +5759,11 @@ static long dialogProc(long id, long sel, long arg0, long arg1, long arg2) {
 		MessageBox dialog = (MessageBox)OS.JNIGetObject(jniRef[0]);
 		if (dialog == null) return 0;
 		dialog.panelDidEnd_returnCode_contextInfo(id, sel, arg0, arg1, arg2);
+	}
+	if (sel == OS.sel_panel_userEnteredFilename_confirmed_) {
+		FileDialog dialog = (FileDialog)OS.JNIGetObject(jniRef[0]);
+		if (dialog == null) return 0;
+		return dialog.panel_userEnteredFilename_confirmed(id, sel, arg0, arg1, arg2);
 	}
 	return 0;
 }
