@@ -663,6 +663,9 @@ public void setEnabled (boolean enabled) {
 	if ((style & SWT.SEPARATOR) == 0) {
 		if (image != null) updateImages (enabled && parent.getEnabled ());
 	}
+	if (!enabled && parent.lastFocusId == id) {
+		parent.lastFocusId = -1;
+	}
 }
 
 /**
