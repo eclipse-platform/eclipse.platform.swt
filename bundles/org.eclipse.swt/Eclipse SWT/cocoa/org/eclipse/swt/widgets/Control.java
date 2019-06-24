@@ -5147,26 +5147,33 @@ public void update () {
 	update (false);
 }
 
-void update (boolean all) {
-	if(NSGraphicsContext.currentContext() == null) {
-		/*
-		 * If linked against macOS 10.14 SDK, or when native dark mode support is
-		 * enabled via Info.plist, views are displayed using Core Animation and drawing
-		 * is only possible, when cocoa invokes drawRect of a dirty view (which it does
-		 * by a run loop observer invoked during calls of
-		 * NSApplication#nextEventMatchingMask, only after more than approx. 10ms have
-		 * passed since the last redraw).
-		 */
-		return;
+boolean update (boolean all) {
+	if (NSGraphicsContext.currentContext() == null) {
+		if (!view.lockFocusIfCanDraw()) {
+			return false;
+		}
+		boolean contextAvailableAfterLockFocus = NSGraphicsContext.currentContext() != null;
+		view.unlockFocus();
+		if (!contextAvailableAfterLockFocus) {
+			/*
+			 * If linked against macOS 10.14 SDK, or when native dark mode support is
+			 * enabled via Info.plist, views are displayed using Core Animation and drawing
+			 * is only possible, when cocoa invokes drawRect of a dirty view (which it does
+			 * by a run loop observer invoked during calls of
+			 * NSApplication#nextEventMatchingMask, only after more than approx. 10ms have
+			 * passed since the last redraw).
+			 */
+			return false;
+		}
  	}
 //	checkWidget();
 	NSArray isPainting = display.isPainting;
-	if (isPainting.containsObject(view)) return;
+	if (isPainting.containsObject(view)) return false;
 	for (int i = 0, length = (int)isPainting.count(); i < length; i++) {
 		NSView view = new NSView(isPainting.objectAtIndex(i));
-		if (view.isDescendantOf(this.view)) return;
+		if (view.isDescendantOf(this.view)) return false;
 	}
-	if (isResizing()) return;
+	if (isResizing()) return false;
 	Shell shell = getShell();
 	NSWindow window = shell.deferFlushing && shell.scrolling ? view.window() : null;
 	try {
@@ -5182,6 +5189,7 @@ void update (boolean all) {
 			window.release();
 		}
 	}
+	return true;
 }
 
 void updateBackgroundColor () {

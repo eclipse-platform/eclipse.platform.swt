@@ -4116,6 +4116,9 @@
 		<method selector="lockFocus" swt_gen="true">
 			<retval swt_gen="true"></retval>
 		</method>
+		<method selector="lockFocusIfCanDraw" swt_gen="true">
+			<retval swt_gen="true"></retval>
+		</method>
 		<method selector="menuForEvent:" swt_gen="true">
 			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>

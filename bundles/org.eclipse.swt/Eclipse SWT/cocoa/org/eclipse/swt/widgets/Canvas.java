@@ -407,14 +407,14 @@ public void scroll (int destX, int destY, int x, int y, int width, int height, b
 	if (isFocus) caret.killFocus ();
 	Rectangle clientRect = getClientArea ();
 	Rectangle sourceRect = new Rectangle (x, y, width, height);
-	if (sourceRect.intersects (clientRect)) {
-		getShell().setScrolling();
-		update (all);
-	}
 	Control control = findBackgroundControl ();
 	boolean redraw = control != null && control.backgroundImage != null;
 	if (!redraw) redraw = hasRegion ();
 	if (!redraw) redraw = isObscured ();
+	if (!redraw && sourceRect.intersects (clientRect)) {
+		getShell().setScrolling();
+		redraw = !update(all);
+	}
 	if (redraw) {
 		redrawWidget (view, x, y, width, height, false);
 		redrawWidget (view, destX, destY, width, height, false);
