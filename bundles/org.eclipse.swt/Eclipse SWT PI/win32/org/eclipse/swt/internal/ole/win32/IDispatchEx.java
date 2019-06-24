@@ -13,8 +13,6 @@
  *******************************************************************************/
 package org.eclipse.swt.internal.ole.win32;
 
-import org.eclipse.swt.internal.win32.*;
-
 public class IDispatchEx extends IDispatch {
 
 public IDispatchEx (long address) {
@@ -30,11 +28,11 @@ public int InvokeEx (int id, int lcid, int wFlags, DISPPARAMS pdp, long pvarRes,
 }
 
 public int DeleteMemberByName (long bstrName, int grfdex) {
-	return OS.VtblCall (9, address, bstrName, grfdex);
+	return COM.VtblCall (9, address, bstrName, grfdex);
 }
 
 public int DeleteMemberByDispID (int id) {
-	return OS.VtblCall (10, address, id);
+	return COM.VtblCall (10, address, id);
 }
 
 public int GetMemberProperties (int id, int grfdexFetch, int[] pgrfdex) {
@@ -42,7 +40,7 @@ public int GetMemberProperties (int id, int grfdexFetch, int[] pgrfdex) {
 }
 
 public int GetMemberName (int id, long[] pbstrName) {
-	return OS.VtblCall (12, address, id, pbstrName);
+	return COM.VtblCall (12, address, id, pbstrName);
 }
 
 public int GetNextDispID (int grfdex, int id, int[] pid) {
@@ -50,6 +48,6 @@ public int GetNextDispID (int grfdex, int id, int[] pid) {
 }
 
 public int GetNameSpaceParent (long[] ppunk) {
-	return OS.VtblCall (14, address, ppunk);
+	return COM.VtblCall (14, address, ppunk);
 }
 }

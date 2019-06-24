@@ -13,8 +13,6 @@
  *******************************************************************************/
 package org.eclipse.swt.internal.ole.win32;
 
-import org.eclipse.swt.internal.win32.*;
-
 public class IEnumTfDisplayAttributeInfo extends IUnknown {
 
 public IEnumTfDisplayAttributeInfo(long address) {
@@ -22,7 +20,7 @@ public IEnumTfDisplayAttributeInfo(long address) {
 }
 
 public int Next(int celt, long[] rgelt, int[] pceltFetched) {
-	return OS.VtblCall(4, address, celt, rgelt, pceltFetched);
+	return COM.VtblCall(4, address, celt, rgelt, pceltFetched);
 }
 
 }

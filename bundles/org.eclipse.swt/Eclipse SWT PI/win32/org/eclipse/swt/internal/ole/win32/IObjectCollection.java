@@ -13,8 +13,6 @@
  *******************************************************************************/
 package org.eclipse.swt.internal.ole.win32;
 
-import org.eclipse.swt.internal.win32.*;
-
 public class IObjectCollection extends IObjectArray {
 
 public IObjectCollection(long address) {
@@ -22,7 +20,7 @@ public IObjectCollection(long address) {
 }
 
 public int AddObject(IUnknown punk) {
-	return OS.VtblCall(5, address, punk.address);
+	return COM.VtblCall(5, address, punk.address);
 }
 
 }

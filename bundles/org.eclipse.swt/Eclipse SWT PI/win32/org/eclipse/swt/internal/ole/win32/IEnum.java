@@ -13,23 +13,21 @@
  *******************************************************************************/
 package org.eclipse.swt.internal.ole.win32;
 
-import org.eclipse.swt.internal.win32.*;
-
 public class IEnum extends IUnknown
 {
 public IEnum(long address) {
 	super(address);
 }
 public int Clone( long[] ppenum  ){
-	return OS.VtblCall(6, address, ppenum);
+	return COM.VtblCall(6, address, ppenum);
 }
 public int Next(int celt, long rgelt, int[] pceltFetched  ){
 	return COM.VtblCall(3, address, celt, rgelt, pceltFetched);
 }
 public int Reset() {
-	return OS.VtblCall(5, address);
+	return COM.VtblCall(5, address);
 }
 public int Skip(int celt){
-	return OS.VtblCall(4, address, celt);
+	return COM.VtblCall(4, address, celt);
 }
 }

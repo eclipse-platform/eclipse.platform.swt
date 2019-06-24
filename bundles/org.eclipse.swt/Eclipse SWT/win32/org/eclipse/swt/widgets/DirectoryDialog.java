@@ -253,7 +253,7 @@ private String openCommonFileDialog () {
 	long [] ppMalloc = new long [1];
 	if (OS.SHGetMalloc (ppMalloc) == OS.S_OK) {
 		/* void Free (struct IMalloc *this, void *pv); */
-		OS.VtblCall (5, ppMalloc [0], lpItemIdList);
+		COM.VtblCall (5, ppMalloc [0], lpItemIdList);
 	}
 
 	/*

@@ -24,7 +24,7 @@ public IWebView (long address) {
 }
 
 public int canShowMIMEType (long mimeType, int[] canShow) {
-	return OS.VtblCall (3, getAddress (), mimeType, canShow);
+	return COM.VtblCall (3, getAddress (), mimeType, canShow);
 }
 
 public int initWithFrame (RECT frame, long frameName, long groupName) {
@@ -32,59 +32,59 @@ public int initWithFrame (RECT frame, long frameName, long groupName) {
 }
 
 public int setUIDelegate (long delegate) {
-	return OS.VtblCall (10, getAddress (), delegate);
+	return COM.VtblCall (10, getAddress (), delegate);
 }
 
 public int setResourceLoadDelegate (long delegate) {
-	return OS.VtblCall (12, getAddress (), delegate);
+	return COM.VtblCall (12, getAddress (), delegate);
 }
 
 public int setDownloadDelegate (long delegate) {
-	return OS.VtblCall (14, getAddress (), delegate);
+	return COM.VtblCall (14, getAddress (), delegate);
 }
 
 public int setFrameLoadDelegate (long delegate) {
-	return OS.VtblCall (16, getAddress (), delegate);
+	return COM.VtblCall (16, getAddress (), delegate);
 }
 
 public int setPolicyDelegate (long delegate) {
-	return OS.VtblCall (18, getAddress (), delegate);
+	return COM.VtblCall (18, getAddress (), delegate);
 }
 
 public int mainFrame (long[] frame) {
-	return OS.VtblCall (20, getAddress (), frame);
+	return COM.VtblCall (20, getAddress (), frame);
 }
 
 public int goBack (int[] succeeded) {
-	return OS.VtblCall (24, getAddress(), succeeded);
+	return COM.VtblCall (24, getAddress(), succeeded);
 }
 
 public int goForward (int[] succeeded) {
-	return OS.VtblCall (25, getAddress(), succeeded);
+	return COM.VtblCall (25, getAddress(), succeeded);
 }
 
 public int setCustomUserAgent (long valueString) {
-	return OS.VtblCall (31, getAddress (), valueString);
+	return COM.VtblCall (31, getAddress (), valueString);
 }
 
 public int setPreferences (long prefs) {
-	return OS.VtblCall (41, getAddress (), prefs);
+	return COM.VtblCall (41, getAddress (), prefs);
 }
 
 public int preferences (long[] prefs) {
-	return OS.VtblCall (42, getAddress (), prefs);
+	return COM.VtblCall (42, getAddress (), prefs);
 }
 
 public int setHostWindow (long window) {
-	return OS.VtblCall (45, getAddress (), window);
+	return COM.VtblCall (45, getAddress (), window);
 }
 
 public int hostWindow (long[] window) {
-	return OS.VtblCall (46, getAddress (), window);
+	return COM.VtblCall (46, getAddress (), window);
 }
 
 public int estimatedProgress (long estimatedProgress) {
-	return OS.VtblCall (51, getAddress (), estimatedProgress);
+	return COM.VtblCall (51, getAddress (), estimatedProgress);
 }
 
 }

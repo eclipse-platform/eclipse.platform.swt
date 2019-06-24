@@ -22,7 +22,7 @@ public ITfDisplayAttributeInfo(long address) {
 }
 
 public int GetAttributeInfo(TF_DISPLAYATTRIBUTE pda) {
-	return OS.VtblCall(5, address, pda);
+	return COM.VtblCall(5, address, pda);
 }
 
 }

@@ -15,7 +15,6 @@ package org.eclipse.swt.internal.webkit;
 
 
 import org.eclipse.swt.internal.ole.win32.*;
-import org.eclipse.swt.internal.win32.*;
 
 public class IWebDataSource extends IUnknown {
 
@@ -24,19 +23,19 @@ public IWebDataSource (long address) {
 }
 
 public int representation (long[] rep) {
-	return OS.VtblCall (5, getAddress (), rep);
+	return COM.VtblCall (5, getAddress (), rep);
 }
 
 public int webFrame (long[] frame) {
-	return OS.VtblCall (6, getAddress (), frame);
+	return COM.VtblCall (6, getAddress (), frame);
 }
 
 public int request (long[] request) {
-	return OS.VtblCall (8, getAddress (), request);
+	return COM.VtblCall (8, getAddress (), request);
 }
 
 public int pageTitle (long[] title) {
-	return OS.VtblCall (12, getAddress (), title);
+	return COM.VtblCall (12, getAddress (), title);
 }
 
 }

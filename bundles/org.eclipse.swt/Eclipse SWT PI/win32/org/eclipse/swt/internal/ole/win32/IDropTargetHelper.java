@@ -23,7 +23,7 @@ public int DragEnter(long hwndTarget, long pDataObject, POINT ppt, int dwEffect)
 	return COM.VtblCall(3, address, hwndTarget, pDataObject, ppt, dwEffect);
 }
 public int DragLeave() {
-	return OS.VtblCall(4, address);
+	return COM.VtblCall(4, address);
 }
 public int DragOver(POINT ppt, int dwEffect) {
 	return COM.VtblCall(5, address, ppt, dwEffect);

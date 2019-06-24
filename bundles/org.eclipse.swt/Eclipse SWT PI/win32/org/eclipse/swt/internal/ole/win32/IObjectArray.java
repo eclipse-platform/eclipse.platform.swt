@@ -13,8 +13,6 @@
  *******************************************************************************/
 package org.eclipse.swt.internal.ole.win32;
 
-import org.eclipse.swt.internal.win32.*;
-
 public class IObjectArray extends IUnknown {
 
 public IObjectArray(long address) {
@@ -22,7 +20,7 @@ public IObjectArray(long address) {
 }
 
 public int GetCount(int[] count) {
-	return OS.VtblCall(3, address, count);
+	return COM.VtblCall(3, address, count);
 }
 
 }

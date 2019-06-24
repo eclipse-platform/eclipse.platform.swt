@@ -14,7 +14,6 @@
 package org.eclipse.swt.internal.webkit;
 
 import org.eclipse.swt.internal.ole.win32.*;
-import org.eclipse.swt.internal.win32.*;
 
 public class IWebOpenPanelResultListener extends IUnknown {
 
@@ -23,11 +22,11 @@ public IWebOpenPanelResultListener (long address) {
 }
 
 public int chooseFilename (long fileName) {
-	return OS.VtblCall (3, getAddress (), fileName);
+	return COM.VtblCall (3, getAddress (), fileName);
 }
 
 public int cancel () {
-	return OS.VtblCall (4, getAddress ());
+	return COM.VtblCall (4, getAddress ());
 }
 
 }

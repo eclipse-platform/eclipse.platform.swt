@@ -73,7 +73,7 @@ public int GetDocumentation(int index, String[] name, String[] docString, int[] 
 	return rc;
 }
 public int GetFuncDesc(int index, long[] ppFuncDesc) {
-	return OS.VtblCall(5, address, index, ppFuncDesc);
+	return COM.VtblCall(5, address, index, ppFuncDesc);
 }
 public int GetIDsOfNames(String[] rgszNames, int cNames, int[] pMemId) {
 
@@ -114,7 +114,7 @@ public int GetIDsOfNames(String[] rgszNames, int cNames, int[] pMemId) {
 }
 
 public int GetImplTypeFlags(int index, int[] pImplTypeFlags) {
-	return OS.VtblCall(9, address, index, pImplTypeFlags);
+	return COM.VtblCall(9, address, index, pImplTypeFlags);
 }
 public int GetNames(int memid, String[] names, int cMaxNames, int[] pcNames){
 
@@ -141,24 +141,24 @@ public int GetNames(int memid, String[] names, int cMaxNames, int[] pcNames){
 	return rc;
 }
 public int GetRefTypeInfo(int hRefType, long[] ppTInfo) {
-	return OS.VtblCall(14, address, hRefType, ppTInfo);
+	return COM.VtblCall(14, address, hRefType, ppTInfo);
 }
 public int GetRefTypeOfImplType(int index, int[] pRefType) {
-	return OS.VtblCall(8, address, index, pRefType);
+	return COM.VtblCall(8, address, index, pRefType);
 }
 public int GetTypeAttr(long[] ppTypeAttr) {
-	return OS.VtblCall(3, address, ppTypeAttr);
+	return COM.VtblCall(3, address, ppTypeAttr);
 }
 public int GetVarDesc(int index, long[] ppVarDesc ) {
-	return OS.VtblCall(6, address, index, ppVarDesc);
+	return COM.VtblCall(6, address, index, ppVarDesc);
 }
 public int ReleaseFuncDesc(long pFuncDesc ) {
-	return OS.VtblCall(20, address, pFuncDesc);
+	return COM.VtblCall(20, address, pFuncDesc);
 }
 public int ReleaseTypeAttr(long pTypeAttr) {
-	return OS.VtblCall(19, address, pTypeAttr);
+	return COM.VtblCall(19, address, pTypeAttr);
 }
 public int ReleaseVarDesc(long pVarDesc ) {
-	return OS.VtblCall(21, address, pVarDesc);
+	return COM.VtblCall(21, address, pVarDesc);
 }
 }

@@ -22,11 +22,11 @@ public IPropertyStore(long address) {
 }
 
 public int SetValue(PROPERTYKEY key, long propvar) {
-	return OS.VtblCall(6, address, key, propvar);
+	return COM.VtblCall(6, address, key, propvar);
 }
 
 public int Commit() {
-	return OS.VtblCall(7, address);
+	return COM.VtblCall(7, address);
 }
 
 }

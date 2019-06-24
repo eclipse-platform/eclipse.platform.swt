@@ -15,7 +15,6 @@ package org.eclipse.swt.internal.webkit;
 
 
 import org.eclipse.swt.internal.ole.win32.*;
-import org.eclipse.swt.internal.win32.*;
 
 public class IWebDocumentRepresentation extends IUnknown {
 
@@ -24,7 +23,7 @@ public IWebDocumentRepresentation (long address) {
 }
 
 public int documentSource (long[] source) {
-	return OS.VtblCall (8, getAddress (), source);
+	return COM.VtblCall (8, getAddress (), source);
 }
 
 }

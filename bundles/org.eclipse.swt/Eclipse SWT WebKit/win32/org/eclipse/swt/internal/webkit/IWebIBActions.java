@@ -15,7 +15,6 @@ package org.eclipse.swt.internal.webkit;
 
 
 import org.eclipse.swt.internal.ole.win32.*;
-import org.eclipse.swt.internal.win32.*;
 
 public class IWebIBActions extends IUnknown {
 
@@ -24,19 +23,19 @@ public IWebIBActions (long address) {
 }
 
 public int stopLoading (long sender) {
-	return OS.VtblCall (4, getAddress (), sender);
+	return COM.VtblCall (4, getAddress (), sender);
 }
 
 public int reload (long sender) {
-	return OS.VtblCall (5, getAddress (), sender);
+	return COM.VtblCall (5, getAddress (), sender);
 }
 
 public int canGoBack (long sender, int[] result) {
-	return OS.VtblCall (6, getAddress (), sender, result);
+	return COM.VtblCall (6, getAddress (), sender, result);
 }
 
 public int canGoForward (long sender, int[] result) {
-	return OS.VtblCall (8, getAddress (), sender, result);
+	return COM.VtblCall (8, getAddress (), sender, result);
 }
 
 }

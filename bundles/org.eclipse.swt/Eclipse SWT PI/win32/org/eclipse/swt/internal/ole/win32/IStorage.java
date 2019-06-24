@@ -13,15 +13,13 @@
  *******************************************************************************/
 package org.eclipse.swt.internal.ole.win32;
 
-import org.eclipse.swt.internal.win32.*;
-
 public class IStorage extends IUnknown
 {
 public IStorage(long address) {
 	super(address);
 }
 public int Commit(int grfCommitFlag) {
-	return OS.VtblCall(9, address, grfCommitFlag);
+	return COM.VtblCall(9, address, grfCommitFlag);
 }
 public int CopyTo(
 	int ciidExclude,     //Number of elements in rgiidExclude
@@ -74,7 +72,7 @@ public int DestroyElement(String pwcsName) {
 	if (pwcsName != null) {
 		buffer = (pwcsName+"\0").toCharArray();
 	}
-	return OS.VtblCall(12, address, buffer);
+	return COM.VtblCall(12, address, buffer);
 }
 public int EnumElements(
 	int reserved1, //Reserved; must be zero
@@ -83,7 +81,7 @@ public int EnumElements(
 	long[] ppenum   //Pointer to output variable that
 				   // receives the IEnumSTATSTG interface
 ){
-	return OS.VtblCall(11, address, reserved1, reserved2, reserved3, ppenum);
+	return COM.VtblCall(11, address, reserved1, reserved2, reserved3, ppenum);
 }
 public int OpenStorage(
 	String pwcsName,     //Pointer to the name of the
@@ -144,7 +142,7 @@ public int RenameElement(
 	return COM.VtblCall(13, address, buffer1, buffer2);
 }
 public int Revert() {
-	return OS.VtblCall(10, address);
+	return COM.VtblCall(10, address);
 }
 public int SetClass(
 	GUID clsid  //CLSID to be assigned to the storage object

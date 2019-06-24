@@ -22,15 +22,15 @@ public IOleDocumentView(long address) {
 	super(address);
 }
 public int SetInPlaceSite(long pIPSite) {
-	return OS.VtblCall(3, address, pIPSite);
+	return COM.VtblCall(3, address, pIPSite);
 }
 public int SetRect(RECT prcView) {
 	return COM.VtblCall(6, address, prcView);
 }
 public int Show(int fShow) {
-	return OS.VtblCall(9, address, fShow);
+	return COM.VtblCall(9, address, fShow);
 }
 public int UIActivate(int fUIActivate) {
-	return OS.VtblCall(10, address, fUIActivate);
+	return COM.VtblCall(10, address, fUIActivate);
 }
 }

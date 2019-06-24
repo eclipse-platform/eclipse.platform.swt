@@ -21,15 +21,15 @@ public IOleInPlaceObject(long address) {
 	super(address);
 }
 public int InPlaceDeactivate() {
-	return OS.VtblCall(5, address);
+	return COM.VtblCall(5, address);
 }
 public int UIDeactivate() {
-	return OS.VtblCall(6, address);
+	return COM.VtblCall(6, address);
 }
 public int SetObjectRects(RECT lprcPosRect, RECT lprcClipRect) {
 	return COM.VtblCall(7, address, lprcPosRect, lprcClipRect);
 }
 public int ReactivateAndUndo() {
-	return OS.VtblCall(8, address);
+	return COM.VtblCall(8, address);
 }
 }

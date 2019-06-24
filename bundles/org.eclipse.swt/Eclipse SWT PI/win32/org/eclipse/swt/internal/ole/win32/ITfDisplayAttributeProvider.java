@@ -13,8 +13,6 @@
  *******************************************************************************/
 package org.eclipse.swt.internal.ole.win32;
 
-import org.eclipse.swt.internal.win32.*;
-
 public class ITfDisplayAttributeProvider extends IUnknown {
 
 public ITfDisplayAttributeProvider(long address) {
@@ -22,7 +20,7 @@ public ITfDisplayAttributeProvider(long address) {
 }
 
 public int EnumDisplayAttributeInfo(long [] ppEnum) {
-	return OS.VtblCall(3, address, ppEnum);
+	return COM.VtblCall(3, address, ppEnum);
 }
 
 }

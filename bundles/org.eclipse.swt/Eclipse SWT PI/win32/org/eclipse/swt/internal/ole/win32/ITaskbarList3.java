@@ -13,8 +13,6 @@
  *******************************************************************************/
 package org.eclipse.swt.internal.ole.win32;
 
-import org.eclipse.swt.internal.win32.*;
-
 public class ITaskbarList3 extends IUnknown {
 
 public ITaskbarList3(long address) {
@@ -22,15 +20,15 @@ public ITaskbarList3(long address) {
 }
 
 public int SetProgressValue(long hwnd, long ullCompleted, long ullTotal) {
-	return OS.VtblCall(9, address, hwnd, ullCompleted, ullTotal);
+	return COM.VtblCall(9, address, hwnd, ullCompleted, ullTotal);
 }
 
 public int SetProgressState(long hwnd, int tbpFlags) {
-	return OS.VtblCall(10, address, hwnd, tbpFlags);
+	return COM.VtblCall(10, address, hwnd, tbpFlags);
 }
 
 public int SetOverlayIcon(long hwnd, long hIcon, long pszDescription) {
-	return OS.VtblCall(18, address, hwnd, hIcon, pszDescription);
+	return COM.VtblCall(18, address, hwnd, hIcon, pszDescription);
 }
 
 }

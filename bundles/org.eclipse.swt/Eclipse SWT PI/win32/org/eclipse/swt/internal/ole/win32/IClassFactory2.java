@@ -13,8 +13,6 @@
  *******************************************************************************/
 package org.eclipse.swt.internal.ole.win32;
 
-import org.eclipse.swt.internal.win32.*;
-
 public class IClassFactory2 extends IUnknown
 {
 public IClassFactory2(long address) {
@@ -27,6 +25,6 @@ public int GetLicInfo(LICINFO licInfo) {
 	return COM.VtblCall(5, address, licInfo);
 }
 public int RequestLicKey(int dwReserved, long[] pBstrKey) {
-	return OS.VtblCall(6, address, dwReserved, pBstrKey);
+	return COM.VtblCall(6, address, dwReserved, pBstrKey);
 }
 }

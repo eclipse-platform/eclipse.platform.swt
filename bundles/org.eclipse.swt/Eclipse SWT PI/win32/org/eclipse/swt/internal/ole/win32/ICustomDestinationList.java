@@ -13,8 +13,6 @@
  *******************************************************************************/
 package org.eclipse.swt.internal.ole.win32;
 
-import org.eclipse.swt.internal.win32.*;
-
 public class ICustomDestinationList extends IUnknown {
 
 public ICustomDestinationList(long address) {
@@ -22,7 +20,7 @@ public ICustomDestinationList(long address) {
 }
 
 public int SetAppID(char[] pszAppID) {
-	return OS.VtblCall(3, address, pszAppID);
+	return COM.VtblCall(3, address, pszAppID);
 }
 
 public int BeginList(int[] pcMinSlots, GUID riid, long[] ppv) {
@@ -30,19 +28,19 @@ public int BeginList(int[] pcMinSlots, GUID riid, long[] ppv) {
 }
 
 public int AppendCategory(char[] pszCategory, IObjectArray poa) {
-	return OS.VtblCall(5, address, pszCategory, poa.address);
+	return COM.VtblCall(5, address, pszCategory, poa.address);
 }
 
 public int AddUserTasks(IUnknown poa) {
-	return OS.VtblCall(7, address, poa.address);
+	return COM.VtblCall(7, address, poa.address);
 }
 
 public int CommitList() {
-	return OS.VtblCall(8, address);
+	return COM.VtblCall(8, address);
 }
 
 public int DeleteList(char[] pszAppID) {
-	return OS.VtblCall(10, address, pszAppID);
+	return COM.VtblCall(10, address, pszAppID);
 }
 
 }

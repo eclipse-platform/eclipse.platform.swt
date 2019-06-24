@@ -14,7 +14,7 @@
 package org.eclipse.swt.internal.webkit;
 
 
-import org.eclipse.swt.internal.win32.*;
+import org.eclipse.swt.internal.ole.win32.*;
 
 public class IWebMutableURLRequest extends IWebURLRequest {
 
@@ -31,19 +31,19 @@ public IWebMutableURLRequest (long address) {
 //}
 
 public int setHTTPMethod (int post) {
-	return OS.VtblCall (23, getAddress (), post);
+	return COM.VtblCall (23, getAddress (), post);
 }
 
 public int setURL (long theUrl) {
-	return OS.VtblCall (27, getAddress (), theUrl);
+	return COM.VtblCall (27, getAddress (), theUrl);
 }
 
 public int setValue (long value, long field) {
-	return OS.VtblCall (28, getAddress (), value, field);
+	return COM.VtblCall (28, getAddress (), value, field);
 }
 
 public int setAllowsAnyHTTPSCertificate () {
-	return OS.VtblCall (29, getAddress ());
+	return COM.VtblCall (29, getAddress ());
 }
 
 }

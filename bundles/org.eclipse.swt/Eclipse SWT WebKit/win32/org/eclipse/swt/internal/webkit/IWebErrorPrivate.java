@@ -15,7 +15,6 @@ package org.eclipse.swt.internal.webkit;
 
 
 import org.eclipse.swt.internal.ole.win32.*;
-import org.eclipse.swt.internal.win32.*;
 
 public class IWebErrorPrivate extends IUnknown {
 
@@ -24,7 +23,7 @@ public IWebErrorPrivate (long address) {
 }
 
 public int sslPeerCertificate (long[] result) {
-	return OS.VtblCall (3, getAddress (), result);
+	return COM.VtblCall (3, getAddress (), result);
 }
 
 }

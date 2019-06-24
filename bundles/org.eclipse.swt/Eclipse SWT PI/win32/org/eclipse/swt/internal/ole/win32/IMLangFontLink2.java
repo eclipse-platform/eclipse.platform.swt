@@ -13,8 +13,6 @@
  *******************************************************************************/
 package org.eclipse.swt.internal.ole.win32;
 
-import org.eclipse.swt.internal.win32.*;
-
 public class IMLangFontLink2 extends IUnknown {
 
 public IMLangFontLink2(long address) {
@@ -24,17 +22,17 @@ public IMLangFontLink2(long address) {
 // IMLangCodePages
 
 public int GetStrCodePages(char[] pszSrc, int cchSrc, int dwPriorityCodePages, int[] pdwCodePages, int[] pcchCodePages) {
-	return OS.VtblCall(4, address, pszSrc, cchSrc, dwPriorityCodePages, pdwCodePages, pcchCodePages);
+	return COM.VtblCall(4, address, pszSrc, cchSrc, dwPriorityCodePages, pdwCodePages, pcchCodePages);
 }
 
 // IMLangFontLink2
 
 public int ReleaseFont(long hFont) {
-	return OS.VtblCall(8, address, hFont);
+	return COM.VtblCall(8, address, hFont);
 }
 
 public int MapFont(long hDC, int dwCodePages, char chSrc, long[] phDestFont) {
-	return OS.VtblCall(10, address, hDC, dwCodePages, chSrc, phDestFont);
+	return COM.VtblCall(10, address, hDC, dwCodePages, chSrc, phDestFont);
 }
 
 }

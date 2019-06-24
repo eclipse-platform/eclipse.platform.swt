@@ -15,7 +15,6 @@ package org.eclipse.swt.internal.webkit;
 
 
 import org.eclipse.swt.internal.ole.win32.*;
-import org.eclipse.swt.internal.win32.*;
 
 public class IWebMutableURLRequestPrivate extends IUnknown {
 
@@ -28,7 +27,7 @@ public IWebMutableURLRequestPrivate (long address) {
 //}
 
 public int cfRequest () {
-	return OS.VtblCall (4, getAddress ());
+	return COM.VtblCall (4, getAddress ());
 }
 
 }

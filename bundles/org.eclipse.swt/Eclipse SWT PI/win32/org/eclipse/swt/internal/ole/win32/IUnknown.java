@@ -13,8 +13,6 @@
  *******************************************************************************/
 package org.eclipse.swt.internal.ole.win32;
 
-import org.eclipse.swt.internal.win32.*;
-
 public class IUnknown
 {
 	long address;
@@ -22,7 +20,7 @@ public IUnknown(long address) {
 	this.address = address;
 }
 public int AddRef() {
-	return OS.VtblCall(1, address);
+	return COM.VtblCall(1, address);
 }
 public long getAddress() {
 	return address;
@@ -31,6 +29,6 @@ public int QueryInterface(GUID riid, long[] ppvObject) {
 	return COM.VtblCall(0, address, riid, ppvObject);
 }
 public int Release() {
-	return OS.VtblCall(2, address);
+	return COM.VtblCall(2, address);
 }
 }

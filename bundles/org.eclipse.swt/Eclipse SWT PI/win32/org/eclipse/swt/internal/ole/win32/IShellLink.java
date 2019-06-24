@@ -13,8 +13,6 @@
  *******************************************************************************/
 package org.eclipse.swt.internal.ole.win32;
 
-import org.eclipse.swt.internal.win32.*;
-
 public class IShellLink extends IUnknown {
 
 public IShellLink(long address) {
@@ -22,19 +20,19 @@ public IShellLink(long address) {
 }
 
 public int SetDescription(char[] pszName) {
-	return OS.VtblCall(7, address, pszName);
+	return COM.VtblCall(7, address, pszName);
 }
 
 public int SetArguments(char[] pszArgs) {
-	return OS.VtblCall(11, address, pszArgs);
+	return COM.VtblCall(11, address, pszArgs);
 }
 
 public int SetIconLocation(char[] pszIconPath, int iIcon) {
-	return OS.VtblCall(17, address, pszIconPath, iIcon);
+	return COM.VtblCall(17, address, pszIconPath, iIcon);
 }
 
 public int SetPath(char[] pszFile) {
-	return OS.VtblCall(20, address, pszFile);
+	return COM.VtblCall(20, address, pszFile);
 }
 
 }

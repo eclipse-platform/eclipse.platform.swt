@@ -4567,50 +4567,6 @@ public static final native boolean ValidateRect (long hWnd, RECT lpRect);
 /** @param ch cast=(WCHAR) */
 public static final native short VkKeyScan (short ch);
 
-/** @method flags=trycatch */
-public static final native int VtblCall (int fnNumber, long ppVtbl);
-
-public static final native int VtblCall (int fnNumber, long ppVtbl, int arg0);
-public static final native int VtblCall (int fnNumber, long ppVtbl, long arg0);
-
-public static final native int VtblCall (int fnNumber, long ppVtbl, int arg0, int arg1, int arg2, int[] arg3);
-public static final native int VtblCall (int fnNumber, long ppVtbl, long arg0, int arg1, int arg2, int[] arg3);
-public static final native int VtblCall (int fnNumber, long ppVtbl, long arg0, long arg1, int arg2, long[] arg3);
-public static final native int VtblCall (int fnNumber, long ppVtbl, int arg0, long arg1, int arg2, long[] arg3);
-public static final native int VtblCall (int fnNumber, long ppVtbl, long arg0, int arg1, int arg2, long[] arg3);
-
-public static final native int VtblCall (int fnNumber, long ppVtbl, char[] arg0, int arg1, int arg2, int[] arg3, int[] arg4);
-public static final native int VtblCall (int fnNumber, long ppVtbl, short arg0, byte[] arg1, byte[] arg2, byte[] arg3);
-public static final native int VtblCall (int fnNumber, long ppVtbl, int[] arg0);
-public static final native int VtblCall (int fnNumber, long ppVtbl, long[] arg0);
-public static final native int VtblCall (int fnNumber, long ppVtbl, byte[] arg0, int[] arg1);
-public static final native int VtblCall (int fnNumber, long ppVtbl, byte[] arg0, long[] arg1);
-public static final native int VtblCall (int fnNumber, long ppVtbl, int arg0, long[] arg1, int[] arg2);
-public static final native int VtblCall (int fnNumber, long ppVtbl, long arg0, int[] arg1, int[] arg2);
-public static final native int VtblCall (int fnNumber, long ppVtbl, long arg0, long[] arg1, long[] arg2);
-public static final native int VtblCall (int fnNumber, long ppVtbl, TF_DISPLAYATTRIBUTE arg0);
-
-public static final native int VtblCall(int fnNumber, long ppVtbl, int arg0, long arg1, long arg2);
-public static final native int VtblCall(int fnNumber, long ppVtbl, long arg0, long arg1, long arg2);
-public static final native int VtblCall (int fnNumber, long ppVtbl, int arg0, int arg1, int arg2);
-
-public static final native int VtblCall (int fnNumber, long ppVtbl, int arg0, int arg1);
-public static final native int VtblCall (int fnNumber, long ppVtbl, int arg0, long arg1);
-public static final native int VtblCall (int fnNumber, long ppVtbl, long arg0, long arg1);
-public static final native int VtblCall (int fnNumber, long ppVtbl, long arg0, int arg1);
-public static final native int VtblCall (int fnNumber, long ppVtbl, int[] arg0, byte[] arg1, int[] arg2);
-public static final native int VtblCall (int fnNumber, long ppVtbl, int[] arg0, byte[] arg1, long[] arg2);
-public static final native int VtblCall (int fnNumber, long ppVtbl, char[] arg0);
-public static final native int VtblCall (int fnNumber, long ppVtbl, char[] arg0, int arg1);
-public static final native int VtblCall (int fnNumber, long ppVtbl, char[] arg0, long arg1);
-public static final native int VtblCall (int fnNumber, long ppVtbl, PROPERTYKEY arg0, int arg1);
-public static final native int VtblCall (int fnNumber, long ppVtbl, PROPERTYKEY arg0, long arg1);
-public static final native int VtblCall (int fnNumber, long ppVtbl, int arg0, int arg1, char[] arg2, char[] arg3, int arg4);
-public static final native int VtblCall (int fnNumber, long ppVtbl, long arg0, int arg1, char[] arg2, char[] arg3, long arg4);
-public static final native int VtblCall (int fnNumber, long ppVtbl, int arg0, int[] arg1);
-public static final native int VtblCall (int fnNumber, long ppVtbl, long arg0, int[] arg1);
-public static final native int VtblCall (int fnNumber, long ppVtbl, int arg0, long[] arg1);
-
 public static final native boolean WaitMessage ();
 /**
  * @param lpWideCharStr cast=(LPCWSTR),flags=no_out critical

@@ -13,8 +13,6 @@
  *******************************************************************************/
 package org.eclipse.swt.internal.ole.win32;
 
-import org.eclipse.swt.internal.win32.*;
-
 public class IShellItem extends IUnknown {
 
 public IShellItem(long address) {
@@ -22,7 +20,7 @@ public IShellItem(long address) {
 }
 
 public int GetDisplayName(int sigdnName, long[] ppszName) {
-	return OS.VtblCall(5, address, sigdnName, ppszName);
+	return COM.VtblCall(5, address, sigdnName, ppszName);
 }
 
 }

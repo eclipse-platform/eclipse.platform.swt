@@ -15,7 +15,6 @@ package org.eclipse.swt.internal.webkit;
 
 
 import org.eclipse.swt.internal.ole.win32.*;
-import org.eclipse.swt.internal.win32.*;
 
 public class IWebURLAuthenticationChallengeSender extends IUnknown {
 
@@ -24,11 +23,11 @@ public IWebURLAuthenticationChallengeSender (long address) {
 }
 
 public int cancelAuthenticationChallenge (long challenge) {
-	return OS.VtblCall (3, getAddress (), challenge);
+	return COM.VtblCall (3, getAddress (), challenge);
 }
 
 public int useCredential (long credential, long challenge) {
-	return OS.VtblCall (5, getAddress (), credential, challenge);
+	return COM.VtblCall (5, getAddress (), credential, challenge);
 }
 
 }

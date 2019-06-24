@@ -13,14 +13,12 @@
  *******************************************************************************/
 package org.eclipse.swt.internal.ole.win32;
 
-import org.eclipse.swt.internal.win32.*;
-
 public class IDataObject extends IUnknown {
 public IDataObject(long address) {
 	super(address);
 }
 public int EnumFormatEtc(int dwDirection, long[] ppenumFormatetc) {
-	return OS.VtblCall(8, address, dwDirection, ppenumFormatetc);
+	return COM.VtblCall(8, address, dwDirection, ppenumFormatetc);
 }
 public int GetData(FORMATETC pFormatetc, STGMEDIUM pmedium) {
 	//Called by a data consumer to obtain data from a source data object.

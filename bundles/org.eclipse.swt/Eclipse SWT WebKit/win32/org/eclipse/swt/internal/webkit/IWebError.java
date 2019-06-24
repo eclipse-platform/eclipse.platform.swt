@@ -15,7 +15,6 @@ package org.eclipse.swt.internal.webkit;
 
 
 import org.eclipse.swt.internal.ole.win32.*;
-import org.eclipse.swt.internal.win32.*;
 
 public class IWebError extends IUnknown {
 
@@ -24,7 +23,7 @@ public IWebError (long address) {
 }
 
 public int code (int[] result) {
-	return OS.VtblCall (4, getAddress (), result);
+	return COM.VtblCall (4, getAddress (), result);
 }
 
 //public int domain (long[] result) {
@@ -32,7 +31,7 @@ public int code (int[] result) {
 //}
 
 public int localizedDescription (long[] result) {
-	return OS.VtblCall (6, getAddress (), result);
+	return COM.VtblCall (6, getAddress (), result);
 }
 
 //public int localizedFailureReason (long[] result) {
@@ -44,7 +43,7 @@ public int localizedDescription (long[] result) {
 //}
 
 public int failingURL (long[] result) {
-	return OS.VtblCall (12, getAddress (), result);
+	return COM.VtblCall (12, getAddress (), result);
 }
 
 }

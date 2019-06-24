@@ -15,7 +15,6 @@ package org.eclipse.swt.internal.webkit;
 
 
 import org.eclipse.swt.internal.ole.win32.*;
-import org.eclipse.swt.internal.win32.*;
 
 public class IWebPolicyDecisionListener extends IUnknown{
 
@@ -24,15 +23,15 @@ public IWebPolicyDecisionListener (long address) {
 }
 
 public int use () {
-	return OS.VtblCall (3, getAddress ());
+	return COM.VtblCall (3, getAddress ());
 }
 
 public int download () {
-	return OS.VtblCall (4, getAddress ());
+	return COM.VtblCall (4, getAddress ());
 }
 
 public int ignore () {
-	return OS.VtblCall (5, getAddress ());
+	return COM.VtblCall (5, getAddress ());
 }
 
 }

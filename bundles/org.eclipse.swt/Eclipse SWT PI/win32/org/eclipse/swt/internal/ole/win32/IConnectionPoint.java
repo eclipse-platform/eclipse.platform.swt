@@ -13,17 +13,15 @@
  *******************************************************************************/
 package org.eclipse.swt.internal.ole.win32;
 
-import org.eclipse.swt.internal.win32.*;
-
 public class IConnectionPoint extends IUnknown
 {
 public IConnectionPoint(long address) {
 	super(address);
 }
 public int Advise(long pUnk, int[] pdwCookie) {
-	return OS.VtblCall(5, address, pUnk, pdwCookie);
+	return COM.VtblCall(5, address, pUnk, pdwCookie);
 }
 public int Unadvise(int dwCookie) {
-	return OS.VtblCall(6, address, dwCookie);
+	return COM.VtblCall(6, address, dwCookie);
 }
 }

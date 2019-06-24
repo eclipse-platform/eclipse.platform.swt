@@ -15,7 +15,6 @@ package org.eclipse.swt.internal.webkit;
 
 
 import org.eclipse.swt.internal.ole.win32.*;
-import org.eclipse.swt.internal.win32.*;
 
 public class IWebDownload extends IUnknown {
 
@@ -24,15 +23,15 @@ public IWebDownload (long address) {
 }
 
 public int cancel () {
-	return OS.VtblCall (4, getAddress ());
+	return COM.VtblCall (4, getAddress ());
 }
 
 public int setDeletesFileUponFailure (int deletesFileUponFailure) {
-	return OS.VtblCall (12, getAddress (), deletesFileUponFailure);
+	return COM.VtblCall (12, getAddress (), deletesFileUponFailure);
 }
 
 public int setDestination (long path, int allowOverwrite) {
-	return OS.VtblCall (13, getAddress(), path, allowOverwrite);
+	return COM.VtblCall (13, getAddress(), path, allowOverwrite);
 }
 
 }

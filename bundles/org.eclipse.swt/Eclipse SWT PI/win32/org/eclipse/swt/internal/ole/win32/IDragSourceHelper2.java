@@ -13,13 +13,11 @@
  *******************************************************************************/
 package org.eclipse.swt.internal.ole.win32;
 
-import org.eclipse.swt.internal.win32.*;
-
 public class IDragSourceHelper2 extends IDragSourceHelper {
 public IDragSourceHelper2(long address) {
 	super(address);
 }
 public int SetFlags(int dwFlags) {
-	return OS.VtblCall(5, address, dwFlags);
+	return COM.VtblCall(5, address, dwFlags);
 }
 }

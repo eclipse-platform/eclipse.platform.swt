@@ -15,7 +15,6 @@ package org.eclipse.swt.internal.webkit;
 
 
 import org.eclipse.swt.internal.ole.win32.*;
-import org.eclipse.swt.internal.win32.*;
 
 public class IWebFramePrivate extends IUnknown {
 
@@ -24,15 +23,15 @@ public IWebFramePrivate (long address) {
 }
 
 public int setInPrintingMode (int value, long printDC) {
-	return OS.VtblCall (8, getAddress (), value, printDC);
+	return COM.VtblCall (8, getAddress (), value, printDC);
 }
 
 public int getPrintedPageCount (long printDC, int[] pageCount) {
-	return OS.VtblCall (9, getAddress (), printDC, pageCount);
+	return COM.VtblCall (9, getAddress (), printDC, pageCount);
 }
 
 public int spoolPages (long printDC, int startPage, int endPage, long[] ctx) {
-	return OS.VtblCall (10, getAddress (), printDC, startPage, endPage, ctx);
+	return COM.VtblCall (10, getAddress (), printDC, startPage, endPage, ctx);
 }
 
 }
