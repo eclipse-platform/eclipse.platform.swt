@@ -478,4 +478,12 @@
             </message_arguments>
         </filter>
     </resource>
+    <resource path="META-INF/MANIFEST.MF">
+        <filter comment="Bug 548190 - Adding API Tools filter to hide the warning message in org.eclipse.swt project. For more details refer: https://bugs.eclipse.org/bugs/show_bug.cgi?id=548190#c23" id="926941240">
+            <message_arguments>
+                <message_argument value="3.112.0"/>
+                <message_argument value="3.111.0"/>
+            </message_arguments>
+        </filter>
+    </resource>
 </component>
