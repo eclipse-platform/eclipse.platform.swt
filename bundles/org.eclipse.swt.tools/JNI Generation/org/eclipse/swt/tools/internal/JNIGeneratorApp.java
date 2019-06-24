@@ -371,6 +371,8 @@ JNIClass[] getASTClasses() {
 						if (cce.getMessage().startsWith(EnumDeclaration.class.getName())) {
 							// this can be ignored since enums don't affect native files
 						}
+					} catch (IndexOutOfBoundsException e) {
+						// ignore, can also happen because of enums
 					}
 				}
 			}

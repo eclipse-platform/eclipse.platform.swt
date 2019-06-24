@@ -698,6 +698,7 @@ public enum Selector {
 	, sel_locationForGlyphAtIndex_("locationForGlyphAtIndex:")
 	, sel_locationInWindow("locationInWindow")
 	, sel_lockFocus("lockFocus")
+	, sel_lockFocusIfCanDraw("lockFocusIfCanDraw")
 	, sel_lowercaseString("lowercaseString")
 	, sel_magnification("magnification")
 	, sel_magnifyWithEvent_("magnifyWithEvent:")

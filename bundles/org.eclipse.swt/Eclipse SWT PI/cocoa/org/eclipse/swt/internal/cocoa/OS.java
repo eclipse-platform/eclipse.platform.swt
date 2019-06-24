@@ -1587,6 +1587,7 @@ public static final long sel_location = Selector.sel_location.value;
 public static final long sel_locationForGlyphAtIndex_ = Selector.sel_locationForGlyphAtIndex_.value;
 public static final long sel_locationInWindow = Selector.sel_locationInWindow.value;
 public static final long sel_lockFocus = Selector.sel_lockFocus.value;
+public static final long sel_lockFocusIfCanDraw = Selector.sel_lockFocusIfCanDraw.value;
 public static final long sel_lowercaseString = Selector.sel_lowercaseString.value;
 public static final long sel_magnification = Selector.sel_magnification.value;
 public static final long sel_magnifyWithEvent_ = Selector.sel_magnifyWithEvent_.value;
