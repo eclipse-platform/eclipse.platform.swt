@@ -1348,6 +1348,7 @@ void selectField(FieldPosition fieldPosition) {
 			setSelection(s, end);
 		}
 	});
+	sendSelectionEvent(SWT.Selection);
 }
 
 void sendSelectionEvent () {
