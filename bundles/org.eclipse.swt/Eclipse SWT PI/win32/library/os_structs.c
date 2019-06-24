@@ -819,6 +819,40 @@ void setCHOOSEFONTFields(JNIEnv *env, jobject lpObject, CHOOSEFONT *lpStruct)
 }
 #endif
 
+#ifndef NO_CIDA
+typedef struct CIDA_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID cidl, aoffset;
+} CIDA_FID_CACHE;
+
+CIDA_FID_CACHE CIDAFc;
+
+void cacheCIDAFields(JNIEnv *env, jobject lpObject)
+{
+	if (CIDAFc.cached) return;
+	CIDAFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	CIDAFc.cidl = (*env)->GetFieldID(env, CIDAFc.clazz, "cidl", "I");
+	CIDAFc.aoffset = (*env)->GetFieldID(env, CIDAFc.clazz, "aoffset", "I");
+	CIDAFc.cached = 1;
+}
+
+CIDA *getCIDAFields(JNIEnv *env, jobject lpObject, CIDA *lpStruct)
+{
+	if (!CIDAFc.cached) cacheCIDAFields(env, lpObject);
+	lpStruct->cidl = (*env)->GetIntField(env, lpObject, CIDAFc.cidl);
+	lpStruct->aoffset[0] = (*env)->GetIntField(env, lpObject, CIDAFc.aoffset);
+	return lpStruct;
+}
+
+void setCIDAFields(JNIEnv *env, jobject lpObject, CIDA *lpStruct)
+{
+	if (!CIDAFc.cached) cacheCIDAFields(env, lpObject);
+	(*env)->SetIntField(env, lpObject, CIDAFc.cidl, (jint)lpStruct->cidl);
+	(*env)->SetIntField(env, lpObject, CIDAFc.aoffset, (jint)lpStruct->aoffset[0]);
+}
+#endif
+
 #ifndef NO_COMBOBOXINFO
 typedef struct COMBOBOXINFO_FID_CACHE {
 	int cached;

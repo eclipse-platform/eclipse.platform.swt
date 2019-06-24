@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2018 IBM Corporation and others.
+ * Copyright (c) 2000, 2019 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -2021,6 +2021,7 @@ public static final native int HDHITTESTINFO_sizeof ();
 public static final native int HELPINFO_sizeof ();
 public static final native int HIGHCONTRAST_sizeof ();
 public static final native int ICONINFO_sizeof ();
+public static final native int CIDA_sizeof ();
 public static final native int INITCOMMONCONTROLSEX_sizeof ();
 public static final native int INPUT_sizeof ();
 public static final native int KEYBDINPUT_sizeof ();
@@ -3108,6 +3109,10 @@ public static final native boolean HideCaret (long hWnd);
  */
 public static final native int IIDFromString (char[] lpsz, byte[] lpiid);
 /**
+ * @param pidl cast=(PCIDLIST_ABSOLUTE)
+ */
+public static final native int ILGetSize(long pidl);
+/**
  * @param himl cast=(HIMAGELIST)
  * @param hbmImage cast=(HBITMAP)
  * @param hbmMask cast=(HBITMAP)
@@ -3789,6 +3794,16 @@ public static final native void MoveMemory (long Destination, MOUSEINPUT Source,
  * @param Source cast=(CONST VOID *),flags=no_out
  */
 public static final native void MoveMemory (long Destination, GESTURECONFIG Source, int Length);
+/**
+ * @param Destination cast=(PVOID)
+ * @param Source cast=(CONST VOID *),flags=no_out
+ */
+public static final native void MoveMemory (long Destination, CIDA Source, int Length);
+/**
+ * @param Destination cast=(PVOID),flags=no_in
+ * @param Source cast=(CONST VOID *)
+ */
+public static final native void MoveMemory (CIDA Destination, long Source, int Length);
 /**
  * @param hdc cast=(HDC)
  * @param lPoint cast=(LPPOINT)

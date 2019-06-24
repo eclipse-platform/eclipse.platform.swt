@@ -78,6 +78,7 @@ char * COM_nativeFunctionNames[] = {
 	"OleSetContainedObject",
 	"OleSetMenuDescriptor",
 	"OleTranslateColor",
+	"PathToPIDL",
 	"ProgIDFromCLSID",
 	"RegisterDragDrop",
 	"ReleaseStgMedium",

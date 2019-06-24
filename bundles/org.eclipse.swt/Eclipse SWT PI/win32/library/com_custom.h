@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2010 IBM Corporation and others.
+ * Copyright (c) 2000, 2019 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -21,3 +21,12 @@
 #define AccessibleObjectFromWindow_LIB "oleacc.dll"
 #define CreateStdAccessibleObject_LIB "oleacc.dll"
 #define LresultFromObject_LIB "oleacc.dll"
+
+/* Custom functions */
+#ifdef __cplusplus
+extern "C" {
+#endif
+HRESULT PathToPIDL(_In_ PCWSTR pszName, _Outptr_ PIDLIST_ABSOLUTE *ppidl);
+#ifdef __cplusplus
+}
+#endif

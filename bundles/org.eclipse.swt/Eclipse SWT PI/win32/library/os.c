@@ -450,6 +450,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(CHOOSEFONT_1sizeof)
 }
 #endif
 
+#ifndef NO_CIDA_1sizeof
+JNIEXPORT jint JNICALL OS_NATIVE(CIDA_1sizeof)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, CIDA_1sizeof_FUNC);
+	rc = (jint)CIDA_sizeof();
+	OS_NATIVE_EXIT(env, that, CIDA_1sizeof_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_COMBOBOXINFO_1sizeof
 JNIEXPORT jint JNICALL OS_NATIVE(COMBOBOXINFO_1sizeof)
 	(JNIEnv *env, jclass that)
@@ -4106,6 +4118,18 @@ fail:
 }
 #endif
 
+#ifndef NO_ILGetSize
+JNIEXPORT jint JNICALL OS_NATIVE(ILGetSize)
+	(JNIEnv *env, jclass that, jlong arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, ILGetSize_FUNC);
+	rc = (jint)ILGetSize((PCIDLIST_ABSOLUTE)arg0);
+	OS_NATIVE_EXIT(env, that, ILGetSize_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_INITCOMMONCONTROLSEX_1sizeof
 JNIEXPORT jint JNICALL OS_NATIVE(INITCOMMONCONTROLSEX_1sizeof)
 	(JNIEnv *env, jclass that)
@@ -5392,6 +5416,19 @@ JNIEXPORT void JNICALL OS_NATIVE(MoveMemory__JJI)
 }
 #endif
 
+#ifndef NO_MoveMemory__JLorg_eclipse_swt_internal_win32_CIDA_2I
+JNIEXPORT void JNICALL OS_NATIVE(MoveMemory__JLorg_eclipse_swt_internal_win32_CIDA_2I)
+	(JNIEnv *env, jclass that, jlong arg0, jobject arg1, jint arg2)
+{
+	CIDA _arg1, *lparg1=NULL;
+	OS_NATIVE_ENTER(env, that, MoveMemory__JLorg_eclipse_swt_internal_win32_CIDA_2I_FUNC);
+	if (arg1) if ((lparg1 = getCIDAFields(env, arg1, &_arg1)) == NULL) goto fail;
+	MoveMemory((PVOID)arg0, (CONST VOID *)lparg1, arg2);
+fail:
+	OS_NATIVE_EXIT(env, that, MoveMemory__JLorg_eclipse_swt_internal_win32_CIDA_2I_FUNC);
+}
+#endif
+
 #ifndef NO_MoveMemory__JLorg_eclipse_swt_internal_win32_DEVMODE_2I
 JNIEXPORT void JNICALL OS_NATIVE(MoveMemory__JLorg_eclipse_swt_internal_win32_DEVMODE_2I)
 	(JNIEnv *env, jclass that, jlong arg0, jobject arg1, jint arg2)
@@ -5859,6 +5896,20 @@ JNIEXPORT void JNICALL OS_NATIVE(MoveMemory__Lorg_eclipse_swt_internal_win32_CER
 fail:
 	if (arg0 && lparg0) setCERT_INFOFields(env, arg0, lparg0);
 	OS_NATIVE_EXIT(env, that, MoveMemory__Lorg_eclipse_swt_internal_win32_CERT_1INFO_2JI_FUNC);
+}
+#endif
+
+#ifndef NO_MoveMemory__Lorg_eclipse_swt_internal_win32_CIDA_2JI
+JNIEXPORT void JNICALL OS_NATIVE(MoveMemory__Lorg_eclipse_swt_internal_win32_CIDA_2JI)
+	(JNIEnv *env, jclass that, jobject arg0, jlong arg1, jint arg2)
+{
+	CIDA _arg0, *lparg0=NULL;
+	OS_NATIVE_ENTER(env, that, MoveMemory__Lorg_eclipse_swt_internal_win32_CIDA_2JI_FUNC);
+	if (arg0) if ((lparg0 = &_arg0) == NULL) goto fail;
+	MoveMemory((PVOID)lparg0, (CONST VOID *)arg1, arg2);
+fail:
+	if (arg0 && lparg0) setCIDAFields(env, arg0, lparg0);
+	OS_NATIVE_EXIT(env, that, MoveMemory__Lorg_eclipse_swt_internal_win32_CIDA_2JI_FUNC);
 }
 #endif
 

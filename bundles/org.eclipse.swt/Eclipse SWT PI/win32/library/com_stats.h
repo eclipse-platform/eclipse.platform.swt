@@ -88,6 +88,7 @@ typedef enum {
 	OleSetContainedObject_FUNC,
 	OleSetMenuDescriptor_FUNC,
 	OleTranslateColor_FUNC,
+	PathToPIDL_FUNC,
 	ProgIDFromCLSID_FUNC,
 	RegisterDragDrop_FUNC,
 	ReleaseStgMedium_FUNC,
