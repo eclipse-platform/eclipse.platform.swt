@@ -21,4 +21,8 @@
   <artifactId>org.eclipse.swt.fragments.localbuild</artifactId>
   <version>3.105.0-SNAPSHOT</version>
   <packaging>eclipse-plugin</packaging>
+  
+  <properties>
+    <skipAPIAnalysis>true</skipAPIAnalysis>
+  </properties>
 </project>

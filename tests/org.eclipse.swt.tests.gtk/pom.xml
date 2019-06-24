@@ -24,6 +24,7 @@
   <properties>
     <code.ignoredWarnings>${tests.ignoredWarnings}</code.ignoredWarnings>
     <tycho.testArgLine></tycho.testArgLine>
+    <skipAPIAnalysis>true</skipAPIAnalysis>
   </properties>
   <build>
     <plugins>
