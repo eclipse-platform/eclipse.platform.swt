@@ -808,11 +808,7 @@ public class ImageAnalyzer {
 			// Display the image.
 			imageDataIndex = 0;
 			displayImage(imageData);
-		} catch (SWTException e) {
-			showErrorDialog(bundle.getString("Loading_lc"), filename, e);
-		} catch (SWTError e) {
-			showErrorDialog(bundle.getString("Loading_lc"), filename, e);
-		} catch (OutOfMemoryError e) {
+		} catch (SWTException | SWTError | OutOfMemoryError e) {
 			showErrorDialog(bundle.getString("Loading_lc"), filename, e);
 		} finally {
 			shell.setCursor(null);
@@ -864,13 +860,7 @@ public class ImageAnalyzer {
 				imageDataIndex = 0;
 				displayImage(imageDataArray[imageDataIndex]);
 			}
-		} catch (SWTException e) {
-			showErrorDialog(bundle.getString("Loading_lc"), filename, e);
-			loader = oldLoader;
-		} catch (SWTError e) {
-			showErrorDialog(bundle.getString("Loading_lc"), filename, e);
-			loader = oldLoader;
-		} catch (OutOfMemoryError e) {
+		} catch (SWTException | SWTError | OutOfMemoryError e) {
 			showErrorDialog(bundle.getString("Loading_lc"), filename, e);
 			loader = oldLoader;
 		} finally {
@@ -921,10 +911,7 @@ public class ImageAnalyzer {
 				imageDataIndex = 0;
 				displayImage(imageDataArray[imageDataIndex]);
 			}
-		} catch (Exception e) {
-			showErrorDialog(bundle.getString("Loading_lc"), urlname, e);
-			loader = oldLoader;
-		} catch (OutOfMemoryError e) {
+		} catch (Exception | OutOfMemoryError e) {
 			showErrorDialog(bundle.getString("Loading_lc"), urlname, e);
 			loader = oldLoader;
 		} finally {
@@ -1007,9 +994,7 @@ public class ImageAnalyzer {
 			if (imageData.type == SWT.IMAGE_JPEG) loader.compression = compressionCombo.indexOf(compressionCombo.getText()) + 1;
 			if (imageData.type == SWT.IMAGE_PNG) loader.compression = compressionCombo.indexOf(compressionCombo.getText());
 			loader.save(fileName, imageData.type);
-		} catch (SWTException e) {
-			showErrorDialog(bundle.getString("Saving_lc"), fileName, e);
-		} catch (SWTError e) {
+		} catch (SWTException | SWTError e) {
 			showErrorDialog(bundle.getString("Saving_lc"), fileName, e);
 		} finally {
 			shell.setCursor(null);
@@ -1117,9 +1102,7 @@ public class ImageAnalyzer {
 			shell.setText(createMsg(bundle.getString("Analyzer_on"), filename));
 			typeLabel.setText(createMsg(bundle.getString("Type_string"), fileTypeString(filetype)));
 
-		} catch (SWTException e) {
-			showErrorDialog(bundle.getString("Saving_lc"), filename, e);
-		} catch (SWTError e) {
+		} catch (SWTException | SWTError e) {
 			showErrorDialog(bundle.getString("Saving_lc"), filename, e);
 		} finally {
 			shell.setCursor(null);
@@ -1175,9 +1158,7 @@ public class ImageAnalyzer {
 			loader.data = new ImageData[] {maskImageData};
 			loader.save(filename, filetype);
 
-		} catch (SWTException e) {
-			showErrorDialog(bundle.getString("Saving_lc"), filename, e);
-		} catch (SWTError e) {
+		} catch (SWTException | SWTError e) {
 			showErrorDialog(bundle.getString("Saving_lc"), filename, e);
 		} finally {
 			shell.setCursor(null);
@@ -1259,9 +1240,7 @@ public class ImageAnalyzer {
 			imageDataIndex = 0;
 			displayImage(newImageData[imageDataIndex]);
 
-		} catch (Exception e) {
-			showErrorDialog(bundle.getString("Reloading_lc"), currentName, e);
-		} catch (OutOfMemoryError e) {
+		} catch (Exception | OutOfMemoryError e) {
 			showErrorDialog(bundle.getString("Reloading_lc"), currentName, e);
 		} finally {
 			shell.setCursor(null);

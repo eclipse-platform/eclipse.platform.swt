@@ -1365,8 +1365,6 @@ public class FileViewer {
 						FileWriter out = new FileWriter(newFile);){
 					int count;
 					while ((count = in.read()) != -1) out.write(count);
-				} catch (FileNotFoundException e) {
-					return false;
 				} catch (IOException e) {
 					return false;
 				}

@@ -66,10 +66,7 @@ public class SessionManagerDBus {
 		public void install() {
 			try {
 				Runtime.getRuntime().addShutdownHook(this);
-			} catch (IllegalArgumentException ex) {
-				// Shouldn't happen
-				ex.printStackTrace();
-			} catch (IllegalStateException ex) {
+			} catch (IllegalArgumentException | IllegalStateException ex) {
 				// Shouldn't happen
 				ex.printStackTrace();
 			} catch (SecurityException ex) {
