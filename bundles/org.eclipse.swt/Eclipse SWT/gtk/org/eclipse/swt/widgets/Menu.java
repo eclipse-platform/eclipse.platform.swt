@@ -46,7 +46,6 @@ public class Menu extends Widget {
 	boolean hasLocation;
 	MenuItem cascade, selectedItem;
 	Decorations parent;
-	long imItem, imSeparator, imHandle;
 	ImageList imageList;
 	int poppedUpCount;
 
@@ -411,67 +410,6 @@ void createHandle (int index) {
 	}
 }
 
-void createIMMenu (long imHandle) {
-	if (imHandle == 0) {
-		this.imHandle = 0;
-		if (imItem != 0) {
-			GTK.gtk_widget_destroy (imItem);
-			imItem = 0;
-		}
-		if (imSeparator != 0) {
-			GTK.gtk_widget_destroy (imSeparator);
-			imSeparator = 0;
-		}
-		return;
-	}
-	if (this.imHandle == imHandle) return;
-	this.imHandle = imHandle;
-
-	if (imSeparator == 0) {
-		imSeparator = GTK.gtk_separator_menu_item_new ();
-		GTK.gtk_widget_show (imSeparator);
-		GTK.gtk_menu_shell_insert (handle, imSeparator, -1);
-	}
-	if (imItem == 0) {
-		byte[] buffer = Converter.wcsToMbcs (SWT.getMessage("SWT_InputMethods"), true);
-		imItem = GTK.gtk_menu_item_new ();
-		if (imItem == 0) error (SWT.ERROR_NO_HANDLES);
-		long imageHandle = 0;
-		long labelHandle = GTK.gtk_accel_label_new (buffer);
-		if (labelHandle == 0) error (SWT.ERROR_NO_HANDLES);
-		if (GTK.GTK_VERSION >= OS.VERSION (3, 16, 0)) {
-			GTK.gtk_label_set_xalign (labelHandle, 0);
-			GTK.gtk_widget_set_halign (labelHandle, GTK.GTK_ALIGN_FILL);
-		} else {
-			GTK.gtk_misc_set_alignment(labelHandle, 0, 0);
-		}
-		long boxHandle = gtk_box_new (GTK.GTK_ORIENTATION_HORIZONTAL, false, 0);
-		if (boxHandle == 0) error (SWT.ERROR_NO_HANDLES);
-		if (OS.SWT_PADDED_MENU_ITEMS) {
-			imageHandle = GTK.gtk_image_new();
-			if (imageHandle == 0) error (SWT.ERROR_NO_HANDLES);
-			GTK.gtk_image_set_pixel_size (imageHandle, 16);
-			if (boxHandle != 0) {
-				GTK.gtk_container_add (boxHandle, imageHandle);
-				GTK.gtk_widget_show (imageHandle);
-			}
-		}
-		if (labelHandle != 0 && boxHandle != 0) {
-			gtk_box_pack_end (boxHandle, labelHandle, true, true, 0);
-			GTK.gtk_widget_show (labelHandle);
-		}
-		if (boxHandle != 0) {
-			GTK.gtk_container_add (imItem, boxHandle);
-			GTK.gtk_widget_show (boxHandle);
-		}
-		GTK.gtk_widget_show (imItem);
-		GTK.gtk_menu_shell_insert (handle, imItem, -1);
-	}
-	long imSubmenu = GTK.gtk_menu_new ();
-	GTK.gtk_im_multicontext_append_menuitems (imHandle, imSubmenu);
-	GTK.gtk_menu_item_set_submenu (imItem, imSubmenu);
-}
-
 @Override
 void createWidget (int index) {
 	checkOrientation (parent);
@@ -570,8 +508,6 @@ public MenuItem getItem (int index) {
 	long list = GTK.gtk_container_get_children (handle);
 	if (list == 0) error (SWT.ERROR_CANNOT_GET_ITEM);
 	int count = OS.g_list_length (list);
-	if (imSeparator != 0) count--;
-	if (imItem != 0) count--;
 	if (!(0 <= index && index < count)) error (SWT.ERROR_INVALID_RANGE);
 	long data = OS.g_list_nth_data (list, index);
 	OS.g_list_free (list);
@@ -595,8 +531,6 @@ public int getItemCount () {
 	if (list == 0) return 0;
 	int count = OS.g_list_length (list);
 	OS.g_list_free (list);
-	if (imSeparator != 0) count--;
-	if (imItem != 0) count--;
 	return Math.max (0, count);
 }
 
@@ -622,8 +556,6 @@ public MenuItem [] getItems () {
 	if (list == 0) return new MenuItem [0];
 	long originalList = list;
 	int count = OS.g_list_length (list);
-	if (imSeparator != 0) count--;
-	if (imItem != 0) count--;
 	MenuItem [] items = new MenuItem [count];
 	int index = 0;
 	for (int i=0; i<count; i++) {
@@ -963,7 +895,6 @@ void releaseWidget () {
 	if (parent != null) parent.removeMenu (this);
 	parent = null;
 	cascade = null;
-	imItem = imSeparator = imHandle = 0;
 	if (imageList != null) imageList.dispose ();
 	imageList = null;
 }

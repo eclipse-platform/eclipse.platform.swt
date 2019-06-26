@@ -6829,24 +6829,6 @@ fail:
 }
 #endif
 
-#ifndef NO__1gtk_1im_1multicontext_1append_1menuitems
-JNIEXPORT void JNICALL GTK_NATIVE(_1gtk_1im_1multicontext_1append_1menuitems)
-	(JNIEnv *env, jclass that, jlong arg0, jlong arg1)
-{
-	GTK_NATIVE_ENTER(env, that, _1gtk_1im_1multicontext_1append_1menuitems_FUNC);
-/*
-	gtk_im_multicontext_append_menuitems((GtkIMMulticontext *)arg0, (GtkMenuShell *)arg1);
-*/
-	{
-		GTK_LOAD_FUNCTION(fp, gtk_im_multicontext_append_menuitems)
-		if (fp) {
-			((void (CALLING_CONVENTION*)(GtkIMMulticontext *, GtkMenuShell *))fp)((GtkIMMulticontext *)arg0, (GtkMenuShell *)arg1);
-		}
-	}
-	GTK_NATIVE_EXIT(env, that, _1gtk_1im_1multicontext_1append_1menuitems_FUNC);
-}
-#endif
-
 #ifndef NO__1gtk_1im_1multicontext_1new
 JNIEXPORT jlong JNICALL GTK_NATIVE(_1gtk_1im_1multicontext_1new)
 	(JNIEnv *env, jclass that)

@@ -6280,8 +6280,6 @@ boolean showMenu (int x, int y, int detail) {
 	if (isDisposed ()) return false;
 	if (event.doit) {
 		if (menu != null && !menu.isDisposed ()) {
-			boolean hooksKeys = hooks (SWT.KeyDown) || hooks (SWT.KeyUp);
-			menu.createIMMenu (hooksKeys ? imHandle() : 0);
 			Rectangle rect = DPIUtil.autoScaleUp (event.getBounds ());
 			if (rect.x != x || rect.y != y) {
 				menu.setLocationInPixels (rect.x, rect.y);

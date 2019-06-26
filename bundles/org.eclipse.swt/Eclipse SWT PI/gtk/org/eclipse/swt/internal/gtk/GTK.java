@@ -3557,20 +3557,6 @@ public class GTK extends OS {
 			lock.unlock();
 		}
 	}
-	/**
-	 * @method flags=dynamic
-	 * @param context cast=(GtkIMMulticontext *)
-	 * @param menushell cast=(GtkMenuShell *)
-	 */
-	public static final native void _gtk_im_multicontext_append_menuitems (long context, long menushell);
-	public static final void gtk_im_multicontext_append_menuitems (long context, long menushell) {
-		lock.lock();
-		try {
-			_gtk_im_multicontext_append_menuitems(context, menushell);
-		} finally {
-			lock.unlock();
-		}
-	}
 	public static final native long _gtk_im_multicontext_new();
 	public static final long gtk_im_multicontext_new() {
 		lock.lock();
