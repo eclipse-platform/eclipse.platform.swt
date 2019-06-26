@@ -84,8 +84,8 @@ JNIEXPORT jobject JNICALL Java_org_eclipse_swt_awt_SWT_1AWT_initFrame
 	
 	jclass cls = (*env)->FindClass(env, "sun/awt/X11/XEmbeddedFrame");
 	if (NULL == cls) return NULL;
-	constructor = (*env)->GetMethodID(env, cls, "<init>", "(J)V");
-	object = (*env)->NewObject(env, cls, constructor, handle);
+	constructor = (*env)->GetMethodID(env, cls, "<init>", "(JZ)V");
+	object = (*env)->NewObject(env, cls, constructor, handle, JNI_TRUE);
 	return object;
 }
 #endif
