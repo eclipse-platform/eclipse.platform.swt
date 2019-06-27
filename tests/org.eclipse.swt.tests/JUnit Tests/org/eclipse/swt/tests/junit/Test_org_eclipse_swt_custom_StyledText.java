@@ -5360,5 +5360,20 @@ public void test_consistency_DragDetect () {
 	consistencyEvent(30, 10, 50, 0, ConsistencyUtility.MOUSE_DRAG);
 }
 
+@Test
+public void test_GlyphMetricsOnTab() {
+	text.setTabs(4);
+	text.setText("\tabcdefghijkl");
+	Rectangle boundsWithoutGlyphMetrics = text.getTextBounds(0, text.getText().length() - 1);
+	int tabWidthWithoutGlyphMetrics = text.getTextBounds(0, 0).width;
+	StyleRange range = new StyleRange(0, 1, null, null);
+	range.metrics = new GlyphMetrics(0, 0, 100);
+	text.setStyleRange(range);
+	int tabWidthWithGlyphMetrics = text.getTextBounds(0, 0).width;
+	assertEquals(range.metrics.width, tabWidthWithGlyphMetrics);
+	Rectangle boundsWithGlyphMetrics = text.getTextBounds(0, text.getText().length() - 1);
+	assertEquals("Style should change text bounds", boundsWithoutGlyphMetrics.width - tabWidthWithoutGlyphMetrics + tabWidthWithGlyphMetrics, boundsWithGlyphMetrics.width);
+}
+
 }
 
