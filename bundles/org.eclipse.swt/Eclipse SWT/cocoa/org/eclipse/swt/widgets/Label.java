@@ -486,28 +486,32 @@ boolean setTabItemFocus () {
 public void setImage (Image image) {
 	checkWidget();
 	if ((style & SWT.SEPARATOR) != 0) return;
-	if (image != null && image.isDisposed ()) {
-		error (SWT.ERROR_INVALID_ARGUMENT);
-	}
-	this.image = image;
-	isImage = true;
-
-	/*
-	 * Feature in Cocoa.  If the NSImage object being set into the view is
-	 * the same NSImage object that is already there then the new image is
-	 * not taken.  This results in the view's image not changing even if the
-	 * NSImage object's content has changed since it was last set into the
-	 * view.  The workaround is to temporarily set the view's image to null
-	 * so that the new image will then be taken.
-	 */
 	if (image != null) {
+		if (image.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
+
+		this.image = image;
+		isImage = true;
+		/*
+		 * Feature in Cocoa.  If the NSImage object being set into the view is
+		 * the same NSImage object that is already there then the new image is
+		 * not taken.  This results in the view's image not changing even if the
+		 * NSImage object's content has changed since it was last set into the
+		 * view.  The workaround is to temporarily set the view's image to null
+		 * so that the new image will then be taken.
+		 */
 		NSImage current = imageView.image ();
 		if (current != null && current.id == image.handle.id) {
 			imageView.setImage (null);
 		}
+		imageView.setImage(image.handle);
+		((NSBox)view).setContentView(imageView);
+	} else {
+		if (this.image == null) return; // do nothing if image is already null
+
+		this.image = image;
+		imageView.setImage(null);
+		_setText();
 	}
-	imageView.setImage(image != null ? image.handle : null);
-	((NSBox)view).setContentView(imageView);
 }
 
 /**
@@ -545,8 +549,12 @@ public void setText (String string) {
 	checkWidget();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if ((style & SWT.SEPARATOR) != 0) return;
-	isImage = false;
 	text = string;
+	_setText();
+}
+
+private void _setText () {
+	isImage = false;
 	NSCell cell = new NSCell(textView.cell());
 	cell.setAttributedStringValue(createString());
 	((NSBox)view).setContentView(textView);
