@@ -305,7 +305,7 @@ public class SnippetExplorer {
 		formData.bottom = new FormAttachment(100, 0);
 		rightContainer.setLayoutData(formData);
 
-		filterField = new Text(leftContainer, SWT.SINGLE | SWT.BORDER | SWT.SEARCH | SWT.ICON_CANCEL);
+		filterField = new Text(leftContainer, SWT.SINGLE | SWT.BORDER | SWT.SEARCH | SWT.ICON_SEARCH | SWT.ICON_CANCEL);
 		filterField.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
 		filterField.setMessage(FILTER_HINT);
 		filterField.addListener(SWT.Modify, event -> {
