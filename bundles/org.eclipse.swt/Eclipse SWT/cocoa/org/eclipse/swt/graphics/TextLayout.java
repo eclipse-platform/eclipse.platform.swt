@@ -54,6 +54,7 @@ public final class TextLayout extends Resource {
 	int wrapWidth;
 	int orientation;
 	private double defaultTabWidth;
+	NSColor linkForeground;
 
 	int[] lineOffsets;
 	NSRect[] lineBounds;
@@ -64,7 +65,6 @@ public final class TextLayout extends Resource {
 
 	static final int TAB_COUNT = 32;
 	static final int UNDERLINE_THICK = 1 << 16;
-	static final RGB LINK_FOREGROUND = new RGB (0, 51, 153);
 	int[] invalidOffsets;
 	private boolean ignoreSegments;
 	static final char LTR_MARK = '\u200E', RTL_MARK = '\u200F';
@@ -267,7 +267,7 @@ void computeRuns() {
 				case SWT.UNDERLINE_LINK: {
 					underlineStyle = OS.NSUnderlineStyleSingle;
 					if (foreground == null) {
-						NSColor color = NSColor.colorWithDeviceRed(LINK_FOREGROUND.red / 255f, LINK_FOREGROUND.green / 255f, LINK_FOREGROUND.blue / 255f, 1);
+						NSColor color = getLinkColor();
 						attrStr.addAttribute(OS.NSForegroundColorAttributeName, color, range);
 					}
 					break;
@@ -1057,6 +1057,20 @@ public FontMetrics getLineMetrics (int lineIndex) {
 	} finally {
 		if (pool != null) pool.release();
 	}
+}
+
+NSColor getLinkColor() {
+	if (linkForeground == null) {
+		/**
+		 * Color used is same as SWT.COLOR_LINK_FOREGROUND computed in Display.getWidgetColorRGB()
+		 */
+		NSTextView textView = (NSTextView)new NSTextView().alloc();
+		textView.init ();
+		NSDictionary dict = textView.linkTextAttributes();
+		linkForeground = new NSColor(dict.valueForKey(OS.NSForegroundColorAttributeName));
+		textView.release ();
+	}
+	return linkForeground;
 }
 
 /**
