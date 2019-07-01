@@ -54,7 +54,6 @@ public final class TextLayout extends Resource {
 	int wrapWidth;
 	int orientation;
 	private double defaultTabWidth;
-	NSColor linkForeground;
 
 	int[] lineOffsets;
 	NSRect[] lineBounds;
@@ -68,6 +67,8 @@ public final class TextLayout extends Resource {
 	int[] invalidOffsets;
 	private boolean ignoreSegments;
 	static final char LTR_MARK = '\u200E', RTL_MARK = '\u200F';
+
+	static NSColor linkForeground;
 
 	static class StyleItem {
 		TextStyle style;
@@ -267,7 +268,7 @@ void computeRuns() {
 				case SWT.UNDERLINE_LINK: {
 					underlineStyle = OS.NSUnderlineStyleSingle;
 					if (foreground == null) {
-						NSColor color = getLinkColor();
+						NSColor color = getLinkForeground();
 						attrStr.addAttribute(OS.NSForegroundColorAttributeName, color, range);
 					}
 					break;
@@ -1059,9 +1060,9 @@ public FontMetrics getLineMetrics (int lineIndex) {
 	}
 }
 
-NSColor getLinkColor() {
+NSColor getLinkForeground() {
 	if (linkForeground == null) {
-		/**
+		/*
 		 * Color used is same as SWT.COLOR_LINK_FOREGROUND computed in Display.getWidgetColorRGB()
 		 */
 		NSTextView textView = (NSTextView)new NSTextView().alloc();
