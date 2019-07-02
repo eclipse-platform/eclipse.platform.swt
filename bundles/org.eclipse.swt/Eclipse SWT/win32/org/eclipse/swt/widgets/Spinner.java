@@ -305,7 +305,7 @@ long borderHandle () {
 		OS.SendMessage (hwndUpDown , OS.UDM_GETRANGE32, null, max);
 		String string = String.valueOf (max [0]);
 		if (digits > 0) {
-			StringBuffer buffer = new StringBuffer ();
+			StringBuilder buffer = new StringBuilder ();
 			buffer.append (string);
 			buffer.append (getDecimalSeparator ());
 			int count = digits - string.length ();
@@ -972,7 +972,7 @@ void setSelection (int value, boolean setPos, boolean setText, boolean notify) {
 			string = String.valueOf (Math.abs (value));
 			String decimalSeparator = getDecimalSeparator ();
 			int index = string.length () - digits;
-			StringBuffer buffer = new StringBuffer ();
+			StringBuilder buffer = new StringBuilder ();
 			if (value < 0) buffer.append ("-");
 			if (index > 0) {
 				buffer.append (string.substring (0, index));

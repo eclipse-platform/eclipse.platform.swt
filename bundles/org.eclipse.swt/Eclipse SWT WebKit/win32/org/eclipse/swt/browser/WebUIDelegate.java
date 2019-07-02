@@ -403,7 +403,7 @@ int runBeforeUnloadConfirmPanelWithMessage (long sender, long message, long init
 
 	Shell parent = browser.getShell ();
 	String string = WebKit.extractBSTR (message);
-	StringBuffer text = new StringBuffer (Compatibility.getMessage ("SWT_OnBeforeUnload_Message1")); //$NON-NLS-1$
+	StringBuilder text = new StringBuilder (Compatibility.getMessage ("SWT_OnBeforeUnload_Message1")); //$NON-NLS-1$
 	text.append ("\n\n"); //$NON-NLS-1$
 	text.append (string);
 	text.append ("\n\n"); //$NON-NLS-1$

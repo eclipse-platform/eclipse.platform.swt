@@ -398,7 +398,7 @@ String parse (String string) {
 	offsets = new Point [length / 4];
 	ids = new String [length / 4];
 	mnemonics = new int [length / 4 + 1];
-	StringBuffer result = new StringBuffer ();
+	StringBuilder result = new StringBuilder ();
 	char [] buffer = new char [length];
 	string.getChars (0, string.length (), buffer, 0);
 	int index = 0, state = 0, linkIndex = 0;
@@ -524,7 +524,7 @@ String parse (String string) {
 	return result.toString ();
 }
 
-int parseMnemonics (char[] buffer, int start, int end, StringBuffer result) {
+int parseMnemonics (char[] buffer, int start, int end, StringBuilder result) {
 	int mnemonic = -1, index = start;
 	while (index < end) {
 		if (buffer [index] == '&') {

@@ -85,7 +85,7 @@ public void javaToNative (Object object, TransferData transferData){
 	int endFragment = startFragment + cchMultiByte - 1;
 	int endHTML = endFragment + SUFFIX.length();
 
-	StringBuffer buffer = new StringBuffer(HEADER);
+	StringBuilder buffer = new StringBuilder(HEADER);
 	int maxLength = NUMBER.length();
 	//startHTML
 	int start = buffer.toString().indexOf(NUMBER);

@@ -938,7 +938,7 @@ void setSelection (int value, boolean setPos, boolean setText, boolean notify) {
 		if (digits > 0) {
 			String decimalSeparator = textFormatter.decimalSeparator().getString();
 			int index = string.length () - digits;
-			StringBuffer buffer = new StringBuffer ();
+			StringBuilder buffer = new StringBuilder ();
 			if (index > 0) {
 				buffer.append (string.substring (0, index));
 				buffer.append (decimalSeparator);

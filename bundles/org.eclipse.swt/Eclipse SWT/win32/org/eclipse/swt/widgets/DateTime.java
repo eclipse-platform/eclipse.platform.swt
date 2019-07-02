@@ -286,7 +286,7 @@ String getCustomShortDateFormat () {
 }
 
 String getCustomShortTimeFormat () {
-	StringBuffer buffer = new StringBuffer (getTimeFormat ());
+	StringBuilder buffer = new StringBuilder (getTimeFormat ());
 	int length = buffer.length ();
 	boolean inQuotes = false;
 	int start = 0, end = 0;

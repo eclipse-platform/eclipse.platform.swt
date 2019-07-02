@@ -5229,7 +5229,7 @@ public class Accessible {
 	}
 	String getStateString(int state) {
 		if (state == 0) return " no state bits set";
-		StringBuffer stateString = new StringBuffer();
+		StringBuilder stateString = new StringBuilder();
 		if (DEBUG) {
 		if ((state & COM.STATE_SYSTEM_SELECTED) != 0) stateString.append(" STATE_SYSTEM_SELECTED");
 		if ((state & COM.STATE_SYSTEM_SELECTABLE) != 0) stateString.append(" STATE_SYSTEM_SELECTABLE");
@@ -5254,7 +5254,7 @@ public class Accessible {
 	}
 	String getIA2StatesString(int ia2States) {
 		if (ia2States == 0) return " no state bits set";
-		StringBuffer stateString = new StringBuffer();
+		StringBuilder stateString = new StringBuilder();
 		if (DEBUG) {
 		if ((ia2States & COM.IA2_STATE_ACTIVE) != 0) stateString.append(" IA2_STATE_ACTIVE");
 		if ((ia2States & COM.IA2_STATE_EDITABLE) != 0) stateString.append(" IA2_STATE_EDITABLE");

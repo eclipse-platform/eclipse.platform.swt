@@ -1763,9 +1763,9 @@ boolean onNumberKeyInput(int key) {
 		return false;
 	}
 	int fieldName = getCalendarField(currentField);
-	StringBuffer prefix = new StringBuffer();
-	StringBuffer current = new StringBuffer();
-	StringBuffer suffix = new StringBuffer();
+	StringBuilder prefix = new StringBuilder();
+	StringBuilder current = new StringBuilder();
+	StringBuilder suffix = new StringBuilder();
 
 	AttributedCharacterIterator iterator = dateFormat.formatToCharacterIterator(calendar.getTime());
 	char c = iterator.first();

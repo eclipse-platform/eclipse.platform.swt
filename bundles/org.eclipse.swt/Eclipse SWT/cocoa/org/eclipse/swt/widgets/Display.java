@@ -763,7 +763,7 @@ static String convertToLf(String text) {
 	/* The string is formatted with CR/LF.
 	 * Create a new string with the LF line delimiter. */
 	i = 0;
-	StringBuffer result = new StringBuffer ();
+	StringBuilder result = new StringBuilder ();
 	while (i < length) {
 		int j = text.indexOf (Cr, i);
 		if (j == -1) j = length;

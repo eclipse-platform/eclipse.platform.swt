@@ -263,7 +263,7 @@ public int getHeight() {
  * @since 3.0
  */
 public String getLocale () {
-	StringBuffer buffer = new StringBuffer ();
+	StringBuilder buffer = new StringBuilder ();
 	char sep = '_';
 	if (lang != null) {
 		buffer.append (lang);
@@ -446,7 +446,7 @@ public void setStyle(int style) {
  */
 @Override
 public String toString() {
-	StringBuffer buffer = new StringBuffer(128);
+	StringBuilder buffer = new StringBuilder(128);
 	buffer.append("1|");
 	buffer.append(getName());
 	buffer.append("|");

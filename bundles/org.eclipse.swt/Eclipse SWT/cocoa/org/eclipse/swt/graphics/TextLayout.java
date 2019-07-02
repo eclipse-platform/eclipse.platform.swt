@@ -2376,7 +2376,7 @@ public void setDefaultTabWidth(int tabLength) {
 
 	checkLayout();
 	String oldString = getText();
-	StringBuffer tabBuffer = new StringBuffer(tabLength);
+	StringBuilder tabBuffer = new StringBuilder(tabLength);
 	for (int i = 0; i < tabLength; i++) {
 		tabBuffer.append(' ');
 	}

@@ -459,7 +459,7 @@ boolean close (boolean showPrompters) {
 	if (!jsEnabled) return true;
 
 	String functionName = EXECUTE_ID + "CLOSE"; // $NON-NLS-1$
-	StringBuffer buffer = new StringBuffer ("function "); // $NON-NLS-1$
+	StringBuilder buffer = new StringBuilder ("function "); // $NON-NLS-1$
 	buffer.append (functionName);
 	buffer.append ("(win) {\n"); // $NON-NLS-1$
 	buffer.append ("var fn = win.onbeforeunload; if (fn != null) {try {var str = fn(); "); // $NON-NLS-1$
@@ -1282,7 +1282,7 @@ NSNumber callRunBeforeUnloadConfirmPanelWithMessage(long messageID, long arg) {
 
 boolean webView_runBeforeUnloadConfirmPanelWithMessage_initiatedByFrame(long sender, long messageID, long frame) {
 	NSString message = new NSString(messageID);
-	StringBuffer text = new StringBuffer(Compatibility.getMessage("SWT_OnBeforeUnload_Message1")); //$NON-NLS-1$
+	StringBuilder text = new StringBuilder(Compatibility.getMessage("SWT_OnBeforeUnload_Message1")); //$NON-NLS-1$
 	text.append("\n\n"); //$NON-NLS-1$
 	text.append(message.getString());
 	text.append("\n\n"); //$NON-NLS-1$

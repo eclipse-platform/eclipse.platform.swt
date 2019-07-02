@@ -75,7 +75,7 @@ public void javaToNative(Object object, TransferData transferData) {
 	String[] fileNames = (String[]) object;
 	long newPtr = 0;
 	if (transferData.type == CF_HDROPID) {
-		StringBuffer allFiles = new StringBuffer();
+		StringBuilder allFiles = new StringBuilder();
 		for (int i = 0; i < fileNames.length; i++) {
 			allFiles.append(fileNames[i]);
 			allFiles.append('\0'); // each name is null terminated

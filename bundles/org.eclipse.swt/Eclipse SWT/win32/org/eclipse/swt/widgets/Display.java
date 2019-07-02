@@ -4810,7 +4810,7 @@ String wrapText (String text, long handle, int width) {
 	text = withCrLf (text);
 	int length = text.length ();
 	if (width <= 0 || length == 0 || length == 1) return text;
-	StringBuffer result = new StringBuffer ();
+	StringBuilder result = new StringBuilder ();
 	int lineStart = 0, lineEnd = 0;
 	while (lineStart < length) {
 		lineEnd = text.indexOf (Lf, lineStart);
@@ -4893,7 +4893,7 @@ static String withCrLf (String string) {
 
 	/* Create a new string with the CR/LF line terminator. */
 	i = 0;
-	StringBuffer result = new StringBuffer (count);
+	StringBuilder result = new StringBuilder (count);
 	while (i < length) {
 		int j = string.indexOf ('\n', i);
 		if (j == -1) j = length;

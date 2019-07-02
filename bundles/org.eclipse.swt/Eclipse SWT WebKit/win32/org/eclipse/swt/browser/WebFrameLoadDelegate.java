@@ -44,14 +44,14 @@ WebFrameLoadDelegate (Browser browser) {
 
 void addEventHandlers (boolean top) {
 	if (top) {
-		StringBuffer buffer = new StringBuffer ("window.SWTkeyhandler = function SWTkeyhandler(e) {"); //$NON-NLS-1$
+		StringBuilder buffer = new StringBuilder ("window.SWTkeyhandler = function SWTkeyhandler(e) {"); //$NON-NLS-1$
 		buffer.append ("try {e.returnValue = HandleWebKitEvent(e.type, e.keyCode, e.charCode, e.altKey, e.ctrlKey, e.shiftKey, e.metaKey);} catch (e) {}};"); //$NON-NLS-1$
 		buffer.append ("document.addEventListener('keydown', SWTkeyhandler, true);"); //$NON-NLS-1$
 		buffer.append ("document.addEventListener('keypress', SWTkeyhandler, true);"); //$NON-NLS-1$
 		buffer.append ("document.addEventListener('keyup', SWTkeyhandler, true);"); //$NON-NLS-1$
 		browser.execute (buffer.toString ());
 
-		buffer = new StringBuffer ("window.SWTmousehandler = function SWTmousehandler(e) {"); //$NON-NLS-1$
+		buffer = new StringBuilder ("window.SWTmousehandler = function SWTmousehandler(e) {"); //$NON-NLS-1$
 		buffer.append ("try {e.returnValue = HandleWebKitEvent(e.type, e.screenX, e.screenY, e.detail, e.button + 1, e.altKey, e.ctrlKey, e.shiftKey, e.metaKey, e.relatedTarget != null);} catch (e) {}};"); //$NON-NLS-1$
 		buffer.append ("document.addEventListener('mousedown', SWTmousehandler, true);"); //$NON-NLS-1$
 		buffer.append ("document.addEventListener('mouseup', SWTmousehandler, true);"); //$NON-NLS-1$
@@ -63,7 +63,7 @@ void addEventHandlers (boolean top) {
 
 		browser.execute (buffer.toString ());
 	} else {
-		StringBuffer buffer = new StringBuffer ("for (var i = 0; i < frames.length; i++) {"); //$NON-NLS-1$
+		StringBuilder buffer = new StringBuilder ("for (var i = 0; i < frames.length; i++) {"); //$NON-NLS-1$
 		buffer.append ("frames[i].document.addEventListener('keydown', window.SWTkeyhandler, true);"); //$NON-NLS-1$
 		buffer.append ("frames[i].document.addEventListener('keypress', window.SWTkeyhandler, true);"); //$NON-NLS-1$
 		buffer.append ("frames[i].document.addEventListener('keyup', window.SWTkeyhandler, true);"); //$NON-NLS-1$
@@ -566,7 +566,7 @@ boolean showCertificateDialog (long webView, final String failingUrlString, fina
 		/* show the url instead */
 		host = failingUrlString;
 	}
-	StringBuffer message = new StringBuffer ("\n"); //$NON-NLS-1$
+	StringBuilder message = new StringBuilder ("\n"); //$NON-NLS-1$
 	message.append (Compatibility.getMessage ("SWT_InvalidCert_Message", new String[] {host})); //$NON-NLS-1$
 	message.append ("\n\n"); //$NON-NLS-1$
 	message.append (Compatibility.getMessage (description));
@@ -708,20 +708,20 @@ void showCertificate (Shell parent, long certificate) {
 	tableItem.setText (new String[] {SWT.getMessage ("SWT_Issuer"), issuer}); //$NON-NLS-1$
 
 	tableItem = new TableItem (table, SWT.NONE);
-	StringBuffer stringBuffer2 = new StringBuffer ();
-	stringBuffer2.append (validFrom);
-	stringBuffer2.append (", "); //$NON-NLS-1$
-	stringBuffer2.append (validFromTime);
-	stringBuffer2.append (" GMT"); //$NON-NLS-1$
-	tableItem.setText (new String[] {SWT.getMessage ("SWT_ValidFrom"), stringBuffer2.toString ()}); //$NON-NLS-1$
+	StringBuilder stringBuilder2 = new StringBuilder ();
+	stringBuilder2.append (validFrom);
+	stringBuilder2.append (", "); //$NON-NLS-1$
+	stringBuilder2.append (validFromTime);
+	stringBuilder2.append (" GMT"); //$NON-NLS-1$
+	tableItem.setText (new String[] {SWT.getMessage ("SWT_ValidFrom"), stringBuilder2.toString ()}); //$NON-NLS-1$
 
 	tableItem = new TableItem (table, SWT.NONE);
-	StringBuffer stringBuffer = new StringBuffer ();
-	stringBuffer.append (validTo);
-	stringBuffer.append (", "); //$NON-NLS-1$
-	stringBuffer.append (validToTime);
-	stringBuffer.append (" GMT"); //$NON-NLS-1$
-	tableItem.setText (new String[] {SWT.getMessage ("SWT_ValidTo"), stringBuffer.toString ()}); //$NON-NLS-1$
+	StringBuilder stringBuilder = new StringBuilder ();
+	stringBuilder.append (validTo);
+	stringBuilder.append (", "); //$NON-NLS-1$
+	stringBuilder.append (validToTime);
+	stringBuilder.append (" GMT"); //$NON-NLS-1$
+	tableItem.setText (new String[] {SWT.getMessage ("SWT_ValidTo"), stringBuilder.toString ()}); //$NON-NLS-1$
 
 	tableItem = new TableItem (table, SWT.NONE);
 	tableItem.setText (new String[] {SWT.getMessage ("SWT_Subject"), subject}); //$NON-NLS-1$

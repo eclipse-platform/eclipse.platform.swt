@@ -1317,7 +1317,7 @@ boolean navigate(String url, String postData, String headers[], boolean silent) 
 		rgdispidNamedArgs[index++] = rgdispid[2];
 	}
 	if (headers != null) {
-		StringBuffer buffer = new StringBuffer();
+		StringBuilder buffer = new StringBuilder();
 		for (int i = 0; i < headers.length; i++) {
 			String current = headers[i];
 			if (current != null) {
