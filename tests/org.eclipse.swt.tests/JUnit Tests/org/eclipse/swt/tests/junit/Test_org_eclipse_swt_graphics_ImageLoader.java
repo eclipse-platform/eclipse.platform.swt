@@ -200,7 +200,6 @@ public void test_bug547529() {
 		 */
 		if (SwtTestUtil.isGTK) {
 			imageDepth = 32;
-
 		} else {
 			imageDepth = 24;
 		}

@@ -469,11 +469,25 @@ public void save(OutputStream stream, int format) {
 	int bytes_per_pixel = imgData.bytesPerLine / width; // n_channels for original ImageData (width * height * bytes_per_pixel) = imgData.length
 
 	/*
-	 * Destination offsets, ImageData data provided is in RGBA format.
-	 *
+	 * Destination offsets, GdkPixbuf data is stored in RGBA format.
 	 */
-	int da, dr, dg, db;
-	da = 3; dr = 0; dg = 1; db = 2;
+	int da = 3; int dr = 0; int dg = 1; int db = 2;
+
+	/*
+	 * ImageData offsets. These can vary depending on how the ImageData.data
+	 * field was populated. In most cases it will be RGB format, so this case
+	 * is assumed (blue shift is 0).
+	 *
+	 * If blue is negatively shifted, then we are dealing with BGR byte ordering, so
+	 * adjust the offsets accordingly.
+	 */
+	int or = 0; int og = 1; int ob = 2;
+	PaletteData palette = imgData.palette;
+	if (palette.isDirect && palette.blueShift < 0) {
+		or = 2;
+		og = 1;
+		ob = 0;
+	}
 
 	if (has_alpha && bytes_per_pixel == 3) {
 		bytes_per_pixel = 4;
@@ -487,10 +501,9 @@ public void save(OutputStream stream, int format) {
 		for (int y = 0, offset = 0, new_offset = 0, alphaOffset = 0; y < height; y++) {
 			for (int x = 0; x < width; x++, offset += n_channels, new_offset += bytes_per_pixel) {
 				byte a = imgData.alphaData[alphaOffset++];
-				// ImageData data is stored in RGBA format
-				byte r = imgData.data[offset + alpha_offset + 0];
-				byte g = imgData.data[offset + alpha_offset + 1];
-				byte b = imgData.data[offset + alpha_offset + 2];
+				byte r = imgData.data[offset + alpha_offset + or];
+				byte g = imgData.data[offset + alpha_offset + og];
+				byte b = imgData.data[offset + alpha_offset + ob];
 
 				// GdkPixbuf expects RGBA format
 				srcData[new_offset + db] = b;
@@ -502,9 +515,9 @@ public void save(OutputStream stream, int format) {
 	} else {
 		for (int y = 0, offset = 0, new_offset = 0; y < height; y++) {
 			for (int x = 0; x < width; x++, offset += n_channels, new_offset += bytes_per_pixel) {
-				byte r = imgData.data[offset + alpha_offset + 0];
-				byte g = imgData.data[offset + alpha_offset + 1];
-				byte b = imgData.data[offset + alpha_offset + 2];
+				byte r = imgData.data[offset + alpha_offset + or];
+				byte g = imgData.data[offset + alpha_offset + og];
+				byte b = imgData.data[offset + alpha_offset + ob];
 				byte a = (byte) 255;
 
 				srcData[new_offset + db] = b;
