@@ -470,6 +470,18 @@ public class SessionManagerDBus {
 
 		if (clientInfo == 0) return extractFreeGError(error[0]);
 
+		/*
+		 * Bug 548806: LXDE's emulation of Gnome session manager is
+		 * partial and broken. Its handler for 'RegisterClient' is
+		 * empty, so it returns empty result (and doesn't raise an
+		 * error) where '(o)' format variant is expected. Trying to
+		 * extract the empty variant will crash VM. Also, LXDE doesn't
+		 * implement wanted signals anyway, so let's just give up.
+		 */
+		if (0 == OS.g_variant_n_children(clientInfo)) {
+			return "Session manager's response to 'RegisterClient' is invalid";
+		}
+
 		// Success
 		clientObjectPath = extractVariantTupleS(clientInfo);
 		OS.g_variant_unref(clientInfo);
