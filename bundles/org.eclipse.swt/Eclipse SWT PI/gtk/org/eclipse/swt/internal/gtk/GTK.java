@@ -7565,6 +7565,20 @@ public class GTK extends OS {
 	/**
 	 * @param store cast=(GtkTreeStore *)
 	 * @param iter cast=(GtkTreeIter *)
+	 * @param parent cast=(GtkTreeIter *)
+	 */
+	public static final native void _gtk_tree_store_prepend(long store, long iter, long parent);
+	public static final void gtk_tree_store_prepend(long store, long iter, long parent) {
+		lock.lock();
+		try {
+			_gtk_tree_store_prepend(store, iter, parent);
+		} finally {
+			lock.unlock();
+		}
+	}
+	/**
+	 * @param store cast=(GtkTreeStore *)
+	 * @param iter cast=(GtkTreeIter *)
 	 */
 	public static final native void _gtk_tree_store_remove(long store, long iter);
 	public static final void gtk_tree_store_remove(long store, long iter) {

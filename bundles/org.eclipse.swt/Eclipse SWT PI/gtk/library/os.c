@@ -11008,6 +11008,16 @@ fail:
 }
 #endif
 
+#ifndef NO__1gtk_1tree_1store_1prepend
+JNIEXPORT void JNICALL GTK_NATIVE(_1gtk_1tree_1store_1prepend)
+	(JNIEnv *env, jclass that, jlong arg0, jlong arg1, jlong arg2)
+{
+	GTK_NATIVE_ENTER(env, that, _1gtk_1tree_1store_1prepend_FUNC);
+	gtk_tree_store_prepend((GtkTreeStore *)arg0, (GtkTreeIter *)arg1, (GtkTreeIter *)arg2);
+	GTK_NATIVE_EXIT(env, that, _1gtk_1tree_1store_1prepend_FUNC);
+}
+#endif
+
 #ifndef NO__1gtk_1tree_1store_1remove
 JNIEXPORT void JNICALL GTK_NATIVE(_1gtk_1tree_1store_1remove)
 	(JNIEnv *env, jclass that, jlong arg0, jlong arg1)

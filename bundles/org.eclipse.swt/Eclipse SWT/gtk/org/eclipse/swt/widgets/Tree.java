@@ -890,21 +890,42 @@ void createItem (TreeColumn column, int index) {
 	}
 }
 
+/*
+ * NOTE: the fastest way to bulk-insert items is to insert every item
+ * at index 0 (insert in reverse to preserve order).
+ */
 void createItem (TreeItem item, long parentIter, int index) {
-	int count = GTK.gtk_tree_model_iter_n_children (modelHandle, parentIter);
-	if (index == -1) index = count;
-	if (!(0 <= index && index <= count)) error (SWT.ERROR_INVALID_RANGE);
-	item.handle = OS.g_malloc (GTK.GtkTreeIter_sizeof ());
-	if (item.handle == 0) error(SWT.ERROR_NO_HANDLES);
 	/*
-	* Feature in GTK.  It is much faster to append to a tree store
-	* than to insert at the end using gtk_tree_store_insert().
-	*/
-	if (index == count) {
+	 * Try to achieve maximum possible performance in bulk insert scenarios.
+	 * Even a single call to 'gtk_tree_model_iter_n_children' already
+	 * reduces performance 3x, so try to avoid any unneeded API calls.
+	 */
+	if (index == 0) {
+		item.handle = OS.g_malloc (GTK.GtkTreeIter_sizeof ());
+		if (item.handle == 0) error(SWT.ERROR_NO_HANDLES);
+		GTK.gtk_tree_store_prepend (modelHandle, item.handle, parentIter);
+	} else if (index == -1) {
+		item.handle = OS.g_malloc (GTK.GtkTreeIter_sizeof ());
+		if (item.handle == 0) error(SWT.ERROR_NO_HANDLES);
 		GTK.gtk_tree_store_append (modelHandle, item.handle, parentIter);
 	} else {
-		GTK.gtk_tree_store_insert (modelHandle, item.handle, parentIter, index);
+		int count = GTK.gtk_tree_model_iter_n_children (modelHandle, parentIter);
+		if (!(0 <= index && index <= count)) error (SWT.ERROR_INVALID_RANGE);
+
+		item.handle = OS.g_malloc (GTK.GtkTreeIter_sizeof ());
+		if (item.handle == 0) error(SWT.ERROR_NO_HANDLES);
+
+		/*
+		 * Feature in GTK.  It is much faster to append to a tree store
+		 * than to insert at the end using gtk_tree_store_insert().
+		 */
+		if (index == count) {
+			GTK.gtk_tree_store_append (modelHandle, item.handle, parentIter);
+		} else {
+			GTK.gtk_tree_store_insert (modelHandle, item.handle, parentIter, index);
+		}
 	}
+
 	int id = getId (item.handle, false);
 	items [id] = item;
 	modelChanged = true;

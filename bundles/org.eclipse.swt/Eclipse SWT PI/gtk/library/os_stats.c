@@ -875,6 +875,7 @@ char * GTK_nativeFunctionNames[] = {
 	"_1gtk_1tree_1store_1clear",
 	"_1gtk_1tree_1store_1insert",
 	"_1gtk_1tree_1store_1newv",
+	"_1gtk_1tree_1store_1prepend",
 	"_1gtk_1tree_1store_1remove",
 	"_1gtk_1tree_1store_1set__JJIII",
 	"_1gtk_1tree_1store_1set__JJIJI",

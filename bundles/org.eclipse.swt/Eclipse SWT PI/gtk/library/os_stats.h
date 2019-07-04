@@ -873,6 +873,7 @@ typedef enum {
 	_1gtk_1tree_1store_1clear_FUNC,
 	_1gtk_1tree_1store_1insert_FUNC,
 	_1gtk_1tree_1store_1newv_FUNC,
+	_1gtk_1tree_1store_1prepend_FUNC,
 	_1gtk_1tree_1store_1remove_FUNC,
 	_1gtk_1tree_1store_1set__JJIII_FUNC,
 	_1gtk_1tree_1store_1set__JJIJI_FUNC,
