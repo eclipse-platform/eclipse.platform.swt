@@ -54,7 +54,7 @@ public static void main(String[] args) {
 			TreeItem[] revisedSelection = new TreeItem[0];
 			for (int i = 0; i < selection.length; i++) {
 				String text = selection[i].getText();
-				if (text.indexOf("1") > 0) {
+				if (text.indexOf('1') > 0) {
 					TreeItem[] newSelection = new TreeItem[revisedSelection.length + 1];
 					System.arraycopy(revisedSelection, 0, newSelection, 0, revisedSelection.length);
 					newSelection[revisedSelection.length] = selection[i];

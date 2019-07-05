@@ -319,7 +319,7 @@ void generateMethods(String className, ArrayList<Node> methods) {
 		out(" ");
 		String methodName = sel;
 		if (isUnique(method, methods)) {
-			int index = methodName.indexOf(":");
+			int index = methodName.indexOf(':');
 			if (index != -1) methodName = methodName.substring(0, index);
 		} else {
 			//TODO improve this selector
@@ -1246,7 +1246,7 @@ boolean isUnique(Node method, ArrayList<Node> methods) {
 			signature += getJavaType(param);
 		}
 	}
-	int index = methodName.indexOf(":");
+	int index = methodName.indexOf(':');
 	if (index != -1) methodName = methodName.substring(0, index);
 	for (Node other : methods) {
 		NamedNodeMap attributes = other.getAttributes();
@@ -1254,7 +1254,7 @@ boolean isUnique(Node method, ArrayList<Node> methods) {
 		if (attributes != null) otherSel = attributes.getNamedItem("selector");
 		if (other != method && otherSel != null) {
 			String otherName = otherSel.getNodeValue();
-			index = otherName.indexOf(":");
+			index = otherName.indexOf(':');
 			if (index != -1) otherName = otherName.substring(0, index);
 			if (methodName.equals(otherName)) {
 				NodeList otherParams = other.getChildNodes();

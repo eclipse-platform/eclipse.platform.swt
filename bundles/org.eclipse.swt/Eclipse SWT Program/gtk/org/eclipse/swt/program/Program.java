@@ -218,7 +218,7 @@ public ImageData getImageData() {
 						List<String> mimeTypes = new ArrayList<>();
 						String mimeType = line.substring(0, separatorIndex);
 						String extensionFormat = line.substring(separatorIndex + 1);
-						int extensionIndex = extensionFormat.indexOf(".");
+						int extensionIndex = extensionFormat.indexOf('.');
 						if (extensionIndex > 0) {
 							String extension = extensionFormat.substring(extensionIndex);
 							if (mimeTable.containsKey(extension)) {

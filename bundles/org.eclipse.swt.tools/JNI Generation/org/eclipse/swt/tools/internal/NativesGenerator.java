@@ -763,7 +763,7 @@ void generateFunctionCall(JNIMethod method, JNIParameter[] params, JNIType retur
 			output(cast);
 		} else {
 			output("(");
-			output(name.substring(0, name.indexOf("_")));
+			output(name.substring(0, name.indexOf('_')));
 			output(" *)");
 		}
 		outputln("arg0;");
