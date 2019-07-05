@@ -46,7 +46,7 @@ public class Bug497705_setBoundsAfterSetVisible {
 
 	Display display;
 	Shell shell ;
-	private StringBuffer log;
+	private StringBuilder log;
 	private int x;
 	private int y;
 	private int height;
@@ -60,7 +60,7 @@ public class Bug497705_setBoundsAfterSetVisible {
 		display = Display.getDefault();
 		shell = new Shell(display);
 		shell.setSize(400, 400);
-		log = new StringBuffer("");
+		log = new StringBuilder("");
 		x = 5;
 		y = 10;
 		height = 100;
