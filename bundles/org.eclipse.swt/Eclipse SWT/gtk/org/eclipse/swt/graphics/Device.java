@@ -743,8 +743,8 @@ private void overrideThemeValues () {
 	// Load functional CSS fixes. Such as keyboard functionality for some widgets.
 	combinedCSS.append(load.apply(
 		GTK.GTK_VERSION < OS.VERSION(3, 20, 0) ?
-				"/org/eclipse/swt/internal/gtk/swt_functional_gtk_pre320.css" :
-				"/org/eclipse/swt/internal/gtk/swt_functional_gtk_320.css"
+				"/org/eclipse/swt/internal/gtk/swt_functional_gtk_pre_3_20.css" :
+				"/org/eclipse/swt/internal/gtk/swt_functional_gtk_3_20.css"
 			, true));
 
 	// By default, load CSS theme fixes to overcome things such as excessive padding that breaks SWT otherwise.
@@ -756,11 +756,14 @@ private void overrideThemeValues () {
 	// - These fixes should not contain any color information, otherwise it might break a light/dark variant of the theme.
 	//   Color fixes should be put either into the theme itself or via swt user api.
 	if (System.getProperty("org.eclipse.swt.internal.gtk.noThemingFixes") == null) {
-		combinedCSS.append(load.apply(
-				GTK.GTK_VERSION < OS.VERSION(3, 20, 0) ?
-						"/org/eclipse/swt/internal/gtk/swt_theming_fixes_gtk_pre320.css" :
-						"/org/eclipse/swt/internal/gtk/swt_theming_fixes_gtk_320.css"
-					, true));
+		if (GTK.GTK_VERSION >= OS.VERSION(3, 20, 0)) {
+			combinedCSS.append(load.apply("/org/eclipse/swt/internal/gtk/swt_theming_fixes_gtk_3_20.css", true));
+			if (GTK.GTK_VERSION >= OS.VERSION(3, 24, 5)) {
+				combinedCSS.append(load.apply("/org/eclipse/swt/internal/gtk/swt_theming_fixes_gtk_3_24_5.css", true));
+			}
+		} else {
+			combinedCSS.append(load.apply("/org/eclipse/swt/internal/gtk/swt_theming_fixes_gtk_pre_3_20.css", true));
+		}
 	}
 
 	// Load CSS from user-defined CSS file.
