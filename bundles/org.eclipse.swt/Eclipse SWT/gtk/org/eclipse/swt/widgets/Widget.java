@@ -1059,7 +1059,12 @@ char [] fixMnemonic (String string, boolean replace, boolean removeAppended) {
 				if (removeAppended && i + 4 == string.length () && text [i + 1] == '&' && text [i + 3] == ')') {
 					if (replace) result [j++] = ' ';
 					i += 4;
-					break; // break switch case only if we are removing the mnemonic otherwise fall through
+					break; // break switch case only if we are removing the mnemonic
+				}
+				else {
+					// otherwise fall through (default case applies)
+					result [j++] = text [i++];
+					break;
 				}
 			case '_':
 				if (replace) result [j++] = '_';
