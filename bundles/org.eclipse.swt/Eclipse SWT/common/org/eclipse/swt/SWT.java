@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2018 IBM Corporation and others.
+ * Copyright (c) 2000, 2019 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -3131,7 +3131,6 @@ public class SWT {
 	 * The style constant for "search" icon. This style constant is
 	 * used with <code>Text</code> in combination with <code>SWT.SEARCH
 	 * </code> (value is 1&lt;&lt;9).
-	 * <br>Note that this is a <em>HINT</em>.
 	 *
 	 * <p><b>Used By:</b></p>
 	 * <ul>
@@ -3149,7 +3148,6 @@ public class SWT {
 	 * The style constant for "cancel" icon. This style constant is
 	 * used with <code>Text</code> in combination with <code>SWT.SEARCH
 	 * </code> (value is 1&lt;&lt;8).
-	 * <br>Note that this is a <em>HINT</em>.
 	 *
 	 * <p><b>Used By:</b></p>
 	 * <ul>
