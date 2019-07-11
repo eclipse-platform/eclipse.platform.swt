@@ -230,9 +230,11 @@ public boolean equals(Object object) {
 	Color color = (Color)object;
 	GdkRGBA gdkRGBA = color.handle;
 	if (handle == gdkRGBA) return true;
-	return device == color.device && Double.compare(handle.red, gdkRGBA.red) == 0 &&
-			Double.compare(handle.green, gdkRGBA.green) == 0 && Double.compare(handle.blue, gdkRGBA.blue) == 0 &&
-			Double.compare(handle.alpha, gdkRGBA.alpha) == 0;
+	if (this.getRed() != color.getRed()) return false;
+	if (this.getGreen() != color.getGreen()) return false;
+	if (this.getBlue() != color.getBlue()) return false;
+	if (this.getAlpha() != color.getAlpha()) return false;
+	return device == color.device;
 }
 
 /**
@@ -320,8 +322,7 @@ public int getRed() {
 @Override
 public int hashCode() {
 	if (isDisposed()) return 0;
-	return Double.hashCode(handle.red) ^ Double.hashCode(handle.green) ^ Double.hashCode(handle.blue)
-			^ Double.hashCode(handle.alpha);
+	return (((this.getAlpha() * 31) + this.getGreen()) * 31 + this.getBlue()) * 31 + this.getRed();
 }
 
 /**
