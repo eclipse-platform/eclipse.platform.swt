@@ -64,22 +64,13 @@ public class TreeItem extends Item {
 	public SWTTreeItem handle;
 
 /**
- * Constructs a new instance of this class given its parent
- * (which must be a <code>Tree</code> or a <code>TreeItem</code>)
- * and a style value describing its behavior and appearance.
- * The item is added to the end of the items maintained by its parent.
+ * Constructs <code>TreeItem</code> and <em>inserts</em> it into <code>Tree</code>.
+ * Item is inserted as last direct child of the tree.
  * <p>
- * The style value is either one of the style constants defined in
- * class <code>SWT</code> which is applicable to instances of this
- * class, or must be built by <em>bitwise OR</em>'ing together
- * (that is, using the <code>int</code> "|" operator) two or more
- * of those <code>SWT</code> style constants. The class description
- * lists the style constants that are applicable to the class.
- * Style bits are also inherited from superclasses.
- * </p>
+ * For bulk insert scenarios, see TreeItem#TreeItem(Tree,int,int)
  *
  * @param parent a tree control which will be the parent of the new instance (cannot be null)
- * @param style the style of control to construct
+ * @param style no styles are currently supported, pass SWT.NONE
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the parent is null</li>
@@ -98,22 +89,17 @@ public TreeItem (Tree parent, int style) {
 }
 
 /**
- * Constructs a new instance of this class given its parent
- * (which must be a <code>Tree</code> or a <code>TreeItem</code>),
- * a style value describing its behavior and appearance, and the index
- * at which to place it in the items maintained by its parent.
+ * Constructs <code>TreeItem</code> and <em>inserts</em> it into <code>Tree</code>.
+ * Item is inserted as <code>index</code> direct child of the tree.
  * <p>
- * The style value is either one of the style constants defined in
- * class <code>SWT</code> which is applicable to instances of this
- * class, or must be built by <em>bitwise OR</em>'ing together
- * (that is, using the <code>int</code> "|" operator) two or more
- * of those <code>SWT</code> style constants. The class description
- * lists the style constants that are applicable to the class.
- * Style bits are also inherited from superclasses.
- * </p>
+ * The fastest way to insert many items is:
+ * <ol>
+ * <li>Use {@link Tree#setRedraw} to disable drawing during bulk insert</li>
+ * <li>Insert every item at index 0 (insert them in reverse to get the same result)</li>
+ * </ol>
  *
  * @param parent a tree control which will be the parent of the new instance (cannot be null)
- * @param style the style of control to construct
+ * @param style no styles are currently supported, pass SWT.NONE
  * @param index the zero-relative index to store the receiver in its parent
  *
  * @exception IllegalArgumentException <ul>
@@ -128,28 +114,20 @@ public TreeItem (Tree parent, int style) {
  * @see SWT
  * @see Widget#checkSubclass
  * @see Widget#getStyle
+ * @see Tree#setRedraw
  */
 public TreeItem (Tree parent, int style, int index) {
 	this (checkNull (parent), null, style, checkIndex (index), true);
 }
 
 /**
- * Constructs a new instance of this class given its parent
- * (which must be a <code>Tree</code> or a <code>TreeItem</code>)
- * and a style value describing its behavior and appearance.
- * The item is added to the end of the items maintained by its parent.
+ * Constructs <code>TreeItem</code> and <em>inserts</em> it into <code>Tree</code>.
+ * Item is inserted as last direct child of the specified <code>TreeItem</code>.
  * <p>
- * The style value is either one of the style constants defined in
- * class <code>SWT</code> which is applicable to instances of this
- * class, or must be built by <em>bitwise OR</em>'ing together
- * (that is, using the <code>int</code> "|" operator) two or more
- * of those <code>SWT</code> style constants. The class description
- * lists the style constants that are applicable to the class.
- * Style bits are also inherited from superclasses.
- * </p>
+ * For bulk insert scenarios, see TreeItem#TreeItem(TreeItem,int,int)
  *
  * @param parentItem a tree control which will be the parent of the new instance (cannot be null)
- * @param style the style of control to construct
+ * @param style no styles are currently supported, pass SWT.NONE
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the parent is null</li>
@@ -168,22 +146,18 @@ public TreeItem (TreeItem parentItem, int style) {
 }
 
 /**
- * Constructs a new instance of this class given its parent
- * (which must be a <code>Tree</code> or a <code>TreeItem</code>),
- * a style value describing its behavior and appearance, and the index
- * at which to place it in the items maintained by its parent.
+ * Constructs <code>TreeItem</code> and <em>inserts</em> it into <code>Tree</code>.
+ * Item is inserted as <code>index</code> direct child of the specified <code>TreeItem</code>.
  * <p>
- * The style value is either one of the style constants defined in
- * class <code>SWT</code> which is applicable to instances of this
- * class, or must be built by <em>bitwise OR</em>'ing together
- * (that is, using the <code>int</code> "|" operator) two or more
- * of those <code>SWT</code> style constants. The class description
- * lists the style constants that are applicable to the class.
- * Style bits are also inherited from superclasses.
- * </p>
+ * The fastest way to insert many items is:
+ * <ol>
+ * <li>Use {@link Tree#setRedraw} to disable drawing during bulk insert</li>
+ * <li>Insert child items while parent item is collapsed</li>
+ * <li>Insert every item at index 0 (insert them in reverse to get the same result)</li>
+ * </ol>
  *
  * @param parentItem a tree control which will be the parent of the new instance (cannot be null)
- * @param style the style of control to construct
+ * @param style no styles are currently supported, pass SWT.NONE
  * @param index the zero-relative index to store the receiver in its parent
  *
  * @exception IllegalArgumentException <ul>
@@ -198,6 +172,7 @@ public TreeItem (TreeItem parentItem, int style) {
  * @see SWT
  * @see Widget#checkSubclass
  * @see Widget#getStyle
+ * @see Tree#setRedraw
  */
 public TreeItem (TreeItem parentItem, int style, int index) {
 	this (checkNull (parentItem).parent, parentItem, style, checkIndex (index), true);

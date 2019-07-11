@@ -910,10 +910,7 @@ void createItem (TreeColumn column, int index) {
 	}
 }
 
-/*
- * NOTE: the fastest way to bulk-insert items is to insert every item
- * at index 0 (insert in reverse to preserve order).
- */
+// For fast bulk insert, see comments for TreeItem#TreeItem(TreeItem,int,int)
 void createItem (TreeItem item, long parentIter, int index) {
 	/*
 	 * Try to achieve maximum possible performance in bulk insert scenarios.

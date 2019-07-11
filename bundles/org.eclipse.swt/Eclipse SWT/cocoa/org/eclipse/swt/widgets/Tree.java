@@ -698,6 +698,7 @@ void createItem (TreeColumn column, int index) {
 	}
 }
 
+// For fast bulk insert, see comments for TreeItem#TreeItem(TreeItem,int,int)
 void createItem (TreeItem item, TreeItem parentItem, int index) {
 	int count;
 	TreeItem [] items;
