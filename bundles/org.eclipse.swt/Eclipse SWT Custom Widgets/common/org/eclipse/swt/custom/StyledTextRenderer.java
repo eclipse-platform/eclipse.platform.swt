@@ -1128,15 +1128,7 @@ TextLayout getTextLayout(int lineIndex, int orientation, int width, int lineSpac
 				if (lastOffset < start) {
 					layout.setStyle(null, lastOffset, start - 1);
 				}
-				TextStyle style = getStyleRange(styles[i >> 1]);
-				if (style.metrics != null && line.substring(start, Math.min(length, end + 1)).contains("\t")) {
-					line =
-						line.substring(0, start) +
-						line.substring(start, end + 1).replace('\t', ' ') +
-						(end < line.length() ? line.substring(end + 1, line.length()) : "");
-					layout.setText(line);
-				}
-				layout.setStyle(style, start, end);
+				layout.setStyle(getStyleRange(styles[i >> 1]), start, end);
 				lastOffset = Math.max(lastOffset, end);
 			}
 		} else {
@@ -1153,15 +1145,7 @@ TextLayout getTextLayout(int lineIndex, int orientation, int width, int lineSpac
 				if (lastOffset < start) {
 					layout.setStyle(null, lastOffset, start - 1);
 				}
-				TextStyle style = getStyleRange(styles[i]);
-				if (style.metrics != null && line.substring(start, end + 1).contains("\t")) {
-					line =
-						line.substring(0, start) +
-						line.substring(start, end + 1).replace('\t', ' ') +
-						(end < line.length() ? line.substring(end + 1, line.length()) : "");
-					layout.setText(line);
-				}
-				layout.setStyle(style, start, end);
+				layout.setStyle(getStyleRange(styles[i]), start, end);
 				lastOffset = Math.max(lastOffset, end);
 			}
 		}
