@@ -2181,7 +2181,13 @@ void createItem (TreeItem item, long hParent, long hInsertAfter, long hItem) {
 				}
 			}
 		}
-		updateScrollBar ();
+
+		/*
+		 Note: Don't update scrollbars when drawing is disabled.
+		 This gives significant improvement for bulk insert scenarios.
+		 Later, setRedraw(true) will update scrollbars once.
+		 */
+		if (getDrawing ()) updateScrollBar ();
 	}
 }
 
@@ -2636,7 +2642,13 @@ void destroyItem (TreeItem item, long hItem) {
 		scrollWidth = 0;
 		setScrollWidth ();
 	}
-	updateScrollBar ();
+
+	/*
+	 Note: Don't update scrollbars when drawing is disabled.
+	 This gives significant improvement for bulk remove scenarios.
+	 Later, setRedraw(true) will update scrollbars once.
+	 */
+	if (getDrawing ()) updateScrollBar ();
 }
 
 @Override
@@ -4806,21 +4818,23 @@ public void setRedraw (boolean redraw) {
 	* the tree.
 	*/
 	long hItem = 0;
-	if (redraw) {
-		if (drawCount == 1) {
-			int count = (int)OS.SendMessage (handle, OS.TVM_GETCOUNT, 0, 0);
-			if (count == 0) {
-				TVINSERTSTRUCT tvInsert = new TVINSERTSTRUCT ();
-				tvInsert.hInsertAfter = OS.TVI_FIRST;
-				hItem = OS.SendMessage (handle, OS.TVM_INSERTITEM, 0, tvInsert);
-			}
-			OS.DefWindowProc (handle, OS.WM_SETREDRAW, 1, 0);
-			updateScrollBar ();
+	boolean willEnableDraw = redraw && (drawCount == 1);
+	if (willEnableDraw) {
+		int count = (int)OS.SendMessage (handle, OS.TVM_GETCOUNT, 0, 0);
+		if (count == 0) {
+			TVINSERTSTRUCT tvInsert = new TVINSERTSTRUCT ();
+			tvInsert.hInsertAfter = OS.TVI_FIRST;
+			hItem = OS.SendMessage (handle, OS.TVM_INSERTITEM, 0, tvInsert);
 		}
+		OS.DefWindowProc (handle, OS.WM_SETREDRAW, 1, 0);
+		updateScrollBar ();
 	}
+
 	super.setRedraw (redraw);
-	if (!redraw) {
-		if (drawCount == 1) OS.DefWindowProc (handle, OS.WM_SETREDRAW, 0, 0);
+
+	boolean haveDisabledDraw = !redraw && (drawCount == 1);
+	if (haveDisabledDraw) {
+		OS.DefWindowProc (handle, OS.WM_SETREDRAW, 0, 0);
 	}
 	if (hItem != 0) {
 		ignoreShrink = true;
@@ -5660,6 +5674,16 @@ void updateOrientation () {
 	}
 }
 
+/**
+ * Copies Tree's scrollbar state to intermediate parent.
+ *
+ * If Tree has a header, then (Tree+header) get wrapped into intermediate
+ * parent. This parent also has scrollbar, and it is configured to
+ * obscure the Tree's scrollbar - I think this is due to aesthetic
+ * reasons where the new scrollbar also extends over header. Since it
+ * obscures the true scrollbar, it always needs to be in sync with the
+ * true scrollbar.
+ */
 void updateScrollBar () {
 	if (hwndParent != 0) {
 		if (columnCount != 0 || scrollWidth != 0) {
