@@ -15,6 +15,8 @@
 package org.eclipse.swt.internal.gtk;
 
 
+import java.util.*;
+
 import org.eclipse.swt.internal.*;
 
 // Common type translation table:
@@ -720,6 +722,11 @@ public class OS extends C {
 	 */
 	public static final boolean GTK_THEME_DARK;
 
+	/**
+	 * True if SWT is running on the GNOME desktop environment.
+	 */
+	public static final boolean isGNOME;
+
 	/* Feature in Gtk: with the switch to GtkMenuItems from GtkImageMenuItems
 	* in Gtk3 came a small Gtk shortfall: a small amount of padding on the left hand
 	* side of MenuItems was added. This padding is not accessible to the developer,
@@ -771,6 +778,14 @@ public class OS extends C {
 		GTK_THEME_SET = gtkThemeSet;
 		GTK_THEME_NAME = gtkThemeName;
 		GTK_THEME_DARK = gtkThemeDark;
+
+		Map<String, String> env = System.getenv();
+		String desktopEnvironment = env.get("XDG_CURRENT_DESKTOP");
+		boolean gnomeDetected = false;
+		if (desktopEnvironment != null) {
+			gnomeDetected = desktopEnvironment.contains("GNOME");
+		}
+		isGNOME = gnomeDetected;
 
 		System.setProperty("org.eclipse.swt.internal.gtk.version",
 				(GTK.GTK_VERSION >>> 16) + "." + (GTK.GTK_VERSION >>> 8 & 0xFF) + "." + (GTK.GTK_VERSION & 0xFF));

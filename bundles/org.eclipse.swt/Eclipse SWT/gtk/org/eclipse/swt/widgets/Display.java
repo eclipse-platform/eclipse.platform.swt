@@ -1063,8 +1063,7 @@ void checkIMModule () {
 		System.err.println("***WARNING: Unset GTK_IM_MODULE or set GTK_IM_MODULE=ibus if flicking is experienced. ");
 	}
 	// Enforce ibus as the input module on GNOME
-	String desktopEnvironment = env.get("XDG_CURRENT_DESKTOP");
-	if ("GNOME".equals(desktopEnvironment)) {
+	if (OS.isGNOME) {
 		long settings = GTK.gtk_settings_get_default ();
 		byte[] ibus = Converter.wcsToMbcs ("ibus", true);
 		if (settings != 0) OS.g_object_set (settings, GTK.gtk_im_module, ibus, 0);

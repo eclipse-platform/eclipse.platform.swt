@@ -670,7 +670,7 @@ protected void init () {
 			surface = GDK.gdk_window_create_similar_surface(gdkResource, Cairo.CAIRO_CONTENT_COLOR, 10, 10);
 		}
 		Cairo.cairo_surface_get_device_scale(surface, sx, sy);
-		DPIUtil.setUseCairoAutoScale((sx[0]*100) == scaleFactor);
+		DPIUtil.setUseCairoAutoScale((sx[0]*100) == scaleFactor || OS.isGNOME);
 	}
 
 	/* Initialize the system font slot */

@@ -120,6 +120,21 @@ public abstract class Control extends Widget implements Drawable {
 	static boolean mouseDown;
 	boolean dragBegun;
 
+	/**
+	 * Flag to check the scale factor upon the first drawing of this Control.
+	 * This is done by checking the scale factor of the Cairo surface in gtk_draw().
+	 *
+	 * Doing so provides an accurate scale factor, and will determine if this Control
+	 * needs to be scaled manually by SWT. See bug 507020.
+	 */
+	boolean checkScaleFactor = true;
+
+	/**
+	 * True if GTK has autoscaled this Control, meaning SWT does not need to do any
+	 * manual scaling. See bug 507020.
+	 */
+	boolean autoScale = true;
+
 Control () {
 }
 
@@ -1548,6 +1563,12 @@ void setSizeInPixels (int width, int height) {
 boolean isActive () {
 	return getShell ().getModalShell () == null && display.getModalDialog () == null;
 }
+
+@Override
+public boolean isAutoScalable () {
+	return autoScale;
+}
+
 
 /*
  * Answers a boolean indicating whether a Label that precedes the receiver in
@@ -3872,6 +3893,19 @@ void cairoClipRegion (long cairo) {
 
 @Override
 long gtk_draw (long widget, long cairo) {
+	if (checkScaleFactor) {
+		long surface = Cairo.cairo_get_target(cairo);
+		if (surface != 0) {
+			double [] sx = new double [1];
+			double [] sy = new double [1];
+			Cairo.cairo_surface_get_device_scale(surface, sx, sy);
+			long display = GDK.gdk_display_get_default();
+			long monitor = GDK.gdk_display_get_monitor_at_point(display, 0, 0);
+			int scale = GDK.gdk_monitor_get_scale_factor(monitor);
+			autoScale = !(scale == Math.round(sx[0]));
+			checkScaleFactor = false;
+		}
+	}
 	if ((state & OBSCURED) != 0) return 0;
 	GdkRectangle rect = new GdkRectangle ();
 	GDK.gdk_cairo_get_clip_rectangle (cairo, rect);
