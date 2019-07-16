@@ -5507,4 +5507,19 @@ public void test_GlyphMetricsOnTab_Bug549110() throws InterruptedException {
 	assertTrue("Wrong style after tab", hasPixel(text, getColor(BLUE)));
 }
 
+@Test
+public void test_GlyphMetricsOnTab() {
+	text.setTabs(4);
+	text.setText("\tabcdefghijkl");
+	Rectangle boundsWithoutGlyphMetrics = text.getTextBounds(0, text.getText().length() - 1);
+	int tabWidthWithoutGlyphMetrics = text.getTextBounds(0, 0).width;
+	StyleRange range = new StyleRange(0, 1, null, null);
+	range.metrics = new GlyphMetrics(0, 0, 100);
+	text.setStyleRange(range);
+	int tabWidthWithGlyphMetrics = text.getTextBounds(0, 0).width;
+	assertEquals(range.metrics.width, tabWidthWithGlyphMetrics);
+	Rectangle boundsWithGlyphMetrics = text.getTextBounds(0, text.getText().length() - 1);
+	assertEquals("Style should change text bounds", boundsWithoutGlyphMetrics.width - tabWidthWithoutGlyphMetrics + tabWidthWithGlyphMetrics, boundsWithGlyphMetrics.width);
+}
+
 }

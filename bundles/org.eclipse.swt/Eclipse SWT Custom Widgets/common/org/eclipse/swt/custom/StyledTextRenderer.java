@@ -17,6 +17,7 @@ package org.eclipse.swt.custom;
 
 
 import java.util.*;
+import java.util.List;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
@@ -931,6 +932,19 @@ boolean isSameLineSpacing(int lineIndex, int newLineSpacing) {
 	}
 	return false;
 }
+
+private static final class StyleEntry {
+	public final int start;
+	public final int end;
+	public final TextStyle style;
+
+	public StyleEntry(TextStyle style, int start, int end) {
+		this.style = style;
+		this.start = start;
+		this.end = end;
+	}
+}
+
 TextLayout getTextLayout(int lineIndex, int orientation, int width, int lineSpacing) {
 	TextLayout layout = null;
 	if (styledText != null) {
@@ -1092,6 +1106,71 @@ TextLayout getTextLayout(int lineIndex, int orientation, int width, int lineSpac
 		GlyphMetrics metrics = style.metrics;
 		indent += metrics.width;
 	}
+
+	// prepare styles, as it may change the line content, do it before calling layout.setText()
+	// This needs to happen early to handle the case of GlyphMetrics on \t.
+	// The root cause is that TextLayout doesn't return the right value for the bounds when
+	// GlyphMetrics are applied on \t. A better fix could be implemented directly in (all 3)
+	// TextLayout classes.
+	List<StyleEntry> styleEntries = new ArrayList<>();
+	int lastOffset = 0;
+	int length = line.length();
+	if (styles != null) {
+		if (ranges != null) {
+			int rangeCount = styleCount << 1;
+			for (int i = rangeStart; i < rangeCount; i += 2) {
+				int start, end;
+				if (lineOffset > ranges[i]) {
+					start = 0;
+					end = Math.min (length, ranges[i + 1] - lineOffset + ranges[i]);
+				} else {
+					start = ranges[i] - lineOffset;
+					end = Math.min(length, start + ranges[i + 1]);
+				}
+				if (start >= length) break;
+				if (lastOffset < start) {
+					styleEntries.add(new StyleEntry(null, lastOffset, start - 1));
+				}
+				TextStyle style = getStyleRange(styles[i >> 1]);
+				int endIndex = Math.max(start, Math.min(length, end + 1));
+				if (style.metrics != null && line.substring(start, endIndex).contains("\t")) {
+					line =
+						line.substring(0, start) +
+						line.substring(start, endIndex).replace('\t', ' ') +
+						(end < line.length() ? line.substring(end + 1, line.length()) : "");
+				}
+				styleEntries.add(new StyleEntry(style, start, end));
+				lastOffset = Math.max(lastOffset, end);
+			}
+		} else {
+			for (int i = rangeStart; i < styleCount; i++) {
+				int start, end;
+				if (lineOffset > styles[i].start) {
+					start = 0;
+					end = Math.min (length, styles[i].length - lineOffset + styles[i].start);
+				} else {
+					start = styles[i].start - lineOffset;
+					end = Math.min(length, start + styles[i].length);
+				}
+				if (start >= length) break;
+				if (lastOffset < start) {
+					styleEntries.add(new StyleEntry(null, lastOffset, start - 1));
+				}
+				TextStyle style = getStyleRange(styles[i]);
+				int endIndex = Math.max(start, Math.min(length, end + 1));
+				if (style.metrics != null && line.substring(start, endIndex).contains("\t")) {
+					line =
+						line.substring(0, start) +
+						line.substring(start, endIndex).replace('\t', ' ') +
+						(end < line.length() ? line.substring(end + 1, line.length()) : "");
+				}
+				styleEntries.add(new StyleEntry(style, start, end));
+				lastOffset = Math.max(lastOffset, end);
+			}
+		}
+	}
+	if (lastOffset < length) styleEntries.add(new StyleEntry(null, lastOffset, length));
+
 	layout.setFont(regularFont);
 	layout.setAscent(ascent);
 	layout.setDescent(descent);
@@ -1109,48 +1188,11 @@ TextLayout getTextLayout(int lineIndex, int orientation, int width, int lineSpac
 	layout.setAlignment(alignment);
 	layout.setJustify(justify);
 	layout.setTextDirection(textDirection);
-
-	int lastOffset = 0;
-	int length = line.length();
-	if (styles != null) {
-		if (ranges != null) {
-			int rangeCount = styleCount << 1;
-			for (int i = rangeStart; i < rangeCount; i += 2) {
-				int start, end;
-				if (lineOffset > ranges[i]) {
-					start = 0;
-					end = Math.min (length, ranges[i + 1] - lineOffset + ranges[i]);
-				} else {
-					start = ranges[i] - lineOffset;
-					end = Math.min(length, start + ranges[i + 1]);
-				}
-				if (start >= length) break;
-				if (lastOffset < start) {
-					layout.setStyle(null, lastOffset, start - 1);
-				}
-				layout.setStyle(getStyleRange(styles[i >> 1]), start, end);
-				lastOffset = Math.max(lastOffset, end);
-			}
-		} else {
-			for (int i = rangeStart; i < styleCount; i++) {
-				int start, end;
-				if (lineOffset > styles[i].start) {
-					start = 0;
-					end = Math.min (length, styles[i].length - lineOffset + styles[i].start);
-				} else {
-					start = styles[i].start - lineOffset;
-					end = Math.min(length, start + styles[i].length);
-				}
-				if (start >= length) break;
-				if (lastOffset < start) {
-					layout.setStyle(null, lastOffset, start - 1);
-				}
-				layout.setStyle(getStyleRange(styles[i]), start, end);
-				lastOffset = Math.max(lastOffset, end);
-			}
-		}
+	// apply styles, must be done after layout.setText()
+	for (StyleEntry styleEntry : styleEntries) {
+		layout.setStyle(styleEntry.style, styleEntry.start, styleEntry.end);
 	}
-	if (lastOffset < length) layout.setStyle(null, lastOffset, length);
+
 	if (styledText != null && styledText.ime != null) {
 		IME ime = styledText.ime;
 		int compositionOffset = ime.getCompositionOffset();
