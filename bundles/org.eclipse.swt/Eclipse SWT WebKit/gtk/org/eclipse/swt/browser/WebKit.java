@@ -148,6 +148,8 @@ class WebKit extends WebBrowser {
 	URI tlsErrorUri;
 	String tlsErrorType;
 
+	boolean firstLoad = true; //WebKit2 only
+
 	/**
 	 * Timeout used for javascript execution / deadlock detection.
 	 * Loosely based on the 10s limit commonly found in browsers.
@@ -3384,6 +3386,12 @@ long webkit_load_changed (long web_view, int status, long user_data) {
 			return handleLoadCommitted (uri, true);
 		}
 		case WebKitGTK.WEBKIT2_LOAD_FINISHED: {
+			if (firstLoad) {
+				GtkAllocation allocation = new GtkAllocation ();
+				GTK.gtk_widget_get_allocation(browser.handle, allocation);
+				GTK.gtk_widget_size_allocate(browser.handle, allocation);
+				firstLoad = false;
+			}
 			addEventHandlers (web_view, true);
 
 			long title = WebKitGTK.webkit_web_view_get_title (webView);
