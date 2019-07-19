@@ -5268,6 +5268,7 @@ public void test_setStyleRanges_render() throws InterruptedException {
  */
 @Test
 public void test_lineStyleListener_styles_render() throws InterruptedException {
+	Assume.assumeFalse("Bug 536588 prevents test to work on Mac", SwtTestUtil.isCocoa);
 	final ArrayList<StyleRange> styles = new ArrayList<>();
 	styles.add(getStyle(0, 2, null, GREEN));
 	styles.add(getStyle(4, 1, null, GREEN));
@@ -5292,6 +5293,7 @@ public void test_lineStyleListener_styles_render() throws InterruptedException {
  */
 @Test
 public void test_lineStyleListener_stylesAndRanges_render() throws InterruptedException {
+	Assume.assumeFalse("Bug 536588 prevents test to work on Mac", SwtTestUtil.isCocoa);
 	LineStyleListener listener = (LineStyleEvent event) -> {
 		final StyleRange style = getStyle(0, 0, null, GREEN);
 		event.styles =  new StyleRange[] { style, style, style, style };
@@ -5317,6 +5319,7 @@ public void test_lineStyleListener_stylesAndRanges_render() throws InterruptedEx
  */
 @Test
 public void test_lineStyleListener_invalidStyles_render() throws InterruptedException {
+	Assume.assumeFalse("Bug 536588 prevents test to work on Mac", SwtTestUtil.isCocoa);
 	LineStyleListener listener = (LineStyleEvent event) -> {
 		event.styles = new StyleRange[] {
 			getStyle(-10, 4, null, GREEN),
@@ -5482,6 +5485,7 @@ public void test_consistency_DragDetect () {
  */
 @Test
 public void test_GlyphMetricsOnTab_Bug549110() throws InterruptedException {
+	Assume.assumeFalse("Bug 536588 prevents test to work on Mac", SwtTestUtil.isCocoa);
 	shell.setVisible(true);
 	text.setText("ab\tcde");
 	text.setMargins(0, 0, 0, 0);
