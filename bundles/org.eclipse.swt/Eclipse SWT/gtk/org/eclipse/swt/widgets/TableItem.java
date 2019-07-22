@@ -1222,7 +1222,7 @@ public void setImage (int index, Image image) {
 				 * add imageList.getPixbuf returns resized pixbuf.
 				 */
 
-				if ((!parent.ownerDraw) && (DPIUtil.getDeviceZoom() != 100)) {
+				if ((DPIUtil.getDeviceZoom() != 100)) {
 					Rectangle imgSize = image.getBounds();
 					long scaledPixbuf = GDK.gdk_pixbuf_scale_simple(pixbuf, imgSize.width, imgSize.height, GDK.GDK_INTERP_BILINEAR);
 					if (scaledPixbuf !=0) {
