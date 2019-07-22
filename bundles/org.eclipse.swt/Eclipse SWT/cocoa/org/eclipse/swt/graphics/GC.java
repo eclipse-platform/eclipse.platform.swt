@@ -592,7 +592,7 @@ public void copyArea(Image image, int x, int y) {
 					int width = (int) (size.width * scaling);
 					int height = (int) (size.height * scaling);
 					NSBitmapImageRep rep = (NSBitmapImageRep)new NSBitmapImageRep().alloc();
-					rep = rep.initWithBitmapDataPlanes(0, width, height, 8, 3, false, false, OS.NSDeviceRGBColorSpace, OS.NSAlphaFirstBitmapFormat | OS.NSAlphaNonpremultipliedBitmapFormat, width * 4, 32);
+					rep = rep.initWithBitmapDataPlanes(0, width, height, 8, 3, false, false, OS.NSDeviceRGBColorSpace, OS.NSAlphaFirstBitmapFormat, width * 4, 32);
 					C.memset(rep.bitmapData(), 0xFF, width * height * 4);
 					imageHandle.addRepresentation(rep);
 					rep.release();

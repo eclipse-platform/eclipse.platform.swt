@@ -215,7 +215,7 @@ public Cursor(Device device, int style) {
 			size.height =  height;
 			nsImage = nsImage.initWithSize(size);
 			nsImageRep = nsImageRep.initWithBitmapDataPlanes(0, width, height, 8, 4, true, false, OS.NSDeviceRGBColorSpace,
-					OS.NSAlphaFirstBitmapFormat | OS.NSAlphaNonpremultipliedBitmapFormat, width*4, 32);
+					OS.NSAlphaFirstBitmapFormat, width*4, 32);
 			NSPoint point = new NSPoint();
 			if (style == SWT.CURSOR_WAIT) {
 				C.memmove(nsImageRep.bitmapData(), WAIT_SOURCE, WAIT_SOURCE.length);
@@ -333,7 +333,7 @@ void createNSCursor(int hotspotX, int hotspotY, byte[] buffer, int width, int he
 	nsImage = nsImage.initWithSize(size);
 	nsImageRep = nsImageRep.initWithBitmapDataPlanes(0, width, height,
 			8, hasAlpha ? 4 : 3, hasAlpha, false, OS.NSDeviceRGBColorSpace,
-			OS.NSAlphaFirstBitmapFormat | OS.NSAlphaNonpremultipliedBitmapFormat, width * 4, 32);
+			OS.NSAlphaFirstBitmapFormat, width * 4, 32);
 	C.memmove(nsImageRep.bitmapData(), buffer, buffer.length);
 	nsImage.addRepresentation(nsImageRep);
 	NSPoint point = new NSPoint();
