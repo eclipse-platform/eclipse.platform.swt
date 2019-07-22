@@ -1238,7 +1238,6 @@ void handleFocus (int type) {
 			shell.addListener (SWT.Deactivate, popupListener);
 			Display display = getDisplay ();
 			display.removeFilter (SWT.FocusIn, popupFilter);
-			display.addFilter (SWT.FocusIn, popupFilter);
 			Event e = new Event ();
 			notifyListeners (SWT.FocusIn, e);
 			break;
@@ -1251,7 +1250,6 @@ void handleFocus (int type) {
 			Shell shell = getShell ();
 			shell.removeListener (SWT.Deactivate, popupListener);
 			Display display = getDisplay ();
-			display.removeFilter (SWT.FocusIn, popupFilter);
 			display.removeFilter (SWT.MouseDown, mouseEventListener);
 			Event e = new Event ();
 			notifyListeners (SWT.FocusOut, e);
