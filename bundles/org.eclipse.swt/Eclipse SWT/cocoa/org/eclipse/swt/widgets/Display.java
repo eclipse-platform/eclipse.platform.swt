@@ -1652,6 +1652,17 @@ public Point [] getIconSizes () {
 		new Point (64, 64), new Point (128, 128)};
 }
 
+/**
+ * Returns true if the current OS theme has a dark appearance, else returns false.
+ *
+ * @return true if the OS theme is dark else false
+ *
+ * @since 3.112
+ */
+public static boolean isSystemDarkTheme () {
+	return OS.isSystemDarkAppearance();
+}
+
 int getLastEventTime () {
 	NSEvent event = application != null ? application.currentEvent() : null;
 	if (event == null) return 0;

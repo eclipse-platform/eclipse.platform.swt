@@ -2013,6 +2013,17 @@ ImageList getImageListToolBarHot (int style, int width, int height) {
 	return list;
 }
 
+/**
+ * Returns true if the current OS theme has a dark appearance, else returns false.
+ *
+ * @return true if the current OS theme is dark else false
+ *
+ * @since 3.112
+ */
+public static boolean isSystemDarkTheme () {
+	return false;
+}
+
 int getLastEventTime () {
 	return OS.GetMessageTime ();
 }

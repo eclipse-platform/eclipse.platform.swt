@@ -2422,6 +2422,17 @@ public Point [] getIconSizes () {
 	return new Point [] {new Point (16, 16), new Point (32, 32)};
 }
 
+/**
+ * Returns true if the current OS theme has a dark appearance, else returns false.
+ *
+ * @return true if the OS theme is dark else false
+ *
+ * @since 3.112
+ */
+public static boolean isSystemDarkTheme () {
+	return false;
+}
+
 int getLastEventTime () {
 	return lastEventTime;
 }
