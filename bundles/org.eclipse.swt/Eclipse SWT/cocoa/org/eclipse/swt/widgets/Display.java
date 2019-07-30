@@ -1912,7 +1912,13 @@ double [] getWidgetColorRGB (int id) {
 			color = new NSColor(dict.valueForKey(OS.NSForegroundColorAttributeName));
 			textView.release ();
 			break;
-		case SWT.COLOR_WIDGET_DISABLED_FOREGROUND: color = NSColor.disabledControlTextColor(); break;
+		case SWT.COLOR_WIDGET_DISABLED_FOREGROUND:
+			if (OS.VERSION >= OS.VERSION (10, 14, 0)) {
+				color = NSColor.secondarySelectedControlColor();
+			} else {
+				color = NSColor.disabledControlTextColor();
+			}
+			break;
 	}
 	return getNSColorRGB (color);
 }
