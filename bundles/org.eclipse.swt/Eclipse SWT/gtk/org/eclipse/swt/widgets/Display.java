@@ -2442,7 +2442,7 @@ public Point [] getIconSizes () {
  * @since 3.112
  */
 public static boolean isSystemDarkTheme () {
-	return false;
+	return OS.GTK_THEME_DARK;
 }
 
 int getLastEventTime () {
