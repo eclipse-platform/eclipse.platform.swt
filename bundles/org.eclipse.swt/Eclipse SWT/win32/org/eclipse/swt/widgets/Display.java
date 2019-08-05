@@ -2014,14 +2014,54 @@ ImageList getImageListToolBarHot (int style, int width, int height) {
 }
 
 /**
- * Returns true if the current OS theme has a dark appearance, else returns false.
+ * Returns <code>true</code> if the current OS theme has a dark appearance, else
+ * returns <code>false</code>.
+ * <p>
+ * Note: This operation is a hint and is not supported on platforms that do not
+ * have this concept.
+ * </p>
+ * <p>
+ * Note: Windows 10 onwards users can separately configure the theme for OS and
+ * Application level and this can be read from the Windows registry. Since the
+ * application needs to honor the application level theme, this API reads the
+ * Application level theme setting.
+ * </p>
  *
- * @return true if the current OS theme is dark else false
+ * @return <code>true</code> if the current OS theme has a dark appearance, else
+ *         returns <code>false</code>.
  *
  * @since 3.112
  */
 public static boolean isSystemDarkTheme () {
-	return false;
+	boolean isDarkTheme = false;
+	/*
+	 * Win10 onwards we can read the Dark Theme from the OS registry.
+	 */
+	if (OS.WIN32_VERSION >= OS.VERSION (10, 0)) {
+		TCHAR key = new TCHAR (0, "Software\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize", true); //$NON-NLS-1$
+		long [] phkResult = new long [1];
+		boolean regKeyFound = false;
+		if (OS.RegOpenKeyEx(OS.HKEY_CURRENT_USER, key, 0, OS.KEY_READ, phkResult) == 0) {
+			regKeyFound = true;
+		} else if (OS.RegOpenKeyEx(OS.HKEY_LOCAL_MACHINE, key, 0, OS.KEY_READ, phkResult) == 0) {
+			// Try reading from HKLM
+			regKeyFound = true;
+		}
+		if (regKeyFound) {
+			int [] lpcbData = new int [1];
+			TCHAR buffer = new TCHAR (0, "AppsUseLightTheme", true); //$NON-NLS-1$
+			int result = OS.RegQueryValueEx (phkResult [0], buffer, 0, new int[] {OS.REG_DWORD}, (TCHAR)null, lpcbData);
+			if (result == 0) {
+				int[] lpData = new int[lpcbData[0] / TCHAR.sizeof];
+				result = OS.RegQueryValueEx(phkResult[0], buffer, 0, new int[] {OS.REG_DWORD}, lpData, lpcbData);
+				if (result == 0) {
+					isDarkTheme = (lpData[0] == 0);
+				}
+			}
+			OS.RegCloseKey (phkResult [0]);
+		}
+	}
+	return isDarkTheme;
 }
 
 int getLastEventTime () {
