@@ -857,6 +857,7 @@
 	<target name="copy.library.src">
 		<script language="javascript">
 			<![CDATA[
+				load("nashorn:mozilla_compat.js");
 				importClass(java.io.File);
 				importClass(java.io.StreamTokenizer);
 				importClass(java.io.StringReader);
