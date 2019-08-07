@@ -553,6 +553,18 @@ public class GDK extends OS {
 	/**
 	 * @param window cast=(GdkWindow *)
 	 */
+	public static final native boolean _gdk_window_ensure_native(long window);
+	public static final boolean gdk_window_ensure_native(long window) {
+		lock.lock();
+		try {
+			return _gdk_window_ensure_native(window);
+		} finally {
+			lock.unlock();
+		}
+	}
+	/**
+	 * @param window cast=(GdkWindow *)
+	 */
 	public static final native int _gdk_window_get_state(long window);
 	/** [GTK3 only, if-def'd in os.h] */
 	public static final int gdk_window_get_state(long window) {

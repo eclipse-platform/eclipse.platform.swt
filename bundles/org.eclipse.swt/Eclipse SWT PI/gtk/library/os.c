@@ -2821,6 +2821,18 @@ JNIEXPORT jlong JNICALL GDK_NATIVE(_1gdk_1window_1end_1draw_1frame)
 }
 #endif
 
+#ifndef NO__1gdk_1window_1ensure_1native
+JNIEXPORT jboolean JNICALL GDK_NATIVE(_1gdk_1window_1ensure_1native)
+	(JNIEnv *env, jclass that, jlong arg0)
+{
+	jboolean rc = 0;
+	GDK_NATIVE_ENTER(env, that, _1gdk_1window_1ensure_1native_FUNC);
+	rc = (jboolean)gdk_window_ensure_native((GdkWindow *)arg0);
+	GDK_NATIVE_EXIT(env, that, _1gdk_1window_1ensure_1native_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO__1gdk_1window_1focus
 JNIEXPORT void JNICALL GDK_NATIVE(_1gdk_1window_1focus)
 	(JNIEnv *env, jclass that, jlong arg0, jint arg1)

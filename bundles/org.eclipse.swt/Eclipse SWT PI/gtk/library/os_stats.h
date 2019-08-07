@@ -227,6 +227,7 @@ typedef enum {
 	_1gdk_1window_1create_1similar_1surface_FUNC,
 	_1gdk_1window_1destroy_FUNC,
 	_1gdk_1window_1end_1draw_1frame_FUNC,
+	_1gdk_1window_1ensure_1native_FUNC,
 	_1gdk_1window_1focus_FUNC,
 	_1gdk_1window_1get_1children_FUNC,
 	_1gdk_1window_1get_1device_1position_FUNC,
