@@ -83,6 +83,8 @@ public class Table extends Composite {
 	TableColumn sortColumn;
 	ImageList imageList, headerImageList;
 	boolean firstCustomDraw;
+	/** True iff computeSize has never been called on this Table */
+	boolean firstCompute = true;
 	int drawState, drawFlags;
 	GdkRGBA background, foreground, drawForegroundRGBA;
 	Color headerBackground, headerForeground;
@@ -493,6 +495,18 @@ Point computeSizeInPixels (int wHint, int hHint, boolean changed) {
 	checkWidget ();
 	if (wHint != SWT.DEFAULT && wHint < 0) wHint = 0;
 	if (hHint != SWT.DEFAULT && hHint < 0) hHint = 0;
+	/*
+	 * Set all the TableColumn buttons visible otherwise
+	 * gtk_widget_get_preferred_size() will not take their size
+	 * into account.
+	 */
+	if (firstCompute) {
+		for (int x = 0; x < columns.length; x++) {
+			TableColumn column = columns[x];
+			if (column != null) GTK.gtk_widget_set_visible(column.buttonHandle, true);
+		}
+		firstCompute = false;
+	}
 	Point size = computeNativeSize (handle, wHint, hHint, changed);
 	/*
 	 * In GTK 3, computeNativeSize(..) sometimes just returns the header
@@ -510,16 +524,21 @@ Point computeSizeInPixels (int wHint, int hHint, boolean changed) {
 	if (wHint == SWT.DEFAULT && size.x == 0 && columnCount == 0) {
 		size.x = maxWidth;
 	}
-	/*
-	 * In case the table doesn't contain any elements,
-	 * getItemCount returns 0 and size.y will be 0
-	 * so need to assign default height. The same applies
-	 * for size.x.
-	 */
-	if (size.y == 0 && hHint == SWT.DEFAULT) size.y = DEFAULT_HEIGHT;
-	if (size.x == 0 && wHint == SWT.DEFAULT) size.x = DEFAULT_WIDTH;
 	Rectangle trim = computeTrimInPixels (0, 0, size.x, size.y);
 	size.x = trim.width;
+	/*
+	 * Feature in GTK: sometimes GtkScrolledWindow's with no scrollbars
+	 * won't automatically adjust their size. This happens when a Table
+	 * has a header, and the initial computed height was the height of
+	 * the of the header.
+	 *
+	 *  The fix is to increment the height by 1 in order to force a size
+	 *  update for the parent GtkScrollWindow, otherwise the headers
+	 *  will not be shown. This only happens once, see bug 546490.
+	 */
+	if (size.y == this.headerHeight && this.headerVisible && (style & SWT.NO_SCROLL) != 0) {
+		trim.height = trim.height + 1;
+	}
 	size.y = trim.height;
 	return size;
 }
