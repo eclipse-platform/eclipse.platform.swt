@@ -330,6 +330,12 @@ public class Display extends Device {
 	final int SWT_COLOR_LIST_SELECTION_TEXT_INACTIVE = 38;
 	final int SWT_COLOR_LIST_SELECTION_INACTIVE = 39;
 
+	/* Theme related */
+	/** The name of the current theme, including the theme named by GTK_THEME. */
+	static String themeName;
+	/** True if the current theme is dark. This includes the theme set in GTK_THEME. */
+	static boolean themeDark;
+
 	/* Popup Menus */
 	Menu [] popups;
 
@@ -1070,17 +1076,43 @@ void checkIMModule () {
 	}
 }
 
+/**
+ * Sets the org.eclipse.swt.internal.gtk.theme value with the current
+ * GTK theme name. Checks if the current theme SWT is running with
+ * is dark or not. This includes checking the GTK_THEME environment
+ * variable, the theme name, and GSettings.
+ *
+ * @param themeName the full name of the current theme SWT is running with
+ * @return true if the current theme is dark
+ */
+boolean checkAndSetThemeDetails (String themeName) {
+	if (themeName.endsWith("-dark") || themeName.endsWith(":dark")) {
+		System.setProperty("org.eclipse.swt.internal.gtk.theme", themeName);
+		return true;
+	}
+	long settings = GTK.gtk_settings_get_default ();
+	boolean [] darkThemePreferred = new boolean [1];
+	OS.g_object_get(settings, GTK.gtk_application_prefer_dark_theme, darkThemePreferred, 0);
+	if (darkThemePreferred[0]) {
+		/*
+		 * When 'gtk-application-prefer-dark-theme' is set to true, GTK uses the 'dark'
+		 * variant of the theme specified in the system settings -- see 'get_theme_name'
+		 * in the GtkSettings source code for more context.
+		 */
+		System.setProperty("org.eclipse.swt.internal.gtk.theme", themeName.concat(":dark"));
+	} else {
+		System.setProperty("org.eclipse.swt.internal.gtk.theme", themeName);
+	}
+	return darkThemePreferred[0];
+}
+
 void createDisplay (DeviceData data) {
 	boolean init = GTK.GTK4 ? GTK.gtk_init_check () : GTK.gtk_init_check (new long [] {0}, null);
 	if (!init) SWT.error (SWT.ERROR_NO_HANDLES, null, " [gtk_init_check() failed]"); //$NON-NLS-1$
 	checkIMModule();
 	//set GTK+ Theme name as property for introspection purposes
-	if (OS.GTK_THEME_SET) {
-		String themeName = OS.GTK_THEME_NAME + (OS.GTK_THEME_DARK ? ":dark" : "");
-		System.setProperty("org.eclipse.swt.internal.gtk.theme", themeName);
-	} else {
-		System.setProperty("org.eclipse.swt.internal.gtk.theme", OS.getThemeName());
-	}
+	themeName = OS.GTK_THEME_SET ? OS.GTK_THEME_SET_NAME : OS.getThemeName();
+	themeDark = checkAndSetThemeDetails(themeName);
 	if (OS.isX11()) {
 		xDisplay = GTK.GTK4 ? 0 : GDK.gdk_x11_get_default_xdisplay();
 	}
@@ -2442,7 +2474,7 @@ public Point [] getIconSizes () {
  * @since 3.112
  */
 public static boolean isSystemDarkTheme () {
-	return OS.GTK_THEME_DARK;
+	return themeDark;
 }
 
 int getLastEventTime () {

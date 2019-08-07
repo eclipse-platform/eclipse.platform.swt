@@ -715,13 +715,7 @@ public class OS extends C {
 	 * A string containing the theme name supplied via the GTK_THEME
 	 * environment variable. Otherwise this will contain an empty string.
 	 */
-	public static final String GTK_THEME_NAME;
-	/**
-	 * True if GTK_THEME_SET is true, and if the dark variant was
-	 * specified via the GTK_THEME environment variable.
-	 */
-	public static final boolean GTK_THEME_DARK;
-
+	public static final String GTK_THEME_SET_NAME;
 	/**
 	 * True if SWT is running on the GNOME desktop environment.
 	 */
@@ -768,16 +762,12 @@ public class OS extends C {
 		String gtkThemeCheck = getEnvironmentalVariable(gtkThemeProperty);
 		boolean gtkThemeSet = false;
 		String gtkThemeName = "";
-		boolean gtkThemeDark = false;
 		if (gtkThemeCheck != null && !gtkThemeCheck.isEmpty()) {
 			gtkThemeSet = true;
-			gtkThemeDark = gtkThemeCheck.contains(":dark") ? true : false;
-			String [] themeNameSplit = gtkThemeCheck.split(":");
-			gtkThemeName = themeNameSplit[0];
+			gtkThemeName = gtkThemeCheck;
 		}
 		GTK_THEME_SET = gtkThemeSet;
-		GTK_THEME_NAME = gtkThemeName;
-		GTK_THEME_DARK = gtkThemeDark;
+		GTK_THEME_SET_NAME = gtkThemeName;
 
 		Map<String, String> env = System.getenv();
 		String desktopEnvironment = env.get("XDG_CURRENT_DESKTOP");
@@ -2032,6 +2022,20 @@ public static final void g_object_get(long object, byte[] first_property_name, i
  */
 public static final native void _g_object_get(long object, byte[] first_property_name, long[] value, long terminator);
 public static final void g_object_get(long object, byte[] first_property_name, long[] value, long terminator) {
+	lock.lock();
+	try {
+		_g_object_get(object, first_property_name, value, terminator);
+	} finally {
+		lock.unlock();
+	}
+}
+/**
+ * @param object cast=(GObject *)
+ * @param first_property_name cast=(const gchar *),flags=no_out
+ * @param terminator cast=(const gchar *),flags=sentinel
+ */
+public static final native void _g_object_get(long object, byte[] first_property_name, boolean[] value, long terminator);
+public static final void g_object_get(long object, byte[] first_property_name, boolean[] value, long terminator) {
 	lock.lock();
 	try {
 		_g_object_get(object, first_property_name, value, terminator);

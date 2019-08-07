@@ -1250,6 +1250,7 @@ typedef enum {
 	_1g_1object_1class_1find_1property_FUNC,
 	_1g_1object_1get__J_3B_3IJ_FUNC,
 	_1g_1object_1get__J_3B_3JJ_FUNC,
+	_1g_1object_1get__J_3B_3ZJ_FUNC,
 	_1g_1object_1get_1qdata_FUNC,
 	_1g_1object_1new_FUNC,
 	_1g_1object_1notify_FUNC,

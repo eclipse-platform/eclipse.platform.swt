@@ -1276,6 +1276,7 @@ char * OS_nativeFunctionNames[] = {
 	"_1g_1object_1class_1find_1property",
 	"_1g_1object_1get__J_3B_3IJ",
 	"_1g_1object_1get__J_3B_3JJ",
+	"_1g_1object_1get__J_3B_3ZJ",
 	"_1g_1object_1get_1qdata",
 	"_1g_1object_1new",
 	"_1g_1object_1notify",
