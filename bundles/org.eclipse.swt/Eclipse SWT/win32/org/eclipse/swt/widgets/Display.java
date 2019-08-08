@@ -2040,25 +2040,15 @@ public static boolean isSystemDarkTheme () {
 	if (OS.WIN32_VERSION >= OS.VERSION (10, 0)) {
 		TCHAR key = new TCHAR (0, "Software\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize", true); //$NON-NLS-1$
 		long [] phkResult = new long [1];
-		boolean regKeyFound = false;
 		if (OS.RegOpenKeyEx(OS.HKEY_CURRENT_USER, key, 0, OS.KEY_READ, phkResult) == 0) {
-			regKeyFound = true;
-		} else if (OS.RegOpenKeyEx(OS.HKEY_LOCAL_MACHINE, key, 0, OS.KEY_READ, phkResult) == 0) {
-			// Try reading from HKLM
-			regKeyFound = true;
-		}
-		if (regKeyFound) {
-			int [] lpcbData = new int [1];
-			TCHAR buffer = new TCHAR (0, "AppsUseLightTheme", true); //$NON-NLS-1$
-			int result = OS.RegQueryValueEx (phkResult [0], buffer, 0, new int[] {OS.REG_DWORD}, (TCHAR)null, lpcbData);
+			int[] lpcbData = new int[] { 4 };
+			TCHAR buffer = new TCHAR(0, "AppsUseLightTheme", true); //$NON-NLS-1$
+			int[] lpData = new int[1];
+			int result = OS.RegQueryValueEx(phkResult[0], buffer, 0, null, lpData, lpcbData);
 			if (result == 0) {
-				int[] lpData = new int[lpcbData[0] / TCHAR.sizeof];
-				result = OS.RegQueryValueEx(phkResult[0], buffer, 0, new int[] {OS.REG_DWORD}, lpData, lpcbData);
-				if (result == 0) {
-					isDarkTheme = (lpData[0] == 0);
-				}
+				isDarkTheme = (lpData[0] == 0);
 			}
-			OS.RegCloseKey (phkResult [0]);
+			OS.RegCloseKey(phkResult[0]);
 		}
 	}
 	return isDarkTheme;
