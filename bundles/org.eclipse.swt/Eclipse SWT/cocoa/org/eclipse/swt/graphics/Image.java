@@ -1502,6 +1502,7 @@ void initAlpha_200(NSBitmapImageRep nativeRep) {
 
 		if (alphaInfo_200 == null) alphaInfo_200 = new AlphaInfo();
 		alphaInfo_200.init(nativeRep, rep);
+		rep.release();
 	} finally {
 		if (pool != null) pool.release();
 	}

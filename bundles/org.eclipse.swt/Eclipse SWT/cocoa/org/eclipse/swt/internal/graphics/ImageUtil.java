@@ -53,6 +53,7 @@ public class ImageUtil {
 		sourceRect.height = 0;
 		imgHandle.drawInRect(target, sourceRect, OS.NSCompositeCopy, 1);
 		NSGraphicsContext.static_restoreGraphicsState();
+		rep.autorelease();
 		return rep;
 	}
 }
