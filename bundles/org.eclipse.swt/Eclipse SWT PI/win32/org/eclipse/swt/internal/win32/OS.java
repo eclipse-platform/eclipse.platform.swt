@@ -2248,6 +2248,23 @@ public static final boolean OpenPrinter (TCHAR pPrinterName, long [] phPrinter, 
 	return OpenPrinter (pPrinterName1, phPrinter, pDefault);
 }
 
+public static final int readRegistryDword(int hkeyLocation, String key, String valueName) throws Exception {
+	if (key == null || valueName == null) throw new Exception("Registry key/valueName is null.");
+	long [] phkResult = new long [1];
+	TCHAR regKey = new TCHAR (0, key, true);
+	TCHAR lpValueName = new TCHAR (0, valueName, true);
+	if (OS.RegOpenKeyEx(hkeyLocation, regKey, 0, OS.KEY_READ, phkResult) == 0) {
+		int[] lpcbData = new int[] { 4 };
+		int[] lpData = new int[1];
+		int result = OS.RegQueryValueEx(phkResult[0], lpValueName, 0, null, lpData, lpcbData);
+		OS.RegCloseKey(phkResult[0]);
+		if (result == 0) {
+			return lpData[0];
+		}
+	}
+	throw new Exception("Registry entry not found.");
+}
+
 public static final int RegCreateKeyEx (long hKey, TCHAR lpSubKey, int Reserved, TCHAR lpClass, int dwOptions, int samDesired, long lpSecurityAttributes, long[] phkResult, long[] lpdwDisposition) {
 	char [] lpClass1 = lpClass == null ? null : lpClass.chars;
 	char [] lpSubKey1 = lpSubKey == null ? null : lpSubKey.chars;

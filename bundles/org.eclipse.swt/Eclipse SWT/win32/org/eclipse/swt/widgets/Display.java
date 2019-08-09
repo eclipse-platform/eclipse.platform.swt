@@ -2038,17 +2038,12 @@ public static boolean isSystemDarkTheme () {
 	 * Win10 onwards we can read the Dark Theme from the OS registry.
 	 */
 	if (OS.WIN32_VERSION >= OS.VERSION (10, 0)) {
-		TCHAR key = new TCHAR (0, "Software\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize", true); //$NON-NLS-1$
-		long [] phkResult = new long [1];
-		if (OS.RegOpenKeyEx(OS.HKEY_CURRENT_USER, key, 0, OS.KEY_READ, phkResult) == 0) {
-			int[] lpcbData = new int[] { 4 };
-			TCHAR buffer = new TCHAR(0, "AppsUseLightTheme", true); //$NON-NLS-1$
-			int[] lpData = new int[1];
-			int result = OS.RegQueryValueEx(phkResult[0], buffer, 0, null, lpData, lpcbData);
-			if (result == 0) {
-				isDarkTheme = (lpData[0] == 0);
-			}
-			OS.RegCloseKey(phkResult[0]);
+		try {
+			int result = OS.readRegistryDword(OS.HKEY_CURRENT_USER,
+					"Software\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize", "AppsUseLightTheme");
+			isDarkTheme = (result == 0);
+		} catch (Exception e) {
+			// Registry entry not found
 		}
 	}
 	return isDarkTheme;
@@ -2783,15 +2778,11 @@ boolean isXMouseActive () {
 	* NOTE: X-Mouse is active when bit 1 of the UserPreferencesMask is set.
 	*/
 	boolean xMouseActive = false;
-	TCHAR key = new TCHAR (0, "Control Panel\\Desktop", true); //$NON-NLS-1$
-	long [] phKey = new long [1];
-	int result = OS.RegOpenKeyEx (OS.HKEY_CURRENT_USER, key, 0, OS.KEY_READ, phKey);
-	if (result == 0) {
-		TCHAR lpValueName = new TCHAR (0, "UserPreferencesMask", true); //$NON-NLS-1$
-		int [] lpcbData = new int [] {4}, lpData = new int [1];
-		result = OS.RegQueryValueEx (phKey [0], lpValueName, 0, null, lpData, lpcbData);
-		if (result == 0) xMouseActive = (lpData [0] & 0x01) != 0;
-		OS.RegCloseKey (phKey [0]);
+	try {
+		int result = OS.readRegistryDword(OS.HKEY_CURRENT_USER, "Control Panel\\Desktop", "UserPreferencesMask");
+		xMouseActive = (result & 0x01) != 0;
+	} catch (Exception e) {
+		// Registry entry not found
 	}
 	return xMouseActive;
 }
