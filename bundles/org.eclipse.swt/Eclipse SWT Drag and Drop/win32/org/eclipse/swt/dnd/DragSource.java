@@ -391,6 +391,31 @@ private void drag(Event dragEvent) {
 		}
 	}
 
+	/*
+	 * Bug 549643: a proper drag&drop operation is finished when the DoDragDrop loop/function returns.
+	 * Unfortunately the Windows Explorer is ignoring this fact while showing a Portable Device
+	 * (e.g. Smartphone attached through MTP). I.e. dropping a file on Windows Explorer in this
+	 * situation will query the iDataObject at least once for its data _after_ DoDragDrop finished.
+	 * Revoking this getData request will fail the drop.
+	 *
+	 * This behavior can succeeds because most applications store the actual data to transfer in
+	 * the IDataObject and since its lifetime is managed through ref counting it can return the data
+	 * even after the drag&drop finished. In SWT the data to transfer is not stored in the IDataObject
+	 * but instead obtained on demand through a DND.DragSetData event. Additional some clients release
+	 * the data to drag in the DragEnd event and therefore do not like to get such events after DragEnd.
+	 *
+	 * That's why the next few lines exist. In case the DropTarget has not yet released the IDataObject
+	 * (which is the case for the faulty Windows Explorer described above) we delay the DragEnd event in
+	 * case an additional DragSetData is triggered. Since the DropTarget can be any (faulty or malicious)
+	 * application maybe never releasing the object wait is combined with a tight timeout.
+	 */
+	final long start = System.currentTimeMillis();
+	while (refCount > 0 && System.currentTimeMillis() - start < 1000) {
+		if (!display.readAndDispatch()) {
+			try { Thread.sleep(10); }
+			catch (InterruptedException e) { break; }
+		}
+	}
 	disposeCOMInterfaces();
 
 	event = new DNDEvent();

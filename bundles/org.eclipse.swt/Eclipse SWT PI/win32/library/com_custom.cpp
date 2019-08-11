@@ -71,13 +71,18 @@ private:
 };
 
 /*
- * An extended version of SHParseDisplayName which ignores the attribute query part
- * and use bind context to support creation of simple PIDLs for non existing paths.
+ * An extended version of SHParseDisplayName which use bind context to support
+ * creation of simple PIDLs in case the normal PIDL creation failed.
+ * (most likley due to non existing file/directory)
  */
 extern "C" HRESULT PathToPIDL(PCWSTR pszName, PIDLIST_ABSOLUTE *ppidl)
 {
 	if (!ppidl) return E_FAIL;
 	*ppidl = nullptr;
+	
+	SFGAOF sfgao = 0;
+	HRESULT hr = SHParseDisplayName(pszName, nullptr, ppidl, sfgao, &sfgao);
+	if (hr == S_OK) return hr;
 
 	IFileSystemBindData *pfsbd = new CFileSysBindData();
 	if (!pfsbd) return E_OUTOFMEMORY;
@@ -87,7 +92,7 @@ extern "C" HRESULT PathToPIDL(PCWSTR pszName, PIDLIST_ABSOLUTE *ppidl)
 
 	IBindCtx* pbc;
 
-	HRESULT hr = CreateBindCtx(0, &pbc);
+	hr = CreateBindCtx(0, &pbc);
 	if (hr == S_OK)
 	{
 		BIND_OPTS bo = { sizeof(bo), 0, STGM_CREATE, 0 };
@@ -97,7 +102,7 @@ extern "C" HRESULT PathToPIDL(PCWSTR pszName, PIDLIST_ABSOLUTE *ppidl)
 			hr = pbc->RegisterObjectParam(STR_FILE_SYS_BIND_DATA, pfsbd);
 			if (hr == S_OK)
 			{
-				SFGAOF sfgao = 0;
+				sfgao = 0;
 				hr = SHParseDisplayName(pszName, pbc, ppidl, sfgao, &sfgao);
 			}
 		}
