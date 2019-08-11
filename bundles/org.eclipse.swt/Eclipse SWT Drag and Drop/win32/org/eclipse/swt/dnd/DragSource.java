@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2017 IBM Corporation and others.
+ * Copyright (c) 2000, 2019 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -161,8 +161,6 @@ public DragSource(Control control, int style) {
 		DND.error(DND.ERROR_CANNOT_INIT_DRAG);
 	}
 	control.setData(DND.DRAG_SOURCE_KEY, this);
-	createCOMInterfaces();
-	this.AddRef();
 
 	controlListener = event -> {
 		if (event.type == SWT.Dispose) {
@@ -241,6 +239,7 @@ private int AddRef() {
 }
 
 private void createCOMInterfaces() {
+	disposeCOMInterfaces();
 	// register each of the interfaces that this object implements
 	iDropSource = new COMObject(new int[]{2, 0, 0, 2, 1}){
 		@Override
@@ -276,6 +275,7 @@ private void createCOMInterfaces() {
 		// method10 DUnadvise - not implemented
 		// method11 EnumDAdvise - not implemented
 	};
+	refCount = 1;
 }
 
 @Override
@@ -307,6 +307,7 @@ private void drag(Event dragEvent) {
 	notifyListeners(DND.DragStart,event);
 	if (!event.doit || transferAgents == null || transferAgents.length == 0 ) return;
 
+	createCOMInterfaces();
 	int[] pdwEffect = new int[1];
 	int operations = opToOs(getStyle());
 	Display display = control.getDisplay();
@@ -379,6 +380,7 @@ private void drag(Event dragEvent) {
 			topControl = null;
 		}
 		display.setData(key, oldValue);
+		Release();
 	}
 	int operation = osToOp(pdwEffect[0]);
 	if (dataEffect == DND.DROP_MOVE) {
@@ -388,6 +390,9 @@ private void drag(Event dragEvent) {
 			operation = dataEffect;
 		}
 	}
+
+	disposeCOMInterfaces();
+
 	event = new DNDEvent();
 	event.widget = this;
 	event.time = OS.GetMessageTime();

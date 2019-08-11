@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2017 IBM Corporation and others.
+ * Copyright (c) 2000, 2019 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -402,80 +402,87 @@ int Drop_64(long pDataObject, int grfKeyState, long pt, long pdwEffect) {
 }
 
 int Drop(long pDataObject, int grfKeyState, int pt_x, int pt_y, long pdwEffect) {
-	pt_x = DPIUtil.autoScaleDown(pt_x);// To Points
-	pt_y = DPIUtil.autoScaleDown(pt_y);// To Points
-	DNDEvent event = new DNDEvent();
-	event.widget = this;
-	event.time = OS.GetMessageTime();
-	if (dropEffect != null) {
-		event.item = dropEffect.getItem(pt_x, pt_y);
-	}
-	event.detail = DND.DROP_NONE;
-	notifyListeners(DND.DragLeave, event);
-	refresh();
-
-	event = new DNDEvent();
-	if (!setEventData(event, pDataObject, grfKeyState, pt_x, pt_y, pdwEffect)) {
-		keyOperation = -1;
-		OS.MoveMemory(pdwEffect, new int[] {COM.DROPEFFECT_NONE}, 4);
-		return COM.S_FALSE;
-	}
-	keyOperation = -1;
-	int allowedOperations = event.operations;
-	TransferData[] allowedDataTypes = new TransferData[event.dataTypes.length];
-	System.arraycopy(event.dataTypes, 0, allowedDataTypes, 0, allowedDataTypes.length);
-	event.dataType = selectedDataType;
-	event.detail = selectedOperation;
-	notifyListeners(DND.DropAccept,event);
-	refresh();
-
-	selectedDataType = null;
-	for (int i = 0; i < allowedDataTypes.length; i++) {
-		if (TransferData.sameType(allowedDataTypes[i], event.dataType)){
-			selectedDataType = allowedDataTypes[i];
-			break;
-		}
-	}
-	selectedOperation = DND.DROP_NONE;
-	if (selectedDataType != null && (allowedOperations & event.detail) == event.detail) {
-		selectedOperation = event.detail;
-	}
-
-	if (selectedOperation == DND.DROP_NONE){
-		OS.MoveMemory(pdwEffect, new int[] {COM.DROPEFFECT_NONE}, 4);
-		return COM.S_OK;
-	}
-
-	// Get Data in a Java format
-	Object object = null;
-	for (int i = 0; i < transferAgents.length; i++){
-		Transfer transfer = transferAgents[i];
-		if (transfer != null && transfer.isSupportedType(selectedDataType)){
-			object = transfer.nativeToJava(selectedDataType);
-			break;
-		}
-	}
-	if (object == null){
-		selectedOperation = DND.DROP_NONE;
-	}
-
-	event.detail = selectedOperation;
-	event.dataType = selectedDataType;
-	event.data = object;
-	OS.ImageList_DragShowNolock(false);
 	try {
-		notifyListeners(DND.Drop,event);
+		pt_x = DPIUtil.autoScaleDown(pt_x);// To Points
+		pt_y = DPIUtil.autoScaleDown(pt_y);// To Points
+		DNDEvent event = new DNDEvent();
+		event.widget = this;
+		event.time = OS.GetMessageTime();
+		if (dropEffect != null) {
+			event.item = dropEffect.getItem(pt_x, pt_y);
+		}
+		event.detail = DND.DROP_NONE;
+		notifyListeners(DND.DragLeave, event);
+		refresh();
+
+		event = new DNDEvent();
+		if (!setEventData(event, pDataObject, grfKeyState, pt_x, pt_y, pdwEffect)) {
+			keyOperation = -1;
+			OS.MoveMemory(pdwEffect, new int[] {COM.DROPEFFECT_NONE}, 4);
+			return COM.S_FALSE;
+		}
+		keyOperation = -1;
+		int allowedOperations = event.operations;
+		TransferData[] allowedDataTypes = new TransferData[event.dataTypes.length];
+		System.arraycopy(event.dataTypes, 0, allowedDataTypes, 0, allowedDataTypes.length);
+		event.dataType = selectedDataType;
+		event.detail = selectedOperation;
+		notifyListeners(DND.DropAccept,event);
+		refresh();
+
+		selectedDataType = null;
+		for (int i = 0; i < allowedDataTypes.length; i++) {
+			if (TransferData.sameType(allowedDataTypes[i], event.dataType)){
+				selectedDataType = allowedDataTypes[i];
+				break;
+			}
+		}
+		selectedOperation = DND.DROP_NONE;
+		if (selectedDataType != null && (allowedOperations & event.detail) == event.detail) {
+			selectedOperation = event.detail;
+		}
+
+		if (selectedOperation == DND.DROP_NONE){
+			OS.MoveMemory(pdwEffect, new int[] {COM.DROPEFFECT_NONE}, 4);
+			return COM.S_OK;
+		}
+
+		// Get Data in a Java format
+		Object object = null;
+		for (int i = 0; i < transferAgents.length; i++){
+			Transfer transfer = transferAgents[i];
+			if (transfer != null && transfer.isSupportedType(selectedDataType)){
+				object = transfer.nativeToJava(selectedDataType);
+				break;
+			}
+		}
+		if (object == null){
+			selectedOperation = DND.DROP_NONE;
+		}
+
+		event.detail = selectedOperation;
+		event.dataType = selectedDataType;
+		event.data = object;
+		OS.ImageList_DragShowNolock(false);
+		try {
+			notifyListeners(DND.Drop,event);
+		} finally {
+			OS.ImageList_DragShowNolock(true);
+		}
+		refresh();
+		selectedOperation = DND.DROP_NONE;
+		if ((allowedOperations & event.detail) == event.detail) {
+			selectedOperation = event.detail;
+		}
+		//notify source of action taken
+		OS.MoveMemory(pdwEffect, new int[] {opToOs(selectedOperation)}, 4);
+		return COM.S_OK;
 	} finally {
-		OS.ImageList_DragShowNolock(true);
+		if (iDataObject != null) {
+			iDataObject.Release();
+			iDataObject = null;
+		}
 	}
-	refresh();
-	selectedOperation = DND.DROP_NONE;
-	if ((allowedOperations & event.detail) == event.detail) {
-		selectedOperation = event.detail;
-	}
-	//notify source of action taken
-	OS.MoveMemory(pdwEffect, new int[] {opToOs(selectedOperation)}, 4);
-	return COM.S_OK;
 }
 
 /**
