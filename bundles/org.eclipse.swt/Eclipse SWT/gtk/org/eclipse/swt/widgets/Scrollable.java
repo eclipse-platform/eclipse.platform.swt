@@ -304,6 +304,45 @@ public ScrollBar getVerticalBar () {
 }
 
 @Override
+long gtk_draw (long widget, long cairo) {
+	/*
+	 * Draw events destined for an SwtFixed instance will sometimes
+	 * only be redrawing the scrollbars attached to it. GTK will send many
+	 * draw events to an SwtFixed instance if:
+	 *   1) that instance has overlay scrollbars attached to it, and
+	 *   2) the mouse has just left (leave-notify) that SwtFixed widget.
+	 *
+	 * Such extra draw events cause extra SWT.Paint events to be sent and
+	 * reduce performance. The fix is to check if the dirty region in need
+	 * of a redraw is the same region that the scroll bars occupy, and ignore
+	 * draw events that target such cases. See bug 546248.
+	 */
+	boolean overlayScrolling = !OS.GTK_OVERLAY_SCROLLING_DISABLED &&
+			GTK.GTK_VERSION >= OS.VERSION(3, 16, 0);
+	if (overlayScrolling && OS.G_OBJECT_TYPE(widget) == OS.swt_fixed_get_type()) {
+		if ((style & SWT.V_SCROLL) != 0 && verticalBar != null) {
+			GtkAllocation verticalBarAlloc = new GtkAllocation();
+			GTK.gtk_widget_get_allocation(verticalBar.handle, verticalBarAlloc);
+			GdkRectangle rect = new GdkRectangle();
+			GDK.gdk_cairo_get_clip_rectangle(cairo, rect);
+			if (rect.width == verticalBarAlloc.width && rect.height == verticalBarAlloc.height) {
+				return 0;
+			}
+		}
+		if ((style & SWT.H_SCROLL) != 0 && horizontalBar != null) {
+			GtkAllocation horizontalBarAlloc = new GtkAllocation();
+			GTK.gtk_widget_get_allocation(horizontalBar.handle, horizontalBarAlloc);
+			GdkRectangle rect = new GdkRectangle();
+			GDK.gdk_cairo_get_clip_rectangle(cairo, rect);
+			if (rect.width == horizontalBarAlloc.width && rect.height == horizontalBarAlloc.height) {
+				return 0;
+			}
+		}
+	}
+	return super.gtk_draw(widget, cairo);
+}
+
+@Override
 long gtk_scroll_event (long widget, long eventPtr) {
 	long result = super.gtk_scroll_event (widget, eventPtr);
 

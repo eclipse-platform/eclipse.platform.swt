@@ -717,6 +717,11 @@ public class OS extends C {
 	 */
 	public static final String GTK_THEME_SET_NAME;
 	/**
+	 * True iff overlay scrolling has been disabled via GTK_OVERLAY_SCROLLING=0.
+	 * See bug 546248.
+	 */
+	public static final boolean GTK_OVERLAY_SCROLLING_DISABLED;
+	/**
 	 * True if SWT is running on the GNOME desktop environment.
 	 */
 	public static final boolean isGNOME;
@@ -768,6 +773,14 @@ public class OS extends C {
 		}
 		GTK_THEME_SET = gtkThemeSet;
 		GTK_THEME_SET_NAME = gtkThemeName;
+
+		String scrollingProperty = "GTK_OVERLAY_SCROLLING";
+		String scrollingCheck = getEnvironmentalVariable(scrollingProperty);
+		boolean scrollingDisabled = false;
+		if (scrollingCheck != null && scrollingCheck.equals("0")) {
+			scrollingDisabled = true;
+		}
+		GTK_OVERLAY_SCROLLING_DISABLED = scrollingDisabled;
 
 		Map<String, String> env = System.getenv();
 		String desktopEnvironment = env.get("XDG_CURRENT_DESKTOP");
