@@ -8965,7 +8965,6 @@ public void setEnabled (boolean enabled) {
 		if (!customBackground) setBackground(display.getSystemColor(SWT.COLOR_LIST_BACKGROUND));
 		if (!customForeground) setForeground(display.getSystemColor(SWT.COLOR_LIST_FOREGROUND));
 	} else {
-		setSelectionRange(0,0);
 		if (!customBackground) setBackground(display.getSystemColor(SWT.COLOR_TEXT_DISABLED_BACKGROUND));
 		if (!customForeground) setForeground(display.getSystemColor(SWT.COLOR_WIDGET_DISABLED_FOREGROUND));
 	}

@@ -5584,4 +5584,30 @@ public void test_GlyphMetricsOnTab() {
 	assertEquals("Style should change text bounds", boundsWithoutGlyphMetrics.width - tabWidthWithoutGlyphMetrics + tabWidthWithGlyphMetrics, boundsWithGlyphMetrics.width);
 }
 
+/**
+ * Test for:
+ * Bug 550017 - [StyledText] Disabling StyledText moves insertion position to 0
+ */
+@Test
+public void test_InsertWhenDisabled() {
+	String str = "some test text";
+	text.setText(str);
+	String selected = "test";
+	int selectionStart = str.indexOf(selected);
+	int selectionEnd = selectionStart + selected.length();
+	text.setSelection(selectionStart, selectionEnd);
+	assertEquals(selectionEnd, text.getCaretOffset());
+	assertEquals(selected, text.getSelectionText());
+
+	text.setEnabled(false);
+
+	assertEquals(selected, text.getSelectionText());
+	assertEquals(selectionEnd, text.getCaretOffset());
+
+	text.insert("[inserted]");
+	String actualText = text.getText();
+	String expectedText = "some [inserted] text";
+	assertEquals("Wrong insert in disabled StyledText", expectedText, actualText);
+}
+
 }
