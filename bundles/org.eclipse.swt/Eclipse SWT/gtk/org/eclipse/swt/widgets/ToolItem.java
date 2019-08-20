@@ -48,6 +48,8 @@ public class ToolItem extends Item {
 	Image hotImage, disabledImage;
 	String toolTipText;
 	boolean drawHotImage;
+	/** True iff map has been hooked for this ToolItem. See bug 546914. */
+	boolean mapHooked;
 
 /**
  * Constructs a new instance of this class given its parent
@@ -792,9 +794,11 @@ void hookEvents () {
 	} else {
 		OS.g_signal_connect_closure_by_id (eventHandle, display.signalIds [EVENT_AFTER], 0, display.getClosure (EVENT_AFTER), false);
 	}
-
-	long topHandle = topHandle ();
-	OS.g_signal_connect_closure_by_id (topHandle, display.signalIds [MAP], 0, display.getClosure (MAP), true);
+	if (!mapHooked) {
+		long topHandle = topHandle ();
+		OS.g_signal_connect_closure_by_id (topHandle, display.signalIds [MAP], 0, display.getClosure (MAP), true);
+		mapHooked = true;
+	}
 }
 
 /**
@@ -951,6 +955,14 @@ public void setControl (Control control) {
 	if (this.control == control) return;
 	this.control = control;
 	parent.relayout ();
+	// Fix the Z-order in order to ensure proper event traversal. See bug 546914.
+	if (control != null) {
+		parent.fixZOrder();
+		if (!mapHooked) {
+			OS.g_signal_connect_closure_by_id (topHandle(), display.signalIds [MAP], 0, display.getClosure (MAP), true);
+			mapHooked = true;
+		}
+	}
 }
 
 /**
