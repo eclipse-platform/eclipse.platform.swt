@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2017 IBM Corporation and others.
+ * Copyright (c) 2000, 2019 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -1524,6 +1524,12 @@ public void paste () {
 
 void stateFlagsAdd(int flags) {
 	final long tagCBoxPtr = OS.GetWindowLongPtr(handle, 0);
+	/*
+	 * Bug 550423: When non-XP-theme COMMCTL32.DLL gets loaded, undocumented
+	 * internal data is not there. We do not support that and in such case
+	 * GetWindowLongPtr function fails and return zero.
+	 */
+	if (tagCBoxPtr == 0) return;
 	final long stateFlagsPtr = tagCBoxPtr + stateFlagsOffset;
 
 	int stateFlags[] = new int[1];
@@ -1539,6 +1545,12 @@ void stateFlagsAdd(int flags) {
  */
 boolean stateFlagsTest() {
 	final long tagCBoxPtr = OS.GetWindowLongPtr(handle, 0);
+	/*
+	 * Bug 550423: When non-XP-theme COMMCTL32.DLL gets loaded, undocumented
+	 * internal data is not there. We do not support that and in such case
+	 * GetWindowLongPtr function fails and return zero.
+	 */
+	if (tagCBoxPtr == 0) return false;
 	final long stateFlagsPtr = tagCBoxPtr + stateFlagsOffset;
 
 	int stateFlags[] = new int[1];
