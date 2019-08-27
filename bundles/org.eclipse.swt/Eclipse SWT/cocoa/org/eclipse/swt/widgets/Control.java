@@ -2184,7 +2184,7 @@ public long internal_new_GC (GCData data) {
 			int height = 256;
 			NSBitmapImageRep rep = (NSBitmapImageRep) new NSBitmapImageRep().alloc();
 			rep = rep.initWithBitmapDataPlanes(0, width, height, 8, 3, false, false, OS.NSDeviceRGBColorSpace,
-					OS.NSAlphaFirstBitmapFormat | OS.NSAlphaNonpremultipliedBitmapFormat, width * 4, 32);
+					OS.NSAlphaFirstBitmapFormat, width * 4, 32);
 			graphicsContext = NSGraphicsContext.graphicsContextWithBitmapImageRep(rep);
 			rep.release();
 		}
