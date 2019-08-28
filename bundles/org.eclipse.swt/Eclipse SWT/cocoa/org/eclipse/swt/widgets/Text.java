@@ -347,10 +347,11 @@ public void append (String string) {
 
 @Override
 boolean becomeFirstResponder (long id, long sel) {
-	receivingFocus = true;
-	boolean result = super.becomeFirstResponder (id, sel);
-	receivingFocus = false;
-	return result;
+	if ((style & SWT.SINGLE) != 0) {
+		if ((state & DISABLED) != 0) return false;
+		return true;
+	}
+	return super.becomeFirstResponder (id, sel);
 }
 
 static int checkStyle (int style) {
@@ -818,6 +819,15 @@ void enableWidget(boolean enabled) {
 Cursor findCursor () {
 	Cursor cursor = super.findCursor ();
 	return (cursor != null) ? cursor : display.getSystemCursor (SWT.CURSOR_IBEAM);
+}
+
+@Override
+boolean forceFocus(NSView focusView) {
+	receivingFocus = true;
+	boolean result = super.forceFocus(focusView);
+	if (((style & SWT.SINGLE) != 0)) ((NSTextField) view).selectText(null);
+	receivingFocus = false;
+	return result;
 }
 
 /**
