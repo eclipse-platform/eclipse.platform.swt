@@ -43,7 +43,7 @@ import org.eclipse.swt.internal.image.*;
  * </ul>
  *
  * <p>
-  * NOTE: <code>ImageLoader</code> is implemented in Java on some platforms, which has
+ * NOTE: <code>ImageLoader</code> is implemented in Java on some platforms, which has
  * certain performance implications. Performance and memory sensitive applications may
  * benefit from using one of the constructors provided by <code>Image</code>, as these
  * are implemented natively.</p>

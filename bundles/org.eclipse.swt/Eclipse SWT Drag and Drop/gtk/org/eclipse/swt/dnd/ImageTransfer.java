@@ -27,8 +27,8 @@ import org.eclipse.swt.widgets.*;
  * <p>An example of a java <code>ImageData</code> is shown below:</p>
  *
  * <pre><code>
- *     Image image = new Image(display, "C:\temp\img1.gif");
- *	   ImageData imgData = image.getImageData();
+ *     Image image = new Image(display, "C:\\temp\\img1.gif");
+ *     ImageData imgData = image.getImageData();
  * </code></pre>
  *
  * @see Transfer

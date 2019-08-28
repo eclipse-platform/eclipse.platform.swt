@@ -439,8 +439,6 @@ static long gdk_pixbuf_new_from_file(String filename) {
  * <dd>JPEG file format</dd>
  * <dt><code>IMAGE_PNG</code></dt>
  * <dd>PNG file format</dd>
- * <dt><code>IMAGE_TIFF</code></dt>
- * <dd>TIFF file format</dd>
  * </dl>
  *
  * @param stream the output stream to write the images to
@@ -587,8 +585,6 @@ public void save(OutputStream stream, int format) {
  * <dd>JPEG file format</dd>
  * <dt><code>IMAGE_PNG</code></dt>
  * <dd>PNG file format</dd>
- * <dt><code>IMAGE_TIFF</code></dt>
- * <dd>TIFF file format</dd>
  * </dl>
  *
  * @param filename the name of the file to write the images to

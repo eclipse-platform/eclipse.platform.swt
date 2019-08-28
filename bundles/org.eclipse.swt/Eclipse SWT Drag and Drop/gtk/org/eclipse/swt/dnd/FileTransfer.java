@@ -27,8 +27,8 @@ import org.eclipse.swt.internal.gtk.*;
  * below:</p>
  *
  * <pre><code>
- *     File file1 = new File("C:\temp\file1");
- *     File file2 = new File("C:\temp\file2");
+ *     File file1 = new File("C:\\temp\\file1");
+ *     File file2 = new File("C:\\temp\\file2");
  *     String[] fileData = new String[2];
  *     fileData[0] = file1.getAbsolutePath();
  *     fileData[1] = file2.getAbsolutePath();
