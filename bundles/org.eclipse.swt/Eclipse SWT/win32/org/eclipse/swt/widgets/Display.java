@@ -133,6 +133,7 @@ public class Display extends Device {
 	static final String WindowOwnDCName = "SWT_WindowOwnDC"; //$NON-NLS-1$
 	EventTable eventTable, filterTable;
 	boolean useOwnDC;
+	boolean externalEventLoop; // events are dispatched outside SWT, e.g. TrackPopupMenu or DoDragDrop
 
 	/* Widget Table */
 	int freeSlot;
@@ -210,6 +211,7 @@ public class Display extends Device {
 	static final String RUN_MESSAGES_IN_MESSAGE_PROC_KEY = "org.eclipse.swt.internal.win32.runMessagesInMessageProc"; //$NON-NLS-1$
 	static final String USE_OWNDC_KEY = "org.eclipse.swt.internal.win32.useOwnDC"; //$NON-NLS-1$
 	static final String ACCEL_KEY_HIT = "org.eclipse.swt.internal.win32.accelKeyHit"; //$NON-NLS-1$
+	static final String EXTERNAL_EVENT_LOOP_KEY = "org.eclipse.swt.internal.win32.externalEventLoop"; //$NON-NLS-1$
 	Thread thread;
 
 	/* Display Shutdown */
@@ -4314,6 +4316,11 @@ public void setData (String key, Object value) {
 	if (key.equals (ACCEL_KEY_HIT)) {
 		Boolean data = (Boolean) value;
 		accelKeyHit = data != null && data.booleanValue ();
+		return;
+	}
+	if (key.equals (EXTERNAL_EVENT_LOOP_KEY)) {
+		Boolean data = (Boolean) value;
+		externalEventLoop = data != null && data.booleanValue ();
 		return;
 	}
 	/* Remove the key/value pair */

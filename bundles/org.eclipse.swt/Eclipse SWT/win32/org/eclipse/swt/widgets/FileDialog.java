@@ -377,12 +377,14 @@ public String open () {
 	*/
 	boolean oldRunMessagesInIdle = display.runMessagesInIdle;
 	display.runMessagesInIdle = true;
+	display.externalEventLoop = true;
 	display.sendPreExternalEventDispatchEvent ();
 	/*
 	* Open the dialog.  If the open fails due to an invalid
 	* file name, use an empty file name and open it again.
 	*/
 	boolean success = (save) ? OS.GetSaveFileName (struct) : OS.GetOpenFileName (struct);
+	display.externalEventLoop = false;
 	display.sendPostExternalEventDispatchEvent ();
 	switch (OS.CommDlgExtendedError ()) {
 		case OS.FNERR_INVALIDFILENAME:

@@ -310,8 +310,11 @@ int printFrame (long webView, long frame) {
 	pd.lStructSize = PRINTDLG.sizeof;
 	pd.Flags = OS.PD_RETURNDC;
 	Display display = browser.getDisplay ();
+	String externalLoopKey = "org.eclipse.swt.internal.win32.externalEventLoop";
+	display.setData(externalLoopKey, Boolean.TRUE);
 	display.sendPreExternalEventDispatchEvent ();
 	boolean success = OS.PrintDlg (pd);
+	display.setData(externalLoopKey, Boolean.FALSE);
 	display.sendPostExternalEventDispatchEvent ();
 	if (!success) return COM.S_OK;
 	long printDC = pd.hDC;

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2017 IBM Corporation and others.
+ * Copyright (c) 2000, 2019 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -843,7 +843,7 @@ public void layout (Control [] changed, int flags) {
 				composite = child.parent;
 			}
 		}
-		if ((flags & SWT.DEFER) != 0) {
+		if (!display.externalEventLoop && (flags & SWT.DEFER) != 0) {
 			setLayoutDeferred (true);
 			display.addLayoutDeferred (this);
 		}
@@ -853,7 +853,7 @@ public void layout (Control [] changed, int flags) {
 	} else {
 		if (layout == null && (flags & SWT.ALL) == 0) return;
 		markLayout ((flags & SWT.CHANGED) != 0, (flags & SWT.ALL) != 0);
-		if ((flags & SWT.DEFER) != 0) {
+		if (!display.externalEventLoop && (flags & SWT.DEFER) != 0) {
 			setLayoutDeferred (true);
 			display.addLayoutDeferred (this);
 		}

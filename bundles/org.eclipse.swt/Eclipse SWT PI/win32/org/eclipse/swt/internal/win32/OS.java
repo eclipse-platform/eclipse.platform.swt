@@ -1890,6 +1890,10 @@ public class OS extends C {
 	public static final int WM_NULL = 0x0;
 	public static final int WM_PAINT = 0xf;
 	public static final int WM_PARENTNOTIFY = 0x0210;
+	public static final int WM_ENTERMENULOOP = 0x0211;
+	public static final int WM_EXITMENULOOP = 0x0212;
+	public static final int WM_ENTERSIZEMOVE = 0x0231;
+	public static final int WM_EXITSIZEMOVE = 0x0232;
 	public static final int WM_PASTE = 0x302;
 	public static final int WM_PRINT = 0x0317;
 	public static final int WM_PRINTCLIENT = 0x0318;

@@ -224,9 +224,11 @@ public FontData open () {
 		display.setModalDialog (this);
 	}
 
+	display.externalEventLoop = true;
 	display.sendPreExternalEventDispatchEvent ();
 	/* Open the dialog */
 	boolean success = OS.ChooseFont (lpcf);
+	display.externalEventLoop = false;
 	display.sendPostExternalEventDispatchEvent ();
 
 	/* Clear the temporary dialog modal parent */

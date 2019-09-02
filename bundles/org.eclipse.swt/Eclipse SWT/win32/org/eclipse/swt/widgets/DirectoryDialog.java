@@ -224,7 +224,9 @@ private String openCommonFileDialog () {
 	int oldErrorMode = OS.SetErrorMode (OS.SEM_FAILCRITICALERRORS);
 
 	display.sendPreExternalEventDispatchEvent ();
+	display.externalEventLoop = true;
 	long lpItemIdList = OS.SHBrowseForFolder (lpbi);
+	display.externalEventLoop = false;
 	display.sendPostExternalEventDispatchEvent ();
 	OS.SetErrorMode (oldErrorMode);
 
@@ -306,7 +308,9 @@ private String openCommonItemDialog() {
 			}
 		}
 
+		Display display = parent.getDisplay();
 		long hwndOwner = parent.handle;
+		display.externalEventLoop = true;
 		if (fileDialog.Show(hwndOwner) == OS.S_OK) {
 			if (fileDialog.GetResult(ppv) == OS.S_OK) {
 				IShellItem psi = new IShellItem(ppv[0]);
@@ -322,6 +326,7 @@ private String openCommonItemDialog() {
 				psi.Release();
 			}
 		}
+		display.externalEventLoop = false;
 
 		fileDialog.Release();
 	}

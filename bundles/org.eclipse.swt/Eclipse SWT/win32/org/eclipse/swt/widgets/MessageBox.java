@@ -14,8 +14,8 @@
 package org.eclipse.swt.widgets;
 
 
-import org.eclipse.swt.internal.win32.*;
 import org.eclipse.swt.*;
+import org.eclipse.swt.internal.win32.*;
 
 /**
  * Instances of this class are used to inform or warn the user.
@@ -199,7 +199,9 @@ public int open () {
 	/* Use the character encoding for the default locale */
 	TCHAR buffer1 = new TCHAR (0, message, true);
 	TCHAR buffer2 = new TCHAR (0, title, true);
+	display.externalEventLoop = true;
 	int code = OS.MessageBox (hwndOwner, buffer1, buffer2, bits);
+	display.externalEventLoop = false;
 	display.sendPostExternalEventDispatchEvent ();
 
 	/* Clear the temporarily dialog modal parent */

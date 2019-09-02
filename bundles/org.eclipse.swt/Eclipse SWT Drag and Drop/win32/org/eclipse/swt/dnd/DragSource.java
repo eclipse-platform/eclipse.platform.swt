@@ -366,10 +366,13 @@ private void drag(Event dragEvent) {
 		OS.GetWindowRect (hwndDrag, rect);
 		OS.ImageList_DragEnter(hwndDrag, pt.x - rect.left, pt.y - rect.top);
 	}
+	String externalLoopKey = "org.eclipse.swt.internal.win32.externalEventLoop";
 	int result = COM.DRAGDROP_S_CANCEL;
 	try {
+		display.setData(externalLoopKey, Boolean.TRUE);
 		result = COM.DoDragDrop(iDataObject.getAddress(), iDropSource.getAddress(), operations, pdwEffect);
 	} finally {
+		display.setData(externalLoopKey, Boolean.FALSE);
 		// ensure that we don't leave transparent window around
 		if (hwndDrag != 0) {
 			OS.ImageList_DragLeave(hwndDrag);

@@ -352,11 +352,14 @@ public PrinterData open() {
 		}
 	}
 	Display display = parent.getDisplay();
+	String externalLoopKey = "org.eclipse.swt.internal.win32.externalEventLoop";
 	if (!success) {
 		/* Initialize PRINTDLG fields, including DEVMODE, for the default printer. */
 		pd.Flags = OS.PD_RETURNDEFAULT;
+		display.setData(externalLoopKey, Boolean.TRUE);
 		display.sendPreExternalEventDispatchEvent ();
 		success = OS.PrintDlg(pd);
+		display.setData(externalLoopKey, Boolean.FALSE);
 		display.sendPostExternalEventDispatchEvent ();
 		if (success) {
 			if (pd.hDevNames != 0) {
@@ -443,8 +446,10 @@ public PrinterData open() {
 		String key = "org.eclipse.swt.internal.win32.runMessagesInIdle"; //$NON-NLS-1$
 		Object oldValue = display.getData(key);
 		display.setData(key, Boolean.TRUE);
+		display.setData(externalLoopKey, Boolean.TRUE);
 		display.sendPreExternalEventDispatchEvent ();
 		success = OS.PrintDlg(pd);
+		display.setData(externalLoopKey, Boolean.FALSE);
 		display.sendPostExternalEventDispatchEvent ();
 		display.setData(key, oldValue);
 		if ((getStyle() & (SWT.APPLICATION_MODAL | SWT.SYSTEM_MODAL)) != 0) {

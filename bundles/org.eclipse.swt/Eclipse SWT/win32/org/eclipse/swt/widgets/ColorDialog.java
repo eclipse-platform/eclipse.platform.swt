@@ -14,10 +14,10 @@
 package org.eclipse.swt.widgets;
 
 
-import org.eclipse.swt.internal.*;
-import org.eclipse.swt.internal.win32.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.internal.*;
+import org.eclipse.swt.internal.win32.*;
 
 /**
  * Instances of this class allow the user to select a color
@@ -254,9 +254,11 @@ public RGB open () {
 		display.setModalDialog (this);
 	}
 
+	display.externalEventLoop = true;
 	display.sendPreExternalEventDispatchEvent ();
 	/* Open the dialog */
 	boolean success = OS.ChooseColor (lpcc);
+	display.externalEventLoop = false;
 	display.sendPostExternalEventDispatchEvent ();
 
 	/* Clear the temporary dialog modal parent */
