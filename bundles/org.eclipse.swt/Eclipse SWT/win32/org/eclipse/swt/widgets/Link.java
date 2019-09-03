@@ -48,6 +48,7 @@ public class Link extends Control {
 	int linkForeground = -1;
 	String [] ids;
 	char [] mnemonics;
+	int nextFocusItem = -1;
 	static final long LinkProc;
 	static final TCHAR LinkClass = new TCHAR (0, OS.WC_LINK, true);
 	static {
@@ -275,6 +276,7 @@ boolean mnemonicHit (char key) {
 	char uckey = Character.toUpperCase (key);
 	for (int i = 0; i < mnemonics.length; i++) {
 		if (uckey == mnemonics[i]) {
+			nextFocusItem = i;
 			return setFocus () && setFocusItem (i);
 		}
 	}
@@ -471,11 +473,11 @@ boolean setFocusItem (int index) {
 	long result = OS.SendMessage (handle, OS.LM_SETITEM, 0, item);
 
 	if (index > 0) {
-		/* Feature in Windows. For some reason, setting the focus to
-		 * any item but first causes the control to clear the WS_TABSTOP
-		 * bit. The fix is always to reset the bit.
-		 */
-		OS.SetWindowLong (handle, OS.GWL_STYLE, bits);
+	/* Feature in Windows. For some reason, setting the focus to
+	 * any item but first causes the control to clear the WS_TABSTOP
+	 * bit. The fix is always to reset the bit.
+	 */
+	OS.SetWindowLong (handle, OS.GWL_STYLE, bits);
 	}
 	return result != 0;
 }
@@ -652,10 +654,8 @@ LRESULT WM_KEYDOWN (long wParam, long lParam) {
 
 @Override
 LRESULT WM_KILLFOCUS (long wParam, long lParam) {
-	int focusItem = getFocusItem();
-	LRESULT result = super.WM_KILLFOCUS(wParam, lParam);
-	if (ids.length > 1 && focusItem != -1) setFocusItem(focusItem);
-	return result;
+	nextFocusItem = getFocusItem();
+	return super.WM_KILLFOCUS(wParam, lParam);
 }
 
 @Override
@@ -690,8 +690,12 @@ LRESULT WM_SETFOCUS (long wParam, long lParam) {
 	*/
 	if (ids.length > 1) {
 		if (OS.GetKeyState (OS.VK_TAB) < 0) {
-			boolean shift = OS.GetKeyState (OS.VK_SHIFT) < 0;
-			setFocusItem(shift ? ids.length - 1 : 0);
+			if (OS.GetKeyState (OS.VK_SHIFT) < 0) {
+				// reverse tab; focus on last item
+				setFocusItem(ids.length - 1);
+			}
+		} else if (nextFocusItem > 0) {
+			setFocusItem(nextFocusItem);
 		}
 	}
 	return super.WM_SETFOCUS (wParam, lParam);
