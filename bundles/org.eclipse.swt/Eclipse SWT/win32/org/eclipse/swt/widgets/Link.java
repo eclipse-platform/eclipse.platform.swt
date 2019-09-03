@@ -447,23 +447,36 @@ public void removeSelectionListener (SelectionListener listener) {
 }
 
 boolean setFocusItem (int index) {
-	int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
+	int bits = 0;
+	if (index > 0) {
+		bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
+	}
 	LITEM item = new LITEM ();
 	item.mask = OS.LIF_ITEMINDEX | OS.LIF_STATE;
 	item.stateMask = OS.LIS_FOCUSED;
-	while (item.iLink < ids.length) {
-		if (item.iLink != index) OS.SendMessage (handle, OS.LM_SETITEM, 0, item);
-		item.iLink++;
+	int activeIndex = getFocusItem ();
+	if (activeIndex == index) return true;
+	if (activeIndex >= 0) {
+		/* Feature in Windows. Unfocus any element unfocus all elements.
+		 * For example if item 2 is focused and we set unfocus (state = 0)
+		 * for item 0 Windows will remove the focus state for item 2
+		 * (getFocusItem() == -1) but fail to remove the focus border around
+		 * the link. The fix is to only unfocus the element which has focus.
+		 */
+		item.iLink = activeIndex;
+		OS.SendMessage (handle, OS.LM_SETITEM, 0, item);
 	}
 	item.iLink = index;
 	item.state = OS.LIS_FOCUSED;
 	long result = OS.SendMessage (handle, OS.LM_SETITEM, 0, item);
 
-	/* Feature in Windows. For some reason, setting the focus to
-	 * any item but first causes the control to clear the WS_TABSTOP
-	 * bit. The fix is always to reset the bit.
-	 */
-	OS.SetWindowLong (handle, OS.GWL_STYLE, bits);
+	if (index > 0) {
+		/* Feature in Windows. For some reason, setting the focus to
+		 * any item but first causes the control to clear the WS_TABSTOP
+		 * bit. The fix is always to reset the bit.
+		 */
+		OS.SetWindowLong (handle, OS.GWL_STYLE, bits);
+	}
 	return result != 0;
 }
 
