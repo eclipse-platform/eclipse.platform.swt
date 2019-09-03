@@ -588,7 +588,7 @@ LRESULT WM_CHAR (long wParam, long lParam) {
 	LRESULT result = super.WM_CHAR (wParam, lParam);
 	if (result != null) return result;
 	switch ((int)wParam) {
-		case ' ':
+		case SWT.SPACE:
 		case SWT.CR:
 		case SWT.TAB:
 			/*
@@ -641,7 +641,7 @@ LRESULT WM_KEYDOWN (long wParam, long lParam) {
 LRESULT WM_KILLFOCUS (long wParam, long lParam) {
 	int focusItem = getFocusItem();
 	LRESULT result = super.WM_KILLFOCUS(wParam, lParam);
-	if (focusItem != -1) setFocusItem(focusItem);
+	if (ids.length > 1 && focusItem != -1) setFocusItem(focusItem);
 	return result;
 }
 
