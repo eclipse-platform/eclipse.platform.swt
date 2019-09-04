@@ -336,7 +336,7 @@ public class Display extends Device {
 	/** True if the current theme is dark. This includes the theme set in GTK_THEME. */
 	static boolean themeDark;
 
-	private final static Pattern colorPattern = Pattern.compile("[^-]color: rgba?\\((\\d+(,\\s?)?){3,4}\\)");
+	private final static Pattern colorPattern = Pattern.compile("[^-]color: (rgba?\\((?:\\d+(?:,\\s?)?){3,4}\\))");
 
 	/* Popup Menus */
 	Menu [] popups;
@@ -2118,8 +2118,6 @@ String gtk_css_provider_to_string (long provider) {
  */
 GdkRGBA gtk_css_parse_foreground (String css, String precise) {
 	if (css.isEmpty()) return COLOR_WIDGET_FOREGROUND_RGBA;
-	String shortOutput;
-	int startIndex;
 	GdkRGBA rgba = new GdkRGBA ();
 	String searched = "";
 	/*
@@ -2148,12 +2146,9 @@ GdkRGBA gtk_css_parse_foreground (String css, String precise) {
 	 * properties and filter out things like background-color, border-color,
 	 * etc.
 	 */
-
 	Matcher m = colorPattern.matcher(searched);
 	if (m.find()) {
-		String match = m.group(0);
-		startIndex = match.indexOf("color:");
-		shortOutput = match.substring(startIndex + 7);
+		String shortOutput = m.group(1);
 		rgba = gtk_css_property_to_rgba(shortOutput);
 	} else {
 		return COLOR_WIDGET_FOREGROUND_RGBA;
