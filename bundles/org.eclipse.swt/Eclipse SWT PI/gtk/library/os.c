@@ -8409,6 +8409,16 @@ JNIEXPORT void JNICALL GTK_NATIVE(_1gtk_1print_1unix_1dialog_1set_1embed_1page_1
 }
 #endif
 
+#ifndef NO__1gtk_1print_1unix_1dialog_1set_1has_1selection
+JNIEXPORT void JNICALL GTK_NATIVE(_1gtk_1print_1unix_1dialog_1set_1has_1selection)
+	(JNIEnv *env, jclass that, jlong arg0, jboolean arg1)
+{
+	GTK_NATIVE_ENTER(env, that, _1gtk_1print_1unix_1dialog_1set_1has_1selection_FUNC);
+	gtk_print_unix_dialog_set_has_selection((GtkPrintUnixDialog *)arg0, arg1);
+	GTK_NATIVE_EXIT(env, that, _1gtk_1print_1unix_1dialog_1set_1has_1selection_FUNC);
+}
+#endif
+
 #ifndef NO__1gtk_1print_1unix_1dialog_1set_1manual_1capabilities
 JNIEXPORT void JNICALL GTK_NATIVE(_1gtk_1print_1unix_1dialog_1set_1manual_1capabilities)
 	(JNIEnv *env, jclass that, jlong arg0, jlong arg1)
@@ -8436,6 +8446,16 @@ JNIEXPORT void JNICALL GTK_NATIVE(_1gtk_1print_1unix_1dialog_1set_1settings)
 	GTK_NATIVE_ENTER(env, that, _1gtk_1print_1unix_1dialog_1set_1settings_FUNC);
 	gtk_print_unix_dialog_set_settings((GtkPrintUnixDialog *)arg0, (GtkPrintSettings *)arg1);
 	GTK_NATIVE_EXIT(env, that, _1gtk_1print_1unix_1dialog_1set_1settings_FUNC);
+}
+#endif
+
+#ifndef NO__1gtk_1print_1unix_1dialog_1set_1support_1selection
+JNIEXPORT void JNICALL GTK_NATIVE(_1gtk_1print_1unix_1dialog_1set_1support_1selection)
+	(JNIEnv *env, jclass that, jlong arg0, jboolean arg1)
+{
+	GTK_NATIVE_ENTER(env, that, _1gtk_1print_1unix_1dialog_1set_1support_1selection_FUNC);
+	gtk_print_unix_dialog_set_support_selection((GtkPrintUnixDialog *)arg0, arg1);
+	GTK_NATIVE_EXIT(env, that, _1gtk_1print_1unix_1dialog_1set_1support_1selection_FUNC);
 }
 #endif
 
