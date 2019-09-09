@@ -2419,7 +2419,8 @@ long gtk_draw (long widget, long cairo) {
 	 * if the Tree has no items. In such cases, the fix is to ensure that the Tree's GdkWindow
 	 * is a native one. Only X11 is affected by this issue, see bug 541427 for more info.
 	 */
-	if (firstDraw && OS.isX11() && getItemCount() == 0 && GTK.GTK_VERSION >= OS.VERSION(3, 20, 0)) {
+	if (firstDraw && OS.isX11() && getItemCount() == 0 && GTK.GTK_VERSION >= OS.VERSION(3, 20, 0)
+			&& !hasChildren && headerVisible) {
 		long binWindow = GTK.gtk_tree_view_get_bin_window(handle);
 		GDK.gdk_window_ensure_native(binWindow);
 	}
