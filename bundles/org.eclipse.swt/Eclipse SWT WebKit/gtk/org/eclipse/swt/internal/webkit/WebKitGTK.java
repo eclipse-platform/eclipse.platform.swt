@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2018 IBM Corporation and others. All rights reserved.
+ * Copyright (c) 2000, 2019 IBM Corporation and others. All rights reserved.
  * The contents of this file are made available under the terms
  * of the GNU Lesser General Public License (LGPL) Version 2.1 that
  * accompanies this distribution (lgpl-v21.txt).  The LGPL is also
@@ -198,6 +198,8 @@ public class WebKitGTK extends C {
 	public static final byte[] enable_javascript = ascii ("enable-javascript"); // $NON-NLS-1$	// Webkit2 only
 
 	public static final byte[] enable_webgl = ascii("enable-webgl"); // $NON-NLS-1$				// Webkit1 & Webkit2
+
+	public static final byte[] enable_back_forward_navigation_gestures = ascii("enable-back-forward-navigation-gestures"); // $NON-NLS-1$ // Webkit2
 
 	public static final byte[] enable_universal_access_from_file_uris = ascii ("enable-universal-access-from-file-uris"); // $NON-NLS-1$  // Webkit1
 	public static final byte[] allow_universal_access_from_file_urls = ascii ("allow-universal-access-from-file-urls"); // $NON-NLS-1$    // Webkit2 Since 2.14

@@ -1291,6 +1291,9 @@ public void create (Composite parent, int style) {
 		OS.g_object_set (settings, WebKitGTK.default_charset, bytes, 0);
 		if (WebKitGTK.webkit_get_minor_version() >= 14) {
 			OS.g_object_set (settings, WebKitGTK.allow_universal_access_from_file_urls, 1, 0);
+			if (WebKitGTK.webkit_get_minor_version() >= 24) {
+				OS.g_object_set (settings, WebKitGTK.enable_back_forward_navigation_gestures, 1, 0);
+			}
 		} else {
 			System.err.println("SWT WEBKIT: Warning, you are using Webkitgtk below version 2.14. Your version is: "
 					+ "Your version is: " + internalGetWebKitVersionStr()
