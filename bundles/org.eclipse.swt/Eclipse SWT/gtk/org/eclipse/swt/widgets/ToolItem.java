@@ -688,12 +688,14 @@ long gtk_event_after (long widget, long gdkEvent) {
 long gtk_focus_in_event (long widget, long event) {
 	parent.hasChildFocus = true;
 	parent.currentFocusItem = this;
+	parent.sendFocusEvent(SWT.FocusIn);
 	return 0;
 }
 
 @Override
 long gtk_focus_out_event (long widget, long event) {
 	parent.hasChildFocus = false;
+	parent.sendFocusEvent(SWT.FocusOut);
 	return 0;
 }
 

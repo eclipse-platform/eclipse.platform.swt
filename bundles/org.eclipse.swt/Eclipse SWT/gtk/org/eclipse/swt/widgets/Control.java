@@ -3828,7 +3828,6 @@ long gtk_event_after (long widget, long gdkEvent) {
 					}
 				}
 			}
-
 			sendFocusEvent (focusIn[0] ? SWT.FocusIn : SWT.FocusOut);
 			break;
 		}
