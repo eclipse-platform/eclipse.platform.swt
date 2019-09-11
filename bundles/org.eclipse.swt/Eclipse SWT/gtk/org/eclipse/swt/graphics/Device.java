@@ -399,10 +399,7 @@ public int getDepth () {
  */
 public Point getDPI () {
 	checkDevice ();
-	long screen = GDK.gdk_screen_get_default();
-	int dpi = (int) GDK.gdk_screen_get_resolution(screen);
-	Point ptDPI = dpi == -1 ? new Point (96, 96) : new Point (dpi, dpi);
-	return ptDPI;
+	return getScreenDPI();
 }
 
 /**
@@ -473,6 +470,13 @@ public FontData[] getFontList (String faceName, boolean scalable) {
 	FontData[] result = new FontData[nFds];
 	System.arraycopy(fds, 0, result, 0, nFds);
 	return result;
+}
+
+Point getScreenDPI () {
+	long screen = GDK.gdk_screen_get_default();
+	int dpi = (int) GDK.gdk_screen_get_resolution(screen);
+	Point ptDPI = dpi == -1 ? new Point (96, 96) : new Point (dpi, dpi);
+	return ptDPI;
 }
 
 /**
@@ -679,6 +683,11 @@ protected void init () {
 		defaultFont = defaultFontArray [0];
 	}
 	defaultFont = OS.pango_font_description_copy (defaultFont);
+	Point dpi = getDPI(), screenDPI = getScreenDPI();
+	if (dpi.y != screenDPI.y) {
+		int size = OS.pango_font_description_get_size(defaultFont);
+		OS.pango_font_description_set_size(defaultFont, size * dpi.y / screenDPI.y);
+	}
 	systemFont = Font.gtk_new (this, defaultFont);
 
 	overrideThemeValues();
