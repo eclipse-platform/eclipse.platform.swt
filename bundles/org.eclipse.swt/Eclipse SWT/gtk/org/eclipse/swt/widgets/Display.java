@@ -128,12 +128,12 @@ public class Display extends Device {
 	int [] max_priority = new int [1], timeout = new int [1];
 	Callback eventCallback;
 	long eventProc, windowProc2, windowProc3, windowProc4, windowProc5, windowProc6;
-	long snapshotDrawProc;
+	long snapshotDrawProc, changeValueProc;
 	long keyPressReleaseProc, focusProc, enterMotionScrollProc, leaveProc;
 	long gesturePressReleaseProc;
 	long notifyStateProc;
 	Callback windowCallback2, windowCallback3, windowCallback4, windowCallback5, windowCallback6;
-	Callback snapshotDraw;
+	Callback snapshotDraw, changeValue;
 	Callback keyPressReleaseCallback, focusCallback, enterMotionScrollCallback, leaveCallback;
 	Callback gesturePressReleaseCallback;
 	Callback notifyStateCallback;
@@ -3540,7 +3540,15 @@ void initializeCallbacks () {
 	windowProc5 = windowCallback5.getAddress ();
 	if (windowProc5 == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 
-	closuresProc [Widget.CHANGE_VALUE] = windowProc5;
+	/*
+	 * The "change-value" signal has a double parameter, so this
+	 * needs to be handled separately. See bug
+	 */
+	changeValue = new Callback (this, "changeValue", boolean.class, new Type [] {long.class, int.class, double.class, long.class}); //$NON-NLS-1$
+	changeValueProc = changeValue.getAddress ();
+	if (changeValueProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
+	closuresProc [Widget.CHANGE_VALUE] = changeValueProc;
+
 	closuresProc [Widget.EXPAND_COLLAPSE_CURSOR_ROW] = windowProc5;
 	closuresProc [Widget.INSERT_TEXT] = windowProc5;
 	closuresProc [Widget.TEXT_BUFFER_INSERT_TEXT] = windowProc5;
@@ -4484,6 +4492,11 @@ void releaseDisplay () {
 		windowCallback6.dispose ();  windowCallback6 = null;
 	}
 	windowProc2 = windowProc3 = windowProc4 = windowProc5 = windowProc6 = 0;
+
+	if (changeValue != null) {
+		changeValue.dispose(); changeValue = null;
+	}
+	changeValueProc = 0;
 
 	if (GTK.GTK4) {
 		keyPressReleaseCallback.dispose();
@@ -5822,6 +5835,12 @@ long notifyStateProc (long gdk_handle, long param_spec, long user_data) {
 	Widget widget = getWidget (user_data);
 	if (widget == null) return 0;
 	return widget.notifyStateProc(gdk_handle, user_data);
+}
+
+boolean changeValue (long handle, int scroll, double value, long user_data) {
+	Widget widget = getWidget (handle);
+	if (widget == null) return false;
+	return widget.gtk_change_value(handle, scroll, value, user_data);
 }
 
 long windowProc (long handle, long user_data) {

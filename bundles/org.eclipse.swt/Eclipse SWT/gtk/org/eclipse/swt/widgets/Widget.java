@@ -719,8 +719,8 @@ long gtk_changed (long widget) {
 	return 0;
 }
 
-long gtk_change_value (long widget, long scroll, long value1, long value2) {
-	return 0;
+boolean gtk_change_value (long widget, int scroll, double value, long user_data) {
+	return false;
 }
 
 long gtk_clicked (long widget) {
@@ -2280,7 +2280,6 @@ long windowProc (long handle, long arg0, long arg1, long user_data) {
 
 long windowProc (long handle, long arg0, long arg1, long arg2, long user_data) {
 	switch ((int)user_data) {
-		case CHANGE_VALUE: return gtk_change_value (handle, arg0, arg1, arg2);
 		case EXPAND_COLLAPSE_CURSOR_ROW: return gtk_expand_collapse_cursor_row (handle, arg0, arg1, arg2);
 		case INSERT_TEXT: return gtk_insert_text (handle, arg0, arg1, arg2);
 		case TEXT_BUFFER_INSERT_TEXT: return gtk_text_buffer_insert_text (handle, arg0, arg1, arg2);

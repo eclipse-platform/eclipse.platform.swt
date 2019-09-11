@@ -534,9 +534,9 @@ long gtk_button_press_event (long widget, long eventPtr) {
 }
 
 @Override
-long gtk_change_value (long widget, long scroll, long value1, long value2) {
-	detail = (int)scroll;
-	return 0;
+boolean gtk_change_value (long widget, int scroll, double value, long user_data) {
+	detail = scroll;
+	return false;
 }
 
 void gtk_range_get_slider_range (long widget, int [] slider_start, int [] slider_end) {
