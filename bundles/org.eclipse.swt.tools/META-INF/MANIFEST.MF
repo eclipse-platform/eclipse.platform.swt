@@ -2,11 +2,9 @@ Manifest-Version: 1.0
 Bundle-Name: %pluginName
 Bundle-Vendor: %providerName
 Bundle-SymbolicName: org.eclipse.swt.tools; singleton:=true
-Bundle-Version: 3.108.0.qualifier
-Bundle-Activator: org.eclipse.swt.tools.Activator
+Bundle-Version: 3.108.100.qualifier
 Bundle-ManifestVersion: 2
-Export-Package: org.eclipse.swt.tools,
- org.eclipse.swt.tools.internal; x-internal:=true
+Export-Package: org.eclipse.swt.tools.internal; x-internal:=true
 Bundle-ActivationPolicy: lazy
 Bundle-Localization: plugin
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
