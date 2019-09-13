@@ -4500,17 +4500,32 @@ void releaseDisplay () {
 
 	if (GTK.GTK4) {
 		keyPressReleaseCallback.dispose();
+		keyPressReleaseCallback = null;
 		keyPressReleaseProc = 0;
+
 		focusCallback.dispose();
+		focusCallback = null;
 		focusProc = 0;
+
 		enterMotionScrollCallback.dispose();
+		enterMotionScrollCallback = null;
 		enterMotionScrollProc = 0;
+
 		leaveCallback.dispose();
+		leaveCallback = null;
 		leaveProc = 0;
+
 		gesturePressReleaseCallback.dispose();
+		gesturePressReleaseCallback = null;
 		gesturePressReleaseProc = 0;
+
 		notifyStateCallback.dispose();
+		notifyStateCallback = null;
 		notifyStateProc = 0;
+
+		snapshotDraw.dispose();
+		snapshotDraw = null;
+		snapshotDrawProc = 0;
 	}
 
 	/* Dispose checkIfEvent callback */
