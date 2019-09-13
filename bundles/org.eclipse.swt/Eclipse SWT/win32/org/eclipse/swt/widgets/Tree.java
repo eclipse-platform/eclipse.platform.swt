@@ -2589,9 +2589,7 @@ void destroyItem (TreeItem item, long hItem) {
 		*/
 //		OS.SendMessage (handle, OS.WM_SETREDRAW, 0, 0);
 	}
-	if ((style & SWT.MULTI) != 0) {
-		ignoreDeselect = ignoreSelect = lockSelection = true;
-	}
+	ignoreDeselect = ignoreSelect = lockSelection = true;
 
 	/*
 	* Feature in Windows.  When an item is deleted and a tool tip
@@ -2609,9 +2607,11 @@ void destroyItem (TreeItem item, long hItem) {
 	shrink = ignoreShrink = true;
 	OS.SendMessage (handle, OS.TVM_DELETEITEM, 0, hItem);
 	ignoreShrink = false;
-	if ((style & SWT.MULTI) != 0) {
-		ignoreDeselect = ignoreSelect = lockSelection = false;
-	}
+	/*
+	 * Bug 546333: When TVGN_CARET item is deleted, Windows automatically
+	 * sets selection to some other item. We do not want that.
+	 */
+	ignoreDeselect = ignoreSelect = lockSelection = false;
 	if (fixRedraw) {
 		OS.DefWindowProc (handle, OS.WM_SETREDRAW, 1, 0);
 		OS.ValidateRect (handle, null);

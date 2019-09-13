@@ -845,14 +845,6 @@ public void test_consistency_DragDetect () {
 
 @Test
 public void test_disposeItemNotTriggerSelection() {
-	if (SwtTestUtil.isWindows) {
-		// TODO Fix Windows failure.
-		if (SwtTestUtil.verbose) {
-			System.out
-					.println("Excluded test_disposeItemNotTriggerSelection(org.eclipse.swt.tests.junit.Test_org_eclipse_swt_widgets_Tree).");
-		}
-		return;
-	}
 	Display display = shell.getDisplay();
 	shell.setLayout(new FillLayout());
 	Tree tree = new Tree (shell, SWT.BORDER);
