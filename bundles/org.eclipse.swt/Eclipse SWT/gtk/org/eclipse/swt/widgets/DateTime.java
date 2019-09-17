@@ -1823,6 +1823,14 @@ boolean onNumberKeyInput(int key) {
 	setSelection(prefix.length() + typeBufferPos, prefix.length() + typeBuffer.length());
 	currentField.setBeginIndex(prefix.length());
 	currentField.setEndIndex(prefix.length() + typeBuffer.length());
+	if (!isCalendar()) {
+		try {
+			Date date = dateFormat.parse(getText());
+			calendar.setTime(date);
+		} catch (ParseException e) {
+			// invalid value, input will reset...
+		}
+	}
 	return false;
 }
 
