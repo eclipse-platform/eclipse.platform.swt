@@ -1794,6 +1794,10 @@ boolean onNumberKeyInput(int key) {
 		}
 	} else {
 		char newText = keyToString(key);
+		// Don't allow non-digit character inputs for SWT.TIME, unless modifying the AM/PM field
+		if ((style & SWT.TIME) != 0 && fieldName != Calendar.AM_PM && !Character.isDigit(newText)) {
+			return false;
+		}
 		if (!Character.isAlphabetic(newText) && !Character.isDigit(newText)) {
 			return false;
 		}
@@ -1840,7 +1844,7 @@ private char keyToString(int key) {
 		// convert numberpad button to regular key;
 		key -= 65408;
 	}
-	return (char) key;
+	return (char) GDK.gdk_keyval_to_unicode(key);
 }
 
 void updateControl() {
