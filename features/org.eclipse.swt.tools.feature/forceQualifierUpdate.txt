@@ -1,2 +1,3 @@
 # To force a version qualifier update add the bug here
 Bug 540097 - Comparator Errors in I20181012-1800 Build
+Bug 551174 - Comparator errors in 4.14 I build - I20190917-1800
