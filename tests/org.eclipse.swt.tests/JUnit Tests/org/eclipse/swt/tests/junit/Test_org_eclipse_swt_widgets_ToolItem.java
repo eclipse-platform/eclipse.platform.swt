@@ -14,6 +14,7 @@
 package org.eclipse.swt.tests.junit;
 
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -60,6 +61,31 @@ public void test_getToolTipText() {
 @Override
 @Test
 public void test_setImageLorg_eclipse_swt_graphics_Image() {
+}
+
+@Test
+public void test_setDisabledImage() {
+	toolItem.setImage(images[0]);
+	toolItem.setDisabledImage(images[1]);
+	toolItem.setEnabled(false);
+	assertEquals(images[1], item.getImage());
+	toolItem.setEnabled(true);
+	assertEquals(images[0], item.getImage());
+	toolItem.setDisabledImage(images[0]);
+	assertEquals(images[0], item.getImage());
+	toolItem.setEnabled(false);
+	assertEquals(images[0], item.getImage());
+	toolItem.setImage(images[0]);
+	toolItem.setEnabled(true);
+	assertEquals(images[0], item.getImage());
+	toolItem.setDisabledImage(images[2]);
+	toolItem.setEnabled(false);
+	assertEquals(images[2], item.getImage());
+	toolItem.setEnabled(true);
+	toolItem.setDisabledImage(null);
+	toolItem.setEnabled(false);
+	assertEquals(images[0], item.getImage());
+
 }
 
 @Override

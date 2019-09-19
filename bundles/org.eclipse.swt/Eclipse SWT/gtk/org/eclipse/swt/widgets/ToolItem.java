@@ -45,11 +45,12 @@ public class ToolItem extends Item {
 	long eventHandle, proxyMenuItem, provider;
 	ToolBar parent;
 	Control control;
-	Image hotImage, disabledImage;
+	Image hotImage, disabledImage, enabledImage;
 	String toolTipText;
 	boolean drawHotImage;
 	/** True iff map has been hooked for this ToolItem. See bug 546914. */
 	boolean mapHooked;
+	boolean enabled = true;
 
 /**
  * Constructs a new instance of this class given its parent
@@ -856,7 +857,7 @@ void releaseWidget () {
 	if (parent.currentFocusItem == this) parent.currentFocusItem = null;
 	parent = null;
 	control = null;
-	hotImage = disabledImage = null;
+	hotImage = disabledImage = enabledImage = null;
 	toolTipText = null;
 }
 
@@ -988,6 +989,19 @@ public void setDisabledImage (Image image) {
 	checkWidget();
 	if ((style & SWT.SEPARATOR) != 0) return;
 	disabledImage = image;
+	if (image != null) {
+		ImageList imageList = parent.imageList;
+		if (imageList == null) imageList = parent.imageList = new ImageList ();
+		int imageIndex = imageList.indexOf (image);
+		if (imageIndex == -1) {
+			imageIndex = imageList.add (image);
+		} else {
+			imageList.put (imageIndex, image);
+		}
+	}
+	if (!enabled) {
+		setImage(image);
+	}
 }
 
 /**
@@ -1009,7 +1023,10 @@ public void setDisabledImage (Image image) {
 public void setEnabled (boolean enabled) {
 	checkWidget();
 	long topHandle = topHandle ();
-	if (GTK.gtk_widget_get_sensitive (topHandle) == enabled) return;
+	if (this.enabled == enabled) return;
+	this.enabled = enabled;
+	if (!enabled && disabledImage != null) setImage (disabledImage);
+	if (enabled && enabledImage != null) setImage (enabledImage);
 	GTK.gtk_widget_set_sensitive (topHandle, enabled);
 }
 
@@ -1110,6 +1127,11 @@ public void setImage (Image image) {
 	checkWidget();
 	if ((style & SWT.SEPARATOR) != 0) return;
 	super.setImage (image);
+	if (enabled) enabledImage = image;
+	if (!enabled && disabledImage != image) {
+		enabledImage = image;
+		return;
+	}
 	if (image != null) {
 		ImageList imageList = parent.imageList;
 		if (imageList == null) imageList = parent.imageList = new ImageList ();
