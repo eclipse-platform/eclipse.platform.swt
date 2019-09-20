@@ -8956,19 +8956,23 @@ public void setEditable(boolean editable) {
 	this.editable = editable;
 }
 @Override
-public void setEnabled (boolean enabled) {
+public void setEnabled(boolean enabled) {
 	super.setEnabled(enabled);
 	Display display = getDisplay();
 	this.enabled = enabled;
 	this.insideSetEnableCall = true;
-	if (enabled) {
-		if (!customBackground) setBackground(display.getSystemColor(SWT.COLOR_LIST_BACKGROUND));
-		if (!customForeground) setForeground(display.getSystemColor(SWT.COLOR_LIST_FOREGROUND));
-	} else {
-		if (!customBackground) setBackground(display.getSystemColor(SWT.COLOR_TEXT_DISABLED_BACKGROUND));
-		if (!customForeground) setForeground(display.getSystemColor(SWT.COLOR_WIDGET_DISABLED_FOREGROUND));
+	try {
+		if (enabled) {
+			if (!customBackground) setBackground(display.getSystemColor(SWT.COLOR_LIST_BACKGROUND));
+			if (!customForeground) setForeground(display.getSystemColor(SWT.COLOR_LIST_FOREGROUND));
+		} else {
+			if (!customBackground) setBackground(display.getSystemColor(SWT.COLOR_TEXT_DISABLED_BACKGROUND));
+			if (!customForeground) setForeground(display.getSystemColor(SWT.COLOR_WIDGET_DISABLED_FOREGROUND));
+		}
 	}
-	this.insideSetEnableCall = false;
+	finally {
+		this.insideSetEnableCall = false;
+	}
 }
 /**
  * Sets a new font to render text with.
