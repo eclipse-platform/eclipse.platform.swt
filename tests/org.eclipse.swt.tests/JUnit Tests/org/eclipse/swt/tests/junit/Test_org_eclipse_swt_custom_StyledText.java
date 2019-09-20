@@ -5423,7 +5423,7 @@ private void testLineStyleListener(String content, LineStyleListener listener, B
 /**
  * Check if StyledText widget contains the given color.
  *
- * @param text          widget to check
+ * @param text widget to check
  * @param expectedColor color to find
  * @return <code>true</code> if the given color was found in current text widget
  *         bounds
@@ -5437,7 +5437,7 @@ private boolean hasPixel(StyledText text, Color expectedColor) {
  * effective search range to find the color is the union of current widget
  * bounds and given rectangle.
  *
- * @param text          widget to check
+ * @param text widget to check
  * @param expectedColor color to find
  * @param rect          the bounds where the color is searched in. Can overlap
  *                      the text widget bounds or <code>null</code> to check the
@@ -5643,6 +5643,7 @@ public void test_InsertWhenDisabled() {
 /**
  * Test for:
  * Bug 551335 - [StyledText] setStyleRanges reset less cache than necessary
+ * Bug 551336 - [StyledText] resetting styles does not reset rendering
  */
 @Test
 public void test_bug551335_lostStyles() throws InterruptedException {
@@ -5696,7 +5697,7 @@ public void test_bug551335_lostStyles() throws InterruptedException {
 	processEvents(1000, testAllLinesStyled);
 	assertTrue(testAllLinesStyled.getAsBoolean());
 
-	text.setStyleRange(new StyleRange(0, text.getCharCount(), null, null)); // reset style
+	text.setStyleRange(null); // reset style
 	processEvents(1000, testUnstyledText);
 	assertTrue(testUnstyledText.getAsBoolean());
 
@@ -5705,7 +5706,7 @@ public void test_bug551335_lostStyles() throws InterruptedException {
 	processEvents(1000, testAllLinesStyled);
 	assertTrue(testAllLinesStyled.getAsBoolean());
 
-	text.setStyleRange(new StyleRange(0, text.getCharCount(), null, null)); // reset style
+	text.setStyleRange(null); // reset style
 	processEvents(1000, testUnstyledText);
 	assertTrue(testUnstyledText.getAsBoolean());
 
@@ -5721,7 +5722,7 @@ public void test_bug551335_lostStyles() throws InterruptedException {
 	processEvents(1000, testAllLinesStyled);
 	assertTrue(testAllLinesStyled.getAsBoolean());
 
-	text.setStyleRange(new StyleRange(0, text.getCharCount(), null, null)); // reset style
+	text.setStyleRange(null); // reset style
 	processEvents(1000, testUnstyledText);
 	assertTrue(testUnstyledText.getAsBoolean());
 }

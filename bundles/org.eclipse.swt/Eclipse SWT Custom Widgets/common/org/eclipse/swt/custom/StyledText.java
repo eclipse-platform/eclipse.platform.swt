@@ -10230,9 +10230,13 @@ public void setStyleRanges(int[] ranges, StyleRange[] styles) {
 	}
 }
 void setStyleRanges(int start, int length, int[] ranges, StyleRange[] styles, boolean reset) {
+	int charCount = content.getCharCount();
+	if (reset) {
+		start = 0;
+		length = charCount;
+	}
 	int[] formerRanges = getRanges(start, length);
 	StyleRange[] formerStyles = getStyleRanges(start, length);
-	int charCount = content.getCharCount();
 	int end = start + length;
 	if (start > end || start < 0) {
 		SWT.error(SWT.ERROR_INVALID_RANGE);
