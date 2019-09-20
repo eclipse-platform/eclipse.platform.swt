@@ -10369,9 +10369,9 @@ private SortedSet<Integer> computeModifiedLines(int[] referenceRanges, StyleRang
 		StyleRange referenceStyleAtCurrentOffset = defaultStyle;
 		if (isInRange(referenceRanges, referenceRangeIndex, currentOffset)) { // has styling
 			referenceStyleAtCurrentOffset = referenceStyles[referenceRangeIndex];
-			nextMilestoneOffset =  Math.min(nextMilestoneOffset, endRangeOffset(referenceRanges, referenceRangeIndex));
-		} else if (referenceRangeIndex + 1 < referenceStyles.length) { // no range, default styling
-			nextMilestoneOffset = referenceRanges[2 * (referenceRangeIndex + 1)]; // beginning of next range
+			nextMilestoneOffset =  endRangeOffset(referenceRanges, referenceRangeIndex);
+		} else if (referenceRangeIndex < referenceStyles.length) { // no range, default styling
+			nextMilestoneOffset = referenceRanges[2 * referenceRangeIndex]; // beginning of next range
 		}
 
 		while (newRangeIndex < newStyles.length && endRangeOffset(newRanges, newRangeIndex) <= currentOffset) {
@@ -10381,8 +10381,8 @@ private SortedSet<Integer> computeModifiedLines(int[] referenceRanges, StyleRang
 		if (isInRange(newRanges, newRangeIndex, currentOffset)) {
 			newStyleAtCurrentOffset = newStyles[newRangeIndex];
 			nextMilestoneOffset = Math.min(nextMilestoneOffset, endRangeOffset(newRanges, newRangeIndex));
-		} else if (newRangeIndex + 1 < newStyles.length) {
-			nextMilestoneOffset = newRanges[2 * (newRangeIndex + 1)];
+		} else if (newRangeIndex < newStyles.length) {
+			nextMilestoneOffset = Math.min(nextMilestoneOffset, newRanges[2 * newRangeIndex]);
 		}
 
 		if (!referenceStyleAtCurrentOffset.similarTo(newStyleAtCurrentOffset)) {

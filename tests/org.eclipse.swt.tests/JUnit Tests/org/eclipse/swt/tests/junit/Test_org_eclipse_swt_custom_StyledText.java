@@ -5420,15 +5420,45 @@ private void testLineStyleListener(String content, LineStyleListener listener, B
 	}
 }
 
+/**
+ * Check if StyledText widget contains the given color.
+ *
+ * @param text          widget to check
+ * @param expectedColor color to find
+ * @return <code>true</code> if the given color was found in current text widget
+ *         bounds
+ */
 private boolean hasPixel(StyledText text, Color expectedColor) {
+	return hasPixel(text, expectedColor, null);
+}
+
+/**
+ * Check if StyledText widget contains the given color in given bounds. The
+ * effective search range to find the color is the union of current widget
+ * bounds and given rectangle.
+ *
+ * @param text          widget to check
+ * @param expectedColor color to find
+ * @param rect          the bounds where the color is searched in. Can overlap
+ *                      the text widget bounds or <code>null</code> to check the
+ *                      widgets full bounds.
+ * @return <code>true</code> if the given color was found in search range of
+ *         text widget
+ */
+private boolean hasPixel(StyledText text, Color expectedColor, Rectangle rect) {
 	GC gc = new GC(text);
 	final Image image = new Image(text.getDisplay(), text.getSize().x, text.getSize().y);
 	gc.copyArea(image, 0, 0);
 	gc.dispose();
 	ImageData imageData = image.getImageData();
+	if (rect == null) {
+		rect = new Rectangle(0, 0, image.getBounds().width, image.getBounds().height);
+	}
 	RGB expectedRGB = expectedColor.getRGB();
-	for (int x = 1; x < image.getBounds().width - 1; x++) { // ignore first and last columns
-		for (int y = 0; y < image.getBounds().height; y++) {
+	int xEnd = rect.x + rect.width;
+	int yEnd = rect.y + rect.height;
+	for (int x = Math.max(rect.x, 1); x < xEnd && x < image.getBounds().width - 1; x++) { // ignore first and last columns
+		for (int y = rect.y; y < yEnd && y < image.getBounds().height; y++) {
 			RGB pixelRGB = imageData.palette.getRGB(imageData.getPixel(x, y));
 			if (expectedRGB.equals(pixelRGB)) {
 				image.dispose();
@@ -5608,6 +5638,92 @@ public void test_InsertWhenDisabled() {
 	String actualText = text.getText();
 	String expectedText = "some [inserted] text";
 	assertEquals("Wrong insert in disabled StyledText", expectedText, actualText);
+}
+
+/**
+ * Test for:
+ * Bug 551335 - [StyledText] setStyleRanges reset less cache than necessary
+ */
+@Test
+public void test_bug551335_lostStyles() throws InterruptedException {
+	Assume.assumeFalse("Bug 536588 prevents test to work on Mac", SwtTestUtil.isCocoa);
+	shell.setVisible(true);
+	text.setText("012345678\n012345678\n0123456789");
+	text.setMargins(0, 0, 0, 0);
+	text.pack();
+	shell.pack();
+
+	StyleRange style = new StyleRange();
+	style.background = getColor(BLUE);
+	style.length = 3;
+
+	StyleRange[] styles = new StyleRange[3];
+	style.start = 3;
+	styles[0] = (StyleRange) style.clone();
+	style.start = 13;
+	styles[1] =  (StyleRange) style.clone();
+	style.start = 23;
+	styles[2] =  (StyleRange) style.clone();
+
+	int lineHeight = text.getBounds().height / text.getLineCount();
+	Rectangle[] testAreas = new Rectangle[text.getLineCount()];
+	for (int i = 0; i < testAreas.length; i++) {
+		// the test area is a small horizontal line approximate in the middle of the line
+		// the concrete width doesn't matter because it is clipped to the actual line width
+		testAreas[i] = new Rectangle(0, (int)((i + 0.48) * lineHeight), 1000, 3);
+	}
+	BooleanSupplier testAllLinesStyled = () -> {
+		for (Rectangle testArea : testAreas) {
+			if (!hasPixel(text, getColor(BLUE), testArea)) {
+				return false;
+			}
+		}
+		return true;
+	};
+	BooleanSupplier testUnstyledText = () -> {
+		for (Rectangle testArea : testAreas) {
+			if (hasPixel(text, getColor(BLUE), testArea)) {
+				return false;
+			}
+		}
+		return true;
+	};
+
+	// 1. apply style one by one
+	for (StyleRange s : styles) {
+		text.setStyleRange(s);
+	}
+	processEvents(1000, testAllLinesStyled);
+	assertTrue(testAllLinesStyled.getAsBoolean());
+
+	text.setStyleRange(new StyleRange(0, text.getCharCount(), null, null)); // reset style
+	processEvents(1000, testUnstyledText);
+	assertTrue(testUnstyledText.getAsBoolean());
+
+	// 2. apply styles as array
+	text.setStyleRanges(styles);
+	processEvents(1000, testAllLinesStyled);
+	assertTrue(testAllLinesStyled.getAsBoolean());
+
+	text.setStyleRange(new StyleRange(0, text.getCharCount(), null, null)); // reset style
+	processEvents(1000, testUnstyledText);
+	assertTrue(testUnstyledText.getAsBoolean());
+
+	// 3. apply styles using ranges
+	int[] ranges = new int[styles.length * 2];
+	style.start = style.length = 0;
+	for (int i = 0; i < styles.length; i++) {
+		ranges[i*2] =   styles[i].start;
+		ranges[i*2 + 1] = styles[i].length;
+		styles[i] = style;
+	}
+	text.setStyleRanges(ranges, styles);
+	processEvents(1000, testAllLinesStyled);
+	assertTrue(testAllLinesStyled.getAsBoolean());
+
+	text.setStyleRange(new StyleRange(0, text.getCharCount(), null, null)); // reset style
+	processEvents(1000, testUnstyledText);
+	assertTrue(testUnstyledText.getAsBoolean());
 }
 
 }
