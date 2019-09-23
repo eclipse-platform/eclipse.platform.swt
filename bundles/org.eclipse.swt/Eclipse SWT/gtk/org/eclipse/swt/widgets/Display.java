@@ -142,10 +142,12 @@ public class Display extends Device {
 	static String APP_VERSION = ""; //$NON-NLS-1$
 	static final String DISPATCH_EVENT_KEY = "org.eclipse.swt.internal.gtk.dispatchEvent"; //$NON-NLS-1$
 	static final String ADD_WIDGET_KEY = "org.eclipse.swt.internal.addWidget"; //$NON-NLS-1$
+	static final String EXTERNAL_EVENT_LOOP_KEY = "org.eclipse.swt.internal.gtk.externalEventLoop"; //$NON-NLS-1$
 	long [] closures, closuresProc;
 	int [] closuresCount;
 	int [] signalIds;
 	long shellMapProcClosure;
+	boolean externalEventLoop; // events are dispatched outside SWT, e.g. when system dialog is open
 
 	/* Widget Table */
 	int [] indexTable;
@@ -5171,6 +5173,11 @@ public void setData (String key, Object value) {
 	}
 	if (key.equals (REMOVE_IDLE_PROC_KEY)) {
 		removeIdleProc ();
+		return;
+	}
+	if (key.equals (EXTERNAL_EVENT_LOOP_KEY)) {
+		Boolean data = (Boolean) value;
+		externalEventLoop = data != null && data.booleanValue ();
 		return;
 	}
 

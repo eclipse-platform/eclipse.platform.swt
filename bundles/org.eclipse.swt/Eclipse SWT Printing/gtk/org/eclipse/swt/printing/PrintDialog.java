@@ -391,6 +391,8 @@ public PrinterData open() {
 		oldModal = display.getData (GET_MODAL_DIALOG);
 		display.setData (SET_MODAL_DIALOG, this);
 	}
+	String key = "org.eclipse.swt.internal.gtk.externalEventLoop"; //$NON-NLS-1$
+	display.setData (key, Boolean.TRUE);
 	display.sendPreExternalEventDispatchEvent ();
 	int response = GTK.gtk_dialog_run (handle);
 	/*
@@ -400,6 +402,7 @@ public PrinterData open() {
 	* thread leaves the GTK lock acquired by the function above.
 	*/
 	if (!GTK.GTK4) GDK.gdk_threads_leave();
+	display.setData (key, Boolean.FALSE);
 	display.sendPostExternalEventDispatchEvent ();
 	if (GTK.gtk_window_get_modal (handle)) {
 		display.setData (SET_MODAL_DIALOG, oldModal);

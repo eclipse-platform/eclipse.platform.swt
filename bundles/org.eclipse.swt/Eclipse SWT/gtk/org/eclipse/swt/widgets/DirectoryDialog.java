@@ -182,6 +182,7 @@ String openNativeChooserDialog () {
 		signalId = OS.g_signal_lookup (OS.map, GTK.GTK_TYPE_WIDGET());
 		hookId = OS.g_signal_add_emission_hook (signalId, 0, display.emissionProc, handle, 0);
 	}
+	display.externalEventLoop = true;
 	display.sendPreExternalEventDispatchEvent ();
 	int response = GTK.gtk_native_dialog_run (handle);
 	/*
@@ -191,6 +192,7 @@ String openNativeChooserDialog () {
 	* thread leaves the GTK lock acquired by the function above.
 	*/
 	if (!GTK.GTK4) GDK.gdk_threads_leave();
+	display.externalEventLoop = false;
 	display.sendPostExternalEventDispatchEvent ();
 	if ((style & SWT.RIGHT_TO_LEFT) != 0) {
 		OS.g_signal_remove_emission_hook (signalId, hookId);
@@ -283,6 +285,7 @@ String openChooserDialog () {
 		signalId = OS.g_signal_lookup (OS.map, GTK.GTK_TYPE_WIDGET());
 		hookId = OS.g_signal_add_emission_hook (signalId, 0, display.emissionProc, handle, 0);
 	}
+	display.externalEventLoop = true;
 	display.sendPreExternalEventDispatchEvent ();
 	int response = GTK.gtk_dialog_run (handle);
 	/*
@@ -292,6 +295,7 @@ String openChooserDialog () {
 	* thread leaves the GTK lock acquired by the function above.
 	*/
 	if (!GTK.GTK4) GDK.gdk_threads_leave();
+	display.externalEventLoop = false;
 	display.sendPostExternalEventDispatchEvent ();
 	if ((style & SWT.RIGHT_TO_LEFT) != 0) {
 		OS.g_signal_remove_emission_hook (signalId, hookId);
