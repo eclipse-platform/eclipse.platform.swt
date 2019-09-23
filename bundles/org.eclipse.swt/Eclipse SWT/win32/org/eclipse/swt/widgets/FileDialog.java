@@ -389,8 +389,10 @@ public String open () {
 	switch (OS.CommDlgExtendedError ()) {
 		case OS.FNERR_INVALIDFILENAME:
 			OS.MoveMemory (lpstrFile, new char [1], TCHAR.sizeof);
+			display.externalEventLoop = true;
 			display.sendPreExternalEventDispatchEvent ();
 			success = (save) ? OS.GetSaveFileName (struct) : OS.GetOpenFileName (struct);
+			display.externalEventLoop = false;
 			display.sendPostExternalEventDispatchEvent ();
 			break;
 		case OS.FNERR_BUFFERTOOSMALL:
