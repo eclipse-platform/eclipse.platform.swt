@@ -4563,7 +4563,7 @@ int getOffsetAtPoint(int x, int y, int lineIndex, int[] alignment) {
 			offsetInLine += trailing[0];
 			if (alignment != null) {
 				int trailingLevel = layout.getLevel(offsetInLine) & 0x1;
-				if ((level ^ trailingLevel) != 0) {
+				if (level != trailingLevel) {
 					alignment[0] = PREVIOUS_OFFSET_TRAILING;
 				} else {
 					alignment[0] = OFFSET_LEADING;
@@ -6062,10 +6062,10 @@ void handleKey(Event event) {
 			// insert a character in the text in this instance). Don't
 			// ignore CTRL+ALT combinations since that is the Alt Gr
 			// key on some keyboards.  See bug 20953.
-			ignore = (event.stateMask ^ SWT.ALT) == 0 ||
-					(event.stateMask ^ SWT.CTRL) == 0 ||
-					(event.stateMask ^ (SWT.ALT | SWT.SHIFT)) == 0 ||
-					(event.stateMask ^ (SWT.CTRL | SWT.SHIFT)) == 0;
+			ignore = event.stateMask == SWT.ALT ||
+					event.stateMask == SWT.CTRL ||
+					event.stateMask == (SWT.ALT | SWT.SHIFT) ||
+					event.stateMask == (SWT.CTRL | SWT.SHIFT);
 		}
 		// -ignore anything below SPACE except for line delimiter keys and tab.
 		// -ignore DEL
