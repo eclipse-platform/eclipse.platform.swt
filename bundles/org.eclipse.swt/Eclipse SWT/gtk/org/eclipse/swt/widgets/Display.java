@@ -322,6 +322,7 @@ public class Display extends Device {
 	GdkRGBA COLOR_TITLE_FOREGROUND_RGBA, COLOR_TITLE_BACKGROUND_RGBA, COLOR_TITLE_BACKGROUND_GRADIENT_RGBA;
 	GdkRGBA COLOR_TITLE_INACTIVE_FOREGROUND_RGBA, COLOR_TITLE_INACTIVE_BACKGROUND_RGBA, COLOR_TITLE_INACTIVE_BACKGROUND_GRADIENT_RGBA;
 	GdkRGBA COLOR_WIDGET_DISABLED_FOREGROUND_RGBA, COLOR_TEXT_DISABLED_BACKGROUND_RGBA;
+	GdkRGBA COLOR_TOGGLE_BUTTON_FOREGROUND_RGBA;
 
 	/* Initialize color list */
 	ArrayList<String> colorList;
@@ -3087,6 +3088,7 @@ void initializeSystemColors () {
 	initializeSystemColorsTitle(shellContext);
 	initializeSystemColorsLink();
 	initializeSystemColorsTooltip();
+	initializeSystemColorsToggleButton();
 	initializeSystemColorsDisabled();
 
 	COLOR_TITLE_FOREGROUND_RGBA = COLOR_LIST_SELECTION_TEXT_RGBA;
@@ -3182,6 +3184,17 @@ void initializeSystemColorsTooltip() {
 	// Cleanup
 	// customLabel is owned by tooltip and will be destroyed automatically
 	OS.g_object_unref(tooltip);
+}
+
+void initializeSystemColorsToggleButton() {
+	// GtkCheckButton and GtkRadioButton use the same colors
+	long button = GTK.gtk_check_button_new();
+	OS.g_object_ref_sink(button);
+
+	long styleContextButton = GTK.gtk_widget_get_style_context(button);
+	COLOR_TOGGLE_BUTTON_FOREGROUND_RGBA = styleContextGetColor(styleContextButton, GTK.GTK_STATE_FLAG_NORMAL);
+
+	OS.g_object_unref(button);
 }
 
 void initializeSystemColorsDisabled() {
@@ -4633,6 +4646,7 @@ void releaseDisplay () {
 	COLOR_TITLE_INACTIVE_FOREGROUND_RGBA = COLOR_TITLE_INACTIVE_BACKGROUND_RGBA = COLOR_TITLE_INACTIVE_BACKGROUND_GRADIENT_RGBA =
 	COLOR_INFO_BACKGROUND_RGBA = COLOR_INFO_FOREGROUND_RGBA = COLOR_LINK_FOREGROUND_RGBA = COLOR_WIDGET_DISABLED_FOREGROUND_RGBA =
 	COLOR_TEXT_DISABLED_BACKGROUND_RGBA = null;
+	COLOR_TOGGLE_BUTTON_FOREGROUND_RGBA = null;
 
 	/* Dispose the event callback */
 	GDK.gdk_event_handler_set (0, 0, 0);

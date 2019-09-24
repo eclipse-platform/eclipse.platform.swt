@@ -50,6 +50,8 @@ import org.eclipse.swt.internal.gtk.*;
 public class Button extends Control {
 	long boxHandle, labelHandle, imageHandle, arrowHandle, groupHandle;
 	boolean selected, grayed;
+	/** True iff this toggle button requires special theme handling. See bug 546552.*/
+	boolean toggleButtonTheming;
 	ImageList imageList;
 	Image image;
 	String text;
@@ -312,10 +314,18 @@ void createHandle (int index) {
 		case SWT.TOGGLE:
 			handle = GTK.gtk_toggle_button_new ();
 			if (handle == 0) error (SWT.ERROR_NO_HANDLES);
+			if (Display.themeName != null) {
+				toggleButtonTheming = (GTK.GTK_VERSION >= OS.VERSION(3, 24, 11) && Display.themeName.contains("Adwaita"))
+						|| Display.themeName.contains("Yaru");
+			}
 			break;
 		case SWT.CHECK:
 			handle = GTK.gtk_check_button_new ();
 			if (handle == 0) error (SWT.ERROR_NO_HANDLES);
+			if (Display.themeName != null) {
+				toggleButtonTheming = (GTK.GTK_VERSION >= OS.VERSION(3, 24, 11) && Display.themeName.contains("Adwaita"))
+						|| Display.themeName.contains("Yaru");
+			}
 			break;
 		case SWT.RADIO:
 			/*
@@ -334,6 +344,10 @@ void createHandle (int index) {
 			OS.g_object_ref_sink (groupHandle);
 			handle = GTK.gtk_radio_button_new (GTK.gtk_radio_button_get_group (groupHandle));
 			if (handle == 0) error (SWT.ERROR_NO_HANDLES);
+			if (Display.themeName != null) {
+				toggleButtonTheming = (GTK.GTK_VERSION >= OS.VERSION(3, 24, 11) && Display.themeName.contains("Adwaita"))
+						|| Display.themeName.contains("Yaru");
+			}
 			break;
 		case SWT.PUSH:
 		default:
@@ -827,6 +841,23 @@ void setBackgroundGdkRGBA (long context, long handle, GdkRGBA rgba) {
 	String color = display.gtk_rgba_to_css_string (rgba);
 	css += color + ";}";
 
+	/*
+	 * Feature in GTK: some toggle style (check, radio, and toggle) buttons
+	 * have inverted colors, meaning the background color when checked is
+	 * a dark color (like blue or green), and the checkmark/indicator is
+	 * white. To complicate matters, this background area is an image, and
+	 * overriding this with a color causes the checkmark to be invisible.
+	 * The new (GTK3 >= 3.24.11) Adwaita theme is affected, as well as the
+	 * default Yaru theme on Ubuntu.
+	 *
+	 *  The fix is to set the default CSS for the default background case, as
+	 *  this doesn't use the universal (*) selector. See bug 546552.
+	 */
+	if (rgba == null && toggleButtonTheming) {
+		super.setBackgroundGdkRGBA(context, handle, rgba);
+		return;
+	}
+
 	// Cache background color
 	cssBackground = css;
 
@@ -946,13 +977,45 @@ void setForegroundGdkRGBA (long handle, GdkRGBA rgba) {
 		super.setForegroundGdkRGBA(handle, rgba);
 		return;
 	}
-	GdkRGBA toSet = rgba == null ? display.COLOR_WIDGET_FOREGROUND_RGBA : rgba;
 	long context = GTK.gtk_widget_get_style_context (handle);
 
-	// Form foreground string
+	GdkRGBA toSet = rgba == null ? display.COLOR_WIDGET_FOREGROUND_RGBA : rgba;
+	String name, css;
 	String color = display.gtk_rgba_to_css_string(toSet);
-	String name = GTK.GTK_VERSION >= OS.VERSION(3, 20, 0) ? "button" : "GtkButton";
-	String css = name + " {color: " + color + ";}";
+	int bits = SWT.CHECK | SWT.RADIO;
+	switch (style & bits) {
+		case SWT.CHECK:
+			name = GTK.GTK_VERSION >= OS.VERSION(3, 20, 0) ? "checkbutton" : "GtkCheckButton";
+			css = name + " {color: " + color + ";}";
+			if (GTK.GTK_VERSION >= OS.VERSION(3, 20, 0)) {
+				String checkColor;
+				if (toggleButtonTheming) {
+					GdkRGBA checkRGBA = rgba == null ? display.COLOR_TOGGLE_BUTTON_FOREGROUND_RGBA : rgba;
+					checkColor = display.gtk_rgba_to_css_string(checkRGBA);
+				} else {
+					checkColor = display.gtk_rgba_to_css_string(toSet);
+				}
+				css += " check {color: " + checkColor + ";}";
+			}
+			break;
+		case SWT.RADIO:
+			name = GTK.GTK_VERSION >= OS.VERSION(3, 20, 0) ? "radiobutton" : "GtkRadioButton";
+			css = name + " {color: " + color + ";}";
+			if (GTK.GTK_VERSION >= OS.VERSION(3, 20, 0)) {
+				String radioColor;
+				if (toggleButtonTheming) {
+					GdkRGBA radioRGBA = rgba == null ? display.COLOR_TOGGLE_BUTTON_FOREGROUND_RGBA : rgba;
+					radioColor = display.gtk_rgba_to_css_string(radioRGBA);
+				} else {
+					radioColor = display.gtk_rgba_to_css_string(toSet);
+				}
+				css += " radio {color: " + radioColor + ";}";
+			}
+			break;
+		default:
+			name = GTK.GTK_VERSION >= OS.VERSION(3, 20, 0) ? "button" : "GtkButton";
+			css = name + " {color: " + color + ";}";
+	}
 
 	// Cache foreground color
 	cssForeground = css;
