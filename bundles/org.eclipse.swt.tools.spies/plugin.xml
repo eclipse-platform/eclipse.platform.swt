@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<?eclipse version="3.0"?>
 <plugin>
    <extension
          point="org.eclipse.ui.views">
@@ -11,12 +10,14 @@
             id="org.eclipse.swt.tools.views.SpyView"
             name="%spyViewName">
       </view>
-      <view
-            category="org.eclipse.swt.swt.tools"
-            class="org.eclipse.swt.tools.views.SleakView"
-            icon="icons/sleak.png"
-            id="org.eclipse.swt.tools.views.SleakView"
-            name="%sleakViewName">
-      </view>
    </extension>
+   <extension
+         id="org.eclipse.swt.tools.spies.fragment"
+         point="org.eclipse.e4.workbench.model">
+      <fragment
+            apply="always"
+            uri="fragment.e4xmi">
+      </fragment>
+   </extension>
+
 </plugin>
