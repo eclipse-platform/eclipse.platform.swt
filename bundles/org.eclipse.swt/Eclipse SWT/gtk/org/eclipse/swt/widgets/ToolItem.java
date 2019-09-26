@@ -243,12 +243,6 @@ void createHandle (int index) {
 	if ((parent.state & FONT) != 0) {
 		setFontDescription (parent.getFontDescription());
 	}
-	/*
-	 * Feature in GTK. GtkToolButton class uses this property to
-	 * determine whether to show or hide its label when the toolbar
-	 * style is GTK_TOOLBAR_BOTH_HORIZ (or SWT.RIGHT).
-	 */
-	if ((parent.style & SWT.RIGHT) != 0) GTK.gtk_tool_item_set_is_important (handle, true);
 	if ((style & SWT.SEPARATOR) == 0) GTK.gtk_tool_button_set_use_underline (handle, true);
 	/*
 	 * Set the "homogeneous" property to false, otherwise all ToolItems will be as large as
@@ -1242,6 +1236,13 @@ public void setText (String string) {
 	char [] chars = fixMnemonic (string);
 	byte [] buffer = Converter.wcsToMbcs (chars, true);
 	GTK.gtk_label_set_text_with_mnemonic (labelHandle, buffer);
+	/*
+	 * Only set important if this ToolItem actually has text.
+	 * See bug 543895.
+	 */
+	if ((parent.style & SWT.RIGHT) != 0) {
+		GTK.gtk_tool_item_set_is_important (handle, !string.isEmpty());
+	}
 	/*
 	* If Text/Image of a tool-item changes, then it is
 	* required to reset the proxy menu. Otherwise, the
