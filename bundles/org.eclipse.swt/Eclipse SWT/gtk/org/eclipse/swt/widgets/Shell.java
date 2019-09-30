@@ -1938,9 +1938,6 @@ long notifyStateProc (long gdk_handle, long handle) {
 public void open () {
 	checkWidget ();
 	bringToTop (false);
-	if (Shell.class.isInstance(getParent()) && !getParent().isVisible()) {
-		Shell.class.cast(getParent()).open();
-	}
 	setVisible (true);
 	if (isDisposed ()) return;
 	/*
