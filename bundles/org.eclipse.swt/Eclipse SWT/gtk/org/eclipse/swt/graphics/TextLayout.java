@@ -743,17 +743,11 @@ public int getAscent () {
  * @see #getLineBounds(int)
  */
 public Rectangle getBounds() {
-	checkLayout();
-	Rectangle bounds = DPIUtil.autoScaleDown(getDevice(), getBoundsInPixels());
-	int lineCount = OS.pango_layout_get_line_count(layout);
-	int totalLineheight = getScaledVerticalIndent();
-	for (int i = 0; i < lineCount; i++) {
-		totalLineheight += this.getLineBounds(i).height + OS.PANGO_PIXELS(OS.pango_layout_get_spacing(layout));
-	}
-	bounds.height = totalLineheight;
-	return bounds;
+	int spacingInPixels = getSpacingInPixels();
+	return DPIUtil.autoScaleDown(getDevice(), getBoundsInPixels(spacingInPixels));
 }
-Rectangle getBoundsInPixels() {
+
+Rectangle getBoundsInPixels(int spacingInPixels) {
 	checkLayout();
 	computeRuns();
 	int[] w = new int[1], h = new int[1];
@@ -765,7 +759,7 @@ Rectangle getBoundsInPixels() {
 	if (ascentInPoints != -1 && descentInPoints != -1) {
 		height = Math.max (height, DPIUtil.autoScaleUp(getDevice(), ascentInPoints + descentInPoints));
 	}
-	height += OS.PANGO_PIXELS(OS.pango_layout_get_spacing(layout));
+	height += spacingInPixels;
 	return new Rectangle(0, 0, width, height + getScaledVerticalIndent());
 }
 
@@ -981,11 +975,18 @@ Rectangle getLineBoundsInPixels(int lineIndex) {
 	int lineCount = OS.pango_layout_get_line_count(layout);
 	if (!(0 <= lineIndex && lineIndex < lineCount)) SWT.error(SWT.ERROR_INVALID_RANGE);
 	long iter = OS.pango_layout_get_iter(layout);
+	for (int i = 0; i < lineIndex; i++) {
+		OS.pango_layout_iter_next_line(iter);
+	}
+	Rectangle lineBoundsInPixels = getLineBoundsInPixels(lineIndex, iter);
+	OS.pango_layout_iter_free(iter);
+	return lineBoundsInPixels;
+}
+
+private Rectangle getLineBoundsInPixels(int lineIndex, long iter) {
 	if (iter == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-	for (int i = 0; i < lineIndex; i++) OS.pango_layout_iter_next_line(iter);
 	PangoRectangle rect = new PangoRectangle();
 	OS.pango_layout_iter_get_line_extents(iter, null, rect);
-	OS.pango_layout_iter_free(iter);
 	int x = OS.PANGO_PIXELS(rect.x);
 	int y = OS.PANGO_PIXELS(rect.y);
 	int width = OS.PANGO_PIXELS(rect.width);
