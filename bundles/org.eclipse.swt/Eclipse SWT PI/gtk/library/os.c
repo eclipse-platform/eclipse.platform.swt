@@ -12371,6 +12371,18 @@ JNIEXPORT jboolean JNICALL GTK_NATIVE(_1gtk_1widget_1get_1realized)
 }
 #endif
 
+#ifndef NO__1gtk_1widget_1get_1scale_1factor
+JNIEXPORT jint JNICALL GTK_NATIVE(_1gtk_1widget_1get_1scale_1factor)
+	(JNIEnv *env, jclass that, jlong arg0)
+{
+	jint rc = 0;
+	GTK_NATIVE_ENTER(env, that, _1gtk_1widget_1get_1scale_1factor_FUNC);
+	rc = (jint)gtk_widget_get_scale_factor((GtkWidget *)arg0);
+	GTK_NATIVE_EXIT(env, that, _1gtk_1widget_1get_1scale_1factor_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO__1gtk_1widget_1get_1screen
 JNIEXPORT jlong JNICALL GTK_NATIVE(_1gtk_1widget_1get_1screen)
 	(JNIEnv *env, jclass that, jlong arg0)

@@ -302,6 +302,7 @@ public class OS extends C {
 	public static final byte[] delete_range = ascii("delete-range");
 	public static final byte[] delete_text = ascii("delete-text");
 	public static final byte[] direction_changed = ascii("direction-changed");
+	public static final byte[] dpi_changed = ascii("notify::scale-factor");
 	public static final byte[] drag_begin = ascii("drag_begin");
 	public static final byte[] drag_data_delete = ascii("drag_data_delete");
 	public static final byte[] drag_data_get = ascii("drag_data_get");

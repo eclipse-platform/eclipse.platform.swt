@@ -868,7 +868,8 @@ public class SWT {
 	 * </p>
 	 * <p>
 	 * Note that this is a <em>HINT</em> and is not sent on platforms that do not
-	 * support dynamic DPI changes. This event is currently sent on Windows 10 only.
+	 * support dynamic DPI changes. This event is currently sent on Windows 10 and GTK
+	 * only.
 	 * </p>
 	 *
 	 * @see org.eclipse.swt.widgets.Widget#addListener

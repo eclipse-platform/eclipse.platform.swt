@@ -978,6 +978,7 @@ char * GTK_nativeFunctionNames[] = {
 	"_1gtk_1widget_1get_1preferred_1size",
 	"_1gtk_1widget_1get_1preferred_1width_1for_1height",
 	"_1gtk_1widget_1get_1realized",
+	"_1gtk_1widget_1get_1scale_1factor",
 	"_1gtk_1widget_1get_1screen",
 	"_1gtk_1widget_1get_1sensitive",
 	"_1gtk_1widget_1get_1size_1request",

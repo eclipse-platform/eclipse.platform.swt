@@ -236,7 +236,8 @@ public abstract class Widget {
 	static final int GESTURE_RELEASED = 101;
 	static final int NOTIFY_STATE = 102;
 	static final int SIZE_ALLOCATE_GTK4 = 103;
-	static final int LAST_SIGNAL = 104;
+	static final int DPI_CHANGED = 104;
+	static final int LAST_SIGNAL = 105;
 
 	static final String IS_ACTIVE = "org.eclipse.swt.internal.control.isactive"; //$NON-NLS-1$
 	static final String KEY_CHECK_SUBWINDOW = "org.eclipse.swt.internal.control.checksubwindow"; //$NON-NLS-1$
@@ -526,6 +527,23 @@ public void dispose () {
 	if (isDisposed ()) return;
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	release (true);
+}
+
+long dpiChanged (long object, long arg0) {
+	int oldZoom = DPIUtil.getDeviceZoom() / 100;
+	int newZoom = GTK.gtk_widget_get_scale_factor(object);
+
+	if (oldZoom != newZoom) {
+		Event event = new Event();
+		event.type = SWT.ZoomChanged;
+		event.widget = this;
+		event.detail = newZoom;
+		event.doit = true;
+		notifyListeners(SWT.ZoomChanged, event);
+		display.dpiChanged();
+	}
+
+	return 0;
 }
 
 void error (int code) {
@@ -2177,7 +2195,15 @@ long leaveProc (long handle, long user_data) {
 	return result;
 }
 
-long notifyStateProc (long gdk_handle, long handle) {
+long notifyProc (long object, long arg0, long user_data) {
+	switch ((int)user_data) {
+		case DPI_CHANGED: return dpiChanged(object, arg0);
+		case NOTIFY_STATE: return notifyState(object, arg0);
+	}
+	return 0;
+}
+
+long notifyState (long object, long argo0) {
 	return 0;
 }
 

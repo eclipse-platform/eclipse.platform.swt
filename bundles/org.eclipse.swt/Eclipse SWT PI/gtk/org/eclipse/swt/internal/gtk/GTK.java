@@ -514,6 +514,19 @@ public class GTK extends OS {
 		}
 	}
 
+	/**
+	 * @param widget cast=(GtkWidget *)
+	 */
+	public static final native int _gtk_widget_get_scale_factor(long widget);
+	public static final int gtk_widget_get_scale_factor(long widget) {
+		lock.lock();
+		try {
+			return _gtk_widget_get_scale_factor(widget);
+		} finally {
+			lock.unlock();
+		}
+	}
+
 	/** @param widget cast=(GtkWidget *) */
 	public static final native long _gtk_widget_get_name(long widget);
 	public static final long gtk_widget_get_name(long widget) {

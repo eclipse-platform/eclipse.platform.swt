@@ -917,16 +917,20 @@ boolean hasBorder () {
 @Override
 void hookEvents () {
 	super.hookEvents ();
+	long notifyAddress = display.notifyCallback.getAddress();
+	if (display.firstShell == null) {
+		display.firstShell = this;
+		OS.g_signal_connect (shellHandle, OS.dpi_changed, notifyAddress, Widget.DPI_CHANGED);
+	}
 	if (GTK.GTK4) {
 		// Replace configure-event, map-event with generic event handler
 		if (eventHandle() == 0) {
 			OS.g_signal_connect_closure_by_id (shellHandle, display.signalIds [EVENT], 0, display.getClosure (EVENT), false);
 		}
 		// Replaced "window-state-event" with GdkSurface "notify::state", pass shellHandle as user_data
-		long notifyStateAddress = display.notifyStateCallback.getAddress();
 		GTK.gtk_widget_realize(shellHandle);
 		long gdkSurface = gtk_widget_get_surface (shellHandle);
-		OS.g_signal_connect (gdkSurface, OS.notify_state, notifyStateAddress, shellHandle);
+		OS.g_signal_connect (gdkSurface, OS.notify_state, notifyAddress, shellHandle);
 		OS.g_signal_connect_closure_by_id (shellHandle, display.signalIds [SIZE_ALLOCATE_GTK4], 0, display.getClosure (SIZE_ALLOCATE_GTK4), false);
 	} else {
 		OS.g_signal_connect_closure_by_id (shellHandle, display.signalIds [WINDOW_STATE_EVENT], 0, display.getClosure (WINDOW_STATE_EVENT), false);
@@ -1896,10 +1900,10 @@ long gtk_window_state_event (long widget, long event) {
 }
 
 @Override
-long notifyStateProc (long gdk_handle, long handle) {
+long notifyState (long object, long arg0) {
 	// GTK4 equivalent of gtk_window_state_event
 	assert GTK.GTK4;
-	int gdkSurfaceState = GDK.gdk_surface_get_state (gdk_handle);
+	int gdkSurfaceState = GDK.gdk_surface_get_state (object);
 	minimized = (gdkSurfaceState & GDK.GDK_SURFACE_STATE_ICONIFIED) != 0;
 	maximized = (gdkSurfaceState & GDK.GDK_SURFACE_STATE_MAXIMIZED) != 0;
 	fullScreen = (gdkSurfaceState & GDK.GDK_SURFACE_STATE_FULLSCREEN) != 0;

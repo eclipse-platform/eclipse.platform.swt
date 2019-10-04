@@ -976,6 +976,7 @@ typedef enum {
 	_1gtk_1widget_1get_1preferred_1size_FUNC,
 	_1gtk_1widget_1get_1preferred_1width_1for_1height_FUNC,
 	_1gtk_1widget_1get_1realized_FUNC,
+	_1gtk_1widget_1get_1scale_1factor_FUNC,
 	_1gtk_1widget_1get_1screen_FUNC,
 	_1gtk_1widget_1get_1sensitive_FUNC,
 	_1gtk_1widget_1get_1size_1request_FUNC,

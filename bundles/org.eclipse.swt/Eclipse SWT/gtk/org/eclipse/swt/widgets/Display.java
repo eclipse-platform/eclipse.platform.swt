@@ -131,12 +131,12 @@ public class Display extends Device {
 	long snapshotDrawProc, changeValueProc;
 	long keyPressReleaseProc, focusProc, enterMotionScrollProc, leaveProc;
 	long gesturePressReleaseProc;
-	long notifyStateProc;
+	long notifyProc;
 	Callback windowCallback2, windowCallback3, windowCallback4, windowCallback5, windowCallback6;
 	Callback snapshotDraw, changeValue;
 	Callback keyPressReleaseCallback, focusCallback, enterMotionScrollCallback, leaveCallback;
 	Callback gesturePressReleaseCallback;
-	Callback notifyStateCallback;
+	Callback notifyCallback;
 	EventTable eventTable, filterTable;
 	static String APP_NAME = "SWT"; //$NON-NLS-1$
 	static String APP_VERSION = ""; //$NON-NLS-1$
@@ -155,6 +155,7 @@ public class Display extends Device {
 	long lastHandle;
 	Widget lastWidget;
 	Widget [] widgetTable;
+	Shell firstShell;
 	final static int GROW_SIZE = 1024;
 	static final int SWT_OBJECT_INDEX;
 	static final int SWT_OBJECT_INDEX1;
@@ -3452,14 +3453,15 @@ void initializeCallbacks () {
 		if (leaveProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 
 		closuresProc [Widget.LEAVE] = leaveProc;
-
-		notifyStateCallback = new Callback(this, "notifyStateProc", long.class, new Type[] {
-				long.class, long.class, long.class}); //$NON-NLS-1$
-		notifyStateProc = notifyStateCallback.getAddress();
-		if (notifyStateProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
-
-		closuresProc [Widget.NOTIFY_STATE] = notifyStateProc;
 	}
+
+	notifyCallback = new Callback(this, "notifyProc", long.class, new Type[] {
+			long.class, long.class, long.class}); //$NON-NLS-1$
+	notifyProc = notifyCallback.getAddress();
+	if (notifyProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
+
+	closuresProc [Widget.NOTIFY_STATE] = notifyProc;
+	closuresProc [Widget.DPI_CHANGED] = notifyProc;
 
 	closuresProc [Widget.ACTIVATE] = windowProc2;
 	closuresProc [Widget.ACTIVATE_INVERSE] = windowProc2;
@@ -4534,14 +4536,14 @@ void releaseDisplay () {
 		gesturePressReleaseCallback = null;
 		gesturePressReleaseProc = 0;
 
-		notifyStateCallback.dispose();
-		notifyStateCallback = null;
-		notifyStateProc = 0;
-
 		snapshotDraw.dispose();
 		snapshotDraw = null;
 		snapshotDrawProc = 0;
 	}
+
+	notifyCallback.dispose();
+	notifyCallback = null;
+	notifyProc = 0;
 
 	/* Dispose checkIfEvent callback */
 	checkIfEventCallback.dispose(); checkIfEventCallback = null;
@@ -4864,6 +4866,15 @@ String debugInfoForIndex(long index) {
 	}
 	s += dumpWidgetTableInfo();
 	return s;
+}
+
+void dpiChanged() {
+	this.scaleFactor = getDeviceZoom ();
+	DPIUtil.setDeviceZoom (scaleFactor);
+	Shell[] shells = getShells();
+	for (int i = 0; i < shells.length; i++) {
+		shells[i].layout(true, true);
+	}
 }
 
 String dumpWidgetTableInfo() {
@@ -5867,10 +5878,21 @@ long leaveProc (long controller, long user_data) {
 	return widget.leaveProc(handle, user_data);
 }
 
-long notifyStateProc (long gdk_handle, long param_spec, long user_data) {
-	Widget widget = getWidget (user_data);
-	if (widget == null) return 0;
-	return widget.notifyStateProc(gdk_handle, user_data);
+long notifyProc (long object, long param_spec, long user_data) {
+	Widget widget = getWidget (object);
+	if (widget == null) {
+		widget = getWidget (user_data);
+		if (widget == null) {
+			return 0;
+		} else {
+			/*
+			 * There is a corner case where the connected handle is actually
+			 * a GdkSurface.
+			 */
+			return widget.notifyProc(object, param_spec, Widget.NOTIFY_STATE);
+		}
+	}
+	return widget.notifyProc(object, param_spec, user_data);
 }
 
 boolean changeValue (long handle, int scroll, double value, long user_data) {
