@@ -426,8 +426,8 @@ void setMenu (Menu menu) {
 						}
 					}
 				}
-				poa.Release();
 			}
+			poa.Release();
 			hr = pDestList.CommitList ();
 			if (hr != OS.S_OK) error (SWT.ERROR_INVALID_ARGUMENT);
 			pRemovedItems.Release ();
