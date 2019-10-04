@@ -404,14 +404,15 @@ int TranslateAccelerator(long lpMsg, long pguidCmdGroup, int nCmdID) {
 			case OS.VK_NEXT:
 				/* Do not translate/consume IE's keys for scrolling content. */
 				break;
+			case OS.VK_SPACE:
 			case OS.VK_BACK:
 			case OS.VK_RETURN:
 				/*
-				* Translating OS.VK_BACK or OS.VK_RETURN results in the native control
-				* handling them twice (eg.- inserting two lines instead of one).  So
-				* these keys are not translated here, and instead are explicitly handled
-				* in the keypress handler.
-				*/
+				 * Translating OS.VK_BACK, OS.VK_RETURN or OS.VK_SPACE results in the native
+				 * control handling them twice (eg.- inserting two lines instead of one). So
+				 * these keys are not translated here, and instead are explicitly handled
+				 * in the keypress handler.
+				 */
 				break;
 			case OS.VK_L:
 			case OS.VK_N:
