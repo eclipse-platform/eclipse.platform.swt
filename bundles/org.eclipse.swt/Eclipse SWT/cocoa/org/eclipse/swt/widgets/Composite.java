@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2011 IBM Corporation and others.
+ * Copyright (c) 2000, 2019 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -96,7 +96,9 @@ public Composite (Composite parent, int style) {
 }
 
 Control [] _getChildren () {
-	NSArray views = contentView().subviews();
+	NSView nsClipView = contentView();
+	if (nsClipView == null) return new Control [0];
+	NSArray views = nsClipView.subviews();
 	int count = (int)views.count();
 	Control [] children = new Control [count];
 	if (count == 0) return children;

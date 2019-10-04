@@ -915,4 +915,13 @@ public void test_setAlpha() {
 	testShell.setAlpha(255);
 	assertEquals(255, testShell.getAlpha());
 }
+
+@Test // see bug#520488
+public void test_childDisposesParent () {
+	createShell();
+	Shell root = new Shell(testShell, SWT.SHELL_TRIM);
+	Shell child = new Shell(root, SWT.SHELL_TRIM);
+	child.addListener(SWT.Dispose, e -> root.dispose());
+	root.dispose();
+}
 }

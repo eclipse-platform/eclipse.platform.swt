@@ -403,6 +403,9 @@ void releaseChildren (boolean destroy) {
 		menuBar = null;
 	}
 	Display display = this.display;
+	if (display == null || display.isDisposed()) {
+		return;
+	}
 	super.releaseChildren (destroy);
 	Menu [] menus = display.getMenus (this);
 	if (menus != null) {
