@@ -71,7 +71,6 @@ public abstract class Control extends Widget implements Drawable {
 	Region region;
 	Font font;
 	int drawCount, foreground, background, backgroundAlpha = 255;
-	long hPrevIMC;
 
 /**
  * Prevents uninitialized instances from being created outside the package.
@@ -725,7 +724,7 @@ void createHandle () {
 	}
 	if (OS.IsDBLocale && hwndParent != 0) {
 		long hIMC = OS.ImmGetContext (hwndParent);
-		hPrevIMC = OS.ImmAssociateContext (handle, hIMC);
+		OS.ImmAssociateContext (handle, hIMC);
 		OS.ImmReleaseContext (hwndParent, hIMC);
 	}
 
@@ -2542,8 +2541,7 @@ void releaseParent () {
 void releaseWidget () {
 	super.releaseWidget ();
 	if (OS.IsDBLocale) {
-		OS.ImmAssociateContext (handle, hPrevIMC);
-		hPrevIMC = 0;
+		OS.ImmAssociateContext (handle, 0);
 	}
 	if (toolTipText != null) {
 		setToolTipText (getShell (), null);
