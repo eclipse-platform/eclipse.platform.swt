@@ -19,7 +19,11 @@ import org.eclipse.swt.layout.*;
 import org.eclipse.swt.widgets.*;
 
 public class Bug543747_JvmCrash_Msctf {
-	public static void reproduce526758(Shell parentShell) {
+	/**
+	 * This test demonstrates a crash where destroying a Shell
+	 * accesses context already freed by 'ImmDestroyContext'.
+	 */
+	public static void reproduceCrash1(Shell parentShell) {
 		Shell tempShell = new Shell(parentShell);
 
 		// Create something to catch initial focus, so that
@@ -47,13 +51,18 @@ public class Bug543747_JvmCrash_Msctf {
 		msgbox.open();
 	}
 
-	public static void reproduce543747(Shell parentShell) {
+	/**
+	 * This test demonstrates a crash where destroying a Shell
+	 * accesses context already freed by 'ImmDestroyContext'
+	 * if IME-capable Control has an intermediate parent.
+	 */
+	public static void reproduceCrash23(Shell parentShell, boolean focusEditOnClose) {
 		Shell tempShell = new Shell(parentShell);
 
 		// Create something to catch initial focus, so that
 		// text.setFocus() does something. This is only to
 		// show that .setFocus() is important.
-		new Button(tempShell, SWT.PUSH);
+		Button button = new Button(tempShell, SWT.PUSH);
 
 		// This Text will cause crash.
 		// Text needs to have an intermediate parent for this bug.
@@ -68,6 +77,10 @@ public class Bug543747_JvmCrash_Msctf {
 		// .setFocus() causes it to start up.
 		text.setFocus();
 
+		// There are two slightly different crashes depending on focus
+		if (!focusEditOnClose)
+			button.setFocus();
+
 		// Destroying the shell triggers the bug.
 		tempShell.dispose();
 
@@ -80,6 +93,44 @@ public class Bug543747_JvmCrash_Msctf {
 				"\n" +
 				"The snippet is expected to crash just after that."
 		);
+		msgbox.open();
+	}
+
+	/**
+	 * This test demonstrates a crash where destroying a Composite
+	 * with Text inside it crashes, even if 'ImmDestroyContext' wasn't
+	 * called yet.
+	 */
+	public static void reproduceCrash4(Shell parentShell) {
+		Shell tempShell = new Shell(parentShell);
+
+		// Create something to catch initial focus, so that
+		// text.setFocus() does something. This is only to
+		// show that .setFocus() is important.
+		// new Button(tempShell, SWT.PUSH);
+
+		// This Text will cause crash.
+		// Text needs to have an intermediate parent for this bug.
+		Composite composite = new Composite(tempShell, 0);
+		Text text = new Text(composite, 0);
+
+		// Shell must be visible to prevent early return in .setFocus()
+		tempShell.setSize(10, 10);
+		tempShell.open();
+
+		// ImmAssociateContext() itself is lazy.
+		// .setFocus() causes it to start up.
+		text.setFocus();
+
+		// Destroying the composite triggers the bug.
+		composite.dispose();
+
+		// Cleanup
+		tempShell.dispose();
+
+		// JVM still alive?
+		MessageBox msgbox = new MessageBox(parentShell);
+		msgbox.setMessage("Crash didn't reproduce");
 		msgbox.open();
 	}
 
@@ -123,13 +174,21 @@ public class Bug543747_JvmCrash_Msctf {
 				"e) There's no need to uninstall Application Verifier, but you can do that if you like."
 		);
 
-		final Button button526758 = new Button(shell, SWT.PUSH);
-		button526758.setText("Reproduce crash 526758");
-		button526758.addListener(SWT.Selection, event -> {reproduce526758(shell);});
+		final Button buttonCrash1 = new Button(shell, SWT.PUSH);
+		buttonCrash1.setText("Reproduce crash #1 - Bug 526758");
+		buttonCrash1.addListener(SWT.Selection, event -> {reproduceCrash1(shell);});
 
-		final Button button543747 = new Button(shell, SWT.PUSH);
-		button543747.setText("Reproduce crash 543747");
-		button543747.addListener(SWT.Selection, event -> {reproduce543747(shell);});
+		final Button buttonCrash2 = new Button(shell, SWT.PUSH);
+		buttonCrash2.setText("Reproduce crash #2 - Bug 543747 (A)");
+		buttonCrash2.addListener(SWT.Selection, event -> {reproduceCrash23(shell, true);});
+
+		final Button buttonCrash3 = new Button(shell, SWT.PUSH);
+		buttonCrash3.setText("Reproduce crash #3 - Bug 543747 (B)");
+		buttonCrash3.addListener(SWT.Selection, event -> {reproduceCrash23(shell, false);});
+
+		final Button buttonCrash4 = new Button(shell, SWT.PUSH);
+		buttonCrash4.setText("Reproduce crash #4 - Bug 543747 (C)");
+		buttonCrash4.addListener(SWT.Selection, event -> {reproduceCrash4(shell);});
 
 		shell.pack();
 		shell.open();
