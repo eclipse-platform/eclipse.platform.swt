@@ -1349,4 +1349,14 @@ void showWidget (int index) {
 	if (imageHandle != 0) GTK.gtk_widget_show (imageHandle);
 	GTK.gtk_toolbar_insert(parent.handle, handle, index);
 }
+
+@Override
+String getNameText() {
+	String nameText = super.getNameText();
+	Object data = getData();
+	if(data != null) {
+		return "text: '" + nameText + "', data: " + data;
+	}
+	return nameText;
+}
 }
