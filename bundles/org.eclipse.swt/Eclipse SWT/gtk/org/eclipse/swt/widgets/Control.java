@@ -4287,10 +4287,15 @@ public long internal_new_GC (GCData data) {
 			long surface;
 			if (GTK.GTK4) {
 				surface = GDK.gdk_surface_create_similar_surface(gdkResource, Cairo.CAIRO_CONTENT_COLOR_ALPHA, data.width, data.height);
+				gc = Cairo.cairo_create(surface);
 			} else {
-				surface = GDK.gdk_window_create_similar_surface(gdkResource, Cairo.CAIRO_CONTENT_COLOR_ALPHA, data.width, data.height);
+				long cairo_region = GDK.gdk_window_get_visible_region(gdkResource);
+				long drawingContext = GDK.gdk_window_begin_draw_frame(gdkResource, cairo_region);
+				Cairo.cairo_region_destroy(cairo_region);
+				gc = Cairo.cairo_reference(GDK.gdk_drawing_context_get_cairo_context(drawingContext));
+				GDK.gdk_window_end_draw_frame(gdkResource, drawingContext);
 			}
-			gc = Cairo.cairo_create(surface);
+
 		} else {
 			gc = GDK.gdk_cairo_create (gdkResource);
 		}
