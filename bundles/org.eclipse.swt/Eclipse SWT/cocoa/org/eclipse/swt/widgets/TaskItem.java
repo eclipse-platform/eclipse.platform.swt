@@ -421,7 +421,7 @@ void updateImage () {
 	NSImage newImage = (NSImage)new NSImage().alloc ();
 	newImage = newImage.initWithSize (size);
 	NSBitmapImageRep rep = (NSBitmapImageRep)new NSBitmapImageRep ().alloc ();
-	rep = rep.initWithBitmapDataPlanes (0, (int)size.width, (int)size.height, 8, 4, true, false, OS.NSDeviceRGBColorSpace, OS.NSAlphaFirstBitmapFormat | OS.NSAlphaNonpremultipliedBitmapFormat, (int)size.width * 4, 32);
+	rep = rep.initWithBitmapDataPlanes (0, (int)size.width, (int)size.height, 8, 4, true, false, OS.NSDeviceRGBColorSpace, OS.NSAlphaFirstBitmapFormat, (int)size.width * 4, 32);
 	newImage.addRepresentation (rep);
 	rep.release ();
 
