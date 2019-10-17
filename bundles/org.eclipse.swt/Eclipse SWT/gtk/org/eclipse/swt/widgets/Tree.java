@@ -4121,22 +4121,7 @@ void showItem (long path, boolean scroll) {
 		GTK.gtk_tree_path_free (tempPath);
 	}
 	if (scroll) {
-		GdkRectangle cellRect = new GdkRectangle ();
-		GTK.gtk_widget_realize (handle);
-		GTK.gtk_tree_view_get_cell_area (handle, path, 0, cellRect);
-		boolean isHidden = cellRect.y == 0 && cellRect.height == 0;
-		int [] tx = new int [1], ty = new int [1];
-		GTK.gtk_tree_view_convert_bin_window_to_tree_coords(handle, cellRect.x, cellRect.y, tx, ty);
-		if (!isHidden) {
-			GdkRectangle visibleRect = new GdkRectangle ();
-			GTK.gtk_tree_view_get_visible_rect (handle, visibleRect);
-			if (ty [0] < visibleRect.y || ty [0] + cellRect.height > visibleRect.y + visibleRect.height) {
-				isHidden = true;
-			}
-		}
-		if (isHidden) {
-			GTK.gtk_tree_view_scroll_to_cell (handle, path, 0, depth != 1, 0.5f, 0.0f);
-		}
+		GTK.gtk_tree_view_scroll_to_cell (handle, path, 0, depth != 1, 0.5f, 0.0f);
 	}
 }
 
