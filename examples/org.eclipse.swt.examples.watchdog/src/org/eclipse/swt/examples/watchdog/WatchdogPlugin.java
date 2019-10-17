@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013, 2016 Google Inc. and others.
+ * Copyright (c) 2013, 2018 Google Inc. and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -17,6 +17,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IStartup;
 import org.eclipse.ui.IWorkbench;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 
@@ -31,7 +32,7 @@ public class WatchdogPlugin extends AbstractUIPlugin implements IStartup {
 		super();
 		plugin = this;
 
-		IWorkbench workbench = getWorkbench();
+		IWorkbench workbench = PlatformUI.getWorkbench();
 		display = (workbench != null) ? workbench.getDisplay() : null;
 
 		Thread displayThread = (display != null) ? display.getThread() : null;
