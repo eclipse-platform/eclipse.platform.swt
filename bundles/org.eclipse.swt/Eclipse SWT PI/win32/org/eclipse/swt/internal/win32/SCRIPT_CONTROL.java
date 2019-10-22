@@ -23,6 +23,8 @@ public class SCRIPT_CONTROL {
 	public boolean fNeutralOverride;
 	public boolean fNumericOverride;
 	public boolean fLegacyBidiClass;
+	public boolean fMergeNeutralItems;
+	public boolean fUseStandardBidi;
 	public int fReserved;
 	public static final int sizeof = OS.SCRIPT_CONTROL_sizeof ();
 }

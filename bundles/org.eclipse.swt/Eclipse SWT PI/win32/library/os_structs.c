@@ -5761,7 +5761,7 @@ void setSCRIPT_ANALYSISFields(JNIEnv *env, jobject lpObject, SCRIPT_ANALYSIS *lp
 typedef struct SCRIPT_CONTROL_FID_CACHE {
 	int cached;
 	jclass clazz;
-	jfieldID uDefaultLanguage, fContextDigits, fInvertPreBoundDir, fInvertPostBoundDir, fLinkStringBefore, fLinkStringAfter, fNeutralOverride, fNumericOverride, fLegacyBidiClass, fReserved;
+	jfieldID uDefaultLanguage, fContextDigits, fInvertPreBoundDir, fInvertPostBoundDir, fLinkStringBefore, fLinkStringAfter, fNeutralOverride, fNumericOverride, fLegacyBidiClass, fMergeNeutralItems, fUseStandardBidi, fReserved;
 } SCRIPT_CONTROL_FID_CACHE;
 
 SCRIPT_CONTROL_FID_CACHE SCRIPT_CONTROLFc;
@@ -5779,6 +5779,8 @@ void cacheSCRIPT_CONTROLFields(JNIEnv *env, jobject lpObject)
 	SCRIPT_CONTROLFc.fNeutralOverride = (*env)->GetFieldID(env, SCRIPT_CONTROLFc.clazz, "fNeutralOverride", "Z");
 	SCRIPT_CONTROLFc.fNumericOverride = (*env)->GetFieldID(env, SCRIPT_CONTROLFc.clazz, "fNumericOverride", "Z");
 	SCRIPT_CONTROLFc.fLegacyBidiClass = (*env)->GetFieldID(env, SCRIPT_CONTROLFc.clazz, "fLegacyBidiClass", "Z");
+	SCRIPT_CONTROLFc.fMergeNeutralItems = (*env)->GetFieldID(env, SCRIPT_CONTROLFc.clazz, "fMergeNeutralItems", "Z");
+	SCRIPT_CONTROLFc.fUseStandardBidi = (*env)->GetFieldID(env, SCRIPT_CONTROLFc.clazz, "fUseStandardBidi", "Z");
 	SCRIPT_CONTROLFc.fReserved = (*env)->GetFieldID(env, SCRIPT_CONTROLFc.clazz, "fReserved", "I");
 	SCRIPT_CONTROLFc.cached = 1;
 }
@@ -5795,6 +5797,8 @@ SCRIPT_CONTROL *getSCRIPT_CONTROLFields(JNIEnv *env, jobject lpObject, SCRIPT_CO
 	lpStruct->fNeutralOverride = (*env)->GetBooleanField(env, lpObject, SCRIPT_CONTROLFc.fNeutralOverride);
 	lpStruct->fNumericOverride = (*env)->GetBooleanField(env, lpObject, SCRIPT_CONTROLFc.fNumericOverride);
 	lpStruct->fLegacyBidiClass = (*env)->GetBooleanField(env, lpObject, SCRIPT_CONTROLFc.fLegacyBidiClass);
+	lpStruct->fMergeNeutralItems = (*env)->GetBooleanField(env, lpObject, SCRIPT_CONTROLFc.fMergeNeutralItems);
+	lpStruct->fUseStandardBidi = (*env)->GetBooleanField(env, lpObject, SCRIPT_CONTROLFc.fUseStandardBidi);
 	lpStruct->fReserved = (*env)->GetIntField(env, lpObject, SCRIPT_CONTROLFc.fReserved);
 	return lpStruct;
 }
@@ -5811,6 +5815,8 @@ void setSCRIPT_CONTROLFields(JNIEnv *env, jobject lpObject, SCRIPT_CONTROL *lpSt
 	(*env)->SetBooleanField(env, lpObject, SCRIPT_CONTROLFc.fNeutralOverride, (jboolean)lpStruct->fNeutralOverride);
 	(*env)->SetBooleanField(env, lpObject, SCRIPT_CONTROLFc.fNumericOverride, (jboolean)lpStruct->fNumericOverride);
 	(*env)->SetBooleanField(env, lpObject, SCRIPT_CONTROLFc.fLegacyBidiClass, (jboolean)lpStruct->fLegacyBidiClass);
+	(*env)->SetBooleanField(env, lpObject, SCRIPT_CONTROLFc.fMergeNeutralItems, (jboolean)lpStruct->fMergeNeutralItems);
+	(*env)->SetBooleanField(env, lpObject, SCRIPT_CONTROLFc.fUseStandardBidi, (jboolean)lpStruct->fUseStandardBidi);
 	(*env)->SetIntField(env, lpObject, SCRIPT_CONTROLFc.fReserved, (jint)lpStruct->fReserved);
 }
 #endif
