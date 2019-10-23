@@ -217,7 +217,6 @@ char * GDK_nativeFunctionNames[] = {
 	"_1gdk_1window_1create_1similar_1surface",
 	"_1gdk_1window_1destroy",
 	"_1gdk_1window_1end_1draw_1frame",
-	"_1gdk_1window_1ensure_1native",
 	"_1gdk_1window_1focus",
 	"_1gdk_1window_1get_1children",
 	"_1gdk_1window_1get_1device_1position",

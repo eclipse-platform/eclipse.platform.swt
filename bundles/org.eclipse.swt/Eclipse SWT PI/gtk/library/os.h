@@ -314,7 +314,6 @@
 #define NO__1gdk_1window_1begin_1draw_1frame
 #define NO__1gdk_1window_1create_1similar_1surface
 #define NO__1gdk_1window_1destroy
-#define NO__1gdk_1window_1ensure_1native
 #define NO__1gdk_1window_1end_1draw_1frame
 #define NO__1gdk_1window_1focus
 #define NO__1gdk_1window_1get_1children

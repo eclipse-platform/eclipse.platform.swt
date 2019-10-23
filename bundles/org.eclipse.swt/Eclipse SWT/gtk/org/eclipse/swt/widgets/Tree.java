@@ -89,8 +89,6 @@ public class Tree extends Composite {
 	TreeItem currentItem;
 	ImageList imageList, headerImageList;
 	boolean firstCustomDraw;
-	/** True iff a draw event has never been processed by this Tree */
-	boolean firstDraw = true;
 	/** True iff computeSize has never been called on this Tree */
 	boolean firstCompute = true;
 	boolean modelChanged;
@@ -2414,17 +2412,6 @@ void drawInheritedBackground (long cairo) {
 long gtk_draw (long widget, long cairo) {
 	boolean haveBoundsChanged = boundsChangedSinceLastDraw;
 	boundsChangedSinceLastDraw = false;
-	/*
-	 * Feature in GTK: a drawing model change in GTK3.20 means that headers are not drawn
-	 * if the Tree has no items. In such cases, the fix is to ensure that the Tree's GdkWindow
-	 * is a native one. Only X11 is affected by this issue, see bug 541427 for more info.
-	 */
-	if (firstDraw && OS.isX11() && getItemCount() == 0 && GTK.GTK_VERSION >= OS.VERSION(3, 20, 0)
-			&& !hasChildren && headerVisible) {
-		long binWindow = GTK.gtk_tree_view_get_bin_window(handle);
-		GDK.gdk_window_ensure_native(binWindow);
-	}
-	firstDraw = false;
 	if ((state & OBSCURED) != 0) return 0;
 	/*
 	 * Bug 537960: JFace tree viewers miss a repaint when resized by a SashForm
