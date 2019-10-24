@@ -3815,12 +3815,7 @@ public long internal_new_GC (GCData data) {
 		gc = Cairo.cairo_create(surface);
 	} else {
 		root = GDK.gdk_get_default_root_window();
-		if (GTK.GTK_VERSION >= OS.VERSION(3, 22, 0)) {
-			long surface = GDK.gdk_window_create_similar_surface(root, Cairo.CAIRO_CONTENT_COLOR_ALPHA, data.width, data.height);
-			gc = Cairo.cairo_create(surface);
-		} else {
-			gc = GDK.gdk_cairo_create(root);
-		}
+		gc = GDK.gdk_cairo_create(root);
 	}
 	if (gc == 0) error (SWT.ERROR_NO_HANDLES);
 	//TODO how gdk_gc_set_subwindow is done in cairo?

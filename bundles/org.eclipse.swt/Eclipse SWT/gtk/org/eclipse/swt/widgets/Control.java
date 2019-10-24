@@ -207,7 +207,7 @@ void deregister () {
 }
 
 void drawBackground (Control control, long gdkResource, long cr, int x, int y, int width, int height) {
-	long cairo, context = 0;
+	long cairo = 0;
 	long region = 0;
 	if (GTK.GTK4) {
 		// TODO: once Eclipse runs on GTK4, check for bug 547466.
@@ -228,17 +228,7 @@ void drawBackground (Control control, long gdkResource, long cr, int x, int y, i
 			region = Cairo.cairo_region_create_rectangle(regionRect);
 		}
 	} else {
-		if (GTK.GTK_VERSION >= OS.VERSION(3, 22, 0)) {
-			if (cr == 0) {
-				long cairo_region = GDK.gdk_window_get_visible_region(gdkResource);
-				context = GDK.gdk_window_begin_draw_frame(gdkResource, cairo_region);
-				cairo = GDK.gdk_drawing_context_get_cairo_context(context);
-			} else {
-				cairo = cr;
-			}
-		} else {
-			cairo = cr != 0 ? cr : GDK.gdk_cairo_create(gdkResource);
-		}
+		cairo = cr != 0 ? cr : GDK.gdk_cairo_create(gdkResource);
 	}
 	/*
 	 * It's possible that a client is using an SWT.NO_BACKGROUND Composite with custom painting
@@ -277,11 +267,7 @@ void drawBackground (Control control, long gdkResource, long cr, int x, int y, i
 	Cairo.cairo_rectangle (cairo, x, y, width, height);
 	Cairo.cairo_fill (cairo);
 	if (!GTK.GTK4 ) {
-		if (GTK.GTK_VERSION >= OS.VERSION(3, 22, 0)) {
-			if (cairo != cr && context != 0) GDK.gdk_window_end_draw_frame(gdkResource, context);
-		} else {
-			if (cairo != cr) Cairo.cairo_destroy(cairo);
-		}
+		if (cairo != cr) Cairo.cairo_destroy(cairo);
 	}
 }
 
@@ -4283,19 +4269,9 @@ public long internal_new_GC (GCData data) {
 	if (gc != 0) {
 		Cairo.cairo_reference (gc);
 	} else {
-		if (GTK.GTK_VERSION >= 	OS.VERSION(3, 22, 0)) {
-			long surface;
-			if (GTK.GTK4) {
-				surface = GDK.gdk_surface_create_similar_surface(gdkResource, Cairo.CAIRO_CONTENT_COLOR_ALPHA, data.width, data.height);
-				gc = Cairo.cairo_create(surface);
-			} else {
-				long cairo_region = GDK.gdk_window_get_visible_region(gdkResource);
-				long drawingContext = GDK.gdk_window_begin_draw_frame(gdkResource, cairo_region);
-				Cairo.cairo_region_destroy(cairo_region);
-				gc = Cairo.cairo_reference(GDK.gdk_drawing_context_get_cairo_context(drawingContext));
-				GDK.gdk_window_end_draw_frame(gdkResource, drawingContext);
-			}
-
+		if (GTK.GTK4) {
+			long surface = GDK.gdk_surface_create_similar_surface(gdkResource, Cairo.CAIRO_CONTENT_COLOR_ALPHA, data.width, data.height);
+			gc = Cairo.cairo_create(surface);
 		} else {
 			gc = GDK.gdk_cairo_create (gdkResource);
 		}
