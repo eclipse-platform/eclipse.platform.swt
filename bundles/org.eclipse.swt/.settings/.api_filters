@@ -269,6 +269,12 @@
                 <message_argument value="COLOR_WIDGET_DISABLED_FOREGROUND"/>
             </message_arguments>
         </filter>
+        <filter id="336658481">
+            <message_arguments>
+                <message_argument value="org.eclipse.swt.SWT"/>
+                <message_argument value="IMAGE_SVG"/>
+            </message_arguments>
+        </filter>
     </resource>
     <resource path="Eclipse SWT/common/org/eclipse/swt/events/ArmListener.java" type="org.eclipse.swt.events.ArmListener">
         <filter id="576720909">

@@ -4238,6 +4238,14 @@ public class SWT {
 	public static final int IMAGE_OS2_BMP = 7;
 
 	/**
+	 * Image format constant indicating a SVG format image (value is 8).
+	 * <br>Note that this is a <em>HINT</em> and is currently only supported on GTK.
+	 *
+	 * @since 3.113
+	 */
+	public static final int IMAGE_SVG = 8;
+
+	/**
 	 * GIF image disposal method constants indicating that the
 	 * disposal method is unspecified (value is 0).
 	 */

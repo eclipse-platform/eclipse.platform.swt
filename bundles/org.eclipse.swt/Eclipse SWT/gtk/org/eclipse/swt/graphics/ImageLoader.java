@@ -343,6 +343,7 @@ int getImageFormat(long loader) {
 		case "ico": return SWT.IMAGE_ICO;
 		case "jpeg": return SWT.IMAGE_JPEG;
 		case "png": return SWT.IMAGE_PNG;
+		case "svg": return SWT.IMAGE_SVG;
 		default: return SWT.IMAGE_UNDEFINED;
 	}
 }
@@ -547,6 +548,7 @@ public void save(OutputStream stream, int format) {
 		case SWT.IMAGE_JPEG: typeStr = "jpeg"; break;
 		case SWT.IMAGE_PNG: typeStr = "png"; break;
 		case SWT.IMAGE_TIFF: typeStr = "tiff"; break;
+		case SWT.IMAGE_SVG: typeStr = "svg"; break;
 	}
 	byte [] type = Converter.wcsToMbcs(typeStr, true);
 
