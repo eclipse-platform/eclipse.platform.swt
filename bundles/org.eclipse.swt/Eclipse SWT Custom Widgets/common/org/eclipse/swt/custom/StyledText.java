@@ -132,6 +132,7 @@ public class StyledText extends Canvas {
 	boolean wordWrap = false;			// text is wrapped automatically
 	boolean visualWrap = false;		// process line breaks inside logical lines (inserted by BidiSegmentEvent)
 	boolean hasStyleWithVariableHeight = false;
+	boolean hasVerticalIndent = false;
 	boolean doubleClickEnabled = true;	// see getDoubleClickEnabled
 	boolean overwrite = false;			// insert/overwrite edit mode
 	int textLimit = -1;					// limits the number of characters the user can type in the widget. Unlimited by default.
@@ -7323,7 +7324,7 @@ boolean isBidiCaret() {
 	return BidiUtil.isBidiPlatform();
 }
 boolean isFixedLineHeight() {
-	return !isWordWrap() && lineSpacing == 0 && renderer.lineSpacingProvider == null && !hasStyleWithVariableHeight;
+	return !isWordWrap() && lineSpacing == 0 && renderer.lineSpacingProvider == null && !hasStyleWithVariableHeight && !hasVerticalIndent;
 }
 /**
  * Returns whether the given offset is inside a multi byte line delimiter.
@@ -9479,6 +9480,7 @@ public void setLineVerticalIndent(int lineIndex, int verticalLineIndent) {
 		verticalScrollOffset = -1;
 	}
 	renderer.setLineVerticalIndent(lineIndex, verticalLineIndent);
+	hasVerticalIndent = verticalLineIndent != 0 || renderer.hasVerticalIndent();
 	resetCache(lineIndex, 1);
 	int newBottom = getLinePixel(lineIndex + 1);
 	redrawLines(lineIndex, 1, oldBottom != newBottom);

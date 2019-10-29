@@ -1928,5 +1928,11 @@ void updateRanges(int start, int replaceCharCount, int newCharCount) {
 	}
 }
 
+public boolean hasVerticalIndent() {
+	return Arrays.stream(lines).filter(Objects::nonNull) //
+			.mapToInt(line -> line.verticalIndent) //
+			.anyMatch(n -> n != 0);
+}
+
 
 }
