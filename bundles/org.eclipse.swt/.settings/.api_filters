@@ -496,7 +496,7 @@
         <filter id="926941240">
             <message_arguments>
                 <message_argument value="3.113.0"/>
-                <message_argument value="3.112.100"/>
+                <message_argument value="3.112.0"/>
             </message_arguments>
         </filter>
     </resource>
