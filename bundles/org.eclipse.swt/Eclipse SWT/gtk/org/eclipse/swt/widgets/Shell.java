@@ -623,9 +623,9 @@ void bringToTop (boolean force) {
 		}
 	} else {
 		if (GTK.GTK4) {
-			GDK.gdk_surface_focus (gdkResource, GDK.GDK_CURRENT_TIME);
+			GDK.gdk_surface_focus (gdkResource, display.lastUserEventTime);
 		} else {
-			GDK.gdk_window_focus (gdkResource, GDK.GDK_CURRENT_TIME);
+			GDK.gdk_window_focus (gdkResource, display.lastUserEventTime);
 		}
 	}
 	display.activeShell = this;
