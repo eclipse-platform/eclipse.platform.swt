@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2018 IBM Corporation and others.
+ * Copyright (c) 2000, 2019 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -510,6 +510,7 @@ public void copyArea(Image image, int x, int y) {
 	try {
 		if (data.image != null) {
 			int srcX = x, srcY = y, destX = 0, destY = 0;
+			int scaleFactor = DPIUtil.getDeviceZoom () / 100;
 			NSSize srcSize = data.image.handle.size();
 			int imgHeight = (int)srcSize.height;
 			int destWidth = (int)srcSize.width - x, destHeight = (int)srcSize.height - y;
@@ -529,8 +530,8 @@ public void copyArea(Image image, int x, int y) {
 			NSRect destRect = new NSRect();
 			destRect.x = destX;
 			destRect.y = destY;
-			destRect.width = destWidth;
-			destRect.height = destHeight;
+			destRect.width = destWidth * scaleFactor;
+			destRect.height = destHeight * scaleFactor;
 			data.image.handle.drawInRect(destRect, srcRect, OS.NSCompositeCopy, 1);
 			NSGraphicsContext.static_restoreGraphicsState();
 			return;
