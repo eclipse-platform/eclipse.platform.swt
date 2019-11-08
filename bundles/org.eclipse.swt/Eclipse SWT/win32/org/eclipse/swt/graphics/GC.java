@@ -4722,21 +4722,13 @@ void setLineWidthInPixels(int lineWidth) {
  * and the destination, and if the argument is <code>false</code>,
  * puts the receiver in a drawing mode where the destination color
  * is replaced with the source color value.
- * <p>
- * Note that this mode in fundamentally unsupportable on certain
- * platforms. Clients that want their
- * code to run on all platforms need to avoid this method.
- * </p>
  *
  * @param xor if <code>true</code>, then <em>xor</em> mode is used, otherwise <em>source copy</em> mode is used
  *
  * @exception SWTException <ul>
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
- *
- * @deprecated this functionality is not supported on some platforms
  */
-@Deprecated
 public void setXORMode(boolean xor) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	OS.SetROP2(handle, xor ? OS.R2_XORPEN : OS.R2_COPYPEN);
