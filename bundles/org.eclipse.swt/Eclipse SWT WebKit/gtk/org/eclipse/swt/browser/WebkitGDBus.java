@@ -233,7 +233,6 @@ class WebkitGDBus {
 
 	@SuppressWarnings("unused") // Callback Only called directly by JNI.
 	private static long onNameLostCallback (long connection, long name, long user_data) {
-		assert false : "This code should never have executed";
 		System.err.println("SWT WebkitGDBus.java: Lost GDBus name. This should never occur");
 		return 0;
 	}
