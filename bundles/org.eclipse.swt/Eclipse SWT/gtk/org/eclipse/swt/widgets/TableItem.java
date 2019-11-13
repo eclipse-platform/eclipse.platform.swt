@@ -419,7 +419,9 @@ Rectangle getBoundsInPixels (int index) {
 	GTK.gtk_tree_view_get_cell_area (parentHandle, path, column, rect);
 	GTK.gtk_tree_path_free (path);
 	int [] cw = new int [1], ch = new int [1];
+	parent.ignoreSize = true;
 	GTK.gtk_tree_view_column_cell_get_size (column, null, null, null, cw, ch);
+	parent.ignoreSize = false;
 	rect.height = ch [0];
 	if ((parent.getStyle () & SWT.MIRRORED) != 0) rect.x = parent.getClientWidth () - rect.width - rect.x;
 
