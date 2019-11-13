@@ -290,15 +290,6 @@ boolean checkData (TableItem item) {
 		OS.g_signal_handlers_unblock_matched (modelHandle, mask, signal_id, 0, 0, 0, handle);
 		if (item.isDisposed ()) return false;
 	}
-	/*
-	 * A commit in GTK3.18 caused bug 531048 due to internal changes in GtkStyleContext
-	 * invalidation. The fix is to invalidate the GtkStyleContext manually when changing
-	 * SWT.VIRTUAL Table content. Without it, the internal caching mechanism causes
-	 * the wrong cells to be rendered.
-	 */
-	if (!GTK.GTK4 && GTK.GTK_VERSION >= OS.VERSION(3, 18, 0)) {
-		GTK.gtk_style_context_invalidate(GTK.gtk_widget_get_style_context(handle));
-	}
 	return true;
 }
 
