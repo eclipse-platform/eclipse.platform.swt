@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2016 IBM Corporation and others.
+ * Copyright (c) 2000, 2019 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -10,6 +10,7 @@
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
+ *     Paul Pazderski - Bug 349112: allow setting alignment on the text field
  *******************************************************************************/
 package org.eclipse.swt.custom;
 
@@ -32,8 +33,8 @@ import org.eclipse.swt.widgets.*;
  * attempts to set the height of a Combo are ignored. CCombo can be used
  * anywhere that having the increased flexibility is more important than
  * getting native L&amp;F, but the decision should not be taken lightly.
- * There is no is no strict requirement that CCombo look or behave
- * the same as the native combo box.
+ * There is no strict requirement that CCombo look or behave the same as
+ * the native combo box.
  * </p>
  * <p>
  * Note that although this class is a subclass of <code>Composite</code>,
@@ -41,7 +42,7 @@ import org.eclipse.swt.widgets.*;
  * </p>
  * <dl>
  * <dt><b>Styles:</b>
- * <dd>BORDER, READ_ONLY, FLAT</dd>
+ * <dd>BORDER, READ_ONLY, FLAT, LEAD, LEFT, CENTER, TRAIL, RIGHT</dd>
  * <dt><b>Events:</b>
  * <dd>DefaultSelection, Modify, Selection, Verify</dd>
  * </dl>
@@ -91,19 +92,16 @@ public class CCombo extends Composite {
  * @see SWT#BORDER
  * @see SWT#READ_ONLY
  * @see SWT#FLAT
+ * @see SWT#LEAD
+ * @see SWT#LEFT
+ * @see SWT#CENTER
+ * @see SWT#RIGHT
+ * @see SWT#TRAIL
  * @see Widget#getStyle()
  */
 public CCombo (Composite parent, int style) {
 	super (parent, style = checkStyle (style));
 	_shell = super.getShell ();
-
-	int textStyle = SWT.SINGLE;
-	if ((style & SWT.READ_ONLY) != 0) textStyle |= SWT.READ_ONLY;
-	if ((style & SWT.FLAT) != 0) textStyle |= SWT.FLAT;
-	text = new Text (this, textStyle);
-	int arrowStyle = SWT.ARROW | SWT.DOWN;
-	if ((style & SWT.FLAT) != 0) arrowStyle |= SWT.FLAT;
-	arrow = new Button (this, arrowStyle);
 
 	listener = event -> {
 		if (isDisposed ()) return;
@@ -134,6 +132,12 @@ public CCombo (Composite parent, int style) {
 			});
 		}
 	};
+
+	createText(parent, style);
+
+	int arrowStyle = SWT.ARROW | SWT.DOWN;
+	if ((style & SWT.FLAT) != 0) arrowStyle |= SWT.FLAT;
+	arrow = new Button (this, arrowStyle);
 	filter = event -> {
 		if (isDisposed ()) return;
 		if (event.type == SWT.Selection) {
@@ -151,11 +155,6 @@ public CCombo (Composite parent, int style) {
 	int [] comboEvents = {SWT.Dispose, SWT.FocusIn, SWT.Move, SWT.Resize, SWT.FocusOut};
 	for (int i=0; i<comboEvents.length; i++) this.addListener (comboEvents [i], listener);
 
-	int [] textEvents = {SWT.DefaultSelection, SWT.DragDetect, SWT.KeyDown, SWT.KeyUp, SWT.MenuDetect, SWT.Modify,
-		SWT.MouseDown, SWT.MouseUp, SWT.MouseDoubleClick, SWT.MouseEnter, SWT.MouseExit, SWT.MouseHover,
-		SWT.MouseMove, SWT.MouseWheel, SWT.Traverse, SWT.FocusIn, SWT.Verify};
-	for (int i=0; i<textEvents.length; i++) text.addListener (textEvents [i], listener);
-
 	int [] arrowEvents = {SWT.DragDetect, SWT.MouseDown, SWT.MouseEnter, SWT.MouseExit, SWT.MouseHover,
 		SWT.MouseMove, SWT.MouseUp, SWT.MouseWheel, SWT.Selection, SWT.FocusIn};
 	for (int i=0; i<arrowEvents.length; i++) arrow.addListener (arrowEvents [i], listener);
@@ -172,8 +171,56 @@ public CCombo (Composite parent, int style) {
 	initAccessible();
 }
 static int checkStyle (int style) {
-	int mask = SWT.BORDER | SWT.READ_ONLY | SWT.FLAT | SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT;
+	int mask = SWT.BORDER | SWT.READ_ONLY | SWT.FLAT | SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT | SWT.LEAD | SWT.CENTER | SWT.TRAIL;
 	return SWT.NO_FOCUS | (style & mask);
+}
+void createText(Control parent, int style) {
+	String textValue = null, tooltip = null;
+	Point selection = null;
+	int limit = 0;
+	boolean enabled = false, focus = false, editable = false;
+	Font font = null;
+	Color fg = null, bg = null;
+	Menu menu = null;
+	if (text != null) {
+		textValue = text.getText();
+		tooltip = text.getToolTipText();
+		selection = text.getSelection();
+		limit = text.getTextLimit();
+		enabled = text.isEnabled();
+		editable = text.getEditable();
+		focus = text.isFocusControl();
+		font = text.getFont();
+		fg = text.getForeground();
+		bg = text.getBackground();
+		menu = text.getMenu();
+		text.dispose();
+	}
+
+	int textStyle = style | SWT.SINGLE;
+	if ((style & SWT.READ_ONLY) != 0) textStyle |= SWT.READ_ONLY;
+	if ((style & SWT.FLAT) != 0) textStyle |= SWT.FLAT;
+	textStyle |= style & (SWT.LEAD | SWT.CENTER | SWT.TRAIL);
+	text = new Text (this, textStyle);
+	if (textValue != null) {
+		text.setText(textValue);
+		text.setToolTipText(tooltip);
+		if (selection != null) text.setSelection(selection);
+		text.setTextLimit(limit);
+		text.setEnabled(enabled);
+		text.setEditable(editable);
+		if (focus) text.setFocus();
+		if (font != null) text.setFont(font);
+		if (fg != null) text.setForeground(fg);
+		if (bg != null) text.setBackground(bg);
+		if (menu != null) text.setMenu(menu);
+		internalLayout(true);
+	}
+
+	int [] textEvents = {SWT.DefaultSelection, SWT.DragDetect, SWT.KeyDown, SWT.KeyUp, SWT.MenuDetect, SWT.Modify,
+			SWT.MouseDown, SWT.MouseUp, SWT.MouseDoubleClick, SWT.MouseEnter, SWT.MouseExit, SWT.MouseHover,
+			SWT.MouseMove, SWT.MouseWheel, SWT.Traverse, SWT.FocusIn, SWT.Verify};
+	for (int i=0; i<textEvents.length; i++) text.addListener (textEvents [i], listener);
 }
 /**
  * Adds the argument to the end of the receiver's list.
@@ -660,6 +707,16 @@ String getAssociatedLabel () {
 	}
 	return null;
 }
+/**
+ * Returns the horizontal alignment.
+ * The alignment style (LEFT, CENTER or RIGHT) is returned.
+ *
+ * @return SWT.LEFT, SWT.RIGHT or SWT.CENTER
+ * @since 3.113
+ */
+public int getAlignment() {
+	return text.getStyle() & (SWT.LEFT | SWT.CENTER | SWT.RIGHT);
+}
 @Override
 public Control [] getChildren () {
 	checkWidget();
@@ -827,6 +884,8 @@ public int getStyle () {
 	int style = super.getStyle ();
 	style &= ~SWT.READ_ONLY;
 	if (!text.getEditable()) style |= SWT.READ_ONLY;
+	style &= ~(SWT.LEFT | SWT.CENTER | SWT.RIGHT);
+	style |= getAlignment();
 	return style;
 }
 /**
@@ -1462,6 +1521,25 @@ public void select (int index) {
 			list.showSelection ();
 		}
 	}
+}
+
+/**
+ * Set the horizontal alignment of the CLabel.
+ * Use the values LEFT, CENTER and RIGHT to align image and text within the available space.
+ *
+ * @param align the alignment style of LEFT, RIGHT or CENTER
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if the value of align is not one of SWT.LEFT, SWT.RIGHT or SWT.CENTER</li>
+ * </ul>
+ * @since 3.113
+ */
+public void setAlignment(int align) {
+	checkWidget();
+	int styleWithoutAlign = getStyle() & ~(SWT.LEFT | SWT.CENTER | SWT.RIGHT);
+	createText(getParent(), styleWithoutAlign | align);
 }
 @Override
 public void setBackground (Color color) {

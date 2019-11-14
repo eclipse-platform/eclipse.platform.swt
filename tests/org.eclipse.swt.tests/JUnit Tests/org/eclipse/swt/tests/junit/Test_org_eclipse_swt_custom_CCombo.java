@@ -1029,4 +1029,24 @@ public void test_setTextLjava_lang_String() {
 		assertTrue(":c:" + i, ccombo.getText().equals(cases[i]));
 	}
 }
+
+@Test
+public void test_setAlignment() {
+	assertEquals(":a:", SWT.LEAD, ccombo.getAlignment());
+
+	ccombo.setText("Trail");
+	ccombo.setAlignment(SWT.TRAIL);
+	assertEquals(":b:", SWT.TRAIL, ccombo.getAlignment());
+	assertEquals(":b:", "Trail", ccombo.getText());
+
+	ccombo.add("Center");
+	ccombo.select(ccombo.getItemCount() - 1);
+	ccombo.setAlignment(SWT.CENTER);
+	assertEquals(":c:", SWT.CENTER, ccombo.getAlignment());
+	assertEquals(":c:", "Center", ccombo.getText());
+
+	ccombo.setAlignment(SWT.LEFT);
+	assertEquals(":d:", SWT.LEFT, ccombo.getAlignment());
+	assertEquals(":d:", "Center", ccombo.getText());
+}
 }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2013 IBM Corporation and others.
+ * Copyright (c) 2000, 2019 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -14,12 +14,15 @@
 package org.eclipse.swt.examples.controlexample;
 
 
-import org.eclipse.swt.*;
-import org.eclipse.swt.widgets.*;
-import org.eclipse.swt.custom.*;
-import org.eclipse.swt.layout.*;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.CCombo;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Group;
+import org.eclipse.swt.widgets.Widget;
 
-class CComboTab extends Tab {
+class CComboTab extends AlignableTab {
 
 	/* Example widgets and groups that contain them */
 	CCombo combo1;
@@ -70,6 +73,9 @@ class CComboTab extends Tab {
 		if (flatButton.getSelection ()) style |= SWT.FLAT;
 		if (readOnlyButton.getSelection ()) style |= SWT.READ_ONLY;
 		if (borderButton.getSelection ()) style |= SWT.BORDER;
+		if (leftButton.getSelection ()) style |= SWT.LEFT;
+		if (centerButton.getSelection ()) style |= SWT.CENTER;
+		if (rightButton.getSelection ()) style |= SWT.RIGHT;
 
 		/* Create the example widgets */
 		combo1 = new CCombo (comboGroup, style);
@@ -129,5 +135,17 @@ class CComboTab extends Tab {
 		flatButton.setSelection ((combo1.getStyle () & SWT.FLAT) != 0);
 		readOnlyButton.setSelection ((combo1.getStyle () & SWT.READ_ONLY) != 0);
 		borderButton.setSelection ((combo1.getStyle () & SWT.BORDER) != 0);
+		leftButton.setSelection ((combo1.getStyle () & SWT.LEFT) != 0);
+		centerButton.setSelection ((combo1.getStyle () & SWT.CENTER) != 0);
+		rightButton.setSelection ((combo1.getStyle () & SWT.RIGHT) != 0);
+	}
+
+	@Override
+	void setExampleWidgetAlignment() {
+		int alignment = 0;
+		if (leftButton.getSelection ()) alignment = SWT.LEFT;
+		if (centerButton.getSelection ()) alignment = SWT.CENTER;
+		if (rightButton.getSelection ()) alignment = SWT.RIGHT;
+		combo1.setAlignment (alignment);
 	}
 }
