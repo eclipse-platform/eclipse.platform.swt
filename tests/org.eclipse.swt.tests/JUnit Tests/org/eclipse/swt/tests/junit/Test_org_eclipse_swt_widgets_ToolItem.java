@@ -69,23 +69,37 @@ public void test_setDisabledImage() {
 		toolItem.setImage(images[0]);
 		toolItem.setDisabledImage(images[1]);
 		toolItem.setEnabled(false);
-		assertEquals(images[1], item.getImage());
+		assertEquals(images[1], toolItem.getImage());
+
 		toolItem.setEnabled(true);
-		assertEquals(images[0], item.getImage());
+		assertEquals(images[0], toolItem.getImage());
+
 		toolItem.setDisabledImage(images[0]);
-		assertEquals(images[0], item.getImage());
+		assertEquals(images[0], toolItem.getImage());
+
 		toolItem.setEnabled(false);
-		assertEquals(images[0], item.getImage());
+		assertEquals(images[0], toolItem.getImage());
+
 		toolItem.setImage(images[0]);
 		toolItem.setEnabled(true);
-		assertEquals(images[0], item.getImage());
+		assertEquals(images[0], toolItem.getImage());
+
 		toolItem.setDisabledImage(images[2]);
 		toolItem.setEnabled(false);
-		assertEquals(images[2], item.getImage());
+		assertEquals(images[2], toolItem.getImage());
+
 		toolItem.setEnabled(true);
 		toolItem.setDisabledImage(null);
 		toolItem.setEnabled(false);
-		assertEquals(images[0], item.getImage());
+		assertEquals(images[0], toolItem.getImage());
+
+		toolItem.setEnabled(true);
+		toolItem.setDisabledImage(null);
+		assertEquals(images[0], toolItem.getImage());
+
+		toolItem.setEnabled(false);
+		toolItem.setDisabledImage(null);
+		assertEquals(images[0], toolItem.getImage());
 	}
 }
 

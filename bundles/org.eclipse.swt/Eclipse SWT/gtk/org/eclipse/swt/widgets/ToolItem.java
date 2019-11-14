@@ -992,9 +992,9 @@ public void setDisabledImage (Image image) {
 		} else {
 			imageList.put (imageIndex, image);
 		}
-	}
-	if (!enabled) {
-		setImage(image);
+		if (!enabled) {
+			setImage(image);
+		}
 	}
 }
 
