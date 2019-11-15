@@ -5308,6 +5308,7 @@ public void test_insertInBlockSelection() {
 
 @Test
 public void test_setStyleRanges_render() throws InterruptedException {
+	Assume.assumeFalse("Bug 553090 causes test to fail on Mac", SwtTestUtil.isCocoa);
 	shell.setVisible(true);
 	text.setText("abc");
 	text.setMargins(0, 0, 0, 0);
