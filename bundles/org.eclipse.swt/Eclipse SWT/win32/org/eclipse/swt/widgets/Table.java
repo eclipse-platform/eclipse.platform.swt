@@ -1498,7 +1498,7 @@ void createHandle () {
 	/* Use the Explorer theme */
 	if (OS.IsAppThemed ()) {
 		explorerTheme = true;
-		OS.SetWindowTheme (handle, Display.EXPLORER, null);
+		OS.SetWindowTheme (handle, display.getExplorerTheme(), null);
 	}
 
 	/* Get the header window handle */

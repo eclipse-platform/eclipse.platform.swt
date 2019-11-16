@@ -973,6 +973,12 @@ void enableDrag (boolean enabled) {
 	/* Do nothing */
 }
 
+void enableDarkScrollbars() {
+	if (display.getData(Display.ENABLE_DARK_SCROLLBARS) != null) {
+		OS.SetWindowTheme (handle, Display.DARKMODE_EXPLORER, null);
+	}
+}
+
 void enableWidget (boolean enabled) {
 	OS.EnableWindow (handle, enabled);
 }

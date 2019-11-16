@@ -156,12 +156,14 @@ public class Display extends Device {
 	long hButtonTheme, hEditTheme, hExplorerBarTheme, hScrollBarTheme, hTabTheme;
 	static final char [] BUTTON = new char [] {'B', 'U', 'T', 'T', 'O', 'N', 0};
 	static final char [] EDIT = new char [] {'E', 'D', 'I', 'T', 0};
+	static final char [] DARKMODE_EXPLORER = new char [] {'D', 'A', 'R', 'K', 'M', 'O', 'D', 'E', '_', 'E', 'X', 'P', 'L', 'O', 'R', 'E', 'R', 0};
 	static final char [] EXPLORER = new char [] {'E', 'X', 'P', 'L', 'O', 'R', 'E', 'R', 0};
 	static final char [] EXPLORERBAR = new char [] {'E', 'X', 'P', 'L', 'O', 'R', 'E', 'R', 'B', 'A', 'R', 0};
 	static final char [] SCROLLBAR = new char [] {'S', 'C', 'R', 'O', 'L', 'L', 'B', 'A', 'R', 0};
 	static final char [] LISTVIEW = new char [] {'L', 'I', 'S', 'T', 'V', 'I', 'E', 'W', 0};
 	static final char [] TAB = new char [] {'T', 'A', 'B', 0};
 	static final char [] TREEVIEW = new char [] {'T', 'R', 'E', 'E', 'V', 'I', 'E', 'W', 0};
+	static final String ENABLE_DARK_SCROLLBARS = "org.eclipse.swt.internal.win32.enableDarkScrollbars";
 
 	/* Custom icons */
 	long hIconSearch;
@@ -4494,6 +4496,11 @@ public final void setErrorHandler (Consumer<Error> errorHandler) {
  */
 public final Consumer<Error> getErrorHandler () {
 	return errorHandler;
+}
+
+char[] getExplorerTheme() {
+	Boolean data = (Boolean) getData(Display.ENABLE_DARK_SCROLLBARS);
+	return data != null && data.booleanValue () ? DARKMODE_EXPLORER : EXPLORER;
 }
 
 int shiftedKey (int key) {

@@ -879,6 +879,18 @@ boolean dragDetect (long hwnd, int x, int y, boolean filter, boolean [] detect, 
 	return super.dragDetect (hwnd, x, y, filter, detect, consume);
 }
 
+@Override
+void enableDarkScrollbars() {
+	/*
+	 * Feature in Windows. If the control has default foreground and
+	 * background, the background gets black without focus and white with
+	 * focus, but the foreground color always stays black.
+	 */
+	if (hasCustomBackground() || hasCustomForeground()) {
+		super.enableDarkScrollbars();
+	}
+}
+
 void fixAlignment () {
 	/*
 	* Feature in Windows.  When the edit control is not
@@ -1872,6 +1884,7 @@ void setBackgroundImage (long hBitmap) {
 
 @Override
 void setBackgroundPixel (int pixel) {
+	enableDarkScrollbars();
 	int flags = OS.RDW_ERASE | OS.RDW_ALLCHILDREN | OS.RDW_INVALIDATE;
 	OS.RedrawWindow (handle, null, 0, flags);
 }
@@ -2029,6 +2042,12 @@ public void setFont (Font font) {
 	super.setFont (font);
 	setTabStops (tabs);
 	setMargins ();
+}
+
+@Override
+void setForegroundPixel (int pixel) {
+	enableDarkScrollbars();
+	super.setForegroundPixel(pixel);
 }
 
 void setMargins () {

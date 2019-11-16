@@ -1847,7 +1847,7 @@ void createHandle () {
 	/* Use the Explorer theme */
 	if (OS.IsAppThemed ()) {
 		explorerTheme = true;
-		OS.SetWindowTheme (handle, Display.EXPLORER, null);
+		OS.SetWindowTheme (handle, display.getExplorerTheme(), null);
 		int bits = OS.TVS_EX_DOUBLEBUFFER | OS.TVS_EX_RICHTOOLTIP;
 		if (ENABLE_TVS_EX_FADEINOUTEXPANDOS) bits |= OS.TVS_EX_FADEINOUTEXPANDOS;
 		OS.SendMessage (handle, OS.TVM_SETEXTENDEDSTYLE, 0, bits);
@@ -2232,6 +2232,7 @@ void createParent () {
 		null);
 	if (hwndParent == 0) error (SWT.ERROR_NO_HANDLES);
 	OS.SetWindowLongPtr (hwndParent, OS.GWLP_ID, hwndParent);
+	OS.SetWindowTheme (hwndParent, display.getExplorerTheme(), null);
 	int bits = OS.WS_EX_NOINHERITLAYOUT;
 	if ((style & SWT.RIGHT_TO_LEFT) != 0) bits |= OS.WS_EX_LAYOUTRTL;
 	hwndHeader = OS.CreateWindowEx (

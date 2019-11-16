@@ -140,6 +140,12 @@ Rectangle computeTrimInPixels (int x, int y, int width, int height) {
 	return new Rectangle (rect.left, rect.top, nWidth, nHeight);
 }
 
+@Override
+void createHandle () {
+	super.createHandle();
+	enableDarkScrollbars();
+}
+
 ScrollBar createScrollBar (int type) {
 	ScrollBar bar = new ScrollBar (this, type);
 	if ((state & CANVAS) != 0) {
