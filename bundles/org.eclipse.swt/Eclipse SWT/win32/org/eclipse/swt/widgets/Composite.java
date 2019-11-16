@@ -126,15 +126,15 @@ Control [] _getChildren () {
 Control [] _getTabList () {
 	if (tabList == null) return tabList;
 	int count = 0;
-	for (int i=0; i<tabList.length; i++) {
-		if (!tabList [i].isDisposed ()) count++;
+	for (Control element : tabList) {
+		if (!element.isDisposed ()) count++;
 	}
 	if (count == tabList.length) return tabList;
 	Control [] newList = new Control [count];
 	int index = 0;
-	for (int i=0; i<tabList.length; i++) {
-		if (!tabList [i].isDisposed ()) {
-			newList [index++] = tabList [i];
+	for (Control element : tabList) {
+		if (!element.isDisposed ()) {
+			newList [index++] = element;
 		}
 	}
 	tabList = newList;
@@ -194,8 +194,7 @@ Widget [] computeTabList () {
 	Widget result [] = super.computeTabList ();
 	if (result.length == 0) return result;
 	Control [] list = tabList != null ? _getTabList () : _getChildren ();
-	for (int i=0; i<list.length; i++) {
-		Control child = list [i];
+	for (Control child : list) {
 		Widget  [] childList = child.computeTabList ();
 		if (childList.length != 0) {
 			Widget [] newResult = new Widget [result.length + childList.length];
@@ -377,9 +376,7 @@ Composite findDeferredControl () {
 Menu [] findMenus (Control control) {
 	if (control == this) return new Menu [0];
 	Menu result [] = super.findMenus (control);
-	Control [] children = _getChildren ();
-	for (int i=0; i<children.length; i++) {
-		Control child = children [i];
+	for (Control child : _getChildren ()) {
 		Menu [] menuList = child.findMenus (control);
 		if (menuList.length != 0) {
 			Menu [] newResult = new Menu [result.length + menuList.length];
@@ -394,17 +391,16 @@ Menu [] findMenus (Control control) {
 @Override
 void fixChildren (Shell newShell, Shell oldShell, Decorations newDecorations, Decorations oldDecorations, Menu [] menus) {
 	super.fixChildren (newShell, oldShell, newDecorations, oldDecorations, menus);
-	Control [] children = _getChildren ();
-	for (int i=0; i<children.length; i++) {
-		children [i].fixChildren (newShell, oldShell, newDecorations, oldDecorations, menus);
+	for (Control child : _getChildren ()) {
+		child.fixChildren (newShell, oldShell, newDecorations, oldDecorations, menus);
 	}
 }
 
 void fixTabList (Control control) {
 	if (tabList == null) return;
 	int count = 0;
-	for (int i=0; i<tabList.length; i++) {
-		if (tabList [i] == control) count++;
+	for (Control element : tabList) {
+		if (element == control) count++;
 	}
 	if (count == 0) return;
 	Control [] newList = null;
@@ -412,9 +408,9 @@ void fixTabList (Control control) {
 	if (length != 0) {
 		newList = new Control [length];
 		int index = 0;
-		for (int i=0; i<tabList.length; i++) {
-			if (tabList [i] != control) {
-				newList [index++] = tabList [i];
+		for (Control element : tabList) {
+			if (element != control) {
+				newList [index++] = element;
 			}
 		}
 	}
@@ -518,14 +514,14 @@ public Control [] getTabList () {
 	if (tabList == null) {
 		int count = 0;
 		Control [] list =_getChildren ();
-		for (int i=0; i<list.length; i++) {
-			if (list [i].isTabGroup ()) count++;
+		for (Control element : list) {
+			if (element.isTabGroup ()) count++;
 		}
 		tabList = new Control [count];
 		int index = 0;
-		for (int i=0; i<list.length; i++) {
-			if (list [i].isTabGroup ()) {
-				tabList [index++] = list [i];
+		for (Control element : list) {
+			if (element.isTabGroup ()) {
+				tabList [index++] = element;
 			}
 		}
 	}
@@ -806,8 +802,7 @@ public void layout (Control [] changed) {
 public void layout (Control [] changed, int flags) {
 	checkWidget ();
 	if (changed != null) {
-		for (int i=0; i<changed.length; i++) {
-			Control control = changed [i];
+		for (Control control : changed) {
 			if (control == null) error (SWT.ERROR_INVALID_ARGUMENT);
 			if (control.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
 			boolean ancestor = false;
@@ -821,8 +816,8 @@ public void layout (Control [] changed, int flags) {
 		}
 		int updateCount = 0;
 		Composite [] update = new Composite [16];
-		for (int i=0; i<changed.length; i++) {
-			Control child = changed [i];
+		for (Control element : changed) {
+			Control child = element;
 			Composite composite = child.parent;
 			// Update layout when the list of children has changed.
 			// See bug 497812.
@@ -868,23 +863,21 @@ void markLayout (boolean changed, boolean all) {
 		if (changed) state |= LAYOUT_CHANGED;
 	}
 	if (all) {
-		Control [] children = _getChildren ();
-		for (int i=0; i<children.length; i++) {
-			children [i].markLayout (changed, all);
+		for (Control element : _getChildren ()) {
+			element.markLayout (changed, all);
 		}
 	}
 }
 
 Point minimumSize (int wHint, int hHint, boolean changed) {
-	Control [] children = _getChildren ();
 	/*
 	 * Since getClientArea can be overridden by subclasses, we cannot
 	 * call getClientAreaInPixels directly.
 	 */
 	Rectangle clientArea = DPIUtil.autoScaleUp(getClientArea ());
 	int width = 0, height = 0;
-	for (int i=0; i<children.length; i++) {
-		Rectangle rect = DPIUtil.autoScaleUp(children [i].getBounds ());
+	for (Control element : _getChildren ()) {
+		Rectangle rect = DPIUtil.autoScaleUp(element.getBounds ());
 		width = Math.max (width, rect.x - clientArea.x + rect.width);
 		height = Math.max (height, rect.y - clientArea.y + rect.height);
 	}
@@ -894,9 +887,8 @@ Point minimumSize (int wHint, int hHint, boolean changed) {
 @Override
 boolean redrawChildren () {
 	if (!super.redrawChildren ()) return false;
-	Control [] children = _getChildren ();
-	for (int i=0; i<children.length; i++) {
-		children [i].redrawChildren ();
+	for (Control element : _getChildren ()) {
+		element.redrawChildren ();
 	}
 	return true;
 }
@@ -924,9 +916,7 @@ void releaseParent () {
 
 @Override
 void releaseChildren (boolean destroy) {
-	Control [] children = _getChildren ();
-	for (int i=0; i<children.length; i++) {
-		Control child = children [i];
+	for (Control child : _getChildren ()) {
 		if (child != null && !child.isDisposed ()) {
 			child.release (false);
 		}
@@ -960,9 +950,7 @@ void removeControl (Control control) {
 @Override
 void reskinChildren (int flags) {
 	super.reskinChildren (flags);
-	Control [] children = _getChildren ();
-	for (int i=0; i<children.length; i++) {
-		Control child = children [i];
+	for (Control child : _getChildren ()) {
 		if (child != null) child.reskin (flags);
 	}
 }
@@ -985,8 +973,7 @@ boolean resizeChildren (boolean defer, WINDOWPOS [] pwp) {
 		hdwp = OS.BeginDeferWindowPos (pwp.length);
 		if (hdwp == 0) return false;
 	}
-	for (int i=0; i<pwp.length; i++) {
-		WINDOWPOS wp = pwp [i];
+	for (WINDOWPOS wp : pwp) {
 		if (wp != null) {
 			/*
 			* This code is intentionally commented.  All widgets that
@@ -1061,9 +1048,8 @@ void sendResize () {
 public void setBackgroundMode (int mode) {
 	checkWidget ();
 	backgroundMode = mode;
-	Control [] children = _getChildren ();
-	for (int i = 0; i < children.length; i++) {
-		children [i].updateBackgroundMode ();
+	for (Control element : _getChildren ()) {
+		element.updateBackgroundMode ();
 	}
 }
 
@@ -1090,12 +1076,10 @@ void setBoundsInPixels (int x, int y, int width, int height, int flags, boolean 
 public boolean setFocus () {
 	checkWidget ();
 	Control [] children = _getChildren ();
-	for (int i=0; i<children.length; i++) {
-		Control child = children [i];
+	for (Control child : children) {
 		if (child.setRadioFocus (false)) return true;
 	}
-	for (int i=0; i<children.length; i++) {
-		Control child = children [i];
+	for (Control child : children) {
 		if (child.setFocus ()) return true;
 	}
 	return super.setFocus ();
@@ -1169,8 +1153,7 @@ public void setLayoutDeferred (boolean defer) {
 public void setTabList (Control [] tabList) {
 	checkWidget ();
 	if (tabList != null) {
-		for (int i=0; i<tabList.length; i++) {
-			Control control = tabList [i];
+		for (Control control : tabList) {
 			if (control == null) error (SWT.ERROR_INVALID_ARGUMENT);
 			if (control.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
 			if (control.parent != this) error (SWT.ERROR_INVALID_PARENT);
@@ -1206,12 +1189,10 @@ boolean setTabGroupFocus () {
 	}
 	if (takeFocus && setTabItemFocus ()) return true;
 	Control [] children = _getChildren ();
-	for (int i=0; i<children.length; i++) {
-		Control child = children [i];
+	for (Control child : children) {
 		if (child.isTabItem () && child.setRadioFocus (true)) return true;
 	}
-	for (int i=0; i<children.length; i++) {
-		Control child = children [i];
+	for (Control child : children) {
 		if (child.isTabItem () && !child.isTabGroup () && child.setTabItemFocus ()) {
 			return true;
 		}
@@ -1269,9 +1250,7 @@ String toolTipText (NMTTDISPINFO hdr) {
 boolean translateMnemonic (Event event, Control control) {
 	if (super.translateMnemonic (event, control)) return true;
 	if (control != null) {
-		Control [] children = _getChildren ();
-		for (int i=0; i<children.length; i++) {
-			Control child = children [i];
+		for (Control child : _getChildren ()) {
 			if (child.translateMnemonic (event, control)) return true;
 		}
 	}
@@ -1302,10 +1281,9 @@ boolean translateTraversal (MSG msg) {
 @Override
 void updateBackgroundColor () {
 	super.updateBackgroundColor ();
-	Control [] children = _getChildren ();
-	for (int i=0; i<children.length; i++) {
-		if ((children [i].state & PARENT_BACKGROUND) != 0) {
-			children [i].updateBackgroundColor ();
+	for (Control element : _getChildren ()) {
+		if ((element.state & PARENT_BACKGROUND) != 0) {
+			element.updateBackgroundColor ();
 		}
 	}
 }
@@ -1313,10 +1291,9 @@ void updateBackgroundColor () {
 @Override
 void updateBackgroundImage () {
 	super.updateBackgroundImage ();
-	Control [] children = _getChildren ();
-	for (int i=0; i<children.length; i++) {
-		if ((children [i].state & PARENT_BACKGROUND) != 0) {
-			children [i].updateBackgroundImage ();
+	for (Control element : _getChildren ()) {
+		if ((element.state & PARENT_BACKGROUND) != 0) {
+			element.updateBackgroundImage ();
 		}
 	}
 }
@@ -1324,18 +1301,15 @@ void updateBackgroundImage () {
 @Override
 void updateBackgroundMode () {
 	super.updateBackgroundMode ();
-	Control [] children = _getChildren ();
-	for (int i = 0; i < children.length; i++) {
-		children [i].updateBackgroundMode ();
+	for (Control element : _getChildren ()) {
+		element.updateBackgroundMode ();
 	}
 }
 
 @Override
 void updateFont (Font oldFont, Font newFont) {
 	super.updateFont (oldFont, newFont);
-	Control [] children = _getChildren ();
-	for (int i=0; i<children.length; i++) {
-		Control control = children [i];
+	for (Control control : _getChildren ()) {
 		if (!control.isDisposed ()) {
 			control.updateFont (oldFont, newFont);
 		}
@@ -1363,9 +1337,8 @@ void updateLayout (boolean resize, boolean all) {
 	}
 	if (all) {
 		state &= ~LAYOUT_CHILD;
-		Control [] children = _getChildren ();
-		for (int i=0; i<children.length; i++) {
-			children [i].updateLayout (resize, all);
+		for (Control element : _getChildren ()) {
+			element.updateLayout (resize, all);
 		}
 	}
 }

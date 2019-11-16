@@ -269,8 +269,8 @@ public RGB open () {
 	/* Get the Custom Colors (if the user defined any) from the dialog */
 	boolean customColor = false;
 	OS.MoveMemory (colors, display.lpCustColors, colors.length * 4);
-	for (int i=0; i<colors.length; i++) {
-		if (colors[i] != 0x00FFFFFF) {
+	for (int color : colors) {
+		if (color != 0x00FFFFFF) {
 			customColor = true;
 			break;
 		}
@@ -352,8 +352,8 @@ public void setRGB (RGB rgb) {
  */
 public void setRGBs(RGB[] rgbs) {
 	if (rgbs != null) {
-		for (int i=0; i<rgbs.length; i++) {
-			if (rgbs [i] == null) error (SWT.ERROR_INVALID_ARGUMENT);
+		for (RGB rgb : rgbs) {
+			if (rgb == null) error (SWT.ERROR_INVALID_ARGUMENT);
 		}
 	}
 	this.rgbs = rgbs;

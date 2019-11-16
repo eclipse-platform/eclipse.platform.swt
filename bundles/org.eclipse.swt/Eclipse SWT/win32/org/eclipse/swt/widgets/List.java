@@ -300,16 +300,15 @@ public void deselect (int [] indices) {
 	if ((style & SWT.SINGLE) != 0) {
 		int oldIndex = (int)OS.SendMessage (handle, OS.LB_GETCURSEL, 0, 0);
 		if (oldIndex == OS.LB_ERR) return;
-		for (int i=0; i<indices.length; i++) {
-			if (oldIndex == indices [i]) {
+		for (int index : indices) {
+			if (oldIndex == index) {
 				OS.SendMessage (handle, OS.LB_SETCURSEL, -1, 0);
 				return;
 			}
 		}
 		return;
 	}
-	for (int i=0; i<indices.length; i++) {
-		int index = indices [i];
+	for (int index : indices) {
 		if (index != -1) {
 			OS.SendMessage (handle, OS.LB_SETSEL, 0, index);
 		}
@@ -1210,8 +1209,8 @@ public void setItem (int index, String string) {
 public void setItems (String... items) {
 	checkWidget ();
 	if (items == null) error (SWT.ERROR_NULL_ARGUMENT);
-	for (int i=0; i<items.length; i++) {
-		if (items [i] == null) error (SWT.ERROR_INVALID_ARGUMENT);
+	for (String item : items) {
+		if (item == null) error (SWT.ERROR_INVALID_ARGUMENT);
 	}
 	long oldProc = OS.GetWindowLongPtr (handle, OS.GWLP_WNDPROC);
 	OS.SetWindowLongPtr (handle, OS.GWLP_WNDPROC, ListProc);

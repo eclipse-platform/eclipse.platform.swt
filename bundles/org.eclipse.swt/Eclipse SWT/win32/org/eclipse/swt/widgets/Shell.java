@@ -761,16 +761,15 @@ void enableWidget (boolean enabled) {
 @Override
 long findBrush (long value, int lbStyle) {
 	if (lbStyle == OS.BS_SOLID) {
-		for (int i=0; i<SYSTEM_COLORS.length; i++) {
-			if (value == OS.GetSysColor (SYSTEM_COLORS [i])) {
-				return OS.GetSysColorBrush (SYSTEM_COLORS [i]);
+		for (int element : SYSTEM_COLORS) {
+			if (value == OS.GetSysColor (element)) {
+				return OS.GetSysColorBrush (element);
 			}
 		}
 	}
 	if (brushes == null) brushes = new long [BRUSHES_SIZE];
 	LOGBRUSH logBrush = new LOGBRUSH ();
-	for (int i=0; i<brushes.length; i++) {
-		long hBrush = brushes [i];
+	for (long hBrush : brushes) {
 		if (hBrush == 0) break;
 		OS.GetObject (hBrush, LOGBRUSH.sizeof, logBrush);
 		switch (logBrush.lbStyle) {
@@ -1153,8 +1152,8 @@ public Shell [] getShells () {
 	checkWidget ();
 	int count = 0;
 	Shell [] shells = display.getShells ();
-	for (int i=0; i<shells.length; i++) {
-		Control shell = shells [i];
+	for (Shell activeshell : shells) {
+		Control shell = activeshell;
 		do {
 			shell = shell.parent;
 		} while (shell != null && shell != this);
@@ -1162,13 +1161,13 @@ public Shell [] getShells () {
 	}
 	int index = 0;
 	Shell [] result = new Shell [count];
-	for (int i=0; i<shells.length; i++) {
-		Control shell = shells [i];
+	for (Shell activeshell : shells) {
+		Control shell = activeshell;
 		do {
 			shell = shell.parent;
 		} while (shell != null && shell != this);
 		if (shell == this) {
-			result [index++] = shells [i];
+			result [index++] = activeshell;
 		}
 	}
 	return result;
@@ -1325,8 +1324,8 @@ void register () {
 
 void releaseBrushes () {
 	if (brushes != null) {
-		for (int i=0; i<brushes.length; i++) {
-			if (brushes [i] != 0) OS.DeleteObject (brushes [i]);
+		for (long brush : brushes) {
+			if (brush != 0) OS.DeleteObject (brush);
 		}
 	}
 	brushes = null;
@@ -1334,16 +1333,13 @@ void releaseBrushes () {
 
 @Override
 void releaseChildren (boolean destroy) {
-	Shell [] shells = getShells ();
-	for (int i=0; i<shells.length; i++) {
-		Shell shell = shells [i];
+	for (Shell shell : getShells ()) {
 		if (shell != null && !shell.isDisposed ()) {
 			shell.release (false);
 		}
 	}
 	if (toolTips != null) {
-		for (int i=0; i<toolTips.length; i++) {
-			ToolTip toolTip = toolTips [i];
+		for (ToolTip toolTip : toolTips) {
 			if (toolTip != null && !toolTip.isDisposed ()) {
 				toolTip.release (false);
 			}
@@ -1421,14 +1417,11 @@ public void requestLayout () {
 
 @Override
 void reskinChildren (int flags) {
-	Shell [] shells = getShells ();
-	for (int i=0; i<shells.length; i++) {
-		Shell shell = shells [i];
+	for (Shell shell : getShells ()) {
 		if (shell != null) shell.reskin (flags);
 	}
 	if (toolTips != null) {
-		for (int i=0; i<toolTips.length; i++) {
-			ToolTip toolTip = toolTips [i];
+		for (ToolTip toolTip : toolTips) {
 			if (toolTip != null) toolTip.reskin (flags);
 		}
 	}
@@ -2124,7 +2117,7 @@ long windowProc (long hwnd, int msg, long wParam, long lParam) {
 		return callWindowProc (hwnd, msg, wParam, lParam);
 	}
 	if (hwnd == handle) {
-		if ((int)msg == Display.TASKBARBUTTONCREATED) {
+		if (msg == Display.TASKBARBUTTONCREATED) {
 			if (display.taskBar != null) {
 				for (TaskItem item : display.taskBar.items) {
 					if (item != null && item.shell == this) {

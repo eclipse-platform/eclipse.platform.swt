@@ -182,8 +182,7 @@ void checkGDIP() {
 	if (loadedFonts != null) {
 		fontCollection = Gdip.PrivateFontCollection_new();
 		if (fontCollection == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-		for (int i = 0; i < loadedFonts.length; i++) {
-			String path = loadedFonts[i];
+		for (String path : loadedFonts) {
 			if (path == null) break;
 			int length = path.length();
 			char [] buffer = new char [length + 1];
@@ -799,8 +798,7 @@ void printErrors () {
 			int objectCount = 0;
 			int colors = 0, cursors = 0, fonts = 0, gcs = 0, images = 0;
 			int paths = 0, patterns = 0, regions = 0, textLayouts = 0, transforms = 0;
-			for (int i=0; i<objects.length; i++) {
-				Object object = objects [i];
+			for (Object object : objects) {
 				if (object != null) {
 					objectCount++;
 					if (object instanceof Color) colors++;
@@ -831,8 +829,8 @@ void printErrors () {
 					string = string.substring (0, string.length () - 2);
 					System.err.println (string);
 				}
-				for (int i=0; i<errors.length; i++) {
-					if (errors [i] != null) errors [i].printStackTrace (System.err);
+				for (Error error : errors) {
+					if (error != null) error.printStackTrace (System.err);
 				}
 			}
 		}

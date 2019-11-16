@@ -2111,8 +2111,8 @@ public void setItem (int index, String string) {
 public void setItems (String... items) {
 	checkWidget ();
 	if (items == null) error (SWT.ERROR_NULL_ARGUMENT);
-	for (int i=0; i<items.length; i++) {
-		if (items [i] == null) error (SWT.ERROR_INVALID_ARGUMENT);
+	for (String item : items) {
+		if (item == null) error (SWT.ERROR_INVALID_ARGUMENT);
 	}
 	RECT rect = null;
 	long hDC = 0, oldFont = 0, newFont = 0;
@@ -2126,9 +2126,8 @@ public void setItems (String... items) {
 	}
 	OS.SendMessage (handle, OS.CB_RESETCONTENT, 0, 0);
 	int codePage = getCodePage ();
-	for (int i=0; i<items.length; i++) {
-		String string = items [i];
-		TCHAR buffer = new TCHAR (codePage, string, true);
+	for (String item : items) {
+		TCHAR buffer = new TCHAR (codePage, item, true);
 		int code = (int)OS.SendMessage (handle, OS.CB_ADDSTRING, 0, buffer);
 		if (code == OS.CB_ERR) error (SWT.ERROR_ITEM_NOT_ADDED);
 		if (code == OS.CB_ERRSPACE) error (SWT.ERROR_ITEM_NOT_ADDED);

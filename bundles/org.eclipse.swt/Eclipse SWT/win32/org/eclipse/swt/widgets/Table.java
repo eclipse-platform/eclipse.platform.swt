@@ -1855,14 +1855,14 @@ public void deselect (int [] indices) {
 	if (indices.length == 0) return;
 	LVITEM lvItem = new LVITEM ();
 	lvItem.stateMask = OS.LVIS_SELECTED;
-	for (int i=0; i<indices.length; i++) {
+	for (int index : indices) {
 		/*
 		* An index of -1 will apply the change to all
 		* items.  Ensure that indices are greater than -1.
 		*/
-		if (indices [i] >= 0) {
+		if (index >= 0) {
 			ignoreSelect = true;
-			OS.SendMessage (handle, OS.LVM_SETITEMSTATE, indices [i], lvItem);
+			OS.SendMessage (handle, OS.LVM_SETITEMSTATE, index, lvItem);
 			ignoreSelect = false;
 		}
 	}
@@ -2119,9 +2119,9 @@ void destroyItem (TableColumn column) {
 		int count = 0;
 		int oldIndex = oldOrder [orderIndex];
 		int [] newOrder = new int [columnCount];
-		for (int i=0; i<oldOrder.length; i++) {
-			if (oldOrder [i] != oldIndex) {
-				int newIndex = oldOrder [i] <= oldIndex ? oldOrder [i] : oldOrder [i] - 1;
+		for (int element : oldOrder) {
+			if (element != oldIndex) {
+				int newIndex = element <= oldIndex ? element : element - 1;
 				newOrder [count++] = newIndex;
 			}
 		}
@@ -2145,9 +2145,9 @@ void destroyItem (TableColumn column) {
 			newColumns [i - orderIndex] = columns [newOrder [i]];
 			newColumns [i - orderIndex].updateToolTip (newOrder [i]);
 		}
-		for (int i=0; i<newColumns.length; i++) {
-			if (!newColumns [i].isDisposed ()) {
-				newColumns [i].sendEvent (SWT.Move);
+		for (TableColumn newColumn : newColumns) {
+			if (!newColumn.isDisposed ()) {
+				newColumn.sendEvent (SWT.Move);
 			}
 		}
 	}
@@ -3097,8 +3097,7 @@ public void remove (int [] indices) {
 	}
 	setDeferResize (true);
 	int last = -1;
-	for (int i=0; i<newIndices.length; i++) {
-		int index = newIndices [i];
+	for (int index : newIndices) {
 		if (index != last) {
 			TableItem item = _getItem (index, false);
 			if (item != null && !item.isDisposed ()) item.release (false);
@@ -3643,7 +3642,7 @@ Event sendMeasureItemEvent (TableItem item, int row, int column, long hDC) {
 		LVITEM lvItem = new LVITEM ();
 		lvItem.mask = OS.LVIF_STATE;
 		lvItem.stateMask = OS.LVIS_SELECTED;
-		lvItem.iItem = (int)row;
+		lvItem.iItem = row;
 		long result = OS.SendMessage (handle, OS.LVM_GETITEM, 0, lvItem);
 		boolean selected = (result != 0 && (lvItem.state & OS.LVIS_SELECTED) != 0);
 		if (selected && (column == 0 || (style & SWT.FULL_SELECTION) != 0)) {
@@ -5647,9 +5646,9 @@ void updateOrientation () {
 boolean updateTextDirection(int textDirection) {
 	if (super.updateTextDirection(textDirection)) {
 		if (textDirection == AUTO_TEXT_DIRECTION || (state & HAS_AUTO_DIRECTION) != 0) {
-			for (int i = 0, n = items.length; i < n; i++) {
-				if (items[i] != null) {
-					items[i].updateTextDirection(textDirection == AUTO_TEXT_DIRECTION ? AUTO_TEXT_DIRECTION : style & SWT.FLIP_TEXT_DIRECTION);
+			for (TableItem item : items) {
+				if (item != null) {
+					item.updateTextDirection(textDirection == AUTO_TEXT_DIRECTION ? AUTO_TEXT_DIRECTION : style & SWT.FLIP_TEXT_DIRECTION);
 				}
 			}
 		}
@@ -5933,8 +5932,7 @@ LRESULT WM_KEYDOWN (long wParam, long lParam) {
 				if (index != columnCount || hooks (SWT.MeasureItem)) {
 					TableColumn [] newColumns = new TableColumn [columnCount];
 					System.arraycopy (columns, 0, newColumns, 0, columnCount);
-					for (int i=0; i<newColumns.length; i++) {
-						TableColumn column = newColumns [i];
+					for (TableColumn column : newColumns) {
 						if (!column.isDisposed () && column.getResizable ()) {
 							column.pack ();
 						}

@@ -1973,8 +1973,8 @@ boolean isShowing () {
 boolean isTabGroup () {
 	Control [] tabList = parent._getTabList ();
 	if (tabList != null) {
-		for (int i=0; i<tabList.length; i++) {
-			if (tabList [i] == this) return true;
+		for (Control element : tabList) {
+			if (element == this) return true;
 		}
 	}
 	int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
@@ -1984,8 +1984,8 @@ boolean isTabGroup () {
 boolean isTabItem () {
 	Control [] tabList = parent._getTabList ();
 	if (tabList != null) {
-		for (int i=0; i<tabList.length; i++) {
-			if (tabList [i] == this) return false;
+		for (Control element : tabList) {
+			if (element == this) return false;
 		}
 	}
 	int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
@@ -5535,9 +5535,7 @@ LRESULT WM_SYSCOMMAND (long wParam, long lParam) {
 							char key = (char) lParam;
 							if (key != 0) {
 								key = Character.toUpperCase (key);
-								MenuItem [] items = menu.getItems ();
-								for (int i=0; i<items.length; i++) {
-									MenuItem item = items [i];
+								for (MenuItem item : menu.getItems ()) {
 									String text = item.getText ();
 									char mnemonic = findMnemonic (text);
 									if (text.length () > 0 && mnemonic == 0) {

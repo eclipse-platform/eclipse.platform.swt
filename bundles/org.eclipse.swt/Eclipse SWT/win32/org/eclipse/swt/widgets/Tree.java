@@ -1774,8 +1774,7 @@ public void clearAll (boolean all) {
 	if (hItem == 0) return;
 	if (all) {
 		boolean redraw = false;
-		for (int i=0; i<items.length; i++) {
-			TreeItem item = items [i];
+		for (TreeItem item : items) {
 			if (item != null && item != currentItem) {
 				item.clear ();
 				redraw = true;
@@ -1941,8 +1940,7 @@ void createItem (TreeColumn column, int index) {
 		System.arraycopy (columns, 0, newColumns, 0, columns.length);
 		columns = newColumns;
 	}
-	for (int i=0; i<items.length; i++) {
-		TreeItem item = items [i];
+	for (TreeItem item : items) {
 		if (item != null) {
 			String [] strings = item.strings;
 			if (strings != null) {
@@ -2404,8 +2402,7 @@ public void deselectAll () {
 			long hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_ROOT, 0);
 			deselect (hItem, tvItem, 0);
 		} else {
-			for (int i=0; i<items.length; i++) {
-				TreeItem item = items [i];
+			for (TreeItem item : items) {
 				if (item != null) {
 					tvItem.hItem = item.handle;
 					OS.SendMessage (handle, OS.TVM_SETITEM, 0, tvItem);
@@ -2437,8 +2434,7 @@ void destroyItem (TreeColumn column) {
 	}
 	System.arraycopy (columns, index + 1, columns, index, --columnCount - index);
 	columns [columnCount] = null;
-	for (int i=0; i<items.length; i++) {
-		TreeItem item = items [i];
+	for (TreeItem item : items) {
 		if (item != null) {
 			if (columnCount == 0) {
 				item.strings = null;
@@ -2537,9 +2533,9 @@ void destroyItem (TreeColumn column) {
 			newColumns [i - orderIndex] = columns [newOrder [i]];
 			newColumns [i - orderIndex].updateToolTip (newOrder [i]);
 		}
-		for (int i=0; i<newColumns.length; i++) {
-			if (!newColumns [i].isDisposed ()) {
-				newColumns [i].sendEvent (SWT.Move);
+		for (TreeColumn newColumn : newColumns) {
+			if (!newColumn.isDisposed ()) {
+				newColumn.sendEvent (SWT.Move);
 			}
 		}
 	}
@@ -3502,8 +3498,7 @@ public TreeItem [] getSelection () {
 		long hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_ROOT, 0);
 		count = getSelection (hItem, tvItem, guess, 0, -1, false, true);
 	} else {
-		for (int i=0; i<items.length; i++) {
-			TreeItem item = items [i];
+		for (TreeItem item : items) {
 			if (item != null) {
 				long hItem = item.handle;
 				int state = (int)OS.SendMessage (handle, OS.TVM_GETITEMSTATE, hItem, OS.TVIS_SELECTED);
@@ -3565,8 +3560,7 @@ public int getSelectionCount () {
 		long hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_ROOT, 0);
 		count = getSelection (hItem, null, null, 0, -1, false, true);
 	} else {
-		for (int i=0; i<items.length; i++) {
-			TreeItem item = items [i];
+		for (TreeItem item : items) {
 			if (item != null) {
 				long hItem = item.handle;
 				int state = (int)OS.SendMessage (handle, OS.TVM_GETITEMSTATE, hItem, OS.TVIS_SELECTED);
@@ -3908,8 +3902,7 @@ void releaseHandle () {
 @Override
 void releaseChildren (boolean destroy) {
 	if (items != null) {
-		for (int i=0; i<items.length; i++) {
-			TreeItem item = items [i];
+		for (TreeItem item : items) {
 			if (item != null && !item.isDisposed ()) {
 				item.release (false);
 			}
@@ -3917,8 +3910,7 @@ void releaseChildren (boolean destroy) {
 		items = null;
 	}
 	if (columns != null) {
-		for (int i=0; i<columns.length; i++) {
-			TreeColumn column = columns [i];
+		for (TreeColumn column : columns) {
 			if (column != null && !column.isDisposed ()) {
 				column.release (false);
 			}
@@ -3972,8 +3964,7 @@ public void removeAll () {
 	checkWidget ();
 	hFirstIndexOf = hLastIndexOf = 0;
 	itemCount = -1;
-	for (int i=0; i<items.length; i++) {
-		TreeItem item = items [i];
+	for (TreeItem item : items) {
 		if (item != null && !item.isDisposed ()) {
 			item.release (false);
 		}
@@ -4060,14 +4051,12 @@ public void removeTreeListener(TreeListener listener) {
 @Override
 void reskinChildren (int flags) {
 	if (items != null) {
-		for (int i=0; i<items.length; i++) {
-			TreeItem item = items [i];
+		for (TreeItem item : items) {
 			if (item != null) item.reskinChildren (flags);
 		}
 	}
 	if (columns != null) {
-		for (int i=0; i<columns.length; i++) {
-			TreeColumn column = columns [i];
+		for (TreeColumn column : columns) {
 			if (column != null) column.reskinChildren (flags);
 		}
 	}
@@ -5062,8 +5051,8 @@ public void setSelection (TreeItem [] items) {
 		long hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_ROOT, 0);
 		setSelection (hItem, tvItem, items);
 	} else {
-		for (int i=0; i<this.items.length; i++) {
-			item = this.items [i];
+		for (TreeItem item2 : this.items) {
+			item = item2;
 			if (item != null) {
 				int index = 0;
 				while (index < length) {
@@ -5630,8 +5619,7 @@ void updateOrientation () {
 		Point size = imageList.getImageSize ();
 		display.releaseImageList (imageList);
 		imageList = display.getImageList (style & SWT.RIGHT_TO_LEFT, size.x, size.y);
-		for (int i = 0; i < items.length; i++) {
-			TreeItem item = items[i];
+		for (TreeItem item : items) {
 			if (item != null) {
 				Image image = item.image;
 				if (image != null) {
@@ -6727,8 +6715,7 @@ LRESULT WM_LBUTTONDOWN (long wParam, long lParam) {
 					long hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_ROOT, 0);
 					deselect (hItem, tvItem, hNewItem);
 				} else {
-					for (int i=0; i<items.length; i++) {
-						TreeItem item = items [i];
+					for (TreeItem item : items) {
 						if (item != null && item.handle != hNewItem) {
 							tvItem.hItem = item.handle;
 							OS.SendMessage (handle, OS.TVM_SETITEM, 0, tvItem);

@@ -749,9 +749,7 @@ void selectRadio () {
 //	int j = index + 1;
 //	while (j < children.length && children [j].setRadioSelection (false)) j++;
 //	setSelection (true);
-	Control [] children = parent._getChildren ();
-	for (int i=0; i<children.length; i++) {
-		Control child = children [i];
+	for (Control child : parent._getChildren ()) {
 		if (this != child) child.setRadioSelection (false);
 	}
 	setSelection (true);

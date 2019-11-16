@@ -442,9 +442,8 @@ void fixMenus (Decorations newParent) {
 	if (isDisposed()) {
 		return;
 	}
-	MenuItem [] items = getItems ();
-	for (int i=0; i<items.length; i++) {
-		items [i].fixMenus (newParent);
+	for (MenuItem item : getItems ()) {
+		item.fixMenus (newParent);
 	}
 	parent.removeMenu (this);
 	newParent.addMenu (this);
@@ -811,8 +810,8 @@ public boolean getVisible () {
 	if ((style & SWT.POP_UP) != 0) {
 		Menu [] popups = display.popups;
 		if (popups == null) return false;
-		for (int i=0; i<popups.length; i++) {
-			if (popups [i] == this) return true;
+		for (Menu popup : popups) {
+			if (popup == this) return true;
 		}
 	}
 	Shell shell = getShell ();
@@ -923,9 +922,7 @@ void releaseHandle () {
 
 @Override
 void releaseChildren (boolean destroy) {
-	MenuItem [] items = getItems ();
-	for (int i=0; i<items.length; i++) {
-		MenuItem item = items [i];
+	for (MenuItem item : getItems ()) {
 		if (item != null && !item.isDisposed ()) {
 			item.release (false);
 		}
@@ -1009,9 +1006,7 @@ public void removeMenuListener (MenuListener listener) {
 
 @Override
 void reskinChildren (int flags) {
-	MenuItem [] items = getItems ();
-	for (int i=0; i<items.length; i++) {
-		MenuItem item = items [i];
+	for (MenuItem item : getItems ()) {
 		item.reskin (flags);
 	}
 	super.reskinChildren (flags);
@@ -1243,9 +1238,8 @@ void _setOrientation (int orientation) {
 	style &= ~flags;
 	style |= orientation & flags;
 	style &= ~SWT.FLIP_TEXT_DIRECTION;
-	MenuItem [] itms = getItems ();
-	for (int i=0; i<itms.length; i++) {
-		itms [i].setOrientation (orientation);
+	for (MenuItem itm : getItems ()) {
+		itm.setOrientation (orientation);
 	}
 }
 
@@ -1282,9 +1276,7 @@ void update () {
 		return;
 	}
 	boolean hasCheck = false, hasImage = false;
-	MenuItem [] items = getItems ();
-	for (int i=0; i<items.length; i++) {
-		MenuItem item = items [i];
+	for (MenuItem item : getItems ()) {
 		if (item.image != null) {
 			if ((hasImage = true) && hasCheck) break;
 		}

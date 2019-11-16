@@ -724,8 +724,7 @@ void drawInPixels (GC gc, int x, int y, int selectionStart, int selectionEnd, Co
 
 		//Draw the background of the runs in the line
 		int alignmentX = drawX;
-		for (int i = 0; i < lineRuns.length; i++) {
-			StyleItem run = lineRuns[i];
+		for (StyleItem run : lineRuns) {
 			if (run.length == 0) continue;
 			if (drawX > clip.x + clip.width) break;
 			if (drawX + run.width >= clip.x) {
@@ -744,9 +743,9 @@ void drawInPixels (GC gc, int x, int y, int selectionStart, int selectionEnd, Co
 		//Draw the text, underline, strikeout, and border of the runs in the line
 		int baselineInPixels = Math.max(0, this.ascentInPixels);
 		int lineUnderlinePos = 0;
-		for (int i = 0; i < lineRuns.length; i++) {
-			baselineInPixels = Math.max(baselineInPixels, DPIUtil.autoScaleUp(getDevice(), lineRuns[i].ascentInPoints));
-			lineUnderlinePos = Math.min(lineUnderlinePos, lineRuns[i].underlinePos);
+		for (StyleItem run : lineRuns) {
+			baselineInPixels = Math.max(baselineInPixels, DPIUtil.autoScaleUp(getDevice(), run.ascentInPoints));
+			lineUnderlinePos = Math.min(lineUnderlinePos, run.underlinePos);
 		}
 		RECT borderClip = null, underlineClip = null, strikeoutClip = null, pRect = null;
 		drawX = alignmentX;
@@ -858,7 +857,7 @@ RECT drawBorder(long hdc, int x, int y, int lineHeight, StyleItem[] line, int in
 		long oldBrush = OS.SelectObject(hdc, OS.GetStockObject(OS.NULL_BRUSH));
 		LOGBRUSH logBrush = new LOGBRUSH();
 		logBrush.lbStyle = OS.BS_SOLID;
-		logBrush.lbColor = (int)color;
+		logBrush.lbColor = color;
 		long newPen = OS.ExtCreatePen(lineStyle | OS.PS_GEOMETRIC, lineWidth, logBrush, 0, null);
 		long oldPen = OS.SelectObject(hdc, newPen);
 		RECT drawRect = new RECT();
@@ -881,7 +880,7 @@ RECT drawBorder(long hdc, int x, int y, int lineHeight, StyleItem[] line, int in
 			if (clipRect.left == -1) clipRect.left = 0;
 			if (clipRect.right == -1) clipRect.right = 0x7ffff;
 			OS.IntersectClipRect(hdc, clipRect.left, clipRect.top, clipRect.right, clipRect.bottom);
-			logBrush.lbColor = (int)selectionColor;
+			logBrush.lbColor = selectionColor;
 			long selPen = OS.ExtCreatePen (lineStyle | OS.PS_GEOMETRIC, lineWidth, logBrush, 0, null);
 			oldPen = OS.SelectObject(hdc, selPen);
 			OS.Rectangle(hdc, drawRect.left, drawRect.top, drawRect.right, drawRect.bottom);
@@ -1564,8 +1563,7 @@ RECT drawUnderlineGDIP (long graphics, int x, int baselineInPixels, int lineUnde
 
 void freeRuns () {
 	if (allRuns == null) return;
-	for (int i=0; i<allRuns.length; i++) {
-		StyleItem run = allRuns[i];
+	for (StyleItem run : allRuns) {
 		run.free();
 	}
 	allRuns = null;
@@ -1980,9 +1978,7 @@ public FontMetrics getLineMetrics (int lineIndex) {
 	int descentInPoints = DPIUtil.autoScaleDown(getDevice(), Math.max(lptm.tmDescent, this.descentInPixels));
 	int leadingInPoints = DPIUtil.autoScaleDown(getDevice(), lptm.tmInternalLeading);
 	if (text.length() != 0) {
-		StyleItem[] lineRuns = runs[lineIndex];
-		for (int i = 0; i<lineRuns.length; i++) {
-			StyleItem run = lineRuns[i];
+		for (StyleItem run : runs[lineIndex]) {
 			if (run.ascentInPoints > ascentInPoints) {
 				ascentInPoints = run.ascentInPoints;
 				leadingInPoints = run.leadingInPoints;

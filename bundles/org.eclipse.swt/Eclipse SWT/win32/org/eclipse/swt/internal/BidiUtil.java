@@ -467,9 +467,8 @@ public static boolean isBidiPlatform() {
  * @return true if bidi is supported, false otherwise.
  */
 public static boolean isKeyboardBidi() {
-	long[] list = getKeyboardLanguageList();
-	for (int i=0; i<list.length; i++) {
-		if (isBidiLang(list[i])) {
+	for (long language : getKeyboardLanguageList()) {
+		if (isBidiLang(language)) {
 			return true;
 		}
 	}
@@ -560,10 +559,9 @@ public static int resolveTextDirection (String text) {
 public static void setKeyboardLanguage(int language) {
 	if (language == getKeyboardLanguage()) return;
 	boolean bidi = language == KEYBOARD_BIDI;
-	long[] list = getKeyboardLanguageList();
-	for (int i=0; i<list.length; i++) {
-		if (bidi == isBidiLang(list[i])) {
-			OS.ActivateKeyboardLayout(list[i], 0);
+	for (long element : getKeyboardLanguageList()) {
+		if (bidi == isBidiLang(element)) {
+			OS.ActivateKeyboardLayout(element, 0);
 			return;
 		}
 	}

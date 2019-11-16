@@ -750,10 +750,10 @@ protected void checkDevice () {
 
 static void checkDisplay (Thread thread, boolean multiple) {
 	synchronized (Device.class) {
-		for (int i=0; i<Displays.length; i++) {
-			if (Displays [i] != null) {
+		for (Display display : Displays) {
+			if (display != null) {
 				if (!multiple) SWT.error (SWT.ERROR_NOT_IMPLEMENTED, null, " [multiple displays]"); //$NON-NLS-1$
-				if (Displays [i].thread == thread) SWT.error (SWT.ERROR_THREAD_INVALID_ACCESS);
+				if (display.thread == thread) SWT.error (SWT.ERROR_THREAD_INVALID_ACCESS);
 			}
 		}
 	}
@@ -771,8 +771,8 @@ void clearModal (Shell shell) {
 	System.arraycopy (modalShells, index + 1, modalShells, index, --length - index);
 	modalShells [length] = null;
 	if (index == 0 && modalShells [0] == null) modalShells = null;
-	Shell [] shells = getShells ();
-	for (int i=0; i<shells.length; i++) shells [i].updateModal ();
+	for (Shell activeShell : getShells ())
+		activeShell.updateModal ();
 }
 
 int controlKey (int key) {
@@ -1151,8 +1151,7 @@ public void disposeExec (Runnable runnable) {
 
 void drawMenuBars () {
 	if (bars == null) return;
-	for (int i=0; i<bars.length; i++) {
-		Menu menu = bars [i];
+	for (Menu menu : bars) {
 		if (menu != null && !menu.isDisposed ()) menu.update ();
 	}
 	bars = null;
@@ -1365,8 +1364,7 @@ long foregroundIdleProc (long code, long wParam, long lParam) {
  */
 public static Display findDisplay (Thread thread) {
 	synchronized (Device.class) {
-		for (int i=0; i<Displays.length; i++) {
-			Display display = Displays [i];
+		for (Display display : Displays) {
 			if (display != null && display.thread == thread) {
 				return display;
 			}
@@ -2213,8 +2211,7 @@ public Shell [] getShells () {
 	checkDevice ();
 	int index = 0;
 	Shell [] result = new Shell [16];
-	for (int i = 0; i < controlTable.length; i++) {
-		Control control = controlTable [i];
+	for (Control control : controlTable) {
 		if (control != null && control instanceof Shell) {
 			int j = 0;
 			while (j < index) {
@@ -3043,8 +3040,8 @@ long messageProc (long hwnd, long msg, long wParam, long lParam) {
 								if (mapKey != 0) {
 									accentKey = (mapKey & 0x80000000) != 0;
 									if (!accentKey) {
-										for (int i=0; i<ACCENTS.length; i++) {
-											int value = OS.VkKeyScan (ACCENTS [i]);
+										for (short accent : ACCENTS) {
+											int value = OS.VkKeyScan (accent);
 											if (value != -1 && (value & 0xFF) == keyMsg.wParam) {
 												int state = value >> 8;
 												if ((OS.GetKeyState (OS.VK_SHIFT) < 0) == ((state & 0x1) != 0) &&
@@ -3111,9 +3108,7 @@ long messageProc (long hwnd, long msg, long wParam, long lParam) {
 		}
 		case SWT_TRAYICONMSG: {
 			if (tray != null) {
-				TrayItem [] items = tray.items;
-				for (int i=0; i<items.length; i++) {
-					TrayItem item = items [i];
+				for (TrayItem item : tray.items) {
 					if (item != null && item.id == wParam) {
 						return item.messageProc (hwnd, (int)msg, wParam, lParam);
 					}
@@ -3211,9 +3206,7 @@ long messageProc (long hwnd, long msg, long wParam, long lParam) {
 		default: {
 			if ((int)msg == TASKBARCREATED) {
 				if (tray != null) {
-					TrayItem [] items = tray.items;
-					for (int i=0; i<items.length; i++) {
-						TrayItem item = items [i];
+					for (TrayItem item : tray.items) {
 						if (item != null) item.recreate ();
 					}
 				}
@@ -3632,9 +3625,7 @@ static void register (Display display) {
 @Override
 protected void release () {
 	sendEvent (SWT.Dispose, new Event ());
-	Shell [] shells = getShells ();
-	for (int i=0; i<shells.length; i++) {
-		Shell shell = shells [i];
+	for (Shell shell : getShells ()) {
 		if (!shell.isDisposed ()) shell.dispose ();
 	}
 	if (tray != null) tray.dispose ();
@@ -3643,8 +3634,7 @@ protected void release () {
 	taskBar = null;
 	while (readAndDispatch ()) {}
 	if (disposeList != null) {
-		for (int i=0; i<disposeList.length; i++) {
-			Runnable next = disposeList [i];
+		for (Runnable next : disposeList) {
 			if (next != null) {
 				try {
 					next.run ();
@@ -3734,15 +3724,15 @@ void releaseDisplay () {
 	errorImage = infoImage = questionImage = warningIcon = null;
 
 	/* Release the System Cursors */
-	for (int i = 0; i < cursors.length; i++) {
-		if (cursors [i] != null) cursors [i].dispose ();
+	for (Cursor cursor : cursors) {
+		if (cursor != null) cursor.dispose ();
 	}
 	cursors = null;
 
 	/* Release Acquired Resources */
 	if (resources != null) {
-		for (int i=0; i<resources.length; i++) {
-			if (resources [i] != null) resources [i].dispose ();
+		for (Resource resource : resources) {
+			if (resource != null) resource.dispose ();
 		}
 		resources = null;
 	}
@@ -4039,9 +4029,7 @@ void runSettings () {
 	sendEvent (SWT.Settings, null);
 	Font newFont = getSystemFont ();
 	boolean sameFont = oldFont.equals (newFont);
-	Shell [] shells = getShells ();
-	for (int i=0; i<shells.length; i++) {
-		Shell shell = shells [i];
+	for (Shell shell : getShells ()) {
 		if (!shell.isDisposed ()) {
 			if (!sameFont) {
 				shell.updateFont (oldFont, newFont);
@@ -4453,10 +4441,11 @@ public static void setAppVersion (String version) {
 	APP_VERSION = version;
 }
 
-void setModalDialog (Dialog modalDailog) {
+void setModalDialog(Dialog modalDailog) {
 	this.modalDialog = modalDailog;
-	Shell [] shells = getShells ();
-	for (int i=0; i<shells.length; i++) shells [i].updateModal ();
+	for (Shell shell : getShells()) {
+		shell.updateModal();
+	}
 }
 
 void setModalShell (Shell shell) {
@@ -4473,8 +4462,9 @@ void setModalShell (Shell shell) {
 		modalShells = newModalShells;
 	}
 	modalShells [index] = shell;
-	Shell [] shells = getShells ();
-	for (int i=0; i<shells.length; i++) shells [i].updateModal ();
+	for (Shell activeShell : getShells ()) {
+		activeShell.updateModal ();
+	}
 }
 
 /**
@@ -4705,8 +4695,8 @@ boolean translateAccelerator (MSG msg, Control control) {
 }
 
 static int translateKey (int key) {
-	for (int i=0; i<KeyTable.length; i++) {
-		if (KeyTable [i] [0] == key) return KeyTable [i] [1];
+	for (int[] element : KeyTable) {
+		if (element [0] == key) return element [1];
 	}
 	return 0;
 }
@@ -4747,8 +4737,8 @@ boolean translateTraversal (MSG msg, Control control) {
 }
 
 static int untranslateKey (int key) {
-	for (int i=0; i<KeyTable.length; i++) {
-		if (KeyTable [i] [1] == key) return KeyTable [i] [0];
+	for (int[] element : KeyTable) {
+		if (element [1] == key) return element [0];
 	}
 	return 0;
 }
@@ -4784,9 +4774,7 @@ public void update() {
 		int flags = OS.PM_REMOVE | OS.PM_NOYIELD;
 		OS.PeekMessage (msg, hwndMessage, SWT_NULL, SWT_NULL, flags);
 	}
-	Shell[] shells = getShells ();
-	for (int i=0; i<shells.length; i++) {
-		Shell shell = shells [i];
+	for (Shell shell : getShells ()) {
 		if (!shell.isDisposed ()) shell.update (true);
 	}
 }

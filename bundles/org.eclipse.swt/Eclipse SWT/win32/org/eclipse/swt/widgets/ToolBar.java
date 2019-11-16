@@ -288,8 +288,7 @@ Widget [] computeTabList () {
 	Widget result [] = {};
 	if (!isTabGroup () || !isEnabled () || !isVisible ()) return result;
 	ToolItem [] list = tabList != null ? _getTabItemList () : items;
-	for (int i=0; i<list.length; i++) {
-		ToolItem child = list [i];
+	for (ToolItem child : list) {
 		Widget  [] childList = child.computeTabList ();
 		if (childList.length != 0) {
 			Widget [] newResult = new Widget [result.length + childList.length];
@@ -476,8 +475,7 @@ void enableWidget (boolean enabled) {
 	* The fix is to use the disabled image in all image
 	* lists for all items.
 	*/
-	for (int i=0; i<items.length; i++) {
-		ToolItem item = items [i];
+	for (ToolItem item : items) {
 		if (item != null) {
 			if ((item.style & SWT.SEPARATOR) == 0) {
 				item.updateImages (enabled && item.getEnabled ());
@@ -546,10 +544,9 @@ public ToolItem getItem (Point point) {
 }
 
 ToolItem getItemInPixels (Point point) {
-	ToolItem [] items = getItems ();
-	for (int i=0; i<items.length; i++) {
-		Rectangle rect = items [i].getBoundsInPixels ();
-		if (rect.contains (point)) return items [i];
+	for (ToolItem item : getItems ()) {
+		Rectangle rect = item.getBoundsInPixels ();
+		if (rect.contains (point)) return item;
 	}
 	return null;
 }
@@ -625,15 +622,15 @@ public int getRowCount () {
 ToolItem [] _getTabItemList () {
 	if (tabItemList == null) return tabItemList;
 	int count = 0;
-	for (int i=0; i<tabItemList.length; i++) {
-		if (!tabItemList [i].isDisposed ()) count++;
+	for (ToolItem item : tabItemList) {
+		if (!item.isDisposed ()) count++;
 	}
 	if (count == tabItemList.length) return tabItemList;
 	ToolItem [] newList = new ToolItem [count];
 	int index = 0;
-	for (int i=0; i<tabItemList.length; i++) {
-		if (!tabItemList [i].isDisposed ()) {
-			newList [index++] = tabItemList [i];
+	for (ToolItem item : tabItemList) {
+		if (!item.isDisposed ()) {
+			newList [index++] = item;
 		}
 	}
 	tabItemList = newList;
@@ -682,8 +679,7 @@ void layoutItems () {
 	if (OS.IsAppThemed ()) {
 		if ((style & SWT.RIGHT) != 0 && (style & SWT.VERTICAL) == 0) {
 			boolean hasText = false, hasImage = false;
-			for (int i=0; i<items.length; i++) {
-				ToolItem item = items [i];
+			for (ToolItem item : items) {
 				if (item != null) {
 					if (!hasText) hasText = item.text.length () != 0;
 					if (!hasImage) hasImage = item.image != null;
@@ -748,8 +744,7 @@ void layoutItems () {
 				long padding = OS.SendMessage (handle, OS.TB_GETPADDING, 0, 0);
 				info.cx += OS.LOWORD (padding + extraPadding) * 2;
 			}
-			for (int i=0; i<items.length; i++) {
-				ToolItem item = items [i];
+			for (ToolItem item : items) {
 				if (item != null && (item.style & SWT.SEPARATOR) == 0) {
 					OS.SendMessage (handle, OS.TB_SETBUTTONINFO, item.id, info);
 				}
@@ -773,8 +768,7 @@ void layoutItems () {
 			TBBUTTONINFO info = new TBBUTTONINFO ();
 			info.cbSize = TBBUTTONINFO.sizeof;
 			info.dwMask = OS.TBIF_SIZE;
-			for (int i=0; i<items.length; i++) {
-				ToolItem item = items [i];
+			for (ToolItem item : items) {
 				if (item != null && item.cx > 0) {
 					info.cx = item.cx;
 					OS.SendMessage (handle, OS.TB_SETBUTTONINFO, item.id, info);
@@ -783,8 +777,7 @@ void layoutItems () {
 		}
 	}
 
-	for (int i=0; i<items.length; i++) {
-		ToolItem item = items [i];
+	for (ToolItem item : items) {
 		if (item != null) item.resizeControl ();
 	}
 }
@@ -823,8 +816,7 @@ boolean mnemonicMatch (char ch) {
 @Override
 void releaseChildren (boolean destroy) {
 	if (items != null) {
-		for (int i=0; i<items.length; i++) {
-			ToolItem item = items [i];
+		for (ToolItem item : items) {
 			if (item != null && !item.isDisposed ()) {
 				item.release (false);
 			}
@@ -855,8 +847,7 @@ void releaseWidget () {
 @Override
 void removeControl (Control control) {
 	super.removeControl (control);
-	for (int i=0; i<items.length; i++) {
-		ToolItem item = items [i];
+	for (ToolItem item : items) {
 		if (item != null && item.control == control) {
 			item.setControl (null);
 		}
@@ -866,8 +857,7 @@ void removeControl (Control control) {
 @Override
 void reskinChildren (int flags) {
 	if (items != null) {
-		for (int i=0; i<items.length; i++) {
-			ToolItem item = items [i];
+		for (ToolItem item : items) {
 			if (item != null) item.reskin (flags);
 		}
 	}
@@ -952,8 +942,7 @@ void setDropDownItems (boolean set) {
 	*/
 	if (OS.IsAppThemed ()) {
 		boolean hasText = false, hasImage = false;
-		for (int i=0; i<items.length; i++) {
-			ToolItem item = items [i];
+		for (ToolItem item : items) {
 			if (item != null) {
 				if (!hasText) hasText = item.text.length () != 0;
 				if (!hasImage) hasImage = item.image != null;
@@ -961,8 +950,7 @@ void setDropDownItems (boolean set) {
 			}
 		}
 		if (hasImage && !hasText) {
-			for (int i=0; i<items.length; i++) {
-				ToolItem item = items [i];
+			for (ToolItem item : items) {
 				if (item != null && (item.style & SWT.DROP_DOWN) != 0) {
 					TBBUTTONINFO info = new TBBUTTONINFO ();
 					info.cbSize = TBBUTTONINFO.sizeof;
@@ -1104,8 +1092,7 @@ void setRowCount (int count) {
 /*public*/ void setTabItemList (ToolItem [] tabList) {
 	checkWidget ();
 	if (tabList != null) {
-		for (int i=0; i<tabList.length; i++) {
-			ToolItem item = tabList [i];
+		for (ToolItem item : tabList) {
 			if (item == null) error (SWT.ERROR_INVALID_ARGUMENT);
 			if (item.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
 			if (item.parent != this) error (SWT.ERROR_INVALID_PARENT);
@@ -1280,8 +1267,7 @@ LRESULT WM_CAPTURECHANGED (long wParam, long lParam) {
 	* item is pressed, the item remains pressed.  The fix is
 	* unpress all items using TB_SETSTATE and TBSTATE_PRESSED.
 	*/
-	for (int i=0; i<items.length; i++) {
-		ToolItem item = items [i];
+	for (ToolItem item : items) {
 		if (item != null) {
 			int fsState = (int)OS.SendMessage (handle, OS.TB_GETSTATE, item.id, 0);
 			if ((fsState & OS.TBSTATE_PRESSED) != 0) {

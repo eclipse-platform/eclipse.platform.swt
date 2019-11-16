@@ -1806,10 +1806,10 @@ static long [] init(Device device, Image image, ImageData i) {
 	/* Set the rgb colors into the bitmap info */
 	int offset = BITMAPINFOHEADER.sizeof;
 	if (!i.palette.isDirect) {
-		for (int j = 0; j < rgbs.length; j++) {
-			bmi[offset] = (byte)rgbs[j].blue;
-			bmi[offset + 1] = (byte)rgbs[j].green;
-			bmi[offset + 2] = (byte)rgbs[j].red;
+		for (RGB rgb : rgbs) {
+			bmi[offset] = (byte)rgb.blue;
+			bmi[offset + 1] = (byte)rgb.green;
+			bmi[offset + 2] = (byte)rgb.red;
 			bmi[offset + 3] = 0;
 			offset += 4;
 		}

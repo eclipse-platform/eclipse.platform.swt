@@ -454,8 +454,7 @@ void layoutItems (int index, boolean setScrollbar) {
 @Override
 void releaseChildren (boolean destroy) {
 	if (items != null) {
-		for (int i=0; i<items.length; i++) {
-			ExpandItem item = items [i];
+		for (ExpandItem item : items) {
 			if (item != null && !item.isDisposed ()) {
 				item.release (false);
 			}
@@ -494,8 +493,7 @@ public void removeExpandListener (ExpandListener listener) {
 @Override
 void reskinChildren (int flags) {
 	if (items != null) {
-		for (int i=0; i<items.length; i++) {
-			ExpandItem item = items [i];
+		for (ExpandItem item : items) {
 			if (item != null ) item.reskin (flags);
 		}
 	}
@@ -585,9 +583,9 @@ void setSpacingInPixels (int spacing) {
 @Override
 boolean updateTextDirection(int textDirection) {
 	if (super.updateTextDirection(textDirection)) {
-		for (int i = 0, n = items.length; i < n; i++) {
-			if (items[i] != null) {
-				items[i].updateTextDirection(textDirection == AUTO_TEXT_DIRECTION ? AUTO_TEXT_DIRECTION : style & SWT.FLIP_TEXT_DIRECTION);
+		for (ExpandItem item : items) {
+			if (item != null) {
+				item.updateTextDirection(textDirection == AUTO_TEXT_DIRECTION ? AUTO_TEXT_DIRECTION : style & SWT.FLIP_TEXT_DIRECTION);
 			}
 		}
 		return true;

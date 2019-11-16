@@ -1168,9 +1168,7 @@ LRESULT wmMeasureChild (long wParam, long lParam) {
 		long hMenu = parent.handle;
 		OS.GetMenuInfo (hMenu, lpcmi);
 		if ((lpcmi.dwStyle & OS.MNS_CHECKORBMP) == 0) {
-			MenuItem [] items = parent.getItems ();
-			for (int i=0; i<items.length; i++) {
-				MenuItem item = items [i];
+			for (MenuItem item : parent.getItems ()) {
 				if (item.image != null) {
 					Rectangle rect = item.image.getBoundsInPixels ();
 					width = Math.max (width, rect.width);

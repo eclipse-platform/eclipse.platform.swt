@@ -709,8 +709,7 @@ void resizeToMaximumWidth (int index) {
 @Override
 void releaseChildren (boolean destroy) {
 	if (items != null) {
-		for (int i=0; i<items.length; i++) {
-			CoolItem item = items [i];
+		for (CoolItem item : items) {
 			if (item != null && !item.isDisposed ()) {
 				item.release (false);
 			}
@@ -723,8 +722,7 @@ void releaseChildren (boolean destroy) {
 @Override
 void removeControl (Control control) {
 	super.removeControl (control);
-	for (int i=0; i<items.length; i++) {
-		CoolItem item = items [i];
+	for (CoolItem item : items) {
 		if (item != null && item.control == control) {
 			item.setControl (null);
 		}
@@ -734,8 +732,7 @@ void removeControl (Control control) {
 @Override
 void reskinChildren (int flags) {
 	if (items != null) {
-		for (int i=0; i<items.length; i++) {
-			CoolItem item = items [i];
+		for (CoolItem item : items) {
 			if (item != null) item.reskin (flags);
 		}
 	}
@@ -852,8 +849,7 @@ void setItemOrder (int [] itemOrder) {
 
 	/* Ensure that itemOrder does not contain any duplicates. */
 	boolean [] set = new boolean [itemCount];
-	for (int i=0; i<itemOrder.length; i++) {
-		int index = itemOrder [i];
+	for (int index : itemOrder) {
 		if (index < 0 || index >= itemCount) error (SWT.ERROR_INVALID_RANGE);
 		if (set [index]) error (SWT.ERROR_INVALID_ARGUMENT);
 		set [index] = true;
@@ -967,8 +963,8 @@ public void setWrapIndices (int [] indices) {
 	checkWidget ();
 	if (indices == null) indices = new int [0];
 	int count = getItemCount ();
-	for (int i=0; i<indices.length; i++) {
-		if (indices [i] < 0 || indices [i] >= count) {
+	for (int index : indices) {
+		if (index < 0 || index >= count) {
 			error (SWT.ERROR_INVALID_RANGE);
 		}
 	}
@@ -982,8 +978,7 @@ public void setWrapIndices (int [] indices) {
 		}
 	}
 	resizeToMaximumWidth (count - 1);
-	for (int i=0; i<indices.length; i++) {
-		int index = indices [i];
+	for (int index : indices) {
 		if (0 <= index && index < items.length) {
 			CoolItem item = items [index];
 			item.setWrap (true);

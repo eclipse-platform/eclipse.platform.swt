@@ -354,8 +354,7 @@ void createAccelerators () {
 	ACCEL accel = new ACCEL ();
 	byte [] buffer1 = new byte [ACCEL.sizeof];
 	byte [] buffer2 = new byte [items.length * ACCEL.sizeof];
-	for (int i=0; i<items.length; i++) {
-		MenuItem item = items [i];
+	for (MenuItem item : items) {
 		if (item != null && item.accelerator != 0) {
 			Menu menu = item.parent;
 			if (menu.parent == this) {
@@ -410,8 +409,7 @@ public void dispose () {
 
 Menu findMenu (long hMenu) {
 	if (menus == null) return null;
-	for (int i=0; i<menus.length; i++) {
-		Menu menu = menus [i];
+	for (Menu menu : menus) {
 		if (menu != null && hMenu == menu.handle) return menu;
 	}
 	return null;
@@ -729,8 +727,7 @@ void releaseChildren (boolean destroy) {
 	}
 	super.releaseChildren (destroy);
 	if (menus != null) {
-		for (int i=0; i<menus.length; i++) {
-			Menu menu = menus [i];
+		for (Menu menu : menus) {
 			if (menu != null && !menu.isDisposed ()) {
 				menu.dispose ();
 			}
@@ -766,8 +763,7 @@ void removeMenu (Menu menu) {
 void reskinChildren (int flags) {
 	if (menuBar != null) menuBar.reskin (flags);
 	if (menus != null) {
-		for (int i=0; i<menus.length; i++) {
-			Menu menu = menus [i];
+		for (Menu menu : menus) {
 			if (menu != null) menu.reskin (flags);
 		}
 	}
@@ -993,8 +989,8 @@ void setImages (Image image, Image [] images) {
 public void setImages (Image [] images) {
 	checkWidget ();
 	if (images == null) error (SWT.ERROR_INVALID_ARGUMENT);
-	for (int i = 0; i < images.length; i++) {
-		if (images [i] == null || images [i].isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
+	for (Image image : images) {
+		if (image == null || image.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
 	}
 	this.images = images;
 	setImages (null, images);
@@ -1092,8 +1088,7 @@ public void setMinimized (boolean minimized) {
 public void setOrientation (int orientation) {
 	super.setOrientation (orientation);
 	if (menus != null) {
-		for (int i=0; i<menus.length; i++) {
-			Menu menu = menus [i];
+		for (Menu menu : menus) {
 			if (menu != null && !menu.isDisposed () && (menu.getStyle () & SWT.POP_UP) != 0) {
 				menu._setOrientation (menu.getOrientation ());
 			}

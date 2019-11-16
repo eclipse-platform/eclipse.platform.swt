@@ -286,8 +286,8 @@ boolean mnemonicHit (char key) {
 @Override
 boolean mnemonicMatch (char key) {
 	char uckey = Character.toUpperCase (key);
-	for (int i = 0; i < mnemonics.length; i++) {
-		if (uckey == mnemonics[i]) {
+	for (char mnemonic : mnemonics) {
+		if (uckey == mnemonic) {
 			return true;
 		}
 	}

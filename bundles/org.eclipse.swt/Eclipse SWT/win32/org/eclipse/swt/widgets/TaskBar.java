@@ -89,9 +89,8 @@ void createItem (TaskItem item, int index) {
 }
 
 void createItems () {
-	Shell [] shells = display.getShells ();
-	for (int i = 0; i < shells.length; i++) {
-		getItem (shells[i]);
+	for (Shell shell : display.getShells ()) {
+		getItem (shell);
 	}
 	getItem (null);
 }
@@ -204,8 +203,8 @@ IObjectArray createShellLinkArray (MenuItem [] items) {
 	int hr = COM.CoCreateInstance (COM.CLSID_EnumerableObjectCollection, 0, COM.CLSCTX_INPROC_SERVER, COM.IID_IObjectCollection, ppv);
 	if (hr != OS.S_OK) error (SWT.ERROR_NO_HANDLES);
 	IObjectCollection pObjColl = new IObjectCollection (ppv [0]);
-	for (int i = 0; i < items.length; i++) {
-		IShellLink pLink = createShellLink (items[i]);
+	for (MenuItem item : items) {
+		IShellLink pLink = createShellLink (item);
 		if (pLink != null) {
 			/*IObjectCollection::AddObject*/
 			pObjColl.AddObject (pLink);
@@ -285,9 +284,9 @@ public TaskItem getItem (int index) {
  */
 public TaskItem getItem (Shell shell) {
 	checkWidget ();
-	for (int i = 0; i < items.length; i++) {
-		if (items [i] != null && items [i].shell == shell) {
-			return items [i];
+	for (TaskItem item : items) {
+		if (item != null && item.shell == shell) {
+			return item;
 		}
 	}
 	TaskItem item = new TaskItem (this, SWT.NONE);
@@ -338,8 +337,7 @@ public TaskItem [] getItems () {
 @Override
 void releaseChildren (boolean destroy) {
 	if (items != null) {
-		for (int i=0; i<items.length; i++) {
-			TaskItem item = items [i];
+		for (TaskItem item : items) {
 			if (item != null && !item.isDisposed ()) {
 				item.release (false);
 			}
@@ -365,8 +363,7 @@ void releaseWidget () {
 @Override
 void reskinChildren (int flags) {
 	if (items != null) {
-		for (int i=0; i<items.length; i++) {
-			TaskItem item = items [i];
+		for (TaskItem item : items) {
 			if (item != null) item.reskin (flags);
 		}
 	}
@@ -404,8 +401,7 @@ void setMenu (Menu menu) {
 				if (hr != OS.S_OK) error (SWT.ERROR_INVALID_ARGUMENT);
 			}
 
-			for (int i = 0; i < items.length; i++) {
-				MenuItem item = items [i];
+			for (MenuItem item : items) {
 				if ((item.getStyle () & SWT.CASCADE) != 0) {
 					Menu subMenu = item.getMenu ();
 					if (subMenu != null) {

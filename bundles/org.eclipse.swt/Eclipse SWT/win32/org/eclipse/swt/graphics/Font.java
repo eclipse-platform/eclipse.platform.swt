@@ -111,8 +111,8 @@ public Font(Device device, FontData[] fds) {
 	super(device);
 	if (fds == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (fds.length == 0) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	for (int i=0; i<fds.length; i++) {
-		if (fds[i] == null) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	for (FontData fd : fds) {
+		if (fd == null) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
 	init(fds[0]);
 	init();

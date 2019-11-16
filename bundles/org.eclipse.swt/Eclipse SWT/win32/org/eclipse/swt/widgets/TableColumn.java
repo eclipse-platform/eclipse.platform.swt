@@ -448,12 +448,11 @@ public void pack () {
 		sendEvent (SWT.Resize);
 		if (isDisposed ()) return;
 		boolean moved = false;
-		int [] order = parent.getColumnOrder ();
 		TableColumn [] columns = parent.getColumns ();
-		for (int i=0; i<order.length; i++) {
-			TableColumn column = columns [order [i]];
+		for (int columnindex : parent.getColumnOrder ()) {
+			TableColumn column = columns [columnindex];
 			if (moved && !column.isDisposed ()) {
-				column.updateToolTip (order [i]);
+				column.updateToolTip (columnindex);
 				column.sendEvent (SWT.Move);
 			}
 			if (column == this) moved = true;

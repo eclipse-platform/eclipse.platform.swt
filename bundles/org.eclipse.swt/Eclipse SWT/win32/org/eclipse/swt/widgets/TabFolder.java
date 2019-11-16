@@ -503,10 +503,8 @@ public int indexOf (TabItem item) {
 
 @Override
 Point minimumSize (int wHint, int hHint, boolean flushCache) {
-	Control [] children = _getChildren ();
 	int width = 0, height = 0;
-	for (int i=0; i<children.length; i++) {
-		Control child = children [i];
+	for (Control child : _getChildren ()) {
 		int index = 0;
 		int count = (int)OS.SendMessage (handle, OS.TCM_GETITEMCOUNT, 0, 0);
 		while (index < count) {
@@ -549,8 +547,7 @@ boolean mnemonicHit (char key) {
 
 @Override
 boolean mnemonicMatch (char key) {
-	for (int i=0; i<items.length; i++) {
-		TabItem item = items [i];
+	for (TabItem item : items) {
 		if (item != null) {
 			char ch = findMnemonic (item.getText ());
 			if (Character.toUpperCase (key) == Character.toUpperCase (ch)) {
