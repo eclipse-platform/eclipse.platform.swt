@@ -45,7 +45,7 @@ public class ToolItem extends Item {
 	long eventHandle, proxyMenuItem, provider;
 	ToolBar parent;
 	Control control;
-	Image hotImage, disabledImage, enabledImage;
+	Image hotImage, disabledImage;
 	String toolTipText;
 	boolean drawHotImage;
 	/** True iff map has been hooked for this ToolItem. See bug 546914. */
@@ -390,6 +390,22 @@ public boolean getEnabled () {
 public Image getHotImage () {
 	checkWidget();
 	return hotImage;
+}
+
+/**
+ * Returns the receiver's enabled image if it has one, or null
+ * if it does not.
+ *
+ * @return the receiver's enabled image
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
+@Override
+public Image getImage () {
+	return this.image;
 }
 
 /**
@@ -851,7 +867,7 @@ void releaseWidget () {
 	if (parent.currentFocusItem == this) parent.currentFocusItem = null;
 	parent = null;
 	control = null;
-	hotImage = disabledImage = enabledImage = null;
+	hotImage = disabledImage = null;
 	toolTipText = null;
 }
 
@@ -984,16 +1000,8 @@ public void setDisabledImage (Image image) {
 	if ((style & SWT.SEPARATOR) != 0) return;
 	disabledImage = image;
 	if (image != null) {
-		ImageList imageList = parent.imageList;
-		if (imageList == null) imageList = parent.imageList = new ImageList ();
-		int imageIndex = imageList.indexOf (image);
-		if (imageIndex == -1) {
-			imageIndex = imageList.add (image);
-		} else {
-			imageList.put (imageIndex, image);
-		}
 		if (!enabled) {
-			setImage(image);
+			_setImage(image);
 		}
 	}
 }
@@ -1019,8 +1027,8 @@ public void setEnabled (boolean enabled) {
 	long topHandle = topHandle ();
 	if (this.enabled == enabled) return;
 	this.enabled = enabled;
-	if (!enabled && disabledImage != null) setImage (disabledImage);
-	if (enabled && enabledImage != null) setImage (enabledImage);
+	if (!enabled && disabledImage != null) _setImage (disabledImage);
+	if (enabled && this.image != null) _setImage (this.image);
 	GTK.gtk_widget_set_sensitive (topHandle, enabled);
 }
 
@@ -1121,11 +1129,14 @@ public void setImage (Image image) {
 	checkWidget();
 	if ((style & SWT.SEPARATOR) != 0) return;
 	super.setImage (image);
-	if (enabled) enabledImage = image;
 	if (!enabled && disabledImage != image) {
-		enabledImage = image;
 		return;
 	}
+	_setImage(image);
+}
+
+void _setImage (Image image) {
+	if ((style & SWT.SEPARATOR) != 0) return;
 	if (image != null) {
 		ImageList imageList = parent.imageList;
 		if (imageList == null) imageList = parent.imageList = new ImageList ();
