@@ -3201,14 +3201,23 @@ void initializeSystemColorsToggleButton() {
 }
 
 void initializeSystemColorsDisabled() {
+	/*
+	 * 'Yaru' theme on Ubuntu 18.10 defines background color for
+	 * 'entry:backdrop:disabled' as 'transparent', so parent window's color
+	 * will be used. However, SWT doesn't quite expect transparent colors.
+	 * The workaround is to use a temporary window as parent. GTK will blend
+	 * colors and return non-transparent result.
+	 */
+	long window = GTK.gtk_window_new (GTK.GTK_WINDOW_TOPLEVEL);
 	long entry = GTK.gtk_entry_new ();
-	OS.g_object_ref_sink(entry);
+	GTK.gtk_container_add (window, entry);
+
 	long context = GTK.gtk_widget_get_style_context (entry);
 
 	COLOR_WIDGET_DISABLED_FOREGROUND_RGBA = styleContextGetColor (context, GTK.GTK_STATE_FLAG_INSENSITIVE);
 	COLOR_TEXT_DISABLED_BACKGROUND_RGBA = styleContextEstimateBackgroundColor (context, GTK.GTK_STATE_FLAG_INSENSITIVE);
 
-	OS.g_object_unref(entry);
+	GTK.gtk_widget_destroy (window);
 }
 
 GdkRGBA styleContextGetColor(long context, int flag) {
