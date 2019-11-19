@@ -196,6 +196,7 @@ public class WebKitGTK extends C {
 
 	public static final byte[] enable_scripts = ascii ("enable-scripts"); // $NON-NLS-1$		// Webkit1 only.
 	public static final byte[] enable_javascript = ascii ("enable-javascript"); // $NON-NLS-1$	// Webkit2 only
+	public static final byte[] enable_developer_extras = ascii ("enable-developer-extras");
 
 	public static final byte[] enable_webgl = ascii("enable-webgl"); // $NON-NLS-1$				// Webkit1 & Webkit2
 
