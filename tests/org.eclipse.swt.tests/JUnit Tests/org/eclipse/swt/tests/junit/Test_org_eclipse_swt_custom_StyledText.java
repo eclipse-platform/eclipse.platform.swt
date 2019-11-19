@@ -5806,6 +5806,7 @@ public void test_clipboardCarryover() {
 /**
  * Test for:
  * Bug 553377 - StyledTextRenderer max width can be invalid
+ * Bug 343086 - Horizontal scroll bar vanishes when line gets shorter
  */
 @Test
 public void test_claimRightFreeSpace() {
@@ -5831,6 +5832,14 @@ public void test_claimRightFreeSpace() {
 	assertTrue("Free horizontal space not reclaimed on character remove",
 			text.getHorizontalIndex() < lastScrollIndex && text.getHorizontalIndex() > 0);
 	n -= cutLenght;
+
+	// test if widget reclaims horizontal space if longest line is shortened because line get split
+	int newlineOffset = n - 5;
+	text.setCaretOffset(newlineOffset - 2);
+	lastScrollIndex = text.getHorizontalIndex();
+	text.getContent().replaceTextRange(newlineOffset, 0, "\n");
+	assertTrue("Free horizontal space not reclaimed on splitting line",
+			text.getHorizontalIndex() < lastScrollIndex && text.getHorizontalIndex() > 0);
 
 	// similar to previous test but this time the second half of the split is the new max length line
 	text.setCaretOffset(0);

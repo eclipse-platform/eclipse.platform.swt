@@ -6389,7 +6389,7 @@ void handleTextChanged(TextChangedEvent event) {
 	if (lastTextChangeReplaceLineCount > 0 || wordWrap || visualWrap) {
 		claimBottomFreeSpace();
 	}
-	if (lastTextChangeReplaceCharCount > 0) {
+	if (lastTextChangeReplaceCharCount > 0 || lastTextChangeNewLineCount > 0) {
 		claimRightFreeSpace();
 	}
 
