@@ -210,10 +210,10 @@ void createText(Control parent, int style) {
 		text.setEnabled(enabled);
 		text.setEditable(editable);
 		if (focus) text.setFocus();
-		if (font != null) text.setFont(font);
-		if (fg != null) text.setForeground(fg);
-		if (bg != null) text.setBackground(bg);
-		if (menu != null) text.setMenu(menu);
+		if (font != null && !font.isDisposed()) text.setFont(font);
+		if (fg != null && !fg.isDisposed()) text.setForeground(fg);
+		if (bg != null && !bg.isDisposed()) text.setBackground(bg);
+		if (menu != null && !menu.isDisposed()) text.setMenu(menu);
 		internalLayout(true);
 	}
 
