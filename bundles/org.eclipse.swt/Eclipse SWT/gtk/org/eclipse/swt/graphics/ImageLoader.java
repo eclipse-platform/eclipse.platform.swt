@@ -465,7 +465,7 @@ public void save(OutputStream stream, int format) {
 	int width = imgData.width;
 	int height = imgData.height;
 	int n_channels = imgData.bytesPerLine / width;	// original n_channels 3 or 4
-	int bytes_per_pixel = imgData.bytesPerLine / width; // n_channels for original ImageData (width * height * bytes_per_pixel) = imgData.length
+	int bytes_per_pixel = 4; // all images saved are 32 bit, if there is no alpha we set it to 255
 
 	/*
 	 * Destination offsets, GdkPixbuf data is stored in RGBA format.
@@ -488,12 +488,8 @@ public void save(OutputStream stream, int format) {
 		ob = 0;
 	}
 
-	if (has_alpha && bytes_per_pixel == 3) {
-		bytes_per_pixel = 4;
-	}
-
-	// We use alpha by default now so just hard code bytes per pixel to 4
-	byte[] srcData = new byte[(width * height * 4)];
+	// We use alpha by default now so bytes_per_pixel is always 4
+	byte[] srcData = new byte[(width * height * bytes_per_pixel)];
 
 	int alpha_offset = n_channels == 4 ? 1 : 0;
 	if (has_alpha) {
