@@ -35,9 +35,8 @@ public class Bug547109_JvmCrashNativeLibraryLoad {
 			folder.mkdir();
 		}
 		else {
-			File[] files = folder.listFiles();
-			for (int i = 0; i < files.length; i++) {
-				files[i].delete();
+			for (File file : folder.listFiles()) {
+				file.delete();
 			}
 		}
 	}
@@ -71,8 +70,8 @@ public class Bug547109_JvmCrashNativeLibraryLoad {
 			}
 
 			// Test for errors
-			for (int i = 0; i < processes.length; i++) {
-				int exitCode = processes[i].waitFor();
+			for (Process process : processes) {
+				int exitCode = process.waitFor();
 				if (EXIT_CODE_GOOD != exitCode) numErrors++;
 			}
 		} catch (Throwable ex) {
