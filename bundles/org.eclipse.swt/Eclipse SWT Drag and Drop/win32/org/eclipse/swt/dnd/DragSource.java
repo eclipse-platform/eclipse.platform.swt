@@ -440,8 +440,7 @@ private int EnumFormatEtc(int dwDirection, long ppenumFormatetc) {
 
 	// what types have been registered?
 	TransferData[] allowedDataTypes = new TransferData[0];
-	for (int i = 0; i < transferAgents.length; i++){
-		Transfer transferAgent = transferAgents[i];
+	for (Transfer transferAgent : transferAgents) {
 		if (transferAgent != null) {
 			TransferData[] formats = transferAgent.getSupportedTypes();
 			TransferData[] newAllowedDataTypes = new TransferData[allowedDataTypes.length + formats.length];
@@ -500,8 +499,7 @@ private int GetData(long pFormatetc, long pmedium) {
 
 	// get matching transfer agent to perform conversion
 	Transfer transfer = null;
-	for (int i = 0; i < transferAgents.length; i++){
-		Transfer transferAgent = transferAgents[i];
+	for (Transfer transferAgent : transferAgents) {
 		if (transferAgent != null && transferAgent.isSupportedType(transferData)){
 			transfer = transferAgent;
 			break;
@@ -656,9 +654,8 @@ private int QueryGetData(long pFormatetc) {
 	transferData.type = transferData.formatetc.cfFormat;
 
 	// is this type supported by the transfer agent?
-	for (int i = 0; i < transferAgents.length; i++){
-		Transfer transfer = transferAgents[i];
-		if (transfer != null && transfer.isSupportedType(transferData))
+	for (Transfer transferAgent : transferAgents) {
+		if (transferAgent != null && transferAgent.isSupportedType(transferData))
 			return COM.S_OK;
 	}
 

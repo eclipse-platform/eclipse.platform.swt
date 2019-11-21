@@ -76,8 +76,8 @@ public void javaToNative(Object object, TransferData transferData) {
 	long newPtr = 0;
 	if (transferData.type == CF_HDROPID) {
 		StringBuilder allFiles = new StringBuilder();
-		for (int i = 0; i < fileNames.length; i++) {
-			allFiles.append(fileNames[i]);
+		for (String fileName : fileNames) {
+			allFiles.append(fileName);
 			allFiles.append('\0'); // each name is null terminated
 		}
 		allFiles.append('\0'); // there is an extra null terminator at the very end
@@ -231,9 +231,8 @@ protected String[] getTypeNames(){
 }
 boolean checkFile(Object object) {
 	if (object == null || !(object instanceof String[]) || ((String[])object).length == 0) return false;
-	String[] strings = (String[])object;
-	for (int i = 0; i < strings.length; i++) {
-		if (strings[i] == null || strings[i].length() == 0) return false;
+	for (String string : (String[])object) {
+		if (string == null || string.length() == 0) return false;
 	}
 	return true;
 }

@@ -334,10 +334,8 @@ public Object getContents(Transfer transfer, int clipboards) {
 	if (result != COM.S_OK) return null;
 	IDataObject dataObject = new IDataObject(ppv[0]);
 	try {
-		TransferData[] allowed = transfer.getSupportedTypes();
-		for (int i = 0; i < allowed.length; i++) {
-			if (dataObject.QueryGetData(allowed[i].formatetc) == COM.S_OK) {
-				TransferData data = allowed[i];
+		for (TransferData data : transfer.getSupportedTypes()) {
+			if (dataObject.QueryGetData(data.formatetc) == COM.S_OK) {
 				data.pIDataObject = ppv[0];
 				return transfer.nativeToJava(data);
 			}
@@ -556,8 +554,8 @@ private int EnumFormatEtc(int dwDirection, long ppenumFormatetc) {
 	if (dwDirection == COM.DATADIR_SET) return COM.E_NOTIMPL;
 	// what types have been registered?
 	TransferData[] allowedDataTypes = new TransferData[0];
-	for (int i = 0; i < transferAgents.length; i++){
-		TransferData[] formats = transferAgents[i].getSupportedTypes();
+	for (Transfer transferAgent : transferAgents) {
+		TransferData[] formats = transferAgent.getSupportedTypes();
 		TransferData[] newAllowedDataTypes = new TransferData[allowedDataTypes.length + formats.length];
 		System.arraycopy(allowedDataTypes, 0, newAllowedDataTypes, 0, allowedDataTypes.length);
 		System.arraycopy(formats, 0, newAllowedDataTypes, allowedDataTypes.length, formats.length);
@@ -630,8 +628,8 @@ private int QueryGetData(long pFormatetc) {
 	transferData.type = transferData.formatetc.cfFormat;
 	if (transferData.type == CFSTR_PREFERREDDROPEFFECT) return COM.S_OK;
 	// is this type supported by the transfer agent?
-	for (int i = 0; i < transferAgents.length; i++){
-		if (transferAgents[i].isSupportedType(transferData))
+	for (Transfer transferAgent : transferAgents) {
+		if (transferAgent.isSupportedType(transferData))
 			return COM.S_OK;
 	}
 

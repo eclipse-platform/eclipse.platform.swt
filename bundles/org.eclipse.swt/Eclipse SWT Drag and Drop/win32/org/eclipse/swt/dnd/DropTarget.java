@@ -308,9 +308,9 @@ int DragEnter(long pDataObject, int grfKeyState, int pt_x, int pt_y, long pdwEff
 	}
 
 	selectedDataType = null;
-	for (int i = 0; i < allowedDataTypes.length; i++) {
-		if (TransferData.sameType(allowedDataTypes[i], event.dataType)){
-			selectedDataType = allowedDataTypes[i];
+	for (TransferData allowedDataType : allowedDataTypes) {
+		if (TransferData.sameType(allowedDataType, event.dataType)){
+			selectedDataType = allowedDataType;
 			break;
 		}
 	}
@@ -379,9 +379,9 @@ int DragOver(int grfKeyState, int pt_x, int pt_y, long pdwEffect) {
 	}
 
 	selectedDataType = null;
-	for (int i = 0; i < allowedDataTypes.length; i++) {
-		if (TransferData.sameType(allowedDataTypes[i], event.dataType)){
-			selectedDataType = allowedDataTypes[i];
+	for (TransferData allowedDataType : allowedDataTypes) {
+		if (TransferData.sameType(allowedDataType, event.dataType)){
+			selectedDataType = allowedDataType;
 			break;
 		}
 	}
@@ -431,9 +431,9 @@ int Drop(long pDataObject, int grfKeyState, int pt_x, int pt_y, long pdwEffect) 
 		refresh();
 
 		selectedDataType = null;
-		for (int i = 0; i < allowedDataTypes.length; i++) {
-			if (TransferData.sameType(allowedDataTypes[i], event.dataType)){
-				selectedDataType = allowedDataTypes[i];
+		for (TransferData allowedDataType : allowedDataTypes) {
+			if (TransferData.sameType(allowedDataType, event.dataType)){
+				selectedDataType = allowedDataType;
 				break;
 			}
 		}
@@ -449,8 +449,7 @@ int Drop(long pDataObject, int grfKeyState, int pt_x, int pt_y, long pdwEffect) 
 
 		// Get Data in a Java format
 		Object object = null;
-		for (int i = 0; i < transferAgents.length; i++){
-			Transfer transfer = transferAgents[i];
+		for (Transfer transfer : transferAgents) {
 			if (transfer != null && transfer.isSupportedType(selectedDataType)){
 				object = transfer.nativeToJava(selectedDataType);
 				break;
@@ -750,8 +749,7 @@ boolean setEventData(DNDEvent event, long pDataObject, int grfKeyState, int pt_x
 					COM.MoveMemory(transferData.formatetc, rgelt, FORMATETC.sizeof);
 					transferData.type = transferData.formatetc.cfFormat;
 					transferData.pIDataObject = pDataObject;
-					for (int i = 0; i < transferAgents.length; i++){
-						Transfer transfer = transferAgents[i];
+					for (Transfer transfer : transferAgents) {
 						if (transfer != null && transfer.isSupportedType(transferData)){
 							TransferData[] newDataTypes = new TransferData[dataTypes.length + 1];
 							System.arraycopy(dataTypes, 0, newDataTypes, 0, dataTypes.length);

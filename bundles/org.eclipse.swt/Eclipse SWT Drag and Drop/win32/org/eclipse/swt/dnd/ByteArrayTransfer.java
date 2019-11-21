@@ -142,10 +142,9 @@ public TransferData[] getSupportedTypes() {
 @Override
 public boolean isSupportedType(TransferData transferData){
 	if (transferData == null) return false;
-	int[] types = getTypeIds();
-	for (int i = 0; i < types.length; i++) {
+	for (int type : getTypeIds()) {
 		FORMATETC format = transferData.formatetc;
-		if (format.cfFormat == types[i] &&
+		if (format.cfFormat == type &&
 			(format.dwAspect & COM.DVASPECT_CONTENT) == COM.DVASPECT_CONTENT &&
 			(format.tymed & COM.TYMED_HGLOBAL) == COM.TYMED_HGLOBAL  )
 			return true;
