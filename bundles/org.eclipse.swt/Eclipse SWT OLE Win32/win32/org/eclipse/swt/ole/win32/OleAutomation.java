@@ -733,8 +733,8 @@ public boolean setProperty(int dispIdMember, Variant rgvarg) {
 public boolean setProperty(int dispIdMember, Variant[] rgvarg) {
 	int[] rgdispidNamedArgs = new int[] {COM.DISPID_PROPERTYPUT};
 	int dwFlags = COM.DISPATCH_PROPERTYPUT;
-	for (int i = 0; i < rgvarg.length; i++) {
-		if ((rgvarg[i].getType() & COM.VT_BYREF) == COM.VT_BYREF)
+	for (Variant element : rgvarg) {
+		if ((element.getType() & COM.VT_BYREF) == COM.VT_BYREF)
 		dwFlags = COM.DISPATCH_PROPERTYPUTREF;
 	}
 	Variant pVarResult = new Variant();

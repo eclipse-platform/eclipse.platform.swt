@@ -45,8 +45,8 @@ void hook (int eventType, OleListener handler) {
 }
 boolean hooks (int eventType) {
 	if (handlers == null) return false;
-	for (int i=0; i<types.length; i++) {
-		if (types [i] == eventType) return true;
+	for (int type : types) {
+		if (type == eventType) return true;
 	}
 	return false;
 }
@@ -70,8 +70,8 @@ void unhook (int eventType, OleListener handler) {
 	}
 }
 boolean hasEntries() {
-	for (int i=0; i<types.length; i++) {
-		if (types[i] != 0) return true;
+	for (int type : types) {
+		if (type != 0) return true;
 	}
 	return false;
 }

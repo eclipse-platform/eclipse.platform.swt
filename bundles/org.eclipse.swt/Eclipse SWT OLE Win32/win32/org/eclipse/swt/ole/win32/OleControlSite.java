@@ -480,8 +480,7 @@ protected void createCOMInterfaces () {
 }
 private void disconnectEventSinks() {
 
-	for (int i = 0; i < oleEventSink.length; i++) {
-		OleEventSink sink = oleEventSink[i];
+	for (OleEventSink sink : oleEventSink) {
 		sink.disconnect();
 		sink.Release();
 	}

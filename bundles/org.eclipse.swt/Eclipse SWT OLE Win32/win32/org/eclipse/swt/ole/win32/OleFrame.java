@@ -248,8 +248,8 @@ static long getMsgProc(long code, long wParam, long lParam) {
 									if (mapKey != 0) {
 										accentKey = (mapKey & 0x80000000) != 0;
 										if (!accentKey) {
-											for (int i=0; i<ACCENTS.length; i++) {
-												int value = OS.VkKeyScan (ACCENTS [i]);
+											for (short element : ACCENTS) {
+												int value = OS.VkKeyScan (element);
 												if (value != -1 && (value & 0xFF) == msg.wParam) {
 													int state = value >> 8;
 													if ((OS.GetKeyState (OS.VK_SHIFT) < 0) == ((state & 0x1) != 0) &&
@@ -472,8 +472,7 @@ private int InsertMenus(long hmenuShared, long lpMenuWidths) {
 	int fileMenuCount = 0;
 	int newindex = 0;
 	if (this.fileMenuItems != null) {
-		for (int i = 0; i < this.fileMenuItems.length; i++) {
-			MenuItem item = this.fileMenuItems[i];
+		for (MenuItem item : this.fileMenuItems) {
 			if (item != null) {
 				int index = item.getParent().indexOf(item);
 				lpmii.cch = cch;  // lpmii.cch gets updated by GetMenuItemInfo to indicate the
@@ -497,8 +496,7 @@ private int InsertMenus(long hmenuShared, long lpMenuWidths) {
 	// item from the OS.
 	int containerMenuCount = 0;
 	if (this.containerMenuItems != null) {
-		for (int i = 0; i < this.containerMenuItems.length; i++) {
-			MenuItem item = this.containerMenuItems[i];
+		for (MenuItem item : this.containerMenuItems) {
 			if (item != null) {
 				int index = item.getParent().indexOf(item);
 				lpmii.cch = cch; // lpmii.cch gets updated by GetMenuItemInfo to indicate the
@@ -522,8 +520,7 @@ private int InsertMenus(long hmenuShared, long lpMenuWidths) {
 	// item from the OS.
 	int windowMenuCount = 0;
 	if (this.windowMenuItems != null) {
-		for (int i = 0; i < this.windowMenuItems.length; i++) {
-			MenuItem item = this.windowMenuItems[i];
+		for (MenuItem item : this.windowMenuItems) {
 			if (item != null) {
 				int index = item.getParent().indexOf(item);
 				lpmii.cch = cch; // lpmii.cch gets updated by GetMenuItemInfo to indicate the
@@ -633,8 +630,7 @@ private int RemoveMenus(long hmenuShared) {
 
 	List<LONG> ids = new ArrayList<>();
 	if (this.fileMenuItems != null) {
-		for (int i = 0; i < this.fileMenuItems.length; i++) {
-			MenuItem item = this.fileMenuItems[i];
+		for (MenuItem item : this.fileMenuItems) {
 			if (item != null && !item.isDisposed()) {
 				int index = item.getParent().indexOf(item);
 				// get Id from original menubar
@@ -644,8 +640,7 @@ private int RemoveMenus(long hmenuShared) {
 		}
 	}
 	if (this.containerMenuItems != null) {
-		for (int i = 0; i < this.containerMenuItems.length; i++) {
-			MenuItem item = this.containerMenuItems[i];
+		for (MenuItem item : this.containerMenuItems) {
 			if (item != null && !item.isDisposed()) {
 				int index = item.getParent().indexOf(item);
 				long id = getMenuItemID(hMenu, index);
@@ -654,8 +649,7 @@ private int RemoveMenus(long hmenuShared) {
 		}
 	}
 	if (this.windowMenuItems != null) {
-		for (int i = 0; i < this.windowMenuItems.length; i++) {
-			MenuItem item = this.windowMenuItems[i];
+		for (MenuItem item : this.windowMenuItems) {
 			if (item != null && !item.isDisposed()) {
 				int index = item.getParent().indexOf(item);
 				long id = getMenuItemID(hMenu, index);

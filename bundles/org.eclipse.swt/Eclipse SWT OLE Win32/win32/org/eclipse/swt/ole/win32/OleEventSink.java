@@ -128,8 +128,8 @@ private int Invoke(int dispIdMember, long riid, int lcid, int dwFlags, long pDis
 	notifyListener(dispIdMember,event);
 
 	if (eventInfo != null) {
-		for (int j = 0; j < eventInfo.length; j++){
-			eventInfo[j].dispose();
+		for (Variant element : eventInfo) {
+			element.dispose();
 		}
 	}
 
