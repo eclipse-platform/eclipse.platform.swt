@@ -85,9 +85,9 @@ public static void main (String[] args) {
 	columnOwner.setResizable(false);
 	createMenuItem(headerMenu, columnOwner);
 
-	for (int i = 0; i < files.length; i++) {
+	for (String[] file : files) {
 		TreeItem item = new TreeItem(tree, SWT.NONE);
-		item.setText(files[i]);
+		item.setText(file);
 		TreeItem subItem = new TreeItem(item, SWT.NONE);
 		subItem.setText("node");
 	}

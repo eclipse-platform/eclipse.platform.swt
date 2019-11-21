@@ -42,8 +42,7 @@ public static void main (String [] args) {
 	button.addListener (SWT.Selection, event -> {
 		Control [] children = shell.getChildren ();
 		Button newButton = (Button) children [4];
-		for (int i=0; i<children.length; i++) {
-			Control child = children [i];
+		for (Control child : children) {
 			if (child instanceof Button && (child.getStyle () & SWT.RADIO) != 0) {
 				((Button) child).setSelection (false);
 			}

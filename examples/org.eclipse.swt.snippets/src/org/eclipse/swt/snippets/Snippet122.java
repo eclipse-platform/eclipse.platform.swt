@@ -66,10 +66,9 @@ public static void main(String[] args) {
 		String selection = text.getSelectionText();
 		copyItem.setEnabled(selection.length() > 0);
 		// is paste valid?
-		TransferData[] available = cb.getAvailableTypes();
 		boolean enabled = false;
-		for (int i = 0; i < available.length; i++) {
-			if (TextTransfer.getInstance().isSupportedType(available[i])) {
+		for (TransferData transfer : cb.getAvailableTypes()) {
+			if (TextTransfer.getInstance().isSupportedType(transfer)) {
 				enabled = true;
 				break;
 			}

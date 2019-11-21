@@ -56,12 +56,12 @@ public void javaToNative (Object object, TransferData transferData) {
 	try (ByteArrayOutputStream out = new ByteArrayOutputStream ();
 		DataOutputStream writeOut = new DataOutputStream (out)) {
 		// write data to a byte array and then ask super to convert to pMedium
-		for (int i = 0, length = myTypes.length; i < length; i++) {
-			byte [] buffer = myTypes [i].fileName.getBytes ();
+		for (MyType myType : myTypes) {
+			byte [] buffer = myType.fileName.getBytes ();
 			writeOut.writeInt (buffer.length);
 			writeOut.write (buffer);
-			writeOut.writeLong (myTypes [i].fileLength);
-			writeOut.writeLong (myTypes [i].lastModified);
+			writeOut.writeLong (myType.fileLength);
+			writeOut.writeLong (myType.lastModified);
 		}
 		byte [] buffer = out.toByteArray ();
 		writeOut.close ();
@@ -119,10 +119,10 @@ boolean checkMyType(Object object) {
 		return false;
 	}
 	MyType[] myTypes = (MyType[])object;
-	for (int i = 0; i < myTypes.length; i++) {
-		if (myTypes[i] == null ||
-			myTypes[i].fileName == null ||
-			myTypes[i].fileName.length() == 0) {
+	for (MyType myType : myTypes) {
+		if (myType == null ||
+			myType.fileName == null ||
+			myType.fileName.length() == 0) {
 			return false;
 		}
 	}
@@ -184,8 +184,8 @@ public static void main (String [] args) {
 				MyType [] myTypes = (MyType []) event.data;
 				if (myTypes != null) {
 					String string = "";
-					for (int i = 0; i < myTypes.length; i++) {
-						string += myTypes [i].fileName + " ";
+					for (MyType myType : myTypes) {
+						string += myType.fileName + " ";
 					}
 					label2.setText (string);
 				}

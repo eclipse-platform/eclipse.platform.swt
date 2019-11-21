@@ -47,9 +47,9 @@ public static void main(String [] args) {
 	column2.setText("Percent");
 	column2.setWidth(200);
 	String[] labels = new String[]{"Resolved", "New", "Won't Fix", "Invalid"};
-	for (int i=0; i<labels.length; i++) {
+	for (String label : labels) {
 		TableItem item = new TableItem(table, SWT.NONE);
-		item.setText(labels[i]);
+		item.setText(label);
 	}
 
 	/*

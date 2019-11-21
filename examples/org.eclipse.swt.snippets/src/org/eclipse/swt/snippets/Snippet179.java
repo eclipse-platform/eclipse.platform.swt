@@ -80,17 +80,17 @@ public static void main(String[] args) {
 			int start = e.start;
 			if (start > 9) return;
 			int index = 0;
-			for (int i = 0; i < chars.length; i++) {
+			for (char c : chars) {
 				if (start + index == 4 || start + index == 7) {
-					if (chars[i] == '/') {
+					if (c == '/') {
 						index++;
 						continue;
 					}
 					buffer.insert(index++, '/');
 				}
-				if (chars[i] < '0' || '9' < chars[i]) return;
-				if (start + index == 5 &&  '1' < chars[i]) return; /* [M]M */
-				if (start + index == 8 &&  '3' < chars[i]) return; /* [D]D */
+				if (c < '0' || '9' < c) return;
+				if (start + index == 5 &&  '1' < c) return; /* [M]M */
+				if (start + index == 8 &&  '3' < c) return; /* [D]D */
 				index++;
 			}
 			String newText = buffer.toString();

@@ -36,13 +36,15 @@ public static void main (String [] args) {
 	list.addListener (SWT.Selection, e -> {
 		String string = "";
 		int [] selection = list.getSelectionIndices ();
-		for (int i=0; i<selection.length; i++) string += selection [i] + " ";
+		for (int element : selection)
+			string += element + " ";
 		System.out.println ("Selection={" + string + "}");
 	});
 	list.addListener (SWT.DefaultSelection, e -> {
 		String string = "";
 		int [] selection = list.getSelectionIndices ();
-		for (int i=0; i<selection.length; i++) string += selection [i] + " ";
+		for (int element : selection)
+			string += element + " ";
 		System.out.println ("DefaultSelection={" + string + "}");
 	});
 	shell.pack ();

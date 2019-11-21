@@ -43,7 +43,8 @@ public static void main (String [] args) {
 			item.setText (j, "Item " + i);
 		}
 	}
-	for (int i=0; i<columns.length; i++) columns [i].pack ();
+	for (TableColumn col : columns)
+		col.pack ();
 	Button button = new Button (shell, SWT.PUSH);
 	final int index = 1;
 	button.setText ("Insert Column " + index + "a");

@@ -38,14 +38,14 @@ public static void main (String [] args) {
 	table.setBounds (clientArea.x, clientArea.y, 100, 100);
 	table.addListener (SWT.Selection, e -> {
 		String string = "";
-		TableItem [] selection = table.getSelection ();
-		for (int i=0; i<selection.length; i++) string += selection [i] + " ";
+		for (TableItem item : table.getSelection ())
+			string += item + " ";
 		System.out.println ("Selection={" + string + "}");
 	});
 	table.addListener (SWT.DefaultSelection, e -> {
 		String string = "";
-		TableItem [] selection = table.getSelection ();
-		for (int i=0; i<selection.length; i++) string += selection [i] + " ";
+		for (TableItem item : table.getSelection ())
+			string += item + " ";
 		System.out.println ("DefaultSelection={" + string + "}");
 	});
 	shell.pack ();

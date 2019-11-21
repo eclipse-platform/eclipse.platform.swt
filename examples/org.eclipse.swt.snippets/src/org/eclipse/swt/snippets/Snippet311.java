@@ -85,9 +85,9 @@ public static void main (String[] args) {
 	columnOwner.setResizable(false);
 	createMenuItem(headerMenu, columnOwner);
 
-	for (int i = 0; i < files.length; i++) {
+	for (String[] file : files) {
 		TableItem item = new TableItem(table, SWT.NONE);
-		item.setText(files[i]);
+		item.setText(file);
 	}
 
 	final Menu tableMenu = new Menu(shell, SWT.POP_UP);

@@ -48,12 +48,12 @@ public static void main(String [] args) {
 	column2.setWidth(200);
 	String[] states = new String[]{"Resolved", "New", "Won't Fix", "Invalid"};
 	String[] teams = new String[] {"UI", "SWT", "OSGI"};
-	for (int i=0; i<teams.length; i++) {
+	for (String team : teams) {
 		TreeItem item = new TreeItem(tree, SWT.NONE);
-		item.setText(teams[i]);
-		for (int j = 0; j < states.length; j++) {
+		item.setText(team);
+		for (String state : states) {
 			TreeItem subItem = new TreeItem(item, SWT.NONE);
-			subItem.setText(states[j]);
+			subItem.setText(state);
 		}
 	}
 

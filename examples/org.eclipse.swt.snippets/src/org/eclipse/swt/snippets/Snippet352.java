@@ -59,9 +59,7 @@ public class Snippet352 {
 
 			Touch touches[] = e.touches;
 
-			for (int i = 0; i < touches.length; i++) {
-				Touch currTouch = touches[i];
-
+			for (Touch currTouch : touches) {
 				if ((currTouch.state & (SWT.TOUCHSTATE_UP)) != 0) {
 					touchLocations.remove(currTouch.id);
 				} else {

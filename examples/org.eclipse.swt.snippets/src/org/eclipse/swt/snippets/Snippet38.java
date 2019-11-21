@@ -37,9 +37,9 @@ public static void main (String [] args) {
 	data.heightHint = 200;
 	table.setLayoutData(data);
 	String[] titles = {" ", "C", "!", "Description", "Resource", "In Folder", "Location"};
-	for (int i=0; i<titles.length; i++) {
+	for (String title : titles) {
 		TableColumn column = new TableColumn (table, SWT.NONE);
-		column.setText (titles [i]);
+		column.setText (title);
 	}
 	int count = 128;
 	for (int i=0; i<count; i++) {

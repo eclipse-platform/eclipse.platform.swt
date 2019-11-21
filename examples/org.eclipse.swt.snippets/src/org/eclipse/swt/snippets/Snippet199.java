@@ -79,8 +79,8 @@ public class Snippet199 {
 		public void handleEvent (OleEvent e) {
 			System.out.println("selection has changed");
 			Variant[] args = e.arguments;
-			for (int i = 0; i < args.length; i++) {
-				System.out.println(args[i]);
+			for (Variant arg : args) {
+				System.out.println(arg);
 			}
 		}
 	};

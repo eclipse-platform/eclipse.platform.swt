@@ -34,28 +34,27 @@ public static void main (String [] args) {
 	shell.setText ("Lazy Tree");
 	shell.setLayout (new FillLayout ());
 	final Tree tree = new Tree (shell, SWT.BORDER);
-	File [] roots = File.listRoots ();
-	for (int i=0; i<roots.length; i++) {
+	for (File rootFile : File.listRoots ()) {
 		TreeItem root = new TreeItem (tree, 0);
-		root.setText (roots [i].toString ());
-		root.setData (roots [i]);
+		root.setText (rootFile.toString ());
+		root.setData (rootFile);
 		new TreeItem (root, 0);
 	}
 	tree.addListener (SWT.Expand, event -> {
 		final TreeItem root = (TreeItem) event.item;
 		TreeItem [] items = root.getItems ();
-		for (int i1= 0; i1<items.length; i1++) {
-			if (items [i1].getData () != null) return;
-			items [i1].dispose ();
+		for (TreeItem item : items) {
+			if (item.getData () != null) return;
+			item.dispose ();
 		}
 		File file = (File) root.getData ();
 		File [] files = file.listFiles ();
 		if (files == null) return;
-		for (int i2= 0; i2<files.length; i2++) {
+		for (File rootFile : files) {
 			TreeItem item = new TreeItem (root, 0);
-			item.setText (files [i2].getName ());
-			item.setData (files [i2]);
-			if (files [i2].isDirectory()) {
+			item.setText (rootFile.getName ());
+			item.setData (rootFile);
+			if (rootFile.isDirectory()) {
 				new TreeItem (item, 0);
 			}
 		}

@@ -221,9 +221,9 @@ public class Snippet373 {
 		table.setLinesVisible(true);
 		table.setHeaderVisible(true);
 		String titles[] = { "Title 1" };
-		for (int i = 0; i < titles.length; i++) {
+		for (String title : titles) {
 			TableColumn column = new TableColumn(table, SWT.NONE);
-			column.setText(titles[i]);
+			column.setText(title);
 			column.setImage(eclipseTableHeader);
 		}
 		for (int i = 0; i < 1; i++) {

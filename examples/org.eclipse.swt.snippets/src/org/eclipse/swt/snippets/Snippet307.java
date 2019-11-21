@@ -72,8 +72,7 @@ static class CustomFunction extends BrowserFunction {
 	@Override
 	public Object function (Object[] arguments) {
 		System.out.println ("theJavaFunction() called from javascript with args:");
-		for (int i = 0; i < arguments.length; i++) {
-			Object arg = arguments[i];
+		for (Object arg : arguments) {
 			if (arg == null) {
 				System.out.println ("\t-->null");
 			} else {

@@ -84,8 +84,7 @@ public class Snippet212 {
 		});
 		styledText.addListener(SWT.Dispose, event -> {
 			StyleRange[] styles = styledText.getStyleRanges();
-			for (int i = 0; i < styles.length; i++) {
-				StyleRange style = styles[i];
+			for (StyleRange style : styles) {
 				if (style.data != null) {
 					Image image = (Image)style.data;
 					if (image != null) image.dispose();

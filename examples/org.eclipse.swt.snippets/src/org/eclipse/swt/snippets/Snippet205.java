@@ -86,8 +86,8 @@ public static void main(String[] args) {
 		if (!display.readAndDispatch()) display.sleep();
 	}
 	layout.dispose();
-	for (int i = 0; i < images.length; i++) {
-		images[i].dispose();
+	for (Image image : images) {
+		image.dispose();
 	}
 	display.dispose();
 }

@@ -45,14 +45,14 @@ public static void main (String [] args) {
 	}
 	tree.addListener (SWT.Selection, e -> {
 		String string = "";
-		TreeItem [] selection = tree.getSelection ();
-		for (int i=0; i<selection.length; i++) string += selection [i] + " ";
+		for (TreeItem item : tree.getSelection ())
+			string += item + " ";
 		System.out.println ("Selection={" + string + "}");
 	});
 	tree.addListener (SWT.DefaultSelection, e -> {
 		String string = "";
-		TreeItem [] selection = tree.getSelection ();
-		for (int i=0; i<selection.length; i++) string += selection [i] + " ";
+		for (TreeItem item : tree.getSelection ())
+			string += item + " ";
 		System.out.println ("DefaultSelection={" + string + "}");
 	});
 	tree.addListener (SWT.Expand, e -> System.out.println ("Expand={" + e.item + "}"));

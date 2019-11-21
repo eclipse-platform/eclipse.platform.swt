@@ -64,9 +64,8 @@ public static void main(String[] args) {
 				}
 			}
 
-			TransferData[] data = event.dataTypes;
-			for (int i = 0; i < data.length; i++) {
-				int id = data[i].type;
+			for (TransferData transfer : event.dataTypes) {
+				int id = transfer.type;
 				String name = getNameFromId(id);
 				TableItem item2 = new TableItem(control,SWT.NONE);
 				item2.setText("Data type is "+id+" "+name);

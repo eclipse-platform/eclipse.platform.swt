@@ -69,9 +69,9 @@ public class SnippetLauncher {
 							skip = true;
 						} else {
 							String [] platforms = {"win32", "gtk"};
-							for (int p = 0; p < platforms.length; p++) {
-								if (!platforms[p].equals(platform) && source.contains("." + platforms[p])) {
-									platform = platforms[p];
+							for (String platformId : platforms) {
+								if (!platformId.equals(platform) && source.contains("." + platformId)) {
+									platform = platformId;
 									skip = true;
 									break;
 								}

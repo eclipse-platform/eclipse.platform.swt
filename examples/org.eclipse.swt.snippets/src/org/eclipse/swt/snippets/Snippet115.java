@@ -36,11 +36,9 @@ public static void main (String [] args) {
 	c2.setLayout (new RowLayout ());
 	final Composite [] composites = new Composite [] {c1, c2};
 	Listener radioGroup = event -> {
-		for (int i=0; i<composites.length; i++) {
-			Composite composite = composites [i];
+		for (Composite composite : composites) {
 			Control [] children = composite.getChildren ();
-			for (int j=0; j<children.length; j++) {
-				Control child = children [j];
+			for (Control child : children) {
 				if (child instanceof Button) {
 					Button button1 = (Button) child;
 					if ((button1.getStyle () & SWT.RADIO) != 0) button1.setSelection (false);

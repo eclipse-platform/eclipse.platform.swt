@@ -70,8 +70,8 @@ public static void main(String args[]) {
 	});
 	display.addListener(SWT.Close, event -> EventQueue.invokeLater(() -> {
 		Frame[] frames = Frame.getFrames();
-		for (int i = 0; i < frames.length; i++) {
-			frames[i].dispose();
+		for (Frame frame : frames) {
+			frame.dispose();
 		}
 	}));
 	while (!display.isDisposed()) {

@@ -32,8 +32,7 @@ public static void main (String [] args) {
 	shell.setLayout (new FillLayout ());
 	Listener listener = e -> {
 		Control [] children = shell.getChildren ();
-		for (int i=0; i<children.length; i++) {
-			Control child = children [i];
+		for (Control child : children) {
 			if (e.widget != child && child instanceof Button && (child.getStyle () & SWT.TOGGLE) != 0) {
 				((Button) child).setSelection (false);
 			}

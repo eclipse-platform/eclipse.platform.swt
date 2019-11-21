@@ -137,9 +137,9 @@ public static void main(String [] args) {
 	while (!shell.isDisposed()) {
 		if (!display.readAndDispatch()) display.sleep();
 	}
-	for (int i = 0; i < images.length; i++) {
-		if (images[i] != null) {
-			images[i].dispose();
+	for (Image image : images) {
+		if (image != null) {
+			image.dispose();
 		}
 	}
 	display.dispose();

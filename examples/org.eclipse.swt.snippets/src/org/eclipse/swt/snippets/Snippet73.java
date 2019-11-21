@@ -41,14 +41,14 @@ public static void main (String [] args) {
 	menu.addListener (SWT.Show, event -> {
 		MenuItem [] menuItems = menu.getItems ();
 		TreeItem [] treeItems = tree.getSelection ();
-		for (int i=0; i<menuItems.length; i++) {
-			String text = menuItems [i].getText ();
+		for (MenuItem menuItem : menuItems) {
+			String text = menuItem.getText ();
 			int index = 0;
 			while (index<treeItems.length) {
 				if (treeItems [index].getText ().equals (text)) break;
 				index++;
 			}
-			menuItems [i].setEnabled (index != treeItems.length);
+			menuItem.setEnabled (index != treeItems.length);
 		}
 	});
 	Rectangle clientArea = shell.getClientArea ();

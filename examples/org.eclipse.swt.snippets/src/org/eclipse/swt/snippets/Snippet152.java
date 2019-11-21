@@ -70,9 +70,9 @@ public static void main(String[] args) {
 	fileMenu.addListener(SWT.Show, showListener);
 	fileItem.setMenu(fileMenu);
 	String[] fileStrings = { "New", "Close", "Exit" };
-	for (int i = 0; i < fileStrings.length; i++) {
+	for (String fileString : fileStrings) {
 		MenuItem item = new MenuItem(fileMenu, SWT.PUSH);
-		item.setText(fileStrings[i]);
+		item.setText(fileString);
 		item.addListener(SWT.Arm, armListener);
 	}
 	Menu editMenu = new Menu(shell, SWT.DROP_DOWN);
@@ -80,9 +80,9 @@ public static void main(String[] args) {
 	editMenu.addListener(SWT.Show, showListener);
 	String[] editStrings = { "Cut", "Copy", "Paste" };
 	editItem.setMenu(editMenu);
-	for (int i = 0; i < editStrings.length; i++) {
+	for (String editString : editStrings) {
 		MenuItem item = new MenuItem(editMenu, SWT.PUSH);
-		item.setText(editStrings[i]);
+		item.setText(editString);
 		item.addListener(SWT.Arm, armListener);
 	}
 	shell.open();

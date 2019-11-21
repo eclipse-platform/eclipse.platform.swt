@@ -35,8 +35,8 @@ public static void main(String[] args) {
 	text.setBounds(clientArea.x + 10, clientArea.y + 10, 150, 150);
 	Font initialFont = text.getFont();
 	FontData[] fontData = initialFont.getFontData();
-	for (int i = 0; i < fontData.length; i++) {
-		fontData[i].setHeight(24);
+	for (FontData element : fontData) {
+		element.setHeight(24);
 	}
 	Font newFont = new Font(display, fontData);
 	text.setFont(newFont);

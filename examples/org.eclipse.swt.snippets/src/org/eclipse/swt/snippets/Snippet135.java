@@ -181,8 +181,7 @@ public class Snippet135 {
 		});
 
 		File[] roots = File.listRoots();
-		for (int i = 0; i < roots.length; i++) {
-			File file = roots[i];
+		for (File file : roots) {
 			TreeItem treeItem = new TreeItem(fileTree, SWT.NONE);
 			treeItem.setText(file.getAbsolutePath());
 			treeItem.setData(file);
@@ -201,8 +200,7 @@ public class Snippet135 {
 			File root = (File)item.getData();
 			File[] files = root.listFiles();
 			if (files == null) return;
-			for (int i = 0; i < files.length; i++) {
-				File file = files[i];
+			for (File file : files) {
 				if (file.isDirectory()) {
 					TreeItem treeItem = new TreeItem(item, SWT.NONE);
 					treeItem.setText(file.getName());

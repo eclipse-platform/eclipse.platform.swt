@@ -49,8 +49,7 @@ public static void main(String[] args) {
 	shell.addListener(SWT.Paint, event -> {
 		Point point = new Point(10, 10);
 		int width = shell.getClientArea().width - 2 * point.x;
-		for (int i = 0; i < layouts.length; i++) {
-			TextLayout layout = layouts[i];
+		for (TextLayout layout : layouts) {
 			layout.setWidth(width);
 			layout.draw(event.gc, point.x, point.y);
 			point.y += layout.getBounds().height + 10;
@@ -60,8 +59,8 @@ public static void main(String[] args) {
 	while (!shell.isDisposed()) {
 		if (!display.readAndDispatch()) display.sleep();
 	}
-	for (int i = 0; i < layouts.length; i++) {
-		layouts[i].dispose();
+	for (TextLayout layout : layouts) {
+		layout.dispose();
 	}
 	display.dispose();
 }

@@ -442,8 +442,8 @@ public class SnippetExplorer {
 	 *         available with given name)
 	 */
 	private Font tryCreateFont(String fontName, FontData[] existingData) {
-		for (int i = 0; i < existingData.length; i++) {
-			existingData[i].setName(fontName);
+		for (FontData element : existingData) {
+			element.setName(fontName);
 		}
 		try {
 			return new Font(display, existingData);

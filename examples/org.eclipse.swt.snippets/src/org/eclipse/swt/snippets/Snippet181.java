@@ -51,11 +51,10 @@ public class Snippet181 {
 			item.setText(text);
 		}
 		Listener listener = e -> System.out.println("Move "+e.widget);
-		TableColumn[] columns = table.getColumns();
-		for (int i = 0; i < columns.length; i++) {
-			columns[i].pack();
-			columns[i].setMoveable(true);
-			columns[i].addListener(SWT.Move, listener);
+		for (TableColumn col : table.getColumns()) {
+			col.pack();
+			col.setMoveable(true);
+			col.addListener(SWT.Move, listener);
 		}
 		Button b = new Button(shell, SWT.PUSH);
 		b.setText("invert column order");

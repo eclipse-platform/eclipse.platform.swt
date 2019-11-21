@@ -50,14 +50,13 @@ public static void main(String[] args) {
 	}
 
 	tree.addSelectionListener(widgetSelectedAdapter(e -> {
-			TreeItem[] selection = tree.getSelection();
 			TreeItem[] revisedSelection = new TreeItem[0];
-			for (int i = 0; i < selection.length; i++) {
-				String text = selection[i].getText();
+			for (TreeItem item : tree.getSelection()) {
+				String text = item.getText();
 				if (text.indexOf('1') > 0) {
 					TreeItem[] newSelection = new TreeItem[revisedSelection.length + 1];
 					System.arraycopy(revisedSelection, 0, newSelection, 0, revisedSelection.length);
-					newSelection[revisedSelection.length] = selection[i];
+					newSelection[revisedSelection.length] = item;
 					revisedSelection = newSelection;
 				}
 			}

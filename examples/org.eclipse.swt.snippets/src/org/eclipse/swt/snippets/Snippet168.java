@@ -38,14 +38,14 @@ public static void main(String[] args) {
 		gc.setForeground(display.getSystemColor(SWT.COLOR_BLUE));
 		gc.setLineWidth(10);
 		int[] caps = {SWT.CAP_FLAT, SWT.CAP_ROUND, SWT.CAP_SQUARE};
-		for (int i1 = 0; i1 < caps.length; i1++) {
-			gc.setLineCap(caps[i1]);
+		for (int cap : caps) {
+			gc.setLineCap(cap);
 			gc.drawLine(x, y, x + w, y);
 			y += 20;
 		}
 		int[] joins = {SWT.JOIN_BEVEL, SWT.JOIN_MITER, SWT.JOIN_ROUND};
-		for (int i2 = 0; i2 < joins.length; i2++) {
-			gc.setLineJoin(joins[i2]);
+		for (int join : joins) {
+			gc.setLineJoin(join);
 			gc.drawPolygon(new int[] {x, y, x + w/2, y + h, x + w, y});
 			y += h + 20;
 		}

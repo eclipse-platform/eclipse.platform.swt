@@ -32,8 +32,8 @@ public class Snippet354 {
 
 	static MenuItem getItem(Menu menu, int id) {
 		MenuItem[] items = menu.getItems();
-		for (int i = 0; i < items.length; i++) {
-			if (items[i].getID() == id) return items[i];
+		for (MenuItem item : items) {
+			if (item.getID() == id) return item;
 		}
 		return null;
 	}
