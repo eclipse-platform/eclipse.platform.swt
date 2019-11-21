@@ -1205,8 +1205,7 @@ public boolean setUrl (String url, String postData, String[] headers) {
 	}
 	hr = COM.S_OK;	//TODO: once post code is completed, remove this line if not required
 	if (headers != null) {
-		for (int i = 0; i < headers.length; i++) {
-			String current = headers[i];
+		for (String current : headers) {
 			if (current != null) {
 				int index = current.indexOf (':');
 				if (index != -1) {

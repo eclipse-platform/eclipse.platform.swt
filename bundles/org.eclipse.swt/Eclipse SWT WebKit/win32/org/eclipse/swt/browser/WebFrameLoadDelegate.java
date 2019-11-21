@@ -182,9 +182,8 @@ int didChangeLocationWithinPageForFrame (long webView, long frame) {
 		statusText.display = display;
 		statusText.widget = browser;
 		statusText.text = url2;
-		StatusTextListener[] statusTextListeners = browser.webBrowser.statusTextListeners;
-		for (int i = 0; i < statusTextListeners.length; i++) {
-			statusTextListeners[i].changed (statusText);
+		for (StatusTextListener statusTextListener : browser.webBrowser.statusTextListeners) {
+			statusTextListener.changed (statusText);
 		}
 	}
 
@@ -193,9 +192,8 @@ int didChangeLocationWithinPageForFrame (long webView, long frame) {
 	location.widget = browser;
 	location.location = url2;
 	location.top = top;
-	LocationListener[] locationListeners = browser.webBrowser.locationListeners;
-	for (int i = 0; i < locationListeners.length; i++) {
-		locationListeners[i].changed (location);
+	for (LocationListener locationListener : browser.webBrowser.locationListeners) {
+		locationListener.changed (location);
 	}
 	return COM.S_OK;
 }
@@ -291,9 +289,8 @@ int didCommitLoadForFrame (long webview, long frame) {
 		progress.widget = browser;
 		progress.current = 1;
 		progress.total = WebKit.MAX_PROGRESS;
-		ProgressListener[] progressListeners = browser.webBrowser.progressListeners;
-		for (int i = 0; i < progressListeners.length; i++) {
-			progressListeners[i].changed (progress);
+		for (ProgressListener progressListener : browser.webBrowser.progressListeners) {
+			progressListener.changed (progress);
 		}
 		if (browser.isDisposed ()) return COM.S_OK;
 
@@ -301,9 +298,8 @@ int didCommitLoadForFrame (long webview, long frame) {
 		statusText.display = display;
 		statusText.widget = browser;
 		statusText.text = url2;
-		StatusTextListener[] statusTextListeners = browser.webBrowser.statusTextListeners;
-		for (int i = 0; i < statusTextListeners.length; i++) {
-			statusTextListeners[i].changed (statusText);
+		for (StatusTextListener statusTextListener : browser.webBrowser.statusTextListeners) {
+			statusTextListener.changed (statusText);
 		}
 		if (browser.isDisposed ()) return COM.S_OK;
 	}
@@ -312,9 +308,8 @@ int didCommitLoadForFrame (long webview, long frame) {
 	location.widget = browser;
 	location.location = url2;
 	location.top = top;
-	LocationListener[] locationListeners = browser.webBrowser.locationListeners;
-	for (int i = 0; i < locationListeners.length; i++) {
-		locationListeners[i].changed (location);
+	for (LocationListener locationListener : browser.webBrowser.locationListeners) {
+		locationListener.changed (location);
 	}
 	return COM.S_OK;
 }
@@ -460,9 +455,8 @@ int didFinishLoadForFrame (long webview, long frame) {
 			newEvent.display = display;
 			newEvent.widget = browser;
 			newEvent.title = getUrl ();
-			TitleListener[] titleListeners = browser.webBrowser.titleListeners;
-			for (int i = 0; i < titleListeners.length; i++) {
-				titleListeners[i].changed (newEvent);
+			for (TitleListener titleListener : browser.webBrowser.titleListeners) {
+				titleListener.changed (newEvent);
 			}
 			if (browser.isDisposed ()) return COM.S_OK;
 		}
@@ -472,9 +466,8 @@ int didFinishLoadForFrame (long webview, long frame) {
 		progress.widget = browser;
 		progress.current = WebKit.MAX_PROGRESS;
 		progress.total = WebKit.MAX_PROGRESS;
-		ProgressListener[] progressListeners = browser.webBrowser.progressListeners;
-		for (int i = 0; i < progressListeners.length; i++) {
-			progressListeners[i].completed (progress);
+		for (ProgressListener progressListener : browser.webBrowser.progressListeners) {
+			progressListener.completed (progress);
 		}
 		if (browser.isDisposed ()) return COM.S_OK;
 	}
@@ -495,9 +488,8 @@ int didReceiveTitle (long webView, long title, long frame) {
 		newEvent.display = browser.getDisplay ();
 		newEvent.widget = browser;
 		newEvent.title = newTitle;
-		TitleListener[] titleListeners = browser.webBrowser.titleListeners;
-		for (int i = 0; i < titleListeners.length; i++) {
-			titleListeners[i].changed (newEvent);
+		for (TitleListener titleListener : browser.webBrowser.titleListeners) {
+			titleListener.changed (newEvent);
 		}
 	}
 	new IWebFrame (mainFrame[0]).Release ();

@@ -117,8 +117,8 @@ int decidePolicyForNavigationAction (long webView, long actionInformation, long 
 	newEvent.doit = true;
 	LocationListener[] locationListeners = webKit.locationListeners;
 	if (locationListeners != null) {
-		for (int i = 0; i < locationListeners.length; i++) {
-			locationListeners[i].changing (newEvent);
+		for (LocationListener locationListener : locationListeners) {
+			locationListener.changing (newEvent);
 		}
 	}
 	if (newEvent.doit) {

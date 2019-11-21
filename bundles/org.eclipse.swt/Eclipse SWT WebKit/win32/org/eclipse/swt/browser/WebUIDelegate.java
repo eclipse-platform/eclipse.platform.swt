@@ -214,9 +214,8 @@ int createWebViewWithRequest (long sender, long request, long webView) {
 	newEvent.display = browser.getDisplay ();
 	newEvent.widget = browser;
 	newEvent.required = true;
-	OpenWindowListener[] openWindowListeners = browser.webBrowser.openWindowListeners;
-	for (int i = 0; i < openWindowListeners.length; i++) {
-		openWindowListeners[i].open (newEvent);
+	for (OpenWindowListener openWindowListener : browser.webBrowser.openWindowListeners) {
+		openWindowListener.open (newEvent);
 	}
 	IWebView iwebview = null;
 	Browser browser = null;
@@ -287,8 +286,8 @@ int mouseDidMoveOverElement (long sender, long elementInformation, int modifierF
 		statusText.display = browser.getDisplay ();
 		statusText.widget = browser;
 		statusText.text = "";	//$NON-NLS-1$
-		for (int i = 0; i < statusTextListeners.length; i++) {
-			statusTextListeners[i].changed (statusText);
+		for (StatusTextListener statusTextListener : statusTextListeners) {
+			statusTextListener.changed (statusText);
 		}
 		return COM.S_OK;
 	}
@@ -298,8 +297,8 @@ int mouseDidMoveOverElement (long sender, long elementInformation, int modifierF
 	statusText.display = browser.getDisplay ();
 	statusText.widget = browser;
 	statusText.text = value;
-	for (int i = 0; i < statusTextListeners.length; i++) {
-		statusTextListeners[i].changed (statusText);
+	for (StatusTextListener statusTextListener : statusTextListeners) {
+		statusTextListener.changed (statusText);
 	}
 	return COM.S_OK;
 }
@@ -489,9 +488,8 @@ int setStatusText (long sender, long text) {
 	statusTextEvent.display = browser.getDisplay ();
 	statusTextEvent.widget = browser;
 	statusTextEvent.text = statusText;
-	StatusTextListener[] statusTextListeners = browser.webBrowser.statusTextListeners;
-	for (int i = 0; i < statusTextListeners.length; i++) {
-		statusTextListeners[i].changed (statusTextEvent);
+	for (StatusTextListener statusTextListener : browser.webBrowser.statusTextListeners) {
+		statusTextListener.changed (statusTextEvent);
 	}
 	return COM.S_OK;
 }
@@ -696,9 +694,8 @@ int webViewClose (long sender) {
 	WindowEvent newEvent = new WindowEvent (browser);
 	newEvent.display = browser.getDisplay ();
 	newEvent.widget = browser;
-	CloseWindowListener[] closeWindowListeners = browser.webBrowser.closeWindowListeners;
-	for (int i = 0; i < closeWindowListeners.length; i++) {
-		closeWindowListeners[i].close (newEvent);
+	for (CloseWindowListener closeWindowListener : browser.webBrowser.closeWindowListeners) {
+		closeWindowListener.close (newEvent);
 	}
 	browser.dispose ();
 	return COM.S_OK;
@@ -726,9 +723,8 @@ int webViewShow (long sender) {
 	newEvent.menuBar = menuBar;
 	newEvent.statusBar = statusBar;
 	newEvent.toolBar = toolBar;
-	VisibilityWindowListener[] visibilityWindowListeners = browser.webBrowser.visibilityWindowListeners;
-	for (int i = 0; i < visibilityWindowListeners.length; i++) {
-		visibilityWindowListeners[i].show (newEvent);
+	for (VisibilityWindowListener visibilityWindowListener : browser.webBrowser.visibilityWindowListeners) {
+		visibilityWindowListener.show (newEvent);
 	}
 	location = null;
 	size = null;

@@ -80,11 +80,10 @@ int didReceiveAuthenticationChallenge (long webView, long identifier, long chall
 	int hr = authenticationChallenge.previousFailureCount (count);
 	long[] result = new long[1];
 	if (hr == COM.S_OK && count[0] < 3) {
-		AuthenticationListener[] authenticationListeners = browser.webBrowser.authenticationListeners;
-		for (int i = 0; i < authenticationListeners.length; i++) {
+		for (AuthenticationListener authenticationListener : browser.webBrowser.authenticationListeners) {
 			AuthenticationEvent event = new AuthenticationEvent (browser);
 			event.location = ((WebKit)browser.webBrowser).lastNavigateURL;
-			authenticationListeners[i].authenticate (event);
+			authenticationListener.authenticate (event);
 			if (!event.doit) {
 				hr = authenticationChallenge.sender (result);
 				if (hr != COM.S_OK || result[0] == 0) {
@@ -235,9 +234,8 @@ int identifierForInitialRequest (long webView, long request, long dataSource, lo
 		progressEvent.widget = browser;
 		progressEvent.current = progress;
 		progressEvent.total = Math.max (progress, WebKit.MAX_PROGRESS);
-		ProgressListener[] progressListeners = browser.webBrowser.progressListeners;
-		for (int i = 0; i < progressListeners.length; i++) {
-			progressListeners[i].changed (progressEvent);
+		for (ProgressListener progressListener : browser.webBrowser.progressListeners) {
+			progressListener.changed (progressEvent);
 		}
 	}
 	return COM.S_OK;
