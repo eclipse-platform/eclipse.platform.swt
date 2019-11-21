@@ -327,13 +327,10 @@ public PrinterData open() {
 	boolean success = false;
 	if (printerData.name != null) {
 		/* Ensure that the printer name is in the current list of printers. */
-		PrinterData printerList[] = Printer.getPrinterList();
-		if (printerList.length > 0) {
-			for (int p = 0; p < printerList.length; p++) {
-				if (printerList[p].name.equals(printerData.name)) {
-					success = true;
-					break;
-				}
+		for (PrinterData element : Printer.getPrinterList()) {
+			if (element.name.equals(printerData.name)) {
+				success = true;
+				break;
 			}
 		}
 		if (success) {
@@ -453,9 +450,9 @@ public PrinterData open() {
 		display.sendPostExternalEventDispatchEvent ();
 		display.setData(key, oldValue);
 		if ((getStyle() & (SWT.APPLICATION_MODAL | SWT.SYSTEM_MODAL)) != 0) {
-			for (int i=0; i<shells.length; i++) {
-				if (shells[i] != null && !shells[i].isDisposed ()) {
-					shells[i].setEnabled(true);
+			for (Shell shell : shells) {
+				if (shell != null && !shell.isDisposed ()) {
+					shell.setEnabled(true);
 				}
 			}
 		}
