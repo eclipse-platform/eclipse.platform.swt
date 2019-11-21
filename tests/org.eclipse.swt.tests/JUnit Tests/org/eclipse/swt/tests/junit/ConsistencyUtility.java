@@ -193,9 +193,9 @@ public class ConsistencyUtility {
 	};
 
 	static String getSelectionType(int type) {
-		for(int i=0; i<selectionConversion.length;i++) {
-			if(type == selectionConversion[i][0])
-				return selectionTypes[selectionConversion[i][1]];
+		for (int[] element : selectionConversion) {
+			if(type == element[0])
+				return selectionTypes[element[1]];
 		}
 		return "";
 	}

@@ -339,7 +339,6 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLjava_io_InputStream
 		String fileName = SwtTestUtil.invalidImageFilenames[0];
 		Display[] displays = {display, null};
 		for (int j = 0; j < displays.length; j++) {
-//			Display tempDisplay = displays[j];
 			for (int i=0; i<numFormats; i++) {
 				String format = SwtTestUtil.imageFormats[i];
 				stream = SwtTestUtil.class.getResourceAsStream(fileName + "." + format);
@@ -372,8 +371,7 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLjava_io_InputStream
 		}
 
 		// create valid images
-		for (int j = 0; j < displays.length; j++) {
-			Display tempDisplay = displays[j];
+		for (Display tempDisplay : displays) {
 			int numFileNames = SwtTestUtil.imageFilenames.length;
 			for (int k=0; k<numFileNames; k++) {
 				fileName = SwtTestUtil.imageFilenames[k];
@@ -427,7 +425,6 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLjava_lang_String() 
 		fileName = SwtTestUtil.invalidImageFilenames[0];
 		Display[] displays = {display, null};
 		for (int j = 0; j < displays.length; j++) {
-//			Display tempDisplay = displays[j];
 			for (int i=0; i<numFormats; i++) {
 				String format = SwtTestUtil.imageFormats[i];
 
@@ -455,7 +452,6 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLjava_lang_String() 
 
 		// create valid images
 		for (int j = 0; j < displays.length; j++) {
-//			Display tempDisplay = displays[j];
 			int numFileNames = SwtTestUtil.imageFilenames.length;
 			for (int k=0; k<numFileNames; k++) {
 				fileName = SwtTestUtil.imageFilenames[k];

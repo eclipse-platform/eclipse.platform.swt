@@ -95,13 +95,13 @@ public class Test_org_eclipse_swt_custom_StyledText_VariableLineHeight {
 		// Create little, big font
 		Font initialFont = styledText.getFont();
 		FontData[] fontData = initialFont.getFontData();
-		for (int i = 0; i < fontData.length; i++) {
-			fontData[i].setHeight(24);
+		for (FontData fd : fontData) {
+			fd.setHeight(24);
 		}
 		Font bigFont = new Font(styledText.getDisplay(), fontData);
 		fontData = initialFont.getFontData();
-		for (int i = 0; i < fontData.length; i++) {
-			fontData[i].setHeight(fontData[i].getHeight() - 1);
+		for (FontData fd : fontData) {
+			fd.setHeight(fd.getHeight() - 1);
 		}
 		Font littleFont = new Font(styledText.getDisplay(), fontData);
 
@@ -175,13 +175,13 @@ public class Test_org_eclipse_swt_custom_StyledText_VariableLineHeight {
 		// Create little, big font
 		Font initialFont = styledText.getFont();
 		FontData[] fontData = initialFont.getFontData();
-		for (int i = 0; i < fontData.length; i++) {
-			fontData[i].setHeight(fontData[i].getHeight() / 2);
+		for (FontData fd : fontData) {
+			fd.setHeight(fd.getHeight() / 2);
 		}
 		Font littleFont1 = new Font(styledText.getDisplay(), fontData);
 		fontData = initialFont.getFontData();
-		for (int i = 0; i < fontData.length; i++) {
-			fontData[i].setHeight(fontData[i].getHeight() / 4);
+		for (FontData fd : fontData) {
+			fd.setHeight(fd.getHeight() / 4);
 		}
 		Font littleFont2 = new Font(styledText.getDisplay(), fontData);
 
@@ -211,13 +211,13 @@ public class Test_org_eclipse_swt_custom_StyledText_VariableLineHeight {
 		// Create little, big font
 		Font initialFont = styledText.getFont();
 		FontData[] fontData = initialFont.getFontData();
-		for (int i = 0; i < fontData.length; i++) {
-			fontData[i].setHeight(fontData[i].getHeight() * 2);
+		for (FontData fd : fontData) {
+			fd.setHeight(fd.getHeight() * 2);
 		}
 		Font bigFont = new Font(styledText.getDisplay(), fontData);
 		fontData = initialFont.getFontData();
-		for (int i = 0; i < fontData.length; i++) {
-			fontData[i].setHeight(fontData[i].getHeight() / 2);
+		for (FontData fd : fontData) {
+			fd.setHeight(fd.getHeight() / 2);
 		}
 		Font littleFont = new Font(styledText.getDisplay(), fontData);
 

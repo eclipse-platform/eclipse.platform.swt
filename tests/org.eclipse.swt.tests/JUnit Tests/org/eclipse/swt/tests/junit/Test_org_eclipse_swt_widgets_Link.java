@@ -162,9 +162,9 @@ public void test_setTextLjava_lang_String() {
 			"ldkashdoehufweovcnhslvhregojebckreavbkuhxbiufvcyhbifuyewvbiureyd.,cmnesljliewjfchvbwoifivbeworixuieurvbiuvbohflksjeahfcliureafgyciabelitvyrwtlicuyrtliureybcliuyreuceyvbliureybct",
 			"\n \n \b \t ",
 			"\0"};
-	for (int i=0; i<cases.length; i++){
-		link.setText(cases[i]);
-		assertEquals(link.getText() , cases[i]);
+	for (String text : cases) {
+		link.setText(text);
+		assertEquals(link.getText() , text);
 	}
 	try {
 		link.setText(null);

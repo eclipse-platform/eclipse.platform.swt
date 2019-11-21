@@ -652,8 +652,8 @@ public void test_activateEventSend() {
 			});
 		testShell.open();
 		int[] styles = {SWT.ON_TOP, SWT.APPLICATION_MODAL, SWT.PRIMARY_MODAL, SWT.SYSTEM_MODAL, SWT.NO_TRIM, SWT.BORDER, SWT.SHELL_TRIM};
-		for (int i = 0; i < styles.length; i++) {
-			Shell childShell = new Shell(testShell, styles[i]);
+		for (int style : styles) {
+			Shell childShell = new Shell(testShell, style);
 			listenerCalled = false;
 			childShell.open();
 			childShell.dispose();

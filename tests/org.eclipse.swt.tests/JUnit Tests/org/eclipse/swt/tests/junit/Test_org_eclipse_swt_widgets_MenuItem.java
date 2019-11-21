@@ -247,9 +247,8 @@ public void test_setMenuLorg_eclipse_swt_widgets_Menu() {
 public void test_setSelectionZ() {
 
 	int[] itemStyles = {SWT.CHECK, SWT.RADIO};
-	for (int i=0; i<itemStyles.length; i++)
-	{
-		MenuItem mItem = new MenuItem(menu, itemStyles[i]);
+	for (int itemStyle : itemStyles) {
+		MenuItem mItem = new MenuItem(menu, itemStyle);
 		mItem.setSelection(false);
 		assertEquals(mItem.getSelection(), false);
 		mItem.setSelection(true);

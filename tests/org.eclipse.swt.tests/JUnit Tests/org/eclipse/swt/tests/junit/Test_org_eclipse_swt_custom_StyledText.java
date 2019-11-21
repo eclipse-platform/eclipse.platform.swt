@@ -1770,9 +1770,9 @@ public void test_getSelectionRange() {
 	int invalidRanges [][] = {{-1, 0}, {-1, -1}, {100, 1}, {100, -1}, {12, 1}, {11, 2}, {2, -3}, {50, -1}};
 	int selectionRanges [][] = {{0, 1}, {0, 0}, {2, 3}, {12, 0}, {2, -2}, {5, -1}};
 
-	for (int i = 0; i < invalidRanges.length; i++) {
-		int start = invalidRanges[i][0];
-		int length = invalidRanges[i][1];
+	for (int[] invalidRange : invalidRanges) {
+		int start = invalidRange[0];
+		int length = invalidRange[1];
 
 		try {
 			text.setSelectionRange(start, length);
@@ -1800,9 +1800,9 @@ public void test_getSelectionRange() {
 		assertTrue(":c:" + i, text.getSelectionRange().x == start && text.getSelectionRange().y == length);
 	}
 
-	for (int i = 0; i < invalidRanges.length; i++) {
-		int start = invalidRanges[i][0];
-		int length = invalidRanges[i][1];
+	for (int[] invalidRange : invalidRanges) {
+		int start = invalidRange[0];
+		int length = invalidRange[1];
 
 		try {
 			text.setSelectionRange(start, length);
@@ -2015,9 +2015,9 @@ public void test_getTextII() {
 	int invalidRanges[][] = {{-1, 0}, {0, -1}, {-1, -1}, {100, 1}, {100, -1}, {2, testText.length()}, {5, 2}};
 	int ranges[][] = {{0, 1}, {0, 0}, {2, 5}, {7, 11}};
 
-	for (int i = 0; i < invalidRanges.length; i++) {
-		int start = invalidRanges[i][0];
-		int end = invalidRanges[i][1];
+	for (int[] invalidRange : invalidRanges) {
+		int start = invalidRange[0];
+		int end = invalidRange[1];
 
 		exceptionThrown = false;
 		try {
@@ -2034,9 +2034,9 @@ public void test_getTextII() {
 		int end = ranges[i][1];
 		assertEquals(":b:" + i, testText.substring(start, end + 1), text.getText(start, end));
 	}
-	for (int i = 0; i < invalidRanges.length; i++) {
-		int start = invalidRanges[i][0];
-		int end = invalidRanges[i][1];
+	for (int[] invalidRange : invalidRanges) {
+		int start = invalidRange[0];
+		int end = invalidRange[1];
 
 		exceptionThrown = false;
 		try {
@@ -2059,9 +2059,9 @@ public void test_getTextRangeII() {
 	int invalidRanges[][] = {{-1, 0}, {0, -1}, {-1, -1}, {100, 1}, {100, -1}, {1, testText.length()}, {5, -1}};
 	int ranges[][] = {{0, 1}, {0, 0}, {5, 1}, {7, 5}, {12, 0}};
 
-	for (int i = 0; i < invalidRanges.length; i++) {
-		int start = invalidRanges[i][0];
-		int length = invalidRanges[i][1];
+	for (int[] invalidRange : invalidRanges) {
+		int start = invalidRange[0];
+		int length = invalidRange[1];
 
 		exceptionThrown = false;
 		try {
@@ -2078,9 +2078,9 @@ public void test_getTextRangeII() {
 		int length = ranges[i][1];
 		assertEquals(":b:" + i, testText.substring(start, start + length), text.getTextRange(start, length));
 	}
-	for (int i = 0; i < invalidRanges.length; i++) {
-		int start = invalidRanges[i][0];
-		int length = invalidRanges[i][1];
+	for (int[] invalidRange : invalidRanges) {
+		int start = invalidRange[0];
+		int length = invalidRange[1];
 
 		exceptionThrown = false;
 		try {
@@ -3750,9 +3750,9 @@ public void test_setLineBackgroundIILorg_eclipse_swt_graphics_Color(){
 public void test_setSelectionI() {
 	int[] invalid = {-1, 100, 12};
 
-	for (int i = 0; i < invalid.length; i++) {
+	for (int start : invalid) {
 		try {
-			text.setSelection(invalid[i]);
+			text.setSelection(start);
 		} catch (IllegalArgumentException e) {
 			fail("should not throw exception for out of range");
 		}
@@ -3764,9 +3764,9 @@ public void test_setSelectionI() {
 	text.setSelection(11);
 	assertEquals(11, text.getCaretOffset());
 
-	for (int i = 0; i < invalid.length; i++) {
+	for (int start : invalid) {
 		try {
-			text.setSelection(invalid[i]);
+			text.setSelection(start);
 		}
 		catch (IllegalArgumentException e) {
 			fail("should not throw exception for out of range");
@@ -3779,9 +3779,9 @@ public void test_setSelectionLorg_eclipse_swt_graphics_Point() {
 	Point[] invalidRanges = {new Point(-1, 0), new Point(-1, -1), new Point(100, 1),
 		new Point(100, -1), new Point(11, 12), new Point(10, 12)};
 
-	for (int i = 0; i < invalidRanges.length; i++) {
+	for (Point invalidRange : invalidRanges) {
 		try {
-			text.setSelection(invalidRanges[i]);
+			text.setSelection(invalidRange);
 		}
 		catch (IllegalArgumentException e) {
 			fail("should not throw exception for out of range");
@@ -3792,9 +3792,9 @@ public void test_setSelectionLorg_eclipse_swt_graphics_Point() {
 	text.setSelection(3, 7);
 	assertEquals("3456", text.getSelectionText());
 
-	for (int i = 0; i < invalidRanges.length; i++) {
+	for (Point invalidRange : invalidRanges) {
 		try {
-			text.setSelection(invalidRanges[i]);
+			text.setSelection(invalidRange);
 		}
 		catch (IllegalArgumentException e) {
 			fail("should not throw exception for out of range");
@@ -3806,9 +3806,9 @@ public void test_setSelectionLorg_eclipse_swt_graphics_Point() {
 public void test_setSelectionII(){
 	int[][] invalidRanges = {{-1, 0}, {-1, -1}, {100, 1}, {100, -1}, {11, 12}, {10, 12}, {2, -3}, {50, -1}};
 
-	for (int i = 0; i < invalidRanges.length; i++) {
-		int start = invalidRanges[i][0];
-		int end = invalidRanges[i][1];
+	for (int[] invalidRange : invalidRanges) {
+		int start = invalidRange[0];
+		int end = invalidRange[1];
 
 		try {
 			text.setSelection(start, end);
@@ -3825,9 +3825,9 @@ public void test_setSelectionII(){
 	assertEquals("012", text.getSelectionText());
 	assertEquals(0, text.getCaretOffset());
 
-	for (int i = 0; i < invalidRanges.length; i++) {
-		int start = invalidRanges[i][0];
-		int end = invalidRanges[i][1];
+	for (int[] invalidRange : invalidRanges) {
+		int start = invalidRange[0];
+		int end = invalidRange[1];
 
 		try {
 			text.setSelection(start, end);

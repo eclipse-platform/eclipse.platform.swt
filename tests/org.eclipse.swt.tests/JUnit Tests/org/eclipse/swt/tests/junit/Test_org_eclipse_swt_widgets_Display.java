@@ -458,8 +458,8 @@ public void test_getSystemColorI() {
 			SWT.COLOR_LIST_BACKGROUND, SWT.COLOR_LIST_SELECTION,
 			SWT.COLOR_LIST_SELECTION_TEXT,
 		};
-		for (int i=0; i < colorIds.length; i++) {
-			assertNotNull(display.getSystemColor(colorIds[i]));
+		for (int colorId : colorIds) {
+			assertNotNull(display.getSystemColor(colorId));
 		}
 	} finally {
 		display.dispose();

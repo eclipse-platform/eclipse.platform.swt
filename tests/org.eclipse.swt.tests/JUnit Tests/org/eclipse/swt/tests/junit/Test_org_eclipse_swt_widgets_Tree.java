@@ -62,15 +62,15 @@ public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI() {
 	}
 
 	int[] cases = {0, SWT.BORDER};
-	for (int i = 0; i < cases.length; i++)
-		tree = new Tree(shell, cases[i]);
+	for (int style : cases)
+		tree = new Tree(shell, style);
 
 	cases = new int[]{0, 10, 100};
-	for (int j = 0; j < cases.length; j++) {
-		for (int i = 0; i < cases[j]; i++) {
+	for (int count : cases) {
+		for (int i = 0; i < count; i++) {
 			new TreeItem(tree, 0);
 		}
-		assertEquals(cases[j], tree.getItemCount());
+		assertEquals(count, tree.getItemCount());
 		tree.removeAll();
 	}
 }
@@ -254,8 +254,8 @@ public void test_getItems() {
 
 	makeCleanEnvironment(false);
 
-	for (int j = 0; j < cases.length; j++) {
-		for (int i = 0; i < cases[j]; i++) {
+	for (int count : cases) {
+		for (int i = 0; i < count; i++) {
 			TreeItem ti = new TreeItem(tree, 0);
 			ti.setText(String.valueOf(i));
 		}

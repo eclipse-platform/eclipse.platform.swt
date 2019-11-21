@@ -70,11 +70,11 @@ public void test_getDefaultButton() {
 @Test
 public void test_getImage() {
 	Image[] cases = {null, new Image(null, 100, 100)};
-	for(int i=0; i<cases.length; i++){
-		decorations.setImage(cases[i]);
-		assertEquals(decorations.getImage(), cases[i]);
-		if (cases[i]!=null)
-			cases[i].dispose();
+	for (Image image : cases) {
+		decorations.setImage(image);
+		assertEquals(decorations.getImage(), image);
+		if (image!=null)
+			image.dispose();
 	}
 }
 
@@ -219,6 +219,7 @@ private void loadImages() {
 
 // this method must be private or protected so the auto-gen tool keeps it
 private void freeImages() {
-	for (int i=0; i<images.length; i++) images[i].dispose();
+	for (Image image : images)
+		image.dispose();
 }
 }

@@ -131,10 +131,9 @@ public void test_setEnabledZ() {
 @Test
 public void test_setIncrementI() {
 	int[] cases = {1, 10, 10000};
-	for (int i=0; i < cases.length; i++)
-	{
-		scrollBar.setIncrement(cases[i]);
-		assertEquals(cases[i], scrollBar.getIncrement());
+	for (int value : cases) {
+		scrollBar.setIncrement(value);
+		assertEquals(value, scrollBar.getIncrement());
 	}
 
 	scrollBar.setIncrement(25);
@@ -146,8 +145,7 @@ public void test_setIncrementI() {
 public void test_setMaximumI(){
 	int [][] testValues = getSetMaximumValues();
 
-	for (int i = 0; i < testValues.length; i++) {
-		int[] intArray = testValues[i];
+	for (int[] intArray : testValues) {
 		setDefaults();
 		scrollBar.setMaximum(intArray[0]);
 		String valueString = valueString(intArray);
@@ -159,8 +157,7 @@ public void test_setMaximumI(){
 public void test_setMinimumI(){
 	int [][] testValues = getSetMinimumValues();
 
-	for (int i = 0; i < testValues.length; i++) {
-		int[] intArray = testValues[i];
+	for (int[] intArray : testValues) {
 		setDefaults();
 		scrollBar.setMinimum(intArray[0]);
 		String valueString = valueString(intArray);
@@ -171,10 +168,9 @@ public void test_setMinimumI(){
 @Test
 public void test_setPageIncrementI(){
 	int[] cases = {1, 10, 10000};
-	for (int i=0; i<cases.length; i++)
-	{
-		scrollBar.setPageIncrement(cases[i]);
-		assertEquals(scrollBar.getPageIncrement(), cases[i]);
+	for (int value : cases) {
+		scrollBar.setPageIncrement(value);
+		assertEquals(scrollBar.getPageIncrement(), value);
 	}
 
 	scrollBar.setPageIncrement(25);
@@ -185,8 +181,7 @@ public void test_setPageIncrementI(){
 @Test
 public void test_setSelectionI(){
 	int [][] testValues = getSetSelectionValues();
-	for (int i = 0; i < testValues.length; i++) {
-		int[] intArray = testValues[i];
+	for (int[] intArray : testValues) {
 		setDefaults();
 		scrollBar.setSelection(intArray[0]);
 		String valueString = valueString(intArray);
@@ -197,8 +192,7 @@ public void test_setSelectionI(){
 @Test
 public void test_setThumbI(){
 	int [][] testValues = getSetThumbValues();
-	for (int i = 0; i < testValues.length; i++) {
-		int[] intArray = testValues[i];
+	for (int[] intArray : testValues) {
 		setDefaults();
 		scrollBar.setThumb(intArray[0]);
 		String valueString = valueString(intArray);

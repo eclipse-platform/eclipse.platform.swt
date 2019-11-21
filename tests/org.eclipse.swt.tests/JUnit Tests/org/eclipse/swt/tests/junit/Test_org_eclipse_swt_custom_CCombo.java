@@ -66,8 +66,8 @@ public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI() {
 		ccombo = new CCombo(shell, SWT.BORDER | SWT.READ_ONLY);
 		// Test all the combo listeners
 		int comboListeners[] = { SWT.Dispose, SWT.FocusIn, SWT.Move, SWT.Resize };
-		for (int i = 0; i < comboListeners.length; i++) {
-			assertTrue("Combo Listener events not implemented", ccombo.getListeners(comboListeners[i]).length > 0);
+		for (int comboListener : comboListeners) {
+			assertTrue("Combo Listener events not implemented", ccombo.getListeners(comboListener).length > 0);
 		}
 		assertTrue("Pop up items are present.", ccombo.getItems().length == 0);
 		// test that accessible features are added

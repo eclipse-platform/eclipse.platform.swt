@@ -60,8 +60,8 @@ public void test_equalsLjava_lang_Object() {
 public void test_getBounds() {
 	Rectangle bounds = primary.getBounds();
 	assertNotNull(bounds);
-	for (int i = 0; i < monitors.length; i++) {
-		bounds = monitors[i].getBounds();
+	for (Monitor monitor : monitors) {
+		bounds = monitor.getBounds();
 		assertNotNull(bounds);
 	}
 }
@@ -70,8 +70,8 @@ public void test_getBounds() {
 public void test_getClientArea() {
 	Rectangle bounds = primary.getClientArea();
 	assertNotNull(bounds);
-	for (int i = 0; i < monitors.length; i++) {
-		bounds = monitors[i].getClientArea();
+	for (Monitor monitor : monitors) {
+		bounds = monitor.getClientArea();
 		assertNotNull(bounds);
 	}
 }
@@ -80,17 +80,17 @@ public void test_getClientArea() {
 public void test_getZoom() {
 	int zoom = primary.getZoom();
 	assertNotEquals(0, zoom);
-	for (int i = 0; i < monitors.length; i++) {
-		zoom = monitors[i].getZoom();
+	for (Monitor monitor : monitors) {
+		zoom = monitor.getZoom();
 		assertNotEquals(0, zoom);
 	}
 }
 
 @Test
 public void test_hashCode() {
-	for (int i = 0; i < monitors.length; i++) {
-		if (primary.equals(monitors[i])) {
-			assertTrue(primary.hashCode() == monitors[i].hashCode());
+	for (Monitor monitor : monitors) {
+		if (primary.equals(monitor)) {
+			assertTrue(primary.hashCode() == monitor.hashCode());
 			break;
 		}
 	}

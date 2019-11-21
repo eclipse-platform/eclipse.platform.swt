@@ -49,8 +49,8 @@ public class Test_org_eclipse_swt_widgets_ScrolledComposite extends Test_org_ecl
 		}
 
 		int[] cases = {SWT.H_SCROLL, SWT.V_SCROLL, SWT.BORDER, SWT.LEFT_TO_RIGHT, SWT.RIGHT_TO_LEFT};
-		for (int i = 0; i < cases.length; i++){
-			scrolledComposite = new ScrolledComposite(shell, cases[i]);
+		for (int style : cases) {
+			scrolledComposite = new ScrolledComposite(shell, style);
 		}
 	}
 

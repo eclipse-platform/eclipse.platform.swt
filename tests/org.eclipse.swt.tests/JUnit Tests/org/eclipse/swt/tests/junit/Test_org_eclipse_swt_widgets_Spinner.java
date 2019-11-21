@@ -44,8 +44,8 @@ public class Test_org_eclipse_swt_widgets_Spinner extends Test_org_eclipse_swt_w
 		catch (IllegalArgumentException e) {
 		}
 		int[] cases = {0, SWT.READ_ONLY, SWT.WRAP};
-		for (int i = 0; i < cases.length; i++)
-			spinner = new Spinner(shell, cases[i]);
+		for (int style : cases)
+			spinner = new Spinner(shell, style);
 	}
 
 	@Override
@@ -57,9 +57,9 @@ public class Test_org_eclipse_swt_widgets_Spinner extends Test_org_eclipse_swt_w
 	@Test
 	public void test_getIncrement() {
 		int [] cases = {5,100,1000,1};
-		for (int i=0;i<cases.length;i++){
-			spinner.setIncrement(cases[i]);
-			assertEquals(spinner.getIncrement(), cases[i]);
+		for (int value : cases) {
+			spinner.setIncrement(value);
+			assertEquals(spinner.getIncrement(), value);
 		}
 		spinner.setIncrement(-1);
 		assertEquals(spinner.getIncrement(), cases[cases.length-1]);
@@ -68,9 +68,9 @@ public class Test_org_eclipse_swt_widgets_Spinner extends Test_org_eclipse_swt_w
 	@Test
 	public void test_getDigits() {
 		int [] cases = {1,10,0};
-		for (int i=0;i<cases.length;i++){
-			spinner.setDigits(cases[i]);
-			assertEquals(spinner.getDigits(), cases[i]);
+		for (int digits : cases) {
+			spinner.setDigits(digits);
+			assertEquals(spinner.getDigits(), digits);
 		}
 		try{
 			spinner.setDigits(-1);
@@ -102,9 +102,9 @@ public class Test_org_eclipse_swt_widgets_Spinner extends Test_org_eclipse_swt_w
 	@Test
 	public void test_getPageIncrement() {
 		int [] cases = {5,1000,20,1};
-		for (int i=0;i<cases.length;i++){
-			spinner.setPageIncrement(cases[i]);
-			assertEquals(spinner.getPageIncrement(), cases[i]);
+		for (int value : cases) {
+			spinner.setPageIncrement(value);
+			assertEquals(spinner.getPageIncrement(), value);
 		}
 		spinner.setPageIncrement(-1);
 		assertEquals(spinner.getPageIncrement(), cases[cases.length-1]);
@@ -128,9 +128,9 @@ public class Test_org_eclipse_swt_widgets_Spinner extends Test_org_eclipse_swt_w
 	@Test
 	public void test_getTextLimit() {
 		int [] cases = {5,1000,1};
-		for (int i=0;i<cases.length;i++){
-			spinner.setTextLimit(cases[i]);
-			assertEquals(spinner.getTextLimit(), cases[i]);
+		for (int value : cases) {
+			spinner.setTextLimit(value);
+			assertEquals(spinner.getTextLimit(), value);
 		}
 		try {
 			spinner.setTextLimit(0);

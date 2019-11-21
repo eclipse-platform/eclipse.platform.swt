@@ -50,8 +50,8 @@ public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI(){
 	label = new Label(shell, 0);
 
 	int[] cases = {SWT.LEFT, SWT.RIGHT, SWT.CENTER, SWT.SEPARATOR, SWT.HORIZONTAL, SWT.VERTICAL, SWT.SHADOW_IN, SWT.SHADOW_OUT};
-	for (int i = 0; i < cases.length; i++)
-		label = new Label(shell, cases[i]);
+	for (int style : cases)
+		label = new Label(shell, style);
 }
 
 @Override
@@ -63,40 +63,38 @@ public void test_computeSizeIIZ() {
 @Test
 public void test_getAlignment(){
 	int[] cases = {SWT.LEFT, SWT.RIGHT, SWT.CENTER};
-	for (int i=0; i<cases.length; i++)
-	{
-		label = new Label(shell, cases[i]);
-		assertEquals(label.getAlignment(), cases[i]);
+	for (int style : cases) {
+		label = new Label(shell, style);
+		assertEquals(label.getAlignment(), style);
 	}
 }
 
 @Test
 public void test_getImage(){
 	Image[] cases = {null, new Image(null, 100, 100)};
-	for(int i=0; i<cases.length; i++){
-		label.setImage(cases[i]);
-		assertEquals(label.getImage(), cases[i]);
-		if (cases[i]!=null)
-			cases[i].dispose();
+	for (Image image : cases) {
+		label.setImage(image);
+		assertEquals(label.getImage(), image);
+		if (image!=null)
+			image.dispose();
 	}
 }
 
 @Test
 public void test_getText(){
 	String[] cases = {"", "some name", "sdasdlkjshcdascecoewcwe"};
-	for(int i=0; i<cases.length; i++){
-		label.setText(cases[i]);
-		assertEquals(label.getText(), cases[i]);
+	for (String text : cases) {
+		label.setText(text);
+		assertEquals(label.getText(), text);
 	}
 }
 
 @Test
 public void test_setAlignmentI(){
 	int[] cases = {SWT.LEFT, SWT.RIGHT, SWT.CENTER};
-	for (int i=0; i<cases.length; i++)
-	{
-		label.setAlignment(cases[i]);
-		assertEquals(label.getAlignment(), cases[i]);
+	for (int style : cases) {
+		label.setAlignment(style);
+		assertEquals(label.getAlignment(), style);
 	}
 }
 

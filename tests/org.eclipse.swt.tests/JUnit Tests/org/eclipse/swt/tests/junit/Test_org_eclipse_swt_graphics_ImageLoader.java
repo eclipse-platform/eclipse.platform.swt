@@ -138,8 +138,8 @@ public void test_saveLjava_io_OutputStreamI() {
 		} catch (SWTException e) {
 		}
 		boolean jpgSupported = false;
-		for (int i=0; i<SwtTestUtil.imageFormats.length; i++) {
-			if (SwtTestUtil.imageFormats[i].equals("jpg")) {
+		for (String imageFormat : SwtTestUtil.imageFormats) {
+			if (imageFormat.equals("jpg")) {
 				jpgSupported = true;
 				break;
 			}

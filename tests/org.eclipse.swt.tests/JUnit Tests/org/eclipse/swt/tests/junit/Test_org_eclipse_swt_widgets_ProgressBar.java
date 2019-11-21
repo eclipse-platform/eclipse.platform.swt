@@ -47,8 +47,8 @@ public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI() {
 	}
 
 	int[] cases = {0, SWT.HORIZONTAL, SWT.VERTICAL};
-	for (int i = 0; i < cases.length; i++)
-		progressBar = new ProgressBar(shell, cases[i]);
+	for (int style : cases)
+		progressBar = new ProgressBar(shell, style);
 }
 
 @Override
@@ -66,8 +66,7 @@ public void test_setMaximumI() {
 
 	int [][] testValues = getSetMaximumValues();
 
-	for (int i = 0; i < testValues.length; i++) {
-		int[] intArray = testValues[i];
+	for (int[] intArray : testValues) {
 		setDefaults();
 		progressBar.setMaximum(intArray[0]);
 		report("setMaximum", intArray[0], intArray[1], intArray[2], intArray[3]);
@@ -79,8 +78,7 @@ public void test_setMinimumI() {
 
 	int [][] testValues = getSetMinimumValues();
 
-	for (int i = 0; i < testValues.length; i++) {
-		int[] intArray = testValues[i];
+	for (int[] intArray : testValues) {
 		setDefaults();
 		progressBar.setMinimum(intArray[0]);
 		report("setMinimum", intArray[0], intArray[1], intArray[2], intArray[3]);
@@ -90,8 +88,7 @@ public void test_setMinimumI() {
 @Test
 public void test_setSelectionI() {
 	int [][] testValues = getSetSelectionValues();
-	for (int i = 0; i < testValues.length; i++) {
-		int[] intArray = testValues[i];
+	for (int[] intArray : testValues) {
 		setDefaults();
 		progressBar.setSelection(intArray[0]);
 		report("setSelection", intArray[0], intArray[1], intArray[2], intArray[3]);

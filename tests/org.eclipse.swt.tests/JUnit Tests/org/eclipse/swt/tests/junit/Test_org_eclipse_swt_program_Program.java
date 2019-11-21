@@ -45,8 +45,8 @@ public void test_equalsLjava_lang_Object() {
 	String[] extensions = Program.getExtensions();
 	// No assertion here because the doc does not guarantee a non-null result.
 	if (extensions != null) {
-		for (int i=0; i<extensions.length; i++) {
-			Program program = Program.findProgram(extensions[i]);
+		for (String extension : extensions) {
+			Program program = Program.findProgram(extension);
 			if (program != null) {
 				assertTrue(program.equals(program));
 			}
@@ -83,8 +83,8 @@ public void test_findProgramLjava_lang_String() {
 	String[] extensions = Program.getExtensions();
 	// No assertion here because the doc does not guarantee a non-null result.
 	if (extensions != null) {
-		for (int i=0; i<extensions.length; i++) {
-			Program.findProgram(extensions[i]);
+		for (String extension : extensions) {
+			Program.findProgram(extension);
 			// No assertion here because a null result is allowed.
 		}
 	}
@@ -106,8 +106,8 @@ public void test_getExtensions() {
 	String[] extensions = Program.getExtensions();
 	// No assertion here because the doc does not guarantee a non-null result.
 	if (extensions != null) {
-		for (int i=0; i<extensions.length; i++) {
-			assertNotNull(extensions[i]);
+		for (String extension : extensions) {
+			assertNotNull(extension);
 		}
 	}
 }
@@ -117,8 +117,8 @@ public void test_getImageData() {
 	String[] extensions = Program.getExtensions();
 	// No assertion here because the doc does not guarantee a non-null result.
 	if (extensions != null) {
-		for (int i=0; i<extensions.length; i++) {
-			Program program = Program.findProgram(extensions[i]);
+		for (String extension : extensions) {
+			Program program = Program.findProgram(extension);
 			if (program != null) {
 				program.getImageData();
 				// Nothing to do.
@@ -132,8 +132,8 @@ public void test_getName() {
 	String[] extensions = Program.getExtensions();
 	// No assertion here because the doc does not guarantee a non-null result.
 	if (extensions != null) {
-		for (int i=0; i<extensions.length; i++) {
-			Program program = Program.findProgram(extensions[i]);
+		for (String extension : extensions) {
+			Program program = Program.findProgram(extension);
 			if (program != null) {
 				String name = program.getName();
 				assertNotNull("Program has null name",name);
@@ -190,8 +190,8 @@ public void test_toString() {
 	String[] extensions = Program.getExtensions();
 	// No assertion here because the doc does not guarantee a non-null result.
 	if (extensions != null) {
-		for (int i=0; i<extensions.length; i++) {
-			Program program = Program.findProgram(extensions[i]);
+		for (String extension : extensions) {
+			Program program = Program.findProgram(extension);
 			if (program != null) {
 				String string = program.toString();
 				assertNotNull("toString returned null",string);

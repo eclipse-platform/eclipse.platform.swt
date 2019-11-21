@@ -63,8 +63,8 @@ public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI() {
 			SWT.MULTI | SWT.V_SCROLL,
 			SWT.MULTI | SWT.H_SCROLL,
 			SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL };
-	for (int i = 0; i < cases.length; i++)
-		list = new List(shell, cases[i]);
+	for (int style : cases)
+		list = new List(shell, style);
 }
 
 @Test
@@ -370,8 +370,8 @@ public void test_deselectII() {
 			10, 1 }
 	};
 
-	for (int i = 0; i < cases.length; ++i) {
-		deselectII_helper(items, cases[i][0], cases[i][1], new int[] { 0, 1, 2, 3, 4 });
+	for (int[] position : cases) {
+		deselectII_helper(items, position[0], position[1], new int[] { 0, 1, 2, 3, 4 });
 	}
 	if (SwtTestUtil.fCheckSWTPolicy) {
 		deselectII_helper(items, -1, 3, new int[] { 4 });
@@ -1639,18 +1639,18 @@ public void test_setItemILjava_lang_String() {
 
 	assertEquals(list.getItemCount(), 0);
 	int[] cases = { -10, 0, 10 };
-	for (int i = 0; i < cases.length; i++) {
+	for (int index : cases) {
 		try {
-			list.setItem(cases[i], null);
+			list.setItem(index, null);
 			fail("No exception thrown");
 		} catch (IllegalArgumentException e) {
 		}
 	}
 	assertEquals(list.getItemCount(), 0);
 
-	for (int i = 0; i < cases.length; i++) {
+	for (int index : cases) {
 		try {
-			list.setItem(cases[i], "");
+			list.setItem(index, "");
 			fail("No exception thrown");
 		} catch (IllegalArgumentException e) {
 		}
@@ -1658,9 +1658,9 @@ public void test_setItemILjava_lang_String() {
 	assertEquals(list.getItemCount(), 0);
 
 	int cases2[] = { 10, 15, 0 };
-	for (int i = 0; i < cases2.length; i++) {
+	for (int index : cases2) {
 		try {
-			list.setItem(cases2[i], "fred");
+			list.setItem(index, "fred");
 			fail("No exception thrown");
 		} catch (IllegalArgumentException e) {
 		}
@@ -1673,9 +1673,9 @@ public void test_setItemILjava_lang_String() {
 
 	setSingleList();
 	assertEquals(0, list.getItemCount());
-	for (int i = 0; i < cases.length; i++) {
+	for (int index : cases) {
 		try {
-			list.setItem(cases[i], null);
+			list.setItem(index, null);
 			fail("No exception thrown");
 		} catch (IllegalArgumentException e) {
 		}
@@ -1684,9 +1684,9 @@ public void test_setItemILjava_lang_String() {
 
 
 	setSingleList();
-	for (int i = 0; i < cases.length; i++) {
+	for (int index : cases) {
 		try {
-			list.setItem(cases[i], "");
+			list.setItem(index, "");
 			fail("No exception thrown");
 		} catch (IllegalArgumentException e) {
 		}
@@ -1696,9 +1696,9 @@ public void test_setItemILjava_lang_String() {
 
 
 	setSingleList();
-	for (int i = 0; i < cases2.length; i++) {
+	for (int index : cases2) {
 		try {
-			list.setItem(cases2[i], "fred");
+			list.setItem(index, "fred");
 			fail("No exception thrown");
 		} catch (IllegalArgumentException e) {
 		}
@@ -1740,9 +1740,9 @@ public void test_setItems$Ljava_lang_String() {
 			"sdasd" }, {
 			"sdasd", "323434" }
 	};
-	for (int i = 0; i < itemArr.length; i++) {
-		list.setItems(itemArr[i]);
-		assertArrayEquals(itemArr[i], list.getItems());
+	for (String[] items : itemArr) {
+		list.setItems(items);
+		assertArrayEquals(items, list.getItems());
 	}
 
 	try {

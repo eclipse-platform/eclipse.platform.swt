@@ -47,8 +47,8 @@ public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI() {
 	}
 
 	int[] cases = {0, SWT.HORIZONTAL, SWT.VERTICAL};
-	for (int i = 0; i < cases.length; i++)
-		sash = new Sash(shell, cases[i]);
+	for (int style : cases)
+		sash = new Sash(shell, style);
 }
 
 @Override

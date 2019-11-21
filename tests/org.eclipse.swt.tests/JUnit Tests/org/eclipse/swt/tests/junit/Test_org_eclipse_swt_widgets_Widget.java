@@ -177,8 +177,8 @@ protected void setWidget(Widget w) {
 }
 
 protected void hookListeners(Widget w, int[] types, Listener listener) {
-	for (int i = 0; i < types.length; i++) {
-		w.addListener(types[i], listener);
+	for (int type : types) {
+		w.addListener(type, listener);
 	}
 }
 

@@ -75,8 +75,8 @@ public void test_ConstructorIIILorg_eclipse_swt_graphics_PaletteData() {
 	}
 
 	int[] validDepths = {1, 2, 4, 8, 16, 24, 32};
-	for (int i = 0; i < validDepths.length; i++) {
-		new ImageData(1, 1, validDepths[i], new PaletteData(new RGB(0, 0, 0)));
+	for (int validDepth : validDepths) {
+		new ImageData(1, 1, validDepth, new PaletteData(new RGB(0, 0, 0)));
 	}
 }
 
@@ -140,8 +140,8 @@ public void test_ConstructorIIILorg_eclipse_swt_graphics_PaletteDataI$B() {
 
 	// verify all valid depths
 	int[] validDepths = {1, 2, 4, 8, 16, 24, 32};
-	for (int i = 0; i < validDepths.length; i++) {
-		new ImageData(1, 1, validDepths[i], new PaletteData(new RGB(0, 0, 0)), 1, validData);
+	for (int validDepth : validDepths) {
+		new ImageData(1, 1, validDepth, new PaletteData(new RGB(0, 0, 0)), 1, validData);
 	}
 
 	// verify no divide by zero exception if scanlinePad == 0
@@ -384,8 +384,8 @@ public void test_getPixelsIII$BI() {
 	// test 1 bit
 	imageData = new ImageData(IMAGE_DIMENSION, IMAGE_DIMENSION, 1, new PaletteData(new RGB(0, 0, 0), new RGB(255, 255, 255)));
 	imageData.getPixels(0, 1, GET_WIDTH, pixelData, OFFSET);
-	for (int i = 0; i < pixelData.length; i ++) {
-		assertEquals(":a:", 0, pixelData[i]);
+	for (byte b : pixelData) {
+		assertEquals(":a:", 0, b);
 	}
 
 	byte[] values = new byte[]{0x1, 0x1, 0x1, 0x1, 0x1};
@@ -404,8 +404,8 @@ public void test_getPixelsIII$BI() {
 	// test 2 bit
 	imageData = new ImageData(IMAGE_DIMENSION, IMAGE_DIMENSION, 2, new PaletteData(new RGB(0, 0, 0), new RGB(255, 255, 255)));
 	imageData.getPixels(0, 1, GET_WIDTH, pixelData, OFFSET);
-	for (int i = 0; i < pixelData.length; i ++) {
-		assertEquals(":e:", 0, pixelData[i]);
+	for (byte b : pixelData) {
+		assertEquals(":e:", 0, b);
 	}
 
 	values = new byte[]{0x1, 0x2, 0x3, 0x2, 0x1};
@@ -424,8 +424,8 @@ public void test_getPixelsIII$BI() {
 	// test 4 bit
 	imageData = new ImageData(IMAGE_DIMENSION, IMAGE_DIMENSION, 4, new PaletteData(new RGB(0, 0, 0), new RGB(255, 255, 255)));
 	imageData.getPixels(0, 1, GET_WIDTH, pixelData, OFFSET);
-	for (int i = 0; i < pixelData.length; i ++) {
-		assertEquals(":i:", 0, pixelData[i]);
+	for (byte b : pixelData) {
+		assertEquals(":i:", 0, b);
 	}
 
 	values = new byte[]{0x1, 0x2, 0x3, 0x4, 0xF};
@@ -444,8 +444,8 @@ public void test_getPixelsIII$BI() {
 	// test 8 bit
 	imageData = new ImageData(IMAGE_DIMENSION, IMAGE_DIMENSION, 8, new PaletteData(new RGB(0, 0, 0), new RGB(255, 255, 255)));
 	imageData.getPixels(0, 1, GET_WIDTH, pixelData, OFFSET);
-	for (int i = 0; i < pixelData.length; i ++) {
-		assertEquals(":m:", 0, pixelData[i]);
+	for (byte b : pixelData) {
+		assertEquals(":m:", 0, b);
 	}
 
 	values = new byte[]{0x1, 0x2, 0x3, 0xF, (byte)0xFF};
@@ -522,8 +522,8 @@ public void test_getPixelsIII$II() {
 	// test 1 bit
 	imageData = new ImageData(IMAGE_DIMENSION, IMAGE_DIMENSION, 1, new PaletteData(new RGB(0, 0, 0), new RGB(255, 255, 255)));
 	imageData.getPixels(0, 1, GET_WIDTH, pixelData, OFFSET);
-	for (int i = 0; i < pixelData.length; i ++) {
-		assertEquals(":a:", 0, pixelData[i]);
+	for (int data : pixelData) {
+		assertEquals(":a:", 0, data);
 	}
 
 	int[] values = new int[]{0x1, 0x1, 0x1, 0x1, 0x1};
@@ -542,8 +542,8 @@ public void test_getPixelsIII$II() {
 	// test 2 bit
 	imageData = new ImageData(IMAGE_DIMENSION, IMAGE_DIMENSION, 2, new PaletteData(new RGB(0, 0, 0), new RGB(255, 255, 255)));
 	imageData.getPixels(0, 1, GET_WIDTH, pixelData, OFFSET);
-	for (int i = 0; i < pixelData.length; i ++) {
-		assertEquals(":e:", 0, pixelData[i]);
+	for (int data : pixelData) {
+		assertEquals(":e:", 0, data);
 	}
 
 	values = new int[]{0x1, 0x2, 0x3, 0x2, 0x1};
@@ -562,8 +562,8 @@ public void test_getPixelsIII$II() {
 	// test 4 bit
 	imageData = new ImageData(IMAGE_DIMENSION, IMAGE_DIMENSION, 4, new PaletteData(new RGB(0, 0, 0), new RGB(255, 255, 255)));
 	imageData.getPixels(0, 1, GET_WIDTH, pixelData, OFFSET);
-	for (int i = 0; i < pixelData.length; i ++) {
-		assertEquals(":i:", 0, pixelData[i]);
+	for (int data : pixelData) {
+		assertEquals(":i:", 0, data);
 	}
 
 	values = new int[]{0x1, 0x2, 0x3, 0x4, 0xF};
@@ -582,8 +582,8 @@ public void test_getPixelsIII$II() {
 	// test 8 bit
 	imageData = new ImageData(IMAGE_DIMENSION, IMAGE_DIMENSION, 8, new PaletteData(new RGB(0, 0, 0), new RGB(255, 255, 255)));
 	imageData.getPixels(0, 1, GET_WIDTH, pixelData, OFFSET);
-	for (int i = 0; i < pixelData.length; i ++) {
-		assertEquals(":m:", 0, pixelData[i]);
+	for (int data : pixelData) {
+		assertEquals(":m:", 0, data);
 	}
 
 	values = new int[]{0x1, 0x2, 0x3, 0xF, 0xFF};
@@ -602,8 +602,8 @@ public void test_getPixelsIII$II() {
 	// test 16 bit
 	imageData = new ImageData(IMAGE_DIMENSION, IMAGE_DIMENSION, 16, new PaletteData(0xF800, 0x7E0, 0x1F));
 	imageData.getPixels(0, 1, GET_WIDTH, pixelData, OFFSET);
-	for (int i = 0; i < pixelData.length; i ++) {
-		assertEquals(":q:", 0, pixelData[i]);
+	for (int data : pixelData) {
+		assertEquals(":q:", 0, data);
 	}
 
 	values = new int[]{0, 0x2, 0xF, 0xFF, 0xFFAA};
@@ -622,8 +622,8 @@ public void test_getPixelsIII$II() {
 	// test 24 bit
 	imageData = new ImageData(IMAGE_DIMENSION, IMAGE_DIMENSION, 24, new PaletteData(0xFF0000, 0xFF00, 0xFF));
 	imageData.getPixels(0, 1, GET_WIDTH, pixelData, OFFSET);
-	for (int i = 0; i < pixelData.length; i ++) {
-		assertEquals(":u:", 0, pixelData[i]);
+	for (int data : pixelData) {
+		assertEquals(":u:", 0, data);
 	}
 
 	values = new int[]{0, 0xFF, 0xFFAA, 0xFF00AA};
@@ -642,8 +642,8 @@ public void test_getPixelsIII$II() {
 	// test 32 bit
 	imageData = new ImageData(IMAGE_DIMENSION, IMAGE_DIMENSION, 32, new PaletteData(0xFF000000, 0xFF00, 0xFF));
 	imageData.getPixels(0, 1, GET_WIDTH, pixelData, OFFSET);
-	for (int i = 0; i < pixelData.length; i ++) {
-		assertEquals(":y:", 0, pixelData[i]);
+	for (int data : pixelData) {
+		assertEquals(":y:", 0, data);
 	}
 
 	values = new int[]{0, 0xFF, 0xFFAA, 0xFF00AA00};

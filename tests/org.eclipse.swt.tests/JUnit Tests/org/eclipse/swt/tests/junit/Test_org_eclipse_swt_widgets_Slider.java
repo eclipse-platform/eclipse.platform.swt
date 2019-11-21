@@ -55,8 +55,8 @@ public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI() {
 	}
 
 	int[] cases = {0, SWT.HORIZONTAL, SWT.VERTICAL};
-	for (int i = 0; i < cases.length; i++)
-		slider = new Slider(shell, cases[i]);
+	for (int style : cases)
+		slider = new Slider(shell, style);
 }
 
 @Test
@@ -179,8 +179,7 @@ public void test_setMaximumI() {
 
 	int [][] testValues = getSetMaximumValues();
 
-	for (int i = 0; i < testValues.length; i++) {
-		int[] intArray = testValues[i];
+	for (int[] intArray : testValues) {
 		setDefaults();
 		slider.setMaximum(intArray[0]);
 		String valueString = valueString(intArray);
@@ -193,8 +192,7 @@ public void test_setMinimumI() {
 
 	int [][] testValues = getSetMinimumValues();
 
-	for (int i = 0; i < testValues.length; i++) {
-		int[] intArray = testValues[i];
+	for (int[] intArray : testValues) {
 		setDefaults();
 		slider.setMinimum(intArray[0]);
 		String valueString = valueString(intArray);
@@ -211,8 +209,7 @@ public void test_setPageIncrementI() {
 @Test
 public void test_setSelectionI() {
 	int [][] testValues = getSetSelectionValues();
-	for (int i = 0; i < testValues.length; i++) {
-		int[] intArray = testValues[i];
+	for (int[] intArray : testValues) {
 		setDefaults();
 		slider.setSelection(intArray[0]);
 		String valueString = valueString(intArray);
@@ -225,8 +222,7 @@ public void test_setThumbI() {
 
 	int [][] testValues = getSetThumbValues();
 
-	for (int i = 0; i < testValues.length; i++) {
-		int[] intArray = testValues[i];
+	for (int[] intArray : testValues) {
 		setDefaults();
 		slider.setThumb(intArray[0]);
 		String valueString = valueString(intArray);

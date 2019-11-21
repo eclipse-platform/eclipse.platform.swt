@@ -60,8 +60,8 @@ public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI() {
 	}
 
 	int[] cases = {SWT.H_SCROLL, SWT.V_SCROLL, SWT.H_SCROLL | SWT.V_SCROLL};
-	for (int i = 0; i < cases.length; i++)
-		composite = new Composite(shell, cases[i]);
+	for (int style : cases)
+		composite = new Composite(shell, style);
 }
 
 @Test
@@ -80,8 +80,8 @@ public void test_getChildren() {
 	assertArrayEquals(":e:", new Control[]{c1, c3}, composite.getChildren());
 
 	Control[] children = composite.getChildren();
-	for (int i = 0; i < children.length; i++)
-		children[i].dispose();
+	for (Control element : children)
+		element.dispose();
 
 	assertArrayEquals(":f:", new Control[]{}, composite.getChildren());
 }

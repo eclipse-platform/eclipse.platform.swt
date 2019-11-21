@@ -140,10 +140,9 @@ public void run() {
 	}
 	Class<?> clazz;
 	clazz = this.getClass();
-	Method[] methods = clazz.getDeclaredMethods();
-	for (int i=0; i<methods.length; i++) {
+	for (Method method : clazz.getDeclaredMethods()) {
 		setUp();
-		currentMethod = methods[i];
+		currentMethod = method;
 		failed = false;
 		try {
 			if (currentMethod.getName().startsWith("test_")) {
