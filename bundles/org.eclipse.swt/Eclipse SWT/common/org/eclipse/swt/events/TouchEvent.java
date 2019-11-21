@@ -86,8 +86,8 @@ public String toString() {
 			+ " x=" + x
 			+ " y=" + y;
 	if (touches != null) {
-		for (int i = 0; i < touches.length; i++) {
-			string += "\n     " + touches[i].toString();
+		for (Touch touch : touches) {
+			string += "\n     " + touch.toString();
 		}
 		string += "\n";
 	}

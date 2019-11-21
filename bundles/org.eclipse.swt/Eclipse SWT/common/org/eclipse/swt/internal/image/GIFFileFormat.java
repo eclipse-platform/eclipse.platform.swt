@@ -577,8 +577,7 @@ public final class GIFFileFormat extends FileFormat {
 	void writePalette(PaletteData palette, int depth) {
 		byte[] bytes = new byte[(1 << depth) * 3];
 		int offset = 0;
-		for (int i = 0; i < palette.colors.length; i++) {
-			RGB color = palette.colors[i];
+		for (RGB color : palette.colors) {
 			bytes[offset] = (byte)color.red;
 			bytes[offset + 1] = (byte)color.green;
 			bytes[offset + 2] = (byte)color.blue;

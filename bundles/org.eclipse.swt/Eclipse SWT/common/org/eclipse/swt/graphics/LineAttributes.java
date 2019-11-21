@@ -174,8 +174,8 @@ public int hashCode () {
 	hashCode = 31 * hashCode + Float.floatToIntBits(dashOffset);
 	hashCode = 31 * hashCode + Float.floatToIntBits(miterLimit);
 	if (dash != null) {
-		for (int i = 0; i < dash.length; i++) {
-			hashCode = 31 * hashCode + Float.floatToIntBits(dash[i]);
+		for (float element : dash) {
+			hashCode = 31 * hashCode + Float.floatToIntBits(element);
 		}
 	}
 	return hashCode;

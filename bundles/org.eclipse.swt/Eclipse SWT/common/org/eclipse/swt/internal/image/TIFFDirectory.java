@@ -611,7 +611,9 @@ void write(int photometricInterpretation) throws IOException {
 		out.writeInt(1);
 	}
 	/* ColorMap */
-	if (isColorMap) for (int i = 0; i < colorMap.length; i++) out.writeShort(colorMap[i]);
+	if (isColorMap)
+		for (int element : colorMap)
+			out.writeShort(element);
 
 	/* Image Data */
 	out.write(data);

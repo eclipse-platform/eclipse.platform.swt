@@ -1172,9 +1172,7 @@ void getDHT() {
 	if (dcHuffmanTables == null) {
 		dcHuffmanTables = new JPEGHuffmanTable[4];
 	}
-	JPEGHuffmanTable[] dhtTables = dht.getAllTables();
-	for (int i = 0; i < dhtTables.length; i++) {
-		JPEGHuffmanTable dhtTable = dhtTables[i];
+	for (JPEGHuffmanTable dhtTable : dht.getAllTables()) {
 		if (dhtTable.getTableClass() == 0) {
 			dcHuffmanTables[dhtTable.getTableIdentifier()] = dhtTable;
 		} else {
@@ -1855,14 +1853,11 @@ void unloadIntoByteStream(ImageLoader loader) {
 		JPEGHuffmanTable.getDefaultACLuminanceTable(),
 		JPEGHuffmanTable.getDefaultACChrominanceTable()
 	};
-	for (int i = 0; i < dhtTables.length; i++) {
-		JPEGHuffmanTable dhtTable = dhtTables[i];
+	for (JPEGHuffmanTable dhtTable : dhtTables) {
 		if (!dhtTable.writeToStream(outputStream)) {
 			SWT.error(SWT.ERROR_IO);
 		}
-		JPEGHuffmanTable[] allTables = dhtTable.getAllTables();
-		for (int j = 0; j < allTables.length; j++) {
-			JPEGHuffmanTable huffmanTable = allTables[j];
+		for (JPEGHuffmanTable huffmanTable : dhtTable.getAllTables()) {
 			if (huffmanTable.getTableClass() == 0) {
 				dcHuffmanTables[huffmanTable.getTableIdentifier()] = huffmanTable;
 			} else {

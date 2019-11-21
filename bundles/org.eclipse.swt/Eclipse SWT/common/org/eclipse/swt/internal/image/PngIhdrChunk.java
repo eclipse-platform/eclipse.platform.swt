@@ -239,8 +239,8 @@ void validate(PngFileReadState readState, PngIhdrChunk headerChunk) {
 	}
 
 	boolean colorTypeIsValid = false;
-	for (int i = 0; i < ValidColorTypes.length; i++) {
-		if (ValidColorTypes[i] == colorType) {
+	for (byte validColorType : ValidColorTypes) {
+		if (validColorType == colorType) {
 			colorTypeIsValid = true;
 			break;
 		}
@@ -248,8 +248,8 @@ void validate(PngFileReadState readState, PngIhdrChunk headerChunk) {
 	if (!colorTypeIsValid) SWT.error(SWT.ERROR_INVALID_IMAGE);
 
 	boolean bitDepthIsValid = false;
-	for (int i = 0; i < ValidBitDepths.length; i++) {
-		if (ValidBitDepths[i] == bitDepth) {
+	for (byte validBitDepth : ValidBitDepths) {
+		if (validBitDepth == bitDepth) {
 			bitDepthIsValid = true;
 			break;
 		}

@@ -130,8 +130,7 @@ public TrayItem [] getItems () {
 @Override
 void releaseChildren (boolean destroy) {
 	if (items != null) {
-		for (int i=0; i<items.length; i++) {
-			TrayItem item = items [i];
+		for (TrayItem item : items) {
 			if (item != null && !item.isDisposed ()) {
 				item.release (false);
 			}
@@ -150,8 +149,7 @@ void releaseParent () {
 @Override
 void reskinChildren (int flags) {
 	if (items != null) {
-		for (int i=0; i<items.length; i++) {
-			TrayItem item = items [i];
+		for (TrayItem item : items) {
 			if (item != null) item.reskin (flags);
 		}
 	}

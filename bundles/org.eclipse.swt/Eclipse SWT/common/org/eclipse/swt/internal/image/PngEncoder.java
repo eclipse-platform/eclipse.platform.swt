@@ -142,11 +142,11 @@ void writePalette() {
 
 	ByteArrayOutputStream baos = new ByteArrayOutputStream(RGBs.length);
 
-	for (int i = 0; i < RGBs.length; i++) {
+	for (RGB rgb : RGBs) {
 
-		baos.write((byte) RGBs[i].red);
-		baos.write((byte) RGBs[i].green);
-		baos.write((byte) RGBs[i].blue);
+		baos.write((byte) rgb.red);
+		baos.write((byte) rgb.green);
+		baos.write((byte) rgb.blue);
 
 	}
 

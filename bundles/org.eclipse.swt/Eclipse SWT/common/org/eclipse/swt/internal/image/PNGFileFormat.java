@@ -421,11 +421,11 @@ void readInterlaceFrame(
 				valueMask |= 1;
 			}
 			int maxShift = 8 - bitsPerPixel;
-			for (int byteOffset = 0; byteOffset < currentRow.length; byteOffset++) {
+			for (byte element : currentRow) {
 				for (int bitOffset = maxShift; bitOffset >= 0; bitOffset -= bitsPerPixel) {
 					if (column < width) {
 						int dataOffset = rowBase + (column * bitsPerPixel / 8);
-						int value = (currentRow[byteOffset] >> bitOffset) & valueMask;
+						int value = (element >> bitOffset) & valueMask;
 						int dataShift = maxShift - (bitsPerPixel * (column % pixelsPerByte));
 						data[dataOffset] |= value << dataShift;
 					}

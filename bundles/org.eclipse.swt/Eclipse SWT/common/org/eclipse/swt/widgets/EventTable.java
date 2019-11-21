@@ -33,8 +33,8 @@ class EventTable {
 public Listener [] getListeners (int eventType) {
 	if (types == null) return new Listener [0];
 	int count = 0;
-	for (int i=0; i<types.length; i++) {
-		if (types [i] == eventType) count++;
+	for (int type : types) {
+		if (type == eventType) count++;
 	}
 	if (count == 0) return new Listener [0];
 	Listener [] result = new Listener [count];
@@ -70,8 +70,8 @@ public void hook (int eventType, Listener listener) {
 
 public boolean hooks (int eventType) {
 	if (types == null) return false;
-	for (int i=0; i<types.length; i++) {
-		if (types [i] == eventType) return true;
+	for (int type : types) {
+		if (type == eventType) return true;
 	}
 	return false;
 }
@@ -130,8 +130,8 @@ public void sendEvent (Event event) {
 public int size () {
 	if (types == null) return 0;
 	int count = 0;
-	for (int i=0; i<types.length; i++) {
-		if (types [i] != 0) count++;
+	for (int type : types) {
+		if (type != 0) count++;
 	}
 	return count;
 }

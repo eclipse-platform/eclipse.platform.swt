@@ -370,9 +370,8 @@ public String toString() {
 	buffer.append("\n\tLength: ");
 	buffer.append(getLength());
 	buffer.append("\n\tType: ");
-	byte[] type = getTypeBytes();
-	for(int i = 0; i < type.length; i++) {
-		buffer.append((char) type[i]);
+	for (byte element : getTypeBytes()) {
+		buffer.append((char) element);
 	}
 
 	contributeToString(buffer);

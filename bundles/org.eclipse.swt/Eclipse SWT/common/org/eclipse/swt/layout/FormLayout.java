@@ -294,8 +294,7 @@ protected void layout (Composite composite, boolean flushCache) {
 
 Point layout (Composite composite, boolean move, int x, int y, int width, int height, boolean flushCache) {
 	Control [] children = composite.getChildren ();
-	for (int i=0; i<children.length; i++) {
-		Control child = children [i];
+	for (Control child : children) {
 		FormData data = (FormData) child.getLayoutData ();
 		if (data == null) child.setLayoutData (data = new FormData ());
 		if (flushCache) data.flushCache ();
