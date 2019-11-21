@@ -143,8 +143,8 @@ BrowserFunction (Browser browser, String name, boolean top, String[] frameNames,
 	byte[] bytes = new byte[16];
 	random.nextBytes (bytes);
 	StringBuilder buffer = new StringBuilder ();
-	for (int i = 0; i < bytes.length; i++) {
-		buffer.append (Integer.toHexString (bytes[i] & 0xff));
+	for (byte b : bytes) {
+		buffer.append (Integer.toHexString (b & 0xff));
 	}
 	token = buffer.toString ();
 	if (create) browser.webBrowser.createFunction (this);

@@ -348,9 +348,9 @@ public void createFunction (BrowserFunction function) {
 	buffer.append ("var frameIds = null;"); //$NON-NLS-1$
 	if (function.frameNames != null) {
 		buffer.append ("frameIds = {"); //$NON-NLS-1$
-		for (int i = 0; i < function.frameNames.length; i++) {
+		for (String frameName : function.frameNames) {
 			buffer.append ('\'');
-			buffer.append (function.frameNames[i]);
+			buffer.append (frameName);
 			buffer.append ("':1,"); //$NON-NLS-1$
 		}
 		if (function.frameNames.length > 0) {
@@ -732,8 +732,8 @@ public abstract boolean setUrl (String url, String postData, String[] headers);
 public abstract void stop ();
 
 int translateKey (int key) {
-	for (int i = 0; i < KeyTable.length; i++) {
-		if (KeyTable[i][0] == key) return KeyTable[i][1];
+	for (int[] element : KeyTable) {
+		if (element[0] == key) return element[1];
 	}
 	return 0;
 }
