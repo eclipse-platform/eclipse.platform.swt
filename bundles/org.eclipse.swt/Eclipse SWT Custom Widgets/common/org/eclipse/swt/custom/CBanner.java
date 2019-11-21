@@ -126,8 +126,8 @@ public CBanner(Composite parent, int style) {
 		}
 	};
 	int[] events = new int[] {SWT.Dispose, SWT.MouseDown, SWT.MouseExit, SWT.MouseMove, SWT.MouseUp, SWT.Paint, SWT.Resize};
-	for (int i = 0; i < events.length; i++) {
-		addListener(events[i], listener);
+	for (int event : events) {
+		addListener(event, listener);
 	}
 }
 static int[] bezier(int x0, int y0, int x1, int y1, int x2, int y2, int x3, int y3, int count) {

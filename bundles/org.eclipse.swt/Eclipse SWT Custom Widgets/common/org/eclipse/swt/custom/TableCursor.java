@@ -115,8 +115,8 @@ public TableCursor(Table parent, int style) {
 		}
 	};
 	int[] events = new int[] {SWT.Dispose, SWT.FocusIn, SWT.FocusOut, SWT.KeyDown, SWT.Paint, SWT.Traverse};
-	for (int i = 0; i < events.length; i++) {
-		addListener(events[i], listener);
+	for (int event : events) {
+		addListener(event, listener);
 	}
 
 	tableListener = event -> {

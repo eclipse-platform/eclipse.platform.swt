@@ -124,8 +124,8 @@ public ControlEditor (Composite parent) {
 	this.parent = parent;
 
 	controlListener = e -> layout ();
-	for (int i=0; i<EVENTS.length; i++) {
-		parent.addListener (EVENTS [i], controlListener);
+	for (int event : EVENTS) {
+		parent.addListener (event, controlListener);
 	}
 
 	scrollbarListener = e -> scroll (e);
@@ -178,8 +178,8 @@ Rectangle computeBounds () {
  */
 public void dispose () {
 	if (parent != null && !parent.isDisposed()) {
-		for (int i=0; i<EVENTS.length; i++) {
-			parent.removeListener (EVENTS [i], controlListener);
+		for (int event : EVENTS) {
+			parent.removeListener (event, controlListener);
 		}
 		ScrollBar hBar = parent.getHorizontalBar ();
 		if (hBar != null) hBar.removeListener (SWT.Selection, scrollbarListener);

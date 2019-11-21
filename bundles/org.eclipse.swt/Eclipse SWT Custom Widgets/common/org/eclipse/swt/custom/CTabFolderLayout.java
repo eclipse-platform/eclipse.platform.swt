@@ -86,8 +86,8 @@ protected Point computeSize(Composite composite, int wHint, int hHint, boolean f
 	int controlW = 0;
 	int controlH = 0;
 	// preferred size of controls in tab items
-	for (int i = 0; i < items.length; i++) {
-		Control control = items[i].control;
+	for (CTabItem item : items) {
+		Control control = item.control;
 		if (control != null && !control.isDisposed()){
 			Point size = control.computeSize (wHint, hHint, flushCache);
 			controlW = Math.max (controlW, size.x);

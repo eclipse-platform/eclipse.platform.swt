@@ -583,19 +583,19 @@ void onPaint(PaintEvent event) {
 	// draw the text
 	if (lines != null) {
 		gc.setForeground(getForeground());
-		for (int i = 0; i < lines.length; i++) {
+		for (String line : lines) {
 			int lineX = x;
 			if (lines.length > 1) {
 				if (align == SWT.CENTER) {
-					int lineWidth = gc.textExtent(lines[i], DRAW_FLAGS).x;
+					int lineWidth = gc.textExtent(line, DRAW_FLAGS).x;
 					lineX = x + Math.max(0, (extent.x - lineWidth) / 2);
 				}
 				if (align == SWT.RIGHT) {
-					int lineWidth = gc.textExtent(lines[i], DRAW_FLAGS).x;
+					int lineWidth = gc.textExtent(line, DRAW_FLAGS).x;
 					lineX = Math.max(x, rect.x + rect.width - rightMargin - lineWidth);
 				}
 			}
-			gc.drawText(lines[i], lineX, lineY, DRAW_FLAGS);
+			gc.drawText(line, lineX, lineY, DRAW_FLAGS);
 			lineY += lineHeight;
 		}
 	}

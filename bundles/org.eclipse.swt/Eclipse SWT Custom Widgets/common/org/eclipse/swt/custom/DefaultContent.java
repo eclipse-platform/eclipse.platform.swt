@@ -806,8 +806,8 @@ public void replaceTextRange(int start, int replaceLength, String newText){
  * Sends the text listeners the TextChanged event.
  */
 void sendTextEvent(StyledTextEvent event) {
-	for (int i = 0; i < textListeners.size(); i++) {
-		textListeners.get(i).handleEvent(event);
+	for (StyledTextListener textListener : textListeners) {
+		textListener.handleEvent(event);
 	}
 }
 /**

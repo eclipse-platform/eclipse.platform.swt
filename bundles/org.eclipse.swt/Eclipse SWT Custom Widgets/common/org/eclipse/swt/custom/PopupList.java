@@ -214,9 +214,9 @@ public void select(String string) {
 	// find the first entry in the list that starts with the
 	// specified string
 	if (string != null){
-		for (int i = 0; i < items.length; i++) {
-			if (items[i].startsWith(string)){
-				int index = list.indexOf(items[i]);
+		for (String item : items) {
+			if (item.startsWith(string)){
+				int index = list.indexOf(item);
 				list.select(index);
 				break;
 			}

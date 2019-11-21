@@ -828,8 +828,7 @@ public class StyledText extends Canvas {
 			header.append(";");
 		}
 		header.append("}}\n{\\colortbl");
-		for (int i = 0; i < colorTable.size(); i++) {
-			Color color = colorTable.get(i);
+		for (Color color : colorTable) {
 			header.append("\\red");
 			header.append(color.getRed());
 			header.append("\\green");
@@ -4926,8 +4925,8 @@ StyledTextEvent getBidiSegments(int lineOffset, String line) {
 		}
 	}
 	if (hasSegmentsChars && !visualWrap) {
-		for (int i= 0; i < segmentsChars.length; i++) {
-			if (segmentsChars[i] == '\n' || segmentsChars[i] == '\r') {
+		for (char segmentsChar : segmentsChars) {
+			if (segmentsChar == '\n' || segmentsChar == '\r') {
 				visualWrap = true;
 				break;
 			}
@@ -5654,8 +5653,8 @@ int insertBlockSelectionText(String text, boolean fillWithSpaces) {
 	lines[lineCount++] = text.substring(start);
 	if (fillWithSpaces) {
 		int maxLength = 0;
-		for (int i = 0; i < lines.length; i++) {
-			int length = lines[i].length();
+		for (String line : lines) {
+			int length = line.length();
 			maxLength = Math.max(maxLength, length);
 		}
 		for (int i = 0; i < lines.length; i++) {
@@ -7680,8 +7679,8 @@ void redrawLinesBullet (int[] redrawLines) {
 	if (redrawLines == null) return;
 	int topIndex = getPartialTopIndex();
 	int bottomIndex = getPartialBottomIndex();
-	for (int i = 0; i < redrawLines.length; i++) {
-		int lineIndex = redrawLines[i];
+	for (int redrawLine : redrawLines) {
+		int lineIndex = redrawLine;
 		if (!(topIndex <= lineIndex && lineIndex <= bottomIndex)) continue;
 		int width = -1;
 		Bullet bullet = renderer.getLineBullet(lineIndex, null);
@@ -8132,9 +8131,7 @@ public void scroll(int destX, int destY, int x, int y, int width, int height, bo
 	super.scroll(destX, destY, x, y, width, height, false);
 	if (all) {
 		int deltaX = destX - x, deltaY = destY - y;
-		Control[] children = getChildren();
-		for (int i=0; i<children.length; i++) {
-			Control child = children[i];
+		for (Control child : getChildren()) {
 			Rectangle rect = child.getBounds();
 			child.setLocation(rect.x + deltaX, rect.y + deltaY);
 		}
@@ -8219,8 +8216,7 @@ boolean scrollVertical(int pixels, boolean adjustScrollBar) {
 			}
 		}
 		Control[] children = getChildren();
-		for (int i=0; i<children.length; i++) {
-			Control child = children[i];
+		for (Control child : children) {
 			Rectangle rect = child.getBounds();
 			child.setLocation(rect.x, rect.y + deltaY);
 		}

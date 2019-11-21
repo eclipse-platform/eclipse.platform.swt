@@ -171,8 +171,8 @@ public ViewForm(Composite parent, int style) {
 
 	int[] events = new int[] {SWT.Dispose, SWT.Paint, SWT.Resize};
 
-	for (int i = 0; i < events.length; i++) {
-		addListener(events[i], listener);
+	for (int event : events) {
+		addListener(event, listener);
 	}
 }
 

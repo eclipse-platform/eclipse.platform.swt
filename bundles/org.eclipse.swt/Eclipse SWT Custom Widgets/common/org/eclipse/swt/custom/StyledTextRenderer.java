@@ -411,8 +411,8 @@ void dispose() {
 }
 void disposeTextLayout (TextLayout layout) {
 	if (layouts != null) {
-		for (int i = 0; i < layouts.length; i++) {
-			if (layouts[i] == layout) return;
+		for (TextLayout l : layouts) {
+			if (l == layout) return;
 		}
 	}
 	layout.dispose();
@@ -505,8 +505,8 @@ int drawLine(int lineIndex, int paintX, int paintY, GC gc, Color widgetBackgroun
 				bulletIndex = bulletsIndices[index];
 			}
 		} else {
-			for (int i = 0; i < bullets.length; i++) {
-				bullet = bullets[i];
+			for (Bullet b : bullets) {
+				bullet = b;
 				bulletIndex = bullet.indexOf(lineIndex);
 				if (bulletIndex != -1) break;
 			}
@@ -561,8 +561,8 @@ Font getFont(int style) {
 }
 FontData[] getFontData(int style) {
 	FontData[] fontDatas = regularFont.getFontData();
-	for (int i = 0; i < fontDatas.length; i++) {
-		fontDatas[i].setStyle(style);
+	for (FontData fontData : fontDatas) {
+		fontData.setStyle(style);
 	}
 	return fontDatas;
 }
@@ -605,8 +605,7 @@ boolean hasLink(int offset) {
 					}
 				}
 			} else {
-				for (int i = 0; i < styles.length; i++) {
-					StyleRange style = styles[i];
+				for (StyleRange style : styles) {
 					if (style.start <= offset && offset < style.start + style.length && style.underline && style.underlineStyle == SWT.UNDERLINE_LINK) {
 						return true;
 					}
@@ -647,8 +646,7 @@ Color getLineBackground(int index, Color defaultBackground) {
 Bullet getLineBullet (int index, Bullet defaultBullet) {
 	if (bullets == null) return defaultBullet;
 	if (bulletsIndices != null) return defaultBullet;
-	for (int i = 0; i < bullets.length; i++) {
-		Bullet bullet = bullets[i];
+	for (Bullet bullet : bullets) {
 		if (bullet.indexOf(index) != -1) return bullet;
 	}
 	return defaultBullet;
@@ -1084,9 +1082,9 @@ TextLayout getTextLayout(int lineIndex, int orientation, int width, int lineSpac
 			bulletsIndices = null;
 		}
 		if (bullets != null) {
-			for (int i = 0; i < bullets.length; i++) {
-				if (bullets[i].indexOf(lineIndex) != -1) {
-					bullet = bullets[i];
+			for (Bullet b : bullets) {
+				if (b.indexOf(lineIndex) != -1) {
+					bullet = b;
 					break;
 				}
 			}
@@ -1261,10 +1259,10 @@ TextLayout getTextLayout(int lineIndex, int orientation, int width, int lineSpac
 			ascent = metrics.getAscent() + metrics.getLeading();
 			descent = metrics.getDescent();
 			if (layouts != null) {
-				for (int i = 0; i < layouts.length; i++) {
-					if (layouts[i] != null && layouts[i] != layout) {
-						layouts[i].setAscent(ascent);
-						layouts[i].setDescent(descent);
+				for (TextLayout l : layouts) {
+					if (l != null && l != layout) {
+						l.setAscent(ascent);
+						l.setDescent(descent);
 					}
 				}
 			}
@@ -1294,8 +1292,7 @@ int getWidth() {
 }
 void reset() {
 	if (layouts != null) {
-		for (int i = 0; i < layouts.length; i++) {
-			TextLayout layout = layouts[i];
+		for (TextLayout layout : layouts) {
 			if (layout != null) layout.dispose();
 		}
 		layouts = null;
@@ -1637,8 +1634,8 @@ void setStyleRanges (int[] newRanges, StyleRange[] newStyles) {
 		}
 		modifyEnd = modifyStart;
 		StyleRange[] mergeStyles = new StyleRange[3];
-		for (int i = 0; i < newStyles.length; i++) {
-			StyleRange newStyle = newStyles[i], style;
+		for (StyleRange newStyle : newStyles) {
+			StyleRange style;
 			int newStart = newStyle.start;
 			int newEnd = newStart + newStyle.length;
 			if (newStart == newEnd) continue;
@@ -1793,8 +1790,7 @@ void textChanging(TextChangingEvent event) {
 void updateBullets(int startLine, int replaceLineCount, int newLineCount, boolean update) {
 	if (bullets == null) return;
 	if (bulletsIndices != null) return;
-	for (int i = 0; i < bullets.length; i++) {
-		Bullet bullet = bullets[i];
+	for (Bullet bullet : bullets) {
 		int[] lines = bullet.removeIndices(startLine, replaceLineCount, newLineCount, update);
 		if (lines != null) {
 			if (redrawLines == null) {
@@ -1808,8 +1804,8 @@ void updateBullets(int startLine, int replaceLineCount, int newLineCount, boolea
 		}
 	}
 	int removed = 0;
-	for (int i = 0; i < bullets.length; i++) {
-		if (bullets[i].size() == 0) removed++;
+	for (Bullet bullet : bullets) {
+		if (bullet.size() == 0) removed++;
 	}
 	if (removed > 0) {
 		if (removed == bullets.length) {

@@ -131,8 +131,8 @@ public TreeCursor(Tree parent, int style) {
 		}
 	};
 	int[] events = new int[] { SWT.Dispose, SWT.FocusIn, SWT.FocusOut, SWT.KeyDown, SWT.Paint, SWT.Traverse };
-	for (int i = 0; i < events.length; i++) {
-		addListener(events[i], listener);
+	for (int event : events) {
+		addListener(event, listener);
 	}
 
 	treeListener = event -> {
@@ -280,9 +280,8 @@ int countSubTreePages(TreeItem root) {
 	if (root == null) return 0;
 	if (root.getItemCount() == 0) return 1;
 	if (!root.getExpanded()) return 1;
-	TreeItem[] items = root.getItems();
-	for (int i = 0; i < items.length; i++) {
-		pages += countSubTreePages(items[i]);
+	for (TreeItem item : root.getItems()) {
+		pages += countSubTreePages(item);
 	}
 	return pages;
 }

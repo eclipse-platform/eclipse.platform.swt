@@ -103,11 +103,11 @@ protected void layout(Composite composite, boolean flushCache) {
 	Control[] controls = sashForm.controls;
 
 	if (sashForm.maxControl != null && !sashForm.maxControl.isDisposed()) {
-		for (int i= 0; i < controls.length; i++){
-			if (controls[i] != sashForm.maxControl) {
-				controls[i].setBounds(-200, -200, 0, 0);
+		for (Control control : controls) {
+			if (control != sashForm.maxControl) {
+				control.setBounds(-200, -200, 0, 0);
 			} else {
-				controls[i].setBounds(area);
+				control.setBounds(area);
 			}
 		}
 		return;
@@ -124,8 +124,8 @@ protected void layout(Composite composite, boolean flushCache) {
 	}
 	if (sashForm.sashes.length > controls.length - 1) {
 		if (controls.length == 0) {
-			for (int i = 0; i < sashForm.sashes.length; i++) {
-				sashForm.sashes[i].dispose();
+			for (Sash sash : sashForm.sashes) {
+				sash.dispose();
 			}
 			sashForm.sashes = new Sash[0];
 		} else {

@@ -153,11 +153,13 @@ public CCombo (Composite parent, int style) {
 	};
 
 	int [] comboEvents = {SWT.Dispose, SWT.FocusIn, SWT.Move, SWT.Resize, SWT.FocusOut};
-	for (int i=0; i<comboEvents.length; i++) this.addListener (comboEvents [i], listener);
+	for (int comboEvent : comboEvents)
+		this.addListener (comboEvent, listener);
 
 	int [] arrowEvents = {SWT.DragDetect, SWT.MouseDown, SWT.MouseEnter, SWT.MouseExit, SWT.MouseHover,
 		SWT.MouseMove, SWT.MouseUp, SWT.MouseWheel, SWT.Selection, SWT.FocusIn};
-	for (int i=0; i<arrowEvents.length; i++) arrow.addListener (arrowEvents [i], listener);
+	for (int arrowEvent : arrowEvents)
+		arrow.addListener (arrowEvent, listener);
 
 	createPopup(null, -1);
 	if ((style & SWT.SIMPLE) == 0) {
@@ -220,7 +222,8 @@ void createText(int comboStyle) {
 	int [] textEvents = {SWT.DefaultSelection, SWT.DragDetect, SWT.KeyDown, SWT.KeyUp, SWT.MenuDetect, SWT.Modify,
 			SWT.MouseDown, SWT.MouseUp, SWT.MouseDoubleClick, SWT.MouseEnter, SWT.MouseExit, SWT.MouseHover,
 			SWT.MouseMove, SWT.MouseWheel, SWT.Traverse, SWT.FocusIn, SWT.Verify};
-	for (int i=0; i<textEvents.length; i++) text.addListener (textEvents [i], listener);
+	for (int textEvent : textEvents)
+		text.addListener (textEvent, listener);
 }
 /**
  * Adds the argument to the end of the receiver's list.
@@ -486,12 +489,11 @@ void comboEvent (Event event) {
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget ();
 	int width = 0, height = 0;
-	String[] items = list.getItems ();
 	GC gc = new GC (text);
 	int spacer = gc.stringExtent (" ").x; //$NON-NLS-1$
 	int textWidth = gc.stringExtent (text.getText ()).x;
-	for (int i = 0; i < items.length; i++) {
-		textWidth = Math.max (gc.stringExtent (items[i]).x, textWidth);
+	for (String item : list.getItems ()) {
+		textWidth = Math.max (gc.stringExtent (item).x, textWidth);
 	}
 	gc.dispose ();
 	Point textSize = text.computeSize (SWT.DEFAULT, SWT.DEFAULT, changed);
@@ -536,9 +538,11 @@ void createPopup(String[] items, int selectionIndex) {
 	if (background != null) list.setBackground (background);
 
 	int [] popupEvents = {SWT.Close, SWT.Paint};
-	for (int i=0; i<popupEvents.length; i++) popup.addListener (popupEvents [i], listener);
+	for (int popupEvent : popupEvents)
+		popup.addListener (popupEvent, listener);
 	int [] listEvents = {SWT.MouseUp, SWT.Selection, SWT.Traverse, SWT.KeyDown, SWT.KeyUp, SWT.FocusIn, SWT.FocusOut, SWT.Dispose};
-	for (int i=0; i<listEvents.length; i++) list.addListener (listEvents [i], listener);
+	for (int listEvent : listEvents)
+		list.addListener (listEvent, listener);
 
 	if (items != null) list.setItems (items);
 	if (selectionIndex != -1) list.setSelection (selectionIndex);

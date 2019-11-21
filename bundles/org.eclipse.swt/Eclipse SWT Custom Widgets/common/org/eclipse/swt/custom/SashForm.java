@@ -188,15 +188,14 @@ public int[] getWeights() {
 	return ratios;
 }
 Control[] getControls(boolean onlyVisible) {
-	Control[] children = getChildren();
 	Control[] result = new Control[0];
-	for (int i = 0; i < children.length; i++) {
-		if (children[i] instanceof Sash) continue;
-		if (onlyVisible && !children[i].getVisible()) continue;
+	for (Control element : getChildren()) {
+		if (element instanceof Sash) continue;
+		if (onlyVisible && !element.getVisible()) continue;
 
 		Control[] newResult = new Control[result.length + 1];
 		System.arraycopy(result, 0, newResult, 0, result.length);
-		newResult[result.length] = children[i];
+		newResult[result.length] = element;
 		result = newResult;
 	}
 	return result;
@@ -336,16 +335,16 @@ public void setOrientation(int orientation) {
 public void setBackground (Color color) {
 	super.setBackground(color);
 	background = color;
-	for (int i = 0; i < sashes.length; i++) {
-		sashes[i].setBackground(background);
+	for (Sash sash : sashes) {
+		sash.setBackground(background);
 	}
 }
 @Override
 public void setForeground (Color color) {
 	super.setForeground(color);
 	foreground = color;
-	for (int i = 0; i < sashes.length; i++) {
-		sashes[i].setForeground(foreground);
+	for (Sash sash : sashes) {
+		sash.setForeground(foreground);
 	}
 }
 /**
@@ -388,15 +387,15 @@ public void setMaximizedControl(Control control){
 		if (maxControl != null) {
 			this.maxControl = null;
 			layout(false);
-			for (int i= 0; i < sashes.length; i++){
-				sashes[i].setVisible(true);
+			for (Sash sashe : sashes) {
+				sashe.setVisible(true);
 			}
 		}
 		return;
 	}
 
-	for (int i= 0; i < sashes.length; i++){
-		sashes[i].setVisible(false);
+	for (Sash sash : sashes) {
+		sash.setVisible(false);
 	}
 	maxControl = control;
 	layout(false);
@@ -424,8 +423,8 @@ public void setSashWidth(int width) {
 @Override
 public void setToolTipText(String string) {
 	super.setToolTipText(string);
-	for (int i = 0; i < sashes.length; i++) {
-		sashes[i].setToolTipText(string);
+	for (Sash sash : sashes) {
+		sash.setToolTipText(string);
 	}
 }
 /**
@@ -451,11 +450,11 @@ public void setWeights(int[] weights) {
 	}
 
 	int total = 0;
-	for (int i = 0; i < weights.length; i++) {
-		if (weights[i] < 0) {
+	for (int weight : weights) {
+		if (weight < 0) {
 			SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 		}
-		total += weights[i];
+		total += weight;
 	}
 	if (total == 0) {
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
