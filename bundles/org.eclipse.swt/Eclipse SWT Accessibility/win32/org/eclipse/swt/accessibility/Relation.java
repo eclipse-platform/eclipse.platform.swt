@@ -173,20 +173,20 @@ class Relation {
 		targets = newTargets;
 	}
 
-	boolean containsTarget(Accessible target) {
-		for (int i = 0; i < targets.length; i++) {
-			if (targets[i] == target) return true;
+	boolean containsTarget(Accessible searched) {
+		for (Accessible target : targets) {
+			if (target == searched) return true;
 		}
 		return false;
 	}
 
-	void removeTarget(Accessible target) {
-		if (!containsTarget(target)) return;
+	void removeTarget(Accessible searched) {
+		if (!containsTarget(searched)) return;
 		Accessible[] newTargets = new Accessible[targets.length - 1];
 		int j = 0;
-		for (int i = 0; i < targets.length; i++) {
-			if (targets[i] != target) {
-				newTargets[j++] = targets[i];
+		for (Accessible target : targets) {
+			if (target != searched) {
+				newTargets[j++] = target;
 			}
 		}
 		targets = newTargets;
