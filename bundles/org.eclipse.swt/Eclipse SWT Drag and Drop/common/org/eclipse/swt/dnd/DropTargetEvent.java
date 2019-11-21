@@ -138,8 +138,8 @@ public String toString() {
 	sb.append(" feedback="); sb.append(feedback);
 	sb.append(" dataTypes={ ");
 	if (dataTypes != null) {
-		for (int i = 0; i < dataTypes.length; i++) {
-			sb.append(dataTypes[i].type); sb.append(' ');
+		for (TransferData dataType : dataTypes) {
+			sb.append(dataType.type); sb.append(' ');
 		}
 	}
 	sb.append('}');
