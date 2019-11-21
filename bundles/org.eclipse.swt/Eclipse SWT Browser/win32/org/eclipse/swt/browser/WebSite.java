@@ -449,8 +449,8 @@ int TranslateAccelerator(long lpMsg, long pguidCmdGroup, int nCmdID) {
 					if (mapKey != 0) {
 						isAccent = (mapKey & 0x80000000) != 0;
 						if (!isAccent) {
-							for (int i=0; i<ACCENTS.length; i++) {
-								int value = OS.VkKeyScan (ACCENTS [i]);
+							for (short element : ACCENTS) {
+								int value = OS.VkKeyScan (element);
 								if (value != -1 && (value & 0xFF) == msg.wParam) {
 									int state = value >> 8;
 									if ((OS.GetKeyState (OS.VK_SHIFT) < 0) == ((state & 0x1) != 0) &&
@@ -687,10 +687,10 @@ int Exec(long pguidCmdGroup, int nCmdID, int nCmdExecOpt, long pvaIn, long pvaOu
 
 int Authenticate (long hwnd, long szUsername, long szPassword) {
 	IE browser = (IE)((Browser)getParent ().getParent ()).webBrowser;
-	for (int i = 0; i < browser.authenticationListeners.length; i++) {
+	for (AuthenticationListener authenticationListener : browser.authenticationListeners) {
 		AuthenticationEvent event = new AuthenticationEvent (browser.browser);
 		event.location = browser.lastNavigateURL;
-		browser.authenticationListeners[i].authenticate (event);
+		authenticationListener.authenticate (event);
 		if (!event.doit) return COM.E_ACCESSDENIED;
 		if (event.user != null && event.password != null) {
 			TCHAR user = new TCHAR (0, event.user, true);

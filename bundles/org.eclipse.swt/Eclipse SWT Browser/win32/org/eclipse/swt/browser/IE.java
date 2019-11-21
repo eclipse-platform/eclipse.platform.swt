@@ -388,8 +388,8 @@ public void create(Composite parent, int style) {
 				*/
 				if (!frame.isDisposed ()) unhookDOMListeners(documents);
 
-				for (int i = 0; i < documents.length; i++) {
-					documents[i].dispose();
+				for (OleAutomation document : documents) {
+					document.dispose();
 				}
 				documents = null;
 
@@ -521,8 +521,8 @@ public void create(Composite parent, int style) {
 					newEvent1.widget = browser;
 					newEvent1.location = url1;
 					newEvent1.doit = true;
-					for (int i1 = 0; i1 < locationListeners.length; i1++) {
-						locationListeners[i1].changing(newEvent1);
+					for (LocationListener locationListener : locationListeners) {
+						locationListener.changing(newEvent1);
 					}
 					boolean doit1 = newEvent1.doit && !browser.isDisposed();
 					Variant cancel3 = event.arguments[6];
@@ -609,8 +609,8 @@ public void create(Composite parent, int style) {
 						locationEvent.widget = browser;
 						locationEvent.location = url2;
 						locationEvent.top = top2.getAddress() == dispatch2.getAddress();
-						for (int i2 = 0; i2 < locationListeners.length; i2++) {
-							locationListeners[i2].changed(locationEvent);
+						for (LocationListener locationListener : locationListeners) {
+							locationListener.changed(locationEvent);
 						}
 						if (browser.isDisposed()) return;
 
@@ -652,8 +652,8 @@ public void create(Composite parent, int style) {
 							ProgressEvent progressEvent1 = new ProgressEvent(browser);
 							progressEvent1.display = browser.getDisplay();
 							progressEvent1.widget = browser;
-							for (int i3 = 0; i3 < progressListeners.length; i3++) {
-								progressListeners[i3].completed(progressEvent1);
+							for (ProgressListener progressListener : progressListeners) {
+								progressListener.completed(progressEvent1);
 							}
 						}
 					}
@@ -684,8 +684,8 @@ public void create(Composite parent, int style) {
 					ProgressEvent progressEvent2 = new ProgressEvent(browser);
 					progressEvent2.display = browser.getDisplay();
 					progressEvent2.widget = browser;
-					for (int i4 = 0; i4 < progressListeners.length; i4++) {
-						progressListeners[i4].completed(progressEvent2);
+					for (ProgressListener progressListener : progressListeners) {
+						progressListener.completed(progressEvent2);
 					}
 
 					break;
@@ -762,8 +762,8 @@ public void create(Composite parent, int style) {
 					if (isTop) {
 						/* unhook DOM listeners and unref the last document(s) */
 						unhookDOMListeners(documents);
-						for (int i5 = 0; i5 < documents.length; i5++) {
-							documents[i5].dispose();
+						for (OleAutomation document : documents) {
+							document.dispose();
 						}
 						documents = new OleAutomation[0];
 
@@ -830,8 +830,8 @@ public void create(Composite parent, int style) {
 					newEvent2.display = browser.getDisplay();
 					newEvent2.widget = browser;
 					newEvent2.required = false;
-					for (int i6 = 0; i6 < openWindowListeners.length; i6++) {
-						openWindowListeners[i6].open(newEvent2);
+					for (OpenWindowListener openWindowListener : openWindowListeners) {
+						openWindowListener.open(newEvent2);
 					}
 					IE browser = null;
 					if (newEvent2.browser != null && newEvent2.browser.webBrowser instanceof IE) {
@@ -914,14 +914,14 @@ public void create(Composite parent, int style) {
 						newEvent3.toolBar = toolBar;
 						newEvent3.location = location;
 						newEvent3.size = size;
-						for (int i7 = 0; i7 < visibilityWindowListeners.length; i7++) {
-							visibilityWindowListeners[i7].show(newEvent3);
+						for (VisibilityWindowListener visibilityWindowListener : visibilityWindowListeners) {
+							visibilityWindowListener.show(newEvent3);
 						}
 						location = null;
 						size = null;
 					} else {
-						for (int i8 = 0; i8 < visibilityWindowListeners.length; i8++) {
-							visibilityWindowListeners[i8].hide(newEvent3);
+						for (VisibilityWindowListener visibilityWindowListener : visibilityWindowListeners) {
+							visibilityWindowListener.hide(newEvent3);
 						}
 					}
 					break;
@@ -940,8 +940,8 @@ public void create(Composite parent, int style) {
 					newEvent4.current = nProgress;
 					newEvent4.total = nProgressMax;
 					if (nProgress != -1) {
-						for (int i9 = 0; i9 < progressListeners.length; i9++) {
-							progressListeners[i9].changed(newEvent4);
+						for (ProgressListener progressListener : progressListeners) {
+							progressListener.changed(newEvent4);
 						}
 					}
 					break;
@@ -957,8 +957,8 @@ public void create(Composite parent, int style) {
 						newEvent5.display = browser.getDisplay();
 						newEvent5.widget = browser;
 						newEvent5.text = text;
-						for (int i10 = 0; i10 < statusTextListeners.length; i10++) {
-							statusTextListeners[i10].changed(newEvent5);
+						for (StatusTextListener statusTextListener : statusTextListeners) {
+							statusTextListener.changed(newEvent5);
 						}
 					}
 					break;
@@ -974,8 +974,8 @@ public void create(Composite parent, int style) {
 						newEvent6.display = browser.getDisplay();
 						newEvent6.widget = browser;
 						newEvent6.title = title;
-						for (int i11 = 0; i11 < titleListeners.length; i11++) {
-							titleListeners[i11].changed(newEvent6);
+						for (TitleListener titleListener : titleListeners) {
+							titleListener.changed(newEvent6);
 						}
 					}
 					break;
@@ -991,8 +991,8 @@ public void create(Composite parent, int style) {
 						WindowEvent newEvent = new WindowEvent(browser);
 						newEvent.display = browser.getDisplay();
 						newEvent.widget = browser;
-						for (int i = 0; i < closeWindowListeners.length; i++) {
-							closeWindowListeners[i].close(newEvent);
+						for (CloseWindowListener closeWindowListener : closeWindowListeners) {
+							closeWindowListener.close(newEvent);
 						}
 						browser.dispose();
 					});
@@ -1318,8 +1318,7 @@ boolean navigate(String url, String postData, String headers[], boolean silent) 
 	}
 	if (headers != null) {
 		StringBuilder buffer = new StringBuilder();
-		for (int i = 0; i < headers.length; i++) {
-			String current = headers[i];
+		for (String current : headers) {
 			if (current != null) {
 				int sep = current.indexOf(':');
 				if (sep != -1) {
@@ -2022,8 +2021,7 @@ void unhookDOMListeners(OleAutomation[] documents) {
 	char[] buffer = (COM.IIDIHTMLDocumentEvents2 + '\0').toCharArray();
 	GUID guid = new GUID();
 	if (COM.IIDFromString(buffer, guid) == COM.S_OK) {
-		for (int i = 0; i < documents.length; i++) {
-			OleAutomation document = documents[i];
+		for (OleAutomation document : documents) {
 			site.removeEventListener(document, guid, COM.DISPID_HTMLDOCUMENTEVENTS_ONKEYDOWN, domListener);
 			site.removeEventListener(document, guid, COM.DISPID_HTMLDOCUMENTEVENTS_ONKEYPRESS, domListener);
 			site.removeEventListener(document, guid, COM.DISPID_HTMLDOCUMENTEVENTS_ONKEYUP, domListener);
