@@ -52,8 +52,8 @@ public int GetIDsOfNames(GUID riid, String[] rgszNames, int cNames, int lcid, in
 
 	} finally {
 		// free the memory
-		for (int i=0; i<memTracker.length; i++){
-			OS.HeapFree(hHeap, 0, memTracker[i]);
+		for (long tracker : memTracker) {
+			OS.HeapFree(hHeap, 0, tracker);
 		}
 		OS.HeapFree(hHeap, 0, ppNames);
 	}
