@@ -46,13 +46,13 @@ public void generateIncludes() {
 public void generate(JNIClass clazz, String methodName) {
 	JNIMethod[] methods = clazz.getDeclaredMethods();
 	int count = 0;
-	for (int i = 0; i < methods.length; i++) {
-		if (methods[i].getName().startsWith(methodName)) count++;
+	for (JNIMethod method : methods) {
+		if (method.getName().startsWith(methodName)) count++;
 	}
 	JNIMethod[] result = new JNIMethod[count];
 	count = 0;
-	for (int i = 0; i < methods.length; i++) {
-		if (methods[i].getName().startsWith(methodName)) result[count++] = methods[i];
+	for (JNIMethod method : methods) {
+		if (method.getName().startsWith(methodName)) result[count++] = method;
 	}
 	generate(result);
 }
@@ -74,8 +74,7 @@ public void generate(JNIClass clazz) {
 
 public void generate(JNIMethod[] methods) {
 	sort(methods);	
-	for (int i = 0; i < methods.length; i++) {
-		JNIMethod method = methods[i];
+	for (JNIMethod method : methods) {
 		if ((method.getModifiers() & Modifier.NATIVE) == 0) continue;
 		generate(method);
 		if (progress != null) progress.step();
@@ -83,9 +82,8 @@ public void generate(JNIMethod[] methods) {
 }
 
 boolean isStruct(String flagsStr) {
-	String[] flags = split(flagsStr, " ");
-	for (int i = 0; i < flags.length; i++) {
-		if (flags[i].equals(Flags.FLAG_STRUCT)) return true;
+	for (String flag : split(flagsStr, " ")) {
+		if (flag.equals(Flags.FLAG_STRUCT)) return true;
 	}
 	return false;
 }
@@ -225,8 +223,7 @@ public void setEnterExitMacro(boolean enterExitMacro) {
 
 void generateExcludes(JNIMethod[] methods) {
 	HashSet<String> excludes = new HashSet<>();
-	for (int i = 0; i < methods.length; i++) {
-		JNIMethod method = methods[i];
+	for (JNIMethod method : methods) {
 		if ((method.getModifiers() & Modifier.NATIVE) == 0) continue;
 		String exclude = method.getExclude();
 		if (exclude.length() != 0) {
@@ -235,8 +232,7 @@ void generateExcludes(JNIMethod[] methods) {
 	}
 	for (String exclude: excludes) {
 		outputln(exclude);
-		for (int i = 0; i < methods.length; i++) {
-			JNIMethod method = methods[i];
+		for (JNIMethod method : methods) {
 			if ((method.getModifiers() & Modifier.NATIVE) == 0) continue;
 			String methodExclude = method.getExclude();
 			if (exclude.equals(methodExclude)) {
@@ -508,8 +504,7 @@ boolean generateLocalVars(JNIParameter[] params, JNIType returnType, JNIType ret
 boolean generateGetters(JNIParameter[] params) {
 	boolean genFailTag = false;
 	int criticalCount = 0;
-	for (int i = 0; i < params.length; i++) {
-		JNIParameter param = params[i];
+	for (JNIParameter param : params) {
 		if (!isCritical(param)) {
 			genFailTag |= generateGetParameter(param, false, 1);
 		} else {
@@ -517,8 +512,7 @@ boolean generateGetters(JNIParameter[] params) {
 		}
 	}
 	if (criticalCount != 0) {
-		for (int i = 0; i < params.length; i++) {
-			JNIParameter param = params[i];
+		for (JNIParameter param : params) {
 			if (isCritical(param)) {
 				genFailTag |= generateGetParameter(param, true, 2);
 			}

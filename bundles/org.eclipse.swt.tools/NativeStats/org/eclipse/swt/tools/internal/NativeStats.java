@@ -112,16 +112,14 @@ void dump(String className, NativeFunction[] funcs, PrintStream ps) {
 	if (funcs == null) return;
 	Arrays.sort(funcs);
 	int total = 0;
-	for (int i = 0; i < funcs.length; i++) {
-		NativeFunction func = funcs[i];
+	for (NativeFunction func : funcs) {
 		total += func.getCallCount();
 	}
 	ps.print(className);
 	ps.print("=");
 	ps.print(total);
 	ps.println();
-	for (int i = 0; i < funcs.length; i++) {
-		NativeFunction func = funcs[i];
+	for (NativeFunction func : funcs) {
 		if (func.getCallCount() > 0) {
 			ps.print("\t");
 			ps.print(func.getName());
@@ -138,8 +136,7 @@ public void reset() {
 
 public Map<String, NativeFunction[]> snapshot() {
 	Map<String, NativeFunction[]> snapshot = new HashMap<>();
-	for (int i = 0; i < classes.length; i++) {
-		String className = classes[i];
+	for (String className : classes) {
 		snapshot(className, snapshot);
 	}
 	return snapshot;

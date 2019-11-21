@@ -144,13 +144,13 @@ public class IconExe {
 			IconExe iconExe = new IconExe();
 			IconResInfo[] iconInfo = iconExe.getIcons(raf);
 			int cnt = 0;
-			for (int i = 0; i < iconInfo.length; i++) {
-				for (int j = 0; j < icons.length; j++)
-					if (iconInfo[i].data.width == icons[j].width && 
-					iconInfo[i].data.height == icons[j].height && 
-					iconInfo[i].data.depth == icons[j].depth) {
-						raf.seek(iconInfo[i].offset);
-						unloadIcon(raf, icons[j]);
+			for (IconResInfo element : iconInfo) {
+				for (ImageData icon : icons)
+					if (element.data.width == icon.width && 
+					element.data.height == icon.height && 
+					element.data.depth == icon.depth) {
+						raf.seek(element.offset);
+						unloadIcon(raf, icon);
 						cnt++;
 					}
 			}
@@ -233,15 +233,12 @@ void dumpResourceDirectory(RandomAccessFile raf, int imageResourceDirectoryOffse
 		imageResourceDirectoryEntries[i] = new IMAGE_RESOURCE_DIRECTORY_ENTRY();
 		read(raf, imageResourceDirectoryEntries[i]);
 	}
-	for (int i = 0; i < imageResourceDirectoryEntries.length; i++) {
-		if (imageResourceDirectoryEntries[i].DataIsDirectory) {
-			dumpResourceDirectory(raf, imageResourceDirectoryEntries[i].OffsetToDirectory + resourceBase, resourceBase, delta, imageResourceDirectoryEntries[i].Id, level + 1, rt_icon_root ? true : type == RT_ICON);
+	for (IMAGE_RESOURCE_DIRECTORY_ENTRY irde : imageResourceDirectoryEntries) {
+		if (irde.DataIsDirectory) {
+			dumpResourceDirectory(raf, irde.OffsetToDirectory + resourceBase, resourceBase, delta, irde.Id, level + 1, rt_icon_root ? true : type == RT_ICON);
 		} else {
-			// Resource found
-			/// pResDirEntry->Name
-			IMAGE_RESOURCE_DIRECTORY_ENTRY irde = imageResourceDirectoryEntries[i];
 			IMAGE_RESOURCE_DATA_ENTRY data = new IMAGE_RESOURCE_DATA_ENTRY();
-			raf.seek(imageResourceDirectoryEntries[i].OffsetToData + resourceBase);
+			raf.seek(irde.OffsetToData + resourceBase);
 			read(raf, data);
 			if (DEBUG) System.out.println("Resource Id "+irde.Id+" Data Offset RVA "+data.OffsetToData+", Size "+data.Size);
 			if (rt_icon_root) {

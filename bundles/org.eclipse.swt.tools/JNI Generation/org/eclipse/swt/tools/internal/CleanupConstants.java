@@ -43,8 +43,7 @@ public void generate(JNIClass clazz) {
 
 public void generate(JNIField[] fields) {
 	sort(fields);
-	for (int i = 0; i < fields.length; i++) {
-		JNIField field = fields[i];
+	for (JNIField field : fields) {
 		if ((field.getModifiers() & Modifier.FINAL) == 0) continue;
 		generate(field);
 	}

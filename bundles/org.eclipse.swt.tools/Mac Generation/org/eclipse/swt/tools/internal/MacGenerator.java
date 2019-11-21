@@ -43,8 +43,7 @@ static void list(File path, ArrayList<String> list) {
 	if (path == null) return;
 	File[] frameworks = path.listFiles();
 	if (frameworks == null) return;
-	for (int i = 0; i < frameworks.length; i++) {
-		File file = frameworks[i];
+	for (File file : frameworks) {
 		String name = file.getName();
 		int index = name.lastIndexOf(".");
 		if (index != -1) {
@@ -602,8 +601,7 @@ void copyClassMethodsDown(final Map<String, Object[]> classes) {
 		ArrayList<Node> methods = (ArrayList<Node>)clazz[1];
 		Object[] superclass = classes.get(getSuperclassName(node));
 		if (superclass != null) {
-			for (Iterator<Node> iterator2 = ((ArrayList<Node>)superclass[1]).iterator(); iterator2.hasNext();) {
-				Node method = iterator2.next();
+			for (Node method : ((ArrayList<Node>) superclass[1])) {
 				if (isStatic(method)) {
 					methods.add(method);
 				}
@@ -870,8 +868,8 @@ public String[] getXmls() {
 			if(files == null) {
 				files = new File[0];
 			}
-			for (int i = 0; i < files.length; i++) {
-				array.add(files[i].getAbsolutePath());
+			for (File file : files) {
+				array.add(file.getAbsolutePath());
 			}
 		}
 		Collections.sort(array, (o1, o2) -> new File(o1).getName().compareTo(new File(o2).getName()));
@@ -1031,9 +1029,8 @@ String getKey (Node node) {
 public Node getIDAttribute(Node node) {
 	NamedNodeMap attributes = node.getAttributes();
 	if (attributes == null) return null;
-	String[] names = getIDAttributeNames();
-	for (int i = 0; i < names.length; i++) {
-		Node nameAttrib = attributes.getNamedItem(names[i]);
+	for (String name : getIDAttributeNames()) {
+		Node nameAttrib = attributes.getNamedItem(name);
 		if (nameAttrib != null) return nameAttrib;
 	}
 	return null;

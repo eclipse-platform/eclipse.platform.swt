@@ -26,8 +26,7 @@ public void generate(JNIClass clazz) {
 public void generate(JNIField[] fields) {
 	sort(fields);
 	outputln("int main() {");
-	for (int i = 0; i < fields.length; i++) {
-		JNIField field = fields[i];
+	for (JNIField field : fields) {
 		if ((field.getModifiers() & Modifier.FINAL) == 0) continue;
 		generate(field);
 	}
@@ -55,8 +54,7 @@ public static void main(String[] args) {
 	}
 	try {
 		ConstantsGenerator gen = new ConstantsGenerator();
-		for (int i = 0; i < args.length; i++) {
-			String clazzName = args[i];
+		for (String clazzName : args) {
 			Class<?> clazz = Class.forName(clazzName);
 			gen.generate(new ReflectClass(clazz));
 		}

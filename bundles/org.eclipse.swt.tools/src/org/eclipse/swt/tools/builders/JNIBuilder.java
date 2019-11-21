@@ -68,8 +68,7 @@ public class JNIBuilder extends IncrementalProjectBuilder {
 			return true;
 		});
 		final IWorkspaceRoot root = getProject().getWorkspace().getRoot();
-		for (int i = 0; i < classes.length; i++) {
-			MainClass mainClass = classes[i];
+		for (MainClass mainClass : classes) {
 			if (mainClass.build) {
 				mainClass.build = false;
 				IResource library = root.findMember(mainClass.outputDir);

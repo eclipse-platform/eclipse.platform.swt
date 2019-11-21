@@ -43,10 +43,9 @@ public class MacGeneratorUI {
 		if (lastParent != null && !lastParent.isDisposed() && lastParent.getParentItem() == superItem && name.equals(lastParent.getData())) {
 			parentItem = lastParent;
 		} else {
-			TreeItem[] items = superItem.getItems();
-			for (int i = 0; i < items.length; i++) {
-				if (name.equals(items[i].getData())) {
-					parentItem = items[i];
+			for (TreeItem item : superItem.getItems()) {
+				if (name.equals(item.getData())) {
+					parentItem = item;
 					break;
 				}
 			}
@@ -124,16 +123,15 @@ public class MacGeneratorUI {
 				addChild(childNodes.item(i), item);
 			}
 			/* Figure out categories state */
-			TreeItem[] items = item.getItems();
-			for (int i = 0; i < items.length; i++) {
-				TreeItem[] children = items[i].getItems();
+			for (TreeItem child : item.getItems()) {
+				TreeItem[] children = child.getItems();
 				int checkedCount = 0;
-				for (int j = 0; j < children.length; j++) {
-					if (children[j].getChecked()) checkedCount++;
-					if (children[j].getGrayed()) break;
+				for (TreeItem element : children) {
+					if (element.getChecked()) checkedCount++;
+					if (element.getGrayed()) break;
 				}
-				items[i].setChecked(checkedCount != 0);
-				items[i].setGrayed(checkedCount != children.length);
+				child.setChecked(checkedCount != 0);
+				child.setGrayed(checkedCount != children.length);
 			}
 		}
 	}
@@ -151,8 +149,8 @@ public class MacGeneratorUI {
 				checkNodes(childNodes.item(i), checked);
 			}
 		} else {
-			for (int i = 0; i < items.length; i++) {
-				checkItems(items[i], checked);
+			for (TreeItem item2 : items) {
+				checkItems(item2, checked);
 			}
 		}
 	}
@@ -408,8 +406,8 @@ public class MacGeneratorUI {
 		}
 		if (flatNodes == null) {
 			flatNodes = new ArrayList<>();
-			for (int i = 0; i < documents.length; i++) {
-				if (documents[i] != null) addNodes(documents[i], flatNodes);
+			for (Document document : documents) {
+				if (document != null) addNodes(document, flatNodes);
 			}
 		}
 		int index = 0;
@@ -459,13 +457,12 @@ public class MacGeneratorUI {
 	}
 	
 	TreeItem findItem(TreeItem[] items, Node node) {
-		for (int i = 0; i < items.length; i++) {
-			TreeItem item = items[i];
+		for (TreeItem item : items) {
 			checkChildren(item);
 			if (item.getData() == node) return item;
 		}
-		for (int i = 0; i < items.length; i++) {
-			TreeItem child = findItem(items[i].getItems(), node);
+		for (TreeItem item : items) {
+			TreeItem child = findItem(item.getItems(), node);
 			if (child != null) return child;
 		}
 		return null;
@@ -486,10 +483,9 @@ public class MacGeneratorUI {
 		if (!(item.getData() instanceof Node)) return;
 		Node node = (Node)item.getData();
 		NamedNodeMap attributes = node.getAttributes();
-		String[] extraAttribs = gen.getExtraAttributeNames(node);
-		for (int i = 0; i < extraAttribs.length; i++) {
+		for (String extraAttrib : gen.getExtraAttributeNames(node)) {
 			TableItem attribItem = new TableItem(attribTable, SWT.NONE);
-			String attribName = extraAttribs[i];
+			String attribName = extraAttrib;
 			if (!SHOW_SWT_PREFIX && attribName.startsWith("swt_")) {
 				attribName = attribName.substring("swt_".length(), attribName.length());
 				attribItem.setData("swt_", "swt_");
@@ -497,7 +493,7 @@ public class MacGeneratorUI {
 			attribItem.setText(attribName);
 			attribItem.setData(node);
 			attribItem.setForeground(item.getDisplay().getSystemColor(SWT.COLOR_BLUE));
-			Node attrib = attributes.getNamedItem(extraAttribs[i]);
+			Node attrib = attributes.getNamedItem(extraAttrib);
 			if (attrib != null) {
 				attribItem.setText(1, attrib.getNodeValue());
 			}
@@ -553,9 +549,8 @@ public class MacGeneratorUI {
 			checkItem(node, item);
 			new TreeItem(item, SWT.NONE);
 		}
-		TreeColumn[] columns = nodesTree.getColumns();
-		for (int i = 0; i < columns.length; i++) {
-			columns[i].pack();
+		for (TreeColumn column : nodesTree.getColumns()) {
+			column.pack();
 		}
 	}
 	

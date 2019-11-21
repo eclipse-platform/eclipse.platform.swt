@@ -39,8 +39,7 @@ public void generate() {
 
 public void generate(JNIField[] fields) {
 	sort(fields);	
-	for (int i = 0; i < fields.length; i++) {
-		JNIField field = fields[i];
+	for (JNIField field : fields) {
 		if ((field.getModifiers() & Modifier.FINAL) == 0) continue;
 		generate(field);
 	}
@@ -61,8 +60,7 @@ public static void main(String[] args) {
 	}
 	try {
 		SizeofGenerator gen = new SizeofGenerator();
-		for (int i = 0; i < args.length; i++) {
-			String clazzName = args[i];
+		for (String clazzName : args) {
 			Class<?> clazz = Class.forName(clazzName);
 			gen.generate(new ReflectClass(clazz));
 		}

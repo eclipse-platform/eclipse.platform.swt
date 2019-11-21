@@ -79,21 +79,19 @@ public class SpyView extends ViewPart {
 						text.append("\n");
 						if (control instanceof Composite) {
 							text.append("\nChildren:\n");
-							Control[] children = ((Composite)control).getChildren();
-							for (int i = 0; i < children.length; i++) {
-								text.append("\t"+getName(children[i])+"\n");
+							for (Control element : ((Composite)control).getChildren()) {
+								text.append("\t"+getName(element)+"\n");
 							}
 						}
 						Composite parent = control.getParent();
 						if (parent != null) {
 							text.append("\nPeers:\n");
-							Control[] peers = parent.getChildren();
-							for (int i = 0; i < peers.length; i++) {
+							for (Control peer : parent.getChildren()) {
 								text.append("\t");
-								if (peers[i] == control) text.append("*");
-								text.append(getName(peers[i])+"@"+getOSHandle(peers[i]));
-								text.append(" Layout Data: "+getName(peers[i].getLayoutData()));
-								text.append(" Bounds: "+peers[i].getBounds());
+								if (peer == control) text.append("*");
+								text.append(getName(peer)+"@"+getOSHandle(peer));
+								text.append(" Layout Data: "+getName(peer.getLayoutData()));
+								text.append(" Bounds: "+peer.getBounds());
 								text.append("\n");
 							}
 							text.append("\nParent Tree:\n");
@@ -159,10 +157,9 @@ public class SpyView extends ViewPart {
 
 	private String getOSHandle(Control control) {
 		if (field == null) {
-			String[] fieldNames = {"handle", "view"};
-			for (int i = 0; i < fieldNames.length; i++) {
+			for (String fieldName : new String[]{"handle", "view"}) {
 				try {
-					field = control.getClass().getField(fieldNames[i]);
+					field = control.getClass().getField(fieldName);
 					if (field != null) break;
 				} catch (Throwable e) {}
 			}

@@ -113,8 +113,7 @@ void generateSourceFile(JNIClass clazz) {
 	output(className);
 	outputln("_nativeFunctionNames[] = {");
 	sort(methods);
-	for (int i = 0; i < methods.length; i++) {
-		JNIMethod method = methods[i];
+	for (JNIMethod method : methods) {
 		if ((method.getModifiers() & Modifier.NATIVE) == 0) continue;
 		String function = getFunctionName(method), function64 = getFunctionName(method, method.getParameterTypes64());
 		if (!function.equals(function64)) {
@@ -196,8 +195,7 @@ void generateStatsNatives(String className) {
 void generateFunctionEnum(JNIMethod[] methods) {
 	if (methods.length == 0) return;
 	outputln("typedef enum {");
-	for (int i = 0; i < methods.length; i++) {
-		JNIMethod method = methods[i];
+	for (JNIMethod method : methods) {
 		if ((method.getModifiers() & Modifier.NATIVE) == 0) continue;
 		String function = getFunctionName(method), function64 = getFunctionName(method, method.getParameterTypes64());
 		if (!function.equals(function64)) {

@@ -38,8 +38,8 @@ public class DOMWriter {
 	boolean filter(Attr attr) {
 		if (attributeFilter == null) return false;
 		String name = attr.getNodeName();
-		for (int i = 0; i < attributeFilter.length; i++) {
-			if (name.matches(attributeFilter[i])) return false;
+		for (String filteredName : attributeFilter) {
+			if (name.matches(filteredName)) return false;
 		}
 		return true;
 	}
@@ -47,9 +47,8 @@ public class DOMWriter {
 	Node getIDAttribute(Node node) {
 		NamedNodeMap attributes = node.getAttributes();
 		if (attributes == null) return null;
-		String[] names = idAttributes;
-		for (int i = 0; i < names.length; i++) {
-			Node nameAttrib = attributes.getNamedItem(names[i]);
+		for (String name : idAttributes) {
+			Node nameAttrib = attributes.getNamedItem(name);
 			if (nameAttrib != null) return nameAttrib;
 		}
 		return null;
@@ -92,8 +91,7 @@ public class DOMWriter {
 				for (int i = 0; i < level; i++) print("\t");
 				print("<");
 				print(name);
-				for (int i = 0; i < attrs.length; i++) {
-					Attr attr = attrs[i];
+				for (Attr attr : attrs) {
 					if (isArg && "name".equals(attr.getNodeName())) continue;
 					if (filter(attr)) continue;
 					print(" ");

@@ -66,8 +66,8 @@ void loadFiles () {
 	// BAD - holds on to a lot of memory
 	if (sourcePath == null) return;
 	files = new HashMap<> ();
-	for (int i = 0; i < sourcePath.length; i++) {
-		File file = new File(sourcePath[i]);
+	for (String path : sourcePath) {
+		File file = new File(path);
 		if (file.exists()) {
 			if (!file.isDirectory()) {
 				if (file.getAbsolutePath().endsWith(".java")) {
@@ -102,8 +102,7 @@ void loadDirectory(File file) {
 	if (entries == null) {
 		entries = new String[0];
 	}
-	for (int i = 0; i < entries.length; i++) {
-		String entry = entries[i];
+	for (String entry : entries) {
 		File f = new File(file, entry);
 		if (!f.isDirectory()) {
 			if (f.getAbsolutePath().endsWith(".java")) {

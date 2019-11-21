@@ -94,8 +94,7 @@ public void create (Composite parent) {
 void refreshLabel () {
 	int colors = 0, cursors = 0, fonts = 0, gcs = 0, images = 0;
 	int paths = 0, patterns = 0, regions = 0, textLayouts = 0, transforms= 0;
-	for (int i=0; i<objects.length; i++) {
-		Object object = objects [i];
+	for (Object object : objects) {
 		if (object instanceof Color) colors++;
 		if (object instanceof Cursor) cursors++;
 		if (object instanceof Font) fonts++;
@@ -158,8 +157,8 @@ void refreshDifference () {
 	list.removeAll ();
 	text.setText ("");
 	canvas.redraw ();
-	for (int i=0; i<objects.length; i++) {
-		list.add (objects [i].toString());
+	for (Object object : objects) {
+		list.add (object.toString());
 	}
 	refreshLabel ();
 	layout ();
@@ -190,11 +189,9 @@ void paintCanvas (Event event) {
 	if (object instanceof Font) {
 		if (((Font)object).isDisposed ()) return;
 		gc.setFont ((Font) object);
-		FontData [] array = gc.getFont ().getFontData ();
 		String string = "";
 		String lf = text.getLineDelimiter ();
-		for (int i=0; i<array.length; i++) {
-			FontData data = array [i];
+		for (FontData data : gc.getFont ().getFontData ()) {
 			String style = "NORMAL";
 			int bits = data.getStyle ();
 			if (bits != 0) {

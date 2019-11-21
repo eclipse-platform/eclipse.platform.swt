@@ -113,11 +113,11 @@ public class JavadocBasher {
 
 		System.out.println("==== Start Bashing ====");
 		int totalBashed = 0;
-		for (int t = 0; t < targetSubdirs.length; t++) {
-			for (int f = 0; f < folders.length; f++) {
-				String targetSubdir = folders[f] + "/" + targetSubdirs[t];
+		for (String dir : targetSubdirs) {
+			for (String folder : folders) {
+				String targetSubdir = folder + "/" + dir;
 				File source = new File(workspaceDir + "/org.eclipse.swt/"
-						+ folders[f] + "/" + sourceSubdir);
+						+ folder + "/" + sourceSubdir);
 				File target = new File(workspaceDir + "/org.eclipse.swt/"
 						+ targetSubdir);
 				File out = new File(outputDir + "/org.eclipse.swt/"

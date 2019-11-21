@@ -130,9 +130,7 @@ public boolean isNativeUnique() {
 	if (unique != null) return unique.booleanValue();
 	boolean result = true;
 	String name = getName();
-	JNIMethod[] methods = declaringClass.getDeclaredMethods();
-	for (int i = 0; i < methods.length; i++) {
-		JNIMethod mth = methods[i];
+	for (JNIMethod mth : declaringClass.getDeclaredMethods()) {
 		if ((mth.getModifiers() & Modifier.NATIVE) != 0 &&
 			this != mth && !this.equals(mth) &&
 			name.equals(mth.getName()))
