@@ -298,8 +298,8 @@ public class ColorMenu {
 			switch (event.type) {
 
 			case SWT.Dispose:
-				for (int i = 0; i < resources.size(); i++) {
-					resources.get(i).dispose();
+				for (Resource resource : resources) {
+					resource.dispose();
 				}
 				resources = new ArrayList<>();
 				break;

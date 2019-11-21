@@ -155,8 +155,7 @@ public class OlePlugin extends AbstractUIPlugin {
 	 */
 	public static void freeResources() {
 		if (images != null) {
-			for (int i = 0; i < images.length; ++i) {
-				final Image image = images[i];
+			for (final Image image : images) {
 				if (image != null) image.dispose();
 			}
 			images = null;

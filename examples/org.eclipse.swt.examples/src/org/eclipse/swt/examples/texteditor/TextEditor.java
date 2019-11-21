@@ -909,8 +909,8 @@ public class TextEditor {
 		String[] names = new String[fontNames.length];
 		int count = 0;
 		mainfor:
-		for (int i = 0; i < fontNames.length; i++) {
-			String fontName = fontNames[i].getName();
+		for (FontData fontData : fontNames) {
+			String fontName = fontData.getName();
 			if (fontName.startsWith("@")) //$NON-NLS-1$
 				continue;
 			for (int j = 0; j < count; j++) {

@@ -235,9 +235,9 @@ public class PawnTab {
 
 		boolean hasMore = false;
 		cntWhite = 0; cntBlack = 0;
-		for (int i = 0; i < game.length; i++)
+		for (byte[] element : game)
 			for (int j = 0; j < game[0].length; j++) {
-				switch (game[i][j]) {
+				switch (element[j]) {
 					case EMPTY: hasMore = true; break;
 					case WHITE: cntWhite++; break;
 					case BLACK: cntBlack++; break;

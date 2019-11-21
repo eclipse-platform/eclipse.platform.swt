@@ -83,8 +83,7 @@ public class GradientDialog extends Dialog {
 		createDialogControls(dialog);
 
 		dialog.addListener(SWT.Close, event -> {
-			for (int i = 0; i < resources.size(); i++) {
-				Object obj = resources.get(i);
+			for (Image obj : resources) {
 				if (obj != null && obj instanceof Resource) {
 					((Resource) obj).dispose();
 				}

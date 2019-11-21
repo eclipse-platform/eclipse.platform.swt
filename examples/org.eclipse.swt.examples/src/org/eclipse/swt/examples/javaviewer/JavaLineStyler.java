@@ -62,8 +62,7 @@ Color getColor(int type) {
 }
 
 boolean inBlockComment(int start, int end) {
-	for (int i=0; i<blockComments.size(); i++) {
-		int[] offsets = blockComments.get(i);
+	for (int[] offsets : blockComments) {
 		// start of comment in the line
 		if ((offsets[0] >= start) && (offsets[0] <= end)) return true;
 		// end of comment in the line

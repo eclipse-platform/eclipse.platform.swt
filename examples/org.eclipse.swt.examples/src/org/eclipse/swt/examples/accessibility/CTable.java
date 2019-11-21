@@ -3896,8 +3896,8 @@ public void setItemCount (int count) {
 		}
 
 		int newSelectedCount = 0;
-		for (int i = 0; i < selectedItems.length; i++) {
-			if (!selectedItems [i].isDisposed ()) newSelectedCount++;
+		for (CTableItem selectedItem : selectedItems) {
+			if (!selectedItem.isDisposed ()) newSelectedCount++;
 		}
 		if (newSelectedCount != selectedItems.length) {
 			/* one or more selected items have been disposed */
@@ -4095,10 +4095,10 @@ void setSelection (CTableItem[] items, boolean updateViewport) {
 
 	boolean tableSelectionChanged = false;
 	if (isFocusControl () || (getStyle () & SWT.HIDE_SELECTION) == 0) {
-		for (int i = 0; i < oldSelection.length; i++) {
-			if (!oldSelection [i].isSelected ()) {
-				redrawItem (oldSelection [i].index, true);
-				oldSelection[i].getAccessible(getAccessible(), 0).selectionChanged();
+		for (CTableItem item : oldSelection) {
+			if (!item.isSelected ()) {
+				redrawItem (item.index, true);
+				item.getAccessible(getAccessible(), 0).selectionChanged();
 				tableSelectionChanged = true;
 			}
 		}
