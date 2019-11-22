@@ -5432,14 +5432,6 @@ private void testLineStyleListener(String content, LineStyleListener listener, B
 	}
 }
 
-/**
- * Check if StyledText widget contains the given color.
- *
- * @param text widget to check
- * @param expectedColor color to find
- * @return <code>true</code> if the given color was found in current text widget
- *         bounds
- */
 @Test
 public void test_variableToFixedLineHeight() throws InterruptedException {
 	GridData layoutData = new GridData(SWT.FILL, SWT.FILL,true, true);
@@ -5471,7 +5463,14 @@ public void test_variableToFixedLineHeight() throws InterruptedException {
 	assertFalse(hasPixel(text, colorForVariableHeight));
 }
 
-
+/**
+ * Check if StyledText widget contains the given color.
+ *
+ * @param text widget to check
+ * @param expectedColor color to find
+ * @return <code>true</code> if the given color was found in current text widget
+ *         bounds
+ */
 private boolean hasPixel(StyledText text, Color expectedColor) {
 	return hasPixel(text, expectedColor, null);
 }
