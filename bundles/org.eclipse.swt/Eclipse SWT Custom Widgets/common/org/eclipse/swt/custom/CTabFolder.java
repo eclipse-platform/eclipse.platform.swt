@@ -136,12 +136,12 @@ public class CTabFolder extends Composite {
 	 * <p>
 	 * If there is not enough place for all tabs, tabs starting from the end of
 	 * the {@link #priority} array will be hidden first (independently from the
-	 * {@link #mru} flag!) => the right most elements have the highest priority
+	 * {@link #mru} flag!) =&gt; the right most elements have the highest priority
 	 * to be hidden.
 	 * <p>
 	 * If there is more place to show previously hidden tabs, tabs starting from
 	 * the beginning of the {@link #priority} array will be made visible first
-	 * (independently from the {@link #mru} flag!) => the left most elements
+	 * (independently from the {@link #mru} flag!) =&gt; the left most elements
 	 * have the highest priority to be shown.
 	 * <p>
 	 * The update strategy of the {@link #priority} array however depends on the

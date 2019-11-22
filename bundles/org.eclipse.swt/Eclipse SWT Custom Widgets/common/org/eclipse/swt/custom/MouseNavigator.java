@@ -18,9 +18,11 @@ import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
 
 /**
- * This class add the following behaviour to <code>StyledText</code> widgets:<br/>
+ * This class add the following behaviour to <code>StyledText</code> widgets:
+ * <p>
  * When the user clicks on the wheel, a circle with arrows appears. When the user moves the mouse,
- * the StyledText content is scrolled (on the right or on the left for horizontal movements, up or down for vertical movements).<br/>
+ * the StyledText content is scrolled (on the right or on the left for horizontal movements, up or down for vertical movements).
+ * </p>
  *
  * @since 3.110
  */

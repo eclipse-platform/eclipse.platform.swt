@@ -37,7 +37,7 @@ class DefaultContent implements StyledTextContent {
 	int replaceExpandExp = 1; 	// the expansion exponent, used to increase the lines array exponentially
 
 /**
- * Creates a new DefaultContent and initializes it.  A <code>StyledTextContent</> will always have
+ * Creates a new DefaultContent and initializes it.  A <code>StyledTextContent</code> will always have
  * at least one empty line.
  */
 DefaultContent() {
@@ -759,12 +759,12 @@ public void removeTextChangeListener(TextChangeListener listener){
  * lines that are going to be inserted and <code>replaceLineCount</code> is
  * the number of lines that are going to be deleted, based on the change
  * that occurs visually.  For example:
- * <ul>
- * <li>(replaceText,newText) ==> (replaceLineCount,newLineCount)
- * <li>("","\n") ==> (0,1)
- * <li>("\n\n","a") ==> (2,0)
- * </ul>
  * </p>
+ * <ul>
+ * <li>(replaceText,newText) ==&gt; (replaceLineCount,newLineCount)
+ * <li>("","\n") ==&gt; (0,1)
+ * <li>("\n\n","a") ==&gt; (2,0)
+ * </ul>
  *
  * @param start	start offset of text to replace
  * @param replaceLength start offset of text to replace

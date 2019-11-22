@@ -232,7 +232,7 @@ public class StyledText extends Canvas {
 	 * Creates an instance of <code>Printing</code>.
 	 * Copies the widget content and rendering data that needs
 	 * to be requested from listeners.
-	 * </p>
+	 *
 	 * @param parent StyledText widget to print.
 	 * @param printer printer device to print on.
 	 * @param printOptions print options
@@ -263,7 +263,7 @@ public class StyledText extends Canvas {
 	}
 	/**
 	 * Caches all line data that needs to be requested from a listener.
-	 * </p>
+	 *
 	 * @param printerContent <code>StyledTextContent</code> to request
 	 * 	line data for.
 	 */
@@ -378,7 +378,7 @@ public class StyledText extends Canvas {
 	}
 	/**
 	 * Copies the text of the specified <code>StyledTextContent</code>.
-	 * </p>
+	 *
 	 * @param original the <code>StyledTextContent</code> to copy.
 	 */
 	StyledTextContent copyContent(StyledTextContent original) {
@@ -1039,7 +1039,7 @@ public class StyledText extends Canvas {
 	 * partial lines, specify the start and length of the desired segment
 	 * during object creation.
 	 * <p>
-	 * </b>NOTE:</b> <code>toString()</code> is guaranteed to return a valid string only after close()
+	 * <b>NOTE:</b> <code>toString()</code> is guaranteed to return a valid string only after close()
 	 * has been called.
 	 * </p>
 	 */
@@ -1113,7 +1113,7 @@ public class StyledText extends Canvas {
 	/**
 	 * Inserts the given string to the data at the specified offset.
 	 * <p>
-	 * Do nothing if "offset" is < 0 or > getCharCount()
+	 * Do nothing if "offset" is &lt; 0 or &gt; getCharCount()
 	 * </p>
 	 *
 	 * @param string text to insert
@@ -3350,7 +3350,7 @@ void doSelectionLineUp() {
  * relative to the top line remains the same. The exception is the end
  * of the text where a full page scroll is not possible. In this case
  * the caret is moved after the last character.
- * <p></p>
+ * </p><p>
  * Adjusts the selection according to the caret change. This can either add
  * to or subtract from the old selection, depending on the previous selection
  * direction.
@@ -8144,8 +8144,8 @@ public void scroll(int destX, int destY, int x, int y, int width, int height, bo
 /**
  * Scrolls the widget horizontally.
  *
- * @param pixels number of SWT logical points to scroll, > 0 = scroll left,
- * 	< 0 scroll right
+ * @param pixels number of SWT logical points to scroll, &gt; 0 = scroll left,
+ * 	&lt; 0 scroll right
  * @param adjustScrollBar
  * 	true= the scroll thumb will be moved to reflect the new scroll offset.
  * 	false = the scroll thumb will not be moved
@@ -8855,7 +8855,7 @@ void setCaretOffset(int offset, int alignment) {
  * @param start start index of the text
  * @param length length of text to place in clipboard
  *
- * @exception SWTError, see Clipboard.setContents
+ * @exception SWTError
  * @see org.eclipse.swt.dnd.Clipboard#setContents
  */
 void setClipboardContent(int start, int length, int clipboardType) throws SWTError {
@@ -10008,9 +10008,9 @@ public void setSelection(int start, int end) {
  * the selection into view.
  * </p>
  *
- * @param start offset of the first selected character, start >= 0 must be true.
- * @param length number of characters to select, 0 <= start + length
- * 	<= getCharCount() must be true.
+ * @param start offset of the first selected character, start &gt;= 0 must be true.
+ * @param length number of characters to select, 0 &lt;= start + length
+ * 	&lt;= getCharCount() must be true.
  * 	A negative length places the caret at the selection start.
  * @param sendEvent a Selection event is sent when set to true and when
  * 	the selection is reset.
@@ -10331,7 +10331,7 @@ void setStyleRanges(int start, int length, int[] ranges, StyleRange[] styles, bo
  *
  * @param referenceRanges former ranges, sorted by order and without overlapping, typically returned {@link #getRanges(int, int)}
  * @param referenceStyles
- * @param newRanges former ranges, sorted by order and without overlappingz
+ * @param newRanges former ranges, sorted by order and without overlapping
  * @param newStyles
  * @return
  */
@@ -10503,7 +10503,7 @@ public void setTabs(int tabs) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_INVALID_ARGUMENT - if a tab stop is negavite or less than the previous stop in the list</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if a tab stop is negative or less than the previous stop in the list</li>
  * </ul>
  *
  * @see StyledText#getTabStops()
