@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2018 IBM Corporation and others.
+ * Copyright (c) 2000, 2020 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -8088,12 +8088,8 @@ void resetBidiData() {
 }
 void resetCache(SortedSet<Integer> lines) {
 	if (lines == null || lines.isEmpty()) return;
-	int maxLineIndex = renderer.maxWidthLineIndex;
 	renderer.reset(lines);
 	renderer.calculateClientArea();
-	if (0 <= maxLineIndex && maxLineIndex < content.getLineCount()) {
-		renderer.calculate(maxLineIndex, 1);
-	}
 	setScrollBars(true);
 	if (!isFixedLineHeight()) {
 		if (topIndex > lines.iterator().next()) {
@@ -8103,12 +8099,8 @@ void resetCache(SortedSet<Integer> lines) {
 	}
 }
 void resetCache(int firstLine, int count) {
-	int maxLineIndex = renderer.maxWidthLineIndex;
 	renderer.reset(firstLine, count);
 	renderer.calculateClientArea();
-	if (0 <= maxLineIndex && maxLineIndex < content.getLineCount()) {
-		renderer.calculate(maxLineIndex, 1);
-	}
 	setScrollBars(true);
 	if (!isFixedLineHeight()) {
 		if (topIndex > firstLine) {

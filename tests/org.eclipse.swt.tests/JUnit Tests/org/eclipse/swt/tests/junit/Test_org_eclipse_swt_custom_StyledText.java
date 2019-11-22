@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2019 IBM Corporation and others.
+ * Copyright (c) 2000, 2020 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -17,6 +17,7 @@ package org.eclipse.swt.tests.junit;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -5800,5 +5801,52 @@ public void test_clipboardCarryover() {
 	RTFTransfer rtfTranfer = RTFTransfer.getInstance();
 	String clipboardText = (String) clipboard.getContents(rtfTranfer);
 	assertTrue("RTF copy failed", clipboardText.length() > 0);
+}
+
+/**
+ * Test for:
+ * Bug 553377 - StyledTextRenderer max width can be invalid
+ */
+@Test
+public void test_claimRightFreeSpace() {
+	text.dispose();
+	text = new StyledText(shell, SWT.H_SCROLL);
+	setWidget(text);
+	text.setAlwaysShowScrollBars(true);
+	text.setSize(200, 500);
+	String content = "######################################################";
+	int n = content.length();
+	text.setText(content);
+	text.setCaretOffset(n);
+	text.showSelection();
+	shell.pack();
+	shell.open();
+
+	int lastScrollIndex = text.getHorizontalIndex();
+	assertNotEquals("Widget must be scrolled for test", 0, lastScrollIndex);
+
+	// test if widget reclaims horizontal space when characters are removed
+	int cutLenght = 3;
+	text.getContent().replaceTextRange(n - cutLenght, cutLenght, "");
+	assertTrue("Free horizontal space not reclaimed on character remove",
+			text.getHorizontalIndex() < lastScrollIndex && text.getHorizontalIndex() > 0);
+	n -= cutLenght;
+
+	// similar to previous test but this time the second half of the split is the new max length line
+	text.setCaretOffset(0);
+	text.setHorizontalIndex(100);
+	lastScrollIndex = text.getHorizontalIndex();
+	assertNotEquals("Widget must be scrolled for test", 0, lastScrollIndex);
+	text.getContent().replaceTextRange(10, 5, "~~\n~~");
+	assertTrue("Free horizontal space not reclaimed on splitting line",
+			text.getHorizontalIndex() < lastScrollIndex && text.getHorizontalIndex() > 0);
+
+	text.setText(content);
+	text.setHorizontalIndex(content.length());
+	lastScrollIndex = text.getHorizontalIndex();
+	assertNotEquals("Widget must be scrolled for test", 0, lastScrollIndex);
+	text.getContent().replaceTextRange(0, content.length(), "\n" + content.substring(5));
+	assertTrue("Free horizontal space not reclaimed replace",
+			text.getHorizontalIndex() < lastScrollIndex && text.getHorizontalIndex() > 0);
 }
 }
