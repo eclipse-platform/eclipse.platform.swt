@@ -30,6 +30,8 @@ import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Device;
 import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Text;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -194,6 +196,8 @@ public void test_setEnabledZ() {
 @Test
 public void test_setFocus() {
 	assertTrue(!ccombo.setFocus());
+	shell.open();
+	shell.setVisible(true);
 	boolean exceptionThrown = false;
 	try{
 		ccombo.setEnabled(false);
@@ -207,8 +211,18 @@ public void test_setFocus() {
 		assertFalse("Expect false wehn not visible and not enabled", ccombo.setFocus());
 		ccombo.setEnabled(true);
 		ccombo.setVisible(true);
+		processEvents(0, null);
 		if(ccombo.isFocusControl())
 			assertTrue("Set focus error", ccombo.setFocus());
+
+		ccombo.setEnabled(true);
+		ccombo.setVisible(true);
+		ccombo.setFocus();
+		processEvents(0, null);
+		assertTrue(ccombo.isFocusControl());
+		Control focusControl = ccombo.getDisplay().getFocusControl();
+		assertTrue(focusControl instanceof Text);
+		assertEquals(ccombo, focusControl.getParent());
 	}
 	catch (Exception e) {
 		exceptionThrown = true;

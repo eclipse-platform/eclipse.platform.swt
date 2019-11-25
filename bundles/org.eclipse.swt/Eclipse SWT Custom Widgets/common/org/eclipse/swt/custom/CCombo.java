@@ -133,7 +133,7 @@ public CCombo (Composite parent, int style) {
 		}
 	};
 
-	createText(parent, style);
+	createText(style);
 
 	int arrowStyle = SWT.ARROW | SWT.DOWN;
 	if ((style & SWT.FLAT) != 0) arrowStyle |= SWT.FLAT;
@@ -174,7 +174,7 @@ static int checkStyle (int style) {
 	int mask = SWT.BORDER | SWT.READ_ONLY | SWT.FLAT | SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT | SWT.LEAD | SWT.CENTER | SWT.TRAIL;
 	return SWT.NO_FOCUS | (style & mask);
 }
-void createText(Control parent, int style) {
+void createText(int comboStyle) {
 	String textValue = null, tooltip = null;
 	Point selection = null;
 	int limit = 0;
@@ -197,10 +197,10 @@ void createText(Control parent, int style) {
 		text.dispose();
 	}
 
-	int textStyle = style | SWT.SINGLE;
-	if ((style & SWT.READ_ONLY) != 0) textStyle |= SWT.READ_ONLY;
-	if ((style & SWT.FLAT) != 0) textStyle |= SWT.FLAT;
-	textStyle |= style & (SWT.LEAD | SWT.CENTER | SWT.TRAIL);
+	int textStyle = SWT.SINGLE;
+	if ((comboStyle & SWT.READ_ONLY) != 0) textStyle |= SWT.READ_ONLY;
+	if ((comboStyle & SWT.FLAT) != 0) textStyle |= SWT.FLAT;
+	textStyle |= comboStyle & (SWT.LEAD | SWT.CENTER | SWT.TRAIL);
 	text = new Text (this, textStyle);
 	if (textValue != null) {
 		text.setText(textValue);
@@ -1539,7 +1539,7 @@ public void select (int index) {
 public void setAlignment(int align) {
 	checkWidget();
 	int styleWithoutAlign = getStyle() & ~(SWT.LEFT | SWT.CENTER | SWT.RIGHT);
-	createText(getParent(), styleWithoutAlign | align);
+	createText(styleWithoutAlign | align);
 }
 @Override
 public void setBackground (Color color) {
