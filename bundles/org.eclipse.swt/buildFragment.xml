@@ -30,6 +30,7 @@
 		<property name="logExtension" value=".xml" />
 		<property name="javacSource" value="1.8" />
 		<property name="javacTarget" value="1.8" />
+		<property name="javacRelease" value="8" />
 		<condition property="bootclasspath" value="">
 			<equals arg1="${swt.os}" arg2="macosx"/>
 		</condition>
@@ -70,7 +71,7 @@
 		<delete dir="${temp.folder}/@dot.bin" />
 		<mkdir dir="${temp.folder}/@dot.bin" />
 		<antcall target="copy.${swt.ws}.src"/>
-		<javac destdir="${temp.folder}/@dot.bin" verbose="${javacVerbose}" debug="${debug}" failonerror="no" bootclasspath="${bundleBootClasspath}" source="${bundleJavacSource}" target="${bundleJavacTarget}" includeantruntime="false">
+		<javac destdir="${temp.folder}/@dot.bin" verbose="${javacVerbose}" debug="${debug}" failonerror="yes" bootclasspath="${bundleBootClasspath}" source="${bundleJavacSource}" target="${bundleJavacTarget}" release="${javacRelease}" includeantruntime="false">
 			<src path="${temp.folder}/@dot.src/"/>
 			<compilerarg line="-log '${temp.folder}'/@dot.bin${logExtension}" compiler="org.eclipse.jdt.core.JDTCompilerAdapter" />
 			<compilerarg line="${compilerArg}" compiler="org.eclipse.jdt.core.JDTCompilerAdapter" />
