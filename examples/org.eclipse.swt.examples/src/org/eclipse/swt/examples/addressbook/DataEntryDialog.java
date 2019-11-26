@@ -159,8 +159,6 @@ public void setValues(String[] itemInfo) {
 		values = new String[labels.length];
 
 	int numItems = Math.min(values.length, itemInfo.length);
-	for(int i = 0; i < numItems; i++) {
-		values[i] = itemInfo[i];
-	}
+	System.arraycopy(itemInfo, 0, values, 0, numItems);
 }
 }

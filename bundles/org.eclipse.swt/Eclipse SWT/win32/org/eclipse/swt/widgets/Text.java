@@ -2344,7 +2344,7 @@ public void setTextChars (char[] text) {
 	int limit = (int)OS.SendMessage (handle, OS.EM_GETLIMITTEXT, 0, 0) & 0x7FFFFFFF;
 	if (text.length > limit) {
 		char [] temp = new char [limit];
-		for (int i = 0; i < limit; i++) temp [i] = text [i];
+		System.arraycopy(text, 0, temp, 0, limit);
 		text = temp;
 	}
 	TCHAR buffer = new TCHAR (getCodePage (), text, true);

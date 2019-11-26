@@ -394,8 +394,7 @@ void nextPutPixels(byte[] buf) {
 	if (image.depth == 8) {
 		// Slight optimization for depth = 8.
 		int start = line * image.bytesPerLine;
-		for (int i = 0; i < imageWidth; i++)
-			image.data[start + i] = buf[i];
+		System.arraycopy(buf, 0, image.data, start, imageWidth);
 	} else {
 		image.setPixels(0, line, imageWidth, buf, 0);
 	}
