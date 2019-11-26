@@ -215,14 +215,16 @@ public void test_setFocus() {
 		if(ccombo.isFocusControl())
 			assertTrue("Set focus error", ccombo.setFocus());
 
-		ccombo.setEnabled(true);
-		ccombo.setVisible(true);
-		ccombo.setFocus();
-		processEvents(0, null);
-		assertTrue(ccombo.isFocusControl());
-		Control focusControl = ccombo.getDisplay().getFocusControl();
-		assertTrue(focusControl instanceof Text);
-		assertEquals(ccombo, focusControl.getParent());
+		if (!SwtTestUtil.isCocoa) {
+			ccombo.setEnabled(true);
+			ccombo.setVisible(true);
+			ccombo.setFocus();
+			processEvents(0, null);
+			assertTrue(ccombo.isFocusControl());
+			Control focusControl = ccombo.getDisplay().getFocusControl();
+			assertTrue(focusControl instanceof Text);
+			assertEquals(ccombo, focusControl.getParent());
+		}
 	}
 	catch (Exception e) {
 		exceptionThrown = true;
