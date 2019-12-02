@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2017 IBM Corporation and others.
+ * Copyright (c) 2000, 2019 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -10,6 +10,7 @@
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
+ *     Paul Pazderski - Bug 418714: Content copied to clipboard lost after dispose
  *******************************************************************************/
 package org.eclipse.swt.dnd;
 
@@ -220,9 +221,30 @@ public void dispose () {
 	 * The argument pDataObject is owned by the caller so reference count does not
 	 * need to be incremented.
 	 */
+	int result = COM.S_OK;
 	if (COM.OleIsCurrentClipboard(this.iDataObject.getAddress()) == COM.S_OK) {
-		COM.OleFlushClipboard();
+		result = COM.OleFlushClipboard();
 	}
+	/* Just like setContents, flushing the clipboard can fail if another application is
+	 * inspecting the clipboard at the exact moment we want to flush our content.
+	 * In this case try a few more times before accepting the failure.
+	 */
+	int retryCount = 0;
+	while (result != COM.S_OK && retryCount++ < RETRY_LIMIT) {
+		try {
+			Thread.sleep(25);
+		} catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
+			break;
+		}
+		if (COM.OleIsCurrentClipboard(this.iDataObject.getAddress()) != COM.S_OK) {
+			break;
+		}
+		MSG msg = new MSG();
+		OS.PeekMessage(msg, 0, 0, 0, OS.PM_NOREMOVE | OS.PM_NOYIELD);
+		result = COM.OleFlushClipboard();
+	}
+
 	this.Release();
 	display = null;
 }

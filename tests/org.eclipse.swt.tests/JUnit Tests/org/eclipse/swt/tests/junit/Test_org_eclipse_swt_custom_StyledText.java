@@ -21,10 +21,12 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.junit.Assume.assumeFalse;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 import java.util.function.BooleanSupplier;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -5770,4 +5772,33 @@ public void test_bug551335_lostStyles() throws InterruptedException {
 	assertTrue(testUnstyledText.getAsBoolean());
 }
 
+/**
+ * Test for: Bug 418714 - [Win32] Content copied to clipboard lost after dispose
+ *
+ * More a {@link Clipboard} than a StlyedText test. Depending on platform data
+ * transfered to clipboard is not actually copied until the data is requested
+ * from clipboard. It should be still possible to paste text which was copied
+ * from a now disposed/unavailable StyledText.
+ */
+@Test
+public void test_clipboardCarryover() {
+	assumeFalse("Disabled on Mac because similar clipboard tests are also disabled.", SwtTestUtil.isCocoa);
+
+	String content = "StyledText-" + Math.abs(new Random().nextInt());
+	text.setText(content);
+	text.selectAll();
+	text.copy();
+	text.dispose();
+
+	text = new StyledText(shell, SWT.NONE);
+	setWidget(text);
+	text.paste();
+	assertEquals("Lost clipboard content", content, text.getText());
+	assertEquals("Clipboard content got some unexpected styling", 0, text.getStyleRanges().length);
+
+	Clipboard clipboard = new Clipboard(text.getDisplay());
+	RTFTransfer rtfTranfer = RTFTransfer.getInstance();
+	String clipboardText = (String) clipboard.getContents(rtfTranfer);
+	assertTrue("RTF copy failed", clipboardText.length() > 0);
+}
 }
