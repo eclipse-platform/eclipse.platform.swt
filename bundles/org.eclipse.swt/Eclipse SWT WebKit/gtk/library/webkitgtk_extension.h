@@ -37,15 +37,13 @@
 #include <JavaScriptCore/JSObjectRef.h>
 #include <JavaScriptCore/JSStringRef.h>
 
-#define WEBKITGTK_EXTENSION_DBUS_NAME_PREFIX "org.eclipse.swt.webkitgtk_extension"
-#define WEBKITGTK_EXTENSION_DBUS_PATH_PREFIX "/org/eclipse/swt/webkitgtk_extension/gdbus/"
-#define WEBKITGTK_EXTENSION_DBUS_INTERFACE "org.eclipse.swt.webkitgtk_extension.gdbusInterface"
+#define WEBKITGTK_EXTENSION_DBUS_NAME "org.eclipse.swt.webkitgtk_extension"
+#define WEBKITGTK_EXTENSION_OBJECT_PATH "/org/eclipse/swt/webkitgtk_extension/gdbus"
+#define WEBKITGTK_EXTENSION_INTERFACE_NAME "org.eclipse.swt.webkitgtk_extension.gdbusInterface"
 
-#define WEBKIT_MAIN_PROCESS_DBUS_NAME_PREFIX "org.eclipse.swt"
-#define WEBKIT_MAIN_PROCESS_DBUS_PATH_PREFIX "/org/eclipse/swt/gdbus/"
-
-static gchar* webkitgtk_extension_dbus_name;
-static gchar* webkitgtk_extension_dbus_path;
+#define WEBKIT_MAIN_PROCESS_DBUS_NAME "org.eclipse.swt"
+#define WEBKIT_MAIN_PROCESS_OBJECT_PATH "/org/eclipse/swt/gdbus"
+#define WEBKIT_MAIN_PROCESS_INTERFACE_NAME "org.eclipse.swt.gdbusInterface"
 
 static WebKitWebExtension *this_extension;
 

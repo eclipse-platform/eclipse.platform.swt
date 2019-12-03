@@ -292,6 +292,7 @@ class WebKit extends WebBrowser {
 			}
 
 			if (WEBKIT2) {
+				// Note: this will also initialize WebkitGDBus
 				Webkit2Extension.init();
 			} else {
 				JSObjectHasPropertyProc = new Callback (WebKit.class, "JSObjectHasPropertyProc", 3); //$NON-NLS-1$
@@ -437,7 +438,7 @@ class WebKit extends WebBrowser {
 			 * function string, and URL in a HashMap. Once the proxy to the extension is loaded, these
 			 * functions will be sent to and registered in the extension.
 			 */
-			if (!WebkitGDBus.proxyToExtension) {
+			if (!WebkitGDBus.connectionToExtensionCreated) {
 				WebkitGDBus.functionsPending = true;
 				ArrayList<ArrayList<String>> list = new ArrayList<>();
 				ArrayList<String> functionAndUrl = new ArrayList<>();
@@ -461,7 +462,7 @@ class WebKit extends WebBrowser {
 	@Override
 	public void destroyFunction (BrowserFunction function) {
 		// Only deregister functions if the proxy to the extension has been loaded
-		if (WebkitGDBus.proxyToExtension && WEBKIT2) {
+		if (WebkitGDBus.connectionToExtensionCreated && WEBKIT2) {
 			String url = this.getUrl().isEmpty() ? "nullURL" : this.getUrl();
 			boolean successful = webkit_extension_modify_function(this.pageId, function.functionString, url, "deregister");
 			if (!successful) {
@@ -502,9 +503,11 @@ class WebKit extends WebBrowser {
 	static class Webkit2Extension {
 		/** Note, if updating this, you need to change it also in webkitgtk_extension.c */
 		private static final String javaScriptFunctionName = "webkit2callJava";  // $NON-NLS-1$
-		private static final String webkitWebExtensionIdentifier = "webkitWebExtensionIdentifer";  // $NON-NLS-1$
+		private static final String webkitWebExtensionIdentifier = "webkitWebExtensionIdentifier";  // $NON-NLS-1$
 		private static Callback initializeWebExtensions_callback;
-		private static int uniqueID = OS.getpid();
+
+		/** GDBusServer returned by WebkitGDBus */
+		private static long dBusServer = 0;
 
 		/**
 		 * Don't continue initialization if something failed. This allows Browser to carryout some functionality
@@ -515,7 +518,7 @@ class WebKit extends WebBrowser {
 		static String getJavaScriptFunctionName() {
 			return javaScriptFunctionName;
 		}
-		static String getWebExtensionIdentifer() {
+		static String getWebExtensionIdentifier() {
 			return webkitWebExtensionIdentifier;
 		}
 		static String getJavaScriptFunctionDeclaration(long webView) {
@@ -532,7 +535,10 @@ class WebKit extends WebBrowser {
 			 * sends data back to SWT via GDBus. Failure to load GDBus here will result in crashes.
 			 * See bug 536141.
 			 */
-			gdbus_init();
+			dBusServer = gdbus_init();
+			if (dBusServer == 0) {
+				System.err.println("SWT WebKit: error initializing DBus server, dBusServer == 0");
+			}
 			initializeWebExtensions_callback = new Callback(Webkit2Extension.class, "initializeWebExtensions_callback", void.class, new Type [] {long.class, long.class});
 			if (initializeWebExtensions_callback.getAddress() == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
 			if (WebKitGTK.webkit_get_minor_version() >= 4) { // Callback exists only since 2.04
@@ -544,19 +550,18 @@ class WebKit extends WebBrowser {
 		 * GDbus initialization can cause performance slow downs. So we int GDBus in lazy way.
 		 * It can be initialized upon first use of BrowserFunction.
 		 */
-		static boolean gdbus_init() {
+		static long gdbus_init() {
 			if (WebKitGTK.webkit_get_minor_version() < 4) {
 				System.err.println("SWT Webkit: Warning, You are using an old version of webkitgtk. (pre 2.4)"
 						+ " BrowserFunction functionality will not be avaliable");
-				return false;
+				return 0;
 			}
 
 
 			if (!loadFailed) {
-				WebkitGDBus.init(String.valueOf(uniqueID));
-				return true;
+				return WebkitGDBus.init();
 			} else {
-				return false;
+				return 0;
 			}
 		}
 
@@ -608,7 +613,9 @@ class WebKit extends WebBrowser {
 			 * (as a note, the webprocess would have to load the gmodule).
 			 */
 			WebKitGTK.webkit_web_context_set_web_extensions_directory(WebKitGTK.webkit_web_context_get_default(), Converter.wcsToMbcs (extensionsFolder, true));
-			long gvariantUserData = OS.g_variant_new_int32(uniqueID);
+			long clientAddress = OS.g_dbus_server_get_client_address(dBusServer);
+			String clientAddressJava = Converter.cCharPtrToJavaString(clientAddress, false);
+			long gvariantUserData = OS.g_variant_new_string(clientAddress);
 			WebKitGTK.webkit_web_context_set_web_extensions_initialization_user_data(WebKitGTK.webkit_web_context_get_default(), gvariantUserData);
 		}
 
@@ -1174,6 +1181,14 @@ public void create (Composite parent, int style) {
 		C.memmove (webViewData, new long [] {webView}, C.PTR_SIZEOF);
 	}
 
+	/*
+	 * Set the Display for this WebKit class, so we can safely dispose of GDBus objects later.
+	 * See bug 540060 for more info.
+	 */
+	if (WEBKIT2 && !WebkitGDBus.attachedToDisplay) {
+		WebkitGDBus.setDisplay(browser.getDisplay());
+	}
+
 	// Documentation for these signals/properties is usually found under signal/property of WebKitWebView.
 	// notify_* usually implies a property change. For these, the first arg is typically the webview handle.
 	if (WEBKIT1){
@@ -1203,8 +1218,6 @@ public void create (Composite parent, int style) {
 		OS.g_signal_connect (webView, WebKitGTK.mouse_target_changed, Proc4.getAddress (), MOUSE_TARGET_CHANGED);
 		OS.g_signal_connect (webView, WebKitGTK.context_menu, Proc5.getAddress (), CONTEXT_MENU);
 		OS.g_signal_connect (webView, WebKitGTK.load_failed_with_tls_errors, Proc5.getAddress (), LOAD_FAILED_TLS);
-
-
 	}
 
 	// Proc3 is overloaded in that not only Webview connects to it,

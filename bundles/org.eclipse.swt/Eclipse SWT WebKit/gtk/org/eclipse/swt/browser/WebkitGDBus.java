@@ -20,6 +20,7 @@ import java.util.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.gtk.*;
+import org.eclipse.swt.widgets.*;
 
 /**
  * Logic for Webkit to interact with it's Webkit extension via GDBus.
@@ -34,21 +35,52 @@ import org.eclipse.swt.internal.gtk.*;
  * @category gdbus
  */
 class WebkitGDBus {
-	private static String DBUS_SERVICE_NAME;
-	private static final String DBUS_OBJECT_PATH = "/org/eclipse/swt/gdbus";
-	private static final String INTERFACE_NAME = "org.eclipse.swt.gdbusInterface";
-	private static final String EXTENSION_INTERFACE_NAME = "org.eclipse.swt.webkitgtk_extension.gdbusInterface";
-	private static String EXTENSION_DBUS_NAME;
-	private static String EXTENSION_DBUS_PATH;
+	/*
+	 * If any of the GDBus names/paths/interfaces need to be changed, then they also need to be changed
+	 * in the extension (webkitgtk_extension.c).
+	 */
 
-	/** Accepted methods over gdbus */
+	/* WEBKITGDBUS_DBUS_NAME isn't actually used but is here for informative purposes */
+	@SuppressWarnings("unused")
+	private static final String WEBKITGDBUS_DBUS_NAME = "org.eclipse.swt";
+	private static final byte [] WEBKITGDBUS_OBJECT_PATH = Converter.javaStringToCString("/org/eclipse/swt/gdbus");
+	private static final String WEBKITGDBUS_INTERFACE_NAME_JAVA = "org.eclipse.swt.gdbusInterface";
+	private static final byte [] WEBKITGDBUS_INTERFACE_NAME = Converter.javaStringToCString("org.eclipse.swt.gdbusInterface");
+
+	/* Extension connection details, in byte [] form */
+	private static final byte [] EXTENSION_DBUS_NAME = Converter.javaStringToCString("org.eclipse.swt.webkitgtk_extension");
+	private static final byte [] EXTENSION_OBJECT_PATH = Converter.javaStringToCString("/org/eclipse/swt/webkitgtk_extension/gdbus");
+	private static final byte [] EXTENSION_INTERFACE_NAME = Converter.javaStringToCString("org.eclipse.swt.webkitgtk_extension.gdbusInterface");
+
+	/** Extension GDBusServer client address */
+	private static String EXTENSION_DBUS_SERVER_CLIENT_ADDRESS;
+
+	/* Accepted GDBus methods */
 	private static final String webkit2callJava = WebKit.Webkit2Extension.getJavaScriptFunctionName();
-	private static final String webkitWebExtensionIdentifier = WebKit.Webkit2Extension.getWebExtensionIdentifer();
+	private static final String webkitWebExtensionIdentifier = WebKit.Webkit2Extension.getWebExtensionIdentifier();
 
-	/** Proxy connection to the web extension.*/
-	static long proxy;
-	/** A field that is set to true if the proxy connection has been established, false otherwise */
-	static boolean proxyToExtension;
+	/* Connections */
+	/** GDBusConnection from the web extension */
+	static long connectionFromExtension;
+	/** GDBusConnection to the web extension */
+	static long connectionToExtension;
+	/** A field that is set to true if the proxy connection has been established, false otherwise. */
+	static boolean connectionToExtensionCreated;
+
+	/* Server related objects */
+	/** GDBusServer for the main SWT process */
+	private static long gDBusServer = 0;
+	/** GDBusAuthObserver for the server */
+	private static long authObserver = 0;
+	/** GUID of the GDBusServer */
+	private static long guid = 0;
+
+	/** Display this GDBus class is "attached" to */
+	static Display display;
+
+
+
+	// BrowserFunction logic
 	/** Set to true if there are <code>BrowserFunction</code> objects waiting to be registered with the web extension.*/
 	static boolean functionsPending;
 	/**
@@ -87,9 +119,9 @@ class WebkitGDBus {
 	 * Be mindful about only using supported DBUS_TYPE_* , as convert* methods might fail otherwise.
 	 * Alternatively, modify convert* methods.
 	 */
-	private static final String dbus_introspection_xml =
+	private static final byte [] WEBKITGDBUS_INTROSPECTION_XML = Converter.javaStringToCString(
 			"<node>"
-			+  "  <interface name='" + INTERFACE_NAME + "'>"
+			+  "  <interface name='" + WEBKITGDBUS_INTERFACE_NAME_JAVA + "'>"
 			+  "    <method name='" + webkit2callJava + "'>"
 			+  "      <arg type='"+ OS.DBUS_TYPE_STRING + "' name='webViewPtr' direction='in'/>"
 			+  "      <arg type='"+ OS.DBUS_TYPE_DOUBLE + "' name='index' direction='in'/>"
@@ -98,12 +130,11 @@ class WebkitGDBus {
 			+  "      <arg type='" + OS.DBUS_TYPE_SINGLE_COMPLETE + "' name='result' direction='out'/>"
 			+  "    </method>"
 			+  "	<method name='" + webkitWebExtensionIdentifier + "'>"
-			+  "      <arg type='"+ OS.DBUS_TYPE_STRING + "' name='webExtensionDbusName' direction='in'/>"
-			+  "      <arg type='"+ OS.DBUS_TYPE_STRING + "' name='webExtensionDbusPath' direction='in'/>"
+			+  "      <arg type='"+ OS.DBUS_TYPE_STRING + "' name='webExtensionServerAddress' direction='in'/>"
 			+  "      <arg type='"+ OS.DBUS_TYPE_STRUCT_ARRAY_BROWSER_FUNCS + "' name='result' direction='out'/>"
 			+  "    </method>"
 			+  "  </interface>"
-			+  "</node>";
+			+  "</node>");
 
 	/**
 	 * GDBus/DBus doesn't have a notion of Null.
@@ -115,129 +146,124 @@ class WebkitGDBus {
 	private static final byte SWT_DBUS_MAGIC_NUMBER_NULL = 48;
 
 
-	/** GDBusNodeInfo */
-	private static Callback onBusAcquiredCallback;
-	private static Callback onNameAcquiredCallback;
-	private static Callback onNameLostCallback;
-	private static Callback handleMethodCallback;
-
+	/** Callback for GDBus method handling */
+	private static Callback handleMethodCB;
+	/** Callback for incoming connections to WebkitGDBus' server */
+	private static Callback newConnectionCB;
+	/** Callback for creating a new connection to the web extension */
+	private static Callback newConnectionToExtensionCB;
+	/** Callback for authenticating connections to WebkitGDBus' server */
+	private static Callback authenticatePeerCB;
 	/** Callback for asynchronous proxy calls to the extension */
-	private static Callback callExtensionAsyncCallback;
+	private static Callback callExtensionAsyncCB;
 
 	static {
-		onBusAcquiredCallback = new Callback (WebkitGDBus.class, "onBusAcquiredCallback", 3); //$NON-NLS-1$
-		if (onBusAcquiredCallback.getAddress () == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
+		handleMethodCB = new Callback (WebkitGDBus.class, "handleMethodCB", 8); //$NON-NLS-1$
+		if (handleMethodCB.getAddress () == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
 
-		onNameAcquiredCallback = new Callback (WebkitGDBus.class, "onNameAcquiredCallback", 3); //$NON-NLS-1$
-		if (onNameAcquiredCallback.getAddress () == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
+		callExtensionAsyncCB = new Callback (WebkitGDBus.class, "callExtensionAsyncCB", 3); //$NON-NLS-1$
+		if (callExtensionAsyncCB.getAddress () == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
 
-		onNameLostCallback = new Callback (WebkitGDBus.class, "onNameLostCallback", 3); //$NON-NLS-1$
-		if (onNameLostCallback.getAddress () == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
+		newConnectionCB = new Callback (WebkitGDBus.class, "newConnectionCB", 3); //$NON-NLS-1$
+		if (newConnectionCB.getAddress () == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
 
-		handleMethodCallback = new Callback (WebkitGDBus.class, "handleMethodCallback", 8); //$NON-NLS-1$
-		if (handleMethodCallback.getAddress () == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
+		newConnectionToExtensionCB = new Callback (WebkitGDBus.class, "newConnectionToExtensionCB", 3); //$NON-NLS-1$
+		if (newConnectionToExtensionCB.getAddress () == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
 
-		callExtensionAsyncCallback = new Callback (WebkitGDBus.class, "callExtensionAsyncCallback", 3); //$NON-NLS-1$
-		if (callExtensionAsyncCallback.getAddress () == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
+		authenticatePeerCB = new Callback (WebkitGDBus.class, "authenticatePeerCB", 4); //$NON-NLS-1$
+		if (authenticatePeerCB.getAddress () == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
 	}
 
+	/** True iff the GDBusServer has been initialized */
 	static boolean initialized;
+	/** True iff this class has been attached to a Display */
+	static boolean attachedToDisplay;
 
-	/** This method is not intended to be referenced by clients. Internal class. */
-	static void init(String uniqueId) {
-		if (initialized)
-			return;
-		initialized = true;
-		DBUS_SERVICE_NAME = "org.eclipse.swt" + uniqueId;
-		int owner_id = OS.g_bus_own_name(OS.G_BUS_TYPE_SESSION,
-				Converter.javaStringToCString(DBUS_SERVICE_NAME),
-				OS.G_BUS_NAME_OWNER_FLAGS_REPLACE | OS.G_BUS_NAME_OWNER_FLAGS_ALLOW_REPLACEMENT,
-				onBusAcquiredCallback.getAddress(),
-				onNameAcquiredCallback.getAddress(), // name_acquired_handler
-				onNameLostCallback.getAddress(), // name_lost_handler
-				0, // user_data
-				0); // user_data_free_func
-
-		if (owner_id == 0) {
-			System.err.println("SWT WebkitGDBus: Failed to aquire bus name: " + DBUS_SERVICE_NAME);
+	/** This method is in an internal class and is not intended to be referenced by clients. */
+	static long init () {
+		if (initialized) {
+			return gDBusServer;
 		}
-	}
+		initialized = true;
 
-	@SuppressWarnings("unused")
-	private static void teardown_gdbus() {
-		// Currently GDBus is persistent across browser instances.
-		// If ever needed, gdbus can be disposed via:
-		// g_bus_unown_name (owner_id);					// owner_id would need to be made global
-		// g_dbus_node_info_unref (gdBusNodeInfo); // introspection_data Would need to be made global
+		// Generate address and GUID
+		long address = construct_server_address();
+		authObserver = OS.g_dbus_auth_observer_new();
+		guid = OS.g_dbus_generate_guid();
+
+		// Create server
+		long [] error = new long [1];
+		gDBusServer = OS.g_dbus_server_new_sync(address, OS.G_DBUS_SERVER_FLAGS_NONE, guid, authObserver, 0, error);
+
+		// Connect authentication and incoming connections signals to the newly created server, and start it
+		if (gDBusServer != 0) {
+			OS.g_signal_connect(gDBusServer, OS.new_connection, newConnectionCB.getAddress(), 0);
+			OS.g_signal_connect(authObserver, OS.authorize_authenticated_peer, authenticatePeerCB.getAddress(), 0);
+			OS.g_dbus_server_start(gDBusServer);
+		} else {
+			System.err.println("SWT WebKitGDBus: error creating DBus server " + Display.extractFreeGError(error[0]));
+		}
+		return gDBusServer;
 	}
 
 	/**
-	 * @param connection  GDBusConnection *
-	 * @param name		  const gchar *
-	 * @param user_data   gpointer
-	 * @return	void.
+	 * Sets the Display for this class. This allows WebkitGDBus to attach its servers and related objects
+	 * to the provided Display. When the Display is disposed, it will will release the GDBus related
+	 * resources.
+	 *
+	 * @param displayToSet the Display to set
 	 */
-	@SuppressWarnings("unused") // Callback Only called directly by JNI.
-	private static long onBusAcquiredCallback (long connection, long name, long user_data) {
-		long gdBusNodeInfo;
+	static void setDisplay (Display displayToSet) {
+		if (attachedToDisplay) {
+			return;
+		} else {
+			display = displayToSet;
 
-		// Parse XML
-		{
-			long [] error = new long [1];
-			gdBusNodeInfo = OS.g_dbus_node_info_new_for_xml(Converter.javaStringToCString(dbus_introspection_xml), error);
-			if (gdBusNodeInfo == 0 || error[0] != 0) {
-				System.err.println("SWT WebkitGDBus: Failed to get introspection data");
-			}
-			assert gdBusNodeInfo != 0 : "SWT WebkitGDBus: introspection data should not be 0";
+			/*
+			 * Add the GDBusServer, GDBusAuthObserver, and GUID to the Display.
+			 * Note that we don't add the connections yet, because they likely
+			 * don't exist. Those are added in callbacks as they come in.
+			 */
+			if (gDBusServer != 0) display.dBusServers.add(gDBusServer);
+			if (authObserver != 0) display.dBusAuthObservers.add(authObserver);
+			if (guid != 0) display.dBusGUIDS.add(guid);
+			attachedToDisplay = true;
 		}
+	}
 
-		// Register object
-		{
-			long [] error = new long [1];
-			long interface_info = OS.g_dbus_node_info_lookup_interface(gdBusNodeInfo, Converter.javaStringToCString(INTERFACE_NAME));
-			long vtable [] = { handleMethodCallback.getAddress(), 0, 0 };
-			// SWT Dev Note: SWT Tool's "32/64 bit" checking mechanism sometimes get's confused by this method signature and shows an incorrect warning.
-			// Other times it validates it fine. We ignore for now as 32bit will be dropped anyway.
-			OS.g_dbus_connection_register_object(
-					connection,
-					Converter.javaStringToCString(DBUS_OBJECT_PATH),
-					interface_info,
-					vtable,
-					0, // user_data
-					0, // user_data_free_func
-					error);
-
-			if (error[0] != 0) {
-				System.err.println("SWT WebkitGDBus: Failed to register object: " + DBUS_OBJECT_PATH);
-				return 0;
-			}
+	/**
+	 * Constructs an address at which the GDBus server for the SWT main process
+	 * can be reached.
+	 *
+	 * @return a pointer to the address
+	 */
+	private static long construct_server_address () {
+		byte [] swt = Converter.wcsToMbcs("SWT-GDBusServer-", true);
+		long swtPtr = OS.g_malloc(swt.length);
+		C.memmove(swtPtr, swt, swt.length);
+		long user = OS.g_get_user_name();
+		byte [] template = Converter.wcsToMbcs("-XXXXXX", true);
+		long templatePtr = OS.g_malloc(template.length);
+		C.memmove(templatePtr, template, template.length);
+		long fileName = OS.g_strconcat(swtPtr, user, templatePtr, 0);
+		long [] error = new long [1];
+		long address = OS.g_dir_make_tmp(fileName, error);
+		if (address == 0) {
+			System.err.println("SWT WebkitGDBus: error creating temp folder " + Display.extractFreeGError(error[0]));
 		}
+		byte [] socket = Converter.wcsToMbcs("unix:tmpdir=", true);
+		long socketPtr = OS.g_malloc(socket.length);
+		C.memmove(socketPtr, socket, socket.length);
+		long finalAddress = OS.g_strconcat(socketPtr, address, 0);
 
-		// Developer note:
-		// To verify that a gdbus interface is regisetered on the gdbus, you can use the 'gdbus' utility.
-		// e.g:
-		// gdbus introspect --session --dest org.eclipse  <Press TAB KEY>    // it should expand to something like:  (uniqueID might be appended at the end).
-		// gdbus introspect --session --dest org.eclipse.swt     			 // you can then get object info like:
-		// gdbus introspect --session --dest org.eclipse.swt --object-path /org/eclipse/swt/gdbus
-
-		return 0; // Actual callback is void.
+		// Clean up temporary string pointers and return result
+		OS.g_free(swtPtr);
+		OS.g_free(user);
+		OS.g_free(templatePtr);
+		OS.g_free(fileName);
+		OS.g_free(socketPtr);
+		return finalAddress;
 	}
-
-
-	@SuppressWarnings("unused") // Callback Only called directly by JNI.
-	private static long onNameAcquiredCallback (long connection, long name, long user_data) {
-		// Currently not used, but can be used if acquring the gdbus name should trigger something to load.
-		return 0;
-	}
-
-
-	@SuppressWarnings("unused") // Callback Only called directly by JNI.
-	private static long onNameLostCallback (long connection, long name, long user_data) {
-		System.err.println("SWT WebkitGDBus.java: Lost GDBus name. This should never occur");
-		return 0;
-	}
-
-
 
 	/**
 	 * This is called when a client call one of the GDBus methods.
@@ -257,8 +283,8 @@ class WebkitGDBus {
 	 * @param user_data      gpointer
 	 * @return
 	 */
-	@SuppressWarnings("unused") // Callback only called directly by JNI.
-	private static long handleMethodCallback (
+	@SuppressWarnings("unused") // callback not directly called by SWT
+	private static long handleMethodCB (
 			long connection, long sender,
 			long object_path, long interface_name,
 			long method_name, long gvar_parameters,
@@ -274,39 +300,111 @@ class WebkitGDBus {
 				} catch (Exception e) {
 					// gdbus should always return to prevent extension from hanging.
 					result = (String) WebBrowser.CreateErrorString (e.getLocalizedMessage ());
-					System.err.println("SWT Webkit: Exception occured in Webkit2 callback logic. Bug?");
+					System.err.println("SWT WebkitGDBus: Exception occured in Webkit2 callback logic.");
 				}
 			} else if (java_method_name.equals(webkitWebExtensionIdentifier)) {
-				Object [] nameArray = (Object []) convertGVariantToJava(gvar_parameters);
-				if (nameArray [0] != null && nameArray[0] instanceof String) EXTENSION_DBUS_NAME = (String) nameArray[0];
-				if (nameArray [1] != null && nameArray[1] instanceof String) EXTENSION_DBUS_PATH = (String) nameArray[1];
-				proxyToExtension = proxyToExtensionInit();
-				if (proxyToExtension) {
+				Object [] serverAddress = (Object []) convertGVariantToJava(gvar_parameters);
+				if (serverAddress[0] != null && serverAddress[0] instanceof String) {
+					EXTENSION_DBUS_SERVER_CLIENT_ADDRESS = (String) serverAddress[0];
+					// Connect to the extension's server by creating a connection asynchronously
+					createConnectionToExtension();
+					/*
+					 * Return any pending BrowserFunctions that were created before WebkitGDBus
+					 * was initialized.
+					 */
 					invokeReturnValueExtensionIdentifier(pendingBrowserFunctions, invocation);
 				} else {
-					invokeReturnValueExtensionIdentifier(null, invocation);
-					System.err.println("SWT webkit: proxy to web extension failed to load, BrowserFunction may not work.");
+					System.err.println("SWT WebkitGDBus: error in web extension identification process."
+							+ " BrowserFunction may not work.");
 				}
 				return 0;
 			}
 		} else {
-			result = (String) "SWT webkit: GDBus called an unknown method?";
-			System.err.println("SWT webkit: Received a call from an unknown method: " + java_method_name);
+			result = (String) "SWT WebkitGDBus: GDBus called an unknown method?";
+			System.err.println("SWT WebkitGDBus: Received a call from an unknown method: " + java_method_name);
 		}
 		invokeReturnValue(result, invocation);
 		return 0;
 	}
 
-	@SuppressWarnings("unused")
-	private static long callExtensionAsyncCallback (long source_object, long res, long user_data) {
-		long [] gerror = new long [1];
-		long result = OS.g_dbus_proxy_call_finish (proxy, res, gerror);
-		if (gerror[0] != 0){
-			long errMsg = OS.g_error_get_message(gerror[0]);
-			String msg = Converter.cCharPtrToJavaString(errMsg, false);
-			System.err.println("SWT webkit: There was an error executing something asynchronously with the extension (Java callback).");
-			System.err.println("SWT webkit: the error message provided is " + msg);
-			OS.g_error_free(gerror[0]);
+	@SuppressWarnings("unused") // callback not directly called by SWT
+	private static long callExtensionAsyncCB (long source_object, long result, long user_data) {
+		long [] error = new long [1];
+		long gVariantResult = OS.g_dbus_connection_call_finish (connectionToExtension, result, error);
+		if (error[0] != 0) {
+			String msg = Display.extractFreeGError(error[0]);
+			System.err.println("SWT WebkitGDBus: there was an error executing something asynchronously with the extension (Java callback).");
+			System.err.println("SWT WebkitGDBus: the error message provided is " + msg);
+		}
+		OS.g_variant_unref(gVariantResult);
+		return 0;
+	}
+
+	@SuppressWarnings("unused") // callback not directly called by SWT
+	private static long authenticatePeerCB (long observer, long stream, long credentials, long user_data) {
+		boolean authorized = false;
+		if (credentials != 0) {
+			long error [] = new long [1];
+			long ownCredentials = OS.g_credentials_new();
+			authorized = OS.g_credentials_is_same_user(credentials, ownCredentials, error);
+			if (error[0] != 0) {
+				String msg = Display.extractFreeGError(error[0]);
+				System.err.println("SWT WebkitGDBus: error authenticating client connection to server " + msg);
+			}
+			OS.g_object_unref(ownCredentials);
+		}
+		return authorized ? 1 : 0;
+	}
+
+	@SuppressWarnings("unused") // callback not directly called by SWT
+	private static long newConnectionCB (long server, long connection, long user_data) {
+		long gdBusNodeInfo;
+		long [] error = new long [1];
+		gdBusNodeInfo = OS.g_dbus_node_info_new_for_xml(WEBKITGDBUS_INTROSPECTION_XML, error);
+		if (gdBusNodeInfo == 0 || error[0] != 0) {
+			System.err.println("SWT WebkitGDBus: failed to get introspection data");
+		}
+		assert gdBusNodeInfo != 0 : "SWT WebKitGDBus: introspection data should not be 0";
+
+		long interface_info = OS.g_dbus_node_info_lookup_interface(gdBusNodeInfo, WEBKITGDBUS_INTERFACE_NAME);
+		long vtable [] = { handleMethodCB.getAddress(), 0, 0 };
+
+		OS.g_dbus_connection_register_object(
+				connection,
+				WEBKITGDBUS_OBJECT_PATH,
+				interface_info,
+				vtable,
+				0, // user_data
+				0, // user_data_free_func
+				error);
+
+		if (error[0] != 0) {
+			System.err.println("SWT WebKitGDBus: failed to register object: " + WEBKITGDBUS_OBJECT_PATH);
+			return 0;
+		}
+
+		// Ref the connection and add it to the Display's list of connections
+		connectionFromExtension = OS.g_object_ref(connection);
+		if (attachedToDisplay && display != null) {
+			if (!display.dBusConnections.contains(connection)) display.dBusConnections.add(connectionFromExtension);
+		}
+		return 1;
+	}
+
+	@SuppressWarnings("unused") // callback not directly called by SWT
+	private static long newConnectionToExtensionCB (long sourceObject, long result, long user_data) {
+		long [] error = new long [1];
+		connectionToExtension = OS.g_dbus_connection_new_for_address_finish(result, error);
+		if (error[0] != 0) {
+			System.err.println("SWT WebKitGDBus: error finishing connection: " + Display.extractFreeGError(error[0]));
+			return 0;
+		} else {
+			connectionToExtensionCreated = true;
+		}
+
+		// Add the connections to the Display's list of connections
+		if (attachedToDisplay && display != null) {
+			if (!display.dBusConnections.contains(connectionToExtension)) display.dBusConnections.add(connectionToExtension);
 		}
 		return 0;
 	}
@@ -346,7 +444,7 @@ class WebkitGDBus {
 			if (tupleGVariant != 0) {
 				OS.g_variant_builder_add_value(builder, tupleGVariant);
 			} else {
-				System.err.println("SWT webkit: error creating empty BrowserFunction GVariant tuple, skipping.");
+				System.err.println("SWT WebKitGDBus: error creating empty BrowserFunction GVariant tuple, skipping.");
 			}
 		} else {
 			for (long id : map.keySet()) {
@@ -355,7 +453,7 @@ class WebkitGDBus {
 					for (ArrayList<String> stringList : list) {
 						Object [] stringArray = stringList.toArray();
 						if (stringArray.length > 2) {
-							System.err.println("SWT webkit: String array with BrowserFunction and URL should never have"
+							System.err.println("SWT WebKitGDBus: String array with BrowserFunction and URL should never have"
 									+ "more than 2 Strings");
 						}
 						tupleArray[0] = id;
@@ -364,7 +462,7 @@ class WebkitGDBus {
 						if (tupleGVariant != 0) {
 							OS.g_variant_builder_add_value(builder, tupleGVariant);
 						} else {
-							System.err.println("SWT webkit: error creating BrowserFunction GVariant tuple, skipping.");
+							System.err.println("SWT WebKitGDBus: error creating BrowserFunction GVariant tuple, skipping.");
 						}
 					}
 				}
@@ -373,7 +471,7 @@ class WebkitGDBus {
 		resultGVariant = OS.g_variant_builder_end(builder);
 		String typeString = Converter.cCharPtrToJavaString(OS.g_variant_get_type_string(resultGVariant), false);
 		if (!OS.DBUS_TYPE_STRUCT_ARRAY_BROWSER_FUNCS.equals(typeString)) {
-			System.err.println("An error packaging the GVariant occurred: type mismatch.");
+			System.err.println("SWT WebKitGDBus: an error packaging the GVariant occurred: type mismatch.");
 		}
 		long [] variants = {resultGVariant};
 		long finalGVariant = OS.g_variant_new_tuple(variants, 1);
@@ -397,34 +495,20 @@ class WebkitGDBus {
 	}
 
 	/**
-	 * Initializes the proxy connection to the web extension.
-	 *
-	 * @return true if establishing the proxy connections succeeded,
-	 * false otherwise
+	 * Asynchronously initializes a GDBusConnection to the web extension. Connection process
+	 * will be confirmed when the newConnectionToExtension callback is called.
 	 */
-	private static boolean proxyToExtensionInit() {
-		if (proxy != 0) {
-			return true;
-		} else {
-			if (EXTENSION_DBUS_NAME != null && EXTENSION_DBUS_PATH != null) {
-				long [] error = new long [1];
-				byte [] name = Converter.javaStringToCString(EXTENSION_DBUS_NAME);
-				byte [] path = Converter.javaStringToCString(EXTENSION_DBUS_PATH);
-				byte [] interfaceName = Converter.javaStringToCString(EXTENSION_INTERFACE_NAME);
-				proxy = OS.g_dbus_proxy_new_for_bus_sync(OS.G_BUS_TYPE_SESSION, OS.G_DBUS_PROXY_FLAGS_NONE, 0, name, path, interfaceName, 0, error);
-				if (error[0] != 0) {
-					long errMsg = OS.g_error_get_message(error[0]);
-					String msg = Converter.cCharPtrToJavaString(errMsg, false);
-					OS.g_error_free(error[0]);
-					System.err.println("SWT webkit: there was an error establishing the proxy connection to the extension. " +
-							" The error is " + msg);
-					return false;
-				} else {
-					return true;
-				}
-			}
+	private static void createConnectionToExtension() {
+		byte [] address = Converter.javaStringToCString(EXTENSION_DBUS_SERVER_CLIENT_ADDRESS);
+		long [] error = new long [1];
+		// Create connection asynchronously to avoid deadlock issues
+		OS.g_dbus_connection_new_for_address (address, OS.G_DBUS_CONNECTION_FLAGS_AUTHENTICATION_CLIENT,
+				0, 0, newConnectionToExtensionCB.getAddress(), 0);
+
+		if (error[0] != 0) {
+			System.err.println("SWT WebkitGDBus: error creating connection to the extension "
+					+ Display.extractFreeGError(error[0]));
 		}
-		return false;
 	}
 
 	/**
@@ -436,22 +520,21 @@ class WebkitGDBus {
 	 * @return an Object representing the return value from DBus in boolean form
 	 */
 	static Object callExtensionSync (long params, String methodName) {
-		long [] gerror = new long [1]; // GError **
-		long gVariant = OS.g_dbus_proxy_call_sync(proxy, Converter.javaStringToCString(methodName),
-				params, OS.G_DBUS_CALL_FLAGS_NO_AUTO_START, 1000, 0, gerror);
-		if (gerror[0] != 0) {
-			long errMsg = OS.g_error_get_message(gerror[0]);
-			String msg = Converter.cCharPtrToJavaString(errMsg, false);
+		long [] error = new long [1]; // GError **
+		long gVariant = OS.g_dbus_connection_call_sync(connectionToExtension, EXTENSION_DBUS_NAME, EXTENSION_OBJECT_PATH,
+				EXTENSION_INTERFACE_NAME, Converter.javaStringToCString(methodName), params,
+				0, OS.G_DBUS_CALL_FLAGS_NO_AUTO_START, 1000, 0, error);
+		if (error[0] != 0) {
+			String msg = Display.extractFreeGError(error[0]);
 			/*
 			 * Don't print console warnings for timeout errors, as we can handle these ourselves.
 			 * Note, most timeout errors happen only when running test cases, not during "normal" use.
 			 */
 			if (msg != null && (!msg.contains("Timeout") && !msg.contains("timeout"))) {
-				System.err.println("SWT webkit: There was an error executing something synchronously with the extension.");
-				System.err.println("SWT webkit: The error message is: " + msg);
+				System.err.println("SWT WebKitGDBus: there was an error executing something synchronously with the extension.");
+				System.err.println("SWT WebKitGDBus: the error message is: " + msg);
 				return (Object) false;
 			}
-			OS.g_error_free(gerror[0]);
 			return (Object) "timeout";
 		}
 		Object resultObject = gVariant != 0 ? convertGVariantToJava(gVariant) : (Object) false;
@@ -472,15 +555,15 @@ class WebkitGDBus {
 	 * @return true if the extension was called without errors, false otherwise
 	 */
 	static boolean callExtensionAsync (long params, String methodName) {
-		long [] gerror = new long [1]; // GError **
-		OS.g_dbus_proxy_call(proxy, Converter.javaStringToCString(methodName),
-				params, OS.G_DBUS_CALL_FLAGS_NO_AUTO_START, 1000, 0, callExtensionAsyncCallback.getAddress(), gerror);
-		if (gerror[0] != 0) {
-			long errMsg = OS.g_error_get_message(gerror[0]);
-			String msg = Converter.cCharPtrToJavaString(errMsg, false);
-			System.err.println("SWT webkit: There was an error executing something asynchronously with the extension.");
-			System.err.println("SWT webkit: The error message is: " + msg);
-			OS.g_error_free(gerror[0]);
+		long [] error = new long [1]; // GError **
+		OS.g_dbus_connection_call(connectionToExtension, EXTENSION_DBUS_NAME, EXTENSION_OBJECT_PATH,
+				EXTENSION_INTERFACE_NAME, Converter.javaStringToCString(methodName), params,
+				0, OS.G_DBUS_CALL_FLAGS_NO_AUTO_START, 1000, 0, callExtensionAsyncCB.getAddress(), 0);
+		if (error[0] != 0) {
+			String msg = Display.extractFreeGError(error[0]);
+			System.err.println("SWT WebKitGDBus: there was an error executing something asynchronously "
+					+ "with the extension.");
+			System.err.println("SWT WebKitGDBus: the error message is: " + msg);
 			return false;
 		}
 		return true;
@@ -528,7 +611,7 @@ class WebkitGDBus {
 			case WebkitGDBus.SWT_DBUS_MAGIC_NUMBER_EMPTY_ARRAY:
 				return new Object [0];
 			default:
-				System.err.println("SWT Error, received unsupported byte type via gdbus: " + byteVal);
+				System.err.println("SWT WebKitGDBus: received an unsupported byte type via GDBus: " + byteVal);
 				break;
 			}
 		}
@@ -607,7 +690,7 @@ class WebkitGDBus {
 
 			return OS.g_variant_new_tuple(variants, length);
 		}
-		System.err.println("SWT Webkit: Invalid object being returned to javascript: " + javaObject.toString() + "\n"
+		System.err.println("SWT WebKitGDBus: invalid object being returned to JavaScript: " + javaObject.toString() + "\n"
 				+ "Only the following are supported: null, String, Boolean, Number(Long,Integer,Double...), Object[] of basic types");
 		throw new SWTException(SWT.ERROR_INVALID_ARGUMENT, "Given object is not valid: " + javaObject.toString());
 	}

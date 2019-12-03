@@ -222,6 +222,10 @@ public class OS extends C {
 	public static final int G_DBUS_CALL_FLAGS_NONE = 0;
 	public static final int G_DBUS_CALL_FLAGS_NO_AUTO_START = (1<<0);
 
+	public static final int G_DBUS_CONNECTION_FLAGS_AUTHENTICATION_CLIENT = 1;
+
+	public static final int G_DBUS_SERVER_FLAGS_NONE = 0;
+
 	/**
 	 * DBus Data types as defined by:
 	 * https://dbus.freedesktop.org/doc/dbus-specification.html#idm423
@@ -279,6 +283,7 @@ public class OS extends C {
 	public static final byte[] accel_closures_changed = ascii("accel-closures-changed");		// Gtk2,3,4
 	public static final byte[] activate = ascii("activate");	// ?
 	public static final byte[] angle_changed = ascii("angle_changed");	// Gtk3/4, Guesture related.
+	public static final byte[] authorize_authenticated_peer = ascii("authorize-authenticated-peer");
 	public static final byte[] backspace = ascii("backspace");
 	public static final byte[] begin = ascii("begin");
 	public static final byte[] button_press_event = ascii("button-press-event");
@@ -346,6 +351,7 @@ public class OS extends C {
 	public static final byte[] motion = ascii("motion");
 	public static final byte[] move_cursor = ascii("move-cursor");
 	public static final byte[] move_focus = ascii("move-focus");
+	public static final byte[] new_connection = ascii("new-connection");
 	public static final byte[] output = ascii("output");
 	public static final byte[] paste_clipboard = ascii("paste-clipboard");
 	public static final byte[] pressed = ascii("pressed");
@@ -1378,6 +1384,29 @@ public static final boolean g_content_type_is_a(long type, byte[] supertype) {
 		lock.unlock();
 	}
 }
+public static final native long _g_credentials_new();
+public static final long g_credentials_new() {
+	lock.lock();
+	try {
+		return _g_credentials_new();
+	} finally {
+		lock.unlock();
+	}
+}
+/**
+ * @param credentials cast=(GCredentials *)
+ * @param other_credentials cast=(GCredentials *)
+ * @param error cast=(GError **)
+ */
+public static final native boolean _g_credentials_is_same_user(long credentials, long other_credentials, long [] error);
+public static final boolean g_credentials_is_same_user(long credentials, long other_credentials, long [] error) {
+	lock.lock();
+	try {
+		return _g_credentials_is_same_user(credentials, other_credentials, error);
+	} finally {
+		lock.unlock();
+	}
+}
 /**
  * @param info cast=(GFileInfo *)
  */
@@ -1741,6 +1770,15 @@ public static final void g_get_current_time(long result) {
 	lock.lock();
 	try {
 		_g_get_current_time(result);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native long _g_get_user_name();
+public static final long g_get_user_name() {
+	lock.lock();
+	try {
+		return _g_get_user_name();
 	} finally {
 		lock.unlock();
 	}
@@ -2582,6 +2620,35 @@ public static final double g_strtod(long str, long [] endptr) {
 		lock.unlock();
 	}
 }
+/**
+ * @param str cast=(const gchar *)
+ * @param str2 cast=(const gchar *)
+ * @param str3 cast=(const gchar *)
+ * @param terminator cast=(const gchar *),flags=sentinel
+ */
+public static final native long _g_strconcat(long str, long str2, long str3, long terminator);
+public static final long g_strconcat(long str, long str2, long str3, long terminator) {
+	lock.lock();
+	try {
+		return _g_strconcat(str, str2, str3, terminator);
+	} finally {
+		lock.unlock();
+	}
+}
+/**
+ * @param str cast=(const gchar *)
+ * @param str2 cast=(const gchar *)
+ * @param terminator cast=(const gchar *),flags=sentinel
+ */
+public static final native long _g_strconcat(long str, long str2, long terminator);
+public static final long g_strconcat(long str, long str2, long terminator) {
+	lock.lock();
+	try {
+		return _g_strconcat(str, str2, terminator);
+	} finally {
+		lock.unlock();
+	}
+}
 /** @param str cast=(char *) */
 public static final native long g_strdup (long str);
 /**
@@ -2865,20 +2932,6 @@ public static final boolean FcConfigAppFontAddFile(long config, byte[] file) {
 	}
 }
 
-
-// Technically works on OSX also, but currently only used on Linux.
-// Once SWT is moved to Java 9, consider using 'ProcessHandle.current().getPid();' instead,
-// but for now getpid() should do.
-// https://stackoverflow.com/questions/35842/how-can-a-java-program-get-its-own-process-id
-public static final native int _getpid ();
-public static final int getpid() {
-	lock.lock();
-	try {
-		return _getpid();
-	} finally {
-		lock.unlock();
-	}
-}
 /**
  * @param dest cast=(void *)
  * @param src cast=(const void *),flags=no_out
@@ -4194,6 +4247,20 @@ public static final byte [] getThemeNameBytes() {
 	}
 
 /**
+ * @param tmpl cast=(const gchar *)
+ * @param error cast=(GError **)
+ */
+public static final native long _g_dir_make_tmp (long tmpl, long [] error);
+public static final long g_dir_make_tmp (long tmpl, long [] error) {
+	lock.lock();
+	try {
+		return _g_dir_make_tmp (tmpl, error);
+	} finally {
+		lock.unlock();
+	}
+}
+
+/**
  * @param info cast=(GDBusInterfaceInfo *)
  * @param name cast=(const gchar *)
  * @param object_path cast=(const gchar *)
@@ -4307,6 +4374,136 @@ public static final int g_bus_own_name (int bus_type, byte[] name, int flags, lo
 
 /**
  * @param connection cast=(GDBusConnection *)
+ * @param bus_name cast=(const gchar *)
+ * @param object_path cast=(const gchar *)
+ * @param interface_name cast=(const gchar *)
+ * @param method_name cast=(const gchar *)
+ * @param param cast=(GVariant *)
+ * @param reply_type cast=(const GVariantType *)
+ * @param cancellable cast=(GCancellable *)
+ * @param callback cast=(GAsyncReadyCallback)
+ * @param user_data cast=(gpointer)
+ * @category gdbus
+ */
+public static final native void _g_dbus_connection_call (long connection, byte [] bus_name, byte [] object_path, byte [] interface_name, byte [] method_name, long param, long reply_type, int flag, int timeout, long cancellable, long callback, long user_data);
+/** @category gdbus */
+public static final void g_dbus_connection_call (long connection, byte [] bus_name, byte [] object_path, byte [] interface_name, byte [] method_name, long param, long reply_type, int flag, int timeout, long cancellable, long callback, long user_data) {
+	lock.lock();
+	try {
+		_g_dbus_connection_call(connection, bus_name, object_path, interface_name, method_name, param, reply_type, flag, timeout, cancellable, callback, user_data);
+	} finally {
+		lock.unlock();
+	}
+}
+
+/**
+ * @param proxy cast=(GDBusConnection *)
+ * @param res cast=(GAsyncResult *)
+ * @param error cast=(GError **)
+ * @category gdbus
+ */
+public static final native long _g_dbus_connection_call_finish (long proxy, long res, long [] error);
+public static final long g_dbus_connection_call_finish (long proxy, long res, long [] error) {
+	lock.lock();
+	try {
+		return _g_dbus_connection_call_finish (proxy, res, error);
+	} finally {
+		lock.unlock();
+	}
+}
+
+/**
+ * @param connection cast=(GDBusConnection *)
+ * @param bus_name cast=(const gchar *)
+ * @param object_path cast=(const gchar *)
+ * @param interface_name cast=(const gchar *)
+ * @param method_name cast=(const gchar *)
+ * @param param cast=(GVariant *)
+ * @param reply_type cast=(const GVariantType *)
+ * @param cancellable cast=(GCancellable *)
+ * @param error cast=(GError **)
+ * @category gdbus
+ */
+public static final native long _g_dbus_connection_call_sync (long connection, byte [] bus_name, byte [] object_path, byte [] interface_name, byte [] method_name, long param, long reply_type, int flag, int timeout, long cancellable, long [] error);
+/** @category gdbus */
+public static final long g_dbus_connection_call_sync (long connection, byte [] bus_name, byte [] object_path, byte [] interface_name, byte [] method_name, long param, long reply_type, int flag, int timeout, long cancellable, long [] error) {
+	lock.lock();
+	try {
+		return _g_dbus_connection_call_sync(connection, bus_name, object_path, interface_name, method_name, param, reply_type, flag, timeout, cancellable, error);
+	} finally {
+		lock.unlock();
+	}
+}
+
+/**
+ * @param connection cast=(GDBusConnection *)
+ * @param cancellable cast=(GCancellable *)
+ * @param error cast=(GError **)
+ * @category gdbus
+ */
+public static final native boolean _g_dbus_connection_close_sync (long connection, long cancellable, long [] error);
+/** @category gdbus */
+public static final boolean g_dbus_connection_close_sync (long connection, long cancellable, long [] error) {
+	lock.lock();
+	try {
+		return _g_dbus_connection_close_sync(connection, cancellable, error);
+	} finally {
+		lock.unlock();
+	}
+}
+
+/**
+ * @param connection cast=(GDBusConnection *)
+ * @category gdbus
+ */
+public static final native boolean _g_dbus_connection_is_closed (long connection);
+/** @category gdbus */
+public static final boolean g_dbus_connection_is_closed (long connection) {
+	lock.lock();
+	try {
+		return _g_dbus_connection_is_closed(connection);
+	} finally {
+		lock.unlock();
+	}
+}
+
+/**
+ * @param address cast=(const gchar *)
+ * @param observer cast=(GDBusAuthObserver *)
+ * @param cancellable cast=(GCancellable *)
+ * @param callback cast=(GAsyncReadyCallback)
+ * @param user_data cast=(gpointer)
+ * @category gdbus
+ */
+public static final native void _g_dbus_connection_new_for_address (byte[] address, int flags, long observer, long cancellable, long callback, long user_data);
+/** @category gdbus */
+public static final void g_dbus_connection_new_for_address (byte[] address, int flags, long observer, long cancellable, long callback, long user_data) {
+	lock.lock();
+	try {
+		_g_dbus_connection_new_for_address(address, flags, observer, cancellable, callback, user_data);
+	} finally {
+		lock.unlock();
+	}
+}
+
+/**
+ * @param result cast=(GAsyncResult *)
+ * @param error cast=(GError **)
+ * @category gdbus
+ */
+public static final native long _g_dbus_connection_new_for_address_finish (long result, long [] error);
+/** @category gdbus */
+public static final long g_dbus_connection_new_for_address_finish (long result, long [] error) {
+	lock.lock();
+	try {
+		return _g_dbus_connection_new_for_address_finish(result, error);
+	} finally {
+		lock.unlock();
+	}
+}
+
+/**
+ * @param connection cast=(GDBusConnection *)
  * @param object_path cast=(const gchar *)
  * @param interface_info cast=(GDBusInterfaceInfo *)
  * @param vtable cast=(const GDBusInterfaceVTable *)
@@ -4353,6 +4550,99 @@ public static final void g_dbus_method_invocation_return_value (long invocation,
 	lock.lock();
 	try {
 		_g_dbus_method_invocation_return_value (invocation, parameters);
+	} finally {
+		lock.unlock();
+	}
+}
+
+/**
+ * @param address cast=(const gchar *)
+ * @param flags cast=(GDBusServerFlags)
+ * @param guid cast=(const gchar *)
+ * @param observer cast=(GDBusAuthObserver *)
+ * @param cancellable cast=(GCancellable *)
+ * @param error cast=(GError **)
+ * @category gdbus
+ */
+public static final native long _g_dbus_server_new_sync (long address, int flags, long guid, long observer, long cancellable, long [] error);
+/** @category gdbus */
+public static final long g_dbus_server_new_sync (long address, int flags, long guid, long observer, long cancellable, long [] error) {
+	lock.lock();
+	try {
+		return _g_dbus_server_new_sync(address, flags, guid, observer, cancellable, error);
+	} finally {
+		lock.unlock();
+	}
+}
+
+/**
+ * @param server cast=(GDBusServer *)
+ * @category gdbus
+ */
+public static final native void _g_dbus_server_start (long server);
+/** @category gdbus */
+public static final void g_dbus_server_start (long server) {
+	lock.lock();
+	try {
+		_g_dbus_server_start(server);
+	} finally {
+		lock.unlock();
+	}
+}
+
+/**
+ * @param server cast=(GDBusServer *)
+ * @category gdbus
+ */
+public static final native void _g_dbus_server_stop (long server);
+/** @category gdbus */
+public static final void g_dbus_server_stop (long server) {
+	lock.lock();
+	try {
+		_g_dbus_server_stop(server);
+	} finally {
+		lock.unlock();
+	}
+}
+
+/**
+ * @param server cast=(GDBusServer *)
+ * @category gdbus
+ */
+public static final native long _g_dbus_server_get_client_address (long server);
+/** @category gdbus */
+public static final long g_dbus_server_get_client_address (long server) {
+	lock.lock();
+	try {
+		return _g_dbus_server_get_client_address(server);
+	} finally {
+		lock.unlock();
+	}
+}
+
+/**
+ * @category gdbus
+ */
+public static final native long _g_dbus_auth_observer_new ();
+/** @category gdbus */
+public static final long g_dbus_auth_observer_new () {
+	lock.lock();
+	try {
+		return _g_dbus_auth_observer_new();
+	} finally {
+		lock.unlock();
+	}
+}
+
+/**
+ * @category gdbus
+ */
+public static final native long _g_dbus_generate_guid ();
+/** @category gdbus */
+public static final long g_dbus_generate_guid () {
+	lock.lock();
+	try {
+		return _g_dbus_generate_guid();
 	} finally {
 		lock.unlock();
 	}
@@ -4740,6 +5030,21 @@ public static final long g_variant_new_tuple (long [] items, long length ) {
 public static final native long _g_variant_new_string (byte[] string);
 /** @category gdbus */
 public static final long g_variant_new_string (byte[] string) {
+	lock.lock();
+	try {
+		return _g_variant_new_string (string);
+	} finally {
+		lock.unlock();
+	}
+}
+
+/**
+ * @param string cast=(const gchar *)
+ * @category gdbus
+ */
+public static final native long _g_variant_new_string (long string);
+/** @category gdbus */
+public static final long g_variant_new_string (long string) {
 	lock.lock();
 	try {
 		return _g_variant_new_string (string);

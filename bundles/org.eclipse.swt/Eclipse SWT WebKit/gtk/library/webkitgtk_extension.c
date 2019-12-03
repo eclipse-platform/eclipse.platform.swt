@@ -1,98 +1,68 @@
 #include "webkitgtk_extension.h"
 
-/**
- * Note: g_asserts() are active/working. (i.e not dissabled)
+/*
+ * To debug this extension:
+ *  -ensure this is built with debug flags (look for '-g*' in make_linux, or 'SWT_LIB_DEBUG' macro)
+ *  -connect to the WebKitWebProcess with the PID of this extension. It can be found as follows:
+		g_print("Extension PID: %d\n", getpid());
  */
 
-// +-------------+----------------------------------------------------------------
-// | Misc Globals|
-// +-------------+
-gint32 parentUniqueId = 0;
+// Client address of the main process GDBusServer -- the extension connects to this
+const gchar *swt_main_proc_client_address = NULL;
 
-// see: WebKitGTK.java 'TYPE NOTES'
+// Client address of the extension's GDBusServer -- SWT main process connects to this
+const gchar *extension_server_address = NULL;
+
+// See: WebKitGTK.java's 'TYPE NOTES'
 guchar SWT_DBUS_MAGIC_NUMBER_EMPTY_ARRAY = 101;
 guchar SWT_DBUS_MAGIC_NUMBER_NULL = 48;
 
-// +-------------+----------------------------------------------------------------
-// | Misc Helpers|
-// +-------------+
-
-/* Combine String and int.
- * @return char * should be free()'ed.
- */
-char * combineStrInt(char * in_str, gint32 in_i) {
-	int new_str_len = strlen(in_str) + snprintf(NULL, 0, "%d", in_i) + 1; // str + int + \0
-	char * out_str = malloc (new_str_len);
-	snprintf( out_str, new_str_len, "%s%d", in_str, in_i);
-	return out_str;
-}
-
-// +-------------+----------------------------------------------------------------
-// | GDBus logic |
-// +-------------+
-static const gchar base_service_name[] = "org.eclipse.swt"; // Base name. Full name has uniqueID appended.
-static const gchar object_name[] = "/org/eclipse/swt/gdbus";
-static const gchar interface[] = "org.eclipse.swt.gdbusInterface";
-
+// This struct represents a BrowserFunction
 typedef struct {
-    guint64 page_id;
-    gchar *function;
-    gchar *url;
+    guint64 page_id; // page ID
+    gchar *function; // JS function
+    gchar *url; // URL the function belongs to
 } BrowserFunction;
 
+// The list of BrowserFunctions registered to this extension
 GSList *function_list = NULL;
-GDBusProxy *proxy = NULL;    // The proxy that we work with
 
-void proxy_init () {
-	g_assert(parentUniqueId != 0);
+// GDBusConnection to the SWT main process
+GDBusConnection *connection_to_main_proc = NULL;
 
-	if (proxy != NULL) { // Already initialized.
-		return;
-	}
-	const char * full_service_name = combineStrInt((char *) base_service_name, parentUniqueId);
+// This extension's GDBusServer and related resources
+GDBusServer *server = NULL;
+GDBusAuthObserver *auth_observer = NULL;
+gchar *guid = NULL;
 
-	GError *error = NULL; // Some functions return errors through params
-
-	//	g_type_init(); // Not needed as of glib 2.36
-	proxy = g_dbus_proxy_new_for_bus_sync(G_BUS_TYPE_SESSION, G_DBUS_PROXY_FLAGS_NONE, NULL, full_service_name, object_name, interface, NULL, &error);
-	if ((proxy == NULL) || (error != NULL)) {
-		fprintf(stderr, "SWT Webextension: GDBus setupServer error. Could not connect to %s:%s on %s.\n", full_service_name, object_name, interface);
-		if (error != NULL) {
-			fprintf(stderr, "  %s\n", error->message);
-		}
-		exit(0);
-	}
-}
-
+// GDBusConnection from SWT main process
+GDBusConnection *connection_from_main_proc = NULL;
 
 /**
- * Caller should free the returned GVariant *.
+ * Caller should free the returned GVariant
  */
-GVariant * callMainProc(char * methodName, GVariant * params) {
-	proxy_init();
+GVariant *call_main_proc_sync(char * method_name, GVariant *parameters) {
 	GError *error = NULL; // Some functions return errors through params
 	GVariant *result;     // The value result from a call
 
 	// Send a message
-	result = g_dbus_proxy_call_sync(proxy, methodName, params, 0, -1, NULL, &error); // You can make multiple calls
-
+	result = g_dbus_connection_call_sync(connection_to_main_proc, WEBKIT_MAIN_PROCESS_DBUS_NAME,
+			WEBKIT_MAIN_PROCESS_OBJECT_PATH, WEBKIT_MAIN_PROCESS_INTERFACE_NAME, method_name, parameters,
+			NULL, G_DBUS_CALL_FLAGS_NONE, -1, NULL, &error);
 	// Error checking.
 	if (result == NULL) {
 		if (error != NULL) {
-			g_error("SWT web extension: Call failed because '%s.'\n", error->message);
-		}
-		else {
-			g_error("SWT web extension: Call failed for an unknown reason.\n");
+			g_error("call_main_proc_sync failed because '%s.'\n", error->message);
+		} else {
+			g_error("call_main_proc_sync failed for an unknown reason.\n");
 		}
 		return NULL;
 	}
 
-	// Deal with result
 	return result;
 }
 
-
-// +--------------------------------------------------+-------------------------------------
+// +--------------------------------------------------+
 // | JavaScriptCore to/from conversion GVariant logic |
 // +--------------------------------------------------+
 
@@ -188,7 +158,7 @@ static GVariant * convert_js_to_gvariant (JSContextRef context, JSValueRef value
 	char* valueUTF8 = (char*) malloc(valueUTF8Size);
 	JSStringGetUTF8CString(valueIString, valueUTF8, valueUTF8Size);
 
-	g_warning("SWT Webextension: Unhandled type %d value: %s \n", type, valueUTF8);
+	g_warning("Unhandled type %d value: %s \n", type, valueUTF8);
 	free(valueUTF8);
 	JSStringRelease(valueIString);
 
@@ -261,7 +231,7 @@ static JSValueRef webkit2callJava (JSContextRef context,
 
 	// Need to ensure user arguments won't break gdbus.
 	if (!is_js_valid(context, arguments[3])) {
-		g_warning("SWT Webextension: Arguments contain an invalid type (object). Only Number,Boolean,null,String and (mixed) arrays of basic types are supported");
+		g_warning("Arguments contain an invalid type (object). Only Number,Boolean,null,String and (mixed) arrays of basic types are supported");
 		return 0;
 	}
 
@@ -272,9 +242,9 @@ static JSValueRef webkit2callJava (JSContextRef context,
 			convert_js_to_gvariant(context, arguments[3])  // js args
 			);
 
-	GVariant *g_var_result = callMainProc("webkit2callJava", g_var_params);
+	GVariant *g_var_result = call_main_proc_sync("webkit2callJava", g_var_params);
 	if (g_var_result == NULL) {
-		g_error("SWT Webextension: Java call returned NULL. This should never happpen\n");
+		g_error("Java call returned NULL. This should never happpen\n");
 		return 0;
 	}
 
@@ -290,7 +260,7 @@ static JSValueRef webkit2callJava (JSContextRef context,
 		}
 		retVal = convert_gvariant_to_js(context, g_variant_get_child_value(g_var_result, 0));
 	} else {
-		g_error("SWT Webextension: Unsupported return type. Should be an array, but received a single type.\n");
+		g_error("Unsupported return type. Should be an array, but received a single type.\n");
 	}
 
 	g_variant_unref(g_var_result);
@@ -327,7 +297,7 @@ static gboolean webkitgtk_extension_execute_script (const guint64 page_id, gchar
 		size_t exceptionUTF8Size = JSStringGetMaximumUTF8CStringSize(exceptionIString);
 		char* exceptionUTF8 = (char*)malloc(exceptionUTF8Size);
 		JSStringGetUTF8CString(exceptionIString, exceptionUTF8, exceptionUTF8Size);
-		g_error("SWT web extension: failed to execute script exception: %s\n", exceptionUTF8);
+		g_error("Failed to execute script exception: %s\n", exceptionUTF8);
 		free(exceptionUTF8);
 		JSStringRelease(exceptionIString);
 	}
@@ -390,7 +360,7 @@ void unpack_browser_function_array(GVariant *array) {
 	    gsize length = (int)g_variant_n_children (child);
 	    if (length > 3) {
 	    	// If the length is longer than three, something went wrong and this tuple should be skipped
-	    	g_warning("SWT web extension: there was an error unpacking the GVariant tuple for a BrowserFunction in the web extension.\n");
+	    	g_warning("There was an error unpacking the GVariant tuple for a BrowserFunction in the web extension.\n");
 	    	continue;
 	    }
 	    guint64 page = g_variant_get_uint64(g_variant_get_child_value(child, 0));
@@ -403,7 +373,7 @@ void unpack_browser_function_array(GVariant *array) {
 	    	if (function != NULL && url != NULL) {
 	    		add_browser_function(page, function, url);
 	    	} else {
-	    		g_warning("SWT web extension: there was an error unpacking the function string or URL.\n");
+	    		g_warning("There was an error unpacking the function string or URL.\n");
 	    	}
 	    }
 	 	g_variant_unref (child);
@@ -444,7 +414,7 @@ static void window_object_cleared_callback (WebKitScriptWorld *world, WebKitWebP
     	if (page_id != -1) {
     		g_slist_foreach(function_list, (GFunc)execute_browser_functions, GUINT_TO_POINTER(page_id));
     	} else {
-    		g_warning("SWT web extension: there was an error fetching the page ID in the object_cleared callback.\n");
+    		g_warning("There was an error fetching the page ID in the object_cleared callback.\n");
     	}
     }
 }
@@ -486,61 +456,153 @@ webkitgtk_extension_handle_method_call (GDBusConnection *connection, const gchar
 		g_dbus_method_invocation_return_value(invocation, g_variant_new("(b)", result));
 		return;
 	}
-	g_error ("UNKNOWN method %s\n", method_name);
+	g_error ("Unknown method %s\n", method_name);
 }
 
 static const GDBusInterfaceVTable interface_vtable = {webkitgtk_extension_handle_method_call, NULL, NULL};
 
-static void on_bus_acquired (GDBusConnection *connection, const gchar *name, gpointer user_data) {
-	dbus_interface = g_dbus_node_info_lookup_interface(dbus_node, WEBKITGTK_EXTENSION_DBUS_INTERFACE);
-	guint registration_id = g_dbus_connection_register_object(connection,
-		  webkitgtk_extension_dbus_path,
-	      dbus_interface,
-	      &interface_vtable, NULL, /* user_data */
-	      NULL, /* user_data_free_func */
-	      NULL); /* GError** */
+static void connection_closed_cb (GDBusConnection *connection, gboolean remote_peer_vanished, GError *error,
+		gpointer user_data) {
+	/*
+	 * If this connection is closed we can shut the server down. NOTE: all connections are freed in the main
+	 * SWT process, including connections created here in this extension. This is done for the sake of
+	 * consistency to avoid double frees.
+	 */
+	if (connection == connection_from_main_proc) {
+		// Free server and its objects
+		g_dbus_server_stop(server);
+		g_object_unref(auth_observer);
+		g_object_unref(server);
+		g_free(guid);
+	}
+}
+
+static gboolean new_connection_cb (GDBusServer *server, GDBusConnection *connection, gpointer user_data) {
+	// Create introspection XML
+	dbus_introspection_xml = g_new (gchar, strlen(dbus_introspection_xml_template) +
+			strlen(WEBKITGTK_EXTENSION_INTERFACE_NAME) + 1);
+	g_sprintf (dbus_introspection_xml, dbus_introspection_xml_template, WEBKITGTK_EXTENSION_INTERFACE_NAME);
+
+	// Create DBus node
+	dbus_node = g_dbus_node_info_new_for_xml (dbus_introspection_xml, NULL);
+	g_assert (dbus_node != NULL);
+
+	// Register node on the connection that was just created
+	dbus_interface = g_dbus_node_info_lookup_interface(dbus_node, WEBKITGTK_EXTENSION_INTERFACE_NAME);
+	guint registration_id = g_dbus_connection_register_object(connection, WEBKITGTK_EXTENSION_OBJECT_PATH,
+		      dbus_interface,
+		      &interface_vtable, NULL, /* user_data */
+		      NULL, /* user_data_free_func */
+		      NULL); /* GError** */
 	g_assert(registration_id > 0);
 
-	GVariant *g_var_result = callMainProc("webkitWebExtensionIdentifer", g_variant_new ("(ss)",
-			webkitgtk_extension_dbus_name, webkitgtk_extension_dbus_path));
-	if (g_variant_is_of_type(g_var_result, G_VARIANT_TYPE_TUPLE)) {
-	      unpack_browser_function_array(g_variant_get_child_value(g_var_result, 0));
-	} else {
-		g_warning("SWT web extension: on_bus_acquired return value from SWT was an unexpected type (not a tuple).\n");
+	// This connection will be the one from the main SWT process
+	connection_from_main_proc = g_object_ref(connection);
+
+	// Listen to the "close" signal on this connection so we can free resources in the extension when
+	// the time comes.
+	g_signal_connect(connection_from_main_proc, "closed", G_CALLBACK (connection_closed_cb), NULL);
+
+	return 1;
+}
+
+static gboolean extension_authorize_peer (GDBusAuthObserver *observer, GIOStream *stream, GCredentials *credentials,
+		gpointer user_data) {
+	g_autoptr (GError) error = NULL;
+	gboolean authorized = FALSE;
+	if (credentials != NULL) {
+		  GCredentials *own_credentials;
+		  own_credentials = g_credentials_new ();
+		  if (g_credentials_is_same_user (credentials, own_credentials, &error)) {
+			  authorized = TRUE;
+	      }
+		  g_object_unref (own_credentials);
 	}
-	return;
+	if (error) {
+		g_warning ("Error authenticating client connection: %s", error->message);
+	}
+	return authorized;
+}
+
+// Returns a valid GDBusServer address -- this will be the address used to connect to the extension's
+// GDBusServer
+gchar *construct_server_address () {
+	g_autoptr (GError) error = NULL;
+	gchar *partial_name = g_strconcat ("SWT-WebExtensionGDBusServer-", g_get_user_name (), "-XXXXXX", NULL);
+	gchar *temp_path = g_dir_make_tmp (partial_name, &error);
+	if (error) {
+		g_error("There was an error creating the server address: %s\n", error->message);
+	}
+	g_free (partial_name);
+	return g_strdup_printf ("unix:tmpdir=%s", temp_path);
+}
+
+// Creates the GDBusServer for this web extension
+static void create_server () {
+	g_autoptr (GError) error = NULL;
+	extension_server_address = construct_server_address();
+	auth_observer = g_dbus_auth_observer_new();
+
+	guid = g_dbus_generate_guid();
+	server = g_dbus_server_new_sync(extension_server_address, G_DBUS_SERVER_FLAGS_NONE, guid,
+			auth_observer, NULL, &error);
+
+	if (error) {
+		g_error ("Failed to create server: %s", error->message);
+	}
+
+	if (server) {
+		g_signal_connect(server, "new-connection", G_CALLBACK(new_connection_cb), NULL);
+		g_dbus_server_start(server);
+		g_signal_connect (auth_observer, "authorize-authenticated-peer", G_CALLBACK(extension_authorize_peer), NULL);
+	}
+}
+
+// Identifies this web extension to the main SWT process by sending its
+// server address over DBus.
+static void identify_extension_to_main_proc () {
+	const gchar *client_address_for_extension_server = g_dbus_server_get_client_address(server);
+	GVariant *result = call_main_proc_sync("webkitWebExtensionIdentifier", g_variant_new ("(s)",
+			client_address_for_extension_server));
+
+	// Process and register any pending BrowserFunctions from the main SWT process
+	if (g_variant_is_of_type(result, G_VARIANT_TYPE_TUPLE)) {
+		  unpack_browser_function_array(g_variant_get_child_value(result, 0));
+	} else {
+		g_warning("webkitWebExtensionIdentifier return value from SWT was an unexpected type""(not a tuple).\n");
+	}
+}
+
+// Creates a GDBusConnection to the main SWT process
+static void connect_to_main_proc (GVariant *user_data) {
+	swt_main_proc_client_address = g_variant_get_string(user_data, NULL);
+
+	g_autoptr (GError) error = NULL;
+	connection_to_main_proc = g_dbus_connection_new_for_address_sync (swt_main_proc_client_address,
+			G_DBUS_CONNECTION_FLAGS_AUTHENTICATION_CLIENT, NULL, NULL, &error);
+
+	if (error) {
+		g_error ("Failed to create connection: %s", error->message);
+	}
+
+	if (connection_to_main_proc && g_dbus_connection_is_closed(connection_to_main_proc)) {
+			g_error ("Failed to created connection: connection is closed");
+	}
 }
 
 G_MODULE_EXPORT void webkit_web_extension_initialize_with_user_data(WebKitWebExtension *extension, GVariant *user_data) {
-	// To debug this extension:
-	// - ensure this is build with debug flags (look for '-g*' in make_linux, or 'SWT_LIB_DEBUG' macro.
-	// - connect to WebKitWebProcess with pid of this extension. Use below to print it:
-	//	g_print("Webext pid: %d  (To debug, attach to WebKitWebProcess with this pid)\n", getpid());
-
 	this_extension = extension;
-	parentUniqueId = g_variant_get_int32(user_data);
+
+	// Connect to the main SWT process
+	connect_to_main_proc(user_data);
+
+	// Create this extension's GDBusServer
+	create_server();
+
+	// Identify this extension's server address to the main process
+	identify_extension_to_main_proc();
+
+	// WebKit callbacks
     g_signal_connect(extension, "page-created",  G_CALLBACK(web_page_created_callback), NULL);
-
-    // To hook into javascript execution:
     g_signal_connect (webkit_script_world_get_default (), "window-object-cleared", G_CALLBACK (window_object_cleared_callback), NULL);
-
-    // Create DBus server for this web extension
-    webkitgtk_extension_dbus_name = combineStrInt((char *) WEBKITGTK_EXTENSION_DBUS_NAME_PREFIX, (gint32) getpid());
-    webkitgtk_extension_dbus_path = combineStrInt((char *) WEBKITGTK_EXTENSION_DBUS_PATH_PREFIX, (gint32) getpid());
-
-    dbus_introspection_xml = g_new (gchar, strlen(dbus_introspection_xml_template) + strlen(WEBKITGTK_EXTENSION_DBUS_INTERFACE) + 1);
-    g_sprintf (dbus_introspection_xml, dbus_introspection_xml_template, WEBKITGTK_EXTENSION_DBUS_INTERFACE);
-    dbus_node = g_dbus_node_info_new_for_xml (dbus_introspection_xml, NULL);
-    g_assert (dbus_node != NULL);
-
-    guint owner_id;
-    owner_id = g_bus_own_name (G_BUS_TYPE_SESSION,
-    		webkitgtk_extension_dbus_name,
-			G_BUS_NAME_OWNER_FLAGS_REPLACE | G_BUS_NAME_OWNER_FLAGS_ALLOW_REPLACEMENT,
-			on_bus_acquired,
-			NULL, /* on_name_acquired */
-			NULL, /* on_name_lost */
-			NULL,
-			NULL);
-    g_assert (owner_id != 0);
 }

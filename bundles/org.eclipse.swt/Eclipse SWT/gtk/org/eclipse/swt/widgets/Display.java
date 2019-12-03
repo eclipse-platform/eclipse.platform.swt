@@ -219,6 +219,19 @@ public class Display extends Device {
 	SessionManagerListener sessionManagerListener;
 	Runnable [] disposeList;
 
+	/*
+	 * DBus objects to be freed upong Display release. Only public for use in
+	 * other areas of SWT (i.e. WebKit). See bug 540060.
+	 */
+	/** @noreference */
+	public ArrayList<Long> dBusServers = new ArrayList<>();
+	/** @noreference */
+	public ArrayList<Long> dBusAuthObservers = new ArrayList<>();
+	/** @noreference */
+	public ArrayList<Long> dBusGUIDS = new ArrayList<>();
+	/** @noreference */
+	public ArrayList<Long> dBusConnections = new ArrayList<>();
+
 	/* Deferred Layout list */
 	Composite[] layoutDeferred;
 	int layoutDeferredCount;
@@ -3761,6 +3774,59 @@ void initializeSessionManager() {
 	sessionManagerDBus.addListener(sessionManagerListener);
 }
 
+/**
+ * Some parts of SWT (like WebKit) use GDBus for IPC. Some of these objects
+ * cannot be disposed of in their own classes due to design challenges.
+ * In these instances we release them along with this Display. This ensures
+ * no Browser will be using them at disposal time.
+ */
+void releaseDBusServices() {
+	releaseSessionManager();
+	for (long connection : dBusConnections) {
+		if (OS.g_dbus_connection_is_closed(connection)) continue;
+		long [] error = new long [1];
+		boolean closed = OS.g_dbus_connection_close_sync(connection, 0, error);
+		if (error[0] != 0) {
+			String msg = extractFreeGError(error[0]);
+			System.err.println("SWT Display: error closing connection: " + msg);
+		}
+		if (closed) {
+			// Free this as we added a reference to it
+			OS.g_object_unref(connection);
+		}
+	}
+	for (long server : dBusServers) {
+		OS.g_dbus_server_stop(server);
+		OS.g_object_unref(server);
+	}
+	for (long authObserver : dBusAuthObservers) {
+		OS.g_object_unref(authObserver);
+	}
+	for (long guid : dBusGUIDS) {
+		OS.g_free(guid);
+	}
+	dBusConnections.clear();
+	dBusServers.clear();
+	dBusAuthObservers.clear();
+	dBusGUIDS.clear();
+	dBusServers = dBusAuthObservers = dBusGUIDS = dBusConnections = null;
+}
+
+/**
+ * Helper method to extract GError messages. Only call if the pointer is valid (i.e. non-zero).
+ *
+ * @param errorPtr pointer to the GError
+ * @return a String representing the error message that was set
+ *
+ * @noreference This method is not intended to be referenced by clients.
+ */
+public static String extractFreeGError(long errorPtr) {
+	long errorMessageC = OS.g_error_get_message(errorPtr);
+	String errorMessageStr = Converter.cCharPtrToJavaString(errorMessageC, false);
+	OS.g_error_free(errorPtr);
+	return errorMessageStr;
+}
+
 void releaseSessionManager() {
 	if (sessionManagerDBus != null) {
 		sessionManagerDBus.dispose();
@@ -4497,6 +4563,7 @@ protected void release () {
 	disposeList = null;
 	synchronizer.releaseSynchronizer ();
 	synchronizer = null;
+	releaseDBusServices ();
 	releaseSessionManager ();
 	releaseDisplay ();
 	super.release ();
