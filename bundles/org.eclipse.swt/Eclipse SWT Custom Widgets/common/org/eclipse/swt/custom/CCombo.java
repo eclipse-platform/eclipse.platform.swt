@@ -1524,7 +1524,7 @@ public void select (int index) {
 }
 
 /**
- * Set the horizontal alignment of the CLabel.
+ * Set the horizontal alignment of the CCombo.
  * Use the values LEFT, CENTER and RIGHT to align image and text within the available space.
  *
  * @param align the alignment style of LEFT, RIGHT or CENTER
