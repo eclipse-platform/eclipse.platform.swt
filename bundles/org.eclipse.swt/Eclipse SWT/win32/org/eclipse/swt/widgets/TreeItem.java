@@ -1802,4 +1802,12 @@ public void setText (String string) {
 	parent.sort (handle, false);
 }
 
+@Override
+String getNameText () {
+	if ((parent.style & SWT.VIRTUAL) != 0) {
+		if (!cached) return "*virtual*"; //$NON-NLS-1$
+	}
+	return super.getNameText ();
+}
+
 }
