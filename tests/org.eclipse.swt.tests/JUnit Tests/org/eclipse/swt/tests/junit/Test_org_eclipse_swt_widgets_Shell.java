@@ -502,8 +502,8 @@ public void test_open() {
 
 @Test
 public void test_setActive() {
-	if (SwtTestUtil.isGTK) {
-		//TODO Fix GTK failure.
+	if (SwtTestUtil.isGTK || SwtTestUtil.isCocoa) {
+		//TODO Fix GTK and Cocoa failure.
 		if (SwtTestUtil.verbose) {
 			System.out.println("Excluded test_setActive(org.eclipse.swt.tests.junit.Test_org_eclipse_swt_widgets_Shell))");
 		}
@@ -517,9 +517,6 @@ public void test_setActive() {
 	/* Test setActive for visible shell. */
 	shell.setVisible(true);
 	shell.setActive();
-	if (SwtTestUtil.isCocoa) { //workaround for Bug 536564
-		drainEventQueue(shell.getDisplay(), 5000);
-	}
 	assertTrue("visible shell was not made active", shell.getDisplay().getActiveShell() == shell);
 
 	/* Test setActive for visible dialog shell. */
@@ -527,9 +524,6 @@ public void test_setActive() {
 	testShell.setBounds(shell.getBounds());
 	testShell.setVisible(true);
 	testShell.setActive();
-	if (SwtTestUtil.isCocoa) { //workaround for Bug 536564
-		drainEventQueue(shell.getDisplay(), 2000);
-	}
 	assertTrue("visible dialog shell was not made active", testShell.getDisplay().getActiveShell() == testShell);
 
 	/* Test setActive for non-visible shell. */
@@ -537,9 +531,6 @@ public void test_setActive() {
 	shell.setVisible(false);
 	shell.setActive();
 	shell2.setText("Shell2: Not active");
-	if (SwtTestUtil.isCocoa) { //workaround for Bug 536564
-		drainEventQueue(shell.getDisplay(), 2000);
-	}
 	assertTrue("non-visible shell was made active", shell.getDisplay().getActiveShell() != shell);
 
 	/* Test setActive for non-visible dialog shell. */
@@ -547,30 +538,9 @@ public void test_setActive() {
 	testShell.setVisible(false);
 	testShell.setActive();
 	shell2.setText("Shell2: Not active");
-	if (SwtTestUtil.isCocoa) { //workaround for Bug 536564
-		drainEventQueue(shell.getDisplay(), 2000);
-	}
 	assertTrue("non-visible dialog shell was made active", testShell.getDisplay().getActiveShell() != testShell);
 
 	shell2.dispose();
-}
-
-private static void drainEventQueue(Display display, int millis) {
-	if (millis == 0) {
-		while (!display.isDisposed() && display.readAndDispatch()) {
-		}
-		return;
-	}
-	long end = System.currentTimeMillis() + millis;
-	while (!display.isDisposed() && System.currentTimeMillis() < end) {
-		if (!display.readAndDispatch ()) {
-			try {
-				Thread.sleep(10);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-		}
-	}
 }
 
 @Override

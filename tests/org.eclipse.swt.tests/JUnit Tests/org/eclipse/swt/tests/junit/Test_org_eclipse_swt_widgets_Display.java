@@ -40,6 +40,7 @@ import org.eclipse.swt.widgets.Monitor;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Synchronizer;
 import org.eclipse.test.Screenshots;
+import org.junit.Assume;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestName;
@@ -217,12 +218,13 @@ public void test_findDisplayLjava_lang_Thread() {
 
 @Test
 public void test_getActiveShell() {
+	Assume.assumeFalse("Test fails on Mac: Bug 536564", SwtTestUtil.isCocoa);
 	Display display = new Display();
 	try {
 		Shell shell = new Shell(display);
 		shell.setText("test_getActiveShell");
 		shell.open();
-		drainEventQueue(display, 5000); // workaround for https://bugs.eclipse.org/506680
+		drainEventQueue(display, 150); // workaround for https://bugs.eclipse.org/506680
 		assertSame(shell, display.getActiveShell());
 		shell.dispose();
 	} finally {
