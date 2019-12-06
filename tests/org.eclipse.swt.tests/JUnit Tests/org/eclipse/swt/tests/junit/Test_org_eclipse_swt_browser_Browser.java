@@ -246,8 +246,10 @@ private String toCookieEvalString (String key) {
 
 @Test
 public void test_get_set_Cookies() {
-	assumeFalse("Not implemented on webkit2 yet. Bug 522181.", isWebkit2);
-
+	if (isWebkit2) {
+		// set/get cookies will only work for WebKit2.20+
+		assumeTrue(webkitGtkVersionInts[1] >= 20);
+	}
 	final AtomicBoolean loaded = new AtomicBoolean(false);
 	browser.addProgressListener(ProgressListener.completedAdapter(event -> loaded.set(true)));
 

@@ -570,6 +570,28 @@ public static final void soup_cookie_free (long cookie) {
 }
 
 /** @method flags=dynamic */
+public static final native long _soup_cookie_get_name (long cookie);
+public static final long soup_cookie_get_name (long cookie) {
+	lock.lock();
+	try {
+		return _soup_cookie_get_name (cookie);
+	} finally {
+		lock.unlock();
+	}
+}
+
+/** @method flags=dynamic */
+public static final native long _soup_cookie_get_value (long cookie);
+public static final long soup_cookie_get_value (long cookie) {
+	lock.lock();
+	try {
+		return _soup_cookie_get_value (cookie);
+	} finally {
+		lock.unlock();
+	}
+}
+
+/** @method flags=dynamic */
 public static final native void _soup_cookie_jar_add_cookie (long jar, long cookie);
 public static final void soup_cookie_jar_add_cookie (long jar, long cookie) {
 	lock.lock();
@@ -800,6 +822,58 @@ public static final boolean webkit_authentication_request_is_retry (long request
 	lock.lock();
 	try {
 		return _webkit_authentication_request_is_retry (request);
+	} finally {
+		lock.unlock();
+	}
+}
+
+/**
+ * @method flags=dynamic
+ */
+public static final native void _webkit_cookie_manager_add_cookie (long cookie_manager, long cookie, long cancellable, long cb, long user_data);
+public static final void webkit_cookie_manager_add_cookie (long cookie_manager, long cookie, long cancellable, long cb, long user_data) {
+	assert WEBKIT2 : Webkit2AssertMsg;
+	lock.lock();
+	try {
+		_webkit_cookie_manager_add_cookie (cookie_manager, cookie, cancellable, cb, user_data);
+	} finally {
+		lock.unlock();
+	}
+}
+
+/** @method flags=dynamic */
+public static final native boolean _webkit_cookie_manager_add_cookie_finish (long cookie_manager, long result, long error []);
+public static final boolean webkit_cookie_manager_add_cookie_finish (long cookie_manager, long result, long error []) {
+	assert WEBKIT2 : Webkit2AssertMsg;
+	lock.lock();
+	try {
+		return _webkit_cookie_manager_add_cookie_finish (cookie_manager, result, error);
+	} finally {
+		lock.unlock();
+	}
+}
+
+/**
+ * @method flags=dynamic
+ */
+public static final native void _webkit_cookie_manager_get_cookies (long cookie_manager, byte [] uri, long cancellable, long cb, long user_data);
+public static final void webkit_cookie_manager_get_cookies (long cookie_manager, byte [] uri, long cancellable, long cb, long user_data) {
+	assert WEBKIT2 : Webkit2AssertMsg;
+	lock.lock();
+	try {
+		_webkit_cookie_manager_get_cookies (cookie_manager, uri, cancellable, cb, user_data);
+	} finally {
+		lock.unlock();
+	}
+}
+
+/** @method flags=dynamic */
+public static final native long _webkit_cookie_manager_get_cookies_finish (long cookie_manager, long result, long error []);
+public static final long webkit_cookie_manager_get_cookies_finish (long cookie_manager, long result, long error []) {
+	assert WEBKIT2 : Webkit2AssertMsg;
+	lock.lock();
+	try {
+		return _webkit_cookie_manager_get_cookies_finish (cookie_manager, result, error);
 	} finally {
 		lock.unlock();
 	}
@@ -1428,6 +1502,18 @@ public static final long webkit_web_context_get_default () {
 	lock.lock();
 	try {
 		return _webkit_web_context_get_default ();
+	} finally {
+		lock.unlock();
+	}
+}
+
+/** @method flags=dynamic */
+public static final native long _webkit_web_context_get_cookie_manager (long context);
+public static final long webkit_web_context_get_cookie_manager (long context) {
+	assert WEBKIT2 : Webkit2AssertMsg;
+	lock.lock();
+	try {
+		return _webkit_web_context_get_cookie_manager (context);
 	} finally {
 		lock.unlock();
 	}

@@ -307,16 +307,14 @@ class WebKit extends WebBrowser {
 
 			NativeClearSessions = () -> {
 				if (!WebKitGTK.LibraryLoaded) return;
-
 				if (WEBKIT2) {
 					if (WebKitGTK.webkit_get_minor_version() >= 16) {
-						// TODO: webkit_website_data_manager_clear currently does not
-						// support more fine grained removals. (I.e, session vs all cookies)
 						long context = WebKitGTK.webkit_web_context_get_default();
 						long manager = WebKitGTK.webkit_web_context_get_website_data_manager (context);
 						WebKitGTK.webkit_website_data_manager_clear(manager, WebKitGTK.WEBKIT_WEBSITE_DATA_COOKIES, 0, 0, 0, 0);
 					} else {
-						System.err.println("SWT Webkit. Warning, clear cookies only supported on Webkitgtk version 2.16 and above. Your version is:" + internalGetWebKitVersionStr());
+						System.err.println("SWT WebKit: clear sessions only supported on WebKitGtk version 2.16 and above. "
+								+ "Your version is: " + internalGetWebKitVersionStr());
 					}
 				} else {
 					long session = WebKitGTK.webkit_get_default_session ();
@@ -343,38 +341,39 @@ class WebKit extends WebBrowser {
 
 			NativeGetCookie = () -> {
 				if (!WebKitGTK.LibraryLoaded) return;
-
 				if (WEBKIT2) {
-					// TODO - implement equivalent. Bug 522181
-					// Currently 'webkit_get_default_session()' is a webkit1-only function.
-					// If it's reached by webkit2, the whole JVM crashes. Better skip for now.
-					return;
-				}
-
-				long session = WebKitGTK.webkit_get_default_session ();
-				long type = WebKitGTK.soup_cookie_jar_get_type ();
-				long jar = WebKitGTK.soup_session_get_feature (session, type);
-				if (jar == 0) return;
-				byte[] bytes = Converter.wcsToMbcs (CookieUrl, true);
-				long uri = WebKitGTK.soup_uri_new (bytes);
-				if (uri == 0) return;
-				long cookies = WebKitGTK.soup_cookie_jar_get_cookies (jar, uri, 0);
-				WebKitGTK.soup_uri_free (uri);
-				if (cookies == 0) return;
-				int length = C.strlen (cookies);
-				bytes = new byte[length];
-				C.memmove (bytes, cookies, length);
-				OS.g_free (cookies);
-				String allCookies = new String (Converter.mbcsToWcs (bytes));
-				StringTokenizer tokenizer = new StringTokenizer (allCookies, ";"); //$NON-NLS-1$
-				while (tokenizer.hasMoreTokens ()) {
-					String cookie = tokenizer.nextToken ();
-					int index = cookie.indexOf ('=');
-					if (index != -1) {
-						String name = cookie.substring (0, index).trim ();
-						if (name.equals (CookieName)) {
-							CookieValue = cookie.substring (index + 1).trim ();
-							return;
+					if (WebKitGTK.webkit_get_minor_version() >= 20) {
+						CookieValue = Webkit2AsyncToSync.getCookie(CookieUrl, CookieName);
+					} else {
+						System.err.println("SWT WebKit: getCookie() only supported on WebKitGTK version 2.20 and above. "
+								+ "Your version is: " + internalGetWebKitVersionStr());
+					}
+				} else {
+					long session = WebKitGTK.webkit_get_default_session ();
+					long type = WebKitGTK.soup_cookie_jar_get_type ();
+					long jar = WebKitGTK.soup_session_get_feature (session, type);
+					if (jar == 0) return;
+					byte[] bytes = Converter.wcsToMbcs (CookieUrl, true);
+					long uri = WebKitGTK.soup_uri_new (bytes);
+					if (uri == 0) return;
+					long cookies = WebKitGTK.soup_cookie_jar_get_cookies (jar, uri, 0);
+					WebKitGTK.soup_uri_free (uri);
+					if (cookies == 0) return;
+					int length = C.strlen (cookies);
+					bytes = new byte[length];
+					C.memmove (bytes, cookies, length);
+					OS.g_free (cookies);
+					String allCookies = new String (Converter.mbcsToWcs (bytes));
+					StringTokenizer tokenizer = new StringTokenizer (allCookies, ";"); //$NON-NLS-1$
+					while (tokenizer.hasMoreTokens ()) {
+						String cookie = tokenizer.nextToken ();
+						int index = cookie.indexOf ('=');
+						if (index != -1) {
+							String name = cookie.substring (0, index).trim ();
+							if (name.equals (CookieName)) {
+								CookieValue = cookie.substring (index + 1).trim ();
+								return;
+							}
 						}
 					}
 				}
@@ -382,35 +381,36 @@ class WebKit extends WebBrowser {
 
 			NativeSetCookie = () -> {
 				if (!WebKitGTK.LibraryLoaded) return;
-
 				if (WEBKIT2) {
-					// TODO - implement equivalent. Bug 522181
-					// Currently 'webkit_get_default_session()' is a webkit1-only function.
-					// If it's reached by webkit2, the whole JVM crashes. Better skip for now.
-					return;
+					if (WebKitGTK.webkit_get_minor_version() >= 20) {
+						CookieResult = Webkit2AsyncToSync.setCookie(CookieUrl, CookieValue);
+					} else {
+						System.err.println("SWT WebKit: setCookie() only supported on WebKitGTK version 2.20 and above. "
+								+ "Your version is: " + internalGetWebKitVersionStr());
+					}
+				} else {
+					long session = WebKitGTK.webkit_get_default_session ();
+					long type = WebKitGTK.soup_cookie_jar_get_type ();
+					long jar = WebKitGTK.soup_session_get_feature (session, type);
+					if (jar == 0) {
+						/* this happens if a navigation has not occurred yet */
+						WebKitGTK.soup_session_add_feature_by_type (session, type);
+						jar = WebKitGTK.soup_session_get_feature (session, type);
+					}
+					if (jar == 0) return;
+					byte[] bytes = Converter.wcsToMbcs (CookieUrl, true);
+					long uri = WebKitGTK.soup_uri_new (bytes);
+					if (uri == 0) return;
+					bytes = Converter.wcsToMbcs (CookieValue, true);
+					long cookie = WebKitGTK.soup_cookie_parse (bytes, uri);
+					if (cookie != 0) {
+						WebKitGTK.soup_cookie_jar_add_cookie (jar, cookie);
+						// the following line is intentionally commented
+						// WebKitGTK.soup_cookie_free (cookie);
+						CookieResult = true;
+					}
+					WebKitGTK.soup_uri_free (uri);
 				}
-
-				long session = WebKitGTK.webkit_get_default_session ();
-				long type = WebKitGTK.soup_cookie_jar_get_type ();
-				long jar = WebKitGTK.soup_session_get_feature (session, type);
-				if (jar == 0) {
-					/* this happens if a navigation has not occurred yet */
-					WebKitGTK.soup_session_add_feature_by_type (session, type);
-					jar = WebKitGTK.soup_session_get_feature (session, type);
-				}
-				if (jar == 0) return;
-				byte[] bytes = Converter.wcsToMbcs (CookieUrl, true);
-				long uri = WebKitGTK.soup_uri_new (bytes);
-				if (uri == 0) return;
-				bytes = Converter.wcsToMbcs (CookieValue, true);
-				long cookie = WebKitGTK.soup_cookie_parse (bytes, uri);
-				if (cookie != 0) {
-					WebKitGTK.soup_cookie_jar_add_cookie (jar, cookie);
-					// the following line is intentionally commented
-					// WebKitGTK.soup_cookie_free (cookie);
-					CookieResult = true;
-				}
-				WebKitGTK.soup_uri_free (uri);
 			};
 
 			if (NativePendingCookies != null) {
@@ -1117,6 +1117,12 @@ public void create (Composite parent, int style) {
 			WebKitGTK.memmove (classDefinitionPtr, jsClassDefinition, JSClassDefinition.sizeof);
 
 			ExternalClass = WebKitGTK.JSClassCreate (classDefinitionPtr);
+		} else {
+			/*
+			 * Set this Browser instance to Webki2AsyncToSync in order for cookie
+			 * functionality to work. See bug 522181.
+			 */
+			Webkit2AsyncToSync.setCookieBrowser(browser);
 		}
 
 		byte [] bytes = Converter.wcsToMbcs ("POST", true); //$NON-NLS-1$
@@ -1663,15 +1669,25 @@ public boolean execute (String script) {
  * The mechanism generates an ID for each callback and waits for that callback to complete.
  */
 private static class Webkit2AsyncToSync {
-
+	/** We need a way to associate a Browser instance with this class for cookie functionality */
+	private static Browser cookieBrowser;
 	private static Callback runjavascript_callback;
 	private static Callback getText_callback;
+	private static Callback setCookie_callback;
+	private static Callback getCookie_callback;
+
 	static {
 		runjavascript_callback = new Callback(Webkit2AsyncToSync.class, "runjavascript_callback", void.class, new Type[] {long.class, long.class, long.class});
 		if (runjavascript_callback.getAddress() == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
 
 		getText_callback = new Callback(Webkit2AsyncToSync.class, "getText_callback", void.class, new Type[] {long.class, long.class, long.class});
 		if (getText_callback.getAddress() == 0) SWT.error(SWT.ERROR_NO_MORE_CALLBACKS);
+
+		setCookie_callback = new Callback(Webkit2AsyncToSync.class, "setCookie_callback", void.class, new Type[] {long.class, long.class, long.class});
+		if (setCookie_callback.getAddress() == 0) SWT.error(SWT.ERROR_NO_MORE_CALLBACKS);
+
+		getCookie_callback = new Callback(Webkit2AsyncToSync.class, "getCookie_callback", void.class, new Type[] {long.class, long.class, long.class});
+		if (getCookie_callback.getAddress() == 0) SWT.error(SWT.ERROR_NO_MORE_CALLBACKS);
 	}
 
 	/** Object used to return data from callback to original call */
@@ -1888,6 +1904,139 @@ private static class Webkit2AsyncToSync {
 		retObj.callbackFinished = true;
 		Display.getCurrent().wake();
 	}
+
+	/**
+	 * Associates a Browser instance with this class, mainly so we can get its Display
+	 * and check for disposal.
+	 * @param toSet the Browser instance to set
+	 */
+	static void setCookieBrowser (Browser toSet) {
+		if (toSet != null) cookieBrowser = toSet;
+	}
+
+	static boolean setCookie(String cookieUrl, String cookieValue) {
+		long context = WebKitGTK.webkit_web_context_get_default();
+		long cookieManager = WebKitGTK.webkit_web_context_get_cookie_manager(context);
+		byte[] bytes = Converter.wcsToMbcs (cookieUrl, true);
+		long uri = WebKitGTK.soup_uri_new (bytes);
+		if (uri == 0) {
+			System.err.println("SWT WebKit: SoupURI == 0 when setting cookie");
+			return false;
+		}
+		bytes = Converter.wcsToMbcs (cookieValue, true);
+		long soupCookie = WebKitGTK.soup_cookie_parse (bytes, uri);
+
+		if (nonBlockingEvaluate > 0) {
+			System.err.println("SWT Webkit: setCookie() called inside a synchronous callback, which can lead to a deadlock.\n"
+					+ "Return value is false.");
+			return false;
+		}
+
+		Consumer<Integer> asyncFunc = (callbackID) -> WebKitGTK.webkit_cookie_manager_add_cookie(cookieManager, soupCookie, 0,
+				setCookie_callback.getAddress(), callbackID);
+		Webkit2AsyncReturnObj retObj = execAsyncAndWaitForReturn(cookieBrowser, asyncFunc, " setCookie() was called");
+
+		WebKitGTK.soup_uri_free (uri);
+
+		if (retObj.swtAsyncTimeout) {
+			return false;
+		} else {
+			return (Boolean) retObj.returnValue;
+		}
+	}
+
+	@SuppressWarnings("unused") // Callback only called only by C directly
+	private static void setCookie_callback(long cookieManager, long result, long user_data) {
+		int callbackID = (int) user_data;
+		Webkit2AsyncReturnObj retObj = CallBackMap.getObj(callbackID);
+
+		long [] error = new long [1];
+		retObj.returnValue = WebKitGTK.webkit_cookie_manager_add_cookie_finish(cookieManager, result, error);
+
+		if (error[0] != 0) {
+			long errorMessageC = OS.g_error_get_message(error[0]);
+			String errorMessageStr = Converter.cCharPtrToJavaString(errorMessageC, false);
+			System.err.println("SWT WebKit: error setting cookie: " + errorMessageStr);
+			OS.g_error_free(error[0]);
+		}
+
+		retObj.callbackFinished = true;
+		Display.getCurrent().wake();
+
+	}
+
+	static String getCookie(String cookieUrl, String cookieName) {
+		long context = WebKitGTK.webkit_web_context_get_default();
+		long cookieManager = WebKitGTK.webkit_web_context_get_cookie_manager(context);
+		byte[] uri = Converter.wcsToMbcs (cookieUrl, true);
+		if (nonBlockingEvaluate > 0) {
+			System.err.println("SWT Webkit: getCookie() called inside a synchronous callback, which can lead to a deadlock.\n"
+					+ "Return value is an empty string '' instead of actual cookie value.");
+			return "";
+		}
+
+		/*
+		 * We package the cookie name and callbackID into a GVariant which can be passed to the callback.
+		 * The callbackID is necessary so we can find our way back to the correct Browser instance, and
+		 * the cookie name is necessary as the field could have been modified by the time the callback
+		 * triggers.
+		 */
+		Consumer<Integer> asyncFunc = (callbackID) -> WebKitGTK.webkit_cookie_manager_get_cookies(cookieManager, uri, 0,
+				getCookie_callback.getAddress(), WebkitGDBus.convertJavaToGVariant(new Object [] {cookieName, callbackID}));
+		Webkit2AsyncReturnObj retObj = execAsyncAndWaitForReturn(cookieBrowser, asyncFunc, " getCookie() was called");
+
+		if (retObj.swtAsyncTimeout) {
+			return "SWT WEBKIT TIMEOUT ERROR";
+		} else {
+			return (String) retObj.returnValue;
+		}
+	}
+
+	@SuppressWarnings("unused") // Callback only called only by C directly
+	private static void getCookie_callback(long cookieManager, long result, long user_data) {
+		Object resultObject = WebkitGDBus.convertGVariantToJava(user_data);
+
+		// We are expecting a GVariant tuple, anything else means something went wrong
+		if (resultObject instanceof Object []) {
+			// Unpack callback ID and cookie name
+			Object [] nameAndId = (Object []) resultObject;
+			String cookieName = (String) nameAndId[0];
+			int callbackId = ((Number) nameAndId[1]).intValue();
+			Webkit2AsyncReturnObj retObj = CallBackMap.getObj(callbackId);
+
+			// Get GSList of cookies
+			long [] error = new long [1];
+			long cookieList = WebKitGTK.webkit_cookie_manager_get_cookies_finish(cookieManager, result, error);
+			if (error[0] != 0) {
+				long errorMessageC = OS.g_error_get_message(error[0]);
+				String errorMessageStr = Converter.cCharPtrToJavaString(errorMessageC, false);
+				System.err.println("SWT WebKit: error getting cookie: " + errorMessageStr);
+				OS.g_error_free(error[0]);
+				retObj.returnValue = (String) "";
+			}
+
+			int length = OS.g_slist_length (cookieList);
+			long current = cookieList;
+			for (int i = 0; i < length; i++) {
+				long soupCookie = OS.g_slist_data (current);
+				long soupName = WebKitGTK.soup_cookie_get_name(soupCookie);
+				String soupNameStr = Converter.cCharPtrToJavaString(soupName, false);
+				if (soupNameStr != null && soupNameStr.equals(cookieName)) {
+					long soupValue = WebKitGTK.soup_cookie_get_value(soupCookie);
+					retObj.returnValue = Converter.cCharPtrToJavaString(soupValue, false);
+					break;
+				}
+				current = OS.g_slist_next (current);
+			}
+			OS.g_slist_free (cookieList);
+
+			retObj.callbackFinished = true;
+			Display.getCurrent().wake();
+		} else {
+			System.err.println("SWT WebKit: something went wrong unpacking GVariant tuple for getCookie_callback");
+		}
+	}
+
 	/**
 	 * You should check 'retObj.swtAsyncTimeout' after making a call to this.
 	 */

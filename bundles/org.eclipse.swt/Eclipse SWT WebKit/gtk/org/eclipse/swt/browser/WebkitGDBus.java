@@ -512,7 +512,7 @@ class WebkitGDBus {
 	 *
 	 * @param gVariant a pointer to the native GVariant
 	 */
-	private static Object convertGVariantToJava(long gVariant){
+	static Object convertGVariantToJava(long gVariant){
 
 		if (OS.g_variant_is_of_type(gVariant, OS.G_VARIANT_TYPE_BOOLEAN)){
 			return OS.g_variant_get_boolean(gVariant);
@@ -567,7 +567,7 @@ class WebkitGDBus {
 	 *
 	 * @return pointer GVariant *
 	 */
-	private static long convertJavaToGVariant(Object javaObject) throws SWTException {
+	static long convertJavaToGVariant(Object javaObject) throws SWTException {
 
 		if (javaObject == null) {
 			return OS.g_variant_new_byte(WebkitGDBus.SWT_DBUS_MAGIC_NUMBER_NULL);  // see: WebKitGTK.java 'TYPE NOTES'

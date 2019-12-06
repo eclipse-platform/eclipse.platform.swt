@@ -696,6 +696,46 @@ JNIEXPORT void JNICALL WebKitGTK_NATIVE(_1soup_1cookie_1free)
 }
 #endif
 
+#ifndef NO__1soup_1cookie_1get_1name
+JNIEXPORT jlong JNICALL WebKitGTK_NATIVE(_1soup_1cookie_1get_1name)
+	(JNIEnv *env, jclass that, jlong arg0)
+{
+	jlong rc = 0;
+	WebKitGTK_NATIVE_ENTER(env, that, _1soup_1cookie_1get_1name_FUNC);
+/*
+	rc = (jlong)soup_cookie_get_name(arg0);
+*/
+	{
+		WebKitGTK_LOAD_FUNCTION(fp, soup_cookie_get_name)
+		if (fp) {
+			rc = (jlong)((jlong (CALLING_CONVENTION*)(jlong))fp)(arg0);
+		}
+	}
+	WebKitGTK_NATIVE_EXIT(env, that, _1soup_1cookie_1get_1name_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1soup_1cookie_1get_1value
+JNIEXPORT jlong JNICALL WebKitGTK_NATIVE(_1soup_1cookie_1get_1value)
+	(JNIEnv *env, jclass that, jlong arg0)
+{
+	jlong rc = 0;
+	WebKitGTK_NATIVE_ENTER(env, that, _1soup_1cookie_1get_1value_FUNC);
+/*
+	rc = (jlong)soup_cookie_get_value(arg0);
+*/
+	{
+		WebKitGTK_LOAD_FUNCTION(fp, soup_cookie_get_value)
+		if (fp) {
+			rc = (jlong)((jlong (CALLING_CONVENTION*)(jlong))fp)(arg0);
+		}
+	}
+	WebKitGTK_NATIVE_EXIT(env, that, _1soup_1cookie_1get_1value_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO__1soup_1cookie_1jar_1add_1cookie
 JNIEXPORT void JNICALL WebKitGTK_NATIVE(_1soup_1cookie_1jar_1add_1cookie)
 	(JNIEnv *env, jclass that, jlong arg0, jlong arg1)
@@ -1105,6 +1145,94 @@ JNIEXPORT jboolean JNICALL WebKitGTK_NATIVE(_1webkit_1authentication_1request_1i
 		}
 	}
 	WebKitGTK_NATIVE_EXIT(env, that, _1webkit_1authentication_1request_1is_1retry_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1webkit_1cookie_1manager_1add_1cookie
+JNIEXPORT void JNICALL WebKitGTK_NATIVE(_1webkit_1cookie_1manager_1add_1cookie)
+	(JNIEnv *env, jclass that, jlong arg0, jlong arg1, jlong arg2, jlong arg3, jlong arg4)
+{
+	WebKitGTK_NATIVE_ENTER(env, that, _1webkit_1cookie_1manager_1add_1cookie_FUNC);
+/*
+	webkit_cookie_manager_add_cookie(arg0, arg1, arg2, arg3, arg4);
+*/
+	{
+		WebKitGTK_LOAD_FUNCTION(fp, webkit_cookie_manager_add_cookie)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(jlong, jlong, jlong, jlong, jlong))fp)(arg0, arg1, arg2, arg3, arg4);
+		}
+	}
+	WebKitGTK_NATIVE_EXIT(env, that, _1webkit_1cookie_1manager_1add_1cookie_FUNC);
+}
+#endif
+
+#ifndef NO__1webkit_1cookie_1manager_1add_1cookie_1finish
+JNIEXPORT jboolean JNICALL WebKitGTK_NATIVE(_1webkit_1cookie_1manager_1add_1cookie_1finish)
+	(JNIEnv *env, jclass that, jlong arg0, jlong arg1, jlongArray arg2)
+{
+	jlong *lparg2=NULL;
+	jboolean rc = 0;
+	WebKitGTK_NATIVE_ENTER(env, that, _1webkit_1cookie_1manager_1add_1cookie_1finish_FUNC);
+	if (arg2) if ((lparg2 = (*env)->GetLongArrayElements(env, arg2, NULL)) == NULL) goto fail;
+/*
+	rc = (jboolean)webkit_cookie_manager_add_cookie_finish(arg0, arg1, lparg2);
+*/
+	{
+		WebKitGTK_LOAD_FUNCTION(fp, webkit_cookie_manager_add_cookie_finish)
+		if (fp) {
+			rc = (jboolean)((jboolean (CALLING_CONVENTION*)(jlong, jlong, jlong *))fp)(arg0, arg1, lparg2);
+		}
+	}
+fail:
+	if (arg2 && lparg2) (*env)->ReleaseLongArrayElements(env, arg2, lparg2, 0);
+	WebKitGTK_NATIVE_EXIT(env, that, _1webkit_1cookie_1manager_1add_1cookie_1finish_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1webkit_1cookie_1manager_1get_1cookies
+JNIEXPORT void JNICALL WebKitGTK_NATIVE(_1webkit_1cookie_1manager_1get_1cookies)
+	(JNIEnv *env, jclass that, jlong arg0, jbyteArray arg1, jlong arg2, jlong arg3, jlong arg4)
+{
+	jbyte *lparg1=NULL;
+	WebKitGTK_NATIVE_ENTER(env, that, _1webkit_1cookie_1manager_1get_1cookies_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
+/*
+	webkit_cookie_manager_get_cookies(arg0, lparg1, arg2, arg3, arg4);
+*/
+	{
+		WebKitGTK_LOAD_FUNCTION(fp, webkit_cookie_manager_get_cookies)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(jlong, jbyte *, jlong, jlong, jlong))fp)(arg0, lparg1, arg2, arg3, arg4);
+		}
+	}
+fail:
+	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	WebKitGTK_NATIVE_EXIT(env, that, _1webkit_1cookie_1manager_1get_1cookies_FUNC);
+}
+#endif
+
+#ifndef NO__1webkit_1cookie_1manager_1get_1cookies_1finish
+JNIEXPORT jlong JNICALL WebKitGTK_NATIVE(_1webkit_1cookie_1manager_1get_1cookies_1finish)
+	(JNIEnv *env, jclass that, jlong arg0, jlong arg1, jlongArray arg2)
+{
+	jlong *lparg2=NULL;
+	jlong rc = 0;
+	WebKitGTK_NATIVE_ENTER(env, that, _1webkit_1cookie_1manager_1get_1cookies_1finish_FUNC);
+	if (arg2) if ((lparg2 = (*env)->GetLongArrayElements(env, arg2, NULL)) == NULL) goto fail;
+/*
+	rc = (jlong)webkit_cookie_manager_get_cookies_finish(arg0, arg1, lparg2);
+*/
+	{
+		WebKitGTK_LOAD_FUNCTION(fp, webkit_cookie_manager_get_cookies_finish)
+		if (fp) {
+			rc = (jlong)((jlong (CALLING_CONVENTION*)(jlong, jlong, jlong *))fp)(arg0, arg1, lparg2);
+		}
+	}
+fail:
+	if (arg2 && lparg2) (*env)->ReleaseLongArrayElements(env, arg2, lparg2, 0);
+	WebKitGTK_NATIVE_EXIT(env, that, _1webkit_1cookie_1manager_1get_1cookies_1finish_FUNC);
 	return rc;
 }
 #endif
@@ -2316,6 +2444,26 @@ JNIEXPORT jlong JNICALL WebKitGTK_NATIVE(_1webkit_1web_1context_1allow_1tls_1cer
 fail:
 	if (arg2 && lparg2) (*env)->ReleaseByteArrayElements(env, arg2, lparg2, 0);
 	WebKitGTK_NATIVE_EXIT(env, that, _1webkit_1web_1context_1allow_1tls_1certificate_1for_1host_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1webkit_1web_1context_1get_1cookie_1manager
+JNIEXPORT jlong JNICALL WebKitGTK_NATIVE(_1webkit_1web_1context_1get_1cookie_1manager)
+	(JNIEnv *env, jclass that, jlong arg0)
+{
+	jlong rc = 0;
+	WebKitGTK_NATIVE_ENTER(env, that, _1webkit_1web_1context_1get_1cookie_1manager_FUNC);
+/*
+	rc = (jlong)webkit_web_context_get_cookie_manager(arg0);
+*/
+	{
+		WebKitGTK_LOAD_FUNCTION(fp, webkit_web_context_get_cookie_manager)
+		if (fp) {
+			rc = (jlong)((jlong (CALLING_CONVENTION*)(jlong))fp)(arg0);
+		}
+	}
+	WebKitGTK_NATIVE_EXIT(env, that, _1webkit_1web_1context_1get_1cookie_1manager_FUNC);
 	return rc;
 }
 #endif

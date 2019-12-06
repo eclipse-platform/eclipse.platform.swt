@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2009, 2018 IBM Corporation and others. All rights reserved.
+ * Copyright (c) 2009, 2019 IBM Corporation and others. All rights reserved.
  * The contents of this file are made available under the terms
  * of the GNU Lesser General Public License (LGPL) Version 2.1 that
  * accompanies this distribution (lgpl-v21.txt).  The LGPL is also
@@ -66,6 +66,8 @@ typedef enum {
 	_1soup_1auth_1get_1host_FUNC,
 	_1soup_1auth_1get_1scheme_1name_FUNC,
 	_1soup_1cookie_1free_FUNC,
+	_1soup_1cookie_1get_1name_FUNC,
+	_1soup_1cookie_1get_1value_FUNC,
 	_1soup_1cookie_1jar_1add_1cookie_FUNC,
 	_1soup_1cookie_1jar_1all_1cookies_FUNC,
 	_1soup_1cookie_1jar_1delete_1cookie_FUNC,
@@ -87,6 +89,10 @@ typedef enum {
 	_1webkit_1authentication_1request_1authenticate_FUNC,
 	_1webkit_1authentication_1request_1cancel_FUNC,
 	_1webkit_1authentication_1request_1is_1retry_FUNC,
+	_1webkit_1cookie_1manager_1add_1cookie_FUNC,
+	_1webkit_1cookie_1manager_1add_1cookie_1finish_FUNC,
+	_1webkit_1cookie_1manager_1get_1cookies_FUNC,
+	_1webkit_1cookie_1manager_1get_1cookies_1finish_FUNC,
 	_1webkit_1credential_1free_FUNC,
 	_1webkit_1credential_1new_FUNC,
 	_1webkit_1dom_1event_1target_1add_1event_1listener_FUNC,
@@ -147,6 +153,7 @@ typedef enum {
 	_1webkit_1uri_1response_1get_1content_1length_FUNC,
 	_1webkit_1uri_1response_1get_1mime_1type_FUNC,
 	_1webkit_1web_1context_1allow_1tls_1certificate_1for_1host_FUNC,
+	_1webkit_1web_1context_1get_1cookie_1manager_FUNC,
 	_1webkit_1web_1context_1get_1default_FUNC,
 	_1webkit_1web_1context_1get_1type_FUNC,
 	_1webkit_1web_1context_1get_1website_1data_1manager_FUNC,

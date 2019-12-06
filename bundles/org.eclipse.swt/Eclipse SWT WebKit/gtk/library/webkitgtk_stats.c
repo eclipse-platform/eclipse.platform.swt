@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2009, 2018 IBM Corporation and others. All rights reserved.
+ * Copyright (c) 2009, 2019 IBM Corporation and others. All rights reserved.
  * The contents of this file are made available under the terms
  * of the GNU Lesser General Public License (LGPL) Version 2.1 that
  * accompanies this distribution (lgpl-v21.txt).  The LGPL is also
@@ -56,6 +56,8 @@ char * WebKitGTK_nativeFunctionNames[] = {
 	"_1soup_1auth_1get_1host",
 	"_1soup_1auth_1get_1scheme_1name",
 	"_1soup_1cookie_1free",
+	"_1soup_1cookie_1get_1name",
+	"_1soup_1cookie_1get_1value",
 	"_1soup_1cookie_1jar_1add_1cookie",
 	"_1soup_1cookie_1jar_1all_1cookies",
 	"_1soup_1cookie_1jar_1delete_1cookie",
@@ -77,6 +79,10 @@ char * WebKitGTK_nativeFunctionNames[] = {
 	"_1webkit_1authentication_1request_1authenticate",
 	"_1webkit_1authentication_1request_1cancel",
 	"_1webkit_1authentication_1request_1is_1retry",
+	"_1webkit_1cookie_1manager_1add_1cookie",
+	"_1webkit_1cookie_1manager_1add_1cookie_1finish",
+	"_1webkit_1cookie_1manager_1get_1cookies",
+	"_1webkit_1cookie_1manager_1get_1cookies_1finish",
 	"_1webkit_1credential_1free",
 	"_1webkit_1credential_1new",
 	"_1webkit_1dom_1event_1target_1add_1event_1listener",
@@ -137,6 +143,7 @@ char * WebKitGTK_nativeFunctionNames[] = {
 	"_1webkit_1uri_1response_1get_1content_1length",
 	"_1webkit_1uri_1response_1get_1mime_1type",
 	"_1webkit_1web_1context_1allow_1tls_1certificate_1for_1host",
+	"_1webkit_1web_1context_1get_1cookie_1manager",
 	"_1webkit_1web_1context_1get_1default",
 	"_1webkit_1web_1context_1get_1type",
 	"_1webkit_1web_1context_1get_1website_1data_1manager",
