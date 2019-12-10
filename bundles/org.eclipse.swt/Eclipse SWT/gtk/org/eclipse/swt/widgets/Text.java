@@ -774,19 +774,6 @@ void deregister () {
 
 @Override
 boolean dragDetect (int x, int y, boolean filter, boolean dragOnTimeout, boolean [] consume) {
-	/**
-	 * Drag detection on GTKText will not be done in SWT, but fully handled by GTK side.
-	 * Let GTK handle the DnD logic as it is inherent to that widget as of GTK3.14 and cannot
-	 * be removed without overriding it. It is better to take the signal from GTK and send it
-	 * back to SWT instead.
-	 */
-	boolean isDraggable = (GTK.GTK_VERSION < OS.VERSION(3, 14, 0)) ? insideBlockSelection(x, y) : false;
-	if (filter) {
-		if (isDraggable && super.dragDetect (x, y, filter, dragOnTimeout, consume)) {
-			if (consume != null) consume [0] = true;
-			return true;
-		}
-	}
 	return false;
 }
 
@@ -1886,48 +1873,6 @@ long imContext () {
 	return 0;
 }
 
-
-private boolean insideBlockSelection (int x, int y) {
-	int start = 0, end = 0;
-	if ((style & SWT.SINGLE) != 0) {
-		int [] s = new int [1], e = new int [1];
-		GTK.gtk_editable_get_selection_bounds (handle, s, e);
-		start = s [0];
-		end = e [0];
-	} else {
-		byte [] s = new byte [ITER_SIZEOF], e =  new byte [ITER_SIZEOF];
-		GTK.gtk_text_buffer_get_selection_bounds (bufferHandle, s, e);
-		start = GTK.gtk_text_iter_get_offset (s);
-		end = GTK.gtk_text_iter_get_offset (e);
-	}
-	if (start != end) {
-		if (end < start) {
-			int temp = end;
-			end = start;
-			start = temp;
-		}
-		int position = -1;
-		if ((style & SWT.SINGLE) != 0) {
-			int [] index = new int [1];
-			int [] trailing = new int [1];
-			long layout = GTK.gtk_entry_get_layout (handle);
-			OS.pango_layout_xy_to_index (layout, x * OS.PANGO_SCALE, y * OS.PANGO_SCALE, index, trailing);
-			long ptr = OS.pango_layout_get_text (layout);
-			position = (int)OS.g_utf8_pointer_to_offset (ptr, ptr + index[0]) + trailing[0];
-		} else {
-			byte [] p = new byte [ITER_SIZEOF];
-			GTK.gtk_text_view_get_iter_at_location (handle, p, x, y);
-			position = GTK.gtk_text_iter_get_offset (p);
-		}
-		if (start <= position && position < end) {
-			return true;
-		}
-	}
-	return false;
-}
-
-
-
 /**
  * Inserts a string.
  * <p>
@@ -2246,14 +2191,10 @@ GdkRGBA getContextBackgroundGdkRGBA () {
 
 @Override
 GdkRGBA getContextColorGdkRGBA () {
-	if (GTK.GTK_VERSION >= OS.VERSION(3, 14, 0)) {
-		if (foreground != null) {
-			return foreground;
-		} else {
-			return display.COLOR_WIDGET_FOREGROUND_RGBA;
-		}
+	if (foreground != null) {
+		return foreground;
 	} else {
-		return super.getContextColorGdkRGBA ();
+		return display.COLOR_WIDGET_FOREGROUND_RGBA;
 	}
 }
 
@@ -2298,13 +2239,9 @@ void setBackgroundGdkRGBA (long context, long handle, GdkRGBA rgba) {
 
 @Override
 void setForegroundGdkRGBA (GdkRGBA rgba) {
-	if (GTK.GTK_VERSION >= OS.VERSION (3, 14, 0)) {
-		foreground = rgba;
-		GdkRGBA toSet = rgba == null ? display.COLOR_WIDGET_FOREGROUND_RGBA : rgba;
-		setForegroundGdkRGBA (handle, toSet);
-	} else {
-		super.setForegroundGdkRGBA(rgba);
-	}
+	foreground = rgba;
+	GdkRGBA toSet = rgba == null ? display.COLOR_WIDGET_FOREGROUND_RGBA : rgba;
+	setForegroundGdkRGBA (handle, toSet);
 }
 
 @Override

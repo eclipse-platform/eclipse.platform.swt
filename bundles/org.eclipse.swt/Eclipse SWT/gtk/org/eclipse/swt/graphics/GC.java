@@ -2055,11 +2055,7 @@ Rectangle getClippingInPixels() {
 		/* Intersect visible bounds with clipping */
 		if (clipRgn != 0) {
 			/* Convert clipping to device space if needed */
-			if (data.clippingTransform != null && GTK.GTK_VERSION < OS.VERSION (3, 14, 0)) {
-					clipRgn = convertRgn(clipRgn, data.clippingTransform);
-					Cairo.cairo_region_intersect(rgn, clipRgn);
-					Cairo.cairo_region_destroy(clipRgn);
-			} else if (!Arrays.equals(data.clippingTransform, currentTransform) && GTK.GTK_VERSION >= OS.VERSION (3, 14, 0)) {
+			if (!Arrays.equals(data.clippingTransform, currentTransform)) {
 				double[] clippingTransform;
 				if (currentTransform != null && data.clippingTransform == null) {
 					/*
@@ -2109,15 +2105,6 @@ Rectangle getClippingInPixels() {
 				Cairo.cairo_region_intersect(rgn, clipRgn);
 			}
 		}
-		/* Convert to user space */
-		if (cairo != 0 && GTK.GTK_VERSION < OS.VERSION (3, 14, 0)) {
-			double[] matrix = new double[6];
-			Cairo.cairo_get_matrix(cairo, matrix);
-			Cairo.cairo_matrix_invert(matrix);
-			clipRgn = convertRgn(rgn, matrix);
-			Cairo.cairo_region_destroy(rgn);
-			rgn = clipRgn;
-		}
 		Cairo.cairo_region_get_extents(rgn, rect);
 		Cairo.cairo_region_destroy(rgn);
 		x = rect.x;
@@ -2148,7 +2135,6 @@ public void getClipping(Region region) {
 	if (region.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	long clipping = region.handle;
 	Cairo.cairo_region_subtract(clipping, clipping);
-	long cairo = data.cairo;
 	long clipRgn = data.clipRgn;
 	if (clipRgn == 0) {
 		cairo_rectangle_int_t rect = new cairo_rectangle_int_t();
@@ -2158,27 +2144,10 @@ public void getClipping(Region region) {
 		rect.height = height[0];
 		Cairo.cairo_region_union_rectangle(clipping, rect);
 	} else {
-		/* Convert clipping to device space if needed */
-		if (data.clippingTransform != null && GTK.GTK_VERSION < OS.VERSION (3, 14, 0)) {
-			long rgn = convertRgn(clipRgn, data.clippingTransform);
-			Cairo.cairo_region_union(clipping, rgn);
-			Cairo.cairo_region_destroy(rgn);
-		} else {
-			Cairo.cairo_region_union(clipping, clipRgn);
-		}
+		Cairo.cairo_region_union(clipping, clipRgn);
 	}
 	if (data.damageRgn != 0) {
 		Cairo.cairo_region_intersect(clipping, data.damageRgn);
-	}
-	/* Convert to user space */
-	if (cairo != 0 && GTK.GTK_VERSION < OS.VERSION (3, 14, 0)) {
-		double[] matrix = new double[6];
-		Cairo.cairo_get_matrix(cairo, matrix);
-		Cairo.cairo_matrix_invert(matrix);
-		long rgn = convertRgn(clipping, matrix);
-		Cairo.cairo_region_subtract(clipping, clipping);
-		Cairo.cairo_region_union(clipping, rgn);
-		Cairo.cairo_region_destroy(rgn);
 	}
 }
 
@@ -2560,17 +2529,10 @@ public void getTransform(Transform transform) {
 		 * They do not want to know about the global coordinates of their widget, which is contained in Cairo.cairo_get_matrix().
 		 * So we return whatever the client specified with setTransform.
 		 */
-		if (GTK.GTK_VERSION >= OS.VERSION (3, 14, 0)) {
-			if (currentTransform != null) {
-				transform.handle = currentTransform.clone();
-			} else {
-				transform.handle = new double[] { 1.0, 0.0, 0.0, 1.0, 0.0, 0.0 };
-			}
+		if (currentTransform != null) {
+			transform.handle = currentTransform.clone();
 		} else {
-			Cairo.cairo_get_matrix(cairo, transform.handle);
-			double[] identity = identity();
-			Cairo.cairo_matrix_invert(identity);
-			Cairo.cairo_matrix_multiply(transform.handle, transform.handle, identity);
+			transform.handle = new double[] { 1.0, 0.0, 0.0, 1.0, 0.0, 0.0 };
 		}
 	} else {
 		transform.setElements(1, 0, 0, 1, 0, 0);
@@ -2654,14 +2616,10 @@ void init(Drawable drawable, GCData data, long gdkGC) {
 	initCairo();
 	if ((data.style & SWT.MIRRORED) != 0) {
 		// Don't overwrite the Cairo transformation matrix in GTK 3.14 and above; it contains a translation relative to the parent widget.
-		if (GTK.GTK_VERSION >= OS.VERSION (3, 14, 0)) {
-			int[] w = new int[1], h = new int[1];
-			getSize(w, h);
-			Cairo.cairo_translate(cairo, w[0], 0);
-			Cairo.cairo_scale(cairo, -1.0, 1.0);
-		} else {
-			Cairo.cairo_set_matrix(data.cairo, identity());
-		}
+		int[] w = new int[1], h = new int[1];
+		getSize(w, h);
+		Cairo.cairo_translate(cairo, w[0], 0);
+		Cairo.cairo_scale(cairo, -1.0, 1.0);
 	}
 	if (cairoTransformationMatrix == null) cairoTransformationMatrix = new double[6];
 	Cairo.cairo_get_matrix(data.cairo, cairoTransformationMatrix);
@@ -2972,9 +2930,7 @@ void setCairoClip(long damageRgn, long clipRgn) {
 		 * The Cairo handle is shared by all widgets, but GC.setClipping allows global clipping changes.
 		 * So we intersect whatever the client sets with the initial GC clipping.
 		 */
-		if (GTK.GTK_VERSION >= OS.VERSION(3, 14, 0)) {
-			limitClipping(clipRgnCopy);
-		}
+		limitClipping(clipRgnCopy);
 
 		setCairoRegion(cairo, clipRgnCopy);
 		Cairo.cairo_clip(cairo);
@@ -3075,7 +3031,6 @@ private static Rectangle getTransformedClippingRectangle(int[] pointsArray) {
 }
 
 void setClipping(long clipRgn) {
-	long cairo = data.cairo;
 	if (clipRgn == 0) {
 		if (data.clipRgn != 0) {
 			Cairo.cairo_region_destroy(data.clipRgn);
@@ -3087,10 +3042,7 @@ void setClipping(long clipRgn) {
 		if (data.clipRgn == 0) data.clipRgn = Cairo.cairo_region_create();
 		Cairo.cairo_region_subtract(data.clipRgn, data.clipRgn);
 		Cairo.cairo_region_union(data.clipRgn, clipRgn);
-		if (GTK.GTK_VERSION < OS.VERSION (3, 14, 0)) {
-			if (data.clippingTransform == null) data.clippingTransform = new double[6];
-			Cairo.cairo_get_matrix(cairo, data.clippingTransform);
-		} else if (currentTransform != null) {
+		if (currentTransform != null) {
 			// store the current transformation, to use it when the user requests clipping bounds
 			data.clippingTransform = currentTransform.clone();
 		} else {
@@ -3205,17 +3157,13 @@ void setClippingInPixels(Rectangle rect) {
 }
 
 private void resetClipping() {
-	if (GTK.GTK_VERSION >= OS.VERSION(3, 14, 0)) {
-		/*
-		 * Bug 531667: widgets paint over other widgets
-		 *
-		 * The Cairo handle is shared by all widgets, and GC.setClipping(0) allows painting outside the current GC area.
-		 * So if we reset any custom clipping we still want to restrict GC operations with the initial GC clipping.
-		 */
-		setClipping(clipping);
-	} else {
-		setClipping(0);
-	}
+	/*
+	 * Bug 531667: widgets paint over other widgets
+	 *
+	 * The Cairo handle is shared by all widgets, and GC.setClipping(0) allows painting outside the current GC area.
+	 * So if we reset any custom clipping we still want to restrict GC operations with the initial GC clipping.
+	 */
+	setClipping(clipping);
 }
 
 /**
@@ -3807,25 +3755,17 @@ public void setTransform(Transform transform) {
 	if (data.cairo == 0 && transform == null) return;
 	initCairo();
 	long cairo = data.cairo;
-	if (GTK.GTK_VERSION >= OS.VERSION (3, 14, 0)) {
-		// Re-set the original Cairo transformation matrix: it contains a translation relative to the parent widget.
-		if (currentTransform != null) {
-			Cairo.cairo_set_matrix(cairo, cairoTransformationMatrix);
-			currentTransform = null;
-		}
-		// Apply user transform on top of the current transformation matrix (and remember it)
-		if (transform != null) {
-			currentTransform = transform.handle.clone();
-			double[] transformMatrix = identity();
-			Cairo.cairo_matrix_multiply(transformMatrix, transform.handle, transformMatrix);
-			Cairo.cairo_transform(cairo, transformMatrix);
-		}
-	} else {
-		double[] identity = identity();
-		if (transform != null) {
-			Cairo.cairo_matrix_multiply(identity, transform.handle, identity);
-		}
-		Cairo.cairo_set_matrix(cairo, identity);
+	// Re-set the original Cairo transformation matrix: it contains a translation relative to the parent widget.
+	if (currentTransform != null) {
+		Cairo.cairo_set_matrix(cairo, cairoTransformationMatrix);
+		currentTransform = null;
+	}
+	// Apply user transform on top of the current transformation matrix (and remember it)
+	if (transform != null) {
+		currentTransform = transform.handle.clone();
+		double[] transformMatrix = identity();
+		Cairo.cairo_matrix_multiply(transformMatrix, transform.handle, transformMatrix);
+		Cairo.cairo_transform(cairo, transformMatrix);
 	}
 	data.state &= ~DRAW_OFFSET;
 }

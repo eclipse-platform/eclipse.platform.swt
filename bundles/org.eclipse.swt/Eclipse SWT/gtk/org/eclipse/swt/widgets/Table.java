@@ -1409,14 +1409,10 @@ GdkRGBA getContextBackgroundGdkRGBA () {
 
 @Override
 GdkRGBA getContextColorGdkRGBA () {
-	if (GTK.GTK_VERSION >= OS.VERSION(3, 14, 0)) {
-		if (foreground != null) {
-			return foreground;
-		} else {
-			return display.COLOR_LIST_FOREGROUND_RGBA;
-		}
+	if (foreground != null) {
+		return foreground;
 	} else {
-		return super.getContextColorGdkRGBA ();
+		return display.COLOR_LIST_FOREGROUND_RGBA;
 	}
 }
 
@@ -2302,7 +2298,7 @@ long gtk_draw (long widget, long cairo) {
 	 * If the table was resized since the last paint, we ignore this draw request
 	 * and queue another draw request so that the pixel cache is properly invalidated.
 	 */
-	if (GTK.GTK_VERSION >= OS.VERSION(3, 14, 0) && ownerDraw && haveBoundsChanged) {
+	if (ownerDraw && haveBoundsChanged) {
 		GTK.gtk_widget_queue_draw(handle);
 		return 0;
 	}
@@ -2974,7 +2970,7 @@ void rendererRender (long cell, long cr, long snapshot, long widget, long backgr
 	}
 	if (item != null) {
 		if (GTK.GTK_IS_CELL_RENDERER_TOGGLE (cell) ||
-				( (GTK.GTK_IS_CELL_RENDERER_PIXBUF (cell) || GTK.GTK_VERSION > OS.VERSION(3, 13, 0)) && (columnIndex != 0 || (style & SWT.CHECK) == 0))) {
+				( (GTK.GTK_IS_CELL_RENDERER_PIXBUF (cell)) && (columnIndex != 0 || (style & SWT.CHECK) == 0))) {
 			drawFlags = (int)flags;
 			drawState = SWT.FOREGROUND;
 			long [] ptr = new long [1];
@@ -3405,21 +3401,16 @@ void setBackgroundGdkRGBA (long context, long handle, GdkRGBA rgba) {
 		background = rgba;
 	}
 	GdkRGBA selectedBackground = display.getSystemColor(SWT.COLOR_LIST_SELECTION).handle;
-	if (GTK.GTK_VERSION >= OS.VERSION(3, 14, 0)) {
-		String name = GTK.GTK_VERSION >= OS.VERSION(3, 20, 0) ? "treeview" : "GtkTreeView";
-		String css = name + " {background-color: " + display.gtk_rgba_to_css_string(background) + ";}\n"
-				+ name + ":selected {background-color: " + display.gtk_rgba_to_css_string(selectedBackground) + ";}";
+	String name = GTK.GTK_VERSION >= OS.VERSION(3, 20, 0) ? "treeview" : "GtkTreeView";
+	String css = name + " {background-color: " + display.gtk_rgba_to_css_string(background) + ";}\n"
+			+ name + ":selected {background-color: " + display.gtk_rgba_to_css_string(selectedBackground) + ";}";
 
 		// Cache background color
 		cssBackground = css;
 
 		// Apply background color and any foreground color
-		String finalCss = display.gtk_css_create_css_color_string (cssBackground, cssForeground, SWT.BACKGROUND);
-		gtk_css_provider_load_from_css(context, finalCss);
-	} else {
-		super.setBackgroundGdkRGBA(context, handle, rgba);
-		GTK.gtk_widget_override_background_color(handle, GTK.GTK_STATE_FLAG_SELECTED, selectedBackground);
-	}
+	String finalCss = display.gtk_css_create_css_color_string (cssBackground, cssForeground, SWT.BACKGROUND);
+	gtk_css_provider_load_from_css(context, finalCss);
 }
 
 @Override
@@ -3505,13 +3496,9 @@ void setFontDescription (long font) {
 
 @Override
 void setForegroundGdkRGBA (GdkRGBA rgba) {
-	if (GTK.GTK_VERSION >= OS.VERSION (3, 14, 0)) {
-		foreground = rgba;
-		GdkRGBA toSet = rgba == null ? display.COLOR_LIST_FOREGROUND_RGBA : rgba;
-		setForegroundGdkRGBA (handle, toSet);
-	} else {
-		super.setForegroundGdkRGBA(rgba);
-	}
+	foreground = rgba;
+	GdkRGBA toSet = rgba == null ? display.COLOR_LIST_FOREGROUND_RGBA : rgba;
+	setForegroundGdkRGBA (handle, toSet);
 }
 
 /**
@@ -3766,10 +3753,8 @@ void setParentGdkResource (Control child) {
 	} else {
 		long parentGdkWindow = eventWindow ();
 		GTK.gtk_widget_set_parent_window (child.topHandle(), parentGdkWindow);
-		if (GTK.GTK_VERSION >= OS.VERSION(3, 10, 0)) {
-			hasChildren = true;
-			connectFixedHandleDraw();
-		}
+		hasChildren = true;
+		connectFixedHandleDraw();
 	}
 }
 
@@ -4235,7 +4220,7 @@ Point resizeCalculationsGTK3 (long widget, int width, int height) {
 	 * In the error case, the SWT fixed which contains the table still resizes as expected,
 	 * and the horizontal scrollbar is only partially visible so that it doesn't overlap with table headers.
 	 */
-	if (widget == scrolledHandle && GTK.GTK_VERSION >= OS.VERSION(3, 14, 0) && getHeaderVisible()) {
+	if (widget == scrolledHandle && getHeaderVisible()) {
 		int hScrollBarHeight = hScrollBarWidth(); // this actually returns height
 		if (hScrollBarHeight > 0) {
 			sizes.y = Math.max(sizes.y, getHeaderHeight() + hScrollBarHeight + (getBorderWidth() * 2));

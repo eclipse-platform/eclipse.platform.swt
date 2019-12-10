@@ -12563,50 +12563,6 @@ JNIEXPORT jboolean JNICALL GTK_NATIVE(_1gtk_1widget_1mnemonic_1activate)
 }
 #endif
 
-#ifndef NO__1gtk_1widget_1override_1background_1color
-JNIEXPORT void JNICALL GTK_NATIVE(_1gtk_1widget_1override_1background_1color)
-	(JNIEnv *env, jclass that, jlong arg0, jint arg1, jobject arg2)
-{
-	GdkRGBA _arg2, *lparg2=NULL;
-	GTK_NATIVE_ENTER(env, that, _1gtk_1widget_1override_1background_1color_FUNC);
-	if (arg2) if ((lparg2 = getGdkRGBAFields(env, arg2, &_arg2)) == NULL) goto fail;
-/*
-	gtk_widget_override_background_color(arg0, arg1, lparg2);
-*/
-	{
-		GTK_LOAD_FUNCTION(fp, gtk_widget_override_background_color)
-		if (fp) {
-			((void (CALLING_CONVENTION*)(jlong, jint, GdkRGBA *))fp)(arg0, arg1, lparg2);
-		}
-	}
-fail:
-	if (arg2 && lparg2) setGdkRGBAFields(env, arg2, lparg2);
-	GTK_NATIVE_EXIT(env, that, _1gtk_1widget_1override_1background_1color_FUNC);
-}
-#endif
-
-#ifndef NO__1gtk_1widget_1override_1color
-JNIEXPORT void JNICALL GTK_NATIVE(_1gtk_1widget_1override_1color)
-	(JNIEnv *env, jclass that, jlong arg0, jint arg1, jobject arg2)
-{
-	GdkRGBA _arg2, *lparg2=NULL;
-	GTK_NATIVE_ENTER(env, that, _1gtk_1widget_1override_1color_FUNC);
-	if (arg2) if ((lparg2 = getGdkRGBAFields(env, arg2, &_arg2)) == NULL) goto fail;
-/*
-	gtk_widget_override_color(arg0, arg1, lparg2);
-*/
-	{
-		GTK_LOAD_FUNCTION(fp, gtk_widget_override_color)
-		if (fp) {
-			((void (CALLING_CONVENTION*)(jlong, jint, GdkRGBA *))fp)(arg0, arg1, lparg2);
-		}
-	}
-fail:
-	if (arg2 && lparg2) setGdkRGBAFields(env, arg2, lparg2);
-	GTK_NATIVE_EXIT(env, that, _1gtk_1widget_1override_1color_FUNC);
-}
-#endif
-
 #ifndef NO__1gtk_1widget_1override_1font
 JNIEXPORT void JNICALL GTK_NATIVE(_1gtk_1widget_1override_1font)
 	(JNIEnv *env, jclass that, jlong arg0, jlong arg1)
@@ -15032,18 +14988,6 @@ JNIEXPORT jlong JNICALL OS_NATIVE(_1g_1getenv)
 fail:
 	if (arg0 && lparg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, JNI_ABORT);
 	OS_NATIVE_EXIT(env, that, _1g_1getenv_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO__1g_1hash_1table_1get_1values
-JNIEXPORT jlong JNICALL OS_NATIVE(_1g_1hash_1table_1get_1values)
-	(JNIEnv *env, jclass that, jlong arg0)
-{
-	jlong rc = 0;
-	OS_NATIVE_ENTER(env, that, _1g_1hash_1table_1get_1values_FUNC);
-	rc = (jlong)g_hash_table_get_values((GHashTable *)arg0);
-	OS_NATIVE_EXIT(env, that, _1g_1hash_1table_1get_1values_FUNC);
 	return rc;
 }
 #endif

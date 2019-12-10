@@ -54,7 +54,6 @@ public abstract class Control extends Widget implements Drawable {
 	long redrawWindow, enableWindow, provider;
 	long redrawSurface, enableSurface;
 	int drawCount, backgroundAlpha = 255;
-	long enterNotifyEventId;
 	long dragGesture, zoomGesture, rotateGesture, panGesture;
 	Composite parent;
 	Cursor cursor;
@@ -88,12 +87,6 @@ public abstract class Control extends Widget implements Drawable {
 	Point lastInput = new Point(0, 0);
 
 	LinkedList <Event> dragDetectionQueue;
-
-	/* these class variables are for the workaround for bug #427776 */
-	static Callback enterNotifyEventFunc;
-	static int enterNotifyEventSignalId;
-	static int GTK_POINTER_WINDOW;
-	static int SWT_GRAB_WIDGET;
 
 	static Callback gestureZoom, gestureRotation, gestureSwipe, gestureBegin, gestureEnd;
 	static {
@@ -565,18 +558,6 @@ void hookEvents () {
 
 	long topHandle = topHandle ();
 	OS.g_signal_connect_closure_by_id (topHandle, display.signalIds [MAP], 0, display.getClosure (MAP), true);
-
-	if (enterNotifyEventFunc == null && GTK.GTK_VERSION < OS.VERSION (3, 11, 9)) {
-		enterNotifyEventFunc = new Callback (Control.class, "enterNotifyEventProc", 4);
-		if (enterNotifyEventFunc.getAddress () == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
-
-		enterNotifyEventSignalId = OS.g_signal_lookup (OS.enter_notify_event, GTK.GTK_TYPE_WIDGET ());
-
-		byte [] buffer = Converter.wcsToMbcs ("gtk-pointer-window", true);
-		GTK_POINTER_WINDOW = OS.g_quark_from_string (buffer);
-		buffer = Converter.wcsToMbcs ("swt-grab-widget", true);
-		SWT_GRAB_WIDGET = OS.g_quark_from_string (buffer);
-	}
 }
 
 boolean hooksPaint () {
@@ -786,19 +767,6 @@ void checkBackground () {
 	} while (true);
 }
 
-void checkForeground () {
-	/*
-	* Feature in GTK 3. The widget foreground is inherited from the immediate
-	* parent. This is not the expected behavior for SWT. The fix is to avoid
-	* the inheritance by explicitly setting the default foreground on the widget.
-	*
-	* This can be removed on GTK3.16+.
-	*/
-	if (GTK.GTK_VERSION < OS.VERSION(3, 14, 0)) {
-		setForegroundGdkRGBA (topHandle (), display.COLOR_WIDGET_FOREGROUND_RGBA);
-	}
-}
-
 void checkBorder () {
 	if (getBorderWidthInPixels () == 0) style &= ~SWT.BORDER;
 }
@@ -828,7 +796,6 @@ void createWidget (int index) {
 	checkOrientation (parent);
 	super.createWidget (index);
 	checkBackground ();
-	checkForeground ();
 	if ((state & PARENT_BACKGROUND) != 0) setParentBackground ();
 	checkBuffered ();
 	showWidget ();
@@ -3008,33 +2975,18 @@ public Image getBackgroundImage () {
 }
 
 GdkRGBA getContextBackgroundGdkRGBA () {
-	long fontHandle = fontHandle ();
 	if ((state & BACKGROUND) == 0) {
 		return defaultBackground();
 	}
-	if (GTK.GTK_VERSION >= OS.VERSION(3, 14, 0)) {
-		if (provider != 0) {
-			return display.gtk_css_parse_background (display.gtk_css_provider_to_string(provider), null);
-		} else {
-			return defaultBackground();
-		}
+	if (provider != 0) {
+		return display.gtk_css_parse_background (display.gtk_css_provider_to_string(provider), null);
 	} else {
-		long context = GTK.gtk_widget_get_style_context (fontHandle);
-		GdkRGBA rgba = new GdkRGBA ();
-		GTK.gtk_style_context_get_background_color (context, GTK.GTK_STATE_FLAG_NORMAL, rgba);
-		return rgba;
+		return defaultBackground();
 	}
 }
 
 GdkRGBA getContextColorGdkRGBA () {
-	long fontHandle = fontHandle ();
-	if (GTK.GTK_VERSION >= OS.VERSION(3, 14, 0)) {
-		return display.gtk_css_parse_foreground(display.gtk_css_provider_to_string(provider), null);
-	} else {
-		long context = GTK.gtk_widget_get_style_context (fontHandle);
-		GdkRGBA rgba = display.styleContextGetColor (context, GTK.GTK_STATE_FLAG_NORMAL);
-		return rgba;
-	}
+	return display.gtk_css_parse_foreground(display.gtk_css_provider_to_string(provider), null);
 }
 
 GdkRGBA getBgGdkRGBA () {
@@ -3915,9 +3867,7 @@ long gtk_draw (long widget, long cairo) {
 	 */
 	if (drawRegion) data.regionSet = eventRegion;
 //	data.damageRgn = gdkEvent.region;
-	if (GTK.GTK_VERSION >= OS.VERSION (3, 14, 0)) {
-		data.cairo = cairo;
-	}
+	data.cairo = cairo;
 	GC gc = event.gc = GC.gtk_new (this, data);
 	// Note: use GC#setClipping(x,y,width,height) because GC#setClipping(Rectangle) got broken by bug 446075
 	gc.setClipping (eventBounds.x, eventBounds.y, eventBounds.width, eventBounds.height);
@@ -5046,38 +4996,16 @@ private void _setBackground (Color color) {
 
 void setBackgroundGdkRGBA (long context, long handle, GdkRGBA rgba) {
 	GdkRGBA selectedBackground = display.getSystemColor(SWT.COLOR_LIST_SELECTION).handle;
-	if (GTK.GTK_VERSION >= OS.VERSION(3, 14, 0)) {
-		// Form background string
-		String name = GTK.GTK_VERSION >= OS.VERSION(3, 20, 0) ? display.gtk_widget_class_get_css_name(handle)
-				: display.gtk_widget_get_name(handle);
-		String css = name + " {background-color: " + display.gtk_rgba_to_css_string(rgba) + ";}\n"
-				+ name + ":selected" + " {background-color: " + display.gtk_rgba_to_css_string(selectedBackground) + ";}";
+	// Form background string
+	String name = GTK.GTK_VERSION >= OS.VERSION(3, 20, 0) ? display.gtk_widget_class_get_css_name(handle)
+			: display.gtk_widget_get_name(handle);
+	String css = name + " {background-color: " + display.gtk_rgba_to_css_string(rgba) + ";}\n"
+			+ name + ":selected" + " {background-color: " + display.gtk_rgba_to_css_string(selectedBackground) + ";}";
 
 		// Cache background
 		cssBackground = css;
 
 		// Apply background color and any cached foreground color
-		String finalCss = display.gtk_css_create_css_color_string (cssBackground, cssForeground, SWT.BACKGROUND);
-		gtk_css_provider_load_from_css (context, finalCss);
-	} else {
-		GTK.gtk_widget_override_background_color (handle, GTK.GTK_STATE_FLAG_NORMAL, rgba);
-		GTK.gtk_widget_override_background_color(handle, GTK.GTK_STATE_FLAG_SELECTED, selectedBackground);
-	}
-}
-
-void setBackgroundGradientGdkRGBA (long context, long handle, GdkRGBA rgba) {
-	String css ="* {\n";
-	if (rgba != null) {
-		String color = display.gtk_rgba_to_css_string (rgba);
-		//Note, use 'background-image' CSS class with caution. Not all themes/widgets support it. (e.g button doesn't).
-		//Use 'background' CSS class where possible instead unless 'background-image' is explicidly supported.
-		css += "background-image: -gtk-gradient (linear, 0 0, 0 1, color-stop(0, " + color + "), color-stop(1, " + color + "));\n";
-	}
-	css += "}\n";
-	//Cache background color
-	cssBackground = css;
-
-	// Apply background color and any cached foreground color
 	String finalCss = display.gtk_css_create_css_color_string (cssBackground, cssForeground, SWT.BACKGROUND);
 	gtk_css_provider_load_from_css (context, finalCss);
 }
@@ -5262,29 +5190,6 @@ public void setDragDetect (boolean dragDetect) {
 	}
 }
 
-static long enterNotifyEventProc (long ihint, long n_param_values, long param_values, long data) {
-	/* 427776: this workaround listens to the enter-notify-event signal on all
-	 * GtkWidgets. If enableWindow (the data parameter) has been added to the
-	 * internal hash table of the widget, a record is kept as the lifetime of
-	 * enableWindow is controlled here, so we'll need to remove that reference
-	 * when we destroy enableWindow. this internal hash table was removed in
-	 * GTK 3.11.9 so once only newer GTK is targeted, this workaround can be
-	 * removed. */
-	long instance = OS.g_value_peek_pointer (param_values);
-	long hashTable = OS.g_object_get_qdata (instance, GTK_POINTER_WINDOW);
-
-	// there will only ever be one item in the hash table
-	if (hashTable != 0) {
-		long firstItem = OS.g_hash_table_get_values (hashTable);
-		long gdkWindow = OS.g_list_data (firstItem);
-		// data is actually enableWindow
-		if (gdkWindow == data)
-			OS.g_object_set_qdata(gdkWindow, SWT_GRAB_WIDGET, instance);
-	}
-
-	return 1; // keep the signal connected
-}
-
 /**
  * Enables the receiver if the argument is <code>true</code>,
  * and disables it otherwise. A disabled control is typically
@@ -5362,13 +5267,6 @@ public void setEnabled (boolean enabled) {
 			attributes.window_type = GDK.GDK_WINDOW_CHILD;
 			enableWindow = GDK.gdk_window_new (window, attributes, GDK.GDK_WA_X | GDK.GDK_WA_Y);
 			if (enableWindow != 0) {
-				/* 427776: we need to listen to all enter-notify-event signals to
-				 * see if this new GdkWindow has been added to a widget's internal
-				 * hash table, so when the GdkWindow is destroyed we can also remove
-				 * that reference. */
-				if (enterNotifyEventFunc != null)
-					enterNotifyEventId = OS.g_signal_add_emission_hook (enterNotifyEventSignalId, 0, enterNotifyEventFunc.getAddress (), enableWindow, 0);
-
 				GDK.gdk_window_set_user_data (enableWindow, parentHandle);
 				restackWindow (enableWindow, gtk_widget_get_window (topHandle), true);
 				if (GTK.gtk_widget_get_visible (topHandle)) GDK.gdk_window_show_unraised (enableWindow);
@@ -5379,24 +5277,6 @@ public void setEnabled (boolean enabled) {
 }
 
 void cleanupEnableWindow() {
-	if (enterNotifyEventFunc != null) {
-		if (enterNotifyEventId > 0)
-			OS.g_signal_remove_emission_hook(enterNotifyEventSignalId, enterNotifyEventId);
-		enterNotifyEventId = 0;
-
-		/*
-		 * 427776: now we can remove any reference to the GdkWindow
-		 * in a widget's internal hash table. this internal hash
-		 * table was removed in GTK 3.11.9 so once only newer GTK is
-		 * targeted, this workaround can be removed.
-		 */
-		long grabWidget = OS.g_object_get_qdata(enableWindow, SWT_GRAB_WIDGET);
-		if (grabWidget != 0) {
-			OS.g_object_set_qdata(grabWidget, GTK_POINTER_WINDOW, 0);
-			OS.g_object_set_qdata(enableWindow, SWT_GRAB_WIDGET, 0);
-		}
-	}
-
 	GDK.gdk_window_set_user_data (enableWindow, 0);
 	GDK.gdk_window_destroy (enableWindow);
 	enableWindow = 0;
@@ -5507,38 +5387,29 @@ void setForegroundGdkRGBA (GdkRGBA rgba) {
 }
 
 void setForegroundGdkRGBA (long handle, GdkRGBA rgba) {
-	if (GTK.GTK_VERSION >= OS.VERSION(3, 14, 0)) {
-		GdkRGBA toSet;
-		if (rgba != null) {
-			toSet = rgba;
-		} else {
-			toSet = display.COLOR_WIDGET_FOREGROUND_RGBA;
-		}
-		long context = GTK.gtk_widget_get_style_context (handle);
-		// Form foreground string
-		String color = display.gtk_rgba_to_css_string(toSet);
-		String name = GTK.GTK_VERSION >= OS.VERSION(3, 20, 0) ? display.gtk_widget_class_get_css_name(handle)
-				: display.gtk_widget_get_name(handle);
-		GdkRGBA selectedForeground = display.COLOR_LIST_SELECTION_TEXT_RGBA;
-		String selection = GTK.GTK_VERSION >= OS.VERSION(3, 20, 0) &&
-				!name.contains("treeview") ? " selection" : ":selected";
-		String css = "* {color: " + color + ";}\n"
-				+ name + selection + " {color: " + display.gtk_rgba_to_css_string(selectedForeground) + ";}";
+	GdkRGBA toSet;
+	if (rgba != null) {
+		toSet = rgba;
+	} else {
+		toSet = display.COLOR_WIDGET_FOREGROUND_RGBA;
+	}
+	long context = GTK.gtk_widget_get_style_context (handle);
+	// Form foreground string
+	String color = display.gtk_rgba_to_css_string(toSet);
+	String name = GTK.GTK_VERSION >= OS.VERSION(3, 20, 0) ? display.gtk_widget_class_get_css_name(handle)
+			: display.gtk_widget_get_name(handle);
+	GdkRGBA selectedForeground = display.COLOR_LIST_SELECTION_TEXT_RGBA;
+	String selection = GTK.GTK_VERSION >= OS.VERSION(3, 20, 0) &&
+			!name.contains("treeview") ? " selection" : ":selected";
+	String css = "* {color: " + color + ";}\n"
+			+ name + selection + " {color: " + display.gtk_rgba_to_css_string(selectedForeground) + ";}";
 
 		// Cache foreground color
 		cssForeground = css;
 
 		// Apply foreground color and any cached background color
-		String finalCss = display.gtk_css_create_css_color_string (cssBackground, cssForeground, SWT.FOREGROUND);
-		gtk_css_provider_load_from_css(context, finalCss);
-	} else {
-		GdkRGBA selectedForeground = display.COLOR_LIST_SELECTION_TEXT_RGBA;
-		GTK.gtk_widget_override_color (handle, GTK.GTK_STATE_FLAG_NORMAL, rgba);
-		GTK.gtk_widget_override_color (handle, GTK.GTK_STATE_FLAG_SELECTED, selectedForeground);
-		long context = GTK.gtk_widget_get_style_context (handle);
-		GTK.gtk_style_context_invalidate (context);
-		return;
-	}
+	String finalCss = display.gtk_css_create_css_color_string (cssBackground, cssForeground, SWT.FOREGROUND);
+	gtk_css_provider_load_from_css(context, finalCss);
 }
 
 void setInitialBounds () {
@@ -5592,15 +5463,13 @@ boolean mustBeVisibleOnInitBounds() {
  * TODO currently phase is set to BUBBLE = 2. Look into using groups perhaps.
  */
 private void setDragGesture () {
-		if (GTK.GTK_VERSION >= OS.VERSION(3, 14, 0)) {
-			dragGesture = GTK.gtk_gesture_drag_new (handle);
-			GTK.gtk_event_controller_set_propagation_phase (dragGesture,
-			        2);
-			GTK.gtk_gesture_single_set_button (dragGesture, 0);
-			OS.g_signal_connect(dragGesture, OS.begin, gestureBegin.getAddress(), this.handle);
-			OS.g_signal_connect(dragGesture, OS.end, gestureEnd.getAddress(), this.handle);
-			return;
-		}
+	dragGesture = GTK.gtk_gesture_drag_new (handle);
+	GTK.gtk_event_controller_set_propagation_phase (dragGesture,
+	        2);
+	GTK.gtk_gesture_single_set_button (dragGesture, 0);
+	OS.g_signal_connect(dragGesture, OS.begin, gestureBegin.getAddress(), this.handle);
+	OS.g_signal_connect(dragGesture, OS.end, gestureEnd.getAddress(), this.handle);
+	return;
 }
 
 //private void setPanGesture () {
@@ -5608,27 +5477,23 @@ private void setDragGesture () {
 //}
 
 private void setRotateGesture () {
-	if (GTK.GTK_VERSION >= OS.VERSION(3, 14, 0)) {
-		rotateGesture = GTK.gtk_gesture_rotate_new(handle);
-		GTK.gtk_event_controller_set_propagation_phase (rotateGesture,
-		        2);
-		OS.g_signal_connect (rotateGesture, OS.angle_changed, gestureRotation.getAddress(), this.handle);
-		OS.g_signal_connect(rotateGesture, OS.begin, gestureBegin.getAddress(), this.handle);
-		OS.g_signal_connect(rotateGesture, OS.end, gestureEnd.getAddress(), this.handle);
-		return;
-	}
+	rotateGesture = GTK.gtk_gesture_rotate_new(handle);
+	GTK.gtk_event_controller_set_propagation_phase (rotateGesture,
+	        2);
+	OS.g_signal_connect (rotateGesture, OS.angle_changed, gestureRotation.getAddress(), this.handle);
+	OS.g_signal_connect(rotateGesture, OS.begin, gestureBegin.getAddress(), this.handle);
+	OS.g_signal_connect(rotateGesture, OS.end, gestureEnd.getAddress(), this.handle);
+	return;
 }
 
 private void setZoomGesture () {
-		if (GTK.GTK_VERSION >= OS.VERSION(3, 14, 0)) {
-			zoomGesture = GTK.gtk_gesture_zoom_new(handle);
-			GTK.gtk_event_controller_set_propagation_phase (zoomGesture,
-			        2);
-			OS.g_signal_connect(zoomGesture, OS.scale_changed, gestureZoom.getAddress(), this.handle);
-			OS.g_signal_connect(zoomGesture, OS.begin, gestureBegin.getAddress(), this.handle);
-			OS.g_signal_connect(zoomGesture, OS.end, gestureEnd.getAddress(), this.handle);
-			return;
-		}
+	zoomGesture = GTK.gtk_gesture_zoom_new(handle);
+	GTK.gtk_event_controller_set_propagation_phase (zoomGesture,
+	        2);
+	OS.g_signal_connect(zoomGesture, OS.scale_changed, gestureZoom.getAddress(), this.handle);
+	OS.g_signal_connect(zoomGesture, OS.begin, gestureBegin.getAddress(), this.handle);
+	OS.g_signal_connect(zoomGesture, OS.end, gestureEnd.getAddress(), this.handle);
+	return;
 }
 
 static Control getControl(long handle) {
@@ -6788,14 +6653,7 @@ long windowProc (long handle, long arg0, long user_data) {
 			Control control = findBackgroundControl ();
 			boolean draw = control != null && control.backgroundImage != null;
 			if (!draw && (state & CANVAS) != 0) {
-				if (GTK.GTK_VERSION < OS.VERSION(3, 14, 0)) {
-					GdkRGBA rgba = new GdkRGBA();
-					long context = GTK.gtk_widget_get_style_context (handle);
-					GTK.gtk_style_context_get_background_color (context, GTK.GTK_STATE_FLAG_NORMAL, rgba);
-					draw = rgba.alpha == 0;
-				} else {
-					draw = (state & BACKGROUND) == 0;
-				}
+				draw = (state & BACKGROUND) == 0;
 			}
 			if (draw) {
 				long cairo = arg0;

@@ -973,10 +973,6 @@ void setForegroundGdkRGBA (GdkRGBA rgba) {
 
 @Override
 void setForegroundGdkRGBA (long handle, GdkRGBA rgba) {
-	if (GTK.GTK_VERSION < OS.VERSION(3, 14, 0)) {
-		super.setForegroundGdkRGBA(handle, rgba);
-		return;
-	}
 	long context = GTK.gtk_widget_get_style_context (handle);
 
 	GdkRGBA toSet = rgba == null ? display.COLOR_WIDGET_FOREGROUND_RGBA : rgba;
@@ -1034,13 +1030,10 @@ private void gtk_swt_set_border_color (GdkRGBA rgba) {
 	css_string += "}\n";
 
 	String finalCss;
-	if (GTK.GTK_VERSION >= OS.VERSION(3, 14, 0)) {
-		// Cache foreground color
-		cssForeground += "\n" + css_string;
-		finalCss = display.gtk_css_create_css_color_string (cssBackground, cssForeground, SWT.FOREGROUND);
-	} else {
-		finalCss = css_string;
-	}
+
+	// Cache foreground color
+	cssForeground += "\n" + css_string;
+	finalCss = display.gtk_css_create_css_color_string (cssBackground, cssForeground, SWT.FOREGROUND);
 
 	// Apply the CSS
 	long context = GTK.gtk_widget_get_style_context (handle);

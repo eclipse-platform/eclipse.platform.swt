@@ -152,30 +152,16 @@ Rectangle getClientAreaInPixels () {
 
 @Override
 GdkRGBA getContextColorGdkRGBA () {
-	if (GTK.GTK_VERSION >= OS.VERSION (3, 14, 0)) {
-		if (foreground != null) {
-			return foreground;
-		} else {
-			return display.COLOR_WIDGET_FOREGROUND_RGBA;
-		}
+	if (foreground != null) {
+		return foreground;
 	} else {
-		return super.getContextColorGdkRGBA();
+		return display.COLOR_WIDGET_FOREGROUND_RGBA;
 	}
 }
 
 @Override
 GdkRGBA getContextBackgroundGdkRGBA () {
-	if (GTK.GTK_VERSION >= OS.VERSION(3, 14, 0)) {
-		return super.getContextBackgroundGdkRGBA();
-	} else {
-		long context = GTK.gtk_widget_get_style_context (fixedHandle);
-		GdkRGBA rgba = new GdkRGBA ();
-		GTK.gtk_style_context_get_background_color (context, GTK.GTK_STATE_FLAG_NORMAL, rgba);
-		if ((state & BACKGROUND) == 0) {
-			return defaultBackground();
-		}
-		return rgba;
-	}
+	return super.getContextBackgroundGdkRGBA();
 }
 
 @Override
@@ -338,10 +324,6 @@ void setFontDescription (long font) {
 
 @Override
 void setForegroundGdkRGBA (long handle, GdkRGBA rgba) {
-	if (GTK.GTK_VERSION < OS.VERSION(3, 14, 0)) {
-		super.setForegroundGdkRGBA(handle, rgba);
-		return;
-	}
 	/*
 	 * When using CSS, setting the foreground color on an empty label
 	 * widget prevents the background from being set. If a user wants
@@ -448,19 +430,15 @@ int setBounds(int x, int y, int width, int height, boolean move, boolean resize)
 
 @Override
 long paintHandle() {
-	if (GTK.GTK_VERSION < OS.VERSION(3, 14, 0)) {
-		return super.paintHandle();
-	} else {
-		if (GTK.GTK4) return clientHandle;
-		long topHandle = topHandle ();
-		/* we draw all our children on the clientHandle*/
-		long paintHandle = clientHandle;
-		while (paintHandle != topHandle) {
-			if (gtk_widget_get_has_surface_or_window (paintHandle)) break;
-			paintHandle = GTK.gtk_widget_get_parent (paintHandle);
-		}
-		return paintHandle;
+	if (GTK.GTK4) return clientHandle;
+	long topHandle = topHandle ();
+	/* we draw all our children on the clientHandle*/
+	long paintHandle = clientHandle;
+	while (paintHandle != topHandle) {
+		if (gtk_widget_get_has_surface_or_window (paintHandle)) break;
+		paintHandle = GTK.gtk_widget_get_parent (paintHandle);
 	}
+	return paintHandle;
 }
 
 @Override

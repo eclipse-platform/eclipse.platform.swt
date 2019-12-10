@@ -513,7 +513,7 @@ public class Display extends Device {
 
 	/* GTK Version */
 	static final int GTK3_MAJOR = 3;
-	static final int GTK3_MINOR = 10;
+	static final int GTK3_MINOR = 14;
 	static final int GTK3_MICRO = 0;
 
 	/* Display Data */

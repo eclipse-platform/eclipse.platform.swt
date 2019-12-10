@@ -8927,32 +8927,6 @@ public class GTK extends OS {
 	/**
 	 * @method flags=dynamic
 	 */
-	public static final native void _gtk_widget_override_color(long widget, int state, GdkRGBA color);
-	/** [GTK3; 3.16 deprecated, replaced]*/
-	public static final void gtk_widget_override_color(long widget, int state, GdkRGBA color) {
-		lock.lock();
-		try {
-			_gtk_widget_override_color(widget, state, color);
-		} finally {
-			lock.unlock();
-		}
-	}
-	/**
-	 * @method flags=dynamic
-	 */
-	public static final native void _gtk_widget_override_background_color(long widget, int state, GdkRGBA color);
-	/** [GTK3; 3.16 deprecated, replaced] */
-	public static final void gtk_widget_override_background_color(long widget, int state, GdkRGBA color) {
-		lock.lock();
-		try {
-			_gtk_widget_override_background_color(widget, state, color);
-		} finally {
-			lock.unlock();
-		}
-	}
-	/**
-	 * @method flags=dynamic
-	 */
 	public static final native void _gtk_widget_override_font(long widget, long font);
 	/** [GTK3; 3.16 deprecated] */
 	public static final void gtk_widget_override_font(long widget, long font) {

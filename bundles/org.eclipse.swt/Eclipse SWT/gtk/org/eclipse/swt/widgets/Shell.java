@@ -790,9 +790,6 @@ void createHandle (int index) {
 		GTK.gtk_window_set_title (shellHandle, new byte [1]);
 		if ((style & (SWT.NO_TRIM | SWT.BORDER | SWT.SHELL_TRIM)) == 0) {
 			gtk_container_set_border_width (shellHandle, 1);
-			if (GTK.GTK_VERSION < OS.VERSION (3, 14, 0)) {
-				GTK.gtk_widget_override_background_color (shellHandle, GTK.GTK_STATE_FLAG_NORMAL, new GdkRGBA());
-			}
 		}
 		if ((style & SWT.TOOL) != 0) {
 			GTK.gtk_window_set_type_hint(shellHandle, GDK.GDK_WINDOW_TYPE_HINT_UTILITY);
@@ -2344,13 +2341,6 @@ public void setEnabled (boolean enabled) {
 				if (cursor != null) {
 					GDK.gdk_window_set_cursor (enableWindow, cursor.handle);
 				}
-				/* 427776: we need to listen to all enter-notify-event signals to
-				 * see if this new GdkWindow has been added to a widget's internal
-				 * hash table, so when the GdkWindow is destroyed we can also remove
-				 * that reference. */
-				if (enterNotifyEventFunc != null)
-					enterNotifyEventId = OS.g_signal_add_emission_hook (enterNotifyEventSignalId, 0, enterNotifyEventFunc.getAddress (), enableWindow, 0);
-
 				GDK.gdk_window_set_user_data (enableWindow, parentHandle);
 				GDK.gdk_window_show (enableWindow);
 			}

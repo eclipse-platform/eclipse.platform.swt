@@ -1392,22 +1392,19 @@ void setBackgroundGdkRGBA (GdkRGBA rgba) {
 void setBackgroundGdkRGBA (long context, long handle, GdkRGBA rgba) {
 	// We need to override here because DateTime widgets use "background" instead of
 	// "background-color" as their CSS property.
-	if (GTK.GTK_VERSION >= OS.VERSION(3, 14, 0)) {
-		// Form background string
-		String name = GTK.GTK_VERSION >= OS.VERSION(3, 20, 0) ? display.gtk_widget_class_get_css_name(handle)
-				: display.gtk_widget_get_name(handle);
-		String css = name + " {background: " + display.gtk_rgba_to_css_string (rgba) + ";}\n" +
-				name + ":selected" + " {background: " + display.gtk_rgba_to_css_string(display.COLOR_LIST_SELECTION_RGBA) + ";}";
+
+	// Form background string
+	String name = GTK.GTK_VERSION >= OS.VERSION(3, 20, 0) ? display.gtk_widget_class_get_css_name(handle)
+			: display.gtk_widget_get_name(handle);
+	String css = name + " {background: " + display.gtk_rgba_to_css_string (rgba) + ";}\n" +
+			name + ":selected" + " {background: " + display.gtk_rgba_to_css_string(display.COLOR_LIST_SELECTION_RGBA) + ";}";
 
 		// Cache background
 		cssBackground = css;
 
 		// Apply background color and any cached foreground color
-		String finalCss = display.gtk_css_create_css_color_string (cssBackground, cssForeground, SWT.BACKGROUND);
-		gtk_css_provider_load_from_css (context, finalCss);
-	} else {
-		super.setBackgroundGdkRGBA(context, handle, rgba);
-	}
+	String finalCss = display.gtk_css_create_css_color_string (cssBackground, cssForeground, SWT.BACKGROUND);
+	gtk_css_provider_load_from_css (context, finalCss);
 }
 
 @Override

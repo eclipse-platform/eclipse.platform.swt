@@ -1049,28 +1049,18 @@ void setBackgroundRGBA (GdkRGBA rgba) {
 }
 
 void setBackgroundRGBA (long handle, GdkRGBA rgba) {
-	if (GTK.GTK_VERSION >= OS.VERSION(3, 14, 0)) {
-		// Form background string
-		long context = GTK.gtk_widget_get_style_context(handle);
-		String name = GTK.GTK_VERSION >= OS.VERSION(3,	 20, 0) ? display.gtk_widget_class_get_css_name(handle)
-				: display.gtk_widget_get_name(handle);
-		String css = name + " {background-color: " + display.gtk_rgba_to_css_string(rgba) + "}";
+	// Form background string
+	long context = GTK.gtk_widget_get_style_context(handle);
+	String name = GTK.GTK_VERSION >= OS.VERSION(3,	 20, 0) ? display.gtk_widget_class_get_css_name(handle)
+			: display.gtk_widget_get_name(handle);
+	String css = name + " {background-color: " + display.gtk_rgba_to_css_string(rgba) + "}";
 
 
 		// Apply background color and any foreground color
-		gtk_css_provider_load_from_css(context, css);
-	}
+	gtk_css_provider_load_from_css(context, css);
 }
 
 void setForegroundRGBA (long handle, GdkRGBA rgba) {
-	if (GTK.GTK_VERSION < OS.VERSION(3, 14, 0)) {
-		GdkRGBA selectedForeground = display.COLOR_LIST_SELECTION_TEXT_RGBA;
-		GTK.gtk_widget_override_color (handle, GTK.GTK_STATE_FLAG_NORMAL, rgba);
-		GTK.gtk_widget_override_color (handle, GTK.GTK_STATE_FLAG_SELECTED, selectedForeground);
-		long context = GTK.gtk_widget_get_style_context (handle);
-		GTK.gtk_style_context_invalidate (context);
-		return;
-	}
 	GdkRGBA toSet = new GdkRGBA();
 	if (rgba != null) {
 		toSet = rgba;

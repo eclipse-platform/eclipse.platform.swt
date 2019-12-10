@@ -591,20 +591,16 @@ int setBounds (int x, int y, int width, int height, boolean move, boolean resize
 
 @Override
 void setBackgroundGdkRGBA (long context, long handle, GdkRGBA rgba) {
-	if (GTK.GTK_VERSION >= OS.VERSION(3, 14, 0)) {
-		// Form background string
-		String name = GTK.GTK_VERSION >= OS.VERSION(3, 20, 0) ? "toolbar" : "GtkToolbar";
-		String css = name + " {background-color: " + display.gtk_rgba_to_css_string(rgba) + "}";
+	// Form background string
+	String name = GTK.GTK_VERSION >= OS.VERSION(3, 20, 0) ? "toolbar" : "GtkToolbar";
+	String css = name + " {background-color: " + display.gtk_rgba_to_css_string(rgba) + "}";
 
 		// Cache background color
 		this.cssBackground = css;
 
 		// Apply background color and any foreground color
-		String finalCss = display.gtk_css_create_css_color_string (this.cssBackground, this.cssForeground, SWT.BACKGROUND);
-		gtk_css_provider_load_from_css(context, finalCss);
-	} else {
-		super.setBackgroundGdkRGBA(context, handle, rgba);
-	}
+	String finalCss = display.gtk_css_create_css_color_string (this.cssBackground, this.cssForeground, SWT.BACKGROUND);
+	gtk_css_provider_load_from_css(context, finalCss);
 }
 
 @Override
@@ -615,32 +611,28 @@ void setParentBackground () {
 
 @Override
 void setForegroundGdkRGBA (long handle, GdkRGBA rgba) {
-	if (GTK.GTK_VERSION >= OS.VERSION(3, 14, 0)) {
-		GdkRGBA toSet = new GdkRGBA();
-		if (rgba != null) {
-			toSet = rgba;
-		} else {
-			toSet = display.COLOR_WIDGET_FOREGROUND_RGBA;
-		}
-		long context = GTK.gtk_widget_get_style_context (handle);
-		// Form foreground string
-		String color = display.gtk_rgba_to_css_string(toSet);
-		String name = GTK.GTK_VERSION >= OS.VERSION(3, 20, 0) ? display.gtk_widget_class_get_css_name(handle)
-				: display.gtk_widget_get_name(handle);
-		GdkRGBA selectedForeground = display.COLOR_LIST_SELECTION_TEXT_RGBA;
-		String selection = GTK.GTK_VERSION >= OS.VERSION(3, 20, 0) ? " selection" : ":selected";
-		String css = "* {color: " + color + ";}\n"
-				+ name + selection + " {color: " + display.gtk_rgba_to_css_string(selectedForeground) + ";}";
+	GdkRGBA toSet = new GdkRGBA();
+	if (rgba != null) {
+		toSet = rgba;
+	} else {
+		toSet = display.COLOR_WIDGET_FOREGROUND_RGBA;
+	}
+	long context = GTK.gtk_widget_get_style_context (handle);
+	// Form foreground string
+	String color = display.gtk_rgba_to_css_string(toSet);
+	String name = GTK.GTK_VERSION >= OS.VERSION(3, 20, 0) ? display.gtk_widget_class_get_css_name(handle)
+			: display.gtk_widget_get_name(handle);
+	GdkRGBA selectedForeground = display.COLOR_LIST_SELECTION_TEXT_RGBA;
+	String selection = GTK.GTK_VERSION >= OS.VERSION(3, 20, 0) ? " selection" : ":selected";
+	String css = "* {color: " + color + ";}\n"
+			+ name + selection + " {color: " + display.gtk_rgba_to_css_string(selectedForeground) + ";}";
 
 		// Cache foreground color
 		this.cssForeground = css;
 
 		// Apply foreground color and any cached background color
-		String finalCss = display.gtk_css_create_css_color_string (this.cssBackground, this.cssForeground, SWT.FOREGROUND);
-		gtk_css_provider_load_from_css(context, finalCss);
-	} else {
-		super.setForegroundGdkRGBA(handle, rgba);
-	}
+	String finalCss = display.gtk_css_create_css_color_string (this.cssBackground, this.cssForeground, SWT.FOREGROUND);
+	gtk_css_provider_load_from_css(context, finalCss);
 }
 
 @Override

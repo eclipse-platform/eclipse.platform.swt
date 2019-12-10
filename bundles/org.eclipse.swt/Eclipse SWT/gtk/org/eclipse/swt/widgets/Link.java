@@ -401,16 +401,14 @@ long gtk_button_release_event (long widget, long event) {
 
 @Override
 long gtk_draw (long widget, long cairo) {
-	if (GTK.GTK_VERSION >= OS.VERSION(3, 14, 0)) {
-		long context = GTK.gtk_widget_get_style_context(widget);
-		GtkAllocation allocation = new GtkAllocation();
-		GTK.gtk_widget_get_allocation (widget, allocation);
-		int width = (state & ZERO_WIDTH) != 0 ? 0 : allocation.width;
-		int height = (state & ZERO_HEIGHT) != 0 ? 0 : allocation.height;
-		// We specify a 0 value for x & y as we want the whole widget to be
-		// colored, not some portion of it.
-		GTK.gtk_render_background(context, cairo, 0, 0, width, height);
-	}
+	long context = GTK.gtk_widget_get_style_context(widget);
+	GtkAllocation allocation = new GtkAllocation();
+	GTK.gtk_widget_get_allocation (widget, allocation);
+	int width = (state & ZERO_WIDTH) != 0 ? 0 : allocation.width;
+	int height = (state & ZERO_HEIGHT) != 0 ? 0 : allocation.height;
+	// We specify a 0 value for x & y as we want the whole widget to be
+	// colored, not some portion of it.
+	GTK.gtk_render_background(context, cairo, 0, 0, width, height);
 	return super.gtk_draw(widget, cairo);
 }
 

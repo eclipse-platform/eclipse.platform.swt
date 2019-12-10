@@ -872,35 +872,31 @@ private void setTrackerBackground(boolean opaque) {
 	} else if (opaque == cachedBackgroundIsOpaque.booleanValue()) {
 		return;
 	}
-	if (GTK.GTK_VERSION < OS.VERSION (3, 14, 0)) {
-		GTK.gtk_widget_override_background_color (overlay, GTK.GTK_STATE_FLAG_NORMAL, new GdkRGBA());
+	String name = GTK.GTK_VERSION >= OS.VERSION(3, 20, 0) ? "window" : "GtkWindow";
+	String css;
+	if (opaque) {
+		GTK.gtk_widget_set_opacity (overlay, 1.0);
+		css = name + " {background-color: rgb(0,0,0);}";
 	} else {
-		String name = GTK.GTK_VERSION >= OS.VERSION(3, 20, 0) ? "window" : "GtkWindow";
-		String css;
-		if (opaque) {
-			GTK.gtk_widget_set_opacity (overlay, 1.0);
-			css = name + " {background-color: rgb(0,0,0);}";
-		} else {
-			GTK.gtk_widget_set_opacity (overlay, 0.0);
-			css = name +  " {  "
-					+ "border-top-color: transparent;"
-					+ "border-left-color: transparent;"
-					+ "border-right-color: transparent;"
-					+ "border-bottom-color: transparent;}";
-		}
-		long context = GTK.gtk_widget_get_style_context (overlay);
-		if (provider == 0) {
-			provider = GTK.gtk_css_provider_new ();
-			GTK.gtk_style_context_add_provider (context, provider, GTK.GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
-			OS.g_object_unref (provider);
-		}
-		if (GTK.GTK4) {
-			GTK.gtk_css_provider_load_from_data (provider, Converter.wcsToMbcs (css, true), -1);
-		} else {
-			GTK.gtk_css_provider_load_from_data (provider, Converter.wcsToMbcs (css, true), -1, null);
-		}
-		GTK.gtk_style_context_invalidate (context);
+		GTK.gtk_widget_set_opacity (overlay, 0.0);
+		css = name +  " {  "
+				+ "border-top-color: transparent;"
+				+ "border-left-color: transparent;"
+				+ "border-right-color: transparent;"
+				+ "border-bottom-color: transparent;}";
 	}
+	long context = GTK.gtk_widget_get_style_context (overlay);
+	if (provider == 0) {
+		provider = GTK.gtk_css_provider_new ();
+		GTK.gtk_style_context_add_provider (context, provider, GTK.GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+		OS.g_object_unref (provider);
+	}
+	if (GTK.GTK4) {
+		GTK.gtk_css_provider_load_from_data (provider, Converter.wcsToMbcs (css, true), -1);
+	} else {
+		GTK.gtk_css_provider_load_from_data (provider, Converter.wcsToMbcs (css, true), -1, null);
+	}
+	GTK.gtk_style_context_invalidate (context);
 	long region = Cairo.cairo_region_create ();
 	GTK.gtk_widget_shape_combine_region (overlay, region);
 	GTK.gtk_widget_input_shape_combine_region (overlay, region);

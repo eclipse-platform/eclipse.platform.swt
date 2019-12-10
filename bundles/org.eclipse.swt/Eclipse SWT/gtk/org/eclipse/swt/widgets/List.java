@@ -1231,7 +1231,7 @@ public void remove (int [] indices) {
 
 /**
  * Removes all of the items from the receiver.
- * 
+ *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -1509,12 +1509,8 @@ public void setItems (String... items) {
 
 @Override
 void setForegroundGdkRGBA (GdkRGBA rgba) {
-	if (GTK.GTK_VERSION >= OS.VERSION (3, 14, 0)) {
-		GdkRGBA toSet = rgba == null ? display.COLOR_LIST_FOREGROUND_RGBA : rgba;
-		setForegroundGdkRGBA (handle, toSet);
-	} else {
-		super.setForegroundGdkRGBA(rgba);
-	}
+	GdkRGBA toSet = rgba == null ? display.COLOR_LIST_FOREGROUND_RGBA : rgba;
+	setForegroundGdkRGBA (handle, toSet);
 }
 
 /**

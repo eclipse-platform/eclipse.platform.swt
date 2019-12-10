@@ -757,7 +757,7 @@ private void overrideThemeValues () {
 
 	// Load CSS from user-defined CSS file.
 	String additionalCSSPath = System.getProperty("org.eclipse.swt.internal.gtk.cssFile");
-	if (GTK.GTK_VERSION >= OS.VERSION(3, 14, 0) && additionalCSSPath != null){
+	if (additionalCSSPath != null){
 		// Warning:
 		// - gtk css syntax changed in 3.20. If you load custom css, it could break things depending on gtk version on system.
 		// - Also, a lot of custom css/themes are buggy and may result in additional console warnings.

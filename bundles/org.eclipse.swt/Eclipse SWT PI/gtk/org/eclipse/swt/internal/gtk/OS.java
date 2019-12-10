@@ -1764,18 +1764,6 @@ public static final void g_time_val_add(long result, long microseconds) {
 	}
 }
 /**
- * @param table cast=(GHashTable *)
- */
-public static final native long _g_hash_table_get_values(long table);
-public static final long g_hash_table_get_values(long table) {
-	lock.lock();
-	try {
-		return _g_hash_table_get_values(table);
-	} finally {
-		lock.unlock();
-	}
-}
-/**
  * @param function cast=(GSourceFunc)
  * @param data cast=(gpointer)
  */

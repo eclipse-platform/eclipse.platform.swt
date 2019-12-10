@@ -431,12 +431,8 @@ void reskinChildren (int flags) {
 
 @Override
 void setWidgetBackground  () {
-	if (GTK.GTK_VERSION >= OS.VERSION(3, 14, 0)) {
-		GdkRGBA rgba = (state & BACKGROUND) != 0 ? getBackgroundGdkRGBA () : null;
-		super.setBackgroundGdkRGBA (handle, rgba);
-	} else {
-		super.setWidgetBackground();
-	}
+	GdkRGBA rgba = (state & BACKGROUND) != 0 ? getBackgroundGdkRGBA () : null;
+	super.setBackgroundGdkRGBA (handle, rgba);
 }
 
 @Override

@@ -2224,16 +2224,10 @@ void setBackgroundGdkRGBA (long context, long handle, GdkRGBA rgba) {
 		// For read only Combos, we can just apply the background CSS to the GtkToggleButton.
 		gtk_css_provider_load_from_css (GTK.gtk_widget_get_style_context(buttonHandle), finalCss);
 	} else {
-		if (GTK.GTK_VERSION >= OS.VERSION(3, 14, 0)) {
-			// GtkEntry and GtkToggleButton needs to be themed separately with different
-			// providers for coherent background. Similar to Tree/Table headers.
-			gtk_css_provider_load_from_css (GTK._gtk_widget_get_style_context(entryHandle), finalCss);
-			setButtonBackgroundGdkRGBA (rgba);
-		} else {
-			// Maintain GTK3.12- functionality
-			setBackgroundGradientGdkRGBA (GTK.gtk_widget_get_style_context (entryHandle), handle, rgba);
-			super.setBackgroundGdkRGBA (GTK.gtk_widget_get_style_context (entryHandle), entryHandle, rgba);
-		}
+		// GtkEntry and GtkToggleButton needs to be themed separately with different
+		// providers for coherent background. Similar to Tree/Table headers.
+		gtk_css_provider_load_from_css (GTK._gtk_widget_get_style_context(entryHandle), finalCss);
+		setButtonBackgroundGdkRGBA (rgba);
 	}
 	// Set the background color of the text of the drop down menu.
 	OS.g_object_set (textRenderer, OS.background_rgba, rgba, 0);
