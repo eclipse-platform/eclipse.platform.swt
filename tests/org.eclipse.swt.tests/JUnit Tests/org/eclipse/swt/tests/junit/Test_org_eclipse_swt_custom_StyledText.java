@@ -164,12 +164,13 @@ private Color getColor(RGB rgb) {
 }
 // this method must not be public so that the auto-gen tool keeps it
 protected void initializeColors() {
-	colors.put(RED, new Color (RED));
-	colors.put(BLUE, new Color (BLUE));
-	colors.put(GREEN, new Color (GREEN));
-	colors.put(YELLOW, new Color (YELLOW));
-	colors.put(CYAN, new Color (CYAN));
-	colors.put(PURPLE, new Color (PURPLE));
+	Display display = Display.getDefault();
+	colors.put(RED, new Color (display, RED));
+	colors.put(BLUE, new Color (display, BLUE));
+	colors.put(GREEN, new Color (display, GREEN));
+	colors.put(YELLOW, new Color (display, YELLOW));
+	colors.put(CYAN, new Color (display, CYAN));
+	colors.put(PURPLE, new Color (display, PURPLE));
 }
 
 @Override
@@ -234,7 +235,7 @@ public void test_addExtendedModifyListenerLorg_eclipse_swt_custom_ExtendedModify
 		listenerCalled = true;
 		assertEquals("ExtendedModify event data invalid", 0, event.start);
 		assertEquals("ExtendedModify event data invalid", line.length(), event.length);
-		assertEquals("ExtendedModify event data invalid", line + line.substring(1) + line, event.replacedText);
+		assertEquals("ExtendedModify event data invalid", line + line.substring(1, line.length()) + line, event.replacedText);
 	};
 	text.addExtendedModifyListener(listener);
 	text.setText(line);
@@ -576,7 +577,7 @@ public void test_addVerifyListenerLorg_eclipse_swt_events_VerifyListener() {
 	textLength = text.getCharCount() - 1 + newLine.length();
 	text.replaceTextRange(0, 1, line);
 	assertTrue("replaceTextRange does not send event", listenerCalled);
-	assertEquals("Listener failed", newLine + newLine.substring(1) + newLine, text.getText());
+	assertEquals("Listener failed", newLine + newLine.substring(1, newLine.length()) + newLine, text.getText());
 
 	listenerCalled = false;
 	text.removeVerifyListener(listener);
@@ -2282,8 +2283,10 @@ public void test_invokeActionI() {
 	assertEquals("LineL\r\n", text.getSelectionText());
 
 	text.invokeAction(ST.LINE_END);
+	assertEquals(12, text.getCaretOffset());
 	text.invokeAction(ST.SELECT_LINE_UP);
 	assertEquals("\r\nLineW", text.getSelectionText());
+	assertEquals(5, text.getCaretOffset());
 
 	text.invokeAction(ST.SELECT_LINE_START);
 	assertEquals("LineL\r\nLineW", text.getSelectionText());
@@ -2328,6 +2331,7 @@ public void test_invokeActionI() {
 	assertEquals("LineL", text.getSelectionText());
 
 	text.invokeAction(ST.SELECT_LINE_END);
+	assertEquals("LineL", text.getSelectionText());
 	text.invokeAction(ST.CUT);
 	assertEquals("\r\nLineW", text.getText());
 
@@ -5575,6 +5579,14 @@ public void test_variableToFixedLineHeight() throws InterruptedException {
 	assertFalse(hasPixel(text, colorForVariableHeight));
 }
 
+/**
+ * Check if StyledText widget contains the given color.
+ *
+ * @param text widget to check
+ * @param expectedColor color to find
+ * @return <code>true</code> if the given color was found in current text widget
+ *         bounds
+ */
 private boolean hasPixel(StyledText text, Color expectedColor) {
 	return SwtTestUtil.hasPixel(text, expectedColor);
 }
