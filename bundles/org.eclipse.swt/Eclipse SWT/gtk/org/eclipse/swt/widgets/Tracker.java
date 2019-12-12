@@ -54,7 +54,7 @@ public class Tracker extends Widget {
 	Rectangle bounds;
 	int cursorOrientation = SWT.NONE;
 	int oldX, oldY;
-	long provider; // Gtk3.14
+	long provider;
 
 	// Re-use/cache some items for performance reasons as draw-events must be efficient to prevent jitter.
 	Rectangle cachedCombinedDisplayResolution = Display.getDefault().getBounds(); // Cached for performance reasons.

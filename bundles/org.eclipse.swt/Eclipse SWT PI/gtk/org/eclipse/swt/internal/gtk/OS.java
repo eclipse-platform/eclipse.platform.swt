@@ -673,11 +673,6 @@ public class OS extends C {
 	 * Minimum Glib version requirement of gtk can be found in gtk's 'configure.ac' file, see line 'm4_define([glib_required_version],[2.*.*]).
 	 *
 	 * For reference:
-	 * Gtk3.4  has min version of glib 2.32
-	 * Gtk3.6  has min version of glib 2.33.1
-	 * Gtk3.8  has min version of glib 2.35.3
-	 * Gtk3.10 has min version of glib 2.37.5
-	 * Gtk3.12 has min version of glib 2.39.5
 	 * Gtk3.14 has min version of glib 2.41.2
 	 * Gtk3.16 has min version of glib 2.43.4
 	 * Gtk3.18 has min version of glib 2.45.8
