@@ -15,9 +15,6 @@
 package org.eclipse.swt.browser;
 
 
-import static org.eclipse.swt.internal.webkit.WebKitGTK.WEBKIT1;
-import static org.eclipse.swt.internal.webkit.WebKitGTK.WEBKIT2;
-
 import java.io.*;
 import java.lang.reflect.*;
 import java.net.*;
@@ -122,33 +119,19 @@ import org.eclipse.swt.widgets.*;
  * ~May the force be with you.
  */
 class WebKit extends WebBrowser {
-	/**
-	 * WebKitWebView
-	 * Note, as of time at compleating webkit2, (18th April 2018, we )
-	 */
 	long webView;
-	long scrolledWindow;
 	long pageId;
-
-	/** Webkit1 only. Used by the externalObject for javascript callback to java. */
-	long webViewData;
 
 	int failureCount, lastKeyCode, lastCharCode;
 
-	String postData;  // Webkit1 only.
-	String[] headers; // Webkit1 only.
-	byte[] htmlBytes;  // Webkit1 only.
-	boolean loadingText, untrustedText; // Webkit1 only.
-	BrowserFunction eventFunction; //Webkit1 only.
-
-	boolean ignoreDispose; // Webkit1 & Webkit2.
+	boolean ignoreDispose;
 	boolean tlsError;
 	long tlsErrorCertificate;
 	String tlsErrorUriString;
 	URI tlsErrorUri;
 	String tlsErrorType;
 
-	boolean firstLoad = true; //WebKit2 only
+	boolean firstLoad = true;
 
 	/**
 	 * Timeout used for javascript execution / deadlock detection.
@@ -157,12 +140,13 @@ class WebKit extends WebBrowser {
 	 * https://www.nczonline.net/blog/2009/01/05/what-determines-that-a-script-is-long-running/
 	 * https://stackoverflow.com/questions/3030024/maximum-execution-time-for-javascript
 	 */
-	static final int ASYNC_EXEC_TIMEOUT_MS = 10000; // Webkit2.
+	static final int ASYNC_EXEC_TIMEOUT_MS = 10000;
 
-	static boolean bug522733FirstInstanceCreated = false; //Webkit2 workaround for Bug 522733
+	/** Workaround for bug 522733 */
+	static boolean bug522733FirstInstanceCreated = false;
 
 	/** Part of workaround in Bug 527738. Prevent old request overring newer request */
-	static AtomicInteger w2_bug527738LastRequestCounter = new AtomicInteger(); // Webkit 2 only (Bug 527738)
+	static AtomicInteger w2_bug527738LastRequestCounter = new AtomicInteger();
 
 	/**
 	 * Webkit2: In a few situations, evaluate() should not wait for it's asynchronous callback to finish.
@@ -178,14 +162,7 @@ class WebKit extends WebBrowser {
 	 */
 	private static int nonBlockingEvaluate = 0;
 
-	static int DisabledJSCount;
-
-	/** Webkit1 only. Used for callJava. See JSObjectHasPropertyProc */
-	static long ExternalClass;
-
-	static long PostString, WebViewType;
-	static Map<LONG, LONG> WindowMappings = new HashMap<> ();
-	static Map<LONG, Integer> webKitDownloadStatus = new HashMap<> (); // Webkit2
+	static Map<LONG, Integer> webKitDownloadStatus = new HashMap<> ();
 
 	static final String ABOUT_BLANK = "about:blank"; //$NON-NLS-1$
 	static final String CLASSNAME_EXTERNAL = "External"; //$NON-NLS-1$
@@ -219,63 +196,37 @@ class WebKit extends WebBrowser {
 	static final String DOMEVENT_MOUSEWHEEL = "mousewheel"; //$NON-NLS-1$
 
 	/* WebKit signal data */
-	static final int HOVERING_OVER_LINK = 1;
-	static final int NOTIFY_PROGRESS = 2;
-	static final int NAVIGATION_POLICY_DECISION_REQUESTED = 3;
-	static final int NOTIFY_TITLE = 4;
-	static final int POPULATE_POPUP = 5;
-	static final int STATUS_BAR_TEXT_CHANGED = 6; // webkit1 only.
-	static final int CREATE_WEB_VIEW = 7;
-	static final int WEB_VIEW_READY = 8;
-	static final int NOTIFY_LOAD_STATUS = 9;
-	static final int RESOURCE_REQUEST_STARTING = 10;
-	static final int DOWNLOAD_REQUESTED = 11; // Webkit1
-	static final int MIME_TYPE_POLICY_DECISION_REQUESTED = 12;
-	static final int CLOSE_WEB_VIEW = 13;
-	static final int WINDOW_OBJECT_CLEARED = 14;
-	static final int CONSOLE_MESSAGE = 15;
-	static final int LOAD_CHANGED = 16;
-	static final int DECIDE_POLICY = 17;
-	static final int MOUSE_TARGET_CHANGED = 18;
-	static final int CONTEXT_MENU = 19;
-	static final int AUTHENTICATE = 20;
-	static final int DECIDE_DESTINATION = 21; // webkit2 only.
-	static final int FAILED = 22; // webkit2 only.
-	static final int FINISHED = 23; // webkit2 only.
-	static final int DOWNLOAD_STARTED = 24;   // Webkit2 (webkit1 equivalent is DOWNLOAD_REQUESTED)
-	static final int WIDGET_EVENT = 25;		// Webkit2. Used for events like keyboard/mouse input. See Bug 528549 and Bug 533833.
-	static final int LOAD_FAILED_TLS = 26; // Webkit2 only
+	static final int NOTIFY_PROGRESS = 1;
+	static final int NOTIFY_TITLE = 2;
+	static final int CREATE_WEB_VIEW = 3;
+	static final int WEB_VIEW_READY = 4;
+	static final int CLOSE_WEB_VIEW = 5;
+	static final int LOAD_CHANGED = 6;
+	static final int DECIDE_POLICY = 7;
+	static final int MOUSE_TARGET_CHANGED = 8;
+	static final int CONTEXT_MENU = 9;
+	static final int AUTHENTICATE = 10;
+	static final int DECIDE_DESTINATION = 11;
+	static final int FAILED = 12;
+	static final int FINISHED = 13;
+	static final int DOWNLOAD_STARTED = 14;
+	static final int WIDGET_EVENT = 15; // Used for events like keyboard/mouse input. See Bug 528549 and Bug 533833.
+	static final int LOAD_FAILED_TLS = 16;
 
 	static final String KEY_CHECK_SUBWINDOW = "org.eclipse.swt.internal.control.checksubwindow"; //$NON-NLS-1$
 
 	static final String SWT_WEBKITGTK_VERSION = "org.eclipse.swt.internal.webkitgtk.version"; //$NON-NLS-1$
 
 	/* the following Callbacks are never freed */
-	static Callback Proc2, Proc3, Proc4, Proc5, Proc6;
+	static Callback Proc2, Proc3, Proc4, Proc5;
 
-
-	/**
-	 * Webkit1  only: For javascript to call java via it's 'callJava'.
-	 * For webkit2, see Webkit2JavaCallback.
-	 *
-	 * Webkit1: - callJava is implemented via an external object
-	 * - Creates an object 'external' on javascipt side.
-	 * 	 -- see create(..) where it's initialized
-	 *   -- see webkit_window_object_cleared where it re-creates it on page-reloads
-	 * - Javascript will call 'external.callJava' (where callJava is a property of 'external').
-	 *    this triggers JSObjectGetPropertyProc(..) callback, which initializes callJava function.
-	 *    Then the external.callJava reaches JSObjectCallAsFunctionProc(..) and subsequently WebKit.java:callJava(..) is called.
-	 */
-	static Callback JSObjectHasPropertyProc, JSObjectGetPropertyProc, JSObjectCallAsFunctionProc; // webkit1 only.
-
-	/** Webkit1 & Webkit2, Process key/mouse events from javascript. */
+	/** Process key/mouse events from javascript. */
 	static Callback JSDOMEventProc;
 
-	/** Flag indicating whether TLS errors (like self-signed certificates) are to be ignored. Webkit2 only.*/
+	/** Flag indicating whether TLS errors (like self-signed certificates) are to be ignored. */
 	static final boolean ignoreTls;
 
 	static {
-			WebViewType = WebKitGTK.webkit_web_view_get_type ();
 			Proc2 = new Callback (WebKit.class, "Proc", 2); //$NON-NLS-1$
 			if (Proc2.getAddress () == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
 			Proc3 = new Callback (WebKit.class, "Proc", 3); //$NON-NLS-1$
@@ -284,133 +235,43 @@ class WebKit extends WebBrowser {
 			if (Proc4.getAddress () == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
 			Proc5 = new Callback (WebKit.class, "Proc", 5); //$NON-NLS-1$
 			if (Proc5.getAddress () == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
-			Proc6 = new Callback (WebKit.class, "Proc", 6); //$NON-NLS-1$
-			if (Proc6.getAddress () == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
 
-			if (WEBKIT2) {
-				new Webkit2AsyncToSync();
-			}
+			new Webkit2AsyncToSync();
 
-			if (WEBKIT2) {
-				// Note: this will also initialize WebkitGDBus
-				Webkit2Extension.init();
-			} else {
-				JSObjectHasPropertyProc = new Callback (WebKit.class, "JSObjectHasPropertyProc", 3); //$NON-NLS-1$
-				if (JSObjectHasPropertyProc.getAddress () == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
-				JSObjectGetPropertyProc = new Callback (WebKit.class, "JSObjectGetPropertyProc", 4); //$NON-NLS-1$
-				if (JSObjectGetPropertyProc.getAddress () == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
-				JSObjectCallAsFunctionProc = new Callback (WebKit.class, "JSObjectCallAsFunctionProc", 6); //$NON-NLS-1$
-				if (JSObjectCallAsFunctionProc.getAddress () == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
-			}
+			WebKitExtension.init();
 
 			JSDOMEventProc = new Callback (WebKit.class, "JSDOMEventProc", 3); //$NON-NLS-1$
 			if (JSDOMEventProc.getAddress () == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
 
 			NativeClearSessions = () -> {
 				if (!WebKitGTK.LibraryLoaded) return;
-				if (WEBKIT2) {
-					if (WebKitGTK.webkit_get_minor_version() >= 16) {
-						long context = WebKitGTK.webkit_web_context_get_default();
-						long manager = WebKitGTK.webkit_web_context_get_website_data_manager (context);
-						WebKitGTK.webkit_website_data_manager_clear(manager, WebKitGTK.WEBKIT_WEBSITE_DATA_COOKIES, 0, 0, 0, 0);
-					} else {
-						System.err.println("SWT WebKit: clear sessions only supported on WebKitGtk version 2.16 and above. "
-								+ "Your version is: " + internalGetWebKitVersionStr());
-					}
+				if (WebKitGTK.webkit_get_minor_version() >= 16) {
+					long context = WebKitGTK.webkit_web_context_get_default();
+					long manager = WebKitGTK.webkit_web_context_get_website_data_manager (context);
+					WebKitGTK.webkit_website_data_manager_clear(manager, WebKitGTK.WEBKIT_WEBSITE_DATA_COOKIES, 0, 0, 0, 0);
 				} else {
-					long session = WebKitGTK.webkit_get_default_session ();
-					long type = WebKitGTK.soup_cookie_jar_get_type ();
-					long jar = WebKitGTK.soup_session_get_feature (session, type);
-					if (jar == 0) return;
-					long cookies = WebKitGTK.soup_cookie_jar_all_cookies (jar);
-					int length = OS.g_slist_length (cookies);
-					long current = cookies;
-					for (int i = 0; i < length; i++) {
-						long cookie = OS.g_slist_data (current);
-						long expires = WebKitGTK.SoupCookie_expires (cookie);
-						if (expires == 0) {
-							/* indicates a session cookie */
-							WebKitGTK.soup_cookie_jar_delete_cookie (jar, cookie);
-						}
-						WebKitGTK.soup_cookie_free (cookie);
-						current = OS.g_slist_next (current);
-					}
-					OS.g_slist_free (cookies);
+					System.err.println("SWT WebKit: clear sessions only supported on WebKitGtk version 2.16 and above. "
+							+ "Your version is: " + internalGetWebKitVersionStr());
 				}
-
 			};
 
 			NativeGetCookie = () -> {
 				if (!WebKitGTK.LibraryLoaded) return;
-				if (WEBKIT2) {
-					if (WebKitGTK.webkit_get_minor_version() >= 20) {
-						CookieValue = Webkit2AsyncToSync.getCookie(CookieUrl, CookieName);
-					} else {
-						System.err.println("SWT WebKit: getCookie() only supported on WebKitGTK version 2.20 and above. "
-								+ "Your version is: " + internalGetWebKitVersionStr());
-					}
+				if (WebKitGTK.webkit_get_minor_version() >= 20) {
+					CookieValue = Webkit2AsyncToSync.getCookie(CookieUrl, CookieName);
 				} else {
-					long session = WebKitGTK.webkit_get_default_session ();
-					long type = WebKitGTK.soup_cookie_jar_get_type ();
-					long jar = WebKitGTK.soup_session_get_feature (session, type);
-					if (jar == 0) return;
-					byte[] bytes = Converter.wcsToMbcs (CookieUrl, true);
-					long uri = WebKitGTK.soup_uri_new (bytes);
-					if (uri == 0) return;
-					long cookies = WebKitGTK.soup_cookie_jar_get_cookies (jar, uri, 0);
-					WebKitGTK.soup_uri_free (uri);
-					if (cookies == 0) return;
-					int length = C.strlen (cookies);
-					bytes = new byte[length];
-					C.memmove (bytes, cookies, length);
-					OS.g_free (cookies);
-					String allCookies = new String (Converter.mbcsToWcs (bytes));
-					StringTokenizer tokenizer = new StringTokenizer (allCookies, ";"); //$NON-NLS-1$
-					while (tokenizer.hasMoreTokens ()) {
-						String cookie = tokenizer.nextToken ();
-						int index = cookie.indexOf ('=');
-						if (index != -1) {
-							String name = cookie.substring (0, index).trim ();
-							if (name.equals (CookieName)) {
-								CookieValue = cookie.substring (index + 1).trim ();
-								return;
-							}
-						}
-					}
+					System.err.println("SWT WebKit: getCookie() only supported on WebKitGTK version 2.20 and above. "
+							+ "Your version is: " + internalGetWebKitVersionStr());
 				}
 			};
 
 			NativeSetCookie = () -> {
 				if (!WebKitGTK.LibraryLoaded) return;
-				if (WEBKIT2) {
-					if (WebKitGTK.webkit_get_minor_version() >= 20) {
-						CookieResult = Webkit2AsyncToSync.setCookie(CookieUrl, CookieValue);
-					} else {
-						System.err.println("SWT WebKit: setCookie() only supported on WebKitGTK version 2.20 and above. "
-								+ "Your version is: " + internalGetWebKitVersionStr());
-					}
+				if (WebKitGTK.webkit_get_minor_version() >= 20) {
+					CookieResult = Webkit2AsyncToSync.setCookie(CookieUrl, CookieValue);
 				} else {
-					long session = WebKitGTK.webkit_get_default_session ();
-					long type = WebKitGTK.soup_cookie_jar_get_type ();
-					long jar = WebKitGTK.soup_session_get_feature (session, type);
-					if (jar == 0) {
-						/* this happens if a navigation has not occurred yet */
-						WebKitGTK.soup_session_add_feature_by_type (session, type);
-						jar = WebKitGTK.soup_session_get_feature (session, type);
-					}
-					if (jar == 0) return;
-					byte[] bytes = Converter.wcsToMbcs (CookieUrl, true);
-					long uri = WebKitGTK.soup_uri_new (bytes);
-					if (uri == 0) return;
-					bytes = Converter.wcsToMbcs (CookieValue, true);
-					long cookie = WebKitGTK.soup_cookie_parse (bytes, uri);
-					if (cookie != 0) {
-						WebKitGTK.soup_cookie_jar_add_cookie (jar, cookie);
-						// the following line is intentionally commented
-						// WebKitGTK.soup_cookie_free (cookie);
-						CookieResult = true;
-					}
-					WebKitGTK.soup_uri_free (uri);
+					System.err.println("SWT WebKit: setCookie() only supported on WebKitGTK version 2.20 and above. "
+							+ "Your version is: " + internalGetWebKitVersionStr());
 				}
 			};
 
@@ -418,43 +279,39 @@ class WebKit extends WebBrowser {
 				SetPendingCookies (NativePendingCookies);
 				NativePendingCookies = null;
 			}
-			ignoreTls = WEBKIT2 && "true".equals(System.getProperty("org.eclipse.swt.internal.webkitgtk.ignoretlserrors"));
+			ignoreTls = "true".equals(System.getProperty("org.eclipse.swt.internal.webkitgtk.ignoretlserrors"));
 	}
 
 	@Override
 	public void createFunction(BrowserFunction function) {
-		if (WEBKIT2) {
-			if (!WebkitGDBus.initialized) {
-				System.err.println("SWT webkit: WebkitGDBus and/or Webkit2Extension not loaded, BrowserFunction will not work." +
-					"Tried to create "+ function.name);
-				return;
-			}
+		if (!WebkitGDBus.initialized) {
+			System.err.println("SWT webkit: WebkitGDBus and/or Webkit2Extension not loaded, BrowserFunction will not work." +
+				"Tried to create "+ function.name);
+			return;
 		}
 		super.createFunction(function);
-		if (WEBKIT2) {
-			String url = this.getUrl().isEmpty() ? "nullURL" : this.getUrl();
-			/*
-			 * If the proxy to the extension has not yet been loaded, store the BrowserFunction page ID,
-			 * function string, and URL in a HashMap. Once the proxy to the extension is loaded, these
-			 * functions will be sent to and registered in the extension.
-			 */
-			if (!WebkitGDBus.connectionToExtensionCreated) {
-				WebkitGDBus.functionsPending = true;
-				ArrayList<ArrayList<String>> list = new ArrayList<>();
-				ArrayList<String> functionAndUrl = new ArrayList<>();
-				functionAndUrl.add(0, function.functionString);
-				functionAndUrl.add(1, url);
-				list.add(functionAndUrl);
-				ArrayList<ArrayList<String>> existing = WebkitGDBus.pendingBrowserFunctions.putIfAbsent(this.pageId, list);
-				if (existing != null) {
-					existing.add(functionAndUrl);
-				}
-			} else {
-				// If the proxy to the extension is already loaded, register the function in the extension via DBus
-				boolean successful = webkit_extension_modify_function(this.pageId, function.functionString, url, "register");
-				if (!successful) {
-					System.err.println("SWT webkit: failure registering BrowserFunction " + function.name);
-				}
+		String url = this.getUrl().isEmpty() ? "nullURL" : this.getUrl();
+		/*
+		 * If the proxy to the extension has not yet been loaded, store the BrowserFunction page ID,
+		 * function string, and URL in a HashMap. Once the proxy to the extension is loaded, these
+		 * functions will be sent to and registered in the extension.
+		 */
+		if (!WebkitGDBus.connectionToExtensionCreated) {
+			WebkitGDBus.functionsPending = true;
+			ArrayList<ArrayList<String>> list = new ArrayList<>();
+			ArrayList<String> functionAndUrl = new ArrayList<>();
+			functionAndUrl.add(0, function.functionString);
+			functionAndUrl.add(1, url);
+			list.add(functionAndUrl);
+			ArrayList<ArrayList<String>> existing = WebkitGDBus.pendingBrowserFunctions.putIfAbsent(this.pageId, list);
+			if (existing != null) {
+				existing.add(functionAndUrl);
+			}
+		} else {
+			// If the proxy to the extension is already loaded, register the function in the extension via DBus
+			boolean successful = webkit_extension_modify_function(this.pageId, function.functionString, url, "register");
+			if (!successful) {
+				System.err.println("SWT webkit: failure registering BrowserFunction " + function.name);
 			}
 		}
 	}
@@ -462,7 +319,7 @@ class WebKit extends WebBrowser {
 	@Override
 	public void destroyFunction (BrowserFunction function) {
 		// Only deregister functions if the proxy to the extension has been loaded
-		if (WebkitGDBus.connectionToExtensionCreated && WEBKIT2) {
+		if (WebkitGDBus.connectionToExtensionCreated) {
 			String url = this.getUrl().isEmpty() ? "nullURL" : this.getUrl();
 			boolean successful = webkit_extension_modify_function(this.pageId, function.functionString, url, "deregister");
 			if (!successful) {
@@ -494,13 +351,13 @@ class WebKit extends WebBrowser {
 	}
 
 	/**
-	 * This class deals with the Webkit2 extension.
+	 * This class deals with the WebKit extension.
 	 *
 	 * Extension is separately loaded and deals Javascript callbacks to Java.
 	 * Extension is needed so that Javascript can receive a return value from Java
 	 * (for which currently there is no api in WebkitGtk 2.18)
 	 */
-	static class Webkit2Extension {
+	static class WebKitExtension {
 		/** Note, if updating this, you need to change it also in webkitgtk_extension.c */
 		private static final String javaScriptFunctionName = "webkit2callJava";  // $NON-NLS-1$
 		private static final String webkitWebExtensionIdentifier = "webkitWebExtensionIdentifier";  // $NON-NLS-1$
@@ -539,7 +396,7 @@ class WebKit extends WebBrowser {
 			if (dBusServer == 0) {
 				System.err.println("SWT WebKit: error initializing DBus server, dBusServer == 0");
 			}
-			initializeWebExtensions_callback = new Callback(Webkit2Extension.class, "initializeWebExtensions_callback", void.class, new Type [] {long.class, long.class});
+			initializeWebExtensions_callback = new Callback(WebKitExtension.class, "initializeWebExtensions_callback", void.class, new Type [] {long.class, long.class});
 			if (initializeWebExtensions_callback.getAddress() == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
 			if (WebKitGTK.webkit_get_minor_version() >= 4) { // Callback exists only since 2.04
 				OS.g_signal_connect (WebKitGTK.webkit_web_context_get_default(), WebKitGTK.initialize_web_extensions, initializeWebExtensions_callback.getAddress(), 0);
@@ -646,8 +503,6 @@ class WebKit extends WebBrowser {
 				returnValue = function.function(user_args);
 			} catch (Exception e ) {
 				// - Something went wrong in user code.
-				// - Dev note, webkit1 uses a browserFunction and function.isEvaluate for evaluate(),
-				//   webkit2 doesn't, so we don't have 'if (function.isEvaluate)' logic here.
 				System.err.println("SWT Webkit: Exception occured in user code of function: " + function.name);
 				returnValue = WebBrowser.CreateErrorString (e.getLocalizedMessage ());
 			} finally {
@@ -659,11 +514,7 @@ class WebKit extends WebBrowser {
 
 	@Override
 	String getJavaCallDeclaration() {
-		if (WEBKIT2) {
-			return Webkit2Extension.getJavaScriptFunctionDeclaration(webView);
-		} else {
-			return super.getJavaCallDeclaration();
-		}
+		return WebKitExtension.getJavaScriptFunctionDeclaration(webView);
 	}
 
 	/**
@@ -672,15 +523,9 @@ class WebKit extends WebBrowser {
 	 */
 	private static int[] internalGetWebkitVersion(){
 		int [] vers = new int[3];
-		if (WEBKIT2){
-			vers[0] = WebKitGTK.webkit_get_major_version ();
-			vers[1] = WebKitGTK.webkit_get_minor_version ();
-			vers[2] = WebKitGTK.webkit_get_micro_version ();
-		} else {
-			vers[0] = WebKitGTK.webkit_major_version ();
-			vers[1] = WebKitGTK.webkit_minor_version ();
-			vers[2] = WebKitGTK.webkit_micro_version ();
-		}
+		vers[0] = WebKitGTK.webkit_get_major_version ();
+		vers[1] = WebKitGTK.webkit_get_minor_version ();
+		vers[2] = WebKitGTK.webkit_get_micro_version ();
 		return vers;
 	}
 
@@ -700,9 +545,6 @@ static String getString (long strPtr) {
 static Browser FindBrowser (long webView) {
 	if (webView == 0) return null;
 	long parent = GTK.gtk_widget_get_parent (webView);
-	if (WEBKIT1){
-		parent = GTK.gtk_widget_get_parent (parent);
-	}
 	return (Browser)Display.getCurrent ().findWidget (parent);
 }
 
@@ -719,154 +561,74 @@ static boolean IsInstalled () {
 		(major == MIN_VERSION[0] && minor == MIN_VERSION[1] && micro >= MIN_VERSION[2]);
 }
 
-/**
- * Webkit1 callback. Used when external.callJava is called in javascript.
- * Not used by Webkit2.
- */
-static long JSObjectCallAsFunctionProc (long ctx, long function, long thisObject, long argumentCount, long arguments, long exception) {
-	if (WEBKIT2) {
-		System.err.println("Internal error: SWT JSObjectCallAsFunctionProc. This should never have been called on webkit2.");
-		return 0;
-	}
-
-	if (WebKitGTK.JSValueIsObjectOfClass (ctx, thisObject, ExternalClass) == 0) {
-		return WebKitGTK.JSValueMakeUndefined (ctx);
-	}
-	long ptr = WebKitGTK.JSObjectGetPrivate (thisObject);
-	long [] handle = new long [1];
-	C.memmove (handle, ptr, C.PTR_SIZEOF);
-	Browser browser = FindBrowser (handle[0]);
-	if (browser == null) return 0;
-	WebKit webkit = (WebKit)browser.webBrowser;
-	return webkit.callJava (ctx, function, thisObject, argumentCount, arguments, exception);
-}
-
-/**
- * This callback is only being ran by webkit1. Only for 'callJava'.
- * It's used to initialize the 'callJava' function pointer in the 'external' object,
- * such that external.callJava reaches Java land.
- */
-static long JSObjectGetPropertyProc (long ctx, long object, long propertyName, long exception) {
-	if (WEBKIT2) {
-		System.err.println("Internal error: SWT WebKit.java:JSObjectGetPropertyProc. This should never have been called on webkit2.");
-		return 0;
-	}
-	byte[] bytes = (FUNCTIONNAME_CALLJAVA + '\0').getBytes (StandardCharsets.UTF_8); //$NON-NLS-1$
-	long name = WebKitGTK.JSStringCreateWithUTF8CString (bytes);
-	long function = WebKitGTK.JSObjectMakeFunctionWithCallback (ctx, name, JSObjectCallAsFunctionProc.getAddress ());
-	WebKitGTK.JSStringRelease (name);
-	return function;
-}
-
-/**
- * Webkit1: Check if the 'external' object regiseterd earlied has the 'callJava' property.
- */
-static long JSObjectHasPropertyProc (long ctx, long object, long propertyName) {
-	if (WEBKIT2) {
-		System.err.println("Internal error: SWT JSObjectHasPropertyProc. This should never have been called on webkit2.");
-		return 0;
-	}
-	byte[] bytes = (FUNCTIONNAME_CALLJAVA + '\0').getBytes (StandardCharsets.UTF_8); //$NON-NLS-1$
-	return WebKitGTK.JSStringIsEqualToUTF8CString (propertyName, bytes);
-}
-
 static long JSDOMEventProc (long arg0, long event, long user_data) {
-	if (WEBKIT1 && GTK.GTK_IS_SCROLLED_WINDOW (arg0)) {
-		/*
-		 * Stop the propagation of events that are not consumed by WebKit, before
-		 * they reach the parent embedder.  These events have already been received.
-		 */
-		return user_data;
-	}
-
-	// G_TYPE_CHECK_INSTANCE_TYPE is a bad way to check type. See OS.G_TYPE_CHECK_INSTANCE_TYPE.
-	// But kept for webkit1 legacy reason. Don't use G_TYPE_CHECK_INSTANCE_TYPE in new code.
-	if ((WEBKIT1 && OS.G_TYPE_CHECK_INSTANCE_TYPE (arg0, WebViewType))
-		|| (WEBKIT2 && user_data == WIDGET_EVENT)) {
+	if (user_data == WIDGET_EVENT) {
 		/*
 		* Only consider using GDK events to create SWT events to send if JS is disabled
 		* in one or more WebKit instances (indicates that this instance may not be
 		* receiving events from the DOM).  This check is done up-front for performance.
 		*/
-		if ((WEBKIT1 && DisabledJSCount > 0) || WEBKIT2){
-			final Browser browser = FindBrowser (arg0);
-			if (browser != null &&
-					(WEBKIT1 && !browser.webBrowser.jsEnabled)
-					|| (WEBKIT2 && user_data == WIDGET_EVENT)){
-				/* this instance does need to use the GDK event to create an SWT event to send */
-				switch (GDK.GDK_EVENT_TYPE (event)) {
-					case GDK.GDK_KEY_PRESS: {
-						if (browser.isFocusControl ()) {
-							int [] key = new int[1];
-							GDK.gdk_event_get_keyval(event, key);
-							int [] state = new int[1];
-							GDK.gdk_event_get_state(event, state);
-							switch (key[0]) {
-								case GDK.GDK_ISO_Left_Tab:
-								case GDK.GDK_Tab: {
-									if ((state[0] & (GDK.GDK_CONTROL_MASK | GDK.GDK_MOD1_MASK)) == 0) {
-										browser.getDisplay ().asyncExec (() -> {
-											if (browser.isDisposed ()) return;
-											if (browser.getDisplay ().getFocusControl () == null) {
-												int traversal = (state[0] & GDK.GDK_SHIFT_MASK) != 0 ? SWT.TRAVERSE_TAB_PREVIOUS : SWT.TRAVERSE_TAB_NEXT;
-												browser.traverse (traversal);
-											}
-										});
-									}
-									break;
+		final Browser browser = FindBrowser (arg0);
+		if (browser != null && user_data == WIDGET_EVENT){
+			/* this instance does need to use the GDK event to create an SWT event to send */
+			switch (GDK.GDK_EVENT_TYPE (event)) {
+				case GDK.GDK_KEY_PRESS: {
+					if (browser.isFocusControl ()) {
+						int [] key = new int[1];
+						GDK.gdk_event_get_keyval(event, key);
+						int [] state = new int[1];
+						GDK.gdk_event_get_state(event, state);
+						switch (key[0]) {
+							case GDK.GDK_ISO_Left_Tab:
+							case GDK.GDK_Tab: {
+								if ((state[0] & (GDK.GDK_CONTROL_MASK | GDK.GDK_MOD1_MASK)) == 0) {
+									browser.getDisplay ().asyncExec (() -> {
+										if (browser.isDisposed ()) return;
+										if (browser.getDisplay ().getFocusControl () == null) {
+											int traversal = (state[0] & GDK.GDK_SHIFT_MASK) != 0 ? SWT.TRAVERSE_TAB_PREVIOUS : SWT.TRAVERSE_TAB_NEXT;
+											browser.traverse (traversal);
+										}
+									});
 								}
-								case GDK.GDK_Escape: {
-									Event keyEvent = new Event ();
-									keyEvent.widget = browser;
-									keyEvent.type = SWT.KeyDown;
-									keyEvent.keyCode = keyEvent.character = SWT.ESC;
-									if ((state[0] & GDK.GDK_MOD1_MASK) != 0) keyEvent.stateMask |= SWT.ALT;
-									if ((state[0] & GDK.GDK_SHIFT_MASK) != 0) keyEvent.stateMask |= SWT.SHIFT;
-									if ((state[0]& GDK.GDK_CONTROL_MASK) != 0) keyEvent.stateMask |= SWT.CONTROL;
-									try { // to avoid deadlocks, evaluate() should not block during listener. See Bug 512001
-										  // I.e, evaluate() can be called and script will be executed, but no return value will be provided.
-										nonBlockingEvaluate++;
-									browser.webBrowser.sendKeyEvent (keyEvent);
-									} catch (Exception e) {
-										throw e;
-									} finally {
-										nonBlockingEvaluate--;
-									}
-									return 1;
+								break;
+							}
+							case GDK.GDK_Escape: {
+								Event keyEvent = new Event ();
+								keyEvent.widget = browser;
+								keyEvent.type = SWT.KeyDown;
+								keyEvent.keyCode = keyEvent.character = SWT.ESC;
+								if ((state[0] & GDK.GDK_MOD1_MASK) != 0) keyEvent.stateMask |= SWT.ALT;
+								if ((state[0] & GDK.GDK_SHIFT_MASK) != 0) keyEvent.stateMask |= SWT.SHIFT;
+								if ((state[0]& GDK.GDK_CONTROL_MASK) != 0) keyEvent.stateMask |= SWT.CONTROL;
+								try { // to avoid deadlocks, evaluate() should not block during listener. See Bug 512001
+									  // I.e, evaluate() can be called and script will be executed, but no return value will be provided.
+									nonBlockingEvaluate++;
+								browser.webBrowser.sendKeyEvent (keyEvent);
+								} catch (Exception e) {
+									throw e;
+								} finally {
+									nonBlockingEvaluate--;
 								}
+								return 1;
 							}
 						}
-						break;
 					}
+					break;
 				}
-				if (WEBKIT1 || (WEBKIT2 && browser != null)) {
-					GTK.gtk_widget_event (browser.handle, event);
-				}
+			}
+			if (browser != null) {
+				GTK.gtk_widget_event (browser.handle, event);
 			}
 		}
 		return 0;
 	}
-
-	if (WEBKIT1) {
-		LONG webViewHandle = WindowMappings.get (new LONG (arg0));
-		if (webViewHandle == null) return 0;
-		Browser browser = FindBrowser (webViewHandle.value);
-		if (browser == null) return 0;
-		WebKit webkit = (WebKit)browser.webBrowser;
-		if (user_data == WIDGET_EVENT) {
-			user_data = 0; // legacy.
-		}
-		return webkit.handleDOMEvent (event, (int)user_data) ? 0 : STOP_PROPOGATE;
-	}
-
-	// Webkit2
 	return 0;
 }
 
 static long Proc (long handle, long user_data) {
 	long webView  = handle;
 
-	if (WEBKIT2 && user_data == FINISHED) {
+	if (user_data == FINISHED) {
 		// Special case, callback from WebKitDownload instead of webview.
 		long webKitDownload = handle;
 		return webkit_download_finished(webKitDownload);
@@ -885,22 +647,8 @@ static long Proc (long handle, long arg0, long user_data) {
 	// Instead use user_data.
 
 	{ // Deal with Special cases where callback comes not from webview. Handle is not a webview.
-		if (WEBKIT1 && user_data == NOTIFY_LOAD_STATUS) {
-			// Webkit1 vs 2 note:
-			// Notion of 'Webkit frame' is webkit1 port specific. In webkit2 port, web frames are a webextension and aren't used.
-			// Special case to handle webkit1 webview notify::load-status. Handle is a webframe not a webview.
-			// Note, G_TYPE_CHECK_INSTANCE_TYPE is not a good way to test for type. See it's javadoc.
-			//   only kept for webkit1 legacy reason.
-			if (OS.G_TYPE_CHECK_INSTANCE_TYPE (handle, WebKitGTK.webkit_web_frame_get_type ())) {
-				long webView = WebKitGTK.webkit_web_frame_get_web_view (handle); // webkit1 only.
-				Browser browser = FindBrowser (webView);
-				if (browser == null) return 0;
-				WebKit webkit = (WebKit)browser.webBrowser;
-				return webkit.webframe_notify_load_status(handle, arg0);
-			}
-		}
 
-		if (WEBKIT2 && user_data == DOWNLOAD_STARTED) {
+		if (user_data == DOWNLOAD_STARTED) {
 			// This callback comes from WebKitWebContext as oppose to the WebView. So handle is WebContext not Webview.
 			// user_function (WebKitWebContext *context, WebKitDownload  *download,  gpointer  user_data)
 			long webKitDownload = arg0;
@@ -908,7 +656,7 @@ static long Proc (long handle, long arg0, long user_data) {
 			return 0;
 		}
 
-		if (WEBKIT2 && user_data == DECIDE_DESTINATION) {
+		if (user_data == DECIDE_DESTINATION) {
 			// This callback comes from WebKitDownload, so handle is WebKitDownload not webview.
 			// gboolean  user_function (WebKitDownload *download, gchar   *suggested_filename, gpointer  user_data)
 			long webKitDownload = handle;
@@ -916,7 +664,7 @@ static long Proc (long handle, long arg0, long user_data) {
 			return webkit_download_decide_destination(webKitDownload,suggested_filename);
 		}
 
-		if (WEBKIT2 && user_data == FAILED) {
+		if (user_data == FAILED) {
 			// void user_function (WebKitDownload *download, GError *error, gpointer user_data)
 			long webKitDownload = handle;
 			return webkit_download_failed(webKitDownload);
@@ -941,73 +689,16 @@ static long Proc (long handle, long arg0, long arg1, long user_data) {
 }
 
 static long Proc (long handle, long arg0, long arg1, long arg2, long user_data) {
-	long webView;
-
-	// Note: G_TYPE_CHECK_INSTANCE_TYPE is not a good way to check for instance type, see it's javadoc.
-	// Kept only for webkit1 legacy reasons. Do not use in new code.
-	if (WEBKIT1 && OS.G_TYPE_CHECK_INSTANCE_TYPE (handle, WebKitGTK.soup_session_get_type ())) {
-		webView = user_data;
-	} else {
-		webView = handle;
-	}
+	long webView = handle;
 	Browser browser = FindBrowser (webView);
 	if (browser == null) return 0;
 	WebKit webkit = (WebKit)browser.webBrowser;
 
-	if (WEBKIT1 && webView == user_data) {
-		return webkit.sessionProc (handle, arg0, arg1, arg2, user_data); // Webkit1's way of authentication.
-	} else {
-		return webkit.webViewProc (handle, arg0, arg1, arg2, user_data);
-	}
-}
-
-static long Proc (long handle, long arg0, long arg1, long arg2, long arg3, long user_data) {
-	Browser browser = FindBrowser (handle);
-	if (browser == null) return 0;
-	WebKit webkit = (WebKit)browser.webBrowser;
-	return webkit.webViewProc (handle, arg0, arg1, arg2, arg3, user_data);
-}
-
-/** Webkit1 only */
-long sessionProc (long session, long msg, long auth, long retrying, long user_data) {
-	/* authentication challenges are currently the only notification received from the session */
-	assert WEBKIT1 : WebKitGTK.Webkit1AssertMsg;
-	if (retrying == 0) {
-		failureCount = 0;
-	} else {
-		if (++failureCount >= 3) return 0;
-	}
-
-	long uri = WebKitGTK.soup_message_get_uri (msg);
-	long uriString = WebKitGTK.soup_uri_to_string (uri, 0);
-	int length = C.strlen (uriString);
-	byte[] bytes = new byte[length];
-	C.memmove (bytes, uriString, length);
-	OS.g_free (uriString);
-	String location = new String (Converter.mbcsToWcs (bytes));
-
-	for (int i = 0; i < authenticationListeners.length; i++) {
-		AuthenticationEvent event = new AuthenticationEvent (browser);
-		event.location = location;
-		authenticationListeners[i].authenticate (event);
-		if (!event.doit) {
-			OS.g_signal_stop_emission_by_name (session, WebKitGTK.authenticate);
-			return 0;
-		}
-		if (event.user != null && event.password != null) {
-			byte[] userBytes = Converter.wcsToMbcs (event.user, true);
-			byte[] passwordBytes = Converter.wcsToMbcs (event.password, true);
-			WebKitGTK.soup_auth_authenticate (auth, userBytes, passwordBytes);
-			OS.g_signal_stop_emission_by_name (session, WebKitGTK.authenticate);
-			return 0;
-		}
-	}
-	return 0;
+	return webkit.webViewProc (handle, arg0, arg1, arg2, user_data);
 }
 
 /**
- * Webkit2 only
- * - gboolean user_function (WebKitWebView *web_view, WebKitAuthenticationRequest *request, gpointer user_data)
+ * gboolean user_function (WebKitWebView *web_view, WebKitAuthenticationRequest *request, gpointer user_data)
  * - https://webkitgtk.org/reference/webkit2gtk/stable/WebKitWebView.html#WebKitWebView-authenticate
  */
 long webkit_authenticate (long web_view, long request){
@@ -1062,21 +753,16 @@ long webViewProc (long handle, long user_data) {
 long webViewProc (long handle, long arg0, long user_data) {
 	switch ((int)user_data) {
 		case CREATE_WEB_VIEW: return webkit_create_web_view (handle, arg0);
-		case DOWNLOAD_REQUESTED: return webkit_download_requested (handle, arg0); // webkit1
-		case NOTIFY_LOAD_STATUS: return webkit_notify_load_status (handle, arg0); // Webkit1
 		case LOAD_CHANGED: return webkit_load_changed (handle, (int) arg0, user_data);
-		case NOTIFY_PROGRESS: return webkit_notify_progress (handle, arg0);		  // webkit1 & webkit2.
+		case NOTIFY_PROGRESS: return webkit_notify_progress (handle, arg0);
 		case NOTIFY_TITLE: return webkit_notify_title (handle, arg0);
-		case POPULATE_POPUP: return webkit_populate_popup (handle, arg0);
-		case STATUS_BAR_TEXT_CHANGED: return webkit_status_bar_text_changed (handle, arg0); // Webkit1 only.
-		case AUTHENTICATE: return webkit_authenticate (handle, arg0);		// Webkit2 only.
+		case AUTHENTICATE: return webkit_authenticate (handle, arg0);
 		default: return 0;
 	}
 }
 
 long webViewProc (long handle, long arg0, long arg1, long user_data) {
 	switch ((int)user_data) {
-		case HOVERING_OVER_LINK: return webkit_hovering_over_link (handle, arg0, arg1);		// Webkit1 only
 		case MOUSE_TARGET_CHANGED: return webkit_mouse_target_changed (handle, arg0, arg1); // Webkit2 only.
 		case DECIDE_POLICY: return webkit_decide_policy(handle, arg0, (int)arg1, user_data);
 		default: return 0;
@@ -1085,19 +771,8 @@ long webViewProc (long handle, long arg0, long arg1, long user_data) {
 
 long webViewProc (long handle, long arg0, long arg1, long arg2, long user_data) {
 	switch ((int)user_data) {
-		case CONSOLE_MESSAGE: return webkit_console_message (handle, arg0, arg1, arg2);
-		case WINDOW_OBJECT_CLEARED: return webkit_window_object_cleared (handle, arg0, arg1, arg2);
 		case CONTEXT_MENU: return webkit_context_menu(handle, arg0, arg1, arg2);
 		case LOAD_FAILED_TLS: return webkit_load_failed_tls(handle, arg0, arg1, arg2);
-		default: return 0;
-	}
-}
-
-long webViewProc (long handle, long arg0, long arg1, long arg2, long arg3, long user_data) {
-	switch ((int)user_data) {
-		case MIME_TYPE_POLICY_DECISION_REQUESTED: return webkit_mime_type_policy_decision_requested (handle, arg0, arg1, arg2, arg3);  // Webkit1
-		case NAVIGATION_POLICY_DECISION_REQUESTED: return webkit_navigation_policy_decision_requested (handle, arg0, arg1, arg2, arg3);
-		case RESOURCE_REQUEST_STARTING: return webkit_resource_request_starting (handle, arg0, arg1, arg2, arg3); // Webkit1
 		default: return 0;
 	}
 }
@@ -1105,57 +780,16 @@ long webViewProc (long handle, long arg0, long arg1, long arg2, long arg3, long 
 @Override
 public void create (Composite parent, int style) {
 	int [] vers = internalGetWebkitVersion();
-	if (ExternalClass == 0) {
-		System.setProperty(SWT_WEBKITGTK_VERSION,
-				String.format("%s.%s.%s", vers[0], vers[1], vers[2])); // $NON-NLS-1$
-		if (Device.DEBUG) {
-			System.out.println(String.format("WebKit version %s.%s.%s", vers[0], vers[1], vers[2])); //$NON-NLS-1$
-		}
-
-		if (WEBKIT1) { // 'external' object only used on webkit1 for javaCall. Webkit2 has a different mechanism.
-			JSClassDefinition jsClassDefinition = new JSClassDefinition ();
-			byte[] bytes = Converter.wcsToMbcs (CLASSNAME_EXTERNAL, true);
-			jsClassDefinition.className = C.malloc (bytes.length);
-			C.memmove (jsClassDefinition.className, bytes, bytes.length);
-
-			jsClassDefinition.hasProperty = JSObjectHasPropertyProc.getAddress ();
-			jsClassDefinition.getProperty = JSObjectGetPropertyProc.getAddress ();
-			long classDefinitionPtr = C.malloc (JSClassDefinition.sizeof);
-			WebKitGTK.memmove (classDefinitionPtr, jsClassDefinition, JSClassDefinition.sizeof);
-
-			ExternalClass = WebKitGTK.JSClassCreate (classDefinitionPtr);
-		} else {
-			/*
-			 * Set this Browser instance to Webki2AsyncToSync in order for cookie
-			 * functionality to work. See bug 522181.
-			 */
-			Webkit2AsyncToSync.setCookieBrowser(browser);
-		}
-
-		byte [] bytes = Converter.wcsToMbcs ("POST", true); //$NON-NLS-1$
-		PostString = C.malloc (bytes.length);
-		C.memmove (PostString, bytes, bytes.length);
-
-		/*
-		* WebKitGTK version 1.8.x and newer can crash sporadically in
-		* webkitWebViewRegisterForIconNotification().  The root issue appears
-		* to be WebKitGTK accessing its icon database from a background
-		* thread.  Work around this crash by disabling the use of WebKitGTK's
-		* icon database, which should not affect the Browser in any way.
-		*/
-		if (WEBKIT1){
-			long database = WebKitGTK.webkit_get_favicon_database ();
-			if (database != 0) {
-				/* WebKitGTK version is >= 1.8.x */
-				WebKitGTK.webkit_favicon_database_set_path (database, 0);
-			}
-		}
+	System.setProperty(SWT_WEBKITGTK_VERSION,
+			String.format("%s.%s.%s", vers[0], vers[1], vers[2])); // $NON-NLS-1$
+	if (Device.DEBUG) {
+		System.out.println(String.format("WebKit version %s.%s.%s", vers[0], vers[1], vers[2])); //$NON-NLS-1$
 	}
-
-	if (WEBKIT1){
-		scrolledWindow = GTK.gtk_scrolled_window_new (0, 0);
-		GTK.gtk_scrolled_window_set_policy (scrolledWindow, GTK.GTK_POLICY_AUTOMATIC, GTK.GTK_POLICY_AUTOMATIC);
-	}
+	/*
+	 * Set this Browser instance to Webki2AsyncToSync in order for cookie
+	 * functionality to work. See bug 522181.
+	 */
+	Webkit2AsyncToSync.setCookieBrowser(browser);
 
 	webView = WebKitGTK.webkit_web_view_new ();
 
@@ -1165,7 +799,7 @@ public void create (Composite parent, int style) {
 	//   leads to a crash. This workaround would benefit from deeper investigation (find root cause etc...).
 	// [edit] Bug 530678. Note, it seems that as of Webkit2.18, webkit auto-disposes itself if parent get's disposed.
 	//        While not directly related, see onDispose() for how to deal with disposal of this.
-	if (WEBKIT2 && !bug522733FirstInstanceCreated && vers[0] == 2 && vers[1] >= 18) {
+	if (!bug522733FirstInstanceCreated && vers[0] == 2 && vers[1] >= 18) {
 		bug522733FirstInstanceCreated = true;
 		OS.g_object_ref(webView);
 	}
@@ -1176,152 +810,65 @@ public void create (Composite parent, int style) {
 		System.out.println("***WARNING: Please use for development purposes only!");
 	}
 
-	if (WEBKIT1) {
-		webViewData = C.malloc (C.PTR_SIZEOF);
-		C.memmove (webViewData, new long [] {webView}, C.PTR_SIZEOF);
-	}
+	// Webkit2 Signal Documentation: https://webkitgtk.org/reference/webkit2gtk/stable/WebKitWebView.html#WebKitWebView--title
+	GTK.gtk_container_add (browser.handle, webView);
+	OS.g_signal_connect (webView, WebKitGTK.close, Proc2.getAddress (), CLOSE_WEB_VIEW);
+	OS.g_signal_connect (webView, WebKitGTK.ready_to_show, Proc2.getAddress (), WEB_VIEW_READY);
+	OS.g_signal_connect (webView, WebKitGTK.decide_policy, Proc4.getAddress (), DECIDE_POLICY);
+	OS.g_signal_connect (webView, WebKitGTK.mouse_target_changed, Proc4.getAddress (), MOUSE_TARGET_CHANGED);
+	OS.g_signal_connect (webView, WebKitGTK.context_menu, Proc5.getAddress (), CONTEXT_MENU);
+	OS.g_signal_connect (webView, WebKitGTK.load_failed_with_tls_errors, Proc5.getAddress (), LOAD_FAILED_TLS);
 
-	/*
-	 * Set the Display for this WebKit class, so we can safely dispose of GDBus objects later.
-	 * See bug 540060 for more info.
-	 */
-	if (WEBKIT2 && !WebkitGDBus.attachedToDisplay) {
-		WebkitGDBus.setDisplay(browser.getDisplay());
-	}
+	// GtkWidget* user_function (WebKitWebView *web_view, WebKitNavigationAction *navigation_action,  gpointer  user_data)
+	OS.g_signal_connect (webView, WebKitGTK.create, 						Proc3.getAddress (), CREATE_WEB_VIEW);
+	//void user_function (WebKitWebView  *web_view,  WebKitLoadEvent load_event,  gpointer  user_data)
+	OS.g_signal_connect (webView, WebKitGTK.load_changed, 					Proc3.getAddress (), LOAD_CHANGED);
+	// Property change: of 'estimated-load-progress'   args: webview, pspec
+	OS.g_signal_connect (webView, WebKitGTK.notify_estimated_load_progress, Proc3.getAddress (), NOTIFY_PROGRESS);
 
-	// Documentation for these signals/properties is usually found under signal/property of WebKitWebView.
-	// notify_* usually implies a property change. For these, the first arg is typically the webview handle.
-	if (WEBKIT1){
-		// Webkit1 signal documentation: https://webkitgtk.org/reference/webkitgtk/unstable/webkitgtk-webkitwebview.html#WebKitWebView--progress
-		GTK.gtk_container_add (scrolledWindow, webView);
-		GTK.gtk_container_add (browser.handle, scrolledWindow);
-		GTK.gtk_widget_show (scrolledWindow);
-		OS.g_signal_connect (webView, WebKitGTK.close_web_view, 			Proc2.getAddress (), CLOSE_WEB_VIEW);
-		OS.g_signal_connect (webView, WebKitGTK.web_view_ready, 			Proc2.getAddress (), WEB_VIEW_READY);
+	// gboolean user_function (WebKitWebView *web_view,  WebKitAuthenticationRequest *request,  gpointer user_data)
+	OS.g_signal_connect (webView, WebKitGTK.authenticate, 					Proc3.getAddress (), AUTHENTICATE);
 
-		OS.g_signal_connect (webView, WebKitGTK.hovering_over_link, 		Proc4.getAddress (), HOVERING_OVER_LINK);
-
-		OS.g_signal_connect (webView, WebKitGTK.window_object_cleared, 		Proc5.getAddress (), WINDOW_OBJECT_CLEARED);
-		OS.g_signal_connect (webView, WebKitGTK.console_message, 			Proc5.getAddress (), CONSOLE_MESSAGE);
-
-		OS.g_signal_connect (webView, WebKitGTK.navigation_policy_decision_requested, 	Proc6.getAddress (), NAVIGATION_POLICY_DECISION_REQUESTED);
-		OS.g_signal_connect (webView, WebKitGTK.mime_type_policy_decision_requested, 	Proc6.getAddress (), MIME_TYPE_POLICY_DECISION_REQUESTED);
-		OS.g_signal_connect (webView, WebKitGTK.resource_request_starting, Proc6.getAddress (), RESOURCE_REQUEST_STARTING);
-
-	} else {
-		// Webkit2 Signal Documentation: https://webkitgtk.org/reference/webkit2gtk/stable/WebKitWebView.html#WebKitWebView--title
-		GTK.gtk_container_add (browser.handle, webView);
-		OS.g_signal_connect (webView, WebKitGTK.close, Proc2.getAddress (), CLOSE_WEB_VIEW);
-		OS.g_signal_connect (webView, WebKitGTK.ready_to_show, Proc2.getAddress (), WEB_VIEW_READY);
-		OS.g_signal_connect (webView, WebKitGTK.decide_policy, Proc4.getAddress (), DECIDE_POLICY);
-
-		OS.g_signal_connect (webView, WebKitGTK.mouse_target_changed, Proc4.getAddress (), MOUSE_TARGET_CHANGED);
-		OS.g_signal_connect (webView, WebKitGTK.context_menu, Proc5.getAddress (), CONTEXT_MENU);
-		OS.g_signal_connect (webView, WebKitGTK.load_failed_with_tls_errors, Proc5.getAddress (), LOAD_FAILED_TLS);
-	}
-
-	// Proc3 is overloaded in that not only Webview connects to it,
-	// but also (webkit1) WebFrame and (webkit2) WebKitDownload hook into it as well.
-	// Pay extra attention to argument 1 (handle) to prevent wrong type of handle being passed to gtk and causing segfaults. (See 533545)
-	if (WEBKIT1) {
-		// WebKitWebView* user_function (WebKitWebView  *web_view, WebKitWebFrame *frame, gpointer user_data)
-		OS.g_signal_connect (webView, WebKitGTK.create_web_view, 		 Proc3.getAddress (), CREATE_WEB_VIEW);
-
-		// Property change: load-status  (webview is first arg)  https://webkitgtk.org/reference/webkitgtk/unstable/WebKitWebFrame.html#WebKitWebFrame--load-status
-		OS.g_signal_connect (webView, WebKitGTK.notify_load_status, 	 Proc3.getAddress (), NOTIFY_LOAD_STATUS);
-
-		// gboolean user_function (WebKitWebView  *web_view, WebKitDownload *download, gpointer        user_data)
-		OS.g_signal_connect (webView, WebKitGTK.download_requested, 	 Proc3.getAddress (), DOWNLOAD_REQUESTED);
-
-		// void user_function (WebKitWebView *web_view, GtkMenu *menu, gpointer user_data)
-		OS.g_signal_connect (webView, WebKitGTK.populate_popup, 		 Proc3.getAddress (), POPULATE_POPUP);
-
-		// Property change: progress.  (first arg is webview)
-		OS.g_signal_connect (webView, WebKitGTK.notify_progress, 		 Proc3.getAddress (), NOTIFY_PROGRESS);
-
-		// void user_function (WebKitWebView *webkitwebview, gchar  *arg1, gpointer user_data)
-		OS.g_signal_connect (webView, WebKitGTK.status_bar_text_changed, Proc3.getAddress (), STATUS_BAR_TEXT_CHANGED);
-
-	}
-	if (WEBKIT2) { // Note: In Webkit2, webkit_download_started(...) also connects return signals to proc3.
-		// GtkWidget* user_function (WebKitWebView *web_view, WebKitNavigationAction *navigation_action,  gpointer  user_data)
-		OS.g_signal_connect (webView, WebKitGTK.create, 						Proc3.getAddress (), CREATE_WEB_VIEW);
-
-		//void user_function (WebKitWebView  *web_view,  WebKitLoadEvent load_event,  gpointer  user_data)
-		OS.g_signal_connect (webView, WebKitGTK.load_changed, 					Proc3.getAddress (), LOAD_CHANGED);
-
-		// Property change: of 'estimated-load-progress'   args: webview, pspec
-		OS.g_signal_connect (webView, WebKitGTK.notify_estimated_load_progress, Proc3.getAddress (), NOTIFY_PROGRESS);
-
-		// gboolean user_function (WebKitWebView *web_view,  WebKitAuthenticationRequest *request,  gpointer user_data)
-		OS.g_signal_connect (webView, WebKitGTK.authenticate, 					Proc3.getAddress (), AUTHENTICATE);
-
-		// (!) Note this one's a 'webContext' signal, not webview. See:
-		// https://webkitgtk.org/reference/webkit2gtk/stable/WebKitWebContext.html#WebKitWebContext-download-started
-		OS.g_signal_connect (WebKitGTK.webkit_web_context_get_default(), WebKitGTK.download_started, Proc3.getAddress (), DOWNLOAD_STARTED);
-	}
+	// (!) Note this one's a 'webContext' signal, not webview. See:
+	// https://webkitgtk.org/reference/webkit2gtk/stable/WebKitWebContext.html#WebKitWebContext-download-started
+	OS.g_signal_connect (WebKitGTK.webkit_web_context_get_default(), WebKitGTK.download_started, Proc3.getAddress (), DOWNLOAD_STARTED);
 
 	GTK.gtk_widget_show (webView);
 	GTK.gtk_widget_show (browser.handle);
 
-	// Webview 'title' property. Webkit1 & Webkit2.
+	// Webview 'title' property
 	OS.g_signal_connect (webView, WebKitGTK.notify_title, 						Proc3.getAddress (), NOTIFY_TITLE);
 
-	/* Callback to get events before WebKit receives and consumes them */
-	if (WEBKIT2) {
-		OS.g_signal_connect (webView, OS.button_press_event, JSDOMEventProc.getAddress (), WIDGET_EVENT);
-		OS.g_signal_connect (webView, OS.button_release_event, JSDOMEventProc.getAddress (), WIDGET_EVENT);
-		OS.g_signal_connect (webView, OS.focus_in_event, JSDOMEventProc.getAddress (), 	WIDGET_EVENT);
-		OS.g_signal_connect (webView, OS.focus_out_event, JSDOMEventProc.getAddress (), WIDGET_EVENT);
-		// if connecting any other special gtk event to webkit, add SWT.* to w2_passThroughSwtEvents above.
-	}
+	OS.g_signal_connect (webView, OS.button_press_event, JSDOMEventProc.getAddress (), WIDGET_EVENT);
+	OS.g_signal_connect (webView, OS.button_release_event, JSDOMEventProc.getAddress (), WIDGET_EVENT);
+	OS.g_signal_connect (webView, OS.focus_in_event, JSDOMEventProc.getAddress (), 	WIDGET_EVENT);
+	OS.g_signal_connect (webView, OS.focus_out_event, JSDOMEventProc.getAddress (), WIDGET_EVENT);
+	// if connecting any other special gtk event to webkit, add SWT.* to w2_passThroughSwtEvents above.
+
 	this.pageId = WebKitGTK.webkit_web_view_get_page_id (webView);
-	if (WEBKIT1) {
-		OS.g_signal_connect (webView, OS.button_press_event, JSDOMEventProc.getAddress (), 0);
-		OS.g_signal_connect (webView, OS.button_release_event, JSDOMEventProc.getAddress (), 0);
-	}
+
 	OS.g_signal_connect (webView, OS.key_press_event, JSDOMEventProc.getAddress (),  	WIDGET_EVENT);
 	OS.g_signal_connect (webView, OS.key_release_event, JSDOMEventProc.getAddress (),	WIDGET_EVENT);
 	OS.g_signal_connect (webView, OS.scroll_event, JSDOMEventProc.getAddress (), 		WIDGET_EVENT);
 	OS.g_signal_connect (webView, OS.motion_notify_event, JSDOMEventProc.getAddress (), WIDGET_EVENT);
 
-	/*
-	* Callbacks to get the events not consumed by WebKit, and to block
-	* them so that they don't get propagated to the parent handle twice.
-	* This hook is set after WebKit and is therefore called after WebKit's
-	* handler because GTK dispatches events in their order of registration.
-	*/
-	if (WEBKIT1){
-		OS.g_signal_connect (scrolledWindow, OS.button_press_event, JSDOMEventProc.getAddress (), STOP_PROPOGATE);
-		OS.g_signal_connect (scrolledWindow, OS.button_release_event, JSDOMEventProc.getAddress (), STOP_PROPOGATE);
-		OS.g_signal_connect (scrolledWindow, OS.key_press_event, JSDOMEventProc.getAddress (), STOP_PROPOGATE);
-		OS.g_signal_connect (scrolledWindow, OS.key_release_event, JSDOMEventProc.getAddress (), STOP_PROPOGATE);
-		OS.g_signal_connect (scrolledWindow, OS.scroll_event, JSDOMEventProc.getAddress (), STOP_PROPOGATE);
-		OS.g_signal_connect (scrolledWindow, OS.motion_notify_event, JSDOMEventProc.getAddress (), STOP_PROPOGATE);
-	}
-
-	byte[] bytes = Converter.wcsToMbcs ("UTF-8", true); // $NON-NLS-1$
+	byte[] utfBytes = Converter.wcsToMbcs ("UTF-8", true); // $NON-NLS-1$
 
 	long settings = WebKitGTK.webkit_web_view_get_settings (webView);
 	OS.g_object_set (settings, WebKitGTK.javascript_can_open_windows_automatically, 1, 0);
 	OS.g_object_set (settings, WebKitGTK.enable_webgl, 1, 0);
 	OS.g_object_set (settings, WebKitGTK.enable_developer_extras, 1, 0);
 
-	if (WEBKIT2){
-		OS.g_object_set (settings, WebKitGTK.default_charset, bytes, 0);
-		if (WebKitGTK.webkit_get_minor_version() >= 14) {
-			OS.g_object_set (settings, WebKitGTK.allow_universal_access_from_file_urls, 1, 0);
-			if (WebKitGTK.webkit_get_minor_version() >= 24) {
-				OS.g_object_set (settings, WebKitGTK.enable_back_forward_navigation_gestures, 1, 0);
-			}
-		} else {
-			System.err.println("SWT WEBKIT: Warning, you are using Webkitgtk below version 2.14. Your version is: "
-					+ "Your version is: " + internalGetWebKitVersionStr()
-					+ "\nJavascript execution limited to same origin due to unimplemented feature of this version.");
+	OS.g_object_set (settings, WebKitGTK.default_charset, utfBytes, 0);
+	if (WebKitGTK.webkit_get_minor_version() >= 14) {
+		OS.g_object_set (settings, WebKitGTK.allow_universal_access_from_file_urls, 1, 0);
+		if (WebKitGTK.webkit_get_minor_version() >= 24) {
+			OS.g_object_set (settings, WebKitGTK.enable_back_forward_navigation_gestures, 1, 0);
 		}
 	} else {
-		OS.g_object_set (settings, WebKitGTK.default_encoding, bytes, 0);
-		OS.g_object_set (settings, WebKitGTK.enable_universal_access_from_file_uris, 1, 0);
+		System.err.println("SWT WEBKIT: Warning, you are using Webkitgtk below version 2.14. Your version is: "
+				+ "Your version is: " + internalGetWebKitVersionStr()
+				+ "\nJavascript execution limited to same origin due to unimplemented feature of this version.");
 	}
 
 	Listener listener = event -> {
@@ -1339,7 +886,7 @@ public void create (Composite parent, int style) {
 				break;
 			}
 			case SWT.FocusIn: {
-				if (WEBKIT2 && webView != 0)
+				if (webView != 0)
 					GTK.gtk_widget_grab_focus (webView);
 				break;
 			}
@@ -1353,60 +900,6 @@ public void create (Composite parent, int style) {
 	browser.addListener (SWT.FocusIn, listener);
 	browser.addListener (SWT.KeyDown, listener);
 	browser.addListener (SWT.Resize, listener);
-
-	if (WEBKIT1){
-		/*
-		* Ensure that our Authenticate listener is at the front of the signal
-		* queue by removing the default Authenticate listener, adding ours,
-		* and then re-adding the default listener.
-		*/
-		long session = WebKitGTK.webkit_get_default_session ();
-		long originalAuth = WebKitGTK.soup_session_get_feature (session, WebKitGTK.webkit_soup_auth_dialog_get_type ());
-		if (originalAuth != 0) {
-			WebKitGTK.soup_session_feature_detach (originalAuth, session);
-		}
-		OS.g_signal_connect (session, WebKitGTK.authenticate, Proc5.getAddress (), webView);
-		if (originalAuth != 0) {
-			WebKitGTK.soup_session_feature_attach (originalAuth, session);
-		}
-
-		/*
-		* Check for proxy values set as documented java properties and update the
-		* session to use these values if needed.
-		*/
-		String proxyHost = System.getProperty (PROPERTY_PROXYHOST);
-		String proxyPortString = System.getProperty (PROPERTY_PROXYPORT);
-		int port = -1;
-		if (proxyPortString != null) {
-			try {
-				int value = Integer.valueOf (proxyPortString).intValue ();
-				if (0 <= value && value <= MAX_PORT) port = value;
-			} catch (NumberFormatException e) {
-				/* do nothing, java property has non-integer value */
-			}
-		}
-		if (proxyHost != null || port != -1) {
-			if (!proxyHost.startsWith (PROTOCOL_HTTP)) {
-				proxyHost = PROTOCOL_HTTP + proxyHost;
-			}
-			proxyHost += ":" + port; //$NON-NLS-1$
-			bytes = Converter.wcsToMbcs (proxyHost, true);
-			long uri = WebKitGTK.soup_uri_new (bytes);
-			if (uri != 0) {
-				OS.g_object_set (session, WebKitGTK.SOUP_SESSION_PROXY_URI, uri, 0);
-				WebKitGTK.soup_uri_free (uri);
-			}
-		}
-	}
-
-	if (WEBKIT1) { // HandleWebKitEvent registration. Pre Webkit 1.4 way of handling mouse/keyboard events. Webkit2 uses dom.
-		eventFunction = new BrowserFunction (browser, "HandleWebKitEvent") { //$NON-NLS-1$
-			@Override
-			public Object function(Object[] arguments) {
-				return handleEventFromFunction (arguments) ? Boolean.TRUE : Boolean.FALSE;
-			}
-		};
-	}
 
 	/*
 	* Bug in WebKitGTK.  MouseOver/MouseLeave events are not consistently sent from
@@ -1435,92 +928,6 @@ public void create (Composite parent, int style) {
 	}
 }
 
-void addEventHandlers (long web_view, boolean top) {
-	/*
-	* If JS is disabled (causes DOM events to not be delivered) then do not add event
-	* listeners here, DOM events will be inferred from received GDK events instead.
-	*/
-	if (!jsEnabled) return;
-
-	if (top) {
-		if (WEBKIT2) {
-			// TODO implement equivalent?
-			// As a note, this entire function only seems to do webkit1-only stuff at the moment...
-		} else {
-			long domDocument = WebKitGTK.webkit_web_view_get_dom_document (web_view); // Webkit1 only
-			if (domDocument != 0) {
-				WindowMappings.put (new LONG (domDocument), new LONG (web_view));
-				WebKitGTK.webkit_dom_event_target_add_event_listener (domDocument, WebKitGTK.dragstart, JSDOMEventProc.getAddress (), 0, SWT.DragDetect);
-				WebKitGTK.webkit_dom_event_target_add_event_listener (domDocument, WebKitGTK.keydown, JSDOMEventProc.getAddress (), 0, SWT.KeyDown);
-				WebKitGTK.webkit_dom_event_target_add_event_listener (domDocument, WebKitGTK.keypress, JSDOMEventProc.getAddress (), 0, SENTINEL_KEYPRESS);
-				WebKitGTK.webkit_dom_event_target_add_event_listener (domDocument, WebKitGTK.keyup, JSDOMEventProc.getAddress (), 0, SWT.KeyUp);
-				WebKitGTK.webkit_dom_event_target_add_event_listener (domDocument, WebKitGTK.mousedown, JSDOMEventProc.getAddress (), 0, SWT.MouseDown);
-				WebKitGTK.webkit_dom_event_target_add_event_listener (domDocument, WebKitGTK.mousemove, JSDOMEventProc.getAddress (), 0, SWT.MouseMove);
-				WebKitGTK.webkit_dom_event_target_add_event_listener (domDocument, WebKitGTK.mouseup, JSDOMEventProc.getAddress (), 0, SWT.MouseUp);
-				WebKitGTK.webkit_dom_event_target_add_event_listener (domDocument, WebKitGTK.mousewheel, JSDOMEventProc.getAddress (), 0, SWT.MouseWheel);
-
-				/*
-				* The following two lines are intentionally commented because they cannot be used to
-				* consistently send MouseEnter/MouseExit events until https://bugs.webkit.org/show_bug.cgi?id=35246
-				* is fixed.
-				*/
-				//WebKitGTK.webkit_dom_event_target_add_event_listener (domWindow, WebKitGTK.mouseover, JSDOMEventProc.getAddress (), 0, SWT.MouseEnter);
-				//WebKitGTK.webkit_dom_event_target_add_event_listener (domWindow, WebKitGTK.mouseout, JSDOMEventProc.getAddress (), 0, SWT.MouseExit);
-			}
-			return;
-		}
-	}
-
-
-	if (WEBKIT1) { // add HandleWebKitEvent key/mouse handlers
-		/* install the JS call-out to the registered BrowserFunction */
-		StringBuilder buffer = new StringBuilder ("window.SWTkeyhandler = function SWTkeyhandler(e) {"); //$NON-NLS-1$
-		buffer.append ("try {e.returnValue = HandleWebKitEvent(e.type, e.keyCode, e.charCode, e.altKey, e.ctrlKey, e.shiftKey, e.metaKey);} catch (e) {}};"); //$NON-NLS-1$
-		nonBlockingExecute (buffer.toString ());
-		buffer = new StringBuilder ("window.SWTmousehandler = function SWTmousehandler(e) {"); //$NON-NLS-1$
-		buffer.append ("try {e.returnValue = HandleWebKitEvent(e.type, e.screenX, e.screenY, e.detail, e.button, e.altKey, e.ctrlKey, e.shiftKey, e.metaKey, e.relatedTarget != null);} catch (e) {}};"); //$NON-NLS-1$
-		nonBlockingExecute (buffer.toString ());
-
-		if (top) {
-			/* DOM API is not available, so add listener to top-level document */
-			buffer = new StringBuilder ("document.addEventListener('keydown', SWTkeyhandler, true);"); //$NON-NLS-1$
-			buffer.append ("document.addEventListener('keypress', SWTkeyhandler, true);"); //$NON-NLS-1$
-			buffer.append ("document.addEventListener('keyup', SWTkeyhandler, true);"); //$NON-NLS-1$
-			buffer.append ("document.addEventListener('mousedown', SWTmousehandler, true);"); //$NON-NLS-1$
-			buffer.append ("document.addEventListener('mouseup', SWTmousehandler, true);"); //$NON-NLS-1$
-			buffer.append ("document.addEventListener('mousemove', SWTmousehandler, true);"); //$NON-NLS-1$
-			buffer.append ("document.addEventListener('mousewheel', SWTmousehandler, true);"); //$NON-NLS-1$
-			buffer.append ("document.addEventListener('dragstart', SWTmousehandler, true);"); //$NON-NLS-1$
-
-			/*
-			* The following two lines are intentionally commented because they cannot be used to
-			* consistently send MouseEnter/MouseExit events until https://bugs.webkit.org/show_bug.cgi?id=35246
-			* is fixed.
-			*/
-			//buffer.append ("document.addEventListener('mouseover', SWTmousehandler, true);"); //$NON-NLS-1$
-			//buffer.append ("document.addEventListener('mouseout', SWTmousehandler, true);"); //$NON-NLS-1$
-
-			nonBlockingExecute (buffer.toString ());
-			return;
-		}
-
-		/* add JS event listener in frames */
-		buffer = new StringBuilder ("for (var i = 0; i < frames.length; i++) {"); //$NON-NLS-1$
-		buffer.append ("frames[i].document.addEventListener('keydown', window.SWTkeyhandler, true);"); //$NON-NLS-1$
-		buffer.append ("frames[i].document.addEventListener('keypress', window.SWTkeyhandler, true);"); //$NON-NLS-1$
-		buffer.append ("frames[i].document.addEventListener('keyup', window.SWTkeyhandler, true);"); //$NON-NLS-1$
-		buffer.append ("frames[i].document.addEventListener('mousedown', window.SWTmousehandler, true);"); //$NON-NLS-1$
-		buffer.append ("frames[i].document.addEventListener('mouseup', window.SWTmousehandler, true);"); //$NON-NLS-1$
-		buffer.append ("frames[i].document.addEventListener('mousemove', window.SWTmousehandler, true);"); //$NON-NLS-1$
-		buffer.append ("frames[i].document.addEventListener('mouseover', window.SWTmousehandler, true);"); //$NON-NLS-1$
-		buffer.append ("frames[i].document.addEventListener('mouseout', window.SWTmousehandler, true);"); //$NON-NLS-1$
-		buffer.append ("frames[i].document.addEventListener('mousewheel', window.SWTmousehandler, true);"); //$NON-NLS-1$
-		buffer.append ("frames[i].document.addEventListener('dragstart', window.SWTmousehandler, true);"); //$NON-NLS-1$
-		buffer.append ('}');
-		nonBlockingExecute (buffer.toString ());
-	}
-}
-
 @Override
 public boolean back () {
 	if (WebKitGTK.webkit_web_view_can_go_back (webView) == 0) return false;
@@ -1538,7 +945,6 @@ public boolean close () {
 //         false = blocks disposal. In Browser.java, user is told widget was not disposed.
 // See Snippet326.
 boolean close (boolean showPrompters) {
-	assert WEBKIT1 || WEBKIT2;
 	if (!jsEnabled) return true;
 
 	String message1 = Compatibility.getMessage("SWT_OnBeforeUnload_Message1"); // $NON-NLS-1$
@@ -1565,31 +971,22 @@ boolean close (boolean showPrompters) {
 	nonBlockingExecute (buffer.toString ());
 
 	Boolean result;
-	if (WEBKIT1) {
+	/*
+	 * Sometimes if a disposal is already underway (ex parent shell disposed), then
+	 * Javascript execution can throw. We have to account for that.
+	 */
+	try {
 		result = (Boolean)evaluate ("return " + functionName +"(window);"); // $NON-NLS-1$ // $NON-NLS-2$
-		if (result == null) return false; // Default to prevent disposal.
-	} else {
-		assert WEBKIT2 : WebKitGTK.Webkit2AssertMsg;
-		// Sometimes if a disposal is already underway (ex parent shell disposed), then
-		// Webkit1: Silently fails
-		// Webkit2: Javascript execution can throw. We have to account for that.
-		try {
-			result = (Boolean)evaluate ("return " + functionName +"(window);"); // $NON-NLS-1$ // $NON-NLS-2$
-			if (result == null) return true; // Default to assume that webkit is disposed and allow disposal of Browser.
-		} catch (SWTException e) {
-			return true; // Permit browser to be disposed if javascript execution failed.
-		}
+		if (result == null) return true; // Default to assume that webkit is disposed and allow disposal of Browser.
+	} catch (SWTException e) {
+		return true; // Permit browser to be disposed if javascript execution failed.
 	}
 	return result.booleanValue ();
 }
 
 
 private boolean isJavascriptEnabled() {
-	assert WEBKIT2 : WebKitGTK.Webkit2AssertMsg;
-	// If you try to run javascript while javascript is turned off, then:
-	// - on Webkit1: nothing happens.
-	// - on Webkit2: an exception is thrown.
-	// To ensure consistent behavior, do not even try to execute js on webkit2 if it's off.
+	// If you try to run Javascript while Javascript is turned off, then an exception is thrown.
 	return webkit_settings_get(WebKitGTK.enable_javascript) != 0;
 }
 
@@ -1645,33 +1042,17 @@ private boolean webkit_extension_modify_function (long pageId, String function, 
 
 @Override
 public boolean execute (String script) {
-	if (WEBKIT2){
-		if (!isJavascriptEnabled()) {
-			System.err.println("SWT Webkit Warning: Attempting to execute javascript when javascript is dissabled."
-					+ "Execution has no effect. Script:\n" + script);
-			return false;
-		}
-		try {
-			Webkit2AsyncToSync.runjavascript(script, this.browser, webView);
-		} catch (SWTException e) {
-			return false;
-		}
-		return true;
-	} else {
-		byte[] scriptBytes = (script + '\0').getBytes (StandardCharsets.UTF_8); //$NON-NLS-1$
-		long jsScriptString = WebKitGTK.JSStringCreateWithUTF8CString (scriptBytes);
-
-		// Currently loaded website will be used as 'source file' of the javascript to be exucuted.
-		byte[] sourceUrlbytes = (getUrl () + '\0').getBytes (StandardCharsets.UTF_8); //$NON-NLS-1$
-
-		long jsSourceUrlString = WebKitGTK.JSStringCreateWithUTF8CString (sourceUrlbytes);
-		long frame = WebKitGTK.webkit_web_view_get_main_frame (webView);
-		long context = WebKitGTK.webkit_web_frame_get_global_context (frame);
-		long result = WebKitGTK.JSEvaluateScript (context, jsScriptString, 0, jsSourceUrlString, 0, null);
-		WebKitGTK.JSStringRelease (jsSourceUrlString);
-		WebKitGTK.JSStringRelease (jsScriptString);
-		return result != 0;
+	if (!isJavascriptEnabled()) {
+		System.err.println("SWT Webkit Warning: Attempting to execute javascript when javascript is dissabled."
+				+ "Execution has no effect. Script:\n" + script);
+		return false;
 	}
+	try {
+		Webkit2AsyncToSync.runjavascript(script, this.browser, webView);
+	} catch (SWTException e) {
+		return false;
+	}
+	return true;
 }
 
 /**
@@ -2092,19 +1473,15 @@ public Object evaluate (String script) throws SWTException {
 	if ("".equals(script)) {
 		return null; // A litte optimization. Sometimes evaluate() is called with a generated script, where the generated script is sometimes empty.
 	}
-	if (WEBKIT2){
-		if (!isJavascriptEnabled()) {
-			return null;
-		}
-		return Webkit2AsyncToSync.evaluate(script, this.browser, webView);
-	} else {
-		return super.evaluate(script);
+	if (!isJavascriptEnabled()) {
+		return null;
 	}
+	return Webkit2AsyncToSync.evaluate(script, this.browser, webView);
 }
 
 @Override
 public boolean forward () {
-	if (WEBKIT2 && webView == 0) {
+	if (webView == 0) {
 		assert false;
 		System.err.println("SWT Webkit: forward() called after widget disposed. Should not have happened.\n" + getInternalErrorMsg());
 		return false; // Disposed.
@@ -2121,33 +1498,7 @@ public String getBrowserType () {
 
 @Override
 public String getText () {
-	if (WEBKIT2) {
-		return Webkit2AsyncToSync.getText(browser, webView);
-	} else  {
-		// Webkit1 only.
-		long frame = WebKitGTK.webkit_web_view_get_main_frame (webView);
-		long source = WebKitGTK.webkit_web_frame_get_data_source (frame);
-		if (source == 0) return "";	//$NON-NLS-1$
-		long data = WebKitGTK.webkit_web_data_source_get_data (source);
-		if (data == 0) return "";	//$NON-NLS-1$
-
-		long encoding = WebKitGTK.webkit_web_data_source_get_encoding (source);
-		int length = C.strlen (encoding);
-		byte[] bytes = new byte [length];
-		C.memmove (bytes, encoding, length);
-		String encodingString = new String (Converter.mbcsToWcs (bytes));
-
-		length = OS.GString_len (data);
-		bytes = new byte[length];
-		long string = OS.GString_str (data);
-		C.memmove (bytes, string, length);
-
-		try {
-			return new String (bytes, encodingString);
-		} catch (UnsupportedEncodingException e) {
-		}
-		return new String (Converter.mbcsToWcs (bytes));
-	}
+	return Webkit2AsyncToSync.getText(browser, webView);
 }
 
 @Override
@@ -2560,19 +1911,6 @@ long handleLoadCommitted (long uri, boolean top) {
 		}
 	}
 
-	// Bug 511797 : On webkit2, this code is only reached once per page load.
-	if (WEBKIT1) {
-		/*
-		* Webkit1:
-		* Each invocation of setText() causes webkit_notify_load_status to be invoked
-		* twice, once for the initial navigate to about:blank, and once for the auto-navigate
-		* to about:blank that WebKit does when webkit_web_view_load_string is invoked.  If
-		* this is the first webkit_notify_load_status callback received for a setText()
-		* invocation then do not send any events or re-install registered BrowserFunctions.
-		*/
-		if (top && url.startsWith(ABOUT_BLANK) && htmlBytes != null) return 0;
-	}
-
 	LocationEvent event = new LocationEvent (browser);
 	event.display = browser.getDisplay ();
 	event.widget = browser;
@@ -2584,40 +1922,12 @@ long handleLoadCommitted (long uri, boolean top) {
 			locationListeners[i].changed (event);
 		}
 	};
-	if (WEBKIT2) {
-		browser.getDisplay().asyncExec(fireLocationChanged);
-	} else {
-		fireLocationChanged.run();
-	}
+	browser.getDisplay().asyncExec(fireLocationChanged);
 	return 0;
-}
-
-private void fireNewTitleEvent(String title){
-	if (WEBKIT1) {
-		// titleListener is already handled/fired in webkit_notify_title()
-		// [which is triggered by 'notify::title'. No need to fire it twice.
-		//
-		// This function is called by load_change / notify_load_status, which doesn't necessarily mean the
-		// title has actually changed. Further title can also be changed by javascript on the same page,
-		// thus page_load is not a proper way to trigger title_change.
-		// It's not clear when notify::title was introduced, (sometime in Webkit1 by the looks?)
-		// thus keeping code below for webkit1/legacy reasons.
-		TitleEvent newEvent = new TitleEvent (browser);
-		newEvent.display = browser.getDisplay ();
-		newEvent.widget = browser;
-		newEvent.title = title;
-		for (int i = 0; i < titleListeners.length; i++) {
-			titleListeners[i].changed (newEvent);
-		}
-	}
 }
 
 /**
  * This method is reached by:
- * Webkit1: WebkitWebView notify::load-status
- *  - simple change in property
- * 	- https://webkitgtk.org/reference/webkitgtk/unstable/webkitgtk-webkitwebview.html#WebKitWebView--load-status
- *
  * Webkit2: WebKitWebView load-changed signal
  * 	- void user_function (WebKitWebView  *web_view, WebKitLoadEvent load_event, gpointer user_data)
  *  - https://webkitgtk.org/reference/webkit2gtk/stable/WebKitWebView.html#WebKitWebView-load-changed
@@ -2635,86 +1945,12 @@ private void fireProgressCompletedEvent(){
 			progressListeners[i].completed (progress);
 		}
 	};
-	if (WEBKIT2)
-		browser.getDisplay().asyncExec(fireProgressEvents);
-	else
-		fireProgressEvents.run();
-}
-
-/** Webkit1 only.
- *  (Webkit2 equivalent is webkit_load_changed())
- */
-long handleLoadFinished (long uri, boolean top) {
-	assert WEBKIT1 : WebKitGTK.Webkit1AssertMsg;
-	int length = C.strlen (uri);
-	byte[] bytes = new byte[length];
-	C.memmove (bytes, uri, length);
-	String url = new String (Converter.mbcsToWcs (bytes));
-	/*
-	 * If the URI indicates that the page is being rendered from memory
-	 * (via setText()) then set it to about:blank to be consistent with IE.
-	 */
-	if (url.equals (URI_FILEROOT)) {
-		url = ABOUT_BLANK;
-	} else {
-		length = URI_FILEROOT.length ();
-		if (url.startsWith (URI_FILEROOT) && url.charAt (length) == '#') {
-			url = ABOUT_BLANK + url.substring (length);
-		}
-	}
-
-	/*
-	 * If htmlBytes is not null then there is html from a previous setText() call
-	 * waiting to be set into the about:blank page once it has completed loading.
-	 */
-	if (top && htmlBytes != null) {
-		if (url.startsWith(ABOUT_BLANK)) {
-			loadingText = true;
-			byte[] mimeType = Converter.wcsToMbcs ("text/html", true);  //$NON-NLS-1$
-			byte[] encoding = Converter.wcsToMbcs (StandardCharsets.UTF_8.displayName(), true);  //$NON-NLS-1$
-			byte[] uriBytes;
-			if (untrustedText) {
-				uriBytes = Converter.wcsToMbcs (ABOUT_BLANK, true);
-			} else {
-				uriBytes = Converter.wcsToMbcs (URI_FILEROOT, true);
-			}
-			WebKitGTK.webkit_web_view_load_string (webView, htmlBytes, mimeType, encoding, uriBytes);
-			htmlBytes = null;
-		}
-	}
-
-	/*
-	* The webkit_web_view_load_string() invocation above will trigger a second
-	* webkit_web_view_load_string callback when it is completed.  Wait for this
-	* second callback to come before sending the title or completed events.
-	*/
-	if (!loadingText) {
-		/*
-		* To be consistent with other platforms a title event should be fired
-		* when a top-level page has completed loading.  A page with a <title>
-		* tag will do this automatically when the notify::title signal is received.
-		* However a page without a <title> tag will not do this by default, so fire
-		* the event here with the page's url as the title.
-		*/
-		if (top) {
-			long frame = WebKitGTK.webkit_web_view_get_main_frame (webView);
-			long title = WebKitGTK.webkit_web_frame_get_title (frame);
-			if (title == 0) {
-				fireNewTitleEvent(url);
-				if (browser.isDisposed ()) return 0;
-			}
-		}
-
-		fireProgressCompletedEvent();
-	}
-	loadingText = false;
-
-	return 0;
+	browser.getDisplay().asyncExec(fireProgressEvents);
 }
 
 @Override
 public boolean isBackEnabled () {
-	if (WEBKIT2 && webView == 0)
+	if (webView == 0)
 		return false; //disposed.
 	return WebKitGTK.webkit_web_view_can_go_back (webView) != 0;
 }
@@ -2738,18 +1974,7 @@ void onDispose (Event e) {
 	}
 	functions = null;
 
-	if (WEBKIT1) {
-		// event function/external object only used by webkit1. For Webkit2, see Webkit2JavaCallback
-		if (eventFunction != null) {
-			eventFunction.dispose (false);
-			eventFunction = null;
-		}
-		C.free (webViewData);
-		postData = null;
-		headers = null;
-		htmlBytes = null;
-	}
-	if (WEBKIT2 && WebKitGTK.webkit_get_minor_version() >= 18) {
+	if (WebKitGTK.webkit_get_minor_version() >= 18) {
 		// Bug 530678.
 		// * As of Webkit 2.18, (it seems) webkitGtk auto-disposes itself when the parent is disposed.
 		// * This can cause a deadlock inside Webkit process if WebkitGTK widget's parent is disposed during a callback.
@@ -2771,18 +1996,9 @@ void onDispose (Event e) {
 
 void onResize (Event e) {
 	Rectangle rect = DPIUtil.autoScaleUp(browser.getClientArea ());
-	if (WEBKIT2){
-		if (webView == 0)
-			return;
-		GTK.gtk_widget_set_size_request (webView, rect.width, rect.height);
-	} else {
-		GTK.gtk_widget_set_size_request (scrolledWindow, rect.width, rect.height);
-	}
-}
-
-void openDownloadWindow (final long webkitDownload) {
-	assert WEBKIT1 : WebKitGTK.Webkit1AssertMsg;
-	openDownloadWindow(webkitDownload, null);
+	if (webView == 0)
+		return;
+	GTK.gtk_widget_set_size_request (webView, rect.width, rect.height);
 }
 
 void openDownloadWindow (final long webkitDownload, final String suggested_filename) {
@@ -2795,24 +2011,11 @@ void openDownloadWindow (final long webkitDownload, final String suggested_filen
 	gridLayout.verticalSpacing = 20;
 	shell.setLayout (gridLayout);
 
-	String nameString;
-	if (WEBKIT1) {
-		long name = WebKitGTK.webkit_download_get_suggested_filename (webkitDownload);
-		int length = C.strlen (name);
-		byte[] bytes = new byte[length];
-		C.memmove (bytes, name, length);
-		nameString = new String (Converter.mbcsToWcs (bytes));
-	} else {
-		nameString = suggested_filename;
-	}
+	String nameString = suggested_filename;
 
-	long url;
-	if (WEBKIT1) {
-		url = WebKitGTK.webkit_download_get_uri (webkitDownload);
-	} else {
-		long request = WebKitGTK.webkit_download_get_request(webkitDownload);
-		url = WebKitGTK.webkit_uri_request_get_uri(request);
-	}
+	long request = WebKitGTK.webkit_download_get_request(webkitDownload);
+	long url = WebKitGTK.webkit_uri_request_get_uri(request);
+
 	int length = C.strlen (url);
 	byte[] bytes = new byte[length];
 	C.memmove (bytes, url, length);
@@ -2840,9 +2043,7 @@ void openDownloadWindow (final long webkitDownload, final String suggested_filen
 	data.horizontalAlignment = GridData.CENTER;
 	cancel.setLayoutData (data);
 	final Listener cancelListener = event -> {
-		if (WEBKIT2) {
-			webKitDownloadStatus.put(new LONG(webkitDownload), WebKitGTK.WEBKIT_DOWNLOAD_STATUS_CANCELLED);
-		}
+		webKitDownloadStatus.put(new LONG(webkitDownload), WebKitGTK.WEBKIT_DOWNLOAD_STATUS_CANCELLED);
 		WebKitGTK.webkit_download_cancel (webkitDownload);
 	};
 	cancel.addListener (SWT.Selection, cancelListener);
@@ -2853,19 +2054,12 @@ void openDownloadWindow (final long webkitDownload, final String suggested_filen
 	display.timerExec (INTERVAL, new Runnable () {
 		@Override
 		public void run () {
-			int status = 0; // 0 allows download window to continue
-			if (WEBKIT1) {
-				status = WebKitGTK.webkit_download_get_status (webkitDownload);
-			} else {
-				status = webKitDownloadStatus.containsKey(new LONG(webkitDownload)) ? webKitDownloadStatus.get(new LONG(webkitDownload)) : 0;
-			}
+			int status =  webKitDownloadStatus.containsKey(new LONG(webkitDownload)) ? webKitDownloadStatus.get(new LONG(webkitDownload)) : 0;
 			if (shell.isDisposed () || status == WebKitGTK.WEBKIT_DOWNLOAD_STATUS_FINISHED || status == WebKitGTK.WEBKIT_DOWNLOAD_STATUS_CANCELLED) {
 				shell.dispose ();
 				display.timerExec (-1, this);
 				OS.g_object_unref (webkitDownload);
-				if (WEBKIT2) {
-					webKitDownloadStatus.remove(new LONG(webkitDownload));
-				}
+				webKitDownloadStatus.remove(new LONG(webkitDownload));
 				return;
 			}
 			if (status == WebKitGTK.WEBKIT_DOWNLOAD_STATUS_ERROR) {
@@ -2874,22 +2068,13 @@ void openDownloadWindow (final long webkitDownload, final String suggested_filen
 				OS.g_object_unref (webkitDownload);
 				cancel.removeListener (SWT.Selection, cancelListener);
 				cancel.addListener (SWT.Selection, event -> shell.dispose ());
-				if (WEBKIT2) {
-					webKitDownloadStatus.remove(new LONG(webkitDownload));
-				}
+				webKitDownloadStatus.remove(new LONG(webkitDownload));
 				return;
 			}
 
-			long current = 0;
-			long total = 0;
-			if (WEBKIT1) {
-				current = WebKitGTK.webkit_download_get_current_size (webkitDownload) / 1024L;
-				total = WebKitGTK.webkit_download_get_total_size (webkitDownload) / 1024L;
-			} else {
-				current = WebKitGTK.webkit_download_get_received_data_length(webkitDownload) / 1024L;
-				long response = WebKitGTK.webkit_download_get_response(webkitDownload);
-				total = WebKitGTK.webkit_uri_response_get_content_length(response) / 1024L;
-			}
+			long current = WebKitGTK.webkit_download_get_received_data_length(webkitDownload) / 1024L;
+			long response = WebKitGTK.webkit_download_get_response(webkitDownload);
+			long total = WebKitGTK.webkit_uri_response_get_content_length(response) / 1024L;
 			String message = Compatibility.getMessage ("SWT_Download_Status", new Object[] {current, total}); //$NON-NLS-1$
 			statusLabel.setText (message);
 			display.timerExec (INTERVAL, this);
@@ -2902,7 +2087,7 @@ void openDownloadWindow (final long webkitDownload, final String suggested_filen
 
 @Override
 public void refresh () {
-	if (WEBKIT2 && webView == 0)
+	if (webView == 0)
 		return; //disposed.
 	WebKitGTK.webkit_web_view_reload (webView);
 }
@@ -2912,46 +2097,23 @@ public boolean setText (String html, boolean trusted) {
 	/* convert the String containing HTML to an array of bytes with UTF-8 data */
 	byte[] html_bytes = (html + '\0').getBytes (StandardCharsets.UTF_8); //$NON-NLS-1$
 
-	/*
-	* If this.htmlBytes is not null then the about:blank page is already being loaded,
-	* so no navigate is required.  Just set the html that is to be shown.
-	*/
-	boolean blankLoading = htmlBytes != null; // Webkit1 only.
-	if (WEBKIT1) {
-		this.htmlBytes = html_bytes;
-		untrustedText = !trusted;
-	}
-
-	if (WEBKIT2) {
-		w2_bug527738LastRequestCounter.incrementAndGet();
-		byte[] uriBytes;
-		if (!trusted) {
-			uriBytes = Converter.wcsToMbcs (ABOUT_BLANK, true);
-		} else {
-			uriBytes = Converter.wcsToMbcs (URI_FILEROOT, true);
-		}
-		WebKitGTK.webkit_web_view_load_html (webView, html_bytes, uriBytes);
+	w2_bug527738LastRequestCounter.incrementAndGet();
+	byte[] uriBytes;
+	if (!trusted) {
+		uriBytes = Converter.wcsToMbcs (ABOUT_BLANK, true);
 	} else {
-		if (blankLoading) return true;
-
-		byte[] uriBytes = Converter.wcsToMbcs (ABOUT_BLANK, true);
-		WebKitGTK.webkit_web_view_load_uri (webView, uriBytes);
+		uriBytes = Converter.wcsToMbcs (URI_FILEROOT, true);
 	}
+	WebKitGTK.webkit_web_view_load_html (webView, html_bytes, uriBytes);
 
 	return true;
 }
 
 @Override
 public boolean setUrl (String url, String postData, String[] headers) {
-	if (WEBKIT1) {
-		this.postData = postData;
-		this.headers = headers;
-	}
-	if (WEBKIT2) {
-		w2_bug527738LastRequestCounter.incrementAndGet();
-	}
+	w2_bug527738LastRequestCounter.incrementAndGet();
 
-	if (WEBKIT2 && webView == 0)
+	if (webView == 0)
 		return false; // disposed.
 
 	/*
@@ -3006,7 +2168,7 @@ public boolean setUrl (String url, String postData, String[] headers) {
 
 	byte[] uriBytes = Converter.wcsToMbcs (url, true);
 
-	if (WEBKIT2 && postData==null && headers != null) {
+	if (postData==null && headers != null) {
 		long request = WebKitGTK.webkit_uri_request_new (uriBytes);
 		long requestHeaders = WebKitGTK.webkit_uri_request_get_http_headers (request);
 		if (requestHeaders != 0) {
@@ -3021,7 +2183,7 @@ public boolean setUrl (String url, String postData, String[] headers) {
 	// Webkit2 doesn't have api to set url with data. (2.18). While we wait for them to implement,
 	// this  workaround uses java to query a server and then manually populate webkit with content.
 	// This should be version guarded and replaced with proper functions once webkit2 has implemented api.
-	if (WEBKIT2 && postData != null) {
+	if (postData != null) {
 		final String base_url = url;
 
 		// Use Webkit User-Agent
@@ -3123,8 +2285,7 @@ public boolean setUrl (String url, String postData, String[] headers) {
 		WebKitGTK.webkit_web_view_load_uri (webView, uriBytes);
 	}
 
-	// Handle when !(WEBKIT2 && postData != null)
-	if (WEBKIT1 || (WEBKIT2 && postData == null)) {
+	if (postData == null) {
 		OS.g_object_set (settings, WebKitGTK.user_agent, 0, 0);
 	}
 	return true;
@@ -3135,41 +2296,10 @@ public void stop () {
 	WebKitGTK.webkit_web_view_stop_loading (webView);
 }
 
-long webframe_notify_load_status (long web_frame, long pspec) {
-	assert WEBKIT1 : WebKitGTK.Webkit1AssertMsg;
-	int status = WebKitGTK.webkit_web_frame_get_load_status (web_frame);
-	switch (status) {
-		case WebKitGTK.WEBKIT_LOAD_COMMITTED: {
-			long uri = WebKitGTK.webkit_web_frame_get_uri (web_frame);
-			return handleLoadCommitted (uri, false);
-		}
-		case WebKitGTK.WEBKIT_LOAD_FINISHED: {
-			/*
-			* If this frame navigation was isolated to this frame (eg.- a link was
-			* clicked in the frame, as opposed to this frame being created in
-			* response to navigating to a main document containing frames) then
-			* treat this as a completed load.
-			*/
-			long parentFrame = WebKitGTK.webkit_web_frame_get_parent (web_frame);
-			if (WebKitGTK.webkit_web_frame_get_load_status (parentFrame) == WebKitGTK.WEBKIT_LOAD_FINISHED) {
-				long uri = WebKitGTK.webkit_web_frame_get_uri (web_frame);
-				return handleLoadFinished (uri, false);
-			}
-		}
-	}
-	return 0;
-}
-
 /**
- * Webkit1:
- *  - WebkitWebView 'close-web-view' signal.
- * 	- gboolean user_function (WebKitWebView *web_view, gpointer user_data);   // observe return value.
- *	- https://webkitgtk.org/reference/webkitgtk/unstable/webkitgtk-webkitwebview.html#WebKitWebView-close-web-view
- *
- * Webkit2:
- * 	- WebKitWebView 'close' signal
- *  - void user_function (WebKitWebView *web_view, gpointer user_data); // observe *no* return value.
- *  - https://webkitgtk.org/reference/webkit2gtk/stable/WebKitWebView.html#WebKitWebView-close
+ * WebKitWebView 'close' signal
+ * void user_function (WebKitWebView *web_view, gpointer user_data); // observe *no* return value.
+ * https://webkitgtk.org/reference/webkit2gtk/stable/WebKitWebView.html#WebKitWebView-close
  */
 long webkit_close_web_view (long web_view) {
 	WindowEvent newEvent = new WindowEvent (browser);
@@ -3182,18 +2312,10 @@ long webkit_close_web_view (long web_view) {
 		}
 		browser.dispose ();
 	};
-	if (WEBKIT2) {
-		// There is a subtle difference in Webkit1 vs Webkit2, in that on webkit2 this signal doesn't expect a return value.
-		// As such, we can safley execute the SWT listeners later to avoid deadlocks. See bug 512001
-		browser.getDisplay().asyncExec(fireCloseWindowListeners);
-	} else {
-		fireCloseWindowListeners.run();
-	}
+	// On WebKit2 this signal doesn't expect a return value.
+	// As such, we can safley execute the SWT listeners later to avoid deadlocks. See bug 512001
+	browser.getDisplay().asyncExec(fireCloseWindowListeners);
 	return 0;
-}
-
-long webkit_console_message (long web_view, long message, long line, long source_id) {
-	return 1;	/* stop the message from being written to stderr */
 }
 
 long webkit_create_web_view (long web_view, long frame) {
@@ -3208,17 +2330,13 @@ long webkit_create_web_view (long web_view, long frame) {
 			}
 		}
 	};
-	if (WEBKIT2) {
-		try {
-			nonBlockingEvaluate++; 	  // running evaluate() inside openWindowListener and waiting for return leads to deadlock. Bug 512001
-			fireOpenWindowListeners.run();// Permit evaluate()/execute() to execute scripts in listener, but do not provide return value.
-		} catch (Exception e) {
-			throw e; // rethrow execption if thrown, but decrement counter first.
-		} finally {
-			nonBlockingEvaluate--;
-		}
-	} else {
-		fireOpenWindowListeners.run();
+	try {
+		nonBlockingEvaluate++; 	  // running evaluate() inside openWindowListener and waiting for return leads to deadlock. Bug 512001
+		fireOpenWindowListeners.run();// Permit evaluate()/execute() to execute scripts in listener, but do not provide return value.
+	} catch (Exception e) {
+		throw e; // rethrow execption if thrown, but decrement counter first.
+	} finally {
+		nonBlockingEvaluate--;
 	}
 	Browser browser = null;
 	if (newEvent.browser != null && newEvent.browser.webBrowser instanceof WebKit) {
@@ -3230,43 +2348,7 @@ long webkit_create_web_view (long web_view, long frame) {
 	return 0;
 }
 
-long webkit_download_requested (long web_view, long download) {
-	assert WEBKIT1 : WebKitGTK.Webkit1AssertMsg;
-	long name = WebKitGTK.webkit_download_get_suggested_filename (download);
-	int length = C.strlen (name);
-	byte[] bytes = new byte[length];
-	C.memmove (bytes, name, length);
-	final String nameString = new String (Converter.mbcsToWcs (bytes));
-	final long request = WebKitGTK.webkit_download_get_network_request (download);
-	OS.g_object_ref (request);
-	/*
-	 * As of WebKitGTK 1.8.x attempting to show a FileDialog in this callback causes
-	 * a hang.  The workaround is to open it asynchronously with a new download.
-	 */
-	browser.getDisplay ().asyncExec (() -> {
-		if (!browser.isDisposed ()) {
-			FileDialog dialog = new FileDialog (browser.getShell (), SWT.SAVE);
-			dialog.setFileName (nameString);
-			String title = Compatibility.getMessage ("SWT_FileDownload"); //$NON-NLS-1$
-			dialog.setText (title);
-			String path = dialog.open ();
-			if (path != null) {
-				path = URI_FILEROOT + path;
-				long newDownload = WebKitGTK.webkit_download_new (request);
-				byte[] uriBytes = Converter.wcsToMbcs (path, true);
-				WebKitGTK.webkit_download_set_destination_uri (newDownload, uriBytes);
-				openDownloadWindow (newDownload);
-				WebKitGTK.webkit_download_start (newDownload);
-				OS.g_object_unref (newDownload);
-			}
-		}
-		OS.g_object_unref (request);
-	});
-	return 1;
-}
-
 static long webkit_download_started(long webKitDownload) {
-	assert WEBKIT2 : WebKitGTK.Webkit2AssertMsg;
 	OS._g_signal_connect(webKitDownload, WebKitGTK.decide_destination, Proc3.getAddress(), DECIDE_DESTINATION);
 	OS._g_signal_connect(webKitDownload, WebKitGTK.failed, Proc3.getAddress(), FAILED);
 	OS._g_signal_connect(webKitDownload, WebKitGTK.finished, Proc2.getAddress(), FINISHED);
@@ -3275,7 +2357,6 @@ static long webkit_download_started(long webKitDownload) {
 
 
 static long webkit_download_decide_destination(long webKitDownload, long suggested_filename) {
-	assert WEBKIT2 : WebKitGTK.Webkit2AssertMsg;
 	final String fileName = getString(suggested_filename);
 	long webView = WebKitGTK.webkit_download_get_web_view(webKitDownload);
 	if (webView != 0) {
@@ -3302,7 +2383,6 @@ static long webkit_download_decide_destination(long webKitDownload, long suggest
 }
 
 static long webkit_download_finished(long download) {
-	assert WEBKIT2 : WebKitGTK.Webkit2AssertMsg;
 	// A failed signal may have been recorded prior. The finish signal is now being called.
 	if (!webKitDownloadStatus.containsKey(new LONG(download))) {
 		webKitDownloadStatus.put(new LONG(download), WebKitGTK.WEBKIT_DOWNLOAD_STATUS_FINISHED);
@@ -3311,7 +2391,6 @@ static long webkit_download_finished(long download) {
 }
 
 static long webkit_download_failed(long download) {
-	assert WEBKIT2 : WebKitGTK.Webkit2AssertMsg;
 	// A cancel may have been issued resulting in this signal call. Preserve the original cause.
 	if (!webKitDownloadStatus.containsKey(new LONG(download))) {
 		webKitDownloadStatus.put(new LONG(download), WebKitGTK.WEBKIT_DOWNLOAD_STATUS_ERROR);
@@ -3320,12 +2399,11 @@ static long webkit_download_failed(long download) {
 }
 
 /**
- *  Webkit2 only. WebkitWebView mouse-target-changed
+ * WebkitWebView mouse-target-changed
  * - void user_function (WebKitWebView *web_view, WebKitHitTestResult *hit_test_result, guint modifiers, gpointer user_data)
  * - https://webkitgtk.org/reference/webkit2gtk/stable/WebKitWebView.html#WebKitWebView-mouse-target-changed
  * */
 long webkit_mouse_target_changed (long web_view, long hit_test_result, long modifiers) {
-	assert WEBKIT2 : WebKitGTK.Webkit2AssertMsg;
 	if (WebKitGTK.webkit_hit_test_result_context_is_link(hit_test_result)){
 		long uri = WebKitGTK.webkit_hit_test_result_get_link_uri(hit_test_result);
 		long title = WebKitGTK.webkit_hit_test_result_get_link_title(hit_test_result);
@@ -3336,10 +2414,6 @@ long webkit_mouse_target_changed (long web_view, long hit_test_result, long modi
 }
 
 /**
- * Webkit1: WebkitWebView hovering-over-link signal
- * - void user_function (WebKitWebView *web_view, gchar *title, gchar *uri, gpointer user_data)
- * - https://webkitgtk.org/reference/webkitgtk/unstable/webkitgtk-webkitwebview.html#WebKitWebView-hovering-over-link
- *
  * Webkit2: WebkitWebView mouse-target-change
  * - Normally this signal is called for many different events, e.g hoveing over an image.
  *   But in our case, in webkit_mouse_target_changed() we filter out everything except mouse_over_link events.
@@ -3362,100 +2436,12 @@ long webkit_hovering_over_link (long web_view, long title, long uri) {
 				statusTextListeners[i].changed (event);
 			}
 		};
-		if (WEBKIT2)
-			browser.getDisplay().asyncExec(fireStatusTextListener);
-		else
-			fireStatusTextListener.run();
+		browser.getDisplay().asyncExec(fireStatusTextListener);
 	}
 	return 0;
 }
 
-long webkit_mime_type_policy_decision_requested (long web_view, long frame, long request, long mimetype, long policy_decision) {
-	assert WEBKIT1 : WebKitGTK.Webkit1AssertMsg;
-	boolean canShow = WebKitGTK.webkit_web_view_can_show_mime_type (webView, mimetype) != 0;
-	if (!canShow) {
-		WebKitGTK.webkit_web_policy_decision_download (policy_decision);
-		return 1;
-	}
-	return 0;
-}
-
-/** Webkit1 only */
-long webkit_navigation_policy_decision_requested (long web_view, long frame, long request, long navigation_action, long policy_decision) {
-	assert WEBKIT1 : WebKitGTK.Webkit1AssertMsg;
-	if (loadingText) {
-		/*
-		 * WebKit is auto-navigating to about:blank in response to a
-		 * webkit_web_view_load_string() invocation.  This navigate
-		 * should always proceed without sending an event since it is
-		 * preceded by an explicit navigate to about:blank in setText().
-		 */
-		return 0;
-	}
-
-	long uri = WebKitGTK.webkit_network_request_get_uri (request);
-	int length = C.strlen (uri);
-	byte[] bytes = new byte[length];
-	C.memmove (bytes, uri, length);
-
-	String url = new String (Converter.mbcsToWcs (bytes));
-	/*
-	 * If the URI indicates that the page is being rendered from memory
-	 * (via setText()) then set it to about:blank to be consistent with IE.
-	 */
-	if (url.equals (URI_FILEROOT)) {
-		url = ABOUT_BLANK;
-	} else {
-		length = URI_FILEROOT.length ();
-		if (url.startsWith (URI_FILEROOT) && url.charAt (length) == '#') {
-			url = ABOUT_BLANK + url.substring (length);
-		}
-	}
-
-	LocationEvent newEvent = new LocationEvent (browser);
-	newEvent.display = browser.getDisplay ();
-	newEvent.widget = browser;
-	newEvent.location = url;
-	newEvent.doit = true;
-	if (locationListeners != null) {
-		for (int i = 0; i < locationListeners.length; i++) {
-			locationListeners[i].changing (newEvent);
-		}
-	}
-	if (newEvent.doit && !browser.isDisposed ()) {
-		if (jsEnabled != jsEnabledOnNextPage) {
-			jsEnabled = jsEnabledOnNextPage;
-			DisabledJSCount += !jsEnabled ? 1 : -1;
-			webkit_settings_set(WebKitGTK.enable_scripts, jsEnabled ? 1 : 0);
-		}
-
-		/* hook status change signal if frame is a newly-created sub-frame */
-		long mainFrame = WebKitGTK.webkit_web_view_get_main_frame (webView);
-		if (frame != mainFrame) {
-			int id = OS.g_signal_handler_find (frame, OS.G_SIGNAL_MATCH_FUNC | OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, Proc3.getAddress (), NOTIFY_LOAD_STATUS);
-			if (id == 0) {
-				OS.g_signal_connect (frame, WebKitGTK.notify_load_status, Proc3.getAddress (), NOTIFY_LOAD_STATUS);
-			}
-		}
-
-		/*
-		* The following line is intentionally commented.  For some reason, invoking
-		* webkit_web_policy_decision_use(policy_decision) causes the Flash plug-in
-		* to crash when navigating to a page with Flash.  Since returning from this
-		* callback without invoking webkit_web_policy_decision_ignore(policy_decision)
-		* implies that the page should be loaded, it's fine to not invoke
-		* webkit_web_policy_decision_use(policy_decision) here.
-		*/
-		//WebKitGTK.webkit_web_policy_decision_use (policy_decision);
-	} else {
-		WebKitGTK.webkit_web_policy_decision_ignore (policy_decision);
-	}
-	return 0;
-}
-
-/** Webkit2 only */
 long webkit_decide_policy (long web_view, long decision, int decision_type, long user_data) {
-	assert WEBKIT2 : WebKitGTK.Webkit2AssertMsg;
 	switch (decision_type) {
 	case WebKitGTK.WEBKIT_POLICY_DECISION_TYPE_NAVIGATION_ACTION:
 		long request = WebKitGTK. webkit_navigation_policy_decision_get_request(decision);
@@ -3524,28 +2510,7 @@ long webkit_decide_policy (long web_view, long decision, int decision_type, long
 	return 0;
 }
 
-long webkit_notify_load_status (long web_view, long pspec) {
-	assert WEBKIT1 : WebKitGTK.Webkit1AssertMsg;
-	int status = WebKitGTK.webkit_web_view_get_load_status (webView);
-	switch (status) {
-		case WebKitGTK.WEBKIT_LOAD_COMMITTED: {
-			long uri = WebKitGTK.webkit_web_view_get_uri (webView);
-			return handleLoadCommitted (uri, true);
-		}
-		case WebKitGTK.WEBKIT_LOAD_FINISHED: {
-			long uri = WebKitGTK.webkit_web_view_get_uri (webView);
-			return handleLoadFinished (uri, true);
-		}
-	}
-	return 0;
-}
-
-/**
- * This method is only called by Webkit2.
- * The webkit1 equivalent is webkit_window_object_cleared;
- */
 long webkit_load_changed (long web_view, int status, long user_data) {
-	assert WEBKIT2 : WebKitGTK.Webkit2AssertMsg;
 	switch (status) {
 		case WebKitGTK.WEBKIT2_LOAD_COMMITTED: {
 			long uri = WebKitGTK.webkit_web_view_get_uri (webView);
@@ -3558,13 +2523,7 @@ long webkit_load_changed (long web_view, int status, long user_data) {
 				GTK.gtk_widget_size_allocate(browser.handle, allocation);
 				firstLoad = false;
 			}
-			addEventHandlers (web_view, true);
 
-			long title = WebKitGTK.webkit_web_view_get_title (webView);
-			if (title == 0) {
-				long uri = WebKitGTK.webkit_web_view_get_uri (webView);
-				fireNewTitleEvent(getString(uri));
-			}
 			fireProgressCompletedEvent();
 
 			/*
@@ -3611,13 +2570,10 @@ long webkit_load_changed (long web_view, int status, long user_data) {
 }
 
 /**
- * This method is only called by Webkit2.
- *
  * Called in cases where a web page failed to load due to TLS errors
  * (self-signed certificates, as an example).
  */
 long webkit_load_failed_tls (long web_view, long failing_uri, long certificate, long error) {
-	assert WEBKIT2 : WebKitGTK.Webkit2AssertMsg;
 	if (!ignoreTls) {
 		// Set tlsError flag so that the user can be prompted once this "bad" page has finished loading
 		tlsError = true;
@@ -3685,24 +2641,17 @@ void convertUri (long webkitUri) {
 
 /**
  * Triggered by a change in property. (both gdouble[0,1])
- * Webkit1: WebkitWebview notify::progress
- * 	https://webkitgtk.org/reference/webkitgtk/unstable/webkitgtk-webkitwebview.html#WebKitWebView--progress
  * Webkit2: WebkitWebview notify::estimated-load-progress
  *  https://webkitgtk.org/reference/webkit2gtk/stable/WebKitWebView.html#WebKitWebView--estimated-load-progress
  *
  *  No return value required. Thus safe to run asynchronously.
  */
 long webkit_notify_progress (long web_view, long pspec) {
-	assert WEBKIT1 || WEBKIT2;
 	ProgressEvent event = new ProgressEvent (browser);
 	event.display = browser.getDisplay ();
 	event.widget = browser;
 	double progress = 0;
-	if (WEBKIT2){
-		progress = WebKitGTK.webkit_web_view_get_estimated_load_progress (webView);
-	} else {
-		progress = WebKitGTK.webkit_web_view_get_progress (webView);
-	}
+	progress = WebKitGTK.webkit_web_view_get_estimated_load_progress (webView);
 	event.current = (int) (progress * MAX_PROGRESS);
 	event.total = MAX_PROGRESS;
 	Runnable fireProgressChangedEvents = () -> {
@@ -3711,10 +2660,7 @@ long webkit_notify_progress (long web_view, long pspec) {
 			progressListeners[i].changed (event);
 		}
 	};
-	if (WEBKIT2)
-		browser.getDisplay().asyncExec(fireProgressChangedEvents);
-	else
-		fireProgressChangedEvents.run();
+	browser.getDisplay().asyncExec(fireProgressChangedEvents);
 	return 0;
 }
 
@@ -3726,7 +2672,6 @@ long webkit_notify_progress (long web_view, long pspec) {
  * It doesn't look it would require a return value, so running in asyncExec should be fine.
  */
 long webkit_notify_title (long web_view, long pspec) {
-	assert WEBKIT1 || WEBKIT2;
 	long title = WebKitGTK.webkit_web_view_get_title (webView);
 	String titleString;
 	if (title == 0) {
@@ -3746,10 +2691,7 @@ long webkit_notify_title (long web_view, long pspec) {
 			titleListeners[i].changed (event);
 		}
 	};
-	if (WEBKIT2)
-		browser.getDisplay().asyncExec(fireTitleListener);
-	else
-		fireTitleListener.run();
+	browser.getDisplay().asyncExec(fireTitleListener);
 	return 0;
 }
 
@@ -3776,44 +2718,6 @@ long webkit_context_menu (long web_view, long context_menu, long eventXXX, long 
 	return 0;
 }
 
-// Seems to be reached only by Webkit1 at the moment.
-long webkit_populate_popup (long web_view, long webkit_menu) {
-	Point pt = browser.getDisplay ().getCursorLocation ();
-	Event event = new Event ();
-	event.x = pt.x;
-	event.y = pt.y;
-	browser.notifyListeners (SWT.MenuDetect, event);
-	if (!event.doit) {
-		/* clear the menu */
-		long children = GTK.gtk_container_get_children (webkit_menu);
-		long current = children;
-		while (current != 0) {
-			long item = OS.g_list_data (current);
-			GTK.gtk_container_remove (webkit_menu, item);
-			current = OS.g_list_next (current);
-		}
-		OS.g_list_free (children);
-		return 0;
-	}
-	Menu menu = browser.getMenu ();
-	if (menu != null && !menu.isDisposed ()) {
-		if (pt.x != event.x || pt.y != event.y) {
-			menu.setLocation (event.x, event.y);
-		}
-		menu.setVisible (true);
-		/* clear the menu */
-		long children = GTK.gtk_container_get_children (webkit_menu);
-		long current = children;
-		while (current != 0) {
-			long item = OS.g_list_data (current);
-			GTK.gtk_container_remove (webkit_menu, item);
-			current = OS.g_list_next (current);
-		}
-		OS.g_list_free (children);
-	}
-	return 0;
-}
-
 private void addRequestHeaders(long requestHeaders, String[] headers){
 	for (int i = 0; i < headers.length; i++) {
 		String current = headers[i];
@@ -3833,82 +2737,8 @@ private void addRequestHeaders(long requestHeaders, String[] headers){
 
 }
 
-long webkit_resource_request_starting (long web_view, long web_frame, long web_resource, long request, long response) {
-	assert WEBKIT1;
-	if (postData != null || headers != null) {
-		long message = WebKitGTK.webkit_network_request_get_message (request);
-		if (message == 0) {
-			headers = null;
-			postData = null;
-		} else {
-			if (postData != null) {
-				// Set the message method type to POST
-				WebKitGTK.SoupMessage_method (message, PostString);
-				long body = WebKitGTK.SoupMessage_request_body (message);
-				byte[] bytes = Converter.wcsToMbcs (postData, false);
-				long data = C.malloc (bytes.length);
-				C.memmove (data, bytes, bytes.length);
-				WebKitGTK.soup_message_body_append (body, WebKitGTK.SOUP_MEMORY_TAKE, data, bytes.length);
-				WebKitGTK.soup_message_body_flatten (body);
-
-				if (headers == null) headers = new String[0];
-				boolean found = false;
-				for (int i = 0; i < headers.length; i++) {
-					int index = headers[i].indexOf (':');
-					if (index != -1) {
-						String name = headers[i].substring (0, index).trim ().toLowerCase ();
-						if (name.equals (HEADER_CONTENTTYPE)) {
-							found = true;
-							break;
-						}
-					}
-				}
-				if (!found) {
-					String[] temp = new String[headers.length + 1];
-					System.arraycopy (headers, 0, temp, 0, headers.length);
-					temp[headers.length] = HEADER_CONTENTTYPE + ':' + MIMETYPE_FORMURLENCODED;
-					headers = temp;
-				}
-				postData = null;
-			}
-
-			/* headers */
-			long requestHeaders = WebKitGTK.SoupMessage_request_headers (message);
-			addRequestHeaders(requestHeaders, headers);
-			headers = null;
-		}
-	}
-
-	return 0;
-}
-
-/**
- * Webkit1 only.
- * Normally triggered by javascript that runs "window.status=txt".
- *
- * On webkit2 this signal doesn't exist anymore.
- * In general, window.status=text is not supported on most newer browsers anymore.
- * status bar now only changes when you hover you mouse over it.
- */
-long webkit_status_bar_text_changed (long web_view, long text) {
-	int length = C.strlen (text);
-	byte[] bytes = new byte[length];
-	C.memmove (bytes, text, length);
-	StatusTextEvent statusText = new StatusTextEvent (browser);
-	statusText.display = browser.getDisplay ();
-	statusText.widget = browser;
-	statusText.text = new String (Converter.mbcsToWcs (bytes));
-	for (int i = 0; i < statusTextListeners.length; i++) {
-		statusTextListeners[i].changed (statusText);
-	}
-	return 0;
-}
-
 /**
  * Emitted after "create" on the newly created WebKitWebView when it should be displayed to the user.
- *
- * Webkit1 signal: web-view-ready
- *   https://webkitgtk.org/reference/webkitgtk/unstable/webkitgtk-webkitwebview.html#WebKitWebView-web-view-ready
  * Webkit2 signal: ready-to-show
  *   https://webkitgtk.org/reference/webkitgtk/unstable/webkitgtk-webkitwebview.html#WebKitWebView-web-view-ready
  * Note in webkit2, no return value has to be provided in callback.
@@ -3918,45 +2748,27 @@ long webkit_web_view_ready (long web_view) {
 	newEvent.display = browser.getDisplay ();
 	newEvent.widget = browser;
 
-	if (WEBKIT1) {
-		long webKitWebWindowFeatures = WebKitGTK.webkit_web_view_get_window_features (webView);
-		newEvent.addressBar = webkit_settings_get(webKitWebWindowFeatures, WebKitGTK.locationbar_visible) != 0;
-		newEvent.menuBar = webkit_settings_get(webKitWebWindowFeatures, WebKitGTK.menubar_visible) != 0;
-		newEvent.statusBar = webkit_settings_get(webKitWebWindowFeatures, WebKitGTK.statusbar_visible) != 0;
-		newEvent.addressBar = webkit_settings_get(webKitWebWindowFeatures, WebKitGTK.toolbar_visible) != 0;
-		int x =  webkit_settings_get(webKitWebWindowFeatures, WebKitGTK.x);
-		int y =  webkit_settings_get(webKitWebWindowFeatures, WebKitGTK.y);
-		int width =  webkit_settings_get(webKitWebWindowFeatures, WebKitGTK.width);
-		int height =  webkit_settings_get(webKitWebWindowFeatures, WebKitGTK.height);
-		if (x != -1 && y != -1)
-			newEvent.location = new Point (x,y);
-		if (width != -1 && height != -1)
-			newEvent.size = new Point (width,height);
-	} else {
-		assert WEBKIT2 : WebKitGTK.Webkit2AssertMsg;
-		long properties = WebKitGTK.webkit_web_view_get_window_properties(webView);
-		newEvent.addressBar = webkit_settings_get(properties, WebKitGTK.locationbar_visible) != 0;
-		newEvent.menuBar = webkit_settings_get(properties, WebKitGTK.menubar_visible) != 0;
-		newEvent.statusBar = webkit_settings_get(properties, WebKitGTK.statusbar_visible) != 0;
-		newEvent.toolBar = webkit_settings_get(properties, WebKitGTK.toolbar_visible) != 0;
+	long properties = WebKitGTK.webkit_web_view_get_window_properties(webView);
+	newEvent.addressBar = webkit_settings_get(properties, WebKitGTK.locationbar_visible) != 0;
+	newEvent.menuBar = webkit_settings_get(properties, WebKitGTK.menubar_visible) != 0;
+	newEvent.statusBar = webkit_settings_get(properties, WebKitGTK.statusbar_visible) != 0;
+	newEvent.toolBar = webkit_settings_get(properties, WebKitGTK.toolbar_visible) != 0;
 
-		GdkRectangle rect = new GdkRectangle();
-		WebKitGTK.webkit_window_properties_get_geometry(properties, rect);
-		newEvent.location = new Point(Math.max(0, rect.x),Math.max(0, rect.y));
+	GdkRectangle rect = new GdkRectangle();
+	WebKitGTK.webkit_window_properties_get_geometry(properties, rect);
+	newEvent.location = new Point(Math.max(0, rect.x),Math.max(0, rect.y));
 
-		int width = rect.width;
-		int height = rect.height;
-		if (height == 100 && width == 100) {
-			// On Webkit1, if no height/width is specified, reasonable defaults are given.
-			// On Webkit2, if no height/width is specified, then minimum (which is 100) is allocated to popus.
-			// This makes popups very small.
-			// For better cross-platform consistency (Win/Cocoa/Gtk), we give more reasonable defaults (2/3 the size of a screen).
-			Rectangle primaryMonitorBounds = browser.getDisplay ().getPrimaryMonitor().getBounds();
-			height = (int) (primaryMonitorBounds.height * 0.66);
-			width = (int) (primaryMonitorBounds.width * 0.66);
-		}
-		newEvent.size = new Point(width, height);
+	int width = rect.width;
+	int height = rect.height;
+	if (height == 100 && width == 100) {
+		// On Webkit2, if no height/width is specified, then minimum (which is 100) is allocated to popus.
+		// This makes popups very small.
+		// For better cross-platform consistency (Win/Cocoa/Gtk), we give more reasonable defaults (2/3 the size of a screen).
+		Rectangle primaryMonitorBounds = browser.getDisplay ().getPrimaryMonitor().getBounds();
+		height = (int) (primaryMonitorBounds.height * 0.66);
+		width = (int) (primaryMonitorBounds.width * 0.66);
 	}
+	newEvent.size = new Point(width, height);
 
 	Runnable fireVisibilityListeners = () -> {
 		if (browser.isDisposed()) return;
@@ -3964,117 +2776,38 @@ long webkit_web_view_ready (long web_view) {
 			visibilityWindowListeners[i].show (newEvent);
 		}
 	};
-	if (WEBKIT2) {
-		// Postpone execution of listener, to avoid deadlocks in case evaluate() is
-		// called in the listener while another signal is being handled. See bug 512001.
-		// evaluate() can safely be called in this listener with no adverse effects.
-		browser.getDisplay().asyncExec(fireVisibilityListeners);
-	} else {
-		fireVisibilityListeners.run();
-	}
+	// Postpone execution of listener, to avoid deadlocks in case evaluate() is
+	// called in the listener while another signal is being handled. See bug 512001.
+	// evaluate() can safely be called in this listener with no adverse effects.
+	browser.getDisplay().asyncExec(fireVisibilityListeners);
 	return 0;
 }
 
 /**
- * This method is only called by Webkit1.
- * The webkit2 equivalent is webkit_load_changed(..):caseWEBKIT2__LOAD_FINISHED
+ * @return An integer value for the property is returned. For boolean settings, 0 indicates false,
+ * 1 indicates true. -1= is error.
  */
-long webkit_window_object_cleared (long web_view, long frame, long context, long window_object) {
-	assert WEBKIT1 : WebKitGTK.Webkit1AssertMsg;
-	long globalObject = WebKitGTK.JSContextGetGlobalObject (context);
-	long externalObject = WebKitGTK.JSObjectMake (context, ExternalClass, webViewData);
-	byte[] bytes = (OBJECTNAME_EXTERNAL + '\0').getBytes (StandardCharsets.UTF_8);
-	long name = WebKitGTK.JSStringCreateWithUTF8CString (bytes);
-	WebKitGTK.JSObjectSetProperty (context, globalObject, name, externalObject, 0, null);
-	WebKitGTK.JSStringRelease (name);
-
-	registerBrowserFunctions(); // Bug 508217
-	long mainFrame = WebKitGTK.webkit_web_view_get_main_frame (webView);
-	boolean top = mainFrame == frame;
-	addEventHandlers (web_view, top);
-	return 0;
-}
-
-/** Webkit1 & Webkit2
- * @return An integer value for the property is returned. For boolean settings, 0 indicates false, 1 indicates true. -1= is error.*/
 private int webkit_settings_get(byte [] property) {
-	if (WEBKIT2 && webView == 0) { // already disposed.
+	if (webView == 0) { // already disposed.
 		return -1; // error.
 	}
 	long settings = WebKitGTK.webkit_web_view_get_settings (webView);
 	return webkit_settings_get(settings, property);
 }
 
-/** Webkit1 & Webkit2
- * @return An integer value for the property is returned. For boolean settings, 0 indicates false, 1 indicates true */
+/** @return An integer value for the property is returned. For boolean settings, 0 indicates false, 1 indicates true */
 private int webkit_settings_get(long settings, byte[] property) {
 	int[] result = new int[1];
 	OS.g_object_get (settings, property, result, 0);
 	return result[0];
 }
 
-/** Webkit1 & Webkit2 */
 private void webkit_settings_set(byte [] property, int value) {
-	if (WEBKIT2 && webView == 0) { // already disposed.
+	if (webView == 0) { // already disposed.
 		return;
 	}
 	long settings = WebKitGTK.webkit_web_view_get_settings (webView);
 	OS.g_object_set(settings, property, value, 0);
-}
-
-private void registerBrowserFunctions() {
-	for (BrowserFunction current : functions.values()) {
-		nonBlockingExecute(current.functionString);
-	}
-}
-
-/**
- * Webkit1 callback for javascript to call java.
- */
-long callJava (long ctx, long func, long thisObject, long argumentCount, long arguments, long exception) {
-	Object returnValue = null;
-	if (argumentCount == 3) {
-		// Javastring array: <int: function index>, <string: token>, <array: javascript args>
-		// 1st arg: Function index
-		long [] result = new long [1];
-		C.memmove (result, arguments, C.PTR_SIZEOF);
-		int type = WebKitGTK.JSValueGetType (ctx, result[0]);
-		if (type == WebKitGTK.kJSTypeNumber) {
-			int index = ((Double)convertToJava (ctx, result[0])).intValue ();
-			result[0] = 0;
-			// 2nd arg: function token
-			C.memmove (result, arguments + C.PTR_SIZEOF, C.PTR_SIZEOF);
-			type = WebKitGTK.JSValueGetType (ctx, result[0]);
-			if (type == WebKitGTK.kJSTypeString) {
-				String token = (String)convertToJava (ctx, result[0]);
-				BrowserFunction function = functions.get (index);
-				if (function != null && token.equals (function.token)) {
-					try {
-						// 3rd Arg: paramaters given from Javascript
-						C.memmove (result, arguments + 2 * C.PTR_SIZEOF, C.PTR_SIZEOF);
-						Object temp = convertToJava (ctx, result[0]);
-						if (temp instanceof Object[]) {
-							Object[] args = (Object[])temp;
-							try {
-								returnValue = function.function (args);
-							} catch (Exception e) {
-								/* exception during function invocation */
-								returnValue = WebBrowser.CreateErrorString (e.getLocalizedMessage ());
-							}
-						}
-					} catch (IllegalArgumentException e) {
-						/* invalid argument value type */
-						if (function.isEvaluate) {
-							/* notify the function so that a java exception can be thrown */
-							function.function (new String[] {WebBrowser.CreateErrorString (new SWTException (SWT.ERROR_INVALID_RETURN_VALUE).getLocalizedMessage ())});
-						}
-						returnValue = WebBrowser.CreateErrorString (e.getLocalizedMessage ());
-					}
-				}
-			}
-		}
-	}
-	return convertToJS (ctx, returnValue);
 }
 
 long convertToJS (long ctx, Object value) {

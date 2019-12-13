@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2009, 2017 IBM Corporation and others. All rights reserved.
+ * Copyright (c) 2009, 2019 IBM Corporation and others. All rights reserved.
  * The contents of this file are made available under the terms
  * of the GNU Lesser General Public License (LGPL) Version 2.1 that
  * accompanies this distribution (lgpl-v21.txt).  The LGPL is also
@@ -28,17 +28,5 @@ void setGdkRectangleFields(JNIEnv *env, jobject lpObject, GdkRectangle *lpStruct
 #define getGdkRectangleFields(a,b,c) NULL
 #define setGdkRectangleFields(a,b,c)
 #define GdkRectangle_sizeof() 0
-#endif
-
-#ifndef NO_JSClassDefinition
-void cacheJSClassDefinitionFields(JNIEnv *env, jobject lpObject);
-JSClassDefinition *getJSClassDefinitionFields(JNIEnv *env, jobject lpObject, JSClassDefinition *lpStruct);
-void setJSClassDefinitionFields(JNIEnv *env, jobject lpObject, JSClassDefinition *lpStruct);
-#define JSClassDefinition_sizeof() sizeof(JSClassDefinition)
-#else
-#define cacheJSClassDefinitionFields(a,b)
-#define getJSClassDefinitionFields(a,b,c) NULL
-#define setJSClassDefinitionFields(a,b,c)
-#define JSClassDefinition_sizeof() 0
 #endif
 

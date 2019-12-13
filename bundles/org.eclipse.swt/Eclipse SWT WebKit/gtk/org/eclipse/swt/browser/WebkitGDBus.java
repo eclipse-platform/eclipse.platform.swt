@@ -56,8 +56,8 @@ class WebkitGDBus {
 	private static String EXTENSION_DBUS_SERVER_CLIENT_ADDRESS;
 
 	/* Accepted GDBus methods */
-	private static final String webkit2callJava = WebKit.Webkit2Extension.getJavaScriptFunctionName();
-	private static final String webkitWebExtensionIdentifier = WebKit.Webkit2Extension.getWebExtensionIdentifier();
+	private static final String webkit2callJava = WebKit.WebKitExtension.getJavaScriptFunctionName();
+	private static final String webkitWebExtensionIdentifier = WebKit.WebKitExtension.getWebExtensionIdentifier();
 
 	/* Connections */
 	/** GDBusConnection from the web extension */
@@ -77,7 +77,6 @@ class WebkitGDBus {
 
 	/** Display this GDBus class is "attached" to */
 	static Display display;
-
 
 
 	// BrowserFunction logic
@@ -296,7 +295,7 @@ class WebkitGDBus {
 			if (java_method_name.equals(webkit2callJava)) {
 				try {
 					Object [] java_parameters = (Object []) convertGVariantToJava(gvar_parameters);
-					result = WebKit.Webkit2Extension.webkit2callJavaCallback(java_parameters);
+					result = WebKit.WebKitExtension.webkit2callJavaCallback(java_parameters);
 				} catch (Exception e) {
 					// gdbus should always return to prevent extension from hanging.
 					result = (String) WebBrowser.CreateErrorString (e.getLocalizedMessage ());
