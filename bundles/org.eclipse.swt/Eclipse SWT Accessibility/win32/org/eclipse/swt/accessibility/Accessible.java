@@ -2137,7 +2137,8 @@ public class Accessible {
 					osAccessible.item = item;
 					if (!found) {
 						item.addListener(SWT.Dispose, e -> {
-							for (Accessible accChild : children) {
+							List<Accessible> list = new ArrayList<>(children);
+							for (Accessible accChild : list) {
 								if (accChild.item == item) {
 									accChild.dispose();
 								}
