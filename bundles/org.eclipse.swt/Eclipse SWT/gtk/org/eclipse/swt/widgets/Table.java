@@ -2969,8 +2969,7 @@ void rendererRender (long cell, long cr, long snapshot, long widget, long backgr
 		}
 	}
 	if (item != null) {
-		if (GTK.GTK_IS_CELL_RENDERER_TOGGLE (cell) ||
-				( (GTK.GTK_IS_CELL_RENDERER_PIXBUF (cell)) && (columnIndex != 0 || (style & SWT.CHECK) == 0))) {
+		if (GTK.GTK_IS_CELL_RENDERER_TOGGLE (cell) || (columnIndex != 0 || (style & SWT.CHECK) == 0)) {
 			drawFlags = (int)flags;
 			drawState = SWT.FOREGROUND;
 			long [] ptr = new long [1];
