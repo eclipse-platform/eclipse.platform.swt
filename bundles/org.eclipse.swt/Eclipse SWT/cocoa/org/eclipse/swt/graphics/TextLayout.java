@@ -236,12 +236,12 @@ void computeRuns() {
 			font.addTraits(attrStr, range);
 		}
 		Color foreground = style.foreground;
-		if (foreground != null) {
+		if (foreground != null && !foreground.isDisposed()) {
 			NSColor color = NSColor.colorWithDeviceRed(foreground.handle[0], foreground.handle[1], foreground.handle[2], 1);
 			attrStr.addAttribute(OS.NSForegroundColorAttributeName, color, range);
 		}
 		Color background = style.background;
-		if (background != null) {
+		if (background != null && !background.isDisposed()) {
 			NSColor color = NSColor.colorWithDeviceRed(background.handle[0], background.handle[1], background.handle[2], 1);
 			attrStr.addAttribute(OS.NSBackgroundColorAttributeName, color, range);
 		}
