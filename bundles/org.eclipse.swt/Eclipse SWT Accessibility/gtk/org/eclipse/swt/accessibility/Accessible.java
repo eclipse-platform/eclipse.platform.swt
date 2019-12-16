@@ -553,8 +553,9 @@ public class Accessible {
 
 	void release () {
 		if (children != null) {
-			for (int i = 0; i < children.size(); i++) {
-				Accessible child = children.get(i);
+			List<Accessible> temp = new ArrayList<>(children);
+			for (int i = 0; i < temp.size(); i++) {
+				Accessible child = temp.get(i);
 				child.dispose();
 			}
 		}
