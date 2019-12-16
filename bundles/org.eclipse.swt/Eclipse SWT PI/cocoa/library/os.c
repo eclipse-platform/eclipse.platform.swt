@@ -2097,18 +2097,6 @@ JNIEXPORT jint JNICALL OS_NATIVE(CGPoint_1sizeof)
 }
 #endif
 
-#ifndef NO_CGPostKeyboardEvent
-JNIEXPORT jint JNICALL OS_NATIVE(CGPostKeyboardEvent)
-	(JNIEnv *env, jclass that, jshort arg0, jshort arg1, jboolean arg2)
-{
-	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, CGPostKeyboardEvent_FUNC);
-	rc = (jint)CGPostKeyboardEvent((CGCharCode)arg0, (CGKeyCode)arg1, (boolean_t)arg2);
-	OS_NATIVE_EXIT(env, that, CGPostKeyboardEvent_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO_CGRect_1sizeof
 JNIEXPORT jint JNICALL OS_NATIVE(CGRect_1sizeof)
 	(JNIEnv *env, jclass that)
@@ -2117,30 +2105,6 @@ JNIEXPORT jint JNICALL OS_NATIVE(CGRect_1sizeof)
 	OS_NATIVE_ENTER(env, that, CGRect_1sizeof_FUNC);
 	rc = (jint)CGRect_sizeof();
 	OS_NATIVE_EXIT(env, that, CGRect_1sizeof_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO_CGSetLocalEventsFilterDuringSuppressionState
-JNIEXPORT jint JNICALL OS_NATIVE(CGSetLocalEventsFilterDuringSuppressionState)
-	(JNIEnv *env, jclass that, jint arg0, jint arg1)
-{
-	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, CGSetLocalEventsFilterDuringSuppressionState_FUNC);
-	rc = (jint)CGSetLocalEventsFilterDuringSuppressionState((CGEventFilterMask)arg0, (CGEventSuppressionState)arg1);
-	OS_NATIVE_EXIT(env, that, CGSetLocalEventsFilterDuringSuppressionState_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO_CGSetLocalEventsSuppressionInterval
-JNIEXPORT jint JNICALL OS_NATIVE(CGSetLocalEventsSuppressionInterval)
-	(JNIEnv *env, jclass that, jdouble arg0)
-{
-	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, CGSetLocalEventsSuppressionInterval_FUNC);
-	rc = (jint)CGSetLocalEventsSuppressionInterval((CFTimeInterval)arg0);
-	OS_NATIVE_EXIT(env, that, CGSetLocalEventsSuppressionInterval_FUNC);
 	return rc;
 }
 #endif
@@ -2508,22 +2472,6 @@ fail:
 	if (arg2 && lparg2) (*env)->ReleaseBooleanArrayElements(env, arg2, lparg2, 0);
 	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
 	OS_NATIVE_EXIT(env, that, FSPathMakeRef_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO_Gestalt
-JNIEXPORT jint JNICALL OS_NATIVE(Gestalt)
-	(JNIEnv *env, jclass that, jint arg0, jintArray arg1)
-{
-	jint *lparg1=NULL;
-	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, Gestalt_FUNC);
-	if (arg1) if ((lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL)) == NULL) goto fail;
-	rc = (jint)Gestalt(arg0, lparg1);
-fail:
-	if (arg1 && lparg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
-	OS_NATIVE_EXIT(env, that, Gestalt_FUNC);
 	return rc;
 }
 #endif
@@ -3991,18 +3939,6 @@ JNIEXPORT jlong JNICALL OS_NATIVE(NSAccessibilitySliderRole)
 }
 #endif
 
-#ifndef NO_NSAccessibilitySortButtonRole
-JNIEXPORT jlong JNICALL OS_NATIVE(NSAccessibilitySortButtonRole)
-	(JNIEnv *env, jclass that)
-{
-	jlong rc = 0;
-	OS_NATIVE_ENTER(env, that, NSAccessibilitySortButtonRole_FUNC);
-	rc = (jlong)NSAccessibilitySortButtonRole;
-	OS_NATIVE_EXIT(env, that, NSAccessibilitySortButtonRole_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO_NSAccessibilitySplitterRole
 JNIEXPORT jlong JNICALL OS_NATIVE(NSAccessibilitySplitterRole)
 	(JNIEnv *env, jclass that)
@@ -4625,20 +4561,6 @@ JNIEXPORT jlong JNICALL OS_NATIVE(NSCalibratedRGBColorSpace)
 }
 #endif
 
-#ifndef NO_NSCountWindows
-JNIEXPORT void JNICALL OS_NATIVE(NSCountWindows)
-	(JNIEnv *env, jclass that, jlongArray arg0)
-{
-	jlong *lparg0=NULL;
-	OS_NATIVE_ENTER(env, that, NSCountWindows_FUNC);
-	if (arg0) if ((lparg0 = (*env)->GetLongArrayElements(env, arg0, NULL)) == NULL) goto fail;
-	NSCountWindows((NSInteger*)lparg0);
-fail:
-	if (arg0 && lparg0) (*env)->ReleaseLongArrayElements(env, arg0, lparg0, 0);
-	OS_NATIVE_EXIT(env, that, NSCountWindows_FUNC);
-}
-#endif
-
 #ifndef NO_NSCursorAttributeName
 JNIEXPORT jlong JNICALL OS_NATIVE(NSCursorAttributeName)
 	(JNIEnv *env, jclass that)
@@ -4714,18 +4636,6 @@ fail:
 	if (arg1 && lparg1) setNSRectFields(env, arg1, lparg1);
 	if (arg0 && lparg0) setNSRectFields(env, arg0, lparg0);
 	OS_NATIVE_EXIT(env, that, NSEqualRects_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO_NSErrorFailingURLStringKey
-JNIEXPORT jlong JNICALL OS_NATIVE(NSErrorFailingURLStringKey)
-	(JNIEnv *env, jclass that)
-{
-	jlong rc = 0;
-	OS_NATIVE_ENTER(env, that, NSErrorFailingURLStringKey_FUNC);
-	rc = (jlong)NSErrorFailingURLStringKey;
-	OS_NATIVE_EXIT(env, that, NSErrorFailingURLStringKey_FUNC);
 	return rc;
 }
 #endif

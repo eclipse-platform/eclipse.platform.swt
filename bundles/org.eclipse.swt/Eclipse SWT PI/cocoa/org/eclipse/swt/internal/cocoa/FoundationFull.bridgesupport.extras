@@ -1176,7 +1176,6 @@
 	<class name="NSXMLElement" swt_superclass="NSXMLNode">
 	</class>
 	<constant name="NSDefaultRunLoopMode" swt_gen="true"></constant>
-	<constant name="NSErrorFailingURLStringKey" swt_gen="true"></constant>
 	<constant name="NSLocaleLanguageCode" swt_gen="true"></constant>
 	<constant name="NSNotFound" swt_gen="true"></constant>
 	<enum name="NSAllApplicationsDirectory" swt_gen="true"></enum>

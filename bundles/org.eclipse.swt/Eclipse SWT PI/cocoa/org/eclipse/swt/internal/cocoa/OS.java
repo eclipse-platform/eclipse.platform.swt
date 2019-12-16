@@ -235,7 +235,6 @@ public static final native Object JNIGetObject(long globalRef);
 
 /** Carbon calls */
 
-public static final native int Gestalt(int selector, int[] response);
 /** @param psn cast=(ProcessSerialNumber *) */
 public static final native int GetCurrentProcess(int[] psn);
 /** @param psn cast=(ProcessSerialNumber *) */
@@ -2951,9 +2950,6 @@ public static final NSString NSAccessibilitySizeAttribute = new NSString(NSAcces
 public static final native long NSAccessibilitySliderRole();
 public static final NSString NSAccessibilitySliderRole = new NSString(NSAccessibilitySliderRole());
 /** @method flags=const */
-public static final native long NSAccessibilitySortButtonRole();
-public static final NSString NSAccessibilitySortButtonRole = new NSString(NSAccessibilitySortButtonRole());
-/** @method flags=const */
 public static final native long NSAccessibilitySplitterRole();
 public static final NSString NSAccessibilitySplitterRole = new NSString(NSAccessibilitySplitterRole());
 /** @method flags=const */
@@ -3272,9 +3268,6 @@ public static final native long kCTParagraphStyleAttributeName();
 public static final native long NSDefaultRunLoopMode();
 public static final NSString NSDefaultRunLoopMode = new NSString(NSDefaultRunLoopMode());
 /** @method flags=const */
-public static final native long NSErrorFailingURLStringKey();
-public static final NSString NSErrorFailingURLStringKey = new NSString(NSErrorFailingURLStringKey());
-/** @method flags=const */
 public static final native long NSLocaleLanguageCode();
 public static final NSString NSLocaleLanguageCode = new NSString(NSLocaleLanguageCode());
 /** @method flags=const */
@@ -3327,10 +3320,6 @@ public static final native void NSBeep();
  * @param depth cast=(NSWindowDepth)
  */
 public static final native long NSBitsPerPixelFromDepth(int depth);
-/**
- * @param count cast=(NSInteger*)
- */
-public static final native void NSCountWindows(long[] count);
 /**
  * @param colorSpaceName cast=(NSString*)
  */
@@ -3709,21 +3698,6 @@ public static final native void CGPathMoveToPoint(long path, long m, double x, d
  * @param path cast=(CGPathRef)
  */
 public static final native void CGPathRelease(long path);
-/**
- * @param keyChar cast=(CGCharCode)
- * @param virtualKey cast=(CGKeyCode)
- * @param keyDown cast=(boolean_t)
- */
-public static final native int CGPostKeyboardEvent(short keyChar, short virtualKey, boolean keyDown);
-/**
- * @param filter cast=(CGEventFilterMask)
- * @param state cast=(CGEventSuppressionState)
- */
-public static final native int CGSetLocalEventsFilterDuringSuppressionState(int filter, int state);
-/**
- * @param seconds cast=(CFTimeInterval)
- */
-public static final native int CGSetLocalEventsSuppressionInterval(double seconds);
 /**
  * @param newCursorPosition flags=struct
  */
