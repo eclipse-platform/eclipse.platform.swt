@@ -916,8 +916,9 @@ public class Accessible {
 		}
 		iaccessible = null;
 		Release();
-		for (Accessible child : children) {
-			child.dispose();
+		List<Accessible> list = new ArrayList<>(children);
+		for (Accessible accChild : list) {
+			accChild.dispose();
 		}
 	}
 
