@@ -21,6 +21,7 @@ import java.util.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.gtk.*;
+import org.eclipse.swt.internal.image.*;
 
 /**
  * Instances of this class are used to load images from,
@@ -464,8 +465,16 @@ public void save(OutputStream stream, int format) {
 	boolean has_alpha = imgData.alphaData != null && alpha_supported;
 	int width = imgData.width;
 	int height = imgData.height;
-	int n_channels = imgData.bytesPerLine / width;	// original n_channels 3 or 4
-	int bytes_per_pixel = 4; // all images saved are 32 bit, if there is no alpha we set it to 255
+	// original n_channels. Native implementation will only be used in case of 3 or 4
+	int n_channels = imgData.bytesPerLine / width;
+
+	// Native implementation only supports a subset of possible image configurations.
+	// Redirect the not supported variants to the Java implementation.
+	// See also https://bugs.eclipse.org/bugs/show_bug.cgi?id=558043
+	if (!imgData.palette.isDirect || n_channels < 3 || n_channels > 4) {
+		FileFormat.save(stream, format, this);
+		return;
+	}
 
 	/*
 	 * Destination offsets, GdkPixbuf data is stored in RGBA format.
@@ -488,14 +497,15 @@ public void save(OutputStream stream, int format) {
 		ob = 0;
 	}
 
-	// We use alpha by default now so bytes_per_pixel is always 4
+	// We use alpha by default now so all images saved are 32 bit, if there is no alpha we set it to 255
+	int bytes_per_pixel = 4;
 	byte[] srcData = new byte[(width * height * bytes_per_pixel)];
 
 	int alpha_offset = n_channels == 4 ? 1 : 0;
 	if (has_alpha) {
-		for (int y = 0, offset = 0, new_offset = 0, alphaOffset = 0; y < height; y++) {
+		for (int y = 0, offset = 0, new_offset = 0, alphaIndex = 0; y < height; y++) {
 			for (int x = 0; x < width; x++, offset += n_channels, new_offset += bytes_per_pixel) {
-				byte a = imgData.alphaData[alphaOffset++];
+				byte a = imgData.alphaData[alphaIndex++];
 				byte r = imgData.data[offset + alpha_offset + or];
 				byte g = imgData.data[offset + alpha_offset + og];
 				byte b = imgData.data[offset + alpha_offset + ob];
