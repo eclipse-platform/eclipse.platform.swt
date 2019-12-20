@@ -821,7 +821,7 @@ JNIEXPORT jint JNICALL COM_NATIVE(PathToPIDL)
 	COM_NATIVE_ENTER(env, that, PathToPIDL_FUNC);
 	if (arg0) if ((lparg0 = (*env)->GetCharArrayElements(env, arg0, NULL)) == NULL) goto fail;
 	if (arg1) if ((lparg1 = (*env)->GetLongArrayElements(env, arg1, NULL)) == NULL) goto fail;
-	rc = (jint)PathToPIDL((PCWSTR)lparg0, (PIDLIST_ABSOLUTE)lparg1);
+	rc = (jint)PathToPIDL((PCWSTR)lparg0, (PIDLIST_ABSOLUTE *)lparg1);
 fail:
 	if (arg1 && lparg1) (*env)->ReleaseLongArrayElements(env, arg1, lparg1, 0);
 	if (arg0 && lparg0) (*env)->ReleaseCharArrayElements(env, arg0, lparg0, 0);

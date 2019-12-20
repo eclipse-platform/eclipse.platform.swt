@@ -403,7 +403,7 @@ public static final native int OleTranslateColor(int clr, long hpal, int[] pcolo
 /**
  * Custom native function.
  * @param pszName cast=(PCWSTR)
- * @param ppidl cast=(PIDLIST_ABSOLUTE)
+ * @param ppidl cast=(PIDLIST_ABSOLUTE *)
  */
 public static final native int PathToPIDL (char [] pszName, long [] ppidl);
 /** @param lplpszProgID cast=(LPOLESTR *) */
