@@ -637,7 +637,7 @@ public void setMenuBar (Menu menu) {
  * always. This should be avoided if possible.
  * </p>
  *
- * @param minimized the new maximized state
+ * @param minimized the new minimized state
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
