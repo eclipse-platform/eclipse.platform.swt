@@ -1253,6 +1253,11 @@ void drawInteriorWithFrame_inView (long id, long sel, NSRect rect, long view) {
 		if (!drawExpansion) {
 			gc.setClipping ((int)(cellRect.x - offsetX), (int)(cellRect.y - offsetY), (int)cellRect.width, (int)cellRect.height);
 		}
+		/*
+		 * Client code can modify the item text in the paint listener, so reset the cached width.
+		 */
+		item.width = -1;
+
 		Event event = new Event ();
 		event.item = item;
 		event.gc = gc;
