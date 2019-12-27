@@ -794,6 +794,11 @@ public void copy () {
 }
 
 @Override
+ScrollBar createScrollBar (int type) {
+	return (style & SWT.SEARCH) == 0 ? super.createScrollBar(type) : null;
+}
+
+@Override
 void createWidget () {
 	super.createWidget ();
 	message = "";
@@ -2513,6 +2518,14 @@ String verifyText (String string, int start, int end, Event keyEvent) {
 @Override
 int widgetStyle () {
 	int bits = super.widgetStyle () | OS.ES_AUTOHSCROLL;
+	/*
+	 * NOTE: ICON_CANCEL and ICON_SEARCH have the same value as H_SCROLL and
+	 * V_SCROLL. The meaning is determined by whether SWT.SEARCH is set.
+	 */
+	if ((style & SWT.SEARCH) != 0) {
+		bits &= ~OS.WS_HSCROLL;
+		bits &= ~OS.WS_VSCROLL;
+	}
 	if ((style & SWT.PASSWORD) != 0) bits |= OS.ES_PASSWORD;
 	if ((style & SWT.CENTER) != 0) bits |= OS.ES_CENTER;
 	if ((style & SWT.RIGHT) != 0) bits |= OS.ES_RIGHT;

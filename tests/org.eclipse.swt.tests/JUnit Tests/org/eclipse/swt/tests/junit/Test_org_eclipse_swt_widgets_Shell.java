@@ -894,4 +894,29 @@ public void test_childDisposesParent () {
 	child.addListener(SWT.Dispose, e -> root.dispose());
 	root.dispose();
 }
+
+@Test
+public void test_bug558652_scrollBarNPE() {
+	createShell();
+	int[] styles = new int[] { SWT.NONE, SWT.DIALOG_TRIM, SWT.SHELL_TRIM };
+	for (int style : styles) {
+		Shell shell = new Shell(testShell, style);
+		assertNull(shell.getVerticalBar());
+		assertNull(shell.getHorizontalBar());
+		shell.dispose();
+		shell = new Shell(testShell, style | SWT.V_SCROLL);
+		assertNotNull(shell.getVerticalBar());
+		assertNull(shell.getHorizontalBar());
+		shell.dispose();
+		shell = new Shell(testShell, style | SWT.H_SCROLL);
+		assertNull(shell.getVerticalBar());
+		assertNotNull(shell.getHorizontalBar());
+		shell.dispose();
+		shell = new Shell(testShell, style | SWT.V_SCROLL | SWT.H_SCROLL);
+		assertNotNull(shell.getVerticalBar());
+		assertNotNull(shell.getHorizontalBar());
+		shell.dispose();
+	}
+}
+
 }
