@@ -2009,7 +2009,7 @@ public Cursor getSystemCursor (int id) {
 	return cursors [id];
 }
 
-NSImage getSystemImageForID(int osType) {
+static NSImage getSystemImageForID(int osType) {
 	long iconRef[] = new long [1];
 	OS.GetIconRefFromTypeInfo(OS.kSystemIconsCreator, osType, 0, 0, 0, iconRef);
 	NSImage nsImage = (NSImage)new NSImage().alloc();

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2017 IBM Corporation and others.
+ * Copyright (c) 2000, 2019 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -42,6 +42,10 @@ public long runModal() {
 
 public void setAlertStyle(long alertStyle) {
 	OS.objc_msgSend(this.id, OS.sel_setAlertStyle_, alertStyle);
+}
+
+public void setIcon(NSImage icon) {
+	OS.objc_msgSend(this.id, OS.sel_setIcon_, icon != null ? icon.id : 0);
 }
 
 public void setMessageText(NSString messageText) {

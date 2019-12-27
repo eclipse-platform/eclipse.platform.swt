@@ -141,11 +141,21 @@ public String getMessage () {
 public int open () {
 	NSAlert alert = (NSAlert) new NSAlert().alloc().init();
 	int alertType = OS.NSInformationalAlertStyle;
-	if ((style & SWT.ICON_ERROR) != 0) alertType = OS.NSCriticalAlertStyle;
-	if ((style & SWT.ICON_INFORMATION) != 0) alertType = OS.NSInformationalAlertStyle;
-	if ((style & SWT.ICON_QUESTION) != 0) alertType = OS.NSInformationalAlertStyle;
-	if ((style & SWT.ICON_WARNING) != 0) alertType = OS.NSWarningAlertStyle;
-	if ((style & SWT.ICON_WORKING) != 0) alertType = OS.NSInformationalAlertStyle;
+	if ((style & SWT.ICON_ERROR) != 0) {
+		alertType = OS.NSCriticalAlertStyle;
+	}
+	if (((style & SWT.ICON_INFORMATION) != 0) || ((style & SWT.ICON_WORKING) != 0) || ((style & SWT.ICON_QUESTION) != 0)) {
+		alertType = OS.NSInformationalAlertStyle;
+		NSImage icon = Display.getSystemImageForID(OS.kAlertNoteIcon);
+		alert.setIcon(icon);
+		icon.release();
+	}
+	if ((style & SWT.ICON_WARNING) != 0) {
+		alertType = OS.NSWarningAlertStyle;
+		NSImage icon = Display.getSystemImageForID(OS.kAlertCautionIcon);
+		alert.setIcon(icon);
+		icon.release();
+	}
 	alert.setAlertStyle(alertType);
 
 	int mask = (SWT.YES | SWT.NO | SWT.OK | SWT.CANCEL | SWT.ABORT | SWT.RETRY | SWT.IGNORE);
