@@ -84,6 +84,7 @@ public class Table extends Composite {
 
 	/* Used to control drop feedback when FEEDBACK_SCROLL is set/not set */
 	boolean shouldScroll = true;
+	boolean keyDown;
 
 	static int NEXT_ID;
 
@@ -2021,7 +2022,9 @@ boolean isTransparent() {
 @Override
 void keyDown(long id, long sel, long theEvent) {
 	ignoreSelect = preventSelect = false;
+	keyDown = true;
 	super.keyDown(id, sel, theEvent);
+	keyDown = false;
 }
 
 @Override
@@ -3488,16 +3491,33 @@ boolean tableView_shouldTrackCell_forTableColumn_row(long id, long sel, long tab
 
 @Override
 void tableView_setObjectValue_forTableColumn_row (long id, long sel, long aTableView, long anObject, long aTableColumn, long rowIndex) {
-	if (checkColumn != null && aTableColumn == checkColumn.id)  {
-		TableItem item = items [(int)rowIndex];
-		item.checked = !item.checked;
-		Event event = new Event ();
-		event.detail = SWT.CHECK;
-		event.item = item;
-		event.index = (int)rowIndex;
-		sendSelectionEvent (SWT.Selection, event, false);
-		item.redraw (-1);
+	if (checkColumn != null && aTableColumn == checkColumn.id) {
+		if (keyDown && (style & SWT.MULTI) != 0) {
+			NSTableView widget = (NSTableView)view;
+			NSIndexSet selection = widget.selectedRowIndexes ();
+			int count = (int)selection.count ();
+			long [] indices = new long [count];
+			selection.getIndexes (indices, count, 0);
+			for (int i = 0; i < indices.length; i++) {
+				int index = (int)indices [i];
+				TableItem item = items [index];
+				toggleCheckedItem (item, index);
+			}
+		} else {
+			TableItem item = items [(int)rowIndex];
+			toggleCheckedItem (item, rowIndex);
+		}
 	}
+}
+
+private void toggleCheckedItem (TableItem item, long rowIndex) {
+	item.checked = !item.checked;
+	Event event = new Event ();
+	event.detail = SWT.CHECK;
+	event.item = item;
+	event.index = (int)rowIndex;
+	sendSelectionEvent (SWT.Selection, event, false);
+	item.redraw (-1);
 }
 
 @Override
