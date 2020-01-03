@@ -320,8 +320,6 @@ int DragEnter(long pDataObject, int grfKeyState, int pt_x, int pt_y, long pdwEff
 		selectedOperation = event.detail;
 	}
 
-	clearEventData(event);
-
 	OS.MoveMemory(pdwEffect, new int[] {opToOs(selectedOperation)}, 4);
 	return COM.S_OK;
 }
@@ -393,8 +391,6 @@ int DragOver(int grfKeyState, int pt_x, int pt_y, long pdwEffect) {
 		selectedOperation = event.detail;
 	}
 
-	clearEventData(event);
-
 	OS.MoveMemory(pdwEffect, new int[] {opToOs(selectedOperation)}, 4);
 	return COM.S_OK;
 }
@@ -406,10 +402,10 @@ int Drop_64(long pDataObject, int grfKeyState, long pt, long pdwEffect) {
 }
 
 int Drop(long pDataObject, int grfKeyState, int pt_x, int pt_y, long pdwEffect) {
-	DNDEvent event = new DNDEvent();
 	try {
 		pt_x = DPIUtil.autoScaleDown(pt_x);// To Points
 		pt_y = DPIUtil.autoScaleDown(pt_y);// To Points
+		DNDEvent event = new DNDEvent();
 		event.widget = this;
 		event.time = OS.GetMessageTime();
 		if (dropEffect != null) {
@@ -485,7 +481,6 @@ int Drop(long pDataObject, int grfKeyState, int pt_x, int pt_y, long pdwEffect) 
 			iDataObject.Release();
 			iDataObject = null;
 		}
-		clearEventData(event);
 	}
 }
 
@@ -788,27 +783,6 @@ boolean setEventData(DNDEvent event, long pDataObject, int grfKeyState, int pt_x
 	event.operations = operations[0];
 	event.detail = operation;
 	return true;
-}
-
-/**
- * Null some of the event fields. This is done to hinder misuse as in Bug 513075.
- *
- * @param event the event to clear
- */
-private void clearEventData(DNDEvent event) {
-	if (event == null) return;
-	if (event.dataType != null) {
-		event.dataType.pIDataObject = 0;
-		event.dataType.stgmedium = null;
-	}
-	if (event.dataTypes != null) {
-		for (TransferData dataType : event.dataTypes) {
-			if (dataType != null) {
-				dataType.pIDataObject = 0;
-				dataType.stgmedium = null;
-			}
-		}
-	}
 }
 
 /**
