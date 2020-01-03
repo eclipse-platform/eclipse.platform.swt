@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2019 IBM Corporation and others.
+ * Copyright (c) 2000, 2020 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -4347,42 +4347,6 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(ImageList_1SetIconSize)
 	OS_NATIVE_ENTER(env, that, ImageList_1SetIconSize_FUNC);
 	rc = (jboolean)ImageList_SetIconSize((HIMAGELIST)arg0, arg1, arg2);
 	OS_NATIVE_EXIT(env, that, ImageList_1SetIconSize_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO_ImmAssociateContext
-JNIEXPORT jlong JNICALL OS_NATIVE(ImmAssociateContext)
-	(JNIEnv *env, jclass that, jlong arg0, jlong arg1)
-{
-	jlong rc = 0;
-	OS_NATIVE_ENTER(env, that, ImmAssociateContext_FUNC);
-	rc = (jlong)ImmAssociateContext((HWND)arg0, (HIMC)arg1);
-	OS_NATIVE_EXIT(env, that, ImmAssociateContext_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO_ImmCreateContext
-JNIEXPORT jlong JNICALL OS_NATIVE(ImmCreateContext)
-	(JNIEnv *env, jclass that)
-{
-	jlong rc = 0;
-	OS_NATIVE_ENTER(env, that, ImmCreateContext_FUNC);
-	rc = (jlong)ImmCreateContext();
-	OS_NATIVE_EXIT(env, that, ImmCreateContext_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO_ImmDestroyContext
-JNIEXPORT jboolean JNICALL OS_NATIVE(ImmDestroyContext)
-	(JNIEnv *env, jclass that, jlong arg0)
-{
-	jboolean rc = 0;
-	OS_NATIVE_ENTER(env, that, ImmDestroyContext_FUNC);
-	rc = (jboolean)ImmDestroyContext((HIMC)arg0);
-	OS_NATIVE_EXIT(env, that, ImmDestroyContext_FUNC);
 	return rc;
 }
 #endif

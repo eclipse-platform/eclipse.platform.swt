@@ -3178,14 +3178,6 @@ public static final native int ImageList_ReplaceIcon (long himl, int i, long hic
 /** @param himl cast=(HIMAGELIST) */
 public static final native boolean ImageList_SetIconSize (long himl, int cx, int cy);
 /**
- * @param hWnd cast=(HWND)
- * @param hIMC cast=(HIMC)
- */
-public static final native long ImmAssociateContext (long hWnd, long hIMC);
-public static final native long ImmCreateContext ();
-/** @param hIMC cast=(HIMC) */
-public static final native boolean ImmDestroyContext (long hIMC);
-/**
  * @param hKL cast=(HKL)
  * @param hIMC cast=(HIMC)
  * @param lpData cast=(LPVOID)

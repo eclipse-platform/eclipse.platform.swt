@@ -2271,12 +2271,6 @@ void createParent () {
 		null);
 	if (hwndHeader == 0) error (SWT.ERROR_NO_HANDLES);
 	OS.SetWindowLongPtr (hwndHeader, OS.GWLP_ID, hwndHeader);
-	if (OS.IsDBLocale) {
-		long hIMC = OS.ImmGetContext (handle);
-		OS.ImmAssociateContext (hwndParent, hIMC);
-		OS.ImmAssociateContext (hwndHeader, hIMC);
-		OS.ImmReleaseContext (handle, hIMC);
-	}
 	//This code is intentionally commented
 //	if (!OS.IsPPC) {
 //		if ((style & SWT.BORDER) != 0) {

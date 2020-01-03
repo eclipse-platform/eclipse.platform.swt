@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2019 IBM Corporation and others.
+ * Copyright (c) 2000, 2020 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -343,9 +343,6 @@ typedef enum {
 	ImageList_1Replace_FUNC,
 	ImageList_1ReplaceIcon_FUNC,
 	ImageList_1SetIconSize_FUNC,
-	ImmAssociateContext_FUNC,
-	ImmCreateContext_FUNC,
-	ImmDestroyContext_FUNC,
 	ImmEscape_FUNC,
 	ImmGetCompositionFont_FUNC,
 	ImmGetCompositionString__JI_3BI_FUNC,
