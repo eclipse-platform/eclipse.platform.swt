@@ -331,12 +331,10 @@ public static void loadLibrary (String name, boolean mapName) {
 	/* Try extracting and loading library from jar. */
 	if (path != null) {
 		if (extract (path + SEPARATOR + fileName1, mappedName1)) {
-			load(path + SEPARATOR + fileName1, message);
-			return;
+			if (load(path + SEPARATOR + fileName1, message)) return;
 		}
 		if (mapName && extract (path + SEPARATOR + fileName2, mappedName2)) {
-			load(path + SEPARATOR + fileName2, message);
-			return;
+			if (load(path + SEPARATOR + fileName2, message)) return;
 		}
 	}
 
