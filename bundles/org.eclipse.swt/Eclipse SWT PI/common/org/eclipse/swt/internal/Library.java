@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2019 IBM Corporation and others.
+ * Copyright (c) 2000, 2020 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -58,7 +58,7 @@ public class Library {
 	static final String SWT_LIB_DIR;
 
 static {
-	DELIMITER = System.getProperty("line.separator"); //$NON-NLS-1$
+	DELIMITER = System.lineSeparator(); //$NON-NLS-1$
 	SEPARATOR = File.separator;
 	USER_HOME = System.getProperty ("user.home");
 	SWT_LIB_DIR = ".swt" + SEPARATOR + "lib" + SEPARATOR + os() + SEPARATOR + arch(); //$NON-NLS-1$ $NON-NLS-2$

@@ -82,7 +82,7 @@ import org.eclipse.swt.widgets.*;
  */
 public class StyledText extends Canvas {
 	static final char TAB = '\t';
-	static final String PlatformLineDelimiter = System.getProperty("line.separator");
+	static final String PlatformLineDelimiter = System.lineSeparator();
 	static final int BIDI_CARET_WIDTH = 3;
 	static final int DEFAULT_WIDTH	= 64;
 	static final int DEFAULT_HEIGHT = 64;

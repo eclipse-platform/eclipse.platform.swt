@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2019 IBM Corporation and others.
+ * Copyright (c) 2000, 2020 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -119,7 +119,7 @@ public int getLineCount();
  * Return the line delimiter that should be used by the StyledText
  * widget when inserting new lines. New lines entered using key strokes
  * and paste operations use this line delimiter.
- * Implementors may use System.getProperty("line.separator") to return
+ * Implementors may use System.lineSeparator() to return
  * the platform line delimiter.
  * <p>
  *

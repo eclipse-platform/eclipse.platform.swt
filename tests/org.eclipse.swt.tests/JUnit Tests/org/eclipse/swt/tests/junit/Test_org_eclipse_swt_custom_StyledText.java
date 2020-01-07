@@ -95,7 +95,7 @@ final static RGB GREEN = new RGB(0,255,0);
 final static RGB YELLOW = new RGB(255,255,0);
 final static RGB CYAN = new RGB(0,255,255);
 final static RGB PURPLE = new RGB(255,0,255);
-final static String PLATFORM_LINE_DELIMITER = System.getProperty("line.separator");
+final static String PLATFORM_LINE_DELIMITER = System.lineSeparator();
 Map<RGB, Color> colors = new HashMap<>();
 private boolean listenerCalled;
 private boolean listener2Called;
@@ -4968,7 +4968,7 @@ public void test_isTextSelected() {
 	// Set block selection
 	StringBuilder buffer = new StringBuilder();
 	for (int i = 0; i < 500; i++) {
-		buffer.append("Sample Test Selection" + System.getProperty("line.separator"));
+		buffer.append("Sample Test Selection" + System.lineSeparator());
 	}
 	text.setText(buffer.toString());
 	text.setSize(100, 10000);
@@ -4977,7 +4977,7 @@ public void test_isTextSelected() {
 	assertTrue(text.isTextSelected());
 
 	// Set block selection on new line
-	text.setText(System.getProperty("line.separator"));
+	text.setText(System.lineSeparator());
 	text.setSize(100, 100);
 	text.setBlockSelection(true);
 	text.setBlockSelectionBounds(0, 0, 100, 100);
@@ -5130,13 +5130,13 @@ public void test_isTextSelectedInBlockSelection() {
 	Point lowerRight = text.getLocationAtOffset(blockSelectionTestTextOneLine().length() * 2 + 6);
 	text.setBlockSelectionBounds(0, 0, lowerRight.x, lowerRight.y + 1);
 	assertTrue(text.isTextSelected());
-	assertEquals("Sample" + System.getProperty("line.separator") + "Sample" + System.getProperty("line.separator")
+	assertEquals("Sample" + System.lineSeparator() + "Sample" + System.lineSeparator()
 			+ "Sample", text.getSelectionText());
 }
 
 @Test
 public void test_isTextSelectedInBlockSelectionForLingleEmptyLine() {
-	text.setText(System.getProperty("line.separator"));
+	text.setText(System.lineSeparator());
 	text.setSize(100, 100);
 	text.setBlockSelection(true);
 	text.setBlockSelectionBounds(0, 0, 100, 100);
@@ -5145,7 +5145,7 @@ public void test_isTextSelectedInBlockSelectionForLingleEmptyLine() {
 
 @Test
 public void test_selectionIsClearedOnCaretMoveWhenInBlockSelection() {
-	text.setText("Test" + System.getProperty("line.separator"));
+	text.setText("Test" + System.lineSeparator());
 	text.setSize(100, 100);
 	text.setBlockSelection(true);
 	text.setBlockSelectionBounds(0, 0, 100, 100);
@@ -5168,7 +5168,7 @@ public void test_setBlockSelectionBounds_updatesNormalSelectionIfNotInBlockMode(
 
 @Test
 public void test_selectionIsMaintainedOnDisableOfBlockSelection() {
-	text.setText("Test" + System.getProperty("line.separator"));
+	text.setText("Test" + System.lineSeparator());
 	text.setSize(100, 100);
 	text.setBlockSelection(true);
 	text.setBlockSelectionBounds(0, 0, 100, 100);
@@ -5180,12 +5180,12 @@ public void test_selectionIsMaintainedOnDisableOfBlockSelection() {
 
 @Test
 public void test_selectAllInBlockSelectionMode() {
-	text.setText("Test" + System.getProperty("line.separator"));
+	text.setText("Test" + System.lineSeparator());
 	text.setSize(100, 100);
 	text.setBlockSelection(true);
 	text.selectAll();
 	assertTrue(text.isTextSelected());
-	assertEquals("Test" + System.getProperty("line.separator"), text.getSelectionText());
+	assertEquals("Test" + System.lineSeparator(), text.getSelectionText());
 }
 
 @Test
@@ -5199,10 +5199,10 @@ public void test_cutTextInBlockSelection() {
 
 	assertTrue(text.getText(),
 			text.getText()
-					.startsWith(" Test Selection" + System.getProperty("line.separator")
-							+ " Test Selection" + System.getProperty("line.separator")
-							+ " Test Selection" + System.getProperty("line.separator")
-							+ "Sample Test Selection" + System.getProperty("line.separator")));
+					.startsWith(" Test Selection" + System.lineSeparator()
+							+ " Test Selection" + System.lineSeparator()
+							+ " Test Selection" + System.lineSeparator()
+							+ "Sample Test Selection" + System.lineSeparator()));
 }
 
 @Test
@@ -5245,8 +5245,8 @@ public void test_cutAndPasteInBlockSelection() {
 
 @Test
 public void test_trippleClickInBlockSelectionSelectsLine() {
-	text.setText("  Sample Test Selection  " + System.getProperty("line.separator") + "  Sample Test Selection  "
-			+ System.getProperty("line.separator"));
+	text.setText("  Sample Test Selection  " + System.lineSeparator() + "  Sample Test Selection  "
+			+ System.lineSeparator());
 	text.setSize(1000, 1000);
 	text.setBlockSelection(true);
 	Point lowerRight = text.getLocationAtOffset(3);
@@ -5268,8 +5268,8 @@ public void test_getSelectionRangesInBlockSelection() {
 	text.setBlockSelection(true);
 	Point lowerRight = text.getLocationAtOffset(blockSelectionTestTextOneLine().length() * 2 + 6);
 	text.setBlockSelectionBounds(0, 0, lowerRight.x, lowerRight.y + 1);
-	assertArrayEquals(new int[] { 0, 6, 21 + System.getProperty("line.separator").length(), 6,
-			42 + System.getProperty("line.separator").length() * 2, 6 }, text.getSelectionRanges());
+	assertArrayEquals(new int[] { 0, 6, 21 + System.lineSeparator().length(), 6,
+			42 + System.lineSeparator().length() * 2, 6 }, text.getSelectionRanges());
 }
 
 @Test
@@ -5280,7 +5280,7 @@ public void test_getSelectionCountInBlockSelection() {
 	Point lowerRight = text
 			.getLocationAtOffset(blockSelectionTestTextOneLine().length() * 2 + 6);
 	text.setBlockSelectionBounds(0, 0, lowerRight.x, lowerRight.y + 1);
-	assertEquals(18 + System.getProperty("line.separator").length() * 2, text.getSelectionCount());
+	assertEquals(18 + System.lineSeparator().length() * 2, text.getSelectionCount());
 }
 
 @Test
@@ -5301,12 +5301,12 @@ public void test_insertInBlockSelection() {
 	text.setBlockSelection(true);
 
 	text.setSelection(6, 6 + blockSelectionTestTextOneLine().length());
-	text.insert("Foo" + System.getProperty("line.separator") + "Foo" + System.getProperty("line.separator"));
+	text.insert("Foo" + System.lineSeparator() + "Foo" + System.lineSeparator());
 
 	assertTrue(text.getText(), text.getText()
-			.startsWith("SampleFoo Test Selection" + System.getProperty("line.separator")
-					+ "SampleFoo Test Selection" + System.getProperty("line.separator") + "Sample Test Selection"
-					+ System.getProperty("line.separator")));
+			.startsWith("SampleFoo Test Selection" + System.lineSeparator()
+					+ "SampleFoo Test Selection" + System.lineSeparator() + "Sample Test Selection"
+					+ System.lineSeparator()));
 }
 
 @Test
@@ -5525,7 +5525,7 @@ private String blockSelectionTestText() {
 }
 
 private String blockSelectionTestTextOneLine() {
-	return "Sample Test Selection" + System.getProperty("line.separator");
+	return "Sample Test Selection" + System.lineSeparator();
 }
 
 /**

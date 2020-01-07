@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2018 IBM Corporation and others.
+ * Copyright (c) 2000, 2020 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -21,7 +21,7 @@ import org.eclipse.swt.internal.*;
 import org.eclipse.swt.widgets.*;
 
 class DefaultContent implements StyledTextContent {
-	private final static String LineDelimiter = System.getProperty("line.separator");
+	private final static String LineDelimiter = System.lineSeparator();
 
 	List<StyledTextListener> textListeners = new ArrayList<>(); // stores text listeners for event sending
 	char[] textStore = new char[0];	// stores the actual text

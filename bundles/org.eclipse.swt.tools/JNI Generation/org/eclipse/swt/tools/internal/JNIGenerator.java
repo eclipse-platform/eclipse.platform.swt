@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2004, 2018 IBM Corporation and others.
+ * Copyright (c) 2004, 2020 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -29,7 +29,7 @@ public abstract class JNIGenerator implements Flags {
 	static final String JNI64 = "JNI64";
 
 public JNIGenerator() {
-	delimiter = System.getProperty("line.separator");
+	delimiter = System.lineSeparator();
 	output = System.out;
 	metaData = new MetaData(new Properties());
 }
@@ -102,7 +102,7 @@ public static String getDelimiter(String fileName) {
 		}
 	} catch (IOException e) {
 	}
-	return System.getProperty("line.separator");
+	return System.lineSeparator();
 }
 
 String fixDelimiter(String str) {

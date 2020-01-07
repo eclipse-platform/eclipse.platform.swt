@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2008, 2017 IBM Corporation and others.
+ * Copyright (c) 2008, 2020 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -27,7 +27,7 @@ public class MacGenerator {
 	String[] xmls;
 	Document[] documents;
 	String outputDir, outputLibDir, extrasDir, mainClassName, selectorEnumName;
-	String delimiter = System.getProperty("line.separator");
+	String delimiter = System.lineSeparator();
 	PrintWriter out;
 	HashSet<String> knownConstTypes = new HashSet<>();
 
@@ -102,7 +102,7 @@ void merge(Document document, Document extraDocument) {
 		}
 		return compare;
 	});
-	String delimiter = System.getProperty("line.separator");
+	String delimiter = System.lineSeparator();
 	for (Node node : sortedNodes) {
 		String name = node.getNodeName();
 		if ("arg".equals(name) || "retval".equals(name)) {

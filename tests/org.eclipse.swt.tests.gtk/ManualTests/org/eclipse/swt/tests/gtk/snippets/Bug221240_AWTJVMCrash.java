@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2018 Red Hat and others. All rights reserved.
+ * Copyright (c) 2018, 2020 Red Hat and others. All rights reserved.
  * The contents of this file are made available under the terms
  * of the GNU Lesser General Public License (LGPL) Version 2.1 that
  * accompanies this distribution (lgpl-v21.txt).  The LGPL is also
@@ -43,7 +43,7 @@ public class Bug221240_AWTJVMCrash extends JFrame {
 
 	private static final long serialVersionUID = -248424300520098295L;
 
-protected static final String LS = System.getProperty("line.separator");
+protected static final String LS = System.lineSeparator();
 
 	public Bug221240_AWTJVMCrash() {
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
