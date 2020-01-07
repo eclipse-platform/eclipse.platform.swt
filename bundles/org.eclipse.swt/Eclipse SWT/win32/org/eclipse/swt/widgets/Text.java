@@ -68,7 +68,7 @@ public class Text extends Scrollable {
 	String message;
 	int[] segments;
 	int clearSegmentsCount = 0;
-	long hwndSearch, hwndCancel, hwndActive;
+	long hwndActiveIcon;
 
 	static final char LTR_MARK = '\u200e';
 	static final char RTL_MARK = '\u200f';
@@ -272,31 +272,31 @@ long callWindowProc (long hwnd, int msg, long wParam, long lParam) {
 			case OS.WM_MOUSEMOVE: {
 				POINT pt = new POINT ();
 				OS.POINTSTOPOINT(pt, lParam);
-				long prevActive = hwndActive;
-				hwndActive = OS.ChildWindowFromPointEx (handle, pt, OS.CWP_SKIPINVISIBLE);
-				if (hwndActive == handle) hwndActive = 0;
-				if (prevActive != hwndActive) {
-					if (prevActive != 0) OS.InvalidateRect (prevActive, null, false);
-					if (hwndActive != 0) OS.InvalidateRect (hwndActive, null, false);
+				long hwndIcon = OS.ChildWindowFromPointEx (handle, pt, OS.CWP_SKIPINVISIBLE);
+				if (hwndIcon == handle) hwndIcon = 0;
+				if (hwndIcon != hwndActiveIcon) {
+					if (hwndActiveIcon != 0) OS.InvalidateRect (hwndActiveIcon, null, false);
+					if (hwndIcon != 0) OS.InvalidateRect (hwndIcon, null, false);
+					hwndActiveIcon = hwndIcon;
 				}
 				break;
 			}
 			case OS.WM_MOUSELEAVE:
-				if (hwndActive != 0) {
-					OS.InvalidateRect (hwndActive, null, false);
-					hwndActive = 0;
+				if (hwndActiveIcon != 0) {
+					OS.InvalidateRect (hwndActiveIcon, null, false);
+					hwndActiveIcon = 0;
 				}
 				break;
 			case OS.WM_LBUTTONDOWN:
-				if (hwndActive != 0) {
-					OS.InvalidateRect (hwndActive, null, false);
+				if (hwndActiveIcon != 0) {
+					OS.InvalidateRect (hwndActiveIcon, null, false);
 					return 0; // prevent mouse selection
 				}
 				break;
 			case OS.WM_LBUTTONUP: {
-				if (hwndActive != 0) {
+				if (hwndActiveIcon != 0) {
 					Event e = new Event();
-					if (hwndActive == hwndSearch) {
+					if (hwndActiveIcon == OS.GetDlgItem (handle, SWT.ICON_SEARCH)) {
 						e.detail = SWT.ICON_SEARCH;
 					} else {
 						e.detail = SWT.ICON_CANCEL;
@@ -344,16 +344,29 @@ void createHandle () {
 			display.hIconCancel = phicon [0];
 		}
 		if ((style & SWT.ICON_SEARCH) != 0) {
-			hwndSearch = OS.CreateWindowEx (0, Label.LabelClass, null,
-					OS.WS_CHILD | OS.WS_VISIBLE | OS.WS_CLIPSIBLINGS | OS.SS_OWNERDRAW,
-					0, 0, 0, 0, handle, 0, OS.GetModuleHandle (null), null);
+			long hwndSearch = OS.CreateWindowEx (
+				0,
+				Label.LabelClass,
+				null,
+				OS.WS_CHILD | OS.WS_VISIBLE | OS.WS_CLIPSIBLINGS | OS.SS_OWNERDRAW,
+				0, 0, 0, 0,
+				handle,
+				SWT.ICON_SEARCH,
+				OS.GetModuleHandle (null),
+				null);
 			if (hwndSearch == 0) error (SWT.ERROR_NO_HANDLES);
 		}
 		if ((style & SWT.ICON_CANCEL) != 0) {
 			state |= TRACK_MOUSE;
-			hwndCancel = OS.CreateWindowEx (0, Label.LabelClass, null,
-					OS.WS_CHILD | OS.WS_CLIPSIBLINGS | OS.SS_OWNERDRAW,
-					0, 0, 0, 0, handle, 0, OS.GetModuleHandle (null), null);
+			long hwndCancel = OS.CreateWindowEx (
+				0,
+				Label.LabelClass, null,
+				OS.WS_CHILD | OS.WS_CLIPSIBLINGS | OS.SS_OWNERDRAW,
+				0, 0, 0, 0,
+				handle,
+				SWT.ICON_CANCEL,
+				OS.GetModuleHandle (null),
+				null);
 			if (hwndCancel == 0) error (SWT.ERROR_NO_HANDLES);
 		}
 	}
@@ -2040,9 +2053,10 @@ public void setFont (Font font) {
 
 void setMargins () {
 	if ((style & SWT.SEARCH) != 0) {
+		boolean rtl = (style & SWT.RIGHT_TO_LEFT) != 0;
+		int fLeading = rtl ? OS.EC_RIGHTMARGIN : OS.EC_LEFTMARGIN;
+		int fTrailing = rtl ? OS.EC_LEFTMARGIN : OS.EC_RIGHTMARGIN;
 		int flags = 0;
-		int fLeading = (style & SWT.LEFT_TO_RIGHT) != 0 ? OS.EC_LEFTMARGIN : OS.EC_RIGHTMARGIN;
-		int fTrailing = (style & SWT.LEFT_TO_RIGHT) != 0 ? OS.EC_RIGHTMARGIN : OS.EC_LEFTMARGIN;
 		if ((style & SWT.ICON_SEARCH) != 0) flags |= fLeading;
 		if ((style & SWT.ICON_CANCEL) != 0) flags |= fTrailing;
 		if (flags != 0) {
@@ -2725,11 +2739,11 @@ LRESULT WM_DRAWITEM (long wParam, long lParam) {
 	POINT pt = new POINT ();
 	OS.MapWindowPoints (struct.hwndItem, handle, pt, 1);
 	drawBackground (struct.hDC, rect, -1, pt.x, pt.y);
-	if (struct.hwndItem == hwndCancel && struct.hwndItem == hwndActive && OS.IsAppThemed()) {
+	if (struct.CtlID == SWT.ICON_CANCEL && struct.hwndItem == hwndActiveIcon && OS.IsAppThemed()) {
 		int state = OS.GetKeyState (OS.VK_LBUTTON) < 0 ? OS.PBS_PRESSED : OS.PBS_HOT;
 		OS.DrawThemeBackground (display.hButtonTheme (), struct.hDC, OS.BP_PUSHBUTTON, state, rect, null);
 	}
-	long hIcon = (struct.hwndItem == hwndSearch) ? display.hIconSearch : display.hIconCancel;
+	long hIcon = (struct.CtlID == SWT.ICON_SEARCH) ? display.hIconSearch : display.hIconCancel;
 	int y = (rect.bottom - rect.right) / 2;
 	OS.DrawIconEx (struct.hDC, 0, y, hIcon, 0, 0, 0, 0, OS.DI_NORMAL);
 	return LRESULT.ONE;
@@ -2879,13 +2893,34 @@ LRESULT WM_PASTE (long wParam, long lParam) {
 }
 
 @Override
+LRESULT WM_SETCURSOR (long wParam, long lParam) {
+	LRESULT result = super.WM_SETCURSOR(wParam, lParam);
+	if (result != null) return result;
+	if ((style & SWT.SEARCH) != 0) {
+		int hitTest = (short) OS.LOWORD (lParam);
+		if (hitTest == OS.HTCLIENT) {
+			POINT pt = new POINT ();
+			OS.GetCursorPos (pt);
+			OS.ScreenToClient (handle, pt);
+			long hwndIcon = OS.ChildWindowFromPointEx (handle, pt, OS.CWP_SKIPINVISIBLE);
+			if (hwndIcon != handle) {
+				OS.SetCursor (OS.LoadCursor (0, OS.IDC_ARROW));
+				return LRESULT.ONE;
+			}
+		}
+	}
+	return null;
+}
+
+@Override
 LRESULT WM_SIZE(long wParam, long lParam) {
 	LRESULT result = super.WM_SIZE (wParam, lParam);
 	if (isDisposed ()) return result;
 	if ((style & SWT.SEARCH) != 0) {
 		/* NOTE: EDIT controls don't support mirrored layout. */
-		long hwndLeading = (style & SWT.LEFT_TO_RIGHT) != 0 ? hwndSearch : hwndCancel;
-		long hwndTrailing = (style & SWT.LEFT_TO_RIGHT) != 0 ? hwndCancel : hwndSearch;
+		boolean rtl = (style & SWT.RIGHT_TO_LEFT) != 0;
+		long hwndLeading = OS.GetDlgItem (handle, rtl ? SWT.ICON_CANCEL : SWT.ICON_SEARCH);
+		long hwndTrailing = OS.GetDlgItem (handle, rtl ? SWT.ICON_SEARCH : SWT.ICON_CANCEL);
 		int width = OS.LOWORD (lParam);
 		int height = OS.HIWORD (lParam);
 		int iconWidth = OS.GetSystemMetrics (OS.SM_CXSMICON);
@@ -3013,8 +3048,10 @@ LRESULT wmCommandChild (long wParam, long lParam) {
 			if (findImageControl () != null) {
 				OS.InvalidateRect (handle, null, true);
 			}
-			if ((style & SWT.SEARCH) != 0 && hwndCancel != 0) {
-				OS.ShowWindow (hwndCancel, OS.GetWindowTextLength (handle) != 0 ? OS.SW_SHOW : OS.SW_HIDE);
+			if ((style & SWT.SEARCH) != 0) {
+				boolean showCancel = OS.GetWindowTextLength (handle) != 0;
+				long hwndCancel = OS.GetDlgItem (handle, SWT.ICON_CANCEL);
+				if (hwndCancel != 0) OS.ShowWindow (hwndCancel, showCancel ? OS.SW_SHOW : OS.SW_HIDE);
 			}
 			if (ignoreModify) break;
 			/*
