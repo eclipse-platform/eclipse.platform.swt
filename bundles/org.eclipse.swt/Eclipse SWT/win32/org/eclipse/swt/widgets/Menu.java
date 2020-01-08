@@ -59,7 +59,6 @@ public class Menu extends Widget {
 
 	int x, y;
 	long hBrush;
-	int id0, id1;
 	int foreground = -1, background = -1;
 	Image backgroundImage;
 	boolean hasLocation;
