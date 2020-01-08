@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2019 IBM Corporation and others. All rights reserved.
+ * Copyright (c) 2000, 2020 IBM Corporation and others. All rights reserved.
  * The contents of this file are made available under the terms
  * of the GNU Lesser General Public License (LGPL) Version 2.1 that
  * accompanies this distribution (lgpl-v21.txt).  The LGPL is also
@@ -870,7 +870,15 @@ JNIEXPORT jint JNICALL GDK_NATIVE(_1gdk_1drag_1context_1get_1actions)
 {
 	jint rc = 0;
 	GDK_NATIVE_ENTER(env, that, _1gdk_1drag_1context_1get_1actions_FUNC);
-	rc = (jint)gdk_drag_context_get_actions((GdkDragContext *)arg0);
+/*
+	rc = (jint)gdk_drag_context_get_actions(arg0);
+*/
+	{
+		GDK_LOAD_FUNCTION(fp, gdk_drag_context_get_actions)
+		if (fp) {
+			rc = (jint)((jint (CALLING_CONVENTION*)(jlong))fp)(arg0);
+		}
+	}
 	GDK_NATIVE_EXIT(env, that, _1gdk_1drag_1context_1get_1actions_FUNC);
 	return rc;
 }
@@ -894,7 +902,15 @@ JNIEXPORT jint JNICALL GDK_NATIVE(_1gdk_1drag_1context_1get_1selected_1action)
 {
 	jint rc = 0;
 	GDK_NATIVE_ENTER(env, that, _1gdk_1drag_1context_1get_1selected_1action_FUNC);
-	rc = (jint)gdk_drag_context_get_selected_action((GdkDragContext *)arg0);
+/*
+	rc = (jint)gdk_drag_context_get_selected_action(arg0);
+*/
+	{
+		GDK_LOAD_FUNCTION(fp, gdk_drag_context_get_selected_action)
+		if (fp) {
+			rc = (jint)((jint (CALLING_CONVENTION*)(jlong))fp)(arg0);
+		}
+	}
 	GDK_NATIVE_EXIT(env, that, _1gdk_1drag_1context_1get_1selected_1action_FUNC);
 	return rc;
 }
@@ -1238,7 +1254,15 @@ JNIEXPORT void JNICALL GDK_NATIVE(_1gdk_1event_1handler_1set)
 	(JNIEnv *env, jclass that, jlong arg0, jlong arg1, jlong arg2)
 {
 	GDK_NATIVE_ENTER(env, that, _1gdk_1event_1handler_1set_FUNC);
-	gdk_event_handler_set((GdkEventFunc)arg0, (gpointer)arg1, (GDestroyNotify)arg2);
+/*
+	gdk_event_handler_set(arg0, arg1, arg2);
+*/
+	{
+		GDK_LOAD_FUNCTION(fp, gdk_event_handler_set)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(jlong, jlong, jlong))fp)(arg0, arg1, arg2);
+		}
+	}
 	GDK_NATIVE_EXIT(env, that, _1gdk_1event_1handler_1set_FUNC);
 }
 #endif
@@ -7389,12 +7413,12 @@ JNIEXPORT void JNICALL GTK_NATIVE(_1gtk_1menu_1popup)
 {
 	GTK_NATIVE_ENTER(env, that, _1gtk_1menu_1popup_FUNC);
 /*
-	gtk_menu_popup((GtkMenu *)arg0, (GtkWidget *)arg1, (GtkWidget *)arg2, (GtkMenuPositionFunc)arg3, (gpointer)arg4, (guint)arg5, (guint32)arg6);
+	gtk_menu_popup(arg0, arg1, arg2, arg3, arg4, arg5, arg6);
 */
 	{
 		GTK_LOAD_FUNCTION(fp, gtk_menu_popup)
 		if (fp) {
-			((void (CALLING_CONVENTION*)(GtkMenu *, GtkWidget *, GtkWidget *, GtkMenuPositionFunc, gpointer, guint, guint32))fp)((GtkMenu *)arg0, (GtkWidget *)arg1, (GtkWidget *)arg2, (GtkMenuPositionFunc)arg3, (gpointer)arg4, (guint)arg5, (guint32)arg6);
+			((void (CALLING_CONVENTION*)(jlong, jlong, jlong, jlong, jlong, jint, jint))fp)(arg0, arg1, arg2, arg3, arg4, arg5, arg6);
 		}
 	}
 	GTK_NATIVE_EXIT(env, that, _1gtk_1menu_1popup_FUNC);

@@ -4232,13 +4232,6 @@ public class GTK extends OS {
 	}
 	/**
 	 * @method flags=dynamic
-	 * @param menu cast=(GtkMenu *)
-	 * @param parent_menu_shell cast=(GtkWidget *)
-	 * @param parent_menu_item cast=(GtkWidget *)
-	 * @param func cast=(GtkMenuPositionFunc)
-	 * @param data cast=(gpointer)
-	 * @param button cast=(guint)
-	 * @param activate_time cast=(guint32)
 	 */
 	public static final native void _gtk_menu_popup(long menu, long parent_menu_shell, long parent_menu_item, long func, long data, int button, int activate_time);
 	/** [GTK2/GTK3; 3.22 deprecated, replaced] */

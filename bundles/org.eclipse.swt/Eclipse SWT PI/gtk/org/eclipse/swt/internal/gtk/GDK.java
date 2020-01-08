@@ -902,9 +902,10 @@ public class GDK extends OS {
 		}
 	}
 	/**
-	 * @param context cast=(GdkDragContext *)
+	 * @method flags=dynamic
 	 */
 	public static final native int _gdk_drag_context_get_actions(long context);
+	// TODO GTK4 function removed
 	public static final int gdk_drag_context_get_actions(long context) {
 		lock.lock();
 		try {
@@ -927,9 +928,10 @@ public class GDK extends OS {
 		}
 	}
 	/**
-	 * @param context cast=(GdkDragContext *)
+	 * @method flags=dynamic
 	 */
 	public static final native int _gdk_drag_context_get_selected_action(long context);
+	// TODO GTK4 function removed
 	public static final int gdk_drag_context_get_selected_action(long context) {
 		lock.lock();
 		try {
@@ -1223,11 +1225,10 @@ public class GDK extends OS {
 		}
 	}
 	/**
-	 * @param func cast=(GdkEventFunc)
-	 * @param data cast=(gpointer)
-	 * @param notify cast=(GDestroyNotify)
+	 * @method flags=dynamic
 	 */
 	public static final native void _gdk_event_handler_set(long func, long data, long notify);
+	// TODO GTK4 function removed
 	public static final void gdk_event_handler_set(long func, long data, long notify) {
 		lock.lock();
 		try {
