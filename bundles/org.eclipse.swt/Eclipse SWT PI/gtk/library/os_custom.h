@@ -92,11 +92,11 @@ struct _GtkAccelLabelPrivate
 // NOTE: functions like gtk_false need to be linked to a lib. Eg see gtk_false_LIB above.
 #define GET_FUNCTION_POINTER_gtk_false() 0; \
 GTK_LOAD_FUNCTION(fp, gtk_false) \
-rc = (jintLong)fp;
+rc = (jlong)fp;
 
 #define gtk_status_icon_position_menu_func() 0; \
 GTK_LOAD_FUNCTION(fp, gtk_status_icon_position_menu) \
-rc = (jintLong)fp;
+rc = (jlong)fp;
 
 glong g_utf16_pointer_to_offset(const gchar*, const gchar*);
 gchar* g_utf16_offset_to_pointer(const gchar*, glong);
@@ -166,7 +166,7 @@ struct _SwtFixedAccessibleClass
 GType swt_fixed_accessible_get_type (void) G_GNUC_CONST;
 AtkObject *swt_fixed_accessible_new (GtkWidget *widget);
 void swt_fixed_accessible_register_accessible (AtkObject *obj, gboolean is_native, GtkWidget *to_map);
-jintLong call_accessible_object_function (const char *method_name, const char *method_signature,...);
+jlong call_accessible_object_function (const char *method_name, const char *method_signature,...);
 
 void swt_debug_on_fatal_warnings() ;
 

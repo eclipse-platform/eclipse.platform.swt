@@ -17,7 +17,7 @@
 //#include <stdbool.h>		   // for standard true/false
 //#include <gio/gio.h>	       // For things like GAsyncResult
 
-#include "swt.h"		       // For types like jintLong etc..
+#include "swt.h"
 
 #include "webkitgtk.h"         // For WebKitGTK_LOAD_FUNCTION macro and custom struct definitions.
 #include "webkitgtk_custom.h"
@@ -44,7 +44,7 @@ int fps_cached = 0;
 /** Dynamic Function pointer declarations */
 // Example of a dynamic function declaration.
 // dyn_WebKitJavascriptResult  (*fp_webkit_web_view_run_javascript_finish) 	 (dyn_WebKitWebView, GAsyncResult*, GError**);
-// // example call of this function would be: fp_webkit_web_view_run_javascript_finish ((jintLong) object, result, &error);
+// // example call of this function would be: fp_webkit_web_view_run_javascript_finish ((jlong) object, result, &error);
 
 #define INIT_WEBKIT_FP(function) \
 		{ \
@@ -69,7 +69,7 @@ void initFPs() {
 
 // Example of a function that makes dynamic calls.
 //JNIEXPORT void Java_org_eclipse_swt_internal_webkit_WebKitGTK__1swtWebkitEvaluateJavascript
-//	(JNIEnv *env, jclass that, jintLong webkit_handle, jbyteArray javascriptStringBytes, jobject swtjsreturnvalOBJ)
+//	(JNIEnv *env, jclass that, jlong webkit_handle, jbyteArray javascriptStringBytes, jobject swtjsreturnvalOBJ)
 //{
 //	WebKitGTK_NATIVE_ENTER(env, that, _1swtWebkitEvaluateJavascript_FUNC); // For native stats tool.
 //// In your custom function, you should first ensure function pointers are initiated:

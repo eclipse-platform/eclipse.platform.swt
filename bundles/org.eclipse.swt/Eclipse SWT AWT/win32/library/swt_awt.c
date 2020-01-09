@@ -18,14 +18,14 @@
 #define SWT_AWT_NATIVE(func) Java_org_eclipse_swt_awt_SWT_1AWT_##func
 
 #ifndef NO_getAWTHandle
-JNIEXPORT jintLong JNICALL SWT_AWT_NATIVE(getAWTHandle)
+JNIEXPORT jlong JNICALL SWT_AWT_NATIVE(getAWTHandle)
 	(JNIEnv *env, jclass that, jobject canvas)
 {
 	JAWT awt;
 	JAWT_DrawingSurface* ds;
 	JAWT_DrawingSurfaceInfo* dsi;
 	JAWT_Win32DrawingSurfaceInfo* dsi_win;
-	jintLong result = 0;
+	jlong result = 0;
 	jint lock;
 
 	awt.version = JAWT_VERSION_1_3;
@@ -36,7 +36,7 @@ JNIEXPORT jintLong JNICALL SWT_AWT_NATIVE(getAWTHandle)
 		 	if ((lock & JAWT_LOCK_ERROR) == 0) {
 			 	dsi = ds->GetDrawingSurfaceInfo(ds);
 				dsi_win = (JAWT_Win32DrawingSurfaceInfo*)dsi->platformInfo;
-				result = (jintLong)dsi_win->hwnd;
+				result = (jlong)dsi_win->hwnd;
 				ds->FreeDrawingSurfaceInfo(dsi);
 				ds->Unlock(ds);
 			}
@@ -49,7 +49,7 @@ JNIEXPORT jintLong JNICALL SWT_AWT_NATIVE(getAWTHandle)
 
 #ifndef NO_initFrame
 JNIEXPORT jobject JNICALL SWT_AWT_NATIVE(initFrame)
-	(JNIEnv *env, jclass that, jintLong handle, jstring className)
+	(JNIEnv *env, jclass that, jlong handle, jstring className)
 {
 	jobject object;
 	jmethodID constructor;

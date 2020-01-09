@@ -29,7 +29,7 @@
 
 #ifndef NO_JNIGetObject
 JNIEXPORT jobject JNICALL OS_NATIVE(JNIGetObject)
-	(JNIEnv *env, jclass that, jintLong arg0)
+	(JNIEnv *env, jclass that, jlong arg0)
 {
 	jobject rc = 0;
 	OS_NATIVE_ENTER(env, that, JNIGetObject_FUNC);
@@ -40,27 +40,27 @@ JNIEXPORT jobject JNICALL OS_NATIVE(JNIGetObject)
 #endif
 
 #ifndef NO_FindWindow
-JNIEXPORT jintLong JNICALL OS_NATIVE(FindWindow)
-(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jintLongArray arg2)
+JNIEXPORT jlong JNICALL OS_NATIVE(FindWindow)
+(JNIEnv *env, jclass that, jlong arg0, jlong arg1, jlongArray arg2)
 {
-	jintLong *lparg2=NULL;
-	jintLong rc = 0;
+	jlong *lparg2=NULL;
+	jlong rc = 0;
 	Point p;
 	p.h = (short)arg0;
 	p.v = (short)arg1;
 	OS_NATIVE_ENTER(env, that, FindWindow_FUNC);
-	if (arg2) if ((lparg2 = (*env)->GetIntLongArrayElements(env, arg2, NULL)) == NULL) goto fail;
+	if (arg2) if ((lparg2 = (*env)->GetLongArrayElements(env, arg2, NULL)) == NULL) goto fail;
 	/*
-	 rc = (jintLong)FindWindow(arg0, arg1, (WindowRef *)lparg2);
+	 rc = (jlong)FindWindow(arg0, arg1, (WindowRef *)lparg2);
 	 */
 	{
 		OS_LOAD_FUNCTION(fp, FindWindow)
 		if (fp) {
-			rc = (jintLong)((jintLong (CALLING_CONVENTION*)(Point, WindowRef *))fp)(p, (WindowRef *)lparg2);
+			rc = (jlong)((jlong (CALLING_CONVENTION*)(Point, WindowRef *))fp)(p, (WindowRef *)lparg2);
 		}
 	}
 fail:
-	if (arg2 && lparg2) (*env)->ReleaseIntLongArrayElements(env, arg2, lparg2, 0);
+	if (arg2 && lparg2) (*env)->ReleaseLongArrayElements(env, arg2, lparg2, 0);
 		OS_NATIVE_EXIT(env, that, FindWindow_FUNC);
 		return rc;
 }
@@ -118,7 +118,7 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(_1_1BIG_1ENDIAN_1_1)
 
 #ifndef NO_class_1getName
 JNIEXPORT jstring JNICALL OS_NATIVE(class_1getName)
-(JNIEnv *env, jclass that, jintLong arg0)
+(JNIEnv *env, jclass that, jlong arg0)
 {
 	jstring rc = 0;
 	OS_NATIVE_ENTER(env, that, class_1getName_FUNC);
@@ -134,26 +134,26 @@ static BOOL isFlippedProc(id obj, SEL sel)
 {
 	return YES;
 }
-JNIEXPORT jintLong JNICALL OS_NATIVE(isFlipped_1CALLBACK)
+JNIEXPORT jlong JNICALL OS_NATIVE(isFlipped_1CALLBACK)
 (JNIEnv *env, jclass that)
 {
-	return (jintLong)isFlippedProc;
+	return (jlong)isFlippedProc;
 }
 #endif
 
 #ifndef NO_kTISPropertyUnicodeKeyLayoutData
-JNIEXPORT jintLong JNICALL OS_NATIVE(kTISPropertyUnicodeKeyLayoutData)
+JNIEXPORT jlong JNICALL OS_NATIVE(kTISPropertyUnicodeKeyLayoutData)
 (JNIEnv *env, jclass that)
 {
-	jintLong rc = 0;
+	jlong rc = 0;
 	OS_NATIVE_ENTER(env, that, kTISPropertyUnicodeKeyLayoutData_FUNC);
 /*
-	rc = (jintLong) kTISPropertyUnicodeKeyLayoutData;
+	rc = (jlong) kTISPropertyUnicodeKeyLayoutData;
 */
 	{
 		LOAD_CFSTR(data, kTISPropertyUnicodeKeyLayoutData)
 		if (data) {
-			rc = (jintLong)(*data);
+			rc = (jlong)(*data);
 		}
 	}
 	OS_NATIVE_EXIT(env, that, kTISPropertyUnicodeKeyLayoutData_FUNC);
@@ -162,18 +162,18 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(kTISPropertyUnicodeKeyLayoutData)
 #endif
 
 #ifndef NO_NSAccessibilityCellRole
-JNIEXPORT jintLong JNICALL OS_NATIVE(NSAccessibilityCellRole)
+JNIEXPORT jlong JNICALL OS_NATIVE(NSAccessibilityCellRole)
 	(JNIEnv *env, jclass that)
 {
-	jintLong rc = 0;
+	jlong rc = 0;
 	OS_NATIVE_ENTER(env, that, NSAccessibilityCellRole_FUNC);
 /*
-	rc = (jintLong)NSAccessibilityCellRole;
+	rc = (jlong)NSAccessibilityCellRole;
 */
 	{
 		LOAD_CFSTR(data, NSAccessibilityCellRole)
 		if (data) {
-			rc = (jintLong)(*data);
+			rc = (jlong)(*data);
 		}
 	}
 	OS_NATIVE_EXIT(env, that, NSAccessibilityCellRole_FUNC);
@@ -182,18 +182,18 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(NSAccessibilityCellRole)
 #endif
 
 #ifndef NO_NSAccessibilityColumnIndexRangeAttribute
-JNIEXPORT jintLong JNICALL OS_NATIVE(NSAccessibilityColumnIndexRangeAttribute)
+JNIEXPORT jlong JNICALL OS_NATIVE(NSAccessibilityColumnIndexRangeAttribute)
 	(JNIEnv *env, jclass that)
 {
-	jintLong rc = 0;
+	jlong rc = 0;
 	OS_NATIVE_ENTER(env, that, NSAccessibilityColumnIndexRangeAttribute_FUNC);
 /*
-	rc = (jintLong)NSAccessibilityColumnIndexRangeAttribute;
+	rc = (jlong)NSAccessibilityColumnIndexRangeAttribute;
 */
 	{
 		LOAD_CFSTR(data, NSAccessibilityColumnIndexRangeAttribute)
 		if (data) {
-			rc = (jintLong)(*data);
+			rc = (jlong)(*data);
 		}
 	}
 	OS_NATIVE_EXIT(env, that, NSAccessibilityColumnIndexRangeAttribute_FUNC);
@@ -202,18 +202,18 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(NSAccessibilityColumnIndexRangeAttribute)
 #endif
 
 #ifndef NO_NSAccessibilityCellForColumnAndRowParameterizedAttribute
-JNIEXPORT jintLong JNICALL OS_NATIVE(NSAccessibilityCellForColumnAndRowParameterizedAttribute)
+JNIEXPORT jlong JNICALL OS_NATIVE(NSAccessibilityCellForColumnAndRowParameterizedAttribute)
 	(JNIEnv *env, jclass that)
 {
-	jintLong rc = 0;
+	jlong rc = 0;
 	OS_NATIVE_ENTER(env, that, NSAccessibilityCellForColumnAndRowParameterizedAttribute_FUNC);
 /*
-	rc = (jintLong)NSAccessibilityCellForColumnAndRowParameterizedAttribute;
+	rc = (jlong)NSAccessibilityCellForColumnAndRowParameterizedAttribute;
 */
 	{
 		LOAD_CFSTR(data, NSAccessibilityCellForColumnAndRowParameterizedAttribute)
 		if (data) {
-			rc = (jintLong)(*data);
+			rc = (jlong)(*data);
 		}
 	}
 	OS_NATIVE_EXIT(env, that, NSAccessibilityCellForColumnAndRowParameterizedAttribute_FUNC);
@@ -222,18 +222,18 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(NSAccessibilityCellForColumnAndRowParameter
 #endif
 
 #ifndef NO_NSAccessibilityRowIndexRangeAttribute
-JNIEXPORT jintLong JNICALL OS_NATIVE(NSAccessibilityRowIndexRangeAttribute)
+JNIEXPORT jlong JNICALL OS_NATIVE(NSAccessibilityRowIndexRangeAttribute)
 	(JNIEnv *env, jclass that)
 {
-	jintLong rc = 0;
+	jlong rc = 0;
 	OS_NATIVE_ENTER(env, that, NSAccessibilityRowIndexRangeAttribute_FUNC);
 /*
-	rc = (jintLong)NSAccessibilityRowIndexRangeAttribute;
+	rc = (jlong)NSAccessibilityRowIndexRangeAttribute;
 */
 	{
 		LOAD_CFSTR(data, NSAccessibilityRowIndexRangeAttribute)
 		if (data) {
-			rc = (jintLong)(*data);
+			rc = (jlong)(*data);
 		}
 	}
 	OS_NATIVE_EXIT(env, that, NSAccessibilityRowIndexRangeAttribute_FUNC);
@@ -241,15 +241,15 @@ JNIEXPORT jintLong JNICALL OS_NATIVE(NSAccessibilityRowIndexRangeAttribute)
 }
 #endif
 
-typedef void (*FunctionPointer)(jintLong result);
-typedef void (^ObjcBlock)(jintLong result);
+typedef void (*FunctionPointer)(jlong result);
+typedef void (^ObjcBlock)(jlong result);
 
 /*
 Method that takes a function pointer as input and returns a objective-c block
 which calls the function pointed to by the function pointer.
 */
 ObjcBlock functionToBlock(FunctionPointer func) {
-    return [[^(jintLong result) {
+    return [[^(jlong result) {
                  func(result);
              } copy] autorelease];
 }
@@ -259,14 +259,14 @@ Wrapper function which receives a function pointer from Java and calls NSSavePan
 with objective-C block (with block syntax) as the last parameter.
 */ 
 #ifndef NO_beginSheetModalForWindow
-JNIEXPORT jintLong JNICALL OS_NATIVE(beginSheetModalForWindow)
-	(JNIEnv *env, jclass that, jintLong arg0, jintLong arg1, jintLong arg2, FunctionPointer arg3)
+JNIEXPORT jlong JNICALL OS_NATIVE(beginSheetModalForWindow)
+	(JNIEnv *env, jclass that, jlong arg0, jlong arg1, jlong arg2, FunctionPointer arg3)
 {
-	jintLong rc = 0;
+	jlong rc = 0;
 	
 	OS_NATIVE_ENTER(env, that, beginSheetModalForWindow_FUNC);
 	
-	rc = (jintLong)((jintLong (*)(jintLong, jintLong, jintLong, void (^)(jintLong)))objc_msgSend)(arg0, arg1, arg2, functionToBlock(arg3));
+	rc = (jlong)((jlong (*)(jlong, jlong, jlong, void (^)(jlong)))objc_msgSend)(arg0, arg1, arg2, functionToBlock(arg3));
 	
 	OS_NATIVE_EXIT(env, that, beginSheetModalForWindow_FUNC);
 	return rc;

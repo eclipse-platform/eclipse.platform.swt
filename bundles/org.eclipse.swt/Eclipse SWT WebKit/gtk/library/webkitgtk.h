@@ -26,7 +26,7 @@
 // For JNI bindings in webkitgtk.c to properly link to custom functions:
 #include "webkitgtk_custom.h"
 
-#include "swt.h"  // for jintlong used by custom struct below.
+#include "swt.h"
 
 /**
  * Conceptually the macro does:

@@ -27,7 +27,7 @@
 
 #include "os_custom.h"
 
-extern jint CPSSetProcessName(void *, jintLong);
+extern jint CPSSetProcessName(void *, jlong);
 
 #define OS_LOAD_FUNCTION LOAD_FUNCTION
 

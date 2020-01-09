@@ -18,7 +18,7 @@
 
 /* Manually written code */
 /** Dynamic type definitions */
-typedef jintLong 	dyn_WebKitWebView;
+typedef jlong 	dyn_WebKitWebView;
 typedef gpointer 	dyn_WebKitJavascriptResult;
 typedef gpointer 	dyn_JSContextRef;
 typedef gpointer 	dyn_JSGlobalContextRef;

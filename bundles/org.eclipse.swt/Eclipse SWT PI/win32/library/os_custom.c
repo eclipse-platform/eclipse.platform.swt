@@ -38,12 +38,12 @@ BOOL WINAPI DllMain(HANDLE hInstDLL, DWORD dwReason, LPVOID lpvReserved)
 }
 
 #ifndef NO_GetLibraryHandle
-JNIEXPORT jintLong JNICALL OS_NATIVE(GetLibraryHandle)
+JNIEXPORT jlong JNICALL OS_NATIVE(GetLibraryHandle)
 	(JNIEnv *env, jclass that)
 {
-	jintLong rc;
+	jlong rc;
 	OS_NATIVE_ENTER(env, that, GetLibraryHandle_FUNC)
-	rc = (jintLong)g_hInstance;
+	rc = (jlong)g_hInstance;
 	OS_NATIVE_EXIT(env, that, GetLibraryHandle_FUNC)
 	return rc;
 }

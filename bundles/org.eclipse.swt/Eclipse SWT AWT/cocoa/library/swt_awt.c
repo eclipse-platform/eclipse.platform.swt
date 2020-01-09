@@ -35,10 +35,10 @@ JAWT_MacOSXDrawingSurfaceInfo;
 
 
 #ifndef NO_getAWTHandle
-JNIEXPORT jintLong JNICALL SWT_AWT_NATIVE(getAWTHandle)
+JNIEXPORT jlong JNICALL SWT_AWT_NATIVE(getAWTHandle)
 	(JNIEnv *env, jclass that, jobject canvas)
 {
-	jintLong result = 0;
+	jlong result = 0;
 	JAWT awt;
 	JAWT_DrawingSurface* ds;
 	JAWT_DrawingSurfaceInfo* dsi;
@@ -53,7 +53,7 @@ JNIEXPORT jintLong JNICALL SWT_AWT_NATIVE(getAWTHandle)
 		 	if ((lock & JAWT_LOCK_ERROR) == 0) {
 			 	dsi = ds->GetDrawingSurfaceInfo(ds);
 				dsi_cocoa = (JAWT_MacOSXDrawingSurfaceInfo*)dsi->platformInfo;
-				result = (jintLong)dsi_cocoa->cocoaViewRef;
+				result = (jlong)dsi_cocoa->cocoaViewRef;
 				ds->FreeDrawingSurfaceInfo(dsi);
 				ds->Unlock(ds);
 			}
@@ -66,7 +66,7 @@ JNIEXPORT jintLong JNICALL SWT_AWT_NATIVE(getAWTHandle)
 
 #ifndef NO_initFrame
 JNIEXPORT jobject JNICALL Java_org_eclipse_swt_awt_SWT_1AWT_initFrame
-	(JNIEnv *env, jclass that, jintLong handle, const char *className)
+	(JNIEnv *env, jclass that, jlong handle, const char *className)
 {
 	jobject object;
 	jmethodID constructor;

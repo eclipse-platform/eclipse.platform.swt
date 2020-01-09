@@ -251,7 +251,7 @@ public static final void JSStringRelease (long string) {
 }
 
 // Signature: 	   void webkit_javascript_result_unref (WebKitJavascriptResult *js_result);
-// Type Note:      WebKitJavascriptResult -> gpointer -> jintLong
+// Type Note:      WebKitJavascriptResult -> gpointer -> jlong
 /** @method flags=dynamic */
 public static final native void _webkit_javascript_result_unref(long js_result);
 public static final void webkit_javascript_result_unref(long js_result) {
