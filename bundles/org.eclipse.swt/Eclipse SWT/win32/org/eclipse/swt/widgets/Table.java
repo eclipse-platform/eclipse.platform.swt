@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2018 IBM Corporation and others.
+ * Copyright (c) 2000, 2020 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -5837,8 +5837,8 @@ LRESULT WM_CHAR (long wParam, long lParam) {
 	switch ((int)wParam) {
 		case ' ':
 			if ((style & SWT.CHECK) != 0) {
-				int index = (int)OS.SendMessage (handle, OS.LVM_GETNEXTITEM, -1, OS.LVNI_FOCUSED);
-				if (index != -1) {
+				int index = -1;
+				while ((index = (int)OS.SendMessage (handle, OS.LVM_GETNEXTITEM, index, OS.LVNI_SELECTED)) != -1) {
 					TableItem item = _getItem (index);
 					item.setChecked (!item.getChecked (), true);
 					OS.NotifyWinEvent (OS.EVENT_OBJECT_FOCUS, handle, OS.OBJID_CLIENT, index + 1);
