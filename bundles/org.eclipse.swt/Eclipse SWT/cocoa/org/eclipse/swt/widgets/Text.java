@@ -818,7 +818,10 @@ void enableWidget(boolean enabled) {
 @Override
 Cursor findCursor () {
 	Cursor cursor = super.findCursor ();
-	return (cursor != null) ? cursor : display.getSystemCursor (SWT.CURSOR_IBEAM);
+	if (cursor == null && OS.VERSION < OS.VERSION(10, 14, 0)) {
+		cursor = display.getSystemCursor (SWT.CURSOR_IBEAM);
+	}
+	return cursor;
 }
 
 @Override

@@ -698,7 +698,10 @@ boolean dragDetect(int x, int y, boolean filter, boolean[] consume) {
 @Override
 Cursor findCursor () {
 	Cursor cursor = super.findCursor ();
-	return (cursor != null || (style & SWT.READ_ONLY) != 0) ? cursor : display.getSystemCursor (SWT.CURSOR_IBEAM);
+	if (cursor == null && (style & SWT.READ_ONLY) == 0 && OS.VERSION < OS.VERSION(10, 14, 0)) {
+		cursor = display.getSystemCursor (SWT.CURSOR_IBEAM);
+	}
+	return cursor;
 }
 
 @Override

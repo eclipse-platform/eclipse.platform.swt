@@ -200,7 +200,14 @@ public Cursor(Device device, int style) {
 			case SWT.CURSOR_SIZESW:			handle = NSCursor.crosshairCursor(); break;
 			case SWT.CURSOR_SIZENW:			handle = NSCursor.crosshairCursor(); break;
 			case SWT.CURSOR_UPARROW:			handle = NSCursor.crosshairCursor(); break;
-			case SWT.CURSOR_IBEAM:			shouldCreateCursor = true; break;
+			case SWT.CURSOR_IBEAM:
+				// Before 10.14, I-Beam cursor is nearly invisible on a dark background
+				if (OS.VERSION < OS.VERSION(10, 14, 0)) {
+					shouldCreateCursor = true;
+				} else {
+					handle = NSCursor.IBeamCursor();
+				}
+				break;
 			case SWT.CURSOR_NO:				handle = NSCursor.operationNotAllowedCursor(); break;
 			default:
 				SWT.error(SWT.ERROR_INVALID_ARGUMENT);
