@@ -2855,18 +2855,6 @@ LRESULT WM_GETDLGCODE (long wParam, long lParam) {
 @Override
 LRESULT WM_KILLFOCUS (long wParam, long lParam) {
 	/*
-	* Bug in Windows.  When a combo box that is read only
-	* is disposed in CBN_KILLFOCUS, Windows segment faults.
-	* The fix is to send focus from WM_KILLFOCUS instead
-	* of CBN_KILLFOCUS.
-	*
-	* NOTE: In version 6 of COMCTL32.DLL, the bug is fixed.
-	*/
-	if ((style & SWT.READ_ONLY) != 0) {
-		return super.WM_KILLFOCUS (wParam, lParam);
-	}
-
-	/*
 	* Return NULL - Focus notification is
 	* done in WM_COMMAND by CBN_KILLFOCUS.
 	*/
@@ -3239,15 +3227,6 @@ LRESULT wmCommandChild (long wParam, long lParam) {
 			updateDropDownHeight ();
 			break;
 		case OS.CBN_KILLFOCUS:
-			/*
-			* Bug in Windows.  When a combo box that is read only
-			* is disposed in CBN_KILLFOCUS, Windows segment faults.
-			* The fix is to send focus from WM_KILLFOCUS instead
-			* of CBN_KILLFOCUS.
-			*
-			* NOTE: In version 6 of COMCTL32.DLL, the bug is fixed.
-			*/
-			if ((style & SWT.READ_ONLY) != 0) break;
 			sendFocusEvent (SWT.FocusOut);
 			if (isDisposed ()) return LRESULT.ZERO;
 			break;

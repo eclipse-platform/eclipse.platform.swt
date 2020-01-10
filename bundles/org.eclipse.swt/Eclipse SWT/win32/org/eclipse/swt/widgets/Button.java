@@ -904,13 +904,6 @@ public void setImage (Image image) {
 	if (image != null && image.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
 	if ((style & SWT.ARROW) != 0) return;
 	this.image = image;
-	/* This code is intentionally commented */
-//	if (OS.COMCTL32_MAJOR < 6) {
-//		if (image == null || text.length () != 0) {
-//			_setText (text);
-//			return;
-//		}
-//	}
 	_setImage (image);
 }
 
@@ -1050,13 +1043,6 @@ public void setText (String string) {
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if ((style & SWT.ARROW) != 0) return;
 	text = string;
-	/* This code is intentionally commented */
-//	if (OS.COMCTL32_MAJOR < 6) {
-//		if (text.length () == 0 && image != null) {
-//			_setImage (image);
-//			return;
-//		}
-//	}
 	_setText (string);
 }
 
