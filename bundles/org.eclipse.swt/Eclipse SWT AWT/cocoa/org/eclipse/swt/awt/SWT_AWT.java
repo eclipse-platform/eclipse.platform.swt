@@ -58,7 +58,6 @@ public class SWT_AWT {
 
 	static boolean loaded, swingInitialized;
 
-	static native final long getAWTHandle (Canvas canvas);
 	static native final Object initFrame (long handle, String className);
 	static native final void validateWithBounds (Frame frame, int x, int y, int w, int h);
 	static native final void synthesizeWindowActivation (Frame frame, boolean doActivate);
@@ -67,15 +66,6 @@ public class SWT_AWT {
 		if (loaded) return;
 		loaded = true;
 		Toolkit.getDefaultToolkit();
-		/*
-		 * Note that the jawt library is loaded explicitly
-		 * because it cannot be found by the library loader.
-		 * All exceptions are caught because the library may
-		 * have been loaded already.
-		 */
-		try {
-			System.loadLibrary("jawt");
-		} catch (Throwable e) {}
 		Library.loadLibrary("swt-awt");
 	}
 
@@ -311,30 +301,8 @@ public static Frame new_Frame(final Composite parent) {
 public static Shell new_Shell(final Display display, final Canvas parent) {
 	if (display == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 	if (parent == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
-	long handle = 0;
-
-	try {
-		loadLibrary ();
-		handle = getAWTHandle (parent);
-	} catch (Throwable e) {
-		SWT.error (SWT.ERROR_NOT_IMPLEMENTED, e);
-	}
-	if (handle == 0) SWT.error (SWT.ERROR_INVALID_ARGUMENT, null, " [peer not created]");
-
-	final Shell shell = Shell.cocoa_new (display, handle);
-	final ComponentListener listener = new ComponentAdapter () {
-		@Override
-		public void componentResized (ComponentEvent e) {
-			display.asyncExec (() -> {
-				if (shell.isDisposed()) return;
-				Dimension dim = parent.getSize ();
-				shell.setSize (dim.width, dim.height);
-			});
-		}
-	};
-	parent.addComponentListener(listener);
-	shell.addListener(SWT.Dispose, event -> parent.removeComponentListener(listener));
-	shell.setVisible (true);
-	return shell;
+	// Since Java 7, AWT widgets don't have a backing NSView, making embedding impossible
+	SWT.error(SWT.ERROR_NOT_IMPLEMENTED, null, "[Embedding SWT in AWT isn't supported on macOS]");
+	return null;
 }
 }
