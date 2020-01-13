@@ -34,28 +34,17 @@ import org.eclipse.swt.layout.*;
 import org.eclipse.swt.widgets.*;
 
 /**
- * Webkit2 port developer architecture notes: (Dec 2017)
- * ##########################################
- * I'm (Leo Ufimtsev) writing this as part of the completion of the webkit1->webkit2 port,
- * so that either swt/webkit2 maintainers or maybe webkit3 port-guy has a better understanding
- * of what's going on.
- * I didn't write the initial webkit1 implementation and only wrote half of the webkit2 port. So I don't
- * know the details/reasons behind webkit1 decisions too well, I can only speculate.
- *
- *
  * VERSIONS:
  * Versioning for webkit is somewhat confusing because it's trying to incorporate webkit, gtk and (various linux distribution) versions.
  * The way they version webkitGTK is different from webkit.
  *   WebkitGTK:
- *    2.4 is the last webkit1 version.   [2.0-2.4) is Gtk3.
  *    2.5 is webkit2.                    [2.4-..)  is Gtk3.
- *  Further, linux distributions might refer to webkit1/2 bindings linked against gtk2/3 differently.
+ *  Further, linux distributions might refer to webkit2 bindings linked against gtk3 differently.
  *  E.g on Fedora:
- *     webkitgtk3 = Webkit1 / Gtk3
  *     webkitgtk4 = webkit2 / Gtk3
+ *     webkit2gtk3 = WebKit2/ Gtk3
  *
- * Webkit1 & Webkit2 loading:
- * - This code dynamically uses either webkit1 or webkit2 depending on what's available.
+ * Webkit2 loading:
  * - Dynamic bindings are auto generated and linked when the @dynamic keyword is used in WebKitGTK.java
  *   Unlike in OS.java, you don't have to add any code saying what lib the dynamic method is linked to. It's auto-linked to webkit lib by default.
  * - At no point should you have hard-compiled code, because this will cause crashes on older machines without webkit2.
@@ -67,8 +56,6 @@ import org.eclipse.swt.widgets.*;
  *   (webextension is an exception).
  *
  * Webextension:
- * - Webkit1 implemented javascript execution and function callback by calling javascript core directly, but on webkit2 we can't do this anymore since
- *   webkit2 runs the network logic in a separate process.
  * - On Webkit2, a webextension is used to provide browserfunction/javascript callback functionality. (See the whole WebkitGDBus.java business).
  * - I've initially implemented javascript execution by running javascript and then waiting in a display-loop until webkit makes a return call.
  *   I then added a whole bunch of logic to avoid deadlocks.
@@ -80,21 +67,14 @@ import org.eclipse.swt.widgets.*;
  *
  *
  * EVENT_HANDLING_DOC:
- * - On Pre-webkit1.4, event handles (mouseMove/Click/keyoard/Dnd etc..) were implemented as javascript hooks.
- * 	  but if javascript was not enabled, hooks would not work either.
- * - On Post-Webkit1.4 gtk provided DOM hooks that generated signals. There still seems to be some strange logic
- *   that either uses javascript or webkitDom events to generate the equivalent SWT.MouseDown/SWT.Key* events etc...
- *   I haven't really taken the time to fully understand why there's such a mix and musch between the two. I just left the code as is.
  * - On webkit2, signals are implemented via regular gtk mechanism, hook events and pass them along as we receive them.
  *   I haven't found a need to use the dom events, because webkitgtk seems to adequately meet the requirements via regular gtk
  *   events, but maybe I missed something? Who knows.
- * - With that said, I haven't done a deep dive/investigation in how things work. It works, so I left it.
  *
  * setUrl(..) with 'post data' was implemented in a very hacky way, via native Java due to missing webkit2gtk api.
  * It's the best that could be done at the time, but it could result in strange behavior like some webpages loading in funky ways if post-data is used.
  *
  * Some good resources that I found are as following:
- * - Webkit1 reference: https://webkitgtk.org/reference/webkitgtk/unstable/
  * - Webkit2 reference: https://webkitgtk.org/reference/webkit2gtk/stable/
  *
  * - My github repository has a lot of snippets to prototype individual features (e.g gdbus, barebone webkit extension, GVariants etc..):
