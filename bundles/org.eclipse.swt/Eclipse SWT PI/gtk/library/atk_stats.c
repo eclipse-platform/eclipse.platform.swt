@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2019 IBM Corporation and others. All rights reserved.
+ * Copyright (c) 2000, 2020 IBM Corporation and others. All rights reserved.
  * The contents of this file are made available under the terms
  * of the GNU Lesser General Public License (LGPL) Version 2.1 that
  * accompanies this distribution (lgpl-v21.txt).  The LGPL is also
@@ -22,6 +22,13 @@
 #ifdef NATIVE_STATS
 
 char * ATK_nativeFunctionNames[] = {
+	"ATK_1ACTION_1GET_1IFACE",
+	"ATK_1COMPONENT_1GET_1IFACE",
+	"ATK_1EDITABLE_1TEXT_1GET_1IFACE",
+	"ATK_1HYPERTEXT_1GET_1IFACE",
+	"ATK_1SELECTION_1GET_1IFACE",
+	"ATK_1TABLE_1GET_1IFACE",
+	"ATK_1TEXT_1GET_1IFACE",
 	"ATK_1TYPE_1ACTION",
 	"ATK_1TYPE_1COMPONENT",
 	"ATK_1TYPE_1EDITABLE_1TEXT",
@@ -31,28 +38,21 @@ char * ATK_nativeFunctionNames[] = {
 	"ATK_1TYPE_1TABLE",
 	"ATK_1TYPE_1TEXT",
 	"ATK_1TYPE_1VALUE",
+	"ATK_1VALUE_1GET_1IFACE",
 	"AtkAttribute_1sizeof",
 	"AtkTextRange_1sizeof",
 	"AtkTextRectangle_1sizeof",
-	"_1ATK_1ACTION_1GET_1IFACE",
-	"_1ATK_1COMPONENT_1GET_1IFACE",
-	"_1ATK_1EDITABLE_1TEXT_1GET_1IFACE",
-	"_1ATK_1HYPERTEXT_1GET_1IFACE",
 	"_1ATK_1OBJECT_1FACTORY_1CLASS",
-	"_1ATK_1SELECTION_1GET_1IFACE",
-	"_1ATK_1TABLE_1GET_1IFACE",
-	"_1ATK_1TEXT_1GET_1IFACE",
-	"_1ATK_1VALUE_1GET_1IFACE",
-	"_1atk_1object_1add_1relationship",
-	"_1atk_1object_1notify_1state_1change",
-	"_1atk_1object_1remove_1relationship",
-	"_1atk_1state_1set_1add_1state",
-	"_1atk_1text_1attribute_1get_1name",
-	"_1atk_1text_1attribute_1get_1value",
-	"_1call__JJ",
-	"_1call__JJJ",
-	"_1call__JJJJ",
-	"_1call__JJJJJJ",
+	"atk_1object_1add_1relationship",
+	"atk_1object_1notify_1state_1change",
+	"atk_1object_1remove_1relationship",
+	"atk_1state_1set_1add_1state",
+	"atk_1text_1attribute_1get_1name",
+	"atk_1text_1attribute_1get_1value",
+	"call__JJ",
+	"call__JJJ",
+	"call__JJJJ",
+	"call__JJJJJJ",
 	"memmove__JLorg_eclipse_swt_internal_accessibility_gtk_AtkActionIface_2",
 	"memmove__JLorg_eclipse_swt_internal_accessibility_gtk_AtkAttribute_2I",
 	"memmove__JLorg_eclipse_swt_internal_accessibility_gtk_AtkComponentIface_2",

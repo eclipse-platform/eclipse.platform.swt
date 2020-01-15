@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2016 IBM Corporation and others.
+ * Copyright (c) 2000, 2020 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -22,15 +22,15 @@
 
 char * GLX_nativeFunctionNames[] = {
 	"XVisualInfo_1sizeof",
-	"_1glGetIntegerv",
-	"_1glViewport",
-	"_1glXChooseVisual",
-	"_1glXCreateContext",
-	"_1glXDestroyContext",
-	"_1glXGetConfig",
-	"_1glXGetCurrentContext",
-	"_1glXMakeCurrent",
-	"_1glXSwapBuffers",
+	"glGetIntegerv",
+	"glViewport",
+	"glXChooseVisual",
+	"glXCreateContext",
+	"glXDestroyContext",
+	"glXGetConfig",
+	"glXGetCurrentContext",
+	"glXMakeCurrent",
+	"glXSwapBuffers",
 	"memmove",
 };
 #define NATIVE_FUNCTION_COUNT sizeof(GLX_nativeFunctionNames) / sizeof(char*)

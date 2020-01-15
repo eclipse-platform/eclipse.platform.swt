@@ -209,112 +209,40 @@ public static final native int XVisualInfo_sizeof();
  * @param pname cast=(GLenum)
  * @param params cast=(GLint *),flags=no_in
  */
-public static final native void _glGetIntegerv(int pname, int[] params);
-public static final void glGetIntegerv(int pname, int[] params) {
-	lock.lock();
-	try {
-		_glGetIntegerv(pname, params);
-	} finally {
-		lock.unlock();
-	}
-}
+public static final native void glGetIntegerv(int pname, int[] params);
 /**
  * @param x cast=(GLint)
  * @param y cast=(GLint)
  * @param width cast=(GLsizei)
  * @param height cast=(GLsizei)
  */
-public static final native void _glViewport(int x, int y, int width, int height);
-public static final void glViewport(int x, int y, int width, int height) {
-	lock.lock();
-	try {
-		_glViewport(x, y, width, height);
-	} finally {
-		lock.unlock();
-	}
-}
+public static final native void glViewport(int x, int y, int width, int height);
 /** @param dpy cast=(Display *) */
-public static final native long _glXChooseVisual(long dpy, int screen, int[] attribList);
-public static final long glXChooseVisual(long dpy, int screen, int[] attribList) {
-	lock.lock();
-	try {
-		return _glXChooseVisual(dpy, screen, attribList);
-	} finally {
-		lock.unlock();
-	}
-}
+public static final native long glXChooseVisual(long dpy, int screen, int[] attribList);
 /**
  * @param dpy cast=(Display *)
  * @param shareList cast=(GLXContext)
  */
-public static final native long _glXCreateContext(long dpy, XVisualInfo vis, long shareList, boolean direct);
-public static final long glXCreateContext(long dpy, XVisualInfo vis, long shareList, boolean direct) {
-	lock.lock();
-	try {
-		return _glXCreateContext(dpy, vis, shareList, direct);
-	} finally {
-		lock.unlock();
-	}
-}
+public static final native long glXCreateContext(long dpy, XVisualInfo vis, long shareList, boolean direct);
 /**
  * @param dpy cast=(Display *)
  * @param ctx cast=(GLXContext)
  */
-public static final native void _glXDestroyContext(long dpy, long ctx);
-public static final void glXDestroyContext(long dpy, long ctx) {
-	lock.lock();
-	try {
-		_glXDestroyContext(dpy, ctx);
-	} finally {
-		lock.unlock();
-	}
-}
+public static final native void glXDestroyContext(long dpy, long ctx);
 /** @param dpy cast=(Display *) */
-public static final native int _glXGetConfig(long dpy, XVisualInfo vis, int attrib, int[] value);
-public static final int glXGetConfig(long dpy, XVisualInfo vis, int attrib, int[] value) {
-	lock.lock();
-	try {
-		return _glXGetConfig(dpy, vis, attrib, value);
-	} finally {
-		lock.unlock();
-	}
-}
-public static final native long _glXGetCurrentContext();
-public static final long glXGetCurrentContext() {
-	lock.lock();
-	try {
-		return _glXGetCurrentContext();
-	} finally {
-		lock.unlock();
-	}
-}
+public static final native int glXGetConfig(long dpy, XVisualInfo vis, int attrib, int[] value);
+public static final native long glXGetCurrentContext();
 /**
  * @param dpy cast=(Display *)
  * @param drawable cast=(GLXDrawable)
  * @param ctx cast=(GLXContext)
  */
-public static final native boolean _glXMakeCurrent(long dpy, long drawable, long ctx);
-public static final boolean glXMakeCurrent(long dpy, long drawable, long ctx) {
-	lock.lock();
-	try {
-		return _glXMakeCurrent(dpy, drawable, ctx);
-	} finally {
-		lock.unlock();
-	}
-}
+public static final native boolean glXMakeCurrent(long dpy, long drawable, long ctx);
 /**
  * @param dpy cast=(Display *)
  * @param drawable cast=(GLXDrawable)
  */
-public static final native void _glXSwapBuffers(long dpy, long drawable);
-public static final void glXSwapBuffers(long dpy, long drawable) {
-	lock.lock();
-	try {
-		_glXSwapBuffers(dpy, drawable);
-	} finally {
-		lock.unlock();
-	}
-}
+public static final native void glXSwapBuffers(long dpy, long drawable);
 /**
  * @param src cast=(const void *)
  * @param size cast=(size_t)

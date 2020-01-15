@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2016 IBM Corporation and others.
+ * Copyright (c) 2000, 2020 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -32,14 +32,14 @@ extern char* GLX_nativeFunctionNames[];
 
 typedef enum {
 	XVisualInfo_1sizeof_FUNC,
-	_1glGetIntegerv_FUNC,
-	_1glViewport_FUNC,
-	_1glXChooseVisual_FUNC,
-	_1glXCreateContext_FUNC,
-	_1glXDestroyContext_FUNC,
-	_1glXGetConfig_FUNC,
-	_1glXGetCurrentContext_FUNC,
-	_1glXMakeCurrent_FUNC,
-	_1glXSwapBuffers_FUNC,
+	glGetIntegerv_FUNC,
+	glViewport_FUNC,
+	glXChooseVisual_FUNC,
+	glXCreateContext_FUNC,
+	glXDestroyContext_FUNC,
+	glXGetConfig_FUNC,
+	glXGetCurrentContext_FUNC,
+	glXMakeCurrent_FUNC,
+	glXSwapBuffers_FUNC,
 	memmove_FUNC,
 } GLX_FUNCS;

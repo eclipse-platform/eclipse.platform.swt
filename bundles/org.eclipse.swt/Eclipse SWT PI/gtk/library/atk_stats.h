@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2019 IBM Corporation and others. All rights reserved.
+ * Copyright (c) 2000, 2020 IBM Corporation and others. All rights reserved.
  * The contents of this file are made available under the terms
  * of the GNU Lesser General Public License (LGPL) Version 2.1 that
  * accompanies this distribution (lgpl-v21.txt).  The LGPL is also
@@ -32,6 +32,13 @@ extern char* ATK_nativeFunctionNames[];
 #endif
 
 typedef enum {
+	ATK_1ACTION_1GET_1IFACE_FUNC,
+	ATK_1COMPONENT_1GET_1IFACE_FUNC,
+	ATK_1EDITABLE_1TEXT_1GET_1IFACE_FUNC,
+	ATK_1HYPERTEXT_1GET_1IFACE_FUNC,
+	ATK_1SELECTION_1GET_1IFACE_FUNC,
+	ATK_1TABLE_1GET_1IFACE_FUNC,
+	ATK_1TEXT_1GET_1IFACE_FUNC,
 	ATK_1TYPE_1ACTION_FUNC,
 	ATK_1TYPE_1COMPONENT_FUNC,
 	ATK_1TYPE_1EDITABLE_1TEXT_FUNC,
@@ -41,28 +48,21 @@ typedef enum {
 	ATK_1TYPE_1TABLE_FUNC,
 	ATK_1TYPE_1TEXT_FUNC,
 	ATK_1TYPE_1VALUE_FUNC,
+	ATK_1VALUE_1GET_1IFACE_FUNC,
 	AtkAttribute_1sizeof_FUNC,
 	AtkTextRange_1sizeof_FUNC,
 	AtkTextRectangle_1sizeof_FUNC,
-	_1ATK_1ACTION_1GET_1IFACE_FUNC,
-	_1ATK_1COMPONENT_1GET_1IFACE_FUNC,
-	_1ATK_1EDITABLE_1TEXT_1GET_1IFACE_FUNC,
-	_1ATK_1HYPERTEXT_1GET_1IFACE_FUNC,
 	_1ATK_1OBJECT_1FACTORY_1CLASS_FUNC,
-	_1ATK_1SELECTION_1GET_1IFACE_FUNC,
-	_1ATK_1TABLE_1GET_1IFACE_FUNC,
-	_1ATK_1TEXT_1GET_1IFACE_FUNC,
-	_1ATK_1VALUE_1GET_1IFACE_FUNC,
-	_1atk_1object_1add_1relationship_FUNC,
-	_1atk_1object_1notify_1state_1change_FUNC,
-	_1atk_1object_1remove_1relationship_FUNC,
-	_1atk_1state_1set_1add_1state_FUNC,
-	_1atk_1text_1attribute_1get_1name_FUNC,
-	_1atk_1text_1attribute_1get_1value_FUNC,
-	_1call__JJ_FUNC,
-	_1call__JJJ_FUNC,
-	_1call__JJJJ_FUNC,
-	_1call__JJJJJJ_FUNC,
+	atk_1object_1add_1relationship_FUNC,
+	atk_1object_1notify_1state_1change_FUNC,
+	atk_1object_1remove_1relationship_FUNC,
+	atk_1state_1set_1add_1state_FUNC,
+	atk_1text_1attribute_1get_1name_FUNC,
+	atk_1text_1attribute_1get_1value_FUNC,
+	call__JJ_FUNC,
+	call__JJJ_FUNC,
+	call__JJJJ_FUNC,
+	call__JJJJJJ_FUNC,
 	memmove__JLorg_eclipse_swt_internal_accessibility_gtk_AtkActionIface_2_FUNC,
 	memmove__JLorg_eclipse_swt_internal_accessibility_gtk_AtkAttribute_2I_FUNC,
 	memmove__JLorg_eclipse_swt_internal_accessibility_gtk_AtkComponentIface_2_FUNC,
