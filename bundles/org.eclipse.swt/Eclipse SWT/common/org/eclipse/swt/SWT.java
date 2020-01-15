@@ -2388,7 +2388,7 @@ public class SWT {
 	public static final int BALLOON = 1 << 12;
 
 	/**
-	 * Style constant for vertical alignment or orientation behavior (value is 1).
+	 * Style constant for alignment or orientation behavior (value is 1).
 	 * <p><b>Used By:</b></p>
 	 * <ul>
 	 * <li><code>GridLayout</code> type</li>
@@ -2397,7 +2397,7 @@ public class SWT {
 	public static final int BEGINNING = 1;
 
 	/**
-	 * Style constant for vertical alignment or orientation behavior (value is 4).
+	 * Style constant for alignment or orientation behavior (value is 4).
 	 * <p><b>Used By:</b></p>
 	 * <ul>
 	 * <li><code>GridLayout</code> type</li>
@@ -2743,6 +2743,9 @@ public class SWT {
 	/**
 	 * Keyboard event constant representing the END key
 	 * (value is (1&lt;&lt;24)+8).
+	 * <p>
+	 * Additional this constant is used by GridLayout for alignments.
+	 * </p>
 	 */
 	public static final int END = KEYCODE_BIT + 8;
 
