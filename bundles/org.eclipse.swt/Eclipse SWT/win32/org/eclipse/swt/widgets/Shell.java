@@ -1591,6 +1591,9 @@ public void setFullScreen (boolean fullScreen) {
 	}
 	if (fullScreen) wasMaximized = getMaximized ();
 	boolean visible = isVisible ();
+	if (!visible && !wasMaximized) {
+		swFlags = stateFlags;
+	}
 	OS.SetWindowLong (handle, OS.GWL_STYLE, styleFlags);
 	if (wasMaximized) {
 		OS.ShowWindow (handle, OS.SW_HIDE);
