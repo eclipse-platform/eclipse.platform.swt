@@ -56,28 +56,11 @@ public class Cairo extends Platform {
 	public static final int CAIRO_FONT_SLANT_OBLIQUE = 2;
 	public static final int CAIRO_FONT_WEIGHT_NORMAL = 0;
 	public static final int CAIRO_FONT_WEIGHT_BOLD = 1;
-	public static final int CAIRO_STATUS_SUCCESS = 0;
-	public static final int CAIRO_STATUS_NO_MEMORY = 1;
-	public static final int CAIRO_STATUS_INVALID_RESTORE = 2;
-	public static final int CAIRO_STATUS_INVALID_POP_GROUP = 3;
-	public static final int CAIRO_STATUS_NO_CURRENT_POINT = 4;
-	public static final int CAIRO_STATUS_INVALID_MATRIX = 5;
-	public static final int CAIRO_STATUS_NO_TARGET_SURFACE = 6;
-	public static final int CAIRO_STATUS_NULL_POINTER =7;
 	public static final int CAIRO_SURFACE_TYPE_IMAGE = 0;
 	public static final int CAIRO_SURFACE_TYPE_PDF = 1;
 	public static final int CAIRO_SURFACE_TYPE_PS = 2;
 	public static final int CAIRO_SURFACE_TYPE_XLIB = 3;
-	public static final int CAIRO_SURFACE_TYPE_XCB = 4;
-	public static final int CAIRO_SURFACE_TYPE_GLITZ = 5;
-	public static final int CAIRO_SURFACE_TYPE_QUARTZ = 6;
-	public static final int CAIRO_SURFACE_TYPE_WIN32 = 7;
-	public static final int CAIRO_SURFACE_TYPE_BEOS = 8;
-	public static final int CAIRO_SURFACE_TYPE_DIRECTFB = 9;
-	public static final int CAIRO_SURFACE_TYPE_SVG = 10;
-	public static final int CAIRO_REGION_OVERLAP_IN = 0;
 	public static final int CAIRO_REGION_OVERLAP_OUT = 1;
-	public static final int CAIRO_REGION_OVERLAP_PART = 2;
 	public static final int CAIRO_FILTER_FAST = 0;
 	public static final int CAIRO_FILTER_GOOD = 1;
 	public static final int CAIRO_FILTER_BEST = 2;
@@ -114,8 +97,6 @@ public static final native void cairo_clip(long cr);
 /** @param cr cast=(cairo_t *) */
 public static final native void cairo_close_path(long cr);
 /** @param cr cast=(cairo_t *) */
-public static final native void cairo_copy_page(long cr);
-/** @param cr cast=(cairo_t *) */
 public static final native long cairo_copy_path(long cr);
 /** @param cr cast=(cairo_t *) */
 public static final native long cairo_copy_path_flat(long cr);
@@ -148,8 +129,6 @@ public static final native long cairo_get_font_face(long cr);
  */
 public static final native void cairo_get_matrix(long cr, double[] matrix);
 /** @param cr cast=(cairo_t *) */
-public static final native int cairo_get_operator(long cr);
-/** @param cr cast=(cairo_t *) */
 public static final native long cairo_get_source(long cr);
 /** @param cr cast=(cairo_t *) */
 public static final native long cairo_get_target(long cr);
@@ -180,24 +159,10 @@ public static final native int cairo_in_fill(long cr, double x, double y);
 public static final native int cairo_in_stroke(long cr, double x, double y);
 /** @param cr cast=(cairo_t *) */
 public static final native void cairo_line_to(long cr, double x, double y);
-/**
- * @param cr cast=(cairo_t *)
- * @param pattern cast=(cairo_pattern_t *)
- */
-public static final native void cairo_mask(long cr, long pattern);
-/**
- * @param cr cast=(cairo_t *)
- * @param surface cast=(cairo_surface_t *)
- */
-public static final native void cairo_mask_surface(long cr, long surface, double surface_x, double surface_y);
 /** @param matrix cast=(cairo_matrix_t *) */
 public static final native void cairo_matrix_init(double[] matrix, double xx, double yx, double xy, double yy, double x0, double y0);
 /** @param matrix cast=(cairo_matrix_t *) */
 public static final native void cairo_matrix_init_identity(double[] matrix);
-/** @param matrix cast=(cairo_matrix_t *) */
-public static final native void cairo_matrix_init_rotate(double[] matrix, double radians);
-/** @param matrix cast=(cairo_matrix_t *) */
-public static final native void cairo_matrix_init_scale(double[] matrix, double sx, double sy);
 /** @param matrix cast=(cairo_matrix_t *) */
 public static final native int cairo_matrix_invert(double[] matrix);
 /**
@@ -210,8 +175,6 @@ public static final native void cairo_matrix_multiply(double[] result, double[] 
 public static final native void cairo_matrix_rotate(double[] matrix, double radians);
 /** @param matrix cast=(cairo_matrix_t *) */
 public static final native void cairo_matrix_scale(double[] matrix, double sx, double sy);
-/** @param matrix cast=(cairo_matrix_t *) */
-public static final native void cairo_matrix_transform_distance(double[] matrix, double[] dx, double[] dy);
 /** @param matrix cast=(cairo_matrix_t *) */
 public static final native void cairo_matrix_transform_point(double[] matrix, double[] x, double[] y);
 /** @param matrix cast=(cairo_matrix_t *) */
@@ -233,8 +196,6 @@ public static final native long cairo_pattern_create_for_surface(long surface);
 public static final native long cairo_pattern_create_linear(double x0, double y0, double x1, double y1);
 /** @param pattern cast=(cairo_pattern_t *) */
 public static final native void cairo_pattern_destroy(long pattern);
-/** @param pattern cast=(cairo_pattern_t *) */
-public static final native int cairo_pattern_get_extend(long pattern);
 /** @param pattern cast=(cairo_pattern_t *) */
 public static final native void cairo_pattern_set_extend(long pattern, int extend);
 /** @param pattern cast=(cairo_pattern_t *) */
@@ -271,8 +232,6 @@ public static final native void cairo_reset_clip(long cr);
 /** @param cr cast=(cairo_t *) */
 public static final native void cairo_restore(long cr);
 /** @param cr cast=(cairo_t *) */
-public static final native void cairo_rotate(long cr, double angle);
-/** @param cr cast=(cairo_t *) */
 public static final native void cairo_save(long cr);
 /** @param cr cast=(cairo_t *) */
 public static final native void cairo_scale(long cr, double sx, double sy);
@@ -299,11 +258,6 @@ public static final native void cairo_set_antialias(long cr, int antialias);
 public static final native void cairo_set_dash(long cr, double[] dashes, int ndash, double offset);
 /** @param cr cast=(cairo_t *) */
 public static final native void cairo_set_fill_rule(long cr, int fill_rule);
-/**
- * @param cr cast=(cairo_t *)
- * @param font_face cast=(cairo_font_face_t *)
- */
-public static final native void cairo_set_font_face(long cr, long font_face);
 /** @param cr cast=(cairo_t *) */
 public static final native void cairo_set_font_size(long cr, double size);
 /** @param cr cast=(cairo_t *) */
@@ -341,8 +295,6 @@ public static final native void cairo_set_tolerance(long cr, double tolerance);
 public static final native void cairo_show_page(long cr);
 /** @param cr cast=(cairo_t *) */
 public static final native void cairo_stroke(long cr);
-/** @param other cast=(cairo_surface_t *) */
-public static final native long cairo_surface_create_similar(long other, int format, int width, int height);
 /** @param surface cast=(cairo_surface_t *) */
 public static final native void cairo_surface_destroy(long surface);
 /** @param surface cast=(cairo_surface_t *) */
@@ -357,11 +309,6 @@ public static final native int cairo_surface_get_type(long surface);
  * @param surface cast=(cairo_surface_t *)
  */
 public static final native int cairo_surface_get_content(long surface);
-/**
- * @param surface cast=(cairo_surface_t *)
- * @param key cast=(cairo_user_data_key_t *)
- */
-public static final native long cairo_surface_get_user_data(long surface, long key);
 /** @param surface cast=(cairo_surface_t *) */
 public static final native void cairo_surface_mark_dirty(long surface);
 /** @param surface cast=(cairo_surface_t *) */
@@ -376,13 +323,6 @@ public static final native void cairo_translate(long cr, double tx, double ty);
 /** @param cr cast=(cairo_t *) */
 public static final native void cairo_user_to_device_distance(long cr, double[] dx, double[] dy);
 public static final native int cairo_version();
-
-/**
- * @param dpy cast=(Display *)
- * @param drawable cast=(Drawable)
- * @param visual cast=(Visual *)
- */
-public static final native long cairo_xlib_surface_create(long dpy, long drawable, long visual, int width, int height);
 /**
  * @method flags=dynamic
  * @param surface cast=(cairo_surface_t *)

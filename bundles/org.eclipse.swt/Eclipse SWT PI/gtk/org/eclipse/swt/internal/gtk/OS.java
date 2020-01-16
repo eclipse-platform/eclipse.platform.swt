@@ -141,16 +141,13 @@ public class OS extends C {
 	/** Constants */
 	public static final int G_FILE_TEST_IS_DIR = 1 << 2;
 	public static final int G_FILE_TEST_IS_EXECUTABLE = 1 << 3;
-	public static final int G_SIGNAL_MATCH_FUNC = 1 << 3;
 	public static final int G_SIGNAL_MATCH_DATA = 1 << 4;
 	public static final int G_SIGNAL_MATCH_ID = 1 << 0;
 	public static final int G_LOG_FLAG_FATAL = 0x2;
 	public static final int G_LOG_FLAG_RECURSION = 0x1;
 	public static final int G_LOG_LEVEL_MASK = 0xfffffffc;
 	public static final int G_APP_INFO_CREATE_NONE = 0;
-	public static final int G_APP_INFO_CREATE_NEEDS_TERMINAL = (1 << 0);
 	public static final int G_APP_INFO_CREATE_SUPPORTS_URIS  = (1 << 1);
-	public static final int None = 0;
 	public static final int PANGO_ALIGN_LEFT = 0;
 	public static final int PANGO_ALIGN_CENTER = 1;
 	public static final int PANGO_ALIGN_RIGHT = 2;
@@ -183,26 +180,12 @@ public class OS extends C {
 	public static final int PANGO_VARIANT_SMALL_CAPS = 1;
 	public static final int PANGO_WEIGHT_BOLD = 0x2bc;
 	public static final int PANGO_WEIGHT_NORMAL = 0x190;
-	public static final int PANGO_WRAP_WORD = 0;
 	public static final int PANGO_WRAP_WORD_CHAR = 2;
-	public static final int RTLD_GLOBAL = OS.IsWin32 ? 0 : OS.RTLD_GLOBAL();
-	public static final int RTLD_LAZY = OS.IsWin32 ? 0 : OS.RTLD_LAZY();
-	public static final int RTLD_MEMBER = 0x00040000;
-	public static final int RTLD_NOW = OS.IsWin32 ? 0 : OS.RTLD_NOW();
-
 
 	/**
 	 * GDBus Session types.
 	 * @category gdbus */
-	public static final int G_BUS_TYPE_STARTER = -1; //An alias for the message bus that activated the process, if any.
-	/** @category gdbus */
-	public static final int G_BUS_TYPE_NONE = 0;    // Not a message bus.
-	/** @category gdbus */
-	public static final int G_BUS_TYPE_SYSTEM  = 1; // The system-wide message bus.
-	/** @category gdbus */
 	public static final int G_BUS_TYPE_SESSION = 2; //The login session message bus.
-	/** @category gdbus */
-	public static final int G_BUS_NAME_OWNER_FLAGS_NONE = 0; //No flags set.
 	/** @category gdbus */
 	public static final int G_BUS_NAME_OWNER_FLAGS_ALLOW_REPLACEMENT = (1<<0); //Allow another message bus connection to claim the name.
 	/**
@@ -212,12 +195,9 @@ public class OS extends C {
 	public static final int G_BUS_NAME_OWNER_FLAGS_REPLACE = (1<<1);
 
 	// Proxy flags found here: https://developer.gnome.org/gio/stable/GDBusProxy.html#GDBusProxyFlags
-	public static final int G_DBUS_PROXY_FLAGS_NONE = 0;
 	public static final int G_DBUS_PROXY_FLAGS_DO_NOT_LOAD_PROPERTIES = 1;
 	public static final int G_DBUS_PROXY_FLAGS_DO_NOT_CONNECT_SIGNALS = 2;
 	public static final int G_DBUS_PROXY_FLAGS_DO_NOT_AUTO_START = 3;
-	public static final int G_DBUS_PROXY_FLAGS_GET_INVALIDATED_PROPERTIES = 4;
-	public static final int G_DBUS_PROXY_FLAGS_DO_NOT_AUTO_START_AT_CONSTRUCTION = 5;
 
 	public static final int G_DBUS_CALL_FLAGS_NONE = 0;
 	public static final int G_DBUS_CALL_FLAGS_NO_AUTO_START = (1<<0);
@@ -289,7 +269,6 @@ public class OS extends C {
 	public static final byte[] button_press_event = ascii("button-press-event");
 	public static final byte[] button_release_event = ascii("button-release-event");
 	public static final byte[] changed = ascii("changed");
-	public static final byte[] change_current_page = ascii("change-current-page");
 	public static final byte[] change_value = ascii("change-value");
 	public static final byte[] clicked = ascii("clicked");
 	public static final byte[] close_request = ascii("close-request");
@@ -298,12 +277,10 @@ public class OS extends C {
 	public static final byte[] copy_clipboard = ascii("copy-clipboard");
 	public static final byte[] cut_clipboard = ascii("cut-clipboard");
 	public static final byte[] create_menu_proxy = ascii("create-menu-proxy");
-	public static final byte[] destroy = ascii("destroy");
 	public static final byte[] delete_event = ascii("delete-event");
 	public static final byte[] delete_from_cursor = ascii("delete-from-cursor");
 	public static final byte[] day_selected = ascii("day-selected");
 	public static final byte[] day_selected_double_click = ascii("day-selected-double-click");
-	public static final byte[] decelerate= ascii("decelerate");
 	public static final byte[] delete_range = ascii("delete-range");
 	public static final byte[] delete_text = ascii("delete-text");
 	public static final byte[] direction_changed = ascii("direction-changed");
@@ -323,7 +300,6 @@ public class OS extends C {
 	public static final byte[] event = ascii("event");
 	public static final byte[] event_after = ascii("event-after");
 	public static final byte[] expand_collapse_cursor_row = ascii("expand-collapse-cursor-row");
-	public static final byte[] expose_event = ascii("expose-event");
 	public static final byte[] focus = ascii("focus");
 	public static final byte[] focus_in_event = ascii("focus-in-event");
 	public static final byte[] focus_in = ascii("focus-in");
@@ -332,8 +308,6 @@ public class OS extends C {
 	public static final byte[] grab_focus = ascii("grab-focus");
 	public static final byte[] hide = ascii("hide");
 	public static final byte[] icon_release = ascii("icon-release");
-	public static final byte[] im_update = ascii("im-update");
-	public static final byte[] input = ascii("input");
 	public static final byte[] insert_text = ascii("insert-text");
 	public static final byte[] key_press_event = ascii("key-press-event");
 	public static final byte[] key_release_event = ascii("key-release-event");
@@ -342,7 +316,6 @@ public class OS extends C {
 	public static final byte[] keys_changed = ascii("keys-changed");
 	public static final byte[] leave_notify_event = ascii("leave-notify-event");
 	public static final byte[] leave = ascii("leave");
-	public static final byte[] link_color = ascii("link-color");
 	public static final byte[] map = ascii("map");
 	public static final byte[] map_event = ascii("map-event");
 	public static final byte[] mnemonic_activate = ascii("mnemonic-activate");
@@ -371,33 +344,26 @@ public class OS extends C {
 	public static final byte[] scroll_child = ascii("scroll-child");
 	public static final byte[] scroll_event = ascii("scroll-event");
 	public static final byte[] scroll = ascii("scroll");
-	public static final byte[] scroll_begin = ascii("scroll-begin");
-	public static final byte[] scroll_end = ascii("scroll-end");
 	public static final byte[] select = ascii("select");
 	public static final byte[] selection_done = ascii("selection-done");
 	public static final byte[] show = ascii("show");
 	public static final byte[] show_help = ascii("show-help");
 	public static final byte[] size_allocate = ascii("size-allocate");
-	public static final byte[] size_request = ascii("size-request");
 	public static final byte[] start_interactive_search = ascii("start-interactive-search");
 	public static final byte[] style_updated = ascii("style-updated");
-	public static final byte[] swipe = ascii("swipe");
 	public static final byte[] switch_page = ascii("switch-page");
 	public static final byte[] test_collapse_row = ascii("test-collapse-row");
 	public static final byte[] test_expand_row = ascii("test-expand-row");
 	public static final byte[] toggled = ascii("toggled");
 	public static final byte[] unmap = ascii("unmap");
 	public static final byte[] unmap_event = ascii("unmap-event");
-	public static final byte[] unrealize = ascii("unrealize");
 	public static final byte[] value_changed = ascii("value-changed");
 	public static final byte[] window_state_event = ascii("window-state-event");
 	public static final byte[] notify_state = ascii("notify::state");
 
 	/** Properties */
 	public static final byte[] active = ascii("active");
-	public static final byte[] background_gdk = ascii("background-gdk");
 	public static final byte[] background_rgba = ascii("background-rgba");
-	public static final byte[] button_relief = ascii("button-relief");
 	public static final byte[] cell_background_rgba = ascii("cell-background-rgba");
 	public static final byte[] default_border = ascii("default-border");
 	public static final byte[] expander_size = ascii("expander-size");
@@ -405,7 +371,6 @@ public class OS extends C {
 	public static final byte[] focus_line_width = ascii("focus-line-width");
 	public static final byte[] focus_padding = ascii("focus-padding");
 	public static final byte[] font_desc = ascii("font-desc");
-	public static final byte[] foreground_gdk = ascii("foreground-gdk");
 	public static final byte[] foreground_rgba = ascii("foreground-rgba");
 	public static final byte[] grid_line_width = ascii("grid-line-width");
 	public static final byte[] inner_border = ascii("inner-border");
@@ -563,11 +528,6 @@ public class OS extends C {
 
 	/** CUSTOM_CODE END */
 
-
-
-
-
-
 	/**
 	 * Gtk has a minimum glib version. (But it's not a 1:1 link, one can have a newer version of glib and older gtk).
 	 *
@@ -715,10 +675,8 @@ public static boolean isX11 () {
 }
 
 /** 64 bit */
-public static final native int GInterfaceInfo_sizeof ();
 public static final native int GPollFD_sizeof ();
 public static final native int GTypeInfo_sizeof ();
-public static final native int GTypeQuery_sizeof ();
 public static final native int PangoAttribute_sizeof();
 public static final native int PangoAttrColor_sizeof();
 public static final native int PangoAttrInt_sizeof();
@@ -753,31 +711,18 @@ public static final native int X_EVENT_TYPE(long xevent);
 public static final native long X_EVENT_WINDOW(long xevent);
 
 /** X11 Native methods and constants */
-public static final int Above = 0;
-public static final int Below = 1;
-public static final int ButtonRelease = 5;
 public static final int CurrentTime = 0;
-public static final int CWSibling = 0x20;
-public static final int CWStackMode = 0x40;
-public static final int EnterNotify = 7;
 public static final int Expose = 12;
-public static final int FocusChangeMask = 1 << 21;
 public static final int FocusIn = 9;
 public static final int FocusOut = 10;
 public static final int GraphicsExpose = 13;
-public static final int NoExpose = 14;
 public static final int ExposureMask = 1 << 15;
-public static final long NoEventMask = 0;
 public static final int NotifyNormal = 0;
-public static final int NotifyGrab = 1;
-public static final int NotifyHint = 1;
-public static final int NotifyUngrab = 2;
 public static final int NotifyWhileGrabbed = 3;
 public static final int NotifyAncestor = 0;
 public static final int NotifyVirtual = 1;
 public static final int NotifyNonlinear = 3;
 public static final int NotifyNonlinearVirtual = 4;
-public static final int NotifyPointer = 5;
 public static final int RevertToParent = 2;
 public static final native int Call(long proc, long arg1, long arg2);
 public static final native long call(long function, long arg0, long arg1, long arg2, long arg3, long arg4, long arg5, long arg6);
@@ -845,29 +790,11 @@ public static final native void memmove(XExposeEvent dest, long src, long size);
  */
 public static final native void memmove(XFocusChangeEvent dest, long src, long size);
 
-/** @method flags=const */
-public static final native int RTLD_GLOBAL();
-/** @method flags=const */
-public static final native int RTLD_NOW();
-/** @method flags=const */
-public static final native int RTLD_LAZY();
-
 
 /** Natives */
 public static final native int Call (long func, long arg0, int arg1, int arg2);
-public static final native long Call (long func, long arg0, int arg1, long arg2);
-public static final native long G_OBJECT_CLASS(long klass);
 public static final native long G_OBJECT_GET_CLASS(long object);
 public static final native long G_OBJECT_TYPE_NAME(long object);
-/*
- * Note: G_TYPE_CHECK_INSTANCE_TYPE is not a good way to check for instance type,
- * The C-Macro doesn't seem to work reliably in the context of being invoked from Java
- * via JNI on a dynamically loaded library.
- * But webkit1 development has halted and it's not worth the effort to change this.
- * I.e, kept for legacy reason but don't use this. Instead, to identify type, use user_data. (see Webkit proc3 as example).
- */
-
-public static final native boolean G_TYPE_CHECK_INSTANCE_TYPE(long instance, long type);
 /** @method flags=const */
 public static final native long G_TYPE_BOOLEAN();
 /** @method flags=const */
@@ -891,8 +818,6 @@ public static final native long PANGO_TYPE_FONT_FAMILY();
 public static final native long PANGO_TYPE_FONT_FACE();
 /** @method flags=const */
 public static final native long PANGO_TYPE_LAYOUT();
-/** @param filename cast=(const char *) */
-public static final native long dlopen(byte[] filename, int flag);
 /**
  * @param commandline cast=(gchar *)
  * @param applName cast=(gchar *)
@@ -931,10 +856,6 @@ public static final native long g_app_info_get_default_for_type(byte[] mimeType,
  * @param error cast=(GError **)
  */
 public static final native boolean g_app_info_launch_default_for_uri(long uri, long launchContext, long error);
-/**
- * @param appInfo cast=(GAppInfo *)
- */
-public static final native boolean g_app_info_should_show(long appInfo);
 /**
  * @param appInfo cast=(GAppInfo *)
  */
@@ -1085,7 +1006,6 @@ public static final native long g_filename_from_utf8(long opsysstring, long len,
  */
 public static final native long g_filename_from_uri(long uri, long [] hostname, long [] error);
 /** @param mem cast=(gpointer) */
-// NOTE: Lock is not used, see Bug 546743 and Bug 547093
 public static final native void g_free(long mem);
 /**
  * @param variable cast=(const gchar *),flags=no_out
@@ -1113,46 +1033,19 @@ public static final native long g_list_append(long list, long data);
 public static final native long g_list_data(long list);
 /** @param list cast=(GList *) */
 public static final native void g_list_free(long list);
-/** @param list cast=(GList *) */
-public static final native void g_list_free_1(long list);
 /**
  * @param list cast=(GList *)
  */
 public static final native long g_list_last(long list);
 /** @param list cast=(GList *) */
 public static final native int g_list_length(long list);
-/**
- * @param list cast=(GList *)
- * @param llist cast=(GList *)
- */
-public static final native void g_list_set_next(long list, long llist);
 public static final native long g_list_next(long list);
 /**
  * @param list cast=(GList *)
  * @param n cast=(guint)
  */
-public static final native long g_list_nth(long list, int n);
-/**
- * @param list cast=(GList *)
- * @param n cast=(guint)
- */
 public static final native long g_list_nth_data(long list, int n);
-/**
- * @param list cast=(GList *)
- * @param data cast=(gpointer)
- */
-public static final native long g_list_prepend(long list, long data);
-/**
- * @param list cast=(GList *)
- * @param llist cast=(GList *)
- */
-public static final native void g_list_set_previous(long list, long llist);
 public static final native long g_list_previous(long list);
-/**
- * @param list cast=(GList *)
- * @param link cast=(GList *)
- */
-public static final native long g_list_remove_link(long list, long link);
 /**
  * @param log_domain cast=(gchar *)
  * @param log_levels cast=(GLogLevelFlags)
@@ -1174,11 +1067,6 @@ public static final native void g_log_remove_handler(byte[] log_domain, int hand
 public static final native int g_log_set_handler(byte[] log_domain, int log_levels, long log_func, long user_data);
 /** @param size cast=(gulong) */
 public static final native long g_malloc(long size);
-/**
- * @param oclass cast=(GObjectClass *)
- * @param property_name cast=(const gchar *)
- */
-public static final native long g_object_class_find_property(long oclass, byte[] property_name);
 /**
  * @param object cast=(GObject *)
  * @param first_property_name cast=(const gchar *),flags=no_out
@@ -1261,7 +1149,6 @@ public static final native void g_object_set(long object, byte[] first_property_
  */
 public static final native void g_object_set_qdata(long object, int quark, long data);
 /** @param object cast=(gpointer) */
-// NOTE: Lock is not used, see Bug 546743 and Bug 547093
 public static final native void g_object_unref(long object);
 
 /**
@@ -1333,14 +1220,6 @@ public static final native void g_signal_emit_by_name(long instance, byte[] deta
 public static final native void g_signal_handler_disconnect(long instance, int handler_id);
 /**
  * @param instance cast=(gpointer)
- * @param detail cast=(GQuark)
- * @param closure cast=(GClosure *)
- * @param func cast=(gpointer)
- * @param data cast=(gpointer)
- */
-public static final native int g_signal_handler_find(long instance, int mask, int signal_id, int detail, long closure, long func, long data);
-/**
- * @param instance cast=(gpointer)
  * @param mask cast=(GSignalMatchType)
  * @param signal_id cast=(guint)
  * @param detail cast=(GQuark)
@@ -1384,29 +1263,6 @@ public static final native int g_slist_length(long list);
 /** @param string_array cast=(gchar **) */
 public static final native void g_strfreev(long string_array);
 /**
- * @method flags=getter
- * @param string cast=(GString *)
- */
-public static final native int GString_len(long string);
-/**
- * @method flags=getter
- * @param string cast=(GString *)
- */
-public static final native long GString_str(long string);
-
-/**
- * @param init cast=(const gchar *)
- */
-/* 				   GString * g_string_new_len (const gchar *init, gssize len); */
-public static final native long g_string_new_len(long init, long gssize);
-
-/**
- * @param GString cast=(GString *)
- */
-/* 					 gchar * g_string_free (GString *string, gboolean free_segment);*/
-public static final native long g_string_free(long GString, int gboolen_free_segment);
-
-/**
  * @param str cast=(const gchar *)
  * @param endptr cast=(gchar **)
  */
@@ -1426,12 +1282,6 @@ public static final native long g_strconcat(long str, long str2, long str3, long
 public static final native long g_strconcat(long str, long str2, long terminator);
 /** @param str cast=(char *) */
 public static final native long g_strdup (long str);
-/**
- * @param instance_type cast=(GType)
- * @param interface_type cast=(GType)
- * @param info cast=(const GInterfaceInfo *)
- */
-public static final native void g_type_add_interface_static(long instance_type, long interface_type, long info);
 /** @param g_class cast=(GType) */
 public static final native long g_type_class_peek(long g_class);
 /** @param g_class cast=(gpointer) */
@@ -1450,11 +1300,6 @@ public static final native boolean g_type_is_a(long type, long is_a_type);
 /** @param type cast=(GType) */
 public static final native long g_type_parent(long type);
 /**
- * @param type cast=(GType)
- * @param query cast=(GTypeQuery *)
- */
-public static final native void g_type_query(long type, long query);
-/**
  * @param parent_type cast=(GType)
  * @param type_name cast=(const gchar *)
  * @param info cast=(const GTypeInfo *)
@@ -1468,7 +1313,6 @@ public static final native long g_type_register_static(long parent_type, byte[] 
  * @param items_written cast=(glong *),flags=critical
  * @param error cast=(GError **),flags=critical
  */
-// NOTE: Lock is not used, see Bug 546743 and Bug 547093
 public static final native long g_utf16_to_utf8(char[] str, long len, long [] items_read, long [] items_written, long [] error);
 /**
  * @param str cast=(const gchar *)
@@ -1528,7 +1372,6 @@ public static final native int glib_major_version();
 public static final native int glib_minor_version();
 /** @method flags=const */
 public static final native int glib_micro_version();
-
 /**
  * @param interval cast=(guint32)
  * @param function cast=(GSourceFunc)
@@ -1539,17 +1382,6 @@ public static final native int g_timeout_add(int interval, long function, long d
 /** @method flags=dynamic */
 public static final native boolean FcConfigAppFontAddFile(long config, byte[] file);
 
-/**
- * @param dest cast=(void *)
- * @param src cast=(const void *),flags=no_out
- * @param size cast=(size_t)
- */
-public static final native void memmove(long dest, GInterfaceInfo src, int size);
-/**
- * @param dest cast=(void *),flags=no_in
- * @param src cast=(const void *),flags=no_out
- */
-public static final native void memmove(long dest, GObjectClass src);
 /**
  * @param dest cast=(void *)
  * @param src cast=(const void *),flags=no_out
@@ -1588,17 +1420,6 @@ public static final native void memmove(long dest, GtkWidgetClass src);
  * @param size cast=(size_t)
  */
 public static final native void memmove(long dest, PangoAttribute src, long size);
-/**
- * @param dest cast=(void *),flags=no_in
- * @param src cast=(const void *)
- */
-public static final native void memmove(GObjectClass  dest, long src);
-/**
- * @param dest cast=(void *),flags=no_in
- * @param src cast=(const void *)
- * @param size cast=(size_t)
- */
-public static final native void memmove(GTypeQuery dest, long src, long size);
 /** @param dest flags=no_in */
 public static final native void memmove(GtkWidgetClass dest, long src);
 /**
@@ -1856,11 +1677,6 @@ public static final native long pango_font_family_get_name(long family);
  */
 public static final native void pango_font_family_list_faces(long family, long [] faces, int[] n_faces);
 /**
- * @param font cast=(PangoFont *)
- * @param language cast=(PangoLanguage *)
- */
-public static final native long pango_font_get_metrics(long font, long language);
-/**
  * @param fontMap cast=(PangoFontMap *)
  */
 public static final native long pango_font_map_create_context(long fontMap);
@@ -2008,10 +1824,6 @@ public static final native void pango_tab_array_set_tab(long tab_array, int tab_
  */
 public static final native long ubuntu_menu_proxy_get();
 /**
- * @param path cast=(const char*)
- */
-public static final native int access(byte [] path, int amode);
-/**
  * @param s1 cast=(const char*)
  * @param s2 cast=(const char*)
  */
@@ -2095,7 +1907,6 @@ public static final native long g_dbus_proxy_new_for_bus_sync(int bus_type, int 
  * @param error cast=(GError **)
  * @category gdbus
  */
-// NOTE: Lock is not used, see Bug 546743 and Bug 547093
 public static final native long g_dbus_proxy_call_sync (long proxy, byte[] method_name, long parameters, int flags, int timeout_msec, long cancellable, long [] error);
 
 /**
@@ -2107,7 +1918,6 @@ public static final native long g_dbus_proxy_call_sync (long proxy, byte[] metho
  * @param error cast=(GError **)
  * @category gdbus
  */
-// NOTE: Lock is not used, see Bug 546743 and Bug 547093
 public static final native void g_dbus_proxy_call (long proxy, byte[] method_name, long parameters, int flags, int timeout_msec, long cancellable, long callback, long [] error);
 
 /**
@@ -2115,14 +1925,6 @@ public static final native void g_dbus_proxy_call (long proxy, byte[] method_nam
  * @category gdbus
  */
 public static final native long g_dbus_proxy_get_name_owner(long proxy);
-
-/**
- * @param proxy cast=(GDBusProxy *)
- * @param res cast=(GAsyncResult *)
- * @param error cast=(GError **)
- * @category gdbus
- */
-public static final native long g_dbus_proxy_call_finish(long proxy, long res, long [] error);
 
 /**
  * @param xml_data cast=(const gchar *)
@@ -2319,7 +2121,6 @@ public static final native void g_variant_builder_unref(long builder);
  * @param arg0 cast=(const gchar *),flags=no_out
  * @category gdbus
  */
-// NOTE: Lock is not used, see Bug 546743 and Bug 547093
 public static final native long g_variant_new (byte[] format_string, byte[] arg0);
 
 /**
@@ -2328,7 +2129,6 @@ public static final native long g_variant_new (byte[] format_string, byte[] arg0
  * @param arg1 cast=(const gchar *),flags=no_out
  * @category gdbus
  */
-// NOTE: Lock is not used, see Bug 546743 and Bug 547093
 public static final native long g_variant_new (byte[] format_string, boolean arg0, byte[] arg1);
 
 /**
@@ -2337,7 +2137,6 @@ public static final native long g_variant_new (byte[] format_string, boolean arg
  * @param arg1 cast=(const gchar *),flags=no_out
  * @category gdbus
  */
-// NOTE: Lock is not used, see Bug 546743 and Bug 547093
 public static final native long g_variant_new (byte[] format_string, byte[] arg0, byte[] arg1);
 
 /**
@@ -2394,13 +2193,6 @@ public static final native long g_variant_get_uint64(long gvariant);
  * @category gdbus
  */
 public static final native long g_variant_get_string(long gvariant, long[] length);
-
-/**
- * @param gvariant cast=(GVariant *)
- * @return const GVariantType *
- * @category gdbus
- */
-public static final native long g_variant_get_type(long gvariant);
 
 /**
  * @param gvariant cast=(GVariant *)

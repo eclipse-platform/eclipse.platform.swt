@@ -161,7 +161,6 @@ public class ATK extends OS {
 
 	/** Signals */
 	public static final byte[] selection_changed = OS.ascii ("selection_changed");
-	public static final byte[] active_descendant_changed = OS.ascii ("active_descendant_changed");
 	public static final byte[] text_changed_insert = OS.ascii ("text_changed::insert");
 	public static final byte[] text_changed_delete = OS.ascii ("text_changed::delete");
 	public static final byte[] text_caret_moved = OS.ascii ("text_caret_moved");
@@ -169,7 +168,6 @@ public class ATK extends OS {
 	public static final byte[] load_complete = OS.ascii ("load-complete");
 	public static final byte[] load_stopped = OS.ascii ("load-stopped");
 	public static final byte[] reload = OS.ascii ("reload");
-	public static final byte[] state_change = OS.ascii ("state-change");
 	public static final byte[] bounds_changed = OS.ascii ("bounds-changed");
 	public static final byte[] link_activated = OS.ascii ("link-activated");
 	public static final byte[] link_selected = OS.ascii ("link-selected");
@@ -220,11 +218,8 @@ public static final native long ATK_TYPE_TABLE ();
 public static final native long ATK_TYPE_TEXT ();
 /** @method flags=const */
 public static final native long ATK_TYPE_VALUE ();
-/** @method flags=const */
-public static final native long ATK_TYPE_OBJECT_FACTORY ();
 public static final native long ATK_ACTION_GET_IFACE(long obj);
 public static final native long ATK_COMPONENT_GET_IFACE(long atkHandle);
-public static final native long _ATK_OBJECT_FACTORY_CLASS (long klass);
 public static final native long ATK_SELECTION_GET_IFACE(long obj);
 public static final native long ATK_EDITABLE_TEXT_GET_IFACE(long handle);
 public static final native long ATK_HYPERTEXT_GET_IFACE(long handle);
@@ -265,15 +260,6 @@ public static final native void memmove (AtkSelectionIface dest, long src);
 public static final native void memmove (AtkTableIface dest, long src);
 public static final native void memmove (AtkTextIface dest, long src);
 public static final native void memmove (AtkValueIface dest, long src);
-public static final native void memmove (long dest, AtkActionIface src);
-public static final native void memmove (long dest, AtkComponentIface src);
-public static final native void memmove (long dest, AtkEditableTextIface src);
-public static final native void memmove (long dest, AtkHypertextIface src);
-public static final native void memmove (long dest, AtkObjectClass src);
-public static final native void memmove (long dest, AtkSelectionIface src);
-public static final native void memmove (long dest, AtkTableIface src);
-public static final native void memmove (long dest, AtkTextIface src);
-public static final native void memmove (long dest, AtkValueIface src);
 /**
  * @param dest cast=(void *)
  * @param src cast=(const void *),flags=no_out

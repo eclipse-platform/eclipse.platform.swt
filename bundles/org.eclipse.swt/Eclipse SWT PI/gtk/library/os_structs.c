@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2019 IBM Corporation and others. All rights reserved.
+ * Copyright (c) 2000, 2020 IBM Corporation and others. All rights reserved.
  * The contents of this file are made available under the terms
  * of the GNU Lesser General Public License (LGPL) Version 2.1 that
  * accompanies this distribution (lgpl-v21.txt).  The LGPL is also
@@ -18,43 +18,6 @@
 
 #include "swt.h"
 #include "os_structs.h"
-
-#ifndef NO_GInterfaceInfo
-typedef struct GInterfaceInfo_FID_CACHE {
-	int cached;
-	jclass clazz;
-	jfieldID interface_init, interface_finalize, interface_data;
-} GInterfaceInfo_FID_CACHE;
-
-GInterfaceInfo_FID_CACHE GInterfaceInfoFc;
-
-void cacheGInterfaceInfoFields(JNIEnv *env, jobject lpObject)
-{
-	if (GInterfaceInfoFc.cached) return;
-	GInterfaceInfoFc.clazz = (*env)->GetObjectClass(env, lpObject);
-	GInterfaceInfoFc.interface_init = (*env)->GetFieldID(env, GInterfaceInfoFc.clazz, "interface_init", "J");
-	GInterfaceInfoFc.interface_finalize = (*env)->GetFieldID(env, GInterfaceInfoFc.clazz, "interface_finalize", "J");
-	GInterfaceInfoFc.interface_data = (*env)->GetFieldID(env, GInterfaceInfoFc.clazz, "interface_data", "J");
-	GInterfaceInfoFc.cached = 1;
-}
-
-GInterfaceInfo *getGInterfaceInfoFields(JNIEnv *env, jobject lpObject, GInterfaceInfo *lpStruct)
-{
-	if (!GInterfaceInfoFc.cached) cacheGInterfaceInfoFields(env, lpObject);
-	lpStruct->interface_init = (GInterfaceInitFunc)(*env)->GetLongField(env, lpObject, GInterfaceInfoFc.interface_init);
-	lpStruct->interface_finalize = (GInterfaceFinalizeFunc)(*env)->GetLongField(env, lpObject, GInterfaceInfoFc.interface_finalize);
-	lpStruct->interface_data = (gpointer)(*env)->GetLongField(env, lpObject, GInterfaceInfoFc.interface_data);
-	return lpStruct;
-}
-
-void setGInterfaceInfoFields(JNIEnv *env, jobject lpObject, GInterfaceInfo *lpStruct)
-{
-	if (!GInterfaceInfoFc.cached) cacheGInterfaceInfoFields(env, lpObject);
-	(*env)->SetLongField(env, lpObject, GInterfaceInfoFc.interface_init, (jlong)lpStruct->interface_init);
-	(*env)->SetLongField(env, lpObject, GInterfaceInfoFc.interface_finalize, (jlong)lpStruct->interface_finalize);
-	(*env)->SetLongField(env, lpObject, GInterfaceInfoFc.interface_data, (jlong)lpStruct->interface_data);
-}
-#endif
 
 #ifndef NO_GObjectClass
 typedef struct GObjectClass_FID_CACHE {
@@ -163,46 +126,6 @@ void setGTypeInfoFields(JNIEnv *env, jobject lpObject, GTypeInfo *lpStruct)
 }
 #endif
 
-#ifndef NO_GTypeQuery
-typedef struct GTypeQuery_FID_CACHE {
-	int cached;
-	jclass clazz;
-	jfieldID type, type_name, class_size, instance_size;
-} GTypeQuery_FID_CACHE;
-
-GTypeQuery_FID_CACHE GTypeQueryFc;
-
-void cacheGTypeQueryFields(JNIEnv *env, jobject lpObject)
-{
-	if (GTypeQueryFc.cached) return;
-	GTypeQueryFc.clazz = (*env)->GetObjectClass(env, lpObject);
-	GTypeQueryFc.type = (*env)->GetFieldID(env, GTypeQueryFc.clazz, "type", "I");
-	GTypeQueryFc.type_name = (*env)->GetFieldID(env, GTypeQueryFc.clazz, "type_name", "J");
-	GTypeQueryFc.class_size = (*env)->GetFieldID(env, GTypeQueryFc.clazz, "class_size", "I");
-	GTypeQueryFc.instance_size = (*env)->GetFieldID(env, GTypeQueryFc.clazz, "instance_size", "I");
-	GTypeQueryFc.cached = 1;
-}
-
-GTypeQuery *getGTypeQueryFields(JNIEnv *env, jobject lpObject, GTypeQuery *lpStruct)
-{
-	if (!GTypeQueryFc.cached) cacheGTypeQueryFields(env, lpObject);
-	lpStruct->type = (GType)(*env)->GetIntField(env, lpObject, GTypeQueryFc.type);
-	lpStruct->type_name = (const gchar *)(*env)->GetLongField(env, lpObject, GTypeQueryFc.type_name);
-	lpStruct->class_size = (guint)(*env)->GetIntField(env, lpObject, GTypeQueryFc.class_size);
-	lpStruct->instance_size = (guint)(*env)->GetIntField(env, lpObject, GTypeQueryFc.instance_size);
-	return lpStruct;
-}
-
-void setGTypeQueryFields(JNIEnv *env, jobject lpObject, GTypeQuery *lpStruct)
-{
-	if (!GTypeQueryFc.cached) cacheGTypeQueryFields(env, lpObject);
-	(*env)->SetIntField(env, lpObject, GTypeQueryFc.type, (jint)lpStruct->type);
-	(*env)->SetLongField(env, lpObject, GTypeQueryFc.type_name, (jlong)lpStruct->type_name);
-	(*env)->SetIntField(env, lpObject, GTypeQueryFc.class_size, (jint)lpStruct->class_size);
-	(*env)->SetIntField(env, lpObject, GTypeQueryFc.instance_size, (jint)lpStruct->instance_size);
-}
-#endif
-
 #ifndef NO_GdkEvent
 typedef struct GdkEvent_FID_CACHE {
 	int cached;
@@ -231,43 +154,6 @@ void setGdkEventFields(JNIEnv *env, jobject lpObject, GdkEvent *lpStruct)
 {
 	if (!GdkEventFc.cached) cacheGdkEventFields(env, lpObject);
 	(*env)->SetIntField(env, lpObject, GdkEventFc.type, (jint)lpStruct->type);
-}
-#endif
-
-#ifndef NO_GdkEventAny
-typedef struct GdkEventAny_FID_CACHE {
-	int cached;
-	jclass clazz;
-	jfieldID window, send_event;
-} GdkEventAny_FID_CACHE;
-
-GdkEventAny_FID_CACHE GdkEventAnyFc;
-
-void cacheGdkEventAnyFields(JNIEnv *env, jobject lpObject)
-{
-	if (GdkEventAnyFc.cached) return;
-	cacheGdkEventFields(env, lpObject);
-	GdkEventAnyFc.clazz = (*env)->GetObjectClass(env, lpObject);
-	GdkEventAnyFc.window = (*env)->GetFieldID(env, GdkEventAnyFc.clazz, "window", "J");
-	GdkEventAnyFc.send_event = (*env)->GetFieldID(env, GdkEventAnyFc.clazz, "send_event", "B");
-	GdkEventAnyFc.cached = 1;
-}
-
-GdkEventAny *getGdkEventAnyFields(JNIEnv *env, jobject lpObject, GdkEventAny *lpStruct)
-{
-	if (!GdkEventAnyFc.cached) cacheGdkEventAnyFields(env, lpObject);
-	getGdkEventFields(env, lpObject, (GdkEvent *)lpStruct);
-	lpStruct->window = (GdkWindow *)(*env)->GetLongField(env, lpObject, GdkEventAnyFc.window);
-	lpStruct->send_event = (gint8)(*env)->GetByteField(env, lpObject, GdkEventAnyFc.send_event);
-	return lpStruct;
-}
-
-void setGdkEventAnyFields(JNIEnv *env, jobject lpObject, GdkEventAny *lpStruct)
-{
-	if (!GdkEventAnyFc.cached) cacheGdkEventAnyFields(env, lpObject);
-	setGdkEventFields(env, lpObject, (GdkEvent *)lpStruct);
-	(*env)->SetLongField(env, lpObject, GdkEventAnyFc.window, (jlong)lpStruct->window);
-	(*env)->SetByteField(env, lpObject, GdkEventAnyFc.send_event, (jbyte)lpStruct->send_event);
 }
 #endif
 

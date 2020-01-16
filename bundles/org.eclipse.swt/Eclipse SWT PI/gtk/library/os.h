@@ -41,12 +41,6 @@
 #else
 #include <windows.h>
 //#define NO_realpath // TODO [win32] use GetFullPathName instead; 
-#define NO_RTLD_1GLOBAL
-#define NO_RTLD_1LAZY
-#define NO_RTLD_1NOW
-#define NO_dlclose
-#define NO_dlopen
-#define NO_dlsym
 
 #define NO_gtk_1enumerate_1printers
 #define NO_gtk_1printer_1get_1name
@@ -124,7 +118,6 @@
 #define NO_GDK_1IS_1X11_1DISPLAY
 
 /* X Structures */
-#define NO_XAnyEvent
 #define NO_XExposeEvent
 #define NO_XEvent
 #define NO_XFocusChangeEvent

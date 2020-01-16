@@ -36,9 +36,6 @@ public class GTK extends OS {
 	public static final int GTK_CELL_RENDERER_MODE_ACTIVATABLE = 1;
 	public static final int GTK_CELL_RENDERER_SELECTED = 1 << 0;
 	public static final int GTK_CELL_RENDERER_FOCUSED = 1 << 4;
-	public static final int GTK_CLIST_SHOW_TITLES = 0x4;
-	public static final int GTK_CORNER_TOP_LEFT = 0x0;
-	public static final int GTK_CORNER_TOP_RIGHT = 0x2;
 	public static final int GTK_DIALOG_DESTROY_WITH_PARENT = 1 << 1;
 	public static final int GTK_DIALOG_MODAL = 1 << 0;
 	public static final int GTK_DIR_TAB_FORWARD = 0;
@@ -48,8 +45,6 @@ public class GTK extends OS {
 	public static final int GTK_FILE_CHOOSER_ACTION_OPEN = 0;
 	public static final int GTK_FILE_CHOOSER_ACTION_SAVE = 1;
 	public static final int GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER = 2;
-	public static final int GTK_FRAME_LABEL_PAD = 1;
-	public static final int GTK_FRAME_LABEL_SIDE_PAD = 2;
 	public static final int GTK_ICON_SIZE_MENU = 1;
 	public static final int GTK_ICON_SIZE_SMALL_TOOLBAR = 2;
 	public static final int GTK_ICON_SIZE_DIALOG = 6;
@@ -57,13 +52,11 @@ public class GTK extends OS {
 	public static final int GTK_JUSTIFY_CENTER = 0x2;
 	public static final int GTK_JUSTIFY_LEFT = 0x0;
 	public static final int GTK_JUSTIFY_RIGHT = 0x1;
-	public static final int GTK_MAPPED = 1 << 7;
 	public static final int GTK_MESSAGE_INFO = 0;
 	public static final int GTK_MESSAGE_WARNING = 1;
 	public static final int GTK_MESSAGE_QUESTION = 2;
 	public static final int GTK_MESSAGE_ERROR = 3;
 	public static final int GTK_MOVEMENT_VISUAL_POSITIONS = 1;
-	public static final int GTK_NO_WINDOW = 1 << 5;
 	public static final int GTK_ORIENTATION_HORIZONTAL = 0x0;
 	public static final int GTK_ORIENTATION_VERTICAL = 0x1;
 	public static final int GTK_PACK_END = 1;
@@ -79,11 +72,6 @@ public class GTK extends OS {
 	public static final int GTK_PRINT_CAPABILITY_PAGE_SET     = 1 << 0;
 	public static final int GTK_PRINT_CAPABILITY_COPIES       = 1 << 1;
 	public static final int GTK_PRINT_CAPABILITY_COLLATE      = 1 << 2;
-	public static final int GTK_PRINT_CAPABILITY_REVERSE      = 1 << 3;
-	public static final int GTK_PRINT_CAPABILITY_SCALE        = 1 << 4;
-	public static final int GTK_PRINT_CAPABILITY_GENERATE_PDF = 1 << 5;
-	public static final int GTK_PRINT_CAPABILITY_GENERATE_PS  = 1 << 6;
-	public static final int GTK_PRINT_CAPABILITY_PREVIEW      = 1 << 7;
 	public static final int GTK_PRINT_PAGES_ALL = 0;
 	public static final int GTK_PRINT_PAGES_CURRENT = 1;
 	public static final int GTK_PRINT_PAGES_RANGES = 2;
@@ -92,27 +80,14 @@ public class GTK extends OS {
 	public static final int GTK_PRINT_DUPLEX_HORIZONTAL = 1;
 	public static final int GTK_PRINT_DUPLEX_VERTICAL = 2;
 	public static final int GTK_EVENT_CONTROLLER_SCROLL_NONE = 0;
-	public static final int GTK_EVENT_CONTROLLER_SCROLL_VERTICAL = 1;
-	public static final int GTK_EVENT_CONTROLLER_SCROLL_HORIZONTAL = 2;
-	public static final int GTK_EVENT_CONTROLLER_SCROLL_DISCRETE = 3;
-	public static final int GTK_EVENT_CONTROLLER_SCROLL_KINETIC = 4;
-	public static final int GTK_EVENT_CONTROLLER_SCROLL_BOTH_AXES = 5;
-	public static final int GTK_PHASE_NONE = 0;
 	public static final int GTK_PHASE_CAPTURE = 1;
 	public static final int GTK_PHASE_BUBBLE = 2;
 	public static final int GTK_PHASE_TARGET = 3;
-	public static final int GTK_PROGRESS_CONTINUOUS = 0x0;
-	public static final int GTK_PROGRESS_DISCRETE = 0x1;
 	public static final int GTK_PROGRESS_LEFT_TO_RIGHT = 0x0;
 	public static final int GTK_PROGRESS_BOTTOM_TO_TOP = 0x2;
-	public static final int GTK_RECEIVES_DEFAULT = 1 << 20;
-	public static final int GTK_RELIEF_NONE = 0x2;
-	public static final int GTK_RELIEF_NORMAL = 0;
-	public static final int GTK_RESPONSE_APPLY = 0xfffffff6;
 	public static final int GTK_RESPONSE_CANCEL = 0xfffffffa;
 	public static final int GTK_RESPONSE_OK = 0xfffffffb;
 	public static final int GTK_RESPONSE_ACCEPT = -3;
-	public static final int GTK_RESPONSE_DELETE_EVENT = -4;
 	public static final int GTK_SCROLL_NONE = 0;
 	public static final int GTK_SCROLL_JUMP = 1;
 	public static final int GTK_SCROLL_STEP_BACKWARD = 2;
@@ -131,17 +106,11 @@ public class GTK extends OS {
 	public static final int GTK_SCROLL_END = 15;
 	public static final int GTK_SELECTION_BROWSE = 0x2;
 	public static final int GTK_SELECTION_MULTIPLE = 0x3;
-	public static final int GTK_SENSITIVE = 0x200;
 	public static final int GTK_SHADOW_ETCHED_IN = 0x3;
 	public static final int GTK_SHADOW_ETCHED_OUT = 0x4;
 	public static final int GTK_SHADOW_IN = 0x1;
 	public static final int GTK_SHADOW_NONE = 0x0;
 	public static final int GTK_SHADOW_OUT = 0x2;
-	public static final int GTK_STATE_ACTIVE = 0x1;
-	public static final int GTK_STATE_INSENSITIVE = 0x4;
-	public static final int GTK_STATE_NORMAL = 0x0;
-	public static final int GTK_STATE_PRELIGHT = 0x2;
-	public static final int GTK_STATE_SELECTED = 0x3;
 	public static final int GTK_STATE_FLAG_NORMAL = 0;
 	public static final int GTK_STATE_FLAG_ACTIVE = 1 << 0;
 	public static final int GTK_STATE_FLAG_PRELIGHT = 1 << 1;
@@ -152,12 +121,8 @@ public class GTK extends OS {
 	public static final int GTK_STATE_FLAG_BACKDROP  = 1 << 6;
 	public static final int GTK_STATE_FLAG_LINK = 1 << 9;
 	public static final int GTK_TEXT_DIR_LTR = 1;
-	public static final int GTK_TEXT_DIR_NONE = 0 ;
 	public static final int GTK_TEXT_DIR_RTL = 2;
 	public static final int GTK_TEXT_WINDOW_TEXT = 2;
-	public static final int GTK_TOOLBAR_CHILD_BUTTON = 0x1;
-	public static final int GTK_TOOLBAR_CHILD_RADIOBUTTON = 0x3;
-	public static final int GTK_TOOLBAR_CHILD_TOGGLEBUTTON = 0x2;
 	public static final int GTK_TOOLBAR_ICONS = 0;
 	public static final int GTK_TOOLBAR_TEXT = 1;
 	public static final int GTK_TOOLBAR_BOTH = 2;
@@ -184,13 +149,8 @@ public class GTK extends OS {
 	public static final int GTK_WRAP_NONE = 0;
 	public static final int GTK_WRAP_WORD = 2;
 	public static final int GTK_WRAP_WORD_CHAR = 3;
-	public static final int GTK_EXPANDER_COLAPSED = 0;
-	public static final int GTK_EXPANDER_SEMI_COLLAPSED = 1;
-	public static final int GTK_EXPANDER_SEMI_EXPANDED = 2;
-	public static final int GTK_EXPANDER_EXPANDED = 3;
 
 	/** Classes */
-	public static final byte[] GTK_STYLE_CLASS_TOOLTIP = OS.ascii("tooltip");
 	public static final byte[] GTK_STYLE_CLASS_VIEW = OS.ascii("view");
 	public static final byte[] GTK_STYLE_CLASS_CELL = OS.ascii("cell");
 	public static final byte[] GTK_STYLE_CLASS_PANE_SEPARATOR = OS.ascii("pane-separator");
@@ -205,10 +165,8 @@ public class GTK extends OS {
 	public static final byte[] gtk_entry_select_on_focus = OS.ascii("gtk-entry-select-on-focus");
 	public static final byte[] gtk_style_property_font = OS.ascii("font");
 	public static final byte[] gtk_menu_bar_accel = OS.ascii("gtk-menu-bar-accel");
-	public static final byte[] gtk_menu_images = OS.ascii("gtk-menu-images");
 	public static final byte[] gtk_theme_name = OS.ascii("gtk-theme-name");
 	public static final byte[] gtk_im_module = OS.ascii("gtk-im-module");
-
 
 	/** Misc **/
 	public static final byte[] GTK_PRINT_SETTINGS_OUTPUT_URI = OS.ascii("output-uri");
@@ -250,8 +208,6 @@ public class GTK extends OS {
 	public static final native int GtkCellRendererToggleClass_sizeof();
 	public static final native int GtkTreeIter_sizeof();
 
-
-
 	/**
 	 * Macros.
 	 *
@@ -262,7 +218,6 @@ public class GTK extends OS {
 	public static final native long GTK_WIDGET_GET_CLASS(long widget);
 	/** @method flags=const */
 	public static final native long GTK_TYPE_TEXT_VIEW_ACCESSIBLE ();
-	public static final native long _GTK_ACCESSIBLE (long handle);
 	public static final native boolean GTK_IS_ACCEL_LABEL(long obj);
 	public static final native boolean GTK_IS_BUTTON(long obj);
 	public static final native boolean GTK_IS_LABEL(long obj);
@@ -326,9 +281,6 @@ public class GTK extends OS {
 	 *  @param widget_class cast=(GtkWidgetClass *)
 	 */
 	public static final native long gtk_widget_class_get_css_name(long widget_class);
-
-	/** @param button cast=(GtkButton *) */
-	public static final native void gtk_button_clicked(long button);
 
 	public static final native long gtk_button_new();
 
@@ -778,13 +730,6 @@ public class GTK extends OS {
 	public static final native boolean gtk_drag_check_threshold(long widget, int start_x, int start_y, int current_x, int current_y);
 	/**
 	 * @param widget cast=(GtkWidget *)
-	 * @param context cast=(GdkDragContext *)
-	 * @param target_list cast=(GtkTargetList *)
-	 */
-	/* [GTK3/GTK4: both have identical signatures but accept differing parameters at the native level] */
-	public static final native long gtk_drag_dest_find_target(long widget, long context, long target_list);
-	/**
-	 * @param widget cast=(GtkWidget *)
 	 * @param flags cast=(GtkDestDefaults)
 	 * @param targets cast=(const GtkTargetEntry *)
 	 * @param n_targets cast=(gint)
@@ -986,13 +931,6 @@ public class GTK extends OS {
 	 * @param terminator cast=(const gchar *),flags=sentinel
 	 */
 	public static final native long gtk_file_chooser_dialog_new(byte[] title, long parent, int action, byte[] first_button_text, int first_button_id, byte[] second_button_text, int second_button_id, long terminator);
-	/**
-	 * @param title cast=(const gchar *),flags=no_out
-	 * @param parent cast=(GtkWindow *)
-	 * @param first_button_text cast=(const gchar *),flags=no_out
-	 * @param terminator cast=(const gchar *),flags=sentinel
-	 */
-	public static final native long gtk_file_chooser_dialog_new(byte[] title, long parent, int action, long first_button_text, int first_button_id, long second_button_text, int second_button_id, long terminator);
 	/** @param chooser cast=(GtkFileChooser *) */
 	public static final native long gtk_file_chooser_get_filename(long chooser);
 	/**  @param chooser cast=(GtkFileChooser *) */
@@ -1116,10 +1054,6 @@ public class GTK extends OS {
 	/**
 	 * @method flags=dynamic
 	 */
-	public static final native long gtk_gesture_get_last_event(long gesture, long sequence);
-	/**
-	 * @method flags=dynamic
-	 */
 	public static final native long gtk_gesture_get_last_updated_sequence(long gesture);
 	/**
 	 * @method flags=dynamic
@@ -1128,35 +1062,11 @@ public class GTK extends OS {
 	/**
 	 * @method flags=dynamic
 	 */
-	public static final native long gtk_gesture_get_sequences(long gesture);
-	/**
-	 * @method flags=dynamic
-	 */
-	public static final native void gtk_gesture_group(long group_gesture, long gesture);
-	/**
-	 * @method flags=dynamic
-	 */
-	public static final native void gtk_gesture_pan_set_orientation(long orientation);
-	/**
-	 * @method flags=dynamic
-	 */
-	public static final native long gtk_gesture_pan_get_orientation(long gesture);
-	/**
-	 * @method flags=dynamic
-	 */
-	public static final native void gtk_gesture_pan_new(long widget, long orientation);
-	/**
-	 * @method flags=dynamic
-	 */
 	public static final native void gtk_gesture_single_set_button(long gesture, int button);
 	/**
 	 * @method flags=dynamic
 	 */
 	public static final native boolean gtk_gesture_swipe_get_velocity(long gesture, double [] velocity_x, double[] velocity_y);
-	/**
-	 * @method flags=dynamic
-	 */
-	public static final native long gtk_gesture_swipe_new(long widget);
 	/**
 	 * @method flags=dynamic
 	 */
@@ -1578,11 +1488,6 @@ public class GTK extends OS {
 	 */
 	public static final native long gtk_css_provider_to_string(long provider);
 	/**
-	 *  @param name cast=(const gchar *)
-	 *  @param variant cast=(const gchar *)
-	 */
-	public static final native long gtk_css_provider_get_named(byte[] name, byte[] variant);
-	/**
 	 * @param screen cast=(GdkScreen *)
 	 * @param provider cast=(GtkStyleProvider *)
 	 * @param priority cast=(guint)
@@ -1637,7 +1542,6 @@ public class GTK extends OS {
 	public static final native int gtk_get_major_version();
 	public static final native int gtk_get_minor_version();
 	public static final native int gtk_get_micro_version();
-	public static final native void gtk_main();
 	/** @param event cast=(GdkEvent *) */
 	public static final native void gtk_main_do_event(long event);
 	public static final native long gtk_menu_bar_new();
@@ -2230,8 +2134,6 @@ public class GTK extends OS {
 	/** @param spin_button cast=(GtkSpinButton*) */
 	public static final native int gtk_spin_button_get_digits(long spin_button);
 	/** @param spin_button cast=(GtkSpinButton*) */
-	public static final native void gtk_spin_button_set_digits(long spin_button, int digits);
-	/** @param spin_button cast=(GtkSpinButton*) */
 	public static final native void gtk_spin_button_set_increments(long spin_button, double step, double page);
 	/** @param spin_button cast=(GtkSpinButton*) */
 	public static final native void gtk_spin_button_set_range(long spin_button, double max, double min);
@@ -2288,9 +2190,6 @@ public class GTK extends OS {
 	 * @param class_name cast=(const gchar *)
 	 */
 	public static final native void gtk_style_context_remove_class(long context, byte[] class_name);
-	/** @method flags=dynamic */
-	/* [GTK3; 3.16 deprecated, replaced] */
-	public static final native void gtk_style_context_get_background_color(long context, int state, GdkRGBA color);
 	/**
 	 * @method flags=dynamic
 	 * @param context cast=(GtkStyleContext *)
@@ -2619,13 +2518,6 @@ public class GTK extends OS {
 	 */
 	/* [GTK3 only] */
 	public static final native void gtk_toggle_button_set_inconsistent(long toggle_button, boolean setting);
-	/**
-	 * @method flags=dynamic
-	 * @param toggle_button cast=(GtkToggleButton *)
-	 * @param draw_indicator cast=(gboolean)
-	 */
-	/* [GTK3 only] */
-	public static final native void gtk_toggle_button_set_mode(long toggle_button, boolean draw_indicator);
 	/** @param button cast=(GtkToggleToolButton *) */
 	public static final native boolean gtk_toggle_tool_button_get_active(long button);
 	public static final native long gtk_toggle_tool_button_new();
@@ -2644,11 +2536,6 @@ public class GTK extends OS {
 	 * @param widget cast=(GtkWidget *)
 	 */
 	public static final native void gtk_tool_button_set_icon_widget(long button, long widget);
-	/**
-	 * @param button cast=(GtkToolButton *)
-	 * @param label cast=(const gchar *)
-	 */
-	public static final native void gtk_tool_button_set_label(long button,  byte[] label);
 	/**
 	 * @param button cast=(GtkToolButton *)
 	 * @param widget cast=(GtkWidget *)
@@ -2807,20 +2694,11 @@ public class GTK extends OS {
 	public static final native void gtk_tree_selection_select_iter(long selection, long iter);
 	/**
 	 * @param selection cast=(GtkTreeSelection *)
-	 */
-	public static final native long gtk_tree_selection_get_select_function(long selection);
-	/**
-	 * @param selection cast=(GtkTreeSelection *)
 	 * @param func cast=(GtkTreeSelectionFunc)
 	 * @param data cast=(gpointer)
 	 * @param destroy cast=(GDestroyNotify)
 	 */
 	public static final native void gtk_tree_selection_set_select_function(long selection, long func, long data, long destroy);
-	/**
-	 * @param selection cast=(GtkTreeSelection *)
-	 * @param path cast=(GtkTreePath *)
-	 */
-	public static final native void gtk_tree_selection_select_path(long selection, long path);
 	/**
 	 * @param selection cast=(GtkTreeSelection *)
 	 * @param mode cast=(GtkSelectionMode)
@@ -3150,8 +3028,6 @@ public class GTK extends OS {
 	 * @param column cast=(gint)
 	 */
 	public static final native void gtk_tree_view_set_search_column(long tree_view, int column);
-	/** @param tree_view cast=(GtkTreeView *) */
-	public static final native void gtk_tree_view_unset_rows_drag_dest(long tree_view);
 	/**
 	 * @param tree_view cast=(GtkTreeView *)
 	 * @param bx cast=(gint)
@@ -3321,8 +3197,6 @@ public class GTK extends OS {
 	public static final native void gtk_widget_input_shape_combine_region(long widget, long region);
 	/** @param widget cast=(GtkWidget *) */
 	public static final native boolean gtk_widget_is_focus(long widget);
-	/** @param widget cast=(GtkWidget *) */
-	public static final native void gtk_widget_map(long widget);
 	/**
 	 * @param widget cast=(GtkWidget *)
 	 * @param orientation cast=(GtkOrientation)
@@ -3410,11 +3284,6 @@ public class GTK extends OS {
 	 * @param val cast=(gboolean)
 	 */
 	public static final native void gtk_widget_set_focus_on_click(long widget, boolean val);
-	/**
-	 * @param widget cast=(GtkWidget *)
-	 * @param name cast=(const char *)
-	 */
-	public static final native void gtk_widget_set_name(long widget, byte[] name);
 	/**
 	 * @method flags=dynamic
 	 * @param widget cast=(GtkWidget *)

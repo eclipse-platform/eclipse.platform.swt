@@ -52,9 +52,7 @@ public class GDK extends OS {
 	public static final int GDK_CROSSING_GRAB = 1;
 	public static final int GDK_CROSSING_UNGRAB = 2;
 	public static final int GDK_Break = 0xff6b;
-	public static final int GDK_Cancel = 0xff69;
 	public static final int GDK_Caps_Lock = 0xffE5;
-	public static final int GDK_Clear = 0xff0B;
 	public static final int GDK_Control_L = 0xffe3;
 	public static final int GDK_Control_R = 0xffe4;
 	public static final int GDK_CURRENT_TIME = 0x0;
@@ -108,20 +106,10 @@ public class GDK extends OS {
 	public static final int GDK_FUNC_CLOSE = 32;
 	public static final int GDK_GRAB_SUCCESS = 0x0;
 	public static final int GDK_GRAVITY_NORTH_WEST = 1;
-	public static final int GDK_GRAVITY_NORTH = 2;
-	public static final int GDK_GRAVITY_NORTH_EAST = 3;
-	public static final int GDK_GRAVITY_WEST = 4;
-	public static final int GDK_GRAVITY_CENTER = 5;
-	public static final int GDK_GRAVITY_EAST = 6;
-	public static final int GDK_GRAVITY_SOUTH_WEST = 7;
-	public static final int GDK_GRAVITY_SOUTH = 8;
-	public static final int GDK_GRAVITY_SOUTH_EAST = 9;
-	public static final int GDK_GRAVITY_STATIC = 10;
 	public static final int GDK_HAND2 = 0x3c;
 	public static final int GDK_Help = 0xFF6A;
 	public static final int GDK_HINT_MIN_SIZE = 1 << 1;
 	public static final int GDK_Home = 0xff50;
-	public static final int GDK_INCLUDE_INFERIORS = 0x1;
 	public static final int GDK_INPUT_ONLY = 1;
 	public static final int GDK_INTERP_BILINEAR = 0x2;
 	public static final int GDK_Insert = 0xff63;
@@ -188,10 +176,8 @@ public class GDK extends OS {
 	public static final int GDK_MOTION_NOTIFY = 0x3;
 	public static final int GDK_NO_EXPOSE = 30;
 	public static final int GDK_NONE = 0;
-	public static final int GDK_NOTIFY_INFERIOR = 2;
 	public static final int GDK_Num_Lock = 0xFF7F;
 	public static final int GDK_OWNERSHIP_NONE = 0;
-	public static final int GDK_PIXBUF_ALPHA_BILEVEL = 0x0;
 	public static final int GDK_POINTER_MOTION_HINT_MASK = 0x8;
 	public static final int GDK_POINTER_MOTION_MASK = 0x4;
 	public static final int GDK_PROPERTY_NOTIFY = 16;
@@ -228,14 +214,11 @@ public class GDK extends OS {
 	public static final int GDK_SELECTION_REQUEST = 18;
 	public static final int GDK_SHIFT_MASK = 0x1;
 	public static final int GDK_SIZING = 0x78;
-	public static final int GDK_STIPPLED = 0x2;
 	public static final int GDK_SURFACE_STATE_ICONIFIED = 1 << 1;
 	public static final int GDK_SURFACE_STATE_MAXIMIZED = 1 << 2;
 	public static final int GDK_SURFACE_STATE_FULLSCREEN = 1 << 4;
-	public static final int GDK_TILED = 0x1;
 	public static final int GDK_Shift_L = 0xffe1;
 	public static final int GDK_Shift_R = 0xffe2;
-	public static final int GDK_SCROLL = 31;
 	public static final int GDK_Scroll_Lock = 0xff14;
 	public static final int GDK_TOP_LEFT_CORNER = 0x86;
 	public static final int GDK_TOP_RIGHT_CORNER = 0x88;
@@ -243,7 +226,6 @@ public class GDK extends OS {
 	public static final int GDK_Tab = 0xff09;
 	public static final int GDK_Up = 0xff52;
 	public static final int GDK_WATCH = 0x96;
-	public static final int GDK_XOR = 0x2;
 	public static final int GDK_XTERM = 0x98;
 	public static final int GDK_X_CURSOR = 0x0;
 	public static final int GDK_WINDOW_CHILD = 2;
@@ -316,11 +298,6 @@ public class GDK extends OS {
 	 */
 	/* [GTK3/GTK4, GTK3 uses GdkScreen but GTK4 uses GdkX11Screen -- method signature otherwise identical] */
 	public static final native long gdk_x11_screen_get_window_manager_name(long screen);
-	/**
-	 * @method flags=dynamic
-	 */
-	/* [GTK3/GTK4, GTK3 uses GdkVisual but GTK4 uses GdkX11Visual -- method signature otherwise identical] */
-	public static final native long gdk_x11_visual_get_xvisual(long visual);
 	/**
 	* @param gdkwindow cast=(GdkWindow *)
 	*/
@@ -759,8 +736,6 @@ public class GDK extends OS {
 	/** @param pixbuf cast=(const GdkPixbuf *) */
 	public static final native int gdk_pixbuf_get_width(long pixbuf);
 	/** @param pixbuf cast=(const GdkPixbuf *) */
-	public static final native long gdk_pixbuf_get_byte_length(long pixbuf);
-	/** @param pixbuf cast=(const GdkPixbuf *) */
 	public static final native int gdk_pixbuf_get_n_channels(long pixbuf);
 	/** @param pixbuf cast=(const GdkPixbuf *) */
 	public static final native int gdk_pixbuf_get_bits_per_sample(long pixbuf);
@@ -872,10 +847,6 @@ public class GDK extends OS {
 	public static final native void gdk_rgba_free(long rgba);
 	/**
 	 * @param rgba cast=(GdkRGBA *)
-	 */
-	public static final native int gdk_rgba_hash(GdkRGBA rgba);
-	/**
-	 * @param rgba cast=(GdkRGBA *)
 	 * @param property cast=(const gchar *)
 	 */
 	public static final native long gdk_rgba_parse(GdkRGBA rgba, byte[] property);
@@ -943,10 +914,6 @@ public class GDK extends OS {
 	 * @method flags=dynamic
 	 */
 	public static final native int gdk_display_get_n_monitors(long display);
-	/**
-	 * @method flags=dynamic
-	 */
-	public static final native int gdk_monitor_get_width_mm(long monitor);
 	/**
 	 * @method flags=dynamic
 	 */

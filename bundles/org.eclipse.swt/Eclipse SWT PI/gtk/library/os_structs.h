@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2019 IBM Corporation and others. All rights reserved.
+ * Copyright (c) 2000, 2020 IBM Corporation and others. All rights reserved.
  * The contents of this file are made available under the terms
  * of the GNU Lesser General Public License (LGPL) Version 2.1 that
  * accompanies this distribution (lgpl-v21.txt).  The LGPL is also
@@ -17,18 +17,6 @@
 /* DO NOT EDIT - your changes will be lost. */
 
 #include "os.h"
-
-#ifndef NO_GInterfaceInfo
-void cacheGInterfaceInfoFields(JNIEnv *env, jobject lpObject);
-GInterfaceInfo *getGInterfaceInfoFields(JNIEnv *env, jobject lpObject, GInterfaceInfo *lpStruct);
-void setGInterfaceInfoFields(JNIEnv *env, jobject lpObject, GInterfaceInfo *lpStruct);
-#define GInterfaceInfo_sizeof() sizeof(GInterfaceInfo)
-#else
-#define cacheGInterfaceInfoFields(a,b)
-#define getGInterfaceInfoFields(a,b,c) NULL
-#define setGInterfaceInfoFields(a,b,c)
-#define GInterfaceInfo_sizeof() 0
-#endif
 
 #ifndef NO_GObjectClass
 void cacheGObjectClassFields(JNIEnv *env, jobject lpObject);
@@ -54,18 +42,6 @@ void setGTypeInfoFields(JNIEnv *env, jobject lpObject, GTypeInfo *lpStruct);
 #define GTypeInfo_sizeof() 0
 #endif
 
-#ifndef NO_GTypeQuery
-void cacheGTypeQueryFields(JNIEnv *env, jobject lpObject);
-GTypeQuery *getGTypeQueryFields(JNIEnv *env, jobject lpObject, GTypeQuery *lpStruct);
-void setGTypeQueryFields(JNIEnv *env, jobject lpObject, GTypeQuery *lpStruct);
-#define GTypeQuery_sizeof() sizeof(GTypeQuery)
-#else
-#define cacheGTypeQueryFields(a,b)
-#define getGTypeQueryFields(a,b,c) NULL
-#define setGTypeQueryFields(a,b,c)
-#define GTypeQuery_sizeof() 0
-#endif
-
 #ifndef NO_GdkEvent
 void cacheGdkEventFields(JNIEnv *env, jobject lpObject);
 GdkEvent *getGdkEventFields(JNIEnv *env, jobject lpObject, GdkEvent *lpStruct);
@@ -76,18 +52,6 @@ void setGdkEventFields(JNIEnv *env, jobject lpObject, GdkEvent *lpStruct);
 #define getGdkEventFields(a,b,c) NULL
 #define setGdkEventFields(a,b,c)
 #define GdkEvent_sizeof() 0
-#endif
-
-#ifndef NO_GdkEventAny
-void cacheGdkEventAnyFields(JNIEnv *env, jobject lpObject);
-GdkEventAny *getGdkEventAnyFields(JNIEnv *env, jobject lpObject, GdkEventAny *lpStruct);
-void setGdkEventAnyFields(JNIEnv *env, jobject lpObject, GdkEventAny *lpStruct);
-#define GdkEventAny_sizeof() sizeof(GdkEventAny)
-#else
-#define cacheGdkEventAnyFields(a,b)
-#define getGdkEventAnyFields(a,b,c) NULL
-#define setGdkEventAnyFields(a,b,c)
-#define GdkEventAny_sizeof() 0
 #endif
 
 #ifndef NO_GdkEventButton
