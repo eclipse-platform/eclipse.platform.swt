@@ -233,21 +233,13 @@ public static Frame new_Frame (final Composite parent) {
 			case SWT.Activate:
 				EventQueue.invokeLater(() -> {
 					if (frame.isActive()) return;
-					try {
-						Class<?> clazz = frame.getClass();
-						Method method = clazz.getMethod("synthesizeWindowActivation", boolean.class);
-						if (method != null) method.invoke(frame, Boolean.TRUE);
-					} catch (Throwable e1) {}
+					synthesizeWindowActivation(frame, true);
 				});
 				break;
 			case SWT.Deactivate:
 				EventQueue.invokeLater(() -> {
 					if (!frame.isActive()) return;
-					try {
-						Class<?> clazz = frame.getClass();
-						Method method = clazz.getMethod("synthesizeWindowActivation", boolean.class);
-						if (method != null) method.invoke(frame, Boolean.FALSE);
-					} catch (Throwable e1) {}
+					synthesizeWindowActivation(frame, false);
 				});
 				break;
 		}
