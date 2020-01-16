@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2020 IBM Corporation and others.
+ * Copyright (c) 2000, 2018 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -12,7 +12,6 @@
  *     IBM Corporation - initial API and implementation
  *     Anton Leherbauer (Wind River Systems) - Bug 439419
  *     Angelo Zerr <angelo.zerr@gmail.com> - Customize different line spacing of StyledText - Bug 522020
- *     Paul Pazderski - Bug 553377: wrong max width after content change
  *******************************************************************************/
 package org.eclipse.swt.custom;
 
@@ -50,7 +49,8 @@ class StyledTextRenderer {
 	int lineCount;
 	LineSizeInfo[] lineSizes;
 	LineInfo[] lines;
-	int maxWidthLineIndex = -1; // index of longest line or -1 if currently unknown
+	int maxWidth;
+	int maxWidthLineIndex;
 	boolean idleRunning;
 
 	/* Bullet */
@@ -146,11 +146,6 @@ class StyledTextRenderer {
 		 */
 		boolean needsRecalculateHeight() {
 			return height == RESETED_SIZE;
-		}
-
-		@Override
-		public String toString() {
-			return "width: " + width + ", height: " + height; //$NON-NLS-1$ //$NON-NLS-2$
 		}
 	}
 
@@ -304,10 +299,8 @@ void calculate(int startLine, int lineCount) {
 			line.height = rect.height;
 			disposeTextLayout(layout);
 		}
-		// Do not update longest line if not already known. If calculate is only called for
-		// a part of all lines the max index would point to the longest calculated line which
-		// is not necessary the longest of all lines.
-		if (maxWidthLineIndex >= 0 && line.width > getLineSize(maxWidthLineIndex).width) {
+		if (line.width > maxWidth) {
+			maxWidth = line.width;
 			maxWidthLineIndex = i;
 		}
 	}
@@ -1295,21 +1288,7 @@ TextLayout getTextLayout(int lineIndex, int orientation, int width, int lineSpac
 	return layout;
 }
 int getWidth() {
-	// In some cases (e.g. line spacing provider) it can happen that caches are reset while
-	// calculated and therefore the max width line is unknown even after calculating all lines.
-	// Workaround is to calculate bounds until it has stabilized. To prevent endless loops
-	// the max number of iterations is limited.
-	int loops = 2;
-	while (maxWidthLineIndex < 0 && loops-- > 0) {
-		// calculate will update max width index only if the current max width is >= 0
-		// but not if longest line is currently unknown. At this point we must know
-		// the actual max line width. So we set first line as the max so that calculate
-		// will update it to the actual max width line after all line widths are checked.
-		// See also https://bugs.eclipse.org/553377
-		maxWidthLineIndex = 0;
-		calculate(0, lineCount);
-	}
-	return getLineSize(maxWidthLineIndex).width;
+	return maxWidth;
 }
 void reset() {
 	if (layouts != null) {
@@ -1325,7 +1304,6 @@ void reset() {
 	stylesSet = null;
 	lines = null;
 	lineSizes = null;
-	maxWidthLineIndex = -1;
 	bullets = null;
 	bulletsIndices = null;
 	redrawLines = null;
@@ -1342,13 +1320,25 @@ void reset(int startLine, int lineCount) {
 }
 void reset(Set<Integer> lines) {
 	if (lines == null || lines.isEmpty()) return;
+	int resetLineCount = 0;
 	for (Integer line : lines) {
 		if (line >= 0 || line < lineCount) {
+			resetLineCount++;
 			getLineSize(line.intValue()).resetSize();
 		}
 	}
 	if (lines.contains(Integer.valueOf(maxWidthLineIndex))) {
+		maxWidth = 0;
 		maxWidthLineIndex = -1;
+		if (resetLineCount != this.lineCount) {
+			for (int i = 0; i < this.lineCount; i++) {
+				LineSizeInfo lineSize = getLineSize(i);
+				if (lineSize.width > maxWidth) {
+					maxWidth = lineSize.width;
+					maxWidthLineIndex = i;
+				}
+			}
+		}
 	}
 }
 void setContent(StyledTextContent content) {
@@ -1356,6 +1346,7 @@ void setContent(StyledTextContent content) {
 	this.content = content;
 	lineCount = content.getLineCount();
 	lineSizes = new LineSizeInfo[lineCount];
+	maxWidth = 0;
 	maxWidthLineIndex = -1;
 	reset(0, lineCount);
 }
@@ -1675,13 +1666,13 @@ void setStyleRanges (int[] newRanges, StyleRange[] newStyles) {
 	}
 }
 void textChanging(TextChangingEvent event) {
-	final int start = event.start;
-	final int newCharCount = event.newCharCount, replaceCharCount = event.replaceCharCount;
-	final int newLineCount = event.newLineCount, replaceLineCount = event.replaceLineCount;
+	int start = event.start;
+	int newCharCount = event.newCharCount, replaceCharCount = event.replaceCharCount;
+	int newLineCount = event.newLineCount, replaceLineCount = event.replaceLineCount;
 
 	updateRanges(start, replaceCharCount, newCharCount);
 
-	final int startLine = content.getLineAtOffset(start);
+	int startLine = content.getLineAtOffset(start);
 	if (replaceCharCount == content.getCharCount()) lines = null;
 	if (replaceLineCount == lineCount) {
 		lineCount = newLineCount;
@@ -1696,7 +1687,7 @@ void textChanging(TextChangingEvent event) {
 		if(lineCount < startIndex) {
 			SWT.error(SWT.ERROR_INVALID_RANGE, null, "bug 478020: lineCount < startIndex: " + lineCount + ":" + startIndex);
 		}
-		final int delta = newLineCount - replaceLineCount;
+		int delta = newLineCount - replaceLineCount;
 		if (lineCount + delta > lineSizes.length) {
 			LineSizeInfo[] newLineSizes = new LineSizeInfo[lineCount + delta + GROW];
 			System.arraycopy(lineSizes, 0, newLineSizes, 0, lineCount);
@@ -1715,9 +1706,6 @@ void textChanging(TextChangingEvent event) {
 		}
 		for (int i = lineCount + delta; i < lineCount; i++) {
 			lineSizes[i] = null;
-		}
-		if (maxWidthLineIndex >= 0 && (maxWidthLineIndex >= lineSizes.length || lineSizes[maxWidthLineIndex] == null)) {
-			maxWidthLineIndex = -1;
 		}
 		if (layouts != null) {
 			int layoutStartLine = startLine - topIndex;
@@ -1770,15 +1758,14 @@ void textChanging(TextChangingEvent event) {
 			}
 		}
 		if (replaceLineCount != 0 || newLineCount != 0) {
-			int bulletStartLine = startLine;
-			int startLineOffset = content.getOffsetAtLine(bulletStartLine);
-			if (startLineOffset != start) bulletStartLine++;
-			updateBullets(bulletStartLine, replaceLineCount, newLineCount, true);
+			int startLineOffset = content.getOffsetAtLine(startLine);
+			if (startLineOffset != start) startLine++;
+			updateBullets(startLine, replaceLineCount, newLineCount, true);
 			if (lines != null) {
-				startIndex = bulletStartLine + replaceLineCount;
-				endIndex = bulletStartLine + newLineCount;
+				startIndex = startLine + replaceLineCount;
+				endIndex = startLine + newLineCount;
 				System.arraycopy(lines, startIndex, lines, endIndex, lineCount - startIndex);
-				for (int i = bulletStartLine; i < endIndex; i++) {
+				for (int i = startLine; i < endIndex; i++) {
 					lines[i] = null;
 				}
 				for (int i = lineCount + delta; i < lineCount; i++) {
@@ -1787,6 +1774,17 @@ void textChanging(TextChangingEvent event) {
 			}
 		}
 		lineCount += delta;
+		if (maxWidthLineIndex != -1 && startLine <= maxWidthLineIndex && maxWidthLineIndex <= startLine + replaceLineCount) {
+			maxWidth = 0;
+			maxWidthLineIndex = -1;
+			for (int i = 0; i < lineCount; i++) {
+				LineSizeInfo lineSize = getLineSize(i);
+				if (lineSize.width > maxWidth) {
+					maxWidth = lineSize.width;
+					maxWidthLineIndex = i;
+				}
+			}
+		}
 	}
 }
 void updateBullets(int startLine, int replaceLineCount, int newLineCount, boolean update) {
