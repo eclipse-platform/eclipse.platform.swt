@@ -21,7 +21,7 @@
 
 JavaVM *cached_jvm = NULL;
 
-JNIEXPORT void JNICALL OS_NATIVE(_1cachejvmptr)
+JNIEXPORT void JNICALL OS_NATIVE(cachejvmptr)
 	(JNIEnv *env, jclass that)
 {
 	/* cache the JavaVM pointer */

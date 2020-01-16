@@ -2044,7 +2044,7 @@ public TreeItem getTopItem () {
 	 */
 	long vAdjustment;
 	vAdjustment = GTK.gtk_scrollable_get_vadjustment(handle);
-	currentAdjustment = GTK._gtk_adjustment_get_value(vAdjustment);
+	currentAdjustment = GTK.gtk_adjustment_get_value(vAdjustment);
 	TreeItem item = null;
 	if (cachedAdjustment == currentAdjustment) {
 		item = _getCachedTopItem();

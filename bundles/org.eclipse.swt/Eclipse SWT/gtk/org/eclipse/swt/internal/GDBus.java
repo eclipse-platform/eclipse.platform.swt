@@ -355,7 +355,7 @@ public class GDBus {
 			return Boolean.valueOf(OS.g_variant_get_boolean(gVariant));
 		}
 
-		if (OS._g_variant_is_of_type(gVariant, OS.G_VARIANT_TYPE_IN32)) {
+		if (OS.g_variant_is_of_type(gVariant, OS.G_VARIANT_TYPE_IN32)) {
 			return Integer.valueOf(OS.g_variant_get_int32(gVariant));
 		}
 

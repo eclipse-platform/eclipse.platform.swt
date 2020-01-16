@@ -2226,7 +2226,7 @@ void setBackgroundGdkRGBA (long context, long handle, GdkRGBA rgba) {
 	} else {
 		// GtkEntry and GtkToggleButton needs to be themed separately with different
 		// providers for coherent background. Similar to Tree/Table headers.
-		gtk_css_provider_load_from_css (GTK._gtk_widget_get_style_context(entryHandle), finalCss);
+		gtk_css_provider_load_from_css (GTK.gtk_widget_get_style_context(entryHandle), finalCss);
 		setButtonBackgroundGdkRGBA (rgba);
 	}
 	// Set the background color of the text of the drop down menu.

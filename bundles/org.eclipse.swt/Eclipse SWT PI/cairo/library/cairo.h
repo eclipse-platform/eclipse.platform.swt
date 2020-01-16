@@ -26,9 +26,9 @@
 #ifdef CAIRO_HAS_XLIB_SURFACE
 #include <cairo-xlib.h>
 #else
-#define NO__1cairo_1xlib_1surface_1create
-#define NO__1cairo_1xlib_1surface_1get_1height
-#define NO__1cairo_1xlib_1surface_1get_1width 
+#define NO_cairo_1xlib_1surface_1create
+#define NO_cairo_1xlib_1surface_1get_1height
+#define NO_cairo_1xlib_1surface_1get_1width
 #endif
 #include <string.h>
 

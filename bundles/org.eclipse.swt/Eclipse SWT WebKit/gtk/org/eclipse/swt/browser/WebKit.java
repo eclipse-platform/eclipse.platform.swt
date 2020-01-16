@@ -2329,9 +2329,9 @@ long webkit_create_web_view (long web_view, long frame) {
 }
 
 static long webkit_download_started(long webKitDownload) {
-	OS._g_signal_connect(webKitDownload, WebKitGTK.decide_destination, Proc3.getAddress(), DECIDE_DESTINATION);
-	OS._g_signal_connect(webKitDownload, WebKitGTK.failed, Proc3.getAddress(), FAILED);
-	OS._g_signal_connect(webKitDownload, WebKitGTK.finished, Proc2.getAddress(), FINISHED);
+	OS.g_signal_connect(webKitDownload, WebKitGTK.decide_destination, Proc3.getAddress(), DECIDE_DESTINATION);
+	OS.g_signal_connect(webKitDownload, WebKitGTK.failed, Proc3.getAddress(), FAILED);
+	OS.g_signal_connect(webKitDownload, WebKitGTK.finished, Proc2.getAddress(), FINISHED);
 	return 1;
 }
 

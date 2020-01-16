@@ -914,7 +914,7 @@ public void asyncExec (Runnable runnable) {
 		synchronized (idleLock) {
 			if (idleNeeded && idleHandle == 0) {
 				//NOTE: calling unlocked function in OS
-				idleHandle = OS._g_idle_add (idleProc, 0);
+				idleHandle = OS.g_idle_add (idleProc, 0);
 			}
 		}
 		synchronizer.asyncExec (runnable);
@@ -4239,167 +4239,155 @@ long mouseHoverProc (long handle) {
  *
  */
 public boolean post (Event event) {
-	/*
-	* Get the operating system lock before synchronizing on the device
-	* lock so that the device lock will not be held should another
-	* thread already be in the operating system.  This avoids deadlock
-	* should the other thread need the device lock.
-	*/
-	Lock lock = Platform.lock;
-	lock.lock();
-	try {
-		synchronized (Device.class) {
-			if (isDisposed ()) error (SWT.ERROR_DEVICE_DISPOSED);
-			if (event == null) error (SWT.ERROR_NULL_ARGUMENT);
+	synchronized (Device.class) {
+		if (isDisposed ()) error (SWT.ERROR_DEVICE_DISPOSED);
+		if (event == null) error (SWT.ERROR_NULL_ARGUMENT);
 
-			int type = event.type;
+		int type = event.type;
 
-			if (type == SWT.MouseMove) {
-				Rectangle loc = DPIUtil.autoScaleUp(event.getBounds());
-				setCursorLocationInPixels(new Point(loc.x, loc.y));
-				return true;
-			}
-
-			long gdkDisplay = GDK.gdk_display_get_default();
-			long gdkSeat = GDK.gdk_display_get_default_seat(gdkDisplay);
-			long gdkKeyboardDevice = GDK.gdk_seat_get_keyboard(gdkSeat);
-			long gdkPointerDevice = GDK.gdk_seat_get_pointer(gdkSeat);
-			long gdkWindow = GDK.gdk_get_default_root_window();
-			long window_list = GDK.gdk_window_get_children(gdkWindow);
-			if (window_list != 0) {
-				long windows = window_list;
-				while (windows != 0) {
-					long curr_window = OS.g_list_data(windows);
-					int state = GDK.gdk_window_get_state(curr_window);
-					if ((state & GDK.GDK_WINDOW_STATE_FOCUSED) != 0) {
-						gdkWindow = curr_window;
-						OS.g_object_ref(gdkWindow);
-						break;
-					}
-					windows = OS.g_list_next(windows);
-				}
-				OS.g_list_free(window_list);
-			}
-			if (gdkWindow == 0) return false;
-			long eventPtr = 0;
-
-			switch (type) {
-				case SWT.KeyDown:
-				case SWT.KeyUp:
-					/* Translate the SWT Event fields to GDK fields
-					 * We need hardware_keycode, GdkModifierType, group to get keyval
-					 * 1) event.character -> hardware_keycode
-					 * 2) event.stateMask -> GdkModifierType(state)
-					 * 3) event.keyCode -> hardware_keycode, GdkModifierType(state) (i.e. SWT.SHIFT)
-					 */
-					int state = type == SWT.KeyDown ? GDK.GDK_KEY_PRESS_MASK : GDK.GDK_KEY_RELEASE_MASK;
-					if (cachedModifierState != 0) {
-						state |= cachedModifierState;
-					}
-					int is_modifier = 1;
-					int modifier = event.stateMask != 0 ? event.stateMask : event.keyCode;
-					switch (modifier) {
-						case SWT.SHIFT: state |= GDK.GDK_SHIFT_MASK; break;
-						case SWT.ALT: state |= GDK.GDK_MOD1_MASK; break;
-						case SWT.CONTROL: state |= GDK.GDK_CONTROL_MASK; break;
-						case SWT.ALT_GR: state |= GDK.GDK_MOD5_MASK; break;
-						default:
-							is_modifier = cachedModifierState == 0 ? 0 : 1;
-					}
-
-					// Save the modifier state pressed until it is released
-					if (is_modifier == 1 && type == SWT.KeyDown) {
-						cachedModifierState = state & (~GDK.GDK_KEY_PRESS_MASK | ~GDK.GDK_KEY_RELEASE_MASK);
-					} else {
-						cachedModifierState = 0;
-					}
-
-					long gdkKeymap = GDK.gdk_keymap_get_for_display(gdkDisplay);
-					int hardware_keycode = 0;
-					int raw_keyval = untranslateKey(event.keyCode);
-					if (raw_keyval == 0) raw_keyval = event.character;
-
-					long [] keys_list = new long [1];
-					int [] n_keys = new int [1];
-					int [] keyval = new int [1], effective_group = new int [1], level = new int [1], consumed_modifiers = new int[1];
-					int final_keyval = raw_keyval;
-
-					if (GDK.gdk_keymap_get_entries_for_keyval(gdkKeymap, raw_keyval, keys_list, n_keys)) {
-						GdkKeymapKey key_entry = new GdkKeymapKey ();
-						if (n_keys[0] > 0) {
-							OS.memmove(key_entry, keys_list[0], GdkKeymapKey.sizeof);
-							hardware_keycode = key_entry.keycode;
-						}
-						OS.g_free(keys_list[0]);
-
-						GDK.gdk_keymap_translate_keyboard_state(gdkKeymap, hardware_keycode, state, 0, keyval, effective_group, level, consumed_modifiers);
-						if (is_modifier == 1) final_keyval = keyval[0];
-					}
-
-					/* Construct GdkEventKey */
-					eventPtr = GDK.gdk_event_new(type == SWT.KeyDown ? GDK.GDK_KEY_PRESS : GDK.GDK_KEY_RELEASE);
-					GdkEventKey newKeyEvent = new GdkEventKey ();
-					newKeyEvent.type = type == SWT.KeyDown ? GDK.GDK_KEY_PRESS : GDK.GDK_KEY_RELEASE;
-					newKeyEvent.window = gdkWindow;
-					newKeyEvent.send_event = 1;
-					newKeyEvent.time = GDK.GDK_CURRENT_TIME;
-					newKeyEvent.keyval = final_keyval;
-					newKeyEvent.state = state;
-					newKeyEvent.hardware_keycode = (short) hardware_keycode;
-					newKeyEvent.group = (byte) effective_group[0];
-					newKeyEvent.is_modifier = is_modifier;
-
-					OS.memmove(eventPtr, newKeyEvent, GdkEventKey.sizeof);
-					GDK.gdk_event_set_device (eventPtr, gdkKeyboardDevice);
-					if (GTK.GTK4) {
-						long display = GDK.gdk_display_get_default();
-						GDK.gdk_display_put_event(display, eventPtr);
-					} else {
-						GDK.gdk_event_put (eventPtr);
-					}
-					if (GTK.GTK4) {
-						OS.g_object_unref(eventPtr);
-					} else {
-						GDK.gdk_event_free (eventPtr);
-					}
-					return true;
-				case SWT.MouseDown:
-				case SWT.MouseUp:
-					int[] x = new int[1], y = new int[1], mask = new int[1];
-					gdkWindow = GDK.gdk_device_get_window_at_position(gdkPointerDevice, x, y);
-					// Under Wayland or some window managers, gdkWindow is not known to GDK and null is returned,
-					// cannot post mouse events as it will lead to crash
-					if (gdkWindow == 0) return false;
-					OS.g_object_ref(gdkWindow);
-
-					/* Construct GdkEventButton */
-					eventPtr = GDK.gdk_event_new(type == SWT.MouseDown ? GDK.GDK_BUTTON_PRESS : GDK.GDK_BUTTON_RELEASE);
-					GdkEventButton newButtonEvent = new GdkEventButton ();
-					newButtonEvent.type = type == SWT.MouseDown ? GDK.GDK_BUTTON_PRESS : GDK.GDK_BUTTON_RELEASE;
-					newButtonEvent.window = gdkWindow;
-					newButtonEvent.send_event = 1;
-					newButtonEvent.time = GDK.GDK_CURRENT_TIME;
-					newButtonEvent.x = x[0];
-					newButtonEvent.y = y[0];
-					newButtonEvent.state = mask[0];
-					newButtonEvent.button = event.button;
-					newButtonEvent.device = gdkPointerDevice;
-
-					OS.memmove(eventPtr, newButtonEvent, GdkEventButton.sizeof);
-					GDK.gdk_event_set_device(eventPtr, gdkPointerDevice);
-
-					GDK.gdk_event_put(eventPtr);
-					if (GTK.GTK4) {
-						OS.g_object_unref(eventPtr);
-					} else {
-						GDK.gdk_event_free (eventPtr);
-					}
-					return true;
-			}
-			return false;
+		if (type == SWT.MouseMove) {
+			Rectangle loc = DPIUtil.autoScaleUp(event.getBounds());
+			setCursorLocationInPixels(new Point(loc.x, loc.y));
+			return true;
 		}
-	} finally {
-		lock.unlock();
+
+		long gdkDisplay = GDK.gdk_display_get_default();
+		long gdkSeat = GDK.gdk_display_get_default_seat(gdkDisplay);
+		long gdkKeyboardDevice = GDK.gdk_seat_get_keyboard(gdkSeat);
+		long gdkPointerDevice = GDK.gdk_seat_get_pointer(gdkSeat);
+		long gdkWindow = GDK.gdk_get_default_root_window();
+		long window_list = GDK.gdk_window_get_children(gdkWindow);
+		if (window_list != 0) {
+			long windows = window_list;
+			while (windows != 0) {
+				long curr_window = OS.g_list_data(windows);
+				int state = GDK.gdk_window_get_state(curr_window);
+				if ((state & GDK.GDK_WINDOW_STATE_FOCUSED) != 0) {
+					gdkWindow = curr_window;
+					OS.g_object_ref(gdkWindow);
+					break;
+				}
+				windows = OS.g_list_next(windows);
+			}
+			OS.g_list_free(window_list);
+		}
+		if (gdkWindow == 0) return false;
+		long eventPtr = 0;
+
+		switch (type) {
+			case SWT.KeyDown:
+			case SWT.KeyUp:
+				/* Translate the SWT Event fields to GDK fields
+				 * We need hardware_keycode, GdkModifierType, group to get keyval
+				 * 1) event.character -> hardware_keycode
+				 * 2) event.stateMask -> GdkModifierType(state)
+				 * 3) event.keyCode -> hardware_keycode, GdkModifierType(state) (i.e. SWT.SHIFT)
+				 */
+				int state = type == SWT.KeyDown ? GDK.GDK_KEY_PRESS_MASK : GDK.GDK_KEY_RELEASE_MASK;
+				if (cachedModifierState != 0) {
+					state |= cachedModifierState;
+				}
+				int is_modifier = 1;
+				int modifier = event.stateMask != 0 ? event.stateMask : event.keyCode;
+				switch (modifier) {
+					case SWT.SHIFT: state |= GDK.GDK_SHIFT_MASK; break;
+					case SWT.ALT: state |= GDK.GDK_MOD1_MASK; break;
+					case SWT.CONTROL: state |= GDK.GDK_CONTROL_MASK; break;
+					case SWT.ALT_GR: state |= GDK.GDK_MOD5_MASK; break;
+					default:
+						is_modifier = cachedModifierState == 0 ? 0 : 1;
+				}
+
+				// Save the modifier state pressed until it is released
+				if (is_modifier == 1 && type == SWT.KeyDown) {
+					cachedModifierState = state & (~GDK.GDK_KEY_PRESS_MASK | ~GDK.GDK_KEY_RELEASE_MASK);
+				} else {
+					cachedModifierState = 0;
+				}
+
+				long gdkKeymap = GDK.gdk_keymap_get_for_display(gdkDisplay);
+				int hardware_keycode = 0;
+				int raw_keyval = untranslateKey(event.keyCode);
+				if (raw_keyval == 0) raw_keyval = event.character;
+
+				long [] keys_list = new long [1];
+				int [] n_keys = new int [1];
+				int [] keyval = new int [1], effective_group = new int [1], level = new int [1], consumed_modifiers = new int[1];
+				int final_keyval = raw_keyval;
+
+				if (GDK.gdk_keymap_get_entries_for_keyval(gdkKeymap, raw_keyval, keys_list, n_keys)) {
+					GdkKeymapKey key_entry = new GdkKeymapKey ();
+					if (n_keys[0] > 0) {
+						OS.memmove(key_entry, keys_list[0], GdkKeymapKey.sizeof);
+						hardware_keycode = key_entry.keycode;
+					}
+					OS.g_free(keys_list[0]);
+
+					GDK.gdk_keymap_translate_keyboard_state(gdkKeymap, hardware_keycode, state, 0, keyval, effective_group, level, consumed_modifiers);
+					if (is_modifier == 1) final_keyval = keyval[0];
+				}
+
+				/* Construct GdkEventKey */
+				eventPtr = GDK.gdk_event_new(type == SWT.KeyDown ? GDK.GDK_KEY_PRESS : GDK.GDK_KEY_RELEASE);
+				GdkEventKey newKeyEvent = new GdkEventKey ();
+				newKeyEvent.type = type == SWT.KeyDown ? GDK.GDK_KEY_PRESS : GDK.GDK_KEY_RELEASE;
+				newKeyEvent.window = gdkWindow;
+				newKeyEvent.send_event = 1;
+				newKeyEvent.time = GDK.GDK_CURRENT_TIME;
+				newKeyEvent.keyval = final_keyval;
+				newKeyEvent.state = state;
+				newKeyEvent.hardware_keycode = (short) hardware_keycode;
+				newKeyEvent.group = (byte) effective_group[0];
+				newKeyEvent.is_modifier = is_modifier;
+
+				OS.memmove(eventPtr, newKeyEvent, GdkEventKey.sizeof);
+				GDK.gdk_event_set_device (eventPtr, gdkKeyboardDevice);
+				if (GTK.GTK4) {
+					long display = GDK.gdk_display_get_default();
+					GDK.gdk_display_put_event(display, eventPtr);
+				} else {
+					GDK.gdk_event_put (eventPtr);
+				}
+				if (GTK.GTK4) {
+					OS.g_object_unref(eventPtr);
+				} else {
+					GDK.gdk_event_free (eventPtr);
+				}
+				return true;
+			case SWT.MouseDown:
+			case SWT.MouseUp:
+				int[] x = new int[1], y = new int[1], mask = new int[1];
+				gdkWindow = GDK.gdk_device_get_window_at_position(gdkPointerDevice, x, y);
+				// Under Wayland or some window managers, gdkWindow is not known to GDK and null is returned,
+				// cannot post mouse events as it will lead to crash
+				if (gdkWindow == 0) return false;
+				OS.g_object_ref(gdkWindow);
+
+				/* Construct GdkEventButton */
+				eventPtr = GDK.gdk_event_new(type == SWT.MouseDown ? GDK.GDK_BUTTON_PRESS : GDK.GDK_BUTTON_RELEASE);
+				GdkEventButton newButtonEvent = new GdkEventButton ();
+				newButtonEvent.type = type == SWT.MouseDown ? GDK.GDK_BUTTON_PRESS : GDK.GDK_BUTTON_RELEASE;
+				newButtonEvent.window = gdkWindow;
+				newButtonEvent.send_event = 1;
+				newButtonEvent.time = GDK.GDK_CURRENT_TIME;
+				newButtonEvent.x = x[0];
+				newButtonEvent.y = y[0];
+				newButtonEvent.state = mask[0];
+				newButtonEvent.button = event.button;
+				newButtonEvent.device = gdkPointerDevice;
+
+				OS.memmove(eventPtr, newButtonEvent, GdkEventButton.sizeof);
+				GDK.gdk_event_set_device(eventPtr, gdkPointerDevice);
+
+				GDK.gdk_event_put(eventPtr);
+				if (GTK.GTK4) {
+					OS.g_object_unref(eventPtr);
+				} else {
+					GDK.gdk_event_free (eventPtr);
+				}
+				return true;
+		}
+		return false;
 	}
 }
 
@@ -5547,17 +5535,8 @@ public boolean sleep () {
 					*/
 					if (timeout [0] < 0) timeout [0] = 50;
 
-					/* Exit the OS lock to allow other threads to enter GTK */
-					Lock lock = Platform.lock;
-					int count = lock.lock ();
-					for (int i = 0; i < count; i++) lock.unlock ();
-					try {
-						wake = false;
-						OS.Call (poll, fds, nfds, timeout [0]);
-					} finally {
-						for (int i = 0; i < count; i++) lock.lock ();
-						lock.unlock ();
-					}
+					wake = false;
+					OS.Call (poll, fds, nfds, timeout [0]);
 				}
 			}
 			OS.g_main_context_check (context, max_priority [0], fds, nfds);
@@ -5844,7 +5823,7 @@ public void syncExec (Runnable runnable) {
 		synchronized (idleLock) {
 			if (idleNeeded && idleHandle == 0) {
 				//NOTE: calling unlocked function in OS
-				idleHandle = OS._g_idle_add (idleProc, 0);
+				idleHandle = OS.g_idle_add (idleProc, 0);
 			}
 		}
 	}

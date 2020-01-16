@@ -2129,7 +2129,6 @@ public static final native long g_dbus_proxy_call_finish(long proxy, long res, l
  * @param error cast=(GError **)
  * @category gdbus
  */
-/* @category gdbus */
 public static final native long g_dbus_node_info_new_for_xml(byte[] xml_data, long [] error);
 
 /**
@@ -2143,7 +2142,6 @@ public static final native long g_dbus_node_info_new_for_xml(byte[] xml_data, lo
  * @param user_data_free_func cast=(GDestroyNotify)
  * @category gdbus
  */
-/* @category gdbus */
 public static final native int g_bus_own_name(int bus_type, byte[] name, int flags, long bus_acquired_handler, long name_acquired_handler, long name_lost_handler, long  user_data, long user_data_free_func);
 
 /**
@@ -2159,7 +2157,6 @@ public static final native int g_bus_own_name(int bus_type, byte[] name, int fla
  * @param user_data cast=(gpointer)
  * @category gdbus
  */
-/* @category gdbus */
 public static final native void g_dbus_connection_call(long connection, byte [] bus_name, byte [] object_path, byte [] interface_name, byte [] method_name, long param, long reply_type, int flag, int timeout, long cancellable, long callback, long user_data);
 
 /**
@@ -2182,7 +2179,6 @@ public static final native long g_dbus_connection_call_finish(long proxy, long r
  * @param error cast=(GError **)
  * @category gdbus
  */
-/* @category gdbus */
 public static final native long g_dbus_connection_call_sync(long connection, byte [] bus_name, byte [] object_path, byte [] interface_name, byte [] method_name, long param, long reply_type, int flag, int timeout, long cancellable, long [] error);
 
 /**
@@ -2191,14 +2187,12 @@ public static final native long g_dbus_connection_call_sync(long connection, byt
  * @param error cast=(GError **)
  * @category gdbus
  */
-/* @category gdbus */
 public static final native boolean g_dbus_connection_close_sync(long connection, long cancellable, long [] error);
 
 /**
  * @param connection cast=(GDBusConnection *)
  * @category gdbus
  */
-/* @category gdbus */
 public static final native boolean g_dbus_connection_is_closed(long connection);
 
 /**
@@ -2209,7 +2203,6 @@ public static final native boolean g_dbus_connection_is_closed(long connection);
  * @param user_data cast=(gpointer)
  * @category gdbus
  */
-/* @category gdbus */
 public static final native void g_dbus_connection_new_for_address(byte[] address, int flags, long observer, long cancellable, long callback, long user_data);
 
 /**
@@ -2217,7 +2210,6 @@ public static final native void g_dbus_connection_new_for_address(byte[] address
  * @param error cast=(GError **)
  * @category gdbus
  */
-/* @category gdbus */
 public static final native long g_dbus_connection_new_for_address_finish(long result, long [] error);
 
 /**
@@ -2230,7 +2222,6 @@ public static final native long g_dbus_connection_new_for_address_finish(long re
  * @param error cast=(GError **)
  * @category gdbus
  */
-/* @category gdbus */
 public static final native int g_dbus_connection_register_object(long connection, byte[] object_path, long interface_info, long [] vtable, long user_data, long user_data_free_func, long [] error);
 
 /**
@@ -2238,7 +2229,6 @@ public static final native int g_dbus_connection_register_object(long connection
  * @param name cast=(const gchar *)
  * @category gdbus
  */
-/* @category gdbus */
 public static final native long g_dbus_node_info_lookup_interface(long info, byte [] name);
 
 /**
@@ -2246,7 +2236,6 @@ public static final native long g_dbus_node_info_lookup_interface(long info, byt
  * @param parameters cast=(GVariant *)
  * @category gdbus
  */
-/* @category gdbus */
 public static final native void g_dbus_method_invocation_return_value(long invocation, long parameters);
 
 /**
@@ -2258,47 +2247,40 @@ public static final native void g_dbus_method_invocation_return_value(long invoc
  * @param error cast=(GError **)
  * @category gdbus
  */
-/* @category gdbus */
 public static final native long g_dbus_server_new_sync(long address, int flags, long guid, long observer, long cancellable, long [] error);
 
 /**
  * @param server cast=(GDBusServer *)
  * @category gdbus
  */
-/* @category gdbus */
 public static final native void g_dbus_server_start(long server);
 
 /**
  * @param server cast=(GDBusServer *)
  * @category gdbus
  */
-/* @category gdbus */
 public static final native void g_dbus_server_stop(long server);
 
 /**
  * @param server cast=(GDBusServer *)
  * @category gdbus
  */
-/* @category gdbus */
 public static final native long g_dbus_server_get_client_address(long server);
 
 /**
  * @category gdbus
  */
-/* @category gdbus */
 public static final native long g_dbus_auth_observer_new();
 
 /**
  * @category gdbus
  */
-/* @category gdbus */
 public static final native long g_dbus_generate_guid();
 
 /**
  * @param type cast=(const GVariantType *)
  * @category gdbus
  */
-/* @category gdbus */
 public static final native long g_variant_builder_new(long type);
 
 /**
@@ -2306,35 +2288,30 @@ public static final native long g_variant_builder_new(long type);
  * @param value cast=(GVariant *)
  * @category gdbus
  */
-/* @category gdbus */
 public static final native void g_variant_builder_add_value(long builder, long value);
 
 /**
  * @param type cast=(GVariantType *)
  * @category gdbus
  */
-/* @category gdbus */
 public static final native void g_variant_type_free(long type);
 
 /**
  * @param type cast=(const gchar *)
  * @category gdbus
  */
-/* @category gdbus */
 public static final native long g_variant_type_new(byte [] type);
 
 /**
  * @param builder cast=(GVariantBuilder *)
  * @category gdbus
  */
-/* @category gdbus */
 public static final native long g_variant_builder_end(long builder);
 
 /**
  * @param builder cast=(GVariantBuilder *)
  * @category gdbus
  */
-/* @category gdbus */
 public static final native void g_variant_builder_unref(long builder);
 
 /**
@@ -2367,7 +2344,6 @@ public static final native long g_variant_new (byte[] format_string, byte[] arg0
  * @param intval cast=(gint32)
  * @category gdbus
  */
-/* @category gdbus */
 public static final native long g_variant_new_int32(int intval);
 
 
@@ -2376,7 +2352,6 @@ public static final native long g_variant_new_int32(int intval);
  * @category gdbus
  * @return int
  */
-/* @category gdbus */
 public static final native int g_variant_get_int32(long gvariant);
 
 /**
@@ -2384,14 +2359,12 @@ public static final native int g_variant_get_int32(long gvariant);
  * @category gdbus
  * @return guchar
  */
-/* @category gdbus */
 public static final native byte g_variant_get_byte(long gvariant);
 
 /**
  * @param gvariant cast=(GVariant *)
  * @category gdbus
  */
-/* @category gdbus */
 public static final native boolean g_variant_get_boolean(long gvariant);
 
 /**
@@ -2399,14 +2372,12 @@ public static final native boolean g_variant_get_boolean(long gvariant);
  * @param index cast=(gsize)
  * @category gdbus
  */
-/* @category gdbus */
 public static final native long g_variant_get_child_value(long gvariant, int index);
 
 /**
  * @param gvariant cast=(GVariant *)
  * @category gdbus
  */
-/* @category gdbus */
 public static final native double g_variant_get_double(long gvariant);
 
 public static final native long g_variant_new_uint64(long value);
@@ -2415,7 +2386,6 @@ public static final native long g_variant_new_uint64(long value);
  * @param gvariant cast=(GVariant *)
  * @category gdbus
  */
-/* @category gdbus */
 public static final native long g_variant_get_uint64(long gvariant);
 
 /**
@@ -2423,7 +2393,6 @@ public static final native long g_variant_get_uint64(long gvariant);
  * @param length cast=(gsize *)
  * @category gdbus
  */
-/* @category gdbus */
 public static final native long g_variant_get_string(long gvariant, long[] length);
 
 /**
@@ -2431,14 +2400,12 @@ public static final native long g_variant_get_string(long gvariant, long[] lengt
  * @return const GVariantType *
  * @category gdbus
  */
-/* @category gdbus */
 public static final native long g_variant_get_type(long gvariant);
 
 /**
  * @param gvariant cast=(GVariant *)
  * @category gdbus
  */
-/* @category gdbus */
 public static final native long g_variant_get_type_string(long gvariant);
 
 /**
@@ -2446,35 +2413,30 @@ public static final native long g_variant_get_type_string(long gvariant);
  * @param type cast=(const GVariantType *)
  * @category gdbus
  */
-/* @category gdbus */
 public static final native boolean g_variant_is_of_type(long gvariant, byte[] type);
 
 /**
  * @param gvariant cast=(GVariant *)
  * @category gdbus
  */
-/* @category gdbus */
 public static final native long g_variant_n_children(long gvariant);
 
 /**
  * @param value cast=(gboolean)
  * @category gdbus
  */
-/* @category gdbus */
 public static final native long g_variant_new_boolean(boolean value);
 
 /**
  * @param value cast=(gboolean)
  * @category gdbus
  */
-/* @category gdbus */
 public static final native long g_variant_new_double(double value);
 
 /**
  * @param value cast=(guchar)
  * @category gdbus
  */
-/* @category gdbus */
 public static final native long g_variant_new_byte(byte value);
 
 /**
@@ -2482,28 +2444,24 @@ public static final native long g_variant_new_byte(byte value);
  * @param length cast=(gsize)
  * @category gdbus
  */
-/* @category gdbus */
 public static final native long g_variant_new_tuple(long [] items, long length);
 
 /**
  * @param string cast=(const gchar *)
  * @category gdbus
  */
-/* @category gdbus */
 public static final native long g_variant_new_string(byte[] string);
 
 /**
  * @param string cast=(const gchar *)
  * @category gdbus
  */
-/* @category gdbus */
 public static final native long g_variant_new_string(long string);
 
 /**
  * @param value cast=(GVariant *)
  * @category gdbus
  */
-/* @category gdbus */
 public static final native void g_variant_unref(long value);
 
 /**
