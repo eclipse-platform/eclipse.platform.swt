@@ -1004,10 +1004,8 @@ void scrollWheel (long id, long sel, long theEvent) {
 			double deltaY = nsEvent.deltaY();
 			double deltaX = nsEvent.deltaX ();
 			if ((hooks(SWT.Gesture) || filters (SWT.Gesture))) {
-				if (deltaX != 0 || deltaY != 0) {
-					if (!gestureEvent(id, theEvent, SWT.GESTURE_PAN)) {
-						handled = true;
-					}
+				if (!gestureEvent(id, theEvent, SWT.GESTURE_PAN)) {
+					handled = true;
 				}
 			}
 			if (!handled) {

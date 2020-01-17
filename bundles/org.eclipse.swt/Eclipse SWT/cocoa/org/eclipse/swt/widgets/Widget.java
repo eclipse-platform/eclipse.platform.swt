@@ -2080,14 +2080,6 @@ void touchesMovedWithEvent (long id, long sel, long event) {
 	callSuper(id, sel, event);
 }
 
-void beginGestureWithEvent (long id, long sel, long event) {
-	callSuper(id, sel, event);
-}
-
-void endGestureWithEvent (long id, long sel, long event) {
-	callSuper(id, sel, event);
-}
-
 void magnifyWithEvent (long id, long sel, long event) {
 	callSuper(id, sel, event);
 }

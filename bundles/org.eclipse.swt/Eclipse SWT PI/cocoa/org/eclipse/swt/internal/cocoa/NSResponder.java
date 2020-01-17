@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others.
+ * Copyright (c) 2000, 2020 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -35,10 +35,6 @@ public boolean becomeFirstResponder() {
 	return OS.objc_msgSend_bool(this.id, OS.sel_becomeFirstResponder);
 }
 
-public void beginGestureWithEvent(NSEvent event) {
-	OS.objc_msgSend(this.id, OS.sel_beginGestureWithEvent_, event != null ? event.id : 0);
-}
-
 public void cancelOperation(id sender) {
 	OS.objc_msgSend(this.id, OS.sel_cancelOperation_, sender != null ? sender.id : 0);
 }
@@ -49,10 +45,6 @@ public void cursorUpdate(NSEvent event) {
 
 public void doCommandBySelector(long aSelector) {
 	OS.objc_msgSend(this.id, OS.sel_doCommandBySelector_, aSelector);
-}
-
-public void endGestureWithEvent(NSEvent event) {
-	OS.objc_msgSend(this.id, OS.sel_endGestureWithEvent_, event != null ? event.id : 0);
 }
 
 public void flagsChanged(NSEvent theEvent) {

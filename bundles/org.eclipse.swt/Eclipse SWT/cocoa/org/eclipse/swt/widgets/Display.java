@@ -2395,8 +2395,6 @@ void addEventMethods (long cls, long proc2, long proc3, long drawRectProc, long 
 		OS.class_addMethod(cls, OS.sel_touchesMovedWithEvent_, proc3, "@:@");
 		OS.class_addMethod(cls, OS.sel_touchesEndedWithEvent_, proc3, "@:@");
 		OS.class_addMethod(cls, OS.sel_touchesCancelledWithEvent_, proc3, "@:@");
-		OS.class_addMethod(cls, OS.sel_beginGestureWithEvent_, proc3, "@:@");
-		OS.class_addMethod(cls, OS.sel_endGestureWithEvent_, proc3, "@:@");
 		OS.class_addMethod(cls, OS.sel_swipeWithEvent_, proc3, "@:@");
 		OS.class_addMethod(cls, OS.sel_rotateWithEvent_, proc3, "@:@");
 		OS.class_addMethod(cls, OS.sel_magnifyWithEvent_, proc3, "@:@");
@@ -6400,14 +6398,6 @@ static long windowProc(long id, long sel, long arg0) {
 		}
 		case sel_touchesCancelledWithEvent_: {
 			widget.touchesCancelledWithEvent(id, sel, arg0);
-			return 0;
-		}
-		case sel_beginGestureWithEvent_: {
-			widget.beginGestureWithEvent(id, sel, arg0);
-			return 0;
-		}
-		case sel_endGestureWithEvent_: {
-			widget.endGestureWithEvent(id, sel, arg0);
 			return 0;
 		}
 		case sel_swipeWithEvent_: {

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2019 IBM Corporation and others.
+ * Copyright (c) 2000, 2020 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -93,6 +93,10 @@ public static NSPoint mouseLocation() {
 public static NSEvent otherEventWithType(long type, NSPoint location, long flags, double time, long wNum, NSGraphicsContext context, short subtype, long d1, long d2) {
 	long result = OS.objc_msgSend(OS.class_NSEvent, OS.sel_otherEventWithType_location_modifierFlags_timestamp_windowNumber_context_subtype_data1_data2_, type, location, flags, time, wNum, context != null ? context.id : 0, subtype, d1, d2);
 	return result != 0 ? new NSEvent(result) : null;
+}
+
+public long phase() {
+	return OS.objc_msgSend(this.id, OS.sel_phase);
 }
 
 public static long pressedMouseButtons() {

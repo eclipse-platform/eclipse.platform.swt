@@ -1323,6 +1323,9 @@
 			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
+		<method selector="phase" swt_gen="true">
+			<retval swt_gen="true"></retval>
+		</method>
 		<method class_method="true" selector="pressedMouseButtons" swt_gen="true">
 			<retval swt_gen="true"></retval>
 		</method>
@@ -2632,10 +2635,6 @@
 		<method selector="becomeFirstResponder" swt_gen="true">
 			<retval swt_gen="true"></retval>
 		</method>
-		<method selector="beginGestureWithEvent:" swt_gen="true">
-			<arg swt_gen="true"></arg>
-			<retval swt_gen="true"></retval>
-		</method>
 		<method selector="cancelOperation:" swt_gen="true">
 			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
@@ -2645,10 +2644,6 @@
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="doCommandBySelector:" swt_gen="true">
-			<arg swt_gen="true"></arg>
-			<retval swt_gen="true"></retval>
-		</method>
-		<method selector="endGestureWithEvent:" swt_gen="true">
 			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
@@ -4888,6 +4883,9 @@
 	<enum name="NSDragOperationNone" swt_gen="true"></enum>
 	<enum name="NSEnterCharacter" swt_gen="true"></enum>
 	<enum name="NSEvenOddWindingRule" swt_gen="true"></enum>
+	<enum name="NSEventPhaseBegan" swt_gen="true"></enum>
+	<enum name="NSEventPhaseCancelled" swt_gen="true"></enum>
+	<enum name="NSEventPhaseEnded" swt_gen="true"></enum>
 	<enum name="NSEventTypeBeginGesture" swt_gen="true"></enum>
 	<enum name="NSEventTypeEndGesture" swt_gen="true"></enum>
 	<enum name="NSEventTypeGesture" swt_gen="true"></enum>

@@ -763,18 +763,6 @@ boolean becomeFirstResponder (long id, long sel) {
 	return super.becomeFirstResponder (id, sel);
 }
 
-@Override
-void beginGestureWithEvent (long id, long sel, long event) {
-	if (!gestureEvent(id, event, SWT.GESTURE_BEGIN)) return;
-	super.beginGestureWithEvent(id, sel, event);
-}
-
-@Override
-void endGestureWithEvent (long id, long sel, long event) {
-	if (!gestureEvent(id, event, SWT.GESTURE_END)) return;
-	super.endGestureWithEvent(id, sel, event);
-}
-
 void calculateVisibleRegion (NSView view, long visibleRgn, boolean clipChildren) {
 	long tempRgn = OS.NewRgn ();
 	if (!view.isHiddenOrHasHiddenAncestor() && isDrawing()) {
@@ -1500,15 +1488,18 @@ boolean gestureEvent(long id, long eventPtr, int detail) {
 	event.x = (int) point.x;
 	event.y = (int) point.y;
 	setInputState (event, nsEvent, SWT.Gesture);
-	event.detail = detail;
 
-	if (detail == SWT.GESTURE_BEGIN) {
+	long phase = nsEvent.phase();
+	if (phase == OS.NSEventPhaseBegan) {
+		detail = SWT.GESTURE_BEGIN;
 		display.rotation = 0.0;
 		display.magnification = 1.0;
 		display.gestureActive = true;
-	} else if (detail == SWT.GESTURE_END) {
+	} else if (phase == OS.NSEventPhaseCancelled || phase == OS.NSEventPhaseEnded) {
+		detail = SWT.GESTURE_END;
 		display.gestureActive = false;
 	}
+	event.detail = detail;
 
 	switch (detail) {
 	case SWT.GESTURE_SWIPE:
@@ -1530,8 +1521,8 @@ boolean gestureEvent(long id, long eventPtr, int detail) {
 		if (display.gestureActive) {
 			event.xDirection = (int) nsEvent.deltaX();
 			event.yDirection = (int) nsEvent.deltaY();
-			if (event.xDirection == 0 && event.yDirection == 0) return true;
 		}
+		if (event.xDirection == 0 && event.yDirection == 0) return true;
 		break;
 	}
 
@@ -2542,10 +2533,8 @@ void scrollWheel (long id, long sel, long theEvent) {
 	if (id == view.id) {
 		NSEvent nsEvent = new NSEvent(theEvent);
 		if ((hooks(SWT.Gesture) || filters(SWT.Gesture))) {
-			if (nsEvent.deltaY() != 0 || nsEvent.deltaX() != 0) {
-				if (!gestureEvent(id, theEvent, SWT.GESTURE_PAN)) {
-					handled = true;
-				}
+			if (!gestureEvent(id, theEvent, SWT.GESTURE_PAN)) {
+				handled = true;
 			}
 		}
 		if (!handled) {
