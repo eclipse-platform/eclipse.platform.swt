@@ -1558,7 +1558,6 @@ LRESULT wmKeyDown (long hwnd, long wParam, long lParam) {
 			if ((lParam & 0x40000000) != 0) return null;
 	}
 
-	boolean lastDead = display.lastDead;
 	/* Clear last key and last ascii because a new key has been typed */
 	display.lastAscii = display.lastKey = 0;
 	display.lastVirtual = display.lastNull = display.lastDead = false;
@@ -1598,20 +1597,9 @@ LRESULT wmKeyDown (long hwnd, long wParam, long lParam) {
 	if ((mapKey & 0x80000000) != 0) return null;
 
 	MSG msg = new MSG ();
-	int flags = OS.PM_NOREMOVE | OS.PM_NOYIELD | OS.PM_QS_INPUT | OS.PM_QS_POSTMESSAGE;
+	int flags = OS.PM_NOREMOVE | OS.PM_NOYIELD;
 	if (OS.PeekMessage (msg, hwnd, OS.WM_DEADCHAR, OS.WM_DEADCHAR, flags)) {
 		display.lastDead = true;
-		display.lastVirtual = mapKey == 0;
-		display.lastKey = display.lastVirtual ? (int)wParam : mapKey;
-		return null;
-	}
-
-	/*
-	 * When hitting accent keys twice in a row, PeekMessage only returns
-	 * a WM_DEADCHAR for the first WM_KEYDOWN. Ignore the second
-	 * WM_KEYDOWN and issue the key down event from inside WM_CHAR.
-	 */
-	if (lastDead) {
 		display.lastVirtual = mapKey == 0;
 		display.lastKey = display.lastVirtual ? (int)wParam : mapKey;
 		return null;

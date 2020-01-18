@@ -657,9 +657,14 @@ int asciiKey (int key) {
 	if (!OS.GetKeyboardState (keyboard)) return 0;
 
 	/* Translate the key to ASCII or UNICODE using the virtual keyboard */
-	char [] result = new char [1];
-	if (OS.ToUnicode (key, key, keyboard, result, 1, 0) == 1) return result [0];
-	return 0;
+	char [] buffer = new char [1];
+	int len = OS.ToUnicode (key, key, keyboard, buffer, 1, 0);
+
+	/* If the key is a dead key, flush dead key state. */
+	while (len == -1) {
+		len = OS.ToUnicode (key, key, keyboard, buffer, 1, 0);
+	}
+	return (len != 0) ? buffer [0] : 0;
 }
 
 /**
