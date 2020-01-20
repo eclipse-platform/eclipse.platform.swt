@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2019 IBM Corporation and others.
+ * Copyright (c) 2000, 2020 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -169,6 +169,13 @@ public final class Image extends Resource implements Drawable {
 		void init(NSImageRep nativeRep, NSBitmapImageRep rep) {
 			int width = (int)nativeRep.pixelsWide();
 			int height = (int)nativeRep.pixelsHigh();
+			/*
+			 * Intialize alphaInfo object. We may need to re intialize alpha info
+			 * when a new representation is created
+			 */
+			transparentPixel = -1;
+			alpha = -1;
+
 
 			boolean hasAlpha = rep.hasAlpha();
 			int bpr = width * 4;
@@ -1366,6 +1373,8 @@ public ImageData getImageData(int zoom) {
 
 					NSSize targetSize = handle.size();
 					imageRep = createImageRep(targetSize);
+					/* Recreate alpha info */
+					initAlpha_100(imageRep);
 					return _getImageData(imageRep, alphaInfo_100);
 				}
 			}
@@ -1412,6 +1421,15 @@ NSBitmapImageRep getRepresentation () {
 		targetSize.width = (int) imgSize.width * scaleFactor / 100;
 		targetSize.height = (int) imgSize.height * scaleFactor / 100;
 		rep = createImageRep(targetSize);
+		switch (scaleFactor) {
+		case 100:
+			initAlpha_100(rep);
+			break;
+		case 200:
+			initAlpha_200(rep);
+			break;
+		}
+
 	}
 	NSArray reps = handle.representations();
 	long count = reps.count();
@@ -1502,6 +1520,27 @@ void initAlpha_200(NSBitmapImageRep nativeRep) {
 
 		if (alphaInfo_200 == null) alphaInfo_200 = new AlphaInfo();
 		alphaInfo_200.init(nativeRep, rep);
+		rep.release();
+	} finally {
+		if (pool != null) pool.release();
+	}
+
+}
+
+void initAlpha_100(NSBitmapImageRep nativeRep) {
+	NSAutoreleasePool pool = null;
+	if (!NSThread.isMainThread()) pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
+	try {
+		int width = (int)nativeRep.pixelsWide();
+		int height = (int)nativeRep.pixelsHigh();
+
+		boolean hasAlpha = nativeRep.hasAlpha();
+		int bpr = width * 4;
+		NSBitmapImageRep rep = (NSBitmapImageRep)new NSBitmapImageRep().alloc();
+		rep = rep.initWithBitmapDataPlanes(0, width, height, 8, hasAlpha ? 4 : 3, hasAlpha, false, OS.NSDeviceRGBColorSpace, OS.NSAlphaFirstBitmapFormat | OS.NSAlphaNonpremultipliedBitmapFormat, bpr, 32);
+
+		if (alphaInfo_100 == null) alphaInfo_100 = new AlphaInfo();
+		alphaInfo_100.init(nativeRep, rep);
 		rep.release();
 	} finally {
 		if (pool != null) pool.release();
