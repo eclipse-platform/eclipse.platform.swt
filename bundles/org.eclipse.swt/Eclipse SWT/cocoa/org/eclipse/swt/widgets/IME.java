@@ -269,16 +269,16 @@ TextStyle getStyle (NSDictionary attribs) {
 	TextStyle style = new TextStyle ();
 	for (int j = 0; j < count; j++) {
 		NSString key = new NSString (keys.objectAtIndex (j));
-		if (key.isEqualTo (OS.NSBackgroundColorAttributeName)) {
+		if (key.isEqual (OS.NSBackgroundColorAttributeName)) {
 			NSColor color = new NSColor (attribs.objectForKey (key));
 			style.background = Color.cocoa_new (display, display.getNSColorRGB(color));
-		} else if (key.isEqualTo (OS.NSForegroundColorAttributeName)) {
+		} else if (key.isEqual (OS.NSForegroundColorAttributeName)) {
 			NSColor color = new NSColor (attribs.objectForKey (key));
 			style.foreground = Color.cocoa_new (display, display.getNSColorRGB(color));
-		} else if (key.isEqualTo (OS.NSUnderlineColorAttributeName)) {
+		} else if (key.isEqual (OS.NSUnderlineColorAttributeName)) {
 			NSColor color = new NSColor (attribs.objectForKey (key));
 			style.underlineColor = Color.cocoa_new (display, display.getNSColorRGB(color));
-		} else if (key.isEqualTo (OS.NSUnderlineStyleAttributeName)) {
+		} else if (key.isEqual (OS.NSUnderlineStyleAttributeName)) {
 			NSNumber value = new NSNumber (attribs.objectForKey (key));
 			switch (value.intValue ()) {
 				case OS.NSUnderlineStyleSingle: style.underlineStyle = SWT.UNDERLINE_SINGLE; break;
@@ -286,13 +286,13 @@ TextStyle getStyle (NSDictionary attribs) {
 				case OS.NSUnderlineStyleThick: style.underlineStyle = UNDERLINE_THICK; break;
 			}
 			style.underline = value.intValue () != OS.NSUnderlineStyleNone;
-		} else if (key.isEqualTo (OS.NSStrikethroughColorAttributeName)) {
+		} else if (key.isEqual (OS.NSStrikethroughColorAttributeName)) {
 			NSColor color = new NSColor (attribs.objectForKey (key));
 			style.strikeoutColor = Color.cocoa_new (display, display.getNSColorRGB(color));
-		} else if (key.isEqualTo (OS.NSStrikethroughStyleAttributeName)) {
+		} else if (key.isEqual (OS.NSStrikethroughStyleAttributeName)) {
 			NSNumber value = new NSNumber (attribs.objectForKey (key));
 			style.strikeout = value.intValue () != OS.NSUnderlineStyleNone;
-		} else if (key.isEqualTo (OS.NSFontAttributeName)) {
+		} else if (key.isEqual (OS.NSFontAttributeName)) {
 			NSFont font = new NSFont (attribs.objectForKey (key));
 			font.retain();
 			style.font = Font.cocoa_new (display, font);
@@ -513,12 +513,12 @@ boolean setMarkedText_selectedRange (long id, long sel, long string, long selRan
 @Override
 long validAttributesForMarkedText (long id, long sel) {
 	NSMutableArray attribs = NSMutableArray.arrayWithCapacity (6);
-	attribs.addObject (new NSString (OS.NSForegroundColorAttributeName ()));
-	attribs.addObject (new NSString (OS.NSBackgroundColorAttributeName ()));
-	attribs.addObject (new NSString (OS.NSUnderlineStyleAttributeName ()));
-	attribs.addObject (new NSString (OS.NSUnderlineColorAttributeName ()));
-	attribs.addObject (new NSString (OS.NSStrikethroughStyleAttributeName ()));
-	attribs.addObject (new NSString (OS.NSStrikethroughColorAttributeName ()));
+	attribs.addObject (OS.NSForegroundColorAttributeName);
+	attribs.addObject (OS.NSBackgroundColorAttributeName);
+	attribs.addObject (OS.NSUnderlineStyleAttributeName);
+	attribs.addObject (OS.NSUnderlineColorAttributeName);
+	attribs.addObject (OS.NSStrikethroughStyleAttributeName);
+	attribs.addObject (OS.NSStrikethroughColorAttributeName);
 	return attribs.id;
 }
 

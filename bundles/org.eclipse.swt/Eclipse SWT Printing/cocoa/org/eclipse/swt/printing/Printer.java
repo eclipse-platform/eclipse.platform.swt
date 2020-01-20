@@ -237,7 +237,7 @@ protected void create(DeviceData deviceData) {
 		* the user chooses the preview button.  The fix is to reset the job disposition.
 		*/
 		NSString job = printInfo.jobDisposition();
-		if (job.isEqual(new NSString(OS.NSPrintPreviewJob()))) {
+		if (job.isEqual(OS.NSPrintPreviewJob)) {
 			printInfo.setJobDisposition(job);
 		}
 		NSRect rect = new NSRect();

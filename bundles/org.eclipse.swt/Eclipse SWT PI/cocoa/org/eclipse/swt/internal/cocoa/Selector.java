@@ -634,7 +634,6 @@ public enum Selector {
 	, sel_isEmpty("isEmpty")
 	, sel_isEnabled("isEnabled")
 	, sel_isEqual_("isEqual:")
-	, sel_isEqualTo_("isEqualTo:")
 	, sel_isEqualToString_("isEqualToString:")
 	, sel_isExecutableFileAtPath_("isExecutableFileAtPath:")
 	, sel_isFieldEditor("isFieldEditor")

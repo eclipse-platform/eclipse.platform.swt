@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2018 IBM Corporation and others.
+ * Copyright (c) 2000, 2020 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -136,10 +136,6 @@ public NSObject init() {
 
 public boolean isEqual(id object) {
 	return OS.objc_msgSend_bool(this.id, OS.sel_isEqual_, object != null ? object.id : 0);
-}
-
-public boolean isEqualTo(id object) {
-	return OS.objc_msgSend_bool(this.id, OS.sel_isEqualTo_, object != null ? object.id : 0);
 }
 
 public boolean isKindOfClass(long aClass) {

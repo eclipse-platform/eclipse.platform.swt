@@ -1522,7 +1522,6 @@ public static final long sel_isDrawingToScreen = Selector.sel_isDrawingToScreen.
 public static final long sel_isEmpty = Selector.sel_isEmpty.value;
 public static final long sel_isEnabled = Selector.sel_isEnabled.value;
 public static final long sel_isEqual_ = Selector.sel_isEqual_.value;
-public static final long sel_isEqualTo_ = Selector.sel_isEqualTo_.value;
 public static final long sel_isEqualToString_ = Selector.sel_isEqualToString_.value;
 public static final long sel_isExecutableFileAtPath_ = Selector.sel_isExecutableFileAtPath_.value;
 public static final long sel_isFieldEditor = Selector.sel_isFieldEditor.value;
