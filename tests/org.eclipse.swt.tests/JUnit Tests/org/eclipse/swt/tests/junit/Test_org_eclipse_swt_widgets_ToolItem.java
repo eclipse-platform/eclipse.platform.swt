@@ -65,7 +65,6 @@ public void test_setImageLorg_eclipse_swt_graphics_Image() {
 
 @Test
 public void test_setDisabledImage() {
-	if (SwtTestUtil.isGTK) {
 		toolItem.setImage(images[0]);
 		toolItem.setDisabledImage(images[1]);
 		toolItem.setEnabled(false);
@@ -110,7 +109,6 @@ public void test_setDisabledImage() {
 		toolItem.setImage(null);
 		assertEquals(null, toolItem.getImage());
 		assertEquals(images[1], toolItem.getDisabledImage());
-	}
 }
 
 @Override
