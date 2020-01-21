@@ -45,11 +45,6 @@ public class OS extends C {
 	public static final int kAlertCautionIcon = ('c'<<24) + ('a'<<16) + ('u'<<8) + 't';
 	public static final int kAlertNoteIcon = ('n'<<24) + ('o'<<16) + ('t'<<8) + 'e';
 	public static final int kAlertStopIcon = ('s'<<24) + ('t'<<16) + ('o'<<8) + 'p';
-	public static final int kHICommandHide = ('h'<<24) + ('i'<<16) + ('d'<<8) + 'e';
-	public static final int kHICommandHideOthers = ('h'<<24) + ('i'<<16) + ('d'<<8) + 'o';
-	public static final int kHICommandShowAll = ('s'<<24) + ('h'<<16) + ('a'<<8) + 'l';
-	public static final int kHICommandQuit = ('q'<<24) + ('u'<<16) + ('i'<<8) + 't';
-	public static final int kHICommandServices = ('s'<<24) + ('e'<<16) + ('r'<<8) + 'v';
 	public static final int shiftKey = 1 << 9;
 	public static final int kThemeMetricFocusRectOutset = 7;
 	public static final int kHIThemeOrientationNormal = 0;
@@ -277,19 +272,6 @@ public static final native int CancelMenuTracking (long inRootMenu, boolean inIm
  * @param outAppURL cast=(CFURLRef *)
  */
 public static final native long LSGetApplicationForInfo(int inType, int inCreator,long inExtension, int inRoleMask, byte[] outAppRef, int[] outAppURL);
-/** @method flags=dynamic
- * @param mHandle cast=(MenuRef)
- * @param commandId cast=(MenuCommand)
- * @param index cast=(UInt32)
- * @param outMenu cast=(MenuRef *)
- * @param outIndex cast=(MenuItemIndex *)
- */
-public static final native int GetIndMenuItemWithCommandID(long mHandle, int commandId, int index, long [] outMenu, short[] outIndex);
-/** @method flags=dynamic
- * @param mHandle cast=(MenuRef)
- * @param index cast=(short)
- */
-public static final native void DeleteMenuItem(long mHandle, short index);
 /** @method flags=dynamic
  * @param pmSessionInfo cast=(PMPrintSession)
  * @param outPMPrinter cast=(PMPrinter *)

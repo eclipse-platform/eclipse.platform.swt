@@ -5413,30 +5413,6 @@ void applicationWillFinishLaunching (long id, long sel, long notification) {
 	boolean loaded = false;
 
 	/*
-	 * Bug in AWT:  If the AWT starts up first when the VM was started on the first thread it assumes that
-	 * a Carbon-based SWT will be used, so it calls NSApplicationLoad().  This causes the Carbon menu
-	 * manager to create an application menu that isn't accessible via NSMenu.  It is, however, accessible
-	 * via the Carbon menu manager, so find and delete the menu items it added.
-	 *
-	 * Note that this code will continue to work if Apple does change this. GetIndMenuWithCommandID will
-	 * return a non-zero value indicating failure, which we ignore.
-	 */
-	if (isEmbedded) {
-		long outMenu [] = new long [1];
-		short outIndex[] = new short[1];
-		int status = OS.GetIndMenuItemWithCommandID(0, OS.kHICommandHide, 1, outMenu, outIndex);
-		if (status == 0) OS.DeleteMenuItem(outMenu[0], outIndex[0]);
-		status = OS.GetIndMenuItemWithCommandID(0, OS.kHICommandHideOthers, 1, outMenu, outIndex);
-		if (status == 0) OS.DeleteMenuItem(outMenu[0], outIndex[0]);
-		status = OS.GetIndMenuItemWithCommandID(0, OS.kHICommandShowAll, 1, outMenu, outIndex);
-		if (status == 0) OS.DeleteMenuItem(outMenu[0], outIndex[0]);
-		status = OS.GetIndMenuItemWithCommandID(0, OS.kHICommandQuit, 1, outMenu, outIndex);
-		if (status == 0) OS.DeleteMenuItem(outMenu[0], outIndex[0]);
-		status = OS.GetIndMenuItemWithCommandID(0, OS.kHICommandServices, 1, outMenu, outIndex);
-		if (status == 0) OS.DeleteMenuItem(outMenu[0], outIndex[0]);
-	}
-
-	/*
 	 * Get the default locale's language, and then the display name of the language. Some Mac OS X localizations use the
 	 * display name of the language, but many use the ISO two-char abbreviation instead.
 	 */
