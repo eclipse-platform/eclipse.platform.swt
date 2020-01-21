@@ -975,16 +975,6 @@ boolean resizeChildren (boolean defer, WINDOWPOS [] pwp) {
 	}
 	for (WINDOWPOS wp : pwp) {
 		if (wp != null) {
-			/*
-			* This code is intentionally commented.  All widgets that
-			* are created by SWT have WS_CLIPSIBLINGS to ensure that
-			* application code does not draw outside of the control.
-			*/
-//			int count = parent.getChildrenCount ();
-//			if (count > 1) {
-//				int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
-//				if ((bits & OS.WS_CLIPSIBLINGS) == 0) wp.flags |= OS.SWP_NOCOPYBITS;
-//			}
 			if (defer) {
 				hdwp = OS.DeferWindowPos (hdwp, wp.hwnd, 0, wp.x, wp.y, wp.cx, wp.cy, wp.flags);
 				if (hdwp == 0) return false;

@@ -38,8 +38,6 @@ import org.eclipse.swt.internal.win32.*;
  */
 public class ColorDialog extends Dialog {
 	static final int CUSTOM_COLOR_COUNT = 16; // from the MS spec for CHOOSECOLOR.lpCustColors
-	Display display;
-	int width, height;
 	RGB rgb;
 	RGB [] rgbs;
 	int [] colors = new int [CUSTOM_COLOR_COUNT];
@@ -101,28 +99,9 @@ public ColorDialog (Shell parent, int style) {
 long CCHookProc (long hdlg, long uiMsg, long lParam, long lpData) {
 	switch ((int)uiMsg) {
 		case OS.WM_INITDIALOG: {
-			RECT rect = new RECT ();
-			OS.GetWindowRect (hdlg, rect);
-			width = rect.right - rect.left;
-			height = rect.bottom - rect.top;
 			if (title != null && title.length () != 0) {
-				/* Use the character encoding for the default locale */
 				TCHAR buffer = new TCHAR (0, title, true);
 				OS.SetWindowText (hdlg, buffer);
-			}
-			break;
-		}
-		case OS.WM_DESTROY: {
-			RECT rect = new RECT ();
-			OS.GetWindowRect (hdlg, rect);
-			int newWidth = rect.right - rect.left;
-			int newHeight = rect.bottom - rect.top;
-			if (newWidth < width || newHeight < height) {
-				//display.fullOpen = false;
-			} else {
-				if (newWidth > width || newHeight > height) {
-					//display.fullOpen = true;
-				}
 			}
 			break;
 		}
@@ -204,7 +183,7 @@ public RGB open () {
 	long lpfnHook = callback.getAddress ();
 
 	/* Allocate the Custom Colors and initialize to white */
-	display = parent.display;
+	Display display = parent.display;
 	if (display.lpCustColors == 0) {
 		long hHeap = OS.GetProcessHeap ();
 		display.lpCustColors = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, CUSTOM_COLOR_COUNT * 4);
@@ -234,7 +213,6 @@ public RGB open () {
 	CHOOSECOLOR lpcc = new CHOOSECOLOR ();
 	lpcc.lStructSize = CHOOSECOLOR.sizeof;
 	lpcc.Flags = OS.CC_ANYCOLOR | OS.CC_ENABLEHOOK;
-	//if (display.fullOpen) lpcc.Flags |= OS.CC_FULLOPEN;
 	lpcc.lpfnHook = lpfnHook;
 	lpcc.hwndOwner = hwndOwner;
 	lpcc.lpCustColors = display.lpCustColors;
@@ -295,15 +273,6 @@ public RGB open () {
 	/* Free the CCHookProc */
 	callback.dispose ();
 
-	/* Free the Custom Colors */
-	/*
-	* This code is intentionally commented.  Currently,
-	* there is exactly one set of custom colors per display.
-	* The memory associated with these colors is released
-	* when the display is disposed.
-	*/
-//	if (lpCustColors != 0) OS.HeapFree (hHeap, 0, lpCustColors);
-
 	/* Destroy the BIDI orientation window */
 	if (hwndParent != hwndOwner) {
 		if (enabled) OS.EnableWindow (hwndParent, true);
@@ -311,15 +280,6 @@ public RGB open () {
 		OS.DestroyWindow (hwndOwner);
 	}
 
-	/*
-	* This code is intentionally commented.  On some
-	* platforms, the owner window is repainted right
-	* away when a dialog window exits.  This behavior
-	* is currently unspecified.
-	*/
-//	if (hwndOwner != 0) OS.UpdateWindow (hwndOwner);
-
-	display = null;
 	if (!success) return null;
 	return rgb;
 }

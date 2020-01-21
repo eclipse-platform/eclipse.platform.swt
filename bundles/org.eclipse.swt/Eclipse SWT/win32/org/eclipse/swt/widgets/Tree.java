@@ -205,14 +205,6 @@ void _addListener (int eventType, Listener listener) {
 			OS.SendMessage (handle, OS.TVM_SETSCROLLTIME, 0, 0);
 			int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
 			if (eventType == SWT.MeasureItem) {
-				/*
-				* This code is intentionally commented.
-				*/
-//				if (explorerTheme) {
-//					int bits1 = (int)OS.SendMessage (handle, OS.TVM_GETEXTENDEDSTYLE, 0, 0);
-//					bits1 &= ~OS.TVS_EX_AUTOHSCROLL;
-//					OS.SendMessage (handle, OS.TVM_SETEXTENDEDSTYLE, 0, bits1);
-//				}
 				bits |= OS.TVS_NOHSCROLL;
 			}
 			/*
@@ -1667,11 +1659,6 @@ boolean checkData (TreeItem item, int index, boolean redraw) {
 	return true;
 }
 
-@Override
-boolean checkHandle (long hwnd) {
-	return hwnd == handle || (hwndParent != 0 && hwnd == hwndParent) || (hwndHeader != 0 && hwnd == hwndHeader);
-}
-
 boolean checkScroll (long hItem) {
 	/*
 	* Feature in Windows.  If redraw is turned off using WM_SETREDRAW
@@ -1863,10 +1850,6 @@ void createHandle () {
 		OS.SetWindowTheme (handle, Display.EXPLORER, null);
 		int bits = OS.TVS_EX_DOUBLEBUFFER | OS.TVS_EX_RICHTOOLTIP;
 		if (ENABLE_TVS_EX_FADEINOUTEXPANDOS) bits |= OS.TVS_EX_FADEINOUTEXPANDOS;
-		/*
-		* This code is intentionally commented.
-		*/
-//		if ((style & SWT.FULL_SELECTION) == 0) bits |= OS.TVS_EX_AUTOHSCROLL;
 		OS.SendMessage (handle, OS.TVM_SETEXTENDEDSTYLE, 0, bits);
 		/*
 		* Bug in Windows.  When the tree is using the explorer
@@ -2112,14 +2095,6 @@ void createItem (TreeItem item, long hParent, long hInsertAfter, long hItem) {
 		hNewItem = OS.SendMessage (handle, OS.TVM_INSERTITEM, 0, tvInsert);
 		ignoreCustomDraw = false;
 		if (hNewItem == 0) error (SWT.ERROR_ITEM_NOT_ADDED);
-		/*
-		* This code is intentionally commented.
-		*/
-//		if (hParent != 0) {
-//			int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
-//			bits |= OS.TVS_LINESATROOT;
-//			OS.SetWindowLong (handle, OS.GWL_STYLE, bits);
-//		}
 	} else {
 		TVITEM tvItem = new TVITEM ();
 		tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_PARAM;
@@ -2271,14 +2246,6 @@ void createParent () {
 		null);
 	if (hwndHeader == 0) error (SWT.ERROR_NO_HANDLES);
 	OS.SetWindowLongPtr (hwndHeader, OS.GWLP_ID, hwndHeader);
-	//This code is intentionally commented
-//	if (!OS.IsPPC) {
-//		if ((style & SWT.BORDER) != 0) {
-//			int oldExStyle = OS.GetWindowLong (handle, OS.GWL_EXSTYLE);
-//			oldExStyle &= ~OS.WS_EX_CLIENTEDGE;
-//			OS.SetWindowLong (handle, OS.GWL_EXSTYLE, oldExStyle);
-//		}
-//	}
 	long hFont = OS.SendMessage (handle, OS.WM_GETFONT, 0, 0);
 	if (hFont != 0) OS.SendMessage (hwndHeader, OS.WM_SETFONT, hFont, 0);
 	long hwndInsertAfter = OS.GetWindow (handle, OS.GW_HWNDPREV);
@@ -2574,10 +2541,6 @@ void destroyItem (TreeItem item, long hItem) {
 		hParent = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_PARENT, hItem);
 		OS.UpdateWindow (handle);
 		OS.DefWindowProc (handle, OS.WM_SETREDRAW, 0, 0);
-		/*
-		* This code is intentionally commented.
-		*/
-//		OS.SendMessage (handle, OS.WM_SETREDRAW, 0, 0);
 	}
 	ignoreDeselect = ignoreSelect = lockSelection = true;
 
@@ -5217,9 +5180,6 @@ void showItem (long hItem) {
 			OS.DefWindowProc (handle, OS.WM_SETREDRAW, 0, 0);
 		}
 		OS.SendMessage (handle, OS.TVM_SELECTITEM, OS.TVGN_FIRSTVISIBLE, hItem);
-		/* This code is intentionally commented */
-		//int hParent = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_PARENT, hItem);
-		//if (hParent == 0) OS.SendMessage (handle, OS.WM_HSCROLL, OS.SB_TOP, 0);
 		OS.SendMessage (handle, OS.WM_HSCROLL, OS.SB_TOP, 0);
 		if (fixScroll) {
 			OS.DefWindowProc (handle, OS.WM_SETREDRAW, 1, 0);

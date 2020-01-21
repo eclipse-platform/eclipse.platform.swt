@@ -113,19 +113,12 @@ public class OS extends C {
 	public static final int BDR_INNER = 0x000c;
 	public static final int BDR_RAISED = 0x0005;
 	public static final int BDR_SUNKEN = 0x000a;
-	public static final int BFFM_INITIALIZED = 0x1;
-	public static final int BFFM_SETSELECTION = 0x467;
-	public static final int BFFM_VALIDATEFAILED = 0x4;
 	public static final int BF_ADJUST = 0x2000;
 	public static final int BF_LEFT = 0x0001;
 	public static final int BF_TOP = 0x0002;
 	public static final int BF_RIGHT = 0x0004;
 	public static final int BF_BOTTOM = 0x0008;
 	public static final int BF_RECT = (BF_LEFT | BF_TOP | BF_RIGHT | BF_BOTTOM);
-	public static final int BIF_EDITBOX = 0x10;
-	public static final int BIF_NEWDIALOGSTYLE = 0x40;
-	public static final int BIF_RETURNONLYFSDIRS = 0x1;
-	public static final int BIF_VALIDATE = 0x20;
 	public static final int BITSPIXEL = 0xc;
 	public static final int BI_BITFIELDS = 3;
 	public static final int BI_RGB = 0;
@@ -347,10 +340,6 @@ public class OS extends C {
 	public static final int CWP_SKIPINVISIBLE = 0x0001;
 	public static final String DATETIMEPICK_CLASS = "SysDateTimePick32"; //$NON-NLS-1$
 	public static final int DCX_CACHE = 0x2;
-	public static final int DCX_CLIPCHILDREN = 0x8;
-	public static final int DCX_CLIPSIBLINGS = 0x10;
-	public static final int DCX_INTERSECTRGN = 0x80;
-	public static final int DCX_WINDOW = 0x1;
 	public static final int DEFAULT_CHARSET = 0x1;
 	public static final int DEFAULT_GUI_FONT = 0x11;
 	public static final int DFCS_BUTTONCHECK = 0x0;
@@ -514,9 +503,6 @@ public class OS extends C {
 	public static final int FLICKDIRECTION_INVALID = 8;
 	public static final int FNERR_INVALIDFILENAME = 0x3002;
 	public static final int FNERR_BUFFERTOOSMALL = 0x3003;
-	public static final int FORMAT_MESSAGE_ALLOCATE_BUFFER = 0x00000100;
-	public static final int FORMAT_MESSAGE_FROM_SYSTEM = 0x00001000;
-	public static final int FORMAT_MESSAGE_IGNORE_INSERTS = 0x00000200;
 	public static final int FOS_NOCHANGEDIR = 0x8;
 	public static final int FOS_PICKFOLDERS = 0x20;
 	public static final int FOS_FORCEFILESYSTEM = 0x40;
@@ -718,7 +704,6 @@ public class OS extends C {
 	public static final int LANG_JAPANESE = 0x11;
 	public static final int LANG_KOREAN = 0x12;
 	public static final int LANG_NEUTRAL = 0x0;
-	public static final int LANG_USER_DEFAULT = 1 << 10;
 	public static final int LAYOUT_RTL = 0x1;
 	public static final int LBN_DBLCLK = 0x2;
 	public static final int LBN_SELCHANGE = 0x1;
@@ -1259,7 +1244,6 @@ public class OS extends C {
 	public static final int SCRBS_HOT = 2;
 	public static final int SCRBS_PRESSED = 3;
 	public static final int SCRBS_DISABLED = 4;
-	public static final int SEM_FAILCRITICALERRORS = 0x1;
 	public static final int SET_FEATURE_ON_PROCESS = 0x2;
 	public static final int SHADEBLENDCAPS = 120;
 	public static final int SHGFI_ICON = 0x000000100;
@@ -1981,7 +1965,6 @@ public static final native int BITMAP_sizeof ();
 public static final native int BITMAPINFOHEADER_sizeof ();
 public static final native int BLENDFUNCTION_sizeof ();
 public static final native int BP_PAINTPARAMS_sizeof ();
-public static final native int BROWSEINFO_sizeof ();
 public static final native int BUTTON_IMAGELIST_sizeof ();
 public static final native int CANDIDATEFORM_sizeof ();
 public static final native int CERT_CONTEXT_sizeof ();
@@ -2346,11 +2329,6 @@ public static final boolean SetDllDirectory (TCHAR lpPathName) {
 public static final boolean SetWindowText (long hWnd, TCHAR lpString) {
 	char [] lpString1 = lpString == null ? null : lpString.chars;
 	return SetWindowText (hWnd, lpString1);
-}
-
-public static final boolean SHGetPathFromIDList (long pidl, TCHAR pszPath) {
-	char [] pszPath1 = pszPath == null ? null : pszPath.chars;
-	return SHGetPathFromIDList (pidl, pszPath1);
 }
 
 public static final boolean UnregisterClass (TCHAR lpClassName, long hInstance) {
@@ -2751,12 +2729,6 @@ public static final native boolean FileTimeToSystemTime (FILETIME lpFileTime, SY
  * @param hbr cast=(HBRUSH)
  */
 public static final native int FillRect (long hDC, RECT lprc, long hbr);
-/**
- * @param lpSource cast=(LPCVOID)
- * @param lpBuffer cast=(LPWSTR)
- * @param Arguments cast=(va_list*)
- */
-public static final native int FormatMessage (int dwFlags, long lpSource, int dwMessageId, int dwLanguageId, long [] lpBuffer, int nSize, long Arguments);
 /** @param dwLimit cast=(DWORD) */
 public static final native int GdiSetBatchLimit (int dwLimit);
 public static final native int GET_WHEEL_DELTA_WPARAM(long wParam);
@@ -4359,7 +4331,6 @@ public static final native boolean SetCursorPos (int X, int Y);
  */
 public static final native int SetDIBColorTable (long hdc, int uStartIndex, int cEntries, byte[] pColors);
 public static final native boolean SetDllDirectory (char [] lpString);
-public static final native int SetErrorMode (int uMode);
 /** @param hWnd cast=(HWND) */
 public static final native long SetFocus (long hWnd);
 /** @param hWnd cast=(HWND) */
@@ -4473,8 +4444,6 @@ public static final native long SetWindowsHookEx (int idHook, long lpfn,  long h
  * @param lpXform cast=(XFORM *)
  */
 public static final native boolean SetWorldTransform(long hdc, float[] lpXform);
-/** @param lpbi cast=(LPBROWSEINFOW) */
-public static final native long SHBrowseForFolder (BROWSEINFO lpbi);
 /**
  * @param pszPath cast=(LPCWSTR)
  * @param psfi cast=(SHFILEINFOW *)
@@ -4483,13 +4452,6 @@ public static final native long SHGetFileInfo (char [] pszPath, int dwFileAttrib
 /** @param lpExecInfo cast=(LPSHELLEXECUTEINFOW) */
 public static final native boolean ShellExecuteEx (SHELLEXECUTEINFO lpExecInfo);
 public static final native boolean Shell_NotifyIcon (int dwMessage, NOTIFYICONDATA lpData);
-/** @param ppMalloc cast=(LPMALLOC *) */
-public static final native int SHGetMalloc (long [] ppMalloc);
-/**
- * @param pidl cast=(LPCITEMIDLIST)
- * @param pszPath cast=(LPWSTR)
- */
-public static final native boolean SHGetPathFromIDList (long pidl, char [] pszPath);
 /** @param hWnd cast=(HWND) */
 public static final native boolean ShowCaret (long hWnd);
 /** @param hWnd cast=(HWND) */

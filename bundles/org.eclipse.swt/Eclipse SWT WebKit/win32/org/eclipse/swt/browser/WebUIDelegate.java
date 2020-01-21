@@ -350,7 +350,6 @@ int printFrame (long webView, long frame) {
 	long hHeap = OS.GetProcessHeap ();
 	long lpszDocName = 0;
 	if (jobName != null && jobName.length () != 0) {
-		/* Use the character encoding for the default locale */
 		TCHAR buffer = new TCHAR (0, jobName, true);
 		int byteCount = buffer.length () * TCHAR.sizeof;
 		lpszDocName = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);

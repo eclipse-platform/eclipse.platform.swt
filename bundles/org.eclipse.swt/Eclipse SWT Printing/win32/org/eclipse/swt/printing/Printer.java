@@ -86,7 +86,6 @@ public final class Printer extends Device {
  */
 public static PrinterData[] getPrinterList() {
 	int length = 1024;
-	/* Use the character encoding for the default locale */
 	TCHAR buf = new TCHAR(0, length);
 	TCHAR nullBuf = new TCHAR(0, 1);
 	int n = OS.GetProfileString(profile, null, nullBuf, buf, length);
@@ -134,7 +133,6 @@ public static PrinterData[] getPrinterList() {
 public static PrinterData getDefaultPrinterData() {
 	String deviceName = null;
 	int length = 1024;
-	/* Use the character encoding for the default locale */
 	TCHAR buf = new TCHAR(0, length);
 	TCHAR nullBuf = new TCHAR(0, 1);
 	int n = OS.GetProfileString(appName, keyName, nullBuf, buf, length);
@@ -215,7 +213,6 @@ public Printer(PrinterData data) {
 @Override
 protected void create(DeviceData deviceData) {
 	data = (PrinterData)deviceData;
-	/* Use the character encoding for the default locale */
 	TCHAR driver = new TCHAR(0, data.driver, true);
 	TCHAR device = new TCHAR(0, data.name, true);
 	long lpInitData = 0;
@@ -360,7 +357,6 @@ public boolean startJob(String jobName) {
 	long hHeap = OS.GetProcessHeap();
 	long lpszDocName = 0;
 	if (jobName != null && jobName.length() != 0) {
-		/* Use the character encoding for the default locale */
 		TCHAR buffer = new TCHAR(0, jobName, true);
 		int byteCount = buffer.length() * TCHAR.sizeof;
 		lpszDocName = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
@@ -373,7 +369,6 @@ public boolean startJob(String jobName) {
 			/* Prompt the user for a file name. */
 			data.fileName = "FILE:"; //$NON-NLS-1$
 		}
-		/* Use the character encoding for the default locale */
 		TCHAR buffer = new TCHAR(0, data.fileName, true);
 		int byteCount = buffer.length() * TCHAR.sizeof;
 		lpszOutput = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, byteCount);

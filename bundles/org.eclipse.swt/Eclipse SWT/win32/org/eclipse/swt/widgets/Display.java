@@ -414,17 +414,6 @@ public class Display extends Device {
 
 	/* Package Name */
 	static final String PACKAGE_PREFIX = "org.eclipse.swt.widgets."; //$NON-NLS-1$
-	/*
-	* This code is intentionally commented.  In order
-	* to support CLDC, .class cannot be used because
-	* it does not compile on some Java compilers when
-	* they are targeted for CLDC.
-	*/
-//	static {
-//		String name = Display.class.getName ();
-//		int index = name.lastIndexOf ('.');
-//		PACKAGE_PREFIX = name.substring (0, index + 1);
-//	}
 
 	/*
 	* TEMPORARY CODE.  Install the runnable that
@@ -1530,20 +1519,8 @@ Control getControl (long handle) {
 	}
 	int index = (int)OS.GetProp (handle, SWT_OBJECT_INDEX) - 1;
 	if (0 <= index && index < controlTable.length) {
-		Control control = controlTable [index];
-		/*
-		* Because GWL_USERDATA can be used by native widgets that
-		* do not belong to SWT, it is possible that GWL_USERDATA
-		* could return an index that is in the range of the table,
-		* but was not put there by SWT.  Therefore, it is necessary
-		* to check the handle of the control that is in the table
-		* against the handle that provided the GWL_USERDATA.
-		*/
-		if (control != null && control.checkHandle (handle)) {
-			lastGetHwnd = handle;
-			lastGetControl = control;
-			return control;
-		}
+		lastGetHwnd = handle;
+		return lastGetControl = controlTable [index];
 	}
 	return null;
 }
@@ -1831,16 +1808,13 @@ public int getIconDepth () {
 	checkDevice ();
 	if (getDepth () >= 24) return 32;
 
-	/* Use the character encoding for the default locale */
 	TCHAR buffer1 = new TCHAR (0, "Control Panel\\Desktop\\WindowMetrics", true); //$NON-NLS-1$
-
 	long [] phkResult = new long [1];
 	int result = OS.RegOpenKeyEx (OS.HKEY_CURRENT_USER, buffer1, 0, OS.KEY_READ, phkResult);
 	if (result != 0) return 4;
 	int depth = 4;
 	int [] lpcbData = new int [1];
 
-	/* Use the character encoding for the default locale */
 	TCHAR buffer2 = new TCHAR (0, "Shell Icon BPP", true); //$NON-NLS-1$
 	result = OS.RegQueryValueEx (phkResult [0], buffer2, 0, null, (TCHAR) null, lpcbData);
 	if (result == 0) {
@@ -2649,7 +2623,6 @@ protected void init () {
 	/* Remember the current thread id */
 	threadId = OS.GetCurrentThreadId ();
 
-	/* Use the character encoding for the default locale */
 	windowClass = new TCHAR (0, WindowName + WindowClassCount, true);
 	windowShadowClass = new TCHAR (0, WindowShadowName + WindowClassCount, true);
 	windowOwnDCClass = new TCHAR (0, WindowOwnDCName + WindowClassCount, true);
@@ -3141,13 +3114,6 @@ long messageProc (long hwnd, long msg, long wParam, long lParam) {
 		case OS.WM_ENDSESSION: {
 			if (wParam != 0) {
 				dispose ();
-				/*
-				* When the session is ending, no SWT program can continue
-				* to run.  In order to avoid running code after the display
-				* has been disposed, exit from Java.
-				*/
-				/* This code is intentionally commented */
-//				System.exit (0);
 			}
 			break;
 		}
@@ -4012,8 +3978,6 @@ void runSettings () {
 			if (!sameFont) {
 				shell.updateFont (oldFont, newFont);
 			}
-			/* This code is intentionally commented */
-			//shell.redraw (true);
 			shell.layout (true, true);
 		}
 	}

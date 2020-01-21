@@ -236,21 +236,6 @@ static int checkStyle (int style) {
 	*/
 	if ((style & SWT.CLOSE) != 0) style |= SWT.TITLE;
 
-	/*
-	* Bug in Windows.  The WS_CAPTION style must be
-	* set when the window is resizable or it does not
-	* draw properly.
-	*/
-	/*
-	* This code is intentionally commented.  It seems
-	* that this problem originally in Windows 3.11,
-	* has been fixed in later versions.  Because the
-	* exact nature of the drawing problem is unknown,
-	* keep the commented code around in case it comes
-	* back.
-	*/
-//	if ((style & SWT.RESIZE) != 0) style |= SWT.TITLE;
-
 	return style;
 }
 
@@ -1235,7 +1220,6 @@ void setSystemMenu () {
 public void setText (String string) {
 	checkWidget ();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
-	/* Use the character encoding for the default locale */
 	TCHAR buffer = new TCHAR (0, string, true);
 	/* Ensure that the title appears in the task bar.*/
 	if ((state & FOREIGN_HANDLE) != 0) {

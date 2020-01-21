@@ -206,13 +206,11 @@ IObjectArray createShellLinkArray (MenuItem [] items) {
 	for (MenuItem item : items) {
 		IShellLink pLink = createShellLink (item);
 		if (pLink != null) {
-			/*IObjectCollection::AddObject*/
 			pObjColl.AddObject (pLink);
 			if (hr != OS.S_OK) error (SWT.ERROR_INVALID_ARGUMENT);
 			pLink.Release ();
 		}
 	}
-	/*IUnknown::QueryInterface*/
 	hr = pObjColl.QueryInterface(COM.IID_IObjectArray, ppv);
 	if (hr != OS.S_OK) error (SWT.ERROR_NO_HANDLES);
 	IObjectArray poa = new IObjectArray (ppv [0]);
@@ -417,7 +415,6 @@ void setMenu (Menu menu) {
 								hr = pDestList.AppendCategory (buffer2, poa2);
 								if (hr != OS.S_OK) error (SWT.ERROR_INVALID_ARGUMENT);
 							}
-							/*IUnknown::Release*/
 							poa2.Release ();
 						}
 					}

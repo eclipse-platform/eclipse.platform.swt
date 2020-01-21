@@ -142,8 +142,6 @@ public class Combo extends Composite {
  */
 public Combo (Composite parent, int style) {
 	super (parent, checkStyle (style));
-	/* This code is intentionally commented */
-	//if ((style & SWT.H_SCROLL) != 0) this.style |= SWT.H_SCROLL;
 	this.style |= SWT.H_SCROLL;
 }
 
@@ -509,11 +507,6 @@ long CBTProc (long nCode, long wParam, long lParam) {
 		}
 	}
 	return OS.CallNextHookEx (cbtHook, (int)nCode, wParam, lParam);
-}
-
-@Override
-boolean checkHandle (long hwnd) {
-	return hwnd == handle || hwnd == OS.GetDlgItem (handle, CBID_EDIT) || hwnd == OS.GetDlgItem (handle, CBID_LIST);
 }
 
 @Override

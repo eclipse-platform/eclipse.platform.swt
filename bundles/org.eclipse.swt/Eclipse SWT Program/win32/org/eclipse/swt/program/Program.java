@@ -84,7 +84,6 @@ public static Program findProgram (String extension) {
 	if (extension == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 	if (extension.length () == 0) return null;
 	if (extension.charAt (0) != '.') extension = "." + extension; //$NON-NLS-1$
-	/* Use the character encoding for the default locale */
 	TCHAR key = new TCHAR (0, extension, true);
 	Program program = null;
 	String command = assocQueryString (OS.ASSOCSTR_COMMAND, key, true);
@@ -139,7 +138,6 @@ public static String [] getExtensions () {
 }
 
 static String getKeyValue (String string, boolean expand) {
-	/* Use the character encoding for the default locale */
 	TCHAR key = new TCHAR (0, string, true);
 	long [] phkResult = new long [1];
 	if (OS.RegOpenKeyEx (OS.HKEY_CLASSES_ROOT, key, 0, OS.KEY_READ, phkResult) != 0) {
@@ -277,7 +275,6 @@ public static boolean launch (String fileName) {
 public static boolean launch (String fileName, String workingDir) {
 	if (fileName == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 
-	/* Use the character encoding for the default locale */
 	long hHeap = OS.GetProcessHeap ();
 	TCHAR buffer = new TCHAR (0, fileName, true);
 	int byteCount = buffer.length () * TCHAR.sizeof;
@@ -334,7 +331,6 @@ public boolean execute (String fileName) {
 	if (append) fileName = " \"" + fileName + "\"";
 	String commandLine = prefix + fileName + suffix;
 	long hHeap = OS.GetProcessHeap ();
-	/* Use the character encoding for the default locale */
 	TCHAR buffer = new TCHAR (0, commandLine, true);
 	int byteCount = buffer.length () * TCHAR.sizeof;
 	long lpCommandLine = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
@@ -386,7 +382,6 @@ public ImageData getImageData () {
 			fileName = fileName.substring (1, length - 1);
 		}
 	}
-	/* Use the character encoding for the default locale */
 	TCHAR lpszFile = new TCHAR (0, fileName, true);
 	long [] phiconSmall = new long[1], phiconLarge = null;
 	OS.ExtractIconEx (lpszFile, nIconIndex, phiconLarge, phiconSmall, 1);

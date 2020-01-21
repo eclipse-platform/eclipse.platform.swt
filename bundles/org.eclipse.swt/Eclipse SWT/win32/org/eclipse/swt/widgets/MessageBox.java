@@ -196,7 +196,6 @@ public int open () {
 
 	/* Open the message box */
 	display.sendPreExternalEventDispatchEvent ();
-	/* Use the character encoding for the default locale */
 	TCHAR buffer1 = new TCHAR (0, message, true);
 	TCHAR buffer2 = new TCHAR (0, title, true);
 	display.externalEventLoop = true;
@@ -208,14 +207,6 @@ public int open () {
 	if ((bits & OS.MB_TASKMODAL) != 0) {
 		display.setModalDialog (oldModal);
 	}
-
-	/*
-	* This code is intentionally commented.  On some
-	* platforms, the owner window is repainted right
-	* away when a dialog window exits.  This behavior
-	* is currently unspecified.
-	*/
-//	if (hwndOwner != 0) OS.UpdateWindow (hwndOwner);
 
 	/* Compute and return the result */
 	if (code != 0) {

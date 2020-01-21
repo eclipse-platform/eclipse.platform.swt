@@ -134,11 +134,6 @@ static int checkStyle (int style) {
 }
 
 @Override
-boolean checkHandle (long hwnd) {
-	return hwnd == handle || hwnd == hwndText || hwnd == hwndUpDown;
-}
-
-@Override
 protected void checkSubclass () {
 	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
 }

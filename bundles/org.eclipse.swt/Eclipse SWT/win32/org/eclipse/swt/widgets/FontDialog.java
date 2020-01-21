@@ -289,14 +289,6 @@ public FontData open () {
 		OS.DestroyWindow (hwndOwner);
 	}
 
-	/*
-	* This code is intentionally commented.  On some
-	* platforms, the owner window is repainted right
-	* away when a dialog window exits.  This behavior
-	* is currently unspecified.
-	*/
-//	if (hwndOwner != 0) OS.UpdateWindow (hwndOwner);
-
 	if (!success) return null;
 	return fontData;
 }

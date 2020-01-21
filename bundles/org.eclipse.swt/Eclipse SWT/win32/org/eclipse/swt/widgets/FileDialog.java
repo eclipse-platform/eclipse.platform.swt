@@ -272,7 +272,6 @@ public String open () {
 
 	/* Convert the title and copy it into lpstrTitle */
 	if (title == null) title = "";
-	/* Use the character encoding for the default locale */
 	TCHAR buffer3 = new TCHAR (0, title, true);
 	int byteCount3 = buffer3.length () * TCHAR.sizeof;
 	long lpstrTitle = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount3);
@@ -290,7 +289,6 @@ public String open () {
 	if (filterExtensions.length == 0) {
 		strFilter = strFilter + FILTER + '\0' + FILTER + '\0';
 	}
-	/* Use the character encoding for the default locale */
 	TCHAR buffer4 = new TCHAR (0, strFilter, true);
 	int byteCount4 = buffer4.length () * TCHAR.sizeof;
 	long lpstrFilter = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount4);
@@ -298,7 +296,6 @@ public String open () {
 
 	/* Convert the fileName and filterName to C strings */
 	if (fileName == null) fileName = "";
-	/* Use the character encoding for the default locale */
 	TCHAR name = new TCHAR (0, fileName, true);
 
 	/*
@@ -317,7 +314,6 @@ public String open () {
 	* the last byte is NULL and the buffer does not overrun.
 	*/
 	if (filterPath == null) filterPath = "";
-	/* Use the character encoding for the default locale */
 	TCHAR path = new TCHAR (0, filterPath.replace ('/', '\\'), true);
 	int byteCount5 = OS.MAX_PATH * TCHAR.sizeof;
 	long lpstrInitialDir = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount5);
@@ -468,14 +464,6 @@ public String open () {
 		OS.SetActiveWindow (hwndParent);
 		OS.DestroyWindow (hwndOwner);
 	}
-
-	/*
-	* This code is intentionally commented.  On some
-	* platforms, the owner window is repainted right
-	* away when a dialog window exits.  This behavior
-	* is currently unspecified.
-	*/
-//	if (hwndOwner != 0) OS.UpdateWindow (hwndOwner);
 
 	/* Answer the full path or null */
 	return fullPath;

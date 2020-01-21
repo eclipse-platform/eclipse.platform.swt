@@ -16,7 +16,6 @@ package org.eclipse.swt.widgets;
 
 
 import org.eclipse.swt.*;
-import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.ole.win32.*;
 import org.eclipse.swt.internal.win32.*;
 
@@ -88,32 +87,6 @@ public DirectoryDialog (Shell parent, int style) {
 	checkSubclass ();
 }
 
-long BrowseCallbackProc (long hwnd, long uMsg, long lParam, long lpData) {
-	switch ((int)uMsg) {
-		case OS.BFFM_INITIALIZED:
-			if (filterPath != null && filterPath.length () != 0) {
-				/* Use the character encoding for the default locale */
-				TCHAR buffer = new TCHAR (0, filterPath.replace ('/', '\\'), true);
-				OS.SendMessage (hwnd, OS.BFFM_SETSELECTION, 1, buffer);
-			}
-			if (title != null && title.length () != 0) {
-				/* Use the character encoding for the default locale */
-				TCHAR buffer = new TCHAR (0, title, true);
-				OS.SetWindowText (hwnd, buffer);
-			}
-			break;
-		case OS.BFFM_VALIDATEFAILED:
-			/* Use the character encoding for the default locale */
-			int length = OS.wcslen (lParam);
-			TCHAR buffer = new TCHAR (0, length);
-			int byteCount = buffer.length () * TCHAR.sizeof;
-			OS.MoveMemory (buffer, lParam, byteCount);
-			directoryPath = buffer.toString (0, length);
-			break;
-	}
-	return 0;
-}
-
 /**
  * Returns the path which the dialog will use to filter
  * the directories it shows.
@@ -150,127 +123,6 @@ public String getMessage () {
  * </ul>
  */
 public String open() {
-	if (OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
-		return openCommonItemDialog();
-	}
-	return openCommonFileDialog();
-}
-
-private String openCommonFileDialog () {
-	long hHeap = OS.GetProcessHeap ();
-
-	/* Get the owner HWND for the dialog */
-	long hwndOwner = 0;
-	if (parent != null) hwndOwner = parent.handle;
-
-	/* Copy the message to OS memory */
-	long lpszTitle = 0;
-	if (message.length () != 0) {
-		String string = message;
-		if (string.indexOf ('&') != -1) {
-			int length = string.length ();
-			char [] buffer = new char [length * 2];
-			int index = 0;
-			for (int i=0; i<length; i++) {
-				char ch = string.charAt (i);
-				if (ch == '&') buffer [index++] = '&';
-				buffer [index++] = ch;
-			}
-			string = new String (buffer, 0, index);
-		}
-		/* Use the character encoding for the default locale */
-		TCHAR buffer = new TCHAR (0, string, true);
-		int byteCount = buffer.length () * TCHAR.sizeof;
-		lpszTitle = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
-		OS.MoveMemory (lpszTitle, buffer, byteCount);
-	}
-
-	/* Create the BrowseCallbackProc */
-	Callback callback = new Callback (this, "BrowseCallbackProc", 4); //$NON-NLS-1$
-	long lpfn = callback.getAddress ();
-
-	/* Make the parent shell be temporary modal */
-	Dialog oldModal = null;
-	Display display = parent.getDisplay ();
-	if ((style & (SWT.APPLICATION_MODAL | SWT.SYSTEM_MODAL)) != 0) {
-		oldModal = display.getModalDialog ();
-		display.setModalDialog (this);
-	}
-
-	directoryPath = null;
-	BROWSEINFO lpbi = new BROWSEINFO ();
-	lpbi.hwndOwner = hwndOwner;
-	lpbi.lpszTitle = lpszTitle;
-	lpbi.ulFlags = OS.BIF_NEWDIALOGSTYLE | OS.BIF_RETURNONLYFSDIRS | OS.BIF_EDITBOX | OS.BIF_VALIDATE;
-	lpbi.lpfn = lpfn;
-	/*
-	* Bug in Windows.  On some hardware configurations, SHBrowseForFolder()
-	* causes warning dialogs with the message "There is no disk in the drive
-	* Please insert a disk into \Device\Harddisk0\DR0".  This is possibly
-	* caused by SHBrowseForFolder() calling internally GetVolumeInformation().
-	* MSDN for GetVolumeInformation() says:
-	*
-	* "If you are attempting to obtain information about a floppy drive
-	* that does not have a floppy disk or a CD-ROM drive that does not
-	* have a compact disc, the system displays a message box asking the
-	* user to insert a floppy disk or a compact disc, respectively.
-	* To prevent the system from displaying this message box, call the
-	* SetErrorMode function with SEM_FAILCRITICALERRORS."
-	*
-	* The fix is to save and restore the error mode using SetErrorMode()
-	* with the SEM_FAILCRITICALERRORS flag around SHBrowseForFolder().
-	*/
-	int oldErrorMode = OS.SetErrorMode (OS.SEM_FAILCRITICALERRORS);
-
-	display.sendPreExternalEventDispatchEvent ();
-	display.externalEventLoop = true;
-	long lpItemIdList = OS.SHBrowseForFolder (lpbi);
-	display.externalEventLoop = false;
-	display.sendPostExternalEventDispatchEvent ();
-	OS.SetErrorMode (oldErrorMode);
-
-	/* Clear the temporary dialog modal parent */
-	if ((style & (SWT.APPLICATION_MODAL | SWT.SYSTEM_MODAL)) != 0) {
-		display.setModalDialog (oldModal);
-	}
-
-	boolean success = lpItemIdList != 0;
-	if (success) {
-		/* Use the character encoding for the default locale */
-		TCHAR buffer = new TCHAR (0, OS.MAX_PATH);
-		if (OS.SHGetPathFromIDList (lpItemIdList, buffer)) {
-			directoryPath = buffer.toString (0, buffer.strlen ());
-			filterPath = directoryPath;
-		}
-	}
-
-	/* Free the BrowseCallbackProc */
-	callback.dispose ();
-
-	/* Free the OS memory */
-	if (lpszTitle != 0) OS.HeapFree (hHeap, 0, lpszTitle);
-
-	/* Free the pointer to the ITEMIDLIST */
-	long [] ppMalloc = new long [1];
-	if (OS.SHGetMalloc (ppMalloc) == OS.S_OK) {
-		/* void Free (struct IMalloc *this, void *pv); */
-		COM.VtblCall (5, ppMalloc [0], lpItemIdList);
-	}
-
-	/*
-	* This code is intentionally commented.  On some
-	* platforms, the owner window is repainted right
-	* away when a dialog window exits.  This behavior
-	* is currently unspecified.
-	*/
-//	if (hwndOwner != 0) OS.UpdateWindow (hwndOwner);
-
-	/* Return the directory path */
-	if (!success) return null;
-	return directoryPath;
-}
-
-private String openCommonItemDialog() {
 	this.directoryPath = null;
 
 	long [] ppv = new long [1];

@@ -1168,12 +1168,6 @@ boolean checkData (TableItem item, int index, boolean redraw) {
 }
 
 @Override
-boolean checkHandle (long hwnd) {
-	if (hwnd == handle) return true;
-	return hwnd == OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
-}
-
-@Override
 protected void checkSubclass () {
 	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
 }
@@ -1509,14 +1503,6 @@ void createHandle () {
 
 	/* Get the header window handle */
 	hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
-
-	/*
-	* This code is intentionally commented.  According to
-	* the documentation, setting the default item size is
-	* supposed to improve performance.  By experimentation,
-	* this does not seem to have much of an effect.
-	*/
-//	OS.SendMessage (handle, OS.LVM_SETITEMCOUNT, 1024 * 2, 0);
 
 	/* Set the checkbox image list */
 	if ((style & SWT.CHECK) != 0) {

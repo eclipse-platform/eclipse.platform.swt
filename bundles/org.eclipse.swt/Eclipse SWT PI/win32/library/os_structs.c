@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2019 IBM Corporation and others.
+ * Copyright (c) 2000, 2020 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -297,58 +297,6 @@ void setBP_PAINTPARAMSFields(JNIEnv *env, jobject lpObject, BP_PAINTPARAMS *lpSt
 	(*env)->SetIntField(env, lpObject, BP_PAINTPARAMSFc.dwFlags, (jint)lpStruct->dwFlags);
 	(*env)->SetLongField(env, lpObject, BP_PAINTPARAMSFc.prcExclude, (jlong)lpStruct->prcExclude);
 	(*env)->SetLongField(env, lpObject, BP_PAINTPARAMSFc.pBlendFunction, (jlong)lpStruct->pBlendFunction);
-}
-#endif
-
-#ifndef NO_BROWSEINFO
-typedef struct BROWSEINFO_FID_CACHE {
-	int cached;
-	jclass clazz;
-	jfieldID hwndOwner, pidlRoot, pszDisplayName, lpszTitle, ulFlags, lpfn, lParam, iImage;
-} BROWSEINFO_FID_CACHE;
-
-BROWSEINFO_FID_CACHE BROWSEINFOFc;
-
-void cacheBROWSEINFOFields(JNIEnv *env, jobject lpObject)
-{
-	if (BROWSEINFOFc.cached) return;
-	BROWSEINFOFc.clazz = (*env)->GetObjectClass(env, lpObject);
-	BROWSEINFOFc.hwndOwner = (*env)->GetFieldID(env, BROWSEINFOFc.clazz, "hwndOwner", "J");
-	BROWSEINFOFc.pidlRoot = (*env)->GetFieldID(env, BROWSEINFOFc.clazz, "pidlRoot", "J");
-	BROWSEINFOFc.pszDisplayName = (*env)->GetFieldID(env, BROWSEINFOFc.clazz, "pszDisplayName", "J");
-	BROWSEINFOFc.lpszTitle = (*env)->GetFieldID(env, BROWSEINFOFc.clazz, "lpszTitle", "J");
-	BROWSEINFOFc.ulFlags = (*env)->GetFieldID(env, BROWSEINFOFc.clazz, "ulFlags", "I");
-	BROWSEINFOFc.lpfn = (*env)->GetFieldID(env, BROWSEINFOFc.clazz, "lpfn", "J");
-	BROWSEINFOFc.lParam = (*env)->GetFieldID(env, BROWSEINFOFc.clazz, "lParam", "J");
-	BROWSEINFOFc.iImage = (*env)->GetFieldID(env, BROWSEINFOFc.clazz, "iImage", "I");
-	BROWSEINFOFc.cached = 1;
-}
-
-BROWSEINFO *getBROWSEINFOFields(JNIEnv *env, jobject lpObject, BROWSEINFO *lpStruct)
-{
-	if (!BROWSEINFOFc.cached) cacheBROWSEINFOFields(env, lpObject);
-	lpStruct->hwndOwner = (HWND)(*env)->GetLongField(env, lpObject, BROWSEINFOFc.hwndOwner);
-	lpStruct->pidlRoot = (LPCITEMIDLIST)(*env)->GetLongField(env, lpObject, BROWSEINFOFc.pidlRoot);
-	lpStruct->pszDisplayName = (LPTSTR)(*env)->GetLongField(env, lpObject, BROWSEINFOFc.pszDisplayName);
-	lpStruct->lpszTitle = (LPCTSTR)(*env)->GetLongField(env, lpObject, BROWSEINFOFc.lpszTitle);
-	lpStruct->ulFlags = (*env)->GetIntField(env, lpObject, BROWSEINFOFc.ulFlags);
-	lpStruct->lpfn = (BFFCALLBACK)(*env)->GetLongField(env, lpObject, BROWSEINFOFc.lpfn);
-	lpStruct->lParam = (*env)->GetLongField(env, lpObject, BROWSEINFOFc.lParam);
-	lpStruct->iImage = (*env)->GetIntField(env, lpObject, BROWSEINFOFc.iImage);
-	return lpStruct;
-}
-
-void setBROWSEINFOFields(JNIEnv *env, jobject lpObject, BROWSEINFO *lpStruct)
-{
-	if (!BROWSEINFOFc.cached) cacheBROWSEINFOFields(env, lpObject);
-	(*env)->SetLongField(env, lpObject, BROWSEINFOFc.hwndOwner, (jlong)lpStruct->hwndOwner);
-	(*env)->SetLongField(env, lpObject, BROWSEINFOFc.pidlRoot, (jlong)lpStruct->pidlRoot);
-	(*env)->SetLongField(env, lpObject, BROWSEINFOFc.pszDisplayName, (jlong)lpStruct->pszDisplayName);
-	(*env)->SetLongField(env, lpObject, BROWSEINFOFc.lpszTitle, (jlong)lpStruct->lpszTitle);
-	(*env)->SetIntField(env, lpObject, BROWSEINFOFc.ulFlags, (jint)lpStruct->ulFlags);
-	(*env)->SetLongField(env, lpObject, BROWSEINFOFc.lpfn, (jlong)lpStruct->lpfn);
-	(*env)->SetLongField(env, lpObject, BROWSEINFOFc.lParam, (jlong)lpStruct->lParam);
-	(*env)->SetIntField(env, lpObject, BROWSEINFOFc.iImage, (jint)lpStruct->iImage);
 }
 #endif
 

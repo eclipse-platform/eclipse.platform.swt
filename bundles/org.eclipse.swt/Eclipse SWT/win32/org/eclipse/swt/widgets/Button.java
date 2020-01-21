@@ -733,22 +733,6 @@ int resolveTextDirection() {
 }
 
 void selectRadio () {
-	/*
-	* This code is intentionally commented.  When two groups
-	* of radio buttons with the same parent are separated by
-	* another control, the correct behavior should be that
-	* the two groups act independently.  This is consistent
-	* with radio tool and menu items.  The commented code
-	* implements this behavior.
-	*/
-//	int index = 0;
-//	Control [] children = parent._getChildren ();
-//	while (index < children.length && children [index] != this) index++;
-//	int i = index - 1;
-//	while (i >= 0 && children [i].setRadioSelection (false)) --i;
-//	int j = index + 1;
-//	while (j < children.length && children [j].setRadioSelection (false)) j++;
-//	setSelection (true);
 	for (Control child : parent._getChildren ()) {
 		if (this != child) child.setRadioSelection (false);
 	}

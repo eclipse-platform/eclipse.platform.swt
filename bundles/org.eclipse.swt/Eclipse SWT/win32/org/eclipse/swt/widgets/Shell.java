@@ -711,26 +711,6 @@ void destroyWidget () {
 }
 
 @Override
-public void dispose () {
-	/*
-	* This code is intentionally commented.  On some
-	* platforms, the owner window is repainted right
-	* away when a dialog window exits.  This behavior
-	* is currently unspecified.
-	*/
-//	/*
-//	* Note:  It is valid to attempt to dispose a widget
-//	* more than once.  If this happens, fail silently.
-//	*/
-//	if (!isValidWidget ()) return;
-//	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-//	Display oldDisplay = display;
-	super.dispose ();
-	// widget is disposed at this point
-//	if (oldDisplay != null) oldDisplay.update ();
-}
-
-@Override
 void enableWidget (boolean enabled) {
 	if (enabled) {
 		state &= ~DISABLED;

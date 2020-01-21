@@ -515,7 +515,6 @@ public FontData [] getFontList (String faceName, boolean scalable) {
 			OS.EnumFontFamilies (hDC, lf.lfFaceName, lpEnumFontFamProc, scalable ? 1 : 0);
 		}
 	} else {
-		/* Use the character encoding for the default locale */
 		TCHAR lpFaceName = new TCHAR (0, faceName, true);
 		OS.EnumFontFamilies (hDC, lpFaceName.chars, lpEnumFontFamProc, scalable ? 1 : 0);
 	}
@@ -551,19 +550,6 @@ String getLastError () {
 	int error = OS.GetLastError();
 	if (error == 0) return ""; //$NON-NLS-1$
 	return " [GetLastError=0x" + Integer.toHexString(error) + "]"; //$NON-NLS-1$ //$NON-NLS-2$
-}
-
-String getLastErrorText () {
-	int error = OS.GetLastError();
-	if (error == 0) return ""; //$NON-NLS-1$
-	long [] buffer = new long [1];
-	int dwFlags = OS.FORMAT_MESSAGE_ALLOCATE_BUFFER | OS.FORMAT_MESSAGE_FROM_SYSTEM | OS.FORMAT_MESSAGE_IGNORE_INSERTS;
-	int length = OS.FormatMessage(dwFlags, 0, error, OS.LANG_USER_DEFAULT, buffer, 0, 0);
-	if (length == 0) return " [GetLastError=0x" + Integer.toHexString(error) + "]"; //$NON-NLS-1$ //$NON-NLS-2$
-	char [] buffer1 = new char [length];
-	OS.MoveMemory(buffer1, buffer[0], length * TCHAR.sizeof);
-	if (buffer[0] != 0) OS.LocalFree(buffer[0]);
-	return new String(buffer1);
 }
 
 /**
