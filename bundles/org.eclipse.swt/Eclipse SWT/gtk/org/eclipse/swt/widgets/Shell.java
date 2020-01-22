@@ -1175,21 +1175,21 @@ int getResizeMode (double x, double y) {
 	int border = gtk_container_get_border_width_or_margin (shellHandle);
 	int mode = 0;
 	if (y >= height - border) {
-		mode = GDK.GDK_BOTTOM_SIDE ;
-		if (x >= width - border - 16) mode = GDK.GDK_BOTTOM_RIGHT_CORNER;
-		else if (x <= border + 16) mode = GDK.GDK_BOTTOM_LEFT_CORNER;
+		mode = SWT.CURSOR_SIZES;
+		if (x >= width - border - 16) mode = SWT.CURSOR_SIZESE;
+		else if (x <= border + 16) mode = SWT.CURSOR_SIZESW;
 	} else if (x >= width - border) {
-		mode = GDK.GDK_RIGHT_SIDE;
-		if (y >= height - border - 16) mode = GDK.GDK_BOTTOM_RIGHT_CORNER;
-		else if (y <= border + 16) mode = GDK.GDK_TOP_RIGHT_CORNER;
+		mode = SWT.CURSOR_SIZEE;
+		if (y >= height - border - 16) mode = SWT.CURSOR_SIZESE;
+		else if (y <= border + 16) mode = SWT.CURSOR_SIZENE;
 	} else if (y <= border) {
-		mode = GDK.GDK_TOP_SIDE;
-		if (x <= border + 16) mode = GDK.GDK_TOP_LEFT_CORNER;
-		else if (x >= width - border - 16) mode = GDK.GDK_TOP_RIGHT_CORNER;
+		mode = SWT.CURSOR_SIZEN;
+		if (x <= border + 16) mode = SWT.CURSOR_SIZENW;
+		else if (x >= width - border - 16) mode = SWT.CURSOR_SIZENE;
 	} else if (x <= border) {
-		mode = GDK.GDK_LEFT_SIDE;
-		if (y <= border + 16) mode = GDK.GDK_TOP_LEFT_CORNER;
-		else if (y >= height - border - 16) mode = GDK.GDK_BOTTOM_LEFT_CORNER;
+		mode = SWT.CURSOR_SIZEW;
+		if (y <= border + 16) mode = SWT.CURSOR_SIZENW;
+		else if (y >= height - border - 16) mode = SWT.CURSOR_SIZESW;
 	}
 	return mode;
 }
@@ -1644,36 +1644,36 @@ long gtk_motion_notify_event (long widget, long event) {
 				int newWidth = Math.max(width - dx, Math.max(minWidth, border + border));
 				int newHeight = Math.max(height - dy, Math.max(minHeight, border + border));
 				switch (display.resizeMode) {
-					case GDK.GDK_LEFT_SIDE:
+					case SWT.CURSOR_SIZEW:
 						x += width - newWidth;
 						width = newWidth;
 						break;
-					case GDK.GDK_TOP_LEFT_CORNER:
+					case SWT.CURSOR_SIZENW:
 						x += width - newWidth;
 						width = newWidth;
 						y += height - newHeight;
 						height = newHeight;
 						break;
-					case GDK.GDK_TOP_SIDE:
+					case SWT.CURSOR_SIZEN:
 						y += height - newHeight;
 						height = newHeight;
 						break;
-					case GDK.GDK_TOP_RIGHT_CORNER:
+					case SWT.CURSOR_SIZENE:
 						width = Math.max(width + dx, Math.max(minWidth, border + border));
 						y += height - newHeight;
 						height = newHeight;
 						break;
-					case GDK.GDK_RIGHT_SIDE:
+					case SWT.CURSOR_SIZEE:
 						width = Math.max(width + dx, Math.max(minWidth, border + border));
 						break;
-					case GDK.GDK_BOTTOM_RIGHT_CORNER:
+					case SWT.CURSOR_SIZESE:
 						width = Math.max(width + dx, Math.max(minWidth, border + border));
 						height = Math.max(height + dy, Math.max(minHeight, border + border));
 						break;
-					case GDK.GDK_BOTTOM_SIDE:
+					case SWT.CURSOR_SIZES:
 						height = Math.max(height + dy, Math.max(minHeight, border + border));
 						break;
-					case GDK.GDK_BOTTOM_LEFT_CORNER:
+					case SWT.CURSOR_SIZESW:
 						x += width - newWidth;
 						width = newWidth;
 						height = Math.max(height + dy, Math.max(minHeight, border + border));
@@ -1694,28 +1694,13 @@ long gtk_motion_notify_event (long widget, long event) {
 				GDK.gdk_event_get_coords(event, eventX, eventY);
 				int mode = getResizeMode (eventX[0], eventY[0]);
 				if (mode != display.resizeMode) {
-					long cursor;
+					long cursor = display.getSystemCursor(mode).handle;
 					if (GTK.GTK4) {
-						byte [] name;
-						switch (mode) {
-							case GDK.GDK_BOTTOM_RIGHT_CORNER: name = Converter.wcsToMbcs("se-resize", true); break;
-							case GDK.GDK_BOTTOM_LEFT_CORNER: name = Converter.wcsToMbcs("sw-resize", true); break;
-							case GDK.GDK_TOP_LEFT_CORNER: name = Converter.wcsToMbcs("nw-resize", true); break;
-							case GDK.GDK_TOP_RIGHT_CORNER: name = Converter.wcsToMbcs("ne-resize", true); break;
-							case GDK.GDK_BOTTOM_SIDE: name = Converter.wcsToMbcs("s-resize", true); break;
-							case GDK.GDK_TOP_SIDE: name = Converter.wcsToMbcs("n-resize", true); break;
-							case GDK.GDK_LEFT_SIDE: name = Converter.wcsToMbcs("w-resize", true); break;
-							case GDK.GDK_RIGHT_SIDE: name = Converter.wcsToMbcs("e-resize", true); break;
-							default: name = Converter.wcsToMbcs("none", true); break;
-						}
-						cursor = GDK.gdk_cursor_new_from_name(name, 0);
 						GTK.gtk_widget_set_cursor (shellHandle, cursor);
 					} else {
 						long window = gtk_widget_get_window (shellHandle);
-						cursor = GDK.gdk_cursor_new_for_display (GDK.gdk_display_get_default(), mode);
 						GDK.gdk_window_set_cursor (window, cursor);
 					}
-					OS.g_object_unref (cursor);
 					display.resizeMode = mode;
 				}
 			}

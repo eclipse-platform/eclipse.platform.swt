@@ -380,46 +380,34 @@ JNIEXPORT jlong JNICALL GDK_NATIVE(gdk_1clipboard_1set_1content)
 }
 #endif
 
-#ifndef NO_gdk_1cursor_1new_1for_1display
-JNIEXPORT jlong JNICALL GDK_NATIVE(gdk_1cursor_1new_1for_1display)
-	(JNIEnv *env, jclass that, jlong arg0, jlong arg1)
+#ifndef NO_gdk_1cursor_1new_1from_1name__JLjava_lang_String_2
+JNIEXPORT jlong JNICALL GDK_NATIVE(gdk_1cursor_1new_1from_1name__JLjava_lang_String_2)
+	(JNIEnv *env, jclass that, jlong arg0, jstring arg1)
 {
+	const char *lparg1= NULL;
 	jlong rc = 0;
-	GDK_NATIVE_ENTER(env, that, gdk_1cursor_1new_1for_1display_FUNC);
-	rc = (jlong)gdk_cursor_new_for_display((GdkDisplay *)arg0, (GdkCursorType)arg1);
-	GDK_NATIVE_EXIT(env, that, gdk_1cursor_1new_1for_1display_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO_gdk_1cursor_1new_1from_1name__J_3B
-JNIEXPORT jlong JNICALL GDK_NATIVE(gdk_1cursor_1new_1from_1name__J_3B)
-	(JNIEnv *env, jclass that, jlong arg0, jbyteArray arg1)
-{
-	jbyte *lparg1=NULL;
-	jlong rc = 0;
-	GDK_NATIVE_ENTER(env, that, gdk_1cursor_1new_1from_1name__J_3B_FUNC);
-	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	GDK_NATIVE_ENTER(env, that, gdk_1cursor_1new_1from_1name__JLjava_lang_String_2_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetStringUTFChars(env, arg1, NULL)) == NULL) goto fail;
 	rc = (jlong)gdk_cursor_new_from_name((GdkDisplay *)arg0, (const gchar *)lparg1);
 fail:
-	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
-	GDK_NATIVE_EXIT(env, that, gdk_1cursor_1new_1from_1name__J_3B_FUNC);
+	if (arg1 && lparg1) (*env)->ReleaseStringUTFChars(env, arg1, lparg1);
+	GDK_NATIVE_EXIT(env, that, gdk_1cursor_1new_1from_1name__JLjava_lang_String_2_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_gdk_1cursor_1new_1from_1name___3BJ
-JNIEXPORT jlong JNICALL GDK_NATIVE(gdk_1cursor_1new_1from_1name___3BJ)
-	(JNIEnv *env, jclass that, jbyteArray arg0, jlong arg1)
+#ifndef NO_gdk_1cursor_1new_1from_1name__Ljava_lang_String_2J
+JNIEXPORT jlong JNICALL GDK_NATIVE(gdk_1cursor_1new_1from_1name__Ljava_lang_String_2J)
+	(JNIEnv *env, jclass that, jstring arg0, jlong arg1)
 {
-	jbyte *lparg0=NULL;
+	const char *lparg0= NULL;
 	jlong rc = 0;
-	GDK_NATIVE_ENTER(env, that, gdk_1cursor_1new_1from_1name___3BJ_FUNC);
-	if (arg0) if ((lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL)) == NULL) goto fail;
+	GDK_NATIVE_ENTER(env, that, gdk_1cursor_1new_1from_1name__Ljava_lang_String_2J_FUNC);
+	if (arg0) if ((lparg0 = (*env)->GetStringUTFChars(env, arg0, NULL)) == NULL) goto fail;
 	rc = (jlong)gdk_cursor_new_from_name((const gchar *)lparg0, (GdkCursor *)arg1);
 fail:
-	if (arg0 && lparg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
-	GDK_NATIVE_EXIT(env, that, gdk_1cursor_1new_1from_1name___3BJ_FUNC);
+	if (arg0 && lparg0) (*env)->ReleaseStringUTFChars(env, arg0, lparg0);
+	GDK_NATIVE_EXIT(env, that, gdk_1cursor_1new_1from_1name__Ljava_lang_String_2J_FUNC);
 	return rc;
 }
 #endif

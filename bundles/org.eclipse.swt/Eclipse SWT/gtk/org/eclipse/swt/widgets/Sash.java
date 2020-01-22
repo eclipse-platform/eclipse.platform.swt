@@ -147,17 +147,15 @@ void createHandle (int index) {
 	GTK.gtk_widget_set_can_focus (handle, true);
 	if ((style & SWT.VERTICAL) != 0) {
 		if (GTK.GTK4) {
-			byte [] name = Converter.wcsToMbcs("w-resize", true);
-			defaultCursor = GDK.gdk_cursor_new_from_name(name, 0);
+			defaultCursor = GDK.gdk_cursor_new_from_name("sb_h_double_arrow", 0);
 		} else {
-			defaultCursor = GDK.gdk_cursor_new_for_display (GDK.gdk_display_get_default(), GDK.GDK_SB_H_DOUBLE_ARROW);
+			defaultCursor = GDK.gdk_cursor_new_from_name (GDK.gdk_display_get_default(), "sb_h_double_arrow");
 		}
 	} else {
 		if (GTK.GTK4) {
-			byte [] name = Converter.wcsToMbcs("ns-resize", true);
-			defaultCursor = GDK.gdk_cursor_new_from_name(name, 0);
+			defaultCursor = GDK.gdk_cursor_new_from_name("sb_v_double_arrow", 0);
 		} else {
-			defaultCursor = GDK.gdk_cursor_new_for_display (GDK.gdk_display_get_default(), GDK.GDK_SB_V_DOUBLE_ARROW);
+			defaultCursor = GDK.gdk_cursor_new_from_name (GDK.gdk_display_get_default(), "sb_v_double_arrow");
 		}
 	}
 }

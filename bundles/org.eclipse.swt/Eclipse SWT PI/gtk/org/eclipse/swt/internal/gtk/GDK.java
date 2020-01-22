@@ -30,9 +30,6 @@ public class GDK extends OS {
 	public static final int GDK_Alt_L = 0xffe9;
 	public static final int GDK_Alt_R = 0xffea;
 	public static final int GDK_BackSpace = 0xff08;
-	public static final int GDK_BOTTOM_LEFT_CORNER = 0xc;
-	public static final int GDK_BOTTOM_RIGHT_CORNER = 0xe;
-	public static final int GDK_BOTTOM_SIDE = 0x10;
 	public static final int GDK_BUTTON1_MASK = 0x100;
 	public static final int GDK_BUTTON2_MASK = 0x200;
 	public static final int GDK_BUTTON3_MASK = 0x400;
@@ -47,7 +44,6 @@ public class GDK extends OS {
 	public static final int GDK_COLORSPACE_RGB = 0;
 	public static final int GDK_CONFIGURE = 13;
 	public static final int GDK_CONTROL_MASK = 0x4;
-	public static final int GDK_CROSS = 0x1e;
 	public static final int GDK_CROSSING_NORMAL = 0;
 	public static final int GDK_CROSSING_GRAB = 1;
 	public static final int GDK_CROSSING_UNGRAB = 2;
@@ -62,7 +58,6 @@ public class GDK extends OS {
 	public static final int GDK_DECOR_MINIMIZE = 0x20;
 	public static final int GDK_DECOR_RESIZEH = 0x4;
 	public static final int GDK_DECOR_TITLE = 0x8;
-	public static final int GDK_DOUBLE_ARROW = 0x2a;
 	public static final int GDK_Delete = 0xffff;
 	public static final int GDK_Down = 0xff54;
 	public static final int GDK_ENTER_NOTIFY_MASK = 0x1000;
@@ -95,7 +90,6 @@ public class GDK extends OS {
 	public static final int GDK_F9 = 0xffc6;
 	public static final int GDK_KEY_a = 0x061;
 	public static final int GDK_KEY_z = 0x07a;
-	public static final int GDK_FLEUR = 0x34;
 	public static final int GDK_FOCUS_CHANGE = 0xc;
 	public static final int GDK_FOCUS_CHANGE_MASK = 0x4000;
 	public static final int GDK_FUNC_ALL = 1;
@@ -106,7 +100,6 @@ public class GDK extends OS {
 	public static final int GDK_FUNC_CLOSE = 32;
 	public static final int GDK_GRAB_SUCCESS = 0x0;
 	public static final int GDK_GRAVITY_NORTH_WEST = 1;
-	public static final int GDK_HAND2 = 0x3c;
 	public static final int GDK_Help = 0xFF6A;
 	public static final int GDK_HINT_MIN_SIZE = 1 << 1;
 	public static final int GDK_Home = 0xff50;
@@ -148,8 +141,6 @@ public class GDK extends OS {
 	public static final int GDK_KP_Up = 0xFF97;
 	public static final int GDK_LEAVE_NOTIFY = 11;
 	public static final int GDK_LEAVE_NOTIFY_MASK = 0x2000;
-	public static final int GDK_LEFT_PTR = 0x44;
-	public static final int GDK_LEFT_SIDE = 0x46;
 	public static final int GDK_Linefeed = 0xff0A;
 	public static final int GDK_Left = 0xff51;
 	public static final int GDK_Meta_L = 0xFFE7;
@@ -186,14 +177,9 @@ public class GDK extends OS {
 	public static final int GDK_Page_Up = 0xff55;
 	public static final int GDK_Pause = 0xff13;
 	public static final int GDK_Print = 0xff61;
-	public static final int GDK_QUESTION_ARROW = 0x5c;
-	public static final int GDK_RIGHT_SIDE = 0x60;
 	public static final int GDK_Return = 0xff0d;
 	public static final int GDK_Right = 0xff53;
 	public static final int GDK_space = 0x20;
-	public static final int GDK_SB_H_DOUBLE_ARROW = 0x6c;
-	public static final int GDK_SB_UP_ARROW = 0x72;
-	public static final int GDK_SB_V_DOUBLE_ARROW = 0x74;
 	public static final int GDK_SEAT_CAPABILITY_NONE = 0;
 	public static final int GDK_SEAT_CAPABILITY_POINTER = 1 << 0;
 	public static final int GDK_SEAT_CAPABILITY_TOUCH = 1 << 1;
@@ -213,21 +199,14 @@ public class GDK extends OS {
 	public static final int GDK_SELECTION_NOTIFY = 19;
 	public static final int GDK_SELECTION_REQUEST = 18;
 	public static final int GDK_SHIFT_MASK = 0x1;
-	public static final int GDK_SIZING = 0x78;
 	public static final int GDK_SURFACE_STATE_ICONIFIED = 1 << 1;
 	public static final int GDK_SURFACE_STATE_MAXIMIZED = 1 << 2;
 	public static final int GDK_SURFACE_STATE_FULLSCREEN = 1 << 4;
 	public static final int GDK_Shift_L = 0xffe1;
 	public static final int GDK_Shift_R = 0xffe2;
 	public static final int GDK_Scroll_Lock = 0xff14;
-	public static final int GDK_TOP_LEFT_CORNER = 0x86;
-	public static final int GDK_TOP_RIGHT_CORNER = 0x88;
-	public static final int GDK_TOP_SIDE = 0x8a;
 	public static final int GDK_Tab = 0xff09;
 	public static final int GDK_Up = 0xff52;
-	public static final int GDK_WATCH = 0x96;
-	public static final int GDK_XTERM = 0x98;
-	public static final int GDK_X_CURSOR = 0x0;
 	public static final int GDK_WINDOW_CHILD = 2;
 	public static final int GDK_WINDOW_STATE = 32;
 	public static final int GDK_WINDOW_STATE_ICONIFIED  = 1 << 1;
@@ -404,23 +383,18 @@ public class GDK extends OS {
 	 */
 	/* [GTK3 only, if-def'd in os.h] */
 	public static final native void gdk_cairo_set_source_window(long cairo, long window, int x, int y);
-	/** @param display cast=(GdkDisplay *)
-	 *  @param cursor_type cast=(GdkCursorType)
-	 */
-	/* [GTK3 only, if-def'd in os.h] */
-	public static final native long gdk_cursor_new_for_display(long display, long cursor_type);
 	/**
 	 * @param display cast=(GdkDisplay *)
 	 * @param cursor_name cast=(const gchar *)
 	 */
 	/* [GTK3 only, if-def'd in os.h] */
-	public static final native long gdk_cursor_new_from_name(long display, byte[] cursor_name);
+	public static final native long gdk_cursor_new_from_name(long display, String cursor_name);
 	/**
 	 * @param cursor_name cast=(const gchar *)
 	 * @param fallback cast=(GdkCursor *)
 	 */
 	/* [GTK4 only, if-def'd in os.h] */
-	public static final native long gdk_cursor_new_from_name(byte[] cursor_name, long fallback);
+	public static final native long gdk_cursor_new_from_name(String cursor_name, long fallback);
 	/**
 	 * @param display cast=(GdkDisplay *)
 	 * @param pixbuf cast=(GdkPixbuf *)

@@ -954,10 +954,9 @@ void setCursor (long cursor) {
 	long defaultCursor = 0;
 	if (cursor == 0)  {
 		if (GTK.GTK4) {
-			byte [] name = Converter.wcsToMbcs("text", true);
-			defaultCursor = GDK.gdk_cursor_new_from_name(name, 0);
+			defaultCursor = GDK.gdk_cursor_new_from_name ("xterm", 0);
 		} else {
-			defaultCursor = GDK.gdk_cursor_new_for_display (GDK.gdk_display_get_default(), GDK.GDK_XTERM);
+			defaultCursor = GDK.gdk_cursor_new_from_name (GDK.gdk_display_get_default(), "xterm");
 		}
 	}
 	super.setCursor (cursor != 0 ? cursor : defaultCursor);
