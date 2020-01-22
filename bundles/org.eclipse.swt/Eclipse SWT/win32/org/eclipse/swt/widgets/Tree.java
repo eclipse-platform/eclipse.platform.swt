@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2017 IBM Corporation and others.
+ * Copyright (c) 2000, 2020 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -2263,12 +2263,6 @@ void createParent () {
 		null);
 	if (hwndHeader == 0) error (SWT.ERROR_NO_HANDLES);
 	OS.SetWindowLongPtr (hwndHeader, OS.GWLP_ID, hwndHeader);
-	if (OS.IsDBLocale) {
-		long /*int*/ hIMC = OS.ImmGetContext (handle);
-		OS.ImmAssociateContext (hwndParent, hIMC);
-		OS.ImmAssociateContext (hwndHeader, hIMC);
-		OS.ImmReleaseContext (handle, hIMC);
-	}
 	//This code is intentionally commented
 //	if (!OS.IsPPC) {
 //		if ((style & SWT.BORDER) != 0) {
