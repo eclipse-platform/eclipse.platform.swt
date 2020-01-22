@@ -90,7 +90,6 @@ public class OS extends C {
 				Library.loadLibrary("swt-pi4");
 			}
 		}
-		cachejvmptr();
 	}
 
 	//Add ability to debug gtk warnings for SWT snippets via SWT_FATAL_WARNINGS=1
@@ -457,8 +456,6 @@ public class OS extends C {
 	/** @method flags=no_gen
 	 * @category custom
 	 */
-	/* Cache the JVM pointer so that it's usable in other implementations. */
-	public static final native void cachejvmptr();
 
 	/** @category custom */
 	/* Add ability to debug gtk warnings for SWT snippets via SWT_FATAL_WARNINGS=1

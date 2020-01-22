@@ -27,7 +27,6 @@
 
 /* --------------- callback globals ----------------- */
 
-static JavaVM *jvm = NULL;
 static CALLBACK_DATA callbackData[MAX_CALLBACKS];
 static int callbackEnabled = 1;
 static int callbackEntryCount = 0;
@@ -980,7 +979,6 @@ JNIEXPORT jlong JNICALL CALLBACK_NATIVE(bind)
 	jmethodID mid = NULL;
 	jclass javaClass = that;
 	const char *methodString = NULL, *sigString = NULL;
-	if (jvm == NULL) (*env)->GetJavaVM(env, &jvm);
 	if (JNI_VERSION == 0) JNI_VERSION = (*env)->GetVersion(env);
 	if (!initialized) {
 		memset(&callbackData, 0, sizeof(callbackData));
@@ -1074,20 +1072,20 @@ jlong callback(int index, ...)
 
 #ifdef JNI_VERSION_1_2
 	if (IS_JNI_1_2) {
-		(*jvm)->GetEnv(jvm, (void **)&env, JNI_VERSION_1_2);
+		(*JVM)->GetEnv(JVM, (void **)&env, JNI_VERSION_1_2);
 	}
 #endif
 	
 #ifdef JNI_VERSION_1_4
 	if (env == NULL) {
 		if (JNI_VERSION >= JNI_VERSION_1_4) {
-			(*jvm)->AttachCurrentThreadAsDaemon(jvm, (void **)&env, NULL);
+			(*JVM)->AttachCurrentThreadAsDaemon(JVM, (void **)&env, NULL);
 		}
 	}
 #endif
 	
 	if (env == NULL) {
-		(*jvm)->AttachCurrentThread(jvm, (void **)&env, NULL);
+		(*JVM)->AttachCurrentThread(JVM, (void **)&env, NULL);
 		if (IS_JNI_1_2) detach = 1;
 	}
 	
@@ -1152,7 +1150,7 @@ done:
 	}
 
 	if (detach) {
-		(*jvm)->DetachCurrentThread(jvm);
+		(*JVM)->DetachCurrentThread(JVM);
 		env = NULL;
 	}
 

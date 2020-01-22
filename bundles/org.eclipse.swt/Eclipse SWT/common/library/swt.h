@@ -30,6 +30,7 @@ extern "C" {
 #endif
 
 extern int IS_JNI_1_2;
+extern JavaVM *JVM;
 
 /* #define DEBUG */
 

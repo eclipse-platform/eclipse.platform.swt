@@ -1155,7 +1155,6 @@ char * OS_nativeFunctionNames[] = {
 	"XSynchronize",
 	"X_1EVENT_1TYPE",
 	"X_1EVENT_1WINDOW",
-	"cachejvmptr",
 	"call__JJJJJ",
 	"call__JJJJJJJ",
 	"call__JJJJJJJJ",

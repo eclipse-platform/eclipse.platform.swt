@@ -19,15 +19,6 @@
 
 #define OS_NATIVE(func) Java_org_eclipse_swt_internal_gtk_OS_##func
 
-JavaVM *cached_jvm = NULL;
-
-JNIEXPORT void JNICALL OS_NATIVE(cachejvmptr)
-	(JNIEnv *env, jclass that)
-{
-	/* cache the JavaVM pointer */
-	if (cached_jvm == NULL) (*env)->GetJavaVM(env, &cached_jvm);
-}
-
 #ifndef NO_GDK_1WINDOWING_1X11
 JNIEXPORT jboolean JNICALL OS_NATIVE(GDK_1WINDOWING_1X11)
 	(JNIEnv *env, jclass that)
@@ -2252,7 +2243,7 @@ jlong call_accessible_object_function (const char *method_name, const char *meth
 	}
 
 	// Get the JNIEnv pointer
-	if ((*cached_jvm)->GetEnv(cached_jvm, (void **)&env, JNI_VERSION_1_2)) {
+	if ((*JVM)->GetEnv(JVM, (void **)&env, JNI_VERSION_1_2)) {
 		g_critical("Error fetching the JNIEnv pointer\n");
 		return 0;
 	}

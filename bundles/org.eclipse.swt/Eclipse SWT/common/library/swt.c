@@ -15,10 +15,12 @@
 #include "swt.h"
 
 int IS_JNI_1_2 = 0;
+JavaVM *JVM = NULL;
 
 #ifdef JNI_VERSION_1_2
 JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *vm, void *reserved) {
 	IS_JNI_1_2 = 1;
+	JVM = vm;
 	return JNI_VERSION_1_2;
 }
 #endif

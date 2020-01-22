@@ -1129,7 +1129,6 @@ typedef enum {
 	XSynchronize_FUNC,
 	X_1EVENT_1TYPE_FUNC,
 	X_1EVENT_1WINDOW_FUNC,
-	cachejvmptr_FUNC,
 	call__JJJJJ_FUNC,
 	call__JJJJJJJ_FUNC,
 	call__JJJJJJJJ_FUNC,
