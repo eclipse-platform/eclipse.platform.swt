@@ -368,10 +368,8 @@ NSAffineTransform transform;
 void convertRgn(NSAffineTransform transform) {
 	long newRgn = OS.NewRgn();
 	Callback callback = new Callback(this, "convertRgn", 4);
-	long proc = callback.getAddress();
-	if (proc == 0) SWT.error(SWT.ERROR_NO_MORE_CALLBACKS);
 	this.transform = transform;
-	OS.QDRegionToRects(handle, OS.kQDParseRegionFromTopLeft, proc, newRgn);
+	OS.QDRegionToRects(handle, OS.kQDParseRegionFromTopLeft, callback.getAddress(), newRgn);
 	this.transform = null;
 	callback.dispose();
 	OS.CopyRgn(newRgn, handle);
@@ -469,7 +467,6 @@ public Rectangle getBounds() {
 
 NSBezierPath getPath() {
 	Callback callback = new Callback(this, "regionToRects", 4);
-	if (callback.getAddress() == 0) SWT.error(SWT.ERROR_NO_MORE_CALLBACKS);
 	NSBezierPath path = NSBezierPath.bezierPath();
 	path.retain();
 	OS.QDRegionToRects(handle, OS.kQDParseRegionFromTopLeft, callback.getAddress(), path.id);

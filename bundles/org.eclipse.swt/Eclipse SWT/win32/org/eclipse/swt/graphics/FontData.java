@@ -14,9 +14,9 @@
 package org.eclipse.swt.graphics;
 
 
+import org.eclipse.swt.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.win32.*;
-import org.eclipse.swt.*;
 
 /**
  * Instances of this class describe operating system fonts.
@@ -521,9 +521,7 @@ public void setLocale(String locale) {
 		data.lfCharSet = (byte)OS.DEFAULT_CHARSET;
 	} else {
 		Callback callback = new Callback (this, "EnumLocalesProc", 1); //$NON-NLS-1$
-		long lpEnumLocalesProc = callback.getAddress ();
-		if (lpEnumLocalesProc == 0) SWT.error(SWT.ERROR_NO_MORE_CALLBACKS);
-		OS.EnumSystemLocales(lpEnumLocalesProc, OS.LCID_SUPPORTED);
+		OS.EnumSystemLocales(callback.getAddress (), OS.LCID_SUPPORTED);
 		callback.dispose ();
 	}
 }

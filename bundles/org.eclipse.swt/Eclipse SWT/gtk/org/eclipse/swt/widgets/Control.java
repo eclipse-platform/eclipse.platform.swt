@@ -92,19 +92,14 @@ public abstract class Control extends Widget implements Drawable {
 	static {
 		gestureZoom = new Callback (Control.class, "magnifyProc", void.class, new Type[] {
 				long.class, double.class, long.class}); //$NON-NLS-1$
-		if (gestureZoom.getAddress() == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
 		gestureRotation = new Callback (Control.class, "rotateProc", void.class, new Type[] {
 				long.class, double.class, double.class, long.class}); //$NON-NLS-1$
-		if (gestureRotation.getAddress() == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
 		gestureSwipe = new Callback (Control.class, "swipeProc", void.class, new Type[] {
 				long.class, double.class, double.class, long.class}); //$NON-NLS-1$
-		if (gestureSwipe.getAddress() == 0) SWT.error(SWT.ERROR_NO_MORE_CALLBACKS);
 		gestureBegin = new Callback (Control.class, "gestureBeginProc", void.class, new Type[] {
 				long.class, long.class, long.class}); //$NON-NLS-1$
-		if (gestureBegin.getAddress() == 0) SWT.error(SWT.ERROR_NO_MORE_CALLBACKS);
 		gestureEnd = new Callback (Control.class, "gestureEndProc", void.class, new Type[] {
 				long.class, long.class, long.class}); //$NON-NLS-1$
-		if (gestureEnd.getAddress() == 0) SWT.error(SWT.ERROR_NO_MORE_CALLBACKS);
 	}
 	/**
 	 * Bug 541635, 515396: GTK Wayland only flag to keep track whether mouse

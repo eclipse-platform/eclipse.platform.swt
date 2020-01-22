@@ -3543,9 +3543,7 @@ void shape (final long hdc, final StyleItem run) {
 			boolean compilerWarningWorkaround = false;
 			if (compilerWarningWorkaround) object.metaFileEnumProc(0, 0, 0, 0, 0);
 			Callback callback = new Callback(object, "metaFileEnumProc", 5);
-			long address = callback.getAddress();
-			if (address == 0) SWT.error(SWT.ERROR_NO_MORE_CALLBACKS);
-			OS.EnumEnhMetaFile(0, metaFile, address, 0, null);
+			OS.EnumEnhMetaFile(0, metaFile, callback.getAddress(), 0, null);
 			OS.DeleteEnhMetaFile(metaFile);
 			callback.dispose();
 			newFont = OS.CreateFontIndirect(emr.elfw.elfLogFont);

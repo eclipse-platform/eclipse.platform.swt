@@ -487,7 +487,6 @@ public FontData [] getFontList (String faceName, boolean scalable) {
 	/* Create the callback */
 	Callback callback = new Callback (this, "EnumFontFamProc", 4); //$NON-NLS-1$
 	long lpEnumFontFamProc = callback.getAddress ();
-	if (lpEnumFontFamProc == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
 
 	/* Initialize the instance variables */
 	metrics = new TEXTMETRIC ();

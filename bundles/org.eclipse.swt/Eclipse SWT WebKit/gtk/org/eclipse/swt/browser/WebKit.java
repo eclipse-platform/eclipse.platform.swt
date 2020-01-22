@@ -208,20 +208,14 @@ class WebKit extends WebBrowser {
 
 	static {
 			Proc2 = new Callback (WebKit.class, "Proc", 2); //$NON-NLS-1$
-			if (Proc2.getAddress () == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
 			Proc3 = new Callback (WebKit.class, "Proc", 3); //$NON-NLS-1$
-			if (Proc3.getAddress () == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
 			Proc4 = new Callback (WebKit.class, "Proc", 4); //$NON-NLS-1$
-			if (Proc4.getAddress () == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
 			Proc5 = new Callback (WebKit.class, "Proc", 5); //$NON-NLS-1$
-			if (Proc5.getAddress () == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
-
 			new Webkit2AsyncToSync();
 
 			WebKitExtension.init();
 
 			JSDOMEventProc = new Callback (WebKit.class, "JSDOMEventProc", 3); //$NON-NLS-1$
-			if (JSDOMEventProc.getAddress () == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
 
 			NativeClearSessions = () -> {
 				if (!WebKitGTK.LibraryLoaded) return;
@@ -377,7 +371,6 @@ class WebKit extends WebBrowser {
 				System.err.println("SWT WebKit: error initializing DBus server, dBusServer == 0");
 			}
 			initializeWebExtensions_callback = new Callback(WebKitExtension.class, "initializeWebExtensions_callback", void.class, new Type [] {long.class, long.class});
-			if (initializeWebExtensions_callback.getAddress() == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
 			if (WebKitGTK.webkit_get_minor_version() >= 4) { // Callback exists only since 2.04
 				OS.g_signal_connect (WebKitGTK.webkit_web_context_get_default(), WebKitGTK.initialize_web_extensions, initializeWebExtensions_callback.getAddress(), 0);
 			}
@@ -1052,16 +1045,9 @@ private static class Webkit2AsyncToSync {
 
 	static {
 		runjavascript_callback = new Callback(Webkit2AsyncToSync.class, "runjavascript_callback", void.class, new Type[] {long.class, long.class, long.class});
-		if (runjavascript_callback.getAddress() == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
-
 		getText_callback = new Callback(Webkit2AsyncToSync.class, "getText_callback", void.class, new Type[] {long.class, long.class, long.class});
-		if (getText_callback.getAddress() == 0) SWT.error(SWT.ERROR_NO_MORE_CALLBACKS);
-
 		setCookie_callback = new Callback(Webkit2AsyncToSync.class, "setCookie_callback", void.class, new Type[] {long.class, long.class, long.class});
-		if (setCookie_callback.getAddress() == 0) SWT.error(SWT.ERROR_NO_MORE_CALLBACKS);
-
 		getCookie_callback = new Callback(Webkit2AsyncToSync.class, "getCookie_callback", void.class, new Type[] {long.class, long.class, long.class});
-		if (getCookie_callback.getAddress() == 0) SWT.error(SWT.ERROR_NO_MORE_CALLBACKS);
 	}
 
 	/** Object used to return data from callback to original call */

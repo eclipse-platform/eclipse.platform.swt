@@ -335,9 +335,7 @@ public String open () {
 		struct.Flags |= OS.OFN_ALLOWMULTISELECT | OS.OFN_EXPLORER | OS.OFN_ENABLESIZING;
 		if (USE_HOOK) {
 			callback = new Callback (this, "OFNHookProc", 4); //$NON-NLS-1$
-			long lpfnHook = callback.getAddress ();
-			if (lpfnHook == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
-			struct.lpfnHook = lpfnHook;
+			struct.lpfnHook = callback.getAddress ();
 			struct.Flags |= OS.OFN_ENABLEHOOK;
 		}
 	}

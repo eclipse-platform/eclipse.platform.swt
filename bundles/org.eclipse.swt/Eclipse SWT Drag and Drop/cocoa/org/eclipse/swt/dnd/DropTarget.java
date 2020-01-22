@@ -89,15 +89,12 @@ public class DropTarget extends Widget {
 
 		dropTarget2Args = new Callback(clazz, "dropTargetProc", 2);
 		proc2Args = dropTarget2Args.getAddress();
-		if (proc2Args == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
 
 		dropTarget3Args = new Callback(clazz, "dropTargetProc", 3);
 		proc3Args = dropTarget3Args.getAddress();
-		if (proc3Args == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
 
 		dropTarget6Args = new Callback(clazz, "dropTargetProc", 6);
 		proc6Args = dropTarget6Args.getAddress();
-		if (proc6Args == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
 	}
 
 	static boolean dropNotAllowed = false;

@@ -175,16 +175,9 @@ public class GDBus {
 
 	static {
 		onBusAcquired = new Callback (GDBus.class, "onBusAcquired", 3); //$NON-NLS-1$
-		if (onBusAcquired.getAddress () == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
-
 		onNameAcquired = new Callback (GDBus.class, "onNameAcquired", 3); //$NON-NLS-1$
-		if (onNameAcquired.getAddress () == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
-
 		onNameLost = new Callback (GDBus.class, "onNameLost", 3); //$NON-NLS-1$
-		if (onNameLost.getAddress () == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
-
 		handleMethod = new Callback (GDBus.class, "handleMethod", 8); //$NON-NLS-1$
-		if (handleMethod.getAddress () == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
 
 		String swt_lib_versions = OS.getEnvironmentalVariable (OS.SWT_LIB_VERSIONS); // Note, this is read in multiple places.
 		if (swt_lib_versions != null && swt_lib_versions.equals("1")) {

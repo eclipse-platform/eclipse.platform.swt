@@ -52,11 +52,7 @@ public class ToolBar extends Composite {
 	ToolItem [] tabItemList;
 	ImageList imageList;
 	boolean hasChildFocus;
-	static Callback menuItemSelectedFunc;
-	static {
-		menuItemSelectedFunc = new Callback(ToolBar.class, "MenuItemSelectedProc", 2);
-		if (menuItemSelectedFunc.getAddress() == 0) SWT.error(SWT.ERROR_NO_MORE_CALLBACKS);
-	}
+	static Callback menuItemSelectedFunc = new Callback(ToolBar.class, "MenuItemSelectedProc", 2);
 	String cssBackground, cssForeground = " ";
 
 /**

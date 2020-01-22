@@ -188,7 +188,6 @@ private String openCommonFileDialog () {
 	/* Create the BrowseCallbackProc */
 	Callback callback = new Callback (this, "BrowseCallbackProc", 4); //$NON-NLS-1$
 	long lpfn = callback.getAddress ();
-	if (lpfn == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 
 	/* Make the parent shell be temporary modal */
 	Dialog oldModal = null;

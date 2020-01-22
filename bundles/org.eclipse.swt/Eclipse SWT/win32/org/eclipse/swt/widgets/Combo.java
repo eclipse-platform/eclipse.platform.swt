@@ -723,9 +723,7 @@ void createHandle () {
 	} else {
 		int threadId = OS.GetCurrentThreadId ();
 		Callback cbtCallback = new Callback (this, "CBTProc", 3); //$NON-NLS-1$
-		long cbtProc = cbtCallback.getAddress ();
-		if (cbtProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
-		cbtHook = OS.SetWindowsHookEx (OS.WH_CBT, cbtProc, 0, threadId);
+		cbtHook = OS.SetWindowsHookEx (OS.WH_CBT, cbtCallback.getAddress (), 0, threadId);
 		super.createHandle ();
 		if (cbtHook != 0) OS.UnhookWindowsHookEx (cbtHook);
 		cbtHook = 0;

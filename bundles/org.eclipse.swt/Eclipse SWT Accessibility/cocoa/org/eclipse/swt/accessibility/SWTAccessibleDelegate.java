@@ -46,15 +46,12 @@ class SWTAccessibleDelegate extends NSObject {
 
 		accessible2Args = new Callback(clazz, "accessibleProc", 2);
 		proc2Args = accessible2Args.getAddress();
-		if (proc2Args == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
 
 		accessible3Args = new Callback(clazz, "accessibleProc", 3);
 		proc3Args = accessible3Args.getAddress();
-		if (proc3Args == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
 
 		accessible4Args = new Callback(clazz, "accessibleProc", 4);
 		proc4Args = accessible3Args.getAddress();
-		if (proc4Args == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
 
 		// Accessible custom controls need to implement the NSAccessibility protocol. To do that,
 		// we dynamically add the methods to the control's class that are required

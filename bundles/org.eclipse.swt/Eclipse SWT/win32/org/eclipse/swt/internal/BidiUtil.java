@@ -55,7 +55,6 @@ public class BidiUtil {
 	static {
 		try {
 			callback = new Callback (Class.forName (CLASS_NAME), "windowProc", 4); //$NON-NLS-1$
-			if (callback.getAddress () == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
 		} catch (ClassNotFoundException e) {}
 	}
 
@@ -443,9 +442,7 @@ public static boolean isBidiPlatform() {
 	Callback callback = null;
 	try {
 		callback = new Callback (Class.forName (CLASS_NAME), "EnumSystemLanguageGroupsProc", 5); //$NON-NLS-1$
-		long lpEnumSystemLanguageGroupsProc = callback.getAddress ();
-		if (lpEnumSystemLanguageGroupsProc == 0) SWT.error(SWT.ERROR_NO_MORE_CALLBACKS);
-		OS.EnumSystemLanguageGroups(lpEnumSystemLanguageGroupsProc, OS.LGRPID_INSTALLED, 0);
+		OS.EnumSystemLanguageGroups(callback.getAddress (), OS.LGRPID_INSTALLED, 0);
 		callback.dispose ();
 	} catch (ClassNotFoundException e) {
 		//callback can only be null at this point

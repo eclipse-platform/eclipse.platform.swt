@@ -467,7 +467,6 @@ public PrinterData open() {
 			/* Save other print_settings data as key/value pairs in otherData. */
 			Callback printSettingsCallback = new Callback(this, "GtkPrintSettingsFunc", 3); //$NON-NLS-1$
 			long GtkPrintSettingsFunc = printSettingsCallback.getAddress();
-			if (GtkPrintSettingsFunc == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
 			index = 0;
 			settingsData = new byte[1024];
 			GTK.gtk_print_settings_foreach (settings, GtkPrintSettingsFunc, 0);

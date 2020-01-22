@@ -158,19 +158,10 @@ class WebkitGDBus {
 
 	static {
 		handleMethodCB = new Callback (WebkitGDBus.class, "handleMethodCB", 8); //$NON-NLS-1$
-		if (handleMethodCB.getAddress () == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
-
 		callExtensionAsyncCB = new Callback (WebkitGDBus.class, "callExtensionAsyncCB", 3); //$NON-NLS-1$
-		if (callExtensionAsyncCB.getAddress () == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
-
 		newConnectionCB = new Callback (WebkitGDBus.class, "newConnectionCB", 3); //$NON-NLS-1$
-		if (newConnectionCB.getAddress () == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
-
 		newConnectionToExtensionCB = new Callback (WebkitGDBus.class, "newConnectionToExtensionCB", 3); //$NON-NLS-1$
-		if (newConnectionToExtensionCB.getAddress () == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
-
 		authenticatePeerCB = new Callback (WebkitGDBus.class, "authenticatePeerCB", 4); //$NON-NLS-1$
-		if (authenticatePeerCB.getAddress () == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
 	}
 
 	/** True iff the GDBusServer has been initialized */

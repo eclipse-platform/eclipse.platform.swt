@@ -1150,25 +1150,21 @@ void createDisplay (DeviceData data) {
 	if (rendererClassInitProc == 0) {
 		rendererClassInitCallback = new Callback (getClass (), "rendererClassInitProc", 2); //$NON-NLS-1$
 		rendererClassInitProc = rendererClassInitCallback.getAddress ();
-		if (rendererClassInitProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 	}
 	if (GTK.GTK4) {
 		if (rendererSnapshotProc == 0) {
 			rendererSnapshotCallback = new Callback (getClass (), "rendererSnapshotProc", 6); //$NON-NLS-1$
 			rendererSnapshotProc = rendererSnapshotCallback.getAddress ();
-			if (rendererSnapshotProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 		}
 	} else {
 		if (rendererRenderProc == 0) {
 			rendererRenderCallback = new Callback (getClass (), "rendererRenderProc", 6); //$NON-NLS-1$
 			rendererRenderProc = rendererRenderCallback.getAddress ();
-			if (rendererRenderProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 		}
 	}
 	if (rendererGetPreferredWidthProc == 0) {
 		rendererGetPreferredWidthCallback = new Callback (getClass (), "rendererGetPreferredWidthProc", 4); //$NON-NLS-1$
 		rendererGetPreferredWidthProc = rendererGetPreferredWidthCallback.getAddress ();
-		if (rendererGetPreferredWidthProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 	}
 	if (text_renderer_type == 0) {
 		GTypeInfo renderer_info = new GTypeInfo ();
@@ -1216,12 +1212,10 @@ void createDisplay (DeviceData data) {
 	/* Initialize the filter and event callback */
 	eventCallback = new Callback (this, "eventProc", 2); //$NON-NLS-1$
 	eventProc = eventCallback.getAddress ();
-	if (eventProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 	GDK.gdk_event_handler_set (eventProc, 0, 0);
 
 	signalCallback = new Callback (this, "signalProc", 3); //$NON-NLS-1$
 	signalProc = signalCallback.getAddress ();
-	if (signalProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 
 	if (!GTK.GTK4) {
 		byte[] atomName = Converter.wcsToMbcs ("SWT_Window_" + APP_NAME, true); //$NON-NLS-1$
@@ -1237,7 +1231,6 @@ void createDisplay (DeviceData data) {
 	latinKeyGroup = findLatinKeyGroup ();
 	keysChangedCallback = new Callback (this, "keysChangedProc", 2); //$NON-NLS-1$
 	keysChangedProc = keysChangedCallback.getAddress ();
-	if (keysChangedProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 	long keymap;
 	long display = GDK.gdk_display_get_default();
 	if (GTK.GTK4) {
@@ -3421,18 +3414,15 @@ void initializeCallbacks () {
 	if (GTK.GTK4) {
 		snapshotDraw = new Callback (getClass (), "snapshotDrawProc", 2); //$NON-NLS-1$
 		snapshotDrawProc = snapshotDraw.getAddress ();
-		if (snapshotDrawProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 	}
 
 	windowCallback2 = new Callback (this, "windowProc", 2); //$NON-NLS-1$
 	windowProc2 = windowCallback2.getAddress ();
-	if (windowProc2 == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 
 	if (GTK.GTK4) {
 		keyPressReleaseCallback = new Callback (this, "keyPressReleaseProc", long.class, new Type[] {
 				long.class, int.class, int.class, int.class, long.class}); //$NON-NLS-1$
 		keyPressReleaseProc = keyPressReleaseCallback.getAddress ();
-		if (keyPressReleaseProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 
 		/*
 		 * Usually GTK4 signals will be connected via g_signal_connect(),
@@ -3445,7 +3435,6 @@ void initializeCallbacks () {
 		focusCallback = new Callback (this, "focusProc", long.class, new Type[] {
 				long.class, long.class}); //$NON-NLS-1$
 		focusProc = focusCallback.getAddress ();
-		if (focusProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 
 		closuresProc [Widget.FOCUS_IN] = focusProc;
 		closuresProc [Widget.FOCUS_OUT] = focusProc;
@@ -3453,7 +3442,6 @@ void initializeCallbacks () {
 		enterMotionScrollCallback = new Callback (this, "enterMotionScrollProc", long.class, new Type[] {
 				long.class, double.class, double.class, long.class}); //$NON-NLS-1$
 		enterMotionScrollProc = enterMotionScrollCallback.getAddress ();
-		if (enterMotionScrollProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 
 		closuresProc [Widget.ENTER] = enterMotionScrollProc;
 		closuresProc [Widget.MOTION] = enterMotionScrollProc;
@@ -3462,7 +3450,6 @@ void initializeCallbacks () {
 		gesturePressReleaseCallback = new Callback (this, "gesturePressReleaseProc", long.class, new Type[] {
 				long.class, int.class, double.class, double.class, long.class}); //$NON-NLS-1$
 		gesturePressReleaseProc = gesturePressReleaseCallback.getAddress();
-		if (gesturePressReleaseProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 
 		closuresProc [Widget.GESTURE_PRESSED] = gesturePressReleaseProc;
 		closuresProc [Widget.GESTURE_RELEASED] = gesturePressReleaseProc;
@@ -3470,7 +3457,6 @@ void initializeCallbacks () {
 		leaveCallback = new Callback (this, "leaveProc", long.class, new Type[] {
 				long.class, long.class}); //$NON-NLS-1$
 		leaveProc = leaveCallback.getAddress ();
-		if (leaveProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 
 		closuresProc [Widget.LEAVE] = leaveProc;
 	}
@@ -3478,7 +3464,6 @@ void initializeCallbacks () {
 	notifyCallback = new Callback(this, "notifyProc", long.class, new Type[] {
 			long.class, long.class, long.class}); //$NON-NLS-1$
 	notifyProc = notifyCallback.getAddress();
-	if (notifyProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 
 	closuresProc [Widget.NOTIFY_STATE] = notifyProc;
 	closuresProc [Widget.DPI_CHANGED] = notifyProc;
@@ -3518,7 +3503,6 @@ void initializeCallbacks () {
 
 	windowCallback3 = new Callback (this, "windowProc", 3); //$NON-NLS-1$
 	windowProc3 = windowCallback3.getAddress ();
-	if (windowProc3 == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 
 	closuresProc [Widget.BUTTON_PRESS_EVENT] = windowProc3;
 	closuresProc [Widget.BUTTON_PRESS_EVENT_INVERSE] = windowProc3;
@@ -3556,7 +3540,6 @@ void initializeCallbacks () {
 
 	windowCallback4 = new Callback (this, "windowProc", 4); //$NON-NLS-1$
 	windowProc4 = windowCallback4.getAddress ();
-	if (windowProc4 == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 
 	closuresProc [Widget.DELETE_RANGE] = windowProc4;
 	closuresProc [Widget.DELETE_TEXT] = windowProc4;
@@ -3575,7 +3558,6 @@ void initializeCallbacks () {
 
 	windowCallback5 = new Callback (this, "windowProc", 5); //$NON-NLS-1$
 	windowProc5 = windowCallback5.getAddress ();
-	if (windowProc5 == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 
 	/*
 	 * The "change-value" signal has a double parameter, so this
@@ -3583,7 +3565,6 @@ void initializeCallbacks () {
 	 */
 	changeValue = new Callback (this, "changeValue", boolean.class, new Type [] {long.class, int.class, double.class, long.class}); //$NON-NLS-1$
 	changeValueProc = changeValue.getAddress ();
-	if (changeValueProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 	closuresProc [Widget.CHANGE_VALUE] = changeValueProc;
 
 	closuresProc [Widget.EXPAND_COLLAPSE_CURSOR_ROW] = windowProc5;
@@ -3595,7 +3576,6 @@ void initializeCallbacks () {
 	if (signalIds [Widget.POPPED_UP] != 0) {
 		windowCallback6 = new Callback (this, "windowProc", 6); //$NON-NLS-1$
 		windowProc6 = windowCallback6.getAddress ();
-		if (windowProc6 == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 		closuresProc [Widget.POPPED_UP] = windowProc6;
 	}
 
@@ -3611,58 +3591,45 @@ void initializeCallbacks () {
 
 	timerCallback = new Callback (this, "timerProc", 1); //$NON-NLS-1$
 	timerProc = timerCallback.getAddress ();
-	if (timerProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 
 	windowTimerCallback = new Callback (this, "windowTimerProc", 1); //$NON-NLS-1$
 	windowTimerProc = windowTimerCallback.getAddress ();
-	if (windowTimerProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 
 	mouseHoverCallback = new Callback (this, "mouseHoverProc", 1); //$NON-NLS-1$
 	mouseHoverProc = mouseHoverCallback.getAddress ();
-	if (mouseHoverProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 
 	caretCallback = new Callback(this, "caretProc", 1); //$NON-NLS-1$
 	caretProc = caretCallback.getAddress();
-	if (caretProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 
 	sizeAllocateCallback = new Callback(this, "sizeAllocateProc", 3); //$NON-NLS-1$
 	sizeAllocateProc = sizeAllocateCallback.getAddress();
-	if (sizeAllocateProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 
 	sizeRequestCallback = new Callback(this, "sizeRequestProc", 3); //$NON-NLS-1$
 	sizeRequestProc = sizeRequestCallback.getAddress();
-	if (sizeRequestProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 
 	shellMapCallback = new Callback(this, "shellMapProc", 3); //$NON-NLS-1$
 	shellMapProc = shellMapCallback.getAddress();
-	if (shellMapProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 
 	shellMapProcClosure = OS.g_cclosure_new (shellMapProc, 0, 0);
 	OS.g_closure_ref (shellMapProcClosure);
 
 	cellDataCallback = new Callback (this, "cellDataProc", 5); //$NON-NLS-1$
 	cellDataProc = cellDataCallback.getAddress ();
-	if (cellDataProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 
 	setDirectionCallback = new Callback (this, "setDirectionProc", 2); //$NON-NLS-1$
 	setDirectionProc = setDirectionCallback.getAddress ();
-	if (setDirectionProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 
 	emissionProcCallback = new Callback (this, "emissionProc", 4); //$NON-NLS-1$
 	emissionProc = emissionProcCallback.getAddress ();
-	if (emissionProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 
 	allChildrenCallback = new Callback (this, "allChildrenProc", 2); //$NON-NLS-1$
 	allChildrenProc = allChildrenCallback.getAddress ();
-	if (allChildrenProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 
 	checkIfEventCallback = new Callback (this, "checkIfEventProc", 3); //$NON-NLS-1$
 	checkIfEventProc = checkIfEventCallback.getAddress ();
-	if (checkIfEventProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 
 	idleCallback = new Callback (this, "idleProc", 1); //$NON-NLS-1$
 	idleProc = idleCallback.getAddress ();
-	if (idleProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 }
 
 void initializeNamedColorList() {

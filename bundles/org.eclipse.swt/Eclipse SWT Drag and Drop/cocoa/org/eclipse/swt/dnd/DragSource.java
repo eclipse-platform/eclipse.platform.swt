@@ -122,23 +122,18 @@ public class DragSource extends Widget {
 
 		dragSource2Args = new Callback(clazz, "dragSourceProc", 2);
 		proc2 = dragSource2Args.getAddress();
-		if (proc2 == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
 
 		dragSource3Args = new Callback(clazz, "dragSourceProc", 3);
 		proc3 = dragSource3Args.getAddress();
-		if (proc3 == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
 
 		dragSource4Args = new Callback(clazz, "dragSourceProc", 4);
 		proc4 = dragSource4Args.getAddress();
-		if (proc4 == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
 
 		dragSource5Args = new Callback(clazz, "dragSourceProc", 5);
 		proc5 = dragSource5Args.getAddress();
-		if (proc5 == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
 
 		dragSource6Args = new Callback(clazz, "dragSourceProc", 6);
 		proc6 = dragSource6Args.getAddress();
-		if (proc6 == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
 
 		long cls = OS.objc_allocateClassPair(OS.class_NSObject, className, 0);
 		OS.class_addIvar(cls, SWT_OBJECT, size, (byte)align, types);

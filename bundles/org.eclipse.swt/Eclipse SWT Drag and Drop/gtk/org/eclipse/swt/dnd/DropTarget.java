@@ -111,13 +111,9 @@ public class DropTarget extends Widget {
 
 	static {
 		Drag_Motion = new Callback(DropTarget.class, "Drag_Motion", 5); //$NON-NLS-1$
-		if (Drag_Motion.getAddress() == 0) SWT.error(SWT.ERROR_NO_MORE_CALLBACKS);
 		Drag_Leave = new Callback(DropTarget.class, "Drag_Leave", 3); //$NON-NLS-1$
-		if (Drag_Leave.getAddress() == 0) SWT.error(SWT.ERROR_NO_MORE_CALLBACKS);
 		Drag_Data_Received = new Callback(DropTarget.class, "Drag_Data_Received", 7); //$NON-NLS-1$
-		if (Drag_Data_Received.getAddress() == 0) SWT.error(SWT.ERROR_NO_MORE_CALLBACKS);
 		Drag_Drop = new Callback(DropTarget.class, "Drag_Drop", 5); //$NON-NLS-1$
-		if (Drag_Drop.getAddress() == 0) SWT.error(SWT.ERROR_NO_MORE_CALLBACKS);
 	}
 
 /**

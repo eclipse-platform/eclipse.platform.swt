@@ -344,7 +344,6 @@ public String open () {
 		if (!overwrite) {
 			callback_overwrite_existing_file = new Callback(this, "_overwriteExistingFileCheck", 3);
 			long proc = callback_overwrite_existing_file.getAddress();
-			if (proc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 			method = OS.class_getInstanceMethod(OS.class_NSSavePanel, OS.sel_overwriteExistingFileCheck);
 			if (method != 0) methodImpl = OS.method_setImplementation(method, proc);
 		}
@@ -411,7 +410,6 @@ public String open () {
 	if (parent != null && (style & SWT.SHEET) != 0) {
 		callback_completion_handler = new Callback(this, "_completionHandler", 1);
 		long handler = callback_completion_handler.getAddress();
-		if (handler == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 		OS.beginSheetModalForWindow(panel, parent.view.window(), handler);
 		NSApplication.sharedApplication().runModalForWindow(parent.view.window());
 	} else {

@@ -1006,7 +1006,6 @@ void resizeEmbeddedHandle(long embeddedHandle, int width, int height) {
 			if (display.msgHook == 0) {
 				display.getMsgCallback = new Callback (display, "getMsgProc", 3);
 				display.getMsgProc = display.getMsgCallback.getAddress ();
-				if (display.getMsgProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 				display.msgHook = OS.SetWindowsHookEx (OS.WH_GETMESSAGE, display.getMsgProc, OS.GetLibraryHandle(), threadId);
 				OS.PostThreadMessage (threadId, OS.WM_NULL, 0, 0);
 			}

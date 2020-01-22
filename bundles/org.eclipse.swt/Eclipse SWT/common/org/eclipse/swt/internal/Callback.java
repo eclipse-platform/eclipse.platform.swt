@@ -135,6 +135,7 @@ public Callback (Object object, String method, int argCount, boolean isArrayBase
 
 	/* Bind the address */
 	address = bind (this, object, method, signature, argCount, isStatic, isArrayBased, errorResult);
+	if (address == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
 }
 
 
@@ -230,9 +231,8 @@ public Callback (Object object, String method, Type returnType, Type [] argument
 
 	/* Bind the address */
 	address = bind (this, this.object, this.method, this.signature, this.argCount, this.isStatic, this.isArrayBased, this.errorResult);
+	if (address == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
 }
-
-
 
 /**
  * Allocates the native level resources associated with the

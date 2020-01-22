@@ -124,21 +124,15 @@ public void create (Composite parent, int style) {
 		Class webKitClass = this.getClass();
 		Callback3 = new Callback(webKitClass, "browserProc", 3); //$NON-NLS-1$
 		long proc3 = Callback3.getAddress();
-		if (proc3 == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
 		Callback4 = new Callback(webKitClass, "browserProc", 4); //$NON-NLS-1$
 		long proc4 = Callback4.getAddress();
-		if (proc4 == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
 		Callback5 = new Callback(webKitClass, "browserProc", 5); //$NON-NLS-1$
 		long proc5 = Callback5.getAddress();
-		if (proc5 == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
 		Callback6 = new Callback(webKitClass, "browserProc", 6); //$NON-NLS-1$
 		long proc6 = Callback6.getAddress();
-		if (proc6 == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
 		Callback7 = new Callback(webKitClass, "browserProc", 7); //$NON-NLS-1$
 		long proc7 = Callback7.getAddress();
-		if (proc7 == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
 		long setFrameProc = OS.CALLBACK_webView_setFrame_(proc4);
-		if (setFrameProc == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
 
 		String className = "SWTWebViewDelegate"; //$NON-NLS-1$
 		byte[] types = {'*','\0'};

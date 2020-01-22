@@ -911,7 +911,6 @@ NSAttributedString createString(String string, int flags, boolean draw) {
 NSBezierPath createNSBezierPath (long  cgPath) {
 	Callback callback = new Callback(this, "applierFunc", 2);
 	long  proc = callback.getAddress();
-	if (proc == 0) SWT.error(SWT.ERROR_NO_MORE_CALLBACKS);
 	count = typeCount = 0;
 	element = new CGPathElement();
 	OS.CGPathApply(cgPath, 0, proc);

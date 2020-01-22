@@ -290,7 +290,6 @@ void initClasses () {
 
 	dialogCallback5 = new Callback(getClass(), "dialogProc", 5);
 	long dialogProc5 = dialogCallback5.getAddress();
-	if (dialogProc5 == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
 
 	byte[] types = {'*','\0'};
 	int size = C.PTR_SIZEOF, align = C.PTR_SIZEOF == 4 ? 2 : 3;

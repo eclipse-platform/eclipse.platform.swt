@@ -171,7 +171,6 @@ public String open () {
 	if (parent != null && (style & SWT.SHEET) != 0) {
 		completion_handler_callback = new Callback(this, "_completionHandler", 1);
 		long handler = completion_handler_callback.getAddress();
-		if (handler == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 		OS.beginSheetModalForWindow(panel, parent.view.window(), handler);
 		NSApplication.sharedApplication().runModalForWindow(parent.view.window());
 	} else {

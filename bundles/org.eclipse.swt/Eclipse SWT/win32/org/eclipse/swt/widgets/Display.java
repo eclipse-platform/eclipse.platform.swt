@@ -2107,9 +2107,7 @@ public Monitor [] getMonitors () {
 	checkDevice ();
 	monitors = new Monitor [4];
 	Callback callback = new Callback (this, "monitorEnumProc", 4); //$NON-NLS-1$
-	long lpfnEnum = callback.getAddress ();
-	if (lpfnEnum == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
-	OS.EnumDisplayMonitors (0, null, lpfnEnum, 0);
+	OS.EnumDisplayMonitors (0, null, callback.getAddress (), 0);
 	callback.dispose ();
 	Monitor [] result = new Monitor [monitorCount];
 	System.arraycopy (monitors, 0, result, 0, monitorCount);
@@ -2132,7 +2130,6 @@ long getMsgProc (long code, long wParam, long lParam) {
 			null);
 		embeddedCallback = new Callback (this, "embeddedProc", 4); //$NON-NLS-1$
 		embeddedProc = embeddedCallback.getAddress ();
-		if (embeddedProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 		OS.SetWindowLongPtr (embeddedHwnd, OS.GWLP_WNDPROC, embeddedProc);
 	}
 	if (code >= 0 && (wParam & OS.PM_REMOVE) != 0) {
@@ -2648,7 +2645,6 @@ protected void init () {
 	/* Create the callbacks */
 	windowCallback = new Callback (this, "windowProc", 4); //$NON-NLS-1$
 	windowProc = windowCallback.getAddress ();
-	if (windowProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 
 	/* Remember the current thread id */
 	threadId = OS.GetCurrentThreadId ();
@@ -2691,19 +2687,16 @@ protected void init () {
 	OS.SetWindowText(hwndMessage, new TCHAR(0, title, true));
 	messageCallback = new Callback (this, "messageProc", 4); //$NON-NLS-1$
 	messageProc = messageCallback.getAddress ();
-	if (messageProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 	OS.SetWindowLongPtr (hwndMessage, OS.GWLP_WNDPROC, messageProc);
 
 	/* Create the filter hook */
 	msgFilterCallback = new Callback (this, "msgFilterProc", 3); //$NON-NLS-1$
 	msgFilterProc = msgFilterCallback.getAddress ();
-	if (msgFilterProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 	filterHook = OS.SetWindowsHookEx (OS.WH_MSGFILTER, msgFilterProc, 0, threadId);
 
 	/* Create the idle hook */
 	foregroundIdleCallback = new Callback (this, "foregroundIdleProc", 3); //$NON-NLS-1$
 	foregroundIdleProc = foregroundIdleCallback.getAddress ();
-	if (foregroundIdleProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 	idleHook = OS.SetWindowsHookEx (OS.WH_FOREGROUNDIDLE, foregroundIdleProc, 0, threadId);
 
 	/* Register window messages */

@@ -15,7 +15,6 @@ package org.eclipse.swt.internal.ole.win32;
 
 import java.util.*;
 
-import org.eclipse.swt.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.win32.*;
 
@@ -34,7 +33,6 @@ public COMObject(int[] argCounts) {
 		for (int i = 0, length = argCounts.length; i < length; i++){
 			if ((Callbacks[i][argCounts[i]]) == null) {
 				Callbacks[i][argCounts[i]] = new Callback(this.getClass(), "callback"+i, argCounts[i] + 1, true, COM.E_FAIL); //$NON-NLS-1$
-				if (Callbacks[i][argCounts[i]].getAddress() == 0) SWT.error(SWT.ERROR_NO_MORE_CALLBACKS);
 			}
 			callbackAddresses[i] = Callbacks[i][argCounts[i]].getAddress();
 		}

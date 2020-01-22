@@ -1624,7 +1624,6 @@ void initClasses () {
 
 	textLayoutCallback2 = new Callback(getClass(), "textLayoutProc", 2);
 	long proc2 = textLayoutCallback2.getAddress();
-	if (proc2 == 0) SWT.error(SWT.ERROR_NO_MORE_CALLBACKS);
 	long cellBaselineOffsetProc = OS.CALLBACK_cellBaselineOffset(proc2);
 	long cellSizeProc = OS.CALLBACK_NSTextAttachmentCell_cellSize(proc2);
 

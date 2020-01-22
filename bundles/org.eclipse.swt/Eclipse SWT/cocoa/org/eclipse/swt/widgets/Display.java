@@ -899,16 +899,11 @@ void createDisplay (DeviceData data) {
 		Class clazz = getClass();
 		applicationCallback2 = new Callback(clazz, "applicationProc", 2);
 		long proc2 = applicationCallback2.getAddress();
-		if (proc2 == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 		applicationCallback3 = new Callback(clazz, "applicationProc", 3);
 		long proc3 = applicationCallback3.getAddress();
-		if (proc3 == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 		applicationCallback4 = new Callback(clazz, "applicationProc", 4);
-		long proc4 = applicationCallback4.getAddress();
-		if (proc4 == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 		applicationCallback6 = new Callback(clazz, "applicationProc", 6);
 		long proc6 = applicationCallback6.getAddress();
-		if (proc6 == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 		long superClassID = OS.object_getClass(application.id);
 		if (new NSObject(superClassID).className().getString().equals("NSKVONotifying_NSApplication")) {
 				/*
@@ -935,9 +930,7 @@ void createDisplay (DeviceData data) {
 	className = "SWTApplicationDelegate";
 	if (OS.objc_lookUpClass (className) == 0) {
 		long appProc3 = applicationCallback3.getAddress();
-		if (appProc3 == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 		long appProc4 = applicationCallback4.getAddress();
-		if (appProc4 == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 		cls = OS.objc_allocateClassPair(OS.class_NSObject, className, 0);
 		OS.class_addMethod(cls, OS.sel_applicationWillFinishLaunching_, appProc3, "@:@");
 		OS.class_addMethod(cls, OS.sel_terminate_, appProc3, "@:@");
@@ -2318,7 +2311,6 @@ protected void init () {
 
 	observerCallback = new Callback (this, "observerProc", 3); //$NON-NLS-1$
 	long observerProc = observerCallback.getAddress ();
-	if (observerProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 	int activities = OS.kCFRunLoopBeforeWaiting;
 	runLoopObserver = OS.CFRunLoopObserverCreate (0, activities, true, 0, observerProc, 0);
 	if (runLoopObserver == 0) error (SWT.ERROR_NO_HANDLES);
@@ -2335,7 +2327,6 @@ protected void init () {
 
 	cursorSetCallback = new Callback(this, "cursorSetProc", 2);
 	long cursorSetProc = cursorSetCallback.getAddress();
-	if (cursorSetProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 	long method = OS.class_getInstanceMethod(OS.class_NSCursor, OS.sel_set);
 	if (method != 0) oldCursorSetProc = OS.method_setImplementation(method, cursorSetProc);
 
@@ -2504,28 +2495,20 @@ void initClasses () {
 	Class clazz = getClass ();
 	dialogCallback3 = new Callback(clazz, "dialogProc", 3);
 	long dialogProc3 = dialogCallback3.getAddress();
-	if (dialogProc3 == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 	dialogCallback4 = new Callback(clazz, "dialogProc", 4);
 	long dialogProc4 = dialogCallback4.getAddress();
-	if (dialogProc4 == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 	dialogCallback5 = new Callback(clazz, "dialogProc", 5);
 	long dialogProc5 = dialogCallback5.getAddress();
-	if (dialogProc5 == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 	windowCallback3 = new Callback(clazz, "windowProc", 3);
 	long proc3 = windowCallback3.getAddress();
-	if (proc3 == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 	windowCallback2 = new Callback(clazz, "windowProc", 2);
 	long proc2 = windowCallback2.getAddress();
-	if (proc2 == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 	windowCallback4 = new Callback(clazz, "windowProc", 4);
 	long proc4 = windowCallback4.getAddress();
-	if (proc4 == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 	windowCallback5 = new Callback(clazz, "windowProc", 5);
 	long proc5 = windowCallback5.getAddress();
-	if (proc5 == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 	windowCallback6 = new Callback(clazz, "windowProc", 6);
 	long proc6 = windowCallback6.getAddress();
-	if (proc6 == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 
 	long isFlippedProc = OS.isFlipped_CALLBACK();
 	long drawRectProc = OS.CALLBACK_drawRect_(proc3);

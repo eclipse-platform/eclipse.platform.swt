@@ -1899,7 +1899,6 @@ NSBezierPath getPath(Region region) {
 
 NSBezierPath getPath(long region) {
 	Callback callback = new Callback(this, "regionToRects", 4);
-	if (callback.getAddress() == 0) error(SWT.ERROR_NO_MORE_CALLBACKS);
 	NSBezierPath path = NSBezierPath.bezierPath();
 	path.retain();
 	OS.QDRegionToRects(region, OS.kQDParseRegionFromTopLeft, callback.getAddress(), path.id);

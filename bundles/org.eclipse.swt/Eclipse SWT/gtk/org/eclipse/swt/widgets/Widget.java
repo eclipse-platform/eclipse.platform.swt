@@ -2058,9 +2058,7 @@ int gdk_pointer_grab (long gdkResource, int grab_ownership, boolean owner_events
 		if (gdkSeatGrabPrepareFunc == null) {
 			gdkSeatGrabPrepareFunc = new Callback(Widget.class, "GdkSeatGrabPrepareFunc", 3); //$NON-NLS-1$
 		}
-		long gdkSeatGrabPrepareFuncAddress = gdkSeatGrabPrepareFunc.getAddress();
-		if (gdkSeatGrabPrepareFuncAddress == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
-		return GDK.gdk_seat_grab(seat, gdkResource, GDK.GDK_SEAT_CAPABILITY_ALL_POINTING, owner_events, cursor, 0, gdkSeatGrabPrepareFuncAddress, gdkResource);
+		return GDK.gdk_seat_grab(seat, gdkResource, GDK.GDK_SEAT_CAPABILITY_ALL_POINTING, owner_events, cursor, 0, gdkSeatGrabPrepareFunc.getAddress(), gdkResource);
 	} else {
 		long pointer = GDK.gdk_get_pointer(display);
 		return GDK.gdk_device_grab (pointer, gdkResource, grab_ownership, owner_events, event_mask, cursor, time_);

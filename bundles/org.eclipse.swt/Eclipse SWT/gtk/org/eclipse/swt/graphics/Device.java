@@ -592,10 +592,8 @@ protected void init () {
 				if (index == Devices.length) {
 					XErrorCallback = new Callback (clazz, "XErrorProc", 2);
 					XNullErrorProc = XErrorCallback.getAddress ();
-					if (XNullErrorProc == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
 					XIOErrorCallback = new Callback (clazz, "XIOErrorProc", 1);
 					XNullIOErrorProc = XIOErrorCallback.getAddress ();
-					if (XNullIOErrorProc == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
 					XErrorProc = OS.XSetErrorHandler (XNullErrorProc);
 					XIOErrorProc = OS.XSetIOErrorHandler (XNullIOErrorProc);
 				}
@@ -608,7 +606,6 @@ protected void init () {
 	if (xDisplay != 0) {
 		logCallback = new Callback (this, "logProc", 4);
 		logProc = logCallback.getAddress ();
-		if (logProc == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
 
 		/* Set GTK warning and error handlers */
 		if (debug) {
