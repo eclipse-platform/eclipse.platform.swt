@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others.
+ * Copyright (c) 2000, 2020 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -12,8 +12,8 @@ package org.eclipse.swt.widgets;
 
 
 import org.eclipse.swt.*;
-import org.eclipse.swt.internal.win32.*;
 import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.internal.win32.*;
 import org.eclipse.swt.events.*;
 
 /**
@@ -186,12 +186,6 @@ void createHandle () {
 	int flags = OS.SWP_NOSIZE | OS.SWP_NOMOVE | OS.SWP_NOACTIVATE;
 	SetWindowPos (hwndText, hwndUpDown, 0, 0, 0, 0, flags);
 	OS.SetWindowLongPtr (hwndUpDown, OS.GWLP_ID, hwndUpDown);
-	if (OS.IsDBLocale) {
-		long /*int*/ hIMC = OS.ImmGetContext (handle);
-		OS.ImmAssociateContext (hwndText, hIMC);
-		OS.ImmAssociateContext (hwndUpDown, hIMC);
-		OS.ImmReleaseContext (handle, hIMC);
-	}
 	OS.SendMessage (hwndUpDown, OS.UDM_SETRANGE32, 0, 100);
 	OS.SendMessage (hwndUpDown, OS.IsWinCE ? OS.UDM_SETPOS : OS.UDM_SETPOS32, 0, 0);
 	pageIncrement = 10;

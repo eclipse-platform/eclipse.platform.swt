@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2016 IBM Corporation and others.
+ * Copyright (c) 2000, 2020 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -720,12 +720,6 @@ void createHandle () {
 	if ((bits & OS.WS_CHILD) != 0) {
 		OS.SetWindowLongPtr (handle, OS.GWLP_ID, handle);
 	}
-	if (OS.IsDBLocale && hwndParent != 0) {
-		long /*int*/ hIMC = OS.ImmGetContext (hwndParent);
-		OS.ImmAssociateContext (handle, hIMC);
-		OS.ImmReleaseContext (hwndParent, hIMC);
-	}
-
 }
 
 void checkGesture () {
@@ -2522,9 +2516,6 @@ void releaseParent () {
 @Override
 void releaseWidget () {
 	super.releaseWidget ();
-	if (OS.IsDBLocale) {
-		OS.ImmAssociateContext (handle, 0);
-	}
 	if (toolTipText != null) {
 		setToolTipText (getShell (), null);
 	}

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2015 IBM Corporation and others.
+ * Copyright (c) 2000, 2020 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -120,7 +120,7 @@ import org.eclipse.swt.internal.win32.*;
 public class Shell extends Decorations {
 	Menu activeMenu;
 	ToolTip [] toolTips;
-	long /*int*/ hIMC, hwndMDIClient, lpstrTip, toolTipHandle, balloonTipHandle, menuItemToolTipHandle;
+	long /*int*/ hwndMDIClient, lpstrTip, toolTipHandle, balloonTipHandle, menuItemToolTipHandle;
 	int minWidth = SWT.DEFAULT, minHeight = SWT.DEFAULT;
 	long /*int*/ [] brushes;
 	boolean showWithParent, fullScreen, wasMaximized, modified, center;
@@ -627,10 +627,6 @@ void createHandle () {
 			psai = new SHACTIVATEINFO ();
 			psai.cbSize = SHACTIVATEINFO.sizeof;
 		}
-	}
-	if (OS.IsDBLocale) {
-		hIMC = OS.ImmCreateContext ();
-		if (hIMC != 0) OS.ImmAssociateContext (handle, hIMC);
 	}
 }
 
@@ -1391,9 +1387,6 @@ void releaseWidget () {
 	}
 	lpstrTip = 0;
 	toolTipHandle = balloonTipHandle = menuItemToolTipHandle = 0;
-	if (OS.IsDBLocale) {
-		if (hIMC != 0) OS.ImmDestroyContext (hIMC);
-	}
 	lastActive = null;
 	toolTitle = balloonTitle = null;
 }
@@ -2258,21 +2251,6 @@ LRESULT WM_ACTIVATE (long /*int*/ wParam, long /*int*/ lParam) {
 			OS.SHSipPreference (handle, psai.fSipUp == 0 ? OS.SIP_DOWN : OS.SIP_UP);
 		}
 	}
-
-	/*
-	* Bug in Windows XP.  When a Shell is deactivated, the
-	* IME composition window does not go away. This causes
-	* repaint issues.  The fix is to commit the composition
-	* string.
-	*/
-	if (OS.WIN32_VERSION >= OS.VERSION (5, 1)) {
-		if (OS.LOWORD (wParam) == 0 && OS.IsDBLocale && hIMC != 0) {
-			if (OS.ImmGetOpenStatus (hIMC)) {
-				OS.ImmNotifyIME (hIMC, OS.NI_COMPOSITIONSTR, OS.CPS_COMPLETE, 0);
-			}
-		}
-	}
-
 	/* Process WM_ACTIVATE */
 	LRESULT result = super.WM_ACTIVATE (wParam, lParam);
 	if (OS.LOWORD (wParam) == 0) {
