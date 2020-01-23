@@ -23,6 +23,8 @@ import java.util.Map.Entry;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Cursor;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -33,9 +35,10 @@ import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Widget;
 
 class ColorTab extends Tab {
-	Table colors;
-	Group colorsGroup;
+	Table colors, cursors;
+	Group colorsGroup, cursorsGroup;
 	HashMap <Integer, String> hmap = new HashMap <> ();
+	HashMap <Integer, String> cmap = new HashMap <> ();
 	static final int namedColorEnd = 8;
 	static String [] columnTitles	= {ControlExample.getResourceString("ColorTitle_0"),
 				ControlExample.getResourceString("ColorTitle_1"),
@@ -84,6 +87,29 @@ class ColorTab extends Tab {
 		hmap.put(SWT.COLOR_LINK_FOREGROUND, "COLOR_LINK_FOREGROUND");
 		hmap.put(SWT.COLOR_WIDGET_DISABLED_FOREGROUND, "COLOR_WIDGET_DISABLED_FOREGROUND");
 		hmap.put(SWT.COLOR_TEXT_DISABLED_BACKGROUND, "COLOR_TEXT_DISABLED_BACKGROUND");
+
+		cmap.put(SWT.CURSOR_APPSTARTING, "CURSOR_APPSTARTING");
+		cmap.put(SWT.CURSOR_ARROW, "CURSOR_ARROW");
+		cmap.put(SWT.CURSOR_WAIT, "CURSOR_WAIT");
+		cmap.put(SWT.CURSOR_CROSS, "CURSOR_CROSS");
+		cmap.put(SWT.CURSOR_HAND, "CURSOR_HAND");
+		cmap.put(SWT.CURSOR_HELP, "CURSOR_HELP");
+		cmap.put(SWT.CURSOR_SIZEALL, "CURSOR_SIZEALL");
+		cmap.put(SWT.CURSOR_SIZENESW, "CURSOR_SIZENESW");
+		cmap.put(SWT.CURSOR_SIZENS, "CURSOR_SIZENS");
+		cmap.put(SWT.CURSOR_SIZENWSE, "CURSOR_SIZENWSE");
+		cmap.put(SWT.CURSOR_SIZEWE, "CURSOR_SIZEWE");
+		cmap.put(SWT.CURSOR_SIZEN, "CURSOR_SIZEN");
+		cmap.put(SWT.CURSOR_SIZES, "CURSOR_SIZES");
+		cmap.put(SWT.CURSOR_SIZEE, "CURSOR_SIZEE");
+		cmap.put(SWT.CURSOR_SIZEW, "CURSOR_SIZEW");
+		cmap.put(SWT.CURSOR_SIZENE, "CURSOR_SIZENE");
+		cmap.put(SWT.CURSOR_SIZESE, "CURSOR_SIZESE");
+		cmap.put(SWT.CURSOR_SIZESW, "CURSOR_SIZESW");
+		cmap.put(SWT.CURSOR_SIZENW, "CURSOR_SIZENW");
+		cmap.put(SWT.CURSOR_UPARROW, "CURSOR_UPARROW");
+		cmap.put(SWT.CURSOR_IBEAM, "CURSOR_IBEAM");
+		cmap.put(SWT.CURSOR_NO, "CURSOR_NO");
 	}
 
 	/**
@@ -92,11 +118,17 @@ class ColorTab extends Tab {
 	@Override
 	void createExampleGroup () {
 		super.createExampleGroup ();
-		/* Create a group for the list */
+		exampleGroup.setLayout(new GridLayout(2, false));
+
 		colorsGroup = new Group (exampleGroup, SWT.NONE);
 		colorsGroup.setLayout (new GridLayout ());
-		colorsGroup.setLayoutData (new GridData (SWT.FILL, SWT.FILL, true, true));
-		colorsGroup.setText ("Color");
+		colorsGroup.setLayoutData (new GridData (SWT.FILL, SWT.FILL, false, true));
+		colorsGroup.setText ("Colors");
+
+		cursorsGroup = new Group (exampleGroup, SWT.NONE);
+		cursorsGroup.setLayout (new GridLayout ());
+		cursorsGroup.setLayoutData (new GridData (SWT.FILL, SWT.FILL, false, true));
+		cursorsGroup.setText ("Cursors");
 	}
 
 	/**
@@ -149,6 +181,28 @@ class ColorTab extends Tab {
 		for (int i = 0; i < columnTitles.length; i++) {
 			colors.getColumn(i).pack();
 		}
+
+		/* Create the cursor table widget */
+		cursors = new Table (cursorsGroup, style);
+		cursors.setHeaderVisible(true);
+		// fill in the table.
+		TableColumn tableColumn = new TableColumn(cursors, SWT.NONE);
+		tableColumn.setText("Cursor");
+		// fill in the Data. Put an empty line inbetween "Named" and "SWT" cursors.
+		for (Entry<Integer, String> entry : cmap.entrySet()) {
+			Integer key = entry.getKey();
+			String value = entry.getValue();
+			TableItem item = new TableItem(cursors, SWT.NONE);
+			item.setText(value);
+			item.setData(display.getSystemCursor(key));
+		}
+		tableColumn.pack();
+
+		cursors.addListener(SWT.MouseMove, e -> {
+			TableItem item = cursors.getItem(new Point(e.x, e.y));
+			Cursor cursor = (item != null) ? (Cursor) item.getData() : null;
+			cursors.setCursor(cursor);
+		});
 	}
 
 	/**
@@ -156,7 +210,7 @@ class ColorTab extends Tab {
 	 */
 	@Override
 	Widget [] getExampleWidgets () {
-		return new Widget [] {colors};
+		return new Widget [] {colors, cursors};
 	}
 
 	/**
