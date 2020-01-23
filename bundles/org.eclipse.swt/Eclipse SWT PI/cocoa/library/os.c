@@ -23,33 +23,6 @@
 #define OS_NATIVE(func) Java_org_eclipse_swt_internal_cocoa_OS_##func
 #endif
 
-#ifndef NO_ATSFontActivateFromFileReference
-JNIEXPORT jint JNICALL OS_NATIVE(ATSFontActivateFromFileReference)
-	(JNIEnv *env, jclass that, jbyteArray arg0, jint arg1, jint arg2, jlong arg3, jint arg4, jlongArray arg5)
-{
-	jbyte *lparg0=NULL;
-	jlong *lparg5=NULL;
-	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, ATSFontActivateFromFileReference_FUNC);
-	if (arg0) if ((lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL)) == NULL) goto fail;
-	if (arg5) if ((lparg5 = (*env)->GetLongArrayElements(env, arg5, NULL)) == NULL) goto fail;
-/*
-	rc = (jint)ATSFontActivateFromFileReference((const FSRef *)lparg0, (ATSFontContext)arg1, (ATSFontFormat)arg2, (void *)arg3, (ATSOptionFlags)arg4, (ATSFontContainerRef *)lparg5);
-*/
-	{
-		OS_LOAD_FUNCTION(fp, ATSFontActivateFromFileReference)
-		if (fp) {
-			rc = (jint)((jint (CALLING_CONVENTION*)(const FSRef *, ATSFontContext, ATSFontFormat, void *, ATSOptionFlags, ATSFontContainerRef *))fp)((const FSRef *)lparg0, (ATSFontContext)arg1, (ATSFontFormat)arg2, (void *)arg3, (ATSOptionFlags)arg4, (ATSFontContainerRef *)lparg5);
-		}
-	}
-fail:
-	if (arg5 && lparg5) (*env)->ReleaseLongArrayElements(env, arg5, lparg5, 0);
-	if (arg0 && lparg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
-	OS_NATIVE_EXIT(env, that, ATSFontActivateFromFileReference_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO_AcquireRootMenu
 JNIEXPORT jlong JNICALL OS_NATIVE(AcquireRootMenu)
 	(JNIEnv *env, jclass that)
@@ -326,46 +299,6 @@ JNIEXPORT jlong JNICALL OS_NATIVE(CALLBACK_1columnAtPoint_1)
 	OS_NATIVE_ENTER(env, that, CALLBACK_1columnAtPoint_1_FUNC);
 	rc = (jlong)CALLBACK_columnAtPoint_(arg0);
 	OS_NATIVE_EXIT(env, that, CALLBACK_1columnAtPoint_1_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO_CALLBACK_1dragSelectionWithEvent_1offset_1slideBack_1
-static jintLong CALLBACK_1dragSelectionWithEvent_1offset_1slideBack_1;
-static BOOL proc_CALLBACK_1dragSelectionWithEvent_1offset_1slideBack_1(id arg0, SEL arg1, NSEvent* arg2, NSSize arg3, BOOL arg4) {
-	return ((BOOL (*)(id, SEL, NSEvent*, NSSize*, BOOL))CALLBACK_1dragSelectionWithEvent_1offset_1slideBack_1)(arg0, arg1, arg2, &arg3, arg4);
-}
-static jintLong CALLBACK_dragSelectionWithEvent_offset_slideBack_(jintLong func) {
-	CALLBACK_1dragSelectionWithEvent_1offset_1slideBack_1 = func;
-	return (jintLong)proc_CALLBACK_1dragSelectionWithEvent_1offset_1slideBack_1;
-}
-JNIEXPORT jlong JNICALL OS_NATIVE(CALLBACK_1dragSelectionWithEvent_1offset_1slideBack_1)
-	(JNIEnv *env, jclass that, jlong arg0)
-{
-	jlong rc = 0;
-	OS_NATIVE_ENTER(env, that, CALLBACK_1dragSelectionWithEvent_1offset_1slideBack_1_FUNC);
-	rc = (jlong)CALLBACK_dragSelectionWithEvent_offset_slideBack_(arg0);
-	OS_NATIVE_EXIT(env, that, CALLBACK_1dragSelectionWithEvent_1offset_1slideBack_1_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO_CALLBACK_1draggedImage_1beganAt_1
-static jintLong CALLBACK_1draggedImage_1beganAt_1;
-static void proc_CALLBACK_1draggedImage_1beganAt_1(id arg0, SEL arg1, NSImage* arg2, NSPoint arg3) {
-	((void (*)(id, SEL, NSImage*, NSPoint*))CALLBACK_1draggedImage_1beganAt_1)(arg0, arg1, arg2, &arg3);
-}
-static jintLong CALLBACK_draggedImage_beganAt_(jintLong func) {
-	CALLBACK_1draggedImage_1beganAt_1 = func;
-	return (jintLong)proc_CALLBACK_1draggedImage_1beganAt_1;
-}
-JNIEXPORT jlong JNICALL OS_NATIVE(CALLBACK_1draggedImage_1beganAt_1)
-	(JNIEnv *env, jclass that, jlong arg0)
-{
-	jlong rc = 0;
-	OS_NATIVE_ENTER(env, that, CALLBACK_1draggedImage_1beganAt_1_FUNC);
-	rc = (jlong)CALLBACK_draggedImage_beganAt_(arg0);
-	OS_NATIVE_EXIT(env, that, CALLBACK_1draggedImage_1beganAt_1_FUNC);
 	return rc;
 }
 #endif
@@ -894,26 +827,6 @@ JNIEXPORT jlong JNICALL OS_NATIVE(CALLBACK_1setFrameSize_1)
 }
 #endif
 
-#ifndef NO_CALLBACK_1setFrame_1
-static jintLong CALLBACK_1setFrame_1;
-static void proc_CALLBACK_1setFrame_1(id arg0, SEL arg1, NSRect arg2) {
-	((void (*)(id, SEL, NSRect*))CALLBACK_1setFrame_1)(arg0, arg1, &arg2);
-}
-static jintLong CALLBACK_setFrame_(jintLong func) {
-	CALLBACK_1setFrame_1 = func;
-	return (jintLong)proc_CALLBACK_1setFrame_1;
-}
-JNIEXPORT jlong JNICALL OS_NATIVE(CALLBACK_1setFrame_1)
-	(JNIEnv *env, jclass that, jlong arg0)
-{
-	jlong rc = 0;
-	OS_NATIVE_ENTER(env, that, CALLBACK_1setFrame_1_FUNC);
-	rc = (jlong)CALLBACK_setFrame_(arg0);
-	OS_NATIVE_EXIT(env, that, CALLBACK_1setFrame_1_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO_CALLBACK_1setMarkedText_1selectedRange_1
 static jintLong CALLBACK_1setMarkedText_1selectedRange_1;
 static void proc_CALLBACK_1setMarkedText_1selectedRange_1(id arg0, SEL arg1, id arg2, NSRange arg3) {
@@ -1098,18 +1011,6 @@ JNIEXPORT jlong JNICALL OS_NATIVE(CALLBACK_1webView_1setFrame_1)
 }
 #endif
 
-#ifndef NO_CFAttributedStringCreate
-JNIEXPORT jlong JNICALL OS_NATIVE(CFAttributedStringCreate)
-	(JNIEnv *env, jclass that, jlong arg0, jlong arg1, jlong arg2)
-{
-	jlong rc = 0;
-	OS_NATIVE_ENTER(env, that, CFAttributedStringCreate_FUNC);
-	rc = (jlong)CFAttributedStringCreate((CFAllocatorRef)arg0, (CFStringRef)arg1, (CFDictionaryRef)arg2);
-	OS_NATIVE_EXIT(env, that, CFAttributedStringCreate_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO_CFDataGetBytePtr
 JNIEXPORT jlong JNICALL OS_NATIVE(CFDataGetBytePtr)
 	(JNIEnv *env, jclass that, jlong arg0)
@@ -1130,40 +1031,6 @@ JNIEXPORT jlong JNICALL OS_NATIVE(CFDataGetLength)
 	OS_NATIVE_ENTER(env, that, CFDataGetLength_FUNC);
 	rc = (jlong)CFDataGetLength((CFDataRef)arg0);
 	OS_NATIVE_EXIT(env, that, CFDataGetLength_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO_CFDictionaryAddValue
-JNIEXPORT void JNICALL OS_NATIVE(CFDictionaryAddValue)
-	(JNIEnv *env, jclass that, jlong arg0, jlong arg1, jlong arg2)
-{
-	OS_NATIVE_ENTER(env, that, CFDictionaryAddValue_FUNC);
-	CFDictionaryAddValue((CFMutableDictionaryRef)arg0, (void*)arg1, (void*)arg2);
-	OS_NATIVE_EXIT(env, that, CFDictionaryAddValue_FUNC);
-}
-#endif
-
-#ifndef NO_CFDictionaryCreateMutable
-JNIEXPORT jlong JNICALL OS_NATIVE(CFDictionaryCreateMutable)
-	(JNIEnv *env, jclass that, jlong arg0, jlong arg1, jlong arg2, jlong arg3)
-{
-	jlong rc = 0;
-	OS_NATIVE_ENTER(env, that, CFDictionaryCreateMutable_FUNC);
-	rc = (jlong)CFDictionaryCreateMutable((CFAllocatorRef)arg0, (CFIndex)arg1, (CFDictionaryKeyCallBacks*)arg2, (CFDictionaryValueCallBacks*)arg3);
-	OS_NATIVE_EXIT(env, that, CFDictionaryCreateMutable_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO_CFRange_1sizeof
-JNIEXPORT jint JNICALL OS_NATIVE(CFRange_1sizeof)
-	(JNIEnv *env, jclass that)
-{
-	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, CFRange_1sizeof_FUNC);
-	rc = (jint)CFRange_sizeof();
-	OS_NATIVE_EXIT(env, that, CFRange_1sizeof_FUNC);
 	return rc;
 }
 #endif
@@ -1222,44 +1089,6 @@ JNIEXPORT void JNICALL OS_NATIVE(CFRunLoopObserverInvalidate)
 }
 #endif
 
-#ifndef NO_CFRunLoopRunInMode
-JNIEXPORT jint JNICALL OS_NATIVE(CFRunLoopRunInMode)
-	(JNIEnv *env, jclass that, jlong arg0, jdouble arg1, jboolean arg2)
-{
-	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, CFRunLoopRunInMode_FUNC);
-	rc = (jint)CFRunLoopRunInMode((CFStringRef)arg0, (CFTimeInterval)arg1, (Boolean)arg2);
-	OS_NATIVE_EXIT(env, that, CFRunLoopRunInMode_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO_CFRunLoopStop
-JNIEXPORT void JNICALL OS_NATIVE(CFRunLoopStop)
-	(JNIEnv *env, jclass that, jlong arg0)
-{
-	OS_NATIVE_ENTER(env, that, CFRunLoopStop_FUNC);
-	CFRunLoopStop((CFRunLoopRef)arg0);
-	OS_NATIVE_EXIT(env, that, CFRunLoopStop_FUNC);
-}
-#endif
-
-#ifndef NO_CFStringCreateWithCharacters
-JNIEXPORT jlong JNICALL OS_NATIVE(CFStringCreateWithCharacters)
-	(JNIEnv *env, jclass that, jlong arg0, jcharArray arg1, jlong arg2)
-{
-	jchar *lparg1=NULL;
-	jlong rc = 0;
-	OS_NATIVE_ENTER(env, that, CFStringCreateWithCharacters_FUNC);
-	if (arg1) if ((lparg1 = (*env)->GetCharArrayElements(env, arg1, NULL)) == NULL) goto fail;
-	rc = (jlong)CFStringCreateWithCharacters((CFAllocatorRef)arg0, (UniChar*)lparg1, (CFIndex)arg2);
-fail:
-	if (arg1 && lparg1) (*env)->ReleaseCharArrayElements(env, arg1, lparg1, 0);
-	OS_NATIVE_EXIT(env, that, CFStringCreateWithCharacters_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO_CFURLCreateFromFSRef
 JNIEXPORT jlong JNICALL OS_NATIVE(CFURLCreateFromFSRef)
 	(JNIEnv *env, jclass that, jlong arg0, jbyteArray arg1)
@@ -1308,30 +1137,6 @@ JNIEXPORT jlong JNICALL OS_NATIVE(CGBitmapContextCreate)
 	OS_NATIVE_ENTER(env, that, CGBitmapContextCreate_FUNC);
 	rc = (jlong)CGBitmapContextCreate((void*)arg0, (size_t)arg1, (size_t)arg2, (size_t)arg3, (size_t)arg4, (CGColorSpaceRef)arg5, (CGBitmapInfo)arg6);
 	OS_NATIVE_EXIT(env, that, CGBitmapContextCreate_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO_CGBitmapContextCreateImage
-JNIEXPORT jlong JNICALL OS_NATIVE(CGBitmapContextCreateImage)
-	(JNIEnv *env, jclass that, jlong arg0)
-{
-	jlong rc = 0;
-	OS_NATIVE_ENTER(env, that, CGBitmapContextCreateImage_FUNC);
-	rc = (jlong)CGBitmapContextCreateImage((CGContextRef)arg0);
-	OS_NATIVE_EXIT(env, that, CGBitmapContextCreateImage_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO_CGBitmapContextGetData
-JNIEXPORT jlong JNICALL OS_NATIVE(CGBitmapContextGetData)
-	(JNIEnv *env, jclass that, jlong arg0)
-{
-	jlong rc = 0;
-	OS_NATIVE_ENTER(env, that, CGBitmapContextGetData_FUNC);
-	rc = (jlong)CGBitmapContextGetData((CGContextRef)arg0);
-	OS_NATIVE_EXIT(env, that, CGBitmapContextGetData_FUNC);
 	return rc;
 }
 #endif
@@ -1414,42 +1219,9 @@ JNIEXPORT jlong JNICALL OS_NATIVE(CGContextCopyPath)
 {
 	jlong rc = 0;
 	OS_NATIVE_ENTER(env, that, CGContextCopyPath_FUNC);
-/*
 	rc = (jlong)CGContextCopyPath((CGContextRef)arg0);
-*/
-	{
-		OS_LOAD_FUNCTION(fp, CGContextCopyPath)
-		if (fp) {
-			rc = (jlong)((jlong (CALLING_CONVENTION*)(CGContextRef))fp)((CGContextRef)arg0);
-		}
-	}
 	OS_NATIVE_EXIT(env, that, CGContextCopyPath_FUNC);
 	return rc;
-}
-#endif
-
-#ifndef NO_CGContextCopyWindowContentsToRect
-JNIEXPORT void JNICALL OS_NATIVE(CGContextCopyWindowContentsToRect)
-	(JNIEnv *env, jclass that, jlong arg0, jobject arg1, jlong arg2, jlong arg3, jobject arg4)
-{
-	CGRect _arg1, *lparg1=NULL;
-	CGRect _arg4, *lparg4=NULL;
-	OS_NATIVE_ENTER(env, that, CGContextCopyWindowContentsToRect_FUNC);
-	if (arg1) if ((lparg1 = getCGRectFields(env, arg1, &_arg1)) == NULL) goto fail;
-	if (arg4) if ((lparg4 = getCGRectFields(env, arg4, &_arg4)) == NULL) goto fail;
-/*
-	CGContextCopyWindowContentsToRect(arg0, *lparg1, arg2, arg3, *lparg4);
-*/
-	{
-		OS_LOAD_FUNCTION(fp, CGContextCopyWindowContentsToRect)
-		if (fp) {
-			((void (CALLING_CONVENTION*)(jlong, CGRect, jlong, jlong, CGRect))fp)(arg0, *lparg1, arg2, arg3, *lparg4);
-		}
-	}
-fail:
-	if (arg4 && lparg4) setCGRectFields(env, arg4, lparg4);
-	if (arg1 && lparg1) setCGRectFields(env, arg1, lparg1);
-	OS_NATIVE_EXIT(env, that, CGContextCopyWindowContentsToRect_FUNC);
 }
 #endif
 
@@ -1629,50 +1401,6 @@ JNIEXPORT void JNICALL OS_NATIVE(CGContextSetMiterLimit)
 }
 #endif
 
-#ifndef NO_CGContextSetShouldAntialias
-JNIEXPORT void JNICALL OS_NATIVE(CGContextSetShouldAntialias)
-	(JNIEnv *env, jclass that, jlong arg0, jboolean arg1)
-{
-	OS_NATIVE_ENTER(env, that, CGContextSetShouldAntialias_FUNC);
-	CGContextSetShouldAntialias((CGContextRef)arg0, (_Bool)arg1);
-	OS_NATIVE_EXIT(env, that, CGContextSetShouldAntialias_FUNC);
-}
-#endif
-
-#ifndef NO_CGContextSetTextDrawingMode
-JNIEXPORT void JNICALL OS_NATIVE(CGContextSetTextDrawingMode)
-	(JNIEnv *env, jclass that, jlong arg0, jint arg1)
-{
-	OS_NATIVE_ENTER(env, that, CGContextSetTextDrawingMode_FUNC);
-	CGContextSetTextDrawingMode((CGContextRef)arg0, (CGTextDrawingMode)arg1);
-	OS_NATIVE_EXIT(env, that, CGContextSetTextDrawingMode_FUNC);
-}
-#endif
-
-#ifndef NO_CGContextSetTextMatrix
-JNIEXPORT void JNICALL OS_NATIVE(CGContextSetTextMatrix)
-	(JNIEnv *env, jclass that, jlong arg0, jobject arg1)
-{
-	CGAffineTransform _arg1, *lparg1=NULL;
-	OS_NATIVE_ENTER(env, that, CGContextSetTextMatrix_FUNC);
-	if (arg1) if ((lparg1 = getCGAffineTransformFields(env, arg1, &_arg1)) == NULL) goto fail;
-	CGContextSetTextMatrix((CGContextRef)arg0, *lparg1);
-fail:
-	if (arg1 && lparg1) setCGAffineTransformFields(env, arg1, lparg1);
-	OS_NATIVE_EXIT(env, that, CGContextSetTextMatrix_FUNC);
-}
-#endif
-
-#ifndef NO_CGContextSetTextPosition
-JNIEXPORT void JNICALL OS_NATIVE(CGContextSetTextPosition)
-	(JNIEnv *env, jclass that, jlong arg0, jdouble arg1, jdouble arg2)
-{
-	OS_NATIVE_ENTER(env, that, CGContextSetTextPosition_FUNC);
-	CGContextSetTextPosition((CGContextRef)arg0, (CGFloat)arg1, (CGFloat)arg2);
-	OS_NATIVE_EXIT(env, that, CGContextSetTextPosition_FUNC);
-}
-#endif
-
 #ifndef NO_CGContextStrokePath
 JNIEXPORT void JNICALL OS_NATIVE(CGContextStrokePath)
 	(JNIEnv *env, jclass that, jlong arg0)
@@ -1715,126 +1443,14 @@ JNIEXPORT void JNICALL OS_NATIVE(CGDataProviderRelease)
 }
 #endif
 
-#ifndef NO_CGDisplayBaseAddress
-JNIEXPORT jlong JNICALL OS_NATIVE(CGDisplayBaseAddress)
-	(JNIEnv *env, jclass that, jint arg0)
-{
-	jlong rc = 0;
-	OS_NATIVE_ENTER(env, that, CGDisplayBaseAddress_FUNC);
-/*
-	rc = (jlong)CGDisplayBaseAddress((CGDirectDisplayID)arg0);
-*/
-	{
-		OS_LOAD_FUNCTION(fp, CGDisplayBaseAddress)
-		if (fp) {
-			rc = (jlong)((jlong (CALLING_CONVENTION*)(CGDirectDisplayID))fp)((CGDirectDisplayID)arg0);
-		}
-	}
-	OS_NATIVE_EXIT(env, that, CGDisplayBaseAddress_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO_CGDisplayBitsPerPixel
-JNIEXPORT jlong JNICALL OS_NATIVE(CGDisplayBitsPerPixel)
-	(JNIEnv *env, jclass that, jint arg0)
-{
-	jlong rc = 0;
-	OS_NATIVE_ENTER(env, that, CGDisplayBitsPerPixel_FUNC);
-/*
-	rc = (jlong)CGDisplayBitsPerPixel((CGDirectDisplayID)arg0);
-*/
-	{
-		OS_LOAD_FUNCTION(fp, CGDisplayBitsPerPixel)
-		if (fp) {
-			rc = (jlong)((jlong (CALLING_CONVENTION*)(CGDirectDisplayID))fp)((CGDirectDisplayID)arg0);
-		}
-	}
-	OS_NATIVE_EXIT(env, that, CGDisplayBitsPerPixel_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO_CGDisplayBitsPerSample
-JNIEXPORT jlong JNICALL OS_NATIVE(CGDisplayBitsPerSample)
-	(JNIEnv *env, jclass that, jint arg0)
-{
-	jlong rc = 0;
-	OS_NATIVE_ENTER(env, that, CGDisplayBitsPerSample_FUNC);
-/*
-	rc = (jlong)CGDisplayBitsPerSample((CGDirectDisplayID)arg0);
-*/
-	{
-		OS_LOAD_FUNCTION(fp, CGDisplayBitsPerSample)
-		if (fp) {
-			rc = (jlong)((jlong (CALLING_CONVENTION*)(CGDirectDisplayID))fp)((CGDirectDisplayID)arg0);
-		}
-	}
-	OS_NATIVE_EXIT(env, that, CGDisplayBitsPerSample_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO_CGDisplayBytesPerRow
-JNIEXPORT jlong JNICALL OS_NATIVE(CGDisplayBytesPerRow)
-	(JNIEnv *env, jclass that, jint arg0)
-{
-	jlong rc = 0;
-	OS_NATIVE_ENTER(env, that, CGDisplayBytesPerRow_FUNC);
-/*
-	rc = (jlong)CGDisplayBytesPerRow((CGDirectDisplayID)arg0);
-*/
-	{
-		OS_LOAD_FUNCTION(fp, CGDisplayBytesPerRow)
-		if (fp) {
-			rc = (jlong)((jlong (CALLING_CONVENTION*)(CGDirectDisplayID))fp)((CGDirectDisplayID)arg0);
-		}
-	}
-	OS_NATIVE_EXIT(env, that, CGDisplayBytesPerRow_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO_CGDisplayCreateImage
 JNIEXPORT jlong JNICALL OS_NATIVE(CGDisplayCreateImage)
 	(JNIEnv *env, jclass that, jint arg0)
 {
 	jlong rc = 0;
 	OS_NATIVE_ENTER(env, that, CGDisplayCreateImage_FUNC);
-/*
 	rc = (jlong)CGDisplayCreateImage((CGDirectDisplayID)arg0);
-*/
-	{
-		OS_LOAD_FUNCTION(fp, CGDisplayCreateImage)
-		if (fp) {
-			rc = (jlong)((jlong (CALLING_CONVENTION*)(CGDirectDisplayID))fp)((CGDirectDisplayID)arg0);
-		}
-	}
 	OS_NATIVE_EXIT(env, that, CGDisplayCreateImage_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO_CGDisplayPixelsHigh
-JNIEXPORT jlong JNICALL OS_NATIVE(CGDisplayPixelsHigh)
-	(JNIEnv *env, jclass that, jint arg0)
-{
-	jlong rc = 0;
-	OS_NATIVE_ENTER(env, that, CGDisplayPixelsHigh_FUNC);
-	rc = (jlong)CGDisplayPixelsHigh((CGDirectDisplayID)arg0);
-	OS_NATIVE_EXIT(env, that, CGDisplayPixelsHigh_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO_CGDisplayPixelsWide
-JNIEXPORT jlong JNICALL OS_NATIVE(CGDisplayPixelsWide)
-	(JNIEnv *env, jclass that, jint arg0)
-{
-	jlong rc = 0;
-	OS_NATIVE_ENTER(env, that, CGDisplayPixelsWide_FUNC);
-	rc = (jlong)CGDisplayPixelsWide((CGDirectDisplayID)arg0);
-	OS_NATIVE_EXIT(env, that, CGDisplayPixelsWide_FUNC);
 	return rc;
 }
 #endif
@@ -1995,20 +1611,6 @@ JNIEXPORT void JNICALL OS_NATIVE(CGPathAddLineToPoint)
 }
 #endif
 
-#ifndef NO_CGPathAddRect
-JNIEXPORT void JNICALL OS_NATIVE(CGPathAddRect)
-	(JNIEnv *env, jclass that, jlong arg0, jlong arg1, jobject arg2)
-{
-	CGRect _arg2, *lparg2=NULL;
-	OS_NATIVE_ENTER(env, that, CGPathAddRect_FUNC);
-	if (arg2) if ((lparg2 = getCGRectFields(env, arg2, &_arg2)) == NULL) goto fail;
-	CGPathAddRect((CGMutablePathRef)arg0, (CGAffineTransform*)arg1, *lparg2);
-fail:
-	if (arg2 && lparg2) setCGRectFields(env, arg2, lparg2);
-	OS_NATIVE_EXIT(env, that, CGPathAddRect_FUNC);
-}
-#endif
-
 #ifndef NO_CGPathApply
 JNIEXPORT void JNICALL OS_NATIVE(CGPathApply)
 	(JNIEnv *env, jclass that, jlong arg0, jlong arg1, jlong arg2)
@@ -2026,18 +1628,6 @@ JNIEXPORT void JNICALL OS_NATIVE(CGPathCloseSubpath)
 	OS_NATIVE_ENTER(env, that, CGPathCloseSubpath_FUNC);
 	CGPathCloseSubpath((CGMutablePathRef)arg0);
 	OS_NATIVE_EXIT(env, that, CGPathCloseSubpath_FUNC);
-}
-#endif
-
-#ifndef NO_CGPathCreateCopy
-JNIEXPORT jlong JNICALL OS_NATIVE(CGPathCreateCopy)
-	(JNIEnv *env, jclass that, jlong arg0)
-{
-	jlong rc = 0;
-	OS_NATIVE_ENTER(env, that, CGPathCreateCopy_FUNC);
-	rc = (jlong)CGPathCreateCopy((CGPathRef)arg0);
-	OS_NATIVE_EXIT(env, that, CGPathCreateCopy_FUNC);
-	return rc;
 }
 #endif
 
@@ -2121,22 +1711,6 @@ JNIEXPORT jint JNICALL OS_NATIVE(CGSize_1sizeof)
 }
 #endif
 
-#ifndef NO_CGWarpMouseCursorPosition
-JNIEXPORT jint JNICALL OS_NATIVE(CGWarpMouseCursorPosition)
-	(JNIEnv *env, jclass that, jobject arg0)
-{
-	CGPoint _arg0, *lparg0=NULL;
-	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, CGWarpMouseCursorPosition_FUNC);
-	if (arg0) if ((lparg0 = getCGPointFields(env, arg0, &_arg0)) == NULL) goto fail;
-	rc = (jint)CGWarpMouseCursorPosition(*lparg0);
-fail:
-	if (arg0 && lparg0) setCGPointFields(env, arg0, lparg0);
-	OS_NATIVE_EXIT(env, that, CGWarpMouseCursorPosition_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO_CPSSetProcessName
 JNIEXPORT jint JNICALL OS_NATIVE(CPSSetProcessName)
 	(JNIEnv *env, jclass that, jintArray arg0, jlong arg1)
@@ -2153,42 +1727,6 @@ fail:
 }
 #endif
 
-#ifndef NO_CTFontGetAscent
-JNIEXPORT jdouble JNICALL OS_NATIVE(CTFontGetAscent)
-	(JNIEnv *env, jclass that, jlong arg0)
-{
-	jdouble rc = 0;
-	OS_NATIVE_ENTER(env, that, CTFontGetAscent_FUNC);
-	rc = (jdouble)CTFontGetAscent((CTFontRef)arg0);
-	OS_NATIVE_EXIT(env, that, CTFontGetAscent_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO_CTFontGetDescent
-JNIEXPORT jdouble JNICALL OS_NATIVE(CTFontGetDescent)
-	(JNIEnv *env, jclass that, jlong arg0)
-{
-	jdouble rc = 0;
-	OS_NATIVE_ENTER(env, that, CTFontGetDescent_FUNC);
-	rc = (jdouble)CTFontGetDescent((CTFontRef)arg0);
-	OS_NATIVE_EXIT(env, that, CTFontGetDescent_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO_CTFontGetLeading
-JNIEXPORT jdouble JNICALL OS_NATIVE(CTFontGetLeading)
-	(JNIEnv *env, jclass that, jlong arg0)
-{
-	jdouble rc = 0;
-	OS_NATIVE_ENTER(env, that, CTFontGetLeading_FUNC);
-	rc = (jdouble)CTFontGetLeading((CTFontRef)arg0);
-	OS_NATIVE_EXIT(env, that, CTFontGetLeading_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO_CTFontManagerRegisterFontsForURL
 JNIEXPORT jboolean JNICALL OS_NATIVE(CTFontManagerRegisterFontsForURL)
 	(JNIEnv *env, jclass that, jlong arg0, jint arg1, jlong arg2)
@@ -2197,114 +1735,6 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(CTFontManagerRegisterFontsForURL)
 	OS_NATIVE_ENTER(env, that, CTFontManagerRegisterFontsForURL_FUNC);
 	rc = (jboolean)CTFontManagerRegisterFontsForURL((CFURLRef)arg0, (CTFontManagerScope)arg1, (CFErrorRef*)arg2);
 	OS_NATIVE_EXIT(env, that, CTFontManagerRegisterFontsForURL_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO_CTLineCreateWithAttributedString
-JNIEXPORT jlong JNICALL OS_NATIVE(CTLineCreateWithAttributedString)
-	(JNIEnv *env, jclass that, jlong arg0)
-{
-	jlong rc = 0;
-	OS_NATIVE_ENTER(env, that, CTLineCreateWithAttributedString_FUNC);
-	rc = (jlong)CTLineCreateWithAttributedString((CFAttributedStringRef)arg0);
-	OS_NATIVE_EXIT(env, that, CTLineCreateWithAttributedString_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO_CTLineDraw
-JNIEXPORT void JNICALL OS_NATIVE(CTLineDraw)
-	(JNIEnv *env, jclass that, jlong arg0, jlong arg1)
-{
-	OS_NATIVE_ENTER(env, that, CTLineDraw_FUNC);
-	CTLineDraw((CTLineRef)arg0, (CGContextRef)arg1);
-	OS_NATIVE_EXIT(env, that, CTLineDraw_FUNC);
-}
-#endif
-
-#ifndef NO_CTLineGetTypographicBounds
-JNIEXPORT jdouble JNICALL OS_NATIVE(CTLineGetTypographicBounds)
-	(JNIEnv *env, jclass that, jlong arg0, jdoubleArray arg1, jdoubleArray arg2, jdoubleArray arg3)
-{
-	jdouble *lparg1=NULL;
-	jdouble *lparg2=NULL;
-	jdouble *lparg3=NULL;
-	jdouble rc = 0;
-	OS_NATIVE_ENTER(env, that, CTLineGetTypographicBounds_FUNC);
-	if (arg1) if ((lparg1 = (*env)->GetDoubleArrayElements(env, arg1, NULL)) == NULL) goto fail;
-	if (arg2) if ((lparg2 = (*env)->GetDoubleArrayElements(env, arg2, NULL)) == NULL) goto fail;
-	if (arg3) if ((lparg3 = (*env)->GetDoubleArrayElements(env, arg3, NULL)) == NULL) goto fail;
-	rc = (jdouble)CTLineGetTypographicBounds((CTLineRef)arg0, (CGFloat*)lparg1, (CGFloat*)lparg2, (CGFloat*)lparg3);
-fail:
-	if (arg3 && lparg3) (*env)->ReleaseDoubleArrayElements(env, arg3, lparg3, 0);
-	if (arg2 && lparg2) (*env)->ReleaseDoubleArrayElements(env, arg2, lparg2, 0);
-	if (arg1 && lparg1) (*env)->ReleaseDoubleArrayElements(env, arg1, lparg1, 0);
-	OS_NATIVE_EXIT(env, that, CTLineGetTypographicBounds_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO_CTParagraphStyleCreate
-JNIEXPORT jlong JNICALL OS_NATIVE(CTParagraphStyleCreate)
-	(JNIEnv *env, jclass that, jlong arg0, jlong arg1)
-{
-	jlong rc = 0;
-	OS_NATIVE_ENTER(env, that, CTParagraphStyleCreate_FUNC);
-	rc = (jlong)CTParagraphStyleCreate((CTParagraphStyleSetting*)arg0, (size_t)arg1);
-	OS_NATIVE_EXIT(env, that, CTParagraphStyleCreate_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO_CTParagraphStyleSetting_1sizeof
-JNIEXPORT jint JNICALL OS_NATIVE(CTParagraphStyleSetting_1sizeof)
-	(JNIEnv *env, jclass that)
-{
-	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, CTParagraphStyleSetting_1sizeof_FUNC);
-	rc = (jint)CTParagraphStyleSetting_sizeof();
-	OS_NATIVE_EXIT(env, that, CTParagraphStyleSetting_1sizeof_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO_CTTypesetterCreateLine
-JNIEXPORT jlong JNICALL OS_NATIVE(CTTypesetterCreateLine)
-	(JNIEnv *env, jclass that, jlong arg0, jobject arg1)
-{
-	CFRange _arg1, *lparg1=NULL;
-	jlong rc = 0;
-	OS_NATIVE_ENTER(env, that, CTTypesetterCreateLine_FUNC);
-	if (arg1) if ((lparg1 = getCFRangeFields(env, arg1, &_arg1)) == NULL) goto fail;
-	rc = (jlong)CTTypesetterCreateLine((CTTypesetterRef)arg0, *lparg1);
-fail:
-	if (arg1 && lparg1) setCFRangeFields(env, arg1, lparg1);
-	OS_NATIVE_EXIT(env, that, CTTypesetterCreateLine_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO_CTTypesetterCreateWithAttributedString
-JNIEXPORT jlong JNICALL OS_NATIVE(CTTypesetterCreateWithAttributedString)
-	(JNIEnv *env, jclass that, jlong arg0)
-{
-	jlong rc = 0;
-	OS_NATIVE_ENTER(env, that, CTTypesetterCreateWithAttributedString_FUNC);
-	rc = (jlong)CTTypesetterCreateWithAttributedString((CFAttributedStringRef)arg0);
-	OS_NATIVE_EXIT(env, that, CTTypesetterCreateWithAttributedString_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO_CTTypesetterSuggestLineBreak
-JNIEXPORT jlong JNICALL OS_NATIVE(CTTypesetterSuggestLineBreak)
-	(JNIEnv *env, jclass that, jlong arg0, jlong arg1, jdouble arg2)
-{
-	jlong rc = 0;
-	OS_NATIVE_ENTER(env, that, CTTypesetterSuggestLineBreak_FUNC);
-	rc = (jlong)CTTypesetterSuggestLineBreak((CTTypesetterRef)arg0, (CFIndex)arg1, (double)arg2);
-	OS_NATIVE_EXIT(env, that, CTTypesetterSuggestLineBreak_FUNC);
 	return rc;
 }
 #endif
@@ -2449,53 +1879,6 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(EmptyRgn)
 }
 #endif
 
-#ifndef NO_FSPathMakeRef
-JNIEXPORT jint JNICALL OS_NATIVE(FSPathMakeRef)
-	(JNIEnv *env, jclass that, jlong arg0, jbyteArray arg1, jbooleanArray arg2)
-{
-	jbyte *lparg1=NULL;
-	jboolean *lparg2=NULL;
-	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, FSPathMakeRef_FUNC);
-	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
-	if (arg2) if ((lparg2 = (*env)->GetBooleanArrayElements(env, arg2, NULL)) == NULL) goto fail;
-/*
-	rc = (jint)FSPathMakeRef((const UInt8 *)arg0, (FSRef *)lparg1, (Boolean *)lparg2);
-*/
-	{
-		OS_LOAD_FUNCTION(fp, FSPathMakeRef)
-		if (fp) {
-			rc = (jint)((jint (CALLING_CONVENTION*)(const UInt8 *, FSRef *, Boolean *))fp)((const UInt8 *)arg0, (FSRef *)lparg1, (Boolean *)lparg2);
-		}
-	}
-fail:
-	if (arg2 && lparg2) (*env)->ReleaseBooleanArrayElements(env, arg2, lparg2, 0);
-	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
-	OS_NATIVE_EXIT(env, that, FSPathMakeRef_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO_GetCurrentEventButtonState
-JNIEXPORT jint JNICALL OS_NATIVE(GetCurrentEventButtonState)
-	(JNIEnv *env, jclass that)
-{
-	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, GetCurrentEventButtonState_FUNC);
-/*
-	rc = (jint)GetCurrentEventButtonState();
-*/
-	{
-		OS_LOAD_FUNCTION(fp, GetCurrentEventButtonState)
-		if (fp) {
-			rc = (jint)((jint (CALLING_CONVENTION*)())fp)();
-		}
-	}
-	OS_NATIVE_EXIT(env, that, GetCurrentEventButtonState_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO_GetCurrentProcess
 JNIEXPORT jint JNICALL OS_NATIVE(GetCurrentProcess)
 	(JNIEnv *env, jclass that, jintArray arg0)
@@ -2508,26 +1891,6 @@ JNIEXPORT jint JNICALL OS_NATIVE(GetCurrentProcess)
 fail:
 	if (arg0 && lparg0) (*env)->ReleaseIntArrayElements(env, arg0, lparg0, 0);
 	OS_NATIVE_EXIT(env, that, GetCurrentProcess_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO_GetDblTime
-JNIEXPORT jint JNICALL OS_NATIVE(GetDblTime)
-	(JNIEnv *env, jclass that)
-{
-	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, GetDblTime_FUNC);
-/*
-	rc = (jint)GetDblTime();
-*/
-	{
-		OS_LOAD_FUNCTION(fp, GetDblTime)
-		if (fp) {
-			rc = (jint)((jint (CALLING_CONVENTION*)())fp)();
-		}
-	}
-	OS_NATIVE_EXIT(env, that, GetDblTime_FUNC);
 	return rc;
 }
 #endif
@@ -2678,26 +2041,6 @@ fail:
 }
 #endif
 
-#ifndef NO_HIWindowGetCGWindowID
-JNIEXPORT jint JNICALL OS_NATIVE(HIWindowGetCGWindowID)
-	(JNIEnv *env, jclass that, jlong arg0)
-{
-	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, HIWindowGetCGWindowID_FUNC);
-/*
-	rc = (jint)HIWindowGetCGWindowID((WindowRef)arg0);
-*/
-	{
-		OS_LOAD_FUNCTION(fp, HIWindowGetCGWindowID)
-		if (fp) {
-			rc = (jint)((jint (CALLING_CONVENTION*)(WindowRef))fp)((WindowRef)arg0);
-		}
-	}
-	OS_NATIVE_EXIT(env, that, HIWindowGetCGWindowID_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO_JSEvaluateScript
 JNIEXPORT jlong JNICALL OS_NATIVE(JSEvaluateScript)
 	(JNIEnv *env, jclass that, jlong arg0, jlong arg1, jlong arg2, jlong arg3, jint arg4, jlongArray arg5)
@@ -2815,18 +2158,6 @@ JNIEXPORT void JNICALL OS_NATIVE(MoveTo)
 }
 #endif
 
-#ifndef NO_NSAccessibilityActionDescription
-JNIEXPORT jlong JNICALL OS_NATIVE(NSAccessibilityActionDescription)
-	(JNIEnv *env, jclass that, jlong arg0)
-{
-	jlong rc = 0;
-	OS_NATIVE_ENTER(env, that, NSAccessibilityActionDescription_FUNC);
-	rc = (jlong)NSAccessibilityActionDescription((NSString*)arg0);
-	OS_NATIVE_EXIT(env, that, NSAccessibilityActionDescription_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO_NSAccessibilityAttributedStringForRangeParameterizedAttribute
 JNIEXPORT jlong JNICALL OS_NATIVE(NSAccessibilityAttributedStringForRangeParameterizedAttribute)
 	(JNIEnv *env, jclass that)
@@ -2875,6 +2206,18 @@ JNIEXPORT jlong JNICALL OS_NATIVE(NSAccessibilityButtonRole)
 }
 #endif
 
+#ifndef NO_NSAccessibilityCellForColumnAndRowParameterizedAttribute
+JNIEXPORT jlong JNICALL OS_NATIVE(NSAccessibilityCellForColumnAndRowParameterizedAttribute)
+	(JNIEnv *env, jclass that)
+{
+	jlong rc = 0;
+	OS_NATIVE_ENTER(env, that, NSAccessibilityCellForColumnAndRowParameterizedAttribute_FUNC);
+	rc = (jlong)NSAccessibilityCellForColumnAndRowParameterizedAttribute;
+	OS_NATIVE_EXIT(env, that, NSAccessibilityCellForColumnAndRowParameterizedAttribute_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_NSAccessibilityCheckBoxRole
 JNIEXPORT jlong JNICALL OS_NATIVE(NSAccessibilityCheckBoxRole)
 	(JNIEnv *env, jclass that)
@@ -2899,14 +2242,14 @@ JNIEXPORT jlong JNICALL OS_NATIVE(NSAccessibilityChildrenAttribute)
 }
 #endif
 
-#ifndef NO_NSAccessibilityColorWellRole
-JNIEXPORT jlong JNICALL OS_NATIVE(NSAccessibilityColorWellRole)
+#ifndef NO_NSAccessibilityColumnIndexRangeAttribute
+JNIEXPORT jlong JNICALL OS_NATIVE(NSAccessibilityColumnIndexRangeAttribute)
 	(JNIEnv *env, jclass that)
 {
 	jlong rc = 0;
-	OS_NATIVE_ENTER(env, that, NSAccessibilityColorWellRole_FUNC);
-	rc = (jlong)NSAccessibilityColorWellRole;
-	OS_NATIVE_EXIT(env, that, NSAccessibilityColorWellRole_FUNC);
+	OS_NATIVE_ENTER(env, that, NSAccessibilityColumnIndexRangeAttribute_FUNC);
+	rc = (jlong)NSAccessibilityColumnIndexRangeAttribute;
+	OS_NATIVE_EXIT(env, that, NSAccessibilityColumnIndexRangeAttribute_FUNC);
 	return rc;
 }
 #endif
@@ -3019,18 +2362,6 @@ JNIEXPORT jlong JNICALL OS_NATIVE(NSAccessibilityExpandedAttribute)
 }
 #endif
 
-#ifndef NO_NSAccessibilityFloatingWindowSubrole
-JNIEXPORT jlong JNICALL OS_NATIVE(NSAccessibilityFloatingWindowSubrole)
-	(JNIEnv *env, jclass that)
-{
-	jlong rc = 0;
-	OS_NATIVE_ENTER(env, that, NSAccessibilityFloatingWindowSubrole_FUNC);
-	rc = (jlong)NSAccessibilityFloatingWindowSubrole;
-	OS_NATIVE_EXIT(env, that, NSAccessibilityFloatingWindowSubrole_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO_NSAccessibilityFocusedAttribute
 JNIEXPORT jlong JNICALL OS_NATIVE(NSAccessibilityFocusedAttribute)
 	(JNIEnv *env, jclass that)
@@ -3051,18 +2382,6 @@ JNIEXPORT jlong JNICALL OS_NATIVE(NSAccessibilityFocusedUIElementChangedNotifica
 	OS_NATIVE_ENTER(env, that, NSAccessibilityFocusedUIElementChangedNotification_FUNC);
 	rc = (jlong)NSAccessibilityFocusedUIElementChangedNotification;
 	OS_NATIVE_EXIT(env, that, NSAccessibilityFocusedUIElementChangedNotification_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO_NSAccessibilityFocusedWindowChangedNotification
-JNIEXPORT jlong JNICALL OS_NATIVE(NSAccessibilityFocusedWindowChangedNotification)
-	(JNIEnv *env, jclass that)
-{
-	jlong rc = 0;
-	OS_NATIVE_ENTER(env, that, NSAccessibilityFocusedWindowChangedNotification_FUNC);
-	rc = (jlong)NSAccessibilityFocusedWindowChangedNotification;
-	OS_NATIVE_EXIT(env, that, NSAccessibilityFocusedWindowChangedNotification_FUNC);
 	return rc;
 }
 #endif
@@ -3127,18 +2446,6 @@ JNIEXPORT jlong JNICALL OS_NATIVE(NSAccessibilityForegroundColorTextAttribute)
 }
 #endif
 
-#ifndef NO_NSAccessibilityGridRole
-JNIEXPORT jlong JNICALL OS_NATIVE(NSAccessibilityGridRole)
-	(JNIEnv *env, jclass that)
-{
-	jlong rc = 0;
-	OS_NATIVE_ENTER(env, that, NSAccessibilityGridRole_FUNC);
-	rc = (jlong)NSAccessibilityGridRole;
-	OS_NATIVE_EXIT(env, that, NSAccessibilityGridRole_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO_NSAccessibilityGroupRole
 JNIEXPORT jlong JNICALL OS_NATIVE(NSAccessibilityGroupRole)
 	(JNIEnv *env, jclass that)
@@ -3199,18 +2506,6 @@ JNIEXPORT jlong JNICALL OS_NATIVE(NSAccessibilityHorizontalOrientationValue)
 }
 #endif
 
-#ifndef NO_NSAccessibilityHorizontalScrollBarAttribute
-JNIEXPORT jlong JNICALL OS_NATIVE(NSAccessibilityHorizontalScrollBarAttribute)
-	(JNIEnv *env, jclass that)
-{
-	jlong rc = 0;
-	OS_NATIVE_ENTER(env, that, NSAccessibilityHorizontalScrollBarAttribute_FUNC);
-	rc = (jlong)NSAccessibilityHorizontalScrollBarAttribute;
-	OS_NATIVE_EXIT(env, that, NSAccessibilityHorizontalScrollBarAttribute_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO_NSAccessibilityImageRole
 JNIEXPORT jlong JNICALL OS_NATIVE(NSAccessibilityImageRole)
 	(JNIEnv *env, jclass that)
@@ -3219,18 +2514,6 @@ JNIEXPORT jlong JNICALL OS_NATIVE(NSAccessibilityImageRole)
 	OS_NATIVE_ENTER(env, that, NSAccessibilityImageRole_FUNC);
 	rc = (jlong)NSAccessibilityImageRole;
 	OS_NATIVE_EXIT(env, that, NSAccessibilityImageRole_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO_NSAccessibilityIncrementorRole
-JNIEXPORT jlong JNICALL OS_NATIVE(NSAccessibilityIncrementorRole)
-	(JNIEnv *env, jclass that)
-{
-	jlong rc = 0;
-	OS_NATIVE_ENTER(env, that, NSAccessibilityIncrementorRole_FUNC);
-	rc = (jlong)NSAccessibilityIncrementorRole;
-	OS_NATIVE_EXIT(env, that, NSAccessibilityIncrementorRole_FUNC);
 	return rc;
 }
 #endif
@@ -3255,18 +2538,6 @@ JNIEXPORT jlong JNICALL OS_NATIVE(NSAccessibilityInsertionPointLineNumberAttribu
 	OS_NATIVE_ENTER(env, that, NSAccessibilityInsertionPointLineNumberAttribute_FUNC);
 	rc = (jlong)NSAccessibilityInsertionPointLineNumberAttribute;
 	OS_NATIVE_EXIT(env, that, NSAccessibilityInsertionPointLineNumberAttribute_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO_NSAccessibilityLabelValueAttribute
-JNIEXPORT jlong JNICALL OS_NATIVE(NSAccessibilityLabelValueAttribute)
-	(JNIEnv *env, jclass that)
-{
-	jlong rc = 0;
-	OS_NATIVE_ENTER(env, that, NSAccessibilityLabelValueAttribute_FUNC);
-	rc = (jlong)NSAccessibilityLabelValueAttribute;
-	OS_NATIVE_EXIT(env, that, NSAccessibilityLabelValueAttribute_FUNC);
 	return rc;
 }
 #endif
@@ -3303,30 +2574,6 @@ JNIEXPORT jlong JNICALL OS_NATIVE(NSAccessibilityLinkTextAttribute)
 	OS_NATIVE_ENTER(env, that, NSAccessibilityLinkTextAttribute_FUNC);
 	rc = (jlong)NSAccessibilityLinkTextAttribute;
 	OS_NATIVE_EXIT(env, that, NSAccessibilityLinkTextAttribute_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO_NSAccessibilityLinkedUIElementsAttribute
-JNIEXPORT jlong JNICALL OS_NATIVE(NSAccessibilityLinkedUIElementsAttribute)
-	(JNIEnv *env, jclass that)
-{
-	jlong rc = 0;
-	OS_NATIVE_ENTER(env, that, NSAccessibilityLinkedUIElementsAttribute_FUNC);
-	rc = (jlong)NSAccessibilityLinkedUIElementsAttribute;
-	OS_NATIVE_EXIT(env, that, NSAccessibilityLinkedUIElementsAttribute_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO_NSAccessibilityListRole
-JNIEXPORT jlong JNICALL OS_NATIVE(NSAccessibilityListRole)
-	(JNIEnv *env, jclass that)
-{
-	jlong rc = 0;
-	OS_NATIVE_ENTER(env, that, NSAccessibilityListRole_FUNC);
-	rc = (jlong)NSAccessibilityListRole;
-	OS_NATIVE_EXIT(env, that, NSAccessibilityListRole_FUNC);
 	return rc;
 }
 #endif
@@ -3499,18 +2746,6 @@ JNIEXPORT jlong JNICALL OS_NATIVE(NSAccessibilityParentAttribute)
 }
 #endif
 
-#ifndef NO_NSAccessibilityPopUpButtonRole
-JNIEXPORT jlong JNICALL OS_NATIVE(NSAccessibilityPopUpButtonRole)
-	(JNIEnv *env, jclass that)
-{
-	jlong rc = 0;
-	OS_NATIVE_ENTER(env, that, NSAccessibilityPopUpButtonRole_FUNC);
-	rc = (jlong)NSAccessibilityPopUpButtonRole;
-	OS_NATIVE_EXIT(env, that, NSAccessibilityPopUpButtonRole_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO_NSAccessibilityPositionAttribute
 JNIEXPORT jlong JNICALL OS_NATIVE(NSAccessibilityPositionAttribute)
 	(JNIEnv *env, jclass that)
@@ -3569,18 +2804,6 @@ JNIEXPORT jlong JNICALL OS_NATIVE(NSAccessibilityProgressIndicatorRole)
 }
 #endif
 
-#ifndef NO_NSAccessibilityRTFForRangeParameterizedAttribute
-JNIEXPORT jlong JNICALL OS_NATIVE(NSAccessibilityRTFForRangeParameterizedAttribute)
-	(JNIEnv *env, jclass that)
-{
-	jlong rc = 0;
-	OS_NATIVE_ENTER(env, that, NSAccessibilityRTFForRangeParameterizedAttribute_FUNC);
-	rc = (jlong)NSAccessibilityRTFForRangeParameterizedAttribute;
-	OS_NATIVE_EXIT(env, that, NSAccessibilityRTFForRangeParameterizedAttribute_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO_NSAccessibilityRadioButtonRole
 JNIEXPORT jlong JNICALL OS_NATIVE(NSAccessibilityRadioButtonRole)
 	(JNIEnv *env, jclass that)
@@ -3590,28 +2813,6 @@ JNIEXPORT jlong JNICALL OS_NATIVE(NSAccessibilityRadioButtonRole)
 	rc = (jlong)NSAccessibilityRadioButtonRole;
 	OS_NATIVE_EXIT(env, that, NSAccessibilityRadioButtonRole_FUNC);
 	return rc;
-}
-#endif
-
-#ifndef NO_NSAccessibilityRadioGroupRole
-JNIEXPORT jlong JNICALL OS_NATIVE(NSAccessibilityRadioGroupRole)
-	(JNIEnv *env, jclass that)
-{
-	jlong rc = 0;
-	OS_NATIVE_ENTER(env, that, NSAccessibilityRadioGroupRole_FUNC);
-	rc = (jlong)NSAccessibilityRadioGroupRole;
-	OS_NATIVE_EXIT(env, that, NSAccessibilityRadioGroupRole_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO_NSAccessibilityRaiseBadArgumentException
-JNIEXPORT void JNICALL OS_NATIVE(NSAccessibilityRaiseBadArgumentException)
-	(JNIEnv *env, jclass that, jlong arg0, jlong arg1, jlong arg2)
-{
-	OS_NATIVE_ENTER(env, that, NSAccessibilityRaiseBadArgumentException_FUNC);
-	NSAccessibilityRaiseBadArgumentException((id)arg0, (NSString*)arg1, (id)arg2);
-	OS_NATIVE_EXIT(env, that, NSAccessibilityRaiseBadArgumentException_FUNC);
 }
 #endif
 
@@ -3647,18 +2848,6 @@ JNIEXPORT jlong JNICALL OS_NATIVE(NSAccessibilityRangeForPositionParameterizedAt
 	OS_NATIVE_ENTER(env, that, NSAccessibilityRangeForPositionParameterizedAttribute_FUNC);
 	rc = (jlong)NSAccessibilityRangeForPositionParameterizedAttribute;
 	OS_NATIVE_EXIT(env, that, NSAccessibilityRangeForPositionParameterizedAttribute_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO_NSAccessibilityResizedNotification
-JNIEXPORT jlong JNICALL OS_NATIVE(NSAccessibilityResizedNotification)
-	(JNIEnv *env, jclass that)
-{
-	jlong rc = 0;
-	OS_NATIVE_ENTER(env, that, NSAccessibilityResizedNotification_FUNC);
-	rc = (jlong)NSAccessibilityResizedNotification;
-	OS_NATIVE_EXIT(env, that, NSAccessibilityResizedNotification_FUNC);
 	return rc;
 }
 #endif
@@ -3699,18 +2888,6 @@ JNIEXPORT jlong JNICALL OS_NATIVE(NSAccessibilityRoleDescriptionAttribute)
 }
 #endif
 
-#ifndef NO_NSAccessibilityRoleDescriptionForUIElement
-JNIEXPORT jlong JNICALL OS_NATIVE(NSAccessibilityRoleDescriptionForUIElement)
-	(JNIEnv *env, jclass that, jlong arg0)
-{
-	jlong rc = 0;
-	OS_NATIVE_ENTER(env, that, NSAccessibilityRoleDescriptionForUIElement_FUNC);
-	rc = (jlong)NSAccessibilityRoleDescriptionForUIElement((id)arg0);
-	OS_NATIVE_EXIT(env, that, NSAccessibilityRoleDescriptionForUIElement_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO_NSAccessibilityRowCountChangedNotification
 JNIEXPORT jlong JNICALL OS_NATIVE(NSAccessibilityRowCountChangedNotification)
 	(JNIEnv *env, jclass that)
@@ -3719,6 +2896,18 @@ JNIEXPORT jlong JNICALL OS_NATIVE(NSAccessibilityRowCountChangedNotification)
 	OS_NATIVE_ENTER(env, that, NSAccessibilityRowCountChangedNotification_FUNC);
 	rc = (jlong)NSAccessibilityRowCountChangedNotification;
 	OS_NATIVE_EXIT(env, that, NSAccessibilityRowCountChangedNotification_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_NSAccessibilityRowIndexRangeAttribute
+JNIEXPORT jlong JNICALL OS_NATIVE(NSAccessibilityRowIndexRangeAttribute)
+	(JNIEnv *env, jclass that)
+{
+	jlong rc = 0;
+	OS_NATIVE_ENTER(env, that, NSAccessibilityRowIndexRangeAttribute_FUNC);
+	rc = (jlong)NSAccessibilityRowIndexRangeAttribute;
+	OS_NATIVE_EXIT(env, that, NSAccessibilityRowIndexRangeAttribute_FUNC);
 	return rc;
 }
 #endif
@@ -3743,18 +2932,6 @@ JNIEXPORT jlong JNICALL OS_NATIVE(NSAccessibilityRowsAttribute)
 	OS_NATIVE_ENTER(env, that, NSAccessibilityRowsAttribute_FUNC);
 	rc = (jlong)NSAccessibilityRowsAttribute;
 	OS_NATIVE_EXIT(env, that, NSAccessibilityRowsAttribute_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO_NSAccessibilityScrollAreaRole
-JNIEXPORT jlong JNICALL OS_NATIVE(NSAccessibilityScrollAreaRole)
-	(JNIEnv *env, jclass that)
-{
-	jlong rc = 0;
-	OS_NATIVE_ENTER(env, that, NSAccessibilityScrollAreaRole_FUNC);
-	rc = (jlong)NSAccessibilityScrollAreaRole;
-	OS_NATIVE_EXIT(env, that, NSAccessibilityScrollAreaRole_FUNC);
 	return rc;
 }
 #endif
@@ -3951,18 +3128,6 @@ JNIEXPORT jlong JNICALL OS_NATIVE(NSAccessibilitySplitterRole)
 }
 #endif
 
-#ifndef NO_NSAccessibilityStandardWindowSubrole
-JNIEXPORT jlong JNICALL OS_NATIVE(NSAccessibilityStandardWindowSubrole)
-	(JNIEnv *env, jclass that)
-{
-	jlong rc = 0;
-	OS_NATIVE_ENTER(env, that, NSAccessibilityStandardWindowSubrole_FUNC);
-	rc = (jlong)NSAccessibilityStandardWindowSubrole;
-	OS_NATIVE_EXIT(env, that, NSAccessibilityStandardWindowSubrole_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO_NSAccessibilityStaticTextRole
 JNIEXPORT jlong JNICALL OS_NATIVE(NSAccessibilityStaticTextRole)
 	(JNIEnv *env, jclass that)
@@ -4031,30 +3196,6 @@ JNIEXPORT jlong JNICALL OS_NATIVE(NSAccessibilitySubroleAttribute)
 	OS_NATIVE_ENTER(env, that, NSAccessibilitySubroleAttribute_FUNC);
 	rc = (jlong)NSAccessibilitySubroleAttribute;
 	OS_NATIVE_EXIT(env, that, NSAccessibilitySubroleAttribute_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO_NSAccessibilitySuperscriptTextAttribute
-JNIEXPORT jlong JNICALL OS_NATIVE(NSAccessibilitySuperscriptTextAttribute)
-	(JNIEnv *env, jclass that)
-{
-	jlong rc = 0;
-	OS_NATIVE_ENTER(env, that, NSAccessibilitySuperscriptTextAttribute_FUNC);
-	rc = (jlong)NSAccessibilitySuperscriptTextAttribute;
-	OS_NATIVE_EXIT(env, that, NSAccessibilitySuperscriptTextAttribute_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO_NSAccessibilitySystemDialogSubrole
-JNIEXPORT jlong JNICALL OS_NATIVE(NSAccessibilitySystemDialogSubrole)
-	(JNIEnv *env, jclass that)
-{
-	jlong rc = 0;
-	OS_NATIVE_ENTER(env, that, NSAccessibilitySystemDialogSubrole_FUNC);
-	rc = (jlong)NSAccessibilitySystemDialogSubrole;
-	OS_NATIVE_EXIT(env, that, NSAccessibilitySystemDialogSubrole_FUNC);
 	return rc;
 }
 #endif
@@ -4131,18 +3272,6 @@ JNIEXPORT jlong JNICALL OS_NATIVE(NSAccessibilityTextFieldRole)
 }
 #endif
 
-#ifndef NO_NSAccessibilityTextLinkSubrole
-JNIEXPORT jlong JNICALL OS_NATIVE(NSAccessibilityTextLinkSubrole)
-	(JNIEnv *env, jclass that)
-{
-	jlong rc = 0;
-	OS_NATIVE_ENTER(env, that, NSAccessibilityTextLinkSubrole_FUNC);
-	rc = (jlong)NSAccessibilityTextLinkSubrole;
-	OS_NATIVE_EXIT(env, that, NSAccessibilityTextLinkSubrole_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO_NSAccessibilityTitleAttribute
 JNIEXPORT jlong JNICALL OS_NATIVE(NSAccessibilityTitleAttribute)
 	(JNIEnv *env, jclass that)
@@ -4203,18 +3332,6 @@ JNIEXPORT jlong JNICALL OS_NATIVE(NSAccessibilityTopLevelUIElementAttribute)
 }
 #endif
 
-#ifndef NO_NSAccessibilityURLAttribute
-JNIEXPORT jlong JNICALL OS_NATIVE(NSAccessibilityURLAttribute)
-	(JNIEnv *env, jclass that)
-{
-	jlong rc = 0;
-	OS_NATIVE_ENTER(env, that, NSAccessibilityURLAttribute_FUNC);
-	rc = (jlong)NSAccessibilityURLAttribute;
-	OS_NATIVE_EXIT(env, that, NSAccessibilityURLAttribute_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO_NSAccessibilityUnderlineColorTextAttribute
 JNIEXPORT jlong JNICALL OS_NATIVE(NSAccessibilityUnderlineColorTextAttribute)
 	(JNIEnv *env, jclass that)
@@ -4259,30 +3376,6 @@ JNIEXPORT jlong JNICALL OS_NATIVE(NSAccessibilityUnignoredChildren)
 	OS_NATIVE_ENTER(env, that, NSAccessibilityUnignoredChildren_FUNC);
 	rc = (jlong)NSAccessibilityUnignoredChildren((NSArray*)arg0);
 	OS_NATIVE_EXIT(env, that, NSAccessibilityUnignoredChildren_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO_NSAccessibilityUnignoredChildrenForOnlyChild
-JNIEXPORT jlong JNICALL OS_NATIVE(NSAccessibilityUnignoredChildrenForOnlyChild)
-	(JNIEnv *env, jclass that, jlong arg0)
-{
-	jlong rc = 0;
-	OS_NATIVE_ENTER(env, that, NSAccessibilityUnignoredChildrenForOnlyChild_FUNC);
-	rc = (jlong)NSAccessibilityUnignoredChildrenForOnlyChild((id)arg0);
-	OS_NATIVE_EXIT(env, that, NSAccessibilityUnignoredChildrenForOnlyChild_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO_NSAccessibilityUnignoredDescendant
-JNIEXPORT jlong JNICALL OS_NATIVE(NSAccessibilityUnignoredDescendant)
-	(JNIEnv *env, jclass that, jlong arg0)
-{
-	jlong rc = 0;
-	OS_NATIVE_ENTER(env, that, NSAccessibilityUnignoredDescendant_FUNC);
-	rc = (jlong)NSAccessibilityUnignoredDescendant((id)arg0);
-	OS_NATIVE_EXIT(env, that, NSAccessibilityUnignoredDescendant_FUNC);
 	return rc;
 }
 #endif
@@ -4335,30 +3428,6 @@ JNIEXPORT jlong JNICALL OS_NATIVE(NSAccessibilityValueChangedNotification)
 }
 #endif
 
-#ifndef NO_NSAccessibilityValueDescriptionAttribute
-JNIEXPORT jlong JNICALL OS_NATIVE(NSAccessibilityValueDescriptionAttribute)
-	(JNIEnv *env, jclass that)
-{
-	jlong rc = 0;
-	OS_NATIVE_ENTER(env, that, NSAccessibilityValueDescriptionAttribute_FUNC);
-	rc = (jlong)NSAccessibilityValueDescriptionAttribute;
-	OS_NATIVE_EXIT(env, that, NSAccessibilityValueDescriptionAttribute_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO_NSAccessibilityValueIndicatorRole
-JNIEXPORT jlong JNICALL OS_NATIVE(NSAccessibilityValueIndicatorRole)
-	(JNIEnv *env, jclass that)
-{
-	jlong rc = 0;
-	OS_NATIVE_ENTER(env, that, NSAccessibilityValueIndicatorRole_FUNC);
-	rc = (jlong)NSAccessibilityValueIndicatorRole;
-	OS_NATIVE_EXIT(env, that, NSAccessibilityValueIndicatorRole_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO_NSAccessibilityVerticalOrientationValue
 JNIEXPORT jlong JNICALL OS_NATIVE(NSAccessibilityVerticalOrientationValue)
 	(JNIEnv *env, jclass that)
@@ -4367,18 +3436,6 @@ JNIEXPORT jlong JNICALL OS_NATIVE(NSAccessibilityVerticalOrientationValue)
 	OS_NATIVE_ENTER(env, that, NSAccessibilityVerticalOrientationValue_FUNC);
 	rc = (jlong)NSAccessibilityVerticalOrientationValue;
 	OS_NATIVE_EXIT(env, that, NSAccessibilityVerticalOrientationValue_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO_NSAccessibilityVerticalScrollBarAttribute
-JNIEXPORT jlong JNICALL OS_NATIVE(NSAccessibilityVerticalScrollBarAttribute)
-	(JNIEnv *env, jclass that)
-{
-	jlong rc = 0;
-	OS_NATIVE_ENTER(env, that, NSAccessibilityVerticalScrollBarAttribute_FUNC);
-	rc = (jlong)NSAccessibilityVerticalScrollBarAttribute;
-	OS_NATIVE_EXIT(env, that, NSAccessibilityVerticalScrollBarAttribute_FUNC);
 	return rc;
 }
 #endif
@@ -4549,18 +3606,6 @@ JNIEXPORT jlong JNICALL OS_NATIVE(NSBitsPerPixelFromDepth)
 }
 #endif
 
-#ifndef NO_NSCalibratedRGBColorSpace
-JNIEXPORT jlong JNICALL OS_NATIVE(NSCalibratedRGBColorSpace)
-	(JNIEnv *env, jclass that)
-{
-	jlong rc = 0;
-	OS_NATIVE_ENTER(env, that, NSCalibratedRGBColorSpace_FUNC);
-	rc = (jlong)NSCalibratedRGBColorSpace;
-	OS_NATIVE_EXIT(env, that, NSCalibratedRGBColorSpace_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO_NSCursorAttributeName
 JNIEXPORT jlong JNICALL OS_NATIVE(NSCursorAttributeName)
 	(JNIEnv *env, jclass that)
@@ -4652,18 +3697,6 @@ JNIEXPORT jlong JNICALL OS_NATIVE(NSEventTrackingRunLoopMode)
 }
 #endif
 
-#ifndef NO_NSFileTypeForHFSTypeCode
-JNIEXPORT jlong JNICALL OS_NATIVE(NSFileTypeForHFSTypeCode)
-	(JNIEnv *env, jclass that, jint arg0)
-{
-	jlong rc = 0;
-	OS_NATIVE_ENTER(env, that, NSFileTypeForHFSTypeCode_FUNC);
-	rc = (jlong)NSFileTypeForHFSTypeCode((OSType)arg0);
-	OS_NATIVE_EXIT(env, that, NSFileTypeForHFSTypeCode_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO_NSFilenamesPboardType
 JNIEXPORT jlong JNICALL OS_NATIVE(NSFilenamesPboardType)
 	(JNIEnv *env, jclass that)
@@ -4696,25 +3729,6 @@ JNIEXPORT jlong JNICALL OS_NATIVE(NSForegroundColorAttributeName)
 	OS_NATIVE_ENTER(env, that, NSForegroundColorAttributeName_FUNC);
 	rc = (jlong)NSForegroundColorAttributeName;
 	OS_NATIVE_EXIT(env, that, NSForegroundColorAttributeName_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO_NSGetSizeAndAlignment
-JNIEXPORT jlong JNICALL OS_NATIVE(NSGetSizeAndAlignment)
-	(JNIEnv *env, jclass that, jlong arg0, jlongArray arg1, jlongArray arg2)
-{
-	jlong *lparg1=NULL;
-	jlong *lparg2=NULL;
-	jlong rc = 0;
-	OS_NATIVE_ENTER(env, that, NSGetSizeAndAlignment_FUNC);
-	if (arg1) if ((lparg1 = (*env)->GetLongArrayElements(env, arg1, NULL)) == NULL) goto fail;
-	if (arg2) if ((lparg2 = (*env)->GetLongArrayElements(env, arg2, NULL)) == NULL) goto fail;
-	rc = (jlong)NSGetSizeAndAlignment((char*)arg0, (NSUInteger*)lparg1, (NSUInteger*)lparg2);
-fail:
-	if (arg2 && lparg2) (*env)->ReleaseLongArrayElements(env, arg2, lparg2, 0);
-	if (arg1 && lparg1) (*env)->ReleaseLongArrayElements(env, arg1, lparg1, 0);
-	OS_NATIVE_EXIT(env, that, NSGetSizeAndAlignment_FUNC);
 	return rc;
 }
 #endif
@@ -4779,18 +3793,6 @@ JNIEXPORT jlong JNICALL OS_NATIVE(NSNotFound)
 }
 #endif
 
-#ifndef NO_NSNumberOfColorComponents
-JNIEXPORT jlong JNICALL OS_NATIVE(NSNumberOfColorComponents)
-	(JNIEnv *env, jclass that, jlong arg0)
-{
-	jlong rc = 0;
-	OS_NATIVE_ENTER(env, that, NSNumberOfColorComponents_FUNC);
-	rc = (jlong)NSNumberOfColorComponents((NSString*)arg0);
-	OS_NATIVE_EXIT(env, that, NSNumberOfColorComponents_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO_NSObliquenessAttributeName
 JNIEXPORT jlong JNICALL OS_NATIVE(NSObliquenessAttributeName)
 	(JNIEnv *env, jclass that)
@@ -4811,18 +3813,6 @@ JNIEXPORT jint JNICALL OS_NATIVE(NSOperatingSystemVersion_1sizeof)
 	OS_NATIVE_ENTER(env, that, NSOperatingSystemVersion_1sizeof_FUNC);
 	rc = (jint)NSOperatingSystemVersion_sizeof();
 	OS_NATIVE_EXIT(env, that, NSOperatingSystemVersion_1sizeof_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO_NSOutlineViewColumnDidMoveNotification
-JNIEXPORT jlong JNICALL OS_NATIVE(NSOutlineViewColumnDidMoveNotification)
-	(JNIEnv *env, jclass that)
-{
-	jlong rc = 0;
-	OS_NATIVE_ENTER(env, that, NSOutlineViewColumnDidMoveNotification_FUNC);
-	rc = (jlong)NSOutlineViewColumnDidMoveNotification;
-	OS_NATIVE_EXIT(env, that, NSOutlineViewColumnDidMoveNotification_FUNC);
 	return rc;
 }
 #endif
@@ -5038,18 +4028,6 @@ JNIEXPORT jlong JNICALL OS_NATIVE(NSPrintScalingFactor)
 }
 #endif
 
-#ifndef NO_NSPrintSpoolJob
-JNIEXPORT jlong JNICALL OS_NATIVE(NSPrintSpoolJob)
-	(JNIEnv *env, jclass that)
-{
-	jlong rc = 0;
-	OS_NATIVE_ENTER(env, that, NSPrintSpoolJob_FUNC);
-	rc = (jlong)NSPrintSpoolJob;
-	OS_NATIVE_EXIT(env, that, NSPrintSpoolJob_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO_NSRange_1sizeof
 JNIEXPORT jint JNICALL OS_NATIVE(NSRange_1sizeof)
 	(JNIEnv *env, jclass that)
@@ -5108,18 +4086,6 @@ JNIEXPORT jint JNICALL OS_NATIVE(NSSize_1sizeof)
 	OS_NATIVE_ENTER(env, that, NSSize_1sizeof_FUNC);
 	rc = (jint)NSSize_sizeof();
 	OS_NATIVE_EXIT(env, that, NSSize_1sizeof_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO_NSSpellingStateAttributeName
-JNIEXPORT jlong JNICALL OS_NATIVE(NSSpellingStateAttributeName)
-	(JNIEnv *env, jclass that)
-{
-	jlong rc = 0;
-	OS_NATIVE_ENTER(env, that, NSSpellingStateAttributeName_FUNC);
-	rc = (jlong)NSSpellingStateAttributeName;
-	OS_NATIVE_EXIT(env, that, NSSpellingStateAttributeName_FUNC);
 	return rc;
 }
 #endif
@@ -5196,54 +4162,6 @@ JNIEXPORT jlong JNICALL OS_NATIVE(NSTIFFPboardType)
 }
 #endif
 
-#ifndef NO_NSTableViewColumnDidMoveNotification
-JNIEXPORT jlong JNICALL OS_NATIVE(NSTableViewColumnDidMoveNotification)
-	(JNIEnv *env, jclass that)
-{
-	jlong rc = 0;
-	OS_NATIVE_ENTER(env, that, NSTableViewColumnDidMoveNotification_FUNC);
-	rc = (jlong)NSTableViewColumnDidMoveNotification;
-	OS_NATIVE_EXIT(env, that, NSTableViewColumnDidMoveNotification_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO_NSTemporaryDirectory
-JNIEXPORT jlong JNICALL OS_NATIVE(NSTemporaryDirectory)
-	(JNIEnv *env, jclass that)
-{
-	jlong rc = 0;
-	OS_NATIVE_ENTER(env, that, NSTemporaryDirectory_FUNC);
-	rc = (jlong)NSTemporaryDirectory();
-	OS_NATIVE_EXIT(env, that, NSTemporaryDirectory_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO_NSToolbarCustomizeToolbarItemIdentifier
-JNIEXPORT jlong JNICALL OS_NATIVE(NSToolbarCustomizeToolbarItemIdentifier)
-	(JNIEnv *env, jclass that)
-{
-	jlong rc = 0;
-	OS_NATIVE_ENTER(env, that, NSToolbarCustomizeToolbarItemIdentifier_FUNC);
-	rc = (jlong)NSToolbarCustomizeToolbarItemIdentifier;
-	OS_NATIVE_EXIT(env, that, NSToolbarCustomizeToolbarItemIdentifier_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO_NSToolbarDidRemoveItemNotification
-JNIEXPORT jlong JNICALL OS_NATIVE(NSToolbarDidRemoveItemNotification)
-	(JNIEnv *env, jclass that)
-{
-	jlong rc = 0;
-	OS_NATIVE_ENTER(env, that, NSToolbarDidRemoveItemNotification_FUNC);
-	rc = (jlong)NSToolbarDidRemoveItemNotification;
-	OS_NATIVE_EXIT(env, that, NSToolbarDidRemoveItemNotification_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO_NSToolbarFlexibleSpaceItemIdentifier
 JNIEXPORT jlong JNICALL OS_NATIVE(NSToolbarFlexibleSpaceItemIdentifier)
 	(JNIEnv *env, jclass that)
@@ -5256,54 +4174,6 @@ JNIEXPORT jlong JNICALL OS_NATIVE(NSToolbarFlexibleSpaceItemIdentifier)
 }
 #endif
 
-#ifndef NO_NSToolbarPrintItemIdentifier
-JNIEXPORT jlong JNICALL OS_NATIVE(NSToolbarPrintItemIdentifier)
-	(JNIEnv *env, jclass that)
-{
-	jlong rc = 0;
-	OS_NATIVE_ENTER(env, that, NSToolbarPrintItemIdentifier_FUNC);
-	rc = (jlong)NSToolbarPrintItemIdentifier;
-	OS_NATIVE_EXIT(env, that, NSToolbarPrintItemIdentifier_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO_NSToolbarSeparatorItemIdentifier
-JNIEXPORT jlong JNICALL OS_NATIVE(NSToolbarSeparatorItemIdentifier)
-	(JNIEnv *env, jclass that)
-{
-	jlong rc = 0;
-	OS_NATIVE_ENTER(env, that, NSToolbarSeparatorItemIdentifier_FUNC);
-	rc = (jlong)NSToolbarSeparatorItemIdentifier;
-	OS_NATIVE_EXIT(env, that, NSToolbarSeparatorItemIdentifier_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO_NSToolbarShowColorsItemIdentifier
-JNIEXPORT jlong JNICALL OS_NATIVE(NSToolbarShowColorsItemIdentifier)
-	(JNIEnv *env, jclass that)
-{
-	jlong rc = 0;
-	OS_NATIVE_ENTER(env, that, NSToolbarShowColorsItemIdentifier_FUNC);
-	rc = (jlong)NSToolbarShowColorsItemIdentifier;
-	OS_NATIVE_EXIT(env, that, NSToolbarShowColorsItemIdentifier_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO_NSToolbarShowFontsItemIdentifier
-JNIEXPORT jlong JNICALL OS_NATIVE(NSToolbarShowFontsItemIdentifier)
-	(JNIEnv *env, jclass that)
-{
-	jlong rc = 0;
-	OS_NATIVE_ENTER(env, that, NSToolbarShowFontsItemIdentifier_FUNC);
-	rc = (jlong)NSToolbarShowFontsItemIdentifier;
-	OS_NATIVE_EXIT(env, that, NSToolbarShowFontsItemIdentifier_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO_NSToolbarSpaceItemIdentifier
 JNIEXPORT jlong JNICALL OS_NATIVE(NSToolbarSpaceItemIdentifier)
 	(JNIEnv *env, jclass that)
@@ -5312,18 +4182,6 @@ JNIEXPORT jlong JNICALL OS_NATIVE(NSToolbarSpaceItemIdentifier)
 	OS_NATIVE_ENTER(env, that, NSToolbarSpaceItemIdentifier_FUNC);
 	rc = (jlong)NSToolbarSpaceItemIdentifier;
 	OS_NATIVE_EXIT(env, that, NSToolbarSpaceItemIdentifier_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO_NSToolbarWillAddItemNotification
-JNIEXPORT jlong JNICALL OS_NATIVE(NSToolbarWillAddItemNotification)
-	(JNIEnv *env, jclass that)
-{
-	jlong rc = 0;
-	OS_NATIVE_ENTER(env, that, NSToolbarWillAddItemNotification_FUNC);
-	rc = (jlong)NSToolbarWillAddItemNotification;
-	OS_NATIVE_EXIT(env, that, NSToolbarWillAddItemNotification_FUNC);
 	return rc;
 }
 #endif
@@ -5890,26 +4748,6 @@ JNIEXPORT jint JNICALL OS_NATIVE(SetSystemUIMode)
 }
 #endif
 
-#ifndef NO_SetThemeCursor
-JNIEXPORT jint JNICALL OS_NATIVE(SetThemeCursor)
-	(JNIEnv *env, jclass that, jint arg0)
-{
-	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, SetThemeCursor_FUNC);
-/*
-	rc = (jint)SetThemeCursor(arg0);
-*/
-	{
-		OS_LOAD_FUNCTION(fp, SetThemeCursor)
-		if (fp) {
-			rc = (jint)((jint (CALLING_CONVENTION*)(jint))fp)(arg0);
-		}
-	}
-	OS_NATIVE_EXIT(env, that, SetThemeCursor_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO_TISCopyCurrentKeyboardInputSource
 JNIEXPORT jlong JNICALL OS_NATIVE(TISCopyCurrentKeyboardInputSource)
 	(JNIEnv *env, jclass that)
@@ -5950,33 +4788,17 @@ JNIEXPORT jlong JNICALL OS_NATIVE(TISGetInputSourceProperty)
 }
 #endif
 
-#ifndef NO_TransformProcessType
-JNIEXPORT jint JNICALL OS_NATIVE(TransformProcessType)
-	(JNIEnv *env, jclass that, jintArray arg0, jint arg1)
-{
-	jint *lparg0=NULL;
-	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, TransformProcessType_FUNC);
-	if (arg0) if ((lparg0 = (*env)->GetIntArrayElements(env, arg0, NULL)) == NULL) goto fail;
-	rc = (jint)TransformProcessType((ProcessSerialNumber *)lparg0, arg1);
-fail:
-	if (arg0 && lparg0) (*env)->ReleaseIntArrayElements(env, arg0, lparg0, 0);
-	OS_NATIVE_EXIT(env, that, TransformProcessType_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO_UCKeyTranslate
 JNIEXPORT jint JNICALL OS_NATIVE(UCKeyTranslate)
-	(JNIEnv *env, jclass that, jlong arg0, jshort arg1, jshort arg2, jint arg3, jint arg4, jint arg5, jintArray arg6, jint arg7, jintArray arg8, jcharArray arg9)
+	(JNIEnv *env, jclass that, jlong arg0, jshort arg1, jshort arg2, jint arg3, jint arg4, jint arg5, jintArray arg6, jint arg7, jlongArray arg8, jcharArray arg9)
 {
 	jint *lparg6=NULL;
-	jint *lparg8=NULL;
+	jlong *lparg8=NULL;
 	jchar *lparg9=NULL;
 	jint rc = 0;
 	OS_NATIVE_ENTER(env, that, UCKeyTranslate_FUNC);
 	if (arg6) if ((lparg6 = (*env)->GetIntArrayElements(env, arg6, NULL)) == NULL) goto fail;
-	if (arg8) if ((lparg8 = (*env)->GetIntArrayElements(env, arg8, NULL)) == NULL) goto fail;
+	if (arg8) if ((lparg8 = (*env)->GetLongArrayElements(env, arg8, NULL)) == NULL) goto fail;
 	if (arg9) if ((lparg9 = (*env)->GetCharArrayElements(env, arg9, NULL)) == NULL) goto fail;
 /*
 	rc = (jint)UCKeyTranslate((const UCKeyboardLayout *)arg0, (UInt16)arg1, (UInt16)arg2, (UInt32)arg3, (UInt32)arg4, (OptionBits)arg5, (UInt32 *)lparg6, (UniCharCount)arg7, (UniCharCount *)lparg8, (UniChar *)lparg9);
@@ -5989,7 +4811,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(UCKeyTranslate)
 	}
 fail:
 	if (arg9 && lparg9) (*env)->ReleaseCharArrayElements(env, arg9, lparg9, 0);
-	if (arg8 && lparg8) (*env)->ReleaseIntArrayElements(env, arg8, lparg8, 0);
+	if (arg8 && lparg8) (*env)->ReleaseLongArrayElements(env, arg8, lparg8, 0);
 	if (arg6 && lparg6) (*env)->ReleaseIntArrayElements(env, arg6, lparg6, 0);
 	OS_NATIVE_EXIT(env, that, UCKeyTranslate_FUNC);
 	return rc;
@@ -6193,66 +5015,6 @@ JNIEXPORT jlong JNICALL OS_NATIVE(kCFRunLoopCommonModes)
 	OS_NATIVE_ENTER(env, that, kCFRunLoopCommonModes_FUNC);
 	rc = (jlong)kCFRunLoopCommonModes;
 	OS_NATIVE_EXIT(env, that, kCFRunLoopCommonModes_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO_kCFTypeDictionaryKeyCallBacks
-JNIEXPORT jlong JNICALL OS_NATIVE(kCFTypeDictionaryKeyCallBacks)
-	(JNIEnv *env, jclass that)
-{
-	jlong rc = 0;
-	OS_NATIVE_ENTER(env, that, kCFTypeDictionaryKeyCallBacks_FUNC);
-	rc = (jlong)&kCFTypeDictionaryKeyCallBacks;
-	OS_NATIVE_EXIT(env, that, kCFTypeDictionaryKeyCallBacks_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO_kCFTypeDictionaryValueCallBacks
-JNIEXPORT jlong JNICALL OS_NATIVE(kCFTypeDictionaryValueCallBacks)
-	(JNIEnv *env, jclass that)
-{
-	jlong rc = 0;
-	OS_NATIVE_ENTER(env, that, kCFTypeDictionaryValueCallBacks_FUNC);
-	rc = (jlong)&kCFTypeDictionaryValueCallBacks;
-	OS_NATIVE_EXIT(env, that, kCFTypeDictionaryValueCallBacks_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO_kCTFontAttributeName
-JNIEXPORT jlong JNICALL OS_NATIVE(kCTFontAttributeName)
-	(JNIEnv *env, jclass that)
-{
-	jlong rc = 0;
-	OS_NATIVE_ENTER(env, that, kCTFontAttributeName_FUNC);
-	rc = (jlong)kCTFontAttributeName;
-	OS_NATIVE_EXIT(env, that, kCTFontAttributeName_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO_kCTForegroundColorAttributeName
-JNIEXPORT jlong JNICALL OS_NATIVE(kCTForegroundColorAttributeName)
-	(JNIEnv *env, jclass that)
-{
-	jlong rc = 0;
-	OS_NATIVE_ENTER(env, that, kCTForegroundColorAttributeName_FUNC);
-	rc = (jlong)kCTForegroundColorAttributeName;
-	OS_NATIVE_EXIT(env, that, kCTForegroundColorAttributeName_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO_kCTParagraphStyleAttributeName
-JNIEXPORT jlong JNICALL OS_NATIVE(kCTParagraphStyleAttributeName)
-	(JNIEnv *env, jclass that)
-{
-	jlong rc = 0;
-	OS_NATIVE_ENTER(env, that, kCTParagraphStyleAttributeName_FUNC);
-	rc = (jlong)kCTParagraphStyleAttributeName;
-	OS_NATIVE_EXIT(env, that, kCTParagraphStyleAttributeName_FUNC);
 	return rc;
 }
 #endif
@@ -6571,18 +5333,6 @@ JNIEXPORT jlong JNICALL OS_NATIVE(objc_1msgSend__JJDDDD)
 }
 #endif
 
-#ifndef NO_objc_1msgSend__JJDJ
-JNIEXPORT jlong JNICALL OS_NATIVE(objc_1msgSend__JJDJ)
-	(JNIEnv *env, jclass that, jlong arg0, jlong arg1, jdouble arg2, jlong arg3)
-{
-	jlong rc = 0;
-	OS_NATIVE_ENTER(env, that, objc_1msgSend__JJDJ_FUNC);
-	rc = (jlong)((jlong (*)(jlong, jlong, jdouble, jlong))objc_msgSend)(arg0, arg1, arg2, arg3);
-	OS_NATIVE_EXIT(env, that, objc_1msgSend__JJDJ_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO_objc_1msgSend__JJDJJJZ
 JNIEXPORT jlong JNICALL OS_NATIVE(objc_1msgSend__JJDJJJZ)
 	(JNIEnv *env, jclass that, jlong arg0, jlong arg1, jdouble arg2, jlong arg3, jlong arg4, jlong arg5, jboolean arg6)
@@ -6667,18 +5417,6 @@ JNIEXPORT jlong JNICALL OS_NATIVE(objc_1msgSend__JJJJJ)
 }
 #endif
 
-#ifndef NO_objc_1msgSend__JJJJJD
-JNIEXPORT jlong JNICALL OS_NATIVE(objc_1msgSend__JJJJJD)
-	(JNIEnv *env, jclass that, jlong arg0, jlong arg1, jlong arg2, jlong arg3, jlong arg4, jdouble arg5)
-{
-	jlong rc = 0;
-	OS_NATIVE_ENTER(env, that, objc_1msgSend__JJJJJD_FUNC);
-	rc = (jlong)((jlong (*)(jlong, jlong, jlong, jlong, jlong, jdouble))objc_msgSend)(arg0, arg1, arg2, arg3, arg4, arg5);
-	OS_NATIVE_EXIT(env, that, objc_1msgSend__JJJJJD_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO_objc_1msgSend__JJJJJJ
 JNIEXPORT jlong JNICALL OS_NATIVE(objc_1msgSend__JJJJJJ)
 	(JNIEnv *env, jclass that, jlong arg0, jlong arg1, jlong arg2, jlong arg3, jlong arg4, jlong arg5)
@@ -6723,18 +5461,6 @@ JNIEXPORT jlong JNICALL OS_NATIVE(objc_1msgSend__JJJJJJJJJ)
 	OS_NATIVE_ENTER(env, that, objc_1msgSend__JJJJJJJJJ_FUNC);
 	rc = (jlong)((jlong (*)(jlong, jlong, jlong, jlong, jlong, jlong, jlong, jlong, jlong))objc_msgSend)(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8);
 	OS_NATIVE_EXIT(env, that, objc_1msgSend__JJJJJJJJJ_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO_objc_1msgSend__JJJJJJJZZJJJ
-JNIEXPORT jlong JNICALL OS_NATIVE(objc_1msgSend__JJJJJJJZZJJJ)
-	(JNIEnv *env, jclass that, jlong arg0, jlong arg1, jlong arg2, jlong arg3, jlong arg4, jlong arg5, jlong arg6, jboolean arg7, jboolean arg8, jlong arg9, jlong arg10, jlong arg11)
-{
-	jlong rc = 0;
-	OS_NATIVE_ENTER(env, that, objc_1msgSend__JJJJJJJZZJJJ_FUNC);
-	rc = (jlong)((jlong (*)(jlong, jlong, jlong, jlong, jlong, jlong, jlong, jboolean, jboolean, jlong, jlong, jlong))objc_msgSend)(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11);
-	OS_NATIVE_EXIT(env, that, objc_1msgSend__JJJJJJJZZJJJ_FUNC);
 	return rc;
 }
 #endif
@@ -6950,22 +5676,6 @@ fail:
 }
 #endif
 
-#ifndef NO_objc_1msgSend__JJLorg_eclipse_swt_internal_cocoa_NSPoint_2DDD
-JNIEXPORT jlong JNICALL OS_NATIVE(objc_1msgSend__JJLorg_eclipse_swt_internal_cocoa_NSPoint_2DDD)
-	(JNIEnv *env, jclass that, jlong arg0, jlong arg1, jobject arg2, jdouble arg3, jdouble arg4, jdouble arg5)
-{
-	NSPoint _arg2, *lparg2=NULL;
-	jlong rc = 0;
-	OS_NATIVE_ENTER(env, that, objc_1msgSend__JJLorg_eclipse_swt_internal_cocoa_NSPoint_2DDD_FUNC);
-	if (arg2) if ((lparg2 = getNSPointFields(env, arg2, &_arg2)) == NULL) goto fail;
-	rc = (jlong)((jlong (*)(jlong, jlong, NSPoint, jdouble, jdouble, jdouble))objc_msgSend)(arg0, arg1, *lparg2, arg3, arg4, arg5);
-fail:
-	if (arg2 && lparg2) setNSPointFields(env, arg2, lparg2);
-	OS_NATIVE_EXIT(env, that, objc_1msgSend__JJLorg_eclipse_swt_internal_cocoa_NSPoint_2DDD_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO_objc_1msgSend__JJLorg_eclipse_swt_internal_cocoa_NSPoint_2DDDZ
 JNIEXPORT jlong JNICALL OS_NATIVE(objc_1msgSend__JJLorg_eclipse_swt_internal_cocoa_NSPoint_2DDDZ)
 	(JNIEnv *env, jclass that, jlong arg0, jlong arg1, jobject arg2, jdouble arg3, jdouble arg4, jdouble arg5, jboolean arg6)
@@ -7054,25 +5764,6 @@ fail:
 	if (arg3 && lparg3) setNSPointFields(env, arg3, lparg3);
 	if (arg2 && lparg2) setNSPointFields(env, arg2, lparg2);
 	OS_NATIVE_EXIT(env, that, objc_1msgSend__JJLorg_eclipse_swt_internal_cocoa_NSPoint_2Lorg_eclipse_swt_internal_cocoa_NSPoint_2Lorg_eclipse_swt_internal_cocoa_NSPoint_2_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO_objc_1msgSend__JJLorg_eclipse_swt_internal_cocoa_NSPoint_2Lorg_eclipse_swt_internal_cocoa_NSRect_2JD
-JNIEXPORT jlong JNICALL OS_NATIVE(objc_1msgSend__JJLorg_eclipse_swt_internal_cocoa_NSPoint_2Lorg_eclipse_swt_internal_cocoa_NSRect_2JD)
-	(JNIEnv *env, jclass that, jlong arg0, jlong arg1, jobject arg2, jobject arg3, jlong arg4, jdouble arg5)
-{
-	NSPoint _arg2, *lparg2=NULL;
-	NSRect _arg3, *lparg3=NULL;
-	jlong rc = 0;
-	OS_NATIVE_ENTER(env, that, objc_1msgSend__JJLorg_eclipse_swt_internal_cocoa_NSPoint_2Lorg_eclipse_swt_internal_cocoa_NSRect_2JD_FUNC);
-	if (arg2) if ((lparg2 = getNSPointFields(env, arg2, &_arg2)) == NULL) goto fail;
-	if (arg3) if ((lparg3 = getNSRectFields(env, arg3, &_arg3)) == NULL) goto fail;
-	rc = (jlong)((jlong (*)(jlong, jlong, NSPoint, NSRect, jlong, jdouble))objc_msgSend)(arg0, arg1, *lparg2, *lparg3, arg4, arg5);
-fail:
-	if (arg3 && lparg3) setNSRectFields(env, arg3, lparg3);
-	if (arg2 && lparg2) setNSPointFields(env, arg2, lparg2);
-	OS_NATIVE_EXIT(env, that, objc_1msgSend__JJLorg_eclipse_swt_internal_cocoa_NSPoint_2Lorg_eclipse_swt_internal_cocoa_NSRect_2JD_FUNC);
 	return rc;
 }
 #endif
@@ -7249,22 +5940,6 @@ fail:
 }
 #endif
 
-#ifndef NO_objc_1msgSend__JJLorg_eclipse_swt_internal_cocoa_NSRect_2JJJ
-JNIEXPORT jlong JNICALL OS_NATIVE(objc_1msgSend__JJLorg_eclipse_swt_internal_cocoa_NSRect_2JJJ)
-	(JNIEnv *env, jclass that, jlong arg0, jlong arg1, jobject arg2, jlong arg3, jlong arg4, jlong arg5)
-{
-	NSRect _arg2, *lparg2=NULL;
-	jlong rc = 0;
-	OS_NATIVE_ENTER(env, that, objc_1msgSend__JJLorg_eclipse_swt_internal_cocoa_NSRect_2JJJ_FUNC);
-	if (arg2) if ((lparg2 = getNSRectFields(env, arg2, &_arg2)) == NULL) goto fail;
-	rc = (jlong)((jlong (*)(jlong, jlong, NSRect, jlong, jlong, jlong))objc_msgSend)(arg0, arg1, *lparg2, arg3, arg4, arg5);
-fail:
-	if (arg2 && lparg2) setNSRectFields(env, arg2, lparg2);
-	OS_NATIVE_EXIT(env, that, objc_1msgSend__JJLorg_eclipse_swt_internal_cocoa_NSRect_2JJJ_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO_objc_1msgSend__JJLorg_eclipse_swt_internal_cocoa_NSRect_2JJZ
 JNIEXPORT jlong JNICALL OS_NATIVE(objc_1msgSend__JJLorg_eclipse_swt_internal_cocoa_NSRect_2JJZ)
 	(JNIEnv *env, jclass that, jlong arg0, jlong arg1, jobject arg2, jlong arg3, jlong arg4, jboolean arg5)
@@ -7328,28 +6003,6 @@ fail:
 	if (arg3 && lparg3) setNSPointFields(env, arg3, lparg3);
 	if (arg2 && lparg2) setNSRectFields(env, arg2, lparg2);
 	OS_NATIVE_EXIT(env, that, objc_1msgSend__JJLorg_eclipse_swt_internal_cocoa_NSRect_2Lorg_eclipse_swt_internal_cocoa_NSPoint_2_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO_objc_1msgSend__JJLorg_eclipse_swt_internal_cocoa_NSRect_2Lorg_eclipse_swt_internal_cocoa_NSRange_2Lorg_eclipse_swt_internal_cocoa_NSRect_2
-JNIEXPORT jlong JNICALL OS_NATIVE(objc_1msgSend__JJLorg_eclipse_swt_internal_cocoa_NSRect_2Lorg_eclipse_swt_internal_cocoa_NSRange_2Lorg_eclipse_swt_internal_cocoa_NSRect_2)
-	(JNIEnv *env, jclass that, jlong arg0, jlong arg1, jobject arg2, jobject arg3, jobject arg4)
-{
-	NSRect _arg2, *lparg2=NULL;
-	NSRange _arg3, *lparg3=NULL;
-	NSRect _arg4, *lparg4=NULL;
-	jlong rc = 0;
-	OS_NATIVE_ENTER(env, that, objc_1msgSend__JJLorg_eclipse_swt_internal_cocoa_NSRect_2Lorg_eclipse_swt_internal_cocoa_NSRange_2Lorg_eclipse_swt_internal_cocoa_NSRect_2_FUNC);
-	if (arg2) if ((lparg2 = getNSRectFields(env, arg2, &_arg2)) == NULL) goto fail;
-	if (arg3) if ((lparg3 = getNSRangeFields(env, arg3, &_arg3)) == NULL) goto fail;
-	if (arg4) if ((lparg4 = getNSRectFields(env, arg4, &_arg4)) == NULL) goto fail;
-	rc = (jlong)((jlong (*)(jlong, jlong, NSRect, NSRange, NSRect))objc_msgSend)(arg0, arg1, *lparg2, *lparg3, *lparg4);
-fail:
-	if (arg4 && lparg4) setNSRectFields(env, arg4, lparg4);
-	if (arg3 && lparg3) setNSRangeFields(env, arg3, lparg3);
-	if (arg2 && lparg2) setNSRectFields(env, arg2, lparg2);
-	OS_NATIVE_EXIT(env, that, objc_1msgSend__JJLorg_eclipse_swt_internal_cocoa_NSRect_2Lorg_eclipse_swt_internal_cocoa_NSRange_2Lorg_eclipse_swt_internal_cocoa_NSRect_2_FUNC);
 	return rc;
 }
 #endif
@@ -7623,22 +6276,6 @@ JNIEXPORT jlong JNICALL OS_NATIVE(objc_1msgSend__JJ_3IJ)
 fail:
 	if (arg2 && lparg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
 	OS_NATIVE_EXIT(env, that, objc_1msgSend__JJ_3IJ_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO_objc_1msgSend__JJ_3J
-JNIEXPORT jlong JNICALL OS_NATIVE(objc_1msgSend__JJ_3J)
-	(JNIEnv *env, jclass that, jlong arg0, jlong arg1, jlongArray arg2)
-{
-	jlong *lparg2=NULL;
-	jlong rc = 0;
-	OS_NATIVE_ENTER(env, that, objc_1msgSend__JJ_3J_FUNC);
-	if (arg2) if ((lparg2 = (*env)->GetLongArrayElements(env, arg2, NULL)) == NULL) goto fail;
-	rc = (jlong)((jlong (*)(jlong, jlong, jlong *))objc_msgSend)(arg0, arg1, lparg2);
-fail:
-	if (arg2 && lparg2) (*env)->ReleaseLongArrayElements(env, arg2, lparg2, 0);
-	OS_NATIVE_EXIT(env, that, objc_1msgSend__JJ_3J_FUNC);
 	return rc;
 }
 #endif
@@ -8321,18 +6958,6 @@ fail:
 }
 #endif
 
-#ifndef NO_objc_1msgSend_1bool__JJS
-JNIEXPORT jboolean JNICALL OS_NATIVE(objc_1msgSend_1bool__JJS)
-	(JNIEnv *env, jclass that, jlong arg0, jlong arg1, jshort arg2)
-{
-	jboolean rc = 0;
-	OS_NATIVE_ENTER(env, that, objc_1msgSend_1bool__JJS_FUNC);
-	rc = (jboolean)((BOOL (*)(jlong, jlong, jshort))objc_msgSend_bool)(arg0, arg1, arg2);
-	OS_NATIVE_EXIT(env, that, objc_1msgSend_1bool__JJS_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO_objc_1msgSend_1floatret
 JNIEXPORT jfloat JNICALL OS_NATIVE(objc_1msgSend_1floatret)
 	(JNIEnv *env, jclass that, jlong arg0, jlong arg1)
@@ -8567,29 +7192,6 @@ fail:
 	if (arg3 && lparg3) setNSRangeFields(env, arg3, lparg3);
 	if (arg0 && lparg0) setNSRangeFields(env, arg0, lparg0);
 	OS_NATIVE_EXIT(env, that, objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSRange_2JJLorg_eclipse_swt_internal_cocoa_NSRange_2J_FUNC);
-}
-#endif
-
-#ifndef NO_objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSRange_2JJLorg_eclipse_swt_internal_cocoa_NSRect_2
-JNIEXPORT void JNICALL OS_NATIVE(objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSRange_2JJLorg_eclipse_swt_internal_cocoa_NSRect_2)
-	(JNIEnv *env, jclass that, jobject arg0, jlong arg1, jlong arg2, jobject arg3)
-{
-	NSRange _arg0, *lparg0=NULL;
-	NSRect _arg3, *lparg3=NULL;
-	OS_NATIVE_ENTER(env, that, objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSRange_2JJLorg_eclipse_swt_internal_cocoa_NSRect_2_FUNC);
-	if (arg0) if ((lparg0 = getNSRangeFields(env, arg0, &_arg0)) == NULL) goto fail;
-	if (arg3) if ((lparg3 = getNSRectFields(env, arg3, &_arg3)) == NULL) goto fail;
-	if (STRUCT_SIZE_LIMIT == 0) {
-		((void (*)(NSRange *, jlong, jlong, NSRect))objc_msgSend_stret)(lparg0, arg1, arg2, *lparg3);
-	} else if (sizeof(_arg0) > STRUCT_SIZE_LIMIT) {
-		*lparg0 = (*(NSRange (*)(jlong, jlong, NSRect))objc_msgSend_stret)(arg1, arg2, *lparg3);
-	} else {
-		*lparg0 = (*(NSRange (*)(jlong, jlong, NSRect))objc_msgSend)(arg1, arg2, *lparg3);
-	}
-fail:
-	if (arg3 && lparg3) setNSRectFields(env, arg3, lparg3);
-	if (arg0 && lparg0) setNSRangeFields(env, arg0, lparg0);
-	OS_NATIVE_EXIT(env, that, objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSRange_2JJLorg_eclipse_swt_internal_cocoa_NSRect_2_FUNC);
 }
 #endif
 
@@ -8854,29 +7456,6 @@ fail:
 }
 #endif
 
-#ifndef NO_objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSSize_2JJLorg_eclipse_swt_internal_cocoa_NSSize_2J
-JNIEXPORT void JNICALL OS_NATIVE(objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSSize_2JJLorg_eclipse_swt_internal_cocoa_NSSize_2J)
-	(JNIEnv *env, jclass that, jobject arg0, jlong arg1, jlong arg2, jobject arg3, jlong arg4)
-{
-	NSSize _arg0, *lparg0=NULL;
-	NSSize _arg3, *lparg3=NULL;
-	OS_NATIVE_ENTER(env, that, objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSSize_2JJLorg_eclipse_swt_internal_cocoa_NSSize_2J_FUNC);
-	if (arg0) if ((lparg0 = getNSSizeFields(env, arg0, &_arg0)) == NULL) goto fail;
-	if (arg3) if ((lparg3 = getNSSizeFields(env, arg3, &_arg3)) == NULL) goto fail;
-	if (STRUCT_SIZE_LIMIT == 0) {
-		((void (*)(NSSize *, jlong, jlong, NSSize, jlong))objc_msgSend_stret)(lparg0, arg1, arg2, *lparg3, arg4);
-	} else if (sizeof(_arg0) > STRUCT_SIZE_LIMIT) {
-		*lparg0 = (*(NSSize (*)(jlong, jlong, NSSize, jlong))objc_msgSend_stret)(arg1, arg2, *lparg3, arg4);
-	} else {
-		*lparg0 = (*(NSSize (*)(jlong, jlong, NSSize, jlong))objc_msgSend)(arg1, arg2, *lparg3, arg4);
-	}
-fail:
-	if (arg3 && lparg3) setNSSizeFields(env, arg3, lparg3);
-	if (arg0 && lparg0) setNSSizeFields(env, arg0, lparg0);
-	OS_NATIVE_EXIT(env, that, objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSSize_2JJLorg_eclipse_swt_internal_cocoa_NSSize_2J_FUNC);
-}
-#endif
-
 #ifndef NO_objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSSize_2JJLorg_eclipse_swt_internal_cocoa_NSSize_2JJJJJ
 JNIEXPORT void JNICALL OS_NATIVE(objc_1msgSend_1stret__Lorg_eclipse_swt_internal_cocoa_NSSize_2JJLorg_eclipse_swt_internal_cocoa_NSSize_2JJJJJ)
 	(JNIEnv *env, jclass that, jobject arg0, jlong arg1, jlong arg2, jobject arg3, jlong arg4, jlong arg5, jlong arg6, jlong arg7, jlong arg8)
@@ -9032,18 +7611,6 @@ JNIEXPORT jlong JNICALL OS_NATIVE(object_1setInstanceVariable)
 fail:
 		if (arg1 && lparg1) (*env)->ReleasePrimitiveArrayCritical(env, arg1, lparg1, 0);
 	OS_NATIVE_EXIT(env, that, object_1setInstanceVariable_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO_sel_1getName
-JNIEXPORT jlong JNICALL OS_NATIVE(sel_1getName)
-	(JNIEnv *env, jclass that, jlong arg0)
-{
-	jlong rc = 0;
-	OS_NATIVE_ENTER(env, that, sel_1getName_FUNC);
-	rc = (jlong)sel_getName((SEL)arg0);
-	OS_NATIVE_EXIT(env, that, sel_1getName_FUNC);
 	return rc;
 }
 #endif

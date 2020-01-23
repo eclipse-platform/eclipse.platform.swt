@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2017 IBM Corporation and others.
+ * Copyright (c) 2000, 2019 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -27,35 +27,9 @@ public NSNumberFormatter(id id) {
 	super(id);
 }
 
-public boolean allowsFloats() {
-	return OS.objc_msgSend_bool(this.id, OS.sel_allowsFloats);
-}
-
-public boolean alwaysShowsDecimalSeparator() {
-	return OS.objc_msgSend_bool(this.id, OS.sel_alwaysShowsDecimalSeparator);
-}
-
 public NSString decimalSeparator() {
 	long result = OS.objc_msgSend(this.id, OS.sel_decimalSeparator);
 	return result != 0 ? new NSString(result) : null;
-}
-
-public NSNumber maximum() {
-	long result = OS.objc_msgSend(this.id, OS.sel_maximum);
-	return result != 0 ? new NSNumber(result) : null;
-}
-
-public long maximumFractionDigits() {
-	return OS.objc_msgSend(this.id, OS.sel_maximumFractionDigits);
-}
-
-public long maximumIntegerDigits() {
-	return OS.objc_msgSend(this.id, OS.sel_maximumIntegerDigits);
-}
-
-public NSNumber minimum() {
-	long result = OS.objc_msgSend(this.id, OS.sel_minimum);
-	return result != 0 ? new NSNumber(result) : null;
 }
 
 public void setAllowsFloats(boolean allowsFloats) {

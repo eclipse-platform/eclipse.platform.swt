@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2017 IBM Corporation and others.
+ * Copyright (c) 2000, 2019 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -51,11 +51,6 @@ public NSRect imageablePageBounds() {
 	return result;
 }
 
-public NSPrintInfo initWithDictionary(NSDictionary attributes) {
-	long result = OS.objc_msgSend(this.id, OS.sel_initWithDictionary_, attributes != null ? attributes.id : 0);
-	return result == this.id ? this : (result != 0 ? new NSPrintInfo(result) : null);
-}
-
 public boolean isSelectionOnly() {
 	return OS.objc_msgSend_bool(this.id, OS.sel_isSelectionOnly);
 }
@@ -69,11 +64,6 @@ public NSSize paperSize() {
 	NSSize result = new NSSize();
 	OS.objc_msgSend_stret(result, this.id, OS.sel_paperSize);
 	return result;
-}
-
-public NSMutableDictionary printSettings() {
-	long result = OS.objc_msgSend(this.id, OS.sel_printSettings);
-	return result != 0 ? new NSMutableDictionary(result) : null;
 }
 
 public NSPrinter printer() {

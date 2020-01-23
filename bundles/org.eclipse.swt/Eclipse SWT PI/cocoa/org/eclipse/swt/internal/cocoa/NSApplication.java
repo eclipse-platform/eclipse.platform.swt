@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2017 IBM Corporation and others.
+ * Copyright (c) 2000, 2019 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -88,11 +88,6 @@ public NSMenu mainMenu() {
 	return result != 0 ? new NSMenu(result) : null;
 }
 
-public NSWindow mainWindow() {
-	long result = OS.objc_msgSend(this.id, OS.sel_mainWindow);
-	return result != 0 ? new NSWindow(result) : null;
-}
-
 public NSEvent nextEventMatchingMask(long mask, NSDate expiration, NSString mode, boolean deqFlag) {
 	long result = OS.objc_msgSend(this.id, OS.sel_nextEventMatchingMask_untilDate_inMode_dequeue_, mask, expiration != null ? expiration.id : 0, mode != null ? mode.id : 0, deqFlag);
 	return result != 0 ? new NSEvent(result) : null;
@@ -102,21 +97,12 @@ public void orderFrontStandardAboutPanel(id sender) {
 	OS.objc_msgSend(this.id, OS.sel_orderFrontStandardAboutPanel_, sender != null ? sender.id : 0);
 }
 
-public NSArray orderedWindows() {
-	long result = OS.objc_msgSend(this.id, OS.sel_orderedWindows);
-	return result != 0 ? new NSArray(result) : null;
-}
-
 public void postEvent(NSEvent event, boolean flag) {
 	OS.objc_msgSend(this.id, OS.sel_postEvent_atStart_, event != null ? event.id : 0, flag);
 }
 
 public void replyToOpenOrPrint(long reply) {
 	OS.objc_msgSend(this.id, OS.sel_replyToOpenOrPrint_, reply);
-}
-
-public void run() {
-	OS.objc_msgSend(this.id, OS.sel_run);
 }
 
 public long runModalForWindow(NSWindow theWindow) {

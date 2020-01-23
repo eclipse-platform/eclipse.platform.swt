@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2017 IBM Corporation and others.
+ * Copyright (c) 2000, 2019 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -33,16 +33,6 @@ public void copy(id sender) {
 
 public void cut(id sender) {
 	OS.objc_msgSend(this.id, OS.sel_cut_, sender != null ? sender.id : 0);
-}
-
-public id delegate() {
-	long result = OS.objc_msgSend(this.id, OS.sel_delegate);
-	return result != 0 ? new id(result) : null;
-}
-
-public NSFont font() {
-	long result = OS.objc_msgSend(this.id, OS.sel_font);
-	return result != 0 ? new NSFont(result) : null;
 }
 
 public boolean isFieldEditor() {
@@ -125,10 +115,6 @@ public void setString(NSString string) {
 
 public void setTextColor(NSColor textColor) {
 	OS.objc_msgSend(this.id, OS.sel_setTextColor_, textColor != null ? textColor.id : 0);
-}
-
-public void sizeToFit() {
-	OS.objc_msgSend(this.id, OS.sel_sizeToFit);
 }
 
 public NSString string() {

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others.
+ * Copyright (c) 2000, 2019 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -27,25 +27,10 @@ public NSAttributedString(id id) {
 	super(id);
 }
 
-public static NSAttributedString attributedStringWithAttachment(NSTextAttachment attachment) {
-	long result = OS.objc_msgSend(OS.class_NSAttributedString, OS.sel_attributedStringWithAttachment_, attachment != null ? attachment.id : 0);
-	return result != 0 ? new NSAttributedString(result) : null;
-}
-
 public NSRect boundingRectWithSize(NSSize size, long options) {
 	NSRect result = new NSRect();
 	OS.objc_msgSend_stret(result, this.id, OS.sel_boundingRectWithSize_options_, size, options);
 	return result;
-}
-
-public NSRange doubleClickAtIndex(long location) {
-	NSRange result = new NSRange();
-	OS.objc_msgSend_stret(result, this.id, OS.sel_doubleClickAtIndex_, location);
-	return result;
-}
-
-public void drawAtPoint(NSPoint point) {
-	OS.objc_msgSend(this.id, OS.sel_drawAtPoint_, point);
 }
 
 public void drawInRect(NSRect rect) {

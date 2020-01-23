@@ -73,10 +73,6 @@ public boolean outlineView(NSOutlineView outlineView, long columnIndex, long new
 	return OS.objc_msgSend_bool(this.id, OS.sel_outlineView_shouldReorderColumn_toColumn_, outlineView != null ? outlineView.id : 0, columnIndex, newColumnIndex);
 }
 
-public boolean outlineView(NSOutlineView outlineView, id item) {
-	return OS.objc_msgSend_bool(this.id, OS.sel_outlineView_shouldSelectItem_, outlineView != null ? outlineView.id : 0, item != null ? item.id : 0);
-}
-
 public boolean outlineView(NSOutlineView outlineView, NSCell cell, NSTableColumn tableColumn, id item) {
 	return OS.objc_msgSend_bool(this.id, OS.sel_outlineView_shouldTrackCell_forTableColumn_item_, outlineView != null ? outlineView.id : 0, cell != null ? cell.id : 0, tableColumn != null ? tableColumn.id : 0, item != null ? item.id : 0);
 }
@@ -87,10 +83,6 @@ public boolean readSelectionFromPasteboard(NSPasteboard pboard) {
 
 public boolean tableView(NSTableView tableView, long columnIndex, long newColumnIndex) {
 	return OS.objc_msgSend_bool(this.id, OS.sel_tableView_shouldReorderColumn_toColumn_, tableView != null ? tableView.id : 0, columnIndex, newColumnIndex);
-}
-
-public boolean tableView(NSTableView tableView, long row) {
-	return OS.objc_msgSend_bool(this.id, OS.sel_tableView_shouldSelectRow_, tableView != null ? tableView.id : 0, row);
 }
 
 public boolean tableView(NSTableView tableView, NSCell cell, NSTableColumn tableColumn, long row) {

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2017 IBM Corporation and others.
+ * Copyright (c) 2000, 2019 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -25,10 +25,6 @@ public NSOpenGLContext(long id) {
 
 public NSOpenGLContext(id id) {
 	super(id);
-}
-
-public static void clearCurrentContext() {
-	OS.objc_msgSend(OS.class_NSOpenGLContext, OS.sel_clearCurrentContext);
 }
 
 public void clearDrawable() {

@@ -32,12 +32,4 @@ public NSTextTab initWithType(long type, double loc) {
 	return result == this.id ? this : (result != 0 ? new NSTextTab(result) : null);
 }
 
-public double location() {
-	return OS.objc_msgSend_fpret(this.id, OS.sel_location);
-}
-
-public long tabStopType() {
-	return OS.objc_msgSend(this.id, OS.sel_tabStopType);
-}
-
 }

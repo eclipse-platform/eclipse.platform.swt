@@ -748,7 +748,7 @@ void updateBar (int selection, int minimum, int maximum, int thumb) {
 	widget.setKnobProportion(knob);
 	widget.setEnabled (range > 0);
 	if (target == null && (knob != oldKnob || fraction != oldFraction)) {
-		OS.objc_msgSend(parent.scrollView.id, OS.sel_flashScrollers);
+		parent.scrollView.flashScrollers();
 	}
 }
 

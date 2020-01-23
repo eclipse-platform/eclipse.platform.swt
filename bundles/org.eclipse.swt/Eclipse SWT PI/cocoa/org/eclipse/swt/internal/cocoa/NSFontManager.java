@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others.
+ * Copyright (c) 2000, 2019 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -32,11 +32,6 @@ public NSArray availableFontFamilies() {
 	return result != 0 ? new NSArray(result) : null;
 }
 
-public NSArray availableFonts() {
-	long result = OS.objc_msgSend(this.id, OS.sel_availableFonts);
-	return result != 0 ? new NSArray(result) : null;
-}
-
 public NSArray availableMembersOfFontFamily(NSString fam) {
 	long result = OS.objc_msgSend(this.id, OS.sel_availableMembersOfFontFamily_, fam != null ? fam.id : 0);
 	return result != 0 ? new NSArray(result) : null;
@@ -47,11 +42,6 @@ public NSFont convertFont(NSFont fontObj, long trait) {
 	return result != 0 ? new NSFont(result) : null;
 }
 
-public NSFont fontWithFamily(NSString family, long traits, long weight, double size) {
-	long result = OS.objc_msgSend(this.id, OS.sel_fontWithFamily_traits_weight_size_, family != null ? family.id : 0, traits, weight, size);
-	return result != 0 ? new NSFont(result) : null;
-}
-
 public static NSFontManager sharedFontManager() {
 	long result = OS.objc_msgSend(OS.class_NSFontManager, OS.sel_sharedFontManager);
 	return result != 0 ? new NSFontManager(result) : null;
@@ -59,10 +49,6 @@ public static NSFontManager sharedFontManager() {
 
 public long traitsOfFont(NSFont fontObj) {
 	return OS.objc_msgSend(this.id, OS.sel_traitsOfFont_, fontObj != null ? fontObj.id : 0);
-}
-
-public long weightOfFont(NSFont fontObj) {
-	return OS.objc_msgSend(this.id, OS.sel_weightOfFont_, fontObj != null ? fontObj.id : 0);
 }
 
 }

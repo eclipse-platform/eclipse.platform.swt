@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others.
+ * Copyright (c) 2000, 2019 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -32,26 +32,13 @@ public NSString fullPathForApplication(NSString appName) {
 	return result != 0 ? new NSString(result) : null;
 }
 
-public boolean getInfoForFile(NSString fullPath, long appName, long type) {
-	return OS.objc_msgSend_bool(this.id, OS.sel_getInfoForFile_application_type_, fullPath != null ? fullPath.id : 0, appName, type);
-}
-
 public NSImage iconForFile(NSString fullPath) {
 	long result = OS.objc_msgSend(this.id, OS.sel_iconForFile_, fullPath != null ? fullPath.id : 0);
 	return result != 0 ? new NSImage(result) : null;
 }
 
-public NSImage iconForFileType(NSString fileType) {
-	long result = OS.objc_msgSend(this.id, OS.sel_iconForFileType_, fileType != null ? fileType.id : 0);
-	return result != 0 ? new NSImage(result) : null;
-}
-
 public boolean isFilePackageAtPath(NSString fullPath) {
 	return OS.objc_msgSend_bool(this.id, OS.sel_isFilePackageAtPath_, fullPath != null ? fullPath.id : 0);
-}
-
-public boolean openFile(NSString fullPath, NSString appName) {
-	return OS.objc_msgSend_bool(this.id, OS.sel_openFile_withApplication_, fullPath != null ? fullPath.id : 0, appName != null ? appName.id : 0);
 }
 
 public boolean openURL(NSURL url) {

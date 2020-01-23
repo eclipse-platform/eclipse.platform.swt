@@ -1818,7 +1818,7 @@ boolean setKeyState (Event event, int type, NSEvent nsEvent) {
 
 						int maxStringLength = 256;
 						char [] output = new char [maxStringLength];
-						int [] actualStringLength = new int [1];
+						long [] actualStringLength = new long [1];
 						int [] deadKeyState = new int[1];
 						OS.UCKeyTranslate (uchrPtr, (short)keyCode, (short)(event.type == SWT.KeyDown ? OS.kUCKeyActionDown : OS.kUCKeyActionUp), 0, (int)keyboardType, 0, deadKeyState, maxStringLength, actualStringLength, output);
 						if (actualStringLength[0] < 1) {

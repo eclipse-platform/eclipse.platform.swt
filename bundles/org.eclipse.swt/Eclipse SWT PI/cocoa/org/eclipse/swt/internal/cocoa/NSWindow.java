@@ -193,10 +193,6 @@ public boolean isZoomed() {
 	return OS.objc_msgSend_bool(this.id, OS.sel_isZoomed);
 }
 
-public long level() {
-	return OS.objc_msgSend(this.id, OS.sel_level);
-}
-
 public boolean makeFirstResponder(NSResponder aResponder) {
 	return OS.objc_msgSend_bool(this.id, OS.sel_makeFirstResponder_, aResponder != null ? aResponder.id : 0);
 }
@@ -355,17 +351,12 @@ public void setToolbar(NSToolbar toolbar) {
 	OS.objc_msgSend(this.id, OS.sel_setToolbar_, toolbar != null ? toolbar.id : 0);
 }
 
-public NSButton standardWindowButton(long b) {
-	long result = OS.objc_msgSend(this.id, OS.sel_standardWindowButton_, b);
-	return result != 0 ? new NSButton(result) : null;
-}
-
 public long styleMask() {
 	return OS.objc_msgSend(this.id, OS.sel_styleMask);
 }
 
-public void toggleToolbarShown(id sender) {
-	OS.objc_msgSend(this.id, OS.sel_toggleToolbarShown_, sender != null ? sender.id : 0);
+public void toggleFullScreen(id sender) {
+	OS.objc_msgSend(this.id, OS.sel_toggleFullScreen_, sender != null ? sender.id : 0);
 }
 
 public NSToolbar toolbar() {
@@ -379,10 +370,6 @@ public long windowNumber() {
 
 public static long windowNumberAtPoint(NSPoint point, long windowNumber) {
 	return OS.objc_msgSend(OS.class_NSWindow, OS.sel_windowNumberAtPoint_belowWindowWithWindowNumber_, point, windowNumber);
-}
-
-public long windowRef() {
-	return OS.objc_msgSend(this.id, OS.sel_windowRef);
 }
 
 public void zoom(id sender) {

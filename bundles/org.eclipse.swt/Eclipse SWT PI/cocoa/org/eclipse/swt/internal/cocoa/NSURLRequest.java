@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others.
+ * Copyright (c) 2000, 2019 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -30,11 +30,6 @@ public NSURLRequest(id id) {
 public NSURL URL() {
 	long result = OS.objc_msgSend(this.id, OS.sel_URL);
 	return result != 0 ? new NSURL(result) : null;
-}
-
-public NSURLRequest initWithURL(NSURL URL) {
-	long result = OS.objc_msgSend(this.id, OS.sel_initWithURL_, URL != null ? URL.id : 0);
-	return result == this.id ? this : (result != 0 ? new NSURLRequest(result) : null);
 }
 
 public static NSURLRequest requestWithURL(NSURL URL) {

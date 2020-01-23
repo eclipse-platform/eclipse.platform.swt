@@ -17,18 +17,6 @@
 
 #include "os.h"
 
-#ifndef NO_CFRange
-void cacheCFRangeFields(JNIEnv *env, jobject lpObject);
-CFRange *getCFRangeFields(JNIEnv *env, jobject lpObject, CFRange *lpStruct);
-void setCFRangeFields(JNIEnv *env, jobject lpObject, CFRange *lpStruct);
-#define CFRange_sizeof() sizeof(CFRange)
-#else
-#define cacheCFRangeFields(a,b)
-#define getCFRangeFields(a,b,c) NULL
-#define setCFRangeFields(a,b,c)
-#define CFRange_sizeof() 0
-#endif
-
 #ifndef NO_CGAffineTransform
 void cacheCGAffineTransformFields(JNIEnv *env, jobject lpObject);
 CGAffineTransform *getCGAffineTransformFields(JNIEnv *env, jobject lpObject, CGAffineTransform *lpStruct);
@@ -87,18 +75,6 @@ void setCGSizeFields(JNIEnv *env, jobject lpObject, CGSize *lpStruct);
 #define getCGSizeFields(a,b,c) NULL
 #define setCGSizeFields(a,b,c)
 #define CGSize_sizeof() 0
-#endif
-
-#ifndef NO_CTParagraphStyleSetting
-void cacheCTParagraphStyleSettingFields(JNIEnv *env, jobject lpObject);
-CTParagraphStyleSetting *getCTParagraphStyleSettingFields(JNIEnv *env, jobject lpObject, CTParagraphStyleSetting *lpStruct);
-void setCTParagraphStyleSettingFields(JNIEnv *env, jobject lpObject, CTParagraphStyleSetting *lpStruct);
-#define CTParagraphStyleSetting_sizeof() sizeof(CTParagraphStyleSetting)
-#else
-#define cacheCTParagraphStyleSettingFields(a,b)
-#define getCTParagraphStyleSettingFields(a,b,c) NULL
-#define setCTParagraphStyleSettingFields(a,b,c)
-#define CTParagraphStyleSetting_sizeof() 0
 #endif
 
 #ifndef NO_NSAffineTransformStruct

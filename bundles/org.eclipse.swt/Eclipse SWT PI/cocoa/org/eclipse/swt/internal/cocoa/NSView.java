@@ -82,18 +82,6 @@ public NSPoint convertPoint_toView_(NSPoint aPoint, NSView aView) {
 	return result;
 }
 
-public NSPoint convertPointFromBase(NSPoint aPoint) {
-	NSPoint result = new NSPoint();
-	OS.objc_msgSend_stret(result, this.id, OS.sel_convertPointFromBase_, aPoint);
-	return result;
-}
-
-public NSPoint convertPointToBase(NSPoint aPoint) {
-	NSPoint result = new NSPoint();
-	OS.objc_msgSend_stret(result, this.id, OS.sel_convertPointToBase_, aPoint);
-	return result;
-}
-
 public NSRect convertRect_fromView_(NSRect aRect, NSView aView) {
 	NSRect result = new NSRect();
 	OS.objc_msgSend_stret(result, this.id, OS.sel_convertRect_fromView_, aRect, aView != null ? aView.id : 0);
@@ -103,42 +91,6 @@ public NSRect convertRect_fromView_(NSRect aRect, NSView aView) {
 public NSRect convertRect_toView_(NSRect aRect, NSView aView) {
 	NSRect result = new NSRect();
 	OS.objc_msgSend_stret(result, this.id, OS.sel_convertRect_toView_, aRect, aView != null ? aView.id : 0);
-	return result;
-}
-
-public NSRect convertRectFromBase(NSRect aRect) {
-	NSRect result = new NSRect();
-	OS.objc_msgSend_stret(result, this.id, OS.sel_convertRectFromBase_, aRect);
-	return result;
-}
-
-public NSRect convertRectToBase(NSRect aRect) {
-	NSRect result = new NSRect();
-	OS.objc_msgSend_stret(result, this.id, OS.sel_convertRectToBase_, aRect);
-	return result;
-}
-
-public NSSize convertSize_fromView_(NSSize aSize, NSView aView) {
-	NSSize result = new NSSize();
-	OS.objc_msgSend_stret(result, this.id, OS.sel_convertSize_fromView_, aSize, aView != null ? aView.id : 0);
-	return result;
-}
-
-public NSSize convertSize_toView_(NSSize aSize, NSView aView) {
-	NSSize result = new NSSize();
-	OS.objc_msgSend_stret(result, this.id, OS.sel_convertSize_toView_, aSize, aView != null ? aView.id : 0);
-	return result;
-}
-
-public NSSize convertSizeFromBase(NSSize aSize) {
-	NSSize result = new NSSize();
-	OS.objc_msgSend_stret(result, this.id, OS.sel_convertSizeFromBase_, aSize);
-	return result;
-}
-
-public NSSize convertSizeToBase(NSSize aSize) {
-	NSSize result = new NSSize();
-	OS.objc_msgSend_stret(result, this.id, OS.sel_convertSizeToBase_, aSize);
 	return result;
 }
 
@@ -265,10 +217,6 @@ public void scrollPoint(NSPoint aPoint) {
 
 public void scrollRect(NSRect aRect, NSSize delta) {
 	OS.objc_msgSend(this.id, OS.sel_scrollRect_by_, aRect, delta);
-}
-
-public boolean scrollRectToVisible(NSRect aRect) {
-	return OS.objc_msgSend_bool(this.id, OS.sel_scrollRectToVisible_, aRect);
 }
 
 public void setAcceptsTouchEvents(boolean acceptsTouchEvents) {

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others.
+ * Copyright (c) 2000, 2019 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -73,11 +73,6 @@ public NSString pathForResource(NSString name, NSString ext) {
 
 public NSString pathForResource(NSString name, NSString ext, NSString subpath, NSString localizationName) {
 	long result = OS.objc_msgSend(this.id, OS.sel_pathForResource_ofType_inDirectory_forLocalization_, name != null ? name.id : 0, ext != null ? ext.id : 0, subpath != null ? subpath.id : 0, localizationName != null ? localizationName.id : 0);
-	return result != 0 ? new NSString(result) : null;
-}
-
-public NSString resourcePath() {
-	long result = OS.objc_msgSend(this.id, OS.sel_resourcePath);
 	return result != 0 ? new NSString(result) : null;
 }
 

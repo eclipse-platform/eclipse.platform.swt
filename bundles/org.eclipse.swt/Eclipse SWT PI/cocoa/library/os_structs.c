@@ -18,40 +18,6 @@
 #include "swt.h"
 #include "os_structs.h"
 
-#ifndef NO_CFRange
-typedef struct CFRange_FID_CACHE {
-	int cached;
-	jclass clazz;
-	jfieldID location, length;
-} CFRange_FID_CACHE;
-
-CFRange_FID_CACHE CFRangeFc;
-
-void cacheCFRangeFields(JNIEnv *env, jobject lpObject)
-{
-	if (CFRangeFc.cached) return;
-	CFRangeFc.clazz = (*env)->GetObjectClass(env, lpObject);
-	CFRangeFc.location = (*env)->GetFieldID(env, CFRangeFc.clazz, "location", "J");
-	CFRangeFc.length = (*env)->GetFieldID(env, CFRangeFc.clazz, "length", "J");
-	CFRangeFc.cached = 1;
-}
-
-CFRange *getCFRangeFields(JNIEnv *env, jobject lpObject, CFRange *lpStruct)
-{
-	if (!CFRangeFc.cached) cacheCFRangeFields(env, lpObject);
-	lpStruct->location = (CFIndex)(*env)->GetLongField(env, lpObject, CFRangeFc.location);
-	lpStruct->length = (CFIndex)(*env)->GetLongField(env, lpObject, CFRangeFc.length);
-	return lpStruct;
-}
-
-void setCFRangeFields(JNIEnv *env, jobject lpObject, CFRange *lpStruct)
-{
-	if (!CFRangeFc.cached) cacheCFRangeFields(env, lpObject);
-	(*env)->SetLongField(env, lpObject, CFRangeFc.location, (jlong)lpStruct->location);
-	(*env)->SetLongField(env, lpObject, CFRangeFc.length, (jlong)lpStruct->length);
-}
-#endif
-
 #ifndef NO_CGAffineTransform
 typedef struct CGAffineTransform_FID_CACHE {
 	int cached;
@@ -243,43 +209,6 @@ void setCGSizeFields(JNIEnv *env, jobject lpObject, CGSize *lpStruct)
 	if (!CGSizeFc.cached) cacheCGSizeFields(env, lpObject);
 	(*env)->SetDoubleField(env, lpObject, CGSizeFc.width, (jdouble)lpStruct->width);
 	(*env)->SetDoubleField(env, lpObject, CGSizeFc.height, (jdouble)lpStruct->height);
-}
-#endif
-
-#ifndef NO_CTParagraphStyleSetting
-typedef struct CTParagraphStyleSetting_FID_CACHE {
-	int cached;
-	jclass clazz;
-	jfieldID spec, valueSize, value;
-} CTParagraphStyleSetting_FID_CACHE;
-
-CTParagraphStyleSetting_FID_CACHE CTParagraphStyleSettingFc;
-
-void cacheCTParagraphStyleSettingFields(JNIEnv *env, jobject lpObject)
-{
-	if (CTParagraphStyleSettingFc.cached) return;
-	CTParagraphStyleSettingFc.clazz = (*env)->GetObjectClass(env, lpObject);
-	CTParagraphStyleSettingFc.spec = (*env)->GetFieldID(env, CTParagraphStyleSettingFc.clazz, "spec", "I");
-	CTParagraphStyleSettingFc.valueSize = (*env)->GetFieldID(env, CTParagraphStyleSettingFc.clazz, "valueSize", "J");
-	CTParagraphStyleSettingFc.value = (*env)->GetFieldID(env, CTParagraphStyleSettingFc.clazz, "value", "J");
-	CTParagraphStyleSettingFc.cached = 1;
-}
-
-CTParagraphStyleSetting *getCTParagraphStyleSettingFields(JNIEnv *env, jobject lpObject, CTParagraphStyleSetting *lpStruct)
-{
-	if (!CTParagraphStyleSettingFc.cached) cacheCTParagraphStyleSettingFields(env, lpObject);
-	lpStruct->spec = (CTParagraphStyleSpecifier)(*env)->GetIntField(env, lpObject, CTParagraphStyleSettingFc.spec);
-	lpStruct->valueSize = (size_t)(*env)->GetLongField(env, lpObject, CTParagraphStyleSettingFc.valueSize);
-	lpStruct->value = (void*)(*env)->GetLongField(env, lpObject, CTParagraphStyleSettingFc.value);
-	return lpStruct;
-}
-
-void setCTParagraphStyleSettingFields(JNIEnv *env, jobject lpObject, CTParagraphStyleSetting *lpStruct)
-{
-	if (!CTParagraphStyleSettingFc.cached) cacheCTParagraphStyleSettingFields(env, lpObject);
-	(*env)->SetIntField(env, lpObject, CTParagraphStyleSettingFc.spec, (jint)lpStruct->spec);
-	(*env)->SetLongField(env, lpObject, CTParagraphStyleSettingFc.valueSize, (jlong)lpStruct->valueSize);
-	(*env)->SetLongField(env, lpObject, CTParagraphStyleSettingFc.value, (jlong)lpStruct->value);
 }
 #endif
 

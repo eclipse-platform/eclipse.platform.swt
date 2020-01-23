@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2017 IBM Corporation and others.
+ * Copyright (c) 2000, 2019 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -39,10 +39,6 @@ public void addRepresentation(NSImageRep imageRep) {
 public NSImageRep bestRepresentationForDevice(NSDictionary deviceDescription) {
 	long result = OS.objc_msgSend(this.id, OS.sel_bestRepresentationForDevice_, deviceDescription != null ? deviceDescription.id : 0);
 	return result != 0 ? new NSImageRep(result) : null;
-}
-
-public void drawAtPoint(NSPoint point, NSRect fromRect, long op, double delta) {
-	OS.objc_msgSend(this.id, OS.sel_drawAtPoint_fromRect_operation_fraction_, point, fromRect, op, delta);
 }
 
 public void drawInRect(NSRect rect, NSRect fromRect, long op, double delta) {

@@ -65,11 +65,6 @@ public NSColor colorUsingColorSpaceName(NSString colorSpace) {
 	return result == this.id ? this : (result != 0 ? new NSColor(result) : null);
 }
 
-public static NSColor colorWithCalibratedRed(double red, double green, double blue, double alpha) {
-	long result = OS.objc_msgSend(OS.class_NSColor, OS.sel_colorWithCalibratedRed_green_blue_alpha_, red, green, blue, alpha);
-	return result != 0 ? new NSColor(result) : null;
-}
-
 public static NSColor colorWithDeviceRed(double red, double green, double blue, double alpha) {
 	long result = OS.objc_msgSend(OS.class_NSColor, OS.sel_colorWithDeviceRed_green_blue_alpha_, red, green, blue, alpha);
 	return result != 0 ? new NSColor(result) : null;
@@ -180,11 +175,6 @@ public static NSColor textColor() {
 
 public static NSColor windowBackgroundColor() {
 	long result = OS.objc_msgSend(OS.class_NSColor, OS.sel_windowBackgroundColor);
-	return result != 0 ? new NSColor(result) : null;
-}
-
-public static NSColor windowFrameColor() {
-	long result = OS.objc_msgSend(OS.class_NSColor, OS.sel_windowFrameColor);
 	return result != 0 ? new NSColor(result) : null;
 }
 

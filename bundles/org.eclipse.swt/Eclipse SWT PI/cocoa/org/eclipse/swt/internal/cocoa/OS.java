@@ -40,12 +40,7 @@ public class OS extends C {
 	 */
 	public static final double MAX_TEXT_CONTAINER_SIZE = 0.5e7f;
 
-	public static final int gestaltSystemVersion = ('s'<<24) + ('y'<<16) + ('s'<<8) + 'v';
-	public static final int gestaltSystemVersionMajor = ('s'<<24) + ('y'<<16) + ('s'<<8) + '1';
-	public static final int gestaltSystemVersionMinor = ('s'<<24) + ('y'<<16) + ('s'<<8) + '2';
-	public static final int gestaltSystemVersionBugFix = ('s'<<24) + ('y'<<16) + ('s'<<8) + '3';
 	public static final int noErr = 0;
-	public static final int kProcessTransformToForegroundApplication = 1;
 	public static final int kSystemIconsCreator = ('m' << 24) + ('a' << 16) + ('c' << 8) + 's';
 	public static final int kAlertCautionIcon = ('c'<<24) + ('a'<<16) + ('u'<<8) + 't';
 	public static final int kAlertNoteIcon = ('n'<<24) + ('o'<<16) + ('t'<<8) + 'e';
@@ -82,7 +77,6 @@ public class OS extends C {
 	public static final long sel_sendVerticalSelection = Selector.sel_sendVerticalSelection.value;
 	public static final long sel_sendHorizontalSelection = Selector.sel_sendHorizontalSelection.value;
 	public static final long sel_timerProc_ = Selector.sel_timerProc_.value;
-	public static final long sel_handleNotification_ = Selector.sel_handleNotification_.value;
 	public static final long sel_callJava = Selector.sel_callJava.value;
 	public static final long sel_callRunBeforeUnloadConfirmPanelWithMessage = Selector.sel_callRunBeforeUnloadConfirmPanelWithMessage.value;
 	public static final long sel_createPanelDidEnd = Selector.sel_createPanelDidEnd.value;
@@ -92,15 +86,10 @@ public class OS extends C {
 	public static final long sel_updateOpenGLContext_ = Selector.sel_updateOpenGLContext_.value;
 
 	public static final long sel_overwriteExistingFileCheck = Selector.sel_overwriteExistingFileCheck.value;
-	public static final long sel_setShowsHiddenFiles_ = Selector.sel_setShowsHiddenFiles_.value;
-
-	public static final long sel_contextID = Selector.sel_contextID.value;
 
 	public static final long sel__drawThemeProgressArea_ = Selector.sel__drawThemeProgressArea_.value;
 
 	public static final long sel__setDashboardBehavior = Selector.sel__setDashboardBehavior.value;
-
-	public static final long sel__setNeedsToUseHeartBeatWindow_ = Selector.sel__setNeedsToUseHeartBeatWindow_.value;
 
 	public static final long class_WebPanelAuthenticationHandler = OS.objc_getClass("WebPanelAuthenticationHandler");
 	public static final long sel_sharedHandler = Selector.sel_sharedHandler.value;
@@ -146,34 +135,6 @@ public class OS extends C {
 	/** @method callback_types=id;id;SEL;,callback_flags=struct;none;none; */
 	public static final native long CALLBACK_NSTextAttachmentCell_attachment(long func);
 	public static final long sel_cellBaselineOffset = Selector.sel_cellBaselineOffset.value;
-
-	/*10.6 Accessibility Strings*/
-	/** @method flags=const dynamic no_gen*/
-	public static final native long NSAccessibilityRowIndexRangeAttribute();
-	public static final NSString NSAccessibilityRowIndexRangeAttribute = new NSString(NSAccessibilityRowIndexRangeAttribute());
-	/** @method flags=const dynamic no_gen*/
-	public static final native long NSAccessibilityColumnIndexRangeAttribute();
-	public static final NSString NSAccessibilityColumnIndexRangeAttribute = new NSString(NSAccessibilityColumnIndexRangeAttribute());
-	/** @method flags=const dynamic no_gen*/
-	public static final native long NSAccessibilityCellForColumnAndRowParameterizedAttribute();
-	public static final NSString NSAccessibilityCellForColumnAndRowParameterizedAttribute = new NSString(NSAccessibilityCellForColumnAndRowParameterizedAttribute());
-	/** @method flags=const dynamic no_gen*/
-	public static final native long NSAccessibilityCellRole();
-	public static final NSString NSAccessibilityCellRole = new NSString(NSAccessibilityCellRole());
-
-	/** 10.7 selectors and constants */
-	public static final long sel_isCompatibleWithOverlayScrollers = Selector.sel_isCompatibleWithOverlayScrollers.value;
-	public static final long sel_flashScrollers = Selector.sel_flashScrollers.value;
-	public static final long sel_frameSizeForContentSize_horizontalScrollerClass_verticalScrollerClass_borderType_controlSize_scrollerStyle_ = Selector.sel_frameSizeForContentSize_horizontalScrollerClass_verticalScrollerClass_borderType_controlSize_scrollerStyle_.value;
-	public static final long sel_scrollerStyle = Selector.sel_scrollerStyle.value;
-	public static final long sel_toggleFullScreen_ = Selector.sel_toggleFullScreen_.value;
-
-	public static final int NSScrollerStyleLegacy = 0;
-	public static final int NSScrollerStyleOverlay = 1;
-	public static final int NSWindowFullScreenButton = 7;
-	public static final int NSFullScreenWindowMask = 1 << 14;
-	public static final int NSWindowCollectionBehaviorFullScreenPrimary = 1 << 7;
-	public static final int NSWindowCollectionBehaviorFullScreenAuxiliary = 1 << 8;
 
 	/** 10.12 selector */
 	public static final long sel_setAllowsAutomaticWindowTabbing_ = Selector.sel_setAllowsAutomaticWindowTabbing.value;
@@ -237,15 +198,8 @@ public static final native Object JNIGetObject(long globalRef);
 
 /** @param psn cast=(ProcessSerialNumber *) */
 public static final native int GetCurrentProcess(int[] psn);
-/** @param psn cast=(ProcessSerialNumber *) */
-public static final native int TransformProcessType(int[] psn, int transformState);
 public static final native int CPSSetProcessName(int[] psn, long name);
 /** @method flags=dynamic */
-public static final native int SetThemeCursor(int themeCursor);
-/** @method flags=dynamic */
-public static final native int GetCurrentEventButtonState();
-/** @method flags=dynamic */
-public static final native int GetDblTime();
 /** @method flags=dynamic
 	@param inCreator cast=(OSType)
 	@param inType cast=(OSType)
@@ -254,9 +208,6 @@ public static final native int GetDblTime();
 	@param inUsageFlags cast=(IconServicesUsageFlags)
 	@param outIconRef cast=(IconRef *) */
 public static final native int GetIconRefFromTypeInfo(int inCreator, int inType, long inExtension, long inMIMEType, int inUsageFlags, long outIconRef[]);
-/** @method flags=dynamic
-	@param context cast=(CGContextRef) */
-public static final native long CGContextCopyPath(long context);
 /** @method flags=dynamic */
 public static final native long TISCopyCurrentKeyboardInputSource();
 /** @method flags=dynamic
@@ -290,7 +241,7 @@ public static final native int GetSystemUIMode(int[] outMode, int[] outOptions);
  * @param actualStringLength cast=(UniCharCount *)
  * @param unicodeString cast=(UniChar *)
  */
-public static final native int UCKeyTranslate (long keyLayoutPtr, short virtualKeyCode, short keyAction, int modifierKeyState, int keyboardType, int keyTranslateOptions, int[] deadKeyState, int maxStringLength, int[] actualStringLength, char[] unicodeString);
+public static final native int UCKeyTranslate (long keyLayoutPtr, short virtualKeyCode, short keyAction, int modifierKeyState, int keyboardType, int keyTranslateOptions, int[] deadKeyState, int maxStringLength, long[] actualStringLength, char[] unicodeString);
 /**
  * @param inUTI1 cast=(CFStringRef)
  * @param inUTI2 cast=(CFStringRef)
@@ -310,32 +261,6 @@ public static final native int HIThemeDrawFocusRect(CGRect inRect, boolean inHas
 
 public static final int kUCKeyActionDown = 0;
 public static final int kUCKeyActionUp = 1;
-
-public static final int kThemeCopyArrowCursor = 1;
-public static final int kThemeNotAllowedCursor = 18;
-public static final int kThemeAliasArrowCursor = 2;
-
-/** @method flags=dynamic
- * @param iFile cast=(const FSRef *)
- * @param iContext cast=(ATSFontContext)
- * @param iFormat cast=(ATSFontFormat)
- * @param iReserved cast=(void *)
- * @param iOptions cast=(ATSOptionFlags)
- * @param oContainer cast=(ATSFontContainerRef *)
- */
-public static final native int ATSFontActivateFromFileReference(byte[] iFile, int iContext, int iFormat, long iReserved, int iOptions, long [] oContainer);
-
-public static final int kATSFontContextLocal = 2;
-public static final int kATSOptionFlagsDefault = 0;
-public static final int kATSFontFormatUnspecified = 0;
-
-/** @method flags=dynamic
- * @param path cast=(const UInt8 *)
- * @param ref cast=(FSRef *)
- * @param isDirectory cast=(Boolean *)
- */
-public static final native int FSPathMakeRef (long path, byte[] ref, boolean[] isDirectory);
-
 /** @method flags=dynamic */
 public static final native byte LMGetKbdType();
 
@@ -402,63 +327,11 @@ public static final native long PMPrinterGetOutputResolution(long pmPrinter, lon
  */
 public static final native long PMPrinterGetIndexedPrinterResolution(long pmPrinter, int index, PMResolution outResolution);
 
-// Custom FindWindow implementation to avoid namespace collisions with Point.
-/**
- * @method flags=no_gen
- * @param wHandle cast=(WindowRef *)
- */
-public static final native long FindWindow (long h, long v, long [] wHandle);
-
-/**
- * @method flags=dynamic
- * @param display cast=(CGDirectDisplayID)
- */
-public static final native long CGDisplayBaseAddress(int display);
-/**
- * @method flags=dynamic
- * @param display cast=(CGDirectDisplayID)
- */
-public static final native long CGDisplayBitsPerPixel(int display);
-/**
- * @method flags=dynamic
- * @param display cast=(CGDirectDisplayID)
- */
-public static final native long CGDisplayBitsPerSample(int display);
-/**
- * @method flags=dynamic
- * @param display cast=(CGDirectDisplayID)
- */
-public static final native long CGDisplayBytesPerRow(int display);
-
-
 /** C calls */
 
 public static final native int getpid();
 
 public static final native void call(long proc, long id, long sel);
-
-/** @method flags=no_gen */
-public static final native boolean __BIG_ENDIAN__();
-public static final int kCGBitmapByteOrderDefault = 0 << 12;
-public static final int kCGBitmapByteOrder16Little = 1 << 12;
-public static final int kCGBitmapByteOrder32Little = 2 << 12;
-public static final int kCGBitmapByteOrder16Big = 3 << 12;
-public static final int kCGBitmapByteOrder32Big = 4 << 12;
-public static final int kCGBitmapByteOrder16Host = __BIG_ENDIAN__() ? kCGBitmapByteOrder16Big : kCGBitmapByteOrder16Little;
-public static final int kCGBitmapByteOrder32Host = __BIG_ENDIAN__() ? kCGBitmapByteOrder32Big : kCGBitmapByteOrder32Little;
-
-/**
- * @method flags=dynamic
- * @param destRect flags=struct
- * @param srcRect flags=struct
- */
-public static final native void CGContextCopyWindowContentsToRect(long context, CGRect destRect, long contextID, long windowNumber, CGRect srcRect);
-
-/**
- * @method flags=dynamic
- * @param displayID cast=(CGDirectDisplayID)
- */
-public static final native long CGDisplayCreateImage(int displayID);
 
 /** QuickDraw calls */
 
@@ -502,17 +375,9 @@ public static final native void CopyRgn(long srcRgnHandle, long dstRgnHandle);
 /** @method flags=dynamic */
 public static final native void SetRect(short[] r, short left, short top, short right, short bottom);
 public static final int kQDParseRegionFromTop = (1 << 0);
-public static final int kQDParseRegionFromBottom = (1 << 1);
 public static final int kQDParseRegionFromLeft = (1 << 2);
-public static final int kQDParseRegionFromRight = (1 << 3);
 public static final int kQDParseRegionFromTopLeft = kQDParseRegionFromTop | kQDParseRegionFromLeft;
 public static final int kQDRegionToRectsMsgParse = 2;
-
-/**
- * @method flags=dynamic
- * @param inWindow cast=(WindowRef)
- */
-public static final native int HIWindowGetCGWindowID(long inWindow);
 
 /** JavaScriptCore calls */
 
@@ -561,7 +426,6 @@ public static final native int SecTrustCreateWithCertificates(long certificates,
 
 public static final int CSSM_CERT_X_509v3 = 0x3;
 
-
 /** Custom callbacks */
 
 /** @method flags=no_gen */
@@ -576,11 +440,6 @@ public static final native void NSIntersectionRect (NSRect result, NSRect aRect,
  * @param display cast=(CGDirectDisplayID)
  */
 public static final native void CGDisplayBounds(int display, CGRect rect);
-
-/** @method flags=const address*/
-public static final native long kCFTypeDictionaryKeyCallBacks();
-/** @method flags=const address*/
-public static final native long kCFTypeDictionaryValueCallBacks();
 
 /** @method flags=const */
 public static final native long kUTTypeFileURL();
@@ -631,15 +490,10 @@ public static final native long class_getSuperclass(long cls);
  */
 public static final native long method_setImplementation(long method, long imp);
 /**
- * @param sel cast=(SEL)
- */
-public static final native long sel_getName(long sel);
-/**
  * @param cls cast=(Class)
  * @param extraBytes cast=(size_t)
  */
 public static final native long class_createInstance(long cls, long extraBytes);
-
 /** @method flags=no_gen */
 public static final native String class_getName(long cls);
 /** @method flags=dynamic */
@@ -679,12 +533,6 @@ public static final native long object_setClass(long obj, long clazz);
 public static final native long sel_registerName(String selectorName);
 public static final native int objc_super_sizeof();
 
-/**
- * @method flags=cast
- * @param arg0 flags=struct
- */
-public static final native void objc_msgSend_stret(NSSize result, long id, long sel, NSSize arg0, long arg1, long arg2, long arg3, long arg4, long arg5);
-
 /** This section is auto generated */
 
 /** Custom callbacks */
@@ -704,10 +552,6 @@ public static final native long CALLBACK_cellSizeForBounds_(long func);
 public static final native long CALLBACK_characterIndexForPoint_(long func);
 /** @method callback_types=NSInteger;id;SEL;NSPoint;,callback_flags=none;none;none;struct; */
 public static final native long CALLBACK_columnAtPoint_(long func);
-/** @method callback_types=BOOL;id;SEL;NSEvent*;NSSize;BOOL;,callback_flags=none;none;none;none;struct;none; */
-public static final native long CALLBACK_dragSelectionWithEvent_offset_slideBack_(long func);
-/** @method callback_types=void;id;SEL;NSImage*;NSPoint;,callback_flags=none;none;none;none;struct; */
-public static final native long CALLBACK_draggedImage_beganAt_(long func);
 /** @method callback_types=void;id;SEL;NSImage*;NSPoint;NSDragOperation;,callback_flags=none;none;none;none;struct;none; */
 public static final native long CALLBACK_draggedImage_endedAt_operation_(long func);
 /** @method callback_types=void;id;SEL;NSRect;,callback_flags=none;none;none;struct; */
@@ -750,8 +594,6 @@ public static final native long CALLBACK_markedRange(long func);
 public static final native long CALLBACK_scrollClipView_toPoint_(long func);
 /** @method callback_types=NSRange;id;SEL;,callback_flags=struct;none;none; */
 public static final native long CALLBACK_selectedRange(long func);
-/** @method callback_types=void;id;SEL;NSRect;,callback_flags=none;none;none;struct; */
-public static final native long CALLBACK_setFrame_(long func);
 /** @method callback_types=void;id;SEL;NSPoint;,callback_flags=none;none;none;struct; */
 public static final native long CALLBACK_setFrameOrigin_(long func);
 /** @method callback_types=void;id;SEL;NSSize;,callback_flags=none;none;none;struct; */
@@ -792,13 +634,11 @@ public static final long class_NSAutoreleasePool = objc_getClass("NSAutoreleaseP
 public static final long class_NSBezierPath = objc_getClass("NSBezierPath");
 public static final long class_NSBitmapImageRep = objc_getClass("NSBitmapImageRep");
 public static final long class_NSBox = objc_getClass("NSBox");
-public static final long class_NSBrowserCell = objc_getClass("NSBrowserCell");
 public static final long class_NSBundle = objc_getClass("NSBundle");
 public static final long class_NSButton = objc_getClass("NSButton");
 public static final long class_NSButtonCell = objc_getClass("NSButtonCell");
 public static final long class_NSCalendarDate = objc_getClass("NSCalendarDate");
 public static final long class_NSCell = objc_getClass("NSCell");
-public static final long class_NSCharacterSet = objc_getClass("NSCharacterSet");
 public static final long class_NSClipView = objc_getClass("NSClipView");
 public static final long class_NSCoder = objc_getClass("NSCoder");
 public static final long class_NSColor = objc_getClass("NSColor");
@@ -876,7 +716,6 @@ public static final long class_NSScroller = objc_getClass("NSScroller");
 public static final long class_NSSearchField = objc_getClass("NSSearchField");
 public static final long class_NSSearchFieldCell = objc_getClass("NSSearchFieldCell");
 public static final long class_NSSecureTextField = objc_getClass("NSSecureTextField");
-public static final long class_NSSegmentedCell = objc_getClass("NSSegmentedCell");
 public static final long class_NSSet = objc_getClass("NSSet");
 public static final long class_NSSlider = objc_getClass("NSSlider");
 public static final long class_NSStatusBar = objc_getClass("NSStatusBar");
@@ -956,7 +795,6 @@ public static final long protocol_NSTextInput = objc_getProtocol("NSTextInput");
 public static final long protocol_NSTextViewDelegate = objc_getProtocol("NSTextViewDelegate");
 public static final long protocol_NSToolTipOwner = objc_getProtocol("NSToolTipOwner");
 public static final long protocol_NSToolbarDelegate = objc_getProtocol("NSToolbarDelegate");
-public static final long protocol_NSToolbarNotifications = objc_getProtocol("NSToolbarNotifications");
 public static final long protocol_NSURLDownloadDelegate = objc_getProtocol("NSURLDownloadDelegate");
 public static final long protocol_NSWindowDelegate = objc_getProtocol("NSWindowDelegate");
 public static final long protocol_NSWindowNotifications = objc_getProtocol("NSWindowNotifications");
@@ -988,7 +826,6 @@ public static final long sel_TIFFRepresentation = Selector.sel_TIFFRepresentatio
 public static final long sel_URL = Selector.sel_URL.value;
 public static final long sel_URLFromPasteboard_ = Selector.sel_URLFromPasteboard_.value;
 public static final long sel_URLWithString_ = Selector.sel_URLWithString_.value;
-public static final long sel_URLsForDirectory_inDomains_ = Selector.sel_URLsForDirectory_inDomains_.value;
 public static final long sel_UTF8String = Selector.sel_UTF8String.value;
 public static final long sel_abortEditing = Selector.sel_abortEditing.value;
 public static final long sel_absoluteString = Selector.sel_absoluteString.value;
@@ -1027,7 +864,6 @@ public static final long sel_addRepresentation_ = Selector.sel_addRepresentation
 public static final long sel_addSubview_ = Selector.sel_addSubview_.value;
 public static final long sel_addSubview_positioned_relativeTo_ = Selector.sel_addSubview_positioned_relativeTo_.value;
 public static final long sel_addTabStop_ = Selector.sel_addTabStop_.value;
-public static final long sel_addTabViewItem_ = Selector.sel_addTabViewItem_.value;
 public static final long sel_addTableColumn_ = Selector.sel_addTableColumn_.value;
 public static final long sel_addTemporaryAttribute_value_forCharacterRange_ = Selector.sel_addTemporaryAttribute_value_forCharacterRange_.value;
 public static final long sel_addTextContainer_ = Selector.sel_addTextContainer_.value;
@@ -1038,18 +874,14 @@ public static final long sel_alignment = Selector.sel_alignment.value;
 public static final long sel_allKeys = Selector.sel_allKeys.value;
 public static final long sel_allObjects = Selector.sel_allObjects.value;
 public static final long sel_alloc = Selector.sel_alloc.value;
-public static final long sel_allowsColumnReordering = Selector.sel_allowsColumnReordering.value;
-public static final long sel_allowsFloats = Selector.sel_allowsFloats.value;
 public static final long sel_alphaComponent = Selector.sel_alphaComponent.value;
 public static final long sel_alphaValue = Selector.sel_alphaValue.value;
 public static final long sel_altKey = Selector.sel_altKey.value;
 public static final long sel_alternateSelectedControlColor = Selector.sel_alternateSelectedControlColor.value;
 public static final long sel_alternateSelectedControlTextColor = Selector.sel_alternateSelectedControlTextColor.value;
-public static final long sel_alwaysShowsDecimalSeparator = Selector.sel_alwaysShowsDecimalSeparator.value;
 public static final long sel_appearanceNamed_ = Selector.sel_appearanceNamed_.value;
 public static final long sel_appendAttributedString_ = Selector.sel_appendAttributedString_.value;
 public static final long sel_appendBezierPath_ = Selector.sel_appendBezierPath_.value;
-public static final long sel_appendBezierPathWithArcWithCenter_radius_startAngle_endAngle_ = Selector.sel_appendBezierPathWithArcWithCenter_radius_startAngle_endAngle_.value;
 public static final long sel_appendBezierPathWithArcWithCenter_radius_startAngle_endAngle_clockwise_ = Selector.sel_appendBezierPathWithArcWithCenter_radius_startAngle_endAngle_clockwise_.value;
 public static final long sel_appendBezierPathWithGlyphs_count_inFont_ = Selector.sel_appendBezierPathWithGlyphs_count_inFont_.value;
 public static final long sel_appendBezierPathWithOvalInRect_ = Selector.sel_appendBezierPathWithOvalInRect_.value;
@@ -1059,14 +891,12 @@ public static final long sel_appendString_ = Selector.sel_appendString_.value;
 public static final long sel_application_openFile_ = Selector.sel_application_openFile_.value;
 public static final long sel_application_openFiles_ = Selector.sel_application_openFiles_.value;
 public static final long sel_applicationDidBecomeActive_ = Selector.sel_applicationDidBecomeActive_.value;
-public static final long sel_applicationDidFinishLaunching_ = Selector.sel_applicationDidFinishLaunching_.value;
 public static final long sel_applicationDidResignActive_ = Selector.sel_applicationDidResignActive_.value;
 public static final long sel_applicationDockMenu_ = Selector.sel_applicationDockMenu_.value;
 public static final long sel_applicationIconImage = Selector.sel_applicationIconImage.value;
 public static final long sel_applicationShouldHandleReopen_hasVisibleWindows_ = Selector.sel_applicationShouldHandleReopen_hasVisibleWindows_.value;
 public static final long sel_applicationShouldTerminate_ = Selector.sel_applicationShouldTerminate_.value;
 public static final long sel_applicationWillFinishLaunching_ = Selector.sel_applicationWillFinishLaunching_.value;
-public static final long sel_applicationWillTerminate_ = Selector.sel_applicationWillTerminate_.value;
 public static final long sel_archivedDataWithRootObject_ = Selector.sel_archivedDataWithRootObject_.value;
 public static final long sel_areCursorRectsEnabled = Selector.sel_areCursorRectsEnabled.value;
 public static final long sel_arrangeInFront_ = Selector.sel_arrangeInFront_.value;
@@ -1079,16 +909,13 @@ public static final long sel_attachColorList_ = Selector.sel_attachColorList_.va
 public static final long sel_attachment = Selector.sel_attachment.value;
 public static final long sel_attribute_atIndex_effectiveRange_ = Selector.sel_attribute_atIndex_effectiveRange_.value;
 public static final long sel_attributedStringValue = Selector.sel_attributedStringValue.value;
-public static final long sel_attributedStringWithAttachment_ = Selector.sel_attributedStringWithAttachment_.value;
 public static final long sel_attributedSubstringFromRange_ = Selector.sel_attributedSubstringFromRange_.value;
 public static final long sel_attributedTitle = Selector.sel_attributedTitle.value;
 public static final long sel_attributesAtIndex_longestEffectiveRange_inRange_ = Selector.sel_attributesAtIndex_longestEffectiveRange_inRange_.value;
 public static final long sel_autorelease = Selector.sel_autorelease.value;
 public static final long sel_availableFontFamilies = Selector.sel_availableFontFamilies.value;
-public static final long sel_availableFonts = Selector.sel_availableFonts.value;
 public static final long sel_availableMembersOfFontFamily_ = Selector.sel_availableMembersOfFontFamily_.value;
 public static final long sel_availableTypeFromArray_ = Selector.sel_availableTypeFromArray_.value;
-public static final long sel_backgroundColor = Selector.sel_backgroundColor.value;
 public static final long sel_backingScaleFactor = Selector.sel_backingScaleFactor.value;
 public static final long sel_badgeLabel = Selector.sel_badgeLabel.value;
 public static final long sel_baselineOffsetInLayoutManager_glyphIndex_ = Selector.sel_baselineOffsetInLayoutManager_glyphIndex_.value;
@@ -1127,7 +954,6 @@ public static final long sel_bundleWithPath_ = Selector.sel_bundleWithPath_.valu
 public static final long sel_button = Selector.sel_button.value;
 public static final long sel_buttonNumber = Selector.sel_buttonNumber.value;
 public static final long sel_bytes = Selector.sel_bytes.value;
-public static final long sel_bytesPerPlane = Selector.sel_bytesPerPlane.value;
 public static final long sel_bytesPerRow = Selector.sel_bytesPerRow.value;
 public static final long sel_cacheDisplayInRect_toBitmapImageRep_ = Selector.sel_cacheDisplayInRect_toBitmapImageRep_.value;
 public static final long sel_calendarDate = Selector.sel_calendarDate.value;
@@ -1157,14 +983,12 @@ public static final long sel_characterAtIndex_ = Selector.sel_characterAtIndex_.
 public static final long sel_characterIndexForGlyphAtIndex_ = Selector.sel_characterIndexForGlyphAtIndex_.value;
 public static final long sel_characterIndexForInsertionAtPoint_ = Selector.sel_characterIndexForInsertionAtPoint_.value;
 public static final long sel_characterIndexForPoint_ = Selector.sel_characterIndexForPoint_.value;
-public static final long sel_characterIsMember_ = Selector.sel_characterIsMember_.value;
 public static final long sel_characters = Selector.sel_characters.value;
 public static final long sel_charactersIgnoringModifiers = Selector.sel_charactersIgnoringModifiers.value;
 public static final long sel_chooseFilename_ = Selector.sel_chooseFilename_.value;
 public static final long sel_className = Selector.sel_className.value;
 public static final long sel_cleanUpOperation = Selector.sel_cleanUpOperation.value;
 public static final long sel_clearColor = Selector.sel_clearColor.value;
-public static final long sel_clearCurrentContext = Selector.sel_clearCurrentContext.value;
 public static final long sel_clearDrawable = Selector.sel_clearDrawable.value;
 public static final long sel_clickCount = Selector.sel_clickCount.value;
 public static final long sel_clickedColumn = Selector.sel_clickedColumn.value;
@@ -1180,22 +1004,17 @@ public static final long sel_colorAtX_y_ = Selector.sel_colorAtX_y_.value;
 public static final long sel_colorListNamed_ = Selector.sel_colorListNamed_.value;
 public static final long sel_colorSpace = Selector.sel_colorSpace.value;
 public static final long sel_colorSpaceModel = Selector.sel_colorSpaceModel.value;
-public static final long sel_colorSpaceName = Selector.sel_colorSpaceName.value;
 public static final long sel_colorUsingColorSpaceName_ = Selector.sel_colorUsingColorSpaceName_.value;
-public static final long sel_colorWithCalibratedRed_green_blue_alpha_ = Selector.sel_colorWithCalibratedRed_green_blue_alpha_.value;
 public static final long sel_colorWithDeviceRed_green_blue_alpha_ = Selector.sel_colorWithDeviceRed_green_blue_alpha_.value;
 public static final long sel_colorWithKey_ = Selector.sel_colorWithKey_.value;
 public static final long sel_colorWithPatternImage_ = Selector.sel_colorWithPatternImage_.value;
 public static final long sel_columnAtPoint_ = Selector.sel_columnAtPoint_.value;
-public static final long sel_columnIndexesInRect_ = Selector.sel_columnIndexesInRect_.value;
-public static final long sel_columnWithIdentifier_ = Selector.sel_columnWithIdentifier_.value;
 public static final long sel_comboBoxSelectionDidChange_ = Selector.sel_comboBoxSelectionDidChange_.value;
 public static final long sel_comboBoxWillDismiss_ = Selector.sel_comboBoxWillDismiss_.value;
 public static final long sel_comboBoxWillPopUp_ = Selector.sel_comboBoxWillPopUp_.value;
 public static final long sel_compare_ = Selector.sel_compare_.value;
 public static final long sel_concat = Selector.sel_concat.value;
 public static final long sel_conformsToProtocol_ = Selector.sel_conformsToProtocol_.value;
-public static final long sel_containerSize = Selector.sel_containerSize.value;
 public static final long sel_containsIndex_ = Selector.sel_containsIndex_.value;
 public static final long sel_containsObject_ = Selector.sel_containsObject_.value;
 public static final long sel_containsPoint_ = Selector.sel_containsPoint_.value;
@@ -1206,7 +1025,6 @@ public static final long sel_contentView = Selector.sel_contentView.value;
 public static final long sel_contentViewMargins = Selector.sel_contentViewMargins.value;
 public static final long sel_context = Selector.sel_context.value;
 public static final long sel_controlBackgroundColor = Selector.sel_controlBackgroundColor.value;
-public static final long sel_controlContentFontOfSize_ = Selector.sel_controlContentFontOfSize_.value;
 public static final long sel_controlDarkShadowColor = Selector.sel_controlDarkShadowColor.value;
 public static final long sel_controlHighlightColor = Selector.sel_controlHighlightColor.value;
 public static final long sel_controlLightHighlightColor = Selector.sel_controlLightHighlightColor.value;
@@ -1218,17 +1036,9 @@ public static final long sel_convertBaseToScreen_ = Selector.sel_convertBaseToSc
 public static final long sel_convertFont_toHaveTrait_ = Selector.sel_convertFont_toHaveTrait_.value;
 public static final long sel_convertPoint_fromView_ = Selector.sel_convertPoint_fromView_.value;
 public static final long sel_convertPoint_toView_ = Selector.sel_convertPoint_toView_.value;
-public static final long sel_convertPointFromBase_ = Selector.sel_convertPointFromBase_.value;
-public static final long sel_convertPointToBase_ = Selector.sel_convertPointToBase_.value;
 public static final long sel_convertRect_fromView_ = Selector.sel_convertRect_fromView_.value;
 public static final long sel_convertRect_toView_ = Selector.sel_convertRect_toView_.value;
-public static final long sel_convertRectFromBase_ = Selector.sel_convertRectFromBase_.value;
-public static final long sel_convertRectToBase_ = Selector.sel_convertRectToBase_.value;
 public static final long sel_convertScreenToBase_ = Selector.sel_convertScreenToBase_.value;
-public static final long sel_convertSize_fromView_ = Selector.sel_convertSize_fromView_.value;
-public static final long sel_convertSize_toView_ = Selector.sel_convertSize_toView_.value;
-public static final long sel_convertSizeFromBase_ = Selector.sel_convertSizeFromBase_.value;
-public static final long sel_convertSizeToBase_ = Selector.sel_convertSizeToBase_.value;
 public static final long sel_cookies = Selector.sel_cookies.value;
 public static final long sel_cookiesForURL_ = Selector.sel_cookiesForURL_.value;
 public static final long sel_cookiesWithResponseHeaderFields_forURL_ = Selector.sel_cookiesWithResponseHeaderFields_forURL_.value;
@@ -1237,7 +1047,6 @@ public static final long sel_copy = Selector.sel_copy.value;
 public static final long sel_copy_ = Selector.sel_copy_.value;
 public static final long sel_count = Selector.sel_count.value;
 public static final long sel_createContext = Selector.sel_createContext.value;
-public static final long sel_createFileAtPath_contents_attributes_ = Selector.sel_createFileAtPath_contents_attributes_.value;
 public static final long sel_credentialWithUser_password_persistence_ = Selector.sel_credentialWithUser_password_persistence_.value;
 public static final long sel_crosshairCursor = Selector.sel_crosshairCursor.value;
 public static final long sel_ctrlKey = Selector.sel_ctrlKey.value;
@@ -1264,7 +1073,6 @@ public static final long sel_dateWithTimeIntervalSinceNow_ = Selector.sel_dateWi
 public static final long sel_dateWithYear_month_day_hour_minute_second_timeZone_ = Selector.sel_dateWithYear_month_day_hour_minute_second_timeZone_.value;
 public static final long sel_dayOfMonth = Selector.sel_dayOfMonth.value;
 public static final long sel_dealloc = Selector.sel_dealloc.value;
-public static final long sel_decimalDigitCharacterSet = Selector.sel_decimalDigitCharacterSet.value;
 public static final long sel_decimalSeparator = Selector.sel_decimalSeparator.value;
 public static final long sel_declareTypes_owner_ = Selector.sel_declareTypes_owner_.value;
 public static final long sel_defaultBaselineOffsetForFont_ = Selector.sel_defaultBaselineOffsetForFont_.value;
@@ -1308,12 +1116,10 @@ public static final long sel_displayRectIgnoringOpacity_inContext_ = Selector.se
 public static final long sel_distantFuture = Selector.sel_distantFuture.value;
 public static final long sel_doCommandBySelector_ = Selector.sel_doCommandBySelector_.value;
 public static final long sel_dockTile = Selector.sel_dockTile.value;
-public static final long sel_documentCursor = Selector.sel_documentCursor.value;
 public static final long sel_documentSource = Selector.sel_documentSource.value;
 public static final long sel_documentView = Selector.sel_documentView.value;
 public static final long sel_documentViewShouldHandlePrint = Selector.sel_documentViewShouldHandlePrint.value;
 public static final long sel_documentVisibleRect = Selector.sel_documentVisibleRect.value;
-public static final long sel_doubleClickAtIndex_ = Selector.sel_doubleClickAtIndex_.value;
 public static final long sel_doubleClickInterval = Selector.sel_doubleClickInterval.value;
 public static final long sel_doubleValue = Selector.sel_doubleValue.value;
 public static final long sel_download = Selector.sel_download.value;
@@ -1324,7 +1130,6 @@ public static final long sel_dragSelectionWithEvent_offset_slideBack_ = Selector
 public static final long sel_draggedImage_beganAt_ = Selector.sel_draggedImage_beganAt_.value;
 public static final long sel_draggedImage_endedAt_operation_ = Selector.sel_draggedImage_endedAt_operation_.value;
 public static final long sel_draggingDestinationWindow = Selector.sel_draggingDestinationWindow.value;
-public static final long sel_draggingEnded_ = Selector.sel_draggingEnded_.value;
 public static final long sel_draggingEntered_ = Selector.sel_draggingEntered_.value;
 public static final long sel_draggingExited_ = Selector.sel_draggingExited_.value;
 public static final long sel_draggingLocation = Selector.sel_draggingLocation.value;
@@ -1332,8 +1137,6 @@ public static final long sel_draggingPasteboard = Selector.sel_draggingPasteboar
 public static final long sel_draggingSourceOperationMask = Selector.sel_draggingSourceOperationMask.value;
 public static final long sel_draggingSourceOperationMaskForLocal_ = Selector.sel_draggingSourceOperationMaskForLocal_.value;
 public static final long sel_draggingUpdated_ = Selector.sel_draggingUpdated_.value;
-public static final long sel_drawAtPoint_ = Selector.sel_drawAtPoint_.value;
-public static final long sel_drawAtPoint_fromRect_operation_fraction_ = Selector.sel_drawAtPoint_fromRect_operation_fraction_.value;
 public static final long sel_drawBackgroundForGlyphRange_atPoint_ = Selector.sel_drawBackgroundForGlyphRange_atPoint_.value;
 public static final long sel_drawBackgroundInClipRect_ = Selector.sel_drawBackgroundInClipRect_.value;
 public static final long sel_drawBezelWithFrame_inView_ = Selector.sel_drawBezelWithFrame_inView_.value;
@@ -1371,17 +1174,16 @@ public static final long sel_familyName = Selector.sel_familyName.value;
 public static final long sel_fieldEditor_forObject_ = Selector.sel_fieldEditor_forObject_.value;
 public static final long sel_fileExistsAtPath_ = Selector.sel_fileExistsAtPath_.value;
 public static final long sel_fileExistsAtPath_isDirectory_ = Selector.sel_fileExistsAtPath_isDirectory_.value;
-public static final long sel_fileSystemRepresentation = Selector.sel_fileSystemRepresentation.value;
 public static final long sel_fileURLWithPath_ = Selector.sel_fileURLWithPath_.value;
 public static final long sel_filename = Selector.sel_filename.value;
 public static final long sel_filenames = Selector.sel_filenames.value;
 public static final long sel_fill = Selector.sel_fill.value;
 public static final long sel_fillRect_ = Selector.sel_fillRect_.value;
 public static final long sel_finishLaunching = Selector.sel_finishLaunching.value;
-public static final long sel_firstIndex = Selector.sel_firstIndex.value;
 public static final long sel_firstRectForCharacterRange_ = Selector.sel_firstRectForCharacterRange_.value;
 public static final long sel_firstResponder = Selector.sel_firstResponder.value;
 public static final long sel_flagsChanged_ = Selector.sel_flagsChanged_.value;
+public static final long sel_flashScrollers = Selector.sel_flashScrollers.value;
 public static final long sel_floatValue = Selector.sel_floatValue.value;
 public static final long sel_flushBuffer = Selector.sel_flushBuffer.value;
 public static final long sel_flushGraphics = Selector.sel_flushGraphics.value;
@@ -1389,26 +1191,22 @@ public static final long sel_flushWindowIfNeeded = Selector.sel_flushWindowIfNee
 public static final long sel_focusRingMaskBoundsForFrame_inView_ = Selector.sel_focusRingMaskBoundsForFrame_inView_.value;
 public static final long sel_font = Selector.sel_font.value;
 public static final long sel_fontName = Selector.sel_fontName.value;
-public static final long sel_fontWithFamily_traits_weight_size_ = Selector.sel_fontWithFamily_traits_weight_size_.value;
 public static final long sel_fontWithName_size_ = Selector.sel_fontWithName_size_.value;
 public static final long sel_frame = Selector.sel_frame.value;
 public static final long sel_frameOfCellAtColumn_row_ = Selector.sel_frameOfCellAtColumn_row_.value;
 public static final long sel_frameOfOutlineCellAtRow_ = Selector.sel_frameOfOutlineCellAtRow_.value;
 public static final long sel_frameRectForContentRect_ = Selector.sel_frameRectForContentRect_.value;
 public static final long sel_frameSizeForContentSize_hasHorizontalScroller_hasVerticalScroller_borderType_ = Selector.sel_frameSizeForContentSize_hasHorizontalScroller_hasVerticalScroller_borderType_.value;
+public static final long sel_frameSizeForContentSize_horizontalScrollerClass_verticalScrollerClass_borderType_controlSize_scrollerStyle_ = Selector.sel_frameSizeForContentSize_horizontalScrollerClass_verticalScrollerClass_borderType_controlSize_scrollerStyle_.value;
 public static final long sel_fullPathForApplication_ = Selector.sel_fullPathForApplication_.value;
 public static final long sel_generalPasteboard = Selector.sel_generalPasteboard.value;
-public static final long sel_genericRGBColorSpace = Selector.sel_genericRGBColorSpace.value;
-public static final long sel_getBitmapDataPlanes_ = Selector.sel_getBitmapDataPlanes_.value;
 public static final long sel_getBytes_ = Selector.sel_getBytes_.value;
-public static final long sel_getBytes_length_ = Selector.sel_getBytes_length_.value;
 public static final long sel_getCharacters_ = Selector.sel_getCharacters_.value;
 public static final long sel_getCharacters_range_ = Selector.sel_getCharacters_range_.value;
 public static final long sel_getComponents_ = Selector.sel_getComponents_.value;
 public static final long sel_getGlyphs_range_ = Selector.sel_getGlyphs_range_.value;
 public static final long sel_getGlyphsInRange_glyphs_characterIndexes_glyphInscriptions_elasticBits_bidiLevels_ = Selector.sel_getGlyphsInRange_glyphs_characterIndexes_glyphInscriptions_elasticBits_bidiLevels_.value;
 public static final long sel_getIndexes_maxCount_inIndexRange_ = Selector.sel_getIndexes_maxCount_inIndexRange_.value;
-public static final long sel_getInfoForFile_application_type_ = Selector.sel_getInfoForFile_application_type_.value;
 public static final long sel_getValues_forAttribute_forVirtualScreen_ = Selector.sel_getValues_forAttribute_forVirtualScreen_.value;
 public static final long sel_globalContext = Selector.sel_globalContext.value;
 public static final long sel_glyphIndexForCharacterAtIndex_ = Selector.sel_glyphIndexForCharacterAtIndex_.value;
@@ -1435,17 +1233,13 @@ public static final long sel_headerView = Selector.sel_headerView.value;
 public static final long sel_helpRequested_ = Selector.sel_helpRequested_.value;
 public static final long sel_hide_ = Selector.sel_hide_.value;
 public static final long sel_hideOtherApplications_ = Selector.sel_hideOtherApplications_.value;
-public static final long sel_highlightColorInView_ = Selector.sel_highlightColorInView_.value;
-public static final long sel_highlightColorWithFrame_inView_ = Selector.sel_highlightColorWithFrame_inView_.value;
 public static final long sel_highlightSelectionInClipRect_ = Selector.sel_highlightSelectionInClipRect_.value;
 public static final long sel_hitPart = Selector.sel_hitPart.value;
 public static final long sel_hitTest_ = Selector.sel_hitTest_.value;
 public static final long sel_hitTestForEvent_inRect_ofView_ = Selector.sel_hitTestForEvent_inRect_ofView_.value;
 public static final long sel_host = Selector.sel_host.value;
-public static final long sel_hotSpot = Selector.sel_hotSpot.value;
 public static final long sel_hourOfDay = Selector.sel_hourOfDay.value;
 public static final long sel_iconForFile_ = Selector.sel_iconForFile_.value;
-public static final long sel_iconForFileType_ = Selector.sel_iconForFileType_.value;
 public static final long sel_ignore = Selector.sel_ignore.value;
 public static final long sel_ignoreModifierKeysWhileDragging = Selector.sel_ignoreModifierKeysWhileDragging.value;
 public static final long sel_image = Selector.sel_image.value;
@@ -1453,21 +1247,18 @@ public static final long sel_imageInterpolation = Selector.sel_imageInterpolatio
 public static final long sel_imageNamed_ = Selector.sel_imageNamed_.value;
 public static final long sel_imageRectForBounds_ = Selector.sel_imageRectForBounds_.value;
 public static final long sel_imageRepWithContentsOfFile_ = Selector.sel_imageRepWithContentsOfFile_.value;
-public static final long sel_imageRepWithData_ = Selector.sel_imageRepWithData_.value;
 public static final long sel_imageablePageBounds = Selector.sel_imageablePageBounds.value;
 public static final long sel_increment = Selector.sel_increment.value;
 public static final long sel_indentationPerLevel = Selector.sel_indentationPerLevel.value;
 public static final long sel_indexOfItemWithTarget_andAction_ = Selector.sel_indexOfItemWithTarget_andAction_.value;
 public static final long sel_indexOfObjectIdenticalTo_ = Selector.sel_indexOfObjectIdenticalTo_.value;
 public static final long sel_indexOfSelectedItem = Selector.sel_indexOfSelectedItem.value;
-public static final long sel_indexSetWithIndex_ = Selector.sel_indexSetWithIndex_.value;
 public static final long sel_infoDictionary = Selector.sel_infoDictionary.value;
 public static final long sel_init = Selector.sel_init.value;
 public static final long sel_initByReferencingFile_ = Selector.sel_initByReferencingFile_.value;
 public static final long sel_initListDescriptor = Selector.sel_initListDescriptor.value;
 public static final long sel_initWithAttributes_ = Selector.sel_initWithAttributes_.value;
 public static final long sel_initWithBitmapDataPlanes_pixelsWide_pixelsHigh_bitsPerSample_samplesPerPixel_hasAlpha_isPlanar_colorSpaceName_bitmapFormat_bytesPerRow_bitsPerPixel_ = Selector.sel_initWithBitmapDataPlanes_pixelsWide_pixelsHigh_bitsPerSample_samplesPerPixel_hasAlpha_isPlanar_colorSpaceName_bitmapFormat_bytesPerRow_bitsPerPixel_.value;
-public static final long sel_initWithBitmapDataPlanes_pixelsWide_pixelsHigh_bitsPerSample_samplesPerPixel_hasAlpha_isPlanar_colorSpaceName_bytesPerRow_bitsPerPixel_ = Selector.sel_initWithBitmapDataPlanes_pixelsWide_pixelsHigh_bitsPerSample_samplesPerPixel_hasAlpha_isPlanar_colorSpaceName_bytesPerRow_bitsPerPixel_.value;
 public static final long sel_initWithCapacity_ = Selector.sel_initWithCapacity_.value;
 public static final long sel_initWithCharacters_length_ = Selector.sel_initWithCharacters_length_.value;
 public static final long sel_initWithColors_ = Selector.sel_initWithColors_.value;
@@ -1476,9 +1267,7 @@ public static final long sel_initWithContentRect_styleMask_backing_defer_ = Sele
 public static final long sel_initWithContentRect_styleMask_backing_defer_screen_ = Selector.sel_initWithContentRect_styleMask_backing_defer_screen_.value;
 public static final long sel_initWithContentsOfFile_ = Selector.sel_initWithContentsOfFile_.value;
 public static final long sel_initWithData_ = Selector.sel_initWithData_.value;
-public static final long sel_initWithDictionary_ = Selector.sel_initWithDictionary_.value;
 public static final long sel_initWithFileWrapper_ = Selector.sel_initWithFileWrapper_.value;
-public static final long sel_initWithFocusedViewRect_ = Selector.sel_initWithFocusedViewRect_.value;
 public static final long sel_initWithFormat_shareContext_ = Selector.sel_initWithFormat_shareContext_.value;
 public static final long sel_initWithFrame_ = Selector.sel_initWithFrame_.value;
 public static final long sel_initWithFrame_frameName_groupName_ = Selector.sel_initWithFrame_frameName_groupName_.value;
@@ -1487,12 +1276,10 @@ public static final long sel_initWithIconRef_ = Selector.sel_initWithIconRef_.va
 public static final long sel_initWithIdentifier_ = Selector.sel_initWithIdentifier_.value;
 public static final long sel_initWithImage_hotSpot_ = Selector.sel_initWithImage_hotSpot_.value;
 public static final long sel_initWithIndex_ = Selector.sel_initWithIndex_.value;
-public static final long sel_initWithIndexSet_ = Selector.sel_initWithIndexSet_.value;
 public static final long sel_initWithIndexesInRange_ = Selector.sel_initWithIndexesInRange_.value;
 public static final long sel_initWithItemIdentifier_ = Selector.sel_initWithItemIdentifier_.value;
 public static final long sel_initWithLocaleIdentifier_ = Selector.sel_initWithLocaleIdentifier_.value;
 public static final long sel_initWithName_ = Selector.sel_initWithName_.value;
-public static final long sel_initWithRect_options_owner_userInfo_ = Selector.sel_initWithRect_options_owner_userInfo_.value;
 public static final long sel_initWithSize_ = Selector.sel_initWithSize_.value;
 public static final long sel_initWithStartingColor_endingColor_ = Selector.sel_initWithStartingColor_endingColor_.value;
 public static final long sel_initWithString_ = Selector.sel_initWithString_.value;
@@ -1501,7 +1288,6 @@ public static final long sel_initWithTitle_ = Selector.sel_initWithTitle_.value;
 public static final long sel_initWithTitle_action_keyEquivalent_ = Selector.sel_initWithTitle_action_keyEquivalent_.value;
 public static final long sel_initWithTransform_ = Selector.sel_initWithTransform_.value;
 public static final long sel_initWithType_location_ = Selector.sel_initWithType_location_.value;
-public static final long sel_initWithURL_ = Selector.sel_initWithURL_.value;
 public static final long sel_insertColor_key_atIndex_ = Selector.sel_insertColor_key_atIndex_.value;
 public static final long sel_insertItem_atIndex_ = Selector.sel_insertItem_atIndex_.value;
 public static final long sel_insertItemWithItemIdentifier_atIndex_ = Selector.sel_insertItemWithItemIdentifier_atIndex_.value;
@@ -1516,6 +1302,7 @@ public static final long sel_invalidate = Selector.sel_invalidate.value;
 public static final long sel_invalidateShadow = Selector.sel_invalidateShadow.value;
 public static final long sel_invert = Selector.sel_invert.value;
 public static final long sel_isActive = Selector.sel_isActive.value;
+public static final long sel_isCompatibleWithOverlayScrollers = Selector.sel_isCompatibleWithOverlayScrollers.value;
 public static final long sel_isDescendantOf_ = Selector.sel_isDescendantOf_.value;
 public static final long sel_isDocumentEdited = Selector.sel_isDocumentEdited.value;
 public static final long sel_isDrawingToScreen = Selector.sel_isDrawingToScreen.value;
@@ -1569,7 +1356,6 @@ public static final long sel_lastPathComponent = Selector.sel_lastPathComponent.
 public static final long sel_layoutManager = Selector.sel_layoutManager.value;
 public static final long sel_leading = Selector.sel_leading.value;
 public static final long sel_length = Selector.sel_length.value;
-public static final long sel_level = Selector.sel_level.value;
 public static final long sel_levelForItem_ = Selector.sel_levelForItem_.value;
 public static final long sel_lineFragmentUsedRectForGlyphAtIndex_effectiveRange_ = Selector.sel_lineFragmentUsedRectForGlyphAtIndex_effectiveRange_.value;
 public static final long sel_lineFragmentUsedRectForGlyphAtIndex_effectiveRange_withoutAdditionalLayout_ = Selector.sel_lineFragmentUsedRectForGlyphAtIndex_effectiveRange_withoutAdditionalLayout_.value;
@@ -1579,7 +1365,6 @@ public static final long sel_loadHTMLString_baseURL_ = Selector.sel_loadHTMLStri
 public static final long sel_loadNibFile_externalNameTable_withZone_ = Selector.sel_loadNibFile_externalNameTable_withZone_.value;
 public static final long sel_loadRequest_ = Selector.sel_loadRequest_.value;
 public static final long sel_localizedDescription = Selector.sel_localizedDescription.value;
-public static final long sel_location = Selector.sel_location.value;
 public static final long sel_locationForGlyphAtIndex_ = Selector.sel_locationForGlyphAtIndex_.value;
 public static final long sel_locationInWindow = Selector.sel_locationInWindow.value;
 public static final long sel_lockFocus = Selector.sel_lockFocus.value;
@@ -1590,23 +1375,17 @@ public static final long sel_magnifyWithEvent_ = Selector.sel_magnifyWithEvent_.
 public static final long sel_mainBundle = Selector.sel_mainBundle.value;
 public static final long sel_mainFrame = Selector.sel_mainFrame.value;
 public static final long sel_mainMenu = Selector.sel_mainMenu.value;
-public static final long sel_mainRunLoop = Selector.sel_mainRunLoop.value;
 public static final long sel_mainScreen = Selector.sel_mainScreen.value;
-public static final long sel_mainWindow = Selector.sel_mainWindow.value;
 public static final long sel_makeCurrentContext = Selector.sel_makeCurrentContext.value;
 public static final long sel_makeFirstResponder_ = Selector.sel_makeFirstResponder_.value;
 public static final long sel_makeKeyAndOrderFront_ = Selector.sel_makeKeyAndOrderFront_.value;
 public static final long sel_markedRange = Selector.sel_markedRange.value;
 public static final long sel_markedTextAttributes = Selector.sel_markedTextAttributes.value;
 public static final long sel_maxValue = Selector.sel_maxValue.value;
-public static final long sel_maximum = Selector.sel_maximum.value;
-public static final long sel_maximumFractionDigits = Selector.sel_maximumFractionDigits.value;
-public static final long sel_maximumIntegerDigits = Selector.sel_maximumIntegerDigits.value;
 public static final long sel_menu = Selector.sel_menu.value;
 public static final long sel_menu_willHighlightItem_ = Selector.sel_menu_willHighlightItem_.value;
 public static final long sel_menuBarFontOfSize_ = Selector.sel_menuBarFontOfSize_.value;
 public static final long sel_menuDidClose_ = Selector.sel_menuDidClose_.value;
-public static final long sel_menuFontOfSize_ = Selector.sel_menuFontOfSize_.value;
 public static final long sel_menuForEvent_ = Selector.sel_menuForEvent_.value;
 public static final long sel_menuNeedsUpdate_ = Selector.sel_menuNeedsUpdate_.value;
 public static final long sel_menuWillOpen_ = Selector.sel_menuWillOpen_.value;
@@ -1615,7 +1394,6 @@ public static final long sel_minFrameWidthWithTitle_styleMask_ = Selector.sel_mi
 public static final long sel_minSize = Selector.sel_minSize.value;
 public static final long sel_minValue = Selector.sel_minValue.value;
 public static final long sel_miniaturize_ = Selector.sel_miniaturize_.value;
-public static final long sel_minimum = Selector.sel_minimum.value;
 public static final long sel_minimumSize = Selector.sel_minimumSize.value;
 public static final long sel_minuteOfHour = Selector.sel_minuteOfHour.value;
 public static final long sel_modifierFlags = Selector.sel_modifierFlags.value;
@@ -1631,12 +1409,8 @@ public static final long sel_mouseLocationOutsideOfEventStream = Selector.sel_mo
 public static final long sel_mouseMoved_ = Selector.sel_mouseMoved_.value;
 public static final long sel_mouseUp_ = Selector.sel_mouseUp_.value;
 public static final long sel_moveColumn_toColumn_ = Selector.sel_moveColumn_toColumn_.value;
-public static final long sel_moveToBeginningOfParagraph_ = Selector.sel_moveToBeginningOfParagraph_.value;
-public static final long sel_moveToEndOfParagraph_ = Selector.sel_moveToEndOfParagraph_.value;
 public static final long sel_moveToPoint_ = Selector.sel_moveToPoint_.value;
-public static final long sel_moveUp_ = Selector.sel_moveUp_.value;
 public static final long sel_mutableCopy = Selector.sel_mutableCopy.value;
-public static final long sel_mutableString = Selector.sel_mutableString.value;
 public static final long sel_name = Selector.sel_name.value;
 public static final long sel_nameFieldStringValue = Selector.sel_nameFieldStringValue.value;
 public static final long sel_needsPanelToBecomeKey = Selector.sel_needsPanelToBecomeKey.value;
@@ -1651,7 +1425,6 @@ public static final long sel_numberOfColumns = Selector.sel_numberOfColumns.valu
 public static final long sel_numberOfComponents = Selector.sel_numberOfComponents.value;
 public static final long sel_numberOfGlyphs = Selector.sel_numberOfGlyphs.value;
 public static final long sel_numberOfItems = Selector.sel_numberOfItems.value;
-public static final long sel_numberOfPlanes = Selector.sel_numberOfPlanes.value;
 public static final long sel_numberOfRows = Selector.sel_numberOfRows.value;
 public static final long sel_numberOfRowsInTableView_ = Selector.sel_numberOfRowsInTableView_.value;
 public static final long sel_numberOfSelectedRows = Selector.sel_numberOfSelectedRows.value;
@@ -1667,7 +1440,6 @@ public static final long sel_objectEnumerator = Selector.sel_objectEnumerator.va
 public static final long sel_objectForInfoDictionaryKey_ = Selector.sel_objectForInfoDictionaryKey_.value;
 public static final long sel_objectForKey_ = Selector.sel_objectForKey_.value;
 public static final long sel_objectValues = Selector.sel_objectValues.value;
-public static final long sel_openFile_withApplication_ = Selector.sel_openFile_withApplication_.value;
 public static final long sel_openPanel = Selector.sel_openPanel.value;
 public static final long sel_openURL_ = Selector.sel_openURL_.value;
 public static final long sel_openURLs_withAppBundleIdentifier_options_additionalEventParamDescriptor_launchIdentifiers_ = Selector.sel_openURLs_withAppBundleIdentifier_options_additionalEventParamDescriptor_launchIdentifiers_.value;
@@ -1680,12 +1452,10 @@ public static final long sel_orderFrontRegardless = Selector.sel_orderFrontRegar
 public static final long sel_orderFrontStandardAboutPanel_ = Selector.sel_orderFrontStandardAboutPanel_.value;
 public static final long sel_orderOut_ = Selector.sel_orderOut_.value;
 public static final long sel_orderWindow_relativeTo_ = Selector.sel_orderWindow_relativeTo_.value;
-public static final long sel_orderedWindows = Selector.sel_orderedWindows.value;
 public static final long sel_otherEventWithType_location_modifierFlags_timestamp_windowNumber_context_subtype_data1_data2_ = Selector.sel_otherEventWithType_location_modifierFlags_timestamp_windowNumber_context_subtype_data1_data2_.value;
 public static final long sel_otherMouseDown_ = Selector.sel_otherMouseDown_.value;
 public static final long sel_otherMouseDragged_ = Selector.sel_otherMouseDragged_.value;
 public static final long sel_otherMouseUp_ = Selector.sel_otherMouseUp_.value;
-public static final long sel_outlineTableColumn = Selector.sel_outlineTableColumn.value;
 public static final long sel_outlineView_acceptDrop_item_childIndex_ = Selector.sel_outlineView_acceptDrop_item_childIndex_.value;
 public static final long sel_outlineView_child_ofItem_ = Selector.sel_outlineView_child_ofItem_.value;
 public static final long sel_outlineView_didClickTableColumn_ = Selector.sel_outlineView_didClickTableColumn_.value;
@@ -1693,18 +1463,15 @@ public static final long sel_outlineView_isItemExpandable_ = Selector.sel_outlin
 public static final long sel_outlineView_numberOfChildrenOfItem_ = Selector.sel_outlineView_numberOfChildrenOfItem_.value;
 public static final long sel_outlineView_objectValueForTableColumn_byItem_ = Selector.sel_outlineView_objectValueForTableColumn_byItem_.value;
 public static final long sel_outlineView_setObjectValue_forTableColumn_byItem_ = Selector.sel_outlineView_setObjectValue_forTableColumn_byItem_.value;
-public static final long sel_outlineView_shouldCollapseItem_ = Selector.sel_outlineView_shouldCollapseItem_.value;
 public static final long sel_outlineView_shouldEditTableColumn_item_ = Selector.sel_outlineView_shouldEditTableColumn_item_.value;
 public static final long sel_outlineView_shouldExpandItem_ = Selector.sel_outlineView_shouldExpandItem_.value;
 public static final long sel_outlineView_shouldReorderColumn_toColumn_ = Selector.sel_outlineView_shouldReorderColumn_toColumn_.value;
-public static final long sel_outlineView_shouldSelectItem_ = Selector.sel_outlineView_shouldSelectItem_.value;
 public static final long sel_outlineView_shouldTrackCell_forTableColumn_item_ = Selector.sel_outlineView_shouldTrackCell_forTableColumn_item_.value;
 public static final long sel_outlineView_validateDrop_proposedItem_proposedChildIndex_ = Selector.sel_outlineView_validateDrop_proposedItem_proposedChildIndex_.value;
 public static final long sel_outlineView_willDisplayCell_forTableColumn_item_ = Selector.sel_outlineView_willDisplayCell_forTableColumn_item_.value;
 public static final long sel_outlineView_writeItems_toPasteboard_ = Selector.sel_outlineView_writeItems_toPasteboard_.value;
 public static final long sel_outlineViewColumnDidMove_ = Selector.sel_outlineViewColumnDidMove_.value;
 public static final long sel_outlineViewColumnDidResize_ = Selector.sel_outlineViewColumnDidResize_.value;
-public static final long sel_outlineViewItemDidExpand_ = Selector.sel_outlineViewItemDidExpand_.value;
 public static final long sel_outlineViewSelectionDidChange_ = Selector.sel_outlineViewSelectionDidChange_.value;
 public static final long sel_outlineViewSelectionIsChanging_ = Selector.sel_outlineViewSelectionIsChanging_.value;
 public static final long sel_owner = Selector.sel_owner.value;
@@ -1749,7 +1516,6 @@ public static final long sel_printDocumentView = Selector.sel_printDocumentView.
 public static final long sel_printOperationWithPrintInfo_ = Selector.sel_printOperationWithPrintInfo_.value;
 public static final long sel_printOperationWithView_printInfo_ = Selector.sel_printOperationWithView_printInfo_.value;
 public static final long sel_printPanel = Selector.sel_printPanel.value;
-public static final long sel_printSettings = Selector.sel_printSettings.value;
 public static final long sel_printer = Selector.sel_printer.value;
 public static final long sel_printerNames = Selector.sel_printerNames.value;
 public static final long sel_printerWithName_ = Selector.sel_printerWithName_.value;
@@ -1782,17 +1548,14 @@ public static final long sel_removeAttribute_range_ = Selector.sel_removeAttribu
 public static final long sel_removeChildWindow_ = Selector.sel_removeChildWindow_.value;
 public static final long sel_removeColorWithKey_ = Selector.sel_removeColorWithKey_.value;
 public static final long sel_removeFromSuperview = Selector.sel_removeFromSuperview.value;
-public static final long sel_removeIndex_ = Selector.sel_removeIndex_.value;
 public static final long sel_removeItem_ = Selector.sel_removeItem_.value;
 public static final long sel_removeItemAtIndex_ = Selector.sel_removeItemAtIndex_.value;
-public static final long sel_removeItemAtPath_error_ = Selector.sel_removeItemAtPath_error_.value;
 public static final long sel_removeLastObject = Selector.sel_removeLastObject.value;
 public static final long sel_removeObject_ = Selector.sel_removeObject_.value;
 public static final long sel_removeObjectAtIndex_ = Selector.sel_removeObjectAtIndex_.value;
 public static final long sel_removeObjectForKey_ = Selector.sel_removeObjectForKey_.value;
 public static final long sel_removeObjectIdenticalTo_ = Selector.sel_removeObjectIdenticalTo_.value;
 public static final long sel_removeObserver_ = Selector.sel_removeObserver_.value;
-public static final long sel_removeObserver_name_object_ = Selector.sel_removeObserver_name_object_.value;
 public static final long sel_removeRepresentation_ = Selector.sel_removeRepresentation_.value;
 public static final long sel_removeStatusItem_ = Selector.sel_removeStatusItem_.value;
 public static final long sel_removeTabViewItem_ = Selector.sel_removeTabViewItem_.value;
@@ -1815,7 +1578,6 @@ public static final long sel_resizeRightCursor = Selector.sel_resizeRightCursor.
 public static final long sel_resizeUpCursor = Selector.sel_resizeUpCursor.value;
 public static final long sel_resizeUpDownCursor = Selector.sel_resizeUpDownCursor.value;
 public static final long sel_resizingMask = Selector.sel_resizingMask.value;
-public static final long sel_resourcePath = Selector.sel_resourcePath.value;
 public static final long sel_respondsToSelector_ = Selector.sel_respondsToSelector_.value;
 public static final long sel_restoreGraphicsState = Selector.sel_restoreGraphicsState.value;
 public static final long sel_retain = Selector.sel_retain.value;
@@ -1829,8 +1591,6 @@ public static final long sel_rotation = Selector.sel_rotation.value;
 public static final long sel_rowAtPoint_ = Selector.sel_rowAtPoint_.value;
 public static final long sel_rowForItem_ = Selector.sel_rowForItem_.value;
 public static final long sel_rowHeight = Selector.sel_rowHeight.value;
-public static final long sel_rowsInRect_ = Selector.sel_rowsInRect_.value;
-public static final long sel_run = Selector.sel_run.value;
 public static final long sel_runModal = Selector.sel_runModal.value;
 public static final long sel_runModalForDirectory_file_ = Selector.sel_runModalForDirectory_file_.value;
 public static final long sel_runModalForWindow_ = Selector.sel_runModalForWindow_.value;
@@ -1851,11 +1611,9 @@ public static final long sel_scrollColumnToVisible_ = Selector.sel_scrollColumnT
 public static final long sel_scrollPoint_ = Selector.sel_scrollPoint_.value;
 public static final long sel_scrollRangeToVisible_ = Selector.sel_scrollRangeToVisible_.value;
 public static final long sel_scrollRect_by_ = Selector.sel_scrollRect_by_.value;
-public static final long sel_scrollRectToVisible_ = Selector.sel_scrollRectToVisible_.value;
 public static final long sel_scrollRowToVisible_ = Selector.sel_scrollRowToVisible_.value;
-public static final long sel_scrollToPoint_ = Selector.sel_scrollToPoint_.value;
 public static final long sel_scrollWheel_ = Selector.sel_scrollWheel_.value;
-public static final long sel_scrollerWidth = Selector.sel_scrollerWidth.value;
+public static final long sel_scrollerStyle = Selector.sel_scrollerStyle.value;
 public static final long sel_scrollerWidthForControlSize_ = Selector.sel_scrollerWidthForControlSize_.value;
 public static final long sel_searchButtonCell = Selector.sel_searchButtonCell.value;
 public static final long sel_searchButtonRectForBounds_ = Selector.sel_searchButtonRectForBounds_.value;
@@ -1919,7 +1677,6 @@ public static final long sel_setBackgroundLayoutEnabled_ = Selector.sel_setBackg
 public static final long sel_setBackgroundStyle_ = Selector.sel_setBackgroundStyle_.value;
 public static final long sel_setBadgeLabel_ = Selector.sel_setBadgeLabel_.value;
 public static final long sel_setBaseWritingDirection_ = Selector.sel_setBaseWritingDirection_.value;
-public static final long sel_setBaseWritingDirection_range_ = Selector.sel_setBaseWritingDirection_range_.value;
 public static final long sel_setBecomesKeyOnlyIfNeeded_ = Selector.sel_setBecomesKeyOnlyIfNeeded_.value;
 public static final long sel_setBezelStyle_ = Selector.sel_setBezelStyle_.value;
 public static final long sel_setBezeled_ = Selector.sel_setBezeled_.value;
@@ -1979,7 +1736,6 @@ public static final long sel_setDropItem_dropChildIndex_ = Selector.sel_setDropI
 public static final long sel_setDropRow_dropOperation_ = Selector.sel_setDropRow_dropOperation_.value;
 public static final long sel_setEditable_ = Selector.sel_setEditable_.value;
 public static final long sel_setEnabled_ = Selector.sel_setEnabled_.value;
-public static final long sel_setEnabled_forSegment_ = Selector.sel_setEnabled_forSegment_.value;
 public static final long sel_setFill = Selector.sel_setFill.value;
 public static final long sel_setFillColor_ = Selector.sel_setFillColor_.value;
 public static final long sel_setFireDate_ = Selector.sel_setFireDate_.value;
@@ -2017,7 +1773,6 @@ public static final long sel_setHorizontallyResizable_ = Selector.sel_setHorizon
 public static final long sel_setIcon_ = Selector.sel_setIcon_.value;
 public static final long sel_setIdentifier_ = Selector.sel_setIdentifier_.value;
 public static final long sel_setImage_ = Selector.sel_setImage_.value;
-public static final long sel_setImage_forSegment_ = Selector.sel_setImage_forSegment_.value;
 public static final long sel_setImageAlignment_ = Selector.sel_setImageAlignment_.value;
 public static final long sel_setImageInterpolation_ = Selector.sel_setImageInterpolation_.value;
 public static final long sel_setImagePosition_ = Selector.sel_setImagePosition_.value;
@@ -2035,15 +1790,12 @@ public static final long sel_setKeyEquivalent_ = Selector.sel_setKeyEquivalent_.
 public static final long sel_setKeyEquivalentModifierMask_ = Selector.sel_setKeyEquivalentModifierMask_.value;
 public static final long sel_setKnobProportion_ = Selector.sel_setKnobProportion_.value;
 public static final long sel_setLabel_ = Selector.sel_setLabel_.value;
-public static final long sel_setLabel_forSegment_ = Selector.sel_setLabel_forSegment_.value;
-public static final long sel_setLeaf_ = Selector.sel_setLeaf_.value;
 public static final long sel_setLength_ = Selector.sel_setLength_.value;
 public static final long sel_setLevel_ = Selector.sel_setLevel_.value;
 public static final long sel_setLineBreakMode_ = Selector.sel_setLineBreakMode_.value;
 public static final long sel_setLineCapStyle_ = Selector.sel_setLineCapStyle_.value;
 public static final long sel_setLineDash_count_phase_ = Selector.sel_setLineDash_count_phase_.value;
 public static final long sel_setLineFragmentPadding_ = Selector.sel_setLineFragmentPadding_.value;
-public static final long sel_setLineFragmentRect_forGlyphRange_usedRect_ = Selector.sel_setLineFragmentRect_forGlyphRange_usedRect_.value;
 public static final long sel_setLineJoinStyle_ = Selector.sel_setLineJoinStyle_.value;
 public static final long sel_setLineSpacing_ = Selector.sel_setLineSpacing_.value;
 public static final long sel_setLineWidth_ = Selector.sel_setLineWidth_.value;
@@ -2056,7 +1808,6 @@ public static final long sel_setMaximum_ = Selector.sel_setMaximum_.value;
 public static final long sel_setMaximumFractionDigits_ = Selector.sel_setMaximumFractionDigits_.value;
 public static final long sel_setMaximumIntegerDigits_ = Selector.sel_setMaximumIntegerDigits_.value;
 public static final long sel_setMenu_ = Selector.sel_setMenu_.value;
-public static final long sel_setMenu_forSegment_ = Selector.sel_setMenu_forSegment_.value;
 public static final long sel_setMenuFormRepresentation_ = Selector.sel_setMenuFormRepresentation_.value;
 public static final long sel_setMessage_ = Selector.sel_setMessage_.value;
 public static final long sel_setMessageText_ = Selector.sel_setMessageText_.value;
@@ -2099,13 +1850,9 @@ public static final long sel_setRowHeight_ = Selector.sel_setRowHeight_.value;
 public static final long sel_setScalesWhenResized_ = Selector.sel_setScalesWhenResized_.value;
 public static final long sel_setScrollable_ = Selector.sel_setScrollable_.value;
 public static final long sel_setSearchButtonCell_ = Selector.sel_setSearchButtonCell_.value;
-public static final long sel_setSegmentCount_ = Selector.sel_setSegmentCount_.value;
-public static final long sel_setSegmentStyle_ = Selector.sel_setSegmentStyle_.value;
 public static final long sel_setSelectable_ = Selector.sel_setSelectable_.value;
-public static final long sel_setSelected_forSegment_ = Selector.sel_setSelected_forSegment_.value;
 public static final long sel_setSelectedItemIdentifier_ = Selector.sel_setSelectedItemIdentifier_.value;
 public static final long sel_setSelectedRange_ = Selector.sel_setSelectedRange_.value;
-public static final long sel_setSelectedSegment_ = Selector.sel_setSelectedSegment_.value;
 public static final long sel_setSelectedTextAttributes_ = Selector.sel_setSelectedTextAttributes_.value;
 public static final long sel_setSelectionOnly_ = Selector.sel_setSelectionOnly_.value;
 public static final long sel_setServicesMenu_ = Selector.sel_setServicesMenu_.value;
@@ -2126,7 +1873,6 @@ public static final long sel_setSubmenu_forItem_ = Selector.sel_setSubmenu_forIt
 public static final long sel_setTabStops_ = Selector.sel_setTabStops_.value;
 public static final long sel_setTabViewType_ = Selector.sel_setTabViewType_.value;
 public static final long sel_setTag_ = Selector.sel_setTag_.value;
-public static final long sel_setTag_forSegment_ = Selector.sel_setTag_forSegment_.value;
 public static final long sel_setTarget_ = Selector.sel_setTarget_.value;
 public static final long sel_setTextColor_ = Selector.sel_setTextColor_.value;
 public static final long sel_setTextStorage_ = Selector.sel_setTextStorage_.value;
@@ -2134,9 +1880,7 @@ public static final long sel_setTitle_ = Selector.sel_setTitle_.value;
 public static final long sel_setTitleFont_ = Selector.sel_setTitleFont_.value;
 public static final long sel_setTitlePosition_ = Selector.sel_setTitlePosition_.value;
 public static final long sel_setToolTip_ = Selector.sel_setToolTip_.value;
-public static final long sel_setToolTip_forSegment_ = Selector.sel_setToolTip_forSegment_.value;
 public static final long sel_setToolbar_ = Selector.sel_setToolbar_.value;
-public static final long sel_setTrackingMode_ = Selector.sel_setTrackingMode_.value;
 public static final long sel_setTransformStruct_ = Selector.sel_setTransformStruct_.value;
 public static final long sel_setTreatsFilePackagesAsDirectories_ = Selector.sel_setTreatsFilePackagesAsDirectories_.value;
 public static final long sel_setUIDelegate_ = Selector.sel_setUIDelegate_.value;
@@ -2147,7 +1891,6 @@ public static final long sel_setUsesFontPanel_ = Selector.sel_setUsesFontPanel_.
 public static final long sel_setUsesScreenFonts_ = Selector.sel_setUsesScreenFonts_.value;
 public static final long sel_setUsesSingleLineMode_ = Selector.sel_setUsesSingleLineMode_.value;
 public static final long sel_setUsesThreadedAnimation_ = Selector.sel_setUsesThreadedAnimation_.value;
-public static final long sel_setValue_forHTTPHeaderField_ = Selector.sel_setValue_forHTTPHeaderField_.value;
 public static final long sel_setValue_forKey_ = Selector.sel_setValue_forKey_.value;
 public static final long sel_setValueWraps_ = Selector.sel_setValueWraps_.value;
 public static final long sel_setValues_forParameter_ = Selector.sel_setValues_forParameter_.value;
@@ -2157,7 +1900,6 @@ public static final long sel_setView_ = Selector.sel_setView_.value;
 public static final long sel_setVisible_ = Selector.sel_setVisible_.value;
 public static final long sel_setWantsRestingTouches_ = Selector.sel_setWantsRestingTouches_.value;
 public static final long sel_setWidth_ = Selector.sel_setWidth_.value;
-public static final long sel_setWidth_forSegment_ = Selector.sel_setWidth_forSegment_.value;
 public static final long sel_setWidthTracksTextView_ = Selector.sel_setWidthTracksTextView_.value;
 public static final long sel_setWindingRule_ = Selector.sel_setWindingRule_.value;
 public static final long sel_setWorksWhenModal_ = Selector.sel_setWorksWhenModal_.value;
@@ -2184,12 +1926,10 @@ public static final long sel_smallSystemFontSize = Selector.sel_smallSystemFontS
 public static final long sel_sortIndicatorRectForBounds_ = Selector.sel_sortIndicatorRectForBounds_.value;
 public static final long sel_standardPreferences = Selector.sel_standardPreferences.value;
 public static final long sel_standardUserDefaults = Selector.sel_standardUserDefaults.value;
-public static final long sel_standardWindowButton_ = Selector.sel_standardWindowButton_.value;
 public static final long sel_startAnimation_ = Selector.sel_startAnimation_.value;
 public static final long sel_state = Selector.sel_state.value;
 public static final long sel_statusItemWithLength_ = Selector.sel_statusItemWithLength_.value;
 public static final long sel_stop_ = Selector.sel_stop_.value;
-public static final long sel_stopAnimation_ = Selector.sel_stopAnimation_.value;
 public static final long sel_stopLoading_ = Selector.sel_stopLoading_.value;
 public static final long sel_stopModal = Selector.sel_stopModal.value;
 public static final long sel_string = Selector.sel_string.value;
@@ -2220,10 +1960,7 @@ public static final long sel_systemFontSize = Selector.sel_systemFontSize.value;
 public static final long sel_systemFontSizeForControlSize_ = Selector.sel_systemFontSizeForControlSize_.value;
 public static final long sel_systemStatusBar = Selector.sel_systemStatusBar.value;
 public static final long sel_systemVersion = Selector.sel_systemVersion.value;
-public static final long sel_tabStopType = Selector.sel_tabStopType.value;
-public static final long sel_tabStops = Selector.sel_tabStops.value;
 public static final long sel_tabView_didSelectTabViewItem_ = Selector.sel_tabView_didSelectTabViewItem_.value;
-public static final long sel_tabView_shouldSelectTabViewItem_ = Selector.sel_tabView_shouldSelectTabViewItem_.value;
 public static final long sel_tabView_willSelectTabViewItem_ = Selector.sel_tabView_willSelectTabViewItem_.value;
 public static final long sel_tabViewItemAtPoint_ = Selector.sel_tabViewItemAtPoint_.value;
 public static final long sel_tableColumns = Selector.sel_tableColumns.value;
@@ -2233,7 +1970,6 @@ public static final long sel_tableView_objectValueForTableColumn_row_ = Selector
 public static final long sel_tableView_setObjectValue_forTableColumn_row_ = Selector.sel_tableView_setObjectValue_forTableColumn_row_.value;
 public static final long sel_tableView_shouldEditTableColumn_row_ = Selector.sel_tableView_shouldEditTableColumn_row_.value;
 public static final long sel_tableView_shouldReorderColumn_toColumn_ = Selector.sel_tableView_shouldReorderColumn_toColumn_.value;
-public static final long sel_tableView_shouldSelectRow_ = Selector.sel_tableView_shouldSelectRow_.value;
 public static final long sel_tableView_shouldTrackCell_forTableColumn_row_ = Selector.sel_tableView_shouldTrackCell_forTableColumn_row_.value;
 public static final long sel_tableView_validateDrop_proposedRow_proposedDropOperation_ = Selector.sel_tableView_validateDrop_proposedRow_proposedDropOperation_.value;
 public static final long sel_tableView_willDisplayCell_forTableColumn_row_ = Selector.sel_tableView_willDisplayCell_forTableColumn_row_.value;
@@ -2265,14 +2001,12 @@ public static final long sel_titleCell = Selector.sel_titleCell.value;
 public static final long sel_titleFont = Selector.sel_titleFont.value;
 public static final long sel_titleOfSelectedItem = Selector.sel_titleOfSelectedItem.value;
 public static final long sel_titleRectForBounds_ = Selector.sel_titleRectForBounds_.value;
-public static final long sel_toggleToolbarShown_ = Selector.sel_toggleToolbarShown_.value;
+public static final long sel_toggleFullScreen_ = Selector.sel_toggleFullScreen_.value;
 public static final long sel_toolbar = Selector.sel_toolbar.value;
 public static final long sel_toolbar_itemForItemIdentifier_willBeInsertedIntoToolbar_ = Selector.sel_toolbar_itemForItemIdentifier_willBeInsertedIntoToolbar_.value;
 public static final long sel_toolbarAllowedItemIdentifiers_ = Selector.sel_toolbarAllowedItemIdentifiers_.value;
 public static final long sel_toolbarDefaultItemIdentifiers_ = Selector.sel_toolbarDefaultItemIdentifiers_.value;
-public static final long sel_toolbarDidRemoveItem_ = Selector.sel_toolbarDidRemoveItem_.value;
 public static final long sel_toolbarSelectableItemIdentifiers_ = Selector.sel_toolbarSelectableItemIdentifiers_.value;
-public static final long sel_toolbarWillAddItem_ = Selector.sel_toolbarWillAddItem_.value;
 public static final long sel_touchesBeganWithEvent_ = Selector.sel_touchesBeganWithEvent_.value;
 public static final long sel_touchesCancelledWithEvent_ = Selector.sel_touchesCancelledWithEvent_.value;
 public static final long sel_touchesEndedWithEvent_ = Selector.sel_touchesEndedWithEvent_.value;
@@ -2364,7 +2098,6 @@ public static final long sel_webViewClose_ = Selector.sel_webViewClose_.value;
 public static final long sel_webViewFocus_ = Selector.sel_webViewFocus_.value;
 public static final long sel_webViewShow_ = Selector.sel_webViewShow_.value;
 public static final long sel_webViewUnfocus_ = Selector.sel_webViewUnfocus_.value;
-public static final long sel_weightOfFont_ = Selector.sel_weightOfFont_.value;
 public static final long sel_wheelDelta = Selector.sel_wheelDelta.value;
 public static final long sel_wheelDeltaX = Selector.sel_wheelDeltaX.value;
 public static final long sel_wheelDeltaY = Selector.sel_wheelDeltaY.value;
@@ -2377,17 +2110,13 @@ public static final long sel_windowDidMiniaturize_ = Selector.sel_windowDidMinia
 public static final long sel_windowDidMove_ = Selector.sel_windowDidMove_.value;
 public static final long sel_windowDidResignKey_ = Selector.sel_windowDidResignKey_.value;
 public static final long sel_windowDidResize_ = Selector.sel_windowDidResize_.value;
-public static final long sel_windowFrameColor = Selector.sel_windowFrameColor.value;
 public static final long sel_windowFrameTextColor = Selector.sel_windowFrameTextColor.value;
 public static final long sel_windowNumber = Selector.sel_windowNumber.value;
 public static final long sel_windowNumberAtPoint_belowWindowWithWindowNumber_ = Selector.sel_windowNumberAtPoint_belowWindowWithWindowNumber_.value;
-public static final long sel_windowRef = Selector.sel_windowRef.value;
 public static final long sel_windowShouldClose_ = Selector.sel_windowShouldClose_.value;
 public static final long sel_windowWillClose_ = Selector.sel_windowWillClose_.value;
 public static final long sel_windowWithWindowNumber_ = Selector.sel_windowWithWindowNumber_.value;
 public static final long sel_windows = Selector.sel_windows.value;
-public static final long sel_worksWhenModal = Selector.sel_worksWhenModal.value;
-public static final long sel_wraps = Selector.sel_wraps.value;
 public static final long sel_writeObjects_ = Selector.sel_writeObjects_.value;
 public static final long sel_writeSelectionToPasteboard_types_ = Selector.sel_writeSelectionToPasteboard_types_.value;
 public static final long sel_yearOfCommonEra = Selector.sel_yearOfCommonEra.value;
@@ -2428,7 +2157,6 @@ public static final int NSCompositeClear = 0;
 public static final int NSCompositeCopy = 1;
 public static final int NSCompositeSourceAtop = 5;
 public static final int NSCompositeSourceOver = 2;
-public static final int NSCompositeXOR = 10;
 public static final int NSContentsCellMask = 1;
 public static final int NSControlKeyMask = 262144;
 public static final int NSCriticalAlertStyle = 2;
@@ -2458,15 +2186,7 @@ public static final int NSFlagsChanged = 12;
 public static final int NSFocusRingTypeNone = 1;
 public static final int NSFontPanelAllEffectsModeMask = 1048320;
 public static final int NSFontPanelAllModesMask = -1;
-public static final int NSFontPanelCollectionModeMask = 4;
-public static final int NSFontPanelDocumentColorEffectModeMask = 2048;
-public static final int NSFontPanelFaceModeMask = 1;
-public static final int NSFontPanelShadowEffectModeMask = 4096;
-public static final int NSFontPanelSizeModeMask = 2;
-public static final int NSFontPanelStandardModesMask = 65535;
-public static final int NSFontPanelStrikethroughEffectModeMask = 512;
-public static final int NSFontPanelTextColorEffectModeMask = 1024;
-public static final int NSFontPanelUnderlineEffectModeMask = 256;
+public static final int NSFullScreenWindowMask = 16384;
 public static final int NSHelpFunctionKey = 63302;
 public static final int NSHelpKeyMask = 4194304;
 public static final int NSHourMinuteDatePickerElementFlag = 12;
@@ -2489,7 +2209,6 @@ public static final int NSKeyDown = 10;
 public static final int NSKeyUp = 11;
 public static final int NSLandscapeOrientation = 1;
 public static final int NSLeftMouseDown = 1;
-public static final int NSLeftMouseDownMask = 2;
 public static final int NSLeftMouseDragged = 6;
 public static final int NSLeftMouseDraggedMask = 64;
 public static final int NSLeftMouseUp = 2;
@@ -2504,7 +2223,6 @@ public static final int NSMiniControlSize = 2;
 public static final int NSMiniaturizableWindowMask = 4;
 public static final int NSMiterLineJoinStyle = 0;
 public static final int NSMixedState = -1;
-public static final int NSModalPanelWindowLevel = 8;
 public static final int NSMomentaryLightButton = 0;
 public static final int NSMouseEntered = 8;
 public static final int NSMouseExited = 9;
@@ -2516,11 +2234,9 @@ public static final int NSNoImage = 0;
 public static final int NSNoTitle = 0;
 public static final int NSNonZeroWindingRule = 0;
 public static final int NSNonactivatingPanelMask = 128;
-public static final int NSNormalWindowLevel = 0;
 public static final int NSOffState = 0;
 public static final int NSOnState = 1;
 public static final int NSOpenGLCPSurfaceOrder = 235;
-public static final int NSOpenGLCPSwapInterval = 222;
 public static final int NSOpenGLPFAAccumSize = 14;
 public static final int NSOpenGLPFAAlphaSize = 11;
 public static final int NSOpenGLPFAColorSize = 8;
@@ -2533,13 +2249,9 @@ public static final int NSOpenGLPFAStereo = 6;
 public static final int NSOtherMouseDown = 25;
 public static final int NSOtherMouseDragged = 27;
 public static final int NSOtherMouseUp = 26;
-public static final int NSOutlineViewDropOnItemIndex = -1;
 public static final int NSPageDownFunctionKey = 63277;
 public static final int NSPageUpFunctionKey = 63276;
 public static final int NSPortraitOrientation = 0;
-public static final int NSPrintPanelShowsCopies = 1;
-public static final int NSPrintPanelShowsOrientation = 8;
-public static final int NSPrintPanelShowsPageRange = 2;
 public static final int NSPrintPanelShowsPageSetupAccessory = 256;
 public static final int NSPrintPanelShowsPrintSelection = 32;
 public static final int NSProgressIndicatorPreferredThickness = 14;
@@ -2565,6 +2277,8 @@ public static final int NSScrollerIncrementLine = 5;
 public static final int NSScrollerIncrementPage = 3;
 public static final int NSScrollerKnob = 2;
 public static final int NSScrollerKnobSlot = 6;
+public static final int NSScrollerStyleLegacy = 0;
+public static final int NSScrollerStyleOverlay = 1;
 public static final int NSShadowlessSquareBezelStyle = 6;
 public static final int NSShiftKeyMask = 131072;
 public static final int NSSmallControlSize = 1;
@@ -2587,20 +2301,17 @@ public static final int NSTerminateNow = 1;
 public static final int NSTextAlignmentCenter = 2;
 public static final int NSTextAlignmentJustified = 3;
 public static final int NSTextAlignmentLeft = 0;
-public static final int NSTextAlignmentNatural = 4;
 public static final int NSTextAlignmentRight = 1;
 public static final int NSTextFieldAndStepperDatePickerStyle = 0;
 public static final int NSTextFieldDatePickerStyle = 2;
 public static final int NSTitledWindowMask = 1;
 public static final int NSToolbarDisplayModeIconOnly = 2;
-public static final int NSTouchEventSubtype = 3;
 public static final long NSTouchPhaseAny = -1L;
 public static final int NSTouchPhaseBegan = 1;
 public static final int NSTouchPhaseCancelled = 16;
 public static final int NSTouchPhaseEnded = 8;
 public static final int NSTouchPhaseMoved = 2;
 public static final int NSTouchPhaseStationary = 4;
-public static final int NSTouchPhaseTouching = 7;
 public static final int NSUnderlineStyleDouble = 9;
 public static final int NSUnderlineStyleNone = 0;
 public static final int NSUnderlineStyleSingle = 1;
@@ -2615,11 +2326,10 @@ public static final int NSViewWidthSizable = 2;
 public static final int NSWarningAlertStyle = 0;
 public static final int NSWindowAbove = 1;
 public static final int NSWindowBelow = -1;
-public static final int NSWindowCollectionBehaviorCanJoinAllSpaces = 1;
-public static final int NSWindowCollectionBehaviorDefault = 0;
+public static final int NSWindowCollectionBehaviorFullScreenAuxiliary = 256;
+public static final int NSWindowCollectionBehaviorFullScreenPrimary = 128;
 public static final int NSWindowCollectionBehaviorMoveToActiveSpace = 2;
 public static final int NSWritingDirectionLeftToRight = 0;
-public static final int NSWritingDirectionNatural = -1;
 public static final int NSWritingDirectionRightToLeft = 1;
 public static final int NSYearMonthDatePickerElementFlag = 192;
 public static final int NSYearMonthDayDatePickerElementFlag = 224;
@@ -2627,11 +2337,6 @@ public static final int kCFRunLoopBeforeWaiting = 32;
 public static final int kCFStringEncodingUTF8 = 134217984;
 public static final int kCGBlendModeDifference = 10;
 public static final int kCGBlendModeNormal = 0;
-public static final int kCGEventFilterMaskPermitLocalKeyboardEvents = 2;
-public static final int kCGEventFilterMaskPermitLocalMouseEvents = 1;
-public static final int kCGEventFilterMaskPermitSystemDefinedEvents = 4;
-public static final int kCGEventKeyDown = 10;
-public static final int kCGEventKeyUp = 11;
 public static final int kCGEventLeftMouseDown = 1;
 public static final int kCGEventLeftMouseUp = 2;
 public static final int kCGEventMouseMoved = 5;
@@ -2640,8 +2345,6 @@ public static final int kCGEventOtherMouseUp = 26;
 public static final int kCGEventRightMouseDown = 3;
 public static final int kCGEventRightMouseUp = 4;
 public static final int kCGEventSourceStateHIDSystemState = 1;
-public static final int kCGEventSuppressionStateRemoteMouseDrag = 1;
-public static final int kCGEventSuppressionStateSuppressionInterval = 0;
 public static final int kCGHIDEventTap = 0;
 public static final int kCGImageAlphaFirst = 4;
 public static final int kCGImageAlphaLast = 3;
@@ -2660,18 +2363,10 @@ public static final int kCGPathElementAddLineToPoint = 1;
 public static final int kCGPathElementAddQuadCurveToPoint = 2;
 public static final int kCGPathElementCloseSubpath = 4;
 public static final int kCGPathElementMoveToPoint = 0;
-public static final int kCGPathStroke = 2;
 public static final int kCGScrollEventUnitLine = 1;
-public static final int kCGScrollEventUnitPixel = 0;
-public static final int kCGTextFillStroke = 2;
 public static final int kCTFontManagerScopeProcess = 1;
-public static final int kCTParagraphStyleSpecifierBaseWritingDirection = 13;
-public static final int kCTWritingDirectionLeftToRight = 0;
-public static final int kCTWritingDirectionNatural = -1;
-public static final int kCTWritingDirectionRightToLeft = 1;
 public static final int NSAllApplicationsDirectory = 100;
 public static final int NSAllDomainsMask = 65535;
-public static final int NSCachesDirectory = 13;
 public static final int NSOrderedSame = 0;
 public static final int NSURLCredentialPersistenceForSession = 1;
 public static final int NSURLErrorBadURL = -1000;
@@ -2679,7 +2374,6 @@ public static final int NSURLErrorSecureConnectionFailed = -1200;
 public static final int NSURLErrorServerCertificateNotYetValid = -1204;
 public static final int NSURLRequestReloadIgnoringLocalCacheData = 1;
 public static final int NSUTF8StringEncoding = 4;
-public static final int NSUserDomainMask = 1;
 
 /** Globals */
 /** @method flags=const */
@@ -2695,14 +2389,17 @@ public static final NSString NSAccessibilityBoundsForRangeParameterizedAttribute
 public static final native long NSAccessibilityButtonRole();
 public static final NSString NSAccessibilityButtonRole = new NSString(NSAccessibilityButtonRole());
 /** @method flags=const */
+public static final native long NSAccessibilityCellForColumnAndRowParameterizedAttribute();
+public static final NSString NSAccessibilityCellForColumnAndRowParameterizedAttribute = new NSString(NSAccessibilityCellForColumnAndRowParameterizedAttribute());
+/** @method flags=const */
 public static final native long NSAccessibilityCheckBoxRole();
 public static final NSString NSAccessibilityCheckBoxRole = new NSString(NSAccessibilityCheckBoxRole());
 /** @method flags=const */
 public static final native long NSAccessibilityChildrenAttribute();
 public static final NSString NSAccessibilityChildrenAttribute = new NSString(NSAccessibilityChildrenAttribute());
 /** @method flags=const */
-public static final native long NSAccessibilityColorWellRole();
-public static final NSString NSAccessibilityColorWellRole = new NSString(NSAccessibilityColorWellRole());
+public static final native long NSAccessibilityColumnIndexRangeAttribute();
+public static final NSString NSAccessibilityColumnIndexRangeAttribute = new NSString(NSAccessibilityColumnIndexRangeAttribute());
 /** @method flags=const */
 public static final native long NSAccessibilityColumnRole();
 public static final NSString NSAccessibilityColumnRole = new NSString(NSAccessibilityColumnRole());
@@ -2731,17 +2428,11 @@ public static final NSString NSAccessibilityEnabledAttribute = new NSString(NSAc
 public static final native long NSAccessibilityExpandedAttribute();
 public static final NSString NSAccessibilityExpandedAttribute = new NSString(NSAccessibilityExpandedAttribute());
 /** @method flags=const */
-public static final native long NSAccessibilityFloatingWindowSubrole();
-public static final NSString NSAccessibilityFloatingWindowSubrole = new NSString(NSAccessibilityFloatingWindowSubrole());
-/** @method flags=const */
 public static final native long NSAccessibilityFocusedAttribute();
 public static final NSString NSAccessibilityFocusedAttribute = new NSString(NSAccessibilityFocusedAttribute());
 /** @method flags=const */
 public static final native long NSAccessibilityFocusedUIElementChangedNotification();
 public static final NSString NSAccessibilityFocusedUIElementChangedNotification = new NSString(NSAccessibilityFocusedUIElementChangedNotification());
-/** @method flags=const */
-public static final native long NSAccessibilityFocusedWindowChangedNotification();
-public static final NSString NSAccessibilityFocusedWindowChangedNotification = new NSString(NSAccessibilityFocusedWindowChangedNotification());
 /** @method flags=const */
 public static final native long NSAccessibilityFontFamilyKey();
 public static final NSString NSAccessibilityFontFamilyKey = new NSString(NSAccessibilityFontFamilyKey());
@@ -2758,9 +2449,6 @@ public static final NSString NSAccessibilityFontTextAttribute = new NSString(NSA
 public static final native long NSAccessibilityForegroundColorTextAttribute();
 public static final NSString NSAccessibilityForegroundColorTextAttribute = new NSString(NSAccessibilityForegroundColorTextAttribute());
 /** @method flags=const */
-public static final native long NSAccessibilityGridRole();
-public static final NSString NSAccessibilityGridRole = new NSString(NSAccessibilityGridRole());
-/** @method flags=const */
 public static final native long NSAccessibilityGroupRole();
 public static final NSString NSAccessibilityGroupRole = new NSString(NSAccessibilityGroupRole());
 /** @method flags=const */
@@ -2776,23 +2464,14 @@ public static final NSString NSAccessibilityHelpTagRole = new NSString(NSAccessi
 public static final native long NSAccessibilityHorizontalOrientationValue();
 public static final NSString NSAccessibilityHorizontalOrientationValue = new NSString(NSAccessibilityHorizontalOrientationValue());
 /** @method flags=const */
-public static final native long NSAccessibilityHorizontalScrollBarAttribute();
-public static final NSString NSAccessibilityHorizontalScrollBarAttribute = new NSString(NSAccessibilityHorizontalScrollBarAttribute());
-/** @method flags=const */
 public static final native long NSAccessibilityImageRole();
 public static final NSString NSAccessibilityImageRole = new NSString(NSAccessibilityImageRole());
-/** @method flags=const */
-public static final native long NSAccessibilityIncrementorRole();
-public static final NSString NSAccessibilityIncrementorRole = new NSString(NSAccessibilityIncrementorRole());
 /** @method flags=const */
 public static final native long NSAccessibilityIndexAttribute();
 public static final NSString NSAccessibilityIndexAttribute = new NSString(NSAccessibilityIndexAttribute());
 /** @method flags=const */
 public static final native long NSAccessibilityInsertionPointLineNumberAttribute();
 public static final NSString NSAccessibilityInsertionPointLineNumberAttribute = new NSString(NSAccessibilityInsertionPointLineNumberAttribute());
-/** @method flags=const */
-public static final native long NSAccessibilityLabelValueAttribute();
-public static final NSString NSAccessibilityLabelValueAttribute = new NSString(NSAccessibilityLabelValueAttribute());
 /** @method flags=const */
 public static final native long NSAccessibilityLineForIndexParameterizedAttribute();
 public static final NSString NSAccessibilityLineForIndexParameterizedAttribute = new NSString(NSAccessibilityLineForIndexParameterizedAttribute());
@@ -2802,12 +2481,6 @@ public static final NSString NSAccessibilityLinkRole = new NSString(NSAccessibil
 /** @method flags=const */
 public static final native long NSAccessibilityLinkTextAttribute();
 public static final NSString NSAccessibilityLinkTextAttribute = new NSString(NSAccessibilityLinkTextAttribute());
-/** @method flags=const */
-public static final native long NSAccessibilityLinkedUIElementsAttribute();
-public static final NSString NSAccessibilityLinkedUIElementsAttribute = new NSString(NSAccessibilityLinkedUIElementsAttribute());
-/** @method flags=const */
-public static final native long NSAccessibilityListRole();
-public static final NSString NSAccessibilityListRole = new NSString(NSAccessibilityListRole());
 /** @method flags=const */
 public static final native long NSAccessibilityMaxValueAttribute();
 public static final NSString NSAccessibilityMaxValueAttribute = new NSString(NSAccessibilityMaxValueAttribute());
@@ -2851,9 +2524,6 @@ public static final NSString NSAccessibilityOutlineRowSubrole = new NSString(NSA
 public static final native long NSAccessibilityParentAttribute();
 public static final NSString NSAccessibilityParentAttribute = new NSString(NSAccessibilityParentAttribute());
 /** @method flags=const */
-public static final native long NSAccessibilityPopUpButtonRole();
-public static final NSString NSAccessibilityPopUpButtonRole = new NSString(NSAccessibilityPopUpButtonRole());
-/** @method flags=const */
 public static final native long NSAccessibilityPositionAttribute();
 public static final NSString NSAccessibilityPositionAttribute = new NSString(NSAccessibilityPositionAttribute());
 /** @method flags=const */
@@ -2866,14 +2536,8 @@ public static final NSString NSAccessibilityPreviousContentsAttribute = new NSSt
 public static final native long NSAccessibilityProgressIndicatorRole();
 public static final NSString NSAccessibilityProgressIndicatorRole = new NSString(NSAccessibilityProgressIndicatorRole());
 /** @method flags=const */
-public static final native long NSAccessibilityRTFForRangeParameterizedAttribute();
-public static final NSString NSAccessibilityRTFForRangeParameterizedAttribute = new NSString(NSAccessibilityRTFForRangeParameterizedAttribute());
-/** @method flags=const */
 public static final native long NSAccessibilityRadioButtonRole();
 public static final NSString NSAccessibilityRadioButtonRole = new NSString(NSAccessibilityRadioButtonRole());
-/** @method flags=const */
-public static final native long NSAccessibilityRadioGroupRole();
-public static final NSString NSAccessibilityRadioGroupRole = new NSString(NSAccessibilityRadioGroupRole());
 /** @method flags=const */
 public static final native long NSAccessibilityRangeForIndexParameterizedAttribute();
 public static final NSString NSAccessibilityRangeForIndexParameterizedAttribute = new NSString(NSAccessibilityRangeForIndexParameterizedAttribute());
@@ -2884,9 +2548,6 @@ public static final NSString NSAccessibilityRangeForLineParameterizedAttribute =
 public static final native long NSAccessibilityRangeForPositionParameterizedAttribute();
 public static final NSString NSAccessibilityRangeForPositionParameterizedAttribute = new NSString(NSAccessibilityRangeForPositionParameterizedAttribute());
 /** @method flags=const */
-public static final native long NSAccessibilityResizedNotification();
-public static final NSString NSAccessibilityResizedNotification = new NSString(NSAccessibilityResizedNotification());
-/** @method flags=const */
 public static final native long NSAccessibilityRoleAttribute();
 public static final NSString NSAccessibilityRoleAttribute = new NSString(NSAccessibilityRoleAttribute());
 /** @method flags=const */
@@ -2896,14 +2557,14 @@ public static final NSString NSAccessibilityRoleDescriptionAttribute = new NSStr
 public static final native long NSAccessibilityRowCountChangedNotification();
 public static final NSString NSAccessibilityRowCountChangedNotification = new NSString(NSAccessibilityRowCountChangedNotification());
 /** @method flags=const */
+public static final native long NSAccessibilityRowIndexRangeAttribute();
+public static final NSString NSAccessibilityRowIndexRangeAttribute = new NSString(NSAccessibilityRowIndexRangeAttribute());
+/** @method flags=const */
 public static final native long NSAccessibilityRowRole();
 public static final NSString NSAccessibilityRowRole = new NSString(NSAccessibilityRowRole());
 /** @method flags=const */
 public static final native long NSAccessibilityRowsAttribute();
 public static final NSString NSAccessibilityRowsAttribute = new NSString(NSAccessibilityRowsAttribute());
-/** @method flags=const */
-public static final native long NSAccessibilityScrollAreaRole();
-public static final NSString NSAccessibilityScrollAreaRole = new NSString(NSAccessibilityScrollAreaRole());
 /** @method flags=const */
 public static final native long NSAccessibilityScrollBarRole();
 public static final NSString NSAccessibilityScrollBarRole = new NSString(NSAccessibilityScrollBarRole());
@@ -2953,9 +2614,6 @@ public static final NSString NSAccessibilitySliderRole = new NSString(NSAccessib
 public static final native long NSAccessibilitySplitterRole();
 public static final NSString NSAccessibilitySplitterRole = new NSString(NSAccessibilitySplitterRole());
 /** @method flags=const */
-public static final native long NSAccessibilityStandardWindowSubrole();
-public static final NSString NSAccessibilityStandardWindowSubrole = new NSString(NSAccessibilityStandardWindowSubrole());
-/** @method flags=const */
 public static final native long NSAccessibilityStaticTextRole();
 public static final NSString NSAccessibilityStaticTextRole = new NSString(NSAccessibilityStaticTextRole());
 /** @method flags=const */
@@ -2973,12 +2631,6 @@ public static final NSString NSAccessibilityStyleRangeForIndexParameterizedAttri
 /** @method flags=const */
 public static final native long NSAccessibilitySubroleAttribute();
 public static final NSString NSAccessibilitySubroleAttribute = new NSString(NSAccessibilitySubroleAttribute());
-/** @method flags=const */
-public static final native long NSAccessibilitySuperscriptTextAttribute();
-public static final NSString NSAccessibilitySuperscriptTextAttribute = new NSString(NSAccessibilitySuperscriptTextAttribute());
-/** @method flags=const */
-public static final native long NSAccessibilitySystemDialogSubrole();
-public static final NSString NSAccessibilitySystemDialogSubrole = new NSString(NSAccessibilitySystemDialogSubrole());
 /** @method flags=const */
 public static final native long NSAccessibilityTabGroupRole();
 public static final NSString NSAccessibilityTabGroupRole = new NSString(NSAccessibilityTabGroupRole());
@@ -2998,9 +2650,6 @@ public static final NSString NSAccessibilityTextAreaRole = new NSString(NSAccess
 public static final native long NSAccessibilityTextFieldRole();
 public static final NSString NSAccessibilityTextFieldRole = new NSString(NSAccessibilityTextFieldRole());
 /** @method flags=const */
-public static final native long NSAccessibilityTextLinkSubrole();
-public static final NSString NSAccessibilityTextLinkSubrole = new NSString(NSAccessibilityTextLinkSubrole());
-/** @method flags=const */
 public static final native long NSAccessibilityTitleAttribute();
 public static final NSString NSAccessibilityTitleAttribute = new NSString(NSAccessibilityTitleAttribute());
 /** @method flags=const */
@@ -3015,9 +2664,6 @@ public static final NSString NSAccessibilityToolbarRole = new NSString(NSAccessi
 /** @method flags=const */
 public static final native long NSAccessibilityTopLevelUIElementAttribute();
 public static final NSString NSAccessibilityTopLevelUIElementAttribute = new NSString(NSAccessibilityTopLevelUIElementAttribute());
-/** @method flags=const */
-public static final native long NSAccessibilityURLAttribute();
-public static final NSString NSAccessibilityURLAttribute = new NSString(NSAccessibilityURLAttribute());
 /** @method flags=const */
 public static final native long NSAccessibilityUnderlineColorTextAttribute();
 public static final NSString NSAccessibilityUnderlineColorTextAttribute = new NSString(NSAccessibilityUnderlineColorTextAttribute());
@@ -3037,17 +2683,8 @@ public static final NSString NSAccessibilityValueAttribute = new NSString(NSAcce
 public static final native long NSAccessibilityValueChangedNotification();
 public static final NSString NSAccessibilityValueChangedNotification = new NSString(NSAccessibilityValueChangedNotification());
 /** @method flags=const */
-public static final native long NSAccessibilityValueDescriptionAttribute();
-public static final NSString NSAccessibilityValueDescriptionAttribute = new NSString(NSAccessibilityValueDescriptionAttribute());
-/** @method flags=const */
-public static final native long NSAccessibilityValueIndicatorRole();
-public static final NSString NSAccessibilityValueIndicatorRole = new NSString(NSAccessibilityValueIndicatorRole());
-/** @method flags=const */
 public static final native long NSAccessibilityVerticalOrientationValue();
 public static final NSString NSAccessibilityVerticalOrientationValue = new NSString(NSAccessibilityVerticalOrientationValue());
-/** @method flags=const */
-public static final native long NSAccessibilityVerticalScrollBarAttribute();
-public static final NSString NSAccessibilityVerticalScrollBarAttribute = new NSString(NSAccessibilityVerticalScrollBarAttribute());
 /** @method flags=const */
 public static final native long NSAccessibilityVisibleCharacterRangeAttribute();
 public static final NSString NSAccessibilityVisibleCharacterRangeAttribute = new NSString(NSAccessibilityVisibleCharacterRangeAttribute());
@@ -3081,9 +2718,6 @@ public static final NSString NSBackgroundColorAttributeName = new NSString(NSBac
 /** @method flags=const */
 public static final native long NSBaselineOffsetAttributeName();
 public static final NSString NSBaselineOffsetAttributeName = new NSString(NSBaselineOffsetAttributeName());
-/** @method flags=const */
-public static final native long NSCalibratedRGBColorSpace();
-public static final NSString NSCalibratedRGBColorSpace = new NSString(NSCalibratedRGBColorSpace());
 /** @method flags=const */
 public static final native long NSCursorAttributeName();
 public static final NSString NSCursorAttributeName = new NSString(NSCursorAttributeName());
@@ -3120,9 +2754,6 @@ public static final NSString NSModalPanelRunLoopMode = new NSString(NSModalPanel
 /** @method flags=const */
 public static final native long NSObliquenessAttributeName();
 public static final NSString NSObliquenessAttributeName = new NSString(NSObliquenessAttributeName());
-/** @method flags=const */
-public static final native long NSOutlineViewColumnDidMoveNotification();
-public static final NSString NSOutlineViewColumnDidMoveNotification = new NSString(NSOutlineViewColumnDidMoveNotification());
 /** @method flags=const */
 public static final native long NSParagraphStyleAttributeName();
 public static final NSString NSParagraphStyleAttributeName = new NSString(NSParagraphStyleAttributeName());
@@ -3169,12 +2800,6 @@ public static final NSString NSPrintSavePath = new NSString(NSPrintSavePath());
 public static final native long NSPrintScalingFactor();
 public static final NSString NSPrintScalingFactor = new NSString(NSPrintScalingFactor());
 /** @method flags=const */
-public static final native long NSPrintSpoolJob();
-public static final NSString NSPrintSpoolJob = new NSString(NSPrintSpoolJob());
-/** @method flags=const */
-public static final native long NSSpellingStateAttributeName();
-public static final NSString NSSpellingStateAttributeName = new NSString(NSSpellingStateAttributeName());
-/** @method flags=const */
 public static final native double NSSquareStatusItemLength();
 /** @method flags=const */
 public static final native long NSStrikethroughColorAttributeName();
@@ -3192,35 +2817,11 @@ public static final NSString NSSystemColorsDidChangeNotification = new NSString(
 public static final native long NSTIFFPboardType();
 public static final NSString NSTIFFPboardType = new NSString(NSTIFFPboardType());
 /** @method flags=const */
-public static final native long NSTableViewColumnDidMoveNotification();
-public static final NSString NSTableViewColumnDidMoveNotification = new NSString(NSTableViewColumnDidMoveNotification());
-/** @method flags=const */
-public static final native long NSToolbarCustomizeToolbarItemIdentifier();
-public static final NSString NSToolbarCustomizeToolbarItemIdentifier = new NSString(NSToolbarCustomizeToolbarItemIdentifier());
-/** @method flags=const */
-public static final native long NSToolbarDidRemoveItemNotification();
-public static final NSString NSToolbarDidRemoveItemNotification = new NSString(NSToolbarDidRemoveItemNotification());
-/** @method flags=const */
 public static final native long NSToolbarFlexibleSpaceItemIdentifier();
 public static final NSString NSToolbarFlexibleSpaceItemIdentifier = new NSString(NSToolbarFlexibleSpaceItemIdentifier());
 /** @method flags=const */
-public static final native long NSToolbarPrintItemIdentifier();
-public static final NSString NSToolbarPrintItemIdentifier = new NSString(NSToolbarPrintItemIdentifier());
-/** @method flags=const */
-public static final native long NSToolbarSeparatorItemIdentifier();
-public static final NSString NSToolbarSeparatorItemIdentifier = new NSString(NSToolbarSeparatorItemIdentifier());
-/** @method flags=const */
-public static final native long NSToolbarShowColorsItemIdentifier();
-public static final NSString NSToolbarShowColorsItemIdentifier = new NSString(NSToolbarShowColorsItemIdentifier());
-/** @method flags=const */
-public static final native long NSToolbarShowFontsItemIdentifier();
-public static final NSString NSToolbarShowFontsItemIdentifier = new NSString(NSToolbarShowFontsItemIdentifier());
-/** @method flags=const */
 public static final native long NSToolbarSpaceItemIdentifier();
 public static final NSString NSToolbarSpaceItemIdentifier = new NSString(NSToolbarSpaceItemIdentifier());
-/** @method flags=const */
-public static final native long NSToolbarWillAddItemNotification();
-public static final NSString NSToolbarWillAddItemNotification = new NSString(NSToolbarWillAddItemNotification());
 /** @method flags=const */
 public static final native long NSURLPboardType();
 public static final NSString NSURLPboardType = new NSString(NSURLPboardType());
@@ -3259,12 +2860,6 @@ public static final native long kCFAllocatorDefault();
 /** @method flags=const */
 public static final native long kCFRunLoopCommonModes();
 /** @method flags=const */
-public static final native long kCTFontAttributeName();
-/** @method flags=const */
-public static final native long kCTForegroundColorAttributeName();
-/** @method flags=const */
-public static final native long kCTParagraphStyleAttributeName();
-/** @method flags=const */
 public static final native long NSDefaultRunLoopMode();
 public static final NSString NSDefaultRunLoopMode = new NSString(NSDefaultRunLoopMode());
 /** @method flags=const */
@@ -3276,20 +2871,10 @@ public static final native long NSNotFound();
 /** Functions */
 
 /**
- * @param action cast=(NSString*)
- */
-public static final native long NSAccessibilityActionDescription(long action);
-/**
  * @param element cast=(id)
  * @param notification cast=(NSString*)
  */
 public static final native void NSAccessibilityPostNotification(long element, long notification);
-/**
- * @param element cast=(id)
- * @param attribute cast=(NSString*)
- * @param value cast=(id)
- */
-public static final native void NSAccessibilityRaiseBadArgumentException(long element, long attribute, long value);
 /**
  * @param role cast=(NSString*)
  * @param subrole cast=(NSString*)
@@ -3298,43 +2883,21 @@ public static final native long NSAccessibilityRoleDescription(long role, long s
 /**
  * @param element cast=(id)
  */
-public static final native long NSAccessibilityRoleDescriptionForUIElement(long element);
-/**
- * @param element cast=(id)
- */
 public static final native long NSAccessibilityUnignoredAncestor(long element);
 /**
  * @param originalChildren cast=(NSArray*)
  */
 public static final native long NSAccessibilityUnignoredChildren(long originalChildren);
-/**
- * @param originalChild cast=(id)
- */
-public static final native long NSAccessibilityUnignoredChildrenForOnlyChild(long originalChild);
-/**
- * @param element cast=(id)
- */
-public static final native long NSAccessibilityUnignoredDescendant(long element);
 public static final native void NSBeep();
 /**
  * @param depth cast=(NSWindowDepth)
  */
 public static final native long NSBitsPerPixelFromDepth(int depth);
 /**
- * @param colorSpaceName cast=(NSString*)
- */
-public static final native long NSNumberOfColorComponents(long colorSpaceName);
-/**
  * @param aRect flags=struct
  * @param op cast=(NSCompositingOperation)
  */
 public static final native void NSRectFillUsingOperation(NSRect aRect, long op);
-/**
- * @param alloc cast=(CFAllocatorRef)
- * @param str cast=(CFStringRef)
- * @param attributes cast=(CFDictionaryRef)
- */
-public static final native long CFAttributedStringCreate(long alloc, long str, long attributes);
 /**
  * @param theData cast=(CFDataRef)
  */
@@ -3343,19 +2906,6 @@ public static final native long CFDataGetBytePtr(long theData);
  * @param theData cast=(CFDataRef)
  */
 public static final native long CFDataGetLength(long theData);
-/**
- * @param theDict cast=(CFMutableDictionaryRef)
- * @param key cast=(void*)
- * @param value cast=(void*)
- */
-public static final native void CFDictionaryAddValue(long theDict, long key, long value);
-/**
- * @param allocator cast=(CFAllocatorRef)
- * @param capacity cast=(CFIndex)
- * @param keyCallBacks cast=(CFDictionaryKeyCallBacks*)
- * @param valueCallBacks cast=(CFDictionaryValueCallBacks*)
- */
-public static final native long CFDictionaryCreateMutable(long allocator, long capacity, long keyCallBacks, long valueCallBacks);
 /**
  * @param cf cast=(CFTypeRef)
  */
@@ -3381,22 +2931,6 @@ public static final native long CFRunLoopObserverCreate(long allocator, long act
  */
 public static final native void CFRunLoopObserverInvalidate(long observer);
 /**
- * @param mode cast=(CFStringRef)
- * @param seconds cast=(CFTimeInterval)
- * @param returnAfterSourceHandled cast=(Boolean)
- */
-public static final native int CFRunLoopRunInMode(long mode, double seconds, boolean returnAfterSourceHandled);
-/**
- * @param rl cast=(CFRunLoopRef)
- */
-public static final native void CFRunLoopStop(long rl);
-/**
- * @param alloc cast=(CFAllocatorRef)
- * @param chars cast=(UniChar*)
- * @param numChars cast=(CFIndex)
- */
-public static final native long CFStringCreateWithCharacters(long alloc, char[] chars, long numChars);
-/**
  * @param allocator cast=(CFAllocatorRef)
  * @param fsRef cast=(FSRef*)
  */
@@ -3419,14 +2953,6 @@ public static final native long CFURLCreateStringByAddingPercentEscapes(long all
  * @param bitmapInfo cast=(CGBitmapInfo)
  */
 public static final native long CGBitmapContextCreate(long data, long width, long height, long bitsPerComponent, long bytesPerRow, long colorspace, int bitmapInfo);
-/**
- * @param c cast=(CGContextRef)
- */
-public static final native long CGBitmapContextCreateImage(long c);
-/**
- * @param c cast=(CGContextRef)
- */
-public static final native long CGBitmapContextGetData(long c);
 /**
  * @param space cast=(CGColorSpaceRef)
  * @param components cast=(CGFloat*)
@@ -3452,6 +2978,10 @@ public static final native void CGContextAddPath(long context, long path);
  * @param auxiliaryInfo cast=(CFDictionaryRef)
  */
 public static final native void CGContextBeginTransparencyLayerWithRect(long context, CGRect rect, long auxiliaryInfo);
+/**
+ * @param context cast=(CGContextRef)
+ */
+public static final native long CGContextCopyPath(long context);
 /**
  * @param c cast=(CGContextRef)
  * @param rect flags=struct
@@ -3533,27 +3063,6 @@ public static final native void CGContextSetLineWidth(long c, double width);
 public static final native void CGContextSetMiterLimit(long c, double limit);
 /**
  * @param c cast=(CGContextRef)
- * @param shouldAntialias cast=(_Bool)
- */
-public static final native void CGContextSetShouldAntialias(long c, boolean shouldAntialias);
-/**
- * @param c cast=(CGContextRef)
- * @param mode cast=(CGTextDrawingMode)
- */
-public static final native void CGContextSetTextDrawingMode(long c, int mode);
-/**
- * @param c cast=(CGContextRef)
- * @param t flags=struct
- */
-public static final native void CGContextSetTextMatrix(long c, CGAffineTransform t);
-/**
- * @param c cast=(CGContextRef)
- * @param x cast=(CGFloat)
- * @param y cast=(CGFloat)
- */
-public static final native void CGContextSetTextPosition(long c, double x, double y);
-/**
- * @param c cast=(CGContextRef)
  */
 public static final native void CGContextStrokePath(long c);
 /**
@@ -3574,13 +3083,9 @@ public static final native long CGDataProviderCreateWithData(long info, long dat
  */
 public static final native void CGDataProviderRelease(long provider);
 /**
- * @param display cast=(CGDirectDisplayID)
+ * @param displayID cast=(CGDirectDisplayID)
  */
-public static final native long CGDisplayPixelsHigh(int display);
-/**
- * @param display cast=(CGDirectDisplayID)
- */
-public static final native long CGDisplayPixelsWide(int display);
+public static final native long CGDisplayCreateImage(int displayID);
 /**
  * @param source cast=(CGEventSourceRef)
  * @param virtualKey cast=(CGKeyCode)
@@ -3667,12 +3172,6 @@ public static final native void CGPathAddCurveToPoint(long path, long m, double 
  */
 public static final native void CGPathAddLineToPoint(long path, long m, double x, double y);
 /**
- * @param path cast=(CGMutablePathRef)
- * @param m cast=(CGAffineTransform*)
- * @param rect flags=struct
- */
-public static final native void CGPathAddRect(long path, long m, CGRect rect);
-/**
  * @param path cast=(CGPathRef)
  * @param info cast=(void*)
  * @param function cast=(CGPathApplierFunction)
@@ -3682,10 +3181,6 @@ public static final native void CGPathApply(long path, long info, long function)
  * @param path cast=(CGMutablePathRef)
  */
 public static final native void CGPathCloseSubpath(long path);
-/**
- * @param path cast=(CGPathRef)
- */
-public static final native long CGPathCreateCopy(long path);
 public static final native long CGPathCreateMutable();
 /**
  * @param path cast=(CGMutablePathRef)
@@ -3699,78 +3194,16 @@ public static final native void CGPathMoveToPoint(long path, long m, double x, d
  */
 public static final native void CGPathRelease(long path);
 /**
- * @param newCursorPosition flags=struct
- */
-public static final native int CGWarpMouseCursorPosition(CGPoint newCursorPosition);
-/**
- * @param font cast=(CTFontRef)
- */
-public static final native double CTFontGetAscent(long font);
-/**
- * @param font cast=(CTFontRef)
- */
-public static final native double CTFontGetDescent(long font);
-/**
- * @param font cast=(CTFontRef)
- */
-public static final native double CTFontGetLeading(long font);
-/**
  * @param fontURL cast=(CFURLRef)
  * @param scope cast=(CTFontManagerScope)
  * @param error cast=(CFErrorRef*)
  */
 public static final native boolean CTFontManagerRegisterFontsForURL(long fontURL, int scope, long error);
 /**
- * @param attrString cast=(CFAttributedStringRef)
- */
-public static final native long CTLineCreateWithAttributedString(long attrString);
-/**
- * @param line cast=(CTLineRef)
- * @param context cast=(CGContextRef)
- */
-public static final native void CTLineDraw(long line, long context);
-/**
- * @param line cast=(CTLineRef)
- * @param ascent cast=(CGFloat*)
- * @param descent cast=(CGFloat*)
- * @param leading cast=(CGFloat*)
- */
-public static final native double CTLineGetTypographicBounds(long line, double[] ascent, double[] descent, double[] leading);
-/**
- * @param settings cast=(CTParagraphStyleSetting*)
- * @param settingCount cast=(size_t)
- */
-public static final native long CTParagraphStyleCreate(long settings, long settingCount);
-/**
- * @param typesetter cast=(CTTypesetterRef)
- * @param stringRange flags=struct
- */
-public static final native long CTTypesetterCreateLine(long typesetter, CFRange stringRange);
-/**
- * @param string cast=(CFAttributedStringRef)
- */
-public static final native long CTTypesetterCreateWithAttributedString(long string);
-/**
- * @param typesetter cast=(CTTypesetterRef)
- * @param startIndex cast=(CFIndex)
- * @param width cast=(double)
- */
-public static final native long CTTypesetterSuggestLineBreak(long typesetter, long startIndex, double width);
-/**
  * @param aRect flags=struct
  * @param bRect flags=struct
  */
 public static final native boolean NSEqualRects(NSRect aRect, NSRect bRect);
-/**
- * @param hfsFileTypeCode cast=(OSType)
- */
-public static final native long NSFileTypeForHFSTypeCode(int hfsFileTypeCode);
-/**
- * @param typePtr cast=(char*)
- * @param sizep cast=(NSUInteger*)
- * @param alignp cast=(NSUInteger*)
- */
-public static final native long NSGetSizeAndAlignment(long typePtr, long[] sizep, long[] alignp);
 /**
  * @param aPoint flags=struct
  * @param aRect flags=struct
@@ -3782,7 +3215,6 @@ public static final native boolean NSPointInRect(NSPoint aPoint, NSRect aRect);
  * @param expandTilde cast=(BOOL)
  */
 public static final native long NSSearchPathForDirectoriesInDomains(long directory, long domainMask, boolean expandTilde);
-public static final native long NSTemporaryDirectory();
 
 /** Super Sends */
 
@@ -3923,8 +3355,6 @@ public static final native boolean objc_msgSend_bool(long id, long sel, long arg
 /** @method flags=cast */
 public static final native boolean objc_msgSend_bool(long id, long sel, long arg0, long arg1, long arg2, long arg3, long arg4);
 /** @method flags=cast */
-public static final native boolean objc_msgSend_bool(long id, long sel, short arg0);
-/** @method flags=cast */
 public static final native double objc_msgSend_fpret(long id, long sel);
 /** @method flags=cast */
 public static final native double objc_msgSend_fpret(long id, long sel, long arg0);
@@ -3957,17 +3387,6 @@ public static final native long objc_msgSend(long id, long sel, NSPoint arg0, NS
  * @param arg1 flags=struct
  */
 public static final native long objc_msgSend(long id, long sel, NSPoint arg0, NSPoint arg1, long arg2);
-/**
- * @method flags=cast
- * @param arg0 flags=struct
- * @param arg1 flags=struct
- */
-public static final native long objc_msgSend(long id, long sel, NSPoint arg0, NSRect arg1, long arg2, double arg3);
-/**
- * @method flags=cast
- * @param arg0 flags=struct
- */
-public static final native long objc_msgSend(long id, long sel, NSPoint arg0, double arg1, double arg2, double arg3);
 /**
  * @method flags=cast
  * @param arg0 flags=struct
@@ -4021,13 +3440,6 @@ public static final native long objc_msgSend(long id, long sel, NSRect arg0);
  * @param arg1 flags=struct
  */
 public static final native long objc_msgSend(long id, long sel, NSRect arg0, NSPoint arg1);
-/**
- * @method flags=cast
- * @param arg0 flags=struct
- * @param arg1 flags=struct
- * @param arg2 flags=struct
- */
-public static final native long objc_msgSend(long id, long sel, NSRect arg0, NSRange arg1, NSRect arg2);
 /**
  * @method flags=cast
  * @param arg0 flags=struct
@@ -4089,11 +3501,6 @@ public static final native long objc_msgSend(long id, long sel, NSRect arg0, lon
  * @method flags=cast
  * @param arg0 flags=struct
  */
-public static final native long objc_msgSend(long id, long sel, NSRect arg0, long arg1, long arg2, long arg3);
-/**
- * @method flags=cast
- * @param arg0 flags=struct
- */
 public static final native long objc_msgSend(long id, long sel, NSSize arg0);
 /** @method flags=cast */
 public static final native long objc_msgSend(long id, long sel, boolean arg0);
@@ -4123,8 +3530,6 @@ public static final native long objc_msgSend(long id, long sel, double arg0);
 public static final native long objc_msgSend(long id, long sel, double arg0, double arg1);
 /** @method flags=cast */
 public static final native long objc_msgSend(long id, long sel, double arg0, double arg1, double arg2, double arg3);
-/** @method flags=cast */
-public static final native long objc_msgSend(long id, long sel, double arg0, long arg1);
 /** @method flags=cast */
 public static final native long objc_msgSend(long id, long sel, double arg0, long arg1, long arg2, long arg3, boolean arg4);
 /** @method flags=cast */
@@ -4195,21 +3600,15 @@ public static final native long objc_msgSend(long id, long sel, long arg0, long 
 /** @method flags=cast */
 public static final native long objc_msgSend(long id, long sel, long arg0, long arg1, long arg2, boolean arg3);
 /** @method flags=cast */
-public static final native long objc_msgSend(long id, long sel, long arg0, long arg1, long arg2, double arg3);
-/** @method flags=cast */
 public static final native long objc_msgSend(long id, long sel, long arg0, long arg1, long arg2, long arg3);
 /** @method flags=cast */
 public static final native long objc_msgSend(long id, long sel, long arg0, long arg1, long arg2, long arg3, long arg4);
-/** @method flags=cast */
-public static final native long objc_msgSend(long id, long sel, long arg0, long arg1, long arg2, long arg3, long arg4, boolean arg5, boolean arg6, long arg7, long arg8, long arg9);
 /** @method flags=cast */
 public static final native long objc_msgSend(long id, long sel, long arg0, long arg1, long arg2, long arg3, long arg4, boolean arg5, boolean arg6, long arg7, long arg8, long arg9, long arg10);
 /** @method flags=cast */
 public static final native long objc_msgSend(long id, long sel, long arg0, long arg1, long arg2, long arg3, long arg4, long arg5);
 /** @method flags=cast */
 public static final native long objc_msgSend(long id, long sel, long arg0, long arg1, long arg2, long arg3, long arg4, long arg5, long arg6);
-/** @method flags=cast */
-public static final native long objc_msgSend(long id, long sel, long[] arg0);
 /** @method flags=cast */
 public static final native long objc_msgSend(long id, long sel, long[] arg0, int arg1, int arg2);
 /** @method flags=cast */
@@ -4239,11 +3638,6 @@ public static final native void objc_msgSend_stret(NSRange result, long id, long
  * @param arg0 flags=struct
  */
 public static final native void objc_msgSend_stret(NSRange result, long id, long sel, NSRange arg0, long arg1);
-/**
- * @method flags=cast
- * @param arg0 flags=struct
- */
-public static final native void objc_msgSend_stret(NSRange result, long id, long sel, NSRect arg0);
 /** @method flags=cast */
 public static final native void objc_msgSend_stret(NSRange result, long id, long sel, long arg0);
 /** @method flags=cast */
@@ -4300,18 +3694,16 @@ public static final native void objc_msgSend_stret(NSSize result, long id, long 
  * @method flags=cast
  * @param arg0 flags=struct
  */
-public static final native void objc_msgSend_stret(NSSize result, long id, long sel, NSSize arg0, long arg1);
+public static final native void objc_msgSend_stret(NSSize result, long id, long sel, NSSize arg0, long arg1, long arg2, long arg3, long arg4, long arg5);
 /** @method flags=cast */
 public static final native void objc_msgSend_stret(NSSize result, long id, long sel, boolean arg0);
 
 /** Sizeof natives */
-public static final native int CFRange_sizeof();
 public static final native int CGAffineTransform_sizeof();
 public static final native int CGPathElement_sizeof();
 public static final native int CGPoint_sizeof();
 public static final native int CGRect_sizeof();
 public static final native int CGSize_sizeof();
-public static final native int CTParagraphStyleSetting_sizeof();
 public static final native int NSAffineTransformStruct_sizeof();
 public static final native int NSOperatingSystemVersion_sizeof();
 public static final native int NSPoint_sizeof();

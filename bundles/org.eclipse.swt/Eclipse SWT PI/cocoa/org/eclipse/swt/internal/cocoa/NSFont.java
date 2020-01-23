@@ -36,11 +36,6 @@ public static NSFont boldSystemFontOfSize(double fontSize) {
 	return result != 0 ? new NSFont(result) : null;
 }
 
-public static NSFont controlContentFontOfSize(double fontSize) {
-	long result = OS.objc_msgSend(OS.class_NSFont, OS.sel_controlContentFontOfSize_, fontSize);
-	return result != 0 ? new NSFont(result) : null;
-}
-
 public double descender() {
 	return OS.objc_msgSend_fpret(this.id, OS.sel_descender);
 }
@@ -71,11 +66,6 @@ public double leading() {
 
 public static NSFont menuBarFontOfSize(double fontSize) {
 	long result = OS.objc_msgSend(OS.class_NSFont, OS.sel_menuBarFontOfSize_, fontSize);
-	return result != 0 ? new NSFont(result) : null;
-}
-
-public static NSFont menuFontOfSize(double fontSize) {
-	long result = OS.objc_msgSend(OS.class_NSFont, OS.sel_menuFontOfSize_, fontSize);
 	return result != 0 ? new NSFont(result) : null;
 }
 

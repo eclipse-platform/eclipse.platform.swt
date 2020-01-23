@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others.
+ * Copyright (c) 2000, 2019 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -33,11 +33,6 @@ public void addTimer(NSTimer timer, NSString mode) {
 
 public static NSRunLoop currentRunLoop() {
 	long result = OS.objc_msgSend(OS.class_NSRunLoop, OS.sel_currentRunLoop);
-	return result != 0 ? new NSRunLoop(result) : null;
-}
-
-public static NSRunLoop mainRunLoop() {
-	long result = OS.objc_msgSend(OS.class_NSRunLoop, OS.sel_mainRunLoop);
 	return result != 0 ? new NSRunLoop(result) : null;
 }
 

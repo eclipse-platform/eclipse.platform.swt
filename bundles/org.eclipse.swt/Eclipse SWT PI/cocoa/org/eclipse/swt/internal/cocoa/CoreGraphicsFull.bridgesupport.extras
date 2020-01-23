@@ -3,11 +3,6 @@
 	<cftype name="CGMutablePathRef" swt_gen="true"></cftype>
 	<enum name="kCGBlendModeDifference" swt_gen="true"></enum>
 	<enum name="kCGBlendModeNormal" swt_gen="true"></enum>
-	<enum name="kCGEventFilterMaskPermitLocalKeyboardEvents" swt_gen="true"></enum>
-	<enum name="kCGEventFilterMaskPermitLocalMouseEvents" swt_gen="true"></enum>
-	<enum name="kCGEventFilterMaskPermitSystemDefinedEvents" swt_gen="true"></enum>
-	<enum name="kCGEventKeyDown" swt_gen="true"></enum>
-	<enum name="kCGEventKeyUp" swt_gen="true"></enum>
 	<enum name="kCGEventLeftMouseDown" swt_gen="true"></enum>
 	<enum name="kCGEventLeftMouseUp" swt_gen="true"></enum>
 	<enum name="kCGEventMouseMoved" swt_gen="true"></enum>
@@ -16,8 +11,6 @@
 	<enum name="kCGEventRightMouseDown" swt_gen="true"></enum>
 	<enum name="kCGEventRightMouseUp" swt_gen="true"></enum>
 	<enum name="kCGEventSourceStateHIDSystemState" swt_gen="true"></enum>
-	<enum name="kCGEventSuppressionStateRemoteMouseDrag" swt_gen="true"></enum>
-	<enum name="kCGEventSuppressionStateSuppressionInterval" swt_gen="true"></enum>
 	<enum name="kCGHIDEventTap" swt_gen="true"></enum>
 	<enum name="kCGImageAlphaFirst" swt_gen="true"></enum>
 	<enum name="kCGImageAlphaLast" swt_gen="true"></enum>
@@ -36,10 +29,7 @@
 	<enum name="kCGPathElementAddQuadCurveToPoint" swt_gen="true"></enum>
 	<enum name="kCGPathElementCloseSubpath" swt_gen="true"></enum>
 	<enum name="kCGPathElementMoveToPoint" swt_gen="true"></enum>
-	<enum name="kCGPathStroke" swt_gen="true"></enum>
 	<enum name="kCGScrollEventUnitLine" swt_gen="true"></enum>
-	<enum name="kCGScrollEventUnitPixel" swt_gen="true"></enum>
-	<enum name="kCGTextFillStroke" swt_gen="true"></enum>
 	<function name="CGBitmapContextCreate" swt_gen="true">
 		<arg swt_gen="true"></arg>
 		<arg swt_gen="true"></arg>
@@ -48,14 +38,6 @@
 		<arg swt_gen="true"></arg>
 		<arg swt_gen="true" swt_param_name="colorspace"></arg>
 		<arg swt_gen="true"></arg>
-		<retval swt_gen="true"></retval>
-	</function>
-	<function name="CGBitmapContextCreateImage" swt_gen="true">
-		<arg swt_gen="true" swt_param_name="c"></arg>
-		<retval swt_gen="true"></retval>
-	</function>
-	<function name="CGBitmapContextGetData" swt_gen="true">
-		<arg swt_gen="true" swt_param_name="c"></arg>
 		<retval swt_gen="true"></retval>
 	</function>
 	<function name="CGColorCreate" swt_gen="true">
@@ -84,6 +66,10 @@
 		<arg swt_gen="true"></arg>
 		<arg swt_gen="true"></arg>
 		<retval></retval>
+	</function>
+	<function name="CGContextCopyPath" swt_gen="true">
+		<arg swt_gen="true"></arg>
+		<retval swt_gen="true"></retval>
 	</function>
 	<function name="CGContextDrawImage" swt_gen="true">
 		<arg swt_gen="true"></arg>
@@ -164,27 +150,6 @@
 		<arg swt_gen="true"></arg>
 		<retval></retval>
 	</function>
-	<function name="CGContextSetShouldAntialias" swt_gen="true">
-		<arg swt_gen="true" swt_param_name="c"></arg>
-		<arg swt_gen="true"></arg>
-		<retval></retval>
-	</function>
-	<function name="CGContextSetTextDrawingMode" swt_gen="true">
-		<arg swt_gen="true"></arg>
-		<arg swt_gen="true"></arg>
-		<retval></retval>
-	</function>
-	<function name="CGContextSetTextMatrix" swt_gen="true">
-		<arg swt_gen="true"></arg>
-		<arg swt_gen="true"></arg>
-		<retval></retval>
-	</function>
-	<function name="CGContextSetTextPosition" swt_gen="true">
-		<arg swt_gen="true"></arg>
-		<arg swt_gen="true"></arg>
-		<arg swt_gen="true"></arg>
-		<retval></retval>
-	</function>
 	<function name="CGContextStrokePath" swt_gen="true">
 		<arg swt_gen="true"></arg>
 		<retval></retval>
@@ -211,11 +176,7 @@
 		<arg swt_gen="true"></arg>
 		<retval></retval>
 	</function>
-	<function name="CGDisplayPixelsHigh" swt_gen="true">
-		<arg swt_gen="true"></arg>
-		<retval swt_gen="true"></retval>
-	</function>
-	<function name="CGDisplayPixelsWide" swt_gen="true">
+	<function name="CGDisplayCreateImage" swt_gen="true">
 		<arg swt_gen="true"></arg>
 		<retval swt_gen="true"></retval>
 	</function>
@@ -304,12 +265,6 @@
 		<arg swt_gen="true"></arg>
 		<retval></retval>
 	</function>
-	<function name="CGPathAddRect" swt_gen="true">
-		<arg swt_gen="true"></arg>
-		<arg swt_gen="true"></arg>
-		<arg swt_gen="true"></arg>
-		<retval></retval>
-	</function>
 	<function name="CGPathApply" swt_gen="true">
 		<arg swt_gen="true"></arg>
 		<arg swt_gen="true"></arg>
@@ -324,10 +279,6 @@
 		<arg swt_gen="true"></arg>
 		<retval></retval>
 	</function>
-	<function name="CGPathCreateCopy" swt_gen="true">
-		<arg swt_gen="true"></arg>
-		<retval swt_gen="true"></retval>
-	</function>
 	<function name="CGPathCreateMutable" swt_gen="true">
 		<retval swt_gen="true"></retval>
 	</function>
@@ -341,17 +292,6 @@
 	<function name="CGPathRelease" swt_gen="true">
 		<arg swt_gen="true"></arg>
 		<retval></retval>
-	</function>
-	<function name="CGPostMouseEvent" swt_variadic_count="4" swt_variadic_java_types="boolean,*">
-		<arg></arg>
-		<arg swt_java_type="boolean"></arg>
-		<arg></arg>
-		<arg swt_java_type="boolean"></arg>
-		<retval></retval>
-	</function>
-	<function name="CGWarpMouseCursorPosition" swt_gen="true">
-		<arg swt_gen="true"></arg>
-		<retval swt_gen="true"></retval>
 	</function>
 	<struct name="CGAffineTransform" swt_gen="true">
 		<field name="a" swt_gen="true"></field>

@@ -66,11 +66,6 @@ public long levelForItem(id item) {
 	return OS.objc_msgSend(this.id, OS.sel_levelForItem_, item != null ? item.id : 0);
 }
 
-public NSTableColumn outlineTableColumn() {
-	long result = OS.objc_msgSend(this.id, OS.sel_outlineTableColumn);
-	return result != 0 ? new NSTableColumn(result) : null;
-}
-
 public void reloadItem(id item, boolean reloadChildren) {
 	OS.objc_msgSend(this.id, OS.sel_reloadItem_reloadChildren_, item != null ? item.id : 0, reloadChildren);
 }

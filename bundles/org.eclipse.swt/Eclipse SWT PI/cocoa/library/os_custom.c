@@ -39,33 +39,6 @@ JNIEXPORT jobject JNICALL OS_NATIVE(JNIGetObject)
 }
 #endif
 
-#ifndef NO_FindWindow
-JNIEXPORT jlong JNICALL OS_NATIVE(FindWindow)
-(JNIEnv *env, jclass that, jlong arg0, jlong arg1, jlongArray arg2)
-{
-	jlong *lparg2=NULL;
-	jlong rc = 0;
-	Point p;
-	p.h = (short)arg0;
-	p.v = (short)arg1;
-	OS_NATIVE_ENTER(env, that, FindWindow_FUNC);
-	if (arg2) if ((lparg2 = (*env)->GetLongArrayElements(env, arg2, NULL)) == NULL) goto fail;
-	/*
-	 rc = (jlong)FindWindow(arg0, arg1, (WindowRef *)lparg2);
-	 */
-	{
-		OS_LOAD_FUNCTION(fp, FindWindow)
-		if (fp) {
-			rc = (jlong)((jlong (CALLING_CONVENTION*)(Point, WindowRef *))fp)(p, (WindowRef *)lparg2);
-		}
-	}
-fail:
-	if (arg2 && lparg2) (*env)->ReleaseLongArrayElements(env, arg2, lparg2, 0);
-		OS_NATIVE_EXIT(env, that, FindWindow_FUNC);
-		return rc;
-}
-#endif
-
 #ifndef NO_NSIntersectionRect
 JNIEXPORT void JNICALL OS_NATIVE(NSIntersectionRect)
 	(JNIEnv *env, jclass that, jobject arg0, jobject arg1, jobject arg2)
@@ -97,22 +70,6 @@ JNIEXPORT void JNICALL OS_NATIVE(CGDisplayBounds)
 fail:
 	if (arg1 && lparg1) setCGRectFields(env, arg1, lparg1);
 	OS_NATIVE_EXIT(env, that, CGDisplayBounds_FUNC);
-}
-#endif
-
-#ifndef NO__1_1BIG_1ENDIAN_1_1
-JNIEXPORT jboolean JNICALL OS_NATIVE(_1_1BIG_1ENDIAN_1_1)
-	(JNIEnv *env, jclass that)
-{
-	jboolean rc;
-	OS_NATIVE_ENTER(env, that, _1_1BIG_1ENDIAN_1_1_FUNC)
-#ifdef __BIG_ENDIAN__
-	rc = (jboolean)TRUE;
-#else
-	rc = (jboolean)FALSE;
-#endif
-	OS_NATIVE_EXIT(env, that, _1_1BIG_1ENDIAN_1_1_FUNC)
-	return rc;
 }
 #endif
 
@@ -157,86 +114,6 @@ JNIEXPORT jlong JNICALL OS_NATIVE(kTISPropertyUnicodeKeyLayoutData)
 		}
 	}
 	OS_NATIVE_EXIT(env, that, kTISPropertyUnicodeKeyLayoutData_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO_NSAccessibilityCellRole
-JNIEXPORT jlong JNICALL OS_NATIVE(NSAccessibilityCellRole)
-	(JNIEnv *env, jclass that)
-{
-	jlong rc = 0;
-	OS_NATIVE_ENTER(env, that, NSAccessibilityCellRole_FUNC);
-/*
-	rc = (jlong)NSAccessibilityCellRole;
-*/
-	{
-		LOAD_CFSTR(data, NSAccessibilityCellRole)
-		if (data) {
-			rc = (jlong)(*data);
-		}
-	}
-	OS_NATIVE_EXIT(env, that, NSAccessibilityCellRole_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO_NSAccessibilityColumnIndexRangeAttribute
-JNIEXPORT jlong JNICALL OS_NATIVE(NSAccessibilityColumnIndexRangeAttribute)
-	(JNIEnv *env, jclass that)
-{
-	jlong rc = 0;
-	OS_NATIVE_ENTER(env, that, NSAccessibilityColumnIndexRangeAttribute_FUNC);
-/*
-	rc = (jlong)NSAccessibilityColumnIndexRangeAttribute;
-*/
-	{
-		LOAD_CFSTR(data, NSAccessibilityColumnIndexRangeAttribute)
-		if (data) {
-			rc = (jlong)(*data);
-		}
-	}
-	OS_NATIVE_EXIT(env, that, NSAccessibilityColumnIndexRangeAttribute_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO_NSAccessibilityCellForColumnAndRowParameterizedAttribute
-JNIEXPORT jlong JNICALL OS_NATIVE(NSAccessibilityCellForColumnAndRowParameterizedAttribute)
-	(JNIEnv *env, jclass that)
-{
-	jlong rc = 0;
-	OS_NATIVE_ENTER(env, that, NSAccessibilityCellForColumnAndRowParameterizedAttribute_FUNC);
-/*
-	rc = (jlong)NSAccessibilityCellForColumnAndRowParameterizedAttribute;
-*/
-	{
-		LOAD_CFSTR(data, NSAccessibilityCellForColumnAndRowParameterizedAttribute)
-		if (data) {
-			rc = (jlong)(*data);
-		}
-	}
-	OS_NATIVE_EXIT(env, that, NSAccessibilityCellForColumnAndRowParameterizedAttribute_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO_NSAccessibilityRowIndexRangeAttribute
-JNIEXPORT jlong JNICALL OS_NATIVE(NSAccessibilityRowIndexRangeAttribute)
-	(JNIEnv *env, jclass that)
-{
-	jlong rc = 0;
-	OS_NATIVE_ENTER(env, that, NSAccessibilityRowIndexRangeAttribute_FUNC);
-/*
-	rc = (jlong)NSAccessibilityRowIndexRangeAttribute;
-*/
-	{
-		LOAD_CFSTR(data, NSAccessibilityRowIndexRangeAttribute)
-		if (data) {
-			rc = (jlong)(*data);
-		}
-	}
-	OS_NATIVE_EXIT(env, that, NSAccessibilityRowIndexRangeAttribute_FUNC);
 	return rc;
 }
 #endif

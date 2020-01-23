@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2017 IBM Corporation and others.
+ * Copyright (c) 2000, 2019 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -29,15 +29,6 @@ public NSClipView(id id) {
 
 public boolean copiesOnScroll() {
 	return OS.objc_msgSend_bool(this.id, OS.sel_copiesOnScroll);
-}
-
-public NSCursor documentCursor() {
-	long result = OS.objc_msgSend(this.id, OS.sel_documentCursor);
-	return result != 0 ? new NSCursor(result) : null;
-}
-
-public void scrollToPoint(NSPoint newOrigin) {
-	OS.objc_msgSend(this.id, OS.sel_scrollToPoint_, newOrigin);
 }
 
 public void setCopiesOnScroll(boolean copiesOnScroll) {

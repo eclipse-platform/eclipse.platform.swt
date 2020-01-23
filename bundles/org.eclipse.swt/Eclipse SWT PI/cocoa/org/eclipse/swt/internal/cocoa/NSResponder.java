@@ -55,10 +55,6 @@ public void helpRequested(NSEvent eventPtr) {
 	OS.objc_msgSend(this.id, OS.sel_helpRequested_, eventPtr != null ? eventPtr.id : 0);
 }
 
-public void insertText(id insertString) {
-	OS.objc_msgSend(this.id, OS.sel_insertText_, insertString != null ? insertString.id : 0);
-}
-
 public void interpretKeyEvents(NSArray eventArray) {
 	OS.objc_msgSend(this.id, OS.sel_interpretKeyEvents_, eventArray != null ? eventArray.id : 0);
 }
@@ -97,18 +93,6 @@ public void mouseMoved(NSEvent theEvent) {
 
 public void mouseUp(NSEvent theEvent) {
 	OS.objc_msgSend(this.id, OS.sel_mouseUp_, theEvent != null ? theEvent.id : 0);
-}
-
-public void moveToBeginningOfParagraph(id sender) {
-	OS.objc_msgSend(this.id, OS.sel_moveToBeginningOfParagraph_, sender != null ? sender.id : 0);
-}
-
-public void moveToEndOfParagraph(id sender) {
-	OS.objc_msgSend(this.id, OS.sel_moveToEndOfParagraph_, sender != null ? sender.id : 0);
-}
-
-public void moveUp(id sender) {
-	OS.objc_msgSend(this.id, OS.sel_moveUp_, sender != null ? sender.id : 0);
 }
 
 public void noResponderFor(long eventSelector) {

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2018 IBM Corporation and others.
+ * Copyright (c) 2000, 2019 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -25,12 +25,6 @@ public NSTextContainer(long id) {
 
 public NSTextContainer(id id) {
 	super(id);
-}
-
-public NSSize containerSize() {
-	NSSize result = new NSSize();
-	OS.objc_msgSend_stret(result, this.id, OS.sel_containerSize);
-	return result;
 }
 
 public NSTextContainer initWithContainerSize(NSSize aContainerSize) {

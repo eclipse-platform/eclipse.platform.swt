@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2013 IBM Corporation and others.
+ * Copyright (c) 2000, 2019 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -45,12 +45,6 @@ public static NSCursor crosshairCursor() {
 public static NSCursor currentCursor() {
 	long result = OS.objc_msgSend(OS.class_NSCursor, OS.sel_currentCursor);
 	return result != 0 ? new NSCursor(result) : null;
-}
-
-public NSPoint hotSpot() {
-	NSPoint result = new NSPoint();
-	OS.objc_msgSend_stret(result, this.id, OS.sel_hotSpot);
-	return result;
 }
 
 public NSCursor initWithImage(NSImage newImage, NSPoint aPoint) {

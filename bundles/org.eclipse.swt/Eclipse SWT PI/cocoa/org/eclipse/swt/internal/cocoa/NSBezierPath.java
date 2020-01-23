@@ -35,10 +35,6 @@ public void appendBezierPath(NSBezierPath path) {
 	OS.objc_msgSend(this.id, OS.sel_appendBezierPath_, path != null ? path.id : 0);
 }
 
-public void appendBezierPathWithArcWithCenter(NSPoint center, double radius, double startAngle, double endAngle) {
-	OS.objc_msgSend(this.id, OS.sel_appendBezierPathWithArcWithCenter_radius_startAngle_endAngle_, center, radius, startAngle, endAngle);
-}
-
 public void appendBezierPathWithArcWithCenter(NSPoint center, double radius, double startAngle, double endAngle, boolean clockwise) {
 	OS.objc_msgSend(this.id, OS.sel_appendBezierPathWithArcWithCenter_radius_startAngle_endAngle_clockwise_, center, radius, startAngle, endAngle, clockwise);
 }

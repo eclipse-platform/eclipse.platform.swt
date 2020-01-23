@@ -146,9 +146,6 @@
 			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
-		<method selector="resourcePath" swt_gen="true">
-			<retval swt_gen="true"></retval>
-		</method>
 	</class>
 	<class name="NSCalendarDate" swt_gen="mixed" swt_superclass="NSDate">
 		<method class_method="true" selector="calendarDate" swt_gen="true">
@@ -186,31 +183,10 @@
 			<retval swt_gen="true"></retval>
 		</method>
 	</class>
-	<class name="NSCharacterSet" swt_gen="mixed">
-		<method selector="characterIsMember:" swt_gen="true">
-			<arg swt_gen="true"></arg>
-			<retval swt_gen="true"></retval>
-		</method>
-		<method class_method="true" selector="decimalDigitCharacterSet" swt_gen="true">
-			<retval swt_gen="true"></retval>
-		</method>
-	</class>
-	<class name="NSCloneCommand" swt_superclass="NSScriptCommand">
-	</class>
-	<class name="NSCloseCommand" swt_superclass="NSScriptCommand">
-	</class>
 	<class name="NSCoder" swt_gen="mixed">
 		<method selector="systemVersion" swt_gen="true">
 			<retval swt_gen="true"></retval>
 		</method>
-	</class>
-	<class name="NSComparisonPredicate" swt_superclass="NSPredicate">
-	</class>
-	<class name="NSCompoundPredicate" swt_superclass="NSPredicate">
-	</class>
-	<class name="NSCountedSet" swt_superclass="NSMutableSet">
-	</class>
-	<class name="NSCreateCommand" swt_superclass="NSScriptCommand">
 	</class>
 	<class name="NSData" swt_gen="mixed">
 		<method selector="bytes" swt_gen="true">
@@ -223,11 +199,6 @@
 		</method>
 		<method selector="getBytes:" swt_gen="true">
 			<arg swt_gen="true" swt_java_type="byte[]"></arg>
-			<retval swt_gen="true"></retval>
-		</method>
-		<method selector="getBytes:length:" swt_gen="true">
-			<arg swt_gen="true"></arg>
-			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="length" swt_gen="true">
@@ -247,12 +218,6 @@
 		<method class_method="true" selector="distantFuture" swt_gen="true">
 			<retval swt_alloc="true" swt_gen="true" swt_java_type="NSDate"></retval>
 		</method>
-	</class>
-	<class name="NSDateFormatter" swt_superclass="NSFormatter">
-	</class>
-	<class name="NSDecimalNumber" swt_superclass="NSNumber">
-	</class>
-	<class name="NSDeleteCommand" swt_superclass="NSScriptCommand">
 	</class>
 	<class name="NSDictionary" swt_gen="mixed">
 		<method selector="allKeys" swt_gen="true">
@@ -283,10 +248,6 @@
 			<retval swt_gen="true"></retval>
 		</method>
 	</class>
-	<class name="NSDistantObject" swt_superclass="NSProxy">
-	</class>
-	<class name="NSDistributedNotificationCenter" swt_superclass="NSNotificationCenter">
-	</class>
 	<class name="NSEnumerator" swt_gen="mixed">
 		<method selector="nextObject" swt_gen="true">
 			<retval swt_gen="true"></retval>
@@ -304,17 +265,6 @@
 		</method>
 	</class>
 	<class name="NSFileManager" swt_gen="mixed">
-		<method selector="URLsForDirectory:inDomains:" swt_gen="true">
-			<arg swt_gen="true"></arg>
-			<arg swt_gen="true"></arg>
-			<retval swt_gen="true"></retval>
-		</method>
-		<method selector="createFileAtPath:contents:attributes:" swt_gen="true">
-			<arg swt_gen="true"></arg>
-			<arg swt_gen="true"></arg>
-			<arg swt_gen="true"></arg>
-			<retval swt_gen="true"></retval>
-		</method>
 		<method class_method="true" selector="defaultManager" swt_gen="true">
 			<retval swt_gen="true"></retval>
 		</method>
@@ -332,11 +282,6 @@
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="isExecutableFileAtPath:" swt_gen="true">
-			<arg swt_gen="true"></arg>
-			<retval swt_gen="true"></retval>
-		</method>
-		<method selector="removeItemAtPath:error:" swt_gen="true">
-			<arg swt_gen="true"></arg>
 			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
@@ -383,8 +328,6 @@
 			<retval swt_gen="true"></retval>
 		</method>
 	</class>
-	<class name="NSHTTPURLResponse" swt_superclass="NSURLResponse">
-	</class>
 	<class name="NSIndexSet" swt_gen="mixed">
 		<method selector="containsIndex:" swt_gen="true">
 			<arg swt_gen="true"></arg>
@@ -393,16 +336,9 @@
 		<method selector="count" swt_gen="true">
 			<retval swt_gen="true"></retval>
 		</method>
-		<method selector="firstIndex" swt_gen="true">
-			<retval swt_gen="true"></retval>
-		</method>
 		<method selector="getIndexes:maxCount:inIndexRange:" swt_gen="true">
 			<arg swt_gen="true" swt_java_type="int[]" swt_java_type64="long[]"></arg>
 			<arg swt_gen="true"></arg>
-			<arg swt_gen="true"></arg>
-			<retval swt_gen="true"></retval>
-		</method>
-		<method class_method="true" selector="indexSetWithIndex:" swt_gen="true">
 			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
@@ -410,20 +346,10 @@
 			<arg swt_gen="true"></arg>
 			<retval swt_gen="true" swt_java_type="NSIndexSet"></retval>
 		</method>
-		<method selector="initWithIndexSet:" swt_gen="true">
-			<arg swt_gen="true"></arg>
-			<retval swt_gen="true"></retval>
-		</method>
 		<method selector="initWithIndexesInRange:" swt_gen="true">
 			<arg swt_gen="true"></arg>
 			<retval swt_gen="true" swt_java_type="NSIndexSet"></retval>
 		</method>
-	</class>
-	<class name="NSIndexSpecifier" swt_superclass="NSScriptObjectSpecifier">
-	</class>
-	<class name="NSInputStream" swt_superclass="NSStream">
-	</class>
-	<class name="NSInvocationOperation" swt_superclass="NSOperation">
 	</class>
 	<class name="NSKeyedArchiver" swt_gen="mixed" swt_superclass="NSCoder">
 		<method class_method="true" selector="archivedDataWithRootObject:" swt_gen="true">
@@ -447,16 +373,6 @@
 			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
-	</class>
-	<class name="NSLogicalTest" swt_superclass="NSScriptWhoseTest">
-	</class>
-	<class name="NSMachBootstrapServer" swt_superclass="NSPortNameServer">
-	</class>
-	<class name="NSMachPort" swt_superclass="NSPort">
-	</class>
-	<class name="NSMessagePortNameServer" swt_superclass="NSPortNameServer">
-	</class>
-	<class name="NSMoveCommand" swt_superclass="NSScriptCommand">
 	</class>
 	<class name="NSMutableArray" swt_gen="mixed" swt_superclass="NSArray">
 		<method selector="addObject:" swt_gen="true">
@@ -508,9 +424,6 @@
 		<method selector="endEditing" swt_gen="true">
 			<retval swt_gen="true"></retval>
 		</method>
-		<method selector="mutableString" swt_gen="true">
-			<retval swt_gen="true"></retval>
-		</method>
 		<method selector="removeAttribute:range:" swt_gen="true">
 			<arg swt_gen="true"></arg>
 			<arg swt_gen="true"></arg>
@@ -525,10 +438,6 @@
 			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
-	</class>
-	<class name="NSMutableCharacterSet" swt_superclass="NSCharacterSet">
-	</class>
-	<class name="NSMutableData" swt_superclass="NSData">
 	</class>
 	<class name="NSMutableDictionary" swt_gen="mixed" swt_superclass="NSDictionary">
 		<method class_method="true" selector="dictionaryWithCapacity:" swt_gen="true">
@@ -560,10 +469,6 @@
 	</class>
 	<class name="NSMutableIndexSet" swt_gen="mixed" swt_superclass="NSIndexSet">
 		<method selector="addIndex:" swt_gen="true">
-			<arg swt_gen="true"></arg>
-			<retval swt_gen="true"></retval>
-		</method>
-		<method selector="removeIndex:" swt_gen="true">
 			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
@@ -606,13 +511,6 @@
 			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
-		<method selector="setValue:forHTTPHeaderField:" swt_gen="true">
-			<arg swt_gen="true"></arg>
-			<arg swt_gen="true"></arg>
-			<retval swt_gen="true"></retval>
-		</method>
-	</class>
-	<class name="NSNameSpecifier" swt_superclass="NSScriptObjectSpecifier">
 	</class>
 	<class name="NSNotification" swt_gen="mixed">
 		<method selector="object" swt_gen="true">
@@ -634,12 +532,6 @@
 			<retval swt_gen="true" swt_java_type="NSNotificationCenter"></retval>
 		</method>
 		<method selector="removeObserver:" swt_gen="true">
-			<arg swt_gen="true"></arg>
-			<retval swt_gen="true"></retval>
-		</method>
-		<method selector="removeObserver:name:object:" swt_gen="true">
-			<arg swt_gen="true"></arg>
-			<arg swt_gen="true"></arg>
 			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
@@ -678,25 +570,7 @@
 		</method>
 	</class>
 	<class name="NSNumberFormatter" swt_gen="mixed" swt_superclass="NSFormatter">
-		<method selector="allowsFloats" swt_gen="true">
-			<retval swt_gen="true"></retval>
-		</method>
-		<method selector="alwaysShowsDecimalSeparator" swt_gen="true">
-			<retval swt_gen="true"></retval>
-		</method>
 		<method selector="decimalSeparator" swt_gen="true">
-			<retval swt_gen="true"></retval>
-		</method>
-		<method selector="maximum" swt_gen="true">
-			<retval swt_gen="true"></retval>
-		</method>
-		<method selector="maximumFractionDigits" swt_gen="true">
-			<retval swt_gen="true"></retval>
-		</method>
-		<method selector="maximumIntegerDigits" swt_gen="true">
-			<retval swt_gen="true"></retval>
-		</method>
-		<method selector="minimum" swt_gen="true">
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="setAllowsFloats:" swt_gen="true">
@@ -818,10 +692,6 @@
 			<retval swt_gen="true"></retval>
 		</method>
 	</class>
-	<class name="NSOutputStream" swt_superclass="NSStream">
-	</class>
-	<class name="NSPortCoder" swt_superclass="NSCoder">
-	</class>
 	<class name="NSProcessInfo" swt_gen="mixed">
 		<method selector="operatingSystemVersion" swt_gen="true">
 			<retval swt_gen="true"></retval>
@@ -829,14 +699,6 @@
 		<method class_method="true" selector="processInfo" swt_gen="true">
 			<retval swt_gen="true"></retval>
 		</method>
-	</class>
-	<class name="NSProtocolChecker" swt_superclass="NSProxy">
-	</class>
-	<class name="NSQuitCommand" swt_superclass="NSScriptCommand">
-	</class>
-	<class name="NSRangeSpecifier" swt_superclass="NSScriptObjectSpecifier">
-	</class>
-	<class name="NSRelativeSpecifier" swt_superclass="NSScriptObjectSpecifier">
 	</class>
 	<class name="NSRunLoop" swt_gen="mixed">
 		<method selector="addTimer:forMode:" swt_gen="true">
@@ -847,16 +709,11 @@
 		<method class_method="true" selector="currentRunLoop" swt_gen="true">
 			<retval swt_gen="true"></retval>
 		</method>
-		<method class_method="true" selector="mainRunLoop" swt_gen="true">
-			<retval swt_gen="true"></retval>
-		</method>
 		<method selector="runMode:beforeDate:" swt_gen="true">
 			<arg swt_gen="true"></arg>
 			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
-	</class>
-	<class name="NSScriptClassDescription" swt_superclass="NSClassDescription">
 	</class>
 	<class name="NSSet" swt_gen="mixed">
 		<method selector="allObjects" swt_gen="true">
@@ -872,14 +729,6 @@
 			<retval swt_alloc="true" swt_gen="true" swt_java_type="NSSet"></retval>
 		</method>
 	</class>
-	<class name="NSSetCommand" swt_superclass="NSScriptCommand">
-	</class>
-	<class name="NSSocketPort" swt_superclass="NSPort">
-	</class>
-	<class name="NSSocketPortNameServer" swt_superclass="NSPortNameServer">
-	</class>
-	<class name="NSSpecifierTest" swt_superclass="NSScriptWhoseTest">
-	</class>
 	<class name="NSString" swt_gen="mixed">
 		<method selector="UTF8String" swt_gen="true">
 			<retval swt_gen="true"></retval>
@@ -890,9 +739,6 @@
 		</method>
 		<method selector="compare:" swt_gen="true">
 			<arg swt_gen="true"></arg>
-			<retval swt_gen="true"></retval>
-		</method>
-		<method selector="fileSystemRepresentation" swt_gen="true">
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="getCharacters:" swt_gen="true">
@@ -1083,16 +929,10 @@
 		<method selector="URL" swt_gen="true">
 			<retval swt_gen="true"></retval>
 		</method>
-		<method selector="initWithURL:" swt_gen="true">
-			<arg swt_gen="true"></arg>
-			<retval swt_gen="true" swt_java_type="NSURLRequest"></retval>
-		</method>
 		<method class_method="true" selector="requestWithURL:" swt_gen="true">
 			<arg swt_gen="true"></arg>
 			<retval swt_alloc="true" swt_gen="true" swt_java_type="NSURLRequest"></retval>
 		</method>
-	</class>
-	<class name="NSUnarchiver" swt_superclass="NSCoder">
 	</class>
 	<class name="NSUndoManager" swt_gen="mixed">
 		<method selector="canRedo" swt_gen="true">
@@ -1107,8 +947,6 @@
 		<method selector="undo" swt_gen="true">
 			<retval swt_gen="true"></retval>
 		</method>
-	</class>
-	<class name="NSUniqueIDSpecifier" swt_superclass="NSScriptObjectSpecifier">
 	</class>
 	<class name="NSUserDefaults" swt_gen="mixed">
 		<method selector="objectForKey:" swt_gen="true">
@@ -1161,23 +999,11 @@
 			<retval swt_gen="true"></retval>
 		</method>
 	</class>
-	<class name="NSWhoseSpecifier" swt_superclass="NSScriptObjectSpecifier">
-	</class>
-	<class name="NSXMLDTD" swt_superclass="NSXMLNode">
-	</class>
-	<class name="NSXMLDTDNode" swt_superclass="NSXMLNode">
-	</class>
-	<class name="NSXMLDocument" swt_superclass="NSXMLNode">
-	</class>
-	<class name="NSXMLElement" swt_superclass="NSXMLNode">
-	</class>
 	<constant name="NSDefaultRunLoopMode" swt_gen="true"></constant>
 	<constant name="NSLocaleLanguageCode" swt_gen="true"></constant>
 	<constant name="NSNotFound" swt_gen="true"></constant>
 	<enum name="NSAllApplicationsDirectory" swt_gen="true"></enum>
 	<enum name="NSAllDomainsMask" swt_gen="true"></enum>
-	<enum name="NSCachesDirectory" swt_gen="true"></enum>
-	<enum name="NSNotFound" swt_gen="true"></enum>
 	<enum name="NSOrderedSame" swt_gen="true"></enum>
 	<enum name="NSURLCredentialPersistenceForSession" swt_gen="true"></enum>
 	<enum name="NSURLErrorBadURL" swt_gen="true"></enum>
@@ -1185,20 +1011,9 @@
 	<enum name="NSURLErrorServerCertificateNotYetValid" swt_gen="true"></enum>
 	<enum name="NSURLRequestReloadIgnoringLocalCacheData" swt_gen="true"></enum>
 	<enum name="NSUTF8StringEncoding" swt_gen="true"></enum>
-	<enum name="NSUserDomainMask" swt_gen="true"></enum>
 	<function name="NSEqualRects" swt_gen="true">
 		<arg swt_gen="true"></arg>
 		<arg swt_gen="true"></arg>
-		<retval swt_gen="true"></retval>
-	</function>
-	<function name="NSFileTypeForHFSTypeCode" swt_gen="true">
-		<arg swt_gen="true"></arg>
-		<retval swt_gen="true"></retval>
-	</function>
-	<function name="NSGetSizeAndAlignment" swt_gen="true">
-		<arg swt_gen="true"></arg>
-		<arg swt_gen="true" swt_java_type="int[]" swt_java_type64="long[]"></arg>
-		<arg swt_gen="true" swt_java_type="int[]" swt_java_type64="long[]"></arg>
 		<retval swt_gen="true"></retval>
 	</function>
 	<function name="NSPointInRect" swt_gen="true">
@@ -1210,9 +1025,6 @@
 		<arg swt_gen="true"></arg>
 		<arg swt_gen="true"></arg>
 		<arg swt_gen="true"></arg>
-		<retval swt_gen="true"></retval>
-	</function>
-	<function name="NSTemporaryDirectory" swt_gen="true">
 		<retval swt_gen="true"></retval>
 	</function>
 	<informal_protocol name="NSURLDownloadDelegate" swt_gen="mixed">

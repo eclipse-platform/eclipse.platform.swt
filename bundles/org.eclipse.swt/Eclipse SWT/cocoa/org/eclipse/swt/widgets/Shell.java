@@ -1742,7 +1742,7 @@ public void setFullScreen (boolean fullScreen) {
 	if (_getFullScreen () == fullScreen) return;
 
 	if ((window.collectionBehavior() & OS.NSWindowCollectionBehaviorFullScreenPrimary) != 0) {
-		OS.objc_msgSend(window.id, OS.sel_toggleFullScreen_, 0);
+		window.toggleFullScreen(Display.applicationDelegate);
 		return;
 	}
 

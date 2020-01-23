@@ -3347,7 +3347,7 @@ public boolean post(Event event) {
 					int maxStringLength = 256;
 					vKey = -1;
 					char [] output = new char [maxStringLength];
-					int [] actualStringLength = new int [1];
+					long [] actualStringLength = new long [1];
 					for (short i = 0 ; i <= 0x7F ; i++) {
 						deadKeyState[0] = 0;
 						OS.UCKeyTranslate (uchrPtr, i, (short)(type == SWT.KeyDown ? OS.kUCKeyActionDown : OS.kUCKeyActionUp), 0, OS.LMGetKbdType(), 0, deadKeyState, maxStringLength, actualStringLength, output);

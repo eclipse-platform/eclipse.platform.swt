@@ -35,6 +35,10 @@ public long hitPart() {
 	return OS.objc_msgSend(this.id, OS.sel_hitPart);
 }
 
+public static boolean isCompatibleWithOverlayScrollers() {
+	return OS.objc_msgSend_bool(OS.class_NSScroller, OS.sel_isCompatibleWithOverlayScrollers);
+}
+
 public double knobProportion() {
 	return OS.objc_msgSend_fpret(this.id, OS.sel_knobProportion);
 }
@@ -43,10 +47,6 @@ public NSRect rectForPart(long partCode) {
 	NSRect result = new NSRect();
 	OS.objc_msgSend_stret(result, this.id, OS.sel_rectForPart_, partCode);
 	return result;
-}
-
-public static double scrollerWidth() {
-	return OS.objc_msgSend_fpret(OS.class_NSScroller, OS.sel_scrollerWidth);
 }
 
 public static double scrollerWidthForControlSize(long controlSize) {

@@ -127,10 +127,6 @@ public void setBackgroundLayoutEnabled(boolean backgroundLayoutEnabled) {
 	OS.objc_msgSend(this.id, OS.sel_setBackgroundLayoutEnabled_, backgroundLayoutEnabled);
 }
 
-public void setLineFragmentRect(NSRect fragmentRect, NSRange glyphRange, NSRect usedRect) {
-	OS.objc_msgSend(this.id, OS.sel_setLineFragmentRect_forGlyphRange_usedRect_, fragmentRect, glyphRange, usedRect);
-}
-
 public void setTextStorage(NSTextStorage textStorage) {
 	OS.objc_msgSend(this.id, OS.sel_setTextStorage_, textStorage != null ? textStorage.id : 0);
 }

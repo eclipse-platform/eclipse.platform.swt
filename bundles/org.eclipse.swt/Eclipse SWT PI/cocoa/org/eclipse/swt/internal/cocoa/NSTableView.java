@@ -31,10 +31,6 @@ public void addTableColumn(NSTableColumn column) {
 	OS.objc_msgSend(this.id, OS.sel_addTableColumn_, column != null ? column.id : 0);
 }
 
-public boolean allowsColumnReordering() {
-	return OS.objc_msgSend_bool(this.id, OS.sel_allowsColumnReordering);
-}
-
 public boolean canDragRowsWithIndexes(NSIndexSet rowIndexes, NSPoint mouseDownPoint) {
 	return OS.objc_msgSend_bool(this.id, OS.sel_canDragRowsWithIndexes_atPoint_, rowIndexes != null ? rowIndexes.id : 0, mouseDownPoint);
 }
@@ -49,15 +45,6 @@ public long clickedRow() {
 
 public long columnAtPoint(NSPoint point) {
 	return OS.objc_msgSend(this.id, OS.sel_columnAtPoint_, point);
-}
-
-public NSIndexSet columnIndexesInRect(NSRect rect) {
-	long result = OS.objc_msgSend(this.id, OS.sel_columnIndexesInRect_, rect);
-	return result != 0 ? new NSIndexSet(result) : null;
-}
-
-public long columnWithIdentifier(NSString identifier) {
-	return OS.objc_msgSend(this.id, OS.sel_columnWithIdentifier_, identifier != null ? identifier.id : 0);
 }
 
 public void deselectAll(id sender) {
@@ -153,12 +140,6 @@ public long rowAtPoint(NSPoint point) {
 
 public double rowHeight() {
 	return OS.objc_msgSend_fpret(this.id, OS.sel_rowHeight);
-}
-
-public NSRange rowsInRect(NSRect rect) {
-	NSRange result = new NSRange();
-	OS.objc_msgSend_stret(result, this.id, OS.sel_rowsInRect_, rect);
-	return result;
 }
 
 public void scrollColumnToVisible(long column) {

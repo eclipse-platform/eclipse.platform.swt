@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2018 IBM Corporation and others.
+ * Copyright (c) 2000, 2019 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -77,11 +77,6 @@ public NSRect focusRingMaskBoundsForFrame(NSRect cellFrame, NSView controlView) 
 public NSFont font() {
 	long result = OS.objc_msgSend(this.id, OS.sel_font);
 	return result != 0 ? new NSFont(result) : null;
-}
-
-public NSColor highlightColorWithFrame(NSRect cellFrame, NSView controlView) {
-	long result = OS.objc_msgSend(this.id, OS.sel_highlightColorWithFrame_inView_, cellFrame, controlView != null ? controlView.id : 0);
-	return result != 0 ? new NSColor(result) : null;
 }
 
 public long hitTestForEvent(NSEvent event, NSRect cellFrame, NSView controlView) {
@@ -188,10 +183,6 @@ public NSRect titleRectForBounds(NSRect theRect) {
 	NSRect result = new NSRect();
 	OS.objc_msgSend_stret(result, this.id, OS.sel_titleRectForBounds_, theRect);
 	return result;
-}
-
-public boolean wraps() {
-	return OS.objc_msgSend_bool(this.id, OS.sel_wraps);
 }
 
 }

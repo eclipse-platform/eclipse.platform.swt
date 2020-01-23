@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="UTF8"?>
 <signatures swt_gen="mixed">
-	<class name="NSATSTypesetter" swt_superclass="NSTypesetter">
-	</class>
 	<class name="NSActionCell" swt_gen="mixed" swt_superclass="NSCell">
 		<method selector="action" swt_gen="true">
 			<retval swt_gen="true"></retval>
@@ -123,9 +121,6 @@
 		<method selector="mainMenu" swt_gen="true">
 			<retval swt_gen="true"></retval>
 		</method>
-		<method selector="mainWindow" swt_gen="true">
-			<retval swt_gen="true"></retval>
-		</method>
 		<method selector="nextEventMatchingMask:untilDate:inMode:dequeue:" swt_gen="true" swt_gen_super_msgSend="true">
 			<arg swt_gen="true"></arg>
 			<arg swt_gen="true"></arg>
@@ -137,9 +132,6 @@
 			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
-		<method selector="orderedWindows" swt_gen="true">
-			<retval swt_gen="true"></retval>
-		</method>
 		<method selector="postEvent:atStart:" swt_gen="true">
 			<arg swt_gen="true"></arg>
 			<arg swt_gen="true"></arg>
@@ -147,9 +139,6 @@
 		</method>
 		<method selector="replyToOpenOrPrint:" swt_gen="true">
 			<arg swt_gen="true"></arg>
-			<retval swt_gen="true"></retval>
-		</method>
-		<method selector="run" swt_gen="true">
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="runModalForWindow:" swt_gen="true">
@@ -216,23 +205,9 @@
 			<retval swt_gen="true"></retval>
 		</method>
 	</class>
-	<class name="NSArrayController" swt_superclass="NSObjectController">
-	</class>
 	<class name="NSAttributedString" swt_gen="mixed">
-		<method class_method="true" selector="attributedStringWithAttachment:" swt_gen="true">
-			<arg swt_gen="true"></arg>
-			<retval swt_gen="true"></retval>
-		</method>
 		<method selector="boundingRectWithSize:options:" swt_gen="true">
 			<arg swt_gen="true"></arg>
-			<arg swt_gen="true"></arg>
-			<retval swt_gen="true"></retval>
-		</method>
-		<method selector="doubleClickAtIndex:" swt_gen="true">
-			<arg swt_gen="true"></arg>
-			<retval swt_gen="true"></retval>
-		</method>
-		<method selector="drawAtPoint:" swt_gen="true">
 			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
@@ -254,13 +229,6 @@
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="appendBezierPath:" swt_gen="true">
-			<arg swt_gen="true"></arg>
-			<retval swt_gen="true"></retval>
-		</method>
-		<method selector="appendBezierPathWithArcWithCenter:radius:startAngle:endAngle:" swt_gen="true">
-			<arg swt_gen="true"></arg>
-			<arg swt_gen="true"></arg>
-			<arg swt_gen="true"></arg>
 			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
@@ -408,9 +376,6 @@
 		</method>
 	</class>
 	<class name="NSBitmapImageRep" swt_gen="mixed" swt_superclass="NSImageRep">
-		<method selector="TIFFRepresentation" swt_gen="true">
-			<retval swt_gen="true"></retval>
-		</method>
 		<method selector="bitmapData" swt_gen="true">
 			<retval swt_gen="true"></retval>
 		</method>
@@ -420,22 +385,11 @@
 		<method selector="bitsPerPixel" swt_gen="true">
 			<retval swt_gen="true"></retval>
 		</method>
-		<method selector="bytesPerPlane" swt_gen="true">
-			<retval swt_gen="true"></retval>
-		</method>
 		<method selector="bytesPerRow" swt_gen="true">
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="colorAtX:y:" swt_gen="true">
 			<arg swt_gen="true"></arg>
-			<arg swt_gen="true"></arg>
-			<retval swt_gen="true"></retval>
-		</method>
-		<method selector="getBitmapDataPlanes:" swt_gen="true">
-			<arg swt_gen="true" swt_java_type="int[]" swt_java_type64="long[]"></arg>
-			<retval swt_gen="true"></retval>
-		</method>
-		<method class_method="true" selector="imageRepWithData:" swt_gen="true">
 			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
@@ -453,31 +407,11 @@
 			<arg swt_gen="true"></arg>
 			<retval swt_gen="true" swt_java_type="NSBitmapImageRep"></retval>
 		</method>
-		<method selector="initWithBitmapDataPlanes:pixelsWide:pixelsHigh:bitsPerSample:samplesPerPixel:hasAlpha:isPlanar:colorSpaceName:bytesPerRow:bitsPerPixel:" swt_gen="true">
-			<arg swt_gen="true"></arg>
-			<arg swt_gen="true"></arg>
-			<arg swt_gen="true"></arg>
-			<arg swt_gen="true"></arg>
-			<arg swt_gen="true"></arg>
-			<arg swt_gen="true"></arg>
-			<arg swt_gen="true"></arg>
-			<arg swt_gen="true"></arg>
-			<arg swt_gen="true"></arg>
-			<arg swt_gen="true"></arg>
-			<retval swt_gen="true" swt_java_type="NSBitmapImageRep"></retval>
-		</method>
 		<method selector="initWithData:" swt_gen="true">
 			<arg swt_gen="true"></arg>
 			<retval swt_gen="true" swt_java_type="NSBitmapImageRep"></retval>
 		</method>
-		<method selector="initWithFocusedViewRect:" swt_gen="true">
-			<arg swt_gen="true"></arg>
-			<retval swt_gen="true" swt_java_type="NSBitmapImageRep"></retval>
-		</method>
 		<method selector="isPlanar" swt_gen="true">
-			<retval swt_gen="true"></retval>
-		</method>
-		<method selector="numberOfPlanes" swt_gen="true">
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="samplesPerPixel" swt_gen="true">
@@ -534,25 +468,10 @@
 			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
-		<method selector="sizeToFit" swt_gen="true">
-			<retval swt_gen="true"></retval>
-		</method>
 		<method selector="titleCell" swt_gen="true">
 			<retval swt_gen="true" swt_java_type="NSCell"></retval>
 		</method>
 		<method selector="titleFont" swt_gen="true">
-			<retval swt_gen="true"></retval>
-		</method>
-	</class>
-	<class name="NSBrowser" swt_superclass="NSControl">
-	</class>
-	<class name="NSBrowserCell" swt_gen="mixed" swt_superclass="NSCell">
-		<method selector="highlightColorInView:" swt_gen="true">
-			<arg swt_gen="true"></arg>
-			<retval swt_gen="true"></retval>
-		</method>
-		<method selector="setLeaf:" swt_gen="true">
-			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
 	</class>
@@ -616,9 +535,6 @@
 		</method>
 	</class>
 	<class name="NSButtonCell" swt_gen="mixed" swt_superclass="NSActionCell">
-		<method selector="backgroundColor" swt_gen="true">
-			<retval swt_gen="true"></retval>
-		</method>
 		<method selector="drawBezelWithFrame:inView:" swt_gen="true" swt_gen_custom_callback="true" swt_gen_super_msgSend="true">
 			<arg swt_gen="true"></arg>
 			<arg swt_gen="true"></arg>
@@ -655,10 +571,6 @@
 		<method selector="title" swt_gen="true">
 			<retval swt_gen="true"></retval>
 		</method>
-	</class>
-	<class name="NSCIImageRep" swt_superclass="NSImageRep">
-	</class>
-	<class name="NSCachedImageRep" swt_superclass="NSImageRep">
 	</class>
 	<class name="NSCell" swt_gen="mixed">
 		<method selector="attributedStringValue" swt_gen="true">
@@ -699,11 +611,6 @@
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="font" swt_gen="true">
-			<retval swt_gen="true"></retval>
-		</method>
-		<method selector="highlightColorWithFrame:inView:" swt_gen="true">
-			<arg swt_gen="true"></arg>
-			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="hitTestForEvent:inRect:ofView:" swt_gen="true" swt_gen_custom_callback="true">
@@ -803,19 +710,9 @@
 			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
-		<method selector="wraps" swt_gen="true">
-			<retval swt_gen="true"></retval>
-		</method>
 	</class>
 	<class name="NSClipView" swt_gen="mixed" swt_superclass="NSView">
 		<method selector="copiesOnScroll" swt_gen="true">
-			<retval swt_gen="true"></retval>
-		</method>
-		<method selector="documentCursor" swt_gen="true">
-			<retval swt_gen="true"></retval>
-		</method>
-		<method selector="scrollToPoint:" swt_gen="true">
-			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="setCopiesOnScroll:" swt_gen="true">
@@ -830,8 +727,6 @@
 			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
-	</class>
-	<class name="NSCollectionView" swt_superclass="NSView">
 	</class>
 	<class name="NSColor" swt_gen="mixed">
 		<method selector="alphaComponent" swt_gen="true">
@@ -856,13 +751,6 @@
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="colorUsingColorSpaceName:" swt_gen="true">
-			<arg swt_gen="true"></arg>
-			<retval swt_gen="true"></retval>
-		</method>
-		<method class_method="true" selector="colorWithCalibratedRed:green:blue:alpha:" swt_gen="true">
-			<arg swt_gen="true"></arg>
-			<arg swt_gen="true"></arg>
-			<arg swt_gen="true"></arg>
 			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
@@ -944,9 +832,6 @@
 		<method class_method="true" selector="windowBackgroundColor" swt_gen="true">
 			<retval swt_gen="true"></retval>
 		</method>
-		<method class_method="true" selector="windowFrameColor" swt_gen="true">
-			<retval swt_gen="true"></retval>
-		</method>
 		<method class_method="true" selector="windowFrameTextColor" swt_gen="true">
 			<retval swt_gen="true"></retval>
 		</method>
@@ -998,11 +883,6 @@
 		<method selector="colorSpaceModel" swt_gen="true">
 			<retval swt_gen="true"></retval>
 		</method>
-		<method class_method="true" selector="genericRGBColorSpace" swt_gen="true">
-			<retval swt_gen="true"></retval>
-		</method>
-	</class>
-	<class name="NSColorWell" swt_superclass="NSControl">
 	</class>
 	<class name="NSComboBox" swt_gen="mixed" swt_superclass="NSTextField">
 		<method selector="addItemWithObjectValue:" swt_gen="true">
@@ -1155,9 +1035,6 @@
 		<method class_method="true" selector="currentCursor" swt_gen="true">
 			<retval swt_gen="true"></retval>
 		</method>
-		<method selector="hotSpot" swt_gen="true">
-			<retval swt_gen="true"></retval>
-		</method>
 		<method selector="initWithImage:hotSpot:" swt_gen="true">
 			<arg swt_gen="true"></arg>
 			<arg swt_gen="true"></arg>
@@ -1242,10 +1119,6 @@
 			<retval swt_gen="true"></retval>
 		</method>
 	</class>
-	<class name="NSDatePickerCell" swt_superclass="NSActionCell">
-	</class>
-	<class name="NSDictionaryController" swt_superclass="NSArrayController">
-	</class>
 	<class name="NSDockTile" swt_gen="mixed">
 		<method selector="badgeLabel" swt_gen="true">
 			<retval swt_gen="true"></retval>
@@ -1254,10 +1127,6 @@
 			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
-	</class>
-	<class name="NSDrawer" swt_superclass="NSResponder">
-	</class>
-	<class name="NSEPSImageRep" swt_superclass="NSImageRep">
 	</class>
 	<class name="NSEvent" swt_gen="mixed">
 		<method selector="CGEvent" swt_gen="true">
@@ -1361,10 +1230,6 @@
 			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
-		<method class_method="true" selector="controlContentFontOfSize:" swt_gen="true">
-			<arg swt_gen="true"></arg>
-			<retval swt_gen="true"></retval>
-		</method>
 		<method selector="descender" swt_gen="true">
 			<retval swt_gen="true"></retval>
 		</method>
@@ -1386,10 +1251,6 @@
 			<retval swt_gen="true"></retval>
 		</method>
 		<method class_method="true" selector="menuBarFontOfSize:" swt_gen="true">
-			<arg swt_gen="true"></arg>
-			<retval swt_gen="true"></retval>
-		</method>
-		<method class_method="true" selector="menuFontOfSize:" swt_gen="true">
 			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
@@ -1415,9 +1276,6 @@
 		<method selector="availableFontFamilies" swt_gen="true">
 			<retval swt_gen="true"></retval>
 		</method>
-		<method selector="availableFonts" swt_gen="true">
-			<retval swt_gen="true"></retval>
-		</method>
 		<method selector="availableMembersOfFontFamily:" swt_gen="true">
 			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
@@ -1427,21 +1285,10 @@
 			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
-		<method selector="fontWithFamily:traits:weight:size:" swt_gen="true">
-			<arg swt_gen="true"></arg>
-			<arg swt_gen="true"></arg>
-			<arg swt_gen="true"></arg>
-			<arg swt_gen="true"></arg>
-			<retval swt_gen="true"></retval>
-		</method>
 		<method class_method="true" selector="sharedFontManager" swt_gen="true">
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="traitsOfFont:" swt_gen="true">
-			<arg swt_gen="true"></arg>
-			<retval swt_gen="true"></retval>
-		</method>
-		<method selector="weightOfFont:" swt_gen="true">
 			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
@@ -1459,10 +1306,6 @@
 		<method class_method="true" selector="sharedFontPanel" swt_gen="true">
 			<retval swt_gen="true"></retval>
 		</method>
-	</class>
-	<class name="NSForm" swt_superclass="NSMatrix">
-	</class>
-	<class name="NSFormCell" swt_superclass="NSActionCell">
 	</class>
 	<class name="NSGradient" swt_gen="mixed">
 		<method selector="drawFromPoint:toPoint:options:" swt_gen="true">
@@ -1571,13 +1414,6 @@
 			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
-		<method selector="drawAtPoint:fromRect:operation:fraction:" swt_gen="true">
-			<arg swt_gen="true"></arg>
-			<arg swt_gen="true"></arg>
-			<arg swt_gen="true"></arg>
-			<arg swt_gen="true"></arg>
-			<retval swt_gen="true"></retval>
-		</method>
 		<method selector="drawInRect:fromRect:operation:fraction:" swt_gen="true">
 			<arg swt_gen="true"></arg>
 			<arg swt_gen="true"></arg>
@@ -1638,13 +1474,8 @@
 			<retval swt_gen="true"></retval>
 		</method>
 	</class>
-	<class name="NSImageCell" swt_superclass="NSCell">
-	</class>
 	<class name="NSImageRep" swt_gen="mixed">
 		<method selector="bitsPerSample" swt_gen="true">
-			<retval swt_gen="true"></retval>
-		</method>
-		<method selector="colorSpaceName" swt_gen="true">
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="drawInRect:" swt_gen="true">
@@ -1814,12 +1645,6 @@
 			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
-		<method selector="setLineFragmentRect:forGlyphRange:usedRect:" swt_gen="true">
-			<arg swt_gen="true"></arg>
-			<arg swt_gen="true"></arg>
-			<arg swt_gen="true"></arg>
-			<retval swt_gen="true"></retval>
-		</method>
 		<method selector="setTextStorage:" swt_gen="true">
 			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
@@ -1835,12 +1660,6 @@
 			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
-	</class>
-	<class name="NSLevelIndicator" swt_superclass="NSControl">
-	</class>
-	<class name="NSLevelIndicatorCell" swt_superclass="NSActionCell">
-	</class>
-	<class name="NSMatrix" swt_superclass="NSControl">
 	</class>
 	<class name="NSMenu" swt_gen="mixed">
 		<method selector="addItem:" swt_gen="true">
@@ -2026,15 +1845,6 @@
 			<retval swt_gen="true"></retval>
 		</method>
 	</class>
-	<class name="NSMenuItemCell" swt_superclass="NSButtonCell">
-	</class>
-	<class name="NSMutableAttributedString" swt_gen="mixed" swt_superclass="NSAttributedString">
-		<method selector="setBaseWritingDirection:range:" swt_gen="true">
-			<arg swt_gen="true"></arg>
-			<arg swt_gen="true"></arg>
-			<retval swt_gen="true"></retval>
-		</method>
-	</class>
 	<class name="NSMutableParagraphStyle" swt_gen="mixed" swt_superclass="NSParagraphStyle">
 		<method selector="addTabStop:" swt_gen="true">
 			<arg swt_gen="true"></arg>
@@ -2072,8 +1882,6 @@
 			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
-	</class>
-	<class name="NSNibOutletConnector" swt_superclass="NSNibConnector">
 	</class>
 	<class name="NSObject" swt_gen="mixed">
 		<method selector="accessibilityAttributeValue:forParameter:" swt_gen="true" swt_gen_super_msgSend="true">
@@ -2116,11 +1924,6 @@
 			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
-		<method selector="outlineView:shouldSelectItem:" swt_gen="true">
-			<arg swt_gen="true"></arg>
-			<arg swt_gen="true"></arg>
-			<retval swt_gen="true"></retval>
-		</method>
 		<method selector="outlineView:shouldTrackCell:forTableColumn:item:" swt_gen="true">
 			<arg swt_gen="true"></arg>
 			<arg swt_gen="true"></arg>
@@ -2138,11 +1941,6 @@
 			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
-		<method selector="tableView:shouldSelectRow:" swt_gen="true">
-			<arg swt_gen="true"></arg>
-			<arg swt_gen="true"></arg>
-			<retval swt_gen="true"></retval>
-		</method>
 		<method selector="tableView:shouldTrackCell:forTableColumn:row:" swt_gen="true">
 			<arg swt_gen="true"></arg>
 			<arg swt_gen="true"></arg>
@@ -2156,12 +1954,7 @@
 			<retval swt_gen="true"></retval>
 		</method>
 	</class>
-	<class name="NSObjectController" swt_superclass="NSController">
-	</class>
 	<class name="NSOpenGLContext" swt_gen="mixed">
-		<method class_method="true" selector="clearCurrentContext" swt_gen="true">
-			<retval swt_gen="true"></retval>
-		</method>
 		<method selector="clearDrawable" swt_gen="true">
 			<retval swt_gen="true"></retval>
 		</method>
@@ -2206,8 +1999,6 @@
 			<arg swt_gen="true" swt_java_type="int[]"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
-	</class>
-	<class name="NSOpenGLView" swt_superclass="NSView">
 	</class>
 	<class name="NSOpenPanel" swt_gen="mixed" swt_superclass="NSSavePanel">
 		<method selector="filenames" swt_gen="true">
@@ -2267,9 +2058,6 @@
 			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
-		<method selector="outlineTableColumn" swt_gen="true">
-			<retval swt_gen="true"></retval>
-		</method>
 		<method selector="reloadItem:reloadChildren:" swt_gen="true">
 			<arg swt_gen="true"></arg>
 			<arg swt_gen="true"></arg>
@@ -2297,10 +2085,6 @@
 			<retval swt_gen="true"></retval>
 		</method>
 	</class>
-	<class name="NSPDFImageRep" swt_superclass="NSImageRep">
-	</class>
-	<class name="NSPICTImageRep" swt_superclass="NSImageRep">
-	</class>
 	<class name="NSPanel" swt_gen="mixed" swt_superclass="NSWindow">
 		<method selector="setBecomesKeyOnlyIfNeeded:" swt_gen="true">
 			<arg swt_gen="true"></arg>
@@ -2314,15 +2098,9 @@
 			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
-		<method selector="worksWhenModal" swt_gen="true">
-			<retval swt_gen="true"></retval>
-		</method>
 	</class>
 	<class name="NSParagraphStyle" swt_gen="mixed">
 		<method selector="alignment" swt_gen="true">
-			<retval swt_gen="true"></retval>
-		</method>
-		<method selector="tabStops" swt_gen="true">
 			<retval swt_gen="true"></retval>
 		</method>
 	</class>
@@ -2383,14 +2161,6 @@
 			<retval swt_gen="true"></retval>
 		</method>
 	</class>
-	<class name="NSPathCell" swt_superclass="NSActionCell">
-	</class>
-	<class name="NSPathComponentCell" swt_superclass="NSTextFieldCell">
-	</class>
-	<class name="NSPathControl" swt_superclass="NSControl">
-	</class>
-	<class name="NSPersistentDocument" swt_superclass="NSDocument">
-	</class>
 	<class name="NSPopUpButton" swt_gen="mixed" swt_superclass="NSButton">
 		<method selector="indexOfSelectedItem" swt_gen="true">
 			<retval swt_gen="true"></retval>
@@ -2441,10 +2211,6 @@
 			<retval swt_gen="true"></retval>
 		</method>
 	</class>
-	<class name="NSPopUpButtonCell" swt_superclass="NSMenuItemCell">
-	</class>
-	<class name="NSPredicateEditor" swt_superclass="NSRuleEditor">
-	</class>
 	<class name="NSPrintInfo" swt_gen="mixed">
 		<method selector="PMPrintSession" swt_gen="true">
 			<retval swt_gen="true"></retval>
@@ -2461,10 +2227,6 @@
 		<method selector="imageablePageBounds" swt_gen="true">
 			<retval swt_gen="true"></retval>
 		</method>
-		<method selector="initWithDictionary:" swt_gen="true">
-			<arg swt_gen="true"></arg>
-			<retval swt_gen="true" swt_java_type="NSPrintInfo"></retval>
-		</method>
 		<method selector="isSelectionOnly" swt_gen="true">
 			<retval swt_gen="true"></retval>
 		</method>
@@ -2472,9 +2234,6 @@
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="paperSize" swt_gen="true">
-			<retval swt_gen="true"></retval>
-		</method>
-		<method selector="printSettings" swt_gen="true">
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="printer" swt_gen="true">
@@ -2580,9 +2339,6 @@
 		</method>
 	</class>
 	<class name="NSProgressIndicator" swt_gen="mixed" swt_superclass="NSView">
-		<method selector="controlSize" swt_gen="true">
-			<retval swt_gen="true"></retval>
-		</method>
 		<method selector="doubleValue" swt_gen="true">
 			<retval swt_gen="true"></retval>
 		</method>
@@ -2616,14 +2372,7 @@
 			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
-		<method selector="sizeToFit" swt_gen="true">
-			<retval swt_gen="true"></retval>
-		</method>
 		<method selector="startAnimation:" swt_gen="true">
-			<arg swt_gen="true"></arg>
-			<retval swt_gen="true"></retval>
-		</method>
-		<method selector="stopAnimation:" swt_gen="true">
 			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
@@ -2652,10 +2401,6 @@
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="helpRequested:" swt_gen="true">
-			<arg swt_gen="true"></arg>
-			<retval swt_gen="true"></retval>
-		</method>
-		<method selector="insertText:" swt_gen="true">
 			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
@@ -2696,18 +2441,6 @@
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="mouseUp:" swt_gen="true">
-			<arg swt_gen="true"></arg>
-			<retval swt_gen="true"></retval>
-		</method>
-		<method selector="moveToBeginningOfParagraph:" swt_gen="true">
-			<arg swt_gen="true"></arg>
-			<retval swt_gen="true"></retval>
-		</method>
-		<method selector="moveToEndOfParagraph:" swt_gen="true">
-			<arg swt_gen="true"></arg>
-			<retval swt_gen="true"></retval>
-		</method>
-		<method selector="moveUp:" swt_gen="true">
 			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
@@ -2790,10 +2523,6 @@
 			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
-	</class>
-	<class name="NSRuleEditor" swt_superclass="NSControl">
-	</class>
-	<class name="NSRulerView" swt_superclass="NSView">
 	</class>
 	<class name="NSRunningApplication" swt_gen="mixed">
 		<method selector="activateWithOptions:" swt_gen="true">
@@ -2909,7 +2638,19 @@
 		<method selector="documentVisibleRect" swt_gen="true">
 			<retval swt_gen="true"></retval>
 		</method>
+		<method selector="flashScrollers" swt_gen="true">
+			<retval swt_gen="true"></retval>
+		</method>
 		<method class_method="true" selector="frameSizeForContentSize:hasHorizontalScroller:hasVerticalScroller:borderType:" swt_gen="true">
+			<arg swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
+		</method>
+		<method class_method="true" selector="frameSizeForContentSize:horizontalScrollerClass:verticalScrollerClass:borderType:controlSize:scrollerStyle:" swt_gen="true">
+			<arg swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
 			<arg swt_gen="true"></arg>
 			<arg swt_gen="true"></arg>
 			<arg swt_gen="true"></arg>
@@ -2918,6 +2659,9 @@
 		</method>
 		<method selector="reflectScrolledClipView:" swt_gen="true">
 			<arg swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
+		</method>
+		<method selector="scrollerStyle" swt_gen="true">
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="setAutohidesScrollers:" swt_gen="true">
@@ -2967,14 +2711,14 @@
 		<method selector="hitPart" swt_gen="true">
 			<retval swt_gen="true"></retval>
 		</method>
+		<method class_method="true" selector="isCompatibleWithOverlayScrollers" swt_gen="true">
+			<retval swt_gen="true"></retval>
+		</method>
 		<method selector="knobProportion" swt_gen="true">
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="rectForPart:" swt_gen="true">
 			<arg swt_gen="true"></arg>
-			<retval swt_gen="true"></retval>
-		</method>
-		<method class_method="true" selector="scrollerWidth" swt_gen="true">
 			<retval swt_gen="true"></retval>
 		</method>
 		<method class_method="true" selector="scrollerWidthForControlSize:" swt_gen="true">
@@ -3028,68 +2772,6 @@
 		</method>
 	</class>
 	<class name="NSSecureTextField" swt_gen="true" swt_superclass="NSTextField"></class>
-	<class name="NSSecureTextFieldCell" swt_superclass="NSTextFieldCell">
-	</class>
-	<class name="NSSegmentedCell" swt_gen="mixed" swt_superclass="NSActionCell">
-		<method selector="setEnabled:forSegment:" swt_gen="true">
-			<arg swt_gen="true"></arg>
-			<arg swt_gen="true"></arg>
-			<retval swt_gen="true"></retval>
-		</method>
-		<method selector="setImage:forSegment:" swt_gen="true">
-			<arg swt_gen="true"></arg>
-			<arg swt_gen="true"></arg>
-			<retval swt_gen="true"></retval>
-		</method>
-		<method selector="setLabel:forSegment:" swt_gen="true">
-			<arg swt_gen="true"></arg>
-			<arg swt_gen="true"></arg>
-			<retval swt_gen="true"></retval>
-		</method>
-		<method selector="setMenu:forSegment:" swt_gen="true">
-			<arg swt_gen="true"></arg>
-			<arg swt_gen="true"></arg>
-			<retval swt_gen="true"></retval>
-		</method>
-		<method selector="setSegmentCount:" swt_gen="true">
-			<arg swt_gen="true"></arg>
-			<retval swt_gen="true"></retval>
-		</method>
-		<method selector="setSegmentStyle:" swt_gen="true">
-			<arg swt_gen="true"></arg>
-			<retval swt_gen="true"></retval>
-		</method>
-		<method selector="setSelected:forSegment:" swt_gen="true">
-			<arg swt_gen="true"></arg>
-			<arg swt_gen="true"></arg>
-			<retval swt_gen="true"></retval>
-		</method>
-		<method selector="setSelectedSegment:" swt_gen="true">
-			<arg swt_gen="true"></arg>
-			<retval swt_gen="true"></retval>
-		</method>
-		<method selector="setTag:forSegment:" swt_gen="true">
-			<arg swt_gen="true"></arg>
-			<arg swt_gen="true"></arg>
-			<retval swt_gen="true"></retval>
-		</method>
-		<method selector="setToolTip:forSegment:" swt_gen="true">
-			<arg swt_gen="true"></arg>
-			<arg swt_gen="true"></arg>
-			<retval swt_gen="true"></retval>
-		</method>
-		<method selector="setTrackingMode:" swt_gen="true">
-			<arg swt_gen="true"></arg>
-			<retval swt_gen="true"></retval>
-		</method>
-		<method selector="setWidth:forSegment:" swt_gen="true">
-			<arg swt_gen="true"></arg>
-			<arg swt_gen="true"></arg>
-			<retval swt_gen="true"></retval>
-		</method>
-	</class>
-	<class name="NSSegmentedControl" swt_superclass="NSControl">
-	</class>
 	<class name="NSSlider" swt_gen="mixed" swt_superclass="NSControl">
 		<method selector="knobThickness" swt_gen="true">
 			<retval swt_gen="true"></retval>
@@ -3108,10 +2790,6 @@
 			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
-	</class>
-	<class name="NSSliderCell" swt_superclass="NSActionCell">
-	</class>
-	<class name="NSSplitView" swt_superclass="NSView">
 	</class>
 	<class name="NSStatusBar" swt_gen="mixed">
 		<method selector="removeStatusItem:" swt_gen="true">
@@ -3179,13 +2857,7 @@
 			<retval swt_gen="true"></retval>
 		</method>
 	</class>
-	<class name="NSStepperCell" swt_superclass="NSActionCell">
-	</class>
 	<class name="NSTabView" swt_gen="mixed" swt_superclass="NSView">
-		<method selector="addTabViewItem:" swt_gen="true">
-			<arg swt_gen="true"></arg>
-			<retval swt_gen="true"></retval>
-		</method>
 		<method selector="contentRect" swt_gen="true">
 			<retval swt_gen="true"></retval>
 		</method>
@@ -3326,9 +2998,6 @@
 			<arg swt_gen="true" swt_param_name="column"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
-		<method selector="allowsColumnReordering" swt_gen="true">
-			<retval swt_gen="true"></retval>
-		</method>
 		<method selector="canDragRowsWithIndexes:atPoint:" swt_gen="true" swt_gen_custom_callback="true" swt_gen_super_msgSend="true">
 			<arg swt_gen="true"></arg>
 			<arg swt_gen="true"></arg>
@@ -3341,14 +3010,6 @@
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="columnAtPoint:" swt_gen="true">
-			<arg swt_gen="true"></arg>
-			<retval swt_gen="true"></retval>
-		</method>
-		<method selector="columnIndexesInRect:" swt_gen="true">
-			<arg swt_gen="true"></arg>
-			<retval swt_gen="true"></retval>
-		</method>
-		<method selector="columnWithIdentifier:" swt_gen="true">
 			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
@@ -3432,10 +3093,6 @@
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="rowHeight" swt_gen="true">
-			<retval swt_gen="true"></retval>
-		</method>
-		<method selector="rowsInRect:" swt_gen="true">
-			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="scrollColumnToVisible:" swt_gen="true">
@@ -3542,12 +3199,6 @@
 			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
-		<method selector="delegate" swt_gen="true">
-			<retval swt_gen="true"></retval>
-		</method>
-		<method selector="font" swt_gen="true">
-			<retval swt_gen="true"></retval>
-		</method>
 		<method selector="isFieldEditor" swt_gen="true">
 			<retval swt_gen="true"></retval>
 		</method>
@@ -3627,9 +3278,6 @@
 			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
-		<method selector="sizeToFit" swt_gen="true">
-			<retval swt_gen="true"></retval>
-		</method>
 		<method selector="string" swt_gen="true">
 			<retval swt_gen="true"></retval>
 		</method>
@@ -3645,9 +3293,6 @@
 		</method>
 	</class>
 	<class name="NSTextContainer" swt_gen="mixed">
-		<method selector="containerSize" swt_gen="true">
-			<retval swt_gen="true"></retval>
-		</method>
 		<method selector="initWithContainerSize:" swt_gen="mixed">
 			<arg swt_gen="true"></arg>
 			<retval swt_java_type="NSTextContainer"></retval>
@@ -3708,9 +3353,6 @@
 			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
-		<method selector="textColor" swt_gen="true">
-			<retval swt_gen="true"></retval>
-		</method>
 	</class>
 	<class name="NSTextStorage" swt_gen="mixed" swt_superclass="NSMutableAttributedString">
 		<method selector="addLayoutManager:" swt_gen="true">
@@ -3727,16 +3369,6 @@
 			<arg swt_gen="true"></arg>
 			<retval swt_gen="true" swt_java_type="NSTextTab"></retval>
 		</method>
-		<method selector="location" swt_gen="true">
-			<retval swt_gen="true"></retval>
-		</method>
-		<method selector="tabStopType" swt_gen="true">
-			<retval swt_gen="true"></retval>
-		</method>
-	</class>
-	<class name="NSTextTable" swt_superclass="NSTextBlock">
-	</class>
-	<class name="NSTextTableBlock" swt_superclass="NSTextBlock">
 	</class>
 	<class name="NSTextView" swt_gen="mixed" swt_superclass="NSText">
 		<method selector="characterIndexForInsertionAtPoint:" swt_gen="true">
@@ -3746,7 +3378,7 @@
 		<method selector="defaultParagraphStyle" swt_gen="true">
 			<retval swt_gen="true"></retval>
 		</method>
-		<method selector="dragSelectionWithEvent:offset:slideBack:" swt_gen="true" swt_gen_custom_callback="true">
+		<method selector="dragSelectionWithEvent:offset:slideBack:" swt_gen="true">
 			<arg swt_gen="true"></arg>
 			<arg swt_gen="true"></arg>
 			<arg swt_gen="true"></arg>
@@ -3769,11 +3401,6 @@
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="setAllowsUndo:" swt_gen="true">
-			<arg swt_gen="true"></arg>
-			<retval swt_gen="true"></retval>
-		</method>
-		<method selector="setBaseWritingDirection:range:" swt_gen="true">
-			<arg swt_gen="true"></arg>
 			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
@@ -3815,10 +3442,6 @@
 		<method selector="textStorage" swt_gen="true">
 			<retval swt_gen="true"></retval>
 		</method>
-	</class>
-	<class name="NSTokenField" swt_superclass="NSTextField">
-	</class>
-	<class name="NSTokenFieldCell" swt_superclass="NSTextFieldCell">
 	</class>
 	<class name="NSToolbar" swt_gen="mixed">
 		<method selector="initWithIdentifier:" swt_gen="true">
@@ -3911,8 +3534,6 @@
 			<retval swt_gen="true"></retval>
 		</method>
 	</class>
-	<class name="NSToolbarItemGroup" swt_superclass="NSToolbarItem">
-	</class>
 	<class name="NSTouch" swt_gen="true">
 		<method selector="device" swt_gen="true">
 			<retval swt_gen="true"></retval>
@@ -3931,21 +3552,12 @@
 		</method>
 	</class>
 	<class name="NSTrackingArea" swt_gen="mixed">
-		<method selector="initWithRect:options:owner:userInfo:" swt_gen="true">
-			<arg swt_gen="true"></arg>
-			<arg swt_gen="true"></arg>
-			<arg swt_gen="true"></arg>
-			<arg swt_gen="true"></arg>
-			<retval swt_gen="true" swt_java_type="NSTrackingArea"></retval>
-		</method>
 		<method selector="owner" swt_gen="true">
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="userInfo" swt_gen="true">
 			<retval swt_gen="true"></retval>
 		</method>
-	</class>
-	<class name="NSTreeController" swt_superclass="NSObjectController">
 	</class>
 	<class name="NSTypesetter" swt_gen="mixed">
 		<method selector="baselineOffsetInLayoutManager:glyphIndex:" swt_gen="true">
@@ -3959,8 +3571,6 @@
 			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
-	</class>
-	<class name="NSUserDefaultsController" swt_superclass="NSController">
 	</class>
 	<class name="NSView" swt_gen="mixed" swt_superclass="NSResponder">
 		<method selector="acceptsFirstMouse:" swt_gen="true">
@@ -4016,14 +3626,6 @@
 			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
-		<method selector="convertPointFromBase:" swt_gen="true">
-			<arg swt_gen="true"></arg>
-			<retval swt_gen="true"></retval>
-		</method>
-		<method selector="convertPointToBase:" swt_gen="true">
-			<arg swt_gen="true"></arg>
-			<retval swt_gen="true"></retval>
-		</method>
 		<method selector="convertRect:fromView:" swt_gen="true">
 			<arg swt_gen="true"></arg>
 			<arg swt_gen="true"></arg>
@@ -4031,32 +3633,6 @@
 		</method>
 		<method selector="convertRect:toView:" swt_gen="true">
 			<arg swt_gen="true"></arg>
-			<arg swt_gen="true"></arg>
-			<retval swt_gen="true"></retval>
-		</method>
-		<method selector="convertRectFromBase:" swt_gen="true">
-			<arg swt_gen="true"></arg>
-			<retval swt_gen="true"></retval>
-		</method>
-		<method selector="convertRectToBase:" swt_gen="true">
-			<arg swt_gen="true"></arg>
-			<retval swt_gen="true"></retval>
-		</method>
-		<method selector="convertSize:fromView:" swt_gen="true">
-			<arg swt_gen="true"></arg>
-			<arg swt_gen="true"></arg>
-			<retval swt_gen="true"></retval>
-		</method>
-		<method selector="convertSize:toView:" swt_gen="true">
-			<arg swt_gen="true"></arg>
-			<arg swt_gen="true"></arg>
-			<retval swt_gen="true"></retval>
-		</method>
-		<method selector="convertSizeFromBase:" swt_gen="true">
-			<arg swt_gen="true"></arg>
-			<retval swt_gen="true"></retval>
-		</method>
-		<method selector="convertSizeToBase:" swt_gen="true">
 			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
@@ -4174,10 +3750,6 @@
 			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
-		<method selector="scrollRectToVisible:" swt_gen="true">
-			<arg swt_gen="true"></arg>
-			<retval swt_gen="true"></retval>
-		</method>
 		<method selector="setAcceptsTouchEvents:" swt_gen="true">
 			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
@@ -4198,7 +3770,7 @@
 			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
-		<method selector="setFrame:" swt_gen="true" swt_gen_custom_callback="true">
+		<method selector="setFrame:" swt_gen="true">
 			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
@@ -4265,10 +3837,6 @@
 		<method selector="window" swt_gen="true">
 			<retval swt_gen="true"></retval>
 		</method>
-	</class>
-	<class name="NSViewAnimation" swt_superclass="NSAnimation">
-	</class>
-	<class name="NSViewController" swt_superclass="NSResponder">
 	</class>
 	<class name="NSWindow" swt_gen="mixed" swt_superclass="NSResponder">
 		<method selector="addChildWindow:ordered:" swt_gen="true">
@@ -4399,9 +3967,6 @@
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="isZoomed" swt_gen="true">
-			<retval swt_gen="true"></retval>
-		</method>
-		<method selector="level" swt_gen="true">
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="makeFirstResponder:" swt_gen="true">
@@ -4556,14 +4121,10 @@
 			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
-		<method selector="standardWindowButton:" swt_gen="true">
-			<arg swt_gen="true"></arg>
-			<retval swt_gen="true"></retval>
-		</method>
 		<method selector="styleMask" swt_gen="true">
 			<retval swt_gen="true"></retval>
 		</method>
-		<method selector="toggleToolbarShown:" swt_gen="true">
+		<method selector="toggleFullScreen:" swt_gen="true">
 			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
@@ -4578,24 +4139,13 @@
 			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
-		<method selector="windowRef" swt_gen="true">
-			<retval swt_gen="true"></retval>
-		</method>
 		<method selector="zoom:" swt_gen="true">
 			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
 	</class>
-	<class name="NSWindowController" swt_superclass="NSResponder">
-	</class>
 	<class name="NSWorkspace" swt_gen="mixed">
 		<method selector="fullPathForApplication:" swt_gen="true">
-			<arg swt_gen="true"></arg>
-			<retval swt_gen="true"></retval>
-		</method>
-		<method selector="getInfoForFile:application:type:" swt_gen="true">
-			<arg swt_gen="true"></arg>
-			<arg swt_gen="true"></arg>
 			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
@@ -4603,16 +4153,7 @@
 			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
-		<method selector="iconForFileType:" swt_gen="true">
-			<arg swt_gen="true"></arg>
-			<retval swt_gen="true"></retval>
-		</method>
 		<method selector="isFilePackageAtPath:" swt_gen="true">
-			<arg swt_gen="true"></arg>
-			<retval swt_gen="true"></retval>
-		</method>
-		<method selector="openFile:withApplication:" swt_gen="true">
-			<arg swt_gen="true"></arg>
 			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
@@ -4646,9 +4187,10 @@
 	<constant name="NSAccessibilityBackgroundColorTextAttribute" swt_gen="true"></constant>
 	<constant name="NSAccessibilityBoundsForRangeParameterizedAttribute" swt_gen="true"></constant>
 	<constant name="NSAccessibilityButtonRole" swt_gen="true"></constant>
+	<constant name="NSAccessibilityCellForColumnAndRowParameterizedAttribute" swt_gen="true"></constant>
 	<constant name="NSAccessibilityCheckBoxRole" swt_gen="true"></constant>
 	<constant name="NSAccessibilityChildrenAttribute" swt_gen="true"></constant>
-	<constant name="NSAccessibilityColorWellRole" swt_gen="true"></constant>
+	<constant name="NSAccessibilityColumnIndexRangeAttribute" swt_gen="true"></constant>
 	<constant name="NSAccessibilityColumnRole" swt_gen="true"></constant>
 	<constant name="NSAccessibilityColumnsAttribute" swt_gen="true"></constant>
 	<constant name="NSAccessibilityComboBoxRole" swt_gen="true"></constant>
@@ -4658,32 +4200,24 @@
 	<constant name="NSAccessibilityDialogSubrole" swt_gen="true"></constant>
 	<constant name="NSAccessibilityEnabledAttribute" swt_gen="true"></constant>
 	<constant name="NSAccessibilityExpandedAttribute" swt_gen="true"></constant>
-	<constant name="NSAccessibilityFloatingWindowSubrole" swt_gen="true"></constant>
 	<constant name="NSAccessibilityFocusedAttribute" swt_gen="true"></constant>
 	<constant name="NSAccessibilityFocusedUIElementChangedNotification" swt_gen="true"></constant>
-	<constant name="NSAccessibilityFocusedWindowChangedNotification" swt_gen="true"></constant>
 	<constant name="NSAccessibilityFontFamilyKey" swt_gen="true"></constant>
 	<constant name="NSAccessibilityFontNameKey" swt_gen="true"></constant>
 	<constant name="NSAccessibilityFontSizeKey" swt_gen="true"></constant>
 	<constant name="NSAccessibilityFontTextAttribute" swt_gen="true"></constant>
 	<constant name="NSAccessibilityForegroundColorTextAttribute" swt_gen="true"></constant>
-	<constant name="NSAccessibilityGridRole" swt_gen="true"></constant>
 	<constant name="NSAccessibilityGroupRole" swt_gen="true"></constant>
 	<constant name="NSAccessibilityHeaderAttribute" swt_gen="true"></constant>
 	<constant name="NSAccessibilityHelpAttribute" swt_gen="true"></constant>
 	<constant name="NSAccessibilityHelpTagRole" swt_gen="true"></constant>
 	<constant name="NSAccessibilityHorizontalOrientationValue" swt_gen="true"></constant>
-	<constant name="NSAccessibilityHorizontalScrollBarAttribute" swt_gen="true"></constant>
 	<constant name="NSAccessibilityImageRole" swt_gen="true"></constant>
-	<constant name="NSAccessibilityIncrementorRole" swt_gen="true"></constant>
 	<constant name="NSAccessibilityIndexAttribute" swt_gen="true"></constant>
 	<constant name="NSAccessibilityInsertionPointLineNumberAttribute" swt_gen="true"></constant>
-	<constant name="NSAccessibilityLabelValueAttribute" swt_gen="true"></constant>
 	<constant name="NSAccessibilityLineForIndexParameterizedAttribute" swt_gen="true"></constant>
 	<constant name="NSAccessibilityLinkRole" swt_gen="true"></constant>
 	<constant name="NSAccessibilityLinkTextAttribute" swt_gen="true"></constant>
-	<constant name="NSAccessibilityLinkedUIElementsAttribute" swt_gen="true"></constant>
-	<constant name="NSAccessibilityListRole" swt_gen="true"></constant>
 	<constant name="NSAccessibilityMaxValueAttribute" swt_gen="true"></constant>
 	<constant name="NSAccessibilityMenuBarRole" swt_gen="true"></constant>
 	<constant name="NSAccessibilityMenuButtonRole" swt_gen="true"></constant>
@@ -4698,24 +4232,20 @@
 	<constant name="NSAccessibilityOutlineRole" swt_gen="true"></constant>
 	<constant name="NSAccessibilityOutlineRowSubrole" swt_gen="true"></constant>
 	<constant name="NSAccessibilityParentAttribute" swt_gen="true"></constant>
-	<constant name="NSAccessibilityPopUpButtonRole" swt_gen="true"></constant>
 	<constant name="NSAccessibilityPositionAttribute" swt_gen="true"></constant>
 	<constant name="NSAccessibilityPressAction" swt_gen="true"></constant>
 	<constant name="NSAccessibilityPreviousContentsAttribute" swt_gen="true"></constant>
 	<constant name="NSAccessibilityProgressIndicatorRole" swt_gen="true"></constant>
-	<constant name="NSAccessibilityRTFForRangeParameterizedAttribute" swt_gen="true"></constant>
 	<constant name="NSAccessibilityRadioButtonRole" swt_gen="true"></constant>
-	<constant name="NSAccessibilityRadioGroupRole" swt_gen="true"></constant>
 	<constant name="NSAccessibilityRangeForIndexParameterizedAttribute" swt_gen="true"></constant>
 	<constant name="NSAccessibilityRangeForLineParameterizedAttribute" swt_gen="true"></constant>
 	<constant name="NSAccessibilityRangeForPositionParameterizedAttribute" swt_gen="true"></constant>
-	<constant name="NSAccessibilityResizedNotification" swt_gen="true"></constant>
 	<constant name="NSAccessibilityRoleAttribute" swt_gen="true"></constant>
 	<constant name="NSAccessibilityRoleDescriptionAttribute" swt_gen="true"></constant>
 	<constant name="NSAccessibilityRowCountChangedNotification" swt_gen="true"></constant>
+	<constant name="NSAccessibilityRowIndexRangeAttribute" swt_gen="true"></constant>
 	<constant name="NSAccessibilityRowRole" swt_gen="true"></constant>
 	<constant name="NSAccessibilityRowsAttribute" swt_gen="true"></constant>
-	<constant name="NSAccessibilityScrollAreaRole" swt_gen="true"></constant>
 	<constant name="NSAccessibilityScrollBarRole" swt_gen="true"></constant>
 	<constant name="NSAccessibilitySelectedAttribute" swt_gen="true"></constant>
 	<constant name="NSAccessibilitySelectedChildrenAttribute" swt_gen="true"></constant>
@@ -4732,38 +4262,30 @@
 	<constant name="NSAccessibilitySizeAttribute" swt_gen="true"></constant>
 	<constant name="NSAccessibilitySliderRole" swt_gen="true"></constant>
 	<constant name="NSAccessibilitySplitterRole" swt_gen="true"></constant>
-	<constant name="NSAccessibilityStandardWindowSubrole" swt_gen="true"></constant>
 	<constant name="NSAccessibilityStaticTextRole" swt_gen="true"></constant>
 	<constant name="NSAccessibilityStrikethroughColorTextAttribute" swt_gen="true"></constant>
 	<constant name="NSAccessibilityStrikethroughTextAttribute" swt_gen="true"></constant>
 	<constant name="NSAccessibilityStringForRangeParameterizedAttribute" swt_gen="true"></constant>
 	<constant name="NSAccessibilityStyleRangeForIndexParameterizedAttribute" swt_gen="true"></constant>
 	<constant name="NSAccessibilitySubroleAttribute" swt_gen="true"></constant>
-	<constant name="NSAccessibilitySuperscriptTextAttribute" swt_gen="true"></constant>
-	<constant name="NSAccessibilitySystemDialogSubrole" swt_gen="true"></constant>
 	<constant name="NSAccessibilityTabGroupRole" swt_gen="true"></constant>
 	<constant name="NSAccessibilityTableRole" swt_gen="true"></constant>
 	<constant name="NSAccessibilityTableRowSubrole" swt_gen="true"></constant>
 	<constant name="NSAccessibilityTabsAttribute" swt_gen="true"></constant>
 	<constant name="NSAccessibilityTextAreaRole" swt_gen="true"></constant>
 	<constant name="NSAccessibilityTextFieldRole" swt_gen="true"></constant>
-	<constant name="NSAccessibilityTextLinkSubrole" swt_gen="true"></constant>
 	<constant name="NSAccessibilityTitleAttribute" swt_gen="true"></constant>
 	<constant name="NSAccessibilityTitleChangedNotification" swt_gen="true"></constant>
 	<constant name="NSAccessibilityTitleUIElementAttribute" swt_gen="true"></constant>
 	<constant name="NSAccessibilityToolbarRole" swt_gen="true"></constant>
 	<constant name="NSAccessibilityTopLevelUIElementAttribute" swt_gen="true"></constant>
-	<constant name="NSAccessibilityURLAttribute" swt_gen="true"></constant>
 	<constant name="NSAccessibilityUnderlineColorTextAttribute" swt_gen="true"></constant>
 	<constant name="NSAccessibilityUnderlineTextAttribute" swt_gen="true"></constant>
 	<constant name="NSAccessibilityUnknownRole" swt_gen="true"></constant>
 	<constant name="NSAccessibilityUnknownSubrole" swt_gen="true"></constant>
 	<constant name="NSAccessibilityValueAttribute" swt_gen="true"></constant>
 	<constant name="NSAccessibilityValueChangedNotification" swt_gen="true"></constant>
-	<constant name="NSAccessibilityValueDescriptionAttribute" swt_gen="true"></constant>
-	<constant name="NSAccessibilityValueIndicatorRole" swt_gen="true"></constant>
 	<constant name="NSAccessibilityVerticalOrientationValue" swt_gen="true"></constant>
-	<constant name="NSAccessibilityVerticalScrollBarAttribute" swt_gen="true"></constant>
 	<constant name="NSAccessibilityVisibleCharacterRangeAttribute" swt_gen="true"></constant>
 	<constant name="NSAccessibilityVisibleChildrenAttribute" swt_gen="true"></constant>
 	<constant name="NSAccessibilityVisibleColumnsAttribute" swt_gen="true"></constant>
@@ -4775,7 +4297,6 @@
 	<constant name="NSAttachmentAttributeName" swt_gen="true"></constant>
 	<constant name="NSBackgroundColorAttributeName" swt_gen="true"></constant>
 	<constant name="NSBaselineOffsetAttributeName" swt_gen="true"></constant>
-	<constant name="NSCalibratedRGBColorSpace" swt_gen="true"></constant>
 	<constant name="NSCursorAttributeName" swt_gen="true"></constant>
 	<constant name="NSDeviceRGBColorSpace" swt_gen="true"></constant>
 	<constant name="NSDeviceResolution" swt_gen="true"></constant>
@@ -4788,7 +4309,6 @@
 	<constant name="NSLinkAttributeName" swt_gen="true"></constant>
 	<constant name="NSModalPanelRunLoopMode" swt_gen="true"></constant>
 	<constant name="NSObliquenessAttributeName" swt_gen="true"></constant>
-	<constant name="NSOutlineViewColumnDidMoveNotification" swt_gen="true"></constant>
 	<constant name="NSParagraphStyleAttributeName" swt_gen="true"></constant>
 	<constant name="NSPasteboardTypeHTML" swt_gen="true"></constant>
 	<constant name="NSPasteboardTypeRTF" swt_gen="true"></constant>
@@ -4804,24 +4324,14 @@
 	<constant name="NSPrintSaveJob" swt_gen="true"></constant>
 	<constant name="NSPrintSavePath" swt_gen="true"></constant>
 	<constant name="NSPrintScalingFactor" swt_gen="true"></constant>
-	<constant name="NSPrintSpoolJob" swt_gen="true"></constant>
-	<constant name="NSSpellingStateAttributeName" swt_gen="true"></constant>
 	<constant name="NSSquareStatusItemLength" swt_gen="true"></constant>
 	<constant name="NSStrikethroughColorAttributeName" swt_gen="true"></constant>
 	<constant name="NSStrikethroughStyleAttributeName" swt_gen="true"></constant>
 	<constant name="NSStrokeWidthAttributeName" swt_gen="true"></constant>
 	<constant name="NSSystemColorsDidChangeNotification" swt_gen="true"></constant>
 	<constant name="NSTIFFPboardType" swt_gen="true"></constant>
-	<constant name="NSTableViewColumnDidMoveNotification" swt_gen="true"></constant>
-	<constant name="NSToolbarCustomizeToolbarItemIdentifier" swt_gen="true"></constant>
-	<constant name="NSToolbarDidRemoveItemNotification" swt_gen="true"></constant>
 	<constant name="NSToolbarFlexibleSpaceItemIdentifier" swt_gen="true"></constant>
-	<constant name="NSToolbarPrintItemIdentifier" swt_gen="true"></constant>
-	<constant name="NSToolbarSeparatorItemIdentifier" swt_gen="true"></constant>
-	<constant name="NSToolbarShowColorsItemIdentifier" swt_gen="true"></constant>
-	<constant name="NSToolbarShowFontsItemIdentifier" swt_gen="true"></constant>
 	<constant name="NSToolbarSpaceItemIdentifier" swt_gen="true"></constant>
-	<constant name="NSToolbarWillAddItemNotification" swt_gen="true"></constant>
 	<constant name="NSURLPboardType" swt_gen="true"></constant>
 	<constant name="NSUnderlineColorAttributeName" swt_gen="true"></constant>
 	<constant name="NSUnderlineStyleAttributeName" swt_gen="true"></constant>
@@ -4867,7 +4377,6 @@
 	<enum name="NSCompositeCopy" swt_gen="true"></enum>
 	<enum name="NSCompositeSourceAtop" swt_gen="true"></enum>
 	<enum name="NSCompositeSourceOver" swt_gen="true"></enum>
-	<enum name="NSCompositeXOR" swt_gen="true"></enum>
 	<enum name="NSContentsCellMask" swt_gen="true"></enum>
 	<enum name="NSControlKeyMask" swt_gen="true"></enum>
 	<enum name="NSCriticalAlertStyle" swt_gen="true"></enum>
@@ -4897,15 +4406,7 @@
 	<enum name="NSFocusRingTypeNone" swt_gen="true"></enum>
 	<enum name="NSFontPanelAllEffectsModeMask" swt_gen="true"></enum>
 	<enum name="NSFontPanelAllModesMask" swt_gen="true"></enum>
-	<enum name="NSFontPanelCollectionModeMask" swt_gen="true"></enum>
-	<enum name="NSFontPanelDocumentColorEffectModeMask" swt_gen="true"></enum>
-	<enum name="NSFontPanelFaceModeMask" swt_gen="true"></enum>
-	<enum name="NSFontPanelShadowEffectModeMask" swt_gen="true"></enum>
-	<enum name="NSFontPanelSizeModeMask" swt_gen="true"></enum>
-	<enum name="NSFontPanelStandardModesMask" swt_gen="true"></enum>
-	<enum name="NSFontPanelStrikethroughEffectModeMask" swt_gen="true"></enum>
-	<enum name="NSFontPanelTextColorEffectModeMask" swt_gen="true"></enum>
-	<enum name="NSFontPanelUnderlineEffectModeMask" swt_gen="true"></enum>
+	<enum name="NSFullScreenWindowMask" swt_gen="true"></enum>
 	<enum name="NSHelpFunctionKey" swt_gen="true"></enum>
 	<enum name="NSHelpKeyMask" swt_gen="true"></enum>
 	<enum name="NSHourMinuteDatePickerElementFlag" swt_gen="true"></enum>
@@ -4928,7 +4429,6 @@
 	<enum name="NSKeyUp" swt_gen="true"></enum>
 	<enum name="NSLandscapeOrientation" swt_gen="true"></enum>
 	<enum name="NSLeftMouseDown" swt_gen="true"></enum>
-	<enum name="NSLeftMouseDownMask" swt_gen="true"></enum>
 	<enum name="NSLeftMouseDragged" swt_gen="true"></enum>
 	<enum name="NSLeftMouseDraggedMask" swt_gen="true"></enum>
 	<enum name="NSLeftMouseUp" swt_gen="true"></enum>
@@ -4943,7 +4443,6 @@
 	<enum name="NSMiniaturizableWindowMask" swt_gen="true"></enum>
 	<enum name="NSMiterLineJoinStyle" swt_gen="true"></enum>
 	<enum name="NSMixedState" swt_gen="true"></enum>
-	<enum name="NSModalPanelWindowLevel" swt_gen="true"></enum>
 	<enum name="NSMomentaryLightButton" swt_gen="true"></enum>
 	<enum name="NSMouseEntered" swt_gen="true"></enum>
 	<enum name="NSMouseExited" swt_gen="true"></enum>
@@ -4955,11 +4454,9 @@
 	<enum name="NSNoTitle" swt_gen="true"></enum>
 	<enum name="NSNonZeroWindingRule" swt_gen="true"></enum>
 	<enum name="NSNonactivatingPanelMask" swt_gen="true"></enum>
-	<enum name="NSNormalWindowLevel" swt_gen="true"></enum>
 	<enum name="NSOffState" swt_gen="true"></enum>
 	<enum name="NSOnState" swt_gen="true"></enum>
 	<enum name="NSOpenGLCPSurfaceOrder" swt_gen="true"></enum>
-	<enum name="NSOpenGLCPSwapInterval" swt_gen="true"></enum>
 	<enum name="NSOpenGLPFAAccumSize" swt_gen="true"></enum>
 	<enum name="NSOpenGLPFAAlphaSize" swt_gen="true"></enum>
 	<enum name="NSOpenGLPFAColorSize" swt_gen="true"></enum>
@@ -4972,13 +4469,9 @@
 	<enum name="NSOtherMouseDown" swt_gen="true"></enum>
 	<enum name="NSOtherMouseDragged" swt_gen="true"></enum>
 	<enum name="NSOtherMouseUp" swt_gen="true"></enum>
-	<enum name="NSOutlineViewDropOnItemIndex" swt_gen="true"></enum>
 	<enum name="NSPageDownFunctionKey" swt_gen="true"></enum>
 	<enum name="NSPageUpFunctionKey" swt_gen="true"></enum>
 	<enum name="NSPortraitOrientation" swt_gen="true"></enum>
-	<enum name="NSPrintPanelShowsCopies" swt_gen="true"></enum>
-	<enum name="NSPrintPanelShowsOrientation" swt_gen="true"></enum>
-	<enum name="NSPrintPanelShowsPageRange" swt_gen="true"></enum>
 	<enum name="NSPrintPanelShowsPageSetupAccessory" swt_gen="true"></enum>
 	<enum name="NSPrintPanelShowsPrintSelection" swt_gen="true"></enum>
 	<enum name="NSProgressIndicatorPreferredThickness" swt_gen="true"></enum>
@@ -5004,6 +4497,8 @@
 	<enum name="NSScrollerIncrementPage" swt_gen="true"></enum>
 	<enum name="NSScrollerKnob" swt_gen="true"></enum>
 	<enum name="NSScrollerKnobSlot" swt_gen="true"></enum>
+	<enum name="NSScrollerStyleLegacy" swt_gen="true"></enum>
+	<enum name="NSScrollerStyleOverlay" swt_gen="true"></enum>
 	<enum name="NSShadowlessSquareBezelStyle" swt_gen="true"></enum>
 	<enum name="NSShiftKeyMask" swt_gen="true"></enum>
 	<enum name="NSSmallControlSize" swt_gen="true"></enum>
@@ -5026,20 +4521,17 @@
 	<enum name="NSTextAlignmentCenter" swt_gen="true"></enum>
 	<enum name="NSTextAlignmentJustified" swt_gen="true"></enum>
 	<enum name="NSTextAlignmentLeft" swt_gen="true"></enum>
-	<enum name="NSTextAlignmentNatural" swt_gen="true"></enum>
 	<enum name="NSTextAlignmentRight" swt_gen="true"></enum>
 	<enum name="NSTextFieldAndStepperDatePickerStyle" swt_gen="true"></enum>
 	<enum name="NSTextFieldDatePickerStyle" swt_gen="true"></enum>
 	<enum name="NSTitledWindowMask" swt_gen="true"></enum>
 	<enum name="NSToolbarDisplayModeIconOnly" swt_gen="true"></enum>
-	<enum name="NSTouchEventSubtype" swt_gen="true"></enum>
 	<enum name="NSTouchPhaseAny" swt_gen="true"></enum>
 	<enum name="NSTouchPhaseBegan" swt_gen="true"></enum>
 	<enum name="NSTouchPhaseCancelled" swt_gen="true"></enum>
 	<enum name="NSTouchPhaseEnded" swt_gen="true"></enum>
 	<enum name="NSTouchPhaseMoved" swt_gen="true"></enum>
 	<enum name="NSTouchPhaseStationary" swt_gen="true"></enum>
-	<enum name="NSTouchPhaseTouching" swt_gen="true"></enum>
 	<enum name="NSUnderlineStyleDouble" swt_gen="true"></enum>
 	<enum name="NSUnderlineStyleNone" swt_gen="true"></enum>
 	<enum name="NSUnderlineStyleSingle" swt_gen="true"></enum>
@@ -5054,35 +4546,20 @@
 	<enum name="NSWarningAlertStyle" swt_gen="true"></enum>
 	<enum name="NSWindowAbove" swt_gen="true"></enum>
 	<enum name="NSWindowBelow" swt_gen="true"></enum>
-	<enum name="NSWindowCollectionBehaviorCanJoinAllSpaces" swt_gen="true"></enum>
-	<enum name="NSWindowCollectionBehaviorDefault" swt_gen="true"></enum>
+	<enum name="NSWindowCollectionBehaviorFullScreenAuxiliary" swt_gen="true"></enum>
+	<enum name="NSWindowCollectionBehaviorFullScreenPrimary" swt_gen="true"></enum>
 	<enum name="NSWindowCollectionBehaviorMoveToActiveSpace" swt_gen="true"></enum>
 	<enum name="NSWritingDirectionLeftToRight" swt_gen="true"></enum>
-	<enum name="NSWritingDirectionNatural" swt_gen="true"></enum>
 	<enum name="NSWritingDirectionRightToLeft" swt_gen="true"></enum>
 	<enum name="NSYearMonthDatePickerElementFlag" swt_gen="true"></enum>
 	<enum name="NSYearMonthDayDatePickerElementFlag" swt_gen="true"></enum>
-	<function name="NSAccessibilityActionDescription" swt_gen="true">
-		<arg swt_gen="true"></arg>
-		<retval swt_gen="true"></retval>
-	</function>
 	<function name="NSAccessibilityPostNotification" swt_gen="true">
-		<arg swt_gen="true"></arg>
-		<arg swt_gen="true"></arg>
-		<retval></retval>
-	</function>
-	<function name="NSAccessibilityRaiseBadArgumentException" swt_gen="true">
-		<arg swt_gen="true"></arg>
 		<arg swt_gen="true"></arg>
 		<arg swt_gen="true"></arg>
 		<retval></retval>
 	</function>
 	<function name="NSAccessibilityRoleDescription" swt_gen="true">
 		<arg swt_gen="true"></arg>
-		<arg swt_gen="true"></arg>
-		<retval swt_gen="true"></retval>
-	</function>
-	<function name="NSAccessibilityRoleDescriptionForUIElement" swt_gen="true">
 		<arg swt_gen="true"></arg>
 		<retval swt_gen="true"></retval>
 	</function>
@@ -5094,22 +4571,10 @@
 		<arg swt_gen="true"></arg>
 		<retval swt_gen="true"></retval>
 	</function>
-	<function name="NSAccessibilityUnignoredChildrenForOnlyChild" swt_gen="true">
-		<arg swt_gen="true"></arg>
-		<retval swt_gen="true"></retval>
-	</function>
-	<function name="NSAccessibilityUnignoredDescendant" swt_gen="true">
-		<arg swt_gen="true"></arg>
-		<retval swt_gen="true"></retval>
-	</function>
 	<function name="NSBeep" swt_gen="true">
 		<retval></retval>
 	</function>
 	<function name="NSBitsPerPixelFromDepth" swt_gen="true">
-		<arg swt_gen="true"></arg>
-		<retval swt_gen="true"></retval>
-	</function>
-	<function name="NSNumberOfColorComponents" swt_gen="true">
 		<arg swt_gen="true"></arg>
 		<retval swt_gen="true"></retval>
 	</function>
@@ -5207,16 +4672,10 @@
 		<method selector="applicationDidBecomeActive:" swt_gen="true">
 			<arg swt_gen="true"></arg>
 		</method>
-		<method selector="applicationDidFinishLaunching:" swt_gen="true">
-			<arg swt_gen="true"></arg>
-		</method>
 		<method selector="applicationDidResignActive:" swt_gen="true">
 			<arg swt_gen="true"></arg>
 		</method>
 		<method selector="applicationWillFinishLaunching:" swt_gen="true">
-			<arg swt_gen="true"></arg>
-		</method>
-		<method selector="applicationWillTerminate:" swt_gen="true">
 			<arg swt_gen="true"></arg>
 		</method>
 	</informal_protocol>
@@ -5238,10 +4697,6 @@
 		</method>
 	</informal_protocol>
 	<informal_protocol name="NSDraggingDestination" swt_gen="mixed">
-		<method selector="draggingEnded:" swt_gen="true">
-			<arg swt_gen="true"></arg>
-			<retval></retval>
-		</method>
 		<method selector="draggingEntered:" swt_gen="true">
 			<arg swt_gen="true"></arg>
 			<retval></retval>
@@ -5263,7 +4718,7 @@
 		</method>
 	</informal_protocol>
 	<informal_protocol name="NSDraggingSource" swt_gen="mixed">
-		<method selector="draggedImage:beganAt:" swt_gen="true" swt_gen_custom_callback="true">
+		<method selector="draggedImage:beganAt:" swt_gen="true">
 			<arg swt_gen="true"></arg>
 			<arg swt_gen="true"></arg>
 		</method>
@@ -5384,11 +4839,6 @@
 			<arg swt_gen="true"></arg>
 			<retval></retval>
 		</method>
-		<method selector="outlineView:shouldCollapseItem:" swt_gen="true">
-			<arg swt_gen="true"></arg>
-			<arg swt_gen="true"></arg>
-			<retval></retval>
-		</method>
 		<method selector="outlineView:shouldExpandItem:" swt_gen="true">
 			<arg swt_gen="true"></arg>
 			<arg swt_gen="true"></arg>
@@ -5409,9 +4859,6 @@
 		<method selector="outlineViewColumnDidResize:" swt_gen="true">
 			<arg swt_gen="true"></arg>
 		</method>
-		<method selector="outlineViewItemDidExpand:" swt_gen="true">
-			<arg swt_gen="true"></arg>
-		</method>
 		<method selector="outlineViewSelectionDidChange:" swt_gen="true">
 			<arg swt_gen="true"></arg>
 		</method>
@@ -5430,17 +4877,12 @@
 		<method selector="tabView:didSelectTabViewItem:" swt_gen="true">
 			<arg swt_gen="true"></arg>
 			<arg swt_gen="true"></arg>
-			<retval></retval>
-		</method>
-		<method selector="tabView:shouldSelectTabViewItem:" swt_gen="true">
-			<arg swt_gen="true"></arg>
-			<arg swt_gen="true"></arg>
-			<retval></retval>
+			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="tabView:willSelectTabViewItem:" swt_gen="true">
 			<arg swt_gen="true"></arg>
 			<arg swt_gen="true"></arg>
-			<retval></retval>
+			<retval swt_gen="true"></retval>
 		</method>
 	</informal_protocol>
 	<informal_protocol name="NSTableDataSource" swt_gen="mixed">
@@ -5608,14 +5050,6 @@
 		<method selector="toolbarSelectableItemIdentifiers:" swt_gen="true">
 			<arg swt_gen="true"></arg>
 			<retval></retval>
-		</method>
-	</informal_protocol>
-	<informal_protocol name="NSToolbarNotifications" swt_gen="true">
-		<method selector="toolbarDidRemoveItem:" swt_gen="true">
-			<arg swt_gen="true"></arg>
-		</method>
-		<method selector="toolbarWillAddItem:" swt_gen="true">
-			<arg swt_gen="true"></arg>
 		</method>
 	</informal_protocol>
 	<informal_protocol name="NSWindowDelegate" swt_gen="mixed">

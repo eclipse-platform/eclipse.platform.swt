@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2017 IBM Corporation and others.
+ * Copyright (c) 2000, 2019 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -35,26 +35,12 @@ public long count() {
 	return OS.objc_msgSend(this.id, OS.sel_count);
 }
 
-public long firstIndex() {
-	return OS.objc_msgSend(this.id, OS.sel_firstIndex);
-}
-
 public long getIndexes(long[] indexBuffer, long bufferSize, long range) {
 	return OS.objc_msgSend(this.id, OS.sel_getIndexes_maxCount_inIndexRange_, indexBuffer, bufferSize, range);
 }
 
-public static NSIndexSet indexSetWithIndex(long value) {
-	long result = OS.objc_msgSend(OS.class_NSIndexSet, OS.sel_indexSetWithIndex_, value);
-	return result != 0 ? new NSIndexSet(result) : null;
-}
-
 public NSIndexSet initWithIndex(long value) {
 	long result = OS.objc_msgSend(this.id, OS.sel_initWithIndex_, value);
-	return result == this.id ? this : (result != 0 ? new NSIndexSet(result) : null);
-}
-
-public NSIndexSet initWithIndexSet(NSIndexSet indexSet) {
-	long result = OS.objc_msgSend(this.id, OS.sel_initWithIndexSet_, indexSet != null ? indexSet.id : 0);
 	return result == this.id ? this : (result != 0 ? new NSIndexSet(result) : null);
 }
 

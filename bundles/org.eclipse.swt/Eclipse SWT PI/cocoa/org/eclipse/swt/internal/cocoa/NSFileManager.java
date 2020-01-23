@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others.
+ * Copyright (c) 2000, 2019 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -27,15 +27,6 @@ public NSFileManager(id id) {
 	super(id);
 }
 
-public NSArray URLsForDirectory(long directory, long domainMask) {
-	long result = OS.objc_msgSend(this.id, OS.sel_URLsForDirectory_inDomains_, directory, domainMask);
-	return result != 0 ? new NSArray(result) : null;
-}
-
-public boolean createFileAtPath(NSString path, NSData data, NSDictionary attr) {
-	return OS.objc_msgSend_bool(this.id, OS.sel_createFileAtPath_contents_attributes_, path != null ? path.id : 0, data != null ? data.id : 0, attr != null ? attr.id : 0);
-}
-
 public static NSFileManager defaultManager() {
 	long result = OS.objc_msgSend(OS.class_NSFileManager, OS.sel_defaultManager);
 	return result != 0 ? new NSFileManager(result) : null;
@@ -56,10 +47,6 @@ public boolean fileExistsAtPath(NSString path, long isDirectory) {
 
 public boolean isExecutableFileAtPath(NSString path) {
 	return OS.objc_msgSend_bool(this.id, OS.sel_isExecutableFileAtPath_, path != null ? path.id : 0);
-}
-
-public boolean removeItemAtPath(NSString path, long error) {
-	return OS.objc_msgSend_bool(this.id, OS.sel_removeItemAtPath_error_, path != null ? path.id : 0, error);
 }
 
 }
