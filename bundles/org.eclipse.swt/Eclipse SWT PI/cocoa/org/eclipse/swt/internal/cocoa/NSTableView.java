@@ -27,8 +27,8 @@ public NSTableView(id id) {
 	super(id);
 }
 
-public void addTableColumn(NSTableColumn column) {
-	OS.objc_msgSend(this.id, OS.sel_addTableColumn_, column != null ? column.id : 0);
+public void addTableColumn(NSTableColumn tableColumn) {
+	OS.objc_msgSend(this.id, OS.sel_addTableColumn_, tableColumn != null ? tableColumn.id : 0);
 }
 
 public boolean canDragRowsWithIndexes(NSIndexSet rowIndexes, NSPoint mouseDownPoint) {
@@ -89,8 +89,8 @@ public boolean isRowSelected(long row) {
 	return OS.objc_msgSend_bool(this.id, OS.sel_isRowSelected_, row);
 }
 
-public void moveColumn(long column, long newIndex) {
-	OS.objc_msgSend(this.id, OS.sel_moveColumn_toColumn_, column, newIndex);
+public void moveColumn(long oldIndex, long newIndex) {
+	OS.objc_msgSend(this.id, OS.sel_moveColumn_toColumn_, oldIndex, newIndex);
 }
 
 public void noteNumberOfRowsChanged() {
@@ -130,8 +130,8 @@ public void reloadData() {
 	OS.objc_msgSend(this.id, OS.sel_reloadData);
 }
 
-public void removeTableColumn(NSTableColumn column) {
-	OS.objc_msgSend(this.id, OS.sel_removeTableColumn_, column != null ? column.id : 0);
+public void removeTableColumn(NSTableColumn tableColumn) {
+	OS.objc_msgSend(this.id, OS.sel_removeTableColumn_, tableColumn != null ? tableColumn.id : 0);
 }
 
 public long rowAtPoint(NSPoint point) {
@@ -195,24 +195,24 @@ public void setDoubleAction(long doubleAction) {
 	OS.objc_msgSend(this.id, OS.sel_setDoubleAction_, doubleAction);
 }
 
-public void setDropRow(long row, long op) {
-	OS.objc_msgSend(this.id, OS.sel_setDropRow_dropOperation_, row, op);
+public void setDropRow(long row, long dropOperation) {
+	OS.objc_msgSend(this.id, OS.sel_setDropRow_dropOperation_, row, dropOperation);
 }
 
-public void setGridStyleMask(long gridStyle) {
-	OS.objc_msgSend(this.id, OS.sel_setGridStyleMask_, gridStyle);
+public void setGridStyleMask(long gridStyleMask) {
+	OS.objc_msgSend(this.id, OS.sel_setGridStyleMask_, gridStyleMask);
 }
 
 public void setHeaderView(NSTableHeaderView headerView) {
 	OS.objc_msgSend(this.id, OS.sel_setHeaderView_, headerView != null ? headerView.id : 0);
 }
 
-public void setHighlightedTableColumn(NSTableColumn tc) {
-	OS.objc_msgSend(this.id, OS.sel_setHighlightedTableColumn_, tc != null ? tc.id : 0);
+public void setHighlightedTableColumn(NSTableColumn highlightedTableColumn) {
+	OS.objc_msgSend(this.id, OS.sel_setHighlightedTableColumn_, highlightedTableColumn != null ? highlightedTableColumn.id : 0);
 }
 
-public void setIndicatorImage(NSImage anImage, NSTableColumn tc) {
-	OS.objc_msgSend(this.id, OS.sel_setIndicatorImage_inTableColumn_, anImage != null ? anImage.id : 0, tc != null ? tc.id : 0);
+public void setIndicatorImage(NSImage anImage, NSTableColumn tableColumn) {
+	OS.objc_msgSend(this.id, OS.sel_setIndicatorImage_inTableColumn_, anImage != null ? anImage.id : 0, tableColumn != null ? tableColumn.id : 0);
 }
 
 public void setIntercellSpacing(NSSize intercellSpacing) {

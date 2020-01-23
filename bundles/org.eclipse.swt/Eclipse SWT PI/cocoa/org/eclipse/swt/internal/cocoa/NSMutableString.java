@@ -39,19 +39,19 @@ public void setString(NSString aString) {
 	OS.objc_msgSend(this.id, OS.sel_setString_, aString != null ? aString.id : 0);
 }
 
-public static NSString string() {
+public static NSMutableString string() {
 	long result = OS.objc_msgSend(OS.class_NSMutableString, OS.sel_string);
-	return result != 0 ? new NSString(result) : null;
+	return result != 0 ? new NSMutableString(result) : null;
 }
 
-public static NSString stringWithCharacters(char[] characters, long length) {
+public static NSMutableString stringWithCharacters(char[] characters, long length) {
 	long result = OS.objc_msgSend(OS.class_NSMutableString, OS.sel_stringWithCharacters_length_, characters, length);
 	return result != 0 ? new NSMutableString(result) : null;
 }
 
-public static NSString stringWithUTF8String(long nullTerminatedCString) {
+public static NSMutableString stringWithUTF8String(long nullTerminatedCString) {
 	long result = OS.objc_msgSend(OS.class_NSMutableString, OS.sel_stringWithUTF8String_, nullTerminatedCString);
-	return result != 0 ? new NSString(result) : null;
+	return result != 0 ? new NSMutableString(result) : null;
 }
 
 }

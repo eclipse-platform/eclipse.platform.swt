@@ -3075,7 +3075,7 @@ void initCGContext(long cgContext) {
 			case SWT.LINE_CUSTOM: dashes = data.lineDashes; break;
 		}
 		if (dashes != null) {
-			float[] lengths = new float[dashes.length];
+			double[] lengths = new double[dashes.length];
 			for (int i = 0; i < lengths.length; i++) {
 				lengths[i] = width == 0 || data.lineStyle == SWT.LINE_CUSTOM ? dashes[i] : dashes[i] * width;
 			}

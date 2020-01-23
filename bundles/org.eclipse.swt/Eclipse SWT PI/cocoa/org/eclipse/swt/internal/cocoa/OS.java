@@ -771,11 +771,10 @@ public static final long protocol_NSAccessibility = objc_getProtocol("NSAccessib
 public static final long protocol_NSAccessibilityAdditions = objc_getProtocol("NSAccessibilityAdditions");
 public static final long protocol_NSAppearanceCustomization = objc_getProtocol("NSAppearanceCustomization");
 public static final long protocol_NSApplicationDelegate = objc_getProtocol("NSApplicationDelegate");
-public static final long protocol_NSApplicationNotifications = objc_getProtocol("NSApplicationNotifications");
 public static final long protocol_NSColorPanelResponderMethod = objc_getProtocol("NSColorPanelResponderMethod");
-public static final long protocol_NSComboBoxNotifications = objc_getProtocol("NSComboBoxNotifications");
+public static final long protocol_NSComboBoxDelegate = objc_getProtocol("NSComboBoxDelegate");
 public static final long protocol_NSDraggingDestination = objc_getProtocol("NSDraggingDestination");
-public static final long protocol_NSDraggingSource = objc_getProtocol("NSDraggingSource");
+public static final long protocol_NSDraggingSourceDeprecated = objc_getProtocol("NSDraggingSourceDeprecated");
 public static final long protocol_NSFontManagerResponderMethod = objc_getProtocol("NSFontManagerResponderMethod");
 public static final long protocol_NSFontPanelValidationAdditions = objc_getProtocol("NSFontPanelValidationAdditions");
 public static final long protocol_NSMenuDelegate = objc_getProtocol("NSMenuDelegate");
@@ -783,12 +782,10 @@ public static final long protocol_NSMenuValidation = objc_getProtocol("NSMenuVal
 public static final long protocol_NSOpenSavePanelDelegate = objc_getProtocol("NSOpenSavePanelDelegate");
 public static final long protocol_NSOutlineViewDataSource = objc_getProtocol("NSOutlineViewDataSource");
 public static final long protocol_NSOutlineViewDelegate = objc_getProtocol("NSOutlineViewDelegate");
-public static final long protocol_NSOutlineViewNotifications = objc_getProtocol("NSOutlineViewNotifications");
 public static final long protocol_NSPasteboardOwner = objc_getProtocol("NSPasteboardOwner");
 public static final long protocol_NSTabViewDelegate = objc_getProtocol("NSTabViewDelegate");
-public static final long protocol_NSTableDataSource = objc_getProtocol("NSTableDataSource");
+public static final long protocol_NSTableViewDataSource = objc_getProtocol("NSTableViewDataSource");
 public static final long protocol_NSTableViewDelegate = objc_getProtocol("NSTableViewDelegate");
-public static final long protocol_NSTableViewNotifications = objc_getProtocol("NSTableViewNotifications");
 public static final long protocol_NSTextAttachmentCell = objc_getProtocol("NSTextAttachmentCell");
 public static final long protocol_NSTextDelegate = objc_getProtocol("NSTextDelegate");
 public static final long protocol_NSTextInput = objc_getProtocol("NSTextInput");
@@ -797,7 +794,6 @@ public static final long protocol_NSToolTipOwner = objc_getProtocol("NSToolTipOw
 public static final long protocol_NSToolbarDelegate = objc_getProtocol("NSToolbarDelegate");
 public static final long protocol_NSURLDownloadDelegate = objc_getProtocol("NSURLDownloadDelegate");
 public static final long protocol_NSWindowDelegate = objc_getProtocol("NSWindowDelegate");
-public static final long protocol_NSWindowNotifications = objc_getProtocol("NSWindowNotifications");
 public static final long protocol_WebDocumentRepresentation = objc_getProtocol("WebDocumentRepresentation");
 public static final long protocol_WebFrameLoadDelegate = objc_getProtocol("WebFrameLoadDelegate");
 public static final long protocol_WebOpenPanelResultListener = objc_getProtocol("WebOpenPanelResultListener");
@@ -2949,10 +2945,10 @@ public static final native long CFURLCreateStringByAddingPercentEscapes(long all
  * @param height cast=(size_t)
  * @param bitsPerComponent cast=(size_t)
  * @param bytesPerRow cast=(size_t)
- * @param colorspace cast=(CGColorSpaceRef)
+ * @param space cast=(CGColorSpaceRef)
  * @param bitmapInfo cast=(CGBitmapInfo)
  */
-public static final native long CGBitmapContextCreate(long data, long width, long height, long bitsPerComponent, long bytesPerRow, long colorspace, int bitmapInfo);
+public static final native long CGBitmapContextCreate(long data, long width, long height, long bitsPerComponent, long bytesPerRow, long space, int bitmapInfo);
 /**
  * @param space cast=(CGColorSpaceRef)
  * @param components cast=(CGFloat*)
@@ -3025,15 +3021,15 @@ public static final native void CGContextScaleCTM(long c, double sx, double sy);
  */
 public static final native void CGContextSetBlendMode(long context, int mode);
 /**
- * @param c cast=(CGContextRef)
+ * @param context cast=(CGContextRef)
  * @param components cast=(CGFloat*)
  */
-public static final native void CGContextSetFillColor(long c, double[] components);
+public static final native void CGContextSetFillColor(long context, double[] components);
 /**
- * @param c cast=(CGContextRef)
- * @param colorspace cast=(CGColorSpaceRef)
+ * @param context cast=(CGContextRef)
+ * @param space cast=(CGColorSpaceRef)
  */
-public static final native void CGContextSetFillColorSpace(long c, long colorspace);
+public static final native void CGContextSetFillColorSpace(long context, long space);
 /**
  * @param c cast=(CGContextRef)
  * @param cap cast=(CGLineCap)
@@ -3045,7 +3041,7 @@ public static final native void CGContextSetLineCap(long c, int cap);
  * @param lengths cast=(CGFloat*)
  * @param count cast=(size_t)
  */
-public static final native void CGContextSetLineDash(long c, double phase, float[] lengths, long count);
+public static final native void CGContextSetLineDash(long c, double phase, double[] lengths, long count);
 /**
  * @param c cast=(CGContextRef)
  * @param join cast=(CGLineJoin)
@@ -3102,7 +3098,7 @@ public static final native long CGEventCreateMouseEvent(long source, int mouseTy
 /**
  * @param source cast=(CGEventSourceRef)
  * @param units cast=(CGScrollEventUnit)
- * @param wheelCount cast=(CGWheelCount)
+ * @param wheelCount cast=(uint32_t)
  * @param wheel1 cast=(int32_t)
  */
 public static final native long CGEventCreateScrollWheelEvent(long source, int units, int wheelCount, int wheel1);
@@ -3117,30 +3113,30 @@ public static final native long CGEventGetIntegerValueField(long event, int fiel
  */
 public static final native void CGEventPost(int tap, long event);
 /**
- * @param sourceState cast=(CGEventSourceStateID)
+ * @param stateID cast=(CGEventSourceStateID)
  */
-public static final native long CGEventSourceCreate(int sourceState);
+public static final native long CGEventSourceCreate(int stateID);
 /**
  * @param rect flags=struct
- * @param maxDisplays cast=(CGDisplayCount)
- * @param dspys cast=(CGDirectDisplayID*)
- * @param dspyCnt cast=(CGDisplayCount*)
+ * @param maxDisplays cast=(uint32_t)
+ * @param displays cast=(CGDirectDisplayID*)
+ * @param matchingDisplayCount cast=(uint32_t*)
  */
-public static final native int CGGetDisplaysWithRect(CGRect rect, int maxDisplays, long dspys, long dspyCnt);
+public static final native int CGGetDisplaysWithRect(CGRect rect, int maxDisplays, long displays, long matchingDisplayCount);
 /**
  * @param width cast=(size_t)
  * @param height cast=(size_t)
  * @param bitsPerComponent cast=(size_t)
  * @param bitsPerPixel cast=(size_t)
  * @param bytesPerRow cast=(size_t)
- * @param colorspace cast=(CGColorSpaceRef)
+ * @param space cast=(CGColorSpaceRef)
  * @param bitmapInfo cast=(CGBitmapInfo)
  * @param provider cast=(CGDataProviderRef)
  * @param decode cast=(CGFloat*)
  * @param shouldInterpolate cast=(_Bool)
  * @param intent cast=(CGColorRenderingIntent)
  */
-public static final native long CGImageCreate(long width, long height, long bitsPerComponent, long bitsPerPixel, long bytesPerRow, long colorspace, int bitmapInfo, long provider, long decode, boolean shouldInterpolate, int intent);
+public static final native long CGImageCreate(long width, long height, long bitsPerComponent, long bitsPerPixel, long bytesPerRow, long space, int bitmapInfo, long provider, long decode, boolean shouldInterpolate, int intent);
 /**
  * @param image cast=(CGImageRef)
  */

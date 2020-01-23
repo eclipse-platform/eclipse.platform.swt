@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others.
+ * Copyright (c) 2000, 2019 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -66,14 +66,14 @@ public long yearOfCommonEra() {
 	return OS.objc_msgSend(this.id, OS.sel_yearOfCommonEra);
 }
 
-public static NSDate dateWithTimeIntervalSinceNow(double secs) {
+public static NSCalendarDate dateWithTimeIntervalSinceNow(double secs) {
 	long result = OS.objc_msgSend(OS.class_NSCalendarDate, OS.sel_dateWithTimeIntervalSinceNow_, secs);
 	return result != 0 ? new NSCalendarDate(result) : null;
 }
 
 public static NSDate distantFuture() {
 	long result = OS.objc_msgSend(OS.class_NSCalendarDate, OS.sel_distantFuture);
-	return result != 0 ? new NSCalendarDate(result) : null;
+	return result != 0 ? new NSDate(result) : null;
 }
 
 }

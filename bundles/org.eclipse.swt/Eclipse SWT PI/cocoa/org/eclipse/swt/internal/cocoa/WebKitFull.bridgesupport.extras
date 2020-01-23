@@ -180,7 +180,7 @@
 			<arg swt_gen="true"></arg>
 			<arg swt_gen="true"></arg>
 			<arg swt_gen="true"></arg>
-			<retval swt_gen="true" swt_java_type="WebView"></retval>
+			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="mainFrame" swt_gen="true">
 			<retval swt_gen="true"></retval>

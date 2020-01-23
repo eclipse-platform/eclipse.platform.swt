@@ -49,8 +49,8 @@ public long UTF8String() {
 	return OS.objc_msgSend(this.id, OS.sel_UTF8String);
 }
 
-public long characterAtIndex(long index) {
-	return OS.objc_msgSend(this.id, OS.sel_characterAtIndex_, index);
+public char characterAtIndex(long index) {
+	return (char)OS.objc_msgSend(this.id, OS.sel_characterAtIndex_, index);
 }
 
 public long compare(NSString string) {

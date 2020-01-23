@@ -342,7 +342,7 @@
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="setLineDash:count:phase:" swt_gen="true">
-			<arg swt_gen="true" swt_java_type="float[]" swt_java_type64="double[]"></arg>
+			<arg swt_gen="true" swt_java_type="double[]"></arg>
 			<arg swt_gen="true"></arg>
 			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
@@ -405,11 +405,11 @@
 			<arg swt_gen="true"></arg>
 			<arg swt_gen="true"></arg>
 			<arg swt_gen="true"></arg>
-			<retval swt_gen="true" swt_java_type="NSBitmapImageRep"></retval>
+			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="initWithData:" swt_gen="true">
 			<arg swt_gen="true"></arg>
-			<retval swt_gen="true" swt_java_type="NSBitmapImageRep"></retval>
+			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="isPlanar" swt_gen="true">
 			<retval swt_gen="true"></retval>
@@ -423,7 +423,7 @@
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="contentView" swt_gen="true">
-			<retval swt_gen="true" swt_java_type="NSView"></retval>
+			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="contentViewMargins" swt_gen="true">
 			<retval swt_gen="true"></retval>
@@ -787,7 +787,7 @@
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="getComponents:" swt_gen="true">
-			<arg swt_gen="true" swt_java_type="float[]" swt_java_type64="double[]"></arg>
+			<arg swt_gen="true" swt_java_type="double[]"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="greenComponent" swt_gen="true">
@@ -943,7 +943,7 @@
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="cell" swt_gen="true">
-			<retval swt_gen="true" swt_java_type="NSCell"></retval>
+			<retval swt_gen="true"></retval>
 		</method>
 		<method class_method="true" selector="cellClass" swt_gen="true">
 			<retval swt_gen="true"></retval>
@@ -1038,7 +1038,7 @@
 		<method selector="initWithImage:hotSpot:" swt_gen="true">
 			<arg swt_gen="true"></arg>
 			<arg swt_gen="true"></arg>
-			<retval swt_gen="true" swt_java_type="NSCursor"></retval>
+			<retval swt_gen="true"></retval>
 		</method>
 		<method class_method="true" selector="operationNotAllowedCursor" swt_gen="true">
 			<retval swt_gen="true"></retval>
@@ -1331,7 +1331,7 @@
 		<method selector="initWithStartingColor:endingColor:" swt_gen="true">
 			<arg swt_gen="true"></arg>
 			<arg swt_gen="true"></arg>
-			<retval swt_gen="true" swt_java_type="NSGradient"></retval>
+			<retval swt_gen="true"></retval>
 		</method>
 	</class>
 	<class name="NSGraphicsContext" swt_gen="mixed">
@@ -1423,15 +1423,15 @@
 		</method>
 		<method class_method="true" selector="imageNamed:" swt_gen="true">
 			<arg swt_gen="true"></arg>
-			<retval swt_gen="true" swt_java_type="NSImage"></retval>
+			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="initByReferencingFile:" swt_gen="true">
 			<arg swt_gen="true"></arg>
-			<retval swt_gen="true" swt_java_type="NSImage"></retval>
+			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="initWithContentsOfFile:" swt_gen="true">
 			<arg swt_gen="true"></arg>
-			<retval swt_gen="true" swt_java_type="NSImage"></retval>
+			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="initWithData:" swt_gen="true">
 			<arg swt_gen="true"></arg>
@@ -1439,11 +1439,11 @@
 		</method>
 		<method selector="initWithIconRef:" swt_gen="true">
 			<arg swt_gen="true"></arg>
-			<retval swt_gen="true" swt_java_type="NSImage"></retval>
+			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="initWithSize:" swt_gen="true">
 			<arg swt_gen="true"></arg>
-			<retval swt_gen="true" swt_java_type="NSImage"></retval>
+			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="lockFocus" swt_gen="true">
 			<retval swt_gen="true"></retval>
@@ -1592,7 +1592,7 @@
 		<method selector="glyphIndexForPoint:inTextContainer:fractionOfDistanceThroughGlyph:" swt_gen="true">
 			<arg swt_gen="true"></arg>
 			<arg swt_gen="true"></arg>
-			<arg swt_gen="true" swt_java_type="float[]" swt_java_type64="double[]"></arg>
+			<arg swt_gen="true" swt_java_type="double[]"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="glyphRangeForCharacterRange:actualCharacterRange:" swt_gen="true">
@@ -1626,14 +1626,14 @@
 			<arg swt_gen="true"></arg>
 			<arg swt_gen="true"></arg>
 			<arg swt_gen="true"></arg>
-			<arg swt_gen="true" swt_java_type="int[]" swt_java_type64="long[]"></arg>
+			<arg swt_gen="true" swt_java_type="long[]"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="rectArrayForGlyphRange:withinSelectedGlyphRange:inTextContainer:rectCount:" swt_gen="true">
 			<arg swt_gen="true"></arg>
 			<arg swt_gen="true"></arg>
 			<arg swt_gen="true"></arg>
-			<arg swt_gen="true" swt_java_type="int[]" swt_java_type64="long[]"></arg>
+			<arg swt_gen="true" swt_java_type="long[]"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="removeTemporaryAttribute:forCharacterRange:" swt_gen="true">
@@ -1682,7 +1682,7 @@
 		</method>
 		<method selector="initWithTitle:" swt_gen="true">
 			<arg swt_gen="true"></arg>
-			<retval swt_gen="true" swt_java_type="NSMenu"></retval>
+			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="insertItem:atIndex:" swt_gen="true">
 			<arg swt_gen="true"></arg>
@@ -1756,7 +1756,7 @@
 			<arg swt_gen="true"></arg>
 			<arg swt_gen="true"></arg>
 			<arg swt_gen="true"></arg>
-			<retval swt_gen="true" swt_java_type="NSMenuItem"></retval>
+			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="isHidden" swt_gen="true">
 			<retval swt_gen="true"></retval>
@@ -1967,7 +1967,7 @@
 		<method selector="initWithFormat:shareContext:" swt_gen="true">
 			<arg swt_gen="true"></arg>
 			<arg swt_gen="true"></arg>
-			<retval swt_gen="true" swt_java_type="NSOpenGLContext"></retval>
+			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="makeCurrentContext" swt_gen="true">
 			<retval swt_gen="true"></retval>
@@ -1990,7 +1990,7 @@
 	</class>
 	<class name="NSOpenGLPixelFormat" swt_gen="mixed">
 		<method selector="getValues:forAttribute:forVirtualScreen:" swt_gen="true">
-			<arg swt_gen="true" swt_java_type="int[]" swt_java_type64="long[]"></arg>
+			<arg swt_gen="true" swt_java_type="long[]"></arg>
 			<arg swt_gen="true"></arg>
 			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
@@ -2168,7 +2168,7 @@
 		<method selector="initWithFrame:pullsDown:" swt_gen="true">
 			<arg swt_gen="true"></arg>
 			<arg swt_gen="true"></arg>
-			<retval swt_gen="true" swt_java_type="NSPopUpButton"></retval>
+			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="itemAtIndex:" swt_gen="true">
 			<arg swt_gen="true"></arg>
@@ -2929,11 +2929,11 @@
 			<retval swt_gen="true" swt_java_type="NSCell"></retval>
 		</method>
 		<method selector="headerCell" swt_gen="true">
-			<retval swt_gen="true" swt_java_type="NSTableHeaderCell"></retval>
+			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="initWithIdentifier:" swt_gen="true">
 			<arg swt_gen="true"></arg>
-			<retval swt_gen="true" swt_java_type="NSTableColumn"></retval>
+			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="resizingMask" swt_gen="true">
 			<retval swt_gen="true"></retval>
@@ -2995,7 +2995,7 @@
 	</class>
 	<class name="NSTableView" swt_gen="mixed" swt_superclass="NSControl">
 		<method selector="addTableColumn:" swt_gen="true">
-			<arg swt_gen="true" swt_param_name="column"></arg>
+			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="canDragRowsWithIndexes:atPoint:" swt_gen="true" swt_gen_custom_callback="true" swt_gen_super_msgSend="true">
@@ -3052,7 +3052,7 @@
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="moveColumn:toColumn:" swt_gen="true">
-			<arg swt_gen="true" swt_param_name="column"></arg>
+			<arg swt_gen="true"></arg>
 			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
@@ -3085,7 +3085,7 @@
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="removeTableColumn:" swt_gen="true">
-			<arg swt_gen="true" swt_param_name="column"></arg>
+			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="rowAtPoint:" swt_gen="true">
@@ -3148,11 +3148,11 @@
 		</method>
 		<method selector="setDropRow:dropOperation:" swt_gen="true">
 			<arg swt_gen="true"></arg>
-			<arg swt_gen="true" swt_param_name="op"></arg>
+			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="setGridStyleMask:" swt_gen="true">
-			<arg swt_gen="true" swt_param_name="gridStyle"></arg>
+			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="setHeaderView:" swt_gen="true">
@@ -3160,12 +3160,12 @@
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="setHighlightedTableColumn:" swt_gen="true">
-			<arg swt_gen="true" swt_param_name="tc"></arg>
+			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="setIndicatorImage:inTableColumn:" swt_gen="true">
 			<arg swt_gen="true"></arg>
-			<arg swt_gen="true" swt_param_name="tc"></arg>
+			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="setIntercellSpacing:" swt_gen="true">
@@ -3285,7 +3285,7 @@
 	<class name="NSTextAttachment" swt_gen="mixed">
 		<method selector="initWithFileWrapper:" swt_gen="true">
 			<arg swt_gen="true"></arg>
-			<retval swt_gen="true" swt_java_type="NSTextAttachment" swt_java_type64="NSTextAttachment"></retval>
+			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="setAttachmentCell:" swt_gen="true">
 			<arg swt_gen="true"></arg>
@@ -3293,9 +3293,9 @@
 		</method>
 	</class>
 	<class name="NSTextContainer" swt_gen="mixed">
-		<method selector="initWithContainerSize:" swt_gen="mixed">
+		<method selector="initWithContainerSize:" swt_gen="true">
 			<arg swt_gen="true"></arg>
-			<retval swt_java_type="NSTextContainer"></retval>
+			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="setContainerSize:" swt_gen="true">
 			<arg swt_gen="true"></arg>
@@ -3367,7 +3367,7 @@
 		<method selector="initWithType:location:" swt_gen="true">
 			<arg swt_gen="true"></arg>
 			<arg swt_gen="true"></arg>
-			<retval swt_gen="true" swt_java_type="NSTextTab"></retval>
+			<retval swt_gen="true"></retval>
 		</method>
 	</class>
 	<class name="NSTextView" swt_gen="mixed" swt_superclass="NSText">
@@ -3385,7 +3385,7 @@
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="drawViewBackgroundInRect:" swt_gen="true" swt_gen_custom_callback="true" swt_gen_super_msgSend="true">
-			<arg swt_gen="true" swt_java_type="NSRect"></arg>
+			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="layoutManager" swt_gen="true">
@@ -3446,7 +3446,7 @@
 	<class name="NSToolbar" swt_gen="mixed">
 		<method selector="initWithIdentifier:" swt_gen="true">
 			<arg swt_gen="true"></arg>
-			<retval swt_gen="true" swt_java_type="NSToolbar"></retval>
+			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="insertItemWithItemIdentifier:atIndex:" swt_gen="true">
 			<arg swt_gen="true"></arg>
@@ -3484,7 +3484,7 @@
 	<class name="NSToolbarItem" swt_gen="mixed">
 		<method selector="initWithItemIdentifier:" swt_gen="true">
 			<arg swt_gen="true"></arg>
-			<retval swt_gen="true" swt_java_type="NSToolbarItem"></retval>
+			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="itemIdentifier" swt_gen="true">
 			<retval swt_gen="true"></retval>
@@ -3661,7 +3661,7 @@
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="drawRect:" swt_gen="true" swt_gen_custom_callback="true">
-			<arg swt_gen="true" swt_param_name="rect"></arg>
+			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="endDocument" swt_gen="true">
@@ -3679,7 +3679,7 @@
 		</method>
 		<method selector="initWithFrame:" swt_gen="true">
 			<arg swt_gen="true"></arg>
-			<retval swt_gen="true" swt_java_type="NSView"></retval>
+			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="isDescendantOf:" swt_gen="true">
 			<arg swt_gen="true"></arg>
@@ -3867,7 +3867,7 @@
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="contentView" swt_gen="true">
-			<retval swt_gen="true" swt_java_type="NSView"></retval>
+			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="convertBaseToScreen:" swt_gen="true">
 			<arg swt_gen="true"></arg>
@@ -3935,7 +3935,7 @@
 			<arg swt_gen="true"></arg>
 			<arg swt_gen="true"></arg>
 			<arg swt_gen="true"></arg>
-			<retval swt_gen="true" swt_java_type="NSWindow"></retval>
+			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="initWithContentRect:styleMask:backing:defer:screen:" swt_gen="true">
 			<arg swt_gen="true"></arg>
@@ -3943,7 +3943,7 @@
 			<arg swt_gen="true"></arg>
 			<arg swt_gen="true"></arg>
 			<arg swt_gen="true"></arg>
-			<retval swt_gen="true" swt_java_type="NSWindow"></retval>
+			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="invalidateShadow" swt_gen="true">
 			<retval swt_gen="true"></retval>
@@ -4654,6 +4654,14 @@
 			<arg swt_gen="true"></arg>
 			<retval></retval>
 		</method>
+		<method selector="applicationDidBecomeActive:" swt_gen="true">
+			<arg swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
+		</method>
+		<method selector="applicationDidResignActive:" swt_gen="true">
+			<arg swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
+		</method>
 		<method selector="applicationDockMenu:" swt_gen="true">
 			<arg swt_gen="true"></arg>
 			<retval></retval>
@@ -4667,16 +4675,9 @@
 			<arg swt_gen="true"></arg>
 			<retval></retval>
 		</method>
-	</informal_protocol>
-	<informal_protocol name="NSApplicationNotifications" swt_gen="mixed">
-		<method selector="applicationDidBecomeActive:" swt_gen="true">
-			<arg swt_gen="true"></arg>
-		</method>
-		<method selector="applicationDidResignActive:" swt_gen="true">
-			<arg swt_gen="true"></arg>
-		</method>
 		<method selector="applicationWillFinishLaunching:" swt_gen="true">
 			<arg swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
 		</method>
 	</informal_protocol>
 	<informal_protocol name="NSColorPanelResponderMethod" swt_gen="true">
@@ -4685,15 +4686,18 @@
 			<retval></retval>
 		</method>
 	</informal_protocol>
-	<informal_protocol name="NSComboBoxNotifications" swt_gen="mixed">
+	<informal_protocol name="NSComboBoxDelegate" swt_gen="mixed">
 		<method selector="comboBoxSelectionDidChange:" swt_gen="true">
 			<arg swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="comboBoxWillDismiss:" swt_gen="true">
 			<arg swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="comboBoxWillPopUp:" swt_gen="true">
 			<arg swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
 		</method>
 	</informal_protocol>
 	<informal_protocol name="NSDraggingDestination" swt_gen="mixed">
@@ -4717,20 +4721,25 @@
 			<retval></retval>
 		</method>
 	</informal_protocol>
-	<informal_protocol name="NSDraggingSource" swt_gen="mixed">
+	<informal_protocol name="NSDraggingSourceDeprecated" swt_gen="mixed">
 		<method selector="draggedImage:beganAt:" swt_gen="true">
 			<arg swt_gen="true"></arg>
 			<arg swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="draggedImage:endedAt:operation:" swt_gen="true" swt_gen_custom_callback="true">
 			<arg swt_gen="true"></arg>
 			<arg swt_gen="true"></arg>
 			<arg swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="draggingSourceOperationMaskForLocal:" swt_gen="true">
 			<arg swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
 		</method>
-		<method selector="ignoreModifierKeysWhileDragging" swt_gen="true"></method>
+		<method selector="ignoreModifierKeysWhileDragging" swt_gen="true">
+			<retval swt_gen="true"></retval>
+		</method>
 	</informal_protocol>
 	<informal_protocol name="NSFontManagerResponderMethod" swt_gen="true">
 		<method selector="changeFont:" swt_gen="true">
@@ -4851,19 +4860,21 @@
 			<arg swt_gen="true"></arg>
 			<retval></retval>
 		</method>
-	</informal_protocol>
-	<informal_protocol name="NSOutlineViewNotifications" swt_gen="mixed">
 		<method selector="outlineViewColumnDidMove:" swt_gen="true">
 			<arg swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="outlineViewColumnDidResize:" swt_gen="true">
 			<arg swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="outlineViewSelectionDidChange:" swt_gen="true">
 			<arg swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="outlineViewSelectionIsChanging:" swt_gen="true">
 			<arg swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
 		</method>
 	</informal_protocol>
 	<informal_protocol name="NSPasteboardOwner" swt_gen="mixed">
@@ -4885,37 +4896,43 @@
 			<retval swt_gen="true"></retval>
 		</method>
 	</informal_protocol>
-	<informal_protocol name="NSTableDataSource" swt_gen="mixed">
+	<informal_protocol name="NSTableViewDataSource" swt_gen="mixed">
 		<method selector="numberOfRowsInTableView:" swt_gen="true">
 			<arg swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="tableView:acceptDrop:row:dropOperation:" swt_gen="true">
 			<arg swt_gen="true"></arg>
 			<arg swt_gen="true"></arg>
 			<arg swt_gen="true"></arg>
 			<arg swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="tableView:objectValueForTableColumn:row:" swt_gen="true">
 			<arg swt_gen="true"></arg>
 			<arg swt_gen="true"></arg>
 			<arg swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="tableView:setObjectValue:forTableColumn:row:" swt_gen="true">
 			<arg swt_gen="true"></arg>
 			<arg swt_gen="true"></arg>
 			<arg swt_gen="true"></arg>
 			<arg swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="tableView:validateDrop:proposedRow:proposedDropOperation:" swt_gen="true">
 			<arg swt_gen="true"></arg>
 			<arg swt_gen="true"></arg>
 			<arg swt_gen="true"></arg>
 			<arg swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="tableView:writeRowsWithIndexes:toPasteboard:" swt_gen="true">
 			<arg swt_gen="true"></arg>
 			<arg swt_gen="true"></arg>
 			<arg swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
 		</method>
 	</informal_protocol>
 	<informal_protocol name="NSTableViewDelegate" swt_gen="mixed">
@@ -4937,19 +4954,21 @@
 			<arg swt_gen="true"></arg>
 			<retval></retval>
 		</method>
-	</informal_protocol>
-	<informal_protocol name="NSTableViewNotifications" swt_gen="true">
 		<method selector="tableViewColumnDidMove:" swt_gen="true">
 			<arg swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="tableViewColumnDidResize:" swt_gen="true">
 			<arg swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="tableViewSelectionDidChange:" swt_gen="true">
 			<arg swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="tableViewSelectionIsChanging:" swt_gen="true">
 			<arg swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
 		</method>
 	</informal_protocol>
 	<informal_protocol name="NSTextAttachmentCell" swt_gen="mixed">
@@ -5053,32 +5072,37 @@
 		</method>
 	</informal_protocol>
 	<informal_protocol name="NSWindowDelegate" swt_gen="mixed">
+		<method selector="windowDidBecomeKey:" swt_gen="true">
+			<arg swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
+		</method>
+		<method selector="windowDidDeminiaturize:" swt_gen="true">
+			<arg swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
+		</method>
+		<method selector="windowDidMiniaturize:" swt_gen="true">
+			<arg swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
+		</method>
+		<method selector="windowDidMove:" swt_gen="true">
+			<arg swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
+		</method>
+		<method selector="windowDidResignKey:" swt_gen="true">
+			<arg swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
+		</method>
+		<method selector="windowDidResize:" swt_gen="true">
+			<arg swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
+		</method>
 		<method selector="windowShouldClose:" swt_gen="true">
 			<arg swt_gen="true"></arg>
 			<retval></retval>
 		</method>
-	</informal_protocol>
-	<informal_protocol name="NSWindowNotifications" swt_gen="mixed">
-		<method selector="windowDidBecomeKey:" swt_gen="true">
-			<arg swt_gen="true"></arg>
-		</method>
-		<method selector="windowDidDeminiaturize:" swt_gen="true">
-			<arg swt_gen="true"></arg>
-		</method>
-		<method selector="windowDidMiniaturize:" swt_gen="true">
-			<arg swt_gen="true"></arg>
-		</method>
-		<method selector="windowDidMove:" swt_gen="true">
-			<arg swt_gen="true"></arg>
-		</method>
-		<method selector="windowDidResignKey:" swt_gen="true">
-			<arg swt_gen="true"></arg>
-		</method>
-		<method selector="windowDidResize:" swt_gen="true">
-			<arg swt_gen="true"></arg>
-		</method>
 		<method selector="windowWillClose:" swt_gen="true">
 			<arg swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
 		</method>
 	</informal_protocol>
 </signatures>

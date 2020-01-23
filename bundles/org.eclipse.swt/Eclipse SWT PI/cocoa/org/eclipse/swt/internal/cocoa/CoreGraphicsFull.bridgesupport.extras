@@ -36,13 +36,13 @@
 		<arg swt_gen="true"></arg>
 		<arg swt_gen="true"></arg>
 		<arg swt_gen="true"></arg>
-		<arg swt_gen="true" swt_param_name="colorspace"></arg>
+		<arg swt_gen="true"></arg>
 		<arg swt_gen="true"></arg>
 		<retval swt_gen="true"></retval>
 	</function>
 	<function name="CGColorCreate" swt_gen="true">
 		<arg swt_gen="true"></arg>
-		<arg swt_gen="true" swt_java_type="float[]" swt_java_type64="double[]"></arg>
+		<arg swt_gen="true" swt_java_type="double[]"></arg>
 		<retval swt_gen="true"></retval>
 	</function>
 	<function name="CGColorRelease" swt_gen="true">
@@ -114,13 +114,13 @@
 		<retval></retval>
 	</function>
 	<function name="CGContextSetFillColor" swt_gen="true">
-		<arg swt_gen="true" swt_param_name="c"></arg>
-		<arg swt_gen="true" swt_java_type="float[]" swt_java_type64="double[]"></arg>
+		<arg swt_gen="true"></arg>
+		<arg swt_gen="true" swt_java_type="double[]"></arg>
 		<retval></retval>
 	</function>
 	<function name="CGContextSetFillColorSpace" swt_gen="true">
-		<arg swt_gen="true" swt_param_name="c"></arg>
-		<arg swt_gen="true" swt_param_name="colorspace"></arg>
+		<arg swt_gen="true"></arg>
+		<arg swt_gen="true"></arg>
 		<retval></retval>
 	</function>
 	<function name="CGContextSetLineCap" swt_gen="true">
@@ -131,7 +131,7 @@
 	<function name="CGContextSetLineDash" swt_gen="true">
 		<arg swt_gen="true"></arg>
 		<arg swt_gen="true"></arg>
-		<arg swt_gen="true" swt_java_type="float[]" swt_java_type64="float[]"></arg>
+		<arg swt_gen="true" swt_java_type="double[]"></arg>
 		<arg swt_gen="true"></arg>
 		<retval></retval>
 	</function>
@@ -196,7 +196,7 @@
 	<function name="CGEventCreateScrollWheelEvent" swt_gen="true">
 		<arg swt_gen="true"></arg>
 		<arg swt_gen="true"></arg>
-		<arg swt_gen="true" swt_param_cast="CGWheelCount"></arg>
+		<arg swt_gen="true"></arg>
 		<arg swt_gen="true"></arg>
 		<retval swt_gen="true"></retval>
 	</function>
@@ -211,14 +211,14 @@
 		<retval></retval>
 	</function>
 	<function name="CGEventSourceCreate" swt_gen="true">
-		<arg swt_gen="true" swt_param_name="sourceState"></arg>
+		<arg swt_gen="true"></arg>
 		<retval swt_gen="true"></retval>
 	</function>
 	<function name="CGGetDisplaysWithRect" swt_gen="true">
 		<arg swt_gen="true"></arg>
-		<arg swt_gen="true" swt_param_cast="CGDisplayCount"></arg>
-		<arg swt_gen="true" swt_param_name="dspys"></arg>
-		<arg swt_gen="true" swt_param_cast="CGDisplayCount*" swt_param_name="dspyCnt"></arg>
+		<arg swt_gen="true"></arg>
+		<arg swt_gen="true"></arg>
+		<arg swt_gen="true"></arg>
 		<retval swt_gen="true"></retval>
 	</function>
 	<function name="CGImageCreate" swt_gen="true">
@@ -227,7 +227,7 @@
 		<arg swt_gen="true"></arg>
 		<arg swt_gen="true"></arg>
 		<arg swt_gen="true"></arg>
-		<arg swt_gen="true" swt_param_name="colorspace"></arg>
+		<arg swt_gen="true"></arg>
 		<arg swt_gen="true"></arg>
 		<arg swt_gen="true"></arg>
 		<arg swt_gen="true"></arg>

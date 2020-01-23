@@ -3,7 +3,7 @@
 	<class name="NSAffineTransform" swt_gen="mixed">
 		<method selector="initWithTransform:" swt_gen="true">
 			<arg swt_gen="true"></arg>
-			<retval swt_gen="true" swt_java_type="NSAffineTransform"></retval>
+			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="invert" swt_gen="true">
 			<retval swt_gen="true"></retval>
@@ -47,16 +47,16 @@
 	</class>
 	<class name="NSAppleEventDescriptor" swt_gen="mixed">
 		<method selector="initListDescriptor" swt_gen="true">
-			<retval swt_gen="true" swt_java_type="NSAppleEventDescriptor"></retval>
+			<retval swt_gen="true"></retval>
 		</method>
 	</class>
 	<class name="NSArray" swt_gen="mixed">
 		<method class_method="true" selector="array" swt_gen="true">
-			<retval swt_gen="true" swt_java_type="NSArray"></retval>
+			<retval swt_gen="true"></retval>
 		</method>
 		<method class_method="true" selector="arrayWithObject:" swt_gen="true">
 			<arg swt_gen="true"></arg>
-			<retval swt_alloc="true" swt_gen="true" swt_java_type="NSArray"></retval>
+			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="containsObject:" swt_gen="true">
 			<arg swt_gen="true"></arg>
@@ -93,12 +93,12 @@
 		</method>
 		<method selector="initWithString:" swt_gen="true">
 			<arg swt_gen="true"></arg>
-			<retval swt_gen="true" swt_java_type="NSAttributedString"></retval>
+			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="initWithString:attributes:" swt_gen="true">
 			<arg swt_gen="true"></arg>
 			<arg swt_gen="true"></arg>
-			<retval swt_gen="true" swt_java_type="NSAttributedString"></retval>
+			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="length" swt_gen="true">
 			<retval swt_gen="true"></retval>
@@ -195,7 +195,7 @@
 		<method class_method="true" selector="dataWithBytes:length:" swt_gen="true">
 			<arg swt_gen="true" swt_java_type="byte[]"></arg>
 			<arg swt_gen="true"></arg>
-			<retval swt_gen="true" swt_java_type="NSData"></retval>
+			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="getBytes:" swt_gen="true">
 			<arg swt_gen="true" swt_java_type="byte[]"></arg>
@@ -213,10 +213,10 @@
 		</method>
 		<method class_method="true" selector="dateWithTimeIntervalSinceNow:" swt_gen="true">
 			<arg swt_gen="true"></arg>
-			<retval swt_alloc="true" swt_gen="true" swt_java_type="NSDate"></retval>
+			<retval swt_gen="true"></retval>
 		</method>
 		<method class_method="true" selector="distantFuture" swt_gen="true">
-			<retval swt_alloc="true" swt_gen="true" swt_java_type="NSDate"></retval>
+			<retval swt_gen="true"></retval>
 		</method>
 	</class>
 	<class name="NSDictionary" swt_gen="mixed">
@@ -229,7 +229,7 @@
 		<method class_method="true" selector="dictionaryWithObject:forKey:" swt_gen="true">
 			<arg swt_gen="true"></arg>
 			<arg swt_gen="true"></arg>
-			<retval swt_alloc="true" swt_gen="true" swt_java_type="NSDictionary"></retval>
+			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="objectEnumerator" swt_gen="true">
 			<retval swt_gen="true"></retval>
@@ -337,18 +337,18 @@
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="getIndexes:maxCount:inIndexRange:" swt_gen="true">
-			<arg swt_gen="true" swt_java_type="int[]" swt_java_type64="long[]"></arg>
+			<arg swt_gen="true" swt_java_type="long[]"></arg>
 			<arg swt_gen="true"></arg>
 			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="initWithIndex:" swt_gen="true">
 			<arg swt_gen="true"></arg>
-			<retval swt_gen="true" swt_java_type="NSIndexSet"></retval>
+			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="initWithIndexesInRange:" swt_gen="true">
 			<arg swt_gen="true"></arg>
-			<retval swt_gen="true" swt_java_type="NSIndexSet"></retval>
+			<retval swt_gen="true"></retval>
 		</method>
 	</class>
 	<class name="NSKeyedArchiver" swt_gen="mixed" swt_superclass="NSCoder">
@@ -385,11 +385,11 @@
 		</method>
 		<method class_method="true" selector="arrayWithCapacity:" swt_gen="true">
 			<arg swt_gen="true"></arg>
-			<retval swt_gen="true" swt_java_type="NSMutableArray"></retval>
+			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="initWithCapacity:" swt_gen="true">
 			<arg swt_gen="true"></arg>
-			<retval swt_gen="true" swt_java_type="NSMutableArray"></retval>
+			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="removeLastObject" swt_gen="true">
 			<retval swt_gen="true"></retval>
@@ -442,11 +442,11 @@
 	<class name="NSMutableDictionary" swt_gen="mixed" swt_superclass="NSDictionary">
 		<method class_method="true" selector="dictionaryWithCapacity:" swt_gen="true">
 			<arg swt_gen="true"></arg>
-			<retval swt_gen="true" swt_java_type="NSMutableDictionary"></retval>
+			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="initWithCapacity:" swt_gen="true">
 			<arg swt_gen="true"></arg>
-			<retval swt_gen="true" swt_java_type="NSMutableDictionary"></retval>
+			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="removeObjectForKey:" swt_gen="true">
 			<arg swt_gen="true"></arg>
@@ -529,7 +529,7 @@
 			<retval swt_gen="true"></retval>
 		</method>
 		<method class_method="true" selector="defaultCenter" swt_gen="true">
-			<retval swt_gen="true" swt_java_type="NSNotificationCenter"></retval>
+			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="removeObserver:" swt_gen="true">
 			<arg swt_gen="true"></arg>
@@ -612,7 +612,7 @@
 	</class>
 	<class name="NSObject" swt_gen="mixed">
 		<method selector="autorelease" swt_gen="true">
-			<retval swt_gen="true" swt_java_type="NSObject"></retval>
+			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="cancelAuthenticationChallenge:" swt_gen="true">
 			<arg swt_gen="true"></arg>
@@ -635,7 +635,7 @@
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="init" swt_gen="true">
-			<retval swt_gen="true" swt_java_type="NSObject"></retval>
+			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="isEqual:" swt_gen="true">
 			<arg swt_gen="true"></arg>
@@ -726,7 +726,7 @@
 			<retval swt_gen="true"></retval>
 		</method>
 		<method class_method="true" selector="set" swt_gen="true">
-			<retval swt_alloc="true" swt_gen="true" swt_java_type="NSSet"></retval>
+			<retval swt_gen="true"></retval>
 		</method>
 	</class>
 	<class name="NSString" swt_gen="mixed">
@@ -735,7 +735,7 @@
 		</method>
 		<method selector="characterAtIndex:" swt_gen="true">
 			<arg swt_gen="true"></arg>
-			<retval swt_gen="true" swt_java_type="int" swt_java_type64="long"></retval>
+			<retval swt_gen="true" swt_java_type="char"></retval>
 		</method>
 		<method selector="compare:" swt_gen="true">
 			<arg swt_gen="true"></arg>
@@ -753,7 +753,7 @@
 		<method selector="initWithCharacters:length:" swt_gen="true">
 			<arg swt_gen="true" swt_java_type="char[]"></arg>
 			<arg swt_gen="true"></arg>
-			<retval swt_gen="true" swt_java_type="NSString"></retval>
+			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="isEqualToString:" swt_gen="true">
 			<arg swt_gen="true"></arg>
@@ -772,7 +772,7 @@
 			<retval swt_gen="true"></retval>
 		</method>
 		<method class_method="true" selector="string" swt_gen="true">
-			<retval swt_gen="true" swt_java_type="NSString"></retval>
+			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="stringByAddingPercentEscapesUsingEncoding:" swt_gen="true">
 			<arg swt_gen="true"></arg>
@@ -808,11 +808,11 @@
 		<method class_method="true" selector="stringWithCharacters:length:" swt_gen="true">
 			<arg swt_gen="true" swt_java_type="char[]"></arg>
 			<arg swt_gen="true"></arg>
-			<retval swt_alloc="true" swt_gen="true" swt_java_type="NSString"></retval>
+			<retval swt_gen="true"></retval>
 		</method>
 		<method class_method="true" selector="stringWithUTF8String:" swt_gen="true">
 			<arg swt_gen="true"></arg>
-			<retval swt_gen="true" swt_java_type="NSString"></retval>
+			<retval swt_gen="true"></retval>
 		</method>
 	</class>
 	<class name="NSThread" swt_gen="mixed">
@@ -854,14 +854,14 @@
 	<class name="NSURL" swt_gen="mixed">
 		<method class_method="true" selector="URLWithString:" swt_gen="true">
 			<arg swt_gen="true"></arg>
-			<retval swt_gen="true" swt_java_type="NSURL"></retval>
+			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="absoluteString" swt_gen="true">
 			<retval swt_gen="true"></retval>
 		</method>
 		<method class_method="true" selector="fileURLWithPath:" swt_gen="true">
 			<arg swt_gen="true"></arg>
-			<retval swt_gen="true" swt_java_type="NSURL"></retval>
+			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="host" swt_gen="true">
 			<retval swt_gen="true"></retval>
@@ -931,7 +931,7 @@
 		</method>
 		<method class_method="true" selector="requestWithURL:" swt_gen="true">
 			<arg swt_gen="true"></arg>
-			<retval swt_alloc="true" swt_gen="true" swt_java_type="NSURLRequest"></retval>
+			<retval swt_gen="true"></retval>
 		</method>
 	</class>
 	<class name="NSUndoManager" swt_gen="mixed">

@@ -1359,14 +1359,14 @@ JNIEXPORT void JNICALL OS_NATIVE(CGContextSetLineCap)
 
 #ifndef NO_CGContextSetLineDash
 JNIEXPORT void JNICALL OS_NATIVE(CGContextSetLineDash)
-	(JNIEnv *env, jclass that, jlong arg0, jdouble arg1, jfloatArray arg2, jlong arg3)
+	(JNIEnv *env, jclass that, jlong arg0, jdouble arg1, jdoubleArray arg2, jlong arg3)
 {
-	jfloat *lparg2=NULL;
+	jdouble *lparg2=NULL;
 	OS_NATIVE_ENTER(env, that, CGContextSetLineDash_FUNC);
-	if (arg2) if ((lparg2 = (*env)->GetFloatArrayElements(env, arg2, NULL)) == NULL) goto fail;
+	if (arg2) if ((lparg2 = (*env)->GetDoubleArrayElements(env, arg2, NULL)) == NULL) goto fail;
 	CGContextSetLineDash((CGContextRef)arg0, (CGFloat)arg1, (CGFloat*)lparg2, (size_t)arg3);
 fail:
-	if (arg2 && lparg2) (*env)->ReleaseFloatArrayElements(env, arg2, lparg2, 0);
+	if (arg2 && lparg2) (*env)->ReleaseDoubleArrayElements(env, arg2, lparg2, 0);
 	OS_NATIVE_EXIT(env, that, CGContextSetLineDash_FUNC);
 }
 #endif
@@ -1489,7 +1489,7 @@ JNIEXPORT jlong JNICALL OS_NATIVE(CGEventCreateScrollWheelEvent)
 {
 	jlong rc = 0;
 	OS_NATIVE_ENTER(env, that, CGEventCreateScrollWheelEvent_FUNC);
-	rc = (jlong)CGEventCreateScrollWheelEvent((CGEventSourceRef)arg0, (CGScrollEventUnit)arg1, (CGWheelCount)arg2, (int32_t)arg3);
+	rc = (jlong)CGEventCreateScrollWheelEvent((CGEventSourceRef)arg0, (CGScrollEventUnit)arg1, (uint32_t)arg2, (int32_t)arg3);
 	OS_NATIVE_EXIT(env, that, CGEventCreateScrollWheelEvent_FUNC);
 	return rc;
 }
@@ -1537,7 +1537,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(CGGetDisplaysWithRect)
 	jint rc = 0;
 	OS_NATIVE_ENTER(env, that, CGGetDisplaysWithRect_FUNC);
 	if (arg0) if ((lparg0 = getCGRectFields(env, arg0, &_arg0)) == NULL) goto fail;
-	rc = (jint)CGGetDisplaysWithRect(*lparg0, (CGDisplayCount)arg1, (CGDirectDisplayID*)arg2, (CGDisplayCount*)arg3);
+	rc = (jint)CGGetDisplaysWithRect(*lparg0, (uint32_t)arg1, (CGDirectDisplayID*)arg2, (uint32_t*)arg3);
 fail:
 	if (arg0 && lparg0) setCGRectFields(env, arg0, lparg0);
 	OS_NATIVE_EXIT(env, that, CGGetDisplaysWithRect_FUNC);

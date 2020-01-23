@@ -114,8 +114,8 @@ public void dragImage(NSImage anImage, NSPoint viewLocation, NSSize initialOffse
 	OS.objc_msgSend(this.id, OS.sel_dragImage_at_offset_event_pasteboard_source_slideBack_, anImage != null ? anImage.id : 0, viewLocation, initialOffset, event != null ? event.id : 0, pboard != null ? pboard.id : 0, sourceObj != null ? sourceObj.id : 0, slideFlag);
 }
 
-public void drawRect(NSRect rect) {
-	OS.objc_msgSend(this.id, OS.sel_drawRect_, rect);
+public void drawRect(NSRect dirtyRect) {
+	OS.objc_msgSend(this.id, OS.sel_drawRect_, dirtyRect);
 }
 
 public void endDocument() {
