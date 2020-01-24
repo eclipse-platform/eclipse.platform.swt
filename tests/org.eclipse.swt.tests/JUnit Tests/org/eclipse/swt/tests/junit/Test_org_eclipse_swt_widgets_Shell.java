@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2020 IBM Corporation and others.
+ * Copyright (c) 2000, 2019 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -20,12 +20,10 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assume.assumeTrue;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Function;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -798,16 +796,14 @@ public void test_setSizeLorg_eclipse_swt_graphics_Point() {
 Shell testShell;
 
 private void createShell() {
-	createShell(SWT.DIALOG_TRIM | SWT.MIN);
-}
-private void createShell(int shellStyle) {
 	tearDown();
 	shell = new Shell();
-	testShell = new Shell(shell, shellStyle);
+	testShell = new Shell(shell, SWT.DIALOG_TRIM | SWT.MIN);
 	testShell.setSize(100,300);
 	testShell.setText("Shell");
 	testShell.setLayout(new FillLayout());
 	setWidget(testShell);
+
 }
 
 @Test
@@ -921,102 +917,6 @@ public void test_bug558652_scrollBarNPE() {
 		assertNotNull(shell.getHorizontalBar());
 		shell.dispose();
 	}
-}
-
-@Test
-public void test_setFullscreen() {
-	assumeTrue("Test only reliable on Windows at the moment.", SwtTestUtil.isWindows);
-
-	Function<Shell, Boolean> looksLikeNormalWindow = s -> {
-		Rectangle monitorRect = s.getMonitor().getClientArea();
-		Rectangle shellSize = s.getClientArea();
-		return shellSize.width < monitorRect.width * 0.8 && shellSize.height < monitorRect.height * 0.8;
-	};
-	Function<Shell, Boolean> looksLikeMaximizedWindow = s -> {
-		Rectangle monitorRect = s.getMonitor().getClientArea();
-		Rectangle shellSize = s.getClientArea();
-		return shellSize.width > monitorRect.width * 0.8 && shellSize.height > monitorRect.height * 0.8
-				&& shellSize.width <= monitorRect.width && shellSize.height <= monitorRect.height;
-	};
-	Function<Shell, Boolean> looksLikeFullscreen = s -> {
-		Rectangle monitorRect = s.getMonitor().getClientArea();
-		Rectangle shellSize = s.getClientArea();
-		return shellSize.width >= monitorRect.width && shellSize.height >= monitorRect.height;
-	};
-
-	Function<Shell, Boolean> hasTrimming = s -> {
-		Rectangle clientArea = s.getClientArea();
-		Point size = s.getSize();
-		return s.isVisible() && size.y - clientArea.height > 10;
-	};
-
-	Runnable setFullscreenBeforeOpen = () -> {
-		testShell.setFullScreen(true);
-		testShell.open();
-	};
-	Runnable setFullscreenAfterOpen = () -> {
-		testShell.open();
-		testShell.setFullScreen(true);
-	};
-	Runnable openHideSetFullscreenOpen = () -> {
-		testShell.open();
-		testShell.setVisible(false);
-		testShell.setFullScreen(true);
-		testShell.setVisible(true);
-	};
-	Runnable oscillateFullscreenBeforeOpen = () -> {
-		testShell.setFullScreen(true);
-		testShell.setFullScreen(false);
-		testShell.setFullScreen(true);
-		testShell.open();
-	};
-	Runnable toggleFullscreenWhileHidden = () -> {
-		testShell.open();
-		testShell.setFullScreen(true);
-		testShell.setVisible(false);
-		testShell.setFullScreen(false);
-		testShell.setVisible(true);
-		testShell.setFullScreen(true);
-	};
-
-	for (Runnable setFullscreenAndOpen : new Runnable[] { setFullscreenBeforeOpen, setFullscreenAfterOpen,
-			openHideSetFullscreenOpen, oscillateFullscreenBeforeOpen, toggleFullscreenWhileHidden }) {
-		for (int shellStyle : new int[] { SWT.SHELL_TRIM, SWT.DIALOG_TRIM, SWT.NO_TRIM, SWT.BORDER }) {
-			createShell(shellStyle);
-			setFullscreenAndOpen.run();
-			assertTrue("Not fullscreen.", looksLikeFullscreen.apply(testShell));
-			assertFalse("Not fullscreen.", hasTrimming.apply(testShell));
-			assertTrue(testShell.getFullScreen());
-			assertFalse(testShell.getMaximized());
-			testShell.setFullScreen(false);
-			assertTrue("Window not restored.", looksLikeNormalWindow.apply(testShell));
-			assertTrue(hasTrimming.apply(testShell) == ((shellStyle & SWT.TITLE) != 0));
-			assertFalse(testShell.getFullScreen());
-			assertFalse(testShell.getMaximized());
-
-			createShell(shellStyle);
-			testShell.setMaximized(true);
-			assertTrue(testShell.getMaximized());
-			setFullscreenAndOpen.run();
-			assertTrue("Not fullscreen.", looksLikeFullscreen.apply(testShell));
-			assertFalse("Not fullscreen.", hasTrimming.apply(testShell));
-			assertTrue(testShell.getFullScreen());
-			assertFalse(testShell.getMaximized());
-			testShell.setFullScreen(false);
-			assertTrue("Not maximized.", looksLikeMaximizedWindow.apply(testShell));
-			assertTrue(hasTrimming.apply(testShell) == ((shellStyle & SWT.TITLE) != 0));
-			assertFalse(testShell.getFullScreen());
-			assertTrue(testShell.getMaximized());
-		}
-	}
-
-	createShell(SWT.SHELL_TRIM);
-	testShell.setFullScreen(false);
-	testShell.open();
-	assertTrue("Window not restored.", looksLikeNormalWindow.apply(testShell));
-	assertTrue("Lost trimming.", hasTrimming.apply(testShell));
-	assertFalse(testShell.getFullScreen());
-	assertFalse(testShell.getMaximized());
 }
 
 }
