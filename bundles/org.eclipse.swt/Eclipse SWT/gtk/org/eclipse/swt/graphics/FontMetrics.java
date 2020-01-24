@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2016 IBM Corporation and others.
+ * Copyright (c) 2000, 2020 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -119,26 +119,6 @@ public int getHeight() {
  */
 public int getLeading() {
 	return 0; // Pango has no concept of "leading"
-}
-
-/**
- * Invokes platform specific functionality to allocate a new font metrics.
- * <p>
- * <b>IMPORTANT:</b> This method is <em>not</em> part of the public
- * API for <code>FontMetrics</code>. It is marked public only so that
- * it can be shared within the packages provided by SWT. It is not
- * available on all platforms, and should never be called from
- * application code.
- * </p>
- *
- * @noreference This method is not intended to be referenced by clients.
- */
-public static FontMetrics gtk_new(int ascentInPoints, int descentInPoints, int averageCharWidthInPoints) {
-	FontMetrics fontMetrics = new FontMetrics();
-	fontMetrics.ascentInPoints = ascentInPoints;
-	fontMetrics.descentInPoints = descentInPoints;
-	fontMetrics.averageCharWidthInPoints = averageCharWidthInPoints;
-	return fontMetrics;
 }
 
 /**

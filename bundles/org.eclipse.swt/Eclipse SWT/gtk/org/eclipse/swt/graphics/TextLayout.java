@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2018 IBM Corporation and others.
+ * Copyright (c) 2000, 2020 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -1089,7 +1089,11 @@ public FontMetrics getLineMetrics (int lineIndex) {
 	heightInPoints = Math.max(this.ascentInPoints + this.descentInPoints, heightInPoints);
 	ascentInPoints = Math.max(this.ascentInPoints, ascentInPoints);
 	int descentInPoints = heightInPoints - ascentInPoints;
-	return FontMetrics.gtk_new(ascentInPoints, descentInPoints, 0);
+	FontMetrics fm = new FontMetrics();
+	fm.ascentInPoints = ascentInPoints;
+	fm.descentInPoints = descentInPoints;
+	fm.averageCharWidthInPoints = 0;
+	return fm;
 }
 
 /**
