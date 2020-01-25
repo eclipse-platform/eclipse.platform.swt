@@ -43,23 +43,4 @@
 
 #include "os_custom.h"
 
-#define NATIVE_TRY(env, that, func) \
-	__try {
-#define NATIVE_CATCH(env, that, func) \
-	} __except(EXCEPTION_EXECUTE_HANDLER) { \
-		jclass expClass = (*env)->FindClass(env, "org/eclipse/swt/SWTError");  \
-		if (expClass) { \
-			char buffer[64]; \
-			wsprintfA(buffer, "caught native exception: 0x%x", GetExceptionCode()); \
-			(*env)->ThrowNew(env, expClass, buffer); \
-		} \
-	}
-
-#define OS_NATIVE_ENTER_TRY(env, that, func) \
-	OS_NATIVE_ENTER(env, that, func); \
-	NATIVE_TRY(env, that, func);
-#define OS_NATIVE_EXIT_CATCH(env, that, func) \
-	NATIVE_CATCH(env, that, func); \
-	OS_NATIVE_EXIT(env, that, func);
-
 #endif /* INC_os_H */

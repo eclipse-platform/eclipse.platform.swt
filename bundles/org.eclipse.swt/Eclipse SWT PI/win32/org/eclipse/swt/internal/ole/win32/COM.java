@@ -386,7 +386,6 @@ public static final native int OleSetClipboard(long pDataObject);
 /** @param pUnk cast=(LPUNKNOWN) */
 public static final native int OleSetContainedObject(long pUnk, boolean fContained);
 /**
- * @method flags=trycatch
  * @param holemenu cast=(HOLEMENU)
  * @param hwndFrame cast=(HWND)
  * @param hwndActiveObject cast=(HWND)
@@ -456,7 +455,6 @@ public static final native void VariantInit(long pvarg);
 /** @param pStg cast=(IStorage *) */
 public static final native int WriteClassStg(long pStg, GUID rclsid);
 
-/** @method flags=trycatch */
 public static final native int VtblCall(int fnNumber, long ppVtbl);
 public static final native int VtblCall(int fnNumber, long ppVtbl, int arg0);
 public static final native int VtblCall(int fnNumber, long ppVtbl, long arg0);

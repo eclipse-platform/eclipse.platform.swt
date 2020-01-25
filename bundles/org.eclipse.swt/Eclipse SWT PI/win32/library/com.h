@@ -20,11 +20,4 @@
 
 #define COM_LOAD_FUNCTION LOAD_FUNCTION
 
-#define COM_NATIVE_ENTER_TRY(env, that, func) \
-	COM_NATIVE_ENTER(env, that, func); \
-	NATIVE_TRY(env, that, func);
-#define COM_NATIVE_EXIT_CATCH(env, that, func) \
-	NATIVE_CATCH(env, that, func); \
-	COM_NATIVE_EXIT(env, that, func);
-
 #endif /* INC_com_H */

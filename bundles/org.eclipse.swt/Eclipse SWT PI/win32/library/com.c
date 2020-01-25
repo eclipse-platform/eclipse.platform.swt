@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2019 IBM Corporation and others.
+ * Copyright (c) 2000, 2020 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -788,9 +788,9 @@ JNIEXPORT jint JNICALL COM_NATIVE(OleSetMenuDescriptor)
 	(JNIEnv *env, jclass that, jlong arg0, jlong arg1, jlong arg2, jlong arg3, jlong arg4)
 {
 	jint rc = 0;
-	COM_NATIVE_ENTER_TRY(env, that, OleSetMenuDescriptor_FUNC);
+	COM_NATIVE_ENTER(env, that, OleSetMenuDescriptor_FUNC);
 	rc = (jint)OleSetMenuDescriptor((HOLEMENU)arg0, (HWND)arg1, (HWND)arg2, (LPOLEINPLACEFRAME)arg3, (LPOLEINPLACEACTIVEOBJECT)arg4);
-	COM_NATIVE_EXIT_CATCH(env, that, OleSetMenuDescriptor_FUNC);
+	COM_NATIVE_EXIT(env, that, OleSetMenuDescriptor_FUNC);
 	return rc;
 }
 #endif
@@ -1108,9 +1108,9 @@ JNIEXPORT jint JNICALL COM_NATIVE(VtblCall__IJ)
 	(JNIEnv *env, jclass that, jint arg0, jlong arg1)
 {
 	jint rc = 0;
-	COM_NATIVE_ENTER_TRY(env, that, VtblCall__IJ_FUNC);
+	COM_NATIVE_ENTER(env, that, VtblCall__IJ_FUNC);
 	rc = (jint)((jint (STDMETHODCALLTYPE *)(jlong))(*(jlong **)arg1)[arg0])(arg1);
-	COM_NATIVE_EXIT_CATCH(env, that, VtblCall__IJ_FUNC);
+	COM_NATIVE_EXIT(env, that, VtblCall__IJ_FUNC);
 	return rc;
 }
 #endif
