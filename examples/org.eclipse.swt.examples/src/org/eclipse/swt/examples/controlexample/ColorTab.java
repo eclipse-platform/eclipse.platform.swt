@@ -140,7 +140,8 @@ class ColorTab extends Tab {
 		/* Create the color table widget */
 		/* Compute the widget style */
 		int style = getDefaultStyle();
-		colors = new Table (colorsGroup, style);
+		colors = new Table (colorsGroup, style | SWT.V_SCROLL);
+		colors.setLayoutData(new GridData (SWT.FILL, SWT.FILL, false, true));
 		colors.setHeaderVisible(true);
 		// fill in the table.
 		for (String columnTitle : columnTitles) {
@@ -183,7 +184,8 @@ class ColorTab extends Tab {
 		}
 
 		/* Create the cursor table widget */
-		cursors = new Table (cursorsGroup, style);
+		cursors = new Table (cursorsGroup, style | SWT.V_SCROLL);
+		cursors.setLayoutData(new GridData (SWT.FILL, SWT.FILL, false, true));
 		cursors.setHeaderVisible(true);
 		// fill in the table.
 		TableColumn tableColumn = new TableColumn(cursors, SWT.NONE);
