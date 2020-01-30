@@ -946,6 +946,7 @@ public enum Selector {
 	, sel_setBorderWidth_("setBorderWidth:")
 	, sel_setBordered_("setBordered:")
 	, sel_setBoundsRotation_("setBoundsRotation:")
+	, sel_setBoundsSize_("setBoundsSize:")
 	, sel_setBoxType_("setBoxType:")
 	, sel_setButtonType_("setButtonType:")
 	, sel_setCacheMode_("setCacheMode:")

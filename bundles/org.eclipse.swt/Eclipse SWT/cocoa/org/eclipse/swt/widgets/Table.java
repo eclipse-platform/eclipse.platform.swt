@@ -3187,7 +3187,30 @@ public void showColumn (TableColumn column) {
 
 void showIndex (int index) {
 	if (0 <= index && index < itemCount) {
-		((NSTableView)view).scrollRowToVisible(index);
+		NSTableView tableView = (NSTableView)view;
+		if (tableView.headerView () == null) {
+			/**
+			 * On macOS 10.15, scrollRowToVisible doesn't work properly if
+			 * contentView's bounds is not set (i.e, width or height is 0).
+			 * The contentView's bounds is set when the Table's header view is set.
+			 * So don't call this code if Table has a header already.
+			 */
+			NSClipView contentView = scrollView.contentView ();
+			if (contentView != null) {
+				NSRect contentViewBounds = contentView.bounds ();
+				if (contentViewBounds.height == 0 || contentViewBounds.width == 0) {
+					NSView documentView = scrollView.documentView ();
+					if (documentView != null) {
+						NSRect documentViewBounds = documentView.bounds ();
+						NSSize size = new NSSize ();
+						size.width = documentViewBounds.width;
+						size.height = documentViewBounds.height;
+						contentView.setBoundsSize (size);
+					}
+				}
+			}
+		}
+		tableView.scrollRowToVisible(index);
 	}
 }
 

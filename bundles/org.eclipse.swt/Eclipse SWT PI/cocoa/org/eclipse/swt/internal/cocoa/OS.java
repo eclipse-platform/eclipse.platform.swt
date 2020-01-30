@@ -1680,6 +1680,7 @@ public static final long sel_setBorderType_ = Selector.sel_setBorderType_.value;
 public static final long sel_setBorderWidth_ = Selector.sel_setBorderWidth_.value;
 public static final long sel_setBordered_ = Selector.sel_setBordered_.value;
 public static final long sel_setBoundsRotation_ = Selector.sel_setBoundsRotation_.value;
+public static final long sel_setBoundsSize_ = Selector.sel_setBoundsSize_.value;
 public static final long sel_setBoxType_ = Selector.sel_setBoxType_.value;
 public static final long sel_setButtonType_ = Selector.sel_setButtonType_.value;
 public static final long sel_setCacheMode_ = Selector.sel_setCacheMode_.value;
