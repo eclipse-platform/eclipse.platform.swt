@@ -16,7 +16,7 @@ package org.eclipse.swt.snippets;
 /*
  * WebKit in a Browser
  *
- * The requirements for using Mozilla-based Browsers are described
+ * The requirements for using WebKit-based Browsers are described
  * https://www.eclipse.org/swt/faq.php#howusewebkit
  *
  * For a list of all SWT example snippets see

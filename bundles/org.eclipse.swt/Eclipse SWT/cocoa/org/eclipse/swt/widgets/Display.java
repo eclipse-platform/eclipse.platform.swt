@@ -202,8 +202,6 @@ public class Display extends Device {
 	Callback cursorSetCallback;
 
 	Combo currentCombo;
-	boolean mozillaRunning;
-	static final String MOZILLA_RUNNING = "org.eclipse.swt.internal.mozillaRunning"; //$NON-NLS-1$
 
 	// the following Callbacks are never freed
 	static Callback windowCallback2, windowCallback3, windowCallback4, windowCallback5, windowCallback6;
@@ -4675,10 +4673,6 @@ public void setData (String key, Object value) {
 		setModalDialog (value != null ? (Dialog) value : null);
 	}
 
-	if (key.equals (MOZILLA_RUNNING)) {
-		mozillaRunning = ((Boolean)value).booleanValue ();
-	}
-
 	if (key.equals (LOCK_CURSOR)) {
 		lockCursor = ((Boolean)value).booleanValue ();
 	}
@@ -5264,23 +5258,8 @@ long applicationNextEventMatchingMask (long id, long sel, long mask, long expira
 		super_struct.super_class = OS.objc_msgSend(id, OS.sel_superclass);
 		long result = OS.objc_msgSendSuper(super_struct, sel, mask, expiration, mode, dequeue != 0);
 		if (result != 0) {
-			/*
-			 * Feature of Cocoa.  When an NSComboBox's items list is visible it runs an event
-			 * loop that will close the list in response to a processed NSApplicationDefined
-			 * event.
-			 *
-			 * Mozilla-style Browsers are a common source of NSApplicationDefined events that
-			 * will cause this to happen, which is not desirable in the context of SWT.  The
-			 * workaround is to detect this case and to not return the event that would trigger
-			 * this to happen.
-			 */
 			if (dequeue != 0 && currentCombo != null && !currentCombo.isDisposed()) {
 				NSEvent nsEvent = new NSEvent(result);
-				if (mozillaRunning) {
-					if (nsEvent.type() == OS.NSApplicationDefined) {
-						return 0;
-					}
-				}
 				if (nsEvent.type() == OS.NSKeyDown) {
 					currentCombo.sendTrackingKeyEvent(nsEvent, SWT.KeyDown);
 				}
