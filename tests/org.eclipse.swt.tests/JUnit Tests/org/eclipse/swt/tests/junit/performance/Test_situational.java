@@ -39,10 +39,8 @@ import org.eclipse.swt.widgets.Tree;
 import org.eclipse.test.performance.Dimension;
 import org.eclipse.test.performance.Performance;
 import org.eclipse.test.performance.PerformanceMeter;
-
-import junit.framework.Test;
-import junit.framework.TestSuite;
-import junit.textui.TestRunner;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
  * Automated Performance Test Suite for class org.eclipse.swt.graphics.Color
@@ -51,20 +49,10 @@ import junit.textui.TestRunner;
  */
 public class Test_situational extends SwtPerformanceTestCase {
 
-public Test_situational(String name) {
-	super(name);
-}
-
-public static void main(String[] args) {
-	TestRunner.run(suite());
-}
-
-@Override
-protected void setUp() throws Exception {
-	super.setUp();
+@Before
+public void setUp() {
 	display = Display.getDefault();
 }
-
 
 /**
  * Situations:
@@ -80,6 +68,7 @@ protected void setUp() throws Exception {
  * - Image loading
  * - Layouts
  */
+@Test
 public void test_createComposites() {
 	PerformanceMeter meter = createMeter("Create composites");
 	int samples;
@@ -115,6 +104,7 @@ public void test_createComposites() {
 	disposeMeter(meter);
 }
 
+@Test
 public void test_createWidgets() {
 	PerformanceMeter meter = createMeter("Create composites and widgets");
 	int samples;
@@ -151,6 +141,7 @@ public void test_createWidgets() {
 	disposeMeter(meter);
 }
 
+@Test
 public void test_layout() {
 	PerformanceMeter meter = createMeter("Layout Composites");
 	int samples;
@@ -226,6 +217,7 @@ public void test_layout() {
 	disposeMeter(meter);
 }
 
+@Test
 public void test_imageDrawing() {
 	PerformanceMeter meter = createMeter("Draw on an image");
 	int samples;
@@ -260,6 +252,7 @@ public void test_imageDrawing() {
 	disposeMeter(meter);
 }
 
+@Test
 public void test_windowDrawing() {
 	PerformanceMeter meter = createMeter("Draw on a window");
 	Performance performance= Performance.getDefault();
@@ -310,6 +303,7 @@ public void test_windowDrawing() {
 	disposeMeter(meter);
 }
 
+@Test
 public void test_stringDrawing() {
 	PerformanceMeter meter = createMeterWithoutSummary("Draw strings using GC.drawText");
 	int samples;
@@ -358,6 +352,7 @@ public void test_stringDrawing() {
 	disposeMeter(meter);
 }
 
+@Test
 public void test_fastStringDrawing() {
 	PerformanceMeter meter = createMeterWithoutSummary("Draw strings using GC.drawString()");
 	int samples;
@@ -403,36 +398,6 @@ public void test_fastStringDrawing() {
 		while(display.readAndDispatch()){/*empty*/}
 	}
 	disposeMeter(meter);
-}
-
-public static Test suite() {
-	TestSuite suite = new TestSuite();
-	java.util.List<String> methodNames = methodNames();
-	for (String e : methodNames) {
-		suite.addTest(new Test_situational(e));
-	}
-	return suite;
-}
-public static java.util.List<String> methodNames() {
-	java.util.List<String> methodNames = new java.util.ArrayList<>();
-	methodNames.add("test_createComposites");
-	methodNames.add("test_createWidgets");
-	methodNames.add("test_imageDrawing");
-	methodNames.add("test_windowDrawing");
-	methodNames.add("test_stringDrawing");
-	methodNames.add("test_fastStringDrawing");
-	methodNames.add("test_layout");
-	return methodNames;
-}
-@Override
-protected void runTest() {
-	if (getName().equals("test_createComposites")) test_createComposites();
-	else if (getName().equals("test_createWidgets")) test_createWidgets();
-	else if (getName().equals("test_layout")) test_layout();
-	else if (getName().equals("test_imageDrawing")) test_imageDrawing();
-	else if (getName().equals("test_windowDrawing")) test_windowDrawing();
-	else if (getName().equals("test_stringDrawing")) test_stringDrawing();
-	else if (getName().equals("test_fastStringDrawing")) test_fastStringDrawing();
 }
 
 /* custom */

@@ -14,10 +14,10 @@
 package org.eclipse.swt.tests.junit.performance;
 
 
+import static org.junit.Assert.fail;
+
 import java.io.File;
 import java.net.URL;
-
-import junit.framework.TestCase;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.test.performance.Dimension;
@@ -25,7 +25,7 @@ import org.eclipse.test.performance.Performance;
 import org.eclipse.test.performance.PerformanceMeter;
 
 
-public class SwtPerformanceTestCase extends TestCase {
+public class SwtPerformanceTestCase {
 	// used to specify verbose mode, if true unimplemented warning messages will
 	// be written to System.out
 	public static boolean verbose = false;
@@ -38,10 +38,6 @@ public class SwtPerformanceTestCase extends TestCase {
 	public static String[] imageFilenames = new String[] {"folder", "folderOpen", "target"};
 	public static String[] transparentImageFilenames = new String[] {"transparent.png"};
 
-
-public SwtPerformanceTestCase(String name) {
-	super(name);
-}
 
 protected PerformanceMeter createMeter(String id) {
 	Performance performance = Performance.getDefault();

@@ -14,23 +14,15 @@
 package org.eclipse.swt.tests.junit.performance;
 
 
-import junit.framework.*;
-import junit.textui.*;
+import org.junit.runner.RunWith;
+import org.junit.runners.Suite;
 
 /**
  * Suite for running SWT performance test cases.
  */
-public class PerformanceTests extends TestSuite {
-
-public static void main(String[] args) {
-	TestRunner.run(suite());
-}
-public static Test suite() {
-	return new PerformanceTests();
-}
-
-public PerformanceTests() {
-	super();
-	addTest(Test_situational.suite());
-}
+@RunWith(Suite.class)
+@Suite.SuiteClasses({
+	Test_situational.class
+})
+public class PerformanceTests {
 }
