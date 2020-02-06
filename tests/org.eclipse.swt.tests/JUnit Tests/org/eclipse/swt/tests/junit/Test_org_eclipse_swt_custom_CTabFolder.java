@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2017 IBM Corporation and others.
+ * Copyright (c) 2000, 2020 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -15,6 +15,7 @@ package org.eclipse.swt.tests.junit;
 
 
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.lang.reflect.Method;
@@ -26,12 +27,18 @@ import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Font;
+import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.swt.widgets.ToolBar;
+import org.eclipse.swt.widgets.ToolItem;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -47,6 +54,7 @@ public class Test_org_eclipse_swt_custom_CTabFolder extends Test_org_eclipse_swt
 @Before
 public void setUp() {
 	super.setUp();
+	shell.setLayout(new FillLayout());
 	makeCleanEnvironment();
 }
 
@@ -85,6 +93,7 @@ protected CTabFolder ctabFolder;
 
 private void makeCleanEnvironment() {
 // this method must be private or protected so the auto-gen tool keeps it
+	if (ctabFolder != null) ctabFolder.dispose();
 	ctabFolder = new CTabFolder(shell, 0);
 	setWidget(ctabFolder);
 }
@@ -98,8 +107,10 @@ private void createTabFolder(List<String> events) {
 		Text itemText = new Text(ctabFolder, SWT.MULTI | SWT.BORDER);
 		itemText.setText("\nText for CTabItem " + i + "\n\n\n");
 		item.setControl(itemText);
-		hookExpectedEvents(item, getTestName(), events);
-		hookExpectedEvents(itemText, getTestName(), events);
+		if (events != null) {
+			hookExpectedEvents(item, getTestName(), events);
+			hookExpectedEvents(itemText, getTestName(), events);
+		}
 	}
 	ctabFolder.setSelection(ctabFolder.getItem(0));
 }
@@ -195,7 +206,7 @@ public void test_checkSize() {
  * We define two {@link CTabFolder tab folders}, of which one has a nested tab folder.
  * We validate that selecting the nested tab does not break selection highlight for the top-level tabs.
  *
- * @see Bug528251_CTabFolder_nested_highlighting
+ * @see org.eclipse.swt.tests.manual.Bug528251_CTabFolder_nested_highlighting
  */
 @Test
 public void test_nestedTabHighlighting () {
@@ -241,6 +252,43 @@ public void test_nestedTabHighlighting () {
 			shouldHighlightConsoleViewTab);
 }
 
+/** Test for Bug 559887: Chevron not updated on foreground color or font change. */
+@Test
+public void test_chevronAppearanceChanged() {
+	Display display = shell.getDisplay();
+	createTabFolder(null);
+	shell.open();
+	processEvents();
+	int itemWidth = 0;
+	for (CTabItem item : ctabFolder.getItems()) {
+		itemWidth += item.getBounds().width;
+	}
+	// resize shell to force a chevron
+	shell.setSize(itemWidth*3/4, shell.getSize().y);
+	ToolItem chevron = getChevron(ctabFolder);
+	assertNotNull("Chevron not shown", chevron);
+
+	Image oldChevronImg = new Image(display, chevron.getImage(), SWT.IMAGE_COPY);
+	try {
+		ctabFolder.setForeground(display.getSystemColor(SWT.COLOR_DARK_GREEN));
+		Image newChevronImg = chevron.getImage();
+		ImageTestUtil.assertImagesNotEqual(oldChevronImg.getImageData(), newChevronImg.getImageData());
+
+		oldChevronImg.dispose();
+		oldChevronImg = new Image(display, newChevronImg, SWT.IMAGE_COPY);
+
+		FontData[] existingFontData = ctabFolder.getFont().getFontData();
+		existingFontData[0].setName(SwtTestUtil.testFontName);
+		existingFontData[0].setStyle(SWT.BOLD | SWT.ITALIC);
+		Font newFont = new Font(display, existingFontData);
+		ctabFolder.setFont(newFont);
+		newChevronImg = chevron.getImage();
+		ImageTestUtil.assertImagesNotEqual(oldChevronImg.getImageData(), newChevronImg.getImageData());
+	} finally {
+		oldChevronImg.dispose();
+	}
+}
+
 private void processEvents() {
 	Display display = shell.getDisplay();
 
@@ -266,6 +314,29 @@ private static boolean reflection_shouldHighlight(CTabFolder partStackTabs) {
 	}
 
 	return shouldHighlightConsoleViewTab;
+}
+
+/**
+ * Find chevron item in CTabFolder. Does not use reflection but searches for a
+ * control which seem to be the chevron based on button style and tooltip text.
+ *
+ * @param tabFolder CTabFolder to search in
+ * @return the chevron item or <code>null</code> if not found or not shown
+ */
+private ToolItem getChevron(CTabFolder tabFolder) {
+	for (Control child : tabFolder.getChildren()) {
+		if (child instanceof ToolBar) {
+			for (ToolItem toolItem : ((ToolBar)child).getItems()) {
+				if ((toolItem.getStyle() & SWT.PUSH) != 0
+						&& toolItem.getText().isEmpty()
+						&& SWT.getMessage("SWT_ShowList").equals(toolItem.getToolTipText())
+						&& toolItem.getImage() != null) {
+					return toolItem;
+				}
+			}
+		}
+	}
+	return null;
 }
 
 }

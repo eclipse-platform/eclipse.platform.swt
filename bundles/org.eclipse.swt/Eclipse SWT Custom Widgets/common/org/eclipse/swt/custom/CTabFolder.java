@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2018 IBM Corporation and others.
+ * Copyright (c) 2000, 2020 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -2548,23 +2548,7 @@ void setButtonBounds(GC gc) {
 		minMaxTb = null;
 	}
 	if (showChevron) {
-		int itemCount = items.length;
-		int count;
-		if (single) {
-			count = selectedIndex == -1 ? itemCount : itemCount - 1;
-		} else {
-			int showCount = 0;
-			while (showCount < priority.length && items[priority[showCount]].showing) {
-				showCount++;
-			}
-			count = itemCount - showCount;
-		}
-		if (count != chevronCount) {
-			chevronCount = count;
-			if (chevronImage != null) chevronImage.dispose();
-			chevronImage = createButtonImage(display, CTabFolderRenderer.PART_CHEVRON_BUTTON);
-			chevronItem.setImage(chevronImage);
-		}
+		updateChevronImage(false);
 	}
 
 	boolean[][] overflow = new boolean[1][0];
@@ -2614,6 +2598,50 @@ void setButtonBounds(GC gc) {
 	controlRects = rects;
 	if (changed || hovering) updateBkImages();
 }
+
+/**
+ * Get the number of hidden items or the number which is to be drawn in the
+ * chevon item.
+ * <p>
+ * Note: do not confuse this with {@link #chevronCount} which contains the count
+ * from the last time the cached chevron image was drawn. It can be different
+ * from the value returned by this method.
+ * </p>
+ *
+ * @return the chevron count
+ */
+int getChevronCount() {
+	int itemCount = items.length;
+	int count;
+	if (single) {
+		count = selectedIndex == -1 ? itemCount : itemCount - 1;
+	} else {
+		int showCount = 0;
+		while (showCount < priority.length && items[priority[showCount]].showing) {
+			showCount++;
+		}
+		count = itemCount - showCount;
+	}
+	return count;
+}
+
+/**
+ * Update the cached chevron image.
+ *
+ * @param styleChange <code>true</code> if the update is required for changed
+ *                    appearance of the chevron. In this case the image is not
+ *                    created if it does not already exist and is updated even
+ *                    if the drawn number (chevonCount) has not changed.
+ */
+private void updateChevronImage(boolean styleChange) {
+	if (styleChange && chevronImage == null) return;
+	int newCount = getChevronCount();
+	if (!styleChange && chevronCount == newCount) return;
+	if (chevronImage != null) chevronImage.dispose();
+	chevronImage = createButtonImage(getDisplay(), CTabFolderRenderer.PART_CHEVRON_BUTTON);
+	chevronItem.setImage(chevronImage);
+	chevronCount = newCount;
+}
 @Override
 public boolean setFocus () {
 	checkWidget ();
@@ -2650,11 +2678,20 @@ public void setFont(Font font) {
 	if (font != null && font.equals(getFont())) return;
 	super.setFont(font);
 	oldFont = getFont();
+	// Chevron painting is cached as image and only recreated if number of hidden tabs changed.
+	// To apply the new font the cached image must be recreated with new font.
+	// Redraw request alone would only redraw the cached image with old font.
+	renderer.chevronFont = null; // renderer will pickup and adjust(!) the new font automatically
+	updateChevronImage(true);
 	updateFolder(REDRAW);
 }
 @Override
 public void setForeground (Color color) {
 	super.setForeground(color);
+	// Chevron painting is cached as image and only recreated if number of hidden tabs changed.
+	// To apply the new foreground color the image must be recreated with new foreground color.
+	// redraw() alone would only redraw the cached image with old color.
+	updateChevronImage(true);
 	redraw();
 }
 /**

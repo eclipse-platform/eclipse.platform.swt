@@ -927,7 +927,6 @@ public class CTabFolderRenderer {
 
 	void drawChevron(GC gc, Rectangle chevronRect, int chevronImageState) {
 		if (chevronRect.width == 0 || chevronRect.height == 0) return;
-		int selectedIndex = parent.selectedIndex;
 		// draw chevron (10x7)
 		Display display = parent.getDisplay();
 		Font font = getChevronFont(display);
@@ -935,17 +934,7 @@ public class CTabFolderRenderer {
 		int indent = Math.max(2, (chevronRect.height - fontHeight - 4) /2);
 		int x = chevronRect.x + 2;
 		int y = chevronRect.y + indent;
-		int count;
-		int itemCount = parent.getItemCount();
-		if (parent.single) {
-			count = selectedIndex == -1 ? itemCount : itemCount - 1;
-		} else {
-			int showCount = 0;
-			while (showCount < parent.priority.length && parent.items[parent.priority[showCount]].showing) {
-				showCount++;
-			}
-			count = itemCount - showCount;
-		}
+		int count = parent.getChevronCount();
 		String chevronString = count > 99 ? CHEVRON_ELLIPSIS : String.valueOf(count);
 		switch (chevronImageState & (SWT.HOT | SWT.SELECTED)) {
 			case SWT.NONE: {
