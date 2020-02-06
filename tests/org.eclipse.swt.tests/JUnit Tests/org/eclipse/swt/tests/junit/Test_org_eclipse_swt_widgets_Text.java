@@ -1168,10 +1168,6 @@ public void test_setForegroundAfterBackground() {
 	text.setForeground(white);
 	assertEquals(text.getForeground(), white);
 	assertEquals(text.getBackground(), gray);
-
-	gray.dispose();
-	white.dispose();
-	defaultForeground.dispose();
 }
 
 @Test
