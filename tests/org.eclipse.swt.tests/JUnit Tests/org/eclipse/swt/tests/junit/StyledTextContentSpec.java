@@ -126,7 +126,7 @@ public void run() {
 		}
 	}
 	try {
-		contentInstance = (StyledTextContent)contentClass.newInstance();
+		contentInstance = (StyledTextContent)contentClass.getDeclaredConstructor().newInstance();
 	} catch (IllegalAccessException e) {
 		MessageBox box = new MessageBox(Display.getDefault().getActiveShell(), SWT.ICON_ERROR);
 		box.setMessage("Unable to access content class:\n" + contentClassName); //$NON-NLS-1$
@@ -137,6 +137,10 @@ public void run() {
 		box.setMessage("Unable to instantiate content class:\n" + contentClassName); //$NON-NLS-1$
 		box.open();
 		return;
+	} catch (IllegalArgumentException|InvocationTargetException|NoSuchMethodException|SecurityException e) {
+		MessageBox box = new MessageBox(Display.getDefault().getActiveShell(), SWT.ICON_ERROR);
+		box.setMessage("Unable to instantiate content class:\n" + contentClassName+". Due to:"+e.getMessage()); //$NON-NLS-1$
+		box.open();
 	}
 	Class<?> clazz;
 	clazz = this.getClass();
