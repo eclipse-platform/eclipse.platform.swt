@@ -2702,10 +2702,13 @@ void sendDoubleSelection() {
 				if (column.id == checkColumn.id) return;
 			}
 		}
-		TreeItem item = (TreeItem) display.getWidget (outlineView.itemAtRow (rowIndex).id);
-		Event event = new Event ();
-		event.item = item;
-		sendSelectionEvent (SWT.DefaultSelection, event, false);
+		id itemAtRow = outlineView.itemAtRow (rowIndex);
+		if (itemAtRow != null) {
+			TreeItem item = (TreeItem) display.getWidget (itemAtRow.id);
+			Event event = new Event ();
+			event.item = item;
+			sendSelectionEvent (SWT.DefaultSelection, event, false);
+		}
 	}
 }
 
