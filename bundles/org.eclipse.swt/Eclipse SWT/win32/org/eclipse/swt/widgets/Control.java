@@ -5132,6 +5132,12 @@ LRESULT WM_KEYUP (long wParam, long lParam) {
 }
 
 LRESULT WM_KILLFOCUS (long wParam, long lParam) {
+	/*
+	 * Feature in Windows. File and directory dialogs might reset focus
+	 * to NULL before they open. As a result, Shell is unable to save
+	 * focus control in WM_ACTIVATE. The fix is to save focus here.
+	 */
+	if (wParam == 0) menuShell().setSavedFocus(this);
 	return wmKillFocus (handle, wParam, lParam);
 }
 
