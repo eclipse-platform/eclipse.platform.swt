@@ -47,6 +47,8 @@ public class CTabItem extends Item {
 
 	// Appearance
 	Font font;
+	Color foreground;
+	Color selectionForeground;
 	Image disabledImage;
 
 	Rectangle closeRect = new Rectangle(0, 0, 0, 0);
@@ -187,6 +189,40 @@ public Image getDisabledImage(){
 	checkWidget();
 	return disabledImage;
 }
+/**
+ * Returns the foreground color that the receiver will use to paint textual information.
+ *
+ * @return the receiver's foreground color
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * @since 3.114
+ */
+public Color getForeground () {
+	checkWidget ();
+	if (foreground != null) return foreground;
+	return parent.getForeground();
+}
+
+/**
+ * Returns the selection foreground color that the receiver will use to paint textual information.
+ *
+ * @return the receiver's selection foreground color
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * @since 3.114
+ */
+public Color getSelectionForeground () {
+	checkWidget ();
+	if (selectionForeground != null) return selectionForeground;
+	return parent.getSelectionForeground();
+}
+
 /**
  * Returns the font that the receiver will use to paint textual information.
  *
@@ -369,6 +405,59 @@ public void setFont (Font font){
 	this.font = font;
 	parent.updateFolder(CTabFolder.UPDATE_TAB_HEIGHT | CTabFolder.REDRAW_TABS);
 }
+
+/**
+ * Sets the foreground color that the receiver will use to paint textual information
+ * for this item to the color specified by the argument, or to the default foreground color
+ * for that kind of control if the argument is null.
+ *
+ * @param color the new color (or null)
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if the argument has been disposed</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * @since 3.114
+ */
+public void setForeground (Color color) {
+	checkWidget ();
+	if (color != null) {
+		if (color.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	}
+	if (color == foreground) return;
+	foreground = color;
+	parent.updateFolder(CTabFolder.REDRAW_TABS);
+}
+
+/**
+ * Sets the selection foreground color that the receiver will use to paint textual information
+ * for this item to the color specified by the argument, or to the default selection foreground color
+ * for that kind of control if the argument is null.
+ *
+ * @param color the new color (or null)
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if the argument has been disposed</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * @since 3.114
+ */
+public void setSelectionForeground (Color color) {
+	checkWidget ();
+	if (color != null) {
+		if (color.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	}
+	if (color == selectionForeground) return;
+	selectionForeground = color;
+	parent.updateFolder(CTabFolder.REDRAW_TABS);
+}
+
 @Override
 public void setImage (Image image) {
 	checkWidget();

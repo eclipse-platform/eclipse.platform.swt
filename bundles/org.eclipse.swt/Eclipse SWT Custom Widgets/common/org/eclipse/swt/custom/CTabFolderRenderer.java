@@ -1464,7 +1464,7 @@ public class CTabFolderRenderer {
 				int textY = y + (height - extent.y) / 2;
 				textY += parent.onBottom ? -1 : 1;
 
-				gc.setForeground(parent.selectionForeground);
+				gc.setForeground(item.selectionForeground == null ? parent.getSelectionForeground() : item.selectionForeground);
 				gc.drawText(item.shortenedText, xDraw, textY, FLAGS);
 				gc.setFont(gcFont);
 
@@ -1673,7 +1673,7 @@ public class CTabFolderRenderer {
 				Point extent = gc.textExtent(item.shortenedText, FLAGS);
 				int textY = y + (height - extent.y) / 2;
 				textY += parent.onBottom ? -1 : 1;
-				gc.setForeground(parent.getForeground());
+				gc.setForeground(item.foreground == null ? parent.getForeground() : item.foreground);
 				gc.drawText(item.shortenedText, xDraw, textY, FLAGS);
 				gc.setFont(gcFont);
 			}

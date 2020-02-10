@@ -13,9 +13,12 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
+import static org.junit.Assert.assertEquals;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
+import org.eclipse.swt.graphics.Color;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -46,5 +49,31 @@ public void test_setImageLorg_eclipse_swt_graphics_Image() {
 @Override
 @Test
 public void test_setTextLjava_lang_String() {
+}
+
+@Test
+public void test_setForegroundLorg_eclipse_swt_graphics_Color() {
+	Color red = cTabFolder.getDisplay().getSystemColor(SWT.COLOR_RED);
+	cTabFolder.setForeground(red);
+
+	Color blue = cTabFolder.getDisplay().getSystemColor(SWT.COLOR_BLUE);
+	cTabItem.setForeground(blue);
+	assertEquals(blue, cTabItem.getForeground());
+
+	cTabItem.setForeground(null);
+	assertEquals(red, cTabItem.getForeground());
+}
+
+@Test
+public void test_setSelectionForegroundLorg_eclipse_swt_graphics_Color() {
+	Color red = cTabFolder.getDisplay().getSystemColor(SWT.COLOR_RED);
+	cTabFolder.setSelectionForeground(red);
+
+	Color blue = cTabFolder.getDisplay().getSystemColor(SWT.COLOR_BLUE);
+	cTabItem.setSelectionForeground(blue);
+	assertEquals(blue, cTabItem.getSelectionForeground());
+
+	cTabItem.setSelectionForeground(null);
+	assertEquals(red, cTabItem.getSelectionForeground());
 }
 }
