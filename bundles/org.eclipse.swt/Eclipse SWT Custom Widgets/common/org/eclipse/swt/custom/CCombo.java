@@ -146,9 +146,11 @@ public CCombo (Composite parent, int style) {
 			}
 			return;
 		}
-		Shell shell = ((Control)event.widget).getShell ();
-		if (shell == CCombo.this.getShell ()) {
-			handleFocus (SWT.FocusOut);
+		if (event.widget instanceof Control) {
+			Shell shell = ((Control)event.widget).getShell ();
+			if (shell == CCombo.this.getShell ()) {
+				handleFocus (SWT.FocusOut);
+			}
 		}
 	};
 
