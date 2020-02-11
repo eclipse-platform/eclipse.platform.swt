@@ -1421,15 +1421,6 @@ NSBitmapImageRep getRepresentation () {
 		targetSize.width = (int) imgSize.width * scaleFactor / 100;
 		targetSize.height = (int) imgSize.height * scaleFactor / 100;
 		rep = createImageRep(targetSize);
-		switch (scaleFactor) {
-		case 100:
-			initAlpha_100(rep);
-			break;
-		case 200:
-			initAlpha_200(rep);
-			break;
-		}
-
 	}
 	NSArray reps = handle.representations();
 	long count = reps.count();
