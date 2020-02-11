@@ -19,7 +19,7 @@
     </parent>
     <groupId>org.eclipse.swt</groupId>
     <artifactId>org.eclipse.swt</artifactId>
-    <version>3.113.100-SNAPSHOT</version>
+    <version>3.114.0-SNAPSHOT</version>
     <packaging>eclipse-plugin</packaging>
       
     <properties>
