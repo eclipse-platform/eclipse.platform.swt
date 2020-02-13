@@ -84,18 +84,6 @@ JNIEXPORT jlong JNICALL GDK_NATIVE(GDK_1TYPE_1RGBA)
 }
 #endif
 
-#ifndef NO_GdkEventAny_1sizeof
-JNIEXPORT jint JNICALL GDK_NATIVE(GdkEventAny_1sizeof)
-	(JNIEnv *env, jclass that)
-{
-	jint rc = 0;
-	GDK_NATIVE_ENTER(env, that, GdkEventAny_1sizeof_FUNC);
-	rc = (jint)GdkEventAny_sizeof();
-	GDK_NATIVE_EXIT(env, that, GdkEventAny_1sizeof_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO_GdkEventButton_1sizeof
 JNIEXPORT jint JNICALL GDK_NATIVE(GdkEventButton_1sizeof)
 	(JNIEnv *env, jclass that)
