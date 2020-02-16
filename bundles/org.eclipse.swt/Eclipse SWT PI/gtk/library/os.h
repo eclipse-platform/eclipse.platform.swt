@@ -176,6 +176,7 @@
 #define NO_GdkEventWindowState
 #define NO_GdkWindowAttr
 #define NO_GdkEvent
+#define NO_GdkEventAny
 #define NO_GdkEventButton
 #define NO_GdkEventCrossing
 #define NO_GdkEventFocus
@@ -190,6 +191,8 @@
 #define NO_memmove__LLorg_eclipse_swt_internal_gtk_GtkTargetEntry_2JJ
 #define NO_memmove__Iorg_eclipse_swt_internal_gtk_GdkEvent_2I
 #define NO_memmove__Jorg_eclipse_swt_internal_gtk_GdkEvent_2J
+#define NO_memmove__Iorg_eclipse_swt_internal_gtk_GdkEventAny_2I
+#define NO_memmove__Jorg_eclipse_swt_internal_gtk_GdkEventAny_2J
 #define NO_memmove__ILorg_eclipse_swt_internal_gtk_GdkEventButton_2I
 #define NO_memmove__JLorg_eclipse_swt_internal_gtk_GdkEventButton_2J
 #define NO_memmove__Lorg_eclipse_swt_internal_gtk_GdkEventButton_2II
@@ -367,7 +370,8 @@
 #define NO_gdk_1cursor_1new_1for_1display
 #define NO_gdk_1cursor_1new_1from_1pixbuf
 #define NO_gdk_1display_1supports_1cursor_1color
-#define NO_gdk_1cursor_1new_1from_1name__JLjava_lang_String_2
+#define NO_gdk_1cursor_1new_1from_1name__I_3B
+#define NO_gdk_1cursor_1new_1from_1name__J_3B
 
 #else
 
@@ -466,10 +470,6 @@
 #define NO_gdk_1event_1get_1string
 #define NO_gdk_1event_1get_1key_1group
 #define NO_gdk_1event_1get_1crossing_1mode
-
-// GdkCursor API changes
-#define NO_gdk_1cursor_1new_1from_1name__Ljava_lang_String_2J
-
 #endif
 
 #include "os_custom.h"

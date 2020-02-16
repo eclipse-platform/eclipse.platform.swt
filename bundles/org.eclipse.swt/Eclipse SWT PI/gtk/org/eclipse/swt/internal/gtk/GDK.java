@@ -239,6 +239,7 @@ public class GDK extends OS {
 	public static final native int GdkKeymapKey_sizeof();
 	public static final native int GdkRGBA_sizeof();
 	public static final native int GdkEvent_sizeof();
+	public static final native int GdkEventAny_sizeof();
 	public static final native int GdkEventButton_sizeof();
 	public static final native int GdkEventCrossing_sizeof();
 	public static final native int GdkEventFocus_sizeof();
