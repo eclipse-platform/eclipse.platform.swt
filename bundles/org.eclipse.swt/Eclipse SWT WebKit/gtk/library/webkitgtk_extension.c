@@ -199,10 +199,10 @@ static JSValueRef convert_gvariant_to_js (JSContextRef context, GVariant * value
 	}
 
 	if (g_variant_is_of_type(value, G_VARIANT_TYPE_TUPLE)) {
-		gsize length = (int) g_variant_n_children(value);
+		gsize length = g_variant_n_children(value);
 		JSValueRef *children = g_new(JSValueRef, length);
 
-		int i = 0;
+		gsize i = 0;
 		for (i = 0; i < length; i++) {
 			children[i] = convert_gvariant_to_js(context, g_variant_get_child_value(value, i));
 		}
@@ -364,7 +364,7 @@ void unpack_browser_function_array(GVariant *array) {
 	    	continue;
 	    }
 	    guint64 page = g_variant_get_uint64(g_variant_get_child_value(child, 0));
-	    if (page == -1) {
+	    if (page == -1UL) {
 	    	// Empty or malformed BrowserFunction, skip this one
 	    	continue;
 	    } else {
@@ -411,7 +411,7 @@ static void window_object_cleared_callback (WebKitScriptWorld *world, WebKitWebP
      */
     if (function_list != NULL) {
     	guint64 page_id = webkit_web_page_get_id (web_page);
-    	if (page_id != -1) {
+    	if (page_id != -1UL) {
     		g_slist_foreach(function_list, (GFunc)execute_browser_functions, GUINT_TO_POINTER(page_id));
     	} else {
     		g_warning("There was an error fetching the page ID in the object_cleared callback.\n");
@@ -434,7 +434,7 @@ webkitgtk_extension_handle_method_call (GDBusConnection *connection, const gchar
 	// Check method names
 	if (g_strcmp0(method_name, "webkitgtk_extension_register_function") == 0) {
 		g_variant_get(parameters, "(t&s&s)", &page_id, &script, &url);
-		if (page_id != -1) {
+		if (page_id != -1UL) {
 			result = TRUE;
 			// Return before processing the linked list, to prevent DBus from hanging
 			g_dbus_method_invocation_return_value(invocation, g_variant_new("(b)", result));
@@ -446,7 +446,7 @@ webkitgtk_extension_handle_method_call (GDBusConnection *connection, const gchar
 	}
 	if (g_strcmp0(method_name, "webkitgtk_extension_deregister_function") == 0) {
 		g_variant_get(parameters, "(t&s&s)", &page_id, &script, &url);
-		if (page_id != -1) {
+		if (page_id != -1UL) {
 			result = TRUE;
 			// Return before processing the linked list, to prevent DBus from hanging
 			g_dbus_method_invocation_return_value(invocation, g_variant_new("(b)", result));
@@ -459,7 +459,7 @@ webkitgtk_extension_handle_method_call (GDBusConnection *connection, const gchar
 	g_error ("Unknown method %s\n", method_name);
 }
 
-static const GDBusInterfaceVTable interface_vtable = {webkitgtk_extension_handle_method_call, NULL, NULL};
+static const GDBusInterfaceVTable interface_vtable = {.method_call = webkitgtk_extension_handle_method_call};
 
 static void connection_closed_cb (GDBusConnection *connection, gboolean remote_peer_vanished, GError *error,
 		gpointer user_data) {
