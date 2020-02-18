@@ -161,6 +161,13 @@ public void test_setDataLjava_lang_StringLjava_lang_Object() {
 
 	widget.setData("the widget", null);
 	assertNull(widget.getData("the widget"));
+
+	try {
+		widget.setData(null, null);
+		fail();
+	} catch(IllegalArgumentException e) {
+		// expected
+	}
 }
 @Test
 public void test_toString() {
