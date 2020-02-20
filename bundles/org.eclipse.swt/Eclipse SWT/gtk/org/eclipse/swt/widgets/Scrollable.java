@@ -40,6 +40,9 @@ public abstract class Scrollable extends Control {
 	long scrolledHandle;
 	ScrollBar horizontalBar, verticalBar;
 
+	/** See bug 484682 */
+	static final boolean RESIZE_ON_GETCLIENTAREA = Boolean.getBoolean("org.eclipse.swt.resizeOnGetClientArea");
+
 /**
  * Prevents uninitialized instances from being created outside the package.
  */
@@ -232,7 +235,9 @@ public Rectangle getClientArea () {
 
 Rectangle getClientAreaInPixels () {
 	checkWidget ();
-	forceResize ();
+	if(RESIZE_ON_GETCLIENTAREA) {
+		forceResize ();
+	}
 	long clientHandle = clientHandle ();
 	GtkAllocation allocation = new GtkAllocation ();
 	GTK.gtk_widget_get_allocation (clientHandle, allocation);

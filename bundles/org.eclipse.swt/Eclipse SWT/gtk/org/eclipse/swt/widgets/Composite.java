@@ -752,7 +752,9 @@ Rectangle getClientAreaInPixels () {
 		if ((state & ZERO_WIDTH) != 0 && (state & ZERO_HEIGHT) != 0) {
 			return new Rectangle (0, 0, 0, 0);
 		}
-		forceResize ();
+		if(RESIZE_ON_GETCLIENTAREA) {
+			forceResize ();
+		}
 		long clientHandle = clientHandle ();
 		GtkAllocation allocation = new GtkAllocation();
 		GTK.gtk_widget_get_allocation (clientHandle, allocation);

@@ -1198,7 +1198,9 @@ void fixChildren (Shell newShell, Shell oldShell, Decorations newDecorations, De
 @Override
 Rectangle getClientAreaInPixels () {
 	checkWidget ();
-	forceResize ();
+	if(RESIZE_ON_GETCLIENTAREA) {
+		forceResize ();
+	}
 	long clientHandle = clientHandle ();
 	GtkAllocation allocation = new GtkAllocation ();
 	GTK.gtk_widget_get_allocation (clientHandle, allocation);
