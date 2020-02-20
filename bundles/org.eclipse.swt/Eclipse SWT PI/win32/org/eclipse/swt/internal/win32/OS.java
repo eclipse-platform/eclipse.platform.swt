@@ -1336,6 +1336,7 @@ public class OS extends C {
 	public static final int STM_SETIMAGE = 0x172;
 	public static final int SWP_ASYNCWINDOWPOS = 0x4000;
 	public static final int SWP_DRAWFRAME = 0x20;
+	public static final int SWP_FRAMECHANGED = 0x0020;
 	public static final int SWP_NOACTIVATE = 0x10;
 	public static final int SWP_NOCOPYBITS = 0x100;
 	public static final int SWP_NOMOVE = 0x2;
