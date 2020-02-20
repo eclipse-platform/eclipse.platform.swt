@@ -23,7 +23,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-import static org.junit.Assume.assumeFalse;
 import static org.junit.Assume.assumeTrue;
 
 import java.io.IOException;
@@ -86,8 +85,6 @@ public class Test_org_eclipse_swt_browser_Browser extends Test_org_eclipse_swt_w
 	public TestName name = new TestName();
 
 	Browser browser;
-	boolean isWebkit1 = false;
-	boolean isWebkit2 = false;
 
 	static int[] webkitGtkVersionInts = new int[3];
 
@@ -120,18 +117,6 @@ public void setUp() {
 		String webkitGtkVersionStr = System.getProperty("org.eclipse.swt.internal.webkitgtk.version"); //$NON-NLS-1$
 
 		shellTitle = shellTitle + " Webkit version: " + webkitGtkVersionStr;
-
-		String[] webkitGtkVersionStrParts = webkitGtkVersionStr.split("\\.");
-		for (int i = 0; i < 3; i++) {
-			webkitGtkVersionInts[i] = Integer.parseInt(webkitGtkVersionStrParts[i]);
-		}
-
-		// webkitgtk 2.5 and onwards uses webkit2.
-		if (webkitGtkVersionInts[0] == 1 || (webkitGtkVersionInts[0] == 2 && webkitGtkVersionInts[1] <= 4)) {
-			isWebkit1 = true;
-		} else if (webkitGtkVersionInts[0] == 2 && webkitGtkVersionInts[1] > 4) {
-			isWebkit2 = true;
-		}
 	}
 	shell.setText(shellTitle);
 	setWidget(browser); // For browser to occupy the whole shell, not just half of it.
@@ -177,10 +162,8 @@ public void test_evalute_Cookies () {
 
 @Test
 public void test_ClearAllSessionCookies () {
-	if (isWebkit2) {
-		// clearSessions will only work for Webkit2 when >= 2.16
-		assumeTrue(webkitGtkVersionInts[1] >= 16);
-	}
+	// clearSessions will only work for Webkit2 when >= 2.16
+	assumeTrue(webkitGtkVersionInts[1] >= 16);
 
 	final AtomicBoolean loaded = new AtomicBoolean(false);
 	browser.addProgressListener(ProgressListener.completedAdapter(event -> loaded.set(true)));
@@ -190,66 +173,28 @@ public void test_ClearAllSessionCookies () {
 	waitForPassCondition(loaded::get);
 
 	// Set the cookies
-	if (isWebkit2) { // TODO: Remove this once Webkit2 Cookie port complete
-		browser.evaluate("document.cookie = \"cookie1=value1\";");
-		browser.evaluate("document.cookie = \"cookie2=value2\";");
-	} else {
-		Browser.setCookie("cookie1=value1", "http://www.eclipse.org/swt");
-		Browser.setCookie("cookie2=value2", "http://www.eclipse.org/swt");
-	}
+	Browser.setCookie("cookie1=value1", "http://www.eclipse.org/swt");
+	Browser.setCookie("cookie2=value2", "http://www.eclipse.org/swt");
 
 	// Get the cookies
-	String v1, v2;
-	if (isWebkit2) { // TODO: Remove this once Webkit2 Cookie port complete
-		v1 = (String) browser.evaluate(toCookieEvalString("cookie1"));
-		v2 = (String) browser.evaluate(toCookieEvalString("cookie2"));
-	} else {
-		v1 = Browser.getCookie("cookie1", "http://www.eclipse.org/swt");
-		v2 = Browser.getCookie("cookie2", "http://www.eclipse.org/swt");
-	}
+	String v1 = Browser.getCookie("cookie1", "http://www.eclipse.org/swt");
+	String v2 = Browser.getCookie("cookie2", "http://www.eclipse.org/swt");
 	assertEquals("value1", v1);
 	assertEquals("value2", v2);
 
 	Browser.clearSessions();
 
 	// Should be empty
-	String e1, e2;
-	if (isWebkit2) { // TODO: Remove this once Webkit2 Cookie port complete
-		e1 = (String) browser.evaluate(toCookieEvalString("cookie1"));
-		e2 = (String) browser.evaluate(toCookieEvalString("cookie2"));
-	} else {
-		e1 = Browser.getCookie("cookie1", "http://www.eclipse.org/swt");
-		e2 = Browser.getCookie("cookie2", "http://www.eclipse.org/swt");
-	}
+	String e1 = Browser.getCookie("cookie1", "http://www.eclipse.org/swt");
+	String e2 = Browser.getCookie("cookie2", "http://www.eclipse.org/swt");
 	assertTrue(e1 == null || e1.isEmpty());
 	assertTrue(e2 == null || e2.isEmpty());
 }
 
-/**
- * TODO: Remove this once Webkit2 Cookie port complete
- */
-private String toCookieEvalString (String key) {
-	return  "var name = \"" + key + "=\";\n" +
-			"    var decodedCookie = decodeURIComponent(document.cookie);\n" +
-			"    var ca = decodedCookie.split(';');\n" +
-			"    for(var i = 0; i < ca.length; i++) {\n" +
-			"        var c = ca[i];\n" +
-			"        while (c.charAt(0) == ' ') {\n" +
-			"            c = c.substring(1);\n" +
-			"        }\n" +
-			"        if (c.indexOf(name) == 0) {\n" +
-			"            return c.substring(name.length, c.length);\n" +
-			"        }\n" +
-			"    }\n" +
-			"    return \"\";";
-}
-
 @Test
 public void test_get_set_Cookies() {
-	if (isWebkit2) {
-		// set/get cookies will only work for WebKit2.20+
-		assumeTrue(webkitGtkVersionInts[1] >= 20);
-	}
+	// set/get cookies will only work for WebKit2.20+
+	assumeTrue(webkitGtkVersionInts[1] >= 20);
 	final AtomicBoolean loaded = new AtomicBoolean(false);
 	browser.addProgressListener(ProgressListener.completedAdapter(event -> loaded.set(true)));
 
@@ -910,8 +855,6 @@ public void test_setUrl_remote() {
 /** This test requires working Internet connection */
 @Test
 public void test_setUrl_remote_with_post() {
-	assumeFalse(webkit1SkipMsg(), isWebkit1); // Fails on webkit1 but likely not going to try to support it.
-
 	// This test sometimes times out if build server has a bad connection. Thus for this test we have a longer timeout.
 	secondsToWaitTillFail = 35;
 
@@ -1117,8 +1060,7 @@ public void test_VisibilityWindowListener_eventSize() {
 	browserChild.dispose();
 
 	boolean passed = false;
-	if (isWebkit1 || SwtTestUtil.isCocoa) {
-		// On webkit1, event.size doesn't work properly. Fields are differently. Solution: Webkit2.
+	if (SwtTestUtil.isCocoa) {
 		// On Cocoa, event height/width aren't respected if declared by javascript.
 		passed = finishedWithoutTimeout && result.get().x != 0 && result.get().y != 0;
 	} else
@@ -1274,15 +1216,12 @@ public void test_setJavascriptEnabled_multipleInstances() {
 */
 @Test
 public void test_LocationListener_evaluateInCallback() {
-	assumeTrue(isWebkit2 || SwtTestUtil.isCocoa || SwtTestUtil.isWindows);
-	// On Webki1 this test works, but is prone to crashes. See Bug 509411
-
 	AtomicBoolean changingFinished = new AtomicBoolean(false);
 	AtomicBoolean changedFinished = new AtomicBoolean(false);
 	browser.addLocationListener(new LocationListener() {
 		@Override
 		public void changing(LocationEvent event) {
-			browser.evaluate("SWTchanging = true");  // Broken on Webkit1. I.e evaluate() in a 'changing()' signal doesn't do anything.
+			browser.evaluate("SWTchanging = true");
 			changingFinished.set(true);
 		}
 		@Override
@@ -1311,12 +1250,9 @@ public void test_LocationListener_evaluateInCallback() {
 					"\n  changed:   fired:" + changedFinished.get() + "    evaluated:" + changed;
 	boolean passed = false;
 
-	if (isWebkit2) {
+	if (SwtTestUtil.isGTK) {
 		// Evaluation works in all cases.
 		passed = changingFinished.get() && changedFinished.get() && changed && changing;
-	} else if (isWebkit1) {
-		// On Webkit1, evaluation in 'changing' fails.
-		passed = changingFinished.get() && changedFinished.get() && changed; // && changing (broken)
 	} else if (SwtTestUtil.isCocoa) {
 		// On Cocoa, evaluation in 'changing' fails.
 		passed = changingFinished.get() && changedFinished.get() && changed; // && changing (broken)
@@ -1331,7 +1267,6 @@ public void test_LocationListener_evaluateInCallback() {
 /** Verify that evaluation works inside an OpenWindowListener */
 @Test
 public void test_OpenWindowListener_evaluateInCallback() {
-	assumeTrue(!isWebkit1); // This works on Webkit1, but can sporadically fail, see Bug 509411
 	AtomicBoolean eventFired = new AtomicBoolean(false);
 	browser.addOpenWindowListener(event -> {
 		browser.evaluate("SWTopenListener = true");
@@ -1552,9 +1487,6 @@ public void test_execute_and_closeListener () {
  */
 @Test
 public void test_evaluate_string() {
-	// This test sometimes crashes on webkit1, but it's useful to test at least one 'evaluate' situation.
-	assumeFalse(webkit1SkipMsg(), (isWebkit1));
-
 	final AtomicReference<String> returnValue = new AtomicReference<>();
 	browser.addProgressListener(completedAdapter(event -> {
 		String evalResult = (String) browser
@@ -1573,8 +1505,6 @@ public void test_evaluate_string() {
 // Test where the script has the 'return' not in the beginning,
 @Test
 public void test_evaluate_returnMoved() {
-	assumeFalse(webkit1SkipMsg(), (isWebkit1));
-
 	final AtomicReference<String> returnValue = new AtomicReference<>();
 	browser.addProgressListener(completedAdapter(event -> {
 		String evalResult = (String) browser.evaluate("var x = 1; return 'hello'");
@@ -1593,7 +1523,6 @@ public void test_evaluate_returnMoved() {
  */
 @Test
 public void test_evaluate_number_normal() {
-	assumeFalse(webkit1SkipMsg(), isWebkit1); // Bug 509411
 	Double testNum = 123.0;
 	boolean passed = evaluate_number_helper(testNum);
 	assertTrue("Failed to evaluate number: " + testNum.toString(), passed);
@@ -1605,8 +1534,6 @@ public void test_evaluate_number_normal() {
  */
 @Test
 public void test_evaluate_number_negative() {
-	assumeFalse(webkit1SkipMsg(), isWebkit1); // Bug 509411
-
 	Double testNum = -123.0;
 	boolean passed = evaluate_number_helper(testNum);
 	assertTrue("Failed to evaluate number: " + testNum.toString(), passed);
@@ -1618,8 +1545,6 @@ public void test_evaluate_number_negative() {
  */
 @Test
 public void test_evaluate_number_big() {
-	assumeFalse(webkit1SkipMsg(), isWebkit1); // Bug 509411
-
 	Double testNum = 10000000000.0;
 	boolean passed = evaluate_number_helper(testNum);
 	assertTrue("Failed to evaluate number: " + testNum.toString(), passed);
@@ -1646,7 +1571,6 @@ boolean evaluate_number_helper(Double testNum) {
  */
 @Test
 public void test_evaluate_boolean() {
-	assumeFalse(webkit1SkipMsg(), isWebkit1); // Bug 509411
 	final AtomicBoolean atomicBoolean = new AtomicBoolean(false);
 	browser.addProgressListener(completedAdapter(event -> {
 		Boolean evalResult = (Boolean) browser.evaluate("return true");
@@ -1667,7 +1591,6 @@ public void test_evaluate_boolean() {
  */
 @Test
 public void test_evaluate_null() {
-	assumeFalse(webkit1SkipMsg(), isWebkit1); // Bug 509411
 	// Boolen only used as dummy placeholder so the object is not null.
 	final AtomicReference<Object> returnValue = new AtomicReference<>(true);
 	browser.addProgressListener(completedAdapter(event -> {
@@ -1689,8 +1612,6 @@ public void test_evaluate_null() {
  */
 @Test
 public void test_evaluate_invalid_return_value() {
-	assumeFalse(webkit1SkipMsg(), isWebkit1); // Bug 509411
-
 	if (SwtTestUtil.isWindows) {
 		/* Bug 508210 . Inconsistent beahiour on windows at the moment.
 		 * Fixing requires deeper investigation. Disabling newly added test for now.
@@ -1736,7 +1657,6 @@ public void test_evaluate_invalid_return_value() {
  */
 @Test
 public void test_evaluate_evaluation_failed_exception() {
-	assumeFalse(webkit1SkipMsg(), isWebkit1); // Bug 509411
 	final AtomicInteger exception = new AtomicInteger(-1);
 	browser.addProgressListener(completedAdapter(event -> {
 		try {
@@ -1770,7 +1690,6 @@ public void test_evaluate_evaluation_failed_exception() {
  */
 @Test
 public void test_evaluate_array_numbers() {
-	assumeFalse(webkit1SkipMsg(), isWebkit1); // Bug 509411
 
 	// Small note:
 	// evaluate() returns 'Double' type. Java doesn't have AtomicDouble
@@ -1809,7 +1728,6 @@ public void test_evaluate_array_numbers() {
  */
 @Test
 public void test_evaluate_array_strings () {
-	assumeFalse(webkit1SkipMsg(), isWebkit1); // Bug 509411
 
 	final AtomicReferenceArray<String> atomicStringArray = new AtomicReferenceArray<>(3);
 	atomicStringArray.set(0, "executing");
@@ -1848,7 +1766,6 @@ public void test_evaluate_array_strings () {
  */
 @Test
 public void test_evaluate_array_mixedTypes () {
-	assumeFalse(webkit1SkipMsg(), isWebkit1); // Bug 509411
 	final AtomicReferenceArray<Object> atomicArray = new AtomicReferenceArray<>(3);
 	atomicArray.set(0, "executing");
 	browser.addProgressListener(completedAdapter(event -> {
@@ -1888,11 +1805,6 @@ ProgressListener callCustomFunctionUponLoad = completedAdapter(event ->	browser.
  */
 @Test
 public void test_BrowserFunction_callback () {
-	// On webkit1, this test works if ran on it's own. But sometimes in test-suite with other tests it causes jvm crash.
-	// culprit seems to be the main_context_iteration() call in shell.setVisible().
-	// See Bug 509587.  Solution: Webkit2.
-	assumeFalse(webkit1SkipMsg(), isWebkit1);
-
 	AtomicBoolean javaCallbackExecuted = new AtomicBoolean(false);
 
 	class JavascriptCallback extends BrowserFunction { // Note: Local class defined inside method.
@@ -1935,12 +1847,6 @@ public void test_BrowserFunction_callback () {
  */
 @Test
 public void test_BrowserFunction_callback_with_integer () {
-	// On webkit1, this test works if ran on it's own. But sometimes in test-suite with other tests it causes jvm crash.
-	// culprit seems to be the main_context_iteration() call in shell.setVisible().
-	// See Bug 509587.  Solution: Webkit2.
-	// It's useful to run at least one function test on webkit1 locally.
-	assumeFalse(webkit1SkipMsg(), (isWebkit1));
-
 	AtomicInteger returnInt = new AtomicInteger(0);
 
 	class JavascriptCallback extends BrowserFunction { // Note: Local class defined inside method.
@@ -1986,11 +1892,6 @@ public void test_BrowserFunction_callback_with_integer () {
  */
 @Test
 public void test_BrowserFunction_callback_with_boolean () {
-	// On webkit1, this test works if ran on it's own. But sometimes in test-suite with other tests it causes jvm crash.
-	// culprit seems to be the main_context_iteration() call in shell.setVisible().
-	// See Bug 509587.  Solution: Webkit2.
-	assumeFalse(webkit1SkipMsg(), isWebkit1);
-
 	AtomicBoolean javaCallbackExecuted = new AtomicBoolean(false);
 
 	class JavascriptCallback extends BrowserFunction { // Note: Local class defined inside method.
@@ -2035,11 +1936,6 @@ public void test_BrowserFunction_callback_with_boolean () {
  */
 @Test
 public void test_BrowserFunction_callback_with_String () {
-	// On webkit1, this test works if ran on it's own. But sometimes in test-suite with other tests it causes jvm crash.
-	// culprit seems to be the main_context_iteration() call in shell.setVisible().
-	// See Bug 509587.  Solution: Webkit2.
-	assumeFalse(webkit1SkipMsg(), isWebkit1);
-
 	final AtomicReference<String> returnValue = new AtomicReference<>();
 	class JavascriptCallback extends BrowserFunction { // Note: Local class defined inside method.
 		JavascriptCallback(Browser browser, String name) {
@@ -2083,11 +1979,6 @@ public void test_BrowserFunction_callback_with_String () {
  */
 @Test
 public void test_BrowserFunction_callback_with_multipleValues () {
-	// On webkit1, this test works if ran on it's own. But sometimes in test-suite with other tests it causes jvm crash.
-	// culprit seems to be the main_context_iteration() call in shell.setVisible().
-	// See Bug 509587.  Solution: Webkit2.
-	assumeFalse(webkit1SkipMsg(), isWebkit1);
-
 	final AtomicReferenceArray<Object> atomicArray = new AtomicReferenceArray<>(3); // Strin, Double, Boolean
 	atomicArray.set(0, "executing");
 
@@ -2156,10 +2047,6 @@ public void test_BrowserFunction_callback_with_multipleValues () {
  */
 @Test
 public void test_BrowserFunction_callback_with_javaReturningInt () {
-	// On webkit1, this test works if ran on it's own. But sometimes in test-suite with other tests it causes jvm crash.
-	// culprit seems to be the main_context_iteration() call in shell.setVisible().
-	// See Bug 509587.  Solution: Webkit2.
-	assumeFalse(webkit1SkipMsg(), isWebkit1);
 	AtomicInteger returnInt = new AtomicInteger(0);
 
 	class JavascriptCallback extends BrowserFunction { // Note: Local class defined inside method.
@@ -2229,11 +2116,6 @@ public void test_BrowserFunction_callback_with_javaReturningInt () {
  */
 @Test
 public void test_BrowserFunction_callback_afterPageReload() {
-	// On webkit1, this test works if ran on it's own. But sometimes in test-suite with other tests it causes jvm crash.
-	// culprit seems to be the main_context_iteration() call in shell.setVisible().
-	// See Bug 509587.  Solution: Webkit2.
-	assumeFalse(webkit1SkipMsg(), isWebkit1);
-
 	AtomicBoolean javaCallbackExecuted = new AtomicBoolean(false);
 	AtomicInteger callCount = new AtomicInteger(0);
 
@@ -2320,11 +2202,6 @@ void waitForMilliseconds(final int milliseconds) {
 	waitForPassCondition(() -> false, milliseconds);
 
 }
-
-private String webkit1SkipMsg() {
-	return "Test_org_eclipse_swt_browser. Bug 509411. Skipping test on Webkit1 due to sporadic crash: "+ name.getMethodName();
-}
-
 
 /**
  * Check if Internet connection to a http url works.
