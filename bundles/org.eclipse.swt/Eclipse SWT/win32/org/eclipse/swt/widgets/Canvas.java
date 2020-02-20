@@ -151,6 +151,11 @@ public IME getIME () {
 }
 
 @Override
+boolean isUseWsBorder () {
+	return super.isUseWsBorder () || ((display != null) && display.useWsBorderCanvas);
+}
+
+@Override
 void releaseChildren (boolean destroy) {
 	if (caret != null) {
 		caret.release (false);

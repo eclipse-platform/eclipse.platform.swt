@@ -1284,6 +1284,7 @@ public class OS extends C {
 	public static final int SM_CXVSCROLL = 0x2;
 	public static final int SM_CYBORDER = 0x6;
 	public static final int SM_CYCURSOR = 0xe;
+	public static final int SM_CYEDGE = 0x2e;
 	public static final int SM_CYFOCUSBORDER = 84;
 	public static final int SM_CYHSCROLL = 0x3;
 	public static final int SM_CYMENU = 0xf;
@@ -2355,6 +2356,11 @@ public static final void setTheme(boolean isDarkTheme) {
 	display.setData("org.eclipse.swt.internal.win32.menuBarForegroundColor",   isDarkTheme ? new Color(display, 0xD0, 0xD0, 0xD0) : null);
 	display.setData("org.eclipse.swt.internal.win32.menuBarBackgroundColor",   isDarkTheme ? new Color(display, 0x30, 0x30, 0x30) : null);
 	display.setData("org.eclipse.swt.internal.win32.menuBarBorderColor",       isDarkTheme ? new Color(display, 0x50, 0x50, 0x50) : null);
+	display.setData("org.eclipse.swt.internal.win32.Canvas.use_WS_BORDER",     isDarkTheme);
+	display.setData("org.eclipse.swt.internal.win32.List.use_WS_BORDER",       isDarkTheme);
+	display.setData("org.eclipse.swt.internal.win32.Table.use_WS_BORDER",      isDarkTheme);
+	display.setData("org.eclipse.swt.internal.win32.Text.use_WS_BORDER",       isDarkTheme);
+	display.setData("org.eclipse.swt.internal.win32.Tree.use_WS_BORDER",       isDarkTheme);
 }
 
 public static final boolean SetDllDirectory (TCHAR lpPathName) {

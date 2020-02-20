@@ -725,6 +725,11 @@ public boolean isSelected (int index) {
 	return (result != 0) && (result != OS.LB_ERR);
 }
 
+@Override
+boolean isUseWsBorder () {
+	return super.isUseWsBorder () || ((display != null) && display.useWsBorderList);
+}
+
 /**
  * Removes the items from the receiver at the given
  * zero-relative indices.

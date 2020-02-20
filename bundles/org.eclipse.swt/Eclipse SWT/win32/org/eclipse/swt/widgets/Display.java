@@ -201,6 +201,27 @@ public class Display extends Device {
 	 */
 	static final String MENUBAR_BORDER_COLOR_KEY     = "org.eclipse.swt.internal.win32.menuBarBorderColor"; //$NON-NLS-1$
 	long menuBarBorderPen;
+	/**
+	 * Use a different border for Controls.
+	 * This often gives better results for dark themes.
+	 * The effect is slightly different for different controls.
+	 */
+	static final String USE_WS_BORDER_ALL_KEY        = "org.eclipse.swt.internal.win32.all.use_WS_BORDER"; //$NON-NLS-1$
+	boolean useWsBorderAll = false;
+	static final String USE_WS_BORDER_CANVAS_KEY     = "org.eclipse.swt.internal.win32.Canvas.use_WS_BORDER"; //$NON-NLS-1$
+	boolean useWsBorderCanvas = false;
+	static final String USE_WS_BORDER_LABEL_KEY      = "org.eclipse.swt.internal.win32.Label.use_WS_BORDER"; //$NON-NLS-1$
+	boolean useWsBorderLabel = false;
+	static final String USE_WS_BORDER_LIST_KEY       = "org.eclipse.swt.internal.win32.List.use_WS_BORDER"; //$NON-NLS-1$
+	boolean useWsBorderList = false;
+	static final String USE_WS_BORDER_SPINNER_KEY    = "org.eclipse.swt.internal.win32.Spinner.use_WS_BORDER"; //$NON-NLS-1$
+	boolean useWsBorderSpinner = false;
+	static final String USE_WS_BORDER_TABLE_KEY      = "org.eclipse.swt.internal.win32.Table.use_WS_BORDER"; //$NON-NLS-1$
+	boolean useWsBorderTable = false;
+	static final String USE_WS_BORDER_TEXT_KEY       = "org.eclipse.swt.internal.win32.Text.use_WS_BORDER"; //$NON-NLS-1$
+	boolean useWsBorderText = false;
+	static final String USE_WS_BORDER_TREE_KEY       = "org.eclipse.swt.internal.win32.Tree.use_WS_BORDER"; //$NON-NLS-1$
+	boolean useWsBorderTree = false;
 
 	/* Custom icons */
 	long hIconSearch;
@@ -4355,6 +4376,30 @@ public void setData (String key, Object value) {
 				menuBarBorderPen = 0;
 			else
 				menuBarBorderPen = OS.CreatePen (OS.PS_SOLID, 1, pixel);
+			return;
+		case USE_WS_BORDER_ALL_KEY:
+			useWsBorderAll     = !disableCustomThemeTweaks && _toBoolean(value);
+			return;
+		case USE_WS_BORDER_CANVAS_KEY:
+			useWsBorderCanvas  = !disableCustomThemeTweaks && _toBoolean(value);
+			return;
+		case USE_WS_BORDER_LABEL_KEY:
+			useWsBorderLabel   = !disableCustomThemeTweaks && _toBoolean(value);
+			return;
+		case USE_WS_BORDER_LIST_KEY:
+			useWsBorderList    = !disableCustomThemeTweaks && _toBoolean(value);
+			return;
+		case USE_WS_BORDER_SPINNER_KEY:
+			useWsBorderSpinner = !disableCustomThemeTweaks && _toBoolean(value);
+			return;
+		case USE_WS_BORDER_TABLE_KEY:
+			useWsBorderTable   = !disableCustomThemeTweaks && _toBoolean(value);
+			return;
+		case USE_WS_BORDER_TEXT_KEY:
+			useWsBorderText    = !disableCustomThemeTweaks && _toBoolean(value);
+			return;
+		case USE_WS_BORDER_TREE_KEY:
+			useWsBorderTree    = !disableCustomThemeTweaks && _toBoolean(value);
 			return;
 	}
 

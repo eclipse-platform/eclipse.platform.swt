@@ -263,6 +263,11 @@ public String getText () {
 }
 
 @Override
+boolean isUseWsBorder () {
+	return super.isUseWsBorder () || ((display != null) && display.useWsBorderLabel);
+}
+
+@Override
 boolean mnemonicHit (char key) {
 	Control control = this;
 	while (control.parent != null) {

@@ -609,6 +609,11 @@ public int getTextLimit () {
 	return (int)OS.SendMessage (hwndText, OS.EM_GETLIMITTEXT, 0, 0) & 0x7FFFFFFF;
 }
 
+@Override
+boolean isUseWsBorder () {
+	return super.isUseWsBorder () || ((display != null) && display.useWsBorderSpinner);
+}
+
 /**
  * Pastes text from clipboard.
  * <p>
