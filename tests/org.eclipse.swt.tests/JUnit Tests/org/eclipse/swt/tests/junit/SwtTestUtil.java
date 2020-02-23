@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2018 IBM Corporation and others.
+ * Copyright (c) 2000, 2020 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -17,9 +17,15 @@ package org.eclipse.swt.tests.junit;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTError;
 import org.eclipse.swt.SWTException;
+import org.eclipse.swt.events.PaintEvent;
+import org.eclipse.swt.events.PaintListener;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Shell;
 
 public class SwtTestUtil {
 	/**
@@ -103,4 +109,52 @@ public static void assertSWTProblem(String message, int expectedCode, Throwable 
 public static boolean isBidi() {
 	return true;
 }
+
+/**
+ * Open the given shell and wait until it is actually opened! Dependent on
+ * platform the shell is not immediately open after {@link Shell#open()} and has
+ * not its final bounds.
+ * <p>
+ * If opening the shell fails or is, for whatever reason, not recognized the
+ * method will return after a short timeout.
+ * </p>
+ *
+ * @param shell the shell to open. Does nothing if <code>null</code> or already
+ *              open.
+ */
+public static void openShell(Shell shell) {
+	if (shell != null && !shell.getVisible()) {
+		if (isGTK) {
+			AtomicBoolean paintRequested = new AtomicBoolean(false);
+			shell.addPaintListener(new PaintListener() {
+				@Override
+				public void paintControl(PaintEvent e) {
+					paintRequested.set(true);
+					shell.removePaintListener(this);
+				}
+			});
+			shell.open();
+			long start = System.currentTimeMillis();
+			while (!paintRequested.get() && System.currentTimeMillis() - 1000 < start) {
+				processEvents();
+			}
+		} else {
+			shell.open();
+		}
+
+	}
+}
+
+/**
+ * Dispatch all pending events (until {@link Display#readAndDispatch()} returned
+ * <code>false</code>).
+ */
+public static void processEvents() {
+	Display display = Display.getCurrent();
+	if (display != null && !display.isDisposed()) {
+		while (display.readAndDispatch()) {
+		}
+	}
+}
+
 }
