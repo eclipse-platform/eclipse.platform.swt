@@ -1256,6 +1256,10 @@ void drawRoundRectangleInPixels(int x, int y, int width, int height, int arcWidt
  * will be performed. The background of the rectangular area where
  * the string is being drawn will be filled with the receiver's
  * background color.
+ * <br><br>
+ * On Windows, {@link #drawString} and {@link #drawText} are slightly
+ * different, see {@link #drawString(String, int, int, boolean)} for
+ * explanation.
  *
  * @param string the string to be drawn
  * @param x the x coordinate of the top left corner of the rectangular area where the string is to be drawn
@@ -1284,6 +1288,13 @@ void drawStringInPixels (String string, int x, int y) {
  * then the background of the rectangular area where the string is being
  * drawn will not be modified, otherwise it will be filled with the
  * receiver's background color.
+ * <br><br>
+ * On Windows, {@link #drawString} and {@link #drawText} are slightly
+ * different:
+ * <ul>
+ *     <li>{@link #drawString} is faster (depends on string size)<br>~7x for 1-char strings<br>~4x for 10-char strings<br>~2x for 100-char strings</li>
+ *     <li>{@link #drawString} doesn't try to find a good fallback font when character doesn't have a glyph in currently selected font</li>
+ * </ul>
  *
  * @param string the string to be drawn
  * @param x the x coordinate of the top left corner of the rectangular area where the string is to be drawn
@@ -1314,6 +1325,10 @@ void drawStringInPixels(String string, int x, int y, boolean isTransparent) {
  * are performed. The background of the rectangular area where
  * the text is being drawn will be filled with the receiver's
  * background color.
+ * <br><br>
+ * On Windows, {@link #drawString} and {@link #drawText} are slightly
+ * different, see {@link #drawString(String, int, int, boolean)} for
+ * explanation.
  *
  * @param string the string to be drawn
  * @param x the x coordinate of the top left corner of the rectangular area where the text is to be drawn
@@ -1340,6 +1355,10 @@ void drawTextInPixels(String string, int x, int y) {
  * then the background of the rectangular area where the text is being
  * drawn will not be modified, otherwise it will be filled with the
  * receiver's background color.
+ * <br><br>
+ * On Windows, {@link #drawString} and {@link #drawText} are slightly
+ * different, see {@link #drawString(String, int, int, boolean)} for
+ * explanation.
  *
  * @param string the string to be drawn
  * @param x the x coordinate of the top left corner of the rectangular area where the text is to be drawn
@@ -1371,6 +1390,10 @@ void drawTextInPixels(String string, int x, int y, boolean isTransparent) {
  * then the background of the rectangular area where the text is being
  * drawn will not be modified, otherwise it will be filled with the
  * receiver's background color.
+ * <br><br>
+ * On Windows, {@link #drawString} and {@link #drawText} are slightly
+ * different, see {@link #drawString(String, int, int, boolean)} for
+ * explanation.
  * <p>
  * The parameter <code>flags</code> may be a combination of:
  * </p>
