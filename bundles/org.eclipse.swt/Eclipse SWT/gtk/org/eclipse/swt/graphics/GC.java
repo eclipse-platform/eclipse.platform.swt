@@ -1394,6 +1394,7 @@ void drawTextInPixels(String string, int x, int y, boolean isTransparent) {
  * On Windows, {@link #drawString} and {@link #drawText} are slightly
  * different, see {@link #drawString(String, int, int, boolean)} for
  * explanation.
+ *
  * <p>
  * The parameter <code>flags</code> may be a combination of:
  * </p>
