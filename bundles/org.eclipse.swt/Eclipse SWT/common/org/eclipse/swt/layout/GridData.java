@@ -238,7 +238,7 @@ public final class GridData {
 	 * exclude informs the layout to ignore this control when sizing
 	 * and positioning controls.  If this value is <code>true</code>,
 	 * the size and position of the control will not be managed by the
-	 * layout.  If this	value is <code>false</code>, the size and
+	 * layout.  If this value is <code>false</code>, the size and
 	 * position of the control will be computed and assigned.
 	 *
 	 * The default value is <code>false</code>.
