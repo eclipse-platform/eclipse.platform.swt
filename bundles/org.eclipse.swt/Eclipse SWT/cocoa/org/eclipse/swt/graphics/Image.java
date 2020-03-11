@@ -1621,9 +1621,6 @@ public long internal_new_GC (GCData data) {
 		int scaleFactor = DPIUtil.getDeviceZoom() / 100;
 		NSBitmapImageRep imageRep = getRepresentation();
 
-		// Can't perform transforms on image reps with alpha.
-		imageRep.setAlpha(false);
-
 		NSGraphicsContext context = NSGraphicsContext.graphicsContextWithBitmapImageRep(imageRep);
 		NSGraphicsContext flippedContext = NSGraphicsContext.graphicsContextWithGraphicsPort(context.graphicsPort(), true);
 		context = flippedContext;
