@@ -4983,8 +4983,7 @@ private void _setBackground (Color color) {
 void setBackgroundGdkRGBA (long context, long handle, GdkRGBA rgba) {
 	GdkRGBA selectedBackground = display.getSystemColor(SWT.COLOR_LIST_SELECTION).handle;
 	// Form background string
-	String name = GTK.GTK_VERSION >= OS.VERSION(3, 20, 0) ? display.gtk_widget_class_get_css_name(handle)
-			: display.gtk_widget_get_name(handle);
+	String name = display.gtk_widget_class_get_css_name(handle);
 	String css = name + " {background-color: " + display.gtk_rgba_to_css_string(rgba) + ";}\n"
 			+ name + ":selected" + " {background-color: " + display.gtk_rgba_to_css_string(selectedBackground) + ";}";
 
@@ -5382,11 +5381,9 @@ void setForegroundGdkRGBA (long handle, GdkRGBA rgba) {
 	long context = GTK.gtk_widget_get_style_context (handle);
 	// Form foreground string
 	String color = display.gtk_rgba_to_css_string(toSet);
-	String name = GTK.GTK_VERSION >= OS.VERSION(3, 20, 0) ? display.gtk_widget_class_get_css_name(handle)
-			: display.gtk_widget_get_name(handle);
+	String name = display.gtk_widget_class_get_css_name(handle);
 	GdkRGBA selectedForeground = display.COLOR_LIST_SELECTION_TEXT_RGBA;
-	String selection = GTK.GTK_VERSION >= OS.VERSION(3, 20, 0) &&
-			!name.contains("treeview") ? " selection" : ":selected";
+	String selection = !name.contains("treeview") ? " selection" : ":selected";
 	String css = "* {color: " + color + ";}\n"
 			+ name + selection + " {color: " + display.gtk_rgba_to_css_string(selectedForeground) + ";}";
 

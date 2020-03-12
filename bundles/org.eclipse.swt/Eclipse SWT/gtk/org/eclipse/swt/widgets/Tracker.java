@@ -872,14 +872,13 @@ private void setTrackerBackground(boolean opaque) {
 	} else if (opaque == cachedBackgroundIsOpaque.booleanValue()) {
 		return;
 	}
-	String name = GTK.GTK_VERSION >= OS.VERSION(3, 20, 0) ? "window" : "GtkWindow";
 	String css;
 	if (opaque) {
 		GTK.gtk_widget_set_opacity (overlay, 1.0);
-		css = name + " {background-color: rgb(0,0,0);}";
+		css = "window {background-color: rgb(0,0,0);}";
 	} else {
 		GTK.gtk_widget_set_opacity (overlay, 0.0);
-		css = name +  " {  "
+		css = "window {  "
 				+ "border-top-color: transparent;"
 				+ "border-left-color: transparent;"
 				+ "border-right-color: transparent;"

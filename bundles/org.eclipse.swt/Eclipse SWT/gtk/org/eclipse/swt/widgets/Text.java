@@ -2210,20 +2210,16 @@ void setBackgroundGdkRGBA (long context, long handle, GdkRGBA rgba) {
 	GdkRGBA selectedForeground = display.getSystemColor(SWT.COLOR_LIST_SELECTION_TEXT).handle;
 	String css;
 	String properties;
-	String name;
-	String selection = GTK.GTK_VERSION >= OS.VERSION(3, 20, 0) ? " selection" : ":selected";
 	if ((style & SWT.SINGLE) != 0) {
-		name = GTK.GTK_VERSION >= OS.VERSION(3, 20, 0) ? "entry" : "GtkEntry";
-		properties = " {background: " + display.gtk_rgba_to_css_string(background) + ";}\n"
-				+ name + ":selected {background-color: " + display.gtk_rgba_to_css_string(selectedBackground) + ";}\n"
-				+ name + selection + " {color: " + display.gtk_rgba_to_css_string(selectedForeground) + ";}";
+		properties = "entry {background: " + display.gtk_rgba_to_css_string(background) + ";}\n"
+				+ "entry:selected {background-color: " + display.gtk_rgba_to_css_string(selectedBackground) + ";}\n"
+				+ "entry selection {color: " + display.gtk_rgba_to_css_string(selectedForeground) + ";}";
 	} else {
-		name = GTK.GTK_VERSION >= OS.VERSION(3, 20, 0) ? "textview text" : "GtkTextView";
-		properties = " {background-color: " + display.gtk_rgba_to_css_string(background) + ";}\n"
-				+ name + ":selected {background-color: " + display.gtk_rgba_to_css_string(selectedBackground) + ";}\n"
-				+ name + selection + " {color: " + display.gtk_rgba_to_css_string(selectedForeground) + ";}";
+		properties = "textview {background-color: " + display.gtk_rgba_to_css_string(background) + ";}\n"
+				+ "textview text:selected {background-color: " + display.gtk_rgba_to_css_string(selectedBackground) + ";}\n"
+				+ "textview text selection {color: " + display.gtk_rgba_to_css_string(selectedForeground) + ";}";
 	}
-	css = name + properties;
+	css = properties;
 
 	// Cache background color
 	cssBackground = css;

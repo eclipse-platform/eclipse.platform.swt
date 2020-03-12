@@ -3499,14 +3499,13 @@ void setBackgroundGdkRGBA (long context, long handle, GdkRGBA rgba) {
 		background = rgba;
 	}
 	GdkRGBA selectedBackground = display.getSystemColor(SWT.COLOR_LIST_SELECTION).handle;
-	String name = GTK.GTK_VERSION >= OS.VERSION(3, 20, 0) ? "treeview" : "GtkTreeView";
-	String css = name + " {background-color: " + display.gtk_rgba_to_css_string(background) + ";}\n"
-			+ name + ":selected {background-color: " + display.gtk_rgba_to_css_string(selectedBackground) + ";}";
+	String css = "treeview {background-color: " + display.gtk_rgba_to_css_string(background) + ";}\n"
+			+ "treeview:selected {background-color: " + display.gtk_rgba_to_css_string(selectedBackground) + ";}";
 
-		// Cache background color
-		cssBackground = css;
+	// Cache background color
+	cssBackground = css;
 
-		// Apply background color and any foreground color
+	// Apply background color and any foreground color
 	String finalCss = display.gtk_css_create_css_color_string (cssBackground, cssForeground, SWT.BACKGROUND);
 	gtk_css_provider_load_from_css(context, finalCss);
 }
@@ -3634,9 +3633,8 @@ public void setHeaderBackground (Color color) {
 	} else {
 		background = defaultBackground();
 	}
-	String name = GTK.GTK_VERSION >= OS.VERSION(3, 20, 0) ? "button" : "GtkButton";
 	// background works for 3.18 and later, background-color only as of 3.20
-	String css = name + " {background: " + display.gtk_rgba_to_css_string(background) + ";}\n";
+	String css = "button {background: " + display.gtk_rgba_to_css_string(background) + ";}\n";
 	headerCSSBackground = css;
 	String finalCss = display.gtk_css_create_css_color_string (headerCSSBackground, headerCSSForeground, SWT.BACKGROUND);
 	for (TreeColumn column : columns) {
@@ -3691,8 +3689,7 @@ public void setHeaderForeground (Color color) {
 	} else {
 		foreground = display.COLOR_LIST_FOREGROUND_RGBA;
 	}
-	String name = GTK.GTK_VERSION >= OS.VERSION(3, 20, 0) ? "button" : "GtkButton";
-	String css = name + " {color: " + display.gtk_rgba_to_css_string(foreground) + ";}";
+	String css = "button {color: " + display.gtk_rgba_to_css_string(foreground) + ";}";
 	headerCSSForeground = css;
 	String finalCss = display.gtk_css_create_css_color_string (headerCSSBackground, headerCSSForeground, SWT.FOREGROUND);
 	for (TreeColumn column : columns) {

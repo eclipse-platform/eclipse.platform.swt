@@ -285,8 +285,7 @@ void createHandle (int index) {
 		Color background = display.getSystemColor (SWT.COLOR_INFO_BACKGROUND);
 		long context = GTK.gtk_widget_get_style_context (handle);
 		GdkRGBA bgRGBA = background.handle;
-		String name = GTK.GTK_VERSION >= OS.VERSION(3, 20, 0) ? "window" : "GtkWindow";
-		String css = name + " {background-color: " + display.gtk_rgba_to_css_string(bgRGBA) + ";}";
+		String css = "window {background-color: " + display.gtk_rgba_to_css_string(bgRGBA) + ";}";
 		gtk_css_provider_load_from_css (context, css);
 		GTK.gtk_style_context_invalidate (context);
 		GTK.gtk_window_set_type_hint (handle, GDK.GDK_WINDOW_TYPE_HINT_TOOLTIP);

@@ -2192,10 +2192,8 @@ void setBackgroundGdkRGBA (long context, long handle, GdkRGBA rgba) {
 	// Set the selected background color
 	GdkRGBA selectedBackground = display.getSystemColor(SWT.COLOR_LIST_SELECTION).handle;
 	GdkRGBA selectedForeground = display.getSystemColor(SWT.COLOR_LIST_SELECTION_TEXT).handle;
-	String name = GTK.GTK_VERSION >= OS.VERSION(3, 20, 0) ? "entry" : "GtkEntry";
-	String selection = GTK.GTK_VERSION >= OS.VERSION(3, 20, 0) ? " selection" : ":selected";
-	css += name + selection + " {background-color: " + display.gtk_rgba_to_css_string(selectedBackground) + ";}\n";
-	css += name + selection + " {color: " + display.gtk_rgba_to_css_string(selectedForeground) + ";}";
+	css += "entry selection {background-color: " + display.gtk_rgba_to_css_string(selectedBackground) + ";}\n";
+	css += "entry selection {color: " + display.gtk_rgba_to_css_string(selectedForeground) + ";}";
 
 	// Cache background color
 	cssBackground = css;

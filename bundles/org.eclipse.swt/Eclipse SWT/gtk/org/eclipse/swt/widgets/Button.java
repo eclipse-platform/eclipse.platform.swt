@@ -966,41 +966,34 @@ void setForegroundGdkRGBA (long handle, GdkRGBA rgba) {
 	long context = GTK.gtk_widget_get_style_context (handle);
 
 	GdkRGBA toSet = rgba == null ? display.COLOR_WIDGET_FOREGROUND_RGBA : rgba;
-	String name, css;
+	String css;
 	String color = display.gtk_rgba_to_css_string(toSet);
 	int bits = SWT.CHECK | SWT.RADIO;
 	switch (style & bits) {
 		case SWT.CHECK:
-			name = GTK.GTK_VERSION >= OS.VERSION(3, 20, 0) ? "checkbutton" : "GtkCheckButton";
-			css = name + " {color: " + color + ";}";
-			if (GTK.GTK_VERSION >= OS.VERSION(3, 20, 0)) {
-				String checkColor;
-				if (toggleButtonTheming) {
-					GdkRGBA checkRGBA = rgba == null ? display.COLOR_TOGGLE_BUTTON_FOREGROUND_RGBA : rgba;
-					checkColor = display.gtk_rgba_to_css_string(checkRGBA);
-				} else {
-					checkColor = display.gtk_rgba_to_css_string(toSet);
-				}
-				css += " check {color: " + checkColor + ";}";
+			css = "checkbutton {color: " + color + ";}";
+			String checkColor;
+			if (toggleButtonTheming) {
+				GdkRGBA checkRGBA = rgba == null ? display.COLOR_TOGGLE_BUTTON_FOREGROUND_RGBA : rgba;
+				checkColor = display.gtk_rgba_to_css_string(checkRGBA);
+			} else {
+				checkColor = display.gtk_rgba_to_css_string(toSet);
 			}
+			css += " check {color: " + checkColor + ";}";
 			break;
 		case SWT.RADIO:
-			name = GTK.GTK_VERSION >= OS.VERSION(3, 20, 0) ? "radiobutton" : "GtkRadioButton";
-			css = name + " {color: " + color + ";}";
-			if (GTK.GTK_VERSION >= OS.VERSION(3, 20, 0)) {
-				String radioColor;
-				if (toggleButtonTheming) {
-					GdkRGBA radioRGBA = rgba == null ? display.COLOR_TOGGLE_BUTTON_FOREGROUND_RGBA : rgba;
-					radioColor = display.gtk_rgba_to_css_string(radioRGBA);
-				} else {
-					radioColor = display.gtk_rgba_to_css_string(toSet);
-				}
-				css += " radio {color: " + radioColor + ";}";
+			css = "radiobutton {color: " + color + ";}";
+			String radioColor;
+			if (toggleButtonTheming) {
+				GdkRGBA radioRGBA = rgba == null ? display.COLOR_TOGGLE_BUTTON_FOREGROUND_RGBA : rgba;
+				radioColor = display.gtk_rgba_to_css_string(radioRGBA);
+			} else {
+				radioColor = display.gtk_rgba_to_css_string(toSet);
 			}
+			css += " radio {color: " + radioColor + ";}";
 			break;
 		default:
-			name = GTK.GTK_VERSION >= OS.VERSION(3, 20, 0) ? "button" : "GtkButton";
-			css = name + " {color: " + color + ";}";
+			css = "button {color: " + color + ";}";
 	}
 
 	// Cache foreground color

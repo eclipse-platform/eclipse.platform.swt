@@ -730,8 +730,7 @@ void reskinChildren (int flags) {
 @Override
 void setBackgroundGdkRGBA (long context, long handle, GdkRGBA rgba) {
 	// Form background string
-	String name = GTK.GTK_VERSION >= OS.VERSION(3, 20, 0) ? "notebook header" : "GtkNotebook.header";
-	String css = name + " {background-color: " + display.gtk_rgba_to_css_string (rgba) + ";}";
+	String css = "notebook header {background-color: " + display.gtk_rgba_to_css_string (rgba) + ";}";
 
 		// Cache background
 		cssBackground = css;

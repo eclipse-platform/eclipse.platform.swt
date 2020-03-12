@@ -935,9 +935,7 @@ void setBackgroundGdkRGBA (long context, long handle, GdkRGBA rgba) {
 		super.setBackgroundGdkRGBA(context, handle, rgba);
 	} else {
 		String color = display.gtk_rgba_to_css_string (background);
-		String properties = " {background-image: -gtk-gradient (linear, 0 0, 0 1, color-stop(0, " + color + "), color-stop(1, " + color + "));}";
-		String name = GTK.GTK_VERSION >= OS.VERSION(3, 20, 0) ? "spinbutton" : "GtkSpinButton";
-		String css = name + properties;
+		String css = "spinbutton {background-image: -gtk-gradient (linear, 0 0, 0 1, color-stop(0, " + color + "), color-stop(1, " + color + "));}";
 
 		cssBackground = css;
 
