@@ -596,30 +596,28 @@ void bringToTop (boolean force) {
 			OS.XSetInputFocus (xDisplay, xWindow, OS.RevertToParent, OS.CurrentTime);
 			GDK.gdk_x11_display_error_trap_pop_ignored(gdkDisplay);
 		} else {
-			if (GTK.GTK_VERSION >= OS.VERSION(3, 20, 0)) {
-				GTK.gtk_grab_add(shellHandle);
-				long gdkDisplay;
-				if (GTK.GTK4) {
-					gdkDisplay = GDK.gdk_surface_get_display(gdkResource);
-				} else {
-					gdkDisplay = GDK.gdk_window_get_display(gdkResource);
-				}
-				long seat = GDK.gdk_display_get_default_seat(gdkDisplay);
-				if (GTK.GTK4) {
-					GDK.gdk_surface_show(gdkResource);
-				} else {
-					GDK.gdk_window_show(gdkResource);
-				}
-				GDK.gdk_seat_grab(seat, gdkResource, GDK.GDK_SEAT_CAPABILITY_ALL, true, 0, 0, 0, 0);
-				/*
-				 * Bug 541185: Hover over to open Javadoc popup will make the popup
-				 * close instead of gaining focus due to an extra focus out signal sent
-				 * after grabbing focus. This triggers SWT.Deactivate handler which closes the shell.
-				 * Workaround is to ignore this focus out.
-				 */
-				grabbedFocus = true;
-				ignoreFocusOutAfterGrab = true;
+			GTK.gtk_grab_add(shellHandle);
+			long gdkDisplay;
+			if (GTK.GTK4) {
+				gdkDisplay = GDK.gdk_surface_get_display(gdkResource);
+			} else {
+				gdkDisplay = GDK.gdk_window_get_display(gdkResource);
 			}
+			long seat = GDK.gdk_display_get_default_seat(gdkDisplay);
+			if (GTK.GTK4) {
+				GDK.gdk_surface_show(gdkResource);
+			} else {
+				GDK.gdk_window_show(gdkResource);
+			}
+			GDK.gdk_seat_grab(seat, gdkResource, GDK.GDK_SEAT_CAPABILITY_ALL, true, 0, 0, 0, 0);
+			/*
+			 * Bug 541185: Hover over to open Javadoc popup will make the popup
+			 * close instead of gaining focus due to an extra focus out signal sent
+			 * after grabbing focus. This triggers SWT.Deactivate handler which closes the shell.
+			 * Workaround is to ignore this focus out.
+			 */
+			grabbedFocus = true;
+			ignoreFocusOutAfterGrab = true;
 		}
 	} else {
 		if (GTK.GTK4) {
@@ -1112,11 +1110,9 @@ void forceResize (int width, int height) {
 	allocation.height = height;
 	// Call gtk_widget_get_preferred_size() on GTK 3.20+ to prevent warnings.
 	// See bug 486068.
-	if (GTK.GTK_VERSION >= OS.VERSION(3, 20, 0)) {
-		GtkRequisition minimumSize = new GtkRequisition ();
-		GtkRequisition naturalSize = new GtkRequisition ();
-		GTK.gtk_widget_get_preferred_size (vboxHandle, minimumSize, naturalSize);
-	}
+	GtkRequisition minimumSize = new GtkRequisition ();
+	GtkRequisition naturalSize = new GtkRequisition ();
+	GTK.gtk_widget_get_preferred_size (vboxHandle, minimumSize, naturalSize);
 	/*
 	 * Bug 535075, 536153: On Wayland, we need to set the position of the GtkBox container
 	 * relative to the shellHandle to prevent window contents rendered with offset.
@@ -3070,7 +3066,7 @@ void deregister () {
 }
 
 boolean requiresUngrab () {
-	return !OS.isX11() && GTK.GTK_VERSION >= OS.VERSION(3, 20, 0) && (style & SWT.ON_TOP) != 0 && (style & SWT.NO_FOCUS) == 0;
+	return !OS.isX11() && (style & SWT.ON_TOP) != 0 && (style & SWT.NO_FOCUS) == 0;
 }
 
 /**

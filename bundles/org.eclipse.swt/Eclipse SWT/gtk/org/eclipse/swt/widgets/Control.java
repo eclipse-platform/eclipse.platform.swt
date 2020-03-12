@@ -644,9 +644,7 @@ public boolean print (GC gc) {
 	GtkAllocation allocation = new GtkAllocation ();
 	GTK.gtk_widget_get_allocation(topHandle, allocation);
 	// Prevent allocation warnings
-	if (GTK.GTK_VERSION >= OS.VERSION(3, 20, 0)) {
-		GTK.gtk_widget_get_preferred_size(topHandle, null, null);
-	}
+	GTK.gtk_widget_get_preferred_size(topHandle, null, null);
 	GTK.gtk_widget_size_allocate(topHandle, allocation);
 	GTK.gtk_widget_draw(topHandle, gc.handle);
 	return true;
@@ -1063,19 +1061,17 @@ Point resizeCalculationsGTK3 (long widget, int width, int height) {
 	 * elements which we cannot access. If the to-be-allocated size minus
 	 * these elements is < 0, allocate the preferred size instead. See bug 486068.
 	 */
-	if (GTK.GTK_VERSION >= OS.VERSION(3, 20, 0)) {
-		GtkRequisition minimumSize = new GtkRequisition();
-		GtkRequisition naturalSize = new GtkRequisition();
-		GTK.gtk_widget_get_preferred_size(widget, minimumSize, naturalSize);
-		/*
-		 * Use the smallest of the minimum/natural sizes to prevent oversized
-		 * widgets.
-		 */
-		int smallestWidth = Math.min(minimumSize.width, naturalSize.width);
-		int smallestHeight = Math.min(minimumSize.height, naturalSize.height);
-		sizes.x = (width - (smallestWidth - width)) < 0 ? smallestWidth : width;
-		sizes.y = (height - (smallestHeight - height)) < 0 ? smallestHeight : height;
-	}
+	GtkRequisition minimumSize = new GtkRequisition();
+	GtkRequisition naturalSize = new GtkRequisition();
+	GTK.gtk_widget_get_preferred_size(widget, minimumSize, naturalSize);
+	/*
+	 * Use the smallest of the minimum/natural sizes to prevent oversized
+	 * widgets.
+	 */
+	int smallestWidth = Math.min(minimumSize.width, naturalSize.width);
+	int smallestHeight = Math.min(minimumSize.height, naturalSize.height);
+	sizes.x = (width - (smallestWidth - width)) < 0 ? smallestWidth : width;
+	sizes.y = (height - (smallestHeight - height)) < 0 ? smallestHeight : height;
 	return sizes;
 }
 
@@ -1191,9 +1187,7 @@ int setBounds (int x, int y, int width, int height, boolean move, boolean resize
 				GTK.gtk_widget_size_allocate (topHandle, allocation, -1);
 			} else {
 				// Prevent GTK+ allocation warnings, preferred size should be retrieved before setting allocation size.
-				if (GTK.GTK_VERSION >= OS.VERSION(3, 20, 0)) {
-					GTK.gtk_widget_get_preferred_size(topHandle, null, null);
-				}
+				GTK.gtk_widget_get_preferred_size(topHandle, null, null);
 				GTK.gtk_widget_size_allocate (topHandle, allocation);
 			}
 		}
@@ -3101,14 +3095,11 @@ long getFontDescription () {
 	} else if (GTK.GTK4) {
 		GTK.gtk_style_context_get(context, GTK.gtk_style_property_font, fontDesc, 0);
 		return fontDesc [0];
-	} else if (GTK.GTK_VERSION >= OS.VERSION(3, 18, 0)) {
+	} else {
 		GTK.gtk_style_context_save(context);
 		GTK.gtk_style_context_set_state(context, GTK.GTK_STATE_FLAG_NORMAL);
 		GTK.gtk_style_context_get(context, GTK.GTK_STATE_FLAG_NORMAL, GTK.gtk_style_property_font, fontDesc, 0);
 		GTK.gtk_style_context_restore(context);
-		return fontDesc [0];
-	} else {
-		GTK.gtk_style_context_get(context, GTK.GTK_STATE_FLAG_NORMAL, GTK.gtk_style_property_font, fontDesc, 0);
 		return fontDesc [0];
 	}
 }
@@ -3360,13 +3351,13 @@ Point getThickness (long widget) {
 	int xthickness = 0, ythickness = 0;
 	GtkBorder tmp = new GtkBorder();
 	long context = GTK.gtk_widget_get_style_context (widget);
-	int state_flag = GTK.GTK_VERSION < OS.VERSION(3, 18, 0) ? GTK.GTK_STATE_FLAG_NORMAL : GTK.gtk_widget_get_state_flags(widget);
+	int state_flag = GTK.gtk_widget_get_state_flags(widget);
 	gtk_style_context_get_padding(context, state_flag, tmp);
 	GTK.gtk_style_context_save (context);
 	GTK.gtk_style_context_add_class (context, GTK.GTK_STYLE_CLASS_FRAME);
 	xthickness += tmp.left;
 	ythickness += tmp.top;
-	int state = GTK.GTK_VERSION < OS.VERSION(3, 18, 0) ? GTK.GTK_STATE_FLAG_NORMAL : GTK.gtk_widget_get_state_flags(widget);
+	int state = GTK.gtk_widget_get_state_flags(widget);
 	gtk_style_context_get_border (context, state, tmp);
 	xthickness += tmp.left;
 	ythickness += tmp.top;
@@ -5430,9 +5421,7 @@ void setInitialBounds () {
 			GTK.gtk_widget_size_allocate (topHandle, allocation, -1);
 		} else {
 			// Prevent GTK+ allocation warnings, preferred size should be retrieved before setting allocation size.
-			if (GTK.GTK_VERSION >= OS.VERSION(3, 20, 0)) {
-				GTK.gtk_widget_get_preferred_size(topHandle, null, null);
-			}
+			GTK.gtk_widget_get_preferred_size(topHandle, null, null);
 			GTK.gtk_widget_size_allocate (topHandle, allocation);
 		}
 	} else {
@@ -5449,7 +5438,7 @@ void setInitialBounds () {
  * @return {@code false} by default on modern GTK 3 versions (3.20+).
  */
 boolean mustBeVisibleOnInitBounds() {
-	return GTK.GTK_VERSION < OS.VERSION(3, 20, 0);
+	return false;
 }
 
 /*
@@ -6619,13 +6608,6 @@ void update (boolean all, boolean flush) {
 	if (!GTK.gtk_widget_get_realized (handle)) return;
 	long window = paintWindow ();
 	if (flush) display.flushExposes (window, all);
-	/*
-	 * Do not send expose events on GTK 3.16.0+
-	 * It's worth checking whether can be removed on all GTK 3 versions.
-	 */
-	if (GTK.GTK_VERSION < OS.VERSION(3, 16, 0)) {
-		GDK.gdk_window_process_updates (window, all);
-	}
 }
 
 void updateBackgroundMode () {

@@ -1694,7 +1694,7 @@ public void setData (String key, Object value) {
 		}
 	}
 	if (key.equals(SWT.SKIN_CLASS) || key.equals(SWT.SKIN_ID)) this.reskin(SWT.ALL);
-	if (GTK.GTK_VERSION >= OS.VERSION(3, 20, 0) && key.equals(KEY_GTK_CSS) && value instanceof String) {
+	if (key.equals(KEY_GTK_CSS) && value instanceof String) {
 		long context = GTK.gtk_widget_get_style_context (cssHandle());
 		long provider = GTK.gtk_css_provider_new();
 		if (context != 0 && provider != 0) {
@@ -2053,27 +2053,17 @@ int gdk_pointer_grab (long gdkResource, int grab_ownership, boolean owner_events
 			display = GDK.gdk_window_get_display (gdkResource);
 		}
 	}
-	if (GTK.GTK_VERSION >= OS.VERSION(3, 20, 0)) {
-		long seat = GDK.gdk_display_get_default_seat(display);
-		if (gdkSeatGrabPrepareFunc == null) {
-			gdkSeatGrabPrepareFunc = new Callback(Widget.class, "GdkSeatGrabPrepareFunc", 3); //$NON-NLS-1$
-		}
-		return GDK.gdk_seat_grab(seat, gdkResource, GDK.GDK_SEAT_CAPABILITY_ALL_POINTING, owner_events, cursor, 0, gdkSeatGrabPrepareFunc.getAddress(), gdkResource);
-	} else {
-		long pointer = GDK.gdk_get_pointer(display);
-		return GDK.gdk_device_grab (pointer, gdkResource, grab_ownership, owner_events, event_mask, cursor, time_);
+	long seat = GDK.gdk_display_get_default_seat(display);
+	if (gdkSeatGrabPrepareFunc == null) {
+		gdkSeatGrabPrepareFunc = new Callback(Widget.class, "GdkSeatGrabPrepareFunc", 3); //$NON-NLS-1$
 	}
+	return GDK.gdk_seat_grab(seat, gdkResource, GDK.GDK_SEAT_CAPABILITY_ALL_POINTING, owner_events, cursor, 0, gdkSeatGrabPrepareFunc.getAddress(), gdkResource);
 }
 
 void gdk_pointer_ungrab (long gdkResource, int time_) {
 	long display = GTK.GTK4? GDK.gdk_surface_get_display(gdkResource) : GDK.gdk_window_get_display (gdkResource);
-	if (GTK.GTK_VERSION >= OS.VERSION(3, 20, 0)) {
-		long seat = GDK.gdk_display_get_default_seat(display);
-		GDK.gdk_seat_ungrab(seat);
-	} else {
-		long pointer = GDK.gdk_get_pointer(display);
-		GDK.gdk_device_ungrab (pointer, time_);
-	}
+	long seat = GDK.gdk_display_get_default_seat(display);
+	GDK.gdk_seat_ungrab(seat);
 }
 
 static long GdkSeatGrabPrepareFunc (long gdkSeat, long gdkResource, long userData_gdkResource) {

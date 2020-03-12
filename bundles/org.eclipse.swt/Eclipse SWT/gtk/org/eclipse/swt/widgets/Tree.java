@@ -3235,13 +3235,6 @@ void rendererRender (long cell, long cr, long snapshot, long widget, long backgr
 				long path = GTK.gtk_tree_model_get_path (modelHandle, iter);
 				GTK.gtk_tree_view_get_background_area (handle, path, columnHandle, rect);
 				GTK.gtk_tree_path_free (path);
-				// Use the x and width information from the Cairo context. See bug 535124 and 465309.
-				if (cr != 0 && GTK.GTK_VERSION <= OS.VERSION(3, 14, 8)) {
-					GdkRectangle r2 = new GdkRectangle ();
-					GDK.gdk_cairo_get_clip_rectangle (cr, r2);
-					rect.x = r2.x;
-					rect.width = r2.width;
-				}
 				ignoreSize = true;
 				int [] contentX = new int [1], contentWidth = new int [1];
 				gtk_cell_renderer_get_preferred_size (cell, handle, contentWidth, null);

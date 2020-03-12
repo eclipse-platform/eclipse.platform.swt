@@ -282,7 +282,7 @@ public ScrollBar getHorizontalBar () {
  */
 public int getScrollbarsMode () {
 	checkWidget();
-	if (GTK.GTK_VERSION >= OS.VERSION(3, 16, 0) && GTK.gtk_scrolled_window_get_overlay_scrolling(scrolledHandle)) {
+	if (GTK.gtk_scrolled_window_get_overlay_scrolling(scrolledHandle)) {
 		return SWT.SCROLLBAR_OVERLAY;
 	}
 	return SWT.NONE;
@@ -317,8 +317,7 @@ long gtk_draw (long widget, long cairo) {
 	 * of a redraw is the same region that the scroll bars occupy, and ignore
 	 * draw events that target such cases. See bug 546248.
 	 */
-	boolean overlayScrolling = !OS.GTK_OVERLAY_SCROLLING_DISABLED &&
-			GTK.GTK_VERSION >= OS.VERSION(3, 16, 0);
+	boolean overlayScrolling = !OS.GTK_OVERLAY_SCROLLING_DISABLED;
 	if (overlayScrolling && OS.G_OBJECT_TYPE(widget) == OS.swt_fixed_get_type()) {
 		if ((style & SWT.V_SCROLL) != 0 && verticalBar != null) {
 			GtkAllocation verticalBarAlloc = new GtkAllocation();
@@ -441,7 +440,7 @@ boolean setScrollBarVisible (ScrollBar bar, boolean visible) {
 	int [] hsp = new int [1], vsp = new int [1];
 	GTK.gtk_scrolled_window_get_policy (scrolledHandle, hsp, vsp);
 	int policy = visible ? GTK.GTK_POLICY_ALWAYS : GTK.GTK_POLICY_NEVER;
-	if (GTK.GTK_VERSION >= OS.VERSION(3, 16, 0) && !visible) {
+	if (!visible) {
 		policy = GTK.GTK_POLICY_EXTERNAL;
 	}
 	if ((bar.style & SWT.HORIZONTAL) != 0) {
@@ -567,9 +566,7 @@ private Point scrollBarSize(long scrollBarHandle) {
 	 * Calling gtk_widget_queue_resize() before querying the size
 	 * fixes this issue.
 	 */
-	if (GTK.GTK_VERSION >= OS.VERSION(3, 20, 0)) {
-		GTK.gtk_widget_queue_resize (scrollBarHandle);
-	}
+	GTK.gtk_widget_queue_resize (scrollBarHandle);
 	gtk_widget_get_preferred_size (scrollBarHandle, requisition);
 	int [] padding = new int [1];
 	// Only GTK3 needs this, GTK4 has the size built-in via gtk_widget_get_preferred_size()

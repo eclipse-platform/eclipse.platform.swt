@@ -2991,13 +2991,6 @@ void rendererRender (long cell, long cr, long snapshot, long widget, long backgr
 			long path = GTK.gtk_tree_model_get_path (modelHandle, iter);
 			GTK.gtk_tree_view_get_background_area (handle, path, columnHandle, rect);
 			GTK.gtk_tree_path_free (path);
-			// A workaround for https://bugs.eclipse.org/bugs/show_bug.cgi?id=459117
-			if (cr != 0 && GTK.GTK_VERSION <= OS.VERSION(3, 14, 8)) {
-				GdkRectangle r2 = new GdkRectangle ();
-				GDK.gdk_cairo_get_clip_rectangle (cr, r2);
-				rect.x = r2.x;
-				rect.width = r2.width;
-			}
 			if ((drawState & SWT.SELECTED) == 0) {
 				if ((state & PARENT_BACKGROUND) != 0 || backgroundImage != null) {
 					Control control = findBackgroundControl ();
@@ -3046,10 +3039,6 @@ void rendererRender (long cell, long cr, long snapshot, long widget, long backgr
 					Rectangle rect2 = DPIUtil.autoScaleDown(new Rectangle(rect.x, r.y, r.width, r.height));
 					// Caveat: rect2 is necessary because GC#setClipping(Rectangle) got broken by bug 446075
 					gc.setClipping(rect2.x, rect2.y, rect2.width, rect2.height);
-
-					if (GTK.GTK_VERSION <= OS.VERSION(3, 14, 8)) {
-						rect.width = r.width;
-					}
 				} else {
 					Rectangle rect2 = DPIUtil.autoScaleDown(new Rectangle(rect.x, rect.y, rect.width, rect.height));
 					// Caveat: rect2 is necessary because GC#setClipping(Rectangle) got broken by bug 446075
@@ -3124,13 +3113,6 @@ void rendererRender (long cell, long cr, long snapshot, long widget, long backgr
 				long path = GTK.gtk_tree_model_get_path (modelHandle, iter);
 				GTK.gtk_tree_view_get_background_area (handle, path, columnHandle, rect);
 				GTK.gtk_tree_path_free (path);
-				// A workaround for https://bugs.eclipse.org/bugs/show_bug.cgi?id=459117
-				if (cr != 0 && GTK.GTK_VERSION <= OS.VERSION(3, 14, 8)) {
-					GdkRectangle r2 = new GdkRectangle ();
-					GDK.gdk_cairo_get_clip_rectangle (cr, r2);
-					rect.x = r2.x;
-					rect.width = r2.width;
-				}
 				ignoreSize = true;
 				int [] contentX = new int [1], contentWidth = new int [1];
 				gtk_cell_renderer_get_preferred_size (cell, handle, contentWidth, null);
@@ -3146,12 +3128,6 @@ void rendererRender (long cell, long cr, long snapshot, long widget, long backgr
 						bounds = image.getBoundsInPixels ();
 					}
 					imageWidth = bounds.width;
-				}
-				// On gtk < 3.14.8 the clip rectangle does not have image area into clip rectangle
-				// need to adjust clip rectangle with image width
-				if (cr != 0 && GTK.GTK_VERSION <= OS.VERSION(3, 14, 8)) {
-					rect.x -= imageWidth;
-					rect.width +=imageWidth;
 				}
 				contentX [0] -= imageWidth;
 				contentWidth [0] += imageWidth;

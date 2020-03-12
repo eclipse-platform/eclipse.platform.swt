@@ -362,14 +362,14 @@ Rectangle computeTrimInPixels (int x, int y, int width, int height) {
 	int xborder = 0, yborder = 0;
 		GtkBorder tmp = new GtkBorder ();
 		long context = GTK.gtk_widget_get_style_context (GTK.GTK4 ? spinButtonHandle :textEntryHandle);
-		int state_flag = GTK.GTK_VERSION < OS.VERSION(3, 18, 0) ? GTK.GTK_STATE_FLAG_NORMAL : GTK.gtk_widget_get_state_flags(textEntryHandle);
+		int state_flag = GTK.gtk_widget_get_state_flags(textEntryHandle);
 		gtk_style_context_get_padding(context, state_flag, tmp);
 		trim.x -= tmp.left;
 		trim.y -= tmp.top;
 		trim.width += tmp.left + tmp.right;
 		trim.height += tmp.top + tmp.bottom;
 		if ((style & SWT.BORDER) != 0) {
-			int state = GTK.GTK_VERSION < OS.VERSION(3, 18, 0) ? GTK.GTK_STATE_FLAG_NORMAL : GTK.gtk_widget_get_state_flags(textEntryHandle);
+			int state = GTK.gtk_widget_get_state_flags(textEntryHandle);
 			gtk_style_context_get_border(context, state, tmp);
 			trim.x -= tmp.left;
 			trim.y -= tmp.top;
@@ -410,9 +410,6 @@ void createHandle () {
 			createHandleForDateTime ();
 		}
 		GTK.gtk_editable_set_editable (textEntryHandle, (style & SWT.READ_ONLY) == 0);
-		if (GTK.GTK_VERSION <= OS.VERSION(3, 20, 0)) {
-			GTK.gtk_entry_set_has_frame (textEntryHandle, (style & SWT.BORDER) != 0);
-		}
 	}
 }
 
@@ -1694,28 +1691,7 @@ void setBoundsInPixels (int x, int y, int width, int height) {
 		GTK.gtk_widget_set_size_request (sizingHandle, (newWidth >= 0) ? newWidth : 0, oldHeight);
 	}
 
-	/*
-	 * TAG_GTK_CALENDAR_VERTICAL_FILL_WORKAROUND_394534
-	 * Work around a GtkCalendar bug in GTK3:
-	 * https://bugzilla.gnome.org/show_bug.cgi?id=737670
-	 *
-	 * In GTK3.0 - 3.14.2 (but not Gtk2) if the calendar is expanded beyond a certain size,
-	 * (e.g in the case of 'Vertical fill' in ControlExample, then the days shift down
-	 * and they become un-selectable. e.g, see screen shot:
-	 * https://bug737670.bugzilla-attachments.gnome.org/attachment.cgi?id=287470
-	 *
-	 * To work around this, if gtk 3.0 - 3.14.2 is used, do not allow the calendar to expand beyond it's preffered
-	 * native height.
-	 */
-	int fixedGtkVersion = OS.VERSION (3, 14, 2);
-	if (isCalendar () && (GTK.GTK_VERSION < fixedGtkVersion)) {
-			int calendarPrefferedVerticalSize = computeSizeInPixels (SWT.DEFAULT, SWT.DEFAULT, true).y;
-			if (height > calendarPrefferedVerticalSize) {
-				height = calendarPrefferedVerticalSize;
-		}
-	}
 	super.setBoundsInPixels (x, y, width, height);
-
 }
 
 /**
@@ -1749,7 +1725,7 @@ GtkBorder getGtkBorderPadding () {
 	GtkBorder gtkBorderPadding = new GtkBorder ();
 	long contextHandle = GTK.GTK4 ? spinButtonHandle : textEntryHandle;
 	long context = GTK.gtk_widget_get_style_context (contextHandle);
-	int state_flag = GTK.GTK_VERSION < OS.VERSION(3, 18, 0) ? GTK.GTK_STATE_FLAG_NORMAL : GTK.gtk_widget_get_state_flags(contextHandle);
+	int state_flag = GTK.gtk_widget_get_state_flags(contextHandle);
 	gtk_style_context_get_padding(context, state_flag, gtkBorderPadding);
 	return gtkBorderPadding;
 }

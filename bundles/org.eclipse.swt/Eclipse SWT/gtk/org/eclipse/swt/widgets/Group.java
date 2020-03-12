@@ -308,15 +308,6 @@ void releaseWidget () {
 }
 
 @Override
-void setBackgroundGdkRGBA(long handle, GdkRGBA rgba) {
-	if (GTK.GTK_VERSION >= OS.VERSION(3, 18, 0)) {
-		super.setBackgroundGdkRGBA(handle, rgba);
-	} else {
-		super.setBackgroundGdkRGBA(fixedHandle, rgba);
-	}
-}
-
-@Override
 void setFontDescription (long font) {
 	super.setFontDescription (font);
 	setFontDescription (labelHandle, font);
@@ -393,7 +384,7 @@ public void setText (String string) {
 		GTK.gtk_frame_set_label_widget (handle, 0);
 	}
 	// Set the foreground now that the text has been set
-	if (GTK.GTK_VERSION >= OS.VERSION (3, 16, 0) && foreground != null) {
+	if (foreground != null) {
 		setForegroundGdkRGBA (labelHandle, foreground);
 	}
 }
@@ -419,12 +410,8 @@ int setBounds(int x, int y, int width, int height, boolean move, boolean resize)
 	 * elements which we cannot access. If the to-be-allocated size minus
 	 * these elements is < 0, allocate the preferred size instead.
 	 */
-	if (GTK.GTK_VERSION >= OS.VERSION(3, 20, 0)) {
-		width = (width - (requisition.width - width)) < 0 ? requisition.width : width;
-		height = (height - (requisition.height - height)) < 0 ? requisition.height : height;
-	} else {
-		width = Math.max(requisition.width, width);
-	}
+	width = (width - (requisition.width - width)) < 0 ? requisition.width : width;
+	height = (height - (requisition.height - height)) < 0 ? requisition.height : height;
 	return super.setBounds(x, y, width, height, move, resize);
 }
 

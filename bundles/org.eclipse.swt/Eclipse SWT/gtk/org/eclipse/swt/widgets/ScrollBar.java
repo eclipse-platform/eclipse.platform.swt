@@ -913,13 +913,6 @@ public void setValues (int selection, int minimum, int maximum, int thumb, int i
 	OS.g_signal_handlers_block_matched (adjustmentHandle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, VALUE_CHANGED);
 	GTK.gtk_adjustment_configure(adjustmentHandle, adjustment.value, adjustment.lower, adjustment.upper,
 		adjustment.step_increment, adjustment.page_increment, adjustment.page_size);
-	/*
-	 * gtk_adujustment_value_changed is deprecated on GTK3.18+.
-	 * GTK+ will emit "value-changed" itself whenever the value changes.
-	 * See bug 495413.
-	 */
-	if (GTK.GTK_VERSION < OS.VERSION(3, 18, 0))
-		GTK.gtk_adjustment_value_changed (adjustmentHandle);
 	OS.g_signal_handlers_unblock_matched (adjustmentHandle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, VALUE_CHANGED);
 }
 

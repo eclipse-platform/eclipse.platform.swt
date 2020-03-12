@@ -353,12 +353,8 @@ void createHandle (int index) {
 		GTK.gtk_widget_show (imageHandle);
 	}
 	if (labelHandle != 0) {
-		if (GTK.GTK_VERSION >= OS.VERSION (3, 16, 0)) {
-			GTK.gtk_label_set_xalign (labelHandle, 0);
-			GTK.gtk_widget_set_halign (labelHandle, GTK.GTK_ALIGN_FILL);
-		} else {
-			GTK.gtk_misc_set_alignment(labelHandle, 0, 0);
-		}
+		GTK.gtk_label_set_xalign (labelHandle, 0);
+		GTK.gtk_widget_set_halign (labelHandle, GTK.GTK_ALIGN_FILL);
 		gtk_box_pack_end (boxHandle, labelHandle, true, true, 0);
 		GTK.gtk_widget_show (labelHandle);
 	}

@@ -192,10 +192,8 @@ long gtk_realize (long widget) {
  */
 @Override
 Point resizeCalculationsGTK3 (long widget, int width, int height) {
-	if (GTK.GTK_VERSION >= OS.VERSION(3, 20, 0)) {
-		// avoid warnings in GTK caused by too narrow progress bars
-		width = Math.max(2, width);
-	}
+	// avoid warnings in GTK caused by too narrow progress bars
+	width = Math.max(2, width);
 	return new Point (width, height);
 }
 

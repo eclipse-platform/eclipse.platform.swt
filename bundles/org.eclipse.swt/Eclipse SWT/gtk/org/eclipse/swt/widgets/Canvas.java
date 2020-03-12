@@ -345,25 +345,23 @@ void scrollInPixels (int destX, int destY, int x, int y, int width, int height, 
 	 * location the scrollbars are re-painted when scrolling, causing the
 	 * hopping effect. See bug 480458.
 	 */
-	if (GTK.GTK_VERSION >= OS.VERSION(3, 16, 0)) {
-		long hBarHandle = 0;
-		long vBarHandle = 0;
-		if (GTK.GTK_IS_SCROLLED_WINDOW(scrolledHandle)) {
-			hBarHandle = GTK.gtk_scrolled_window_get_hscrollbar (scrolledHandle);
-			vBarHandle = GTK.gtk_scrolled_window_get_vscrollbar (scrolledHandle);
+	long hBarHandle = 0;
+	long vBarHandle = 0;
+	if (GTK.GTK_IS_SCROLLED_WINDOW(scrolledHandle)) {
+		hBarHandle = GTK.gtk_scrolled_window_get_hscrollbar (scrolledHandle);
+		vBarHandle = GTK.gtk_scrolled_window_get_vscrollbar (scrolledHandle);
+	}
+	GtkRequisition requisition = new GtkRequisition();
+	if (hBarHandle != 0) {
+		gtk_widget_get_preferred_size (hBarHandle, requisition);
+		if (requisition.height > 0) {
+			srcRect.y = y - requisition.height;
 		}
-		GtkRequisition requisition = new GtkRequisition();
-		if (hBarHandle != 0) {
-			gtk_widget_get_preferred_size (hBarHandle, requisition);
-			if (requisition.height > 0) {
-				srcRect.y = y - requisition.height;
-			}
-		}
-		if (vBarHandle != 0) {
-			gtk_widget_get_preferred_size (vBarHandle, requisition);
-			if (requisition.width > 0) {
-				srcRect.x = x - requisition.width;
-			}
+	}
+	if (vBarHandle != 0) {
+		gtk_widget_get_preferred_size (vBarHandle, requisition);
+		if (requisition.width > 0) {
+			srcRect.x = x - requisition.width;
 		}
 	}
 	srcRect.width = width;
@@ -449,9 +447,7 @@ void scrollInPixels (int destX, int destY, int x, int y, int width, int height, 
 	 * Due to overlay drawing of scrollbars current method of scrolling leaves scrollbar and notifiers for them inside the canvas
 	 * after scroll. Fix is to redraw once done.
 	 */
-	if (GTK.GTK_VERSION >= OS.VERSION(3, 16, 0)) {
-		redraw(false);
-	}
+	redraw(false);
 }
 
 @Override

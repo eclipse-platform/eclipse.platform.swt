@@ -581,7 +581,7 @@ void createHandle (int index) {
 	 * Find the arrowHandle, which is the handle belonging to the GtkIcon
 	 * drop down arrow. See bug 539367.
 	 */
-	if ((style & SWT.READ_ONLY) != 0 && GTK.GTK_VERSION >= OS.VERSION(3, 20, 0)) {
+	if ((style & SWT.READ_ONLY) != 0) {
 		if (cellBoxHandle != 0) arrowHandle = findArrowHandle();
 	}
 	// In GTK 3 font description is inherited from parent widget which is not how SWT has always worked,
@@ -699,23 +699,21 @@ long findButtonHandle() {
 	 * GtkBox has to be retrieved first.
 	 * As it's internal child one can't get it in other way.
 	 */
-	if (GTK.GTK_VERSION >= OS.VERSION(3, 20, 0)) {
-		GTK.gtk_container_forall(handle, display.allChildrenProc, 0);
-		if (display.allChildren != 0) {
-			long list = display.allChildren;
-			while (list != 0) {
-				long widget = OS.g_list_data(list);
-				if (widget != 0) {
-					childHandle = widget;
-					break;
-				}
-				list = OS.g_list_next(list);
+	GTK.gtk_container_forall(handle, display.allChildrenProc, 0);
+	if (display.allChildren != 0) {
+		long list = display.allChildren;
+		while (list != 0) {
+			long widget = OS.g_list_data(list);
+			if (widget != 0) {
+				childHandle = widget;
+				break;
 			}
-			OS.g_list_free(display.allChildren);
-			display.allChildren = 0;
+			list = OS.g_list_next(list);
 		}
-		buttonBoxHandle = childHandle;
+		OS.g_list_free(display.allChildren);
+		display.allChildren = 0;
 	}
+	buttonBoxHandle = childHandle;
 
 	GTK.gtk_container_forall (childHandle, display.allChildrenProc, 0);
 	if (display.allChildren != 0) {
@@ -736,7 +734,7 @@ long findButtonHandle() {
 
 long findArrowHandle() {
 	long result = 0;
-	if (GTK.GTK_VERSION >= OS.VERSION(3, 20, 0) && cellBoxHandle != 0) {
+	if (cellBoxHandle != 0) {
 		GTK.gtk_container_forall (cellBoxHandle, display.allChildrenProc, 0);
 		if (display.allChildren != 0) {
 			long list = display.allChildren;
@@ -1485,7 +1483,7 @@ void adjustChildClipping (long widget) {
 	 * This ensures the text never draws longer than the Combo itself.
 	 * See bug 539367.
 	 */
-	if (widget == cellHandle && (style & SWT.READ_ONLY) != 0 && GTK.GTK_VERSION >= OS.VERSION(3, 20, 0) && !unselected) {
+	if (widget == cellHandle && (style & SWT.READ_ONLY) != 0 && !unselected) {
 		/*
 		 * Set "fit-model" mode for READ_ONLY Combos on GTK3.20+ to false.
 		 * This means the GtkCellView rendering the text can be set to
@@ -1524,21 +1522,19 @@ long gtk_draw (long widget, long cairo) {
 	 * An additional fix was implemented to support non-READ_ONLY Combos, as well
 	 * as the case when one Composite has multiple Combos within it -- see bug 535323.
 	 */
-	if (GTK.GTK_VERSION >= OS.VERSION(3, 20, 0)) {
-		long parentHandle = GTK.gtk_widget_get_parent(fixedHandle);
-		if (parentHandle != 0) {
-			if (parent.fixClipHandle == 0) parent.fixClipHandle = parentHandle;
-			if (firstDraw) {
-				if ((style & SWT.READ_ONLY) != 0) {
-					long [] array = {fixedHandle, handle, buttonBoxHandle, buttonHandle, cellBoxHandle, cellHandle};
-					parent.fixClipMap.put(this, array);
-				} else {
-					long [] array = {fixedHandle, handle, entryHandle, buttonBoxHandle, buttonHandle};
-					parent.fixClipMap.put(this, array);
-				}
-				firstDraw = false;
-				GTK.gtk_widget_queue_draw(parentHandle);
+	long parentHandle = GTK.gtk_widget_get_parent(fixedHandle);
+	if (parentHandle != 0) {
+		if (parent.fixClipHandle == 0) parent.fixClipHandle = parentHandle;
+		if (firstDraw) {
+			if ((style & SWT.READ_ONLY) != 0) {
+				long [] array = {fixedHandle, handle, buttonBoxHandle, buttonHandle, cellBoxHandle, cellHandle};
+				parent.fixClipMap.put(this, array);
+			} else {
+				long [] array = {fixedHandle, handle, entryHandle, buttonBoxHandle, buttonHandle};
+				parent.fixClipMap.put(this, array);
 			}
+			firstDraw = false;
+			GTK.gtk_widget_queue_draw(parentHandle);
 		}
 	}
 	return super.gtk_draw(widget, cairo);
@@ -1592,17 +1588,9 @@ long gtk_event_after (long widget, long gdkEvent)  {
 					focusIn[0] = gdkEventFocus.in != 0;
 				}
 				if (focusIn[0]) {
-					if (GTK.GTK_VERSION >= OS.VERSION(3, 20, 0)) {
-						GTK.gtk_widget_set_focus_on_click(handle, false);
-					} else {
-						GTK.gtk_combo_box_set_focus_on_click (handle, false);
-					}
+					GTK.gtk_widget_set_focus_on_click(handle, false);
 				} else {
-					if (GTK.GTK_VERSION >= OS.VERSION(3, 20, 0)) {
-						GTK.gtk_widget_set_focus_on_click(handle, true);
-					} else {
-						GTK.gtk_combo_box_set_focus_on_click (handle, true);
-					}
+					GTK.gtk_widget_set_focus_on_click(handle, true);
 				}
 			}
 			break;
@@ -1808,13 +1796,9 @@ long paintWindow () {
 		 * The only direct child of GtkComboBox since 3.20 is GtkBox thus the children
 		 * have to be traversed to get to the entry one.
 		 */
-		if (GTK.GTK_VERSION >= OS.VERSION(3, 20, 0)) {
-				do {
-					window = OS.g_list_data (children);
-				} while ((children = OS.g_list_next (children)) != 0);
-		} else {
+		do {
 			window = OS.g_list_data (children);
-		}
+		} while ((children = OS.g_list_next (children)) != 0);
 	}
 	OS.g_list_free (children);
 
@@ -1833,13 +1817,9 @@ long paintSurface () {
 		 * The only direct child of GtkComboBox since 3.20 is GtkBox thus the children
 		 * have to be traversed to get to the entry one.
 		 */
-		if (GTK.GTK_VERSION >= OS.VERSION(3, 20, 0)) {
-				do {
-					surface = OS.g_list_data (children);
-				} while ((children = OS.g_list_next (children)) != 0);
-		} else {
+		do {
 			surface = OS.g_list_data (children);
-		}
+		} while ((children = OS.g_list_next (children)) != 0);
 	}
 	OS.g_list_free (children);
 
@@ -2328,9 +2308,7 @@ void setInitialBounds () {
 			GTK.gtk_widget_size_allocate (topHandle, allocation, -1);
 		} else {
 			// Prevent GTK+ allocation warnings, preferred size should be retrieved before setting allocation size.
-			if (GTK.GTK_VERSION >= OS.VERSION(3, 20, 0)) {
-				GTK.gtk_widget_get_preferred_size(topHandle, null, null);
-			}
+			GTK.gtk_widget_get_preferred_size(topHandle, null, null);
 			GTK.gtk_widget_set_allocation(topHandle, allocation);
 		}
 	} else {

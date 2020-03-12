@@ -369,12 +369,6 @@ public class GTK extends OS {
 	 * @param value cast=(gdouble)
 	 */
 	public static final native void gtk_adjustment_set_page_increment(long adjustment, double value);
-	/**
-	 * @method flags=dynamic
-	 * @param adjustment cast=(GtkAdjustment *)
-	 * */
-	/*  [GTK2/GTK3; 3.18 deprecated, replaced] */
-	public static final native void gtk_adjustment_value_changed(long adjustment);
 	/** @param bin cast=(GtkBin *) */
 	public static final native long gtk_bin_get_child(long bin);
 	/** @param border cast=(GtkBorder *) */
@@ -592,13 +586,6 @@ public class GTK extends OS {
 	 * @param color cast=(GdkRGBA *)
 	 */
 	public static final native void gtk_color_chooser_get_rgba(long chooser, GdkRGBA color);
-	/**
-	 * @method flags=dynamic
-	 * @param combo cast=(GtkComboBox *)
-	 * @param val cast=(gboolean)
-	 */
-	/* [GTK2/GTK3; 3.20 deprecated, replaced] */
-	public static final native void gtk_combo_box_set_focus_on_click(long combo, boolean val);
 	public static final native long gtk_combo_box_text_new();
 	public static final native long gtk_combo_box_text_new_with_entry();
 	/**
@@ -1596,14 +1583,6 @@ public class GTK extends OS {
 	 * @param arg cast=(const gchar *)
 	 */
 	public static final native long gtk_message_dialog_new(long parent, int flags, int type, int buttons, byte[] message_format, byte[] arg);
-	/**
-	 * @method flags=dynamic
-	 * @param misc cast=(GtkMisc *)
-	 * @param xalign cast=(gfloat)
-	 * @param yalign cast=(gfloat)
-	 */
-	/* [GTK3 only, if-def'd in os.h; 3.14 deprecated, replaced] */
-	public static final native void gtk_misc_set_alignment(long misc, float xalign, float yalign);
 	/** @param dialog cast=(GtkNativeDialog *) */
 	public static final native int gtk_native_dialog_run(long dialog);
 	/** @param notebook cast=(GtkNotebook *) */

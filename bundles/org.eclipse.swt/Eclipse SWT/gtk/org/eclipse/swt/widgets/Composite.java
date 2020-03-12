@@ -445,11 +445,9 @@ long gtk_draw (long widget, long cairo) {
 	// We specify a 0 value for x & y as we want the whole widget to be
 	// colored, not some portion of it.
 	GTK.gtk_render_background(context, cairo, 0, 0, width, height);
-	if (GTK.GTK_VERSION >= OS.VERSION(3, 20, 0)) {
-		// If fixClipHandle is set: iterate through the children of widget
-		// and set their clips to be that of their allocation
-		if (widget == fixClipHandle) fixClippings();
-	}
+	// If fixClipHandle is set: iterate through the children of widget
+	// and set their clips to be that of their allocation
+	if (widget == fixClipHandle) fixClippings();
 	return super.gtk_draw(widget, cairo);
 }
 

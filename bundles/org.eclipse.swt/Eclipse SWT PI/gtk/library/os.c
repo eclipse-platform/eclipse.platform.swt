@@ -494,64 +494,6 @@ fail:
 }
 #endif
 
-#ifndef NO_gdk_1device_1grab
-JNIEXPORT jint JNICALL GDK_NATIVE(gdk_1device_1grab)
-	(JNIEnv *env, jclass that, jlong arg0, jlong arg1, jint arg2, jboolean arg3, jint arg4, jlong arg5, jint arg6)
-{
-	jint rc = 0;
-	GDK_NATIVE_ENTER(env, that, gdk_1device_1grab_FUNC);
-/*
-	rc = (jint)gdk_device_grab((GdkDevice *)arg0, (GdkWindow *)arg1, arg2, (gboolean)arg3, (GdkEventMask)arg4, (GdkCursor *)arg5, (guint32)arg6);
-*/
-	{
-		GDK_LOAD_FUNCTION(fp, gdk_device_grab)
-		if (fp) {
-			rc = (jint)((jint (CALLING_CONVENTION*)(GdkDevice *, GdkWindow *, jint, gboolean, GdkEventMask, GdkCursor *, guint32))fp)((GdkDevice *)arg0, (GdkWindow *)arg1, arg2, (gboolean)arg3, (GdkEventMask)arg4, (GdkCursor *)arg5, (guint32)arg6);
-		}
-	}
-	GDK_NATIVE_EXIT(env, that, gdk_1device_1grab_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO_gdk_1device_1manager_1get_1client_1pointer
-JNIEXPORT jlong JNICALL GDK_NATIVE(gdk_1device_1manager_1get_1client_1pointer)
-	(JNIEnv *env, jclass that, jlong arg0)
-{
-	jlong rc = 0;
-	GDK_NATIVE_ENTER(env, that, gdk_1device_1manager_1get_1client_1pointer_FUNC);
-/*
-	rc = (jlong)gdk_device_manager_get_client_pointer(arg0);
-*/
-	{
-		GDK_LOAD_FUNCTION(fp, gdk_device_manager_get_client_pointer)
-		if (fp) {
-			rc = (jlong)((jlong (CALLING_CONVENTION*)(jlong))fp)(arg0);
-		}
-	}
-	GDK_NATIVE_EXIT(env, that, gdk_1device_1manager_1get_1client_1pointer_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO_gdk_1device_1ungrab
-JNIEXPORT void JNICALL GDK_NATIVE(gdk_1device_1ungrab)
-	(JNIEnv *env, jclass that, jlong arg0, jint arg1)
-{
-	GDK_NATIVE_ENTER(env, that, gdk_1device_1ungrab_FUNC);
-/*
-	gdk_device_ungrab((GdkDevice *)arg0, (guint32)arg1);
-*/
-	{
-		GDK_LOAD_FUNCTION(fp, gdk_device_ungrab)
-		if (fp) {
-			((void (CALLING_CONVENTION*)(GdkDevice *, guint32))fp)((GdkDevice *)arg0, (guint32)arg1);
-		}
-	}
-	GDK_NATIVE_EXIT(env, that, gdk_1device_1ungrab_FUNC);
-}
-#endif
-
 #ifndef NO_gdk_1device_1warp__JII
 JNIEXPORT void JNICALL GDK_NATIVE(gdk_1device_1warp__JII)
 	(JNIEnv *env, jclass that, jlong arg0, jint arg1, jint arg2)
@@ -634,26 +576,6 @@ JNIEXPORT jlong JNICALL GDK_NATIVE(gdk_1display_1get_1default_1seat)
 		}
 	}
 	GDK_NATIVE_EXIT(env, that, gdk_1display_1get_1default_1seat_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO_gdk_1display_1get_1device_1manager
-JNIEXPORT jlong JNICALL GDK_NATIVE(gdk_1display_1get_1device_1manager)
-	(JNIEnv *env, jclass that, jlong arg0)
-{
-	jlong rc = 0;
-	GDK_NATIVE_ENTER(env, that, gdk_1display_1get_1device_1manager_FUNC);
-/*
-	rc = (jlong)gdk_display_get_device_manager((GdkDisplay *)arg0);
-*/
-	{
-		GDK_LOAD_FUNCTION(fp, gdk_display_get_device_manager)
-		if (fp) {
-			rc = (jlong)((jlong (CALLING_CONVENTION*)(GdkDisplay *))fp)((GdkDisplay *)arg0);
-		}
-	}
-	GDK_NATIVE_EXIT(env, that, gdk_1display_1get_1device_1manager_FUNC);
 	return rc;
 }
 #endif
@@ -2993,42 +2915,6 @@ fail:
 }
 #endif
 
-#ifndef NO_gdk_1window_1process_1all_1updates
-JNIEXPORT void JNICALL GDK_NATIVE(gdk_1window_1process_1all_1updates)
-	(JNIEnv *env, jclass that)
-{
-	GDK_NATIVE_ENTER(env, that, gdk_1window_1process_1all_1updates_FUNC);
-/*
-	gdk_window_process_all_updates();
-*/
-	{
-		GDK_LOAD_FUNCTION(fp, gdk_window_process_all_updates)
-		if (fp) {
-			((void (CALLING_CONVENTION*)())fp)();
-		}
-	}
-	GDK_NATIVE_EXIT(env, that, gdk_1window_1process_1all_1updates_FUNC);
-}
-#endif
-
-#ifndef NO_gdk_1window_1process_1updates
-JNIEXPORT void JNICALL GDK_NATIVE(gdk_1window_1process_1updates)
-	(JNIEnv *env, jclass that, jlong arg0, jboolean arg1)
-{
-	GDK_NATIVE_ENTER(env, that, gdk_1window_1process_1updates_FUNC);
-/*
-	gdk_window_process_updates((GdkWindow *)arg0, (gboolean)arg1);
-*/
-	{
-		GDK_LOAD_FUNCTION(fp, gdk_window_process_updates)
-		if (fp) {
-			((void (CALLING_CONVENTION*)(GdkWindow *, gboolean))fp)((GdkWindow *)arg0, (gboolean)arg1);
-		}
-	}
-	GDK_NATIVE_EXIT(env, that, gdk_1window_1process_1updates_FUNC);
-}
-#endif
-
 #ifndef NO_gdk_1window_1raise
 JNIEXPORT void JNICALL GDK_NATIVE(gdk_1window_1raise)
 	(JNIEnv *env, jclass that, jlong arg0)
@@ -3942,24 +3828,6 @@ JNIEXPORT void JNICALL GTK_NATIVE(gtk_1adjustment_1set_1value)
 }
 #endif
 
-#ifndef NO_gtk_1adjustment_1value_1changed
-JNIEXPORT void JNICALL GTK_NATIVE(gtk_1adjustment_1value_1changed)
-	(JNIEnv *env, jclass that, jlong arg0)
-{
-	GTK_NATIVE_ENTER(env, that, gtk_1adjustment_1value_1changed_FUNC);
-/*
-	gtk_adjustment_value_changed((GtkAdjustment *)arg0);
-*/
-	{
-		GTK_LOAD_FUNCTION(fp, gtk_adjustment_value_changed)
-		if (fp) {
-			((void (CALLING_CONVENTION*)(GtkAdjustment *))fp)((GtkAdjustment *)arg0);
-		}
-	}
-	GTK_NATIVE_EXIT(env, that, gtk_1adjustment_1value_1changed_FUNC);
-}
-#endif
-
 #ifndef NO_gtk_1bin_1get_1child
 JNIEXPORT jlong JNICALL GTK_NATIVE(gtk_1bin_1get_1child)
 	(JNIEnv *env, jclass that, jlong arg0)
@@ -4641,24 +4509,6 @@ JNIEXPORT void JNICALL GTK_NATIVE(gtk_1combo_1box_1set_1active)
 	GTK_NATIVE_ENTER(env, that, gtk_1combo_1box_1set_1active_FUNC);
 	gtk_combo_box_set_active((GtkComboBox *)arg0, (gint)arg1);
 	GTK_NATIVE_EXIT(env, that, gtk_1combo_1box_1set_1active_FUNC);
-}
-#endif
-
-#ifndef NO_gtk_1combo_1box_1set_1focus_1on_1click
-JNIEXPORT void JNICALL GTK_NATIVE(gtk_1combo_1box_1set_1focus_1on_1click)
-	(JNIEnv *env, jclass that, jlong arg0, jboolean arg1)
-{
-	GTK_NATIVE_ENTER(env, that, gtk_1combo_1box_1set_1focus_1on_1click_FUNC);
-/*
-	gtk_combo_box_set_focus_on_click((GtkComboBox *)arg0, (gboolean)arg1);
-*/
-	{
-		GTK_LOAD_FUNCTION(fp, gtk_combo_box_set_focus_on_click)
-		if (fp) {
-			((void (CALLING_CONVENTION*)(GtkComboBox *, gboolean))fp)((GtkComboBox *)arg0, (gboolean)arg1);
-		}
-	}
-	GTK_NATIVE_EXIT(env, that, gtk_1combo_1box_1set_1focus_1on_1click_FUNC);
 }
 #endif
 
@@ -7222,24 +7072,6 @@ fail:
 	if (arg4 && lparg4) (*env)->ReleaseByteArrayElements(env, arg4, lparg4, 0);
 	GTK_NATIVE_EXIT(env, that, gtk_1message_1dialog_1new_FUNC);
 	return rc;
-}
-#endif
-
-#ifndef NO_gtk_1misc_1set_1alignment
-JNIEXPORT void JNICALL GTK_NATIVE(gtk_1misc_1set_1alignment)
-	(JNIEnv *env, jclass that, jlong arg0, jfloat arg1, jfloat arg2)
-{
-	GTK_NATIVE_ENTER(env, that, gtk_1misc_1set_1alignment_FUNC);
-/*
-	gtk_misc_set_alignment((GtkMisc *)arg0, (gfloat)arg1, (gfloat)arg2);
-*/
-	{
-		GTK_LOAD_FUNCTION(fp, gtk_misc_set_alignment)
-		if (fp) {
-			((void (CALLING_CONVENTION*)(GtkMisc *, gfloat, gfloat))fp)((GtkMisc *)arg0, (gfloat)arg1, (gfloat)arg2);
-		}
-	}
-	GTK_NATIVE_EXIT(env, that, gtk_1misc_1set_1alignment_FUNC);
 }
 #endif
 

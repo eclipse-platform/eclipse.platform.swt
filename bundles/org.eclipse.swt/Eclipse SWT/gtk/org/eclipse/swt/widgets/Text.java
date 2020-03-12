@@ -227,16 +227,12 @@ void createHandle (int index) {
 		 * We need to handle borders differently in GTK3.20+. GtkEntry without frame will have a blank background color.
 		 * So let's set border via css and override the background in this case to be COLOR_LIST_BACKGROUND.
 		 */
-		if (GTK.GTK_VERSION >= OS.VERSION(3, 20, 0)) {
-				if ((style & SWT.BORDER) == 0) {
-					GTK.gtk_entry_set_has_frame(handle, false);
-					long context = GTK.gtk_widget_get_style_context(handle);
-					String background = display.gtk_rgba_to_css_string(display.COLOR_LIST_BACKGROUND_RGBA);
-					gtk_css_provider_load_from_css(context, "entry {border: solid; background: " + background + ";}");
-					GTK.gtk_style_context_invalidate(context);
-				}
-		} else {
-			GTK.gtk_entry_set_has_frame (handle, (style & SWT.BORDER) != 0);
+		if ((style & SWT.BORDER) == 0) {
+			GTK.gtk_entry_set_has_frame(handle, false);
+			long context = GTK.gtk_widget_get_style_context(handle);
+			String background = display.gtk_rgba_to_css_string(display.COLOR_LIST_BACKGROUND_RGBA);
+			gtk_css_provider_load_from_css(context, "entry {border: solid; background: " + background + ";}");
+			GTK.gtk_style_context_invalidate(context);
 		}
 		GTK.gtk_entry_set_visibility (handle, (style & SWT.PASSWORD) == 0);
 		float alignment = 0.0f;
@@ -612,7 +608,7 @@ Point computeSizeInPixels (int wHint, int hHint, boolean changed) {
 		// GtkSearchEntry have more padding than GtkEntry
 		GtkBorder tmp = new GtkBorder();
 		long context = GTK.gtk_widget_get_style_context (handle);
-		int state_flag = GTK.GTK_VERSION < OS.VERSION(3, 18, 0) ? GTK.GTK_STATE_FLAG_NORMAL : GTK.gtk_widget_get_state_flags(handle);
+		int state_flag = GTK.gtk_widget_get_state_flags(handle);
 		gtk_style_context_get_padding(context, state_flag, tmp);
 		width += tmp.left + tmp.right;
 	}
@@ -632,7 +628,7 @@ Rectangle computeTrimInPixels (int x, int y, int width, int height) {
 	if ((style & SWT.SINGLE) != 0) {
 		GtkBorder tmp = new GtkBorder();
 		long context = GTK.gtk_widget_get_style_context (handle);
-		int state_flag = GTK.GTK_VERSION < OS.VERSION(3, 18, 0) ? GTK.GTK_STATE_FLAG_NORMAL : GTK.gtk_widget_get_state_flags(handle);
+		int state_flag = GTK.gtk_widget_get_state_flags(handle);
 		gtk_style_context_get_padding(context, state_flag, tmp);
 		trim.x -= tmp.left;
 		trim.y -= tmp.top;
@@ -644,7 +640,7 @@ Rectangle computeTrimInPixels (int x, int y, int width, int height) {
 			trim.height += tmp.top + tmp.bottom;
 		}
 		if ((style & SWT.BORDER) != 0) {
-			int state = GTK.GTK_VERSION < OS.VERSION(3, 18, 0) ? GTK.GTK_STATE_FLAG_NORMAL : GTK.gtk_widget_get_state_flags(handle);
+			int state = GTK.gtk_widget_get_state_flags(handle);
 			gtk_style_context_get_border(context, state, tmp);
 			trim.x -= tmp.left;
 			trim.y -= tmp.top;

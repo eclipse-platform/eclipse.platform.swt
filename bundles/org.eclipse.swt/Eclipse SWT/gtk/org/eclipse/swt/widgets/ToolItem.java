@@ -614,12 +614,8 @@ long gtk_create_menu_proxy (long widget) {
 
 				long menuLabel = GTK.gtk_accel_label_new (label);
 				if (menuLabel == 0) error (SWT.ERROR_NO_HANDLES);
-				if (GTK.GTK_VERSION >= OS.VERSION (3, 16, 0)) {
-					GTK.gtk_label_set_xalign (labelHandle, 0);
-					GTK.gtk_widget_set_halign (labelHandle, GTK.GTK_ALIGN_FILL);
-				} else {
-					GTK.gtk_misc_set_alignment(labelHandle, 0, 0);
-				}
+				GTK.gtk_label_set_xalign (labelHandle, 0);
+				GTK.gtk_widget_set_halign (labelHandle, GTK.GTK_ALIGN_FILL);
 
 				long menuImage = GTK.gtk_image_new_from_pixbuf (pixbuf);
 				if (menuImage == 0) error (SWT.ERROR_NO_HANDLES);
@@ -1051,12 +1047,10 @@ void setBackgroundRGBA (GdkRGBA rgba) {
 void setBackgroundRGBA (long handle, GdkRGBA rgba) {
 	// Form background string
 	long context = GTK.gtk_widget_get_style_context(handle);
-	String name = GTK.GTK_VERSION >= OS.VERSION(3,	 20, 0) ? display.gtk_widget_class_get_css_name(handle)
-			: display.gtk_widget_get_name(handle);
+	String name = display.gtk_widget_class_get_css_name(handle);
 	String css = name + " {background-color: " + display.gtk_rgba_to_css_string(rgba) + "}";
 
-
-		// Apply background color and any foreground color
+	// Apply background color and any foreground color
 	gtk_css_provider_load_from_css(context, css);
 }
 

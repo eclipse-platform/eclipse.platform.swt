@@ -3234,13 +3234,11 @@ GdkRGBA styleContextGetColor(long context, int flag) {
 	GdkRGBA rgba = new GdkRGBA ();
 	if (GTK.GTK4) {
 		GTK.gtk_style_context_get_color(context, rgba);
-	} else if (GTK.GTK_VERSION >= OS.VERSION(3, 18, 0)) {
+	} else {
 		GTK.gtk_style_context_save(context);
 		GTK.gtk_style_context_set_state(context, flag);
 		GTK.gtk_style_context_get_color (context, flag, rgba);
 		GTK.gtk_style_context_restore(context);
-	} else {
-		GTK.gtk_style_context_get_color (context, flag, rgba);
 	}
 	return rgba;
 }
@@ -5825,13 +5823,6 @@ static int untranslateKey (int key) {
 public void update () {
 	checkDevice ();
 	flushExposes (0, true);
-	/*
-	 * Do not send expose events on GTK 3.16.0+
-	 * It's worth checking whether can be removed on all GTK 3 versions.
-	 */
-	if (GTK.GTK_VERSION < OS.VERSION(3, 16, 0)) {
-		GDK.gdk_window_process_all_updates ();
-	}
 }
 
 /**

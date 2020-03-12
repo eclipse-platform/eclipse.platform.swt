@@ -255,10 +255,10 @@ Rectangle computeTrimInPixels (int x, int y, int width, int height) {
 	Rectangle trim = super.computeTrimInPixels (x, y, width, height);
 	GtkBorder tmp = new GtkBorder();
 	long context = GTK.gtk_widget_get_style_context (handle);
-	int state_flag = GTK.GTK_VERSION < OS.VERSION(3, 18, 0) ? GTK.GTK_STATE_FLAG_NORMAL : GTK.gtk_widget_get_state_flags(handle);
+	int state_flag = GTK.gtk_widget_get_state_flags(handle);
 	gtk_style_context_get_padding(context, state_flag, tmp);
 	if ((style & SWT.BORDER) != 0) {
-		int state = GTK.GTK_VERSION < OS.VERSION(3, 18, 0) ? GTK.GTK_STATE_FLAG_NORMAL : GTK.gtk_widget_get_state_flags(handle);
+		int state = GTK.gtk_widget_get_state_flags(handle);
 		gtk_style_context_get_border(context, state, tmp);
 		trim.x -= tmp.left;
 		trim.y -= tmp.top;
@@ -318,9 +318,6 @@ void createHandle (int index) {
 		entryHandle = textHandle;
 	}
 	GTK.gtk_editable_set_editable (GTK.GTK4 ? entryHandle : handle, (style & SWT.READ_ONLY) == 0);
-	if (GTK.GTK_VERSION <= OS.VERSION(3, 20, 0)) {
-		GTK.gtk_entry_set_has_frame (GTK.GTK4 ? entryHandle : handle, (style & SWT.BORDER) != 0);
-	}
 	GTK.gtk_spin_button_set_wrap (handle, (style & SWT.WRAP) != 0);
 	imContext = OS.imContextLast();
 	// In GTK 3 font description is inherited from parent widget which is not how SWT has always worked,
