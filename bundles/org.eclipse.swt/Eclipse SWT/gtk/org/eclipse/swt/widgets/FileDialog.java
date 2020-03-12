@@ -301,11 +301,7 @@ public boolean getOverwrite () {
  * </ul>
  */
 public String open () {
-	if (GTK.GTK_VERSION >= OS.VERSION(3, 20, 0)) {
-		return openNativeChooserDialog();
-	} else {
-		return openChooserDialog();
-	}
+	return openNativeChooserDialog();
 }
 /**
  * Open the file chooser dialog using the GtkFileChooserNative API (GTK3.20+) for running applications
@@ -316,7 +312,6 @@ public String open () {
  * @return a string describing the absolute path of the first selected file, or null
  */
 String openNativeChooserDialog () {
-	assert GTK.GTK_VERSION >= OS.VERSION(3, 20, 0);
 	byte [] titleBytes = Converter.wcsToMbcs (title, true);
 	int action = (style & SWT.SAVE) != 0 ? GTK.GTK_FILE_CHOOSER_ACTION_SAVE : GTK.GTK_FILE_CHOOSER_ACTION_OPEN;
 	long shellHandle = parent.topHandle ();
@@ -358,69 +353,7 @@ String openNativeChooserDialog () {
 	display.removeIdleProc ();
 	return answer;
 }
-String openChooserDialog () {
-	byte [] titleBytes = Converter.wcsToMbcs (title, true);
-	int action = (style & SWT.SAVE) != 0 ?
-		GTK.GTK_FILE_CHOOSER_ACTION_SAVE :
-		GTK.GTK_FILE_CHOOSER_ACTION_OPEN;
-	long shellHandle = parent.topHandle ();
-	Display display = parent != null ? parent.getDisplay (): Display.getCurrent ();
-	if (display.getDismissalAlignment() == SWT.RIGHT) {
-		handle = GTK.gtk_file_chooser_dialog_new (titleBytes, shellHandle, action, GTK.GTK_NAMED_LABEL_CANCEL, GTK.GTK_RESPONSE_CANCEL, GTK.GTK_NAMED_LABEL_OK, GTK.GTK_RESPONSE_OK, 0);
-	} else {
-		handle = GTK.gtk_file_chooser_dialog_new (titleBytes, shellHandle, action, GTK.GTK_NAMED_LABEL_OK, GTK.GTK_RESPONSE_OK, GTK.GTK_NAMED_LABEL_CANCEL, GTK.GTK_RESPONSE_CANCEL, 0);
-	}
-	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
-	GTK.gtk_window_set_modal (handle, true);
-	long group = GTK.gtk_window_get_group(0);
-	GTK.gtk_window_group_add_window (group, handle);
-	long pixbufs = GTK.gtk_window_get_icon_list (shellHandle);
-	if (pixbufs != 0) {
-		GTK.gtk_window_set_icon_list (handle, pixbufs);
-		OS.g_list_free (pixbufs);
-	}
-	if (uriMode) {
-		GTK.gtk_file_chooser_set_local_only (handle, false);
-	}
-	presetChooserDialog ();
-	display.addIdleProc ();
-	String answer = null;
-	Dialog oldModal = null;
-	if (GTK.gtk_window_get_modal (handle)) {
-		oldModal = display.getModalDialog ();
-		display.setModalDialog (this);
-	}
-	int signalId = 0;
-	long hookId = 0;
-	if ((style & SWT.RIGHT_TO_LEFT) != 0) {
-		signalId = OS.g_signal_lookup (OS.map, GTK.GTK_TYPE_WIDGET());
-		hookId = OS.g_signal_add_emission_hook (signalId, 0, display.emissionProc, handle, 0);
-	}
-	display.externalEventLoop = true;
-	display.sendPreExternalEventDispatchEvent ();
-	int response = GTK.gtk_dialog_run (handle);
-	/*
-	* This call to gdk_threads_leave() is a temporary work around
-	* to avoid deadlocks when gdk_threads_init() is called by native
-	* code outside of SWT (i.e AWT, etc). It ensures that the current
-	* thread leaves the GTK lock acquired by the function above.
-	*/
-	if (!GTK.GTK4) GDK.gdk_threads_leave();
-	display.externalEventLoop = false;
-	display.sendPostExternalEventDispatchEvent ();
-	if ((style & SWT.RIGHT_TO_LEFT) != 0) {
-		OS.g_signal_remove_emission_hook (signalId, hookId);
-	}
-	if (GTK.gtk_window_get_modal (handle)) {
-		display.setModalDialog (oldModal);
-	}
-	if (response == GTK.GTK_RESPONSE_OK) {
-		answer = computeResultChooserDialog ();
-	}
-	display.removeIdleProc ();
-	GTK.gtk_widget_destroy (handle);
-	return answer;
-}
+
 void presetChooserDialog () {
 	/* MULTI is only valid if the native dialog's action is Open */
 	if ((style & (SWT.SAVE | SWT.MULTI)) == SWT.MULTI) {

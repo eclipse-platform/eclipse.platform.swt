@@ -5413,28 +5413,6 @@ JNIEXPORT void JNICALL GTK_NATIVE(gtk_1file_1chooser_1add_1filter)
 }
 #endif
 
-#ifndef NO_gtk_1file_1chooser_1dialog_1new
-JNIEXPORT jlong JNICALL GTK_NATIVE(gtk_1file_1chooser_1dialog_1new)
-	(JNIEnv *env, jclass that, jbyteArray arg0, jlong arg1, jint arg2, jbyteArray arg3, jint arg4, jbyteArray arg5, jint arg6, jlong arg7)
-{
-	jbyte *lparg0=NULL;
-	jbyte *lparg3=NULL;
-	jbyte *lparg5=NULL;
-	jlong rc = 0;
-	GTK_NATIVE_ENTER(env, that, gtk_1file_1chooser_1dialog_1new_FUNC);
-	if (arg0) if ((lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL)) == NULL) goto fail;
-	if (arg3) if ((lparg3 = (*env)->GetByteArrayElements(env, arg3, NULL)) == NULL) goto fail;
-	if (arg5) if ((lparg5 = (*env)->GetByteArrayElements(env, arg5, NULL)) == NULL) goto fail;
-	rc = (jlong)gtk_file_chooser_dialog_new((const gchar *)lparg0, (GtkWindow *)arg1, arg2, (const gchar *)lparg3, arg4, lparg5, arg6, (const gchar *)NULL);
-fail:
-	if (arg5 && lparg5) (*env)->ReleaseByteArrayElements(env, arg5, lparg5, 0);
-	if (arg3 && lparg3) (*env)->ReleaseByteArrayElements(env, arg3, lparg3, JNI_ABORT);
-	if (arg0 && lparg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, JNI_ABORT);
-	GTK_NATIVE_EXIT(env, that, gtk_1file_1chooser_1dialog_1new_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO_gtk_1file_1chooser_1get_1filename
 JNIEXPORT jlong JNICALL GTK_NATIVE(gtk_1file_1chooser_1get_1filename)
 	(JNIEnv *env, jclass that, jlong arg0)

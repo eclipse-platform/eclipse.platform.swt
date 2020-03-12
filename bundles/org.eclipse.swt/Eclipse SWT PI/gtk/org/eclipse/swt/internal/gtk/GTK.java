@@ -911,13 +911,6 @@ public class GTK extends OS {
 	 * @param filter cast=(GtkFileFilter *)
 	 */
 	public static final native void gtk_file_chooser_add_filter(long chooser, long filter);
-	/**
-	 * @param title cast=(const gchar *),flags=no_out
-	 * @param parent cast=(GtkWindow *)
-	 * @param first_button_text cast=(const gchar *),flags=no_out
-	 * @param terminator cast=(const gchar *),flags=sentinel
-	 */
-	public static final native long gtk_file_chooser_dialog_new(byte[] title, long parent, int action, byte[] first_button_text, int first_button_id, byte[] second_button_text, int second_button_id, long terminator);
 	/** @param chooser cast=(GtkFileChooser *) */
 	public static final native long gtk_file_chooser_get_filename(long chooser);
 	/**  @param chooser cast=(GtkFileChooser *) */

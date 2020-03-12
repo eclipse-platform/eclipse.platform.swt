@@ -460,7 +460,6 @@ char * GTK_nativeFunctionNames[] = {
 	"gtk_1expander_1set_1expanded",
 	"gtk_1expander_1set_1label_1widget",
 	"gtk_1file_1chooser_1add_1filter",
-	"gtk_1file_1chooser_1dialog_1new",
 	"gtk_1file_1chooser_1get_1filename",
 	"gtk_1file_1chooser_1get_1filenames",
 	"gtk_1file_1chooser_1get_1filter",

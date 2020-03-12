@@ -458,7 +458,6 @@ typedef enum {
 	gtk_1expander_1set_1expanded_FUNC,
 	gtk_1expander_1set_1label_1widget_FUNC,
 	gtk_1file_1chooser_1add_1filter_FUNC,
-	gtk_1file_1chooser_1dialog_1new_FUNC,
 	gtk_1file_1chooser_1get_1filename_FUNC,
 	gtk_1file_1chooser_1get_1filenames_FUNC,
 	gtk_1file_1chooser_1get_1filter_FUNC,
