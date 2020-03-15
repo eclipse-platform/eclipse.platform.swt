@@ -1587,30 +1587,30 @@ void calculateTopIndex(int delta) {
 			int lineCount = content.getLineCount();
 			while (lineIndex < lineCount) {
 				if (delta <= 0) break;
-				delta -= renderer.getLineHeight(lineIndex++);
+				delta -= renderer.getCachedLineHeight(lineIndex++);
 			}
-			if (lineIndex < lineCount && -delta + renderer.getLineHeight(lineIndex) <= clientAreaHeight - topMargin - bottomMargin) {
+			if (lineIndex < lineCount && -delta + renderer.getCachedLineHeight(lineIndex) <= clientAreaHeight - topMargin - bottomMargin) {
 				topIndex = lineIndex;
 				topIndexY = -delta;
 			} else {
 				topIndex = lineIndex - 1;
-				topIndexY = -renderer.getLineHeight(topIndex) - delta;
+				topIndexY = -renderer.getCachedLineHeight(topIndex) - delta;
 			}
 		} else {
 			delta -= topIndexY;
 			int lineIndex = topIndex;
 			while (lineIndex > 0) {
-				int lineHeight = renderer.getLineHeight(lineIndex - 1);
+				int lineHeight = renderer.getCachedLineHeight(lineIndex - 1);
 				if (delta + lineHeight > 0) break;
 				delta += lineHeight;
 				lineIndex--;
 			}
-			if (lineIndex == 0 || -delta + renderer.getLineHeight(lineIndex) <= clientAreaHeight - topMargin - bottomMargin) {
+			if (lineIndex == 0 || -delta + renderer.getCachedLineHeight(lineIndex) <= clientAreaHeight - topMargin - bottomMargin) {
 				topIndex = lineIndex;
 				topIndexY = - delta;
 			} else {
 				topIndex = lineIndex - 1;
-				topIndexY = - renderer.getLineHeight(topIndex) - delta;
+				topIndexY = - renderer.getCachedLineHeight(topIndex) - delta;
 			}
 		}
 	}
@@ -5397,7 +5397,7 @@ int getVerticalScrollOffset() {
 		renderer.calculate(0, topIndex);
 		int height = 0;
 		for (int i = 0; i < topIndex; i++) {
-			height += renderer.getLineHeight(i);
+			height += renderer.getCachedLineHeight(i);
 		}
 		height -= topIndexY;
 		verticalScrollOffset = height;
@@ -8227,7 +8227,11 @@ boolean scrollVertical(int pixels, boolean adjustScrollBar) {
 		calculateTopIndex(pixels);
 		super.redraw();
 	}
-	setCaretLocation();
+	Caret caret = getCaret();
+	if (caret != null) {
+		Point caretLocation = caret.getLocation();
+		setCaretLocation(new Point(caretLocation.x, caretLocation.y - pixels), getCaretDirection());
+	}
 	return true;
 }
 void scrollText(int srcY, int destY) {
@@ -8715,35 +8719,11 @@ void setCaretLocation(final Point location, int direction) {
 				getStyleRangeAtOffset(caretOffset) :
 				getStyleRangeAtOffset(content.getCharCount() - 1)) : // caret after last char: use last char style
 			null;
-		final int caretLine = getCaretLine();
 
-		int graphicalLineHeight = getLineHeight();
-		final int lineStartOffset = getOffsetAtLine(caretLine);
-		int graphicalLineFirstOffset = lineStartOffset;
-		final int lineEndOffset = lineStartOffset + getLine(caretLine).length();
-		int graphicalLineLastOffset = lineEndOffset;
-		if (caretLine < getLineCount() && renderer.getLineHeight(caretLine) != getLineHeight()) { // word wrap, metrics, styles...
-			graphicalLineHeight = getLineHeight(caretOffset);
-			final Rectangle characterBounds = getBoundsAtOffset(caretOffset);
-			graphicalLineFirstOffset = getOffsetAtPoint(new Point(leftMargin, characterBounds.y));
-			graphicalLineLastOffset = getOffsetAtPoint(new Point(leftMargin, characterBounds.y + graphicalLineHeight)) - 1;
-			if (graphicalLineLastOffset < graphicalLineFirstOffset) {
-				graphicalLineLastOffset = getCharCount();
-			}
-		}
-
+		int graphicalLineHeight = getLineHeight(caretOffset);
 		int caretHeight = getLineHeight();
-		boolean isTextAlignedAtBottom = true;
-		if (graphicalLineFirstOffset >= 0) {
-			for (StyleRange style : getStyleRanges(graphicalLineFirstOffset, graphicalLineLastOffset - graphicalLineFirstOffset)) {
-				isTextAlignedAtBottom &= (
-					(style.font == null || Objects.equals(style.font, getFont())) &&
-					style.rise >= 0 &&
-					(style.metrics == null || style.metrics.descent <= 0)
-				);
-			}
-		}
-		if (!isTextAlignedAtBottom || (styleAtOffset != null && styleAtOffset.isVariableHeight())) {
+
+		if (styleAtOffset != null && styleAtOffset.isVariableHeight()) {
 			if (isDefaultCaret) {
 				direction = SWT.DEFAULT;
 				caretHeight = graphicalLineHeight;
@@ -8751,7 +8731,7 @@ void setCaretLocation(final Point location, int direction) {
 				caretHeight = caret.getSize().y;
 			}
 		}
-		if (isTextAlignedAtBottom && caretHeight < graphicalLineHeight) {
+		if (caretHeight < graphicalLineHeight) {
 			location.y += (graphicalLineHeight - caretHeight);
 		}
 

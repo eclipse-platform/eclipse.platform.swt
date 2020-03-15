@@ -51,6 +51,8 @@ class StyledTextRenderer {
 	LineInfo[] lines;
 	int maxWidth;
 	int maxWidthLineIndex;
+	float averageLineHeight;
+	int linesInAverageLineHeight;
 	boolean idleRunning;
 
 	/* Bullet */
@@ -297,6 +299,7 @@ void calculate(int startLine, int lineCount) {
 			Rectangle rect = layout.getBounds();
 			line.width = rect.width + hTrim;
 			line.height = rect.height;
+			averageLineHeight += (line.height - Math.round(averageLineHeight)) / ++linesInAverageLineHeight;
 			disposeTextLayout(layout);
 		}
 		if (line.width > maxWidth) {
@@ -544,6 +547,9 @@ int drawLine(int lineIndex, int paintX, int paintY, GC gc, Color widgetBackgroun
 int getBaseline() {
 	return ascent;
 }
+int getCachedLineHeight(int lineIndex) {
+	return getLineHeight(lineIndex, false);
+}
 Font getFont(int style) {
 	switch (style) {
 		case SWT.BOLD:
@@ -655,12 +661,19 @@ int getLineHeight() {
 	return ascent + descent;
 }
 int getLineHeight(int lineIndex) {
+	return getLineHeight(lineIndex, true);
+}
+int getLineHeight(int lineIndex, boolean exact) {
 	LineSizeInfo line = getLineSize(lineIndex);
 	if (line.needsRecalculateHeight()) {
-		// here we are in "variable line height", the call of calculate which uses TextLayout can be very slow
-		// check if line can use the default line height.
+		// here we are in "variable line height", the call of calculate which uses TextLayout is very slow
+		// so use the average line height of all calculated lines when many heights are needed e.g. for scrolling.
 		if (isVariableHeight(lineIndex)) {
-			calculate(lineIndex, 1);
+			if (exact) {
+				calculate(lineIndex, 1);
+			} else {
+				return Math.round(averageLineHeight);
+			}
 		} else {
 			line.height = getLineHeight() + getLineSpacing(lineIndex);
 		}
@@ -1326,6 +1339,12 @@ void reset(Set<Integer> lines) {
 			resetLineCount++;
 			getLineSize(line.intValue()).resetSize();
 		}
+	}
+	if (linesInAverageLineHeight > resetLineCount) {
+		linesInAverageLineHeight -= resetLineCount;
+	} else {
+		linesInAverageLineHeight = 0;
+		averageLineHeight = 0.0f;
 	}
 	if (lines.contains(Integer.valueOf(maxWidthLineIndex))) {
 		maxWidth = 0;
