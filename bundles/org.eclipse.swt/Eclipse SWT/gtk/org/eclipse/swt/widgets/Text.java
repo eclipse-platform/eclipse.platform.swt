@@ -2215,7 +2215,7 @@ void setBackgroundGdkRGBA (long context, long handle, GdkRGBA rgba) {
 				+ "entry:selected {background-color: " + display.gtk_rgba_to_css_string(selectedBackground) + ";}\n"
 				+ "entry selection {color: " + display.gtk_rgba_to_css_string(selectedForeground) + ";}";
 	} else {
-		properties = "textview {background-color: " + display.gtk_rgba_to_css_string(background) + ";}\n"
+		properties = "textview text {background-color: " + display.gtk_rgba_to_css_string(background) + ";}\n"
 				+ "textview text:selected {background-color: " + display.gtk_rgba_to_css_string(selectedBackground) + ";}\n"
 				+ "textview text selection {color: " + display.gtk_rgba_to_css_string(selectedForeground) + ";}";
 	}
