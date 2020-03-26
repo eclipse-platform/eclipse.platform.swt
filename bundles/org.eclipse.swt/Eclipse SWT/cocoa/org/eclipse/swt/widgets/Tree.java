@@ -3460,8 +3460,9 @@ void showItem (TreeItem item, boolean scroll) {
 		NSOutlineView outlineView = (NSOutlineView) view;
 		if (outlineView.headerView () == null) {
 			/**
-			 * On macOS 10.15, scrollRowToVisible doesn't work properly if
+			 * On macOS 10.15, scrollRowToVisible doesn't work correctly if
 			 * contentView's bounds is not set (i.e, width or height is 0).
+			 *
 			 * The contentView's bounds is set when the Tree's header view is set.
 			 * So don't call this code if Tree has a header already.
 			 */
@@ -3473,8 +3474,8 @@ void showItem (TreeItem item, boolean scroll) {
 					if (documentView != null) {
 						NSRect documentViewBounds = documentView.bounds ();
 						NSSize size = new NSSize ();
-						size.width = documentViewBounds.width;
-						size.height = documentViewBounds.height;
+						size.width = contentViewBounds.width == 0 ? documentViewBounds.width : contentViewBounds.width;
+						size.height = contentViewBounds.height == 0 ? documentViewBounds.height : contentViewBounds.height;
 						contentView.setBoundsSize (size);
 					}
 				}
