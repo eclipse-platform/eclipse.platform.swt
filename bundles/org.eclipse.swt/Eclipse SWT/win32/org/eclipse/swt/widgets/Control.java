@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2019 IBM Corporation and others.
+ * Copyright (c) 2000, 2020 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -974,7 +974,8 @@ void enableDrag (boolean enabled) {
 }
 
 void enableDarkScrollbars() {
-	if (display.getData(Display.ENABLE_DARK_SCROLLBARS) != null) {
+	String enableDarkScrollBar = System.getProperty(Display.ENABLE_DARK_SCROLLBARS);
+	if (enableDarkScrollBar != null && Boolean.valueOf(enableDarkScrollBar)) {
 		OS.SetWindowTheme (handle, Display.DARKMODE_EXPLORER, null);
 	}
 }

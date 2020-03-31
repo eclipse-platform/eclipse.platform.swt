@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2019 IBM Corporation and others.
+ * Copyright (c) 2000, 2020 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -4499,8 +4499,11 @@ public final Consumer<Error> getErrorHandler () {
 }
 
 char[] getExplorerTheme() {
-	Boolean data = (Boolean) getData(Display.ENABLE_DARK_SCROLLBARS);
-	return data != null && data.booleanValue () ? DARKMODE_EXPLORER : EXPLORER;
+	String enableDarkScrollBar = System.getProperty(ENABLE_DARK_SCROLLBARS);
+	if (enableDarkScrollBar != null && Boolean.valueOf(enableDarkScrollBar)) {
+		return DARKMODE_EXPLORER;
+	}
+	return EXPLORER;
 }
 
 int shiftedKey (int key) {
