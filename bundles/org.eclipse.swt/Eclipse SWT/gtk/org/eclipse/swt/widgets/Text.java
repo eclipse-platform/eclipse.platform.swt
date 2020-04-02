@@ -775,7 +775,31 @@ boolean dragDetect (int x, int y, boolean filter, boolean dragOnTimeout, boolean
 
 @Override
 long eventWindow () {
-	return paintWindow ();
+	if ((style & SWT.SINGLE) != 0) {
+		/*
+		 * Single-line Text (GtkEntry in GTK) uses a GDK_INPUT_ONLY
+		 * internal window. This window can't be used for any kind
+		 * of painting, but this is the window to which functions
+		 * like Control.setCursor() should apply.
+		 */
+		long window = super.paintWindow ();
+		long children = GDK.gdk_window_get_children (window);
+		if (children != 0) {
+			/*
+			 * When search or cancel icons are added to Text, those
+			 * icon window(s) are added to the beginning of the list.
+			 * In order to always return the correct window for Text,
+			 * browse to the end of the list.
+			 */
+			do {
+				window = OS.g_list_data (children);
+			} while ((children = OS.g_list_next (children)) != 0);
+		}
+		OS.g_list_free (children);
+		return window;
+	} else {
+		return paintWindow ();
+	}
 }
 
 @Override
@@ -1973,47 +1997,12 @@ private void scrollIfNotVisible(byte [] iter, byte [] scrollTo, boolean insert) 
 @Override
 long paintWindow () {
 	if ((style & SWT.SINGLE) != 0) {
-		long window = super.paintWindow ();
-		long children = GDK.gdk_window_get_children (window);
-		if (children != 0) {
-			/*
-			* When search or cancel icons are added to Text, those
-			* icon window(s) are added to the beginning of the list.
-			* In order to always return the correct window for Text,
-			* browse to the end of the list.
-			*/
-			do {
-				window = OS.g_list_data (children);
-			} while ((children = OS.g_list_next (children)) != 0);
-		}
-		OS.g_list_free (children);
-		return window;
+		return super.paintWindow ();
+	} else {
+		GTK.gtk_widget_realize (handle);
+		// TODO: this function has been removed on GTK4
+		return GTK.gtk_text_view_get_window (handle, GTK.GTK_TEXT_WINDOW_TEXT);
 	}
-	GTK.gtk_widget_realize (handle);
-	// TODO: this function has been removed on GTK4
-	return GTK.gtk_text_view_get_window (handle, GTK.GTK_TEXT_WINDOW_TEXT);
-}
-
-@Override
-long paintSurface () {
-	if ((style & SWT.SINGLE) != 0) {
-		long surface = super.paintSurface ();
-		long children = GDK.gdk_surface_get_children (surface);
-		if (children != 0) {
-			/*
-			* When search or cancel icons are added to Text, those
-			* icon window(s) are added to the beginning of the list.
-			* In order to always return the correct window for Text,
-			* browse to the end of the list.
-			*/
-			do {
-				surface = OS.g_list_data (children);
-			} while ((children = OS.g_list_next (children)) != 0);
-		}
-		OS.g_list_free (children);
-		return surface;
-	}
-	return 0;
 }
 
 /**
