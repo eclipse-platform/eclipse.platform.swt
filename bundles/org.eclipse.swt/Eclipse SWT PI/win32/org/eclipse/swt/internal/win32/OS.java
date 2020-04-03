@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2019 IBM Corporation and others.
+ * Copyright (c) 2000, 2020 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -2319,6 +2319,23 @@ public static final int RegSetValueEx (long hKey, TCHAR lpValueName, int Reserve
 public static final long SendMessage (long hWnd, int Msg, long wParam, TCHAR lParam) {
 	char [] lParam1 = lParam == null ? null : lParam.chars;
 	return SendMessage (hWnd, Msg, wParam, lParam1);
+}
+
+/**
+ * This method enables below listed dark theme experimental feature(calling it
+ * experimental because it depends on undocumented API on Windows platform which
+ * may or may not be exposed as public in it's current form) as supported on
+ * Windows10 only:<br>
+ * scroll-bar
+ * <p>
+ * Note: This operation is a hint and is not supported on platforms that do not
+ * have this concept.
+ * </p>
+ *
+ * @param isDarkTheme
+ */
+public static final void setTheme(boolean isDarkTheme) {
+	System.setProperty("org.eclipse.swt.internal.win32.enableDarkScrollbars", Boolean.toString(isDarkTheme));
 }
 
 public static final boolean SetDllDirectory (TCHAR lpPathName) {
