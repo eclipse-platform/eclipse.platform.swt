@@ -4075,7 +4075,7 @@ void showItem (long path, boolean scroll) {
 		GTK.gtk_tree_path_free (tempPath);
 	}
 	if (scroll) {
-		GTK.gtk_tree_view_scroll_to_cell (handle, path, 0, depth != 1, 0.5f, 0.0f);
+		GTK.gtk_tree_view_scroll_to_cell (handle, path, 0, false, 0.5f, 0.0f);
 	}
 }
 
