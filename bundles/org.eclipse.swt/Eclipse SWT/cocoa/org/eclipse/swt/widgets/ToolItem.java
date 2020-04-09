@@ -483,8 +483,11 @@ void drawWidget (long id, NSGraphicsContext context, NSRect rect) {
 		if (drawSelected) {
 			NSRect bounds = view.bounds();
 			context.saveGraphicsState();
-			NSColor.colorWithDeviceRed(0.1f, 0.1f, 0.1f, 0.1f).setFill();
-			NSColor.colorWithDeviceRed(0.2f, 0.2f, 0.2f, 0.2f).setStroke();
+			boolean isDark = OS.isAppDarkAppearance();
+			float fillColor = isDark ? 0.9f : 0.1f;
+			float strokeColor = isDark ? 0.8f : 0.2f;
+			NSColor.colorWithDeviceRed(fillColor, fillColor, fillColor, 0.1f).setFill();
+			NSColor.colorWithDeviceRed(strokeColor, strokeColor, strokeColor, 0.2f).setStroke();
 			NSBezierPath.fillRect(bounds);
 			bounds.x += 0.5f;
 			bounds.y += 0.5f;
