@@ -1478,13 +1478,18 @@ public void insert (String string) {
 }
 
 void insertEditText (String string) {
+	_insertEditText (string, false);
+}
+
+void _insertEditText (String string, boolean enableUndo) {
 	int length = string.length ();
 	Point selection = getSelection ();
 	if (hasFocus () && hiddenText == null) {
 		if (textLimit != LIMIT) {
 			int charCount = getCharCount();
-			if (charCount - (selection.y - selection.x) + length > textLimit) {
-				length = textLimit - charCount + (selection.y - selection.x);
+			int selectionLength = selection.y - selection.x;
+			if (charCount - selectionLength + length > textLimit) {
+				length = textLimit - charCount + selectionLength;
 				length = Math.max(0, length);
 			}
 		}
@@ -1492,7 +1497,17 @@ void insertEditText (String string) {
 		string.getChars (0, buffer.length, buffer, 0);
 		NSString nsstring = NSString.stringWithCharacters (buffer, buffer.length);
 		NSText fieldEditor = ((NSTextField) view).currentEditor ();
-		if (fieldEditor != null) fieldEditor.replaceCharactersInRange (fieldEditor.selectedRange (), nsstring);
+		if (fieldEditor != null) {
+			if (enableUndo) {
+				NSUndoManager undoManager = view.undoManager();
+				if (undoManager == null) undoManager = fieldEditor.undoManager();
+				if (undoManager != null) undoManager.beginUndoGrouping ();
+				OS.objc_msgSend (fieldEditor.id, OS.sel_insertText_replacementRange_, nsstring.id, fieldEditor.selectedRange ());
+				if (undoManager != null) undoManager.endUndoGrouping ();
+			} else {
+				fieldEditor.replaceCharactersInRange (fieldEditor.selectedRange (), nsstring);
+			}
+		}
 		selectionRange = null;
 	} else {
 		String oldText = getText ();
@@ -1543,6 +1558,10 @@ boolean isNeeded(ScrollBar scrollbar) {
  */
 public void paste () {
 	checkWidget ();
+	_paste (false);
+}
+
+void _paste (boolean enableUndo) {
 	if ((style & SWT.READ_ONLY) != 0) return;
 	boolean paste = true;
 	String oldText = null;
@@ -1554,7 +1573,7 @@ public void paste () {
 			if (newText == null) return;
 			if (!newText.equals (oldText)) {
 				if ((style & SWT.SINGLE) != 0) {
-					insertEditText (newText);
+					_insertEditText (newText, enableUndo);
 				} else {
 					NSTextView textView = (NSTextView) view;
 					NSRange range = textView.selectedRange ();
@@ -1574,7 +1593,7 @@ public void paste () {
 		if ((style & SWT.SINGLE) != 0) {
 			if (oldText == null) oldText = getClipboardText ();
 			if (oldText == null) return;
-			insertEditText (oldText);
+			_insertEditText (oldText, enableUndo);
 		} else {
 			if (textLimit != LIMIT) {
 				if (oldText == null) oldText = getClipboardText ();
@@ -1741,7 +1760,7 @@ boolean sendKeyEvent (NSEvent nsEvent, int type) {
 				if ((style & SWT.PASSWORD) == 0) copy ();
 				return false;
 			case 9: /* V */
-				paste ();
+				_paste (true);
 				return false;
 			case 0: /* A */
 				NSApplication.sharedApplication().sendAction(OS.sel_selectAll_, null, NSApplication.sharedApplication());

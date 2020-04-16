@@ -5028,6 +5028,13 @@
 			<retval></retval>
 		</method>
 	</informal_protocol>
+	<informal_protocol name="NSTextInputClient" swt_gen="mixed">
+		<method selector="insertText:replacementRange:" swt_gen="true">
+			<arg swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
+		</method>
+	</informal_protocol>
 	<informal_protocol name="NSTextViewDelegate" swt_gen="mixed">
 		<method selector="textView:clickedOnLink:atIndex:" swt_gen="true">
 			<arg swt_gen="true"></arg>
