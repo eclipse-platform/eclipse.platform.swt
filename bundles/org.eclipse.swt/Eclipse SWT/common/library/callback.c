@@ -34,7 +34,14 @@ static int initialized = 0;
 static jint JNI_VERSION = 0;
 
 #ifdef DEBUG_CALL_PRINTS
-static int counter = 0;
+	static int counter = 0;
+
+	#if   defined(COCOA)
+		#include <objc/runtime.h>
+	#elif defined(GTK)
+		#include <dlfcn.h>
+		#include <gdk/gdk.h>
+	#endif
 #endif
 
 #ifdef ATOMIC
@@ -979,6 +986,7 @@ JNIEXPORT jlong JNICALL CALLBACK_NATIVE(bind)
 	jmethodID mid = NULL;
 	jclass javaClass = that;
 	const char *methodString = NULL, *sigString = NULL;
+	jlong result = 0;
 	if (JNI_VERSION == 0) JNI_VERSION = (*env)->GetVersion(env);
 	if (!initialized) {
 		memset(&callbackData, 0, sizeof(callbackData));
@@ -994,8 +1002,6 @@ JNIEXPORT jlong JNICALL CALLBACK_NATIVE(bind)
 			mid = (*env)->GetMethodID(env, javaClass, methodString, sigString);
 		}
 	}
-	if (method && methodString) (*env)->ReleaseStringUTFChars(env, method, methodString);
-	if (signature && sigString) (*env)->ReleaseStringUTFChars(env, signature, sigString);
 	if (mid == 0) goto fail;
 	for (i=0; i<MAX_CALLBACKS; i++) {
 		if (!callbackData[i].callback) {
@@ -1006,24 +1012,59 @@ JNIEXPORT jlong JNICALL CALLBACK_NATIVE(bind)
 			callbackData[i].argCount = argCount;
 			callbackData[i].errorResult = errorResult;
 			callbackData[i].methodID = mid;
-			return (jlong) fnx_array[argCount][i];
+
+			#ifdef DEBUG_CALL_PRINTS
+				#if   defined(COCOA)
+					callbackData[i].arg_Selector = -1;
+
+					if (!strcmp(methodString, "applicationProc") ||
+						!strcmp(methodString, "dragSourceProc") ||
+						!strcmp(methodString, "windowProc") ||
+						!strcmp(methodString, "dialogProc"))
+					{
+						callbackData[i].arg_Selector = 1;
+					}
+				#elif defined(GTK)
+					callbackData[i].arg_GObject = -1;
+					callbackData[i].arg_GdkEvent = -1;
+					callbackData[i].arg_SwtSignalID = -1;
+
+					if (!strcmp(methodString, "windowProc")) {
+						callbackData[i].arg_GObject = 0;
+						callbackData[i].arg_SwtSignalID = argCount - 1;
+					}
+
+					if (!strcmp(methodString, "eventProc")) {
+						callbackData[i].arg_GdkEvent = 0;
+					}
+				#endif
+
+				fprintf(stderr, "SWT-JNI: Registered callback[%02d] = %s%s\n", i, methodString, sigString);
+				fflush(stderr);
+			#endif
+
+			result = (jlong) fnx_array[argCount][i];
+			break;
 		}
 	}
+
 fail:
-    return 0;
+	if (method && methodString) (*env)->ReleaseStringUTFChars(env, method, methodString);
+	if (signature && sigString) (*env)->ReleaseStringUTFChars(env, signature, sigString);
+	return result;
 }
 
 JNIEXPORT void JNICALL CALLBACK_NATIVE(unbind)
   (JNIEnv *env, jclass that, jobject callback)
 {
 	int i;
-    for (i=0; i<MAX_CALLBACKS; i++) {
-        if (callbackData[i].callback != NULL && (*env)->IsSameObject(env, callback, callbackData[i].callback)) {
-            if (callbackData[i].callback != NULL) (*env)->DeleteGlobalRef(env, callbackData[i].callback);
-            if (callbackData[i].object != NULL) (*env)->DeleteGlobalRef(env, callbackData[i].object);
-            memset(&callbackData[i], 0, sizeof(CALLBACK_DATA));
-        }
-    }
+	for (i=0; i<MAX_CALLBACKS; i++) {
+		if (callbackData[i].callback != NULL && (*env)->IsSameObject(env, callback, callbackData[i].callback)) {
+			if (callbackData[i].callback != NULL) (*env)->DeleteGlobalRef(env, callbackData[i].callback);
+			if (callbackData[i].object != NULL) (*env)->DeleteGlobalRef(env, callbackData[i].object);
+			memset(&callbackData[i], 0, sizeof(CALLBACK_DATA));
+		}
+	}
 }
 
 JNIEXPORT jboolean JNICALL CALLBACK_NATIVE(getEnabled)
@@ -1047,8 +1088,141 @@ JNIEXPORT void JNICALL CALLBACK_NATIVE(setEnabled)
 JNIEXPORT void JNICALL CALLBACK_NATIVE(reset)
   (JNIEnv *env, jclass that)
 {
-    memset((void *)&callbackData, 0, sizeof(callbackData));
+	memset((void *)&callbackData, 0, sizeof(callbackData));
 }
+
+#if (defined(DEBUG_CALL_PRINTS) && defined(GTK))
+const char* glibTypeNameFromInstance(void* object) {
+	static int isInitialized = 0;
+	static const char* (*g_type_name_from_instance)(void*) = 0;
+
+	if (!isInitialized) {
+		/* Do not dlclose(gobjectHandle); we're going to continue using the library */
+		void* gobjectHandle = dlopen("libgobject-2.0.so.0", RTLD_LAZY);
+
+		if (gobjectHandle)
+			g_type_name_from_instance = dlsym(gobjectHandle, "g_type_name_from_instance");
+
+		isInitialized = 1;
+	}
+
+	if (!g_type_name_from_instance)
+		return "<No glib>";
+
+	return g_type_name_from_instance(object);
+}
+
+const char* swtSignalNameFromId(int id) {
+	/* Adapted from constants in org.eclipse.swt.widgets.Widget */
+	switch (id) {
+		case 1:   return "ACTIVATE";
+		case 2:   return "BUTTON_PRESS_EVENT";
+		case 3:   return "BUTTON_PRESS_EVENT_INVERSE";
+		case 4:   return "BUTTON_RELEASE_EVENT";
+		case 5:   return "BUTTON_RELEASE_EVENT_INVERSE";
+		case 6:   return "CHANGED";
+		case 7:   return "CHANGE_VALUE";
+		case 8:   return "CLICKED";
+		case 9:   return "COMMIT";
+		case 10:  return "CONFIGURE_EVENT";
+		case 11:  return "DELETE_EVENT";
+		case 12:  return "DELETE_RANGE";
+		case 13:  return "DELETE_TEXT";
+		case 14:  return "ENTER_NOTIFY_EVENT";
+		case 15:  return "EVENT";
+		case 16:  return "EVENT_AFTER";
+		case 17:  return "EXPAND_COLLAPSE_CURSOR_ROW";
+		case 18:  return "EXPOSE_EVENT";
+		case 19:  return "EXPOSE_EVENT_INVERSE";
+		case 20:  return "FOCUS";
+		case 21:  return "FOCUS_IN_EVENT";
+		case 22:  return "FOCUS_OUT_EVENT";
+		case 23:  return "GRAB_FOCUS";
+		case 24:  return "HIDE";
+		case 25:  return "INPUT";
+		case 26:  return "INSERT_TEXT";
+		case 27:  return "KEY_PRESS_EVENT";
+		case 28:  return "KEY_RELEASE_EVENT";
+		case 29:  return "LEAVE_NOTIFY_EVENT";
+		case 30:  return "MAP";
+		case 31:  return "MAP_EVENT";
+		case 32:  return "MNEMONIC_ACTIVATE";
+		case 33:  return "MOTION_NOTIFY_EVENT";
+		case 34:  return "MOTION_NOTIFY_EVENT_INVERSE";
+		case 35:  return "MOVE_FOCUS";
+		case 36:  return "OUTPUT";
+		case 37:  return "POPULATE_POPUP";
+		case 38:  return "POPUP_MENU";
+		case 39:  return "PREEDIT_CHANGED";
+		case 40:  return "REALIZE";
+		case 41:  return "ROW_ACTIVATED";
+		case 42:  return "SCROLL_CHILD";
+		case 43:  return "SCROLL_EVENT";
+		case 44:  return "SELECT";
+		case 45:  return "SHOW";
+		case 46:  return "SHOW_HELP";
+		case 47:  return "SIZE_ALLOCATE";
+		case 48:  return "STYLE_UPDATED";
+		case 49:  return "SWITCH_PAGE";
+		case 50:  return "TEST_COLLAPSE_ROW";
+		case 51:  return "TEST_EXPAND_ROW";
+		case 52:  return "TEXT_BUFFER_INSERT_TEXT";
+		case 53:  return "TOGGLED";
+		case 54:  return "UNMAP";
+		case 55:  return "UNMAP_EVENT";
+		case 56:  return "UNREALIZE";
+		case 57:  return "VALUE_CHANGED";
+		case 59:  return "WINDOW_STATE_EVENT";
+		case 60:  return "ACTIVATE_INVERSE";
+		case 61:  return "DAY_SELECTED";
+		case 62:  return "MONTH_CHANGED";
+		case 63:  return "STATUS_ICON_POPUP_MENU";
+		case 64:  return "ROW_INSERTED";
+		case 65:  return "ROW_DELETED";
+		case 66:  return "DAY_SELECTED_DOUBLE_CLICK";
+		case 67:  return "ICON_RELEASE";
+		case 68:  return "SELECTION_DONE";
+		case 69:  return "START_INTERACTIVE_SEARCH";
+		case 70:  return "BACKSPACE";
+		case 71:  return "BACKSPACE_INVERSE";
+		case 72:  return "COPY_CLIPBOARD";
+		case 73:  return "COPY_CLIPBOARD_INVERSE";
+		case 74:  return "CUT_CLIPBOARD";
+		case 75:  return "CUT_CLIPBOARD_INVERSE";
+		case 76:  return "PASTE_CLIPBOARD";
+		case 77:  return "PASTE_CLIPBOARD_INVERSE";
+		case 78:  return "DELETE_FROM_CURSOR";
+		case 79:  return "DELETE_FROM_CURSOR_INVERSE";
+		case 80:  return "MOVE_CURSOR";
+		case 81:  return "MOVE_CURSOR_INVERSE";
+		case 82:  return "DIRECTION_CHANGED";
+		case 83:  return "CREATE_MENU_PROXY";
+		case 84:  return "ROW_HAS_CHILD_TOGGLED";
+		case 85:  return "POPPED_UP";
+		case 86:  return "FOCUS_IN";
+		case 87:  return "FOCUS_OUT";
+		case 88:  return "IM_UPDATE";
+		case 89:  return "KEY_PRESSED";
+		case 90:  return "KEY_RELEASED";
+		case 91:  return "DECELERATE";
+		case 92:  return "SCROLL";
+		case 93:  return "SCROLL_BEGIN";
+		case 94:  return "SCROLL_END";
+		case 95:  return "ENTER";
+		case 96:  return "LEAVE";
+		case 97:  return "MOTION";
+		case 98:  return "MOTION_INVERSE";
+		case 99:  return "CLOSE_REQUEST";
+		case 100: return "GESTURE_PRESSED";
+		case 101: return "GESTURE_RELEASED";
+		case 102: return "NOTIFY_STATE";
+		case 103: return "SIZE_ALLOCATE_GTK4";
+		case 104: return "DPI_CHANGED";
+	}
+
+	return 0;
+}
+#endif
 
 jlong callback(int index, ...)
 {
@@ -1066,8 +1240,62 @@ jlong callback(int index, ...)
 	int detach = 0;
 	va_list vl;
 
+	va_start(vl, index);
+
 #ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "* callback starting %d\n", counter++);
+	{
+		va_list vaCopy;
+		va_copy(vaCopy, vl);
+
+		counter++;
+		fprintf(stderr, "SWT-JNI:%*scallback[%d](", counter, "", index);
+		for (int i=0; i<argCount; i++) {
+			void* arg = va_arg(vaCopy, void*);
+			int isPrinted = 0;
+
+			#ifdef COCOA
+				if (!isPrinted && (i == callbackData[index].arg_Selector)) {
+					fprintf(stderr, "%s ", sel_getName(arg));
+					isPrinted = 1;
+				}
+			#elif defined(GTK)
+				if (!isPrinted && (i == callbackData[index].arg_GObject)) {
+					fprintf(stderr, "%p [%s] ", arg, glibTypeNameFromInstance(arg));
+					isPrinted = 1;
+				}
+
+				if (!isPrinted && (i == callbackData[index].arg_GdkEvent)) {
+					const GdkEventAny* event = (const GdkEventAny*)arg;
+					fprintf(stderr,
+						"%p [GdkEvent type=%d window=%p [%s]] ",
+						event,
+						event->type,
+						event->window,
+						glibTypeNameFromInstance(event->window)
+					);
+
+					isPrinted = 1;
+				}
+
+				if (!isPrinted && (i == callbackData[index].arg_SwtSignalID)) {
+					int signalID = (int)(long long)arg;
+					const char* signalName = swtSignalNameFromId(signalID);
+					if (signalName)
+						fprintf(stderr, "%s ", signalName);
+					else
+						fprintf(stderr, "%d ", signalID);
+					isPrinted = 1;
+				}
+			#endif
+
+			if (!isPrinted)
+				fprintf(stderr, "%p ", arg);
+		}
+		fprintf(stderr, ") {\n");
+
+		fflush(stderr);
+		va_end(vaCopy);
+	}
 #endif
 
 #ifdef JNI_VERSION_1_2
@@ -1092,20 +1320,25 @@ jlong callback(int index, ...)
 	/* If the current thread is not attached to the VM, it is not possible to call into the VM */
 	if (env == NULL) {
 #ifdef DEBUG_CALL_PRINTS
-		fprintf(stderr, "* could not get env\n");
+		fprintf(stderr, "SWT-JNI:%*s ERROR(%d): (env == NULL)\n", counter, "", __LINE__);
+		fflush(stderr);
 #endif
 		goto noEnv;
 	}
 
 	/* If an exception has occurred in previous callbacks do not call into the VM. */
 	if ((ex = (*env)->ExceptionOccurred(env))) {
+#ifdef DEBUG_CALL_PRINTS
+		fprintf(stderr, "SWT-JNI:%*s ERROR(%d): (*env)->ExceptionOccurred()\n", counter, "", __LINE__);
+		fflush(stderr);
+#endif
 		(*env)->DeleteLocalRef(env, ex);
 		goto done;
 	}
 
 	/* Call into the VM. */
 	ATOMIC_INC(callbackEntryCount);
-	va_start(vl, index);
+
 	if (isArrayBased) {
 		int i;
 		jlongArray argsArray = (*env)->NewLongArray(env, argCount);
@@ -1135,16 +1368,23 @@ jlong callback(int index, ...)
 			result = (*env)->CallLongMethodV(env, object, mid, vl);
 		}
 	}
-	va_end(vl);
 	ATOMIC_DEC(callbackEntryCount);
 
 done:
+	va_end(vl);
+
 	/* If an exception has occurred in Java, return the error result. */
 	if ((ex = (*env)->ExceptionOccurred(env))) {
 		(*env)->DeleteLocalRef(env, ex);
 #ifdef DEBUG_CALL_PRINTS
-		fprintf(stderr, "* java exception occurred\n");
-		(*env)->ExceptionDescribe(env);
+		fprintf(stderr, "SWT-JNI:%*s ERROR(%d): (*env)->ExceptionOccurred()\n", counter, "", __LINE__);
+		fflush(stderr);
+
+		/* 
+		 * WARNING: ExceptionDescribe() also clears exception as if it never happened.
+		 * Don't do this because it changes the behavior of debugged program significantly.
+		 * (*env)->ExceptionDescribe(env);
+		 */
 #endif
 		result = callbackData[index].errorResult;
 	}
@@ -1157,7 +1397,9 @@ done:
 noEnv:
 
 #ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "* callback exiting %d\n", --counter);
+	fprintf(stderr, "SWT-JNI:%*s} ret=%p\n", counter, "", (void*)result);
+	fflush(stderr);
+	counter--;
 #endif
 
 	return result;

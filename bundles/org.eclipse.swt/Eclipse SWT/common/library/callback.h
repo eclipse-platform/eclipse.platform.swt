@@ -33,13 +33,21 @@
 #define MAX_ARGS 12
 
 typedef struct CALLBACK_DATA {
-    jobject callback;
-    jmethodID methodID;
-  	jobject object;
+	jobject callback;
+	jmethodID methodID;
+	jobject object;
 	jboolean isStatic;
 	jboolean isArrayBased; 
 	jint argCount;
 	jlong errorResult;
+
+#if   defined(COCOA)
+	int arg_Selector;
+#elif defined(GTK)
+	int arg_GObject;
+	int arg_GdkEvent;
+	int arg_SwtSignalID;
+#endif
 } CALLBACK_DATA;
 
 #endif /* ifndef INC_callback_H */
