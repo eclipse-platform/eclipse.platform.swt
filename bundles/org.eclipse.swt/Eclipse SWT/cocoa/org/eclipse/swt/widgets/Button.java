@@ -467,7 +467,7 @@ NSRect drawTitleWithFrameInView (long id, long sel, long title, NSRect titleRect
 		wrapSize.height = MAX_SIZE;
 		final double[] foreground2;
 		if (isEnabled) {
-			foreground2 = foreground;
+			foreground2 = foreground == null ? display.getNSColorRGB (NSColor.textColor()) : foreground;
 		} else if (foreground == null) {
 			foreground2 = DEFAULT_DISABLED_FOREGROUND;
 		} else {
