@@ -1622,6 +1622,10 @@ public long internal_new_GC (GCData data) {
 		NSBitmapImageRep imageRep = getRepresentation();
 
 		NSGraphicsContext context = NSGraphicsContext.graphicsContextWithBitmapImageRep(imageRep);
+		if (context == null) {
+			imageRep.setAlpha(false);
+			context = NSGraphicsContext.graphicsContextWithBitmapImageRep(imageRep);
+		}
 		NSGraphicsContext flippedContext = NSGraphicsContext.graphicsContextWithGraphicsPort(context.graphicsPort(), true);
 		context = flippedContext;
 		context.retain();
