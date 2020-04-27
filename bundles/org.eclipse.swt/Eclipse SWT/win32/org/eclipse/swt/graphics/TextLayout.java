@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2018 IBM Corporation and others.
+ * Copyright (c) 2000, 2020 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -2728,6 +2728,9 @@ StyleItem[] itemize () {
 	char[] chars = new char[length];
 	segmentsText.getChars(0, length, chars, 0);
 	OS.ScriptItemize(chars, length, MAX_ITEM, scriptControl, scriptState, pItems, pcItems);
+	// enable font ligatures
+	scriptControl.fMergeNeutralItems = true;
+
 //	if (hr == E_OUTOFMEMORY) //TODO handle it
 
 	StyleItem[] runs = merge(pItems, pcItems[0]);
