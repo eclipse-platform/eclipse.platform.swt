@@ -1874,6 +1874,7 @@ public static final long sel_setUsesFontPanel_ = Selector.sel_setUsesFontPanel_.
 public static final long sel_setUsesScreenFonts_ = Selector.sel_setUsesScreenFonts_.value;
 public static final long sel_setUsesSingleLineMode_ = Selector.sel_setUsesSingleLineMode_.value;
 public static final long sel_setUsesThreadedAnimation_ = Selector.sel_setUsesThreadedAnimation_.value;
+public static final long sel_setValue_forHTTPHeaderField_ = Selector.sel_setValue_forHTTPHeaderField_.value;
 public static final long sel_setValue_forKey_ = Selector.sel_setValue_forKey_.value;
 public static final long sel_setValueWraps_ = Selector.sel_setValueWraps_.value;
 public static final long sel_setValues_forParameter_ = Selector.sel_setValues_forParameter_.value;

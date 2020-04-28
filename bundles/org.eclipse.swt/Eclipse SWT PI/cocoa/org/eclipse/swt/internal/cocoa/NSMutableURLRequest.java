@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2019 IBM Corporation and others.
+ * Copyright (c) 2000, 2020 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -41,6 +41,10 @@ public void setHTTPMethod(NSString HTTPMethod) {
 
 public void setURL(NSURL URL) {
 	OS.objc_msgSend(this.id, OS.sel_setURL_, URL != null ? URL.id : 0);
+}
+
+public void setValue(NSString value, NSString field) {
+	OS.objc_msgSend(this.id, OS.sel_setValue_forHTTPHeaderField_, value != null ? value.id : 0, field != null ? field.id : 0);
 }
 
 public static NSMutableURLRequest requestWithURL(NSURL URL) {

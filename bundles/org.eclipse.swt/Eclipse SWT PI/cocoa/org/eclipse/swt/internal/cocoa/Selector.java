@@ -1157,6 +1157,7 @@ public enum Selector {
 	, sel_setUsesScreenFonts_("setUsesScreenFonts:")
 	, sel_setUsesSingleLineMode_("setUsesSingleLineMode:")
 	, sel_setUsesThreadedAnimation_("setUsesThreadedAnimation:")
+	, sel_setValue_forHTTPHeaderField_("setValue:forHTTPHeaderField:")
 	, sel_setValue_forKey_("setValue:forKey:")
 	, sel_setValueWraps_("setValueWraps:")
 	, sel_setValues_forParameter_("setValues:forParameter:")
