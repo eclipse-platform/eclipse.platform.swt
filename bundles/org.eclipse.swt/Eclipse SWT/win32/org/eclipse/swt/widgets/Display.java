@@ -4498,12 +4498,12 @@ public final Consumer<Error> getErrorHandler () {
 	return errorHandler;
 }
 
+boolean isDarkModeExplorerTheme() {
+	return Boolean.valueOf(System.getProperty(ENABLE_DARK_SCROLLBARS));
+}
+
 char[] getExplorerTheme() {
-	String enableDarkScrollBar = System.getProperty(ENABLE_DARK_SCROLLBARS);
-	if (enableDarkScrollBar != null && Boolean.valueOf(enableDarkScrollBar)) {
-		return DARKMODE_EXPLORER;
-	}
-	return EXPLORER;
+	return isDarkModeExplorerTheme() ? DARKMODE_EXPLORER : EXPLORER;
 }
 
 int shiftedKey (int key) {
