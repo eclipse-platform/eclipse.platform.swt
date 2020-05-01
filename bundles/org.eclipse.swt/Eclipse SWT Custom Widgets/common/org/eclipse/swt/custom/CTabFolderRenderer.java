@@ -1795,6 +1795,7 @@ public class CTabFolderRenderer {
 		if (this.getClass().getName().equals("org.eclipse.e4.ui.workbench.renderers.swt.CTabRendering")) return;
 		int tabHeight = parent.tabHeight;
 		if (tabHeight == lastTabHeight) return;
+		lastTabHeight = tabHeight;
 		if (parent.onBottom) {
 			int d = tabHeight - 12;
 			curve = new int[]{0,13+d, 0,12+d, 2,12+d, 3,11+d, 5,11+d, 6,10+d, 7,10+d, 9,8+d, 10,8+d,
