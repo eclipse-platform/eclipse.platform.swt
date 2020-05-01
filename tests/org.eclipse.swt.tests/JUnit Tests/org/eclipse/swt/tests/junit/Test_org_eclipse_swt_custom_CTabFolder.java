@@ -44,6 +44,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
@@ -122,8 +123,12 @@ private void makeCleanEnvironment(int style) {
 }
 
 private void createTabFolder(List<String> events) {
+	createTabFolder(events, 3);
+}
+
+private void createTabFolder(List<String> events, int numItems) {
 	makeCleanEnvironment();
-	for (int i = 0; i < 3; i++) {
+	for (int i = 0; i < numItems; i++) {
 		CTabItem item = new CTabItem(ctabFolder, SWT.NONE);
 		item.setText("CTabItem &" + i);
 		item.setToolTipText("CTabItem ToolTip" + i);
@@ -285,6 +290,7 @@ public void test_chevronAppearanceChanged() {
 	ToolItem chevron = showChevron();
 
 	Image oldChevronImg = new Image(display, chevron.getImage(), SWT.IMAGE_COPY);
+	Font newFont = null;
 	try {
 		ctabFolder.setForeground(display.getSystemColor(SWT.COLOR_DARK_GREEN));
 		Image newChevronImg = chevron.getImage();
@@ -296,12 +302,15 @@ public void test_chevronAppearanceChanged() {
 		FontData[] existingFontData = ctabFolder.getFont().getFontData();
 		existingFontData[0].setName(SwtTestUtil.testFontName);
 		existingFontData[0].setStyle(SWT.BOLD | SWT.ITALIC);
-		Font newFont = new Font(display, existingFontData);
+		newFont = new Font(display, existingFontData);
 		ctabFolder.setFont(newFont);
 		newChevronImg = chevron.getImage();
 		ImageTestUtil.assertImagesNotEqual(oldChevronImg.getImageData(), newChevronImg.getImageData());
 	} finally {
 		oldChevronImg.dispose();
+		if (newFont != null) {
+			newFont.dispose();
+		}
 	}
 }
 
@@ -381,6 +390,37 @@ public void test_childControlOverlap() {
 	setTopRightAndCheckOverlap.accept(null, 0);
 }
 
+/**
+ * Min/max and chevron icon can appear below tab row.
+ * Test for bug 499215, 533582.
+ */
+@Test
+public void test_iconWrappedOnNextLine() {
+	createTabFolder(null);
+
+	FontData[] existingFontData = ctabFolder.getFont().getFontData();
+	existingFontData[0].setName(SwtTestUtil.testFontName);
+	existingFontData[0].setHeight(3);
+	Font smallFont = new Font(ctabFolder.getDisplay(), existingFontData);
+	try {
+		SwtTestUtil.openShell(shell);
+		ctabFolder.setFont(smallFont);
+
+		ctabFolder.setMaximizeVisible(true);
+		processEvents();
+		assertTabElementsInLine();
+
+		createTabFolder(null, 20);
+		ctabFolder.setFont(smallFont);
+		shell.layout(true, true);
+		showChevron();
+		processEvents();
+		assertTabElementsInLine();
+	} finally {
+		smallFont.dispose();
+	}
+}
+
 private void processEvents() {
 	Display display = shell.getDisplay();
 
@@ -422,9 +462,13 @@ private ToolItem showChevron() {
 		itemWidth += item.getBounds().width;
 	}
 	// resize shell to force a chevron
-	shell.setSize(itemWidth*3/4, shell.getSize().y);
+	int newWidth = itemWidth*3/4;
+	shell.setSize(newWidth, shell.getSize().y);
+	boolean resizeFailed = Math.abs(newWidth - shell.getSize().x) > 10;
 	ToolItem chevron = getChevron(ctabFolder);
-	assertNotNull("Chevron not shown", chevron);
+	assertNotNull("Chevron not shown" + (resizeFailed
+			? ". Shell could not be resized to the desired size. Tab row width might be smaller than the minimum shell width."
+			: ""), chevron);
 	return chevron;
 }
 
@@ -496,6 +540,55 @@ private static Control[] reflection_getChildControls(CTabFolder tabFolder) {
 		fail("Failed to access controls via reflections.");
 		return null;
 	}
+}
+
+/**
+ * Check if all CTabItems and toolbar icons like min/max, chevron are all in one line and not wrapped.
+ */
+private void assertTabElementsInLine() {
+	List<Rectangle> tabBarElementBounds = new ArrayList<>();
+	Arrays.stream(ctabFolder.getItems()).filter(CTabItem::isShowing).map(this::getBoundsInShell).forEach(tabBarElementBounds::add);
+	for (Control child : ctabFolder.getChildren()) {
+		if (child instanceof ToolBar) {
+			for (ToolItem toolItem : ((ToolBar)child).getItems()) {
+				if (toolItem.getImage() != null) {
+					tabBarElementBounds.add(getBoundsInShell(toolItem));
+				}
+			}
+		}
+	}
+	Rectangle maxBound = tabBarElementBounds.get(0);
+	for (Rectangle bound : tabBarElementBounds) {
+		if (bound.height > maxBound.height) {
+			assertTrue("Element at " + maxBound + " is not on line.", bound.y <= maxBound.y && bound.y + bound.height >= maxBound.y + maxBound.height);
+			maxBound = bound;
+		} else {
+			assertTrue("Element at " + bound + " is not on line.", bound.y >= maxBound.y && bound.y + bound.height <= maxBound.y + maxBound.height);
+		}
+	}
+}
+
+private Rectangle getBoundsInShell(Widget control) {
+	Control parent;
+	Rectangle bounds;
+	if (control instanceof Control) {
+		parent = ((Control)control).getParent();
+		bounds = ((Control)control).getBounds();
+	} else if (control instanceof CTabItem) {
+		parent = ((CTabItem)control).getParent();
+		bounds = ((CTabItem)control).getBounds();
+	} else if (control instanceof ToolItem) {
+		parent = ((ToolItem)control).getParent();
+		bounds = ((ToolItem)control).getBounds();
+	} else {
+		throw new UnsupportedOperationException("Widget must provide bounds and parent");
+	}
+	if (parent != null && !(parent instanceof Shell)) {
+		Rectangle absParentBound = getBoundsInShell(parent);
+		bounds.x += absParentBound.x;
+		bounds.y += absParentBound.y;
+	}
+	return bounds;
 }
 
 }

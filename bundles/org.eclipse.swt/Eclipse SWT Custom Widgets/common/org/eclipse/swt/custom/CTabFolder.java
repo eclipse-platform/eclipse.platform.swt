@@ -784,9 +784,8 @@ void destroyItem (CTabItem item) {
 			control.setVisible(false);
 		}
 		setToolTipText(null);
-		GC gc = new GC(this);
-		setButtonBounds(gc);
-		gc.dispose();
+		updateButtons();
+		setButtonBounds();
 		redraw();
 		return;
 	}
@@ -2497,8 +2496,11 @@ public void setBorderVisible(boolean show) {
 	this.borderVisible = show;
 	updateFolder(REDRAW);
 }
-void setButtonBounds(GC gc) {
-	Point size = getSize();
+
+/**
+ * Create or dispose min/max buttons.
+ */
+void updateButtons() {
 	// max button
 	Display display = getDisplay();
 	if (showMax) {
@@ -2551,10 +2553,17 @@ void setButtonBounds(GC gc) {
 		minMaxTb.dispose();
 		minMaxTb = null;
 	}
+}
+
+/**
+ * Update button bounds for min/max and update chevron button.
+ */
+void setButtonBounds() {
 	if (showChevron) {
 		updateChevronImage(false);
 	}
 
+	Point size = getSize();
 	boolean[][] overflow = new boolean[1][0];
 	Rectangle[] rects = computeControlBounds(size, overflow);
 	if (fixedTabHeight != SWT.DEFAULT) {
@@ -3826,9 +3835,17 @@ boolean updateItems (int showIndex) {
 
 	boolean oldShowChevron = showChevron;
 	boolean changed = setItemSize(gc);
+	updateButtons();
+	boolean chevronChanged = showChevron != oldShowChevron;
+	if (chevronChanged) {
+		if (updateTabHeight(false)) {
+			// Tab height has changed. Item sizes have to be set again.
+			changed |= setItemSize(gc);
+		}
+	}
 	changed |= setItemLocation(gc);
-	setButtonBounds(gc);
-	changed |= showChevron != oldShowChevron;
+	setButtonBounds();
+	changed |= chevronChanged;
 	if (changed && getToolTipText() != null) {
 		Point pt = getDisplay().getCursorLocation();
 		pt = toControl(pt);
@@ -3872,6 +3889,7 @@ void runUpdate() {
 	int flags = updateFlags;
 	updateFlags = 0;
 	Rectangle rectBefore = getClientArea();
+	updateButtons();
 	updateTabHeight(false);
 	updateItems(selectedIndex);
 	if ((flags & REDRAW) != 0) {
