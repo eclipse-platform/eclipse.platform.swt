@@ -42,7 +42,7 @@ class CTabFolderTab extends Tab {
 
 	/* Example widgets and groups that contain them */
 	CTabFolder tabFolder1;
-	Group tabFolderGroup, itemGroup;
+	Group tabFolderGroup, itemGroup, tabHeightGroup;
 
 	/* Style widgets added to the "Style" group */
 	Button topButton, bottomButton, flatButton, closeButton;
@@ -56,7 +56,9 @@ class CTabFolderTab extends Tab {
 	static final int SELECTION_FOREGROUND_COLOR = 3;
 	static final int SELECTION_BACKGROUND_COLOR = 4;
 	static final int ITEM_FONT = 5;
-	Color selectionForegroundColor, selectionBackgroundColor;
+	static final int ITEM_FOREGROUND_COLOR = 6;
+	static final int ITEM_BACKGROUND_COLOR = 7;
+	Color selectionForegroundColor, selectionBackgroundColor, itemForegroundColor, itemBackgroundColor;
 	Font itemFont;
 
 	/* Other widgets added to the "Other" group */
@@ -65,11 +67,41 @@ class CTabFolderTab extends Tab {
 
 	ToolBar topRightControl;
 
+	Button tabHeightDefault, tabHeightSmall, tabHeightMedium, tabHeightLarge;
+
 	/**
 	 * Creates the Tab within a given instance of ControlExample.
 	 */
 	CTabFolderTab(ControlExample instance) {
 		super(instance);
+	}
+
+	@Override
+	void createControlGroup() {
+		super.createControlGroup();
+
+		/* Create a group for the CTabFolder */
+		tabHeightGroup = new Group (controlGroup, SWT.NONE);
+		tabHeightGroup.setLayout (new GridLayout ());
+		tabHeightGroup.setLayoutData (new GridData (SWT.FILL, SWT.FILL, true, true));
+		tabHeightGroup.setText (ControlExample.getResourceString ("Tab_Height"));
+
+		tabHeightDefault = new Button(tabHeightGroup, SWT.RADIO);
+		tabHeightDefault.setText(ControlExample.getResourceString("Preferred"));
+		tabHeightDefault.setSelection(true);
+		tabHeightDefault.addSelectionListener (widgetSelectedAdapter(event -> setTabHeight(SWT.DEFAULT)));
+
+		tabHeightSmall = new Button(tabHeightGroup, SWT.RADIO);
+		tabHeightSmall.setText("8");
+		tabHeightSmall.addSelectionListener (widgetSelectedAdapter(event -> setTabHeight(Integer.parseInt(tabHeightSmall.getText()))));
+
+		tabHeightMedium = new Button(tabHeightGroup, SWT.RADIO);
+		tabHeightMedium.setText("20");
+		tabHeightMedium.addSelectionListener (widgetSelectedAdapter(event -> setTabHeight(Integer.parseInt(tabHeightMedium.getText()))));
+
+		tabHeightLarge = new Button(tabHeightGroup, SWT.RADIO);
+		tabHeightLarge.setText("45");
+		tabHeightLarge.addSelectionListener (widgetSelectedAdapter(event -> setTabHeight(Integer.parseInt(tabHeightLarge.getText()))));
 	}
 
 	/**
@@ -85,14 +117,22 @@ class CTabFolderTab extends Tab {
 		item.setText(ControlExample.getResourceString ("Selection_Background_Color"));
 		item = new TableItem(colorAndFontTable, SWT.None);
 		item.setText(ControlExample.getResourceString ("Item_Font"));
+		item = new TableItem(colorAndFontTable, SWT.None);
+		item.setText(ControlExample.getResourceString ("Item_Foreground_Color"));
+		item = new TableItem(colorAndFontTable, SWT.None);
+		item.setText(ControlExample.getResourceString ("Item_Background_Color"));
 
 		shell.addDisposeListener(event -> {
 			if (selectionBackgroundColor != null) selectionBackgroundColor.dispose();
 			if (selectionForegroundColor != null) selectionForegroundColor.dispose();
 			if (itemFont != null) itemFont.dispose();
+			if (itemBackgroundColor != null) itemBackgroundColor.dispose();
+			if (itemForegroundColor != null) itemForegroundColor.dispose();
 			selectionBackgroundColor = null;
 			selectionForegroundColor = null;
 			itemFont = null;
+			itemBackgroundColor = null;
+			itemForegroundColor = null;
 		});
 	}
 
@@ -134,6 +174,30 @@ class CTabFolderTab extends Tab {
 				setItemFont ();
 				setExampleWidgetSize ();
 				if (oldFont != null) oldFont.dispose ();
+			}
+			break;
+			case ITEM_FOREGROUND_COLOR: {
+				Color oldColor = itemForegroundColor;
+				if (oldColor == null) oldColor = tabFolder1.getItem(0).getControl().getForeground();
+				colorDialog.setRGB(oldColor.getRGB());
+				RGB rgb = colorDialog.open();
+				if (rgb == null) return;
+				oldColor = itemForegroundColor;
+				itemForegroundColor = new Color (display, rgb);
+				setItemForeground ();
+				if (oldColor != null) oldColor.dispose ();
+			}
+			break;
+			case ITEM_BACKGROUND_COLOR: {
+				Color oldColor = itemBackgroundColor;
+				if (oldColor == null) oldColor = tabFolder1.getItem(0).getControl().getBackground();
+				colorDialog.setRGB(oldColor.getRGB());
+				RGB rgb = colorDialog.open();
+				if (rgb == null) return;
+				oldColor = itemBackgroundColor;
+				itemBackgroundColor = new Color (display, rgb);
+				setItemBackground ();
+				if (oldColor != null) oldColor.dispose ();
 			}
 			break;
 			default:
@@ -353,6 +417,13 @@ class CTabFolderTab extends Tab {
 		itemFont = null;
 		setItemFont ();
 		if (oldFont != null) oldFont.dispose();
+		oldColor = itemForegroundColor;
+		itemForegroundColor = null;
+		setItemForeground ();
+		if (oldColor != null) oldColor.dispose();
+		oldColor = itemBackgroundColor;
+		itemBackgroundColor = null;
+		setItemBackground ();
 	}
 
 	/**
@@ -371,6 +442,8 @@ class CTabFolderTab extends Tab {
 		setSelectionBackground ();
 		setSelectionForeground ();
 		setItemFont ();
+		setItemBackground();
+		setItemForeground();
 		setExampleWidgetSize();
 	}
 
@@ -504,5 +577,46 @@ class CTabFolderTab extends Tab {
 		item.setImage (fontImage(ft));
 		item.setFont(ft);
 		colorAndFontTable.layout ();
+	}
+
+	/**
+	 * Sets the background color of the CTabItem 0 content element.
+	 */
+	void setItemBackground () {
+		if (!instance.startup) {
+			tabFolder1.getItem(0).getControl().setBackground(itemBackgroundColor);
+		}
+		/* Set the background color item's image to match the background color of the content. */
+		Color color = itemBackgroundColor;
+		if (color == null) color = tabFolder1.getItem(0).getControl().getBackground();
+		TableItem item = colorAndFontTable.getItem(ITEM_BACKGROUND_COLOR);
+		Image oldImage = item.getImage();
+		if (oldImage != null) oldImage.dispose();
+		item.setImage (colorImage(color));
+	}
+
+	/**
+	 * Sets the foreground color of the CTabItem 0  content element.
+	 */
+	void setItemForeground () {
+		if (!instance.startup) {
+			tabFolder1.getItem(0).getControl().setForeground(itemForegroundColor);
+		}
+		/* Set the foreground color item's image to match the foreground color of the content. */
+		Color color = itemForegroundColor;
+		if (color == null) color = tabFolder1.getItem(0).getControl().getForeground();
+		TableItem item = colorAndFontTable.getItem(ITEM_FOREGROUND_COLOR);
+		Image oldImage = item.getImage();
+		if (oldImage != null) oldImage.dispose();
+		item.setImage (colorImage(color));
+	}
+
+	/**
+	 * Set the fixed item height for the CTabFolder
+	 *
+	 * @param height new fixed header height
+	 */
+	void setTabHeight(int height) {
+		tabFolder1.setTabHeight(height);
 	}
 }
