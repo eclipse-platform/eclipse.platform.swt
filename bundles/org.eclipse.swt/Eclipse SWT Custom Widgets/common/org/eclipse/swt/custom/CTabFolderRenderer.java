@@ -402,9 +402,10 @@ public class CTabFolderRenderer {
 		int borderRight = borderLeft;
 		int borderTop = parent.onBottom ? borderLeft : 0;
 		int borderBottom = parent.onBottom ? 0 : borderLeft;
-		int tabHeight = parent.tabHeight;
 		switch (part) {
 			case PART_BODY:
+				parent.runUpdate(CTabFolder.UPDATE_TAB_HEIGHT);
+				int tabHeight = parent.tabHeight;
 				int style = parent.getStyle();
 				int highlight_header = (style & SWT.FLAT) != 0 ? 1 : 3;
 				int highlight_margin = (style & SWT.FLAT) != 0 ? 0 : 2;
@@ -788,6 +789,7 @@ public class CTabFolderRenderer {
 	void drawBody(GC gc, Rectangle bounds, int state) {
 		Point size = new Point(bounds.width, bounds.height);
 		int selectedIndex = parent.selectedIndex;
+		parent.runUpdate(CTabFolder.UPDATE_TAB_HEIGHT);
 		int tabHeight = parent.tabHeight;
 
 		int borderLeft = parent.borderVisible ? 1 : 0;
@@ -1793,6 +1795,7 @@ public class CTabFolderRenderer {
 	void updateCurves () {
 		//Temp fix for Bug 384743
 		if (this.getClass().getName().equals("org.eclipse.e4.ui.workbench.renderers.swt.CTabRendering")) return;
+		parent.runUpdate(CTabFolder.UPDATE_TAB_HEIGHT);
 		int tabHeight = parent.tabHeight;
 		if (tabHeight == lastTabHeight) return;
 		lastTabHeight = tabHeight;

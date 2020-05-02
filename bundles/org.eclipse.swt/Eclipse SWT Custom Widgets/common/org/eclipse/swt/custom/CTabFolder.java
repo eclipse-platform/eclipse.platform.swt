@@ -1281,6 +1281,7 @@ public int getStyle() {
 public int getTabHeight(){
 	checkWidget();
 	if (fixedTabHeight != SWT.DEFAULT) return fixedTabHeight;
+	runUpdate(UPDATE_TAB_HEIGHT);
 	return tabHeight - 1; // -1 for line drawn across top of tab //TODO: replace w/ computeTrim of tab area?
 }
 /**
@@ -2696,7 +2697,7 @@ public void setFont(Font font) {
 	// Redraw request alone would only redraw the cached image with old font.
 	renderer.chevronFont = null; // renderer will pickup and adjust(!) the new font automatically
 	updateChevronImage(true);
-	updateFolder(REDRAW);
+	updateFolder(REDRAW | UPDATE_TAB_HEIGHT);
 }
 @Override
 public void setForeground (Color color) {
@@ -3882,6 +3883,30 @@ void updateFolder (int flags) {
 		runUpdate();
 	};
 	getDisplay().asyncExec(updateRun);
+}
+
+/**
+ * Run pending updates if one of the given update flags is deferred for update.
+ * <p>
+ * If an update is deferred there is no guarantee if only the requested update
+ * is run or all pending update types.
+ *
+ * @param flags only run update if one of this update types is pending
+ */
+void runUpdate(int flags) {
+	if ((updateFlags & flags) != 0) {
+		// if requested update is only tab height, update only tab height
+		if (flags == UPDATE_TAB_HEIGHT) {
+			updateFlags &= ~flags;
+			// Changes in button state (added/removed min/max button) can influence the new
+			// tab height. There is no separate flag to run button updates and no need to
+			// introduce one because the update method is very cheap to run if nothing changed.
+			updateButtons();
+			updateTabHeight(false);
+		} else {
+			runUpdate();
+		}
+	}
 }
 
 void runUpdate() {

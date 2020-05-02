@@ -25,6 +25,8 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.BiConsumer;
 
 import org.eclipse.swt.SWT;
@@ -50,7 +52,6 @@ import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
 import org.eclipse.swt.widgets.Widget;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -198,7 +199,9 @@ public void test_setHighlightEnabled () {
 	assertTrue(ctabFolder.getHighlightEnabled());
 }
 
-@Ignore("Currently failing due to Bug 507611. E.g: Height is 50 instead of being at least 59")
+/**
+ * Test for bug 507611.
+ */
 @Test
 public void test_checkSize() {
 	shell.setLayout(new GridLayout(1, false));
@@ -418,6 +421,123 @@ public void test_iconWrappedOnNextLine() {
 		assertTabElementsInLine();
 	} finally {
 		smallFont.dispose();
+	}
+}
+
+/**
+ * As default the CTabFolder tab row adjust its height automatically as required for the shown content.
+ * This test checks if height changes for different operations including: font size change, showing tab image,
+ * min/max icon and chevron.
+ */
+@Test
+public void test_tabHeightPreferedResize() {
+	createTabFolder(null);
+
+	AtomicInteger oldTabHeight = new AtomicInteger();
+	AtomicReference<Rectangle> oldClientArea = new AtomicReference<>();
+	// function to check if tab height changed since last check
+	// direction <= -1 -> expect height has shrunk
+	// direction = 0 -> expect height did not changed
+	// direction >= 1 -> expect height has grown
+	// msg = optional message to be appended on assertion message
+	BiConsumer<Integer, String> assertTabHeightChange = (direction, msg) -> {
+		int newTabHeight = ctabFolder.getTabHeight();
+		Rectangle newClientArea = ctabFolder.getClientArea();
+		String assertMsgTemplate = "Tab %s should %s%s. %d %s %d";
+		if (msg == null) {
+			msg = "";
+		}
+		if (!msg.isEmpty() && !msg.startsWith(" ")) {
+			msg = " " + msg;
+		}
+		if (direction > 0) {
+			assertTrue(String.format(assertMsgTemplate, "height", "grow", msg, newTabHeight, ">", oldTabHeight.get()), newTabHeight > oldTabHeight.get());
+			assertTrue(String.format(assertMsgTemplate, "client area offset", "grow", msg, newClientArea.y, ">", oldClientArea.get().y), newClientArea.y > oldClientArea.get().y);
+		} else if (direction < 0) {
+			assertTrue(String.format(assertMsgTemplate, "height", "shrink", msg, newTabHeight, "<", oldTabHeight.get()), newTabHeight < oldTabHeight.get());
+			assertTrue(String.format(assertMsgTemplate, "client area offset", "shrink", msg, newClientArea.y, "<", oldClientArea.get().y), newClientArea.y < oldClientArea.get().y);
+		} else {
+			assertTrue(String.format(assertMsgTemplate, "height", "not change", msg, newTabHeight, "==", oldTabHeight.get()), newTabHeight == oldTabHeight.get());
+			assertTrue(String.format(assertMsgTemplate, "client area offset", "not change", msg, newClientArea.y, "==", oldClientArea.get().y), newClientArea.y == oldClientArea.get().y);
+		}
+		oldTabHeight.set(newTabHeight);
+		oldClientArea.set(newClientArea);
+	};
+	Runnable rememberTabHeight = () -> {
+		oldTabHeight.set(ctabFolder.getTabHeight());
+		oldClientArea.set(ctabFolder.getClientArea());
+	};
+
+	Font initalFont = ctabFolder.getFont();
+	FontData[] existingFontData = initalFont.getFontData();
+	existingFontData[0].setName(SwtTestUtil.testFontName);
+	existingFontData[0].setHeight(3);
+	Font smallFont = new Font(ctabFolder.getDisplay(), existingFontData);
+	existingFontData[0].setHeight(20);
+	Font largeFont = new Font(ctabFolder.getDisplay(), existingFontData);
+	existingFontData[0].setHeight(55);
+	Font hugeFont = new Font(ctabFolder.getDisplay(), existingFontData);
+	try {
+		SwtTestUtil.openShell(shell);
+		rememberTabHeight.run();
+
+		// Test tab height changes due to font size change
+		ctabFolder.setFont(smallFont);
+		assertTabHeightChange.accept(-1, "with smaller font");
+
+		ctabFolder.setFont(largeFont);
+		assertTabHeightChange.accept(+1, "with larger font");
+
+		ctabFolder.setFont(initalFont);
+		assertTabHeightChange.accept(-1, "with smaller font");
+
+		// Test tab height can change from showing min/max icon
+		ctabFolder.setFont(smallFont);
+		rememberTabHeight.run();
+		ctabFolder.setMinimizeVisible(true);
+		assertTabHeightChange.accept(+1, "with minimize icon");
+
+		ctabFolder.setMaximizeVisible(true);
+		assertTabHeightChange.accept(0, "");
+
+		ctabFolder.setMinimizeVisible(false);
+		ctabFolder.setMaximizeVisible(false);
+		assertTabHeightChange.accept(-1, "without icons");
+
+		// Test tab height change with tab icon
+		Image systemIcon = ctabFolder.getDisplay().getSystemImage(SWT.ICON_INFORMATION);
+		ctabFolder.setSelection(0);
+		ctabFolder.getItem(0).setImage(systemIcon);
+		assertTabHeightChange.accept(+1, "with tab icon");
+
+		ctabFolder.getItem(0).setImage(null);
+		ctabFolder.getItem(1).setImage(systemIcon);
+		ctabFolder.setUnselectedImageVisible(true);
+		assertTabHeightChange.accept(0, "");
+
+		ctabFolder.getItem(0).setFont(hugeFont);
+		assertTabHeightChange.accept(+1, "with font larger than icon");
+
+		// Test tab height change with chevron
+		createTabFolder(null, 10);
+		ctabFolder.setFont(smallFont);
+		shell.layout(true, true);
+		processEvents();
+		rememberTabHeight.run();
+		showChevron();
+		assertTabHeightChange.accept(+1, "with chevron");
+
+		createTabFolder(null, 10);
+		ctabFolder.setFont(largeFont);
+		shell.layout(true, true);
+		processEvents();
+		rememberTabHeight.run();
+		showChevron();
+		assertTabHeightChange.accept(0, "with chevron");
+	} finally {
+		smallFont.dispose();
+		largeFont.dispose();
+		hugeFont.dispose();
 	}
 }
 
