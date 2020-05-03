@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2004, 2017 IBM Corporation and others.
+ * Copyright (c) 2004, 2020 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -88,7 +88,7 @@ public ASTMethod(ASTClass declaringClass, String source, MethodDeclaration metho
 			for (TagElement tag : tags) {
 				if ("@param".equals(tag.getTagName())) {
 					List<?> fragments = tag.fragments();
-					if (name.equals(fragments.get(0).toString())) {
+					if (fragments.size() >= 2 && name.equals(fragments.get(0).toString())) {
 						String data = fragments.get(1).toString();
 						this.parameters[i].setMetaData(data);
 					}

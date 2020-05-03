@@ -2332,7 +2332,7 @@ public static final long SendMessage (long hWnd, int Msg, long wParam, TCHAR lPa
  * have this concept.
  * </p>
  *
- * @param isDarkTheme
+ * @param isDarkTheme <code>true</code> for dark theme
  */
 public static final void setTheme(boolean isDarkTheme) {
 	System.setProperty("org.eclipse.swt.internal.win32.enableDarkScrollbars", Boolean.toString(isDarkTheme));
