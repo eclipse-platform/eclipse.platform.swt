@@ -76,6 +76,7 @@ import org.eclipse.swt.internal.cocoa.*;
  * @noextend This class is not intended to be subclassed by clients.
  */
 public class Tree extends Composite {
+	private static final TreeItem[] NO_ITEM = new TreeItem[0];
 	NSTableColumn firstColumn, checkColumn;
 	NSTextFieldCell dataCell;
 	NSButtonCell buttonCell;
@@ -1829,7 +1830,7 @@ public TreeItem [] getSelection () {
 	checkWidget ();
 	NSOutlineView widget = (NSOutlineView) view;
 	if (widget.numberOfSelectedRows () == 0) {
-		return new TreeItem [0];
+		return NO_ITEM;
 	}
 	NSIndexSet selection = widget.selectedRowIndexes ();
 	int count = (int)selection.count ();
