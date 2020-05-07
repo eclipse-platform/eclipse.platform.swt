@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2019 IBM Corporation and others.
+ * Copyright (c) 2020 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -51,7 +51,7 @@ public class ImageUtil {
 		NSRect sourceRect = new NSRect();
 		sourceRect.width = 0;
 		sourceRect.height = 0;
-		imgHandle.drawInRect(target, sourceRect, OS.NSCompositeCopy, 1);
+		imgHandle.drawInRect(target, sourceRect, OS.NSCompositeCopy, 0);
 		NSGraphicsContext.static_restoreGraphicsState();
 		rep.autorelease();
 		return rep;
