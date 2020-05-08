@@ -1110,9 +1110,9 @@ boolean checkAndSetThemeDetails (String themeName) {
 		return true;
 	}
 	long settings = GTK.gtk_settings_get_default ();
-	boolean [] darkThemePreferred = new boolean [1];
+	int [] darkThemePreferred = new int [1];
 	OS.g_object_get(settings, GTK.gtk_application_prefer_dark_theme, darkThemePreferred, 0);
-	if (darkThemePreferred[0]) {
+	if (darkThemePreferred[0] != 0) {
 		/*
 		 * When 'gtk-application-prefer-dark-theme' is set to true, GTK uses the 'dark'
 		 * variant of the theme specified in the system settings -- see 'get_theme_name'
@@ -1122,7 +1122,7 @@ boolean checkAndSetThemeDetails (String themeName) {
 	} else {
 		System.setProperty("org.eclipse.swt.internal.gtk.theme", themeName);
 	}
-	return darkThemePreferred[0];
+	return darkThemePreferred[0] != 0;
 }
 
 void createDisplay (DeviceData data) {

@@ -1078,12 +1078,6 @@ public static final native void g_object_get(long object, byte[] first_property_
 public static final native void g_object_get(long object, byte[] first_property_name, long[] value, long terminator);
 /**
  * @param object cast=(GObject *)
- * @param first_property_name cast=(const gchar *),flags=no_out
- * @param terminator cast=(const gchar *),flags=sentinel
- */
-public static final native void g_object_get(long object, byte[] first_property_name, boolean[] value, long terminator);
-/**
- * @param object cast=(GObject *)
  * @param quark cast=(GQuark)
  */
 public static final native long g_object_get_qdata(long object, int quark);
