@@ -2727,9 +2727,10 @@ StyleItem[] itemize () {
 	int[] pcItems = new int[1];
 	char[] chars = new char[length];
 	segmentsText.getChars(0, length, chars, 0);
-	OS.ScriptItemize(chars, length, MAX_ITEM, scriptControl, scriptState, pItems, pcItems);
 	// enable font ligatures
 	scriptControl.fMergeNeutralItems = true;
+
+	OS.ScriptItemize(chars, length, MAX_ITEM, scriptControl, scriptState, pItems, pcItems);
 
 //	if (hr == E_OUTOFMEMORY) //TODO handle it
 
