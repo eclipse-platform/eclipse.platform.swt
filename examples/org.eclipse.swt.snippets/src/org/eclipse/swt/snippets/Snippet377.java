@@ -14,7 +14,8 @@
 package org.eclipse.swt.snippets;
 
 /*
- * Ligatures support with 'Fira Code' font(https://github.com/tonsky/FiraCode/tree/master/distr/ttf)
+ * Ligatures support added in StyledText with 'Fira Code' font:
+ * https://github.com/tonsky/FiraCode/tree/master/distr/ttf
  *
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
@@ -37,7 +38,8 @@ public class Snippet377 {
 		StyledText styledText = new StyledText(shell, SWT.BORDER);
 		styledText.setFont(new Font(display, "Fira Code", 9, SWT.NORMAL));
 		styledText.setText(
-				"Ligatures support with 'Fira Code' font(https://github.com/tonsky/FiraCode/tree/master/distr/ttf): \n");
+				"Ligatures support added in StyledText with 'Fira Code' font: \n");
+		styledText.append("(https://github.com/tonsky/FiraCode/tree/master/distr/ttf) \n");
 		styledText.append(" == != <= >= |= || \n");
 		styledText.append("c:\\ぷろぐらむ\\program \n");
 		styledText.append("c:\\\u3077\u308d\u3050\u3089\u3080\\program \n");
@@ -46,10 +48,11 @@ public class Snippet377 {
 
 		Label label2= new Label(shell, SWT.NONE);
 		label2.setText("Text:");
-		Text text = new Text(shell, SWT.BORDER);
+		Text text = new Text(shell, SWT.BORDER | SWT.MULTI);
 		text.setFont(new Font(display, "Fira Code", 9, SWT.NORMAL));
 		text.setText(
-				"Ligatures support with 'Fira Code' font(https://github.com/tonsky/FiraCode/tree/master/distr/ttf): \n");
+				"Ligatures support(from native) with 'Fira Code' font: \n");
+		text.append("(https://github.com/tonsky/FiraCode/tree/master/distr/ttf) \n");
 		text.append(" == != <= >= |= || \n");
 		text.append("c:\\ぷろぐらむ\\program \n");
 		text.append("c:\\\u3077\u308d\u3050\u3089\u3080\\program \n");
