@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2008, 2018 IBM Corporation and others.
+ * Copyright (c) 2008, 2020 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -110,17 +110,18 @@ public class DOMWriter {
 						if (child.getNodeType() == Node.ELEMENT_NODE) nodes.add(child);
 					}
 					int count = nodes.size();
-					Collections.sort(nodes, (a, b) -> {
+					nodes.sort((a, b) -> {
 						String nameA = a.getNodeName();
 						String nameB = b.getNodeName();
 						if ("arg".equals(nameA)) {
 							return 0;
-						} 
+						}
 						int result = nameA.compareTo(nameB);
 						if (result == 0) {
 							Node idA = getIDAttribute(a);
 							Node idB = getIDAttribute(b);
-							if (idA == null || idB == null) return 0;
+							if (idA == null || idB == null)
+								return 0;
 							return idA.getNodeValue().compareTo(idB.getNodeValue());
 						}
 						return result;

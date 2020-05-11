@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2018 Red Hat and others.
+ * Copyright (c) 2018, 2020 Red Hat and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -16,7 +16,6 @@ package org.eclipse.swt.tests.gtk.snippets;
 
 import java.nio.charset.Charset;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -93,7 +92,7 @@ public class Bug489640_ComboPerformanceTest {
 		button.addListener(SWT.Selection, event -> {
 			final Map<String, Charset> charSets = Charset.availableCharsets();
 			final List<String> encodings = new ArrayList<>(charSets.keySet());
-			Collections.sort(encodings);
+			encodings.sort(null);
 			final String[] items1 = encodings.toArray(new String[encodings.size()]);
 			System.out.println("Setting widget.combo with " + items1.length + " items");
 			final long start1 = System.currentTimeMillis();

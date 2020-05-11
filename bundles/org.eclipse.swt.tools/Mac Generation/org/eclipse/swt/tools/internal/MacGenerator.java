@@ -95,7 +95,7 @@ void merge(Document document, Document extraDocument) {
 	 * not found in the document.
 	 */
 	ArrayList<Node> sortedNodes = Collections.list(Collections.enumeration(extras.values()));
-	Collections.sort(sortedNodes, (arg0, arg1) -> {
+	sortedNodes.sort((arg0, arg1) -> {
 		int compare = getLevel(arg0) - getLevel(arg1);
 		if (compare == 0) {
 			return arg0.getNodeName().compareTo(arg1.getNodeName());
@@ -581,7 +581,7 @@ TreeMap<String, Object[]> getGeneratedStructs() {
 
 void copyClassMethodsDown(final Map<String, Object[]> classes) {
 	ArrayList<Object[]> sortedClasses = Collections.list(Collections.enumeration(classes.values()));
-	Collections.sort(sortedClasses, new Comparator<Object>() {
+	sortedClasses.sort(new Comparator<Object>() {
 		int getHierarchyLevel(Node node) {
 			String superclass = getSuperclassName(node);
 			int level = 0;
@@ -872,7 +872,7 @@ public String[] getXmls() {
 				array.add(file.getAbsolutePath());
 			}
 		}
-		Collections.sort(array, (o1, o2) -> new File(o1).getName().compareTo(new File(o2).getName()));
+		array.sort((o1, o2) -> new File(o1).getName().compareTo(new File(o2).getName()));
 		xmls = array.toArray(new String[array.size()]);
 	}
 	return xmls;
