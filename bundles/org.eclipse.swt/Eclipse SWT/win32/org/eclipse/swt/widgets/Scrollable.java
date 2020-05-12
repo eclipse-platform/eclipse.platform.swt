@@ -143,7 +143,7 @@ Rectangle computeTrimInPixels (int x, int y, int width, int height) {
 @Override
 void createHandle () {
 	super.createHandle();
-	enableDarkScrollbars();
+	enableDarkModeExplorerTheme();
 }
 
 ScrollBar createScrollBar (int type) {

@@ -973,11 +973,9 @@ void enableDrag (boolean enabled) {
 	/* Do nothing */
 }
 
-void enableDarkScrollbars() {
-	String enableDarkScrollBar = System.getProperty(Display.ENABLE_DARK_SCROLLBARS);
-	if (enableDarkScrollBar != null && Boolean.valueOf(enableDarkScrollBar)) {
+void enableDarkModeExplorerTheme() {
+	if (display.useDarkModeExplorerTheme)
 		OS.SetWindowTheme (handle, Display.DARKMODE_EXPLORER, null);
-	}
 }
 
 void enableWidget (boolean enabled) {

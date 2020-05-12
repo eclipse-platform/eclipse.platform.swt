@@ -880,14 +880,14 @@ boolean dragDetect (long hwnd, int x, int y, boolean filter, boolean [] detect, 
 }
 
 @Override
-void enableDarkScrollbars() {
+void enableDarkModeExplorerTheme() {
 	/*
 	 * Feature in Windows. If the control has default foreground and
 	 * background, the background gets black without focus and white with
 	 * focus, but the foreground color always stays black.
 	 */
 	if (hasCustomBackground() || hasCustomForeground()) {
-		super.enableDarkScrollbars();
+		super.enableDarkModeExplorerTheme();
 	}
 }
 
@@ -1884,7 +1884,7 @@ void setBackgroundImage (long hBitmap) {
 
 @Override
 void setBackgroundPixel (int pixel) {
-	enableDarkScrollbars();
+	enableDarkModeExplorerTheme();
 	int flags = OS.RDW_ERASE | OS.RDW_ALLCHILDREN | OS.RDW_INVALIDATE;
 	OS.RedrawWindow (handle, null, 0, flags);
 }
@@ -2046,7 +2046,7 @@ public void setFont (Font font) {
 
 @Override
 void setForegroundPixel (int pixel) {
-	enableDarkScrollbars();
+	enableDarkModeExplorerTheme();
 	super.setForegroundPixel(pixel);
 }
 

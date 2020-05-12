@@ -1498,7 +1498,7 @@ void createHandle () {
 	/* Use the Explorer theme */
 	if (OS.IsAppThemed ()) {
 		explorerTheme = true;
-		darkExplorerTheme = display.isDarkModeExplorerTheme();
+		darkExplorerTheme = display.useDarkModeExplorerTheme;
 		OS.SetWindowTheme (handle, display.getExplorerTheme(), null);
 	}
 

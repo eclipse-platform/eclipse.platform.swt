@@ -16,6 +16,7 @@ package org.eclipse.swt.internal.win32;
 
 
 import org.eclipse.swt.internal.*;
+import org.eclipse.swt.widgets.Display;
 
 public class OS extends C {
 	static {
@@ -2335,7 +2336,20 @@ public static final long SendMessage (long hWnd, int Msg, long wParam, TCHAR lPa
  * @param isDarkTheme <code>true</code> for dark theme
  */
 public static final void setTheme(boolean isDarkTheme) {
-	System.setProperty("org.eclipse.swt.internal.win32.enableDarkScrollbars", Boolean.toString(isDarkTheme));
+	/*
+	 * On macOS and GTK, setting dark theme is supported by system API.
+	 * Probably this is why it was chosen to have 'OS.setTheme()' SWT API
+	 * in 'OS' rather then 'Display'. However, on Windows, there is no
+	 * official API yet, just some tweaks to tailor things that SWT can't
+	 * color properly. These use settings in Display to allow applications
+	 * to configure individual tweaks.
+	 */
+
+	Display display = Display.getCurrent();
+	if (display == null)
+		throw new NullPointerException("Display must be already created before you call OS.setTheme()");
+
+	display.setData("org.eclipse.swt.internal.win32.useDarkModeExplorerTheme", isDarkTheme);
 }
 
 public static final boolean SetDllDirectory (TCHAR lpPathName) {

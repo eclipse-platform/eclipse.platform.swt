@@ -163,9 +163,26 @@ public class Display extends Device {
 	static final char [] LISTVIEW = new char [] {'L', 'I', 'S', 'T', 'V', 'I', 'E', 'W', 0};
 	static final char [] TAB = new char [] {'T', 'A', 'B', 0};
 	static final char [] TREEVIEW = new char [] {'T', 'R', 'E', 'E', 'V', 'I', 'E', 'W', 0};
-	static final String ENABLE_DARK_SCROLLBARS = "org.eclipse.swt.internal.win32.enableDarkScrollbars";
 	/* Emergency switch to be used in case of regressions. Not supposed to be changed when app is running. */
 	static final boolean disableCustomThemeTweaks = Boolean.valueOf(System.getProperty("org.eclipse.swt.internal.win32.disableCustomThemeTweaks")); //$NON-NLS-1$
+	/**
+	 * Changes Windows theme to 'DarkMode_Explorer' for Controls that can benefit from it.
+	 * Effects:<br>
+	 * <ul>
+	 *   <li>Dark scrollbars - this is the most important change for many applications.</li>
+	 *   <li>Tree - dark theme compatible expander icon.</li>
+	 *   <li>Tree, Table - dark theme compatible colors for selected item.</li>
+	 *   <li>Other effects may be present (currently Windows dark theme is only partially implemented).</li>
+	 * </ul>
+	 * Limitations:<br>
+	 * <ul>
+	 *   <li>Only available since Win10 version 1809.</li>
+	 *   <li>Does not affect already created controls.</li>
+	 * </ul>
+	 * All Scrollable-based Controls are affected.
+	 */
+	static final String USE_DARKMODE_EXPLORER_THEME_KEY = "org.eclipse.swt.internal.win32.useDarkModeExplorerTheme";
+	boolean useDarkModeExplorerTheme;
 
 	/* Custom icons */
 	long hIconSearch;
@@ -2741,6 +2758,38 @@ boolean isXMouseActive () {
 	return xMouseActive;
 }
 
+static boolean isThemeAvailable (String applicationName, String className) {
+	long appClassData = 0;
+	long defaultClassData = 0;
+	try {
+		final TCHAR appClass = new TCHAR (0, applicationName + "::" + className, true);
+		appClassData = OS.OpenThemeData (0, appClass.chars);
+		if (appClassData == 0) return false;
+
+		final TCHAR defaultClass = new TCHAR (0, className, true);
+		defaultClassData = OS.OpenThemeData (0, defaultClass.chars);
+		if (defaultClassData == 0) return false;
+
+		/*
+		 * OpenThemeData() will ignore unknown theme packages and still return something.
+		 * Example: If 'DarkMode_Explorer' is not available then 'DarkMode_Explorer::ScrollBar' will return the same as 'ScrollBar'.
+		 * If data handles are equal, then theme isn't really available.
+		 */
+		return (appClassData != defaultClassData);
+	} finally {
+		if (appClassData != 0) OS.CloseThemeData(appClassData);
+		if (defaultClassData != 0) OS.CloseThemeData(defaultClassData);
+	}
+}
+
+static boolean isThemeAvailable_DarkModeExplorer () {
+	/*
+	 * In the first Windows build with dark theme, scrollbar is already there,
+	 * so it could be used as good indicator of presence of the theme.
+	 */
+	return isThemeAvailable("DarkMode_Explorer", "ScrollBar");
+}
+
 boolean isValidThread () {
 	return thread == Thread.currentThread ();
 }
@@ -4252,6 +4301,20 @@ public void setData (String key, Object value) {
 		case EXTERNAL_EVENT_LOOP_KEY:
 			externalEventLoop = _toBoolean (value);
 			return;
+		case USE_DARKMODE_EXPLORER_THEME_KEY:
+			/*
+			 * Note: Request is ignored when theme is not available.
+			 * When theme is not available, SetWindowTheme() ignores it and
+			 * just uses default theme. That's fine for controls where SWT
+			 * doesn't set theme. However, controls such as Table choose
+			 * between 'Explorer' and 'DarkMode_Explorer' themes. When the
+			 * latter is not available and SWT tries to set it, default theme
+			 * will be used instead of 'Explorer'.
+			 */
+			useDarkModeExplorerTheme = _toBoolean (value) &&
+				!disableCustomThemeTweaks &&
+				isThemeAvailable_DarkModeExplorer ();
+			return;
 	}
 
 	/* Remove the key/value pair */
@@ -4497,12 +4560,8 @@ public final Consumer<Error> getErrorHandler () {
 	return errorHandler;
 }
 
-boolean isDarkModeExplorerTheme() {
-	return Boolean.valueOf(System.getProperty(ENABLE_DARK_SCROLLBARS));
-}
-
 char[] getExplorerTheme() {
-	return isDarkModeExplorerTheme() ? DARKMODE_EXPLORER : EXPLORER;
+	return useDarkModeExplorerTheme ? DARKMODE_EXPLORER : EXPLORER;
 }
 
 int shiftedKey (int key) {

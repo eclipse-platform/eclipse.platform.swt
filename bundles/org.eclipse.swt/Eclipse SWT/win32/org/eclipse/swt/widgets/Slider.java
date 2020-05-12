@@ -199,7 +199,7 @@ static int checkStyle (int style) {
 @Override
 void createHandle () {
 	super.createHandle();
-	enableDarkScrollbars();
+	enableDarkModeExplorerTheme();
 }
 
 @Override
