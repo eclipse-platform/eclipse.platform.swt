@@ -164,6 +164,8 @@ public class Display extends Device {
 	static final char [] TAB = new char [] {'T', 'A', 'B', 0};
 	static final char [] TREEVIEW = new char [] {'T', 'R', 'E', 'E', 'V', 'I', 'E', 'W', 0};
 	static final String ENABLE_DARK_SCROLLBARS = "org.eclipse.swt.internal.win32.enableDarkScrollbars";
+	/* Emergency switch to be used in case of regressions. Not supposed to be changed when app is running. */
+	static final boolean disableCustomThemeTweaks = Boolean.valueOf(System.getProperty("org.eclipse.swt.internal.win32.disableCustomThemeTweaks")); //$NON-NLS-1$
 
 	/* Custom icons */
 	long hIconSearch;
@@ -4201,6 +4203,10 @@ public void setCursorLocation (Point point) {
 	setCursorLocation (point.x, point.y);
 }
 
+boolean _toBoolean (Object value) {
+	return value != null && ((Boolean)value).booleanValue ();
+}
+
 /**
  * Sets the application defined property of the receiver
  * with the specified name to the given argument.
@@ -4230,31 +4236,24 @@ public void setData (String key, Object value) {
 	checkDevice ();
 	if (key == null) error (SWT.ERROR_NULL_ARGUMENT);
 
-	if (key.equals (RUN_MESSAGES_IN_IDLE_KEY)) {
-		Boolean data = (Boolean) value;
-		runMessagesInIdle = data != null && data.booleanValue ();
-		return;
+	switch (key) {
+		case RUN_MESSAGES_IN_IDLE_KEY:
+			runMessagesInIdle = _toBoolean (value);
+			return;
+		case RUN_MESSAGES_IN_MESSAGE_PROC_KEY:
+			runMessagesInMessageProc = _toBoolean (value);
+			return;
+		case USE_OWNDC_KEY:
+			useOwnDC = _toBoolean (value);
+			return;
+		case ACCEL_KEY_HIT:
+			accelKeyHit = _toBoolean (value);
+			return;
+		case EXTERNAL_EVENT_LOOP_KEY:
+			externalEventLoop = _toBoolean (value);
+			return;
 	}
-	if (key.equals (RUN_MESSAGES_IN_MESSAGE_PROC_KEY)) {
-		Boolean data = (Boolean) value;
-		runMessagesInMessageProc = data != null && data.booleanValue ();
-		return;
-	}
-	if (key.equals (USE_OWNDC_KEY)) {
-		Boolean data = (Boolean) value;
-		useOwnDC = data != null && data.booleanValue ();
-		return;
-	}
-	if (key.equals (ACCEL_KEY_HIT)) {
-		Boolean data = (Boolean) value;
-		accelKeyHit = data != null && data.booleanValue ();
-		return;
-	}
-	if (key.equals (EXTERNAL_EVENT_LOOP_KEY)) {
-		Boolean data = (Boolean) value;
-		externalEventLoop = data != null && data.booleanValue ();
-		return;
-	}
+
 	/* Remove the key/value pair */
 	if (value == null) {
 		if (keys == null) return;
