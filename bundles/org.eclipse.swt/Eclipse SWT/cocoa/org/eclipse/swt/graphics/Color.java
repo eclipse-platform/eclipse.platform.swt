@@ -47,6 +47,10 @@ public final class Color extends Resource {
 	 */
 	public double [] handle;
 
+Color() {
+	super();
+}
+
 Color(Device device) {
 	super(device);
 }
@@ -74,6 +78,29 @@ public Color(Device device, int red, int green, int blue) {
 	super(device);
 	init(red, green, blue, 255);
 	init();
+}
+
+/**
+ * Constructs a new instance of this class given the
+ * desired red, green and blue values expressed as ints in the range
+ * 0 to 255 (where 0 is black and 255 is full brightness). On limited
+ * color devices, the color instance created by this call may not have
+ * the same RGB values as the ones specified by the arguments. The
+ * RGB values on the returned instance will be the color values of
+ * the operating system color.
+ *
+ * @param red the amount of red in the color
+ * @param green the amount of green in the color
+ * @param blue the amount of blue in the color
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if the red, green or blue argument is not between 0 and 255</li>
+ * </ul>
+ * @since 3.115
+ */
+public Color(int red, int green, int blue) {
+	super();
+	init(red, green, blue, 255);
 }
 
 /**
@@ -105,6 +132,31 @@ public Color(Device device, int red, int green, int blue, int alpha) {
 }
 
 /**
+ * Constructs a new instance of this class given the
+ * desired red, green, blue &amp; alpha values expressed as ints in the range
+ * 0 to 255 (where 0 is black and 255 is full brightness). On limited
+ * color devices, the color instance created by this call may not have
+ * the same RGB values as the ones specified by the arguments. The
+ * RGB values on the returned instance will be the color values of
+ * the operating system color.
+ *
+ * @param red the amount of red in the color
+ * @param green the amount of green in the color
+ * @param blue the amount of blue in the color
+ * @param alpha the amount of alpha in the color. Currently, SWT only honors extreme values for alpha i.e. 0 (transparent) or 255 (opaque).
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if the red, green, blue or alpha argument is not between 0 and 255</li>
+ * </ul>
+ *
+ * @since 3.115
+ */
+public Color(int red, int green, int blue, int alpha) {
+	super();
+	init(red, green, blue, alpha);
+}
+
+/**
  * Constructs a new instance of this class given a device and an
  * <code>RGB</code> describing the desired red, green and blue values.
  * On limited color devices, the color instance created by this call
@@ -126,6 +178,28 @@ public Color(Device device, RGB rgb) {
 	if (rgb == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	init(rgb.red, rgb.green, rgb.blue, 255);
 	init();
+}
+
+/**
+ * Constructs a new instance of this class given an
+ * <code>RGB</code> describing the desired red, green and blue values.
+ * On limited color devices, the color instance created by this call
+ * may not have the same RGB values as the ones specified by the
+ * argument. The RGB values on the returned instance will be the color
+ * values of the operating system color.
+ *
+ * @param rgb the RGB values of the desired color
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the rgb argument is null</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if the red, green or blue components of the argument are not between 0 and 255</li>
+ * </ul>
+ * @since 3.115
+ */
+public Color(RGB rgb) {
+	super();
+	if (rgb == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	init(rgb.red, rgb.green, rgb.blue, 255);
 }
 
 /**
@@ -152,6 +226,29 @@ public Color(Device device, RGBA rgba) {
 	if (rgba == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	init(rgba.rgb.red, rgba.rgb.green, rgba.rgb.blue, rgba.alpha);
 	init();
+}
+
+/**
+ * Constructs a new instance of this class given an
+ * <code>RGBA</code> describing the desired red, green, blue &amp; alpha values.
+ * On limited color devices, the color instance created by this call
+ * may not have the same RGBA values as the ones specified by the
+ * argument. The RGBA values on the returned instance will be the color
+ * values of the operating system color + alpha.
+ *
+ * @param rgba the RGBA values of the desired color. Currently, SWT only honors extreme values for alpha i.e. 0 (transparent) or 255 (opaque).
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the rgba argument is null</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if the red, green, blue or alpha components of the argument are not between 0 and 255</li>
+ * </ul>
+ *
+ * @since 3.115
+ */
+public Color(RGBA rgba) {
+	super();
+	if (rgba == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	init(rgba.rgb.red, rgba.rgb.green, rgba.rgb.blue, rgba.alpha);
 }
 
 /**
@@ -182,6 +279,31 @@ public Color(Device device, RGB rgb, int alpha) {
 	init();
 }
 
+/**
+ * Constructs a new instance of this class given an
+ * <code>RGB</code> describing the desired red, green and blue values,
+ * alpha specifying the level of transparency.
+ * On limited color devices, the color instance created by this call
+ * may not have the same RGB values as the ones specified by the
+ * argument. The RGB values on the returned instance will be the color
+ * values of the operating system color.
+ *
+ * @param rgb the RGB values of the desired color
+ * @param alpha the alpha value of the desired color. Currently, SWT only honors extreme values for alpha i.e. 0 (transparent) or 255 (opaque).
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the rgb argument is null</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if the red, green, blue or alpha components of the argument are not between 0 and 255</li>
+ * </ul>
+ *
+ * @since 3.115
+ */
+public Color(RGB rgb, int alpha) {
+	super();
+	if (rgb == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	init(rgb.red, rgb.green, rgb.blue, alpha);
+}
+
 @Override
 void destroy() {
 	handle = null;
@@ -194,6 +316,23 @@ void destroy() {
 @Override
 public void dispose() {
 	super.dispose();
+	destroy();
+}
+
+/**
+ * Returns the <code>Device</code> where this resource was
+ * created. In cases where no <code>Device</code> was used
+ * at creation, returns the current or default Device.
+ *
+ * @return <code>Device</code> the device of the receiver
+ * @since 3.2
+ */
+@Override
+public Device getDevice() {
+	// Fall back on Device.getDevice only if we haven't been disposed
+	// already.
+	if (this.device == null && this.handle != null) return Device.getDevice();
+	return super.getDevice();
 }
 
 /**
@@ -213,7 +352,7 @@ public boolean equals(Object object) {
 	Color color = (Color)object;
 	double [] rgbColor = color.handle;
 	if (handle == rgbColor) return true;
-	return device == color.device &&
+	return
 		(int)(handle[0] * 255) == (int)(rgbColor[0] * 255) &&
 		(int)(handle[1] * 255) == (int)(rgbColor[1] * 255) &&
 		(int)(handle[2] * 255) == (int)(rgbColor[2] * 255) &&
