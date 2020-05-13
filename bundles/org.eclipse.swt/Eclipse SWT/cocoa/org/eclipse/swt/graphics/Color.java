@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2015 IBM Corporation and others.
+ * Copyright (c) 2000, 2020 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -17,14 +17,12 @@ package org.eclipse.swt.graphics;
 import org.eclipse.swt.*;
 
 /**
- * Instances of this class manage the operating system resources that
- * implement SWT's RGB color model. To create a color you can either
+ * Instances of this store color information. To create a color you can either
  * specify the individual color components as integers in the range
  * 0 to 255 or provide an instance of an <code>RGB</code> or <code>RGBA</code>.
  * <p>
- * Application code must explicitly invoke the <code>Color.dispose()</code>
- * method to release the operating system resources managed by each instance
- * when those instances are no longer required.
+ * Colors do not need to be disposed, however to maintain compatibility
+ * with older code, disposing a Color is not an error.
  * </p>
  *
  * @see RGB
@@ -61,9 +59,6 @@ Color(Device device) {
  * the same RGB values as the ones specified by the arguments. The
  * RGB values on the returned instance will be the color values of
  * the operating system color.
- * <p>
- * You must dispose the color when it is no longer required.
- * </p>
  *
  * @param device the device on which to allocate the color
  * @param red the amount of red in the color
@@ -74,8 +69,6 @@ Color(Device device) {
  *    <li>ERROR_NULL_ARGUMENT - if device is null and there is no current device</li>
  *    <li>ERROR_INVALID_ARGUMENT - if the red, green or blue argument is not between 0 and 255</li>
  * </ul>
- *
- * @see #dispose
  */
 public Color(Device device, int red, int green, int blue) {
 	super(device);
@@ -91,9 +84,6 @@ public Color(Device device, int red, int green, int blue) {
  * the same RGB values as the ones specified by the arguments. The
  * RGB values on the returned instance will be the color values of
  * the operating system color.
- * <p>
- * You must dispose the color when it is no longer required.
- * </p>
  *
  * @param device the device on which to allocate the color
  * @param red the amount of red in the color
@@ -106,7 +96,6 @@ public Color(Device device, int red, int green, int blue) {
  *    <li>ERROR_INVALID_ARGUMENT - if the red, green, blue or alpha argument is not between 0 and 255</li>
  * </ul>
  *
- * @see #dispose
  * @since 3.104
  */
 public Color(Device device, int red, int green, int blue, int alpha) {
@@ -122,9 +111,6 @@ public Color(Device device, int red, int green, int blue, int alpha) {
  * may not have the same RGB values as the ones specified by the
  * argument. The RGB values on the returned instance will be the color
  * values of the operating system color.
- * <p>
- * You must dispose the color when it is no longer required.
- * </p>
  *
  * @param device the device on which to allocate the color
  * @param rgb the RGB values of the desired color
@@ -134,8 +120,6 @@ public Color(Device device, int red, int green, int blue, int alpha) {
  *    <li>ERROR_NULL_ARGUMENT - if the rgb argument is null</li>
  *    <li>ERROR_INVALID_ARGUMENT - if the red, green or blue components of the argument are not between 0 and 255</li>
  * </ul>
- *
- * @see #dispose
  */
 public Color(Device device, RGB rgb) {
 	super(device);
@@ -151,9 +135,6 @@ public Color(Device device, RGB rgb) {
  * may not have the same RGBA values as the ones specified by the
  * argument. The RGBA values on the returned instance will be the color
  * values of the operating system color + alpha.
- * <p>
- * You must dispose the color when it is no longer required.
- * </p>
  *
  * @param device the device on which to allocate the color
  * @param rgba the RGBA values of the desired color. Currently, SWT only honors extreme values for alpha i.e. 0 (transparent) or 255 (opaque).
@@ -164,7 +145,6 @@ public Color(Device device, RGB rgb) {
  *    <li>ERROR_INVALID_ARGUMENT - if the red, green, blue or alpha components of the argument are not between 0 and 255</li>
  * </ul>
  *
- * @see #dispose
  * @since 3.104
  */
 public Color(Device device, RGBA rgba) {
@@ -182,9 +162,6 @@ public Color(Device device, RGBA rgba) {
  * may not have the same RGB values as the ones specified by the
  * argument. The RGB values on the returned instance will be the color
  * values of the operating system color.
- * <p>
- * You must dispose the color when it is no longer required.
- * </p>
  *
  * @param device the device on which to allocate the color
  * @param rgb the RGB values of the desired color
@@ -196,7 +173,6 @@ public Color(Device device, RGBA rgba) {
  *    <li>ERROR_INVALID_ARGUMENT - if the red, green, blue or alpha components of the argument are not between 0 and 255</li>
  * </ul>
  *
- * @see #dispose
  * @since 3.104
  */
 public Color(Device device, RGB rgb, int alpha) {
@@ -209,6 +185,14 @@ public Color(Device device, RGB rgb, int alpha) {
 @Override
 void destroy() {
 	handle = null;
+}
+
+/**
+ * Disposal is not required for Color as the system will auto-dispose it.
+ */
+@Override
+public void dispose() {
+	super.dispose();
 }
 
 /**
@@ -397,8 +381,6 @@ public static Color cocoa_new(Device device, double [] handle, int alpha) {
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_INVALID_ARGUMENT - if the red, green, blue or alpha argument is not between 0 and 255</li>
  * </ul>
- *
- * @see #dispose
  */
 void init(int red, int green, int blue, int alpha) {
 	if ((red > 255) || (red < 0) ||
