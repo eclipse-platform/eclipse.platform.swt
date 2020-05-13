@@ -108,7 +108,6 @@
 			<fileset dir="${temp.folder}/@dot.src" includes="**/*.properties"/>
 			<fileset    dir="${temp.folder}/@dot.src/library/" excludes="**/*.sh"/>
 			<zipfileset dir="${temp.folder}/@dot.src/library/" includes="**/*.sh" filemode="755"/>
-			<fileset dir="${temp.folder}/@dot.src" includes="**/version.txt"/>
 			<fileset dir="${fragmentdir}" includes="about.html,about_files/"/>
 		</zip>
 		<delete dir="${temp.folder}/@dot.src"/>
@@ -120,7 +119,6 @@
 			<fileset dir="${temp.folder}/@dot.src" includes="**/*.java"/>
 			<fileset dir="${temp.folder}/@dot.src" includes="**/*.properties"/>
 			<fileset dir="${temp.folder}/@dot.src/library/"/>
-			<fileset dir="${temp.folder}/@dot.src" includes="**/version.txt"/>
 			<fileset dir="${fragmentdir}" includes="about.html,about_files/"/>
 		</copy>
 		<delete dir="${temp.folder}/@dot.src"/>
