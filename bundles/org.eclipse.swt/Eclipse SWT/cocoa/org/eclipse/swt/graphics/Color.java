@@ -58,11 +58,7 @@ Color(Device device) {
 /**
  * Constructs a new instance of this class given a device and the
  * desired red, green and blue values expressed as ints in the range
- * 0 to 255 (where 0 is black and 255 is full brightness). On limited
- * color devices, the color instance created by this call may not have
- * the same RGB values as the ones specified by the arguments. The
- * RGB values on the returned instance will be the color values of
- * the operating system color.
+ * 0 to 255 (where 0 is black and 255 is full brightness).
  *
  * @param device the device on which to allocate the color
  * @param red the amount of red in the color
@@ -83,11 +79,7 @@ public Color(Device device, int red, int green, int blue) {
 /**
  * Constructs a new instance of this class given the
  * desired red, green and blue values expressed as ints in the range
- * 0 to 255 (where 0 is black and 255 is full brightness). On limited
- * color devices, the color instance created by this call may not have
- * the same RGB values as the ones specified by the arguments. The
- * RGB values on the returned instance will be the color values of
- * the operating system color.
+ * 0 to 255 (where 0 is black and 255 is full brightness).
  *
  * @param red the amount of red in the color
  * @param green the amount of green in the color
@@ -106,11 +98,7 @@ public Color(int red, int green, int blue) {
 /**
  * Constructs a new instance of this class given a device and the
  * desired red, green, blue &amp; alpha values expressed as ints in the range
- * 0 to 255 (where 0 is black and 255 is full brightness). On limited
- * color devices, the color instance created by this call may not have
- * the same RGB values as the ones specified by the arguments. The
- * RGB values on the returned instance will be the color values of
- * the operating system color.
+ * 0 to 255 (where 0 is black and 255 is full brightness).
  *
  * @param device the device on which to allocate the color
  * @param red the amount of red in the color
@@ -134,11 +122,7 @@ public Color(Device device, int red, int green, int blue, int alpha) {
 /**
  * Constructs a new instance of this class given the
  * desired red, green, blue &amp; alpha values expressed as ints in the range
- * 0 to 255 (where 0 is black and 255 is full brightness). On limited
- * color devices, the color instance created by this call may not have
- * the same RGB values as the ones specified by the arguments. The
- * RGB values on the returned instance will be the color values of
- * the operating system color.
+ * 0 to 255 (where 0 is black and 255 is full brightness).
  *
  * @param red the amount of red in the color
  * @param green the amount of green in the color
@@ -159,10 +143,6 @@ public Color(int red, int green, int blue, int alpha) {
 /**
  * Constructs a new instance of this class given a device and an
  * <code>RGB</code> describing the desired red, green and blue values.
- * On limited color devices, the color instance created by this call
- * may not have the same RGB values as the ones specified by the
- * argument. The RGB values on the returned instance will be the color
- * values of the operating system color.
  *
  * @param device the device on which to allocate the color
  * @param rgb the RGB values of the desired color
@@ -183,10 +163,6 @@ public Color(Device device, RGB rgb) {
 /**
  * Constructs a new instance of this class given an
  * <code>RGB</code> describing the desired red, green and blue values.
- * On limited color devices, the color instance created by this call
- * may not have the same RGB values as the ones specified by the
- * argument. The RGB values on the returned instance will be the color
- * values of the operating system color.
  *
  * @param rgb the RGB values of the desired color
  *
@@ -205,10 +181,6 @@ public Color(RGB rgb) {
 /**
  * Constructs a new instance of this class given a device and an
  * <code>RGBA</code> describing the desired red, green, blue &amp; alpha values.
- * On limited color devices, the color instance created by this call
- * may not have the same RGBA values as the ones specified by the
- * argument. The RGBA values on the returned instance will be the color
- * values of the operating system color + alpha.
  *
  * @param device the device on which to allocate the color
  * @param rgba the RGBA values of the desired color. Currently, SWT only honors extreme values for alpha i.e. 0 (transparent) or 255 (opaque).
@@ -231,10 +203,6 @@ public Color(Device device, RGBA rgba) {
 /**
  * Constructs a new instance of this class given an
  * <code>RGBA</code> describing the desired red, green, blue &amp; alpha values.
- * On limited color devices, the color instance created by this call
- * may not have the same RGBA values as the ones specified by the
- * argument. The RGBA values on the returned instance will be the color
- * values of the operating system color + alpha.
  *
  * @param rgba the RGBA values of the desired color. Currently, SWT only honors extreme values for alpha i.e. 0 (transparent) or 255 (opaque).
  *
@@ -255,10 +223,6 @@ public Color(RGBA rgba) {
  * Constructs a new instance of this class given a device, an
  * <code>RGB</code> describing the desired red, green and blue values,
  * alpha specifying the level of transparency.
- * On limited color devices, the color instance created by this call
- * may not have the same RGB values as the ones specified by the
- * argument. The RGB values on the returned instance will be the color
- * values of the operating system color.
  *
  * @param device the device on which to allocate the color
  * @param rgb the RGB values of the desired color
@@ -283,10 +247,6 @@ public Color(Device device, RGB rgb, int alpha) {
  * Constructs a new instance of this class given an
  * <code>RGB</code> describing the desired red, green and blue values,
  * alpha specifying the level of transparency.
- * On limited color devices, the color instance created by this call
- * may not have the same RGB values as the ones specified by the
- * argument. The RGB values on the returned instance will be the color
- * values of the operating system color.
  *
  * @param rgb the RGB values of the desired color
  * @param alpha the alpha value of the desired color. Currently, SWT only honors extreme values for alpha i.e. 0 (transparent) or 255 (opaque).
