@@ -50,7 +50,7 @@ public class Bug530969_ControlPrint {
 	public static void main(String[] args) {
 		Display display = new Display();
 		Shell shell = new Shell(display, SWT.NO_TRIM);
-		Color gray = new Color (display, 222, 223, 224);
+		Color gray = new Color (222, 223, 224);
 		Composite composite = new Composite(shell, SWT.NONE);
 		RowLayout layout = new RowLayout();
 		layout.marginTop = 0;

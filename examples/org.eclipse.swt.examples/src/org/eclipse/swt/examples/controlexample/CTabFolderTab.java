@@ -146,7 +146,7 @@ class CTabFolderTab extends Tab {
 				RGB rgb = colorDialog.open();
 				if (rgb == null) return;
 				oldColor = selectionForegroundColor;
-				selectionForegroundColor = new Color (display, rgb);
+				selectionForegroundColor = new Color (rgb);
 				setSelectionForeground ();
 				if (oldColor != null) oldColor.dispose ();
 			}
@@ -158,7 +158,7 @@ class CTabFolderTab extends Tab {
 				RGB rgb = colorDialog.open();
 				if (rgb == null) return;
 				oldColor = selectionBackgroundColor;
-				selectionBackgroundColor = new Color (display, rgb);
+				selectionBackgroundColor = new Color (rgb);
 				setSelectionBackground ();
 				if (oldColor != null) oldColor.dispose ();
 			}
@@ -183,7 +183,7 @@ class CTabFolderTab extends Tab {
 				RGB rgb = colorDialog.open();
 				if (rgb == null) return;
 				oldColor = itemForegroundColor;
-				itemForegroundColor = new Color (display, rgb);
+				itemForegroundColor = new Color (rgb);
 				setItemForeground ();
 				if (oldColor != null) oldColor.dispose ();
 			}
@@ -195,7 +195,7 @@ class CTabFolderTab extends Tab {
 				RGB rgb = colorDialog.open();
 				if (rgb == null) return;
 				oldColor = itemBackgroundColor;
-				itemBackgroundColor = new Color (display, rgb);
+				itemBackgroundColor = new Color (rgb);
 				setItemBackground ();
 				if (oldColor != null) oldColor.dispose ();
 			}

@@ -40,7 +40,7 @@ public static void main (String [] args) {
 }
 
 public Shell open (Display display) {
-	final Color red = new Color(display, 0xFF, 0, 0);
+	final Color red = new Color(0xFF, 0, 0);
 	final Shell shell = new Shell (display);
 	shell.addPaintListener(event -> {
 		GC gc = event.gc;

@@ -43,10 +43,10 @@ public class Snippet194 {
 				redRGB,		// 1
 				greenRGB,	// 2
 				blueRGB);	// 3
-		white = new Color(display, whiteRGB);
-		red = new Color(display, redRGB);
-		green = new Color(display, greenRGB);
-		blue = new Color(display, blueRGB);
+		white = new Color(whiteRGB);
+		red = new Color(redRGB);
+		green = new Color(greenRGB);
+		blue = new Color(blueRGB);
 		font = new Font(display, "Comic Sans MS", 24, SWT.BOLD);
 
 		ImageData[] data = new ImageData[4];

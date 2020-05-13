@@ -153,7 +153,7 @@ void createHandle(int index) {
 	gtk_widget_set_has_surface_or_window (handle, true);
 	GTK.gtk_widget_set_can_focus (handle, true);
 	layout = new TextLayout (display);
-	disabledColor = new Color (display, LINK_DISABLED_FOREGROUND);
+	disabledColor = new Color (LINK_DISABLED_FOREGROUND);
 	offsets = new Point [0];
 	ids = new String [0];
 	mnemonics = new int [0];

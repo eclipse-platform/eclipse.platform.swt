@@ -309,7 +309,7 @@ public class StyledText extends Canvas {
 				if (printOptions.printLineBackground) {
 					Color printerColor = (Color)resources.get(color);
 					if (printerColor == null) {
-						printerColor = new Color (printer, color.getRGB());
+						printerColor = new Color (color.getRGB());
 						resources.put(color, printerColor);
 					}
 					printerRenderer.setLineBackground(i, 1, printerColor);
@@ -339,7 +339,7 @@ public class StyledText extends Canvas {
 				Color printerColor = (Color)resources.get(color);
 				if (printOptions.printTextForeground) {
 					if (printerColor == null) {
-						printerColor = new Color (printer, color.getRGB());
+						printerColor = new Color (color.getRGB());
 						resources.put(color, printerColor);
 					}
 					style.foreground = printerColor;
@@ -352,7 +352,7 @@ public class StyledText extends Canvas {
 				Color printerColor = (Color)resources.get(color);
 				if (printOptions.printTextBackground) {
 					if (printerColor == null) {
-						printerColor = new Color (printer, color.getRGB());
+						printerColor = new Color (color.getRGB());
 						resources.put(color, printerColor);
 					}
 					style.background = printerColor;
@@ -8500,7 +8500,7 @@ public void setBackground(Color color) {
 			if (background.equals(disabledBg)) {
 				return;
 			} else {
-				color = new Color (getDisplay(), disabledBg.getRGBA());
+				color = new Color (disabledBg.getRGBA());
 				backgroundDisabled = true;
 			}
 		}
@@ -8990,7 +8990,7 @@ public void setForeground(Color color) {
 			if (foreground.equals(disabledFg)) {
 				return;
 			} else {
-				color = new Color (getDisplay(), disabledFg.getRGBA());
+				color = new Color (disabledFg.getRGBA());
 				foregroundDisabled = true;
 			}
 		}

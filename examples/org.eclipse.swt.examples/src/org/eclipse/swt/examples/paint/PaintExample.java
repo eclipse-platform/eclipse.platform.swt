@@ -411,8 +411,8 @@ public class PaintExample {
 	private void init() {
 		Display display = mainComposite.getDisplay();
 
-		paintColorWhite = new Color(display, 255, 255, 255);
-		paintColorBlack = new Color(display, 0, 0, 0);
+		paintColorWhite = new Color(255, 255, 255);
+		paintColorBlack = new Color(0, 0, 0);
 
 		paintDefaultFont = display.getSystemFont();
 
@@ -420,8 +420,8 @@ public class PaintExample {
 		paintColors[0] = paintColorBlack;
 		paintColors[1] = paintColorWhite;
 		for (int i = 2; i < paintColors.length; i++) {
-			paintColors[i] = new Color(display,
-				((i*7)%255),((i*23)%255), ((i*51)%255));
+			paintColors[i] = new Color(((i*7)%255),
+				((i*23)%255),((i*51)%255));
 		}
 
 		toolSettings = new ToolSettings();

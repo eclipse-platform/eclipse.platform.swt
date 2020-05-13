@@ -314,7 +314,7 @@ public class ColorMenu {
 					RGB rgb = dialog.open();
 					if (rgb == null) return;
 					if (customColor != null) customColor.dispose();
-					customColor = new Color(display, rgb);
+					customColor = new Color(rgb);
 					if (customPatternMI != null) customPatternMI.setImage(null);
 					if (customGradientMI != null) customGradientMI.setImage(null);
 					if (customImage != null) customImage.dispose();
@@ -354,8 +354,8 @@ public class ColorMenu {
 							dialog.setSecondRGB(background.getBgColor2().getRGB());
 					}
 					if (dialog.open() != SWT.OK) return;
-					Color colorA = new Color(display, dialog.getFirstRGB());
-					Color colorB = new Color(display, dialog.getSecondRGB());
+					Color colorA = new Color(dialog.getFirstRGB());
+					Color colorB = new Color(dialog.getSecondRGB());
 					if (colorA == null || colorB == null) return;
 					if (customColorMI != null) customColorMI.setImage(null);
 					if (customPatternMI != null) customPatternMI.setImage(null);

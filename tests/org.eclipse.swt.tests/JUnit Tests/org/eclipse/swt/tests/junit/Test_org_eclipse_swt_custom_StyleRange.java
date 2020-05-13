@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2017 IBM Corporation and others.
+ * Copyright (c) 2000, 2020 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -27,7 +27,6 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyleRange;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.RGB;
-import org.eclipse.swt.widgets.Display;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -46,10 +45,9 @@ private Color getColor(RGB rgb) {
 	return colors.get(rgb);
 }
 protected void initializeColors() {
-	Display display = Display.getDefault();
-	colors.put(RED, new Color (display, RED));
-	colors.put(GREEN, new Color (display, GREEN));
-	colors.put(BLUE, new Color (display, BLUE));
+	colors.put(RED, new Color (RED));
+	colors.put(GREEN, new Color (GREEN));
+	colors.put(BLUE, new Color (BLUE));
 }
 
 @Before
@@ -121,7 +119,7 @@ public void test_equalsLjava_lang_Object() {
 @Test
 public void test_hashCode() {
 	Set<StyleRange> set = new HashSet<>();
-	Color testColor = new Color(Display.getDefault(), 0, 0, 0);
+	Color testColor = new Color(0, 0, 0);
 
 	//regression test for bug 30924
 	set.add(new StyleRange());

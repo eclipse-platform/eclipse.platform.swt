@@ -226,8 +226,8 @@ public void test_imageDrawing() {
 		int width = 640;
 		int height = 480;
 		Image image = new Image(display, width, height);
-		Color color1 = new Color(display, 0xff, 0, 0xff);
-		Color color2 = new Color(display, 0, 0xff, 0xff);
+		Color color1 = new Color(0xff, 0, 0xff);
+		Color color2 = new Color(0, 0xff, 0xff);
 		int x1 = 0, y1 = height/2, x2 = width/2, y2 = 0;
 		meter.start();
 		GC gc = new GC(image);
@@ -277,8 +277,8 @@ public void test_windowDrawing() {
 		while(display.readAndDispatch()){/*empty*/}
 		try { Thread.sleep(2000); } catch (Exception e) {}
 		while(display.readAndDispatch()){/*empty*/}
-		Color color1 = new Color(display, 0xff, 0, 0xff);
-		Color color2 = new Color(display, 0, 0xff, 0xff);
+		Color color1 = new Color(0xff, 0, 0xff);
+		Color color2 = new Color(0, 0xff, 0xff);
 		int x1 = 0, y1 = height/2, x2 = width/2, y2 = 0;
 		meter.start();
 		GC gc = new GC(c);
@@ -323,8 +323,8 @@ public void test_stringDrawing() {
 		while(display.readAndDispatch()){/*empty*/}
 		try { Thread.sleep(2000); } catch (Exception e) {}
 		while(display.readAndDispatch()){/*empty*/}
-		Color color1 = new Color(display, 0xff, 0, 0xff);
-		Color color2 = new Color(display, 0, 0xff, 0xff);
+		Color color1 = new Color(0xff, 0, 0xff);
+		Color color2 = new Color(0, 0xff, 0xff);
 		Font font1 = new Font(display, "Helvetica", 20, SWT.NONE);
 		Font font2 = new Font(display, "Helvetica", 10, SWT.BOLD);
 		String testString = "The quick \tbr&own SWT jum&ped foxily o\nver the lazy dog.";
@@ -372,8 +372,8 @@ public void test_fastStringDrawing() {
 		while(display.readAndDispatch()){/*empty*/}
 		try { Thread.sleep(2000); } catch (Exception e) {}
 		while(display.readAndDispatch()){/*empty*/}
-		Color color1 = new Color(display, 0xff, 0, 0xff);
-		Color color2 = new Color(display, 0, 0xff, 0xff);
+		Color color1 = new Color(0xff, 0, 0xff);
+		Color color2 = new Color(0, 0xff, 0xff);
 		Font font1 = new Font(display, "Helvetica", 20, SWT.NONE);
 		Font font2 = new Font(display, "Helvetica", 10, SWT.BOLD);
 		String testString = "The quick brown SWT jumped foxily over the lazy dog.";

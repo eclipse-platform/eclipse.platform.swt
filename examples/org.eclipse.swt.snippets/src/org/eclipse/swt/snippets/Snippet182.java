@@ -49,7 +49,7 @@ public class Snippet182 {
 			System.out.println("default link color " + link.getLinkForeground());
 			ColorDialog colorDialog = new ColorDialog(shell);
 			RGB color = colorDialog.open();
-			link.setLinkForeground(new Color(display, color));
+			link.setLinkForeground(new Color(color));
 			System.out.println("user selected link color " + link.getLinkForeground());
 		}));
 

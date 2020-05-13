@@ -934,7 +934,7 @@ public void test_setBackgroundLorg_eclipse_swt_graphics_Color() {
 	}
 
 	image = new Image(display, 10, 10);
-	Color color = new Color(display, 255, 255, 255);
+	Color color = new Color(255, 255, 255);
 	color.dispose();
 	try {
 		image.setBackground(color);
@@ -947,7 +947,7 @@ public void test_setBackgroundLorg_eclipse_swt_graphics_Color() {
 
 	image = new Image(display, 10, 10);
 	image.dispose();
-	color = new Color(display, 255, 255, 255);
+	color = new Color(255, 255, 255);
 	try {
 		image.setBackground(color);
 		fail("No exception thrown for disposed image");
@@ -1015,7 +1015,7 @@ void getImageData1() {
 void getImageData2(int depth, PaletteData palette) {
 	int width = 10;
 	int height = 10;
-	Color color = new Color(display, 0, 0xff, 0);
+	Color color = new Color(0, 0xff, 0);
 	RGB colorRGB = color.getRGB();
 
 	ImageData imageData = new ImageData(width, height, depth, palette);

@@ -48,9 +48,9 @@ public class Bug85131_ToolTipSetNull
 			int hm = r.height/8;
 			int rw = w2-wm, rh = r.height-2*hm;
 			
-			e.gc.setBackground( new Color(null,200,0,0) );
+			e.gc.setBackground( new Color(200,0,0) );
 			e.gc.fillRectangle( 0,hm,w2,rh);
-			e.gc.setBackground( new Color(null,0,0,200) );
+			e.gc.setBackground( new Color(0,0,200) );
 			e.gc.fillRectangle( w2,hm+hm,rw+wm,rh-hm);
 		}
 		});

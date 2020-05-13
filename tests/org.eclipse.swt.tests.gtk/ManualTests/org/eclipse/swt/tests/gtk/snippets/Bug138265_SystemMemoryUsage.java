@@ -81,7 +81,7 @@ createComposites(false);
 }
 });
 
-color = new Color(display, new RGB(31,150,192));
+color = new Color(new RGB(31,150,192));
 
 }
 

@@ -478,7 +478,7 @@ public class CTabFolderRenderer {
 			int red = from.red + 2*(to.red - from.red)/3;
 			int green = from.green + 2*(to.green - from.green)/3;
 			int blue = from.blue + 2*(to.blue - from.blue)/3;
-			selectedOuterColor = new Color(parent.getDisplay(), red, green, blue);
+			selectedOuterColor = new Color(red, green, blue);
 		}
 		if (innerRGB != null) {
 			RGB from = lineRGB;
@@ -486,7 +486,7 @@ public class CTabFolderRenderer {
 			int red = from.red + 2*(to.red - from.red)/3;
 			int green = from.green + 2*(to.green - from.green)/3;
 			int blue = from.blue + 2*(to.blue - from.blue)/3;
-			selectedInnerColor = new Color(parent.getDisplay(), red, green, blue);
+			selectedInnerColor = new Color(red, green, blue);
 		}
 		/* compute the tabArea color */
 		outerRGB = parent.getParent().getBackground().getRGB();
@@ -496,7 +496,7 @@ public class CTabFolderRenderer {
 			int red = from.red + 2*(to.red - from.red)/3;
 			int green = from.green + 2*(to.green - from.green)/3;
 			int blue = from.blue + 2*(to.blue - from.blue)/3;
-			tabAreaColor = new Color(parent.getDisplay(), red, green, blue);
+			tabAreaColor = new Color(red, green, blue);
 		}
 	}
 
@@ -528,7 +528,7 @@ public class CTabFolderRenderer {
 			int red = (to.red * propTo + from.red * propFrom) / denom;
 			int green = (to.green * propTo  + from.green * propFrom) / denom;
 			int blue = (to.blue * propTo  + from.blue * propFrom) / denom;
-			selectionHighlightGradientColorsCache[i] = new Color(parent.getDisplay(), red, green, blue);
+			selectionHighlightGradientColorsCache[i] = new Color(red, green, blue);
 		}
 	}
 
@@ -609,7 +609,7 @@ public class CTabFolderRenderer {
 			// this color has to be identical to the colors used in the PNG files of
 			// the view drop down menu located in
 			// org.eclipse.e4.ui.workbench.renderers.swt/icons/full/elcl16/view_menu.png
-			minMaxBorderColor = new Color (gc.getDevice(), 105, 105, 105);
+			minMaxBorderColor = new Color (105, 105, 105);
 		}
 		switch (part) {
 			case PART_BACKGROUND:
@@ -1695,7 +1695,7 @@ public class CTabFolderRenderer {
 
 	Color getFillColor() {
 		if (fillColor == null) {
-			fillColor = new Color(parent.getDisplay(), CLOSE_FILL);
+			fillColor = new Color(CLOSE_FILL);
 		}
 		return fillColor;
 	}

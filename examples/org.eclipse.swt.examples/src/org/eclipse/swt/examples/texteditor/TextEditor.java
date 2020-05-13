@@ -558,7 +558,7 @@ public class TextEditor {
 			if (newRgb != null) {
 				if (!newRgb.equals(rgb)) {
 					disposeResource(underlineColor);
-					underlineColor = new Color(display, newRgb);
+					underlineColor = new Color(newRgb);
 				}
 				if (underlineSingleItem.getSelection()) setStyle(UNDERLINE_SINGLE);
 				else if (underlineDoubleItem.getSelection()) setStyle(UNDERLINE_DOUBLE);
@@ -596,7 +596,7 @@ public class TextEditor {
 				if (newRgb == null) return;
 				if (!newRgb.equals(rgb)) {
 					disposeResource(strikeoutColor);
-					strikeoutColor = new Color(display, newRgb);
+					strikeoutColor = new Color(newRgb);
 				}
 			}
 			setStyle(STRIKEOUT);
@@ -638,7 +638,7 @@ public class TextEditor {
 			if (newRgb != null) {
 				if (!newRgb.equals(rgb)) {
 					disposeResource(borderColor);
-					borderColor = new Color(display, newRgb);
+					borderColor = new Color(newRgb);
 				}
 				if (borderDashItem.getSelection()) setStyle(BORDER_DASH);
 				else if (borderDotItem.getSelection()) setStyle(BORDER_DOT);
@@ -674,7 +674,7 @@ public class TextEditor {
 				if (newRgb == null) return;
 				if (!newRgb.equals(rgb)) {
 					disposeResource(textForeground);
-					textForeground = new Color(display, newRgb);
+					textForeground = new Color(newRgb);
 				}
 			}
 			setStyle(FOREGROUND);
@@ -692,7 +692,7 @@ public class TextEditor {
 				if (newRgb == null) return;
 				if (!newRgb.equals(rgb)) {
 					disposeResource(textBackground);
-					textBackground = new Color(display, newRgb);
+					textBackground = new Color(newRgb);
 				}
 			}
 			setStyle(BACKGROUND);
@@ -944,13 +944,13 @@ public class TextEditor {
 					int red = Integer.parseInt(tokenizer.nextToken());
 					int green = Integer.parseInt(tokenizer.nextToken());
 					int blue = Integer.parseInt(tokenizer.nextToken());
-					range.foreground = new Color(display, red, green, blue);
+					range.foreground = new Color(red, green, blue);
 				}
 				if (tokenizer.hasMoreTokens()) {
 					int red = Integer.parseInt(tokenizer.nextToken());
 					int green = Integer.parseInt(tokenizer.nextToken());
 					int blue = Integer.parseInt(tokenizer.nextToken());
-					range.background = new Color(display, red, green, blue);
+					range.background = new Color(red, green, blue);
 				}
 				if (count >= styles.length) {
 					StyleRange[] newStyles =  new StyleRange[styles.length + 256];

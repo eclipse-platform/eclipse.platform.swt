@@ -34,10 +34,10 @@ public static void main (String [] args) {
 	shell.addListener (SWT.Paint, e -> {
 		GC gc = e.gc;
 		Rectangle rect = shell.getClientArea ();
-		Color color1 = new Color (display, 234, 246, 253);
-		Color color2 = new Color (display, 217, 240, 252);
-		Color color3 = new Color (display, 190, 230, 253);
-		Color color4 = new Color (display, 167, 217, 245);
+		Color color1 = new Color (234, 246, 253);
+		Color color2 = new Color (217, 240, 252);
+		Color color3 = new Color (190, 230, 253);
+		Color color4 = new Color (167, 217, 245);
 		Pattern p1 = new Pattern (display, 0, 0, 0, rect.height / 2, color1, color2);
 		gc.setBackgroundPattern (p1);
 		gc.fillRectangle (rect.x, rect.y, rect.width, rect.height / 2);

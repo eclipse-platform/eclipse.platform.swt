@@ -111,7 +111,7 @@ public class Snippet288 {
 						/* Fill with the background color before drawing. */
 						Color bgColor = null;
 						if (useGIFBackground && loader[i].backgroundPixel != -1) {
-							bgColor = new Color(display, imageData.palette.getRGB(loader[i].backgroundPixel));
+							bgColor = new Color(imageData.palette.getRGB(loader[i].backgroundPixel));
 						}
 						gc.setBackground(bgColor != null ? bgColor : shellBackground);
 						gc.fillRectangle(imageData.x, imageData.y, imageData.width, imageData.height);

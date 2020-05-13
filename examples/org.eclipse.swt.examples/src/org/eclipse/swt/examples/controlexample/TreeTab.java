@@ -147,7 +147,7 @@ class TreeTab extends ScrollableTab {
 			RGB rgb = colorDialog.open();
 			if (rgb == null) return;
 			oldColor = itemForegroundColor;
-			itemForegroundColor = new Color (display, rgb);
+			itemForegroundColor = new Color (rgb);
 			setItemForeground ();
 			if (oldColor != null) oldColor.dispose ();
 		}
@@ -159,7 +159,7 @@ class TreeTab extends ScrollableTab {
 			RGB rgb = colorDialog.open();
 			if (rgb == null) return;
 			oldColor = itemBackgroundColor;
-			itemBackgroundColor = new Color (display, rgb);
+			itemBackgroundColor = new Color (rgb);
 			setItemBackground ();
 			if (oldColor != null) oldColor.dispose ();
 		}
@@ -184,7 +184,7 @@ class TreeTab extends ScrollableTab {
 			RGB rgb = colorDialog.open();
 			if (rgb == null) return;
 			oldColor = cellForegroundColor;
-			cellForegroundColor = new Color (display, rgb);
+			cellForegroundColor = new Color (rgb);
 			setCellForeground ();
 			if (oldColor != null) oldColor.dispose ();
 		}
@@ -196,7 +196,7 @@ class TreeTab extends ScrollableTab {
 			RGB rgb = colorDialog.open();
 			if (rgb == null) return;
 			oldColor = cellBackgroundColor;
-			cellBackgroundColor = new Color (display, rgb);
+			cellBackgroundColor = new Color (rgb);
 			setCellBackground ();
 			if (oldColor != null) oldColor.dispose ();
 		}
@@ -221,7 +221,7 @@ class TreeTab extends ScrollableTab {
 			RGB rgb = colorDialog.open();
 			if (rgb == null) return;
 			oldColor = headerForegroundColor;
-			headerForegroundColor = new Color (display, rgb);
+			headerForegroundColor = new Color (rgb);
 			setHeaderForeground ();
 			if (oldColor != null) oldColor.dispose ();
 		}
@@ -233,7 +233,7 @@ class TreeTab extends ScrollableTab {
 			RGB rgb = colorDialog.open();
 			if (rgb == null) return;
 			oldColor = headerBackgroundColor;
-			headerBackgroundColor = new Color (display, rgb);
+			headerBackgroundColor = new Color (rgb);
 			setHeaderBackground ();
 			if (oldColor != null) oldColor.dispose ();
 		}

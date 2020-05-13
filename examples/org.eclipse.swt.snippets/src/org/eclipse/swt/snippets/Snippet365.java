@@ -165,7 +165,7 @@ public class Snippet365 {
 				link.setBackground(null);
 				scale.setBackground(null);
 				RGB rgb = display.getSystemColor(SWT.COLOR_CYAN).getRGB();
-				radio.setBackground(new Color(display, new RGBA(rgb.red, rgb.blue, rgb.green, 255)));
+				radio.setBackground(new Color(new RGBA(rgb.red, rgb.blue, rgb.green, 255)));
 				check.setBackgroundImage(getBackgroundImage(display));
 				group.setBackground(display.getSystemColor(SWT.COLOR_WIDGET_BACKGROUND));
 				sash.setBackground(display.getSystemColor(SWT.COLOR_DARK_CYAN));

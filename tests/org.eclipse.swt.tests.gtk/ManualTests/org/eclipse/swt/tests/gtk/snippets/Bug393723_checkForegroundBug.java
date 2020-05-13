@@ -30,7 +30,7 @@ public static void main(String[] args) {
 	System.out.println("shell fore=" + shell.getForeground());
 	System.out.println("back=" + comp.getBackground());
 	System.out.println("fore=" + comp.getForeground());
-	shell.setForeground(new Color(display, 240, 240, 240));
+	shell.setForeground(new Color(240, 240, 240));
 	comp.setBackground(display.getSystemColor(SWT.COLOR_WHITE));
 	System.out.println("after");
 	System.out.println("shell back=" + shell.getBackground());

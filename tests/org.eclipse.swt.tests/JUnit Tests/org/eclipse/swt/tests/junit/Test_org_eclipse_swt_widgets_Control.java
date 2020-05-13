@@ -606,19 +606,19 @@ public void test_requestLayoutL() {
 }
 @Test
 public void test_setBackgroundLorg_eclipse_swt_graphics_Color() {
-	Color color = new Color(control.getDisplay(), 255, 0, 0);
+	Color color = new Color(255, 0, 0);
 	control.setBackground(color);
 	assertEquals("getBackground not equal color after setBackground(color) for " + control, color, control.getBackground());
 	control.setBackground(null);
 	assertTrue("getBackground unchanged after setBackground(null) for " + control, !control.getBackground().equals(color));
 	color.dispose();
-	color = new Color(control.getDisplay(), 255, 0, 0, 0);
+	color = new Color(255, 0, 0, 0);
 	control.setBackground(color);
 	assertEquals("getBackground not equal color after setBackground(color) with 0 alpha for " + control + " " + control.getBackground(), color, control.getBackground());
 	control.setBackground(null);
 	assertTrue("getBackground unchanged after setBackground(null) alpha for " + control + " " + control.getBackground() + " " + control, !control.getBackground().equals(color));
 	if ("gtk".equals(SWT.getPlatform ())) {
-		Color fg = new Color(control.getDisplay(), 0, 255, 0);
+		Color fg = new Color(0, 255, 0);
 		control.setBackground(color);
 		control.setForeground(fg);
 		assertEquals("Setting a foreground disrupted the background color for " + control,
@@ -630,10 +630,10 @@ public void test_setBackgroundLorg_eclipse_swt_graphics_Color() {
 }
 @Test
 public void test_setBackgroundAlphaLorg_eclipse_swt_graphics_Color() {
-	Color color = new Color (control.getDisplay(), 255, 0, 0, 0);
+	Color color = new Color (255, 0, 0, 0);
 	control.setBackground(color);
 	assertEquals(color, control.getBackground());
-	Color fg = new Color(control.getDisplay(), 0, 255, 0, 0);
+	Color fg = new Color(0, 255, 0, 0);
 	control.setForeground(fg);
 	assertEquals(color, control.getBackground());
 	color.dispose();
@@ -641,7 +641,7 @@ public void test_setBackgroundAlphaLorg_eclipse_swt_graphics_Color() {
 }
 @Test
 public void test_setBackgroundDisposedColorLorg_eclipse_swt_graphics_Color() {
-	Color color = new Color(control.getDisplay(), 255, 0, 0);
+	Color color = new Color(255, 0, 0);
 	color.dispose();
 	try {
 		control.setBackground(color);
@@ -747,13 +747,13 @@ public void test_setFontLorg_eclipse_swt_graphics_Font() {
 }
 @Test
 public void test_setForegroundLorg_eclipse_swt_graphics_Color() {
-	Color color = new Color(control.getDisplay(), 255, 0, 0);
+	Color color = new Color(255, 0, 0);
 	control.setForeground(color);
 	assertEquals(color, control.getForeground());
 	control.setForeground(null);
 	assertFalse(control.getForeground().equals(color));
 	if ("gtk".equals(SWT.getPlatform ())) {
-		Color bg = new Color(control.getDisplay(), 0, 255, 0);
+		Color bg = new Color(0, 255, 0);
 		control.setForeground(color);
 		control.setBackground(bg);
 		assertEquals("Setting a background disrupted the foreground color for " + control,
@@ -767,10 +767,10 @@ public void test_setForegroundLorg_eclipse_swt_graphics_Color() {
 public void test_setForegroundAlphaLorg_eclipse_swt_graphics_Color() {
 	assumeTrue("Alpha support for foreground colors does not exist on GTK2 or Win32",
 			SwtTestUtil.isCocoa || SwtTestUtil.isGTK);
-	Color color = new Color (control.getDisplay(), 255, 0, 0, 0);
+	Color color = new Color (255, 0, 0, 0);
 	control.setForeground(color);
 	assertEquals(color, control.getForeground());
-	Color bg = new Color(control.getDisplay(), 0, 255, 0, 0);
+	Color bg = new Color(0, 255, 0, 0);
 	control.setBackground(bg);
 	assertEquals(color, control.getForeground());
 	color.dispose();
@@ -779,7 +779,7 @@ public void test_setForegroundAlphaLorg_eclipse_swt_graphics_Color() {
 
 @Test
 public void test_setForegroundDisposedColorLorg_eclipse_swt_graphics_Color() {
-	Color color = new Color(control.getDisplay(), 255, 0, 0);
+	Color color = new Color(255, 0, 0);
 	color.dispose();
 	try {
 		control.setForeground(color);

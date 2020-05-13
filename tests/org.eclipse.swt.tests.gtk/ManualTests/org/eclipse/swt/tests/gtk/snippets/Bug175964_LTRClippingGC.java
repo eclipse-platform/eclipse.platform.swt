@@ -35,7 +35,7 @@ public class Bug175964_LTRClippingGC {
 	static Color lightGray;
 public static void main(String [] args) {
 	Display display = new Display();
-	lightGray  = new Color(null, 192, 192, 192);
+	lightGray  = new Color(192, 192, 192);
 	final Image image = display.getSystemImage(SWT.ICON_INFORMATION);
 	Shell shell = new Shell(display);
 	shell.setText("Clipping rectangle for an RTL widget.tree");//"Images on the right side of the TreeItem");

@@ -759,7 +759,7 @@ public void test_selectI() {
 @Test
 public void test_setBackgroundDropDownCombo() {
 	Combo dropDown = new Combo(shell, SWT.DROP_DOWN);
-	Color color = new Color(dropDown.getDisplay(), 255, 0, 0);
+	Color color = new Color(255, 0, 0);
 	dropDown.setBackground(color);
 	assertEquals("getBackground not equal after setBackground for SWT.DROP_DOWN Combo",
 			color, dropDown.getBackground());
@@ -767,7 +767,7 @@ public void test_setBackgroundDropDownCombo() {
 	assertTrue("getBackground unchanged after setBackground(null) for SWT.DROP_DOWN Combo",
 			!dropDown.getBackground().equals(color));
 	color.dispose();
-	color = new Color(dropDown.getDisplay(), 255, 0, 0, 0);
+	color = new Color(255, 0, 0, 0);
 	dropDown.setBackground(color);
 	assertEquals("getBackground not equal after setBackground with 0 alpha for SWT.DROP_DOWN Combo",
 			color, dropDown.getBackground());
@@ -775,7 +775,7 @@ public void test_setBackgroundDropDownCombo() {
 	assertTrue("getBackground unchanged after setBackground(null) with 0 alpha for SWT.DROP_DOWN Combo",
 			!dropDown.getBackground().equals(color));
 	if ("gtk".equals(SWT.getPlatform ())) {
-		Color fg = new Color(dropDown.getDisplay(), 0, 255, 0);
+		Color fg = new Color(0, 255, 0);
 		dropDown.setBackground(color);
 		dropDown.setForeground(fg);
 		assertEquals("Setting a foreground disrupted the background color for SWT.DROP_DOWN Combo",
@@ -791,10 +791,10 @@ public void test_setBackgroundDropDownCombo() {
 @Test
 public void test_setBackgroundAlphaDropDownCombo() {
 	Combo dropDown = new Combo(shell, SWT.DROP_DOWN);
-	Color color = new Color (dropDown.getDisplay(), 255, 0, 0, 0);
+	Color color = new Color (255, 0, 0, 0);
 	dropDown.setBackground(color);
 	assertEquals(color, dropDown.getBackground());
-	Color fg = new Color(dropDown.getDisplay(), 0, 255, 0, 0);
+	Color fg = new Color(0, 255, 0, 0);
 	dropDown.setForeground(fg);
 	assertEquals(color, dropDown.getBackground());
 	color.dispose();
@@ -805,7 +805,7 @@ public void test_setBackgroundAlphaDropDownCombo() {
 @Test
 public void test_setBackgroundSimpleCombo() {
 	Combo simple = new Combo(shell, SWT.SIMPLE);
-	Color color = new Color(simple.getDisplay(), 255, 0, 0);
+	Color color = new Color(255, 0, 0);
 	simple.setBackground(color);
 	assertEquals("getBackground not equal after setBackground for SWT.SIMPLE Combo",
 			color, simple.getBackground());
@@ -813,7 +813,7 @@ public void test_setBackgroundSimpleCombo() {
 	assertTrue("getBackground unchanged after setBackground(null) for SWT.SIMPLE Combo",
 			!simple.getBackground().equals(color));
 	color.dispose();
-	color = new Color(simple.getDisplay(), 255, 0, 0, 0);
+	color = new Color(255, 0, 0, 0);
 	simple.setBackground(color);
 	assertEquals("getBackground not equal after setBackground with 0 alpha for SWT.SIMPLE Combo",
 			color, simple.getBackground());
@@ -821,7 +821,7 @@ public void test_setBackgroundSimpleCombo() {
 	assertTrue("getBackground unchanged after setBackground(null) with 0 alpha for SWT.SIMPLE Combo",
 			!simple.getBackground().equals(color));
 	if ("gtk".equals(SWT.getPlatform ())) {
-		Color fg = new Color(simple.getDisplay(), 0, 255, 0);
+		Color fg = new Color(0, 255, 0);
 		simple.setBackground(color);
 		simple.setForeground(fg);
 		assertEquals("Setting a foreground disrupted the background color for SWT.SIMPLE Combo",
@@ -837,10 +837,10 @@ public void test_setBackgroundSimpleCombo() {
 @Test
 public void test_setBackgroundAlphaSimpleCombo() {
 	Combo simple = new Combo(shell, SWT.SIMPLE);
-	Color color = new Color (simple.getDisplay(), 255, 0, 0, 0);
+	Color color = new Color (255, 0, 0, 0);
 	simple.setBackground(color);
 	assertEquals(color, simple.getBackground());
-	Color fg = new Color(simple.getDisplay(), 0, 255, 0, 0);
+	Color fg = new Color(0, 255, 0, 0);
 	simple.setForeground(fg);
 	assertEquals(color, simple.getBackground());
 	color.dispose();
@@ -851,13 +851,13 @@ public void test_setBackgroundAlphaSimpleCombo() {
 @Test
 public void test_setForegroundDropDownCombo() {
 	Combo dropDown = new Combo(shell, SWT.DROP_DOWN);
-	Color color = new Color(dropDown.getDisplay(), 255, 0, 0);
+	Color color = new Color(255, 0, 0);
 	dropDown.setForeground(color);
 	assertEquals(color, dropDown.getForeground());
 	dropDown.setForeground(null);
 	assertFalse(dropDown.getForeground().equals(color));
 	if ("gtk".equals(SWT.getPlatform ())) {
-		Color bg = new Color(dropDown.getDisplay(), 0, 255, 0);
+		Color bg = new Color(0, 255, 0);
 		dropDown.setForeground(color);
 		dropDown.setBackground(bg);
 		assertEquals("Setting a background disrupted the foreground color for SWT.DROP_DOWN Combo",
@@ -875,10 +875,10 @@ public void test_setForegroundAlphaDropDownCombo() {
 	Combo dropDown = new Combo(shell, SWT.DROP_DOWN);
 	assumeTrue("Alpha support for foreground colors does not exist on GTK2 or Win32",
 			SwtTestUtil.isCocoa || SwtTestUtil.isGTK);
-	Color color = new Color (dropDown.getDisplay(), 255, 0, 0, 0);
+	Color color = new Color (255, 0, 0, 0);
 	dropDown.setForeground(color);
 	assertEquals(color, dropDown.getForeground());
-	Color bg = new Color(dropDown.getDisplay(), 0, 255, 0, 0);
+	Color bg = new Color(0, 255, 0, 0);
 	dropDown.setBackground(bg);
 	assertEquals(color, dropDown.getForeground());
 	color.dispose();
@@ -889,13 +889,13 @@ public void test_setForegroundAlphaDropDownCombo() {
 @Test
 public void test_setForegroundSimpleCombo() {
 	Combo simple = new Combo(shell, SWT.SIMPLE);
-	Color color = new Color(simple.getDisplay(), 255, 0, 0);
+	Color color = new Color(255, 0, 0);
 	simple.setForeground(color);
 	assertEquals(color, simple.getForeground());
 	simple.setForeground(null);
 	assertFalse(simple.getForeground().equals(color));
 	if ("gtk".equals(SWT.getPlatform ())) {
-		Color bg = new Color(simple.getDisplay(), 0, 255, 0);
+		Color bg = new Color(0, 255, 0);
 		simple.setForeground(color);
 		simple.setBackground(bg);
 		assertEquals("Setting a background disrupted the foreground color for SWT.SIMPLE Combo",
@@ -913,10 +913,10 @@ public void test_setForegroundAlphaSimpleCombo() {
 	Combo simple = new Combo(shell, SWT.SIMPLE);
 	assumeTrue("Alpha support for foreground colors does not exist on GTK2 or Win32",
 			SwtTestUtil.isCocoa || SwtTestUtil.isGTK);
-	Color color = new Color (simple.getDisplay(), 255, 0, 0, 0);
+	Color color = new Color (255, 0, 0, 0);
 	simple.setForeground(color);
 	assertEquals(color, simple.getForeground());
-	Color bg = new Color(simple.getDisplay(), 0, 255, 0, 0);
+	Color bg = new Color(0, 255, 0, 0);
 	simple.setBackground(bg);
 	assertEquals(color, simple.getForeground());
 	color.dispose();

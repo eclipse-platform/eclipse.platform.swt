@@ -461,7 +461,7 @@ abstract class Tab {
 				RGB rgb = colorDialog.open();
 				if (rgb == null) return;
 				oldColor = foregroundColor; // save old foreground color to dispose when done
-				foregroundColor = new Color (display, rgb);
+				foregroundColor = new Color (rgb);
 				setExampleWidgetForeground ();
 				if (oldColor != null) oldColor.dispose ();
 			}
@@ -476,7 +476,7 @@ abstract class Tab {
 				RGB rgb = colorDialog.open();
 				if (rgb == null) return;
 				oldColor = backgroundColor; // save old background color to dispose when done
-				backgroundColor = new Color (display, rgb);
+				backgroundColor = new Color (rgb);
 				setExampleWidgetBackground ();
 				if (oldColor != null) oldColor.dispose ();
 			}

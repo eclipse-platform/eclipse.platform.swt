@@ -369,7 +369,7 @@ public void test_selectAll() {
 @Test
 public void test_setHeaderBackgroundLorg_eclipse_swt_graphics_Color() {
 	assertNotNull(tree.getHeaderBackground());
-	Color color = new Color(control.getDisplay(), 12, 34, 56);
+	Color color = new Color(12, 34, 56);
 	tree.setHeaderBackground(color);
 	assertEquals(color, tree.getHeaderBackground());
 	tree.setHeaderBackground(null);
@@ -380,7 +380,7 @@ public void test_setHeaderBackgroundLorg_eclipse_swt_graphics_Color() {
 @Test
 public void test_setHeaderForegroundLorg_eclipse_swt_graphics_Color() {
 	assertNotNull(tree.getHeaderForeground());
-	Color color = new Color(control.getDisplay(), 12, 34, 56);
+	Color color = new Color(12, 34, 56);
 	tree.setHeaderForeground(color);
 	assertEquals(color, tree.getHeaderForeground());
 	tree.setHeaderForeground(null);

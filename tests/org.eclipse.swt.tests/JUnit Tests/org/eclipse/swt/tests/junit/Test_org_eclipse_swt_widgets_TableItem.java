@@ -448,7 +448,7 @@ public void test_setBackgroundILorg_eclipse_swt_graphics_Color() {
 	assertEquals(table.getBackground(),tableItem.getBackground(0));
 
 	try {
-		Color color = new Color(display, 255, 0, 0);
+		Color color = new Color(255, 0, 0);
 		color.dispose();
 		tableItem.setBackground(color);
 		fail("No exception thrown for color disposed");
@@ -458,7 +458,7 @@ public void test_setBackgroundILorg_eclipse_swt_graphics_Color() {
 
 @Test
 public void test_setBackgroundLorg_eclipse_swt_graphics_Color() {
-	Color color = new Color(tableItem.getDisplay(), 255, 0, 0);
+	Color color = new Color(255, 0, 0);
 	tableItem.setBackground(color);
 	assertEquals(color, tableItem.getBackground());
 	tableItem.setBackground(null);
@@ -601,7 +601,7 @@ public void test_setForegroundILorg_eclipse_swt_graphics_Color() {
 	assertEquals(table.getForeground(),tableItem.getForeground(0));
 
 	try {
-		Color color = new Color(display, 255, 0, 0);
+		Color color = new Color(255, 0, 0);
 		color.dispose();
 		tableItem.setForeground(color);
 		fail("No exception thrown for color disposed");
@@ -611,7 +611,7 @@ public void test_setForegroundILorg_eclipse_swt_graphics_Color() {
 
 @Test
 public void test_setForegroundLorg_eclipse_swt_graphics_Color() {
-	Color color = new Color(tableItem.getDisplay(), 255, 0, 0);
+	Color color = new Color(255, 0, 0);
 	tableItem.setForeground(color);
 	assertEquals(color, tableItem.getForeground());
 	tableItem.setForeground(null);

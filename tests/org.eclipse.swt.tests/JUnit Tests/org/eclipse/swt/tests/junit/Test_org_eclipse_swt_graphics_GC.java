@@ -213,9 +213,9 @@ public void test_drawFocusIIII() {
 
 @Test
 public void test_drawImageLorg_eclipse_swt_graphics_ImageII() {
-	Color c1 = new Color(display, 255, 0, 0);
-	Color c2 = new Color(display, 0, 0, 0);
-	Color c3 = new Color(display, 255, 255, 0);
+	Color c1 = new Color(255, 0, 0);
+	Color c2 = new Color(0, 0, 0);
+	Color c3 = new Color(255, 255, 0);
 
 	PaletteData paletteData = new PaletteData(c1.getRGB(), c2.getRGB(), c3.getRGB());
 	ImageData data = new ImageData(30,30, 8, paletteData);
@@ -257,9 +257,9 @@ public void test_drawImageLorg_eclipse_swt_graphics_ImageII() {
 
 @Test
 public void test_drawImageLorg_eclipse_swt_graphics_ImageIIIIIIII() {
-	Color c1 = new Color(display, 255, 0, 0);
-	Color c2 = new Color(display, 0, 0, 0);
-	Color c3 = new Color(display, 255, 255, 0);
+	Color c1 = new Color(255, 0, 0);
+	Color c2 = new Color(0, 0, 0);
+	Color c3 = new Color(255, 255, 0);
 
 	PaletteData paletteData = new PaletteData(c1.getRGB(), c2.getRGB(), c3.getRGB());
 	ImageData data = new ImageData(30,30, 8, paletteData);
@@ -507,7 +507,7 @@ public void test_isDisposed() {
 
 @Test
 public void test_setBackgroundLorg_eclipse_swt_graphics_Color() {
-	Color color = new Color(shell.getDisplay(), 255, 0, 0);
+	Color color = new Color(255, 0, 0);
 	gc.setBackground(color);
 	assertEquals(color, gc.getBackground());
 	try {
@@ -571,7 +571,7 @@ public void test_setFontLorg_eclipse_swt_graphics_Font() {
 
 @Test
 public void test_setForegroundLorg_eclipse_swt_graphics_Color() {
-	Color color = new Color(shell.getDisplay(), 255, 0, 0);
+	Color color = new Color(255, 0, 0);
 	gc.setForeground(color);
 	assertEquals(color, gc.getForeground());
 	try {

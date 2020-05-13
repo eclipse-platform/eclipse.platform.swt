@@ -41,7 +41,7 @@ public class Snippet316 {
 		italic.font = font;
 		text.setStyleRanges(new int[] {0, text.getCharCount()}, new StyleRange[] {italic});
 		text.setMargins(30, 30, 30, 30);
-		Color color = new Color (display, 138, 226, 255);
+		Color color = new Color (138, 226, 255);
 		text.setMarginColor(color);
 		shell.setSize(500, 300);
 		shell.open ();

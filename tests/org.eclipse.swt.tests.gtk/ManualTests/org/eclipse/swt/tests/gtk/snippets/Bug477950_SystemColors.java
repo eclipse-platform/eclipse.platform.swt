@@ -59,64 +59,64 @@ public class Bug477950_SystemColors {
 		actualRGBA.setWidth(150);
 		Color [] colArray;
 		Map<String, Color []> map = new HashMap<>();
-		colArray = new Color [] {display.getSystemColor(SWT.COLOR_WIDGET_DARK_SHADOW), new Color (display, 0,0,0)};
+		colArray = new Color [] {display.getSystemColor(SWT.COLOR_WIDGET_DARK_SHADOW), new Color (0, 0,0)};
 		map.put("COLOR_WIDGET_DARK_SHADOW", colArray);
 
-		colArray = new Color [] {display.getSystemColor(SWT.COLOR_WIDGET_NORMAL_SHADOW), new Color (display, 164,164,161)};
+		colArray = new Color [] {display.getSystemColor(SWT.COLOR_WIDGET_NORMAL_SHADOW), new Color (164, 164,161)};
 		map.put("COLOR_WIDGET_NORMAL_SHADOW", colArray);
 
-		colArray = new Color [] {display.getSystemColor(SWT.COLOR_WIDGET_LIGHT_SHADOW), new Color (display, 232,232,231)};
+		colArray = new Color [] {display.getSystemColor(SWT.COLOR_WIDGET_LIGHT_SHADOW), new Color (232, 232,231)};
 		map.put("COLOR_WIDGET_LIGHT_SHADOW", colArray);
 
-		colArray = new Color [] {display.getSystemColor(SWT.COLOR_WIDGET_HIGHLIGHT_SHADOW), new Color (display, 255,255,255)};
+		colArray = new Color [] {display.getSystemColor(SWT.COLOR_WIDGET_HIGHLIGHT_SHADOW), new Color (255, 255,255)};
 		map.put("COLOR_WIDGET_HIGHLIGHT_SHADOW", colArray);
 
-		colArray = new Color [] {display.getSystemColor(SWT.COLOR_WIDGET_FOREGROUND), new Color (display, 46,52,54)};
+		colArray = new Color [] {display.getSystemColor(SWT.COLOR_WIDGET_FOREGROUND), new Color (46, 52,54)};
 		map.put("COLOR_WIDGET_FOREGROUND", colArray);
 
-		colArray = new Color [] {display.getSystemColor(SWT.COLOR_WIDGET_BACKGROUND), new Color (display, 232,232,231)};
+		colArray = new Color [] {display.getSystemColor(SWT.COLOR_WIDGET_BACKGROUND), new Color (232, 232,231)};
 		map.put("COLOR_WIDGET_BACKGROUND", colArray);
 
-		colArray = new Color [] {display.getSystemColor(SWT.COLOR_WIDGET_BORDER), new Color (display, 0,0,0)};
+		colArray = new Color [] {display.getSystemColor(SWT.COLOR_WIDGET_BORDER), new Color (0, 0,0)};
 		map.put("COLOR_WIDGET_BORDER", colArray);
 
-		colArray = new Color [] {display.getSystemColor(SWT.COLOR_LIST_FOREGROUND), new Color (display, 0,0,0)};
+		colArray = new Color [] {display.getSystemColor(SWT.COLOR_LIST_FOREGROUND), new Color (0, 0,0)};
 		map.put("COLOR_LIST_FOREGROUND", colArray);
 
-		colArray = new Color [] {display.getSystemColor(SWT.COLOR_LIST_BACKGROUND), new Color (display, 255,255,255)};
+		colArray = new Color [] {display.getSystemColor(SWT.COLOR_LIST_BACKGROUND), new Color (255, 255,255)};
 		map.put("COLOR_LIST_BACKGROUND", colArray);
 
-		colArray = new Color [] {display.getSystemColor(SWT.COLOR_LIST_SELECTION), new Color (display, 74,144,217)};
+		colArray = new Color [] {display.getSystemColor(SWT.COLOR_LIST_SELECTION), new Color (74, 144,217)};
 		map.put("COLOR_LIST_SELECTION", colArray);
 
-		colArray = new Color [] {display.getSystemColor(SWT.COLOR_LIST_SELECTION_TEXT), new Color (display, 255,255,255)};
+		colArray = new Color [] {display.getSystemColor(SWT.COLOR_LIST_SELECTION_TEXT), new Color (255, 255,255)};
 		map.put("COLOR_LIST_SELECTION_TEXT", colArray);
 
-		colArray = new Color [] {display.getSystemColor(SWT.COLOR_INFO_FOREGROUND), new Color (display, 255,255,255)};
+		colArray = new Color [] {display.getSystemColor(SWT.COLOR_INFO_FOREGROUND), new Color (255, 255,255)};
 		map.put("COLOR_INFO_FOREGROUND", colArray);
 
-		colArray = new Color [] {display.getSystemColor(SWT.COLOR_INFO_BACKGROUND), new Color (display, 0,0,0)};
+		colArray = new Color [] {display.getSystemColor(SWT.COLOR_INFO_BACKGROUND), new Color (0, 0,0)};
 		map.put("COLOR_INFO_BACKGROUND", colArray);
 
-		colArray = new Color [] {display.getSystemColor(SWT.COLOR_TITLE_FOREGROUND), new Color (display, 255,255,255)};
+		colArray = new Color [] {display.getSystemColor(SWT.COLOR_TITLE_FOREGROUND), new Color (255, 255,255)};
 		map.put("COLOR_TITLE_FOREGROUND", colArray);
 
-		colArray = new Color [] {display.getSystemColor(SWT.COLOR_TITLE_BACKGROUND), new Color (display, 74,144,217)};
+		colArray = new Color [] {display.getSystemColor(SWT.COLOR_TITLE_BACKGROUND), new Color (74, 144,217)};
 		map.put("COLOR_TITLE_BACKGROUND", colArray);
 
-		colArray = new Color [] {display.getSystemColor(SWT.COLOR_TITLE_BACKGROUND_GRADIENT), new Color (display, 133,188,246)};
+		colArray = new Color [] {display.getSystemColor(SWT.COLOR_TITLE_BACKGROUND_GRADIENT), new Color (133, 188,246)};
 		map.put("COLOR_TITLE_BACKGROUND_GRADIENT", colArray);
 
-		colArray = new Color [] {display.getSystemColor(SWT.COLOR_TITLE_INACTIVE_FOREGROUND), new Color (display, 139,142,143)};
+		colArray = new Color [] {display.getSystemColor(SWT.COLOR_TITLE_INACTIVE_FOREGROUND), new Color (139, 142,143)};
 		map.put("COLOR_TITLE_INACTIVE_FOREGROUND", colArray);
 
-		colArray = new Color [] {display.getSystemColor(SWT.COLOR_TITLE_INACTIVE_BACKGROUND), new Color (display, 241,241,241)};
+		colArray = new Color [] {display.getSystemColor(SWT.COLOR_TITLE_INACTIVE_BACKGROUND), new Color (241, 241,241)};
 		map.put("COLOR_TITLE_INACTIVE_BACKGROUND", colArray);
 
-		colArray = new Color [] {display.getSystemColor(SWT.COLOR_TITLE_INACTIVE_BACKGROUND_GRADIENT), new Color (display, 255,255,255)};
+		colArray = new Color [] {display.getSystemColor(SWT.COLOR_TITLE_INACTIVE_BACKGROUND_GRADIENT), new Color (255, 255,255)};
 		map.put("COLOR_TITLE_INACTIVE_BACKGROUND_GRADIENT", colArray);
 
-		colArray = new Color [] {display.getSystemColor(SWT.COLOR_LINK_FOREGROUND), new Color (display, 42,118,198)};
+		colArray = new Color [] {display.getSystemColor(SWT.COLOR_LINK_FOREGROUND), new Color (42, 118,198)};
 		map.put("COLOR_LINK_FOREGROUND", colArray);
 
 		for (Entry<String, Color[]> entry : map.entrySet()) {

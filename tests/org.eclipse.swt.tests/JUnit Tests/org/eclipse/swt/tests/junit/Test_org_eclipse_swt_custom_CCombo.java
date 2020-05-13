@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2019 IBM Corporation and others.
+ * Copyright (c) 2000, 2020 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -28,7 +28,6 @@ import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.graphics.Device;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Text;
@@ -161,8 +160,7 @@ public void test_redrawIIIIZ() {
 @Test
 public void test_setBackgroundLorg_eclipse_swt_graphics_Color() {
 	boolean exceptionThrown = false;
-	Device d = null;
-	Color colors[] = {new Color(d, 0, 0, 0), new Color(d, 255, 255, 255), new Color(d, 0, 45, 255)};
+	Color colors[] = {new Color(0, 0, 0), new Color(255, 255, 255), new Color(0, 45, 255)};
 	try {
 		for(int i=0; i<3; i++) {
 			ccombo.setBackground(colors[i]);
@@ -253,10 +251,9 @@ public void test_setFontLorg_eclipse_swt_graphics_Font() {
 @Test
 public void test_setForegroundLorg_eclipse_swt_graphics_Color() {
 	boolean exceptionThrown = false;
-	Device d = null;
-	Color c1 = new Color(d, 0, 0, 0);
-	Color c2 = new Color(d, 255, 255, 255);
-	Color c3 = new Color(d, 23, 45, 151);
+	Color c1 = new Color(0, 0, 0);
+	Color c2 = new Color(255, 255, 255);
+	Color c3 = new Color(23, 45, 151);
 	try {
 		ccombo.setForeground(c1);
 		ccombo.setForeground(c2);

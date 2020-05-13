@@ -89,7 +89,7 @@ public class Snippet141 {
 										/* Fill with the background color before drawing. */
 										Color bgColor = null;
 										if (useGIFBackground && loader.backgroundPixel != -1) {
-											bgColor = new Color(display, imageData.palette.getRGB(loader.backgroundPixel));
+											bgColor = new Color(imageData.palette.getRGB(loader.backgroundPixel));
 										}
 										offScreenImageGC.setBackground(bgColor != null ? bgColor : shellBackground);
 										offScreenImageGC.fillRectangle(imageData.x, imageData.y, imageData.width, imageData.height);

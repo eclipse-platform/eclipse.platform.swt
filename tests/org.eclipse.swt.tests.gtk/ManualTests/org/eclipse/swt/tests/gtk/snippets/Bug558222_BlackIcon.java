@@ -44,7 +44,7 @@ public class Bug558222_BlackIcon {
 		 */
 		Color border = display.getSystemColor(SWT.COLOR_WIDGET_DARK_SHADOW);
 		Color background = display.getSystemColor(SWT.COLOR_LIST_BACKGROUND);
-		Color backgroundHot = new Color(display, new RGB(252, 160, 160));
+		Color backgroundHot = new Color(new RGB(252, 160, 160));
 		Color transparent = display.getSystemColor(SWT.COLOR_MAGENTA);
 
 		PaletteData palette = new PaletteData(new RGB[] { transparent.getRGB(), border.getRGB(), background.getRGB(), backgroundHot.getRGB() });

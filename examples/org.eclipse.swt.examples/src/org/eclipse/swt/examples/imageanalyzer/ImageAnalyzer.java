@@ -230,11 +230,11 @@ public class ImageAnalyzer {
 		});
 
 		// Create colors and fonts.
-		whiteColor = new Color(display, 255, 255, 255);
-		blackColor = new Color(display, 0, 0, 0);
-		redColor = new Color(display, 255, 0, 0);
-		greenColor = new Color(display, 0, 255, 0);
-		blueColor = new Color(display, 0, 0, 255);
+		whiteColor = new Color(255, 255, 255);
+		blackColor = new Color(0, 0, 0);
+		redColor = new Color(255, 0, 0);
+		greenColor = new Color(0, 255, 0);
+		blueColor = new Color(0, 0, 255);
 		fixedWidthFont = new Font(display, "courier", 10, 0);
 		crossCursor = display.getSystemCursor(SWT.CURSOR_CROSS);
 
@@ -1486,7 +1486,7 @@ public class ImageAnalyzer {
 					if (showBackground && backgroundPixel != -1) {
 						// Fill with the background color.
 						RGB backgroundRGB = imageData.palette.getRGB(backgroundPixel);
-						bgColor = new Color(null, backgroundRGB);
+						bgColor = new Color(backgroundRGB);
 					}
 					try {
 						offScreenImageGC.setBackground(bgColor != null ? bgColor : canvasBackground);
@@ -1854,7 +1854,7 @@ public class ImageAnalyzer {
 					int y = (i+1) * 10 + py;
 					gc.drawString(String.valueOf(i), 10, y, true);
 					gc.drawString(toHexByteString(rgbs[i].red) + toHexByteString(rgbs[i].green) + toHexByteString(rgbs[i].blue), xTab1, y, true);
-					Color color = new Color(display, rgbs[i]);
+					Color color = new Color(rgbs[i]);
 					gc.setBackground(color);
 					gc.fillRectangle(xTab2, y+2, 10, 10);
 					color.dispose();

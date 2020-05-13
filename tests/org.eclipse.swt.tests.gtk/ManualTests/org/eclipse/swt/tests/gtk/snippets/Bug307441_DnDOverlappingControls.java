@@ -62,13 +62,13 @@ public static void main (String [] args) {
 	Rectangle clientArea = dropComp.getClientArea();
 
 	final Label label2 = new Label (dropComp, SWT.BORDER);
-	label2.setBackground(new Color(null,255,255,0));
+	label2.setBackground(new Color(255,255,0));
 	label2.setText("DropLabel1");
 	label2.setSize(100,100);
 	label2.setBounds(clientArea.x, clientArea.y, clientArea.width, (clientArea.height*2)/3);
 
 	final Label label3 = new Label (dropComp, SWT.BORDER);
-	label3.setBackground(new Color(null, 255, 0,0));
+	label3.setBackground(new Color(255, 0, 0));
 	label3.setText("DropLabel2");
 	label3.setSize(100,100);
 	label3.setBounds(clientArea.x+10, clientArea.y+clientArea.height/3, clientArea.width-10, clientArea.height/2);
@@ -171,7 +171,7 @@ public static void setDropTarget (final Control control) {
 				event.detail = DND.DROP_NONE;
 				return;
 			}
-			control.setBackground(new Color(null,0,0,255));
+			control.setBackground(new Color(0,0,255));
 		}
 		@Override
 		public void dragLeave(DropTargetEvent arg0) {

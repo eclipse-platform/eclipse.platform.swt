@@ -176,7 +176,7 @@ public void test_setTextLjava_lang_String() {
 @Test
 public void test_setLinkForegroundLorg_eclipse_swt_graphics_Color() {
 	assertNotNull(link.getLinkForeground());
-	Color color = new Color(control.getDisplay(), 12, 34, 56);
+	Color color = new Color(12, 34, 56);
 	link.setLinkForeground(color);
 	assertEquals(color, link.getLinkForeground());
 	link.setLinkForeground(null);

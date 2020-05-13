@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2018 IBM Corporation and others.
+ * Copyright (c) 2000, 2020 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -28,7 +28,6 @@ import org.eclipse.swt.custom.StyleRange;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Display;
 
 class JavaLineStyler implements LineStyleListener {
 	JavaScanner scanner = new JavaScanner();
@@ -73,12 +72,11 @@ boolean inBlockComment(int start, int end) {
 }
 
 void initializeColors() {
-	Display display = Display.getDefault();
 	colors= new Color[] {
-		new Color(display, new RGB(0, 0, 0)),		// black
-		new Color(display, new RGB(255, 0, 0)),	// red
-		new Color(display, new RGB(0, 255, 0)),	// green
-		new Color(display, new RGB(0,   0, 255))	// blue
+		new Color(new RGB(0, 0, 0)),		// black
+		new Color(new RGB(255, 0, 0)),	// red
+		new Color(new RGB(0, 255, 0)),	// green
+		new Color(new RGB(0,   0, 255))	// blue
 	};
 	tokenColors= new int[MAXIMUM_TOKEN];
 	tokenColors[WORD]=		0;

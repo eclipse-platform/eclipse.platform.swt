@@ -351,7 +351,7 @@ void onPaint(GC gc) {
 		int red = from.red + 3*(to.red - from.red)/4;
 		int green = from.green + 3*(to.green - from.green)/4;
 		int blue = from.blue + 3*(to.blue - from.blue)/4;
-		Color color = new Color(getDisplay(), red, green, blue);
+		Color color = new Color(red, green, blue);
 		gc.setForeground(color);
 		gc.drawPolyline(line2);
 		gc.drawPolyline(line3);

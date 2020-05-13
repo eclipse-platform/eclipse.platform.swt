@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2019 IBM Corporation and others.
+ * Copyright (c) 2000, 2020 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -163,13 +163,12 @@ private Color getColor(RGB rgb) {
 }
 // this method must not be public so that the auto-gen tool keeps it
 protected void initializeColors() {
-	Display display = Display.getDefault();
-	colors.put(RED, new Color (display, RED));
-	colors.put(BLUE, new Color (display, BLUE));
-	colors.put(GREEN, new Color (display, GREEN));
-	colors.put(YELLOW, new Color (display, YELLOW));
-	colors.put(CYAN, new Color (display, CYAN));
-	colors.put(PURPLE, new Color (display, PURPLE));
+	colors.put(RED, new Color (RED));
+	colors.put(BLUE, new Color (BLUE));
+	colors.put(GREEN, new Color (GREEN));
+	colors.put(YELLOW, new Color (YELLOW));
+	colors.put(CYAN, new Color (CYAN));
+	colors.put(PURPLE, new Color (PURPLE));
 }
 
 @Override
