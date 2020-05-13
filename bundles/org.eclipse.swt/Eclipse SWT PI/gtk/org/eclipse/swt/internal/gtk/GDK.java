@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2018 Red Hat Inc. and others. All rights reserved.
+ * Copyright (c) 2018, 2020 Red Hat Inc. and others. All rights reserved.
  * The contents of this file are made available under the terms
  * of the GNU Lesser General Public License (LGPL) Version 2.1 that
  * accompanies this distribution (lgpl-v21.txt).  The LGPL is also
@@ -209,6 +209,7 @@ public class GDK extends OS {
 	public static final int GDK_Up = 0xff52;
 	public static final int GDK_WINDOW_CHILD = 2;
 	public static final int GDK_WINDOW_STATE = 32;
+	public static final int GDK_WINDOW_STATE_WITHDRAWN  = 1 << 0;
 	public static final int GDK_WINDOW_STATE_ICONIFIED  = 1 << 1;
 	public static final int GDK_WINDOW_STATE_MAXIMIZED  = 1 << 2;
 	public static final int GDK_WINDOW_STATE_FULLSCREEN  = 1 << 4;

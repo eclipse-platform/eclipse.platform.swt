@@ -4227,7 +4227,7 @@ public boolean post (Event event) {
 			while (windows != 0) {
 				long curr_window = OS.g_list_data(windows);
 				int state = GDK.gdk_window_get_state(curr_window);
-				if ((state & GDK.GDK_WINDOW_STATE_FOCUSED) != 0) {
+				if ((state & GDK.GDK_WINDOW_STATE_FOCUSED) != 0 && (state & GDK.GDK_WINDOW_STATE_WITHDRAWN) == 0) {
 					gdkWindow = curr_window;
 					OS.g_object_ref(gdkWindow);
 					break;
