@@ -183,6 +183,24 @@ public class Display extends Device {
 	 */
 	static final String USE_DARKMODE_EXPLORER_THEME_KEY = "org.eclipse.swt.internal.win32.useDarkModeExplorerTheme";
 	boolean useDarkModeExplorerTheme;
+	/**
+	 * Configures background/foreground colors of Menu(SWT.BAR).<br>
+	 * Side effects:
+	 * <ul>
+	 * <li>Menu items are no longer highlighted when mouse hovers over</li>
+	 * </ul>
+	 * Expects a <code>Color</code> value.
+	 */
+	static final String MENUBAR_FOREGROUND_COLOR_KEY = "org.eclipse.swt.internal.win32.menuBarForegroundColor"; //$NON-NLS-1$
+	int menuBarForegroundPixel = -1;
+	static final String MENUBAR_BACKGROUND_COLOR_KEY = "org.eclipse.swt.internal.win32.menuBarBackgroundColor"; //$NON-NLS-1$
+	int menuBarBackgroundPixel = -1;
+	/**
+	 * Color of the 1px separator between Menu(SWT.BAR) and Shell's client area.<br>
+	 * Expects a <code>Color</code> value.
+	 */
+	static final String MENUBAR_BORDER_COLOR_KEY     = "org.eclipse.swt.internal.win32.menuBarBorderColor"; //$NON-NLS-1$
+	long menuBarBorderPen;
 
 	/* Custom icons */
 	long hIconSearch;
@@ -3666,6 +3684,8 @@ void releaseDisplay () {
 	if (hScrollBarTheme != 0) OS.CloseThemeData (hScrollBarTheme);
 	if (hTabTheme != 0) OS.CloseThemeData (hTabTheme);
 	hButtonTheme = hEditTheme = hExplorerBarTheme = hScrollBarTheme = hTabTheme = 0;
+	if (menuBarBorderPen != 0) OS.DeleteObject (menuBarBorderPen);
+	menuBarBorderPen = 0;
 
 	/* Unhook the message hook */
 	if (msgHook != 0) OS.UnhookWindowsHookEx (msgHook);
@@ -4256,6 +4276,11 @@ boolean _toBoolean (Object value) {
 	return value != null && ((Boolean)value).booleanValue ();
 }
 
+int _toColorPixel (Object value) {
+	if (value == null) return -1;
+	return ((Color)value).handle;
+}
+
 /**
  * Sets the application defined property of the receiver
  * with the specified name to the given argument.
@@ -4314,6 +4339,22 @@ public void setData (String key, Object value) {
 			useDarkModeExplorerTheme = _toBoolean (value) &&
 				!disableCustomThemeTweaks &&
 				isThemeAvailable_DarkModeExplorer ();
+			return;
+		case MENUBAR_FOREGROUND_COLOR_KEY:
+			menuBarForegroundPixel = disableCustomThemeTweaks ? -1 : _toColorPixel(value);
+			return;
+		case MENUBAR_BACKGROUND_COLOR_KEY:
+			menuBarBackgroundPixel = disableCustomThemeTweaks ? -1 : _toColorPixel(value);
+			return;
+		case MENUBAR_BORDER_COLOR_KEY:
+			if (menuBarBorderPen != 0)
+				OS.DeleteObject(menuBarBorderPen);
+
+			int pixel = _toColorPixel(value);
+			if (disableCustomThemeTweaks || (pixel == -1))
+				menuBarBorderPen = 0;
+			else
+				menuBarBorderPen = OS.CreatePen (OS.PS_SOLID, 1, pixel);
 			return;
 	}
 

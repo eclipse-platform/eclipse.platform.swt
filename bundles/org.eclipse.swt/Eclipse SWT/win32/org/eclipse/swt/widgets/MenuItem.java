@@ -783,7 +783,7 @@ public void setImage (Image image) {
 	MENUITEMINFO info = new MENUITEMINFO ();
 	info.cbSize = MENUITEMINFO.sizeof;
 	info.fMask = OS.MIIM_BITMAP;
-	if (parent.foreground != -1) {
+	if (parent.needsMenuCallback()) {
 		info.hbmpItem = OS.HBMMENU_CALLBACK;
 	} else {
 		if (OS.IsAppThemed ()) {
@@ -1145,6 +1145,25 @@ LRESULT wmDrawChild (long wParam, long lParam) {
 LRESULT wmMeasureChild (long wParam, long lParam) {
 	MEASUREITEMSTRUCT struct = new MEASUREITEMSTRUCT ();
 	OS.MoveMemory (struct, lParam, MEASUREITEMSTRUCT.sizeof);
+
+	if ((parent.style & SWT.BAR) != 0) {
+		if (parent.needsMenuCallback()) {
+			/*
+			 * Weirdness in Windows. Setting `HBMMENU_CALLBACK` causes
+			 * item sizes to mean something else. It seems that it is
+			 * the size of left margin before the text. At the same time,
+			 * if menu item has a mnemonic, it's always drawn at a fixed
+			 * position. I have tested on Win7, Win8.1, Win10 and found
+			 * that value of 5 works well in matching text to mnemonic.
+			 * NOTE: autoScaleUpUsingNativeDPI() is used to avoid problems
+			 * with applications that disable automatic scaling.
+			 */
+			struct.itemWidth = DPIUtil.autoScaleUpUsingNativeDPI(5);
+			OS.MoveMemory (lParam, struct, MEASUREITEMSTRUCT.sizeof);
+			return null;
+		}
+	}
+
 	int width = 0, height = 0;
 	if (image != null) {
 		Rectangle rect = image.getBoundsInPixels ();

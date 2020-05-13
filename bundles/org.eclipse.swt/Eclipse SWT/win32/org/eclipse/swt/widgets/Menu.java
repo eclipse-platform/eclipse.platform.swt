@@ -334,6 +334,7 @@ void createHandle () {
 		handle = OS.CreatePopupMenu ();
 	}
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
+	updateBackground ();
 }
 
 void createItem (MenuItem item, int index) {
@@ -368,11 +369,25 @@ void createItem (MenuItem item, int index) {
 		display.removeMenuItem (item);
 		error (SWT.ERROR_ITEM_NOT_ADDED);
 	}
+
+	if (needsMenuCallback()) {
+		/*
+		 * Bug in Windows: when MIIM_BITMAP is used together with MFT_STRING,
+		 * InsertMenuItem() fails. The workaround is to set MIIM_BITMAP with
+		 * a separate SetMenuItemInfo().
+		 */
+
+		info.fMask = OS.MIIM_BITMAP;
+		info.hbmpItem = OS.HBMMENU_CALLBACK;
+		OS.SetMenuItemInfo (handle, index, true, info);
+	}
+
 	redraw ();
 }
 
 void createWidget () {
 	checkOrientation (parent);
+	initThemeColors ();
 	createHandle ();
 	parent.addMenu (this);
 }
@@ -831,6 +846,13 @@ public int indexOf (MenuItem item) {
 	return -1;
 }
 
+void initThemeColors () {
+	if ((style & SWT.BAR) != 0) {
+		foreground = display.menuBarForegroundPixel;
+		background = display.menuBarBackgroundPixel;
+	}
+}
+
 /**
  * Returns <code>true</code> if the receiver is enabled and all
  * of the receiver's ancestors are enabled, and <code>false</code>
@@ -872,6 +894,34 @@ public boolean isEnabled () {
 public boolean isVisible () {
 	checkWidget ();
 	return getVisible ();
+}
+
+
+boolean needsMenuCallback() {
+	/*
+	 * Note: using `HBMMENU_CALLBACK` disables XP theme for entire menu
+	 * containing the menu item. This has at least the following side
+	 * effects:
+	 * 1) Menu bar: items are no longer highlighted when mouse hovers
+	 * 2) Menu bar: text is now left-aligned without any margin
+	 * 3) Popup menu: Images and checkboxes are no longer merged into a single column
+	 */
+
+	if ((background != -1) || (backgroundImage != null)) {
+		/*
+		 * Since XP theming, `MENUINFO.hbrBack` has two issues:
+		 * 1) Menu bar completely ignores it
+		 * 2) Popup menus ignore it for image/checkbox area
+		 * The workaround is to disable XP theme via `HBMMENU_CALLBACK`.
+		 */
+		return true;
+	}
+
+	/*
+	 * Otherwise, if menu has foreground color configured, use
+	 * `HBMMENU_CALLBACK` to set color in `MenuItem.wmDrawChild` callback.
+	 */
+	return (foreground != -1);
 }
 
 void redraw () {
@@ -1271,11 +1321,12 @@ void update () {
 void updateBackground () {
 	if (hBrush != 0) OS.DeleteObject (hBrush);
 	hBrush = 0;
-	if (backgroundImage != null) {
+
+	if (backgroundImage != null)
 		hBrush = OS.CreatePatternBrush (backgroundImage.handle);
-	} else {
-		if (background != -1) hBrush = OS.CreateSolidBrush (background);
-	}
+	else if (background != -1)
+		hBrush = OS.CreateSolidBrush (background);
+
 	MENUINFO lpcmi = new MENUINFO ();
 	lpcmi.cbSize = MENUINFO.sizeof;
 	lpcmi.fMask = OS.MIM_BACKGROUND;

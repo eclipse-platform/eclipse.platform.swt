@@ -15,6 +15,7 @@
 package org.eclipse.swt.internal.win32;
 
 
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.widgets.Display;
 
@@ -567,7 +568,7 @@ public class OS extends C {
 	public static final int GW_HWNDNEXT = 0x2;
 	public static final int GW_HWNDPREV = 0x3;
 	public static final int GW_OWNER = 0x4;
-	public static final int HBMMENU_CALLBACK = 0xffffffff;
+	public static final long HBMMENU_CALLBACK = -1;
 	public static final int HCBT_CREATEWND = 3;
 	public static final int HCF_HIGHCONTRASTON = 0x1;
 	public static final int HDF_BITMAP = 0x2000;
@@ -2350,6 +2351,9 @@ public static final void setTheme(boolean isDarkTheme) {
 		throw new NullPointerException("Display must be already created before you call OS.setTheme()");
 
 	display.setData("org.eclipse.swt.internal.win32.useDarkModeExplorerTheme", isDarkTheme);
+	display.setData("org.eclipse.swt.internal.win32.menuBarForegroundColor",   isDarkTheme ? new Color(display, 0xD0, 0xD0, 0xD0) : null);
+	display.setData("org.eclipse.swt.internal.win32.menuBarBackgroundColor",   isDarkTheme ? new Color(display, 0x30, 0x30, 0x30) : null);
+	display.setData("org.eclipse.swt.internal.win32.menuBarBorderColor",       isDarkTheme ? new Color(display, 0x50, 0x50, 0x50) : null);
 }
 
 public static final boolean SetDllDirectory (TCHAR lpPathName) {
