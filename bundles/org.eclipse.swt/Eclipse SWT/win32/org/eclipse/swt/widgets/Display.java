@@ -222,6 +222,13 @@ public class Display extends Device {
 	boolean useWsBorderText = false;
 	static final String USE_WS_BORDER_TREE_KEY       = "org.eclipse.swt.internal.win32.Tree.use_WS_BORDER"; //$NON-NLS-1$
 	boolean useWsBorderTree = false;
+	/**
+	 * Changes the color of Table header's column delimiters.
+	 * Only affects custom-drawn header, that is when background/foreground header color is set.
+	 * Expects a <code>Color</code> value.
+	 */
+	static final String TABLE_HEADER_LINE_COLOR_KEY  = "org.eclipse.swt.internal.win32.Table.headerLineColor"; //$NON-NLS-1$
+	int tableHeaderLinePixel = -1;
 
 	/* Custom icons */
 	long hIconSearch;
@@ -4400,6 +4407,9 @@ public void setData (String key, Object value) {
 			return;
 		case USE_WS_BORDER_TREE_KEY:
 			useWsBorderTree    = !disableCustomThemeTweaks && _toBoolean(value);
+			return;
+		case TABLE_HEADER_LINE_COLOR_KEY:
+			tableHeaderLinePixel = disableCustomThemeTweaks ? -1 : _toColorPixel(value);
 			return;
 	}
 
