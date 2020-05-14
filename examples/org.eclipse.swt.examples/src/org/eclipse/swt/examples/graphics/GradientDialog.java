@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2016 IBM Corporation and others.
+ * Copyright (c) 2006, 2020 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -23,7 +23,6 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.graphics.Rectangle;
-import org.eclipse.swt.graphics.Resource;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.layout.RowLayout;
@@ -84,8 +83,8 @@ public class GradientDialog extends Dialog {
 
 		dialog.addListener(SWT.Close, event -> {
 			for (Image obj : resources) {
-				if (obj != null && obj instanceof Resource) {
-					((Resource) obj).dispose();
+				if (obj != null) {
+					obj.dispose();
 				}
 			}
 			dialog.dispose();
