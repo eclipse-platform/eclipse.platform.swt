@@ -773,15 +773,17 @@ boolean refreshImageForZoom () {
 			currentDeviceZoom = deviceZoomLevel;
 		}
 	} else {
-		int deviceZoomLevel = deviceZoom;
-		if (deviceZoomLevel != currentDeviceZoom) {
-			ImageData data = getImageDataAtCurrentZoom();
-			destroy ();
-			ImageData resizedData = DPIUtil.autoScaleImageData(device, data, deviceZoomLevel, currentDeviceZoom);
-			init(resizedData);
-			init();
-			refreshed = true;
-			currentDeviceZoom = deviceZoomLevel;
+		if (!DPIUtil.useCairoAutoScale()) {
+			int deviceZoomLevel = deviceZoom;
+			if (deviceZoomLevel != currentDeviceZoom) {
+				ImageData data = getImageDataAtCurrentZoom();
+				destroy ();
+				ImageData resizedData = DPIUtil.autoScaleImageData(device, data, deviceZoomLevel, currentDeviceZoom);
+				init(resizedData);
+				init();
+				refreshed = true;
+				currentDeviceZoom = deviceZoomLevel;
+			}
 		}
 	}
 	return refreshed;
