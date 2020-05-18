@@ -190,7 +190,8 @@ void destroy() {
 }
 
 /**
- * Disposal is not required for Color as the system will auto-dispose it.
+ * Colors do not need to be disposed, however to maintain compatibility
+ * with older code, disposing a Color is not an error.
  */
 @Override
 public void dispose() {
