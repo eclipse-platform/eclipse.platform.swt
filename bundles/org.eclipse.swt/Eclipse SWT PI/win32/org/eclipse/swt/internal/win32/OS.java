@@ -2326,15 +2326,14 @@ public static final long SendMessage (long hWnd, int Msg, long wParam, TCHAR lPa
 }
 
 /**
- * This method enables below listed dark theme experimental feature(calling it
- * experimental because it depends on undocumented API on Windows platform which
- * may or may not be exposed as public in it's current form) as supported on
- * Windows10 only:<br>
- * scroll-bar
+ * Experimental API for dark theme.
  * <p>
- * Note: This operation is a hint and is not supported on platforms that do not
- * have this concept.
- * </p>
+ * On Windows, there is no OS API for dark theme yet, and this method only
+ * configures various tweaks. Some of these tweaks have drawbacks. The tweaks
+ * are configured with defaults that fit Eclipse. Non-Eclipse applications are
+ * expected to configure individual tweaks instead of calling this method.
+ * Please see <code>Display#setData()</code> and documentation for string keys
+ * used there.
  *
  * @param isDarkTheme <code>true</code> for dark theme
  */

@@ -167,12 +167,13 @@ public class Display extends Device {
 	static final boolean disableCustomThemeTweaks = Boolean.valueOf(System.getProperty("org.eclipse.swt.internal.win32.disableCustomThemeTweaks")); //$NON-NLS-1$
 	/**
 	 * Changes Windows theme to 'DarkMode_Explorer' for Controls that can benefit from it.
-	 * Effects:<br>
+	 * Effects as of Windows 10 version 1909:<br>
 	 * <ul>
 	 *   <li>Dark scrollbars - this is the most important change for many applications.</li>
 	 *   <li>Tree - dark theme compatible expander icon.</li>
-	 *   <li>Tree, Table - dark theme compatible colors for selected item.</li>
-	 *   <li>Other effects may be present (currently Windows dark theme is only partially implemented).</li>
+	 *   <li>Tree - dark theme compatible colors for selected and hovered items.</li>
+	 *   <li>Table - uses older theme. It for example doesn't have mouse hover item highlight.</li>
+	 *   <li>The list is not exhaustive. Also, effects can change, because Windows dark theme is not yet official.</li>
 	 * </ul>
 	 * Limitations:<br>
 	 * <ul>
