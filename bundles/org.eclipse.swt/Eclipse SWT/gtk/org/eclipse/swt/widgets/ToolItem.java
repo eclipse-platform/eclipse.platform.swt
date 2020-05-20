@@ -1113,7 +1113,7 @@ public void setImage (Image image) {
 	checkWidget();
 	if ((style & SWT.SEPARATOR) != 0) return;
 	super.setImage (image);
-	if (!enabled && disabledImage != image) {
+	if (!enabled && disabledImage != image && disabledImage != null) {
 		return;
 	}
 	_setImage(image);
