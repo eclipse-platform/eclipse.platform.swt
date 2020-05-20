@@ -230,6 +230,12 @@ public class Display extends Device {
 	 */
 	static final String TABLE_HEADER_LINE_COLOR_KEY  = "org.eclipse.swt.internal.win32.Table.headerLineColor"; //$NON-NLS-1$
 	int tableHeaderLinePixel = -1;
+	/**
+	 * Disabled Label is drawn with specified foreground color.
+	 * Expects a <code>Color</code> value.
+	 */
+	static final String LABEL_DISABLED_FOREGROUND_COLOR_KEY = "org.eclipse.swt.internal.win32.Label.disabledForegroundColor"; //$NON-NLS-1$
+	int disabledLabelForegroundPixel = -1;
 
 	/* Custom icons */
 	long hIconSearch;
@@ -4412,6 +4418,9 @@ public void setData (String key, Object value) {
 		case TABLE_HEADER_LINE_COLOR_KEY:
 			tableHeaderLinePixel = disableCustomThemeTweaks ? -1 : _toColorPixel(value);
 			return;
+		case LABEL_DISABLED_FOREGROUND_COLOR_KEY:
+			disabledLabelForegroundPixel = disableCustomThemeTweaks ? -1 : _toColorPixel(value);
+			break;
 	}
 
 	/* Remove the key/value pair */

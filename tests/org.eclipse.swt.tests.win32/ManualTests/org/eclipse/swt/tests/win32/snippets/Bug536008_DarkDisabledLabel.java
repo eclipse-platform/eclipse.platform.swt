@@ -66,6 +66,8 @@ public class Bug536008_DarkDisabledLabel {
 
 		Color backColor  = new Color(display, 0x30, 0x30, 0x30);
 		Color foreColor  = new Color(display, 0xD0, 0xD0, 0xD0);
+		Color labelColor = new Color(display, 0x80, 0x80, 0x80);
+		display.setData("org.eclipse.swt.internal.win32.Label.disabledForegroundColor", labelColor);
 
 		int margin = 10;
 		int cx = 60;

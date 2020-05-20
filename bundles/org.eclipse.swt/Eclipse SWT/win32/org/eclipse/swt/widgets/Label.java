@@ -313,8 +313,22 @@ public void setAlignment (int alignment) {
 	if ((alignment & (SWT.LEFT | SWT.RIGHT | SWT.CENTER)) == 0) return;
 	style &= ~(SWT.LEFT | SWT.RIGHT | SWT.CENTER);
 	style |= alignment & (SWT.LEFT | SWT.RIGHT | SWT.CENTER);
-	updateStyleBits();
+	updateStyleBits(getEnabled());
 	OS.InvalidateRect (handle, null, true);
+}
+
+@Override
+public void setEnabled (boolean enabled) {
+	/*
+	 * Style may need to be changed if Display#disabledLabelForegroundPixel
+	 * is active. At the same time, #setEnabled() will cause a repaint with
+	 * current style. Therefore, style needs to be changed before #setEnabled().
+	 * Note that adding redraw() after #setEnabled() is a worse solution
+	 * because it still causes brief old style painting in #setEnabled().
+	 */
+	updateStyleBits(enabled);
+
+	super.setEnabled(enabled);
 }
 
 /**
@@ -337,7 +351,7 @@ public void setImage (Image image) {
 	if (image != null && image.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
 	this.image = image;
 	isImageMode = (image != null);
-	updateStyleBits();
+	updateStyleBits(getEnabled());
 	OS.InvalidateRect (handle, null, true);
 }
 
@@ -377,7 +391,7 @@ public void setText (String string) {
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if ((style & SWT.SEPARATOR) != 0) return;
 	isImageMode = false;
-	updateStyleBits();
+	updateStyleBits(getEnabled());
 	/*
 	* Feature in Windows.  For some reason, SetWindowText() for
 	* static controls redraws the control, even when the text has
@@ -394,8 +408,11 @@ public void setText (String string) {
 	}
 }
 
-void updateStyleBits() {
+void updateStyleBits(boolean isEnabled) {
 	boolean useOwnerDraw = isImageMode;
+
+	if (!useOwnerDraw && (display.disabledLabelForegroundPixel != -1) && !isEnabled)
+		useOwnerDraw = true;
 
 	int oldBits = OS.GetWindowLong(handle, OS.GWL_STYLE);
 
@@ -570,6 +587,19 @@ void wmDrawChildText(DRAWITEMSTRUCT struct) {
 	if ((style & SWT.CENTER) != 0) flags |= OS.DT_CENTER;
 	if ((style & SWT.RIGHT) != 0)  flags |= OS.DT_RIGHT;
 	if ((style & SWT.WRAP) != 0)   flags |= OS.DT_WORDBREAK;
+
+	// Mnemonics are usually not shown on Labels until Alt is pressed.
+	long uiState = OS.SendMessage (handle, OS.WM_QUERYUISTATE, 0, 0);
+	if ((uiState & OS.UISF_HIDEACCEL) != 0)
+		flags |= OS.DT_HIDEPREFIX;
+
+	if (!getEnabled()) {
+		int foregroundPixel = OS.GetSysColor(OS.COLOR_GRAYTEXT);
+		if (display.disabledLabelForegroundPixel != -1)
+			foregroundPixel = display.disabledLabelForegroundPixel;
+
+		OS.SetTextColor(struct.hDC, foregroundPixel);
+	}
 
 	char [] buffer = text.toCharArray ();
 	OS.DrawText (struct.hDC, buffer, buffer.length, rect, flags);

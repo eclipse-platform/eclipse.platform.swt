@@ -2361,6 +2361,7 @@ public static final void setTheme(boolean isDarkTheme) {
 	display.setData("org.eclipse.swt.internal.win32.Text.use_WS_BORDER",       isDarkTheme);
 	display.setData("org.eclipse.swt.internal.win32.Tree.use_WS_BORDER",       isDarkTheme);
 	display.setData("org.eclipse.swt.internal.win32.Table.headerLineColor",    isDarkTheme ? new Color(display, 0x50, 0x50, 0x50) : null);
+	display.setData("org.eclipse.swt.internal.win32.Label.disabledForegroundColor", isDarkTheme ? new Color(display, 0x80, 0x80, 0x80) : null);
 }
 
 public static final boolean SetDllDirectory (TCHAR lpPathName) {
