@@ -29,7 +29,7 @@ import org.eclipse.swt.widgets.*;
 public class Sleak {
 	List list;
 	Canvas canvas;
-	Button start, stop, check;
+	Button snapshot, diff, stackTrace;
 	Text text;
 	Label label;
 	
@@ -74,19 +74,19 @@ public void create (Composite parent) {
 	text = new Text (parent, SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL);
 	canvas = new Canvas (parent, SWT.BORDER);
 	canvas.addListener (SWT.Paint, event -> paintCanvas (event));
-	check = new Button (parent, SWT.CHECK);
-	check.setText ("Stack");
-	check.addListener (SWT.Selection, e -> toggleStackTrace ());
-	start = new Button (parent, SWT.PUSH);
-	start.setText ("Snap");
-	start.addListener (SWT.Selection, event -> refreshAll ());
-	stop = new Button (parent, SWT.PUSH);
-	stop.setText ("Diff");
-	stop.addListener (SWT.Selection, event -> refreshDifference ());
+	stackTrace = new Button (parent, SWT.CHECK);
+	stackTrace.setText ("Stack");
+	stackTrace.addListener (SWT.Selection, e -> toggleStackTrace ());
+	snapshot = new Button (parent, SWT.PUSH);
+	snapshot.setText ("Snap");
+	snapshot.addListener (SWT.Selection, event -> refreshAll ());
+	diff = new Button (parent, SWT.PUSH);
+	diff.setText ("Diff");
+	diff.addListener (SWT.Selection, event -> refreshDifference ());
 	label = new Label (parent, SWT.BORDER);
 	label.setText ("0 object(s)");
 	parent.addListener (SWT.Resize, e -> layout ());
-	check.setSelection (false);
+	stackTrace.setSelection (false);
 	text.setVisible (false);
 	layout();
 }
@@ -246,7 +246,7 @@ void paintCanvas (Event event) {
 void refreshObject () {
 	int index = list.getSelectionIndex ();
 	if (index == -1) return;
-	if (check.getSelection ()) {
+	if (stackTrace.getSelection ()) {
 		ByteArrayOutputStream stream = new ByteArrayOutputStream ();
 		PrintStream s = new PrintStream (stream);
 		errors [index].printStackTrace (s);
@@ -278,18 +278,19 @@ void layout () {
 		width = Math.max (width, gc.stringExtent (items [i]).x);
 	}
 	gc.dispose ();
-	Point size1 = start.computeSize (SWT.DEFAULT, SWT.DEFAULT);
-	Point size2 = stop.computeSize (SWT.DEFAULT, SWT.DEFAULT);
-	Point size3 = check.computeSize (SWT.DEFAULT, SWT.DEFAULT);
-	Point size4 = label.computeSize (SWT.DEFAULT, SWT.DEFAULT);
-	width = Math.max (size1.x, Math.max (size2.x, Math.max (size3.x, width)));
-	width = Math.max (64, Math.max (size4.x, list.computeSize (width, SWT.DEFAULT).x));
-	start.setBounds (0, 0, width, size1.y);
-	stop.setBounds (0, size1.y, width, size2.y);
-	check.setBounds (0, size1.y + size2.y, width, size3.y);
-	label.setBounds (0, rect.height - size4.y, width, size4.y);
-	int height = size1.y + size2.y + size3.y;
-	list.setBounds (0, height, width, rect.height - height - size4.y);
+	Point snapshotSize = snapshot.computeSize (SWT.DEFAULT, SWT.DEFAULT);
+	Point diffSize = diff.computeSize (SWT.DEFAULT, SWT.DEFAULT);
+	Point stackSize = stackTrace.computeSize (SWT.DEFAULT, SWT.DEFAULT);
+	Point labelSize = label.computeSize (SWT.DEFAULT, SWT.DEFAULT);
+	width = Math.max (snapshotSize.x, Math.max (diffSize.x, Math.max (stackSize.x, width)));
+	width = Math.max (labelSize.x, list.computeSize (width, SWT.DEFAULT).x);
+	width = Math.max (64, width);
+	snapshot.setBounds (0, 0, width, snapshotSize.y);
+	diff.setBounds (0, snapshotSize.y, width, diffSize.y);
+	stackTrace.setBounds (0, snapshotSize.y + diffSize.y, width, stackSize.y);
+	label.setBounds (0, rect.height - labelSize.y, width, labelSize.y);
+	int height = snapshotSize.y + diffSize.y + stackSize.y;
+	list.setBounds (0, height, width, rect.height - height - labelSize.y);
 	text.setBounds (width, 0, rect.width - width, rect.height);
 	canvas.setBounds (width, 0, rect.width - width, rect.height);
 }
