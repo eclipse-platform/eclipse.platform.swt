@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2007, 2016 IBM Corporation and others.
+ * Copyright (c) 2007, 2020 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -29,10 +29,17 @@ import org.eclipse.swt.widgets.*;
 public class Sleak {
 	List list;
 	Canvas canvas;
-	Button snapshot, diff, stackTrace;
+	Button snapshot, diff, stackTrace, saveAs, save;
 	Text text;
 	Label label;
 	
+	String filterPath = "";
+	String fileName = "sleakout";
+	String selectedName = null;
+	boolean incrementFileNames = true;
+	boolean saveImages = true;
+	int fileCount = 0;
+
 	Object [] oldObjects = new Object [0];
 	Error [] oldErrors = new Error [0];
 	Object [] objects = new Object [0];
@@ -85,6 +92,14 @@ public void create (Composite parent) {
 	diff.addListener (SWT.Selection, event -> refreshDifference ());
 	label = new Label (parent, SWT.BORDER);
 	label.setText ("0 object(s)");
+	saveAs = new Button (parent, SWT.PUSH);
+	saveAs.setText ("Save As...");
+	saveAs.setToolTipText("Saves the contents of the list to a file, optionally with the stack traces if selected.");
+	saveAs.addListener (SWT.Selection, event -> saveToFile (true));
+	save = new Button (parent, SWT.PUSH);
+	save.setText ("Save");
+	save.setToolTipText("Saves to the previously selected file.");
+	save.addListener (SWT.Selection, event -> saveToFile (false));
 	parent.addListener (SWT.Resize, e -> layout ());
 	stackTrace.setSelection (false);
 	text.setVisible (false);
@@ -164,6 +179,76 @@ void refreshDifference () {
 	layout ();
 }
 
+private void saveToFile(boolean prompt) {
+	if (prompt || selectedName == null) {
+		FileDialog dialog = new FileDialog(saveAs.getShell(), SWT.SAVE);
+		dialog.setFilterPath(filterPath);
+		dialog.setFileName(fileName);
+		dialog.setOverwrite(true);
+		selectedName = dialog.open();
+		fileCount = 0;
+		if (selectedName == null) {
+			return;
+		}
+		filterPath = dialog.getFilterPath();
+		fileName = dialog.getFileName();
+
+		MessageBox msg = new MessageBox(saveAs.getShell(), SWT.ICON_QUESTION | SWT.YES | SWT.NO);
+		msg.setText("Append incrementing file counter?");
+		msg.setMessage("Append an incrementing file count to the file name on each save, starting at 000?");
+		incrementFileNames = msg.open() == SWT.YES;
+
+		msg = new MessageBox(saveAs.getShell(), SWT.ICON_QUESTION | SWT.YES | SWT.NO);
+		msg.setText("Save images for each resource?");
+		msg.setMessage("Save an image (png) for each resource?");
+		saveImages = msg.open() == SWT.YES;
+	}
+
+	String fileName = selectedName;
+	if (incrementFileNames) {
+		fileName = String.format("%s_%03d", fileName, fileCount++);
+	}
+	try (PrintWriter file = new PrintWriter(new FileOutputStream(fileName))) {
+
+		for (int i = 0; i < errors.length; i++) {
+			Object object = objects[i];
+			Error error = errors[i];
+			file.print(object.toString());
+			if (saveImages) {
+				String suffix = String.format("%05d.png", i);
+				String pngName = String.format("%s_%s", fileName, suffix);
+				Image image = new Image(saveAs.getDisplay(), 100, 100);
+				try {
+					GC gc = new GC(image);
+					try {
+						draw(gc, object);
+					} finally {
+						gc.dispose();
+					}
+					ImageLoader loader = new ImageLoader();
+					loader.data = new ImageData[] { image.getImageData() };
+					loader.save(pngName, SWT.IMAGE_PNG);
+				} finally {
+					image.dispose();
+				}
+
+				file.print(" -> ");
+				file.print(suffix);
+			}
+			file.println();
+			if (stackTrace.getSelection()) {
+				error.printStackTrace(file);
+				System.out.println();
+			}
+		}
+	} catch (IOException e1) {
+		MessageBox msg = new MessageBox(saveAs.getShell(), SWT.ICON_ERROR | SWT.OK);
+		msg.setText("Failed to save");
+		msg.setMessage("Failed to save S-Leak file.\n" + e1.getMessage());
+		msg.open();
+	}
+}
+
 void toggleStackTrace () {
 	refreshObject ();
 	layout ();
@@ -175,6 +260,10 @@ void paintCanvas (Event event) {
 	if (index == -1) return;
 	GC gc = event.gc;
 	Object object = objects [index];
+	draw(gc, object);
+}
+
+void draw(GC gc, Object object) {
 	if (object instanceof Color) {
 		if (((Color)object).isDisposed ()) return;
 		gc.setBackground ((Color) object);
@@ -282,15 +371,20 @@ void layout () {
 	Point diffSize = diff.computeSize (SWT.DEFAULT, SWT.DEFAULT);
 	Point stackSize = stackTrace.computeSize (SWT.DEFAULT, SWT.DEFAULT);
 	Point labelSize = label.computeSize (SWT.DEFAULT, SWT.DEFAULT);
+	Point saveAsSize = saveAs.computeSize (SWT.DEFAULT, SWT.DEFAULT);
+	Point saveSize = save.computeSize (SWT.DEFAULT, SWT.DEFAULT);
 	width = Math.max (snapshotSize.x, Math.max (diffSize.x, Math.max (stackSize.x, width)));
+	width = Math.max (saveAsSize.x, Math.max (saveSize.x, width));
 	width = Math.max (labelSize.x, list.computeSize (width, SWT.DEFAULT).x);
 	width = Math.max (64, width);
 	snapshot.setBounds (0, 0, width, snapshotSize.y);
 	diff.setBounds (0, snapshotSize.y, width, diffSize.y);
 	stackTrace.setBounds (0, snapshotSize.y + diffSize.y, width, stackSize.y);
-	label.setBounds (0, rect.height - labelSize.y, width, labelSize.y);
+	label.setBounds (0, rect.height - saveSize.y - saveAsSize.y - labelSize.y, width, labelSize.y);
+	saveAs.setBounds (0, rect.height - saveSize.y - saveAsSize.y, width, saveAsSize.y);
+	save.setBounds (0, rect.height - saveSize.y, width, saveSize.y);
 	int height = snapshotSize.y + diffSize.y + stackSize.y;
-	list.setBounds (0, height, width, rect.height - height - labelSize.y);
+	list.setBounds (0, height, width, rect.height - height - labelSize.y - saveAsSize.y -saveSize.y);
 	text.setBounds (width, 0, rect.width - width, rect.height);
 	canvas.setBounds (width, 0, rect.width - width, rect.height);
 }
