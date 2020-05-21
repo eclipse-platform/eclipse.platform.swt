@@ -275,8 +275,12 @@ void destroy() {
  */
 @Override
 public void dispose() {
-	super.dispose();
+	// Does as below to maintain API contract with Resource. Does
+	// not use super.dispose() because that untracks the Color
+	// from the Device tracking, however init() is overridden
+	// to prevent the tracking in the first place.
 	destroy();
+	device = null;
 }
 
 /**
@@ -495,6 +499,14 @@ void init(int red, int green, int blue, int alpha) {
 	rgbColor[2] = blue / 255f;
 	rgbColor[3] = alpha / 255f;
 	handle = rgbColor;
+}
+
+@Override
+void init() {
+	// Resource init simply tracks this resource in the Device
+	// if DEBUG is on. Since Colors don't require disposal,
+	// the tracking would be a memory leak and a misreport
+	// on what resources are in use.
 }
 
 /**
