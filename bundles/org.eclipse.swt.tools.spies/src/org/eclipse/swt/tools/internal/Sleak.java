@@ -107,10 +107,9 @@ public void create (Composite parent) {
 }
 
 void refreshLabel () {
-	int colors = 0, cursors = 0, fonts = 0, gcs = 0, images = 0;
+	int cursors = 0, fonts = 0, gcs = 0, images = 0;
 	int paths = 0, patterns = 0, regions = 0, textLayouts = 0, transforms= 0;
 	for (Object object : objects) {
-		if (object instanceof Color) colors++;
 		if (object instanceof Cursor) cursors++;
 		if (object instanceof Font) fonts++;
 		if (object instanceof GC) gcs++;
@@ -122,7 +121,6 @@ void refreshLabel () {
 		if (object instanceof Transform) transforms++;
 	}
 	String string = "";
-	if (colors != 0) string += colors + " Color(s)\n";
 	if (cursors != 0) string += cursors + " Cursor(s)\n";
 	if (fonts != 0) string += fonts + " Font(s)\n";
 	if (gcs != 0) string += gcs + " GC(s)\n";
@@ -148,8 +146,23 @@ void refreshDifference () {
 		dialog.setMessage ("Warning: Device is not tracking resource allocation");
 		dialog.open ();
 	}
-	Object [] newObjects = info.objects;
-	Error [] newErrors = info.errors;
+	int size = 0;
+	for (int i = 0; i < info.objects.length; i++) {
+		if (!(info.objects[i] instanceof Color)) {
+			size++;
+		}
+	}
+	Object [] newObjects = new Object[size];
+	Error [] newErrors = new Error[size];
+	for (int i = 0, out_i = 0; i < info.objects.length; i++) {
+		// Bug 563018: Colors don't require disposal, so exclude
+		// them from the list of allocated objects.
+		if (!(info.objects[i] instanceof Color)) {
+			newObjects[out_i] = info.objects[i];
+			newErrors[out_i] = info.errors[i];
+			out_i++;
+		}
+	}
 	Object [] diffObjects = new Object [newObjects.length];
 	Error [] diffErrors = new Error [newErrors.length];
 	int count = 0;
@@ -264,12 +277,6 @@ void paintCanvas (Event event) {
 }
 
 void draw(GC gc, Object object) {
-	if (object instanceof Color) {
-		if (((Color)object).isDisposed ()) return;
-		gc.setBackground ((Color) object);
-		gc.fillRectangle (canvas.getClientArea());
-		return;
-	}
 	if (object instanceof Cursor) {
 		if (((Cursor)object).isDisposed ()) return;
 		canvas.setCursor ((Cursor) object);
