@@ -38,9 +38,8 @@ public class Snippet377 {
 		StyledText styledText = new StyledText(shell, SWT.BORDER);
 		styledText.setFont(new Font(display, "Fira Code", 9, SWT.NORMAL));
 		styledText.setText(
-				"Ligatures support added in StyledText with 'Fira Code' font: \n");
-		styledText.append("(https://github.com/tonsky/FiraCode/tree/master/distr/ttf) \n");
-		styledText.append(" == != <= >= |= || \n");
+				"Ligatures support added in StyledText: \n");
+		styledText.append(" == != <= >= |= || -> <- \n");
 		styledText.append("c:\\ぷろぐらむ\\program \n");
 		styledText.append("c:\\\u3077\u308d\u3050\u3089\u3080\\program \n");
 		styledText.append("a\\&~あ\\&~a\\&~ \n");
@@ -51,9 +50,8 @@ public class Snippet377 {
 		Text text = new Text(shell, SWT.BORDER | SWT.MULTI);
 		text.setFont(new Font(display, "Fira Code", 9, SWT.NORMAL));
 		text.setText(
-				"Ligatures support(from native) with 'Fira Code' font: \n");
-		text.append("(https://github.com/tonsky/FiraCode/tree/master/distr/ttf) \n");
-		text.append(" == != <= >= |= || \n");
+				"Ligatures support(from native): \n");
+		text.append(" == != <= >= |= || -> <- \n");
 		text.append("c:\\ぷろぐらむ\\program \n");
 		text.append("c:\\\u3077\u308d\u3050\u3089\u3080\\program \n");
 		text.append("a\\&~あ\\&~a\\&~ \n");
