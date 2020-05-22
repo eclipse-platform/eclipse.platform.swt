@@ -29,7 +29,7 @@ import org.eclipse.swt.widgets.*;
 public class Sleak {
 	List list;
 	Canvas canvas;
-	Button snapshot, diff, stackTrace, saveAs, save;
+	Button enableTracking, snapshot, diff, stackTrace, saveAs, save;
 	Text text;
 	Label label;
 	
@@ -81,6 +81,11 @@ public void create (Composite parent) {
 	text = new Text (parent, SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL);
 	canvas = new Canvas (parent, SWT.BORDER);
 	canvas.addListener (SWT.Paint, event -> paintCanvas (event));
+	enableTracking = new Button (parent, SWT.CHECK);
+	enableTracking.setText ("Enable");
+	enableTracking.setToolTipText("Enable Device resource tracking. Only resources allocated once enabled will be tracked. To track devices created before view is created, turn on tracing options, see https://www.eclipse.org/swt/tools.php");
+	enableTracking.addListener (SWT.Selection, e -> toggleEnableTracking ());
+	enableTracking.setSelection(enableTracking.getDisplay().isTracking());
 	stackTrace = new Button (parent, SWT.CHECK);
 	stackTrace.setText ("Stack");
 	stackTrace.addListener (SWT.Selection, e -> toggleStackTrace ());
@@ -104,6 +109,12 @@ public void create (Composite parent) {
 	stackTrace.setSelection (false);
 	text.setVisible (false);
 	layout();
+}
+
+private void toggleEnableTracking() {
+	Display display = enableTracking.getDisplay();
+	boolean tracking = display.isTracking();
+	display.setTracking(!tracking);
 }
 
 void refreshLabel () {
@@ -141,10 +152,13 @@ void refreshDifference () {
 	DeviceData info = display.getDeviceData ();
 	if (!info.tracking) {
 		Shell shell = canvas.getShell();
-		MessageBox dialog = new MessageBox (shell, SWT.ICON_WARNING | SWT.OK);
+		MessageBox dialog = new MessageBox (shell, SWT.ICON_WARNING | SWT.YES | SWT.NO);
 		dialog.setText (shell.getText ());
-		dialog.setMessage ("Warning: Device is not tracking resource allocation");
-		dialog.open ();
+		dialog.setMessage ("Warning: Device is not tracking resource allocation\nWould you like to enable tracking now for future created resources?");
+		if (SWT.YES == dialog.open ()) {
+			enableTracking.setSelection(true);
+			toggleEnableTracking();
+		}
 	}
 	int size = 0;
 	for (int i = 0; i < info.objects.length; i++) {
@@ -374,23 +388,26 @@ void layout () {
 		width = Math.max (width, gc.stringExtent (items [i]).x);
 	}
 	gc.dispose ();
+	Point enableTrackingSize = enableTracking.computeSize (SWT.DEFAULT, SWT.DEFAULT);
 	Point snapshotSize = snapshot.computeSize (SWT.DEFAULT, SWT.DEFAULT);
 	Point diffSize = diff.computeSize (SWT.DEFAULT, SWT.DEFAULT);
 	Point stackSize = stackTrace.computeSize (SWT.DEFAULT, SWT.DEFAULT);
 	Point labelSize = label.computeSize (SWT.DEFAULT, SWT.DEFAULT);
 	Point saveAsSize = saveAs.computeSize (SWT.DEFAULT, SWT.DEFAULT);
 	Point saveSize = save.computeSize (SWT.DEFAULT, SWT.DEFAULT);
+	width = Math.max (enableTrackingSize.x, width);
 	width = Math.max (snapshotSize.x, Math.max (diffSize.x, Math.max (stackSize.x, width)));
 	width = Math.max (saveAsSize.x, Math.max (saveSize.x, width));
 	width = Math.max (labelSize.x, list.computeSize (width, SWT.DEFAULT).x);
 	width = Math.max (64, width);
-	snapshot.setBounds (0, 0, width, snapshotSize.y);
-	diff.setBounds (0, snapshotSize.y, width, diffSize.y);
-	stackTrace.setBounds (0, snapshotSize.y + diffSize.y, width, stackSize.y);
+	enableTracking.setBounds (0, 0, width, enableTrackingSize.y);
+	snapshot.setBounds (0, enableTrackingSize.y, width, snapshotSize.y);
+	diff.setBounds (0, enableTrackingSize.y + snapshotSize.y, width, diffSize.y);
+	stackTrace.setBounds (0, enableTrackingSize.y + snapshotSize.y + diffSize.y, width, stackSize.y);
 	label.setBounds (0, rect.height - saveSize.y - saveAsSize.y - labelSize.y, width, labelSize.y);
 	saveAs.setBounds (0, rect.height - saveSize.y - saveAsSize.y, width, saveAsSize.y);
 	save.setBounds (0, rect.height - saveSize.y, width, saveSize.y);
-	int height = snapshotSize.y + diffSize.y + stackSize.y;
+	int height = enableTrackingSize.y + snapshotSize.y + diffSize.y + stackSize.y;
 	list.setBounds (0, height, width, rect.height - height - labelSize.y - saveAsSize.y -saveSize.y);
 	text.setBounds (width, 0, rect.width - width, rect.height);
 	canvas.setBounds (width, 0, rect.width - width, rect.height);

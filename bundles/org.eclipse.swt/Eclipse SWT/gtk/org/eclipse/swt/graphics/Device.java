@@ -161,13 +161,56 @@ public Device(DeviceData data) {
 			tracking = data.tracking;
 		}
 		if (tracking) {
-			errors = new Error [128];
-			objects = new Object [128];
-			trackingLock = new Object ();
+			startTracking();
 		}
 		create (data);
 		init ();
 		register (this);
+	}
+}
+
+/**
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ * @since 3.115
+ */
+public boolean isTracking() {
+	checkDevice();
+	return tracking;
+}
+
+/**
+ * @exception SWTException <ul>
+ *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ * @since 3.115
+ */
+public void setTracking(boolean tracking) {
+	checkDevice();
+	if (tracking == this.tracking) {
+		return;
+	}
+	this.tracking = tracking;
+	if (tracking) {
+		startTracking();
+	} else {
+		stopTracking();
+	}
+}
+
+private void startTracking() {
+	errors = new Error [128];
+	objects = new Object [128];
+	trackingLock = new Object ();
+}
+
+private void stopTracking() {
+	synchronized (trackingLock) {
+		objects = null;
+		errors = null;
+		trackingLock = null;
 	}
 }
 
@@ -232,11 +275,8 @@ public void dispose () {
 		xDisplay = 0;
 		disposed = true;
 		if (tracking) {
-			synchronized (trackingLock) {
-				objects = null;
-				errors = null;
-				trackingLock = null;
-			}
+			tracking = false;
+			stopTracking();
 		}
 	}
 }
