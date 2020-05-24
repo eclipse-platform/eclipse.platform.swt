@@ -5801,4 +5801,37 @@ public void test_clipboardCarryover() {
 	String clipboardText = (String) clipboard.getContents(rtfTranfer);
 	assertTrue("RTF copy failed", clipboardText.length() > 0);
 }
+
+/**
+ * Bug 563531 - [regression][StyledText] Scrolling with arrow down key does not update caret painting
+ */
+@Test
+public void test_caretLocationOnArrowMove() {
+	text.setText(
+		  "............................................................\n"
+		+ "............................................................\n"
+		+ "............................................................\n"
+		+ "............................................................\n"
+		+ "............................................................\n"
+		+ "............................................................\n"
+		+ "............................................................\n"
+		+ "............................................................\n"
+		+ "............................................................\n"
+		+ "............................................................\n"
+		+ "............................................................\n"
+		+ "............................................................");
+
+	shell.open();
+	text.setSize(10, 50);
+
+	for (int i = 0; i < 5; i++) {
+		text.invokeAction(ST.LINE_DOWN);
+	}
+
+	Point caretLocation = text.getCaret().getLocation();
+	int caretOffset = text.getCaretOffset();
+	text.setCaretOffset(0);
+	text.setCaretOffset(caretOffset);
+	assertEquals(text.getCaret().getLocation(), caretLocation);
+}
 }
