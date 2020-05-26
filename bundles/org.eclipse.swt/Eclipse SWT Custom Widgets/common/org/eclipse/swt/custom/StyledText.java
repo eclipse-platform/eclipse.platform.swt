@@ -8227,11 +8227,7 @@ boolean scrollVertical(int pixels, boolean adjustScrollBar) {
 		calculateTopIndex(pixels);
 		super.redraw();
 	}
-	Caret caret = getCaret();
-	if (caret != null) {
-		Point caretLocation = caret.getLocation();
-		setCaretLocation(new Point(caretLocation.x, caretLocation.y - pixels), getCaretDirection());
-	}
+	setCaretLocation();
 	return true;
 }
 void scrollText(int srcY, int destY) {
