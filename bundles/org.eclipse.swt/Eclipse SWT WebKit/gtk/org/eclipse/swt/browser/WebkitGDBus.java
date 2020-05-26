@@ -228,31 +228,13 @@ class WebkitGDBus {
 	 * @return a pointer to the address
 	 */
 	private static long construct_server_address () {
-		byte [] swt = Converter.wcsToMbcs("SWT-GDBusServer-", true);
-		long swtPtr = OS.g_malloc(swt.length);
-		C.memmove(swtPtr, swt, swt.length);
-		long user = OS.g_get_user_name();
-		byte [] template = Converter.wcsToMbcs("-XXXXXX", true);
-		long templatePtr = OS.g_malloc(template.length);
-		C.memmove(templatePtr, template, template.length);
-		long fileName = OS.g_strconcat(swtPtr, user, templatePtr, 0);
-		long [] error = new long [1];
-		long address = OS.g_dir_make_tmp(fileName, error);
-		if (address == 0) {
-			System.err.println("SWT WebkitGDBus: error creating temp folder " + Display.extractFreeGError(error[0]));
-		}
-		byte [] socket = Converter.wcsToMbcs("unix:tmpdir=", true);
-		long socketPtr = OS.g_malloc(socket.length);
-		C.memmove(socketPtr, socket, socket.length);
-		long finalAddress = OS.g_strconcat(socketPtr, address, 0);
+		// On Linux, the address required is used for as an abstract path. If abstract path is not supported
+		// one must create & manage temporary directories. See Bug562443.
+		byte [] address = Converter.wcsToMbcs("unix:tmpdir=/tmp/SWT-GDBusServer", true);
+		long addressPtr = OS.g_malloc(address.length);
+		C.memmove(addressPtr, address, address.length);
 
-		// Clean up temporary string pointers and return result
-		OS.g_free(swtPtr);
-		OS.g_free(user);
-		OS.g_free(templatePtr);
-		OS.g_free(fileName);
-		OS.g_free(socketPtr);
-		return finalAddress;
+		return addressPtr;
 	}
 
 	/**

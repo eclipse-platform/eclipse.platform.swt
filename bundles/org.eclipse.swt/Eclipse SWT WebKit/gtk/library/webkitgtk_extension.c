@@ -525,16 +525,12 @@ static gboolean extension_authorize_peer (GDBusAuthObserver *observer, GIOStream
 }
 
 // Returns a valid GDBusServer address -- this will be the address used to connect to the extension's
-// GDBusServer
+// GDBusServer. On Linux, the address required is used for as an abstract path. If abstract path is not supported
+// one must create & manage temporary directories. See Bug562443.
 gchar *construct_server_address () {
-	g_autoptr (GError) error = NULL;
-	gchar *partial_name = g_strconcat ("SWT-WebExtensionGDBusServer-", g_get_user_name (), "-XXXXXX", NULL);
-	gchar *temp_path = g_dir_make_tmp (partial_name, &error);
-	if (error) {
-		g_error("There was an error creating the server address: %s\n", error->message);
-	}
-	g_free (partial_name);
-	return g_strdup_printf ("unix:tmpdir=%s", temp_path);
+	gchar *tmp_address = g_strdup("unix:tmpdir=/tmp/SWT-WebExtensionGDBusServer");
+
+	return tmp_address;
 }
 
 // Creates the GDBusServer for this web extension
