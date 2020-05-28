@@ -877,7 +877,7 @@ LRESULT CDDS_PREPAINT (NMLVCUSTOMDRAW nmcd, long wParam, long lParam) {
 		OS.SetRect (rect, nmcd.left, nmcd.top, nmcd.right, nmcd.bottom);
 		if (explorerTheme && columnCount == 0) {
 			long hDC = nmcd.hdc;
-			if (OS.IsWindowEnabled (handle) || findImageControl () != null) {
+			if (OS.IsWindowEnabled (handle) || findImageControl () != null || hasCustomBackground()) {
 				drawBackground (hDC, rect);
 			} else {
 				fillBackground (hDC, OS.GetSysColor (OS.COLOR_3DFACE), rect);
@@ -3399,17 +3399,7 @@ void sendEraseItemEvent (TableItem item, NMLVCUSTOMDRAW nmcd, long lParam, Event
 	long hDC = nmcd.hdc;
 	int clrText = item.cellForeground != null ? item.cellForeground [nmcd.iSubItem] : -1;
 	if (clrText == -1) clrText = item.foreground;
-	int clrTextBk = -1;
-	if (OS.IsAppThemed ()) {
-		if (sortColumn != null && sortDirection != SWT.NONE) {
-			if (findImageControl () == null) {
-				if (indexOf (sortColumn) == nmcd.iSubItem) {
-					clrTextBk = getSortColumnPixel ();
-				}
-			}
-		}
-	}
-	clrTextBk = item.cellBackground != null ? item.cellBackground [nmcd.iSubItem] : -1;
+	int clrTextBk = item.cellBackground != null ? item.cellBackground [nmcd.iSubItem] : -1;
 	if (clrTextBk == -1) clrTextBk = item.background;
 	/*
 	* Bug in Windows.  For some reason, CDIS_SELECTED always set,
