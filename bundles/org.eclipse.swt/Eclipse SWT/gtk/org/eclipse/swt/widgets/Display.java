@@ -3753,7 +3753,10 @@ void initializeSubclasses () {
 }
 
 void initializeSystemSettings () {
-	if (!GTK.GTK4) OS.g_signal_connect(shellHandle, OS.style_updated, signalProc, STYLE_UPDATED);
+	if (!GTK.GTK4) {
+		OS.g_signal_connect (shellHandle, OS.style_updated, signalProc, STYLE_UPDATED);
+		OS.g_signal_connect(GTK.gtk_settings_get_default (), OS.notify_theme_change, signalProc, STYLE_UPDATED);
+	}
 
 	boolean[] flag = new boolean[1];
 	long settings = GTK.gtk_settings_get_default();

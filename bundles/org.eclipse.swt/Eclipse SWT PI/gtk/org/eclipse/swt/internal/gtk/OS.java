@@ -360,6 +360,7 @@ public class OS extends C {
 	public static final byte[] value_changed = ascii("value-changed");
 	public static final byte[] window_state_event = ascii("window-state-event");
 	public static final byte[] notify_state = ascii("notify::state");
+	public static final byte[] notify_theme_change = ascii("notify::gtk-application-prefer-dark-theme");
 
 	/** Properties */
 	public static final byte[] active = ascii("active");
