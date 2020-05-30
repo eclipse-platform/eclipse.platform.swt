@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2016 IBM Corporation and others.
+ * Copyright (c) 2000, 2020 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -829,7 +829,7 @@ public class CTabFolderRenderer {
 				} else if (selectedIndex == -1 && parent.gradientColors != null && parent.gradientColors.length > 1 && !parent.gradientVertical) {
 					drawBackground(gc, shape, false);
 				} else {
-					gc.setBackground(selectedIndex == -1 ? parent.getBackground() : parent.selectionBackground);
+					gc.setBackground(selectedIndex != -1 && parent.shouldHighlight() ? parent.selectionBackground : parent.getBackground());
 					gc.fillPolygon(shape);
 				}
 			}
@@ -1515,7 +1515,7 @@ public class CTabFolderRenderer {
 			} else if (selectedIndex == -1 && parent.gradientColors != null && parent.gradientColors.length > 1 && !parent.gradientVertical) {
 				drawBackground(gc, shape, false);
 			} else {
-				gc.setBackground(selectedIndex == -1 ? parent.getBackground() : parent.selectionBackground);
+				gc.setBackground(selectedIndex != -1 && parent.shouldHighlight() ? parent.selectionBackground : parent.getBackground());
 				gc.fillPolygon(shape);
 			}
 
