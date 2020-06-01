@@ -51,9 +51,6 @@ public class Library {
 	static final String JAVA_LIB_PATH = "java.library.path";
 	static final String SWT_LIB_PATH = "swt.library.path";
 
-
-	/* 64-bit support */
-	static final boolean IS_64 = longConst() == (long /*int*/)longConst();
 	static final String SUFFIX_64 = "-64";	//$NON-NLS-1$
 	static final String SWT_LIB_DIR;
 
@@ -68,7 +65,6 @@ static {
 
 static String arch() {
 	String osArch = System.getProperty("os.arch"); //$NON-NLS-1$
-	if (osArch.equals ("i386") || osArch.equals ("i686")) return "x86"; //$NON-NLS-1$ $NON-NLS-2$ $NON-NLS-3$
 	if (osArch.equals ("amd64")) return "x86_64"; //$NON-NLS-1$ $NON-NLS-2$
 	return osArch;
 }
@@ -272,11 +268,8 @@ public static void loadLibrary (String name, boolean mapName) {
 	String prop = System.getProperty ("sun.arch.data.model"); //$NON-NLS-1$
 	if (prop == null) prop = System.getProperty ("com.ibm.vm.bitmode"); //$NON-NLS-1$
 	if (prop != null) {
-		if ("32".equals (prop) && IS_64) { //$NON-NLS-1$
+		if ("32".equals (prop)) { //$NON-NLS-1$
 			throw new UnsatisfiedLinkError ("Cannot load 64-bit SWT libraries on 32-bit JVM"); //$NON-NLS-1$
-		}
-		if ("64".equals (prop) && !IS_64) { //$NON-NLS-1$
-			throw new UnsatisfiedLinkError ("Cannot load 32-bit SWT libraries on 64-bit JVM"); //$NON-NLS-1$
 		}
 	}
 
@@ -319,10 +312,8 @@ public static void loadLibrary (String name, boolean mapName) {
 			path = dir.getAbsolutePath ();
 		} else {
 			/* fall back to using the home dir directory */
-			if (IS_64) {
-				fileName1 = mapLibraryName (libName1 + SUFFIX_64);
-				fileName2 = mapLibraryName (libName2 + SUFFIX_64);
-			}
+			fileName1 = mapLibraryName (libName1 + SUFFIX_64);
+			fileName2 = mapLibraryName (libName2 + SUFFIX_64);
 		}
 		if (load (path + SEPARATOR + fileName1, message)) return;
 		if (mapName && load (path + SEPARATOR + fileName2, message)) return;
