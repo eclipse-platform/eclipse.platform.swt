@@ -2912,29 +2912,27 @@ void remove (long parentIter, int start, int end) {
 public void removeAll () {
 	checkWidget ();
 	checkSetDataInProcessBeforeRemoval();
-	for (int i=0; i<items.length; i++) {
-		TreeItem item = items [i];
-		if (item != null && !item.isDisposed ()) item.release (false);
-	}
-	items = new TreeItem[4];
+
 	long selection = GTK.gtk_tree_view_get_selection (handle);
 	OS.g_signal_handlers_block_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
+
 	if (fixAccessibility ()) {
 		ignoreAccessibility = true;
 	}
-	/**
-	 * Hack for GTK3 in order to not get cellDataFunc while clearing as it calls it for each row-deleted
-	 * and this causes AAIOB in getId as items are already cleared but the model is not yet.
-	 * By disconnecting the model from the handle while clearing no intermediate signals are emitted.
-	 */
-	GTK.gtk_tree_view_set_model(handle, 0);
+
 	GTK.gtk_tree_store_clear (modelHandle);
-	GTK.gtk_tree_view_set_model(handle, modelHandle);
+
 	if (fixAccessibility ()) {
 		ignoreAccessibility = false;
 		OS.g_object_notify (handle, OS.model);
 	}
 	OS.g_signal_handlers_unblock_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
+
+	for (int i=0; i<items.length; i++) {
+		TreeItem item = items [i];
+		if (item != null && !item.isDisposed ()) item.release (false);
+	}
+	items = new TreeItem[4];
 
 	if (!searchEnabled ()) {
 		GTK.gtk_tree_view_set_search_column (handle, -1);
