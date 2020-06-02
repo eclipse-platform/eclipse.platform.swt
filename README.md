@@ -26,7 +26,7 @@ Contact:
 
 Contact the project developers via the project's "dev" list.
 
-- <https://dev.eclipse.org/mailman/listinfo/platform-swt-dev>
+- <https://accounts.eclipse.org/mailing-list/platform-dev>
 
 Search for bugs:
 ----------------
