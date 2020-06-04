@@ -71,7 +71,7 @@ public class Combo extends Composite {
 	int indexSelected;
 	GdkRGBA background, buttonBackground;
 	String cssButtonBackground, cssButtonForeground = " ";
-	long buttonProvider;
+	long buttonProvider, comboProvider;
 	boolean firstDraw = true;
 	boolean unselected = true, fitModelToggled = false;
 	/**
@@ -561,7 +561,7 @@ void createHandle (int index) {
 	* fix is to call size_request() to force the creation of the button
 	* for those versions of GTK that defer the creation.
 	*/
-	menuHandle = findMenuHandle ();
+	menuHandle = findMenuHandle();
 	if (menuHandle != 0) OS.g_object_ref (menuHandle);
 	buttonHandle = findButtonHandle ();
 	if (buttonHandle != 0) OS.g_object_ref (buttonHandle);
@@ -758,22 +758,31 @@ long findArrowHandle() {
 }
 
 long findMenuHandle() {
-	if (popupHandle == 0) return 0;
+	/*
+	* Feature in GTK.  There is no API to query the menu
+	* handle from a combo box. So we walk the popupHandle to
+	* find the handle for the menu.
+	*/
 	long result = 0;
-	GTK.gtk_container_forall (popupHandle, display.allChildrenProc, 0);
-	if (display.allChildren != 0) {
-		long list = display.allChildren;
-		while (list != 0) {
-			long widget = OS.g_list_data (list);
-			if (OS.G_OBJECT_TYPE (widget) == GTK.GTK_TYPE_MENU ()) {
-				result = widget;
-				break;
+
+	if (popupHandle != 0) {
+		GTK.gtk_container_forall(popupHandle, display.allChildrenProc, 0);
+		if (display.allChildren != 0) {
+			long list = display.allChildren;
+			while (list != 0) {
+				long widget = OS.g_list_data(list);
+				String name = display.gtk_widget_get_name(widget);
+				if (name != null && name.contains("gtk-combobox-popup-menu")) {
+					result = widget;
+					break;
+				}
+				list = OS.g_list_next(list);
 			}
-			list = OS.g_list_next (list);
+			OS.g_list_free(display.allChildren);
+			display.allChildren = 0;
 		}
-		OS.g_list_free (display.allChildren);
-		display.allChildren = 0;
 	}
+
 	return result;
 }
 
@@ -2177,15 +2186,18 @@ void setBackgroundGdkRGBA (long context, long handle, GdkRGBA rgba) {
 	}
 	// CSS to be parsed for various widgets within Combo
 	String css = "* {";
-	String color;
+	String color, menuColor;
 	if (rgba != null) {
 		color = display.gtk_rgba_to_css_string (rgba);
+		menuColor = color;
 	} else {
 		if ((style & SWT.READ_ONLY) != 0) {
 			color = display.gtk_rgba_to_css_string (display.COLOR_WIDGET_BACKGROUND_RGBA);
 		} else {
 			color = display.gtk_rgba_to_css_string (display.COLOR_LIST_BACKGROUND_RGBA);
 		}
+
+		menuColor = display.gtk_rgba_to_css_string (display.COLOR_LIST_BACKGROUND_RGBA);
 	}
 	css += "background: " + color + ";}\n";
 
@@ -2207,8 +2219,19 @@ void setBackgroundGdkRGBA (long context, long handle, GdkRGBA rgba) {
 		gtk_css_provider_load_from_css (GTK.gtk_widget_get_style_context(entryHandle), finalCss);
 		setButtonBackgroundGdkRGBA (rgba);
 	}
-	// Set the background color of the text of the drop down menu.
-	OS.g_object_set (textRenderer, OS.background_rgba, rgba, 0);
+
+	String menuCss = "menu { background: " + menuColor + ";}";
+	GTK.gtk_css_provider_load_from_data (getComboProvider(), Converter.wcsToMbcs (menuCss, true), -1, null);
+}
+
+long getComboProvider() {
+	if (comboProvider == 0) {
+		comboProvider = GTK.gtk_css_provider_new();
+		GTK.gtk_style_context_add_provider(GTK.gtk_widget_get_style_context(menuHandle), comboProvider, GTK.GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+		OS.g_object_unref(comboProvider);
+	}
+
+	return comboProvider;
 }
 
 @Override
