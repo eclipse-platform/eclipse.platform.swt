@@ -573,7 +573,7 @@ void copyAreaInPixels(int srcX, int srcY, int width, int height, int destX, int 
 			Cairo.cairo_region_destroy (invalidateRegion);
 		}
 	}
-	if (data.image == null & paint) {
+	if (data.image == null && paint) {
 		boolean disjoint = (destX + width < srcX) || (srcX + width < destX) || (destY + height < srcY) || (srcY + height < destY);
 		GdkRectangle rect = new GdkRectangle ();
 		if (disjoint) {
