@@ -14,6 +14,8 @@
 package org.eclipse.swt.custom;
 
 
+import java.util.*;
+
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
@@ -74,7 +76,7 @@ public class BusyIndicator {
 			shells = display.getShells();
 			for (Shell shell : shells) {
 				Integer id = (Integer)shell.getData(BUSYID_NAME);
-				if (id == busyId) {
+				if (Objects.equals(id, busyId)) {
 					setCursorAndId(shell, null, null);
 				}
 			}
