@@ -139,7 +139,7 @@ public String toString () {
 		+ " bottomMargin=" + bottomMargin   //$NON-NLS-1$
 		+ " leftMargin=" + leftMargin   //$NON-NLS-1$
 		+ " rightMargin=" + rightMargin   //$NON-NLS-1$
-		+ " tabStops=" + tabStops   //$NON-NLS-1$
+		+ " tabStops=" + Arrays.toString(tabStops)   //$NON-NLS-1$
 		+ " justify=" + justify   //$NON-NLS-1$
 		+ " alignment=" + alignment   //$NON-NLS-1$
 		+ " indent=" + indent   //$NON-NLS-1$

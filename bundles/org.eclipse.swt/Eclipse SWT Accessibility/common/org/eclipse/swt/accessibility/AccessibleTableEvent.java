@@ -62,13 +62,13 @@ public AccessibleTableEvent(Object source) {
 public String toString () {
 	return "AccessibleTableEvent {" //$NON-NLS-1$
 		+ "accessible=" + accessible   //$NON-NLS-1$
-		+ " accessibles=" + accessibles   //$NON-NLS-1$
+		+ " accessibles=" + Arrays.toString(accessibles)   //$NON-NLS-1$
 		+ " string=" + result   //$NON-NLS-1$
 		+ " isSelected=" + isSelected   //$NON-NLS-1$
 		+ " column=" + column   //$NON-NLS-1$
 		+ " count=" + count   //$NON-NLS-1$
 		+ " row=" + row   //$NON-NLS-1$
-		+ " selected=" + selected   //$NON-NLS-1$
+		+ " selected=" + Arrays.toString(selected)   //$NON-NLS-1$
 		+ "}";  //$NON-NLS-1$
 }
 }
