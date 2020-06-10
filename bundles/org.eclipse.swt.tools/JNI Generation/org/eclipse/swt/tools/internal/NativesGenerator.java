@@ -175,44 +175,26 @@ void generateCallback(JNIMethod method, String function) {
 
 public void generate(JNIMethod method) {
 	if (method.getFlag(FLAG_NO_GEN)) return;
-	JNIType returnType = method.getReturnType(), returnType64 = method.getReturnType64();	
+	JNIType returnType = method.getReturnType();	
 	if (!(returnType.isType("void") || returnType.isPrimitive() || isSystemClass(returnType) || returnType.isType("java.lang.String"))) {
 		output("Warning: bad return type. :");
 		outputln(method.toString());
 		return;
 	}
 	JNIParameter[] params = method.getParameters();
-	String function = getFunctionName(method), function64 = getFunctionName(method, method.getParameterTypes64());	
-	generateSourceStart(function, function64);
-	boolean sameFunction = function.equals(function64);
-	if (!sameFunction) {
-		output("#ifndef ");
-		output(JNI64);
-		outputln();
-	}
+	String function = getFunctionName(method);
+	generateSourceStart(function);
 	boolean isCPP = getCPP();
 	if (isCPP) {
 		output("extern \"C\" ");
-		generateFunctionPrototype(method, function, params, returnType, returnType64, true);
+		generateFunctionPrototype(method, function, params, returnType, true);
 		outputln(";");
 	}
 	if (function.startsWith("CALLBACK_")) {
 		generateCallback(method, function);
 	}
-	generateFunctionPrototype(method, function, params, returnType, returnType64, !sameFunction);
-	if (!function.equals(function64)) {
-		outputln();
-		outputln("#else");
-		if (isCPP) {
-			output("extern \"C\" ");
-			generateFunctionPrototype(method, function64, params, returnType, returnType64, true);
-			outputln(";");
-		}
-		generateFunctionPrototype(method, function64, params, returnType, returnType64, !sameFunction);
-		outputln();
-		outputln("#endif");
-	}
-	generateFunctionBody(method, function, function64, params, returnType, returnType64);
+	generateFunctionPrototype(method, function, params, returnType, false);
+	generateFunctionBody(method, function, params, returnType);
 	generateSourceEnd();
 	outputln();
 }
@@ -259,7 +241,7 @@ void generateNativeMacro(JNIClass clazz) {
 }
 
 boolean generateGetParameter(JNIParameter param, boolean critical, int indent) {
-	JNIType paramType = param.getType(), paramType64 = param.getType64();
+	JNIType paramType = param.getType();
 	if (paramType.isPrimitive() || isSystemClass(paramType)) return false;
 	String iStr = String.valueOf(param.getParameter());
 	for (int j = 0; j < indent; j++) output("\t");
@@ -275,7 +257,7 @@ boolean generateGetParameter(JNIParameter param, boolean critical, int indent) {
 			if (critical) {
 				if (isCPP) {
 					output("(");
-					output(componentType.getTypeSignature2(!paramType.equals(paramType64)));
+					output(componentType.getTypeSignature2(false));
 					output("*)");
 					output("env->GetPrimitiveArrayCritical(arg");
 				} else {
@@ -289,7 +271,7 @@ boolean generateGetParameter(JNIParameter param, boolean critical, int indent) {
 				} else {
 					output("(*env)->Get");
 				}
-				output(componentType.getTypeSignature1(!paramType.equals(paramType64)));
+				output(componentType.getTypeSignature1(false));
 				if (isCPP) {
 					output("ArrayElements(arg");
 				} else {
@@ -338,7 +320,7 @@ boolean generateGetParameter(JNIParameter param, boolean critical, int indent) {
 }
 
 void generateSetParameter(JNIParameter param, boolean critical) {
-	JNIType paramType = param.getType(), paramType64 = param.getType64();
+	JNIType paramType = param.getType();
 	if (paramType.isPrimitive() || isSystemClass(paramType)) return;
 	String iStr = String.valueOf(param.getParameter());
 	boolean isCPP = getCPP();
@@ -363,7 +345,7 @@ void generateSetParameter(JNIParameter param, boolean critical) {
 				} else {
 					output("(*env)->Release");
 				}
-				output(componentType.getTypeSignature1(!paramType.equals(paramType64)));
+				output(componentType.getTypeSignature1(false));
 				if (isCPP) {
 					output("ArrayElements(arg");
 				} else {
@@ -425,14 +407,9 @@ void generateSetParameter(JNIParameter param, boolean critical) {
 	}
 }
 
-void generateEnterExitMacro(JNIMethod method, String function, String function64, boolean enter) {
+void generateEnterExitMacro(JNIMethod method, String function, boolean enter) {
 	if (!enterExitMacro) return;
 	boolean tryCatch = method.getFlag(FLAG_TRYCATCH);
-	if (!function.equals(function64)) {
-		output("#ifndef ");
-		output(JNI64);
-		outputln();
-	}
 	output("\t");
 	output(method.getDeclaringClass().getSimpleName());
 	output("_NATIVE_");
@@ -441,31 +418,19 @@ void generateEnterExitMacro(JNIMethod method, String function, String function64
 	output("(env, that, ");
 	output(function);
 	outputln("_FUNC);");
-	if (!function.equals(function64)) {
-		outputln("#else");
-		output("\t");
-		output(method.getDeclaringClass().getSimpleName());
-		output("_NATIVE_");
-		output(enter ? "ENTER" : "EXIT");
-		if (tryCatch) output(enter ? "_TRY" : "_CATCH");
-		output("(env, that, ");
-		output(function64);
-		outputln("_FUNC);");
-		outputln("#endif");
-	}
 }
 
-boolean generateLocalVars(JNIParameter[] params, JNIType returnType, JNIType returnType64) {
+boolean generateLocalVars(JNIParameter[] params, JNIType returnType) {
 	boolean needsReturn = enterExitMacro;
 	for (int i = 0; i < params.length; i++) {
 		JNIParameter param = params[i];
-		JNIType paramType = param.getType(), paramType64 = param.getType64();
+		JNIType paramType = param.getType();
 		if (paramType.isPrimitive() || isSystemClass(paramType)) continue;
 		output("\t");
 		if (paramType.isArray()) {
 			JNIType componentType = paramType.getComponentType();
 			if (componentType.isPrimitive()) {
-				output(componentType.getTypeSignature2(!paramType.equals(paramType64)));
+				output(componentType.getTypeSignature2(false));
 				output(" *lparg" + i);
 				output("=NULL;");
 			} else {
@@ -494,7 +459,7 @@ boolean generateLocalVars(JNIParameter[] params, JNIType returnType, JNIType ret
 	if (needsReturn) {
 		if (!returnType.isType("void")) {
 			output("\t");
-			output(returnType.getTypeSignature2(!returnType.equals(returnType64)));
+			output(returnType.getTypeSignature2(false));
 			outputln(" rc = 0;");
 		}
 	}
@@ -546,9 +511,9 @@ void generateSetters(JNIParameter[] params) {
 	}
 }
 
-void generateDynamicFunctionCall(JNIMethod method, JNIParameter[] params, JNIType returnType, JNIType returnType64, boolean needsReturn) {
+void generateDynamicFunctionCall(JNIMethod method, JNIParameter[] params, JNIType returnType, boolean needsReturn) {
 	outputln("/*");
-	generateFunctionCall(method, params, returnType, returnType64, needsReturn);
+	generateFunctionCall(method, params, returnType, needsReturn);
 	outputln("*/");
 	outputln("\t{");
 
@@ -561,9 +526,9 @@ void generateDynamicFunctionCall(JNIMethod method, JNIParameter[] params, JNITyp
 	outputln(")");
 	outputln("\t\tif (fp) {");
 	output("\t\t");
-	generateFunctionCallLeftSide(method, returnType, returnType64, needsReturn);
+	generateFunctionCallLeftSide(method, returnType, needsReturn);
 	output("((");
-	output(returnType.getTypeSignature2(!returnType.equals(returnType64)));
+	output(returnType.getTypeSignature2(false));
 	output(" (CALLING_CONVENTION*)(");
 	for (int i = 0; i < params.length; i++) {
 		if (i != 0) output(", ");
@@ -578,8 +543,8 @@ void generateDynamicFunctionCall(JNIMethod method, JNIParameter[] params, JNITyp
 			}
 			output(cast);
 		} else {
-			JNIType paramType = param.getType(), paramType64 = param.getType64();
-			output(paramType.getTypeSignature4(!paramType.equals(paramType64), isStruct));
+			JNIType paramType = param.getType();
+			output(paramType.getTypeSignature4(false, isStruct));
 		}
 	}
 	output("))");
@@ -592,7 +557,7 @@ void generateDynamicFunctionCall(JNIMethod method, JNIParameter[] params, JNITyp
 	outputln("\t}");
 }
 
-void generateFunctionCallLeftSide(JNIMethod method, JNIType returnType, JNIType returnType64, boolean needsReturn) {
+void generateFunctionCallLeftSide(JNIMethod method, JNIType returnType, boolean needsReturn) {
 	output("\t");
 	if (!returnType.isType("void")) {
 		if (needsReturn) {
@@ -601,7 +566,7 @@ void generateFunctionCallLeftSide(JNIMethod method, JNIType returnType, JNIType 
 			output("return ");
 		}
 		output("(");
-		output(returnType.getTypeSignature2(!returnType.equals(returnType64)));
+		output(returnType.getTypeSignature2(false));
 		output(")");
 	}
 	if (method.getFlag(FLAG_ADDRESS)) {
@@ -639,7 +604,7 @@ void generateFunctionCallRightSide(JNIMethod method, JNIParameter[] params, int 
 	}
 }
 
-void generateFunctionCall(JNIMethod method, JNIParameter[] params, JNIType returnType, JNIType returnType64, boolean needsReturn) {
+void generateFunctionCall(JNIMethod method, JNIParameter[] params, JNIType returnType, boolean needsReturn) {
 	String name = method.getName();
 	String copy = (String)method.getParam("copy");
 	boolean isCPP = getCPP();
@@ -649,7 +614,7 @@ void generateFunctionCall(JNIMethod method, JNIParameter[] params, JNIType retur
 		output(copy);
 		output(" temp = ");
 	} else {
-		generateFunctionCallLeftSide(method, returnType, returnType64, needsReturn);
+		generateFunctionCallLeftSide(method, returnType, needsReturn);
 	}
 	int paramStart = 0;
 	if (name.startsWith("_")) name = name.substring(1);
@@ -667,7 +632,7 @@ void generateFunctionCall(JNIMethod method, JNIParameter[] params, JNIType retur
 			output(cast);
 		} else {
 			output("(");
-			output(returnType.getTypeSignature2(!returnType.equals(returnType64)));
+			output(returnType.getTypeSignature2(false));
 			output(" (");
 			output((String)method.getParam("convention"));
 			output("*)())");
@@ -676,17 +641,17 @@ void generateFunctionCall(JNIMethod method, JNIParameter[] params, JNIType retur
 		paramStart = 1;
 	} else if (name.startsWith("VtblCall") || name.startsWith("_VtblCall")) {
 		output("((");
-		output(returnType.getTypeSignature2(!returnType.equals(returnType64)));
+		output(returnType.getTypeSignature2(false));
 		output(" (STDMETHODCALLTYPE *)(");
 		for (int i = 1; i < params.length; i++) {
 			if (i != 1) output(", ");
 			JNIParameter param = params[i];
-			JNIType paramType = param.getType(), paramType64 = param.getType64();
-			output(paramType.getTypeSignature4(!paramType.equals(paramType64), param.getFlag(FLAG_STRUCT)));
+			JNIType paramType = param.getType();
+			output(paramType.getTypeSignature4(true, param.getFlag(FLAG_STRUCT)));
 		}
 		output("))(*(");
-		JNIType paramType = params[1].getType(), paramType64 = params[1].getType64();
-		output(paramType.getTypeSignature4(!paramType.equals(paramType64), false));
+		JNIType paramType = params[1].getType();
+		output(paramType.getTypeSignature4(false, false));
 		output(" **)arg1)[arg0])");
 		paramStart = 1;
 	} else if (method.getFlag(FLAG_CPP) || method.getFlag(FLAG_SETTER) || method.getFlag(FLAG_GETTER) || method.getFlag(FLAG_ADDER)) {
@@ -768,7 +733,7 @@ void generateFunctionCall(JNIMethod method, JNIParameter[] params, JNIType retur
 		}
 		if (method.getFlag(Flags.FLAG_CAST)) {
 			output("((");
-			String returnCast = returnType.getTypeSignature2(!returnType.equals(returnType64));
+			String returnCast = returnType.getTypeSignature2(false);
 			if (name.equals("objc_msgSend_bool") && returnCast.equals("jboolean")) {
 				returnCast = "BOOL";
 			}
@@ -783,13 +748,13 @@ void generateFunctionCall(JNIMethod method, JNIParameter[] params, JNIType retur
 					if (cast.endsWith(")")) cast = cast.substring(0, cast.length() - 1);
 					output(cast);
 				} else {
-					JNIType paramType = param.getType(), paramType64 = param.getType64();
+					JNIType paramType = param.getType();
 					if (!(paramType.isPrimitive() || paramType.isArray())) {
 						if (param.getTypeClass().getFlag(FLAG_STRUCT)) {
 							output("struct ");
 						}
 					}
-					output(paramType.getTypeSignature4(!paramType.equals(paramType64), param.getFlag(FLAG_STRUCT)));
+					output(paramType.getTypeSignature4(false, param.getFlag(FLAG_STRUCT)));
 				}
 			}
 			output("))");
@@ -828,7 +793,7 @@ void generateFunctionCall(JNIMethod method, JNIParameter[] params, JNIType retur
 		outputln("\t\t*copy = temp;");
 		output("\t\trc = ");
 		output("(");
-		output(returnType.getTypeSignature2(!returnType.equals(returnType64)));
+		output(returnType.getTypeSignature2(false));
 		output(")");
 		outputln("copy;");
 		outputln("\t}");
@@ -848,8 +813,8 @@ void generateFunctionCall(JNIMethod method, JNIParameter[] params, JNIType retur
 
 void generate_objc_msgSend_stret (JNIParameter[] params, String func) {
 	output("\t\t*lparg0 = (*(");
-	JNIType paramType = params[0].getType(), paramType64 = params[0].getType64();
-	output(paramType.getTypeSignature4(!paramType.equals(paramType64), true));
+	JNIType paramType = params[0].getType();
+	output(paramType.getTypeSignature4(false, true));
 	output(" (*)(");
 	for (int i = 1; i < params.length; i++) {
 		if (i != 1) output(", ");
@@ -860,13 +825,13 @@ void generate_objc_msgSend_stret (JNIParameter[] params, String func) {
 			if (cast.endsWith(")")) cast = cast.substring(0, cast.length() - 1);
 			output(cast);
 		} else {
-			paramType = param.getType(); paramType64 = param.getType64();
+			paramType = param.getType();
 			if (!(paramType.isPrimitive() || paramType.isArray())) {
 				if (param.getTypeClass().getFlag(FLAG_STRUCT)) {
 					output("struct ");
 				}
 			}
-			output(paramType.getTypeSignature4(!paramType.equals(paramType64), param.getFlag(FLAG_STRUCT)));
+			output(paramType.getTypeSignature4(false, param.getFlag(FLAG_STRUCT)));
 		}
 	}
 	output("))");
@@ -880,8 +845,8 @@ void generateReturn(JNIType returnType, boolean needsReturn) {
 	}
 }
 
-void generateMemmove(JNIMethod method, String function, String function64, JNIParameter[] params) {
-	generateEnterExitMacro(method, function, function64, true);
+void generateMemmove(JNIMethod method, String function, JNIParameter[] params) {
+	generateEnterExitMacro(method, function, true);
 	output("\t");
 	boolean get = params[0].getType().isPrimitive();
 	String className = params[get ? 1 : 0].getType().getSimpleName();
@@ -891,10 +856,10 @@ void generateMemmove(JNIMethod method, String function, String function64, JNIPa
 	output(className);
 	output(get ? " *)arg0)" : " *)arg1)");
 	outputln(";");
-	generateEnterExitMacro(method, function, function64, false);	
+	generateEnterExitMacro(method, function, false);	
 }
 
-void generateFunctionBody(JNIMethod method, String function, String function64, JNIParameter[] params, JNIType returnType, JNIType returnType64) {
+void generateFunctionBody(JNIMethod method, String function, JNIParameter[] params, JNIType returnType) {
 	outputln("{");
 	
 	/* Custom GTK memmoves. */
@@ -902,28 +867,28 @@ void generateFunctionBody(JNIMethod method, String function, String function64, 
 	if (name.startsWith("_")) name = name.substring(1);
 	boolean isMemove = (name.equals("memmove") || name.equals("MoveMemory")) && params.length == 2 && returnType.isType("void");
 	if (isMemove) {
-		generateMemmove(method, function, function64, params);
+		generateMemmove(method, function, params);
 	} else {
-		boolean needsReturn = generateLocalVars(params, returnType, returnType64);
-		generateEnterExitMacro(method, function, function64, true);
+		boolean needsReturn = generateLocalVars(params, returnType);
+		generateEnterExitMacro(method, function, true);
 		boolean genFailTag = generateGetters(params);
 		if (method.getFlag(FLAG_DYNAMIC)) {
-			generateDynamicFunctionCall(method, params, returnType, returnType64, needsReturn);
+			generateDynamicFunctionCall(method, params, returnType, needsReturn);
 		} else {
-			generateFunctionCall(method, params, returnType, returnType64, needsReturn);
+			generateFunctionCall(method, params, returnType, needsReturn);
 		}
 		if (genFailTag) outputln("fail:");
 		generateSetters(params);
-		generateEnterExitMacro(method, function, function64, false);
+		generateEnterExitMacro(method, function, false);
 		generateReturn(returnType, needsReturn);
 	}
 	
 	outputln("}");
 }
 
-void generateFunctionPrototype(JNIMethod method, String function, JNIParameter[] params, JNIType returnType, JNIType returnType64, boolean singleLine) {
+void generateFunctionPrototype(JNIMethod method, String function, JNIParameter[] params, JNIType returnType, boolean singleLine) {
 	output("JNIEXPORT ");
-	output(returnType.getTypeSignature2(!returnType.equals(returnType64)));
+	output(returnType.getTypeSignature2(false));
 	output(" JNICALL ");
 	output(method.getDeclaringClass().getSimpleName());
 	output("_NATIVE(");
@@ -943,29 +908,17 @@ void generateFunctionPrototype(JNIMethod method, String function, JNIParameter[]
 	output(" that");
 	for (int i = 0; i < params.length; i++) {
 		output(", ");
-		JNIType paramType = params[i].getType(), paramType64 = params[i].getType64();
-		output(paramType.getTypeSignature2(!paramType.equals(paramType64)));
+		JNIType paramType = params[i].getType();
+		output(paramType.getTypeSignature2(false));
 		output(" arg" + i);
 	}
 	output(")");
 	if (!singleLine) outputln();
 }
 
-void generateSourceStart(String function, String function64) {
-	if (function.equals(function64)) {
-		output("#ifndef NO_");
-		outputln(function);
-	} else {
-		output("#if (!defined(NO_");
-		output(function);
-		output(") && !defined(");
-		output(JNI64);
-		output(")) || (!defined(NO_");
-		output(function64);
-		output(") && defined(");
-		output(JNI64);
-		outputln("))");
-	}
+void generateSourceStart(String function) {
+	output("#ifndef NO_");
+	outputln(function);
 }
 
 void generateSourceEnd() {

@@ -13,17 +13,15 @@
  *******************************************************************************/
 package org.eclipse.swt.tools.internal;
 
-import java.io.*;
 import java.lang.reflect.*;
-import java.util.*;
 
 import org.eclipse.jdt.core.dom.*;
 import org.eclipse.jdt.core.dom.Modifier;
 
 public class ReflectMethod extends ReflectItem implements JNIMethod {
 	Method method;
-	ReflectType returnType, returnType64;
-	ReflectType[] paramTypes, paramTypes64;
+	ReflectType returnType;
+	ReflectType[] paramTypes;
 	ReflectClass declaringClass;
 	Boolean unique;
 	
@@ -33,69 +31,9 @@ public ReflectMethod(ReflectClass declaringClass, Method method, String source, 
 	Class<?> returnType = method.getReturnType();
 	Class<?>[] paramTypes = method.getParameterTypes();
 	this.returnType = new ReflectType(returnType);
-	this.returnType64 = this.returnType;
 	this.paramTypes = new ReflectType[paramTypes.length];
-	this.paramTypes64 = new ReflectType[paramTypes.length];
 	for (int i = 0; i < this.paramTypes.length; i++) {
-		this.paramTypes[i] = this.paramTypes64[i] = new ReflectType(paramTypes[i]);
-	}
-	boolean changes = false;
-	if ((method.getModifiers() & Modifier.NATIVE) != 0) {
-		changes = canChange64(returnType);
-		if (!changes) {
-			for (int i = 0; i < paramTypes.length && !changes; i++) {
-				changes |= canChange64(paramTypes[i]);
-			}
-		}
-	}
-	if (changes && new File(declaringClass.sourcePath).exists()) {
-		String name = method.getName();
-		TypeDeclaration type = (TypeDeclaration)unit.types().get(0);
-		MethodDeclaration decl = null;
-		MethodDeclaration[] methods = type.getMethods();
-		for (int i = 0; i < methods.length && decl == null; i++) {
-			MethodDeclaration node = methods[i];
-			if (node.getName().getIdentifier().equals(name)) {
-				if (!declaringClass.getSimpleName(returnType).equals(node.getReturnType2().toString())) continue;
-				List<?> parameters = node.parameters();
-				if (parameters.size() != paramTypes.length) continue;
-				decl = node;
-				for (int j = 0; j < paramTypes.length; j++) {
-					if (!declaringClass.getSimpleName(paramTypes[j]).equals(((SingleVariableDeclaration)parameters.get(j)).getType().toString())) {
-						decl = null;
-						break;
-					}
-				}
-			}
-		}
-		for (int i = 0; i < paramTypes.length; i++) {
-			if (canChange64(paramTypes[i])) {
-				Class<?> clazz = paramTypes[i];
-				SingleVariableDeclaration node = (SingleVariableDeclaration)decl.parameters().get(i);
-				String s = source.substring(node.getStartPosition(), node.getStartPosition() + node.getLength());
-				if (clazz == int.class && s.contains("int /*long*/")) this.paramTypes64[i] = new ReflectType(long.class);
-				else if (clazz == int[].class && (s.contains("int /*long*/") || s.contains("int[] /*long[]*/"))) this.paramTypes64[i] = new ReflectType(long[].class);
-				else if (clazz == float.class && s.contains("float /*double*/")) this.paramTypes64[i] = new ReflectType(double.class);
-				else if (clazz == float[].class && (s.contains("float /*double*/")|| s.contains("float[] /*double[]*/"))) this.paramTypes64[i] = new ReflectType(double[].class);
-				else if (clazz == long.class && s.contains("long /*int*/")) this.paramTypes[i] = new ReflectType(int.class);
-				else if (clazz == long[].class && (s.contains("long /*int*/")|| s.contains("long[] /*int[]*/"))) this.paramTypes[i] = new ReflectType(int[].class);
-				else if (clazz == double.class && s.contains("double /*float*/")) this.paramTypes[i] = new ReflectType(float.class);
-				else if (clazz == double[].class && (s.contains("double /*float*/")|| s.contains("double[] /*float[]*/"))) this.paramTypes[i] = new ReflectType(float[].class);
-			}
-		}
-		if (canChange64(returnType)) {
-			Class<?> clazz = returnType;
-			ASTNode node = decl.getReturnType2();
-			String s = source.substring(node.getStartPosition(), decl.getName().getStartPosition());
-			if (clazz == int.class && s.contains("int /*long*/")) this.returnType64 = new ReflectType(long.class);
-			else if (clazz == int[].class && (s.contains("int /*long*/") || s.contains("int[] /*long[]*/"))) this.returnType64 = new ReflectType(long[].class);
-			else if (clazz == float.class && s.contains("float /*double*/")) this.returnType64 = new ReflectType(double.class);
-			else if (clazz == float[].class && (s.contains("float /*double*/")|| s.contains("float[] /*double[]*/"))) this.returnType64 = new ReflectType(double[].class);
-			else if (clazz == long.class && s.contains("long /*int*/")) this.returnType = new ReflectType(int.class);
-			else if (clazz == long[].class && (s.contains("long /*int*/")|| s.contains("long[] /*int[]*/"))) this.returnType = new ReflectType(int[].class);
-			else if (clazz == double.class && s.contains("double /*float*/")) this.returnType = new ReflectType(float.class);
-			else if (clazz == double[].class && (s.contains("double /*float*/")|| s.contains("double[] /*float[]*/"))) this.returnType = new ReflectType(float[].class);
-		}		
+		this.paramTypes[i] = new ReflectType(paramTypes[i]);
 	}
 }
 
@@ -149,11 +87,6 @@ public JNIType[] getParameterTypes() {
 }
 
 @Override
-public JNIType[] getParameterTypes64() {
-	return paramTypes64;
-}
-
-@Override
 public JNIParameter[] getParameters() {
 	Class<?>[] paramTypes = method.getParameterTypes();
 	ReflectParameter[] result = new ReflectParameter[paramTypes.length];
@@ -166,11 +99,6 @@ public JNIParameter[] getParameters() {
 @Override
 public JNIType getReturnType() {
 	return returnType;
-}
-
-@Override
-public JNIType getReturnType64() {
-	return returnType64;
 }
 
 @Override

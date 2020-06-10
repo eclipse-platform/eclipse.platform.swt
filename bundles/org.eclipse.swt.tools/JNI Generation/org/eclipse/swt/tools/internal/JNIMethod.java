@@ -27,11 +27,7 @@ public JNIParameter[] getParameters();
 
 public JNIType getReturnType();
 
-public JNIType getReturnType64();
-
 public JNIType[] getParameterTypes();
-
-public JNIType[] getParameterTypes64();
 
 public JNIClass getDeclaringClass();
 

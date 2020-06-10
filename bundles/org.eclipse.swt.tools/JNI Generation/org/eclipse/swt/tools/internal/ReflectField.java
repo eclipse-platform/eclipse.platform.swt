@@ -13,15 +13,13 @@
  *******************************************************************************/
 package org.eclipse.swt.tools.internal;
 
-import java.io.*;
 import java.lang.reflect.*;
-import java.util.*;
 
 import org.eclipse.jdt.core.dom.*;
 
 public class ReflectField extends ReflectItem implements JNIField {
 	Field field;
-	ReflectType type, type64;
+	ReflectType type;
 	ReflectClass declaringClass;
 	
 public ReflectField(ReflectClass declaringClass, Field field, String source, CompilationUnit unit) {
@@ -29,31 +27,6 @@ public ReflectField(ReflectClass declaringClass, Field field, String source, Com
 	this.field = field;
 	Class<?> clazz = field.getType();
 	type = new ReflectType(clazz);
-	type64 = type;
-	boolean changes = canChange64(clazz);
-	if (changes && new File(declaringClass.sourcePath).exists()) {
-		TypeDeclaration type1 = (TypeDeclaration)unit.types().get(0);
-		Class<?> result = null;
-		FieldDeclaration[] fields = type1.getFields();
-		for (int i = 0; i < fields.length && result == null; i++) {
-			FieldDeclaration node = fields[i];
-			for (Iterator<?> iterator = node.fragments().iterator(); iterator.hasNext();) {
-				VariableDeclarationFragment decl = (VariableDeclarationFragment) iterator.next();
-				if (decl.getName().getIdentifier().equals(field.getName())) {
-					String s = source.substring(node.getStartPosition(), node.getStartPosition() + node.getLength());
-					if (clazz == int.class && s.contains("int /*long*/")) type64 = new ReflectType(long.class);
-					else if (clazz == float.class && s.contains("float /*double*/")) type64 = new ReflectType(double.class);
-					else if (clazz == int[].class && (s.contains("int /*long*/") || s.contains("int[] /*long[]*/"))) type64 = new ReflectType(long[].class);
-					else if (clazz == float[].class && (s.contains("float /*double*/")|| s.contains("float[] /*double[]*/"))) type = new ReflectType(double[].class);
-					else if (clazz == long.class && s.contains("long /*int*/")) type = new ReflectType(int.class);
-					else if (clazz == double.class && s.contains("double /*float*/")) type = new ReflectType(float.class);
-					else if (clazz == long[].class && (s.contains("long /*int*/")|| s.contains("long[] /*int[]*/"))) type = new ReflectType(int[].class);
-					else if (clazz == double[].class && (s.contains("double /*float*/")|| s.contains("double[] /*float[]*/"))) type = new ReflectType(float[].class);
-					break;
-				}
-			}
-		}
-	}	
 }
 
 @Override
@@ -85,11 +58,6 @@ public String getName() {
 @Override
 public JNIType getType() {
 	return type;
-}
-
-@Override
-public JNIType getType64() {
-	return type64;
 }
 
 @Override

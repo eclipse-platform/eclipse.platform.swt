@@ -21,7 +21,7 @@ public class ASTField extends ASTItem implements JNIField {
 	ASTClass declaringClass;
 	String name;
 	int modifiers;
-	ASTType type, type64;
+	ASTType type;
 	String data;
 	int start;
 	
@@ -44,18 +44,6 @@ public ASTField(ASTClass declaringClass, String source, FieldDeclaration field, 
 		}
 	}
 	type = new ASTType(declaringClass.resolver, field.getType(), fragment.getExtraDimensions());
-	type64 =  this.type;
-	if (GEN64) {
-		String s = source.substring(field.getStartPosition(), field.getStartPosition() + field.getLength());
-		if (type.isType("int") && s.contains("int /*long*/")) type64 = new ASTType("J");
-		else if (type.isType("float") && s.contains("float /*double*/")) type64 = new ASTType("D");
-		else if (type.isType("[I") && (s.contains("int /*long*/") || s.contains("int[] /*long[]*/"))) type64 = new ASTType("[J");
-		else if (type.isType("[F") && (s.contains("float /*double*/")|| s.contains("float[] /*double[]*/"))) type64 = new ASTType("[D");
-		else if (type.isType("long") && s.contains("long /*int*/")) type = new ASTType("I");
-		else if (type.isType("double") && s.contains("double /*float*/")) type = new ASTType("F");
-		else if (type.isType("[J") && (s.contains("long /*int*/")|| s.contains("long[] /*int[]*/"))) type = new ASTType("[I");
-		else if (type.isType("[D") && (s.contains("double /*float*/")|| s.contains("double[] /*float[]*/"))) type = new ASTType("[F");
-	}
 }
 
 @Override
@@ -88,11 +76,6 @@ public String getName() {
 @Override
 public JNIType getType() {
 	return type;
-}
-
-@Override
-public JNIType getType64() {
-	return type64;
 }
 
 @Override

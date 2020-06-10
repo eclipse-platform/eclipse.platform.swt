@@ -84,11 +84,6 @@ public JNIType getType() {
 }
 
 @Override
-public JNIType getType64() {
-	return method.getParameterTypes64()[parameter];
-}
-
-@Override
 public int getParameter() {
 	return parameter;
 }

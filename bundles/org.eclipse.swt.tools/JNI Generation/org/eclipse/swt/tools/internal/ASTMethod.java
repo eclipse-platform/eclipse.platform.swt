@@ -22,8 +22,8 @@ public class ASTMethod extends ASTItem implements JNIMethod {
 	String name, qualifiedName;
 	int modifiers;
 	ASTClass declaringClass;
-	ASTType[] paramTypes, paramTypes64;
-	ASTType returnType, returnType64;
+	ASTType[] paramTypes;
+	ASTType returnType;
 	ASTParameter[] parameters;
 	Boolean unique;
 	String data;
@@ -49,40 +49,16 @@ public ASTMethod(ASTClass declaringClass, String source, MethodDeclaration metho
 		}
 	}
 	returnType = new ASTType(declaringClass.resolver, method.getReturnType2(), method.getExtraDimensions());
-	returnType64 = returnType;
-	if (GEN64) {
-		String s = source.substring(method.getReturnType2().getStartPosition(), method.getName().getStartPosition());
-		if (returnType.isType("int") && s.contains("int /*long*/")) returnType64 = new ASTType("J");
-		else if (returnType.isType("float") && s.contains("float /*double*/")) returnType64 = new ASTType("D");
-		else if (returnType.isType("[I") && (s.contains("int /*long*/") || s.contains("int[] /*long[]*/"))) returnType64 = new ASTType("[J");
-		else if (returnType.isType("[F") && (s.contains("float /*double*/")|| s.contains("float[] /*double[]*/"))) returnType64 = new ASTType("[D");
-		else if (returnType.isType("long") && s.contains("long /*int*/")) returnType = new ASTType("I");
-		else if (returnType.isType("double") && s.contains("double /*float*/")) returnType = new ASTType("F");
-		else if (returnType.isType("[J") && (s.contains("long /*int*/")|| s.contains("long[] /*int[]*/"))) returnType = new ASTType("[I");
-		else if (returnType.isType("[D") && (s.contains("double /*float*/")|| s.contains("double[] /*float[]*/"))) returnType = new ASTType("[F");
-	}
 	
 	List<SingleVariableDeclaration> parameters = method.parameters();
 	paramTypes = new ASTType[parameters.size()];
-	paramTypes64 = new ASTType[parameters.size()];
 	this.parameters = new ASTParameter[paramTypes.length];
 	int i = 0;
 	for (Iterator<SingleVariableDeclaration> iterator = parameters.iterator(); iterator.hasNext(); i++) {
 		SingleVariableDeclaration param = iterator.next();
 		paramTypes[i] = new ASTType(declaringClass.resolver, param.getType(), param.getExtraDimensions());
-		paramTypes64[i] = paramTypes[i];
 		this.parameters[i] = new ASTParameter(this, i, param.getName().getIdentifier());
-		if (GEN64) {
-			String s = source.substring(param.getStartPosition(), param.getStartPosition() + param.getLength());
-			if (paramTypes[i].isType("int") && s.contains("int /*long*/")) paramTypes64[i] = new ASTType("J");
-			else if (paramTypes[i].isType("float") && s.contains("float /*double*/")) paramTypes64[i] = new ASTType("D");
-			else if (paramTypes[i].isType("[I") && (s.contains("int /*long*/") || s.contains("int[] /*long[]*/"))) paramTypes64[i] = new ASTType("[J");
-			else if (paramTypes[i].isType("[F") && (s.contains("float /*double*/")|| s.contains("float[] /*double[]*/"))) paramTypes64[i] = new ASTType("[D");
-			else if (paramTypes[i].isType("long") && s.contains("long /*int*/")) paramTypes[i] = new ASTType("I");
-			else if (paramTypes[i].isType("double") && s.contains("double /*float*/")) paramTypes[i] = new ASTType("F");
-			else if (paramTypes[i].isType("[J") && (s.contains("long /*int*/")|| s.contains("long[] /*int[]*/"))) paramTypes[i] = new ASTType("[I");
-			else if (paramTypes[i].isType("[D") && (s.contains("double /*float*/")|| s.contains("double[] /*float[]*/"))) paramTypes[i] = new ASTType("[F");
-		}
+	
 		if (tags != null) {
 			String name = param.getName().getIdentifier();
 			for (TagElement tag : tags) {
@@ -137,11 +113,6 @@ public JNIType[] getParameterTypes() {
 }
 
 @Override
-public JNIType[] getParameterTypes64() {
-	return paramTypes64;
-}
-
-@Override
 public JNIParameter[] getParameters() {
 	return this.parameters;
 }
@@ -149,11 +120,6 @@ public JNIParameter[] getParameters() {
 @Override
 public JNIType getReturnType() {
 	return returnType;
-}
-
-@Override
-public JNIType getReturnType64() {
-	return returnType64;
 }
 
 @Override

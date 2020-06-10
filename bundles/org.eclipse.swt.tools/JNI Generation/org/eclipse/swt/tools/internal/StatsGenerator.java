@@ -13,7 +13,7 @@
  *******************************************************************************/
 package org.eclipse.swt.tools.internal;
 
-import java.lang.reflect.Modifier;
+import java.lang.reflect.*;
 
 public class StatsGenerator extends JNIGenerator {
 
@@ -115,22 +115,10 @@ void generateSourceFile(JNIClass clazz) {
 	sort(methods);
 	for (JNIMethod method : methods) {
 		if ((method.getModifiers() & Modifier.NATIVE) == 0) continue;
-		String function = getFunctionName(method), function64 = getFunctionName(method, method.getParameterTypes64());
-		if (!function.equals(function64)) {
-			output("#ifndef ");
-			output(JNI64);
-			outputln();
-		}
+		String function = getFunctionName(method);
 		output("\t\"");
 		output(function);
 		outputln("\",");
-		if (!function.equals(function64)) {
-			outputln("#else");
-			output("\t\"");
-			output(function64);
-			outputln("\",");
-			outputln("#endif");
-		}
 		if (progress != null) progress.step();
 	}
 	outputln("};");
@@ -197,22 +185,10 @@ void generateFunctionEnum(JNIMethod[] methods) {
 	outputln("typedef enum {");
 	for (JNIMethod method : methods) {
 		if ((method.getModifiers() & Modifier.NATIVE) == 0) continue;
-		String function = getFunctionName(method), function64 = getFunctionName(method, method.getParameterTypes64());
-		if (!function.equals(function64)) {
-			output("#ifndef ");
-			output(JNI64);
-			outputln();
-		}
+		String function = getFunctionName(method);
 		output("\t");
 		output(function);
 		outputln("_FUNC,");
-		if (!function.equals(function64)) {
-			outputln("#else");
-			output("\t");
-			output(function64);
-			outputln("_FUNC,");
-			outputln("#endif");
-		}
 		if (progress != null) progress.step();
 	}
 	JNIClass clazz = methods[0].getDeclaringClass();
