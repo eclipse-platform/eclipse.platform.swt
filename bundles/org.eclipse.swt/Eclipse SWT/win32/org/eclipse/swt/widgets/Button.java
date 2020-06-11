@@ -60,6 +60,7 @@ public class Button extends Control {
 	static final int CHECK_WIDTH, CHECK_HEIGHT;
 	static final int ICON_WIDTH = 128, ICON_HEIGHT = 128;
 	static /*final*/ boolean COMMAND_LINK = false;
+	static final char[] STRING_WITH_ZERO_CHAR = new char[] {'0'};
 	static final long ButtonProc;
 	static final TCHAR ButtonClass = new TCHAR (0, "BUTTON", true);
 	static {
@@ -1290,6 +1291,25 @@ LRESULT wmCommandChild (long wParam, long lParam) {
 	return super.wmCommandChild (wParam, lParam);
 }
 
+private int getCheckboxTextOffset(long hdc) {
+	int result = 0;
+
+	SIZE size = new SIZE();
+
+	if (OS.IsAppThemed ()) {
+		OS.GetThemePartSize(display.hButtonTheme(), hdc, OS.BP_CHECKBOX, OS.CBS_UNCHECKEDNORMAL, null, OS.TS_TRUE, size);
+		result += size.cx;
+	} else {
+		result += DPIUtil.autoScaleUpUsingNativeDPI(13);
+	}
+
+	// Windows uses half width of '0' as checkbox-to-text distance.
+	OS.GetTextExtentPoint32(hdc, STRING_WITH_ZERO_CHAR, 1, size);
+	result += size.cx / 2;
+
+	return result;
+}
+
 @Override
 LRESULT wmNotifyChild (NMHDR hdr, long wParam, long lParam) {
 	switch (hdr.code) {
@@ -1319,14 +1339,7 @@ LRESULT wmNotifyChild (NMHDR hdr, long wParam, long lParam) {
 						OS.DeleteObject(brush);
 					}
 					if (customForegroundDrawing()) {
-						/*
-						 * Check-box/Radio buttons are native widget which honors
-						 * the Win OS zoom level for both 'Square' and 'Text' part
-						 * [Note: By-design SWT doesn't control native auto-scaling]
-						 * Hence, custom fore-ground draw logic should auto-scale
-						 * text-padding as per OS Native DPI level to fix bug 506371
-						 */
-						int radioOrCheckTextPadding = DPIUtil.autoScaleUpUsingNativeDPI(16);
+						int radioOrCheckTextPadding = getCheckboxTextOffset(nmcd.hdc);
 						int border = isRadioOrCheck() ? 0 : 3;
 						int left = nmcd.left + border;
 						int right = nmcd.right - border;
