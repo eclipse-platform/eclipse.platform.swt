@@ -530,17 +530,18 @@ public void dispose () {
 }
 
 long dpiChanged (long object, long arg0) {
-	int oldZoom = DPIUtil.getDeviceZoom() / 100;
-	int newZoom = GTK.gtk_widget_get_scale_factor(object);
+	int oldScaleFactor = DPIUtil.getDeviceZoom() / 100;
+	int newScaleFactor = GTK.gtk_widget_get_scale_factor(object);
 
-	if (oldZoom != newZoom) {
+	if (oldScaleFactor != newScaleFactor) {
+		display.dpiChanged(newScaleFactor);
+
 		Event event = new Event();
 		event.type = SWT.ZoomChanged;
 		event.widget = this;
-		event.detail = newZoom;
+		event.detail = newScaleFactor;
 		event.doit = true;
 		notifyListeners(SWT.ZoomChanged, event);
-		display.dpiChanged();
 	}
 
 	return 0;

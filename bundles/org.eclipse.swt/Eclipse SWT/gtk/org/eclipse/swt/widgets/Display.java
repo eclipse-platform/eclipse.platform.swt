@@ -4890,9 +4890,8 @@ String debugInfoForIndex(long index) {
 	return s;
 }
 
-void dpiChanged() {
-	this.scaleFactor = getDeviceZoom ();
-	DPIUtil.setDeviceZoom (scaleFactor);
+void dpiChanged(int newScaleFactor) {
+	DPIUtil.setDeviceZoom (DPIUtil.mapDPIToZoom(getDPI().x * newScaleFactor));
 	Shell[] shells = getShells();
 	for (int i = 0; i < shells.length; i++) {
 		shells[i].layout(true, true);
@@ -5974,24 +5973,6 @@ long gdk_device_get_surface_at_position (int[] win_x, int[] win_y) {
 	long display = GDK.gdk_display_get_default ();
 	long device = GDK.gdk_get_pointer(display);
 	return GDK.gdk_device_get_surface_at_position (device, win_x, win_y);
-}
-
-/**
- * @noreference This method is not intended to be referenced by clients.
- * @nooverride This method is not intended to be re-implemented or extended by clients.
- */
-@Override
-protected long gsettingsProc (long gobject, long arg1, long user_data) {
-	switch((int)user_data) {
-		case CHANGE_SCALEFACTOR:
-			this.scaleFactor = getDeviceZoom ();
-			DPIUtil.setDeviceZoom (scaleFactor);
-			Shell[] shells = getShells();
-			for (int i = 0; i < shells.length; i++) {
-				shells[i].layout(true, true);
-			}
-	}
-	return 0;
 }
 
 static int _getDeviceZoom (long monitor_num) {

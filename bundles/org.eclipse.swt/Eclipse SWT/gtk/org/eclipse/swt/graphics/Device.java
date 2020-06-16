@@ -97,13 +97,6 @@ public abstract class Device implements Drawable {
 	/* Device dpi */
 	Point dpi;
 
-	/*Device Scale Factor in percentage*/
-	/**
-	 * @noreference This field is not intended to be referenced by clients.
-	 * @since 3.105
-	 */
-	protected int scaleFactor;
-
 	long emptyTab;
 
 	/*
@@ -576,8 +569,7 @@ public boolean getWarnings () {
  */
 protected void init () {
 	this.dpi = getDPI();
-	this.scaleFactor = getDeviceZoom ();
-	DPIUtil.setDeviceZoom (scaleFactor);
+	DPIUtil.setDeviceZoom (getDeviceZoom ());
 
 	if (debug) {
 		if (xDisplay != 0) {
@@ -656,7 +648,7 @@ protected void init () {
 			surface = GDK.gdk_window_create_similar_surface(gdkResource, Cairo.CAIRO_CONTENT_COLOR, 10, 10);
 		}
 		Cairo.cairo_surface_get_device_scale(surface, sx, sy);
-		DPIUtil.setUseCairoAutoScale((sx[0]*100) == scaleFactor || OS.isGNOME);
+		DPIUtil.setUseCairoAutoScale((sx[0]*100) == DPIUtil.getDeviceZoom() || OS.isGNOME);
 	}
 
 	/* Initialize the system font slot */
@@ -1041,15 +1033,6 @@ static long XIOErrorProc (long xDisplay) {
 }
 
 /**
- * Returns DPI in x direction. In the modern monitors DPI for
- * X and Y directions is same.
- *
- * @return the horizontal DPI
- */
-int _getDPIx () {
-	return scaleFactor * 96/100;
-}
-/**
  * Gets the scaling factor from the device and calculates the zoom level.
  * @return zoom in percentage
  *
@@ -1077,19 +1060,6 @@ protected int getDeviceZoom() {
 		dpi = dpi * scale;
 	}
 	return DPIUtil.mapDPIToZoom (dpi);
-}
-/**
- * @noreference This method is not intended to be referenced by clients.
- * @nooverride This method is not intended to be re-implemented or extended by clients.
- * @since 3.105
- */
-protected long gsettingsProc (long gobject, long arg1, long user_data) {
-	switch((int)user_data) {
-		case CHANGE_SCALEFACTOR:
-			this.scaleFactor = getDeviceZoom ();
-			DPIUtil.setDeviceZoom (scaleFactor);
-	}
-	return 0;
 }
 
 }

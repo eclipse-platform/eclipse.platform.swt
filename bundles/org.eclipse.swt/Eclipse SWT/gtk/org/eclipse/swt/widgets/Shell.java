@@ -821,6 +821,17 @@ void createHandle (int index) {
 	* to avoid confusion.
 	*/
 	GTK.gtk_widget_realize (shellHandle);
+
+	if (display.firstShell == null) {
+		display.firstShell = this;
+
+		int dpi = 96;
+		long window = GTK.gtk_widget_get_window(shellHandle);
+		long monitor = GDK.gdk_display_get_monitor_at_window(GDK.gdk_display_get_default(), window);
+		long scale_factor = GDK.gdk_monitor_get_scale_factor(monitor);
+
+		DPIUtil.setDeviceZoom(DPIUtil.mapDPIToZoom (dpi * (int)scale_factor));
+	}
 }
 
 @Override
@@ -913,10 +924,8 @@ boolean hasBorder () {
 void hookEvents () {
 	super.hookEvents ();
 	long notifyAddress = display.notifyCallback.getAddress();
-	if (display.firstShell == null) {
-		display.firstShell = this;
-		OS.g_signal_connect (shellHandle, OS.dpi_changed, notifyAddress, Widget.DPI_CHANGED);
-	}
+	OS.g_signal_connect (shellHandle, OS.dpi_changed, notifyAddress, Widget.DPI_CHANGED);
+
 	if (GTK.GTK4) {
 		// Replace configure-event, map-event with generic event handler
 		if (eventHandle() == 0) {
