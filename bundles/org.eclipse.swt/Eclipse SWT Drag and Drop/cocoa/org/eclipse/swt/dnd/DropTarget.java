@@ -546,12 +546,14 @@ int getOperationFromKeyState() {
 	// correct Cocoa behavior.  Control + Option or Command is NSDragOperationGeneric,
 	// or DND.DROP_DEFAULT in the SWT.
 	NSEvent currEvent = NSApplication.sharedApplication().currentEvent();
-	long modifiers = currEvent.modifierFlags();
-	boolean option = (modifiers & OS.NSAlternateKeyMask) == OS.NSAlternateKeyMask;
-	boolean control = (modifiers & OS.NSControlKeyMask) == OS.NSControlKeyMask;
-	if (control && option) return DND.DROP_DEFAULT;
-	if (control) return DND.DROP_LINK;
-	if (option) return DND.DROP_COPY;
+	if (currEvent != null) {
+		long modifiers = currEvent.modifierFlags();
+		boolean option = (modifiers & OS.NSAlternateKeyMask) == OS.NSAlternateKeyMask;
+		boolean control = (modifiers & OS.NSControlKeyMask) == OS.NSControlKeyMask;
+		if (control && option) return DND.DROP_DEFAULT;
+		if (control) return DND.DROP_LINK;
+		if (option) return DND.DROP_COPY;
+	}
 	return DND.DROP_DEFAULT;
 }
 
