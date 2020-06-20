@@ -327,14 +327,7 @@ void writeImageData() throws IOException {
 	os.flush();
 	os.close();
 
-	byte[] compressed = baos.toByteArray();
-	if (os == baos) {
-		/* Use PngDeflater for J2ME. */
-		PngDeflater deflater = new PngDeflater();
-		compressed = deflater.deflate(compressed);
-	}
-
-	writeChunk(TAG_IDAT, compressed);
+	writeChunk(TAG_IDAT, baos.toByteArray());
 
 }
 
