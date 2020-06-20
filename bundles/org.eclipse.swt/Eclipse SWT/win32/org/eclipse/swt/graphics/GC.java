@@ -323,13 +323,13 @@ void checkGC(int mask) {
 			float scaling = point.X;
 			if (scaling < 0) scaling = -scaling;
 			float penWidth = data.lineWidth * scaling;
-			if (penWidth == 0 || ((int)penWidth % 2) == 1) {
+			if (penWidth == 0 || (((int)penWidth) & 1) == 1) {
 				data.gdipXOffset = 0.5f / scaling;
 			}
 			scaling = point.Y;
 			if (scaling < 0) scaling = -scaling;
 			penWidth = data.lineWidth * scaling;
-			if (penWidth == 0 || ((int)penWidth % 2) == 1) {
+			if (penWidth == 0 || (((int)penWidth) & 1) == 1) {
 				data.gdipYOffset = 0.5f / scaling;
 			}
 		}
