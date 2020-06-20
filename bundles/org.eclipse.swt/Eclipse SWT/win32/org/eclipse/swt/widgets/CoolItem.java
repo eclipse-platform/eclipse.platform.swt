@@ -490,7 +490,7 @@ public Point getSize () {
 
 Point getSizeInPixels() {
 	int index = parent.indexOf (this);
-	if (index == -1) new Point (0, 0);
+	if (index == -1) return new Point (0, 0);
 	long hwnd = parent.handle;
 	RECT rect = new RECT ();
 	OS.SendMessage (hwnd, OS.RB_GETRECT, index, rect);
