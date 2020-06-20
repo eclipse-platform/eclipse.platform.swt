@@ -116,7 +116,7 @@ public static int[] autoScaleDown(Drawable drawable, int[] pointArray) {
 }
 
 /**
- * Auto-scale up float array dimensions.
+ * Auto-scale down float array dimensions.
  */
 public static float[] autoScaleDown (float size[]) {
 	if (deviceZoom == 100 || size == null) return size;
@@ -129,7 +129,7 @@ public static float[] autoScaleDown (float size[]) {
 }
 
 /**
- * Auto-scale up float array dimensions if enabled for Drawable class.
+ * Auto-scale down float array dimensions if enabled for Drawable class.
  */
 public static float[] autoScaleDown (Drawable drawable, float size[]) {
 	if (drawable != null && !drawable.isAutoScalable ()) return size;

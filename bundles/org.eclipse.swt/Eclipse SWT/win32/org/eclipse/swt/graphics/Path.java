@@ -453,7 +453,8 @@ void destroy() {
 public void getBounds (float[] bounds) {
 	if (bounds == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	getBoundsInPixels(bounds);
-	bounds = DPIUtil.autoScaleDown(bounds);
+	float[] scaledbounds= DPIUtil.autoScaleDown(bounds);
+	System.arraycopy(scaledbounds, 0, bounds, 0, 4);
 }
 
 void getBoundsInPixels(float[] bounds) {
@@ -484,7 +485,8 @@ void getBoundsInPixels(float[] bounds) {
 public void getCurrentPoint (float[] point) {
 	if (point == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	getCurrentPointInPixels(point);
-	point = DPIUtil.autoScaleDown(point);
+	float[] scaledpoint= DPIUtil.autoScaleDown(point);
+	System.arraycopy(scaledpoint, 0, point, 0, 2);
 }
 
 void getCurrentPointInPixels(float[] point) {
