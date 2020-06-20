@@ -50,7 +50,7 @@ import org.eclipse.swt.internal.win32.*;
  */
 public class Button extends Control {
 	String text = "", message = "";
-	Image image, image2, disabledImage;
+	Image image, disabledImage;
 	ImageList imageList;
 	boolean ignoreMouse, grayed;
 	int buttonBackground = -1;
@@ -697,8 +697,6 @@ void releaseWidget () {
 	imageList = null;
 	if (disabledImage != null) disabledImage.dispose ();
 	disabledImage = null;
-	if (image2 != null) image2.dispose ();
-	image2 = null;
 	text = null;
 	image = null;
 }
@@ -1219,7 +1217,6 @@ LRESULT WM_SIZE (long wParam, long lParam) {
 LRESULT WM_SYSCOLORCHANGE (long wParam, long lParam) {
 	LRESULT result = super.WM_SYSCOLORCHANGE (wParam, lParam);
 	if (result != null) return result;
-	if (image2 != null) _setImage (image);
 	return result;
 }
 
