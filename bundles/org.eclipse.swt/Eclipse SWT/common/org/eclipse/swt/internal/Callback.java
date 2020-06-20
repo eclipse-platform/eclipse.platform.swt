@@ -216,11 +216,13 @@ public Callback (Object object, String method, Type returnType, Type [] argument
 	};
 
 	StringBuilder signature = new StringBuilder("(");
-	for (Type t : arguments) {
-		if (t.equals(void.class)) {
-			SWT.error(SWT.ERROR_INVALID_ARGUMENT, null, "void is not a valid argument");
+	if (this.argCount > 0) {
+		for (Type t : arguments) {
+			if (t.equals(void.class)) {
+				SWT.error(SWT.ERROR_INVALID_ARGUMENT, null, "void is not a valid argument");
+			}
+			signature.append(getTypeLetter.apply(t));
 		}
-		signature.append(getTypeLetter.apply(t));
 	}
 	signature.append(")");
 	signature.append(getTypeLetter.apply(returnType));

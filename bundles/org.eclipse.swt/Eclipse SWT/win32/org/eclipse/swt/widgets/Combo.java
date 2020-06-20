@@ -2721,7 +2721,7 @@ long windowProc (long hwnd, int msg, long wParam, long lParam) {
 				if (!(code == OS.CB_ERR || code == OS.CB_ERRSPACE)) {
 					Event event = getSegments (items [index]);
 					segments = event != null ? event.segments : null;
-					if (event.segmentsChars != null) {
+					if (event != null && event.segmentsChars != null) {
 						int auto = state & HAS_AUTO_DIRECTION;
 						if (event.segmentsChars[0] == RLE) {
 							super.updateTextDirection(SWT.RIGHT_TO_LEFT);
