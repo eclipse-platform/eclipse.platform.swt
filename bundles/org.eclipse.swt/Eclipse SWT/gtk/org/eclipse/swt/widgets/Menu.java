@@ -216,7 +216,6 @@ boolean ableToSetLocation() {
 void _setVisible (boolean visible) {
 	if (visible == GTK.gtk_widget_get_mapped (handle)) return;
 	if (visible) {
-		sendEvent (SWT.Show);
 		if (getItemCount () != 0) {
 			/*
 			* Feature in GTK. ON_TOP shells will send out
@@ -728,6 +727,7 @@ long gtk_hide (long widget) {
 
 @Override
 long gtk_show (long widget) {
+	sendEvent (SWT.Show);
 	if ((style & SWT.POP_UP) != 0) {
 		if (display.activeShell != null) {
 			display.activeShell = getShell ();
@@ -735,7 +735,6 @@ long gtk_show (long widget) {
 		}
 		return 0;
 	}
-	sendEvent (SWT.Show);
 	if (OS.ubuntu_menu_proxy_get() != 0) {
 		MenuItem[] items = getItems();
 		for (int i=0; i<items.length; i++) {
