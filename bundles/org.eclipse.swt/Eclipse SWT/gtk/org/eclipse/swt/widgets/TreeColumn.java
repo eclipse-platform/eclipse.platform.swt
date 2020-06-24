@@ -601,11 +601,10 @@ public void setImage (Image image) {
 		}
 		int imageIndex = headerImageList.indexOf (image);
 		if (imageIndex == -1) imageIndex = headerImageList.add (image);
-		long pixbuf = headerImageList.getPixbuf (imageIndex);
-		gtk_image_set_from_gicon (imageHandle, pixbuf);
+		GTK.gtk_image_set_from_surface(imageHandle, image.surface);
 		GTK.gtk_widget_show (imageHandle);
 	} else {
-		gtk_image_set_from_gicon (imageHandle, 0);
+		GTK.gtk_image_set_from_surface(imageHandle, 0);
 		GTK.gtk_widget_hide (imageHandle);
 	}
 }
@@ -785,4 +784,15 @@ void setWidthInPixels (int width) {
 	sendEvent (SWT.Resize);
 }
 
+@Override
+long dpiChanged(long object, long arg0) {
+	super.dpiChanged(object, arg0);
+
+	if (image != null) {
+		image.internal_gtk_refreshImageForZoom();
+		setImage(image);
+	}
+
+	return 0;
+}
 }

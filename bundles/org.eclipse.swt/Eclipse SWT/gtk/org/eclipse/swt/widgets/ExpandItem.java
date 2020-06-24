@@ -647,13 +647,12 @@ public void setImage (Image image) {
 	if (image != null) {
 		if (image.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
 		imageList = new ImageList ();
-		int imageIndex = imageList.add (image);
-		long pixbuf = imageList.getPixbuf (imageIndex);
-		gtk_image_set_from_gicon (imageHandle, pixbuf);
+		imageList.add (image);
+		GTK.gtk_image_set_from_surface(imageHandle, image.surface);
 		if (text.length () == 0) GTK.gtk_widget_hide (labelHandle);
 		GTK.gtk_widget_show (imageHandle);
 	} else {
-		gtk_image_set_from_gicon (imageHandle, 0);
+		GTK.gtk_image_set_from_surface(imageHandle, 0);
 		GTK.gtk_widget_show (labelHandle);
 		GTK.gtk_widget_hide (imageHandle);
 	}
@@ -697,5 +696,17 @@ long windowProc (long handle, long user_data) {
 		}
 	}
 	return super.windowProc (handle, user_data);
+}
+
+@Override
+long dpiChanged(long object, long arg0) {
+	super.dpiChanged(object, arg0);
+
+	if (image != null) {
+		image.internal_gtk_refreshImageForZoom();
+		setImage(image);
+	}
+
+	return 0;
 }
 }

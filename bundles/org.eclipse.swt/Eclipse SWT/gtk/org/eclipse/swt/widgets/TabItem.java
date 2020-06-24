@@ -400,11 +400,11 @@ public void setImage (Image image) {
 		} else {
 			imageList.put (imageIndex, image);
 		}
-		long pixbuf = imageList.getPixbuf (imageIndex);
-		gtk_image_set_from_gicon (imageHandle, pixbuf);
+
+		GTK.gtk_image_set_from_surface(imageHandle, image.surface);
 		GTK.gtk_widget_show (imageHandle);
 	} else {
-		gtk_image_set_from_gicon (imageHandle, 0);
+		GTK.gtk_image_set_from_surface(imageHandle, 0);
 		GTK.gtk_widget_hide (imageHandle);
 	}
 }
@@ -492,4 +492,15 @@ public void setToolTipText (String string) {
 	toolTipText = string;
 }
 
+@Override
+long dpiChanged(long object, long arg0) {
+	super.dpiChanged(object, arg0);
+
+	if (image != null) {
+		image.internal_gtk_refreshImageForZoom();
+		setImage(image);
+	}
+
+	return 0;
+}
 }

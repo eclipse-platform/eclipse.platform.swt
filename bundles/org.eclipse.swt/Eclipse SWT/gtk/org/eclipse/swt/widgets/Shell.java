@@ -825,17 +825,6 @@ void createHandle (int index) {
 	* to avoid confusion.
 	*/
 	GTK.gtk_widget_realize (shellHandle);
-
-	if (display.firstShell == null) {
-		display.firstShell = this;
-
-		int dpi = 96;
-		long window = GTK.gtk_widget_get_window(shellHandle);
-		long monitor = GDK.gdk_display_get_monitor_at_window(GDK.gdk_display_get_default(), window);
-		long scale_factor = GDK.gdk_monitor_get_scale_factor(monitor);
-
-		DPIUtil.setDeviceZoom(DPIUtil.mapDPIToZoom (dpi * (int)scale_factor));
-	}
 }
 
 @Override
@@ -927,8 +916,7 @@ boolean hasBorder () {
 @Override
 void hookEvents () {
 	super.hookEvents ();
-	long notifyAddress = display.notifyCallback.getAddress();
-	OS.g_signal_connect (shellHandle, OS.dpi_changed, notifyAddress, Widget.DPI_CHANGED);
+	OS.g_signal_connect (shellHandle, OS.dpi_changed, display.notifyProc, Widget.DPI_CHANGED);
 
 	if (GTK.GTK4) {
 		// Replace configure-event, map-event with generic event handler
@@ -938,7 +926,7 @@ void hookEvents () {
 		// Replaced "window-state-event" with GdkSurface "notify::state", pass shellHandle as user_data
 		GTK.gtk_widget_realize(shellHandle);
 		long gdkSurface = gtk_widget_get_surface (shellHandle);
-		OS.g_signal_connect (gdkSurface, OS.notify_state, notifyAddress, shellHandle);
+		OS.g_signal_connect (gdkSurface, OS.notify_state, display.notifyProc, shellHandle);
 		OS.g_signal_connect_closure_by_id (shellHandle, display.signalIds [SIZE_ALLOCATE_GTK4], 0, display.getClosure (SIZE_ALLOCATE_GTK4), false);
 	} else {
 		OS.g_signal_connect_closure_by_id (shellHandle, display.signalIds [WINDOW_STATE_EVENT], 0, display.getClosure (WINDOW_STATE_EVENT), false);

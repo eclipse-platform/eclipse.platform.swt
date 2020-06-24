@@ -865,14 +865,14 @@ public void setImage (Image image) {
 
 		if (!GTK.GTK4 && !GTK.GTK_IS_MENU_ITEM (handle)) return;
 		if (OS.SWT_PADDED_MENU_ITEMS && imageHandle != 0) {
-			GTK.gtk_image_set_from_pixbuf(imageHandle, pixbuf);
+			GTK.gtk_image_set_from_surface(imageHandle, image.surface);
 		} else {
 			if (imageHandle == 0 && boxHandle != 0) {
 				imageHandle = GTK.gtk_image_new_from_pixbuf (pixbuf);
 				GTK.gtk_container_add (boxHandle, imageHandle);
 				GTK.gtk_box_reorder_child (boxHandle, imageHandle, 0);
 			} else {
-				GTK.gtk_image_set_from_pixbuf(imageHandle, pixbuf);
+				GTK.gtk_image_set_from_surface(imageHandle, image.surface);
 			}
 			if (boxHandle == 0) error (SWT.ERROR_NO_HANDLES);
 		}
@@ -1211,6 +1211,18 @@ boolean updateAcceleratorText (boolean show) {
 		}
 	}
 	return maskKeysym.keysym != 0;
+}
+
+@Override
+long dpiChanged(long object, long arg0) {
+	super.dpiChanged(object, arg0);
+
+	if (image != null) {
+		image.internal_gtk_refreshImageForZoom();
+		setImage(image);
+	}
+
+	return 0;
 }
 
 }

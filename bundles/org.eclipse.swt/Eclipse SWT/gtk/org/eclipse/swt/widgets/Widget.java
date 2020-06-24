@@ -1158,6 +1158,9 @@ boolean isValidSubclass() {
 }
 
 void hookEvents () {
+	if (handle != 0) {
+		OS.g_signal_connect (handle, OS.dpi_changed, display.notifyProc, Widget.DPI_CHANGED);
+	}
 }
 
 /*
@@ -2350,9 +2353,6 @@ void gtk_widget_get_preferred_size (long widget, GtkRequisition requisition){
 	GTK.gtk_widget_get_preferred_size (widget, requisition, null);
 }
 
-void gtk_image_set_from_gicon (long imageHandle, long pixbuf){
-	GTK.gtk_image_set_from_gicon(imageHandle, pixbuf, GTK.GTK_ICON_SIZE_SMALL_TOOLBAR);
-}
 /**
  * Retrieves the amount of space around the outside of the container.
  * On GTK3: this is done using gtk_container_get_border_width.

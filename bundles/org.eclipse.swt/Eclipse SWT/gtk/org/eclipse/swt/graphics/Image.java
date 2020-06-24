@@ -714,6 +714,21 @@ public Image(Device device, ImageDataProvider imageDataProvider) {
 }
 
 /**
+ * Refreshes the image for the current device scale factor.
+ * <p>
+ * <b>IMPORTANT:</b> This function is <em>not</em> part of the SWT
+ * public API. It is marked public only so that it can be shared
+ * within the packages provided by SWT. It is not available on all
+ * platforms and should never be used from application code.
+ * </p>
+ *
+ * @noreference This function is not intended to be referenced by clients.
+ */
+public boolean internal_gtk_refreshImageForZoom() {
+	return refreshImageForZoom();
+}
+
+/**
  * Refresh the Image based on the zoom level, if required.
  *
  * @return true if image is refreshed
@@ -1542,6 +1557,11 @@ public void setBackground(Color color) {
 @Override
 public String toString () {
 	if (isDisposed()) return "Image {*DISPOSED*}";
+
+	if (imageFileNameProvider != null) {
+		return "Image {" + imageFileNameProvider.getImagePath(100) + "}";
+	}
+
 	return "Image {" + surface + "}";
 }
 

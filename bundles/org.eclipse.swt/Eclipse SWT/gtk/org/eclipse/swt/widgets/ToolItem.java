@@ -717,8 +717,7 @@ long gtk_enter_notify_event (long widget, long event) {
 		if (imageList != null) {
 			int index = imageList.indexOf (hotImage);
 			if (index != -1 && imageHandle != 0) {
-				long pixbuf = imageList.getPixbuf (index);
-				gtk_image_set_from_gicon(imageHandle, pixbuf);
+				GTK.gtk_image_set_from_surface(imageHandle, hotImage.surface);
 			}
 		}
 	}
@@ -775,8 +774,7 @@ long gtk_leave_notify_event (long widget, long event) {
 			if (imageList != null) {
 				int index = imageList.indexOf (image);
 				if (index != -1 && imageHandle != 0) {
-					long pixbuf = imageList.getPixbuf (index);
-					gtk_image_set_from_gicon(imageHandle, pixbuf);
+					GTK.gtk_image_set_from_surface(imageHandle, image.surface);
 				}
 			}
 		}
@@ -800,6 +798,7 @@ void hookEvents () {
 	super.hookEvents ();
 	if ((style & SWT.SEPARATOR) != 0) return;
 	OS.g_signal_connect_closure (handle, OS.clicked, display.getClosure (CLICKED), false);
+
 	/*
 	 * Feature in GTK. GtkToolItem does not respond to basic listeners
 	 * such as button-press, enter-notify to it. The fix is to assign
@@ -1189,10 +1188,10 @@ void _setImage (Image image) {
 		} else {
 			imageList.put (imageIndex, image);
 		}
-		long pixbuf = imageList.getPixbuf (imageIndex);
-		gtk_image_set_from_gicon(imageHandle, pixbuf);
+
+		GTK.gtk_image_set_from_surface(imageHandle, image.surface);
 	} else {
-		gtk_image_set_from_gicon(imageHandle, 0);
+		GTK.gtk_image_set_from_surface(imageHandle, 0);
 	}
 	/*
 	* If Text/Image of a tool-item changes, then it is
@@ -1449,5 +1448,27 @@ String getNameText() {
 		return "text: '" + nameText + "', data: " + data;
 	}
 	return nameText;
+}
+
+@Override
+long dpiChanged(long object, long arg0) {
+	super.dpiChanged(object, arg0);
+
+	if (image != null) {
+		image.internal_gtk_refreshImageForZoom();
+		setImage(image);
+	}
+
+	if (hotImage != null) {
+		hotImage.internal_gtk_refreshImageForZoom();
+		setHotImage(hotImage);
+	}
+
+	if (disabledImage != null) {
+		disabledImage.internal_gtk_refreshImageForZoom();
+		setDisabledImage(disabledImage);
+	}
+
+	return 0;
 }
 }

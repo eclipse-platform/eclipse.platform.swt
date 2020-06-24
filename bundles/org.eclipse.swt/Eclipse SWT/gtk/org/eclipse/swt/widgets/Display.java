@@ -155,7 +155,6 @@ public class Display extends Device {
 	long lastHandle;
 	Widget lastWidget;
 	Widget [] widgetTable;
-	Shell firstShell;
 	final static int GROW_SIZE = 1024;
 	static final int SWT_OBJECT_INDEX;
 	static final int SWT_OBJECT_INDEX1;

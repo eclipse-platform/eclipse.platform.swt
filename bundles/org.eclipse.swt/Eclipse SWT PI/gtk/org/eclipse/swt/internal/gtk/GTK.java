@@ -1462,20 +1462,10 @@ public class GTK extends OS {
 	 */
 	public static final native void gtk_image_set_from_pixbuf(long image, long pixbuf);
 	/**
-	 * @method flags=dynamic
 	 * @param image cast=(GtkImage *)
-	 * @param gicon cast=(GIcon *)
-	 * @param size cast=(GtkIconSize)
+	 * @param surface cast=(cairo_surface_t *)
 	 */
-	/* [GTK3 only] */
-	public static final native void gtk_image_set_from_gicon(long image, long gicon, int size);
-	/**
-	 * @method flags=dynamic
-	 * @param image cast=(GtkImage *)
-	 * @param gicon cast=(GIcon *)
-	 */
-	/* [GTK4 only] */
-	public static final native void gtk_image_set_from_gicon(long image, long gicon);
+	public static final native void gtk_image_set_from_surface(long image, long surface);
 	/**
 	 * @method flags=dynamic
 	 * @param icon_name cast=(const gchar *)

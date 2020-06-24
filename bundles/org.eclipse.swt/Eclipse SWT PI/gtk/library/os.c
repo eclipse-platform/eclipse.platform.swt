@@ -6828,42 +6828,6 @@ JNIEXPORT jlong JNICALL GTK_NATIVE(gtk_1image_1new_1from_1pixbuf)
 }
 #endif
 
-#ifndef NO_gtk_1image_1set_1from_1gicon__JJ
-JNIEXPORT void JNICALL GTK_NATIVE(gtk_1image_1set_1from_1gicon__JJ)
-	(JNIEnv *env, jclass that, jlong arg0, jlong arg1)
-{
-	GTK_NATIVE_ENTER(env, that, gtk_1image_1set_1from_1gicon__JJ_FUNC);
-/*
-	gtk_image_set_from_gicon((GtkImage *)arg0, (GIcon *)arg1);
-*/
-	{
-		GTK_LOAD_FUNCTION(fp, gtk_image_set_from_gicon)
-		if (fp) {
-			((void (CALLING_CONVENTION*)(GtkImage *, GIcon *))fp)((GtkImage *)arg0, (GIcon *)arg1);
-		}
-	}
-	GTK_NATIVE_EXIT(env, that, gtk_1image_1set_1from_1gicon__JJ_FUNC);
-}
-#endif
-
-#ifndef NO_gtk_1image_1set_1from_1gicon__JJI
-JNIEXPORT void JNICALL GTK_NATIVE(gtk_1image_1set_1from_1gicon__JJI)
-	(JNIEnv *env, jclass that, jlong arg0, jlong arg1, jint arg2)
-{
-	GTK_NATIVE_ENTER(env, that, gtk_1image_1set_1from_1gicon__JJI_FUNC);
-/*
-	gtk_image_set_from_gicon((GtkImage *)arg0, (GIcon *)arg1, (GtkIconSize)arg2);
-*/
-	{
-		GTK_LOAD_FUNCTION(fp, gtk_image_set_from_gicon)
-		if (fp) {
-			((void (CALLING_CONVENTION*)(GtkImage *, GIcon *, GtkIconSize))fp)((GtkImage *)arg0, (GIcon *)arg1, (GtkIconSize)arg2);
-		}
-	}
-	GTK_NATIVE_EXIT(env, that, gtk_1image_1set_1from_1gicon__JJI_FUNC);
-}
-#endif
-
 #ifndef NO_gtk_1image_1set_1from_1icon_1name__J_3B
 JNIEXPORT void JNICALL GTK_NATIVE(gtk_1image_1set_1from_1icon_1name__J_3B)
 	(JNIEnv *env, jclass that, jlong arg0, jbyteArray arg1)
@@ -6915,6 +6879,16 @@ JNIEXPORT void JNICALL GTK_NATIVE(gtk_1image_1set_1from_1pixbuf)
 	GTK_NATIVE_ENTER(env, that, gtk_1image_1set_1from_1pixbuf_FUNC);
 	gtk_image_set_from_pixbuf((GtkImage *)arg0, (GdkPixbuf *)arg1);
 	GTK_NATIVE_EXIT(env, that, gtk_1image_1set_1from_1pixbuf_FUNC);
+}
+#endif
+
+#ifndef NO_gtk_1image_1set_1from_1surface
+JNIEXPORT void JNICALL GTK_NATIVE(gtk_1image_1set_1from_1surface)
+	(JNIEnv *env, jclass that, jlong arg0, jlong arg1)
+{
+	GTK_NATIVE_ENTER(env, that, gtk_1image_1set_1from_1surface_FUNC);
+	gtk_image_set_from_surface((GtkImage *)arg0, (cairo_surface_t *)arg1);
+	GTK_NATIVE_EXIT(env, that, gtk_1image_1set_1from_1surface_FUNC);
 }
 #endif
 
