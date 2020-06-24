@@ -23,57 +23,6 @@
 #define COM_NATIVE(func) Java_org_eclipse_swt_internal_ole_win32_COM_##func
 #endif
 
-#ifndef NO_AccessibleChildren
-JNIEXPORT jint JNICALL COM_NATIVE(AccessibleChildren)
-	(JNIEnv *env, jclass that, jlong arg0, jint arg1, jint arg2, jlong arg3, jintArray arg4)
-{
-	jint *lparg4=NULL;
-	jint rc = 0;
-	COM_NATIVE_ENTER(env, that, AccessibleChildren_FUNC);
-	if (arg4) if ((lparg4 = (*env)->GetIntArrayElements(env, arg4, NULL)) == NULL) goto fail;
-/*
-	rc = (jint)AccessibleChildren((IAccessible *)arg0, (LONG)arg1, (LONG)arg2, (VARIANT *)arg3, (LONG *)lparg4);
-*/
-	{
-		COM_LOAD_FUNCTION(fp, AccessibleChildren)
-		if (fp) {
-			rc = (jint)((jint (CALLING_CONVENTION*)(IAccessible *, LONG, LONG, VARIANT *, LONG *))fp)((IAccessible *)arg0, (LONG)arg1, (LONG)arg2, (VARIANT *)arg3, (LONG *)lparg4);
-		}
-	}
-fail:
-	if (arg4 && lparg4) (*env)->ReleaseIntArrayElements(env, arg4, lparg4, 0);
-	COM_NATIVE_EXIT(env, that, AccessibleChildren_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO_AccessibleObjectFromWindow
-JNIEXPORT jint JNICALL COM_NATIVE(AccessibleObjectFromWindow)
-	(JNIEnv *env, jclass that, jlong arg0, jint arg1, jobject arg2, jlongArray arg3)
-{
-	GUID _arg2, *lparg2=NULL;
-	jlong *lparg3=NULL;
-	jint rc = 0;
-	COM_NATIVE_ENTER(env, that, AccessibleObjectFromWindow_FUNC);
-	if (arg2) if ((lparg2 = getGUIDFields(env, arg2, &_arg2)) == NULL) goto fail;
-	if (arg3) if ((lparg3 = (*env)->GetLongArrayElements(env, arg3, NULL)) == NULL) goto fail;
-/*
-	rc = (jint)AccessibleObjectFromWindow((HWND)arg0, (DWORD)arg1, lparg2, (LPVOID *)lparg3);
-*/
-	{
-		COM_LOAD_FUNCTION(fp, AccessibleObjectFromWindow)
-		if (fp) {
-			rc = (jint)((jint (CALLING_CONVENTION*)(HWND, DWORD, GUID *, LPVOID *))fp)((HWND)arg0, (DWORD)arg1, lparg2, (LPVOID *)lparg3);
-		}
-	}
-fail:
-	if (arg3 && lparg3) (*env)->ReleaseLongArrayElements(env, arg3, lparg3, 0);
-	if (arg2 && lparg2) setGUIDFields(env, arg2, lparg2);
-	COM_NATIVE_EXIT(env, that, AccessibleObjectFromWindow_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO_CAUUID_1sizeof
 JNIEXPORT jint JNICALL COM_NATIVE(CAUUID_1sizeof)
 	(JNIEnv *env, jclass that)
@@ -212,15 +161,7 @@ JNIEXPORT jint JNICALL COM_NATIVE(CreateStdAccessibleObject)
 	COM_NATIVE_ENTER(env, that, CreateStdAccessibleObject_FUNC);
 	if (arg2) if ((lparg2 = getGUIDFields(env, arg2, &_arg2)) == NULL) goto fail;
 	if (arg3) if ((lparg3 = (*env)->GetLongArrayElements(env, arg3, NULL)) == NULL) goto fail;
-/*
 	rc = (jint)CreateStdAccessibleObject((HWND)arg0, arg1, lparg2, (LPVOID *)lparg3);
-*/
-	{
-		COM_LOAD_FUNCTION(fp, CreateStdAccessibleObject)
-		if (fp) {
-			rc = (jint)((jint (CALLING_CONVENTION*)(HWND, jint, GUID *, LPVOID *))fp)((HWND)arg0, arg1, lparg2, (LPVOID *)lparg3);
-		}
-	}
 fail:
 	if (arg3 && lparg3) (*env)->ReleaseLongArrayElements(env, arg3, lparg3, 0);
 	if (arg2 && lparg2) setGUIDFields(env, arg2, lparg2);

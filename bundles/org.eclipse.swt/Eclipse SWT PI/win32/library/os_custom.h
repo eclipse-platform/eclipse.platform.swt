@@ -15,6 +15,7 @@
 /* Special sizeof's */
 #define SCRIPT_STRING_ANALYSIS_sizeof() sizeof(SCRIPT_STRING_ANALYSIS)
 #define PROPVARIANT_sizeof() sizeof(PROPVARIANT)
+#define LOGPEN_sizeof() sizeof(LOGPEN)
 
 /* Libraries for dynamic loaded functions */
 #define CloseGestureInfoHandle_LIB "user32.dll"

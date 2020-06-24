@@ -1911,7 +1911,7 @@ void drawRectangleInPixels (int x, int y, int width, int height) {
 		if (data.lineWidth > 1) {
 			if ((data.lineWidth % 2) == 1) x++;
 		} else {
-			if (data.hPen != 0 && OS.GetObject(data.hPen, 0, 0) != LOGPEN.sizeof) {
+			if (data.hPen != 0 && OS.GetObject(data.hPen, 0, 0) != OS.LOGPEN_sizeof()) {
 				x++;
 			}
 		}

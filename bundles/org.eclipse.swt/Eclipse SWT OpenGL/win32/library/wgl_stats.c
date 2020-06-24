@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2016 IBM Corporation and others.
+ * Copyright (c) 2000, 2020 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -23,23 +23,13 @@
 char * WGL_nativeFunctionNames[] = {
 	"ChoosePixelFormat",
 	"DescribePixelFormat",
-	"GetPixelFormat",
 	"SetPixelFormat",
 	"SwapBuffers",
-	"wglCopyContext",
 	"wglCreateContext",
-	"wglCreateLayerContext",
 	"wglDeleteContext",
-	"wglDescribeLayerPlane",
 	"wglGetCurrentContext",
-	"wglGetCurrentDC",
-	"wglGetLayerPaletteEntries",
-	"wglGetProcAddress",
 	"wglMakeCurrent",
-	"wglRealizeLayerPalette",
-	"wglSetLayerPaletteEntries",
 	"wglShareLists",
-	"wglSwapLayerBuffers",
 };
 #define NATIVE_FUNCTION_COUNT sizeof(WGL_nativeFunctionNames) / sizeof(char*)
 int WGL_nativeFunctionCount = NATIVE_FUNCTION_COUNT;

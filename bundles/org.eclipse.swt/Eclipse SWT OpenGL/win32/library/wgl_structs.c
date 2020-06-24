@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2016 IBM Corporation and others.
+ * Copyright (c) 2000, 2020 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -17,106 +17,6 @@
 
 #include "swt.h"
 #include "wgl_structs.h"
-
-#ifndef NO_LAYERPLANEDESCRIPTOR
-typedef struct LAYERPLANEDESCRIPTOR_FID_CACHE {
-	int cached;
-	jclass clazz;
-	jfieldID nSize, nVersion, dwFlags, iPixelType, cColorBits, cRedBits, cRedShift, cGreenBits, cGreenShift, cBlueBits, cBlueShift, cAlphaBits, cAlphaShift, cAccumBits, cAccumRedBits, cAccumGreenBits, cAccumBlueBits, cAccumAlphaBits, cDepthBits, cStencilBits, cAuxBuffers, iLayerPlane, bReserved, crTransparent;
-} LAYERPLANEDESCRIPTOR_FID_CACHE;
-
-LAYERPLANEDESCRIPTOR_FID_CACHE LAYERPLANEDESCRIPTORFc;
-
-void cacheLAYERPLANEDESCRIPTORFields(JNIEnv *env, jobject lpObject)
-{
-	if (LAYERPLANEDESCRIPTORFc.cached) return;
-	LAYERPLANEDESCRIPTORFc.clazz = (*env)->GetObjectClass(env, lpObject);
-	LAYERPLANEDESCRIPTORFc.nSize = (*env)->GetFieldID(env, LAYERPLANEDESCRIPTORFc.clazz, "nSize", "S");
-	LAYERPLANEDESCRIPTORFc.nVersion = (*env)->GetFieldID(env, LAYERPLANEDESCRIPTORFc.clazz, "nVersion", "S");
-	LAYERPLANEDESCRIPTORFc.dwFlags = (*env)->GetFieldID(env, LAYERPLANEDESCRIPTORFc.clazz, "dwFlags", "I");
-	LAYERPLANEDESCRIPTORFc.iPixelType = (*env)->GetFieldID(env, LAYERPLANEDESCRIPTORFc.clazz, "iPixelType", "B");
-	LAYERPLANEDESCRIPTORFc.cColorBits = (*env)->GetFieldID(env, LAYERPLANEDESCRIPTORFc.clazz, "cColorBits", "B");
-	LAYERPLANEDESCRIPTORFc.cRedBits = (*env)->GetFieldID(env, LAYERPLANEDESCRIPTORFc.clazz, "cRedBits", "B");
-	LAYERPLANEDESCRIPTORFc.cRedShift = (*env)->GetFieldID(env, LAYERPLANEDESCRIPTORFc.clazz, "cRedShift", "B");
-	LAYERPLANEDESCRIPTORFc.cGreenBits = (*env)->GetFieldID(env, LAYERPLANEDESCRIPTORFc.clazz, "cGreenBits", "B");
-	LAYERPLANEDESCRIPTORFc.cGreenShift = (*env)->GetFieldID(env, LAYERPLANEDESCRIPTORFc.clazz, "cGreenShift", "B");
-	LAYERPLANEDESCRIPTORFc.cBlueBits = (*env)->GetFieldID(env, LAYERPLANEDESCRIPTORFc.clazz, "cBlueBits", "B");
-	LAYERPLANEDESCRIPTORFc.cBlueShift = (*env)->GetFieldID(env, LAYERPLANEDESCRIPTORFc.clazz, "cBlueShift", "B");
-	LAYERPLANEDESCRIPTORFc.cAlphaBits = (*env)->GetFieldID(env, LAYERPLANEDESCRIPTORFc.clazz, "cAlphaBits", "B");
-	LAYERPLANEDESCRIPTORFc.cAlphaShift = (*env)->GetFieldID(env, LAYERPLANEDESCRIPTORFc.clazz, "cAlphaShift", "B");
-	LAYERPLANEDESCRIPTORFc.cAccumBits = (*env)->GetFieldID(env, LAYERPLANEDESCRIPTORFc.clazz, "cAccumBits", "B");
-	LAYERPLANEDESCRIPTORFc.cAccumRedBits = (*env)->GetFieldID(env, LAYERPLANEDESCRIPTORFc.clazz, "cAccumRedBits", "B");
-	LAYERPLANEDESCRIPTORFc.cAccumGreenBits = (*env)->GetFieldID(env, LAYERPLANEDESCRIPTORFc.clazz, "cAccumGreenBits", "B");
-	LAYERPLANEDESCRIPTORFc.cAccumBlueBits = (*env)->GetFieldID(env, LAYERPLANEDESCRIPTORFc.clazz, "cAccumBlueBits", "B");
-	LAYERPLANEDESCRIPTORFc.cAccumAlphaBits = (*env)->GetFieldID(env, LAYERPLANEDESCRIPTORFc.clazz, "cAccumAlphaBits", "B");
-	LAYERPLANEDESCRIPTORFc.cDepthBits = (*env)->GetFieldID(env, LAYERPLANEDESCRIPTORFc.clazz, "cDepthBits", "B");
-	LAYERPLANEDESCRIPTORFc.cStencilBits = (*env)->GetFieldID(env, LAYERPLANEDESCRIPTORFc.clazz, "cStencilBits", "B");
-	LAYERPLANEDESCRIPTORFc.cAuxBuffers = (*env)->GetFieldID(env, LAYERPLANEDESCRIPTORFc.clazz, "cAuxBuffers", "B");
-	LAYERPLANEDESCRIPTORFc.iLayerPlane = (*env)->GetFieldID(env, LAYERPLANEDESCRIPTORFc.clazz, "iLayerPlane", "B");
-	LAYERPLANEDESCRIPTORFc.bReserved = (*env)->GetFieldID(env, LAYERPLANEDESCRIPTORFc.clazz, "bReserved", "B");
-	LAYERPLANEDESCRIPTORFc.crTransparent = (*env)->GetFieldID(env, LAYERPLANEDESCRIPTORFc.clazz, "crTransparent", "I");
-	LAYERPLANEDESCRIPTORFc.cached = 1;
-}
-
-LAYERPLANEDESCRIPTOR *getLAYERPLANEDESCRIPTORFields(JNIEnv *env, jobject lpObject, LAYERPLANEDESCRIPTOR *lpStruct)
-{
-	if (!LAYERPLANEDESCRIPTORFc.cached) cacheLAYERPLANEDESCRIPTORFields(env, lpObject);
-	lpStruct->nSize = (*env)->GetShortField(env, lpObject, LAYERPLANEDESCRIPTORFc.nSize);
-	lpStruct->nVersion = (*env)->GetShortField(env, lpObject, LAYERPLANEDESCRIPTORFc.nVersion);
-	lpStruct->dwFlags = (*env)->GetIntField(env, lpObject, LAYERPLANEDESCRIPTORFc.dwFlags);
-	lpStruct->iPixelType = (*env)->GetByteField(env, lpObject, LAYERPLANEDESCRIPTORFc.iPixelType);
-	lpStruct->cColorBits = (*env)->GetByteField(env, lpObject, LAYERPLANEDESCRIPTORFc.cColorBits);
-	lpStruct->cRedBits = (*env)->GetByteField(env, lpObject, LAYERPLANEDESCRIPTORFc.cRedBits);
-	lpStruct->cRedShift = (*env)->GetByteField(env, lpObject, LAYERPLANEDESCRIPTORFc.cRedShift);
-	lpStruct->cGreenBits = (*env)->GetByteField(env, lpObject, LAYERPLANEDESCRIPTORFc.cGreenBits);
-	lpStruct->cGreenShift = (*env)->GetByteField(env, lpObject, LAYERPLANEDESCRIPTORFc.cGreenShift);
-	lpStruct->cBlueBits = (*env)->GetByteField(env, lpObject, LAYERPLANEDESCRIPTORFc.cBlueBits);
-	lpStruct->cBlueShift = (*env)->GetByteField(env, lpObject, LAYERPLANEDESCRIPTORFc.cBlueShift);
-	lpStruct->cAlphaBits = (*env)->GetByteField(env, lpObject, LAYERPLANEDESCRIPTORFc.cAlphaBits);
-	lpStruct->cAlphaShift = (*env)->GetByteField(env, lpObject, LAYERPLANEDESCRIPTORFc.cAlphaShift);
-	lpStruct->cAccumBits = (*env)->GetByteField(env, lpObject, LAYERPLANEDESCRIPTORFc.cAccumBits);
-	lpStruct->cAccumRedBits = (*env)->GetByteField(env, lpObject, LAYERPLANEDESCRIPTORFc.cAccumRedBits);
-	lpStruct->cAccumGreenBits = (*env)->GetByteField(env, lpObject, LAYERPLANEDESCRIPTORFc.cAccumGreenBits);
-	lpStruct->cAccumBlueBits = (*env)->GetByteField(env, lpObject, LAYERPLANEDESCRIPTORFc.cAccumBlueBits);
-	lpStruct->cAccumAlphaBits = (*env)->GetByteField(env, lpObject, LAYERPLANEDESCRIPTORFc.cAccumAlphaBits);
-	lpStruct->cDepthBits = (*env)->GetByteField(env, lpObject, LAYERPLANEDESCRIPTORFc.cDepthBits);
-	lpStruct->cStencilBits = (*env)->GetByteField(env, lpObject, LAYERPLANEDESCRIPTORFc.cStencilBits);
-	lpStruct->cAuxBuffers = (*env)->GetByteField(env, lpObject, LAYERPLANEDESCRIPTORFc.cAuxBuffers);
-	lpStruct->iLayerPlane = (*env)->GetByteField(env, lpObject, LAYERPLANEDESCRIPTORFc.iLayerPlane);
-	lpStruct->bReserved = (*env)->GetByteField(env, lpObject, LAYERPLANEDESCRIPTORFc.bReserved);
-	lpStruct->crTransparent = (*env)->GetIntField(env, lpObject, LAYERPLANEDESCRIPTORFc.crTransparent);
-	return lpStruct;
-}
-
-void setLAYERPLANEDESCRIPTORFields(JNIEnv *env, jobject lpObject, LAYERPLANEDESCRIPTOR *lpStruct)
-{
-	if (!LAYERPLANEDESCRIPTORFc.cached) cacheLAYERPLANEDESCRIPTORFields(env, lpObject);
-	(*env)->SetShortField(env, lpObject, LAYERPLANEDESCRIPTORFc.nSize, (jshort)lpStruct->nSize);
-	(*env)->SetShortField(env, lpObject, LAYERPLANEDESCRIPTORFc.nVersion, (jshort)lpStruct->nVersion);
-	(*env)->SetIntField(env, lpObject, LAYERPLANEDESCRIPTORFc.dwFlags, (jint)lpStruct->dwFlags);
-	(*env)->SetByteField(env, lpObject, LAYERPLANEDESCRIPTORFc.iPixelType, (jbyte)lpStruct->iPixelType);
-	(*env)->SetByteField(env, lpObject, LAYERPLANEDESCRIPTORFc.cColorBits, (jbyte)lpStruct->cColorBits);
-	(*env)->SetByteField(env, lpObject, LAYERPLANEDESCRIPTORFc.cRedBits, (jbyte)lpStruct->cRedBits);
-	(*env)->SetByteField(env, lpObject, LAYERPLANEDESCRIPTORFc.cRedShift, (jbyte)lpStruct->cRedShift);
-	(*env)->SetByteField(env, lpObject, LAYERPLANEDESCRIPTORFc.cGreenBits, (jbyte)lpStruct->cGreenBits);
-	(*env)->SetByteField(env, lpObject, LAYERPLANEDESCRIPTORFc.cGreenShift, (jbyte)lpStruct->cGreenShift);
-	(*env)->SetByteField(env, lpObject, LAYERPLANEDESCRIPTORFc.cBlueBits, (jbyte)lpStruct->cBlueBits);
-	(*env)->SetByteField(env, lpObject, LAYERPLANEDESCRIPTORFc.cBlueShift, (jbyte)lpStruct->cBlueShift);
-	(*env)->SetByteField(env, lpObject, LAYERPLANEDESCRIPTORFc.cAlphaBits, (jbyte)lpStruct->cAlphaBits);
-	(*env)->SetByteField(env, lpObject, LAYERPLANEDESCRIPTORFc.cAlphaShift, (jbyte)lpStruct->cAlphaShift);
-	(*env)->SetByteField(env, lpObject, LAYERPLANEDESCRIPTORFc.cAccumBits, (jbyte)lpStruct->cAccumBits);
-	(*env)->SetByteField(env, lpObject, LAYERPLANEDESCRIPTORFc.cAccumRedBits, (jbyte)lpStruct->cAccumRedBits);
-	(*env)->SetByteField(env, lpObject, LAYERPLANEDESCRIPTORFc.cAccumGreenBits, (jbyte)lpStruct->cAccumGreenBits);
-	(*env)->SetByteField(env, lpObject, LAYERPLANEDESCRIPTORFc.cAccumBlueBits, (jbyte)lpStruct->cAccumBlueBits);
-	(*env)->SetByteField(env, lpObject, LAYERPLANEDESCRIPTORFc.cAccumAlphaBits, (jbyte)lpStruct->cAccumAlphaBits);
-	(*env)->SetByteField(env, lpObject, LAYERPLANEDESCRIPTORFc.cDepthBits, (jbyte)lpStruct->cDepthBits);
-	(*env)->SetByteField(env, lpObject, LAYERPLANEDESCRIPTORFc.cStencilBits, (jbyte)lpStruct->cStencilBits);
-	(*env)->SetByteField(env, lpObject, LAYERPLANEDESCRIPTORFc.cAuxBuffers, (jbyte)lpStruct->cAuxBuffers);
-	(*env)->SetByteField(env, lpObject, LAYERPLANEDESCRIPTORFc.iLayerPlane, (jbyte)lpStruct->iLayerPlane);
-	(*env)->SetByteField(env, lpObject, LAYERPLANEDESCRIPTORFc.bReserved, (jbyte)lpStruct->bReserved);
-	(*env)->SetIntField(env, lpObject, LAYERPLANEDESCRIPTORFc.crTransparent, (jint)lpStruct->crTransparent);
-}
-#endif
 
 #ifndef NO_PIXELFORMATDESCRIPTOR
 typedef struct PIXELFORMATDESCRIPTOR_FID_CACHE {

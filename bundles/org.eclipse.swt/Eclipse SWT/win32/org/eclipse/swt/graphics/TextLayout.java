@@ -2718,7 +2718,7 @@ StyleItem[] itemize () {
 	*/
 //	scriptControl.fReserved = 0x1;
 
-	OS.ScriptApplyDigitSubstitution(null, scriptControl, scriptState);
+	OS.ScriptApplyDigitSubstitution(0, scriptControl, scriptState);
 
 	long hHeap = OS.GetProcessHeap();
 	long pItems = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, MAX_ITEM * SCRIPT_ITEM.sizeof);

@@ -15,14 +15,6 @@ package org.eclipse.swt.internal.win32;
 
 public class EXTLOGFONTW {
 	public LOGFONT elfLogFont = new LOGFONT();
-	public char[] elfFullName = new char[OS.LF_FULLFACESIZE];
-	public char[] elfStyle = new char[OS.LF_FACESIZE];
-	public int elfVersion;
-	public int elfStyleSize;
-	public int elfMatch;
-	public int elfReserved;
-	public byte[] elfVendorId = new byte[OS.ELF_VENDOR_SIZE];
-	public int elfCulture;
-	public PANOSE elfPanose = new PANOSE();
+	// the rest of the fields are omitted
 	public static final int sizeof = OS.EXTLOGFONTW_sizeof ();
 }

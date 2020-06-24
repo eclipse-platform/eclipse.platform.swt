@@ -113,54 +113,6 @@ void setCANDIDATEFORMFields(JNIEnv *env, jobject lpObject, CANDIDATEFORM *lpStru
 #define CANDIDATEFORM_sizeof() 0
 #endif
 
-#ifndef NO_CERT_CONTEXT
-void cacheCERT_CONTEXTFields(JNIEnv *env, jobject lpObject);
-CERT_CONTEXT *getCERT_CONTEXTFields(JNIEnv *env, jobject lpObject, CERT_CONTEXT *lpStruct);
-void setCERT_CONTEXTFields(JNIEnv *env, jobject lpObject, CERT_CONTEXT *lpStruct);
-#define CERT_CONTEXT_sizeof() sizeof(CERT_CONTEXT)
-#else
-#define cacheCERT_CONTEXTFields(a,b)
-#define getCERT_CONTEXTFields(a,b,c) NULL
-#define setCERT_CONTEXTFields(a,b,c)
-#define CERT_CONTEXT_sizeof() 0
-#endif
-
-#ifndef NO_CERT_INFO
-void cacheCERT_INFOFields(JNIEnv *env, jobject lpObject);
-CERT_INFO *getCERT_INFOFields(JNIEnv *env, jobject lpObject, CERT_INFO *lpStruct);
-void setCERT_INFOFields(JNIEnv *env, jobject lpObject, CERT_INFO *lpStruct);
-#define CERT_INFO_sizeof() sizeof(CERT_INFO)
-#else
-#define cacheCERT_INFOFields(a,b)
-#define getCERT_INFOFields(a,b,c) NULL
-#define setCERT_INFOFields(a,b,c)
-#define CERT_INFO_sizeof() 0
-#endif
-
-#ifndef NO_CERT_NAME_BLOB
-void cacheCERT_NAME_BLOBFields(JNIEnv *env, jobject lpObject);
-CERT_NAME_BLOB *getCERT_NAME_BLOBFields(JNIEnv *env, jobject lpObject, CERT_NAME_BLOB *lpStruct);
-void setCERT_NAME_BLOBFields(JNIEnv *env, jobject lpObject, CERT_NAME_BLOB *lpStruct);
-#define CERT_NAME_BLOB_sizeof() sizeof(CERT_NAME_BLOB)
-#else
-#define cacheCERT_NAME_BLOBFields(a,b)
-#define getCERT_NAME_BLOBFields(a,b,c) NULL
-#define setCERT_NAME_BLOBFields(a,b,c)
-#define CERT_NAME_BLOB_sizeof() 0
-#endif
-
-#ifndef NO_CERT_PUBLIC_KEY_INFO
-void cacheCERT_PUBLIC_KEY_INFOFields(JNIEnv *env, jobject lpObject);
-CERT_PUBLIC_KEY_INFO *getCERT_PUBLIC_KEY_INFOFields(JNIEnv *env, jobject lpObject, CERT_PUBLIC_KEY_INFO *lpStruct);
-void setCERT_PUBLIC_KEY_INFOFields(JNIEnv *env, jobject lpObject, CERT_PUBLIC_KEY_INFO *lpStruct);
-#define CERT_PUBLIC_KEY_INFO_sizeof() sizeof(CERT_PUBLIC_KEY_INFO)
-#else
-#define cacheCERT_PUBLIC_KEY_INFOFields(a,b)
-#define getCERT_PUBLIC_KEY_INFOFields(a,b,c) NULL
-#define setCERT_PUBLIC_KEY_INFOFields(a,b,c)
-#define CERT_PUBLIC_KEY_INFO_sizeof() 0
-#endif
-
 #ifndef NO_CHOOSECOLOR
 void cacheCHOOSECOLORFields(JNIEnv *env, jobject lpObject);
 CHOOSECOLOR *getCHOOSECOLORFields(JNIEnv *env, jobject lpObject, CHOOSECOLOR *lpStruct);
@@ -231,54 +183,6 @@ void setCREATESTRUCTFields(JNIEnv *env, jobject lpObject, CREATESTRUCT *lpStruct
 #define getCREATESTRUCTFields(a,b,c) NULL
 #define setCREATESTRUCTFields(a,b,c)
 #define CREATESTRUCT_sizeof() 0
-#endif
-
-#ifndef NO_CRYPT_ALGORITHM_IDENTIFIER
-void cacheCRYPT_ALGORITHM_IDENTIFIERFields(JNIEnv *env, jobject lpObject);
-CRYPT_ALGORITHM_IDENTIFIER *getCRYPT_ALGORITHM_IDENTIFIERFields(JNIEnv *env, jobject lpObject, CRYPT_ALGORITHM_IDENTIFIER *lpStruct);
-void setCRYPT_ALGORITHM_IDENTIFIERFields(JNIEnv *env, jobject lpObject, CRYPT_ALGORITHM_IDENTIFIER *lpStruct);
-#define CRYPT_ALGORITHM_IDENTIFIER_sizeof() sizeof(CRYPT_ALGORITHM_IDENTIFIER)
-#else
-#define cacheCRYPT_ALGORITHM_IDENTIFIERFields(a,b)
-#define getCRYPT_ALGORITHM_IDENTIFIERFields(a,b,c) NULL
-#define setCRYPT_ALGORITHM_IDENTIFIERFields(a,b,c)
-#define CRYPT_ALGORITHM_IDENTIFIER_sizeof() 0
-#endif
-
-#ifndef NO_CRYPT_BIT_BLOB
-void cacheCRYPT_BIT_BLOBFields(JNIEnv *env, jobject lpObject);
-CRYPT_BIT_BLOB *getCRYPT_BIT_BLOBFields(JNIEnv *env, jobject lpObject, CRYPT_BIT_BLOB *lpStruct);
-void setCRYPT_BIT_BLOBFields(JNIEnv *env, jobject lpObject, CRYPT_BIT_BLOB *lpStruct);
-#define CRYPT_BIT_BLOB_sizeof() sizeof(CRYPT_BIT_BLOB)
-#else
-#define cacheCRYPT_BIT_BLOBFields(a,b)
-#define getCRYPT_BIT_BLOBFields(a,b,c) NULL
-#define setCRYPT_BIT_BLOBFields(a,b,c)
-#define CRYPT_BIT_BLOB_sizeof() 0
-#endif
-
-#ifndef NO_CRYPT_INTEGER_BLOB
-void cacheCRYPT_INTEGER_BLOBFields(JNIEnv *env, jobject lpObject);
-CRYPT_INTEGER_BLOB *getCRYPT_INTEGER_BLOBFields(JNIEnv *env, jobject lpObject, CRYPT_INTEGER_BLOB *lpStruct);
-void setCRYPT_INTEGER_BLOBFields(JNIEnv *env, jobject lpObject, CRYPT_INTEGER_BLOB *lpStruct);
-#define CRYPT_INTEGER_BLOB_sizeof() sizeof(CRYPT_INTEGER_BLOB)
-#else
-#define cacheCRYPT_INTEGER_BLOBFields(a,b)
-#define getCRYPT_INTEGER_BLOBFields(a,b,c) NULL
-#define setCRYPT_INTEGER_BLOBFields(a,b,c)
-#define CRYPT_INTEGER_BLOB_sizeof() 0
-#endif
-
-#ifndef NO_CRYPT_OBJID_BLOB
-void cacheCRYPT_OBJID_BLOBFields(JNIEnv *env, jobject lpObject);
-CRYPT_OBJID_BLOB *getCRYPT_OBJID_BLOBFields(JNIEnv *env, jobject lpObject, CRYPT_OBJID_BLOB *lpStruct);
-void setCRYPT_OBJID_BLOBFields(JNIEnv *env, jobject lpObject, CRYPT_OBJID_BLOB *lpStruct);
-#define CRYPT_OBJID_BLOB_sizeof() sizeof(CRYPT_OBJID_BLOB)
-#else
-#define cacheCRYPT_OBJID_BLOBFields(a,b)
-#define getCRYPT_OBJID_BLOBFields(a,b,c) NULL
-#define setCRYPT_OBJID_BLOBFields(a,b,c)
-#define CRYPT_OBJID_BLOB_sizeof() 0
 #endif
 
 #ifndef NO_DEVMODE
@@ -353,18 +257,6 @@ void setDROPFILESFields(JNIEnv *env, jobject lpObject, DROPFILES *lpStruct);
 #define DROPFILES_sizeof() 0
 #endif
 
-#ifndef NO_DTTOPTS
-void cacheDTTOPTSFields(JNIEnv *env, jobject lpObject);
-DTTOPTS *getDTTOPTSFields(JNIEnv *env, jobject lpObject, DTTOPTS *lpStruct);
-void setDTTOPTSFields(JNIEnv *env, jobject lpObject, DTTOPTS *lpStruct);
-#define DTTOPTS_sizeof() sizeof(DTTOPTS)
-#else
-#define cacheDTTOPTSFields(a,b)
-#define getDTTOPTSFields(a,b,c) NULL
-#define setDTTOPTSFields(a,b,c)
-#define DTTOPTS_sizeof() 0
-#endif
-
 #ifndef NO_EMR
 void cacheEMRFields(JNIEnv *env, jobject lpObject);
 EMR *getEMRFields(JNIEnv *env, jobject lpObject, EMR *lpStruct);
@@ -399,18 +291,6 @@ void setEXTLOGFONTWFields(JNIEnv *env, jobject lpObject, EXTLOGFONTW *lpStruct);
 #define getEXTLOGFONTWFields(a,b,c) NULL
 #define setEXTLOGFONTWFields(a,b,c)
 #define EXTLOGFONTW_sizeof() 0
-#endif
-
-#ifndef NO_FILETIME
-void cacheFILETIMEFields(JNIEnv *env, jobject lpObject);
-FILETIME *getFILETIMEFields(JNIEnv *env, jobject lpObject, FILETIME *lpStruct);
-void setFILETIMEFields(JNIEnv *env, jobject lpObject, FILETIME *lpStruct);
-#define FILETIME_sizeof() sizeof(FILETIME)
-#else
-#define cacheFILETIMEFields(a,b)
-#define getFILETIMEFields(a,b,c) NULL
-#define setFILETIMEFields(a,b,c)
-#define FILETIME_sizeof() 0
 #endif
 
 #ifndef NO_FLICK_DATA
@@ -639,18 +519,6 @@ void setLOGFONTFields(JNIEnv *env, jobject lpObject, LOGFONT *lpStruct);
 #define getLOGFONTFields(a,b,c) NULL
 #define setLOGFONTFields(a,b,c)
 #define LOGFONT_sizeof() 0
-#endif
-
-#ifndef NO_LOGPEN
-void cacheLOGPENFields(JNIEnv *env, jobject lpObject);
-LOGPEN *getLOGPENFields(JNIEnv *env, jobject lpObject, LOGPEN *lpStruct);
-void setLOGPENFields(JNIEnv *env, jobject lpObject, LOGPEN *lpStruct);
-#define LOGPEN_sizeof() sizeof(LOGPEN)
-#else
-#define cacheLOGPENFields(a,b)
-#define getLOGPENFields(a,b,c) NULL
-#define setLOGPENFields(a,b,c)
-#define LOGPEN_sizeof() 0
 #endif
 
 #ifndef NO_LVCOLUMN
@@ -1145,18 +1013,6 @@ void setPAINTSTRUCTFields(JNIEnv *env, jobject lpObject, PAINTSTRUCT *lpStruct);
 #define PAINTSTRUCT_sizeof() 0
 #endif
 
-#ifndef NO_PANOSE
-void cachePANOSEFields(JNIEnv *env, jobject lpObject);
-PANOSE *getPANOSEFields(JNIEnv *env, jobject lpObject, PANOSE *lpStruct);
-void setPANOSEFields(JNIEnv *env, jobject lpObject, PANOSE *lpStruct);
-#define PANOSE_sizeof() sizeof(PANOSE)
-#else
-#define cachePANOSEFields(a,b)
-#define getPANOSEFields(a,b,c) NULL
-#define setPANOSEFields(a,b,c)
-#define PANOSE_sizeof() 0
-#endif
-
 #ifndef NO_POINT
 void cachePOINTFields(JNIEnv *env, jobject lpObject);
 POINT *getPOINTFields(JNIEnv *env, jobject lpObject, POINT *lpStruct);
@@ -1275,18 +1131,6 @@ void setSCRIPT_CONTROLFields(JNIEnv *env, jobject lpObject, SCRIPT_CONTROL *lpSt
 #define getSCRIPT_CONTROLFields(a,b,c) NULL
 #define setSCRIPT_CONTROLFields(a,b,c)
 #define SCRIPT_CONTROL_sizeof() 0
-#endif
-
-#ifndef NO_SCRIPT_DIGITSUBSTITUTE
-void cacheSCRIPT_DIGITSUBSTITUTEFields(JNIEnv *env, jobject lpObject);
-SCRIPT_DIGITSUBSTITUTE *getSCRIPT_DIGITSUBSTITUTEFields(JNIEnv *env, jobject lpObject, SCRIPT_DIGITSUBSTITUTE *lpStruct);
-void setSCRIPT_DIGITSUBSTITUTEFields(JNIEnv *env, jobject lpObject, SCRIPT_DIGITSUBSTITUTE *lpStruct);
-#define SCRIPT_DIGITSUBSTITUTE_sizeof() sizeof(SCRIPT_DIGITSUBSTITUTE)
-#else
-#define cacheSCRIPT_DIGITSUBSTITUTEFields(a,b)
-#define getSCRIPT_DIGITSUBSTITUTEFields(a,b,c) NULL
-#define setSCRIPT_DIGITSUBSTITUTEFields(a,b,c)
-#define SCRIPT_DIGITSUBSTITUTE_sizeof() 0
 #endif
 
 #ifndef NO_SCRIPT_FONTPROPERTIES
@@ -1611,18 +1455,6 @@ void setTVITEMFields(JNIEnv *env, jobject lpObject, TVITEM *lpStruct);
 #define getTVITEMFields(a,b,c) NULL
 #define setTVITEMFields(a,b,c)
 #define TVITEM_sizeof() 0
-#endif
-
-#ifndef NO_TVITEMEX
-void cacheTVITEMEXFields(JNIEnv *env, jobject lpObject);
-TVITEMEX *getTVITEMEXFields(JNIEnv *env, jobject lpObject, TVITEMEX *lpStruct);
-void setTVITEMEXFields(JNIEnv *env, jobject lpObject, TVITEMEX *lpStruct);
-#define TVITEMEX_sizeof() sizeof(TVITEMEX)
-#else
-#define cacheTVITEMEXFields(a,b)
-#define getTVITEMEXFields(a,b,c) NULL
-#define setTVITEMEXFields(a,b,c)
-#define TVITEMEX_sizeof() 0
 #endif
 
 #ifndef NO_TVSORTCB

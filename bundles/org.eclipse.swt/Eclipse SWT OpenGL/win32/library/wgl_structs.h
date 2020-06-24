@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2016 IBM Corporation and others.
+ * Copyright (c) 2000, 2020 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -16,18 +16,6 @@
 /* DO NOT EDIT - your changes will be lost. */
 
 #include "wgl.h"
-
-#ifndef NO_LAYERPLANEDESCRIPTOR
-void cacheLAYERPLANEDESCRIPTORFields(JNIEnv *env, jobject lpObject);
-LAYERPLANEDESCRIPTOR *getLAYERPLANEDESCRIPTORFields(JNIEnv *env, jobject lpObject, LAYERPLANEDESCRIPTOR *lpStruct);
-void setLAYERPLANEDESCRIPTORFields(JNIEnv *env, jobject lpObject, LAYERPLANEDESCRIPTOR *lpStruct);
-#define LAYERPLANEDESCRIPTOR_sizeof() sizeof(LAYERPLANEDESCRIPTOR)
-#else
-#define cacheLAYERPLANEDESCRIPTORFields(a,b)
-#define getLAYERPLANEDESCRIPTORFields(a,b,c) NULL
-#define setLAYERPLANEDESCRIPTORFields(a,b,c)
-#define LAYERPLANEDESCRIPTOR_sizeof() 0
-#endif
 
 #ifndef NO_PIXELFORMATDESCRIPTOR
 void cachePIXELFORMATDESCRIPTORFields(JNIEnv *env, jobject lpObject);

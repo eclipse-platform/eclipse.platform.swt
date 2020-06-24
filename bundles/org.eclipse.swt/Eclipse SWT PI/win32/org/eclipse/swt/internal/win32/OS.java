@@ -79,8 +79,8 @@ public class OS extends C {
 	public static final int ABS_LEFTPRESSED = 11;
 	public static final int ABS_RIGHTDISABLED = 16;
 	public static final int ABS_RIGHTHOT = 14;
-	public static final int	ABS_RIGHTNORMAL = 13;
-	public static final int	ABS_RIGHTPRESSED = 15;
+	public static final int ABS_RIGHTNORMAL = 13;
+	public static final int ABS_RIGHTPRESSED = 15;
 	public static final int ABS_UPDISABLED = 4;
 	public static final int ABS_UPHOT = 2;
 	public static final int ABS_UPNORMAL = 1;
@@ -107,20 +107,11 @@ public class OS extends C {
 	public static final int BCM_GETNOTELENGTH = BCM_FIRST + 0xb;
 	public static final int BCM_SETIMAGELIST = BCM_FIRST + 0x2;
 	public static final int BCM_SETNOTE = BCM_FIRST + 0x9;
-	public static final int BDR_RAISEDOUTER = 0x0001;
-	public static final int BDR_SUNKENOUTER = 0x0002;
-	public static final int BDR_RAISEDINNER = 0x0004;
 	public static final int BDR_SUNKENINNER = 0x0008;
-	public static final int BDR_OUTER = 0x0003;
-	public static final int BDR_INNER = 0x000c;
-	public static final int BDR_RAISED = 0x0005;
-	public static final int BDR_SUNKEN = 0x000a;
-	public static final int BF_ADJUST = 0x2000;
 	public static final int BF_LEFT = 0x0001;
 	public static final int BF_TOP = 0x0002;
 	public static final int BF_RIGHT = 0x0004;
 	public static final int BF_BOTTOM = 0x0008;
-	public static final int BF_RECT = (BF_LEFT | BF_TOP | BF_RIGHT | BF_BOTTOM);
 	public static final int BITSPIXEL = 0xc;
 	public static final int BI_BITFIELDS = 3;
 	public static final int BI_RGB = 0;
@@ -137,12 +128,6 @@ public class OS extends C {
 	public static final int BN_CLICKED = 0x0;
 	public static final int BN_DOUBLECLICKED = 0x5;
 	public static final int BPBF_COMPATIBLEBITMAP = 0;
-	public static final int BPBF_DIB = 1;
-	public static final int BPBF_TOPDOWNDIB = 2;
-	public static final int BPBF_TOPDOWNMONODIB = 3;
-	public static final int BPPF_ERASE = 0x0001;
-	public static final int BPPF_NOCLIP = 0x0002;
-	public static final int BPPF_NONCLIENT = 0x0004;
 	public static final int BP_PUSHBUTTON = 1;
 	public static final int BP_RADIOBUTTON = 2;
 	public static final int BP_CHECKBOX = 3;
@@ -227,9 +212,6 @@ public class OS extends C {
 	public static final int CCHDEVICENAME = 32;
 	public static final int CCHFORMNAME = 32;
 	public static final int CCHILDREN_SCROLLBAR = 5;
-	public static final int CCM_FIRST = 0x2000;
-	public static final int CCM_SETBKCOLOR = 0x2001;
-	public static final int CCM_SETVERSION = 0x2007;
 	public static final int CCS_NODIVIDER = 0x40;
 	public static final int CCS_NORESIZE = 0x4;
 	public static final int CCS_VERT = 0x80;
@@ -271,23 +253,7 @@ public class OS extends C {
 	public static final int CDRF_NOTIFYSUBITEMDRAW = 0x00000020;
 	public static final int CDRF_SKIPDEFAULT = 0x04;
 	public static final int CDRF_SKIPPOSTPAINT = 0x00000100;
-	public static final int CERT_SIMPLE_NAME_STR = 1;
-	public static final int CFE_AUTOCOLOR = 0x40000000;
-	public static final int CFE_ITALIC = 0x2;
-	public static final int CFE_STRIKEOUT = 0x8;
-	public static final int CFE_UNDERLINE = 0x4;
-	public static final int CFM_BOLD = 0x1;
-	public static final int CFM_CHARSET = 0x8000000;
-	public static final int CFM_COLOR = 0x40000000;
-	public static final int CFM_FACE = 0x20000000;
-	public static final int CFM_ITALIC = 0x2;
-	public static final int CFM_SIZE = 0x80000000;
-	public static final int CFM_STRIKEOUT = 0x8;
-	public static final int CFM_UNDERLINE = 0x4;
-	public static final int CFM_WEIGHT = 0x400000;
-	public static final int CFS_POINT = 0x2;
 	public static final int CFS_RECT = 0x1;
-	public static final int CFS_CANDIDATEPOS = 0x0040;
 	public static final int CFS_EXCLUDE = 0x0080;
 	public static final int CF_EFFECTS = 0x100;
 	public static final int CF_INITTOLOGFONTSTRUCT = 0x40;
@@ -421,11 +387,8 @@ public class OS extends C {
 	public static final int EBP_HEADERBACKGROUND = 1;
 	public static final int EC_LEFTMARGIN = 0x1;
 	public static final int EC_RIGHTMARGIN = 0x2;
-	public static final int EDGE_RAISED = (BDR_RAISEDOUTER | BDR_RAISEDINNER);
-	public static final int EDGE_SUNKEN = (BDR_SUNKENOUTER | BDR_SUNKENINNER);
-	public static final int EDGE_ETCHED = (BDR_SUNKENOUTER | BDR_RAISEDINNER);
-	public static final int EDGE_BUMP = (BDR_RAISEDOUTER | BDR_SUNKENINNER);
-	public static final int ELF_VENDOR_SIZE = 4;
+	public static final int EDGE_SUNKEN = 10;
+	public static final int EDGE_ETCHED = 6;
 	public static final int EM_CANUNDO = 0xc6;
 	public static final int EM_CHARFROMPOS = 0xd7;
 	public static final int EM_DISPLAYBAND = 0x433;
@@ -483,11 +446,7 @@ public class OS extends C {
 	public static final int ETS_FOCUSED = 5;
 	public static final int ETS_READONLY = 6;
 	public static final int EVENT_OBJECT_FOCUS = 0x8005;
-	public static final int EVENT_OBJECT_LOCATIONCHANGE = 0x800B;
-	public static final int EVENT_OBJECT_SELECTIONWITHIN = 0x8009;
-	public static final int EVENT_OBJECT_VALUECHANGE = 0x800E;
 	public static final short FADF_FIXEDSIZE = 0x10;
-	public static final short FADF_HAVEVARTYPE = 0x80;
 	public static final int FALT = 0x10;
 	public static final int FCONTROL = 0x8;
 	public static final int FE_FONTSMOOTHINGCLEARTYPE = 0x0002;
@@ -511,11 +470,6 @@ public class OS extends C {
 	public static final int FR_PRIVATE = 0x10;
 	public static final int FSHIFT = 0x4;
 	public static final int FVIRTKEY = 0x1;
-	public static final int GBS_NORMAL = 1;
-	public static final int GBS_DISABLED = 2;
-	public static final int GBF_DIRECT = 0x00000001;
-	public static final int GBF_COPY = 0x00000002;
-	public static final int GBF_VALIDBITS = 0x00000003;
 	public static final int GCP_REORDER = 0x0002;
 	public static final int GCP_GLYPHSHAPE = 0x0010;
 	public static final int GCP_CLASSIN = 0x00080000;
@@ -537,8 +491,6 @@ public class OS extends C {
 	public static final int GID_ROTATE = 5;
 	public static final int GID_TWOFINGERTAP = 6;
 	public static final int GID_PRESSANDTAP = 7;
-	public static final int GLPS_CLOSED = 1;
-	public static final int GLPS_OPENED = 2;
 	public static final int GM_ADVANCED = 2;
 	public static final int GMDI_USEDISABLED = 0x1;
 	public static final int GMEM_FIXED = 0x0;
@@ -546,8 +498,6 @@ public class OS extends C {
 	public static final int GMEM_ZEROINIT = 0x40;
 	public static final int GRADIENT_FILL_RECT_H = 0x0;
 	public static final int GRADIENT_FILL_RECT_V = 0x1;
-	public static final int GUI_16BITTASK = 0x20;
-	public static final int GUI_CARETBLINKING = 0x1;
 	public static final int GUI_INMENUMODE = 0x4;
 	public static final int GUI_INMOVESIZE = 0x2;
 	public static final int GUI_POPUPMENUMODE = 0x10;
@@ -611,15 +561,9 @@ public class OS extends C {
 	public static final int HDN_ITEMCLICK = HDN_FIRST - 22;
 	public static final int HDN_ITEMDBLCLICK = HDN_FIRST - 23;
 	public static final int HDS_BUTTONS = 0x2;
-	public static final int HDS_CHECKBOXES = 0x400;
 	public static final int HDS_DRAGDROP = 0x0040;
-	public static final int HDS_FILTERBAR = 0x100;
-	public static final int HDS_FLAT = 0x200;
 	public static final int HDS_FULLDRAG = 0x80;
 	public static final int HDS_HIDDEN = 0x8;
-	public static final int HDS_HOTTRACK = 0x4;
-	public static final int HDS_NOSIZING = 0x800;
-	public static final int HDS_OVERFLOW = 0x1000;
 	public static final int HEAP_ZERO_MEMORY = 0x8;
 	public static final int HELPINFO_MENUITEM = 0x2;
 	public static final int HHT_ONDIVIDER = 0x4;
@@ -627,7 +571,6 @@ public class OS extends C {
 	public static final int HICF_ARROWKEYS = 0x2;
 	public static final int HICF_LEAVING = 0x20;
 	public static final int HICF_MOUSE = 0x1;
-	public static final int HINST_COMMCTRL = 0xffffffff;
 	public static final int HKEY_CLASSES_ROOT = 0x80000000;
 	public static final int HKEY_CURRENT_USER = 0x80000001;
 	public static final int HKEY_LOCAL_MACHINE = 0x80000002;
@@ -648,14 +591,11 @@ public class OS extends C {
 	public static final int HWND_NOTOPMOST = -2;
 	public static final int ICC_COOL_CLASSES = 0x400;
 	public static final int ICC_DATE_CLASSES = 0x100;
-	public static final int ICM_NOTOPEN = 0x0;
 	public static final int ICON_BIG = 0x1;
 	public static final int ICON_SMALL = 0x0;
 	public static final int I_IMAGECALLBACK = -1;
 	public static final int I_IMAGENONE = -2;
 	public static final int IDABORT = 0x3;
-	public static final int IDANI_CAPTION = 3;
-	public static final int IDB_STD_SMALL_COLOR = 0x0;
 	public static final int IDC_APPSTARTING = 0x7f8a;
 	public static final int IDC_ARROW = 0x7f00;
 	public static final int IDC_CROSS = 0x7f03;
@@ -695,8 +635,6 @@ public class OS extends C {
 	public static final int INPUT_MOUSE = 0;
 	public static final int INTERNET_MAX_URL_LENGTH = 2084;
 	public static final int INTERNET_OPTION_END_BROWSER_SESSION = 42;
-	public static final int KEY_ENUMERATE_SUB_KEYS = 0x8;
-	public static final int KEY_NOTIFY = 0x10;
 	public static final int KEY_QUERY_VALUE = 0x1;
 	public static final int KEY_READ = 0x20019;
 	public static final int KEY_WRITE = 0x20006;
@@ -741,7 +679,6 @@ public class OS extends C {
 	public static final int LB_SETHORIZONTALEXTENT = 0x194;
 	public static final int LB_SETSEL = 0x185;
 	public static final int LB_SETTOPINDEX = 0x197;
-	public static final int LF_FULLFACESIZE = 64;
 	public static final int LF_FACESIZE = 32;
 	public static final int LGRPID_ARABIC = 0xd;
 	public static final int LGRPID_HEBREW = 0xc;
@@ -875,7 +812,6 @@ public class OS extends C {
 	public static final int LVS_EX_TRACKSELECT = 0x8;
 	public static final int LVS_EX_TRANSPARENTBKGND = 0x800000;
 	public static final int LVS_EX_TWOCLICKACTIVATE = 0x80;
-	public static final int LVS_LIST = 0x3;
 	public static final int LVS_NOCOLUMNHEADER = 0x4000;
 	public static final int LVS_NOSCROLL = 0x2000;
 	public static final int LVS_OWNERDATA = 0x1000;
@@ -1083,7 +1019,6 @@ public class OS extends C {
 	public static final int PD_COLLATE = 0x10;
 	public static final int PD_PAGENUMS = 0x2;
 	public static final int PD_PRINTTOFILE = 0x20;
-	public static final int PD_RETURNDC = 0x100;
 	public static final int PD_RETURNDEFAULT = 0x00000400;
 	public static final int PD_SELECTION = 0x1;
 	public static final int PD_USEDEVMODECOPIESANDCOLLATE = 0x40000;
@@ -1112,10 +1047,6 @@ public class OS extends C {
 	public static final int PM_QS_SENDMESSAGE = QS_SENDMESSAGE << 16;
 	public static final int PM_REMOVE = 0x1;
 	public static final String PROGRESS_CLASS = "msctls_progress32"; //$NON-NLS-1$
-	public static final int PP_BAR = 1;
-	public static final int PP_BARVERT = 2;
-	public static final int PP_CHUNK = 3;
-	public static final int PP_CHUNKVERT = 4;
 	public static final int PRF_CHILDREN = 16;
 	public static final int PRF_CLIENT = 0x4;
 	public static final int PRF_ERASEBKGND = 0x8;
@@ -1201,17 +1132,7 @@ public class OS extends C {
 	public static final int RGN_DIFF = 0x4;
 	public static final int RGN_ERROR = 0;
 	public static final int RGN_OR = 0x2;
-	public static final int RP_BAND = 3;
 	public static final int SBP_ARROWBTN = 0x1;
-	public static final int SBP_THUMBBTNHORZ = 2;
-	public static final int SBP_THUMBBTNVERT = 3;
-	public static final int SBP_LOWERTRACKHORZ = 4;
-	public static final int SBP_UPPERTRACKHORZ = 5;
-	public static final int SBP_LOWERTRACKVERT = 6;
-	public static final int SBP_UPPERTRACKVERT = 7;
-	public static final int SBP_GRIPPERHORZ = 8;
-	public static final int SBP_GRIPPERVERT = 9;
-	public static final int SBP_SIZEBOX = 10;
 	public static final int SBS_HORZ = 0x0;
 	public static final int SBS_VERT = 0x1;
 	public static final int SB_BOTH = 0x3;
@@ -1258,9 +1179,6 @@ public class OS extends C {
 	public static final int SIF_POS = 0x4;
 	public static final int SIF_RANGE = 0x1;
 	public static final int SIF_TRACKPOS = 0x10;
-	public static final int SIP_DOWN = 1;
-	public static final int SIP_UP = 0;
-	public static final int SIPF_ON = 0x1;
 	public static final int SIZE_RESTORED = 0;
 	public static final int SIZE_MINIMIZED = 1;
 	public static final int SIZE_MAXIMIZED = 2;
@@ -1360,23 +1278,7 @@ public class OS extends C {
 	public static final int SYSRGN = 0x4;
 	public static final int SYSTEM_FONT = 0xd;
 	public static final int S_OK = 0x0;
-	public static final int TABP_TABITEM = 1;
-	public static final int TABP_TABITEMLEFTEDGE = 2;
-	public static final int TABP_TABITEMRIGHTEDGE = 3;
-	public static final int TABP_TABITEMBOTHEDGE = 4;
-	public static final int TABP_TOPTABITEM = 5;
-	public static final int TABP_TOPTABITEMLEFTEDGE = 6;
-	public static final int TABP_TOPTABITEMRIGHTEDGE = 7;
-	public static final int TABP_TOPTABITEMBOTHEDGE = 8;
-	public static final int TABP_PANE = 9;
 	public static final int TABP_BODY = 10;
-	public static final int TBCDRF_BLENDICON = 0x200000;
-	public static final int TBCDRF_HILITEHOTTRACK = 0x20000;
-	public static final int TBCDRF_NOBACKGROUND = 0x400000;
-	public static final int TBCDRF_NOEDGES = 0x10000;
-	public static final int TBCDRF_NOETCHEDEFFECT = 0x100000;
-	public static final int TBCDRF_NOMARK = 0x80000;
-	public static final int TBCDRF_NOOFFSET = 0x40000;
 	public static final int TBCDRF_USECDCOLORS = 0x800000;
 	public static final int TBIF_COMMAND = 0x20;
 	public static final int TBIF_STATE = 0x4;
@@ -1499,21 +1401,6 @@ public class OS extends C {
 	public static final int TF_LS_DOT = 2;
 	public static final int TF_LS_DASH = 3;
 	public static final int TF_LS_SQUIGGLE = 4;
-	public static final int TIS_NORMAL = 1;
-	public static final int TIS_HOT = 2;
-	public static final int TIS_SELECTED = 3;
-	public static final int TIS_DISABLED = 4;
-	public static final int TIS_FOCUSED = 5;
-	public static final int TKP_TRACK = 1;
-	public static final int TKP_TRACKVERT = 2;
-	public static final int TKP_THUMB = 3;
-	public static final int TKP_THUMBBOTTOM = 4;
-	public static final int TKP_THUMBTOP = 5;
-	public static final int TKP_THUMBVERT = 6;
-	public static final int TKP_THUMBLEFT = 7;
-	public static final int TKP_THUMBRIGHT = 8;
-	public static final int TKP_TICS = 9;
-	public static final int TKP_TICSVERT = 10;
 	public static final int TME_HOVER = 0x1;
 	public static final int TME_LEAVE = 0x2;
 	public static final int TME_QUERY = 0x40000000;
@@ -1528,12 +1415,6 @@ public class OS extends C {
 	public static final int TOUCHEVENTF_PALM = 0x0080;
 	public static final String TOOLBARCLASSNAME = "ToolbarWindow32"; //$NON-NLS-1$
 	public static final String TOOLTIPS_CLASS = "tooltips_class32"; //$NON-NLS-1$
-	public static final int TP_BUTTON = 1;
-	public static final int TP_DROPDOWNBUTTON = 2;
-	public static final int TP_SPLITBUTTON = 3;
-	public static final int TP_SPLITBUTTONDROPDOWN = 4;
-	public static final int TP_SEPARATOR = 5;
-	public static final int TP_SEPARATORVERT = 6;
 	public static final int TPM_LEFTALIGN = 0x0;
 	public static final int TPM_LEFTBUTTON = 0x0;
 	public static final int TPM_RIGHTBUTTON = 0x2;
@@ -1956,7 +1837,6 @@ public class OS extends C {
 	public static final int WM_XBUTTONDBLCLK = 0x020D;
 	public static final int XBUTTON1 = 0x1;
 	public static final int XBUTTON2 = 0x2;
-	public static final int X509_ASN_ENCODING = 1;
 
 public static int VERSION (int major, int minor) {
 	return major << 16 | minor;
@@ -1971,30 +1851,20 @@ public static final native int BLENDFUNCTION_sizeof ();
 public static final native int BP_PAINTPARAMS_sizeof ();
 public static final native int BUTTON_IMAGELIST_sizeof ();
 public static final native int CANDIDATEFORM_sizeof ();
-public static final native int CERT_CONTEXT_sizeof ();
-public static final native int CERT_INFO_sizeof ();
-public static final native int CERT_NAME_BLOB_sizeof ();
-public static final native int CERT_PUBLIC_KEY_INFO_sizeof ();
 public static final native int CHOOSECOLOR_sizeof ();
 public static final native int CHOOSEFONT_sizeof ();
 public static final native int COMBOBOXINFO_sizeof ();
 public static final native int COMPOSITIONFORM_sizeof ();
 public static final native int CREATESTRUCT_sizeof ();
-public static final native int CRYPT_ALGORITHM_IDENTIFIER_sizeof ();
-public static final native int CRYPT_BIT_BLOB_sizeof ();
-public static final native int CRYPT_INTEGER_BLOB_sizeof ();
-public static final native int CRYPT_OBJID_BLOB_sizeof ();
 public static final native int DEVMODE_sizeof ();
 public static final native int DIBSECTION_sizeof ();
 public static final native int DOCHOSTUIINFO_sizeof ();
 public static final native int DOCINFO_sizeof ();
 public static final native int DRAWITEMSTRUCT_sizeof ();
 public static final native int DROPFILES_sizeof ();
-public static final native int DTTOPTS_sizeof ();
 public static final native int EMR_sizeof ();
 public static final native int EMREXTCREATEFONTINDIRECTW_sizeof ();
 public static final native int EXTLOGFONTW_sizeof ();
-public static final native int FILETIME_sizeof ();
 public static final native int FLICK_DATA_sizeof ();
 public static final native int FLICK_POINT_sizeof ();
 public static final native int GCP_RESULTS_sizeof ();
@@ -2058,7 +1928,6 @@ public static final native int OFNOTIFY_sizeof ();
 public static final native int OPENFILENAME_sizeof ();
 public static final native int OUTLINETEXTMETRIC_sizeof ();
 public static final native int PAINTSTRUCT_sizeof ();
-public static final native int PANOSE_sizeof ();
 public static final native int POINT_sizeof ();
 public static final native int PRINTDLG_sizeof ();
 public static final native int PROCESS_INFORMATION_sizeof ();
@@ -2070,7 +1939,6 @@ public static final native int SAFEARRAY_sizeof ();
 public static final native int SAFEARRAYBOUND_sizeof ();
 public static final native int SCRIPT_ANALYSIS_sizeof ();
 public static final native int SCRIPT_CONTROL_sizeof ();
-public static final native int SCRIPT_DIGITSUBSTITUTE_sizeof ();
 public static final native int SCRIPT_FONTPROPERTIES_sizeof ();
 public static final native int SCRIPT_ITEM_sizeof ();
 public static final native int SCRIPT_LOGATTR_sizeof ();
@@ -2099,7 +1967,6 @@ public static final native int TRIVERTEX_sizeof ();
 public static final native int TVHITTESTINFO_sizeof ();
 public static final native int TVINSERTSTRUCT_sizeof ();
 public static final native int TVITEM_sizeof ();
-public static final native int TVITEMEX_sizeof ();
 public static final native int TVSORTCB_sizeof ();
 public static final native int UDACCEL_sizeof ();
 public static final native int WINDOWPLACEMENT_sizeof ();
@@ -2267,7 +2134,7 @@ public static final int RegDeleteValue (long hKey, TCHAR lpValueName) {
 	return RegDeleteValue (hKey, lpValueName1);
 }
 
-public static final int RegEnumKeyEx (long hKey, int dwIndex, TCHAR lpName, int [] lpcName, int [] lpReserved, TCHAR lpClass, int [] lpcClass, FILETIME lpftLastWriteTime) {
+public static final int RegEnumKeyEx (long hKey, int dwIndex, TCHAR lpName, int [] lpcName, int [] lpReserved, TCHAR lpClass, int [] lpcClass, long lpftLastWriteTime) {
 	char [] lpName1 = lpName == null ? null : lpName.chars;
 	char [] lpClass1 = lpClass == null ? null : lpClass.chars;
 	return RegEnumKeyEx (hKey, dwIndex, lpName1, lpcName, lpReserved, lpClass1, lpcClass, lpftLastWriteTime);
@@ -2364,11 +2231,6 @@ public static final void setTheme(boolean isDarkTheme) {
 	display.setData("org.eclipse.swt.internal.win32.Label.disabledForegroundColor", isDarkTheme ? new Color(display, 0x80, 0x80, 0x80) : null);
 }
 
-public static final boolean SetDllDirectory (TCHAR lpPathName) {
-	char [] lpPathName1 = lpPathName == null ? null : lpPathName.chars;
-	return SetDllDirectory (lpPathName1);
-}
-
 public static final boolean SetWindowText (long hWnd, TCHAR lpString) {
 	char [] lpString1 = lpString == null ? null : lpString.chars;
 	return SetWindowText (hWnd, lpString1);
@@ -2417,8 +2279,6 @@ public static final native long BeginBufferedPaint (long hdcTarget, RECT prcTarg
 public static final native long BeginDeferWindowPos (int nNumWindows);
 /** @param hWnd cast=(HWND) */
 public static final native long BeginPaint (long hWnd, PAINTSTRUCT lpPaint);
-/** @param hdc cast=(HDC) */
-public static final native boolean BeginPath(long hdc);
 /**
  * @param hdcDest cast=(HDC)
  * @param hdcSrc cast=(HDC)
@@ -2439,11 +2299,6 @@ public static final native long CallNextHookEx(long hhk, int nCode, long wParam,
  * @param hWnd cast=(HWND)
  */
 public static final native long CallWindowProc (long lpPrevWndFunc, long hWnd, int Msg, long wParam, long lParam);
-/**
- * @param pName cast=(PCERT_NAME_BLOB)
- * @param psz cast=(LPWSTR)
- */
-public static final native int CertNameToStr (int dwCertEncodingType, CERT_NAME_BLOB pName, int dwStrType, char[] psz, int csz);
 /** @param ch cast=(LPWSTR) */
 public static final native long CharLower (long ch);
 /** @param ch cast=(LPWSTR) */
@@ -2479,13 +2334,6 @@ public static final native int CloseThemeData (long hTheme);
  * @param hTouchInput cast=(HTOUCHINPUT)
  */
 public static final native boolean CloseTouchInputHandle(long hTouchInput);
-/**
- * @param rclsid cast=(REFCLSID)
- * @param pUnkOuter cast=(LPUNKNOWN)
- * @param riid cast=(REFIID)
- * @param ppv cast=(LPVOID *)
- */
-public static final native int CoCreateInstance (byte[] rclsid, long pUnkOuter, int dwClsContext, byte[] riid, long[] ppv);
 public static final native int CoInternetIsFeatureEnabled (int FeatureEntry, int dwFlags);
 /** @param fEnable cast=(BOOL) */
 public static final native int CoInternetSetFeatureEnabled (int FeatureEntry, int dwFlags, boolean fEnable);
@@ -2765,7 +2613,6 @@ public static final native boolean ExtTextOut (long hdc, int X, int Y, int fuOpt
  * @param phiconSmall cast=(HICON FAR *)
  */
 public static final native int ExtractIconEx (char [] lpszFile, int nIconIndex, long [] phiconLarge, long [] phiconSmall, int nIcons);
-public static final native boolean FileTimeToSystemTime (FILETIME lpFileTime, SYSTEMTIME lpSystemTime);
 /**
  * @param hDC cast=(HDC)
  * @param lprc flags=no_out
@@ -3037,7 +2884,6 @@ public static final native void GetStartupInfo (STARTUPINFO lpStartupInfo);
 public static final native long GetStockObject (int fnObject);
 public static final native int GetSysColor (int nIndex);
 public static final native long GetSysColorBrush (int nIndex);
-public static final native short GetSystemDefaultUILanguage ();
 /** @param hWnd cast=(HWND) */
 public static final native long GetSystemMenu (long hWnd, boolean bRevert);
 public static final native int GetSystemMetrics (int nIndex);
@@ -3522,16 +3368,6 @@ public static final native void MoveMemory (BITMAPINFOHEADER Destination, long S
  * @param Destination cast=(PVOID),flags=no_in
  * @param Source cast=(CONST VOID *)
  */
-public static final native void MoveMemory (CERT_CONTEXT Destination, long Source, int Length);
-/**
- * @param Destination cast=(PVOID),flags=no_in
- * @param Source cast=(CONST VOID *)
- */
-public static final native void MoveMemory (CERT_INFO Destination, long Source, int Length);
-/**
- * @param Destination cast=(PVOID),flags=no_in
- * @param Source cast=(CONST VOID *)
- */
 public static final native void MoveMemory (DEVMODE Destination, long Source, int Length);
 /**
  * @param Destination cast=(PVOID),flags=no_in
@@ -3945,8 +3781,9 @@ public static final native int RegDeleteValue (long hKey, char[] lpValueName);
  * @param lpReserved cast=(LPDWORD)
  * @param lpClass cast=(LPWSTR)
  * @param lpcClass cast=(LPDWORD)
+ * @param lpftLastWriteTime cast=(PFILETIME)
  */
-public static final native int RegEnumKeyEx (long hKey, int dwIndex, char [] lpName, int [] lpcName, int [] lpReserved, char [] lpClass, int [] lpcClass, FILETIME lpftLastWriteTime);
+public static final native int RegEnumKeyEx (long hKey, int dwIndex, char [] lpName, int [] lpcName, int [] lpReserved, char [] lpClass, int [] lpcClass, long lpftLastWriteTime);
 /** @param lpWndClass cast=(LPWNDCLASSW) */
 public static final native int RegisterClass (WNDCLASS lpWndClass);
 /**
@@ -4019,7 +3856,7 @@ public static final native boolean ScreenToClient (long hWnd, POINT lpPoint);
  * @param psc cast=(SCRIPT_CONTROL*)
  * @param pss cast=(SCRIPT_STATE*)
  */
-public static final native int ScriptApplyDigitSubstitution (SCRIPT_DIGITSUBSTITUTE psds, SCRIPT_CONTROL psc, SCRIPT_STATE pss);
+public static final native int ScriptApplyDigitSubstitution (long psds, SCRIPT_CONTROL psc, SCRIPT_STATE pss);
 /**
  * @param pwcChars cast=(const WCHAR *)
  * @param psa cast=(const SCRIPT_ANALYSIS *)
@@ -4092,11 +3929,6 @@ public static final native int ScriptLayout (int cRuns, byte[] pbLevel, int[] pi
  * @param pABC cast=(ABC *)
  */
 public static final native int ScriptPlace (long hdc, long psc, long pwGlyphs, int cGlyphs, long psva, SCRIPT_ANALYSIS psa, long piAdvance, long pGoffset, int[] pABC);
-/**
- * @param Locale cast=(LCID)
- * @param psds cast=(SCRIPT_DIGITSUBSTITUTE*)
- */
-public static final native int ScriptRecordDigitSubstitution (int Locale, SCRIPT_DIGITSUBSTITUTE psds);
 /**
  * @param hdc cast=(HDC)
  * @param psc cast=(SCRIPT_CACHE *)
@@ -4373,7 +4205,6 @@ public static final native boolean SetCursorPos (int X, int Y);
  * @param pColors cast=(RGBQUAD *),flags=no_out critical
  */
 public static final native int SetDIBColorTable (long hdc, int uStartIndex, int cEntries, byte[] pColors);
-public static final native boolean SetDllDirectory (char [] lpString);
 /** @param hWnd cast=(HWND) */
 public static final native long SetFocus (long hWnd);
 /** @param hWnd cast=(HWND) */

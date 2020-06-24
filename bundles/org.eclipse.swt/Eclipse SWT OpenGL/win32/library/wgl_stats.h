@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2016 IBM Corporation and others.
+ * Copyright (c) 2000, 2020 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -33,21 +33,11 @@ extern char* WGL_nativeFunctionNames[];
 typedef enum {
 	ChoosePixelFormat_FUNC,
 	DescribePixelFormat_FUNC,
-	GetPixelFormat_FUNC,
 	SetPixelFormat_FUNC,
 	SwapBuffers_FUNC,
-	wglCopyContext_FUNC,
 	wglCreateContext_FUNC,
-	wglCreateLayerContext_FUNC,
 	wglDeleteContext_FUNC,
-	wglDescribeLayerPlane_FUNC,
 	wglGetCurrentContext_FUNC,
-	wglGetCurrentDC_FUNC,
-	wglGetLayerPaletteEntries_FUNC,
-	wglGetProcAddress_FUNC,
 	wglMakeCurrent_FUNC,
-	wglRealizeLayerPalette_FUNC,
-	wglSetLayerPaletteEntries_FUNC,
 	wglShareLists_FUNC,
-	wglSwapLayerBuffers_FUNC,
 } WGL_FUNCS;
