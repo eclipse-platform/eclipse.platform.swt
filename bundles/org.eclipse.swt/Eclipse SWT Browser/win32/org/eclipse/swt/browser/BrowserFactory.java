@@ -13,14 +13,9 @@
  *******************************************************************************/
 package org.eclipse.swt.browser;
 
-import org.eclipse.swt.*;
-
 class BrowserFactory {
 
 WebBrowser createWebBrowser (int style) {
-	if ((style & SWT.WEBKIT) != 0) {
-		return new WebKit ();
-	}
 	return new IE ();
 }
 

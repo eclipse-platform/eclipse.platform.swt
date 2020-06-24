@@ -19,17 +19,6 @@
 echo
 echo INFO Starting build of binaries. Detailed system setup instructions can be found in /Readme.Win32.md
 
-@rem builddir used for 32 bit building with webkit. Not needed on 64 bit builds.
-IF "x.%SWT_BUILDDIR%"=="x." set "SWT_BUILDDIR=W:"
-echo SWT build dir: %SWT_BUILDDIR%
-IF "x.%MSSDK%"=="x." set "MSSDK=%ProgramFiles(x86)%\Windows Kits\10"
-echo Microsoft Windows10 SDK dir: %MSSDK%
-IF "x.%WEBKIT_DIR%"=="x." set "WEBKIT_DIR=%SWT_BUILDDIR%\WebKit\r72896"
-echo Webkit dir: %WEBKIT_DIR%
-IF "x.%WEBKIT_SUPPORT_DIR%"=="x." set "WEBKIT_SUPPORT_DIR=%SWT_BUILDDIR%\WebKit\SupportLibrary"
-echo Webkit SupportLibrary dir: %WEBKIT_SUPPORT_DIR%
-
-
 IF "x.%MSVC_HOME%"=="x." set "MSVC_HOME=%SWT_BUILDDIR%\Microsoft\Visual Studio\2017\"
 IF NOT EXIST "%MSVC_HOME%" set "MSVC_HOME=%ProgramFiles(x86)%\Microsoft Visual Studio\2017"
 IF EXIST "%MSVC_HOME%" (
