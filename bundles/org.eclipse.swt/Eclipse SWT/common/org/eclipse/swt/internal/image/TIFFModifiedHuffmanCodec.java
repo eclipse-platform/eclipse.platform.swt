@@ -150,11 +150,11 @@ int decodeRunLength() {
 		boolean found = false;
 		nbrBits = isWhite ? WHITE_MIN_BITS : BLACK_MIN_BITS;
 		code = getNextBits(nbrBits);
-		for (short[][] element : huffmanCode) {
-			for (int j = 0; j < element.length; j++) {
-				if (element[j][0] == code) {
+		for (short[][] batch : huffmanCode) {
+			for (short[] element : batch) {
+				if (element[0] == code) {
 					found = true;
-					partialRun = element[j][1];
+					partialRun = element[1];
 					if (partialRun == -1) {
 						/* Stop when reaching final EOL on last byte */
 						if (byteOffsetSrc == src.length - 1) return -1;

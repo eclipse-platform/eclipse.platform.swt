@@ -209,8 +209,9 @@ int encodeLoop() {
 			}
 		} else {
 			nextPutCode(clearCode);
-			for (int i = 0; i < nodeStack.length; i++)
-				nodeStack[i].children = null;
+			for (LZWNode lzwnode : nodeStack) {
+				lzwnode.children = null;
+			}
 			codeSize = bitsPerPixel + 1;
 			codeMask = MASK_TABLE[codeSize - 1];
 			currentSlot = newCodes;

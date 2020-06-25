@@ -430,8 +430,7 @@ void computeRuns (GC gc) {
 				lineWidth += lineIndent;
 				long hHeap = OS.GetProcessHeap();
 				int newLineWidth = 0;
-				for (int j = 0; j < runs[line].length; j++) {
-					StyleItem item = runs[line][j];
+				for (StyleItem item : runs[line]) {
 					int iDx = item.width * wrapWidth / lineWidth;
 					if (iDx != item.width) {
 						item.justify = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, item.glyphCount * 4);
@@ -455,9 +454,9 @@ void computeRuns (GC gc) {
 			}
 
 			lineWidth = getLineIndent(line);
-			for (int j = 0; j < runs[line].length; j++) {
-				runs[line][j].x = lineWidth;
-				lineWidth += runs[line][j].width;
+			for (StyleItem run1 : runs[line]) {
+				run1.x = lineWidth;
+				lineWidth += run1.width;
 			}
 			line++;
 			lineY[line] = lineY[line - 1] + ascentInPoints + descentInPoints + lineSpacingInPoints;

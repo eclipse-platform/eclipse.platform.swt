@@ -449,9 +449,9 @@ void moveRectangles (int xChange, int yChange) {
 	if (yChange > 0 && ((style & SWT.DOWN) == 0)) yChange = 0;
 	if (xChange == 0 && yChange == 0) return;
 	bounds.x += xChange; bounds.y += yChange;
-	for (int i = 0; i < rectangles.length; i++) {
-		rectangles [i].x += xChange;
-		rectangles [i].y += yChange;
+	for (Rectangle rectangle : rectangles) {
+		rectangle.x += xChange;
+		rectangle.y += yChange;
 	}
 }
 
