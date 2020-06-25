@@ -210,7 +210,7 @@ class IE extends WebBrowser {
 					if (index != -1) {
 						String majorString = versionString.substring (0, index);
 						try {
-							IEVersion = Integer.valueOf (majorString).intValue ();
+							IEVersion = Integer.parseInt (majorString);
 						} catch (NumberFormatException e) {
 							/* just continue, version-specific features will not be enabled */
 						}
@@ -283,7 +283,7 @@ public void create(Composite parent, int style) {
 				version = -1;
 			} else {
 				try {
-					version = Integer.valueOf(versionProperty).intValue();
+					version = Integer.parseInt(versionProperty);
 				} catch (NumberFormatException e) {
 					/*
 					 * An invalid value was specified for the IEVersion java property.  Ignore it
