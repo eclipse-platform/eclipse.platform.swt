@@ -72,6 +72,7 @@ TaskBar (Display display, int style) {
 void createHandle () {
 	long[] ppv = new long [1];
 	int hr = COM.CoCreateInstance (COM.CLSID_TaskbarList, 0, COM.CLSCTX_INPROC_SERVER, COM.IID_ITaskbarList3, ppv);
+	if (hr == COM.REGDB_E_CLASSNOTREG) error (SWT.ERROR_NOT_IMPLEMENTED);
 	if (hr != OS.S_OK) error (SWT.ERROR_NO_HANDLES);
 	mTaskbarList3 = new ITaskbarList3 (ppv [0]);
 }

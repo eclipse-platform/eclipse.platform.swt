@@ -196,6 +196,7 @@ public class COM extends OS {
 	public static final int OLEEMBEDDED = 1;
 	public static final int OLELINKED = 0;
 	public static final int OLERENDER_DRAW = 1;
+	public static final int REGDB_E_CLASSNOTREG = 0x80040154;
 	public static final int S_FALSE = 1;
 	public static final int S_OK = 0;
 	public static final int STGC_DEFAULT = 0;

@@ -2538,7 +2538,15 @@ public TaskBar getSystemTaskBar () {
 	checkDevice ();
 	if (taskBar != null) return taskBar;
 	if (OS.WIN32_VERSION >= OS.VERSION (6, 1)) {
-		taskBar = new TaskBar (this, SWT.NONE);
+		try {
+			taskBar = new TaskBar (this, SWT.NONE);
+		} catch (SWTError e) {
+			if (e.code == SWT.ERROR_NOT_IMPLEMENTED) {
+				// Windows Server Core doesn't have a Taskbar
+				return null;
+			}
+			throw e;
+		}
 	}
 	return taskBar;
 }
