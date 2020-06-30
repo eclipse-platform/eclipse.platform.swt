@@ -369,6 +369,10 @@
 #define NO_gdk_1display_1supports_1cursor_1color
 #define NO_gdk_1cursor_1new_1from_1name__JLjava_lang_String_2
 
+// GdkKeymap removals
+#define NO_gdk_1keymap_1translate_1keyboard_1state
+#define NO_gdk_1keymap_1get_1entries_1for_1keyval
+
 #else
 
 /**
@@ -435,7 +439,6 @@
 // Miscellaneous functions not present on GTK3
 #define NO_gdk_1device_1warp__III
 #define NO_gdk_1device_1warp__JII
-#define NO_gdk_1display_1get_1keymap
 #define NO_gtk_1widget_1measure
 #define NO_gtk_1style_1context_1add_1provider_1for_1display
 #define NO_gtk_1widget_1get_1first_1child

@@ -1234,11 +1234,12 @@ void createDisplay (DeviceData data) {
 	long keymap;
 	long display = GDK.gdk_display_get_default();
 	if (GTK.GTK4) {
-		keymap = GDK.gdk_display_get_keymap(display);
+		long keyboardDevice = GDK.gdk_seat_get_keyboard(GDK.gdk_display_get_default_seat(display));
+		OS.g_signal_connect (keyboardDevice, OS.changed, keysChangedProc, 0);
 	} else {
 		keymap = GDK.gdk_keymap_get_for_display(display);
+		OS.g_signal_connect (keymap, OS.keys_changed, keysChangedProc, 0);
 	}
-	OS.g_signal_connect (keymap, OS.keys_changed, keysChangedProc, 0);
 }
 
 /**
@@ -1250,20 +1251,22 @@ void createDisplay (DeviceData data) {
 private int findLatinKeyGroup () {
 	int result = 0;
 	groupKeysCount = new HashMap<> ();
-	long keymap;
 	long display = GDK.gdk_display_get_default();
-	if (GTK.GTK4) {
-		keymap = GDK.gdk_display_get_keymap(display);
-	} else {
-		keymap = GDK.gdk_keymap_get_for_display(display);
-	}
 
 	// count all key groups for Latin alphabet
 	for (int keyval = GDK.GDK_KEY_a; keyval <= GDK.GDK_KEY_z; keyval++) {
 		long [] keys = new long [1];
 		int [] n_keys = new int [1];
 
-		if (GDK.gdk_keymap_get_entries_for_keyval (keymap, keyval, keys, n_keys)) {
+		boolean foundKeys;
+		if (GTK.GTK4) {
+			foundKeys = GDK.gdk_display_map_keyval(display, keyval, keys, n_keys);
+		} else {
+			long keymap = GDK.gdk_keymap_get_for_display(display);
+			foundKeys = GDK.gdk_keymap_get_entries_for_keyval (keymap, keyval, keys, n_keys);
+		}
+
+		if (foundKeys) {
 			GdkKeymapKey key_entry = new GdkKeymapKey ();
 			for (int key = 0; key < n_keys [0]; key++) {
 				OS.memmove (key_entry, keys [0] + key * GdkKeymapKey.sizeof, GdkKeymapKey.sizeof);
@@ -4270,7 +4273,6 @@ public boolean post (Event event) {
 					cachedModifierState = 0;
 				}
 
-				long gdkKeymap = GDK.gdk_keymap_get_for_display(gdkDisplay);
 				int hardware_keycode = 0;
 				int raw_keyval = untranslateKey(event.keyCode);
 				if (raw_keyval == 0) raw_keyval = event.character;
@@ -4280,7 +4282,15 @@ public boolean post (Event event) {
 				int [] keyval = new int [1], effective_group = new int [1], level = new int [1], consumed_modifiers = new int[1];
 				int final_keyval = raw_keyval;
 
-				if (GDK.gdk_keymap_get_entries_for_keyval(gdkKeymap, raw_keyval, keys_list, n_keys)) {
+				boolean foundKeys;
+				if (GTK.GTK4) {
+					foundKeys = GDK.gdk_display_map_keyval(gdkDisplay, raw_keyval, keys_list, n_keys);
+				} else {
+					long keymap = GDK.gdk_keymap_get_for_display(gdkDisplay);
+					foundKeys = GDK.gdk_keymap_get_entries_for_keyval (keymap, raw_keyval, keys_list, n_keys);
+				}
+
+				if (foundKeys) {
 					GdkKeymapKey key_entry = new GdkKeymapKey ();
 					if (n_keys[0] > 0) {
 						OS.memmove(key_entry, keys_list[0], GdkKeymapKey.sizeof);
@@ -4288,7 +4298,8 @@ public boolean post (Event event) {
 					}
 					OS.g_free(keys_list[0]);
 
-					GDK.gdk_keymap_translate_keyboard_state(gdkKeymap, hardware_keycode, state, 0, keyval, effective_group, level, consumed_modifiers);
+					long keymap = GDK.gdk_keymap_get_for_display(gdkDisplay);
+					GDK.gdk_keymap_translate_keyboard_state(keymap, hardware_keycode, state, 0, keyval, effective_group, level, consumed_modifiers);
 					if (is_modifier == 1) final_keyval = keyval[0];
 				}
 
@@ -4308,8 +4319,7 @@ public boolean post (Event event) {
 				OS.memmove(eventPtr, newKeyEvent, GdkEventKey.sizeof);
 				GDK.gdk_event_set_device (eventPtr, gdkKeyboardDevice);
 				if (GTK.GTK4) {
-					long display = GDK.gdk_display_get_default();
-					GDK.gdk_display_put_event(display, eventPtr);
+					GDK.gdk_display_put_event(gdkDisplay, eventPtr);
 				} else {
 					GDK.gdk_event_put (eventPtr);
 				}

@@ -630,11 +630,16 @@ public class GDK extends OS {
 	/* [GTK3 only] */
 	public static final native long gdk_keymap_get_for_display(long display);
 	/**
+	 * @method flags=dynamic
 	 * @param display cast=(GdkDisplay *)
+	 * @param keyval cast=(guint)
+	 * @param keys cast=(GdkKeymapKey**)
+	 * @param n_keys cast=(gint*)
 	 */
 	/* [GTK4 only, if-def'd in os.h] */
-	public static final native long gdk_display_get_keymap(long display);
+	public static final native boolean gdk_display_map_keyval(long display, int keyval, long[] keys, int[] n_keys);
 	/**
+	 * @method flags=dynamic
 	 * @param keymap cast=(GdkKeymap *)
 	 * @param hardware_keycode cast=(guint)
 	 * @param state cast=(GdkModifierType)
@@ -644,13 +649,16 @@ public class GDK extends OS {
 	 * @param level cast=(gint *)
 	 * @param consumed_modifiers cast=(GdkModifierType *)
 	 */
+	/* [GTK3 only] */
 	public static final native boolean gdk_keymap_translate_keyboard_state(long keymap, int hardware_keycode, int state, int group, int[] keyval, int[] effective_group, int[] level,  int[] consumed_modifiers);
 	/**
+	 * @method flags=dynamic
 	 * @param keymap cast=(GdkKeymap*)
 	 * @param keyval cast=(guint)
 	 * @param keys cast=(GdkKeymapKey**)
 	 * @param n_keys cast=(gint*)
 	 */
+	/* [GTK3 only] */
 	public static final native boolean gdk_keymap_get_entries_for_keyval(long keymap, int keyval, long [] keys, int[] n_keys);
 	public static final native long gdk_keyval_to_lower(long keyval);
 	public static final native long gdk_keyval_to_unicode(long keyval);

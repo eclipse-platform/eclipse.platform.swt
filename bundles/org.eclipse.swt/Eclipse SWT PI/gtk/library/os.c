@@ -580,18 +580,6 @@ JNIEXPORT jlong JNICALL GDK_NATIVE(gdk_1display_1get_1default_1seat)
 }
 #endif
 
-#ifndef NO_gdk_1display_1get_1keymap
-JNIEXPORT jlong JNICALL GDK_NATIVE(gdk_1display_1get_1keymap)
-	(JNIEnv *env, jclass that, jlong arg0)
-{
-	jlong rc = 0;
-	GDK_NATIVE_ENTER(env, that, gdk_1display_1get_1keymap_FUNC);
-	rc = (jlong)gdk_display_get_keymap((GdkDisplay *)arg0);
-	GDK_NATIVE_EXIT(env, that, gdk_1display_1get_1keymap_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO_gdk_1display_1get_1monitor
 JNIEXPORT jlong JNICALL GDK_NATIVE(gdk_1display_1get_1monitor)
 	(JNIEnv *env, jclass that, jlong arg0, jint arg1)
@@ -724,6 +712,33 @@ JNIEXPORT jboolean JNICALL GDK_NATIVE(gdk_1display_1is_1composited)
 	GDK_NATIVE_ENTER(env, that, gdk_1display_1is_1composited_FUNC);
 	rc = (jboolean)gdk_display_is_composited((GdkDisplay *)arg0);
 	GDK_NATIVE_EXIT(env, that, gdk_1display_1is_1composited_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_gdk_1display_1map_1keyval
+JNIEXPORT jboolean JNICALL GDK_NATIVE(gdk_1display_1map_1keyval)
+	(JNIEnv *env, jclass that, jlong arg0, jint arg1, jlongArray arg2, jintArray arg3)
+{
+	jlong *lparg2=NULL;
+	jint *lparg3=NULL;
+	jboolean rc = 0;
+	GDK_NATIVE_ENTER(env, that, gdk_1display_1map_1keyval_FUNC);
+	if (arg2) if ((lparg2 = (*env)->GetLongArrayElements(env, arg2, NULL)) == NULL) goto fail;
+	if (arg3) if ((lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL)) == NULL) goto fail;
+/*
+	rc = (jboolean)gdk_display_map_keyval((GdkDisplay *)arg0, (guint)arg1, (GdkKeymapKey**)lparg2, (gint*)lparg3);
+*/
+	{
+		GDK_LOAD_FUNCTION(fp, gdk_display_map_keyval)
+		if (fp) {
+			rc = (jboolean)((jboolean (CALLING_CONVENTION*)(GdkDisplay *, guint, GdkKeymapKey**, gint*))fp)((GdkDisplay *)arg0, (guint)arg1, (GdkKeymapKey**)lparg2, (gint*)lparg3);
+		}
+	}
+fail:
+	if (arg3 && lparg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
+	if (arg2 && lparg2) (*env)->ReleaseLongArrayElements(env, arg2, lparg2, 0);
+	GDK_NATIVE_EXIT(env, that, gdk_1display_1map_1keyval_FUNC);
 	return rc;
 }
 #endif
@@ -1231,7 +1246,15 @@ JNIEXPORT jboolean JNICALL GDK_NATIVE(gdk_1keymap_1get_1entries_1for_1keyval)
 	GDK_NATIVE_ENTER(env, that, gdk_1keymap_1get_1entries_1for_1keyval_FUNC);
 	if (arg2) if ((lparg2 = (*env)->GetLongArrayElements(env, arg2, NULL)) == NULL) goto fail;
 	if (arg3) if ((lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL)) == NULL) goto fail;
+/*
 	rc = (jboolean)gdk_keymap_get_entries_for_keyval((GdkKeymap*)arg0, (guint)arg1, (GdkKeymapKey**)lparg2, (gint*)lparg3);
+*/
+	{
+		GDK_LOAD_FUNCTION(fp, gdk_keymap_get_entries_for_keyval)
+		if (fp) {
+			rc = (jboolean)((jboolean (CALLING_CONVENTION*)(GdkKeymap*, guint, GdkKeymapKey**, gint*))fp)((GdkKeymap*)arg0, (guint)arg1, (GdkKeymapKey**)lparg2, (gint*)lparg3);
+		}
+	}
 fail:
 	if (arg3 && lparg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
 	if (arg2 && lparg2) (*env)->ReleaseLongArrayElements(env, arg2, lparg2, 0);
@@ -1274,7 +1297,15 @@ JNIEXPORT jboolean JNICALL GDK_NATIVE(gdk_1keymap_1translate_1keyboard_1state)
 	if (arg5) if ((lparg5 = (*env)->GetIntArrayElements(env, arg5, NULL)) == NULL) goto fail;
 	if (arg6) if ((lparg6 = (*env)->GetIntArrayElements(env, arg6, NULL)) == NULL) goto fail;
 	if (arg7) if ((lparg7 = (*env)->GetIntArrayElements(env, arg7, NULL)) == NULL) goto fail;
+/*
 	rc = (jboolean)gdk_keymap_translate_keyboard_state((GdkKeymap *)arg0, (guint)arg1, (GdkModifierType)arg2, (gint)arg3, (guint *)lparg4, (gint *)lparg5, (gint *)lparg6, (GdkModifierType *)lparg7);
+*/
+	{
+		GDK_LOAD_FUNCTION(fp, gdk_keymap_translate_keyboard_state)
+		if (fp) {
+			rc = (jboolean)((jboolean (CALLING_CONVENTION*)(GdkKeymap *, guint, GdkModifierType, gint, guint *, gint *, gint *, GdkModifierType *))fp)((GdkKeymap *)arg0, (guint)arg1, (GdkModifierType)arg2, (gint)arg3, (guint *)lparg4, (gint *)lparg5, (gint *)lparg6, (GdkModifierType *)lparg7);
+		}
+	}
 fail:
 	if (arg7 && lparg7) (*env)->ReleaseIntArrayElements(env, arg7, lparg7, 0);
 	if (arg6 && lparg6) (*env)->ReleaseIntArrayElements(env, arg6, lparg6, 0);
