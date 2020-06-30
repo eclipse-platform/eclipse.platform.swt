@@ -1835,7 +1835,19 @@ void sendCancelSelection () {
 @Override
 void setBackgroundColor(NSColor nsColor) {
 	if ((style & SWT.SINGLE) != 0) {
-		((NSTextField) view).setBackgroundColor (nsColor);
+		NSTextField textField = (NSTextField) view;
+		textField.setBackgroundColor (nsColor);
+		/*
+		 * When the Text widget has focus, the background color is not drawn,
+		 * as the field editor is drawn on top. Set drawsBackground to true
+		 * for the field editor.
+		 */
+		if ((style & SWT.SEARCH) == 0 && hasFocus()) {
+			NSText fieldEditor = textField.currentEditor();
+			if (fieldEditor != null) {
+				fieldEditor.setDrawsBackground(true);
+			}
+		}
 	} else {
 		((NSTextView) view).setBackgroundColor (nsColor);
 	}
