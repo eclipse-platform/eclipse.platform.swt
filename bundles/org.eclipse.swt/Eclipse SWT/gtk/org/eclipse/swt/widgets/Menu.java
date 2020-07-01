@@ -216,6 +216,29 @@ boolean ableToSetLocation() {
 void _setVisible (boolean visible) {
 	if (visible == GTK.gtk_widget_get_mapped (handle)) return;
 	if (visible) {
+		/*
+		 * Feature in GTK. When a menu with no items is shown, GTK shows a
+		 * weird small rectangle. For comparison, Windows API prevents showing
+		 * empty menus on its own. At the same time, Eclipse creates menu items
+		 * lazily in `SWT.Show`, so we can't know if menu is empty before
+		 * `SWT.Show` is sent.
+		 * Known solutions all have drawbacks:
+		 * 1) Send `SWT.Show` here, instead of sending it when GtkMenu
+		 *    receives 'show' event (see gtk_show()). This allows us to test if
+		 *    menu has items before asking GTK to show it. The drawback is that
+		 *    when GTK fails to show menu (see Bug 564595), application still
+		 *    receives fake `SWT.Show` without a matching `SWT.Hide`.
+		 * 2) Send SWT.Show` from gtk_show(). This solves drawback of (1).
+		 *    The new drawback is that empty menu will now show, because it's
+		 *    hard to stop menu from showing at this point.
+		 * 3) Rework Eclipse (and possibly other SWT users) to stop depending
+		 *    on `SWT.Show` and use some other event for lazy init. This will
+		 *    allow to know if menu is empty in advance. This sounds like the
+		 *    best solution, because it solves core problem: empty menus
+		 *    shouldn't try to show. The drawback is that it will be a breaking
+		 *    change.
+		 * Solution (1) has been there since 2002-05-29.
+		 */
 		sendEvent (SWT.Show);
 		if (getItemCount () != 0) {
 			/*
