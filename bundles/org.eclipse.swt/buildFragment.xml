@@ -29,16 +29,6 @@
 		<property name="javacVerbose" value="false" />
 		<property name="logExtension" value=".xml" />
 		<property name="javacRelease" value="8" />
-		<condition property="bootclasspath" value="">
-			<equals arg1="${swt.os}" arg2="macosx"/>
-		</condition>
-		<path id="path_bootclasspath">
-			<fileset dir="${java.home}/lib">
-				<include name="*.jar" />
-			</fileset>
-		</path>
-		<property name="bootclasspath" refid="path_bootclasspath" />
-		<property name="bundleBootClasspath" value="${bootclasspath}" />
 		<condition property="p2.publish.parts" value="true">
 			<istrue value="${p2.gathering}" />
 		</condition>
@@ -67,7 +57,7 @@
 		<delete dir="${temp.folder}/@dot.bin" />
 		<mkdir dir="${temp.folder}/@dot.bin" />
 		<antcall target="copy.${swt.ws}.src"/>
-		<javac destdir="${temp.folder}/@dot.bin" verbose="${javacVerbose}" debug="${debug}" failonerror="yes" bootclasspath="${bundleBootClasspath}" release="${javacRelease}" includeantruntime="false">
+		<javac destdir="${temp.folder}/@dot.bin" verbose="${javacVerbose}" debug="${debug}" failonerror="yes" release="${javacRelease}" includeantruntime="false">
 			<src path="${temp.folder}/@dot.src/"/>
 			<compilerarg line="-log '${temp.folder}'/@dot.bin${logExtension}" compiler="org.eclipse.jdt.core.JDTCompilerAdapter" />
 			<compilerarg line="${compilerArg}" compiler="org.eclipse.jdt.core.JDTCompilerAdapter" />
