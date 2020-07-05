@@ -1028,16 +1028,29 @@ public void removeAll () {
 	TVITEM tvItem = new TVITEM ();
 	tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_PARAM;
 	tvItem.hItem = OS.SendMessage (hwnd, OS.TVM_GETNEXTITEM, OS.TVGN_CHILD, handle);
-	while (tvItem.hItem != 0) {
-		OS.SendMessage (hwnd, OS.TVM_GETITEM, 0, tvItem);
-		TreeItem item = tvItem.lParam != -1 ? parent.items [(int)tvItem.lParam] : null;
-		if (item != null && !item.isDisposed ()) {
-			item.dispose ();
-		} else {
-			parent.releaseItem (tvItem.hItem, tvItem, false);
-			parent.destroyItem (null, tvItem.hItem);
+	/**
+	 * Performance optimization, switch off redraw for high amount of elements
+	 */
+	boolean disableRedraw = parent.itemCount > 30;
+	if (disableRedraw) {
+		parent.setRedraw(false);
+	}
+	try {
+		while (tvItem.hItem != 0) {
+			OS.SendMessage (hwnd, OS.TVM_GETITEM, 0, tvItem);
+			TreeItem item = tvItem.lParam != -1 ? parent.items [(int)tvItem.lParam] : null;
+			if (item != null && !item.isDisposed ()) {
+				item.dispose ();
+			} else {
+				parent.releaseItem (tvItem.hItem, tvItem, false);
+				parent.destroyItem (null, tvItem.hItem);
+			}
+			tvItem.hItem = OS.SendMessage (hwnd, OS.TVM_GETNEXTITEM, OS.TVGN_CHILD, handle);
 		}
-		tvItem.hItem = OS.SendMessage (hwnd, OS.TVM_GETNEXTITEM, OS.TVGN_CHILD, handle);
+	} finally {
+		if (disableRedraw) {
+			parent.setRedraw(true);
+		}
 	}
 }
 
