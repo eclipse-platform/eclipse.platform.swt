@@ -131,36 +131,13 @@ int calculateWidth (int index, GC gc, boolean rowSelected) {
 	if (index == 0 && width != -1) return width;
 	Font font = null;
 	if (cellFont != null) font = cellFont[index];
-	if (font == null) font = this.font;
-	if (font == null) font = parent.font;
-	if (font == null) font = parent.defaultFont();
 	String text = index == 0 ? this.text : (strings == null ? "" : strings [index]);
 	if ((text != null) && (text.length() > TEXT_LIMIT)) {
 		text = text.substring(0, TEXT_LIMIT - ELLIPSIS.length()) + ELLIPSIS;
 	}
+	NSSize size = getTextExtent(text, font);
 	Image image = index == 0 ? this.image : (images == null ? null : images [index]);
-	NSCell cell = parent.dataCell;
-	if (font.extraTraits != 0) {
-		NSAttributedString attribStr = parent.createString(text, font, null, 0, false, true, false);
-		cell.setAttributedStringValue(attribStr);
-		attribStr.release();
-	} else {
-		cell.setFont (font.handle);
-		NSString str = (NSString) new NSString().alloc();
-		str = str.initWithString(text != null ? text : "");
-		cell.setTitle (str);
-		str.release();
-	}
-
-	/* This code is inlined for performance */
-	objc_super super_struct = new objc_super();
-	super_struct.receiver = cell.id;
-	super_struct.super_class = OS.objc_msgSend(cell.id, OS.sel_superclass);
-	NSSize size = new NSSize();
-	OS.objc_msgSendSuper_stret(size, super_struct, OS.sel_cellSize);
 	if (image != null) size.width += parent.imageBounds.width + Table.IMAGE_GAP;
-//	cell.setImage (image != null ? image.handle : null);
-//	NSSize size = cell.cellSize ();
 
 	int width = (int)Math.ceil (size.width);
 	boolean sendMeasure = true;
@@ -286,8 +263,16 @@ public Rectangle getBounds () {
 	if (image != null) {
 		titleRect.x += parent.imageBounds.width + Table.IMAGE_GAP;
 	}
+	Font f = (cellFont != null ? cellFont[columnIndex] : null);
+	NSSize size = getTextExtent(text, f);
+	NSRect columnRect = widget.rectOfColumn (columnIndex);
+	size.width = Math.min (size.width, columnRect.width - (titleRect.x - columnRect.x));
+	return new Rectangle ((int)titleRect.x, (int)titleRect.y, (int)Math.ceil (size.width), (int)Math.ceil (titleRect.height));
+}
+
+NSSize getTextExtent(String inStr, Font inCellFont) {
 	Font font = null;
-	if (cellFont != null) font = cellFont[columnIndex];
+	if (cellFont != null) font = inCellFont;
 	if (font == null) font = this.font;
 	if (font == null) font = parent.font;
 	if (font == null) font = parent.defaultFont ();
@@ -311,10 +296,7 @@ public Rectangle getBounds () {
 	super_struct.super_class = OS.objc_msgSend(cell.id, OS.sel_superclass);
 	NSSize size = new NSSize();
 	OS.objc_msgSendSuper_stret(size, super_struct, OS.sel_cellSize);
-//	NSSize size = cell.cellSize ();
-	NSRect columnRect = widget.rectOfColumn (columnIndex);
-	size.width = Math.min (size.width, columnRect.width - (titleRect.x - columnRect.x));
-	return new Rectangle ((int)titleRect.x, (int)titleRect.y, (int)Math.ceil (size.width), (int)Math.ceil (titleRect.height));
+	return size;
 }
 
 /**
@@ -631,13 +613,15 @@ public Rectangle getTextBounds (int index) {
 		TableColumn column = parent.getColumn (index);
 		index = parent.indexOf (column.nsColumn);
 	}
+	Font f = (cellFont != null ? cellFont[index] : null);
+	NSSize size = getTextExtent(getText(index), f);
 	NSRect rect = tableView.frameOfCellAtColumn (index, parent.indexOf (this));
 	rect.x += Table.TEXT_GAP;
-	rect.width -= Table.TEXT_GAP;
+	rect.width = size.width;
+	rect.height = size.height;
 	if (image != null) {
 		int offset = parent.imageBounds.width + Table.IMAGE_GAP;
 		rect.x += offset;
-		rect.width -= offset;
 	}
 	return new Rectangle((int) rect.x, (int) rect.y, (int) rect.width, (int) rect.height);
 }
