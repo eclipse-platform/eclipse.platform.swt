@@ -1479,7 +1479,14 @@ long eventProc (long event, long data) {
 		}
 	}
 	if (!dispatch) {
-		addGdkEvent (GDK.gdk_event_copy (event));
+		long copiedEvent;
+		if (GTK.GTK4) {
+			copiedEvent = GDK.gdk_event_ref (event);
+		} else {
+			copiedEvent = GDK.gdk_event_copy (event);
+		}
+
+		addGdkEvent (copiedEvent);
 		return 0;
 	}
 	dispatch = true;
@@ -4323,10 +4330,11 @@ public boolean post (Event event) {
 				} else {
 					GDK.gdk_event_put (eventPtr);
 				}
+
 				if (GTK.GTK4) {
-					OS.g_object_unref(eventPtr);
+					GDK.gdk_event_unref(eventPtr);
 				} else {
-					GDK.gdk_event_free (eventPtr);
+					GDK.gdk_event_free(eventPtr);
 				}
 				return true;
 			case SWT.MouseDown:
@@ -4356,9 +4364,9 @@ public boolean post (Event event) {
 
 				GDK.gdk_event_put(eventPtr);
 				if (GTK.GTK4) {
-					OS.g_object_unref(eventPtr);
+					GDK.gdk_event_unref(eventPtr);
 				} else {
-					GDK.gdk_event_free (eventPtr);
+					GDK.gdk_event_free(eventPtr);
 				}
 				return true;
 		}
@@ -4402,7 +4410,7 @@ void putGdkEvents () {
 				}
 			}
 			if (GTK.GTK4) {
-				OS.g_object_unref (event);
+				GDK.gdk_event_unref (event);
 			} else {
 				GDK.gdk_event_free (event);
 			}

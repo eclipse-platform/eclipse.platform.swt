@@ -1456,17 +1456,16 @@ void sendEvent (int eventType, Event event, boolean send) {
 boolean sendKeyEvent (int type, long event) {
 	int length;
 	long string;
+	int [] keyval = new int [1];
 	if (GTK.GTK4) {
-		long [] eventString = new long [1];
-		GDK.gdk_event_get_string(event, eventString);
-		string = eventString[0];
-		length = (int)OS.g_utf16_strlen (string, -1);
+		keyval[0] = GDK.gdk_key_event_get_keyval(event);
 	} else {
-		GdkEventKey gdkEvent = new GdkEventKey ();
-		OS.memmove(gdkEvent, event, GdkEventKey.sizeof);
-		length = gdkEvent.length;
-		string = gdkEvent.string;
+		GDK.gdk_event_get_keyval(event, keyval);
 	}
+
+	string = GDK.gdk_keyval_name(keyval[0]);
+	length = (int)OS.g_utf16_strlen (string, -1);
+
 	if (string == 0 || OS.g_utf16_strlen (string, length) <= 1) {
 		Event javaEvent = new Event ();
 		javaEvent.time = GDK.gdk_event_get_time(event);
@@ -1501,7 +1500,11 @@ char [] sendIMKeyEvent (int type, long event, char [] chars) {
 				case GDK.GDK_KEY_PRESS:
 				case GDK.GDK_KEY_RELEASE:
 					int [] eventState = new int[1];
-					GDK.gdk_event_get_state(ptr, eventState);
+					if (GTK.GTK4) {
+						eventState[0] = GDK.gdk_event_get_modifier_state(event);
+					} else {
+						GDK.gdk_event_get_state(event, eventState);
+					}
 					state = eventState[0];
 					break;
 				default:
@@ -1566,15 +1569,25 @@ void sendSelectionEvent (int eventType, Event event, boolean send) {
 			case GDK.GDK_BUTTON_PRESS:
 			case GDK.GDK_2BUTTON_PRESS:
 			case GDK.GDK_BUTTON_RELEASE: {
+
 				int [] eventButton = new int [1];
-				GDK.gdk_event_get_button(ptr, eventButton);
+				if (GTK.GTK4) {
+					eventButton[0] = GDK.gdk_button_event_get_button(ptr);
+				} else {
+					GDK.gdk_event_get_button(ptr, eventButton);
+				}
+
 				setButtonState(event, eventButton [0]);
 			}
 			//$FALL-THROUGH$
 			case GDK.GDK_KEY_PRESS:
 			case GDK.GDK_KEY_RELEASE: {
-				int [] state = new int [1];
-				GDK.gdk_event_get_state (ptr, state);
+				int [] state = new int[1];
+				if (GTK.GTK4) {
+					state[0] = GDK.gdk_event_get_modifier_state(ptr);
+				} else {
+					GDK.gdk_event_get_state(ptr, state);
+				}
 				setInputState (event, state [0]);
 				break;
 			}
@@ -1740,26 +1753,28 @@ boolean setInputState (Event event, int state) {
 boolean setKeyState (Event javaEvent, long event) {
 	long string;
 	int length;
-	int [] eventKeyval = new int[1];
 	int group;
-	GDK.gdk_event_get_keyval(event, eventKeyval);
-	int [] eventState = new int[1];
-	GDK.gdk_event_get_state(event, eventState);
+	int [] eventKeyval = new int [1];
+	int [] eventState = new int [1];
 	if (GTK.GTK4) {
-		long [] eventString = new long [1];
-		GDK.gdk_event_get_string(event, eventString);
-		string = eventString[0];
-		length = (int)OS.g_utf16_strlen (string, -1);
-		int [] eventGroup = new int [1];
-		GDK.gdk_event_get_key_group(event, eventGroup);
-		group = eventGroup[0];
+		eventKeyval[0] = GDK.gdk_key_event_get_keyval(event);
+		eventState[0] = GDK.gdk_event_get_modifier_state(event);
+	} else {
+		GDK.gdk_event_get_keyval(event, eventKeyval);
+		GDK.gdk_event_get_state(event, eventState);
+	}
+
+	if (GTK.GTK4) {
+		group = GDK.gdk_key_event_get_layout(event);
 	} else {
 		GdkEventKey gdkEvent = new GdkEventKey ();
 		OS.memmove(gdkEvent, event, GdkEventKey.sizeof);
-		length = gdkEvent.length;
-		string = gdkEvent.string;
 		group = gdkEvent.group;
 	}
+
+	string = GDK.gdk_keyval_name(eventKeyval[0]);
+	length = (int)OS.g_utf16_strlen (string, -1);
+
 	if (string != 0 && OS.g_utf16_strlen (string, length) > 1) return false;
 	boolean isNull = false;
 	javaEvent.keyCode = Display.translateKey (eventKeyval[0]);
@@ -1806,7 +1821,11 @@ boolean setKeyState (Event javaEvent, long event) {
 
 void setLocationState (Event event, long eventPtr) {
 	int [] eventKeyval = new int[1];
-	GDK.gdk_event_get_keyval(eventPtr, eventKeyval);
+	if (GTK.GTK4) {
+		eventKeyval[0] = GDK.gdk_key_event_get_keyval(eventPtr);
+	} else {
+		GDK.gdk_event_get_keyval(eventPtr, eventKeyval);
+	}
 	switch (eventKeyval[0]) {
 		case GDK.GDK_Alt_L:
 		case GDK.GDK_Shift_L:
@@ -1944,7 +1963,7 @@ void gdk_surface_get_size (long surface, int[] width, int[] height) {
 void gdk_event_free (long event) {
 	if (event == 0) return;
 	if (GTK.GTK4) {
-		OS.g_object_unref(event);
+		GDK.gdk_event_unref(event);
 	} else {
 		GDK.gdk_event_free(event);
 	}
@@ -1988,8 +2007,12 @@ long gdk_event_peek() {
  *        OS.GDK_SHIFT_MASK / OS.GDK_CONTROL_MASK / OS.GDK_MOD1_MASK etc..
  */
 int gdk_event_get_state (long event) {
-	int [] state = new int [1];
-	GDK.gdk_event_get_state (event, state);
+	int [] state = new int[1];
+	if (GTK.GTK4) {
+		state[0] = GDK.gdk_event_get_modifier_state(event);
+	} else {
+		GDK.gdk_event_get_state(event, state);
+	}
 	return state[0];
 }
 

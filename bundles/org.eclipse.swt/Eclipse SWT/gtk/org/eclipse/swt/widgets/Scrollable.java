@@ -358,10 +358,26 @@ long gtk_scroll_event (long widget, long eventPtr) {
 	if ((state & CANVAS) != 0) {
 		ScrollBar scrollBar;
 		int [] direction = new int[1];
-		boolean fetched = GDK.gdk_event_get_scroll_direction(eventPtr, direction);
+		boolean fetched;
+		if (GTK.GTK4) {
+			direction[0] = GDK.gdk_scroll_event_get_direction(eventPtr);
+			fetched = direction[0] != GDK.GDK_SCROLL_SMOOTH;
+		} else {
+			fetched = GDK.gdk_event_get_scroll_direction(eventPtr, direction);
+		}
+
 		if (!fetched) {
 			double[] delta_x = new double[1], delta_y = new double [1];
-			if (GDK.gdk_event_get_scroll_deltas (eventPtr, delta_x, delta_y)) {
+			boolean deltasAvailable;
+			if (GTK.GTK4) {
+				GDK.gdk_scroll_event_get_deltas(eventPtr, delta_x, delta_y);
+				// In GTK4, deltas is always available but zero when not GDK_SMOOTH_SCROLL
+				deltasAvailable = true;
+			} else {
+				deltasAvailable = GDK.gdk_event_get_scroll_deltas (eventPtr, delta_x, delta_y);
+			}
+
+			if (deltasAvailable) {
 				if (delta_x [0] != 0) {
 					scrollBar = horizontalBar;
 					if (scrollBar != null && !GTK.gtk_widget_get_visible (scrollBar.handle) && scrollBar.getEnabled()) {

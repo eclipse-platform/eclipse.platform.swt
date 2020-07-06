@@ -1926,8 +1926,13 @@ void setText (String dateTimeText) {
 @Override
 long gtk_key_press_event (long widget, long event) {
 	if (!isReadOnly () && (isTime () || isDate ())) {
-		int [] key = new int[1];
-		GDK.gdk_event_get_keyval(event, key);
+		int [] key = new int [1];
+		if (GTK.GTK4) {
+			key[0] = GDK.gdk_key_event_get_keyval(event);
+		} else {
+			GDK.gdk_event_get_keyval(event, key);
+		}
+
 		switch (key[0]) {
 		case GDK.GDK_Up:
 		case GDK.GDK_KP_Up:
@@ -2081,7 +2086,12 @@ private int validateValueBounds(FieldPosition field, int value) {
 long gtk_button_release_event (long widget, long event) {
 	if (isDate () || isTime ()) {
 		int [] eventButton = new int [1];
-		GDK.gdk_event_get_button(event, eventButton);
+		if (GTK.GTK4) {
+			eventButton[0] = GDK.gdk_button_event_get_button(event);
+		} else {
+			GDK.gdk_event_get_button(event, eventButton);
+		}
+
 		if (eventButton[0] == 1) { // left mouse button.
 			onTextMouseClick ();
 		}

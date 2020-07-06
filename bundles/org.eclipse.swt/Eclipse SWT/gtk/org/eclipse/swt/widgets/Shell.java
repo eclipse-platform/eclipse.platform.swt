@@ -1424,8 +1424,14 @@ long gtk_button_press_event (long widget, long event) {
 			double [] eventRX = new double [1];
 			double [] eventRY = new double [1];
 			GDK.gdk_event_get_root_coords(event, eventRX, eventRY);
+
 			int [] eventButton = new int [1];
-			GDK.gdk_event_get_button(event, eventButton);
+			if (GTK.GTK4) {
+				eventButton[0] = GDK.gdk_button_event_get_button(event);
+			} else {
+				GDK.gdk_event_get_button(event, eventButton);
+			}
+
 			if (eventButton[0] == 1) {
 				display.resizeLocationX = eventRX[0];
 				display.resizeLocationY = eventRY[0];
@@ -1576,7 +1582,12 @@ long gtk_leave_notify_event (long widget, long event) {
 	if (widget == shellHandle) {
 		if (isCustomResize ()) {
 			int [] state = new int [1];
-			GDK.gdk_event_get_state(event, state);
+			if (GTK.GTK4) {
+				state[0] = GDK.gdk_event_get_modifier_state(event);
+			} else {
+				GDK.gdk_event_get_state(event, state);
+			}
+
 			if ((state[0] & GDK.GDK_BUTTON1_MASK) == 0) {
 				if (GTK.GTK4) {
 					GTK.gtk_widget_set_cursor (shellHandle, 0);
@@ -1617,7 +1628,11 @@ long gtk_motion_notify_event (long widget, long event) {
 	if (widget == shellHandle) {
 		if (isCustomResize ()) {
 			int [] state = new int [1];
-			GDK.gdk_event_get_state(event, state);
+			if (GTK.GTK4) {
+				state[0] = GDK.gdk_event_get_modifier_state(event);
+			} else {
+				GDK.gdk_event_get_state(event, state);
+			}
 			double [] eventRX = new double [1];
 			double [] eventRY = new double [1];
 			GDK.gdk_event_get_root_coords(event, eventRX, eventRY);
@@ -1679,7 +1694,12 @@ long gtk_motion_notify_event (long widget, long event) {
 			} else {
 				double [] eventX = new double [1];
 				double [] eventY = new double [1];
-				GDK.gdk_event_get_coords(event, eventX, eventY);
+				if (GTK.GTK4) {
+					GDK.gdk_event_get_position(event, eventX, eventY);
+				} else {
+					GDK.gdk_event_get_coords(event, eventX, eventY);
+				}
+
 				int mode = getResizeMode (eventX[0], eventY[0]);
 				if (mode != display.resizeMode) {
 					long cursor = display.getSystemCursor(mode).handle;
@@ -1716,10 +1736,16 @@ long gtk_key_press_event (long widget, long event) {
 					GTK.gtk_accelerator_parse (accel [0], keyval, mods);
 					OS.g_free (accel [0]);
 					if (keyval [0] != 0) {
-						int [] key = new int[1];
-						GDK.gdk_event_get_keyval(event, key);
-						int [] state = new int [1];
-						GDK.gdk_event_get_state(event, state);
+						int [] key = new int [1];
+						int [] state = new int[1];
+						if (GTK.GTK4) {
+							key[0] = GDK.gdk_key_event_get_keyval(event);
+							state[0] = GDK.gdk_event_get_modifier_state(event);
+						} else {
+							GDK.gdk_event_get_keyval(event, key);
+							GDK.gdk_event_get_state(event, state);
+						}
+
 						int mask = GTK.gtk_accelerator_get_default_mod_mask ();
 						if (key[0] == keyval [0] && (state[0] & mask) == (mods [0] & mask)) {
 							return focusControl.gtk_key_press_event (focusControl.focusHandle (), event);
