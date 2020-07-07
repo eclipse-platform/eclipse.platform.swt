@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2020 IBM Corporation and others.
+ * Copyright (c) 2000, 2018 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -10,7 +10,6 @@
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
- *     Christoph Läubrich - Bug 513185
  *******************************************************************************/
 package org.eclipse.swt.layout;
 
@@ -146,7 +145,7 @@ protected Point computeSize (Composite composite, int wHint, int hHint, boolean 
 }
 
 Point computeChildSize (Control control, int wHint, int hHint, boolean flushCache) {
-	FillData data = validateLayoutData(control, -1);
+	FillData data = (FillData)control.getLayoutData ();
 	if (data == null) {
 		data = new FillData ();
 		control.setLayoutData (data);
@@ -173,10 +172,8 @@ Point computeChildSize (Control control, int wHint, int hHint, boolean flushCach
 
 @Override
 protected boolean flushCache (Control control) {
-	FillData data = validateLayoutData(control, -1);
-	if (data != null) {
-		data.flushCache();
-	}
+	Object data = control.getLayoutData();
+	if (data != null) ((FillData)data).flushCache();
 	return true;
 }
 
@@ -201,7 +198,6 @@ protected void layout (Composite composite, boolean flushCache) {
 		int y = rect.y + marginHeight, cellWidth = width / count;
 		for (int i=0; i<count; i++) {
 			Control child = children [i];
-			validateLayoutData(child, i);
 			int childWidth = cellWidth;
 			if (i == 0) {
 				childWidth += extra / 2;
@@ -217,7 +213,6 @@ protected void layout (Composite composite, boolean flushCache) {
 		int y = rect.y + marginHeight, extra = height % count;
 		for (int i=0; i<count; i++) {
 			Control child = children [i];
-			validateLayoutData(child, i);
 			int childHeight = cellHeight;
 			if (i == 0) {
 				childHeight += extra / 2;
@@ -228,21 +223,6 @@ protected void layout (Composite composite, boolean flushCache) {
 			y += childHeight + spacing;
 		}
 	}
-}
-
-private FillData validateLayoutData(Control control, int index) {
-	if (control == null) {
-		throw new SWTException(SWT.ERROR_NULL_ARGUMENT, "control can't be null");
-	}
-	Object layoutData = control.getLayoutData();
-	if (layoutData == null) {
-		return null;
-	}
-	if (layoutData instanceof FillData) {
-		return (FillData) layoutData;
-	}
-	throw new SWTException(SWT.ERROR_INVALID_ARGUMENT, "Child#" + index + " of type " + control.getClass().getName()
-			+ " has illegal layout data type " + layoutData.getClass().getName());
 }
 
 /**
