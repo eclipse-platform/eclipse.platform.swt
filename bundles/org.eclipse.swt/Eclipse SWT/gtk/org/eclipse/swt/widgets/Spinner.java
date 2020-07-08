@@ -807,9 +807,7 @@ long paintWindow () {
 @Override
 long paintSurface () {
 	long surface = super.paintSurface ();
-	long children = GDK.gdk_surface_get_children (surface);
-	if (children != 0) surface = OS.g_list_data (children);
-	OS.g_list_free (children);
+	/* TODO: GTK4 no access to children of the surface. Need to find alternative, note that class hierarchy can change from GTK3 */
 	return surface;
 }
 

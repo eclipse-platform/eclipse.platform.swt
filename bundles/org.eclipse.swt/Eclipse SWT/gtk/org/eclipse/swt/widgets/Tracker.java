@@ -211,7 +211,10 @@ Point adjustMoveCursor () {
 
 	int [] actualX = new int [1], actualY = new int [1], state = new int [1];
 	if (GTK.GTK4) {
-		display.gdk_surface_get_device_position (surface, actualX, actualY, state);
+		double [] actualXDouble = new double [1], actualYDouble = new double [1];
+		display.gdk_surface_get_device_position (surface, actualXDouble, actualYDouble, state);
+		actualX[0] = (int) actualXDouble[0];
+		actualY[0] = (int) actualYDouble[0];
 	} else {
 		display.gdk_window_get_device_position (window, actualX, actualY, state);
 	}
@@ -248,7 +251,10 @@ Point adjustResizeCursor () {
 	 */
 	int [] actualX = new int [1], actualY = new int [1], state = new int [1];
 	if (GTK.GTK4) {
-		display.gdk_surface_get_device_position (surface, actualX, actualY, state);
+		double [] actualXDouble = new double [1], actualYDouble = new double [1];
+		display.gdk_surface_get_device_position (surface, actualXDouble, actualYDouble, state);
+		actualX[0] = (int) actualXDouble[0];
+		actualY[0] = (int) actualYDouble[0];
 	} else {
 		display.gdk_window_get_device_position (window, actualX, actualY, state);
 	}
@@ -413,7 +419,7 @@ void drawRectangles (Rectangle [] rects) {
 	if (GTK.GTK4) {
 		long overlaySurface = GTK.gtk_native_get_surface(GTK.gtk_widget_get_native (overlay));
 		GDK.gdk_surface_hide (overlaySurface);
-		GDK.gdk_surface_show (overlaySurface);
+		/* TODO: GTK does not provide a gdk_surface_show, probably will require use of the present api */
 	} else {
 		long overlayWindow = GTK.gtk_widget_get_window (overlay);
 		GDK.gdk_window_hide (overlayWindow);
@@ -631,7 +637,10 @@ long gtk_motion_notify_event (long widget, long eventPtr) {
 long gtk_mouse (int eventType, long widget, long eventPtr) {
 	int [] newX = new int [1], newY = new int [1];
 	if (GTK.GTK4) {
-		display.gdk_surface_get_device_position (surface, newX, newY, null);
+		double [] newXDouble = new double [1], newYDouble = new double [1];
+		display.gdk_surface_get_device_position (surface, newXDouble, newYDouble, null);
+		newX[0] = (int) newXDouble[0];
+		newY[0] = (int) newYDouble[0];
 	} else {
 		display.gdk_window_get_device_position (window, newX, newY, null);
 	}
@@ -779,7 +788,10 @@ public boolean open () {
 	tracking = true;
 	int [] oldX = new int [1], oldY = new int [1], state = new int [1];
 	if (GTK.GTK4) {
-		display.gdk_surface_get_device_position (surface, oldX, oldY, state);
+		double [] oldXDouble = new double [1], oldYDouble = new double [1];
+		display.gdk_surface_get_device_position (surface, oldXDouble, oldYDouble, state);
+		oldX[0] = (int) oldXDouble[0];
+		oldY[0] = (int) oldYDouble[0];
 	} else {
 		display.gdk_window_get_device_position (window, oldX, oldY, state);
 	}

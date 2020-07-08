@@ -2060,7 +2060,7 @@ void gdk_pointer_ungrab (long gdkResource, int time_) {
 static long GdkSeatGrabPrepareFunc (long gdkSeat, long gdkResource, long userData_gdkResource) {
 	if (userData_gdkResource != 0) {
 		if (GTK.GTK4) {
-			GDK.gdk_surface_show(userData_gdkResource);
+			/* TODO: GTK does not provide a gdk_surface_show, probably will require use of the present api */
 		} else {
 			GDK.gdk_window_show(userData_gdkResource);
 		}

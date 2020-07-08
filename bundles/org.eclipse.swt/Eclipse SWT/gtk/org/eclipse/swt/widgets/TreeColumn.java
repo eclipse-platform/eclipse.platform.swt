@@ -747,24 +747,8 @@ void setWidthInPixels (int width) {
 	if (width != 0) {
 		if (buttonHandle != 0) {
 			if (GTK.GTK4) {
-				long surface = GTK.gtk_widget_get_parent_surface (buttonHandle);
-				if (surface != 0) {
-					long surfaceList = GDK.gdk_surface_get_children (surface);
-					if (surfaceList != 0) {
-						long surfaces = surfaceList;
-						long [] userData = new long [1];
-						while (surfaces != 0) {
-							long child = OS.g_list_data (surfaces);
-							GDK.gdk_surface_get_user_data (child, userData);
-							if (userData[0] == buttonHandle) {
-								GDK.gdk_surface_lower (child);
-								break;
-							}
-							surfaces = OS.g_list_next (surfaces);
-						}
-						OS.g_list_free (surfaceList);
-					}
-				}
+				/* TODO: GTK4 Removed this for time being, as not confirm if this bug still exists. Has to be
+				 * removed since the fix requires functions that no longer exist in GTK4. */
 			} else {
 				long window = GTK.gtk_widget_get_parent_window (buttonHandle);
 				if (window != 0) {

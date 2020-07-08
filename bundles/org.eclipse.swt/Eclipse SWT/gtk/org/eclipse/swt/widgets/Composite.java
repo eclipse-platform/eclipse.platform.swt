@@ -630,24 +630,10 @@ void fixZOrder () {
 	if ((state & CANVAS) != 0) return;
 	long parentHandle = parentingHandle ();
 	if (GTK.GTK4) {
-		long parentSurface = gtk_widget_get_surface (parentHandle);
-		if (parentSurface == 0) return;
-		long [] userData = new long [1];
-		long surfaceList = GDK.gdk_surface_get_children (parentSurface);
-		if (surfaceList != 0) {
-			long surfaces = surfaceList;
-			while (surfaces != 0) {
-				long surface = OS.g_list_data (surfaces);
-				if (surface != redrawSurface) {
-					GDK.gdk_surface_get_user_data (surface, userData);
-					if (userData [0] == 0 || OS.G_OBJECT_TYPE (userData [0]) != display.gtk_fixed_get_type ()) {
-						GDK.gdk_surface_lower (surface);
-					}
-				}
-				surfaces = OS.g_list_next (surfaces);
-			}
-			OS.g_list_free (surfaceList);
-		}
+		/* TODO: GTK4 parent does not hold the list of children it has created (parent-children relationship can only be done
+		 * with GdkPopup) Will need to consider if we can get children some other way or not have to do fixZOrder at all
+		 * and use GdkPopup autohide feature.
+		 */
 	} else {
 		long parentWindow = gtk_widget_get_window (parentHandle);
 		if (parentWindow == 0) return;
@@ -1315,9 +1301,9 @@ void moveChildren(int oldWidth) {
 		int clientWidth = getClientWidth ();
 		x = clientWidth - controlWidth - x;
 		if (GTK.GTK4) {
-			if (child.enableSurface != 0) {
-				GDK.gdk_surface_move (child.enableSurface, x, y);
-			}
+			/* TODO: GTK4 gdk_surface_move replaced with gdk_toplevel_begin_move which is begins some
+			 * interactive operation. Need to reconsider how this is implemented.
+			 */
 		} else {
 			if (child.enableWindow != 0) {
 				GDK.gdk_window_move (child.enableWindow, x, y);
@@ -1443,7 +1429,7 @@ void propagateDraw (long container, long cairo) {
 							if (!childLowered) {
 								if (GTK.GTK4) {
 									long surface = gtk_widget_get_surface(child);
-									GDK.gdk_surface_lower(surface);
+									GDK.gdk_toplevel_lower(surface);
 								} else {
 									long window = gtk_widget_get_window(child);
 									GDK.gdk_window_lower(window);
@@ -1454,7 +1440,10 @@ void propagateDraw (long container, long cairo) {
 							if (childLowered) {
 								if (GTK.GTK4) {
 									long surface = gtk_widget_get_surface(child);
-									GDK.gdk_surface_raise(surface);
+									int width = GDK.gdk_surface_get_width(surface);
+									int height = GDK.gdk_surface_get_height(surface);
+									long layout = GDK.gdk_toplevel_layout_new(width, height);
+									GDK.gdk_toplevel_present(surface, width, height, layout);
 								} else {
 									long window = gtk_widget_get_window(child);
 									GDK.gdk_window_raise(window);

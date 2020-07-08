@@ -1795,13 +1795,16 @@ public Control getCursorControl () {
 	long [] user_data = new long [1];
 	long gdkResource;
 	if (GTK.GTK4) {
-		gdkResource = gdk_device_get_surface_at_position (x,y);
+		double[] xDouble = new double [1], yDouble = new double [1];
+		gdkResource = gdk_device_get_surface_at_position (xDouble, yDouble);
+		x[0] = (int) xDouble[0];
+		y[0] = (int) yDouble[0];
 	} else {
 		gdkResource = gdk_device_get_window_at_position (x,y);
 	}
 	if (gdkResource != 0) {
 		if (GTK.GTK4) {
-			GDK.gdk_surface_get_user_data (gdkResource, user_data);
+			user_data[0] = GDK.gdk_popup_get_parent(gdkResource);
 		} else {
 			GDK.gdk_window_get_user_data (gdkResource, user_data);
 		}
@@ -5972,13 +5975,13 @@ long gdk_window_get_device_position (long window, int[] x, int[] y, int[] mask) 
 	return GDK.gdk_window_get_device_position(window, pointer, x, y, mask);
 }
 
-long gdk_surface_get_device_position (long surface, int[] x, int[] y, int[] mask) {
+void gdk_surface_get_device_position (long surface, double[] x, double[] y, int[] mask) {
 	long display = 0;
 	if (surface != 0) {
 		display = GDK.gdk_surface_get_display (surface);
 	}
 	long pointer = GDK.gdk_get_pointer(display);
-	return GDK.gdk_surface_get_device_position(surface, pointer, x, y, mask);
+	GDK.gdk_surface_get_device_position(surface, pointer, x, y, mask);
 }
 
 long gdk_device_get_window_at_position (int[] win_x, int[] win_y) {
@@ -5987,7 +5990,7 @@ long gdk_device_get_window_at_position (int[] win_x, int[] win_y) {
 	return GDK.gdk_device_get_window_at_position (device, win_x, win_y);
 }
 
-long gdk_device_get_surface_at_position (int[] win_x, int[] win_y) {
+long gdk_device_get_surface_at_position (double[] win_x, double[] win_y) {
 	long display = GDK.gdk_display_get_default ();
 	long device = GDK.gdk_get_pointer(display);
 	return GDK.gdk_device_get_surface_at_position (device, win_x, win_y);

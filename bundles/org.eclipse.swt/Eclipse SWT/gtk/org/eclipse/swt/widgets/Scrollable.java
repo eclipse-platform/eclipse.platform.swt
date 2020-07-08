@@ -484,8 +484,9 @@ void redrawWidget (int x, int y, int width, int height, boolean redrawAll, boole
 		rect.height = Math.max (0, height);
 	}
 	if (GTK.GTK4) {
-		long surface = gtk_widget_get_surface (topHandle);
-		GDK.gdk_surface_invalidate_rect (surface, rect);
+		/* TODO: GTK4 no ability to invalidate surfaces, may need to keep track of
+		 * invalid regions ourselves and do gdk_surface_queue_expose. Will need a different way to force redraws.
+		 * New "render" signal? */
 	} else {
 		long window = gtk_widget_get_window (topHandle);
 		GDK.gdk_window_invalidate_rect (window, rect, all);

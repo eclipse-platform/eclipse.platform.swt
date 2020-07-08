@@ -483,10 +483,8 @@ void adjustTrim () {
 	int width = allocation.width;
 	int height = allocation.height;
 	GdkRectangle rect = new GdkRectangle ();
-	if (GTK.GTK4) {
-		long surface = gtk_widget_get_surface(shellHandle);
-		GDK.gdk_surface_get_frame_extents (surface, rect);
-	} else {
+
+	if (!GTK.GTK4) {
 		long window = gtk_widget_get_window (shellHandle);
 		GDK.gdk_window_get_frame_extents (window, rect);
 	}
@@ -611,7 +609,7 @@ void bringToTop (boolean force) {
 			}
 			long seat = GDK.gdk_display_get_default_seat(gdkDisplay);
 			if (GTK.GTK4) {
-				GDK.gdk_surface_show(gdkResource);
+				/* TODO: GTK does not provide a gdk_surface_show, probably will require use of the present api */
 			} else {
 				GDK.gdk_window_show(gdkResource);
 			}
@@ -627,7 +625,7 @@ void bringToTop (boolean force) {
 		}
 	} else {
 		if (GTK.GTK4) {
-			GDK.gdk_surface_focus (gdkResource, display.lastUserEventTime);
+			GDK.gdk_toplevel_focus (gdkResource, display.lastUserEventTime);
 		} else {
 			GDK.gdk_window_focus (gdkResource, display.lastUserEventTime);
 		}
@@ -1675,7 +1673,9 @@ long gtk_motion_notify_event (long widget, long event) {
 				}
 				if (x != display.resizeBoundsX || y != display.resizeBoundsY) {
 					if (GTK.GTK4) {
-						GDK.gdk_surface_move_resize (gtk_widget_get_surface (shellHandle), x, y, width, height);
+						/* TODO: GTK4 no longer exist, will probably need to us gdk_toplevel_begin_move &
+						 * gdk_toplevel_begin_resize to provide this functionality
+						 */
 					} else {
 						GDK.gdk_window_move_resize (gtk_widget_get_window (shellHandle), x, y, width, height);
 					}
@@ -1818,8 +1818,11 @@ private void updateDecorations(long gdkResource) {
 		if ((style & SWT.NO_MOVE) == 0) functions |=  GDK.GDK_FUNC_MOVE;
 	}
 	if (GTK.GTK4) {
-		GDK.gdk_surface_set_decorations (gdkResource, decorations);
-		GDK.gdk_surface_set_functions(gdkResource, functions);
+		/*TODO: GTK4 no longer supports specifying hints for window management functions to be available on the window frame
+		 * Usually window managers don't do anything with the hint anyways. */
+		/*TODO: GTK4 no longer supports specifying hints for window management decorations. There is no direct way to specify the
+		 * decorations we want/don't want. May have to implement client-side decorations. Use gdk_toplevel_set_decorated to indicate.
+		 * A replacement for SWT.CLOSE in GTK4 is gdk_toplevel_set_deletable */
 	} else {
 		GDK.gdk_window_set_decorations (gdkResource, decorations);
 		/*
@@ -1844,11 +1847,12 @@ long gtk_realize (long widget) {
 	if ((style & SWT.SHELL_TRIM) != SWT.SHELL_TRIM) {
 		updateDecorations(gdkResource);
 	} else if ((style & SWT.NO_MOVE) != 0) {
-		// if the GDK_FUNC_ALL bit is present, all the other style
-		// bits specified as a parameter will be removed from the window
 		if (GTK.GTK4) {
-			GDK.gdk_surface_set_functions (gdkResource, GDK.GDK_FUNC_ALL | GDK.GDK_FUNC_MOVE);
+			/*TODO: GTK4 no longer supports specifying hints for window management functions to be available on the window frame
+			 * Usually window managers don't do anything with the hint anyways. */
 		} else {
+			// if the GDK_FUNC_ALL bit is present, all the other style
+			// bits specified as a parameter will be removed from the window
 			GDK.gdk_window_set_functions (gdkResource, GDK.GDK_FUNC_ALL | GDK.GDK_FUNC_MOVE);
 		}
 	}
@@ -1879,11 +1883,11 @@ long gtk_window_state_event (long widget, long event) {
 long notifyState (long object, long arg0) {
 	// GTK4 equivalent of gtk_window_state_event
 	assert GTK.GTK4;
-	int gdkSurfaceState = GDK.gdk_surface_get_state (object);
-	minimized = (gdkSurfaceState & GDK.GDK_SURFACE_STATE_ICONIFIED) != 0;
+	int gdkSurfaceState = GDK.gdk_toplevel_get_state (object);
+	minimized = (gdkSurfaceState & GDK.GDK_SURFACE_STATE_MINIMIZED) != 0;
 	maximized = (gdkSurfaceState & GDK.GDK_SURFACE_STATE_MAXIMIZED) != 0;
 	fullScreen = (gdkSurfaceState & GDK.GDK_SURFACE_STATE_FULLSCREEN) != 0;
-	if ((gdkSurfaceState & GDK.GDK_SURFACE_STATE_ICONIFIED) != 0) {
+	if ((gdkSurfaceState & GDK.GDK_SURFACE_STATE_MINIMIZED) != 0) {
 		if (minimized) {
 			sendEvent (SWT.Iconify);
 		} else {
@@ -2137,12 +2141,10 @@ public void setAlpha (int alpha) {
 void resizeBounds (int width, int height, boolean notify) {
 	int border = gtk_container_get_border_width_or_margin (shellHandle);
 	if (GTK.GTK4) {
-		if (redrawSurface != 0) {
-			GDK.gdk_surface_resize (redrawSurface, width, height);
-		}
-		if (redrawSurface != 0) {
-			GDK.gdk_surface_resize (redrawSurface, width, height);
-		}
+		/* TODO: GTK4 gdk_surface_resize no longer exist & have been replaced with
+		 * gdk_toplevel_begin_resize. These functions might change the
+		 * design of resizing in GTK4 */
+
 		if (parent != null) {
 			GtkAllocation allocation = new GtkAllocation();
 			allocation.width = width;
@@ -2285,18 +2287,19 @@ public void setEnabled (boolean enabled) {
 		} else {
 			long parentHandle = shellHandle;
 			GTK.gtk_widget_realize (parentHandle);
-			long surface = gtk_widget_get_surface (parentHandle);
-			Rectangle rect = getBoundsInPixels ();
-			GdkRectangle gdkRectangle = new GdkRectangle ();
-			gdkRectangle.width = rect.width;
-			gdkRectangle.height = rect.height;
-			enableSurface = GDK.gdk_surface_new_child (surface, gdkRectangle);
+			Rectangle bounds = getBoundsInPixels ();
+			enableSurface = GDK.gdk_surface_new_popup(parentHandle, false);
 			if (enableSurface != 0) {
 				if (cursor != null) {
 					GDK.gdk_surface_set_cursor (enableSurface, cursor.handle);
 				}
-				GDK.gdk_surface_set_user_data (enableSurface, parentHandle);
-				GDK.gdk_surface_show (enableSurface);
+
+				GdkRectangle anchor = new GdkRectangle();
+				anchor.width = bounds.width;
+				anchor.height = bounds.height;
+
+				long layout = GDK.gdk_popup_layout_new(anchor, GDK.GDK_GRAVITY_NORTH_WEST, GDK.GDK_GRAVITY_NORTH_WEST);
+				GDK.gdk_popup_present(enableSurface, bounds.width, bounds.height, layout);
 			}
 		}
 	} else {
@@ -2736,7 +2739,12 @@ public void setVisible (boolean visible) {
 		 *  if it has editable fields and is running Wayland. Refer to bug 515773.
 		 */
 		if (GTK.GTK4) {
-			if (enableSurface != 0) GDK.gdk_surface_raise (enableSurface);
+			if (enableSurface != 0) {
+				int width = GDK.gdk_surface_get_width(enableSurface);
+				int height = GDK.gdk_surface_get_height(enableSurface);
+				long layout = GDK.gdk_toplevel_layout_new(minWidth, minHeight);
+				GDK.gdk_toplevel_present(enableSurface, width, height, layout);
+			}
 		} else {
 			if (enableWindow != 0) GDK.gdk_window_raise (enableWindow);
 		}
@@ -3157,8 +3165,9 @@ Rectangle getBoundsInPixels () {
 		GTK.gtk_window_get_position (shellHandle, x, y);
 	} else {
 		if (GTK.GTK4) {
-			long surface = GTK.gtk_native_get_surface(GTK.gtk_widget_get_native (shellHandle));
-			GDK.gdk_surface_get_root_origin(surface, x, y);
+			/* TODO: GTK4 Coordinate system is now surface relative, therefore can no longer obtain
+			 * root coordinates. Ideas include using the popup GdkSurface which allows you to get
+			 * parent relative x and y coords. */
 		} else {
 			GDK.gdk_window_get_root_origin(GTK.gtk_widget_get_window(shellHandle), x, y);
 		}

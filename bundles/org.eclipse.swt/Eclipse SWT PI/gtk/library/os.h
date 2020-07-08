@@ -394,36 +394,27 @@
 #define NO_gtk_1widget_1set_1parent_1surface
 #define NO_gdk_1surface_1create_1similar_1surface
 #define NO_gdk_1surface_1destroy
-#define NO_gdk_1surface_1focus
 #define NO_gdk_1device_1get_1surface_1at_1position
-#define NO_gdk_1surface_1lower
-#define NO_gdk_1surface_1raise
-#define NO_gdk_1surface_1get_1children
-#define NO_gdk_1surface_1get_1user_1data
 #define NO_gdk_1surface_1get_1origin
 #define NO_gdk_1surface_1invalidate_1rect
 #define NO_gdk_1surface_1get_1display
 #define NO_gdk_1surface_1set_1cursor
-#define NO_gdk_1surface_1new_1child
-#define NO_gdk_1surface_1set_1user_1data
-#define NO_gdk_1surface_1restack
-#define NO_gdk_1surface_1show_1unraised
-#define NO_gdk_1surface_1show
+#define NO_gdk_1surface_1new_1toplevel
+#define NO_gdk_1surface_1new_1popup
 #define NO_gdk_1surface_1get_1device_1position
 #define NO_gdk_1display_1get_1monitor_1at_1surface
-#define NO_gdk_1surface_1get_1frame_1extents
 #define NO_gdk_1surface_1get_1width
 #define NO_gdk_1surface_1get_1height
-#define NO_gdk_1surface_1get_1state
-#define NO_gdk_1surface_1resize
-#define NO_gdk_1surface_1move
-#define NO_gdk_1surface_1move_1resize
 #define NO_gdk_1surface_1hide
-#define NO_gdk_1surface_1set_1decorations
-#define NO_gdk_1surface_1set_1functions
 #define NO_gdk_1surface_1get_1root_1origin
 #define NO_gdk_1surface_1invalidate_1region
 #define NO_gdk_1event_1get_1surface
+
+// No GdkToplevel on GTK3
+#define NO_gdk_1toplevel_1focus
+#define NO_gdk_1toplevel_1get_1state
+#define NO_gdk_1toplevel_1lower
+#define NO_gdk_1toplevel_1present
 
 // No GdkClipboard on GTK3
 #define NO_gdk_1clipboard_1set_1content
@@ -478,6 +469,12 @@
 
 // No GtkNative on GTK3
 #define NO_gtk_1native_1get_1surface
+
+// No GdkPopup on GTK3
+#define NO_gdk_1popup_1get_1parent
+#define NO_gdk_1popup_1layout_1new
+#define NO_gdk_1popup_1present
+
 
 #endif
 

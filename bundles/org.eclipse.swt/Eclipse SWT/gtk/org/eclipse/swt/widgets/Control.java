@@ -1104,9 +1104,9 @@ int setBounds (int x, int y, int width, int height, boolean move, boolean resize
 		sameOrigin = x == oldX && y == oldY;
 		if (!sameOrigin) {
 			if (GTK.GTK4) {
-				if (enableSurface != 0) {
-					GDK.gdk_surface_move (enableSurface, x, y);
-				}
+				/* TODO: GTK4 gdk_surface_resize/move no longer exist & have been replaced with
+				 * gdk_toplevel_begin_resize & gdk_toplevel_begin_move. These functions might change the
+				 * design of resizing and moving in GTK4 */
 			} else {
 				if (enableWindow != 0) {
 					GDK.gdk_window_move (enableWindow, x, y);
@@ -1125,12 +1125,9 @@ int setBounds (int x, int y, int width, int height, boolean move, boolean resize
 			int newWidth = Math.max (1, width);
 			int newHeight = Math.max (1, height);
 			if (GTK.GTK4) {
-				if (redrawSurface != 0) {
-					GDK.gdk_surface_resize (redrawSurface, newWidth, newHeight);
-				}
-				if (enableSurface != 0) {
-					GDK.gdk_surface_resize (enableSurface, newWidth, newHeight);
-				}
+				/* TODO: GTK4 gdk_surface_resize/move no longer exist & have been replaced with
+				 * gdk_toplevel_begin_resize & gdk_toplevel_begin_move. These functions might change the
+				 * design of resizing and moving in GTK4 */
 			} else {
 				if (redrawWindow != 0) {
 					GDK.gdk_window_resize (redrawWindow, newWidth, newHeight);
@@ -1209,7 +1206,8 @@ int setBounds (int x, int y, int width, int height, boolean move, boolean resize
 			} else {
 				if ((state & HIDDEN) == 0) {
 					if (enableSurface != 0) {
-						GDK.gdk_surface_show_unraised (enableSurface);
+						/* TODO: GTK4 no longer provides ability to change Z-order, only allow presenting
+						 * need replacement for gdk_window_show_unraised */
 					}
 					GTK.gtk_widget_show (topHandle);
 				}
@@ -2749,7 +2747,10 @@ boolean dragDetect (int x, int y, boolean filter, boolean dragOnTimeout, boolean
 					}
 					int [] newX = new int [1], newY = new int [1];
 					if (GTK.GTK4) {
-						display.gdk_surface_get_device_position (gdkResource, newX, newY, null);
+						double [] newXDouble = new double [1], newYDouble = new double [1];
+						display.gdk_surface_get_device_position (gdkResource, newXDouble, newYDouble, null);
+						newX[0] = (int) newXDouble[0];
+						newY[0] = (int) newYDouble[0];
 					} else {
 						display.gdk_window_get_device_position (gdkResource, newX, newY, null);
 					}
@@ -4524,7 +4525,9 @@ void redrawWidget (int x, int y, int width, int height, boolean redrawAll, boole
 			rect.width = Math.max (0, width);
 			rect.height = Math.max (0, height);
 		}
-		GDK.gdk_surface_invalidate_rect(surface, rect);
+		/* TODO: GTK4 no ability to invalidate surfaces, may need to keep track of
+		 * invalid regions ourselves and do gdk_surface_queue_expose. Will need a different way to force redraws
+		 * New "render" signal? */
 	} else {
 		long window = paintWindow ();
 		if (redrawAll) {
@@ -4589,7 +4592,6 @@ void releaseWidget () {
 	display.removeMouseHoverTimeout (handle);
 	if (GTK.GTK4) {
 		if (enableSurface != 0) {
-			GDK.gdk_surface_set_user_data (enableSurface, 0);
 			GDK.gdk_surface_destroy (enableSurface);
 			enableSurface = 0;
 		}
@@ -4630,17 +4632,6 @@ void releaseWidget () {
  */
 void restackWindow (long window, long sibling, boolean above) {
 	GDK.gdk_window_restack (window, sibling, above);
-}
-
-/**
- * GTK4 only, do not call on GTK3.
- * @param window a GdkSurface
- * @param sibling the sibling thereof, or 0
- * @param above a boolean setting for whether the surface
- * should be raised or lowered
- */
-void restackSurface (long surface, long sibling, boolean above) {
-	GDK.gdk_surface_restack (surface, sibling, above);
 }
 
 boolean sendDragEvent (int button, int stateMask, int x, int y, boolean isStateMask) {
@@ -5215,20 +5206,21 @@ public void setEnabled (boolean enabled) {
 		} else {
 			GTK.gtk_widget_realize (handle);
 			long parentHandle = parent.eventHandle ();
-			long surface = parent.eventSurface ();
-			long topHandle = topHandle ();
-			GtkAllocation allocation = new GtkAllocation ();
-			GTK.gtk_widget_get_allocation (topHandle, allocation);
-			GdkRectangle rect = new GdkRectangle ();
-			rect.x = allocation.x;
-			rect.y = allocation.y;
-			rect.width = (state & ZERO_WIDTH) != 0 ? 0 : allocation.width;
-			rect.height = (state & ZERO_HEIGHT) != 0 ? 0 : allocation.height;
-			enableSurface = GDK.gdk_surface_new_child (surface, rect);
+
+			enableSurface = GDK.gdk_surface_new_popup(parentHandle, false);
 			if (enableSurface != 0) {
-				GDK.gdk_surface_set_user_data (enableSurface, parentHandle);
-				restackSurface (enableSurface, gtk_widget_get_surface (topHandle), true);
-				if (GTK.gtk_widget_get_visible (topHandle)) GDK.gdk_surface_show_unraised (enableSurface);
+				long topHandle = topHandle ();
+				GtkAllocation allocation = new GtkAllocation ();
+				GTK.gtk_widget_get_allocation (topHandle, allocation);
+
+				GdkRectangle anchor = new GdkRectangle();
+				anchor.x = allocation.x;
+				anchor.y = allocation.y;
+				anchor.width =  (state & ZERO_WIDTH) != 0 ? 0 : allocation.width;
+				anchor.height = (state & ZERO_HEIGHT) != 0 ? 0 : allocation.height;
+
+				long layout = GDK.gdk_popup_layout_new(anchor, GDK.GDK_GRAVITY_NORTH_WEST, GDK.GDK_GRAVITY_NORTH_WEST);
+				GDK.gdk_popup_present(enableSurface, anchor.width, anchor.height, layout);
 			}
 		}
 	} else {
@@ -5269,7 +5261,6 @@ void cleanupEnableWindow() {
 }
 
 void cleanupEnableSurface() {
-	GDK.gdk_surface_set_user_data (enableSurface, 0);
 	GDK.gdk_surface_destroy (enableSurface);
 	enableSurface = 0;
 }
@@ -5762,19 +5753,16 @@ public void setRedraw (boolean redraw) {
 	} else {
 		if (drawCount++ == 0) {
 			if (GTK.gtk_widget_get_realized (handle)) {
-				Rectangle rect = getBoundsInPixels ();
+				Rectangle bounds = getBoundsInPixels ();
 				if (GTK.GTK4) {
-					long surface = paintSurface();
-					GdkRectangle gdkRectangle = new GdkRectangle ();
-					gdkRectangle.width = rect.width;
-					gdkRectangle.height = rect.height;
-					redrawSurface = GDK.gdk_surface_new_child(surface, gdkRectangle);
-					GDK.gdk_surface_show(redrawSurface);
+					/* TODO: Need to reconsider whether a redrawSurface is a GdkToplevel or GdkPopup */
+					redrawSurface = GDK.gdk_surface_new_toplevel(GDK.gdk_display_get_default(), bounds.width, bounds.height);
+					/* TODO: GTK does not provide a gdk_surface_show, probably will require use of the present api */
 				} else {
 					long window = paintWindow ();
 					GdkWindowAttr attributes = new GdkWindowAttr ();
-					attributes.width = rect.width;
-					attributes.height = rect.height;
+					attributes.width = bounds.width;
+					attributes.height = bounds.height;
 					attributes.event_mask = GDK.GDK_EXPOSURE_MASK;
 					attributes.window_type = GDK.GDK_WINDOW_CHILD;
 					redrawWindow = GDK.gdk_window_new (window, attributes, 0);
@@ -5935,7 +5923,8 @@ public void setVisible (boolean visible) {
 		state &= ~HIDDEN;
 		if ((state & (ZERO_WIDTH | ZERO_HEIGHT)) == 0) {
 			if (GTK.GTK4) {
-				if (enableSurface != 0) GDK.gdk_surface_show_unraised (enableSurface);
+				/* TODO: GTK4 no longer provides ability to change Z-order, only allow presenting
+				 * need replacement for gdk_window_show_unraised */
 			} else {
 				if (enableWindow != 0) GDK.gdk_window_show_unraised (enableWindow);
 			}
@@ -6028,21 +6017,20 @@ void setZOrder (Control sibling, boolean above, boolean fixRelations, boolean fi
 			long redrawSurface = fixChildren ? parent.redrawSurface : 0;
 			if (!OS.isX11 () || (siblingSurface == 0 && (!above || redrawSurface == 0))) {
 				if (above) {
-					GDK.gdk_surface_raise (surface);
-					if (redrawSurface != 0) GDK.gdk_surface_raise (redrawSurface);
-					if (enableSurface != 0) GDK.gdk_surface_raise (enableSurface);
+					int width = GDK.gdk_surface_get_width(surface);
+					int height = GDK.gdk_surface_get_height(surface);
+					long layout = GDK.gdk_toplevel_layout_new(width, height);
+					GDK.gdk_toplevel_present(surface, width, height, layout);
+
+					if (redrawSurface != 0) GDK.gdk_toplevel_present(redrawSurface, width, height, layout);
+					if (enableSurface != 0) GDK.gdk_toplevel_present(enableSurface, width, height, layout);
 				} else {
-					if (enableSurface != 0) GDK.gdk_surface_lower (enableSurface);
-					GDK.gdk_surface_lower (surface);
+					if (enableSurface != 0) GDK.gdk_toplevel_lower (enableSurface);
+					GDK.gdk_toplevel_lower (surface);
 				}
 			} else {
-				long siblingS = siblingSurface != 0 ? siblingSurface : redrawSurface;
-				boolean stack_mode = above;
-				if (redrawSurface != 0 && siblingSurface == 0) stack_mode = false;
-				restackSurface (surface, siblingS, stack_mode);
-				if (enableSurface != 0) {
-					restackSurface (enableSurface, surface, true);
-				}
+				/* TODO: GTK4 no longer has ability for changing the Z-order of the windowing system directly.
+				 * May need to find alternative way to do reorder (if required) */
 			}
 		}
 	} else {

@@ -1221,23 +1221,19 @@ void verifyMenuPosition (int itemCount) {
 			 */
 			GTK.gtk_widget_get_preferred_height(handle, null, naturalHeight);
 			if (naturalHeight[0] > 0) {
-
-				int width;
 				if (GTK.GTK4) {
-					long topLevelNative = GTK.gtk_widget_get_native(handle);
-					long topLevelSurface = GTK.gtk_native_get_surface(topLevelNative);
-					width = GDK.gdk_surface_get_width(topLevelSurface);
-					GDK.gdk_surface_resize(topLevelSurface, width, naturalHeight[0]);
+					/* TODO: GTK4 gdk_surface_resize/move no longer exist & have been replaced with
+					 * gdk_toplevel_begin_resize & gdk_toplevel_begin_move. These functions might change the
+					 * design of resizing and moving in GTK4 */
 				} else {
 					long topLevelWidget = GTK.gtk_widget_get_toplevel(handle);
 					long topLevelWindow = GTK.gtk_widget_get_window(topLevelWidget);
-					width = GDK.gdk_window_get_width(topLevelWindow);
+					int width = GDK.gdk_window_get_width(topLevelWindow);
 					GDK.gdk_window_resize(topLevelWindow, width, naturalHeight[0]);
 				}
 			}
 		}
 	}
-	return;
 }
 
 /**

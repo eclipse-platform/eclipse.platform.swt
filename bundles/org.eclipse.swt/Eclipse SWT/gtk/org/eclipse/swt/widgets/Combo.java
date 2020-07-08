@@ -1820,17 +1820,7 @@ long paintSurface () {
 	GTK.gtk_widget_realize (childHandle);
 	long surface = gtk_widget_get_surface (childHandle);
 	if ((style & SWT.READ_ONLY) != 0) return surface;
-	long children = GDK.gdk_surface_get_children (surface);
-	if (children != 0) {
-		/*
-		 * The only direct child of GtkComboBox since 3.20 is GtkBox thus the children
-		 * have to be traversed to get to the entry one.
-		 */
-		do {
-			surface = OS.g_list_data (children);
-		} while ((children = OS.g_list_next (children)) != 0);
-	}
-	OS.g_list_free (children);
+	/* TODO: GTK4 no access to children of the surface, for combobox may need to use gtk_combo_box_get_child () */
 
 	return surface;
 }
