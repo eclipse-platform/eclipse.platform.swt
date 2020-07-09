@@ -429,11 +429,19 @@ private void createHandleForCalendar () {
 
 	GTK.gtk_container_add (fixedHandle, calendarHandle);
 
-	int flags = GTK.GTK_CALENDAR_SHOW_HEADING | GTK.GTK_CALENDAR_SHOW_DAY_NAMES;
-	if (showWeekNumbers()) {
-		flags |= GTK.GTK_CALENDAR_SHOW_WEEK_NUMBERS;
+
+	if (GTK.GTK4) {
+		GTK.gtk_calendar_set_show_heading(calendarHandle, true);
+		GTK.gtk_calendar_set_show_day_names(calendarHandle, true);
+		GTK.gtk_calendar_set_show_week_numbers(calendarHandle, showWeekNumbers());
+	} else {
+		int flags = GTK.GTK_CALENDAR_SHOW_HEADING | GTK.GTK_CALENDAR_SHOW_DAY_NAMES;
+		if (showWeekNumbers()) {
+			flags |= GTK.GTK_CALENDAR_SHOW_WEEK_NUMBERS;
+		}
+		GTK.gtk_calendar_set_display_options (calendarHandle, flags);
 	}
-	GTK.gtk_calendar_set_display_options (calendarHandle, flags);
+
 	GTK.gtk_widget_show (calendarHandle);
 }
 
@@ -711,7 +719,14 @@ void getDate () {
 	int [] y = new int [1];
 	int [] m = new int [1];
 	int [] d = new int [1];
-	GTK.gtk_calendar_get_date (calendarHandle, y, m, d);
+
+	if (GTK.GTK4) {
+		long dateTime = GTK.gtk_calendar_get_date(calendarHandle);
+		OS.g_date_time_get_ymd(dateTime, y, m, d);
+	} else {
+		GTK.gtk_calendar_get_date (calendarHandle, y, m, d);
+	}
+
 	year = y[0];
 	month = m[0];
 	day = d[0];
@@ -1350,8 +1365,14 @@ void sendSelectionEvent () {
 	int [] y = new int [1];
 	int [] m = new int [1];
 	int [] d = new int [1];
-	GTK.gtk_calendar_get_date (calendarHandle, y, m, d);
-	//TODO: hours, minutes, seconds?
+
+	if (GTK.GTK4) {
+		long dateTime = GTK.gtk_calendar_get_date(calendarHandle);
+		OS.g_date_time_get_ymd(dateTime, y, m, d);
+	} else {
+		GTK.gtk_calendar_get_date (calendarHandle, y, m, d);
+	}
+
 	if (d[0] != day ||
 		m[0] != month ||
 		y[0] != year) {
@@ -1475,8 +1496,14 @@ public void setDate (int year, int month, int day) {
 		this.year = year;
 		this.month = month;
 		this.day = day;
-		GTK.gtk_calendar_select_month (calendarHandle, month, year);
-		GTK.gtk_calendar_select_day (calendarHandle, day);
+
+		if (GTK.GTK4) {
+			long dateTime = OS.g_date_time_new_local(year, month, day, 0, 0, 0);
+			GTK.gtk_calendar_select_day(calendarHandle, dateTime);
+		} else {
+			GTK.gtk_calendar_select_month (calendarHandle, month, year);
+			GTK.gtk_calendar_select_day (calendarHandle, day);
+		}
 	} else {
 		calendar.set (year, month, day);
 		updateControl ();
@@ -1504,7 +1531,13 @@ public void setDay (int day) {
 	if (!isValidDate (getYear (), getMonth (), day)) return;
 	if (isCalendar ()) {
 		this.day = day;
-		GTK.gtk_calendar_select_day (calendarHandle, day);
+
+		if (GTK.GTK4) {
+			long dateTime = OS.g_date_time_new_local(this.year, this.month, day, 0, 0, 0);
+			GTK.gtk_calendar_select_day(calendarHandle, dateTime);
+		} else {
+			GTK.gtk_calendar_select_day (calendarHandle, day);
+		}
 	} else {
 		calendar.set (Calendar.DAY_OF_MONTH, day);
 		updateControl ();

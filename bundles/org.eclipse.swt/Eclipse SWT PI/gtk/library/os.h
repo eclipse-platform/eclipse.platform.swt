@@ -381,6 +381,9 @@
 #define NO_gdk_1keymap_1translate_1keyboard_1state
 #define NO_gdk_1keymap_1get_1entries_1for_1keyval
 
+// GtkCalendarDisplayOptions removed
+#define NO_gtk_1calendar_1set_1display_1options
+
 #else
 
 /**

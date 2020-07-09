@@ -4109,23 +4109,51 @@ JNIEXPORT void JNICALL GTK_NATIVE(gtk_1calendar_1clear_1marks)
 }
 #endif
 
-#ifndef NO_gtk_1calendar_1get_1date
-JNIEXPORT void JNICALL GTK_NATIVE(gtk_1calendar_1get_1date)
+#ifndef NO_gtk_1calendar_1get_1date__J
+JNIEXPORT jlong JNICALL GTK_NATIVE(gtk_1calendar_1get_1date__J)
+	(JNIEnv *env, jclass that, jlong arg0)
+{
+	jlong rc = 0;
+	GTK_NATIVE_ENTER(env, that, gtk_1calendar_1get_1date__J_FUNC);
+/*
+	rc = (jlong)gtk_calendar_get_date((GtkCalendar *)arg0);
+*/
+	{
+		GTK_LOAD_FUNCTION(fp, gtk_calendar_get_date)
+		if (fp) {
+			rc = (jlong)((jlong (CALLING_CONVENTION*)(GtkCalendar *))fp)((GtkCalendar *)arg0);
+		}
+	}
+	GTK_NATIVE_EXIT(env, that, gtk_1calendar_1get_1date__J_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_gtk_1calendar_1get_1date__J_3I_3I_3I
+JNIEXPORT void JNICALL GTK_NATIVE(gtk_1calendar_1get_1date__J_3I_3I_3I)
 	(JNIEnv *env, jclass that, jlong arg0, jintArray arg1, jintArray arg2, jintArray arg3)
 {
 	jint *lparg1=NULL;
 	jint *lparg2=NULL;
 	jint *lparg3=NULL;
-	GTK_NATIVE_ENTER(env, that, gtk_1calendar_1get_1date_FUNC);
+	GTK_NATIVE_ENTER(env, that, gtk_1calendar_1get_1date__J_3I_3I_3I_FUNC);
 	if (arg1) if ((lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL)) == NULL) goto fail;
 	if (arg2) if ((lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL)) == NULL) goto fail;
 	if (arg3) if ((lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL)) == NULL) goto fail;
+/*
 	gtk_calendar_get_date((GtkCalendar *)arg0, (guint *)lparg1, (guint *)lparg2, (guint *)lparg3);
+*/
+	{
+		GTK_LOAD_FUNCTION(fp, gtk_calendar_get_date)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(GtkCalendar *, guint *, guint *, guint *))fp)((GtkCalendar *)arg0, (guint *)lparg1, (guint *)lparg2, (guint *)lparg3);
+		}
+	}
 fail:
 	if (arg3 && lparg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
 	if (arg2 && lparg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
 	if (arg1 && lparg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
-	GTK_NATIVE_EXIT(env, that, gtk_1calendar_1get_1date_FUNC);
+	GTK_NATIVE_EXIT(env, that, gtk_1calendar_1get_1date__J_3I_3I_3I_FUNC);
 }
 #endif
 
@@ -4151,13 +4179,39 @@ JNIEXPORT jlong JNICALL GTK_NATIVE(gtk_1calendar_1new)
 }
 #endif
 
-#ifndef NO_gtk_1calendar_1select_1day
-JNIEXPORT void JNICALL GTK_NATIVE(gtk_1calendar_1select_1day)
+#ifndef NO_gtk_1calendar_1select_1day__JI
+JNIEXPORT void JNICALL GTK_NATIVE(gtk_1calendar_1select_1day__JI)
 	(JNIEnv *env, jclass that, jlong arg0, jint arg1)
 {
-	GTK_NATIVE_ENTER(env, that, gtk_1calendar_1select_1day_FUNC);
+	GTK_NATIVE_ENTER(env, that, gtk_1calendar_1select_1day__JI_FUNC);
+/*
 	gtk_calendar_select_day((GtkCalendar *)arg0, (guint)arg1);
-	GTK_NATIVE_EXIT(env, that, gtk_1calendar_1select_1day_FUNC);
+*/
+	{
+		GTK_LOAD_FUNCTION(fp, gtk_calendar_select_day)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(GtkCalendar *, guint))fp)((GtkCalendar *)arg0, (guint)arg1);
+		}
+	}
+	GTK_NATIVE_EXIT(env, that, gtk_1calendar_1select_1day__JI_FUNC);
+}
+#endif
+
+#ifndef NO_gtk_1calendar_1select_1day__JJ
+JNIEXPORT void JNICALL GTK_NATIVE(gtk_1calendar_1select_1day__JJ)
+	(JNIEnv *env, jclass that, jlong arg0, jlong arg1)
+{
+	GTK_NATIVE_ENTER(env, that, gtk_1calendar_1select_1day__JJ_FUNC);
+/*
+	gtk_calendar_select_day((GtkCalendar *)arg0, (GDateTime *)arg1);
+*/
+	{
+		GTK_LOAD_FUNCTION(fp, gtk_calendar_select_day)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(GtkCalendar *, GDateTime *))fp)((GtkCalendar *)arg0, (GDateTime *)arg1);
+		}
+	}
+	GTK_NATIVE_EXIT(env, that, gtk_1calendar_1select_1day__JJ_FUNC);
 }
 #endif
 
@@ -4166,7 +4220,15 @@ JNIEXPORT void JNICALL GTK_NATIVE(gtk_1calendar_1select_1month)
 	(JNIEnv *env, jclass that, jlong arg0, jint arg1, jint arg2)
 {
 	GTK_NATIVE_ENTER(env, that, gtk_1calendar_1select_1month_FUNC);
+/*
 	gtk_calendar_select_month((GtkCalendar *)arg0, (guint)arg1, (guint)arg2);
+*/
+	{
+		GTK_LOAD_FUNCTION(fp, gtk_calendar_select_month)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(GtkCalendar *, guint, guint))fp)((GtkCalendar *)arg0, (guint)arg1, (guint)arg2);
+		}
+	}
 	GTK_NATIVE_EXIT(env, that, gtk_1calendar_1select_1month_FUNC);
 }
 #endif
@@ -4176,8 +4238,70 @@ JNIEXPORT void JNICALL GTK_NATIVE(gtk_1calendar_1set_1display_1options)
 	(JNIEnv *env, jclass that, jlong arg0, jint arg1)
 {
 	GTK_NATIVE_ENTER(env, that, gtk_1calendar_1set_1display_1options_FUNC);
+/*
 	gtk_calendar_set_display_options((GtkCalendar *)arg0, (GtkCalendarDisplayOptions)arg1);
+*/
+	{
+		GTK_LOAD_FUNCTION(fp, gtk_calendar_set_display_options)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(GtkCalendar *, GtkCalendarDisplayOptions))fp)((GtkCalendar *)arg0, (GtkCalendarDisplayOptions)arg1);
+		}
+	}
 	GTK_NATIVE_EXIT(env, that, gtk_1calendar_1set_1display_1options_FUNC);
+}
+#endif
+
+#ifndef NO_gtk_1calendar_1set_1show_1day_1names
+JNIEXPORT void JNICALL GTK_NATIVE(gtk_1calendar_1set_1show_1day_1names)
+	(JNIEnv *env, jclass that, jlong arg0, jboolean arg1)
+{
+	GTK_NATIVE_ENTER(env, that, gtk_1calendar_1set_1show_1day_1names_FUNC);
+/*
+	gtk_calendar_set_show_day_names((GtkCalendar *)arg0, (gboolean)arg1);
+*/
+	{
+		GTK_LOAD_FUNCTION(fp, gtk_calendar_set_show_day_names)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(GtkCalendar *, gboolean))fp)((GtkCalendar *)arg0, (gboolean)arg1);
+		}
+	}
+	GTK_NATIVE_EXIT(env, that, gtk_1calendar_1set_1show_1day_1names_FUNC);
+}
+#endif
+
+#ifndef NO_gtk_1calendar_1set_1show_1heading
+JNIEXPORT void JNICALL GTK_NATIVE(gtk_1calendar_1set_1show_1heading)
+	(JNIEnv *env, jclass that, jlong arg0, jboolean arg1)
+{
+	GTK_NATIVE_ENTER(env, that, gtk_1calendar_1set_1show_1heading_FUNC);
+/*
+	gtk_calendar_set_show_heading((GtkCalendar *)arg0, (gboolean)arg1);
+*/
+	{
+		GTK_LOAD_FUNCTION(fp, gtk_calendar_set_show_heading)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(GtkCalendar *, gboolean))fp)((GtkCalendar *)arg0, (gboolean)arg1);
+		}
+	}
+	GTK_NATIVE_EXIT(env, that, gtk_1calendar_1set_1show_1heading_FUNC);
+}
+#endif
+
+#ifndef NO_gtk_1calendar_1set_1show_1week_1numbers
+JNIEXPORT void JNICALL GTK_NATIVE(gtk_1calendar_1set_1show_1week_1numbers)
+	(JNIEnv *env, jclass that, jlong arg0, jboolean arg1)
+{
+	GTK_NATIVE_ENTER(env, that, gtk_1calendar_1set_1show_1week_1numbers_FUNC);
+/*
+	gtk_calendar_set_show_week_numbers((GtkCalendar *)arg0, (gboolean)arg1);
+*/
+	{
+		GTK_LOAD_FUNCTION(fp, gtk_calendar_set_show_week_numbers)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(GtkCalendar *, gboolean))fp)((GtkCalendar *)arg0, (gboolean)arg1);
+		}
+	}
+	GTK_NATIVE_EXIT(env, that, gtk_1calendar_1set_1show_1week_1numbers_FUNC);
 }
 #endif
 
@@ -14003,6 +14127,38 @@ JNIEXPORT jlong JNICALL OS_NATIVE(g_1credentials_1new)
 	OS_NATIVE_ENTER(env, that, g_1credentials_1new_FUNC);
 	rc = (jlong)g_credentials_new();
 	OS_NATIVE_EXIT(env, that, g_1credentials_1new_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_g_1date_1time_1get_1ymd
+JNIEXPORT void JNICALL OS_NATIVE(g_1date_1time_1get_1ymd)
+	(JNIEnv *env, jclass that, jlong arg0, jintArray arg1, jintArray arg2, jintArray arg3)
+{
+	jint *lparg1=NULL;
+	jint *lparg2=NULL;
+	jint *lparg3=NULL;
+	OS_NATIVE_ENTER(env, that, g_1date_1time_1get_1ymd_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	if (arg2) if ((lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL)) == NULL) goto fail;
+	if (arg3) if ((lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL)) == NULL) goto fail;
+	g_date_time_get_ymd((GDateTime *)arg0, (gint *)lparg1, (gint *)lparg2, (gint *)lparg3);
+fail:
+	if (arg3 && lparg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
+	if (arg2 && lparg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	if (arg1 && lparg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
+	OS_NATIVE_EXIT(env, that, g_1date_1time_1get_1ymd_FUNC);
+}
+#endif
+
+#ifndef NO_g_1date_1time_1new_1local
+JNIEXPORT jlong JNICALL OS_NATIVE(g_1date_1time_1new_1local)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4, jdouble arg5)
+{
+	jlong rc = 0;
+	OS_NATIVE_ENTER(env, that, g_1date_1time_1new_1local_FUNC);
+	rc = (jlong)g_date_time_new_local(arg0, arg1, arg2, arg3, arg4, arg5);
+	OS_NATIVE_EXIT(env, that, g_1date_1time_1new_1local_FUNC);
 	return rc;
 }
 #endif

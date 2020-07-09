@@ -389,18 +389,10 @@ public class GTK extends OS {
 	 */
 	/* [GTK4 only] */
 	public static final native void gtk_box_set_child_packing(long box, long child, int pack_type);
+
+	/* GtkCalendar */
+
 	public static final native long gtk_calendar_new();
-	/**
-	 * @param calendar cast=(GtkCalendar *)
-	 * @param month cast=(guint)
-	 * @param year cast=(guint)
-	 */
-	public static final native void /*long*/ gtk_calendar_select_month(long calendar, int month, int year);
-	/**
-	 * @param calendar cast=(GtkCalendar *)
-	 * @param day cast=(guint)
-	 */
-	public static final native void gtk_calendar_select_day(long calendar, int day);
 	/**
 	 * @param calendar cast=(GtkCalendar *)
 	 * @param day cast=(guint)
@@ -410,18 +402,68 @@ public class GTK extends OS {
 	 * @param calendar cast=(GtkCalendar *)
 	 */
 	public static final native void gtk_calendar_clear_marks(long calendar);
+
+	/* GtkCalendar [GTK3 only] */
 	/**
+	 * @method flags=dynamic
+	 * @param calendar cast=(GtkCalendar *)
+	 * @param month cast=(guint)
+	 * @param year cast=(guint)
+	 */
+	public static final native void /*long*/ gtk_calendar_select_month(long calendar, int month, int year);
+	/**
+	 * @method flags=dynamic
+	 * @param calendar cast=(GtkCalendar *)
+	 * @param day cast=(guint)
+	 */
+	public static final native void gtk_calendar_select_day(long calendar, int day);
+	/**
+	 * @method flags=dynamic
 	 * @param calendar cast=(GtkCalendar *)
 	 * @param flags cast=(GtkCalendarDisplayOptions)
 	 */
+	/* [GTK3 only] */
 	public static final native void gtk_calendar_set_display_options(long calendar, int flags);
 	/**
+	 * @method flags=dynamic
 	 * @param calendar cast=(GtkCalendar *)
 	 * @param year cast=(guint *)
 	 * @param month cast=(guint *)
 	 * @param day cast=(guint *)
 	 */
 	public static final native void gtk_calendar_get_date(long calendar, int[] year, int[] month, int[] day);
+
+	/* GtkCalendar [GTK4 only] */
+	/**
+	 * @method flags=dynamic
+	 * @param calendar cast=(GtkCalendar *)
+	 */
+	public static final native long gtk_calendar_get_date(long calendar);
+	/**
+	 * @method flags=dynamic
+	 * @param calendar cast=(GtkCalendar *)
+	 * @param date cast=(GDateTime *)
+	 */
+	public static final native void gtk_calendar_select_day(long calendar, long date);
+	/**
+	 * @method flags=dynamic
+	 * @param calendar cast=(GtkCalendar *)
+	 * @param value cast=(gboolean)
+	 */
+	public static final native void gtk_calendar_set_show_day_names(long calendar, boolean value);
+	/**
+	 * @method flags=dynamic
+	 * @param calendar cast=(GtkCalendar *)
+	 * @param value cast=(gboolean)
+	 */
+	public static final native void gtk_calendar_set_show_heading(long calendar, boolean value);
+	/**
+	 * @method flags=dynamic
+	 * @param calendar cast=(GtkCalendar *)
+	 * @param value cast=(gboolean)
+	 */
+	public static final native void gtk_calendar_set_show_week_numbers(long calendar, boolean value);
+
 	/** @param cell_layout cast=(GtkCellLayout *) */
 	public static final native void gtk_cell_layout_clear(long cell_layout);
 	/** @param cell_layout cast=(GtkCellLayout *) */

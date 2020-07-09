@@ -2251,4 +2251,15 @@ public static final native void g_variant_unref(long value);
  * @param object cast=(GObject *)
  */
 public static final native long g_object_ref_sink(long object);
+
+/**
+ * @param dateTime cast=(GDateTime *)
+ * @param year cast=(gint *)
+ * @param month cast=(gint *)
+ * @param day cast=(gint *)
+ */
+public static final native void g_date_time_get_ymd(long dateTime, int[] year, int[] month, int[] day);
+
+public static final native long g_date_time_new_local(int year, int month, int day, int hour, int minute, double seconds);
+
 }
