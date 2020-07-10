@@ -47,10 +47,12 @@ import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Monitor;
 import org.eclipse.swt.widgets.Shell;
@@ -1181,6 +1183,18 @@ public void test_ExceptionsThrownInDisposeListenerDontPreventDisposal () {
 	} finally {
 		Display.getCurrent ().setRuntimeExceptionHandler (oldHandler);
 	}
+}
+
+@Test
+public void test_NoExceptionsThrownInFillLayout () {
+	shell.setLayout(new FillLayout());
+	Label label = new Label(shell, SWT.NONE);
+	Label label2 = new Label(shell, SWT.NONE);
+	String layoutData = new String("not a fill layout");
+	label.setLayoutData(layoutData);
+	shell.computeSize(SWT.DEFAULT, SWT.DEFAULT, true);
+	assertEquals(layoutData, label.getLayoutData());
+	assertNotNull(label2.getLayoutData());
 }
 
 }

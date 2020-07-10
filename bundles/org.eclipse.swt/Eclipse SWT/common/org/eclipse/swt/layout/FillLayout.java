@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2018 IBM Corporation and others.
+ * Copyright (c) 2000, 2020 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -10,6 +10,7 @@
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
+ *     Christoph Läubrich - Bug 513185
  *******************************************************************************/
 package org.eclipse.swt.layout;
 
@@ -145,14 +146,19 @@ protected Point computeSize (Composite composite, int wHint, int hHint, boolean 
 }
 
 Point computeChildSize (Control control, int wHint, int hHint, boolean flushCache) {
-	FillData data = (FillData)control.getLayoutData ();
-	if (data == null) {
-		data = new FillData ();
-		control.setLayoutData (data);
+	Object data = control.getLayoutData ();
+	FillData fillData;
+	if (data instanceof FillData) {
+		fillData = (FillData) data;
+	} else {
+		fillData = new FillData ();
+		if (data == null) {
+			control.setLayoutData(fillData);
+		}
 	}
 	Point size = null;
 	if (wHint == SWT.DEFAULT && hHint == SWT.DEFAULT) {
-		size = data.computeSize (control, wHint, hHint, flushCache);
+		size = fillData.computeSize (control, wHint, hHint, flushCache);
 	} else {
 		// TEMPORARY CODE
 		int trimX, trimY;
@@ -165,7 +171,7 @@ Point computeChildSize (Control control, int wHint, int hHint, boolean flushCach
 		}
 		int w = wHint == SWT.DEFAULT ? wHint : Math.max (0, wHint - trimX);
 		int h = hHint == SWT.DEFAULT ? hHint : Math.max (0, hHint - trimY);
-		size = data.computeSize (control, w, h, flushCache);
+		size = fillData.computeSize (control, w, h, flushCache);
 	}
 	return size;
 }
@@ -173,8 +179,11 @@ Point computeChildSize (Control control, int wHint, int hHint, boolean flushCach
 @Override
 protected boolean flushCache (Control control) {
 	Object data = control.getLayoutData();
-	if (data != null) ((FillData)data).flushCache();
-	return true;
+	if (data instanceof FillData) {
+		((FillData)data).flushCache();
+		return true;
+	}
+	return false;
 }
 
 String getName () {
