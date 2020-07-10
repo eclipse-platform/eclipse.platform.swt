@@ -19,6 +19,10 @@
 echo
 echo INFO Starting build of binaries. Detailed system setup instructions can be found in /Readme.Win32.md
 
+@rem SWT_BUILDDIR defaults to "W:" on the SWT Windows native build infrastructure machine.
+IF "x.%SWT_BUILDDIR%"=="x." set "SWT_BUILDDIR=C:\swt-builddir"
+echo SWT build dir: %SWT_BUILDDIR%
+
 IF "x.%MSVC_HOME%"=="x." set "MSVC_HOME=%SWT_BUILDDIR%\Microsoft\Visual Studio\2017\"
 IF NOT EXIST "%MSVC_HOME%" set "MSVC_HOME=%ProgramFiles(x86)%\Microsoft Visual Studio\2017"
 IF EXIST "%MSVC_HOME%" (
