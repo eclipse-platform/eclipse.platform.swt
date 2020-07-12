@@ -303,6 +303,11 @@ public void dispose() {
  * created. In cases where no <code>Device</code> was used
  * at creation, returns the current or default Device.
  *
+ * <p>
+ * As Color does not require a Device it is recommended to not
+ * use {@link Color#getDevice()}.
+ * </p>
+ *
  * @return <code>Device</code> the device of the receiver
  * @since 3.2
  */
