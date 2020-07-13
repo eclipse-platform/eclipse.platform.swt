@@ -108,11 +108,16 @@ String computeResultChooserDialog () {
 	fullPath = null;
 	if ((style & SWT.MULTI) != 0) {
 		long list = 0;
-		if (uriMode) {
-			list = GTK.gtk_file_chooser_get_uris (handle);
+		if (GTK.GTK4) {
+			list = GTK.gtk_file_chooser_get_files(handle);
 		} else {
-			list = GTK.gtk_file_chooser_get_filenames (handle);
+			if (uriMode) {
+				list = GTK.gtk_file_chooser_get_uris (handle);
+			} else {
+				list = GTK.gtk_file_chooser_get_filenames (handle);
+			}
 		}
+
 		int listLength = OS.g_slist_length (list);
 		fileNames = new String [listLength];
 		long current = list;
@@ -121,8 +126,16 @@ String computeResultChooserDialog () {
 			long name = OS.g_slist_data (current);
 			long utf8Ptr = 0;
 			if (uriMode) {
-				utf8Ptr = name;
+				if (GTK.GTK4) {
+					utf8Ptr = OS.g_file_get_uri(name);
+				} else {
+					utf8Ptr = name;
+				}
 			} else {
+				if (GTK.GTK4) {
+					name = OS.g_file_get_path(name);
+				}
+
 				utf8Ptr = OS.g_filename_to_utf8 (name, -1, null, null, null);
 				if (utf8Ptr == 0) utf8Ptr = OS.g_filename_display_name (name);
 			}
@@ -151,9 +164,21 @@ String computeResultChooserDialog () {
 	} else {
 		long utf8Ptr = 0;
 		if (uriMode) {
-			utf8Ptr = GTK.gtk_file_chooser_get_uri (handle);
+			if (GTK.GTK4) {
+				long file = GTK.gtk_file_chooser_get_file(handle);
+				utf8Ptr = OS.g_file_get_uri(file);
+			} else {
+				utf8Ptr = GTK.gtk_file_chooser_get_uri (handle);
+			}
 		} else {
-			long path = GTK.gtk_file_chooser_get_filename (handle);
+			long path;
+			if (GTK.GTK4) {
+				long file = GTK.gtk_file_chooser_get_file(handle);
+				path = OS.g_file_get_path(file);
+			} else {
+				path = GTK.gtk_file_chooser_get_filename (handle);
+			}
+
 			if (path != 0) {
 				utf8Ptr = OS.g_filename_to_utf8 (path, -1, null, null, null);
 				if (utf8Ptr == 0) utf8Ptr = OS.g_filename_display_name (path);
@@ -319,7 +344,8 @@ String openNativeChooserDialog () {
 	handle = GTK.gtk_file_chooser_native_new(titleBytes, shellHandle, action, null, null);
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 
-	if (uriMode) {
+	if (uriMode && !GTK.GTK4) {
+		// GTK4 file chooser works on GFiles and does not need to worry about this
 		GTK.gtk_file_chooser_set_local_only (handle, false);
 	}
 	presetChooserDialog ();
@@ -368,7 +394,15 @@ void presetChooserDialog () {
 		if (filterPath.length () > 0) {
 			if (uriMode) {
 				byte [] buffer = Converter.wcsToMbcs (filterPath, true);
-				GTK.gtk_file_chooser_set_current_folder_uri (handle, buffer);
+
+				if (GTK.GTK4) {
+					long file = OS.g_file_new_for_uri(buffer);
+					GTK.gtk_file_chooser_set_current_folder (handle, file, 0);
+					OS.g_object_unref(file);
+				} else {
+					GTK.gtk_file_chooser_set_current_folder_uri (handle, buffer);
+				}
+
 			} else {
 				/* filename must be a full path */
 				byte [] buffer = Converter.wcsToMbcs (SEPARATOR + filterPath, true);
@@ -379,7 +413,13 @@ void presetChooserDialog () {
 				 */
 				long ptr = OS.realpath (buffer, null);
 				if (ptr != 0) {
-					GTK.gtk_file_chooser_set_current_folder (handle, ptr);
+					if (GTK.GTK4) {
+						long file = OS.g_file_new_for_path(buffer);
+						GTK.gtk_file_chooser_set_current_folder (handle, file, 0);
+						OS.g_object_unref(file);
+					} else {
+						GTK.gtk_file_chooser_set_current_folder (handle, ptr);
+					}
 					OS.g_free (ptr);
 				}
 			}
@@ -427,29 +467,52 @@ void presetChooserDialog () {
 			stringBuilder.append(fileName);
 		}
 		byte [] buffer = Converter.wcsToMbcs (stringBuilder.toString(), true);
-		if (uriMode) {
-			GTK.gtk_file_chooser_set_uri (handle, buffer);
-		} else {
-			/*
-			 * in GTK version 2.10, gtk_file_chooser_set_current_folder requires path
-			 * to be true canonical path. So using realpath to convert the path to
-			 * true canonical path.
-			 */
-			long ptr = OS.realpath (buffer, null);
-			if (ptr != 0) {
+
+		if (GTK.GTK4) {
+			long file;
+			if (uriMode) {
+				file = OS.g_file_new_for_uri(buffer);
+				GTK.gtk_file_chooser_set_file (handle, file, 0);
+			} else {
+				file = OS.g_file_new_for_path(buffer);
+
 				if (fileName.length() > 0) {
-					GTK.gtk_file_chooser_set_filename (handle, ptr);
+					GTK.gtk_file_chooser_set_file (handle, file, 0);
 				} else {
-					GTK.gtk_file_chooser_set_current_folder (handle, ptr);
+					GTK.gtk_file_chooser_set_current_folder (handle, file, 0);
 				}
-				OS.g_free (ptr);
+			}
+
+			OS.g_object_unref(file);
+		} else {
+			if (uriMode) {
+				GTK.gtk_file_chooser_set_uri (handle, buffer);
+			} else {
+				/*
+				 * in GTK version 2.10, gtk_file_chooser_set_current_folder requires path
+				 * to be true canonical path. So using realpath to convert the path to
+				 * true canonical path.
+				 */
+				long ptr = OS.realpath (buffer, null);
+				if (ptr != 0) {
+					if (fileName.length() > 0) {
+						GTK.gtk_file_chooser_set_filename (handle, ptr);
+					} else {
+						GTK.gtk_file_chooser_set_current_folder (handle, ptr);
+					}
+					OS.g_free (ptr);
+				}
 			}
 		}
 	}
 
 	/* Set overwrite mode */
 	if ((style & SWT.SAVE) != 0) {
-		GTK.gtk_file_chooser_set_do_overwrite_confirmation (handle, overwrite);
+		if (GTK.GTK4) {
+			// TODO: GTK4 does not this property for the file chooser, not sure what the default behavior is. Must test before trying an alternative.
+		} else {
+			GTK.gtk_file_chooser_set_do_overwrite_confirmation (handle, overwrite);
+		}
 	}
 
 	/* Set the extension filters */

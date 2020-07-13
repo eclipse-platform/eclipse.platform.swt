@@ -153,7 +153,13 @@ String openNativeChooserDialog () {
 		 */
 		long ptr = OS.realpath (buffer, null);
 		if (ptr != 0) {
-			GTK.gtk_file_chooser_set_current_folder (handle, ptr);
+			if (GTK.GTK4) {
+				long file = OS.g_file_new_for_path(buffer);
+				GTK.gtk_file_chooser_set_current_folder (handle, file, 0);
+				OS.g_object_unref(file);
+			} else {
+				GTK.gtk_file_chooser_set_current_folder (handle, ptr);
+			}
 			OS.g_free (ptr);
 		}
 	}
@@ -194,7 +200,14 @@ String openNativeChooserDialog () {
 		OS.g_signal_remove_emission_hook (signalId, hookId);
 	}
 	if (response == GTK.GTK_RESPONSE_ACCEPT) {
-		long path = GTK.gtk_file_chooser_get_filename (handle);
+		long path;
+		if (GTK.GTK4) {
+			long file = GTK.gtk_file_chooser_get_file (handle);
+			path = OS.g_file_get_path(file);
+		} else {
+			path = GTK.gtk_file_chooser_get_filename (handle);
+		}
+
 		if (path != 0) {
 			long utf8Ptr = OS.g_filename_to_utf8 (path, -1, null, null, null);
 			if (utf8Ptr == 0) utf8Ptr = OS.g_filename_display_name (path);

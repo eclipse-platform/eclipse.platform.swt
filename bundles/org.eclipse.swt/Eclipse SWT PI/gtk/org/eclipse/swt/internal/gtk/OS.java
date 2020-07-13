@@ -2262,4 +2262,6 @@ public static final native void g_date_time_get_ymd(long dateTime, int[] year, i
 
 public static final native long g_date_time_new_local(int year, int month, int day, int hour, int minute, double seconds);
 
+/** @param file cast=(GFile *) */
+public static final native long g_file_get_path(long file);
 }

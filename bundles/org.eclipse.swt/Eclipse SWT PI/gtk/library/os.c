@@ -5568,13 +5568,33 @@ JNIEXPORT void JNICALL GTK_NATIVE(gtk_1file_1chooser_1add_1filter)
 }
 #endif
 
+#ifndef NO_gtk_1file_1chooser_1get_1file
+JNIEXPORT jlong JNICALL GTK_NATIVE(gtk_1file_1chooser_1get_1file)
+	(JNIEnv *env, jclass that, jlong arg0)
+{
+	jlong rc = 0;
+	GTK_NATIVE_ENTER(env, that, gtk_1file_1chooser_1get_1file_FUNC);
+	rc = (jlong)gtk_file_chooser_get_file((GtkFileChooser *)arg0);
+	GTK_NATIVE_EXIT(env, that, gtk_1file_1chooser_1get_1file_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_gtk_1file_1chooser_1get_1filename
 JNIEXPORT jlong JNICALL GTK_NATIVE(gtk_1file_1chooser_1get_1filename)
 	(JNIEnv *env, jclass that, jlong arg0)
 {
 	jlong rc = 0;
 	GTK_NATIVE_ENTER(env, that, gtk_1file_1chooser_1get_1filename_FUNC);
+/*
 	rc = (jlong)gtk_file_chooser_get_filename((GtkFileChooser *)arg0);
+*/
+	{
+		GTK_LOAD_FUNCTION(fp, gtk_file_chooser_get_filename)
+		if (fp) {
+			rc = (jlong)((jlong (CALLING_CONVENTION*)(GtkFileChooser *))fp)((GtkFileChooser *)arg0);
+		}
+	}
 	GTK_NATIVE_EXIT(env, that, gtk_1file_1chooser_1get_1filename_FUNC);
 	return rc;
 }
@@ -5586,8 +5606,28 @@ JNIEXPORT jlong JNICALL GTK_NATIVE(gtk_1file_1chooser_1get_1filenames)
 {
 	jlong rc = 0;
 	GTK_NATIVE_ENTER(env, that, gtk_1file_1chooser_1get_1filenames_FUNC);
+/*
 	rc = (jlong)gtk_file_chooser_get_filenames((GtkFileChooser *)arg0);
+*/
+	{
+		GTK_LOAD_FUNCTION(fp, gtk_file_chooser_get_filenames)
+		if (fp) {
+			rc = (jlong)((jlong (CALLING_CONVENTION*)(GtkFileChooser *))fp)((GtkFileChooser *)arg0);
+		}
+	}
 	GTK_NATIVE_EXIT(env, that, gtk_1file_1chooser_1get_1filenames_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_gtk_1file_1chooser_1get_1files
+JNIEXPORT jlong JNICALL GTK_NATIVE(gtk_1file_1chooser_1get_1files)
+	(JNIEnv *env, jclass that, jlong arg0)
+{
+	jlong rc = 0;
+	GTK_NATIVE_ENTER(env, that, gtk_1file_1chooser_1get_1files_FUNC);
+	rc = (jlong)gtk_file_chooser_get_files((GtkFileChooser *)arg0);
+	GTK_NATIVE_EXIT(env, that, gtk_1file_1chooser_1get_1files_FUNC);
 	return rc;
 }
 #endif
@@ -5610,7 +5650,15 @@ JNIEXPORT jlong JNICALL GTK_NATIVE(gtk_1file_1chooser_1get_1uri)
 {
 	jlong rc = 0;
 	GTK_NATIVE_ENTER(env, that, gtk_1file_1chooser_1get_1uri_FUNC);
+/*
 	rc = (jlong)gtk_file_chooser_get_uri((GtkFileChooser *)arg0);
+*/
+	{
+		GTK_LOAD_FUNCTION(fp, gtk_file_chooser_get_uri)
+		if (fp) {
+			rc = (jlong)((jlong (CALLING_CONVENTION*)(GtkFileChooser *))fp)((GtkFileChooser *)arg0);
+		}
+	}
 	GTK_NATIVE_EXIT(env, that, gtk_1file_1chooser_1get_1uri_FUNC);
 	return rc;
 }
@@ -5622,7 +5670,15 @@ JNIEXPORT jlong JNICALL GTK_NATIVE(gtk_1file_1chooser_1get_1uris)
 {
 	jlong rc = 0;
 	GTK_NATIVE_ENTER(env, that, gtk_1file_1chooser_1get_1uris_FUNC);
+/*
 	rc = (jlong)gtk_file_chooser_get_uris((GtkFileChooser *)arg0);
+*/
+	{
+		GTK_LOAD_FUNCTION(fp, gtk_file_chooser_get_uris)
+		if (fp) {
+			rc = (jlong)((jlong (CALLING_CONVENTION*)(GtkFileChooser *))fp)((GtkFileChooser *)arg0);
+		}
+	}
 	GTK_NATIVE_EXIT(env, that, gtk_1file_1chooser_1get_1uris_FUNC);
 	return rc;
 }
@@ -5658,13 +5714,41 @@ fail:
 }
 #endif
 
-#ifndef NO_gtk_1file_1chooser_1set_1current_1folder
-JNIEXPORT void JNICALL GTK_NATIVE(gtk_1file_1chooser_1set_1current_1folder)
+#ifndef NO_gtk_1file_1chooser_1set_1current_1folder__JJ
+JNIEXPORT void JNICALL GTK_NATIVE(gtk_1file_1chooser_1set_1current_1folder__JJ)
 	(JNIEnv *env, jclass that, jlong arg0, jlong arg1)
 {
-	GTK_NATIVE_ENTER(env, that, gtk_1file_1chooser_1set_1current_1folder_FUNC);
+	GTK_NATIVE_ENTER(env, that, gtk_1file_1chooser_1set_1current_1folder__JJ_FUNC);
+/*
 	gtk_file_chooser_set_current_folder((GtkFileChooser *)arg0, (const gchar *)arg1);
-	GTK_NATIVE_EXIT(env, that, gtk_1file_1chooser_1set_1current_1folder_FUNC);
+*/
+	{
+		GTK_LOAD_FUNCTION(fp, gtk_file_chooser_set_current_folder)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(GtkFileChooser *, const gchar *))fp)((GtkFileChooser *)arg0, (const gchar *)arg1);
+		}
+	}
+	GTK_NATIVE_EXIT(env, that, gtk_1file_1chooser_1set_1current_1folder__JJ_FUNC);
+}
+#endif
+
+#ifndef NO_gtk_1file_1chooser_1set_1current_1folder__JJJ
+JNIEXPORT jboolean JNICALL GTK_NATIVE(gtk_1file_1chooser_1set_1current_1folder__JJJ)
+	(JNIEnv *env, jclass that, jlong arg0, jlong arg1, jlong arg2)
+{
+	jboolean rc = 0;
+	GTK_NATIVE_ENTER(env, that, gtk_1file_1chooser_1set_1current_1folder__JJJ_FUNC);
+/*
+	rc = (jboolean)gtk_file_chooser_set_current_folder((GtkFileChooser *)arg0, (GFile *)arg1, (GError **)arg2);
+*/
+	{
+		GTK_LOAD_FUNCTION(fp, gtk_file_chooser_set_current_folder)
+		if (fp) {
+			rc = (jboolean)((jboolean (CALLING_CONVENTION*)(GtkFileChooser *, GFile *, GError **))fp)((GtkFileChooser *)arg0, (GFile *)arg1, (GError **)arg2);
+		}
+	}
+	GTK_NATIVE_EXIT(env, that, gtk_1file_1chooser_1set_1current_1folder__JJJ_FUNC);
+	return rc;
 }
 #endif
 
@@ -5675,7 +5759,15 @@ JNIEXPORT void JNICALL GTK_NATIVE(gtk_1file_1chooser_1set_1current_1folder_1uri)
 	jbyte *lparg1=NULL;
 	GTK_NATIVE_ENTER(env, that, gtk_1file_1chooser_1set_1current_1folder_1uri_FUNC);
 	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
+/*
 	gtk_file_chooser_set_current_folder_uri((GtkFileChooser *)arg0, (const gchar *)lparg1);
+*/
+	{
+		GTK_LOAD_FUNCTION(fp, gtk_file_chooser_set_current_folder_uri)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(GtkFileChooser *, const gchar *))fp)((GtkFileChooser *)arg0, (const gchar *)lparg1);
+		}
+	}
 fail:
 	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
 	GTK_NATIVE_EXIT(env, that, gtk_1file_1chooser_1set_1current_1folder_1uri_FUNC);
@@ -5701,7 +5793,15 @@ JNIEXPORT void JNICALL GTK_NATIVE(gtk_1file_1chooser_1set_1do_1overwrite_1confir
 	(JNIEnv *env, jclass that, jlong arg0, jboolean arg1)
 {
 	GTK_NATIVE_ENTER(env, that, gtk_1file_1chooser_1set_1do_1overwrite_1confirmation_FUNC);
+/*
 	gtk_file_chooser_set_do_overwrite_confirmation((GtkFileChooser *)arg0, (gboolean)arg1);
+*/
+	{
+		GTK_LOAD_FUNCTION(fp, gtk_file_chooser_set_do_overwrite_confirmation)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(GtkFileChooser *, gboolean))fp)((GtkFileChooser *)arg0, (gboolean)arg1);
+		}
+	}
 	GTK_NATIVE_EXIT(env, that, gtk_1file_1chooser_1set_1do_1overwrite_1confirmation_FUNC);
 }
 #endif
@@ -5716,12 +5816,40 @@ JNIEXPORT void JNICALL GTK_NATIVE(gtk_1file_1chooser_1set_1extra_1widget)
 }
 #endif
 
+#ifndef NO_gtk_1file_1chooser_1set_1file
+JNIEXPORT jboolean JNICALL GTK_NATIVE(gtk_1file_1chooser_1set_1file)
+	(JNIEnv *env, jclass that, jlong arg0, jlong arg1, jlong arg2)
+{
+	jboolean rc = 0;
+	GTK_NATIVE_ENTER(env, that, gtk_1file_1chooser_1set_1file_FUNC);
+/*
+	rc = (jboolean)gtk_file_chooser_set_file((GtkFileChooser *)arg0, (GFile *)arg1, (GError **)arg2);
+*/
+	{
+		GTK_LOAD_FUNCTION(fp, gtk_file_chooser_set_file)
+		if (fp) {
+			rc = (jboolean)((jboolean (CALLING_CONVENTION*)(GtkFileChooser *, GFile *, GError **))fp)((GtkFileChooser *)arg0, (GFile *)arg1, (GError **)arg2);
+		}
+	}
+	GTK_NATIVE_EXIT(env, that, gtk_1file_1chooser_1set_1file_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_gtk_1file_1chooser_1set_1filename
 JNIEXPORT void JNICALL GTK_NATIVE(gtk_1file_1chooser_1set_1filename)
 	(JNIEnv *env, jclass that, jlong arg0, jlong arg1)
 {
 	GTK_NATIVE_ENTER(env, that, gtk_1file_1chooser_1set_1filename_FUNC);
+/*
 	gtk_file_chooser_set_filename((GtkFileChooser *)arg0, (const gchar *)arg1);
+*/
+	{
+		GTK_LOAD_FUNCTION(fp, gtk_file_chooser_set_filename)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(GtkFileChooser *, const gchar *))fp)((GtkFileChooser *)arg0, (const gchar *)arg1);
+		}
+	}
 	GTK_NATIVE_EXIT(env, that, gtk_1file_1chooser_1set_1filename_FUNC);
 }
 #endif
@@ -5741,7 +5869,15 @@ JNIEXPORT void JNICALL GTK_NATIVE(gtk_1file_1chooser_1set_1local_1only)
 	(JNIEnv *env, jclass that, jlong arg0, jboolean arg1)
 {
 	GTK_NATIVE_ENTER(env, that, gtk_1file_1chooser_1set_1local_1only_FUNC);
+/*
 	gtk_file_chooser_set_local_only((GtkFileChooser *)arg0, (gboolean)arg1);
+*/
+	{
+		GTK_LOAD_FUNCTION(fp, gtk_file_chooser_set_local_only)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(GtkFileChooser *, gboolean))fp)((GtkFileChooser *)arg0, (gboolean)arg1);
+		}
+	}
 	GTK_NATIVE_EXIT(env, that, gtk_1file_1chooser_1set_1local_1only_FUNC);
 }
 #endif
@@ -5763,7 +5899,15 @@ JNIEXPORT void JNICALL GTK_NATIVE(gtk_1file_1chooser_1set_1uri)
 	jbyte *lparg1=NULL;
 	GTK_NATIVE_ENTER(env, that, gtk_1file_1chooser_1set_1uri_FUNC);
 	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
+/*
 	gtk_file_chooser_set_uri((GtkFileChooser *)arg0, (const char *)lparg1);
+*/
+	{
+		GTK_LOAD_FUNCTION(fp, gtk_file_chooser_set_uri)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(GtkFileChooser *, const char *))fp)((GtkFileChooser *)arg0, (const char *)lparg1);
+		}
+	}
 fail:
 	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
 	GTK_NATIVE_EXIT(env, that, gtk_1file_1chooser_1set_1uri_FUNC);
@@ -14460,6 +14604,18 @@ JNIEXPORT jlong JNICALL OS_NATIVE(g_1error_1get_1message)
 	OS_NATIVE_ENTER(env, that, g_1error_1get_1message_FUNC);
 	rc = (jlong)g_error_get_message((GError *)arg0);
 	OS_NATIVE_EXIT(env, that, g_1error_1get_1message_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_g_1file_1get_1path
+JNIEXPORT jlong JNICALL OS_NATIVE(g_1file_1get_1path)
+	(JNIEnv *env, jclass that, jlong arg0)
+{
+	jlong rc = 0;
+	OS_NATIVE_ENTER(env, that, g_1file_1get_1path_FUNC);
+	rc = (jlong)g_file_get_path((GFile *)arg0);
+	OS_NATIVE_EXIT(env, that, g_1file_1get_1path_FUNC);
 	return rc;
 }
 #endif
