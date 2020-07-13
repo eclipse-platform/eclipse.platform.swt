@@ -1,0 +1,23 @@
+[package]
+name = "chromium"
+version = "59.0.0"
+authors = ["Equo <https://www.equoplatform.com/>", "Guillermo Zunino <guillez@gmail.com>"]
+
+[[bin]]
+name = "chromium_subp"
+path = "src/bin/chromium_subp.rs"
+
+[profile.release]
+lto = true
+codegen-units = 1
+
+[dependencies]
+
+[target.'cfg(windows)'.dependencies]
+winapi = { version = "0.3", features = ["winuser", "libloaderapi"] }
+
+[features]
+gen = ["bindgen"]
+
+[build-dependencies]
+bindgen = { version = "0.41.0", optional = true }

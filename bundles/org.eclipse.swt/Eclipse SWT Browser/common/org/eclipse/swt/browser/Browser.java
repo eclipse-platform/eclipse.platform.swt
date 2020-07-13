@@ -183,6 +183,9 @@ static int checkStyle(int style) {
 				if (current.equalsIgnoreCase ("webkit")) { //$NON-NLS-1$
 					DefaultType = SWT.WEBKIT;
 					break;
+				} if (current.equalsIgnoreCase ("chromium")) { //$NON-NLS-1$
+					DefaultType = SWT.CHROMIUM;
+					break;
 				} else if (current.equalsIgnoreCase ("ie") && "win32".equals (platform)) { //$NON-NLS-1$ //$NON-NLS-2$
 					DefaultType = SWT.NONE;
 					break;
@@ -201,7 +204,7 @@ static int checkStyle(int style) {
 	if ((style & SWT.WEBKIT) != 0) {
 		return style;
 	}
-	if ("win32".equals (platform)) { //$NON-NLS-1$
+	if ("win32".equals (platform) && (style & SWT.CHROMIUM) == 0) { //$NON-NLS-1$
 		/*
 		* For IE on win32 the border is supplied by the embedded browser, so remove
 		* the style so that the parent Composite will not draw a second border.

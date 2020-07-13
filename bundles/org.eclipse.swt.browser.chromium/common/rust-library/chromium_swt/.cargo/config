@@ -1,0 +1,10 @@
+[target.'cfg(not(windows))']
+rustflags = [
+	"-C", "link-arg=-Wl,-rpath,$ORIGIN",
+	"-C", "link-arg=-s"
+	]
+
+[target.'cfg(windows)']
+rustflags = [
+	"-C", "target-feature=+crt-static"
+	]

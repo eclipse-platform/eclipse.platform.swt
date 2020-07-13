@@ -52,6 +52,11 @@
       sourceURL="${git.clone.platform.swt.location|uri}/bundles/org.eclipse.swt/.classpath_${osgi.ws}"
       targetURL="${git.clone.platform.swt.location|uri}/bundles/org.eclipse.swt/.classpath"/>
   <setupTask
+      xsi:type="setup:ResourceCopyTask"
+      excludedTriggers="BOOTSTRAP"
+      sourceURL="${git.clone.platform.swt.location|uri}/bundles/org.eclipse.swt.browser.chromium/.classpath_${osgi.ws}"
+      targetURL="${git.clone.platform.swt.location|uri}/bundles/org.eclipse.swt.browser.chromium/.classpath"/>
+  <setupTask
       xsi:type="setup.workingsets:WorkingSetTask"/>
   <setupTask
       xsi:type="git:GitCloneTask"
@@ -207,7 +212,7 @@
             project="org.eclipse.swt"/>
         <operand
             xsi:type="workingsets:ExclusionPredicate"
-            excludedWorkingSet="//@setupTasks.7/@workingSets.2 //@setupTasks.7/@workingSets.1 //@setupTasks.7/@workingSets.0"/>
+            excludedWorkingSet="//@setupTasks.8/@workingSets.2 //@setupTasks.8/@workingSets.1 //@setupTasks.8/@workingSets.0"/>
       </predicate>
     </workingSet>
     <workingSet

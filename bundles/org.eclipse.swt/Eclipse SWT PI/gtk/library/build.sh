@@ -280,6 +280,23 @@ func_build_gtk4 () {
 	fi
 }
 
+func_build_chromium () {
+	func_echo_plus "Building Chromium bindings:"
+	if [ -d "chromium_subp/cef_linux" ]; then
+		export CHROMIUM_HEADERS=./chromium_subp/cef_linux
+	else
+		export CHROMIUM_HEADERS=$CHROMIUM_OUTPUT_DIR/../../../../eclipse.platform.swt/bundles/org.eclipse.swt.browser.chromium/common/rust-library/chromium_subp/cef_linux
+	fi
+	${MAKE_TYPE} -f $MAKEFILE "${@}"
+	RETURN_VALUE=$?   #make can return 1 or 2 if it fails. Thus need to cache it in case it's used programmatically somewhere.
+	if [ "$RETURN_VALUE" -eq 0 ]; then
+		func_echo_plus "Chromium Build succeeded"
+	else
+		func_echo_error "Chromium Build failed, aborting further actions.."
+		exit $RETURN_VALUE
+	fi
+}
+
 func_build_gtk3 () {
 	export GTK_VERSION=3.0
 
@@ -315,6 +332,8 @@ elif [ "$1" = "-gtk4" ]; then
 elif [ "$1" = "-gtk3" ]; then
 	shift
 	func_build_gtk3 "$@"
+elif [ "$1" = "chromium_install" ] || [ "$1" = "chromium_cargo" ]; then
+	func_build_chromium "$@"
 elif [ "${GTK_VERSION}" = "4.0" ]; then
 	func_build_gtk4 "$@"
 elif [ "${GTK_VERSION}" = "3.0" -o "${GTK_VERSION}" = "" ]; then

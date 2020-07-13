@@ -1,0 +1,8 @@
+!common/rust-library/chromium_subp/src/bin
+.classpath
+ws/
+.build64/
+.buildas/
+common/rust-library/chromium_subp/cef_linux
+common/rust-library/chromium_subp/cef_win32
+common/rust-library/chromium_subp/cef_macosx

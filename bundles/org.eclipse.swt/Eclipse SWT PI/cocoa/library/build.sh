@@ -26,6 +26,11 @@ if [ "x${MODEL}" = "xx86_64" ]; then
 	if [ "x${OUTPUT_DIR}" = "x" ]; then
 		export OUTPUT_DIR=../../../org.eclipse.swt.cocoa.macosx.x86_64
 	fi
+	if [ -d "chromium_subp/cef_macosx" ]; then
+		export CHROMIUM_HEADERS=./chromium_subp/cef_macosx
+	else
+		export CHROMIUM_HEADERS=$CHROMIUM_OUTPUT_DIR/../../../../eclipse.platform.swt/bundles/org.eclipse.swt.browser.chromium/common/rust-library/chromium_subp/cef_macosx
+	fi
 fi
 
 export MACOSX_DEPLOYMENT_TARGET=10.10

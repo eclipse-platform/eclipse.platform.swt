@@ -81,7 +81,12 @@ static void chmod(String permision, String path) {
 	if (os().equals ("win32")) return; //$NON-NLS-1$
 	try {
 		Runtime.getRuntime ().exec (new String []{"chmod", permision, path}).waitFor(); //$NON-NLS-1$
-	} catch (Throwable e) {}
+	} catch (Throwable e) {
+		try {
+			new File(path).setExecutable(true);
+		} catch (Throwable e1) {
+		}
+	}
 }
 
 /* Use method instead of in-lined constants to avoid compiler warnings */
@@ -167,7 +172,7 @@ static boolean extract (String extractToFilePath, String mappedName) {
 				}
 
 	// Extract resource
-	String resourceName = "/" + mappedName; //$NON-NLS-1$
+	String resourceName = "/" + mappedName.replace('\\', '/'); //$NON-NLS-1$
 	if (!extractResource (resourceName, tempFile)) {
 		tempFile.delete();
 		return false;
@@ -334,10 +339,14 @@ public static void loadLibrary (String name, boolean mapName) {
 }
 
 static String mapLibraryName (String libName) {
+	return mapLibraryName(libName, true);
+}
+
+static String mapLibraryName (String libName, boolean replaceDylib) {
 	/* SWT libraries in the Macintosh use the extension .jnilib but the some VMs map to .dylib. */
 	libName = System.mapLibraryName (libName);
 	String ext = ".dylib"; //$NON-NLS-1$
-	if (libName.endsWith(ext)) {
+	if (libName.endsWith(ext) && replaceDylib) {
 		libName = libName.substring(0, libName.length() - ext.length()) + ".jnilib"; //$NON-NLS-1$
 	}
 	return libName;
@@ -363,7 +372,9 @@ public static String getVersionString () {
 	return version;
 }
 
-
+public static File findResource(String subDir, String resourceName, boolean mapResourceName){
+	return findResource(subDir, resourceName, mapResourceName, true, true);
+}
 /**
  * Locates a resource located either in java library path, swt library path, or attempts to extract it from inside swt.jar file.
  * This function supports a single level subfolder, e.g SubFolder/resource.
@@ -375,14 +386,14 @@ public static String getVersionString () {
  * @param resourceName e.g swt-webkitgtk
  * @param mapResourceName  true if you like platform specific mapping applied to resource name. e.g  MyLib -> libMyLib-gtk-4826.so
  */
-public static File findResource(String subDir, String resourceName, boolean mapResourceName){
+public static File findResource(String subDir, String resourceName, boolean mapResourceName, boolean replaceDylib, boolean searchInOsgi){
 
 	//We construct a 'maybe' subdirectory path. 'Maybe' because if no subDir given, then it's an empty string "".
 	                                                                         //       subdir  e.g:  subdir
 	String maybeSubDirPath = subDir != null ? subDir + SEPARATOR : "";       //               e.g:  subdir/  or ""
 	String maybeSubDirPathWithPrefix = subDir != null ? SEPARATOR + maybeSubDirPath : ""; //  e.g: /subdir/  or ""
 	final String finalResourceName = mapResourceName ?
-			mapLibraryName(resourceName + "-" + Platform.PLATFORM + "-" + getVersionString ()) // e.g libMyLib-gtk-3826.so
+			mapLibraryName(resourceName + "-" + Platform.PLATFORM + "-" + getVersionString (), replaceDylib) // e.g libMyLib-gtk-3826.so
 			: resourceName;
 
 	// 1) Look for the resource in the java/swt library path(s)
@@ -392,7 +403,7 @@ public static File findResource(String subDir, String resourceName, boolean mapR
 		Function<String, File> lookForFileInPath = searchPath -> {
 			String classpath = System.getProperty(searchPath);
 			if (classpath != null){
-				String[] paths = classpath.split(":");
+				String[] paths = classpath.split(File.pathSeparator);
 				for (String path : paths) {
 				File file = new File(path + SEPARATOR + maybeSubDirPath + finalResourceName);
 					if (file.exists()){
@@ -412,7 +423,7 @@ public static File findResource(String subDir, String resourceName, boolean mapR
 
 	// 2) If SWT is ran as OSGI bundle (e.g inside Eclipse), then local resources are extracted to
 	// eclipse/configuration/org.eclipse.osgi/NN/N/.cp/<resource> and we're given a pointer to the file.
-	{
+	if (searchInOsgi) {
 		// If this is an OSGI bundle look for the resource using getResource
 		URL url = Library.class.getClassLoader().getResource(maybeSubDirPathWithPrefix + finalResourceName);
 		URLConnection connection;
@@ -458,7 +469,7 @@ public static File findResource(String subDir, String resourceName, boolean mapR
 			}
 		}
 	}
-	throw new UnsatisfiedLinkError("Could not find resource" + resourceName +  (subDir != null ? " (in subdirectory: " + subDir + " )" : ""));
+	throw new UnsatisfiedLinkError("Could not find resource " + resourceName +  (subDir != null ? " (in subdirectory: " + subDir + " )" : ""));
 }
 
 

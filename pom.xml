@@ -108,6 +108,7 @@
 
   <modules>
     <module>bundles/org.eclipse.swt</module>
+    <module>bundles/org.eclipse.swt.browser.chromium</module>
     <module>local-build/org.eclipse.swt.fragments.localbuild</module>
     <module>bundles/org.eclipse.swt.tools.base</module>
     <module>bundles/org.eclipse.swt.tools.spies</module>

@@ -1,0 +1,28 @@
+[package]
+name = "chromium_swt"
+version = "59.0.0"
+authors = ["Equo <https://www.equoplatform.com/>", "Guillermo Zunino <guillez@gmail.com>"]
+
+[lib]
+name = "chromium_swt_4936r6"
+crate-type = ["dylib"]
+path = "src/lib.rs"
+
+[profile.release]
+lto = true
+codegen-units = 1
+
+[dependencies]
+chromium = { path = "../chromium_subp/" }
+
+[target.'cfg(target_os = "linux")'.dependencies]
+x11 = "2.17.0"
+
+[target.'cfg(unix)'.dependencies]
+nix = "0.8.1"
+
+[target.'cfg(windows)'.dependencies]
+winapi = { version = "0.3", features = ["winuser"] }
+
+[target.'cfg(target_os = "macos")'.dependencies]
+objc = "0.2.2"

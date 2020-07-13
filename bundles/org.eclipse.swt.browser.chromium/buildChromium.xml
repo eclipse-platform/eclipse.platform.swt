@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Copyright (c) 2020 Equo
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License 2.0 which is available at
+    http://www.eclipse.org/legal/epl-2.0.
+
+    SPDX-License-Identifier: EPL-2.0
+
+    Contributors:
+        Guillermo Zunino, Equo - initial implementation
+ -->
+
+<project name="chromiumbuild" default="build.jars" basedir=".">
+
+	<property name="targets" value="chromium_install"/>
+	<property name="fragment" value="org.eclipse.swt.browser.chromium.${swt.ws}.${swt.os}.${swt.arch}"/>
+	<property name="src_common" value="'bundles/org.eclipse.swt/Eclipse SWT/common/library' 'bundles/org.eclipse.swt.browser.chromium/common/library' 'bundles/org.eclipse.swt.browser.chromium/common/rust-library'"/>
+	<property name="src_gtk" value="${src_common} 'bundles/org.eclipse.swt/Eclipse SWT PI/gtk/library'"/>
+	<property name="src_cocoa" value="${src_common} 'bundles/org.eclipse.swt/Eclipse SWT PI/cocoa/library'"/>
+	<property name="src_win32" value="${src_common} 'bundles/org.eclipse.swt/Eclipse SWT PI/win32/library'"/>
+	<property name="swtbasename" value="swt-chromium"/>
+
+	<property name="swtplugindir" value="../org.eclipse.swt"/>
+	
+	<target name="build_local">
+		<antcall target="swtbuild.build_local"/>
+		<exec executable="rmdir">
+			<arg value="${output_dir}/webkitextensions${swt_version}/"/>
+		</exec>
+	</target>
+
+	<target name="get_cef">
+		<condition property="cefos" value="windows" else="${swt.os}">
+			<equals arg1="${swt.os}" arg2="win32"/>
+		</condition>
+		<property name="ceffile" value="cef_binary_3.3071.1649.g98725e6_${cefos}64_minimal.tar.bz2"/>
+		<mkdir dir="${tmphome}"/>
+		<get src="http://opensource.spotify.com/cefbuilds/${ceffile}" dest="${tmphome}/${ceffile}" usetimestamp="true"/>
+		<untar dest="${repo.src}/bundles/org.eclipse.swt.browser.chromium/common/rust-library/chromium_subp/cef_${swt.os}" overwrite="false" compression="bzip2" src="${tmphome}/${ceffile}">
+			<cutdirsmapper dirs="1"/>
+		</untar>
+	</target>
+	
+	<target name="build_chromium" depends="init_fragment,get_version,get_cef">
+		<property name="rust_dir" value="${repo.src}/bundles/org.eclipse.swt.browser.chromium/common/rust-library"/>
+		<property name="chromium_output_dir" value="${basedir}/${fragment_dir}/chromium-${cef_ver}"/>
+		<property name="chromium_subp_output_dir" value="${chromium_output_dir}"/>
+		<property name="chromium_subp" value="chromium_subp-${swt_version}"/>
+		<property name="chromium_subp_from" value="chromium_subp"/>
+		
+		<exec dir="${rust_dir}/chromium_subp" executable="cargo" failonerror="true">
+			<arg line="build"/>
+			<arg line="--release"/>
+		</exec>
+		<exec dir="${rust_dir}/chromium_swt" executable="cargo" failonerror="true">
+			<arg line="build"/>
+			<arg line="--release"/>
+		</exec>
+		<copy todir="${chromium_output_dir}" overwrite="true">
+			<fileset dir="${rust_dir}/chromium_swt/target/release/">
+				<include name="libchromium_swt_${swt_version}.so"/>
+				<include name="libchromium_swt_${swt_version}.dylib"/>
+				<include name="chromium_swt_${swt_version}.dll"/>
+			</fileset>
+		</copy>
+		<copy tofile="${chromium_subp_output_dir}/${chromium_subp}" file="${rust_dir}/chromium_subp/target/release/${chromium_subp_from}" overwrite="true"/>
+		<chmod perm="755" verbose="true" dir="${chromium_output_dir}" includes="*.so,*.dylib,*.jnilib" />
+		<chmod perm="755" verbose="true" dir="${chromium_subp_output_dir}" includes="${chromium_subp}" />
+	</target>
+
+	<import file="${swtplugindir}/buildFragment.xml"/>
+	<import file="${swtplugindir}/buildSWT.xml"/>
+</project>

@@ -53,12 +53,14 @@
 	<target name="@dot" depends="init" unless="@dot" description="Create jar: @dot.">
 		<property name="destdir" value="${temp.folder}/@dot.bin" />
 		<property name="debug" value="true" />
-		<property name="jar.filename" value="swt.jar" />
+		<property name="swtbasename" value="swt" />
+		<property name="jar.filename" value="${swtbasename}.jar" />
 		<delete dir="${temp.folder}/@dot.bin" />
 		<mkdir dir="${temp.folder}/@dot.bin" />
 		<antcall target="copy.${swt.ws}.src"/>
 		<javac destdir="${temp.folder}/@dot.bin" verbose="${javacVerbose}" debug="${debug}" failonerror="yes" release="${javacRelease}" includeantruntime="false">
 			<src path="${temp.folder}/@dot.src/"/>
+			<classpath path="${dotcp}" />
 			<compilerarg line="-log '${temp.folder}'/@dot.bin${logExtension}" compiler="org.eclipse.jdt.core.JDTCompilerAdapter" />
 			<compilerarg line="${compilerArg}" compiler="org.eclipse.jdt.core.JDTCompilerAdapter" />
 		</javac>
@@ -257,9 +259,9 @@
 			<fileset dir="${build.result.folder}/@dot" includes="**" />
 		</copy>
 		<copy todir="${destination.temp.folder}/${full.name}">
-			<fileset dir="${fragmentdir}" includes="fragment.properties,about.html,about_files/,swt*.dll,libswt*.so,libswt*.sl,libswt*.a,libswt*.jnilib,libXm.so.2,webkitextensions*/libswt*.so,META-INF/" />
+			<fileset dir="${fragmentdir}" includes="fragment.properties,about.html,about_files/,swt*.dll,libswt*.so,libswt*.sl,libswt*.a,libswt*.jnilib,libXm.so.2,webkitextensions*/libswt*.so,chromium-*/**,META-INF/" />
 		</copy>
-		<chmod perm="755" dir="${destination.temp.folder}/${full.name}" includes="swt*.dll,libswt*.so,libswt*.sl,libswt*.a,libswt*.jnilib,libXm.so.2,webkitextensions*/libswt*.so" />
+		<chmod perm="755" dir="${destination.temp.folder}/${full.name}" includes="swt*.dll,libswt*.so,libswt*.sl,libswt*.a,libswt*.jnilib,libXm.so.2,webkitextensions*/libswt*.so,chromium-*/*.so,chromium-*/*.*lib,chromium-*/*.dll,chromium-*/chromium_subp*,chromium-*/chromium_subp*.app/Contents/MacOS/chromium_subp" />
 		<eclipse.versionReplacer path="${destination.temp.folder}/${full.name}" version="${version.suffix}" />
 	</target>
 
@@ -268,9 +270,10 @@
 		<delete dir="${build.result.folder}/@dot" />
 		<mkdir dir="${temp.folder}/swtdownload/" />
 		<property name="includetranslationfiles" value="true" />
+		<property name="swtbasename" value="swt" />
 		<antcall target="build.jars" />
-		<jar jarfile="${build.result.folder}/swt.jar" basedir="${fragmentdir}" update="true" includes="swt*.dll,libswt*.so,libswt*.sl,libswt*.a,libswt*.jnilib,libXm.so.2,webkitextensions*/libswt*.so" />
-		<move file="${build.result.folder}/swt.jar" todir="${temp.folder}/swtdownload" />
+		<jar jarfile="${build.result.folder}/${swtbasename}.jar" basedir="${fragmentdir}" update="true" includes="swt*.dll,libswt*.so,libswt*.sl,libswt*.a,libswt*.jnilib,libXm.so.2,webkitextensions*/libswt*.so,chromium-*/*" />
+		<move file="${build.result.folder}/${swtbasename}.jar" todir="${temp.folder}/swtdownload" />
 		<delete dir="${build.result.folder}/@dot" />
 		<antcall target="build.sources" />
 		<move file="${build.result.folder}/src.zip" todir="${temp.folder}/swtdownload" />
@@ -279,7 +282,7 @@
 		<copy todir="${temp.folder}/swtdownload">
 			<fileset dir="${fragmentdir}" includes="about.html,about_files/" />
 		</copy>
-		<condition property="zipfilename" value="swt-${buildid}-${swt.ws}-${swt.os}-${swt.arch}.zip" else="swt-${buildid}-${swt.ws}-${swt.os}.zip">
+		<condition property="zipfilename" value="${swtbasename}-${buildid}-${swt.ws}-${swt.os}-${swt.arch}.zip" else="swt-${buildid}-${swt.ws}-${swt.os}.zip">
 			<isset property="swt.arch"/>
 		</condition>
 		<zip zipfile="${destination}/${zipfilename}">

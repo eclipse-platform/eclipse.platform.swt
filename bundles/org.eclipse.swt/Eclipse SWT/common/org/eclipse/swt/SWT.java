@@ -2377,6 +2377,18 @@ public class SWT {
 	public static final int WEBKIT = 1 << 16;
 
 	/**
+	 * Style constant specifying that a Browser should use Chromium Embedded Framework
+	 * for rendering its content (value is 1&lt;&lt;17).
+	 * <p><b>Used By:</b></p>
+	 * <ul>
+	 * <li><code>Browser</code></li>
+	 * </ul>
+	 *
+	 * @since 3.115
+	 */
+	public static final int CHROMIUM = 1 << 17;
+
+	/**
 	 * Style constant for balloon behavior (value is 1&lt;&lt;12).
 	 * <p><b>Used By:</b></p>
 	 * <ul>

@@ -256,6 +256,14 @@
             </message_arguments>
         </filter>
     </resource>
+    <resource path="Eclipse SWT/common/org/eclipse/swt/SWT.java" type="org.eclipse.swt.SWT">
+        <filter comment="new SWT.CHROMIUM constant for Browser" id="336658481">
+            <message_arguments>
+                <message_argument value="org.eclipse.swt.SWT"/>
+                <message_argument value="CHROMIUM"/>
+            </message_arguments>
+        </filter>
+    </resource>
     <resource path="Eclipse SWT/common/org/eclipse/swt/events/ArmListener.java" type="org.eclipse.swt.events.ArmListener">
         <filter id="576720909">
             <message_arguments>
@@ -469,6 +477,14 @@
                 <message_argument value="SWTEventListener"/>
                 <message_argument value="TypedListener"/>
                 <message_argument value="getEventListener()"/>
+            </message_arguments>
+        </filter>
+    </resource>
+    <resource path="META-INF/MANIFEST.MF">
+        <filter comment="Required for new browser.chromium fragments - Bug 549585 - Contribute Chromium support to SWT" id="931135546">
+            <message_arguments>
+                <message_argument value="3.115.100"/>
+                <message_argument value="3.114.0"/>
             </message_arguments>
         </filter>
     </resource>

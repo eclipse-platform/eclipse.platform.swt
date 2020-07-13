@@ -579,6 +579,7 @@ void generateFunctions(JNIClass clazz) {
 boolean ignoreField(JNIField field) {
 	int mods = field.getModifiers();
 	return
+		field.getFlag(FLAG_NO_GEN) ||
 		((mods & Modifier.PUBLIC) == 0) ||
 		((mods & Modifier.FINAL) != 0) ||
 		((mods & Modifier.STATIC) != 0);
