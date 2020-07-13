@@ -318,14 +318,8 @@ long gtk_key_press_event (long widget, long event) {
 		if (items [index].hasFocus ()) break;
 		index++;
 	}
-
-	int [] key = new int [1];
-	if (GTK.GTK4) {
-		key[0] = GDK.gdk_key_event_get_keyval(event);
-	} else {
-		GDK.gdk_event_get_keyval(event, key);
-	}
-
+	int [] key = new int[1];
+	GDK.gdk_event_get_keyval(event, key);
 	boolean next = false;
 	switch (key[0]) {
 		case GDK.GDK_Up:

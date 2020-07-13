@@ -862,12 +862,7 @@ long gtk_key_press_event (long widget, long event) {
 	*/
 	if ((state & CANVAS) != 0 && socketHandle == 0) {
 		int [] eventKeyval = new int [1];
-		if (GTK.GTK4) {
-			eventKeyval[0] = GDK.gdk_key_event_get_keyval(event);
-		} else {
-			GDK.gdk_event_get_keyval(event, eventKeyval);
-		}
-
+		GDK.gdk_event_get_keyval(event, eventKeyval);
 		switch (eventKeyval[0]) {
 			case GDK.GDK_Return:
 			case GDK.GDK_KP_Enter: return 1;

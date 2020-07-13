@@ -547,16 +547,10 @@ static long JSDOMEventProc (long arg0, long event, long user_data) {
 			switch (GDK.GDK_EVENT_TYPE (event)) {
 				case GDK.GDK_KEY_PRESS: {
 					if (browser.isFocusControl ()) {
-						int [] key = new int [1];
+						int [] key = new int[1];
+						GDK.gdk_event_get_keyval(event, key);
 						int [] state = new int[1];
-						if (GTK.GTK4) {
-							key[0] = GDK.gdk_key_event_get_keyval(event);
-							state[0] = GDK.gdk_event_get_modifier_state(event);
-						} else {
-							GDK.gdk_event_get_keyval(event, key);
-							GDK.gdk_event_get_state(event, state);
-						}
-						
+						GDK.gdk_event_get_state(event, state);
 						switch (key[0]) {
 							case GDK.GDK_ISO_Left_Tab:
 							case GDK.GDK_Tab: {
@@ -1571,11 +1565,7 @@ boolean handleDOMEvent (long event, int type) {
 	if (eventPtr != 0) {
 		int eventType = GDK.gdk_event_get_event_type(eventPtr);
 		int [] state = new int[1];
-		if (GTK.GTK4) {
-			state[0] = GDK.gdk_event_get_modifier_state(eventPtr);
-		} else {
-			GDK.gdk_event_get_state(eventPtr, state);
-		}
+		GDK.gdk_event_get_state(eventPtr, state);
 		switch (eventType) {
 			case GDK.GDK_KEY_PRESS:
 			case GDK.GDK_KEY_RELEASE:

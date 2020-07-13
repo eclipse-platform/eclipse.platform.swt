@@ -276,14 +276,8 @@ long gtk_activate (long widget) {
 long gtk_button_press_event (long widget, long event) {
 	int eventType = GDK.gdk_event_get_event_type(event);
 	eventType = Control.fixGdkEventTypeValues(eventType);
-
 	int [] eventButton = new int [1];
-	if (GTK.GTK4) {
-		eventButton[0] = GDK.gdk_button_event_get_button(event);
-	} else {
-		GDK.gdk_event_get_button(event, eventButton);
-	}
-
+	GDK.gdk_event_get_button(event, eventButton);
 	if (eventType == GDK.GDK_3BUTTON_PRESS) return 0;
 	if (eventButton[0] == 3 && eventType == GDK.GDK_BUTTON_PRESS) {
 		sendEvent (SWT.MenuDetect);

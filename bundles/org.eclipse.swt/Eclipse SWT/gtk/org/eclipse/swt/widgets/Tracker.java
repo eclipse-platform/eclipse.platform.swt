@@ -485,17 +485,10 @@ long gtk_button_release_event (long widget, long event) {
 long gtk_key_press_event (long widget, long eventPtr) {
 	long result = super.gtk_key_press_event (widget, eventPtr);
 	if (result != 0) return result;
-	
-	int [] state = new int [1];
-	int [] keyval = new int [1];
-	if (GTK.GTK4) {
-		state[0] = GDK.gdk_event_get_modifier_state(eventPtr);
-		keyval[0] = GDK.gdk_key_event_get_keyval(eventPtr);
-	} else {
-		GDK.gdk_event_get_state(eventPtr, state);
-		GDK.gdk_event_get_keyval(eventPtr, keyval);
-	}
-
+	int [] state = new int[1];
+	GDK.gdk_event_get_state(eventPtr, state);
+	int [] keyval = new int[1];
+	GDK.gdk_event_get_keyval(eventPtr, keyval);
 	int stepSize = ((state[0] & GDK.GDK_CONTROL_MASK) != 0) ? STEPSIZE_SMALL : STEPSIZE_LARGE;
 	int xChange = 0, yChange = 0;
 	switch (keyval[0]) {

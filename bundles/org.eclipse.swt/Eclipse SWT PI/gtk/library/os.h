@@ -356,18 +356,10 @@
 #define NO_gtk_1tree_1view_1get_1bin_1window
 
 // Event related functions removed in GTK4
-#define NO_gdk_1event_1copy
 #define NO_gdk_1event_1free
 #define NO_gdk_1event_1get
 #define NO_gdk_1event_1peek
 #define NO_gdk_1event_1put
-#define NO_gdk_1event_1get_1button
-#define NO_gdk_1event_1get_1coords
-#define NO_gdk_1event_1get_1root_1coords
-#define NO_gdk_1event_1get_1keyval
-#define NO_gdk_1event_1get_1scroll_1deltas
-#define NO_gdk_1event_1get_1scroll_1direction
-#define NO_gdk_1event_1get_1state
 #define NO_GDK_1EVENT_1TYPE
 #define NO_GDK_1EVENT_1WINDOW
 
@@ -476,17 +468,10 @@
 #define NO_gtk_1widget_1add_1controller
 
 // GdkEvent functions which do not exist on GTK3
-#define NO_gdk_1focus_1event_1get_1in
-#define NO_gdk_1crossing_1event_1get_1mode
-#define NO_gdk_1button_1event_1get_1button
-#define NO_gdk_1event_1get_1position
-#define NO_gdk_1key_1event_1get_1keyval
-#define NO_gdk_1scroll_1event_1get_1deltas
-#define NO_gdk_1scroll_1event_1get_1direction
-#define NO_gdk_1event_1get_1modifier_1state
-#define NO_gdk_1key_1event_1get_1layout
-#define NO_gdk_1event_1ref
-#define NO_gdk_1event_1unref
+#define NO_gdk_1event_1get_1focus_1in
+#define NO_gdk_1event_1get_1string
+#define NO_gdk_1event_1get_1key_1group
+#define NO_gdk_1event_1get_1crossing_1mode
 
 // GdkCursor API changes
 #define NO_gdk_1cursor_1new_1from_1name__Ljava_lang_String_2J

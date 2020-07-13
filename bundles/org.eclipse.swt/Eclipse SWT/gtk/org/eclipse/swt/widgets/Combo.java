@@ -1357,12 +1357,7 @@ long gtk_button_press_event (long widget, long event) {
 	* send the mouse event from the event_after handler.
 	*/
 	int [] eventButton = new int [1];
-	if (GTK.GTK4) {
-		eventButton[0] = GDK.gdk_button_event_get_button(event);
-	} else {
-		GDK.gdk_event_get_button(event, eventButton);
-	}
-
+	GDK.gdk_event_get_button(event, eventButton);
 	int eventType = GDK.gdk_event_get_event_type(event);
 	eventType = fixGdkEventTypeValues(eventType);
 	if (eventType == GDK.GDK_BUTTON_PRESS && eventButton[0] == 1) {
@@ -1574,21 +1569,13 @@ long gtk_event_after (long widget, long gdkEvent)  {
 	switch (eventType) {
 		case GDK.GDK_BUTTON_PRESS: {
 			int [] eventButton = new int [1];
-			int [] eventState = new int [1];
-			if (GTK.GTK4) {
-				eventButton[0] = GDK.gdk_button_event_get_button(gdkEvent);
-				eventState[0] = GDK.gdk_event_get_modifier_state(gdkEvent);
-			} else {
-				GDK.gdk_event_get_button(gdkEvent, eventButton);
-				GDK.gdk_event_get_state(gdkEvent, eventState);
-			}
-
+			GDK.gdk_event_get_button(gdkEvent, eventButton);
 			int eventTime = GDK.gdk_event_get_time(gdkEvent);
-
 			double [] eventRX = new double [1];
 			double [] eventRY = new double [1];
 			GDK.gdk_event_get_root_coords(gdkEvent, eventRX, eventRY);
-			
+			int [] eventState = new int [1];
+			GDK.gdk_event_get_state(gdkEvent, eventState);
 			if (eventButton[0] == 1) {
 				if (!sendMouseEvent (SWT.MouseDown, eventButton[0], display.clickCount, 0, false, eventTime, eventRX[0], eventRY[0], false, eventState[0])) {
 					return 1;
@@ -1603,7 +1590,7 @@ long gtk_event_after (long widget, long gdkEvent)  {
 			if ((style & SWT.READ_ONLY) == 0) {
 				boolean [] focusIn = new boolean [1];
 				if (GTK.GTK4) {
-					focusIn[0] = GDK.gdk_focus_event_get_in(gdkEvent);
+					GDK.gdk_event_get_focus_in(gdkEvent, focusIn);
 				} else {
 					GdkEventFocus gdkEventFocus = new GdkEventFocus ();
 					OS.memmove (gdkEventFocus, gdkEvent, GdkEventFocus.sizeof);
@@ -1682,12 +1669,7 @@ long gtk_key_press_event (long widget, long event) {
 		int oldIndex = GTK.gtk_combo_box_get_active (handle);
 		int newIndex = oldIndex;
 		int [] eventKeyval = new int [1];
-		if (GTK.GTK4) {
-			eventKeyval[0] = GDK.gdk_key_event_get_keyval(event);
-		} else {
-			GDK.gdk_event_get_keyval(event, eventKeyval);
-		}
-
+		GDK.gdk_event_get_keyval(event, eventKeyval);
 		switch (eventKeyval[0]) {
 			case GDK.GDK_Down:
 			case GDK.GDK_KP_Down:
@@ -2637,13 +2619,8 @@ boolean checkSubwindow () {
 
 @Override
 boolean translateTraversal (long event) {
-	int [] key = new int [1];
-	if (GTK.GTK4) {
-		key[0] = GDK.gdk_key_event_get_keyval(event);
-	} else {
-		GDK.gdk_event_get_keyval(event, key);
-	}
-
+	int [] key = new int[1];
+	GDK.gdk_event_get_keyval(event, key);
 	switch (key[0]) {
 		case GDK.GDK_KP_Enter:
 		case GDK.GDK_Return: {

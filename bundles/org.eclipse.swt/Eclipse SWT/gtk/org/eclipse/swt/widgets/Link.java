@@ -330,25 +330,13 @@ public String getText () {
 long gtk_button_press_event (long widget, long event) {
 	long result = super.gtk_button_press_event (widget, event);
 	if (result != 0) return result;
-
 	int eventType = GDK.gdk_event_get_event_type(event);
 	eventType = fixGdkEventTypeValues(eventType);
-
 	int [] eventButton = new int [1];
-	if (GTK.GTK4) {
-		eventButton[0] = GDK.gdk_button_event_get_button(event);
-	} else {
-		GDK.gdk_event_get_button(event, eventButton);
-	}
-
+	GDK.gdk_event_get_button(event, eventButton);
 	double [] eventX = new double [1];
 	double [] eventY = new double [1];
-	if (GTK.GTK4) {
-		GDK.gdk_event_get_position(event, eventX, eventY);
-	} else {
-		GDK.gdk_event_get_coords(event, eventX, eventY);
-	}
-
+	GDK.gdk_event_get_coords(event, eventX, eventY);
 	if (eventButton[0] == 1 && eventType == GDK.GDK_BUTTON_PRESS) {
 		if (focusIndex != -1) setFocus ();
 		int x = (int) eventX[0];
@@ -388,22 +376,11 @@ long gtk_button_release_event (long widget, long event) {
 	long result = super.gtk_button_release_event (widget, event);
 	if (result != 0) return result;
 	if (focusIndex == -1) return result;
-
 	int [] eventButton = new int [1];
-	if (GTK.GTK4) {
-		eventButton[0] = GDK.gdk_button_event_get_button(event);
-	} else {
-		GDK.gdk_event_get_button(event, eventButton);
-	}
-
+	GDK.gdk_event_get_button(event, eventButton);
 	double [] eventX = new double [1];
 	double [] eventY = new double [1];
-	if (GTK.GTK4) {
-		GDK.gdk_event_get_position(event, eventX, eventY);
-	} else {
-		GDK.gdk_event_get_coords(event, eventX, eventY);
-	}
-
+	GDK.gdk_event_get_coords(event, eventX, eventY);
 	if (eventButton[0] == 1) {
 		int x = (int) eventX[0];
 		int y = (int) eventY[0];
@@ -452,13 +429,8 @@ long gtk_key_press_event (long widget, long eventPtr) {
 	long result = super.gtk_key_press_event (widget, eventPtr);
 	if (result != 0) return result;
 	if (focusIndex == -1) return result;
-
-	int [] key = new int [1];
-	if (GTK.GTK4) {
-		key[0] = GDK.gdk_key_event_get_keyval(eventPtr);
-	} else {
-		GDK.gdk_event_get_keyval(eventPtr, key);
-	}
+	int [] key = new int[1];
+	GDK.gdk_event_get_keyval(eventPtr, key);
 	switch (key[0]) {
 		case GDK.GDK_Return:
 		case GDK.GDK_KP_Enter:
@@ -487,21 +459,13 @@ long gtk_key_press_event (long widget, long eventPtr) {
 long gtk_motion_notify_event (long widget, long event) {
 	long result = super.gtk_motion_notify_event (widget, event);
 	if (result != 0) return result;
-
 	double [] eventX = new double [1];
 	double [] eventY = new double [1];
-	int [] state = new int [1];
-	if (GTK.GTK4) {
-		GDK.gdk_event_get_position(event, eventX, eventY);
-		state[0] = GDK.gdk_event_get_modifier_state(event);
-	} else {
-		GDK.gdk_event_get_coords(event, eventX, eventY);
-		GDK.gdk_event_get_state(event, state);
-	}
-
+	GDK.gdk_event_get_coords(event, eventX, eventY);
 	int x = (int) eventX[0];
 	int y = (int) eventY[0];
-
+	int [] state = new int [1];
+	GDK.gdk_event_get_state(event, state);
 	if ((style & SWT.MIRRORED) != 0) x = getClientWidth () - x;
 	if ((state[0] & GDK.GDK_BUTTON1_MASK) != 0) {
 		int oldSelection = selection.y;
