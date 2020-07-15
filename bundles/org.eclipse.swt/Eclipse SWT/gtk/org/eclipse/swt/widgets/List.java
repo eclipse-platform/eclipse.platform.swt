@@ -535,28 +535,29 @@ int getItemHeightInPixels () {
 	checkWidget();
 	int itemCount = GTK.gtk_tree_model_iter_n_children (modelHandle, 0);
 	long column = GTK.gtk_tree_view_get_column (handle, 0);
+
+	int height;
+	int [] w = new int [1], h = new int [1];
+
 	if (itemCount == 0) {
-		int [] w = new int [1], h = new int [1];
 		GTK.gtk_tree_view_column_cell_get_size (column, null, null, null, w, h);
-		int height = h [0];
-		long textRenderer = getTextRenderer (column);
-		if (textRenderer != 0) GTK.gtk_cell_renderer_get_preferred_height_for_width (textRenderer, handle, 0, h, null);
-		height += h [0];
-		return height;
+		height = h[0];
 	} else {
-		int height = 0;
 		long iter = OS.g_malloc (GTK.GtkTreeIter_sizeof ());
 		GTK.gtk_tree_model_get_iter_first (modelHandle, iter);
 		GTK.gtk_tree_view_column_cell_set_cell_data (column, modelHandle, iter, false, false);
-		int [] w = new int [1], h = new int [1];
 		GTK.gtk_tree_view_column_cell_get_size (column, null, null, null, w, h);
-		long textRenderer = getTextRenderer (column);
-		int [] ypad = new int[1];
-		if (textRenderer != 0) GTK.gtk_cell_renderer_get_padding(textRenderer, null, ypad);
-		height = h [0] + ypad [0];
+		height = h[0];
+
 		OS.g_free (iter);
-		return height;
 	}
+
+	long textRenderer = getTextRenderer (column);
+	int [] ypad = new int[1];
+	if (textRenderer != 0) GTK.gtk_cell_renderer_get_padding(textRenderer, null, ypad);
+	height += ypad [0];
+
+	return height;
 }
 
 /**
