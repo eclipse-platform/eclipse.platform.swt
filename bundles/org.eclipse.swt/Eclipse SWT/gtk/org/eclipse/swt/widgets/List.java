@@ -549,36 +549,27 @@ public int getItemHeight () {
 
 int getItemHeightInPixels() {
 	checkWidget();
-	int height = 0;
-	int itemCount = GTK.gtk_tree_model_iter_n_children(modelHandle, 0);
+
+	final int BASE_ITEM_PADDING = 1;
+
+	int[] h = new int [1];
+	long layout = GTK.gtk_widget_create_pango_layout(handle, Converter.wcsToMbcs(" ", true));
+	OS.pango_layout_get_pixel_size(layout, null, h);
+
+	// By default, the item has a base vertical padding around the text
+	int height = h[0] + BASE_ITEM_PADDING * 2;
+
+	OS.g_object_unref(layout);
 
 	long column = GTK.gtk_tree_view_get_column(handle, 0);
-	int[] h = new int[1];
-	if (itemCount == 0) {
-		if (GTK.GTK4) {
-			GTK.gtk_tree_view_column_cell_get_size(column, null, null, null, h);
-		} else {
-			GTK.gtk_tree_view_column_cell_get_size(column, null, null, null, null, h);
-		}
-	} else {
-		long iter = OS.g_malloc(GTK.GtkTreeIter_sizeof());
-
-		GTK.gtk_tree_model_get_iter_first(modelHandle, iter);
-		GTK.gtk_tree_view_column_cell_set_cell_data(column, modelHandle, iter, false, false);
-		if (GTK.GTK4) {
-			GTK.gtk_tree_view_column_cell_get_size(column, null, null, null, h);
-		} else {
-			GTK.gtk_tree_view_column_cell_get_size(column, null, null, null, null, h);
-		}
-
-		OS.g_free(iter);
-	}
-	height = h[0];
-
 	long textRenderer = getTextRenderer(column);
-	int[] ypad = new int[1];
-	if (textRenderer != 0) GTK.gtk_cell_renderer_get_padding(textRenderer, null, ypad);
-	height += ypad[0];
+	int [] ypad = new int[1];
+	if (textRenderer != 0) {
+		GTK.gtk_cell_renderer_get_padding(textRenderer, null, ypad);
+	}
+
+	// Add additional top & bottom padding set by the cell renderer
+	height += ypad [0] * 2;
 
 	return height;
 }

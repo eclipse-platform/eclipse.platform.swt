@@ -2481,4 +2481,17 @@ public void test_consistency_DragDetect () {
 	add();
 	consistencyEvent(20, 5, 30, 10, ConsistencyUtility.MOUSE_DRAG);
 }
+
+// See Bug 565305
+@Test
+public void test_getItemHeight_returns_inconsistent_heights () {
+	list.removeAll();
+
+	int emptyListItemHeight = list.getItemHeight();
+
+	list.add("test");
+	int filledListItemHeight = list.getItemHeight();
+
+	assertEquals(emptyListItemHeight, filledListItemHeight);
+}
 }
