@@ -7364,6 +7364,18 @@ JNIEXPORT jint JNICALL GTK_NATIVE(gtk_1native_1dialog_1run)
 }
 #endif
 
+#ifndef NO_gtk_1native_1get_1surface
+JNIEXPORT jlong JNICALL GTK_NATIVE(gtk_1native_1get_1surface)
+	(JNIEnv *env, jclass that, jlong arg0)
+{
+	jlong rc = 0;
+	GTK_NATIVE_ENTER(env, that, gtk_1native_1get_1surface_FUNC);
+	rc = (jlong)gtk_native_get_surface((GtkNative *)arg0);
+	GTK_NATIVE_EXIT(env, that, gtk_1native_1get_1surface_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_gtk_1notebook_1get_1current_1page
 JNIEXPORT jint JNICALL GTK_NATIVE(gtk_1notebook_1get_1current_1page)
 	(JNIEnv *env, jclass that, jlong arg0)
@@ -11831,6 +11843,26 @@ JNIEXPORT jlong JNICALL GTK_NATIVE(gtk_1widget_1get_1name)
 }
 #endif
 
+#ifndef NO_gtk_1widget_1get_1native
+JNIEXPORT jlong JNICALL GTK_NATIVE(gtk_1widget_1get_1native)
+	(JNIEnv *env, jclass that, jlong arg0)
+{
+	jlong rc = 0;
+	GTK_NATIVE_ENTER(env, that, gtk_1widget_1get_1native_FUNC);
+/*
+	rc = (jlong)gtk_widget_get_native((GtkWidget *)arg0);
+*/
+	{
+		GTK_LOAD_FUNCTION(fp, gtk_widget_get_native)
+		if (fp) {
+			rc = (jlong)((jlong (CALLING_CONVENTION*)(GtkWidget *))fp)((GtkWidget *)arg0);
+		}
+	}
+	GTK_NATIVE_EXIT(env, that, gtk_1widget_1get_1native_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_gtk_1widget_1get_1next_1sibling
 JNIEXPORT jlong JNICALL GTK_NATIVE(gtk_1widget_1get_1next_1sibling)
 	(JNIEnv *env, jclass that, jlong arg0)
@@ -12108,26 +12140,6 @@ JNIEXPORT jlong JNICALL GTK_NATIVE(gtk_1widget_1get_1style_1context)
 }
 #endif
 
-#ifndef NO_gtk_1widget_1get_1surface
-JNIEXPORT jlong JNICALL GTK_NATIVE(gtk_1widget_1get_1surface)
-	(JNIEnv *env, jclass that, jlong arg0)
-{
-	jlong rc = 0;
-	GTK_NATIVE_ENTER(env, that, gtk_1widget_1get_1surface_FUNC);
-/*
-	rc = (jlong)gtk_widget_get_surface((GtkWidget *)arg0);
-*/
-	{
-		GTK_LOAD_FUNCTION(fp, gtk_widget_get_surface)
-		if (fp) {
-			rc = (jlong)((jlong (CALLING_CONVENTION*)(GtkWidget *))fp)((GtkWidget *)arg0);
-		}
-	}
-	GTK_NATIVE_EXIT(env, that, gtk_1widget_1get_1surface_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO_gtk_1widget_1get_1tooltip_1text
 JNIEXPORT jlong JNICALL GTK_NATIVE(gtk_1widget_1get_1tooltip_1text)
 	(JNIEnv *env, jclass that, jlong arg0)
@@ -12146,7 +12158,15 @@ JNIEXPORT jlong JNICALL GTK_NATIVE(gtk_1widget_1get_1toplevel)
 {
 	jlong rc = 0;
 	GTK_NATIVE_ENTER(env, that, gtk_1widget_1get_1toplevel_FUNC);
+/*
 	rc = (jlong)gtk_widget_get_toplevel((GtkWidget *)arg0);
+*/
+	{
+		GTK_LOAD_FUNCTION(fp, gtk_widget_get_toplevel)
+		if (fp) {
+			rc = (jlong)((jlong (CALLING_CONVENTION*)(GtkWidget *))fp)((GtkWidget *)arg0);
+		}
+	}
 	GTK_NATIVE_EXIT(env, that, gtk_1widget_1get_1toplevel_FUNC);
 	return rc;
 }

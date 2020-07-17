@@ -188,7 +188,14 @@ public static Frame new_Frame (final Composite parent) {
 					Shell shell = parent.getShell();
 					long awtHandle = getAWTHandle(window);
 					if (awtHandle == 0) return;
-					long xWindow = GDK.gdk_x11_window_get_xid (GTK.gtk_widget_get_window (GTK.gtk_widget_get_toplevel (shell.handle)));
+
+					long xWindow;
+					if (GTK.GTK4) {
+						xWindow = GDK.gdk_x11_surface_get_xid(GTK.gtk_native_get_surface (GTK.gtk_widget_get_native(shell.handle)));
+					} else {
+						xWindow = GDK.gdk_x11_window_get_xid (GTK.gtk_widget_get_window (GTK.gtk_widget_get_toplevel (shell.handle)));
+					}
+
 					OS.XSetTransientForHint(GDK.gdk_x11_display_get_xdisplay(GDK.gdk_display_get_default()), awtHandle, xWindow);
 				});
 			}

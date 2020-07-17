@@ -308,7 +308,8 @@ void _setVisible (boolean visible) {
 						// On Wayland, get the relative GdkWindow from the parent shell.
 						long gdkResource;
 						if (GTK.GTK4) {
-							gdkResource = GTK.gtk_widget_get_surface (getShell().topHandle());
+							long surface = GTK.gtk_native_get_surface(GTK.gtk_widget_get_native (getShell().topHandle()));
+							gdkResource = GTK.gtk_native_get_surface (surface);
 						} else {
 							gdkResource = GTK.gtk_widget_get_window (getShell().topHandle());
 						}
@@ -1220,13 +1221,15 @@ void verifyMenuPosition (int itemCount) {
 			 */
 			GTK.gtk_widget_get_preferred_height(handle, null, naturalHeight);
 			if (naturalHeight[0] > 0) {
-				long topLevelWidget = GTK.gtk_widget_get_toplevel(handle);
+
 				int width;
 				if (GTK.GTK4) {
-					long topLevelSurface = GTK.gtk_widget_get_surface(topLevelWidget);
+					long topLevelNative = GTK.gtk_widget_get_native(handle);
+					long topLevelSurface = GTK.gtk_native_get_surface(topLevelNative);
 					width = GDK.gdk_surface_get_width(topLevelSurface);
 					GDK.gdk_surface_resize(topLevelSurface, width, naturalHeight[0]);
 				} else {
+					long topLevelWidget = GTK.gtk_widget_get_toplevel(handle);
 					long topLevelWindow = GTK.gtk_widget_get_window(topLevelWidget);
 					width = GDK.gdk_window_get_width(topLevelWindow);
 					GDK.gdk_window_resize(topLevelWindow, width, naturalHeight[0]);

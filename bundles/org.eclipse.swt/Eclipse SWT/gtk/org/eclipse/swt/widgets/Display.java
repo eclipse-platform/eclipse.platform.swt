@@ -1381,9 +1381,17 @@ void destroyDisplay () {
 }
 
 long emissionProc (long ihint, long n_param_values, long param_values, long data) {
-	if (GTK.gtk_widget_get_toplevel (OS.g_value_peek_pointer(param_values)) == data) {
+	long topLevel;
+	if (GTK.GTK4) {
+		topLevel = GTK.gtk_widget_get_native (OS.g_value_peek_pointer(param_values));
+	} else {
+		topLevel = GTK.gtk_widget_get_toplevel (OS.g_value_peek_pointer(param_values));
+	}
+
+	if (topLevel == data) {
 		GTK.gtk_widget_set_direction (OS.g_value_peek_pointer(param_values), GTK.GTK_TEXT_DIR_RTL);
 	}
+
 	return 1;
 }
 

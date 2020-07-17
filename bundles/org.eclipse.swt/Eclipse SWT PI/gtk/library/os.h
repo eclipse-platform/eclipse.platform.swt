@@ -476,6 +476,9 @@
 // GdkCursor API changes
 #define NO_gdk_1cursor_1new_1from_1name__Ljava_lang_String_2J
 
+// No GtkNative on GTK3
+#define NO_gtk_1native_1get_1surface
+
 #endif
 
 #include "os_custom.h"

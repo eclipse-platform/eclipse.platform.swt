@@ -4547,11 +4547,13 @@ class AccessibleObject {
 			widget = GTK.gtk_accessible_get_widget(object.atkHandle);
 		}
 		if (widget == 0) return;
-		long topLevel = GTK.gtk_widget_get_toplevel (widget);
+
 		if (GTK.GTK4) {
-			long surface = GTK.gtk_widget_get_surface (topLevel);
+			long topLevel = GTK.gtk_widget_get_native(widget);
+			long surface = GTK.gtk_native_get_surface(topLevel);
 			GDK.gdk_surface_get_origin (surface, x, y);
 		} else {
+			long topLevel = GTK.gtk_widget_get_toplevel (widget);
 			long window = GTK.gtk_widget_get_window (topLevel);
 			GDK.gdk_window_get_origin (window, x, y);
 		}

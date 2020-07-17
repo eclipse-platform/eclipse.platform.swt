@@ -351,7 +351,8 @@ void dragEnd(long widget, long context){
 	 */
 	long display;
 	if (GTK.GTK4) {
-		display = GDK.gdk_surface_get_display(GTK.gtk_widget_get_surface(widget));
+		long surface = GTK.gtk_native_get_surface(GTK.gtk_widget_get_native (widget));
+		display = GDK.gdk_surface_get_display(surface);
 	} else {
 		display = GDK.gdk_window_get_display(GTK.gtk_widget_get_window(widget));
 	}

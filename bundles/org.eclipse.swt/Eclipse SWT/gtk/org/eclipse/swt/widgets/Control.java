@@ -6022,7 +6022,7 @@ void setZOrder (Control sibling, boolean above, boolean fixRelations, boolean fi
 				if (above && sibling.enableSurface != 0) {
 					siblingSurface = enableSurface;
 				} else {
-					siblingSurface = GTK.gtk_widget_get_surface (siblingHandle);
+					siblingSurface = GTK.gtk_native_get_surface(GTK.gtk_widget_get_native (siblingHandle));
 				}
 			}
 			long redrawSurface = fixChildren ? parent.redrawSurface : 0;
@@ -6637,7 +6637,7 @@ long windowProc (long handle, long arg0, long user_data) {
 				if (control == null) control = this;
 				long gdkResource;
 				if (GTK.GTK4) {
-					gdkResource = GTK.gtk_widget_get_surface(handle);
+					gdkResource = GTK.gtk_native_get_surface(GTK.gtk_widget_get_native (handle));
 					drawBackground (control, gdkResource, cairo, rect.x, rect.y, rect.width, rect.height);
 				} else {
 					gdkResource = GTK.gtk_widget_get_window(handle);

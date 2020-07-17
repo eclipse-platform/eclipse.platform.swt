@@ -140,7 +140,14 @@ public GLCanvas (Composite parent, int style, GLData data) {
 	if ((style & SWT.NO_BACKGROUND) != 0) {
 		//TODO: implement this on GTK3 as pixmaps are gone.
 	}
-	xWindow = GDK.gdk_x11_window_get_xid (glWindow);
+
+	if (GTK.GTK4) {
+		// TODO: Enable when the GdkWindow to GdkSurface changes are in
+		//xWindow = GDK.gdk_x11_surface_get_xid(glWindow);
+	} else {
+		xWindow = GDK.gdk_x11_window_get_xid (glWindow);
+	}
+
 	GDK.gdk_window_show (glWindow);
 
 	Listener listener = event -> {

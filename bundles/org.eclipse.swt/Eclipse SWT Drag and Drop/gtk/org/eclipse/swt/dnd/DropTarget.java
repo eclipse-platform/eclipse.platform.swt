@@ -774,7 +774,7 @@ boolean setEventData(long context, int x, int y, int time, DNDEvent event) {
 	if (dataTypes.length == 0) return false;
 	int [] origin_x = new int[1], origin_y = new int[1];
 	if (GTK.GTK4) {
-		long surface = GTK.gtk_widget_get_surface (control.handle);
+		long surface = GTK.gtk_native_get_surface(GTK.gtk_widget_get_native (control.handle));
 		GDK.gdk_surface_get_origin(surface, origin_x, origin_y);
 	} else {
 		long window = GTK.gtk_widget_get_window (control.handle);

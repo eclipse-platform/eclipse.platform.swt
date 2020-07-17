@@ -3098,6 +3098,19 @@ public class GTK extends OS {
 	 * @param type cast=(GtkShadowType)
 	 */
 	public static final native void gtk_viewport_set_shadow_type(long viewport, int type);
+
+	/* GtkNative [GTK4 only] */
+	/** @param self cast=(GtkNative *) */
+	public static final native long gtk_native_get_surface(long self);
+
+
+	/* GtkWidget [GTK4 only] */
+	/**
+	 * @method flags=dynamic
+	 * @param widget cast=(GtkWidget *)
+	 */
+	public static final native long gtk_widget_get_native(long widget);
+
 	/**
 	 * @param widget cast=(GtkWidget *)
 	 * @param accel_signal cast=(const gchar *)
@@ -3175,12 +3188,6 @@ public class GTK extends OS {
 	 * @method flags=dynamic
 	 * @param widget cast=(GtkWidget *)
 	 */
-	/* [GTK4 only] */
-	public static final native long gtk_widget_get_surface(long widget);
-	/**
-	 * @method flags=dynamic
-	 * @param widget cast=(GtkWidget *)
-	 */
 	public static final native int gtk_widget_get_margin_start(long widget);
 	/**
 	 * @method flags=dynamic
@@ -3237,7 +3244,11 @@ public class GTK extends OS {
 	 * @param height cast=(gint *)
 	 */
 	public static final native void gtk_widget_get_size_request(long widget, int [] width, int [] height);
-	/** @param widget cast=(GtkWidget *) */
+	/**
+	 * @method flags=dynamic
+	 * @param widget cast=(GtkWidget *)
+	 * */
+	/* [GTK3 only] */
 	public static final native long gtk_widget_get_toplevel(long widget);
 	/** @param widget cast=(GtkWidget *) */
 	public static final native long gtk_widget_get_tooltip_text(long widget);

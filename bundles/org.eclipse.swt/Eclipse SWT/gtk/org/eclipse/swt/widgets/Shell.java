@@ -590,7 +590,13 @@ void bringToTop (boolean force) {
 		if (OS.isX11()) {
 			long gdkDisplay = GDK.gdk_window_get_display(gdkResource);
 			long xDisplay = GDK.gdk_x11_display_get_xdisplay(gdkDisplay);
-			long xWindow = GDK.gdk_x11_window_get_xid (gdkResource);
+			long xWindow;
+			if (GTK.GTK4) {
+				xWindow = GDK.gdk_x11_surface_get_xid(gdkResource);
+			} else {
+				xWindow = GDK.gdk_x11_window_get_xid (gdkResource);
+			}
+
 			GDK.gdk_x11_display_error_trap_push(gdkDisplay);
 			/* Use CurrentTime instead of the last event time to ensure that the shell becomes active */
 			OS.XSetInputFocus (xDisplay, xWindow, OS.RevertToParent, OS.CurrentTime);
@@ -3151,7 +3157,8 @@ Rectangle getBoundsInPixels () {
 		GTK.gtk_window_get_position (shellHandle, x, y);
 	} else {
 		if (GTK.GTK4) {
-			GDK.gdk_surface_get_root_origin(GTK.gtk_widget_get_surface(shellHandle), x, y);
+			long surface = GTK.gtk_native_get_surface(GTK.gtk_widget_get_native (shellHandle));
+			GDK.gdk_surface_get_root_origin(surface, x, y);
 		} else {
 			GDK.gdk_window_get_root_origin(GTK.gtk_widget_get_window(shellHandle), x, y);
 		}

@@ -1899,7 +1899,7 @@ long gtk_widget_get_window (long widget){
 
 long gtk_widget_get_surface (long widget){
 	GTK.gtk_widget_realize(widget);
-	return GTK.gtk_widget_get_surface (widget);
+	return GTK.gtk_native_get_surface(GTK.gtk_widget_get_native (widget));
 }
 
 void gtk_widget_set_has_surface_or_window (long widget, boolean has) {

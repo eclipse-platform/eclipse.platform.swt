@@ -411,7 +411,7 @@ void drawRectangles (Rectangle [] rects) {
 	GTK.gtk_widget_shape_combine_region (overlay, region);
 	Cairo.cairo_region_destroy (region);
 	if (GTK.GTK4) {
-		long overlaySurface = GTK.gtk_widget_get_surface (overlay);
+		long overlaySurface = GTK.gtk_native_get_surface(GTK.gtk_widget_get_native (overlay));
 		GDK.gdk_surface_hide (overlaySurface);
 		GDK.gdk_surface_show (overlaySurface);
 	} else {
