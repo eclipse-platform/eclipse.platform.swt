@@ -43,7 +43,7 @@ CHROMIUM_PREFIX = swt-chromium
 CHROMIUM_LIB    = lib$(CHROMIUM_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).jnilib
 CHROMIUM_OBJECTS   = chromiumlib.o chromiumlib_structs.o chromiumlib_custom.o chromiumlib_stats.o
 CHROMIUM_CFLAGS = -I $(CHROMIUM_HEADERS)
-CHROMIUM_LFLAGS = -bundle $(ARCHS) -lchromium_swt -L$(CHROMIUM_OUTPUT_DIR)/chromium-$(cef_ver)
+CHROMIUM_LFLAGS = -bundle $(ARCHS) -lchromium_swt_${SWT_VERSION} -L$(CHROMIUM_OUTPUT_DIR)/chromium-$(cef_ver)
 
 all: $(SWT_LIB) $(SWTPI_LIB) $(AWT_LIB)
 

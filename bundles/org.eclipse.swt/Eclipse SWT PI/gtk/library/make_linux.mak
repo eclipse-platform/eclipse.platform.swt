@@ -96,7 +96,7 @@ WEBKITLIBS +=  `pkg-config --libs-only-l webkit2gtk-4.0`
 WEBKITCFLAGS +=  `pkg-config --cflags webkit2gtk-4.0`
 endif
 
-CHROMIUMLIBS = -lchromium_swt -L$(CHROMIUM_OUTPUT_DIR)/chromium-$(cef_ver) -Wl,--disable-new-dtags,-rpath,"\$$ORIGIN"
+CHROMIUMLIBS = -lchromium_swt_${SWT_VERSION} -L$(CHROMIUM_OUTPUT_DIR)/chromium-$(cef_ver) -Wl,--disable-new-dtags,-rpath,"\$$ORIGIN"
 CHROMIUMCFLAGS = -I$(CHROMIUM_HEADERS)
 
 SWT_OBJECTS = swt.o c.o c_stats.o callback.o
