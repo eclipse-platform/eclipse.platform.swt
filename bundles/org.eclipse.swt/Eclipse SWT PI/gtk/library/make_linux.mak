@@ -96,7 +96,7 @@ WEBKITLIBS +=  `pkg-config --libs-only-l webkit2gtk-4.0`
 WEBKITCFLAGS +=  `pkg-config --cflags webkit2gtk-4.0`
 endif
 
-CHROMIUMLIBS = -lchromium_swt_${SWT_VERSION} -L$(CHROMIUM_OUTPUT_DIR)/chromium-$(cef_ver) -Wl,--disable-new-dtags,-rpath,"\$$ORIGIN"
+CHROMIUMLIBS = -lchromium_swt -L$(CHROMIUM_OUTPUT_DIR)/chromium-$(cef_ver) -Wl,--disable-new-dtags,-rpath,"\$$ORIGIN"
 CHROMIUMCFLAGS = -I$(CHROMIUM_HEADERS)
 
 SWT_OBJECTS = swt.o c.o c_stats.o callback.o
@@ -294,7 +294,7 @@ chromium_cargo:
 	cd chromium_swt && cargo build --release
 	mkdir -p $(CHROMIUM_OUTPUT_DIR)/chromium-$(cef_ver)
 	cp chromium_subp/target/release/chromium_subp $(CHROMIUM_OUTPUT_DIR)/chromium-$(cef_ver)/chromium_subp-$(SWT_VERSION)
-	cp chromium_swt/target/release/libchromium_swt_$(SWT_VERSION).so $(CHROMIUM_OUTPUT_DIR)/chromium-$(cef_ver)
+	cp chromium_swt/target/release/libchromium_swt.so $(CHROMIUM_OUTPUT_DIR)/chromium-$(cef_ver)/libchromium_swt_$(SWT_VERSION).so
 chromium_install: chromium
 	cp $(CHROMIUM_LIB) $(CHROMIUM_OUTPUT_DIR)/chromium-$(cef_ver)
 #

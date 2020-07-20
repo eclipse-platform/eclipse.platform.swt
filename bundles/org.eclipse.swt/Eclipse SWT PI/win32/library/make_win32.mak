@@ -43,7 +43,7 @@ AWT_OBJS   = swt_awt.obj
 
 CHROMIUM_PREFIX = swt-chromium
 CHROMIUM_LIB    = $(CHROMIUM_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).dll
-CHROMIUM_LIBS   = $(CHROMIUM_TARGET)\chromium_swt_$(SWT_VERSION).dll.lib
+CHROMIUM_LIBS   = $(CHROMIUM_TARGET)\chromium_swt.dll.lib
 CHROMIUM_OBJS   = chromiumlib.obj chromiumlib_stats.obj chromiumlib_custom.obj chromiumlib_structs.obj
 
 WGL_PREFIX = swt-wgl
@@ -152,7 +152,7 @@ chromium_cargo:
 	cd chromium_swt && cargo build --release
 	mkdir $(CHROMIUM_OUTPUT_DIR)\chromium-$(cef_ver)
 	copy chromium_subp\target\release\chromium_subp.exe $(CHROMIUM_OUTPUT_DIR)\chromium-$(cef_ver)\chromium_subp-$(SWT_VERSION).exe
-	copy chromium_swt\target\release\chromium_swt_$(SWT_VERSION).dll $(CHROMIUM_OUTPUT_DIR)\chromium-$(cef_ver)
+	copy chromium_swt\target\release\chromium_swt.dll $(CHROMIUM_OUTPUT_DIR)\chromium-$(cef_ver)\chromium_swt_$(SWT_VERSION).dll
 	
 chromium_install: make_chromium
 	copy $(CHROMIUM_PREFIX)*.dll "$(CHROMIUM_OUTPUT_DIR)\chromium-$(cef_ver)"

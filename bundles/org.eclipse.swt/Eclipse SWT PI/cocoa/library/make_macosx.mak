@@ -43,7 +43,7 @@ CHROMIUM_PREFIX = swt-chromium
 CHROMIUM_LIB    = lib$(CHROMIUM_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).jnilib
 CHROMIUM_OBJECTS   = chromiumlib.o chromiumlib_structs.o chromiumlib_custom.o chromiumlib_stats.o
 CHROMIUM_CFLAGS = -I $(CHROMIUM_HEADERS)
-CHROMIUM_LFLAGS = -bundle $(ARCHS) -lchromium_swt_${SWT_VERSION} -L$(CHROMIUM_OUTPUT_DIR)/chromium-$(cef_ver)
+CHROMIUM_LFLAGS = -bundle $(ARCHS) -lchromium_swt -L$(CHROMIUM_OUTPUT_DIR)/chromium-$(cef_ver)
 
 all: $(SWT_LIB) $(SWTPI_LIB) $(AWT_LIB)
 
@@ -84,11 +84,11 @@ chromium_cargo:
 	cd chromium_swt && cargo build --release
 	mkdir -p $(CHROMIUM_OUTPUT_DIR)/chromium-$(cef_ver)/chromium_subp-$(SWT_VERSION).app/Contents/MacOS/
 	install_name_tool -change '@rpath/Frameworks/Chromium Embedded Framework.framework/Chromium Embedded Framework' '@loader_path/../../../Chromium Embedded Framework.framework/Chromium Embedded Framework' chromium_subp/target/release/chromium_subp
-	install_name_tool -change '@rpath/Frameworks/Chromium Embedded Framework.framework/Chromium Embedded Framework' '@loader_path/Chromium Embedded Framework.framework/Chromium Embedded Framework' chromium_swt/target/release/libchromium_swt_$(SWT_VERSION).dylib
-	install_name_tool -id '@loader_path/libchromium_swt_$(SWT_VERSION).dylib' chromium_swt/target/release/libchromium_swt_$(SWT_VERSION).dylib
-	strip -r -u chromium_swt/target/release/libchromium_swt_$(SWT_VERSION).dylib
+	install_name_tool -change '@rpath/Frameworks/Chromium Embedded Framework.framework/Chromium Embedded Framework' '@loader_path/Chromium Embedded Framework.framework/Chromium Embedded Framework' chromium_swt/target/release/libchromium_swt.dylib
+	install_name_tool -id '@loader_path/libchromium_swt.dylib' chromium_swt/target/release/libchromium_swt.dylib
+	strip -r -u chromium_swt/target/release/libchromium_swt.dylib
 	cp chromium_subp/target/release/chromium_subp $(CHROMIUM_OUTPUT_DIR)/chromium-$(cef_ver)/chromium_subp-$(SWT_VERSION).app/Contents/MacOS/
-	cp chromium_swt/target/release/libchromium_swt_$(SWT_VERSION).dylib $(CHROMIUM_OUTPUT_DIR)/chromium-$(cef_ver)
+	cp chromium_swt/target/release/libchromium_swt.dylib $(CHROMIUM_OUTPUT_DIR)/chromium-$(cef_ver)/libchromium_swt_$(SWT_VERSION).dylib
 chromium_install: make_chromium
 	strip -r -u $(CHROMIUM_LIB)
 	cp $(CHROMIUM_LIB) "$(CHROMIUM_OUTPUT_DIR)/chromium-$(cef_ver)"
