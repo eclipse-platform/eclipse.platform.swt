@@ -278,14 +278,6 @@ glx_stats.o: glx_stats.c glx_stats.h
 # I hope there are no spaces in the path :-).
 install: all
 	cp $(ALL_SWT_LIBS) $(OUTPUT_DIR)
-chromium_cargo:
-	cd chromium_subp && cargo build --release
-	cd chromium_swt && cargo build --release
-	mkdir -p $(CHROMIUM_OUTPUT_DIR)/chromium-$(cef_ver)
-	cp chromium_subp/target/release/chromium_subp $(CHROMIUM_OUTPUT_DIR)/chromium-$(cef_ver)/chromium_subp-$(SWT_VERSION)
-	cp chromium_swt/target/release/libchromium_swt_$(SWT_VERSION).so $(CHROMIUM_OUTPUT_DIR)/chromium-$(cef_ver)
-chromium_install: chromium
-	cp $(CHROMIUM_LIB) $(CHROMIUM_OUTPUT_DIR)/chromium-$(cef_ver)
 ifeq ($(BUILD_WEBKIT2EXTENSION),yes)
 	@# Copy webextension into it's own folder, but create folder first.
 	@# CAREFULLY delete '.so' files inside webextension*. Then carefully remove the directories. 'rm -rf' seemed too risky of an approach.
@@ -297,6 +289,14 @@ ifeq ($(BUILD_WEBKIT2EXTENSION),yes)
 	-cp $(WEBKIT_EXTENSION_LIB) $(OUTPUT_DIR)/$(WEBEXTENSION_DIR)/
 endif
 
+chromium_cargo:
+	cd chromium_subp && cargo build --release
+	cd chromium_swt && cargo build --release
+	mkdir -p $(CHROMIUM_OUTPUT_DIR)/chromium-$(cef_ver)
+	cp chromium_subp/target/release/chromium_subp $(CHROMIUM_OUTPUT_DIR)/chromium-$(cef_ver)/chromium_subp-$(SWT_VERSION)
+	cp chromium_swt/target/release/libchromium_swt_$(SWT_VERSION).so $(CHROMIUM_OUTPUT_DIR)/chromium-$(cef_ver)
+chromium_install: chromium
+	cp $(CHROMIUM_LIB) $(CHROMIUM_OUTPUT_DIR)/chromium-$(cef_ver)
 #
 # Clean
 #
