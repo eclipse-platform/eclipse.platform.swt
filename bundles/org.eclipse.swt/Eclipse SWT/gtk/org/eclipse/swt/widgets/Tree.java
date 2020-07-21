@@ -2267,33 +2267,27 @@ long gtk_row_activated (long tree, long path, long column) {
 @Override
 long gtk_key_press_event (long widget, long event) {
 	int [] key = new int[1];
+
 	if (GTK.GTK4) {
 		key[0] = GDK.gdk_key_event_get_keyval(event);
 	} else {
 		GDK.gdk_event_get_keyval(event, key);
 	}
 
-	keyPressDefaultSelectionHandler (event, key[0]);
-	return super.gtk_key_press_event (widget, event);
-}
-
-/**
- * Used to emulate DefaultSelection event. See Bug 312568.
- * @param event the gtk key press event that was fired.
- */
-void keyPressDefaultSelectionHandler (long event, int key) {
-	int keymask = gdk_event_get_state (event);
-	switch (key) {
+	switch (key[0]) {
 		case GDK.GDK_Return:
 			// Send DefaultSelectionEvent when:
-			// when    : Enter, Shift+Enter, Ctrl+Enter are pressed.
+			// When    : Enter, Shift+Enter, Ctrl+Enter are pressed.
 			// Not when: Alt+Enter, (Meta|Super|Hyper)+Enter, reason is stateMask is not provided on Gtk.
-			// Note: alt+Enter creates a selection on GTK, but we filter it out to be a bit more consitent Win32 (521387)
+			// Note: alt+Enter creates a selection on GTK, but we filter it out to be a bit more consistent Win32 (521387)
+			int keymask = gdk_event_get_state (event);
 			if ((keymask & (GDK.GDK_SUPER_MASK | GDK.GDK_META_MASK | GDK.GDK_HYPER_MASK | GDK.GDK_MOD1_MASK)) == 0) {
 				sendTreeDefaultSelection ();
+				return 0; // Avoid doubling the enter event to other widgets when it is a DefaultSelectionEvent
 			}
-			break;
 	}
+
+	return super.gtk_key_press_event (widget, event);
 }
 
 /**
