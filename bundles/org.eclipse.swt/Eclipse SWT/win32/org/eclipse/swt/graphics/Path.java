@@ -199,10 +199,11 @@ public Path (Device device, PathData data) {
  * </ul>
  */
 public void addArc (float x, float y, float width, float height, float startAngle, float arcAngle) {
-	x = DPIUtil.autoScaleUp(x);
-	y = DPIUtil.autoScaleUp(y);
-	width = DPIUtil.autoScaleUp(width);
-	height = DPIUtil.autoScaleUp(height);
+	Drawable drawable = getDevice();
+	x = DPIUtil.autoScaleUp(drawable, x);
+	y = DPIUtil.autoScaleUp(drawable, y);
+	width = DPIUtil.autoScaleUp(drawable, width);
+	height = DPIUtil.autoScaleUp(drawable, height);
 	addArcInPixels(x, y, width, height, startAngle, arcAngle);
 }
 
@@ -269,10 +270,11 @@ public void addPath(Path path) {
  * </ul>
  */
 public void addRectangle (float x, float y, float width, float height) {
-	x = DPIUtil.autoScaleUp(x);
-	y = DPIUtil.autoScaleUp(y);
-	width = DPIUtil.autoScaleUp(width);
-	height = DPIUtil.autoScaleUp(height);
+	Drawable drawable = getDevice();
+	x = DPIUtil.autoScaleUp(drawable, x);
+	y = DPIUtil.autoScaleUp(drawable, y);
+	width = DPIUtil.autoScaleUp(drawable, width);
+	height = DPIUtil.autoScaleUp(drawable, height);
 	addRectangleInPixels(x, y, width, height);
 }
 
@@ -306,8 +308,9 @@ void addRectangleInPixels(float x, float y, float width, float height) {
  * </ul>
  */
 public void addString (String string, float x, float y, Font font) {
-	x = DPIUtil.autoScaleUp(x);
-	y = DPIUtil.autoScaleUp(y);
+	Drawable drawable = getDevice();
+	x = DPIUtil.autoScaleUp(drawable, x);
+	y = DPIUtil.autoScaleUp(drawable, y);
 	addStringInPixels(string, x, y, font);
 }
 
@@ -378,8 +381,9 @@ public void close() {
  * </ul>
  */
 public boolean contains (float x, float y, GC gc, boolean outline) {
-	x = DPIUtil.autoScaleUp(x);
-	y = DPIUtil.autoScaleUp(y);
+	Drawable drawable = getDevice();
+	x = DPIUtil.autoScaleUp(drawable, x);
+	y = DPIUtil.autoScaleUp(drawable, y);
 	return containsInPixels(x, y, gc, outline);
 }
 
@@ -414,12 +418,13 @@ boolean containsInPixels(float x, float y, GC gc, boolean outline) {
  * </ul>
  */
 public void cubicTo (float cx1, float cy1, float cx2, float cy2, float x, float y) {
-	cx1 = DPIUtil.autoScaleUp(cx1);
-	cy1 = DPIUtil.autoScaleUp(cy1);
-	cx2 = DPIUtil.autoScaleUp(cx2);
-	cy2 = DPIUtil.autoScaleUp(cy2);
-	x = DPIUtil.autoScaleUp(x);
-	y = DPIUtil.autoScaleUp(y);
+	Drawable drawable = getDevice();
+	cx1 = DPIUtil.autoScaleUp(drawable, cx1);
+	cy1 = DPIUtil.autoScaleUp(drawable, cy1);
+	cx2 = DPIUtil.autoScaleUp(drawable, cx2);
+	cy2 = DPIUtil.autoScaleUp(drawable, cy2);
+	x = DPIUtil.autoScaleUp(drawable, x);
+	y = DPIUtil.autoScaleUp(drawable, y);
 	cubicToInPixels(cx1, cy1, cx2, cy2, x, y);
 }
 
@@ -453,7 +458,7 @@ void destroy() {
 public void getBounds (float[] bounds) {
 	if (bounds == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	getBoundsInPixels(bounds);
-	float[] scaledbounds= DPIUtil.autoScaleDown(bounds);
+	float[] scaledbounds= DPIUtil.autoScaleDown(getDevice(), bounds);
 	System.arraycopy(scaledbounds, 0, bounds, 0, 4);
 }
 
@@ -485,7 +490,7 @@ void getBoundsInPixels(float[] bounds) {
 public void getCurrentPoint (float[] point) {
 	if (point == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	getCurrentPointInPixels(point);
-	float[] scaledpoint= DPIUtil.autoScaleDown(point);
+	float[] scaledpoint= DPIUtil.autoScaleDown(getDevice(), point);
 	System.arraycopy(scaledpoint, 0, point, 0, 2);
 }
 
@@ -510,7 +515,7 @@ void getCurrentPointInPixels(float[] point) {
 public PathData getPathData() {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	PathData result = getPathDataInPixels();
-	result.points = DPIUtil.autoScaleDown(result.points);
+	result.points = DPIUtil.autoScaleDown(getDevice(), result.points);
 	return result;
 }
 
@@ -571,7 +576,8 @@ PathData getPathDataInPixels() {
  * </ul>
  */
 public void lineTo (float x, float y) {
-	lineToInPixels(DPIUtil.autoScaleUp(x), DPIUtil.autoScaleUp(y));
+	Drawable drawable = getDevice();
+	lineToInPixels(DPIUtil.autoScaleUp(drawable, x), DPIUtil.autoScaleUp(drawable, y));
 }
 
 void lineToInPixels(float x, float y) {
@@ -635,7 +641,8 @@ public boolean isDisposed() {
  * </ul>
  */
 public void moveTo (float x, float y) {
-	moveToInPixels(DPIUtil.autoScaleUp(x), DPIUtil.autoScaleUp(y));
+	Drawable drawable = getDevice();
+	moveToInPixels(DPIUtil.autoScaleUp(drawable, x), DPIUtil.autoScaleUp(drawable, y));
 }
 
 void moveToInPixels(float x, float y) {
@@ -658,10 +665,11 @@ void moveToInPixels(float x, float y) {
  * </ul>
  */
 public void quadTo (float cx, float cy, float x, float y) {
-	cx = DPIUtil.autoScaleUp(cx);
-	cy = DPIUtil.autoScaleUp(cy);
-	x = DPIUtil.autoScaleUp(x);
-	y = DPIUtil.autoScaleUp(y);
+	Drawable drawable = getDevice();
+	cx = DPIUtil.autoScaleUp(drawable, cx);
+	cy = DPIUtil.autoScaleUp(drawable, cy);
+	x = DPIUtil.autoScaleUp(drawable, x);
+	y = DPIUtil.autoScaleUp(drawable, y);
 	quadToInPixels(cx, cy, x, y);
 }
 
