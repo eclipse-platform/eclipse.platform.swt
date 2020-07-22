@@ -317,7 +317,8 @@ public class Display extends Device {
 	RECT clickRect;
 	int clickCount, lastTime, lastButton;
 	long lastClickHwnd;
-	int scrollRemainder, scrollHRemainder;
+	Point scrollRemainderEvt = new Point(0, 0);
+	Point scrollRemainderBar = new Point(0, 0);
 	int lastKey, lastMouse, lastAscii;
 	boolean lastVirtual, lastNull, lastDead;
 	byte [] keyboard = new byte [256];

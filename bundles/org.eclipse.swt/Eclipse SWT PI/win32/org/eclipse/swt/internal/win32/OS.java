@@ -1218,6 +1218,7 @@ public class OS extends C {
 	public static final int SPI_GETWORKAREA = 0x30;
 	public static final int SPI_GETMOUSEVANISH = 0x1020;
 	public static final int SPI_GETNONCLIENTMETRICS = 41;
+	public static final int SPI_GETWHEELSCROLLCHARS = 108;
 	public static final int SPI_GETWHEELSCROLLLINES = 104;
 	public static final int SPI_GETCARETWIDTH = 0x2006;
 	public static final int SPI_SETSIPINFO = 224;

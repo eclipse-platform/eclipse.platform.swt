@@ -375,24 +375,30 @@ LRESULT wmScrollWheel (boolean update, long wParam, long lParam) {
 	* Translate WM_MOUSEWHEEL to WM_VSCROLL or WM_HSCROLL.
 	*/
 	if (update) {
-		if ((wParam & (OS.MK_SHIFT | OS.MK_CONTROL)) != 0) return result;
-		boolean vertical = verticalBar != null && verticalBar.getEnabled ();
-		boolean horizontal = horizontalBar != null && horizontalBar.getEnabled ();
-		int msg = vertical ? OS.WM_VSCROLL : horizontal ? OS.WM_HSCROLL : 0;
-		if (msg == 0) return result;
-		int [] linesToScroll = new int [1];
-		OS.SystemParametersInfo (OS.SPI_GETWHEELSCROLLLINES, 0, linesToScroll, 0);
-		int delta = OS.GET_WHEEL_DELTA_WPARAM (wParam);
-		boolean pageScroll = linesToScroll [0] == OS.WHEEL_PAGESCROLL;
+		if ((wParam & (OS.MK_SHIFT | OS.MK_CONTROL)) != 0)
+			return null;
+
+		boolean vertical;
+		if (verticalBar != null && verticalBar.getEnabled ())
+			vertical = true;
+		else if (horizontalBar != null && horizontalBar.getEnabled ())
+			vertical = false;
+		else
+			return null;
+
 		ScrollBar bar = vertical ? verticalBar : horizontalBar;
+		MouseWheelData wheelData = new MouseWheelData(vertical, bar, wParam, display.scrollRemainderBar);
+
+		if (wheelData.count == 0) return null;
+
 		SCROLLINFO info = new SCROLLINFO ();
 		info.cbSize = SCROLLINFO.sizeof;
 		info.fMask = OS.SIF_POS;
 		OS.GetScrollInfo (handle, bar.scrollBarType (), info);
-		if (vertical && !pageScroll) delta *= linesToScroll [0];
-		int increment = pageScroll ? bar.getPageIncrement () : bar.getIncrement ();
-		info.nPos -=  increment * delta / OS.WHEEL_DELTA;
+		info.nPos -= wheelData.count;
 		OS.SetScrollInfo (handle, bar.scrollBarType (), info, true);
+
+		int msg = vertical ? OS.WM_VSCROLL : OS.WM_HSCROLL;
 		OS.SendMessage (handle, msg, OS.SB_THUMBPOSITION, 0);
 		return LRESULT.ZERO;
 	}

@@ -1112,36 +1112,78 @@ boolean sendMouseEvent (int type, int button, int count, int detail, boolean sen
 	return event.doit;
 }
 
-boolean sendMouseWheelEvent (int type, long hwnd, long wParam, long lParam) {
-	int delta = OS.GET_WHEEL_DELTA_WPARAM (wParam);
-	int detail = 0;
-	if (type == SWT.MouseWheel) {
-		int [] linesToScroll = new int [1];
-		OS.SystemParametersInfo (OS.SPI_GETWHEELSCROLLLINES, 0, linesToScroll, 0);
-		if (linesToScroll [0] == OS.WHEEL_PAGESCROLL) {
-			detail = SWT.SCROLL_PAGE;
-		} else {
-			detail = SWT.SCROLL_LINE;
-			delta *= linesToScroll [0];
-		}
-		/* Check if the delta and the remainder have the same direction (sign) */
-		if ((delta ^ display.scrollRemainder) >= 0) delta += display.scrollRemainder;
-		display.scrollRemainder = delta % OS.WHEEL_DELTA;
-	} else {
-		/* Check if the delta and the remainder have the same direction (sign) */
-		if ((delta ^ display.scrollHRemainder) >= 0) delta += display.scrollHRemainder;
-		display.scrollHRemainder = delta % OS.WHEEL_DELTA;
+class MouseWheelData {
+	MouseWheelData (boolean isVertical, ScrollBar scrollBar, long wParam, Point remainder) {
+		/* WHEEL_DELTA is expressed in precision units, see OS.WHEEL_DELTA */
+		int delta = OS.GET_WHEEL_DELTA_WPARAM (wParam);
 
-		delta = -delta;
+		/* Wheel speed can be configured in Windows mouse settings */
+		if (isVertical) {
+			int [] wheelSpeed = new int [1];
+			OS.SystemParametersInfo (OS.SPI_GETWHEELSCROLLLINES, 0, wheelSpeed, 0);
+			if (wheelSpeed [0] == OS.WHEEL_PAGESCROLL) {
+				detail = SWT.SCROLL_PAGE;
+			} else {
+				delta *= wheelSpeed [0];
+				detail = SWT.SCROLL_LINE;
+			}
+		} else {
+			int [] wheelSpeed = new int [1];
+			OS.SystemParametersInfo (OS.SPI_GETWHEELSCROLLCHARS, 0, wheelSpeed, 0);
+			delta *= wheelSpeed [0];
+
+			/* For legacy compatibility reasons, detail is set to 0 here */
+			detail = 0;
+		}
+
+		/* Take scrollbar scrolling speed into account */
+		if (scrollBar != null) {
+			if (detail == SWT.SCROLL_PAGE) {
+				delta *= scrollBar.getPageIncrement ();
+			} else {
+				delta *= scrollBar.getIncrement ();
+			}
+		}
+
+		/*
+		 * Accumulate remainder to deal with fractional scrolls. This is only seen
+		 * on some devices which support "smooth scrolling". MSDN also says:
+		 *     The remainder must be zeroed when the wheel rotation switches
+		 *     directions or when window focus changes.
+		 */
+		if (isVertical) {
+			if ((delta ^ remainder.y) >= 0) delta += remainder.y;
+			remainder.y = delta % OS.WHEEL_DELTA;
+		} else {
+			if ((delta ^ remainder.x) >= 0) delta += remainder.x;
+			remainder.x = delta % OS.WHEEL_DELTA;
+		}
+
+		/* Finally, divide by WHEEL_DELTA */
+		count = delta / OS.WHEEL_DELTA;
 	}
 
+	int count;		// lines or pages scrolled
+	int detail;		// {0, SWT.SCROLL_PAGE, SWT.SCROLL_LINE}
+}
+
+boolean sendMouseWheelEvent (int type, long hwnd, long wParam, long lParam) {
 	if (!hooks (type) && !filters (type)) return true;
-	int count = delta / OS.WHEEL_DELTA;
+
+	boolean vertical = (type == SWT.MouseWheel);
+	MouseWheelData wheelData = new MouseWheelData (vertical, null, wParam, display.scrollRemainderEvt);
+
+	if (wheelData.count == 0) return true;
+
+	/* Legacy code. I wonder if any SWT application actually cares? */
+	if (!vertical)
+		wheelData.count = -wheelData.count;
+
 	POINT pt = new POINT ();
 	OS.POINTSTOPOINT (pt, lParam);
 	OS.ScreenToClient (hwnd, pt);
 	lParam = OS.MAKELPARAM (pt.x, pt.y);
-	return sendMouseEvent (type, 0, count, detail, true, hwnd, lParam);
+	return sendMouseEvent (type, 0, wheelData.count, wheelData.detail, true, hwnd, lParam);
 }
 
 /**
@@ -1794,7 +1836,15 @@ LRESULT wmKeyUp (long hwnd, long wParam, long lParam) {
 }
 
 LRESULT wmKillFocus (long hwnd, long wParam, long lParam) {
-	display.scrollRemainder = display.scrollHRemainder = 0;
+	/*
+	 * MSDN says: The remainder must be zeroed when the wheel rotation switches
+	 * directions or when window focus changes.
+	 */
+	display.scrollRemainderEvt.x = 0;
+	display.scrollRemainderEvt.y = 0;
+	display.scrollRemainderBar.x = 0;
+	display.scrollRemainderBar.y = 0;
+
 	long code = callWindowProc (hwnd, OS.WM_KILLFOCUS, wParam, lParam);
 	sendFocusEvent (SWT.FocusOut);
 	// widget could be disposed at this point
