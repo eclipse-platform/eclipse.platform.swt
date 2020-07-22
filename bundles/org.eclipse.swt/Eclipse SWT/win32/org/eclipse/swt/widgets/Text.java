@@ -2890,8 +2890,8 @@ LRESULT WM_LBUTTONDBLCLK (long wParam, long lParam) {
 	* calling the window proc.
 	*/
 	LRESULT result = null;
-	sendMouseEvent (SWT.MouseDown, 1, handle, OS.WM_LBUTTONDOWN, wParam, lParam);
-	if (!sendMouseEvent (SWT.MouseDoubleClick, 1, handle, OS.WM_LBUTTONDBLCLK, wParam, lParam)) {
+	sendMouseEvent (SWT.MouseDown, 1, handle, lParam);
+	if (!sendMouseEvent (SWT.MouseDoubleClick, 1, handle, lParam)) {
 		result = LRESULT.ZERO;
 	}
 	if (!display.captureChanged && !isDisposed ()) {

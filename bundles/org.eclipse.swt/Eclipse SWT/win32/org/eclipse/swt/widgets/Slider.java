@@ -700,7 +700,7 @@ LRESULT WM_LBUTTONDBLCLK (long wParam, long lParam) {
 	* release the automatic capture.
 	*/
 	if (OS.GetCapture () == handle) OS.ReleaseCapture ();
-	if (!sendMouseEvent (SWT.MouseUp, 1, handle, OS.WM_LBUTTONUP, wParam, lParam)) {
+	if (!sendMouseEvent (SWT.MouseUp, 1, handle, lParam)) {
 		return LRESULT.ZERO;
 	}
 	return result;
@@ -732,7 +732,7 @@ LRESULT WM_LBUTTONDOWN (long wParam, long lParam) {
 	* release the automatic capture.
 	*/
 	if (OS.GetCapture () == handle) OS.ReleaseCapture ();
-	if (!sendMouseEvent (SWT.MouseUp, 1, handle, OS.WM_LBUTTONUP, wParam, lParam)) {
+	if (!sendMouseEvent (SWT.MouseUp, 1, handle, lParam)) {
 		return LRESULT.ONE;
 	}
 	return result;

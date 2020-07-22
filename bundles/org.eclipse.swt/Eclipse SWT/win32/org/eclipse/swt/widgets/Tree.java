@@ -6288,8 +6288,8 @@ LRESULT WM_LBUTTONDBLCLK (long wParam, long lParam) {
 			if ((lpht.flags & OS.TVHT_ONITEMSTATEICON) != 0) {
 				Display display = this.display;
 				display.captureChanged = false;
-				sendMouseEvent (SWT.MouseDown, 1, handle, OS.WM_LBUTTONDOWN, wParam, lParam);
-				if (!sendMouseEvent (SWT.MouseDoubleClick, 1, handle, OS.WM_LBUTTONDBLCLK, wParam, lParam)) {
+				sendMouseEvent (SWT.MouseDown, 1, handle, lParam);
+				if (!sendMouseEvent (SWT.MouseDoubleClick, 1, handle, lParam)) {
 					if (!display.captureChanged && !isDisposed ()) {
 						if (OS.GetCapture () != handle) OS.SetCapture (handle);
 					}
@@ -6361,7 +6361,7 @@ LRESULT WM_LBUTTONDOWN (long wParam, long lParam) {
 	if (lpht.hItem == 0 || (lpht.flags & OS.TVHT_ONITEMBUTTON) != 0) {
 		Display display = this.display;
 		display.captureChanged = false;
-		if (!sendMouseEvent (SWT.MouseDown, 1, handle, OS.WM_LBUTTONDOWN, wParam, lParam)) {
+		if (!sendMouseEvent (SWT.MouseDown, 1, handle, lParam)) {
 			if (!display.captureChanged && !isDisposed ()) {
 				if (OS.GetCapture () != handle) OS.SetCapture (handle);
 			}
@@ -6451,7 +6451,7 @@ LRESULT WM_LBUTTONDOWN (long wParam, long lParam) {
 		if ((lpht.flags & OS.TVHT_ONITEMSTATEICON) != 0) {
 			Display display = this.display;
 			display.captureChanged = false;
-			if (!sendMouseEvent (SWT.MouseDown, 1, handle, OS.WM_LBUTTONDOWN, wParam, lParam)) {
+			if (!sendMouseEvent (SWT.MouseDown, 1, handle, lParam)) {
 				if (!display.captureChanged && !isDisposed ()) {
 					if (OS.GetCapture () != handle) OS.SetCapture (handle);
 				}
@@ -6512,7 +6512,7 @@ LRESULT WM_LBUTTONDOWN (long wParam, long lParam) {
 		if ((lpht.flags & OS.TVHT_ONITEM) == 0) {
 			Display display = this.display;
 			display.captureChanged = false;
-			if (!sendMouseEvent (SWT.MouseDown, 1, handle, OS.WM_LBUTTONDOWN, wParam, lParam)) {
+			if (!sendMouseEvent (SWT.MouseDown, 1, handle, lParam)) {
 				if (!display.captureChanged && !isDisposed ()) {
 					if (OS.GetCapture () != handle) OS.SetCapture (handle);
 				}
@@ -6584,7 +6584,7 @@ LRESULT WM_LBUTTONDOWN (long wParam, long lParam) {
 	/* Do the selection */
 	Display display = this.display;
 	display.captureChanged = false;
-	if (!sendMouseEvent (SWT.MouseDown, 1, handle, OS.WM_LBUTTONDOWN, wParam, lParam)) {
+	if (!sendMouseEvent (SWT.MouseDown, 1, handle, lParam)) {
 		if (!display.captureChanged && !isDisposed ()) {
 			if (OS.GetCapture () != handle) OS.SetCapture (handle);
 		}
@@ -6733,7 +6733,7 @@ LRESULT WM_LBUTTONDOWN (long wParam, long lParam) {
 	} else {
 		int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
 		if ((bits & OS.TVS_DISABLEDRAGDROP) == 0) {
-			sendMouseEvent (SWT.MouseUp, 1, handle, OS.WM_LBUTTONUP, wParam, lParam);
+			sendMouseEvent (SWT.MouseUp, 1, handle, lParam);
 		}
 	}
 	dragStarted = false;
@@ -6816,7 +6816,7 @@ LRESULT WM_RBUTTONDOWN (long wParam, long lParam) {
 	*/
 	Display display = this.display;
 	display.captureChanged = false;
-	if (!sendMouseEvent (SWT.MouseDown, 3, handle, OS.WM_RBUTTONDOWN, wParam, lParam)) {
+	if (!sendMouseEvent (SWT.MouseDown, 3, handle, lParam)) {
 		if (!display.captureChanged && !isDisposed ()) {
 			if (OS.GetCapture () != handle) OS.SetCapture (handle);
 		}

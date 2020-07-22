@@ -3692,7 +3692,7 @@ Event sendMeasureItemEvent (TableItem item, int row, int column, long hDC) {
 LRESULT sendMouseDownEvent (int type, int button, int msg, long wParam, long lParam) {
 	Display display = this.display;
 	display.captureChanged = false;
-	if (!sendMouseEvent (type, button, handle, msg, wParam, lParam)) {
+	if (!sendMouseEvent (type, button, handle, lParam)) {
 		if (!display.captureChanged && !isDisposed ()) {
 			if (OS.GetCapture () != handle) OS.SetCapture (handle);
 		}
@@ -3859,7 +3859,7 @@ LRESULT sendMouseDownEvent (int type, int button, int msg, long wParam, long lPa
 			fakeMouseUp = (pinfo.flags & OS.LVHT_ONITEMSTATEICON) == 0;
 		}
 		if (fakeMouseUp) {
-			sendMouseEvent (SWT.MouseUp, button, handle, msg, wParam, lParam);
+			sendMouseEvent (SWT.MouseUp, button, handle, lParam);
 		}
 	}
 	return new LRESULT (code);
@@ -6016,8 +6016,8 @@ LRESULT WM_LBUTTONDBLCLK (long wParam, long lParam) {
 	int index = (int)OS.SendMessage (handle, OS.LVM_HITTEST, 0, pinfo);
 	Display display = this.display;
 	display.captureChanged = false;
-	sendMouseEvent (SWT.MouseDown, 1, handle, OS.WM_LBUTTONDOWN, wParam, lParam);
-	if (!sendMouseEvent (SWT.MouseDoubleClick, 1, handle, OS.WM_LBUTTONDBLCLK, wParam, lParam)) {
+	sendMouseEvent (SWT.MouseDown, 1, handle, lParam);
+	if (!sendMouseEvent (SWT.MouseDoubleClick, 1, handle, lParam)) {
 		if (!display.captureChanged && !isDisposed ()) {
 			if (OS.GetCapture () != handle) OS.SetCapture (handle);
 		}
@@ -6126,8 +6126,8 @@ LRESULT WM_RBUTTONDBLCLK (long wParam, long lParam) {
 	OS.SendMessage (handle, OS.LVM_HITTEST, 0, pinfo);
 	Display display = this.display;
 	display.captureChanged = false;
-	sendMouseEvent (SWT.MouseDown, 3, handle, OS.WM_RBUTTONDOWN, wParam, lParam);
-	if (sendMouseEvent (SWT.MouseDoubleClick, 3, handle, OS.WM_RBUTTONDBLCLK, wParam, lParam)) {
+	sendMouseEvent (SWT.MouseDown, 3, handle, lParam);
+	if (sendMouseEvent (SWT.MouseDoubleClick, 3, handle, lParam)) {
 		if (pinfo.iItem != -1) callWindowProc (handle, OS.WM_RBUTTONDBLCLK, wParam, lParam);
 	}
 	if (!display.captureChanged && !isDisposed ()) {
