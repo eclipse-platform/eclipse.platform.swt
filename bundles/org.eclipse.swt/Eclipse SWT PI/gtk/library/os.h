@@ -376,6 +376,28 @@
 // GtkCalendarDisplayOptions removed
 #define NO_gtk_1calendar_1set_1display_1options
 
+// GtkToolbar & toolbar item related objects removed
+#define NO_gtk_1toolbar_1new
+#define NO_gtk_1toolbar_1insert
+#define NO_gtk_1toolbar_1set_1icon_1size
+#define NO_gtk_1toolbar_1set_1style
+#define NO_gtk_1toolbar_1set_1show_1arrow
+#define NO_gtk_1separator_1tool_1item_1new
+#define NO_gtk_1separator_1tool_1item_1set_1draw
+#define NO_gtk_1toggle_1tool_1button_1new
+#define NO_gtk_1toggle_1tool_1button_1get_1active
+#define NO_gtk_1toggle_1tool_1button_1set_1active
+#define NO_gtk_1tool_1button_1new
+#define NO_gtk_1tool_1button_1set_1label_1widget
+#define NO_gtk_1tool_1button_1set_1icon_1widget
+#define NO_gtk_1tool_1button_1set_1use_1underline
+#define NO_gtk_1tool_1item_1set_1homogeneous
+#define NO_gtk_1tool_1item_1set_1is_1important
+#define NO_gtk_1tool_1item_1retrieve_1proxy_1menu_1item
+#define NO_gtk_1tool_1item_1set_1proxy_1menu_1item
+#define NO_gtk_1tool_1item_1get_1proxy_1menu_1item
+#define NO_gtk_1menu_1tool_1button_1new
+
 #else
 
 /**

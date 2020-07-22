@@ -129,7 +129,13 @@ void createHandle (int index) {
 	fixedHandle = OS.g_object_new (display.gtk_fixed_get_type (), 0);
 	if (fixedHandle == 0) error (SWT.ERROR_NO_HANDLES);
 	gtk_widget_set_has_surface_or_window (fixedHandle, true);
-	handle = GTK.gtk_toolbar_new ();
+
+	if (GTK.GTK4) {
+		handle = GTK.gtk_box_new(GTK.GTK_ORIENTATION_HORIZONTAL, 0);
+	} else {
+		handle = GTK.gtk_toolbar_new ();
+	}
+
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 	GTK.gtk_container_add (fixedHandle, handle);
 
@@ -143,7 +149,7 @@ void createHandle (int index) {
 	* tool bar preferred size is too big with GTK_ICON_SIZE_LARGE_TOOLBAR
 	* when the tool bar item has no image or text.
 	*/
-	GTK.gtk_toolbar_set_icon_size (handle, GTK.GTK_ICON_SIZE_SMALL_TOOLBAR);
+	if (!GTK.GTK4) GTK.gtk_toolbar_set_icon_size (handle, GTK.GTK_ICON_SIZE_SMALL_TOOLBAR);
 
 	// In GTK 3 font description is inherited from parent widget which is not how SWT has always worked,
 	// reset to default font to get the usual behavior
@@ -160,15 +166,25 @@ Point computeSizeInPixels (int wHint, int hHint, boolean changed) {
 	checkWidget ();
 	if (wHint != SWT.DEFAULT && wHint < 0) wHint = 0;
 	if (hHint != SWT.DEFAULT && hHint < 0) hHint = 0;
-	/*
-	 * Feature in GTK. Size of toolbar is calculated incorrectly
-	 * and appears as just the overflow arrow, if the arrow is enabled
-	 * to display. The fix is to disable it before the computation of
-	 * size and enable it if WRAP style is set.
-	 */
-	GTK.gtk_toolbar_set_show_arrow (handle, false);
-	Point size = computeNativeSize (handle, wHint, hHint, changed);
-	if ((style & SWT.WRAP) != 0) GTK.gtk_toolbar_set_show_arrow (handle, true);
+
+	Point size = null;
+
+	if (GTK.GTK4) {
+		/* TODO: GTK4 will require us to implement our own
+		 * overflow menu. May require the use of the "toolbar" style class
+		 * applied to the widget.  */
+	} else {
+		/*
+		 * Feature in GTK. Size of toolbar is calculated incorrectly
+		 * and appears as just the overflow arrow, if the arrow is enabled
+		 * to display. The fix is to disable it before the computation of
+		 * size and enable it if WRAP style is set.
+		 */
+		GTK.gtk_toolbar_set_show_arrow (handle, false);
+		size = computeNativeSize (handle, wHint, hHint, changed);
+		if ((style & SWT.WRAP) != 0) GTK.gtk_toolbar_set_show_arrow (handle, true);
+	}
+
 	return size;
 }
 
@@ -520,19 +536,25 @@ void relayout () {
 			hasImage |= item.image != null;
 		}
 	}
-	int type = GTK.GTK_TOOLBAR_ICONS;
-	if (hasText && hasImage) {
-		if ((style & SWT.RIGHT) != 0) {
-			type = GTK.GTK_TOOLBAR_BOTH_HORIZ;
-		} else {
-			type = GTK.GTK_TOOLBAR_BOTH;
+
+	if (GTK.GTK4) {
+		/* TODO: GTK4 no more GtkToolbar, we have to use a generic GtkBox
+		 * therefore we will need to implement these style ourselves. */
+	} else {
+		int type = GTK.GTK_TOOLBAR_ICONS;
+		if (hasText && hasImage) {
+			if ((style & SWT.RIGHT) != 0) {
+				type = GTK.GTK_TOOLBAR_BOTH_HORIZ;
+			} else {
+				type = GTK.GTK_TOOLBAR_BOTH;
+			}
+		} else if (hasText) {
+			type = GTK.GTK_TOOLBAR_TEXT;
+		} else if (hasImage) {
+			type = GTK.GTK_TOOLBAR_ICONS;
 		}
-	} else if (hasText) {
-		type = GTK.GTK_TOOLBAR_TEXT;
-	} else if (hasImage) {
-		type = GTK.GTK_TOOLBAR_ICONS;
+		GTK.gtk_toolbar_set_style (handle, type);
 	}
-	GTK.gtk_toolbar_set_style (handle, type);
 }
 
 @Override
@@ -581,7 +603,16 @@ int setBounds (int x, int y, int width, int height, boolean move, boolean resize
 	GTK.gtk_toolbar_set_show_arrow (handle, false);
 	int result = super.setBounds (x, y, width, height, move, resize);
 	if ((result & RESIZED) != 0) relayout ();
-	if ((style & SWT.WRAP) != 0) GTK.gtk_toolbar_set_show_arrow (handle, true);
+	if ((style & SWT.WRAP) != 0) {
+		if (GTK.GTK4) {
+			/* TODO: GTK4 will require us to implement our own
+			 * overflow menu. May require the use of the "toolbar" style class
+			 * applied to the widget.  */
+		} else {
+			GTK.gtk_toolbar_set_show_arrow (handle, true);
+		}
+	}
+
 	return result;
 }
 

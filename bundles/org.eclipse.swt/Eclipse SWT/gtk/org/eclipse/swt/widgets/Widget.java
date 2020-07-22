@@ -2024,7 +2024,7 @@ void gtk_box_pack_end (long box, long child, boolean expand, boolean fill, int p
 			GTK.gtk_widget_set_valign(child, GTK.GTK_ALIGN_FILL);
 		}
 		OS.g_object_set(box, OS.margin, padding, 0);
-		GTK.gtk_box_pack_end(box, child);
+		GTK.gtk_box_append(box, child);
 	} else {
 		GTK.gtk_box_pack_end(box, child, expand, fill, padding);
 	}

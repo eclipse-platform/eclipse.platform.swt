@@ -284,6 +284,13 @@ public class GTK extends OS {
 
 	public static final native long gtk_button_new();
 
+	/** @method flags=dynamic
+	 *  @param button cast=(GtkButton *)
+	 *  @param child cast=(GtkWidget *)
+	 */
+	/* [GTK4 only] */
+	public static final native void gtk_button_set_child(long button, long child);
+
 	/**
 	 * @method flags=dynamic
 	 * @param button cast=(GtkButton *)
@@ -291,6 +298,10 @@ public class GTK extends OS {
 	 */
 	/* [GTK3 only] */
 	public static final native void gtk_button_set_image(long button, long image);
+	/**
+	 * @param button cast=(GtkButton *)
+	 */
+	public static final native void gtk_button_set_use_underline(long button, boolean use_underline);
 
 	/**
 	 * @method flags=dynamic
@@ -373,25 +384,75 @@ public class GTK extends OS {
 	public static final native long gtk_bin_get_child(long bin);
 	/** @param border cast=(GtkBorder *) */
 	public static final native void gtk_border_free(long border);
+
+	/* GtkBox */
 	/** @param box cast=(GtkBox *) */
 	public static final native void gtk_box_set_spacing(long box, int spacing);
 	/**
-	 * @method flags=dynamic
-	 * @param box cast=(GtkBox *)
-	 * @param child cast=(GtkWidget *)
+	 * @param orientation cast=(GtkOrientation)
+	 * @param spacing cast=(gint)
 	 */
-	/* [GTK3 only] */
-	public static final native void gtk_box_set_child_packing(long box, long child, boolean expand, boolean fill, int padding, int pack_type);
+	public static final native long gtk_box_new(int orientation, int spacing);
+	/**
+	 * @param box cast=(GtkBox *)
+	 * @param homogeneous cast=(gboolean)
+	 */
+	public static final native void gtk_box_set_homogeneous(long box, boolean homogeneous);
+
+	/* GtkBox [GTK3 only] */
 	/**
 	 * @method flags=dynamic
 	 * @param box cast=(GtkBox *)
 	 * @param child cast=(GtkWidget *)
 	 */
-	/* [GTK4 only] */
+	public static final native void gtk_box_set_child_packing(long box, long child, boolean expand, boolean fill, int padding, int pack_type);
+
+	/**
+	 * @method flags=dynamic
+	 * @param box cast=(GtkBox *)
+	 * @param child cast=(GtkWidget *)
+	 */
 	public static final native void gtk_box_set_child_packing(long box, long child, int pack_type);
+	/**
+	 * @method flags=dynamic
+	 * @param box cast=(GtkBox *)
+	 * @param child cast=(GtkWidget *)
+	 * @param position cast=(gint)
+	 */
+	public static final native void gtk_box_reorder_child(long box, long child, int position);
+	/**
+	 * @method flags=dynamic
+	 * @param box cast=(GtkBox *)
+	 * @param widget cast=(GtkWidget *)
+	 * @param expand cast=(gboolean)
+	 * @param fill cast=(gboolean)
+	 * @param padding cast=(guint)
+	 */
+	public static final native void gtk_box_pack_end(long box, long widget, boolean expand, boolean fill, int padding);
+
+	/* GtkBox [GTK4 only] */
+	/**
+	 * @method flags=dynamic
+	 * @param box cast=(GtkBox *)
+	 * @param child cast=(GtkWidget *)
+	 */
+	public static final native void gtk_box_append(long box, long child);
+	/**
+	 * @method flags=dynamic
+	 * @param box cast=(GtkBox *)
+	 * @param child cast=(GtkWidget *)
+	 */
+	public static final native void gtk_box_prepend(long box, long child);
+
+	/**
+	 * @method flags=dynamic
+	 * @param box cast=(GtkBox *)
+	 * @param child cast=(GtkWidget *)
+	 * @param sibling cast=(GtkWidget *)
+	 */
+	public static final native void gtk_box_insert_child_after(long box, long child, long sibling);
 
 	/* GtkCalendar */
-
 	public static final native long gtk_calendar_new();
 	/**
 	 * @param calendar cast=(GtkCalendar *)
@@ -1294,40 +1355,6 @@ public class GTK extends OS {
 	 */
 	public static final native void gtk_rgb_to_hsv(double r, double g, double b, double[] h, double[] s, double[] v);
 	/**
-	 * @param orientation cast=(GtkOrientation)
-	 * @param spacing cast=(gint)
-	 */
-	public static final native long gtk_box_new(int orientation, int spacing);
-	/**
-	 * @method flags=dynamic
-	 * @param box cast=(GtkBox *)
-	 * @param widget cast=(GtkWidget *)
-	 * @param expand cast=(gboolean)
-	 * @param fill cast=(gboolean)
-	 * @param padding cast=(guint)
-	 */
-	/* [GTK3 only] */
-	public static final native void gtk_box_pack_end(long box, long widget,
-			boolean expand, boolean fill, int padding);
-	/**
-	 * @method flags=dynamic
-	 * @param box cast=(GtkBox *)
-	 * @param child cast=(GtkWidget *)
-	 */
-	/* [GTK4 only] */
-	public static final native void gtk_box_pack_end(long box, long child);
-	/**
-	 * @param box cast=(GtkBox *)
-	 * @param child cast=(GtkWidget *)
-	 * @param position cast=(gint)
-	 */
-	public static final native void gtk_box_reorder_child(long box, long child, int position);
-	/**
-	 * @param box cast=(GtkBox *)
-	 * @param homogeneous cast=(gboolean)
-	 */
-	public static final native void gtk_box_set_homogeneous(long box, boolean homogeneous);
-	/**
 	 * @method flags=dynamic
 	 */
 	/* [GTK3 only] */
@@ -1647,11 +1674,8 @@ public class GTK extends OS {
 	 * @param take_focus cast=(gboolean)
 	 */
 	public static final native void gtk_menu_shell_set_take_focus(long menu_shell, boolean take_focus);
-	/**
-	 * @param icon_widget cast=(GtkWidget *)
-	 * @param label cast=(const gchar *)
-	 */
-	public static final native long gtk_menu_tool_button_new(long icon_widget, byte[] label);
+
+	public static final native long gtk_menu_button_new();
 	/**
 	 * @param parent cast=(GtkWindow *)
 	 * @param flags cast=(GtkDialogFlags)
@@ -2165,12 +2189,6 @@ public class GTK extends OS {
 	 */
 	public static final native void gtk_selection_data_set(long selection_data, long type, int format, long data, int length);
 	public static final native long gtk_separator_menu_item_new();
-	public static final native long gtk_separator_tool_item_new();
-	/**
-	 * @param item cast=(GtkSeparatorToolItem *)
-	 * @param draw cast=(gboolean)
-	 */
-	public static final native void gtk_separator_tool_item_set_draw(long item, boolean draw);
 	/** @param socket cast=(GtkSocket *) */
 	public static final native long gtk_socket_get_id(long socket);
 	public static final native long gtk_socket_new();
@@ -2575,14 +2593,9 @@ public class GTK extends OS {
 	 */
 	/* [GTK3 only] */
 	public static final native void gtk_toggle_button_set_inconsistent(long toggle_button, boolean setting);
-	/** @param button cast=(GtkToggleToolButton *) */
-	public static final native boolean gtk_toggle_tool_button_get_active(long button);
-	public static final native long gtk_toggle_tool_button_new();
-	/**
-	 * @param item cast=(GtkToggleToolButton *)
-	 * @param selected cast=(gboolean)
-	 */
-	public static final native void gtk_toggle_tool_button_set_active(long item, boolean selected);
+
+
+	/* GtkToolbar & related tool items [GTK3 only] */
 	/**
 	 * @param icon_widget cast=(GtkWidget *)
 	 * @param label cast=(const gchar *)
@@ -2603,6 +2616,16 @@ public class GTK extends OS {
 	 * @param underline cast=(gboolean)
 	 */
 	public static final native void gtk_tool_button_set_use_underline(long item, boolean underline);
+
+	/** @param button cast=(GtkToggleToolButton *) */
+	public static final native boolean gtk_toggle_tool_button_get_active(long button);
+	public static final native long gtk_toggle_tool_button_new();
+	/**
+	 * @param item cast=(GtkToggleToolButton *)
+	 * @param selected cast=(gboolean)
+	 */
+	public static final native void gtk_toggle_tool_button_set_active(long item, boolean selected);
+
 	/**
 	 * @param item cast=(GtkToolItem *)
 	 * @param menu_id cast=(const gchar *)
@@ -2637,16 +2660,27 @@ public class GTK extends OS {
 	 * @param show_arrow cast=(gboolean)
 	 */
 	public static final native void gtk_toolbar_set_show_arrow(long toolbar, boolean show_arrow);
-	/** @param toolbar cast=(GtkToolbar *)
+	/**
+	 * @param toolbar cast=(GtkToolbar *)
 	 * @param style cast=(GtkToolbarStyle)
 	 */
 	public static final native void gtk_toolbar_set_style(long toolbar, int style);
-	/**
-	 * @method flags=dynamic
-	 * @param toolbar cast=(GtkToolbar *)
-	 */
-	/* [GTK3 only] */
+	/** @param toolbar cast=(GtkToolbar *)*/
 	public static final native void gtk_toolbar_set_icon_size(long toolbar, int size);
+	/**
+	 * @param icon_widget cast=(GtkWidget *)
+	 * @param label cast=(const gchar *)
+	 */
+	public static final native long gtk_menu_tool_button_new(long icon_widget, byte[] label);
+	public static final native long gtk_separator_tool_item_new();
+	/**
+	 * @param item cast=(GtkSeparatorToolItem *)
+	 * @param draw cast=(gboolean)
+	 */
+	public static final native void gtk_separator_tool_item_set_draw(long item, boolean draw);
+
+
+
 	public static final native long gtk_tooltip_get_type();
 	/**
 	 * @param tooltip cast=(GtkTooltip *)

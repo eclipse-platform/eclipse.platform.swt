@@ -198,12 +198,22 @@ void createHandle (int index) {
 	}
 	switch (style & bits) {
 		case SWT.SEPARATOR:
-			handle = GTK.gtk_separator_tool_item_new ();
-			if (handle == 0) error (SWT.ERROR_NO_HANDLES);
-			GTK.gtk_separator_tool_item_set_draw (handle, true);
+			if (GTK.GTK4) {
+				handle = GTK.gtk_separator_new(GTK.GTK_ORIENTATION_VERTICAL);
+				if (handle == 0) error (SWT.ERROR_NO_HANDLES);
+			} else {
+				handle = GTK.gtk_separator_tool_item_new ();
+				if (handle == 0) error (SWT.ERROR_NO_HANDLES);
+				GTK.gtk_separator_tool_item_set_draw (handle, true);
+			}
 			break;
 		case SWT.DROP_DOWN:
-			handle = GTK.gtk_menu_tool_button_new (0, null);
+			if (GTK.GTK4) {
+				handle = GTK.gtk_menu_button_new();
+			} else {
+				handle = GTK.gtk_menu_tool_button_new (0, null);
+			}
+
 			if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 			/*
 			 * Feature in GTK. The arrow button of DropDown tool-item is
@@ -225,30 +235,61 @@ void createHandle (int index) {
 			* The fix is to use toggle buttons instead.
 			*/
 		case SWT.CHECK:
-			handle = GTK.gtk_toggle_tool_button_new ();
+			if (GTK.GTK4) {
+				handle = GTK.gtk_toggle_button_new();
+			} else {
+				handle = GTK.gtk_toggle_tool_button_new ();
+			}
+
 			if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 			break;
 		case SWT.PUSH:
 		default:
-			handle = GTK.gtk_tool_button_new (0, null);
+			if (GTK.GTK4) {
+				handle = GTK.gtk_button_new();
+			} else {
+				handle = GTK.gtk_tool_button_new (0, null);
+			}
+
 			if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 			break;
 	}
 	if (labelHandle != 0) {
-		GTK.gtk_tool_button_set_label_widget(handle, labelHandle);
+		if (GTK.GTK4) {
+			/* TODO: GTK4 button has no way of explicitly setting the
+			 * label widget. The solution is probably to create buttons with
+			 * labels and get the labelHandle by traversing the children of the
+			 * button widget. */
+		} else {
+			GTK.gtk_tool_button_set_label_widget(handle, labelHandle);
+		}
 	}
 	if (imageHandle != 0) {
-		GTK.gtk_tool_button_set_icon_widget(handle, imageHandle);
+		if (GTK.GTK4) {
+			GTK.gtk_button_set_child(handle, imageHandle);
+		} else {
+			GTK.gtk_tool_button_set_icon_widget(handle, imageHandle);
+		}
 	}
 	if ((parent.state & FONT) != 0) {
 		setFontDescription (parent.getFontDescription());
 	}
-	if ((style & SWT.SEPARATOR) == 0) GTK.gtk_tool_button_set_use_underline (handle, true);
+	if ((style & SWT.SEPARATOR) == 0) {
+		if (GTK.GTK4) {
+			GTK.gtk_button_set_use_underline (handle, true);
+		} else {
+			GTK.gtk_tool_button_set_use_underline (handle, true);
+		}
+	}
 	/*
 	 * Set the "homogeneous" property to false, otherwise all ToolItems will be as large as
 	 * the largest one in the ToolBar. See bug 548331, 395296 for more information.
 	 */
-	GTK.gtk_tool_item_set_homogeneous(handle, false);
+	if (GTK.GTK4) {
+		GTK.gtk_box_set_homogeneous(handle, false);
+	} else {
+		GTK.gtk_tool_item_set_homogeneous(handle, false);
+	}
 }
 
 @Override
@@ -444,7 +485,15 @@ public ToolBar getParent () {
 public boolean getSelection () {
 	checkWidget();
 	if ((style & (SWT.CHECK | SWT.RADIO)) == 0) return false;
-	return GTK.gtk_toggle_tool_button_get_active (handle);
+
+	boolean selection;
+	if (GTK.GTK4) {
+		selection = GTK.gtk_toggle_button_get_active(handle);
+	} else {
+		selection = GTK.gtk_toggle_tool_button_get_active(handle);
+	}
+
+	return selection;
 }
 
 /**
@@ -562,6 +611,11 @@ long gtk_clicked (long widget) {
 
 @Override
 long gtk_create_menu_proxy (long widget) {
+	if (GTK.GTK4) {
+		/* TODO: GTK4 have to implement our own overflow menu */
+		return 0;
+	}
+
 	/*
 	 * Feature in GTK. If the item is a radio/check button
 	 * with only image, then that image does not appear in
@@ -1141,9 +1195,13 @@ void _setImage (Image image) {
 	* old menuItem appears in the overflow menu.
 	*/
 	if ((style & SWT.DROP_DOWN) != 0) {
-		proxyMenuItem = 0;
-		proxyMenuItem = GTK.gtk_tool_item_retrieve_proxy_menu_item (handle);
-		OS.g_signal_connect(proxyMenuItem, OS.activate, ToolBar.menuItemSelectedFunc.getAddress(), handle);
+		if (GTK.GTK4) {
+			/* TODO: GTK4 have to implement our own overflow menu */
+		} else {
+			proxyMenuItem = 0;
+			proxyMenuItem = GTK.gtk_tool_item_retrieve_proxy_menu_item (handle);
+			OS.g_signal_connect(proxyMenuItem, OS.activate, ToolBar.menuItemSelectedFunc.getAddress(), handle);
+		}
 	}
 	parent.relayout ();
 }
@@ -1184,7 +1242,11 @@ public void setSelection (boolean selected) {
 	checkWidget ();
 	if ((style & (SWT.CHECK | SWT.RADIO)) == 0) return;
 	OS.g_signal_handlers_block_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CLICKED);
-	GTK.gtk_toggle_tool_button_set_active (handle, selected);
+	if (GTK.GTK4) {
+		GTK.gtk_toggle_button_set_active (handle, selected);
+	} else {
+		GTK.gtk_toggle_tool_button_set_active (handle, selected);
+	}
 	OS.g_signal_handlers_unblock_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CLICKED);
 }
 
@@ -1236,7 +1298,7 @@ public void setText (String string) {
 	 * See bug 543895.
 	 */
 	if ((parent.style & SWT.RIGHT) != 0) {
-		GTK.gtk_tool_item_set_is_important (handle, !string.isEmpty());
+		if (!GTK.GTK4) GTK.gtk_tool_item_set_is_important (handle, !string.isEmpty());
 	}
 	/*
 	* If Text/Image of a tool-item changes, then it is
@@ -1244,9 +1306,13 @@ public void setText (String string) {
 	* old menuItem appears in the overflow menu.
 	*/
 	if ((style & SWT.DROP_DOWN) != 0) {
-		proxyMenuItem = 0;
-		proxyMenuItem = GTK.gtk_tool_item_retrieve_proxy_menu_item (handle);
-		OS.g_signal_connect(proxyMenuItem, OS.activate, ToolBar.menuItemSelectedFunc.getAddress(), handle);
+		if (GTK.GTK4) {
+			/* TODO: GTK4 have to implement our own overflow menu */
+		} else {
+			proxyMenuItem = 0;
+			proxyMenuItem = GTK.gtk_tool_item_retrieve_proxy_menu_item (handle);
+			OS.g_signal_connect(proxyMenuItem, OS.activate, ToolBar.menuItemSelectedFunc.getAddress(), handle);
+		}
 	}
 	parent.relayout ();
 }
@@ -1292,9 +1358,13 @@ public void setToolTipText (String string) {
 	* menu as a blank item.
 	*/
 	if ((style & SWT.DROP_DOWN) != 0) {
-		proxyMenuItem = 0;
-		proxyMenuItem = GTK.gtk_tool_item_retrieve_proxy_menu_item (handle);
-		OS.g_signal_connect(proxyMenuItem, OS.activate, ToolBar.menuItemSelectedFunc.getAddress(), handle);
+		if (GTK.GTK4) {
+			/* TODO: GTK4 have to implement our own overflow menu */
+		} else {
+			proxyMenuItem = 0;
+			proxyMenuItem = GTK.gtk_tool_item_retrieve_proxy_menu_item (handle);
+			OS.g_signal_connect(proxyMenuItem, OS.activate, ToolBar.menuItemSelectedFunc.getAddress(), handle);
+		}
 	}
 }
 
@@ -1342,7 +1412,28 @@ void showWidget (int index) {
 	if (handle != 0) GTK.gtk_widget_show (handle);
 	if (labelHandle != 0) GTK.gtk_widget_show (labelHandle);
 	if (imageHandle != 0) GTK.gtk_widget_show (imageHandle);
-	GTK.gtk_toolbar_insert(parent.handle, handle, index);
+
+	if (GTK.GTK4) {
+		if (index == 0) {
+			GTK.gtk_box_prepend(parent.handle, handle);
+		} else if (index < 0) {
+			GTK.gtk_box_append(parent.handle, handle);
+		} else {
+			/* TODO: This implementation of inserting the widget at a position
+			 * index in the GtkBox may not work if gtk_widget_get_next_sibling/_first_child
+			 * does not work as assumed */
+			long sibling = GTK.gtk_widget_get_first_child(parent.handle);
+
+			while (index > 0) {
+				sibling = GTK.gtk_widget_get_next_sibling(sibling);
+				index--;
+			}
+
+			GTK.gtk_box_insert_child_after(parent.handle, handle, sibling);
+		}
+	} else {
+		GTK.gtk_toolbar_insert(parent.handle, handle, index);
+	}
 }
 
 @Override

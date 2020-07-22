@@ -3790,6 +3790,42 @@ JNIEXPORT void JNICALL GTK_NATIVE(gtk_1border_1free)
 }
 #endif
 
+#ifndef NO_gtk_1box_1append
+JNIEXPORT void JNICALL GTK_NATIVE(gtk_1box_1append)
+	(JNIEnv *env, jclass that, jlong arg0, jlong arg1)
+{
+	GTK_NATIVE_ENTER(env, that, gtk_1box_1append_FUNC);
+/*
+	gtk_box_append((GtkBox *)arg0, (GtkWidget *)arg1);
+*/
+	{
+		GTK_LOAD_FUNCTION(fp, gtk_box_append)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(GtkBox *, GtkWidget *))fp)((GtkBox *)arg0, (GtkWidget *)arg1);
+		}
+	}
+	GTK_NATIVE_EXIT(env, that, gtk_1box_1append_FUNC);
+}
+#endif
+
+#ifndef NO_gtk_1box_1insert_1child_1after
+JNIEXPORT void JNICALL GTK_NATIVE(gtk_1box_1insert_1child_1after)
+	(JNIEnv *env, jclass that, jlong arg0, jlong arg1, jlong arg2)
+{
+	GTK_NATIVE_ENTER(env, that, gtk_1box_1insert_1child_1after_FUNC);
+/*
+	gtk_box_insert_child_after((GtkBox *)arg0, (GtkWidget *)arg1, (GtkWidget *)arg2);
+*/
+	{
+		GTK_LOAD_FUNCTION(fp, gtk_box_insert_child_after)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(GtkBox *, GtkWidget *, GtkWidget *))fp)((GtkBox *)arg0, (GtkWidget *)arg1, (GtkWidget *)arg2);
+		}
+	}
+	GTK_NATIVE_EXIT(env, that, gtk_1box_1insert_1child_1after_FUNC);
+}
+#endif
+
 #ifndef NO_gtk_1box_1new
 JNIEXPORT jlong JNICALL GTK_NATIVE(gtk_1box_1new)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
@@ -3802,29 +3838,11 @@ JNIEXPORT jlong JNICALL GTK_NATIVE(gtk_1box_1new)
 }
 #endif
 
-#ifndef NO_gtk_1box_1pack_1end__JJ
-JNIEXPORT void JNICALL GTK_NATIVE(gtk_1box_1pack_1end__JJ)
-	(JNIEnv *env, jclass that, jlong arg0, jlong arg1)
-{
-	GTK_NATIVE_ENTER(env, that, gtk_1box_1pack_1end__JJ_FUNC);
-/*
-	gtk_box_pack_end((GtkBox *)arg0, (GtkWidget *)arg1);
-*/
-	{
-		GTK_LOAD_FUNCTION(fp, gtk_box_pack_end)
-		if (fp) {
-			((void (CALLING_CONVENTION*)(GtkBox *, GtkWidget *))fp)((GtkBox *)arg0, (GtkWidget *)arg1);
-		}
-	}
-	GTK_NATIVE_EXIT(env, that, gtk_1box_1pack_1end__JJ_FUNC);
-}
-#endif
-
-#ifndef NO_gtk_1box_1pack_1end__JJZZI
-JNIEXPORT void JNICALL GTK_NATIVE(gtk_1box_1pack_1end__JJZZI)
+#ifndef NO_gtk_1box_1pack_1end
+JNIEXPORT void JNICALL GTK_NATIVE(gtk_1box_1pack_1end)
 	(JNIEnv *env, jclass that, jlong arg0, jlong arg1, jboolean arg2, jboolean arg3, jint arg4)
 {
-	GTK_NATIVE_ENTER(env, that, gtk_1box_1pack_1end__JJZZI_FUNC);
+	GTK_NATIVE_ENTER(env, that, gtk_1box_1pack_1end_FUNC);
 /*
 	gtk_box_pack_end((GtkBox *)arg0, (GtkWidget *)arg1, (gboolean)arg2, (gboolean)arg3, (guint)arg4);
 */
@@ -3834,7 +3852,25 @@ JNIEXPORT void JNICALL GTK_NATIVE(gtk_1box_1pack_1end__JJZZI)
 			((void (CALLING_CONVENTION*)(GtkBox *, GtkWidget *, gboolean, gboolean, guint))fp)((GtkBox *)arg0, (GtkWidget *)arg1, (gboolean)arg2, (gboolean)arg3, (guint)arg4);
 		}
 	}
-	GTK_NATIVE_EXIT(env, that, gtk_1box_1pack_1end__JJZZI_FUNC);
+	GTK_NATIVE_EXIT(env, that, gtk_1box_1pack_1end_FUNC);
+}
+#endif
+
+#ifndef NO_gtk_1box_1prepend
+JNIEXPORT void JNICALL GTK_NATIVE(gtk_1box_1prepend)
+	(JNIEnv *env, jclass that, jlong arg0, jlong arg1)
+{
+	GTK_NATIVE_ENTER(env, that, gtk_1box_1prepend_FUNC);
+/*
+	gtk_box_prepend((GtkBox *)arg0, (GtkWidget *)arg1);
+*/
+	{
+		GTK_LOAD_FUNCTION(fp, gtk_box_prepend)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(GtkBox *, GtkWidget *))fp)((GtkBox *)arg0, (GtkWidget *)arg1);
+		}
+	}
+	GTK_NATIVE_EXIT(env, that, gtk_1box_1prepend_FUNC);
 }
 #endif
 
@@ -3843,7 +3879,15 @@ JNIEXPORT void JNICALL GTK_NATIVE(gtk_1box_1reorder_1child)
 	(JNIEnv *env, jclass that, jlong arg0, jlong arg1, jint arg2)
 {
 	GTK_NATIVE_ENTER(env, that, gtk_1box_1reorder_1child_FUNC);
+/*
 	gtk_box_reorder_child((GtkBox *)arg0, (GtkWidget *)arg1, (gint)arg2);
+*/
+	{
+		GTK_LOAD_FUNCTION(fp, gtk_box_reorder_child)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(GtkBox *, GtkWidget *, gint))fp)((GtkBox *)arg0, (GtkWidget *)arg1, (gint)arg2);
+		}
+	}
 	GTK_NATIVE_EXIT(env, that, gtk_1box_1reorder_1child_FUNC);
 }
 #endif
@@ -3916,6 +3960,24 @@ JNIEXPORT jlong JNICALL GTK_NATIVE(gtk_1button_1new)
 }
 #endif
 
+#ifndef NO_gtk_1button_1set_1child
+JNIEXPORT void JNICALL GTK_NATIVE(gtk_1button_1set_1child)
+	(JNIEnv *env, jclass that, jlong arg0, jlong arg1)
+{
+	GTK_NATIVE_ENTER(env, that, gtk_1button_1set_1child_FUNC);
+/*
+	gtk_button_set_child((GtkButton *)arg0, (GtkWidget *)arg1);
+*/
+	{
+		GTK_LOAD_FUNCTION(fp, gtk_button_set_child)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(GtkButton *, GtkWidget *))fp)((GtkButton *)arg0, (GtkWidget *)arg1);
+		}
+	}
+	GTK_NATIVE_EXIT(env, that, gtk_1button_1set_1child_FUNC);
+}
+#endif
+
 #ifndef NO_gtk_1button_1set_1image
 JNIEXPORT void JNICALL GTK_NATIVE(gtk_1button_1set_1image)
 	(JNIEnv *env, jclass that, jlong arg0, jlong arg1)
@@ -3931,6 +3993,16 @@ JNIEXPORT void JNICALL GTK_NATIVE(gtk_1button_1set_1image)
 		}
 	}
 	GTK_NATIVE_EXIT(env, that, gtk_1button_1set_1image_FUNC);
+}
+#endif
+
+#ifndef NO_gtk_1button_1set_1use_1underline
+JNIEXPORT void JNICALL GTK_NATIVE(gtk_1button_1set_1use_1underline)
+	(JNIEnv *env, jclass that, jlong arg0, jboolean arg1)
+{
+	GTK_NATIVE_ENTER(env, that, gtk_1button_1set_1use_1underline_FUNC);
+	gtk_button_set_use_underline((GtkButton *)arg0, arg1);
+	GTK_NATIVE_EXIT(env, that, gtk_1button_1set_1use_1underline_FUNC);
 }
 #endif
 
@@ -7082,6 +7154,18 @@ JNIEXPORT jlong JNICALL GTK_NATIVE(gtk_1menu_1bar_1new)
 }
 #endif
 
+#ifndef NO_gtk_1menu_1button_1new
+JNIEXPORT jlong JNICALL GTK_NATIVE(gtk_1menu_1button_1new)
+	(JNIEnv *env, jclass that)
+{
+	jlong rc = 0;
+	GTK_NATIVE_ENTER(env, that, gtk_1menu_1button_1new_FUNC);
+	rc = (jlong)gtk_menu_button_new();
+	GTK_NATIVE_EXIT(env, that, gtk_1menu_1button_1new_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_gtk_1menu_1item_1get_1submenu
 JNIEXPORT jlong JNICALL GTK_NATIVE(gtk_1menu_1item_1get_1submenu)
 	(JNIEnv *env, jclass that, jlong arg0)
@@ -10154,15 +10238,7 @@ JNIEXPORT void JNICALL GTK_NATIVE(gtk_1toolbar_1set_1icon_1size)
 	(JNIEnv *env, jclass that, jlong arg0, jint arg1)
 {
 	GTK_NATIVE_ENTER(env, that, gtk_1toolbar_1set_1icon_1size_FUNC);
-/*
 	gtk_toolbar_set_icon_size((GtkToolbar *)arg0, arg1);
-*/
-	{
-		GTK_LOAD_FUNCTION(fp, gtk_toolbar_set_icon_size)
-		if (fp) {
-			((void (CALLING_CONVENTION*)(GtkToolbar *, jint))fp)((GtkToolbar *)arg0, arg1);
-		}
-	}
 	GTK_NATIVE_EXIT(env, that, gtk_1toolbar_1set_1icon_1size_FUNC);
 }
 #endif
