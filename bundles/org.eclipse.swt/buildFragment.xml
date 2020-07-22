@@ -272,7 +272,7 @@
 		<property name="includetranslationfiles" value="true" />
 		<property name="swtbasename" value="swt" />
 		<antcall target="build.jars" />
-		<jar jarfile="${build.result.folder}/${swtbasename}.jar" basedir="${fragmentdir}" update="true" includes="swt*.dll,libswt*.so,libswt*.sl,libswt*.a,libswt*.jnilib,libXm.so.2,webkitextensions*/libswt*.so,chromium-*/*" />
+		<jar jarfile="${build.result.folder}/${swtbasename}.jar" basedir="${fragmentdir}" update="true" includes="swt*.dll,libswt*.so,libswt*.sl,libswt*.a,libswt*.jnilib,libXm.so.2,webkitextensions*/libswt*.so,chromium-*/**" />
 		<move file="${build.result.folder}/${swtbasename}.jar" todir="${temp.folder}/swtdownload" />
 		<delete dir="${build.result.folder}/@dot" />
 		<antcall target="build.sources" />
