@@ -541,7 +541,6 @@ void releaseWidget () {
 	if (layout != null)	layout.dispose ();
 	layout = null;
 	linkColor = null;
-	if (disabledColor != null) disabledColor.dispose ();
 	disabledColor = null;
 	offsets = null;
 	ids = null;
