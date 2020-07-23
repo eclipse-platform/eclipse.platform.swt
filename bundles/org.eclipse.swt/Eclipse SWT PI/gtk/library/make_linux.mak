@@ -294,7 +294,7 @@ chromium_cargo:
 	cd chromium_swt && cargo build --release
 	mkdir -p $(CHROMIUM_OUTPUT_DIR)/chromium-$(cef_ver)
 	cp chromium_subp/target/release/chromium_subp $(CHROMIUM_OUTPUT_DIR)/chromium-$(cef_ver)/chromium_subp-$(SWT_VERSION)
-	cp chromium_swt/target/release/libchromium_swt.so $(CHROMIUM_OUTPUT_DIR)/chromium-$(cef_ver)/libchromium_swt_$(SWT_VERSION).so
+	cp chromium_swt/target/release/libchromium_swt_$(SWT_VERSION).so $(CHROMIUM_OUTPUT_DIR)/chromium-$(cef_ver)
 chromium_install: chromium
 	cp $(CHROMIUM_LIB) $(CHROMIUM_OUTPUT_DIR)/chromium-$(cef_ver)
 #
