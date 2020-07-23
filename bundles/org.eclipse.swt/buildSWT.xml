@@ -307,7 +307,7 @@
 
 	<target name="commit_sources" depends="get_version" if="natives_changed">
 		<exec dir="${repo.src}" executable="git" failonerror="true">
-			<arg line="add '${file_library}' '${file_version}' '${file_make_common}' "/>
+			<arg line="add '${file_library}' '${file_version}' '${file_make_common}' 'bundles/org.eclipse.swt.browser.chromium/common/rust-library/chromium_swt/Cargo.toml'"/>
 		</exec>
 		<exec dir="${repo.src}" executable="git" failonerror="true">
 			<arg line="status"/>
