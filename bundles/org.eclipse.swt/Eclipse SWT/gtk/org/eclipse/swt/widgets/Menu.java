@@ -42,6 +42,7 @@ import org.eclipse.swt.internal.gtk.*;
  * @noextend This class is not intended to be subclassed by clients.
  */
 public class Menu extends Widget {
+	long modelHandle; // used in GTK4 only
 	int x, y;
 	boolean hasLocation;
 	MenuItem cascade, selectedItem;
@@ -248,7 +249,13 @@ void _setVisible (boolean visible) {
 			* when it is being shown in an ON_TOP shell.
 			*/
 			if ((parent._getShell ().style & SWT.ON_TOP) != 0) {
-				GTK.gtk_menu_shell_set_take_focus (handle, false);
+				if (GTK.GTK4) {
+					/* TODO: Behavior of menu is unknown at the moment. After compilation
+					 * testing will be done to see if this type of fix is required.
+					 */
+				} else {
+					GTK.gtk_menu_shell_set_take_focus (handle, false);
+				}
 			}
 			if (GTK.GTK_VERSION < OS.VERSION(3, 22, 0)) {
 				long address = 0;
@@ -354,7 +361,11 @@ void _setVisible (boolean visible) {
 			sendEvent (SWT.Hide);
 		}
 	} else {
-		GTK.gtk_menu_popdown (handle);
+		if (GTK.GTK4) {
+			GTK.gtk_popover_popdown(handle);
+		} else {
+			GTK.gtk_menu_popdown (handle);
+		}
 	}
 }
 
@@ -422,14 +433,27 @@ public void addHelpListener (HelpListener listener) {
 @Override
 void createHandle (int index) {
 	state |= HANDLE;
+
+	if (GTK.GTK4) modelHandle = OS.g_menu_new();
+
 	if ((style & SWT.BAR) != 0) {
-		handle = GTK.gtk_menu_bar_new ();
+		if (GTK.GTK4) {
+			handle = GTK.gtk_popover_menu_bar_new_from_model(modelHandle);
+		} else {
+			handle = GTK.gtk_menu_bar_new ();
+		}
+
 		if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 		long vboxHandle = parent.vboxHandle;
 		GTK.gtk_container_add (vboxHandle, handle);
 		gtk_box_set_child_packing (vboxHandle, handle, false, true, 0, GTK.GTK_PACK_START);
 	} else {
-		handle = GTK.gtk_menu_new ();
+		if (GTK.GTK4) {
+			handle = GTK.gtk_popover_menu_new_from_model(modelHandle);
+		} else {
+			handle = GTK.gtk_menu_new ();
+		}
+
 		if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 	}
 }
@@ -774,6 +798,7 @@ long gtk_show (long widget) {
 @Override
 long gtk_show_help (long widget, long helpType) {
 	if (sendHelpEvent (helpType)) {
+		// TODO: GTK4 there is no idea of a menu shell
 		GTK.gtk_menu_shell_deactivate (handle);
 		return 1;
 	}

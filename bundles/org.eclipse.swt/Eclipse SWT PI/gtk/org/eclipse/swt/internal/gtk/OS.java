@@ -2264,4 +2264,19 @@ public static final native long g_date_time_new_local(int year, int month, int d
 
 /** @param file cast=(GFile *) */
 public static final native long g_file_get_path(long file);
+
+/* GMenu */
+public static final native long g_menu_new();
+/**
+ * @param menu_item cast=(GMenuItem *)
+ * @param submenu cast=(GMenuModel *)
+ */
+public static final native void g_menu_item_set_submenu(long menu_item, long submenu);
+/**
+ * @param menu cast=(GMenu *)
+ * @param label cast=(const gchar *)
+ * @param detailed_action cast=(const gchar *)
+ */
+public static final native void g_menu_insert(long menu, int position, long label, long detailed_action);
+
 }

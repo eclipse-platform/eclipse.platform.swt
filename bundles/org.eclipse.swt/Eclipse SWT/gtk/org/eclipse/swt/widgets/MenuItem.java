@@ -258,122 +258,131 @@ void createHandle (int index) {
 	state |= HANDLE;
 	byte [] buffer = new byte [1];
 	int bits = SWT.CHECK | SWT.RADIO | SWT.PUSH | SWT.SEPARATOR | SWT.CASCADE;
-	switch (style & bits) {
-		case SWT.SEPARATOR:
-			handle = GTK.gtk_separator_menu_item_new ();
-			if (handle == 0) error (SWT.ERROR_NO_HANDLES);
-			break;
-		case SWT.RADIO:
-			/*
-			* Feature in GTK.  In GTK, radio button must always be part of
-			* a radio button group.  In a GTK radio group, one button is always
-			* selected.  This means that it is not possible to have a single
-			* radio button that is unselected.  This is necessary to allow
-			* applications to implement their own radio behavior or use radio
-			* buttons outside of radio groups.  The fix is to create a hidden
-			* radio button for each radio button we create and add them
-			* to the same group.  This allows the visible button to be
-			* unselected.
-			*/
-			groupHandle = GTK.gtk_radio_menu_item_new (0);
-			if (groupHandle == 0) error (SWT.ERROR_NO_HANDLES);
-			OS.g_object_ref_sink (groupHandle);
-			long group = GTK.gtk_radio_menu_item_get_group (groupHandle);
-			handle = GTK.gtk_radio_menu_item_new (group);
-			if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 
-			labelHandle = GTK.gtk_accel_label_new (buffer);
-			if (labelHandle == 0) error (SWT.ERROR_NO_HANDLES);
-
-			boxHandle = gtk_box_new (GTK.GTK_ORIENTATION_HORIZONTAL, false, 6);
-			if (boxHandle == 0) error (SWT.ERROR_NO_HANDLES);
-
-			if (OS.SWT_PADDED_MENU_ITEMS) {
-				imageHandle = GTK.gtk_image_new ();
-				if (imageHandle == 0) error (SWT.ERROR_NO_HANDLES);
-			}
-			break;
-		case SWT.CHECK:
-			handle = GTK.gtk_check_menu_item_new ();
-			if (handle == 0) error (SWT.ERROR_NO_HANDLES);
-
-			labelHandle = GTK.gtk_accel_label_new (buffer);
-			if (labelHandle == 0) error (SWT.ERROR_NO_HANDLES);
-
-			boxHandle = gtk_box_new (GTK.GTK_ORIENTATION_HORIZONTAL, false, 6);
-			if (boxHandle == 0) error (SWT.ERROR_NO_HANDLES);
-
-			if (OS.SWT_PADDED_MENU_ITEMS) {
-				imageHandle = GTK.gtk_image_new ();
-				if (imageHandle == 0) error (SWT.ERROR_NO_HANDLES);
-			}
-			break;
-		// This case now needs to be handled due to double padding. When double padded
-		// menus are used, the "head" menu item (such as File, Edit, Help, etc.) should
-		// not be padded. We only care about this in Gtk3.
-		case SWT.CASCADE:
-			handle = GTK.gtk_menu_item_new ();
-			if (handle == 0) error (SWT.ERROR_NO_HANDLES);
-
-			labelHandle = GTK.gtk_accel_label_new (buffer);
-			if (labelHandle == 0) error (SWT.ERROR_NO_HANDLES);
-
-			boxHandle = gtk_box_new (GTK.GTK_ORIENTATION_HORIZONTAL, false, 6);
-			if (boxHandle == 0) error (SWT.ERROR_NO_HANDLES);
-			if ((parent.style & bits) == SWT.BAR) {
+	if (GTK.GTK4) {
+		/* TODO: Need to specify the correct GAction in order to get the different styles
+		 * SWT.SEPARATOR is not explicitly represented in the menu model, instead inserted between any two
+		 * non-empty sections of the menu
+		 * REF: https://developer.gnome.org/gio/stable/GMenuModel.html#GMenuModel-struct */
+		OS.g_menu_insert(parent.modelHandle, index, 0, 0);
+	} else {
+		switch (style & bits) {
+			case SWT.SEPARATOR:
+				handle = GTK.gtk_separator_menu_item_new ();
+				if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 				break;
-			}
-			if (OS.SWT_PADDED_MENU_ITEMS) {
-				imageHandle = GTK.gtk_image_new ();
-				if (imageHandle == 0) error (SWT.ERROR_NO_HANDLES);
-			}
-			break;
-		case SWT.PUSH:
-		default:
-			handle = GTK.gtk_menu_item_new ();
-			if (handle == 0) error (SWT.ERROR_NO_HANDLES);
+			case SWT.RADIO:
+				/*
+				* Feature in GTK.  In GTK, radio button must always be part of
+				* a radio button group.  In a GTK radio group, one button is always
+				* selected.  This means that it is not possible to have a single
+				* radio button that is unselected.  This is necessary to allow
+				* applications to implement their own radio behavior or use radio
+				* buttons outside of radio groups.  The fix is to create a hidden
+				* radio button for each radio button we create and add them
+				* to the same group.  This allows the visible button to be
+				* unselected.
+				*/
+				groupHandle = GTK.gtk_radio_menu_item_new (0);
+				if (groupHandle == 0) error (SWT.ERROR_NO_HANDLES);
+				OS.g_object_ref_sink (groupHandle);
+				long group = GTK.gtk_radio_menu_item_get_group (groupHandle);
+				handle = GTK.gtk_radio_menu_item_new (group);
+				if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 
-			labelHandle = GTK.gtk_accel_label_new (buffer);
-			if (labelHandle == 0) error (SWT.ERROR_NO_HANDLES);
+				labelHandle = GTK.gtk_accel_label_new (buffer);
+				if (labelHandle == 0) error (SWT.ERROR_NO_HANDLES);
 
-			boxHandle = gtk_box_new (GTK.GTK_ORIENTATION_HORIZONTAL, false, 6);
-			if (boxHandle == 0) error (SWT.ERROR_NO_HANDLES);
+				boxHandle = gtk_box_new (GTK.GTK_ORIENTATION_HORIZONTAL, false, 6);
+				if (boxHandle == 0) error (SWT.ERROR_NO_HANDLES);
 
-			if (OS.SWT_PADDED_MENU_ITEMS) {
-				imageHandle = GTK.gtk_image_new ();
-				if (imageHandle == 0) error (SWT.ERROR_NO_HANDLES);
-			}
-			break;
-	}
-	if (imageHandle != 0) {
-		if (OS.SWT_PADDED_MENU_ITEMS) {
-			GTK.gtk_image_set_pixel_size (imageHandle, 16);
+				if (OS.SWT_PADDED_MENU_ITEMS) {
+					imageHandle = GTK.gtk_image_new ();
+					if (imageHandle == 0) error (SWT.ERROR_NO_HANDLES);
+				}
+				break;
+			case SWT.CHECK:
+				handle = GTK.gtk_check_menu_item_new ();
+				if (handle == 0) error (SWT.ERROR_NO_HANDLES);
+
+				labelHandle = GTK.gtk_accel_label_new (buffer);
+				if (labelHandle == 0) error (SWT.ERROR_NO_HANDLES);
+
+				boxHandle = gtk_box_new (GTK.GTK_ORIENTATION_HORIZONTAL, false, 6);
+				if (boxHandle == 0) error (SWT.ERROR_NO_HANDLES);
+
+				if (OS.SWT_PADDED_MENU_ITEMS) {
+					imageHandle = GTK.gtk_image_new ();
+					if (imageHandle == 0) error (SWT.ERROR_NO_HANDLES);
+				}
+				break;
+			// This case now needs to be handled due to double padding. When double padded
+			// menus are used, the "head" menu item (such as File, Edit, Help, etc.) should
+			// not be padded. We only care about this in Gtk3.
+			case SWT.CASCADE:
+				handle = GTK.gtk_menu_item_new ();
+				if (handle == 0) error (SWT.ERROR_NO_HANDLES);
+
+				labelHandle = GTK.gtk_accel_label_new (buffer);
+				if (labelHandle == 0) error (SWT.ERROR_NO_HANDLES);
+
+				boxHandle = gtk_box_new (GTK.GTK_ORIENTATION_HORIZONTAL, false, 6);
+				if (boxHandle == 0) error (SWT.ERROR_NO_HANDLES);
+				if ((parent.style & bits) == SWT.BAR) {
+					break;
+				}
+				if (OS.SWT_PADDED_MENU_ITEMS) {
+					imageHandle = GTK.gtk_image_new ();
+					if (imageHandle == 0) error (SWT.ERROR_NO_HANDLES);
+				}
+				break;
+			case SWT.PUSH:
+			default:
+				handle = GTK.gtk_menu_item_new ();
+				if (handle == 0) error (SWT.ERROR_NO_HANDLES);
+
+				labelHandle = GTK.gtk_accel_label_new (buffer);
+				if (labelHandle == 0) error (SWT.ERROR_NO_HANDLES);
+
+				boxHandle = gtk_box_new (GTK.GTK_ORIENTATION_HORIZONTAL, false, 6);
+				if (boxHandle == 0) error (SWT.ERROR_NO_HANDLES);
+
+				if (OS.SWT_PADDED_MENU_ITEMS) {
+					imageHandle = GTK.gtk_image_new ();
+					if (imageHandle == 0) error (SWT.ERROR_NO_HANDLES);
+				}
+				break;
 		}
-		GTK.gtk_container_add (boxHandle, imageHandle);
-		GTK.gtk_widget_show (imageHandle);
-	}
-	if (labelHandle != 0) {
-		GTK.gtk_label_set_xalign (labelHandle, 0);
-		GTK.gtk_widget_set_halign (labelHandle, GTK.GTK_ALIGN_FILL);
-		gtk_box_pack_end (boxHandle, labelHandle, true, true, 0);
-		GTK.gtk_widget_show (labelHandle);
-	}
-	if (boxHandle != 0) {
-		GTK.gtk_container_add (handle, boxHandle);
-		GTK.gtk_widget_show (boxHandle);
-	}
-	if ((style & SWT.SEPARATOR) == 0) {
-		if (boxHandle == 0) {
-			labelHandle = GTK.gtk_bin_get_child (handle);
+		if (imageHandle != 0) {
+			if (OS.SWT_PADDED_MENU_ITEMS) {
+				GTK.gtk_image_set_pixel_size (imageHandle, 16);
+			}
+			GTK.gtk_container_add (boxHandle, imageHandle);
+			GTK.gtk_widget_show (imageHandle);
 		}
-		GTK.gtk_accel_label_set_accel_widget (labelHandle, 0);
+		if (labelHandle != 0) {
+			GTK.gtk_label_set_xalign (labelHandle, 0);
+			GTK.gtk_widget_set_halign (labelHandle, GTK.GTK_ALIGN_FILL);
+			gtk_box_pack_end (boxHandle, labelHandle, true, true, 0);
+			GTK.gtk_widget_show (labelHandle);
+		}
+		if (boxHandle != 0) {
+			GTK.gtk_container_add (handle, boxHandle);
+			GTK.gtk_widget_show (boxHandle);
+		}
+		if ((style & SWT.SEPARATOR) == 0) {
+			if (boxHandle == 0) {
+				labelHandle = GTK.gtk_bin_get_child (handle);
+			}
+			GTK.gtk_accel_label_set_accel_widget (labelHandle, 0);
+		}
+		long parentHandle = parent.handle;
+		boolean enabled = GTK.gtk_widget_get_sensitive (parentHandle);
+		if (!enabled) GTK.gtk_widget_set_sensitive (parentHandle, true);
+		GTK.gtk_menu_shell_insert (parentHandle, handle, index);
+		if (!enabled) GTK.gtk_widget_set_sensitive (parentHandle, false);
+		GTK.gtk_widget_show (handle);
 	}
-	long parentHandle = parent.handle;
-	boolean enabled = GTK.gtk_widget_get_sensitive (parentHandle);
-	if (!enabled) GTK.gtk_widget_set_sensitive (parentHandle, true);
-	GTK.gtk_menu_shell_insert (parentHandle, handle, index);
-	if (!enabled) GTK.gtk_widget_set_sensitive (parentHandle, false);
-	GTK.gtk_widget_show (handle);
 }
 
 void fixMenus (Decorations newParent) {
@@ -574,6 +583,7 @@ long gtk_show_help (long widget, long helpType) {
 		handled = parent.sendHelpEvent (helpType);
 	}
 	if (handled) {
+		// TODO: GTK4 there is no idea of a menu shell
 		GTK.gtk_menu_shell_deactivate (parent.handle);
 		return 1;
 	}
@@ -853,7 +863,7 @@ public void setImage (Image image) {
 			pixbuf = imageList.getPixbuf (imageIndex);
 		}
 
-		if (!GTK.GTK_IS_MENU_ITEM (handle)) return;
+		if (!GTK.GTK4 && !GTK.GTK_IS_MENU_ITEM (handle)) return;
 		if (OS.SWT_PADDED_MENU_ITEMS && imageHandle != 0) {
 			GTK.gtk_image_set_from_pixbuf(imageHandle, pixbuf);
 		} else {
@@ -938,11 +948,20 @@ public void setMenu (Menu menu) {
 		* to replace or GTK will destroy it.
 		*/
 		OS.g_object_ref (oldMenu.handle);
-		GTK.gtk_menu_item_set_submenu (handle, 0);
+
+		if (GTK.GTK4) {
+			OS.g_menu_item_set_submenu(handle, 0);
+		} else {
+			GTK.gtk_menu_item_set_submenu (handle, 0);
+		}
 	}
 	if ((this.menu = menu) != null) {
 		menu.cascade = this;
-		GTK.gtk_menu_item_set_submenu (handle, menu.handle);
+		if (GTK.GTK4) {
+			OS.g_menu_item_set_submenu(handle, menu.modelHandle);
+		} else {
+			GTK.gtk_menu_item_set_submenu (handle, menu.handle);
+		}
 	}
 	if (accelGroup != 0) addAccelerators (accelGroup);
 }

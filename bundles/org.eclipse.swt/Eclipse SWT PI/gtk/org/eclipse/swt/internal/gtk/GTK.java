@@ -614,14 +614,6 @@ public class GTK extends OS {
 	 */
 	public static final native void gtk_cell_view_set_fit_model(long cell_view, boolean fit_model);
 	public static final native long gtk_check_button_new();
-	/** @param check_menu_item cast=(GtkCheckMenuItem *) */
-	public static final native boolean gtk_check_menu_item_get_active(long check_menu_item);
-	public static final native long gtk_check_menu_item_new();
-	/**
-	 * @param wid cast=(GtkCheckMenuItem *)
-	 * @param active cast=(gboolean)
-	 */
-	public static final native void gtk_check_menu_item_set_active(long wid, boolean active);
 	public static final native long gtk_check_version(int required_major, int required_minor, int required_micro);
 	/** @param clipboard cast=(GtkClipboard *) */
 	/* [GTK3 only, if-def'd in os.h] */
@@ -1636,6 +1628,16 @@ public class GTK extends OS {
 	public static final native int gtk_get_micro_version();
 	/** @param event cast=(GdkEvent *) */
 	public static final native void gtk_main_do_event(long event);
+
+	/** @method flags=dynamic */
+	/* [GTK2/GTK3; 3.22 deprecated, replaced] */
+	public static final native void gtk_menu_popup(long menu, long parent_menu_shell, long parent_menu_item, long func, long data, int button, int activate_time);
+	/** @method flags=dynamic */
+	public static final native void gtk_menu_popup_at_pointer(long menu, long trigger_event);
+	/** @method flags=dynamic */
+	public static final native void gtk_menu_popup_at_rect(long menu, long rect_window, GdkRectangle rect, int rect_anchor, int menu_anchor, long trigger_event);
+
+	/* GtkMenu/GtkMenuItem [GTK3 only, if-def'd in os.h] */
 	public static final native long gtk_menu_bar_new();
 	/** @param menu_item cast=(GtkMenuItem *) */
 	public static final native long gtk_menu_item_get_submenu(long menu_item);
@@ -1648,19 +1650,6 @@ public class GTK extends OS {
 	public static final native long gtk_menu_new();
 	/** @param menu cast=(GtkMenu *) */
 	public static final native void gtk_menu_popdown(long menu);
-	/**
-	 * @method flags=dynamic
-	 */
-	/* [GTK2/GTK3; 3.22 deprecated, replaced] */
-	public static final native void gtk_menu_popup(long menu, long parent_menu_shell, long parent_menu_item, long func, long data, int button, int activate_time);
-	/**
-	 *  @method flags=dynamic
-	 */
-	public static final native void gtk_menu_popup_at_pointer(long menu, long trigger_event);
-	/**
-	 *  @method flags=dynamic
-	 */
-	public static final native void gtk_menu_popup_at_rect(long menu, long rect_window, GdkRectangle rect, int rect_anchor, int menu_anchor, long trigger_event);
 	/** @param menu_shell cast=(GtkMenuShell *) */
 	public static final native void gtk_menu_shell_deactivate(long menu_shell);
 	/**
@@ -1675,7 +1664,39 @@ public class GTK extends OS {
 	 */
 	public static final native void gtk_menu_shell_set_take_focus(long menu_shell, boolean take_focus);
 
+	/** @param check_menu_item cast=(GtkCheckMenuItem *) */
+	public static final native boolean gtk_check_menu_item_get_active(long check_menu_item);
+	public static final native long gtk_check_menu_item_new();
+	/**
+	 * @param wid cast=(GtkCheckMenuItem *)
+	 * @param active cast=(gboolean)
+	 */
+	public static final native void gtk_check_menu_item_set_active(long wid, boolean active);
+	/** @param radio_menu_item cast=(GtkRadioMenuItem *) */
+	public static final native long gtk_radio_menu_item_get_group(long radio_menu_item);
+	/** @param group cast=(GSList *) */
+	public static final native long gtk_radio_menu_item_new(long group);
+	public static final native long gtk_separator_menu_item_new();
+
+	/* GtkPopover */
+	/** @param popover cast=(GtkPopover *) */
+	public static final native void gtk_popover_popdown(long popover);
+
+	/* GtkPopoverMenuBar [GTK4 only] */
+	/**
+	 * @method flags=dynamic
+	 * @param model cast=(GMenuModel *) */
+	public static final native long gtk_popover_menu_bar_new_from_model(long model);
+
+	/* GtkPopoverMenu [GTK4 only] */
+	/**
+	 * @method flags=dynamic
+	 * @param model cast=(GMenuModel *) */
+	public static final native long gtk_popover_menu_new_from_model(long model);
+
+	/* GtkMenuButton */
 	public static final native long gtk_menu_button_new();
+
 	/**
 	 * @param parent cast=(GtkWindow *)
 	 * @param flags cast=(GtkDialogFlags)
@@ -2082,10 +2103,6 @@ public class GTK extends OS {
 	public static final native long gtk_radio_button_get_group(long radio_button);
 	/** @param group cast=(GSList *) */
 	public static final native long gtk_radio_button_new(long group);
-	/** @param radio_menu_item cast=(GtkRadioMenuItem *) */
-	public static final native long gtk_radio_menu_item_get_group(long radio_menu_item);
-	/** @param group cast=(GSList *) */
-	public static final native long gtk_radio_menu_item_new(long group);
 	/** @param range cast=(GtkRange *) */
 	public static final native long gtk_range_get_adjustment(long range);
 	/** @param range cast=(GtkRange *) */
@@ -2188,7 +2205,6 @@ public class GTK extends OS {
 	 * @param length cast=(gint)
 	 */
 	public static final native void gtk_selection_data_set(long selection_data, long type, int format, long data, int length);
-	public static final native long gtk_separator_menu_item_new();
 	/** @param socket cast=(GtkSocket *) */
 	public static final native long gtk_socket_get_id(long socket);
 	public static final native long gtk_socket_new();

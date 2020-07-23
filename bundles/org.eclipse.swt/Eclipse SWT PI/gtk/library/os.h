@@ -398,6 +398,25 @@
 #define NO_gtk_1tool_1item_1get_1proxy_1menu_1item
 #define NO_gtk_1menu_1tool_1button_1new
 
+// GtkMenu, GtkMenuBar and GtkMenuItem removed
+#define NO_GTK_1TYPE_1MENU
+#define NO_GTK_1IS_1MENU_1ITEM
+#define NO_gtk_1menu_1bar_1new
+#define NO_gtk_1menu_1new
+#define NO_gtk_1menu_1popdown
+#define NO_gtk_1menu_1item_1new
+#define NO_gtk_1menu_1item_1set_1submenu
+#define NO_gtk_1menu_1item_1get_1submenu
+#define NO_gtk_1menu_1shell_1insert
+#define NO_gtk_1menu_1shell_1set_1take_1focus
+#define NO_gtk_1menu_1shell_1deactivate
+#define NO_gtk_1separator_1menu_1item_1new
+#define NO_gtk_1radio_1menu_1item_1new
+#define NO_gtk_1radio_1menu_1item_1get_1group
+#define NO_gtk_1check_1menu_1item_1new
+#define NO_gtk_1check_1menu_1item_1set_1active
+#define NO_gtk_1check_1menu_1item_1get_1active
+
 #else
 
 /**

@@ -5308,7 +5308,7 @@ public void setData (Object data) {
 
 long setDirectionProc (long widget, long direction) {
 	GTK.gtk_widget_set_direction (widget, (int)direction);
-	if (GTK.GTK_IS_MENU_ITEM (widget)) {
+	if (!GTK.GTK4 && GTK.GTK_IS_MENU_ITEM (widget)) {
 		long submenu = GTK.gtk_menu_item_get_submenu (widget);
 		if (submenu != 0) {
 			GTK.gtk_widget_set_direction (submenu, (int)direction);
