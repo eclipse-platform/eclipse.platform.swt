@@ -18,6 +18,8 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.time.Instant;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SegmentListener;
@@ -28,6 +30,8 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.Widget;
 import org.junit.Before;
@@ -1624,5 +1628,55 @@ private void doSegmentsTest (boolean isListening) {
 	pt.x = pt.y = pt.x + substr.length();
 	assertEquals(pt, text.getSelection());
 	assertEquals(substr + string, text.getText());
+}
+
+/**
+ * Bug 565164 - SWT.BS event no longer working
+ */
+@Test
+public void test_backspaceAndDelete() {
+	shell.open();
+	text.setSize(10, 50);
+	final Instant timeOut = Instant.now().plusSeconds(10);
+
+	Display display = Display.getDefault();
+
+	Event a = keyEvent('a', SWT.KeyDown, display.getFocusControl());
+	Event aUp = keyEvent('a', SWT.KeyUp, display.getFocusControl());
+	Event backspace = keyEvent(SWT.BS, SWT.KeyDown, display.getFocusControl());
+	Event backspaceUp = keyEvent(SWT.BS, SWT.KeyUp, display.getFocusControl());
+
+	display.post(a);
+	display.post(aUp);
+
+	while (Instant.now().isBefore(timeOut)) {
+		if (text.getText().length() == 1) break;
+
+		if (!shell.isDisposed()) {
+			display.readAndDispatch();
+		}
+	}
+
+	display.post(backspace);
+	display.post(backspaceUp);
+
+	while (Instant.now().isBefore(timeOut)) {
+		if (text.getText().length() == 0) break;
+
+		if (!shell.isDisposed()) {
+			display.readAndDispatch();
+		}
+	}
+
+	assertEquals(0, text.getText().length());
+}
+
+private Event keyEvent(int key, int type, Widget w) {
+	Event e = new Event();
+	e.keyCode= key;
+	e.character = (char) key;
+	e.type = type;
+	e.widget = w;
+	return e;
 }
 }

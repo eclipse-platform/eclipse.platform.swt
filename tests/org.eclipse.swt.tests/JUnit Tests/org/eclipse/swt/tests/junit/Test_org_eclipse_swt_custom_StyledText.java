@@ -23,6 +23,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.junit.Assume.assumeFalse;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -72,6 +73,7 @@ import org.eclipse.swt.printing.Printer;
 import org.eclipse.swt.widgets.Caret;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Widget;
 import org.eclipse.test.Screenshots;
 import org.junit.After;
 import org.junit.Assume;
@@ -5832,5 +5834,52 @@ public void test_caretLocationOnArrowMove() {
 	text.setCaretOffset(0);
 	text.setCaretOffset(caretOffset);
 	assertEquals(text.getCaret().getLocation(), caretLocation);
+}
+
+/**
+ * Bug 565164 - SWT.BS event no longer working
+ */
+@Test
+public void test_backspaceAndDelete() {
+	shell.open();
+	text.setSize(10, 50);
+	final Instant timeOut = Instant.now().plusSeconds(10);
+
+	Display display = Display.getDefault();
+
+	Event a = keyEvent('a', SWT.KeyDown, display.getFocusControl());
+	Event aUp = keyEvent('a', SWT.KeyUp, display.getFocusControl());
+
+	display.post(a);
+	display.post(aUp);
+
+	while (Instant.now().isBefore(timeOut)) {
+		if (text.getText().length() == 1) break;
+
+		if (!shell.isDisposed()) {
+			display.readAndDispatch();
+		}
+	}
+
+	// Simulate the backspace, ensuring that the caret is in the correct position
+	text.invokeAction(ST.DELETE_PREVIOUS);
+
+	while (Instant.now().isBefore(timeOut)) {
+		if (text.getText().length() == 0) break;
+
+		if (!shell.isDisposed()) {
+			display.readAndDispatch();
+		}
+	}
+
+	assertEquals(0, text.getText().length());
+}
+private Event keyEvent(int key, int type, Widget w) {
+	Event e = new Event();
+	e.keyCode= key;
+	e.character = (char) key;
+	e.type = type;
+	e.widget = w;
+	return e;
 }
 }
