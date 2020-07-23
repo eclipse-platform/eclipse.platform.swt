@@ -3751,16 +3751,6 @@ LRESULT sendMouseDownEvent (int type, int button, int msg, long wParam, long lPa
 	}
 
 	/*
-	* Force the table to have focus so that when the user
-	* reselects the focus item, the LVIS_FOCUSED state bits
-	* for the item will be set.  If the user did not click on
-	* an item, then set focus to the table so that it will
-	* come to the front and take focus in the work around
-	* below.
-	*/
-	OS.SetFocus (handle);
-
-	/*
 	* Feature in Windows.  When the user selects outside of
 	* a table item, Windows deselects all the items, even
 	* when the table is multi-select.  While not strictly
@@ -3772,6 +3762,8 @@ LRESULT sendMouseDownEvent (int type, int button, int msg, long wParam, long lPa
 			if (!display.captureChanged && !isDisposed ()) {
 				if (OS.GetCapture () != handle) OS.SetCapture (handle);
 			}
+			/* We're skipping default processing, but at least set focus to control */
+			OS.SetFocus (handle);
 			return LRESULT.ZERO;
 		}
 	}
