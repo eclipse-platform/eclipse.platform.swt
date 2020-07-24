@@ -3604,24 +3604,28 @@ boolean sendMouseEvent(NSEvent nsEvent, int type, boolean send) {
 		 * To keep the order of events correct, deselect the other selected items and send the
 		 * selection event before MouseUp is sent. Ignore the next selection event.
 		 */
-		if (!dragDetected && selectedRowIndex != -1) {
-			NSTableView widget = (NSTableView)view;
-			NSIndexSet selectedRows = widget.selectedRowIndexes ();
-			int count = (int)selectedRows.count();
-			long [] indexBuffer = new long [count];
-			selectedRows.getIndexes(indexBuffer, count, 0);
-			for (int i = 0; i < count; i++) {
-				if (indexBuffer[i] == selectedRowIndex) continue;
-				ignoreSelect = true;
-				widget.deselectRow (indexBuffer[i]);
-				ignoreSelect = false;
-			}
+		if (selectedRowIndex != -1) {
+			if (dragDetected) {
+				selectedRowIndex = -1;
+			} else {
+				NSTableView widget = (NSTableView)view;
+				NSIndexSet selectedRows = widget.selectedRowIndexes ();
+				int count = (int)selectedRows.count();
+				long [] indexBuffer = new long [count];
+				selectedRows.getIndexes(indexBuffer, count, 0);
+				for (int i = 0; i < count; i++) {
+					if (indexBuffer[i] == selectedRowIndex) continue;
+					ignoreSelect = true;
+					widget.deselectRow (indexBuffer[i]);
+					ignoreSelect = false;
+				}
 
-			Event event = new Event ();
-			event.item = _getItem ((int)selectedRowIndex);
-			selectedRowIndex = -1;
-			sendSelectionEvent (SWT.Selection, event, false);
-			ignoreSelect = true;
+				Event event = new Event ();
+				event.item = _getItem ((int)selectedRowIndex);
+				selectedRowIndex = -1;
+				sendSelectionEvent (SWT.Selection, event, false);
+				ignoreSelect = true;
+			}
 		}
 		dragDetected = false;
 	}
