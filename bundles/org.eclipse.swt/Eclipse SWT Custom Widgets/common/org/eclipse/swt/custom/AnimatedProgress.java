@@ -78,7 +78,7 @@ public AnimatedProgress(Composite parent, int style) {
 	showBorder = (style & SWT.BORDER) != 0;
 
 	addControlListener(ControlListener.controlResizedAdapter(e -> redraw()));
-	addPaintListener(e -> paint(e));
+	addPaintListener(this::paint);
 	addDisposeListener(e -> stop());
 }
 private static int checkStyle (int style) {

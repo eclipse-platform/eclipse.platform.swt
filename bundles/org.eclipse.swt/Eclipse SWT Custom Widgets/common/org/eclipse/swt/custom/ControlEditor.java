@@ -128,7 +128,7 @@ public ControlEditor (Composite parent) {
 		parent.addListener (event, controlListener);
 	}
 
-	scrollbarListener = e -> scroll (e);
+	scrollbarListener = this::scroll;
 	ScrollBar hBar = parent.getHorizontalBar ();
 	if (hBar != null) hBar.addListener (SWT.Selection, scrollbarListener);
 	ScrollBar vBar = parent.getVerticalBar ();

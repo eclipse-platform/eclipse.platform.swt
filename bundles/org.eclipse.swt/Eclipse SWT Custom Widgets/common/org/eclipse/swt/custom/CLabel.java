@@ -118,7 +118,7 @@ public CLabel(Composite parent, int style) {
 	if ((style & SWT.RIGHT) != 0)  align = SWT.RIGHT;
 	if ((style & SWT.LEFT) != 0)   align = SWT.LEFT;
 
-	addPaintListener(event -> onPaint(event));
+	addPaintListener(this::onPaint);
 
 	addTraverseListener(event -> {
 		if (event.detail == SWT.TRAVERSE_MNEMONIC) {
@@ -126,7 +126,7 @@ public CLabel(Composite parent, int style) {
 		}
 	});
 
-	addListener(SWT.Dispose, event -> onDispose(event));
+	addListener(SWT.Dispose, this::onDispose);
 
 	initAccessible();
 

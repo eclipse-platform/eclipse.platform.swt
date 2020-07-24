@@ -86,7 +86,7 @@ public SashForm(Composite parent, int style) {
 	sashStyle = ((style & SWT.VERTICAL) != 0) ? SWT.HORIZONTAL : SWT.VERTICAL;
 	if ((style & SWT.BORDER) != 0) sashStyle |= SWT.BORDER;
 	if ((style & SWT.SMOOTH) != 0) sashStyle |= SWT.SMOOTH;
-	sashListener = e -> onDragSash(e);
+	sashListener = this::onDragSash;
 }
 static int checkStyle (int style) {
 	int mask = SWT.BORDER | SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT;

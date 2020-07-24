@@ -103,7 +103,7 @@ public TreeEditor (Tree tree) {
 			layout();
 		}
 	};
-	timer = () -> layout ();
+	timer = this::layout;
 	treeListener = new TreeListener () {
 		final Runnable runnable = () -> {
 			if (editor == null || editor.isDisposed()) return;

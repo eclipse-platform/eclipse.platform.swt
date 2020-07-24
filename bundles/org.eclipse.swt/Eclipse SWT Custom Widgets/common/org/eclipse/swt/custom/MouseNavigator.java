@@ -46,27 +46,27 @@ class MouseNavigator {
 		}
 		parent = styledText;
 
-		mouseDownListener = (event) -> {
+		mouseDownListener = event -> {
 			onMouseDown(event);
 		};
 		parent.addListener(SWT.MouseDown, mouseDownListener);
 
-		mouseUpListener = (event) -> {
+		mouseUpListener = event -> {
 			onMouseUp(event);
 		};
 		parent.addListener(SWT.MouseUp, mouseUpListener);
 
-		paintListener = (event) -> {
+		paintListener = event -> {
 			onPaint(event);
 		};
 		parent.addListener(SWT.Paint, paintListener);
 
-		mouseMoveListener = (event) -> {
+		mouseMoveListener = event -> {
 			onMouseMove(event);
 		};
 		parent.addListener(SWT.MouseMove, mouseMoveListener);
 
-		focusOutListener = (event) -> {
+		focusOutListener = event -> {
 			onFocusOut(event);
 		};
 		parent.addListener(SWT.FocusOut, focusOutListener);

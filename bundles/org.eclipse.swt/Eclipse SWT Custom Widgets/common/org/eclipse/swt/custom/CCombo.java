@@ -1161,7 +1161,7 @@ boolean isDropped () {
 @Override
 public boolean isFocusControl () {
 	checkWidget();
-	Predicate<Control> checkFocusControl = (control) -> (control != null && !control.isDisposed() && control.isFocusControl ());
+	Predicate<Control> checkFocusControl = control -> (control != null && !control.isDisposed() && control.isFocusControl ());
 	if (checkFocusControl.test(text) || checkFocusControl.test(arrow) ||
 			checkFocusControl.test(list) || checkFocusControl.test(popup)) {
 		return true;

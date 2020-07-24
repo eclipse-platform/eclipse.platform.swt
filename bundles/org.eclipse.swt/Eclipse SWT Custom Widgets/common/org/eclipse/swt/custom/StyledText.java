@@ -5827,10 +5827,10 @@ void installListeners() {
 		}
 	});
 	if (verticalBar != null) {
-		verticalBar.addListener(SWT.Selection, event -> handleVerticalScroll(event));
+		verticalBar.addListener(SWT.Selection, this::handleVerticalScroll);
 	}
 	if (horizontalBar != null) {
-		horizontalBar.addListener(SWT.Selection, event -> handleHorizontalScroll(event));
+		horizontalBar.addListener(SWT.Selection, this::handleHorizontalScroll);
 	}
 }
 void internalRedrawRange(int start, int length) {

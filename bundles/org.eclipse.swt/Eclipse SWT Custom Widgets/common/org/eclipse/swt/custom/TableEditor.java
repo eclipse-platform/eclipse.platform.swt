@@ -103,7 +103,7 @@ public TableEditor (Table table) {
 			layout ();
 		}
 	};
-	timer = () -> layout ();
+	timer = this::layout;
 
 	// To be consistent with older versions of SWT, grabVertical defaults to true
 	grabVertical = true;
