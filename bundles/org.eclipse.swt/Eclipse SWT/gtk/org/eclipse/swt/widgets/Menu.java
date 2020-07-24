@@ -353,7 +353,11 @@ void _setVisible (boolean visible) {
 					adjustParentWindowWayland(eventPtr);
 					verifyMenuPosition(getItemCount());
 					GTK.gtk_menu_popup_at_pointer(handle, eventPtr);
-					GDK.gdk_event_free (eventPtr);
+					if (GTK.GTK4) {
+						GDK.gdk_event_unref(eventPtr);
+					} else {
+						GDK.gdk_event_free(eventPtr);
+					}
 				}
 			}
 			poppedUpCount = getItemCount();

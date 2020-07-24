@@ -170,11 +170,18 @@ long gtk_button_press_event (long widget, long event) {
 	if (result != 0) return result;
 	// Event fields
 	int [] eventButton = new int [1];
-	GDK.gdk_event_get_button(event, eventButton);
+	if (GTK.GTK4) {
+		eventButton[0] = GDK.gdk_button_event_get_button(event);
+	} else {
+		GDK.gdk_event_get_button(event, eventButton);
+	}
+
 	int eventType = GDK.gdk_event_get_event_type(event);
+
 	double [] eventRX = new double [1];
 	double [] eventRY = new double [1];
 	GDK.gdk_event_get_root_coords(event, eventRX, eventRY);
+
 	int eventTime = GDK.gdk_event_get_time(event);
 
 	int button = eventButton[0];
@@ -224,13 +231,21 @@ long gtk_button_press_event (long widget, long event) {
 long gtk_button_release_event (long widget, long event) {
 	long result = super.gtk_button_release_event (widget, event);
 	if (result != 0) return result;
+
 	int [] eventButton = new int [1];
-	GDK.gdk_event_get_button(event, eventButton);
+	if (GTK.GTK4) {
+		eventButton[0] = GDK.gdk_button_event_get_button(event);
+	} else {
+		GDK.gdk_event_get_button(event, eventButton);
+	}
+
 	int eventTime = GDK.gdk_event_get_time(event);
+
 	int button = eventButton[0];
 	if (button != 1) return 0;
 	if (!dragging) return 0;
 	dragging = false;
+
 	GtkAllocation allocation = new GtkAllocation ();
 	GTK.gtk_widget_get_allocation (handle, allocation);
 	int width = allocation.width;
@@ -284,10 +299,17 @@ long gtk_focus_in_event (long widget, long event) {
 long gtk_key_press_event (long widget, long eventPtr) {
 	long result = super.gtk_key_press_event (widget, eventPtr);
 	if (result != 0) return result;
-	int [] key = new int[1];
-	GDK.gdk_event_get_keyval(eventPtr, key);
+
+	int [] key = new int [1];
 	int [] state = new int[1];
-	GDK.gdk_event_get_state(eventPtr, state);
+	if (GTK.GTK4) {
+		key[0] = GDK.gdk_key_event_get_keyval(eventPtr);
+		state[0] = GDK.gdk_event_get_modifier_state(eventPtr);
+	} else {
+		GDK.gdk_event_get_keyval(eventPtr, key);
+		GDK.gdk_event_get_state(eventPtr, state);
+	}
+
 	switch (key[0]) {
 		case GDK.GDK_Left:
 		case GDK.GDK_Right:
@@ -367,8 +389,14 @@ long gtk_motion_notify_event (long widget, long eventPtr) {
 	double [] fetchedX = new double [1];
 	double [] fetchedY = new double [1];
 	GDK.gdk_event_get_root_coords(eventPtr, fetchedX, fetchedY);
+
 	int [] state = new int [1];
-	GDK.gdk_event_get_state(eventPtr, state);
+	if (GTK.GTK4) {
+		state[0] = GDK.gdk_event_get_modifier_state(eventPtr);
+	} else {
+		GDK.gdk_event_get_state(eventPtr, state);
+	}
+
 	long gdkResource = gdk_event_get_surface_or_window(eventPtr);
 	boolean isHint;
 	if (GTK.GTK4) {

@@ -1218,8 +1218,13 @@ boolean checkSubwindow () {
 
 @Override
 boolean translateTraversal (long event) {
-	int [] key = new int[1];
-	GDK.gdk_event_get_keyval(event, key);
+	int [] key = new int [1];
+	if (GTK.GTK4) {
+		key[0] = GDK.gdk_key_event_get_keyval(event);
+	} else {
+		GDK.gdk_event_get_keyval(event, key);
+	}
+
 	switch (key[0]) {
 		case GDK.GDK_KP_Enter:
 		case GDK.GDK_Return: {

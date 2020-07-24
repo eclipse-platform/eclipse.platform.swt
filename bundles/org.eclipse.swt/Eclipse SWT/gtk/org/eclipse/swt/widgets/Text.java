@@ -1655,7 +1655,7 @@ long gtk_event_after (long widget, long gdkEvent) {
 			case GDK.GDK_FOCUS_CHANGE:
 				boolean [] focusIn = new boolean [1];
 				if (GTK.GTK4) {
-					GDK.gdk_event_get_focus_in(gdkEvent, focusIn);
+					focusIn[0] = GDK.gdk_focus_event_get_in(gdkEvent);
 				} else {
 					GdkEventFocus gdkEventFocus = new GdkEventFocus ();
 					OS.memmove (gdkEventFocus, gdkEvent, GdkEventFocus.sizeof);
@@ -1772,18 +1772,20 @@ long gtk_insert_text (long widget, long new_text, long new_text_length, long pos
 long gtk_key_press_event (long widget, long event) {
 	boolean handleSegments = false, segmentsCleared = false;
 	if (hooks (SWT.Segments) || filters (SWT.Segments)) {
-		int length;
+		int length = 0;
 		int [] state = new int[1];
-		GDK.gdk_event_get_state(event, state);
+
 		if (GTK.GTK4) {
-			long [] eventString = new long [1];
-			GDK.gdk_event_get_string(event, eventString);
-			length = (int)OS.g_utf16_strlen (eventString[0], -1);
+			/* TODO: GTK4 no access to key event string */
+			state[0] = GDK.gdk_event_get_modifier_state(event);
 		} else {
+			GDK.gdk_event_get_state(event, state);
+
 			GdkEventKey gdkEvent = new GdkEventKey ();
 			OS.memmove(gdkEvent, event, GdkEventKey.sizeof);
 			length = gdkEvent.length;
 		}
+
 		if (length > 0 && (state[0] & (GDK.GDK_MOD1_MASK | GDK.GDK_CONTROL_MASK)) == 0) {
 			handleSegments = true;
 			if (segments != null) {
@@ -2742,7 +2744,12 @@ int translateOffset (int offset) {
 @Override
 boolean translateTraversal (long event) {
 	int [] key = new int[1];
-	GDK.gdk_event_get_keyval(event, key);
+	if (GTK.GTK4) {
+		key[0] = GDK.gdk_key_event_get_keyval(event);
+	} else {
+		GDK.gdk_event_get_keyval(event, key);
+	}
+
 	switch (key[0]) {
 		case GDK.GDK_KP_Enter:
 		case GDK.GDK_Return: {
@@ -2769,7 +2776,12 @@ int traversalCode (int key, long event) {
 		bits &= ~SWT.TRAVERSE_RETURN;
 		if (key == GDK.GDK_Tab && event != 0) {
 			int [] eventState = new int [1];
-			GDK.gdk_event_get_state(event, eventState);
+			if (GTK.GTK4) {
+				eventState[0] = GDK.gdk_event_get_modifier_state(event);
+			} else {
+				GDK.gdk_event_get_state(event, eventState);
+			}
+
 			boolean next = (eventState[0] & GDK.GDK_SHIFT_MASK) == 0;
 			if (next && (eventState[0] & GDK.GDK_CONTROL_MASK) == 0) {
 				bits &= ~(SWT.TRAVERSE_TAB_NEXT | SWT.TRAVERSE_TAB_PREVIOUS);

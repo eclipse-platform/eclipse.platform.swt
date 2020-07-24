@@ -499,12 +499,12 @@ public class GDK extends OS {
 	 */
 	/* [GTK3 only, if-def'd in os.h] */
 	public static final native void gdk_drag_status(long context, int action, int time);
+
+	/* GDK Events [GTK3 only, if-def'd in os.h] */
 	/** @param event cast=(GdkEvent *) */
 	public static final native long gdk_event_copy(long event);
 	/** @param event cast=(GdkEvent *) */
-	/* [GTK3 only, if-def'd in os.h] */
 	public static final native void gdk_event_free(long event);
-	/* [GTK3 only, if-def'd in os.h] */
 	public static final native long gdk_event_get();
 	/**
 	 * @param event cast=(GdkEvent *)
@@ -514,37 +514,14 @@ public class GDK extends OS {
 	public static final native boolean gdk_event_get_coords(long event, double[] px, double[] py);
 	/**
 	 * @param event cast=(GdkEvent *)
-	 * @param mode cast=(GdkCrossingMode *)
-	 */
-	/* [GTK4 only, if-def'd in os.h] */
-	public static final native boolean gdk_event_get_crossing_mode(long event, int [] mode);
-	/**
-	 * @param event cast=(GdkEvent *)
 	 * @param button cast=(guint *)
 	 */
 	public static final native boolean gdk_event_get_button(long event, int[] button);
 	/**
 	 * @param event cast=(GdkEvent *)
-	 * @param in cast=(gboolean *)
-	 */
-	/* [GTK4 only, if-def'd in os.h] */
-	public static final native boolean gdk_event_get_focus_in(long event, boolean [] in);
-	/**
-	 * @param event cast=(GdkEvent *)
 	 * @param keyval cast=(guint *)
 	 */
 	public static final native boolean gdk_event_get_keyval(long event,int [] keyval);
-	/**
-	 * @param event cast=(GdkEvent *)
-	 * @param keycode cast=(guint16 *)
-	 */
-	public static final native boolean gdk_event_get_keycode(long event, short [] keycode);
-	/**
-	 * @param event cast=(GdkEvent *)
-	 * @param group cast=(guint *)
-	 */
-	/* [GTK4 only, if-def'd in os.h] */
-	public static final native boolean gdk_event_get_key_group(long event,int [] group);
 	/**
 	 * @param event cast=(GdkEvent *)
 	 * @param x cast=(gdouble *)
@@ -557,12 +534,6 @@ public class GDK extends OS {
 	 */
 	public static final native boolean gdk_event_get_state(long event, int[] pmod);
 	/**
-	 * @param event cast=(GdkEvent *)
-	 * @param string cast=(const char **)
-	 */
-	/* [GTK4 only, if-def'd in os.h] */
-	public static final native boolean gdk_event_get_string(long event, long [] string);
-	/**
 	 * @param event cast=(const GdkEvent *)
 	 * @param delta_x cast=(gdouble *)
 	 * @param delta_y cast=(gdouble *)
@@ -573,6 +544,35 @@ public class GDK extends OS {
 	 * @param direction cast=(GdkScrollDirection *)
 	 */
 	public static final native boolean gdk_event_get_scroll_direction(long event, int [] direction);
+
+	/* GDK Events (GTK4 only, if-def'd in os.h) */
+	/** @param event cast=(GdkEvent *) */
+	public static final native long gdk_event_ref(long event);
+	/** @param event cast=(GdkEvent *) */
+	public static final native void gdk_event_unref(long event);
+	/**
+	 * @param event cast=(GdkEvent *)
+	 * @param px cast=(gdouble *)
+	 * @param py cast=(gdouble *)
+	 */
+	public static final native boolean gdk_event_get_position(long event, double[] px, double[] py);
+	/** @param event cast=(GdkEvent *) */
+	public static final native int gdk_crossing_event_get_mode(long event);
+	/** @param event cast=(GdkEvent *) */
+	public static final native int gdk_button_event_get_button(long event);
+	/** @param event cast=(GdkEvent *) */
+	public static final native boolean gdk_focus_event_get_in(long event);
+	/** @param event cast=(GdkEvent *) */
+	public static final native int gdk_key_event_get_keyval(long event);
+	/** @param event cast=(GdkEvent *) */
+	public static final native int gdk_key_event_get_layout(long event);
+	/** @param event cast=(GdkEvent *) */
+	public static final native int gdk_event_get_modifier_state(long event);
+	/** @param event cast=(GdkEvent *) */
+	public static final native void gdk_scroll_event_get_deltas(long event, double[] delta_x, double[] delta_y);
+	/** @param event cast=(GdkEvent *) */
+	public static final native int gdk_scroll_event_get_direction(long event);
+
 	/**
 	 * @method flags=dynamic
 	 */
@@ -634,7 +634,7 @@ public class GDK extends OS {
 	 * @param keys cast=(GdkKeymapKey**)
 	 * @param n_keys cast=(gint*)
 	 */
-	/* [GTK4 only, if-def'd in os.h] */
+	/* [GTK4 only] */
 	public static final native boolean gdk_display_map_keyval(long display, int keyval, long[] keys, int[] n_keys);
 	/**
 	 * @method flags=dynamic
@@ -660,6 +660,8 @@ public class GDK extends OS {
 	public static final native boolean gdk_keymap_get_entries_for_keyval(long keymap, int keyval, long [] keys, int[] n_keys);
 	public static final native long gdk_keyval_to_lower(long keyval);
 	public static final native long gdk_keyval_to_unicode(long keyval);
+	/** @param keyval cast=(guint) */
+	public static final native long gdk_keyval_name(int keyval);
 	/**
 	 * @method flags=dynamic
 	 */
@@ -882,7 +884,7 @@ public class GDK extends OS {
 	public static final native long gdk_display_peek_event(long display);
 	/**
 	 * @param display cast=(GdkDisplay *)
-	 * @param event cast=(const GdkEvent *)
+	 * @param event cast=(GdkEvent *)
 	 */
 	public static final native void gdk_display_put_event(long display, long event);
 	/**

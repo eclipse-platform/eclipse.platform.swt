@@ -827,7 +827,12 @@ long gtk_button_press_event (long widget, long event) {
 	if ((state & CANVAS) != 0) {
 		if ((style & SWT.NO_FOCUS) == 0 && hooksKeys ()) {
 			int [] eventButton = new int [1];
-			GDK.gdk_event_get_button(event, eventButton);
+			if (GTK.GTK4) {
+				eventButton[0] = GDK.gdk_button_event_get_button(event);
+			} else {
+				GDK.gdk_event_get_button(event, eventButton);
+			}
+
 			if (eventButton[0] == 1) {
 				if (getChildrenCount () == 0) setFocus ();
 			}
@@ -848,7 +853,12 @@ long gtk_key_press_event (long widget, long event) {
 	*/
 	if ((state & CANVAS) != 0 && socketHandle == 0) {
 		int [] eventKeyval = new int [1];
-		GDK.gdk_event_get_keyval(event, eventKeyval);
+		if (GTK.GTK4) {
+			eventKeyval[0] = GDK.gdk_key_event_get_keyval(event);
+		} else {
+			GDK.gdk_event_get_keyval(event, eventKeyval);
+		}
+
 		switch (eventKeyval[0]) {
 			case GDK.GDK_Return:
 			case GDK.GDK_KP_Enter: return 1;

@@ -2731,12 +2731,19 @@ boolean dragDetect (int x, int y, boolean filter, boolean dragOnTimeout, boolean
 			eventType = fixGdkEventTypeValues(eventType);
 			switch (eventType) {
 				case GDK.GDK_MOTION_NOTIFY: {
-					int [] state = new int[1];
-					GDK.gdk_event_get_state(eventPtr, state);
 					long gdkResource = gdk_event_get_surface_or_window(eventPtr);
+
+					int [] state = new int[1];
 					double [] eventX = new double[1];
 					double [] eventY = new double[1];
-					GDK.gdk_event_get_coords(eventPtr, eventX, eventY);
+					if (GTK.GTK4) {
+						state[0] = GDK.gdk_event_get_modifier_state(eventPtr);
+						GDK.gdk_event_get_position(eventPtr, eventX, eventY);
+					} else {
+						GDK.gdk_event_get_state(eventPtr, state);
+						GDK.gdk_event_get_coords(eventPtr, eventX, eventY);
+					}
+
 					if ((state[0] & GDK.GDK_BUTTON1_MASK) != 0) {
 						if (GTK.gtk_drag_check_threshold (handle, x, y, (int) eventX[0], (int) eventY[0])) {
 							dragging = true;
@@ -2759,7 +2766,12 @@ boolean dragDetect (int x, int y, boolean filter, boolean dragOnTimeout, boolean
 				case GDK.GDK_KEY_PRESS:
 				case GDK.GDK_KEY_RELEASE: {
 					int [] eventKeyval = new int [1];
-					GDK.gdk_event_get_keyval(eventPtr, eventKeyval);
+					if (GTK.GTK4) {
+						eventKeyval[0] = GDK.gdk_key_event_get_keyval(eventPtr);
+					} else {
+						GDK.gdk_event_get_keyval(eventPtr, eventKeyval);
+					}
+
 					if (eventKeyval[0] == GDK.GDK_Escape) quit = true;
 					break;
 				}
@@ -3424,15 +3436,31 @@ long gtk_gesture_press_event (long gesture, int n_press, double x, double y, lon
 	// Event fields
 	double [] eventX = new double [1];
 	double [] eventY = new double [1];
-	GDK.gdk_event_get_coords(event, eventX, eventY);
+	if (GTK.GTK4) {
+		GDK.gdk_event_get_position(event, eventX, eventY);
+	} else {
+		GDK.gdk_event_get_coords(event, eventX, eventY);
+	}
+
 	int [] eventButton = new int [1];
-	GDK.gdk_event_get_button(event, eventButton);
+	if (GTK.GTK4) {
+		eventButton[0] = GDK.gdk_button_event_get_button(event);
+	} else {
+		GDK.gdk_event_get_button(event, eventButton);
+	}
+
 	double [] eventRX = new double [1];
 	double [] eventRY = new double [1];
 	GDK.gdk_event_get_root_coords(event, eventRX, eventRY);
+
 	int eventTime = GDK.gdk_event_get_time(event);
+
 	int [] eventState = new int[1];
-	GDK.gdk_event_get_state(event, eventState);
+	if (GTK.GTK4) {
+		eventState[0] = GDK.gdk_event_get_modifier_state(event);
+	} else {
+		GDK.gdk_event_get_state(event, eventState);
+	}
 
 	lastInput.x = (int) eventX[0];
 	lastInput.y = (int) eventY[0];
@@ -3467,15 +3495,31 @@ long gtk_gesture_release_event (long gesture, int n_press, double x, double y, l
 	// Event fields
 	double [] eventX = new double [1];
 	double [] eventY = new double [1];
-	GDK.gdk_event_get_coords(event, eventX, eventY);
+	if (GTK.GTK4) {
+		GDK.gdk_event_get_position(event, eventX, eventY);
+	} else {
+		GDK.gdk_event_get_coords(event, eventX, eventY);
+	}
+
 	int [] eventButton = new int [1];
-	GDK.gdk_event_get_button(event, eventButton);
+	if (GTK.GTK4) {
+		eventButton[0] = GDK.gdk_button_event_get_button(event);
+	} else {
+		GDK.gdk_event_get_button(event, eventButton);
+	}
+
 	int eventTime = GDK.gdk_event_get_time(event);
+
 	double [] eventRX = new double [1];
 	double [] eventRY = new double [1];
 	GDK.gdk_event_get_root_coords(event, eventRX, eventRY);
-	int [] eventState = new int [1];
-	GDK.gdk_event_get_state(event, eventState);
+
+	int [] eventState = new int[1];
+	if (GTK.GTK4) {
+		eventState[0] = GDK.gdk_event_get_modifier_state(event);
+	} else {
+		GDK.gdk_event_get_state(event, eventState);
+	}
 
 	lastInput.x = (int) eventX[0];
 	lastInput.y = (int) eventY[0];
@@ -3495,17 +3539,30 @@ long gtk_button_press_event (long widget, long event, boolean sendMouseDown) {
 	// Event fields
 	double [] eventX = new double [1];
 	double [] eventY = new double [1];
-	GDK.gdk_event_get_coords(event, eventX, eventY);
+	if (GTK.GTK4) {
+		GDK.gdk_event_get_position(event, eventX, eventY);
+	} else {
+		GDK.gdk_event_get_coords(event, eventX, eventY);
+	}
+
 	int eventType = GDK.gdk_event_get_event_type(event);
 	eventType = fixGdkEventTypeValues(eventType);
+
 	int [] eventButton = new int [1];
-	GDK.gdk_event_get_button(event, eventButton);
+	int [] eventState = new int[1];
+	if (GTK.GTK4) {
+		eventButton[0] = GDK.gdk_button_event_get_button(event);
+		eventState[0] = GDK.gdk_event_get_modifier_state(event);
+	} else {
+		GDK.gdk_event_get_button(event, eventButton);
+		GDK.gdk_event_get_state(event, eventState);
+	}
+
 	int eventTime = GDK.gdk_event_get_time(event);
+
 	double [] eventRX = new double [1];
 	double [] eventRY = new double [1];
 	GDK.gdk_event_get_root_coords(event, eventRX, eventRY);
-	int [] eventState = new int [1];
-	GDK.gdk_event_get_state(event, eventState);
 
 	lastInput.x = (int) eventX[0];
 	lastInput.y = (int) eventY[0];
@@ -3599,15 +3656,27 @@ long gtk_button_release_event (long widget, long event) {
 	// Event fields
 	double [] eventX = new double [1];
 	double [] eventY = new double [1];
-	GDK.gdk_event_get_coords(event, eventX, eventY);
+	if (GTK.GTK4) {
+		GDK.gdk_event_get_position(event, eventX, eventY);
+	} else {
+		GDK.gdk_event_get_coords(event, eventX, eventY);
+	}
+
 	int [] eventButton = new int [1];
-	GDK.gdk_event_get_button(event, eventButton);
+	int [] eventState = new int[1];
+	if (GTK.GTK4) {
+		eventButton[0] = GDK.gdk_button_event_get_button(event);
+		eventState[0] = GDK.gdk_event_get_modifier_state(event);
+	} else {
+		GDK.gdk_event_get_button(event, eventButton);
+		GDK.gdk_event_get_state(event, eventState);
+	}
+
 	int eventTime = GDK.gdk_event_get_time(event);
+
 	double [] eventRX = new double [1];
 	double [] eventRY = new double [1];
 	GDK.gdk_event_get_root_coords(event, eventRX, eventRY);
-	int [] eventState = new int [1];
-	GDK.gdk_event_get_state(event, eventState);
 
 	lastInput.x = (int) eventX[0];
 	lastInput.y = (int) eventY[0];
@@ -3644,25 +3713,32 @@ long gtk_enter_notify_event (long widget, long event) {
 	GTK.gtk_widget_set_tooltip_text (toolHandle, buffer);
 
 	if (display.currentControl == this) return 0;
-	GdkEventCrossing gdkEvent = new GdkEventCrossing ();
-	long childGdkResource = 0;
-	int [] crossingMode = new int[1];
 	int [] state = new int [1];
-	GDK.gdk_event_get_state(event, state);
+	double [] eventX = new double [1];
+	double [] eventY = new double [1];
+	if (GTK.GTK4) {
+		state[0] = GDK.gdk_event_get_modifier_state(event);
+		GDK.gdk_event_get_position(event, eventX, eventY);
+	} else {
+		GDK.gdk_event_get_state(event, state);
+		GDK.gdk_event_get_coords(event, eventX, eventY);
+	}
+
 	int time = GDK.gdk_event_get_time(event);
+
 	double [] eventRX = new double [1];
 	double [] eventRY = new double [1];
 	GDK.gdk_event_get_root_coords(event, eventRX, eventRY);
-	double [] eventX = new double [1];
-	double [] eventY = new double [1];
-	GDK.gdk_event_get_coords(event, eventX, eventY);
+
 	lastInput.x = (int) eventX[0];
 	lastInput.y = (int) eventY[0];
 	if (containedInRegion(lastInput.x, lastInput.y)) return 0;
+
+	GdkEventCrossing gdkEvent = new GdkEventCrossing ();
+	long childGdkResource = 0;
+	int [] crossingMode = new int[1];
 	if (GTK.GTK4) {
-		GDK.gdk_event_get_crossing_mode(event, crossingMode);
-		// TODO_GTK4: GTK devs are still deciding whether or not
-		// to provide API for GdkEventCrossing->child_surface.
+		crossingMode[0] = GDK.gdk_crossing_event_get_mode(event);
 	} else {
 		OS.memmove(gdkEvent, event, GdkEventCrossing.sizeof);
 		crossingMode[0] = gdkEvent.mode;
@@ -3709,8 +3785,14 @@ long gtk_event_after (long widget, long gdkEvent) {
 				double [] eventRX = new double [1];
 				double [] eventRY = new double [1];
 				GDK.gdk_event_get_root_coords(gdkEvent, eventRX, eventRY);
+
 				int [] eventButton = new int [1];
-				GDK.gdk_event_get_button(gdkEvent, eventButton);
+				if (GTK.GTK4) {
+					eventButton[0] = GDK.gdk_button_event_get_button(gdkEvent);
+				} else {
+					GDK.gdk_event_get_button(gdkEvent, eventButton);
+				}
+
 				if (eventButton[0] == 3) {
 					showMenu ((int) eventRX[0], (int) eventRY[0]);
 				}
@@ -3721,7 +3803,7 @@ long gtk_event_after (long widget, long gdkEvent) {
 			if (!isFocusHandle (widget)) break;
 			boolean [] focusIn = new boolean [1];
 			if (GTK.GTK4) {
-				GDK.gdk_event_get_focus_in(gdkEvent, focusIn);
+				focusIn[0] = GDK.gdk_focus_event_get_in(gdkEvent);
 			} else {
 				GdkEventFocus gdkEventFocus = new GdkEventFocus ();
 				OS.memmove (gdkEventFocus, gdkEvent, GdkEventFocus.sizeof);
@@ -3907,7 +3989,12 @@ long gtk_focus_out_event (long widget, long event) {
 @Override
 long gtk_key_press_event (long widget, long event) {
 	int [] eventKeyval = new int [1];
-	GDK.gdk_event_get_keyval(event, eventKeyval);
+	if (GTK.GTK4) {
+		eventKeyval[0] = GDK.gdk_key_event_get_keyval(event);
+	} else {
+		GDK.gdk_event_get_keyval(event, eventKeyval);
+	}
+
 	if (!hasFocus ()) {
 		/*
 		* Feature in GTK.  On AIX, the IME window deactivates the current shell and even
@@ -3947,26 +4034,36 @@ long gtk_key_release_event (long widget, long event) {
 @Override
 long gtk_leave_notify_event (long widget, long event) {
 	if (display.currentControl != this) return 0;
-	GdkEventCrossing gdkEvent = new GdkEventCrossing ();
-	int [] crossingMode = new int[1];
 	int [] state = new int [1];
-	GDK.gdk_event_get_state(event, state);
+	double [] eventX = new double [1];
+	double [] eventY = new double [1];
+	if (GTK.GTK4) {
+		state[0] = GDK.gdk_event_get_modifier_state(event);
+		GDK.gdk_event_get_position(event, eventX, eventY);
+	} else {
+		GDK.gdk_event_get_state(event, state);
+		GDK.gdk_event_get_coords(event, eventX, eventY);
+	}
+
 	int time = GDK.gdk_event_get_time(event);
+
 	double [] eventRX = new double [1];
 	double [] eventRY = new double [1];
 	GDK.gdk_event_get_root_coords(event, eventRX, eventRY);
-	double [] eventX = new double [1];
-	double [] eventY = new double [1];
-	GDK.gdk_event_get_coords(event, eventX, eventY);
+
 	lastInput.x = (int) eventX[0];
 	lastInput.y = (int) eventY[0];
 	if (containedInRegion(lastInput.x, lastInput.y)) return 0;
+
+	GdkEventCrossing gdkEvent = new GdkEventCrossing ();
+	int [] crossingMode = new int[1];
 	if (GTK.GTK4) {
-		GDK.gdk_event_get_crossing_mode(event, crossingMode);
+		crossingMode[0] = GDK.gdk_crossing_event_get_mode(event);
 	} else {
 		OS.memmove(gdkEvent, event, GdkEventCrossing.sizeof);
 		crossingMode[0] = gdkEvent.mode;
 	}
+
 	display.removeMouseHoverTimeout (handle);
 	int result = 0;
 	if (sendLeaveNotify () || display.getCursorControl () == null) {
@@ -4006,12 +4103,18 @@ long gtk_motion_notify_event (long widget, long event) {
 		dragBegun = true;
 	}
 	int result;
-	double [] eventX = new double[1];
-	double [] eventY = new double[1];
-	GDK.gdk_event_get_coords(event, eventX, eventY);
+	double [] eventX = new double [1];
+	double [] eventY = new double [1];
+	if (GTK.GTK4) {
+		GDK.gdk_event_get_position(event, eventX, eventY);
+	} else {
+		GDK.gdk_event_get_coords(event, eventX, eventY);
+	}
+
 	double [] eventRX = new double[1];
 	double [] eventRY = new double[1];
 	GDK.gdk_event_get_root_coords(event, eventRX, eventRY);
+
 	lastInput.x = (int) eventX[0];
 	lastInput.y = (int) eventY[0];
 	if (containedInRegion(lastInput.x, lastInput.y)) return 0;
@@ -4034,11 +4137,19 @@ long gtk_motion_notify_event (long widget, long event) {
 			GTK.gtk_event_controller_handle_event(dragGesture,event);
 			int eventType = GDK.gdk_event_get_event_type(event);
 			if (eventType == GDK.GDK_3BUTTON_PRESS) return 0;
+
 			Point scaledEvent = DPIUtil.autoScaleDown(new Point((int)eventX[0], (int) eventY[0]));
+
 			int [] eventButton = new int [1];
-			GDK.gdk_event_get_button(event, eventButton);
 			int [] eventState = new int [1];
-			GDK.gdk_event_get_state(event, eventState);
+			if (GTK.GTK4) {
+				eventButton[0] = GDK.gdk_button_event_get_button(event);
+				eventState[0] = GDK.gdk_event_get_modifier_state(event);
+			} else {
+				GDK.gdk_event_get_button(event, eventButton);
+				GDK.gdk_event_get_state(event, eventState);
+			}
+
 			if (sendDragEvent (eventButton[0], eventState[0], scaledEvent.x, scaledEvent.y, false)){
 				return 1;
 			}
@@ -4062,7 +4173,7 @@ long gtk_motion_notify_event (long widget, long event) {
 			state[0] = mask [0];
 		}
 	} else {
-		GDK.gdk_event_get_state(event, state);
+		state[0] = GDK.gdk_event_get_modifier_state(event);
 	}
 	int time = GDK.gdk_event_get_time(event);
 	if (this != display.currentControl) {
@@ -4120,20 +4231,37 @@ long gtk_realize (long widget) {
 @Override
 long gtk_scroll_event (long widget, long eventPtr) {
 	long result = 0;
-	double [] eventX = new double[1];
-	double [] eventY = new double[1];
-	GDK.gdk_event_get_coords(eventPtr, eventX, eventY);
+	double [] eventX = new double [1];
+	double [] eventY = new double [1];
+	int [] state = new int [1];
+	if (GTK.GTK4) {
+		GDK.gdk_event_get_position(eventPtr, eventX, eventY);
+		state[0] = GDK.gdk_event_get_modifier_state(eventPtr);
+	} else {
+		GDK.gdk_event_get_coords(eventPtr, eventX, eventY);
+		GDK.gdk_event_get_state(eventPtr, state);
+	}
+
 	double [] eventRX = new double[1];
 	double [] eventRY = new double[1];
 	GDK.gdk_event_get_root_coords(eventPtr, eventRX, eventRY);
+
 	int time = GDK.gdk_event_get_time(eventPtr);
-	int [] state = new int[1];
-	GDK.gdk_event_get_state(eventPtr, state);
+
+	int [] direction = new int[1];
+	boolean fetched;
+	if (GTK.GTK4) {
+		direction[0] = GDK.gdk_scroll_event_get_direction(eventPtr);
+		fetched = direction[0] != GDK.GDK_SCROLL_SMOOTH;
+	} else {
+		fetched = GDK.gdk_event_get_scroll_direction(eventPtr, direction);
+	}
+
 	lastInput.x = (int) eventX[0];
 	lastInput.y = (int) eventY[0];
-	int [] direction = new int[1];
-	boolean fetched = GDK.gdk_event_get_scroll_direction(eventPtr, direction);
+
 	if (containedInRegion(lastInput.x, lastInput.y)) return 0;
+
 	if (fetched) {
 		switch (direction[0]) {
 			case GDK.GDK_SCROLL_UP:
@@ -4147,7 +4275,16 @@ long gtk_scroll_event (long widget, long eventPtr) {
 		}
 	} else {
 		double[] delta_x = new double[1], delta_y = new double [1];
-		if (GDK.gdk_event_get_scroll_deltas (eventPtr, delta_x, delta_y)) {
+		boolean deltasAvailable;
+		if (GTK.GTK4) {
+			GDK.gdk_scroll_event_get_deltas(eventPtr, delta_x, delta_y);
+			// In GTK4, deltas is always available but zero when not GDK_SMOOTH_SCROLL
+			deltasAvailable = true;
+		} else {
+			deltasAvailable = GDK.gdk_event_get_scroll_deltas (eventPtr, delta_x, delta_y);
+		}
+
+		if (deltasAvailable) {
 			if (delta_x [0] != 0) {
 				result = (sendMouseEvent (SWT.MouseHorizontalWheel, 0, (int)(-3 * delta_x [0]), 0, true, time, eventRX[0], eventRY[0], false, state[0]) ? 0 : 1);
 			}
@@ -6378,7 +6515,12 @@ boolean translateMnemonic (Event event, Control control) {
 boolean translateMnemonic (int keyval, long event) {
 	long key = GDK.gdk_keyval_to_unicode (keyval);
 	int [] state = new int[1];
-	GDK.gdk_event_get_state(event, state);
+	if (GTK.GTK4) {
+		state[0] = GDK.gdk_event_get_modifier_state(event);
+	} else {
+		GDK.gdk_event_get_state(event, state);
+	}
+
 	if (key < 0x20) return false;
 	if (state[0] == 0) {
 		int code = traversalCode (keyval, event);
@@ -6402,9 +6544,15 @@ boolean translateMnemonic (int keyval, long event) {
 boolean translateTraversal (long event) {
 	int detail = SWT.TRAVERSE_NONE;
 	int [] eventKeyval = new int [1];
-	GDK.gdk_event_get_keyval(event, eventKeyval);
 	int [] eventState = new int[1];
-	GDK.gdk_event_get_state(event, eventState);
+	if (GTK.GTK4) {
+		eventKeyval[0] = GDK.gdk_key_event_get_keyval(event);
+		eventState[0] = GDK.gdk_event_get_modifier_state(event);
+	} else {
+		GDK.gdk_event_get_keyval(event, eventKeyval);
+		GDK.gdk_event_get_state(event, eventState);
+	}
+
 	int key = eventKeyval[0];
 	int code = traversalCode (key, event);
 	boolean all = false;

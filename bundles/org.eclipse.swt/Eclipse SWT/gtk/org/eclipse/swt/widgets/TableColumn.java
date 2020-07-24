@@ -350,7 +350,12 @@ long gtk_clicked (long widget) {
 	long eventPtr = GTK.gtk_get_current_event ();
 	if (eventPtr != 0) {
 		int [] eventButton = new int [1];
-		GDK.gdk_event_get_button(eventPtr, eventButton);
+		if (GTK.GTK4) {
+			eventButton[0] = GDK.gdk_button_event_get_button(eventPtr);
+		} else {
+			GDK.gdk_event_get_button(eventPtr, eventButton);
+		}
+
 		int eventType = GDK.gdk_event_get_event_type(eventPtr);
 		eventType = Control.fixGdkEventTypeValues(eventType);
 		int eventTime = GDK.gdk_event_get_time(eventPtr);
@@ -378,7 +383,12 @@ long gtk_event_after (long widget, long gdkEvent) {
 	switch (eventType) {
 		case GDK.GDK_BUTTON_PRESS: {
 			int [] eventButton = new int [1];
-			GDK.gdk_event_get_button(gdkEvent, eventButton);
+			if (GTK.GTK4) {
+				eventButton[0] = GDK.gdk_button_event_get_button(gdkEvent);
+			} else {
+				GDK.gdk_event_get_button(gdkEvent, eventButton);
+			}
+
 			if (eventButton[0] == 3) {
 				double [] eventRX = new double [1];
 				double [] eventRY = new double [1];

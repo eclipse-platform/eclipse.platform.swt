@@ -230,7 +230,12 @@ long gtk_event_after (long widget, long gdkEvent) {
 	switch (eventType) {
 		case GDK.GDK_BUTTON_RELEASE: {
 			int [] eventButton = new int [1];
-			GDK.gdk_event_get_button(gdkEvent, eventButton);
+			if (GTK.GTK4) {
+				eventButton[0] = GDK.gdk_button_event_get_button(gdkEvent);
+			} else {
+				GDK.gdk_event_get_button(gdkEvent, eventButton);
+			}
+
 			if (eventButton[0] == 1 && detail == SWT.DRAG) {
 				if (!dragSent) {
 					Event event = new Event ();
