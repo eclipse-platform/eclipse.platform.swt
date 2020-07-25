@@ -41,7 +41,7 @@ void checkMembers() {
 	CompilationUnit unit = null;
 	
 	source = JNIGenerator.loadFile(sourcePath);
-	ASTParser parser = ASTParser.newParser(AST.JLS8);
+	ASTParser parser = ASTParser.newParser(AST.JLS11);
 	parser.setSource(source.toCharArray());
 	unit = (CompilationUnit)parser.createAST(null);
 	
