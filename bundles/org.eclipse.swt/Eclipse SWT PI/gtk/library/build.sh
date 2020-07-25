@@ -119,21 +119,14 @@ case $SWT_OS.$SWT_ARCH in
 			export CC=gcc
 		fi
 		if [ "${JAVA_HOME}" = "" ]; then
-			# Validate that we set JAVA_HOME to an existing directory. If not try to look for a better one.
-			BLUEBIRD_JAVA_HOME="/bluebird/teamswt/swt-builddir/JDKs/x86_64/jdk1.5.0"
-			if [ -d "$BLUEBIRD_JAVA_HOME" ]; then
-				func_echo_plus "JAVA_HOME not set, configured to: $BLUEBIRD_JAVA_HOME"
-				export JAVA_HOME="$BLUEBIRD_JAVA_HOME"
+			# Cross-platform method of finding JAVA_HOME.
+			# Tested on Fedora 24 and Ubuntu 16
+			DYNAMIC_JAVA_HOME=`readlink -f /usr/bin/java | sed "s:jre/::" | sed "s:bin/java::"`
+			if [ -e "${DYNAMIC_JAVA_HOME}include/jni.h" ]; then
+				func_echo_plus "JAVA_HOME not set, but jni.h found, dynamically configured to $DYNAMIC_JAVA_HOME"
+				export JAVA_HOME="$DYNAMIC_JAVA_HOME"
 			else
-				# Cross-platform method of finding JAVA_HOME.
-				# Tested on Fedora 24 and Ubuntu 16
-				DYNAMIC_JAVA_HOME=`readlink -f /usr/bin/java | sed "s:jre/::" | sed "s:bin/java::"`
-				if [ -e "${DYNAMIC_JAVA_HOME}include/jni.h" ]; then
-					func_echo_plus "JAVA_HOME not set, but jni.h found, dynamically configured to $DYNAMIC_JAVA_HOME"
-					export JAVA_HOME="$DYNAMIC_JAVA_HOME"
-				else
-					func_echo_error "JAVA_HOME not set and jni.h could not be located. You might get a compile error about include 'jni.h'. You should install 'java-*-openjdk-devel' package or if you have it installed already, find jni.h and  set JAVA_HOME manually to base of 'include' folder"
-				fi
+				func_echo_error "JAVA_HOME not set and jni.h could not be located. You might get a compile error about include 'jni.h'. You should install 'java-*-openjdk-devel' package or if you have it installed already, find jni.h and  set JAVA_HOME manually to base of 'include' folder"
 			fi
 		fi
 		if [ "${PKG_CONFIG_PATH}" = "" ]; then
