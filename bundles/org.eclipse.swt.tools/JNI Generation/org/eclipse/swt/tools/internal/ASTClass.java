@@ -104,14 +104,14 @@ public ASTClass(String sourcePath, MetaData metaData) {
 	for (FieldDeclaration field : type.getFields()) {
 		List<VariableDeclarationFragment> fragments = field.fragments();
 		for (VariableDeclarationFragment fragment : fragments) {
-			fid.add(new ASTField(this, source, field, fragment));
+			fid.add(new ASTField(this, field, fragment));
 		}
 	}
 	this.fields = fid.toArray(new ASTField[fid.size()]);
 	List<ASTMethod> mid = new ArrayList<>();
 	for (MethodDeclaration method : type.getMethods()) {
 		if (method.getReturnType2() == null) continue;
-		mid.add(new ASTMethod(this, source, method));
+		mid.add(new ASTMethod(this, method));
 	}
 	this.methods = mid.toArray(new ASTMethod[mid.size()]);
 }

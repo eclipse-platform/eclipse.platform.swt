@@ -15,7 +15,6 @@ package org.eclipse.swt.tools.internal;
 
 import java.lang.reflect.*;
 
-import org.eclipse.jdt.core.dom.*;
 import org.eclipse.jdt.core.dom.Modifier;
 
 public class ReflectMethod extends ReflectItem implements JNIMethod {
@@ -25,7 +24,7 @@ public class ReflectMethod extends ReflectItem implements JNIMethod {
 	ReflectClass declaringClass;
 	Boolean unique;
 	
-public ReflectMethod(ReflectClass declaringClass, Method method, String source, CompilationUnit unit) {
+public ReflectMethod(ReflectClass declaringClass, Method method) {
 	this.method = method;
 	this.declaringClass = declaringClass;	
 	Class<?> returnType = method.getReturnType();

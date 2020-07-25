@@ -25,7 +25,7 @@ public class ASTField extends ASTItem implements JNIField {
 	String data;
 	int start;
 	
-public ASTField(ASTClass declaringClass, String source, FieldDeclaration field, VariableDeclarationFragment fragment) {
+public ASTField(ASTClass declaringClass, FieldDeclaration field, VariableDeclarationFragment fragment) {
 	this.declaringClass = declaringClass;	
 	name = fragment.getName().getIdentifier();
 	modifiers = field.getModifiers();

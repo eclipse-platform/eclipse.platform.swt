@@ -38,22 +38,20 @@ public ReflectClass(Class<?> clazz, MetaData data, String sourcePath) {
 void checkMembers() {
 	if (fields != null) return;
 	String source = null;
-	CompilationUnit unit = null;
-	
 	source = JNIGenerator.loadFile(sourcePath);
 	ASTParser parser = ASTParser.newParser(AST.JLS11);
 	parser.setSource(source.toCharArray());
-	unit = (CompilationUnit)parser.createAST(null);
+	parser.createAST(null);
 	
 	Field[] fields = clazz.getDeclaredFields();
 	this.fields = new ReflectField[fields.length];
 	for (int i = 0; i < fields.length; i++) {
-		this.fields[i] = new ReflectField(this, fields[i], source, unit);
+		this.fields[i] = new ReflectField(this, fields[i]);
 	}
 	Method[] methods = clazz.getDeclaredMethods();
 	this.methods = new ReflectMethod[methods.length];
 	for (int i = 0; i < methods.length; i++) {
-		this.methods[i] = new ReflectMethod(this, methods[i], source, unit);
+		this.methods[i] = new ReflectMethod(this, methods[i]);
 	}
 }
 

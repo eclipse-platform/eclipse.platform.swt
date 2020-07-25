@@ -15,14 +15,12 @@ package org.eclipse.swt.tools.internal;
 
 import java.lang.reflect.*;
 
-import org.eclipse.jdt.core.dom.*;
-
 public class ReflectField extends ReflectItem implements JNIField {
 	Field field;
 	ReflectType type;
 	ReflectClass declaringClass;
 	
-public ReflectField(ReflectClass declaringClass, Field field, String source, CompilationUnit unit) {
+public ReflectField(ReflectClass declaringClass, Field field) {
 	this.declaringClass = declaringClass;
 	this.field = field;
 	Class<?> clazz = field.getType();

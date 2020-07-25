@@ -29,7 +29,7 @@ public class ASTMethod extends ASTItem implements JNIMethod {
 	String data;
 	int start;
 	
-public ASTMethod(ASTClass declaringClass, String source, MethodDeclaration method) {
+public ASTMethod(ASTClass declaringClass, MethodDeclaration method) {
 	this.declaringClass = declaringClass;
 	
 	name = method.getName().getIdentifier();
