@@ -148,6 +148,9 @@ void handleResponse (long response) {
 public String open () {
 	directoryPath = null;
 	panel = NSOpenPanel.openPanel();
+	if (panel == null) {
+		return null;
+	}
 
 	/*
 	 * This line is intentionally commented. Don't show hidden files forcefully,
