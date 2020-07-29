@@ -2775,30 +2775,34 @@ boolean sendMouseEvent(NSEvent nsEvent, int type, boolean send) {
 		 * To keep the order of events correct, deselect the other selected items and send the
 		 * selection event before MouseUp is sent. Ignore the next selection event.
 		 */
-		if (!dragDetected && selectedRowIndex != -1) {
-			NSOutlineView widget = (NSOutlineView)view;
-			NSIndexSet selectedRows = widget.selectedRowIndexes ();
-			int count = (int)selectedRows.count();
-			long [] indexBuffer = new long [count];
-			selectedRows.getIndexes(indexBuffer, count, 0);
-			for (int i = 0; i < count; i++) {
-				if (indexBuffer[i] == selectedRowIndex) continue;
-				ignoreSelect = true;
-				widget.deselectRow (indexBuffer[i]);
-				ignoreSelect = false;
-			}
-
-			Event event = new Event ();
-			id itemID = widget.itemAtRow (selectedRowIndex);
-			if (itemID != null) {
-				Widget item = display.getWidget (itemID.id);
-				if (item != null && item instanceof TreeItem) {
-					event.item = display.getWidget (itemID.id);
-					sendSelectionEvent (SWT.Selection, event, false);
+		if (selectedRowIndex != -1) {
+			if (dragDetected) {
+				selectedRowIndex = -1;
+			} else {
+				NSOutlineView widget = (NSOutlineView)view;
+				NSIndexSet selectedRows = widget.selectedRowIndexes ();
+				int count = (int)selectedRows.count();
+				long [] indexBuffer = new long [count];
+				selectedRows.getIndexes(indexBuffer, count, 0);
+				for (int i = 0; i < count; i++) {
+					if (indexBuffer[i] == selectedRowIndex) continue;
+					ignoreSelect = true;
+					widget.deselectRow (indexBuffer[i]);
+					ignoreSelect = false;
 				}
+
+				Event event = new Event ();
+				id itemID = widget.itemAtRow (selectedRowIndex);
+				if (itemID != null) {
+					Widget item = display.getWidget (itemID.id);
+					if (item != null && item instanceof TreeItem) {
+						event.item = display.getWidget (itemID.id);
+						sendSelectionEvent (SWT.Selection, event, false);
+					}
+				}
+				selectedRowIndex = -1;
+				ignoreSelect = true;
 			}
-			selectedRowIndex = -1;
-			ignoreSelect = true;
 		}
 		dragDetected = false;
 	}
