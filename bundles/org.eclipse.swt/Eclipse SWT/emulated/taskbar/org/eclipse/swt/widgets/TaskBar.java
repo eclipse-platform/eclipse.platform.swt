@@ -156,8 +156,7 @@ public TaskItem [] getItems () {
 @Override
 void releaseChildren (boolean destroy) {
 	if (items != null) {
-		for (int i=0; i<items.length; i++) {
-			TaskItem item = items [i];
+		for (TaskItem item : items) {
 			if (item != null && !item.isDisposed ()) {
 				item.release (false);
 			}
@@ -170,8 +169,7 @@ void releaseChildren (boolean destroy) {
 @Override
 void reskinChildren (int flags) {
 	if (items != null) {
-		for (int i=0; i<items.length; i++) {
-			TaskItem item = items [i];
+		for (TaskItem item : items) {
 			if (item != null) item.reskin (flags);
 		}
 	}
