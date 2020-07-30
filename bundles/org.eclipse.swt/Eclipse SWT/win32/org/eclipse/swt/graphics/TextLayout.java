@@ -2728,6 +2728,28 @@ StyleItem[] itemize () {
 	segmentsText.getChars(0, length, chars, 0);
 	// enable font ligatures
 	scriptControl.fMergeNeutralItems = true;
+	/*
+	 * With font ligatures enabled: CJK characters are not rendered properly when
+	 * used in Java comments, workaround is to avoid ligatures between ascii and
+	 * non-ascii chars. For more details refer bug 565526
+	 */
+	for (int i = 0, latestNeutralIndex = -2, latestUnicodeIndex = -2; i < length; i++) {
+		char c = chars[i];
+
+		if (c >= ' ' && c <= '~' && !Character.isAlphabetic(c)) {
+			latestNeutralIndex = i;
+		} else if (c > 255) {
+			latestUnicodeIndex = i;
+		} else {
+			continue;
+		}
+
+		// If the latest neutral and unicode characters are adjacent
+		if (Math.abs(latestNeutralIndex - latestUnicodeIndex) == 1) {
+			// Change the neutral into a non-neutral alphabet character
+			chars[latestNeutralIndex] = 'A';
+		}
+	}
 
 	OS.ScriptItemize(chars, length, MAX_ITEM, scriptControl, scriptState, pItems, pcItems);
 

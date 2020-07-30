@@ -40,6 +40,14 @@ public class Snippet377 {
 		styledText.setText(
 				"Ligatures support added in StyledText: \n");
 		styledText.append(" == != <= >= |= || -> <- \n");
+		styledText.append("//ぷろぐらむ: CJK Comments \n");
+		styledText.append("// ぷろぐらむ: CJK Comments \n");
+		styledText.append("/* ぷろぐらむ: CJK Comments \n");
+		styledText.append("* ぷろぐらむ: CJK Comments \n");
+		styledText.append("//Aぷろぐらむ: CJK Comments \n");
+		styledText.append("//1ぷろぐらむ: CJK Comments \n");
+		styledText.append("//~ぷろぐらむ: CJK Comments \n");
+		styledText.append("//ÿぷろぐらむ: CJK Comments \n");
 		styledText.append("c:\\ぷろぐらむ\\program \n");
 		styledText.append("c:\\\u3077\u308d\u3050\u3089\u3080\\program \n");
 		styledText.append("a\\&~あ\\&~a\\&~ \n");
@@ -52,6 +60,14 @@ public class Snippet377 {
 		text.setText(
 				"Ligatures support(from native): \n");
 		text.append(" == != <= >= |= || -> <- \n");
+		text.append("//ぷろぐらむ: CJK Comments \n");
+		text.append("// ぷろぐらむ: CJK Comments \n");
+		text.append("/* ぷろぐらむ: CJK Comments \n");
+		text.append("* ぷろぐらむ: CJK Comments \n");
+		text.append("//Aぷろぐらむ: CJK Comments \n");
+		text.append("//1ぷろぐらむ: CJK Comments \n");
+		text.append("//~ぷろぐらむ: CJK Comments \n");
+		text.append("//ÿぷろぐらむ: CJK Comments \n");
 		text.append("c:\\ぷろぐらむ\\program \n");
 		text.append("c:\\\u3077\u308d\u3050\u3089\u3080\\program \n");
 		text.append("a\\&~あ\\&~a\\&~ \n");
