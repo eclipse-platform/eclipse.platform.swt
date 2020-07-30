@@ -215,8 +215,6 @@ public class Display extends Device {
 	boolean useWsBorderLabel = false;
 	static final String USE_WS_BORDER_LIST_KEY       = "org.eclipse.swt.internal.win32.List.use_WS_BORDER"; //$NON-NLS-1$
 	boolean useWsBorderList = false;
-	static final String USE_WS_BORDER_SPINNER_KEY    = "org.eclipse.swt.internal.win32.Spinner.use_WS_BORDER"; //$NON-NLS-1$
-	boolean useWsBorderSpinner = false;
 	static final String USE_WS_BORDER_TABLE_KEY      = "org.eclipse.swt.internal.win32.Table.use_WS_BORDER"; //$NON-NLS-1$
 	boolean useWsBorderTable = false;
 	static final String USE_WS_BORDER_TEXT_KEY       = "org.eclipse.swt.internal.win32.Text.use_WS_BORDER"; //$NON-NLS-1$
@@ -4411,9 +4409,6 @@ public void setData (String key, Object value) {
 			return;
 		case USE_WS_BORDER_LIST_KEY:
 			useWsBorderList    = !disableCustomThemeTweaks && _toBoolean(value);
-			return;
-		case USE_WS_BORDER_SPINNER_KEY:
-			useWsBorderSpinner = !disableCustomThemeTweaks && _toBoolean(value);
 			return;
 		case USE_WS_BORDER_TABLE_KEY:
 			useWsBorderTable   = !disableCustomThemeTweaks && _toBoolean(value);

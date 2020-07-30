@@ -143,7 +143,7 @@ void createHandle () {
 	super.createHandle ();
 	state &= ~(CANVAS | THEME_BACKGROUND);
 	long hInstance = OS.GetModuleHandle (null);
-	int textExStyle = (style & SWT.BORDER) != 0 ? OS.WS_EX_CLIENTEDGE : 0;
+	int textExStyle = 0;
 	int textStyle = OS.WS_CHILD | OS.WS_VISIBLE | OS.ES_AUTOHSCROLL | OS.WS_CLIPSIBLINGS;
 	if ((style & SWT.READ_ONLY) != 0) textStyle |= OS.ES_READONLY;
 	if ((style & SWT.RIGHT_TO_LEFT) != 0) textExStyle |= OS.WS_EX_LAYOUTRTL;
@@ -161,13 +161,6 @@ void createHandle () {
 	OS.SetWindowLongPtr (hwndText, OS.GWLP_ID, hwndText);
 	int upDownStyle = OS.WS_CHILD | OS.WS_VISIBLE | OS.UDS_AUTOBUDDY;
 	if ((style & SWT.WRAP) != 0) upDownStyle |= OS.UDS_WRAP;
-	if ((style & SWT.BORDER) != 0) {
-		if ((style & SWT.RIGHT_TO_LEFT) != 0) {
-			upDownStyle |= OS.UDS_ALIGNLEFT;
-		} else {
-			upDownStyle |= OS.UDS_ALIGNRIGHT;
-		}
-	}
 	hwndUpDown = OS.CreateWindowEx (
 		0,
 		UpDownClass,
@@ -273,11 +266,6 @@ void addVerifyListener (VerifyListener listener) {
 	addListener (SWT.Verify, typedListener);
 }
 
-@Override
-long borderHandle () {
-	return hwndText;
-}
-
 @Override Point computeSizeInPixels (int wHint, int hHint, boolean changed) {
 	checkWidget ();
 	int width = 0, height = 0;
@@ -314,13 +302,15 @@ long borderHandle () {
 	if (width == 0) width = DEFAULT_WIDTH;
 	if (height == 0) height = DEFAULT_HEIGHT;
 	if (wHint != SWT.DEFAULT) width = wHint;
-	if (hHint != SWT.DEFAULT) height = hHint;
-	Rectangle trim = computeTrimInPixels (0, 0, width, height);
-	if (hHint == SWT.DEFAULT) {
-		int upDownHeight = OS.GetSystemMetrics (OS.SM_CYVSCROLL) + 2 * getBorderWidthInPixels ();
-		upDownHeight += (style & SWT.BORDER) != 0 ? 1 : 3;
-		trim.height = Math.max (trim.height, upDownHeight);
+	if (hHint != SWT.DEFAULT)
+		height = hHint;
+	else {
+		int borderAdjustment = (style & SWT.BORDER) != 0 ? -1 : 3;
+		int upDownHeight = OS.GetSystemMetrics (OS.SM_CYVSCROLL);
+		height = Math.max(height, upDownHeight + borderAdjustment);
 	}
+
+	Rectangle trim = computeTrimInPixels (0, 0, width, height);
 	return new Point (trim.width, trim.height);
 }
 
@@ -330,8 +320,16 @@ long borderHandle () {
 	/* Get the trim of the text control */
 	RECT rect = new RECT ();
 	OS.SetRect (rect, x, y, x + width, y + height);
-	int bits0 = OS.GetWindowLong (hwndText, OS.GWL_STYLE);
-	int bits1 = OS.GetWindowLong (hwndText, OS.GWL_EXSTYLE);
+	int bits0 = OS.GetWindowLong (handle, OS.GWL_STYLE);
+	int bits1 = OS.GetWindowLong (handle, OS.GWL_EXSTYLE);
+	/*
+	 * For a very long time, border was WS_EX_CLIENTEDGE. Now that is was
+	 * changed to WS_BORDER, preserve old size for compatibility reasons.
+	 */
+	if ((bits0 & OS.WS_BORDER) != 0) {
+		bits0 &= ~OS.WS_BORDER;
+		bits1 |= OS.WS_EX_CLIENTEDGE;
+	}
 	OS.AdjustWindowRectEx (rect, bits0, false, bits1);
 	width = rect.right - rect.left;
 	height = rect.bottom - rect.top;
@@ -611,7 +609,7 @@ public int getTextLimit () {
 
 @Override
 boolean isUseWsBorder () {
-	return super.isUseWsBorder () || ((display != null) && display.useWsBorderSpinner);
+	return true;
 }
 
 /**
@@ -1136,11 +1134,6 @@ String verifyText (String string, int start, int end, Event keyEvent) {
 }
 
 @Override
-int widgetExtStyle () {
-	return super.widgetExtStyle () & ~OS.WS_EX_CLIENTEDGE;
-}
-
-@Override
 long windowProc (long hwnd, int msg, long wParam, long lParam) {
 	if (hwnd == hwndText || hwnd == hwndUpDown) {
 		LRESULT result = null;
@@ -1233,7 +1226,7 @@ LRESULT WM_SIZE (long wParam, long lParam) {
 	LRESULT result = super.WM_SIZE (wParam, lParam);
 	if (isDisposed ()) return result;
 	int width = OS.LOWORD (lParam), height = OS.HIWORD (lParam);
-	int upDownWidth = OS.GetSystemMetrics (OS.SM_CXVSCROLL);
+	int upDownWidth = OS.GetSystemMetrics (OS.SM_CXVSCROLL) - 1;
 	int textWidth = width - upDownWidth;
 	int border = OS.GetSystemMetrics (OS.SM_CXEDGE);
 	int flags = OS.SWP_NOZORDER | OS.SWP_DRAWFRAME | OS.SWP_NOACTIVATE;
