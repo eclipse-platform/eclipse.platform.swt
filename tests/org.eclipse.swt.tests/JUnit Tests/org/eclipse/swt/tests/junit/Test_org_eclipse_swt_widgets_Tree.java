@@ -33,8 +33,11 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeColumn;
 import org.eclipse.swt.widgets.TreeItem;
+import org.eclipse.test.Screenshots;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TestName;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.widgets.Tree
@@ -42,6 +45,9 @@ import org.junit.Test;
  * @see org.eclipse.swt.widgets.Tree
  */
 public class Test_org_eclipse_swt_widgets_Tree extends Test_org_eclipse_swt_widgets_Composite {
+
+@Rule
+public TestName testName = new TestName();
 
 @Override
 @Before
@@ -929,8 +935,10 @@ public void test_Virtual() {
 			top[0] = item;
 			item.setText("top");
 		} else {
-			int index = top[0].indexOf(item);
-			item.setText("Item " + index);
+			if (top[0] != null) {
+				int index = top[0].indexOf(item);
+				item.setText("Item " + index);
+			}
 		}
 		dataCounter[0]++;
 	});
@@ -941,8 +949,10 @@ public void test_Virtual() {
 	TreeItem item0 = tree.getItem(0);
 	item0.setItemCount(count);
 	item0.setExpanded(true);
+
 	long end = System.currentTimeMillis() + 3000;
-	while (!shell.isDisposed() && System.currentTimeMillis() < end) {
+	Display display = shell.getDisplay();
+	while (!display.isDisposed() && System.currentTimeMillis() < end) {
 		if (!shell.getDisplay().readAndDispatch ()) {
 			try {
 				Thread.sleep(10);
@@ -951,6 +961,13 @@ public void test_Virtual() {
 			}
 		}
 	}
+	// temp code to capture screenshot
+	if (SwtTestUtil.isCocoa) {
+		Screenshots.takeScreenshot(getClass(), testName.getMethodName());
+		// check if setData is called for root item
+		assertTrue("SetData not called for top item", top[0] != null);
+	}
+
 	// the "* 2" allows some surplus for platforms that pre-fetch items to improve scrolling performance:
 	assertTrue("SetData callback count not in range: " + dataCounter[0],
 			dataCounter[0] > visibleCount / 2 && dataCounter[0] <= visibleCount * 2);
