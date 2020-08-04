@@ -425,6 +425,22 @@
 #define NO_gtk_1check_1menu_1item_1set_1active
 #define NO_gtk_1check_1menu_1item_1get_1active
 
+// GtkWindow changes
+#define NO_gtk_1window_1new__I
+#define NO_gtk_1window_1set_1default
+#define NO_gtk_1window_1deiconify
+#define NO_gtk_1window_1iconify
+#define NO_gtk_1window_1activate_1default
+#define NO_gtk_1window_1set_1type_1hint
+#define NO_gtk_1window_1set_1skip_1taskbar_1hint
+#define NO_gtk_1window_1set_1keep_1above
+#define NO_gtk_1window_1set_1icon_1list
+#define NO_gtk_1window_1get_1icon_1list
+#define NO_gtk_1window_1set_1attached_1to
+#define NO_gtk_1window_1move
+#define NO_gtk_1window_1get_1position
+#define NO_gtk_1window_1get_1mnemonic_1modifier
+
 #else
 
 /**
@@ -531,6 +547,10 @@
 #define NO_gdk_1popup_1layout_1new
 #define NO_gdk_1popup_1present
 
+// GtkWindow changes
+#define NO_gtk_1window_1new__
+#define NO_gtk_1window_1minimize
+#define NO_gtk_1window_1unminimize
 
 #endif
 

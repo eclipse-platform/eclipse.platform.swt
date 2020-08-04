@@ -2511,9 +2511,17 @@ public void setMinimized (boolean minimized) {
 		GTK.gtk_widget_show(shellHandle);
 	}
 	if (minimized) {
-		GTK.gtk_window_iconify (shellHandle);
+		if (GTK.GTK4) {
+			GTK.gtk_window_minimize(shellHandle);
+		} else {
+			GTK.gtk_window_iconify (shellHandle);
+		}
 	} else {
-		GTK.gtk_window_deiconify (shellHandle);
+		if (GTK.GTK4) {
+			GTK.gtk_window_unminimize(shellHandle);
+		} else {
+			GTK.gtk_window_deiconify (shellHandle);
+		}
 		bringToTop (false);
 	}
 }

@@ -28,7 +28,8 @@ class ClipboardProxy {
 	Object[] primaryClipboardData;
 	Transfer[] primaryClipboardDataTypes;
 
-	long clipboardOwner = GTK.gtk_window_new(0);
+	long clipboardOwner = GTK.GTK4 ? GTK.gtk_window_new() : GTK.gtk_window_new(GTK.GTK_WINDOW_TOPLEVEL);
+
 	Display display;
 	Clipboard activeClipboard = null;
 	Clipboard activePrimaryClipboard = null;

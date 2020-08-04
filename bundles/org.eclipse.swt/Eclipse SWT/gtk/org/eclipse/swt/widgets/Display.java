@@ -1205,7 +1205,11 @@ void createDisplay (DeviceData data) {
 	}
 
 	/* Initialize the hidden shell */
-	shellHandle = GTK.gtk_window_new (GTK.GTK_WINDOW_TOPLEVEL);
+	if (GTK.GTK4) {
+		shellHandle = GTK.gtk_window_new();
+	} else {
+		shellHandle = GTK.gtk_window_new (GTK.GTK_WINDOW_TOPLEVEL);
+	}
 	if (shellHandle == 0) error (SWT.ERROR_NO_HANDLES);
 	GTK.gtk_widget_realize (shellHandle);
 
@@ -3186,7 +3190,12 @@ private void initializeSystemColorsLink() {
 	 */
 
 	// The 'Clearlooks-Phenix' theme sets 'color:' for 'window {' css node, so a stand-alone label is not enough
-	long window = GTK.gtk_window_new (GTK.GTK_WINDOW_TOPLEVEL);
+	long window;
+	if (GTK.GTK4) {
+		window = GTK.gtk_window_new();
+	} else {
+		window = GTK.gtk_window_new (GTK.GTK_WINDOW_TOPLEVEL);
+	}
 	long label = GTK.gtk_label_new(null);
 	GTK.gtk_container_add (window, label);
 
@@ -3233,7 +3242,12 @@ void initializeSystemColorsDisabled() {
 	 * The workaround is to use a temporary window as parent. GTK will blend
 	 * colors and return non-transparent result.
 	 */
-	long window = GTK.gtk_window_new (GTK.GTK_WINDOW_TOPLEVEL);
+	long window;
+	if (GTK.GTK4) {
+		window = GTK.gtk_window_new();
+	} else {
+		window = GTK.gtk_window_new (GTK.GTK_WINDOW_TOPLEVEL);
+	}
 	long entry = GTK.gtk_entry_new ();
 	GTK.gtk_container_add (window, entry);
 

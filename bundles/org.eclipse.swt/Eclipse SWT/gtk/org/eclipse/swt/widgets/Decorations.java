@@ -574,7 +574,12 @@ public void setDefaultButton (Button button) {
 		long context = GTK.gtk_widget_get_style_context (buttonHandle);
 		GTK.gtk_style_context_add_class(context, GTK.GTK_STYLE_CLASS_SUGGESTED_ACTION);
 	}
-	GTK.gtk_window_set_default (topHandle (), buttonHandle);
+
+	if (GTK.GTK4) {
+		GTK.gtk_window_set_default_widget (topHandle(), buttonHandle);
+	} else {
+		GTK.gtk_window_set_default (topHandle (), buttonHandle);
+	}
 }
 
 /**
@@ -797,7 +802,13 @@ boolean traverseReturn () {
 	*/
 	if (!button.isVisible () || !button.isEnabled ()) return true;
 	long shellHandle = _getShell ().topHandle ();
-	return GTK.gtk_window_activate_default (shellHandle);
+
+	if (GTK.GTK4) {
+		long defaultWidget = GTK.gtk_window_get_default_widget(shellHandle);
+		return GTK.gtk_widget_activate(defaultWidget);
+	} else {
+		return GTK.gtk_window_activate_default (shellHandle);
+	}
 }
 
 }

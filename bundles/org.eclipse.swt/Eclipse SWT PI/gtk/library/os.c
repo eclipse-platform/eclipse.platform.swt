@@ -11578,6 +11578,18 @@ JNIEXPORT void JNICALL GTK_NATIVE(gtk_1viewport_1set_1shadow_1type)
 }
 #endif
 
+#ifndef NO_gtk_1widget_1activate
+JNIEXPORT jboolean JNICALL GTK_NATIVE(gtk_1widget_1activate)
+	(JNIEnv *env, jclass that, jlong arg0)
+{
+	jboolean rc = 0;
+	GTK_NATIVE_ENTER(env, that, gtk_1widget_1activate_FUNC);
+	rc = (jboolean)gtk_widget_activate((GtkWidget *)arg0);
+	GTK_NATIVE_EXIT(env, that, gtk_1widget_1activate_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_gtk_1widget_1add_1accelerator
 JNIEXPORT void JNICALL GTK_NATIVE(gtk_1widget_1add_1accelerator)
 	(JNIEnv *env, jclass that, jlong arg0, jbyteArray arg1, jlong arg2, jint arg3, jint arg4, jint arg5)
@@ -13036,6 +13048,18 @@ JNIEXPORT void JNICALL GTK_NATIVE(gtk_1window_1fullscreen)
 }
 #endif
 
+#ifndef NO_gtk_1window_1get_1default_1widget
+JNIEXPORT jlong JNICALL GTK_NATIVE(gtk_1window_1get_1default_1widget)
+	(JNIEnv *env, jclass that, jlong arg0)
+{
+	jlong rc = 0;
+	GTK_NATIVE_ENTER(env, that, gtk_1window_1get_1default_1widget_FUNC);
+	rc = (jlong)gtk_window_get_default_widget((GtkWindow *)arg0);
+	GTK_NATIVE_EXIT(env, that, gtk_1window_1get_1default_1widget_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_gtk_1window_1get_1focus
 JNIEXPORT jlong JNICALL GTK_NATIVE(gtk_1window_1get_1focus)
 	(JNIEnv *env, jclass that, jlong arg0)
@@ -13206,6 +13230,16 @@ JNIEXPORT void JNICALL GTK_NATIVE(gtk_1window_1maximize)
 }
 #endif
 
+#ifndef NO_gtk_1window_1minimize
+JNIEXPORT void JNICALL GTK_NATIVE(gtk_1window_1minimize)
+	(JNIEnv *env, jclass that, jlong arg0)
+{
+	GTK_NATIVE_ENTER(env, that, gtk_1window_1minimize_FUNC);
+	gtk_window_minimize((GtkWindow *)arg0);
+	GTK_NATIVE_EXIT(env, that, gtk_1window_1minimize_FUNC);
+}
+#endif
+
 #ifndef NO_gtk_1window_1move
 JNIEXPORT void JNICALL GTK_NATIVE(gtk_1window_1move)
 	(JNIEnv *env, jclass that, jlong arg0, jint arg1, jint arg2)
@@ -13216,14 +13250,26 @@ JNIEXPORT void JNICALL GTK_NATIVE(gtk_1window_1move)
 }
 #endif
 
-#ifndef NO_gtk_1window_1new
-JNIEXPORT jlong JNICALL GTK_NATIVE(gtk_1window_1new)
+#ifndef NO_gtk_1window_1new__
+JNIEXPORT jlong JNICALL GTK_NATIVE(gtk_1window_1new__)
+	(JNIEnv *env, jclass that)
+{
+	jlong rc = 0;
+	GTK_NATIVE_ENTER(env, that, gtk_1window_1new___FUNC);
+	rc = (jlong)gtk_window_new();
+	GTK_NATIVE_EXIT(env, that, gtk_1window_1new___FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_gtk_1window_1new__I
+JNIEXPORT jlong JNICALL GTK_NATIVE(gtk_1window_1new__I)
 	(JNIEnv *env, jclass that, jint arg0)
 {
 	jlong rc = 0;
-	GTK_NATIVE_ENTER(env, that, gtk_1window_1new_FUNC);
+	GTK_NATIVE_ENTER(env, that, gtk_1window_1new__I_FUNC);
 	rc = (jlong)gtk_window_new((GtkWindowType)arg0);
-	GTK_NATIVE_EXIT(env, that, gtk_1window_1new_FUNC);
+	GTK_NATIVE_EXIT(env, that, gtk_1window_1new__I_FUNC);
 	return rc;
 }
 #endif
@@ -13275,6 +13321,16 @@ JNIEXPORT void JNICALL GTK_NATIVE(gtk_1window_1set_1default)
 	GTK_NATIVE_ENTER(env, that, gtk_1window_1set_1default_FUNC);
 	gtk_window_set_default((GtkWindow *)arg0, (GtkWidget *)arg1);
 	GTK_NATIVE_EXIT(env, that, gtk_1window_1set_1default_FUNC);
+}
+#endif
+
+#ifndef NO_gtk_1window_1set_1default_1widget
+JNIEXPORT void JNICALL GTK_NATIVE(gtk_1window_1set_1default_1widget)
+	(JNIEnv *env, jclass that, jlong arg0, jlong arg1)
+{
+	GTK_NATIVE_ENTER(env, that, gtk_1window_1set_1default_1widget_FUNC);
+	gtk_window_set_default_widget((GtkWindow *)arg0, (GtkWidget *)arg1);
+	GTK_NATIVE_EXIT(env, that, gtk_1window_1set_1default_1widget_FUNC);
 }
 #endif
 
@@ -13402,6 +13458,16 @@ JNIEXPORT void JNICALL GTK_NATIVE(gtk_1window_1unmaximize)
 	GTK_NATIVE_ENTER(env, that, gtk_1window_1unmaximize_FUNC);
 	gtk_window_unmaximize((GtkWindow *)arg0);
 	GTK_NATIVE_EXIT(env, that, gtk_1window_1unmaximize_FUNC);
+}
+#endif
+
+#ifndef NO_gtk_1window_1unminimize
+JNIEXPORT void JNICALL GTK_NATIVE(gtk_1window_1unminimize)
+	(JNIEnv *env, jclass that, jlong arg0)
+{
+	GTK_NATIVE_ENTER(env, that, gtk_1window_1unminimize_FUNC);
+	gtk_window_unminimize((GtkWindow *)arg0);
+	GTK_NATIVE_EXIT(env, that, gtk_1window_1unminimize_FUNC);
 }
 #endif
 

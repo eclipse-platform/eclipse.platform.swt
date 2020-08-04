@@ -632,7 +632,11 @@ protected void init () {
 	if (emptyTab == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	OS.pango_tab_array_set_tab(emptyTab, 0, OS.PANGO_TAB_LEFT, 1);
 
-	shellHandle = GTK.gtk_window_new(GTK.GTK_WINDOW_TOPLEVEL);
+	if (GTK.GTK4) {
+		shellHandle = GTK.gtk_window_new();
+	} else {
+		shellHandle = GTK.gtk_window_new (GTK.GTK_WINDOW_TOPLEVEL);
+	}
 	if (shellHandle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	GTK.gtk_widget_realize(shellHandle);
 
