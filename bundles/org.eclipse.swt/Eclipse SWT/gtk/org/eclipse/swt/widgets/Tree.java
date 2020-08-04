@@ -816,7 +816,13 @@ void createHandle (int index) {
 	int hsp = (style & SWT.H_SCROLL) != 0 ? GTK.GTK_POLICY_AUTOMATIC : GTK.GTK_POLICY_NEVER;
 	int vsp = (style & SWT.V_SCROLL) != 0 ? GTK.GTK_POLICY_AUTOMATIC : GTK.GTK_POLICY_NEVER;
 	GTK.gtk_scrolled_window_set_policy (scrolledHandle, hsp, vsp);
-	if ((style & SWT.BORDER) != 0) GTK.gtk_scrolled_window_set_shadow_type (scrolledHandle, GTK.GTK_SHADOW_ETCHED_IN);
+	if ((style & SWT.BORDER) != 0) {
+		if (GTK.GTK4) {
+			GTK.gtk_scrolled_window_set_has_frame(scrolledHandle, true);
+		} else {
+			GTK.gtk_scrolled_window_set_shadow_type (scrolledHandle, GTK.GTK_SHADOW_ETCHED_IN);
+		}
+	}
 	/*
 	 * We enable fixed-height-mode for performance reasons (see bug 490203).
 	 */

@@ -441,6 +441,12 @@
 #define NO_gtk_1window_1get_1position
 #define NO_gtk_1window_1get_1mnemonic_1modifier
 
+// No GtkShadowType in GTK4
+#define NO_gtk_1viewport_1set_1shadow_1type
+#define NO_gtk_1scrolled_1window_1set_1shadow_1type
+#define NO_gtk_1scrolled_1window_1get_1shadow_1type
+#define NO_gtk_1frame_1set_1shadow_1type
+
 #else
 
 /**
@@ -551,6 +557,10 @@
 #define NO_gtk_1window_1new__
 #define NO_gtk_1window_1minimize
 #define NO_gtk_1window_1unminimize
+
+// GtkScrollWindow
+#define NO_gtk_1scrolled_1window_1set_1has_1frame
+#define NO_gtk_1scrolled_1window_1get_1has_1frame
 
 #endif
 

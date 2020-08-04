@@ -8687,6 +8687,18 @@ JNIEXPORT jlong JNICALL GTK_NATIVE(gtk_1scrolled_1window_1get_1hadjustment)
 }
 #endif
 
+#ifndef NO_gtk_1scrolled_1window_1get_1has_1frame
+JNIEXPORT jboolean JNICALL GTK_NATIVE(gtk_1scrolled_1window_1get_1has_1frame)
+	(JNIEnv *env, jclass that, jlong arg0)
+{
+	jboolean rc = 0;
+	GTK_NATIVE_ENTER(env, that, gtk_1scrolled_1window_1get_1has_1frame_FUNC);
+	rc = (jboolean)gtk_scrolled_window_get_has_frame(arg0);
+	GTK_NATIVE_EXIT(env, that, gtk_1scrolled_1window_1get_1has_1frame_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_gtk_1scrolled_1window_1get_1hscrollbar
 JNIEXPORT jlong JNICALL GTK_NATIVE(gtk_1scrolled_1window_1get_1hscrollbar)
 	(JNIEnv *env, jclass that, jlong arg0)
@@ -8781,6 +8793,16 @@ JNIEXPORT jlong JNICALL GTK_NATIVE(gtk_1scrolled_1window_1new)
 	rc = (jlong)gtk_scrolled_window_new((GtkAdjustment *)arg0, (GtkAdjustment *)arg1);
 	GTK_NATIVE_EXIT(env, that, gtk_1scrolled_1window_1new_FUNC);
 	return rc;
+}
+#endif
+
+#ifndef NO_gtk_1scrolled_1window_1set_1has_1frame
+JNIEXPORT void JNICALL GTK_NATIVE(gtk_1scrolled_1window_1set_1has_1frame)
+	(JNIEnv *env, jclass that, jlong arg0, jboolean arg1)
+{
+	GTK_NATIVE_ENTER(env, that, gtk_1scrolled_1window_1set_1has_1frame_FUNC);
+	gtk_scrolled_window_set_has_frame((GtkScrolledWindow *)arg0, arg1);
+	GTK_NATIVE_EXIT(env, that, gtk_1scrolled_1window_1set_1has_1frame_FUNC);
 }
 #endif
 

@@ -128,7 +128,14 @@ Rectangle computeTrimInPixels (int x, int y, int width, int height) {
 	trimHeight += hScrollBarWidth ();
 	trimWidth  += vScrollBarWidth ();
 	if (scrolledHandle != 0) {
-		if (GTK.gtk_scrolled_window_get_shadow_type (scrolledHandle) != GTK.GTK_SHADOW_NONE) {
+		boolean hasFrame;
+		if (GTK.GTK4) {
+			hasFrame = GTK.gtk_scrolled_window_get_has_frame(scrolledHandle);
+		} else {
+			hasFrame = GTK.gtk_scrolled_window_get_shadow_type (scrolledHandle) != GTK.GTK_SHADOW_NONE;
+		}
+
+		if (hasFrame) {
 			Point thickness = getThickness (scrolledHandle);
 			int xthickness = thickness.x;
 			int ythickness = thickness.y;
@@ -208,7 +215,14 @@ int getBorderWidthInPixels () {
 	if (fixedHandle != 0) border += gtk_container_get_border_width_or_margin (fixedHandle);
 	if (scrolledHandle != 0) {
 		border += gtk_container_get_border_width_or_margin (scrolledHandle);
-		if (GTK.gtk_scrolled_window_get_shadow_type (scrolledHandle) != GTK.GTK_SHADOW_NONE) {
+
+		boolean hasFrame;
+		if (GTK.GTK4) {
+			hasFrame = GTK.gtk_scrolled_window_get_has_frame(scrolledHandle);
+		} else {
+			hasFrame = GTK.gtk_scrolled_window_get_shadow_type (scrolledHandle) != GTK.GTK_SHADOW_NONE;
+		}
+		if (hasFrame) {
 			border += getThickness (scrolledHandle).x;
 		}
 	}

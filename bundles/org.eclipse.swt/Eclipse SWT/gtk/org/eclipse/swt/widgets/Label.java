@@ -275,7 +275,7 @@ void createHandle (int index) {
 		if (frameHandle == 0) error (SWT.ERROR_NO_HANDLES);
 		GTK.gtk_container_add (fixedHandle, frameHandle);
 		GTK.gtk_container_add (frameHandle, handle);
-		GTK.gtk_frame_set_shadow_type (frameHandle, GTK.GTK_SHADOW_ETCHED_IN);
+		if (!GTK.GTK4) GTK.gtk_frame_set_shadow_type (frameHandle, GTK.GTK_SHADOW_ETCHED_IN);
 	} else {
 		GTK.gtk_container_add (fixedHandle, handle);
 	}

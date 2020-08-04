@@ -1316,6 +1316,7 @@ public class GTK extends OS {
 	 * @param frame cast=(GtkFrame *)
 	 * @param type cast=(GtkShadowType)
 	 */
+	/* [GTK3 only, if-def'd in os.h] */
 	public static final native void gtk_frame_set_shadow_type(long frame, int type);
 	public static final native long gtk_get_current_event();
 	/** @param state cast=(GdkModifierType*) */
@@ -2146,8 +2147,6 @@ public class GTK extends OS {
 	 */
 	public static final native void gtk_scrolled_window_get_policy(long scrolled_window, int[] hscrollbar_policy, int[] vscrollbar_policy);
 	/** @param scrolled_window cast=(GtkScrolledWindow *) */
-	public static final native int gtk_scrolled_window_get_shadow_type(long scrolled_window);
-	/** @param scrolled_window cast=(GtkScrolledWindow *) */
 	public static final native long gtk_scrolled_window_get_vadjustment(long scrolled_window);
 	/**
 	 * @param scrolled_window cast=(GtkScrolledWindow *)
@@ -2173,7 +2172,17 @@ public class GTK extends OS {
 	 * @param scrolled_window cast=(GtkScrolledWindow *)
 	 * @param type cast=(GtkShadowType)
 	 */
+	/* [GTK3 only, if-def'd in os.h] */
 	public static final native void gtk_scrolled_window_set_shadow_type(long scrolled_window, int type);
+	/** @param scrolled_window cast=(GtkScrolledWindow *) */
+	/* [GTK3 only, if-def'd in os.h] */
+	public static final native int gtk_scrolled_window_get_shadow_type(long scrolled_window);
+	/** @param scrolled_window cast=(GtkScrolledWindow *) */
+	/* [GTK4 only, if-def'd in os.h] */
+	public static final native void gtk_scrolled_window_set_has_frame(long scrolled_window, boolean has_frame);
+	/* [GTK4 only, if-def'd in os.h] */
+	public static final native boolean gtk_scrolled_window_get_has_frame(long scrolled_window);
+
 	public static final native long gtk_settings_get_default();
 	/** @param selection_data cast=(GtkSelectionData *) */
 	public static final native void gtk_selection_data_free(long selection_data);
@@ -3147,6 +3156,7 @@ public class GTK extends OS {
 	 * @param viewport cast=(GtkViewport *)
 	 * @param type cast=(GtkShadowType)
 	 */
+	/* [GTK3 only, if-def'd in os.h] */
 	public static final native void gtk_viewport_set_shadow_type(long viewport, int type);
 
 	/* GtkNative [GTK4 only] */

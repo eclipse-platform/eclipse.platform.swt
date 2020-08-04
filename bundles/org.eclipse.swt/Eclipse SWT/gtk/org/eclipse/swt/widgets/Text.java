@@ -256,7 +256,11 @@ void createHandle (int index) {
 		int vsp = (style & SWT.V_SCROLL) != 0 ? GTK.GTK_POLICY_ALWAYS : GTK.GTK_POLICY_NEVER;
 		GTK.gtk_scrolled_window_set_policy (scrolledHandle, hsp, vsp);
 		if ((style & SWT.BORDER) != 0) {
-			GTK.gtk_scrolled_window_set_shadow_type (scrolledHandle, GTK.GTK_SHADOW_ETCHED_IN);
+			if (GTK.GTK4) {
+				GTK.gtk_scrolled_window_set_has_frame(scrolledHandle, true);
+			} else {
+				GTK.gtk_scrolled_window_set_shadow_type (scrolledHandle, GTK.GTK_SHADOW_ETCHED_IN);
+			}
 		}
 		int just = GTK.GTK_JUSTIFY_LEFT;
 		if ((style & SWT.CENTER) != 0) just = GTK.GTK_JUSTIFY_CENTER;

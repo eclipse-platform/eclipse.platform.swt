@@ -190,18 +190,22 @@ void createHandle(int index) {
 
 	GTK.gtk_container_add (fixedHandle, handle);
 	GTK.gtk_container_add (handle, clientHandle);
-	if ((style & SWT.SHADOW_IN) != 0) {
-		GTK.gtk_frame_set_shadow_type (handle, GTK.GTK_SHADOW_IN);
+
+	if (!GTK.GTK4) {
+		if ((style & SWT.SHADOW_IN) != 0) {
+			GTK.gtk_frame_set_shadow_type (handle, GTK.GTK_SHADOW_IN);
+		}
+		if ((style & SWT.SHADOW_OUT) != 0) {
+			GTK.gtk_frame_set_shadow_type (handle, GTK.GTK_SHADOW_OUT);
+		}
+		if ((style & SWT.SHADOW_ETCHED_IN) != 0) {
+			GTK.gtk_frame_set_shadow_type (handle, GTK.GTK_SHADOW_ETCHED_IN);
+		}
+		if ((style & SWT.SHADOW_ETCHED_OUT) != 0) {
+			GTK.gtk_frame_set_shadow_type (handle, GTK.GTK_SHADOW_ETCHED_OUT);
+		}
 	}
-	if ((style & SWT.SHADOW_OUT) != 0) {
-		GTK.gtk_frame_set_shadow_type (handle, GTK.GTK_SHADOW_OUT);
-	}
-	if ((style & SWT.SHADOW_ETCHED_IN) != 0) {
-		GTK.gtk_frame_set_shadow_type (handle, GTK.GTK_SHADOW_ETCHED_IN);
-	}
-	if ((style & SWT.SHADOW_ETCHED_OUT) != 0) {
-		GTK.gtk_frame_set_shadow_type (handle, GTK.GTK_SHADOW_ETCHED_OUT);
-	}
+
 	// In GTK 3 font description is inherited from parent widget which is not how SWT has always worked,
 	// reset to default font to get the usual behavior
 	setFontDescription (defaultFont ().handle);
