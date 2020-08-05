@@ -15,9 +15,10 @@
 package org.eclipse.swt.tests.junit;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTException;
@@ -75,46 +76,22 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceIII() {
 	color = new Color(102, 255, 0, 0);
 
 	// illegal argument, rgb < 0
-	try {
-		color = new Color(-10, -10, -10);
-		fail("No exception thrown for rgb < 0");
-	} catch (IllegalArgumentException e) {
-	}
+	assertThrows("No exception thrown for rgb < 0", IllegalArgumentException.class, () -> new Color(-10, -10, -10));
 
 	// illegal argument, alpha < 0
-	try {
-		color = new Color(0, 0, 0, -10);
-		fail("No exception thrown for rgba < 0");
-	} catch (IllegalArgumentException e) {
-	}
+	assertThrows("No exception thrown for rgba < 0", IllegalArgumentException.class, () -> new Color(0, 0, 0, -10));
 
 	// illegal argument, rgb > 255
-	try {
-		color = new Color(1000, 2000, 3000);
-		fail("No exception thrown for rgb > 255");
-	} catch (IllegalArgumentException e) {
-	}
+	assertThrows("No exception thrown for rgb > 255", IllegalArgumentException.class, () -> new Color(1000, 2000, 3000));
 
 	// illegal argument, rgba > 255
-	try {
-		color = new Color(1000, 2000, 3000, 4000);
-		fail("No exception thrown for rgba > 255");
-	} catch (IllegalArgumentException e) {
-	}
+	assertThrows("No exception thrown for rgba > 255", IllegalArgumentException.class, () -> new Color(1000, 2000, 3000, 4000));
 
 	// illegal argument, blue > 255
-	try {
-		color = new Color(10, 10, 256);
-		fail("No exception thrown for blue > 255");
-	} catch (IllegalArgumentException e) {
-	}
+	assertThrows("No exception thrown for blue > 255", IllegalArgumentException.class, () -> new Color(10, 10, 256));
 
 	// illegal argument, alpha > 255
-	try {
-		color = new Color(10, 10, 10, 256);
-		fail("No exception thrown for alpha > 255");
-	} catch (IllegalArgumentException e) {
-	}
+	assertThrows("No exception thrown for alpha > 255", IllegalArgumentException.class, () -> new Color(10, 10, 10, 256));
 }
 
 @Test
@@ -163,52 +140,22 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceIII_with_device() {
 	color.dispose();
 
 	// illegal argument, rgb < 0
-	try {
-		color = new Color(display, -10, -10, -10);
-		color.dispose();
-		fail("No exception thrown for rgb < 0");
-	} catch (IllegalArgumentException e) {
-	}
+	assertThrows("No exception thrown for rgb < 0", IllegalArgumentException.class, () -> new Color(display, -10, -10, -10));
 
 	// illegal argument, alpha < 0
-	try {
-		color = new Color(display, 0, 0, 0, -10);
-		color.dispose();
-		fail("No exception thrown for rgba < 0");
-	} catch (IllegalArgumentException e) {
-	}
+	assertThrows("No exception thrown for rgba < 0", IllegalArgumentException.class, () -> new Color(display, 0, 0, 0, -10));
 
 	// illegal argument, rgb > 255
-	try {
-		color = new Color(display, 1000, 2000, 3000);
-		color.dispose();
-		fail("No exception thrown for rgb > 255");
-	} catch (IllegalArgumentException e) {
-	}
+	assertThrows("No exception thrown for rgb > 255", IllegalArgumentException.class, () -> new Color(display, 1000, 2000, 3000));
 
 	// illegal argument, rgba > 255
-	try {
-		color = new Color(display, 1000, 2000, 3000, 4000);
-		color.dispose();
-		fail("No exception thrown for rgba > 255");
-	} catch (IllegalArgumentException e) {
-	}
+	assertThrows("No exception thrown for rgba > 355", IllegalArgumentException.class, () -> new Color(display, 1000, 2000, 3000, 4000));
 
 	// illegal argument, blue > 255
-	try {
-		color = new Color(display, 10, 10, 256);
-		color.dispose();
-		fail("No exception thrown for blue > 255");
-	} catch (IllegalArgumentException e) {
-	}
+	assertThrows("No exception thrown for blue > 255", IllegalArgumentException.class, () -> new Color(display, 10, 10, 256));
 
 	// illegal argument, alpha > 255
-	try {
-		color = new Color(display, 10, 10, 10, 256);
-		color.dispose();
-		fail("No exception thrown for alpha > 255");
-	} catch (IllegalArgumentException e) {
-	}
+	assertThrows("No exception thrown for alpha > 255", IllegalArgumentException.class, () -> new Color(display, 10, 10, 10, 256));
 }
 
 @Test
@@ -242,54 +189,25 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_gra
 	color = new Color(new RGB(102, 255, 0), 0);
 
 	// illegal argument, rgb < 0
-	try {
-		color = new Color(new RGB(-10, -10, -10));
-		fail("No exception thrown for rgb < 0");
-	}
-	catch (IllegalArgumentException e) {
-	}
+	assertThrows("No exception thrown for rgb < 0", IllegalArgumentException.class, () -> new Color(new RGB(-10, -10, -10)));
+
 	// illegal argument, alpha < 0
-	try {
-		color = new Color(new RGB(0, 0, 0), -10);
-		fail("No exception thrown for rgba < 0");
-	}
-	catch (IllegalArgumentException e) {
-	}
+	assertThrows("No exception thrown for rgba < 0", IllegalArgumentException.class, () -> new Color(new RGB(0, 0, 0), -10));
+
 	// illegal argument, rgb > 255
-	try {
-		color = new Color(new RGB(1000, 2000, 3000));
-		fail("No exception thrown for rgb > 255");
-	}
-	catch (IllegalArgumentException e) {
-	}
+	assertThrows("No exception thrown for rgb > 255", IllegalArgumentException.class, () -> new Color(new RGB(1000, 2000, 3000)));
+
 	// illegal argument, rgba > 255
-		try {
-			color = new Color(new RGB(1000, 2000, 3000), 4000);
-			fail("No exception thrown for rgba > 255");
-		}
-		catch (IllegalArgumentException e) {
-		}
+	assertThrows("No exception thrown for rgba > 255", IllegalArgumentException.class, () -> new Color(new RGB(1000, 2000, 3000), 4000));
+
 	// illegal argument, blue > 255
-	try {
-		color = new Color(new RGB(10, 10, 256));
-		fail("No exception thrown for blue > 255");
-	}
-	catch (IllegalArgumentException e) {
-	}
+	assertThrows("No exception thrown for blue > 255", IllegalArgumentException.class, () -> new Color(new RGB(10, 10, 256)));
+
 	// illegal argument, alpha > 255
-		try {
-			color = new Color(new RGB(10, 10, 10), 256);
-			fail("No exception thrown for alpha > 255");
-		}
-		catch (IllegalArgumentException e) {
-		}
+	assertThrows("No exception thrown for alpha > 255", IllegalArgumentException.class, () -> new Color(new RGB(10, 10, 10), 256));
+
 	// illegal argument, rgb == null with alpha
-	try {
-		color = new Color(null, 0);
-		fail("No exception thrown for rgb == null with alpha");
-	}
-	catch (IllegalArgumentException e) {
-	}
+	assertThrows("No exception thrown for rgb == null with alpha", IllegalArgumentException.class, () -> new Color(null, 0));
 }
 
 @Test
@@ -338,61 +256,25 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_gra
 	color.dispose();
 
 	// illegal argument, rgb < 0
-	try {
-		color = new Color(display, new RGB(-10, -10, -10));
-		color.dispose();
-		fail("No exception thrown for rgb < 0");
-	}
-	catch (IllegalArgumentException e) {
-	}
+	assertThrows("No exception thrown for rgb < 0", IllegalArgumentException.class, () -> new Color(display, new RGB(-10, -10, -10)));
+
 	// illegal argument, alpha < 0
-	try {
-		color = new Color(display, new RGB(0, 0, 0), -10);
-		color.dispose();
-		fail("No exception thrown for rgba < 0");
-	}
-	catch (IllegalArgumentException e) {
-	}
+	assertThrows("No exception thrown for rgba < 0", IllegalArgumentException.class, () -> new Color(display, new RGB(0, 0, 0), -10));
+
 	// illegal argument, rgb > 255
-	try {
-		color = new Color(display, new RGB(1000, 2000, 3000));
-		color.dispose();
-		fail("No exception thrown for rgb > 255");
-	}
-	catch (IllegalArgumentException e) {
-	}
+	assertThrows("No exception thrown for rgb > 255", IllegalArgumentException.class, () -> new Color(display, new RGB(1000, 2000, 3000)));
+
 	// illegal argument, rgba > 255
-		try {
-			color = new Color(display, new RGB(1000, 2000, 3000), 4000);
-			color.dispose();
-			fail("No exception thrown for rgba > 255");
-		}
-		catch (IllegalArgumentException e) {
-		}
+	assertThrows("No exception thrown for rgba > 255", IllegalArgumentException.class, () -> new Color(display, new RGB(1000, 2000, 3000), 4000));
+
 	// illegal argument, blue > 255
-	try {
-		color = new Color(display, new RGB(10, 10, 256));
-		color.dispose();
-		fail("No exception thrown for blue > 255");
-	}
-	catch (IllegalArgumentException e) {
-	}
+	assertThrows("No exception thrown for blue > 255", IllegalArgumentException.class, () -> new Color(display, new RGB(10, 10, 256)));
+
 	// illegal argument, alpha > 255
-		try {
-			color = new Color(display, new RGB(10, 10, 10), 256);
-			color.dispose();
-			fail("No exception thrown for alpha > 255");
-		}
-		catch (IllegalArgumentException e) {
-		}
+	assertThrows("No exception thrown for alpha > 255", IllegalArgumentException.class, () -> new Color(display, new RGB(10, 10, 10), 256));
+
 	// illegal argument, rgb == null with alpha
-	try {
-		color = new Color(display, null, 0);
-		color.dispose();
-		fail("No exception thrown for rgb == null with alpha");
-	}
-	catch (IllegalArgumentException e) {
-	}
+	assertThrows("No exception thrown for rgb == null with alpha", IllegalArgumentException.class, () -> new Color(display, null, 0));
 }
 
 @Test
@@ -426,40 +308,19 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_gra
 	color = new Color(new RGBA(102, 255, 0, 0));
 
 	// illegal argument, rgba < 0
-	try {
-		color = new Color(new RGBA(-10, -10, -10, -10));
-		fail("No exception thrown for rgba < 0");
-	}
-	catch (IllegalArgumentException e) {
-	}
+	assertThrows("No exception thrown for rgba < 0", IllegalArgumentException.class, () -> new Color(new RGBA(-10, -10, -10, -10)));
+
 	// illegal argument, alpha < 0
-	try {
-		color = new Color(new RGBA(0, 0, 0, -10));
-		fail("No exception thrown for alpha < 0");
-	}
-	catch (IllegalArgumentException e) {
-	}
+	assertThrows("No exception thrown for alpha < 0", IllegalArgumentException.class, () -> new Color(new RGBA(0, 0, 0, -10)));
+
 	// illegal argument, rgba > 255
-	try {
-		color = new Color(new RGBA(1000, 2000, 3000, 4000));
-		fail("No exception thrown for rgba > 255");
-	}
-	catch (IllegalArgumentException e) {
-	}
+	assertThrows("No exception thrown for rgba > 255", IllegalArgumentException.class, () -> new Color(new RGBA(1000, 2000, 3000, 4000)));
+
 	// illegal argument, blue > 255
-	try {
-		color = new Color(new RGBA(10, 10, 256, 10));
-		fail("No exception thrown for blue > 255");
-	}
-	catch (IllegalArgumentException e) {
-	}
+	assertThrows("No exception thrown for blue > 255", IllegalArgumentException.class, () -> new Color(new RGBA(10, 10, 256, 10)));
+
 	// illegal argument, alpha > 255
-	try {
-		color = new Color(new RGBA(10, 10, 10, 256));
-		fail("No exception thrown for alpha > 255");
-	}
-	catch (IllegalArgumentException e) {
-	}
+	assertThrows("No exception thrown for alpha > 255", IllegalArgumentException.class, () -> new Color(new RGBA(10, 10, 10, 256)));
 }
 
 @Test
@@ -508,46 +369,21 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_gra
 	color.dispose();
 
 	// illegal argument, rgba < 0
-	try {
-		color = new Color(display, new RGBA(-10, -10, -10, -10));
-		color.dispose();
-		fail("No exception thrown for rgba < 0");
-	}
-	catch (IllegalArgumentException e) {
-	}
+	assertThrows("No exception thrown for rgba < 0", IllegalArgumentException.class, () -> new Color(display, new RGBA(-10, -10, -10, -10)));
+
 	// illegal argument, alpha < 0
-	try {
-		color = new Color(display, new RGBA(0, 0, 0, -10));
-		color.dispose();
-		fail("No exception thrown for alpha < 0");
-	}
-	catch (IllegalArgumentException e) {
-	}
+	assertThrows("No exception thrown for alpha < 0", IllegalArgumentException.class, () -> new Color(display, new RGBA(0, 0, 0, -10)));
+
 	// illegal argument, rgba > 255
-	try {
-		color = new Color(display, new RGBA(1000, 2000, 3000, 4000));
-		color.dispose();
-		fail("No exception thrown for rgba > 255");
-	}
-	catch (IllegalArgumentException e) {
-	}
+	assertThrows("No exception thrown for rgba > 255", IllegalArgumentException.class, () -> new Color(display, new RGBA(1000, 2000, 3000, 4000)));
+
 	// illegal argument, blue > 255
-	try {
-		color = new Color(display, new RGBA(10, 10, 256, 10));
-		color.dispose();
-		fail("No exception thrown for blue > 255");
-	}
-	catch (IllegalArgumentException e) {
-	}
+	assertThrows("No exception thrown for blue > 255", IllegalArgumentException.class, () -> new Color(display, new RGBA(10, 10, 256, 10)));
+
 	// illegal argument, alpha > 255
-	try {
-		color = new Color(display, new RGBA(10, 10, 10, 256));
-		color.dispose();
-		fail("No exception thrown for alpha > 255");
-	}
-	catch (IllegalArgumentException e) {
-	}
+	assertThrows("No exception thrown for alpha > 255", IllegalArgumentException.class, () -> new Color(display, new RGBA(10, 10, 10, 256)));
 }
+
 @Test
 public void test_equalsLjava_lang_Object() {
 	Color color = new Color(1, 2, 3);
@@ -556,14 +392,14 @@ public void test_equalsLjava_lang_Object() {
 	Color otherColor = new Color(5, 6, 7);
 
 	// Test Color.equals(Object)
-	assertTrue("!color.equals((Object)null)", !color.equals((Object)null));
+	assertFalse("!color.equals((Object)null)", color.equals((Object)null));
 
 	// Test Color.equals(Color)
-	assertTrue("!color.equals((Color)null)", !color.equals((Color)null));
+	assertFalse("!color.equals((Color)null)", color.equals((Color)null));
 	assertTrue("color.equals(color)", color.equals(color));
 	assertTrue("color.equals(sameColor)", color.equals(sameColor));
 	assertTrue("color.equals(sameColor2)", color.equals(sameColor2));
-	assertTrue("!color.equals(otherColor)", !color.equals(otherColor));
+	assertFalse("!color.equals(otherColor)", color.equals(otherColor));
 
 	// With alpha
 	color = new Color(1, 2, 3, 0);
@@ -571,14 +407,14 @@ public void test_equalsLjava_lang_Object() {
 	sameColor2 = new Color(new RGB(1, 2, 3), 0);
 	otherColor = new Color(5, 6, 7, 0);
 	// Test Color.equals(Object)
-	assertTrue("!color.equals((Object)null)", !color.equals((Object)null));
+	assertFalse("!color.equals((Object)null)", color.equals((Object)null));
 
 	// Test Color.equals(Color)
-	assertTrue("!color.equals((Color)null)", !color.equals((Color)null));
+	assertFalse("!color.equals((Color)null)", color.equals((Color)null));
 	assertTrue("color.equals(color)", color.equals(color));
 	assertTrue("color.equals(sameColor)", color.equals(sameColor));
 	assertTrue("color.equals(sameColor2)", color.equals(sameColor2));
-	assertTrue("!color.equals(otherColor)", !color.equals(otherColor));
+	assertFalse("!color.equals(otherColor)", color.equals(otherColor));
 }
 
 @Test
@@ -589,14 +425,14 @@ public void test_equalsLjava_lang_Object_with_device() {
 	Color otherColor = new Color(display, 5, 6, 7);
 	try {
 		// Test Color.equals(Object)
-		assertTrue("!color.equals((Object)null)", !color.equals((Object)null));
+		assertFalse("!color.equals((Object)null)", color.equals((Object)null));
 
 		// Test Color.equals(Color)
-		assertTrue("!color.equals((Color)null)", !color.equals((Color)null));
+		assertFalse("!color.equals((Color)null)", color.equals((Color)null));
 		assertTrue("color.equals(color)", color.equals(color));
 		assertTrue("color.equals(sameColor)", color.equals(sameColor));
 		assertTrue("color.equals(sameColor2)", color.equals(sameColor2));
-		assertTrue("!color.equals(otherColor)", !color.equals(otherColor));
+		assertFalse("!color.equals(otherColor)", color.equals(otherColor));
 	} finally {
 		color.dispose();
 		sameColor.dispose();
@@ -611,14 +447,14 @@ public void test_equalsLjava_lang_Object_with_device() {
 	otherColor = new Color(display, 5, 6, 7, 0);
 	try {
 		// Test Color.equals(Object)
-		assertTrue("!color.equals((Object)null)", !color.equals((Object)null));
+		assertFalse("!color.equals((Object)null)", color.equals((Object)null));
 
 		// Test Color.equals(Color)
-		assertTrue("!color.equals((Color)null)", !color.equals((Color)null));
+		assertFalse("!color.equals((Color)null)", color.equals((Color)null));
 		assertTrue("color.equals(color)", color.equals(color));
 		assertTrue("color.equals(sameColor)", color.equals(sameColor));
 		assertTrue("color.equals(sameColor2)", color.equals(sameColor2));
-		assertTrue("!color.equals(otherColor)", !color.equals(otherColor));
+		assertFalse("!color.equals(otherColor)", color.equals(otherColor));
 	} finally {
 		color.dispose();
 		sameColor.dispose();
@@ -635,9 +471,9 @@ public void test_equalsLjava_lang_Object_mix() {
 	try {
 		// Test Color.equals(Color)
 		assertTrue("color.equals(sameColor)", color.equals(sameColorNoDevice));
-		assertTrue("!color.equals(otherColor)", !color.equals(otherColorNoDevice));
+		assertFalse("!color.equals(otherColor)", color.equals(otherColorNoDevice));
 		assertTrue("color.equals(sameColor)", sameColorNoDevice.equals(color));
-		assertTrue("!color.equals(otherColor)", !otherColorNoDevice.equals(color));
+		assertFalse("!color.equals(otherColor)", otherColorNoDevice.equals(color));
 	} finally {
 		color.dispose();
 	}
@@ -649,9 +485,9 @@ public void test_equalsLjava_lang_Object_mix() {
 	try {
 		// Test Color.equals(Color)
 		assertTrue("color.equals(sameColor)", color.equals(sameColorNoDevice));
-		assertTrue("!color.equals(otherColor)", !color.equals(otherColorNoDevice));
+		assertFalse("!color.equals(otherColor)", color.equals(otherColorNoDevice));
 		assertTrue("color.equals(sameColor)", sameColorNoDevice.equals(color));
-		assertTrue("!color.equals(otherColor)", !otherColorNoDevice.equals(color));
+		assertFalse("!color.equals(otherColor)", otherColorNoDevice.equals(color));
 	} finally {
 		color.dispose();
 	}
@@ -773,33 +609,27 @@ public void test_hashCode_with_device() {
 public void test_isDisposed() {
 	// Test Color.isDisposed() false
 	Color color = new Color(34, 67, 98, 0);
-	try {
-		assertTrue("Color should not be disposed", !color.isDisposed());
-	} finally {
-		// Test Color.isDisposed() true
-		color.dispose();
-		assertTrue("Color should be disposed", color.isDisposed());
-	}
+	assertFalse("Color should not be disposed", color.isDisposed());
+	// Test Color.isDisposed() true
+	color.dispose();
+	assertTrue("Color should be disposed", color.isDisposed());
 }
 
 @Test
 public void test_isDisposed_with_device() {
 	// Test Color.isDisposed() false
 	Color color = new Color(display, 34, 67, 98, 0);
-	try {
-		assertTrue("Color should not be disposed", !color.isDisposed());
-	} finally {
-		// Test Color.isDisposed() true
-		color.dispose();
-		assertTrue("Color should be disposed", color.isDisposed());
-	}
+	assertFalse("Color should not be disposed", color.isDisposed());
+	// Test Color.isDisposed() true
+	color.dispose();
+	assertTrue("Color should be disposed", color.isDisposed());
 }
 
 @Test
 public void test_toString() {
 	Color color = new Color(0, 0, 255, 255);
 	assertNotNull(color.toString());
-	assertTrue(color.toString().length() > 0);
+	assertFalse(color.toString().isEmpty());
 	assertEquals("Color {0, 0, 255, 255}", color.toString());
 }
 
@@ -808,7 +638,7 @@ public void test_toString_with_device() {
 	Color color = new Color(display, 0, 0, 255, 255);
 	try {
 		assertNotNull(color.toString());
-		assertTrue(color.toString().length() > 0);
+		assertFalse(color.toString().isEmpty());
 		assertEquals("Color {0, 0, 255, 255}", color.toString());
 	} finally {
 		color.dispose();
@@ -821,15 +651,14 @@ public void test_getDevice() {
 	Device device = color.getDevice();
 	assertEquals("The existing display should have been returned", display, device);
 
-	color = new Color(0, 0, 255, 255);
+
 	// see test_isDisposed - we need to keep dispose semantics
-	color.dispose();
-	try {
-		color.getDevice();
-		fail("No exception thrown for getDevice on disposed Color");
-	} catch (SWTException e) {
-		assertEquals("Color should have thrown device disposed on getDevice", SWT.ERROR_GRAPHIC_DISPOSED, e.code);
-	}
+	SWTException e = assertThrows("No exception thrown for getDevice on disposed Color", SWTException.class, () -> {
+		Color color1 = new Color(0, 0, 255, 255);
+		color1.dispose();
+		color1.getDevice();
+	});
+	assertEquals("Color should have thrown device disposed on getDevice", SWT.ERROR_GRAPHIC_DISPOSED, e.code);
 }
 
 @Test
@@ -841,14 +670,12 @@ public void test_getDevice_with_device() {
 		color.dispose();
 	}
 
-	color = new Color(display, 0, 0, 255, 255);
-	color.dispose();
-	try {
-		color.getDevice();
-		fail("No exception thrown for getDevice on disposed Color");
-	} catch (SWTException e) {
-		assertEquals("Color should have thrown device disposed on getDevice", SWT.ERROR_GRAPHIC_DISPOSED, e.code);
-	}
+	SWTException e = assertThrows("No exception thrown for getDevice on disposed Color", SWTException.class, () -> {
+		Color color1 = new Color(0, 0, 255, 255);
+		color1.dispose();
+		color1.getDevice();
+	});
+	assertEquals("Color should have thrown device disposed on getDevice", SWT.ERROR_GRAPHIC_DISPOSED, e.code);
 }
 
 /* custom */
