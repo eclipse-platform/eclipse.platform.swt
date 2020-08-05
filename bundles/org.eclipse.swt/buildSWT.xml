@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <!--
-    Copyright (c) 2009, 2018 IBM Corporation and others.
+    Copyright (c) 2009, 2020 IBM Corporation and others.
 
     This program and the accompanying materials
     are made available under the terms of the Eclipse Public License 2.0
@@ -83,7 +83,7 @@
 	<target name="check_fragment_libraries" depends="get_version">
 		<echo>Checking ${fragment}</echo>
 		<property name="checkdir" value="~/build/check_libraries"/>
-		<property name="library_count" value="35"/>
+		<property name="library_count" value="43"/>
 		<property name="fragment" value=""/>
 		<fileset id="match" dir="${repo.bin}/bundles/${fragment}" includes="**/org.eclipse.swt.gtk.linux.aarch64/**, **/org.eclipse.swt.gtk.linux.ppc64le/**, **/org.eclipse.swt.gtk.linux.x86_64/**, **/org.eclipse.swt.win32.win32.x86_64/**, **/org.eclipse.swt.cocoa.macosx.*/**, **/org.eclipse.swt.browser.chromium.gtk.linux.x86_64/**, **/org.eclipse.swt.browser.chromium.win32.win32.x86_64/**, **/org.eclipse.swt.browser.chromium.cocoa.macosx.x86_64/**">
 			<filename regex="[0-9][0-9][0-9][0-9]"/>
