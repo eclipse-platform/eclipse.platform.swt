@@ -18,3 +18,8 @@ requires.4.namespace = org.eclipse.equinox.p2.iu
 requires.4.name = org.eclipse.swt.gtk.linux.ppc64le
 requires.4.range = 0.0.0
 requires.4.filter = (&(osgi.os=linux)(osgi.ws=gtk)(osgi.arch=ppc64le))
+
+requires.5.namespace = org.eclipse.equinox.p2.iu
+requires.5.name = org.eclipse.swt.gtk.linux.aarch64
+requires.5.range = 0.0.0
+requires.5.filter = (&(osgi.os=linux)(osgi.ws=gtk)(osgi.arch=aarch64))
