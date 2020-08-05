@@ -19,8 +19,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
@@ -52,15 +52,11 @@ public void setUp() {
 @Override
 @Test
 public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI() {
-		try {
-			ccombo = new CCombo(null, 0);
-			fail("No exception thrown for parent == null");
-		} catch (IllegalArgumentException e) {
-		}
+		assertThrows("No exception thrown for parent == null", IllegalArgumentException.class, () -> ccombo = new CCombo(null, 0));
 		int cases[] = { SWT.FLAT, SWT.BORDER };
 		for (int i = 0; i < cases.length; i++) {
 			ccombo = new CCombo(shell, cases[i]);
-			assertTrue(":a:" + String.valueOf(i), (ccombo.getStyle() & cases[i]) == cases[i]);
+			assertEquals(":a:" + String.valueOf(i), cases[i], (ccombo.getStyle() & cases[i]));
 		}
 		ccombo = new CCombo(shell, SWT.BORDER | SWT.READ_ONLY);
 		// Test all the combo listeners
@@ -68,7 +64,7 @@ public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI() {
 		for (int comboListener : comboListeners) {
 			assertTrue("Combo Listener events not implemented", ccombo.getListeners(comboListener).length > 0);
 		}
-		assertTrue("Pop up items are present.", ccombo.getItems().length == 0);
+		assertEquals("Pop up items are present.",0,  ccombo.getItems().length);
 		// test that accessible features are added
 		assertNotNull(ccombo.getAccessible());
 }
@@ -159,41 +155,26 @@ public void test_redrawIIIIZ() {
 @Override
 @Test
 public void test_setBackgroundLorg_eclipse_swt_graphics_Color() {
-	boolean exceptionThrown = false;
 	Color colors[] = {new Color(0, 0, 0), new Color(255, 255, 255), new Color(0, 45, 255)};
-	try {
-		for(int i=0; i<3; i++) {
-			ccombo.setBackground(colors[i]);
-			assertEquals("i="+i, ccombo.getBackground(), colors[i]);
-		}
+	for(int i=0; i<3; i++) {
+		ccombo.setBackground(colors[i]);
+		assertEquals("i="+i, ccombo.getBackground(), colors[i]);
 	}
-	catch (Exception e) {
-		exceptionThrown = true;
-	}
-	assertFalse("Expected exception thrown", exceptionThrown);
-	exceptionThrown = false;
 }
 
 @Override
 @Test
 public void test_setEnabledZ() {
-	boolean exceptionThrown = false;
-	try{
-		ccombo.setEnabled(true);
-		assertTrue("Set true error", ccombo.getEnabled());
-		ccombo.setEnabled(false);
-		assertFalse("Set false error", ccombo.getEnabled());
-	}
-	catch (Exception e) {
-		exceptionThrown = true;
-	}
-	assertFalse("Exception thrown", exceptionThrown);
+	ccombo.setEnabled(true);
+	assertTrue("Set true error", ccombo.getEnabled());
+	ccombo.setEnabled(false);
+	assertFalse("Set false error", ccombo.getEnabled());
 }
 
 @Override
 @Test
 public void test_setFocus() {
-	assertTrue(!ccombo.setFocus());
+	assertFalse(ccombo.setFocus());
 	shell.open();
 	shell.setVisible(true);
 	boolean exceptionThrown = false;
@@ -250,38 +231,24 @@ public void test_setFontLorg_eclipse_swt_graphics_Font() {
 @Override
 @Test
 public void test_setForegroundLorg_eclipse_swt_graphics_Color() {
-	boolean exceptionThrown = false;
 	Color c1 = new Color(0, 0, 0);
 	Color c2 = new Color(255, 255, 255);
 	Color c3 = new Color(23, 45, 151);
-	try {
-		ccombo.setForeground(c1);
-		ccombo.setForeground(c2);
-		ccombo.setForeground(c3);
-	}
-	catch (Exception e) {
-		exceptionThrown = true;
-	}
-	assertFalse("Expected exception thrown", exceptionThrown);
+	ccombo.setForeground(c1);
+	ccombo.setForeground(c2);
+	ccombo.setForeground(c3);
 }
 
 @Override
 @Test
 public void test_setToolTipTextLjava_lang_String() {
-	boolean exceptionThrown = false;
-	try {
-		ccombo.setToolTipText(null);
-		assertNull(ccombo.getToolTipText());
-		String[] cases = {"", "fang", "fang0"};
-		for (int i = 0; i < cases.length; i++) {
-			ccombo.setText(cases[i]);
-			assertTrue(":a:" + i, ccombo.getText().equals(cases[i]));
-		}
+	ccombo.setToolTipText(null);
+	assertNull(ccombo.getToolTipText());
+	String[] cases = {"", "fang", "fang0"};
+	for (int i = 0; i < cases.length; i++) {
+		ccombo.setText(cases[i]);
+		assertTrue(":a:" + i, ccombo.getText().equals(cases[i]));
 	}
-	catch (Exception e) {
-		exceptionThrown = true;
-	}
-	assertFalse("Unexpected exception thrown", exceptionThrown);
 }
 
 @Override
@@ -346,11 +313,7 @@ public void test_consistency_DragDetect () {
 @Test
 public void test_addLjava_lang_String() {
 	ccombo = new CCombo(shell, 0);
-	try {
-		ccombo.add(null);
-		fail("Did not catch null argument");
-	} catch (IllegalArgumentException e) {
-	}
+	assertThrows("Did not catch null argument",IllegalArgumentException.class, ()-> ccombo.add(null));
 	add();
 	assertTrue("Items not successfully added", ccombo.getItems().length > 0);
 
@@ -359,19 +322,12 @@ public void test_addLjava_lang_String() {
 @Test
 public void test_addLjava_lang_StringI() {
 	ccombo = new CCombo(shell, 0);
-	try {
-		ccombo.add(null, 0);
-		fail("Did not catch null argument");
-	} catch (IllegalArgumentException e) {
-	}
+	assertThrows("Did not catch null argument",IllegalArgumentException.class, ()-> ccombo.add(null, 0));
 
 	add();// add three items
 	assertTrue("Items not successfully added", ccombo.getItems().length > 0);
-	try {
-		ccombo.add("Hello", 7);
-		fail("Did not catch invalid range exception");
-	} catch (IllegalArgumentException e) {
-	}
+
+	assertThrows("Did not catch range exception",IllegalArgumentException.class, ()-> ccombo.add("Hello", 7));
 
 	ccombo.add("Hello", 1);
 	String test = ccombo.getItem(1);
@@ -381,16 +337,8 @@ public void test_addLjava_lang_StringI() {
 @Test
 public void test_addModifyListenerLorg_eclipse_swt_events_ModifyListener() {
 	ccombo = new CCombo(shell, 0);
-	boolean exceptionThrown = false;
 	ModifyListener listener = event -> listenerCalled = true;
-	try {
-		ccombo.addModifyListener(null);
-	}
-	catch (IllegalArgumentException e) {
-		exceptionThrown = true;
-	}
-	assertTrue("Expected exception not thrown", exceptionThrown);
-	exceptionThrown = false;
+	assertThrows("Expected exception not thrown", IllegalArgumentException.class, () -> ccombo.addModifyListener(null));
 
 	// test whether all content modifying API methods send a Modify event
 	ccombo.addModifyListener(listener);
@@ -402,21 +350,14 @@ public void test_addModifyListenerLorg_eclipse_swt_events_ModifyListener() {
 	ccombo.removeModifyListener(listener);
 	// cause to call the listener.
 	ccombo.setText("line");
-	assertTrue("Listener not removed", listenerCalled == false);
-	try {
-		ccombo.removeModifyListener(null);
-	}
-	catch (IllegalArgumentException e) {
-		exceptionThrown = true;
-	}
-	assertTrue("Expected exception not thrown", exceptionThrown);
+	assertFalse("Listener not removed", listenerCalled);
+	assertThrows("Expected exception not thrown", IllegalArgumentException.class, () -> ccombo.removeModifyListener(null));
 }
 
 @Test
 public void test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener() {
 	ccombo = new CCombo(shell, 0);
 	listenerCalled = false;
-	boolean exceptionThrown = false;
 	SelectionListener listener = new SelectionListener() {
 		@Override
 		public void widgetSelected(SelectionEvent event) {
@@ -426,25 +367,12 @@ public void test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener()
 		public void widgetDefaultSelected(SelectionEvent event) {
 		}
 	};
-	try {
-		ccombo.addSelectionListener(null);
-	}
-	catch (IllegalArgumentException e) {
-		exceptionThrown = true;
-	}
-	assertTrue("Expected exception not thrown", exceptionThrown);
-	exceptionThrown = false;
+	assertThrows("Expected exception not thrown", IllegalArgumentException.class, () -> ccombo.addSelectionListener(null));
 	ccombo.addSelectionListener(listener);
 	ccombo.select(0);
-	assertTrue(":a:", listenerCalled == false);
+	assertFalse(":a:", listenerCalled);
 	ccombo.removeSelectionListener(listener);
-	try {
-		ccombo.removeSelectionListener(null);
-	}
-	catch (IllegalArgumentException e) {
-		exceptionThrown = true;
-	}
-	assertTrue("Expected exception not thrown", exceptionThrown);
+	assertThrows("Expected exception not thrown", IllegalArgumentException.class, () -> ccombo.removeSelectionListener(null));
 }
 
 @Test
@@ -461,7 +389,7 @@ public void test_clearSelection() {
 	ccombo.setSelection(new Point(0, 5));
 	assertTrue(":c:", ccombo.getSelection().equals(new Point(0, 5)));
 	ccombo.clearSelection();
-	assertTrue(":d:", ccombo.getSelection().x==ccombo.getSelection().y);
+	assertEquals(":d:", ccombo.getSelection().x, ccombo.getSelection().y);
  }
 
 @Test
@@ -473,7 +401,7 @@ public void test_deselectAll() {
 	ccombo.select(0);
 	ccombo.select(2);
 	ccombo.deselectAll();
-	assertTrue(":a:", ccombo.getSelectionIndex()== -1);
+	assertEquals(":a:", -1,  ccombo.getSelectionIndex());
 }
 
 @Test
@@ -494,9 +422,9 @@ public void test_deselectI() {
 		ccombo.add("fred" + i);
 	for (int i = 0; i < number; i++) {
 		ccombo.select(i);
-		assertTrue(":a:" + i, ccombo.getSelectionIndex()==i);
+		assertEquals(":a:" + i, i, ccombo.getSelectionIndex());
 		ccombo.deselect(i);
-		assertTrue(":b:" + i, ccombo.getSelectionIndex()==-1);
+		assertEquals(":b:" + i,-1, ccombo.getSelectionIndex());
 	}
  }
 
@@ -512,17 +440,17 @@ public void test_getEditable() {
 public void test_getItemCount() {
 	int number = 10;
 	for (int i = 0; i < number; i++) {
-		assertTrue(":a:" + i, ccombo.getItemCount() == i);
+		assertEquals(":a:" + i, i, ccombo.getItemCount());
 		ccombo.add("fred" + i);
 	}
-	assertTrue(":aa:", ccombo.getItemCount() == number);
+	assertEquals(":aa:", number, ccombo.getItemCount());
 
 	for (int i = 0; i < number; i++) {
-		assertTrue(":b:" + i, ccombo.getItemCount() == number-i);
+		assertEquals(":b:" + i,number-i, ccombo.getItemCount());
 		ccombo.remove(0);
 	}
 	ccombo.removeAll();
-	assertTrue(":c:", ccombo.getItemCount() == 0);
+	assertEquals(":c:",0,ccombo.getItemCount());
 }
 
 @Test
@@ -532,11 +460,7 @@ public void test_getItemHeight() {
 
 @Test
 public void test_getItemI() {
-	try {
-		ccombo.getItem(0);
-		fail("No exception thrown for illegal index argument");
-	} catch (IllegalArgumentException e) {
-	}
+	assertThrows("No exception thrown for illegal index argument", IllegalArgumentException.class, () -> ccombo.getItem(0));
 
 	int number = 10;
 	for (int i = 0; i < number; i++) {
@@ -553,7 +477,7 @@ public void test_getItems() {
 	ccombo.add("2");
 	ccombo.add("3");
 	String[] items = ccombo.getItems();
-	assertTrue(":a:", items.length==3);
+	assertEquals(":a:",3, items.length);
 	assertTrue(":a:", items[0].equals("1"));
 	assertTrue(":a:", items[1].equals("2"));
 	assertTrue(":a:", items[2].equals("3"));
@@ -595,12 +519,7 @@ public void test_getSelectionIndex() {
 public void test_getStyle() {
 	int style = 0;
 	ccombo.setEditable(false);
-	try {
-		style = ccombo.getStyle();
-	}
-	catch(Exception e) {
-		fail("Unexpected exception thrown for getStyle");
-	}
+	style = ccombo.getStyle();
 	assertTrue((style & SWT.READ_ONLY) != 0);
 }
 
@@ -615,24 +534,20 @@ public void test_getText() {
 
 @Test
 public void test_getTextHeight() {
-		ccombo.getTextHeight();
+	ccombo.getTextHeight();
 }
 
 @Test
 public void test_getTextLimit() {
 	ccombo.setTextLimit(3);
-	assertTrue(":a:", ccombo.getTextLimit()==3);
+	assertEquals(":a:", 3, ccombo.getTextLimit());
 }
 
 @Test
 public void test_indexOfLjava_lang_String() {
 	ccombo.add("string1");
-	try {
-		ccombo.indexOf(null);
-		fail("No exception thrown for string == null");
-	}
-	catch (IllegalArgumentException e) {
-	}
+	assertThrows("No exception thrown for string == null",IllegalArgumentException.class, ()-> ccombo.indexOf(null));
+
 	ccombo.removeAll();
 
 	int number = 5;
@@ -670,12 +585,7 @@ public void test_indexOfLjava_lang_String() {
 @Test
 public void test_indexOfLjava_lang_StringI() {
 	ccombo.add("string0");
-	try {
-		ccombo.indexOf(null);
-		fail("No exception thrown for string == null");
-	}
-	catch (IllegalArgumentException e) {
-	}
+	assertThrows("No exception thrown for string == null",IllegalArgumentException.class, ()-> ccombo.indexOf(null));
 	assertEquals(0, ccombo.indexOf("string0", 0));
 	ccombo.removeAll();
 
@@ -683,18 +593,18 @@ public void test_indexOfLjava_lang_StringI() {
 	for (int i = 0; i < number; i++)
 		ccombo.add("fred" + i);
 	for (int i = 0; i < number; i++)
-		assertTrue(":a:" + i, ccombo.indexOf("fred" + i, 0) == i);
+		assertEquals(":a:" + i, i, ccombo.indexOf("fred" + i, 0));
 	for (int i = 0; i < number; i++)
-		assertTrue(":b:" + i, ccombo.indexOf("fred" + i, i + 1) == -1);
+		assertEquals(":b:" + i,-1,  ccombo.indexOf("fred" + i, i + 1));
 
 	for (int i = 0; i < number; i++)
 		ccombo.add("fred" + i);
 	for (int i = 0; i < 3; i++)
-		assertTrue(":a:" + i, ccombo.indexOf("fred" + i, 0) == i);
+		assertEquals(":a:" + i, i, ccombo.indexOf("fred" + i, 0));
 	for (int i = 3; i < number; i++)
-		assertTrue(":b:" + i, ccombo.indexOf("fred" + i, 3) == i);
+		assertEquals(":b:" + i, i, ccombo.indexOf("fred" + i, 3));
 	for (int i = 0; i < number; i++)
-		assertTrue(":b:" + i, ccombo.indexOf("fred" + i, i) == i);
+		assertEquals(":b:" + i, i, ccombo.indexOf("fred" + i, i));
 }
 
 @Test
@@ -702,7 +612,7 @@ public void test_removeAll() {
 	ccombo = new CCombo(shell, 0);
 	add();
 	ccombo.removeAll();
-	assertTrue(":a:", ccombo.getItems().length==0);
+	assertEquals(":a:",0, ccombo.getItems().length);
 }
 
 
@@ -742,19 +652,9 @@ public void test_removeII() {
 		ccombo.add("fred");
 	}
 
-	try {
-		ccombo.remove(2, 100);
-		fail("No exception thrown for illegal index argument");
-	}
-	catch (IllegalArgumentException e) {
-	}
+	assertThrows("No exception thrown for illegal index argument", IllegalArgumentException.class, () -> ccombo.remove(2, 100));
 
-	try {
-		ccombo.remove(-1, number-1);
-		fail("No exception thrown for start index < 0");
-	}
-	catch (IllegalArgumentException e) {
-	}
+	assertThrows("No exception thrown for start index < 0", IllegalArgumentException.class, () ->ccombo.remove(-1, number-1));
 }
 
 @Test
@@ -777,38 +677,22 @@ public void test_removeLjava_lang_String() {
 
 	for (int i = 0; i < number; i++)
 		ccombo.add("fred");
-	try {
-		ccombo.remove(null);
-		fail("No exception thrown for item == null");
-	}
-	catch (IllegalArgumentException e) {
-	}
+
+	assertThrows("No exception thrown for item == null", IllegalArgumentException.class, () -> ccombo.remove(null));
 
 	ccombo.removeAll();
 	for (int i = 0; i < number; i++)
 		ccombo.add("fred" + i);
-	try {
-		ccombo.remove("fred");
-		fail("No exception thrown for item not found");
-	}
-	catch (IllegalArgumentException e) {
-	}
+
+	assertThrows("No exception thrown for item not found", IllegalArgumentException.class, () -> ccombo.remove("fred"));
 
 	assertEquals(number, ccombo.getItemCount());
 }
 
 @Test
 public void test_removeModifyListenerLorg_eclipse_swt_events_ModifyListener() {
-	boolean exceptionThrown = false;
 	ModifyListener listener = event -> listenerCalled = true;
-	try {
-		ccombo.addModifyListener(null);
-	}
-	catch (IllegalArgumentException e) {
-		exceptionThrown = true;
-	}
-	assertTrue("Expected exception not thrown", exceptionThrown);
-	exceptionThrown = false;
+	assertThrows("Expected exception not thrown", IllegalArgumentException.class, () -> ccombo.addModifyListener(null));
 
 	// test whether all content modifying API methods send a Modify event
 	ccombo.addModifyListener(listener);
@@ -820,20 +704,13 @@ public void test_removeModifyListenerLorg_eclipse_swt_events_ModifyListener() {
 	ccombo.removeModifyListener(listener);
 	// cause to call the listener.
 	ccombo.setText("line");
-	assertTrue("Listener not removed", listenerCalled == false);
-	try {
-		ccombo.removeModifyListener(null);
-	}
-	catch (IllegalArgumentException e) {
-		exceptionThrown = true;
-	}
-	assertTrue("Expected exception not thrown", exceptionThrown);
+	assertFalse("Listener not removed", listenerCalled);
+	assertThrows("Expected exception not thrown", IllegalArgumentException.class, () -> ccombo.removeModifyListener(null));
 }
 
 @Test
 public void test_removeSelectionListenerLorg_eclipse_swt_events_SelectionListener() {
 	listenerCalled = false;
-	boolean exceptionThrown = false;
 	SelectionListener listener = new SelectionListener() {
 		@Override
 		public void widgetSelected(SelectionEvent event) {
@@ -844,23 +721,12 @@ public void test_removeSelectionListenerLorg_eclipse_swt_events_SelectionListene
 		public void widgetDefaultSelected(SelectionEvent event) {
 		}
 	};
-	try {
-		ccombo.addSelectionListener(null);
-	} catch (IllegalArgumentException e) {
-		exceptionThrown = true;
-	}
-	assertTrue("Expected exception not thrown", exceptionThrown);
-	exceptionThrown = false;
+	assertThrows("Expected exception not thrown", IllegalArgumentException.class, () -> ccombo.addSelectionListener(null));
 	ccombo.addSelectionListener(listener);
 	ccombo.select(0);
-	assertTrue(":a:", listenerCalled == false);
+	assertFalse(":a:", listenerCalled);
 	ccombo.removeSelectionListener(listener);
-	try {
-		ccombo.removeSelectionListener(null);
-	} catch (IllegalArgumentException e) {
-		exceptionThrown = true;
-	}
-	assertTrue("Expected exception not thrown", exceptionThrown);
+	assertThrows("Expected exception not thrown", IllegalArgumentException.class, () -> ccombo.removeSelectionListener(null));
 }
 
 @Test
@@ -870,7 +736,7 @@ public void test_selectI() {
 	ccombo.add("789");
 	ccombo.select(0);
 	ccombo.select(1);
-	assertTrue(":a:", ccombo.getSelectionIndex()== 1);
+	assertEquals(":a:", 1, ccombo.getSelectionIndex());
 
 	// indices out of range are ignored
 	ccombo.select(10);
@@ -879,73 +745,32 @@ public void test_selectI() {
 
 @Test
 public void test_setEditableZ() {
-	boolean exceptionThrown = false;
-	try{
-		ccombo.setEditable(true);
-		assertTrue("Set true error", ccombo.getEditable());
-		ccombo.setEditable(false);
-		assertFalse("Set false error", ccombo.getEditable());
-	}
-	catch (Exception e) {
-		exceptionThrown = true;
-	}
-	assertFalse("Exception thrown", exceptionThrown);
+	ccombo.setEditable(true);
+	assertTrue("Set true error", ccombo.getEditable());
+	ccombo.setEditable(false);
+	assertFalse("Set false error", ccombo.getEditable());
 }
 
 @Test
 public void test_setItemILjava_lang_String() {
-	try {
-		ccombo.setItem(0, null);
-		fail("No exception thrown for item == null");
-	}
-	catch (IllegalArgumentException e) {
-	}
+	assertThrows("No exception thrown for item == null", IllegalArgumentException.class, () -> ccombo.setItem(0, null));
 
-	try {
-		ccombo.setItem(3, "fang");
-		fail("No exception thrown for illegal index argument");
-	}
-	catch (IllegalArgumentException e) {
-	}
+	assertThrows("No exception thrown for illegal index argument", IllegalArgumentException.class, () ->ccombo.setItem(3, "fang"));
 
-	try {
-		ccombo.setItem(0, "fang");
-		fail("No exception thrown for illegal index argument");
-	}
-	catch (IllegalArgumentException e) {
-	}
+	assertThrows("No exception thrown for illegal index argument", IllegalArgumentException.class, () ->ccombo.setItem(0, "fang"));
 
 	ccombo.add("string0");
-	try {
-		ccombo.setItem(0, null);
-		fail("No exception thrown for item == null");
-	}
-	catch (IllegalArgumentException e) {
-	}
+	assertThrows("No exception thrown for item == null", IllegalArgumentException.class, () -> ccombo.setItem(0, null));
 
-	try {
-		ccombo.setItem(-1, "new value");
-		fail("No exception thrown for index < 0");
-	}
-	catch (IllegalArgumentException e) {
-	}
-	try {
-		ccombo.setItem(3, "fang");
-		fail("No exception thrown for illegal index argument");
-	}
-	catch (IllegalArgumentException e) {
-	}
+	assertThrows("No exception thrown for index < 0", IllegalArgumentException.class, () ->ccombo.setItem(-1, "new value"));
+
+	assertThrows("No exception thrown for illegal index argument", IllegalArgumentException.class, () -> ccombo.setItem(3, "fang"));
 
 	ccombo.add("joe");
 	ccombo.setItem(0, "fang");
 	assertTrue("fang", ccombo.getItem(0).equals("fang"));
 
-	try {
-		ccombo.setItem(4, "fang");
-		fail("No exception thrown for illegal index argument");
-	}
-	catch (IllegalArgumentException e) {
-	}
+	assertThrows("No exception thrown for illegal index argument", IllegalArgumentException.class, () ->ccombo.setItem(4, "fang"));
 
 	ccombo.removeAll();
 	int number = 5;
@@ -958,20 +783,12 @@ public void test_setItemILjava_lang_String() {
 
 @Test
 public void test_setItems$Ljava_lang_String() {
-	try {
-		ccombo.setItems(null);
-		fail("No exception thrown for items == null");
-	}
-	catch (IllegalArgumentException e) {
-	}
+	assertThrows("No exception thrown for items == null", IllegalArgumentException.class, () -> ccombo.setItems(null));
+
 	String nullItem[] = new String[1];
 	nullItem[0] = null;
-	try {
-		ccombo.setItems(nullItem);
-		fail("No exception thrown for items[0] == null");
-	}
-	catch (IllegalArgumentException e) {
-	}
+
+	assertThrows("No exception thrown for items[0] == null", IllegalArgumentException.class, () ->ccombo.setItems(nullItem));
 
 	String[][] items = {{}, {""}, {"", ""}, {"fang"}, {"fang0", "fang0"}, {"fang", "fang"}};
 
@@ -983,12 +800,7 @@ public void test_setItems$Ljava_lang_String() {
 
 @Test
 public void test_setSelectionLorg_eclipse_swt_graphics_Point() {
-	try {
-		ccombo.setSelection(null);
-		fail("No exception thrown for point == null");
-	}
-	catch (IllegalArgumentException e) {
-	}
+	assertThrows("No exception thrown for point == null", IllegalArgumentException.class, () -> ccombo.setSelection(null));
 
 	int number = 5;
 	for (int i = 0; i < number; i++)
@@ -1002,25 +814,15 @@ public void test_setSelectionLorg_eclipse_swt_graphics_Point() {
 
 @Test
 public void test_setTextLimitI() {
-	try {
-		ccombo.setTextLimit(0);
-		fail("No exception thrown for limit == 0");
-	}
-	catch (IllegalArgumentException e) {
-	}
+	assertThrows("No exception thrown for limit == 0", IllegalArgumentException.class, () -> ccombo.setTextLimit(0));
 
 	ccombo.setTextLimit(3);
-	assertTrue(":a:", ccombo.getTextLimit()==3);
+	assertEquals(":a:", 3, ccombo.getTextLimit());
 }
 
 @Test
 public void test_setTextLjava_lang_String() {
-	try {
-		ccombo.setText(null);
-		fail("No exception thrown for text == null");
-	}
-	catch (IllegalArgumentException e) {
-	}
+	assertThrows("No exception thrown for text == null", IllegalArgumentException.class, () -> ccombo.setText(null));
 
 	String[] cases = {"", "fang", "fang0"};
 	for (int i = 0; i < cases.length; i++) {
