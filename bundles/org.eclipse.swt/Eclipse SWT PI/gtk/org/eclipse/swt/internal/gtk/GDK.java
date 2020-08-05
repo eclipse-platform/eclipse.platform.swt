@@ -524,6 +524,11 @@ public class GDK extends OS {
 	public static final native boolean gdk_event_get_keyval(long event,int [] keyval);
 	/**
 	 * @param event cast=(GdkEvent *)
+	 * @param keycode cast=(guint16 *)
+	 */
+	public static final native boolean gdk_event_get_keycode(long event, short [] keycode);
+	/**
+	 * @param event cast=(GdkEvent *)
 	 * @param x cast=(gdouble *)
 	 * @param y cast=(gdouble *)
 	 */
@@ -545,6 +550,7 @@ public class GDK extends OS {
 	 */
 	public static final native boolean gdk_event_get_scroll_direction(long event, int [] direction);
 
+
 	/* GDK Events (GTK4 only, if-def'd in os.h) */
 	/** @param event cast=(GdkEvent *) */
 	public static final native long gdk_event_ref(long event);
@@ -562,6 +568,8 @@ public class GDK extends OS {
 	public static final native int gdk_button_event_get_button(long event);
 	/** @param event cast=(GdkEvent *) */
 	public static final native boolean gdk_focus_event_get_in(long event);
+	/** @param event cast=(GdkEvent *) */
+	public static final native int gdk_key_event_get_keycode(long event);
 	/** @param event cast=(GdkEvent *) */
 	public static final native int gdk_key_event_get_keyval(long event);
 	/** @param event cast=(GdkEvent *) */

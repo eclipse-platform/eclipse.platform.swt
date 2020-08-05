@@ -964,6 +964,22 @@ JNIEXPORT jint JNICALL GDK_NATIVE(gdk_1event_1get_1event_1type)
 }
 #endif
 
+#ifndef NO_gdk_1event_1get_1keycode
+JNIEXPORT jboolean JNICALL GDK_NATIVE(gdk_1event_1get_1keycode)
+	(JNIEnv *env, jclass that, jlong arg0, jshortArray arg1)
+{
+	jshort *lparg1=NULL;
+	jboolean rc = 0;
+	GDK_NATIVE_ENTER(env, that, gdk_1event_1get_1keycode_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetShortArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	rc = (jboolean)gdk_event_get_keycode((GdkEvent *)arg0, (guint16 *)lparg1);
+fail:
+	if (arg1 && lparg1) (*env)->ReleaseShortArrayElements(env, arg1, lparg1, 0);
+	GDK_NATIVE_EXIT(env, that, gdk_1event_1get_1keycode_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_gdk_1event_1get_1keyval
 JNIEXPORT jboolean JNICALL GDK_NATIVE(gdk_1event_1get_1keyval)
 	(JNIEnv *env, jclass that, jlong arg0, jintArray arg1)
@@ -1241,6 +1257,18 @@ JNIEXPORT jlong JNICALL GDK_NATIVE(gdk_1get_1default_1root_1window)
 	GDK_NATIVE_ENTER(env, that, gdk_1get_1default_1root_1window_FUNC);
 	rc = (jlong)gdk_get_default_root_window();
 	GDK_NATIVE_EXIT(env, that, gdk_1get_1default_1root_1window_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_gdk_1key_1event_1get_1keycode
+JNIEXPORT jint JNICALL GDK_NATIVE(gdk_1key_1event_1get_1keycode)
+	(JNIEnv *env, jclass that, jlong arg0)
+{
+	jint rc = 0;
+	GDK_NATIVE_ENTER(env, that, gdk_1key_1event_1get_1keycode_FUNC);
+	rc = (jint)gdk_key_event_get_keycode((GdkEvent *)arg0);
+	GDK_NATIVE_EXIT(env, that, gdk_1key_1event_1get_1keycode_FUNC);
 	return rc;
 }
 #endif

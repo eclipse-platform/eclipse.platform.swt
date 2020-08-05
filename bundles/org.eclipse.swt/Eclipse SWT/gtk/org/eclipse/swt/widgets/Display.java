@@ -4323,10 +4323,12 @@ public boolean post (Event event) {
 				int final_keyval = raw_keyval;
 
 				boolean foundKeys;
+				long keymap = 0;
 				if (GTK.GTK4) {
+					// TODO: Find alternative for gdk_keymap_translate_keyboard_state (no longer exist, and keymap can not be retrieved)
 					foundKeys = GDK.gdk_display_map_keyval(gdkDisplay, raw_keyval, keys_list, n_keys);
 				} else {
-					long keymap = GDK.gdk_keymap_get_for_display(gdkDisplay);
+					keymap = GDK.gdk_keymap_get_for_display(gdkDisplay);
 					foundKeys = GDK.gdk_keymap_get_entries_for_keyval (keymap, raw_keyval, keys_list, n_keys);
 				}
 
@@ -4338,7 +4340,6 @@ public boolean post (Event event) {
 					}
 					OS.g_free(keys_list[0]);
 
-					long keymap = GDK.gdk_keymap_get_for_display(gdkDisplay);
 					GDK.gdk_keymap_translate_keyboard_state(keymap, hardware_keycode, state, 0, keyval, effective_group, level, consumed_modifiers);
 					if (is_modifier == 1) final_keyval = keyval[0];
 				}

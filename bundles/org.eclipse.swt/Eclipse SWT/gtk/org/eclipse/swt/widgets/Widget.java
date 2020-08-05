@@ -1789,13 +1789,30 @@ boolean setKeyState (Event javaEvent, long event) {
 		default: {
 			if (javaEvent.keyCode == 0) {
 				int [] keyval = new int [1];
+				int [] effective_group = new int [1], level = new int [1], consumed_modifiers = new int [1];
 				/* If current group is not a Latin layout, get the most Latin Layout group from input source. */
 				Map<Integer, Integer> groupLatinKeysCount = display.getGroupKeysCount();
 				if (!groupLatinKeysCount.containsKey(group)) {
 					group = display.getLatinKeyGroup();
 				}
 
-				if (GDK.gdk_event_get_keyval(event, keyval)) {
+				long keymap = 0;
+				long display = GDK.gdk_display_get_default();
+				if (GTK.GTK4) {
+					//TODO: GTK4 Get keymap or find alternative for gdk_keymap_translate_keyboard_state (no longer exist in GTK4)
+				} else {
+					keymap = GDK.gdk_keymap_get_for_display(display);
+				}
+
+				short [] keyCode = new short [1];
+				if (GTK.GTK4) {
+					keyCode[0] = (short) GDK.gdk_key_event_get_keycode(event);
+				} else {
+					GDK.gdk_event_get_keycode(event, keyCode);
+				}
+
+				if (GDK.gdk_keymap_translate_keyboard_state (keymap, keyCode[0],
+						0, group, keyval, effective_group, level, consumed_modifiers)) {
 					javaEvent.keyCode = (int) GDK.gdk_keyval_to_unicode (keyval [0]);
 				}
 			}
