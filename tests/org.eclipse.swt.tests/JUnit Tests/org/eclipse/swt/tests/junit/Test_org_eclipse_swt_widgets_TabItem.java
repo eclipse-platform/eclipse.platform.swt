@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2017 IBM Corporation and others.
+ * Copyright (c) 2000, 2020 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -14,9 +14,10 @@
 package org.eclipse.swt.tests.junit;
 
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Control;
@@ -44,55 +45,33 @@ public void setUp() {
 
 @Test
 public void test_ConstructorLorg_eclipse_swt_widgets_TabFolderI() {
-	try {
-		new TabItem(null, SWT.NULL);
-		fail("No exception thrown for parent == null");
-	}
-	catch (IllegalArgumentException e) {
-	}
+	assertThrows("No exception thrown for parent == null",IllegalArgumentException.class, () -> new TabItem(null, SWT.NULL));
 }
 
 @Test
 public void test_ConstructorLorg_eclipse_swt_widgets_TabFolderII() {
 	TabItem tItem = new TabItem(tabFolder, SWT.NULL, 0);
 
-	assertTrue(":a:", tabFolder.getItems()[0] == tItem);
+	assertEquals(":a:", tItem, tabFolder.getItems()[0]);
 
 	tItem = new TabItem(tabFolder, SWT.NULL, 1);
-	assertTrue(":b:", tabFolder.getItems()[1] == tItem);
+	assertEquals(":b:", tItem, tabFolder.getItems()[1]);
 
 	tItem = new TabItem(tabFolder, SWT.NULL, 1);
-	assertTrue(":c:", tabFolder.getItems()[1] == tItem);
+	assertEquals(":c:", tItem, tabFolder.getItems()[1]);
 
-	try {
-		new TabItem(tabFolder, SWT.NULL, -1);
-		fail("No exception thrown");
-	}
-	catch (IllegalArgumentException e) {
-	}
-	finally {
-		assertTrue(":d:", tabFolder.getItems()[1] == tItem);
-	}
-	try {
-		new TabItem(tabFolder, SWT.NULL, tabFolder.getItemCount() + 1);
-		fail("No exception thrown");
-	}
-	catch (IllegalArgumentException e) {
-	}
-	finally {
-		assertTrue(":e:", tabFolder.getItems()[1] == tItem);
-	}
-	try {
-		new TabItem(null, SWT.NULL, 0);
-		fail("No exception thrown");
-	}
-	catch (IllegalArgumentException e) {
-	}
+	assertThrows("No exception thrown",IllegalArgumentException.class, () -> new TabItem(tabFolder, SWT.NULL, -1));
+	assertEquals(":d:", tItem, tabFolder.getItems()[1]);
+
+	assertThrows("No exception thrown",IllegalArgumentException.class, () -> new TabItem(tabFolder, SWT.NULL, tabFolder.getItemCount() + 1));
+	assertEquals(":e:", tItem, tabFolder.getItems()[1]);
+
+	assertThrows("No exception thrown",IllegalArgumentException.class, () -> new TabItem(null, SWT.NULL, 0));
 }
 
 @Test
 public void test_getParent() {
-	assertTrue(":a: ", tabItem.getParent() == tabFolder);
+	assertEquals(":a: ", tabFolder, tabItem.getParent());
 }
 
 @Test
@@ -102,7 +81,7 @@ public void test_setControlLorg_eclipse_swt_widgets_Control() {
 	assertNull(":a: ", tabItem.getControl());
 
 	tabItem.setControl(control);
-	assertTrue(":b: ", tabItem.getControl() == control);
+	assertEquals(":b: ", control, tabItem.getControl());
 
 	tabItem.setControl(null);
 	assertNull(":c: ", tabItem.getControl());
