@@ -447,6 +447,12 @@
 #define NO_gtk_1scrolled_1window_1get_1shadow_1type
 #define NO_gtk_1frame_1set_1shadow_1type
 
+// GtkIconTheme API changes
+#define NO_gtk_1icon_1info_1load_1icon
+#define NO_gtk_1icon_1theme_1get_1default
+#define NO_gtk_1icon_1theme_1load_1icon
+#define NO_gtk_1icon_1theme_1lookup_1by_1gicon__JJII
+
 #else
 
 /**
@@ -557,6 +563,12 @@
 #define NO_gtk_1window_1new__
 #define NO_gtk_1window_1minimize
 #define NO_gtk_1window_1unminimize
+#define NO_gtk_1window_1set_1default_1widget
+
+// GtkIconTheme API changes
+#define NO_gtk_1icon_1theme_1get_1for_1display
+#define NO_gtk_1icon_1theme_1lookup_1icon
+#define NO_gtk_1icon_1theme_1lookup_1by_1gicon__JJIIII
 
 // GtkScrollWindow
 #define NO_gtk_1scrolled_1window_1set_1has_1frame

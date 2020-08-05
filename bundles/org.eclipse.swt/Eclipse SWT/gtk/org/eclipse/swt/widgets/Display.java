@@ -1325,7 +1325,15 @@ long keysChangedProc (long keymap, long user_data) {
 
 Image createImage (String name) {
 	byte[] buffer = Converter.wcsToMbcs (name, true);
-	long pixbuf = GTK.gtk_icon_theme_load_icon(GTK.gtk_icon_theme_get_default(), buffer, 48, GTK.GTK_ICON_LOOKUP_FORCE_SIZE, 0);
+
+	long iconTheme;
+	if (GTK.GTK4) {
+		iconTheme = GTK.gtk_icon_theme_get_for_display(GDK.gdk_display_get_default());
+	} else {
+		iconTheme = GTK.gtk_icon_theme_get_default();
+	}
+
+	long pixbuf = GTK.gtk_icon_theme_load_icon(iconTheme, buffer, 48, GTK.GTK_ICON_LOOKUP_FORCE_SIZE, 0);
 	if (pixbuf == 0) return null;
 	int width = GDK.gdk_pixbuf_get_width (pixbuf);
 	int height = GDK.gdk_pixbuf_get_height (pixbuf);

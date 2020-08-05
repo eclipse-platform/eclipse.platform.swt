@@ -1370,15 +1370,15 @@ public class GTK extends OS {
 	// Get function pointer to gtk_status_icon_position_menu
 	// See os_custom.h
 	public static final native long gtk_status_icon_position_menu_func();
+
+	/* GtkIconTheme [GTK3 only, if-def'd in os.h] */
+	/**
+	 * @param icon_info cast=(GtkIconInfo *)
+	 * @param error cast=(GError **)
+	 */
+	public static final native long gtk_icon_info_load_icon(long icon_info, long error[]);
 	/** @return cast=(GtkIconTheme *) */
 	public static final native long gtk_icon_theme_get_default();
-	/**
-	 * @param icon_theme cast=(GtkIconTheme *)
-	 * @param icon cast=(GIcon *)
-	 * @param size cast=(gint)
-	 * @param flags cast=(GtkIconLookupFlags)
-	 */
-	public static final native long gtk_icon_theme_lookup_by_gicon(long icon_theme, long icon, int size, int flags);
 	/**
 	 * @param icon_theme cast=(GtkIconTheme *)
 	 * @param icon_name cast=(const gchar *)
@@ -1388,10 +1388,36 @@ public class GTK extends OS {
 	 */
 	public static final native long gtk_icon_theme_load_icon(long icon_theme, byte[] icon_name, int size, int flags, long error);
 	/**
-	 * @param icon_info cast=(GtkIconInfo *)
-	 * @param error cast=(GError **)
+	 * @param icon_theme cast=(GtkIconTheme *)
+	 * @param icon cast=(GIcon *)
+	 * @param size cast=(gint)
+	 * @param flags cast=(GtkIconLookupFlags)
 	 */
-	public static final native long gtk_icon_info_load_icon(long icon_info, long error[]);
+	public static final native long gtk_icon_theme_lookup_by_gicon(long icon_theme, long icon, int size, int flags);
+
+	/* GtkIconTheme [GTK4 only, if-def'd in os.h] */
+	/** @param display cast=(GdkDisplay *) */
+	public static final native long gtk_icon_theme_get_for_display(long display);
+	/**
+	 * @param self cast=(GtkIconTheme *)
+	 * @param icon_name cast=(const char *)
+	 * @param size cast=(gint)
+	 * @param scale cast=(gint)
+	 * @param fallbacks cast=(const char **)
+	 * @param direction cast=(GtkTextDirection)
+	 * @param flags cast=(GtkIconLookupFlags)
+	 */
+	public static final native long gtk_icon_theme_lookup_icon(long self, long icon_name, long fallbacks, int size, int scale, int direction, int flags);
+	/**
+	 * @param self cast=(GtkIconTheme *)
+	 * @param icon cast=(GIcon *)
+	 * @param size cast=(gint)
+	 * @param scale cast=(gint)
+	 * @param direction cast=(GtkTextDirection)
+	 * @param flags cast=(GtkIconLookupFlags)
+	 */
+	public static final native long gtk_icon_theme_lookup_by_gicon(long self, long icon, int size, int scale, int direction, int flags);
+
 	/**
 	 * @param context cast=(GtkIMContext *)
 	 * @param event cast=(GdkEventKey *)
@@ -2180,6 +2206,7 @@ public class GTK extends OS {
 	/** @param scrolled_window cast=(GtkScrolledWindow *) */
 	/* [GTK4 only, if-def'd in os.h] */
 	public static final native void gtk_scrolled_window_set_has_frame(long scrolled_window, boolean has_frame);
+	/** @param scrolled_window cast=(GtkScrolledWindow *) */
 	/* [GTK4 only, if-def'd in os.h] */
 	public static final native boolean gtk_scrolled_window_get_has_frame(long scrolled_window);
 
@@ -3604,6 +3631,8 @@ public class GTK extends OS {
 	public static final native void gtk_window_set_transient_for(long window, long parent);
 	/** @param handle cast=(GtkWindow *) */
 	public static final native void gtk_window_unmaximize(long handle);
+	/** @param window cast=(GtkWindow *) */
+	public static final native long gtk_window_get_default_widget(long window);
 
 	/* GtkWindow [GTK3 only, if-def'd in os.h] */
 	/**
@@ -3675,6 +3704,4 @@ public class GTK extends OS {
 	 * @param default_widget cast=(GtkWidget *)
 	 */
 	public static final native void gtk_window_set_default_widget(long window, long default_widget);
-	/** @param window cast=(GtkWindow *) */
-	public static final native long gtk_window_get_default_widget(long window);
 }

@@ -149,7 +149,13 @@ public static Program[] getPrograms() {
 public ImageData getImageData() {
 	if (iconPath == null) return null;
 	ImageData data = null;
-	long icon_theme =GTK.gtk_icon_theme_get_default();
+	long icon_theme;
+	if (GTK.GTK4) {
+		icon_theme = GTK.gtk_icon_theme_get_for_display(GDK.gdk_display_get_default());
+	} else {
+		icon_theme = GTK.gtk_icon_theme_get_default();
+	}
+
 	byte[] icon = Converter.wcsToMbcs (iconPath, true);
 	long gicon = OS.g_icon_new_for_string(icon, null);
 	if (gicon != 0) {

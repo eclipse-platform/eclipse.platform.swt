@@ -6555,6 +6555,18 @@ JNIEXPORT jlong JNICALL GTK_NATIVE(gtk_1icon_1theme_1get_1default)
 }
 #endif
 
+#ifndef NO_gtk_1icon_1theme_1get_1for_1display
+JNIEXPORT jlong JNICALL GTK_NATIVE(gtk_1icon_1theme_1get_1for_1display)
+	(JNIEnv *env, jclass that, jlong arg0)
+{
+	jlong rc = 0;
+	GTK_NATIVE_ENTER(env, that, gtk_1icon_1theme_1get_1for_1display_FUNC);
+	rc = (jlong)gtk_icon_theme_get_for_display((GdkDisplay *)arg0);
+	GTK_NATIVE_EXIT(env, that, gtk_1icon_1theme_1get_1for_1display_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_gtk_1icon_1theme_1load_1icon
 JNIEXPORT jlong JNICALL GTK_NATIVE(gtk_1icon_1theme_1load_1icon)
 	(JNIEnv *env, jclass that, jlong arg0, jbyteArray arg1, jint arg2, jint arg3, jlong arg4)
@@ -6571,14 +6583,38 @@ fail:
 }
 #endif
 
-#ifndef NO_gtk_1icon_1theme_1lookup_1by_1gicon
-JNIEXPORT jlong JNICALL GTK_NATIVE(gtk_1icon_1theme_1lookup_1by_1gicon)
+#ifndef NO_gtk_1icon_1theme_1lookup_1by_1gicon__JJII
+JNIEXPORT jlong JNICALL GTK_NATIVE(gtk_1icon_1theme_1lookup_1by_1gicon__JJII)
 	(JNIEnv *env, jclass that, jlong arg0, jlong arg1, jint arg2, jint arg3)
 {
 	jlong rc = 0;
-	GTK_NATIVE_ENTER(env, that, gtk_1icon_1theme_1lookup_1by_1gicon_FUNC);
+	GTK_NATIVE_ENTER(env, that, gtk_1icon_1theme_1lookup_1by_1gicon__JJII_FUNC);
 	rc = (jlong)gtk_icon_theme_lookup_by_gicon((GtkIconTheme *)arg0, (GIcon *)arg1, (gint)arg2, (GtkIconLookupFlags)arg3);
-	GTK_NATIVE_EXIT(env, that, gtk_1icon_1theme_1lookup_1by_1gicon_FUNC);
+	GTK_NATIVE_EXIT(env, that, gtk_1icon_1theme_1lookup_1by_1gicon__JJII_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_gtk_1icon_1theme_1lookup_1by_1gicon__JJIIII
+JNIEXPORT jlong JNICALL GTK_NATIVE(gtk_1icon_1theme_1lookup_1by_1gicon__JJIIII)
+	(JNIEnv *env, jclass that, jlong arg0, jlong arg1, jint arg2, jint arg3, jint arg4, jint arg5)
+{
+	jlong rc = 0;
+	GTK_NATIVE_ENTER(env, that, gtk_1icon_1theme_1lookup_1by_1gicon__JJIIII_FUNC);
+	rc = (jlong)gtk_icon_theme_lookup_by_gicon((GtkIconTheme *)arg0, (GIcon *)arg1, (gint)arg2, (gint)arg3, (GtkTextDirection)arg4, (GtkIconLookupFlags)arg5);
+	GTK_NATIVE_EXIT(env, that, gtk_1icon_1theme_1lookup_1by_1gicon__JJIIII_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_gtk_1icon_1theme_1lookup_1icon
+JNIEXPORT jlong JNICALL GTK_NATIVE(gtk_1icon_1theme_1lookup_1icon)
+	(JNIEnv *env, jclass that, jlong arg0, jlong arg1, jlong arg2, jint arg3, jint arg4, jint arg5, jint arg6)
+{
+	jlong rc = 0;
+	GTK_NATIVE_ENTER(env, that, gtk_1icon_1theme_1lookup_1icon_FUNC);
+	rc = (jlong)gtk_icon_theme_lookup_icon((GtkIconTheme *)arg0, (const char *)arg1, (const char **)arg2, (gint)arg3, (gint)arg4, (GtkTextDirection)arg5, (GtkIconLookupFlags)arg6);
+	GTK_NATIVE_EXIT(env, that, gtk_1icon_1theme_1lookup_1icon_FUNC);
 	return rc;
 }
 #endif
@@ -8693,7 +8729,7 @@ JNIEXPORT jboolean JNICALL GTK_NATIVE(gtk_1scrolled_1window_1get_1has_1frame)
 {
 	jboolean rc = 0;
 	GTK_NATIVE_ENTER(env, that, gtk_1scrolled_1window_1get_1has_1frame_FUNC);
-	rc = (jboolean)gtk_scrolled_window_get_has_frame(arg0);
+	rc = (jboolean)gtk_scrolled_window_get_has_frame((GtkScrolledWindow *)arg0);
 	GTK_NATIVE_EXIT(env, that, gtk_1scrolled_1window_1get_1has_1frame_FUNC);
 	return rc;
 }
