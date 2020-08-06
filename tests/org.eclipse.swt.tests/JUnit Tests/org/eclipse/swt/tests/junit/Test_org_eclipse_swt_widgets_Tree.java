@@ -33,7 +33,6 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeColumn;
 import org.eclipse.swt.widgets.TreeItem;
-import org.eclipse.test.Screenshots;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -935,6 +934,9 @@ public void test_Virtual() {
 			top[0] = item;
 			item.setText("top");
 		} else {
+			if (top[0] == null) {
+				top[0] = tree.getItem(0);
+			}
 			if (top[0] != null) {
 				int index = top[0].indexOf(item);
 				item.setText("Item " + index);
@@ -960,12 +962,6 @@ public void test_Virtual() {
 				e.printStackTrace();
 			}
 		}
-	}
-	// temp code to capture screenshot
-	if (SwtTestUtil.isCocoa) {
-		Screenshots.takeScreenshot(getClass(), testName.getMethodName());
-		// check if setData is called for root item
-		assertTrue("SetData not called for top item", top[0] != null);
 	}
 
 	// the "* 2" allows some surplus for platforms that pre-fetch items to improve scrolling performance:
