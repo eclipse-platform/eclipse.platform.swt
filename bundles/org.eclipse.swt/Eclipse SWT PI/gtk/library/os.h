@@ -462,6 +462,11 @@
 #define NO_gtk_1selection_1data_1get_1target
 #define NO_gtk_1selection_1data_1set
 
+// GdkAtom removed
+#define NO_gtk_1drag_1get_1data__JJJ
+#define NO_gdk_1text_1property_1to_1utf8_1list_1for_1display
+#define NO_gdk_1x11_1display_1utf8_1to_1compound_1text
+
 #else
 
 /**
