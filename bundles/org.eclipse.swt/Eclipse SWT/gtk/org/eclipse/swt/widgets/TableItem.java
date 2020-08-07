@@ -418,11 +418,15 @@ Rectangle getBoundsInPixels (int index) {
 	GdkRectangle rect = new GdkRectangle ();
 	GTK.gtk_tree_view_get_cell_area (parentHandle, path, column, rect);
 	GTK.gtk_tree_path_free (path);
-	int [] cw = new int [1], ch = new int [1];
+	int [] columnWidth = new int [1], columnHeight = new int [1];
 	parent.ignoreSize = true;
-	GTK.gtk_tree_view_column_cell_get_size (column, null, null, null, cw, ch);
+	if (GTK.GTK4) {
+		GTK.gtk_tree_view_column_cell_get_size(column, null, null, columnWidth, columnHeight);
+	} else {
+		GTK.gtk_tree_view_column_cell_get_size (column, null, null, null, columnWidth, columnHeight);
+	}
 	parent.ignoreSize = false;
-	rect.height = ch [0];
+	rect.height = columnHeight [0];
 	if ((parent.getStyle () & SWT.MIRRORED) != 0) rect.x = parent.getClientWidth () - rect.width - rect.x;
 
 	if (index == 0 && (parent.style & SWT.CHECK) != 0) {

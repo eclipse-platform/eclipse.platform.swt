@@ -467,6 +467,9 @@
 #define NO_gdk_1text_1property_1to_1utf8_1list_1for_1display
 #define NO_gdk_1x11_1display_1utf8_1to_1compound_1text
 
+// GtkTreeViewColumn changes
+#define NO_gtk_1tree_1view_1column_1cell_1get_1size__JLorg_eclipse_swt_internal_gtk_GdkRectangle_2_3I_3I_3I_3I
+
 #else
 
 /**
@@ -587,6 +590,9 @@
 // GtkScrollWindow
 #define NO_gtk_1scrolled_1window_1set_1has_1frame
 #define NO_gtk_1scrolled_1window_1get_1has_1frame
+
+// GtkTreeViewColumn
+#define NO_gtk_1tree_1view_1column_1cell_1get_1size__J_3I_3I_3I_3I
 
 #endif
 

@@ -2935,7 +2935,17 @@ public class GTK extends OS {
 	 * @param width cast=(gint *)
 	 * @param height cast=(gint *)
 	 */
+	/* [GTK3 only, if-def'd in os.h] */
 	public static final native void gtk_tree_view_column_cell_get_size(long tree_column, GdkRectangle cell_area, int[] x_offset, int[] y_offset, int[] width, int[] height);
+	/**
+	 * @param tree_column cast=(GtkTreeViewColumn *)
+	 * @param x_offset cast=(int *)
+	 * @param y_offset cast=(int *)
+	 * @param width cast=(int *)
+	 * @param height cast=(int *)
+	 */
+	/* [GTK4 only, if-def'd in os.h] */
+	public static final native void gtk_tree_view_column_cell_get_size(long tree_column, int[] x_offset, int[] y_offset, int[] width, int[] height);
 	/**
 	 * @param tree_column cast=(GtkTreeViewColumn *)
 	 * @param tree_model cast=(GtkTreeModel *)

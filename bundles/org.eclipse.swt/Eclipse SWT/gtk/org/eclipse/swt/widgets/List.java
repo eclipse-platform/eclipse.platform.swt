@@ -546,7 +546,12 @@ int getItemHeightInPixels () {
 	int [] w = new int [1], h = new int [1];
 
 	if (itemCount == 0) {
-		GTK.gtk_tree_view_column_cell_get_size (column, null, null, null, w, h);
+		if (GTK.GTK4) {
+			GTK.gtk_tree_view_column_cell_get_size(column, null, null, w, h);
+		} else {
+			GTK.gtk_tree_view_column_cell_get_size (column, null, null, null, w, h);
+		}
+
 		height = h[0];
 	} else {
 		long iter = OS.g_malloc (GTK.GtkTreeIter_sizeof ());

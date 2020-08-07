@@ -1776,7 +1776,11 @@ int getItemHeightInPixels () {
 		long column = GTK.gtk_tree_view_get_column (handle, 0);
 		int [] w = new int [1], h = new int [1];
 		ignoreSize = true;
-		GTK.gtk_tree_view_column_cell_get_size (column, null, null, null, w, h);
+		if (GTK.GTK4) {
+			GTK.gtk_tree_view_column_cell_get_size(column, null, null, w, h);
+		} else {
+			GTK.gtk_tree_view_column_cell_get_size (column, null, null, null, w, h);
+		}
 		int height = h [0];
 		long textRenderer = getTextRenderer (column);
 		if (textRenderer != 0) GTK.gtk_cell_renderer_get_preferred_height_for_width (textRenderer, handle, 0, h, null);

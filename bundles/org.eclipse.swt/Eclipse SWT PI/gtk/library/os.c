@@ -11013,8 +11013,8 @@ fail:
 }
 #endif
 
-#ifndef NO_gtk_1tree_1view_1column_1cell_1get_1size
-JNIEXPORT void JNICALL GTK_NATIVE(gtk_1tree_1view_1column_1cell_1get_1size)
+#ifndef NO_gtk_1tree_1view_1column_1cell_1get_1size__JLorg_eclipse_swt_internal_gtk_GdkRectangle_2_3I_3I_3I_3I
+JNIEXPORT void JNICALL GTK_NATIVE(gtk_1tree_1view_1column_1cell_1get_1size__JLorg_eclipse_swt_internal_gtk_GdkRectangle_2_3I_3I_3I_3I)
 	(JNIEnv *env, jclass that, jlong arg0, jobject arg1, jintArray arg2, jintArray arg3, jintArray arg4, jintArray arg5)
 {
 	GdkRectangle _arg1, *lparg1=NULL;
@@ -11022,7 +11022,7 @@ JNIEXPORT void JNICALL GTK_NATIVE(gtk_1tree_1view_1column_1cell_1get_1size)
 	jint *lparg3=NULL;
 	jint *lparg4=NULL;
 	jint *lparg5=NULL;
-	GTK_NATIVE_ENTER(env, that, gtk_1tree_1view_1column_1cell_1get_1size_FUNC);
+	GTK_NATIVE_ENTER(env, that, gtk_1tree_1view_1column_1cell_1get_1size__JLorg_eclipse_swt_internal_gtk_GdkRectangle_2_3I_3I_3I_3I_FUNC);
 	if (arg1) if ((lparg1 = &_arg1) == NULL) goto fail;
 	if (arg2) if ((lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL)) == NULL) goto fail;
 	if (arg3) if ((lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL)) == NULL) goto fail;
@@ -11035,7 +11035,30 @@ fail:
 	if (arg3 && lparg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
 	if (arg2 && lparg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
 	if (arg1 && lparg1) setGdkRectangleFields(env, arg1, lparg1);
-	GTK_NATIVE_EXIT(env, that, gtk_1tree_1view_1column_1cell_1get_1size_FUNC);
+	GTK_NATIVE_EXIT(env, that, gtk_1tree_1view_1column_1cell_1get_1size__JLorg_eclipse_swt_internal_gtk_GdkRectangle_2_3I_3I_3I_3I_FUNC);
+}
+#endif
+
+#ifndef NO_gtk_1tree_1view_1column_1cell_1get_1size__J_3I_3I_3I_3I
+JNIEXPORT void JNICALL GTK_NATIVE(gtk_1tree_1view_1column_1cell_1get_1size__J_3I_3I_3I_3I)
+	(JNIEnv *env, jclass that, jlong arg0, jintArray arg1, jintArray arg2, jintArray arg3, jintArray arg4)
+{
+	jint *lparg1=NULL;
+	jint *lparg2=NULL;
+	jint *lparg3=NULL;
+	jint *lparg4=NULL;
+	GTK_NATIVE_ENTER(env, that, gtk_1tree_1view_1column_1cell_1get_1size__J_3I_3I_3I_3I_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	if (arg2) if ((lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL)) == NULL) goto fail;
+	if (arg3) if ((lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL)) == NULL) goto fail;
+	if (arg4) if ((lparg4 = (*env)->GetIntArrayElements(env, arg4, NULL)) == NULL) goto fail;
+	gtk_tree_view_column_cell_get_size((GtkTreeViewColumn *)arg0, (int *)lparg1, (int *)lparg2, (int *)lparg3, (int *)lparg4);
+fail:
+	if (arg4 && lparg4) (*env)->ReleaseIntArrayElements(env, arg4, lparg4, 0);
+	if (arg3 && lparg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
+	if (arg2 && lparg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	if (arg1 && lparg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
+	GTK_NATIVE_EXIT(env, that, gtk_1tree_1view_1column_1cell_1get_1size__J_3I_3I_3I_3I_FUNC);
 }
 #endif
 
