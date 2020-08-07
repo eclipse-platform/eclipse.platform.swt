@@ -37,6 +37,7 @@ import org.eclipse.swt.layout.*;
 import org.eclipse.swt.widgets.*;
 
 abstract class Chromium extends WebBrowser {
+	private static final String SET_TEXT_URL = "swt.chromium.setText.";
 	private static final String DATA_TEXT_URL = "data:text/html;base64,";
 	private static final String VERSION = Library.getVersionString();
 	private static final String CEFVERSION = "3071";
@@ -780,7 +781,7 @@ abstract class Chromium extends WebBrowser {
 				} else {
 					event.required = true;
 				}
-			} else {
+			} else if (!event.required) {
 				createDefaultPopup(windowInfo, client, event);
 			}
 		});
@@ -994,7 +995,7 @@ abstract class Chromium extends WebBrowser {
 			event.display = chromium.getDisplay();
 			event.widget = chromium;
 			event.doit = true;
-			event.location = ChromiumLib.cefswt_request_to_java(request);
+			event.location = getPlainUrl(ChromiumLib.cefswt_request_to_java(request));
 			debugPrint("on_before_browse:" + event.location);
 			try {
 				loopDisable = true;
@@ -1904,6 +1905,8 @@ abstract class Chromium extends WebBrowser {
 //		debugPrint("getUrl1:" + cefurl);
 		if (cefurl == null)
 			cefurl = getPlainUrl(this.url);
+		else
+			cefurl = getPlainUrl(cefurl);
 		return cefurl;
 	}
 
@@ -1930,6 +1933,16 @@ abstract class Chromium extends WebBrowser {
 
 	@Override
 	public boolean setText(String html, boolean trusted) {
+		if (html.contains("file:/")) { // file:/ resources not supported with data:text
+			try {
+				Path tmp = Files.createTempFile(SET_TEXT_URL, ".html");
+				Files.write(tmp, html.getBytes());
+				tmp.toFile().deleteOnExit();
+				boolean s = setUrl(tmp.toUri().toString(), null, null);
+				return s;
+			} catch (IOException e) {
+			}
+		}
 		String texturl = DATA_TEXT_URL + Base64.getEncoder().encodeToString(html.getBytes());
 		return setUrl(texturl, null, null);
 	}
@@ -1937,6 +1950,9 @@ abstract class Chromium extends WebBrowser {
 	private static String getPlainUrl(String url) {
 		if (url != null && url.startsWith(DATA_TEXT_URL)) {
 			return url.substring(0, DATA_TEXT_URL.length()-8);
+		}
+		if (url != null && url.startsWith("file:/") && url.contains(SET_TEXT_URL)) {
+			return "about:blank";
 		}
 		return url;
 	}
