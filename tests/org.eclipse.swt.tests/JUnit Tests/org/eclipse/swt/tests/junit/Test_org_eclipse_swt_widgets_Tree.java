@@ -964,8 +964,8 @@ public void test_Virtual() {
 		}
 	}
 
-	// the "* 2" allows some surplus for platforms that pre-fetch items to improve scrolling performance:
+	// the "* 3" allows some surplus for platforms that pre-fetch items to improve scrolling performance:
 	assertTrue("SetData callback count not in range: " + dataCounter[0],
-			dataCounter[0] > visibleCount / 2 && dataCounter[0] <= visibleCount * 2);
+			dataCounter[0] > visibleCount / 2 && dataCounter[0] <= visibleCount * 3);
 }
 }
