@@ -453,6 +453,15 @@
 #define NO_gtk_1icon_1theme_1load_1icon
 #define NO_gtk_1icon_1theme_1lookup_1by_1gicon__JJII
 
+// GtkSelectionData removed
+#define NO_gtk_1selection_1data_1free
+#define NO_gtk_1selection_1data_1get_1data
+#define NO_gtk_1selection_1data_1get_1data_1type
+#define NO_gtk_1selection_1data_1get_1format
+#define NO_gtk_1selection_1data_1get_1length
+#define NO_gtk_1selection_1data_1get_1target
+#define NO_gtk_1selection_1data_1set
+
 #else
 
 /**
