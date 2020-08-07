@@ -455,6 +455,7 @@ typedef enum {
 	gtk_1entry_1text_1index_1to_1layout_1index_FUNC,
 	gtk_1enumerate_1printers_FUNC,
 	gtk_1event_1box_1new_FUNC,
+	gtk_1event_1controller_1get_1current_1event_FUNC,
 	gtk_1event_1controller_1get_1widget_FUNC,
 	gtk_1event_1controller_1handle_1event_FUNC,
 	gtk_1event_1controller_1key_1new_FUNC,

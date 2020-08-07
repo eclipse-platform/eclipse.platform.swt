@@ -182,6 +182,7 @@
 #define NO_GdkEventKey
 #define NO_GdkEventMotion
 #define NO_GdkEventScroll
+#define NO_GdkGeometry
 
 // Memmoves for those structs which were removed in GTK4
 #define NO_memmove__ILorg_eclipse_swt_internal_gtk_GtkTargetEntry_2I
@@ -370,6 +371,7 @@
 #define NO_gdk_1event_1get_1state
 #define NO_GDK_1EVENT_1TYPE
 #define NO_GDK_1EVENT_1WINDOW
+#define NO_gtk_1get_1current_1event
 
 // GdkCursor removals
 #define NO_gdk_1cursor_1new_1for_1display
@@ -564,12 +566,16 @@
 #define NO_gdk_1button_1event_1get_1button
 #define NO_gdk_1event_1get_1position
 #define NO_gdk_1key_1event_1get_1keyval
+#define NO_gdk_1key_1event_1get_1keycode
 #define NO_gdk_1scroll_1event_1get_1deltas
 #define NO_gdk_1scroll_1event_1get_1direction
 #define NO_gdk_1event_1get_1modifier_1state
 #define NO_gdk_1key_1event_1get_1layout
 #define NO_gdk_1event_1ref
 #define NO_gdk_1event_1unref
+
+// GtkEventController
+#define NO_gtk_1event_1controller_1get_1current_1event
 
 // GdkCursor API changes
 #define NO_gdk_1cursor_1new_1from_1name__Ljava_lang_String_2J

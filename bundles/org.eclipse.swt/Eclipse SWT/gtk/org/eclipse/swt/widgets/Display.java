@@ -5903,35 +5903,35 @@ long enterMotionScrollProc (long controller, double x, double y, long user_data)
 	long handle = GTK.gtk_event_controller_get_widget(controller);
 	Widget widget = getWidget (handle);
 	if (widget == null) return 0;
-	return widget.enterMotionScrollProc(handle, x, y, user_data);
+	return widget.enterMotionScrollProc(controller, handle, x, y, user_data);
 }
 
 long focusProc (long controller, long user_data) {
 	long handle = GTK.gtk_event_controller_get_widget(controller);
 	Widget widget = getWidget (handle);
 	if (widget == null) return 0;
-	return widget.focusProc(handle, user_data);
+	return widget.focusProc(controller, handle, user_data);
 }
 
 long keyPressReleaseProc (long controller, int keyval, int keycode, int state, long user_data) {
 	long handle = GTK.gtk_event_controller_get_widget(controller);
 	Widget widget = getWidget (handle);
 	if (widget == null) return 0;
-	return widget.keyPressReleaseProc(handle, keyval, keycode, state, user_data);
+	return widget.keyPressReleaseProc(controller, handle, keyval, keycode, state, user_data);
 }
 
 long gesturePressReleaseProc (long gesture, int n_press, double x, double y, long user_data) {
 	long handle = GTK.gtk_event_controller_get_widget(gesture);
 	Widget widget = getWidget (handle);
 	if (widget == null) return 0;
-	return widget.getsurePressReleaseProc (gesture, n_press, x, y, user_data);
+	return widget.gesturePressReleaseProc (gesture, n_press, x, y, user_data);
 }
 
 long leaveProc (long controller, long user_data) {
 	long handle = GTK.gtk_event_controller_get_widget(controller);
 	Widget widget = getWidget (handle);
 	if (widget == null) return 0;
-	return widget.leaveProc(handle, user_data);
+	return widget.leaveProc(controller, handle, user_data);
 }
 
 long notifyProc (long object, long param_spec, long user_data) {

@@ -5501,6 +5501,18 @@ JNIEXPORT jlong JNICALL GTK_NATIVE(gtk_1event_1box_1new)
 }
 #endif
 
+#ifndef NO_gtk_1event_1controller_1get_1current_1event
+JNIEXPORT jlong JNICALL GTK_NATIVE(gtk_1event_1controller_1get_1current_1event)
+	(JNIEnv *env, jclass that, jlong arg0)
+{
+	jlong rc = 0;
+	GTK_NATIVE_ENTER(env, that, gtk_1event_1controller_1get_1current_1event_FUNC);
+	rc = (jlong)gtk_event_controller_get_current_event(arg0);
+	GTK_NATIVE_EXIT(env, that, gtk_1event_1controller_1get_1current_1event_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_gtk_1event_1controller_1get_1widget
 JNIEXPORT jlong JNICALL GTK_NATIVE(gtk_1event_1controller_1get_1widget)
 	(JNIEnv *env, jclass that, jlong arg0)
@@ -6653,7 +6665,7 @@ JNIEXPORT jboolean JNICALL GTK_NATIVE(gtk_1im_1context_1filter_1keypress)
 {
 	jboolean rc = 0;
 	GTK_NATIVE_ENTER(env, that, gtk_1im_1context_1filter_1keypress_FUNC);
-	rc = (jboolean)gtk_im_context_filter_keypress((GtkIMContext *)arg0, (GdkEventKey *)arg1);
+	rc = (jboolean)gtk_im_context_filter_keypress((GtkIMContext *)arg0, arg1);
 	GTK_NATIVE_EXIT(env, that, gtk_1im_1context_1filter_1keypress_FUNC);
 	return rc;
 }

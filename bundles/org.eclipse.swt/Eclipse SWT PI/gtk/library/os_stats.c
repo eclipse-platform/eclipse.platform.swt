@@ -457,6 +457,7 @@ char * GTK_nativeFunctionNames[] = {
 	"gtk_1entry_1text_1index_1to_1layout_1index",
 	"gtk_1enumerate_1printers",
 	"gtk_1event_1box_1new",
+	"gtk_1event_1controller_1get_1current_1event",
 	"gtk_1event_1controller_1get_1widget",
 	"gtk_1event_1controller_1handle_1event",
 	"gtk_1event_1controller_1key_1new",

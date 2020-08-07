@@ -1318,7 +1318,10 @@ public class GTK extends OS {
 	 */
 	/* [GTK3 only, if-def'd in os.h] */
 	public static final native void gtk_frame_set_shadow_type(long frame, int type);
+	/* [GTK3 only, if-def'd in os.h] */
 	public static final native long gtk_get_current_event();
+	/* [GTK4 only, if-def'd in os.h] */
+	public static final native long gtk_event_controller_get_current_event(long controller);
 	/** @param state cast=(GdkModifierType*) */
 	public static final native boolean gtk_get_current_event_state(int[] state);
 	public static final native long gtk_get_default_language();
@@ -1418,10 +1421,7 @@ public class GTK extends OS {
 	 */
 	public static final native long gtk_icon_theme_lookup_by_gicon(long self, long icon, int size, int scale, int direction, int flags);
 
-	/**
-	 * @param context cast=(GtkIMContext *)
-	 * @param event cast=(GdkEventKey *)
-	 */
+	/** @param context cast=(GtkIMContext *) */
 	public static final native boolean gtk_im_context_filter_keypress(long context, long event);
 	/** @param context cast=(GtkIMContext *) */
 	public static final native void gtk_im_context_focus_in(long context);
