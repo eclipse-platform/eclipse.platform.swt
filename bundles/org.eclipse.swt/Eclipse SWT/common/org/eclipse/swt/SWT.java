@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2019 IBM Corporation and others.
+ * Copyright (c) 2000, 2020 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -62,6 +62,21 @@ public class SWT {
 	/**
 	 * The key down event type (value is 1).
 	 *
+	 * <p>
+	 * Note:
+	 * <ul>
+	 * <li>Event.keyCode: the constant of the pressed key, even if it is just a
+	 * modifier (Shift, Ctrl, ...)</li>
+	 * <li>Event.character: the character that the key press created (or 0 if
+	 * none)</li>
+	 * <li>Event.keyLocation: either SWT.NONE, SWT.LEFT/.RIGHT (e.g. for Shift key)
+	 * or SWT.KEYPAD</li>
+	 * <li>Event.stateMask: an or-combined bit mask of the modifiers
+	 * (SWT.BUTTON_MASK, SWT.SHIFT, SWT.CTRL, SWT.CMD, SWT.ALT, SWT.MOD1, SWT.MOD2,
+	 * SWT.MOD3)</li>
+	 * </ul>
+	 * </p>
+	 *
 	 * @see org.eclipse.swt.widgets.Widget#addListener
 	 * @see org.eclipse.swt.widgets.Display#addFilter
 	 * @see org.eclipse.swt.widgets.Event
@@ -89,6 +104,17 @@ public class SWT {
 
 	/**
 	 * The mouse down event type (value is 3).
+	 *
+	 * <p>
+	 * Note:
+	 * <ul>
+	 * <li>Event.button: either 1, 2 or 3 for the mouse button that was pressed</li>
+	 * <li>Event.x, Event.y: the cursor position relative to the control
+	 * (event.widget)</li>
+	 * <li>Event.stateMask: an or-combined bit mask of the modifiers
+	 * (SWT.BUTTON_MASK)</li>
+	 * </ul>
+	 * </p>
 	 *
 	 * @see org.eclipse.swt.widgets.Widget#addListener
 	 * @see org.eclipse.swt.widgets.Display#addFilter
@@ -129,6 +155,11 @@ public class SWT {
 	/**
 	 * The mouse enter event type (value is 6).
 	 *
+	 * <p>
+	 * Note: This event is received when the user enters a control's bounds with the
+	 * mouse cursor.
+	 * </p>
+	 *
 	 * @see org.eclipse.swt.widgets.Widget#addListener
 	 * @see org.eclipse.swt.widgets.Display#addFilter
 	 * @see org.eclipse.swt.widgets.Event
@@ -142,6 +173,13 @@ public class SWT {
 	/**
 	 * The mouse exit event type (value is 7).
 	 *
+	 * <p>
+	 * Note: This event is received when the user exits a control's bounds with the
+	 * mouse cursor. This is not 100% reliable and if you want to have it 100%
+	 * reliable, use control.setCapture(true).
+	 * </p>
+	 *
+	 * @see org.eclipse.swt.widgets.Control#setCapture
 	 * @see org.eclipse.swt.widgets.Widget#addListener
 	 * @see org.eclipse.swt.widgets.Display#addFilter
 	 * @see org.eclipse.swt.widgets.Event
@@ -167,6 +205,15 @@ public class SWT {
 
 	/**
 	 * The paint event type (value is 9).
+	 *
+	 * <p>
+	 * Note:
+	 * <ul>
+	 * <li>Event.gc: the graphic context used for drawing.</li>
+	 * <li>Event.x, Event.y, Event.width, Event.height: the area that needs to be
+	 * painted</li>
+	 * </ul>
+	 * </p>
 	 *
 	 * @see org.eclipse.swt.widgets.Widget#addListener
 	 * @see org.eclipse.swt.widgets.Display#addFilter
@@ -301,6 +348,13 @@ public class SWT {
 	/**
 	 * The expand event type (value is 17).
 	 *
+	 * <p>
+	 * Note:
+	 * <ul>
+	 * <li>Event.item: the TreeItem which gets expanded</li>
+	 * </ul>
+	 * </p>
+	 *
 	 * @see org.eclipse.swt.widgets.Widget#addListener
 	 * @see org.eclipse.swt.widgets.Display#addFilter
 	 * @see org.eclipse.swt.widgets.Event
@@ -313,6 +367,13 @@ public class SWT {
 
 	/**
 	 * The collapse event type (value is 18).
+	 *
+	 * <p>
+	 * Note:
+	 * <ul>
+	 * <li>Event.item: the TreeItem which gets collapsed</li>
+	 * </ul>
+	 * </p>
 	 *
 	 * @see org.eclipse.swt.widgets.Widget#addListener
 	 * @see org.eclipse.swt.widgets.Display#addFilter
@@ -408,6 +469,20 @@ public class SWT {
 	/**
 	 * The verify event type (value is 25).
 	 *
+	 * <p>
+	 * Note:This event is sent before the actual change happens and the listener is
+	 * able to prevent the change by setting event.doit to false.
+	 *
+	 * <ul>
+	 * <li>Event.text: the new text</li>
+	 * <li>Event.start: the start position where the new text is
+	 * inserted/replaced</li>
+	 * <li>Event.end: the end position where the new text is inserted/replaced</li>
+	 * <li>Event.character/.keyCode/.stateMask: if the change is caused by a key
+	 * event, these fields are taken from the key event</li>
+	 * </ul>
+	 * </p>
+	 *
 	 * @see org.eclipse.swt.widgets.Widget#addListener
 	 * @see org.eclipse.swt.widgets.Display#addFilter
 	 * @see org.eclipse.swt.widgets.Event
@@ -492,6 +567,15 @@ public class SWT {
 	/**
 	 * The traverse event type (value is 31).
 	 *
+	 * <p>
+	 * Note: Event.detail: one of the SWT.TRAVERSE_* constants
+	 * <ul>
+	 * <li>Event.stateMask: the or-combined bit masks of pressed modifiers, e.g.
+	 * SWT.MOD1</li>
+	 * <li>Event.doit: set to false if no default behavior should happen</li>
+	 * </ul>
+	 * </p>
+	 *
 	 * @see org.eclipse.swt.widgets.Widget#addListener
 	 * @see org.eclipse.swt.widgets.Display#addFilter
 	 * @see org.eclipse.swt.widgets.Event
@@ -504,6 +588,11 @@ public class SWT {
 
 	/**
 	 * The mouse hover event type (value is 32).
+	 *
+	 * <p>
+	 * Note: This event is sent if the cursor stays over the same position for a
+	 * short time, e.g. to show a tool-tip
+	 * </p>
 	 *
 	 * @see org.eclipse.swt.widgets.Widget#addListener
 	 * @see org.eclipse.swt.widgets.Display#addFilter
@@ -535,6 +624,14 @@ public class SWT {
 
 	/**
 	 * The menu detect event type (value is 35).
+	 *
+	 * <p>
+	 * Note:
+	 * <ul>
+	 * <li>Event.detail: either SWT.MENU_MOUSE or SWT.MENU_KEYBOARD</li>
+	 * <li>Event.x, Event.y: cursor position in display coordinates</li>
+	 * </ul>
+	 * </p>
 	 *
 	 * @see org.eclipse.swt.widgets.Widget#addListener
 	 * @see org.eclipse.swt.widgets.Display#addFilter
@@ -623,6 +720,18 @@ public class SWT {
 	/**
 	 * The erase item event type (value is 40).
 	 *
+	 * <p>
+	 * Note:
+	 * <ul>
+	 * <li>Event.detail: an or-combined bit mask of the current state, e.g.
+	 * SWT.SELECTED, SWT.HOT</li>
+	 * <li>Event.gc: the graphics context to draw or modify colors</li>
+	 * <li>Event.x, Event.y, Event.width, Event.height: the cell's bounds</li>
+	 * <li>Event.item: the TreeItem or TableItem</li>
+	 * <li>Event.index: the column of the cell</li>
+	 * </ul>
+	 * </p>
+	 *
 	 * @see org.eclipse.swt.widgets.Widget#addListener
 	 * @see org.eclipse.swt.widgets.Display#addFilter
 	 * @see org.eclipse.swt.widgets.Event
@@ -634,6 +743,19 @@ public class SWT {
 	/**
 	 * The measure item event type (value is 41).
 	 *
+	 * <p>
+	 * Note:
+	 * <ul>
+	 * <li>Event.detail: an or-combined bit mask of the current state, e.g.
+	 * SWT.SELECTED, SWT.HOT</li>
+	 * <li>Event.gc: the graphics context to draw or modify colors</li>
+	 * <li>Event.x, Event.y, Event.width, Event.height: the cell's bounds, used as
+	 * input and output</li>
+	 * <li>Event.item: the TreeItem or TableItem</li>
+	 * <li>Event.index: the column of the cell</li>
+	 * </ul>
+	 * </p>
+	 *
 	 * @see org.eclipse.swt.widgets.Widget#addListener
 	 * @see org.eclipse.swt.widgets.Display#addFilter
 	 * @see org.eclipse.swt.widgets.Event
@@ -644,6 +766,18 @@ public class SWT {
 
 	/**
 	 * The paint item event type (value is 42).
+	 *
+	 * <p>
+	 * Note:
+	 * <ul>
+	 * <li>Event.detail: an or-combined bit mask of the current state, e.g.
+	 * SWT.SELECTED, SWT.HOT</li>
+	 * <li>Event.gc: the graphics context to draw or modify colors</li>
+	 * <li>Event.x, Event.y, Event.width, Event.height: the cell's bounds</li>
+	 * <li>Event.item: the TreeItem or TableItem</li>
+	 * <li>Event.index: the column of the cell</li>
+	 * </ul>
+	 * </p>
 	 *
 	 * @see org.eclipse.swt.widgets.Widget#addListener
 	 * @see org.eclipse.swt.widgets.Display#addFilter
