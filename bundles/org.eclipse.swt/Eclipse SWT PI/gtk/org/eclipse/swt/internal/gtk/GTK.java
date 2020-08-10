@@ -3198,6 +3198,7 @@ public class GTK extends OS {
 	 */
 	public static final native long gtk_widget_get_native(long widget);
 
+	/* GtkWidget [GTK3 only] */
 	/**
 	 * @param widget cast=(GtkWidget *)
 	 * @param accel_signal cast=(const gchar *)
@@ -3207,12 +3208,21 @@ public class GTK extends OS {
 	 */
 	public static final native void gtk_widget_add_accelerator(long widget, byte[] accel_signal, long accel_group, int accel_key, int accel_mods, int accel_flags);
 	/**
+	 * @param widget cast=(GtkWidget *)
+	 * @param accel_group cast=(GtkAccelGroup *)
+	 * @param accel_key cast=(guint)
+	 * @param accel_mods cast=(GdkModifierType)
+	 */
+	public static final native void gtk_widget_remove_accelerator(long widget, long accel_group, int accel_key, int accel_mods);
+	/**
 	 * @method flags=dynamic
 	 * @param widget cast=(GtkWidget *)
 	 * @param events cast=(gint)
 	 */
-	/* [GTK3 only] */
 	public static final native void gtk_widget_add_events(long widget, int events);
+
+
+
 	/** @param widget cast=(GtkWidget *) */
 	public static final native boolean gtk_widget_child_focus(long widget, int direction);
 	/**
@@ -3378,13 +3388,6 @@ public class GTK extends OS {
 	/** @param widget cast=(GtkWidget *) */
 	public static final native void gtk_widget_realize(long widget);
 	/**
-	 * @param widget cast=(GtkWidget *)
-	 * @param accel_group cast=(GtkAccelGroup *)
-	 * @param accel_key cast=(guint)
-	 * @param accel_mods cast=(GdkModifierType)
-	 */
-	public static final native void gtk_widget_remove_accelerator(long widget, long accel_group, int accel_key, int accel_mods);
-	/**
 	 * @method flags=dynamic
 	 * @param widget cast=(GtkWidget *)
 	 * @param new_parent cast=(GtkWidget *)
@@ -3549,11 +3552,6 @@ public class GTK extends OS {
 
 
 	/* GtkWindow */
-	/**
-	 * @param window cast=(GtkWindow *)
-	 * @param accel_group cast=(GtkAccelGroup *)
-	 */
-	public static final native void gtk_window_add_accel_group(long window, long accel_group);
 	/** @param window cast=(GtkWindow *) */
 	public static final native long gtk_window_get_focus(long window);
 	/**
@@ -3582,11 +3580,6 @@ public class GTK extends OS {
 	public static final native void gtk_window_fullscreen(long handle);
 	/** @param handle cast=(GtkWindow *) */
 	public static final native void gtk_window_unfullscreen(long handle);
-	/**
-	 * @param window cast=(GtkWindow *)
-	 * @param accel_group cast=(GtkAccelGroup *)
-	 */
-	public static final native void gtk_window_remove_accel_group(long window, long accel_group);
 	/**
 	 * @param handle cast=(GtkWindow *)
 	 * @param x cast=(gint)
@@ -3635,6 +3628,16 @@ public class GTK extends OS {
 	public static final native long gtk_window_get_default_widget(long window);
 
 	/* GtkWindow [GTK3 only, if-def'd in os.h] */
+	/**
+	 * @param window cast=(GtkWindow *)
+	 * @param accel_group cast=(GtkAccelGroup *)
+	 */
+	public static final native void gtk_window_add_accel_group(long window, long accel_group);
+	/**
+	 * @param window cast=(GtkWindow *)
+	 * @param accel_group cast=(GtkAccelGroup *)
+	 */
+	public static final native void gtk_window_remove_accel_group(long window, long accel_group);
 	/**
 	 * @param window cast=(GtkWindow *)
 	 * @param geometry_widget cast=(GtkWidget *)

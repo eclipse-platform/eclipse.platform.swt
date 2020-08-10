@@ -470,6 +470,12 @@
 // GtkTreeViewColumn changes
 #define NO_gtk_1tree_1view_1column_1cell_1get_1size__JLorg_eclipse_swt_internal_gtk_GdkRectangle_2_3I_3I_3I_3I
 
+// GtkAccelGroup removed
+#define NO_gtk_1widget_1add_1accelerator
+#define NO_gtk_1widget_1remove_1accelerator
+#define NO_gtk_1window_1add_1accel_1group
+#define NO_gtk_1window_1remove_1accel_1group
+
 #else
 
 /**

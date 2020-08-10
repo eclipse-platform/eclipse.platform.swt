@@ -58,21 +58,6 @@
 /* Field accessors */
 #define G_OBJECT_CLASS_CONSTRUCTOR(arg0) (arg0)->constructor
 #define G_OBJECT_CLASS_SET_CONSTRUCTOR(arg0, arg1) (arg0)->constructor = (GObject* (*) (GType, guint, GObjectConstructParam *))arg1
-struct _GtkAccelLabelPrivate
-{
-  GtkWidget     *accel_widget;       /* done */
-  GClosure      *accel_closure;      /* has set function */
-  GtkAccelGroup *accel_group;        /* set by set_accel_closure() */
-  gchar         *accel_string;       /* has set function */
-  guint          accel_padding;      /* should be style property? */
-  guint16        accel_string_width; /* seems to be private */
-};
-#define GTK_ACCEL_LABEL_SET_ACCEL_STRING(arg0, arg1) (arg0)->priv->accel_string = arg1
-#define GTK_ACCEL_LABEL_GET_ACCEL_STRING(arg0) (arg0)->priv->accel_string
-#define GTK_ENTRY_IM_CONTEXT(arg0) (arg0)->im_context
-#define GTK_TEXTVIEW_IM_CONTEXT(arg0) (arg0)->im_context
-#define GTK_WIDGET_REQUISITION_WIDTH(arg0) (arg0)->requisition.width
-#define GTK_WIDGET_REQUISITION_HEIGHT(arg0) (arg0)->requisition.height
 #define GDK_EVENT_TYPE(arg0) (arg0)->type
 #define GDK_EVENT_WINDOW(arg0) (arg0)->window
 #define X_EVENT_TYPE(arg0) (arg0)->type
@@ -82,9 +67,6 @@ struct _GtkAccelLabelPrivate
 #define g_slist_data(arg0) (arg0)->data
 #define g_list_set_next(arg0, arg1) (arg0)->next = arg1
 #define g_list_set_previous(arg0, arg1) (arg0)->prev = arg1
-#define gtk_style_get_font_desc(arg0) (arg0)->font_desc
-#define gtk_style_get_xthickness(arg0) (arg0)->xthickness
-#define gtk_style_get_ythickness(arg0) (arg0)->ythickness
 #define localeconv_decimal_point() localeconv()->decimal_point
 
 // Mechanism to get function pointers of C/gtk functions back to java.
