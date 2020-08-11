@@ -712,18 +712,14 @@ static AtkObject *swt_fixed_get_accessible (GtkWidget *widget);
 static void swt_fixed_measure (GtkWidget *widget, GtkOrientation  orientation, int for_size, int *minimum,
 		int *natural, int *minimum_baseline, int *natural_baseline);
 static void swt_fixed_size_allocate (GtkWidget *widget, const GtkAllocation *allocation, int baseline);
-static void swt_fixed_add (GtkContainer *container, GtkWidget *widget);
-static void swt_fixed_remove (GtkContainer *container, GtkWidget *widget);
-static void swt_fixed_forall (GtkContainer *container,  GtkCallback callback, gpointer callback_data);
 
-G_DEFINE_TYPE_WITH_CODE (SwtFixed, swt_fixed, GTK_TYPE_CONTAINER,
+G_DEFINE_TYPE_WITH_CODE (SwtFixed, swt_fixed, GTK_TYPE_WIDGET,
 		G_IMPLEMENT_INTERFACE (GTK_TYPE_SCROLLABLE, NULL)
 		G_ADD_PRIVATE (SwtFixed))
 
 static void swt_fixed_class_init (SwtFixedClass *class) {
 	GObjectClass *gobject_class = (GObjectClass*) class;
 	GtkWidgetClass *widget_class = (GtkWidgetClass*) class;
-	GtkContainerClass *container_class = (GtkContainerClass*) class;
 
 	/* GOject implementation */
 	gobject_class->set_property = swt_fixed_set_property;
@@ -743,12 +739,6 @@ static void swt_fixed_class_init (SwtFixedClass *class) {
 
 	/* Accessibility implementation */
 	widget_class->get_accessible = swt_fixed_get_accessible;
-
-	/* Container implementation */
-	container_class->add = swt_fixed_add;
-	container_class->remove = swt_fixed_remove;
-	container_class->forall = swt_fixed_forall;
-
 }
 
 void swt_fixed_restack (SwtFixed *fixed, GtkWidget *widget, GtkWidget *sibling, gboolean above) {
@@ -1058,8 +1048,7 @@ void swt_fixed_resize (SwtFixed *fixed, GtkWidget *widget, gint width, gint heig
 	}
 }
 
-static void swt_fixed_add (GtkContainer *container, GtkWidget *child) {
-	GtkWidget *widget = GTK_WIDGET (container);
+void swt_fixed_add (GtkWidget *container, GtkWidget *child) {
 	SwtFixed *fixed = SWT_FIXED (container);
 	SwtFixedPrivate *priv = fixed->priv;
 	SwtFixedChild *child_data;
@@ -1070,10 +1059,10 @@ static void swt_fixed_add (GtkContainer *container, GtkWidget *child) {
   	child_data->width = child_data->height = -1;
 
 	priv->children = g_list_append (priv->children, child_data);
-	gtk_widget_set_parent (child, widget);
+	gtk_widget_set_parent (child, container);
 }
 
-static void swt_fixed_remove (GtkContainer *container, GtkWidget *widget) {
+void swt_fixed_remove (GtkWidget *container, GtkWidget *widget) {
 	SwtFixed *fixed = SWT_FIXED (container);
 	SwtFixedPrivate *priv = fixed->priv;
 	GList *list;
@@ -1090,35 +1079,6 @@ static void swt_fixed_remove (GtkContainer *container, GtkWidget *widget) {
 			break;
 		}
 		list = list->next;
-	}
-}
-
-static void swt_fixed_forall (GtkContainer *container, GtkCallback callback, gpointer callback_data) {
-	SwtFixed *fixed = SWT_FIXED (container);
-	SwtFixedPrivate *priv = fixed->priv;
-	GList *list;
-
-	list = priv->children;
-
-	// NOTE: The direction of the list traversal is conditional.
-	//
-	// 1) When we do a *_foreach() traversal (i.e, include_internals==FALSE), we traverse the list as normal
-	// from front to back.
-	// This is used to layout higher level widgets inside containers (e.g row/grid etc..) in the expected way.
-	// If for a non-internal traversal we were to go in reverse, then widgets would get laid out in inverse order.
-	// 2) When we do a *_forall() traversal (i.e, include_internals==TRUE), we traverse the list in *reverse* order.
-	// This is an internal traversal of the internals of a widget. Reverse traversal is necessary for things like
-	// DnD Drop and DnD Motion events to find the correct widget in the case of overlapping  widgets on an absolute layout.
-	// Reversal is required because in swt_fixed_map(..) we do not raise the widget when we show it, as a result
-	// the stack is in reverse.
-
-	while (list) {
-		SwtFixedChild *child_data = list->data;
-		GtkWidget *child = child_data->widget;
-
-		list = list->next;
-
-		(* callback) (child, callback_data);
 	}
 }
 
@@ -1153,6 +1113,7 @@ struct _SwtFixedAccessiblePrivate {
 	GtkWidget *widget;
 };
 
+#if !defined(GTK4)
 G_DEFINE_TYPE_WITH_CODE (SwtFixedAccessible, swt_fixed_accessible, GTK_TYPE_CONTAINER_ACCESSIBLE,
 			 G_IMPLEMENT_INTERFACE (ATK_TYPE_ACTION, swt_fixed_accessible_action_iface_init)
 			 G_IMPLEMENT_INTERFACE (ATK_TYPE_COMPONENT, swt_fixed_accessible_component_iface_init)
@@ -1163,6 +1124,18 @@ G_DEFINE_TYPE_WITH_CODE (SwtFixedAccessible, swt_fixed_accessible, GTK_TYPE_CONT
 			 G_IMPLEMENT_INTERFACE (ATK_TYPE_TEXT, swt_fixed_accessible_text_iface_init)
 			 G_IMPLEMENT_INTERFACE (ATK_TYPE_VALUE, swt_fixed_accessible_value_iface_init)
 			 G_ADD_PRIVATE (SwtFixedAccessible))
+#else
+G_DEFINE_TYPE_WITH_CODE (SwtFixedAccessible, swt_fixed_accessible, GTK_TYPE_WIDGET_ACCESSIBLE,
+	 G_IMPLEMENT_INTERFACE (ATK_TYPE_ACTION, swt_fixed_accessible_action_iface_init)
+	 G_IMPLEMENT_INTERFACE (ATK_TYPE_COMPONENT, swt_fixed_accessible_component_iface_init)
+	 G_IMPLEMENT_INTERFACE (ATK_TYPE_EDITABLE_TEXT, swt_fixed_accessible_editable_text_iface_init)
+	 G_IMPLEMENT_INTERFACE (ATK_TYPE_HYPERTEXT, swt_fixed_accessible_hypertext_iface_init)
+	 G_IMPLEMENT_INTERFACE (ATK_TYPE_SELECTION, swt_fixed_accessible_selection_iface_init)
+	 G_IMPLEMENT_INTERFACE (ATK_TYPE_TABLE, swt_fixed_accessible_table_iface_init)
+	 G_IMPLEMENT_INTERFACE (ATK_TYPE_TEXT, swt_fixed_accessible_text_iface_init)
+	 G_IMPLEMENT_INTERFACE (ATK_TYPE_VALUE, swt_fixed_accessible_value_iface_init)
+	 G_ADD_PRIVATE (SwtFixedAccessible))
+#endif
 
 // Fully qualified Java class name for the Java implementation of ATK functions
 const char *ACCESSIBILITY_CLASS_NAME = "org/eclipse/swt/accessibility/AccessibleObject";

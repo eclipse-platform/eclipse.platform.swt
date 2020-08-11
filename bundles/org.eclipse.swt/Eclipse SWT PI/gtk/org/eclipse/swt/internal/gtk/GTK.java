@@ -380,10 +380,12 @@ public class GTK extends OS {
 	 * @param value cast=(gdouble)
 	 */
 	public static final native void gtk_adjustment_set_page_increment(long adjustment, double value);
-	/** @param bin cast=(GtkBin *) */
-	public static final native long gtk_bin_get_child(long bin);
 	/** @param border cast=(GtkBorder *) */
 	public static final native void gtk_border_free(long border);
+
+	/* GtkBin [GTK3 only] */
+	/** @param bin cast=(GtkBin *) */
+	public static final native long gtk_bin_get_child(long bin);
 
 	/* GtkBox */
 	/** @param box cast=(GtkBox *) */
@@ -733,6 +735,9 @@ public class GTK extends OS {
 	* @param combo_box cast=(GtkComboBox *)
 	*/
 	public static final native void gtk_combo_box_popdown(long combo_box);
+
+
+	/* GtkContainer [GTK3 only] */
 	/**
 	 * @param container cast=(GtkContainer *)
 	 * @param widget cast=(GtkWidget *)
@@ -752,12 +757,10 @@ public class GTK extends OS {
 	 * @param child cast=(GtkWidget *)
 	 * @param cairo cast=(cairo_t *)
 	 */
-	/* [GTK3 only, if-def'd in os.h] */
 	public static final native void gtk_container_propagate_draw(long container, long child, long cairo);
 	/**
 	 * @param container cast=(GtkContainer *)
 	 */
-	/* [GTK3 only, if-def'd in os.h] */
 	public static final native int gtk_container_get_border_width(long container);
 	/** @param container cast=(GtkContainer *) */
 	public static final native long gtk_container_get_children(long container);
@@ -770,8 +773,10 @@ public class GTK extends OS {
 	 * @param container cast=(GtkContainer *)
 	 * @param border_width cast=(guint)
 	 */
-	/* [GTK3 only, if-def'd in os.h] */
 	public static final native void gtk_container_set_border_width(long container, int border_width);
+
+
+
 	/**
 	 * @param dialog cast=(GtkDialog *)
 	 * @param button_text cast=(const gchar *)
@@ -3707,4 +3712,9 @@ public class GTK extends OS {
 	 * @param default_widget cast=(GtkWidget *)
 	 */
 	public static final native void gtk_window_set_default_widget(long window, long default_widget);
+	/**
+	 * @param window cast=(GtkWindow *)
+	 * @param child cast=(GtkWidget *)
+	 */
+	public static final native void gtk_window_set_child(long window, long child);
 }

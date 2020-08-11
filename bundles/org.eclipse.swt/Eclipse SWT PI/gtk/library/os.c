@@ -13399,6 +13399,16 @@ JNIEXPORT void JNICALL GTK_NATIVE(gtk_1window_1set_1attached_1to)
 }
 #endif
 
+#ifndef NO_gtk_1window_1set_1child
+JNIEXPORT void JNICALL GTK_NATIVE(gtk_1window_1set_1child)
+	(JNIEnv *env, jclass that, jlong arg0, jlong arg1)
+{
+	GTK_NATIVE_ENTER(env, that, gtk_1window_1set_1child_FUNC);
+	gtk_window_set_child((GtkWindow *)arg0, (GtkWidget *)arg1);
+	GTK_NATIVE_EXIT(env, that, gtk_1window_1set_1child_FUNC);
+}
+#endif
+
 #ifndef NO_gtk_1window_1set_1decorated
 JNIEXPORT void JNICALL GTK_NATIVE(gtk_1window_1set_1decorated)
 	(JNIEnv *env, jclass that, jlong arg0, jboolean arg1)
@@ -18498,6 +18508,16 @@ JNIEXPORT void JNICALL OS_NATIVE(swt_1fixed_1accessible_1register_1accessible)
 }
 #endif
 
+#ifndef NO_swt_1fixed_1add
+JNIEXPORT void JNICALL OS_NATIVE(swt_1fixed_1add)
+	(JNIEnv *env, jclass that, jlong arg0, jlong arg1)
+{
+	OS_NATIVE_ENTER(env, that, swt_1fixed_1add_FUNC);
+	swt_fixed_add((GtkWidget*)arg0, (GtkWidget*)arg1);
+	OS_NATIVE_EXIT(env, that, swt_1fixed_1add_FUNC);
+}
+#endif
+
 #ifndef NO_swt_1fixed_1get_1type
 JNIEXPORT jlong JNICALL OS_NATIVE(swt_1fixed_1get_1type)
 	(JNIEnv *env, jclass that)
@@ -18517,6 +18537,16 @@ JNIEXPORT void JNICALL OS_NATIVE(swt_1fixed_1move)
 	OS_NATIVE_ENTER(env, that, swt_1fixed_1move_FUNC);
 	swt_fixed_move((SwtFixed*)arg0, (GtkWidget*)arg1, arg2, arg3);
 	OS_NATIVE_EXIT(env, that, swt_1fixed_1move_FUNC);
+}
+#endif
+
+#ifndef NO_swt_1fixed_1remove
+JNIEXPORT void JNICALL OS_NATIVE(swt_1fixed_1remove)
+	(JNIEnv *env, jclass that, jlong arg0, jlong arg1)
+{
+	OS_NATIVE_ENTER(env, that, swt_1fixed_1remove_FUNC);
+	swt_fixed_remove((GtkWidget*)arg0, (GtkWidget*)arg1);
+	OS_NATIVE_EXIT(env, that, swt_1fixed_1remove_FUNC);
 }
 #endif
 

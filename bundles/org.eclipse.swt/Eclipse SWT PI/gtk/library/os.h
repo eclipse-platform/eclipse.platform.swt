@@ -275,6 +275,10 @@
 #define NO_gtk_1container_1propagate_1draw
 #define NO_gtk_1container_1set_1border_1width
 #define NO_gtk_1container_1get_1border_1width
+#define NO_gtk_1container_1add
+#define NO_gtk_1container_1forall
+#define NO_gtk_1container_1get_1children
+#define NO_gtk_1container_1remove
 
 /**
  * Some gtk_drag_* functions exist on both versions,
@@ -478,6 +482,9 @@
 #define NO_gtk_1window_1add_1accel_1group
 #define NO_gtk_1window_1remove_1accel_1group
 
+// GtkBin removed
+#define NO_gtk_1bin_1get_1child
+
 #else
 
 /**
@@ -593,6 +600,7 @@
 #define NO_gtk_1window_1minimize
 #define NO_gtk_1window_1unminimize
 #define NO_gtk_1window_1set_1default_1widget
+#define NO_gtk_1window_1set_1child
 
 // GtkIconTheme API changes
 #define NO_gtk_1icon_1theme_1get_1for_1display
@@ -605,6 +613,10 @@
 
 // GtkTreeViewColumn
 #define NO_gtk_1tree_1view_1column_1cell_1get_1size__J_3I_3I_3I_3I
+
+// SWTFixed changes
+#define NO_swt_1fixed_1add
+#define NO_swt_1fixed_1remove
 
 #endif
 

@@ -720,7 +720,12 @@ void createHandle (int index) {
 		if (handle == 0) {
 			int type = GTK.GTK_WINDOW_TOPLEVEL;
 			if (parent != null && (style & SWT.ON_TOP) != 0) type = GTK.GTK_WINDOW_POPUP;
-			shellHandle = GTK.gtk_window_new (type);
+			if (GTK.GTK4) {
+				// TODO: GTK4 need to handle for GTK_WINDOW_POPUP type
+				shellHandle = GTK.gtk_window_new();
+			} else {
+				shellHandle = GTK.gtk_window_new (type);
+			}
 		} else {
 			shellHandle = GTK.gtk_plug_new (handle);
 		}
@@ -814,8 +819,13 @@ void createHandle (int index) {
 	vboxHandle = gtk_box_new (GTK.GTK_ORIENTATION_VERTICAL, false, 0);
 	if (vboxHandle == 0) error (SWT.ERROR_NO_HANDLES);
 	createHandle (index, false, true);
-	GTK.gtk_container_add (vboxHandle, scrolledHandle);
-	gtk_box_set_child_packing (vboxHandle, scrolledHandle, true, true, 0, GTK.GTK_PACK_END);
+	if (GTK.GTK4) {
+		GTK.gtk_box_append(vboxHandle, scrolledHandle);
+	} else {
+		GTK.gtk_container_add (vboxHandle, scrolledHandle);
+		gtk_box_set_child_packing (vboxHandle, scrolledHandle, true, true, 0, GTK.GTK_PACK_END);
+	}
+
 	group = GTK.gtk_window_group_new ();
 	if (group == 0) error (SWT.ERROR_NO_HANDLES);
 	/*
@@ -2888,7 +2898,13 @@ void showWidget () {
 		}
 		OS.g_list_free (list);
 	}
-	GTK.gtk_container_add (shellHandle, vboxHandle);
+
+	if (GTK.GTK4) {
+		GTK.gtk_window_set_child (shellHandle, vboxHandle);
+	} else {
+		GTK.gtk_container_add (shellHandle, vboxHandle);
+	}
+
 	if (scrolledHandle != 0) GTK.gtk_widget_show (scrolledHandle);
 	if (handle != 0) GTK.gtk_widget_show (handle);
 	if (vboxHandle != 0) GTK.gtk_widget_show (vboxHandle);

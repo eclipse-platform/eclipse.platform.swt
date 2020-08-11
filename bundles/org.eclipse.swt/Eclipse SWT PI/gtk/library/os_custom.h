@@ -21,10 +21,12 @@
 #define GPollFD_sizeof() sizeof(GPollFD)
 #define GtkCellRendererText_sizeof() sizeof(GtkCellRendererText)
 #define GtkCellRendererTextClass_sizeof() sizeof(GtkCellRendererTextClass)
+#if !defined(GTK4)
 #define GtkCellRendererPixbuf_sizeof() sizeof(GtkCellRendererPixbuf)
 #define GtkCellRendererPixbufClass_sizeof() sizeof(GtkCellRendererPixbufClass)
 #define GtkCellRendererToggle_sizeof() sizeof(GtkCellRendererToggle)
 #define GtkCellRendererToggleClass_sizeof() sizeof(GtkCellRendererToggleClass)
+#endif
 #define GtkTextIter_sizeof() sizeof(GtkTextIter)
 #define GtkTreeIter_sizeof() sizeof(GtkTreeIter)
 
@@ -98,6 +100,23 @@ typedef struct _SwtFixed SwtFixed;
 typedef struct _SwtFixedPrivate SwtFixedPrivate;
 typedef struct _SwtFixedClass SwtFixedClass;
 
+#if defined(GTK4)
+struct _SwtFixed
+{
+  GtkWidget container;
+
+  /*< private >*/
+  SwtFixedPrivate *priv;
+
+  /* Accessibility */
+  AtkObject *accessible;
+};
+
+struct _SwtFixedClass
+{
+  GtkWidgetClass parent_class;
+};
+#else
 struct _SwtFixed
 {
   GtkContainer container;
@@ -113,9 +132,14 @@ struct _SwtFixedClass
 {
   GtkContainerClass parent_class;
 };
+#endif
 
 GType swt_fixed_get_type (void) G_GNUC_CONST;
 
+#if defined(GTK4)
+void swt_fixed_add (GtkWidget *container, GtkWidget *widget);
+void swt_fixed_remove (GtkWidget *container, GtkWidget *widget);
+#endif
 void swt_fixed_restack(SwtFixed *fixed, GtkWidget *widget, GtkWidget *sibling, gboolean above);
 void swt_fixed_move(SwtFixed *fixed, GtkWidget *widget, gint x, gint y);
 void swt_fixed_resize(SwtFixed *fixed, GtkWidget *widget, gint width, gint height);
@@ -130,6 +154,19 @@ typedef struct _SwtFixedAccessible SwtFixedAccessible;
 typedef struct _SwtFixedAccessiblePrivate SwtFixedAccessiblePrivate;
 typedef struct _SwtFixedAccessibleClass SwtFixedAccessibleClass;
 
+#if defined(GTK4)
+struct _SwtFixedAccessible
+{
+	GtkWidgetAccessible parent;
+
+	SwtFixedAccessiblePrivate *priv;
+};
+
+struct _SwtFixedAccessibleClass
+{
+	GtkWidgetAccessibleClass parent_class;
+};
+#else
 struct _SwtFixedAccessible
 {
 	GtkContainerAccessible parent;
@@ -141,6 +178,7 @@ struct _SwtFixedAccessibleClass
 {
 	GtkContainerAccessibleClass parent_class;
 };
+#endif
 
 GType swt_fixed_accessible_get_type (void) G_GNUC_CONST;
 AtkObject *swt_fixed_accessible_new (GtkWidget *widget);

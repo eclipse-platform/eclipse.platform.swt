@@ -1175,7 +1175,9 @@ void createDisplay (DeviceData data) {
 		byte [] type_name = Converter.wcsToMbcs ("SwtTextRenderer", true); //$NON-NLS-1$
 		text_renderer_type = OS.g_type_register_static (GTK.GTK_TYPE_CELL_RENDERER_TEXT (), type_name, text_renderer_info_ptr, 0);
 	}
-	if (pixbuf_renderer_type == 0) {
+
+	// TODO: GTK4 These classes no longer exist (ignore initialization of them for time being)
+	if (pixbuf_renderer_type == 0 && !GTK.GTK4) {
 		GTypeInfo renderer_info = new GTypeInfo ();
 		renderer_info.class_size = (short) GTK.GtkCellRendererPixbufClass_sizeof ();
 		renderer_info.class_init = rendererClassInitProc;
@@ -1185,7 +1187,7 @@ void createDisplay (DeviceData data) {
 		byte [] type_name = Converter.wcsToMbcs ("SwtPixbufRenderer", true); //$NON-NLS-1$
 		pixbuf_renderer_type = OS.g_type_register_static (GTK.GTK_TYPE_CELL_RENDERER_PIXBUF (), type_name, pixbuf_renderer_info_ptr, 0);
 	}
-	if (toggle_renderer_type == 0) {
+	if (toggle_renderer_type == 0 && !GTK.GTK4) {
 		GTypeInfo renderer_info = new GTypeInfo ();
 		renderer_info.class_size = (short) GTK.GtkCellRendererToggleClass_sizeof ();
 		renderer_info.class_init = rendererClassInitProc;
@@ -3204,7 +3206,11 @@ private void initializeSystemColorsLink() {
 		window = GTK.gtk_window_new (GTK.GTK_WINDOW_TOPLEVEL);
 	}
 	long label = GTK.gtk_label_new(null);
-	GTK.gtk_container_add (window, label);
+	if (GTK.GTK4) {
+		GTK.gtk_window_set_child(window, label);
+	} else {
+		GTK.gtk_container_add(window, label);
+	}
 
 	long styleContextLink = GTK.gtk_widget_get_style_context (label);
 	COLOR_LINK_FOREGROUND_RGBA = styleContextGetColor (styleContextLink, GTK.GTK_STATE_FLAG_LINK);
@@ -3256,7 +3262,11 @@ void initializeSystemColorsDisabled() {
 		window = GTK.gtk_window_new (GTK.GTK_WINDOW_TOPLEVEL);
 	}
 	long entry = GTK.gtk_entry_new ();
-	GTK.gtk_container_add (window, entry);
+	if (GTK.GTK4) {
+		GTK.gtk_window_set_child(window, entry);
+	} else {
+		GTK.gtk_container_add(window, entry);
+	}
 
 	long context = GTK.gtk_widget_get_style_context (entry);
 
