@@ -64,6 +64,7 @@ public class SWT {
 	 *
 	 * <p>
 	 * Note:
+	 * </p>
 	 * <ul>
 	 * <li>Event.keyCode: the constant of the pressed key, even if it is just a
 	 * modifier (Shift, Ctrl, ...)</li>
@@ -75,7 +76,6 @@ public class SWT {
 	 * (SWT.BUTTON_MASK, SWT.SHIFT, SWT.CTRL, SWT.CMD, SWT.ALT, SWT.MOD1, SWT.MOD2,
 	 * SWT.MOD3)</li>
 	 * </ul>
-	 * </p>
 	 *
 	 * @see org.eclipse.swt.widgets.Widget#addListener
 	 * @see org.eclipse.swt.widgets.Display#addFilter
@@ -107,6 +107,7 @@ public class SWT {
 	 *
 	 * <p>
 	 * Note:
+	 * </p>
 	 * <ul>
 	 * <li>Event.button: either 1, 2 or 3 for the mouse button that was pressed</li>
 	 * <li>Event.x, Event.y: the cursor position relative to the control
@@ -114,7 +115,6 @@ public class SWT {
 	 * <li>Event.stateMask: an or-combined bit mask of the modifiers
 	 * (SWT.BUTTON_MASK)</li>
 	 * </ul>
-	 * </p>
 	 *
 	 * @see org.eclipse.swt.widgets.Widget#addListener
 	 * @see org.eclipse.swt.widgets.Display#addFilter
@@ -208,12 +208,12 @@ public class SWT {
 	 *
 	 * <p>
 	 * Note:
+	 * </p>
 	 * <ul>
 	 * <li>Event.gc: the graphic context used for drawing.</li>
 	 * <li>Event.x, Event.y, Event.width, Event.height: the area that needs to be
 	 * painted</li>
 	 * </ul>
-	 * </p>
 	 *
 	 * @see org.eclipse.swt.widgets.Widget#addListener
 	 * @see org.eclipse.swt.widgets.Display#addFilter
@@ -350,10 +350,10 @@ public class SWT {
 	 *
 	 * <p>
 	 * Note:
+	 * </p>
 	 * <ul>
 	 * <li>Event.item: the TreeItem which gets expanded</li>
 	 * </ul>
-	 * </p>
 	 *
 	 * @see org.eclipse.swt.widgets.Widget#addListener
 	 * @see org.eclipse.swt.widgets.Display#addFilter
@@ -370,10 +370,10 @@ public class SWT {
 	 *
 	 * <p>
 	 * Note:
+	 * </p>
 	 * <ul>
 	 * <li>Event.item: the TreeItem which gets collapsed</li>
 	 * </ul>
-	 * </p>
 	 *
 	 * @see org.eclipse.swt.widgets.Widget#addListener
 	 * @see org.eclipse.swt.widgets.Display#addFilter
@@ -472,6 +472,7 @@ public class SWT {
 	 * <p>
 	 * Note:This event is sent before the actual change happens and the listener is
 	 * able to prevent the change by setting event.doit to false.
+	 * </p>
 	 *
 	 * <ul>
 	 * <li>Event.text: the new text</li>
@@ -481,7 +482,6 @@ public class SWT {
 	 * <li>Event.character/.keyCode/.stateMask: if the change is caused by a key
 	 * event, these fields are taken from the key event</li>
 	 * </ul>
-	 * </p>
 	 *
 	 * @see org.eclipse.swt.widgets.Widget#addListener
 	 * @see org.eclipse.swt.widgets.Display#addFilter
@@ -569,12 +569,12 @@ public class SWT {
 	 *
 	 * <p>
 	 * Note: Event.detail: one of the SWT.TRAVERSE_* constants
+	 * </p>
 	 * <ul>
 	 * <li>Event.stateMask: the or-combined bit masks of pressed modifiers, e.g.
 	 * SWT.MOD1</li>
 	 * <li>Event.doit: set to false if no default behavior should happen</li>
 	 * </ul>
-	 * </p>
 	 *
 	 * @see org.eclipse.swt.widgets.Widget#addListener
 	 * @see org.eclipse.swt.widgets.Display#addFilter
@@ -627,11 +627,11 @@ public class SWT {
 	 *
 	 * <p>
 	 * Note:
+	 * </p>
 	 * <ul>
 	 * <li>Event.detail: either SWT.MENU_MOUSE or SWT.MENU_KEYBOARD</li>
 	 * <li>Event.x, Event.y: cursor position in display coordinates</li>
 	 * </ul>
-	 * </p>
 	 *
 	 * @see org.eclipse.swt.widgets.Widget#addListener
 	 * @see org.eclipse.swt.widgets.Display#addFilter
@@ -722,6 +722,7 @@ public class SWT {
 	 *
 	 * <p>
 	 * Note:
+	 * </p>
 	 * <ul>
 	 * <li>Event.detail: an or-combined bit mask of the current state, e.g.
 	 * SWT.SELECTED, SWT.HOT</li>
@@ -730,7 +731,6 @@ public class SWT {
 	 * <li>Event.item: the TreeItem or TableItem</li>
 	 * <li>Event.index: the column of the cell</li>
 	 * </ul>
-	 * </p>
 	 *
 	 * @see org.eclipse.swt.widgets.Widget#addListener
 	 * @see org.eclipse.swt.widgets.Display#addFilter
@@ -745,6 +745,7 @@ public class SWT {
 	 *
 	 * <p>
 	 * Note:
+	 * </p>
 	 * <ul>
 	 * <li>Event.detail: an or-combined bit mask of the current state, e.g.
 	 * SWT.SELECTED, SWT.HOT</li>
@@ -754,7 +755,6 @@ public class SWT {
 	 * <li>Event.item: the TreeItem or TableItem</li>
 	 * <li>Event.index: the column of the cell</li>
 	 * </ul>
-	 * </p>
 	 *
 	 * @see org.eclipse.swt.widgets.Widget#addListener
 	 * @see org.eclipse.swt.widgets.Display#addFilter
@@ -769,6 +769,7 @@ public class SWT {
 	 *
 	 * <p>
 	 * Note:
+	 * </p>
 	 * <ul>
 	 * <li>Event.detail: an or-combined bit mask of the current state, e.g.
 	 * SWT.SELECTED, SWT.HOT</li>
@@ -777,7 +778,6 @@ public class SWT {
 	 * <li>Event.item: the TreeItem or TableItem</li>
 	 * <li>Event.index: the column of the cell</li>
 	 * </ul>
-	 * </p>
 	 *
 	 * @see org.eclipse.swt.widgets.Widget#addListener
 	 * @see org.eclipse.swt.widgets.Display#addFilter
