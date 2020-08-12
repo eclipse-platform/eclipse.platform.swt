@@ -52,10 +52,28 @@ public class Bug565679_WS_BORDER {
 			new Spinner(compControls, 0);
 
 			new Label(compControls, 0).setText("Tree (with header)");
-			Tree tree = new Tree(compControls, SWT.BORDER);
-			tree.setHeaderVisible(true);
-			new TreeColumn(tree, 0).setText("Column");
-			new TreeItem(tree, 0).setText("Item");
+			{
+				Tree tree = new Tree(compControls, SWT.BORDER);
+				tree.setHeaderVisible(true);
+				TreeColumn column = new TreeColumn(tree, 0);
+				column.setText("Column");
+				column.setWidth(100);
+				TreeItem treeItem1 = new TreeItem(tree, 0);
+				treeItem1.setText("Item");
+				TreeItem treeItem2 = new TreeItem(treeItem1, 0);
+				treeItem2.setText("Item");
+				treeItem1.setExpanded(true);
+			}
+
+			new Label(compControls, 0).setText("Tree (no header)");
+			{
+				Tree tree = new Tree(compControls, SWT.BORDER);
+				TreeItem treeItem1 = new TreeItem(tree, 0);
+				treeItem1.setText("Item");
+				TreeItem treeItem2 = new TreeItem(treeItem1, 0);
+				treeItem2.setText("Item");
+				treeItem1.setExpanded(true);
+			}
 		}
 
 		new Label(shell, 0).setText(
@@ -91,9 +109,6 @@ public class Bug565679_WS_BORDER {
 			new Label(compControls, 0).setText("ToolBar");
 			ToolBar toolbar = new ToolBar(compControls, SWT.BORDER);
 			toolbar.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-
-			new Label(compControls, 0).setText("Tree (no header)");
-			new Tree(compControls, SWT.BORDER);
 		}
 
 		new Label(shell, 0).setText(
@@ -115,7 +130,7 @@ public class Bug565679_WS_BORDER {
 			new TabItem(tabFolder, 0).setText("Item");
 		}
 
-		shell.setSize(400, 800);
+		shell.setSize(400, 900);
 		shell.open();
 
 		while (!shell.isDisposed()) {

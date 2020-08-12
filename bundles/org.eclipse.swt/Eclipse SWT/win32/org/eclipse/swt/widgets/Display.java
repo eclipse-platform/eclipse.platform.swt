@@ -219,8 +219,6 @@ public class Display extends Device {
 	boolean useWsBorderTable = false;
 	static final String USE_WS_BORDER_TEXT_KEY       = "org.eclipse.swt.internal.win32.Text.use_WS_BORDER"; //$NON-NLS-1$
 	boolean useWsBorderText = false;
-	static final String USE_WS_BORDER_TREE_KEY       = "org.eclipse.swt.internal.win32.Tree.use_WS_BORDER"; //$NON-NLS-1$
-	boolean useWsBorderTree = false;
 	/**
 	 * Changes the color of Table header's column delimiters.
 	 * Only affects custom-drawn header, that is when background/foreground header color is set.
@@ -4415,9 +4413,6 @@ public void setData (String key, Object value) {
 			return;
 		case USE_WS_BORDER_TEXT_KEY:
 			useWsBorderText    = !disableCustomThemeTweaks && _toBoolean(value);
-			return;
-		case USE_WS_BORDER_TREE_KEY:
-			useWsBorderTree    = !disableCustomThemeTweaks && _toBoolean(value);
 			return;
 		case TABLE_HEADER_LINE_COLOR_KEY:
 			tableHeaderLinePixel = disableCustomThemeTweaks ? -1 : _toColorPixel(value);

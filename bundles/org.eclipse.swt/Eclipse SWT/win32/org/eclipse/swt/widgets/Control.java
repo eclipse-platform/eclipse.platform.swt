@@ -1219,7 +1219,19 @@ int getBorderWidthInPixels () {
 	if ((bits1 & OS.WS_EX_CLIENTEDGE) != 0) return OS.GetSystemMetrics (OS.SM_CXEDGE);
 	if ((bits1 & OS.WS_EX_STATICEDGE) != 0) return OS.GetSystemMetrics (OS.SM_CXBORDER);
 	int bits2 = OS.GetWindowLong (borderHandle, OS.GWL_STYLE);
-	if ((bits2 & OS.WS_BORDER) != 0) return OS.GetSystemMetrics (OS.SM_CXBORDER);
+
+	if ((bits2 & OS.WS_BORDER) != 0) {
+		/*
+		 * For compatibility reasons, isUseWsBorder() shall not change layout size
+		 * compared to previously used WS_EX_CLIENTEDGE. Removing this workaround
+		 * saves screen space, but could break some layouts.
+		 */
+		if (isUseWsBorder ())
+			return OS.GetSystemMetrics (OS.SM_CXEDGE);
+
+		return OS.GetSystemMetrics (OS.SM_CXBORDER);
+	}
+
 	return 0;
 }
 
