@@ -973,9 +973,15 @@ void enableDrag (boolean enabled) {
 	/* Do nothing */
 }
 
-void enableDarkModeExplorerTheme() {
-	if (display.useDarkModeExplorerTheme)
-		OS.SetWindowTheme (handle, Display.DARKMODE_EXPLORER, null);
+void maybeEnableDarkSystemTheme() {
+	maybeEnableDarkSystemTheme(handle);
+}
+
+void maybeEnableDarkSystemTheme(long handle) {
+	if (display.useDarkModeExplorerTheme) {
+		OS.AllowDarkModeForWindow(handle, true);
+		OS.SetWindowTheme(handle, Display.EXPLORER, null);
+	}
 }
 
 void enableWidget (boolean enabled) {

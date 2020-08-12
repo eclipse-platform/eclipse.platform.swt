@@ -156,7 +156,6 @@ public class Display extends Device {
 	long hButtonTheme, hEditTheme, hExplorerBarTheme, hScrollBarTheme, hTabTheme;
 	static final char [] BUTTON = new char [] {'B', 'U', 'T', 'T', 'O', 'N', 0};
 	static final char [] EDIT = new char [] {'E', 'D', 'I', 'T', 0};
-	static final char [] DARKMODE_EXPLORER = new char [] {'D', 'A', 'R', 'K', 'M', 'O', 'D', 'E', '_', 'E', 'X', 'P', 'L', 'O', 'R', 'E', 'R', 0};
 	static final char [] EXPLORER = new char [] {'E', 'X', 'P', 'L', 'O', 'R', 'E', 'R', 0};
 	static final char [] EXPLORERBAR = new char [] {'E', 'X', 'P', 'L', 'O', 'R', 'E', 'R', 'B', 'A', 'R', 0};
 	static final char [] SCROLLBAR = new char [] {'S', 'C', 'R', 'O', 'L', 'L', 'B', 'A', 'R', 0};
@@ -172,12 +171,11 @@ public class Display extends Device {
 	 *   <li>Dark scrollbars - this is the most important change for many applications.</li>
 	 *   <li>Tree - dark theme compatible expander icon.</li>
 	 *   <li>Tree - dark theme compatible colors for selected and hovered items.</li>
-	 *   <li>Table - uses older theme. It for example doesn't have mouse hover item highlight.</li>
 	 *   <li>The list is not exhaustive. Also, effects can change, because Windows dark theme is not yet official.</li>
 	 * </ul>
 	 * Limitations:<br>
 	 * <ul>
-	 *   <li>Only available since Win10 version 1809.</li>
+	 *   <li>Only available since Win10 version 1903.</li>
 	 *   <li>Does not affect already created controls.</li>
 	 * </ul>
 	 * All Scrollable-based Controls are affected.
@@ -2816,38 +2814,6 @@ boolean isXMouseActive () {
 	return xMouseActive;
 }
 
-static boolean isThemeAvailable (String applicationName, String className) {
-	long appClassData = 0;
-	long defaultClassData = 0;
-	try {
-		final TCHAR appClass = new TCHAR (0, applicationName + "::" + className, true);
-		appClassData = OS.OpenThemeData (0, appClass.chars);
-		if (appClassData == 0) return false;
-
-		final TCHAR defaultClass = new TCHAR (0, className, true);
-		defaultClassData = OS.OpenThemeData (0, defaultClass.chars);
-		if (defaultClassData == 0) return false;
-
-		/*
-		 * OpenThemeData() will ignore unknown theme packages and still return something.
-		 * Example: If 'DarkMode_Explorer' is not available then 'DarkMode_Explorer::ScrollBar' will return the same as 'ScrollBar'.
-		 * If data handles are equal, then theme isn't really available.
-		 */
-		return (appClassData != defaultClassData);
-	} finally {
-		if (appClassData != 0) OS.CloseThemeData(appClassData);
-		if (defaultClassData != 0) OS.CloseThemeData(defaultClassData);
-	}
-}
-
-static boolean isThemeAvailable_DarkModeExplorer () {
-	/*
-	 * In the first Windows build with dark theme, scrollbar is already there,
-	 * so it could be used as good indicator of presence of the theme.
-	 */
-	return isThemeAvailable("DarkMode_Explorer", "ScrollBar");
-}
-
 boolean isValidThread () {
 	return thread == Thread.currentThread ();
 }
@@ -4367,18 +4333,31 @@ public void setData (String key, Object value) {
 			externalEventLoop = _toBoolean (value);
 			return;
 		case USE_DARKMODE_EXPLORER_THEME_KEY:
-			/*
-			 * Note: Request is ignored when theme is not available.
-			 * When theme is not available, SetWindowTheme() ignores it and
-			 * just uses default theme. That's fine for controls where SWT
-			 * doesn't set theme. However, controls such as Table choose
-			 * between 'Explorer' and 'DarkMode_Explorer' themes. When the
-			 * latter is not available and SWT tries to set it, default theme
-			 * will be used instead of 'Explorer'.
-			 */
 			useDarkModeExplorerTheme = _toBoolean (value) &&
 				!disableCustomThemeTweaks &&
-				isThemeAvailable_DarkModeExplorer ();
+				OS.IsDarkModeAvailable ();
+
+			/* Modify the per-application flag. Note that as of Windows 2004,
+			 * APIs are still undocumented, and two more steps are needed to
+			 * make window dark, see Control.enableDarkSystemTheme()
+			 *
+			 * Undocumented argument is:
+			 * enum class PreferredAppMode
+			 * {
+			 * 	Default    = 0,
+			 * 	AllowDark  = 1,
+			 * 	ForceDark  = 2,
+			 * 	ForceLight = 3,
+			 * 	Max        = 4,
+			 * };
+			 */
+			final int PreferredAppMode_Default   = 0;
+			final int PreferredAppMode_ForceDark = 2;
+			if (useDarkModeExplorerTheme) {
+				OS.SetPreferredAppMode(PreferredAppMode_ForceDark);
+			} else {
+				OS.SetPreferredAppMode(PreferredAppMode_Default);
+			}
 			return;
 		case MENUBAR_FOREGROUND_COLOR_KEY:
 			menuBarForegroundPixel = disableCustomThemeTweaks ? -1 : _toColorPixel(value);
@@ -4663,10 +4642,6 @@ public final void setErrorHandler (Consumer<Error> errorHandler) {
  */
 public final Consumer<Error> getErrorHandler () {
 	return errorHandler;
-}
-
-char[] getExplorerTheme() {
-	return useDarkModeExplorerTheme ? DARKMODE_EXPLORER : EXPLORER;
 }
 
 int shiftedKey (int key) {

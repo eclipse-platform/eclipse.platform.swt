@@ -2262,6 +2262,8 @@ public static final native long ActivateKeyboardLayout(long hkl, int Flags);
 /** @param pdv cast=(PVOID) */
 public static final native int AddFontResourceEx(char[] lpszFilename, int fl, long pdv);
 public static final native boolean AdjustWindowRectEx (RECT lpRect, int dwStyle, boolean bMenu, int dwExStyle);
+/** @method flags=no_gen */
+public static final native boolean AllowDarkModeForWindow(long hWnd, boolean allow);
 public static final native boolean AllowSetForegroundWindow (int dwProcessId);
 /**
  * @param hdcDest cast=(HDC)
@@ -3132,6 +3134,8 @@ public static final native boolean InvalidateRect (long hWnd, RECT lpRect, boole
  */
 public static final native boolean InvalidateRgn (long hWnd, long hRgn, boolean bErase);
 public static final native boolean IsAppThemed ();
+/** @method flags=no_gen */
+public static final native boolean IsDarkModeAvailable();
 /** @param hWnd cast=(HWND) */
 public static final native boolean IsHungAppWindow (long hWnd);
 /** @param hWnd cast=(HWND) */
@@ -4251,6 +4255,8 @@ public static final native int SetPixel (long hdc, int X, int Y, int crColor);
 /** @param hdc cast=(HDC) */
 public static final native int SetPolyFillMode (long hdc, int iPolyFillMode);
 public static final native boolean SetProcessDPIAware ();
+/** @method flags=no_gen */
+public static final native int SetPreferredAppMode(int mode);
 /** @param lprc flags=no_in */
 public static final native boolean SetRect (RECT lprc, int xLeft, int yTop, int xRight, int yBottom);
 /** @param hrgn cast=(HRGN) */

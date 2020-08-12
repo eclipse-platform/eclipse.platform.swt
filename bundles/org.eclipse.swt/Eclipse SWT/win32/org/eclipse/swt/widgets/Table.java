@@ -86,7 +86,7 @@ public class Table extends Composite {
 	boolean [] columnVisible;
 	long headerToolTipHandle, hwndHeader;
 	boolean ignoreCustomDraw, ignoreDrawForeground, ignoreDrawBackground, ignoreDrawFocus, ignoreDrawSelection, ignoreDrawHot;
-	boolean customDraw, dragStarted, explorerTheme, darkExplorerTheme, firstColumnImage, fixScrollWidth, tipRequested, wasSelected, wasResized, painted;
+	boolean customDraw, dragStarted, explorerTheme, firstColumnImage, fixScrollWidth, tipRequested, wasSelected, wasResized, painted;
 	boolean ignoreActivate, ignoreSelect, ignoreShrink, ignoreResize, ignoreColumnMove, ignoreColumnResize, fullRowSelect, settingItemHeight;
 	boolean headerItemDragging;
 	int itemHeight, lastIndexOf, lastWidth, sortDirection, resizeCount, selectionForeground, hotIndex;
@@ -1498,8 +1498,7 @@ void createHandle () {
 	/* Use the Explorer theme */
 	if (OS.IsAppThemed ()) {
 		explorerTheme = true;
-		darkExplorerTheme = display.useDarkModeExplorerTheme;
-		OS.SetWindowTheme (handle, display.getExplorerTheme(), null);
+		OS.SetWindowTheme (handle, Display.EXPLORER, null);
 	}
 
 	/* Get the header window handle */
@@ -3539,18 +3538,6 @@ void sendEraseItemEvent (TableItem item, NMLVCUSTOMDRAW nmcd, long lParam, Event
 		// Draw selection background
 		if (explorerTheme) {
 			boolean backgroundWanted = !ignoreDrawHot || drawDrophilited || (!ignoreDrawSelection && clrSelectionBk != -1);
-
-			/*
-			 * With 'DarkMode_Explorer' theme, Windows draws selection background in "paint"
-			 * step instead of "erase" step. In this case, the code below is not needed,
-			 * because Windows background drawing happens after rather then before SWT.EraseItem.
-			 * On top of this, windows draws selection in a smaller rect and with a different color.
-			 * Proceeding with code below will result in two selection backgrounds visible.
-			 * Finally, as of Windows 10 version 1909, 'DarkMode_Explorer::LISTVIEW' is not yet
-			 * present, and 'OpenThemeData("LISTVIEW")' opens wrong theme data.
-			 */
-			if (darkExplorerTheme)
-				backgroundWanted = false;
 
 			if (backgroundWanted) {
 				RECT pClipRect = new RECT ();

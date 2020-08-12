@@ -1847,7 +1847,7 @@ void createHandle () {
 	/* Use the Explorer theme */
 	if (OS.IsAppThemed ()) {
 		explorerTheme = true;
-		OS.SetWindowTheme (handle, display.getExplorerTheme(), null);
+		OS.SetWindowTheme (handle, Display.EXPLORER, null);
 		int bits = OS.TVS_EX_DOUBLEBUFFER | OS.TVS_EX_RICHTOOLTIP;
 		if (ENABLE_TVS_EX_FADEINOUTEXPANDOS) bits |= OS.TVS_EX_FADEINOUTEXPANDOS;
 		OS.SendMessage (handle, OS.TVM_SETEXTENDEDSTYLE, 0, bits);
@@ -2257,7 +2257,7 @@ void createParent () {
 	OS.SetWindowLongPtr (hwndParent, OS.GWLP_ID, hwndParent);
 
 	/* Copy dark scrollbar settings to hwndParent */
-	OS.SetWindowTheme (hwndParent, display.getExplorerTheme(), null);
+	maybeEnableDarkSystemTheme(hwndParent);
 
 	/* Create header */
 	int bits = OS.WS_EX_NOINHERITLAYOUT;
