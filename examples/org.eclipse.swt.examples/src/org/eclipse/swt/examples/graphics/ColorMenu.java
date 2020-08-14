@@ -21,7 +21,6 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.RGB;
-import org.eclipse.swt.graphics.Resource;
 import org.eclipse.swt.widgets.ColorDialog;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
@@ -132,7 +131,7 @@ public class ColorMenu {
 
 	/** Adds the colors items to the menu. */
 	private void addColorItems(Menu menu, MenuItemListener menuListener,
-			List<Resource> menuResources) {
+			List<Image> menuResources) {
 		Display display = menu.getDisplay();
 
 		if (menu.getItemCount() != 0) {
@@ -187,7 +186,7 @@ public class ColorMenu {
 
 	/** Adds the pattern items to the menu. */
 	private void addPatternItems(Menu menu, MenuItemListener menuListener,
-			List<Resource> menuResources) {
+			List<Image> menuResources) {
 		Display display = menu.getDisplay();
 
 		if (menu.getItemCount() != 0) {
@@ -256,7 +255,7 @@ public class ColorMenu {
 	 * @param resources
 	 *            The list of resources of the menu
 	 */
-	private Image loadImage(Display display, String name, List<Resource> resources) {
+	private Image loadImage(Display display, String name, List<Image> resources) {
 		Image image = GraphicsExample.loadImage(display, GraphicsExample.class, name);
 		if (image != null) resources.add(image);
 		return image;
@@ -272,11 +271,11 @@ public class ColorMenu {
 		Color customColor;
 		GraphicsBackground background;	// used to store information about the background
 		ColorListener colorListener;
-		List<Resource> resources;
+		List<Image> resourceImages;
 
 		public MenuItemListener(Control parent){
 			this.parent = parent;
-			resources = new ArrayList<>();
+			resourceImages = new ArrayList<>();
 		}
 		/**
 		 * Method used to set the ColorListener
@@ -289,8 +288,8 @@ public class ColorMenu {
 			this.colorListener = cl;
 		}
 
-		public List<Resource> getMenuResources() {
-			return resources;
+		public List<Image> getMenuResources() {
+			return resourceImages;
 		}
 
 		@Override
@@ -298,10 +297,10 @@ public class ColorMenu {
 			switch (event.type) {
 
 			case SWT.Dispose:
-				for (Resource resource : resources) {
-					resource.dispose();
+				for (Image image : resourceImages) {
+					image.dispose();
 				}
-				resources = new ArrayList<>();
+				resourceImages = new ArrayList<>();
 				break;
 			case SWT.Selection:
 				Display display = event.display;
@@ -313,7 +312,6 @@ public class ColorMenu {
 					}
 					RGB rgb = dialog.open();
 					if (rgb == null) return;
-					if (customColor != null) customColor.dispose();
 					customColor = new Color(rgb);
 					if (customPatternMI != null) customPatternMI.setImage(null);
 					if (customGradientMI != null) customGradientMI.setImage(null);
@@ -325,8 +323,7 @@ public class ColorMenu {
 					gb.setBgColor1(customColor);
 					item.setData(gb);
 					item.setImage(customImage);
-					resources.add(customColor);
-					resources.add(customImage);
+					resourceImages.add(customImage);
 				} else if (customPatternMI == item) {
 					FileDialog dialog = new FileDialog(parent.getShell());
 					dialog.setFilterExtensions(new String[] { "*.jpg", "*.gif",	"*.*" });
@@ -334,7 +331,6 @@ public class ColorMenu {
 					if (name == null) return;
 					if (customColorMI != null) customColorMI.setImage(null);
 					if (customGradientMI != null) customGradientMI.setImage(null);
-					if (customColor != null) customColor.dispose();
 					if (customImage != null) customImage.dispose();
 					if (customImageThumb != null) customImageThumb.dispose();
 					customImage = new Image(display, name);
@@ -344,7 +340,7 @@ public class ColorMenu {
 					gb.setThumbNail(customImageThumb);
 					item.setData(gb);
 					item.setImage(customImageThumb);
-					resources.add(customImageThumb);
+					resourceImages.add(customImageThumb);
 				} else if (customGradientMI == item) {
 					GradientDialog dialog = new GradientDialog(parent.getShell());
 					if (background != null) {
@@ -359,7 +355,6 @@ public class ColorMenu {
 					if (colorA == null || colorB == null) return;
 					if (customColorMI != null) customColorMI.setImage(null);
 					if (customPatternMI != null) customPatternMI.setImage(null);
-					if (customColor != null) customColor.dispose();
 					if (customImage != null) customImage.dispose();
 					customImage = GraphicsExample.createImage(display, colorA,
 							colorB, 16, 16);
@@ -370,9 +365,7 @@ public class ColorMenu {
 					gb.setBgColor2(colorB);
 					item.setData(gb);
 					item.setImage(customImage);
-					resources.add(colorA);
-					resources.add(colorB);
-					resources.add(customImage);
+					resourceImages.add(customImage);
 				} else {
 					if (customColorMI != null) customColorMI.setImage(null);
 					if (customPatternMI != null) customPatternMI.setImage(null);

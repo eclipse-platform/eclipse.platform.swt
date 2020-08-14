@@ -50,7 +50,6 @@ import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.graphics.Rectangle;
-import org.eclipse.swt.graphics.Resource;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -557,7 +556,6 @@ public class TextEditor {
 			RGB newRgb = dialog.open();
 			if (newRgb != null) {
 				if (!newRgb.equals(rgb)) {
-					disposeResource(underlineColor);
 					underlineColor = new Color(newRgb);
 				}
 				if (underlineSingleItem.getSelection()) setStyle(UNDERLINE_SINGLE);
@@ -595,7 +593,6 @@ public class TextEditor {
 				RGB newRgb = dialog.open();
 				if (newRgb == null) return;
 				if (!newRgb.equals(rgb)) {
-					disposeResource(strikeoutColor);
 					strikeoutColor = new Color(newRgb);
 				}
 			}
@@ -637,7 +634,6 @@ public class TextEditor {
 			RGB newRgb = dialog.open();
 			if (newRgb != null) {
 				if (!newRgb.equals(rgb)) {
-					disposeResource(borderColor);
 					borderColor = new Color(newRgb);
 				}
 				if (borderDashItem.getSelection()) setStyle(BORDER_DASH);
@@ -673,7 +669,6 @@ public class TextEditor {
 				RGB newRgb = dialog.open();
 				if (newRgb == null) return;
 				if (!newRgb.equals(rgb)) {
-					disposeResource(textForeground);
 					textForeground = new Color(newRgb);
 				}
 			}
@@ -691,7 +686,6 @@ public class TextEditor {
 				RGB newRgb = dialog.open();
 				if (newRgb == null) return;
 				if (!newRgb.equals(rgb)) {
-					disposeResource(textBackground);
 					textBackground = new Color(newRgb);
 				}
 			}
@@ -864,21 +858,11 @@ public class TextEditor {
 	void disposeRanges(StyleRange[] ranges) {
 		StyleRange[] allRanges = styledText.getStyleRanges(0, styledText.getCharCount(), false);
 		for (StyleRange rangeToDispose : ranges) {
-			boolean disposeFg = true, disposeBg = true, disposeStrike= true, disposeUnder= true, disposeBorder = true, disposeFont = true;
+			boolean disposeFont = true;
 			for (StyleRange range : allRanges) {
 				if (disposeFont && rangeToDispose.font == range.font) disposeFont = false;
-				if (disposeFg && rangeToDispose.foreground == range.foreground) disposeFg = false;
-				if (disposeBg && rangeToDispose.background == range.background) disposeBg = false;
-				if (disposeStrike && rangeToDispose.strikeoutColor == range.strikeoutColor) disposeStrike = false;
-				if (disposeUnder && rangeToDispose.underlineColor == range.underlineColor) disposeUnder = false;
-				if (disposeBorder && rangeToDispose.borderColor == range.borderColor) disposeBorder =  false;
 			}
 			if (disposeFont && rangeToDispose.font != textFont && rangeToDispose.font != null)  rangeToDispose.font.dispose();
-			if (disposeFg && rangeToDispose.foreground != textForeground && rangeToDispose.foreground != null) rangeToDispose.foreground.dispose();
-			if (disposeBg && rangeToDispose.background != textBackground && rangeToDispose.background != null) rangeToDispose.background.dispose();
-			if (disposeStrike && rangeToDispose.strikeoutColor != strikeoutColor && rangeToDispose.strikeoutColor != null) rangeToDispose.strikeoutColor.dispose();
-			if (disposeUnder && rangeToDispose.underlineColor != underlineColor && rangeToDispose.underlineColor != null) rangeToDispose.underlineColor.dispose();
-			if (disposeBorder && rangeToDispose.borderColor != borderColor && rangeToDispose.borderColor != null) rangeToDispose.borderColor.dispose();
 
 			Object data = rangeToDispose.data;
 			if (data != null) {
@@ -888,20 +872,15 @@ public class TextEditor {
 		}
 	}
 
-	void disposeResource(Resource resource) {
-		if (resource == null) return;
+	void disposeResource(Font font) {
+		if (font == null) return;
 		StyleRange[] styles = styledText.getStyleRanges(0, styledText.getCharCount(), false);
 		int index = 0;
 		while (index < styles.length) {
-			if (styles[index].font == resource) break;
-			if (styles[index].foreground == resource) break;
-			if (styles[index].background == resource) break;
-			if (styles[index].strikeoutColor == resource) break;
-			if (styles[index].underlineColor == resource) break;
-			if (styles[index].borderColor == resource) break;
+			if (styles[index].font == font) break;
 			index++;
 		}
-		if (index == styles.length) resource.dispose();
+		if (index == styles.length) font.dispose();
 	}
 
 	String[] getFontNames() {
@@ -1542,14 +1521,12 @@ public class TextEditor {
 			if (range.foreground != null) {
 				styleState |= FOREGROUND;
 				if (textForeground != range.foreground) {
-					disposeResource(textForeground);
 					textForeground = range.foreground;
 				}
 			}
 			if (range.background != null) {
 				styleState |= BACKGROUND;
 				if (textBackground != range.background) {
-					disposeResource(textBackground);
 					textBackground = range.background;
 				}
 			}
@@ -1569,13 +1546,11 @@ public class TextEditor {
 					underlineDoubleItem.setSelection((styleState & UNDERLINE_DOUBLE) != 0);
 					underlineErrorItem.setSelection((styleState & UNDERLINE_ERROR) != 0);
 					underlineSquiggleItem.setSelection((styleState & UNDERLINE_SQUIGGLE) != 0);
-					disposeResource(underlineColor);
 					underlineColor = range.underlineColor;
 				}
 			}
 			if (range.strikeout) {
 				styleState |= STRIKEOUT;
-				disposeResource(strikeoutColor);
 				strikeoutColor = range.strikeoutColor;
 			}
 			if (range.borderStyle != SWT.NONE) {
@@ -1587,7 +1562,6 @@ public class TextEditor {
 				borderSolidItem.setSelection((styleState & BORDER_SOLID) != 0);
 				borderDashItem.setSelection((styleState & BORDER_DASH) != 0);
 				borderDotItem.setSelection((styleState & BORDER_DOT) != 0);
-				disposeResource(borderColor);
 				borderColor = range.borderColor;
 			}
 		}
