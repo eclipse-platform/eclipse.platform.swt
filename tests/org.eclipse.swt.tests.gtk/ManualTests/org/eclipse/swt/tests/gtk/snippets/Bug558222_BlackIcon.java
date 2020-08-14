@@ -69,8 +69,6 @@ public class Bug558222_BlackIcon {
 		gc.drawPolygon(shape);
 		gc.dispose();
 
-		backgroundHot.dispose();
-
 		ToolBar bar = new ToolBar (shell, SWT.BORDER | SWT.FLAT);
 		Rectangle clientArea = shell.getClientArea ();
 		bar.setBounds (clientArea.x, clientArea.y, 200, 32);

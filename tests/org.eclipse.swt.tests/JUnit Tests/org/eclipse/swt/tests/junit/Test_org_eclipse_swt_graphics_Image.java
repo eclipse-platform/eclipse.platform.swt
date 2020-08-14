@@ -1035,7 +1035,6 @@ void getImageData2(int depth, PaletteData palette) {
 			assertTrue("rgb.equals(colorRGB)", rgb.equals(colorRGB));
 		}
 	}
-	color.dispose();
 	gc.dispose();
 	image.dispose();
 }
