@@ -80,7 +80,6 @@ void createShell (Display display) {
 	layout.numColumns = 1;
 	shell.setLayout(layout);
 	shell.addShellListener(ShellListener.shellClosedAdapter(e -> {
-		lineStyler.disposeColors();
 		text.removeLineStyleListener(lineStyler);
 	}));
 }

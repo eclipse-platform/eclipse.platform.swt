@@ -144,10 +144,8 @@ class TableTab extends ScrollableTab {
 			colorDialog.setRGB(oldColor.getRGB());
 			RGB rgb = colorDialog.open();
 			if (rgb == null) return;
-			oldColor = itemForegroundColor;
 			itemForegroundColor = new Color (rgb);
 			setItemForeground ();
-			if (oldColor != null) oldColor.dispose ();
 		}
 		break;
 		case ITEM_BACKGROUND_COLOR: {
@@ -156,10 +154,8 @@ class TableTab extends ScrollableTab {
 			colorDialog.setRGB(oldColor.getRGB());
 			RGB rgb = colorDialog.open();
 			if (rgb == null) return;
-			oldColor = itemBackgroundColor;
 			itemBackgroundColor = new Color (rgb);
 			setItemBackground ();
-			if (oldColor != null) oldColor.dispose ();
 		}
 		break;
 		case ITEM_FONT: {
@@ -181,10 +177,8 @@ class TableTab extends ScrollableTab {
 			colorDialog.setRGB(oldColor.getRGB());
 			RGB rgb = colorDialog.open();
 			if (rgb == null) return;
-			oldColor = cellForegroundColor;
 			cellForegroundColor = new Color (rgb);
 			setCellForeground ();
-			if (oldColor != null) oldColor.dispose ();
 		}
 		break;
 		case CELL_BACKGROUND_COLOR: {
@@ -193,10 +187,8 @@ class TableTab extends ScrollableTab {
 			colorDialog.setRGB(oldColor.getRGB());
 			RGB rgb = colorDialog.open();
 			if (rgb == null) return;
-			oldColor = cellBackgroundColor;
 			cellBackgroundColor = new Color (rgb);
 			setCellBackground ();
-			if (oldColor != null) oldColor.dispose ();
 		}
 		break;
 		case CELL_FONT: {
@@ -218,10 +210,8 @@ class TableTab extends ScrollableTab {
 			colorDialog.setRGB(oldColor.getRGB());
 			RGB rgb = colorDialog.open();
 			if (rgb == null) return;
-			oldColor = headerForegroundColor;
 			headerForegroundColor = new Color (rgb);
 			setHeaderForeground ();
-			if (oldColor != null) oldColor.dispose ();
 		}
 		break;
 		case HEADER_BACKGROUND_COLOR: {
@@ -230,10 +220,8 @@ class TableTab extends ScrollableTab {
 			colorDialog.setRGB(oldColor.getRGB());
 			RGB rgb = colorDialog.open();
 			if (rgb == null) return;
-			oldColor = headerBackgroundColor;
 			headerBackgroundColor = new Color (rgb);
 			setHeaderBackground ();
-			if (oldColor != null) oldColor.dispose ();
 		}
 		break;
 		default:

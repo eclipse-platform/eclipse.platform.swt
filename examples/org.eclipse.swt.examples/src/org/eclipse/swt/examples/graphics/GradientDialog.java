@@ -152,8 +152,6 @@ public class GradientDialog extends Dialog {
 				e.gc.drawImage (preview, 0, 0);
 			}
 			preview.dispose();
-			color1.dispose();
-			color2.dispose();
 		});
 
 		// composite used for both color buttons
@@ -176,7 +174,6 @@ public class GradientDialog extends Dialog {
 		colorButton1.setText(GraphicsExample.getResourceString("GradientDlgButton1"));
 		Color color1 = new Color(rgb1);
 		Image img1 = GraphicsExample.createImage(display, color1);
-		color1.dispose();
 		colorButton1.setImage(img1);
 		resources.add(img1);
 		menu1 = colorMenu.createMenu(parent.getParent(), gb -> {
@@ -198,7 +195,6 @@ public class GradientDialog extends Dialog {
 		colorButton2.setText(GraphicsExample.getResourceString("GradientDlgButton2"));
 		Color color2 = new Color(rgb2);
 		Image img2 = GraphicsExample.createImage(display, color2);
-		color2.dispose();
 		colorButton2.setImage(img2);
 		resources.add(img2);
 		menu2 = colorMenu.createMenu(parent.getParent(), gb -> {

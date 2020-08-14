@@ -460,10 +460,8 @@ abstract class Tab {
 				if (oldColor != null) colorDialog.setRGB(oldColor.getRGB()); // seed dialog with current color
 				RGB rgb = colorDialog.open();
 				if (rgb == null) return;
-				oldColor = foregroundColor; // save old foreground color to dispose when done
 				foregroundColor = new Color (rgb);
 				setExampleWidgetForeground ();
-				if (oldColor != null) oldColor.dispose ();
 			}
 			break;
 			case BACKGROUND_COLOR: {
@@ -475,10 +473,8 @@ abstract class Tab {
 				if (oldColor != null) colorDialog.setRGB(oldColor.getRGB());
 				RGB rgb = colorDialog.open();
 				if (rgb == null) return;
-				oldColor = backgroundColor; // save old background color to dispose when done
 				backgroundColor = new Color (rgb);
 				setExampleWidgetBackground ();
-				if (oldColor != null) oldColor.dispose ();
 			}
 			break;
 			case FONT: {

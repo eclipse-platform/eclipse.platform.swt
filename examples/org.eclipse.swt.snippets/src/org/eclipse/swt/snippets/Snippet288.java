@@ -115,7 +115,6 @@ public class Snippet288 {
 						}
 						gc.setBackground(bgColor != null ? bgColor : shellBackground);
 						gc.fillRectangle(imageData.x, imageData.y, imageData.width, imageData.height);
-						if (bgColor != null) bgColor.dispose();
 						break;
 					default:
 						/* Restore the previous image before drawing. */

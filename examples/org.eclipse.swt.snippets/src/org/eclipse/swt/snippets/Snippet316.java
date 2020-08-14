@@ -49,7 +49,6 @@ public class Snippet316 {
 			if (!display.readAndDispatch ()) display.sleep ();
 		}
 		font.dispose();
-		color.dispose();
 		display.dispose ();
 	}
 }

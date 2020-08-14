@@ -344,11 +344,6 @@ public class PaintExample {
 	 */
 	public void dispose() {
 		if (paintSurface != null) paintSurface.dispose();
-		if (paintColors != null) {
-			for (final Color color : paintColors) {
-				if (color != null) color.dispose();
-			}
-		}
 		paintDefaultFont = null;
 		paintColors = null;
 		paintSurface = null;

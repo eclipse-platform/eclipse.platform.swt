@@ -39,15 +39,11 @@ public static void main (String [] args) {
 		gc.setForeground(color1);
 		gc.setBackground(color2);
 		gc.fillGradientRectangle (rect.x, rect.y, rect.width, rect.height / 2, true);
-		color1.dispose ();
-		color2.dispose ();
 		Color color3 = new Color (190, 230, 253);
 		Color color4 = new Color (167, 217, 245);
 		gc.setForeground(color3);
 		gc.setBackground(color4);
 		gc.fillGradientRectangle (rect.x, rect.y + (rect.height / 2), rect.width, rect.height / 2 + 1, true);
-		color3.dispose ();
-		color4.dispose ();
 
 	});
 	shell.setSize (200, 64);

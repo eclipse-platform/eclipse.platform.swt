@@ -97,8 +97,6 @@ public class Snippet133 {
 			if (!display.readAndDispatch()) display.sleep();
 		}
 		if (font != null) font.dispose();
-		if (foregroundColor != null) foregroundColor.dispose();
-		if (backgroundColor != null) backgroundColor.dispose();
 		display.dispose();
 	}
 
@@ -152,7 +150,6 @@ public class Snippet133 {
 		colorDialog.setRGB(text.getForeground().getRGB());
 		RGB rgb = colorDialog.open();
 		if (rgb != null) {
-			if (foregroundColor != null) foregroundColor.dispose();
 			foregroundColor = new Color(rgb);
 			text.setForeground(foregroundColor);
 		}
@@ -163,7 +160,6 @@ public class Snippet133 {
 		colorDialog.setRGB(text.getBackground().getRGB());
 		RGB rgb = colorDialog.open();
 		if (rgb != null) {
-			if (backgroundColor != null) backgroundColor.dispose();
 			backgroundColor = new Color(rgb);
 			text.setBackground(backgroundColor);
 		}
@@ -231,8 +227,6 @@ public class Snippet133 {
 
 			/* Cleanup graphics resources used in printing */
 			printerFont.dispose();
-			printerForegroundColor.dispose();
-			printerBackgroundColor.dispose();
 			gc.dispose();
 		}
 	}

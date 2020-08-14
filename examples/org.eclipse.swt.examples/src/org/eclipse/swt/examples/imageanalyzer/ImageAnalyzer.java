@@ -1488,16 +1488,12 @@ public class ImageAnalyzer {
 						RGB backgroundRGB = imageData.palette.getRGB(backgroundPixel);
 						bgColor = new Color(backgroundRGB);
 					}
-					try {
-						offScreenImageGC.setBackground(bgColor != null ? bgColor : canvasBackground);
-						offScreenImageGC.fillRectangle(
-							imageData.x,
-							imageData.y,
-							imageData.width,
-							imageData.height);
-					} finally {
-						if (bgColor != null) bgColor.dispose();
-					}
+					offScreenImageGC.setBackground(bgColor != null ? bgColor : canvasBackground);
+					offScreenImageGC.fillRectangle(
+						imageData.x,
+						imageData.y,
+						imageData.width,
+						imageData.height);
 				} else if (imageData.disposalMethod == SWT.DM_FILL_PREVIOUS) {
 					// Restore the previous image before drawing.
 					offScreenImageGC.drawImage(
@@ -1857,7 +1853,6 @@ public class ImageAnalyzer {
 					Color color = new Color(rgbs[i]);
 					gc.setBackground(color);
 					gc.fillRectangle(xTab2, y+2, 10, 10);
-					color.dispose();
 				}
 			}
 		}

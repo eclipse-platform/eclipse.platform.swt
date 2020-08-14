@@ -88,12 +88,6 @@ void initializeColors() {
 	tokenColors[NUMBER]=	0;
 }
 
-void disposeColors() {
-	for (Color color : colors) {
-		color.dispose();
-	}
-}
-
 /**
  * Event.detail			line start offset (input)
  * Event.text 			line text (input)

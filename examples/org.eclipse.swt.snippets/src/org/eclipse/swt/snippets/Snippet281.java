@@ -46,10 +46,6 @@ public static void main (String [] args) {
 		gc.fillRectangle (rect.x, rect.y + (rect.height / 2), rect.width, rect.height / 2 + 1);
 		p1.dispose ();
 		p2.dispose ();
-		color1.dispose ();
-		color2.dispose ();
-		color3.dispose ();
-		color4.dispose ();
 	});
 	shell.setSize (200, 64);
 	shell.open ();

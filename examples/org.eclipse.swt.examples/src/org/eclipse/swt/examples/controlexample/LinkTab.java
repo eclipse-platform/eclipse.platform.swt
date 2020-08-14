@@ -105,10 +105,8 @@ class LinkTab extends Tab {
 				colorDialog.setRGB(oldColor.getRGB());
 				RGB rgb = colorDialog.open();
 				if (rgb == null) return;
-				oldColor = linkForegroundColor;
 				linkForegroundColor = new Color (rgb);
 				setLinkForeground ();
-				if (oldColor != null) oldColor.dispose ();
 			}
 			break;
 			default:
