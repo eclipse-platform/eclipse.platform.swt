@@ -624,12 +624,6 @@ class AccessibleObject {
 				if (style.font != null) {
 					style.font.dispose();
 				}
-				if (style.foreground != null) {
-					style.foreground.dispose();
-				}
-				if (style.background != null) {
-					style.background.dispose();
-				}
 				return ACC.OK.equals(event.result) ? 1 : 0;
 			}
 		}
