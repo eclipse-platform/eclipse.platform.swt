@@ -708,7 +708,6 @@ static void swt_fixed_get_property (GObject *object, guint prop_id, GValue *valu
 static void swt_fixed_set_property (GObject *object, guint prop_id, const GValue *value, GParamSpec *pspec);
 static void swt_fixed_finalize (GObject *object);
 static void swt_fixed_map (GtkWidget *widget);
-static AtkObject *swt_fixed_get_accessible (GtkWidget *widget);
 static void swt_fixed_measure (GtkWidget *widget, GtkOrientation  orientation, int for_size, int *minimum,
 		int *natural, int *minimum_baseline, int *natural_baseline);
 static void swt_fixed_size_allocate (GtkWidget *widget, const GtkAllocation *allocation, int baseline);
@@ -736,9 +735,6 @@ static void swt_fixed_class_init (SwtFixedClass *class) {
 	widget_class->map = swt_fixed_map;
 	widget_class->measure = swt_fixed_measure;
 	widget_class->size_allocate = swt_fixed_size_allocate;
-
-	/* Accessibility implementation */
-	widget_class->get_accessible = swt_fixed_get_accessible;
 }
 
 void swt_fixed_restack (SwtFixed *fixed, GtkWidget *widget, GtkWidget *sibling, gboolean above) {
@@ -805,7 +801,6 @@ static void swt_fixed_finalize (GObject *object) {
 
 	g_object_unref (priv->hadjustment);
 	g_object_unref (priv->vadjustment);
-	g_clear_object (&widget->accessible);
 
 	G_OBJECT_CLASS (swt_fixed_parent_class)->finalize (object);
 }
@@ -910,16 +905,6 @@ static void swt_fixed_map (GtkWidget *widget) {
 		gdk_surface_show_unraised (gtk_widget_get_surface (widget));
 	}
 	return GTK_WIDGET_CLASS (swt_fixed_parent_class)->map (widget);
-}
-
-/* Accessibility */
-static AtkObject *swt_fixed_get_accessible (GtkWidget *widget) {
-	SwtFixed *fixed = SWT_FIXED (widget);
-
-	if (!fixed->accessible) {
-		fixed->accessible = swt_fixed_accessible_new (widget);
-	}
-	return fixed->accessible;
 }
 
 static void swt_fixed_measure (GtkWidget *widget, GtkOrientation  orientation, int for_size, int *minimum,
@@ -1083,6 +1068,8 @@ void swt_fixed_remove (GtkWidget *container, GtkWidget *widget) {
 }
 
 #endif
+
+#if !defined(GTK4)
 static void swt_fixed_accessible_class_init (SwtFixedAccessibleClass *klass);
 static void swt_fixed_accessible_finalize (GObject *object);
 static void swt_fixed_accessible_initialize (AtkObject *obj, gpointer data);
@@ -1113,7 +1100,6 @@ struct _SwtFixedAccessiblePrivate {
 	GtkWidget *widget;
 };
 
-#if !defined(GTK4)
 G_DEFINE_TYPE_WITH_CODE (SwtFixedAccessible, swt_fixed_accessible, GTK_TYPE_CONTAINER_ACCESSIBLE,
 			 G_IMPLEMENT_INTERFACE (ATK_TYPE_ACTION, swt_fixed_accessible_action_iface_init)
 			 G_IMPLEMENT_INTERFACE (ATK_TYPE_COMPONENT, swt_fixed_accessible_component_iface_init)
@@ -1124,18 +1110,6 @@ G_DEFINE_TYPE_WITH_CODE (SwtFixedAccessible, swt_fixed_accessible, GTK_TYPE_CONT
 			 G_IMPLEMENT_INTERFACE (ATK_TYPE_TEXT, swt_fixed_accessible_text_iface_init)
 			 G_IMPLEMENT_INTERFACE (ATK_TYPE_VALUE, swt_fixed_accessible_value_iface_init)
 			 G_ADD_PRIVATE (SwtFixedAccessible))
-#else
-G_DEFINE_TYPE_WITH_CODE (SwtFixedAccessible, swt_fixed_accessible, GTK_TYPE_WIDGET_ACCESSIBLE,
-	 G_IMPLEMENT_INTERFACE (ATK_TYPE_ACTION, swt_fixed_accessible_action_iface_init)
-	 G_IMPLEMENT_INTERFACE (ATK_TYPE_COMPONENT, swt_fixed_accessible_component_iface_init)
-	 G_IMPLEMENT_INTERFACE (ATK_TYPE_EDITABLE_TEXT, swt_fixed_accessible_editable_text_iface_init)
-	 G_IMPLEMENT_INTERFACE (ATK_TYPE_HYPERTEXT, swt_fixed_accessible_hypertext_iface_init)
-	 G_IMPLEMENT_INTERFACE (ATK_TYPE_SELECTION, swt_fixed_accessible_selection_iface_init)
-	 G_IMPLEMENT_INTERFACE (ATK_TYPE_TABLE, swt_fixed_accessible_table_iface_init)
-	 G_IMPLEMENT_INTERFACE (ATK_TYPE_TEXT, swt_fixed_accessible_text_iface_init)
-	 G_IMPLEMENT_INTERFACE (ATK_TYPE_VALUE, swt_fixed_accessible_value_iface_init)
-	 G_ADD_PRIVATE (SwtFixedAccessible))
-#endif
 
 // Fully qualified Java class name for the Java implementation of ATK functions
 const char *ACCESSIBILITY_CLASS_NAME = "org/eclipse/swt/accessibility/AccessibleObject";
@@ -2244,7 +2218,6 @@ jlong call_accessible_object_function (const char *method_name, const char *meth
 	return result;
 }
 
-#if !defined(GTK4)
 //Add ability to debug gtk warnings for SWT snippets via SWT_FATAL_WARNINGS=1
 // env variable. Please see Eclipse bug 471477.
 // PLEASE NOTE: this functionality is only available on GTK3.

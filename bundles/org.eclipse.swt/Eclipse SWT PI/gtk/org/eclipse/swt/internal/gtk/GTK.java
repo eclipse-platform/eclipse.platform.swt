@@ -2152,15 +2152,14 @@ public class GTK extends OS {
 	 * @param draw_value cast=(gboolean)
 	 */
 	public static final native void gtk_scale_set_draw_value(long scale, boolean draw_value);
-	/**
-	 * @param scrollable cast=(GtkScrollable *)
-	 */
+	/** @param scrollable cast=(GtkScrollable *) */
 	public static final native long gtk_scrollable_get_vadjustment(long scrollable);
+
+
+	/* GtkScrolledWindow */
 	/** @param scrolled_window cast=(GtkScrolledWindow *) */
 	public static final native long gtk_scrolled_window_get_hadjustment(long scrolled_window);
-	/**
-	 * @param scrolled_window cast=(GtkScrolledWindow *)
-	 */
+	/** @param scrolled_window cast=(GtkScrolledWindow *) */
 	public static final native long gtk_scrolled_window_get_hscrollbar(long scrolled_window);
 	/**
 	 * @param scrolled_window cast=(GtkScrolledWindow *)
@@ -2175,11 +2174,6 @@ public class GTK extends OS {
 	 */
 	public static final native long gtk_scrolled_window_get_vscrollbar(long scrolled_window);
 	/**
-	 * @param hadjustment cast=(GtkAdjustment *)
-	 * @param vadjustment cast=(GtkAdjustment *)
-	 */
-	public static final native long gtk_scrolled_window_new(long hadjustment, long vadjustment);
-	/**
 	 * @param scrolled_window cast=(GtkScrolledWindow *)
 	 * @param hscrollbar_policy cast=(GtkPolicyType)
 	 * @param vscrollbar_policy cast=(GtkPolicyType)
@@ -2190,21 +2184,28 @@ public class GTK extends OS {
 	 * @param scrolled_window cast=(GtkScrolledWindow *)
 	 */
 	public static final native boolean gtk_scrolled_window_get_overlay_scrolling(long scrolled_window);
+
+	/* GtkScrolledWindow [GTK3 only, if-def'd in os.h] */
+	/**
+	 * @param hadjustment cast=(GtkAdjustment *)
+	 * @param vadjustment cast=(GtkAdjustment *)
+	 */
+	public static final native long gtk_scrolled_window_new(long hadjustment, long vadjustment);
 	/**
 	 * @param scrolled_window cast=(GtkScrolledWindow *)
 	 * @param type cast=(GtkShadowType)
 	 */
-	/* [GTK3 only, if-def'd in os.h] */
 	public static final native void gtk_scrolled_window_set_shadow_type(long scrolled_window, int type);
 	/** @param scrolled_window cast=(GtkScrolledWindow *) */
-	/* [GTK3 only, if-def'd in os.h] */
 	public static final native int gtk_scrolled_window_get_shadow_type(long scrolled_window);
+
+	/* GtkScrolledWindow [GTK4 only, if-def'd in os.h] */
+	public static final native long gtk_scrolled_window_new();
 	/** @param scrolled_window cast=(GtkScrolledWindow *) */
-	/* [GTK4 only, if-def'd in os.h] */
 	public static final native void gtk_scrolled_window_set_has_frame(long scrolled_window, boolean has_frame);
 	/** @param scrolled_window cast=(GtkScrolledWindow *) */
-	/* [GTK4 only, if-def'd in os.h] */
 	public static final native boolean gtk_scrolled_window_get_has_frame(long scrolled_window);
+
 
 	public static final native long gtk_settings_get_default();
 	/** @param selection_data cast=(GtkSelectionData *) */

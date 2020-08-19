@@ -95,7 +95,7 @@
 
 
 #if defined(GDK_WINDOWING_X11)
-#if !GTK_CHECK_VERSION(3,98,4)
+#if !GTK_CHECK_VERSION(3,99,0)
 #include <gtk/gtkx.h>
 #define NO_gdk_1x11_1surface_1get_1xid
 #define NO_gdk_1x11_1surface_1lookup_1for_1display
@@ -108,7 +108,7 @@
 #define NO_gtk_1socket_1get_1id
 #define NO_gtk_1socket_1new
 #endif
-#if !GTK_CHECK_VERSION(3,98,4)
+#if !GTK_CHECK_VERSION(3,99,0)
 #include <gdk/gdkx.h>
 #else
 #include <gdk/x11/gdkx.h>
@@ -168,7 +168,7 @@
 
 #endif
 
-#if GTK_CHECK_VERSION(3,98,4)
+#if GTK_CHECK_VERSION(3,99,0)
 #define GTK4 1
 
 // Structs which do not exist on GTK4
@@ -485,6 +485,13 @@
 // GtkBin removed
 #define NO_gtk_1bin_1get_1child
 
+// Accessibility interface changes
+#define NO_GTK_1TYPE_1TEXT_1VIEW_1ACCESSIBLE
+#define NO_swt_1fixed_1accessible_1register_1accessible
+
+// GtkScrolledWindow changes
+#define NO_gtk_1scrolled_1window_1new__JJ
+
 #else
 
 /**
@@ -619,6 +626,9 @@
 // SWTFixed changes
 #define NO_swt_1fixed_1add
 #define NO_swt_1fixed_1remove
+
+// GtkScrolledWindow signature change
+#define NO_gtk_1scrolled_1window_1new__
 
 #endif
 

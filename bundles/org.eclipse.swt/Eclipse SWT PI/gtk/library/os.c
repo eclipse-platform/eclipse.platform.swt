@@ -8846,14 +8846,26 @@ JNIEXPORT jlong JNICALL GTK_NATIVE(gtk_1scrolled_1window_1get_1vscrollbar)
 }
 #endif
 
-#ifndef NO_gtk_1scrolled_1window_1new
-JNIEXPORT jlong JNICALL GTK_NATIVE(gtk_1scrolled_1window_1new)
+#ifndef NO_gtk_1scrolled_1window_1new__
+JNIEXPORT jlong JNICALL GTK_NATIVE(gtk_1scrolled_1window_1new__)
+	(JNIEnv *env, jclass that)
+{
+	jlong rc = 0;
+	GTK_NATIVE_ENTER(env, that, gtk_1scrolled_1window_1new___FUNC);
+	rc = (jlong)gtk_scrolled_window_new();
+	GTK_NATIVE_EXIT(env, that, gtk_1scrolled_1window_1new___FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_gtk_1scrolled_1window_1new__JJ
+JNIEXPORT jlong JNICALL GTK_NATIVE(gtk_1scrolled_1window_1new__JJ)
 	(JNIEnv *env, jclass that, jlong arg0, jlong arg1)
 {
 	jlong rc = 0;
-	GTK_NATIVE_ENTER(env, that, gtk_1scrolled_1window_1new_FUNC);
+	GTK_NATIVE_ENTER(env, that, gtk_1scrolled_1window_1new__JJ_FUNC);
 	rc = (jlong)gtk_scrolled_window_new((GtkAdjustment *)arg0, (GtkAdjustment *)arg1);
-	GTK_NATIVE_EXIT(env, that, gtk_1scrolled_1window_1new_FUNC);
+	GTK_NATIVE_EXIT(env, that, gtk_1scrolled_1window_1new__JJ_FUNC);
 	return rc;
 }
 #endif

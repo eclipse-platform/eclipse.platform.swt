@@ -39,9 +39,9 @@
 #define LIB_FONTCONFIG "libfontconfig-1.dll"
 #else
 #if defined(GTK4)
-#define LIB_GTK "libgtk-4.so.0.9804.0"
+#define LIB_GTK "libgtk-4.so.0.9900.0"
 // Point GDK to GTK for GTK4
-#define LIB_GDK "libgtk-4.so.0.9804.0"
+#define LIB_GDK "libgtk-4.so.0.9900.0"
 #else
 #define LIB_GTK "libgtk-3.so.0"
 #define LIB_GDK "libgdk-3.so.0"
@@ -107,9 +107,6 @@ struct _SwtFixed
 
   /*< private >*/
   SwtFixedPrivate *priv;
-
-  /* Accessibility */
-  AtkObject *accessible;
 };
 
 struct _SwtFixedClass
@@ -144,7 +141,9 @@ void swt_fixed_restack(SwtFixed *fixed, GtkWidget *widget, GtkWidget *sibling, g
 void swt_fixed_move(SwtFixed *fixed, GtkWidget *widget, gint x, gint y);
 void swt_fixed_resize(SwtFixed *fixed, GtkWidget *widget, gint width, gint height);
 
+#if !defined(GTK4)
 #include <gtk/gtk-a11y.h>
+#endif
 
 #define SWT_TYPE_FIXED_ACCESSIBLE      (swt_fixed_accessible_get_type ())
 #define SWT_FIXED_ACCESSIBLE(obj)      (G_TYPE_CHECK_INSTANCE_CAST ((obj), SWT_TYPE_FIXED_ACCESSIBLE, SwtFixedAccessible))
@@ -157,14 +156,11 @@ typedef struct _SwtFixedAccessibleClass SwtFixedAccessibleClass;
 #if defined(GTK4)
 struct _SwtFixedAccessible
 {
-	GtkWidgetAccessible parent;
-
 	SwtFixedAccessiblePrivate *priv;
 };
 
 struct _SwtFixedAccessibleClass
 {
-	GtkWidgetAccessibleClass parent_class;
 };
 #else
 struct _SwtFixedAccessible
@@ -181,8 +177,10 @@ struct _SwtFixedAccessibleClass
 #endif
 
 GType swt_fixed_accessible_get_type (void) G_GNUC_CONST;
+#if !defined(GTK4)
 AtkObject *swt_fixed_accessible_new (GtkWidget *widget);
 void swt_fixed_accessible_register_accessible (AtkObject *obj, gboolean is_native, GtkWidget *to_map);
+#endif
 jlong call_accessible_object_function (const char *method_name, const char *method_signature,...);
 
 void swt_debug_on_fatal_warnings() ;

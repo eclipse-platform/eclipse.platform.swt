@@ -140,7 +140,11 @@ void createHandle (int index) {
 	handle = gtk_box_new (GTK.GTK_ORIENTATION_VERTICAL, false, 0);
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 	if ((style & SWT.V_SCROLL) != 0) {
-		scrolledHandle = GTK.gtk_scrolled_window_new (0, 0);
+		if (GTK.GTK4) {
+			scrolledHandle = GTK.gtk_scrolled_window_new();
+		} else {
+			scrolledHandle = GTK.gtk_scrolled_window_new (0, 0);
+		}
 		if (scrolledHandle == 0) error (SWT.ERROR_NO_HANDLES);
 		GTK.gtk_scrolled_window_set_policy (scrolledHandle, GTK.GTK_POLICY_NEVER, GTK.GTK_POLICY_AUTOMATIC);
 		GTK.gtk_container_add (fixedHandle, scrolledHandle);

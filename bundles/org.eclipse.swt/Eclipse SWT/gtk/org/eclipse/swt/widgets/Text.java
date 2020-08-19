@@ -242,7 +242,11 @@ void createHandle (int index) {
 			GTK.gtk_entry_set_alignment (handle, alignment);
 		}
 	} else {
-		scrolledHandle = GTK.gtk_scrolled_window_new (0, 0);
+		if (GTK.GTK4) {
+			scrolledHandle = GTK.gtk_scrolled_window_new();
+		} else {
+			scrolledHandle = GTK.gtk_scrolled_window_new (0, 0);
+		}
 		if (scrolledHandle == 0) error (SWT.ERROR_NO_HANDLES);
 		handle = GTK.gtk_text_view_new ();
 		if (handle == 0) error (SWT.ERROR_NO_HANDLES);
