@@ -607,14 +607,14 @@ public Rectangle getTextBounds (int index) {
 
 	NSTableView tableView = (NSTableView) parent.view;
 	Image image = index == 0 ? this.image : (images != null) ? images [index] : null;
+	Font f = (cellFont != null ? cellFont[index] : null);
+	NSSize size = getTextExtent(getText(index), f);
 	if (parent.columnCount == 0) {
 		index = (parent.style & SWT.CHECK) != 0 ? 1 : 0;
 	} else {
 		TableColumn column = parent.getColumn (index);
 		index = parent.indexOf (column.nsColumn);
 	}
-	Font f = (cellFont != null ? cellFont[index] : null);
-	NSSize size = getTextExtent(getText(index), f);
 	NSRect rect = tableView.frameOfCellAtColumn (index, parent.indexOf (this));
 	rect.x += Table.TEXT_GAP;
 	rect.width = size.width;

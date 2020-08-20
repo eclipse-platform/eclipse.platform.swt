@@ -839,15 +839,15 @@ public Rectangle getTextBounds (int index) {
 	parent.checkItems ();
 	NSOutlineView outlineView = (NSOutlineView) parent.view;
 	Image image = index == 0 ? this.image : (images != null) ? images [index] : null;
+	Font f = (cellFont != null ? cellFont[index] : null);
+	String text = index == 0 ? this.text : (strings == null ? "" : strings [index]);
+	NSSize size = getTextExtent(text, f);
 	if (parent.columnCount == 0) {
 		index = (parent.style & SWT.CHECK) != 0 ? 1 : 0;
 	} else {
 		TreeColumn column = parent.getColumn (index);
 		index = parent.indexOf (column.nsColumn);
 	}
-	Font f = (cellFont != null ? cellFont[index] : null);
-	String text = index == 0 ? this.text : (strings == null ? "" : strings [index]);
-	NSSize size = getTextExtent(text, f);
 
 	NSRect rect = outlineView.frameOfCellAtColumn (index, outlineView.rowForItem (handle));
 	rect.x += Tree.TEXT_GAP;
