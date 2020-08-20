@@ -724,6 +724,11 @@ void createHandle () {
 	}
 	state &= ~(CANVAS | THEME_BACKGROUND);
 
+	if (display.comboUseDarkTheme) {
+		OS.AllowDarkModeForWindow(handle, true);
+		OS.SetWindowTheme(handle, "CFD\0".toCharArray(), null);
+	}
+
 	stateFlagsUsable = stateFlagsTest();
 
 	/* Get the text and list window procs */
@@ -2485,6 +2490,18 @@ void updateDropDownHeight () {
 	}
 }
 
+void updateDropDownTheme () {
+	COMBOBOXINFO pcbi = new COMBOBOXINFO ();
+	pcbi.cbSize = COMBOBOXINFO.sizeof;
+	if (!OS.GetComboBoxInfo(handle, pcbi))
+		return;
+
+	if (pcbi.hwndList == 0)
+		return;
+
+	maybeEnableDarkSystemTheme(pcbi.hwndList);
+}
+
 @Override
 boolean updateTextDirection(int textDirection) {
 	if (super.updateTextDirection(textDirection)) {
@@ -3216,6 +3233,7 @@ LRESULT wmCommandChild (long wParam, long lParam) {
 		case OS.CBN_DROPDOWN:
 			setCursor ();
 			updateDropDownHeight ();
+			updateDropDownTheme ();
 			break;
 		case OS.CBN_KILLFOCUS:
 			sendFocusEvent (SWT.FocusOut);

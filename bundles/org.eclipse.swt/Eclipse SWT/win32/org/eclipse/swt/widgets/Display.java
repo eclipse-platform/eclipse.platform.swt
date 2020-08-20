@@ -230,6 +230,17 @@ public class Display extends Device {
 	 */
 	static final String LABEL_DISABLED_FOREGROUND_COLOR_KEY = "org.eclipse.swt.internal.win32.Label.disabledForegroundColor"; //$NON-NLS-1$
 	int disabledLabelForegroundPixel = -1;
+	/**
+	 * Use dark theme for Combo.
+	 * Limitations:<br>
+	 * <ul>
+	 *   <li>Only available since Win10 version 1903.</li>
+	 *   <li>Does not affect already created controls.</li>
+	 * </ul>
+	 * Expects a <code>boolean</code> value.
+	 */
+	static final String COMBO_USE_DARK_THEME = "org.eclipse.swt.internal.win32.Combo.useDarkTheme"; //$NON-NLS-1$
+	boolean comboUseDarkTheme = false;
 
 	/* Custom icons */
 	long hIconSearch;
@@ -4398,6 +4409,11 @@ public void setData (String key, Object value) {
 			return;
 		case LABEL_DISABLED_FOREGROUND_COLOR_KEY:
 			disabledLabelForegroundPixel = disableCustomThemeTweaks ? -1 : _toColorPixel(value);
+			break;
+		case COMBO_USE_DARK_THEME:
+			comboUseDarkTheme = _toBoolean(value) &&
+				!disableCustomThemeTweaks &&
+				OS.IsDarkModeAvailable();
 			break;
 	}
 
