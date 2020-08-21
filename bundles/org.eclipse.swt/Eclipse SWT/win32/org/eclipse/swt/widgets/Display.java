@@ -241,6 +241,20 @@ public class Display extends Device {
 	 */
 	static final String COMBO_USE_DARK_THEME = "org.eclipse.swt.internal.win32.Combo.useDarkTheme"; //$NON-NLS-1$
 	boolean comboUseDarkTheme = false;
+	/**
+	 * Use .setForeground() .setBackground() theme for ProgressBar.
+	 * Limitations:<br>
+	 * <ul>
+	 *   <li>Does not affect already created controls.</li>
+	 * </ul>
+	 * Side effects:
+	 * <ul>
+	 *   <li>ProgressBar's shine animation is lost.</li>
+	 * </ul>
+	 * Expects a <code>boolean</code> value.
+	 */
+	static final String PROGRESSBAR_USE_COLORS = "org.eclipse.swt.internal.win32.ProgressBar.useColors"; //$NON-NLS-1$
+	boolean progressbarUseColors = false;
 
 	/* Custom icons */
 	long hIconSearch;
@@ -4414,6 +4428,9 @@ public void setData (String key, Object value) {
 			comboUseDarkTheme = _toBoolean(value) &&
 				!disableCustomThemeTweaks &&
 				OS.IsDarkModeAvailable();
+			break;
+		case PROGRESSBAR_USE_COLORS:
+			progressbarUseColors = !disableCustomThemeTweaks && _toBoolean(value);
 			break;
 	}
 

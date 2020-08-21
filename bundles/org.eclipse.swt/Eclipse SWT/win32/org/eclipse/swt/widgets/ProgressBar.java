@@ -137,6 +137,12 @@ static int checkStyle (int style) {
 @Override
 void createHandle () {
 	super.createHandle ();
+
+	if (display.progressbarUseColors) {
+		char[] noTheme = new char[]{0};
+		OS.SetWindowTheme(handle, noTheme, noTheme);
+	}
+
 	startTimer ();
 }
 
