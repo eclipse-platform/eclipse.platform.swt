@@ -2727,10 +2727,16 @@ public int getSelectionIndex () {
  */
 public int [] getSelectionIndices () {
 	checkWidget ();
-	int i = -1, j = 0, count = (int)OS.SendMessage (handle, OS.LVM_GETSELECTEDCOUNT, 0, 0);
+	int count = (int)OS.SendMessage (handle, OS.LVM_GETSELECTEDCOUNT, 0, 0);
 	int [] result = new int [count];
-	while ((i = (int)OS.SendMessage (handle, OS.LVM_GETNEXTITEM, i, OS.LVNI_SELECTED)) != -1) {
-		result [j++] = i;
+	int lastIndex = -1;
+	for (int i = 0; i < count; i++) {
+		lastIndex = (int)OS.SendMessage (handle, OS.LVM_GETNEXTITEM, lastIndex, OS.LVNI_SELECTED);
+		if (lastIndex == -1) {
+			break;
+		}
+
+		result[i] = lastIndex;
 	}
 	return result;
 }
