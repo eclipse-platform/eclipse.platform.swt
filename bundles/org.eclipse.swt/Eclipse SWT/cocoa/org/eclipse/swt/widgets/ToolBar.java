@@ -586,6 +586,14 @@ int [] layoutUnified (int width, int height, boolean resize) {
 	for (int i=0; i<itemCount; i++) {
 		Point size = sizes [i] = items [i].computeSize ();
 		containerRects [i] = new NSView(itemViewers.objectAtIndex(i)).frame();
+		// workaround for https://bugs.eclipse.org/bugs/show_bug.cgi?id=539693
+		if (containerRects [i].width < 0 || containerRects [i].width > 100000) {
+			containerRects [i].x = 0;
+			containerRects [i].y = 0;
+			containerRects [i].width = 0;
+			containerRects [i].height = 0;
+		}
+
 		if (i == 0) x = (int) containerRects[0].x;
 		itemHeight = Math.max (itemHeight, size.y);
 	}
