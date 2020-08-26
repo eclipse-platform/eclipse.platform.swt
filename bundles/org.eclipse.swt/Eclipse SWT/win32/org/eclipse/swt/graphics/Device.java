@@ -129,23 +129,23 @@ public Device(DeviceData data) {
 }
 
 /**
-*
-* @exception SWTException <ul>
-*    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
-* </ul>
-* @since 3.115
-*/
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ * @since 3.115
+ */
 public boolean isTracking() {
 	checkDevice();
 	return tracking;
 }
 
 /**
-* @exception SWTException <ul>
-*    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
-* </ul>
-* @since 3.115
-*/
+ * @exception SWTException <ul>
+ *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ * @since 3.115
+ */
 public void setTracking(boolean tracking) {
 	checkDevice();
 	if (tracking == this.tracking) {

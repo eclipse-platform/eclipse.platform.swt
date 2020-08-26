@@ -22,7 +22,8 @@ import org.eclipse.swt.*;
  * 0 to 255 or provide an instance of an <code>RGB</code> or <code>RGBA</code>.
  * <p>
  * Colors do not need to be disposed, however to maintain compatibility
- * with older code, disposing a Color is not an error.
+ * with older code, disposing a Color is not an error. As Colors do not require
+ * disposal, the constructors which do not require a Device are recommended.
  * </p>
  *
  * @see RGB
@@ -69,6 +70,8 @@ Color(Device device) {
  *    <li>ERROR_NULL_ARGUMENT - if device is null and there is no current device</li>
  *    <li>ERROR_INVALID_ARGUMENT - if the red, green or blue argument is not between 0 and 255</li>
  * </ul>
+ *
+ * @see #Color(int, int, int) The equivalent constructor not requiring a Device
  */
 public Color(Device device, int red, int green, int blue) {
 	super(device);
@@ -111,6 +114,8 @@ public Color(int red, int green, int blue) {
  *    <li>ERROR_INVALID_ARGUMENT - if the red, green, blue or alpha argument is not between 0 and 255</li>
  * </ul>
  *
+ * @see #Color(int, int, int, int) The equivalent constructor not requiring a Device
+ *
  * @since 3.104
  */
 public Color(Device device, int red, int green, int blue, int alpha) {
@@ -152,6 +157,8 @@ public Color(int red, int green, int blue, int alpha) {
  *    <li>ERROR_NULL_ARGUMENT - if the rgb argument is null</li>
  *    <li>ERROR_INVALID_ARGUMENT - if the red, green or blue components of the argument are not between 0 and 255</li>
  * </ul>
+ *
+ * @see #Color(RGB) The equivalent constructor not requiring a Device
  */
 public Color(Device device, RGB rgb) {
 	super(device);
@@ -190,6 +197,8 @@ public Color(RGB rgb) {
  *    <li>ERROR_NULL_ARGUMENT - if the rgba argument is null</li>
  *    <li>ERROR_INVALID_ARGUMENT - if the red, green, blue or alpha components of the argument are not between 0 and 255</li>
  * </ul>
+ *
+ * @see #Color(RGBA) The equivalent constructor not requiring a Device
  *
  * @since 3.104
  */
@@ -233,6 +242,8 @@ public Color(RGBA rgba) {
  *    <li>ERROR_NULL_ARGUMENT - if the rgb argument is null</li>
  *    <li>ERROR_INVALID_ARGUMENT - if the red, green, blue or alpha components of the argument are not between 0 and 255</li>
  * </ul>
+ *
+ * @see #Color(RGB, int) The equivalent constructor not requiring a Device
  *
  * @since 3.104
  */
@@ -287,6 +298,11 @@ public void dispose() {
  * Returns the <code>Device</code> where this resource was
  * created. In cases where no <code>Device</code> was used
  * at creation, returns the current or default Device.
+ *
+ * <p>
+ * As Color does not require a Device it is recommended to not
+ * use {@link Color#getDevice()}.
+ * </p>
  *
  * @return <code>Device</code> the device of the receiver
  * @since 3.2
