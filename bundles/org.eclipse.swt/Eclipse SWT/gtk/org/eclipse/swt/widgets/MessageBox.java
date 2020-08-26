@@ -207,7 +207,11 @@ public int open () {
 		display.setModalDialog (oldModal);
 	}
 	display.removeIdleProc ();
-	GTK.gtk_widget_destroy (handle);
+	if (GTK.GTK4) {
+		GTK.gtk_window_destroy(handle);
+	} else {
+		GTK.gtk_widget_destroy(handle);
+	}
 	return response;
 }
 

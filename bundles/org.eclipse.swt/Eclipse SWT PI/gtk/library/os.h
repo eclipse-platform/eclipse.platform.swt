@@ -270,6 +270,7 @@
 #define NO_gtk_1css_1provider_1load_1from_1data__I_3BI_3I
 #define NO_gtk_1css_1provider_1load_1from_1data__J_3BJ_3J
 #define NO_gdk_1pixbuf_1get_1from_1window
+#define NO_gtk_1widget_1destroy
 
 // Some GtkContainer functions don't exist on GTK4
 #define NO_gtk_1container_1propagate_1draw
@@ -610,6 +611,7 @@
 #define NO_gtk_1window_1unminimize
 #define NO_gtk_1window_1set_1default_1widget
 #define NO_gtk_1window_1set_1child
+#define NO_gtk_1window_1destroy
 
 // GtkIconTheme API changes
 #define NO_gtk_1icon_1theme_1get_1for_1display

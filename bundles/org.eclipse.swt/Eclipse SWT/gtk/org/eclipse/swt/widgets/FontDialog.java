@@ -220,7 +220,11 @@ public FontData open () {
 		OS.pango_font_description_free (fontDesc);
 	}
 	display.removeIdleProc ();
-	GTK.gtk_widget_destroy(handle);
+	if (GTK.GTK4) {
+		OS.g_object_unref(handle);
+	} else {
+		GTK.gtk_widget_destroy(handle);
+	}
 	if (!success) return null;
 	return fontData;
 }

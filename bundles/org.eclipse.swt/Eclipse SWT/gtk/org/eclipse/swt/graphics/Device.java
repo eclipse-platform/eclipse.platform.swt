@@ -953,7 +953,13 @@ static synchronized void register (Device device) {
  * @see #destroy
  */
 protected void release () {
-	if (shellHandle != 0) GTK.gtk_widget_destroy(shellHandle);
+	if (shellHandle != 0) {
+		if (GTK.GTK4) {
+			GTK.gtk_window_destroy(shellHandle);
+		} else {
+			GTK.gtk_widget_destroy(shellHandle);
+		}
+	}
 	shellHandle = 0;
 
 	/* Dispose the default font */

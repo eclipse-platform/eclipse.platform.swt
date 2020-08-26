@@ -494,7 +494,11 @@ public PrinterData open() {
 		}
 	}
 	display.setData (REMOVE_IDLE_PROC_KEY, null);
-	GTK.gtk_widget_destroy (handle);
+	if (GTK.GTK4) {
+		GTK.gtk_window_destroy(handle);
+	} else {
+		GTK.gtk_widget_destroy(handle);
+	}
 	return data;
 }
 

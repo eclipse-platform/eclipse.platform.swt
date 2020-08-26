@@ -3243,6 +3243,7 @@ public class GTK extends OS {
 	 */
 	public static final native long gtk_widget_create_pango_layout(long widget, long text);
 	/** @param widget cast=(GtkWidget *) */
+	/* [GTK3 only] */
 	public static final native void gtk_widget_destroy(long widget);
 	/**
 	 * @method flags=dynamic
@@ -3719,4 +3720,6 @@ public class GTK extends OS {
 	 * @param child cast=(GtkWidget *)
 	 */
 	public static final native void gtk_window_set_child(long window, long child);
+	/** @param window cast=(GtkWindow *) */
+	public static final native void gtk_window_destroy(long window);
 }

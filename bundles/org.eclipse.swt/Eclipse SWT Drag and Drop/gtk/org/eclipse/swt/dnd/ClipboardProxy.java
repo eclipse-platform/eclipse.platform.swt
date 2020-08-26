@@ -106,7 +106,13 @@ void dispose () {
 	clipboardDataTypes = null;
 	primaryClipboardData = null;
 	primaryClipboardDataTypes = null;
-	if (clipboardOwner != 0) GTK.gtk_widget_destroy (clipboardOwner);
+	if (clipboardOwner != 0) {
+		if (GTK.GTK4) {
+			GTK.gtk_window_destroy(clipboardOwner);
+		} else {
+			GTK.gtk_widget_destroy(clipboardOwner);
+		}
+	}
 	clipboardOwner = 0;
 }
 

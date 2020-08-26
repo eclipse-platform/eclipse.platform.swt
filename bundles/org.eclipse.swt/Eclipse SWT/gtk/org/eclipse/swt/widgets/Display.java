@@ -3217,7 +3217,11 @@ private void initializeSystemColorsLink() {
 	long styleContextLink = GTK.gtk_widget_get_style_context (label);
 	COLOR_LINK_FOREGROUND_RGBA = styleContextGetColor (styleContextLink, GTK.GTK_STATE_FLAG_LINK);
 
-	GTK.gtk_widget_destroy (window);
+	if (GTK.GTK4) {
+		GTK.gtk_window_destroy(window);
+	} else {
+		GTK.gtk_widget_destroy(window);
+	}
 }
 
 void initializeSystemColorsTooltip() {
@@ -3275,7 +3279,11 @@ void initializeSystemColorsDisabled() {
 	COLOR_WIDGET_DISABLED_FOREGROUND_RGBA = styleContextGetColor (context, GTK.GTK_STATE_FLAG_INSENSITIVE);
 	COLOR_TEXT_DISABLED_BACKGROUND_RGBA = styleContextEstimateBackgroundColor (context, GTK.GTK_STATE_FLAG_INSENSITIVE);
 
-	GTK.gtk_widget_destroy (window);
+	if (GTK.GTK4) {
+		GTK.gtk_window_destroy(window);
+	} else {
+		GTK.gtk_widget_destroy(window);
+	}
 }
 
 GdkRGBA styleContextGetColor(long context, int flag) {
@@ -3738,23 +3746,13 @@ void initializeSubclasses () {
 }
 
 void initializeSystemSettings () {
-	OS.g_signal_connect (shellHandle, OS.style_updated, signalProc, STYLE_UPDATED);
+	if (!GTK.GTK4) OS.g_signal_connect(shellHandle, OS.style_updated, signalProc, STYLE_UPDATED);
 
-	/*
-	* Feature in GTK.  Despite the fact that the
-	* gtk-entry-select-on-focus property is a global
-	* setting, it is initialized when the GtkEntry
-	* is initialized.  This means that it cannot be
-	* accessed before a GtkEntry is created.  The
-	* fix is to for the initializaion by creating
-	* a temporary GtkEntry.
-	*/
-	long entry = GTK.gtk_entry_new ();
-	GTK.gtk_widget_destroy (entry);
-	int [] buffer2 = new int [1];
-	long settings = GTK.gtk_settings_get_default ();
-	OS.g_object_get (settings, GTK.gtk_entry_select_on_focus, buffer2, 0);
-	entrySelectOnFocus = buffer2 [0] != 0;
+	boolean[] flag = new boolean[1];
+	long settings = GTK.gtk_settings_get_default();
+	OS.g_object_get(settings, GTK.gtk_entry_select_on_focus, flag, 0);
+
+	entrySelectOnFocus = flag[0];
 }
 
 void initializeWidgetTable () {
@@ -4631,7 +4629,14 @@ void releaseDisplay () {
 	checkIfEventProc = 0;
 
 	/* Dispose preedit window */
-	if (preeditWindow != 0) GTK.gtk_widget_destroy (preeditWindow);
+	if (preeditWindow != 0) {
+		if (GTK.GTK4) {
+			GTK.gtk_window_destroy(preeditWindow);
+		} else {
+			GTK.gtk_widget_destroy(preeditWindow);
+		}
+	}
+	preeditWindow = 0;
 	imControl = null;
 
 	/* Dispose the tooltip map callback */
@@ -4738,7 +4743,13 @@ void releaseDisplay () {
 	eventCallback.dispose ();  eventCallback = null;
 
 	/* Dispose the hidden shell */
-	if (shellHandle != 0) GTK.gtk_widget_destroy (shellHandle);
+	if (shellHandle != 0) {
+		if (GTK.GTK4) {
+			GTK.gtk_window_destroy(shellHandle);
+		} else {
+			GTK.gtk_widget_destroy(shellHandle);
+		}
+	}
 	shellHandle = 0;
 
 	/* Dispose the settings callback */

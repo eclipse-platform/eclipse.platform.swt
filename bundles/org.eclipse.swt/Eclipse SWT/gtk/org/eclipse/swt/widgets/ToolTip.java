@@ -323,9 +323,13 @@ void destroyWidget () {
 	releaseHandle ();
 	if (topHandle != 0 && (state & HANDLE) != 0) {
 		if ((style & SWT.BALLOON) != 0) {
-			GTK.gtk_widget_destroy (topHandle);
+			if (GTK.GTK4) {
+				OS.g_object_unref(topHandle);
+			} else {
+				GTK.gtk_widget_destroy(topHandle);
+			}
 		} else {
-			OS.g_object_unref (topHandle);
+			OS.g_object_unref(topHandle);
 		}
 	}
 }
