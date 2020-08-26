@@ -8870,6 +8870,16 @@ JNIEXPORT jlong JNICALL GTK_NATIVE(gtk_1scrolled_1window_1new__JJ)
 }
 #endif
 
+#ifndef NO_gtk_1scrolled_1window_1set_1child
+JNIEXPORT void JNICALL GTK_NATIVE(gtk_1scrolled_1window_1set_1child)
+	(JNIEnv *env, jclass that, jlong arg0, jlong arg1)
+{
+	GTK_NATIVE_ENTER(env, that, gtk_1scrolled_1window_1set_1child_FUNC);
+	gtk_scrolled_window_set_child((GtkScrolledWindow *)arg0, (GtkWidget *)arg1);
+	GTK_NATIVE_EXIT(env, that, gtk_1scrolled_1window_1set_1child_FUNC);
+}
+#endif
+
 #ifndef NO_gtk_1scrolled_1window_1set_1has_1frame
 JNIEXPORT void JNICALL GTK_NATIVE(gtk_1scrolled_1window_1set_1has_1frame)
 	(JNIEnv *env, jclass that, jlong arg0, jboolean arg1)
@@ -11955,18 +11965,6 @@ JNIEXPORT jlong JNICALL GTK_NATIVE(gtk_1widget_1get_1first_1child)
 }
 #endif
 
-#ifndef NO_gtk_1widget_1get_1has_1surface
-JNIEXPORT jboolean JNICALL GTK_NATIVE(gtk_1widget_1get_1has_1surface)
-	(JNIEnv *env, jclass that, jlong arg0)
-{
-	jboolean rc = 0;
-	GTK_NATIVE_ENTER(env, that, gtk_1widget_1get_1has_1surface_FUNC);
-	rc = (jboolean)gtk_widget_get_has_surface((GtkWidget *)arg0);
-	GTK_NATIVE_EXIT(env, that, gtk_1widget_1get_1has_1surface_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO_gtk_1widget_1get_1has_1window
 JNIEXPORT jboolean JNICALL GTK_NATIVE(gtk_1widget_1get_1has_1window)
 	(JNIEnv *env, jclass that, jlong arg0)
@@ -12757,16 +12755,6 @@ JNIEXPORT void JNICALL GTK_NATIVE(gtk_1widget_1set_1halign)
 	GTK_NATIVE_ENTER(env, that, gtk_1widget_1set_1halign_FUNC);
 	gtk_widget_set_halign((GtkWidget *)arg0, (GtkAlign)arg1);
 	GTK_NATIVE_EXIT(env, that, gtk_1widget_1set_1halign_FUNC);
-}
-#endif
-
-#ifndef NO_gtk_1widget_1set_1has_1surface
-JNIEXPORT void JNICALL GTK_NATIVE(gtk_1widget_1set_1has_1surface)
-	(JNIEnv *env, jclass that, jlong arg0, jboolean arg1)
-{
-	GTK_NATIVE_ENTER(env, that, gtk_1widget_1set_1has_1surface_FUNC);
-	gtk_widget_set_has_surface((GtkWidget *)arg0, (gboolean)arg1);
-	GTK_NATIVE_EXIT(env, that, gtk_1widget_1set_1has_1surface_FUNC);
 }
 #endif
 

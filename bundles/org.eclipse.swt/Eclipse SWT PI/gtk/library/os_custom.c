@@ -792,7 +792,7 @@ static void swt_fixed_init (SwtFixed *widget) {
 	priv->hadjustment = NULL;
 	priv->vadjustment = NULL;
 
-	gtk_widget_set_has_surface(GTK_WIDGET(widget), FALSE);
+//	gtk_widget_set_has_surface(GTK_WIDGET(widget), FALSE);
 }
 
 static void swt_fixed_finalize (GObject *object) {
@@ -862,24 +862,6 @@ static void swt_fixed_set_property (GObject *object, guint prop_id, const GValue
     }
 }
 
-/*
-static void swt_fixed_realize (GtkWidget *widget) {
-	GtkAllocation allocation;
-	GdkSurface *surface;
-
- 	if (!gtk_widget_get_has_surface (widget)) {
-    	GTK_WIDGET_CLASS (swt_fixed_parent_class)->realize (widget);
-    	return;
-    }
-
-	gtk_widget_get_allocation (widget, &allocation);
-
-	surface = gdk_surface_new_child (gtk_widget_get_parent_surface (widget), &allocation);
-	gtk_widget_set_surface(widget, surface);
-	gdk_surface_set_user_data (surface, widget);
-	return GTK_WIDGET_CLASS (swt_fixed_parent_class)->realize (widget);
-}*/
-
 static void swt_fixed_map (GtkWidget *widget) {
 	SwtFixed *fixed = SWT_FIXED (widget);
 	SwtFixedPrivate *priv = fixed->priv;
@@ -894,16 +876,9 @@ static void swt_fixed_map (GtkWidget *widget) {
 			if (!gtk_widget_get_mapped (child)) gtk_widget_map (child);
 		}
 	}
-	if (gtk_widget_get_has_surface (widget)) {
-		//NOTE: contrary to most of GTK, swt_fixed_* container does not raise windows upon showing them.
-		//This has the effect that widgets are drawn *beneath* the previous one.
-		//E.g if this line is changed to gdk_window_show (..) then widgets are drawn on top of the previous one.
-		//This affects mostly only the absolute layout with overlapping widgets, e.g minimizied panels that
-		//pop-out in Eclipse (aka fast-view).
-		//As such, be attentive to swt_fixed_forall(..); traversing children may need to be done in reverse in some
-		//cases.
-		gdk_surface_show_unraised (gtk_widget_get_surface (widget));
-	}
+
+	//TODO: SWTFixed needs to show without raising. To have an effect that widgets are drawn beneath the previous one.
+
 	return GTK_WIDGET_CLASS (swt_fixed_parent_class)->map (widget);
 }
 
@@ -941,9 +916,10 @@ static void swt_fixed_size_allocate (GtkWidget *widget, const GtkAllocation *all
 	GtkRequisition requisition;
 	gint w, h;
 
-	if (gtk_widget_get_has_surface (widget)) {
+	GtkNative* native = gtk_widget_get_native(widget);
+	if (native != NULL) {
 		if (gtk_widget_get_realized (widget)) {
-			gdk_surface_move_resize (gtk_widget_get_surface (widget), allocation->x, allocation->y, allocation->width, allocation->height);
+			//TODO: GTK4 no surface_resize need to use respective present functions to position
 	    }
 	}
 
@@ -956,7 +932,7 @@ static void swt_fixed_size_allocate (GtkWidget *widget, const GtkAllocation *all
 
 		child_allocation.x = child_data->x;
 		child_allocation.y = child_data->y;
-		if (!gtk_widget_get_has_surface (widget)) {
+		if (native == NULL) {
           child_allocation.x += allocation->x;
           child_allocation.y += allocation->y;
         }

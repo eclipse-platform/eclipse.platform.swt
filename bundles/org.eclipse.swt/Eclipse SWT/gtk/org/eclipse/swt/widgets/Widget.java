@@ -1949,7 +1949,7 @@ void gtk_widget_set_has_surface_or_window (long widget, boolean has) {
 		if (has && OS.G_OBJECT_TYPE(widget) == OS.swt_fixed_get_type()) {
 			return;
 		}
-		GTK.gtk_widget_set_has_surface(widget, has);
+		//TODO: GTK4 no has_surface property
 	} else {
 		GTK.gtk_widget_set_has_window(widget, has);
 	}
@@ -1957,7 +1957,7 @@ void gtk_widget_set_has_surface_or_window (long widget, boolean has) {
 
 boolean gtk_widget_get_has_surface_or_window (long widget) {
 	if (GTK.GTK4) {
-		return GTK.gtk_widget_get_has_surface(widget);
+		return GTK.gtk_widget_get_native(widget) != 0;
 	} else {
 		return GTK.gtk_widget_get_has_window(widget);
 	}

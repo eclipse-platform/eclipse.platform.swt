@@ -1215,7 +1215,11 @@ Point getLocationInPixels () {
 		setLocationInPixels(oldX, oldY);
 	}
 	int [] x = new int [1], y = new int [1];
-	GTK.gtk_window_get_position (shellHandle, x,y);
+	if (GTK.GTK4) {
+		// TODO: GTK4 GtkWindow no longer has the ability to get position
+	} else {
+		GTK.gtk_window_get_position (shellHandle, x, y);
+	}
 	return new Point (x [0], y [0]);
 }
 
@@ -3204,7 +3208,11 @@ Rectangle getBoundsInPixels () {
 	checkWidget ();
 	int [] x = new int [1], y = new int [1];
 	if ((state & Widget.DISPOSE_SENT) == 0) {
-		GTK.gtk_window_get_position (shellHandle, x, y);
+		if (GTK.GTK4) {
+			// TODO: GTK4 GtkWindow no longer has the ability to get position
+		} else {
+			GTK.gtk_window_get_position (shellHandle, x, y);
+		}
 	} else {
 		if (GTK.GTK4) {
 			/* TODO: GTK4 Coordinate system is now surface relative, therefore can no longer obtain

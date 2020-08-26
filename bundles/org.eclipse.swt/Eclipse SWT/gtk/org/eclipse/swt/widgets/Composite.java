@@ -161,7 +161,8 @@ static int checkStyle (int style) {
 
 Control [] _getChildren () {
 	long parentHandle = parentingHandle ();
-	long list = GTK.gtk_container_get_children (parentHandle);
+	//TODO: GTK4 no GTKContainer, and GtkWidget has no get_children function
+	long list = GTK.GTK4 ? 0 : GTK.gtk_container_get_children (parentHandle);
 	if (list == 0) return new Control [0];
 	int count = OS.g_list_length (list);
 	Control [] children = new Control [count];
@@ -333,15 +334,19 @@ void createHandle (int index, boolean fixed, boolean scrolled) {
 	}
 	if (scrolled) {
 		if (fixed) GTK.gtk_container_add (fixedHandle, scrolledHandle);
-		/*
-		* Force the scrolledWindow to have a single child that is
-		* not scrolled automatically.  Calling gtk_container_add()
-		* seems to add the child correctly but cause a warning.
-		*/
-		boolean warnings = display.getWarnings ();
-		display.setWarnings (false);
-		GTK.gtk_container_add (scrolledHandle, handle);
-		display.setWarnings (warnings);
+		if (GTK.GTK4) {
+			GTK.gtk_scrolled_window_set_child(scrolledHandle, handle);
+		} else {
+			/*
+			* Force the scrolledWindow to have a single child that is
+			* not scrolled automatically.  Calling gtk_container_add()
+			* seems to add the child correctly but cause a warning.
+			*/
+			boolean warnings = display.getWarnings ();
+			display.setWarnings (false);
+			GTK.gtk_container_add (scrolledHandle, handle);
+			display.setWarnings (warnings);
+		}
 
 		int hsp = (style & SWT.H_SCROLL) != 0 ? GTK.GTK_POLICY_ALWAYS : GTK.GTK_POLICY_NEVER;
 		int vsp = (style & SWT.V_SCROLL) != 0 ? GTK.GTK_POLICY_ALWAYS : GTK.GTK_POLICY_NEVER;

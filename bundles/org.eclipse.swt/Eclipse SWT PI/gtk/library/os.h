@@ -506,8 +506,6 @@
 #define NO_gtk_1drag_1get_1data__JJJ
 
 // No GdkSurface on GTK3
-#define NO_gtk_1widget_1set_1has_1surface
-#define NO_gtk_1widget_1get_1has_1surface
 #define NO_gtk_1widget_1set_1parent_1surface
 #define NO_gdk_1surface_1create_1similar_1surface
 #define NO_gdk_1surface_1destroy
@@ -621,6 +619,7 @@
 // GtkScrollWindow
 #define NO_gtk_1scrolled_1window_1set_1has_1frame
 #define NO_gtk_1scrolled_1window_1get_1has_1frame
+#define NO_gtk_1scrolled_1window_1set_1child
 
 // GtkTreeViewColumn
 #define NO_gtk_1tree_1view_1column_1cell_1get_1size__J_3I_3I_3I_3I

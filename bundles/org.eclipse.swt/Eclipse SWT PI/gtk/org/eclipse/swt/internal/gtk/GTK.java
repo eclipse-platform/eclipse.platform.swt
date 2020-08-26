@@ -1231,12 +1231,6 @@ public class GTK extends OS {
 	public static final native void gtk_widget_set_has_window(long widget, boolean has_window);
 	/**
 	 * @param widget cast=(GtkWidget *)
-	 * @param has_surface cast=(gboolean)
-	 */
-	/* [GTK4 only, if-def'd in os.h] */
-	public static final native void gtk_widget_set_has_surface(long widget, boolean has_surface);
-	/**
-	 * @param widget cast=(GtkWidget *)
 	 * @param expand cast=(gboolean)
 	 */
 	public static final native void gtk_widget_set_hexpand(long widget, boolean expand);
@@ -2205,6 +2199,11 @@ public class GTK extends OS {
 	public static final native void gtk_scrolled_window_set_has_frame(long scrolled_window, boolean has_frame);
 	/** @param scrolled_window cast=(GtkScrolledWindow *) */
 	public static final native boolean gtk_scrolled_window_get_has_frame(long scrolled_window);
+	/**
+	 * @param scrolled_window cast=(GtkScrolledWindow *)
+	 * @param child cast=(GtkWidget *)
+	 *  */
+	public static final native void gtk_scrolled_window_set_child(long scrolled_window, long child);
 
 
 	public static final native long gtk_settings_get_default();
@@ -3268,11 +3267,6 @@ public class GTK extends OS {
 	 */
 	/* [GTK3 only, if-def'd in os.h] */
 	public static final native boolean gtk_widget_get_has_window(long widget);
-	/**
-	 * @param widget cast=(GtkWidget *)
-	 */
-	/* [GTK4 only, if-def'd in os.h] */
-	public static final native boolean gtk_widget_get_has_surface(long widget);
 	/** @param widget cast=(GtkWidget *) */
 	public static final native boolean gtk_widget_get_can_default(long widget);
 	/** @param widget cast=(GtkWidget *) */

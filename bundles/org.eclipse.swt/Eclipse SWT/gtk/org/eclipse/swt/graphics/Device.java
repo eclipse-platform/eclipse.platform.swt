@@ -506,9 +506,16 @@ public FontData[] getFontList (String faceName, boolean scalable) {
 }
 
 Point getScreenDPI () {
-	long screen = GDK.gdk_screen_get_default();
-	int dpi = (int) GDK.gdk_screen_get_resolution(screen);
-	Point ptDPI = dpi == -1 ? new Point (96, 96) : new Point (dpi, dpi);
+	Point ptDPI;
+
+	if (GTK.GTK4) {
+		ptDPI = new Point (96, 96);
+	} else {
+		long screen = GDK.gdk_screen_get_default();
+		int dpi = (int) GDK.gdk_screen_get_resolution(screen);
+		ptDPI = dpi == -1 ? new Point (96, 96) : new Point (dpi, dpi);
+	}
+
 	return ptDPI;
 }
 
@@ -608,9 +615,6 @@ public boolean getWarnings () {
  * @see #create
  */
 protected void init () {
-	this.dpi = getDPI();
-	DPIUtil.setDeviceZoom (getDeviceZoom ());
-
 	if (debug) {
 		if (xDisplay != 0) {
 			/* Create the warning and error callbacks */
@@ -679,6 +683,9 @@ protected void init () {
 	}
 	if (shellHandle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	GTK.gtk_widget_realize(shellHandle);
+
+	this.dpi = getDPI();
+	DPIUtil.setDeviceZoom (getDeviceZoom ());
 
 	if (GTK.GTK_VERSION >= OS.VERSION(3, 22, 0)) {
 		double sx[] = new double[1];
@@ -1082,7 +1089,15 @@ protected int getDeviceZoom() {
 	int dpi = 96;
 	if (GTK.GTK_VERSION >= OS.VERSION(3, 22, 0)) {
 		long display = GDK.gdk_display_get_default();
-		long monitor = GDK.gdk_display_get_monitor_at_point(display, 0, 0);
+		long monitor;
+
+		if (GTK.GTK4) {
+			long surface = GTK.gtk_native_get_surface(GTK.gtk_widget_get_native(shellHandle));
+			monitor = GDK.gdk_display_get_monitor_at_surface(display, surface);
+		} else {
+			monitor = GDK.gdk_display_get_monitor_at_point(display, 0, 0);
+		}
+
 		int scale = GDK.gdk_monitor_get_scale_factor(monitor);
 		dpi = dpi * scale;
 	} else {
@@ -1093,6 +1108,7 @@ protected int getDeviceZoom() {
 		int scale = GDK.gdk_screen_get_monitor_scale_factor (screen, monitor_num);
 		dpi = dpi * scale;
 	}
+
 	return DPIUtil.mapDPIToZoom (dpi);
 }
 

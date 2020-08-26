@@ -3058,8 +3058,11 @@ static int inversePremultipliedColor(int color, int alpha) {
  * This is only important when top layer is semi-transparent.
  */
 private static void renderAllBackgrounds(long styleContext, long cairo) {
-	long parentStyleContext = GTK.gtk_style_context_get_parent (styleContext);
-	if (parentStyleContext != 0) renderAllBackgrounds (parentStyleContext, cairo);
+	if (!GTK.GTK4) {
+		// GTK4 GtkStyleContext has no concept of parents
+		long parentStyleContext = GTK.gtk_style_context_get_parent (styleContext);
+		if (parentStyleContext != 0) renderAllBackgrounds (parentStyleContext, cairo);
+	}
 
 	GTK.gtk_render_background (styleContext, cairo, -50, -50, 100, 100);
 }
