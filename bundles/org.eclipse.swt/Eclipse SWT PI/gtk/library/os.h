@@ -583,6 +583,8 @@
 
 // GtkEventController
 #define NO_gtk_1event_1controller_1get_1current_1event
+#define NO_gtk_1event_1controller_1focus_1new
+#define NO_gtk_1gesture_1click_1new
 
 // GdkCursor API changes
 #define NO_gdk_1cursor_1new_1from_1name__Ljava_lang_String_2J

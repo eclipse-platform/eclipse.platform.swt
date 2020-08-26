@@ -79,7 +79,7 @@ public class GTK extends OS {
 	public static final int GTK_PRINT_DUPLEX_SIMPLEX = 0;
 	public static final int GTK_PRINT_DUPLEX_HORIZONTAL = 1;
 	public static final int GTK_PRINT_DUPLEX_VERTICAL = 2;
-	public static final int GTK_EVENT_CONTROLLER_SCROLL_NONE = 0;
+	public static final int GTK_EVENT_CONTROLLER_SCROLL_BOTH_AXES = 5;
 	public static final int GTK_PHASE_CAPTURE = 1;
 	public static final int GTK_PHASE_BUBBLE = 2;
 	public static final int GTK_PHASE_TARGET = 3;
@@ -1115,13 +1115,14 @@ public class GTK extends OS {
 	public static final native boolean gtk_file_chooser_set_file(long chooser, long file, long error);
 
 	/* [GTK4 only, if-def'd in os.h] */
-	public static final native long gtk_gesture_multi_press_new();
+	public static final native long gtk_gesture_click_new();
 	/* [GTK4 only, if-def'd in os.h] */
 	public static final native long gtk_event_controller_key_new();
 	/* [GTK4 only, if-def'd in os.h] */
 	public static final native long gtk_event_controller_motion_new();
 	/* [GTK4 only, if-def'd in os.h] */
 	public static final native long gtk_event_controller_scroll_new(int flag);
+	public static final native long gtk_event_controller_focus_new();
 	/**
 	 * @param widget cast=(GtkWidget *)
 	 * @param controller cast=(GtkEventController *)

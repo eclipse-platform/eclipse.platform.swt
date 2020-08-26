@@ -175,6 +175,7 @@ void connectPaint () {
 		GTK.gtk_widget_add_events (paintHandle, paintMask);
 		OS.g_signal_connect_closure_by_id (paintHandle, display.signalIds [DRAW], 0, display.getClosure (EXPOSE_EVENT_INVERSE), false);
 		OS.g_signal_connect_closure_by_id (paintHandle, display.signalIds [DRAW], 0, display.getClosure (DRAW), true);
+		OS.g_signal_connect_closure_by_id (paintHandle, display.signalIds [STYLE_UPDATED], 0, display.getClosure (STYLE_UPDATED), false);
 	}
 }
 
@@ -415,97 +416,20 @@ boolean hasFocus () {
 
 @Override
 void hookEvents () {
-	/* Connect the keyboard signals */
-	long focusHandle = focusHandle ();
-	int focusMask = GDK.GDK_KEY_PRESS_MASK | GDK.GDK_KEY_RELEASE_MASK | GDK.GDK_FOCUS_CHANGE_MASK;
-	if (GTK.GTK4) {
-		long keyController = GTK.gtk_event_controller_key_new();
-		GTK.gtk_widget_add_controller(focusHandle, keyController);
-		GTK.gtk_event_controller_set_propagation_phase(keyController, GTK.GTK_PHASE_TARGET);
-
-		long keyPressReleaseAddress = display.keyPressReleaseCallback.getAddress();
-		long focusAddress = display.focusCallback.getAddress();
-		OS.g_signal_connect (keyController, OS.key_pressed, keyPressReleaseAddress, KEY_PRESSED);
-		OS.g_signal_connect (keyController, OS.key_released, keyPressReleaseAddress, KEY_RELEASED);
-		OS.g_signal_connect (keyController, OS.focus_in, focusAddress, FOCUS_IN);
-		OS.g_signal_connect (keyController, OS.focus_out, focusAddress, FOCUS_OUT);
-
-		long gesturePressReleaseAddress = display.gesturePressReleaseCallback.getAddress();
-		long gestureMultiPress = GTK.gtk_gesture_multi_press_new();
-		GTK.gtk_widget_add_controller(focusHandle, gestureMultiPress);
-		OS.g_signal_connect(gestureMultiPress, OS.pressed, gesturePressReleaseAddress, GESTURE_PRESSED);
-		OS.g_signal_connect(gestureMultiPress, OS.released, gesturePressReleaseAddress, GESTURE_RELEASED);
-
-	} else {
-		GTK.gtk_widget_add_events (focusHandle, focusMask);
-		OS.g_signal_connect_closure_by_id (focusHandle, display.signalIds [KEY_PRESS_EVENT], 0, display.getClosure (KEY_PRESS_EVENT), false);
-		OS.g_signal_connect_closure_by_id (focusHandle, display.signalIds [KEY_RELEASE_EVENT], 0, display.getClosure (KEY_RELEASE_EVENT), false);
-		OS.g_signal_connect_closure_by_id (focusHandle, display.signalIds [FOCUS_IN_EVENT], 0, display.getClosure (FOCUS_IN_EVENT), false);
-		OS.g_signal_connect_closure_by_id (focusHandle, display.signalIds [FOCUS_OUT_EVENT], 0, display.getClosure (FOCUS_OUT_EVENT), false);
-	}
-	OS.g_signal_connect_closure_by_id (focusHandle, display.signalIds [POPUP_MENU], 0, display.getClosure (POPUP_MENU), false);
-	if (!GTK.GTK4) OS.g_signal_connect_closure_by_id (focusHandle, display.signalIds [SHOW_HELP], 0, display.getClosure (SHOW_HELP), false);
-	OS.g_signal_connect_closure_by_id (focusHandle, display.signalIds [FOCUS], 0, display.getClosure (FOCUS), false);
-
-	/* Connect the mouse signals */
-	long eventHandle = eventHandle ();
-	long blockHandle = fixedHandle != 0 ? fixedHandle : eventHandle;
-	long enterExitHandle = enterExitHandle ();
-	if (GTK.GTK4) {
-		long motionController = GTK.gtk_event_controller_motion_new();
-		GTK.gtk_widget_add_controller(eventHandle, motionController);
-		GTK.gtk_event_controller_set_propagation_phase(motionController, GTK.GTK_PHASE_BUBBLE);
-
-		long enterMotionScrollAddress = display.enterMotionScrollCallback.getAddress();
-		OS.g_signal_connect (motionController, OS.motion, enterMotionScrollAddress, MOTION);
-
-		long enterLeaveController;
-		enterLeaveController = GTK.gtk_event_controller_motion_new();
-		GTK.gtk_widget_add_controller(enterExitHandle, enterLeaveController);
-		GTK.gtk_event_controller_set_propagation_phase(enterLeaveController, GTK.GTK_PHASE_TARGET);
-
-		long leaveAddress = display.leaveCallback.getAddress();
-		OS.g_signal_connect (enterLeaveController, OS.leave, leaveAddress, LEAVE);
-		OS.g_signal_connect (enterLeaveController, OS.enter, enterMotionScrollAddress, ENTER);
-
-		long motionInverseController;
-		if (blockHandle != eventHandle) {
-			motionInverseController = GTK.gtk_event_controller_motion_new();
-			GTK.gtk_widget_add_controller(blockHandle, motionInverseController);
-			GTK.gtk_event_controller_set_propagation_phase(motionInverseController, GTK.GTK_PHASE_TARGET);
-		} else {
-			motionInverseController = motionController;
-		}
-		OS.g_signal_connect (motionInverseController, OS.motion, enterMotionScrollAddress, MOTION_INVERSE);
-
-		long scrollController = GTK.gtk_event_controller_scroll_new(GTK.GTK_EVENT_CONTROLLER_SCROLL_NONE);
-		GTK.gtk_widget_add_controller(eventHandle, scrollController);
-		GTK.gtk_event_controller_set_propagation_phase(scrollController, GTK.GTK_PHASE_TARGET);
-		OS.g_signal_connect (scrollController, OS.scroll, enterMotionScrollAddress, SCROLL);
-	} else {
-		int eventMask = GDK.GDK_POINTER_MOTION_MASK | GDK.GDK_BUTTON_PRESS_MASK | GDK.GDK_BUTTON_RELEASE_MASK | GDK.GDK_SCROLL_MASK | GDK.GDK_SMOOTH_SCROLL_MASK;
-		GTK.gtk_widget_add_events (eventHandle, eventMask);
-		OS.g_signal_connect_closure_by_id (eventHandle, display.signalIds [MOTION_NOTIFY_EVENT], 0, display.getClosure (MOTION_NOTIFY_EVENT), false);
-
-		int enterExitMask = GDK.GDK_ENTER_NOTIFY_MASK | GDK.GDK_LEAVE_NOTIFY_MASK;
-		GTK.gtk_widget_add_events (enterExitHandle, enterExitMask);
-		OS.g_signal_connect_closure_by_id (enterExitHandle, display.signalIds [ENTER_NOTIFY_EVENT], 0, display.getClosure (ENTER_NOTIFY_EVENT), false);
-		OS.g_signal_connect_closure_by_id (enterExitHandle, display.signalIds [LEAVE_NOTIFY_EVENT], 0, display.getClosure (LEAVE_NOTIFY_EVENT), false);
-		OS.g_signal_connect_closure_by_id (eventHandle, display.signalIds [SCROLL_EVENT], 0, display.getClosure (SCROLL_EVENT), false);
-	}
-	if (GTK.GTK4) {
-		// GTK4: replace button-press/release-event, event-after dropped with generic event
-		OS.g_signal_connect_closure_by_id (eventHandle, display.signalIds [EVENT], 0, display.getClosure (EVENT), false);
-	} else {
-		OS.g_signal_connect_closure_by_id (eventHandle, display.signalIds [BUTTON_PRESS_EVENT], 0, display.getClosure (BUTTON_PRESS_EVENT), false);
-		OS.g_signal_connect_closure_by_id (eventHandle, display.signalIds [BUTTON_RELEASE_EVENT], 0, display.getClosure (BUTTON_RELEASE_EVENT), false);
-	}
+	long focusHandle = focusHandle();
+	hookKeyboardAndFocusSignals(focusHandle);
+	hookMouseSignals(eventHandle());
+	hookWidgetSignals(focusHandle);
+	connectPaint();
+	connectIMSignals();
 
 	/*Connect gesture signals */
 	setZoomGesture();
 	setDragGesture();
 	setRotateGesture();
 
+	long eventHandle = eventHandle ();
+	long blockHandle = fixedHandle != 0 ? fixedHandle : eventHandle;
 	/*
 	* Feature in GTK3.  Events such as mouse move are propagate up
 	* the widget hierarchy and are seen by the parent.  This is the
@@ -516,43 +440,107 @@ void hookEvents () {
 	* The signal is hooked to the fixedHandle to catch events sent to
 	* lightweight widgets.
 	*
-	* Events are not propagated up on GTK4
+	* In GTK4, event propagation is set in the event controller
 	*/
 	if (!GTK.GTK4) {
-		OS.g_signal_connect_closure_by_id (blockHandle, display.signalIds [BUTTON_PRESS_EVENT], 0, display.getClosure (BUTTON_PRESS_EVENT_INVERSE), true);
-		OS.g_signal_connect_closure_by_id (blockHandle, display.signalIds [BUTTON_RELEASE_EVENT], 0, display.getClosure (BUTTON_RELEASE_EVENT_INVERSE), true);
-		OS.g_signal_connect_closure_by_id (blockHandle, display.signalIds [MOTION_NOTIFY_EVENT], 0, display.getClosure (MOTION_NOTIFY_EVENT_INVERSE), true);
+		OS.g_signal_connect_closure_by_id(blockHandle, display.signalIds[BUTTON_PRESS_EVENT], 0, display.getClosure(BUTTON_PRESS_EVENT_INVERSE), true);
+		OS.g_signal_connect_closure_by_id(blockHandle, display.signalIds[BUTTON_RELEASE_EVENT], 0, display.getClosure(BUTTON_RELEASE_EVENT_INVERSE), true);
+		OS.g_signal_connect_closure_by_id(blockHandle, display.signalIds[MOTION_NOTIFY_EVENT], 0, display.getClosure(MOTION_NOTIFY_EVENT_INVERSE), true);
 	}
 
 	/* Connect the event_after signal for both key and mouse */
 	if (GTK.GTK4) {
-		// GTK4: event-after replaced with generic event
-		if (focusHandle != eventHandle) {
-			OS.g_signal_connect_closure_by_id (focusHandle, display.signalIds [EVENT], 0, display.getClosure (EVENT), false);
-		}
+		// GTK4: no event-after signal
 	} else {
-		OS.g_signal_connect_closure_by_id (eventHandle, display.signalIds [EVENT_AFTER], 0, display.getClosure (EVENT_AFTER), false);
+		OS.g_signal_connect_closure_by_id(eventHandle, display.signalIds[EVENT_AFTER], 0, display.getClosure(EVENT_AFTER), false);
 		if (focusHandle != eventHandle) {
-			OS.g_signal_connect_closure_by_id (focusHandle, display.signalIds [EVENT_AFTER], 0, display.getClosure (EVENT_AFTER), false);
+			OS.g_signal_connect_closure_by_id(focusHandle, display.signalIds[EVENT_AFTER], 0, display.getClosure(EVENT_AFTER), false);
 		}
 	}
+}
 
-	/* Connect the paint signal */
-	connectPaint ();
+private void hookKeyboardAndFocusSignals(long focusHandle) {
+	if (GTK.GTK4) {
+		long keyController = GTK.gtk_event_controller_key_new();
+		GTK.gtk_event_controller_set_propagation_phase(keyController, GTK.GTK_PHASE_TARGET);
+		GTK.gtk_widget_add_controller(focusHandle, keyController);
+		OS.g_signal_connect(keyController, OS.key_pressed, display.keyPressReleaseProc, KEY_PRESSED);
+		OS.g_signal_connect(keyController, OS.key_released, display.keyPressReleaseProc, KEY_RELEASED);
 
-	/* Connect the Input Method signals */
-	OS.g_signal_connect_closure_by_id (handle, display.signalIds [REALIZE], 0, display.getClosure (REALIZE), true);
-	OS.g_signal_connect_closure_by_id (handle, display.signalIds [UNREALIZE], 0, display.getClosure (UNREALIZE), false);
-	long imHandle = imHandle ();
-	if (imHandle != 0) {
-		OS.g_signal_connect_closure (imHandle, OS.commit, display.getClosure (COMMIT), false);
-		OS.g_signal_connect_closure (imHandle, OS.preedit_changed, display.getClosure (PREEDIT_CHANGED), false);
+		long focusController = GTK.gtk_event_controller_focus_new();
+		GTK.gtk_event_controller_set_propagation_phase(focusController, GTK.GTK_PHASE_TARGET);
+		GTK.gtk_widget_add_controller(focusHandle, focusController);
+		OS.g_signal_connect(focusController, OS.enter, display.focusProc, FOCUS_IN);
+		OS.g_signal_connect(focusController, OS.leave, display.focusProc, FOCUS_OUT);
+	} else {
+		int focusMask = GDK.GDK_KEY_PRESS_MASK | GDK.GDK_KEY_RELEASE_MASK | GDK.GDK_FOCUS_CHANGE_MASK;
+		GTK.gtk_widget_add_events (focusHandle, focusMask);
+		OS.g_signal_connect_closure_by_id(focusHandle, display.signalIds[KEY_PRESS_EVENT], 0, display.getClosure(KEY_PRESS_EVENT), false);
+		OS.g_signal_connect_closure_by_id(focusHandle, display.signalIds[KEY_RELEASE_EVENT], 0, display.getClosure(KEY_RELEASE_EVENT), false);
+		OS.g_signal_connect_closure_by_id(focusHandle, display.signalIds[FOCUS_IN_EVENT], 0, display.getClosure(FOCUS_IN_EVENT), false);
+		OS.g_signal_connect_closure_by_id(focusHandle, display.signalIds[FOCUS_OUT_EVENT], 0, display.getClosure(FOCUS_OUT_EVENT), false);
 	}
+}
 
-	OS.g_signal_connect_closure_by_id (paintHandle (), display.signalIds [STYLE_UPDATED], 0, display.getClosure (STYLE_UPDATED), false);
+private void hookMouseSignals(long eventHandle) {
+	long enterExitHandle = enterExitHandle();
 
-	long topHandle = topHandle ();
-	OS.g_signal_connect_closure_by_id (topHandle, display.signalIds [MAP], 0, display.getClosure (MAP), true);
+	if (GTK.GTK4) {
+		long clickGesture = GTK.gtk_gesture_click_new();
+		GTK.gtk_event_controller_set_propagation_phase(clickGesture, GTK.GTK_PHASE_TARGET);
+		GTK.gtk_widget_add_controller(eventHandle, clickGesture);
+		OS.g_signal_connect(clickGesture, OS.pressed, display.gesturePressReleaseProc, GESTURE_PRESSED);
+		OS.g_signal_connect(clickGesture, OS.released, display.gesturePressReleaseProc, GESTURE_RELEASED);
+
+		long scrollController = GTK.gtk_event_controller_scroll_new(GTK.GTK_EVENT_CONTROLLER_SCROLL_BOTH_AXES);
+		GTK.gtk_event_controller_set_propagation_phase(scrollController, GTK.GTK_PHASE_TARGET);
+		GTK.gtk_widget_add_controller(eventHandle, scrollController);
+		OS.g_signal_connect(scrollController, OS.scroll, display.enterMotionScrollProc, SCROLL);
+
+		long motionController = GTK.gtk_event_controller_motion_new();
+		GTK.gtk_event_controller_set_propagation_phase(motionController, GTK.GTK_PHASE_TARGET);
+		GTK.gtk_widget_add_controller(eventHandle, motionController);
+		OS.g_signal_connect(motionController, OS.motion, display.enterMotionScrollProc, MOTION);
+
+		long enterExitController = GTK.gtk_event_controller_motion_new();
+		GTK.gtk_event_controller_set_propagation_phase(enterExitController, GTK.GTK_PHASE_TARGET);
+		GTK.gtk_widget_add_controller(enterExitHandle, enterExitController);
+		OS.g_signal_connect(enterExitController, OS.enter, display.enterMotionScrollProc, ENTER);
+		OS.g_signal_connect(enterExitController, OS.leave, display.leaveProc, LEAVE);
+	} else {
+		int eventMask = GDK.GDK_POINTER_MOTION_MASK | GDK.GDK_BUTTON_PRESS_MASK | GDK.GDK_BUTTON_RELEASE_MASK | GDK.GDK_SCROLL_MASK | GDK.GDK_SMOOTH_SCROLL_MASK;
+		GTK.gtk_widget_add_events (eventHandle, eventMask);
+		OS.g_signal_connect_closure_by_id(eventHandle, display.signalIds[MOTION_NOTIFY_EVENT], 0, display.getClosure(MOTION_NOTIFY_EVENT), false);
+		OS.g_signal_connect_closure_by_id(eventHandle, display.signalIds[BUTTON_PRESS_EVENT], 0, display.getClosure(BUTTON_PRESS_EVENT), false);
+		OS.g_signal_connect_closure_by_id(eventHandle, display.signalIds[BUTTON_RELEASE_EVENT], 0, display.getClosure(BUTTON_RELEASE_EVENT), false);
+		OS.g_signal_connect_closure_by_id(eventHandle, display.signalIds[SCROLL_EVENT], 0, display.getClosure(SCROLL_EVENT), false);
+
+		int enterExitMask = GDK.GDK_ENTER_NOTIFY_MASK | GDK.GDK_LEAVE_NOTIFY_MASK;
+		GTK.gtk_widget_add_events (enterExitHandle, enterExitMask);
+		OS.g_signal_connect_closure_by_id(enterExitHandle, display.signalIds[ENTER_NOTIFY_EVENT], 0, display.getClosure(ENTER_NOTIFY_EVENT), false);
+		OS.g_signal_connect_closure_by_id(enterExitHandle, display.signalIds[LEAVE_NOTIFY_EVENT], 0, display.getClosure(LEAVE_NOTIFY_EVENT), false);
+	}
+}
+
+private void hookWidgetSignals(long focusHandle) {
+	OS.g_signal_connect_closure_by_id(handle, display.signalIds[REALIZE], 0, display.getClosure(REALIZE), true);
+	OS.g_signal_connect_closure_by_id(handle, display.signalIds[UNREALIZE], 0, display.getClosure(UNREALIZE), false);
+
+	OS.g_signal_connect_closure_by_id(topHandle(), display.signalIds[MAP], 0, display.getClosure(MAP), true);
+
+	if (!GTK.GTK4) {
+		OS.g_signal_connect_closure_by_id(focusHandle, display.signalIds[POPUP_MENU], 0, display.getClosure(POPUP_MENU), false);
+		OS.g_signal_connect_closure_by_id(focusHandle, display.signalIds[SHOW_HELP], 0, display.getClosure(SHOW_HELP), false);
+		OS.g_signal_connect_closure_by_id(focusHandle, display.signalIds[FOCUS], 0, display.getClosure(FOCUS), false);
+	}
+}
+
+private void connectIMSignals() {
+	long imHandle = imHandle();
+	if (imHandle != 0) {
+		OS.g_signal_connect_closure(imHandle, OS.commit, display.getClosure(COMMIT), false);
+		OS.g_signal_connect_closure(imHandle, OS.preedit_changed, display.getClosure(PREEDIT_CHANGED), false);
+	}
 }
 
 boolean hooksPaint () {

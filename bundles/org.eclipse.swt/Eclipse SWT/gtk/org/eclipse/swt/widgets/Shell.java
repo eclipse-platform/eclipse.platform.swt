@@ -937,7 +937,10 @@ void hookEvents () {
 		GTK.gtk_widget_realize(shellHandle);
 		long gdkSurface = gtk_widget_get_surface (shellHandle);
 		OS.g_signal_connect (gdkSurface, OS.notify_state, display.notifyProc, shellHandle);
-		OS.g_signal_connect_closure_by_id (shellHandle, display.signalIds [SIZE_ALLOCATE_GTK4], 0, display.getClosure (SIZE_ALLOCATE_GTK4), false);
+		/* TODO: GTK4
+		 * The ::size-allocate signal has been removed, since it is easy to misuse.
+		 * If you need to learn about sizing changes of custom drawing widgets, use the “resize” or “resize” signals.
+		 * */
 	} else {
 		OS.g_signal_connect_closure_by_id (shellHandle, display.signalIds [WINDOW_STATE_EVENT], 0, display.getClosure (WINDOW_STATE_EVENT), false);
 		OS.g_signal_connect_closure_by_id (shellHandle, display.signalIds [CONFIGURE_EVENT], 0, display.getClosure (CONFIGURE_EVENT), false);
@@ -949,12 +952,12 @@ void hookEvents () {
 		long keyController = GTK.gtk_event_controller_key_new();
 		GTK.gtk_widget_add_controller(shellHandle, keyController);
 		GTK.gtk_event_controller_set_propagation_phase(keyController, GTK.GTK_PHASE_TARGET);
+		OS.g_signal_connect (keyController, OS.key_pressed, display.keyPressReleaseProc, KEY_PRESSED);
 
-		long keyPressReleaseAddress = display.keyPressReleaseCallback.getAddress();
-		long focusAddress = display.focusCallback.getAddress();
-		OS.g_signal_connect (keyController, OS.key_pressed, keyPressReleaseAddress, KEY_PRESSED);
-		OS.g_signal_connect (keyController, OS.focus_in, focusAddress, FOCUS_IN);
-		OS.g_signal_connect (keyController, OS.focus_out, focusAddress, FOCUS_OUT);
+		long focusController = GTK.gtk_event_controller_focus_new();
+		GTK.gtk_widget_add_controller(shellHandle, focusController);
+		OS.g_signal_connect (focusController, OS.enter, display.focusProc, FOCUS_IN);
+		OS.g_signal_connect (focusController, OS.leave, display.focusProc, FOCUS_OUT);
 
 		long enterLeaveController = GTK.gtk_event_controller_motion_new();
 		GTK.gtk_widget_add_controller(shellHandle, enterLeaveController);

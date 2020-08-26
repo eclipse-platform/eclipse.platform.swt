@@ -2356,7 +2356,6 @@ long windowProc (long handle, long arg0, long arg1, long user_data) {
 		case TEST_EXPAND_ROW: return gtk_test_expand_row(handle, arg0, arg1);
 		case ROW_INSERTED: return gtk_row_inserted (handle, arg0, arg1);
 		case ROW_HAS_CHILD_TOGGLED: return gtk_row_has_child_toggled(handle, arg0, arg1);
-		case SIZE_ALLOCATE_GTK4: return gtk_size_allocate(handle, arg0);
 		default: return 0;
 	}
 }

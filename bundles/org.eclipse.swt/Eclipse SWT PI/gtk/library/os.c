@@ -5501,6 +5501,18 @@ JNIEXPORT jlong JNICALL GTK_NATIVE(gtk_1event_1box_1new)
 }
 #endif
 
+#ifndef NO_gtk_1event_1controller_1focus_1new
+JNIEXPORT jlong JNICALL GTK_NATIVE(gtk_1event_1controller_1focus_1new)
+	(JNIEnv *env, jclass that)
+{
+	jlong rc = 0;
+	GTK_NATIVE_ENTER(env, that, gtk_1event_1controller_1focus_1new_FUNC);
+	rc = (jlong)gtk_event_controller_focus_new();
+	GTK_NATIVE_EXIT(env, that, gtk_1event_1controller_1focus_1new_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_gtk_1event_1controller_1get_1current_1event
 JNIEXPORT jlong JNICALL GTK_NATIVE(gtk_1event_1controller_1get_1current_1event)
 	(JNIEnv *env, jclass that, jlong arg0)
@@ -6151,6 +6163,18 @@ JNIEXPORT void JNICALL GTK_NATIVE(gtk_1frame_1set_1shadow_1type)
 }
 #endif
 
+#ifndef NO_gtk_1gesture_1click_1new
+JNIEXPORT jlong JNICALL GTK_NATIVE(gtk_1gesture_1click_1new)
+	(JNIEnv *env, jclass that)
+{
+	jlong rc = 0;
+	GTK_NATIVE_ENTER(env, that, gtk_1gesture_1click_1new_FUNC);
+	rc = (jlong)gtk_gesture_click_new();
+	GTK_NATIVE_EXIT(env, that, gtk_1gesture_1click_1new_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_gtk_1gesture_1drag_1get_1offset
 JNIEXPORT void JNICALL GTK_NATIVE(gtk_1gesture_1drag_1get_1offset)
 	(JNIEnv *env, jclass that, jlong arg0, jdoubleArray arg1, jdoubleArray arg2)
@@ -6286,18 +6310,6 @@ JNIEXPORT jboolean JNICALL GTK_NATIVE(gtk_1gesture_1is_1recognized)
 		}
 	}
 	GTK_NATIVE_EXIT(env, that, gtk_1gesture_1is_1recognized_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO_gtk_1gesture_1multi_1press_1new
-JNIEXPORT jlong JNICALL GTK_NATIVE(gtk_1gesture_1multi_1press_1new)
-	(JNIEnv *env, jclass that)
-{
-	jlong rc = 0;
-	GTK_NATIVE_ENTER(env, that, gtk_1gesture_1multi_1press_1new_FUNC);
-	rc = (jlong)gtk_gesture_multi_press_new();
-	GTK_NATIVE_EXIT(env, that, gtk_1gesture_1multi_1press_1new_FUNC);
 	return rc;
 }
 #endif
