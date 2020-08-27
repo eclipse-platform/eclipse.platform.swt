@@ -1131,6 +1131,8 @@ public class GTK extends OS {
 	public static final native void gtk_widget_add_controller(long widget, long controller);
 	/**
 	 * @method flags=dynamic
+	 * @param controller cast=(GtkEventController *)
+	 * @param phase cast=(GtkPropagationPhase)
 	 */
 	public static final native void gtk_event_controller_set_propagation_phase(long controller, int phase);
 	/**
@@ -1321,6 +1323,7 @@ public class GTK extends OS {
 	/* [GTK3 only, if-def'd in os.h] */
 	public static final native long gtk_get_current_event();
 	/* [GTK4 only, if-def'd in os.h] */
+	/** @param controller cast=(GtkEventController *) */
 	public static final native long gtk_event_controller_get_current_event(long controller);
 	/** @param state cast=(GdkModifierType*) */
 	public static final native boolean gtk_get_current_event_state(int[] state);
@@ -2178,6 +2181,16 @@ public class GTK extends OS {
 	 * @param scrolled_window cast=(GtkScrolledWindow *)
 	 */
 	public static final native boolean gtk_scrolled_window_get_overlay_scrolling(long scrolled_window);
+	/**
+	 * @param scrolled_window cast=(GtkScrolledWindow *)
+	 * @param adjustment cast=(GtkAdjustment *)
+	 *  */
+	public static final native void gtk_scrolled_window_set_vadjustment(long scrolled_window, long adjustment);
+	/**
+	 * @param scrolled_window cast=(GtkScrolledWindow *)
+	 * @param adjustment cast=(GtkAdjustment *)
+	 *  */
+	public static final native void gtk_scrolled_window_set_hadjustment(long scrolled_window, long adjustment);
 
 	/* GtkScrolledWindow [GTK3 only, if-def'd in os.h] */
 	/**

@@ -558,8 +558,8 @@ public class GDK extends OS {
 	public static final native void gdk_event_unref(long event);
 	/**
 	 * @param event cast=(GdkEvent *)
-	 * @param px cast=(gdouble *)
-	 * @param py cast=(gdouble *)
+	 * @param px cast=(double *)
+	 * @param py cast=(double *)
 	 */
 	public static final native boolean gdk_event_get_position(long event, double[] px, double[] py);
 	/** @param event cast=(GdkEvent *) */

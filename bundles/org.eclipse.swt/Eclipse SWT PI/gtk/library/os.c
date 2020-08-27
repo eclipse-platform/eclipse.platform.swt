@@ -1018,7 +1018,7 @@ JNIEXPORT jboolean JNICALL GDK_NATIVE(gdk_1event_1get_1position)
 	GDK_NATIVE_ENTER(env, that, gdk_1event_1get_1position_FUNC);
 	if (arg1) if ((lparg1 = (*env)->GetDoubleArrayElements(env, arg1, NULL)) == NULL) goto fail;
 	if (arg2) if ((lparg2 = (*env)->GetDoubleArrayElements(env, arg2, NULL)) == NULL) goto fail;
-	rc = (jboolean)gdk_event_get_position((GdkEvent *)arg0, (gdouble *)lparg1, (gdouble *)lparg2);
+	rc = (jboolean)gdk_event_get_position((GdkEvent *)arg0, (double *)lparg1, (double *)lparg2);
 fail:
 	if (arg2 && lparg2) (*env)->ReleaseDoubleArrayElements(env, arg2, lparg2, 0);
 	if (arg1 && lparg1) (*env)->ReleaseDoubleArrayElements(env, arg1, lparg1, 0);
@@ -5519,7 +5519,7 @@ JNIEXPORT jlong JNICALL GTK_NATIVE(gtk_1event_1controller_1get_1current_1event)
 {
 	jlong rc = 0;
 	GTK_NATIVE_ENTER(env, that, gtk_1event_1controller_1get_1current_1event_FUNC);
-	rc = (jlong)gtk_event_controller_get_current_event(arg0);
+	rc = (jlong)gtk_event_controller_get_current_event((GtkEventController *)arg0);
 	GTK_NATIVE_EXIT(env, that, gtk_1event_1controller_1get_1current_1event_FUNC);
 	return rc;
 }
@@ -5605,12 +5605,12 @@ JNIEXPORT void JNICALL GTK_NATIVE(gtk_1event_1controller_1set_1propagation_1phas
 {
 	GTK_NATIVE_ENTER(env, that, gtk_1event_1controller_1set_1propagation_1phase_FUNC);
 /*
-	gtk_event_controller_set_propagation_phase(arg0, arg1);
+	gtk_event_controller_set_propagation_phase((GtkEventController *)arg0, (GtkPropagationPhase)arg1);
 */
 	{
 		GTK_LOAD_FUNCTION(fp, gtk_event_controller_set_propagation_phase)
 		if (fp) {
-			((void (CALLING_CONVENTION*)(jlong, jint))fp)(arg0, arg1);
+			((void (CALLING_CONVENTION*)(GtkEventController *, GtkPropagationPhase))fp)((GtkEventController *)arg0, (GtkPropagationPhase)arg1);
 		}
 	}
 	GTK_NATIVE_EXIT(env, that, gtk_1event_1controller_1set_1propagation_1phase_FUNC);
@@ -8880,6 +8880,16 @@ JNIEXPORT void JNICALL GTK_NATIVE(gtk_1scrolled_1window_1set_1child)
 }
 #endif
 
+#ifndef NO_gtk_1scrolled_1window_1set_1hadjustment
+JNIEXPORT void JNICALL GTK_NATIVE(gtk_1scrolled_1window_1set_1hadjustment)
+	(JNIEnv *env, jclass that, jlong arg0, jlong arg1)
+{
+	GTK_NATIVE_ENTER(env, that, gtk_1scrolled_1window_1set_1hadjustment_FUNC);
+	gtk_scrolled_window_set_hadjustment((GtkScrolledWindow *)arg0, (GtkAdjustment *)arg1);
+	GTK_NATIVE_EXIT(env, that, gtk_1scrolled_1window_1set_1hadjustment_FUNC);
+}
+#endif
+
 #ifndef NO_gtk_1scrolled_1window_1set_1has_1frame
 JNIEXPORT void JNICALL GTK_NATIVE(gtk_1scrolled_1window_1set_1has_1frame)
 	(JNIEnv *env, jclass that, jlong arg0, jboolean arg1)
@@ -8907,6 +8917,16 @@ JNIEXPORT void JNICALL GTK_NATIVE(gtk_1scrolled_1window_1set_1shadow_1type)
 	GTK_NATIVE_ENTER(env, that, gtk_1scrolled_1window_1set_1shadow_1type_FUNC);
 	gtk_scrolled_window_set_shadow_type((GtkScrolledWindow *)arg0, (GtkShadowType)arg1);
 	GTK_NATIVE_EXIT(env, that, gtk_1scrolled_1window_1set_1shadow_1type_FUNC);
+}
+#endif
+
+#ifndef NO_gtk_1scrolled_1window_1set_1vadjustment
+JNIEXPORT void JNICALL GTK_NATIVE(gtk_1scrolled_1window_1set_1vadjustment)
+	(JNIEnv *env, jclass that, jlong arg0, jlong arg1)
+{
+	GTK_NATIVE_ENTER(env, that, gtk_1scrolled_1window_1set_1vadjustment_FUNC);
+	gtk_scrolled_window_set_vadjustment((GtkScrolledWindow *)arg0, (GtkAdjustment *)arg1);
+	GTK_NATIVE_EXIT(env, that, gtk_1scrolled_1window_1set_1vadjustment_FUNC);
 }
 #endif
 

@@ -307,16 +307,20 @@ void createHandle (int index, boolean fixed, boolean scrolled) {
 			gtk_widget_set_has_surface_or_window (fixedHandle, true);
 		}
 
+		long vadj = GTK.gtk_adjustment_new (0, 0, 100, 1, 10, 10);
+		if (vadj == 0) error (SWT.ERROR_NO_HANDLES);
+		long hadj = GTK.gtk_adjustment_new (0, 0, 100, 1, 10, 10);
+		if (hadj == 0) error (SWT.ERROR_NO_HANDLES);
+
 		if (GTK.GTK4) {
 			scrolledHandle = GTK.gtk_scrolled_window_new();
+			GTK.gtk_scrolled_window_set_hadjustment(scrolledHandle, hadj);
+			GTK.gtk_scrolled_window_set_vadjustment(scrolledHandle, vadj);
+			GTK.gtk_widget_set_hexpand(scrolledHandle, true);
+			GTK.gtk_widget_set_vexpand(scrolledHandle, true);
 		} else {
-			long vadj = GTK.gtk_adjustment_new (0, 0, 100, 1, 10, 10);
-			if (vadj == 0) error (SWT.ERROR_NO_HANDLES);
-			long hadj = GTK.gtk_adjustment_new (0, 0, 100, 1, 10, 10);
-			if (hadj == 0) error (SWT.ERROR_NO_HANDLES);
 			scrolledHandle = GTK.gtk_scrolled_window_new (hadj, vadj);
 		}
-
 		if (scrolledHandle == 0) error (SWT.ERROR_NO_HANDLES);
 	}
 	handle = OS.g_object_new (display.gtk_fixed_get_type (), 0);

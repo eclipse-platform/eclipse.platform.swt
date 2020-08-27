@@ -3686,6 +3686,21 @@ long gtk_commit (long imcontext, long text) {
 
 @Override
 long gtk_enter_notify_event (long widget, long event) {
+	if (GTK.GTK4) {
+		if (display.currentControl == this) return 0;
+
+		if (display.currentControl != null && !display.currentControl.isDisposed ()) {
+			display.removeMouseHoverTimeout (display.currentControl.handle);
+			display.currentControl.sendMouseEvent (SWT.MouseExit,  0, 0, 0, 0, false, 0);
+		}
+		if (!isDisposed ()) {
+			display.currentControl = this;
+			return sendMouseEvent (SWT.MouseEnter, 0, 0, 0, 0, false, 0) ? 0 : 1;
+		}
+
+		return 0;
+	}
+
 	/*
 	 * Feature in GTK. Children of a shell will inherit and display the shell's
 	 * tooltip if they do not have a tooltip of their own. The fix is to use the
@@ -4021,6 +4036,19 @@ long gtk_key_release_event (long widget, long event) {
 
 @Override
 long gtk_leave_notify_event (long widget, long event) {
+	if (GTK.GTK4) {
+		if (display.currentControl != this) return 0;
+
+		display.removeMouseHoverTimeout (handle);
+		int result = 0;
+		if (sendLeaveNotify () || display.getCursorControl () == null) {
+			result = sendMouseEvent (SWT.MouseExit, 0, 0, 0, 0, false, 0) ? 0 : 1;
+			display.currentControl = null;
+		}
+		return result;
+	}
+
+
 	if (display.currentControl != this) return 0;
 	int [] state = new int [1];
 	double [] eventX = new double [1];
@@ -4087,25 +4115,23 @@ long gtk_mnemonic_activate (long widget, long arg1) {
 
 @Override
 long gtk_motion_notify_event (long widget, long event) {
+	int result;
 	if (mouseDown) {
 		dragBegun = true;
 	}
-	int result;
-	double [] eventX = new double [1];
-	double [] eventY = new double [1];
+
+	double[] eventX = new double[1];
+	double[] eventY = new double[1];
 	if (GTK.GTK4) {
 		GDK.gdk_event_get_position(event, eventX, eventY);
 	} else {
 		GDK.gdk_event_get_coords(event, eventX, eventY);
 	}
 
-	double [] eventRX = new double[1];
-	double [] eventRY = new double[1];
-	GDK.gdk_event_get_root_coords(event, eventRX, eventRY);
-
-	lastInput.x = (int) eventX[0];
-	lastInput.y = (int) eventY[0];
+	lastInput.x = (int)eventX[0];
+	lastInput.y = (int)eventY[0];
 	if (containedInRegion(lastInput.x, lastInput.y)) return 0;
+
 	/*
 	 * Feature in GTK: DND detection for X.11 & Wayland support is done through motion notify event
 	 * instead of mouse click event. See Bug 503431.
@@ -4143,16 +4169,33 @@ long gtk_motion_notify_event (long widget, long event) {
 			}
 		}
 	}
-	if (this == display.currentControl && (hooks (SWT.MouseHover) || filters (SWT.MouseHover))) {
-		display.addMouseHoverTimeout (handle);
+
+	if (this == display.currentControl && (hooks(SWT.MouseHover) || filters(SWT.MouseHover))) {
+		display.addMouseHoverTimeout(handle);
 	}
-	double x = eventRX[0], y = eventRY[0];
+
+	int time = GDK.gdk_event_get_time(event);
+	double x, y;
 	int [] state = new int [1];
-	GdkEventMotion gdkEvent = new GdkEventMotion();
-	if (!GTK.GTK4) {
+	boolean isHint = false;
+
+	if (GTK.GTK4) {
+		state[0] = GDK.gdk_event_get_modifier_state(event);
+		x = eventX[0];
+		y = eventY[0];
+	} else {
+		double [] eventRX = new double[1];
+		double [] eventRY = new double[1];
+		GDK.gdk_event_get_root_coords(event, eventRX, eventRY);
+		x = eventRX[0];
+		y = eventRY[0];
+
+		GdkEventMotion gdkEvent = new GdkEventMotion();
 		OS.memmove(gdkEvent, event, GdkEventMotion.sizeof);
 		state[0] = gdkEvent.state;
-		if (gdkEvent.is_hint != 0) {
+		isHint = gdkEvent.is_hint != 0;
+
+		if (isHint) {
 			int [] pointer_x = new int [1], pointer_y = new int [1], mask = new int [1];
 			long window = eventWindow ();
 			display.gdk_window_get_device_position (window, pointer_x, pointer_y, mask);
@@ -4160,22 +4203,21 @@ long gtk_motion_notify_event (long widget, long event) {
 			y = pointer_y [0];
 			state[0] = mask [0];
 		}
-	} else {
-		state[0] = GDK.gdk_event_get_modifier_state(event);
 	}
-	int time = GDK.gdk_event_get_time(event);
+
 	if (this != display.currentControl) {
 		if (display.currentControl != null && !display.currentControl.isDisposed ()) {
-			display.removeMouseHoverTimeout (display.currentControl.handle);
-			Point pt = display.mapInPixels (this, display.currentControl, (int) x, (int) y);
-			display.currentControl.sendMouseEvent (SWT.MouseExit,  0, time, pt.x, pt.y, GTK.GTK4 ? false : gdkEvent.is_hint != 0, state[0]);
+			display.removeMouseHoverTimeout(display.currentControl.handle);
+			Point pt = display.mapInPixels(this, display.currentControl, (int)x, (int)y);
+			display.currentControl.sendMouseEvent(SWT.MouseExit,  0, time, pt.x, pt.y, isHint, state[0]);
 		}
 		if (!isDisposed ()) {
 			display.currentControl = this;
-			sendMouseEvent (SWT.MouseEnter, 0, time, x, y, GTK.GTK4 ? false : gdkEvent.is_hint != 0, state[0]);
+			sendMouseEvent(SWT.MouseEnter, 0, time, x, y, isHint, state[0]);
 		}
 	}
-	result = sendMouseEvent (SWT.MouseMove, 0, time, x, y, GTK.GTK4 ? false : gdkEvent.is_hint != 0, state[0]) ? 0 : 1;
+
+	result = sendMouseEvent(SWT.MouseMove, 0, time, x, y, isHint, state[0]) ? 0 : 1;
 	return result;
 }
 
@@ -4931,10 +4973,10 @@ boolean sendMouseEvent (int type, int button, int count, int detail, boolean sen
 		int [] origin_x = new int [1], origin_y = new int [1];
 		Rectangle eventRect;
 		if (GTK.GTK4) {
-			long surface = eventSurface ();
-			GDK.gdk_surface_get_origin (surface, origin_x, origin_y);
-			eventRect = new Rectangle ((int)x - origin_x [0], (int)y - origin_y [0], 0, 0);
-			event.setBounds (DPIUtil.autoScaleDown (eventRect));
+//			long surface = eventSurface ();
+//			GDK.gdk_surface_get_origin (surface, origin_x, origin_y);
+//			eventRect = new Rectangle ((int)x - origin_x [0], (int)y - origin_y [0], 0, 0);
+//			event.setBounds (DPIUtil.autoScaleDown (eventRect));
 		} else {
 			long window = eventWindow ();
 			GDK.gdk_window_get_origin (window, origin_x, origin_y);
