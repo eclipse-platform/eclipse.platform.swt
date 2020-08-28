@@ -129,12 +129,19 @@ public class GDBus {
 
 	/**
 	 * Instantiate GDBus for use by SWT.
-	 * Note, a new SWT instance that runs this "Steals" org.eclipse.swt session bus,
+	 * Note, a new SWT instance that runs this "Steals" the session bus,
 	 * but upon termination it returns the session back to the previous owner.
 	 *
+	 * To make this more flexible we append appName (derived from the
+	 * application executable but can be set with the command-line argument
+	 * -name) to the session name.
+	 *
 	 * @param methods GDBus methods that we should handle.
+	 * @param appName appName to append to GDBus object name if not null
 	 */
-	public static void init (GDBusMethod[] methods) {
+	public static void init (GDBusMethod[] methods, String appName) {
+		String serviceName = DBUS_SERVICE_NAME;
+
 		if (!initialized)
 			initialized = true;
 		else
@@ -145,10 +152,14 @@ public class GDBus {
 			return;
 		}
 
+		if (appName != null) {
+			serviceName += "." + appName;
+		}
+
 		gdbusMethods = Arrays.asList(methods);
 
 		int owner_id = OS.g_bus_own_name(OS.G_BUS_TYPE_SESSION,
-				Converter.javaStringToCString(DBUS_SERVICE_NAME),
+				Converter.javaStringToCString(serviceName),
 				OS.G_BUS_NAME_OWNER_FLAGS_REPLACE | OS.G_BUS_NAME_OWNER_FLAGS_ALLOW_REPLACEMENT, // Allow name to be used by other eclipse instances.
 				onBusAcquired.getAddress(),
 				onNameAcquired.getAddress(), // name_acquired_handler
@@ -157,7 +168,7 @@ public class GDBus {
 				0); // user_data_free_func
 
 		if (owner_id == 0) {
-			System.err.println("SWT GDBus: Failed to aquire bus name: " + DBUS_SERVICE_NAME);
+			System.err.println("SWT GDBus: Failed to aquire bus name: " + serviceName);
 		}
 	}
 

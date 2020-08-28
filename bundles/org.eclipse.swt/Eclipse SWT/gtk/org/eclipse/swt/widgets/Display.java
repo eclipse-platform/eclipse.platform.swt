@@ -763,8 +763,10 @@ public void addListener (int eventType, Listener listener) {
  * Handle gdbus on 'org.eclipse.swt' DBus session.
  * E.g equinox launcher passes files/urls to SWT via gdbus. "./eclipse myFile" or "./eclipse http://www.google.com"
  *
- * Only one SWT instance can hold the unique and well-known name at one time, so we have to be mindful
- * of the case where an SWT app could steal the well-known name and make the equinox launcher confused.
+ * Only one SWT instance can hold the unique and well-known name at one time.
+ * We construct the name as org.eclipse.swt.NAME (e.g. org.eclipse.swt.Eclipse),
+ * where NAME is derived from the application executable but may be changed
+ * using the command-line argument -name.
  *
  * For equinox launcher, See eclipseGtk.c:gtkPlatformJavaSystemProperties
  */
@@ -772,7 +774,7 @@ private void gdbus_init_methods() {
 	GDBusMethod[] methods = {
 		new GDBusMethod(
 			// FileOpen call can be reached via:
-			// gdbus call --session --dest org.eclipse.swt --object-path /org/eclipse/swt --method org.eclipse.swt.FileOpen "['/tmp/hi','http://www.eclipse.org']"
+			// gdbus call --session --dest org.eclipse.swt.Eclipse --object-path /org/eclipse/swt --method org.eclipse.swt.FileOpen "['/tmp/hi','http://www.eclipse.org']"
 			// See Bug525305_Browser_OpenUrl.java test snippet for testing/verification.
 			// In a child eclipse, this will open the files in a new editor.
 			// This is reached by equinox launcher from eclipseGtk.c. Look for "g_dbus_proxy_call_sync"
@@ -799,7 +801,7 @@ private void gdbus_init_methods() {
 				return null;
 			})
 		};
-	GDBus.init(methods);
+	GDBus.init(methods, getAppName());
 }
 
 long allChildrenProc (long widget, long recurse) {
