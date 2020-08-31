@@ -3564,7 +3564,12 @@ long gtk_button_press_event (long widget, long event, boolean sendMouseDown) {
 
 	double [] eventRX = new double [1];
 	double [] eventRY = new double [1];
-	GDK.gdk_event_get_root_coords(event, eventRX, eventRY);
+	if (GTK.GTK4) {
+		long root = GTK.gtk_widget_get_root(widget);
+		GTK.gtk_widget_translate_coordinates(widget, root, eventX[0], eventY[0], eventRX, eventRY);
+	} else {
+		GDK.gdk_event_get_root_coords(event, eventRX, eventRY);
+	}
 
 	lastInput.x = (int) eventX[0];
 	lastInput.y = (int) eventY[0];
@@ -4279,7 +4284,7 @@ long gtk_scroll_event (long widget, long eventPtr) {
 	double [] eventY = new double [1];
 	int [] state = new int [1];
 	if (GTK.GTK4) {
-		GDK.gdk_event_get_position(eventPtr, eventX, eventY);
+		// GTK4 Position returns NaN
 		state[0] = GDK.gdk_event_get_modifier_state(eventPtr);
 	} else {
 		GDK.gdk_event_get_coords(eventPtr, eventX, eventY);
@@ -4288,7 +4293,12 @@ long gtk_scroll_event (long widget, long eventPtr) {
 
 	double [] eventRX = new double[1];
 	double [] eventRY = new double[1];
-	GDK.gdk_event_get_root_coords(eventPtr, eventRX, eventRY);
+	if (GTK.GTK4) {
+		long root = GTK.gtk_widget_get_root(widget);
+		GTK.gtk_widget_translate_coordinates(widget, root, eventX[0], eventY[0], eventRX, eventRY);
+	} else {
+		GDK.gdk_event_get_root_coords(eventPtr, eventRX, eventRY);
+	}
 
 	int time = GDK.gdk_event_get_time(eventPtr);
 
@@ -6327,7 +6337,11 @@ void showWidget () {
 	long topHandle = topHandle ();
 	long parentHandle = parent.parentingHandle ();
 	parent.setParentGdkResource (this);
-	GTK.gtk_container_add (parentHandle, topHandle);
+	if (GTK.GTK4) {
+		OS.swt_fixed_add(parentHandle, topHandle);
+	} else {
+		GTK.gtk_container_add(parentHandle, topHandle);
+	}
 	if (handle != 0 && handle != topHandle) GTK.gtk_widget_show (handle);
 	if ((state & (ZERO_WIDTH | ZERO_HEIGHT)) == 0) {
 		if (fixedHandle != 0) GTK.gtk_widget_show (fixedHandle);
@@ -6572,7 +6586,11 @@ boolean translateMnemonic (int keyval, long event) {
 	} else {
 		Shell shell = _getShell ();
 		int mask = GDK.GDK_CONTROL_MASK | GDK.GDK_SHIFT_MASK | GDK.GDK_MOD1_MASK;
-		if ((state[0] & mask) != GTK.gtk_window_get_mnemonic_modifier (shell.shellHandle)) return false;
+		if (GTK.GTK4) {
+			if (state[0] != GDK.GDK_MOD1_MASK) return false;
+		} else {
+			if ((state[0] & mask) != GTK.gtk_window_get_mnemonic_modifier (shell.shellHandle)) return false;
+		}
 	}
 	Decorations shell = menuShell ();
 	if (shell.isVisible () && shell.isEnabled ()) {

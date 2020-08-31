@@ -338,6 +338,11 @@ int getWidthInPixels () {
 
 @Override
 long gtk_clicked (long widget) {
+	if (GTK.GTK4) {
+		sendSelectionEvent(SWT.Selection);
+		return 0;
+	}
+
 	/*
 	* There is no API to get a double click on a table column.  Normally, when
 	* the mouse is double clicked, this is indicated by GDK_2BUTTON_PRESS
@@ -442,10 +447,10 @@ void hookEvents () {
 	super.hookEvents ();
 	OS.g_signal_connect_closure (handle, OS.clicked, display.getClosure (CLICKED), false);
 	if (buttonHandle != 0) {
-		OS.g_signal_connect_closure_by_id (buttonHandle, display.signalIds [SIZE_ALLOCATE], 0, display.getClosure (SIZE_ALLOCATE), false);
 		if (GTK.GTK4) {
-			OS.g_signal_connect_closure_by_id (buttonHandle, display.signalIds [EVENT], 0, display.getClosure (EVENT), false);
+			// TODO: GTK4 no EVENT_AFTER signal
 		} else {
+			OS.g_signal_connect_closure_by_id (buttonHandle, display.signalIds [SIZE_ALLOCATE], 0, display.getClosure (SIZE_ALLOCATE), false);
 			OS.g_signal_connect_closure_by_id (buttonHandle, display.signalIds [EVENT_AFTER], 0, display.getClosure (EVENT_AFTER), false);
 		}
 	}

@@ -550,6 +550,7 @@
 #define NO_gdk_1device_1warp__JII
 #define NO_gtk_1widget_1measure
 #define NO_gtk_1style_1context_1add_1provider_1for_1display
+#define NO_gtk_1widget_1get_1root
 #define NO_gtk_1css_1provider_1load_1from_1data__I_3BI
 #define NO_gtk_1css_1provider_1load_1from_1data__J_3BJ
 #define NO_gdk_1display_1is_1composited

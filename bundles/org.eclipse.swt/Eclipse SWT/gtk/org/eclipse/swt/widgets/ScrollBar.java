@@ -606,8 +606,7 @@ void hookEvents () {
 	super.hookEvents ();
 	OS.g_signal_connect_closure (adjustmentHandle, OS.value_changed, display.getClosure (VALUE_CHANGED), false);
 	if (GTK.GTK4) {
-		// GTK4: event-after replaced with generic event
-		OS.g_signal_connect_closure_by_id (handle, display.signalIds [EVENT], 0, display.getClosure (EVENT), false);
+		// GTK4: no event-after
 		// GTK4: change-value moved to gtk_scroll_child in Composite
 	} else {
 		OS.g_signal_connect_closure (handle, OS.change_value, display.getClosure (CHANGE_VALUE), false);

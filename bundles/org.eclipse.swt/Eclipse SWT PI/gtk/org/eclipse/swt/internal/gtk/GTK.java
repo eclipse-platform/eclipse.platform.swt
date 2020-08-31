@@ -305,6 +305,9 @@ public class GTK extends OS {
 	 */
 	public static final native long gtk_widget_class_get_css_name(long widget_class);
 
+	/** @param widget cast=(GtkWidget *) */
+	public static final native long gtk_widget_get_root(long widget);
+
 	public static final native long gtk_button_new();
 
 	/** @method flags=dynamic
@@ -3573,6 +3576,14 @@ public class GTK extends OS {
 	 * @param dest_y cast=(gint *)
 	 */
 	public static final native boolean gtk_widget_translate_coordinates(long src_widget, long dest_widget, int src_x, int src_y, int[] dest_x, int[] dest_y);
+	/**
+	 * @method flags=dynamic
+	 * @param src_widget cast=(GtkWidget *)
+	 * @param dest_widget cast=(GtkWidget *)
+	 * @param dest_x cast=(double *)
+	 * @param dest_y cast=(double *)
+	 */
+	public static final native boolean gtk_widget_translate_coordinates(long src_widget, long dest_widget, double src_x, double src_y, double[] dest_x, double[] dest_y);
 	/** @param widget cast=(GtkWidget *) */
 	public static final native boolean gtk_widget_activate(long widget);
 	/**

@@ -12413,6 +12413,18 @@ JNIEXPORT jboolean JNICALL GTK_NATIVE(gtk_1widget_1get_1realized)
 }
 #endif
 
+#ifndef NO_gtk_1widget_1get_1root
+JNIEXPORT jlong JNICALL GTK_NATIVE(gtk_1widget_1get_1root)
+	(JNIEnv *env, jclass that, jlong arg0)
+{
+	jlong rc = 0;
+	GTK_NATIVE_ENTER(env, that, gtk_1widget_1get_1root_FUNC);
+	rc = (jlong)gtk_widget_get_root((GtkWidget *)arg0);
+	GTK_NATIVE_EXIT(env, that, gtk_1widget_1get_1root_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_gtk_1widget_1get_1scale_1factor
 JNIEXPORT jint JNICALL GTK_NATIVE(gtk_1widget_1get_1scale_1factor)
 	(JNIEnv *env, jclass that, jlong arg0)
@@ -13206,21 +13218,48 @@ fail:
 }
 #endif
 
-#ifndef NO_gtk_1widget_1translate_1coordinates
-JNIEXPORT jboolean JNICALL GTK_NATIVE(gtk_1widget_1translate_1coordinates)
+#ifndef NO_gtk_1widget_1translate_1coordinates__JJDD_3D_3D
+JNIEXPORT jboolean JNICALL GTK_NATIVE(gtk_1widget_1translate_1coordinates__JJDD_3D_3D)
+	(JNIEnv *env, jclass that, jlong arg0, jlong arg1, jdouble arg2, jdouble arg3, jdoubleArray arg4, jdoubleArray arg5)
+{
+	jdouble *lparg4=NULL;
+	jdouble *lparg5=NULL;
+	jboolean rc = 0;
+	GTK_NATIVE_ENTER(env, that, gtk_1widget_1translate_1coordinates__JJDD_3D_3D_FUNC);
+	if (arg4) if ((lparg4 = (*env)->GetDoubleArrayElements(env, arg4, NULL)) == NULL) goto fail;
+	if (arg5) if ((lparg5 = (*env)->GetDoubleArrayElements(env, arg5, NULL)) == NULL) goto fail;
+/*
+	rc = (jboolean)gtk_widget_translate_coordinates((GtkWidget *)arg0, (GtkWidget *)arg1, arg2, arg3, (double *)lparg4, (double *)lparg5);
+*/
+	{
+		GTK_LOAD_FUNCTION(fp, gtk_widget_translate_coordinates)
+		if (fp) {
+			rc = (jboolean)((jboolean (CALLING_CONVENTION*)(GtkWidget *, GtkWidget *, jdouble, jdouble, double *, double *))fp)((GtkWidget *)arg0, (GtkWidget *)arg1, arg2, arg3, (double *)lparg4, (double *)lparg5);
+		}
+	}
+fail:
+	if (arg5 && lparg5) (*env)->ReleaseDoubleArrayElements(env, arg5, lparg5, 0);
+	if (arg4 && lparg4) (*env)->ReleaseDoubleArrayElements(env, arg4, lparg4, 0);
+	GTK_NATIVE_EXIT(env, that, gtk_1widget_1translate_1coordinates__JJDD_3D_3D_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_gtk_1widget_1translate_1coordinates__JJII_3I_3I
+JNIEXPORT jboolean JNICALL GTK_NATIVE(gtk_1widget_1translate_1coordinates__JJII_3I_3I)
 	(JNIEnv *env, jclass that, jlong arg0, jlong arg1, jint arg2, jint arg3, jintArray arg4, jintArray arg5)
 {
 	jint *lparg4=NULL;
 	jint *lparg5=NULL;
 	jboolean rc = 0;
-	GTK_NATIVE_ENTER(env, that, gtk_1widget_1translate_1coordinates_FUNC);
+	GTK_NATIVE_ENTER(env, that, gtk_1widget_1translate_1coordinates__JJII_3I_3I_FUNC);
 	if (arg4) if ((lparg4 = (*env)->GetIntArrayElements(env, arg4, NULL)) == NULL) goto fail;
 	if (arg5) if ((lparg5 = (*env)->GetIntArrayElements(env, arg5, NULL)) == NULL) goto fail;
 	rc = (jboolean)gtk_widget_translate_coordinates((GtkWidget *)arg0, (GtkWidget *)arg1, arg2, arg3, (gint *)lparg4, (gint *)lparg5);
 fail:
 	if (arg5 && lparg5) (*env)->ReleaseIntArrayElements(env, arg5, lparg5, 0);
 	if (arg4 && lparg4) (*env)->ReleaseIntArrayElements(env, arg4, lparg4, 0);
-	GTK_NATIVE_EXIT(env, that, gtk_1widget_1translate_1coordinates_FUNC);
+	GTK_NATIVE_EXIT(env, that, gtk_1widget_1translate_1coordinates__JJII_3I_3I_FUNC);
 	return rc;
 }
 #endif

@@ -658,8 +658,13 @@ void createHandle (int index) {
 		OS.g_object_ref (checkRenderer);
 	}
 	createColumn (null, 0);
-	GTK.gtk_container_add (fixedHandle, scrolledHandle);
-	GTK.gtk_container_add (scrolledHandle, handle);
+	if (GTK.GTK4) {
+		OS.swt_fixed_add(fixedHandle, scrolledHandle);
+		GTK.gtk_scrolled_window_set_child(scrolledHandle, handle);
+	} else {
+		GTK.gtk_container_add(fixedHandle, scrolledHandle);
+		GTK.gtk_container_add(scrolledHandle, handle);
+	}
 
 	int mode = (style & SWT.MULTI) != 0 ? GTK.GTK_SELECTION_MULTIPLE : GTK.GTK_SELECTION_BROWSE;
 	long selectionHandle = GTK.gtk_tree_view_get_selection (handle);
@@ -699,21 +704,34 @@ void createItem (TableColumn column, int index) {
 	} else {
 		createColumn (column, index);
 	}
-	long boxHandle = gtk_box_new (GTK.GTK_ORIENTATION_HORIZONTAL, false, 3);
-	if (boxHandle == 0) error (SWT.ERROR_NO_HANDLES);
-	long labelHandle = GTK.gtk_label_new_with_mnemonic (null);
-	if (labelHandle == 0) error (SWT.ERROR_NO_HANDLES);
-	long imageHandle = GTK.gtk_image_new ();
-	if (imageHandle == 0) error (SWT.ERROR_NO_HANDLES);
-	GTK.gtk_container_add (boxHandle, imageHandle);
-	GTK.gtk_container_add (boxHandle, labelHandle);
-	GTK.gtk_widget_show (boxHandle);
-	GTK.gtk_widget_show (labelHandle);
+
+	long boxHandle = gtk_box_new(GTK.GTK_ORIENTATION_HORIZONTAL, false, 3);
+	if (boxHandle == 0) error(SWT.ERROR_NO_HANDLES);
+	GTK.gtk_tree_view_column_set_widget (column.handle, boxHandle);
+
+	long labelHandle = GTK.gtk_label_new_with_mnemonic(null);
+	if (labelHandle == 0) error(SWT.ERROR_NO_HANDLES);
+	long imageHandle = GTK.gtk_image_new();
+	if (imageHandle == 0) error(SWT.ERROR_NO_HANDLES);
+
+	if (GTK.GTK4) {
+		GTK.gtk_box_append(boxHandle, imageHandle);
+		GTK.gtk_box_append(boxHandle, labelHandle);
+
+		GTK.gtk_widget_hide(imageHandle);
+	} else {
+		GTK.gtk_container_add (boxHandle, imageHandle);
+		GTK.gtk_container_add (boxHandle, labelHandle);
+
+		GTK.gtk_widget_show (boxHandle);
+		GTK.gtk_widget_show (labelHandle);
+	}
+
 	column.labelHandle = labelHandle;
 	column.imageHandle = imageHandle;
-	GTK.gtk_tree_view_column_set_widget (column.handle, boxHandle);
 	column.buttonHandle = GTK.gtk_tree_view_column_get_button(column.handle);
 	GTK.gtk_widget_set_focus_on_click(column.buttonHandle, false);
+
 	if (columnCount == columns.length) {
 		TableColumn [] newColumns = new TableColumn [columns.length + 4];
 		System.arraycopy (columns, 0, newColumns, 0, columns.length);
@@ -1539,13 +1557,9 @@ int getHeaderHeightInPixels () {
 		return height;
 	}
 	if (GTK.GTK4) {
-		long fixedSurface = gtk_widget_get_surface (fixedHandle);
-		long surface = gtk_widget_get_surface (handle);
-		int [] surfaceY = new int [1];
-		GDK.gdk_surface_get_origin (surface, null, surfaceY);
-		int [] fixedY = new int [1];
-		GDK.gdk_surface_get_origin (fixedSurface, null, fixedY);
-		return surfaceY [0] - fixedY [0];
+		// TODO: GTK4 get header height before adding any columns
+
+		return 0;
 	} else {
 		GTK.gtk_widget_realize (handle);
 		long fixedWindow = gtk_widget_get_window (fixedHandle);
@@ -1713,7 +1727,11 @@ int getItemHeightInPixels () {
 			long column = GTK.gtk_tree_view_get_column (handle, i);
 			GTK.gtk_tree_view_column_cell_set_cell_data (column, modelHandle, iter, false, false);
 			int [] w = new int [1], h = new int [1];
-			GTK.gtk_tree_view_column_cell_get_size (column, null, null, null, w, h);
+			if (GTK.GTK4) {
+				GTK.gtk_tree_view_column_cell_get_size(column, null, null, w, h);
+			} else {
+				GTK.gtk_tree_view_column_cell_get_size (column, null, null, null, w, h);
+			}
 			long textRenderer = getTextRenderer (column);
 			int [] ypad = new int[1];
 			if (textRenderer != 0) GTK.gtk_cell_renderer_get_padding(textRenderer, null, ypad);
@@ -2057,7 +2075,12 @@ long gtk_button_press_event (long widget, long event) {
 
 	double [] eventRX = new double [1];
 	double [] eventRY = new double [1];
-	GDK.gdk_event_get_root_coords(event, eventRX, eventRY);
+	if (GTK.GTK4) {
+		long root = GTK.gtk_widget_get_root(widget);
+		GTK.gtk_widget_translate_coordinates(widget, root, eventX[0], eventY[0], eventRX, eventRY);
+	} else {
+		GDK.gdk_event_get_root_coords(event, eventRX, eventRY);
+	}
 
 	long eventGdkResource = gdk_event_get_surface_or_window(event);
 	if (GTK.GTK4) {

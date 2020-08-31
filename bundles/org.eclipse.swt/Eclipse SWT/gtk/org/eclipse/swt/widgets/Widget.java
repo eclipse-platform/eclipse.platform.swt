@@ -1567,7 +1567,7 @@ void sendSelectionEvent (int eventType, Event event, boolean send) {
 		return;
 	}
 	if (event == null) event = new Event ();
-	long ptr = GTK.gtk_get_current_event ();
+	long ptr = GTK.GTK4 ? 0 : GTK.gtk_get_current_event ();
 	if (ptr != 0) {
 		int currentEventType = GDK.gdk_event_get_event_type(ptr);
 		currentEventType = Control.fixGdkEventTypeValues(currentEventType);
@@ -1814,13 +1814,13 @@ boolean setKeyState (Event javaEvent, long event) {
 				short [] keyCode = new short [1];
 				if (GTK.GTK4) {
 					keyCode[0] = (short) GDK.gdk_key_event_get_keycode(event);
+					javaEvent.keyCode = keyCode[0];
 				} else {
 					GDK.gdk_event_get_keycode(event, keyCode);
-				}
-
-				if (GDK.gdk_keymap_translate_keyboard_state (keymap, keyCode[0],
-						0, group, keyval, effective_group, level, consumed_modifiers)) {
-					javaEvent.keyCode = (int) GDK.gdk_keyval_to_unicode (keyval [0]);
+					if (GDK.gdk_keymap_translate_keyboard_state (keymap, keyCode[0],
+							0, group, keyval, effective_group, level, consumed_modifiers)) {
+						javaEvent.keyCode = (int) GDK.gdk_keyval_to_unicode (keyval [0]);
+					}
 				}
 			}
 			int key = eventKeyval[0];

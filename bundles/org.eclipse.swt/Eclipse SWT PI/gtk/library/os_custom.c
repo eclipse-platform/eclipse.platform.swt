@@ -885,30 +885,17 @@ static void swt_fixed_map (GtkWidget *widget) {
 	return GTK_WIDGET_CLASS (swt_fixed_parent_class)->map (widget);
 }
 
-static void swt_fixed_measure (GtkWidget *widget, GtkOrientation  orientation, int for_size, int *minimum,
-		int *natural, int *minimum_baseline, int *natural_baseline) {
-	SwtFixed *fixed = SWT_FIXED (widget);
-	SwtFixedPrivate *priv = fixed->priv;
-	GList *list;
-	int natural_size, child_nat;
-
-	list = priv->children;
-	natural_size = 0;
-
-	while (list) {
-		SwtFixedChild *child_data = list->data;
-		GtkWidget *child = child_data->widget;
+static void swt_fixed_measure (GtkWidget *widget, GtkOrientation  orientation, int for_size, int *minimum, int *natural, int *minimum_baseline, int *natural_baseline) {
+	for (GtkWidget* child = gtk_widget_get_first_child(widget); child != NULL; child = gtk_widget_get_next_sibling(child)) {
+		int child_nat = 0;
 
 		gtk_widget_measure(child, orientation, -1, NULL, &child_nat, NULL, NULL);
-		if (child_nat > natural_size) natural_size = child_nat;
-
-		list = list->next;
+		*natural = MAX(*natural, child_nat);
 	}
-	if (natural) *natural = natural_size;
+
 	if (minimum) *minimum = 0;
 	if (minimum_baseline) *minimum_baseline = -1;
 	if (natural_baseline) *natural_baseline = -1;
-	return;
 }
 
 static void swt_fixed_size_allocate (GtkWidget *widget, int width, int height, int baseline) {
@@ -999,17 +986,17 @@ void swt_fixed_resize (SwtFixed *fixed, GtkWidget *widget, gint width, gint heig
 }
 
 void swt_fixed_add (GtkWidget *container, GtkWidget *child) {
-	SwtFixed *fixed = SWT_FIXED (container);
+	SwtFixed *fixed = SWT_FIXED(container);
 	SwtFixedPrivate *priv = fixed->priv;
-	SwtFixedChild *child_data;
 
-	child_data = g_new (SwtFixedChild, 1);
+	SwtFixedChild *child_data = g_new(SwtFixedChild, 1);
 	child_data->widget = child;
   	child_data->x = child_data->y = 0;
   	child_data->width = child_data->height = -1;
 
-	priv->children = g_list_append (priv->children, child_data);
-	gtk_widget_set_parent (child, container);
+	priv->children = g_list_append(priv->children, child_data);
+
+	gtk_widget_set_parent(child, container);
 }
 
 void swt_fixed_remove (GtkWidget *container, GtkWidget *widget) {
