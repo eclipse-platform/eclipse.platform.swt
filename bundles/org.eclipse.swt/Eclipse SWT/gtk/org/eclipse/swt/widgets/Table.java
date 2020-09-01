@@ -4174,23 +4174,26 @@ public void showSelection () {
 @Override
 void updateScrollBarValue (ScrollBar bar) {
 	super.updateScrollBarValue (bar);
-	/*
-	*  Bug in GTK. Scrolling changes the XWindow position
-	* and makes the child widgets appear to scroll even
-	* though when queried their position is unchanged.
-	* The fix is to queue a resize event for each child to
-	* force the position to be corrected.
-	*/
-	long parentHandle = parentingHandle ();
-	long list = GTK.gtk_container_get_children (parentHandle);
-	if (list == 0) return;
-	long temp = list;
-	while (temp != 0) {
-		long widget = OS.g_list_data (temp);
-		if (widget != 0) GTK.gtk_widget_queue_resize  (widget);
-		temp = OS.g_list_next (temp);
+
+	if (!GTK.GTK4) {
+		/*
+		*  Bug in GTK. Scrolling changes the XWindow position
+		* and makes the child widgets appear to scroll even
+		* though when queried their position is unchanged.
+		* The fix is to queue a resize event for each child to
+		* force the position to be corrected.
+		*/
+		long parentHandle = parentingHandle ();
+		long list = GTK.gtk_container_get_children (parentHandle);
+		if (list == 0) return;
+		long temp = list;
+		while (temp != 0) {
+			long widget = OS.g_list_data (temp);
+			if (widget != 0) GTK.gtk_widget_queue_resize  (widget);
+			temp = OS.g_list_next (temp);
+		}
+		OS.g_list_free (list);
 	}
-	OS.g_list_free (list);
 }
 
 @Override

@@ -1431,27 +1431,41 @@ public void setRegion (Region region) {
 }
 
 void setRelations () {
-	long parentHandle = parent.parentingHandle ();
-	long list = GTK.gtk_container_get_children (parentHandle);
-	if (list == 0) return;
-	int count = OS.g_list_length (list);
-	if (count > 1) {
-		/*
-		 * the receiver is the last item in the list, so its predecessor will
-		 * be the second-last item in the list
-		 */
-		long handle = OS.g_list_nth_data (list, count - 2);
-		if (handle != 0) {
-			Widget widget = display.getWidget (handle);
-			if (widget != null && widget != this) {
-				if (widget instanceof Control) {
-					Control sibling = (Control)widget;
-					sibling.addRelation (this);
-				}
+	long parentHandle = parent.parentingHandle();
+	long handle = 0;
+
+	if (GTK.GTK4) {
+		int count = 0;
+		for (long child = GTK.gtk_widget_get_first_child(parentHandle); child != 0; child = GTK.gtk_widget_get_next_sibling(child)) {
+			count++;
+		}
+
+		if (count > 1) {
+			handle = GTK.gtk_widget_get_prev_sibling(GTK.gtk_widget_get_last_child(parentHandle));
+		}
+	} else {
+		long list = GTK.gtk_container_get_children (parentHandle);
+		if (list == 0) return;
+		int count = OS.g_list_length (list);
+		if (count > 1) {
+			/*
+			 * the receiver is the last item in the list, so its predecessor will
+			 * be the second-last item in the list
+			 */
+			handle = OS.g_list_nth_data (list, count - 2);
+		}
+		OS.g_list_free (list);
+	}
+
+	if (handle != 0) {
+		Widget widget = display.getWidget (handle);
+		if (widget != null && widget != this) {
+			if (widget instanceof Control) {
+				Control sibling = (Control)widget;
+				sibling.addRelation (this);
 			}
 		}
 	}
-	OS.g_list_free (list);
 }
 
 /**

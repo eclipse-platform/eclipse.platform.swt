@@ -13,6 +13,8 @@
  *******************************************************************************/
 package org.eclipse.swt.widgets;
 
+import java.util.*;
+
 import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
@@ -561,14 +563,34 @@ public boolean getEnabled () {
  */
 public MenuItem getItem (int index) {
 	checkWidget();
-	long list = GTK.gtk_container_get_children (handle);
-	if (list == 0) error (SWT.ERROR_CANNOT_GET_ITEM);
-	int count = OS.g_list_length (list);
-	if (!(0 <= index && index < count)) error (SWT.ERROR_INVALID_RANGE);
-	long data = OS.g_list_nth_data (list, index);
-	OS.g_list_free (list);
-	if (data == 0) error (SWT.ERROR_CANNOT_GET_ITEM);
-	return (MenuItem) display.getWidget (data);
+
+	if (GTK.GTK4) {
+		long itemHandle = GTK.gtk_widget_get_first_child(handle);
+		if (itemHandle == 0) error(SWT.ERROR_CANNOT_GET_ITEM);
+
+		int childIndex = 0;
+		while (itemHandle != 0) {
+			if (childIndex == index) {
+				break;
+			}
+			childIndex++;
+			itemHandle = GTK.gtk_widget_get_next_sibling(itemHandle);
+		}
+
+		if (index < 0 || index >= childIndex) error(SWT.ERROR_INVALID_RANGE);
+		if (itemHandle == 0) error(SWT.ERROR_CANNOT_GET_ITEM);
+
+		return (MenuItem) display.getWidget(itemHandle);
+	} else {
+		long list = GTK.gtk_container_get_children (handle);
+		if (list == 0) error (SWT.ERROR_CANNOT_GET_ITEM);
+		int count = OS.g_list_length (list);
+		if (!(0 <= index && index < count)) error (SWT.ERROR_INVALID_RANGE);
+		long data = OS.g_list_nth_data (list, index);
+		OS.g_list_free (list);
+		if (data == 0) error (SWT.ERROR_CANNOT_GET_ITEM);
+		return (MenuItem) display.getWidget(data);
+	}
 }
 
 /**
@@ -583,11 +605,23 @@ public MenuItem getItem (int index) {
  */
 public int getItemCount () {
 	checkWidget();
-	long list = GTK.gtk_container_get_children (handle);
-	if (list == 0) return 0;
-	int count = OS.g_list_length (list);
-	OS.g_list_free (list);
-	return Math.max (0, count);
+
+	int count = 0;
+	if (GTK.GTK4) {
+		long itemHandle = GTK.gtk_widget_get_first_child(handle);
+		if (itemHandle == 0) return 0;
+		while (itemHandle != 0) {
+			count++;
+			itemHandle = GTK.gtk_widget_get_next_sibling(itemHandle);
+		}
+	} else {
+		long list = GTK.gtk_container_get_children (handle);
+		if (list == 0) return 0;
+		count = OS.g_list_length (list);
+		OS.g_list_free (list);
+	}
+
+	return Math.max(0, count);
 }
 
 /**
@@ -608,25 +642,40 @@ public int getItemCount () {
  */
 public MenuItem [] getItems () {
 	checkWidget();
-	long list = GTK.gtk_container_get_children (handle);
-	if (list == 0) return new MenuItem [0];
-	long originalList = list;
-	int count = OS.g_list_length (list);
-	MenuItem [] items = new MenuItem [count];
-	int index = 0;
-	for (int i=0; i<count; i++) {
-		long data = OS.g_list_data (list);
-		MenuItem item = (MenuItem) display.getWidget (data);
-		if (item != null) items [index++] = item;
-		list = OS.g_list_next (list);
+
+	if (GTK.GTK4) {
+		long itemHandle = GTK.gtk_widget_get_first_child(handle);
+		if (itemHandle == 0) return new MenuItem[0];
+
+		ArrayList<MenuItem> items = new ArrayList<>();
+		while (itemHandle != 0) {
+			MenuItem item = (MenuItem) display.getWidget(itemHandle);
+			if (item != null) items.add(item);
+			itemHandle = GTK.gtk_widget_get_next_sibling(itemHandle);
+		}
+
+		return items.toArray(new MenuItem[items.size()]);
+	} else {
+		long list = GTK.gtk_container_get_children (handle);
+		if (list == 0) return new MenuItem [0];
+		long originalList = list;
+		int count = OS.g_list_length (list);
+		MenuItem [] items = new MenuItem [count];
+		int index = 0;
+		for (int i=0; i<count; i++) {
+			long data = OS.g_list_data (list);
+			MenuItem item = (MenuItem) display.getWidget (data);
+			if (item != null) items [index++] = item;
+			list = OS.g_list_next (list);
+		}
+		OS.g_list_free (originalList);
+		if (index != items.length) {
+			MenuItem [] newItems = new MenuItem [index];
+			System.arraycopy (items, 0, newItems, 0, index);
+			items = newItems;
+		}
+		return items;
 	}
-	OS.g_list_free (originalList);
-	if (index != items.length) {
-		MenuItem [] newItems = new MenuItem [index];
-		System.arraycopy (items, 0, newItems, 0, index);
-		items = newItems;
-	}
-	return items;
 }
 
 @Override

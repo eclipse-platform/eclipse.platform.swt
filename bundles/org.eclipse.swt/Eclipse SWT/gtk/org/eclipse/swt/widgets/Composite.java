@@ -159,32 +159,44 @@ static int checkStyle (int style) {
 	return style;
 }
 
-Control [] _getChildren () {
-	long parentHandle = parentingHandle ();
-	//TODO: GTK4 no GTKContainer, and GtkWidget has no get_children function
-	long list = GTK.GTK4 ? 0 : GTK.gtk_container_get_children (parentHandle);
-	if (list == 0) return new Control [0];
-	int count = OS.g_list_length (list);
-	Control [] children = new Control [count];
-	int i = 0;
-	long temp = list;
-	while (temp != 0) {
-		long handle = OS.g_list_data (temp);
-		if (handle != 0) {
-			Widget widget = display.getWidget (handle);
-			if (widget != null && widget != this) {
-				if (widget instanceof Control) {
-					children [i++] = (Control) widget;
-				}
+Control[] _getChildren () {
+	long parentHandle = parentingHandle();
+
+	if (GTK.GTK4) {
+		ArrayList<Control> childrenList = new ArrayList<>();
+		for (long child = GTK.gtk_widget_get_first_child(parentHandle); child != 0; child = GTK.gtk_widget_get_next_sibling(child)) {
+			Widget childWidget = display.getWidget(child);
+			if (childWidget != null && childWidget instanceof Control && childWidget != this) {
+				childrenList.add((Control)childWidget);
 			}
 		}
-		temp = OS.g_list_next (temp);
+
+		return childrenList.toArray(new Control[childrenList.size()]);
+	} else {
+		long list = GTK.gtk_container_get_children (parentHandle);
+		if (list == 0) return new Control [0];
+		int count = OS.g_list_length (list);
+		Control [] children = new Control [count];
+		int i = 0;
+		long temp = list;
+		while (temp != 0) {
+			long handle = OS.g_list_data (temp);
+			if (handle != 0) {
+				Widget widget = display.getWidget (handle);
+				if (widget != null && widget != this) {
+					if (widget instanceof Control) {
+						children [i++] = (Control) widget;
+					}
+				}
+			}
+			temp = OS.g_list_next (temp);
+		}
+		OS.g_list_free (list);
+		if (i == count) return children;
+		Control [] newChildren = new Control [i];
+		System.arraycopy (children, 0, newChildren, 0, i);
+		return newChildren;
 	}
-	OS.g_list_free (list);
-	if (i == count) return children;
-	Control [] newChildren = new Control [i];
-	System.arraycopy (children, 0, newChildren, 0, i);
-	return newChildren;
 }
 
 Control [] _getTabList () {
@@ -745,14 +757,24 @@ public Control [] getChildren () {
 }
 
 int getChildrenCount () {
-	/*
-	* NOTE: The current implementation will count
-	* non-registered children.
-	*/
-	long list = GTK.gtk_container_get_children (handle);
-	if (list == 0) return 0;
-	int count = OS.g_list_length (list);
-	OS.g_list_free (list);
+	int count = 0;
+
+	if (GTK.GTK4) {
+		for (long child = GTK.gtk_widget_get_first_child(handle); child != 0; child = GTK.gtk_widget_get_next_sibling(child)) {
+			count++;
+		}
+	} else {
+		/*
+		* NOTE: The current implementation will count
+		* non-registered children.
+		*/
+		long list = GTK.gtk_container_get_children(handle);
+		if (list != 0) {
+			count = OS.g_list_length(list);
+			OS.g_list_free(list);
+		}
+	}
+
 	return count;
 }
 
@@ -1445,56 +1467,49 @@ void connectFixedHandleDraw () {
  */
 void propagateDraw (long container, long cairo) {
 	if (container == fixedHandle) {
-		long list = GTK.gtk_container_get_children (container);
-		long temp = list;
-		while (temp != 0) {
-			long child = OS.g_list_data (temp);
-			if (child != 0) {
-				Widget widget = display.getWidget (child);
-				if (widget != this) {
-					if (noChildDrawing) {
-						Boolean childLowered = childrenLowered.get(widget);
-						if (childLowered == null) {
-							childrenLowered.put(widget, false);
-							childLowered = false;
-						}
-						GtkAllocation allocation = new GtkAllocation ();
-						GTK.gtk_widget_get_allocation(child, allocation);
-						if (allocation.y < 0) {
-							if (!childLowered) {
-								if (GTK.GTK4) {
-									long surface = gtk_widget_get_surface(child);
-									GDK.gdk_toplevel_lower(surface);
-								} else {
+		if (GTK.GTK4) {
+			for (long child = GTK.gtk_widget_get_first_child(container); child != 0; child = GTK.gtk_widget_get_next_sibling(child)) {
+				//TODO: GTK4 no gtk_container_propagate_draw. Possibly not required at all.
+			}
+		} else {
+			long list = GTK.gtk_container_get_children (container);
+			long temp = list;
+			while (temp != 0) {
+				long child = OS.g_list_data (temp);
+				if (child != 0) {
+					Widget widget = display.getWidget (child);
+					if (widget != this) {
+						if (noChildDrawing) {
+							Boolean childLowered = childrenLowered.get(widget);
+							if (childLowered == null) {
+								childrenLowered.put(widget, false);
+								childLowered = false;
+							}
+							GtkAllocation allocation = new GtkAllocation ();
+							GTK.gtk_widget_get_allocation(child, allocation);
+							if (allocation.y < 0) {
+								if (!childLowered) {
 									long window = gtk_widget_get_window(child);
 									GDK.gdk_window_lower(window);
+									childrenLowered.put(widget, true);
 								}
-								childrenLowered.put(widget, true);
-							}
-						} else {
-							if (childLowered) {
-								if (GTK.GTK4) {
-									long surface = gtk_widget_get_surface(child);
-									int width = GDK.gdk_surface_get_width(surface);
-									int height = GDK.gdk_surface_get_height(surface);
-									long layout = GDK.gdk_toplevel_layout_new(width, height);
-									GDK.gdk_toplevel_present(surface, width, height, layout);
-								} else {
+							} else {
+								if (childLowered) {
 									long window = gtk_widget_get_window(child);
 									GDK.gdk_window_raise(window);
+									childrenLowered.put(widget, false);
 								}
-								childrenLowered.put(widget, false);
+								GTK.gtk_container_propagate_draw(container, child, cairo);
 							}
+						} else {
 							GTK.gtk_container_propagate_draw(container, child, cairo);
 						}
-					} else {
-						GTK.gtk_container_propagate_draw(container, child, cairo);
 					}
 				}
+				temp = OS.g_list_next (temp);
 			}
-			temp = OS.g_list_next (temp);
+			OS.g_list_free (list);
 		}
-		OS.g_list_free (list);
 	}
 }
 

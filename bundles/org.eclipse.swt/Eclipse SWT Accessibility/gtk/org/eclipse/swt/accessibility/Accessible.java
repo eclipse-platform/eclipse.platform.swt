@@ -493,21 +493,32 @@ public class Accessible {
 
 	long getControlHandle () {
 		long result = control.handle;
+
 		if (control instanceof Label) {
-			long list = GTK.gtk_container_get_children (result);
-			if (list != 0) {
-				long temp = list;
-				while (temp != 0) {
-					long widget = OS.g_list_data( temp);
-					if (GTK.gtk_widget_get_visible (widget)) {
-						result = widget;
+			if (GTK.GTK4) {
+				for (long child = GTK.gtk_widget_get_first_child(result); child != 0; child = GTK.gtk_widget_get_next_sibling(child)) {
+					if (GTK.gtk_widget_get_visible(child)) {
+						result = child;
 						break;
 					}
-					temp = OS.g_list_next (temp);
 				}
-				OS.g_list_free (list);
+			} else {
+				long list = GTK.gtk_container_get_children (result);
+				if (list != 0) {
+					long temp = list;
+					while (temp != 0) {
+						long widget = OS.g_list_data( temp);
+						if (GTK.gtk_widget_get_visible (widget)) {
+							result = widget;
+							break;
+						}
+						temp = OS.g_list_next (temp);
+					}
+					OS.g_list_free (list);
+				}
 			}
 		}
+
 		return result;
 	}
 

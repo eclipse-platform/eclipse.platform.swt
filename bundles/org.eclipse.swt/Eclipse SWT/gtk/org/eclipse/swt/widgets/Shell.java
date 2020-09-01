@@ -2898,12 +2898,19 @@ void showWidget () {
 			display.activeShell = this;
 			display.activePending = true;
 		}
-		long children = GTK.gtk_container_get_children (shellHandle), list = children;
-		while (list != 0) {
-			GTK.gtk_container_remove (shellHandle, OS.g_list_data (list));
-			list = OS.g_list_next(list);
+
+		if (GTK.GTK4) {
+			for (long child = GTK.gtk_widget_get_first_child(shellHandle); child != 0; child = GTK.gtk_widget_get_next_sibling(child)) {
+				GTK.gtk_widget_unparent(child);
+			}
+		} else {
+			long list = GTK.gtk_container_get_children (shellHandle);
+			while (list != 0) {
+				GTK.gtk_container_remove (shellHandle, OS.g_list_data (list));
+				list = OS.g_list_next(list);
+			}
+			OS.g_list_free (list);
 		}
-		OS.g_list_free (list);
 	}
 
 	if (GTK.GTK4) {

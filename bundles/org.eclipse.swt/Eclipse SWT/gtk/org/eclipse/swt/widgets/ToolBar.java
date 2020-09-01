@@ -14,6 +14,8 @@
 package org.eclipse.swt.widgets;
 
 
+import java.util.*;
+
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.*;
@@ -339,10 +341,19 @@ ToolItem getItemInPixels (Point point) {
  */
 public int getItemCount () {
 	checkWidget();
-	long list = GTK.gtk_container_get_children (handle);
-	if (list == 0) return 0;
-	int itemCount = OS.g_list_length (list);
-	OS.g_list_free (list);
+
+	int itemCount = 0;
+	if (GTK.GTK4) {
+		for (long child = GTK.gtk_widget_get_first_child(handle); child != 0; child = GTK.gtk_widget_get_next_sibling(child)) {
+			itemCount++;
+		}
+	} else {
+		long list = GTK.gtk_container_get_children (handle);
+		if (list == 0) return 0;
+		itemCount = OS.g_list_length (list);
+		OS.g_list_free (list);
+	}
+
 	return itemCount;
 }
 
@@ -367,26 +378,38 @@ public ToolItem [] getItems () {
 	return _getItems ();
 }
 
-ToolItem [] _getItems () {
-	long list = GTK.gtk_container_get_children (handle);
-	if (list == 0) return new ToolItem [0];
-	int count = OS.g_list_length (list);
-	ToolItem [] items = new ToolItem [count];
-	long originalList = list;
-	int index = 0;
-	for (int i=0; i<count; i++) {
-		long data = OS.g_list_data (list);
-		Widget widget = display.getWidget (data);
-		if (widget != null) items [index++] = (ToolItem) widget;
-		list = OS.g_list_next (list);
+ToolItem[] _getItems () {
+	if (GTK.GTK4) {
+		ArrayList<ToolItem> childrenList = new ArrayList<>();
+		for (long child = GTK.gtk_widget_get_first_child(handle); child != 0; child = GTK.gtk_widget_get_next_sibling(child)) {
+			Widget childWidget = display.getWidget(child);
+			if (childWidget != null) {
+				childrenList.add((ToolItem)childWidget);
+			}
+		}
+
+		return childrenList.toArray(new ToolItem[childrenList.size()]);
+	} else {
+		long list = GTK.gtk_container_get_children (handle);
+		if (list == 0) return new ToolItem [0];
+		int count = OS.g_list_length (list);
+		ToolItem [] items = new ToolItem [count];
+		long originalList = list;
+		int index = 0;
+		for (int i=0; i<count; i++) {
+			long data = OS.g_list_data (list);
+			Widget widget = display.getWidget (data);
+			if (widget != null) items [index++] = (ToolItem) widget;
+			list = OS.g_list_next (list);
+		}
+		OS.g_list_free (originalList);
+		if (index != items.length) {
+			ToolItem [] newItems = new ToolItem [index];
+			System.arraycopy (items, 0, newItems, 0, index);
+			items = newItems;
+		}
+		return items;
 	}
-	OS.g_list_free (originalList);
-	if (index != items.length) {
-		ToolItem [] newItems = new ToolItem [index];
-		System.arraycopy (items, 0, newItems, 0, index);
-		items = newItems;
-	}
-	return items;
 }
 
 /**

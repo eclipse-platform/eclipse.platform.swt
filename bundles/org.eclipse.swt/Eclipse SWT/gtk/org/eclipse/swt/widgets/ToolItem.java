@@ -211,21 +211,24 @@ void createHandle (int index) {
 			if (GTK.GTK4) {
 				handle = GTK.gtk_menu_button_new();
 			} else {
-				handle = GTK.gtk_menu_tool_button_new (0, null);
+				handle = GTK.gtk_menu_tool_button_new(0, null);
 			}
+			if (handle == 0) error(SWT.ERROR_NO_HANDLES);
 
-			if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 			/*
 			 * Feature in GTK. The arrow button of DropDown tool-item is
 			 * disabled when it does not contain menu. The fix is to
 			 * find the arrow button handle and enable it.
 			 */
-			long child = GTK.gtk_bin_get_child (handle);
-			long list = GTK.gtk_container_get_children (child);
-			arrowHandle = OS.g_list_nth_data (list, 1);
-			if (arrowHandle != 0) {
-				GTK.gtk_widget_set_sensitive (arrowHandle, true);
+			if (GTK.GTK4) {
+				arrowHandle = GTK.gtk_widget_get_first_child(handle);
+			} else {
+				long child = GTK.gtk_bin_get_child(handle);
+				long list = GTK.gtk_container_get_children(child);
+				arrowHandle = OS.g_list_nth_data(list, 1);
 			}
+			if (arrowHandle != 0) GTK.gtk_widget_set_sensitive (arrowHandle, true);
+
 			break;
 		case SWT.RADIO:
 			/*
@@ -806,9 +809,18 @@ void hookEvents () {
 	 */
 	eventHandle = GTK.gtk_bin_get_child(handle);
 	if ((style & SWT.DROP_DOWN) != 0) {
-		long list = GTK.gtk_container_get_children(eventHandle);
-		eventHandle = OS.g_list_nth_data(list, 0);
-		if (arrowHandle != 0) OS.g_signal_connect_closure (arrowHandle, OS.clicked, display.getClosure (CLICKED), false);
+		if (GTK.GTK4) {
+			eventHandle = GTK.gtk_widget_get_first_child(handle);
+			if (arrowHandle != 0) {
+				long clickGesture = GTK.gtk_gesture_click_new();
+				OS.g_signal_connect(clickGesture, OS.pressed, display.gesturePressReleaseProc, GESTURE_PRESSED);
+				GTK.gtk_widget_add_controller(arrowHandle, clickGesture);
+			}
+		} else {
+			long list = GTK.gtk_container_get_children(eventHandle);
+			eventHandle = OS.g_list_nth_data(list, 0);
+			if (arrowHandle != 0) OS.g_signal_connect_closure (arrowHandle, OS.clicked, display.getClosure (CLICKED), false);
+		}
 	}
 	OS.g_signal_connect_closure (handle, OS.create_menu_proxy, display.getClosure (CREATE_MENU_PROXY), false);
 	if (GTK.GTK4) {
@@ -1373,13 +1385,17 @@ public void setToolTipText (String string) {
 }
 
 void setToolTipText (Shell shell, String newString) {
-	long child = GTK.gtk_bin_get_child (handle);
-	if ((style & SWT.DROP_DOWN) != 0) {
-		long list = GTK.gtk_container_get_children (child);
-		child = OS.g_list_nth_data (list, 0);
-		if (arrowHandle != 0) shell.setToolTipText (arrowHandle, newString);
+	if (GTK.GTK4) {
+		shell.setToolTipText(handle, newString);
+	} else {
+		long child = GTK.gtk_bin_get_child (handle);
+		if ((style & SWT.DROP_DOWN) != 0) {
+			long list = GTK.gtk_container_get_children (child);
+			child = OS.g_list_nth_data (list, 0);
+			if (arrowHandle != 0) shell.setToolTipText (arrowHandle, newString);
+		}
+		shell.setToolTipText (child != 0 ? child : handle, newString);
 	}
-	shell.setToolTipText (child != 0 ? child : handle, newString);
 }
 
 /**

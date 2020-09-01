@@ -255,13 +255,36 @@ public class GTK extends OS {
 	/** @param widget cast=(GtkWidget *) */
 	public static final native boolean gtk_widget_get_sensitive(long widget);
 
-	/** @param widget cast=(GtkWidget *) */
-	/* [GTK4 only, if-def'd in os.h] */
+	/**
+	 * @method flags=dynamic
+	 * @param widget cast=(GtkWidget *)
+	 * */
+	/* [GTK4 only] */
 	public static final native long gtk_widget_get_first_child(long widget);
-
-	/** @param widget cast=(GtkWidget *) */
-	/* [GTK4 only, if-def'd in os.h] */
+	/**
+	 * @method flags=dynamic
+	 * @param widget cast=(GtkWidget *)
+	 * */
+	/* [GTK4 only] */
+	public static final native long gtk_widget_get_last_child(long widget);
+	/**
+	 * @method flags=dynamic
+	 * @param widget cast=(GtkWidget *)
+	 * */
+	/* [GTK4 only] */
 	public static final native long gtk_widget_get_next_sibling(long widget);
+	/**
+	 * @method flags=dynamic
+	 * @param widget cast=(GtkWidget *)
+	 * */
+	/* [GTK4 only] */
+	public static final native long gtk_widget_get_prev_sibling(long widget);
+	/**
+	 * @method flags=dynamic
+	 * @param widget cast=(GtkWidget *)
+	 * */
+	/* [GTK4 only] */
+	public static final native void gtk_widget_unparent(long widget);
 
 	/**
 	 * @param widget cast=(GtkWidget *)
