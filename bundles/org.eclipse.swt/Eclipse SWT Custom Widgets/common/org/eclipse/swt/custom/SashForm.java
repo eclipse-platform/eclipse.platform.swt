@@ -442,7 +442,7 @@ public void setToolTipText(String string) {
  *    <li>ERROR_INVALID_ARGUMENT - if the weights value is null or of incorrect length (must match the number of children)</li>
  * </ul>
  */
-public void setWeights(int[] weights) {
+public void setWeights(int... weights) {
 	checkWidget();
 	Control[] cArray = getControls(false);
 	if (weights == null || weights.length != cArray.length) {
@@ -459,6 +459,7 @@ public void setWeights(int[] weights) {
 	if (total == 0) {
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
+
 	for (int i = 0; i < cArray.length; i++) {
 		Object data = cArray[i].getLayoutData();
 		if (data == null || !(data instanceof SashFormData)) {
