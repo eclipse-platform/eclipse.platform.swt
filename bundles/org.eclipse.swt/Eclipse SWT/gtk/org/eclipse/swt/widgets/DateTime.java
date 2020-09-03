@@ -423,44 +423,43 @@ private void createHandleForCalendar () {
 	calendarHandle = GTK.gtk_calendar_new ();
 	if (calendarHandle == 0) error (SWT.ERROR_NO_HANDLES);
 
-	//Calenadar becomes container in this case.
+	//Calendar becomes container in this case.
 	handle = calendarHandle;
 	containerHandle = calendarHandle;
 
-	GTK.gtk_container_add (fixedHandle, calendarHandle);
-
-
 	if (GTK.GTK4) {
+		OS.swt_fixed_add(fixedHandle, calendarHandle);
+
 		GTK.gtk_calendar_set_show_heading(calendarHandle, true);
 		GTK.gtk_calendar_set_show_day_names(calendarHandle, true);
 		GTK.gtk_calendar_set_show_week_numbers(calendarHandle, showWeekNumbers());
 	} else {
+		GTK.gtk_container_add (fixedHandle, calendarHandle);
+
 		int flags = GTK.GTK_CALENDAR_SHOW_HEADING | GTK.GTK_CALENDAR_SHOW_DAY_NAMES;
 		if (showWeekNumbers()) {
 			flags |= GTK.GTK_CALENDAR_SHOW_WEEK_NUMBERS;
 		}
 		GTK.gtk_calendar_set_display_options (calendarHandle, flags);
+		GTK.gtk_widget_show (calendarHandle);
 	}
-
-	GTK.gtk_widget_show (calendarHandle);
 }
 
 private void createHandleForDateWithDropDown () {
-	//Create box to put entry and button into box.
 	containerHandle = gtk_box_new (GTK.GTK_ORIENTATION_HORIZONTAL, false, 0);
 	if (containerHandle == 0) error (SWT.ERROR_NO_HANDLES);
-	GTK.gtk_container_add (fixedHandle, containerHandle);
-
-	//Create entry
 	textEntryHandle = GTK.gtk_entry_new ();
 	if (textEntryHandle == 0) error (SWT.ERROR_NO_HANDLES);
-	GTK.gtk_container_add (containerHandle, textEntryHandle);
 
-	GTK.gtk_widget_show (containerHandle);
-	GTK.gtk_widget_show (textEntryHandle);
-
-	handle = containerHandle;
-	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
+	if (GTK.GTK4) {
+		OS.swt_fixed_add(fixedHandle, containerHandle);
+		GTK.gtk_box_append(containerHandle, textEntryHandle);
+	} else {
+		GTK.gtk_container_add (fixedHandle, containerHandle);
+		GTK.gtk_container_add (containerHandle, textEntryHandle);
+		GTK.gtk_widget_show (containerHandle);
+		GTK.gtk_widget_show (textEntryHandle);
+	}
 
 	// In GTK 3 font description is inherited from parent widget which is not how SWT has always worked,
 	// reset to default font to get the usual behavior
@@ -483,9 +482,14 @@ private void createHandleForDateTime () {
 	}
 	if (textEntryHandle == 0) error (SWT.ERROR_NO_HANDLES);
 
-	GTK.gtk_spin_button_set_numeric (GTK.GTK4? spinButtonHandle : textEntryHandle, false);
-	GTK.gtk_container_add (fixedHandle, GTK.GTK4? spinButtonHandle : textEntryHandle);
-	GTK.gtk_spin_button_set_wrap (GTK.GTK4? spinButtonHandle : textEntryHandle, (style & SWT.WRAP) != 0);
+	if (GTK.GTK4) {
+		OS.swt_fixed_add(fixedHandle, handle);
+	} else {
+		GTK.gtk_container_add (fixedHandle, handle);
+	}
+
+	GTK.gtk_spin_button_set_numeric (handle, false);
+	GTK.gtk_spin_button_set_wrap (handle, (style & SWT.WRAP) != 0);
 }
 
 void createDropDownButton () {

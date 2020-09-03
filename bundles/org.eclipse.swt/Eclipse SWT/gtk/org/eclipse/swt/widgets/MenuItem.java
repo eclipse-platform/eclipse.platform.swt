@@ -357,8 +357,12 @@ void createHandle (int index) {
 			if (OS.SWT_PADDED_MENU_ITEMS) {
 				GTK.gtk_image_set_pixel_size (imageHandle, 16);
 			}
-			GTK.gtk_container_add (boxHandle, imageHandle);
-			GTK.gtk_widget_show (imageHandle);
+			if (GTK.GTK4) {
+				GTK.gtk_box_append(boxHandle, imageHandle);
+			} else {
+				GTK.gtk_container_add (boxHandle, imageHandle);
+				GTK.gtk_widget_show (imageHandle);
+			}
 		}
 		if (labelHandle != 0) {
 			GTK.gtk_label_set_xalign (labelHandle, 0);
@@ -367,8 +371,12 @@ void createHandle (int index) {
 			GTK.gtk_widget_show (labelHandle);
 		}
 		if (boxHandle != 0) {
-			GTK.gtk_container_add (handle, boxHandle);
-			GTK.gtk_widget_show (boxHandle);
+			if (GTK.GTK4) {
+				// TODO: need to implement how menu items will be populated, currently no value for handle
+			} else {
+				GTK.gtk_container_add (handle, boxHandle);
+				GTK.gtk_widget_show (boxHandle);
+			}
 		}
 		if ((style & SWT.SEPARATOR) == 0) {
 			if (boxHandle == 0) {

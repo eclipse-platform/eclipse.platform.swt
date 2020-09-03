@@ -178,7 +178,12 @@ void createHandle (int index) {
 	if ((style & SWT.VERTICAL) != 0) {
 		GTK.gtk_widget_set_can_focus (handle, true);
 	}
-	GTK.gtk_container_add (fixedHandle, handle);
+
+	if (GTK.GTK4) {
+		OS.swt_fixed_add(fixedHandle, handle);
+	} else {
+		GTK.gtk_container_add (fixedHandle, handle);
+	}
 }
 
 @Override

@@ -188,10 +188,13 @@ void createHandle(int index) {
 	 */
 	gtk_widget_set_has_surface_or_window (clientHandle, true);
 
-	GTK.gtk_container_add (fixedHandle, handle);
-	GTK.gtk_container_add (handle, clientHandle);
+	if (GTK.GTK4) {
+		OS.swt_fixed_add(fixedHandle, handle);
+		GTK.gtk_frame_set_child(handle, clientHandle);
+	} else {
+		GTK.gtk_container_add (fixedHandle, handle);
+		GTK.gtk_container_add (handle, clientHandle);
 
-	if (!GTK.GTK4) {
 		if ((style & SWT.SHADOW_IN) != 0) {
 			GTK.gtk_frame_set_shadow_type (handle, GTK.GTK_SHADOW_IN);
 		}

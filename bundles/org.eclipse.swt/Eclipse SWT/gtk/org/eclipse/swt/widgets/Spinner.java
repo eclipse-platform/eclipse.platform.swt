@@ -311,11 +311,15 @@ void createHandle (int index) {
 	if (adjustment == 0) error (SWT.ERROR_NO_HANDLES);
 	handle = GTK.gtk_spin_button_new (adjustment, climbRate, 0);
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
-	GTK.gtk_container_add (fixedHandle, handle);
+
 	if (GTK.GTK4) {
+		OS.swt_fixed_add(fixedHandle, handle);
+
 		long boxHandle = GTK.gtk_widget_get_first_child(handle);
 		long textHandle = GTK.gtk_widget_get_first_child(boxHandle);
 		entryHandle = textHandle;
+	} else {
+		GTK.gtk_container_add (fixedHandle, handle);
 	}
 	GTK.gtk_editable_set_editable (GTK.GTK4 ? entryHandle : handle, (style & SWT.READ_ONLY) == 0);
 	GTK.gtk_spin_button_set_wrap (handle, (style & SWT.WRAP) != 0);

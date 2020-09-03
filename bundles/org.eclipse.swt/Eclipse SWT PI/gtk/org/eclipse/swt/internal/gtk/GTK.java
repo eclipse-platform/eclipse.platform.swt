@@ -993,12 +993,12 @@ public class GTK extends OS {
 	 * @param visible cast=(gboolean)
 	 */
 	public static final native void gtk_entry_set_visibility(long entry, boolean visible);
+
+	/* GtkExpander */
+	/** @param label cast=(const gchar *) */
+	public static final native long gtk_expander_new(byte[] label);
 	/** @param expander cast=(GtkExpander *) */
 	public static final native boolean gtk_expander_get_expanded(long expander);
-	/**
-	 * @param label cast=(const gchar *)
-	 */
-	public static final native long gtk_expander_new(byte[] label);
 	/** @param expander cast=(GtkExpander *) */
 	public static final native void gtk_expander_set_expanded(long expander, boolean expanded);
 	/**
@@ -1006,6 +1006,15 @@ public class GTK extends OS {
 	 * @param label_widget cast=(GtkWidget *)
 	 */
 	public static final native void gtk_expander_set_label_widget(long expander, long label_widget);
+
+	/* GtkExpander [GTK4 only] */
+	/**
+	 * @method flags=dynamic
+	 * @param expander cast=(GtkExpander *)
+	 * @param child cast=(GtkWidget *)
+	 */
+	public static final native void gtk_expander_set_child(long expander, long child);
+
 
 	/* GtkFileChooser */
 	/**
@@ -1305,6 +1314,8 @@ public class GTK extends OS {
 	 * @param fontname cast=(const gchar *)
 	 */
 	public static final native void gtk_font_chooser_set_font(long fsd, byte[] fontname);
+
+	/* GtkFrame */
 	/** @param label cast=(const gchar *) */
 	public static final native long gtk_frame_new(byte[] label);
 	/** @param frame cast=(GtkFrame *) */
@@ -1314,12 +1325,22 @@ public class GTK extends OS {
 	 * @param label_widget cast=(GtkWidget *)
 	 */
 	public static final native void gtk_frame_set_label_widget(long frame, long label_widget);
+
+	/* GtkFrame [GTK3 only] */
 	/**
 	 * @param frame cast=(GtkFrame *)
 	 * @param type cast=(GtkShadowType)
 	 */
-	/* [GTK3 only, if-def'd in os.h] */
 	public static final native void gtk_frame_set_shadow_type(long frame, int type);
+
+	/* GtkFrame [GTK4 only] */
+	/**
+	 * @method flags=dynamic
+	 * @param frame cast=(GtkFrame *)
+	 * @param child cast=(GtkWidget *)
+	 */
+	public static final native void gtk_frame_set_child(long frame, long child);
+
 	/* [GTK3 only, if-def'd in os.h] */
 	public static final native long gtk_get_current_event();
 	/* [GTK4 only, if-def'd in os.h] */

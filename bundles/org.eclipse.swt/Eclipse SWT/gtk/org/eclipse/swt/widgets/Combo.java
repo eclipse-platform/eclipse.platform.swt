@@ -534,7 +534,11 @@ void createHandle (int index) {
 		imContext = OS.imContextLast();
 	}
 	popupHandle = findPopupHandle (oldList);
-	GTK.gtk_container_add (fixedHandle, handle);
+	if (GTK.GTK4) {
+		OS.swt_fixed_add(fixedHandle, handle);
+	} else {
+		GTK.gtk_container_add (fixedHandle, handle);
+	}
 	textRenderer = GTK.gtk_cell_renderer_text_new ();
 	if (textRenderer == 0) error (SWT.ERROR_NO_HANDLES);
 	/*

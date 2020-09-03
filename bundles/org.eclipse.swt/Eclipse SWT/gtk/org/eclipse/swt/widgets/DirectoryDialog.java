@@ -170,8 +170,13 @@ String openNativeChooserDialog () {
 		if (box == 0) error (SWT.ERROR_NO_HANDLES);
 		long label = GTK.gtk_label_new (buffer);
 		if (label == 0) error (SWT.ERROR_NO_HANDLES);
-		GTK.gtk_container_add (box, label);
-		GTK.gtk_widget_show (label);
+		if (GTK.GTK4) {
+			GTK.gtk_box_append(box, label);
+		} else {
+			GTK.gtk_container_add (box, label);
+			GTK.gtk_widget_show (label);
+		}
+
 		GTK.gtk_label_set_line_wrap (label, true);
 		GTK.gtk_label_set_justify (label, GTK.GTK_JUSTIFY_CENTER);
 		GTK.gtk_file_chooser_set_extra_widget (handle, box);

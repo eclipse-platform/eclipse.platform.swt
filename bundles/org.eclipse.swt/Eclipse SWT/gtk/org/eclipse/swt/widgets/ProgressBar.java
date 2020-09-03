@@ -91,7 +91,13 @@ void createHandle (int index) {
 	gtk_widget_set_has_surface_or_window (fixedHandle, true);
 	handle = GTK.gtk_progress_bar_new ();
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
-	GTK.gtk_container_add (fixedHandle, handle);
+
+	if (GTK.GTK4) {
+		OS.swt_fixed_add(fixedHandle, handle);
+	} else {
+		GTK.gtk_container_add (fixedHandle, handle);
+	}
+
 	int orientation = (style & SWT.VERTICAL) != 0 ? GTK.GTK_PROGRESS_BOTTOM_TO_TOP : GTK.GTK_PROGRESS_LEFT_TO_RIGHT;
 	gtk_orientable_set_orientation (handle, orientation);
 	if ((style & SWT.INDETERMINATE) != 0) {

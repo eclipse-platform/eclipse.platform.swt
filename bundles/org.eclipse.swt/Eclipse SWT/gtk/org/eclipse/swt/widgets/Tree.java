@@ -810,8 +810,14 @@ void createHandle (int index) {
 		OS.g_object_ref (checkRenderer);
 	}
 	createColumn (null, 0);
-	GTK.gtk_container_add (fixedHandle, scrolledHandle);
-	GTK.gtk_container_add (scrolledHandle, handle);
+
+	if (GTK.GTK4) {
+		OS.swt_fixed_add(fixedHandle, scrolledHandle);
+		GTK.gtk_scrolled_window_set_child(scrolledHandle, handle);
+	} else {
+		GTK.gtk_container_add (fixedHandle, scrolledHandle);
+		GTK.gtk_container_add (scrolledHandle, handle);
+	}
 
 	int mode = (style & SWT.MULTI) != 0 ? GTK.GTK_SELECTION_MULTIPLE : GTK.GTK_SELECTION_BROWSE;
 	long selectionHandle = GTK.gtk_tree_view_get_selection (handle);
@@ -867,10 +873,20 @@ void createItem (TreeColumn column, int index) {
 	if (labelHandle == 0) error (SWT.ERROR_NO_HANDLES);
 	long imageHandle = GTK.gtk_image_new ();
 	if (imageHandle == 0) error (SWT.ERROR_NO_HANDLES);
-	GTK.gtk_container_add (boxHandle, imageHandle);
-	GTK.gtk_container_add (boxHandle, labelHandle);
-	GTK.gtk_widget_show (boxHandle);
-	GTK.gtk_widget_show (labelHandle);
+
+	if (GTK.GTK4) {
+		GTK.gtk_box_append(boxHandle, imageHandle);
+		GTK.gtk_box_append(boxHandle, labelHandle);
+
+		GTK.gtk_widget_hide(imageHandle);
+	} else {
+		GTK.gtk_container_add (boxHandle, imageHandle);
+		GTK.gtk_container_add (boxHandle, labelHandle);
+
+		GTK.gtk_widget_show (boxHandle);
+		GTK.gtk_widget_show (labelHandle);
+	}
+
 	column.labelHandle = labelHandle;
 	column.imageHandle = imageHandle;
 	GTK.gtk_tree_view_column_set_widget (column.handle, boxHandle);

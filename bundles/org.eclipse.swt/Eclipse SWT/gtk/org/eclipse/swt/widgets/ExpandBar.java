@@ -147,14 +147,25 @@ void createHandle (int index) {
 		}
 		if (scrolledHandle == 0) error (SWT.ERROR_NO_HANDLES);
 		GTK.gtk_scrolled_window_set_policy (scrolledHandle, GTK.GTK_POLICY_NEVER, GTK.GTK_POLICY_AUTOMATIC);
-		GTK.gtk_container_add (fixedHandle, scrolledHandle);
-		GTK.gtk_container_add(scrolledHandle, handle);
+
+		if (GTK.GTK4) {
+			OS.swt_fixed_add(fixedHandle, scrolledHandle);
+			GTK.gtk_scrolled_window_set_child(scrolledHandle, handle);
+		} else {
+			GTK.gtk_container_add (fixedHandle, scrolledHandle);
+			GTK.gtk_container_add(scrolledHandle, handle);
+		}
+
 		if (!GTK.GTK4) {
 			long viewport = GTK.gtk_bin_get_child (scrolledHandle);
 			GTK.gtk_viewport_set_shadow_type (viewport, GTK.GTK_SHADOW_NONE);
 		}
 	} else {
-		GTK.gtk_container_add (fixedHandle, handle);
+		if (GTK.GTK4) {
+			OS.swt_fixed_add(fixedHandle, handle);
+		} else {
+			GTK.gtk_container_add (fixedHandle, handle);
+		}
 	}
 	gtk_container_set_border_width (handle, 0);
 	// In GTK 3 font description is inherited from parent widget which is not how SWT has always worked,

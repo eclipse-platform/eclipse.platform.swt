@@ -353,7 +353,7 @@ void createHandle (int index) {
 		default:
 			handle = GTK.gtk_button_new ();
 			if (handle == 0) error (SWT.ERROR_NO_HANDLES);
-			GTK.gtk_widget_set_can_default (handle, true);
+			if (!GTK.GTK4) GTK.gtk_widget_set_can_default (handle, true);
 			break;
 	}
 	if ((style & SWT.ARROW) != 0) {
@@ -367,15 +367,27 @@ void createHandle (int index) {
 		if (labelHandle == 0) error (SWT.ERROR_NO_HANDLES);
 		imageHandle = GTK.gtk_image_new ();
 		if (imageHandle == 0) error (SWT.ERROR_NO_HANDLES);
-		GTK.gtk_container_add (handle, boxHandle);
-		GTK.gtk_container_add (boxHandle, imageHandle);
-		GTK.gtk_container_add (boxHandle, labelHandle);
+
+		if (GTK.GTK4) {
+			GTK.gtk_button_set_child(handle, boxHandle);
+			GTK.gtk_box_append(boxHandle, imageHandle);
+			GTK.gtk_box_append(boxHandle, labelHandle);
+		} else {
+			GTK.gtk_container_add (handle, boxHandle);
+			GTK.gtk_container_add (boxHandle, imageHandle);
+			GTK.gtk_container_add (boxHandle, labelHandle);
+		}
+
 		if ((style & SWT.WRAP) != 0) {
 			GTK.gtk_label_set_line_wrap (labelHandle, true);
 			GTK.gtk_label_set_line_wrap_mode (labelHandle, OS.PANGO_WRAP_WORD_CHAR);
 		}
 	}
-	GTK.gtk_container_add (fixedHandle, handle);
+	if (GTK.GTK4) {
+		OS.swt_fixed_add(fixedHandle, handle);
+	} else {
+		GTK.gtk_container_add (fixedHandle, handle);
+	}
 
 	if ((style & SWT.ARROW) != 0) return;
 	// In GTK 3 font description is inherited from parent widget which is not how SWT has always worked,

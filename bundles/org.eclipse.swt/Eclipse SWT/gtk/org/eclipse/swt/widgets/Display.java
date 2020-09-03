@@ -5491,8 +5491,13 @@ void showIMWindow (Control control) {
 		if (preeditWindow == 0) error (SWT.ERROR_NO_HANDLES);
 		preeditLabel = GTK.gtk_label_new (null);
 		if (preeditLabel == 0) error (SWT.ERROR_NO_HANDLES);
-		GTK.gtk_container_add (preeditWindow, preeditLabel);
-		GTK.gtk_widget_show (preeditLabel);
+
+		if (GTK.GTK4) {
+			GTK.gtk_window_set_child(preeditWindow, preeditLabel);
+		} else {
+			GTK.gtk_container_add (preeditWindow, preeditLabel);
+			GTK.gtk_widget_show (preeditLabel);
+		}
 	}
 	long [] preeditString = new long [1];
 	long [] pangoAttrs = new long [1];

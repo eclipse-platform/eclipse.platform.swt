@@ -446,10 +446,14 @@ void createHandle (int index) {
 		} else {
 			handle = GTK.gtk_menu_bar_new ();
 		}
-
 		if (handle == 0) error (SWT.ERROR_NO_HANDLES);
+
 		long vboxHandle = parent.vboxHandle;
-		GTK.gtk_container_add (vboxHandle, handle);
+		if (GTK.GTK4) {
+			GTK.gtk_box_append(vboxHandle, handle);
+		} else {
+			GTK.gtk_container_add (vboxHandle, handle);
+		}
 		gtk_box_set_child_packing (vboxHandle, handle, false, true, 0, GTK.GTK_PACK_START);
 	} else {
 		if (GTK.GTK4) {

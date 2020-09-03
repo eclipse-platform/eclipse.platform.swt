@@ -337,7 +337,13 @@ void createHandle (int index, boolean fixed, boolean scrolled) {
 		}
 	}
 	if (scrolled) {
-		if (fixed) GTK.gtk_container_add (fixedHandle, scrolledHandle);
+		if (fixed) {
+			if (GTK.GTK4) {
+				OS.swt_fixed_add(fixedHandle, scrolledHandle);
+			} else {
+				GTK.gtk_container_add (fixedHandle, scrolledHandle);
+			}
+		}
 		if (GTK.GTK4) {
 			GTK.gtk_scrolled_window_set_child(scrolledHandle, handle);
 		} else {

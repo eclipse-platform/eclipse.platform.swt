@@ -256,7 +256,13 @@ void createHandle (int index) {
 	gtk_widget_set_has_surface_or_window (fixedHandle, true);
 	handle = GTK.gtk_notebook_new ();
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
-	GTK.gtk_container_add (fixedHandle, handle);
+
+	if (GTK.GTK4) {
+		OS.swt_fixed_add(fixedHandle, handle);
+	} else {
+		GTK.gtk_container_add (fixedHandle, handle);
+	}
+
 	GTK.gtk_notebook_set_show_tabs (handle, true);
 	GTK.gtk_notebook_set_scrollable (handle, true);
 	if ((style & SWT.BOTTOM) != 0) {
@@ -289,8 +295,15 @@ void createItem (TabItem item, int index) {
 	if (labelHandle == 0) error (SWT.ERROR_NO_HANDLES);
 	long imageHandle = GTK.gtk_image_new ();
 	if (imageHandle == 0) error (SWT.ERROR_NO_HANDLES);
-	GTK.gtk_container_add (boxHandle, imageHandle);
-	GTK.gtk_container_add (boxHandle, labelHandle);
+
+	if (GTK.GTK4) {
+		GTK.gtk_box_append(boxHandle, imageHandle);
+		GTK.gtk_box_append(boxHandle, labelHandle);
+	} else {
+		GTK.gtk_container_add (boxHandle, imageHandle);
+		GTK.gtk_container_add (boxHandle, labelHandle);
+	}
+
 	long pageHandle = OS.g_object_new (display.gtk_fixed_get_type (), 0);
 	if (pageHandle == 0) error (SWT.ERROR_NO_HANDLES);
 	OS.g_signal_handlers_block_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, SWITCH_PAGE);

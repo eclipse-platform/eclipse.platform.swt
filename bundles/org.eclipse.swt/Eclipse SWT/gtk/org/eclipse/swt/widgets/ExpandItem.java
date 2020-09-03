@@ -130,15 +130,26 @@ void createHandle (int index) {
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 	clientHandle = OS.g_object_new (display.gtk_fixed_get_type (), 0);
 	if (clientHandle == 0) error (SWT.ERROR_NO_HANDLES);
-	GTK.gtk_container_add (handle, clientHandle);
+	if (GTK.GTK4) {
+		GTK.gtk_expander_set_child(handle, clientHandle);
+	} else {
+		GTK.gtk_container_add (handle, clientHandle);
+	}
 	boxHandle = gtk_box_new (GTK.GTK_ORIENTATION_HORIZONTAL, false, 4);
 	if (boxHandle == 0) error (SWT.ERROR_NO_HANDLES);
 	labelHandle = GTK.gtk_label_new (null);
 	if (labelHandle == 0) error (SWT.ERROR_NO_HANDLES);
 	imageHandle = GTK.gtk_image_new ();
 	if (imageHandle == 0) error (SWT.ERROR_NO_HANDLES);
-	GTK.gtk_container_add (boxHandle, imageHandle);
-	GTK.gtk_container_add (boxHandle, labelHandle);
+
+	if (GTK.GTK4) {
+		GTK.gtk_box_append(boxHandle, imageHandle);
+		GTK.gtk_box_append(boxHandle, labelHandle);
+	} else {
+		GTK.gtk_container_add (boxHandle, imageHandle);
+		GTK.gtk_container_add (boxHandle, labelHandle);
+	}
+
 	GTK.gtk_expander_set_label_widget (handle, boxHandle);
 	GTK.gtk_widget_set_can_focus (handle, true);
 }
@@ -676,6 +687,10 @@ public void setText (String string) {
 }
 
 void showWidget (int index) {
+	if (GTK.GTK4) {
+		GTK.gtk_box_append(parent.handle, handle);
+		gtk_box_set_child_packing (parent.handle, handle, false, false, 0, GTK.GTK_PACK_START);
+	} else {
 		GTK.gtk_widget_show (handle);
 		GTK.gtk_widget_show (clientHandle);
 		if (labelHandle != 0)
@@ -684,6 +699,7 @@ void showWidget (int index) {
 			GTK.gtk_widget_show (boxHandle);
 		GTK.gtk_container_add (parent.handle, handle);
 		gtk_box_set_child_packing (parent.handle, handle, false, false, 0, GTK.GTK_PACK_START);
+	}
 }
 
 @Override

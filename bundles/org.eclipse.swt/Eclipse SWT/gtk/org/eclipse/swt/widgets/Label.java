@@ -258,8 +258,8 @@ void createHandle (int index) {
 		imageHandle = GTK.gtk_image_new ();
 		if (imageHandle == 0) error (SWT.ERROR_NO_HANDLES);
 		if (GTK.GTK4) {
-			GTK.gtk_container_add (handle, labelHandle);
-			GTK.gtk_container_add (handle, imageHandle);
+			GTK.gtk_box_append(handle, labelHandle);
+			GTK.gtk_box_append(handle, imageHandle);
 			gtk_box_set_child_packing(handle, labelHandle, true, true, 0, GTK.GTK_PACK_START);
 			gtk_box_set_child_packing(handle, imageHandle, true, true, 0, GTK.GTK_PACK_START);
 		} else {
@@ -273,11 +273,20 @@ void createHandle (int index) {
 	if ((style & SWT.BORDER) != 0) {
 		frameHandle = GTK.gtk_frame_new (null);
 		if (frameHandle == 0) error (SWT.ERROR_NO_HANDLES);
-		GTK.gtk_container_add (fixedHandle, frameHandle);
-		GTK.gtk_container_add (frameHandle, handle);
-		if (!GTK.GTK4) GTK.gtk_frame_set_shadow_type (frameHandle, GTK.GTK_SHADOW_ETCHED_IN);
+		if (GTK.GTK4) {
+			OS.swt_fixed_add(fixedHandle, frameHandle);
+			GTK.gtk_frame_set_child(frameHandle, handle);
+		} else {
+			GTK.gtk_container_add (fixedHandle, frameHandle);
+			GTK.gtk_container_add (frameHandle, handle);
+			GTK.gtk_frame_set_shadow_type (frameHandle, GTK.GTK_SHADOW_ETCHED_IN);
+		}
 	} else {
-		GTK.gtk_container_add (fixedHandle, handle);
+		if (GTK.GTK4) {
+			OS.swt_fixed_add(fixedHandle, handle);
+		} else {
+			GTK.gtk_container_add (fixedHandle, handle);
+		}
 	}
 	if ((style & SWT.SEPARATOR) != 0) return;
 	if ((style & SWT.WRAP) != 0) {

@@ -221,7 +221,13 @@ void createHandle (int index) {
 			handle = GTK.gtk_entry_new ();
 		}
 		if (handle == 0) error (SWT.ERROR_NO_HANDLES);
-		GTK.gtk_container_add (fixedHandle, handle);
+
+		if (GTK.GTK4) {
+			OS.swt_fixed_add(fixedHandle, handle);
+		} else {
+			GTK.gtk_container_add (fixedHandle, handle);
+		}
+
 		GTK.gtk_editable_set_editable (handle, (style & SWT.READ_ONLY) == 0);
 		/*
 		 * We need to handle borders differently in GTK3.20+. GtkEntry without frame will have a blank background color.
@@ -252,8 +258,15 @@ void createHandle (int index) {
 		if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 		bufferHandle = GTK.gtk_text_view_get_buffer (handle);
 		if (bufferHandle == 0) error (SWT.ERROR_NO_HANDLES);
-		GTK.gtk_container_add (fixedHandle, scrolledHandle);
-		GTK.gtk_container_add (scrolledHandle, handle);
+
+		if (GTK.GTK4) {
+			OS.swt_fixed_add(fixedHandle, scrolledHandle);
+			GTK.gtk_scrolled_window_set_child(scrolledHandle, handle);
+		} else {
+			GTK.gtk_container_add (fixedHandle, scrolledHandle);
+			GTK.gtk_container_add (scrolledHandle, handle);
+		}
+
 		GTK.gtk_text_view_set_editable (handle, (style & SWT.READ_ONLY) == 0);
 		if ((style & SWT.WRAP) != 0) GTK.gtk_text_view_set_wrap_mode (handle, GTK.GTK_WRAP_WORD_CHAR);
 		int hsp = (style & SWT.H_SCROLL) != 0 ? GTK.GTK_POLICY_ALWAYS : GTK.GTK_POLICY_NEVER;

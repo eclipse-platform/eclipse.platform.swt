@@ -139,7 +139,13 @@ void createHandle (int index) {
 		handle = GTK.gtk_scale_new (GTK.GTK_ORIENTATION_VERTICAL, hAdjustment);
 	}
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
-	GTK.gtk_container_add (fixedHandle, handle);
+
+	if (GTK.GTK4) {
+		OS.swt_fixed_add(fixedHandle, handle);
+	} else {
+		GTK.gtk_container_add (fixedHandle, handle);
+	}
+
 	GTK.gtk_scale_set_digits (handle, 0);
 	GTK.gtk_scale_set_draw_value (handle, false);
 }

@@ -226,8 +226,14 @@ void createHandle (int index) {
 	GTK.gtk_tree_view_column_add_attribute (columnHandle, textRenderer, OS.text, TEXT_COLUMN);
 	GTK.gtk_tree_view_column_set_min_width (columnHandle, 0);
 	GTK.gtk_tree_view_insert_column (handle, columnHandle, index);
-	GTK.gtk_container_add (fixedHandle, scrolledHandle);
-	GTK.gtk_container_add (scrolledHandle, handle);
+
+	if (GTK.GTK4) {
+		OS.swt_fixed_add(fixedHandle, scrolledHandle);
+		GTK.gtk_scrolled_window_set_child(scrolledHandle, handle);
+	} else {
+		GTK.gtk_container_add (fixedHandle, scrolledHandle);
+		GTK.gtk_container_add (scrolledHandle, handle);
+	}
 
 	int mode = (style & SWT.MULTI) != 0 ? GTK.GTK_SELECTION_MULTIPLE : GTK.GTK_SELECTION_BROWSE;
 	long selectionHandle = GTK.gtk_tree_view_get_selection (handle);

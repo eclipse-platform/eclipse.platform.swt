@@ -137,7 +137,12 @@ void createHandle (int index) {
 	}
 
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
-	GTK.gtk_container_add (fixedHandle, handle);
+
+	if (GTK.GTK4) {
+		OS.swt_fixed_add(fixedHandle, handle);
+	} else {
+		GTK.gtk_container_add (fixedHandle, handle);
+	}
 
 	/*
 	* Bug in GTK.  GTK will segment fault if gtk_widget_reparent() is called
