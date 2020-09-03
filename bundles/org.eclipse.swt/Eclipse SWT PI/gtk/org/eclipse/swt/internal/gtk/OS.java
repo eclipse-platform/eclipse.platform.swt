@@ -348,6 +348,7 @@ public class OS extends C {
 	public static final byte[] show = ascii("show");
 	public static final byte[] show_help = ascii("show-help");
 	public static final byte[] size_allocate = ascii("size-allocate");
+	public static final byte[] resize = ascii("resize");
 	public static final byte[] start_interactive_search = ascii("start-interactive-search");
 	public static final byte[] style_updated = ascii("style-updated");
 	public static final byte[] switch_page = ascii("switch-page");

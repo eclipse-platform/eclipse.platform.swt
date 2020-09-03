@@ -704,13 +704,20 @@ enum {
    PROP_VSCROLL_POLICY,
 };
 
+enum {
+  RESIZE,
+  LAST_SIGNAL
+};
+
+static guint signals[LAST_SIGNAL];
+
 static void swt_fixed_get_property (GObject *object, guint prop_id, GValue *value, GParamSpec *pspec);
 static void swt_fixed_set_property (GObject *object, guint prop_id, const GValue *value, GParamSpec *pspec);
 static void swt_fixed_finalize (GObject *object);
 static void swt_fixed_map (GtkWidget *widget);
 static void swt_fixed_measure (GtkWidget *widget, GtkOrientation  orientation, int for_size, int *minimum,
 		int *natural, int *minimum_baseline, int *natural_baseline);
-static void swt_fixed_size_allocate (GtkWidget *widget, const GtkAllocation *allocation, int baseline);
+static void swt_fixed_size_allocate (GtkWidget *widget, int width, int height, int baseline);
 
 G_DEFINE_TYPE_WITH_CODE (SwtFixed, swt_fixed, GTK_TYPE_WIDGET,
 		G_IMPLEMENT_INTERFACE (GTK_TYPE_SCROLLABLE, NULL)
@@ -725,7 +732,7 @@ static void swt_fixed_class_init (SwtFixedClass *class) {
 	gobject_class->get_property = swt_fixed_get_property;
 	gobject_class->finalize = swt_fixed_finalize;
 
-	/* Scrollable implemetation */
+	/* Scrollable implementation */
 	g_object_class_override_property (gobject_class, PROP_HADJUSTMENT,    "hadjustment");
 	g_object_class_override_property (gobject_class, PROP_VADJUSTMENT,    "vadjustment");
 	g_object_class_override_property (gobject_class, PROP_HSCROLL_POLICY, "hscroll-policy");
@@ -735,6 +742,13 @@ static void swt_fixed_class_init (SwtFixedClass *class) {
 	widget_class->map = swt_fixed_map;
 	widget_class->measure = swt_fixed_measure;
 	widget_class->size_allocate = swt_fixed_size_allocate;
+
+	signals[RESIZE] = g_signal_new(
+			"resize",
+			G_TYPE_FROM_CLASS (class),
+			G_SIGNAL_RUN_LAST,
+			0, NULL, NULL, NULL,
+	        G_TYPE_NONE, 2, G_TYPE_INT, G_TYPE_INT);
 }
 
 void swt_fixed_restack (SwtFixed *fixed, GtkWidget *widget, GtkWidget *sibling, gboolean above) {
@@ -771,17 +785,6 @@ void swt_fixed_restack (SwtFixed *fixed, GtkWidget *widget, GtkWidget *sibling, 
 		list = above ? priv->children : NULL;
 	}
 	priv->children = g_list_insert_before (priv->children, list, child);
-
-	/*
-	{
-	GdkWindow *sibling_window = NULL;
-	if (list) {
-		child = list->data;
-		sibling_window = gtk_widget_get_window (child);
-	}
-	gdk_window_restack (gtk_widget_get_window (widget), sibling_window, above);
-	}
-	*/
 }
 
 static void swt_fixed_init (SwtFixed *widget) {
@@ -908,51 +911,37 @@ static void swt_fixed_measure (GtkWidget *widget, GtkOrientation  orientation, i
 	return;
 }
 
-static void swt_fixed_size_allocate (GtkWidget *widget, const GtkAllocation *allocation, int baseline) {
+static void swt_fixed_size_allocate (GtkWidget *widget, int width, int height, int baseline) {
+	g_signal_emit (widget, signals[RESIZE], 0, width, height);
+
 	SwtFixed *fixed = SWT_FIXED (widget);
 	SwtFixedPrivate *priv = fixed->priv;
-	GList *list;
-	GtkAllocation child_allocation;
-	GtkRequisition requisition;
-	gint w, h;
-
-	GtkNative* native = gtk_widget_get_native(widget);
-	if (native != NULL) {
-		if (gtk_widget_get_realized (widget)) {
-			//TODO: GTK4 no surface_resize need to use respective present functions to position
-	    }
-	}
-
-	list = priv->children;
+	GList* list = priv->children;
 
 	while (list) {
 		SwtFixedChild *child_data = list->data;
 		GtkWidget *child = child_data->widget;
-		list = list->next;
 
+		GtkAllocation child_allocation;
 		child_allocation.x = child_data->x;
 		child_allocation.y = child_data->y;
-		if (native == NULL) {
-          child_allocation.x += allocation->x;
-          child_allocation.y += allocation->y;
-        }
 
-		w = child_data->width;
-		h = child_data->height;
+		int w = child_data->width;
+		int h = child_data->height;
 		if (w == -1 || h == -1) {
+			GtkRequisition requisition;
 			gtk_widget_get_preferred_size (child, &requisition, NULL);
 			if (w == -1) w = requisition.width;
 			if (h == -1) h = requisition.height;
 		}
-		// Feature in GTK: gtk_widget_preferred_size() has to be called before
-		// gtk_widget_size_allocate otherwise a warning is thrown. See Bug 486068.
-		gtk_widget_get_preferred_size (child, &requisition, NULL);
 
 		child_allocation.width = w;
 		child_allocation.height = h;
 
 		gtk_widget_size_allocate (child, &child_allocation, -1);
-    }
+
+		list = list->next;
+	}
 }
 
 void swt_fixed_move (SwtFixed *fixed, GtkWidget *widget, gint x, gint y) {

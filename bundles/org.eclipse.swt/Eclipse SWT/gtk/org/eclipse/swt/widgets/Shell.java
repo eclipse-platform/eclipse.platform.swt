@@ -937,10 +937,7 @@ void hookEvents () {
 		GTK.gtk_widget_realize(shellHandle);
 		long gdkSurface = gtk_widget_get_surface (shellHandle);
 		OS.g_signal_connect (gdkSurface, OS.notify_state, display.notifyProc, shellHandle);
-		/* TODO: GTK4
-		 * The ::size-allocate signal has been removed, since it is easy to misuse.
-		 * If you need to learn about sizing changes of custom drawing widgets, use the “resize” or “resize” signals.
-		 * */
+		OS.g_signal_connect(handle, OS.resize, display.resizeProc, 0);
 	} else {
 		OS.g_signal_connect_closure_by_id (shellHandle, display.signalIds [WINDOW_STATE_EVENT], 0, display.getClosure (WINDOW_STATE_EVENT), false);
 		OS.g_signal_connect_closure_by_id (shellHandle, display.signalIds [CONFIGURE_EVENT], 0, display.getClosure (CONFIGURE_EVENT), false);
