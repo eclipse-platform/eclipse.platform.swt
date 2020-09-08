@@ -116,6 +116,7 @@ public double getAverageCharacterWidth() {
  * @return the average character width of the font
  * @deprecated Use getAverageCharacterWidth() instead
  */
+@Deprecated
 public int getAverageCharWidth() {
 	return DPIUtil.autoScaleDown(handle.tmAveCharWidth);
 }
