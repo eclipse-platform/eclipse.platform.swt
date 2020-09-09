@@ -612,12 +612,18 @@ Point computeSizeInPixels (int wHint, int hHint, boolean changed) {
 	 * In GTK 3, computeNativeSize(..) sometimes just returns the header
 	 * height as height. In that case, calculate the tree height based on
 	 * the number of items at the root of the tree.
-	 * FIXME: This calculation neglects children of expanded tree items.
-	 * When fixing that, be careful not to use getItems (), since that
-	 * would realize too many VIRTUAL TreeItems (similar to bug 490203).
 	 */
 	if (hHint == SWT.DEFAULT && size.y == getHeaderHeight()) {
-		size.y = getItemCount() * getItemHeightInPixels() + getHeaderHeight();
+		int itemHeight = getItemHeightInPixels();
+
+		// Initialize to height of root items & header
+		size.y = getItemCount() * itemHeight + getHeaderHeight();
+
+		for (TreeItem item : items) {
+			if (item != null && item.isExpanded) {
+				size.y += GTK.gtk_tree_model_iter_n_children (modelHandle, item.handle) * itemHeight;
+			}
+		}
 	}
 
 	Rectangle trim = computeTrimInPixels (0, 0, size.x, size.y);
