@@ -153,6 +153,10 @@ public class GDBus {
 		}
 
 		if (appName != null) {
+			// GDBus allows alphanumeric characters, underscores and hyphens.
+			// https://gitlab.gnome.org/GNOME/glib/blob/master/gio/gdbusutils.c
+			// Replace invalid GDBus characters with hyphens.
+			appName = appName.replaceAll("[^0-9A-Za-z_.\\-]", "-");
 			serviceName += "." + appName;
 		}
 
