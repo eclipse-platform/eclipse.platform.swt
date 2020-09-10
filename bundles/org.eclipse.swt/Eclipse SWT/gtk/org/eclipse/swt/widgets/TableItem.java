@@ -423,7 +423,7 @@ Rectangle getBoundsInPixels (int index) {
 	if (GTK.GTK4) {
 		GTK.gtk_tree_view_column_cell_get_size(column, null, null, columnWidth, columnHeight);
 	} else {
-		GTK.gtk_tree_view_column_cell_get_size (column, null, null, null, columnWidth, columnHeight);
+		GTK.gtk_tree_view_column_cell_get_size(column, null, null, null, columnWidth, columnHeight);
 	}
 	parent.ignoreSize = false;
 	rect.height = columnHeight [0];

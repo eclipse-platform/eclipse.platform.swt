@@ -547,36 +547,38 @@ public int getItemHeight () {
 	return DPIUtil.autoScaleDown(getItemHeightInPixels());
 }
 
-int getItemHeightInPixels () {
+int getItemHeightInPixels() {
 	checkWidget();
-	int itemCount = GTK.gtk_tree_model_iter_n_children (modelHandle, 0);
-	long column = GTK.gtk_tree_view_get_column (handle, 0);
+	int height = 0;
+	int itemCount = GTK.gtk_tree_model_iter_n_children(modelHandle, 0);
 
-	int height;
-	int [] w = new int [1], h = new int [1];
-
+	long column = GTK.gtk_tree_view_get_column(handle, 0);
+	int[] h = new int[1];
 	if (itemCount == 0) {
 		if (GTK.GTK4) {
-			GTK.gtk_tree_view_column_cell_get_size(column, null, null, w, h);
+			GTK.gtk_tree_view_column_cell_get_size(column, null, null, null, h);
 		} else {
-			GTK.gtk_tree_view_column_cell_get_size (column, null, null, null, w, h);
+			GTK.gtk_tree_view_column_cell_get_size(column, null, null, null, null, h);
+		}
+	} else {
+		long iter = OS.g_malloc(GTK.GtkTreeIter_sizeof());
+
+		GTK.gtk_tree_model_get_iter_first(modelHandle, iter);
+		GTK.gtk_tree_view_column_cell_set_cell_data(column, modelHandle, iter, false, false);
+		if (GTK.GTK4) {
+			GTK.gtk_tree_view_column_cell_get_size(column, null, null, null, h);
+		} else {
+			GTK.gtk_tree_view_column_cell_get_size(column, null, null, null, null, h);
 		}
 
-		height = h[0];
-	} else {
-		long iter = OS.g_malloc (GTK.GtkTreeIter_sizeof ());
-		GTK.gtk_tree_model_get_iter_first (modelHandle, iter);
-		GTK.gtk_tree_view_column_cell_set_cell_data (column, modelHandle, iter, false, false);
-		GTK.gtk_tree_view_column_cell_get_size (column, null, null, null, w, h);
-		height = h[0];
-
-		OS.g_free (iter);
+		OS.g_free(iter);
 	}
+	height = h[0];
 
-	long textRenderer = getTextRenderer (column);
-	int [] ypad = new int[1];
+	long textRenderer = getTextRenderer(column);
+	int[] ypad = new int[1];
 	if (textRenderer != 0) GTK.gtk_cell_renderer_get_padding(textRenderer, null, ypad);
-	height += ypad [0];
+	height += ypad[0];
 
 	return height;
 }
