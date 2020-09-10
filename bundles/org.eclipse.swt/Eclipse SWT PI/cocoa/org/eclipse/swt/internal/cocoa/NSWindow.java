@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2019 IBM Corporation and others.
+ * Copyright (c) 2000, 2021 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -201,6 +201,12 @@ public void makeKeyAndOrderFront(id sender) {
 	OS.objc_msgSend(this.id, OS.sel_makeKeyAndOrderFront_, sender != null ? sender.id : 0);
 }
 
+public NSSize maxSize() {
+	NSSize result = new NSSize();
+	OS.objc_msgSend_stret(result, this.id, OS.sel_maxSize);
+	return result;
+}
+
 public static double minFrameWidthWithTitle(NSString aTitle, long aStyle) {
 	return OS.objc_msgSend_fpret(OS.class_NSWindow, OS.sel_minFrameWidthWithTitle_styleMask_, aTitle != null ? aTitle.id : 0, aStyle);
 }
@@ -309,6 +315,10 @@ public void setHidesOnDeactivate(boolean hidesOnDeactivate) {
 
 public void setLevel(long level) {
 	OS.objc_msgSend(this.id, OS.sel_setLevel_, level);
+}
+
+public void setMaxSize(NSSize maxSize) {
+	OS.objc_msgSend(this.id, OS.sel_setMaxSize_, maxSize);
 }
 
 public void setMinSize(NSSize minSize) {

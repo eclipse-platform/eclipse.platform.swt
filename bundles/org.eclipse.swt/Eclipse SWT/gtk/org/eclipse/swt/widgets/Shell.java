@@ -125,7 +125,7 @@ public class Shell extends Decorations {
 	long shellHandle, tooltipsHandle, tooltipWindow, group, modalGroup;
 	boolean mapped, moved, resized, opened, fullScreen, showWithParent, modified, center;
 	int oldX, oldY, oldWidth, oldHeight;
-	int minWidth, minHeight;
+	GdkGeometry geometry;
 	Control lastActive;
 	ToolTip [] toolTips;
 	boolean ignoreFocusOut, ignoreFocusIn;
@@ -286,6 +286,7 @@ Shell (Display display, Shell parent, int style, long handle, boolean embedded) 
 			state |= FOREIGN_HANDLE;
 		}
 	}
+	this.geometry = new GdkGeometry();
 	reskinWidget();
 	createWidget (0);
 }
@@ -1272,8 +1273,36 @@ public Point getMinimumSize () {
 
 Point getMinimumSizeInPixels () {
 	checkWidget ();
-	int width = Math.max (1, minWidth + trimWidth ());
-	int height = Math.max (1, minHeight + trimHeight ());
+	int width = Math.max (1, geometry.min_width + trimWidth ());
+	int height = Math.max (1, geometry.min_height + trimHeight ());
+	return new Point (width, height);
+}
+
+/**
+ * Returns a point describing the maximum receiver's size. The
+ * x coordinate of the result is the maximum width of the receiver.
+ * The y coordinate of the result is the maximum height of the
+ * receiver.
+ *
+ * @return the receiver's size
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @since 3.116
+ */
+public Point getMaximumSize () {
+	checkWidget ();
+	return DPIUtil.autoScaleDown (getMaximumSizeInPixels ());
+}
+
+Point getMaximumSizeInPixels () {
+	checkWidget ();
+
+	int width = Math.min (Integer.MAX_VALUE, geometry.max_width + trimWidth ());
+	int height = Math.min (Integer.MAX_VALUE, geometry.max_height + trimHeight ());
 	return new Point (width, height);
 }
 
@@ -1654,8 +1683,8 @@ long gtk_motion_notify_event (long widget, long event) {
 				int y = display.resizeBoundsY;
 				int width = display.resizeBoundsWidth;
 				int height = display.resizeBoundsHeight;
-				int newWidth = Math.max(width - dx, Math.max(minWidth, border + border));
-				int newHeight = Math.max(height - dy, Math.max(minHeight, border + border));
+				int newWidth = Math.max(width - dx, Math.max(geometry.min_width, border + border));
+				int newHeight = Math.max(height - dy, Math.max(geometry.min_height, border + border));
 				switch (display.resizeMode) {
 					case SWT.CURSOR_SIZEW:
 						x += width - newWidth;
@@ -1672,24 +1701,24 @@ long gtk_motion_notify_event (long widget, long event) {
 						height = newHeight;
 						break;
 					case SWT.CURSOR_SIZENE:
-						width = Math.max(width + dx, Math.max(minWidth, border + border));
+						width = Math.max(width + dx, Math.max(geometry.min_width, border + border));
 						y += height - newHeight;
 						height = newHeight;
 						break;
 					case SWT.CURSOR_SIZEE:
-						width = Math.max(width + dx, Math.max(minWidth, border + border));
+						width = Math.max(width + dx, Math.max(geometry.min_width, border + border));
 						break;
 					case SWT.CURSOR_SIZESE:
-						width = Math.max(width + dx, Math.max(minWidth, border + border));
-						height = Math.max(height + dy, Math.max(minHeight, border + border));
+						width = Math.max(width + dx, Math.max(geometry.min_width, border + border));
+						height = Math.max(height + dy, Math.max(geometry.min_height, border + border));
 						break;
 					case SWT.CURSOR_SIZES:
-						height = Math.max(height + dy, Math.max(minHeight, border + border));
+						height = Math.max(height + dy, Math.max(geometry.min_height, border + border));
 						break;
 					case SWT.CURSOR_SIZESW:
 						x += width - newWidth;
 						width = newWidth;
-						height = Math.max(height + dy, Math.max(minHeight, border + border));
+						height = Math.max(height + dy, Math.max(geometry.min_height, border + border));
 						break;
 				}
 				if (x != display.resizeBoundsX || y != display.resizeBoundsY) {
@@ -2267,13 +2296,19 @@ int setBounds (int x, int y, int width, int height, boolean move, boolean resize
 		}
 	}
 	if (resize) {
-		width = Math.max (1, Math.max (minWidth, width - trimWidth ()));
-		height = Math.max (1, Math.max (minHeight, height - trimHeight ()));
+		width = Math.max (1, Math.max (geometry.min_width, width - trimWidth ()));
+		if (geometry.max_width > 0) {
+			width = Math.min( width, geometry.max_width);
+		}
+		height = Math.max (1, Math.max (geometry.min_height, height - trimHeight ()));
+		if (geometry.max_height > 0) {
+			height = Math.min(height, geometry.max_height);
+		}
 		/*
 		* If the shell is created without a RESIZE style bit, and the
-		* minWidth/minHeight has been set, allow the resize.
+		* minWidth/minHeight/maxWidth/maxHeight have been set, allow the resize.
 		*/
-		if ((style & SWT.RESIZE) != 0 || (minHeight != 0 || minWidth != 0)) {
+		if ((style & SWT.RESIZE) != 0 || (geometry.min_height != 0 || geometry.min_width != 0 || geometry.max_height != 0 || geometry.max_width != 0)) {
 			if (GTK.GTK4) {
 				GTK.gtk_window_set_default_size(shellHandle, width, height);
 			} else {
@@ -2389,8 +2424,9 @@ public void setEnabled (boolean enabled) {
  * to either the maximized or normal states.
  * <p>
  * Note: The result of intermixing calls to <code>setFullScreen(true)</code>,
- * <code>setMaximized(true)</code> and <code>setMinimized(true)</code> will
- * vary by platform. Typically, the behavior will match the platform user's
+ * <code>setMaximized(true)</code>, <code>setMinimized(true)</code> and
+ * <code>setMaximumSize</code> will vary by platform.
+ * Typically, the behavior will match the platform user's
  * expectations, but not always. This should be avoided if possible.
  * </p>
  *
@@ -2580,10 +2616,13 @@ public void setMinimumSize (int width, int height) {
 
 void setMinimumSizeInPixels (int width, int height) {
 	checkWidget ();
-	GdkGeometry geometry = new GdkGeometry ();
-	minWidth = geometry.min_width = Math.max (width, trimWidth ()) - trimWidth ();
-	minHeight = geometry.min_height = Math.max (height, trimHeight ()) - trimHeight ();
-	GTK.gtk_window_set_geometry_hints (shellHandle, 0, geometry, GDK.GDK_HINT_MIN_SIZE);
+	geometry.min_width = Math.max (width, trimWidth ()) - trimWidth ();
+	geometry.min_height = Math.max (height, trimHeight ()) - trimHeight ();
+	int hint = GDK.GDK_HINT_MIN_SIZE;
+	if (geometry.max_height > 0 || geometry.max_width > 0) {
+		hint = hint | GDK.GDK_HINT_MAX_SIZE;
+	}
+	GTK.gtk_window_set_geometry_hints (shellHandle, 0, geometry, hint);
 }
 
 /**
@@ -2612,6 +2651,75 @@ void setMinimumSizeInPixels (Point size) {
 	checkWidget ();
 	if (size == null) error (SWT.ERROR_NULL_ARGUMENT);
 	setMinimumSizeInPixels (size.x, size.y);
+}
+
+/**
+ * Sets the receiver's maximum size to the size specified by the arguments.
+ * If the new maximum size is smaller than the current size of the receiver,
+ * the receiver is resized to the new maximum size.
+ * <p>
+ * Note: The result of intermixing calls to <code>setMaximumSize</code> and
+ * <code>setFullScreen(true)</code> will vary by platform.
+ * Typically, the behavior will match the platform user's
+ * expectations, but not always. This should be avoided if possible.
+ * </p>
+ * @param width the new maximum width for the receiver
+ * @param height the new maximum height for the receiver
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @since 3.116
+ */
+public void setMaximumSize (int width, int height) {
+	checkWidget ();
+	setMaximumSize (new Point (width, height));
+}
+
+/**
+ * Sets the receiver's maximum size to the size specified by the argument.
+ * If the new maximum size is smaller than the current size of the receiver,
+ * the receiver is resized to the new maximum size.
+ * <p>
+ * Note: The result of intermixing calls to <code>setMaximumSize</code> and
+ * <code>setFullScreen(true)</code> will vary by platform.
+ * Typically, the behavior will match the platform user's
+ * expectations, but not always. This should be avoided if possible.
+ * </p>
+ * @param size the new maximum size for the receiver
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the point is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @since 3.116
+ */
+public void setMaximumSize (Point size) {
+	checkWidget ();
+	setMaximumSizeInPixels (DPIUtil.autoScaleUp (size));
+}
+
+void setMaximumSizeInPixels (Point size) {
+	checkWidget ();
+	if (size == null) error (SWT.ERROR_NULL_ARGUMENT);
+	setMaximumSizeInPixels (size.x, size.y);
+}
+
+void setMaximumSizeInPixels (int width, int height) {
+	checkWidget ();
+	geometry.max_width = Math.max (width, trimWidth ()) - trimWidth ();
+	geometry.max_height = Math.max (height, trimHeight ()) - trimHeight ();
+	int hint = GDK.GDK_HINT_MAX_SIZE;
+	if (geometry.min_width > 0 || geometry.min_height > 0) {
+		hint = hint | GDK.GDK_HINT_MIN_SIZE;
+	}
+	GTK.gtk_window_set_geometry_hints (shellHandle, 0, geometry, hint);
 }
 
 /**
@@ -2809,7 +2917,7 @@ public void setVisible (boolean visible) {
 			if (enableSurface != 0) {
 				int width = GDK.gdk_surface_get_width(enableSurface);
 				int height = GDK.gdk_surface_get_height(enableSurface);
-				long layout = GDK.gdk_toplevel_layout_new(minWidth, minHeight);
+				long layout = GDK.gdk_toplevel_layout_new(geometry.min_width, geometry.min_height);
 				GDK.gdk_toplevel_present(enableSurface, width, height, layout);
 			}
 		} else {

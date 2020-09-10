@@ -651,6 +651,7 @@ public enum Selector {
 	, sel_makeKeyAndOrderFront_("makeKeyAndOrderFront:")
 	, sel_markedRange("markedRange")
 	, sel_markedTextAttributes("markedTextAttributes")
+	, sel_maxSize("maxSize")
 	, sel_maxValue("maxValue")
 	, sel_menu("menu")
 	, sel_menu_willHighlightItem_("menu:willHighlightItem:")

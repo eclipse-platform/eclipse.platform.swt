@@ -1109,6 +1109,28 @@ public boolean getMinimized () {
 }
 
 /**
+ * Returns a point describing the maximum receiver's size. The
+ * x coordinate of the result is the maximum width of the receiver.
+ * The y coordinate of the result is the maximum height of the
+ * receiver.
+ *
+ * @return the receiver's size
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @since 3.116
+ */
+public Point getMaximumSize () {
+	checkWidget();
+	if (window == null) return new Point(0, 0);
+	NSSize size = window.maxSize();
+	return new Point((int)size.width, (int)size.height);
+}
+
+/**
  * Returns a point describing the minimum receiver's size. The
  * x coordinate of the result is the minimum width of the receiver.
  * The y coordinate of the result is the minimum height of the
@@ -1722,8 +1744,9 @@ public void setEnabled (boolean enabled) {
  * to either the maximized or normal states.
  * <p>
  * Note: The result of intermixing calls to <code>setFullScreen(true)</code>,
- * <code>setMaximized(true)</code> and <code>setMinimized(true)</code> will
- * vary by platform. Typically, the behavior will match the platform user's
+ * <code>setMaximized(true)</code>, <code>setMinimized(true)</code> and 
+ * <code>setMaximumSize</code> will vary by platform. 
+ * Typically, the behavior will match the platform user's
  * expectations, but not always. This should be avoided if possible.
  * </p>
  *
@@ -1816,6 +1839,69 @@ public void setMaximized (boolean maximized) {
 	if (window == null) return;
 	if (window.isZoomed () == maximized) return;
 	window.zoom (null);
+}
+
+/**
+ * Sets the receiver's maximum size to the size specified by the arguments.
+ * If the new maximum size is smaller than the current size of the receiver,
+ * the receiver is resized to the new maximum size.
+ * <p>
+ * Note: The result of intermixing calls to <code>setMaximumSize</code> and
+ * <code>setFullScreen(true)</code> will vary by platform. 
+ * Typically, the behavior will match the platform user's
+ * expectations, but not always. This should be avoided if possible.
+ * </p>
+ * @param width the new maximum width for the receiver
+ * @param height the new maximum height for the receiver
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @since 3.116
+ */
+public void setMaximumSize (int width, int height) {
+	checkWidget();
+	if (window == null) return;
+	NSSize size = new NSSize();
+	size.width = width;
+	size.height = height;
+	window.setMaxSize(size);
+	NSRect frame = window.frame();
+	if (width < frame.width || height < frame.height) {
+		width = (int)(width < frame.width ? width : frame.width);
+		height = (int)(height < frame.height ? height : frame.height);
+		setBounds(0, 0, width, height, false, true);
+	}
+}
+
+/**
+ * Sets the receiver's maximum size to the size specified by the argument.
+ * If the new maximum size is smaller than the current size of the receiver,
+ * the receiver is resized to the new maximum size.
+ * <p>
+ * Note: The result of intermixing calls to <code>setMaximumSize</code> and
+ * <code>setFullScreen(true)</code> will vary by platform. 
+ * Typically, the behavior will match the platform user's
+ * expectations, but not always. This should be avoided if possible.
+ * </p>
+ * @param size the new maximum size for the receiver
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the point is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @since 3.116
+ */
+public void setMaximumSize (Point size) {
+	checkWidget();
+	if (size == null) error (SWT.ERROR_NULL_ARGUMENT);
+	setMaximumSize (size.x, size.y);
 }
 
 @Override

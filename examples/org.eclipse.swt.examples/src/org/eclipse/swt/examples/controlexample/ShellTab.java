@@ -341,7 +341,7 @@ class ShellTab extends Tab {
 
 	@Override
 	String[] getMethodNames() {
-		return new String[] {"Alpha", "Bounds", "MinimumSize", "Modified", "Text"};
+		return new String[] {"Alpha", "Bounds", "MinimumSize", "MaximumSize", "Modified", "Text"};
 	}
 
 	@Override

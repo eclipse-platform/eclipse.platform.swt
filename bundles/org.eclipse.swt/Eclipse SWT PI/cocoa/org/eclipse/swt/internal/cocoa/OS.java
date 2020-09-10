@@ -1379,6 +1379,7 @@ public static final long sel_makeFirstResponder_ = Selector.sel_makeFirstRespond
 public static final long sel_makeKeyAndOrderFront_ = Selector.sel_makeKeyAndOrderFront_.value;
 public static final long sel_markedRange = Selector.sel_markedRange.value;
 public static final long sel_markedTextAttributes = Selector.sel_markedTextAttributes.value;
+public static final long sel_maxSize = Selector.sel_maxSize.value;
 public static final long sel_maxValue = Selector.sel_maxValue.value;
 public static final long sel_menu = Selector.sel_menu.value;
 public static final long sel_menu_willHighlightItem_ = Selector.sel_menu_willHighlightItem_.value;

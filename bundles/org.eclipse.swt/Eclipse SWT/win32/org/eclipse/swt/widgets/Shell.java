@@ -124,7 +124,7 @@ public class Shell extends Decorations {
 	Menu activeMenu;
 	ToolTip [] toolTips;
 	long hwndMDIClient, lpstrTip, toolTipHandle, balloonTipHandle, menuItemToolTipHandle;
-	int minWidth = SWT.DEFAULT, minHeight = SWT.DEFAULT;
+	int minWidth = SWT.DEFAULT, minHeight = SWT.DEFAULT, maxWidth = SWT.DEFAULT, maxHeight = SWT.DEFAULT;
 	long [] brushes;
 	boolean showWithParent, fullScreen, wasMaximized, modified, center;
 	String toolTitle, balloonTitle;
@@ -1010,6 +1010,47 @@ public boolean getMaximized () {
 }
 
 /**
+ * Returns a point describing the maximum receiver's size. The
+ * x coordinate of the result is the maximum width of the receiver.
+ * The y coordinate of the result is the maximum height of the
+ * receiver.
+ *
+ * @return the receiver's size
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @since 3.116
+ */
+public Point getMaximumSize () {
+	checkWidget ();
+	return DPIUtil.autoScaleDown(getMaximumSizeInPixels());
+}
+
+Point getMaximumSizeInPixels () {
+	int width = Math.min (Integer.MAX_VALUE, maxWidth);
+	int trim = SWT.TITLE | SWT.CLOSE | SWT.MIN | SWT.MAX;
+	if ((style & SWT.NO_TRIM) == 0 && (style & trim) != 0) {
+		width = Math.min (width, OS.GetSystemMetrics (OS.SM_CXMAXTRACK));
+	}
+	int height = Math.min (Integer.MAX_VALUE, maxHeight);
+	if ((style & SWT.NO_TRIM) == 0 && (style & trim) != 0) {
+		if ((style & SWT.RESIZE) != 0) {
+			height = Math.min (height, OS.GetSystemMetrics (OS.SM_CYMAXTRACK));
+		} else {
+			RECT rect = new RECT ();
+			int bits1 = OS.GetWindowLong (handle, OS.GWL_STYLE);
+			int bits2 = OS.GetWindowLong (handle, OS.GWL_EXSTYLE);
+			OS.AdjustWindowRectEx (rect, bits1, false, bits2);
+			height = Math.min (height, rect.bottom - rect.top);
+		}
+	}
+	return new Point (width,  height);
+}
+
+/**
  * Returns a point describing the minimum receiver's size. The
  * x coordinate of the result is the minimum width of the receiver.
  * The y coordinate of the result is the minimum height of the
@@ -1539,8 +1580,9 @@ public void setEnabled (boolean enabled) {
  * to either the maximized or normal states.
  * <p>
  * Note: The result of intermixing calls to <code>setFullScreen(true)</code>,
- * <code>setMaximized(true)</code> and <code>setMinimized(true)</code> will
- * vary by platform. Typically, the behavior will match the platform user's
+ * <code>setMaximized(true)</code>, <code>setMinimized(true)</code> and 
+ * <code>setMaximumSize</code> will vary by platform. 
+ * Typically, the behavior will match the platform user's
  * expectations, but not always. This should be avoided if possible.
  * </p>
  *
@@ -1644,6 +1686,85 @@ public void setImeInputMode (int mode) {
 		}
 	}
 	OS.ImmReleaseContext (handle, hIMC);
+}
+
+/**
+ * Sets the receiver's maximum size to the size specified by the arguments.
+ * If the new maximum size is smaller than the current size of the receiver,
+ * the receiver is resized to the new maximum size.
+ * <p>
+ * Note: The result of intermixing calls to <code>setMaximumSize</code> and
+ * <code>setFullScreen(true)</code> will vary by platform. 
+ * Typically, the behavior will match the platform user's
+ * expectations, but not always. This should be avoided if possible.
+ * </p>
+ * @param width the new maximum width for the receiver
+ * @param height the new maximum height for the receiver
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @since 3.116
+ */
+public void setMaximumSize (int width, int height) {
+	checkWidget ();
+	setMaximumSizeInPixels(DPIUtil.autoScaleUp(width), DPIUtil.autoScaleUp(height));
+}
+
+/**
+ * Sets the receiver's maximum size to the size specified by the argument.
+ * If the new maximum size is smaller than the current size of the receiver,
+ * the receiver is resized to the new maximum size.
+ * <p>
+ * Note: The result of intermixing calls to <code>setMaximumSize</code> and
+ * <code>setFullScreen(true)</code> will vary by platform. 
+ * Typically, the behavior will match the platform user's
+ * expectations, but not always. This should be avoided if possible.
+ * </p>
+ * @param size the new maximum size for the receiver
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the point is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @since 3.116
+ */
+public void setMaximumSize (Point size) {
+	checkWidget ();
+	if (size == null) error (SWT.ERROR_NULL_ARGUMENT);
+	size = DPIUtil.autoScaleUp(size);
+	setMaximumSizeInPixels(size.x, size.y);
+}
+
+void setMaximumSizeInPixels (int width, int height) {
+	int widthLimit = 0, heightLimit = 0;
+	int trim = SWT.TITLE | SWT.CLOSE | SWT.MIN | SWT.MAX;
+	if ((style & SWT.NO_TRIM) == 0 && (style & trim) != 0) {
+		widthLimit = OS.GetSystemMetrics (OS.SM_CXMAXTRACK);
+		if ((style & SWT.RESIZE) != 0) {
+			heightLimit = OS.GetSystemMetrics (OS.SM_CYMAXTRACK);
+		} else {
+			RECT rect = new RECT ();
+			int bits1 = OS.GetWindowLong (handle, OS.GWL_STYLE);
+			int bits2 = OS.GetWindowLong (handle, OS.GWL_EXSTYLE);
+			OS.AdjustWindowRectEx (rect, bits1, false, bits2);
+			heightLimit = rect.bottom - rect.top;
+		}
+	}
+	maxWidth = Math.min (widthLimit, width);
+	maxHeight = Math.min (heightLimit, height);
+	Point size = getSizeInPixels ();
+	int newWidth = Math.min (size.x, maxWidth);
+	int newHeight = Math.min (size.y, maxHeight);
+	if (maxWidth >= widthLimit) maxWidth = SWT.DEFAULT;
+	if (maxHeight >= heightLimit) maxHeight = SWT.DEFAULT;
+	if (newWidth != size.x || newHeight != size.y) setSizeInPixels (newWidth, newHeight);
 }
 
 /**
@@ -2227,11 +2348,14 @@ LRESULT WM_ENTERIDLE (long wParam, long lParam) {
 LRESULT WM_GETMINMAXINFO (long wParam, long lParam) {
 	LRESULT result = super.WM_GETMINMAXINFO (wParam, lParam);
 	if (result != null) return result;
-	if (minWidth != SWT.DEFAULT || minHeight != SWT.DEFAULT) {
+	if (minWidth != SWT.DEFAULT || minHeight != SWT.DEFAULT
+			|| maxWidth != SWT.DEFAULT || maxHeight != SWT.DEFAULT) {
 		MINMAXINFO info = new MINMAXINFO ();
 		OS.MoveMemory (info, lParam, MINMAXINFO.sizeof);
 		if (minWidth != SWT.DEFAULT) info.ptMinTrackSize_x = minWidth;
 		if (minHeight != SWT.DEFAULT) info.ptMinTrackSize_y = minHeight;
+		if (maxWidth != SWT.DEFAULT) info.ptMaxTrackSize_x = maxWidth;
+		if (maxHeight != SWT.DEFAULT) info.ptMaxTrackSize_y = maxHeight;
 		OS.MoveMemory (lParam, info, MINMAXINFO.sizeof);
 		return LRESULT.ZERO;
 	}

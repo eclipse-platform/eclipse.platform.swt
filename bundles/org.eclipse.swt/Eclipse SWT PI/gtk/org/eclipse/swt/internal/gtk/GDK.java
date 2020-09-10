@@ -102,6 +102,7 @@ public class GDK extends OS {
 	public static final int GDK_GRAVITY_NORTH_WEST = 1;
 	public static final int GDK_Help = 0xFF6A;
 	public static final int GDK_HINT_MIN_SIZE = 1 << 1;
+	public static final int GDK_HINT_MAX_SIZE = 1 << 2;
 	public static final int GDK_Home = 0xff50;
 	public static final int GDK_INPUT_ONLY = 1;
 	public static final int GDK_INTERP_BILINEAR = 0x2;
