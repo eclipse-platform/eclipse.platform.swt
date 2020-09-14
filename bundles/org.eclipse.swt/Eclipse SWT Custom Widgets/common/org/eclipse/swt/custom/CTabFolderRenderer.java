@@ -542,33 +542,21 @@ public class CTabFolderRenderer {
 	protected void dispose() {
 		disposeAntialiasColors();
 		disposeSelectionHighlightGradientColors();
-		if (fillColor != null) {
-			fillColor.dispose();
-			fillColor = null;
-		}
+
+		fillColor = null;
+		minMaxBorderColor = null;
+
 		if (chevronFont != null) {
 			chevronFont.dispose();
 			chevronFont = null;
 		}
-		if (minMaxBorderColor != null) {
-			minMaxBorderColor.dispose();
-			minMaxBorderColor = null;
-		}
 	}
 
 	void disposeAntialiasColors() {
-		if (tabAreaColor != null) tabAreaColor.dispose();
-		if (selectedInnerColor != null) selectedInnerColor.dispose();
-		if (selectedOuterColor != null) selectedOuterColor.dispose();
 		tabAreaColor = selectedInnerColor = selectedOuterColor = null;
 	}
 
 	void disposeSelectionHighlightGradientColors() {
-		if(selectionHighlightGradientColorsCache == null)
-			return;
-		for (Color element : selectionHighlightGradientColorsCache) {
-			element.dispose();
-		}
 		selectionHighlightGradientColorsCache = null;
 	}
 
