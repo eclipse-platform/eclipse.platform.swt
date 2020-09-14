@@ -21,6 +21,9 @@ package org.eclipse.swt.internal.gtk;
  */
 public class GTK extends OS {
 
+	public static final int GTK_VERSION = OS.VERSION(GTK.gtk_get_major_version(), GTK.gtk_get_minor_version(), GTK.gtk_get_micro_version());
+	public static final boolean GTK4 = GTK_VERSION >= OS.VERSION(3, 94, 0);
+
 	/** Constants */
 	public static final int GTK_ACCEL_VISIBLE = 0x1;
 	public static final int GTK_ALIGN_FILL = 0x0; //Gtk3 GtkAlign Enum
@@ -163,7 +166,7 @@ public class GTK extends OS {
 	public static final byte[] gtk_cursor_blink_time = OS.ascii("gtk-cursor-blink-time");
 	public static final byte[] gtk_double_click_time = OS.ascii("gtk-double-click-time");
 	public static final byte[] gtk_entry_select_on_focus = OS.ascii("gtk-entry-select-on-focus");
-	public static final byte[] gtk_style_property_font = OS.ascii("font");
+	public static final byte[] gtk_style_property_font = GTK.GTK4 ? OS.ascii("gtk-font-name") : OS.ascii("font");
 	public static final byte[] gtk_menu_bar_accel = OS.ascii("gtk-menu-bar-accel");
 	public static final byte[] gtk_theme_name = OS.ascii("gtk-theme-name");
 	public static final byte[] gtk_im_module = OS.ascii("gtk-im-module");
@@ -190,9 +193,6 @@ public class GTK extends OS {
 	public static final byte[] GTK_NAMED_ICON_PAN_DOWN = OS.ascii ("pan-down-symbolic");
 	public static final byte[] GTK_NAMED_LABEL_OK = OS.ascii("_OK");
 	public static final byte[] GTK_NAMED_LABEL_CANCEL = OS.ascii("_Cancel");
-
-	public static final int GTK_VERSION = OS.VERSION(GTK.gtk_get_major_version(), GTK.gtk_get_minor_version(), GTK.gtk_get_micro_version());
-	public static final boolean GTK4 = GTK_VERSION >= OS.VERSION(3, 94, 0);
 
 	/** SWT Tools translates TYPE_sizeof() into sizeof(TYPE) at native level. os.c will have a binding to functions auto-generated in os_structs.h */
 	public static final native int GtkAllocation_sizeof();
@@ -1498,12 +1498,9 @@ public class GTK extends OS {
 	 */
 	public static final native void gtk_im_context_set_cursor_location(long context, GdkRectangle area);
 	public static final native long gtk_im_multicontext_new();
+
+	/* GtkImage */
 	public static final native long gtk_image_new();
-	/**
-	 * @param image cast=(GtkImage *)
-	 * @param pixel_size cast=(gint)
-	 */
-	public static final native void gtk_image_set_pixel_size(long image, int pixel_size);
 	/** @param pixbuf cast=(GdkPixbuf *) */
 	public static final native long gtk_image_new_from_pixbuf(long pixbuf);
 	/**
@@ -1513,6 +1510,14 @@ public class GTK extends OS {
 	public static final native void gtk_image_set_from_pixbuf(long image, long pixbuf);
 	/**
 	 * @param image cast=(GtkImage *)
+	 * @param pixel_size cast=(gint)
+	 */
+	public static final native void gtk_image_set_pixel_size(long image, int pixel_size);
+
+	/* GtkImage [GTK3 only] */
+	/**
+	 * @method flags=dynamic
+	 * @param image cast=(GtkImage *)
 	 * @param surface cast=(cairo_surface_t *)
 	 */
 	public static final native void gtk_image_set_from_surface(long image, long surface);
@@ -1521,29 +1526,33 @@ public class GTK extends OS {
 	 * @param icon_name cast=(const gchar *)
 	 * @param size cast=(GtkIconSize)
 	 */
-	/* [GTK3 only] */
 	public static final native long gtk_image_new_from_icon_name(byte[] icon_name, int size);
-	/**
-	 * @method flags=dynamic
-	 * @param icon_name cast=(const gchar *)
-	 */
-	/* [GTK4 only] */
-	public static final native long gtk_image_new_from_icon_name(byte[] icon_name);
 	/**
 	 * @method flags=dynamic
 	 * @param image cast=(GtkImage *)
 	 * @param icon_name cast=(const gchar *)
 	 * @param size cast=(GtkIconSize)
 	 */
-	/* [GTK3 only] */
 	public static final native void gtk_image_set_from_icon_name(long image, byte[] icon_name, int size);
+
+	/* GtkImage [GTK4 only] */
+	/**
+	 * @method flags=dynamic
+	 * @param icon_name cast=(const gchar *)
+	 */
+	public static final native long gtk_image_new_from_icon_name(byte[] icon_name);
 	/**
 	 * @method flags=dynamic
 	 * @param image cast=(GtkImage *)
 	 * @param icon_name cast=(const gchar *)
 	 */
-	/* [GTK4 only] */
 	public static final native void gtk_image_set_from_icon_name(long image, byte[] icon_name);
+	/**
+	 * @method flags=dynamic
+	 * @param image cast=(GtkImage *)
+	 */
+	public static final native void gtk_image_clear(long image);
+
 	/**
 	 * @method flags=dynamic
 	 * @param argc cast=(int *)

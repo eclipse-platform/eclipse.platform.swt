@@ -655,15 +655,20 @@ public void setImage (Image image) {
 	super.setImage (image);
 	if (imageList != null) imageList.dispose ();
 	imageList = null;
+
 	if (image != null) {
-		if (image.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
-		imageList = new ImageList ();
-		imageList.add (image);
-		GTK.gtk_image_set_from_surface(imageHandle, image.surface);
+		if (image.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
+		imageList = new ImageList();
+		int index = imageList.add(image);
+		GTK.gtk_image_set_from_pixbuf(imageHandle, imageList.getPixbuf(index));
 		if (text.length () == 0) GTK.gtk_widget_hide (labelHandle);
 		GTK.gtk_widget_show (imageHandle);
 	} else {
-		GTK.gtk_image_set_from_surface(imageHandle, 0);
+		if (GTK.GTK4) {
+			GTK.gtk_image_clear(imageHandle);
+		} else {
+			GTK.gtk_image_set_from_surface(imageHandle, 0);
+		}
 		GTK.gtk_widget_show (labelHandle);
 		GTK.gtk_widget_hide (imageHandle);
 	}

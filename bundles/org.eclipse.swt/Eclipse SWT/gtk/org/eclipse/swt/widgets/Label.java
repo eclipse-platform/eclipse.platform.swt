@@ -632,12 +632,16 @@ public void setImage (Image image) {
 	imageList = null;
 	if (image != null) {
 		imageList = new ImageList ();
-		imageList.add (image);
-		GTK.gtk_image_set_from_surface(imageHandle, image.surface);
+		int index = imageList.add(image);
+		GTK.gtk_image_set_from_pixbuf(imageHandle, imageList.getPixbuf(index));
 		GTK.gtk_widget_hide (labelHandle);
 		GTK.gtk_widget_show (imageHandle);
 	} else {
-		GTK.gtk_image_set_from_surface(imageHandle, 0);
+		if (GTK.GTK4) {
+			GTK.gtk_image_clear(imageHandle);
+		} else {
+			GTK.gtk_image_set_from_surface(imageHandle, 0);
+		}
 		GTK.gtk_widget_show (labelHandle);
 		GTK.gtk_widget_hide (imageHandle);
 	}

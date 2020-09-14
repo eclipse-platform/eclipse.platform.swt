@@ -180,13 +180,25 @@ public GC(Drawable drawable, int style) {
 	if (drawable == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	GCData data = new GCData();
 	data.style = checkStyle(style);
-	long gdkGC = drawable.internal_new_GC(data);
 	Device device = data.device;
 	if (device == null) device = Device.getDevice();
 	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	this.device = data.device = device;
+
+	long gdkGC = drawable.internal_new_GC(data);
 	init(drawable, data, gdkGC);
 	init();
+}
+
+/**
+ * Ensure that the style specified is either LEFT_TO_RIGHT <b>or</b> RIGHT_TO_LEFT.
+ *
+ * @param style the SWT style bit string
+ * @return If only one style is specified, it is return unmodified. If both styles are specified, returns LEFT_TO_RIGHT
+ */
+int checkStyle(int style) {
+	if ((style & SWT.LEFT_TO_RIGHT) != 0) style &= ~SWT.RIGHT_TO_LEFT;
+	return style & (SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT);
 }
 
 static void addCairoString(long cairo, String string, float x, float y, Font font) {
@@ -202,11 +214,6 @@ static void addCairoString(long cairo, String string, float x, float y, Font fon
 	}
 	OS.pango_cairo_layout_path(cairo, layout);
 	OS.g_object_unref(layout);
-}
-
-static int checkStyle (int style) {
-	if ((style & SWT.LEFT_TO_RIGHT) != 0) style &= ~SWT.RIGHT_TO_LEFT;
-	return style & (SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT);
 }
 
 /**

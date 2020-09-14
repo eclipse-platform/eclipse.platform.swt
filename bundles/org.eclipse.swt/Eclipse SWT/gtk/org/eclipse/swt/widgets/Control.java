@@ -162,23 +162,6 @@ public Control (Composite parent, int style) {
 	createWidget (0);
 }
 
-void connectPaint () {
-	long paintHandle = paintHandle ();
-	if (GTK.GTK4 && hooksPaint()) {
-		long widgetClass = GTK.GTK_WIDGET_GET_CLASS(paintHandle);
-		GtkWidgetClass widgetClassStruct = new GtkWidgetClass ();
-		OS.memmove(widgetClassStruct, widgetClass);
-		widgetClassStruct.snapshot = display.snapshotDrawProc;
-		OS.memmove(widgetClass, widgetClassStruct);
-	} else if (!GTK.GTK4) {
-		int paintMask = GDK.GDK_EXPOSURE_MASK;
-		GTK.gtk_widget_add_events (paintHandle, paintMask);
-		OS.g_signal_connect_closure_by_id (paintHandle, display.signalIds [DRAW], 0, display.getClosure (EXPOSE_EVENT_INVERSE), false);
-		OS.g_signal_connect_closure_by_id (paintHandle, display.signalIds [DRAW], 0, display.getClosure (DRAW), true);
-		OS.g_signal_connect_closure_by_id (paintHandle, display.signalIds [STYLE_UPDATED], 0, display.getClosure (STYLE_UPDATED), false);
-	}
-}
-
 Font defaultFont () {
 	return display.getSystemFont ();
 }
@@ -420,7 +403,7 @@ void hookEvents () {
 	hookKeyboardAndFocusSignals(focusHandle);
 	hookMouseSignals(eventHandle());
 	hookWidgetSignals(focusHandle);
-	connectPaint();
+	hookPaintSignals();
 	connectIMSignals();
 
 	/*Connect gesture signals */
@@ -532,6 +515,25 @@ private void hookWidgetSignals(long focusHandle) {
 		OS.g_signal_connect_closure_by_id(focusHandle, display.signalIds[POPUP_MENU], 0, display.getClosure(POPUP_MENU), false);
 		OS.g_signal_connect_closure_by_id(focusHandle, display.signalIds[SHOW_HELP], 0, display.getClosure(SHOW_HELP), false);
 		OS.g_signal_connect_closure_by_id(focusHandle, display.signalIds[FOCUS], 0, display.getClosure(FOCUS), false);
+	}
+}
+
+private void hookPaintSignals() {
+	long paintHandle = paintHandle();
+
+	if (GTK.GTK4) {
+		long widgetClass = GTK.GTK_WIDGET_GET_CLASS(paintHandle());
+		GtkWidgetClass widgetClassStruct = new GtkWidgetClass();
+
+		OS.memmove(widgetClassStruct, widgetClass);
+		widgetClassStruct.snapshot = display.snapshotDrawProc;
+		OS.memmove(widgetClass, widgetClassStruct);
+	} else {
+		int paintMask = GDK.GDK_EXPOSURE_MASK;
+		GTK.gtk_widget_add_events (paintHandle, paintMask);
+		OS.g_signal_connect_closure_by_id (paintHandle, display.signalIds [DRAW], 0, display.getClosure (EXPOSE_EVENT_INVERSE), false);
+		OS.g_signal_connect_closure_by_id (paintHandle, display.signalIds [DRAW], 0, display.getClosure (DRAW), true);
+		OS.g_signal_connect_closure_by_id (paintHandle, display.signalIds [STYLE_UPDATED], 0, display.getClosure (STYLE_UPDATED), false);
 	}
 }
 
@@ -2132,10 +2134,10 @@ public void addMouseWheelListener (MouseWheelListener listener) {
  */
 public void addPaintListener(PaintListener listener) {
 	checkWidget();
-	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
-	TypedListener typedListener = new TypedListener (listener);
-	addListener(SWT.Paint,typedListener);
-	if (GTK.GTK4) connectPaint();
+	if (listener == null) error(SWT.ERROR_NULL_ARGUMENT);
+
+	TypedListener typedListener = new TypedListener(listener);
+	addListener(SWT.Paint, typedListener);
 }
 
 /**
@@ -3921,6 +3923,25 @@ void cairoClipRegion (long cairo) {
 
 @Override
 long gtk_draw (long widget, long cairo) {
+	if (GTK.GTK4) {
+		if (!hooksPaint()) return 0;
+
+		GCData data = new GCData();
+		data.cairo = cairo;
+		GC gc = GC.gtk_new(this, data);
+
+		Event event = new Event();
+		event.count = 1;
+		event.gc = gc;
+
+		drawWidget(gc);
+		sendEvent(SWT.Paint, event);
+		gc.dispose();
+		event.gc = null;
+
+		return 0;
+	}
+
 	if (checkScaleFactor) {
 		long surface = Cairo.cairo_get_target(cairo);
 		if (surface != 0) {

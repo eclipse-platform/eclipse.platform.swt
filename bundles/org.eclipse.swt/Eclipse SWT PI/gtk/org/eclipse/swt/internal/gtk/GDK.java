@@ -319,6 +319,7 @@ public class GDK extends OS {
 	/* [GTK3 only, if-def'd in os.h; 3.22 deprecated, replaced] */
 	public static final native long gdk_cairo_create(long window);
 	/**
+	 * @method flags=dynamic
 	 * @param cr cast=(cairo_t *)
 	 * @param rect cast=(GdkRectangle *),flags=no_in
 	 */
@@ -680,6 +681,7 @@ public class GDK extends OS {
 	 * @param index_ranges cast=(gint *)
 	 */
 	public static final native long gdk_pango_layout_get_clip_region(long layout, int x_origin, int y_origin, int[] index_ranges, int n_ranges);
+
 	/** @param animation cast=(GdkPixbufAnimation *) */
 	public static final native boolean gdk_pixbuf_animation_is_static_image(long animation);
 	/** @param iter cast=(GdkPixbufAnimationIter *) */
@@ -705,11 +707,6 @@ public class GDK extends OS {
 	public static final native void gdk_pixbuf_copy_area(long src_pixbuf, int src_x, int src_y, int width, int height, long dest_pixbuf, int dest_x, int dest_y);
 	/** @param pixbuf cast=(const GdkPixbuf *) */
 	public static final native boolean gdk_pixbuf_get_has_alpha(long pixbuf);
-	/**
-	 * @param window cast=(GdkWindow *)
-	 */
-	/* [GTK3 only, if-def'd in os.h] */
-	public static final native long gdk_pixbuf_get_from_window(long window, int x, int y, int width, int height);
 	/** @param pixbuf cast=(const GdkPixbuf *) */
 	public static final native int gdk_pixbuf_get_height(long pixbuf);
 	/** @param pixbuf cast=(const GdkPixbuf *) */
@@ -778,6 +775,14 @@ public class GDK extends OS {
 	 * @param interp_type cast=(GdkInterpType)
 	 */
 	public static final native long gdk_pixbuf_scale_simple(long src, int dest_width, int dest_height, int interp_type);
+
+	/* GdkPixbuf Interaction */
+	/**
+	 * @method flags=dynamic
+	 * @param window cast=(GdkWindow *)
+	 */
+	public static final native long gdk_pixbuf_get_from_window(long window, int x, int y, int width, int height);
+
 	/**
 	 * @param device cast=(GdkDevice *)
 	 */

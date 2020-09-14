@@ -401,10 +401,14 @@ public void setImage (Image image) {
 			imageList.put (imageIndex, image);
 		}
 
-		GTK.gtk_image_set_from_surface(imageHandle, image.surface);
+		GTK.gtk_image_set_from_pixbuf(imageHandle, imageList.getPixbuf(imageIndex));
 		GTK.gtk_widget_show (imageHandle);
 	} else {
-		GTK.gtk_image_set_from_surface(imageHandle, 0);
+		if (GTK.GTK4) {
+			GTK.gtk_image_clear(imageHandle);
+		} else {
+			GTK.gtk_image_set_from_surface(imageHandle, 0);
+		}
 		GTK.gtk_widget_hide (imageHandle);
 	}
 }

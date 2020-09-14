@@ -704,20 +704,31 @@ protected void init () {
 
 	/* Initialize the system font slot */
 	long [] defaultFontArray = new long [1];
-	long defaultFont;
+	long defaultFont = 0;
 	long context = GTK.gtk_widget_get_style_context (shellHandle);
 	if ("ppc64le".equals(System.getProperty("os.arch"))) {
 		defaultFont = GTK.gtk_style_context_get_font (context, GTK.GTK_STATE_FLAG_NORMAL);
 	} else {
-		GTK.gtk_style_context_save(context);
-		GTK.gtk_style_context_set_state(context, GTK.GTK_STATE_FLAG_NORMAL);
 		if (GTK.GTK4) {
-			GTK.gtk_style_context_get(context, GTK.gtk_style_property_font, defaultFontArray, 0);
+			long[] fontPtr = new long[1];
+			long settings = GTK.gtk_settings_get_default ();
+			OS.g_object_get (settings, GTK.gtk_style_property_font, fontPtr, 0);
+			if (fontPtr[0] != 0) {
+				int length = C.strlen(fontPtr[0]);
+				if (length != 0) {
+					byte[] fontString = new byte [length + 1];
+					C.memmove(fontString, fontPtr[0], length);
+					OS.g_free(fontPtr[0]);
+					defaultFont = OS.pango_font_description_from_string(fontString);
+				}
+			}
 		} else {
+			GTK.gtk_style_context_save(context);
+			GTK.gtk_style_context_set_state(context, GTK.GTK_STATE_FLAG_NORMAL);
 			GTK.gtk_style_context_get(context, GTK.GTK_STATE_FLAG_NORMAL, GTK.gtk_style_property_font, defaultFontArray, 0);
+			GTK.gtk_style_context_restore(context);
+			defaultFont = defaultFontArray [0];
 		}
-		GTK.gtk_style_context_restore(context);
-		defaultFont = defaultFontArray [0];
 	}
 	defaultFont = OS.pango_font_description_copy (defaultFont);
 	Point dpi = getDPI(), screenDPI = getScreenDPI();

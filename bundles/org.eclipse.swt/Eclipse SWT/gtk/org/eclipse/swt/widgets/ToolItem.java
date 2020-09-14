@@ -718,9 +718,9 @@ long gtk_enter_notify_event (long widget, long event) {
 	if (drawHotImage) {
 		ImageList imageList = parent.imageList;
 		if (imageList != null) {
-			int index = imageList.indexOf (hotImage);
+			int index = imageList.indexOf(hotImage);
 			if (index != -1 && imageHandle != 0) {
-				GTK.gtk_image_set_from_surface(imageHandle, hotImage.surface);
+				GTK.gtk_image_set_from_pixbuf(imageHandle, imageList.getPixbuf(index));
 			}
 		}
 	}
@@ -775,9 +775,9 @@ long gtk_leave_notify_event (long widget, long event) {
 		if (image != null) {
 			ImageList imageList = parent.imageList;
 			if (imageList != null) {
-				int index = imageList.indexOf (image);
+				int index = imageList.indexOf(image);
 				if (index != -1 && imageHandle != 0) {
-					GTK.gtk_image_set_from_surface(imageHandle, image.surface);
+					GTK.gtk_image_set_from_pixbuf(imageHandle, imageList.getPixbuf(index));
 				}
 			}
 		}
@@ -1201,9 +1201,13 @@ void _setImage (Image image) {
 			imageList.put (imageIndex, image);
 		}
 
-		GTK.gtk_image_set_from_surface(imageHandle, image.surface);
+		GTK.gtk_image_set_from_pixbuf(imageHandle, imageList.getPixbuf(imageIndex));
 	} else {
-		GTK.gtk_image_set_from_surface(imageHandle, 0);
+		if (GTK.GTK4) {
+			GTK.gtk_image_clear(imageHandle);
+		} else {
+			GTK.gtk_image_set_from_surface(imageHandle, 0);
+		}
 	}
 	/*
 	* If Text/Image of a tool-item changes, then it is

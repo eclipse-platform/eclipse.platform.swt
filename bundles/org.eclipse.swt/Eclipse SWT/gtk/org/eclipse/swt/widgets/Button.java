@@ -1065,13 +1065,18 @@ public void setImage (Image image) {
 	if ((style & SWT.ARROW) != 0) return;
 	if (imageList != null) imageList.dispose ();
 	imageList = null;
+
 	if (image != null) {
-		if (image.isDisposed()) error (SWT.ERROR_INVALID_ARGUMENT);
-		imageList = new ImageList ();
-		imageList.add (image);
-		GTK.gtk_image_set_from_surface(imageHandle, image.surface);
+		if (image.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
+		imageList = new ImageList();
+		int index = imageList.add(image);
+		GTK.gtk_image_set_from_pixbuf(imageHandle, imageList.getPixbuf(index));
 	} else {
-		GTK.gtk_image_set_from_surface(imageHandle, 0);
+		if (GTK.GTK4) {
+			GTK.gtk_image_clear(imageHandle);
+		} else {
+			GTK.gtk_image_set_from_surface(imageHandle, 0);
+		}
 	}
 	this.image = image;
 	updateWidgetsVisibility();

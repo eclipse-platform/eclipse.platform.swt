@@ -304,7 +304,15 @@ JNIEXPORT jboolean JNICALL GDK_NATIVE(gdk_1cairo_1get_1clip_1rectangle)
 	jboolean rc = 0;
 	GDK_NATIVE_ENTER(env, that, gdk_1cairo_1get_1clip_1rectangle_FUNC);
 	if (arg1) if ((lparg1 = &_arg1) == NULL) goto fail;
+/*
 	rc = (jboolean)gdk_cairo_get_clip_rectangle((cairo_t *)arg0, (GdkRectangle *)lparg1);
+*/
+	{
+		GDK_LOAD_FUNCTION(fp, gdk_cairo_get_clip_rectangle)
+		if (fp) {
+			rc = (jboolean)((jboolean (CALLING_CONVENTION*)(cairo_t *, GdkRectangle *))fp)((cairo_t *)arg0, (GdkRectangle *)lparg1);
+		}
+	}
 fail:
 	if (arg1 && lparg1) setGdkRectangleFields(env, arg1, lparg1);
 	GDK_NATIVE_EXIT(env, that, gdk_1cairo_1get_1clip_1rectangle_FUNC);
@@ -1637,7 +1645,15 @@ JNIEXPORT jlong JNICALL GDK_NATIVE(gdk_1pixbuf_1get_1from_1window)
 {
 	jlong rc = 0;
 	GDK_NATIVE_ENTER(env, that, gdk_1pixbuf_1get_1from_1window_FUNC);
+/*
 	rc = (jlong)gdk_pixbuf_get_from_window((GdkWindow *)arg0, arg1, arg2, arg3, arg4);
+*/
+	{
+		GDK_LOAD_FUNCTION(fp, gdk_pixbuf_get_from_window)
+		if (fp) {
+			rc = (jlong)((jlong (CALLING_CONVENTION*)(GdkWindow *, jint, jint, jint, jint))fp)((GdkWindow *)arg0, arg1, arg2, arg3, arg4);
+		}
+	}
 	GDK_NATIVE_EXIT(env, that, gdk_1pixbuf_1get_1from_1window_FUNC);
 	return rc;
 }
@@ -6816,6 +6832,24 @@ JNIEXPORT jlong JNICALL GTK_NATIVE(gtk_1im_1multicontext_1new)
 }
 #endif
 
+#ifndef NO_gtk_1image_1clear
+JNIEXPORT void JNICALL GTK_NATIVE(gtk_1image_1clear)
+	(JNIEnv *env, jclass that, jlong arg0)
+{
+	GTK_NATIVE_ENTER(env, that, gtk_1image_1clear_FUNC);
+/*
+	gtk_image_clear((GtkImage *)arg0);
+*/
+	{
+		GTK_LOAD_FUNCTION(fp, gtk_image_clear)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(GtkImage *))fp)((GtkImage *)arg0);
+		}
+	}
+	GTK_NATIVE_EXIT(env, that, gtk_1image_1clear_FUNC);
+}
+#endif
+
 #ifndef NO_gtk_1image_1new
 JNIEXPORT jlong JNICALL GTK_NATIVE(gtk_1image_1new)
 	(JNIEnv *env, jclass that)
@@ -6947,7 +6981,15 @@ JNIEXPORT void JNICALL GTK_NATIVE(gtk_1image_1set_1from_1surface)
 	(JNIEnv *env, jclass that, jlong arg0, jlong arg1)
 {
 	GTK_NATIVE_ENTER(env, that, gtk_1image_1set_1from_1surface_FUNC);
+/*
 	gtk_image_set_from_surface((GtkImage *)arg0, (cairo_surface_t *)arg1);
+*/
+	{
+		GTK_LOAD_FUNCTION(fp, gtk_image_set_from_surface)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(GtkImage *, cairo_surface_t *))fp)((GtkImage *)arg0, (cairo_surface_t *)arg1);
+		}
+	}
 	GTK_NATIVE_EXIT(env, that, gtk_1image_1set_1from_1surface_FUNC);
 }
 #endif

@@ -541,6 +541,7 @@ typedef enum {
 	gtk_1im_1context_1set_1client_1window_FUNC,
 	gtk_1im_1context_1set_1cursor_1location_FUNC,
 	gtk_1im_1multicontext_1new_FUNC,
+	gtk_1image_1clear_FUNC,
 	gtk_1image_1new_FUNC,
 	gtk_1image_1new_1from_1icon_1name___3B_FUNC,
 	gtk_1image_1new_1from_1icon_1name___3BI_FUNC,

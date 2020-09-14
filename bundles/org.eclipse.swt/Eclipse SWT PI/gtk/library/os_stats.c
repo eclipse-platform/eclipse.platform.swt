@@ -543,6 +543,7 @@ char * GTK_nativeFunctionNames[] = {
 	"gtk_1im_1context_1set_1client_1window",
 	"gtk_1im_1context_1set_1cursor_1location",
 	"gtk_1im_1multicontext_1new",
+	"gtk_1image_1clear",
 	"gtk_1image_1new",
 	"gtk_1image_1new_1from_1icon_1name___3B",
 	"gtk_1image_1new_1from_1icon_1name___3BI",
