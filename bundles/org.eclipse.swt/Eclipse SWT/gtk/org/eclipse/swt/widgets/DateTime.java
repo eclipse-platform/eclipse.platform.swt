@@ -446,24 +446,26 @@ private void createHandleForCalendar () {
 }
 
 private void createHandleForDateWithDropDown () {
-	containerHandle = gtk_box_new (GTK.GTK_ORIENTATION_HORIZONTAL, false, 0);
-	if (containerHandle == 0) error (SWT.ERROR_NO_HANDLES);
-	textEntryHandle = GTK.gtk_entry_new ();
-	if (textEntryHandle == 0) error (SWT.ERROR_NO_HANDLES);
+	handle = gtk_box_new(GTK.GTK_ORIENTATION_HORIZONTAL, false, 0);
+	if (handle == 0) error(SWT.ERROR_NO_HANDLES);
+	containerHandle = handle;
+
+	textEntryHandle = GTK.gtk_entry_new();
+	if (textEntryHandle == 0) error(SWT.ERROR_NO_HANDLES);
 
 	if (GTK.GTK4) {
 		OS.swt_fixed_add(fixedHandle, containerHandle);
 		GTK.gtk_box_append(containerHandle, textEntryHandle);
 	} else {
-		GTK.gtk_container_add (fixedHandle, containerHandle);
-		GTK.gtk_container_add (containerHandle, textEntryHandle);
-		GTK.gtk_widget_show (containerHandle);
-		GTK.gtk_widget_show (textEntryHandle);
+		GTK.gtk_container_add(fixedHandle, containerHandle);
+		GTK.gtk_container_add(containerHandle, textEntryHandle);
+		GTK.gtk_widget_show(containerHandle);
+		GTK.gtk_widget_show(textEntryHandle);
 	}
 
 	// In GTK 3 font description is inherited from parent widget which is not how SWT has always worked,
 	// reset to default font to get the usual behavior
-	setFontDescription (defaultFont ().handle);
+	setFontDescription(defaultFont().handle);
 }
 
 private void createHandleForDateTime () {

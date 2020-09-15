@@ -92,6 +92,8 @@ public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI() {
 
 	new DateTime(shell, SWT.CALENDAR | SWT.SHORT);
 
+	new DateTime(shell, SWT.DROP_DOWN);
+
 	try {
 		new DateTime(null, 0);
 		fail("No exception thrown for parent == null");
