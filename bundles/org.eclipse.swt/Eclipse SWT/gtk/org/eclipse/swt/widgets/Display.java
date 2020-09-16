@@ -1909,16 +1909,19 @@ public Point getCursorLocation () {
 
 Point getCursorLocationInPixels () {
 	checkDevice ();
-	int [] x = new int [1], y = new int [1];
+
+	int[] x = new int[1], y = new int[1];
 	if (GTK.GTK4) {
-		/*
-		 * TODO: calling gdk_window_get_device_position() with a 0
-		 * for the GdkWindow uses gdk_get_default_root_window(),
-		 * which doesn't exist on GTK4.
-		 */
+		double[] xDouble = new double[1], yDouble = new double[1];
+
+		long surface = GTK.gtk_native_get_surface(GTK.gtk_widget_get_native(shellHandle));
+		getSurfacePointerPosition(surface, xDouble, yDouble, null);
+		x[0] = (int)xDouble[0];
+		y[0] = (int)yDouble[0];
 	} else {
-		gdk_window_get_device_position (0, x, y, null);
+		getWindowPointerPosition(0, x, y, null);
 	}
+
 	/*
 	 * Wayland feature: There is no global x/y coordinates in Wayland for security measures, so they
 	 * all return relative coordinates dependant to the root window. If there is a popup window (type SWT.ON_TOP),
@@ -1939,7 +1942,8 @@ Point getCursorLocationInPixels () {
 			tempShell = tempShell.getParent().getShell();
 		}
 	}
-	return new Point (x [0], y [0]);
+
+	return new Point(x[0], y[0]);
 }
 
 /**
@@ -6036,23 +6040,34 @@ long windowTimerProc (long handle) {
 	return widget.timerProc (handle);
 }
 
-long gdk_window_get_device_position (long window, int[] x, int[] y, int[] mask) {
+/**
+ * Gets the current cursor position relative to the upper left corner of the window.
+ * Available to GTK3 implementations only.
+ *
+ * @return the cursor position to <b>x</b> & <b>y</b>. Return value of the function is the window pointer underneath the cursor, can be NULL.
+ */
+long getWindowPointerPosition(long window, int[] x, int[] y, int[] mask) {
 	long display = 0;
-	if( window != 0) {
-		display = GDK.gdk_window_get_display (window);
+
+	if(window != 0) {
+		display = GDK.gdk_window_get_display(window);
 	} else {
-		window = GDK.gdk_get_default_root_window ();
-		display = GDK.gdk_window_get_display (window);
+		window = GDK.gdk_get_default_root_window();
+		display = GDK.gdk_window_get_display(window);
 	}
-	long pointer = GDK.gdk_get_pointer (display);
+
+	long pointer = GDK.gdk_get_pointer(display);
 	return GDK.gdk_window_get_device_position(window, pointer, x, y, mask);
 }
 
-void gdk_surface_get_device_position (long surface, double[] x, double[] y, int[] mask) {
-	long display = 0;
-	if (surface != 0) {
-		display = GDK.gdk_surface_get_display (surface);
-	}
+/**
+ * Gets the current cursor position relative to the upper left corner of the surface.
+ * Available to GTK4 implementations only.
+ */
+void getSurfacePointerPosition(long surface, double[] x, double[] y, int[] mask) {
+	if (surface == 0) error(SWT.ERROR_NULL_ARGUMENT);
+
+	long display = GDK.gdk_surface_get_display(surface);
 	long pointer = GDK.gdk_get_pointer(display);
 	GDK.gdk_surface_get_device_position(surface, pointer, x, y, mask);
 }

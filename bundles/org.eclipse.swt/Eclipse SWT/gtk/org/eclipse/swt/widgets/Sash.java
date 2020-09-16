@@ -408,7 +408,7 @@ long gtk_motion_notify_event (long widget, long eventPtr) {
 	}
 	if (isHint) {
 		int [] pointer_x = new int [1], pointer_y = new int [1], mask = new int [1];
-		display.gdk_window_get_device_position (gdkResource, pointer_x, pointer_y, mask);
+		display.getWindowPointerPosition (gdkResource, pointer_x, pointer_y, mask);
 		eventX = pointer_x [0];
 		eventY = pointer_y [0];
 		eventState = mask [0];

@@ -354,6 +354,7 @@ public boolean getAutoHide () {
 Point getLocation () {
 	int x = this.x;
 	int y = this.y;
+
 	if (item != null) {
 		long itemHandle = item.handle;
 		GdkRectangle area = new GdkRectangle ();
@@ -361,20 +362,24 @@ Point getLocation () {
 		x = area.x + area.width / 2;
 		y = area.y + area.height / 2;
 	}
+
 	if (x == -1 || y == -1) {
-		int [] px = new int [1], py = new int [1];
 		if (GTK.GTK4) {
-			/*
-			 * TODO: calling gdk_window_get_device_position() with a 0
-			 * for the GdkWindow uses gdk_get_default_root_window(),
-			 * which doesn't exist on GTK4.
-			 */
+			double[] px = new double[1], py = new double[1];
+
+			long surface = GTK.gtk_native_get_surface(GTK.gtk_widget_get_native(handle));
+			display.getSurfacePointerPosition(surface, px, py, null);
+			x = (int)px[0];
+			y = (int)py[0];
 		} else {
-			display.gdk_window_get_device_position (0, px, py, null);
+			int[] px = new int[1], py = new int[1];
+
+			display.getWindowPointerPosition (0, px, py, null);
+			x = px[0];
+			y = py[0];
 		}
-		x = px [0];
-		y = py [0];
 	}
+
 	return new Point(x, y);
 }
 

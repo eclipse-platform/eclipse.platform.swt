@@ -2924,17 +2924,19 @@ void showWidget () {
 @Override
 long sizeAllocateProc (long handle, long arg0, long user_data) {
 	int offset = 16;
-	int [] x = new int [1], y = new int [1];
+	int[] x = new int[1], y = new int[1];
 	if (GTK.GTK4) {
-		/*
-		 * TODO: calling gdk_window_get_device_position() with a 0
-		 * for the GdkWindow uses gdk_get_default_root_window(),
-		 * which doesn't exist on GTK4.
-		 */
+		double[] xDouble = new double[1], yDouble = new double[1];
+
+		long surface = GTK.gtk_native_get_surface(GTK.gtk_widget_get_native(shellHandle));
+		display.getSurfacePointerPosition(surface, xDouble, yDouble, null);
+		x[0] = (int)xDouble[0];
+		y[0] = (int)yDouble[0];
 	} else {
-		display.gdk_window_get_device_position (0, x, y, null);
+		display.getWindowPointerPosition(0, x, y, null);
 	}
-	y [0] += offset;
+
+	y[0] += offset;
 	GdkRectangle dest = new GdkRectangle ();
 	if (GTK.GTK_VERSION >= OS.VERSION(3, 22, 0)) {
 		long display = GDK.gdk_display_get_default();

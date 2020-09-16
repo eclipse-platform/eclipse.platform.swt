@@ -206,19 +206,20 @@ Point adjustMoveCursor () {
 	int newX = bounds.x + bounds.width / 2;
 	int newY = bounds.y;
 
-	Point point = display.mapInPixels (parent, null, newX, newY);
-	display.setCursorLocation (point);
+	Point point = display.mapInPixels(parent, null, newX, newY);
+	display.setCursorLocation(point);
 
-	int [] actualX = new int [1], actualY = new int [1], state = new int [1];
+	int[] actualX = new int[1], actualY = new int[1], state = new int[1];
 	if (GTK.GTK4) {
-		double [] actualXDouble = new double [1], actualYDouble = new double [1];
-		display.gdk_surface_get_device_position (surface, actualXDouble, actualYDouble, state);
-		actualX[0] = (int) actualXDouble[0];
-		actualY[0] = (int) actualYDouble[0];
+		double[] actualXDouble = new double[1], actualYDouble = new double[1];
+		display.getSurfacePointerPosition(surface, actualXDouble, actualYDouble, state);
+		actualX[0] = (int)actualXDouble[0];
+		actualY[0] = (int)actualYDouble[0];
 	} else {
-		display.gdk_window_get_device_position (window, actualX, actualY, state);
+		display.getWindowPointerPosition(window, actualX, actualY, state);
 	}
-	return new Point (actualX [0], actualY [0]);
+
+	return new Point(actualX[0], actualY[0]);
 }
 
 Point adjustResizeCursor () {
@@ -251,14 +252,15 @@ Point adjustResizeCursor () {
 	 */
 	int [] actualX = new int [1], actualY = new int [1], state = new int [1];
 	if (GTK.GTK4) {
-		double [] actualXDouble = new double [1], actualYDouble = new double [1];
-		display.gdk_surface_get_device_position (surface, actualXDouble, actualYDouble, state);
-		actualX[0] = (int) actualXDouble[0];
-		actualY[0] = (int) actualYDouble[0];
+		double[] actualXDouble = new double[1], actualYDouble = new double[1];
+		display.getSurfacePointerPosition(surface, actualXDouble, actualYDouble, state);
+		actualX[0] = (int)actualXDouble[0];
+		actualY[0] = (int)actualYDouble[0];
 	} else {
-		display.gdk_window_get_device_position (window, actualX, actualY, state);
+		display.getWindowPointerPosition(window, actualX, actualY, state);
 	}
-	return new Point (actualX [0], actualY [0]);
+
+	return new Point(actualX[0], actualY[0]);
 }
 
 
@@ -644,13 +646,15 @@ long gtk_motion_notify_event (long widget, long eventPtr) {
 long gtk_mouse (int eventType, long widget, long eventPtr) {
 	int [] newX = new int [1], newY = new int [1];
 	if (GTK.GTK4) {
-		double [] newXDouble = new double [1], newYDouble = new double [1];
-		display.gdk_surface_get_device_position (surface, newXDouble, newYDouble, null);
-		newX[0] = (int) newXDouble[0];
-		newY[0] = (int) newYDouble[0];
+		double[] newXDouble = new double[1], newYDouble = new double[1];
+
+		display.getSurfacePointerPosition(surface, newXDouble, newYDouble, null);
+		newX[0] = (int)newXDouble[0];
+		newY[0] = (int)newYDouble[0];
 	} else {
-		display.gdk_window_get_device_position (window, newX, newY, null);
+		display.getWindowPointerPosition(window, newX, newY, null);
 	}
+
 	if (oldX != newX [0] || oldY != newY [0]) {
 		Rectangle [] oldRectangles = rectangles;
 		Rectangle [] rectsToErase = new Rectangle [rectangles.length];
@@ -796,11 +800,11 @@ public boolean open () {
 	int [] oldX = new int [1], oldY = new int [1], state = new int [1];
 	if (GTK.GTK4) {
 		double [] oldXDouble = new double [1], oldYDouble = new double [1];
-		display.gdk_surface_get_device_position (surface, oldXDouble, oldYDouble, state);
+		display.getSurfacePointerPosition (surface, oldXDouble, oldYDouble, state);
 		oldX[0] = (int) oldXDouble[0];
 		oldY[0] = (int) oldYDouble[0];
 	} else {
-		display.gdk_window_get_device_position (window, oldX, oldY, state);
+		display.getWindowPointerPosition (window, oldX, oldY, state);
 	}
 
 	/*

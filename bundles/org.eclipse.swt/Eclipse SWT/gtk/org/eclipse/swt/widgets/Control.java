@@ -551,18 +551,21 @@ boolean hooksPaint () {
 
 @Override
 long hoverProc (long widget) {
-	int [] x = new int [1], y = new int [1], mask = new int [1];
+	int[] x = new int[1], y = new int[1], mask = new int[1];
 	if (GTK.GTK4) {
-		/*
-		 * TODO: calling gdk_window_get_device_position() with a 0
-		 * for the GdkWindow uses gdk_get_default_root_window(),
-		 * which doesn't exist on GTK4.
-		 */
+		double[] xDouble = new double[1], yDouble = new double[1];
+
+		long surface = GTK.gtk_native_get_surface(GTK.gtk_widget_get_native(handle));
+		display.getSurfacePointerPosition(surface, xDouble, yDouble, null);
+		x[0] = (int)xDouble[0];
+		y[0] = (int)yDouble[0];
 	} else {
-		display.gdk_window_get_device_position (0, x, y, mask);
+		display.getWindowPointerPosition(0, x, y, mask);
 	}
+
 	if (containedInRegion(x[0], y[0])) return 0;
-	sendMouseEvent (SWT.MouseHover, 0, /*time*/0, x [0], y [0], false, mask [0]);
+	sendMouseEvent(SWT.MouseHover, 0, 0, x[0], y[0], false, mask[0]);
+
 	/* Always return zero in order to cancel the hover timer */
 	return 0;
 }
@@ -2758,12 +2761,12 @@ boolean dragDetect (int x, int y, boolean filter, boolean dragOnTimeout, boolean
 					}
 					int [] newX = new int [1], newY = new int [1];
 					if (GTK.GTK4) {
-						double [] newXDouble = new double [1], newYDouble = new double [1];
-						display.gdk_surface_get_device_position (gdkResource, newXDouble, newYDouble, null);
-						newX[0] = (int) newXDouble[0];
-						newY[0] = (int) newYDouble[0];
+						double[] newXDouble = new double[1], newYDouble = new double[1];
+						display.getSurfacePointerPosition(gdkResource, newXDouble, newYDouble, null);
+						newX[0] = (int)newXDouble[0];
+						newY[0] = (int)newYDouble[0];
 					} else {
-						display.gdk_window_get_device_position (gdkResource, newX, newY, null);
+						display.getWindowPointerPosition(gdkResource, newX, newY, null);
 					}
 					break;
 				}
@@ -4238,7 +4241,7 @@ long gtk_motion_notify_event (long widget, long event) {
 		if (isHint) {
 			int [] pointer_x = new int [1], pointer_y = new int [1], mask = new int [1];
 			long window = eventWindow ();
-			display.gdk_window_get_device_position (window, pointer_x, pointer_y, mask);
+			display.getWindowPointerPosition (window, pointer_x, pointer_y, mask);
 			x = pointer_x [0];
 			y = pointer_y [0];
 			state[0] = mask [0];
@@ -4272,7 +4275,7 @@ long gtk_popup_menu (long widget) {
 		 * which doesn't exist on GTK4.
 		 */
 	} else {
-		display.gdk_window_get_device_position (0, x, y, null);
+		display.getWindowPointerPosition (0, x, y, null);
 	}
 	return showMenu (x [0], y [0], SWT.MENU_KEYBOARD) ? 1 : 0;
 }
