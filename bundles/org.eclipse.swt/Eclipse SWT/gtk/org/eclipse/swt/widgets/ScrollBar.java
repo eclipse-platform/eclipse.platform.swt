@@ -606,7 +606,14 @@ void hookEvents () {
 	super.hookEvents ();
 	OS.g_signal_connect_closure (adjustmentHandle, OS.value_changed, display.getClosure (VALUE_CHANGED), false);
 	if (GTK.GTK4) {
-		// GTK4: no event-after
+		long eventController = GTK.gtk_event_controller_legacy_new();
+		OS.g_signal_connect_closure(eventController, OS.event, display.getClosure(EVENT), false);
+		GTK.gtk_widget_add_controller(handle, eventController);
+
+		long clickGesture = GTK.gtk_gesture_click_new();
+		GTK.gtk_widget_add_controller(handle, clickGesture);
+		OS.g_signal_connect(clickGesture, OS.pressed, display.gesturePressReleaseProc, GESTURE_PRESSED);
+
 		// GTK4: change-value moved to gtk_scroll_child in Composite
 	} else {
 		OS.g_signal_connect_closure (handle, OS.change_value, display.getClosure (CHANGE_VALUE), false);

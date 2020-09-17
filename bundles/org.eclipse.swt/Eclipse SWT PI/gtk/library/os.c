@@ -4114,6 +4114,28 @@ JNIEXPORT void JNICALL GTK_NATIVE(gtk_1button_1set_1image)
 }
 #endif
 
+#ifndef NO_gtk_1button_1set_1label
+JNIEXPORT void JNICALL GTK_NATIVE(gtk_1button_1set_1label)
+	(JNIEnv *env, jclass that, jlong arg0, jbyteArray arg1)
+{
+	jbyte *lparg1=NULL;
+	GTK_NATIVE_ENTER(env, that, gtk_1button_1set_1label_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
+/*
+	gtk_button_set_label((GtkButton *)arg0, (const char *)lparg1);
+*/
+	{
+		GTK_LOAD_FUNCTION(fp, gtk_button_set_label)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(GtkButton *, const char *))fp)((GtkButton *)arg0, (const char *)lparg1);
+		}
+	}
+fail:
+	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	GTK_NATIVE_EXIT(env, that, gtk_1button_1set_1label_FUNC);
+}
+#endif
+
 #ifndef NO_gtk_1button_1set_1use_1underline
 JNIEXPORT void JNICALL GTK_NATIVE(gtk_1button_1set_1use_1underline)
 	(JNIEnv *env, jclass that, jlong arg0, jboolean arg1)
@@ -5587,6 +5609,18 @@ JNIEXPORT jlong JNICALL GTK_NATIVE(gtk_1event_1controller_1key_1new)
 	GTK_NATIVE_ENTER(env, that, gtk_1event_1controller_1key_1new_FUNC);
 	rc = (jlong)gtk_event_controller_key_new();
 	GTK_NATIVE_EXIT(env, that, gtk_1event_1controller_1key_1new_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_gtk_1event_1controller_1legacy_1new
+JNIEXPORT jlong JNICALL GTK_NATIVE(gtk_1event_1controller_1legacy_1new)
+	(JNIEnv *env, jclass that)
+{
+	jlong rc = 0;
+	GTK_NATIVE_ENTER(env, that, gtk_1event_1controller_1legacy_1new_FUNC);
+	rc = (jlong)gtk_event_controller_legacy_new();
+	GTK_NATIVE_EXIT(env, that, gtk_1event_1controller_1legacy_1new_FUNC);
 	return rc;
 }
 #endif
@@ -11874,6 +11908,20 @@ JNIEXPORT void JNICALL GTK_NATIVE(gtk_1widget_1add_1controller)
 	GTK_NATIVE_ENTER(env, that, gtk_1widget_1add_1controller_FUNC);
 	gtk_widget_add_controller((GtkWidget *)arg0, (GtkEventController *)arg1);
 	GTK_NATIVE_EXIT(env, that, gtk_1widget_1add_1controller_FUNC);
+}
+#endif
+
+#ifndef NO_gtk_1widget_1add_1css_1class
+JNIEXPORT void JNICALL GTK_NATIVE(gtk_1widget_1add_1css_1class)
+	(JNIEnv *env, jclass that, jlong arg0, jbyteArray arg1)
+{
+	jbyte *lparg1=NULL;
+	GTK_NATIVE_ENTER(env, that, gtk_1widget_1add_1css_1class_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	gtk_widget_add_css_class((GtkWidget *)arg0, (const char *)lparg1);
+fail:
+	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	GTK_NATIVE_EXIT(env, that, gtk_1widget_1add_1css_1class_FUNC);
 }
 #endif
 

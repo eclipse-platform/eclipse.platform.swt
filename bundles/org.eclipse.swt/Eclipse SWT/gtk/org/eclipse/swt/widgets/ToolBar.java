@@ -134,6 +134,7 @@ void createHandle (int index) {
 
 	if (GTK.GTK4) {
 		handle = GTK.gtk_box_new(GTK.GTK_ORIENTATION_HORIZONTAL, 0);
+		GTK.gtk_widget_add_css_class(handle, Converter.javaStringToCString("toolbar"));
 	} else {
 		handle = GTK.gtk_toolbar_new ();
 	}
@@ -177,9 +178,7 @@ Point computeSizeInPixels (int wHint, int hHint, boolean changed) {
 	Point size = null;
 
 	if (GTK.GTK4) {
-		/* TODO: GTK4 will require us to implement our own
-		 * overflow menu. May require the use of the "toolbar" style class
-		 * applied to the widget.  */
+		size = computeNativeSize (handle, wHint, hHint, changed);
 	} else {
 		/*
 		 * Feature in GTK. Size of toolbar is calculated incorrectly
@@ -628,7 +627,7 @@ void reskinChildren (int flags) {
 
 @Override
 int setBounds (int x, int y, int width, int height, boolean move, boolean resize) {
-	GTK.gtk_toolbar_set_show_arrow (handle, false);
+	if (!GTK.GTK4) GTK.gtk_toolbar_set_show_arrow (handle, false);
 	int result = super.setBounds (x, y, width, height, move, resize);
 	if ((result & RESIZED) != 0) relayout ();
 	if ((style & SWT.WRAP) != 0) {

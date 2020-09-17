@@ -904,7 +904,9 @@ void hookEvents(long [] handles) {
 			/* Connect the event_after signal for both key and mouse */
 			if (eventHandle != focusHandle ()) {
 				if (GTK.GTK4) {
-					OS.g_signal_connect_closure_by_id (eventHandle, display.signalIds [EVENT_AFTER], 0, display.getClosure (EVENT_AFTER), false);
+					long eventController = GTK.gtk_event_controller_legacy_new();
+					OS.g_signal_connect_closure(eventController, OS.event, display.getClosure(EVENT), false);
+					GTK.gtk_widget_add_controller(eventHandle, eventController);
 				} else {
 					OS.g_signal_connect_closure_by_id (eventHandle, display.signalIds [EVENT_AFTER], 0, display.getClosure (EVENT_AFTER), false);
 				}

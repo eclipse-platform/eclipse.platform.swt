@@ -254,6 +254,11 @@ public class GTK extends OS {
 
 	/** @param widget cast=(GtkWidget *) */
 	public static final native boolean gtk_widget_get_sensitive(long widget);
+	/**
+	 * @param widget cast=(GtkWidget *)
+	 * @param css_class cast=(const char *)
+	 * */
+	public static final native void gtk_widget_add_css_class(long widget, byte[] css_class);
 
 	/**
 	 * @method flags=dynamic
@@ -308,6 +313,7 @@ public class GTK extends OS {
 	/** @param widget cast=(GtkWidget *) */
 	public static final native long gtk_widget_get_root(long widget);
 
+	/* GtkButton */
 	public static final native long gtk_button_new();
 
 	/** @method flags=dynamic
@@ -316,6 +322,11 @@ public class GTK extends OS {
 	 */
 	/* [GTK4 only] */
 	public static final native void gtk_button_set_child(long button, long child);
+	/** @method flags=dynamic
+	 *  @param button cast=(GtkButton *)
+	 *  @param label cast=(const char *)
+	 */
+	public static final native void gtk_button_set_label(long button, byte[] label);
 
 	/**
 	 * @method flags=dynamic
@@ -1149,6 +1160,8 @@ public class GTK extends OS {
 	 */
 	public static final native boolean gtk_file_chooser_set_file(long chooser, long file, long error);
 
+	/* GtkEventController [GTK4 only] */
+	public static final native long gtk_event_controller_legacy_new();
 	/* [GTK4 only, if-def'd in os.h] */
 	public static final native long gtk_gesture_click_new();
 	/* [GTK4 only, if-def'd in os.h] */
@@ -1483,6 +1496,7 @@ public class GTK extends OS {
 	public static final native void gtk_im_context_set_cursor_location(long context, GdkRectangle area);
 	public static final native long gtk_im_multicontext_new();
 
+
 	/* GtkImage */
 	public static final native long gtk_image_new();
 	/** @param pixbuf cast=(GdkPixbuf *) */
@@ -1536,6 +1550,7 @@ public class GTK extends OS {
 	 * @param image cast=(GtkImage *)
 	 */
 	public static final native void gtk_image_clear(long image);
+
 
 	/**
 	 * @method flags=dynamic

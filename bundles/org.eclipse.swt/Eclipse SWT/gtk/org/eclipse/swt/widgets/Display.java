@@ -1826,7 +1826,7 @@ public Control getCursorControl () {
 	}
 	if (gdkResource != 0) {
 		if (GTK.GTK4) {
-			user_data[0] = GDK.gdk_popup_get_parent(gdkResource);
+			// TODO: GTK4 need to retrieve handle
 		} else {
 			GDK.gdk_window_get_user_data (gdkResource, user_data);
 		}

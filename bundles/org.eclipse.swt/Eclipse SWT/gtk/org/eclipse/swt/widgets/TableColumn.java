@@ -448,7 +448,9 @@ void hookEvents () {
 	OS.g_signal_connect_closure (handle, OS.clicked, display.getClosure (CLICKED), false);
 	if (buttonHandle != 0) {
 		if (GTK.GTK4) {
-			// TODO: GTK4 no EVENT_AFTER signal
+			long eventController = GTK.gtk_event_controller_legacy_new();
+			OS.g_signal_connect_closure(eventController, OS.event, display.getClosure(EVENT), false);
+			GTK.gtk_widget_add_controller(buttonHandle, eventController);
 		} else {
 			OS.g_signal_connect_closure_by_id (buttonHandle, display.signalIds [SIZE_ALLOCATE], 0, display.getClosure (SIZE_ALLOCATE), false);
 			OS.g_signal_connect_closure_by_id (buttonHandle, display.signalIds [EVENT_AFTER], 0, display.getClosure (EVENT_AFTER), false);

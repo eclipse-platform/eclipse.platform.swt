@@ -863,16 +863,15 @@ void hookEvents () {
 		GDK.GDK_FOCUS_CHANGE_MASK;
 	GTK.gtk_widget_add_events (eventHandle, mask);
 	if (GTK.GTK4) {
-		OS.g_signal_connect_closure_by_id (eventHandle, display.signalIds [EVENT], 0, display.getClosure (EVENT), false);
+		long eventController = GTK.gtk_event_controller_legacy_new();
+		GTK.gtk_widget_add_controller(eventHandle, eventController);
+		OS.g_signal_connect_closure(eventController, OS.event, display.getClosure(EVENT), false);
 	} else {
 		OS.g_signal_connect_closure_by_id (eventHandle, display.signalIds [BUTTON_PRESS_EVENT], 0, display.getClosure (BUTTON_PRESS_EVENT), false);
 		OS.g_signal_connect_closure_by_id (eventHandle, display.signalIds [BUTTON_RELEASE_EVENT], 0, display.getClosure (BUTTON_RELEASE_EVENT), false);
-	}
-	if (GTK.GTK4) {
-		OS.g_signal_connect_closure_by_id (eventHandle, display.signalIds [EVENT], 0, display.getClosure (EVENT), false);
-	} else {
 		OS.g_signal_connect_closure_by_id (eventHandle, display.signalIds [EVENT_AFTER], 0, display.getClosure (EVENT_AFTER), false);
 	}
+
 	if (!mapHooked) {
 		long topHandle = topHandle ();
 		OS.g_signal_connect_closure_by_id (topHandle, display.signalIds [MAP], 0, display.getClosure (MAP), true);
