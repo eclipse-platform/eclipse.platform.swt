@@ -565,6 +565,8 @@ typedef enum {
 	gtk_1label_1set_1text__JJ_FUNC,
 	gtk_1label_1set_1text__J_3B_FUNC,
 	gtk_1label_1set_1text_1with_1mnemonic_FUNC,
+	gtk_1label_1set_1wrap_FUNC,
+	gtk_1label_1set_1wrap_1mode_FUNC,
 	gtk_1label_1set_1xalign_FUNC,
 	gtk_1label_1set_1yalign_FUNC,
 	gtk_1list_1store_1append_FUNC,

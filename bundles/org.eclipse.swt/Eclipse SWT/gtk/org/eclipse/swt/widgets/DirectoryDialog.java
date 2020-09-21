@@ -164,22 +164,24 @@ String openNativeChooserDialog () {
 		}
 	}
 	if (message.length () > 0) {
-		byte [] buffer = Converter.wcsToMbcs (message, true);
-		long box = GTK.gtk_box_new (GTK.GTK_ORIENTATION_HORIZONTAL, 0);
-		GTK.gtk_box_set_homogeneous (box, false);
-		if (box == 0) error (SWT.ERROR_NO_HANDLES);
+		byte[] buffer = Converter.wcsToMbcs(message, true);
+		long box = GTK.gtk_box_new(GTK.GTK_ORIENTATION_HORIZONTAL, 0);
+		if (box == 0) error(SWT.ERROR_NO_HANDLES);
 		long label = GTK.gtk_label_new (buffer);
-		if (label == 0) error (SWT.ERROR_NO_HANDLES);
+		if (label == 0) error(SWT.ERROR_NO_HANDLES);
+
 		if (GTK.GTK4) {
 			GTK.gtk_box_append(box, label);
+			GTK.gtk_label_set_wrap(label, true);
 		} else {
-			GTK.gtk_container_add (box, label);
-			GTK.gtk_widget_show (label);
+			GTK.gtk_container_add(box, label);
+			GTK.gtk_widget_show(label);
+			GTK.gtk_label_set_line_wrap(label, true);
 		}
 
-		GTK.gtk_label_set_line_wrap (label, true);
-		GTK.gtk_label_set_justify (label, GTK.GTK_JUSTIFY_CENTER);
-		GTK.gtk_file_chooser_set_extra_widget (handle, box);
+		GTK.gtk_box_set_homogeneous(box, false);
+		GTK.gtk_label_set_justify(label, GTK.GTK_JUSTIFY_CENTER);
+		GTK.gtk_file_chooser_set_extra_widget(handle, box);
 	}
 	String answer = null;
 	display.addIdleProc ();

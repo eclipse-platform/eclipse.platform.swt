@@ -1276,22 +1276,6 @@ public class GTK extends OS {
 	 * @param expand cast=(gboolean)
 	 */
 	public static final native void gtk_widget_set_vexpand(long widget, boolean expand);
-	//since Gtk 3.16. For pre-gtk3.16, use gtk_misc_set_alignment(..)
-	/**
-	 * @method flags=dynamic
-	 * @param label cast=(GtkLabel *)
-	 * @param xalign cast=(gfloat)
-	 *
-	 */
-	public static final native void gtk_label_set_xalign(long label, float xalign);
-	//since Gtk 3.16. For pre-gtk3.16, use gtk_misc_set_alignment(..)
-	/**
-	* @method flags=dynamic
-	* @param label cast=(GtkLabel *)
-	* @param yalign cast=(gfloat)
-	*
-	*/
-	public static final native void gtk_label_set_yalign(long label, float yalign);
 	/**
 	 * @param widget cast=(GtkWidget *)
 	 * @param gtk_align cast=(GtkAlign)
@@ -1565,15 +1549,17 @@ public class GTK extends OS {
 	 */
 	/* [GTK4 only] */
 	public static final native boolean gtk_init_check();
-	/** @param label cast=(GtkLabel *) */
-	public static final native long gtk_label_get_layout(long label);
+
+	/* GtkLabel */
 	public static final native long gtk_label_get_type();
-	/** @param label cast=(GtkLabel *) */
-	public static final native int gtk_label_get_mnemonic_keyval(long label);
 	/** @param label cast=(const gchar *) */
 	public static final native long gtk_label_new(byte[] label);
 	/** @param str cast=(const gchar *) */
 	public static final native long gtk_label_new_with_mnemonic(byte[] str);
+	/** @param label cast=(GtkLabel *) */
+	public static final native long gtk_label_get_layout(long label);
+	/** @param label cast=(GtkLabel *) */
+	public static final native int gtk_label_get_mnemonic_keyval(long label);
 	/**
 	 * @param label cast=(GtkLabel *)
 	 * @param attrs cast=(PangoAttrList *)
@@ -1584,16 +1570,6 @@ public class GTK extends OS {
 	 * @param jtype cast=(GtkJustification)
 	 */
 	public static final native void gtk_label_set_justify(long label, int jtype);
-	/**
-	 * @param label cast=(GtkLabel *)
-	 * @param wrap cast=(gboolean)
-	 */
-	public static final native void gtk_label_set_line_wrap(long label, boolean wrap);
-	/**
-	 * @param label cast=(GtkLabel *)
-	 * @param wrap_mode cast=(PangoWrapMode)
-	 */
-	public static final native void gtk_label_set_line_wrap_mode(long label, int wrap_mode);
 	/**
 	 * @param label cast=(GtkLabel *)
 	 * @param str cast=(const gchar *)
@@ -1609,6 +1585,48 @@ public class GTK extends OS {
 	 * @param str cast=(const gchar *)
 	 */
 	public static final native void gtk_label_set_text_with_mnemonic(long label, byte[] str);
+	/**
+	 * @param label cast=(GtkLabel *)
+	 * @param xalign cast=(gfloat)
+	 *
+	 */
+	public static final native void gtk_label_set_xalign(long label, float xalign);
+	/**
+	* @param label cast=(GtkLabel *)
+	* @param yalign cast=(gfloat)
+	*
+	*/
+	public static final native void gtk_label_set_yalign(long label, float yalign);
+
+	/* GtkLabel [GTK3 only] */
+	/**
+	 * @method flags=dynamic
+	 * @param label cast=(GtkLabel *)
+	 * @param wrap cast=(gboolean)
+	 */
+	public static final native void gtk_label_set_line_wrap(long label, boolean wrap);
+	/**
+	 * @method flags=dynamic
+	 * @param label cast=(GtkLabel *)
+	 * @param wrap_mode cast=(PangoWrapMode)
+	 */
+	public static final native void gtk_label_set_line_wrap_mode(long label, int wrap_mode);
+
+	/* GtkLabel [GTK4 only] */
+	/**
+	 * @method flags=dynamic
+	 * @param label cast=(GtkLabel *)
+	 * @param wrap cast=(gboolean)
+	 */
+	public static final native void gtk_label_set_wrap(long label, boolean wrap);
+	/**
+	 * @method flags=dynamic
+	 * @param label cast=(GtkLabel *)
+	 * @param wrap_mode cast=(PangoWrapMode)
+	 */
+	public static final native void gtk_label_set_wrap_mode(long label, int wrap_mode);
+
+
 	/**
 	 * @param list_store cast=(GtkListStore *)
 	 * @param iter cast=(GtkTreeIter *)

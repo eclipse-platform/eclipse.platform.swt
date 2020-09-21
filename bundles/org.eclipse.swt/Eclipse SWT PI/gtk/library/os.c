@@ -7144,7 +7144,15 @@ JNIEXPORT void JNICALL GTK_NATIVE(gtk_1label_1set_1line_1wrap)
 	(JNIEnv *env, jclass that, jlong arg0, jboolean arg1)
 {
 	GTK_NATIVE_ENTER(env, that, gtk_1label_1set_1line_1wrap_FUNC);
+/*
 	gtk_label_set_line_wrap((GtkLabel *)arg0, (gboolean)arg1);
+*/
+	{
+		GTK_LOAD_FUNCTION(fp, gtk_label_set_line_wrap)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(GtkLabel *, gboolean))fp)((GtkLabel *)arg0, (gboolean)arg1);
+		}
+	}
 	GTK_NATIVE_EXIT(env, that, gtk_1label_1set_1line_1wrap_FUNC);
 }
 #endif
@@ -7154,7 +7162,15 @@ JNIEXPORT void JNICALL GTK_NATIVE(gtk_1label_1set_1line_1wrap_1mode)
 	(JNIEnv *env, jclass that, jlong arg0, jint arg1)
 {
 	GTK_NATIVE_ENTER(env, that, gtk_1label_1set_1line_1wrap_1mode_FUNC);
+/*
 	gtk_label_set_line_wrap_mode((GtkLabel *)arg0, (PangoWrapMode)arg1);
+*/
+	{
+		GTK_LOAD_FUNCTION(fp, gtk_label_set_line_wrap_mode)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(GtkLabel *, PangoWrapMode))fp)((GtkLabel *)arg0, (PangoWrapMode)arg1);
+		}
+	}
 	GTK_NATIVE_EXIT(env, that, gtk_1label_1set_1line_1wrap_1mode_FUNC);
 }
 #endif
@@ -7197,20 +7213,48 @@ fail:
 }
 #endif
 
+#ifndef NO_gtk_1label_1set_1wrap
+JNIEXPORT void JNICALL GTK_NATIVE(gtk_1label_1set_1wrap)
+	(JNIEnv *env, jclass that, jlong arg0, jboolean arg1)
+{
+	GTK_NATIVE_ENTER(env, that, gtk_1label_1set_1wrap_FUNC);
+/*
+	gtk_label_set_wrap((GtkLabel *)arg0, (gboolean)arg1);
+*/
+	{
+		GTK_LOAD_FUNCTION(fp, gtk_label_set_wrap)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(GtkLabel *, gboolean))fp)((GtkLabel *)arg0, (gboolean)arg1);
+		}
+	}
+	GTK_NATIVE_EXIT(env, that, gtk_1label_1set_1wrap_FUNC);
+}
+#endif
+
+#ifndef NO_gtk_1label_1set_1wrap_1mode
+JNIEXPORT void JNICALL GTK_NATIVE(gtk_1label_1set_1wrap_1mode)
+	(JNIEnv *env, jclass that, jlong arg0, jint arg1)
+{
+	GTK_NATIVE_ENTER(env, that, gtk_1label_1set_1wrap_1mode_FUNC);
+/*
+	gtk_label_set_wrap_mode((GtkLabel *)arg0, (PangoWrapMode)arg1);
+*/
+	{
+		GTK_LOAD_FUNCTION(fp, gtk_label_set_wrap_mode)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(GtkLabel *, PangoWrapMode))fp)((GtkLabel *)arg0, (PangoWrapMode)arg1);
+		}
+	}
+	GTK_NATIVE_EXIT(env, that, gtk_1label_1set_1wrap_1mode_FUNC);
+}
+#endif
+
 #ifndef NO_gtk_1label_1set_1xalign
 JNIEXPORT void JNICALL GTK_NATIVE(gtk_1label_1set_1xalign)
 	(JNIEnv *env, jclass that, jlong arg0, jfloat arg1)
 {
 	GTK_NATIVE_ENTER(env, that, gtk_1label_1set_1xalign_FUNC);
-/*
 	gtk_label_set_xalign((GtkLabel *)arg0, (gfloat)arg1);
-*/
-	{
-		GTK_LOAD_FUNCTION(fp, gtk_label_set_xalign)
-		if (fp) {
-			((void (CALLING_CONVENTION*)(GtkLabel *, gfloat))fp)((GtkLabel *)arg0, (gfloat)arg1);
-		}
-	}
 	GTK_NATIVE_EXIT(env, that, gtk_1label_1set_1xalign_FUNC);
 }
 #endif
@@ -7220,15 +7264,7 @@ JNIEXPORT void JNICALL GTK_NATIVE(gtk_1label_1set_1yalign)
 	(JNIEnv *env, jclass that, jlong arg0, jfloat arg1)
 {
 	GTK_NATIVE_ENTER(env, that, gtk_1label_1set_1yalign_FUNC);
-/*
 	gtk_label_set_yalign((GtkLabel *)arg0, (gfloat)arg1);
-*/
-	{
-		GTK_LOAD_FUNCTION(fp, gtk_label_set_yalign)
-		if (fp) {
-			((void (CALLING_CONVENTION*)(GtkLabel *, gfloat))fp)((GtkLabel *)arg0, (gfloat)arg1);
-		}
-	}
 	GTK_NATIVE_EXIT(env, that, gtk_1label_1set_1yalign_FUNC);
 }
 #endif

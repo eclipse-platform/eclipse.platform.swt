@@ -567,6 +567,8 @@ char * GTK_nativeFunctionNames[] = {
 	"gtk_1label_1set_1text__JJ",
 	"gtk_1label_1set_1text__J_3B",
 	"gtk_1label_1set_1text_1with_1mnemonic",
+	"gtk_1label_1set_1wrap",
+	"gtk_1label_1set_1wrap_1mode",
 	"gtk_1label_1set_1xalign",
 	"gtk_1label_1set_1yalign",
 	"gtk_1list_1store_1append",

@@ -290,8 +290,13 @@ void createHandle (int index) {
 	}
 	if ((style & SWT.SEPARATOR) != 0) return;
 	if ((style & SWT.WRAP) != 0) {
-		GTK.gtk_label_set_line_wrap (labelHandle, true);
-		GTK.gtk_label_set_line_wrap_mode (labelHandle, OS.PANGO_WRAP_WORD_CHAR);
+		if (GTK.GTK4) {
+			GTK.gtk_label_set_wrap(labelHandle, true);
+			GTK.gtk_label_set_wrap_mode(labelHandle, OS.PANGO_WRAP_WORD_CHAR);
+		} else {
+			GTK.gtk_label_set_line_wrap (labelHandle, true);
+			GTK.gtk_label_set_line_wrap_mode (labelHandle, OS.PANGO_WRAP_WORD_CHAR);
+		}
 	}
 	// In GTK 3 font description is inherited from parent widget which is not how SWT has always worked,
 	// reset to default font to get the usual behavior

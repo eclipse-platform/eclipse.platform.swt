@@ -379,8 +379,13 @@ void createHandle (int index) {
 		}
 
 		if ((style & SWT.WRAP) != 0) {
-			GTK.gtk_label_set_line_wrap (labelHandle, true);
-			GTK.gtk_label_set_line_wrap_mode (labelHandle, OS.PANGO_WRAP_WORD_CHAR);
+			if (GTK.GTK4) {
+				GTK.gtk_label_set_wrap(labelHandle, true);
+				GTK.gtk_label_set_wrap_mode(labelHandle, OS.PANGO_WRAP_WORD_CHAR);
+			} else {
+				GTK.gtk_label_set_line_wrap (labelHandle, true);
+				GTK.gtk_label_set_line_wrap_mode (labelHandle, OS.PANGO_WRAP_WORD_CHAR);
+			}
 		}
 	}
 	if (GTK.GTK4) {
