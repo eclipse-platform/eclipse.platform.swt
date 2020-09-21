@@ -219,6 +219,7 @@ public class GTK extends OS {
 	/** @method flags=const */
 	public static final native long GTK_TYPE_TEXT_VIEW_ACCESSIBLE ();
 	public static final native boolean GTK_IS_ACCEL_LABEL(long obj);
+	public static final native boolean GTK_IS_BOX(long obj);
 	public static final native boolean GTK_IS_BUTTON(long obj);
 	public static final native boolean GTK_IS_LABEL(long obj);
 	public static final native boolean GTK_IS_IM_CONTEXT(long obj);
@@ -720,6 +721,8 @@ public class GTK extends OS {
 	 * @param color cast=(GdkRGBA *)
 	 */
 	public static final native void gtk_color_chooser_get_rgba(long chooser, GdkRGBA color);
+
+	/* GtkComboBox */
 	public static final native long gtk_combo_box_text_new();
 	public static final native long gtk_combo_box_text_new_with_entry();
 	/**
@@ -750,20 +753,7 @@ public class GTK extends OS {
 	* @param index cast=(gint)
 	*/
 	public static final native void gtk_combo_box_set_active(long combo_box, int index);
-	/**
-	 * @param combo_box cast=(GtkComboBox *)
-	 * @param width cast=(gint)
-	 */
-	/*
-	 * Do not use directly. Instead use Combo.gtk_combo_box_toggle_wrap(..)
-	 */
-	public static final native void gtk_combo_box_set_wrap_width(long combo_box, int width);
 
-	/**
-	 * @param combo_box cast=(GtkComboBox *)
-	 * @return cast=(gint)
-	 */
-	public static final native int gtk_combo_box_get_wrap_width(long combo_box);
 	/**
 	* @param combo_box cast=(GtkComboBox *)
 	*/
@@ -772,6 +762,28 @@ public class GTK extends OS {
 	* @param combo_box cast=(GtkComboBox *)
 	*/
 	public static final native void gtk_combo_box_popdown(long combo_box);
+
+	/* GtkComboBox [GTK3 only] */
+	/**
+	 * @method flags=dynamic
+	 * @param combo_box cast=(GtkComboBox *)
+	 * @param width cast=(gint)
+	 */
+	/* Do not use directly. Instead use Combo.gtk_combo_box_toggle_wrap(..) */
+	public static final native void gtk_combo_box_set_wrap_width(long combo_box, int width);
+	/**
+	 * @method flags=dynamic
+	 * @param combo_box cast=(GtkComboBox *)
+	 * @return cast=(gint)
+	 */
+	public static final native int gtk_combo_box_get_wrap_width(long combo_box);
+
+	/* GtkComboBox [GTK4 only] */
+	/**
+	 * @method flags=dynamic
+	 * @param combo_box cast=(GtkComboBox *)
+	 * */
+	public static final native long gtk_combo_box_get_child(long combo_box);
 
 
 	/* GtkContainer [GTK3 only] */
@@ -939,26 +951,16 @@ public class GTK extends OS {
 	 * @param position cast=(gint)
 	 */
 	public static final native void gtk_editable_set_position(long editable, int position);
-	/**
-	 * @param self cast=(GtkEntry *)
-	 * @param n_chars cast=(gint)
-	 */
-	public static final native void gtk_entry_set_width_chars(long self, int n_chars);
+
+	/* GtkEntry */
+	public static final native long gtk_entry_new();
 	/** @param entry cast=(GtkEntry *) */
 	public static final native char gtk_entry_get_invisible_char(long entry);
-	/** @param entry cast=(GtkEntry *) */
-	public static final native long gtk_entry_get_layout(long entry);
 	/**
 	 * @param entry cast=(GtkEntry *)
-	 * @param x cast=(gint *)
-	 * @param y cast=(gint *)
+	 * @param ch cast=(gint)
 	 */
-	public static final native void gtk_entry_get_layout_offsets(long entry, int[] x, int[] y);
-	/**
-	 * @param entry cast=(GtkEntry *)
-	 * @param index cast=(gint)
-	 */
-	public static final native int gtk_entry_text_index_to_layout_index(long entry, int index);
+	public static final native void gtk_entry_set_invisible_char(long entry, char ch);
 	/**
 	 * @param entry cast=(GtkEntry *)
 	 * @param icon_pos cast=(gint)
@@ -968,10 +970,12 @@ public class GTK extends OS {
 	/** @param entry cast=(GtkEntry *) */
 	public static final native int gtk_entry_get_max_length(long entry);
 	/** @param entry cast=(GtkEntry *) */
-	public static final native long gtk_entry_get_text(long entry);
-	/** @param entry cast=(GtkEntry *) */
 	public static final native boolean gtk_entry_get_visibility(long entry);
-	public static final native long gtk_entry_new();
+	/**
+	 * @param entry cast=(GtkEntry *)
+	 * @param visible cast=(gboolean)
+	 */
+	public static final native void gtk_entry_set_visibility(long entry, boolean visible);
 	/**
 	 * @param entry cast=(GtkEntry *)
 	 * @param xalign cast=(gfloat)
@@ -1002,9 +1006,9 @@ public class GTK extends OS {
 	public static final native void gtk_entry_set_icon_sensitive(long entry, int icon_pos, boolean sensitive);
 	/**
 	 * @param entry cast=(GtkEntry *)
-	 * @param ch cast=(gint)
+	 * @param text cast=(const gchar *)
 	 */
-	public static final native void gtk_entry_set_invisible_char(long entry, char ch);
+	public static final native void gtk_entry_set_placeholder_text(long entry, byte[] text);
 	/**
 	 * @param entry cast=(GtkEntry *)
 	 * @param max cast=(gint)
@@ -1015,21 +1019,72 @@ public class GTK extends OS {
 	 * @param tabs cast=(PangoTabArray *)
 	 */
 	public static final native void gtk_entry_set_tabs(long entry, long tabs);
+
+	/* GtkEntry [GTK3 only] */
 	/**
+	 * @method flags=dynamic
+	 * @param self cast=(GtkEntry *)
+	 * @param n_chars cast=(gint)
+	 */
+	public static final native void gtk_entry_set_width_chars(long self, int n_chars);
+	/**
+	 * @method flags=dynamic
+	 * @param entry cast=(GtkEntry *)
+	 */
+	public static final native long gtk_entry_get_layout(long entry);
+	/**
+	 * @method flags=dynamic
+	 * @param entry cast=(GtkEntry *)
+	 * @param x cast=(gint *)
+	 * @param y cast=(gint *)
+	 */
+	public static final native void gtk_entry_get_layout_offsets(long entry, int[] x, int[] y);
+	/**
+	 * @method flags=dynamic
+	 * @param entry cast=(GtkEntry *)
+	 * @param index cast=(gint)
+	 */
+	public static final native int gtk_entry_text_index_to_layout_index(long entry, int index);
+	/**
+	 * @method flags=dynamic
+	 * @param entry cast=(GtkEntry *)
+	 */
+	public static final native long gtk_entry_get_text(long entry);
+	/**
+	 * @method flags=dynamic
 	 * @param entry cast=(GtkEntry *)
 	 * @param text cast=(const gchar *)
 	 */
 	public static final native void gtk_entry_set_text(long entry, byte[] text);
+
+	/* GtkEntry [GTK4 only] */
 	/**
+	 * @method flags=dynamic
 	 * @param entry cast=(GtkEntry *)
-	 * @param text cast=(const gchar *)
+	 * @param buffer cast=(GtkEntryBuffer *)
 	 */
-	public static final native void gtk_entry_set_placeholder_text(long entry, byte[] text);
+	public static final native void gtk_entry_set_buffer(long entry, long buffer);
 	/**
+	 * @method flags=dynamic
 	 * @param entry cast=(GtkEntry *)
-	 * @param visible cast=(gboolean)
 	 */
-	public static final native void gtk_entry_set_visibility(long entry, boolean visible);
+	public static final native long gtk_entry_get_buffer(long entry);
+
+
+	/* GtkEntryBuffer */
+	/**
+	 * @param buffer cast=(GtkEntryBuffer *)
+	 * @param position cast=(guint)
+	 */
+	public static final native int gtk_entry_buffer_delete_text(long buffer, int position, int n_chars);
+	/**
+	 * @param buffer cast=(GtkEntryBuffer *)
+	 * @param chars cast=(const char *)
+	 */
+	public static final native void gtk_entry_buffer_set_text(long buffer, byte[] chars, int n_chars);
+	/** @param buffer cast=(GtkEntryBuffer *) */
+	public static final native long gtk_entry_buffer_get_text(long buffer);
+
 
 	/* GtkExpander */
 	/** @param label cast=(const gchar *) */
