@@ -91,7 +91,7 @@ public class BallTab extends AnimatedGraphicsTab {
 	public void next(int width, int height) {
 		for (int i = 0; i < bc.length; i++) {
 			if (bc[i] == null) return;
-			if (bc[i].prevx.size() == 0) {
+			if (bc[i].prevx.isEmpty()) {
 				bc[i].prevx.addLast(Float.valueOf(bc[i].x));
 				bc[i].prevy.addLast(Float.valueOf(bc[i].y));
 			} else if (bc[i].prevx.size() == bc[i].capacity) {
