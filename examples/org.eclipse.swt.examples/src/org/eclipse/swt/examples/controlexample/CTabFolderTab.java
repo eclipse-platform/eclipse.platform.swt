@@ -123,11 +123,7 @@ class CTabFolderTab extends Tab {
 		item.setText(ControlExample.getResourceString ("Item_Background_Color"));
 
 		shell.addDisposeListener(event -> {
-			if (selectionBackgroundColor != null) selectionBackgroundColor.dispose();
-			if (selectionForegroundColor != null) selectionForegroundColor.dispose();
 			if (itemFont != null) itemFont.dispose();
-			if (itemBackgroundColor != null) itemBackgroundColor.dispose();
-			if (itemForegroundColor != null) itemForegroundColor.dispose();
 			selectionBackgroundColor = null;
 			selectionForegroundColor = null;
 			itemFont = null;
