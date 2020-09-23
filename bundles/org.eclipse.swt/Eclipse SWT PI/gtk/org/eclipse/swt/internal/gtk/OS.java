@@ -2285,8 +2285,19 @@ public static final native long g_date_time_new_local(int year, int month, int d
 /** @param file cast=(GFile *) */
 public static final native long g_file_get_path(long file);
 
+
 /* GMenu */
 public static final native long g_menu_new();
+/**
+ * @param label cast=(const gchar *)
+ * @param submenu cast=(GMenuModel *)
+ */
+public static final native long g_menu_item_new_submenu(byte[] label, long submenu);
+/**
+ * @param label cast=(const gchar *)
+ * @param detailed_action cast=(const gchar *)
+ */
+public static final native long g_menu_item_new(byte[] label, byte[] detailed_action);
 /**
  * @param menu_item cast=(GMenuItem *)
  * @param submenu cast=(GMenuModel *)
@@ -2294,9 +2305,20 @@ public static final native long g_menu_new();
 public static final native void g_menu_item_set_submenu(long menu_item, long submenu);
 /**
  * @param menu cast=(GMenu *)
- * @param label cast=(const gchar *)
- * @param detailed_action cast=(const gchar *)
+ * @param item cast=(GMenuItem *)
  */
-public static final native void g_menu_insert(long menu, int position, long label, long detailed_action);
+public static final native void g_menu_insert_item(long menu, int position, long item);
+/** @param menu cast=(GMenu *) */
+public static final native void g_menu_remove(long menu, int position);
+/**
+ * @param menu_item cast=(GMenuItem *)
+ * @param label cast=(const gchar *)
+ */
+public static final native void g_menu_item_set_label(long menu_item, byte[] label);
+
+
+/* GMenuModel */
+/** @param model cast=(GMenuModel *) */
+public static final native int g_menu_model_get_n_items(long model);
 
 }

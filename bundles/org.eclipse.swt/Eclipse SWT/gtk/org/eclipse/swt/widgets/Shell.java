@@ -2478,22 +2478,27 @@ public void setMenuBar (Menu menu) {
 	checkWidget();
 	if (menuBar == menu) return;
 	boolean both = menu != null && menuBar != null;
+
 	if (menu != null) {
-		if ((menu.style & SWT.BAR) == 0) error (SWT.ERROR_MENU_NOT_BAR);
-		if (menu.parent != this) error (SWT.ERROR_INVALID_PARENT);
+		if ((menu.style & SWT.BAR) == 0) error(SWT.ERROR_MENU_NOT_BAR);
+		if (menu.parent != this) error(SWT.ERROR_INVALID_PARENT);
 	}
+
 	if (menuBar != null) {
 		long menuHandle = menuBar.handle;
 		GTK.gtk_widget_hide (menuHandle);
-		destroyAccelGroup ();
+		if (!GTK.GTK4) destroyAccelGroup ();
 	}
 	menuBar = menu;
 	if (menuBar != null) {
 		long menuHandle = menu.handle;
 		GTK.gtk_widget_show (menuHandle);
-		createAccelGroup ();
-		menuBar.addAccelerators (accelGroup);
+		if (!GTK.GTK4) {
+			createAccelGroup ();
+			menuBar.addAccelerators (accelGroup);
+		}
 	}
+
 	GtkAllocation allocation = new GtkAllocation ();
 	GTK.gtk_widget_get_allocation (vboxHandle, allocation);
 	int width = allocation.width;

@@ -44,13 +44,15 @@ import org.eclipse.swt.internal.gtk.*;
  * @noextend This class is not intended to be subclassed by clients.
  */
 public class Menu extends Widget {
-	long modelHandle; // used in GTK4 only
 	int x, y;
 	boolean hasLocation;
 	MenuItem cascade, selectedItem;
 	Decorations parent;
 	ImageList imageList;
 	int poppedUpCount;
+
+	/** GTK4 only field */
+	long modelHandle;
 
 /**
  * Constructs a new instance of this class given its parent,
@@ -440,31 +442,36 @@ public void addHelpListener (HelpListener listener) {
 void createHandle (int index) {
 	state |= HANDLE;
 
-	if (GTK.GTK4) modelHandle = OS.g_menu_new();
+	if (GTK.GTK4) {
+		int bits = SWT.BAR | SWT.DROP_DOWN | SWT.POP_UP;
+		modelHandle = OS.g_menu_new();
+		if (modelHandle == 0) error(SWT.ERROR_NO_HANDLES);
 
-	if ((style & SWT.BAR) != 0) {
-		if (GTK.GTK4) {
-			handle = GTK.gtk_popover_menu_bar_new_from_model(modelHandle);
-		} else {
-			handle = GTK.gtk_menu_bar_new ();
-		}
-		if (handle == 0) error (SWT.ERROR_NO_HANDLES);
+		switch (style & bits) {
+			case SWT.BAR:
+				handle = GTK.gtk_popover_menu_bar_new_from_model(modelHandle);
+				if (handle == 0) error(SWT.ERROR_NO_HANDLES);
 
-		long vboxHandle = parent.vboxHandle;
-		if (GTK.GTK4) {
-			GTK.gtk_box_append(vboxHandle, handle);
-		} else {
-			GTK.gtk_container_add (vboxHandle, handle);
+				GTK.gtk_box_prepend(parent.vboxHandle, handle);
+				break;
+			case SWT.DROP_DOWN:
+				handle = modelHandle;
+				break;
+			default:
+				handle = GTK.gtk_popover_menu_new_from_model(modelHandle);
+				if (handle == 0) error(SWT.ERROR_NO_HANDLES);
 		}
-		gtk_box_set_child_packing (vboxHandle, handle, false, true, 0, GTK.GTK_PACK_START);
 	} else {
-		if (GTK.GTK4) {
-			handle = GTK.gtk_popover_menu_new_from_model(modelHandle);
-		} else {
-			handle = GTK.gtk_menu_new ();
-		}
+		if ((style & SWT.BAR) != 0) {
+			handle = GTK.gtk_menu_bar_new();
+			if (handle == 0) error(SWT.ERROR_NO_HANDLES);
 
-		if (handle == 0) error (SWT.ERROR_NO_HANDLES);
+			long vboxHandle = parent.vboxHandle;
+			GTK.gtk_container_add(vboxHandle, handle);
+			gtk_box_set_child_packing(vboxHandle, handle, false, true, 0, GTK.GTK_PACK_START);
+		} else {
+			handle = GTK.gtk_menu_new();
+		}
 	}
 }
 
@@ -606,22 +613,16 @@ public MenuItem getItem (int index) {
 public int getItemCount () {
 	checkWidget();
 
-	int count = 0;
 	if (GTK.GTK4) {
-		long itemHandle = GTK.gtk_widget_get_first_child(handle);
-		if (itemHandle == 0) return 0;
-		while (itemHandle != 0) {
-			count++;
-			itemHandle = GTK.gtk_widget_get_next_sibling(itemHandle);
-		}
+		return OS.g_menu_model_get_n_items(modelHandle);
 	} else {
+		int count = 0;
 		long list = GTK.gtk_container_get_children (handle);
 		if (list == 0) return 0;
 		count = OS.g_list_length (list);
 		OS.g_list_free (list);
+		return Math.max(0, count);
 	}
-
-	return Math.max(0, count);
 }
 
 /**

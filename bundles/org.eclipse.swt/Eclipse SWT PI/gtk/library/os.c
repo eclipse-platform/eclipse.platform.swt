@@ -16096,13 +16096,62 @@ JNIEXPORT jlong JNICALL OS_NATIVE(g_1malloc)
 }
 #endif
 
-#ifndef NO_g_1menu_1insert
-JNIEXPORT void JNICALL OS_NATIVE(g_1menu_1insert)
-	(JNIEnv *env, jclass that, jlong arg0, jint arg1, jlong arg2, jlong arg3)
+#ifndef NO_g_1menu_1insert_1item
+JNIEXPORT void JNICALL OS_NATIVE(g_1menu_1insert_1item)
+	(JNIEnv *env, jclass that, jlong arg0, jint arg1, jlong arg2)
 {
-	OS_NATIVE_ENTER(env, that, g_1menu_1insert_FUNC);
-	g_menu_insert((GMenu *)arg0, arg1, (const gchar *)arg2, (const gchar *)arg3);
-	OS_NATIVE_EXIT(env, that, g_1menu_1insert_FUNC);
+	OS_NATIVE_ENTER(env, that, g_1menu_1insert_1item_FUNC);
+	g_menu_insert_item((GMenu *)arg0, arg1, (GMenuItem *)arg2);
+	OS_NATIVE_EXIT(env, that, g_1menu_1insert_1item_FUNC);
+}
+#endif
+
+#ifndef NO_g_1menu_1item_1new
+JNIEXPORT jlong JNICALL OS_NATIVE(g_1menu_1item_1new)
+	(JNIEnv *env, jclass that, jbyteArray arg0, jbyteArray arg1)
+{
+	jbyte *lparg0=NULL;
+	jbyte *lparg1=NULL;
+	jlong rc = 0;
+	OS_NATIVE_ENTER(env, that, g_1menu_1item_1new_FUNC);
+	if (arg0) if ((lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL)) == NULL) goto fail;
+	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	rc = (jlong)g_menu_item_new((const gchar *)lparg0, (const gchar *)lparg1);
+fail:
+	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	if (arg0 && lparg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
+	OS_NATIVE_EXIT(env, that, g_1menu_1item_1new_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_g_1menu_1item_1new_1submenu
+JNIEXPORT jlong JNICALL OS_NATIVE(g_1menu_1item_1new_1submenu)
+	(JNIEnv *env, jclass that, jbyteArray arg0, jlong arg1)
+{
+	jbyte *lparg0=NULL;
+	jlong rc = 0;
+	OS_NATIVE_ENTER(env, that, g_1menu_1item_1new_1submenu_FUNC);
+	if (arg0) if ((lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL)) == NULL) goto fail;
+	rc = (jlong)g_menu_item_new_submenu((const gchar *)lparg0, (GMenuModel *)arg1);
+fail:
+	if (arg0 && lparg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
+	OS_NATIVE_EXIT(env, that, g_1menu_1item_1new_1submenu_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_g_1menu_1item_1set_1label
+JNIEXPORT void JNICALL OS_NATIVE(g_1menu_1item_1set_1label)
+	(JNIEnv *env, jclass that, jlong arg0, jbyteArray arg1)
+{
+	jbyte *lparg1=NULL;
+	OS_NATIVE_ENTER(env, that, g_1menu_1item_1set_1label_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	g_menu_item_set_label((GMenuItem *)arg0, (const gchar *)lparg1);
+fail:
+	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	OS_NATIVE_EXIT(env, that, g_1menu_1item_1set_1label_FUNC);
 }
 #endif
 
@@ -16116,6 +16165,18 @@ JNIEXPORT void JNICALL OS_NATIVE(g_1menu_1item_1set_1submenu)
 }
 #endif
 
+#ifndef NO_g_1menu_1model_1get_1n_1items
+JNIEXPORT jint JNICALL OS_NATIVE(g_1menu_1model_1get_1n_1items)
+	(JNIEnv *env, jclass that, jlong arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, g_1menu_1model_1get_1n_1items_FUNC);
+	rc = (jint)g_menu_model_get_n_items((GMenuModel *)arg0);
+	OS_NATIVE_EXIT(env, that, g_1menu_1model_1get_1n_1items_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_g_1menu_1new
 JNIEXPORT jlong JNICALL OS_NATIVE(g_1menu_1new)
 	(JNIEnv *env, jclass that)
@@ -16125,6 +16186,16 @@ JNIEXPORT jlong JNICALL OS_NATIVE(g_1menu_1new)
 	rc = (jlong)g_menu_new();
 	OS_NATIVE_EXIT(env, that, g_1menu_1new_FUNC);
 	return rc;
+}
+#endif
+
+#ifndef NO_g_1menu_1remove
+JNIEXPORT void JNICALL OS_NATIVE(g_1menu_1remove)
+	(JNIEnv *env, jclass that, jlong arg0, jint arg1)
+{
+	OS_NATIVE_ENTER(env, that, g_1menu_1remove_FUNC);
+	g_menu_remove((GMenu *)arg0, arg1);
+	OS_NATIVE_EXIT(env, that, g_1menu_1remove_FUNC);
 }
 #endif
 

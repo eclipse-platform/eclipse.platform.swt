@@ -59,6 +59,10 @@ public class MenuItem extends Item {
 	int accelerator, userId;
 	String toolTipText;
 
+	/** GTK4 only fields */
+	long modelHandle;
+	int parentMenuPosition;
+
 /**
  * Constructs a new instance of this class given its parent
  * (which must be a <code>Menu</code>) and a style value
@@ -260,11 +264,22 @@ void createHandle (int index) {
 	int bits = SWT.CHECK | SWT.RADIO | SWT.PUSH | SWT.SEPARATOR | SWT.CASCADE;
 
 	if (GTK.GTK4) {
-		/* TODO: Need to specify the correct GAction in order to get the different styles
-		 * SWT.SEPARATOR is not explicitly represented in the menu model, instead inserted between any two
-		 * non-empty sections of the menu
-		 * REF: https://developer.gnome.org/gio/stable/GMenuModel.html#GMenuModel-struct */
-		OS.g_menu_insert(parent.modelHandle, index, 0, 0);
+		modelHandle = OS.g_menu_new();
+
+		switch (style & bits) {
+			case SWT.SEPARATOR:
+
+			case SWT.CASCADE:
+				handle = OS.g_menu_item_new_submenu(null, modelHandle);
+				break;
+			case SWT.PUSH:
+			default:
+				handle = OS.g_menu_item_new(null, null);
+				break;
+		}
+
+		OS.g_menu_insert_item(parent.modelHandle, index, handle);
+		parentMenuPosition = index;
 	} else {
 		switch (style & bits) {
 			case SWT.SEPARATOR:
@@ -947,31 +962,36 @@ public void setMenu (Menu menu) {
 	/* Assign the new menu */
 	Menu oldMenu = this.menu;
 	if (oldMenu == menu) return;
-	long accelGroup = getAccelGroup ();
-	if (accelGroup != 0) removeAccelerators (accelGroup);
-	if (oldMenu != null) {
-		oldMenu.cascade = null;
-		/*
-		* Add a reference to the menu we are about
-		* to replace or GTK will destroy it.
-		*/
-		OS.g_object_ref (oldMenu.handle);
 
-		if (GTK.GTK4) {
-			OS.g_menu_item_set_submenu(handle, 0);
-		} else {
-			GTK.gtk_menu_item_set_submenu (handle, 0);
-		}
-	}
-	if ((this.menu = menu) != null) {
-		menu.cascade = this;
-		if (GTK.GTK4) {
+	if (GTK.GTK4) {
+		if (menu != null) {
+			menu.cascade = this;
 			OS.g_menu_item_set_submenu(handle, menu.modelHandle);
 		} else {
+			oldMenu.cascade = null;
+			OS.g_menu_item_set_submenu(handle, 0);
+		}
+
+		OS.g_menu_remove(parent.modelHandle, parentMenuPosition);
+		OS.g_menu_insert_item(parent.modelHandle, parentMenuPosition, handle);
+	} else {
+		long accelGroup = getAccelGroup ();
+		if (accelGroup != 0) removeAccelerators (accelGroup);
+		if (oldMenu != null) {
+			oldMenu.cascade = null;
+			/*
+			* Add a reference to the menu we are about
+			* to replace or GTK will destroy it.
+			*/
+			OS.g_object_ref (oldMenu.handle);
+			GTK.gtk_menu_item_set_submenu (handle, 0);
+		}
+		if ((this.menu = menu) != null) {
+			menu.cascade = this;
 			GTK.gtk_menu_item_set_submenu (handle, menu.handle);
 		}
+		if (accelGroup != 0) addAccelerators (accelGroup);
 	}
-	if (accelGroup != 0) addAccelerators (accelGroup);
 }
 
 @Override
@@ -1056,27 +1076,35 @@ public void setSelection (boolean selected) {
 @Override
 public void setText (String string) {
 	checkWidget();
-	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
+	if (string == null) error(SWT.ERROR_NULL_ARGUMENT);
 	if ((style & SWT.SEPARATOR) != 0) return;
-	if (text.equals (string)) return;
-	super.setText (string);
-	int index = string.indexOf ('\t');
+	if (text.equals(string)) return;
+	super.setText(string);
+
+	int index = string.indexOf('\t');
 	if (index != -1) {
-		string = string.substring (0, index);
+		string = string.substring(0, index);
 	}
-	char [] chars = fixMnemonic (string);
-	byte [] buffer = Converter.wcsToMbcs (chars, true);
-	if (labelHandle != 0 && GTK.GTK_IS_LABEL (labelHandle)) {
-		GTK.gtk_label_set_text_with_mnemonic (labelHandle, buffer);
-		if (GTK.GTK_IS_ACCEL_LABEL (labelHandle)) {
-			MaskKeysym maskKeysym = getMaskKeysym();
-			if (maskKeysym != null) {
-				GTK.gtk_accel_label_set_accel_widget (labelHandle, handle);
-				GTK.gtk_accel_label_set_accel (labelHandle,
-						maskKeysym.keysym, maskKeysym.mask);
+	char[] chars = fixMnemonic(string);
+	byte[] buffer = Converter.wcsToMbcs(chars, true);
+
+	if (GTK.GTK4) {
+		OS.g_menu_item_set_label(handle, buffer);
+		OS.g_menu_remove(parent.modelHandle, parentMenuPosition);
+		OS.g_menu_insert_item(parent.modelHandle, parentMenuPosition, handle);
+	} else {
+		if (labelHandle != 0 && GTK.GTK_IS_LABEL (labelHandle)) {
+			GTK.gtk_label_set_text_with_mnemonic (labelHandle, buffer);
+			if (GTK.GTK_IS_ACCEL_LABEL (labelHandle)) {
+				MaskKeysym maskKeysym = getMaskKeysym();
+				if (maskKeysym != null) {
+					GTK.gtk_accel_label_set_accel_widget (labelHandle, handle);
+					GTK.gtk_accel_label_set_accel (labelHandle,
+							maskKeysym.keysym, maskKeysym.mask);
+				}
+				// A workaround for Ubuntu Unity global menu
+				OS.g_signal_emit_by_name(handle, OS.accel_closures_changed);
 			}
-			// A workaround for Ubuntu Unity global menu
-			OS.g_signal_emit_by_name(handle, OS.accel_closures_changed);
 		}
 	}
 }
