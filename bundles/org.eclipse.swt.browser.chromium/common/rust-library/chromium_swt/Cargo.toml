@@ -4,7 +4,7 @@ version = "59.0.0"
 authors = ["Equo <https://www.equoplatform.com/>", "Guillermo Zunino <guillez@gmail.com>"]
 
 [lib]
-name = "chromium_swt_4940r6"
+name = "chromium_swt_4940r7"
 crate-type = ["dylib"]
 path = "src/lib.rs"
 
