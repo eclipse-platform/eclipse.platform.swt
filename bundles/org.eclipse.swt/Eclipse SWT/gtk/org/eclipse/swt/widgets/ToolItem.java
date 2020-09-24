@@ -43,6 +43,10 @@ import org.eclipse.swt.internal.gtk.*;
 public class ToolItem extends Item {
 	long arrowHandle, labelHandle, imageHandle;
 	long eventHandle, proxyMenuItem, provider;
+
+	/** GTK4 only field, used to keep track of the containing box of the image & label */
+	long boxHandle;
+
 	ToolBar parent;
 	Control control;
 	Image hotImage, disabledImage;
@@ -190,45 +194,49 @@ protected void checkSubclass () {
 void createHandle (int index) {
 	state |= HANDLE;
 	int bits = SWT.SEPARATOR | SWT.RADIO | SWT.CHECK | SWT.PUSH | SWT.DROP_DOWN;
-	if ((style & SWT.SEPARATOR) == 0) {
-		labelHandle = GTK.gtk_label_new_with_mnemonic (null);
-		if (labelHandle == 0) error (SWT.ERROR_NO_HANDLES);
-		imageHandle = GTK.gtk_image_new_from_pixbuf (0);
-		if (imageHandle == 0) error (SWT.ERROR_NO_HANDLES);
-	}
+
 	switch (style & bits) {
 		case SWT.SEPARATOR:
 			if (GTK.GTK4) {
 				handle = GTK.gtk_separator_new(GTK.GTK_ORIENTATION_VERTICAL);
-				if (handle == 0) error (SWT.ERROR_NO_HANDLES);
+				if (handle == 0) error(SWT.ERROR_NO_HANDLES);
 			} else {
 				handle = GTK.gtk_separator_tool_item_new ();
-				if (handle == 0) error (SWT.ERROR_NO_HANDLES);
-				GTK.gtk_separator_tool_item_set_draw (handle, true);
+				if (handle == 0) error(SWT.ERROR_NO_HANDLES);
+				GTK.gtk_separator_tool_item_set_draw(handle, true);
 			}
 			break;
 		case SWT.DROP_DOWN:
 			if (GTK.GTK4) {
-				handle = GTK.gtk_menu_button_new();
+				handle = GTK.gtk_box_new(GTK.GTK_ORIENTATION_HORIZONTAL, 0);
+				if (handle == 0) error(SWT.ERROR_NO_HANDLES);
+				long dropDownButton = GTK.gtk_menu_button_new();
+				if (dropDownButton == 0) error(SWT.ERROR_NO_HANDLES);
+				long buttonHandle = GTK.gtk_button_new();
+				if (buttonHandle == 0) error(SWT.ERROR_NO_HANDLES);
+				boxHandle = GTK.gtk_box_new(GTK.GTK_ORIENTATION_VERTICAL, 0);
+				if (boxHandle == 0) error(SWT.ERROR_NO_HANDLES);
+				GTK.gtk_button_set_child(buttonHandle, boxHandle);
+
+				GTK.gtk_box_append(handle, buttonHandle);
+				GTK.gtk_box_append(handle, dropDownButton);
+
+				arrowHandle = GTK.gtk_widget_get_first_child(dropDownButton);
 			} else {
 				handle = GTK.gtk_menu_tool_button_new(0, null);
+				if (handle == 0) error(SWT.ERROR_NO_HANDLES);
+
+				long child = GTK.gtk_bin_get_child(handle);
+				long list = GTK.gtk_container_get_children(child);
+				arrowHandle = OS.g_list_nth_data(list, 1);
 			}
-			if (handle == 0) error(SWT.ERROR_NO_HANDLES);
 
 			/*
 			 * Feature in GTK. The arrow button of DropDown tool-item is
 			 * disabled when it does not contain menu. The fix is to
 			 * find the arrow button handle and enable it.
 			 */
-			if (GTK.GTK4) {
-				arrowHandle = GTK.gtk_widget_get_first_child(handle);
-			} else {
-				long child = GTK.gtk_bin_get_child(handle);
-				long list = GTK.gtk_container_get_children(child);
-				arrowHandle = OS.g_list_nth_data(list, 1);
-			}
 			if (arrowHandle != 0) GTK.gtk_widget_set_sensitive (arrowHandle, true);
-
 			break;
 		case SWT.RADIO:
 			/*
@@ -241,39 +249,48 @@ void createHandle (int index) {
 			if (GTK.GTK4) {
 				handle = GTK.gtk_toggle_button_new();
 			} else {
-				handle = GTK.gtk_toggle_tool_button_new ();
+				handle = GTK.gtk_toggle_tool_button_new();
 			}
 
-			if (handle == 0) error (SWT.ERROR_NO_HANDLES);
+			if (handle == 0) error(SWT.ERROR_NO_HANDLES);
 			break;
 		case SWT.PUSH:
 		default:
 			if (GTK.GTK4) {
 				handle = GTK.gtk_button_new();
+				if (handle == 0) error(SWT.ERROR_NO_HANDLES);
+				boxHandle = GTK.gtk_box_new(GTK.GTK_ORIENTATION_VERTICAL, 0);
+				if (boxHandle == 0) error(SWT.ERROR_NO_HANDLES);
+
+				GTK.gtk_button_set_child(handle, boxHandle);
 			} else {
 				handle = GTK.gtk_tool_button_new (0, null);
+				if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 			}
 
-			if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 			break;
 	}
-	if (labelHandle != 0) {
+
+	if ((style & SWT.SEPARATOR) == 0) {
+		labelHandle = GTK.gtk_label_new_with_mnemonic(null);
+		if (labelHandle == 0) error(SWT.ERROR_NO_HANDLES);
+		imageHandle = GTK.gtk_image_new_from_pixbuf(0);
+		if (imageHandle == 0) error(SWT.ERROR_NO_HANDLES);
+
 		if (GTK.GTK4) {
-			/* TODO: GTK4 button has no way of explicitly setting the
-			 * label widget. The solution is probably to create buttons with
-			 * labels and get the labelHandle by traversing the children of the
-			 * button widget. */
+			GTK.gtk_widget_set_valign(boxHandle, GTK.GTK_ALIGN_CENTER);
+
+			GTK.gtk_box_append(boxHandle, imageHandle);
+			GTK.gtk_box_append(boxHandle, labelHandle);
+
+			GTK.gtk_widget_hide(imageHandle);
+			GTK.gtk_widget_hide(labelHandle);
 		} else {
+			GTK.gtk_tool_button_set_icon_widget(handle, imageHandle);
 			GTK.gtk_tool_button_set_label_widget(handle, labelHandle);
 		}
 	}
-	if (imageHandle != 0) {
-		if (GTK.GTK4) {
-			GTK.gtk_button_set_child(handle, imageHandle);
-		} else {
-			GTK.gtk_tool_button_set_icon_widget(handle, imageHandle);
-		}
-	}
+
 	if ((parent.state & FONT) != 0) {
 		setFontDescription (parent.getFontDescription());
 	}
@@ -289,7 +306,7 @@ void createHandle (int index) {
 	 * the largest one in the ToolBar. See bug 548331, 395296 for more information.
 	 */
 	if (GTK.GTK4) {
-		GTK.gtk_box_set_homogeneous(handle, false);
+		GTK.gtk_box_set_homogeneous(parent.handle, false);
 	} else {
 		GTK.gtk_tool_item_set_homogeneous(handle, false);
 	}
@@ -807,7 +824,7 @@ void hookEvents () {
 	 * such as button-press, enter-notify to it. The fix is to assign
 	 * the listener to child (GtkButton) of the tool-item.
 	 */
-	eventHandle = GTK.gtk_bin_get_child(handle);
+	eventHandle = GTK.GTK4 ? GTK.gtk_widget_get_first_child(handle) : GTK.gtk_bin_get_child(handle);
 	if ((style & SWT.DROP_DOWN) != 0) {
 		if (GTK.GTK4) {
 			eventHandle = GTK.gtk_widget_get_first_child(handle);
@@ -822,25 +839,24 @@ void hookEvents () {
 			if (arrowHandle != 0) OS.g_signal_connect_closure (arrowHandle, OS.clicked, display.getClosure (CLICKED), false);
 		}
 	}
-	OS.g_signal_connect_closure (handle, OS.create_menu_proxy, display.getClosure (CREATE_MENU_PROXY), false);
-	if (GTK.GTK4) {
-		long keyController = GTK.gtk_event_controller_key_new();
-		GTK.gtk_widget_add_controller(eventHandle, keyController);
-		GTK.gtk_event_controller_set_propagation_phase(keyController, GTK.GTK_PHASE_TARGET);
 
-		long focusAddress = display.focusCallback.getAddress();
-		OS.g_signal_connect (keyController, OS.focus_in, focusAddress, FOCUS_IN);
-		OS.g_signal_connect (keyController, OS.focus_out, focusAddress, FOCUS_OUT);
+	if (GTK.GTK4) {
+		long focusController = GTK.gtk_event_controller_focus_new();
+		GTK.gtk_widget_add_controller(eventHandle, focusController);
+		GTK.gtk_event_controller_set_propagation_phase(focusController, GTK.GTK_PHASE_TARGET);
+
+		OS.g_signal_connect (focusController, OS.enter, display.focusProc, FOCUS_IN);
+		OS.g_signal_connect (focusController, OS.leave, display.focusProc, FOCUS_OUT);
 
 		long motionController = GTK.gtk_event_controller_motion_new();
 		GTK.gtk_widget_add_controller(eventHandle, motionController);
 		GTK.gtk_event_controller_set_propagation_phase(motionController, GTK.GTK_PHASE_TARGET);
 
-		long enterAddress = display.enterMotionScrollCallback.getAddress();
-		long leaveAddress = display.leaveCallback.getAddress();
-		OS.g_signal_connect (motionController, OS.enter, enterAddress, ENTER);
-		OS.g_signal_connect (motionController, OS.leave, leaveAddress, LEAVE);
+		OS.g_signal_connect (motionController, OS.enter, display.enterMotionScrollProc, ENTER);
+		OS.g_signal_connect (motionController, OS.leave, display.leaveProc, LEAVE);
 	} else {
+		OS.g_signal_connect_closure (handle, OS.create_menu_proxy, display.getClosure (CREATE_MENU_PROXY), false);
+
 		OS.g_signal_connect_closure_by_id (eventHandle, display.signalIds [FOCUS_IN_EVENT], 0, display.getClosure (FOCUS_IN_EVENT), false);
 		OS.g_signal_connect_closure_by_id (eventHandle, display.signalIds [FOCUS_OUT_EVENT], 0, display.getClosure (FOCUS_OUT_EVENT), false);
 
@@ -1200,10 +1216,12 @@ void _setImage (Image image) {
 			imageList.put (imageIndex, image);
 		}
 
+		if (GTK.GTK4) GTK.gtk_widget_show(imageHandle);
 		GTK.gtk_image_set_from_pixbuf(imageHandle, imageList.getPixbuf(imageIndex));
 	} else {
-		if (GTK.GTK4) {
+		if(GTK.GTK4) {
 			GTK.gtk_image_clear(imageHandle);
+			GTK.gtk_widget_hide(imageHandle);
 		} else {
 			GTK.gtk_image_set_from_surface(imageHandle, 0);
 		}
@@ -1311,7 +1329,14 @@ public void setText (String string) {
 	if (labelHandle == 0) return;
 	char [] chars = fixMnemonic (string);
 	byte [] buffer = Converter.wcsToMbcs (chars, true);
-	GTK.gtk_label_set_text_with_mnemonic (labelHandle, buffer);
+
+	if (GTK.GTK4) {
+		GTK.gtk_widget_show(labelHandle);
+		GTK.gtk_label_set_text_with_mnemonic(labelHandle, buffer);
+	} else {
+		GTK.gtk_label_set_text_with_mnemonic(labelHandle, buffer);
+	}
+
 	/*
 	 * Only set important if this ToolItem actually has text.
 	 * See bug 543895.
@@ -1432,29 +1457,25 @@ void setWidthInPixels (int width) {
 }
 
 void showWidget (int index) {
-	if (handle != 0) GTK.gtk_widget_show (handle);
-	if (labelHandle != 0) GTK.gtk_widget_show (labelHandle);
-	if (imageHandle != 0) GTK.gtk_widget_show (imageHandle);
-
 	if (GTK.GTK4) {
 		if (index == 0) {
 			GTK.gtk_box_prepend(parent.handle, handle);
 		} else if (index < 0) {
 			GTK.gtk_box_append(parent.handle, handle);
 		} else {
-			/* TODO: This implementation of inserting the widget at a position
-			 * index in the GtkBox may not work if gtk_widget_get_next_sibling/_first_child
-			 * does not work as assumed */
-			long sibling = GTK.gtk_widget_get_first_child(parent.handle);
+			for (long sibling = GTK.gtk_widget_get_first_child(parent.handle); sibling != 0; sibling = GTK.gtk_widget_get_next_sibling(sibling)) {
+				if (index == 1) {
+					GTK.gtk_box_insert_child_after(parent.handle, handle, sibling);
+					break;
+				}
 
-			while (index > 0) {
-				sibling = GTK.gtk_widget_get_next_sibling(sibling);
 				index--;
 			}
-
-			GTK.gtk_box_insert_child_after(parent.handle, handle, sibling);
 		}
 	} else {
+		if (handle != 0) GTK.gtk_widget_show (handle);
+		if (labelHandle != 0) GTK.gtk_widget_show (labelHandle);
+		if (imageHandle != 0) GTK.gtk_widget_show (imageHandle);
 		GTK.gtk_toolbar_insert(parent.handle, handle, index);
 	}
 }
