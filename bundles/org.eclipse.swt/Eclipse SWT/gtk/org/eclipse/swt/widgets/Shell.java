@@ -717,9 +717,11 @@ Rectangle computeTrimInPixels (int x, int y, int width, int height) {
 void createHandle (int index) {
 	state |= HANDLE | CANVAS;
 	if (shellHandle == 0) {
+		boolean isChildShell = parent != null;
+
 		if (handle == 0) {
 			int type = GTK.GTK_WINDOW_TOPLEVEL;
-			if (parent != null && (style & SWT.ON_TOP) != 0) type = GTK.GTK_WINDOW_POPUP;
+			if (isChildShell && (style & SWT.ON_TOP) != 0) type = GTK.GTK_WINDOW_POPUP;
 			if (GTK.GTK4) {
 				// TODO: GTK4 need to handle for GTK_WINDOW_POPUP type
 				shellHandle = GTK.gtk_window_new();
@@ -730,59 +732,68 @@ void createHandle (int index) {
 			shellHandle = GTK.gtk_plug_new (handle);
 		}
 		if (shellHandle == 0) error (SWT.ERROR_NO_HANDLES);
-		if (parent != null) {
-			/*
-			 * Problems with GTK_WINDOW_POPUP attached to another GTK_WINDOW_POPUP parent
-			 * 1) Bug 530138: GTK_WINDOW_POPUP attached to a GTK_WINDOW_POPUP parent
-			 * gets positioned relatively to the GTK_WINDOW_POPUP. We want to position it
-			 * relatively to the GTK_WINDOW_TOPLEVEL surface. Fix is to set the child popup's transient
-			 * parent to the top level window.
-			 *
-			 * 2) Bug 540166: When a parent popup is destroyed, the child popup sometimes does not
-			 * get destroyed and is stuck until its transient top level parent gets destroyed.
-			 * Fix is to implement a similar gtk_window_set_destroy_with_parent with its *logical*
-			 * parent by connecting a "destroy" signal.
-			 */
-			if (!OS.isX11()) {
-				Composite topLevelParent = parent;
-				while (topLevelParent != null && (topLevelParent.style & SWT.ON_TOP) != 0) {
-					topLevelParent = parent.getParent();
-				}
-				// transient parent must be the a toplevel window to position correctly
-				if (topLevelParent != null) {
-					GTK.gtk_window_set_transient_for(shellHandle, topLevelParent.topHandle());
-				} else {
-					GTK.gtk_window_set_transient_for(shellHandle, parent.topHandle());
-				}
-				// this marks the logical parent
-				GTK.gtk_window_set_attached_to (shellHandle, parent.topHandle());
-				// implements the gtk_window_set_destroy_with_parent for the *logical* parent
-				if (parent != topLevelParent && isMappedToPopup()) {
-					parent.popupChild = this;
-				}
-			} else {
-				GTK.gtk_window_set_transient_for (shellHandle, parent.topHandle ());
-			}
-			GTK.gtk_window_set_destroy_with_parent (shellHandle, true);
-			// if child shells are minimizable, we want them to have a
-			// taskbar icon, so they can be unminimized
-			if ((style & SWT.MIN) == 0) {
-				GTK.gtk_window_set_skip_taskbar_hint(shellHandle, true);
-			}
 
-			/*
-			 * For systems running Metacity, by applying the dialog type hint
-			 * to a window only the close button can be placed on the title bar.
-			 * The style hints for the minimize and maximize buttons are ignored.
-			 * See bug 445456.
-			 *
-			 */
-//			if (!isUndecorated ()) {
-//				OS.gtk_window_set_type_hint (shellHandle, OS.GDK_WINDOW_TYPE_HINT_DIALOG);
-//			}
-		} else {
-			if ((style & SWT.ON_TOP) != 0) GTK.gtk_window_set_keep_above(shellHandle, true);
+		if (isChildShell) {
+			if (GTK.GTK4) {
+				GTK.gtk_window_set_transient_for(shellHandle, parent.topHandle());
+				GTK.gtk_window_set_destroy_with_parent(shellHandle, true);
+
+				// TODO: GTK4 need case for SWT.MIN
+			} else {
+				/*
+				 * Problems with GTK_WINDOW_POPUP attached to another GTK_WINDOW_POPUP parent
+				 * 1) Bug 530138: GTK_WINDOW_POPUP attached to a GTK_WINDOW_POPUP parent
+				 * gets positioned relatively to the GTK_WINDOW_POPUP. We want to position it
+				 * relatively to the GTK_WINDOW_TOPLEVEL surface. Fix is to set the child popup's transient
+				 * parent to the top level window.
+				 *
+				 * 2) Bug 540166: When a parent popup is destroyed, the child popup sometimes does not
+				 * get destroyed and is stuck until its transient top level parent gets destroyed.
+				 * Fix is to implement a similar gtk_window_set_destroy_with_parent with its *logical*
+				 * parent by connecting a "destroy" signal.
+				 */
+				if (!OS.isX11()) {
+					Composite topLevelParent = parent;
+					while (topLevelParent != null && (topLevelParent.style & SWT.ON_TOP) != 0) {
+						topLevelParent = parent.getParent();
+					}
+					// transient parent must be the a toplevel window to position correctly
+					if (topLevelParent != null) {
+						GTK.gtk_window_set_transient_for(shellHandle, topLevelParent.topHandle());
+					} else {
+						GTK.gtk_window_set_transient_for(shellHandle, parent.topHandle());
+					}
+					// this marks the logical parent
+					GTK.gtk_window_set_attached_to (shellHandle, parent.topHandle());
+					// implements the gtk_window_set_destroy_with_parent for the *logical* parent
+					if (parent != topLevelParent && isMappedToPopup()) {
+						parent.popupChild = this;
+					}
+				} else {
+					GTK.gtk_window_set_transient_for (shellHandle, parent.topHandle ());
+				}
+				GTK.gtk_window_set_destroy_with_parent (shellHandle, true);
+				// if child shells are minimizable, we want them to have a
+				// taskbar icon, so they can be unminimized
+				if ((style & SWT.MIN) == 0) {
+					GTK.gtk_window_set_skip_taskbar_hint(shellHandle, true);
+				}
+
+				/*
+				 * For systems running Metacity, by applying the dialog type hint
+				 * to a window only the close button can be placed on the title bar.
+				 * The style hints for the minimize and maximize buttons are ignored.
+				 * See bug 445456.
+				 *
+				 */
+//				if (!isUndecorated ()) {
+//					OS.gtk_window_set_type_hint (shellHandle, OS.GDK_WINDOW_TYPE_HINT_DIALOG);
+//				}
+			}
+		} else if ((style & SWT.ON_TOP) != 0) {
+			GTK.gtk_window_set_keep_above(shellHandle, true);
 		}
+
 		/*
 		* Feature in GTK.  The window size must be set when the window
 		* is created or it will not be allowed to be resized smaller that the
