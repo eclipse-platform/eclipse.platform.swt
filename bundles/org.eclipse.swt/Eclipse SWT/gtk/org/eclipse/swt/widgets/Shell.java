@@ -726,12 +726,12 @@ void createHandle (int index) {
 				// TODO: GTK4 need to handle for GTK_WINDOW_POPUP type
 				shellHandle = GTK.gtk_window_new();
 			} else {
-				shellHandle = GTK.gtk_window_new (type);
+				shellHandle = GTK.gtk_window_new(type);
 			}
 		} else {
-			shellHandle = GTK.gtk_plug_new (handle);
+			shellHandle = GTK.gtk_plug_new(handle);
 		}
-		if (shellHandle == 0) error (SWT.ERROR_NO_HANDLES);
+		if (shellHandle == 0) error(SWT.ERROR_NO_HANDLES);
 
 		if (isChildShell) {
 			if (GTK.GTK4) {
@@ -764,50 +764,33 @@ void createHandle (int index) {
 						GTK.gtk_window_set_transient_for(shellHandle, parent.topHandle());
 					}
 					// this marks the logical parent
-					GTK.gtk_window_set_attached_to (shellHandle, parent.topHandle());
+					GTK.gtk_window_set_attached_to(shellHandle, parent.topHandle());
 					// implements the gtk_window_set_destroy_with_parent for the *logical* parent
 					if (parent != topLevelParent && isMappedToPopup()) {
 						parent.popupChild = this;
 					}
 				} else {
-					GTK.gtk_window_set_transient_for (shellHandle, parent.topHandle ());
+					GTK.gtk_window_set_transient_for(shellHandle, parent.topHandle ());
 				}
-				GTK.gtk_window_set_destroy_with_parent (shellHandle, true);
+				GTK.gtk_window_set_destroy_with_parent(shellHandle, true);
 				// if child shells are minimizable, we want them to have a
 				// taskbar icon, so they can be unminimized
 				if ((style & SWT.MIN) == 0) {
 					GTK.gtk_window_set_skip_taskbar_hint(shellHandle, true);
 				}
-
-				/*
-				 * For systems running Metacity, by applying the dialog type hint
-				 * to a window only the close button can be placed on the title bar.
-				 * The style hints for the minimize and maximize buttons are ignored.
-				 * See bug 445456.
-				 *
-				 */
-//				if (!isUndecorated ()) {
-//					OS.gtk_window_set_type_hint (shellHandle, OS.GDK_WINDOW_TYPE_HINT_DIALOG);
-//				}
 			}
 		} else if ((style & SWT.ON_TOP) != 0) {
 			GTK.gtk_window_set_keep_above(shellHandle, true);
 		}
 
-		/*
-		* Feature in GTK.  The window size must be set when the window
-		* is created or it will not be allowed to be resized smaller that the
-		* initial size by the user.  The fix is to set the size to zero.
-		*/
+		GTK.gtk_window_set_title(shellHandle, new byte[1]);
 		if ((style & SWT.RESIZE) != 0) {
-			GTK.gtk_widget_set_size_request (shellHandle, 0, 0);
-			GTK.gtk_window_set_resizable (shellHandle, true);
+			GTK.gtk_window_set_resizable(shellHandle, true);
 		} else {
-			GTK.gtk_window_set_resizable (shellHandle, false);
+			GTK.gtk_window_set_resizable(shellHandle, false);
 		}
-		GTK.gtk_window_set_title (shellHandle, new byte [1]);
 		if ((style & (SWT.NO_TRIM | SWT.BORDER | SWT.SHELL_TRIM)) == 0) {
-			gtk_container_set_border_width (shellHandle, 1);
+			gtk_container_set_border_width(shellHandle, 1);
 		}
 		if ((style & SWT.TOOL) != 0) {
 			GTK.gtk_window_set_type_hint(shellHandle, GDK.GDK_WINDOW_TYPE_HINT_UTILITY);
@@ -823,29 +806,31 @@ void createHandle (int index) {
 		if (!OS.isX11() && (style & SWT.SHELL_TRIM) == 0) {
 			GTK.gtk_window_set_decorated(shellHandle, false);
 		}
-		if (isCustomResize ()) {
-			gtk_container_set_border_width (shellHandle, BORDER);
+		if (isCustomResize()) {
+			gtk_container_set_border_width(shellHandle, BORDER);
 		}
 	}
-	vboxHandle = gtk_box_new (GTK.GTK_ORIENTATION_VERTICAL, false, 0);
-	if (vboxHandle == 0) error (SWT.ERROR_NO_HANDLES);
+
 	createHandle (index, false, true);
+	vboxHandle = gtk_box_new(GTK.GTK_ORIENTATION_VERTICAL, false, 0);
+	if (vboxHandle == 0) error(SWT.ERROR_NO_HANDLES);
 	if (GTK.GTK4) {
 		GTK.gtk_box_append(vboxHandle, scrolledHandle);
 	} else {
-		GTK.gtk_container_add (vboxHandle, scrolledHandle);
-		gtk_box_set_child_packing (vboxHandle, scrolledHandle, true, true, 0, GTK.GTK_PACK_END);
+		GTK.gtk_container_add(vboxHandle, scrolledHandle);
+		gtk_box_set_child_packing(vboxHandle, scrolledHandle, true, true, 0, GTK.GTK_PACK_END);
 	}
 
-	group = GTK.gtk_window_group_new ();
-	if (group == 0) error (SWT.ERROR_NO_HANDLES);
+	group = GTK.gtk_window_group_new();
+	if (group == 0) error(SWT.ERROR_NO_HANDLES);
+
 	/*
 	* Feature in GTK.  Realizing the shell triggers a size allocate event,
 	* which may be confused for a resize event from the window manager if
 	* received too late.  The fix is to realize the window during creation
 	* to avoid confusion.
 	*/
-	GTK.gtk_widget_realize (shellHandle);
+	GTK.gtk_widget_realize(shellHandle);
 }
 
 @Override
