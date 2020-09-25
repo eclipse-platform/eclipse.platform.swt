@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2019 IBM Corporation and others.
+ * Copyright (c) 2000, 2020 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -1166,7 +1166,11 @@ boolean setTabGroupFocus () {
 	Control [] children = _getChildren ();
 	for (int i=0; i<children.length; i++) {
 		Control child = children [i];
-		if (child.isTabItem () && child.setTabItemFocus ()) return true;
+		/*
+		 * It is unlikely but possible that a child is disposed at this point, for more
+		 * details refer bug 381668.
+		 */
+		if (!child.isDisposed() && child.isTabItem () && child.setTabItemFocus ()) return true;
 	}
 	return false;
 }
