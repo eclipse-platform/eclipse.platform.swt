@@ -1842,6 +1842,7 @@ public class GTK extends OS {
 	public static final native long gtk_radio_menu_item_new(long group);
 	public static final native long gtk_separator_menu_item_new();
 
+
 	/* GtkPopover */
 	/** @param popover cast=(GtkPopover *) */
 	public static final native void gtk_popover_popdown(long popover);
@@ -1858,9 +1859,12 @@ public class GTK extends OS {
 	 * @param model cast=(GMenuModel *) */
 	public static final native long gtk_popover_menu_new_from_model(long model);
 
+
 	/* GtkMenuButton */
 	public static final native long gtk_menu_button_new();
 
+
+	/* GtkMessageDialog */
 	/**
 	 * @param parent cast=(GtkWindow *)
 	 * @param flags cast=(GtkDialogFlags)
@@ -1870,6 +1874,14 @@ public class GTK extends OS {
 	 * @param arg cast=(const gchar *)
 	 */
 	public static final native long gtk_message_dialog_new(long parent, int flags, int type, int buttons, byte[] message_format, byte[] arg);
+	/**
+	 * @param message_dialog cast=(GtkMessageDialog *)
+	 * @param message_format cast=(const gchar *)
+	 * @param arg cast=(const gchar *)
+	 */
+	public static final native void gtk_message_dialog_format_secondary_text(long message_dialog, byte[] message_format, byte[] arg);
+
+
 	/** @param dialog cast=(GtkNativeDialog *) */
 	public static final native int gtk_native_dialog_run(long dialog);
 	/** @param notebook cast=(GtkNotebook *) */
@@ -3881,4 +3893,11 @@ public class GTK extends OS {
 	public static final native void gtk_window_set_child(long window, long child);
 	/** @param window cast=(GtkWindow *) */
 	public static final native void gtk_window_destroy(long window);
+	/** @param window cast=(GtkWindow *) */
+	public static final native long gtk_window_get_icon_name(long window);
+	/**
+	 * @param window cast=(GtkWindow *)
+	 * @param name cast=(const char *)
+	 * */
+	public static final native void gtk_window_set_icon_name(long window, long name);
 }

@@ -7782,6 +7782,23 @@ fail:
 }
 #endif
 
+#ifndef NO_gtk_1message_1dialog_1format_1secondary_1text
+JNIEXPORT void JNICALL GTK_NATIVE(gtk_1message_1dialog_1format_1secondary_1text)
+	(JNIEnv *env, jclass that, jlong arg0, jbyteArray arg1, jbyteArray arg2)
+{
+	jbyte *lparg1=NULL;
+	jbyte *lparg2=NULL;
+	GTK_NATIVE_ENTER(env, that, gtk_1message_1dialog_1format_1secondary_1text_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	if (arg2) if ((lparg2 = (*env)->GetByteArrayElements(env, arg2, NULL)) == NULL) goto fail;
+	gtk_message_dialog_format_secondary_text((GtkMessageDialog *)arg0, (const gchar *)lparg1, (const gchar *)lparg2);
+fail:
+	if (arg2 && lparg2) (*env)->ReleaseByteArrayElements(env, arg2, lparg2, 0);
+	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	GTK_NATIVE_EXIT(env, that, gtk_1message_1dialog_1format_1secondary_1text_FUNC);
+}
+#endif
+
 #ifndef NO_gtk_1message_1dialog_1new
 JNIEXPORT jlong JNICALL GTK_NATIVE(gtk_1message_1dialog_1new)
 	(JNIEnv *env, jclass that, jlong arg0, jint arg1, jint arg2, jint arg3, jbyteArray arg4, jbyteArray arg5)
@@ -13680,6 +13697,18 @@ JNIEXPORT jlong JNICALL GTK_NATIVE(gtk_1window_1get_1icon_1list)
 }
 #endif
 
+#ifndef NO_gtk_1window_1get_1icon_1name
+JNIEXPORT jlong JNICALL GTK_NATIVE(gtk_1window_1get_1icon_1name)
+	(JNIEnv *env, jclass that, jlong arg0)
+{
+	jlong rc = 0;
+	GTK_NATIVE_ENTER(env, that, gtk_1window_1get_1icon_1name_FUNC);
+	rc = (jlong)gtk_window_get_icon_name((GtkWindow *)arg0);
+	GTK_NATIVE_EXIT(env, that, gtk_1window_1get_1icon_1name_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_gtk_1window_1get_1mnemonic_1modifier
 JNIEXPORT jint JNICALL GTK_NATIVE(gtk_1window_1get_1mnemonic_1modifier)
 	(JNIEnv *env, jclass that, jlong arg0)
@@ -13958,6 +13987,16 @@ JNIEXPORT void JNICALL GTK_NATIVE(gtk_1window_1set_1icon_1list)
 	GTK_NATIVE_ENTER(env, that, gtk_1window_1set_1icon_1list_FUNC);
 	gtk_window_set_icon_list((GtkWindow *)arg0, (GList *)arg1);
 	GTK_NATIVE_EXIT(env, that, gtk_1window_1set_1icon_1list_FUNC);
+}
+#endif
+
+#ifndef NO_gtk_1window_1set_1icon_1name
+JNIEXPORT void JNICALL GTK_NATIVE(gtk_1window_1set_1icon_1name)
+	(JNIEnv *env, jclass that, jlong arg0, jlong arg1)
+{
+	GTK_NATIVE_ENTER(env, that, gtk_1window_1set_1icon_1name_FUNC);
+	gtk_window_set_icon_name((GtkWindow *)arg0, (const char *)arg1);
+	GTK_NATIVE_EXIT(env, that, gtk_1window_1set_1icon_1name_FUNC);
 }
 #endif
 
