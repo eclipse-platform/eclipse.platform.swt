@@ -3419,7 +3419,6 @@ protected void init () {
 	initializeSystemColors ();
 	initializeSystemSettings ();
 	initializeWidgetTable ();
-	initializeWindowManager ();
 	initializeSessionManager ();
 }
 
@@ -3774,25 +3773,6 @@ void initializeWidgetTable () {
 	widgetTable = new Widget [GROW_SIZE];
 	for (int i=0; i<GROW_SIZE-1; i++) indexTable [i] = i + 1;
 	indexTable [GROW_SIZE - 1] = -1;
-}
-
-void initializeWindowManager () {
-	/* Get the window manager name */
-	windowManager = ""; //$NON-NLS-1$
-	if (OS.isX11()) {
-		long screen = GDK.gdk_screen_get_default ();
-		if (screen != 0) {
-			long ptr2 = GDK.gdk_x11_screen_get_window_manager_name (screen);
-			if (ptr2 != 0) {
-				int length = C.strlen (ptr2);
-				if (length > 0) {
-					byte [] buffer2 = new byte [length];
-					C.memmove (buffer2, ptr2, length);
-					windowManager = new String (Converter.mbcsToWcs (buffer2));
-				}
-			}
-		}
-	}
 }
 
 void initializeSessionManager() {
@@ -4814,7 +4794,6 @@ void releaseDisplay () {
 	widgetTable = modalShells = null;
 	data = null;
 	values = keys = null;
-	windowManager = null;
 	eventTable = filterTable = null;
 	modalDialog = null;
 	flushRect = null;
