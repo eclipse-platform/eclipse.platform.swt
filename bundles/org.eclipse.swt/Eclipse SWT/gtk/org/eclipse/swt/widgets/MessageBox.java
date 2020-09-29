@@ -240,18 +240,18 @@ public int open () {
 
 private void createButtons (int alignment) {
 	if (alignment == SWT.LEFT) {
-		if ((style & SWT.OK) != 0) GTK.gtk_dialog_add_button(handle, Converter.wcsToMbcs ("gtk-ok", true), SWT.OK);
+		if ((style & SWT.OK) != 0) GTK.gtk_dialog_add_button(handle, Converter.wcsToMbcs (SWT.getMessage("SWT_OK"), true), SWT.OK);
 		if ((style & SWT.ABORT) != 0) GTK.gtk_dialog_add_button(handle, Converter.wcsToMbcs (SWT.getMessage("SWT_Abort"), true), SWT.ABORT);
 		if ((style & SWT.RETRY) != 0) GTK.gtk_dialog_add_button(handle, Converter.wcsToMbcs (SWT.getMessage("SWT_Retry"), true), SWT.RETRY);
-		if ((style & SWT.YES) != 0) GTK.gtk_dialog_add_button(handle, Converter.wcsToMbcs ("gtk-yes", true), SWT.YES);
-		if ((style & SWT.NO) != 0) GTK.gtk_dialog_add_button(handle, Converter.wcsToMbcs ("gtk-no", true), SWT.NO);
+		if ((style & SWT.YES) != 0) GTK.gtk_dialog_add_button(handle, Converter.wcsToMbcs (SWT.getMessage("SWT_Yes"), true), SWT.YES);
+		if ((style & SWT.NO) != 0) GTK.gtk_dialog_add_button(handle, Converter.wcsToMbcs (SWT.getMessage("SWT_No"), true), SWT.NO);
 		if ((style & SWT.IGNORE) != 0) GTK.gtk_dialog_add_button(handle, Converter.wcsToMbcs (SWT.getMessage("SWT_Ignore"), true), SWT.IGNORE);
-		if ((style & SWT.CANCEL) != 0) GTK.gtk_dialog_add_button(handle, Converter.wcsToMbcs ("gtk-cancel", true), SWT.CANCEL);
+		if ((style & SWT.CANCEL) != 0) GTK.gtk_dialog_add_button(handle, Converter.wcsToMbcs (SWT.getMessage("SWT_Cancel"), true), SWT.CANCEL);
 	} else {
-		if ((style & SWT.CANCEL) != 0) GTK.gtk_dialog_add_button(handle, Converter.wcsToMbcs ("gtk-cancel", true), SWT.CANCEL);
-		if ((style & SWT.OK) != 0) GTK.gtk_dialog_add_button(handle, Converter.wcsToMbcs ("gtk-ok", true), SWT.OK);
-		if ((style & SWT.NO) != 0) GTK.gtk_dialog_add_button(handle, Converter.wcsToMbcs ("gtk-no", true), SWT.NO);
-		if ((style & SWT.YES) != 0) GTK.gtk_dialog_add_button(handle, Converter.wcsToMbcs ("gtk-yes", true), SWT.YES);
+		if ((style & SWT.CANCEL) != 0) GTK.gtk_dialog_add_button(handle, Converter.wcsToMbcs (SWT.getMessage("SWT_Cancel"), true), SWT.CANCEL);
+		if ((style & SWT.OK) != 0) GTK.gtk_dialog_add_button(handle, Converter.wcsToMbcs (SWT.getMessage("SWT_OK"), true), SWT.OK);
+		if ((style & SWT.NO) != 0) GTK.gtk_dialog_add_button(handle, Converter.wcsToMbcs (SWT.getMessage("SWT_No"), true), SWT.NO);
+		if ((style & SWT.YES) != 0) GTK.gtk_dialog_add_button(handle, Converter.wcsToMbcs (SWT.getMessage("SWT_Yes"), true), SWT.YES);
 		if ((style & SWT.IGNORE) != 0) GTK.gtk_dialog_add_button(handle, Converter.wcsToMbcs (SWT.getMessage("SWT_Ignore"), true), SWT.IGNORE);
 		if ((style & SWT.RETRY) != 0) GTK.gtk_dialog_add_button(handle, Converter.wcsToMbcs (SWT.getMessage("SWT_Retry"), true), SWT.RETRY);
 		if ((style & SWT.ABORT) != 0) GTK.gtk_dialog_add_button(handle, Converter.wcsToMbcs (SWT.getMessage("SWT_Abort"), true), SWT.ABORT);
