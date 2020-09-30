@@ -918,16 +918,17 @@ Point getCaretLocationInPixels () {
 		int x = offset_x [0] + OS.PANGO_PIXELS (pos.x) - getBorderWidthInPixels ();
 		int y = offset_y [0] + OS.PANGO_PIXELS (pos.y);
 		return new Point (x, y);
+	} else {
+		byte[] position = new byte[ITER_SIZEOF];
+		long mark = GTK.gtk_text_buffer_get_insert(bufferHandle);
+		GTK.gtk_text_buffer_get_iter_at_mark(bufferHandle, position, mark);
+		GdkRectangle rect = new GdkRectangle();
+		GTK.gtk_text_view_get_iter_location(handle, position, rect);
+		int[] x = new int[1];
+		int[] y  = new int[1];
+		GTK.gtk_text_view_buffer_to_window_coords(handle, GTK.GTK_TEXT_WINDOW_TEXT, rect.x, rect.y, x, y);
+		return new Point (x[0], y[0]);
 	}
-	byte [] position = new byte [ITER_SIZEOF];
-	long mark = GTK.gtk_text_buffer_get_insert (bufferHandle);
-	GTK.gtk_text_buffer_get_iter_at_mark (bufferHandle, position, mark);
-	GdkRectangle rect = new GdkRectangle ();
-	GTK.gtk_text_view_get_iter_location (handle, position, rect);
-	int [] x = new int [1];
-	int [] y  = new int [1];
-	GTK.gtk_text_view_buffer_to_window_coords (handle, GTK.GTK_TEXT_WINDOW_TEXT, rect.x, rect.y, x, y);
-	return new Point (x [0], y [0]);
 }
 
 /**
@@ -1511,7 +1512,7 @@ long gtk_changed (long widget) {
 	* is to post the modify event when the user is typing.
 	*/
 	boolean keyPress = false;
-	long eventPtr = GTK.gtk_get_current_event ();
+	long eventPtr = GTK.GTK4 ? 0 : GTK.gtk_get_current_event ();
 	if (eventPtr != 0) {
 		int eventType = GDK.gdk_event_get_event_type(eventPtr);
 		eventType = fixGdkEventTypeValues(eventType);

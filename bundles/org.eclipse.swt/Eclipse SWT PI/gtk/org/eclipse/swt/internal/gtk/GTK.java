@@ -256,6 +256,7 @@ public class GTK extends OS {
 	/** @param widget cast=(GtkWidget *) */
 	public static final native boolean gtk_widget_get_sensitive(long widget);
 	/**
+	 * @method flags=dynamic
 	 * @param widget cast=(GtkWidget *)
 	 * @param css_class cast=(const char *)
 	 * */
@@ -1215,29 +1216,48 @@ public class GTK extends OS {
 	 */
 	public static final native boolean gtk_file_chooser_set_file(long chooser, long file, long error);
 
-	/* GtkEventController [GTK4 only] */
-	public static final native long gtk_event_controller_legacy_new();
-	/* [GTK4 only, if-def'd in os.h] */
-	public static final native long gtk_gesture_click_new();
-	/* [GTK4 only, if-def'd in os.h] */
-	public static final native long gtk_event_controller_key_new();
-	/* [GTK4 only, if-def'd in os.h] */
-	public static final native long gtk_event_controller_motion_new();
-	/* [GTK4 only, if-def'd in os.h] */
-	public static final native long gtk_event_controller_scroll_new(int flag);
-	public static final native long gtk_event_controller_focus_new();
+
+	/* GtkEventController */
 	/**
-	 * @param widget cast=(GtkWidget *)
-	 * @param controller cast=(GtkEventController *)
-	 */
-	/* [GTK4 only, if-def'd in os.h] */
-	public static final native void gtk_widget_add_controller(long widget, long controller);
-	/**
-	 * @method flags=dynamic
 	 * @param controller cast=(GtkEventController *)
 	 * @param phase cast=(GtkPropagationPhase)
 	 */
 	public static final native void gtk_event_controller_set_propagation_phase(long controller, int phase);
+	public static final native long gtk_event_controller_get_widget(long controller);
+
+	/* GtkEventController [GTK3 only] */
+	/** @method flags=dynamic */
+	public static final native void gtk_event_controller_handle_event(long gesture, long event);
+
+	/* GtkEventController [GTK4 only] */
+	/** @method flags=dynamic */
+	public static final native long gtk_event_controller_legacy_new();
+	/** @method flags=dynamic */
+	public static final native long gtk_event_controller_focus_new();
+	/**
+	 * @method flags=dynamic
+	 * @param controller cast=(GtkEventController *)
+	 * */
+	public static final native long gtk_event_controller_get_current_event(long controller);
+	/** @method flags=dynamic */
+	public static final native long gtk_event_controller_key_new();
+	/** @method flags=dynamic */
+	public static final native long gtk_event_controller_motion_new();
+	/** @method flags=dynamic */
+	public static final native long gtk_event_controller_scroll_new(int flag);
+
+
+	/* GtkGesture [GTK4 only] */
+	/** @method flags=dynamic */
+	public static final native long gtk_gesture_click_new();
+
+
+	/**
+	 * @method flags=dynamic
+	 * @param widget cast=(GtkWidget *)
+	 * @param controller cast=(GtkEventController *)
+	 */
+	public static final native void gtk_widget_add_controller(long widget, long controller);
 	/**
 	 * @method flags=dynamic
 	 * @param title cast=(const gchar *),flags=no_out
@@ -1246,14 +1266,7 @@ public class GTK extends OS {
 	 * @param cancel_label cast=(const gchar *),flags=no_out
 	 */
 	public static final native long gtk_file_chooser_native_new(byte[] title, long parent, int action, byte[] accept_label, byte[] cancel_label);
-	/**
-	 * @method flags=dynamic
-	 */
-	public static final native void gtk_event_controller_handle_event(long gesture, long event);
-	/**
-	 * @method flags=dynamic
-	 */
-	public static final native long gtk_event_controller_get_widget(long controller);
+
 	/**
 	 * @param filter cast=(GtkFileFilter *)
 	 * @param pattern cast=(const gchar *)
@@ -1421,9 +1434,6 @@ public class GTK extends OS {
 
 	/* [GTK3 only, if-def'd in os.h] */
 	public static final native long gtk_get_current_event();
-	/* [GTK4 only, if-def'd in os.h] */
-	/** @param controller cast=(GtkEventController *) */
-	public static final native long gtk_event_controller_get_current_event(long controller);
 	/** @param state cast=(GdkModifierType*) */
 	public static final native boolean gtk_get_current_event_state(int[] state);
 	public static final native long gtk_get_default_language();
@@ -2698,8 +2708,10 @@ public class GTK extends OS {
 	public static final native int gtk_text_iter_get_line(byte[] iter);
 	/** @param iter cast=(const GtkTextIter *) */
 	public static final native int gtk_text_iter_get_offset(byte[] iter);
+
+	/* GtkTextView */
+	public static final native long gtk_text_view_new();
 	/**
-	 * @method flags=dynamic
 	 * @param text_view cast=(GtkTextView *)
 	 * @param win cast=(GtkTextWindowType)
 	 * @param buffer_x cast=(gint)
@@ -2707,19 +2719,7 @@ public class GTK extends OS {
 	 * @param window_x cast=(gint *)
 	 * @param window_y cast=(gint *)
 	 */
-	/* [GTK3 only] */
 	public static final native void gtk_text_view_buffer_to_window_coords(long text_view, int win, int buffer_x, int buffer_y, int[] window_x, int[] window_y);
-	/**
-	 * @method flags=dynamic
-	 * @param text_view cast=(GtkTextView *)
-	 * @param win cast=(GtkTextWindowType)
-	 * @param buffer_x cast=(gint)
-	 * @param buffer_y cast=(gint)
-	 * @param window_x cast=(gint *)
-	 * @param window_y cast=(gint *)
-	 */
-	/* [GTK4 only] */
-	public static final native void gtk_text_view_buffer_to_surface_coords(long text_view, int win, int buffer_x, int buffer_y, int[] window_x, int[] window_y);
 	/** @param text_view cast=(GtkTextView *) */
 	public static final native long gtk_text_view_get_buffer(long text_view);
 	/** @param text_view cast=(GtkTextView *) */
@@ -2758,13 +2758,6 @@ public class GTK extends OS {
 	public static final native void gtk_text_view_get_visible_rect(long text_view, GdkRectangle visible_rect);
 	/**
 	 * @param text_view cast=(GtkTextView *)
-	 * @param win cast=(GtkTextWindowType)
-	 */
-	/* [GTK3 only, if-def'd in os.h] */
-	public static final native long gtk_text_view_get_window(long text_view, int win);
-	public static final native long gtk_text_view_new();
-	/**
-	 * @param text_view cast=(GtkTextView *)
 	 * @param mark cast=(GtkTextMark *)
 	 * @param within_margin cast=(gdouble)
 	 * @param use_align cast=(gboolean)
@@ -2795,6 +2788,16 @@ public class GTK extends OS {
 	public static final native void gtk_text_view_set_tabs(long text_view, long tabs);
 	/** @param text_view cast=(GtkTextView *) */
 	public static final native void gtk_text_view_set_wrap_mode(long text_view, int wrap_mode);
+
+	/* GtkTextView [GTK3 only] */
+	/**
+	 * @method flags=dynamic
+	 * @param text_view cast=(GtkTextView *)
+	 * @param win cast=(GtkTextWindowType)
+	 */
+	public static final native long gtk_text_view_get_window(long text_view, int win);
+
+
 	/** @param toggle_button cast=(GtkToggleButton *) */
 	public static final native boolean gtk_toggle_button_get_active(long toggle_button);
 	public static final native long gtk_toggle_button_new();

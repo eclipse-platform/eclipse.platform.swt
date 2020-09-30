@@ -805,7 +805,6 @@ char * GTK_nativeFunctionNames[] = {
 	"gtk_1text_1buffer_1set_1text",
 	"gtk_1text_1iter_1get_1line",
 	"gtk_1text_1iter_1get_1offset",
-	"gtk_1text_1view_1buffer_1to_1surface_1coords",
 	"gtk_1text_1view_1buffer_1to_1window_1coords",
 	"gtk_1text_1view_1get_1buffer",
 	"gtk_1text_1view_1get_1editable",

@@ -358,7 +358,6 @@
 #define NO_gdk_1drag_1status
 
 // Some widgets have removed access to their GdkWindows in GTK4
-#define NO_gtk_1text_1view_1get_1window
 #define NO_gtk_1tree_1view_1get_1bin_1window
 
 // Event related functions removed in GTK4
@@ -554,7 +553,6 @@
 #define NO_gtk_1css_1provider_1load_1from_1data__I_3BI
 #define NO_gtk_1css_1provider_1load_1from_1data__J_3BJ
 #define NO_gdk_1display_1is_1composited
-#define NO_gtk_1gesture_1multi_1press_1new
 #define NO_gtk_1style_1context_1get_1margin
 
 // GdkCursor API changes from GTK3 -> GTK4
@@ -565,12 +563,6 @@
 
 // No GdkTexture on GTK3
 #define NO_gdk_1texture_1new_1for_1pixbuf
-
-// GtkEventController related functions for GTK4
-#define NO_gtk_1event_1controller_1key_1new
-#define NO_gtk_1event_1controller_1motion_1new
-#define NO_gtk_1event_1controller_1scroll_1new
-#define NO_gtk_1widget_1add_1controller
 
 // GdkEvent functions which do not exist on GTK3
 #define NO_gdk_1focus_1event_1get_1in
@@ -585,11 +577,6 @@
 #define NO_gdk_1key_1event_1get_1layout
 #define NO_gdk_1event_1ref
 #define NO_gdk_1event_1unref
-
-// GtkEventController
-#define NO_gtk_1event_1controller_1get_1current_1event
-#define NO_gtk_1event_1controller_1focus_1new
-#define NO_gtk_1gesture_1click_1new
 
 // GdkCursor API changes
 #define NO_gdk_1cursor_1new_1from_1name__Ljava_lang_String_2J

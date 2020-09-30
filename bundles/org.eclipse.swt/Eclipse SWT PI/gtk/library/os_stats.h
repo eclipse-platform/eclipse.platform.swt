@@ -803,7 +803,6 @@ typedef enum {
 	gtk_1text_1buffer_1set_1text_FUNC,
 	gtk_1text_1iter_1get_1line_FUNC,
 	gtk_1text_1iter_1get_1offset_FUNC,
-	gtk_1text_1view_1buffer_1to_1surface_1coords_FUNC,
 	gtk_1text_1view_1buffer_1to_1window_1coords_FUNC,
 	gtk_1text_1view_1get_1buffer_FUNC,
 	gtk_1text_1view_1get_1editable_FUNC,
