@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2019 IBM Corporation and others.
+ * Copyright (c) 2000, 2020 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -11,6 +11,7 @@
  * Contributors:
  *     IBM Corporation - initial API and implementation
  *     Lars Vogel <Lars.Vogel@vogella.com> - Bug 497807
+ *     Paul Pazderski - Improved implementation of IDataObject for bug 549643, 549661 and 567422
  *******************************************************************************/
 package org.eclipse.swt.dnd;
 
@@ -114,9 +115,8 @@ public class DragSource extends Widget {
 	long hwndDrag;
 
 	// ole interfaces
-	COMObject iDropSource;
-	COMObject iDataObject;
-	int refCount;
+	COMIDropSource iDropSource;
+	COMIDataObject iDataObject;
 
 	//workaround - track the operation performed by the drop target for DragEnd event
 	int dataEffect = DND.DROP_NONE;
@@ -124,6 +124,213 @@ public class DragSource extends Widget {
 	static final String DEFAULT_DRAG_SOURCE_EFFECT = "DEFAULT_DRAG_SOURCE_EFFECT"; //$NON-NLS-1$
 	static final int CFSTR_PERFORMEDDROPEFFECT  = Transfer.registerType("Performed DropEffect");	 //$NON-NLS-1$
 	static final TCHAR WindowClass = new TCHAR (0, "#32770", true);
+
+	private class COMIDropSource extends COMObject {
+
+		private long refCount = 0;
+
+		/**
+		 * Create a new IDropSource COM object. Object is created with one active
+		 * reference. (see {@link #Release()})
+		 */
+		public COMIDropSource() {
+			super(new int[]{2, 0, 0, 2, 1});
+			AddRef();
+		}
+
+		@Override
+		public long method0(long[] args) {return QueryInterface(this, args[0], args[1]);}
+		@Override
+		public long method1(long[] args) {return AddRef();}
+		@Override
+		public long method2(long[] args) {return Release();}
+		@Override
+		public long method3(long[] args) {return QueryContinueDrag((int)args[0], (int)args[1]);}
+		@Override
+		public long method4(long[] args) {return GiveFeedback((int)args[0]);}
+
+		public long AddRef() {
+			refCount++;
+			return refCount;
+		}
+
+		public long Release() {
+			refCount--;
+			if (refCount == 0) {
+				if (DragSource.this.iDropSource == this) {
+					DragSource.this.iDropSource = null;
+				}
+				this.dispose();
+				if (COM.FreeUnusedLibraries) {
+					COM.CoFreeUnusedLibraries();
+				}
+			}
+			return refCount;
+		}
+	}
+
+	private class COMIDataObject extends COMObject {
+		/*
+		 * A SWT application is used to provide the data to drag in an event callback
+		 * which is called while the DND operation is performed. However Windows expects
+		 * the data to passed around in an object whose lifetime is managed through
+		 * reference counting. The drop target can keep a reference on the IDataObject
+		 * and even try to query the data long after the DND operation is finished. One
+		 * such case is Windows Explorer when showing a Portal Device (see bug 549661).
+		 * SWT does two things to support this case:
+		 * 1. Implement reference counting as intended. I.e. do not force release the
+		 * object after DND is finished but trust that all involved applications are
+		 * able to count correctly and will release the object at some point.
+		 * 2. Cache the data which was last transfered/generated from the DragSource
+		 * to be able to send it again after the DND operation is finished.
+		 */
+
+		private long refCount = 0;
+
+		private final Transfer[] transferAgents;
+
+		/**
+		 * The most recent data send in a GetData request (or GetDataHere if
+		 * implemented). Or from another perspective the data the application returned
+		 * in the most recent {@link DND#DragSetData} event.
+		 */
+		private Object lastData = null;
+
+		/**
+		 * Create a new IDataObject COM object. Objects are created with one active
+		 * reference. (see {@link #Release()})
+		 *
+		 * @param transferAgents should be the transfer agents which are set on
+		 *                       DragSource at the time this object is created.
+		 */
+		public COMIDataObject(Transfer[] transferAgents) {
+			super(new int[]{2, 0, 0, 2, 2, 1, 2, 3, 2, 4, 1, 1});
+			AddRef();
+			this.transferAgents = transferAgents;
+		}
+
+		@Override
+		public long method0(long[] args) {return QueryInterface(this, args[0], args[1]);}
+		@Override
+		public long method1(long[] args) {return AddRef();}
+		@Override
+		public long method2(long[] args) {return Release();}
+		@Override
+		public long method3(long[] args) {return GetData(args[0], args[1]);}
+		// method4 GetDataHere - not implemented
+		@Override
+		public long method5(long[] args) {return QueryGetData(transferAgents, args[0]);}
+		// method6 GetCanonicalFormatEtc - not implemented
+		@Override
+		public long method7(long[] args) {return SetData(args[0], args[1], (int)args[2]);}
+		@Override
+		public long method8(long[] args) {return EnumFormatEtc(transferAgents, (int)args[0], args[1]);}
+		// method9 DAdvise - not implemented
+		// method10 DUnadvise - not implemented
+		// method11 EnumDAdvise - not implemented
+
+		public long AddRef() {
+			refCount++;
+			return refCount;
+		}
+
+		public long Release() {
+			refCount--;
+			if (refCount == 0) {
+				if (DragSource.this.iDataObject == this) {
+					DragSource.this.iDataObject = null;
+				}
+				this.dispose();
+				if (COM.FreeUnusedLibraries) {
+					COM.CoFreeUnusedLibraries();
+				}
+			}
+			return refCount;
+		}
+
+		/**
+		 * Check if this IDataObject is currently used in a DND operation.
+		 *
+		 * @return <code>true</true> if this object currently used for DND
+		 */
+		private boolean isActive() {
+			return DragSource.this.iDataObject == this;
+		}
+
+		private int GetData(long pFormatetc, long pmedium) {
+			/* Called by a data consumer to obtain data from a source data object.
+			   The GetData method renders the data described in the specified FORMATETC
+			   structure and transfers it through the specified STGMEDIUM structure.
+			   The caller then assumes responsibility for releasing the STGMEDIUM structure.
+			*/
+			if (pFormatetc == 0 || pmedium == 0) return COM.E_INVALIDARG;
+
+			if (QueryGetData(transferAgents, pFormatetc) != COM.S_OK) return COM.DV_E_FORMATETC;
+
+			TransferData transferData = new TransferData();
+			transferData.formatetc = new FORMATETC();
+			COM.MoveMemory(transferData.formatetc, pFormatetc, FORMATETC.sizeof);
+			transferData.type = transferData.formatetc.cfFormat;
+			transferData.stgmedium = new STGMEDIUM();
+			transferData.result = COM.E_FAIL;
+
+			final Object data;
+			if (isActive()) {
+				DNDEvent event = new DNDEvent();
+				event.widget = DragSource.this;
+				event.time = OS.GetMessageTime();
+				event.dataType = transferData;
+				notifyListeners(DND.DragSetData,event);
+
+				if (!event.doit) return COM.E_FAIL;
+
+				lastData = event.data;
+				data = event.data;
+			} else {
+				if (lastData == null) {
+					return COM.E_FAIL;
+				}
+				data = lastData;
+			}
+
+			// get matching transfer agent to perform conversion
+			Transfer transfer = null;
+			for (Transfer transferAgent : transferAgents) {
+				if (transferAgent != null && transferAgent.isSupportedType(transferData)){
+					transfer = transferAgent;
+					break;
+				}
+			}
+
+			if (transfer == null) return COM.DV_E_FORMATETC;
+			transfer.javaToNative(data, transferData);
+			if (transferData.result != COM.S_OK) return transferData.result;
+			COM.MoveMemory(pmedium, transferData.stgmedium, STGMEDIUM.sizeof);
+			return transferData.result;
+		}
+
+		private int SetData(long pFormatetc, long pmedium, int fRelease) {
+			if (pFormatetc == 0 || pmedium == 0) return COM.E_INVALIDARG;
+			FORMATETC formatetc = new FORMATETC();
+			COM.MoveMemory(formatetc, pFormatetc, FORMATETC.sizeof);
+			if (formatetc.cfFormat == CFSTR_PERFORMEDDROPEFFECT && formatetc.tymed == COM.TYMED_HGLOBAL) {
+				STGMEDIUM stgmedium = new STGMEDIUM();
+				COM.MoveMemory(stgmedium, pmedium,STGMEDIUM.sizeof);
+				//TODO - this should be GlobalLock()
+				long[] ptrEffect = new long[1];
+				OS.MoveMemory(ptrEffect, stgmedium.unionField, C.PTR_SIZEOF);
+				int[] effect = new int[1];
+				OS.MoveMemory(effect, ptrEffect[0], 4);
+				if (isActive()) {
+					dataEffect = osToOp(effect[0]);
+				}
+			}
+			if (fRelease == 1) {
+				COM.ReleaseStgMedium(pmedium);
+			}
+			return COM.S_OK;
+		}
+	}
 
 /**
  * Creates a new <code>DragSource</code> to handle dragging from the specified <code>Control</code>.
@@ -233,49 +440,10 @@ public void addDragListener(DragSourceListener listener) {
 	addListener(DND.DragEnd, typedListener);
 }
 
-private int AddRef() {
-	refCount++;
-	return refCount;
-}
-
 private void createCOMInterfaces() {
-	disposeCOMInterfaces();
-	// register each of the interfaces that this object implements
-	iDropSource = new COMObject(new int[]{2, 0, 0, 2, 1}){
-		@Override
-		public long method0(long[] args) {return QueryInterface(args[0], args[1]);}
-		@Override
-		public long method1(long[] args) {return AddRef();}
-		@Override
-		public long method2(long[] args) {return Release();}
-		@Override
-		public long method3(long[] args) {return QueryContinueDrag((int)args[0], (int)args[1]);}
-		@Override
-		public long method4(long[] args) {return GiveFeedback((int)args[0]);}
-	};
-
-	iDataObject = new COMObject(new int[]{2, 0, 0, 2, 2, 1, 2, 3, 2, 4, 1, 1}){
-		@Override
-		public long method0(long[] args) {return QueryInterface(args[0], args[1]);}
-		@Override
-		public long method1(long[] args) {return AddRef();}
-		@Override
-		public long method2(long[] args) {return Release();}
-		@Override
-		public long method3(long[] args) {return GetData(args[0], args[1]);}
-		// method4 GetDataHere - not implemented
-		@Override
-		public long method5(long[] args) {return QueryGetData(args[0]);}
-		// method6 GetCanonicalFormatEtc - not implemented
-		@Override
-		public long method7(long[] args) {return SetData(args[0], args[1], (int)args[2]);}
-		@Override
-		public long method8(long[] args) {return EnumFormatEtc((int)args[0], args[1]);}
-		// method9 DAdvise - not implemented
-		// method10 DUnadvise - not implemented
-		// method11 EnumDAdvise - not implemented
-	};
-	refCount = 1;
+	releaseCOMInterfaces();
+	iDropSource = new COMIDropSource();
+	iDataObject = new COMIDataObject(transferAgents);
 }
 
 @Override
@@ -287,13 +455,13 @@ protected void checkSubclass() {
 	}
 }
 
-private void disposeCOMInterfaces() {
+private void releaseCOMInterfaces() {
 	if (iDropSource != null)
-		iDropSource.dispose();
+		iDropSource.Release();
 	iDropSource = null;
 
 	if (iDataObject != null)
-		iDataObject.dispose();
+		iDataObject.Release();
 	iDataObject = null;
 }
 
@@ -307,7 +475,6 @@ private void drag(Event dragEvent) {
 	notifyListeners(DND.DragStart,event);
 	if (!event.doit || transferAgents == null || transferAgents.length == 0 ) return;
 
-	createCOMInterfaces();
 	int[] pdwEffect = new int[1];
 	int operations = opToOs(getStyle());
 	Display display = control.getDisplay();
@@ -369,6 +536,7 @@ private void drag(Event dragEvent) {
 	String externalLoopKey = "org.eclipse.swt.internal.win32.externalEventLoop";
 	int result = COM.DRAGDROP_S_CANCEL;
 	try {
+		createCOMInterfaces();
 		display.setData(externalLoopKey, Boolean.TRUE);
 		result = COM.DoDragDrop(iDataObject.getAddress(), iDropSource.getAddress(), operations, pdwEffect);
 	} finally {
@@ -383,7 +551,7 @@ private void drag(Event dragEvent) {
 			topControl = null;
 		}
 		display.setData(key, oldValue);
-		Release();
+		releaseCOMInterfaces();
 	}
 	int operation = osToOp(pdwEffect[0]);
 	if (dataEffect == DND.DROP_MOVE) {
@@ -393,33 +561,6 @@ private void drag(Event dragEvent) {
 			operation = dataEffect;
 		}
 	}
-
-	/*
-	 * Bug 549643: a proper drag&drop operation is finished when the DoDragDrop loop/function returns.
-	 * Unfortunately the Windows Explorer is ignoring this fact while showing a Portable Device
-	 * (e.g. Smartphone attached through MTP). I.e. dropping a file on Windows Explorer in this
-	 * situation will query the iDataObject at least once for its data _after_ DoDragDrop finished.
-	 * Revoking this getData request will fail the drop.
-	 *
-	 * This behavior can succeeds because most applications store the actual data to transfer in
-	 * the IDataObject and since its lifetime is managed through ref counting it can return the data
-	 * even after the drag&drop finished. In SWT the data to transfer is not stored in the IDataObject
-	 * but instead obtained on demand through a DND.DragSetData event. Additional some clients release
-	 * the data to drag in the DragEnd event and therefore do not like to get such events after DragEnd.
-	 *
-	 * That's why the next few lines exist. In case the DropTarget has not yet released the IDataObject
-	 * (which is the case for the faulty Windows Explorer described above) we delay the DragEnd event in
-	 * case an additional DragSetData is triggered. Since the DropTarget can be any (faulty or malicious)
-	 * application maybe never releasing the object wait is combined with a tight timeout.
-	 */
-	final long start = System.currentTimeMillis();
-	while (refCount > 0 && System.currentTimeMillis() - start < 1000) {
-		if (!display.readAndDispatch()) {
-			try { Thread.sleep(10); }
-			catch (InterruptedException e) { break; }
-		}
-	}
-	disposeCOMInterfaces();
 
 	event = new DNDEvent();
 	event.widget = this;
@@ -434,7 +575,7 @@ private void drag(Event dragEvent) {
  * Ownership of ppenumFormatetc transfers from callee to caller so reference count on ppenumFormatetc
  * must be incremented before returning.  Caller is responsible for releasing ppenumFormatetc.
  */
-private int EnumFormatEtc(int dwDirection, long ppenumFormatetc) {
+private static int EnumFormatEtc(Transfer[] transferAgents, int dwDirection, long ppenumFormatetc) {
 	// only allow getting of data - SetData is not currently supported
 	if (dwDirection == COM.DATADIR_SET) return COM.E_NOTIMPL;
 
@@ -470,47 +611,6 @@ private int EnumFormatEtc(int dwDirection, long ppenumFormatetc) {
  */
 public Control getControl() {
 	return control;
-}
-
-private int GetData(long pFormatetc, long pmedium) {
-	/* Called by a data consumer to obtain data from a source data object.
-	   The GetData method renders the data described in the specified FORMATETC
-	   structure and transfers it through the specified STGMEDIUM structure.
-	   The caller then assumes responsibility for releasing the STGMEDIUM structure.
-	*/
-	if (pFormatetc == 0 || pmedium == 0) return COM.E_INVALIDARG;
-
-	if (QueryGetData(pFormatetc) != COM.S_OK) return COM.DV_E_FORMATETC;
-
-	TransferData transferData = new TransferData();
-	transferData.formatetc = new FORMATETC();
-	COM.MoveMemory(transferData.formatetc, pFormatetc, FORMATETC.sizeof);
-	transferData.type = transferData.formatetc.cfFormat;
-	transferData.stgmedium = new STGMEDIUM();
-	transferData.result = COM.E_FAIL;
-
-	DNDEvent event = new DNDEvent();
-	event.widget = this;
-	event.time = OS.GetMessageTime();
-	event.dataType = transferData;
-	notifyListeners(DND.DragSetData,event);
-
-	if (!event.doit) return COM.E_FAIL;
-
-	// get matching transfer agent to perform conversion
-	Transfer transfer = null;
-	for (Transfer transferAgent : transferAgents) {
-		if (transferAgent != null && transferAgent.isSupportedType(transferData)){
-			transfer = transferAgent;
-			break;
-		}
-	}
-
-	if (transfer == null) return COM.DV_E_FORMATETC;
-	transfer.javaToNative(event.data, transferData);
-	if (transferData.result != COM.S_OK) return transferData.result;
-	COM.MoveMemory(pmedium, transferData.stgmedium, STGMEDIUM.sizeof);
-	return transferData.result;
 }
 
 /**
@@ -607,7 +707,7 @@ private int QueryContinueDrag(int fEscapePressed, int grfKeyState) {
 
 private void onDispose() {
 	if (control == null) return;
-	this.Release();
+	releaseCOMInterfaces();
 	if (controlListener != null){
 		control.removeListener(SWT.Dispose, controlListener);
 		control.removeListener(SWT.DragDetect, controlListener);
@@ -646,7 +746,7 @@ private int osToOp(int osOperation){
 	return operation;
 }
 
-private int QueryGetData(long pFormatetc) {
+private static int QueryGetData(Transfer[] transferAgents, long pFormatetc) {
 	if (transferAgents == null) return COM.E_FAIL;
 	TransferData transferData = new TransferData();
 	transferData.formatetc = new FORMATETC();
@@ -666,37 +766,22 @@ private int QueryGetData(long pFormatetc) {
  * Ownership of ppvObject transfers from callee to caller so reference count on ppvObject
  * must be incremented before returning.  Caller is responsible for releasing ppvObject.
  */
-private int QueryInterface(long riid, long ppvObject) {
+private static int QueryInterface(COMObject comObject, long riid, long ppvObject) {
 	if (riid == 0 || ppvObject == 0)
 		return COM.E_INVALIDARG;
 	GUID guid = new GUID();
 	COM.MoveMemory(guid, riid, GUID.sizeof);
 
-	if (COM.IsEqualGUID(guid, COM.IIDIUnknown) || COM.IsEqualGUID(guid, COM.IIDIDropSource)) {
-		OS.MoveMemory(ppvObject, new long[] {iDropSource.getAddress()}, C.PTR_SIZEOF);
-		AddRef();
-		return COM.S_OK;
-	}
-
-	if (COM.IsEqualGUID(guid, COM.IIDIDataObject) ) {
-		OS.MoveMemory(ppvObject, new long[] {iDataObject.getAddress()}, C.PTR_SIZEOF);
-		AddRef();
+	if (comObject != null && COM.IsEqualGUID(guid, COM.IIDIUnknown)
+			|| (COM.IsEqualGUID(guid, COM.IIDIDropSource) && (comObject instanceof COMIDropSource))
+			|| (COM.IsEqualGUID(guid, COM.IIDIDataObject) && (comObject instanceof COMIDataObject))) {
+		OS.MoveMemory(ppvObject, new long[] {comObject.getAddress()}, C.PTR_SIZEOF);
+		comObject.method1(null); // AddRef
 		return COM.S_OK;
 	}
 
 	OS.MoveMemory(ppvObject, new long[] {0}, C.PTR_SIZEOF);
 	return COM.E_NOINTERFACE;
-}
-
-private int Release() {
-	refCount--;
-	if (refCount == 0) {
-		disposeCOMInterfaces();
-		if (COM.FreeUnusedLibraries) {
-			COM.CoFreeUnusedLibraries();
-		}
-	}
-	return refCount;
 }
 
 /**
@@ -722,26 +807,6 @@ public void removeDragListener(DragSourceListener listener) {
 	removeListener(DND.DragStart, listener);
 	removeListener(DND.DragSetData, listener);
 	removeListener(DND.DragEnd, listener);
-}
-
-private int SetData(long pFormatetc, long pmedium, int fRelease) {
-	if (pFormatetc == 0 || pmedium == 0) return COM.E_INVALIDARG;
-	FORMATETC formatetc = new FORMATETC();
-	COM.MoveMemory(formatetc, pFormatetc, FORMATETC.sizeof);
-	if (formatetc.cfFormat == CFSTR_PERFORMEDDROPEFFECT && formatetc.tymed == COM.TYMED_HGLOBAL) {
-		STGMEDIUM stgmedium = new STGMEDIUM();
-		COM.MoveMemory(stgmedium, pmedium,STGMEDIUM.sizeof);
-		//TODO - this should be GlobalLock()
-		long[] ptrEffect = new long[1];
-		OS.MoveMemory(ptrEffect, stgmedium.unionField, C.PTR_SIZEOF);
-		int[] effect = new int[1];
-		OS.MoveMemory(effect, ptrEffect[0], 4);
-		dataEffect = osToOp(effect[0]);
-	}
-	if (fRelease == 1) {
-		COM.ReleaseStgMedium(pmedium);
-	}
-	return COM.S_OK;
 }
 
 /**
