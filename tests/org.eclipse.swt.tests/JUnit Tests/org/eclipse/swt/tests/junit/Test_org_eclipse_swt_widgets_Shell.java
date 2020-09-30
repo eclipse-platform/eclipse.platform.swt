@@ -474,8 +474,10 @@ public void test_getShells() {
 	assertTrue(":a:", num == 1);
 	Shell shell_1 = new Shell(shell);
 	num = shell.getShells().length;
-	assertTrue(":a:", num == 2);
+	assertTrue(":b:", num == 2);
 	shell_1.dispose();
+	num = shell.getShells().length;
+	assertTrue(":c:", num == 1);
 }
 
 @Override

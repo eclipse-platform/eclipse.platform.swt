@@ -1121,7 +1121,7 @@ public Shell [] getShells () {
 	for (Shell activeshell : shells) {
 		Control shell = activeshell;
 		do {
-			shell = shell.parent;
+			shell = shell.getParent ();
 		} while (shell != null && shell != this);
 		if (shell == this) count++;
 	}
@@ -1130,7 +1130,7 @@ public Shell [] getShells () {
 	for (Shell activeshell : shells) {
 		Control shell = activeshell;
 		do {
-			shell = shell.parent;
+			shell = shell.getParent ();
 		} while (shell != null && shell != this);
 		if (shell == this) {
 			result [index++] = activeshell;

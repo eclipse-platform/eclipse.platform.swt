@@ -1362,6 +1362,7 @@ public int getImeInputMode () {
 Shell _getShell () {
 	return this;
 }
+
 /**
  * Returns an array containing all shells which are
  * descendants of the receiver.
@@ -1374,11 +1375,11 @@ Shell _getShell () {
  * </ul>
  */
 public Shell [] getShells () {
-	checkWidget();
+	checkWidget ();
 	int count = 0;
 	Shell [] shells = display.getShells ();
-	for (int i=0; i<shells.length; i++) {
-		Control shell = shells [i];
+	for (Shell activeshell : shells) {
+		Control shell = activeshell;
 		do {
 			shell = shell.getParent ();
 		} while (shell != null && shell != this);
@@ -1386,13 +1387,13 @@ public Shell [] getShells () {
 	}
 	int index = 0;
 	Shell [] result = new Shell [count];
-	for (int i=0; i<shells.length; i++) {
-		Control shell = shells [i];
+	for (Shell activeshell : shells) {
+		Control shell = activeshell;
 		do {
 			shell = shell.getParent ();
 		} while (shell != null && shell != this);
 		if (shell == this) {
-			result [index++] = shells [i];
+			result [index++] = activeshell;
 		}
 	}
 	return result;
