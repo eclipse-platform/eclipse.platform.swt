@@ -912,15 +912,22 @@ public class GTK extends OS {
 	public static final native void gtk_container_set_border_width(long container, int border_width);
 
 
-
+	/* GtkDialog */
 	/**
 	 * @param dialog cast=(GtkDialog *)
 	 * @param button_text cast=(const gchar *)
 	 * @param response_id cast=(gint)
 	 */
-	public static final native long gtk_dialog_add_button(long dialog, byte[]  button_text, int response_id);
-	/** @param dialog cast=(GtkDialog *) */
+	public static final native long gtk_dialog_add_button(long dialog, byte[] button_text, int response_id);
+
+	/* GtkDialog [GTK3 only] */
+	/**
+	 * @method flags=dynamic
+	 * @param dialog cast=(GtkDialog *)
+	 */
 	public static final native int gtk_dialog_run(long dialog);
+
+
 	/**
 	 * @method flags=dynamic
 	 * @param widget cast=(GtkWidget *)
@@ -1324,6 +1331,7 @@ public class GTK extends OS {
 	 * @param phase cast=(GtkPropagationPhase)
 	 */
 	public static final native void gtk_event_controller_set_propagation_phase(long controller, int phase);
+	/** @param controller cast=(GtkEventController *) */
 	public static final native long gtk_event_controller_get_widget(long controller);
 
 	/* GtkEventController [GTK3 only] */
@@ -2036,7 +2044,11 @@ public class GTK extends OS {
 	 */
 	public static final native void gtk_message_dialog_format_secondary_text(long message_dialog, byte[] message_format, byte[] arg);
 
+	/* GtkNativeDialog */
+	/** @param dialog cast=(GtkNativeDialog *) */
+	public static final native void gtk_native_dialog_show(long dialog);
 
+	/* GtkNativeDialog [GTK3 only] */
 	/** @param dialog cast=(GtkNativeDialog *) */
 	public static final native int gtk_native_dialog_run(long dialog);
 

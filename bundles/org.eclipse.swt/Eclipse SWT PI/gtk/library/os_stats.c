@@ -619,6 +619,7 @@ char * GTK_nativeFunctionNames[] = {
 	"gtk_1message_1dialog_1new",
 	"gtk_1named_1action_1new",
 	"gtk_1native_1dialog_1run",
+	"gtk_1native_1dialog_1show",
 	"gtk_1native_1get_1surface",
 	"gtk_1notebook_1get_1current_1page",
 	"gtk_1notebook_1get_1n_1pages",

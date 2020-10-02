@@ -500,6 +500,10 @@
 // GtkRadioButton removed
 #define NO_gtk_1radio_1button_1get_1group
 
+// GtkDialog changes
+#define NO_gtk_1dialog_1run
+#define NO_gtk_1native_1dialog_1run
+
 #else
 
 /**

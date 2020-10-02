@@ -339,8 +339,8 @@ public String open () {
 String openNativeChooserDialog () {
 	byte [] titleBytes = Converter.wcsToMbcs (title, true);
 	int action = (style & SWT.SAVE) != 0 ? GTK.GTK_FILE_CHOOSER_ACTION_SAVE : GTK.GTK_FILE_CHOOSER_ACTION_OPEN;
-	long shellHandle = parent.topHandle ();
-	Display display = parent != null ? parent.getDisplay (): Display.getCurrent ();
+	long shellHandle = parent.topHandle();
+	Display display = parent != null ? parent.getDisplay (): Display.getCurrent();
 	handle = GTK.gtk_file_chooser_native_new(titleBytes, shellHandle, action, null, null);
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 
@@ -357,19 +357,25 @@ String openNativeChooserDialog () {
 		signalId = OS.g_signal_lookup (OS.map, GTK.GTK_TYPE_WIDGET());
 		hookId = OS.g_signal_add_emission_hook (signalId, 0, display.emissionProc, handle, 0);
 	}
-	display.externalEventLoop = true;
-	display.sendPreExternalEventDispatchEvent ();
-	int response = 0;
-	response = GTK.gtk_native_dialog_run(handle);
-	/*
-	* This call to gdk_threads_leave() is a temporary work around
-	* to avoid deadlocks when gdk_threads_init() is called by native
-	* code outside of SWT (i.e AWT, etc). It ensures that the current
-	* thread leaves the GTK lock acquired by the function above.
-	*/
-	if (!GTK.GTK4) GDK.gdk_threads_leave();
-	display.externalEventLoop = false;
-	display.sendPostExternalEventDispatchEvent ();
+
+	int response;
+	if (GTK.GTK4) {
+		response = SyncDialogUtil.run(display, handle, true);
+	} else {
+		display.externalEventLoop = true;
+		display.sendPreExternalEventDispatchEvent ();
+		response = GTK.gtk_native_dialog_run(handle);
+		/*
+		* This call to gdk_threads_leave() is a temporary work around
+		* to avoid deadlocks when gdk_threads_init() is called by native
+		* code outside of SWT (i.e AWT, etc). It ensures that the current
+		* thread leaves the GTK lock acquired by the function above.
+		*/
+		GDK.gdk_threads_leave();
+		display.externalEventLoop = false;
+		display.sendPostExternalEventDispatchEvent ();
+	}
+
 	if ((style & SWT.RIGHT_TO_LEFT) != 0) {
 		OS.g_signal_remove_emission_hook (signalId, hookId);
 	}

@@ -128,11 +128,11 @@ public RGB[] getRGBs() {
  * </ul>
  */
 public RGB open () {
-	byte [] buffer = Converter.wcsToMbcs (title, true);
-	long handle = GTK.gtk_color_chooser_dialog_new (buffer, parent.topHandle ());
-	Display display = parent != null ? parent.getDisplay (): Display.getCurrent ();
-	GdkRGBA rgba;
-	rgba = new GdkRGBA ();
+	byte[] buffer = Converter.javaStringToCString(title);
+	long handle = GTK.gtk_color_chooser_dialog_new(buffer, parent.topHandle());
+	Display display = parent != null ? parent.getDisplay(): Display.getCurrent();
+
+	GdkRGBA rgba = new GdkRGBA();
 	if (rgb != null) {
 		rgba.red = (double) rgb.red / 255;
 		rgba.green = (double) rgb.green / 255;
@@ -164,11 +164,11 @@ public RGB open () {
 		OS.g_free (gdkRGBAS);
 	}
 
-	display.addIdleProc ();
+	display.addIdleProc();
 	Dialog oldModal = null;
-	if (GTK.gtk_window_get_modal (handle)) {
-		oldModal = display.getModalDialog ();
-		display.setModalDialog (this);
+	if (GTK.gtk_window_get_modal(handle)) {
+		oldModal = display.getModalDialog();
+		display.setModalDialog(this);
 	}
 	int signalId = 0;
 	long hookId = 0;
@@ -176,44 +176,52 @@ public RGB open () {
 		signalId = OS.g_signal_lookup (OS.map, GTK.GTK_TYPE_WIDGET());
 		hookId = OS.g_signal_add_emission_hook (signalId, 0, display.emissionProc, handle, 0);
 	}
-	display.externalEventLoop = true;
-	display.sendPreExternalEventDispatchEvent ();
-	int response = GTK.gtk_dialog_run (handle);
-	/*
-	* This call to gdk_threads_leave() is a temporary work around
-	* to avoid deadlocks when gdk_threads_init() is called by native
-	* code outside of SWT (i.e AWT, etc). It ensures that the current
-	* thread leaves the GTK lock acquired by the function above.
-	*/
-	if (!GTK.GTK4) GDK.gdk_threads_leave();
-	display.externalEventLoop = false;
-	display.sendPostExternalEventDispatchEvent ();
+
+	int response;
+	if (GTK.GTK4) {
+		response = SyncDialogUtil.run(display, handle, false);
+	} else {
+		display.externalEventLoop = true;
+		display.sendPreExternalEventDispatchEvent();
+		response = GTK.gtk_dialog_run(handle);
+		/*
+		* This call to gdk_threads_leave() is a temporary work around
+		* to avoid deadlocks when gdk_threads_init() is called by native
+		* code outside of SWT (i.e AWT, etc). It ensures that the current
+		* thread leaves the GTK lock acquired by the function above.
+		*/
+		GDK.gdk_threads_leave();
+		display.externalEventLoop = false;
+		display.sendPostExternalEventDispatchEvent();
+	}
+
 	if ((style & SWT.RIGHT_TO_LEFT) != 0) {
-		OS.g_signal_remove_emission_hook (signalId, hookId);
+		OS.g_signal_remove_emission_hook(signalId, hookId);
 	}
 	if (GTK.gtk_window_get_modal (handle)) {
-		display.setModalDialog (oldModal);
+		display.setModalDialog(oldModal);
 	}
 	boolean success = response == GTK.GTK_RESPONSE_OK;
 	if (success) {
 		int red = 0;
 		int green = 0;
 		int blue = 0;
-		rgba = new GdkRGBA ();
-		GTK.gtk_color_chooser_get_rgba (handle, rgba);
+		rgba = new GdkRGBA();
+		GTK.gtk_color_chooser_get_rgba(handle, rgba);
 		red =  (int) (rgba.red * 255);
 		green = (int) (rgba.green * 255);
 		blue =  (int) (rgba.blue *  255);
-		rgb = new RGB (red, green, blue);
+		rgb = new RGB(red, green, blue);
+	} else {
+		rgb = null;
 	}
 
-	display.removeIdleProc ();
+	display.removeIdleProc();
 	if (GTK.GTK4) {
 		GTK.gtk_window_destroy(handle);
 	} else {
 		GTK.gtk_widget_destroy(handle);
 	}
-	if (!success) return null;
 
 	return rgb;
 }

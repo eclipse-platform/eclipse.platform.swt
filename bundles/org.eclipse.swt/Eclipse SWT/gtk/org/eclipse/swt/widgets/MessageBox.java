@@ -14,8 +14,6 @@
 package org.eclipse.swt.widgets;
 
 
-import java.lang.reflect.*;
-
 import org.eclipse.swt.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.gtk.*;
@@ -48,9 +46,6 @@ public class MessageBox extends Dialog {
 	String message = "";
 	long handle;
 
-	/* GTK4 fields used to transform async response callback synchronous */
-	int responseID;
-	Callback dialogResponseCallback;
 /**
  * Constructs a new instance of this class given only its parent.
  *
@@ -148,7 +143,7 @@ public void setMessage (String string) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the dialog</li>
  * </ul>
  */
-public int open () {
+public int open() {
 	long parentHandle = (parent != null) ? parent.topHandle() : 0;
 	int dialogFlags = GTK.GTK_DIALOG_DESTROY_WITH_PARENT;
 	if ((style & (SWT.PRIMARY_MODAL | SWT.APPLICATION_MODAL | SWT.SYSTEM_MODAL)) != 0) {
@@ -184,38 +179,34 @@ public int open () {
 	createButtons(display.getDismissalAlignment());
 	GTK.gtk_message_dialog_format_secondary_text(handle, format, Converter.javaStringToCString(message));
 
+	display.addIdleProc();
+	Dialog oldModal = null;
+	if (GTK.gtk_window_get_modal(handle)) {
+		oldModal = display.getModalDialog();
+		display.setModalDialog(this);
+	}
+	/*
+	* In order to allow the dialog to be modal of it's
+	* parent shells, it is required to assign the
+	* dialog to the same window group as of the shells.
+	*/
+	long defaultWindowGroup = GTK.gtk_window_get_group(0);
+	GTK.gtk_window_group_add_window(defaultWindowGroup, handle);
+
+	int signalId = 0;
+	long hookId = 0;
+	if ((style & SWT.RIGHT_TO_LEFT) != 0) {
+		signalId = OS.g_signal_lookup(OS.map, GTK.GTK_TYPE_WIDGET());
+		hookId = OS.g_signal_add_emission_hook(signalId, 0, display.emissionProc, handle, 0);
+	}
+
 	int response;
 	if (GTK.GTK4) {
-		initializeResponseCallback();
-		OS.g_signal_connect(handle, OS.response, dialogResponseCallback.getAddress(), 0);
-		GTK.gtk_widget_show(handle);
-
-		response = waitForResponse(display);
-		disposeResponseCallback();
+		response = SyncDialogUtil.run(display, handle, false);
 	} else {
-		display.addIdleProc ();
-		Dialog oldModal = null;
-		/*
-		* In order to allow the dialog to be modal of it's
-		* parent shells, it is required to assign the
-		* dialog to the same window group as of the shells.
-		*/
-		long group = GTK.gtk_window_get_group(0);
-		GTK.gtk_window_group_add_window (group, handle);
-
-		if (GTK.gtk_window_get_modal (handle)) {
-			oldModal = display.getModalDialog ();
-			display.setModalDialog (this);
-		}
-		int signalId = 0;
-		long hookId = 0;
-		if ((style & SWT.RIGHT_TO_LEFT) != 0) {
-			signalId = OS.g_signal_lookup (OS.map, GTK.GTK_TYPE_WIDGET());
-			hookId = OS.g_signal_add_emission_hook (signalId, 0, display.emissionProc, handle, 0);
-		}
 		display.externalEventLoop = true;
-		display.sendPreExternalEventDispatchEvent ();
-		response = GTK.gtk_dialog_run (handle);
+		display.sendPreExternalEventDispatchEvent();
+		response = GTK.gtk_dialog_run(handle);
 		/*
 		* This call to gdk_threads_leave() is a temporary work around
 		* to avoid deadlocks when gdk_threads_init() is called by native
@@ -224,16 +215,17 @@ public int open () {
 		*/
 		GDK.gdk_threads_leave();
 		display.externalEventLoop = false;
-		display.sendPostExternalEventDispatchEvent ();
-		if ((style & SWT.RIGHT_TO_LEFT) != 0) {
-			OS.g_signal_remove_emission_hook (signalId, hookId);
-		}
-		if (GTK.gtk_window_get_modal (handle)) {
-			display.setModalDialog (oldModal);
-		}
-		display.removeIdleProc ();
-		GTK.gtk_widget_destroy(handle);
+		display.sendPostExternalEventDispatchEvent();
 	}
+
+	if ((style & SWT.RIGHT_TO_LEFT) != 0) {
+		OS.g_signal_remove_emission_hook(signalId, hookId);
+	}
+	if (GTK.gtk_window_get_modal(handle)) {
+		display.setModalDialog(oldModal);
+	}
+	display.removeIdleProc();
+	GTK.gtk_widget_destroy(handle);
 
 	return response;
 }
@@ -266,57 +258,5 @@ private static int checkStyle (int style) {
 	if (bits == (SWT.RETRY | SWT.CANCEL) || bits == (SWT.ABORT | SWT.RETRY | SWT.IGNORE)) return style;
 	style = (style & ~mask) | SWT.OK;
 	return style;
-}
-
-/**
- * Initializes the response callback and resets the responseID of the dialog to the default value.
- * This function should be called before connect the dialog to the "response" signal, as this sets up the callback.
- *
- * Note: This function is only used in the GTK4 implementation due to the removal of the blocking call gtk_dialog_run. See bug 567371.
- */
-private void initializeResponseCallback() {
-	dialogResponseCallback = new Callback(this, "dialogResponseProc", void.class, new Type[] {long.class, int.class, long.class});
-	responseID = -1;
-}
-
-/**
- * Disposes the response callback.
- * This function should be called after waitForResponse has returned, as this signifies the end of the signal handling.
- *
- * Note: This function is only used in the GTK4 implementation due to the removal of the blocking call gtk_dialog_run. See bug 567371.
- * @see waitForResponse
- */
-private void disposeResponseCallback() {
-	dialogResponseCallback.dispose();
-	dialogResponseCallback = null;
-}
-
-/**
- * A blocking call that waits for the handling of the signal before returning.
- *
- * Note: This function is only used in the GTK4 implementation due to the removal of the blocking call gtk_dialog_run. See bug 567371.
- *
- * @return the response_id from the dialog presented to the user
- */
-private int waitForResponse(Display display) {
-	while (!display.isDisposed()) {
-		boolean eventsDispatched = OS.g_main_context_iteration (0, false);
-		if (responseID != -1) {
-			break;
-		} else if (!eventsDispatched) {
-			display.sleep();
-		}
-	}
-
-	return responseID;
-}
-
-/**
- * Callback function for the "response" signal in GtkDialog widgets.
- * Destroys the dialog after a response is given.
- */
-void dialogResponseProc(long dialog, int response_id, long user_date) {
-	responseID = response_id;
-	GTK.gtk_window_destroy(dialog);
 }
 }

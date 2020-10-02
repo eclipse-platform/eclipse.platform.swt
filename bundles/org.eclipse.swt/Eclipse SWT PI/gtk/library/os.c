@@ -5206,7 +5206,15 @@ JNIEXPORT jint JNICALL GTK_NATIVE(gtk_1dialog_1run)
 {
 	jint rc = 0;
 	GTK_NATIVE_ENTER(env, that, gtk_1dialog_1run_FUNC);
+/*
 	rc = (jint)gtk_dialog_run((GtkDialog *)arg0);
+*/
+	{
+		GTK_LOAD_FUNCTION(fp, gtk_dialog_run)
+		if (fp) {
+			rc = (jint)((jint (CALLING_CONVENTION*)(GtkDialog *))fp)((GtkDialog *)arg0);
+		}
+	}
 	GTK_NATIVE_EXIT(env, that, gtk_1dialog_1run_FUNC);
 	return rc;
 }
@@ -5927,7 +5935,7 @@ JNIEXPORT jlong JNICALL GTK_NATIVE(gtk_1event_1controller_1get_1widget)
 {
 	jlong rc = 0;
 	GTK_NATIVE_ENTER(env, that, gtk_1event_1controller_1get_1widget_FUNC);
-	rc = (jlong)gtk_event_controller_get_widget(arg0);
+	rc = (jlong)gtk_event_controller_get_widget((GtkEventController *)arg0);
 	GTK_NATIVE_EXIT(env, that, gtk_1event_1controller_1get_1widget_FUNC);
 	return rc;
 }
@@ -8169,6 +8177,16 @@ JNIEXPORT jint JNICALL GTK_NATIVE(gtk_1native_1dialog_1run)
 	rc = (jint)gtk_native_dialog_run((GtkNativeDialog *)arg0);
 	GTK_NATIVE_EXIT(env, that, gtk_1native_1dialog_1run_FUNC);
 	return rc;
+}
+#endif
+
+#ifndef NO_gtk_1native_1dialog_1show
+JNIEXPORT void JNICALL GTK_NATIVE(gtk_1native_1dialog_1show)
+	(JNIEnv *env, jclass that, jlong arg0)
+{
+	GTK_NATIVE_ENTER(env, that, gtk_1native_1dialog_1show_FUNC);
+	gtk_native_dialog_show((GtkNativeDialog *)arg0);
+	GTK_NATIVE_EXIT(env, that, gtk_1native_1dialog_1show_FUNC);
 }
 #endif
 

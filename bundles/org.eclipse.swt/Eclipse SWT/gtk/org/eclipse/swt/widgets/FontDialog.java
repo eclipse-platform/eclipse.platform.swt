@@ -155,58 +155,68 @@ public RGB getRGB () {
  * </ul>
  */
 public FontData open () {
-	long handle;
-	byte [] titleBytes;
-	titleBytes = Converter.wcsToMbcs (title, true);
-	Display display = parent != null ? parent.getDisplay (): Display.getCurrent ();
-	handle = GTK.gtk_font_chooser_dialog_new (titleBytes, 0);
-	if (parent!=null) {
-		long shellHandle = parent.topHandle ();
+	byte[] titleBytes = Converter.javaStringToCString(title);
+	Display display = parent != null ? parent.getDisplay(): Display.getCurrent();
+	long handle = GTK.gtk_font_chooser_dialog_new (titleBytes, 0);
+
+	if (parent != null) {
+		long shellHandle = parent.topHandle();
 		GTK.gtk_window_set_transient_for(handle, shellHandle);
 	}
-	long group = GTK.gtk_window_get_group(0);
-	GTK.gtk_window_group_add_window (group, handle);
-	GTK.gtk_window_set_modal (handle, true);
+
+	long defaultWindowGroup = GTK.gtk_window_get_group(0);
+	GTK.gtk_window_group_add_window(defaultWindowGroup, handle);
+	GTK.gtk_window_set_modal(handle, true);
+
+	display.addIdleProc();
+	Dialog oldModal = display.getModalDialog();
+	display.setModalDialog(this);
+
+	// Set font chooser dialog to current font
 	if (fontData != null) {
-		Font font = new Font (display, fontData);
-		long fontName = OS.pango_font_description_to_string (font.handle);
-		int length = C.strlen (fontName);
-		byte [] buffer = new byte [length + 1];
-		C.memmove (buffer, fontName, length);
+		Font font = new Font(display, fontData);
+
+		long fontName = OS.pango_font_description_to_string(font.handle);
+		int length = C.strlen(fontName);
+		byte[] buffer = new byte[length + 1];
+		C.memmove(buffer, fontName, length);
 		font.dispose();
-		OS.g_free (fontName);
-		GTK.gtk_font_chooser_set_font (handle, buffer);
+		OS.g_free(fontName);
+
+		GTK.gtk_font_chooser_set_font(handle, buffer);
 	}
-	display.addIdleProc ();
-	Dialog oldModal = null;
-	if (GTK.gtk_window_get_modal (handle)) {
-		oldModal = display.getModalDialog ();
-		display.setModalDialog (this);
-	}
+
 	int signalId = 0;
 	long hookId = 0;
 	if ((style & SWT.RIGHT_TO_LEFT) != 0) {
-		signalId = OS.g_signal_lookup (OS.map, GTK.GTK_TYPE_WIDGET());
-		hookId = OS.g_signal_add_emission_hook (signalId, 0, display.emissionProc, handle, 0);
+		signalId = OS.g_signal_lookup(OS.map, GTK.GTK_TYPE_WIDGET());
+		hookId = OS.g_signal_add_emission_hook(signalId, 0, display.emissionProc, handle, 0);
 	}
-	display.externalEventLoop = true;
-	display.sendPreExternalEventDispatchEvent ();
-	int response = GTK.gtk_dialog_run (handle);
-	/*
-	* This call to gdk_threads_leave() is a temporary work around
-	* to avoid deadlocks when gdk_threads_init() is called by native
-	* code outside of SWT (i.e AWT, etc). It ensures that the current
-	* thread leaves the GTK lock acquired by the function above.
-	*/
-	if (!GTK.GTK4) GDK.gdk_threads_leave();
-	display.externalEventLoop = false;
-	display.sendPostExternalEventDispatchEvent ();
+
+	int response;
+	if (GTK.GTK4) {
+		response = SyncDialogUtil.run(display, handle, false);
+	} else {
+		display.externalEventLoop = true;
+		display.sendPreExternalEventDispatchEvent();
+		response = GTK.gtk_dialog_run(handle);
+		/*
+		* This call to gdk_threads_leave() is a temporary work around
+		* to avoid deadlocks when gdk_threads_init() is called by native
+		* code outside of SWT (i.e AWT, etc). It ensures that the current
+		* thread leaves the GTK lock acquired by the function above.
+		*/
+		GDK.gdk_threads_leave();
+		display.externalEventLoop = false;
+		display.sendPostExternalEventDispatchEvent();
+	}
+
 	if ((style & SWT.RIGHT_TO_LEFT) != 0) {
-		OS.g_signal_remove_emission_hook (signalId, hookId);
+		OS.g_signal_remove_emission_hook(signalId, hookId);
 	}
-	if (GTK.gtk_window_get_modal (handle)) {
-		display.setModalDialog (oldModal);
-	}
+
+	display.setModalDialog(oldModal);
+
 	boolean success = response == GTK.GTK_RESPONSE_OK;
 	if (success) {
 		long fontName = GTK.gtk_font_chooser_get_font (handle);
@@ -218,14 +228,18 @@ public FontData open () {
 		Font font = Font.gtk_new (display, fontDesc);
 		fontData = font.getFontData () [0];
 		OS.pango_font_description_free (fontDesc);
+	} else {
+		fontData = null;
 	}
+
 	display.removeIdleProc ();
+
 	if (GTK.GTK4) {
 		OS.g_object_unref(handle);
 	} else {
 		GTK.gtk_widget_destroy(handle);
 	}
-	if (!success) return null;
+
 	return fontData;
 }
 /**
