@@ -516,7 +516,14 @@ Point computeNativeSize (long h, int wHint, int hHint, boolean changed) {
  */
 public void copy () {
 	checkWidget ();
-	if (entryHandle != 0) GTK.gtk_editable_copy_clipboard (entryHandle);
+	if (entryHandle != 0) {
+		if (GTK.GTK4) {
+			long textHandle = GTK.gtk_widget_get_first_child(entryHandle);
+			GTK.gtk_widget_activate_action(textHandle, OS.action_copy_clipboard, null);
+		} else {
+			GTK.gtk_editable_copy_clipboard(entryHandle);
+		}
+	}
 }
 
 @Override
@@ -608,7 +615,14 @@ void createHandle (int index) {
  */
 public void cut () {
 	checkWidget ();
-	if (entryHandle != 0) GTK.gtk_editable_cut_clipboard (entryHandle);
+	if (entryHandle != 0) {
+		if (GTK.GTK4) {
+			long textHandle = GTK.gtk_widget_get_first_child(entryHandle);
+			GTK.gtk_widget_activate_action(textHandle, OS.action_cut_clipboard, null);
+		} else {
+			GTK.gtk_editable_cut_clipboard(entryHandle);
+		}
+	}
 }
 
 @Override

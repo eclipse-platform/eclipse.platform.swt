@@ -5175,7 +5175,15 @@ JNIEXPORT void JNICALL GTK_NATIVE(gtk_1editable_1copy_1clipboard)
 	(JNIEnv *env, jclass that, jlong arg0)
 {
 	GTK_NATIVE_ENTER(env, that, gtk_1editable_1copy_1clipboard_FUNC);
+/*
 	gtk_editable_copy_clipboard((GtkEditable *)arg0);
+*/
+	{
+		GTK_LOAD_FUNCTION(fp, gtk_editable_copy_clipboard)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(GtkEditable *))fp)((GtkEditable *)arg0);
+		}
+	}
 	GTK_NATIVE_EXIT(env, that, gtk_1editable_1copy_1clipboard_FUNC);
 }
 #endif
@@ -5185,7 +5193,15 @@ JNIEXPORT void JNICALL GTK_NATIVE(gtk_1editable_1cut_1clipboard)
 	(JNIEnv *env, jclass that, jlong arg0)
 {
 	GTK_NATIVE_ENTER(env, that, gtk_1editable_1cut_1clipboard_FUNC);
+/*
 	gtk_editable_cut_clipboard((GtkEditable *)arg0);
+*/
+	{
+		GTK_LOAD_FUNCTION(fp, gtk_editable_cut_clipboard)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(GtkEditable *))fp)((GtkEditable *)arg0);
+		}
+	}
 	GTK_NATIVE_EXIT(env, that, gtk_1editable_1cut_1clipboard_FUNC);
 }
 #endif
@@ -5275,7 +5291,15 @@ JNIEXPORT void JNICALL GTK_NATIVE(gtk_1editable_1paste_1clipboard)
 	(JNIEnv *env, jclass that, jlong arg0)
 {
 	GTK_NATIVE_ENTER(env, that, gtk_1editable_1paste_1clipboard_FUNC);
+/*
 	gtk_editable_paste_clipboard((GtkEditable *)arg0);
+*/
+	{
+		GTK_LOAD_FUNCTION(fp, gtk_editable_paste_clipboard)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(GtkEditable *))fp)((GtkEditable *)arg0);
+		}
+	}
 	GTK_NATIVE_EXIT(env, that, gtk_1editable_1paste_1clipboard_FUNC);
 }
 #endif
@@ -12079,6 +12103,28 @@ JNIEXPORT void JNICALL GTK_NATIVE(gtk_1viewport_1set_1shadow_1type)
 }
 #endif
 
+#ifndef NO_gtk_1widget_1action_1set_1enabled
+JNIEXPORT void JNICALL GTK_NATIVE(gtk_1widget_1action_1set_1enabled)
+	(JNIEnv *env, jclass that, jlong arg0, jbyteArray arg1, jboolean arg2)
+{
+	jbyte *lparg1=NULL;
+	GTK_NATIVE_ENTER(env, that, gtk_1widget_1action_1set_1enabled_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
+/*
+	gtk_widget_action_set_enabled((GtkWidget *)arg0, (const char *)lparg1, arg2);
+*/
+	{
+		GTK_LOAD_FUNCTION(fp, gtk_widget_action_set_enabled)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(GtkWidget *, const char *, jboolean))fp)((GtkWidget *)arg0, (const char *)lparg1, arg2);
+		}
+	}
+fail:
+	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	GTK_NATIVE_EXIT(env, that, gtk_1widget_1action_1set_1enabled_FUNC);
+}
+#endif
+
 #ifndef NO_gtk_1widget_1activate
 JNIEXPORT jboolean JNICALL GTK_NATIVE(gtk_1widget_1activate)
 	(JNIEnv *env, jclass that, jlong arg0)
@@ -12087,6 +12133,33 @@ JNIEXPORT jboolean JNICALL GTK_NATIVE(gtk_1widget_1activate)
 	GTK_NATIVE_ENTER(env, that, gtk_1widget_1activate_FUNC);
 	rc = (jboolean)gtk_widget_activate((GtkWidget *)arg0);
 	GTK_NATIVE_EXIT(env, that, gtk_1widget_1activate_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_gtk_1widget_1activate_1action
+JNIEXPORT jboolean JNICALL GTK_NATIVE(gtk_1widget_1activate_1action)
+	(JNIEnv *env, jclass that, jlong arg0, jbyteArray arg1, jbyteArray arg2)
+{
+	jbyte *lparg1=NULL;
+	jbyte *lparg2=NULL;
+	jboolean rc = 0;
+	GTK_NATIVE_ENTER(env, that, gtk_1widget_1activate_1action_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	if (arg2) if ((lparg2 = (*env)->GetByteArrayElements(env, arg2, NULL)) == NULL) goto fail;
+/*
+	rc = (jboolean)gtk_widget_activate_action((GtkWidget *)arg0, (const char *)lparg1, (const char *)lparg2);
+*/
+	{
+		GTK_LOAD_FUNCTION(fp, gtk_widget_activate_action)
+		if (fp) {
+			rc = (jboolean)((jboolean (CALLING_CONVENTION*)(GtkWidget *, const char *, const char *))fp)((GtkWidget *)arg0, (const char *)lparg1, (const char *)lparg2);
+		}
+	}
+fail:
+	if (arg2 && lparg2) (*env)->ReleaseByteArrayElements(env, arg2, lparg2, 0);
+	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	GTK_NATIVE_EXIT(env, that, gtk_1widget_1activate_1action_FUNC);
 	return rc;
 }
 #endif

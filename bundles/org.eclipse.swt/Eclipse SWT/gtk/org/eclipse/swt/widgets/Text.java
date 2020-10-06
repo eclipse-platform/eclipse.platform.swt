@@ -71,6 +71,9 @@ public class Text extends Scrollable {
 	boolean doubleClick;
 	String message = "";
 
+	/** GTK4 only field, holds the address to the underlying GtkText widget. */
+	long textHandle;
+
 	static final char LTR_MARK = '\u200e';
 	static final char RTL_MARK = '\u200f';
 	int[] segments;
@@ -207,28 +210,32 @@ static int checkStyle (int style) {
 void createHandle (int index) {
 	state |= HANDLE | MENU;
 	if ((style & SWT.READ_ONLY) != 0) {
-		if (applyThemeBackground () == 1) {
+		if (applyThemeBackground() == 1) {
 			state |= THEME_BACKGROUND;
 		}
 	}
-	fixedHandle = OS.g_object_new (display.gtk_fixed_get_type (), 0);
-	if (fixedHandle == 0) error (SWT.ERROR_NO_HANDLES);
-	gtk_widget_set_has_surface_or_window (fixedHandle, true);
+
+	fixedHandle = OS.g_object_new(display.gtk_fixed_get_type (), 0);
+	if (fixedHandle == 0) error(SWT.ERROR_NO_HANDLES);
+	gtk_widget_set_has_surface_or_window(fixedHandle, true);
 	if ((style & SWT.SINGLE) != 0) {
 		if ((style & SWT.SEARCH) != 0) {
 			handle = GTK.gtk_search_entry_new();
 		} else {
-			handle = GTK.gtk_entry_new ();
+			handle = GTK.gtk_entry_new();
 		}
-		if (handle == 0) error (SWT.ERROR_NO_HANDLES);
+		if (handle == 0) error(SWT.ERROR_NO_HANDLES);
 
 		if (GTK.GTK4) {
 			OS.swt_fixed_add(fixedHandle, handle);
+			textHandle = GTK.gtk_widget_get_first_child(handle);
+			bufferHandle = GTK.gtk_entry_get_buffer(handle);
 		} else {
-			GTK.gtk_container_add (fixedHandle, handle);
+			GTK.gtk_container_add(fixedHandle, handle);
 		}
 
-		GTK.gtk_editable_set_editable (handle, (style & SWT.READ_ONLY) == 0);
+		GTK.gtk_editable_set_editable(handle, (style & SWT.READ_ONLY) == 0);
+		GTK.gtk_entry_set_visibility(handle, (style & SWT.PASSWORD) == 0);
 		/*
 		 * We need to handle borders differently in GTK3.20+. GtkEntry without frame will have a blank background color.
 		 * So let's set border via css and override the background in this case to be COLOR_LIST_BACKGROUND.
@@ -240,7 +247,7 @@ void createHandle (int index) {
 			gtk_css_provider_load_from_css(context, "entry {border: solid; background: " + background + ";}");
 			GTK.gtk_style_context_invalidate(context);
 		}
-		GTK.gtk_entry_set_visibility (handle, (style & SWT.PASSWORD) == 0);
+
 		float alignment = 0.0f;
 		if ((style & SWT.CENTER) != 0) alignment = 0.5f;
 		if ((style & SWT.RIGHT) != 0) alignment = 1.0f;
@@ -714,9 +721,13 @@ Rectangle computeTrimInPixels (int x, int y, int width, int height) {
 public void copy () {
 	checkWidget ();
 	if ((style & SWT.SINGLE) != 0) {
-		GTK.gtk_editable_copy_clipboard (handle);
+		if (GTK.GTK4) {
+			GTK.gtk_widget_activate_action(textHandle, OS.action_copy_clipboard, null);
+		} else {
+			GTK.gtk_editable_copy_clipboard(handle);
+		}
 	} else {
-		long clipboard = GTK.GTK4 ? GDK.gdk_display_get_clipboard(GDK.gdk_display_get_default()) : GTK.gtk_clipboard_get (GDK.GDK_NONE);;
+		long clipboard = GTK.GTK4 ? GDK.gdk_display_get_clipboard(GDK.gdk_display_get_default()) : GTK.gtk_clipboard_get (GDK.GDK_NONE);
 		clearSegments (true);
 		GTK.gtk_text_buffer_copy_clipboard (bufferHandle, clipboard);
 		applySegments ();
@@ -738,9 +749,13 @@ public void copy () {
 public void cut () {
 	checkWidget ();
 	if ((style & SWT.SINGLE) != 0) {
-		GTK.gtk_editable_cut_clipboard (handle);
+		if (GTK.GTK4) {
+			GTK.gtk_widget_activate_action(textHandle, OS.action_cut_clipboard, null);
+		} else {
+			GTK.gtk_editable_cut_clipboard(handle);
+		}
 	} else {
-		long clipboard = GTK.GTK4 ? GDK.gdk_display_get_clipboard(GDK.gdk_display_get_default()) : GTK.gtk_clipboard_get (GDK.GDK_NONE);;
+		long clipboard = GTK.GTK4 ? GDK.gdk_display_get_clipboard(GDK.gdk_display_get_default()) : GTK.gtk_clipboard_get (GDK.GDK_NONE);
 		clearSegments (true);
 		GTK.gtk_text_buffer_cut_clipboard (bufferHandle, clipboard, GTK.gtk_text_view_get_editable (handle));
 		applySegments ();
@@ -785,7 +800,6 @@ GdkRGBA defaultBackground () {
 void deregister () {
 	super.deregister ();
 	if (bufferHandle != 0) display.removeWidget (bufferHandle);
-	long imContext = imContext ();
 	if (imContext != 0) display.removeWidget (imContext);
 }
 
@@ -828,7 +842,6 @@ boolean filterKey (int keyval, long event) {
 	int time = GDK.gdk_event_get_time (event);
 	if (time != lastEventTime) {
 		lastEventTime = time;
-		long imContext = imContext ();
 		if (imContext != 0) {
 			return GTK.gtk_im_context_filter_keypress (imContext, event);
 		}
@@ -847,7 +860,6 @@ void fixIM () {
 	*  filter has to be called by SWT.
 	*/
 	if (gdkEventKey != 0 && gdkEventKey != -1) {
-		long imContext = imContext ();
 		if (imContext != 0) {
 			GTK.gtk_im_context_filter_keypress (imContext, gdkEventKey);
 			gdkEventKey = -1;
@@ -1353,8 +1365,13 @@ public String getText (int start, int end) {
 public char [] getTextChars () {
 	checkWidget ();
 	long address;
+
 	if ((style & SWT.SINGLE) != 0) {
-		address = GTK.gtk_entry_get_text (handle);
+		if (GTK.GTK4) {
+			address = GTK.gtk_entry_buffer_get_text(bufferHandle);
+		} else {
+			address = GTK.gtk_entry_get_text(handle);
+		}
 	} else {
 		byte [] start =  new byte [ITER_SIZEOF];
 		byte [] end =  new byte [ITER_SIZEOF];
@@ -1872,49 +1889,52 @@ long gtk_text_buffer_insert_text (long widget, long iter, long text, long length
 }
 
 @Override
-void hookEvents () {
+void hookEvents() {
 	super.hookEvents();
 	if ((style & SWT.SINGLE) != 0) {
-		OS.g_signal_connect_closure (handle, OS.changed, display.getClosure (CHANGED), true);
-		OS.g_signal_connect_closure (handle, OS.insert_text, display.getClosure (INSERT_TEXT), false);
-		OS.g_signal_connect_closure (handle, OS.delete_text, display.getClosure (DELETE_TEXT), false);
-		OS.g_signal_connect_closure (handle, OS.activate, display.getClosure (ACTIVATE), false);
-		OS.g_signal_connect_closure (handle, OS.grab_focus, display.getClosure (GRAB_FOCUS), false);
-		OS.g_signal_connect_closure (handle, OS.populate_popup, display.getClosure (POPULATE_POPUP), false);
+		OS.g_signal_connect_closure(handle, OS.changed, display.getClosure (CHANGED), true);
+		OS.g_signal_connect_closure(handle, OS.insert_text, display.getClosure (INSERT_TEXT), false);
+		OS.g_signal_connect_closure(handle, OS.delete_text, display.getClosure (DELETE_TEXT), false);
+		OS.g_signal_connect_closure(handle, OS.activate, display.getClosure (ACTIVATE), false);
+
+		if (!GTK.GTK4) {
+			OS.g_signal_connect_closure(handle, OS.grab_focus, display.getClosure (GRAB_FOCUS), false);
+		}
 		if ((style & SWT.SEARCH) != 0) {
-			OS.g_signal_connect_closure (handle, OS.icon_release, display.getClosure (ICON_RELEASE), false);
+			OS.g_signal_connect_closure(handle, OS.icon_release, display.getClosure (ICON_RELEASE), false);
 		}
 	} else {
-		OS.g_signal_connect_closure (bufferHandle, OS.changed, display.getClosure (CHANGED), false);
-		OS.g_signal_connect_closure (bufferHandle, OS.insert_text, display.getClosure (TEXT_BUFFER_INSERT_TEXT), false);
-		OS.g_signal_connect_closure (bufferHandle, OS.delete_range, display.getClosure (DELETE_RANGE), false);
-		OS.g_signal_connect_closure (handle, OS.populate_popup, display.getClosure (POPULATE_POPUP), false);
+		OS.g_signal_connect_closure(bufferHandle, OS.changed, display.getClosure (CHANGED), false);
+		OS.g_signal_connect_closure(bufferHandle, OS.insert_text, display.getClosure (TEXT_BUFFER_INSERT_TEXT), false);
+		OS.g_signal_connect_closure(bufferHandle, OS.delete_range, display.getClosure (DELETE_RANGE), false);
 	}
-	long imContext = imContext ();
-	if (imContext != 0) {
-		OS.g_signal_connect_closure (imContext, OS.commit, display.getClosure (COMMIT), false);
-		int id = OS.g_signal_lookup (OS.commit, GTK.gtk_im_context_get_type ());
-		int mask =  OS.G_SIGNAL_MATCH_DATA | OS.G_SIGNAL_MATCH_ID;
-		OS.g_signal_handlers_block_matched (imContext, mask, id, 0, 0, 0, handle);
-	}
-	OS.g_signal_connect_closure (handle, OS.backspace, display.getClosure (BACKSPACE), false);
-	OS.g_signal_connect_closure (handle, OS.backspace, display.getClosure (BACKSPACE_INVERSE), true);
-	OS.g_signal_connect_closure (handle, OS.copy_clipboard, display.getClosure (COPY_CLIPBOARD), false);
-	OS.g_signal_connect_closure (handle, OS.copy_clipboard, display.getClosure (COPY_CLIPBOARD_INVERSE), true);
-	OS.g_signal_connect_closure (handle, OS.cut_clipboard, display.getClosure (CUT_CLIPBOARD), false);
-	OS.g_signal_connect_closure (handle, OS.cut_clipboard, display.getClosure (CUT_CLIPBOARD_INVERSE), true);
-	OS.g_signal_connect_closure (handle, OS.paste_clipboard, display.getClosure (PASTE_CLIPBOARD), false);
-	OS.g_signal_connect_closure (handle, OS.paste_clipboard, display.getClosure (PASTE_CLIPBOARD_INVERSE), true);
-	OS.g_signal_connect_closure (handle, OS.delete_from_cursor, display.getClosure (DELETE_FROM_CURSOR), false);
-	OS.g_signal_connect_closure (handle, OS.delete_from_cursor, display.getClosure (DELETE_FROM_CURSOR_INVERSE), true);
-	OS.g_signal_connect_closure (handle, OS.move_cursor, display.getClosure (MOVE_CURSOR), false);
-	OS.g_signal_connect_closure (handle, OS.move_cursor, display.getClosure (MOVE_CURSOR_INVERSE), true);
-	OS.g_signal_connect_closure (handle, OS.direction_changed, display.getClosure (DIRECTION_CHANGED), true);
-}
 
-long imContext () {
-	if (imContext != 0) return imContext;
-	return 0;
+	if (imContext != 0) {
+		OS.g_signal_connect_closure(imContext, OS.commit, display.getClosure (COMMIT), false);
+		int id = OS.g_signal_lookup(OS.commit, GTK.gtk_im_context_get_type ());
+		int mask =  OS.G_SIGNAL_MATCH_DATA | OS.G_SIGNAL_MATCH_ID;
+		OS.g_signal_handlers_block_matched(imContext, mask, id, 0, 0, 0, handle);
+	}
+
+	if (!GTK.GTK4) {
+		OS.g_signal_connect_closure(handle, OS.populate_popup, display.getClosure (POPULATE_POPUP), false);
+	}
+
+	// In GTK4, these event signals belong to GtkText which is the only child of GtkEntry
+	long eventHandle = GTK.GTK4 ? textHandle : handle;
+	OS.g_signal_connect_closure(eventHandle, OS.backspace, display.getClosure (BACKSPACE), false);
+	OS.g_signal_connect_closure(eventHandle, OS.backspace, display.getClosure (BACKSPACE_INVERSE), true);
+	OS.g_signal_connect_closure(eventHandle, OS.copy_clipboard, display.getClosure (COPY_CLIPBOARD), false);
+	OS.g_signal_connect_closure(eventHandle, OS.copy_clipboard, display.getClosure (COPY_CLIPBOARD_INVERSE), true);
+	OS.g_signal_connect_closure(eventHandle, OS.cut_clipboard, display.getClosure (CUT_CLIPBOARD), false);
+	OS.g_signal_connect_closure(eventHandle, OS.cut_clipboard, display.getClosure (CUT_CLIPBOARD_INVERSE), true);
+	OS.g_signal_connect_closure(eventHandle, OS.paste_clipboard, display.getClosure (PASTE_CLIPBOARD), false);
+	OS.g_signal_connect_closure(eventHandle, OS.paste_clipboard, display.getClosure (PASTE_CLIPBOARD_INVERSE), true);
+	OS.g_signal_connect_closure(eventHandle, OS.delete_from_cursor, display.getClosure (DELETE_FROM_CURSOR), false);
+	OS.g_signal_connect_closure(eventHandle, OS.delete_from_cursor, display.getClosure (DELETE_FROM_CURSOR_INVERSE), true);
+	OS.g_signal_connect_closure(eventHandle, OS.move_cursor, display.getClosure (MOVE_CURSOR), false);
+	OS.g_signal_connect_closure(eventHandle, OS.move_cursor, display.getClosure (MOVE_CURSOR_INVERSE), true);
+	OS.g_signal_connect_closure(eventHandle, OS.direction_changed, display.getClosure (DIRECTION_CHANGED), true);
 }
 
 /**
@@ -2044,9 +2064,13 @@ long paintWindow () {
 public void paste () {
 	checkWidget ();
 	if ((style & SWT.SINGLE) != 0) {
-		GTK.gtk_editable_paste_clipboard (handle);
+		if (GTK.GTK4) {
+			GTK.gtk_widget_activate_action(textHandle, OS.action_paste_clipboard, null);
+		} else {
+			GTK.gtk_editable_paste_clipboard (handle);
+		}
 	} else {
-		long clipboard = GTK.GTK4 ? GDK.gdk_display_get_clipboard(GDK.gdk_display_get_default()) : GTK.gtk_clipboard_get (GDK.GDK_NONE);;
+		long clipboard = GTK.GTK4 ? GDK.gdk_display_get_clipboard(GDK.gdk_display_get_default()) : GTK.gtk_clipboard_get (GDK.GDK_NONE);
 		clearSegments (true);
 		GTK.gtk_text_buffer_paste_clipboard (bufferHandle, clipboard, null, GTK.gtk_text_view_get_editable (handle));
 		applySegments ();
@@ -2057,7 +2081,6 @@ public void paste () {
 void register () {
 	super.register ();
 	if (bufferHandle != 0) display.addWidget (bufferHandle, this);
-	long imContext = imContext ();
 	if (imContext != 0) display.addWidget (imContext, this);
 }
 
@@ -2468,7 +2491,12 @@ public void setSelection (int start, int end) {
 	start = translateOffset (start);
 	end = translateOffset (end);
 	if ((style & SWT.SINGLE) != 0) {
-		long ptr = GTK.gtk_entry_get_text (handle);
+		long ptr;
+		if (GTK.GTK4) {
+			ptr = GTK.gtk_entry_buffer_get_text(bufferHandle);
+		} else {
+			ptr = GTK.gtk_entry_get_text (handle);
+		}
 		start = (int)OS.g_utf16_offset_to_utf8_offset (ptr, start);
 		end = (int)OS.g_utf16_offset_to_utf8_offset (ptr, end);
 		GTK.gtk_editable_set_position (handle, start);
@@ -2637,15 +2665,19 @@ public void setTextChars (char [] text) {
 void setText (char [] text) {
 	clearSegments (false);
 	if ((style & SWT.SINGLE) != 0) {
-		byte [] buffer = Converter.wcsToMbcs (text, true);
-		OS.g_signal_handlers_block_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
-		OS.g_signal_handlers_block_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, DELETE_TEXT);
-		OS.g_signal_handlers_block_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, INSERT_TEXT);
-		GTK.gtk_entry_set_text (handle, buffer);
-		OS.g_signal_handlers_unblock_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
-		OS.g_signal_handlers_unblock_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, DELETE_TEXT);
-		OS.g_signal_handlers_unblock_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, INSERT_TEXT);
-		Arrays.fill (buffer, (byte) 0);
+		byte[] buffer = Converter.wcsToMbcs(text, true);
+		OS.g_signal_handlers_block_matched(handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
+		OS.g_signal_handlers_block_matched(handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, DELETE_TEXT);
+		OS.g_signal_handlers_block_matched(handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, INSERT_TEXT);
+		if (GTK.GTK4) {
+			GTK.gtk_entry_buffer_set_text(bufferHandle, buffer, -1);
+		} else {
+			GTK.gtk_entry_set_text(handle, buffer);
+		}
+		OS.g_signal_handlers_unblock_matched(handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
+		OS.g_signal_handlers_unblock_matched(handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, DELETE_TEXT);
+		OS.g_signal_handlers_unblock_matched(handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, INSERT_TEXT);
+		Arrays.fill(buffer, (byte) 0);
 	} else {
 		byte [] buffer = Converter.wcsToMbcs (text, false);
 		byte [] position =  new byte [ITER_SIZEOF];
@@ -2775,7 +2807,6 @@ boolean translateTraversal (long event) {
 	switch (key[0]) {
 		case GDK.GDK_KP_Enter:
 		case GDK.GDK_Return: {
-			long imContext =  imContext ();
 			if (imContext != 0) {
 				long [] preeditString = new long [1];
 				GTK.gtk_im_context_get_preedit_string (imContext, preeditString, null, null);

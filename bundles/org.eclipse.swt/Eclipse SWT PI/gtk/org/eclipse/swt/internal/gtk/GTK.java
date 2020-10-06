@@ -905,10 +905,15 @@ public class GTK extends OS {
 	 */
 	/* [GTK3 only, if-def'd in os.h] */
 	public static final native void gtk_drag_set_icon_surface(long context, long surface);
-	/** @param editable cast=(GtkEditable *) */
-	public static final native void gtk_editable_copy_clipboard(long editable);
-	/** @param editable cast=(GtkEditable *) */
-	public static final native void gtk_editable_cut_clipboard(long editable);
+
+
+	/* GtkEditable Interface */
+	/**
+	 * @param editable cast=(GtkEditable *)
+	 * @param start cast=(gint)
+	 * @param end cast=(gint)
+	 */
+	public static final native void gtk_editable_select_region(long editable, int start, int end);
 	/** @param editable cast=(GtkEditable *) */
 	public static final native void gtk_editable_delete_selection(long editable);
 	/**
@@ -917,8 +922,18 @@ public class GTK extends OS {
 	 * @param end_pos cast=(gint)
 	 */
 	public static final native void gtk_editable_delete_text(long editable, int start_pos, int end_pos);
+	/**
+	 * @param entry cast=(GtkEditable *)
+	 * @param editable cast=(gboolean)
+	 */
+	public static final native void gtk_editable_set_editable(long entry, boolean editable);
 	/** @param editable cast=(GtkEditable *) */
 	public static final native boolean gtk_editable_get_editable(long editable);
+	/**
+	 * @param editable cast=(GtkEditable *)
+	 * @param position cast=(gint)
+	 */
+	public static final native void gtk_editable_set_position(long editable, int position);
 	/** @param editable cast=(GtkEditable *) */
 	public static final native int gtk_editable_get_position(long editable);
 	/**
@@ -934,24 +949,24 @@ public class GTK extends OS {
 	 * @param position cast=(gint *)
 	 */
 	public static final native void gtk_editable_insert_text(long editable, byte[] new_text, int new_text_length, int[] position);
-	/** @param editable cast=(GtkEditable *) */
+
+	/* GtkEditable Interface [GTK3 only] */
+	/**
+	 * @method flags=dynamic
+	 * @param editable cast=(GtkEditable *)
+	 */
+	public static final native void gtk_editable_copy_clipboard(long editable);
+	/**
+	 * @method flags=dynamic
+	 * @param editable cast=(GtkEditable *)
+	 */
+	public static final native void gtk_editable_cut_clipboard(long editable);
+	/**
+	 * @method flags=dynamic
+	 * @param editable cast=(GtkEditable *)
+	 */
 	public static final native void gtk_editable_paste_clipboard(long editable);
-	/**
-	 * @param editable cast=(GtkEditable *)
-	 * @param start cast=(gint)
-	 * @param end cast=(gint)
-	 */
-	public static final native void gtk_editable_select_region(long editable, int start, int end);
-	/**
-	 * @param entry cast=(GtkEditable *)
-	 * @param editable cast=(gboolean)
-	 */
-	public static final native void gtk_editable_set_editable(long entry, boolean editable);
-	/**
-	 * @param editable cast=(GtkEditable *)
-	 * @param position cast=(gint)
-	 */
-	public static final native void gtk_editable_set_position(long editable, int position);
+
 
 	/* GtkEntry */
 	public static final native long gtk_entry_new();
@@ -3375,6 +3390,19 @@ public class GTK extends OS {
 	 * @param widget cast=(GtkWidget *)
 	 */
 	public static final native long gtk_widget_get_native(long widget);
+	/**
+	 * @method flags=dynamic
+	 * @param widget cast=(GtkWidget *)
+	 * @param name cast=(const char *)
+	 * @param format_string cast=(const char *)
+	 */
+	public static final native boolean gtk_widget_activate_action(long widget, byte[] name, byte[] format_string);
+	/**
+	 * @method flags=dynamic
+	 * @param widget cast=(GtkWidget *)
+	 * @param action_name cast=(const char *)
+	 */
+	public static final native void gtk_widget_action_set_enabled(long widget, byte[] action_name, boolean enabled);
 
 	/* GtkWidget [GTK3 only] */
 	/**

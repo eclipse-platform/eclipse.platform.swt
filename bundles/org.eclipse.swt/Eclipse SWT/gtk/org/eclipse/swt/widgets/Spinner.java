@@ -298,7 +298,12 @@ Rectangle computeTrimInPixels (int x, int y, int width, int height) {
  */
 public void copy () {
 	checkWidget ();
-	GTK.gtk_editable_copy_clipboard (GTK.GTK4? entryHandle : handle);
+	if (GTK.GTK4) {
+		long textHandle = GTK.gtk_widget_get_first_child(entryHandle);
+		GTK.gtk_widget_activate_action(textHandle, OS.action_copy_clipboard, null);
+	} else {
+		GTK.gtk_editable_copy_clipboard(handle);
+	}
 }
 
 @Override
@@ -343,7 +348,12 @@ void createHandle (int index) {
  */
 public void cut () {
 	checkWidget ();
-	GTK.gtk_editable_cut_clipboard (GTK.GTK4? entryHandle : handle);
+	if (GTK.GTK4) {
+		long textHandle = GTK.gtk_widget_get_first_child(entryHandle);
+		GTK.gtk_widget_activate_action(textHandle, OS.action_cut_clipboard, null);
+	} else {
+		GTK.gtk_editable_cut_clipboard(handle);
+	}
 }
 
 @Override

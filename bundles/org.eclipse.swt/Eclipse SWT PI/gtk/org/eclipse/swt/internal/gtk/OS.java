@@ -398,6 +398,10 @@ public class OS extends C {
 	public static final byte[] margin_top = ascii("margin-top");
 	public static final byte[] scrollbar_spacing = ascii("scrollbar-spacing");
 
+	/** Actions */
+	public static final byte[] action_copy_clipboard = ascii("clipboard.copy");
+	public static final byte[] action_cut_clipboard = ascii("clipboard.cut");
+	public static final byte[] action_paste_clipboard = ascii("clipboard.paste");
 
 	/** CUSTOM_CODE START
 	 *
