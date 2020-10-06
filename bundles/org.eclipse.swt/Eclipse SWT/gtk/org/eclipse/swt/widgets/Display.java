@@ -3006,11 +3006,7 @@ public Menu getSystemMenu () {
  * @return GdkRGBA object with calculated RGB values
  */
 GdkRGBA toGdkRGBA (GdkRGBA rgba, double brightness) {
-	// Copy RGB values into a new object
-	GdkRGBA newRGBA = new GdkRGBA ();
-	newRGBA.red = rgba.red;
-	newRGBA.green = rgba.green;
-	newRGBA.blue = rgba.blue;
+	GdkRGBA newRGBA = new GdkRGBA();
 	newRGBA.alpha = rgba.alpha;
 
 	// Instantiate hue, saturation, and value doubles for HSV.
@@ -3018,7 +3014,18 @@ GdkRGBA toGdkRGBA (GdkRGBA rgba, double brightness) {
 	double[] hue = new double[1];
 	double[] saturationHSV = new double[1];
 	double[] value = new double[1];
-	GTK.gtk_rgb_to_hsv(newRGBA.red, newRGBA.green, newRGBA.blue, hue, saturationHSV, value);
+
+	if (GTK.GTK4) {
+		float[] h = new float[1];
+		float[] s = new float[1];
+		float[] v = new float[1];
+		GTK.gtk_rgb_to_hsv((float)rgba.red, (float)rgba.green, (float)rgba.blue, h, s, v);
+		hue[0] = (double)h[0];
+		saturationHSV[0] = (double)s[0];
+		value[0] = (double)v[0];
+	} else {
+		GTK.gtk_rgb_to_hsv(rgba.red, rgba.green, rgba.blue, hue, saturationHSV, value);
+	}
 
 	// Calculate luminosity
 	double luminosity = ((2 - saturationHSV[0]) * value[0]) / 2;
@@ -3038,10 +3045,21 @@ GdkRGBA toGdkRGBA (GdkRGBA rgba, double brightness) {
 	saturationHSV[0] = (2 * saturationHSL) / (luminosity + saturationHSL);
 
 	// Convert from HSV back to RGB and return the GdkRGBA object
-	GTK.gtk_hsv_to_rgb(hue[0], saturationHSV[0], value[0], hue, saturationHSV, value);
-	newRGBA.red = hue[0];
-	newRGBA.green = saturationHSV[0];
-	newRGBA.blue = value[0];
+	if (GTK.GTK4) {
+		float[] r = new float[1];
+		float[] g = new float[1];
+		float[] b = new float[1];
+		GTK.gtk_hsv_to_rgb((float)hue[0], (float)saturationHSV[0], (float)value[0], r, g, b);
+		newRGBA.red = r[0];
+		newRGBA.green = g[0];
+		newRGBA.blue = b[0];
+	} else {
+		GTK.gtk_hsv_to_rgb(hue[0], saturationHSV[0], value[0], hue, saturationHSV, value);
+		newRGBA.red = hue[0];
+		newRGBA.green = saturationHSV[0];
+		newRGBA.blue = value[0];
+	}
+
 	return newRGBA;
 }
 

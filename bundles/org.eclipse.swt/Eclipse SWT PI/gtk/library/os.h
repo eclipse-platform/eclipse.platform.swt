@@ -492,6 +492,10 @@
 // GtkScrolledWindow changes
 #define NO_gtk_1scrolled_1window_1new__JJ
 
+// Color function signature changes
+#define NO_gtk_1hsv_1to_1rgb__DDD_3D_3D_3D
+#define NO_gtk_1rgb_1to_1hsv__DDD_3D_3D_3D
+
 #else
 
 /**

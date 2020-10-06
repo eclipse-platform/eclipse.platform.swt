@@ -6903,23 +6903,51 @@ JNIEXPORT void JNICALL GTK_NATIVE(gtk_1grab_1remove)
 }
 #endif
 
-#ifndef NO_gtk_1hsv_1to_1rgb
-JNIEXPORT void JNICALL GTK_NATIVE(gtk_1hsv_1to_1rgb)
+#ifndef NO_gtk_1hsv_1to_1rgb__DDD_3D_3D_3D
+JNIEXPORT void JNICALL GTK_NATIVE(gtk_1hsv_1to_1rgb__DDD_3D_3D_3D)
 	(JNIEnv *env, jclass that, jdouble arg0, jdouble arg1, jdouble arg2, jdoubleArray arg3, jdoubleArray arg4, jdoubleArray arg5)
 {
 	jdouble *lparg3=NULL;
 	jdouble *lparg4=NULL;
 	jdouble *lparg5=NULL;
-	GTK_NATIVE_ENTER(env, that, gtk_1hsv_1to_1rgb_FUNC);
+	GTK_NATIVE_ENTER(env, that, gtk_1hsv_1to_1rgb__DDD_3D_3D_3D_FUNC);
 	if (arg3) if ((lparg3 = (*env)->GetDoubleArrayElements(env, arg3, NULL)) == NULL) goto fail;
 	if (arg4) if ((lparg4 = (*env)->GetDoubleArrayElements(env, arg4, NULL)) == NULL) goto fail;
 	if (arg5) if ((lparg5 = (*env)->GetDoubleArrayElements(env, arg5, NULL)) == NULL) goto fail;
+/*
 	gtk_hsv_to_rgb((gdouble)arg0, (gdouble)arg1, (gdouble)arg2, (gdouble *)lparg3, (gdouble *)lparg4, (gdouble *)lparg5);
+*/
+	{
+		GTK_LOAD_FUNCTION(fp, gtk_hsv_to_rgb)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(gdouble, gdouble, gdouble, gdouble *, gdouble *, gdouble *))fp)((gdouble)arg0, (gdouble)arg1, (gdouble)arg2, (gdouble *)lparg3, (gdouble *)lparg4, (gdouble *)lparg5);
+		}
+	}
 fail:
 	if (arg5 && lparg5) (*env)->ReleaseDoubleArrayElements(env, arg5, lparg5, 0);
 	if (arg4 && lparg4) (*env)->ReleaseDoubleArrayElements(env, arg4, lparg4, 0);
 	if (arg3 && lparg3) (*env)->ReleaseDoubleArrayElements(env, arg3, lparg3, 0);
-	GTK_NATIVE_EXIT(env, that, gtk_1hsv_1to_1rgb_FUNC);
+	GTK_NATIVE_EXIT(env, that, gtk_1hsv_1to_1rgb__DDD_3D_3D_3D_FUNC);
+}
+#endif
+
+#ifndef NO_gtk_1hsv_1to_1rgb__FFF_3F_3F_3F
+JNIEXPORT void JNICALL GTK_NATIVE(gtk_1hsv_1to_1rgb__FFF_3F_3F_3F)
+	(JNIEnv *env, jclass that, jfloat arg0, jfloat arg1, jfloat arg2, jfloatArray arg3, jfloatArray arg4, jfloatArray arg5)
+{
+	jfloat *lparg3=NULL;
+	jfloat *lparg4=NULL;
+	jfloat *lparg5=NULL;
+	GTK_NATIVE_ENTER(env, that, gtk_1hsv_1to_1rgb__FFF_3F_3F_3F_FUNC);
+	if (arg3) if ((lparg3 = (*env)->GetFloatArrayElements(env, arg3, NULL)) == NULL) goto fail;
+	if (arg4) if ((lparg4 = (*env)->GetFloatArrayElements(env, arg4, NULL)) == NULL) goto fail;
+	if (arg5) if ((lparg5 = (*env)->GetFloatArrayElements(env, arg5, NULL)) == NULL) goto fail;
+	gtk_hsv_to_rgb(arg0, arg1, arg2, (float *)lparg3, (float *)lparg4, (float *)lparg5);
+fail:
+	if (arg5 && lparg5) (*env)->ReleaseFloatArrayElements(env, arg5, lparg5, 0);
+	if (arg4 && lparg4) (*env)->ReleaseFloatArrayElements(env, arg4, lparg4, 0);
+	if (arg3 && lparg3) (*env)->ReleaseFloatArrayElements(env, arg3, lparg3, 0);
+	GTK_NATIVE_EXIT(env, that, gtk_1hsv_1to_1rgb__FFF_3F_3F_3F_FUNC);
 }
 #endif
 
@@ -9128,23 +9156,51 @@ JNIEXPORT void JNICALL GTK_NATIVE(gtk_1render_1handle)
 }
 #endif
 
-#ifndef NO_gtk_1rgb_1to_1hsv
-JNIEXPORT void JNICALL GTK_NATIVE(gtk_1rgb_1to_1hsv)
+#ifndef NO_gtk_1rgb_1to_1hsv__DDD_3D_3D_3D
+JNIEXPORT void JNICALL GTK_NATIVE(gtk_1rgb_1to_1hsv__DDD_3D_3D_3D)
 	(JNIEnv *env, jclass that, jdouble arg0, jdouble arg1, jdouble arg2, jdoubleArray arg3, jdoubleArray arg4, jdoubleArray arg5)
 {
 	jdouble *lparg3=NULL;
 	jdouble *lparg4=NULL;
 	jdouble *lparg5=NULL;
-	GTK_NATIVE_ENTER(env, that, gtk_1rgb_1to_1hsv_FUNC);
+	GTK_NATIVE_ENTER(env, that, gtk_1rgb_1to_1hsv__DDD_3D_3D_3D_FUNC);
 	if (arg3) if ((lparg3 = (*env)->GetDoubleArrayElements(env, arg3, NULL)) == NULL) goto fail;
 	if (arg4) if ((lparg4 = (*env)->GetDoubleArrayElements(env, arg4, NULL)) == NULL) goto fail;
 	if (arg5) if ((lparg5 = (*env)->GetDoubleArrayElements(env, arg5, NULL)) == NULL) goto fail;
+/*
 	gtk_rgb_to_hsv((gdouble)arg0, (gdouble)arg1, (gdouble)arg2, (gdouble *)lparg3, (gdouble *)lparg4, (gdouble *)lparg5);
+*/
+	{
+		GTK_LOAD_FUNCTION(fp, gtk_rgb_to_hsv)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(gdouble, gdouble, gdouble, gdouble *, gdouble *, gdouble *))fp)((gdouble)arg0, (gdouble)arg1, (gdouble)arg2, (gdouble *)lparg3, (gdouble *)lparg4, (gdouble *)lparg5);
+		}
+	}
 fail:
 	if (arg5 && lparg5) (*env)->ReleaseDoubleArrayElements(env, arg5, lparg5, 0);
 	if (arg4 && lparg4) (*env)->ReleaseDoubleArrayElements(env, arg4, lparg4, 0);
 	if (arg3 && lparg3) (*env)->ReleaseDoubleArrayElements(env, arg3, lparg3, 0);
-	GTK_NATIVE_EXIT(env, that, gtk_1rgb_1to_1hsv_FUNC);
+	GTK_NATIVE_EXIT(env, that, gtk_1rgb_1to_1hsv__DDD_3D_3D_3D_FUNC);
+}
+#endif
+
+#ifndef NO_gtk_1rgb_1to_1hsv__FFF_3F_3F_3F
+JNIEXPORT void JNICALL GTK_NATIVE(gtk_1rgb_1to_1hsv__FFF_3F_3F_3F)
+	(JNIEnv *env, jclass that, jfloat arg0, jfloat arg1, jfloat arg2, jfloatArray arg3, jfloatArray arg4, jfloatArray arg5)
+{
+	jfloat *lparg3=NULL;
+	jfloat *lparg4=NULL;
+	jfloat *lparg5=NULL;
+	GTK_NATIVE_ENTER(env, that, gtk_1rgb_1to_1hsv__FFF_3F_3F_3F_FUNC);
+	if (arg3) if ((lparg3 = (*env)->GetFloatArrayElements(env, arg3, NULL)) == NULL) goto fail;
+	if (arg4) if ((lparg4 = (*env)->GetFloatArrayElements(env, arg4, NULL)) == NULL) goto fail;
+	if (arg5) if ((lparg5 = (*env)->GetFloatArrayElements(env, arg5, NULL)) == NULL) goto fail;
+	gtk_rgb_to_hsv(arg0, arg1, arg2, (float *)lparg3, (float *)lparg4, (float *)lparg5);
+fail:
+	if (arg5 && lparg5) (*env)->ReleaseFloatArrayElements(env, arg5, lparg5, 0);
+	if (arg4 && lparg4) (*env)->ReleaseFloatArrayElements(env, arg4, lparg4, 0);
+	if (arg3 && lparg3) (*env)->ReleaseFloatArrayElements(env, arg3, lparg3, 0);
+	GTK_NATIVE_EXIT(env, that, gtk_1rgb_1to_1hsv__FFF_3F_3F_3F_FUNC);
 }
 #endif
 

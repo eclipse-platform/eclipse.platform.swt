@@ -708,6 +708,8 @@ public class GTK extends OS {
 	 */
 	/* [GTK3 only, if-def'd in os.h] */
 	public static final native long gtk_clipboard_wait_for_contents(long clipboard, long target);
+
+	/* GtkColorChooser Interface */
 	/**
 	 * @param chooser cast=(GtkColorChooser *)
 	 * @param orientation cast=(GtkOrientation)
@@ -716,11 +718,6 @@ public class GTK extends OS {
 	 * @param colors cast=(GdkRGBA *)
 	 */
 	public static final native void gtk_color_chooser_add_palette(long chooser, int orientation, int colors_per_line, int n_colors, long colors);
-	/**
-	 * @param title cast=(const gchar *)
-	 * @param parent cast=(GtkWindow *)
-	 */
-	public static final native long gtk_color_chooser_dialog_new(byte[] title, long parent);
 	/**
 	 * @param chooser cast=(GtkColorChooser *)
 	 * @param use_alpha cast=(gboolean)
@@ -740,6 +737,48 @@ public class GTK extends OS {
 	 * @param color cast=(GdkRGBA *)
 	 */
 	public static final native void gtk_color_chooser_get_rgba(long chooser, GdkRGBA color);
+	/**
+	 * @param title cast=(const gchar *)
+	 * @param parent cast=(GtkWindow *)
+	 */
+	public static final native long gtk_color_chooser_dialog_new(byte[] title, long parent);
+
+	/* GtkColorChooser Interface [GTK3 only] */
+	/**
+	 * @method flags=dynamic
+	 * @param h cast=(gdouble)
+	 * @param s cast=(gdouble)
+	 * @param v cast=(gdouble)
+	 * @param r cast=(gdouble *)
+	 * @param g cast=(gdouble *)
+	 * @param b cast=(gdouble *)
+	 */
+	public static final native void gtk_hsv_to_rgb(double h, double s, double v, double[] r, double[] g, double[] b);
+	/**
+	 * @method flags=dynamic
+	 * @param r cast=(gdouble)
+	 * @param g cast=(gdouble)
+	 * @param b cast=(gdouble)
+	 * @param h cast=(gdouble *)
+	 * @param s cast=(gdouble *)
+	 * @param v cast=(gdouble *)
+	 */
+	public static final native void gtk_rgb_to_hsv(double r, double g, double b, double[] h, double[] s, double[] v);
+
+	/* GtkColorChooser Interface [GTK4 only] */
+	/**
+	 * @param r cast=(float *)
+	 * @param g cast=(float *)
+	 * @param b cast=(float *)
+	 */
+	public static final native void gtk_hsv_to_rgb(float h, float s, float v, float[] r, float[] g, float[] b);
+	/**
+	 * @param h cast=(float *)
+	 * @param s cast=(float *)
+	 * @param v cast=(float *)
+	 */
+	public static final native void gtk_rgb_to_hsv(float r, float g, float b, float[] h, float[] s, float[] v);
+
 
 	/* GtkComboBox */
 	public static final native long gtk_combo_box_text_new();
@@ -1524,24 +1563,7 @@ public class GTK extends OS {
 	public static final native long gtk_grab_get_current();
 	/** @param widget cast=(GtkWidget *) */
 	public static final native void gtk_grab_remove(long widget);
-	/**
-	 * @param h cast=(gdouble)
-	 * @param s cast=(gdouble)
-	 * @param v cast=(gdouble)
-	 * @param r cast=(gdouble *)
-	 * @param g cast=(gdouble *)
-	 * @param b cast=(gdouble *)
-	 */
-	public static final native void gtk_hsv_to_rgb(double h, double s, double v, double[] r, double[] g, double[] b);
-	/**
-	 * @param r cast=(gdouble)
-	 * @param g cast=(gdouble)
-	 * @param b cast=(gdouble)
-	 * @param h cast=(gdouble *)
-	 * @param s cast=(gdouble *)
-	 * @param v cast=(gdouble *)
-	 */
-	public static final native void gtk_rgb_to_hsv(double r, double g, double b, double[] h, double[] s, double[] v);
+
 	/**
 	 * @method flags=dynamic
 	 */
