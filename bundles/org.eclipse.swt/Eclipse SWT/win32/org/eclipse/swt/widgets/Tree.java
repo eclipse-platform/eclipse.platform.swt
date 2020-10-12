@@ -5256,29 +5256,6 @@ void showItem (long hItem) {
 			}
 		}
 	}
-	if (hwndParent != 0) {
-		RECT itemRect = new RECT ();
-		if (OS.TreeView_GetItemRect (handle, hItem, itemRect, true)) {
-			forceResize ();
-			RECT rect = new RECT ();
-			OS.GetClientRect (hwndParent, rect);
-			OS.MapWindowPoints (hwndParent, handle, rect, 2);
-			POINT pt = new POINT ();
-			pt.x = itemRect.left;
-			pt.y = itemRect.top;
-			if (!OS.PtInRect (rect, pt)) {
-				pt.y = itemRect.bottom;
-				if (!OS.PtInRect (rect, pt)) {
-					SCROLLINFO info = new SCROLLINFO ();
-					info.cbSize = SCROLLINFO.sizeof;
-					info.fMask = OS.SIF_POS;
-					info.nPos = Math.max (0, pt.x - Tree.INSET / 2);
-					OS.SetScrollInfo (hwndParent, OS.SB_HORZ, info, true);
-					setScrollWidth ();
-				}
-			}
-		}
-	}
 	updateScrollBar ();
 }
 
@@ -5314,18 +5291,49 @@ public void showColumn (TreeColumn column) {
 		OS.MapWindowPoints (hwndParent, handle, rect, 2);
 		RECT headerRect = new RECT ();
 		OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, index, headerRect);
-		boolean scroll = headerRect.left < rect.left;
-		if (!scroll) {
-			int width = Math.min (rect.right - rect.left, headerRect.right - headerRect.left);
-			scroll = headerRect.left + width > rect.right;
+		/* bugfix for bug 566936: before this change, scroll to the right end was not implemented.
+		 * Now it will be distinguished between
+		 * (i) the left header is not in the client area
+		 * (ii) the right header is not in the client area
+		 * (iii) the client area is smaller than the header
+		 *
+		 *  in case of (i),(iii) the scrollbar should be scrolled, so that the left side of the header is set to the begin of the client area
+		 *  in case of (ii) the scrollbar will be set, so that the right side of the header is set to the end of the client area.
+		 *
+		 *  With this behaviour the header will only be moved so much, that it will be visible in the client area and not more than necessary.
+		 *  This is the same behaviour like in linux and on mac.*/
+		boolean scrollBecauseLeft = headerRect.left < rect.left;
+		boolean scrollBecauseRight = false;
+		if (!scrollBecauseLeft) {
+			int width = Math.min(rect.right - rect.left,
+					headerRect.right - headerRect.left);
+			scrollBecauseRight = headerRect.left + width > rect.right;
 		}
-		if (scroll) {
-			SCROLLINFO info = new SCROLLINFO ();
+		// in case header is wider than visual area, scroll to left position
+		if (scrollBecauseLeft || (headerRect.right
+				- headerRect.left > rect.right - rect.left)) {
+			SCROLLINFO info = new SCROLLINFO();
 			info.cbSize = SCROLLINFO.sizeof;
 			info.fMask = OS.SIF_POS;
-			info.nPos = Math.max (0, headerRect.left - Tree.INSET / 2);
-			OS.SetScrollInfo (hwndParent, OS.SB_HORZ, info, true);
-			setScrollWidth ();
+			info.nPos = Math.max(0, headerRect.left - Tree.INSET / 2);
+			OS.SetScrollInfo(hwndParent, OS.SB_HORZ, info, true);
+			setScrollWidth();
+		} else if (scrollBecauseRight) {
+			SCROLLINFO info = new SCROLLINFO();
+			info.cbSize = SCROLLINFO.sizeof;
+			info.fMask = OS.SIF_POS;
+			int wideRect = rect.right - rect.left;
+			int wideHeader = headerRect.right - headerRect.left;
+			// calculation to scroll to the right
+			// info.nPos + wideRect = headerRect.right
+			// info.nPos + wideRect = headerRect.left + wideHeader
+			// info.nPos = headerRect.left + wideHeader - wideRect
+			info.nPos = Math.max(0, wideHeader + headerRect.left - wideRect
+					- Tree.INSET / 2);
+			info.nPos = Math.min(rect.right - Tree.INSET / 2, info.nPos);
+
+			OS.SetScrollInfo(hwndParent, OS.SB_HORZ, info, true);
+			setScrollWidth();
 		}
 	}
 }
