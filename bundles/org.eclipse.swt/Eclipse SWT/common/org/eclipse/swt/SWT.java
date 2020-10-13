@@ -258,11 +258,17 @@ public class SWT {
 	public static final int Resize = 11;
 
 	/**
-	 * The dispose event type (value is 12).
+	 * The dispose event type (value is 12).<br>
+	 * <br>
+	 * Note: {@link Display} still runs {@link Display#readAndDispatch}
+	 * after sending this event. If you want to dispose any resources,
+	 * this might cause problems. Use {@link Display#disposeExec}
+	 * instead.
 	 *
 	 * @see org.eclipse.swt.widgets.Widget#addListener
 	 * @see org.eclipse.swt.widgets.Display#addListener
 	 * @see org.eclipse.swt.widgets.Display#addFilter
+	 * @see org.eclipse.swt.widgets.Display#disposeExec
 	 * @see org.eclipse.swt.widgets.Event
 	 *
 	 * @see org.eclipse.swt.widgets.Widget#addDisposeListener

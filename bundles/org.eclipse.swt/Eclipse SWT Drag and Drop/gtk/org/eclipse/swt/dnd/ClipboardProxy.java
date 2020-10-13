@@ -14,7 +14,6 @@
 package org.eclipse.swt.dnd;
 
 
-import org.eclipse.swt.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.gtk.*;
 import org.eclipse.swt.widgets.*;
@@ -43,7 +42,7 @@ static ClipboardProxy _getInstance(final Display display) {
 	if (proxy != null) return proxy;
 	proxy = new ClipboardProxy(display);
 	display.setData(ID, proxy);
-	display.addListener(SWT.Dispose, event -> {
+	display.disposeExec(() -> {
 		ClipboardProxy clipbordProxy = (ClipboardProxy)display.getData(ID);
 		if (clipbordProxy == null) return;
 		display.setData(ID, null);
