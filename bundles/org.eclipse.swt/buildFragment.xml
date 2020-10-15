@@ -79,6 +79,8 @@
 				<attribute name="SWT-OS" value="${swt.os}"/>
 				<attribute name="SWT-WS" value="${swt.ws}"/>
 				<attribute name="SWT-Arch" value="${arch}"/>
+				<attribute name="Implementation-Version" value="${version.suffix}"/>
+				<attribute name="Eclipse-Version" value="${eclipse.version}"/>
 			</manifest>
 		</jar>
 	</target>
