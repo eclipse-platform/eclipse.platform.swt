@@ -493,6 +493,17 @@ boolean setMarkedText_selectedRange (long id, long sel, long string, long selRan
 	}
 	NSRange range = new NSRange ();
 	OS.memmove (range, selRange, NSRange.sizeof);
+
+	/*
+	 * Bug 427882: There is a macOS bug where it sends
+	 * 'setMarkedText:selectedRange:' with 'markedText' that is incorrectly
+	 * too short, which results in 'selectedRange.location' being outside it.
+	 * If caret's position is already at the end, this will result in trying
+	 * to set caret outside the text. The workaround is to correct 'location'
+	 * so that it's always within 'markedText'.
+	 */
+	range.location = Math.min(range.location, length);
+
 	caretOffset = (int)range.location;
 	Event event = new Event ();
 	event.detail = SWT.COMPOSITION_CHANGED;
