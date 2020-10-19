@@ -2315,10 +2315,34 @@ public static final native void g_menu_remove(long menu, int position);
  * @param label cast=(const gchar *)
  */
 public static final native void g_menu_item_set_label(long menu_item, byte[] label);
+/**
+ * @param menu_item cast=(GMenuItem *)
+ * @param attribute cast=(const gchar *)
+ * @param format_string cast=(const gchar *)
+ * @param data cast=(const gchar *)
+ */
+public static final native void g_menu_item_set_attribute(long menu_item, byte[] attribute, byte[] format_string, long data);
 
 
 /* GMenuModel */
 /** @param model cast=(GMenuModel *) */
 public static final native int g_menu_model_get_n_items(long model);
 
+
+/* GAction */
+public static final native long g_simple_action_group_new();
+/**
+ * @param name cast=(const gchar *)
+ * @param parameter_type cast=(const GVariantType *)
+ */
+public static final native long g_simple_action_new(byte[] name, long parameter_type);
+/**
+ * @param action_map cast=(GActionMap *)
+ * @param action cast=(GAction *)
+ */
+public static final native void g_action_map_add_action(long action_map, long action);
+/** @param action cast=(GAction *) */
+public static final native boolean g_action_get_enabled(long action);
+/** @param simple_action cast=(GSimpleAction *) */
+public static final native void g_simple_action_set_enabled(long simple_action, boolean enabled);
 }

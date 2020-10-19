@@ -617,6 +617,13 @@
 // GtkScrolledWindow signature change
 #define NO_gtk_1scrolled_1window_1new__
 
+// GtkShortcut and related functions
+#define NO_gtk_1shortcut_1controller_1add_1shortcut
+#define NO_gtk_1shortcut_1controller_1remove_1shortcut
+#define NO_gtk_1shortcut_1controller_1new
+#define NO_gtk_1shortcut_1controller_1set_1scope
+#define NO_gtk_1shortcut_1new
+
 #endif
 
 #include "os_custom.h"

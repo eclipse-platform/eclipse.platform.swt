@@ -52,7 +52,7 @@ public class Menu extends Widget {
 	int poppedUpCount;
 
 	/** GTK4 only field */
-	long modelHandle;
+	long modelHandle, actionGroup, shortcutController;
 
 /**
  * Constructs a new instance of this class given its parent,
@@ -378,10 +378,10 @@ void _setVisible (boolean visible) {
 }
 
 void addAccelerators (long accelGroup) {
-	MenuItem [] items = getItems ();
+	MenuItem[] items = getItems();
 	for (int i = 0; i < items.length; i++) {
 		MenuItem item = items[i];
-		item.addAccelerators (accelGroup);
+		item.addAccelerators(accelGroup);
 	}
 }
 
@@ -457,9 +457,18 @@ void createHandle (int index) {
 			case SWT.DROP_DOWN:
 				handle = modelHandle;
 				break;
+			case SWT.POP_UP:
 			default:
 				handle = GTK.gtk_popover_menu_new_from_model(modelHandle);
 				if (handle == 0) error(SWT.ERROR_NO_HANDLES);
+		}
+
+		if ((style & SWT.DROP_DOWN) == 0) {
+			actionGroup = OS.g_simple_action_group_new();
+			if (actionGroup == 0) error(SWT.ERROR_NO_HANDLES);
+
+			long shellHandle = parent.getShell().topHandle();
+			GTK.gtk_widget_insert_action_group(shellHandle, Converter.javaStringToCString(String.valueOf(this.hashCode())), actionGroup);
 		}
 	} else {
 		if ((style & SWT.BAR) != 0) {
@@ -892,13 +901,22 @@ long gtk_menu_popped_up (long widget, long flipped_rect, long final_rect, long f
 @Override
 void hookEvents () {
 	super.hookEvents ();
+
+	if (GTK.GTK4) {
+		shortcutController = GTK.gtk_shortcut_controller_new();
+		if (shortcutController == 0) error(SWT.ERROR_NO_HANDLES);
+		GTK.gtk_shortcut_controller_set_scope(shortcutController, GTK.GTK_SHORTCUT_SCOPE_GLOBAL);
+		GTK.gtk_widget_add_controller(parent.handle, shortcutController);
+	} else {
+		OS.g_signal_connect_closure_by_id (handle, display.signalIds [SHOW_HELP], 0, display.getClosure (SHOW_HELP), false);
+	}
+
 	OS.g_signal_connect_closure_by_id (handle, display.signalIds [SHOW], 0, display.getClosure (SHOW), false);
 	OS.g_signal_connect_closure_by_id (handle, display.signalIds [HIDE], 0, display.getClosure (HIDE), false);
 	// Hook into the "popped-up" signal on GTK3.22+ if SWT_MENU_LOCATION_DEBUGGING has been set
 	if (GTK.GTK_VERSION >= OS.VERSION(3, 22, 0) && OS.SWT_MENU_LOCATION_DEBUGGING) {
 		OS.g_signal_connect_closure_by_id (handle, display.signalIds [POPPED_UP], 0, display.getClosure (POPPED_UP), false);
 	}
-	OS.g_signal_connect_closure_by_id (handle, display.signalIds [SHOW_HELP], 0, display.getClosure (SHOW_HELP), false);
 }
 
 /**

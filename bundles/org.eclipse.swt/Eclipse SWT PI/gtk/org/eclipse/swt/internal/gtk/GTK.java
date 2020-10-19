@@ -152,6 +152,7 @@ public class GTK extends OS {
 	public static final int GTK_WRAP_NONE = 0;
 	public static final int GTK_WRAP_WORD = 2;
 	public static final int GTK_WRAP_WORD_CHAR = 3;
+	public static final int GTK_SHORTCUT_SCOPE_GLOBAL = 2;
 
 	/** Classes */
 	public static final byte[] GTK_STYLE_CLASS_VIEW = OS.ascii("view");
@@ -349,6 +350,8 @@ public class GTK extends OS {
 	 * @param accel_mods cast=(GdkModifierType)
 	 */
 	public static final native void gtk_accel_label_set_accel(long accel_label, int accel_key, int accel_mods);
+
+	/* Keyboard Accelerators */
 	public static final native int gtk_accelerator_get_default_mod_mask();
 	/**
 	 * @param accelerator cast=(const gchar *)
@@ -356,7 +359,16 @@ public class GTK extends OS {
 	 * @param accelerator_mods cast=(GdkModifierType *)
 	 */
 	public static final native void gtk_accelerator_parse(long accelerator, int [] accelerator_key, int [] accelerator_mods);
+	/**
+	 * @param accelerator_key cast=(guint)
+	 * @param accelerator_mods cast=(GdkModifierType)
+	 */
+	public static final native long gtk_accelerator_name(int accelerator_key, int accelerator_mods);
+
+	/* Keyboard Accelerators [GTK3 only] */
 	public static final native long gtk_accel_group_new();
+
+
 	/**
 	 * @param accel_label cast=(GtkAccelLabel *)
 	 * @param accel_widget cast=(GtkWidget *)
@@ -1266,6 +1278,53 @@ public class GTK extends OS {
 	/** @method flags=dynamic */
 	public static final native long gtk_gesture_click_new();
 
+
+	/* GtkShortcutController [GTK4 only] */
+	/** @method flags=dynamic */
+	public static final native long gtk_shortcut_controller_new();
+	/**
+	 * @method flags=dynamic
+	 * @param controller cast=(GtkShortcutController *)
+	 * @param scope cast=(GtkShortcutScope)
+	 */
+	public static final native void gtk_shortcut_controller_set_scope(long controller, int scope);
+	/**
+	 * @method flags=dynamic
+	 * @param controller cast=(GtkShortcutController *)
+	 * @param shortcut cast=(GtkShortcut *)
+	 */
+	public static final native void gtk_shortcut_controller_add_shortcut(long controller, long shortcut);
+	/**
+	 * @method flags=dynamic
+	 * @param controller cast=(GtkShortcutController *)
+	 * @param shortcut cast=(GtkShortcut *)
+	 */
+	public static final native void gtk_shortcut_controller_remove_shortcut(long controller, long shortcut);
+
+	/* GtkShortcut [GTK4 only] */
+	/**
+	 * @method flags=dynamic
+	 * @param trigger cast=(GtkShortcutTrigger *)
+	 * @param action cast=(GtkShortcutAction *)
+	 */
+	public static final native long gtk_shortcut_new(long trigger, long action);
+
+
+	/* GtkShortcutTrigger [GTK4 only] */
+	/**
+	 * @method flags=dynamic
+	 * @param keyval cast=(guint)
+	 * @param modifiers cast=(GdkModifierType)
+	 */
+	public static final native long gtk_keyval_trigger_new(int keyval, int modifiers);
+
+
+	/* GtkShortcutAction [GTK4 only] */
+	/**
+	 * @method flags=dynamic
+	 * @param name cast=(const char *)
+	 */
+	public static final native long gtk_named_action_new(byte[] name);
 
 	/**
 	 * @method flags=dynamic
@@ -3759,6 +3818,14 @@ public class GTK extends OS {
 	 */
 	/* [GTK4 only, if-def'd in os.h] */
 	public static final native void gtk_widget_snapshot_child(long widget, long child, long snapshot);
+
+	/* GtkWidget [GTK4 only] */
+	/**
+	 * @param widget cast=(GtkWidget *)
+	 * @param name cast=(const char *)
+	 * @param group cast=(GActionGroup *)
+	 */
+	public static final native void gtk_widget_insert_action_group(long widget, byte[] name, long group);
 
 
 	/* GtkWindow */

@@ -2487,15 +2487,19 @@ public void setMenuBar (Menu menu) {
 	if (menuBar != null) {
 		long menuHandle = menuBar.handle;
 		GTK.gtk_widget_hide (menuHandle);
-		if (!GTK.GTK4) destroyAccelGroup ();
+
+		if (!GTK.GTK4) {
+			destroyAccelGroup();
+		}
 	}
 	menuBar = menu;
 	if (menuBar != null) {
 		long menuHandle = menu.handle;
 		GTK.gtk_widget_show (menuHandle);
+
 		if (!GTK.GTK4) {
-			createAccelGroup ();
-			menuBar.addAccelerators (accelGroup);
+			createAccelGroup();
+			menuBar.addAccelerators(accelGroup);
 		}
 	}
 

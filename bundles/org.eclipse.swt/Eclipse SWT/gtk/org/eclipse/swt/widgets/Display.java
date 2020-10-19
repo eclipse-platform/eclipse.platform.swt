@@ -129,12 +129,12 @@ public class Display extends Device {
 	Callback eventCallback;
 	long eventProc, windowProc2, windowProc3, windowProc4, windowProc5, windowProc6;
 	long snapshotDrawProc, changeValueProc;
-	long keyPressReleaseProc, focusProc, enterMotionScrollProc, leaveProc, resizeProc;
+	long keyPressReleaseProc, focusProc, enterMotionScrollProc, leaveProc, resizeProc, activateProc;
 	long gesturePressReleaseProc;
 	long notifyProc;
 	Callback windowCallback2, windowCallback3, windowCallback4, windowCallback5, windowCallback6;
 	Callback snapshotDraw, changeValue;
-	Callback keyPressReleaseCallback, focusCallback, enterMotionScrollCallback, leaveCallback, resizeCallback;
+	Callback keyPressReleaseCallback, focusCallback, enterMotionScrollCallback, leaveCallback, resizeCallback, activateCallback;
 	Callback gesturePressReleaseCallback;
 	Callback notifyCallback;
 	EventTable eventTable, filterTable;
@@ -3524,6 +3524,11 @@ void initializeCallbacks () {
 				long.class, int.class, int.class}); //$NON-NLS-1$
 		resizeProc = resizeCallback.getAddress ();
 
+		activateCallback = new Callback(this, "activateProc", void.class, new Type[] {
+				long.class, long.class, long.class
+		});
+		activateProc = activateCallback.getAddress();
+
 		closuresProc [Widget.LEAVE] = leaveProc;
 	}
 
@@ -5953,6 +5958,13 @@ long leaveProc (long controller, long user_data) {
 	Widget widget = getWidget (handle);
 	if (widget == null) return 0;
 	return widget.leaveProc(controller, handle, user_data);
+}
+
+void activateProc(long action, long parameter, long user_data) {
+	Widget widget = getWidget(user_data);
+	if(widget == null) return;
+
+	widget.gtk_activate(user_data);
 }
 
 void resizeProc(long handle, int width, int height) {

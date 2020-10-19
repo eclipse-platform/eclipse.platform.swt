@@ -60,8 +60,9 @@ public class MenuItem extends Item {
 	String toolTipText;
 
 	/** GTK4 only fields */
-	long modelHandle;
+	long modelHandle, actionHandle, shortcutHandle;
 	int parentMenuPosition;
+	String actionName;
 
 /**
  * Constructs a new instance of this class given its parent
@@ -154,8 +155,8 @@ void addAccelerator (long accelGroup) {
 }
 
 void addAccelerators (long accelGroup) {
-	addAccelerator (accelGroup);
-	if (menu != null) menu.addAccelerators (accelGroup);
+	addAccelerator(accelGroup);
+	if (menu != null) menu.addAccelerators(accelGroup);
 }
 
 /**
@@ -274,7 +275,15 @@ void createHandle (int index) {
 				break;
 			case SWT.PUSH:
 			default:
-				handle = OS.g_menu_item_new(null, null);
+				Menu popoverMenuWidget = parent;
+				while (popoverMenuWidget.actionGroup == 0) {
+					popoverMenuWidget = popoverMenuWidget.cascade.parent;
+				}
+
+				actionHandle = OS.g_simple_action_new(Converter.javaStringToCString(String.valueOf(this.hashCode())), 0);
+				OS.g_action_map_add_action(popoverMenuWidget.actionGroup, actionHandle);
+				actionName = String.valueOf(popoverMenuWidget.hashCode()) + "." + String.valueOf(this.hashCode());
+				handle = OS.g_menu_item_new(null, Converter.javaStringToCString(actionName));
 				break;
 		}
 
@@ -473,7 +482,12 @@ long getAccelGroup () {
  */
 public boolean getEnabled () {
 	checkWidget();
-	return GTK.gtk_widget_get_sensitive (handle);
+
+	if (GTK.GTK4) {
+		return OS.g_action_get_enabled(actionHandle);
+	} else {
+		return GTK.gtk_widget_get_sensitive(handle);
+	}
 }
 
 /**
@@ -573,19 +587,23 @@ public String getToolTipText () {
 @Override
 long gtk_activate (long widget) {
 	if ((style & SWT.CASCADE) != 0 && menu != null) return 0;
-	/*
-	* Bug in GTK.  When an ancestor menu is disabled and
-	* the user types an accelerator key, GTK delivers the
-	* the activate signal even though the menu item cannot
-	* be invoked using the mouse.  The fix is to ignore
-	* activate signals when an ancestor menu is disabled.
-	*/
-	if (!isEnabled ()) return 0;
-	if ((style & SWT.RADIO) != 0) {
-		if ((parent.getStyle () & SWT.NO_RADIO_GROUP) == 0) {
-			selectRadio ();
+
+	if (!GTK.GTK4) {
+		/*
+		* Bug in GTK.  When an ancestor menu is disabled and
+		* the user types an accelerator key, GTK delivers the
+		* the activate signal even though the menu item cannot
+		* be invoked using the mouse.  The fix is to ignore
+		* activate signals when an ancestor menu is disabled.
+		*/
+		if (!isEnabled ()) return 0;
+		if ((style & SWT.RADIO) != 0) {
+			if ((parent.getStyle () & SWT.NO_RADIO_GROUP) == 0) {
+				selectRadio ();
+			}
 		}
 	}
+
 	sendSelectionEvent (SWT.Selection);
 	return 0;
 }
@@ -616,9 +634,14 @@ long gtk_show_help (long widget, long helpType) {
 @Override
 void hookEvents () {
 	super.hookEvents ();
-	OS.g_signal_connect_closure (handle, OS.activate, display.getClosure (ACTIVATE), false);
-	OS.g_signal_connect_closure (handle, OS.select, display.getClosure (SELECT), false);
-	OS.g_signal_connect_closure_by_id (handle, display.signalIds [SHOW_HELP], 0, display.getClosure (SHOW_HELP), false);
+
+	if (GTK.GTK4) {
+		OS.g_signal_connect(actionHandle, OS.activate, display.activateProc, handle);
+	} else {
+		OS.g_signal_connect_closure(handle, OS.activate, display.getClosure (ACTIVATE), false);
+		OS.g_signal_connect_closure (handle, OS.select, display.getClosure (SELECT), false);
+		OS.g_signal_connect_closure_by_id (handle, display.signalIds [SHOW_HELP], 0, display.getClosure (SHOW_HELP), false);
+	}
 }
 
 /**
@@ -786,10 +809,50 @@ void selectRadio () {
 public void setAccelerator (int accelerator) {
 	checkWidget();
 	if (this.accelerator == accelerator) return;
-	long accelGroup = getAccelGroup ();
-	if (accelGroup != 0) removeAccelerator (accelGroup);
-	this.accelerator = accelerator;
-	if (accelGroup != 0) addAccelerator (accelGroup);
+
+	if (GTK.GTK4) {
+		if (shortcutHandle != 0) {
+			GTK.gtk_shortcut_controller_remove_shortcut(parent.shortcutController, shortcutHandle);
+		}
+
+		this.accelerator = accelerator;
+		addShortcut(accelerator);
+	} else {
+		long accelGroup = getAccelGroup();
+		if (accelGroup != 0) removeAccelerator(accelGroup);
+		this.accelerator = accelerator;
+		if (accelGroup != 0) addAccelerator(accelGroup);
+	}
+}
+
+void addShortcut(int accelerator) {
+	if (accelerator == 0 || !getEnabled()) return;
+	if ((accelerator & SWT.COMMAND) != 0) return;
+
+	int mask = 0;
+	if ((accelerator & SWT.ALT) != 0) mask |= GDK.GDK_MOD1_MASK;
+	if ((accelerator & SWT.SHIFT) != 0) mask |= GDK.GDK_SHIFT_MASK;
+	if ((accelerator & SWT.CONTROL) != 0) mask |= GDK.GDK_CONTROL_MASK;
+
+	int keyval = accelerator & SWT.KEY_MASK;
+	int newKey = Display.untranslateKey (keyval);
+	if (newKey != 0) {
+		keyval = newKey;
+	} else {
+		switch (keyval) {
+			case '\r': keyval = GDK.GDK_Return; break;
+			default: keyval = Converter.wcsToMbcs ((char) keyval);
+		}
+	}
+
+	if (keyval != 0) {
+		shortcutHandle = GTK.gtk_shortcut_new(
+				GTK.gtk_keyval_trigger_new(keyval, mask),
+				GTK.gtk_named_action_new(Converter.javaStringToCString(actionName))
+			);
+		if (shortcutHandle == 0) error(SWT.ERROR_NO_HANDLES);
+		GTK.gtk_shortcut_controller_add_shortcut(parent.shortcutController, shortcutHandle);
+	}
 }
 
 /**
@@ -807,11 +870,16 @@ public void setAccelerator (int accelerator) {
  */
 public void setEnabled (boolean enabled) {
 	checkWidget();
-	if (GTK.gtk_widget_get_sensitive (handle) == enabled) return;
-	long accelGroup = getAccelGroup ();
-	if (accelGroup != 0) removeAccelerator (accelGroup);
-	GTK.gtk_widget_set_sensitive (handle, enabled);
-	if (accelGroup != 0) addAccelerator (accelGroup);
+
+	if (GTK.GTK4) {
+		OS.g_simple_action_set_enabled(actionHandle, enabled);
+	} else {
+		if (GTK.gtk_widget_get_sensitive(handle) == enabled) return;
+		long accelGroup = getAccelGroup();
+		if (accelGroup != 0) removeAccelerator(accelGroup);
+		GTK.gtk_widget_set_sensitive(handle, enabled);
+		if (accelGroup != 0) addAccelerator(accelGroup);
+	}
 }
 
 /**
@@ -1090,6 +1158,14 @@ public void setText (String string) {
 
 	if (GTK.GTK4) {
 		OS.g_menu_item_set_label(handle, buffer);
+		MaskKeysym maskKeysym = getMaskKeysym();
+		if (maskKeysym != null) {
+			OS.g_menu_item_set_attribute(handle,
+					Converter.javaStringToCString("accel"),
+					Converter.javaStringToCString("s"),
+					GTK.gtk_accelerator_name(maskKeysym.keysym, maskKeysym.mask)
+				);
+		}
 		OS.g_menu_remove(parent.modelHandle, parentMenuPosition);
 		OS.g_menu_insert_item(parent.modelHandle, parentMenuPosition, handle);
 	} else {
@@ -1166,9 +1242,9 @@ void updateAccelerator (long accelGroup, boolean add) {
 	/* When accel_key is zero, it causes GTK warnings */
 	if (keysym != 0) {
 		if (add) {
-			GTK.gtk_widget_add_accelerator (handle, OS.activate, accelGroup, keysym, mask, GTK.GTK_ACCEL_VISIBLE);
+			GTK.gtk_widget_add_accelerator(handle, OS.activate, accelGroup, keysym, mask, GTK.GTK_ACCEL_VISIBLE);
 		} else {
-			GTK.gtk_widget_remove_accelerator (handle, accelGroup, keysym, mask);
+			GTK.gtk_widget_remove_accelerator(handle, accelGroup, keysym, mask);
 		}
 	}
 }

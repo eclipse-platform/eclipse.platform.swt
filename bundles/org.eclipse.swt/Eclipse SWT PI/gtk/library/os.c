@@ -3745,6 +3745,18 @@ JNIEXPORT jint JNICALL GTK_NATIVE(gtk_1accelerator_1get_1default_1mod_1mask)
 }
 #endif
 
+#ifndef NO_gtk_1accelerator_1name
+JNIEXPORT jlong JNICALL GTK_NATIVE(gtk_1accelerator_1name)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	jlong rc = 0;
+	GTK_NATIVE_ENTER(env, that, gtk_1accelerator_1name_FUNC);
+	rc = (jlong)gtk_accelerator_name((guint)arg0, (GdkModifierType)arg1);
+	GTK_NATIVE_EXIT(env, that, gtk_1accelerator_1name_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_gtk_1accelerator_1parse
 JNIEXPORT void JNICALL GTK_NATIVE(gtk_1accelerator_1parse)
 	(JNIEnv *env, jclass that, jlong arg0, jintArray arg1, jintArray arg2)
@@ -7321,6 +7333,26 @@ fail:
 }
 #endif
 
+#ifndef NO_gtk_1keyval_1trigger_1new
+JNIEXPORT jlong JNICALL GTK_NATIVE(gtk_1keyval_1trigger_1new)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	jlong rc = 0;
+	GTK_NATIVE_ENTER(env, that, gtk_1keyval_1trigger_1new_FUNC);
+/*
+	rc = (jlong)gtk_keyval_trigger_new((guint)arg0, (GdkModifierType)arg1);
+*/
+	{
+		GTK_LOAD_FUNCTION(fp, gtk_keyval_trigger_new)
+		if (fp) {
+			rc = (jlong)((jlong (CALLING_CONVENTION*)(guint, GdkModifierType))fp)((guint)arg0, (GdkModifierType)arg1);
+		}
+	}
+	GTK_NATIVE_EXIT(env, that, gtk_1keyval_1trigger_1new_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_gtk_1label_1get_1layout
 JNIEXPORT jlong JNICALL GTK_NATIVE(gtk_1label_1get_1layout)
 	(JNIEnv *env, jclass that, jlong arg0)
@@ -7878,6 +7910,30 @@ fail:
 	if (arg5 && lparg5) (*env)->ReleaseByteArrayElements(env, arg5, lparg5, 0);
 	if (arg4 && lparg4) (*env)->ReleaseByteArrayElements(env, arg4, lparg4, 0);
 	GTK_NATIVE_EXIT(env, that, gtk_1message_1dialog_1new_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_gtk_1named_1action_1new
+JNIEXPORT jlong JNICALL GTK_NATIVE(gtk_1named_1action_1new)
+	(JNIEnv *env, jclass that, jbyteArray arg0)
+{
+	jbyte *lparg0=NULL;
+	jlong rc = 0;
+	GTK_NATIVE_ENTER(env, that, gtk_1named_1action_1new_FUNC);
+	if (arg0) if ((lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL)) == NULL) goto fail;
+/*
+	rc = (jlong)gtk_named_action_new((const char *)lparg0);
+*/
+	{
+		GTK_LOAD_FUNCTION(fp, gtk_named_action_new)
+		if (fp) {
+			rc = (jlong)((jlong (CALLING_CONVENTION*)(const char *))fp)((const char *)lparg0);
+		}
+	}
+fail:
+	if (arg0 && lparg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
+	GTK_NATIVE_EXIT(env, that, gtk_1named_1action_1new_FUNC);
 	return rc;
 }
 #endif
@@ -9477,6 +9533,100 @@ JNIEXPORT jlong JNICALL GTK_NATIVE(gtk_1settings_1get_1default)
 	GTK_NATIVE_ENTER(env, that, gtk_1settings_1get_1default_FUNC);
 	rc = (jlong)gtk_settings_get_default();
 	GTK_NATIVE_EXIT(env, that, gtk_1settings_1get_1default_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_gtk_1shortcut_1controller_1add_1shortcut
+JNIEXPORT void JNICALL GTK_NATIVE(gtk_1shortcut_1controller_1add_1shortcut)
+	(JNIEnv *env, jclass that, jlong arg0, jlong arg1)
+{
+	GTK_NATIVE_ENTER(env, that, gtk_1shortcut_1controller_1add_1shortcut_FUNC);
+/*
+	gtk_shortcut_controller_add_shortcut((GtkShortcutController *)arg0, (GtkShortcut *)arg1);
+*/
+	{
+		GTK_LOAD_FUNCTION(fp, gtk_shortcut_controller_add_shortcut)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(GtkShortcutController *, GtkShortcut *))fp)((GtkShortcutController *)arg0, (GtkShortcut *)arg1);
+		}
+	}
+	GTK_NATIVE_EXIT(env, that, gtk_1shortcut_1controller_1add_1shortcut_FUNC);
+}
+#endif
+
+#ifndef NO_gtk_1shortcut_1controller_1new
+JNIEXPORT jlong JNICALL GTK_NATIVE(gtk_1shortcut_1controller_1new)
+	(JNIEnv *env, jclass that)
+{
+	jlong rc = 0;
+	GTK_NATIVE_ENTER(env, that, gtk_1shortcut_1controller_1new_FUNC);
+/*
+	rc = (jlong)gtk_shortcut_controller_new();
+*/
+	{
+		GTK_LOAD_FUNCTION(fp, gtk_shortcut_controller_new)
+		if (fp) {
+			rc = (jlong)((jlong (CALLING_CONVENTION*)())fp)();
+		}
+	}
+	GTK_NATIVE_EXIT(env, that, gtk_1shortcut_1controller_1new_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_gtk_1shortcut_1controller_1remove_1shortcut
+JNIEXPORT void JNICALL GTK_NATIVE(gtk_1shortcut_1controller_1remove_1shortcut)
+	(JNIEnv *env, jclass that, jlong arg0, jlong arg1)
+{
+	GTK_NATIVE_ENTER(env, that, gtk_1shortcut_1controller_1remove_1shortcut_FUNC);
+/*
+	gtk_shortcut_controller_remove_shortcut((GtkShortcutController *)arg0, (GtkShortcut *)arg1);
+*/
+	{
+		GTK_LOAD_FUNCTION(fp, gtk_shortcut_controller_remove_shortcut)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(GtkShortcutController *, GtkShortcut *))fp)((GtkShortcutController *)arg0, (GtkShortcut *)arg1);
+		}
+	}
+	GTK_NATIVE_EXIT(env, that, gtk_1shortcut_1controller_1remove_1shortcut_FUNC);
+}
+#endif
+
+#ifndef NO_gtk_1shortcut_1controller_1set_1scope
+JNIEXPORT void JNICALL GTK_NATIVE(gtk_1shortcut_1controller_1set_1scope)
+	(JNIEnv *env, jclass that, jlong arg0, jint arg1)
+{
+	GTK_NATIVE_ENTER(env, that, gtk_1shortcut_1controller_1set_1scope_FUNC);
+/*
+	gtk_shortcut_controller_set_scope((GtkShortcutController *)arg0, (GtkShortcutScope)arg1);
+*/
+	{
+		GTK_LOAD_FUNCTION(fp, gtk_shortcut_controller_set_scope)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(GtkShortcutController *, GtkShortcutScope))fp)((GtkShortcutController *)arg0, (GtkShortcutScope)arg1);
+		}
+	}
+	GTK_NATIVE_EXIT(env, that, gtk_1shortcut_1controller_1set_1scope_FUNC);
+}
+#endif
+
+#ifndef NO_gtk_1shortcut_1new
+JNIEXPORT jlong JNICALL GTK_NATIVE(gtk_1shortcut_1new)
+	(JNIEnv *env, jclass that, jlong arg0, jlong arg1)
+{
+	jlong rc = 0;
+	GTK_NATIVE_ENTER(env, that, gtk_1shortcut_1new_FUNC);
+/*
+	rc = (jlong)gtk_shortcut_new((GtkShortcutTrigger *)arg0, (GtkShortcutAction *)arg1);
+*/
+	{
+		GTK_LOAD_FUNCTION(fp, gtk_shortcut_new)
+		if (fp) {
+			rc = (jlong)((jlong (CALLING_CONVENTION*)(GtkShortcutTrigger *, GtkShortcutAction *))fp)((GtkShortcutTrigger *)arg0, (GtkShortcutAction *)arg1);
+		}
+	}
+	GTK_NATIVE_EXIT(env, that, gtk_1shortcut_1new_FUNC);
 	return rc;
 }
 #endif
@@ -13039,6 +13189,20 @@ JNIEXPORT void JNICALL GTK_NATIVE(gtk_1widget_1input_1shape_1combine_1region)
 }
 #endif
 
+#ifndef NO_gtk_1widget_1insert_1action_1group
+JNIEXPORT void JNICALL GTK_NATIVE(gtk_1widget_1insert_1action_1group)
+	(JNIEnv *env, jclass that, jlong arg0, jbyteArray arg1, jlong arg2)
+{
+	jbyte *lparg1=NULL;
+	GTK_NATIVE_ENTER(env, that, gtk_1widget_1insert_1action_1group_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	gtk_widget_insert_action_group((GtkWidget *)arg0, (const char *)lparg1, (GActionGroup *)arg2);
+fail:
+	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	GTK_NATIVE_EXIT(env, that, gtk_1widget_1insert_1action_1group_FUNC);
+}
+#endif
+
 #ifndef NO_gtk_1widget_1is_1focus
 JNIEXPORT jboolean JNICALL GTK_NATIVE(gtk_1widget_1is_1focus)
 	(JNIEnv *env, jclass that, jlong arg0)
@@ -14868,6 +15032,28 @@ JNIEXPORT jlong JNICALL OS_NATIVE(call__JJJJJJJJ)
 }
 #endif
 
+#ifndef NO_g_1action_1get_1enabled
+JNIEXPORT jboolean JNICALL OS_NATIVE(g_1action_1get_1enabled)
+	(JNIEnv *env, jclass that, jlong arg0)
+{
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, g_1action_1get_1enabled_FUNC);
+	rc = (jboolean)g_action_get_enabled((GAction *)arg0);
+	OS_NATIVE_EXIT(env, that, g_1action_1get_1enabled_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_g_1action_1map_1add_1action
+JNIEXPORT void JNICALL OS_NATIVE(g_1action_1map_1add_1action)
+	(JNIEnv *env, jclass that, jlong arg0, jlong arg1)
+{
+	OS_NATIVE_ENTER(env, that, g_1action_1map_1add_1action_FUNC);
+	g_action_map_add_action((GActionMap *)arg0, (GAction *)arg1);
+	OS_NATIVE_EXIT(env, that, g_1action_1map_1add_1action_FUNC);
+}
+#endif
+
 #ifndef NO_g_1app_1info_1create_1from_1commandline
 JNIEXPORT jlong JNICALL OS_NATIVE(g_1app_1info_1create_1from_1commandline)
 	(JNIEnv *env, jclass that, jbyteArray arg0, jbyteArray arg1, jlong arg2, jlong arg3)
@@ -16141,6 +16327,23 @@ fail:
 }
 #endif
 
+#ifndef NO_g_1menu_1item_1set_1attribute
+JNIEXPORT void JNICALL OS_NATIVE(g_1menu_1item_1set_1attribute)
+	(JNIEnv *env, jclass that, jlong arg0, jbyteArray arg1, jbyteArray arg2, jlong arg3)
+{
+	jbyte *lparg1=NULL;
+	jbyte *lparg2=NULL;
+	OS_NATIVE_ENTER(env, that, g_1menu_1item_1set_1attribute_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	if (arg2) if ((lparg2 = (*env)->GetByteArrayElements(env, arg2, NULL)) == NULL) goto fail;
+	g_menu_item_set_attribute((GMenuItem *)arg0, (const gchar *)lparg1, (const gchar *)lparg2, (const gchar *)arg3);
+fail:
+	if (arg2 && lparg2) (*env)->ReleaseByteArrayElements(env, arg2, lparg2, 0);
+	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	OS_NATIVE_EXIT(env, that, g_1menu_1item_1set_1attribute_FUNC);
+}
+#endif
+
 #ifndef NO_g_1menu_1item_1set_1label
 JNIEXPORT void JNICALL OS_NATIVE(g_1menu_1item_1set_1label)
 	(JNIEnv *env, jclass that, jlong arg0, jbyteArray arg1)
@@ -16638,6 +16841,44 @@ JNIEXPORT void JNICALL OS_NATIVE(g_1signal_1stop_1emission_1by_1name)
 fail:
 	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, JNI_ABORT);
 	OS_NATIVE_EXIT(env, that, g_1signal_1stop_1emission_1by_1name_FUNC);
+}
+#endif
+
+#ifndef NO_g_1simple_1action_1group_1new
+JNIEXPORT jlong JNICALL OS_NATIVE(g_1simple_1action_1group_1new)
+	(JNIEnv *env, jclass that)
+{
+	jlong rc = 0;
+	OS_NATIVE_ENTER(env, that, g_1simple_1action_1group_1new_FUNC);
+	rc = (jlong)g_simple_action_group_new();
+	OS_NATIVE_EXIT(env, that, g_1simple_1action_1group_1new_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_g_1simple_1action_1new
+JNIEXPORT jlong JNICALL OS_NATIVE(g_1simple_1action_1new)
+	(JNIEnv *env, jclass that, jbyteArray arg0, jlong arg1)
+{
+	jbyte *lparg0=NULL;
+	jlong rc = 0;
+	OS_NATIVE_ENTER(env, that, g_1simple_1action_1new_FUNC);
+	if (arg0) if ((lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL)) == NULL) goto fail;
+	rc = (jlong)g_simple_action_new((const gchar *)lparg0, (const GVariantType *)arg1);
+fail:
+	if (arg0 && lparg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
+	OS_NATIVE_EXIT(env, that, g_1simple_1action_1new_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_g_1simple_1action_1set_1enabled
+JNIEXPORT void JNICALL OS_NATIVE(g_1simple_1action_1set_1enabled)
+	(JNIEnv *env, jclass that, jlong arg0, jboolean arg1)
+{
+	OS_NATIVE_ENTER(env, that, g_1simple_1action_1set_1enabled_FUNC);
+	g_simple_action_set_enabled((GSimpleAction *)arg0, arg1);
+	OS_NATIVE_EXIT(env, that, g_1simple_1action_1set_1enabled_FUNC);
 }
 #endif
 
