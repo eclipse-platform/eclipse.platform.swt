@@ -170,46 +170,55 @@ boolean isDelimiter(char ch) {
 	if (ch == SWT.LF) return true;
 	return false;
 }
+
+private boolean isInsideCRLF(int pos) {
+	if (pos == 0) return false;
+	if (pos == getCharCount()) return false;
+
+	char charBefore = getTextRange(pos - 1, 1).charAt(0);
+	if (charBefore != '\r') return false;
+
+	char charAfter = getTextRange(pos, 1).charAt(0);
+	if (charAfter != '\n') return false;
+
+	/*
+	 * Bug 568033: in case of this.setText("\rxxx\n")
+	 * \r and \n are already parsed as separate line endings, so it
+	 * shouldn't be wrong to delete 'xxx' and type something there.
+	 */
+	if (getLineAtOffset(pos - 1) != getLineAtOffset(pos))
+		return false;
+
+	return true;
+}
+
 /**
- * Determine whether or not the replace operation is valid.  DefaultContent will not allow
- * the /r/n line delimiter to be split or partially deleted.
+ * Validates the replace operation.  DefaultContent will not allow
+ * the \r\n line delimiter to be split or partially deleted.
  * <p>
  *
- * @param start	start offset of text to replace
+ * @param start start offset of text to replace
  * @param replaceLength start offset of text to replace
- * @param newText start offset of text to replace
- * @return a boolean specifying whether or not the replace operation is valid
  */
-protected boolean isValidReplace(int start, int replaceLength, String newText){
+private void validateReplace(int start, int replaceLength) {
 	if (replaceLength == 0) {
 		// inserting text, see if the \r\n line delimiter is being split
-		if (start == 0) return true;
-		if (start == getCharCount()) return true;
-		char before = getTextRange(start - 1, 1).charAt(0);
-		if (before == '\r') {
-			char after = getTextRange(start, 1).charAt(0);
-			if (after == '\n') return false;
+		if (isInsideCRLF(start)) {
+			String message = " [0: start=" + start + " len=" + replaceLength + "]";
+			SWT.error(SWT.ERROR_INVALID_ARGUMENT, null, message);
 		}
 	} else {
 		// deleting text, see if part of a \r\n line delimiter is being deleted
-		char startChar = getTextRange(start, 1).charAt(0);
-		if (startChar == '\n') {
-			// see if char before delete position is \r
-			if (start != 0) {
-				char before = getTextRange(start - 1, 1).charAt(0);
-				if (before == '\r') return false;
-			}
+		if (isInsideCRLF(start)) {
+			String message = " [1: start=" + start + " len=" + replaceLength + "]";
+			SWT.error(SWT.ERROR_INVALID_ARGUMENT, null, message);
 		}
-		char endChar = getTextRange(start + replaceLength - 1, 1).charAt(0);
-		if (endChar == '\r') {
-			// see if char after delete position is \n
-			if (start + replaceLength != getCharCount()) {
-				char after = getTextRange(start + replaceLength, 1).charAt(0);
-				if (after == '\n') return false;
-			}
+
+		if (isInsideCRLF(start + replaceLength)) {
+			String message = " [2: start=" + start + " len=" + replaceLength + "]";
+			SWT.error(SWT.ERROR_INVALID_ARGUMENT, null, message);
 		}
 	}
-	return true;
 }
 /**
  * Calculates the indexes of each line of text in the given range.
@@ -780,7 +789,7 @@ public void removeTextChangeListener(TextChangeListener listener){
 @Override
 public void replaceTextRange(int start, int replaceLength, String newText){
 	// check for invalid replace operations
-	if (!isValidReplace(start, replaceLength, newText)) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	validateReplace(start, replaceLength);
 
 	// inform listeners
 	StyledTextEvent event = new StyledTextEvent(this);

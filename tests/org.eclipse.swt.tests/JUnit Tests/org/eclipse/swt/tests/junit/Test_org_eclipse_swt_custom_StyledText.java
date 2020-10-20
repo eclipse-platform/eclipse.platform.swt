@@ -19,6 +19,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.junit.Assume.assumeFalse;
@@ -5874,6 +5875,31 @@ public void test_backspaceAndDelete() {
 
 	assertEquals(0, text.getText().length());
 }
+
+/**
+ * Bug 568033 - Splitting CRLF shall not be forbidden if already on different lines
+ */
+@Test
+public void test_replaceTextRange_isInsideCRLF() {
+	text.setText("0123\r\n6789");
+	assertThrows("Exception shall be thrown when splitting CRLF", IllegalArgumentException.class, () -> {
+		text.replaceTextRange(5, 0, "x");
+	});
+
+	assertThrows("Exception shall be thrown when splitting CRLF", IllegalArgumentException.class, () -> {
+		text.replaceTextRange(0, 5, "x");
+	});
+
+	assertThrows("Exception shall be thrown when splitting CRLF", IllegalArgumentException.class, () -> {
+		text.replaceTextRange(5, 5, "x");
+	});
+
+	// Shouldn't throw when CR/LF were already on different lines
+	text.setText("0\r2\n4");
+	text.replaceTextRange(2, 1, "");
+	text.replaceTextRange(2, 0, "2");
+}
+
 private Event keyEvent(int key, int type, Widget w) {
 	Event e = new Event();
 	e.keyCode= key;
