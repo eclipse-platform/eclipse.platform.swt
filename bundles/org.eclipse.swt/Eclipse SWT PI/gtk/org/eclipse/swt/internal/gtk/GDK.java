@@ -384,34 +384,37 @@ public class GDK extends OS {
 	 */
 	/* [GTK3 only, if-def'd in os.h] */
 	public static final native void gdk_cairo_set_source_window(long cairo, long window, int x, int y);
+
+
+	/* GdkCursor [GTK3 only] */
 	/**
 	 * @param display cast=(GdkDisplay *)
 	 * @param cursor_name cast=(const gchar *)
 	 */
-	/* [GTK3 only, if-def'd in os.h] */
 	public static final native long gdk_cursor_new_from_name(long display, String cursor_name);
-	/**
-	 * @param cursor_name cast=(const gchar *)
-	 * @param fallback cast=(GdkCursor *)
-	 */
-	/* [GTK4 only, if-def'd in os.h] */
-	public static final native long gdk_cursor_new_from_name(String cursor_name, long fallback);
 	/**
 	 * @param display cast=(GdkDisplay *)
 	 * @param pixbuf cast=(GdkPixbuf *)
 	 * @param x cast=(gint)
 	 * @param y cast=(gint)
 	 */
-	/* [GTK3 only, if-def'd in os.h] */
 	public static final native long gdk_cursor_new_from_pixbuf(long display, long pixbuf, int x, int y);
+
+	/* GdkCursor [GTK4 only] */
+	/**
+	 * @param cursor_name cast=(const gchar *)
+	 * @param fallback cast=(GdkCursor *)
+	 */
+	public static final native long gdk_cursor_new_from_name(String cursor_name, long fallback);
 	/**
 	 * @param texture cast=(GdkTexture *)
 	 * @param x cast=(gint)
 	 * @param y cast=(gint)
 	 * @param fallback cast=(GdkCursor *)
 	 */
-	/* [GTK4 only, if-def'd in os.h] */
 	public static final native long gdk_cursor_new_from_texture(long texture, int x, int y, long fallback);
+
+
 	/**
 	 * @param device cast=(GdkDevice *)
 	 * @param screen cast=(GdkScreen *)

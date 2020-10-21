@@ -277,8 +277,10 @@ public Cursor(Device device, ImageData source, int hotspotX, int hotspotY) {
 		hotspotY >= source.height || hotspotY < 0) {
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
-	long display = 0;
-	if (GDK.gdk_display_supports_cursor_color(display = GDK.gdk_display_get_default ())) {
+
+	long display = GDK.gdk_display_get_default();
+	boolean supportsColorCursor = GTK.GTK4 || GDK.gdk_display_supports_cursor_color(display);
+	if (supportsColorCursor) {
 		int width = source.width;
 		int height = source.height;
 		PaletteData palette = source.palette;
@@ -343,7 +345,14 @@ public Cursor(Device device, ImageData source, int hotspotX, int hotspotY) {
 			}
 		}
 		C.memmove(data, buffer, stride * height);
-		handle = GDK.gdk_cursor_new_from_pixbuf(display, pixbuf, hotspotX, hotspotY);
+
+		if (GTK.GTK4) {
+			long texture = GDK.gdk_texture_new_for_pixbuf(pixbuf);
+			handle = GDK.gdk_cursor_new_from_texture(texture, hotspotX, hotspotY, 0);
+			OS.g_object_unref(texture);
+		} else {
+			handle = GDK.gdk_cursor_new_from_pixbuf(display, pixbuf, hotspotX, hotspotY);
+		}
 		OS.g_object_unref(pixbuf);
 	} else {
 
@@ -477,14 +486,17 @@ long createCursor(byte[] sourceData, byte[] maskData, int width, int height, int
 	int stride = GDK.gdk_pixbuf_get_rowstride(pixbuf);
 	long pixels = GDK.gdk_pixbuf_get_pixels(pixbuf);
 	C.memmove(pixels, data, stride * height);
+
 	long cursor;
 	if (GTK.GTK4) {
-		long texture = GDK.gdk_texture_new_for_pixbuf (pixbuf);
-		cursor = GDK.gdk_cursor_new_from_texture (texture, hotspotX, hotspotY, 0);
+		long texture = GDK.gdk_texture_new_for_pixbuf(pixbuf);
+		cursor = GDK.gdk_cursor_new_from_texture(texture, hotspotX, hotspotY, 0);
+		OS.g_object_unref(texture);
 	} else {
 		cursor = GDK.gdk_cursor_new_from_pixbuf(GDK.gdk_display_get_default(), pixbuf, hotspotX, hotspotY);
 	}
 	OS.g_object_unref(pixbuf);
+
 	return cursor;
 }
 
