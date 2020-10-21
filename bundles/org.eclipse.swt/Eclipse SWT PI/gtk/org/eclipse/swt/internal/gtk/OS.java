@@ -2295,6 +2295,11 @@ public static final native long g_menu_new();
 public static final native long g_menu_item_new_submenu(byte[] label, long submenu);
 /**
  * @param label cast=(const gchar *)
+ * @param section cast=(GMenuModel *)
+ */
+public static final native long g_menu_item_new_section(byte[] label, long section);
+/**
+ * @param label cast=(const gchar *)
  * @param detailed_action cast=(const gchar *)
  */
 public static final native long g_menu_item_new(byte[] label, byte[] detailed_action);

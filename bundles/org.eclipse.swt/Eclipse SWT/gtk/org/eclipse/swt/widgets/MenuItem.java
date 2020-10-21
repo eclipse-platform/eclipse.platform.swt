@@ -269,7 +269,9 @@ void createHandle (int index) {
 
 		switch (style & bits) {
 			case SWT.SEPARATOR:
-
+				handle = OS.g_menu_item_new_section(null, modelHandle);
+				parent.sectionModelHandle = modelHandle;
+				break;
 			case SWT.CASCADE:
 				handle = OS.g_menu_item_new_submenu(null, modelHandle);
 				break;
@@ -287,7 +289,12 @@ void createHandle (int index) {
 				break;
 		}
 
-		OS.g_menu_insert_item(parent.modelHandle, index, handle);
+		if ((style & SWT.SEPARATOR) != 0) {
+			OS.g_menu_insert_item(parent.modelHandle, index, handle);
+		} else {
+			OS.g_menu_insert_item(parent.sectionModelHandle, index, handle);
+		}
+
 		parentMenuPosition = index;
 	} else {
 		switch (style & bits) {
@@ -925,6 +932,7 @@ public void setImage (Image image) {
 	checkWidget();
 	if ((style & SWT.SEPARATOR) != 0) return;
 	super.setImage (image);
+
 	if (image != null) {
 		ImageList imageList = parent.imageList;
 		if (imageList == null) imageList = parent.imageList = new ImageList ();
@@ -1040,8 +1048,8 @@ public void setMenu (Menu menu) {
 			OS.g_menu_item_set_submenu(handle, 0);
 		}
 
-		OS.g_menu_remove(parent.modelHandle, parentMenuPosition);
-		OS.g_menu_insert_item(parent.modelHandle, parentMenuPosition, handle);
+		OS.g_menu_remove(parent.sectionModelHandle, parentMenuPosition);
+		OS.g_menu_insert_item(parent.sectionModelHandle, parentMenuPosition, handle);
 	} else {
 		long accelGroup = getAccelGroup ();
 		if (accelGroup != 0) removeAccelerators (accelGroup);
@@ -1166,8 +1174,8 @@ public void setText (String string) {
 					GTK.gtk_accelerator_name(maskKeysym.keysym, maskKeysym.mask)
 				);
 		}
-		OS.g_menu_remove(parent.modelHandle, parentMenuPosition);
-		OS.g_menu_insert_item(parent.modelHandle, parentMenuPosition, handle);
+		OS.g_menu_remove(parent.sectionModelHandle, parentMenuPosition);
+		OS.g_menu_insert_item(parent.sectionModelHandle, parentMenuPosition, handle);
 	} else {
 		if (labelHandle != 0 && GTK.GTK_IS_LABEL (labelHandle)) {
 			GTK.gtk_label_set_text_with_mnemonic (labelHandle, buffer);

@@ -1306,6 +1306,7 @@ char * OS_nativeFunctionNames[] = {
 	"g_1malloc",
 	"g_1menu_1insert_1item",
 	"g_1menu_1item_1new",
+	"g_1menu_1item_1new_1section",
 	"g_1menu_1item_1new_1submenu",
 	"g_1menu_1item_1set_1attribute",
 	"g_1menu_1item_1set_1label",

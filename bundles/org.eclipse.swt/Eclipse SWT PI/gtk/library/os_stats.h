@@ -1280,6 +1280,7 @@ typedef enum {
 	g_1malloc_FUNC,
 	g_1menu_1insert_1item_FUNC,
 	g_1menu_1item_1new_FUNC,
+	g_1menu_1item_1new_1section_FUNC,
 	g_1menu_1item_1new_1submenu_FUNC,
 	g_1menu_1item_1set_1attribute_FUNC,
 	g_1menu_1item_1set_1label_FUNC,

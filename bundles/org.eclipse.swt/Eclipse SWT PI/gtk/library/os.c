@@ -16311,6 +16311,22 @@ fail:
 }
 #endif
 
+#ifndef NO_g_1menu_1item_1new_1section
+JNIEXPORT jlong JNICALL OS_NATIVE(g_1menu_1item_1new_1section)
+	(JNIEnv *env, jclass that, jbyteArray arg0, jlong arg1)
+{
+	jbyte *lparg0=NULL;
+	jlong rc = 0;
+	OS_NATIVE_ENTER(env, that, g_1menu_1item_1new_1section_FUNC);
+	if (arg0) if ((lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL)) == NULL) goto fail;
+	rc = (jlong)g_menu_item_new_section((const gchar *)lparg0, (GMenuModel *)arg1);
+fail:
+	if (arg0 && lparg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
+	OS_NATIVE_EXIT(env, that, g_1menu_1item_1new_1section_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_g_1menu_1item_1new_1submenu
 JNIEXPORT jlong JNICALL OS_NATIVE(g_1menu_1item_1new_1submenu)
 	(JNIEnv *env, jclass that, jbyteArray arg0, jlong arg1)

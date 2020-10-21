@@ -52,7 +52,7 @@ public class Menu extends Widget {
 	int poppedUpCount;
 
 	/** GTK4 only field */
-	long modelHandle, actionGroup, shortcutController;
+	long modelHandle, actionGroup, shortcutController, sectionModelHandle;
 
 /**
  * Constructs a new instance of this class given its parent,
@@ -463,6 +463,13 @@ void createHandle (int index) {
 				if (handle == 0) error(SWT.ERROR_NO_HANDLES);
 		}
 
+		sectionModelHandle = OS.g_menu_new();
+		if (sectionModelHandle == 0) error(SWT.ERROR_NO_HANDLES);
+
+		long defaultSection = OS.g_menu_item_new_section(null, sectionModelHandle);
+		OS.g_menu_insert_item(modelHandle, index, defaultSection);
+		OS.g_object_unref(defaultSection);
+
 		if ((style & SWT.DROP_DOWN) == 0) {
 			actionGroup = OS.g_simple_action_group_new();
 			if (actionGroup == 0) error(SWT.ERROR_NO_HANDLES);
@@ -623,7 +630,7 @@ public int getItemCount () {
 	checkWidget();
 
 	if (GTK.GTK4) {
-		return OS.g_menu_model_get_n_items(modelHandle);
+		return OS.g_menu_model_get_n_items(sectionModelHandle);
 	} else {
 		int count = 0;
 		long list = GTK.gtk_container_get_children (handle);
