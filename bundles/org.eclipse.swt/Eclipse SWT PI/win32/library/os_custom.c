@@ -51,11 +51,27 @@ JNIEXPORT jlong JNICALL OS_NATIVE(GetLibraryHandle)
 
 BOOL Validate_AllowDarkModeForWindow(const BYTE* functionPtr)
 {
+	/*
+	 * 'AllowDarkModeForWindow' is rather long, but it uses
+	 * an ATOM value of 0xA91E which is unlikely to change
+	 */
+
 #ifdef _M_X64
-	/* This function is rather long, but it uses an ATOM value of 0xA91E which is unlikely to change */
-	return
-		(functionPtr[0x15] == 0xBA) &&						// mov     edx,
-		(*(const DWORD*)(functionPtr + 0x16) == 0xA91E);	//             0A91Eh
+	/* Win10 builds from 20236 */
+	if ((functionPtr[0x52] == 0xBA) &&						// mov     edx,
+	    (*(const DWORD*)(functionPtr + 0x53) == 0xA91E))	//             0A91Eh
+	{
+		return TRUE;
+	}
+
+	/* Win10 builds from 17763 to 19041 */
+	if ((functionPtr[0x15] == 0xBA) &&						// mov     edx,
+	    (*(const DWORD*)(functionPtr + 0x16) == 0xA91E))	//             0A91Eh
+	{
+		return TRUE;
+	}
+
+	return FALSE;
 #else
 	#error Unsupported processor type
 #endif
