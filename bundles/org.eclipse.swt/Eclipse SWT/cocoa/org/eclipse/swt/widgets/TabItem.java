@@ -463,9 +463,13 @@ void updateText (boolean selected) {
 	if (attriStr != null) {
 		attriStr.release();
 	}
-	double /*float*/ [] foreground = parent.foreground;
-	if (foreground == null && selected && OS.VERSION >= 0x1070) {
-		foreground = display.getNSColorRGB(NSColor.alternateSelectedControlTextColor());
+	double [] foreground = parent.foreground;
+	if (foreground == null) {
+		if (selected) {
+			foreground = OS.isBigSurOrLater() ? display.selectedControlTextColor : display.alternateSelectedControlTextColor;
+		} else {
+			foreground = parent.defaultForeground().handle;
+		}
 	}
 	attriStr = parent.createString(text, null, foreground, 0, false, true, true);
 	//force parent to resize
