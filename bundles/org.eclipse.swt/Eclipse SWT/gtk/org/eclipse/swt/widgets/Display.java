@@ -3434,7 +3434,6 @@ void initializeCallbacks () {
 	signalIds [Widget.CONFIGURE_EVENT] = OS.g_signal_lookup (OS.configure_event, GTK.GTK_TYPE_WIDGET ());
 	signalIds [Widget.DELETE_EVENT] = OS.g_signal_lookup (OS.delete_event, GTK.GTK_TYPE_WIDGET ());
 	signalIds [Widget.ENTER_NOTIFY_EVENT] = OS.g_signal_lookup (OS.enter_notify_event, GTK.GTK_TYPE_WIDGET ());
-	signalIds [Widget.EVENT] = OS.g_signal_lookup (OS.event, GTK.GTK_TYPE_WIDGET ());
 	signalIds [Widget.EVENT_AFTER] = OS.g_signal_lookup (OS.event_after, GTK.GTK_TYPE_WIDGET ());
 	signalIds [Widget.EXPOSE_EVENT] = OS.g_signal_lookup (OS.draw, GTK.GTK_TYPE_WIDGET ());
 	signalIds [Widget.EXPOSE_EVENT_INVERSE] = OS.g_signal_lookup (OS.draw, GTK.GTK_TYPE_WIDGET ());
@@ -3583,7 +3582,6 @@ void initializeCallbacks () {
 	closuresProc [Widget.CONFIGURE_EVENT] = windowProc3;
 	closuresProc [Widget.DELETE_EVENT] = windowProc3;
 	closuresProc [Widget.ENTER_NOTIFY_EVENT] = windowProc3;
-	closuresProc [Widget.EVENT] = windowProc3;
 	closuresProc [Widget.EVENT_AFTER] = windowProc3;
 	closuresProc [Widget.EXPOSE_EVENT] = windowProc3;
 	closuresProc [Widget.EXPOSE_EVENT_INVERSE] = windowProc3;

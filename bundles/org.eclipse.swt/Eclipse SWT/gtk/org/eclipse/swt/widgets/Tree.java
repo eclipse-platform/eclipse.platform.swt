@@ -2162,32 +2162,18 @@ TreeItem _getCachedTopItem() {
 long gtk_button_press_event (long widget, long event) {
 	double [] eventX = new double [1];
 	double [] eventY = new double [1];
-	if (GTK.GTK4) {
-		GDK.gdk_event_get_position(event, eventX, eventY);
-	} else {
-		GDK.gdk_event_get_coords(event, eventX, eventY);
-	}
+	GDK.gdk_event_get_coords(event, eventX, eventY);
 
 	int eventType = GDK.gdk_event_get_event_type(event);
-	eventType = fixGdkEventTypeValues(eventType);
 
 	int [] eventButton = new int [1];
 	int [] eventState = new int [1];
-	if (GTK.GTK4) {
-		eventButton[0] = GDK.gdk_button_event_get_button(event);
-		eventState[0] = GDK.gdk_event_get_modifier_state(event);
-	} else {
-		GDK.gdk_event_get_button(event, eventButton);
-		GDK.gdk_event_get_state(event, eventState);
-	}
+	GDK.gdk_event_get_button(event, eventButton);
+	GDK.gdk_event_get_state(event, eventState);
+
 	double [] eventRX = new double [1];
 	double [] eventRY = new double [1];
-	if (GTK.GTK4) {
-		long root = GTK.gtk_widget_get_root(widget);
-		GTK.gtk_widget_translate_coordinates(widget, root, eventX[0], eventY[0], eventRX, eventRY);
-	} else {
-		GDK.gdk_event_get_root_coords(event, eventRX, eventRY);
-	}
+	GDK.gdk_event_get_root_coords(event, eventRX, eventRY);
 
 	long eventGdkResource = gdk_event_get_surface_or_window(event);
 	if (GTK.GTK4) {
@@ -2290,9 +2276,7 @@ long gtk_button_press_event (long widget, long event) {
 
 @Override
 long gtk_gesture_press_event (long gesture, int n_press, double x, double y, long event) {
-	if (n_press == 1) return 0;
-	long widget = GTK.gtk_event_controller_get_widget(gesture);
-	long result = gtk_button_press_event (widget, event);
+	long result = super.gtk_gesture_press_event(gesture, n_press, x, y, event);
 
 	if (n_press == 2 && rowActivated) {
 		sendTreeDefaultSelection ();
@@ -2301,6 +2285,10 @@ long gtk_gesture_press_event (long gesture, int n_press, double x, double y, lon
 	return result;
 }
 
+@Override
+long gtk_gesture_release_event(long gesture, int n_press, double x, double y, long event) {
+	return super.gtk_gesture_release_event(gesture, n_press, x, y, event);
+}
 
 @Override
 long gtk_row_activated (long tree, long path, long column) {

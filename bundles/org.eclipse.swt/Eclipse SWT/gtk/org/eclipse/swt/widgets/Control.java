@@ -433,14 +433,7 @@ void hookEvents () {
 
 	/* Connect the event_after signal for both key and mouse */
 	if (GTK.GTK4) {
-		long eventController = GTK.gtk_event_controller_legacy_new();
-		GTK.gtk_widget_add_controller(eventHandle, eventController);
-		OS.g_signal_connect_closure(eventController, OS.event, display.getClosure(EVENT), false);
-		if (focusHandle != eventHandle) {
-			eventController = GTK.gtk_event_controller_legacy_new();
-			GTK.gtk_widget_add_controller(focusHandle, eventController);
-			OS.g_signal_connect_closure(eventController, OS.event, display.getClosure(EVENT), false);
-		}
+		//TODO: GTK4 event-after
 	} else {
 		OS.g_signal_connect_closure_by_id(eventHandle, display.signalIds[EVENT_AFTER], 0, display.getClosure(EVENT_AFTER), false);
 		if (focusHandle != eventHandle) {
@@ -477,7 +470,6 @@ private void hookMouseSignals(long eventHandle) {
 
 	if (GTK.GTK4) {
 		long clickGesture = GTK.gtk_gesture_click_new();
-		GTK.gtk_event_controller_set_propagation_phase(clickGesture, GTK.GTK_PHASE_TARGET);
 		GTK.gtk_widget_add_controller(eventHandle, clickGesture);
 		OS.g_signal_connect(clickGesture, OS.pressed, display.gesturePressReleaseProc, GESTURE_PRESSED);
 		OS.g_signal_connect(clickGesture, OS.released, display.gesturePressReleaseProc, GESTURE_RELEASED);
@@ -3407,138 +3399,44 @@ void gtk_style_context_get_border (long context, int state, GtkBorder padding) {
 		GTK.gtk_style_context_get_border(context, state, padding);
 	}
 }
-/**
- * Generic "event" handler for signals that are dropped in GTK4
- * This method routes the following signals:
- * - button-press-event
- * - button-release-event
- */
-@Override
-long gtk_event (long widget, long event) {
-	if (!GTK.GTK4) return 0;
-	int eventType = GDK.gdk_event_get_event_type(event);
-	switch (eventType) {
-		case GDK.GDK4_BUTTON_PRESS: {
-			return gtk_button_press_event(widget, event);
-		}
-		case GDK.GDK4_BUTTON_RELEASE: {
-			return gtk_button_release_event(widget, event);
-		}
-		case GDK.GDK4_CONFIGURE: {
-			return gtk_configure_event(widget, event);
-		}
-		case GDK.GDK4_MAP: {
-			return gtk_map_event(widget, event);
-		}
-		case GDK.GDK4_UNMAP: {
-			// not used in SWT at all, could be removed
-			return gtk_unmap_event(widget, event);
-		}
-	}
-	return gtk_event_after(widget, event);
-}
 
 /**
  * Handling multi-press event on GTK4
  */
 @Override
 long gtk_gesture_press_event (long gesture, int n_press, double x, double y, long event) {
-	if (n_press == 1) return 0;
 	mouseDown = true;
 	dragBegun = false;
 
-	// Event fields
 	double [] eventX = new double [1];
 	double [] eventY = new double [1];
-	if (GTK.GTK4) {
-		GDK.gdk_event_get_position(event, eventX, eventY);
-	} else {
-		GDK.gdk_event_get_coords(event, eventX, eventY);
-	}
+	GDK.gdk_event_get_position(event, eventX, eventY);
 
-	int [] eventButton = new int [1];
-	if (GTK.GTK4) {
-		eventButton[0] = GDK.gdk_button_event_get_button(event);
-	} else {
-		GDK.gdk_event_get_button(event, eventButton);
-	}
-
-	double [] eventRX = new double [1];
-	double [] eventRY = new double [1];
-	GDK.gdk_event_get_root_coords(event, eventRX, eventRY);
-
+	int eventButton = GDK.gdk_button_event_get_button(event);
 	int eventTime = GDK.gdk_event_get_time(event);
+	int eventState = GDK.gdk_event_get_modifier_state(event);
 
-	int [] eventState = new int[1];
-	if (GTK.GTK4) {
-		eventState[0] = GDK.gdk_event_get_modifier_state(event);
-	} else {
-		GDK.gdk_event_get_state(event, eventState);
-	}
+	boolean mouseEventSent = sendMouseEvent(SWT.MouseDown, eventButton, n_press, 0, false, eventTime, eventX[0], eventY[0], true, eventState);
 
-	lastInput.x = (int) eventX[0];
-	lastInput.y = (int) eventY[0];
-	if (containedInRegion(lastInput.x, lastInput.y)) return 0;
-
-	/*
-	* When a shell is created with SWT.ON_TOP and SWT.NO_FOCUS,
-	* do not activate the shell when the user clicks on the
-	* the client area or on the border or a control within the
-	* shell that does not take focus.
-	*/
-	Shell shell = _getShell ();
-	if (((shell.style & SWT.ON_TOP) != 0) && (((shell.style & SWT.NO_FOCUS) == 0) || ((style & SWT.NO_FOCUS) == 0))) {
-		shell.forceActive();
-	}
-
-	long result = 0;
-	// Only send DoubleClick event as regular click is handled by generic gtk_event
-	if (n_press == 2) {
-		display.clickCount = 2;
-		result = sendMouseEvent (SWT.MouseDoubleClick, eventButton[0], display.clickCount, 0, false, eventTime, eventRX[0], eventRY[0], false, eventState[0]) ? 0 : 1;
-	}
-	if (!shell.isDisposed ()) shell.setActiveControl (this, SWT.MouseDown);
-	return result;
+	return mouseEventSent ? 1 : 0;
 }
 
 @Override
 long gtk_gesture_release_event (long gesture, int n_press, double x, double y, long event) {
-	if (n_press == 1) return 0;
 	mouseDown = false;
 
-	// Event fields
 	double [] eventX = new double [1];
 	double [] eventY = new double [1];
-	if (GTK.GTK4) {
-		GDK.gdk_event_get_position(event, eventX, eventY);
-	} else {
-		GDK.gdk_event_get_coords(event, eventX, eventY);
-	}
+	GDK.gdk_event_get_position(event, eventX, eventY);
 
-	int [] eventButton = new int [1];
-	if (GTK.GTK4) {
-		eventButton[0] = GDK.gdk_button_event_get_button(event);
-	} else {
-		GDK.gdk_event_get_button(event, eventButton);
-	}
-
+	int eventButton = GDK.gdk_button_event_get_button(event);
 	int eventTime = GDK.gdk_event_get_time(event);
-
-	double [] eventRX = new double [1];
-	double [] eventRY = new double [1];
-	GDK.gdk_event_get_root_coords(event, eventRX, eventRY);
-
-	int [] eventState = new int[1];
-	if (GTK.GTK4) {
-		eventState[0] = GDK.gdk_event_get_modifier_state(event);
-	} else {
-		GDK.gdk_event_get_state(event, eventState);
-	}
+	int eventState = GDK.gdk_event_get_modifier_state(event);
 
 	lastInput.x = (int) eventX[0];
 	lastInput.y = (int) eventY[0];
 	if (containedInRegion(lastInput.x, lastInput.y)) return 0;
-	return sendMouseEvent (SWT.MouseUp, eventButton[0], display.clickCount, 0, false, eventTime, eventRX[0], eventRY[0], false, eventState[0]) ? 0 : 1;
+	return sendMouseEvent(SWT.MouseUp, eventButton, display.clickCount, 0, false, eventTime, 0, 0, false, eventState) ? 0 : 1;
 }
 
 @Override
@@ -3550,38 +3448,22 @@ long gtk_button_press_event (long widget, long event, boolean sendMouseDown) {
 	mouseDown = true;
 	dragBegun = false;
 
-	// Event fields
 	double [] eventX = new double [1];
 	double [] eventY = new double [1];
-	if (GTK.GTK4) {
-		GDK.gdk_event_get_position(event, eventX, eventY);
-	} else {
-		GDK.gdk_event_get_coords(event, eventX, eventY);
-	}
+	GDK.gdk_event_get_coords(event, eventX, eventY);
 
 	int eventType = GDK.gdk_event_get_event_type(event);
-	eventType = fixGdkEventTypeValues(eventType);
 
 	int [] eventButton = new int [1];
 	int [] eventState = new int[1];
-	if (GTK.GTK4) {
-		eventButton[0] = GDK.gdk_button_event_get_button(event);
-		eventState[0] = GDK.gdk_event_get_modifier_state(event);
-	} else {
-		GDK.gdk_event_get_button(event, eventButton);
-		GDK.gdk_event_get_state(event, eventState);
-	}
+	GDK.gdk_event_get_button(event, eventButton);
+	GDK.gdk_event_get_state(event, eventState);
 
 	int eventTime = GDK.gdk_event_get_time(event);
 
 	double [] eventRX = new double [1];
 	double [] eventRY = new double [1];
-	if (GTK.GTK4) {
-		long root = GTK.gtk_widget_get_root(widget);
-		GTK.gtk_widget_translate_coordinates(widget, root, eventX[0], eventY[0], eventRX, eventRY);
-	} else {
-		GDK.gdk_event_get_root_coords(event, eventRX, eventRY);
-	}
+	GDK.gdk_event_get_root_coords(event, eventRX, eventRY);
 
 	lastInput.x = (int) eventX[0];
 	lastInput.y = (int) eventY[0];
@@ -3626,12 +3508,8 @@ long gtk_button_press_event (long widget, long event, boolean sendMouseDown) {
 			}
 		}
 		if (sendMouseDown) {
-			boolean mouseEventSent;
-			if (GTK.GTK4) {
-				mouseEventSent = !sendMouseEvent (SWT.MouseDown, eventButton[0], display.clickCount, 0, false, eventTime, eventX[0], eventY[0], true, eventState[0]);
-			} else {
-				mouseEventSent = !sendMouseEvent (SWT.MouseDown, eventButton[0], display.clickCount, 0, false, eventTime, eventRX[0], eventRY[0], false, eventState[0]);
-			}
+			boolean mouseEventSent = !sendMouseEvent(SWT.MouseDown, eventButton[0], display.clickCount, 0, false, eventTime, eventRX[0], eventRY[0], false, eventState[0]);
+
 			if (mouseEventSent) {
 				result = 1;
 			}
@@ -3672,35 +3550,26 @@ long gtk_button_press_event (long widget, long event, boolean sendMouseDown) {
 @Override
 long gtk_button_release_event (long widget, long event) {
 	mouseDown = false;
-	// Event fields
-	double [] eventX = new double [1];
-	double [] eventY = new double [1];
-	if (GTK.GTK4) {
-		GDK.gdk_event_get_position(event, eventX, eventY);
-	} else {
-		GDK.gdk_event_get_coords(event, eventX, eventY);
-	}
 
-	int [] eventButton = new int [1];
-	int [] eventState = new int[1];
-	if (GTK.GTK4) {
-		eventButton[0] = GDK.gdk_button_event_get_button(event);
-		eventState[0] = GDK.gdk_event_get_modifier_state(event);
-	} else {
-		GDK.gdk_event_get_button(event, eventButton);
-		GDK.gdk_event_get_state(event, eventState);
-	}
+	double[] eventX = new double[1];
+	double[] eventY = new double[1];
+	GDK.gdk_event_get_coords(event, eventX, eventY);
+
+	int[] eventButton = new int[1];
+	int[] eventState = new int[1];
+	GDK.gdk_event_get_button(event, eventButton);
+	GDK.gdk_event_get_state(event, eventState);
 
 	int eventTime = GDK.gdk_event_get_time(event);
 
-	double [] eventRX = new double [1];
-	double [] eventRY = new double [1];
+	double[] eventRX = new double[1];
+	double[] eventRY = new double[1];
 	GDK.gdk_event_get_root_coords(event, eventRX, eventRY);
 
 	lastInput.x = (int) eventX[0];
 	lastInput.y = (int) eventY[0];
 	if (containedInRegion(lastInput.x, lastInput.y)) return 0;
-	return sendMouseEvent (SWT.MouseUp, eventButton[0], display.clickCount, 0, false, eventTime, eventRX[0], eventRY[0], false, eventState[0]) ? 0 : 1;
+	return sendMouseEvent(SWT.MouseUp, eventButton[0], display.clickCount, 0, false, eventTime, eventRX[0], eventRY[0], false, eventState[0]) ? 0 : 1;
 }
 
 @Override

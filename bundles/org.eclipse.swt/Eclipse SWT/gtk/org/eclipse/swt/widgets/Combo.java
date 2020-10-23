@@ -923,11 +923,7 @@ void hookEvents(long [] handles) {
 				OS.g_signal_connect(gestureController, OS.pressed, display.gesturePressReleaseProc, GESTURE_PRESSED);
 				OS.g_signal_connect(gestureController, OS.released, display.gesturePressReleaseProc, GESTURE_RELEASED);
 
-				if (eventHandle != focusHandle()) {
-					long eventController = GTK.gtk_event_controller_legacy_new();
-					OS.g_signal_connect_closure(eventController, OS.event, display.getClosure(EVENT), false);
-					GTK.gtk_widget_add_controller(eventHandle, eventController);
-				}
+				//TODO: GTK4 event-after
 			} else {
 				int eventMask =	GDK.GDK_POINTER_MOTION_MASK | GDK.GDK_BUTTON_PRESS_MASK | GDK.GDK_BUTTON_RELEASE_MASK;
 				GTK.gtk_widget_add_events (eventHandle, eventMask);
@@ -1424,7 +1420,6 @@ long gtk_button_press_event (long widget, long event) {
 	}
 
 	int eventType = GDK.gdk_event_get_event_type(event);
-	eventType = fixGdkEventTypeValues(eventType);
 	if (eventType == GDK.GDK_BUTTON_PRESS && eventButton[0] == 1) {
 		return gtk_button_press_event(widget, event, false);
 	}

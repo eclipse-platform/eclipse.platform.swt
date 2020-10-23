@@ -366,21 +366,6 @@ long gtk_activate (long widget) {
 }
 
 @Override
-long gtk_event (long widget, long event) {
-	if (!GTK.GTK4) return 0;
-	int eventType = GDK.gdk_event_get_event_type(event);
-	switch (eventType) {
-		case GDK.GDK4_BUTTON_PRESS: {
-			return gtk_button_press_event(widget, event);
-		}
-		case GDK.GDK4_BUTTON_RELEASE: {
-			return gtk_button_release_event(widget, event);
-		}
-	}
-	return 0;
-}
-
-@Override
 long gtk_button_press_event (long widget, long event) {
 	setFocus ();
 	return 0;
@@ -414,14 +399,14 @@ void hookEvents () {
 	super.hookEvents ();
 	OS.g_signal_connect_closure (handle, OS.activate, display.getClosure (ACTIVATE), false);
 	OS.g_signal_connect_closure (handle, OS.activate, display.getClosure (ACTIVATE_INVERSE), true);
-	if (GTK.GTK4) {
-		OS.g_signal_connect_closure_by_id (handle, display.signalIds [EVENT], 0, display.getClosure (EVENT), false);
-	} else {
-		OS.g_signal_connect_closure_by_id (handle, display.signalIds [BUTTON_PRESS_EVENT], 0, display.getClosure (BUTTON_PRESS_EVENT), false);
-	}
+
 	OS.g_signal_connect_closure_by_id (handle, display.signalIds [FOCUS_OUT_EVENT], 0, display.getClosure (FOCUS_OUT_EVENT), false);
 	OS.g_signal_connect_closure (clientHandle, OS.size_allocate, display.getClosure (SIZE_ALLOCATE), true);
 	if (GTK.GTK4) {
+		long clickController = GTK.gtk_gesture_click_new();
+		GTK.gtk_widget_add_controller(handle, clickController);
+		OS.g_signal_connect(clickController, OS.pressed, display.gesturePressReleaseProc, GESTURE_PRESSED);
+
 		long motionController = GTK.gtk_event_controller_motion_new();
 		GTK.gtk_widget_add_controller(handle, motionController);
 		GTK.gtk_event_controller_set_propagation_phase(motionController, GTK.GTK_PHASE_TARGET);
@@ -430,6 +415,7 @@ void hookEvents () {
 		OS.g_signal_connect (motionController, OS.enter, enterAddress, ENTER);
 	} else {
 		OS.g_signal_connect_closure_by_id (handle, display.signalIds [ENTER_NOTIFY_EVENT], 0, display.getClosure (ENTER_NOTIFY_EVENT), false);
+		OS.g_signal_connect_closure_by_id (handle, display.signalIds [BUTTON_PRESS_EVENT], 0, display.getClosure (BUTTON_PRESS_EVENT), false);
 	}
 }
 

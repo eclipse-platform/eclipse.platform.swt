@@ -820,7 +820,6 @@ long gtk_button_press_event (long widget, long event) {
 	 * selected, we can give the DnD handling to MOTION-NOTIFY. See Bug 503431
 	 */
 	int eventType = GDK.gdk_event_get_event_type(event);
-	eventType = fixGdkEventTypeValues(eventType);
 
 	double [] eventX = new double [1];
 	double [] eventY = new double [1];

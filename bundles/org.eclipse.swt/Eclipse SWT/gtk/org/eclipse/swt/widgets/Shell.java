@@ -925,10 +925,7 @@ void hookEvents () {
 	OS.g_signal_connect (shellHandle, OS.dpi_changed, display.notifyProc, Widget.DPI_CHANGED);
 
 	if (GTK.GTK4) {
-		// Replace configure-event, map-event with generic event handler
-		if (eventHandle() == 0) {
-			OS.g_signal_connect_closure_by_id (shellHandle, display.signalIds [EVENT], 0, display.getClosure (EVENT), false);
-		}
+		// TODO: GTK4 see if same signals are required in GTK4 as in GTK3, if so, will require the legacy event controller
 		// Replaced "window-state-event" with GdkSurface "notify::state", pass shellHandle as user_data
 		GTK.gtk_widget_realize(shellHandle);
 		long gdkSurface = gtk_widget_get_surface (shellHandle);
@@ -1397,24 +1394,6 @@ public Shell [] getShells () {
 		}
 	}
 	return result;
-}
-
-@Override
-long gtk_event (long widget, long event) {
-	if (!GTK.GTK4) return 0;
-	int eventType = GDK.gdk_event_get_event_type(event);
-	switch (eventType) {
-		case GDK.GDK4_BUTTON_PRESS: {
-			return gtk_button_press_event(widget, event);
-		}
-		case GDK.GDK4_BUTTON_RELEASE: {
-			return gtk_button_release_event(widget, event);
-		}
-		case GDK.GDK4_CONFIGURE: {
-			return gtk_configure_event(widget, event);
-		}
-	}
-	return 0;
 }
 
 @Override
