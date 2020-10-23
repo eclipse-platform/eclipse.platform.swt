@@ -18,6 +18,7 @@ use std::os::raw::{c_char, c_int};
 use cef;
 
 #[derive(Debug, PartialEq, Eq)]
+#[repr(C)]
 pub enum ReturnType {
     Double = 0,
     Bool = 1,
