@@ -11915,6 +11915,23 @@ fail:
 }
 #endif
 
+#ifndef NO_gtk_1tree_1view_1convert_1bin_1window_1to_1widget_1coords
+JNIEXPORT void JNICALL GTK_NATIVE(gtk_1tree_1view_1convert_1bin_1window_1to_1widget_1coords)
+	(JNIEnv *env, jclass that, jlong arg0, jint arg1, jint arg2, jintArray arg3, jintArray arg4)
+{
+	jint *lparg3=NULL;
+	jint *lparg4=NULL;
+	GTK_NATIVE_ENTER(env, that, gtk_1tree_1view_1convert_1bin_1window_1to_1widget_1coords_FUNC);
+	if (arg3) if ((lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL)) == NULL) goto fail;
+	if (arg4) if ((lparg4 = (*env)->GetIntArrayElements(env, arg4, NULL)) == NULL) goto fail;
+	gtk_tree_view_convert_bin_window_to_widget_coords((GtkTreeView *)arg0, arg1, arg2, (int *)lparg3, (int *)lparg4);
+fail:
+	if (arg4 && lparg4) (*env)->ReleaseIntArrayElements(env, arg4, lparg4, 0);
+	if (arg3 && lparg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
+	GTK_NATIVE_EXIT(env, that, gtk_1tree_1view_1convert_1bin_1window_1to_1widget_1coords_FUNC);
+}
+#endif
+
 #ifndef NO_gtk_1tree_1view_1create_1row_1drag_1icon
 JNIEXPORT jlong JNICALL GTK_NATIVE(gtk_1tree_1view_1create_1row_1drag_1icon)
 	(JNIEnv *env, jclass that, jlong arg0, jlong arg1)

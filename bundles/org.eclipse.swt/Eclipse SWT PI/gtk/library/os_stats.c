@@ -924,6 +924,7 @@ char * GTK_nativeFunctionNames[] = {
 	"gtk_1tree_1view_1column_1set_1visible",
 	"gtk_1tree_1view_1column_1set_1widget",
 	"gtk_1tree_1view_1convert_1bin_1window_1to_1tree_1coords",
+	"gtk_1tree_1view_1convert_1bin_1window_1to_1widget_1coords",
 	"gtk_1tree_1view_1create_1row_1drag_1icon",
 	"gtk_1tree_1view_1expand_1row",
 	"gtk_1tree_1view_1get_1background_1area",

@@ -1609,11 +1609,12 @@ public int getHeaderHeight () {
 }
 
 int getHeaderHeightInPixels () {
-	checkWidget ();
-	if (!GTK.gtk_tree_view_get_headers_visible (handle)) return 0;
+	checkWidget();
+	if (!GTK.gtk_tree_view_get_headers_visible(handle)) return 0;
+
+	int height = 0;
 	if (columnCount > 0) {
 		GtkRequisition requisition = new GtkRequisition ();
-		int height = 0;
 		for (int i=0; i<columnCount; i++) {
 			long buttonHandle = columns [i].buttonHandle;
 			if (buttonHandle != 0) {
@@ -1621,26 +1622,24 @@ int getHeaderHeightInPixels () {
 				height = Math.max (height, requisition.height);
 			}
 		}
-		return height;
-	}
-	if (GTK.GTK4) {
-		long fixedSurface = gtk_widget_get_surface (fixedHandle);
-		long surface = gtk_widget_get_surface (handle);
-		int [] surfaceY = new int [1];
-		GDK.gdk_surface_get_origin (surface, null, surfaceY);
-		int [] fixedY = new int [1];
-		GDK.gdk_surface_get_origin (fixedSurface, null, fixedY);
-		return surfaceY [0] - fixedY [0];
 	} else {
-		GTK.gtk_widget_realize (handle);
-		long fixedWindow = gtk_widget_get_window (fixedHandle);
-		long binWindow = GTK.gtk_tree_view_get_bin_window (handle);
-		int [] binY = new int [1];
-		GDK.gdk_window_get_origin (binWindow, null, binY);
-		int [] fixedY = new int [1];
-		GDK.gdk_window_get_origin (fixedWindow, null, fixedY);
-		return binY [0] - fixedY [0];
+		if (GTK.GTK4) {
+			int[] headerHeight = new int[1];
+			GTK.gtk_tree_view_convert_bin_window_to_widget_coords(handle, 0, 0, null, headerHeight);
+			height = headerHeight[0];
+		} else {
+			GTK.gtk_widget_realize (handle);
+			long fixedWindow = gtk_widget_get_window (fixedHandle);
+			long binWindow = GTK.gtk_tree_view_get_bin_window (handle);
+			int [] binY = new int [1];
+			GDK.gdk_window_get_origin (binWindow, null, binY);
+			int [] fixedY = new int [1];
+			GDK.gdk_window_get_origin (fixedWindow, null, fixedY);
+			height = binY [0] - fixedY [0];
+		}
 	}
+
+	return height;
 }
 
 /**

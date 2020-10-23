@@ -3432,6 +3432,13 @@ public class GTK extends OS {
 	 */
 	public static final native void gtk_tree_view_convert_bin_window_to_tree_coords(long tree_view, int bx, int by, int[] tx, int[] ty);
 	/**
+	 * @param tree_view cast=(GtkTreeView *)
+	 * @param wx cast=(int *)
+	 * @param wy cast=(int *)
+	 */
+	public static final native void gtk_tree_view_convert_bin_window_to_widget_coords(long tree_view, int bx, int by, int[]wx, int[] wy);
+
+	/**
 	 * @param viewport cast=(GtkViewport *)
 	 * @param type cast=(GtkShadowType)
 	 */
