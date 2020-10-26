@@ -1298,7 +1298,6 @@ char * OS_nativeFunctionNames[] = {
 	"g_1menu_1new",
 	"g_1object_1get__J_3B_3IJ",
 	"g_1object_1get__J_3B_3JJ",
-	"g_1object_1get__J_3B_3ZJ",
 	"g_1object_1get_1qdata",
 	"g_1object_1new",
 	"g_1object_1notify",

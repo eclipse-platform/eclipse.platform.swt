@@ -16162,23 +16162,6 @@ fail:
 }
 #endif
 
-#ifndef NO_g_1object_1get__J_3B_3ZJ
-JNIEXPORT void JNICALL OS_NATIVE(g_1object_1get__J_3B_3ZJ)
-	(JNIEnv *env, jclass that, jlong arg0, jbyteArray arg1, jbooleanArray arg2, jlong arg3)
-{
-	jbyte *lparg1=NULL;
-	jboolean *lparg2=NULL;
-	OS_NATIVE_ENTER(env, that, g_1object_1get__J_3B_3ZJ_FUNC);
-	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
-	if (arg2) if ((lparg2 = (*env)->GetBooleanArrayElements(env, arg2, NULL)) == NULL) goto fail;
-	g_object_get((GObject *)arg0, (const gchar *)lparg1, lparg2, (const gchar *)NULL);
-fail:
-	if (arg2 && lparg2) (*env)->ReleaseBooleanArrayElements(env, arg2, lparg2, 0);
-	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, JNI_ABORT);
-	OS_NATIVE_EXIT(env, that, g_1object_1get__J_3B_3ZJ_FUNC);
-}
-#endif
-
 #ifndef NO_g_1object_1get_1qdata
 JNIEXPORT jlong JNICALL OS_NATIVE(g_1object_1get_1qdata)
 	(JNIEnv *env, jclass that, jlong arg0, jint arg1)

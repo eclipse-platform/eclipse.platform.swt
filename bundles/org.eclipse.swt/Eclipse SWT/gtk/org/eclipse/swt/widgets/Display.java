@@ -3761,11 +3761,11 @@ void initializeSystemSettings () {
 		OS.g_signal_connect(GTK.gtk_settings_get_default (), OS.notify_theme_change, signalProc, STYLE_UPDATED);
 	}
 
-	boolean[] flag = new boolean[1];
+	int[] flag = new int[1];
 	long settings = GTK.gtk_settings_get_default();
 	OS.g_object_get(settings, GTK.gtk_entry_select_on_focus, flag, 0);
 
-	entrySelectOnFocus = flag[0];
+	entrySelectOnFocus = (flag[0] != 0);
 }
 
 void initializeWidgetTable () {

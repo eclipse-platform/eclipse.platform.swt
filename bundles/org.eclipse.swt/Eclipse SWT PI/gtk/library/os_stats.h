@@ -1272,7 +1272,6 @@ typedef enum {
 	g_1menu_1new_FUNC,
 	g_1object_1get__J_3B_3IJ_FUNC,
 	g_1object_1get__J_3B_3JJ_FUNC,
-	g_1object_1get__J_3B_3ZJ_FUNC,
 	g_1object_1get_1qdata_FUNC,
 	g_1object_1new_FUNC,
 	g_1object_1notify_FUNC,
