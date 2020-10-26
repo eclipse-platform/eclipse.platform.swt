@@ -5787,11 +5787,6 @@ static long dialogProc(long id, long sel, long arg0, long arg1, long arg2) {
 	long [] jniRef = new long [1];
 	OS.object_getInstanceVariable(id, SWT_OBJECT, jniRef);
 	if (jniRef[0] == 0) return 0;
-	if (sel == OS.sel_panelDidEnd_returnCode_contextInfo_) {
-		MessageBox dialog = (MessageBox)OS.JNIGetObject(jniRef[0]);
-		if (dialog == null) return 0;
-		dialog.panelDidEnd_returnCode_contextInfo(id, sel, arg0, arg1, arg2);
-	}
 	if (sel == OS.sel_panel_userEnteredFilename_confirmed_) {
 		FileDialog dialog = (FileDialog)OS.JNIGetObject(jniRef[0]);
 		if (dialog == null) return 0;

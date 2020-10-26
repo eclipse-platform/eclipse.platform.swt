@@ -15,6 +15,7 @@ package org.eclipse.swt.widgets;
 
 
 import org.eclipse.swt.*;
+import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.cocoa.*;
 
 /**
@@ -41,8 +42,9 @@ import org.eclipse.swt.internal.cocoa.*;
  * @noextend This class is not intended to be subclassed by clients.
  */
 public  class MessageBox extends Dialog {
+	Callback callback_completion_handler;
 	String message = "";
-	int returnCode;
+	int userResponse;
 
 /**
  * Constructs a new instance of this class given only its parent.
@@ -115,6 +117,12 @@ static int checkStyle (int style) {
 	return style;
 }
 
+private int getBits () {
+	int mask = (SWT.YES | SWT.NO | SWT.OK | SWT.CANCEL | SWT.ABORT | SWT.RETRY | SWT.IGNORE);
+	int bits = style & mask;
+	return bits;
+}
+
 /**
  * Returns the dialog's message, or an empty string if it does not have one.
  * The message is a description of the purpose for which the dialog was opened.
@@ -166,8 +174,7 @@ public int open () {
 	}
 	alert.setAlertStyle(alertType);
 
-	int mask = (SWT.YES | SWT.NO | SWT.OK | SWT.CANCEL | SWT.ABORT | SWT.RETRY | SWT.IGNORE);
-	int bits = style & mask;
+	int bits = getBits();
 	NSString title;
 	switch (bits) {
 		case SWT.OK:
@@ -227,7 +234,7 @@ public int open () {
 	panel.setTitle(title);
 	NSString message = NSString.stringWith(this.message != null ? this.message : "");
 	alert.setMessageText(message);
-	int response = 0;
+
 	long jniRef = 0;
 	SWTPanelDelegate delegate = null;
 	Display display = parent != null ? parent.getDisplay() : Display.getCurrent();
@@ -236,26 +243,39 @@ public int open () {
 		jniRef = OS.NewGlobalRef(this);
 		if (jniRef == 0) error(SWT.ERROR_NO_HANDLES);
 		OS.object_setInstanceVariable(delegate.id, Display.SWT_OBJECT, jniRef);
-		alert.beginSheetModalForWindow(parent.view.window (), delegate, OS.sel_panelDidEnd_returnCode_contextInfo_, 0);
 		display.setModalDialog(this, panel);
+		callback_completion_handler = new Callback(this, "_completionHandler", 1);
+		long handler = callback_completion_handler.getAddress();
+		OS.beginSheetModalForWindow(alert, parent.window, handler);
+
 		if ((style & SWT.APPLICATION_MODAL) != 0) {
-			response = (int)alert.runModal();
+			alert.runModal();
 		} else {
-			this.returnCode = 0;
 			NSWindow window = alert.window();
 			while (window.isVisible()) {
 				if (!display.readAndDispatch()) display.sleep();
 			}
-			response = this.returnCode;
 		}
 	} else {
 		display.setModalDialog(this, panel);
-		response = (int)alert.runModal();
+		int response = (int)alert.runModal();
+		userResponse = handleResponse(bits, response);
 	}
 	display.setModalDialog(null);
 	if (delegate != null) delegate.release();
 	if (jniRef != 0) OS.DeleteGlobalRef(jniRef);
 	alert.release();
+	releaseHandler();
+	return userResponse;
+}
+
+long _completionHandler (long result) {
+	NSApplication.sharedApplication().stopModal();
+	userResponse = handleResponse(getBits(), (int)result);
+	return result;
+}
+
+int handleResponse (int bits, int response) {
 	switch (bits) {
 		case SWT.OK:
 			switch (response) {
@@ -329,10 +349,11 @@ public int open () {
 	return SWT.CANCEL;
 }
 
-void panelDidEnd_returnCode_contextInfo(long id, long sel, long alert, long returnCode, long contextInfo) {
-	this.returnCode = (int)returnCode;
-	NSApplication application = NSApplication.sharedApplication();
-	application.endSheet(new NSAlert(alert).window(), returnCode);
+void releaseHandler () {
+	if (callback_completion_handler != null) {
+		callback_completion_handler.dispose();
+		callback_completion_handler = null;
+	}
 }
 
 /**

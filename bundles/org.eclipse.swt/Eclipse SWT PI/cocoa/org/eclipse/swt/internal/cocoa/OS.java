@@ -155,7 +155,7 @@ public class OS extends C {
 	 */
 	/** @method flags=no_gen*/
 	public static native void beginSheetModalForWindow(long id, long sel, long window, long handler);
-	public static void beginSheetModalForWindow(NSPanel id, NSWindow window, long handler) {
+	public static void beginSheetModalForWindow(NSObject id, NSWindow window, long handler) {
 		OS.beginSheetModalForWindow(id.id, OS.sel_beginSheetModalForWindow_completionHandler_, window != null ? window.id : 0, handler);
 	}
 
