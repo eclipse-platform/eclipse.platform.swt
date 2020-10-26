@@ -20,32 +20,38 @@ import java.util.*;
 import org.eclipse.swt.internal.*;
 
 // Common type translation table:
-// C   ->  Java
+// C            ->  Java
 // --------------------
 // Primitives:
-// int   -> int
-// guint -> long   #Reason:
-//					c : unsigned int range: 4294967295
-//                  java : int range      : 2147483647 (less than c unsigned int)
-//                  Java : long range: 9,223,372,036,854,775,807
-//				    // Note: Not to be used for pointers.
+// int          -> int
+// gint*        -> int[]
 //
-// gint* -> int[]
-// boolean   -> int  ex setenv
-// gboolean  -> boolean
+// Unsigned integer:
+// * Note that java's int is signed, which introduces difficulties
+// * for values > 0x7FFFFFFF. Java's long can fit such values, but
+// * java's long is 8 bytes, while guint is 4 bytes. For that reason,
+// * java's long CAN'T be used for pointers or arrays.
+// guint        -> int/long
+// guint*       -> int[]
+//
+// Boolean:
+// * Java's boolean is handy, but it's 1 byte, while gboolean is 4
+// * bytes. For that reason, it CAN'T be used for pointers or arrays.
+// gboolean     -> int/boolean
+// gboolean*    -> int
 //
 // Pointers:
-// gpointer -> long
-// void *   -> long
+// gpointer     -> long
+// void *       -> long
 //
 // Strings:
-// gchar *      -> long
-// const char * -> byte[]  ex setenv
-// const gchar* -> byte[]  ex g_log_remove_handler
+// gchar *      -> long    // You're responsible for allocating/deallocating memory buffer.
+// const char * -> byte[]  // Example: setenv()
+// const gchar* -> byte[]  // Example: g_log_remove_handler()
 //
 // Special types:
-// GQuark -> int
-// GError ** -> long []  ex g_filename_to_uri
+// GQuark       -> int
+// GError **    -> long[]  // Example: g_filename_to_uri()
 
 
 /**

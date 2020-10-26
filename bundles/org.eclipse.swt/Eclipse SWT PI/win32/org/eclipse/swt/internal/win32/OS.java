@@ -4428,14 +4428,14 @@ public static final native boolean WaitMessage ();
  * @param lpDefaultChar cast=(LPCSTR)
  * @param lpUsedDefaultChar cast=(LPBOOL)
  */
-public static final native int WideCharToMultiByte (int CodePage, int dwFlags, char [] lpWideCharStr, int cchWideChar, byte [] lpMultiByteStr, int cchMultiByte, byte [] lpDefaultChar, boolean [] lpUsedDefaultChar);
+public static final native int WideCharToMultiByte (int CodePage, int dwFlags, char [] lpWideCharStr, int cchWideChar, byte [] lpMultiByteStr, int cchMultiByte, byte [] lpDefaultChar, int [] lpUsedDefaultChar);
 /**
  * @param lpWideCharStr cast=(LPCWSTR),flags=no_out critical
  * @param lpMultiByteStr cast=(LPSTR)
  * @param lpDefaultChar cast=(LPCSTR)
  * @param lpUsedDefaultChar cast=(LPBOOL)
  */
-public static final native int WideCharToMultiByte (int CodePage, int dwFlags, char [] lpWideCharStr, int cchWideChar, long lpMultiByteStr, int cchMultiByte, byte [] lpDefaultChar, boolean [] lpUsedDefaultChar);
+public static final native int WideCharToMultiByte (int CodePage, int dwFlags, char [] lpWideCharStr, int cchWideChar, long lpMultiByteStr, int cchMultiByte, byte [] lpDefaultChar, int [] lpUsedDefaultChar);
 /** @param hDC cast=(HDC) */
 public static final native long WindowFromDC (long hDC);
 /** @param lpPoint flags=struct */

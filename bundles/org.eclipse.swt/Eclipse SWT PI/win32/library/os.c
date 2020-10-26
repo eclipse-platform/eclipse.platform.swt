@@ -9964,49 +9964,49 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(WaitMessage)
 }
 #endif
 
-#ifndef NO_WideCharToMultiByte__II_3CIJI_3B_3Z
-JNIEXPORT jint JNICALL OS_NATIVE(WideCharToMultiByte__II_3CIJI_3B_3Z)
-	(JNIEnv *env, jclass that, jint arg0, jint arg1, jcharArray arg2, jint arg3, jlong arg4, jint arg5, jbyteArray arg6, jbooleanArray arg7)
+#ifndef NO_WideCharToMultiByte__II_3CIJI_3B_3I
+JNIEXPORT jint JNICALL OS_NATIVE(WideCharToMultiByte__II_3CIJI_3B_3I)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jcharArray arg2, jint arg3, jlong arg4, jint arg5, jbyteArray arg6, jintArray arg7)
 {
 	jchar *lparg2=NULL;
 	jbyte *lparg6=NULL;
-	jboolean *lparg7=NULL;
+	jint *lparg7=NULL;
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, WideCharToMultiByte__II_3CIJI_3B_3Z_FUNC);
+	OS_NATIVE_ENTER(env, that, WideCharToMultiByte__II_3CIJI_3B_3I_FUNC);
 	if (arg6) if ((lparg6 = (*env)->GetByteArrayElements(env, arg6, NULL)) == NULL) goto fail;
-	if (arg7) if ((lparg7 = (*env)->GetBooleanArrayElements(env, arg7, NULL)) == NULL) goto fail;
+	if (arg7) if ((lparg7 = (*env)->GetIntArrayElements(env, arg7, NULL)) == NULL) goto fail;
 		if (arg2) if ((lparg2 = (*env)->GetPrimitiveArrayCritical(env, arg2, NULL)) == NULL) goto fail;
 	rc = (jint)WideCharToMultiByte(arg0, arg1, (LPCWSTR)lparg2, arg3, (LPSTR)arg4, arg5, (LPCSTR)lparg6, (LPBOOL)lparg7);
 fail:
 		if (arg2 && lparg2) (*env)->ReleasePrimitiveArrayCritical(env, arg2, lparg2, JNI_ABORT);
-	if (arg7 && lparg7) (*env)->ReleaseBooleanArrayElements(env, arg7, lparg7, 0);
+	if (arg7 && lparg7) (*env)->ReleaseIntArrayElements(env, arg7, lparg7, 0);
 	if (arg6 && lparg6) (*env)->ReleaseByteArrayElements(env, arg6, lparg6, 0);
-	OS_NATIVE_EXIT(env, that, WideCharToMultiByte__II_3CIJI_3B_3Z_FUNC);
+	OS_NATIVE_EXIT(env, that, WideCharToMultiByte__II_3CIJI_3B_3I_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_WideCharToMultiByte__II_3CI_3BI_3B_3Z
-JNIEXPORT jint JNICALL OS_NATIVE(WideCharToMultiByte__II_3CI_3BI_3B_3Z)
-	(JNIEnv *env, jclass that, jint arg0, jint arg1, jcharArray arg2, jint arg3, jbyteArray arg4, jint arg5, jbyteArray arg6, jbooleanArray arg7)
+#ifndef NO_WideCharToMultiByte__II_3CI_3BI_3B_3I
+JNIEXPORT jint JNICALL OS_NATIVE(WideCharToMultiByte__II_3CI_3BI_3B_3I)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jcharArray arg2, jint arg3, jbyteArray arg4, jint arg5, jbyteArray arg6, jintArray arg7)
 {
 	jchar *lparg2=NULL;
 	jbyte *lparg4=NULL;
 	jbyte *lparg6=NULL;
-	jboolean *lparg7=NULL;
+	jint *lparg7=NULL;
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, WideCharToMultiByte__II_3CI_3BI_3B_3Z_FUNC);
+	OS_NATIVE_ENTER(env, that, WideCharToMultiByte__II_3CI_3BI_3B_3I_FUNC);
 	if (arg6) if ((lparg6 = (*env)->GetByteArrayElements(env, arg6, NULL)) == NULL) goto fail;
-	if (arg7) if ((lparg7 = (*env)->GetBooleanArrayElements(env, arg7, NULL)) == NULL) goto fail;
+	if (arg7) if ((lparg7 = (*env)->GetIntArrayElements(env, arg7, NULL)) == NULL) goto fail;
 		if (arg2) if ((lparg2 = (*env)->GetPrimitiveArrayCritical(env, arg2, NULL)) == NULL) goto fail;
 		if (arg4) if ((lparg4 = (*env)->GetPrimitiveArrayCritical(env, arg4, NULL)) == NULL) goto fail;
 	rc = (jint)WideCharToMultiByte(arg0, arg1, (LPCWSTR)lparg2, arg3, (LPSTR)lparg4, arg5, (LPCSTR)lparg6, (LPBOOL)lparg7);
 fail:
 		if (arg4 && lparg4) (*env)->ReleasePrimitiveArrayCritical(env, arg4, lparg4, 0);
 		if (arg2 && lparg2) (*env)->ReleasePrimitiveArrayCritical(env, arg2, lparg2, JNI_ABORT);
-	if (arg7 && lparg7) (*env)->ReleaseBooleanArrayElements(env, arg7, lparg7, 0);
+	if (arg7 && lparg7) (*env)->ReleaseIntArrayElements(env, arg7, lparg7, 0);
 	if (arg6 && lparg6) (*env)->ReleaseByteArrayElements(env, arg6, lparg6, 0);
-	OS_NATIVE_EXIT(env, that, WideCharToMultiByte__II_3CI_3BI_3B_3Z_FUNC);
+	OS_NATIVE_EXIT(env, that, WideCharToMultiByte__II_3CI_3BI_3B_3I_FUNC);
 	return rc;
 }
 #endif
