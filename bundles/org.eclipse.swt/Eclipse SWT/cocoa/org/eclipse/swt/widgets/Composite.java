@@ -945,6 +945,19 @@ void pageUp(long id, long sel, long sender) {
 }
 
 @Override
+void redrawWidget(NSView view, boolean redrawChildren) {
+	super.redrawWidget(view, redrawChildren);
+	if (redrawChildren) {
+		Control[] _getChildren = _getChildren();
+		for (Control child : _getChildren) {
+			if (child != null && !child.isDisposed () && child.isVisible()) {
+				child.redrawWidget(child.view, redrawChildren);
+			}
+		}
+	}
+}
+
+@Override
 void reflectScrolledClipView (long id, long sel, long aClipView) {
 	if ((state & CANVAS) != 0) return;
 	super.reflectScrolledClipView (id, sel, aClipView);
