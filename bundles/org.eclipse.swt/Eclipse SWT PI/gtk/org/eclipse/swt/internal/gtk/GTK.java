@@ -313,6 +313,8 @@ public class GTK extends OS {
 	 */
 	public static final native long gtk_widget_class_get_css_name(long widget_class);
 
+	public static final native void gtk_widget_class_add_binding_signal(long widget_class, int keyval, int mods, byte[] signal, byte[] format_string, boolean arg1, boolean arg2, boolean arg3);
+
 	/** @param widget cast=(GtkWidget *) */
 	public static final native long gtk_widget_get_root(long widget);
 
@@ -364,8 +366,13 @@ public class GTK extends OS {
 	 * @param accelerator_mods cast=(GdkModifierType)
 	 */
 	public static final native long gtk_accelerator_name(int accelerator_key, int accelerator_mods);
+	/**
+	 * @param accelerator cast=(const gchar *)
+	 * @param accelerator_key cast=(guint *)
+	 * @param accelerator_mods cast=(GdkModifierType *)
+	 */
+	public static final native void gtk_accelerator_parse(byte[] accelerator, int[] accelerator_key, int[] accelerator_mods);
 
-	/* Keyboard Accelerators [GTK3 only] */
 	public static final native long gtk_accel_group_new();
 
 

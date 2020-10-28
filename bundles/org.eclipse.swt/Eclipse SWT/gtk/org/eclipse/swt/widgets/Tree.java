@@ -848,6 +848,36 @@ void createHandle (int index) {
 	if (!searchEnabled ()) {
 		GTK.gtk_tree_view_set_search_column (handle, -1);
 	}
+
+	if (GTK.GTK4) bindArrowKeyBindings();
+}
+
+/**
+ * Binds the left and right arrow keys to
+ * allow for expanding and collapsing of the
+ * tree nodes.
+ *
+ * Note: This function is to only be called in GTK4.
+ * Binding of the arrow keys are also done in GTK3,
+ * however it is done through GtkBindingSets in CSS.
+ * See Device.init() for more information, specifically,
+ * swt_functional_gtk_3_20.css
+ */
+void bindArrowKeyBindings() {
+	if (!GTK.GTK4) return;
+
+	int[] keyval = new int[1];
+	GTK.gtk_accelerator_parse(Converter.javaStringToCString("Left"), keyval, null);
+	GTK.gtk_widget_class_add_binding_signal(GTK.GTK_WIDGET_GET_CLASS(handle), keyval[0], 0,
+			Converter.javaStringToCString("expand-collapse-cursor-row"),
+			Converter.javaStringToCString("(bbb)"),
+			false, false, false);
+
+	GTK.gtk_accelerator_parse(Converter.javaStringToCString("Right"), keyval, null);
+	GTK.gtk_widget_class_add_binding_signal(GTK.GTK_WIDGET_GET_CLASS(handle), keyval[0], 0,
+			Converter.javaStringToCString("expand-collapse-cursor-row"),
+			Converter.javaStringToCString("(bbb)"),
+			false, true, false);
 }
 
 @Override

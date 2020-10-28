@@ -777,8 +777,10 @@ private void overrideThemeValues () {
 
 	StringBuilder combinedCSS = new StringBuilder();
 
-	// Load functional CSS fixes. Such as keyboard functionality for some widgets.
-	combinedCSS.append(load.apply("/org/eclipse/swt/internal/gtk/swt_functional_gtk_3_20.css", true));
+	if (!GTK.GTK4) {
+		// Load functional CSS fixes. Such as keyboard functionality for some widgets.
+		combinedCSS.append(load.apply("/org/eclipse/swt/internal/gtk/swt_functional_gtk_3_20.css", true));
+	}
 
 	// By default, load CSS theme fixes to overcome things such as excessive padding that breaks SWT otherwise.
 	// Initially designed for Adwaita light/dark theme, but after investigation other themes (like Ubuntu's Ambiance + dark) seem to benefit from this also.

@@ -3757,20 +3757,40 @@ JNIEXPORT jlong JNICALL GTK_NATIVE(gtk_1accelerator_1name)
 }
 #endif
 
-#ifndef NO_gtk_1accelerator_1parse
-JNIEXPORT void JNICALL GTK_NATIVE(gtk_1accelerator_1parse)
+#ifndef NO_gtk_1accelerator_1parse__J_3I_3I
+JNIEXPORT void JNICALL GTK_NATIVE(gtk_1accelerator_1parse__J_3I_3I)
 	(JNIEnv *env, jclass that, jlong arg0, jintArray arg1, jintArray arg2)
 {
 	jint *lparg1=NULL;
 	jint *lparg2=NULL;
-	GTK_NATIVE_ENTER(env, that, gtk_1accelerator_1parse_FUNC);
+	GTK_NATIVE_ENTER(env, that, gtk_1accelerator_1parse__J_3I_3I_FUNC);
 	if (arg1) if ((lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL)) == NULL) goto fail;
 	if (arg2) if ((lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL)) == NULL) goto fail;
 	gtk_accelerator_parse((const gchar *)arg0, (guint *)lparg1, (GdkModifierType *)lparg2);
 fail:
 	if (arg2 && lparg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
 	if (arg1 && lparg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
-	GTK_NATIVE_EXIT(env, that, gtk_1accelerator_1parse_FUNC);
+	GTK_NATIVE_EXIT(env, that, gtk_1accelerator_1parse__J_3I_3I_FUNC);
+}
+#endif
+
+#ifndef NO_gtk_1accelerator_1parse___3B_3I_3I
+JNIEXPORT void JNICALL GTK_NATIVE(gtk_1accelerator_1parse___3B_3I_3I)
+	(JNIEnv *env, jclass that, jbyteArray arg0, jintArray arg1, jintArray arg2)
+{
+	jbyte *lparg0=NULL;
+	jint *lparg1=NULL;
+	jint *lparg2=NULL;
+	GTK_NATIVE_ENTER(env, that, gtk_1accelerator_1parse___3B_3I_3I_FUNC);
+	if (arg0) if ((lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL)) == NULL) goto fail;
+	if (arg1) if ((lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	if (arg2) if ((lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL)) == NULL) goto fail;
+	gtk_accelerator_parse((const gchar *)lparg0, (guint *)lparg1, (GdkModifierType *)lparg2);
+fail:
+	if (arg2 && lparg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	if (arg1 && lparg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
+	if (arg0 && lparg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
+	GTK_NATIVE_EXIT(env, that, gtk_1accelerator_1parse___3B_3I_3I_FUNC);
 }
 #endif
 
@@ -12478,6 +12498,23 @@ JNIEXPORT jboolean JNICALL GTK_NATIVE(gtk_1widget_1child_1focus)
 	rc = (jboolean)gtk_widget_child_focus((GtkWidget *)arg0, arg1);
 	GTK_NATIVE_EXIT(env, that, gtk_1widget_1child_1focus_FUNC);
 	return rc;
+}
+#endif
+
+#ifndef NO_gtk_1widget_1class_1add_1binding_1signal
+JNIEXPORT void JNICALL GTK_NATIVE(gtk_1widget_1class_1add_1binding_1signal)
+	(JNIEnv *env, jclass that, jlong arg0, jint arg1, jint arg2, jbyteArray arg3, jbyteArray arg4, jboolean arg5, jboolean arg6, jboolean arg7)
+{
+	jbyte *lparg3=NULL;
+	jbyte *lparg4=NULL;
+	GTK_NATIVE_ENTER(env, that, gtk_1widget_1class_1add_1binding_1signal_FUNC);
+	if (arg3) if ((lparg3 = (*env)->GetByteArrayElements(env, arg3, NULL)) == NULL) goto fail;
+	if (arg4) if ((lparg4 = (*env)->GetByteArrayElements(env, arg4, NULL)) == NULL) goto fail;
+	gtk_widget_class_add_binding_signal(arg0, arg1, arg2, lparg3, lparg4, arg5, arg6, arg7);
+fail:
+	if (arg4 && lparg4) (*env)->ReleaseByteArrayElements(env, arg4, lparg4, 0);
+	if (arg3 && lparg3) (*env)->ReleaseByteArrayElements(env, arg3, lparg3, 0);
+	GTK_NATIVE_EXIT(env, that, gtk_1widget_1class_1add_1binding_1signal_FUNC);
 }
 #endif
 
