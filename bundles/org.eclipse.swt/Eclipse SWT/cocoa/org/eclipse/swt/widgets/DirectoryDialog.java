@@ -38,10 +38,13 @@ import org.eclipse.swt.internal.cocoa.*;
  * @noextend This class is not intended to be subclassed by clients.
  */
 public class DirectoryDialog extends Dialog {
+	Callback callback_performKeyEquivalent;
 	Callback completion_handler_callback;
 	NSOpenPanel panel;
 	String directoryPath;
 	String message = "", filterPath = "";
+	long method_performKeyEquivalent = 0;
+	long methodImpl_performKeyEquivalent = 0;
 
 /**
  * Constructs a new instance of this class given only its parent.
@@ -95,6 +98,16 @@ public DirectoryDialog (Shell parent, int style) {
 long _completionHandler (long result) {
 	handleResponse(result);
 	return result;
+}
+
+long _performKeyEquivalent (long id, long sel, long event) {
+	boolean result = false;
+	NSEvent nsEvent = new NSEvent(event);
+	NSWindow window = nsEvent.window ();
+	if (window != null) {
+		result = parent.display.performKeyEquivalent(window, nsEvent);
+	}
+	return result ? 1 : 0;
 }
 
 /**
@@ -152,6 +165,13 @@ public String open () {
 		return null;
 	}
 
+	callback_performKeyEquivalent = new Callback(this, "_performKeyEquivalent", 3);
+	long proc = callback_performKeyEquivalent.getAddress();
+	method_performKeyEquivalent = OS.class_getInstanceMethod(OS.class_NSSavePanel, OS.sel_performKeyEquivalent_);
+	if (method_performKeyEquivalent != 0) {
+		methodImpl_performKeyEquivalent = OS.method_setImplementation(method_performKeyEquivalent, proc);
+	}
+
 	/*
 	 * This line is intentionally commented. Don't show hidden files forcefully,
 	 * instead allow Directory dialog to use the system preference.
@@ -186,6 +206,12 @@ public String open () {
 }
 
 void releaseHandles () {
+	if (method_performKeyEquivalent != 0) {
+		OS.method_setImplementation(method_performKeyEquivalent, methodImpl_performKeyEquivalent);
+	}
+	if (callback_performKeyEquivalent != null) callback_performKeyEquivalent.dispose();
+	callback_performKeyEquivalent = null;
+
 	if (completion_handler_callback != null) {
 		completion_handler_callback.dispose();
 		completion_handler_callback = null;

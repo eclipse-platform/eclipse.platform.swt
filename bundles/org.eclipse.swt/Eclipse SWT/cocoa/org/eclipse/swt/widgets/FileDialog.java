@@ -43,6 +43,7 @@ import org.eclipse.swt.internal.cocoa.*;
 public class FileDialog extends Dialog {
 	Callback callback_completion_handler;
 	Callback callback_overwrite_existing_file;
+	Callback callback_performKeyEquivalent;
 	NSSavePanel panel;
 	NSPopUpButton popup;
 	String [] filterNames = new String [0];
@@ -53,8 +54,10 @@ public class FileDialog extends Dialog {
 	SWTOpenSavePanelDelegate delegate = null;
 	int filterIndex = -1;
 	long jniRef = 0;
-	long method = 0;
-	long methodImpl = 0;
+	long method_overwriteExistingFileCheck = 0;
+	long methodImpl_overwriteExistingFileCheck = 0;
+	long method_performKeyEquivalent = 0;
+	long methodImpl_performKeyEquivalent = 0;
 	boolean overwrite = false;
 	static final char EXTENSION_SEPARATOR = ';';
 
@@ -118,6 +121,16 @@ long _completionHandler (long result) {
 
 long _overwriteExistingFileCheck (long id, long sel, long str) {
 	return 1;
+}
+
+long _performKeyEquivalent (long id, long sel, long event) {
+	boolean result = false;
+	NSEvent nsEvent = new NSEvent(event);
+	NSWindow window = nsEvent.window ();
+	if (window != null) {
+		result = parent.display.performKeyEquivalent(window, nsEvent);
+	}
+	return result ? 1 : 0;
 }
 
 /**
@@ -344,14 +357,24 @@ public String open () {
 		if (!overwrite) {
 			callback_overwrite_existing_file = new Callback(this, "_overwriteExistingFileCheck", 3);
 			long proc = callback_overwrite_existing_file.getAddress();
-			method = OS.class_getInstanceMethod(OS.class_NSSavePanel, OS.sel_overwriteExistingFileCheck);
-			if (method != 0) methodImpl = OS.method_setImplementation(method, proc);
+			method_overwriteExistingFileCheck = OS.class_getInstanceMethod(OS.class_NSSavePanel, OS.sel_overwriteExistingFileCheck);
+			if (method_overwriteExistingFileCheck != 0) {
+				methodImpl_overwriteExistingFileCheck = OS.method_setImplementation(method_overwriteExistingFileCheck, proc);
+			}
 		}
 	} else {
 		NSOpenPanel openPanel = NSOpenPanel.openPanel();
 		openPanel.setAllowsMultipleSelection((style & SWT.MULTI) != 0);
 		panel = openPanel;
 	}
+
+	callback_performKeyEquivalent = new Callback(this, "_performKeyEquivalent", 3);
+	long proc = callback_performKeyEquivalent.getAddress();
+	method_performKeyEquivalent = OS.class_getInstanceMethod(OS.class_NSSavePanel, OS.sel_performKeyEquivalent_);
+	if (method_performKeyEquivalent != 0) {
+		methodImpl_performKeyEquivalent = OS.method_setImplementation(method_performKeyEquivalent, proc);
+	}
+
 	panel.setCanCreateDirectories(true);
 	/*
 	 * This line is intentionally commented. Don't show hidden files forcefully,
@@ -481,10 +504,19 @@ long panel_userEnteredFilename_confirmed (long id, long sel, long sender, long f
 
 void releaseHandles() {
 	if (!overwrite) {
-		if (method != 0) OS.method_setImplementation(method, methodImpl);
+		if (method_overwriteExistingFileCheck != 0) {
+			OS.method_setImplementation(method_overwriteExistingFileCheck, methodImpl_overwriteExistingFileCheck);
+		}
 		if (callback_overwrite_existing_file != null) callback_overwrite_existing_file.dispose();
 		callback_overwrite_existing_file = null;
 	}
+
+	if (method_performKeyEquivalent != 0) {
+		OS.method_setImplementation(method_performKeyEquivalent, methodImpl_performKeyEquivalent);
+	}
+	if (callback_performKeyEquivalent != null) callback_performKeyEquivalent.dispose();
+	callback_performKeyEquivalent = null;
+
 	if (callback_completion_handler != null) {
 		callback_completion_handler.dispose();
 		callback_completion_handler = null;
