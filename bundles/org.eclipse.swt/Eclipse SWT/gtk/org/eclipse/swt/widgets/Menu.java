@@ -299,7 +299,12 @@ void _setVisible (boolean visible) {
 					GdkRectangle rect = new GdkRectangle();
 					if (OS.isX11()) {
 						// Get and (add reference to) the global GdkWindow/GdkSurface
-						event.window = GDK.gdk_display_get_default_group(GDK.gdk_display_get_default());
+						if (GTK.GTK4) {
+							event.window = GDK.gdk_x11_display_get_default_group(GDK.gdk_display_get_default());
+						} else {
+							event.window = GDK.gdk_display_get_default_group(GDK.gdk_display_get_default());
+						}
+
 						OS.g_object_ref(event.window);
 						OS.memmove (eventPtr, event, GdkEventButton.sizeof);
 						/*

@@ -5216,7 +5216,7 @@ void setCursorLocationInPixels (Point location) {
 	long gdkDisplay = GDK.gdk_display_get_default();
 	long gdkPointer = GDK.gdk_get_pointer(gdkDisplay);
 	if (GTK.GTK4) {
-		GDK.gdk_device_warp(gdkPointer, location.x, location.y);
+		//TODO: GTK4 no gdk_device_warp
 	} else {
 		long gdkScreen = GDK.gdk_screen_get_default();
 		GDK.gdk_device_warp(gdkPointer, gdkScreen, location.x, location.y);

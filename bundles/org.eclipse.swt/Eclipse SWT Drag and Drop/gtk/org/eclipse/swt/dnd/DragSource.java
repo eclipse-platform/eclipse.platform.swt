@@ -357,11 +357,17 @@ void dragEnd(long widget, long context){
 		display = GDK.gdk_window_get_display(GTK.gtk_widget_get_window(widget));
 	}
 	long pointer = GDK.gdk_get_pointer(display);
-	long keyboard = GDK.gdk_device_get_associated_device(pointer);
+
+	if (GTK.GTK4) {
+		//TODO: GTK4, ungrab keyboard seat if different from pointer's seat
+	} else {
+		long keyboard = GDK.gdk_device_get_associated_device(pointer);
+		long keyboard_seat = GDK.gdk_device_get_seat(keyboard);
+		GDK.gdk_seat_ungrab(keyboard_seat);
+	}
+
 	long pointer_seat = GDK.gdk_device_get_seat(pointer);
-	long keyboard_seat = GDK.gdk_device_get_seat(keyboard);
 	GDK.gdk_seat_ungrab(pointer_seat);
-	GDK.gdk_seat_ungrab(keyboard_seat);
 
 	int operation = DND.DROP_NONE;
 	if (context != 0) {

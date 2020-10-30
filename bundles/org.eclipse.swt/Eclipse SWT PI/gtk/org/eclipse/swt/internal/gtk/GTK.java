@@ -346,13 +346,6 @@ public class GTK extends OS {
 	 */
 	public static final native void gtk_button_set_use_underline(long button, boolean use_underline);
 
-	/**
-	 * @method flags=dynamic
-	 * @param accel_label cast=(GtkAccelLabel *)
-	 * @param accel_key cast=(guint)
-	 * @param accel_mods cast=(GdkModifierType)
-	 */
-	public static final native void gtk_accel_label_set_accel(long accel_label, int accel_key, int accel_mods);
 
 	/* Keyboard Accelerators */
 	public static final native int gtk_accelerator_get_default_mod_mask();
@@ -373,17 +366,28 @@ public class GTK extends OS {
 	 * @param accelerator_mods cast=(GdkModifierType *)
 	 */
 	public static final native void gtk_accelerator_parse(byte[] accelerator, int[] accelerator_key, int[] accelerator_mods);
-
+	/** @method flags=dynamic */
 	public static final native long gtk_accel_group_new();
 
 
+	/* GtkAccelLabel [GTK3 only] */
+	/** @param label cast=(const gchar *) */
+	public static final native long gtk_accel_label_new(byte[] label);
 	/**
+	 * @method flags=dynamic
 	 * @param accel_label cast=(GtkAccelLabel *)
 	 * @param accel_widget cast=(GtkWidget *)
 	 */
 	public static final native void gtk_accel_label_set_accel_widget(long accel_label, long accel_widget);
-	/** @param label cast=(const gchar *) */
-	public static final native long gtk_accel_label_new(byte[] label);
+	/**
+	 * @method flags=dynamic
+	 * @param accel_label cast=(GtkAccelLabel *)
+	 * @param accel_key cast=(guint)
+	 * @param accel_mods cast=(GdkModifierType)
+	 */
+	public static final native void gtk_accel_label_set_accel(long accel_label, int accel_key, int accel_mods);
+
+
 	/**
 	 * @param accessible cast=(GtkAccessible *)
 	 */

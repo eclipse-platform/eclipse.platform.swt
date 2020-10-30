@@ -462,7 +462,15 @@ JNIEXPORT jlong JNICALL GDK_NATIVE(gdk_1device_1get_1associated_1device)
 {
 	jlong rc = 0;
 	GDK_NATIVE_ENTER(env, that, gdk_1device_1get_1associated_1device_FUNC);
+/*
 	rc = (jlong)gdk_device_get_associated_device((GdkDevice *)arg0);
+*/
+	{
+		GDK_LOAD_FUNCTION(fp, gdk_device_get_associated_device)
+		if (fp) {
+			rc = (jlong)((jlong (CALLING_CONVENTION*)(GdkDevice *))fp)((GdkDevice *)arg0);
+		}
+	}
 	GDK_NATIVE_EXIT(env, that, gdk_1device_1get_1associated_1device_FUNC);
 	return rc;
 }
@@ -474,15 +482,7 @@ JNIEXPORT jlong JNICALL GDK_NATIVE(gdk_1device_1get_1seat)
 {
 	jlong rc = 0;
 	GDK_NATIVE_ENTER(env, that, gdk_1device_1get_1seat_FUNC);
-/*
 	rc = (jlong)gdk_device_get_seat((GdkDevice *)arg0);
-*/
-	{
-		GDK_LOAD_FUNCTION(fp, gdk_device_get_seat)
-		if (fp) {
-			rc = (jlong)((jlong (CALLING_CONVENTION*)(GdkDevice *))fp)((GdkDevice *)arg0);
-		}
-	}
 	GDK_NATIVE_EXIT(env, that, gdk_1device_1get_1seat_FUNC);
 	return rc;
 }
@@ -498,7 +498,15 @@ JNIEXPORT jlong JNICALL GDK_NATIVE(gdk_1device_1get_1surface_1at_1position)
 	GDK_NATIVE_ENTER(env, that, gdk_1device_1get_1surface_1at_1position_FUNC);
 	if (arg1) if ((lparg1 = (*env)->GetDoubleArrayElements(env, arg1, NULL)) == NULL) goto fail;
 	if (arg2) if ((lparg2 = (*env)->GetDoubleArrayElements(env, arg2, NULL)) == NULL) goto fail;
-	rc = (jlong)gdk_device_get_surface_at_position((GdkDevice *)arg0, lparg1, lparg2);
+/*
+	rc = (jlong)gdk_device_get_surface_at_position((GdkDevice *)arg0, (double *)lparg1, (double *)lparg2);
+*/
+	{
+		GDK_LOAD_FUNCTION(fp, gdk_device_get_surface_at_position)
+		if (fp) {
+			rc = (jlong)((jlong (CALLING_CONVENTION*)(GdkDevice *, double *, double *))fp)((GdkDevice *)arg0, (double *)lparg1, (double *)lparg2);
+		}
+	}
 fail:
 	if (arg2 && lparg2) (*env)->ReleaseDoubleArrayElements(env, arg2, lparg2, 0);
 	if (arg1 && lparg1) (*env)->ReleaseDoubleArrayElements(env, arg1, lparg1, 0);
@@ -517,7 +525,15 @@ JNIEXPORT jlong JNICALL GDK_NATIVE(gdk_1device_1get_1window_1at_1position)
 	GDK_NATIVE_ENTER(env, that, gdk_1device_1get_1window_1at_1position_FUNC);
 	if (arg1) if ((lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL)) == NULL) goto fail;
 	if (arg2) if ((lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL)) == NULL) goto fail;
+/*
 	rc = (jlong)gdk_device_get_window_at_position((GdkDevice *)arg0, (gint *)lparg1, (gint *)lparg2);
+*/
+	{
+		GDK_LOAD_FUNCTION(fp, gdk_device_get_window_at_position)
+		if (fp) {
+			rc = (jlong)((jlong (CALLING_CONVENTION*)(GdkDevice *, gint *, gint *))fp)((GdkDevice *)arg0, (gint *)lparg1, (gint *)lparg2);
+		}
+	}
 fail:
 	if (arg2 && lparg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
 	if (arg1 && lparg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
@@ -526,23 +542,21 @@ fail:
 }
 #endif
 
-#ifndef NO_gdk_1device_1warp__JII
-JNIEXPORT void JNICALL GDK_NATIVE(gdk_1device_1warp__JII)
-	(JNIEnv *env, jclass that, jlong arg0, jint arg1, jint arg2)
-{
-	GDK_NATIVE_ENTER(env, that, gdk_1device_1warp__JII_FUNC);
-	gdk_device_warp((GdkDevice *)arg0, (gint)arg1, (gint)arg2);
-	GDK_NATIVE_EXIT(env, that, gdk_1device_1warp__JII_FUNC);
-}
-#endif
-
-#ifndef NO_gdk_1device_1warp__JJII
-JNIEXPORT void JNICALL GDK_NATIVE(gdk_1device_1warp__JJII)
+#ifndef NO_gdk_1device_1warp
+JNIEXPORT void JNICALL GDK_NATIVE(gdk_1device_1warp)
 	(JNIEnv *env, jclass that, jlong arg0, jlong arg1, jint arg2, jint arg3)
 {
-	GDK_NATIVE_ENTER(env, that, gdk_1device_1warp__JJII_FUNC);
+	GDK_NATIVE_ENTER(env, that, gdk_1device_1warp_FUNC);
+/*
 	gdk_device_warp((GdkDevice *)arg0, (GdkScreen *)arg1, (gint)arg2, (gint)arg3);
-	GDK_NATIVE_EXIT(env, that, gdk_1device_1warp__JJII_FUNC);
+*/
+	{
+		GDK_LOAD_FUNCTION(fp, gdk_device_warp)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(GdkDevice *, GdkScreen *, gint, gint))fp)((GdkDevice *)arg0, (GdkScreen *)arg1, (gint)arg2, (gint)arg3);
+		}
+	}
+	GDK_NATIVE_EXIT(env, that, gdk_1device_1warp_FUNC);
 }
 #endif
 
@@ -586,7 +600,15 @@ JNIEXPORT jlong JNICALL GDK_NATIVE(gdk_1display_1get_1default_1group)
 {
 	jlong rc = 0;
 	GDK_NATIVE_ENTER(env, that, gdk_1display_1get_1default_1group_FUNC);
+/*
 	rc = (jlong)gdk_display_get_default_group((GdkDisplay *)arg0);
+*/
+	{
+		GDK_LOAD_FUNCTION(fp, gdk_display_get_default_group)
+		if (fp) {
+			rc = (jlong)((jlong (CALLING_CONVENTION*)(GdkDisplay *))fp)((GdkDisplay *)arg0);
+		}
+	}
 	GDK_NATIVE_EXIT(env, that, gdk_1display_1get_1default_1group_FUNC);
 	return rc;
 }
@@ -3153,6 +3175,26 @@ JNIEXPORT void JNICALL GDK_NATIVE(gdk_1x11_1display_1error_1trap_1push)
 }
 #endif
 
+#ifndef NO_gdk_1x11_1display_1get_1default_1group
+JNIEXPORT jlong JNICALL GDK_NATIVE(gdk_1x11_1display_1get_1default_1group)
+	(JNIEnv *env, jclass that, jlong arg0)
+{
+	jlong rc = 0;
+	GDK_NATIVE_ENTER(env, that, gdk_1x11_1display_1get_1default_1group_FUNC);
+/*
+	rc = (jlong)gdk_x11_display_get_default_group((GdkDisplay *)arg0);
+*/
+	{
+		GDK_LOAD_FUNCTION(fp, gdk_x11_display_get_default_group)
+		if (fp) {
+			rc = (jlong)((jlong (CALLING_CONVENTION*)(GdkDisplay *))fp)((GdkDisplay *)arg0);
+		}
+	}
+	GDK_NATIVE_EXIT(env, that, gdk_1x11_1display_1get_1default_1group_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_gdk_1x11_1display_1get_1xdisplay
 JNIEXPORT jlong JNICALL GDK_NATIVE(gdk_1x11_1display_1get_1xdisplay)
 	(JNIEnv *env, jclass that, jlong arg0)
@@ -3723,7 +3765,15 @@ JNIEXPORT jlong JNICALL GTK_NATIVE(gtk_1accel_1group_1new)
 {
 	jlong rc = 0;
 	GTK_NATIVE_ENTER(env, that, gtk_1accel_1group_1new_FUNC);
+/*
 	rc = (jlong)gtk_accel_group_new();
+*/
+	{
+		GTK_LOAD_FUNCTION(fp, gtk_accel_group_new)
+		if (fp) {
+			rc = (jlong)((jlong (CALLING_CONVENTION*)())fp)();
+		}
+	}
 	GTK_NATIVE_EXIT(env, that, gtk_1accel_1group_1new_FUNC);
 	return rc;
 }
@@ -3768,7 +3818,15 @@ JNIEXPORT void JNICALL GTK_NATIVE(gtk_1accel_1label_1set_1accel_1widget)
 	(JNIEnv *env, jclass that, jlong arg0, jlong arg1)
 {
 	GTK_NATIVE_ENTER(env, that, gtk_1accel_1label_1set_1accel_1widget_FUNC);
+/*
 	gtk_accel_label_set_accel_widget((GtkAccelLabel *)arg0, (GtkWidget *)arg1);
+*/
+	{
+		GTK_LOAD_FUNCTION(fp, gtk_accel_label_set_accel_widget)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(GtkAccelLabel *, GtkWidget *))fp)((GtkAccelLabel *)arg0, (GtkWidget *)arg1);
+		}
+	}
 	GTK_NATIVE_EXIT(env, that, gtk_1accel_1label_1set_1accel_1widget_FUNC);
 }
 #endif

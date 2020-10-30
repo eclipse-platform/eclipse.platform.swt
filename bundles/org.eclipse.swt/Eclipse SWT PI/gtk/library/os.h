@@ -238,8 +238,6 @@
 // No GdkScreen on GTK4, including parameter casts
 #define NO_gtk_1widget_1get_1screen
 #define NO_gtk_1style_1context_1add_1provider_1for_1screen
-#define NO_gdk_1device_1warp__IIII
-#define NO_gdk_1device_1warp__JJII
 #define NO_gdk_1screen_1get_1default
 #define NO_gdk_1screen_1get_1monitor_1at_1point
 #define NO_gdk_1screen_1get_1monitor_1at_1window
@@ -308,6 +306,7 @@
 #define NO_gtk_1widget_1set_1parent_1window
 #define NO_gdk_1cairo_1set_1source_1window
 #define NO_gdk_1device_1grab
+#define NO_gdk_1device_1warp
 #define NO_gdk_1display_1get_1monitor_1at_1window
 #define NO_gdk_1get_1default_1root_1window
 #define NO_gdk_1property_1get
@@ -348,7 +347,6 @@
 #define NO_gdk_1window_1set_1override_1redirect
 #define NO_gdk_1window_1set_1user_1data
 #define NO_gdk_1window_1show_1unraised
-#define NO_gdk_1device_1get_1window_1at_1position
 #define NO_gdk_1window_1set_1background_1pattern
 #define NO_gdk_1event_1get_1window
 
@@ -520,7 +518,6 @@
 #define NO_gtk_1widget_1set_1parent_1surface
 #define NO_gdk_1surface_1create_1similar_1surface
 #define NO_gdk_1surface_1destroy
-#define NO_gdk_1device_1get_1surface_1at_1position
 #define NO_gdk_1surface_1get_1origin
 #define NO_gdk_1surface_1invalidate_1rect
 #define NO_gdk_1surface_1get_1display
@@ -556,8 +553,6 @@
 #define NO_graphene_1rect_1init
 
 // Miscellaneous functions not present on GTK3
-#define NO_gdk_1device_1warp__III
-#define NO_gdk_1device_1warp__JII
 #define NO_gtk_1widget_1measure
 #define NO_gtk_1style_1context_1add_1provider_1for_1display
 #define NO_gtk_1widget_1get_1root

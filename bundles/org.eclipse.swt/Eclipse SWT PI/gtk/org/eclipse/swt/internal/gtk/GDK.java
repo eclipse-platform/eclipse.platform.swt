@@ -414,27 +414,17 @@ public class GDK extends OS {
 	 */
 	public static final native long gdk_cursor_new_from_texture(long texture, int x, int y, long fallback);
 
-
-	/**
-	 * @param device cast=(GdkDevice *)
-	 * @param screen cast=(GdkScreen *)
-	 * @param x cast=(gint)
-	 * @param y cast=(gint)
-	 */
-	/* [GTK3 only, if-def'd in os.h] */
-	public static final native void gdk_device_warp(long device, long screen, int x, int y);
-	/**
-	 * @param device cast=(GdkDevice *)
-	 * @param x cast=(gint)
-	 * @param y cast=(gint)
-	 */
-	/* [GTK4 only, if-def'd in os.h] */
-	public static final native void gdk_device_warp(long device, int x, int y);
 	public static final native long gdk_display_get_default();
 	/**
-	 *  @param display cast=(GdkDisplay *)
+	 * @method flags=dynamic
+	 * @param display cast=(GdkDisplay *)
 	 */
 	public static final native long gdk_display_get_default_group(long display);
+	/**
+	 * @method flags=dynamic
+	 * @param display cast=(GdkDisplay *)
+	 */
+	public static final native long gdk_x11_display_get_default_group(long display);
 	/**
 	 *  @param display cast=(GdkDisplay *)
 	 */
@@ -459,18 +449,6 @@ public class GDK extends OS {
 	 */
 	/* [GTK4 only, if-def'd in os.h] */
 	public static final native long gdk_surface_get_display(long surface);
-	/**
-	 * @param device cast=(GdkDevice *)
-	 * @param win_x cast=(gint *)
-	 * @param win_y cast=(gint *)
-	 */
-	/* [GTK3 only] */
-	public static final native long gdk_device_get_window_at_position(long device, int[] win_x, int[] win_y);
-	/**
-	 * @param device cast=(GdkDevice *)
-	 */
-	/* [GTK4 only] */
-	public static final native long gdk_device_get_surface_at_position(long device, double[] win_x, double[] win_y);
 	/**
 	 * @param display cast=(GdkDisplay *)
 	 */
@@ -794,15 +772,42 @@ public class GDK extends OS {
 	public static final native long gdk_pixbuf_get_from_texture(long texture);
 
 
+	/* GdkDevice */
+	/**@param device cast=(GdkDevice *) */
+	public static final native long gdk_device_get_seat(long device);
+
+	/* GdkDevice [GTK3 only] */
 	/**
+	 * @method flags=dynamic
 	 * @param device cast=(GdkDevice *)
 	 */
 	public static final native long gdk_device_get_associated_device(long device);
 	/**
 	 * @method flags=dynamic
 	 * @param device cast=(GdkDevice *)
+	 * @param screen cast=(GdkScreen *)
+	 * @param x cast=(gint)
+	 * @param y cast=(gint)
 	 */
-	public static final native long gdk_device_get_seat(long device);
+	public static final native void gdk_device_warp(long device, long screen, int x, int y);
+	/**
+	 * @method flags=dynamic
+	 * @param device cast=(GdkDevice *)
+	 * @param win_x cast=(gint *)
+	 * @param win_y cast=(gint *)
+	 */
+	public static final native long gdk_device_get_window_at_position(long device, int[] win_x, int[] win_y);
+
+	/* GdkDevice [GTK4 only] */
+	/**
+	 * @method flags=dynamic
+	 * @param device cast=(GdkDevice *)
+	 * @param win_x cast=(double *)
+	 * @param win_y cast=(double *)
+	 */
+	public static final native long gdk_device_get_surface_at_position(long device, double[] win_x, double[] win_y);
+
+
 	/**
 	 * @param window cast=(GdkWindow *)
 	 * @param property cast=(GdkAtom)
