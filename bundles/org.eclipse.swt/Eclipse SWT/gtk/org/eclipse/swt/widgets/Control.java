@@ -776,19 +776,19 @@ boolean containedInRegion (int x, int y) {
 }
 
 @Override
-void createWidget (int index) {
+void createWidget(int index) {
 	state |= DRAG_DETECT;
-	checkOrientation (parent);
-	super.createWidget (index);
-	checkBackground ();
-	if ((state & PARENT_BACKGROUND) != 0) setParentBackground ();
-	checkBuffered ();
-	showWidget ();
-	setInitialBounds ();
-	setZOrder (null, false, false);
-	setRelations ();
-	checkMirrored ();
-	checkBorder ();
+	checkOrientation(parent);
+	super.createWidget(index);
+	checkBackground();
+	if ((state & PARENT_BACKGROUND) != 0) setParentBackground();
+	checkBuffered();
+	showWidget();
+	setInitialBounds();
+	setZOrder(null, false, false);
+	if (!GTK.GTK4) setRelations();
+	checkMirrored();
+	checkBorder();
 }
 
 /**
