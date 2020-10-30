@@ -4309,6 +4309,8 @@
 	<constant name="NSFilenamesPboardType" swt_gen="true"></constant>
 	<constant name="NSFontAttributeName" swt_gen="true"></constant>
 	<constant name="NSForegroundColorAttributeName" swt_gen="true"></constant>
+	<constant name="NSImageNameCaution" swt_gen="true"></constant>
+	<constant name="NSImageNameInfo" swt_gen="true"></constant>
 	<constant name="NSLigatureAttributeName" swt_gen="true"></constant>
 	<constant name="NSLinkAttributeName" swt_gen="true"></constant>
 	<constant name="NSModalPanelRunLoopMode" swt_gen="true"></constant>

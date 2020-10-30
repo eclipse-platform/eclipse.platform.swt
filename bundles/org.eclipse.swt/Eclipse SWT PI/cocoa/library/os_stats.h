@@ -290,6 +290,8 @@ typedef enum {
 	NSFilenamesPboardType_FUNC,
 	NSFontAttributeName_FUNC,
 	NSForegroundColorAttributeName_FUNC,
+	NSImageNameCaution_FUNC,
+	NSImageNameInfo_FUNC,
 	NSIntersectionRect_FUNC,
 	NSLigatureAttributeName_FUNC,
 	NSLinkAttributeName_FUNC,

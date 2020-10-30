@@ -280,6 +280,8 @@ char * OS_nativeFunctionNames[] = {
 	"NSFilenamesPboardType",
 	"NSFontAttributeName",
 	"NSForegroundColorAttributeName",
+	"NSImageNameCaution",
+	"NSImageNameInfo",
 	"NSIntersectionRect",
 	"NSLigatureAttributeName",
 	"NSLinkAttributeName",

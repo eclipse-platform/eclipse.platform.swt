@@ -3688,6 +3688,30 @@ JNIEXPORT jlong JNICALL OS_NATIVE(NSForegroundColorAttributeName)
 }
 #endif
 
+#ifndef NO_NSImageNameCaution
+JNIEXPORT jlong JNICALL OS_NATIVE(NSImageNameCaution)
+	(JNIEnv *env, jclass that)
+{
+	jlong rc = 0;
+	OS_NATIVE_ENTER(env, that, NSImageNameCaution_FUNC);
+	rc = (jlong)NSImageNameCaution;
+	OS_NATIVE_EXIT(env, that, NSImageNameCaution_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_NSImageNameInfo
+JNIEXPORT jlong JNICALL OS_NATIVE(NSImageNameInfo)
+	(JNIEnv *env, jclass that)
+{
+	jlong rc = 0;
+	OS_NATIVE_ENTER(env, that, NSImageNameInfo_FUNC);
+	rc = (jlong)NSImageNameInfo;
+	OS_NATIVE_EXIT(env, that, NSImageNameInfo_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_NSLigatureAttributeName
 JNIEXPORT jlong JNICALL OS_NATIVE(NSLigatureAttributeName)
 	(JNIEnv *env, jclass that)

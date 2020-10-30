@@ -2000,6 +2000,12 @@ public Cursor getSystemCursor (int id) {
 	return cursors [id];
 }
 
+/**
+ * Gets the system icon using GetIconRefFromTypeInfo() which is deprecated in macOS 10.15.
+ * For BigSur and later, try to get the system image using NSImage.imageNamed().
+ *
+ * @return NSImage, the returned NSImage instance should be released (for example in Image.destroy()).
+ */
 static NSImage getSystemImageForID(int osType) {
 	long iconRef[] = new long [1];
 	OS.GetIconRefFromTypeInfo(OS.kSystemIconsCreator, osType, 0, 0, 0, iconRef);
@@ -2054,12 +2060,32 @@ public Image getSystemImage (int id) {
 		case SWT.ICON_QUESTION:
 		case SWT.ICON_WORKING: {
 			if (infoImage != null) return infoImage;
-			NSImage img = getSystemImageForID(OS.kAlertNoteIcon);
+			NSImage img;
+			if (OS.isBigSurOrLater()) {
+				img = NSImage.imageNamed(OS.NSImageNameInfo);
+				/*
+				 * retain() is required here, as img is used below to create Image object.
+				 * img will be released later in Image.destroy().
+				 */
+				img.retain();
+			} else {
+				img = getSystemImageForID(OS.kAlertNoteIcon);
+			}
 			return infoImage = Image.cocoa_new (this, SWT.ICON, img);
 		}
 		case SWT.ICON_WARNING: {
 			if (warningImage != null) return warningImage;
-			NSImage img = getSystemImageForID(OS.kAlertCautionIcon);
+			NSImage img;
+			if (OS.isBigSurOrLater()) {
+				img = NSImage.imageNamed(OS.NSImageNameCaution);
+				/*
+				 * retain() is required here, as img is used below to create Image object.
+				 * img will be released later in Image.destroy().
+				 */
+				img.retain();
+			} else {
+				img = getSystemImageForID(OS.kAlertCautionIcon);
+			}
 			return warningImage = Image.cocoa_new (this, SWT.ICON, img);
 		}
 	}

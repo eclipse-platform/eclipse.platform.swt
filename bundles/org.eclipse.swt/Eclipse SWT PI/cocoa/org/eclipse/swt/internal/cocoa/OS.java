@@ -2737,6 +2737,12 @@ public static final NSString NSFontAttributeName = new NSString(NSFontAttributeN
 public static final native long NSForegroundColorAttributeName();
 public static final NSString NSForegroundColorAttributeName = new NSString(NSForegroundColorAttributeName());
 /** @method flags=const */
+public static final native long NSImageNameCaution();
+public static final NSString NSImageNameCaution = new NSString(NSImageNameCaution());
+/** @method flags=const */
+public static final native long NSImageNameInfo();
+public static final NSString NSImageNameInfo = new NSString(NSImageNameInfo());
+/** @method flags=const */
 public static final native long NSLigatureAttributeName();
 public static final NSString NSLigatureAttributeName = new NSString(NSLigatureAttributeName());
 /** @method flags=const */
