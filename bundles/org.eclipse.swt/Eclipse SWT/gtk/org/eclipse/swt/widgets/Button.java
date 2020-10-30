@@ -573,12 +573,12 @@ long gtk_clicked (long widget) {
 		}
 	} else {
 		if ((style & SWT.CHECK) != 0) {
-			if (grayed) {
-				if (GTK.gtk_toggle_button_get_active (handle)) {
-					GTK.gtk_toggle_button_set_inconsistent (handle, true);
-				} else {
-					GTK.gtk_toggle_button_set_inconsistent (handle, false);
-				}
+			boolean inconsistent = grayed && GTK.gtk_toggle_button_get_active(handle);
+
+			if (GTK.GTK4) {
+				GTK.gtk_check_button_set_inconsistent(handle, inconsistent);
+			} else {
+				GTK.gtk_toggle_button_set_inconsistent(handle, inconsistent);
 			}
 		}
 	}
@@ -1039,10 +1039,12 @@ public void setGrayed (boolean grayed) {
 	checkWidget();
 	if ((style & SWT.CHECK) == 0) return;
 	this.grayed = grayed;
-	if (grayed && GTK.gtk_toggle_button_get_active (handle)) {
-		GTK.gtk_toggle_button_set_inconsistent (handle, true);
+	boolean inconsistent = grayed && GTK.gtk_toggle_button_get_active(handle);
+
+	if (GTK.GTK4) {
+		GTK.gtk_check_button_set_inconsistent(handle, inconsistent);
 	} else {
-		GTK.gtk_toggle_button_set_inconsistent (handle, false);
+		GTK.gtk_toggle_button_set_inconsistent(handle, inconsistent);
 	}
 }
 
@@ -1128,10 +1130,12 @@ public void setSelection (boolean selected) {
 	OS.g_signal_handlers_block_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CLICKED);
 	GTK.gtk_toggle_button_set_active (handle, selected);
 	if ((style & SWT.CHECK) != 0) {
-		if (selected && grayed) {
-			GTK.gtk_toggle_button_set_inconsistent (handle, true);
+		boolean inconsistent = selected && grayed;
+
+		if (GTK.GTK4) {
+			GTK.gtk_check_button_set_inconsistent(handle, inconsistent);
 		} else {
-			GTK.gtk_toggle_button_set_inconsistent (handle, false);
+			GTK.gtk_toggle_button_set_inconsistent(handle, inconsistent);
 		}
 	}
 	if ((style & SWT.RADIO) != 0) GTK.gtk_toggle_button_set_active (groupHandle, !selected);

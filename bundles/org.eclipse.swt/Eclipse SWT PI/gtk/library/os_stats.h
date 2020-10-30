@@ -373,6 +373,7 @@ typedef enum {
 	gtk_1cell_1renderer_1toggle_1new_FUNC,
 	gtk_1cell_1view_1set_1fit_1model_FUNC,
 	gtk_1check_1button_1new_FUNC,
+	gtk_1check_1button_1set_1inconsistent_FUNC,
 	gtk_1check_1menu_1item_1get_1active_FUNC,
 	gtk_1check_1menu_1item_1new_FUNC,
 	gtk_1check_1menu_1item_1set_1active_FUNC,

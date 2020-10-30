@@ -375,6 +375,7 @@ char * GTK_nativeFunctionNames[] = {
 	"gtk_1cell_1renderer_1toggle_1new",
 	"gtk_1cell_1view_1set_1fit_1model",
 	"gtk_1check_1button_1new",
+	"gtk_1check_1button_1set_1inconsistent",
 	"gtk_1check_1menu_1item_1get_1active",
 	"gtk_1check_1menu_1item_1new",
 	"gtk_1check_1menu_1item_1set_1active",

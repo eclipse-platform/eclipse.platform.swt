@@ -4558,6 +4558,16 @@ JNIEXPORT jlong JNICALL GTK_NATIVE(gtk_1check_1button_1new)
 }
 #endif
 
+#ifndef NO_gtk_1check_1button_1set_1inconsistent
+JNIEXPORT void JNICALL GTK_NATIVE(gtk_1check_1button_1set_1inconsistent)
+	(JNIEnv *env, jclass that, jlong arg0, jboolean arg1)
+{
+	GTK_NATIVE_ENTER(env, that, gtk_1check_1button_1set_1inconsistent_FUNC);
+	gtk_check_button_set_inconsistent(arg0, arg1);
+	GTK_NATIVE_EXIT(env, that, gtk_1check_1button_1set_1inconsistent_FUNC);
+}
+#endif
+
 #ifndef NO_gtk_1check_1menu_1item_1get_1active
 JNIEXPORT jboolean JNICALL GTK_NATIVE(gtk_1check_1menu_1item_1get_1active)
 	(JNIEnv *env, jclass that, jlong arg0)

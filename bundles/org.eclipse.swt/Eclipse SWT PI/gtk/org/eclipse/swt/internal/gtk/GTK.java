@@ -666,7 +666,13 @@ public class GTK extends OS {
 	 * @param fit_model cast=(gboolean)
 	 */
 	public static final native void gtk_cell_view_set_fit_model(long cell_view, boolean fit_model);
+
+	/* GtkCheckButton */
 	public static final native long gtk_check_button_new();
+
+	/* GtkCheckButton [GTK4 only] */
+	public static final native void gtk_check_button_set_inconsistent(long check_button, boolean inconsistent);
+
 	public static final native long gtk_check_version(int required_major, int required_minor, int required_micro);
 	/** @param clipboard cast=(GtkClipboard *) */
 	/* [GTK3 only, if-def'd in os.h] */
@@ -2872,20 +2878,22 @@ public class GTK extends OS {
 	public static final native long gtk_text_view_get_window(long text_view, int win);
 
 
+	/* GtkToggleButton */
+	public static final native long gtk_toggle_button_new();
 	/** @param toggle_button cast=(GtkToggleButton *) */
 	public static final native boolean gtk_toggle_button_get_active(long toggle_button);
-	public static final native long gtk_toggle_button_new();
 	/**
 	 * @param toggle_button cast=(GtkToggleButton *)
 	 * @param is_active cast=(gboolean)
 	 */
 	public static final native void gtk_toggle_button_set_active(long toggle_button, boolean is_active);
+
+	/* GtkToggleButton [GTK3 only] */
 	/**
 	 * @method flags=dynamic
 	 * @param toggle_button cast=(GtkToggleButton *)
 	 * @param setting cast=(gboolean)
 	 */
-	/* [GTK3 only] */
 	public static final native void gtk_toggle_button_set_inconsistent(long toggle_button, boolean setting);
 
 
