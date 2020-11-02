@@ -1137,10 +1137,11 @@ public class GDK extends OS {
 	/* [GTK3 only, if-def'd in os.h] */
 	public static final native long gdk_window_new(long parent, GdkWindowAttr attributes, int attributes_mask);
 	/**
+	 * @method flags=dynamic
 	 * @param display cast=(GdkDisplay *)
 	 */
 	/* [GTK4 only, if-def'd in os.h] */
-	public static final native long gdk_surface_new_toplevel(long display, int width, int height);
+	public static final native long gdk_surface_new_toplevel(long display);
 	/** @param parent cast=(GdkSurface *) */
 	/* [GTK4 only, if-def'd in os.h] */
 	public static final native long gdk_surface_new_popup(long parent, boolean autohide);

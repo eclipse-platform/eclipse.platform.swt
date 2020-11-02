@@ -95,7 +95,7 @@
 
 
 #if defined(GDK_WINDOWING_X11)
-#if !GTK_CHECK_VERSION(3,99,0)
+#if !GTK_CHECK_VERSION(3,99,3)
 #include <gtk/gtkx.h>
 #define NO_gdk_1x11_1surface_1get_1xid
 #define NO_gdk_1x11_1surface_1lookup_1for_1display
@@ -108,7 +108,7 @@
 #define NO_gtk_1socket_1get_1id
 #define NO_gtk_1socket_1new
 #endif
-#if !GTK_CHECK_VERSION(3,99,0)
+#if !GTK_CHECK_VERSION(3,99,3)
 #include <gdk/gdkx.h>
 #else
 #include <gdk/x11/gdkx.h>
@@ -168,7 +168,7 @@
 
 #endif
 
-#if GTK_CHECK_VERSION(3,99,0)
+#if GTK_CHECK_VERSION(3,99,3)
 #define GTK4 1
 
 // Structs which do not exist on GTK4
@@ -482,6 +482,10 @@
 #define NO_gtk_1window_1add_1accel_1group
 #define NO_gtk_1window_1remove_1accel_1group
 
+// GtkAccelLabel removed
+#define NO_gtk_1accel_1label_1set_1accel
+#define NO_gtk_1accel_1label_1set_1accel_1widget
+
 // GtkBin removed
 #define NO_gtk_1bin_1get_1child
 
@@ -495,6 +499,9 @@
 // Color function signature changes
 #define NO_gtk_1hsv_1to_1rgb__DDD_3D_3D_3D
 #define NO_gtk_1rgb_1to_1hsv__DDD_3D_3D_3D
+
+// GtkRadioButton removed
+#define NO_gtk_1radio_1button_1get_1group
 
 #else
 
@@ -517,7 +524,6 @@
 #define NO_gdk_1surface_1invalidate_1rect
 #define NO_gdk_1surface_1get_1display
 #define NO_gdk_1surface_1set_1cursor
-#define NO_gdk_1surface_1new_1toplevel
 #define NO_gdk_1surface_1new_1popup
 #define NO_gdk_1surface_1get_1device_1position
 #define NO_gdk_1display_1get_1monitor_1at_1surface

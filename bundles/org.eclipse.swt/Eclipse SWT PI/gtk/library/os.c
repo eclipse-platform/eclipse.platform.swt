@@ -2509,11 +2509,19 @@ JNIEXPORT jlong JNICALL GDK_NATIVE(gdk_1surface_1new_1popup)
 
 #ifndef NO_gdk_1surface_1new_1toplevel
 JNIEXPORT jlong JNICALL GDK_NATIVE(gdk_1surface_1new_1toplevel)
-	(JNIEnv *env, jclass that, jlong arg0, jint arg1, jint arg2)
+	(JNIEnv *env, jclass that, jlong arg0)
 {
 	jlong rc = 0;
 	GDK_NATIVE_ENTER(env, that, gdk_1surface_1new_1toplevel_FUNC);
-	rc = (jlong)gdk_surface_new_toplevel((GdkDisplay *)arg0, arg1, arg2);
+/*
+	rc = (jlong)gdk_surface_new_toplevel((GdkDisplay *)arg0);
+*/
+	{
+		GDK_LOAD_FUNCTION(fp, gdk_surface_new_toplevel)
+		if (fp) {
+			rc = (jlong)((jlong (CALLING_CONVENTION*)(GdkDisplay *))fp)((GdkDisplay *)arg0);
+		}
+	}
 	GDK_NATIVE_EXIT(env, that, gdk_1surface_1new_1toplevel_FUNC);
 	return rc;
 }
@@ -4566,6 +4574,26 @@ JNIEXPORT void JNICALL GTK_NATIVE(gtk_1cell_1view_1set_1fit_1model)
 }
 #endif
 
+#ifndef NO_gtk_1check_1button_1get_1active
+JNIEXPORT jboolean JNICALL GTK_NATIVE(gtk_1check_1button_1get_1active)
+	(JNIEnv *env, jclass that, jlong arg0)
+{
+	jboolean rc = 0;
+	GTK_NATIVE_ENTER(env, that, gtk_1check_1button_1get_1active_FUNC);
+/*
+	rc = (jboolean)gtk_check_button_get_active((GtkCheckButton *)arg0);
+*/
+	{
+		GTK_LOAD_FUNCTION(fp, gtk_check_button_get_active)
+		if (fp) {
+			rc = (jboolean)((jboolean (CALLING_CONVENTION*)(GtkCheckButton *))fp)((GtkCheckButton *)arg0);
+		}
+	}
+	GTK_NATIVE_EXIT(env, that, gtk_1check_1button_1get_1active_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_gtk_1check_1button_1new
 JNIEXPORT jlong JNICALL GTK_NATIVE(gtk_1check_1button_1new)
 	(JNIEnv *env, jclass that)
@@ -4578,12 +4606,56 @@ JNIEXPORT jlong JNICALL GTK_NATIVE(gtk_1check_1button_1new)
 }
 #endif
 
+#ifndef NO_gtk_1check_1button_1set_1active
+JNIEXPORT void JNICALL GTK_NATIVE(gtk_1check_1button_1set_1active)
+	(JNIEnv *env, jclass that, jlong arg0, jboolean arg1)
+{
+	GTK_NATIVE_ENTER(env, that, gtk_1check_1button_1set_1active_FUNC);
+/*
+	gtk_check_button_set_active((GtkCheckButton *)arg0, arg1);
+*/
+	{
+		GTK_LOAD_FUNCTION(fp, gtk_check_button_set_active)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(GtkCheckButton *, jboolean))fp)((GtkCheckButton *)arg0, arg1);
+		}
+	}
+	GTK_NATIVE_EXIT(env, that, gtk_1check_1button_1set_1active_FUNC);
+}
+#endif
+
+#ifndef NO_gtk_1check_1button_1set_1group
+JNIEXPORT void JNICALL GTK_NATIVE(gtk_1check_1button_1set_1group)
+	(JNIEnv *env, jclass that, jlong arg0, jlong arg1)
+{
+	GTK_NATIVE_ENTER(env, that, gtk_1check_1button_1set_1group_FUNC);
+/*
+	gtk_check_button_set_group((GtkCheckButton *)arg0, (GtkCheckButton *)arg1);
+*/
+	{
+		GTK_LOAD_FUNCTION(fp, gtk_check_button_set_group)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(GtkCheckButton *, GtkCheckButton *))fp)((GtkCheckButton *)arg0, (GtkCheckButton *)arg1);
+		}
+	}
+	GTK_NATIVE_EXIT(env, that, gtk_1check_1button_1set_1group_FUNC);
+}
+#endif
+
 #ifndef NO_gtk_1check_1button_1set_1inconsistent
 JNIEXPORT void JNICALL GTK_NATIVE(gtk_1check_1button_1set_1inconsistent)
 	(JNIEnv *env, jclass that, jlong arg0, jboolean arg1)
 {
 	GTK_NATIVE_ENTER(env, that, gtk_1check_1button_1set_1inconsistent_FUNC);
-	gtk_check_button_set_inconsistent(arg0, arg1);
+/*
+	gtk_check_button_set_inconsistent((GtkCheckButton *)arg0, arg1);
+*/
+	{
+		GTK_LOAD_FUNCTION(fp, gtk_check_button_set_inconsistent)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(GtkCheckButton *, jboolean))fp)((GtkCheckButton *)arg0, arg1);
+		}
+	}
 	GTK_NATIVE_EXIT(env, that, gtk_1check_1button_1set_1inconsistent_FUNC);
 }
 #endif
@@ -9025,7 +9097,15 @@ JNIEXPORT jlong JNICALL GTK_NATIVE(gtk_1radio_1button_1get_1group)
 {
 	jlong rc = 0;
 	GTK_NATIVE_ENTER(env, that, gtk_1radio_1button_1get_1group_FUNC);
+/*
 	rc = (jlong)gtk_radio_button_get_group((GtkRadioButton *)arg0);
+*/
+	{
+		GTK_LOAD_FUNCTION(fp, gtk_radio_button_get_group)
+		if (fp) {
+			rc = (jlong)((jlong (CALLING_CONVENTION*)(GtkRadioButton *))fp)((GtkRadioButton *)arg0);
+		}
+	}
 	GTK_NATIVE_EXIT(env, that, gtk_1radio_1button_1get_1group_FUNC);
 	return rc;
 }
@@ -9037,7 +9117,15 @@ JNIEXPORT jlong JNICALL GTK_NATIVE(gtk_1radio_1button_1new)
 {
 	jlong rc = 0;
 	GTK_NATIVE_ENTER(env, that, gtk_1radio_1button_1new_FUNC);
+/*
 	rc = (jlong)gtk_radio_button_new((GSList *)arg0);
+*/
+	{
+		GTK_LOAD_FUNCTION(fp, gtk_radio_button_new)
+		if (fp) {
+			rc = (jlong)((jlong (CALLING_CONVENTION*)(GSList *))fp)((GSList *)arg0);
+		}
+	}
 	GTK_NATIVE_EXIT(env, that, gtk_1radio_1button_1new_FUNC);
 	return rc;
 }
@@ -13692,6 +13780,24 @@ JNIEXPORT void JNICALL GTK_NATIVE(gtk_1widget_1set_1opacity)
 		}
 	}
 	GTK_NATIVE_EXIT(env, that, gtk_1widget_1set_1opacity_FUNC);
+}
+#endif
+
+#ifndef NO_gtk_1widget_1set_1parent
+JNIEXPORT void JNICALL GTK_NATIVE(gtk_1widget_1set_1parent)
+	(JNIEnv *env, jclass that, jlong arg0, jlong arg1)
+{
+	GTK_NATIVE_ENTER(env, that, gtk_1widget_1set_1parent_FUNC);
+/*
+	gtk_widget_set_parent((GtkWidget *)arg0, (GtkWidget *)arg1);
+*/
+	{
+		GTK_LOAD_FUNCTION(fp, gtk_widget_set_parent)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(GtkWidget *, GtkWidget *))fp)((GtkWidget *)arg0, (GtkWidget *)arg1);
+		}
+	}
+	GTK_NATIVE_EXIT(env, that, gtk_1widget_1set_1parent_FUNC);
 }
 #endif
 

@@ -5847,7 +5847,7 @@ public void setRedraw (boolean redraw) {
 				Rectangle bounds = getBoundsInPixels ();
 				if (GTK.GTK4) {
 					/* TODO: Need to reconsider whether a redrawSurface is a GdkToplevel or GdkPopup */
-					redrawSurface = GDK.gdk_surface_new_toplevel(GDK.gdk_display_get_default(), bounds.width, bounds.height);
+					redrawSurface = GDK.gdk_surface_new_toplevel(GDK.gdk_display_get_default());
 					/* TODO: GTK does not provide a gdk_surface_show, probably will require use of the present api */
 				} else {
 					long window = paintWindow ();

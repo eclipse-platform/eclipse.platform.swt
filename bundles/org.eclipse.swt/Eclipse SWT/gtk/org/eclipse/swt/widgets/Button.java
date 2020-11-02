@@ -339,11 +339,21 @@ void createHandle (int index) {
 			* to the same group.  This allows the visible button to be
 			* unselected.
 			*/
-			groupHandle = GTK.gtk_radio_button_new (0);
-			if (groupHandle == 0) error (SWT.ERROR_NO_HANDLES);
-			OS.g_object_ref_sink (groupHandle);
-			handle = GTK.gtk_radio_button_new (GTK.gtk_radio_button_get_group (groupHandle));
-			if (handle == 0) error (SWT.ERROR_NO_HANDLES);
+
+			if (GTK.GTK4) {
+				groupHandle = GTK.gtk_check_button_new();
+				if (groupHandle == 0) error(SWT.ERROR_NO_HANDLES);
+				handle = GTK.gtk_check_button_new();
+				if (handle == 0) error (SWT.ERROR_NO_HANDLES);
+				GTK.gtk_check_button_set_group(handle, groupHandle);
+			} else {
+				groupHandle = GTK.gtk_radio_button_new (0);
+				if (groupHandle == 0) error (SWT.ERROR_NO_HANDLES);
+				OS.g_object_ref_sink (groupHandle);
+				handle = GTK.gtk_radio_button_new (GTK.gtk_radio_button_get_group (groupHandle));
+				if (handle == 0) error (SWT.ERROR_NO_HANDLES);
+			}
+
 			if (Display.themeName != null) {
 				toggleButtonTheming = (GTK.GTK_VERSION >= OS.VERSION(3, 24, 11) && Display.themeName.contains("Adwaita"))
 						|| Display.themeName.contains("Yaru");
@@ -369,13 +379,13 @@ void createHandle (int index) {
 		if (imageHandle == 0) error (SWT.ERROR_NO_HANDLES);
 
 		if (GTK.GTK4) {
-			GTK.gtk_button_set_child(handle, boxHandle);
+			GTK.gtk_widget_set_parent(boxHandle, handle);
 			GTK.gtk_box_append(boxHandle, imageHandle);
 			GTK.gtk_box_append(boxHandle, labelHandle);
 		} else {
-			GTK.gtk_container_add (handle, boxHandle);
-			GTK.gtk_container_add (boxHandle, imageHandle);
-			GTK.gtk_container_add (boxHandle, labelHandle);
+			GTK.gtk_container_add(handle, boxHandle);
+			GTK.gtk_container_add(boxHandle, imageHandle);
+			GTK.gtk_container_add(boxHandle, labelHandle);
 		}
 
 		if ((style & SWT.WRAP) != 0) {
@@ -533,7 +543,12 @@ String getNameText () {
 public boolean getSelection () {
 	checkWidget ();
 	if ((style & (SWT.CHECK | SWT.RADIO | SWT.TOGGLE)) == 0) return false;
-	return GTK.gtk_toggle_button_get_active (handle);
+
+	if (GTK.GTK4 && (style & (SWT.CHECK | SWT.RADIO)) != 0) {
+		return GTK.gtk_check_button_get_active(handle);
+	} else {
+		return GTK.gtk_toggle_button_get_active(handle);
+	}
 }
 
 /**
@@ -645,7 +660,13 @@ long gtk_key_press_event (long widget, long event) {
 @Override
 void hookEvents () {
 	super.hookEvents();
-	OS.g_signal_connect_closure (handle, OS.clicked, display.getClosure (CLICKED), false);
+
+	if (GTK.GTK4 && ((style & (SWT.RADIO | SWT.CHECK)) != 0)) {
+		OS.g_signal_connect_closure (handle, OS.toggled, display.getClosure (CLICKED), false);
+	} else {
+		OS.g_signal_connect_closure (handle, OS.clicked, display.getClosure (CLICKED), false);
+	}
+
 	if (labelHandle != 0) {
 		OS.g_signal_connect_closure_by_id (labelHandle, display.signalIds [MNEMONIC_ACTIVATE], 0, display.getClosure (MNEMONIC_ACTIVATE), false);
 	}
@@ -688,8 +709,12 @@ void releaseHandle () {
 @Override
 void releaseWidget () {
 	super.releaseWidget ();
-	if (groupHandle != 0) OS.g_object_unref (groupHandle);
-	groupHandle = 0;
+
+	if (!GTK.GTK4) {
+		if (groupHandle != 0) OS.g_object_unref (groupHandle);
+		groupHandle = 0;
+	}
+
 	if (imageList != null) imageList.dispose ();
 	imageList = null;
 	image = null;
@@ -1128,7 +1153,13 @@ public void setSelection (boolean selected) {
 	checkWidget();
 	if ((style & (SWT.CHECK | SWT.RADIO | SWT.TOGGLE)) == 0) return;
 	OS.g_signal_handlers_block_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CLICKED);
-	GTK.gtk_toggle_button_set_active (handle, selected);
+
+	if (GTK.GTK4) {
+		GTK.gtk_check_button_set_active(handle, selected);
+	} else {
+		GTK.gtk_toggle_button_set_active (handle, selected);
+	}
+
 	if ((style & SWT.CHECK) != 0) {
 		boolean inconsistent = selected && grayed;
 
@@ -1138,7 +1169,14 @@ public void setSelection (boolean selected) {
 			GTK.gtk_toggle_button_set_inconsistent(handle, inconsistent);
 		}
 	}
-	if ((style & SWT.RADIO) != 0) GTK.gtk_toggle_button_set_active (groupHandle, !selected);
+	if ((style & SWT.RADIO) != 0) {
+		if (GTK.GTK4) {
+			GTK.gtk_check_button_set_active(groupHandle, !selected);
+		} else {
+			GTK.gtk_toggle_button_set_active (groupHandle, !selected);
+		}
+	}
+
 	OS.g_signal_handlers_unblock_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CLICKED);
 }
 

@@ -22,7 +22,7 @@ package org.eclipse.swt.internal.gtk;
 public class GTK extends OS {
 
 	public static final int GTK_VERSION = OS.VERSION(GTK.gtk_get_major_version(), GTK.gtk_get_minor_version(), GTK.gtk_get_micro_version());
-	public static final boolean GTK4 = GTK_VERSION >= OS.VERSION(3, 94, 0);
+	public static final boolean GTK4 = GTK_VERSION >= OS.VERSION(3, 99, 3);
 
 	/** Constants */
 	public static final int GTK_ACCEL_VISIBLE = 0x1;
@@ -678,7 +678,28 @@ public class GTK extends OS {
 	public static final native long gtk_check_button_new();
 
 	/* GtkCheckButton [GTK4 only] */
+	/**
+	 * @method flags=dynamic
+	 * @param check_button cast=(GtkCheckButton *)
+	 */
 	public static final native void gtk_check_button_set_inconsistent(long check_button, boolean inconsistent);
+	/**
+	 * @method flags=dynamic
+	 * @param check_button cast=(GtkCheckButton *)
+	 * @param group cast=(GtkCheckButton *)
+	 */
+	public static final native void gtk_check_button_set_group(long check_button, long group);
+	/**
+	 * @method flags=dynamic
+	 * @param check_button cast=(GtkCheckButton *)
+	 */
+	public static final native void gtk_check_button_set_active(long check_button, boolean setting);
+	/**
+	 * @method flags=dynamic
+	 * @param check_button cast=(GtkCheckButton *)
+	 */
+	public static final native boolean gtk_check_button_get_active(long check_button);
+
 
 	public static final native long gtk_check_version(int required_major, int required_minor, int required_micro);
 	/** @param clipboard cast=(GtkClipboard *) */
@@ -1384,6 +1405,13 @@ public class GTK extends OS {
 	 * @param controller cast=(GtkEventController *)
 	 */
 	public static final native void gtk_widget_add_controller(long widget, long controller);
+	/**
+	 * @method flags=dynamic
+	 * @param widget cast=(GtkWidget *)
+	 * @param parent cast=(GtkWidget *)
+	 */
+	public static final native void gtk_widget_set_parent(long widget, long parent);
+
 	/**
 	 * @method flags=dynamic
 	 * @param title cast=(const gchar *),flags=no_out
@@ -2394,10 +2422,21 @@ public class GTK extends OS {
 	 * @param inverted cast=(gboolean)
 	 */
 	public static final native void gtk_progress_bar_set_inverted(long pbar, boolean inverted);
-	/** @param radio_button cast=(GtkRadioButton *) */
+
+
+	/* GtkRadioButton [GTK3 only] */
+	/**
+	 * @method flags=dynamic
+	 * @param radio_button cast=(GtkRadioButton *)
+	 */
 	public static final native long gtk_radio_button_get_group(long radio_button);
-	/** @param group cast=(GSList *) */
+	/**
+	 * @method flags=dynamic
+	 * @param group cast=(GSList *)
+	 */
 	public static final native long gtk_radio_button_new(long group);
+
+
 	/** @param range cast=(GtkRange *) */
 	public static final native long gtk_range_get_adjustment(long range);
 	/** @param range cast=(GtkRange *) */
