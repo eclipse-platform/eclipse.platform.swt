@@ -49,7 +49,6 @@ public Shell open (Display display) {
 		gc.drawRectangle(rect.x + 10, rect.y + 10, rect.width - 20, rect.height - 20);
 		gc.drawString(resHello.getString("Hello_world"), rect.x + 20, rect.y + 20);
 	});
-	shell.addDisposeListener (e -> red.dispose());
 	shell.open ();
 	return shell;
 }

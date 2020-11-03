@@ -433,8 +433,6 @@ abstract class Tab {
 		changeButton.addSelectionListener(widgetSelectedAdapter(event -> changeFontOrColor (colorAndFontTable.getSelectionIndex())));
 		defaultsButton.addSelectionListener(widgetSelectedAdapter(e -> resetColorsAndFonts ()));
 		shell.addDisposeListener(event -> {
-			if (foregroundColor != null) foregroundColor.dispose();
-			if (backgroundColor != null) backgroundColor.dispose();
 			if (font != null) font.dispose();
 			foregroundColor = null;
 			backgroundColor = null;

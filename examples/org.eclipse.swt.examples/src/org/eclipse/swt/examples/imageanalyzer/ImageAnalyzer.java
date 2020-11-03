@@ -221,11 +221,6 @@ public class ImageAnalyzer {
 			// Clean up.
 			if (image != null)
 				image.dispose();
-			whiteColor.dispose();
-			blackColor.dispose();
-			redColor.dispose();
-			greenColor.dispose();
-			blueColor.dispose();
 			fixedWidthFont.dispose();
 		});
 

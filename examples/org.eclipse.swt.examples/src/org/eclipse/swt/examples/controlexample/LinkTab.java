@@ -34,7 +34,7 @@ class LinkTab extends Tab {
 	/* Controls and resources added to the "Fonts" group */
 	static final int LINK_FOREGROUND_COLOR = 3;
 	Color linkForegroundColor;
-	
+
 	/**
 	 * Creates the Tab within a given instance of ControlExample.
 	 */
@@ -91,11 +91,10 @@ class LinkTab extends Tab {
 		item.setText(ControlExample.getResourceString ("Link_Foreground_Color"));
 
 		shell.addDisposeListener(event -> {
-			if (linkForegroundColor != null) linkForegroundColor.dispose();
 			linkForegroundColor = null;
 		});
 	}
-	
+
 	@Override
 	void changeFontOrColor(int index) {
 		switch (index) {
@@ -125,7 +124,7 @@ class LinkTab extends Tab {
 		if (oldImage != null) oldImage.dispose();
 		item.setImage (colorImage(color));
 	}
-	
+
 	@Override
 	void resetColorsAndFonts () {
 		super.resetColorsAndFonts ();
@@ -140,7 +139,7 @@ class LinkTab extends Tab {
 		super.setExampleWidgetState();
 		setLinkForeground ();
 	}
-	
+
 	/**
 	 * Gets the "Example" widget children.
 	 */

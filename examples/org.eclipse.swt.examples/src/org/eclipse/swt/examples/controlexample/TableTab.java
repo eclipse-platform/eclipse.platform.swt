@@ -116,14 +116,8 @@ class TableTab extends ScrollableTab {
 		item.setText(ControlExample.getResourceString ("Header_Background_Color"));
 
 		shell.addDisposeListener(event -> {
-			if (itemBackgroundColor != null) itemBackgroundColor.dispose();
-			if (itemForegroundColor != null) itemForegroundColor.dispose();
 			if (itemFont != null) itemFont.dispose();
-			if (cellBackgroundColor != null) cellBackgroundColor.dispose();
-			if (cellForegroundColor != null) cellForegroundColor.dispose();
 			if (cellFont != null) cellFont.dispose();
-			if (headerBackgroundColor != null) headerBackgroundColor.dispose();
-			if (headerForegroundColor != null) headerForegroundColor.dispose();
 			itemBackgroundColor = null;
 			itemForegroundColor = null;
 			itemFont = null;
