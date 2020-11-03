@@ -248,11 +248,15 @@ void createHandle (int index) {
 		case SWT.CHECK:
 			if (GTK.GTK4) {
 				handle = GTK.gtk_toggle_button_new();
+				if (handle == 0) error(SWT.ERROR_NO_HANDLES);
+				boxHandle = GTK.gtk_box_new(GTK.GTK_ORIENTATION_VERTICAL, 0);
+				if (boxHandle == 0) error(SWT.ERROR_NO_HANDLES);
+
+				GTK.gtk_button_set_child(handle, boxHandle);
 			} else {
 				handle = GTK.gtk_toggle_tool_button_new();
+				if (handle == 0) error(SWT.ERROR_NO_HANDLES);
 			}
-
-			if (handle == 0) error(SWT.ERROR_NO_HANDLES);
 			break;
 		case SWT.PUSH:
 		default:

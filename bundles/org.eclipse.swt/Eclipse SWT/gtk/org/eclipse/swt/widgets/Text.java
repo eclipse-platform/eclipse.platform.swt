@@ -1921,7 +1921,14 @@ void hookEvents() {
 	}
 
 	// In GTK4, these event signals belong to GtkText which is the only child of GtkEntry
-	long eventHandle = GTK.GTK4 ? textHandle : handle;
+	long eventHandle = 0;
+
+	if (GTK.GTK4) {
+		eventHandle = ((style & SWT.SINGLE) != 0) ? textHandle : handle;
+	} else {
+		eventHandle = handle;
+	}
+
 	OS.g_signal_connect_closure(eventHandle, OS.backspace, display.getClosure (BACKSPACE), false);
 	OS.g_signal_connect_closure(eventHandle, OS.backspace, display.getClosure (BACKSPACE_INVERSE), true);
 	OS.g_signal_connect_closure(eventHandle, OS.copy_clipboard, display.getClosure (COPY_CLIPBOARD), false);
