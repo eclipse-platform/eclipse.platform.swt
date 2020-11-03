@@ -14,8 +14,6 @@
 package org.eclipse.swt.widgets;
 
 
-import java.util.*;
-
 import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
@@ -281,9 +279,7 @@ void createWidget (int index) {
 void createItem (TabItem item, int index) {
 	int itemCount = 0;
 	if (GTK.GTK4) {
-		for (long child = GTK.gtk_widget_get_first_child(handle); child != 0; child = GTK.gtk_widget_get_next_sibling(child)) {
-			itemCount++;
-		}
+		itemCount = GTK.gtk_notebook_get_n_pages(handle);
 	} else {
 		long list = GTK.gtk_container_get_children (handle);
 		if (list != 0) {
@@ -309,8 +305,8 @@ void createItem (TabItem item, int index) {
 		GTK.gtk_box_append(boxHandle, imageHandle);
 		GTK.gtk_box_append(boxHandle, labelHandle);
 	} else {
-		GTK.gtk_container_add (boxHandle, imageHandle);
-		GTK.gtk_container_add (boxHandle, labelHandle);
+		GTK.gtk_container_add(boxHandle, imageHandle);
+		GTK.gtk_container_add(boxHandle, labelHandle);
 	}
 
 	long pageHandle = OS.g_object_new (display.gtk_fixed_get_type (), 0);
@@ -318,9 +314,15 @@ void createItem (TabItem item, int index) {
 	OS.g_signal_handlers_block_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, SWITCH_PAGE);
 	GTK.gtk_notebook_insert_page (handle, pageHandle, boxHandle, index);
 	OS.g_signal_handlers_unblock_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, SWITCH_PAGE);
-	GTK.gtk_widget_show (boxHandle);
-	GTK.gtk_widget_show (labelHandle);
-	GTK.gtk_widget_show (pageHandle);
+
+	if (GTK.GTK4) {
+		GTK.gtk_widget_hide(imageHandle);
+	} else {
+		GTK.gtk_widget_show(boxHandle);
+		GTK.gtk_widget_show(labelHandle);
+		GTK.gtk_widget_show(pageHandle);
+	}
+
 	item.state |= HANDLE;
 	item.handle = boxHandle;
 	item.labelHandle = labelHandle;
@@ -394,16 +396,13 @@ Control[] _getChildren() {
 			long parentHandle = tabItem.pageHandle;
 
 			if (GTK.GTK4) {
-				ArrayList<Control> childrenList = new ArrayList<>();
 				for (long child = GTK.gtk_widget_get_first_child(parentHandle); child != 0; child = GTK.gtk_widget_get_next_sibling(child)) {
 					Widget childWidget = display.getWidget(child);
 					if (childWidget != null && childWidget instanceof Control && childWidget != this) {
-						childrenList.add((Control)childWidget);
+						children[childrenCount] = (Control)childWidget;
 						childrenCount++;
 					}
 				}
-
-				children = childrenList.toArray(children);
 			} else {
 				long list = GTK.gtk_container_get_children (parentHandle);
 				if (list != 0) {
@@ -515,9 +514,7 @@ public int getItemCount () {
 
 	int itemCount = 0;
 	if (GTK.GTK4) {
-		for (long child = GTK.gtk_widget_get_first_child(handle); child != 0; child = GTK.gtk_widget_get_next_sibling(child)) {
-			itemCount++;
-		}
+		itemCount = GTK.gtk_notebook_get_n_pages(handle);
 	} else {
 		long list = GTK.gtk_container_get_children (handle);
 		if (list == 0) return 0;

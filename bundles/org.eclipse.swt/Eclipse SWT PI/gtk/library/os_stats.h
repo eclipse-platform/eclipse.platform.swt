@@ -619,6 +619,7 @@ typedef enum {
 	gtk_1native_1dialog_1run_FUNC,
 	gtk_1native_1get_1surface_FUNC,
 	gtk_1notebook_1get_1current_1page_FUNC,
+	gtk_1notebook_1get_1n_1pages_FUNC,
 	gtk_1notebook_1get_1scrollable_FUNC,
 	gtk_1notebook_1insert_1page_FUNC,
 	gtk_1notebook_1new_FUNC,

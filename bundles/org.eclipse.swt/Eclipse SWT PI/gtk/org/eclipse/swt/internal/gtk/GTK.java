@@ -2039,10 +2039,26 @@ public class GTK extends OS {
 
 	/** @param dialog cast=(GtkNativeDialog *) */
 	public static final native int gtk_native_dialog_run(long dialog);
+
+
+	/* GtkNotebook */
+	public static final native long gtk_notebook_new();
+	/** @param notebook cast=(GtkNotebook *) */
+	public static final native int gtk_notebook_get_n_pages(long notebook);
 	/** @param notebook cast=(GtkNotebook *) */
 	public static final native int gtk_notebook_get_current_page(long notebook);
+	/**
+	 * @param notebook cast=(GtkNotebook *)
+	 * @param page_num cast=(gint)
+	 */
+	public static final native void gtk_notebook_set_current_page(long notebook, int page_num);
 	/** @param notebook cast=(GtkNotebook *) */
 	public static final native boolean gtk_notebook_get_scrollable(long notebook);
+	/**
+	 * @param notebook cast=(GtkNotebook *)
+	 * @param scrollable cast=(gboolean)
+	 */
+	public static final native void gtk_notebook_set_scrollable(long notebook, boolean scrollable);
 	/**
 	 * @param notebook cast=(GtkNotebook *)
 	 * @param child cast=(GtkWidget *)
@@ -2050,26 +2066,15 @@ public class GTK extends OS {
 	 * @param position cast=(gint)
 	 */
 	public static final native void gtk_notebook_insert_page(long notebook, long child, long tab_label, int position);
-	public static final native long gtk_notebook_new();
-	/** @param notebook cast=(GtkNotebook *) */
-	public static final native void gtk_notebook_next_page(long notebook);
-	/** @param notebook cast=(GtkNotebook *) */
-	public static final native void gtk_notebook_prev_page(long notebook);
 	/**
 	 * @param notebook cast=(GtkNotebook *)
 	 * @param page_num cast=(gint)
 	 */
 	public static final native void gtk_notebook_remove_page(long notebook, int page_num);
-	/**
-	 * @param notebook cast=(GtkNotebook *)
-	 * @param page_num cast=(gint)
-	 */
-	public static final native void gtk_notebook_set_current_page(long notebook, int page_num);
-	/**
-	 * @param notebook cast=(GtkNotebook *)
-	 * @param scrollable cast=(gboolean)
-	 */
-	public static final native void gtk_notebook_set_scrollable(long notebook, boolean scrollable);
+	/** @param notebook cast=(GtkNotebook *) */
+	public static final native void gtk_notebook_next_page(long notebook);
+	/** @param notebook cast=(GtkNotebook *) */
+	public static final native void gtk_notebook_prev_page(long notebook);
 	/**
 	 * @param notebook cast=(GtkNotebook *)
 	 * @param show_tabs cast=(gboolean)
@@ -2080,6 +2085,8 @@ public class GTK extends OS {
 	 * @param pos cast=(GtkPositionType)
 	 */
 	public static final native void gtk_notebook_set_tab_pos(long notebook, int pos);
+
+
 	/**
 	 * @param orientable cast=(GtkOrientable *)
 	 * @param orientation cast=(GtkOrientation)

@@ -8196,6 +8196,18 @@ JNIEXPORT jint JNICALL GTK_NATIVE(gtk_1notebook_1get_1current_1page)
 }
 #endif
 
+#ifndef NO_gtk_1notebook_1get_1n_1pages
+JNIEXPORT jint JNICALL GTK_NATIVE(gtk_1notebook_1get_1n_1pages)
+	(JNIEnv *env, jclass that, jlong arg0)
+{
+	jint rc = 0;
+	GTK_NATIVE_ENTER(env, that, gtk_1notebook_1get_1n_1pages_FUNC);
+	rc = (jint)gtk_notebook_get_n_pages((GtkNotebook *)arg0);
+	GTK_NATIVE_EXIT(env, that, gtk_1notebook_1get_1n_1pages_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_gtk_1notebook_1get_1scrollable
 JNIEXPORT jboolean JNICALL GTK_NATIVE(gtk_1notebook_1get_1scrollable)
 	(JNIEnv *env, jclass that, jlong arg0)

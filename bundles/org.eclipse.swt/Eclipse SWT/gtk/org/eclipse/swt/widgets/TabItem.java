@@ -309,8 +309,8 @@ public void setControl (Control control) {
 			long parentContainer = GTK.gtk_widget_get_parent (widget);
 			if (parentContainer != 0) {
 				OS.g_object_ref (widget); //so that it won't get destroyed due to lack of references.
-				GTK.gtk_container_remove (parentContainer, widget);
-				GTK.gtk_container_add (pageHandle, widget);
+				OS.swt_fixed_remove (parentContainer, widget);
+				OS.swt_fixed_add (pageHandle, widget);
 				OS.g_object_unref (widget);
 				GTK.gtk_widget_show(widget);
 			}
