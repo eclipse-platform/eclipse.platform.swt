@@ -455,9 +455,6 @@
 
 // GtkIconTheme API changes
 #define NO_gtk_1icon_1info_1load_1icon
-#define NO_gtk_1icon_1theme_1get_1default
-#define NO_gtk_1icon_1theme_1load_1icon
-#define NO_gtk_1icon_1theme_1lookup_1by_1gicon__JJII
 
 // GtkSelectionData removed
 #define NO_gtk_1selection_1data_1free
@@ -573,6 +570,7 @@
 
 // No GdkTexture on GTK3
 #define NO_gdk_1texture_1new_1for_1pixbuf
+#define NO_gdk_1pixbuf_1get_1from_1texture
 
 // GdkEvent functions which do not exist on GTK3
 #define NO_gdk_1focus_1event_1get_1in
@@ -633,6 +631,9 @@
 #define NO_gtk_1shortcut_1controller_1new
 #define NO_gtk_1shortcut_1controller_1set_1scope
 #define NO_gtk_1shortcut_1new
+
+// No GtkIconPaintable
+#define NO_gtk_1icon_1paintable_1get_1file
 
 #endif
 

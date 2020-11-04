@@ -52,6 +52,7 @@ public class GTK extends OS {
 	public static final int GTK_ICON_SIZE_SMALL_TOOLBAR = 2;
 	public static final int GTK_ICON_SIZE_DIALOG = 6;
 	public static final int GTK_ICON_LOOKUP_FORCE_SIZE = 4;
+	public static final int GTK_ICON_LOOKUP_FORCE_REGULAR = 0;
 	public static final int GTK_JUSTIFY_CENTER = 0x2;
 	public static final int GTK_JUSTIFY_LEFT = 0x0;
 	public static final int GTK_JUSTIFY_RIGHT = 0x1;
@@ -1625,13 +1626,15 @@ public class GTK extends OS {
 
 	/* GtkIconTheme [GTK3 only, if-def'd in os.h] */
 	/**
+	 * @method flags=dynamic
 	 * @param icon_info cast=(GtkIconInfo *)
 	 * @param error cast=(GError **)
 	 */
 	public static final native long gtk_icon_info_load_icon(long icon_info, long error[]);
-	/** @return cast=(GtkIconTheme *) */
+	/** @method flags=dynamic */
 	public static final native long gtk_icon_theme_get_default();
 	/**
+	 * @method flags=dynamic
 	 * @param icon_theme cast=(GtkIconTheme *)
 	 * @param icon_name cast=(const gchar *)
 	 * @param size cast=(gint)
@@ -1640,6 +1643,7 @@ public class GTK extends OS {
 	 */
 	public static final native long gtk_icon_theme_load_icon(long icon_theme, byte[] icon_name, int size, int flags, long error);
 	/**
+	 * @method flags=dynamic
 	 * @param icon_theme cast=(GtkIconTheme *)
 	 * @param icon cast=(GIcon *)
 	 * @param size cast=(gint)
@@ -1648,27 +1652,31 @@ public class GTK extends OS {
 	public static final native long gtk_icon_theme_lookup_by_gicon(long icon_theme, long icon, int size, int flags);
 
 	/* GtkIconTheme [GTK4 only, if-def'd in os.h] */
-	/** @param display cast=(GdkDisplay *) */
+	/**
+	 * @method flags=dynamic
+	 * @param display cast=(GdkDisplay *)
+	 */
 	public static final native long gtk_icon_theme_get_for_display(long display);
 	/**
+	 * @method flags=dynamic
 	 * @param self cast=(GtkIconTheme *)
 	 * @param icon_name cast=(const char *)
-	 * @param size cast=(gint)
-	 * @param scale cast=(gint)
 	 * @param fallbacks cast=(const char **)
-	 * @param direction cast=(GtkTextDirection)
-	 * @param flags cast=(GtkIconLookupFlags)
-	 */
-	public static final native long gtk_icon_theme_lookup_icon(long self, long icon_name, long fallbacks, int size, int scale, int direction, int flags);
-	/**
-	 * @param self cast=(GtkIconTheme *)
-	 * @param icon cast=(GIcon *)
 	 * @param size cast=(gint)
 	 * @param scale cast=(gint)
 	 * @param direction cast=(GtkTextDirection)
 	 * @param flags cast=(GtkIconLookupFlags)
 	 */
-	public static final native long gtk_icon_theme_lookup_by_gicon(long self, long icon, int size, int scale, int direction, int flags);
+	public static final native long gtk_icon_theme_lookup_icon(long self, byte[] icon_name, long fallbacks, int size, int scale, int direction, int flags);
+
+
+	/* GtkIconPaintable [GTK4 only] */
+	/**
+	 * @method flags=dynamic
+	 * @param paintable cast=(GtkIconPaintable *)
+	 */
+	public static final native long gtk_icon_paintable_get_file(long paintable);
+
 
 	/** @param context cast=(GtkIMContext *) */
 	public static final native boolean gtk_im_context_filter_keypress(long context, long event);

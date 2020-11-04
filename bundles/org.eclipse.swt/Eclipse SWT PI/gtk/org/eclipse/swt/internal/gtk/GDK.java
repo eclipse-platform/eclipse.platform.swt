@@ -779,12 +779,20 @@ public class GDK extends OS {
 	 */
 	public static final native long gdk_pixbuf_scale_simple(long src, int dest_width, int dest_height, int interp_type);
 
-	/* GdkPixbuf Interaction */
+	/* GdkPixbuf Interaction [GTK3 only] */
 	/**
 	 * @method flags=dynamic
 	 * @param window cast=(GdkWindow *)
 	 */
 	public static final native long gdk_pixbuf_get_from_window(long window, int x, int y, int width, int height);
+
+	/* GdkPixbuf Interaction [GTK4 only] */
+	/**
+	 * @method flags=dynamic
+	 * @param texture cast=(GdkTexture *)
+	 */
+	public static final native long gdk_pixbuf_get_from_texture(long texture);
+
 
 	/**
 	 * @param device cast=(GdkDevice *)
@@ -1008,11 +1016,18 @@ public class GDK extends OS {
 	 * @param list cast=(gchar ***)
 	 */
 	public static final native int gdk_text_property_to_utf8_list_for_display(long display, long encoding, int format, long text, int length,  long [] list);
-	/**
-	 * @param pixbuf cast=(GdkPixbuf *)
-	 */
-	/* [GTK4 only, if-def'd in os.h] */
+
+
+	/* GdkTexture [GTK4 only] */
+	/** @param pixbuf cast=(GdkPixbuf *) */
 	public static final native long gdk_texture_new_for_pixbuf(long pixbuf);
+	/**
+	 * @param file cast=(GFile *)
+	 * @param error cast=(GError **)
+	 */
+	public static final native long gdk_texture_new_from_file(long file, long error);
+
+
 	public static final native void gdk_threads_leave ();
 	public static final native  int gdk_unicode_to_keyval(int wc);
 	/**

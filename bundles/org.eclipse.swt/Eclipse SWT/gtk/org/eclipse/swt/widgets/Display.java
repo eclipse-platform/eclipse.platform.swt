@@ -1327,16 +1327,24 @@ long keysChangedProc (long keymap, long user_data) {
 }
 
 Image createImage (String name) {
-	byte[] buffer = Converter.wcsToMbcs (name, true);
+	byte[] buffer = Converter.wcsToMbcs(name, true);
 
-	long iconTheme;
+	long pixbuf;
 	if (GTK.GTK4) {
-		iconTheme = GTK.gtk_icon_theme_get_for_display(GDK.gdk_display_get_default());
+		long iconTheme = GTK.gtk_icon_theme_get_for_display(GDK.gdk_display_get_default());
+		long paintable = GTK.gtk_icon_theme_lookup_icon(iconTheme, buffer, 0, 48, 1, GTK.GTK_TEXT_DIR_LTR, GTK.GTK_ICON_LOOKUP_FORCE_REGULAR);
+		long file = GTK.gtk_icon_paintable_get_file(paintable);
+		long texture = GDK.gdk_texture_new_from_file(file, 0);
+		pixbuf = GDK.gdk_pixbuf_get_from_texture(texture);
+
+		OS.g_object_unref(texture);
+		OS.g_object_unref(file);
+		OS.g_object_unref(paintable);
 	} else {
-		iconTheme = GTK.gtk_icon_theme_get_default();
+		long iconTheme = GTK.gtk_icon_theme_get_default();
+		pixbuf = GTK.gtk_icon_theme_load_icon(iconTheme, buffer, 48, GTK.GTK_ICON_LOOKUP_FORCE_SIZE, 0);
 	}
 
-	long pixbuf = GTK.gtk_icon_theme_load_icon(iconTheme, buffer, 48, GTK.GTK_ICON_LOOKUP_FORCE_SIZE, 0);
 	if (pixbuf == 0) return null;
 	int width = GDK.gdk_pixbuf_get_width (pixbuf);
 	int height = GDK.gdk_pixbuf_get_height (pixbuf);
