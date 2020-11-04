@@ -332,6 +332,7 @@ public boolean equals(Object object) {
 	if (object == this) return true;
 	if (!(object instanceof Color)) return false;
 	Color color = (Color)object;
+	if (isDisposed() || color.isDisposed()) return false;
 	GdkRGBA gdkRGBA = color.handle;
 	if (handle == gdkRGBA) return true;
 	if (this.getRed() != color.getRed()) return false;

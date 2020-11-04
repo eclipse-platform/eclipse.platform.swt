@@ -338,6 +338,9 @@ public boolean equals (Object object) {
 	if (object == this) return true;
 	if (!(object instanceof Color)) return false;
 	Color color = (Color) object;
+	if (isDisposed() || color.isDisposed()) {
+		return false;
+	}
 	return (handle & 0xFFFFFF) == (color.handle & 0xFFFFFF) && (alpha == color.alpha);
 }
 
@@ -438,6 +441,7 @@ public RGBA getRGBA () {
  */
 @Override
 public int hashCode () {
+	if (this.isDisposed()) return 0;
 	return handle ^ alpha;
 }
 

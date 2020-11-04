@@ -390,6 +390,10 @@ public void test_equalsLjava_lang_Object() {
 	Color sameColor = new Color(1, 2, 3);
 	Color sameColor2 = new Color(new RGB(1, 2, 3));
 	Color otherColor = new Color(5, 6, 7);
+	Color disposedColor = new Color(1, 2, 3);
+	disposedColor.dispose();
+	Color disposedColor2 = new Color(5, 6, 7);
+	disposedColor2.dispose();
 
 	// Test Color.equals(Object)
 	assertFalse("!color.equals((Object)null)", color.equals((Object)null));
@@ -415,6 +419,12 @@ public void test_equalsLjava_lang_Object() {
 	assertTrue("color.equals(sameColor)", color.equals(sameColor));
 	assertTrue("color.equals(sameColor2)", color.equals(sameColor2));
 	assertFalse("!color.equals(otherColor)", color.equals(otherColor));
+
+	// Test Color.equals(Color)
+	assertFalse("!color.equals(disposedColor)", color.equals(disposedColor));
+	assertFalse("!disposedColor.equals(color)", disposedColor.equals(color));
+	assertFalse("!disposedColor.equals(disposedColor2)", disposedColor.equals(disposedColor2));
+	assertFalse("!disposedColor2.equals(disposedColor)", disposedColor2.equals(disposedColor));
 }
 
 @Test
