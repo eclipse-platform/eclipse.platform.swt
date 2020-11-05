@@ -638,7 +638,11 @@ public void setImage (Image image) {
 	if (image != null) {
 		imageList = new ImageList ();
 		int index = imageList.add(image);
-		GTK.gtk_image_set_from_pixbuf(imageHandle, imageList.getPixbuf(index));
+		if (GTK.GTK4) {
+			GTK.gtk_image_set_from_pixbuf(imageHandle, imageList.getPixbuf(index));
+		} else {
+			GTK.gtk_image_set_from_surface(imageHandle, image.surface);
+		}
 		GTK.gtk_widget_hide (labelHandle);
 		GTK.gtk_widget_show (imageHandle);
 	} else {

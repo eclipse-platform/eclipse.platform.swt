@@ -1754,17 +1754,6 @@ public class GTK extends OS {
 	/* GtkImage [GTK4 only] */
 	/**
 	 * @method flags=dynamic
-	 * @param icon_name cast=(const gchar *)
-	 */
-	public static final native long gtk_image_new_from_icon_name(byte[] icon_name);
-	/**
-	 * @method flags=dynamic
-	 * @param image cast=(GtkImage *)
-	 * @param icon_name cast=(const gchar *)
-	 */
-	public static final native void gtk_image_set_from_icon_name(long image, byte[] icon_name);
-	/**
-	 * @method flags=dynamic
 	 * @param image cast=(GtkImage *)
 	 */
 	public static final native void gtk_image_clear(long image);

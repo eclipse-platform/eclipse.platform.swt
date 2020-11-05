@@ -1206,8 +1206,12 @@ void _setImage (Image image) {
 			imageList.put (imageIndex, image);
 		}
 
-		if (GTK.GTK4) GTK.gtk_widget_show(imageHandle);
-		GTK.gtk_image_set_from_pixbuf(imageHandle, imageList.getPixbuf(imageIndex));
+		if (GTK.GTK4) {
+			GTK.gtk_widget_show(imageHandle);
+			GTK.gtk_image_set_from_pixbuf(imageHandle, imageList.getPixbuf(imageIndex));
+		} else {
+			GTK.gtk_image_set_from_surface(imageHandle, image.surface);
+		}
 	} else {
 		if(GTK.GTK4) {
 			GTK.gtk_image_clear(imageHandle);
