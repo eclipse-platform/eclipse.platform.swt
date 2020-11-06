@@ -236,7 +236,6 @@
 #define NO_gtk_1target_1list_1unref
 
 // No GdkScreen on GTK4, including parameter casts
-#define NO_gtk_1widget_1get_1screen
 #define NO_gtk_1style_1context_1add_1provider_1for_1screen
 #define NO_gdk_1screen_1get_1default
 #define NO_gdk_1screen_1get_1monitor_1at_1point
@@ -301,7 +300,6 @@
 
 // No GdkWindow on GTK4, this includes parameter casting
 #define NO_gtk_1widget_1set_1has_1window
-#define NO_gtk_1widget_1get_1has_1window
 #define NO_gtk_1im_1context_1set_1client_1window
 #define NO_gtk_1widget_1set_1parent_1window
 #define NO_gdk_1cairo_1set_1source_1window
@@ -502,6 +500,16 @@
 #define NO_gtk_1dialog_1run
 #define NO_gtk_1native_1dialog_1run
 
+// GtkCellRenderer changes
+#define NO_GtkCellRendererPixbufClass_1sizeof
+#define NO_GtkCellRendererPixbuf_1sizeof
+#define NO_GtkCellRendererToggleClass_1sizeof
+#define NO_GtkCellRendererToggle_1sizeof
+
+// GTK3 only macros
+#define NO_GTK_1IS_1ACCEL_1LABEL
+#define NO_GTK_1IS_1CONTAINER
+
 #else
 
 /**
@@ -555,7 +563,6 @@
 // Miscellaneous functions not present on GTK3
 #define NO_gtk_1widget_1measure
 #define NO_gtk_1style_1context_1add_1provider_1for_1display
-#define NO_gtk_1widget_1get_1root
 #define NO_gtk_1css_1provider_1load_1from_1data__I_3BI
 #define NO_gtk_1css_1provider_1load_1from_1data__J_3BJ
 #define NO_gdk_1display_1is_1composited

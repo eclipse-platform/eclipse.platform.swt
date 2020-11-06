@@ -1049,7 +1049,6 @@ char * GTK_nativeFunctionNames[] = {
 	"gtk_1widget_1set_1margin_1top",
 	"gtk_1widget_1set_1opacity",
 	"gtk_1widget_1set_1parent",
-	"gtk_1widget_1set_1parent_1surface",
 	"gtk_1widget_1set_1parent_1window",
 	"gtk_1widget_1set_1receives_1default",
 	"gtk_1widget_1set_1redraw_1on_1allocate",

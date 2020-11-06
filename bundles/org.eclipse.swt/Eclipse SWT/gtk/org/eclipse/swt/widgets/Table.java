@@ -3811,8 +3811,9 @@ void setParentGdkResource (Control child) {
 	 * signal using gtk_container_propagate_draw(). See bug 531928.
 	 */
 	if (GTK.GTK4) {
-		long parentGdkSurface = eventSurface ();
-		GTK.gtk_widget_set_parent_surface (child.topHandle(), parentGdkSurface);
+		// long parentGdkSurface = eventSurface ();
+		// TODO: GTK4 no gtk_widget_set_parent_surface
+		// GTK.gtk_widget_set_parent_surface (child.topHandle(), parentGdkSurface);
 		// TODO: implement connectFixedHandleDraw with the "snapshot" signal
 	} else {
 		long parentGdkWindow = eventWindow ();

@@ -1047,7 +1047,6 @@ typedef enum {
 	gtk_1widget_1set_1margin_1top_FUNC,
 	gtk_1widget_1set_1opacity_FUNC,
 	gtk_1widget_1set_1parent_FUNC,
-	gtk_1widget_1set_1parent_1surface_FUNC,
 	gtk_1widget_1set_1parent_1window_FUNC,
 	gtk_1widget_1set_1receives_1default_FUNC,
 	gtk_1widget_1set_1redraw_1on_1allocate_FUNC,
