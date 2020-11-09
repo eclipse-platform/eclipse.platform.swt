@@ -13388,6 +13388,26 @@ JNIEXPORT jboolean JNICALL GTK_NATIVE(gtk_1widget_1get_1realized)
 }
 #endif
 
+#ifndef NO_gtk_1widget_1get_1receives_1default
+JNIEXPORT jboolean JNICALL GTK_NATIVE(gtk_1widget_1get_1receives_1default)
+	(JNIEnv *env, jclass that, jlong arg0)
+{
+	jboolean rc = 0;
+	GTK_NATIVE_ENTER(env, that, gtk_1widget_1get_1receives_1default_FUNC);
+/*
+	rc = (jboolean)gtk_widget_get_receives_default((GtkWidget *)arg0);
+*/
+	{
+		GTK_LOAD_FUNCTION(fp, gtk_widget_get_receives_default)
+		if (fp) {
+			rc = (jboolean)((jboolean (CALLING_CONVENTION*)(GtkWidget *))fp)((GtkWidget *)arg0);
+		}
+	}
+	GTK_NATIVE_EXIT(env, that, gtk_1widget_1get_1receives_1default_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_gtk_1widget_1get_1root
 JNIEXPORT jlong JNICALL GTK_NATIVE(gtk_1widget_1get_1root)
 	(JNIEnv *env, jclass that, jlong arg0)

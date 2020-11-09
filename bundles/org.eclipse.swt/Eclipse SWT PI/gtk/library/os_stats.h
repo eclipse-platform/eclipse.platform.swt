@@ -1003,6 +1003,7 @@ typedef enum {
 	gtk_1widget_1get_1preferred_1width_1for_1height_FUNC,
 	gtk_1widget_1get_1prev_1sibling_FUNC,
 	gtk_1widget_1get_1realized_FUNC,
+	gtk_1widget_1get_1receives_1default_FUNC,
 	gtk_1widget_1get_1root_FUNC,
 	gtk_1widget_1get_1scale_1factor_FUNC,
 	gtk_1widget_1get_1screen_FUNC,

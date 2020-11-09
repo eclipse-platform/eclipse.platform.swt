@@ -245,8 +245,9 @@ Point computeSizeInPixels (int wHint, int hHint, boolean changed) {
 			GtkBorder innerBorder = getBorder (OS.inner_border, handle, INNER_BORDER);
 			trimWidth += innerBorder.left + innerBorder.right;
 			trimHeight += innerBorder.top + innerBorder.bottom;
-			if (GTK.gtk_widget_get_can_default (handle)) {
-				GtkBorder defaultBorder = getBorder (OS.default_border, handle, DEFAULT_BORDER);
+			boolean canDefault = GTK.GTK4 ? GTK.gtk_widget_get_receives_default(handle) : GTK.gtk_widget_get_can_default(handle);
+			if (canDefault) {
+				GtkBorder defaultBorder = getBorder(OS.default_border, handle, DEFAULT_BORDER);
 				trimWidth += defaultBorder.left + defaultBorder.right;
 				trimHeight += defaultBorder.top + defaultBorder.bottom;
 			}
@@ -281,8 +282,9 @@ Point computeSizeInPixels (int wHint, int hHint, boolean changed) {
 		GTK.gtk_widget_set_size_request (boxHandle, reqWidth [0], reqHeight [0]);
 	}
 	if (wHint != SWT.DEFAULT || hHint != SWT.DEFAULT) {
-		if (GTK.gtk_widget_get_can_default (handle)) {
-			GtkBorder border = getBorder (OS.default_border, handle, DEFAULT_BORDER);
+		boolean canDefault = GTK.GTK4 ? GTK.gtk_widget_get_receives_default(handle) : GTK.gtk_widget_get_can_default(handle);
+		if (canDefault) {
+			GtkBorder border = getBorder(OS.default_border, handle, DEFAULT_BORDER);
 			if (wHint != SWT.DEFAULT) size.x += border.left + border.right;
 			if (hHint != SWT.DEFAULT) size.y += border.top + border.bottom;
 		}
@@ -588,11 +590,11 @@ long gtk_clicked (long widget) {
 		}
 	} else {
 		if ((style & SWT.CHECK) != 0) {
-			boolean inconsistent = grayed && GTK.gtk_toggle_button_get_active(handle);
-
 			if (GTK.GTK4) {
+				boolean inconsistent = grayed && GTK.gtk_check_button_get_active(handle);
 				GTK.gtk_check_button_set_inconsistent(handle, inconsistent);
 			} else {
+				boolean inconsistent = grayed && GTK.gtk_toggle_button_get_active(handle);
 				GTK.gtk_toggle_button_set_inconsistent(handle, inconsistent);
 			}
 		}
@@ -1064,11 +1066,12 @@ public void setGrayed (boolean grayed) {
 	checkWidget();
 	if ((style & SWT.CHECK) == 0) return;
 	this.grayed = grayed;
-	boolean inconsistent = grayed && GTK.gtk_toggle_button_get_active(handle);
 
 	if (GTK.GTK4) {
+		boolean inconsistent = grayed && GTK.gtk_check_button_get_active(handle);
 		GTK.gtk_check_button_set_inconsistent(handle, inconsistent);
 	} else {
+		boolean inconsistent = grayed && GTK.gtk_toggle_button_get_active(handle);
 		GTK.gtk_toggle_button_set_inconsistent(handle, inconsistent);
 	}
 }
@@ -1158,10 +1161,10 @@ public void setSelection (boolean selected) {
 	if ((style & (SWT.CHECK | SWT.RADIO | SWT.TOGGLE)) == 0) return;
 	OS.g_signal_handlers_block_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CLICKED);
 
-	if (GTK.GTK4) {
+	if (GTK.GTK4 && (style & (SWT.CHECK | SWT.RADIO)) != 0) {
 		GTK.gtk_check_button_set_active(handle, selected);
 	} else {
-		GTK.gtk_toggle_button_set_active (handle, selected);
+		GTK.gtk_toggle_button_set_active(handle, selected);
 	}
 
 	if ((style & SWT.CHECK) != 0) {

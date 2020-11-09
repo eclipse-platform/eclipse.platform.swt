@@ -3925,6 +3925,11 @@ public class GTK extends OS {
 	 * @param format_string cast=(const char *)
 	 */
 	public static final native void gtk_widget_class_add_binding_signal(long widget_class, int keyval, int mods, byte[] signal, byte[] format_string, boolean arg1, boolean arg2, boolean arg3);
+	/**
+	 * @method flags=dynamic
+	 * @param widget cast=(GtkWidget *)
+	 */
+	public static final native boolean gtk_widget_get_receives_default(long widget);
 
 
 	/* GtkWindow */
