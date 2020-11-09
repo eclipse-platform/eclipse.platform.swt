@@ -1599,6 +1599,14 @@ public long internal_new_GC (GCData data) {
 	try {
 		int scaleFactor = DPIUtil.getDeviceZoom() / 100;
 		NSBitmapImageRep imageRep = getRepresentation();
+		NSSize imgSize = handle.size();
+		NSSize targetSize = new NSSize();
+		targetSize.height = imgSize.height * scaleFactor;
+		targetSize.width = imgSize.width * scaleFactor;
+
+		if (!((imageRep.pixelsHigh() == targetSize.height) && (imageRep.pixelsWide() == targetSize.width))) {
+			imageRep = createImageRep(targetSize);
+		}
 
 		NSGraphicsContext context = NSGraphicsContext.graphicsContextWithBitmapImageRep(imageRep);
 		if (context == null) {
