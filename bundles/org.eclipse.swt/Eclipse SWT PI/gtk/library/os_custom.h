@@ -39,9 +39,9 @@
 #define LIB_FONTCONFIG "libfontconfig-1.dll"
 #else
 #if defined(GTK4)
-#define LIB_GTK "libgtk-4.so.0.9903.0"
+#define LIB_GTK "libgtk-4.so.0.9904.0"
 // Point GDK to GTK for GTK4
-#define LIB_GDK "libgtk-4.so.0.9903.0"
+#define LIB_GDK "libgtk-4.so.0.9904.0"
 #else
 #define LIB_GTK "libgtk-3.so.0"
 #define LIB_GDK "libgdk-3.so.0"

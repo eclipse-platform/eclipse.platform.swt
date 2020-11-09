@@ -95,7 +95,7 @@
 
 
 #if defined(GDK_WINDOWING_X11)
-#if !GTK_CHECK_VERSION(3,99,3)
+#if !GTK_CHECK_VERSION(3,99,4)
 #include <gtk/gtkx.h>
 #define NO_gdk_1x11_1surface_1get_1xid
 #define NO_gdk_1x11_1surface_1lookup_1for_1display
@@ -108,7 +108,7 @@
 #define NO_gtk_1socket_1get_1id
 #define NO_gtk_1socket_1new
 #endif
-#if !GTK_CHECK_VERSION(3,99,3)
+#if !GTK_CHECK_VERSION(3,99,4)
 #include <gdk/gdkx.h>
 #else
 #include <gdk/x11/gdkx.h>
@@ -168,7 +168,7 @@
 
 #endif
 
-#if GTK_CHECK_VERSION(3,99,3)
+#if GTK_CHECK_VERSION(3,99,4)
 #define GTK4 1
 
 // Structs which do not exist on GTK4
