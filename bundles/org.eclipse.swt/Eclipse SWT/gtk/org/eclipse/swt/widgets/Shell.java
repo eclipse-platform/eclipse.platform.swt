@@ -1408,11 +1408,7 @@ long gtk_button_press_event (long widget, long event) {
 			GDK.gdk_event_get_root_coords(event, eventRX, eventRY);
 
 			int [] eventButton = new int [1];
-			if (GTK.GTK4) {
-				eventButton[0] = GDK.gdk_button_event_get_button(event);
-			} else {
-				GDK.gdk_event_get_button(event, eventButton);
-			}
+			GDK.gdk_event_get_button(event, eventButton);
 
 			if (eventButton[0] == 1) {
 				display.resizeLocationX = eventRX[0];
@@ -2204,31 +2200,33 @@ int setBounds (int x, int y, int width, int height, boolean move, boolean resize
 	}
 	int result = 0;
 	if (move) {
-		int [] x_pos = new int [1], y_pos = new int [1];
-		GTK.gtk_window_get_position (shellHandle, x_pos, y_pos);
-		GTK.gtk_window_move (shellHandle, x, y);
-		/*
-		 * Bug in GTK: gtk_window_get_position () is not always up-to-date right after
-		 * gtk_window_move (). The random delays cause problems like bug 445900.
-		 *
-		 * The workaround is to wait for the position change to be processed.
-		 * The limit 1000 is an experimental value. I've seen cases where about 200
-		 * iterations were necessary.
-		 */
-		for (int i = 0; i < 1000; i++) {
-			int [] x2_pos = new int [1], y2_pos = new int [1];
-			GTK.gtk_window_get_position (shellHandle, x2_pos, y2_pos);
-			if (x2_pos[0] == x && y2_pos[0] == y) {
-				break;
+		if (!GTK.GTK4) {
+			int [] x_pos = new int [1], y_pos = new int [1];
+			GTK.gtk_window_get_position(shellHandle, x_pos, y_pos);
+			GTK.gtk_window_move(shellHandle, x, y);
+			/*
+			 * Bug in GTK: gtk_window_get_position () is not always up-to-date right after
+			 * gtk_window_move (). The random delays cause problems like bug 445900.
+			 *
+			 * The workaround is to wait for the position change to be processed.
+			 * The limit 1000 is an experimental value. I've seen cases where about 200
+			 * iterations were necessary.
+			 */
+			for (int i = 0; i < 1000; i++) {
+				int [] x2_pos = new int [1], y2_pos = new int [1];
+				GTK.gtk_window_get_position(shellHandle, x2_pos, y2_pos);
+				if (x2_pos[0] == x && y2_pos[0] == y) {
+					break;
+				}
 			}
-		}
-		if (x_pos [0] != x || y_pos [0] != y) {
-			moved = true;
-			oldX = x;
-			oldY = y;
-			sendEvent (SWT.Move);
-			if (isDisposed ()) return 0;
-			result |= MOVED;
+			if (x_pos [0] != x || y_pos [0] != y) {
+				moved = true;
+				oldX = x;
+				oldY = y;
+				sendEvent(SWT.Move);
+				if (isDisposed ()) return 0;
+				result |= MOVED;
+			}
 		}
 	}
 	if (resize) {
