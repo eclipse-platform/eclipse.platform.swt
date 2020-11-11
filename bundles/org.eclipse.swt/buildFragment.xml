@@ -58,7 +58,7 @@
 		<delete dir="${temp.folder}/@dot.bin" />
 		<mkdir dir="${temp.folder}/@dot.bin" />
 		<antcall target="copy.${swt.ws}.src"/>
-		<javac destdir="${temp.folder}/@dot.bin" verbose="${javacVerbose}" debug="${debug}" failonerror="yes" release="${javacRelease}" includeantruntime="false">
+		<javac destdir="${temp.folder}/@dot.bin" verbose="${javacVerbose}" debug="${debug}" failonerror="yes" release="${javacRelease}" encoding="UTF-8" includeantruntime="false">
 			<src path="${temp.folder}/@dot.src/"/>
 			<classpath path="${dotcp}" />
 			<compilerarg line="-log '${temp.folder}'/@dot.bin${logExtension}" compiler="org.eclipse.jdt.core.JDTCompilerAdapter" />
