@@ -1144,11 +1144,11 @@ NSBitmapImageRep getRepresentation_100 () {
 			}
 		}
 	}
-	NSBitmapImageRep newRep = (NSBitmapImageRep)new NSBitmapImageRep().alloc();
-	newRep = newRep.initWithData(handle.TIFFRepresentation());
-	newRep.setSize(size);
+	NSBitmapImageRep newRep = createImageRep(size);
+	for (int i = 0; i < count; i++) {
+		handle.removeRepresentation(new NSImageRep(handle.representations().objectAtIndex(0)));
+	}
 	handle.addRepresentation(newRep);
-	newRep.release();
 	return newRep;
 }
 
@@ -1599,14 +1599,6 @@ public long internal_new_GC (GCData data) {
 	try {
 		int scaleFactor = DPIUtil.getDeviceZoom() / 100;
 		NSBitmapImageRep imageRep = getRepresentation();
-		NSSize imgSize = handle.size();
-		NSSize targetSize = new NSSize();
-		targetSize.height = imgSize.height * scaleFactor;
-		targetSize.width = imgSize.width * scaleFactor;
-
-		if (!((imageRep.pixelsHigh() == targetSize.height) && (imageRep.pixelsWide() == targetSize.width))) {
-			imageRep = createImageRep(targetSize);
-		}
 
 		NSGraphicsContext context = NSGraphicsContext.graphicsContextWithBitmapImageRep(imageRep);
 		if (context == null) {
