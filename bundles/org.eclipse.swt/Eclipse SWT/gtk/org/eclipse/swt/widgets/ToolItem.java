@@ -726,7 +726,11 @@ long gtk_enter_notify_event (long widget, long event) {
 		if (imageList != null) {
 			int index = imageList.indexOf(hotImage);
 			if (index != -1 && imageHandle != 0) {
-				GTK.gtk_image_set_from_pixbuf(imageHandle, imageList.getPixbuf(index));
+				if (GTK.GTK4) {
+					GTK.gtk_image_set_from_pixbuf(imageHandle, imageList.getPixbuf(index));
+				} else {
+					GTK.gtk_image_set_from_surface(imageHandle, hotImage.surface);
+				}
 			}
 		}
 	}
@@ -783,7 +787,11 @@ long gtk_leave_notify_event (long widget, long event) {
 			if (imageList != null) {
 				int index = imageList.indexOf(image);
 				if (index != -1 && imageHandle != 0) {
-					GTK.gtk_image_set_from_pixbuf(imageHandle, imageList.getPixbuf(index));
+					if (GTK.GTK4) {
+						GTK.gtk_image_set_from_pixbuf(imageHandle, imageList.getPixbuf(index));
+					} else {
+						GTK.gtk_image_set_from_surface(imageHandle, image.surface);
+					}
 				}
 			}
 		}
