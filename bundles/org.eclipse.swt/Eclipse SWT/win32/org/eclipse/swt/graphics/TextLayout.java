@@ -813,7 +813,7 @@ RECT drawBorder(long hdc, int x, int y, int lineHeight, StyleItem[] line, int in
 	if (style.borderStyle == SWT.NONE) return null;
 	clipRect = addClipRect(run, clipRect, pRect, selectionStart, selectionEnd);
 	boolean lastRunVisible = drawClip != null && (x + run.x + run.width) > (drawClip.x + drawClip.width);
-	if (index + 1 >= line.length || lastRunVisible || !style.isAdherentBorder(line[index + 1].style)) {
+	if (index + 1 >= line.length || lastRunVisible || line[index + 1].lineBreak || !style.isAdherentBorder(line[index + 1].style)) {
 		int left = run.x;
 		int start = run.start;
 		int end = run.start + run.length - 1;
@@ -900,7 +900,7 @@ RECT drawBorderGDIP(long graphics, int x, int y, int lineHeight, StyleItem[] lin
 	if (style.borderStyle == SWT.NONE) return null;
 	clipRect = addClipRect(run, clipRect, pRect, selectionStart, selectionEnd);
 	boolean lastRunVisible = drawClip != null && (x + run.x + run.width) > (drawClip.x + drawClip.width);
-	if (index + 1 >= line.length || lastRunVisible || !style.isAdherentBorder(line[index + 1].style)) {
+	if (index + 1 >= line.length || lastRunVisible || line[index + 1].lineBreak || !style.isAdherentBorder(line[index + 1].style)) {
 		int left = run.x;
 		int start = run.start;
 		int end = run.start + run.length - 1;
@@ -1175,7 +1175,7 @@ RECT drawStrikeout(long hdc, int x, int baselineInPixels, StyleItem[] line, int 
 	if (!style.strikeout) return null;
 	clipRect = addClipRect(run, clipRect, pRect, selectionStart, selectionEnd);
 	boolean lastRunVisible = drawClip != null && (x + run.x + run.width) > (drawClip.x + drawClip.width);
-	if (index + 1 >= line.length || lastRunVisible || !style.isAdherentStrikeout(line[index + 1].style)) {
+	if (index + 1 >= line.length || lastRunVisible || line[index + 1].lineBreak || !style.isAdherentStrikeout(line[index + 1].style)) {
 		int left = run.x;
 		int start = run.start;
 		int end = run.start + run.length - 1;
@@ -1225,7 +1225,7 @@ RECT drawStrikeoutGDIP(long graphics, int x, int baselineInPixels, StyleItem[] l
 	if (!style.strikeout) return null;
 	clipRect = addClipRect(run, clipRect, pRect, selectionStart, selectionEnd);
 	boolean lastRunVisible = drawClip != null && (x + run.x + run.width) > (drawClip.x + drawClip.width);
-	if (index + 1 >= line.length || lastRunVisible || !style.isAdherentStrikeout(line[index + 1].style)) {
+	if (index + 1 >= line.length || lastRunVisible || line[index + 1].lineBreak || !style.isAdherentStrikeout(line[index + 1].style)) {
 		int left = run.x;
 		int start = run.start;
 		int end = run.start + run.length - 1;
@@ -1283,7 +1283,7 @@ RECT drawUnderline(long hdc, int x, int baselineInPixels, int lineUnderlinePos, 
 	if (!style.underline) return null;
 	clipRect = addClipRect(run, clipRect, pRect, selectionStart, selectionEnd);
 	boolean lastRunVisible = drawClip != null && (x + run.x + run.width) > (drawClip.x + drawClip.width);
-	if (index + 1 >= line.length || lastRunVisible || !style.isAdherentUnderline(line[index + 1].style)) {
+	if (index + 1 >= line.length || lastRunVisible || line[index + 1].lineBreak || !style.isAdherentUnderline(line[index + 1].style)) {
 		int left = run.x;
 		int start = run.start;
 		int end = run.start + run.length - 1;
@@ -1414,7 +1414,7 @@ RECT drawUnderlineGDIP (long graphics, int x, int baselineInPixels, int lineUnde
 	if (!style.underline) return null;
 	clipRect = addClipRect(run, clipRect, pRect, selectionStart, selectionEnd);
 	boolean lastRunVisible = drawClip != null && (x + run.x + run.width) > (drawClip.x + drawClip.width);
-	if (index + 1 >= line.length || lastRunVisible || !style.isAdherentUnderline(line[index + 1].style)) {
+	if (index + 1 >= line.length || lastRunVisible || line[index + 1].lineBreak || !style.isAdherentUnderline(line[index + 1].style)) {
 		int left = run.x;
 		int start = run.start;
 		int end = run.start + run.length - 1;

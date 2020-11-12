@@ -60,10 +60,7 @@ import org.eclipse.swt.events.VerifyListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
-import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.GlyphMetrics;
-import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.graphics.Rectangle;
@@ -5467,54 +5464,12 @@ public void test_variableToFixedLineHeight() throws InterruptedException {
 	assertFalse(hasPixel(text, colorForVariableHeight));
 }
 
-/**
- * Check if StyledText widget contains the given color.
- *
- * @param text widget to check
- * @param expectedColor color to find
- * @return <code>true</code> if the given color was found in current text widget
- *         bounds
- */
 private boolean hasPixel(StyledText text, Color expectedColor) {
-	return hasPixel(text, expectedColor, null);
+	return SwtTestUtil.hasPixel(text, expectedColor);
 }
 
-/**
- * Check if StyledText widget contains the given color in given bounds. The
- * effective search range to find the color is the union of current widget
- * bounds and given rectangle.
- *
- * @param text widget to check
- * @param expectedColor color to find
- * @param rect          the bounds where the color is searched in. Can overlap
- *                      the text widget bounds or <code>null</code> to check the
- *                      widgets full bounds.
- * @return <code>true</code> if the given color was found in search range of
- *         text widget
- */
 private boolean hasPixel(StyledText text, Color expectedColor, Rectangle rect) {
-	GC gc = new GC(text);
-	final Image image = new Image(text.getDisplay(), text.getSize().x, text.getSize().y);
-	gc.copyArea(image, 0, 0);
-	gc.dispose();
-	ImageData imageData = image.getImageData();
-	if (rect == null) {
-		rect = new Rectangle(0, 0, image.getBounds().width, image.getBounds().height);
-	}
-	RGB expectedRGB = expectedColor.getRGB();
-	int xEnd = rect.x + rect.width;
-	int yEnd = rect.y + rect.height;
-	for (int x = Math.max(rect.x, 1); x < xEnd && x < image.getBounds().width - 1; x++) { // ignore first and last columns
-		for (int y = rect.y; y < yEnd && y < image.getBounds().height; y++) {
-			RGB pixelRGB = imageData.palette.getRGB(imageData.getPixel(x, y));
-			if (expectedRGB.equals(pixelRGB)) {
-				image.dispose();
-				return true;
-			}
-		}
-	}
-	image.dispose();
-	return false;
+	return SwtTestUtil.hasPixel(text, expectedColor, rect);
 }
 
 private String blockSelectionTestText() {

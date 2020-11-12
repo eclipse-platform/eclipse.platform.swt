@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015, 2016 IBM Corporation and others.
+ * Copyright (c) 2015, 2020 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -16,10 +16,14 @@ package org.eclipse.swt.tests.junit;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Font;
+import org.eclipse.swt.graphics.GC;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.graphics.TextLayout;
@@ -948,5 +952,76 @@ public void test_getTextDirection() {
 		}
 	}
 	layout.dispose();
+}
+
+/**
+ * Bug 568740 - [Win32] TextLayout renders underscore, strikeout and border only on last line
+ */
+@Test
+public void test_bug568740_multilineTextStyle() {
+	Font font = null;
+	Image image = null;
+	GC gc = null;
+	TextLayout layout = null;
+	try {
+		font = new Font(display, SwtTestUtil.testFontName, 16, SWT.NORMAL);
+		image = new Image(display, 200, 100);
+		gc = new GC(image);
+		gc.setBackground(display.getSystemColor(SWT.COLOR_WHITE));
+		gc.fillRectangle(image.getBounds());
+		gc.setAntialias(SWT.OFF); // aa can change colors and break the test in worst case
+
+		layout = new TextLayout(display);
+		layout.setFont(font);
+		layout.setText("first line\nsecond line");
+
+		// The test has one multi-line style containing all the problematic properties
+		// in different colors and a second control style with other colors at the
+		// end of the second line. Searching for the colors anywhere would even work
+		// before the bug was fixed. So we search only in the area of the first line and
+		// if we find any of the control colors we know the search area was calculated
+		// wrong.
+
+		TextStyle style = new TextStyle();
+		style.borderStyle = SWT.BORDER_DOT;
+		style.borderColor = display.getSystemColor(SWT.COLOR_BLUE);
+		style.underline = true;
+		style.underlineColor = display.getSystemColor(SWT.COLOR_GREEN);
+		style.strikeout = true;
+		style.strikeoutColor = display.getSystemColor(SWT.COLOR_RED);
+		layout.setStyle(style, 2, 14);
+
+		TextStyle controlStyle = new TextStyle(style);
+		controlStyle.borderColor = display.getSystemColor(SWT.COLOR_DARK_BLUE);
+		controlStyle.underlineColor = display.getSystemColor(SWT.COLOR_DARK_GREEN);
+		controlStyle.strikeoutColor = display.getSystemColor(SWT.COLOR_DARK_RED);
+		layout.setStyle(controlStyle, 15, 23);
+
+		int offset = 10;
+		layout.draw(gc, offset, offset);
+
+		Rectangle firstLineBounds = layout.getLineBounds(0);
+		Rectangle searchRangeBorder = new Rectangle(0, 0, image.getBounds().width, offset + (int)(firstLineBounds.height * 0.3));
+		Rectangle searchRangeStrike = new Rectangle(0, 0, image.getBounds().width, offset + (int)(firstLineBounds.height * 1.0));
+		Rectangle searchRangeUnder = new Rectangle(0, 0, image.getBounds().width, offset + (int)(firstLineBounds.height * 1.3));
+
+		assertFalse("Invalid test range for border test. Fix test!", SwtTestUtil.hasPixel(image, display.getSystemColor(SWT.COLOR_DARK_BLUE), searchRangeBorder));
+		assertTrue("Found no border style in first line", SwtTestUtil.hasPixel(image, display.getSystemColor(SWT.COLOR_BLUE), searchRangeBorder));
+
+		assertFalse("Invalid test range for strikeout test. Fix test!", SwtTestUtil.hasPixel(image, display.getSystemColor(SWT.COLOR_DARK_RED), searchRangeStrike));
+		assertTrue("Found no strikeout style in first line", SwtTestUtil.hasPixel(image, display.getSystemColor(SWT.COLOR_RED), searchRangeStrike));
+
+		assertFalse("Invalid test range for underline test. Fix test!", SwtTestUtil.hasPixel(image, display.getSystemColor(SWT.COLOR_DARK_GREEN), searchRangeUnder));
+		assertTrue("Found no underline style in first line", SwtTestUtil.hasPixel(image, display.getSystemColor(SWT.COLOR_GREEN), searchRangeUnder));
+	} finally {
+		if (layout != null)
+			layout.dispose();
+		if (gc != null)
+			gc.dispose();
+		if (image != null)
+			image.dispose();
+		if (font != null)
+			font.dispose();
+	}
 }
 }

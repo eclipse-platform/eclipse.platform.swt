@@ -24,6 +24,13 @@ import org.eclipse.swt.SWTError;
 import org.eclipse.swt.SWTException;
 import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.events.PaintListener;
+import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.GC;
+import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.ImageData;
+import org.eclipse.swt.graphics.RGB;
+import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 
@@ -155,6 +162,72 @@ public static void processEvents() {
 		while (display.readAndDispatch()) {
 		}
 	}
+}
+
+/**
+ * Check if widget contains the given color.
+ *
+ * @param control       widget to check
+ * @param expectedColor color to find
+ * @return <code>true</code> if the given color was found in current text widget
+ *         bounds
+ */
+public static boolean hasPixel(Control control, Color expectedColor) {
+	return hasPixel(control, expectedColor, null);
+}
+
+/**
+ * Check if widget contains the given color in given bounds. The effective
+ * search range to find the color is the union of current widget bounds and
+ * given rectangle.
+ *
+ * @param control       widget to check
+ * @param expectedColor color to find
+ * @param rect          the bounds where the color is searched in. Can overlap
+ *                      the control bounds or <code>null</code> to check the
+ *                      widgets full bounds.
+ * @return <code>true</code> if the given color was found in search range of
+ *         widget
+ */
+public static boolean hasPixel(Control control, Color expectedColor, Rectangle rect) {
+	GC gc = new GC(control);
+	final Image image = new Image(control.getDisplay(), control.getSize().x, control.getSize().y);
+	gc.copyArea(image, 0, 0);
+	gc.dispose();
+	boolean result = hasPixel(image, expectedColor, rect);
+	image.dispose();
+	return result;
+}
+
+/**
+ * Check if image contains the given color in given bounds. The effective search
+ * range to find the color is the union of image size and given rectangle.
+ *
+ * @param image         image to check for the expected color
+ * @param expectedColor color to find
+ * @param rect          the bounds where the color is searched in. Can overlap
+ *                      the image bounds or <code>null</code> to check the whole
+ *                      image.
+ * @return <code>true</code> if the given color was found in search range of
+ *         image
+ */
+public static boolean hasPixel(Image image, Color expectedColor, Rectangle rect) {
+	ImageData imageData = image.getImageData();
+	if (rect == null) {
+		rect = new Rectangle(0, 0, image.getBounds().width, image.getBounds().height);
+	}
+	RGB expectedRGB = expectedColor.getRGB();
+	int xEnd = rect.x + rect.width;
+	int yEnd = rect.y + rect.height;
+	for (int x = Math.max(rect.x, 1); x < xEnd && x < image.getBounds().width - 1; x++) { // ignore first and last columns
+		for (int y = rect.y; y < yEnd && y < image.getBounds().height; y++) {
+			RGB pixelRGB = imageData.palette.getRGB(imageData.getPixel(x, y));
+			if (expectedRGB.equals(pixelRGB)) {
+				return true;
+			}
+		}
+	}
+	return false;
 }
 
 }
