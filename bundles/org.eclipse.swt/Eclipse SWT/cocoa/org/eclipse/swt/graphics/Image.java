@@ -380,14 +380,14 @@ public Image(Device device, Image srcImage, int flag) {
 		handle.setCacheMode(OS.NSImageCacheNever);
 
 		/* Create the 100% representation for the new image from source image & apply flag */
-		createRepFromSourceAndApplyFlag(srcImage.getRepresentation_100(), srcWidth, srcHeight, flag);
+		createRepFromSourceAndApplyFlag(srcImage.getRepresentation (100), srcWidth, srcHeight, flag);
 
 		imageFileNameProvider = srcImage.imageFileNameProvider;
 		imageDataProvider = srcImage.imageDataProvider;
 		this.styleFlag = srcImage.styleFlag | flag;
 		if (imageFileNameProvider != null || imageDataProvider != null) {
 			/* If source image has 200% representation then create the 200% representation for the new image & apply flag */
-			NSBitmapImageRep rep200 = srcImage.getRepresentation_200();
+			NSBitmapImageRep rep200 = srcImage.getRepresentation (200);
 			if (rep200 != null) createRepFromSourceAndApplyFlag(rep200, srcWidth * 2, srcHeight * 2, flag);
 		}
 		init();
@@ -1130,21 +1130,25 @@ public boolean equals (Object object) {
 }
 
 /**
- * Returns the image representation at 100%. Creates the representation if necessary.
+ * Returns the image representation at scale factor as percentage. Creates the representation if necessary.
  */
-NSBitmapImageRep getRepresentation_100 () {
+NSBitmapImageRep getRepresentation (int scaleFactor) {
 	NSArray reps = handle.representations();
 	NSSize size = handle.size();
 	long count = reps.count();
+	NSSize targetSize = new NSSize();
+	targetSize.width = (int)size.width * scaleFactor / 100;
+	targetSize.height = (int)size.height * scaleFactor / 100;
+	NSBitmapImageRep rep;
 	for (int i = 0; i < count; i++) {
-		NSBitmapImageRep rep = new NSBitmapImageRep(reps.objectAtIndex(i));
-		if (((int)size.width == rep.pixelsWide() && (int)size.height == rep.pixelsHigh())) {
+		rep = new NSBitmapImageRep(reps.objectAtIndex(i));
+		if ((targetSize.width == rep.pixelsWide() && targetSize.height == rep.pixelsHigh())) {
 			if (rep.isKindOfClass(OS.class_NSBitmapImageRep)) {
 				return rep;
 			}
 		}
 	}
-	NSBitmapImageRep newRep = createImageRep(size);
+	NSBitmapImageRep newRep = createImageRep(targetSize);
 	for (int i = 0; i < count; i++) {
 		handle.removeRepresentation(new NSImageRep(handle.representations().objectAtIndex(0)));
 	}
@@ -1152,45 +1156,6 @@ NSBitmapImageRep getRepresentation_100 () {
 	return newRep;
 }
 
-/**
- * Returns the image representation at 200%, or null if none is available.
- */
-NSBitmapImageRep getRepresentation_200 () {
-	NSArray reps = handle.representations();
-	NSSize size = handle.size();
-	long count = reps.count();
-	NSBitmapImageRep bestRep = null;
-	int width = (int)size.width * 2;
-	int height = (int)size.height * 2;
-	NSBitmapImageRep rep;
-	for (int i = 0; i < count; i++) {
-		rep = new NSBitmapImageRep(reps.objectAtIndex(i));
-		if ((width == rep.pixelsWide() && height == rep.pixelsHigh())) {
-			if (rep.isKindOfClass(OS.class_NSBitmapImageRep)) {
-				return rep;
-			}
-			if (bestRep == null) {
-				bestRep = rep;
-			}
-		}
-
-	}
-	if (bestRep != null) {
-		bestRep.retain();
-		for (int i = 0; i < count; i++) {
-			handle.removeRepresentation(new NSImageRep(handle.representations().objectAtIndex(0)));
-		}
-		handle.addRepresentation(bestRep);
-		NSBitmapImageRep newRep = (NSBitmapImageRep)new NSBitmapImageRep().alloc();
-		newRep = newRep.initWithData(handle.TIFFRepresentation());
-		handle.addRepresentation(newRep);
-		handle.removeRepresentation(bestRep);
-		bestRep.release();
-		newRep.release();
-		return newRep;
-	}
-	return null;
-}
 
 /**
  * Returns the color to which to map the transparent pixel, or null if
@@ -1351,22 +1316,11 @@ public ImageData getImageData(int zoom) {
 	try {
 		if (zoom == 100) {
 			NSBitmapImageRep imageRep;
-			NSSize size = handle.size();
-			imageRep = getRepresentation_100();
-			if (!((imageRep.pixelsHigh() == size.height) && (imageRep.pixelsWide() == size.width))) {
-				imageRep = createImageRep(size);
-			}
+			imageRep = getRepresentation (100);
 			return _getImageData(imageRep, alphaInfo_100);
 		}
 		if (zoom == 200) {
-			NSBitmapImageRep imageRep200 = getRepresentation_200();
-			if (imageRep200 == null) {
-				NSSize imgSize = handle.size();
-				NSSize targetSize = new NSSize();
-				targetSize.height = imgSize.height * 2;
-				targetSize.width = imgSize.width * 2;
-				imageRep200 = createImageRep(targetSize);
-			}
+			NSBitmapImageRep imageRep200 = getRepresentation (200);
 			if (alphaInfo_100.alphaData != null && alphaInfo_200 != null) {
 				if (alphaInfo_200.alphaData == null) initAlpha_200(imageRep200);
 			}
@@ -1383,34 +1337,10 @@ public ImageData getImageData(int zoom) {
 
 /** Returns the best available representation. May be 100% or 200% iff there is an image provider. */
 NSBitmapImageRep getRepresentation () {
-	NSBitmapImageRep rep = null;
-	int scaleFactor = DPIUtil.getDeviceZoom ();
-	switch (scaleFactor) {
-	case 100:
-		rep = getRepresentation_100 ();
-		break;
-	case 200:
-		rep = getRepresentation_200 ();
-		break;
-	}
-
-	if (rep == null) {
-		NSSize targetSize = new NSSize();
-		NSSize imgSize = handle.size();
-		targetSize.width = (int) imgSize.width * scaleFactor / 100;
-		targetSize.height = (int) imgSize.height * scaleFactor / 100;
-		rep = createImageRep(targetSize);
-	}
-	NSArray reps = handle.representations();
-	long count = reps.count();
-	for (int i = 0; i < count; i++) {
-		handle.removeRepresentation(new NSImageRep(handle.representations().objectAtIndex(0)));
-	}
-	handle.addRepresentation(rep);
-	return rep;
+	return getRepresentation (DPIUtil.getDeviceZoom ());
 }
 
- NSBitmapImageRep createImageRep(NSSize targetSize) {
+NSBitmapImageRep createImageRep(NSSize targetSize) {
 	return ImageUtil.createImageRep(this, targetSize);
 }
 
