@@ -1051,6 +1051,24 @@ long paintHandle () {
 	}
 }
 
+void fixActiveShell () {
+	// Only fix shell for SWT.ON_TOP set, see bug 568550
+	if (display.activeShell == this && (style & SWT.ON_TOP) != 0) {
+		Shell shell = null;
+		if (parent != null && parent.isVisible ()) shell = parent.getShell ();
+		if (shell == null && isUndecorated ()) {
+			Shell [] shells = display.getShells ();
+			for (int i = 0; i < shells.length; i++) {
+				if (shells [i] != null && shells [i].isVisible ()) {
+					shell = shells [i];
+					break;
+				}
+			}
+		}
+		if (shell != null) shell.bringToTop (false);
+	}
+}
+
 void fixShell (Shell newShell, Control control) {
 	if (this == newShell) return;
 	if (control == lastActive) setActiveControl (null);
@@ -2840,6 +2858,7 @@ public void setVisible (boolean visible) {
 			}
 		}
 	} else {
+		fixActiveShell ();
 		checkAndUnrabFocus();
 		GTK.gtk_widget_hide (shellHandle);
 		sendEvent (SWT.Hide);
@@ -3154,6 +3173,7 @@ public void dispose () {
 	* more than once.  If this happens, fail silently.
 	*/
 	if (isDisposed()) return;
+	fixActiveShell ();
 	checkAndUnrabFocus();
 	/*
 	 * Bug 540166: Dispose the popup child if any when the parent is disposed so that
