@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2018 IBM Corporation and others.
+ * Copyright (c) 2000, 2020 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -27,6 +27,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.function.Consumer;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTException;
@@ -1074,6 +1075,45 @@ RGB getRealRGB(Color color) {
 	colorImage.dispose();
 	pixel = imageData.getPixel(0, 0);
 	return palette.getRGB(pixel);
+}
+
+/**
+ * Create two types of gray-scale image. Same content but one encoded with color
+ * table and one with an efficient use of color masks.
+ */
+@Test
+public void test_bug566545_efficientGrayscaleImage() {
+	RGB[] grayscale = new RGB[256];
+	for (int i = 0; i < grayscale.length; i++)
+		grayscale[i] = new RGB(i, i, i);
+	int width = 128;
+	int height = 128;
+	ImageData imageDataIndexed = new ImageData(width, height, 8, new PaletteData(grayscale));
+	ImageData imageDataDirect = new ImageData(width, height, 8, new PaletteData(0xFF, 0xFF, 0xFF));
+
+	Consumer<ImageData> fillImage = imageData -> {
+		for (int y = 0; y < imageData.height; y++)
+			for (int x = 0; x < imageData.width; x++)
+				imageData.setPixel(x, y, (x + y) % 256);
+	};
+	fillImage.accept(imageDataIndexed);
+	fillImage.accept(imageDataDirect);
+
+	Image imageIndexed = new Image(display, imageDataIndexed);
+	Image imageDirect = new Image(display, imageDataDirect);
+	Image outImageIndexed = new Image(display, width, height);
+	Image outImageDirect = new Image(display, width, height);
+
+	GC gc = new GC(outImageIndexed);
+	gc.drawImage(imageIndexed, 0, 0);
+	gc.dispose();
+	gc = new GC(outImageDirect);
+	gc.drawImage(imageDirect, 0, 0);
+	gc.dispose();
+
+	ImageTestUtil.assertImagesEqual(imageDataIndexed, imageDataDirect);
+	ImageTestUtil.assertImagesEqual(imageIndexed.getImageData(), imageDirect.getImageData());
+	ImageTestUtil.assertImagesEqual(outImageIndexed.getImageData(), outImageDirect.getImageData());
 }
 
 }

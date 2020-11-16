@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2018 IBM Corporation and others.
+ * Copyright (c) 2000, 2020 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -1747,9 +1747,30 @@ static long [] init(Device device, Image image, ImageData i) {
 
 		switch (i.depth) {
 			case 8:
-				newDepth = 16;
-				newOrder = ImageData.LSB_FIRST;
-				newPalette = new PaletteData(0x7C00, 0x3E0, 0x1F);
+				/*
+				 * Bug 566545. Usually each color mask selects a different part of the pixel
+				 * value to encode the according color. In this common case it is rather trivial
+				 * to convert an 8-bit direct color image to the Windows supported 16-bit image.
+				 * However there is no enforcement for the color masks to be disjunct. For
+				 * example an 8-bit image where all color masks select the same 8-bit of pixel
+				 * value (mask = 0xFF and shift = 0 for all colors) results in a very efficient
+				 * 8-bit gray-scale image without the need of defining a color table.
+				 *
+				 * That's why we need to calculate the actual required depth if all colors are
+				 * stored non-overlapping which might require 24-bit instead of the usual
+				 * expected 16-bit.
+				 */
+				int minDepth = ImageData.getChannelWidth(redMask, palette.redShift)
+						+ ImageData.getChannelWidth(greenMask, palette.greenShift)
+						+ ImageData.getChannelWidth(blueMask, palette.blueShift);
+				if (minDepth <= 16) {
+					newDepth = 16;
+					newOrder = ImageData.LSB_FIRST;
+					newPalette = new PaletteData(0x7C00, 0x3E0, 0x1F);
+				} else {
+					newDepth = 24;
+					newPalette = new PaletteData(0xFF, 0xFF00, 0xFF0000);
+				}
 				break;
 			case 16:
 				newOrder = ImageData.LSB_FIRST;

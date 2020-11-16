@@ -14,6 +14,7 @@
 package org.eclipse.swt.tests.junit;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
 
@@ -69,12 +70,6 @@ public class ImageTestUtil {
 		for (int i = 0; i < expected.length; i++) {
 			assertEquals(formatMsg.apply("Different width", i), expected[i].width, actual[i].width);
 			assertEquals(formatMsg.apply("Different height", i), expected[i].height, actual[i].height);
-			if (expected[i].transparentPixel == -1 || (actual[i].palette != null && actual[i].palette.isDirect)) {
-				assertEquals("Wrong transparent pixel.", expected[i].transparentPixel, actual[i].transparentPixel);
-			} else {
-				assertEquals("Wrong transparent pixel.", expected[i].palette.getRGBs()[expected[i].transparentPixel],
-						actual[i].palette.getRGBs()[actual[i].transparentPixel]);
-			}
 			// improve performance in case the frame has a global fixed alpha value
 			int expectedFixAlpha = getEffectiveAlpha(expected[i], -1, -1);
 			int actualFixAlpha = getEffectiveAlpha(actual[i], -1, -1);
@@ -88,9 +83,11 @@ public class ImageTestUtil {
 							expected[i].palette.getRGB(expectedLine[x]), actual[i].palette.getRGB(actualLine[x]));
 					int expectedAlpha = expectedFixAlpha < 0 ? getEffectiveAlpha(expected[i], x, y) : expectedFixAlpha;
 					int actualAlpha = actualFixAlpha < 0 ? getEffectiveAlpha(actual[i], x, y) : actualFixAlpha;
-					if (expectedAlpha != actualAlpha)
+					if (expectedAlpha != actualAlpha) {
 						assertEquals(formatMsg.apply("Different alpha at x=" + x + ", y=" + y, i), expectedAlpha,
 								actualAlpha);
+					}
+					assertNotEquals(formatMsg.apply("Invalid alpha at x=" + x + ", y=" + y, i), -1, actualAlpha);
 				}
 			}
 		}
@@ -116,9 +113,30 @@ public class ImageTestUtil {
 				return -1;
 			}
 			return data.getAlpha(x, y);
-		} else { // build from data
+		} else if (!data.palette.isDirect) {
+			if (x < 0 || y < 0) {
+				return -1;
+			}
+			return data.transparentPixel != -1 && data.getPixel(x, y) == data.transparentPixel ? 0 : 255;
+		} else {
+			// There is no clear documentation in SWT about alpha value directly encoded in
+			// the pixel values.
+			// Not having direct alpha values would make the 32 bit depth pointless because
+			// it would waste a byte per pixel. So someone can (for this case) assume the
+			// area not used by any of the color mask is the alpha value.
+			// Theoretically the same logic could be used for other depth like 16 bit with 5
+			// bits per color and 1 bit as alpha. However without an alphaShift in
+			// PaleteData this is not practically usable because it would limit the alpha
+			// values to 0 and 1 which are almost the same.
+			// So we assume alpha in direct pixel value only for 32 bit. If the following if
+			// block is removed any bit not used for a color would be comprised to an alpha
+			// value.
+			if (data.depth != 32) {
+				return 255;
+			}
+
 			int alphaMask = ~(data.palette.redMask | data.palette.greenMask | data.palette.blueMask);
-			if (data.depth < 32) {
+			if (data.depth != 32) {
 				alphaMask &= (1 << data.depth) - 1;
 			}
 			if (alphaMask == 0) {
