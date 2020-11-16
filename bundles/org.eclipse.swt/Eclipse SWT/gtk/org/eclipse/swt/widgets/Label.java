@@ -585,13 +585,15 @@ void setFontDescription (long font) {
 	if (labelHandle != 0) setFontDescription (labelHandle, font);
 	if (imageHandle != 0) setFontDescription (imageHandle, font);
 
-	// Bug 445801: Work around for computeSize not returning a different value after
-	// changing font, see https://bugzilla.gnome.org/show_bug.cgi?id=753116
-	// This updates the pango context and also clears the size request cache on the GTK side.
-	int originalDirection = (style & SWT.RIGHT_TO_LEFT) != 0 ? GTK.GTK_TEXT_DIR_RTL : GTK.GTK_TEXT_DIR_LTR;
-	int tempDirection = (style & SWT.RIGHT_TO_LEFT) != 0 ? GTK.GTK_TEXT_DIR_LTR : GTK.GTK_TEXT_DIR_RTL;
-	GTK.gtk_widget_set_direction (labelHandle, tempDirection);
-	GTK.gtk_widget_set_direction (labelHandle, originalDirection);
+	if (labelHandle != 0) {
+		// Bug 445801: Work around for computeSize not returning a different value after
+		// changing font, see https://bugzilla.gnome.org/show_bug.cgi?id=753116
+		// This updates the pango context and also clears the size request cache on the GTK side.
+		int originalDirection = (style & SWT.RIGHT_TO_LEFT) != 0 ? GTK.GTK_TEXT_DIR_RTL : GTK.GTK_TEXT_DIR_LTR;
+		int tempDirection = (style & SWT.RIGHT_TO_LEFT) != 0 ? GTK.GTK_TEXT_DIR_LTR : GTK.GTK_TEXT_DIR_RTL;
+		GTK.gtk_widget_set_direction (labelHandle, tempDirection);
+		GTK.gtk_widget_set_direction (labelHandle, originalDirection);
+	}
 }
 
 @Override
