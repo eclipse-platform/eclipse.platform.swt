@@ -49,7 +49,7 @@ public class ToolItem extends Item {
 
 	ToolBar parent;
 	Control control;
-	Image hotImage, disabledImage;
+	Image hotImage, disabledImage, defaultDisableImage;
 	String toolTipText;
 	boolean drawHotImage;
 	/** True iff map has been hooked for this ToolItem. See bug 546914. */
@@ -948,6 +948,11 @@ void releaseWidget () {
 	control = null;
 	hotImage = disabledImage = null;
 	toolTipText = null;
+
+	if (defaultDisableImage != null) {
+		defaultDisableImage.dispose();
+		defaultDisableImage = null;
+	}
 }
 
 /**
@@ -1103,12 +1108,23 @@ public void setDisabledImage (Image image) {
  */
 public void setEnabled (boolean enabled) {
 	checkWidget();
-	long topHandle = topHandle ();
+	long topHandle = topHandle();
 	if (this.enabled == enabled) return;
 	this.enabled = enabled;
-	if (!enabled && disabledImage != null) _setImage (disabledImage);
-	if (enabled && this.image != null) _setImage (this.image);
-	GTK.gtk_widget_set_sensitive (topHandle, enabled);
+
+	if (!enabled) {
+		if (disabledImage == null) {
+			if (defaultDisableImage == null && image != null) {
+				defaultDisableImage = new Image(getDisplay(), image, SWT.IMAGE_DISABLE);
+			}
+			_setImage(defaultDisableImage);
+		} else {
+			_setImage(disabledImage);
+		}
+	}
+	if (enabled && image != null) _setImage(image);
+
+	GTK.gtk_widget_set_sensitive(topHandle, enabled);
 }
 
 boolean setFocus () {
