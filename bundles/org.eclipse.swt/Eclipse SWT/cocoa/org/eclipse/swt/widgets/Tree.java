@@ -1115,18 +1115,30 @@ void drawInteriorWithFrame_inView (long id, long sel, NSRect rect, long view) {
 		if (!drawSelection && isSelected) {
 			userForeground = Color.cocoa_new(display, gc.getForeground().handle);
 		}
-		gc.dispose ();
 
-		context.restoreGraphicsState();
-
-		if (isDisposed ()) return;
-		if (item.isDisposed ()) return;
+		if (isDisposed () || item.isDisposed ()) {
+			gc.dispose ();
+			context.restoreGraphicsState();
+			return;
+		}
 
 		if (drawSelection && ((style & SWT.HIDE_SELECTION) == 0 || hasFocus)) {
 			cellRect.height -= spacing.height;
-			callSuper (widget.id, OS.sel_highlightSelectionInClipRect_, cellRect);
+			/*
+			 * On BigSur, calling highlightSelectionInClipRect here draws over the full row
+			 * and not just the cellRect. This causes drawing over other cells content.
+			 * Workaround is to draw the highlight background ourselves and not call
+			 * highlightSelectionInClipRect to draw it.
+			 */
+			if (OS.isBigSurOrLater()) {
+				gc.fillRectangle((int)cellRect.x, (int)cellRect.y, (int)cellRect.width, (int)cellRect.height);
+			} else {
+				callSuper (widget.id, OS.sel_highlightSelectionInClipRect_, cellRect);
+			}
 			cellRect.height += spacing.height;
 		}
+		gc.dispose ();
+		context.restoreGraphicsState();
 	} else {
 		if (isSelected && (style & SWT.HIDE_SELECTION) != 0 && !hasFocus) {
 			userForeground = item.getForeground (columnIndex);
