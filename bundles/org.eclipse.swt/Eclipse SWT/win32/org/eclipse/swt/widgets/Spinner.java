@@ -1228,9 +1228,21 @@ LRESULT WM_SIZE (long wParam, long lParam) {
 	int width = OS.LOWORD (lParam), height = OS.HIWORD (lParam);
 	int upDownWidth = OS.GetSystemMetrics (OS.SM_CXVSCROLL) - 1;
 	int textWidth = width - upDownWidth;
-	int border = OS.GetSystemMetrics (OS.SM_CXEDGE);
+
+	/*
+	 * For consistency, make text's vertical position the same as in
+	 * Text control. The difference only occurs when Spinner uses
+	 * WS_BORDER while Text uses WS_EX_CLIENTEDGE.
+	 */
+	int borderAdjustment = 0;
+	if (((style & SWT.BORDER) != 0) && !display.useWsBorderText) {
+		borderAdjustment = OS.GetSystemMetrics (OS.SM_CYEDGE) - OS.GetSystemMetrics (OS.SM_CYBORDER);
+		/* There is an unexplained 1px additional offset in Windows */
+		borderAdjustment++;
+	}
+
 	int flags = OS.SWP_NOZORDER | OS.SWP_DRAWFRAME | OS.SWP_NOACTIVATE;
-	OS.SetWindowPos (hwndText, 0, 0, 0, textWidth + border, height, flags);
+	OS.SetWindowPos (hwndText, 0, 0, borderAdjustment, textWidth, height - borderAdjustment, flags);
 	OS.SetWindowPos (hwndUpDown, 0, textWidth, 0, upDownWidth, height, flags);
 	return result;
 }
