@@ -36,7 +36,7 @@ public class Bug562463_BusyIndicatorIssue {
         	System.out.printf("A task %s has ended\n", description);
 
         }
-	};
+	}
 
     public static void main (String [] args) {
         Display display = new Display();
