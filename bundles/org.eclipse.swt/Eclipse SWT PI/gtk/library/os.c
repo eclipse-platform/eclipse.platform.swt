@@ -2728,14 +2728,14 @@ JNIEXPORT jint JNICALL GDK_NATIVE(gdk_1visual_1get_1depth)
 }
 #endif
 
-#ifndef NO_gdk_1window_1create_1similar_1surface
-JNIEXPORT jlong JNICALL GDK_NATIVE(gdk_1window_1create_1similar_1surface)
-	(JNIEnv *env, jclass that, jlong arg0, jint arg1, jint arg2, jint arg3)
+#ifndef NO_gdk_1window_1create_1similar_1image_1surface
+JNIEXPORT jlong JNICALL GDK_NATIVE(gdk_1window_1create_1similar_1image_1surface)
+	(JNIEnv *env, jclass that, jlong arg0, jint arg1, jint arg2, jint arg3, jint arg4)
 {
 	jlong rc = 0;
-	GDK_NATIVE_ENTER(env, that, gdk_1window_1create_1similar_1surface_FUNC);
-	rc = (jlong)gdk_window_create_similar_surface((GdkWindow *)arg0, (cairo_content_t)arg1, arg2, arg3);
-	GDK_NATIVE_EXIT(env, that, gdk_1window_1create_1similar_1surface_FUNC);
+	GDK_NATIVE_ENTER(env, that, gdk_1window_1create_1similar_1image_1surface_FUNC);
+	rc = (jlong)gdk_window_create_similar_image_surface((GdkWindow *)arg0, (cairo_format_t)arg1, arg2, arg3, arg4);
+	GDK_NATIVE_EXIT(env, that, gdk_1window_1create_1similar_1image_1surface_FUNC);
 	return rc;
 }
 #endif

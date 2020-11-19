@@ -219,7 +219,7 @@
 #define NO_gdk_1get_1default_1root_1window
 #define NO_gdk_1property_1get
 #define NO_gdk_1window_1begin_1draw_1frame
-#define NO_gdk_1window_1create_1similar_1surface
+#define NO_gdk_1window_1create_1similar_1image_1surface
 #define NO_gdk_1window_1destroy
 #define NO_gdk_1window_1end_1draw_1frame
 #define NO_gdk_1window_1focus

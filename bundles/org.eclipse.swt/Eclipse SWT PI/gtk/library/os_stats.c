@@ -198,7 +198,7 @@ char * GDK_nativeFunctionNames[] = {
 	"gdk_1unicode_1to_1keyval",
 	"gdk_1utf8_1to_1string_1target",
 	"gdk_1visual_1get_1depth",
-	"gdk_1window_1create_1similar_1surface",
+	"gdk_1window_1create_1similar_1image_1surface",
 	"gdk_1window_1destroy",
 	"gdk_1window_1focus",
 	"gdk_1window_1get_1children",
