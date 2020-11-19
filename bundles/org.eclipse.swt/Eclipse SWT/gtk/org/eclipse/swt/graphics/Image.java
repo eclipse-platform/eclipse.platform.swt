@@ -823,18 +823,25 @@ void initNative(String filename) {
 
 void createFromPixbuf(int type, long pixbuf) {
 	this.type = type;
-	boolean hasAlpha = GDK.gdk_pixbuf_get_has_alpha(pixbuf);
-	int width = this.width = GDK.gdk_pixbuf_get_width(pixbuf);
-	int height = this.height = GDK.gdk_pixbuf_get_height(pixbuf);
+
+	int pixbufWidth = GDK.gdk_pixbuf_get_width(pixbuf);
+	int pixbufHeight = GDK.gdk_pixbuf_get_height(pixbuf);
+
+	// Scale dimensions of Image object to 100% scale factor
+	double scaleFactor = DPIUtil.getDeviceZoom() / 100f;
+	this.width = pixbufWidth / (int) scaleFactor;
+	this.height = pixbufHeight / (int) scaleFactor;
+
 	int stride = GDK.gdk_pixbuf_get_rowstride(pixbuf);
 	long pixels = GDK.gdk_pixbuf_get_pixels(pixbuf);
+	boolean hasAlpha = GDK.gdk_pixbuf_get_has_alpha(pixbuf);
 	int format = hasAlpha ? Cairo.CAIRO_FORMAT_ARGB32 : Cairo.CAIRO_FORMAT_RGB24;
-	surface = Cairo.cairo_image_surface_create(format, width, height);
+
+	// Initialize surface with dimensions received from the pixbuf and set device_scale appropriately
+	surface = Cairo.cairo_image_surface_create(format, pixbufWidth, pixbufHeight);
 	if (surface == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-	if (DPIUtil.useCairoAutoScale()) {
-		double scaleFactor = DPIUtil.getDeviceZoom() / 100f;
-		Cairo.cairo_surface_set_device_scale(surface, scaleFactor, scaleFactor);
-	}
+	if (DPIUtil.useCairoAutoScale()) Cairo.cairo_surface_set_device_scale(surface, scaleFactor, scaleFactor);
+
 	long data = Cairo.cairo_image_surface_get_data(surface);
 	int cairoStride = Cairo.cairo_image_surface_get_stride(surface);
 	int oa = 0, or = 0, og = 0, ob = 0;
@@ -845,10 +852,10 @@ void createFromPixbuf(int type, long pixbuf) {
 	}
 	byte[] line = new byte[stride];
 	if (hasAlpha) {
-		alphaData = new byte[width * height];
-		for (int y = 0, alphaOffset = 0; y < height; y++) {
+		alphaData = new byte[pixbufWidth * pixbufHeight];
+		for (int y = 0, alphaOffset = 0; y < pixbufHeight; y++) {
 			C.memmove(line, pixels + (y * stride), stride);
-			for (int x = 0, offset = 0; x < width; x++, offset += 4) {
+			for (int x = 0, offset = 0; x < pixbufWidth; x++, offset += 4) {
 				int a = line[offset + 3] & 0xFF;
 				int r = ((line[offset + 0] & 0xFF) * a) + 128;
 				r = (r + (r >> 8)) >> 8;
@@ -866,9 +873,9 @@ void createFromPixbuf(int type, long pixbuf) {
 		}
 	} else {
 		byte[] cairoLine = new byte[cairoStride];
-		for (int y = 0; y < height; y++) {
+		for (int y = 0; y < pixbufHeight; y++) {
 			C.memmove(line, pixels + (y * stride), stride);
-			for (int x = 0, offset = 0, cairoOffset = 0; x < width; x++, offset += 3, cairoOffset += 4) {
+			for (int x = 0, offset = 0, cairoOffset = 0; x < pixbufWidth; x++, offset += 3, cairoOffset += 4) {
 				int r = line[offset + 0] & 0xFF;
 				int g = line[offset + 1] & 0xFF;
 				int b = line[offset + 2] & 0xFF;
@@ -1010,7 +1017,7 @@ public Color getBackground() {
  */
 public Rectangle getBounds() {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	return DPIUtil.autoScaleBounds(getBoundsInPixels(), 100, currentDeviceZoom);
+	return DPIUtil.autoScaleDown(getBoundsInPixels());
 }
 
 /**
@@ -1292,20 +1299,29 @@ void init(int width, int height) {
 
 void init(ImageData image) {
 	if (image == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	int width = this.width = image.width;
-	int height = this.height = image.height;
+
 	PaletteData palette = image.palette;
 	if (!(((image.depth == 1 || image.depth == 2 || image.depth == 4 || image.depth == 8) && !palette.isDirect) ||
-		((image.depth == 8) || (image.depth == 16 || image.depth == 24 || image.depth == 32) && palette.isDirect)))
-			SWT.error (SWT.ERROR_UNSUPPORTED_DEPTH);
+			((image.depth == 8) || (image.depth == 16 || image.depth == 24 || image.depth == 32) && palette.isDirect))) {
+		SWT.error (SWT.ERROR_UNSUPPORTED_DEPTH);
+	}
+
+	int imageDataWidth = image.width;
+	int imageDataHeight = image.height;
+
+	// Scale dimensions of Image object to 100% scale factor
+	double scaleFactor = DPIUtil.getDeviceZoom() / 100f;
+	this.width = imageDataWidth / (int) scaleFactor;
+	this.height = imageDataHeight / (int) scaleFactor;
+
 	boolean hasAlpha = image.transparentPixel != -1 || image.alpha != -1 || image.maskData != null || image.alphaData != null;
 	int format = hasAlpha ? Cairo.CAIRO_FORMAT_ARGB32 : Cairo.CAIRO_FORMAT_RGB24;
-	surface = Cairo.cairo_image_surface_create(format, width, height);
+
+	// Initialize surface with dimensions received from the ImageData and set device_scale appropriately
+	surface = Cairo.cairo_image_surface_create(format, imageDataWidth, imageDataHeight);
 	if (surface == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-	if (DPIUtil.useCairoAutoScale()) {
-		double scaleFactor = DPIUtil.getDeviceZoom() / 100f;
-		Cairo.cairo_surface_set_device_scale(surface, scaleFactor, scaleFactor);
-	}
+	if (DPIUtil.useCairoAutoScale()) Cairo.cairo_surface_set_device_scale(surface, scaleFactor, scaleFactor);
+
 	int stride = Cairo.cairo_image_surface_get_stride(surface);
 	long data = Cairo.cairo_image_surface_get_data(surface);
 	int oa = 0, or = 0, og = 0, ob = 0;
@@ -1325,12 +1341,12 @@ void init(ImageData image) {
 	}
 	byte[] buffer = image.data;
 	if (!palette.isDirect || image.depth != destDepth || stride != image.bytesPerLine || palette.redMask != redMask || palette.greenMask != greenMask || palette.blueMask != blueMask || destOrder != image.getByteOrder()) {
-		buffer = new byte[stride * height];
+		buffer = new byte[stride * imageDataHeight];
 		if (palette.isDirect) {
 			ImageData.blit(ImageData.BLIT_SRC,
-				image.data, image.depth, image.bytesPerLine, image.getByteOrder(), 0, 0, width, height, palette.redMask, palette.greenMask, palette.blueMask,
+				image.data, image.depth, image.bytesPerLine, image.getByteOrder(), 0, 0, imageDataWidth, imageDataHeight, palette.redMask, palette.greenMask, palette.blueMask,
 				ImageData.ALPHA_OPAQUE, null, 0, 0, 0,
-				buffer, destDepth, stride, destOrder, 0, 0, width, height, redMask, greenMask, blueMask,
+				buffer, destDepth, stride, destOrder, 0, 0, imageDataWidth, imageDataHeight, redMask, greenMask, blueMask,
 				false, false);
 		} else {
 			RGB[] rgbs = palette.getRGBs();
@@ -1346,9 +1362,9 @@ void init(ImageData image) {
 				srcBlues[i] = (byte)rgb.blue;
 			}
 			ImageData.blit(ImageData.BLIT_SRC,
-				image.data, image.depth, image.bytesPerLine, image.getByteOrder(), 0, 0, width, height, srcReds, srcGreens, srcBlues,
+				image.data, image.depth, image.bytesPerLine, image.getByteOrder(), 0, 0, imageDataWidth, imageDataHeight, srcReds, srcGreens, srcBlues,
 				ImageData.ALPHA_OPAQUE, null, 0, 0, 0,
-				buffer, destDepth, stride, destOrder, 0, 0, width, height, redMask, greenMask, blueMask,
+				buffer, destDepth, stride, destOrder, 0, 0, imageDataWidth, imageDataHeight, redMask, greenMask, blueMask,
 				false, false);
 		}
 	}
@@ -1369,8 +1385,8 @@ void init(ImageData image) {
 			}
 		}
 		ImageData mask = image.getTransparencyMask();
-		for (int y = 0, offset = 0; y < height; y++) {
-			for (int x=0; x<width; x++, offset += 4) {
+		for (int y = 0, offset = 0; y < imageDataHeight; y++) {
+			for (int x=0; x<imageDataWidth; x++, offset += 4) {
 				int alpha = mask.getPixel(x, y) == 0 ? 0 : 0xff;
 				/* pre-multiplied alpha */
 				int r = ((buffer[offset + or] & 0xFF) * alpha) + 128;
@@ -1392,8 +1408,8 @@ void init(ImageData image) {
 			System.arraycopy(image.alphaData, 0, this.alphaData, 0, alphaData.length);
 		}
 		if (this.alpha != -1) {
-			for (int y = 0, offset = 0; y < height; y++) {
-				for (int x=0; x<width; x++, offset += 4) {
+			for (int y = 0, offset = 0; y < imageDataHeight; y++) {
+				for (int x=0; x<imageDataWidth; x++, offset += 4) {
 					int alpha = this.alpha;
 					/* pre-multiplied alpha */
 					int r = ((buffer[offset + or] & 0xFF) * alpha) + 128;
@@ -1409,9 +1425,9 @@ void init(ImageData image) {
 				}
 			}
 		} else if (this.alphaData != null) {
-			for (int y = 0, offset = 0; y < height; y++) {
-				for (int x=0; x<width; x++, offset += 4) {
-					int alpha = alphaData [y*width+x] & 0xFF;
+			for (int y = 0, offset = 0; y < imageDataHeight; y++) {
+				for (int x=0; x<imageDataWidth; x++, offset += 4) {
+					int alpha = alphaData [y*imageDataWidth+x] & 0xFF;
 					/* pre-multiplied alpha */
 					int r = ((buffer[offset + or] & 0xFF) * alpha) + 128;
 					r = (r + (r >> 8)) >> 8;
@@ -1427,7 +1443,7 @@ void init(ImageData image) {
 			}
 		}
 	}
-	C.memmove(data, buffer, stride * height);
+	C.memmove(data, buffer, stride * imageDataHeight);
 	Cairo.cairo_surface_mark_dirty(surface);
 }
 
