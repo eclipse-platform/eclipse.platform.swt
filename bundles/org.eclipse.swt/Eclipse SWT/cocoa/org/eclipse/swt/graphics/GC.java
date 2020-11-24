@@ -1991,7 +1991,7 @@ public void fillGradientRectangle(int x, int y, int width, int height, boolean v
 			NSGradient gradient = ((NSGradient)new NSGradient().alloc()).initWithStartingColor(startingColor, endingColor);
 			NSRect rect = new NSRect();
 			rect.x = x;
-			rect.y = y;
+			rect.y = y < 0 ? 0 : y;
 			rect.width = width;
 			rect.height = height;
 			gradient.drawInRect(rect, vertical ? 90 : 0);
