@@ -419,11 +419,7 @@ LRESULT CDDS_ITEMPOSTPAINT (NMTVCUSTOMDRAW nmcd, long wParam, long lParam) {
 		if (explorerTheme) {
 			int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
 			if ((bits & OS.TVS_TRACKSELECT) != 0) {
-				if ((style & SWT.FULL_SELECTION) != 0 && (selected || hot)) {
-					OS.SetTextColor (hDC, OS.GetSysColor (OS.COLOR_WINDOWTEXT));
-				} else {
-					OS.SetTextColor (hDC, getForegroundPixel ());
-				}
+				OS.SetTextColor (hDC, getForegroundPixel ());
 			}
 		}
 	}
