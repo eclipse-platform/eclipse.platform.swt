@@ -212,40 +212,52 @@ Point computeSizeInPixels (int wHint, int hHint, boolean changed) {
 	checkWidget ();
 	if (wHint != SWT.DEFAULT && wHint < 0) wHint = 0;
 	if (hHint != SWT.DEFAULT && hHint < 0) hHint = 0;
-	GTK.gtk_widget_realize (handle);
-	long layout = GTK.gtk_entry_get_layout (GTK.GTK4 ? entryHandle : handle);
-	long hAdjustment = GTK.gtk_spin_button_get_adjustment (handle);
-	double upper = GTK.gtk_adjustment_get_upper (hAdjustment);
-	int digits = GTK.gtk_spin_button_get_digits (handle);
-	for (int i = 0; i < digits; i++) upper *= 10;
-	String string = String.valueOf ((int) upper);
-	if (digits > 0) {
-		StringBuilder buffer = new StringBuilder ();
-		buffer.append (string);
-		buffer.append (getDecimalSeparator ());
-		int count = digits - string.length ();
-		while (count >= 0) {
-			buffer.append ("0");
-			count--;
+
+	if (GTK.GTK4) {
+		GTK.gtk_widget_set_size_request(handle, wHint, hHint);
+		GtkRequisition requisition = new GtkRequisition();
+		GTK.gtk_widget_get_preferred_size(handle, requisition, null);
+		int width = wHint == SWT.DEFAULT ? requisition.width : Math.max(wHint, requisition.width);
+		int height = hHint == SWT.DEFAULT ? requisition.height : hHint;
+		Rectangle trim = computeTrimInPixels(0, 0, width, height);
+		return new Point(trim.width, trim.height);
+	} else {
+		GTK.gtk_widget_realize (handle);
+		long layout = GTK.gtk_entry_get_layout (handle);
+		long hAdjustment = GTK.gtk_spin_button_get_adjustment (handle);
+		double upper = GTK.gtk_adjustment_get_upper (hAdjustment);
+		int digits = GTK.gtk_spin_button_get_digits (handle);
+		for (int i = 0; i < digits; i++) upper *= 10;
+		String string = String.valueOf ((int) upper);
+		if (digits > 0) {
+			StringBuilder buffer = new StringBuilder ();
+			buffer.append (string);
+			buffer.append (getDecimalSeparator ());
+			int count = digits - string.length ();
+			while (count >= 0) {
+				buffer.append ("0");
+				count--;
+			}
+			string = buffer.toString ();
 		}
-		string = buffer.toString ();
+		byte [] buffer1 = Converter.wcsToMbcs (string, false);
+		long ptr = OS.pango_layout_get_text (layout);
+		int length = C.strlen (ptr);
+		byte [] buffer2 = new byte [length];
+		C.memmove (buffer2, ptr, length);
+		OS.pango_layout_set_text (layout, buffer1, buffer1.length);
+
+		int width, height = 0 ;
+		GTK.gtk_widget_realize (handle);
+		GTK.gtk_widget_set_size_request (handle, wHint, hHint);
+		GtkRequisition requisition = new GtkRequisition ();
+		GTK.gtk_widget_get_preferred_size (handle, requisition, null);
+		width = wHint == SWT.DEFAULT ? requisition.width : Math.max(wHint, requisition.width);
+		height = hHint == SWT.DEFAULT ? requisition.height : hHint;
+		OS.pango_layout_set_text (layout, buffer2, buffer2.length);
+		Rectangle trim = computeTrimInPixels (0, 0, width, height);
+		return new Point (trim.width, trim.height);
 	}
-	byte [] buffer1 = Converter.wcsToMbcs (string, false);
-	long ptr = OS.pango_layout_get_text (layout);
-	int length = C.strlen (ptr);
-	byte [] buffer2 = new byte [length];
-	C.memmove (buffer2, ptr, length);
-	OS.pango_layout_set_text (layout, buffer1, buffer1.length);
-	int width, height = 0 ;
-	GTK.gtk_widget_realize (handle);
-	GTK.gtk_widget_set_size_request (handle, wHint, hHint);
-	GtkRequisition requisition = new GtkRequisition ();
-	GTK.gtk_widget_get_preferred_size (handle, requisition, null);
-	width = wHint == SWT.DEFAULT ? requisition.width : Math.max(wHint, requisition.width);
-	height = hHint == SWT.DEFAULT ? requisition.height : hHint;
-	OS.pango_layout_set_text (layout, buffer2, buffer2.length);
-	Rectangle trim = computeTrimInPixels (0, 0, width, height);
-	return new Point (trim.width, trim.height);
 }
 
 @Override
@@ -319,10 +331,7 @@ void createHandle (int index) {
 
 	if (GTK.GTK4) {
 		OS.swt_fixed_add(fixedHandle, handle);
-
-		long boxHandle = GTK.gtk_widget_get_first_child(handle);
-		long textHandle = GTK.gtk_widget_get_first_child(boxHandle);
-		entryHandle = textHandle;
+		entryHandle = GTK.gtk_widget_get_first_child(handle);
 	} else {
 		GTK.gtk_container_add (fixedHandle, handle);
 	}
@@ -537,14 +546,23 @@ public int getSelection () {
  *
  * @since 3.4
  */
-public String getText () {
-	checkWidget ();
-	long str = GTK.gtk_entry_get_text (GTK.GTK4 ? entryHandle : handle);
-	if (str == 0) return "";
-	int length = C.strlen (str);
-	byte [] buffer = new byte [length];
-	C.memmove (buffer, str, length);
-	return new String (Converter.mbcsToWcs (buffer));
+public String getText() {
+	checkWidget();
+
+	long stringPtr;
+	if (GTK.GTK4) {
+		long bufferHandle = GTK.gtk_text_get_buffer(entryHandle);
+		stringPtr = GTK.gtk_entry_buffer_get_text(bufferHandle);
+	} else {
+		stringPtr = GTK.gtk_entry_get_text(handle);
+	}
+	if (stringPtr == 0) return "";
+
+	int length = C.strlen(stringPtr);
+	byte[] buffer = new byte[length];
+	C.memmove(buffer, stringPtr, length);
+
+	return new String(Converter.mbcsToWcs(buffer));
 }
 
 /**
@@ -601,13 +619,20 @@ long gtk_activate (long widget) {
 
 @Override
 long gtk_changed (long widget) {
-	long str = GTK.gtk_entry_get_text (GTK.GTK4 ? entryHandle : handle);
-	int length = C.strlen (str);
+	long stringPtr;
+	if (GTK.GTK4) {
+		long bufferHandle = GTK.gtk_text_get_buffer(entryHandle);
+		stringPtr = GTK.gtk_entry_buffer_get_text(bufferHandle);
+	} else {
+		stringPtr = GTK.gtk_entry_get_text(handle);
+	}
+
+	int length = C.strlen(stringPtr);
 	if (length > 0) {
 		long [] endptr = new long [1];
-		double value = OS.g_strtod (str, endptr);
+		double value = OS.g_strtod (stringPtr, endptr);
 		int valueLength = (getDigits() == 0) ? String.valueOf((int)value).length() : String.valueOf(value).length();
-		if ((endptr [0] == str + length) && valueLength == length) {
+		if ((endptr [0] == stringPtr + length) && valueLength == length) {
 			long hAdjustment = GTK.gtk_spin_button_get_adjustment (handle);
 			GtkAdjustment adjustment = new GtkAdjustment ();
 			gtk_adjustment_get (hAdjustment, adjustment);
@@ -625,7 +650,7 @@ long gtk_changed (long widget) {
 	* is to post the modify event when the user is typing.
 	*/
 	boolean keyPress = false;
-	long eventPtr = GTK.gtk_get_current_event ();
+	long eventPtr = GTK.GTK4 ? 0 : GTK.gtk_get_current_event();
 	if (eventPtr != 0) {
 		int eventType = GDK.gdk_event_get_event_type(eventPtr);
 		eventType = fixGdkEventTypeValues(eventType);
