@@ -4236,6 +4236,30 @@ JNIEXPORT jlong JNICALL GTK_NATIVE(gtk_1button_1new)
 }
 #endif
 
+#ifndef NO_gtk_1button_1new_1from_1icon_1name
+JNIEXPORT jlong JNICALL GTK_NATIVE(gtk_1button_1new_1from_1icon_1name)
+	(JNIEnv *env, jclass that, jbyteArray arg0)
+{
+	jbyte *lparg0=NULL;
+	jlong rc = 0;
+	GTK_NATIVE_ENTER(env, that, gtk_1button_1new_1from_1icon_1name_FUNC);
+	if (arg0) if ((lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL)) == NULL) goto fail;
+/*
+	rc = (jlong)gtk_button_new_from_icon_name((const gchar *)lparg0);
+*/
+	{
+		GTK_LOAD_FUNCTION(fp, gtk_button_new_from_icon_name)
+		if (fp) {
+			rc = (jlong)((jlong (CALLING_CONVENTION*)(const gchar *))fp)((const gchar *)lparg0);
+		}
+	}
+fail:
+	if (arg0 && lparg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
+	GTK_NATIVE_EXIT(env, that, gtk_1button_1new_1from_1icon_1name_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_gtk_1button_1set_1child
 JNIEXPORT void JNICALL GTK_NATIVE(gtk_1button_1set_1child)
 	(JNIEnv *env, jclass that, jlong arg0, jlong arg1)
@@ -6904,6 +6928,18 @@ JNIEXPORT jlong JNICALL GTK_NATIVE(gtk_1gesture_1rotate_1new)
 }
 #endif
 
+#ifndef NO_gtk_1gesture_1single_1get_1current_1button
+JNIEXPORT jint JNICALL GTK_NATIVE(gtk_1gesture_1single_1get_1current_1button)
+	(JNIEnv *env, jclass that, jlong arg0)
+{
+	jint rc = 0;
+	GTK_NATIVE_ENTER(env, that, gtk_1gesture_1single_1get_1current_1button_FUNC);
+	rc = (jint)gtk_gesture_single_get_current_button((GtkGestureSingle *)arg0);
+	GTK_NATIVE_EXIT(env, that, gtk_1gesture_1single_1get_1current_1button_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_gtk_1gesture_1single_1set_1button
 JNIEXPORT void JNICALL GTK_NATIVE(gtk_1gesture_1single_1set_1button)
 	(JNIEnv *env, jclass that, jlong arg0, jint arg1)
@@ -7448,13 +7484,37 @@ JNIEXPORT jlong JNICALL GTK_NATIVE(gtk_1image_1new)
 }
 #endif
 
-#ifndef NO_gtk_1image_1new_1from_1icon_1name
-JNIEXPORT jlong JNICALL GTK_NATIVE(gtk_1image_1new_1from_1icon_1name)
+#ifndef NO_gtk_1image_1new_1from_1icon_1name___3B
+JNIEXPORT jlong JNICALL GTK_NATIVE(gtk_1image_1new_1from_1icon_1name___3B)
+	(JNIEnv *env, jclass that, jbyteArray arg0)
+{
+	jbyte *lparg0=NULL;
+	jlong rc = 0;
+	GTK_NATIVE_ENTER(env, that, gtk_1image_1new_1from_1icon_1name___3B_FUNC);
+	if (arg0) if ((lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL)) == NULL) goto fail;
+/*
+	rc = (jlong)gtk_image_new_from_icon_name((const gchar *)lparg0);
+*/
+	{
+		GTK_LOAD_FUNCTION(fp, gtk_image_new_from_icon_name)
+		if (fp) {
+			rc = (jlong)((jlong (CALLING_CONVENTION*)(const gchar *))fp)((const gchar *)lparg0);
+		}
+	}
+fail:
+	if (arg0 && lparg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
+	GTK_NATIVE_EXIT(env, that, gtk_1image_1new_1from_1icon_1name___3B_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_gtk_1image_1new_1from_1icon_1name___3BI
+JNIEXPORT jlong JNICALL GTK_NATIVE(gtk_1image_1new_1from_1icon_1name___3BI)
 	(JNIEnv *env, jclass that, jbyteArray arg0, jint arg1)
 {
 	jbyte *lparg0=NULL;
 	jlong rc = 0;
-	GTK_NATIVE_ENTER(env, that, gtk_1image_1new_1from_1icon_1name_FUNC);
+	GTK_NATIVE_ENTER(env, that, gtk_1image_1new_1from_1icon_1name___3BI_FUNC);
 	if (arg0) if ((lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL)) == NULL) goto fail;
 /*
 	rc = (jlong)gtk_image_new_from_icon_name((const gchar *)lparg0, (GtkIconSize)arg1);
@@ -7467,7 +7527,7 @@ JNIEXPORT jlong JNICALL GTK_NATIVE(gtk_1image_1new_1from_1icon_1name)
 	}
 fail:
 	if (arg0 && lparg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
-	GTK_NATIVE_EXIT(env, that, gtk_1image_1new_1from_1icon_1name_FUNC);
+	GTK_NATIVE_EXIT(env, that, gtk_1image_1new_1from_1icon_1name___3BI_FUNC);
 	return rc;
 }
 #endif
@@ -10861,6 +10921,18 @@ JNIEXPORT void JNICALL GTK_NATIVE(gtk_1text_1buffer_1set_1text)
 fail:
 	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
 	GTK_NATIVE_EXIT(env, that, gtk_1text_1buffer_1set_1text_FUNC);
+}
+#endif
+
+#ifndef NO_gtk_1text_1get_1buffer
+JNIEXPORT jlong JNICALL GTK_NATIVE(gtk_1text_1get_1buffer)
+	(JNIEnv *env, jclass that, jlong arg0)
+{
+	jlong rc = 0;
+	GTK_NATIVE_ENTER(env, that, gtk_1text_1get_1buffer_FUNC);
+	rc = (jlong)gtk_text_get_buffer((GtkText *)arg0);
+	GTK_NATIVE_EXIT(env, that, gtk_1text_1get_1buffer_FUNC);
+	return rc;
 }
 #endif
 

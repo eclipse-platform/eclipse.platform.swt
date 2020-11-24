@@ -325,6 +325,10 @@ public class OS extends C {
 	public static final byte[] map_event = ascii("map-event");
 	public static final byte[] mnemonic_activate = ascii("mnemonic-activate");
 	public static final byte[] month_changed = ascii("month-changed");
+	public static final byte[] next_month = ascii("next-month");
+	public static final byte[] prev_month = ascii("prev-month");
+	public static final byte[] next_year = ascii("next-year");
+	public static final byte[] prev_year = ascii("prev-year");
 	public static final byte[] motion_notify_event = ascii("motion-notify-event");
 	public static final byte[] motion = ascii("motion");
 	public static final byte[] move_cursor = ascii("move-cursor");

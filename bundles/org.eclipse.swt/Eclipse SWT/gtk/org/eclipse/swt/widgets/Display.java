@@ -4180,17 +4180,21 @@ Rectangle mapInPixels (Control from, Control to, int x, int y, int width, int he
 	checkDevice();
 	if (from != null && from.isDisposed()) error (SWT.ERROR_INVALID_ARGUMENT);
 	if (to != null && to.isDisposed()) error (SWT.ERROR_INVALID_ARGUMENT);
+
+	// TODO: GTK4 no longer able to retrieve surface/window origin
+	if (GTK.GTK4) return new Rectangle(x, y, 0, 0);
+
 	Rectangle rect = new Rectangle (x, y, width, height);
 	if (from == to) return rect;
 	boolean fromRTL = false, toRTL = false;
 	if (from != null) {
-		Point origin = GTK.GTK4 ? from.getSurfaceOrigin() : from.getWindowOrigin ();
+		Point origin = from.getWindowOrigin ();
 		if (fromRTL = (from.style & SWT.MIRRORED) != 0) rect.x = from.getClientWidth () - rect.x;
 		rect.x += origin.x;
 		rect.y += origin.y;
 	}
 	if (to != null) {
-		Point origin = GTK.GTK4 ? to.getSurfaceOrigin() : to.getWindowOrigin ();
+		Point origin = to.getWindowOrigin ();
 		rect.x -= origin.x;
 		rect.y -= origin.y;
 		if (toRTL = (to.style & SWT.MIRRORED) != 0) rect.x = to.getClientWidth () - rect.x;

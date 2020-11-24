@@ -641,6 +641,8 @@
 // No GtkIconPaintable
 #define NO_gtk_1icon_1paintable_1get_1file
 
+#define NO_gtk_1text_1get_1buffer
+
 #endif
 
 #include "os_custom.h"

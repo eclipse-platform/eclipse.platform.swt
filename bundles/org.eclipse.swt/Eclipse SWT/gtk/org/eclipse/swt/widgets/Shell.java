@@ -1876,7 +1876,9 @@ long gtk_realize (long widget) {
 		}
 	}
 
-	if ((style & SWT.ON_TOP) != 0) GTK.gtk_window_set_keep_above(shellHandle, true);
+	if ((style & SWT.ON_TOP) != 0) {
+		if (!GTK.GTK4) GTK.gtk_window_set_keep_above(shellHandle, true);
+	}
 	return result;
 }
 

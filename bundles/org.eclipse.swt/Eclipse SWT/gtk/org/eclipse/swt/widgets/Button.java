@@ -307,11 +307,22 @@ void createHandle (int index) {
 			if ((style & SWT.DOWN) != 0) arrowType = GTK.GTK_NAMED_ICON_GO_DOWN;
 			if ((style & SWT.LEFT) != 0) arrowType = GTK.GTK_NAMED_ICON_GO_PREVIOUS;
 			if ((style & SWT.RIGHT) != 0) arrowType = GTK.GTK_NAMED_ICON_GO_NEXT;
-			arrowHandle = GTK.gtk_image_new_from_icon_name (arrowType, GTK.GTK_ICON_SIZE_MENU);
-			if (arrowHandle == 0) error (SWT.ERROR_NO_HANDLES);
 
-			handle = GTK.gtk_button_new ();
-			if (handle == 0) error (SWT.ERROR_NO_HANDLES);
+			if (GTK.GTK4) {
+				handle = GTK.gtk_button_new_from_icon_name(arrowType);
+				if (handle == 0) error (SWT.ERROR_NO_HANDLES);
+				arrowHandle = GTK.gtk_widget_get_first_child(handle);
+				if (arrowHandle == 0) error (SWT.ERROR_NO_HANDLES);
+			} else {
+				arrowHandle = GTK.gtk_image_new_from_icon_name(arrowType, GTK.GTK_ICON_SIZE_MENU);
+				if (arrowHandle == 0) error (SWT.ERROR_NO_HANDLES);
+				handle = GTK.gtk_button_new();
+				if (handle == 0) error (SWT.ERROR_NO_HANDLES);
+
+				// Use gtk_button_set_image() on GTK3 to prevent icons from being
+				// trimmed with smaller sized buttons; see bug 528284.
+				GTK.gtk_button_set_image(handle, arrowHandle);
+			}
 			break;
 		case SWT.TOGGLE:
 			handle = GTK.gtk_toggle_button_new ();
@@ -368,11 +379,8 @@ void createHandle (int index) {
 			if (!GTK.GTK4) GTK.gtk_widget_set_can_default (handle, true);
 			break;
 	}
-	if ((style & SWT.ARROW) != 0) {
-		// Use gtk_button_set_image() on GTK3 to prevent icons from being
-		// trimmed with smaller sized buttons; see bug 528284.
-		GTK.gtk_button_set_image(handle, arrowHandle);
-	} else {
+
+	if ((style & SWT.ARROW) == 0) {
 		boxHandle = gtk_box_new (GTK.GTK_ORIENTATION_HORIZONTAL, false, 4);
 		if (boxHandle == 0) error (SWT.ERROR_NO_HANDLES);
 		labelHandle = GTK.gtk_label_new_with_mnemonic (null);
@@ -400,6 +408,7 @@ void createHandle (int index) {
 			}
 		}
 	}
+
 	if (GTK.GTK4) {
 		OS.swt_fixed_add(fixedHandle, handle);
 	} else {

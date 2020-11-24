@@ -295,7 +295,7 @@ Point computeMaxTextSize (int wHint, int hHint, boolean changed) {
 			// Fixed length for DEFAULT_SHORT_DATE_FORMAT, no need to adjust text length.
 	}
 
-	Point textSize = computeNativeSize (GTK.GTK4? spinButtonHandle : textEntryHandle, wHint, hHint, changed);
+	Point textSize = computeNativeSize (GTK.GTK4 ? handle : textEntryHandle, wHint, hHint, changed);
 	// Change the text back to match the current calendar
 	updateControl();
 	return textSize;
@@ -361,7 +361,7 @@ Rectangle computeTrimInPixels (int x, int y, int width, int height) {
 	Rectangle trim = super.computeTrimInPixels (x, y, width, height);
 	int xborder = 0, yborder = 0;
 		GtkBorder tmp = new GtkBorder ();
-		long context = GTK.gtk_widget_get_style_context (GTK.GTK4 ? spinButtonHandle :textEntryHandle);
+		long context = GTK.gtk_widget_get_style_context (textEntryHandle);
 		int state_flag = GTK.gtk_widget_get_state_flags(textEntryHandle);
 		gtk_style_context_get_padding(context, state_flag, tmp);
 		trim.x -= tmp.left;
@@ -471,11 +471,8 @@ private void createHandleForDateWithDropDown () {
 private void createHandleForDateTime () {
 	long adjusment = GTK.gtk_adjustment_new (0, -9999, 9999, 1, 0, 0);
 	if (GTK.GTK4) {
-		spinButtonHandle =  GTK.gtk_spin_button_new (adjusment, 1, 0);
-		long boxHandle = GTK.gtk_widget_get_first_child(spinButtonHandle);
-		long textHandle = GTK.gtk_widget_get_first_child(boxHandle);
-		textEntryHandle = textHandle;
-		handle = spinButtonHandle;
+		handle =  GTK.gtk_spin_button_new(adjusment, 1, 0);
+		textEntryHandle = GTK.gtk_widget_get_first_child(handle);
 		containerHandle = spinButtonHandle;
 	} else {
 		textEntryHandle = GTK.gtk_spin_button_new (adjusment, 1, 0);
@@ -940,7 +937,7 @@ private long dateTimeHandle () {
 		return calendarHandle;
 	} else if ((isDate () || isTime ())) {
 		if (GTK.GTK4) {
-			if (spinButtonHandle != 0) return spinButtonHandle;
+			return handle;
 		} else {
 			if (textEntryHandle != 0) return textEntryHandle;
 		}
@@ -963,28 +960,34 @@ void hookEvents () {
 		if ((style & SWT.DROP_DOWN) == 0 ) {
 			hookEventsForDateTimeSpinner ();
 		}
-		if (OS.G_OBJECT_TYPE (textEntryHandle) == GTK.GTK_TYPE_MENU ()) {
-			hookEventsForMenu ();
+
+		if (!GTK.GTK4) {
+			if (OS.G_OBJECT_TYPE (textEntryHandle) == GTK.GTK_TYPE_MENU ()) {
+				hookEventsForMenu ();
+			}
 		}
 	}
 }
 
 
 final private void hookEventsForCalendar () {
-	OS.g_signal_connect_closure (calendarHandle, OS.day_selected, display.getClosure (DAY_SELECTED), false);
-	OS.g_signal_connect_closure (calendarHandle, OS.day_selected_double_click, display.getClosure (DAY_SELECTED_DOUBLE_CLICK), false);
-	OS.g_signal_connect_closure (calendarHandle, OS.month_changed, display.getClosure (MONTH_CHANGED), false);
+	OS.g_signal_connect_closure(calendarHandle, OS.day_selected, display.getClosure(DAY_SELECTED), false);
+
+	if (GTK.GTK4) {
+		OS.g_signal_connect_closure(calendarHandle, OS.next_month, display.getClosure(MONTH_CHANGED), false);
+		OS.g_signal_connect_closure(calendarHandle, OS.next_year, display.getClosure(MONTH_CHANGED), false);
+		OS.g_signal_connect_closure(calendarHandle, OS.prev_month, display.getClosure(MONTH_CHANGED), false);
+		OS.g_signal_connect_closure(calendarHandle, OS.prev_year, display.getClosure(MONTH_CHANGED), false);
+	} else {
+		OS.g_signal_connect_closure(calendarHandle, OS.day_selected_double_click, display.getClosure(DAY_SELECTED_DOUBLE_CLICK), false);
+		OS.g_signal_connect_closure(calendarHandle, OS.month_changed, display.getClosure(MONTH_CHANGED), false);
+	}
 }
 
 final private void hookEventsForDateTimeSpinner () {
-	OS.g_signal_connect_closure (textEntryHandle, OS.output, display.getClosure (OUTPUT), true);
+	OS.g_signal_connect_closure (handle, OS.output, display.getClosure (OUTPUT), true);
 	if (GTK.GTK4) {
-		long keyController = GTK.gtk_event_controller_key_new();
-		GTK.gtk_widget_add_controller(textEntryHandle, keyController);
-		GTK.gtk_event_controller_set_propagation_phase(keyController, GTK.GTK_PHASE_TARGET);
-
-		long focusAddress = display.focusCallback.getAddress();
-		OS.g_signal_connect (keyController, OS.focus_in, focusAddress, FOCUS_IN);
+		//TODO: GTK4 focus-in (focus event)?
 	} else {
 		OS.g_signal_connect_closure (textEntryHandle, OS.focus_in_event, display.getClosure (FOCUS_IN_EVENT), true);
 	}
@@ -1349,7 +1352,7 @@ void selectField(FieldPosition fieldPosition) {
 		commitData();
 		fieldPosition = updateField(fieldPosition);
 	}
-	Point pt = getSelection();
+	Point pt = getTextSelection();
 	int start = fieldPosition.getBeginIndex();
 	int end = fieldPosition.getEndIndex();
 	if (sameField && start == pt.x && end == pt.y) {
@@ -1361,7 +1364,7 @@ void selectField(FieldPosition fieldPosition) {
 			String value = getText(getText(), start, end - 1);
 			int s = value.lastIndexOf(' ');
 			s = (s == -1) ? start : start + s + 1;
-			setSelection(s, end);
+			setTextSelection(s, end);
 		}
 	});
 	sendSelectionEvent(SWT.Selection);
@@ -1720,7 +1723,7 @@ void setBoundsInPixels (int x, int y, int width, int height) {
 
 	//Date with Drop down is in container. Needs extra handling.
 	if (isDateWithDropDownButton ()) {
-		long sizingHandle = GTK.GTK4 ? spinButtonHandle : textEntryHandle;
+		long sizingHandle = textEntryHandle;
 		GtkRequisition requisition = new GtkRequisition ();
 		GTK.gtk_widget_get_preferred_size (sizingHandle, null, requisition);
 		int oldHeight = requisition.height; //Entry should not expand vertically. It is single liner.
@@ -1742,7 +1745,7 @@ private void setDropDownButtonSize () {
 	Point buttonSize = down.computeSizeInPixels (SWT.DEFAULT, parentHeight);
 
 	//TAG_GTK3__NO_VERTICAL_FILL_ADJUSTMENT
-	int dateEntryHeight = computeNativeSize (GTK.GTK4 ? spinButtonHandle : textEntryHandle, SWT.DEFAULT, SWT.DEFAULT, false).y;
+	int dateEntryHeight = computeNativeSize (textEntryHandle, SWT.DEFAULT, SWT.DEFAULT, false).y;
 	int newHeight = dateEntryHeight;
 
 	//Move button a little closer to entry field, by amount of padding.
@@ -1761,7 +1764,7 @@ private void setDropDownButtonSize () {
 GtkBorder getGtkBorderPadding () {
 	//In Gtk3, acquire border.
 	GtkBorder gtkBorderPadding = new GtkBorder ();
-	long contextHandle = GTK.GTK4 ? spinButtonHandle : textEntryHandle;
+	long contextHandle = textEntryHandle;
 	long context = GTK.gtk_widget_get_style_context (contextHandle);
 	int state_flag = GTK.gtk_widget_get_state_flags(contextHandle);
 	gtk_style_context_get_padding(context, state_flag, gtkBorderPadding);
@@ -1835,7 +1838,7 @@ boolean onNumberKeyInput(int key) {
 	newText.append(typeBuffer);
 	newText.append(suffix);
 	setText(newText.toString());
-	setSelection(prefix.length() + typeBufferPos, prefix.length() + typeBuffer.length());
+	setTextSelection(prefix.length() + typeBufferPos, prefix.length() + typeBuffer.length());
 	currentField.setBeginIndex(prefix.length());
 	currentField.setEndIndex(prefix.length() + typeBuffer.length());
 	if (!isCalendar()) {
@@ -1936,9 +1939,16 @@ int getArrow(long widget) {
 void setText (String dateTimeText) {
 	if (dateTimeText != null){
 		byte [] dateTimeConverted = Converter.wcsToMbcs (dateTimeText, true);
-		//note, this is ignored if the control is in a fill-layout.
-		GTK.gtk_entry_set_width_chars (textEntryHandle, dateTimeText.length ());
-		GTK.gtk_entry_set_text (textEntryHandle, dateTimeConverted);
+
+		if (GTK.GTK4) {
+			long bufferHandle = isDateWithDropDownButton() ? GTK.gtk_entry_get_buffer(textEntryHandle) : GTK.gtk_text_get_buffer(textEntryHandle);
+			GTK.gtk_entry_buffer_set_text(bufferHandle, dateTimeConverted, dateTimeText.length());
+		} else {
+			//note, this is ignored if the control is in a fill-layout.
+			GTK.gtk_entry_set_width_chars(textEntryHandle, dateTimeText.length());
+			GTK.gtk_entry_set_text(textEntryHandle, dateTimeConverted);
+		}
+
 		if (popupCalendar != null && calendar != null) {
 			Date parse;
 			try {
@@ -2025,21 +2035,6 @@ void commitData() {
 	updateControl();
 }
 
-/** returns selected text **/
-Point getSelection () {
-	checkWidget ();
-	Point selection;
-	int [] start = new int [1];
-	int [] end = new int [1];
-	GTK.gtk_editable_get_selection_bounds (textEntryHandle, start, end);
-	long ptr = GTK.gtk_entry_get_text (textEntryHandle);
-	start[0] = (int)OS.g_utf8_offset_to_utf16_offset (ptr, start[0]);
-	end[0] = (int)OS.g_utf8_offset_to_utf16_offset (ptr, end[0]);
-	selection = new Point (start [0], end [0]);
-	return selection;
-
-}
-
 /**
  * Returns a string containing a copy of the contents of the
  * receiver's text field, or an empty string if there are no
@@ -2052,17 +2047,26 @@ Point getSelection () {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
-String getText () {
-	checkWidget ();
+String getText() {
+	checkWidget();
 	if (textEntryHandle != 0) {
-		long str = GTK.gtk_entry_get_text (textEntryHandle);
-		if (str == 0) return "";
-		int length = C.strlen (str);
-		byte [] buffer = new byte [length];
-		C.memmove (buffer, str, length);
-		return new String (Converter.mbcsToWcs (buffer));
-	}
+		long stringPtr;
+
+		if (GTK.GTK4) {
+			long bufferHandle = isDateWithDropDownButton() ? GTK.gtk_entry_get_buffer(textEntryHandle) : GTK.gtk_text_get_buffer(textEntryHandle);
+			stringPtr = GTK.gtk_entry_buffer_get_text(bufferHandle);
+		} else {
+			stringPtr = GTK.gtk_entry_get_text(textEntryHandle);
+		}
+
+		if (stringPtr == 0) return "";
+		int length = C.strlen(stringPtr);
+		byte[] buffer = new byte[length];
+		C.memmove(buffer, stringPtr, length);
+		return new String(Converter.mbcsToWcs(buffer));
+	} else {
 		return "";
+	}
 }
 
 /**
@@ -2084,13 +2088,49 @@ String getText (String str,int start, int end) {
 	return str.substring (start, end + 1);
 }
 
-void setSelection (int start, int end) {
-	checkWidget ();
-	long ptr = GTK.gtk_entry_get_text (textEntryHandle);
-	start = (int)OS.g_utf16_offset_to_utf8_offset (ptr, start);
-	end = (int)OS.g_utf16_offset_to_utf8_offset (ptr, end);
-	GTK.gtk_editable_set_position (textEntryHandle, start);
-	GTK.gtk_editable_select_region (textEntryHandle, start, end);
+/**
+ * Returns the selected text. If selected text is less than
+ * one character the returned Point has equal start and end values.
+ *
+ * @return the highlighted (selected) text or position of cursor
+ **/
+Point getTextSelection() {
+	checkWidget();
+	int[] start = new int[1];
+	int[] end = new int[1];
+	GTK.gtk_editable_get_selection_bounds(textEntryHandle, start, end);
+
+	long stringPtr;
+	if (GTK.GTK4) {
+		long bufferHandle = isDateWithDropDownButton() ? GTK.gtk_entry_get_buffer(textEntryHandle) : GTK.gtk_text_get_buffer(textEntryHandle);
+		stringPtr = GTK.gtk_entry_buffer_get_text(bufferHandle);
+	} else {
+		stringPtr = GTK.gtk_entry_get_text (textEntryHandle);
+	}
+
+	start[0] = (int)OS.g_utf8_offset_to_utf16_offset(stringPtr, start[0]);
+	end[0] = (int)OS.g_utf8_offset_to_utf16_offset(stringPtr, end[0]);
+
+	return new Point(start[0], end[0]);
+}
+
+/** Highlight (select) the text between the start and end. **/
+void setTextSelection(int start, int end) {
+	checkWidget();
+
+	long stringPtr;
+	if (GTK.GTK4) {
+		long bufferHandle = isDateWithDropDownButton() ? GTK.gtk_entry_get_buffer(textEntryHandle) : GTK.gtk_text_get_buffer(textEntryHandle);
+		stringPtr = GTK.gtk_entry_buffer_get_text(bufferHandle);
+	} else {
+		stringPtr = GTK.gtk_entry_get_text(textEntryHandle);
+	}
+
+	start = (int) OS.g_utf16_offset_to_utf8_offset(stringPtr, start);
+	end = (int) OS.g_utf16_offset_to_utf8_offset(stringPtr, end);
+
+	GTK.gtk_editable_set_position(textEntryHandle, start);
+	GTK.gtk_editable_select_region(textEntryHandle, start, end);
 }
 
 void setTextField(FieldPosition field, int value) {
@@ -2123,20 +2163,30 @@ private int validateValueBounds(FieldPosition field, int value) {
 
 @Override
 long gtk_button_release_event (long widget, long event) {
-	if (isDate () || isTime ()) {
+	if (isDate() || isTime()) {
 		int [] eventButton = new int [1];
-		if (GTK.GTK4) {
-			eventButton[0] = GDK.gdk_button_event_get_button(event);
-		} else {
-			GDK.gdk_event_get_button(event, eventButton);
-		}
+		GDK.gdk_event_get_button(event, eventButton);
 
 		if (eventButton[0] == 1) { // left mouse button.
-			onTextMouseClick ();
+			onTextMouseClick();
 		}
 	}
-	return super.gtk_button_release_event (widget, event);
+	return super.gtk_button_release_event(widget, event);
 }
+
+@Override
+long gtk_gesture_release_event(long gesture, int n_press, double x, double y, long event) {
+	if (isDate() || isTime()) {
+		int button = GTK.gtk_gesture_single_get_current_button(gesture);
+
+		if (button == 1) {
+			onTextMouseClick();
+		}
+	}
+
+	return super.gtk_gesture_release_event(gesture, n_press, x, y, event);
+}
+
 /**
  * Output signal is called when Spinner's arrow buttons are triggered,
  * usually by clicking the mouse on the [gtk2: up/down] [gtk3: +/-] buttons.
@@ -2177,7 +2227,7 @@ void onTextMouseClick() {
 	if (calendar == null) {
 		return; // Guard: Object not fully initialized yet.
 	}
-	int clickPosition = getSelection().x;
+	int clickPosition = getTextSelection().x;
 	AttributedCharacterIterator iterator = dateFormat.formatToCharacterIterator(calendar.getTime());
 	iterator.first();
 	int pos = 0;

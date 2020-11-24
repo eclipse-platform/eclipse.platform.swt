@@ -259,30 +259,35 @@ public class GTK extends OS {
 
 	/* GtkButton */
 	public static final native long gtk_button_new();
-
-	/** @method flags=dynamic
-	 *  @param button cast=(GtkButton *)
-	 *  @param child cast=(GtkWidget *)
-	 */
-	/* [GTK4 only] */
-	public static final native void gtk_button_set_child(long button, long child);
-	/** @method flags=dynamic
-	 *  @param button cast=(GtkButton *)
-	 *  @param label cast=(const char *)
+	/**
+	 * @method flags=dynamic
+	 * @param button cast=(GtkButton *)
+	 * @param label cast=(const char *)
 	 */
 	public static final native void gtk_button_set_label(long button, byte[] label);
+	/** @param button cast=(GtkButton *) */
+	public static final native void gtk_button_set_use_underline(long button, boolean use_underline);
 
+	/* GtkButton [GTK3 only] */
 	/**
 	 * @method flags=dynamic
 	 * @param button cast=(GtkButton *)
 	 * @param image cast=(GtkWidget *)
 	 */
-	/* [GTK3 only] */
 	public static final native void gtk_button_set_image(long button, long image);
+
+	/* GtkButton [GTK4 only] */
 	/**
-	 * @param button cast=(GtkButton *)
+	 * @method flags=dynamic
+	 * @param icon_name cast=(const gchar *)
 	 */
-	public static final native void gtk_button_set_use_underline(long button, boolean use_underline);
+	public static final native long gtk_button_new_from_icon_name(byte[] icon_name);
+	/**
+	 * @method flags=dynamic
+	 * @param button cast=(GtkButton *)
+	 * @param child cast=(GtkWidget *)
+	 */
+	public static final native void gtk_button_set_child(long button, long child);
 
 
 	/* Keyboard Accelerators */
@@ -1270,7 +1275,16 @@ public class GTK extends OS {
 	public static final native long gtk_event_controller_scroll_new(int flag);
 
 
-	/* GtkGesture [GTK4 only] */
+	/* GtkGestureSingle */
+	/** @method flags=dynamic */
+	public static final native void gtk_gesture_single_set_button(long gesture, int button);
+	/** @param gesture cast=(GtkGestureSingle *) */
+	public static final native int gtk_gesture_single_get_current_button(long gesture);
+
+
+
+
+	/* GtkGestureClick [GTK4 only] */
 	/** @method flags=dynamic */
 	public static final native long gtk_gesture_click_new();
 
@@ -1365,10 +1379,6 @@ public class GTK extends OS {
 	 * @method flags=dynamic
 	 */
 	public static final native boolean gtk_gesture_get_point(long gesture, long sequence, double[] x, double [] y);
-	/**
-	 * @method flags=dynamic
-	 */
-	public static final native void gtk_gesture_single_set_button(long gesture, int button);
 	/**
 	 * @method flags=dynamic
 	 */
@@ -1598,6 +1608,11 @@ public class GTK extends OS {
 	public static final native void gtk_image_set_from_icon_name(long image, byte[] icon_name, int size);
 
 	/* GtkImage [GTK4 only] */
+	/**
+	 * @method flags=dynamic
+	 * @param icon_name cast=(const gchar *)
+	 */
+	public static final native long gtk_image_new_from_icon_name(byte[] icon_name);
 	/**
 	 * @method flags=dynamic
 	 * @param image cast=(GtkImage *)
@@ -2714,6 +2729,10 @@ public class GTK extends OS {
 	public static final native int gtk_text_iter_get_line(byte[] iter);
 	/** @param iter cast=(const GtkTextIter *) */
 	public static final native int gtk_text_iter_get_offset(byte[] iter);
+
+	/* GtkText [GTK4 only] */
+	/** @param self cast=(GtkText *) */
+	public static final native long gtk_text_get_buffer(long self);
 
 	/* GtkTextView */
 	public static final native long gtk_text_view_new();
