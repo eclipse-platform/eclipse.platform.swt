@@ -133,6 +133,10 @@ public class OS extends C {
 
 	/** 10.12 selector */
 	public static final long sel_setAllowsAutomaticWindowTabbing_ = Selector.sel_setAllowsAutomaticWindowTabbing.value;
+	
+	/** 10.14 selectors */
+	public static final long sel_selectedContentBackgroundColor = Selector.sel_selectedContentBackgroundColor.value;
+	public static final long sel_unemphasizedSelectedContentBackgroundColor = Selector.sel_unemphasizedSelectedContentBackgroundColor.value;
 
 	/* AWT application delegate. Remove these when JavaRuntimeSupport.framework has bridgesupport generated for it. */
 	public static final long class_JRSAppKitAWT = objc_getClass("JRSAppKitAWT");

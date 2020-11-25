@@ -75,6 +75,10 @@ public enum Selector {
 	/** 10.12 selector */
 	, sel_setAllowsAutomaticWindowTabbing("setAllowsAutomaticWindowTabbing:")
 
+	/** 10.14 selectors */
+	, sel_selectedContentBackgroundColor("selectedContentBackgroundColor")
+	, sel_unemphasizedSelectedContentBackgroundColor("unemphasizedSelectedContentBackgroundColor")
+
 	, sel_awtAppDelegate("awtAppDelegate")
 
 	  /** This section is auto generated */

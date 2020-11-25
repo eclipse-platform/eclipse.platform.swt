@@ -1036,7 +1036,7 @@ void drawInteriorWithFrame_inView (long id, long sel, NSRect rect, long view) {
 	Color selectionBackground = null, selectionForeground = null;
 	if (isSelected && (hooksErase || hooksPaint)) {
 		selectionForeground = Color.cocoa_new(display, (hasFocus || Display.APPEARANCE.Dark == display.appAppearance) ? display.alternateSelectedControlTextColor : display.selectedControlTextColor);
-		selectionBackground = Color.cocoa_new(display, hasFocus ? display.alternateSelectedControlColor : display.secondarySelectedControlColor);
+		selectionBackground = Color.cocoa_new(display, hasFocus ? display.getAlternateSelectedControlColor() : display.getSecondarySelectedControlColor());
 	}
 
 	NSSize contentSize = super.cellSize(id, OS.sel_cellSize);
