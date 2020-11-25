@@ -204,6 +204,8 @@ void fixStyle () {
 }
 
 void initAccessible () {
+	if (GTK.GTK4) return;
+
 	Accessible accessible = getAccessible ();
 	accessible.addAccessibleListener (new AccessibleAdapter () {
 		@Override

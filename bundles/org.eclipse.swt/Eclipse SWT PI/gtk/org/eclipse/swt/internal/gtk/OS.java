@@ -82,7 +82,7 @@ public class OS extends C {
 	/** Initialization; load native libraries */
 	static {
 		String propertyName = "SWT_GTK4";
-		String gtk4 = getEnvironmentalVariable (propertyName);
+		String gtk4 = getEnvironmentalVariable(propertyName);
 		if (gtk4 != null && gtk4.equals("1")) {
 			try {
 				Library.loadLibrary("swt-pi4");

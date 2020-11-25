@@ -6108,13 +6108,7 @@ void setZOrder (Control sibling, boolean above, boolean fixRelations, boolean fi
 			long redrawSurface = fixChildren ? parent.redrawSurface : 0;
 			if (!OS.isX11 () || (siblingSurface == 0 && (!above || redrawSurface == 0))) {
 				if (above) {
-					int width = GDK.gdk_surface_get_width(surface);
-					int height = GDK.gdk_surface_get_height(surface);
-					long layout = GDK.gdk_toplevel_layout_new(width, height);
-					GDK.gdk_toplevel_present(surface, width, height, layout);
-
-					if (redrawSurface != 0) GDK.gdk_toplevel_present(redrawSurface, width, height, layout);
-					if (enableSurface != 0) GDK.gdk_toplevel_present(enableSurface, width, height, layout);
+					//TODO: GTK4 no gdk_window_raise function. In GTK4, alternative may be gdk_toplevel_present
 				} else {
 					if (enableSurface != 0) GDK.gdk_toplevel_lower (enableSurface);
 					GDK.gdk_toplevel_lower (surface);

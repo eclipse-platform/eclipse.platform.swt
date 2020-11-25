@@ -643,7 +643,9 @@ void hookEvents () {
 	super.hookEvents ();
 
 	if (GTK.GTK4) {
-		OS.g_signal_connect(actionHandle, OS.activate, display.activateProc, handle);
+		if ((style & SWT.SEPARATOR) == 0) {
+			OS.g_signal_connect(actionHandle, OS.activate, display.activateProc, handle);
+		}
 	} else {
 		OS.g_signal_connect_closure(handle, OS.activate, display.getClosure (ACTIVATE), false);
 		OS.g_signal_connect_closure (handle, OS.select, display.getClosure (SELECT), false);
