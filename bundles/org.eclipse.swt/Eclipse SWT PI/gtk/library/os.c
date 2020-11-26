@@ -19501,6 +19501,18 @@ JNIEXPORT jlong JNICALL OS_NATIVE(pango_1font_1description_1get_1family)
 }
 #endif
 
+#ifndef NO_pango_1font_1description_1get_1set_1fields
+JNIEXPORT jint JNICALL OS_NATIVE(pango_1font_1description_1get_1set_1fields)
+	(JNIEnv *env, jclass that, jlong arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, pango_1font_1description_1get_1set_1fields_FUNC);
+	rc = (jint)pango_font_description_get_set_fields((PangoFontDescription *)arg0);
+	OS_NATIVE_EXIT(env, that, pango_1font_1description_1get_1set_1fields_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_pango_1font_1description_1get_1size
 JNIEXPORT jint JNICALL OS_NATIVE(pango_1font_1description_1get_1size)
 	(JNIEnv *env, jclass that, jlong arg0)

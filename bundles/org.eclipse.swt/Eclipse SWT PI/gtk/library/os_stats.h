@@ -1497,6 +1497,7 @@ typedef enum {
 	pango_1font_1description_1free_FUNC,
 	pango_1font_1description_1from_1string_FUNC,
 	pango_1font_1description_1get_1family_FUNC,
+	pango_1font_1description_1get_1set_1fields_FUNC,
 	pango_1font_1description_1get_1size_FUNC,
 	pango_1font_1description_1get_1stretch_FUNC,
 	pango_1font_1description_1get_1style_FUNC,

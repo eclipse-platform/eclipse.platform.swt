@@ -1523,6 +1523,7 @@ char * OS_nativeFunctionNames[] = {
 	"pango_1font_1description_1free",
 	"pango_1font_1description_1from_1string",
 	"pango_1font_1description_1get_1family",
+	"pango_1font_1description_1get_1set_1fields",
 	"pango_1font_1description_1get_1size",
 	"pango_1font_1description_1get_1stretch",
 	"pango_1font_1description_1get_1style",

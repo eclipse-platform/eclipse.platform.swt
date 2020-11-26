@@ -1724,10 +1724,64 @@ public void setData (String key, Object value) {
 	}
 }
 
-void setFontDescription (long widget, long font) {
-	GTK.gtk_widget_override_font (widget, font);
-	long context = GTK.gtk_widget_get_style_context (widget);
-	GTK.gtk_style_context_invalidate (context);
+void setFontDescription(long widget, long fontDescription) {
+	if (GTK.GTK4) {
+		long styleContext = GTK.gtk_widget_get_style_context(widget);
+		long provider = GTK.gtk_css_provider_new();
+		GTK.gtk_style_context_add_provider(styleContext, provider, GTK.GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+		OS.g_object_unref(provider);
+
+		GTK.gtk_css_provider_load_from_data(provider, Converter.javaStringToCString(convertPangoFontDescriptionToCss(fontDescription)), -1);
+	} else {
+		GTK.gtk_widget_override_font(widget, fontDescription);
+		long context = GTK.gtk_widget_get_style_context(widget);
+		GTK.gtk_style_context_invalidate(context);
+	}
+}
+
+String convertPangoFontDescriptionToCss(long fontDescription) {
+	String css = "* { ";
+	int fontMask = OS.pango_font_description_get_set_fields(fontDescription);
+
+	if ((fontMask & OS.PANGO_FONT_MASK_FAMILY) != 0) {
+		long fontFamily = OS.pango_font_description_get_family(fontDescription);
+		css += "font-family: \"" + Converter.cCharPtrToJavaString(fontFamily, false) + "\";";
+	}
+
+	if ((fontMask & OS.PANGO_FONT_MASK_WEIGHT) != 0) {
+		int fontWeight = OS.pango_font_description_get_weight(fontDescription);
+
+		String weightString = fontWeight < OS.PANGO_WEIGHT_BOLD ? "normal" : "bold";
+		css += "font-weight: " + weightString + ";";
+	}
+
+	if ((fontMask & OS.PANGO_FONT_MASK_STYLE) != 0) {
+		int fontStyle = OS.pango_font_description_get_style(fontDescription);
+
+		String styleString;
+		switch (fontStyle) {
+			case OS.PANGO_STYLE_NORMAL:
+				styleString = "normal";
+				break;
+			case OS.PANGO_STYLE_ITALIC:
+				styleString = "italic";
+				break;
+			default:
+				styleString = "";
+				break;
+		}
+
+		css += "font-style: " + styleString + ";";
+	}
+
+	if ((fontMask & OS.PANGO_FONT_MASK_SIZE) != 0) {
+		int fontSize = OS.pango_font_description_get_size(fontDescription);
+		css += "font-size: " + fontSize / OS.PANGO_SCALE + "pt;";
+	}
+
+	css += " } ";
+
+	return css;
 }
 
 void setButtonState (Event event, int eventButton) {

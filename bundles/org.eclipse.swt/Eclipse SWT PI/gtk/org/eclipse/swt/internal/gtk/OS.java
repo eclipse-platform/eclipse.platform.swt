@@ -186,6 +186,10 @@ public class OS extends C {
 	public static final int PANGO_WEIGHT_BOLD = 0x2bc;
 	public static final int PANGO_WEIGHT_NORMAL = 0x190;
 	public static final int PANGO_WRAP_WORD_CHAR = 2;
+	public static final int PANGO_FONT_MASK_FAMILY = 1 << 0;
+	public static final int PANGO_FONT_MASK_STYLE = 1 << 1;
+	public static final int PANGO_FONT_MASK_WEIGHT = 1 << 3;
+	public static final int PANGO_FONT_MASK_SIZE = 1 << 5;
 
 	/**
 	 * GDBus Session types.
@@ -1636,6 +1640,9 @@ public static final native void pango_context_set_base_dir(long context, int dir
  * @param language cast=(PangoLanguage *)
  */
 public static final native void pango_context_set_language(long context, long language);
+
+
+/* PangoFontDescription */
 /** @param desc cast=(PangoFontDescription *) */
 public static final native long pango_font_description_copy(long desc);
 /** @param desc cast=(PangoFontDescription *) */
@@ -1687,8 +1694,16 @@ public static final native void pango_font_description_set_weight(long desc, int
 public static final native void pango_font_description_set_variant(long desc, int variant);
 /** @param desc cast=(PangoFontDescription *) */
 public static final native long pango_font_description_to_string(long desc);
+/** @param desc cast=(PangoFontDescription *) */
+public static final native int pango_font_description_get_set_fields(long desc);
+
+
+/* PangoFontFace */
 /** @param face cast=(PangoFontFace *) */
 public static final native long pango_font_face_describe(long face);
+
+
+/* PangoFontFamily */
 /** @param family cast=(PangoFontFamily *) */
 public static final native long pango_font_family_get_name(long family);
 /**
@@ -1697,11 +1712,15 @@ public static final native long pango_font_family_get_name(long family);
  * @param n_faces cast=(int *)
  */
 public static final native void pango_font_family_list_faces(long family, long [] faces, int[] n_faces);
-/**
- * @param fontMap cast=(PangoFontMap *)
- */
+
+
+/* PangoFontMap */
+/** @param fontMap cast=(PangoFontMap *) */
 public static final native long pango_font_map_create_context(long fontMap);
 /** @param metrics cast=(PangoFontMetrics *) */
+
+
+/* PangoFontMetrics */
 public static final native int pango_font_metrics_get_approximate_char_width(long metrics);
 /** @param metrics cast=(PangoFontMetrics *) */
 public static final native int pango_font_metrics_get_ascent(long metrics);
@@ -1709,6 +1728,8 @@ public static final native int pango_font_metrics_get_ascent(long metrics);
 public static final native int pango_font_metrics_get_descent(long metrics);
 /** @param metrics cast=(PangoFontMetrics *) */
 public static final native void pango_font_metrics_unref(long metrics);
+
+/* PangoLayout */
 /** @param layout cast=(PangoLayout *) */
 public static final native void pango_layout_context_changed(long layout);
 /** @param layout cast=(PangoLayout*) */
@@ -1826,6 +1847,8 @@ public static final native void pango_layout_set_wrap(long layout, int wrap);
  * @param trailing cast=(int *)
  */
 public static final native boolean pango_layout_xy_to_index(long layout, int x, int y, int[] index, int[] trailing);
+
+
 /** @param tab_array cast=(PangoTabArray *) */
 public static final native void pango_tab_array_free(long tab_array);
 /**
