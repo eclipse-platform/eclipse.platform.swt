@@ -233,8 +233,7 @@ public class Display extends Device {
 	/* System Colors */
 	double [][] colors;
 	double [] alternateSelectedControlTextColor, selectedControlTextColor;
-	double [] alternateSelectedControlColor, secondarySelectedControlColor;
-	double [] selectedContentBackgroundColor, unemphasizedSelectedContentBackgroundColor;
+	private double [] alternateSelectedControlColor, secondarySelectedControlColor;
 
 	/* Key Mappings. */
 	static int [] [] KeyTable = {
@@ -2181,18 +2180,25 @@ public TaskBar getSystemTaskBar () {
 }
 
 /**
+ * Used for selection in Table and Tree when in focus.
  * @return Returns the system color used for the face of a selected control in a Table or Tree when in focus
  */
 double [] getAlternateSelectedControlColor() {
-	return (OS.VERSION >= OS.VERSION(10, 14, 0)) ? selectedContentBackgroundColor : alternateSelectedControlColor;
+	if (alternateSelectedControlColor == null) {
+		alternateSelectedControlColor = getNSColorRGB(NSColor.alternateSelectedControlColor());
+	}
+	return alternateSelectedControlColor;
 }
 
 /**
  * Used for selection in Table and Tree when not in focus.
- * @return Returns the color used for selected controls in non-key views.
+ * @return Returns the system color used for selected controls in non-key views.
  */
 double [] getSecondarySelectedControlColor() {
-	return (OS.VERSION >= OS.VERSION(10, 14, 0)) ? unemphasizedSelectedContentBackgroundColor : secondarySelectedControlColor;
+	if (secondarySelectedControlColor == null) {
+		secondarySelectedControlColor = getNSColorRGB(NSColor.secondarySelectedControlColor());
+	}
+	return secondarySelectedControlColor;
 }
 
 /**
@@ -3152,22 +3158,12 @@ void initColors () {
 	colors[SWT.COLOR_TEXT_DISABLED_BACKGROUND] = getWidgetColorRGB(SWT.COLOR_TEXT_DISABLED_BACKGROUND);
 	colors[SWT.COLOR_WIDGET_DISABLED_FOREGROUND] = getWidgetColorRGB(SWT.COLOR_WIDGET_DISABLED_FOREGROUND);
 
-	/*
-	 * alternateSelectedControlColor and secondarySelectedControlColor are
-	 * deprecated in 10.14. Their respective replacements are
-	 * selectedContentBackgroundColor and unemphasizedSelectedContentBackgroundColor
-	 */
-	if (OS.VERSION >= OS.VERSION(10, 14, 0)) {
-		long result = OS.objc_msgSend(OS.class_NSColor, OS.sel_selectedContentBackgroundColor);
-		selectedContentBackgroundColor = result != 0 ? getNSColorRGB(new NSColor(result)) : null;
-
-		result = OS.objc_msgSend(OS.class_NSColor, OS.sel_unemphasizedSelectedContentBackgroundColor);
-		unemphasizedSelectedContentBackgroundColor = result != 0 ? getNSColorRGB(new NSColor(result)) : null;
-	}
-	alternateSelectedControlColor = getNSColorRGB(NSColor.alternateSelectedControlColor());
 	alternateSelectedControlTextColor = getNSColorRGB(NSColor.alternateSelectedControlTextColor());
-	secondarySelectedControlColor = getNSColorRGB(NSColor.secondarySelectedControlColor());
 	selectedControlTextColor = getNSColorRGB(NSColor.selectedControlTextColor());
+
+	/* These are set in the getter */
+	alternateSelectedControlColor = null;
+	secondarySelectedControlColor = null;
 }
 
 void initFonts () {
@@ -4353,7 +4349,7 @@ void setAppAppearance (APPEARANCE newMode) {
 	if (appearance != null && application != null) {
 		OS.objc_msgSend(application.id, OS.sel_setAppearance_, appearance.id);
 		appAppearance = newMode;
-	}
+	 }
 }
 
 void setWindowAppearance (NSWindow window, NSAppearance appearance) {
