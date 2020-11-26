@@ -1230,35 +1230,34 @@ void fixChildren (Shell newShell, Shell oldShell, Decorations newDecorations, De
 }
 
 @Override
-Rectangle getClientAreaInPixels () {
-	checkWidget ();
+Rectangle getClientAreaInPixels() {
+	checkWidget();
 	if(RESIZE_ON_GETCLIENTAREA) {
-		forceResize ();
+		forceResize();
 	}
-	long clientHandle = clientHandle ();
-	GtkAllocation allocation = new GtkAllocation ();
-	GTK.gtk_widget_get_allocation (clientHandle, allocation);
+
+	long clientHandle = clientHandle();
+	GtkAllocation allocation = new GtkAllocation();
+	GTK.gtk_widget_get_allocation(clientHandle, allocation);
 	int width = (state & ZERO_WIDTH) != 0 ? 0 : allocation.width;
 	int height = (state & ZERO_HEIGHT) != 0 ? 0 : allocation.height;
+
 	Rectangle rect;
 	if (GTK.GTK4) {
-		long fixedSurface = gtk_widget_get_surface (fixedHandle);
-		long surface = gtk_widget_get_surface (clientHandle);
-		int [] surfaceX = new int [1], surfaceY = new int [1];
-		GDK.gdk_surface_get_origin (surface, surfaceX, surfaceY);
-		int [] fixedX = new int [1], fixedY = new int [1];
-		GDK.gdk_surface_get_origin (fixedSurface, fixedX, fixedY);
-		rect = new Rectangle (fixedX [0] - surfaceX [0], fixedY [0] - surfaceY [0], width, height);
+		int[] headerHeight = new int[1], headerWidth = new int[1];
+		GTK.gtk_tree_view_convert_bin_window_to_widget_coords(handle, 0, 0, headerWidth, headerHeight);
+		rect = new Rectangle(headerWidth[0], headerHeight[0], width, height);
 	} else {
-		GTK.gtk_widget_realize (handle);
-		long fixedWindow = gtk_widget_get_window (fixedHandle);
-		long binWindow = GTK.gtk_tree_view_get_bin_window (handle);
-		int [] binX = new int [1], binY = new int [1];
-		GDK.gdk_window_get_origin (binWindow, binX, binY);
-		int [] fixedX = new int [1], fixedY = new int [1];
-		GDK.gdk_window_get_origin (fixedWindow, fixedX, fixedY);
-		rect = new Rectangle (fixedX [0] - binX [0], fixedY [0] - binY [0], width, height);
+		GTK.gtk_widget_realize(handle);
+		long fixedWindow = gtk_widget_get_window(fixedHandle);
+		long binWindow = GTK.gtk_tree_view_get_bin_window(handle);
+		int[] binX = new int[1], binY = new int[1];
+		GDK.gdk_window_get_origin(binWindow, binX, binY);
+		int[] fixedX = new int[1], fixedY = new int[1];
+		GDK.gdk_window_get_origin(fixedWindow, fixedX, fixedY);
+		rect = new Rectangle(fixedX[0] - binX[0], fixedY[0] - binY[0], width, height);
 	}
+
 	return rect;
 }
 
