@@ -347,7 +347,6 @@ public void setControl (Control control) {
 
 void setFontDescription (long font) {
 	setFontDescription (labelHandle, font);
-	setFontDescription (imageHandle, font);
 }
 
 void setForegroundRGBA (GdkRGBA rgba) {

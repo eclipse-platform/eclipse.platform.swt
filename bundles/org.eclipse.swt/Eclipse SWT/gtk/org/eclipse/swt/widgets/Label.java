@@ -583,7 +583,6 @@ int setBounds (int x, int y, int width, int height, boolean move, boolean resize
 void setFontDescription (long font) {
 	super.setFontDescription (font);
 	if (labelHandle != 0) setFontDescription (labelHandle, font);
-	if (imageHandle != 0) setFontDescription (imageHandle, font);
 
 	if (labelHandle != 0) {
 		// Bug 445801: Work around for computeSize not returning a different value after

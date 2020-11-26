@@ -603,7 +603,6 @@ boolean setFocus () {
 void setFontDescription (long font) {
 	setFontDescription (handle, font);
 	if (labelHandle != 0) setFontDescription (labelHandle, font);
-	if (imageHandle != 0) setFontDescription (imageHandle, font);
 }
 
 void setForegroundRGBA (GdkRGBA rgba) {

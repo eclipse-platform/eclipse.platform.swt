@@ -617,7 +617,6 @@ public void setAlignment (int alignment) {
 
 void setFontDescription (long font) {
 	setFontDescription (labelHandle, font);
-	setFontDescription (imageHandle, font);
 }
 
 @Override

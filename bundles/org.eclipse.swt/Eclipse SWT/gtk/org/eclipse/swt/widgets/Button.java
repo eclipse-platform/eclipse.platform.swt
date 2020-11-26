@@ -992,7 +992,6 @@ void setFontDescription (long fontDesc) {
 	} else {
 		super.setFontDescription (fontDesc);
 		if (labelHandle != 0) setFontDescription (labelHandle, fontDesc);
-		if (imageHandle != 0) setFontDescription (imageHandle, fontDesc);
 	}
 }
 
