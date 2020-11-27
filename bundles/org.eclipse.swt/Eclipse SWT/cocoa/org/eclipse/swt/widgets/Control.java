@@ -5142,6 +5142,15 @@ public void update () {
 }
 
 boolean update (boolean all) {
+	if (OS.isBigSurOrLater()) {
+		/*
+		 * Bigsur seems to force the use of the Automatic Deferred Painting mechanism.
+		 * This behavior was applicable only for applications linked with 10.14, but with BigSur
+		 * it seems this is forced on all applications.
+		 * So, we don't do anything here on BigSur.
+		 */
+		return true;
+	}
 	if (NSGraphicsContext.currentContext() == null) {
 		if (!view.lockFocusIfCanDraw()) {
 			return false;
