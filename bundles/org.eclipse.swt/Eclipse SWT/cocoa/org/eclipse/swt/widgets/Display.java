@@ -4170,6 +4170,13 @@ void removePopup (Menu menu) {
 	}
 }
 
+/**
+ * Resets the cached alternateSelectedControlColor and secondarySelectedControlColor.
+ */
+void resetSelectedControlColors() {
+	alternateSelectedControlColor = secondarySelectedControlColor = null;
+}
+
 boolean runAsyncMessages (boolean all) {
 	return synchronizer.runAsyncMessages (all);
 }
@@ -4349,6 +4356,7 @@ void setAppAppearance (APPEARANCE newMode) {
 	if (appearance != null && application != null) {
 		OS.objc_msgSend(application.id, OS.sel_setAppearance_, appearance.id);
 		appAppearance = newMode;
+		resetSelectedControlColors();
 	 }
 }
 
