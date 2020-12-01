@@ -82,6 +82,8 @@ public abstract class Control extends Widget implements Drawable {
 	 */
 	static final int DEFAULT_DRAG_HYSTERESIS = 5;
 
+	static final boolean FORCE_RUN_UPDATE = Boolean.valueOf(System.getProperty("org.eclipse.swt.internal.control.forceRunUpdate"));
+
 Control () {
 	/* Do nothing */
 }
@@ -5142,7 +5144,7 @@ public void update () {
 }
 
 boolean update (boolean all) {
-	if (OS.isBigSurOrLater()) {
+	if (!FORCE_RUN_UPDATE && OS.isBigSurOrLater()) {
 		/*
 		 * Bigsur seems to force the use of the Automatic Deferred Painting mechanism.
 		 * This behavior was applicable only for applications linked with 10.14, but with BigSur
