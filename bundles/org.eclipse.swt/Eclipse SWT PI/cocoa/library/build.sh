@@ -31,6 +31,11 @@ if [ "x${MODEL}" = "xx86_64" ]; then
 	else
 		export CHROMIUM_HEADERS=$CHROMIUM_OUTPUT_DIR/../../../../eclipse.platform.swt/bundles/org.eclipse.swt.browser.chromium/common/rust-library/chromium_subp/cef_macosx
 	fi
+elif [ "x${MODEL}" = "xarm64" ]; then
+	export ARCHS="-arch arm64"
+	if [ "x${OUTPUT_DIR}" = "x" ]; then
+		export OUTPUT_DIR=../../../org.eclipse.swt.cocoa.macosx.arm64
+	fi
 fi
 
 export MACOSX_DEPLOYMENT_TARGET=10.10
