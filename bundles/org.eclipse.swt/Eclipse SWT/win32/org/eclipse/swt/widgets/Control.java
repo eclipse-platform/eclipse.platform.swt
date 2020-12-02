@@ -4577,9 +4577,12 @@ void unsubclass () {
  * to be processed before this method returns. If there
  * are no outstanding paint request, this method does
  * nothing.
- * <p>
- * Note: This method does not cause a redraw.
- * </p>
+ * <p>Note:</p>
+ * <ul>
+ * <li>This method does not cause a redraw.</li>
+ * <li>Some OS versions forcefully perform automatic deferred painting.
+ * This method does nothing in that case.</li>
+ * </ul>
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
