@@ -3545,8 +3545,6 @@ public void setFont(Font font) {
 	if (font != null && font.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	data.font = font != null ? font : data.device.systemFont;
 	data.state &= ~FONT;
-	textDataCache.release();
-	textDataCache = new GCTextData.Cache(20);
 }
 
 /**
@@ -3572,8 +3570,6 @@ public void setForeground(Color color) {
 	if (data.fg != null) data.fg.release();
 	data.fg = null;
 	data.state &= ~(FOREGROUND | FOREGROUND_FILL);
-	textDataCache.release();
-	textDataCache = new GCTextData.Cache(20);
 }
 
 /**
@@ -3605,8 +3601,6 @@ public void setForegroundPattern(Pattern pattern) {
 	if (data.foregroundPattern == pattern) return;
 	data.foregroundPattern = pattern;
 	data.state &= ~(FOREGROUND | FOREGROUND_FILL);
-	textDataCache.release();
-	textDataCache = new GCTextData.Cache(20);
 }
 
 /**
