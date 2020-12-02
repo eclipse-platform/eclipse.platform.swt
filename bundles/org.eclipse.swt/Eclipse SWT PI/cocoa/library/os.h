@@ -46,6 +46,8 @@ extern jint CPSSetProcessName(void *, jlong);
 #define swt_super_class class
 #elif __x86_64__
 #define swt_super_class super_class
+#elif __arm64__
+#define swt_super_class super_class
 #endif
 
 #ifdef __i386__
@@ -54,6 +56,10 @@ extern jint CPSSetProcessName(void *, jlong);
 #define STRUCT_SIZE_LIMIT 4
 #elif __x86_64__
 #define STRUCT_SIZE_LIMIT 16
+#elif __arm64__
+#define STRUCT_SIZE_LIMIT 64
+#define objc_msgSendSuper_stret objc_msgSendSuper
+#define objc_msgSend_stret objc_msgSend
 #endif
 
 #ifdef DEBUG_EXCEPTIONS
