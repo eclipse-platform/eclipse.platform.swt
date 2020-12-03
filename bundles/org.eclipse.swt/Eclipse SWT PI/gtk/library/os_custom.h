@@ -104,9 +104,6 @@ typedef struct _SwtFixedClass SwtFixedClass;
 struct _SwtFixed
 {
   GtkWidget container;
-
-  /*< private >*/
-  SwtFixedPrivate *priv;
 };
 
 struct _SwtFixedClass
@@ -134,8 +131,8 @@ struct _SwtFixedClass
 GType swt_fixed_get_type (void) G_GNUC_CONST;
 
 #if defined(GTK4)
-void swt_fixed_add (GtkWidget *container, GtkWidget *widget);
-void swt_fixed_remove (GtkWidget *container, GtkWidget *widget);
+void swt_fixed_add(SwtFixed* fixed, GtkWidget* widget);
+void swt_fixed_remove(SwtFixed* fixed, GtkWidget* widget);
 #endif
 void swt_fixed_restack(SwtFixed *fixed, GtkWidget *widget, GtkWidget *sibling, gboolean above);
 void swt_fixed_move(SwtFixed *fixed, GtkWidget *widget, gint x, gint y);

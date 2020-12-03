@@ -711,9 +711,11 @@ enum {
 
 static guint signals[LAST_SIGNAL];
 
+static void swt_fixed_dispose(GObject* object);
+static void swt_fixed_finalize(GObject* object);
 static void swt_fixed_get_property (GObject *object, guint prop_id, GValue *value, GParamSpec *pspec);
 static void swt_fixed_set_property (GObject *object, guint prop_id, const GValue *value, GParamSpec *pspec);
-static void swt_fixed_finalize (GObject *object);
+
 static void swt_fixed_map (GtkWidget *widget);
 static void swt_fixed_measure (GtkWidget *widget, GtkOrientation  orientation, int for_size, int *minimum,
 		int *natural, int *minimum_baseline, int *natural_baseline);
@@ -724,13 +726,12 @@ G_DEFINE_TYPE_WITH_CODE (SwtFixed, swt_fixed, GTK_TYPE_WIDGET,
 		G_ADD_PRIVATE (SwtFixed))
 
 static void swt_fixed_class_init (SwtFixedClass *class) {
+	/* GObject implementation */
 	GObjectClass *gobject_class = (GObjectClass*) class;
-	GtkWidgetClass *widget_class = (GtkWidgetClass*) class;
-
-	/* GOject implementation */
 	gobject_class->set_property = swt_fixed_set_property;
 	gobject_class->get_property = swt_fixed_get_property;
 	gobject_class->finalize = swt_fixed_finalize;
+	gobject_class->dispose = swt_fixed_dispose;
 
 	/* Scrollable implementation */
 	g_object_class_override_property (gobject_class, PROP_HADJUSTMENT,    "hadjustment");
@@ -739,7 +740,7 @@ static void swt_fixed_class_init (SwtFixedClass *class) {
 	g_object_class_override_property (gobject_class, PROP_VSCROLL_POLICY, "vscroll-policy");
 
 	/* Widget implementation */
-	widget_class->map = swt_fixed_map;
+	GtkWidgetClass* widget_class = (GtkWidgetClass*) class;
 	widget_class->measure = swt_fixed_measure;
 	widget_class->size_allocate = swt_fixed_size_allocate;
 
@@ -752,7 +753,7 @@ static void swt_fixed_class_init (SwtFixedClass *class) {
 }
 
 void swt_fixed_restack (SwtFixed *fixed, GtkWidget *widget, GtkWidget *sibling, gboolean above) {
-	SwtFixedPrivate *priv = fixed->priv;
+	SwtFixedPrivate* priv = swt_fixed_get_instance_private(fixed);
 	GList *list;
 	SwtFixedChild *child, *sibling_child;
 
@@ -787,30 +788,34 @@ void swt_fixed_restack (SwtFixed *fixed, GtkWidget *widget, GtkWidget *sibling, 
 	priv->children = g_list_insert_before (priv->children, list, child);
 }
 
-static void swt_fixed_init (SwtFixed *widget) {
-	SwtFixedPrivate *priv;
+static void swt_fixed_init (SwtFixed* fixed) {
+	SwtFixedPrivate* priv = swt_fixed_get_instance_private(fixed);
 
-	priv = widget->priv = swt_fixed_get_instance_private (widget);
 	priv->children = NULL;
 	priv->hadjustment = NULL;
 	priv->vadjustment = NULL;
+}
 
-//	gtk_widget_set_has_surface(GTK_WIDGET(widget), FALSE);
+static void swt_fixed_dispose(GObject* object) {
+	GtkWidget* child;
+	while ((child = gtk_widget_get_first_child(GTK_WIDGET(object)))) {
+		swt_fixed_remove(SWT_FIXED(object), child);
+	}
+
+	G_OBJECT_CLASS(swt_fixed_parent_class)->dispose(object);
 }
 
 static void swt_fixed_finalize (GObject *object) {
-	SwtFixed *widget = SWT_FIXED (object);
-	SwtFixedPrivate *priv = widget->priv;
+	SwtFixedPrivate *priv = swt_fixed_get_instance_private(SWT_FIXED(object));
 
-	g_object_unref (priv->hadjustment);
-	g_object_unref (priv->vadjustment);
+	g_object_unref(priv->hadjustment);
+	g_object_unref(priv->vadjustment);
 
-	G_OBJECT_CLASS (swt_fixed_parent_class)->finalize (object);
+	G_OBJECT_CLASS(swt_fixed_parent_class)->finalize(object);
 }
 
 static void swt_fixed_get_property (GObject *object, guint prop_id, GValue *value, GParamSpec *pspec) {
-	SwtFixed *widget = SWT_FIXED (object);
-	SwtFixedPrivate *priv = widget->priv;
+	SwtFixedPrivate *priv = swt_fixed_get_instance_private(SWT_FIXED(object));
 
 	switch (prop_id) {
 		case PROP_HADJUSTMENT:
@@ -832,8 +837,7 @@ static void swt_fixed_get_property (GObject *object, guint prop_id, GValue *valu
 }
 
 static void swt_fixed_set_property (GObject *object, guint prop_id, const GValue *value, GParamSpec *pspec) {
-	SwtFixed *widget = SWT_FIXED (object);
-	SwtFixedPrivate *priv = widget->priv;
+	SwtFixedPrivate *priv = swt_fixed_get_instance_private(SWT_FIXED(object));
 	GtkAdjustment *adjustment;
 
 	switch (prop_id) {
@@ -843,7 +847,7 @@ static void swt_fixed_set_property (GObject *object, guint prop_id, const GValue
 			if (priv->hadjustment != NULL) g_object_unref (priv->hadjustment);
 			if (adjustment == NULL) adjustment = gtk_adjustment_new (0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
 			priv->hadjustment = g_object_ref_sink (adjustment);
-			g_object_notify (G_OBJECT (widget), "hadjustment");
+			g_object_notify (object, "hadjustment");
 			break;
 		case PROP_VADJUSTMENT:
 			adjustment = g_value_get_object (value);
@@ -851,7 +855,7 @@ static void swt_fixed_set_property (GObject *object, guint prop_id, const GValue
 			if (priv->vadjustment != NULL) g_object_unref (priv->vadjustment);
 			if (adjustment == NULL) adjustment = gtk_adjustment_new (0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
 			priv->vadjustment = g_object_ref_sink (adjustment);
-			g_object_notify (G_OBJECT (widget), "vadjustment");
+			g_object_notify (object, "vadjustment");
 			break;
 		case PROP_HSCROLL_POLICY:
 			priv->hscroll_policy = g_value_get_enum (value);
@@ -866,8 +870,7 @@ static void swt_fixed_set_property (GObject *object, guint prop_id, const GValue
 }
 
 static void swt_fixed_map (GtkWidget *widget) {
-	SwtFixed *fixed = SWT_FIXED (widget);
-	SwtFixedPrivate *priv = fixed->priv;
+	SwtFixedPrivate *priv = swt_fixed_get_instance_private(SWT_FIXED(widget));
 	GList *list;
 
 	list = priv->children;
@@ -901,8 +904,8 @@ static void swt_fixed_measure (GtkWidget *widget, GtkOrientation  orientation, i
 static void swt_fixed_size_allocate (GtkWidget *widget, int width, int height, int baseline) {
 	g_signal_emit (widget, signals[RESIZE], 0, width, height);
 
-	SwtFixed *fixed = SWT_FIXED (widget);
-	SwtFixedPrivate *priv = fixed->priv;
+	SwtFixedPrivate *priv = swt_fixed_get_instance_private(SWT_FIXED(widget));
+
 	GList* list = priv->children;
 
 	while (list) {
@@ -932,89 +935,78 @@ static void swt_fixed_size_allocate (GtkWidget *widget, int width, int height, i
 }
 
 void swt_fixed_move (SwtFixed *fixed, GtkWidget *widget, gint x, gint y) {
-	SwtFixedPrivate *priv = fixed->priv;
-	GList *list;
+	SwtFixedPrivate* priv = swt_fixed_get_instance_private(fixed);
+	GList* list = priv->children;
 
-	list = priv->children;
 	while (list) {
-		SwtFixedChild *child_data = list->data;
-		GtkWidget *child = child_data->widget;
+		SwtFixedChild* child_data = list->data;
+		GtkWidget* child = child_data->widget;
+
 		if (child == widget) {
 			child_data->x = x;
 			child_data->y = y;
 			break;
 		}
+
 		list = list->next;
 	}
 }
 
 void swt_fixed_resize (SwtFixed *fixed, GtkWidget *widget, gint width, gint height) {
-	SwtFixedPrivate *priv = fixed->priv;
-	GList *list;
+	SwtFixedPrivate* priv = swt_fixed_get_instance_private(fixed);
+	GList* list = priv->children;
 
-	list = priv->children;
 	while (list) {
-		SwtFixedChild *child_data = list->data;
-		GtkWidget *child = child_data->widget;
+		SwtFixedChild* child_data = list->data;
+		GtkWidget* child = child_data->widget;
+
 		if (child == widget) {
 			child_data->width = width;
 			child_data->height = height;
-
-			/*
-			 * Feature in GTK: sometimes the sizing of child SwtFixed widgets
-			 * does not happen quickly enough, causing miscalculations in SWT.
-			 * Allocate the size of the child directly when swt_fixed_resize()
-			 * is called. See bug 487160.
-			 */
-			GtkAllocation allocation, to_allocate;
-			GtkRequisition req;
-			gtk_widget_get_allocation(child, &allocation);
-
-			// Keep x and y values the same to prevent misplaced containers
-			to_allocate.x = allocation.x;
-			to_allocate.y = allocation.y;
-			to_allocate.width = width;
-			to_allocate.height = height;
-
-			// Call gtk_widget_get_preferred_size() and finish the allocation.
-			gtk_widget_get_preferred_size (child, &req, NULL);
-			gtk_widget_size_allocate(child, &to_allocate, -1);
 			break;
 		}
+
 		list = list->next;
 	}
 }
 
-void swt_fixed_add (GtkWidget *container, GtkWidget *child) {
-	SwtFixed *fixed = SWT_FIXED(container);
-	SwtFixedPrivate *priv = fixed->priv;
+void swt_fixed_add (SwtFixed *fixed, GtkWidget *widget) {
+	g_return_if_fail(SWT_IS_FIXED(fixed));
+	g_return_if_fail(GTK_IS_WIDGET(widget));
+	g_return_if_fail(gtk_widget_get_parent(widget) == NULL);
+
+	SwtFixedPrivate *priv = swt_fixed_get_instance_private(fixed);
 
 	SwtFixedChild *child_data = g_new(SwtFixedChild, 1);
-	child_data->widget = child;
+	child_data->widget = widget;
   	child_data->x = child_data->y = 0;
   	child_data->width = child_data->height = -1;
 
 	priv->children = g_list_append(priv->children, child_data);
 
-	gtk_widget_set_parent(child, container);
+	gtk_widget_set_parent(widget, GTK_WIDGET(fixed));
 }
 
-void swt_fixed_remove (GtkWidget *container, GtkWidget *widget) {
-	SwtFixed *fixed = SWT_FIXED (container);
-	SwtFixedPrivate *priv = fixed->priv;
-	GList *list;
+void swt_fixed_remove (SwtFixed *fixed, GtkWidget *widget) {
+	g_return_if_fail(SWT_IS_FIXED(fixed));
+	g_return_if_fail(GTK_IS_WIDGET(widget));
+	g_return_if_fail(gtk_widget_get_parent(widget) == GTK_WIDGET(fixed));
 
-	list = priv->children;
-	while (list) {
+	SwtFixedPrivate *priv = swt_fixed_get_instance_private(fixed);
+	GList *list = priv->children;
+
+	while (list != NULL) {
 		SwtFixedChild *child_data = list->data;
 		GtkWidget *child = child_data->widget;
+
 		if (child == widget) {
-			gtk_widget_unparent (widget);
-			priv->children = g_list_remove_link (priv->children, list);
-			g_list_free_1 (list);
-			g_free (child_data);
+			g_free(child_data);
+			priv->children = g_list_delete_link(priv->children, list);
+
+			gtk_widget_unparent(widget);
 			break;
 		}
+
 		list = list->next;
 	}
 }
