@@ -45,7 +45,7 @@ public class ToolItem extends Item {
 	long eventHandle, proxyMenuItem, provider;
 
 	/** GTK4 only field, used to keep track of the containing box of the image & label */
-	long boxHandle;
+	long boxHandle, groupHandle;
 
 	ToolBar parent;
 	Control control;
@@ -210,18 +210,22 @@ void createHandle (int index) {
 			if (GTK.GTK4) {
 				handle = GTK.gtk_box_new(GTK.GTK_ORIENTATION_HORIZONTAL, 0);
 				if (handle == 0) error(SWT.ERROR_NO_HANDLES);
-				long dropDownButton = GTK.gtk_menu_button_new();
-				if (dropDownButton == 0) error(SWT.ERROR_NO_HANDLES);
-				long buttonHandle = GTK.gtk_button_new();
-				if (buttonHandle == 0) error(SWT.ERROR_NO_HANDLES);
+
 				boxHandle = GTK.gtk_box_new(GTK.GTK_ORIENTATION_VERTICAL, 0);
 				if (boxHandle == 0) error(SWT.ERROR_NO_HANDLES);
-				GTK.gtk_button_set_child(buttonHandle, boxHandle);
 
-				GTK.gtk_box_append(handle, buttonHandle);
-				GTK.gtk_box_append(handle, dropDownButton);
+				long button = GTK.gtk_button_new();
+				if (button == 0) error(SWT.ERROR_NO_HANDLES);
+				GTK.gtk_button_set_child(button, boxHandle);
 
-				arrowHandle = GTK.gtk_widget_get_first_child(dropDownButton);
+				long menuButton = GTK.gtk_menu_button_new();
+				if (menuButton == 0) error(SWT.ERROR_NO_HANDLES);
+
+				GTK.gtk_box_append(handle, button);
+				GTK.gtk_box_append(handle, menuButton);
+
+				arrowHandle = GTK.gtk_widget_get_first_child(menuButton);
+				GTK.gtk_menu_button_set_use_underline(menuButton, true);
 			} else {
 				handle = GTK.gtk_menu_tool_button_new(0, null);
 				if (handle == 0) error(SWT.ERROR_NO_HANDLES);
@@ -253,6 +257,7 @@ void createHandle (int index) {
 				if (boxHandle == 0) error(SWT.ERROR_NO_HANDLES);
 
 				GTK.gtk_button_set_child(handle, boxHandle);
+				GTK.gtk_button_set_use_underline(handle, true);
 			} else {
 				handle = GTK.gtk_toggle_tool_button_new();
 				if (handle == 0) error(SWT.ERROR_NO_HANDLES);
@@ -267,6 +272,8 @@ void createHandle (int index) {
 				if (boxHandle == 0) error(SWT.ERROR_NO_HANDLES);
 
 				GTK.gtk_button_set_child(handle, boxHandle);
+
+				GTK.gtk_button_set_use_underline(handle, true);
 			} else {
 				handle = GTK.gtk_tool_button_new (0, null);
 				if (handle == 0) error (SWT.ERROR_NO_HANDLES);
@@ -276,12 +283,12 @@ void createHandle (int index) {
 	}
 
 	if ((style & SWT.SEPARATOR) == 0) {
-		labelHandle = GTK.gtk_label_new_with_mnemonic(null);
-		if (labelHandle == 0) error(SWT.ERROR_NO_HANDLES);
-		imageHandle = GTK.gtk_image_new_from_pixbuf(0);
-		if (imageHandle == 0) error(SWT.ERROR_NO_HANDLES);
-
 		if (GTK.GTK4) {
+			labelHandle = GTK.gtk_label_new_with_mnemonic(null);
+			if (labelHandle == 0) error(SWT.ERROR_NO_HANDLES);
+			imageHandle = GTK.gtk_image_new_from_pixbuf(0);
+			if (imageHandle == 0) error(SWT.ERROR_NO_HANDLES);
+
 			GTK.gtk_widget_set_valign(boxHandle, GTK.GTK_ALIGN_CENTER);
 
 			GTK.gtk_box_append(boxHandle, imageHandle);
@@ -290,21 +297,22 @@ void createHandle (int index) {
 			GTK.gtk_widget_hide(imageHandle);
 			GTK.gtk_widget_hide(labelHandle);
 		} else {
+			labelHandle = GTK.gtk_label_new_with_mnemonic(null);
+			if (labelHandle == 0) error(SWT.ERROR_NO_HANDLES);
+			imageHandle = GTK.gtk_image_new_from_pixbuf(0);
+			if (imageHandle == 0) error(SWT.ERROR_NO_HANDLES);
+
 			GTK.gtk_tool_button_set_icon_widget(handle, imageHandle);
 			GTK.gtk_tool_button_set_label_widget(handle, labelHandle);
+
+			GTK.gtk_tool_button_set_use_underline (handle, true);
 		}
 	}
 
 	if ((parent.state & FONT) != 0) {
 		setFontDescription (parent.getFontDescription());
 	}
-	if ((style & SWT.SEPARATOR) == 0) {
-		if (GTK.GTK4) {
-			GTK.gtk_button_set_use_underline (handle, true);
-		} else {
-			GTK.gtk_tool_button_set_use_underline (handle, true);
-		}
-	}
+
 	/*
 	 * Set the "homogeneous" property to false, otherwise all ToolItems will be as large as
 	 * the largest one in the ToolBar. See bug 548331, 395296 for more information.

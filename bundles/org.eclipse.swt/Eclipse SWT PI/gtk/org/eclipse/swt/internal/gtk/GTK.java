@@ -602,6 +602,11 @@ public class GTK extends OS {
 	 * @method flags=dynamic
 	 * @param check_button cast=(GtkCheckButton *)
 	 */
+	public static final native void gtk_check_button_set_use_underline(long check_button, boolean use_underline);
+	/**
+	 * @method flags=dynamic
+	 * @param check_button cast=(GtkCheckButton *)
+	 */
 	public static final native void gtk_check_button_set_inconsistent(long check_button, boolean inconsistent);
 	/**
 	 * @method flags=dynamic
@@ -1869,12 +1874,20 @@ public class GTK extends OS {
 	/* GtkPopoverMenu [GTK4 only] */
 	/**
 	 * @method flags=dynamic
-	 * @param model cast=(GMenuModel *) */
+	 * @param model cast=(GMenuModel *)
+	 */
 	public static final native long gtk_popover_menu_new_from_model(long model);
 
 
 	/* GtkMenuButton */
 	public static final native long gtk_menu_button_new();
+
+	/* GtkMenuButton [GTK4 only] */
+	/**
+	 * @method flags=dynamic
+	 * @param menu_button cast=(GtkMenuButton *)
+	 */
+	public static final native void gtk_menu_button_set_use_underline(long menu_button, boolean use_underline);
 
 
 	/* GtkMessageDialog */

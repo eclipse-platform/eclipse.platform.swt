@@ -4790,6 +4790,24 @@ JNIEXPORT void JNICALL GTK_NATIVE(gtk_1check_1button_1set_1inconsistent)
 }
 #endif
 
+#ifndef NO_gtk_1check_1button_1set_1use_1underline
+JNIEXPORT void JNICALL GTK_NATIVE(gtk_1check_1button_1set_1use_1underline)
+	(JNIEnv *env, jclass that, jlong arg0, jboolean arg1)
+{
+	GTK_NATIVE_ENTER(env, that, gtk_1check_1button_1set_1use_1underline_FUNC);
+/*
+	gtk_check_button_set_use_underline((GtkCheckButton *)arg0, arg1);
+*/
+	{
+		GTK_LOAD_FUNCTION(fp, gtk_check_button_set_use_underline)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(GtkCheckButton *, jboolean))fp)((GtkCheckButton *)arg0, arg1);
+		}
+	}
+	GTK_NATIVE_EXIT(env, that, gtk_1check_1button_1set_1use_1underline_FUNC);
+}
+#endif
+
 #ifndef NO_gtk_1check_1menu_1item_1get_1active
 JNIEXPORT jboolean JNICALL GTK_NATIVE(gtk_1check_1menu_1item_1get_1active)
 	(JNIEnv *env, jclass that, jlong arg0)
@@ -8033,6 +8051,24 @@ JNIEXPORT jlong JNICALL GTK_NATIVE(gtk_1menu_1button_1new)
 	rc = (jlong)gtk_menu_button_new();
 	GTK_NATIVE_EXIT(env, that, gtk_1menu_1button_1new_FUNC);
 	return rc;
+}
+#endif
+
+#ifndef NO_gtk_1menu_1button_1set_1use_1underline
+JNIEXPORT void JNICALL GTK_NATIVE(gtk_1menu_1button_1set_1use_1underline)
+	(JNIEnv *env, jclass that, jlong arg0, jboolean arg1)
+{
+	GTK_NATIVE_ENTER(env, that, gtk_1menu_1button_1set_1use_1underline_FUNC);
+/*
+	gtk_menu_button_set_use_underline((GtkMenuButton *)arg0, arg1);
+*/
+	{
+		GTK_LOAD_FUNCTION(fp, gtk_menu_button_set_use_underline)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(GtkMenuButton *, jboolean))fp)((GtkMenuButton *)arg0, arg1);
+		}
+	}
+	GTK_NATIVE_EXIT(env, that, gtk_1menu_1button_1set_1use_1underline_FUNC);
 }
 #endif
 
