@@ -612,6 +612,7 @@ public static final native long CALLBACK_view_stringForToolTip_point_userData_(l
 public static final native long CALLBACK_webView_setFrame_(long func);
 
 /** Classes */
+public static final long class_CALayer = objc_getClass("CALayer");
 public static final long class_DOMDocument = objc_getClass("DOMDocument");
 public static final long class_DOMEvent = objc_getClass("DOMEvent");
 public static final long class_DOMKeyboardEvent = objc_getClass("DOMKeyboardEvent");
@@ -1349,6 +1350,7 @@ public static final long sel_keyWindow = Selector.sel_keyWindow.value;
 public static final long sel_knobProportion = Selector.sel_knobProportion.value;
 public static final long sel_knobThickness = Selector.sel_knobThickness.value;
 public static final long sel_lastPathComponent = Selector.sel_lastPathComponent.value;
+public static final long sel_layer = Selector.sel_layer.value;
 public static final long sel_layoutManager = Selector.sel_layoutManager.value;
 public static final long sel_leading = Selector.sel_leading.value;
 public static final long sel_length = Selector.sel_length.value;

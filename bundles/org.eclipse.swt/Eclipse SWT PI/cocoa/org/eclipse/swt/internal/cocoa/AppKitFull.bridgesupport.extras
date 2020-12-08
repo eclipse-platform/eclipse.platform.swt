@@ -3697,6 +3697,9 @@
 		<method selector="isOpaque" swt_gen="true">
 			<retval swt_gen="true"></retval>
 		</method>
+		<method selector="layer" swt_gen="true">
+			<retval swt_gen="true"></retval>
+		</method>
 		<method selector="lockFocus" swt_gen="true">
 			<retval swt_gen="true"></retval>
 		</method>

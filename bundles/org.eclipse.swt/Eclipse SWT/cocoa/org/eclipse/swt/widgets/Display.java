@@ -2943,6 +2943,7 @@ void initClasses () {
 	OS.class_addMethod(cls, OS.sel_menuForEvent_, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_headerRectOfColumn_, headerRectOfColumnProc, "@:i");
 	OS.class_addMethod(cls, OS.sel_columnAtPoint_, columnAtPointProc, "@:{NSPoint}");
+	OS.class_addMethod(cls, OS.sel_viewDidMoveToWindow, proc2, "@:");
 	//TODO hitTestProc and drawRectProc should be set Control.setRegion()?
 	OS.objc_registerClassPair(cls);
 

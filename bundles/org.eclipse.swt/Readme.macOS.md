@@ -54,6 +54,7 @@ Once done with that, go back into the `org.eclipse.swt` bundle directory and exe
      gen_bridge_metadata_complete CoreFoundation    > '<org.eclipse.swt>/Eclipse SWT PI/cocoa/org/eclipse/swt/internal/cocoa/CoreFoundationFull.bridgesupport'
      gen_bridge_metadata_complete CoreText          > '<org.eclipse.swt>/Eclipse SWT PI/cocoa/org/eclipse/swt/internal/cocoa/CoreTextFull.bridgesupport'
      gen_bridge_metadata_complete Foundation        > '<org.eclipse.swt>/Eclipse SWT PI/cocoa/org/eclipse/swt/internal/cocoa/FoundationFull.bridgesupport'
+     gen_bridge_metadata_complete QuartzCore        > '<org.eclipse.swt>/Eclipse SWT PI/cocoa/org/eclipse/swt/internal/cocoa/QuartzCoreFull.bridgesupport'
      gen_bridge_metadata_complete SecurityInterface > '<org.eclipse.swt>/Eclipse SWT PI/cocoa/org/eclipse/swt/internal/cocoa/SecurityInterfaceFull.bridgesupport'
      gen_bridge_metadata_complete WebKit.framework  > '<org.eclipse.swt>/Eclipse SWT PI/cocoa/org/eclipse/swt/internal/cocoa/WebKitFull.bridgesupport'
 
