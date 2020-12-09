@@ -68,6 +68,7 @@ public class Text extends Scrollable {
 	NSRange selectionRange;
 	id targetSearch, targetCancel;
 	long actionSearch, actionCancel;
+	APPEARANCE lastAppAppearance;
 
 	/**
 	* The maximum number of characters that can be entered
@@ -691,24 +692,6 @@ void drawBackground (long id, NSGraphicsContext context, NSRect rect) {
 		}
 	} else if ((style & SWT.MULTI) != 0) {
 		if (id != scrollView.id) return;
-
-		/*
-		 *  If background image has to be set, call fillBackground(). Else, set background color
-		 *  here directly on the NSTextView and return.
-		 */
-		if (backgroundImage == null) {
-			double [] background = this.background;
-			double alpha;
-			if (background == null) {
-				background = defaultBackground ().handle;
-				alpha = getThemeAlpha ();
-			} else {
-				alpha = background[3];
-			}
-			NSColor nsColor = NSColor.colorWithDeviceRed(background[0], background[1], background[2], alpha);
-			((NSTextView) view).setBackgroundColor(nsColor);
-			return;
-		}
 	}
 	fillBackground (view, context, rect, -1);
 }
@@ -785,10 +768,8 @@ void drawInteriorWithFrame_inView_searchfield (long id, long sel, NSRect cellFra
 
 @Override
 void drawRect(long id, long sel, NSRect rect) {
+	updateThemeColors();
 	super.drawRect(id, sel, rect);
-	if (display.appAppearance == APPEARANCE.Dark) {
-		setDefaultForeground();
-	}
 }
 
 @Override
@@ -1861,16 +1842,10 @@ void setBackgroundImage(NSImage image) {
 	} else {
 		((NSTextView) view).setDrawsBackground(image == null);
 		scrollView.setDrawsBackground(image == null);
-	}
-}
 
-void setDefaultForeground() {
-	if ((style & SWT.MULTI) != 0) {
-		if (foreground != null) return;
-		if (getEnabled ()) {
-			((NSTextView) view).setTextColor (NSColor.textColor ());
-		} else {
-			((NSTextView) view).setTextColor (NSColor.disabledControlTextColor ());
+		if (image == null) {
+			// Recalculate theme colors lazily
+			lastAppAppearance = null;
 		}
 	}
 }
@@ -2517,6 +2492,31 @@ void updateCursorRects (boolean enabled) {
 	if (scrollView == null) return;
 	NSClipView contentView = scrollView.contentView ();
 	contentView.setDocumentCursor (enabled ? NSCursor.IBeamCursor () : null);
+}
+
+void updateThemeColors() {
+	// See code comment in Link.updateThemeColors() for explanation
+
+	// Avoid infinite loop of redraws
+	if (lastAppAppearance == display.appAppearance) return;
+	lastAppAppearance = display.appAppearance;
+	// Only multi-line controls are affected
+	if ((style & SWT.MULTI) == 0) return;
+
+	if (foreground == null) {
+		if (getEnabled ()) {
+			((NSTextView) view).setTextColor (NSColor.textColor ());
+		} else {
+			((NSTextView) view).setTextColor (NSColor.disabledControlTextColor ());
+		}
+	}
+
+	if ((backgroundImage == null) && (background == null)) {
+		double [] background = defaultBackground ().handle;
+		double alpha = getThemeAlpha ();
+		NSColor nsColor = NSColor.colorWithDeviceRed(background[0], background[1], background[2], alpha);
+		((NSTextView) view).setBackgroundColor(nsColor);
+	}
 }
 
 String verifyText (String string, int start, int end, NSEvent keyEvent) {

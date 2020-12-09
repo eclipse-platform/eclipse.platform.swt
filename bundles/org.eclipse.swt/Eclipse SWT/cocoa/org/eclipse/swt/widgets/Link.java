@@ -52,6 +52,7 @@ public class Link extends Control {
 	NSColor defaultLinkColor;
 	int focusIndex;
 	boolean ignoreNextMouseUp;
+	APPEARANCE lastAppAppearance;
 
 /**
  * Constructs a new instance of this class given its parent
@@ -247,10 +248,8 @@ void drawBackground (long id, NSGraphicsContext context, NSRect rectangle) {
 
 @Override
 void drawRect(long id, long sel, NSRect rect) {
+	updateThemeColors();
 	super.drawRect(id, sel, rect);
-	if (display.appAppearance == APPEARANCE.Dark) {
-		setDefaultForeground();
-	}
 }
 
 @Override
@@ -670,15 +669,6 @@ void setBackgroundImage(NSImage image) {
 	((NSTextView) view).setDrawsBackground(image == null);
 }
 
-void setDefaultForeground() {
-	if (foreground != null) return;
-	if (getEnabled ()) {
-		((NSTextView) view).setTextColor (NSColor.textColor ());
-	} else {
-		((NSTextView) view).setTextColor (NSColor.disabledControlTextColor ());
-	}
-}
-
 @Override
 void setFont(NSFont font) {
 	((NSTextView) view).setFont(font);
@@ -857,6 +847,27 @@ void updateCursorRects (boolean enabled) {
 	NSClipView contentView = scrollView.contentView ();
 	updateCursorRects (enabled, contentView);
 	contentView.setDocumentCursor (enabled ? NSCursor.arrowCursor () : null);
+}
+
+void updateThemeColors() {
+	/*
+	 * On macOS 10.14 and 10.15, when application sets Dark appearance, NSTextView
+	 * does not change the text color. In case of the link, this means that text
+	 * outside <a></a> will be black-on-dark. Fix this by setting the text color
+	 * explicitly. It seems that this is no longer needed on macOS 11.0. Note that
+	 * there is 'setUsesAdaptiveColorMappingForDarkAppearance:' which causes
+	 * NSTextView to adapt its colors, but it will also remap any colors used in
+	 * .setBackground(), which makes it difficult to use. I wasn't able to find an
+	 * event that colors changed, 'drawRect' seems to be the best option.
+	 */
+
+	// Avoid infinite loop of redraws
+	if (lastAppAppearance == display.appAppearance) return;
+	lastAppAppearance = display.appAppearance;
+	// Only default colors are affected
+	if (foreground != null) return;
+
+	((NSTextView) view).setTextColor (getTextColor (getEnabled ()));
 }
 
 }
