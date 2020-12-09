@@ -212,7 +212,8 @@ Point adjustMoveCursor () {
 	int[] actualX = new int[1], actualY = new int[1], state = new int[1];
 	if (GTK.GTK4) {
 		double[] actualXDouble = new double[1], actualYDouble = new double[1];
-		display.getSurfacePointerPosition(surface, actualXDouble, actualYDouble, state);
+		display.getPointerPosition(actualXDouble, actualYDouble);
+
 		actualX[0] = (int)actualXDouble[0];
 		actualY[0] = (int)actualYDouble[0];
 	} else {
@@ -253,7 +254,8 @@ Point adjustResizeCursor () {
 	int [] actualX = new int [1], actualY = new int [1], state = new int [1];
 	if (GTK.GTK4) {
 		double[] actualXDouble = new double[1], actualYDouble = new double[1];
-		display.getSurfacePointerPosition(surface, actualXDouble, actualYDouble, state);
+		display.getPointerPosition(actualXDouble, actualYDouble);
+
 		actualX[0] = (int)actualXDouble[0];
 		actualY[0] = (int)actualYDouble[0];
 	} else {
@@ -647,8 +649,8 @@ long gtk_mouse (int eventType, long widget, long eventPtr) {
 	int [] newX = new int [1], newY = new int [1];
 	if (GTK.GTK4) {
 		double[] newXDouble = new double[1], newYDouble = new double[1];
+		display.getPointerPosition(newXDouble, newYDouble);
 
-		display.getSurfacePointerPosition(surface, newXDouble, newYDouble, null);
 		newX[0] = (int)newXDouble[0];
 		newY[0] = (int)newYDouble[0];
 	} else {
@@ -800,7 +802,8 @@ public boolean open () {
 	int [] oldX = new int [1], oldY = new int [1], state = new int [1];
 	if (GTK.GTK4) {
 		double [] oldXDouble = new double [1], oldYDouble = new double [1];
-		display.getSurfacePointerPosition (surface, oldXDouble, oldYDouble, state);
+		display.getPointerPosition(oldXDouble, oldYDouble);
+
 		oldX[0] = (int) oldXDouble[0];
 		oldY[0] = (int) oldYDouble[0];
 	} else {

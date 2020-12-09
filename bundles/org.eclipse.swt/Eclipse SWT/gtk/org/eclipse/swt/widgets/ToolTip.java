@@ -366,9 +366,8 @@ Point getLocation () {
 	if (x == -1 || y == -1) {
 		if (GTK.GTK4) {
 			double[] px = new double[1], py = new double[1];
+			display.getPointerPosition(px, py);
 
-			long surface = GTK.gtk_native_get_surface(GTK.gtk_widget_get_native(handle));
-			display.getSurfacePointerPosition(surface, px, py, null);
 			x = (int)px[0];
 			y = (int)py[0];
 		} else {

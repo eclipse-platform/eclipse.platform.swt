@@ -1916,43 +1916,42 @@ boolean filters (int eventType) {
  *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  */
-public Point getCursorLocation () {
+public Point getCursorLocation() {
 	return DPIUtil.autoScaleDown(getCursorLocationInPixels());
 }
 
-Point getCursorLocationInPixels () {
-	checkDevice ();
+Point getCursorLocationInPixels() {
+	checkDevice();
 
 	int[] x = new int[1], y = new int[1];
 	if (GTK.GTK4) {
 		double[] xDouble = new double[1], yDouble = new double[1];
 
-		long surface = GTK.gtk_native_get_surface(GTK.gtk_widget_get_native(shellHandle));
-		getSurfacePointerPosition(surface, xDouble, yDouble, null);
+		getPointerPosition(xDouble, yDouble);
 		x[0] = (int)xDouble[0];
 		y[0] = (int)yDouble[0];
 	} else {
 		getWindowPointerPosition(0, x, y, null);
-	}
 
-	/*
-	 * Wayland feature: There is no global x/y coordinates in Wayland for security measures, so they
-	 * all return relative coordinates dependant to the root window. If there is a popup window (type SWT.ON_TOP),
-	 * the return position is relative to the new popup window and not relative to the parent if its
-	 * active. Using that as an offset and adding all parent shell relative coordinates will give the
-	 * user the correct mouse position in Wayland. This only supports popups that are type
-	 * SWT.ON_TOP as any other type of window is not tied to the parent window through
-	 * a subsurface. There is currently no support for global coordinates
-	 * in Wayland. See Bug 514483.
-	 */
-	if (!OS.isX11() && activeShell != null) {
-		Shell tempShell = activeShell;
-		int [] offsetX = new int [1], offsetY = new int [1];
-		while (tempShell.getParent() != null) {
-			GTK.gtk_window_get_position(tempShell.shellHandle, offsetX, offsetY);
-			x[0]+= offsetX[0];
-			y[0]+= offsetY[0];
-			tempShell = tempShell.getParent().getShell();
+		/*
+		 * Wayland feature: There is no global x/y coordinates in Wayland for security measures, so they
+		 * all return relative coordinates dependant to the root window. If there is a popup window (type SWT.ON_TOP),
+		 * the return position is relative to the new popup window and not relative to the parent if its
+		 * active. Using that as an offset and adding all parent shell relative coordinates will give the
+		 * user the correct mouse position in Wayland. This only supports popups that are type
+		 * SWT.ON_TOP as any other type of window is not tied to the parent window through
+		 * a subsurface. There is currently no support for global coordinates
+		 * in Wayland. See Bug 514483.
+		 */
+		if (!OS.isX11() && activeShell != null) {
+			Shell tempShell = activeShell;
+			int [] offsetX = new int [1], offsetY = new int [1];
+			while (tempShell.getParent() != null) {
+				GTK.gtk_window_get_position(tempShell.shellHandle, offsetX, offsetY);
+				x[0]+= offsetX[0];
+				y[0]+= offsetY[0];
+				tempShell = tempShell.getParent().getShell();
+			}
 		}
 	}
 
@@ -6073,7 +6072,7 @@ long windowTimerProc (long handle) {
 long getWindowPointerPosition(long window, int[] x, int[] y, int[] mask) {
 	long display = 0;
 
-	if(window != 0) {
+	if (window != 0) {
 		display = GDK.gdk_window_get_display(window);
 	} else {
 		window = GDK.gdk_get_default_root_window();
@@ -6088,12 +6087,12 @@ long getWindowPointerPosition(long window, int[] x, int[] y, int[] mask) {
  * Gets the current cursor position relative to the upper left corner of the surface.
  * Available to GTK4 implementations only.
  */
-void getSurfacePointerPosition(long surface, double[] x, double[] y, int[] mask) {
-	if (surface == 0) error(SWT.ERROR_NULL_ARGUMENT);
+void getPointerPosition(double[] x, double[] y) {
+	long display = GDK.gdk_display_get_default();
+	long seat = GDK.gdk_display_get_default_seat(display);
+	long pointer = GDK.gdk_seat_get_pointer(seat);
 
-	long display = GDK.gdk_surface_get_display(surface);
-	long pointer = GDK.gdk_get_pointer(display);
-	GDK.gdk_surface_get_device_position(surface, pointer, x, y, mask);
+	GDK.gdk_device_get_surface_at_position(pointer, x, y);
 }
 
 long gdk_device_get_window_at_position (int[] win_x, int[] win_y) {

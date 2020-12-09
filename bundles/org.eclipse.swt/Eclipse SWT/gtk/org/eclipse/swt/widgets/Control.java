@@ -553,9 +553,8 @@ long hoverProc (long widget) {
 	int[] x = new int[1], y = new int[1], mask = new int[1];
 	if (GTK.GTK4) {
 		double[] xDouble = new double[1], yDouble = new double[1];
+		display.getPointerPosition(xDouble, yDouble);
 
-		long surface = GTK.gtk_native_get_surface(GTK.gtk_widget_get_native(handle));
-		display.getSurfacePointerPosition(surface, xDouble, yDouble, null);
 		x[0] = (int)xDouble[0];
 		y[0] = (int)yDouble[0];
 	} else {
@@ -2761,7 +2760,8 @@ boolean dragDetect (int x, int y, boolean filter, boolean dragOnTimeout, boolean
 					int [] newX = new int [1], newY = new int [1];
 					if (GTK.GTK4) {
 						double[] newXDouble = new double[1], newYDouble = new double[1];
-						display.getSurfacePointerPosition(gdkResource, newXDouble, newYDouble, null);
+						display.getPointerPosition(newXDouble, newYDouble);
+
 						newX[0] = (int)newXDouble[0];
 						newY[0] = (int)newYDouble[0];
 					} else {

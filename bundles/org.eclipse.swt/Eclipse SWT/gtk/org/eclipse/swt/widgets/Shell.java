@@ -2945,9 +2945,8 @@ long sizeAllocateProc (long handle, long arg0, long user_data) {
 	int[] x = new int[1], y = new int[1];
 	if (GTK.GTK4) {
 		double[] xDouble = new double[1], yDouble = new double[1];
+		display.getPointerPosition(xDouble, yDouble);
 
-		long surface = GTK.gtk_native_get_surface(GTK.gtk_widget_get_native(shellHandle));
-		display.getSurfacePointerPosition(surface, xDouble, yDouble, null);
 		x[0] = (int)xDouble[0];
 		y[0] = (int)yDouble[0];
 	} else {
