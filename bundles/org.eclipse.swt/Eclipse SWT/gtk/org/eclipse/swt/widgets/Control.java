@@ -3484,7 +3484,7 @@ long gtk_button_press_event (long widget, long event, boolean sendMouseDown) {
 	if (eventType == GDK.GDK_BUTTON_PRESS) {
 		boolean dragging = false;
 		display.clickCount = 1;
-		long nextEvent = gdk_event_peek ();
+		long nextEvent = GDK.gdk_event_peek();
 		if (nextEvent != 0) {
 			int peekedEventType = GDK.GDK_EVENT_TYPE (nextEvent);
 			if (peekedEventType == GDK.GDK_2BUTTON_PRESS) display.clickCount = 2;

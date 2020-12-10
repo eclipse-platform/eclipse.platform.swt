@@ -365,6 +365,9 @@
 #define NO_gdk_1event_1get_1button
 #define NO_gdk_1event_1get_1coords
 #define NO_gdk_1event_1get_1root_1coords
+#define NO_gdk_1event_1get_1keycode
+#define NO_gdk_1event_1new
+#define NO_gdk_1event_1set_1device
 #define NO_gdk_1event_1get_1keyval
 #define NO_gdk_1event_1get_1scroll_1deltas
 #define NO_gdk_1event_1get_1scroll_1direction
@@ -539,6 +542,8 @@
 #define NO_gdk_1surface_1get_1root_1origin
 #define NO_gdk_1surface_1invalidate_1region
 #define NO_gdk_1event_1get_1surface
+#define NO_gdk_1surface_1set_1input_1region
+#define NO_gdk_1surface_1set_1opaque_1region
 
 // No GdkToplevel on GTK3
 #define NO_gdk_1toplevel_1focus

@@ -516,28 +516,6 @@ void fixMenus (Decorations newParent) {
 	this.parent = newParent;
 }
 
-/*public*/ Rectangle getBounds () {
-	checkWidget();
-	if (!GTK.gtk_widget_get_mapped (handle)) {
-		return new Rectangle (0, 0, 0, 0);
-	}
-	int [] origin_x = new int [1], origin_y = new int [1];
-	if (GTK.GTK4) {
-		long surface = gtk_widget_get_surface (handle);
-		GDK.gdk_surface_get_origin(surface, origin_x, origin_y);
-	} else {
-		long window = gtk_widget_get_window (handle);
-		GDK.gdk_window_get_origin (window, origin_x, origin_y);
-	}
-	GtkAllocation allocation = new GtkAllocation ();
-	GTK.gtk_widget_get_allocation (handle, allocation);
-	int x = origin_x [0] + allocation.x;
-	int y = origin_y [0] + allocation.y;
-	int width = allocation.width;
-	int height = allocation.height;
-	return new Rectangle (x, y, width, height);
-}
-
 /**
  * Returns the default menu item or null if none has
  * been previously set.

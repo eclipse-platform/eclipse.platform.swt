@@ -512,13 +512,13 @@ public class OS extends C {
 	public static final native void swt_fixed_resize(long fixed, long widget, int width, int height);
 
 	/**
-	 * @param container cast=(GtkWidget*)
+	 * @param container cast=(SwtFixed*)
 	 * @param widget cast=(GtkWidget*)
 	 * @category custom
 	 */
 	public static final native void swt_fixed_add(long container, long widget);
 	/**
-	 * @param container cast=(GtkWidget*)
+	 * @param container cast=(SwtFixed*)
 	 * @param widget cast=(GtkWidget*)
 	 * @category custom
 	 */

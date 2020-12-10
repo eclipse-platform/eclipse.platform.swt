@@ -920,8 +920,16 @@ private void setTrackerBackground(boolean opaque) {
 	}
 	GTK.gtk_style_context_invalidate (context);
 	long region = Cairo.cairo_region_create ();
-	GTK.gtk_widget_shape_combine_region (overlay, region);
-	GTK.gtk_widget_input_shape_combine_region (overlay, region);
+
+	if (GTK.GTK4) {
+		//TODO: GTK4
+		//GDK.gdk_surface_set_opaque_region(context, region);
+		//GDK.gdk_surface_set_input_region(context, region);
+	} else {
+		GTK.gtk_widget_shape_combine_region (overlay, region);
+		GTK.gtk_widget_input_shape_combine_region (overlay, region);
+	}
+
 	Cairo.cairo_region_destroy (region);
 }
 

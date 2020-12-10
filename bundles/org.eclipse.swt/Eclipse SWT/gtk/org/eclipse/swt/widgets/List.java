@@ -829,7 +829,7 @@ long gtk_button_press_event (long widget, long event) {
 	if ((state & DRAG_DETECT) != 0 && hooks (SWT.DragDetect) &&
 			!OS.isX11() && eventType == GDK.GDK_BUTTON_PRESS) { // Wayland
 		// check to see if there is another event coming in that is not a double/triple click, this is to prevent Bug 514531
-		long nextEvent = gdk_event_peek ();
+		long nextEvent = GDK.gdk_event_peek();
 		if (nextEvent == 0) {
 			long [] path = new long [1];
 			long selection = GTK.gtk_tree_view_get_selection (handle);
@@ -915,8 +915,7 @@ long gtk_button_press_event (long widget, long event) {
 @Override
 long gtk_gesture_press_event (long gesture, int n_press, double x, double y, long event) {
 	if (n_press == 1) return 0;
-	long widget = GTK.gtk_event_controller_get_widget(gesture);
-	long result = gtk_button_press_event (widget, event);
+	long result = super.gtk_gesture_press_event(gesture, n_press, x, y, event);
 
 	if (n_press == 2 && rowActivated) {
 		sendTreeDefaultSelection ();

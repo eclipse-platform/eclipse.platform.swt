@@ -2005,21 +2005,6 @@ long gdk_event_get_surface_or_window(long event) {
 }
 
 /**
- * Wrapper function for gdk_display_peek_event() on GTK4,
- * and gdk_event_peek() on GTK3.
- *
- * @return the GdkEvent fetched
- */
-long gdk_event_peek() {
-	if (GTK.GTK4) {
-		long display = GDK.gdk_display_get_default();
-		return GDK.gdk_display_peek_event(display);
-	} else {
-		return GDK.gdk_event_peek();
-	}
-}
-
-/**
  * Wrapper function for gdk_event_get_state()
  * @param event   pointer to the GdkEvent.
  * @return the keymask to be used with constants like

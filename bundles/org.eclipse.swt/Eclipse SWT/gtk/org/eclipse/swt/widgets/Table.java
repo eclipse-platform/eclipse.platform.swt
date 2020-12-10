@@ -2062,39 +2062,22 @@ public int getTopIndex () {
 long gtk_button_press_event (long widget, long event) {
 	double [] eventX = new double [1];
 	double [] eventY = new double [1];
-	if (GTK.GTK4) {
-		GDK.gdk_event_get_position(event, eventX, eventY);
-	} else {
-		GDK.gdk_event_get_coords(event, eventX, eventY);
-	}
+	GDK.gdk_event_get_coords(event, eventX, eventY);
 
 	int eventType = GDK.gdk_event_get_event_type(event);
 
 	int [] eventButton = new int [1];
 	int [] eventState = new int [1];
-	if (GTK.GTK4) {
-		eventButton[0] = GDK.gdk_button_event_get_button(event);
-		eventState[0] = GDK.gdk_event_get_modifier_state(event);
-	} else {
-		GDK.gdk_event_get_button(event, eventButton);
-		GDK.gdk_event_get_state(event, eventState);
-	}
+	GDK.gdk_event_get_button(event, eventButton);
+	GDK.gdk_event_get_state(event, eventState);
 
 	double [] eventRX = new double [1];
 	double [] eventRY = new double [1];
-	if (GTK.GTK4) {
-		long root = GTK.gtk_widget_get_root(widget);
-		GTK.gtk_widget_translate_coordinates(widget, root, eventX[0], eventY[0], eventRX, eventRY);
-	} else {
-		GDK.gdk_event_get_root_coords(event, eventRX, eventRY);
-	}
+	GDK.gdk_event_get_root_coords(event, eventRX, eventRY);
+
 
 	long eventGdkResource = gdk_event_get_surface_or_window(event);
-	if (GTK.GTK4) {
-		if (eventGdkResource != gtk_widget_get_surface (handle)) return 0;
-	} else {
-		if (eventGdkResource != GTK.gtk_tree_view_get_bin_window (handle)) return 0;
-	}
+	if (eventGdkResource != GTK.gtk_tree_view_get_bin_window (handle)) return 0;
 
 	long result = super.gtk_button_press_event (widget, event);
 	if (result != 0) return result;
@@ -2107,7 +2090,7 @@ long gtk_button_press_event (long widget, long event) {
 	if ((state & DRAG_DETECT) != 0 && hooks (SWT.DragDetect) &&
 			!OS.isX11() && eventType == GDK.GDK_BUTTON_PRESS) { // Wayland
 		// check to see if there is another event coming in that is not a double/triple click, this is to prevent Bug 514531
-		long nextEvent = gdk_event_peek ();
+		long nextEvent = GDK.gdk_event_peek();
 		if (nextEvent == 0) {
 			long [] path = new long [1];
 			long selection = GTK.gtk_tree_view_get_selection (handle);
@@ -2192,8 +2175,9 @@ long gtk_button_press_event (long widget, long event) {
 @Override
 long gtk_gesture_press_event (long gesture, int n_press, double x, double y, long event) {
 	if (n_press == 1) return 0;
-	long widget = GTK.gtk_event_controller_get_widget(gesture);
-	long result = gtk_button_press_event (widget, event);
+	long result = super.gtk_gesture_press_event(gesture, n_press, x, y, event);
+
+	// TODO: GTK4 replicate gtk_button_press_event functions
 
 	if (n_press == 2 && rowActivated) {
 		sendTreeDefaultSelection ();

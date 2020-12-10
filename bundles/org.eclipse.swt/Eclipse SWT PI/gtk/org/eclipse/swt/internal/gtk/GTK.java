@@ -1155,6 +1155,7 @@ public class GTK extends OS {
 	 */
 	public static final native void gtk_file_chooser_set_current_name(long chooser, byte[] name);
 	/**
+	 * @method flags=dynamic
 	 * @param chooser cast=(GtkFileChooser *)
 	 * @param extra_widget cast=(GtkWidget *)
 	 */
@@ -1455,10 +1456,18 @@ public class GTK extends OS {
 
 	/* [GTK3 only, if-def'd in os.h] */
 	public static final native long gtk_get_current_event();
-	/** @param state cast=(GdkModifierType*) */
+	/**
+	 * @method flags=dynamic
+	 * @param state cast=(GdkModifierType*)
+	 */
+	/* [GTK3 only] */
 	public static final native boolean gtk_get_current_event_state(int[] state);
 	public static final native long gtk_get_default_language();
-	/** @param event cast=(GdkEvent *) */
+	/**
+	 * @method flags=dynamic
+	 * @param event cast=(GdkEvent *)
+	 */
+	/* [GTK3 only] */
 	public static final native long gtk_get_event_widget(long event);
 	/** @param widget cast=(GtkWidget *) */
 	public static final native void gtk_grab_add(long widget);
@@ -1808,7 +1817,10 @@ public class GTK extends OS {
 	public static final native int gtk_get_major_version();
 	public static final native int gtk_get_minor_version();
 	public static final native int gtk_get_micro_version();
-	/** @param event cast=(GdkEvent *) */
+	/**
+	 * @method flags=dynamic
+	 * @param event cast=(GdkEvent *)
+	 */
 	public static final native void gtk_main_do_event(long event);
 
 	/** @method flags=dynamic */
@@ -2557,8 +2569,10 @@ public class GTK extends OS {
 	/* [GTK3 only] */
 	public static final native void gtk_style_context_get_padding(long context, int state, GtkBorder padding);
 	/**
+	 * @method flags=dynamic
 	 * @param context cast=(GtkStyleContext *)
 	 */
+	/* [GTK3 only] */
 	public static final native long gtk_style_context_get_parent(long context);
 	/**
 	 * @method flags=dynamic
@@ -3593,9 +3607,11 @@ public class GTK extends OS {
 	/** @param widget cast=(GtkWidget *) */
 	public static final native void gtk_widget_hide(long widget);
 	/**
+	 * @method flags=dynamic
 	 * @param widget cast=(GtkWidget *)
 	 * @param region cast=(cairo_region_t *)
 	 */
+	/* [GTK3 only] */
 	public static final native void gtk_widget_input_shape_combine_region(long widget, long region);
 	/** @param widget cast=(GtkWidget *) */
 	public static final native boolean gtk_widget_is_focus(long widget);

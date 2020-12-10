@@ -163,26 +163,9 @@ String openNativeChooserDialog () {
 			OS.g_free (ptr);
 		}
 	}
-	if (message.length () > 0) {
-		byte[] buffer = Converter.wcsToMbcs(message, true);
-		long box = GTK.gtk_box_new(GTK.GTK_ORIENTATION_HORIZONTAL, 0);
-		if (box == 0) error(SWT.ERROR_NO_HANDLES);
-		long label = GTK.gtk_label_new (buffer);
-		if (label == 0) error(SWT.ERROR_NO_HANDLES);
 
-		if (GTK.GTK4) {
-			GTK.gtk_box_append(box, label);
-			GTK.gtk_label_set_wrap(label, true);
-		} else {
-			GTK.gtk_container_add(box, label);
-			GTK.gtk_widget_show(label);
-			GTK.gtk_label_set_line_wrap(label, true);
-		}
+	GTK3setNativeDialogMessage(handle, message);
 
-		GTK.gtk_box_set_homogeneous(box, false);
-		GTK.gtk_label_set_justify(label, GTK.GTK_JUSTIFY_CENTER);
-		GTK.gtk_file_chooser_set_extra_widget(handle, box);
-	}
 	String answer = null;
 	display.addIdleProc ();
 	int signalId = 0;
@@ -244,6 +227,34 @@ String openNativeChooserDialog () {
 	display.removeIdleProc ();
 	return answer;
 }
+
+
+/**
+ * GTK3 only function. As of GTK4, gtk_file_chooser_set_extra_widget
+ * is no longer available, and the alternatives do not allow for such
+ * flexibility to display just the message. Therefore in GTK4, there will
+ * be no message displayed in the file chooser dialog.
+ */
+void GTK3setNativeDialogMessage(long handle, String message) {
+	if (GTK.GTK4) return;
+
+	if (message.length () > 0) {
+		byte[] buffer = Converter.wcsToMbcs(message, true);
+		long box = GTK.gtk_box_new(GTK.GTK_ORIENTATION_HORIZONTAL, 0);
+		if (box == 0) error(SWT.ERROR_NO_HANDLES);
+		long label = GTK.gtk_label_new (buffer);
+		if (label == 0) error(SWT.ERROR_NO_HANDLES);
+
+		GTK.gtk_container_add(box, label);
+		GTK.gtk_widget_show(label);
+		GTK.gtk_label_set_line_wrap(label, true);
+
+		GTK.gtk_box_set_homogeneous(box, false);
+		GTK.gtk_label_set_justify(label, GTK.GTK_JUSTIFY_CENTER);
+		GTK.gtk_file_chooser_set_extra_widget(handle, box);
+	}
+}
+
 /**
  * Sets the path that the dialog will use to filter
  * the directories it shows to the argument, which may

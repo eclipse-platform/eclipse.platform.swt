@@ -2204,11 +2204,8 @@ long gtk_button_press_event (long widget, long event) {
 	GDK.gdk_event_get_root_coords(event, eventRX, eventRY);
 
 	long eventGdkResource = gdk_event_get_surface_or_window(event);
-	if (GTK.GTK4) {
-		if (eventGdkResource != gtk_widget_get_surface (handle)) return 0;
-	} else {
-		if (eventGdkResource != GTK.gtk_tree_view_get_bin_window (handle)) return 0;
-	}
+	if (eventGdkResource != GTK.gtk_tree_view_get_bin_window (handle)) return 0;
+
 	long result = super.gtk_button_press_event (widget, event);
 	if (result != 0) return result;
 	/*
@@ -2220,7 +2217,7 @@ long gtk_button_press_event (long widget, long event) {
 	if ((state & DRAG_DETECT) != 0 && hooks (SWT.DragDetect) &&
 			!OS.isX11() && eventType == GDK.GDK_BUTTON_PRESS) { // Wayland
 	// check to see if there is another event coming in that is not a double/triple click, this is to prevent Bug 514531
-		long nextEvent = gdk_event_peek ();
+		long nextEvent = GDK.gdk_event_peek();
 		if (nextEvent == 0) {
 			long [] path = new long [1];
 			long selection = GTK.gtk_tree_view_get_selection (handle);

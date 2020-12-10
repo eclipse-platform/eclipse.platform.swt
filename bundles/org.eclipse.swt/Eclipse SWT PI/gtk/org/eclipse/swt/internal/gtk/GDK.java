@@ -370,6 +370,18 @@ public class GDK extends OS {
 	/* [GTK4 only, if-def'd in os.h] */
 	public static final native int gdk_surface_get_height(long surface);
 	/**
+	 * @param surface cast=(GdkSurface *)
+	 * @param region cast=(cairo_region_t *)
+	 */
+	/* [GTK4 only, if-def'd in os.h] */
+	public static final native void gdk_surface_set_input_region(long surface, long region);
+	/**
+	 * @param surface cast=(GdkSurface *)
+	 * @param region cast=(cairo_region_t *)
+	 */
+	/* [GTK4 only, if-def'd in os.h] */
+	public static final native void gdk_surface_set_opaque_region(long surface, long region);
+	/**
 	 * @param cairo cast=(cairo_t *)
 	 * @param pixbuf cast=(const GdkPixbuf *)
 	 * @param pixbuf_x cast=(gdouble)
@@ -590,6 +602,7 @@ public class GDK extends OS {
 	 */
 	// TODO GTK4 function removed
 	public static final native void gdk_event_handler_set(long func, long data, long notify);
+	/* [GTK3 only, if-def'd in os.h] */
 	public static final native long gdk_event_new(int type);
 	/* [GTK3 only, if-def'd in os.h] */
 	public static final native long gdk_event_peek();
@@ -597,6 +610,7 @@ public class GDK extends OS {
 	 * @param event cast=(GdkEvent *)
 	 * @param device cast=(GdkDevice *)
 	 */
+	/* [GTK3 only, if-def'd in os.h] */
 	public static final native void gdk_event_set_device(long event, long device);
 	/** @param event cast=(GdkEvent *) */
 	/* [GTK3 only, if-def'd in os.h] */
@@ -909,8 +923,6 @@ public class GDK extends OS {
 	 */
 	/* [GTK4 only, if-def'd in os.h] */
 	public static final native boolean gdk_display_is_composited(long display);
-	/** @param display cast=(GdkDisplay *) */
-	public static final native long gdk_display_peek_event(long display);
 	/**
 	 * @param display cast=(GdkDisplay *)
 	 * @param event cast=(GdkEvent *)
