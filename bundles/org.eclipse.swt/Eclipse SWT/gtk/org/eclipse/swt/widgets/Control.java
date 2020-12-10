@@ -4712,6 +4712,18 @@ void releaseWidget () {
 	}
 	accessible = null;
 	region = null;
+	if (dragGesture != 0) {
+		OS.g_object_unref(dragGesture);
+		dragGesture = 0;
+	}
+	if (rotateGesture != 0) {
+		OS.g_object_unref(rotateGesture);
+		rotateGesture = 0;
+	}
+	if (zoomGesture != 0) {
+		OS.g_object_unref(zoomGesture);
+		zoomGesture = 0;
+	}
 }
 
 /**
