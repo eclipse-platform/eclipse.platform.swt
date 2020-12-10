@@ -4915,13 +4915,27 @@ public void test_setTopPixelI(){
 
 @Test
 public void test_verticalIndent_changeRelativeBounds() {
-	String _5000lines = IntStream.range(1, 5001).mapToObj(n -> Integer.toString(n)).collect(Collectors.joining("\n"));
+	String _5000lines = IntStream.range(1, 5001).mapToObj(Integer::toString).collect(Collectors.joining("\n"));
 	text.setText(_5000lines);
 	text.setSize(500, 200);
 	text.invokeAction(ST.TEXT_END);
 	text.setLineVerticalIndent(text.getContent().getLineCount() - 1, 10);
 	text.invokeAction(ST.TEXT_START);
 	assertEquals(0, text.getTopPixel());
+}
+
+@Test
+public void test_notFixedLineHeightDoesntChangeLinePixelIfUnnecessary() {
+	String _50lines = IntStream.range(1, 50).mapToObj(Integer::toString).collect(Collectors.joining("\n"));
+	text.setText(_50lines);
+	text.setSize(500, 200);
+	int line = 30;
+	int offset = text.getOffsetAtLine(line);
+	text.setSelection(offset);
+	text.showSelection();
+	int firstLinePixel = text.getLinePixel(0);
+	text.setWordWrap(true); // make non fixed line height
+	assertEquals(firstLinePixel, text.getLinePixel(0));
 }
 
 @Test

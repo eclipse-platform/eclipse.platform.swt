@@ -235,12 +235,12 @@ protected String getClassName() {
 	return clazz;
 }
 
-protected void processEvents(int timeoutMs, BooleanSupplier condition) throws InterruptedException {
-	if (condition == null) {
-		condition = () -> false;
+protected void processEvents(int timeoutMs, BooleanSupplier breakCondition) throws InterruptedException {
+	if (breakCondition == null) {
+		breakCondition = () -> false;
 	}
 	long targetTimestamp = System.currentTimeMillis() + timeoutMs;
-	while (!condition.getAsBoolean()) {
+	while (!breakCondition.getAsBoolean()) {
 		if (!shell.getDisplay().readAndDispatch()) {
 			if (System.currentTimeMillis() < targetTimestamp) {
 				Thread.sleep(50);

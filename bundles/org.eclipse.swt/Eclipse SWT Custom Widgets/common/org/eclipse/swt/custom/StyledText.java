@@ -1568,6 +1568,7 @@ void calculateTopIndex(int delta) {
 		if (topIndex > 0) {
 			if (clientAreaHeight > 0) {
 				int bottomPixel = getVerticalScrollOffset() + clientAreaHeight;
+				topIndexY = getLinePixel(topIndex);
 				int fullLineTopPixel = topIndex * verticalIncrement;
 				int fullLineVisibleHeight = bottomPixel - fullLineTopPixel;
 				// set top index to partially visible line if no line fully fits in
@@ -4262,7 +4263,8 @@ public int getLinePixel(int lineIndex) {
 		int lineHeight = renderer.getLineHeight();
 		return lineIndex * lineHeight - getVerticalScrollOffset() + topMargin;
 	}
-	if (lineIndex == topIndex) return topIndexY + topMargin;
+	if (lineIndex == topIndex)
+		return topIndexY + topMargin;
 	int height = topIndexY;
 	if (lineIndex > topIndex) {
 		for (int i = topIndex; i < lineIndex; i++) {
@@ -8096,9 +8098,6 @@ void resetCache(SortedSet<Integer> lines) {
 	}
 	setScrollBars(true);
 	if (!isFixedLineHeight()) {
-		if (topIndex > lines.iterator().next()) {
-			verticalScrollOffset = -1;
-		}
 		renderer.calculateIdle();
 	}
 }
@@ -8111,9 +8110,6 @@ void resetCache(int firstLine, int count) {
 	}
 	setScrollBars(true);
 	if (!isFixedLineHeight()) {
-		if (topIndex > firstLine) {
-			verticalScrollOffset = -1;
-		}
 		renderer.calculateIdle();
 	}
 }
