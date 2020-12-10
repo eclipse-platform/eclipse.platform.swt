@@ -4925,6 +4925,25 @@ public void test_verticalIndent_changeRelativeBounds() {
 }
 
 @Test
+public void test_verticalIndent_keepsCurrentCaretAndLinePosition() throws InterruptedException {
+	String _50lines = IntStream.range(1, 50).mapToObj(Integer::toString).collect(Collectors.joining("\n"));
+	text.setText(_50lines);
+	text.setSize(500, 200);
+	int line = 30;
+	int offset = text.getOffsetAtLine(line);
+	text.setSelection(offset);
+	text.showSelection();
+	Point caretLocation = text.getCaret().getLocation();
+	Point offsetLocation = text.getLocationAtOffset(offset);
+	text.setLineVerticalIndent(line, 34);
+	assertEquals(caretLocation, text.getCaret().getLocation());
+	assertEquals(offsetLocation, text.getLocationAtOffset(offset));
+	text.setLineVerticalIndent(line, 0);
+	assertEquals(caretLocation, text.getCaret().getLocation());
+	assertEquals(offsetLocation, text.getLocationAtOffset(offset));
+}
+
+@Test
 public void test_notFixedLineHeightDoesntChangeLinePixelIfUnnecessary() {
 	String _50lines = IntStream.range(1, 50).mapToObj(Integer::toString).collect(Collectors.joining("\n"));
 	text.setText(_50lines);

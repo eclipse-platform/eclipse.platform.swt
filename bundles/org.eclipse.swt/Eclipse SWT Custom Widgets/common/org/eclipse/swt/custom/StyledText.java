@@ -9443,21 +9443,34 @@ public void setLineVerticalIndent(int lineIndex, int verticalLineIndent) {
 	if (lineIndex < 0 || lineIndex >= content.getLineCount()) {
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
-	if (verticalLineIndent == renderer.getLineVerticalIndent(lineIndex)) {
-			return;
+	int previousVerticalIndent = renderer.getLineVerticalIndent(lineIndex);
+	if (verticalLineIndent == previousVerticalIndent) {
+		return;
 	}
-	int oldBottom = getLinePixel(lineIndex + 1);
-	if (oldBottom <= getClientArea().height) {
-		verticalScrollOffset = -1;
-	}
+	int initialTopPixel = getTopPixel();
+	int verticalIndentDiff = verticalLineIndent - previousVerticalIndent;
 	renderer.setLineVerticalIndent(lineIndex, verticalLineIndent);
-	hasVerticalIndent = verticalLineIndent != 0 || renderer.hasVerticalIndent();
+	this.hasVerticalIndent = verticalLineIndent != 0 || renderer.hasVerticalIndent();
 	resetCache(lineIndex, 1);
-	int newBottom = getLinePixel(lineIndex + 1);
-	redrawLines(lineIndex, 1, oldBottom != newBottom);
-	int caretLine = getCaretLine();
-	if (lineIndex <= caretLine && caretLine < lineIndex + 1) {
-		setCaretLocation();
+	if (lineIndex < getPartialTopIndex()) {
+		setTopPixel(initialTopPixel + verticalIndentDiff);
+	} else if (lineIndex > getPartialBottomIndex()) {
+		// adjust vertical scollbar
+	} else {
+		if (getCaretLine() >= getPartialTopIndex() && getCaretLine() <= getPartialBottomIndex()) { // caret line with caret mustn't move
+			if (getCaretLine() < lineIndex) {
+				redrawLines(lineIndex, getPartialBottomIndex(), true);
+			} else {
+				setTopPixel(initialTopPixel + verticalIndentDiff);
+			}
+		} else { // move as few lines as possible
+			if (lineIndex - getTopIndex() < getBottomIndex() - lineIndex) {
+				setTopPixel(initialTopPixel + verticalIndentDiff);
+			} else {
+				// redraw below
+				redrawLines(lineIndex, getPartialBottomIndex() - lineIndex + 1, true);
+			}
+		}
 	}
 }
 
