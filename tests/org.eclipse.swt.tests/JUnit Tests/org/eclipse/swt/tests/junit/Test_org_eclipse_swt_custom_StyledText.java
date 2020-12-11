@@ -4932,13 +4932,52 @@ public void test_verticalIndent_keepsCurrentCaretAndLinePosition() throws Interr
 	int line = 30;
 	int offset = text.getOffsetAtLine(line);
 	text.setSelection(offset);
-	text.showSelection();
+	text.showSelection(); // move to somewhere in the middle of the widget
+	// then pick some line in the middle to test all cases
+	line = text.getLineIndex(text.getClientArea().height / 2);
+	offset = text.getOffsetAtLine(line);
+	text.setSelection(offset);
 	Point caretLocation = text.getCaret().getLocation();
 	Point offsetLocation = text.getLocationAtOffset(offset);
+
+	// on active line
 	text.setLineVerticalIndent(line, 34);
 	assertEquals(caretLocation, text.getCaret().getLocation());
 	assertEquals(offsetLocation, text.getLocationAtOffset(offset));
 	text.setLineVerticalIndent(line, 0);
+	assertEquals(caretLocation, text.getCaret().getLocation());
+	assertEquals(offsetLocation, text.getLocationAtOffset(offset));
+
+	// above visible area
+	text.setLineVerticalIndent(0, 34);
+	assertEquals(caretLocation, text.getCaret().getLocation());
+	assertEquals(offsetLocation, text.getLocationAtOffset(offset));
+	text.setLineVerticalIndent(0, 0);
+	assertEquals(caretLocation, text.getCaret().getLocation());
+	assertEquals(offsetLocation, text.getLocationAtOffset(offset));
+
+	//below visible area
+	int nextInvisibleLine = text.getLineIndex(text.getClientArea().height - 1) + 1;
+	text.setLineVerticalIndent(nextInvisibleLine, 34);
+	assertEquals(caretLocation, text.getCaret().getLocation());
+	assertEquals(offsetLocation, text.getLocationAtOffset(offset));
+	text.setLineVerticalIndent(nextInvisibleLine, 0);
+	assertEquals(caretLocation, text.getCaret().getLocation());
+	assertEquals(offsetLocation, text.getLocationAtOffset(offset));
+
+	// above active line, in visible area
+	text.setLineVerticalIndent(line - 2, 34);
+	assertEquals(caretLocation, text.getCaret().getLocation());
+	assertEquals(offsetLocation, text.getLocationAtOffset(offset));
+	text.setLineVerticalIndent(line - 2, 0);
+	assertEquals(caretLocation, text.getCaret().getLocation());
+	assertEquals(offsetLocation, text.getLocationAtOffset(offset));
+
+	// below active line, in visible area
+	text.setLineVerticalIndent(line + 2, 34);
+	assertEquals(caretLocation, text.getCaret().getLocation());
+	assertEquals(offsetLocation, text.getLocationAtOffset(offset));
+	text.setLineVerticalIndent(line + 2, 0);
 	assertEquals(caretLocation, text.getCaret().getLocation());
 	assertEquals(offsetLocation, text.getLocationAtOffset(offset));
 }

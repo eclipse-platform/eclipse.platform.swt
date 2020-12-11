@@ -9448,18 +9448,18 @@ public void setLineVerticalIndent(int lineIndex, int verticalLineIndent) {
 		return;
 	}
 	int initialTopPixel = getTopPixel();
+	int initialTopIndex = getPartialTopIndex();
+	int initialBottonIndex = getPartialBottomIndex();
 	int verticalIndentDiff = verticalLineIndent - previousVerticalIndent;
 	renderer.setLineVerticalIndent(lineIndex, verticalLineIndent);
 	this.hasVerticalIndent = verticalLineIndent != 0 || renderer.hasVerticalIndent();
 	resetCache(lineIndex, 1);
-	if (lineIndex < getPartialTopIndex()) {
-		setTopPixel(initialTopPixel + verticalIndentDiff);
-	} else if (lineIndex > getPartialBottomIndex()) {
-		// adjust vertical scollbar
+	if (lineIndex < initialTopIndex || lineIndex > getPartialBottomIndex()) {
+		setScrollBars(true);
 	} else {
-		if (getCaretLine() >= getPartialTopIndex() && getCaretLine() <= getPartialBottomIndex()) { // caret line with caret mustn't move
+		if (getCaretLine() >= initialTopIndex && getCaretLine() <= initialBottonIndex) { // caret line with caret mustn't move
 			if (getCaretLine() < lineIndex) {
-				redrawLines(lineIndex, getPartialBottomIndex(), true);
+				redrawLines(lineIndex, getPartialBottomIndex() - lineIndex + 1, true);
 			} else {
 				setTopPixel(initialTopPixel + verticalIndentDiff);
 			}
