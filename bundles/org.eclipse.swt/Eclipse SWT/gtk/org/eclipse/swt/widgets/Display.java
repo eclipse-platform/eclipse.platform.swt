@@ -4224,6 +4224,27 @@ long mouseHoverProc (long handle) {
 	return widget.hoverProc (handle);
 }
 
+long findFocusedWindow() {
+	long gdkWindow = 0;
+	long window_list = GDK.gdk_window_get_children(GDK.gdk_get_default_root_window());
+	if (window_list != 0) {
+		long windows = window_list;
+		while (windows != 0) {
+			long curr_window = OS.g_list_data(windows);
+			int state = GDK.gdk_window_get_state(curr_window);
+			if ((state & GDK.GDK_WINDOW_STATE_FOCUSED) != 0 && (state & GDK.GDK_WINDOW_STATE_WITHDRAWN) == 0) {
+				gdkWindow = curr_window;
+				OS.g_object_ref(gdkWindow);
+				break;
+			}
+			windows = OS.g_list_next(windows);
+		}
+		OS.g_list_free(window_list);
+	}
+
+	return gdkWindow;
+}
+
 /**
  * Generate a low level system event.
  *
@@ -4302,30 +4323,13 @@ public boolean post (Event event) {
 
 		long gdkDisplay = GDK.gdk_display_get_default();
 		long gdkSeat = GDK.gdk_display_get_default_seat(gdkDisplay);
-		long gdkKeyboardDevice = GDK.gdk_seat_get_keyboard(gdkSeat);
-		long gdkPointerDevice = GDK.gdk_seat_get_pointer(gdkSeat);
-		long gdkWindow = GDK.gdk_get_default_root_window();
-		long window_list = GDK.gdk_window_get_children(gdkWindow);
-		if (window_list != 0) {
-			long windows = window_list;
-			while (windows != 0) {
-				long curr_window = OS.g_list_data(windows);
-				int state = GDK.gdk_window_get_state(curr_window);
-				if ((state & GDK.GDK_WINDOW_STATE_FOCUSED) != 0 && (state & GDK.GDK_WINDOW_STATE_WITHDRAWN) == 0) {
-					gdkWindow = curr_window;
-					OS.g_object_ref(gdkWindow);
-					break;
-				}
-				windows = OS.g_list_next(windows);
-			}
-			OS.g_list_free(window_list);
-		}
-		if (gdkWindow == 0) return false;
-		long eventPtr = 0;
 
 		switch (type) {
 			case SWT.KeyDown:
-			case SWT.KeyUp:
+			case SWT.KeyUp: {
+				long gdkWindow = findFocusedWindow();
+				if (gdkWindow == 0) return false;
+
 				/* Translate the SWT Event fields to GDK fields
 				 * We need hardware_keycode, GdkModifierType, group to get keyval
 				 * 1) event.character -> hardware_keycode
@@ -4386,7 +4390,7 @@ public boolean post (Event event) {
 				}
 
 				/* Construct GdkEventKey */
-				eventPtr = GDK.gdk_event_new(type == SWT.KeyDown ? GDK.GDK_KEY_PRESS : GDK.GDK_KEY_RELEASE);
+				final long eventPtr = GDK.gdk_event_new(type == SWT.KeyDown ? GDK.GDK_KEY_PRESS : GDK.GDK_KEY_RELEASE);
 				GdkEventKey newKeyEvent = new GdkEventKey ();
 				newKeyEvent.type = type == SWT.KeyDown ? GDK.GDK_KEY_PRESS : GDK.GDK_KEY_RELEASE;
 				newKeyEvent.window = gdkWindow;
@@ -4399,7 +4403,7 @@ public boolean post (Event event) {
 				newKeyEvent.is_modifier = is_modifier;
 
 				OS.memmove(eventPtr, newKeyEvent, GdkEventKey.sizeof);
-				GDK.gdk_event_set_device (eventPtr, gdkKeyboardDevice);
+				GDK.gdk_event_set_device (eventPtr, GDK.gdk_seat_get_keyboard(gdkSeat));
 				if (GTK.GTK4) {
 					GDK.gdk_display_put_event(gdkDisplay, eventPtr);
 				} else {
@@ -4412,17 +4416,19 @@ public boolean post (Event event) {
 					GDK.gdk_event_free(eventPtr);
 				}
 				return true;
+			}
 			case SWT.MouseDown:
-			case SWT.MouseUp:
+			case SWT.MouseUp: {
 				int[] x = new int[1], y = new int[1], mask = new int[1];
-				gdkWindow = GDK.gdk_device_get_window_at_position(gdkPointerDevice, x, y);
+				final long gdkPointerDevice = GDK.gdk_seat_get_pointer(gdkSeat);
+				final long gdkWindow = GDK.gdk_device_get_window_at_position(gdkPointerDevice, x, y);
 				// Under Wayland or some window managers, gdkWindow is not known to GDK and null is returned,
 				// cannot post mouse events as it will lead to crash
 				if (gdkWindow == 0) return false;
 				OS.g_object_ref(gdkWindow);
 
 				/* Construct GdkEventButton */
-				eventPtr = GDK.gdk_event_new(type == SWT.MouseDown ? GDK.GDK_BUTTON_PRESS : GDK.GDK_BUTTON_RELEASE);
+				final long eventPtr = GDK.gdk_event_new(type == SWT.MouseDown ? GDK.GDK_BUTTON_PRESS : GDK.GDK_BUTTON_RELEASE);
 				GdkEventButton newButtonEvent = new GdkEventButton ();
 				newButtonEvent.type = type == SWT.MouseDown ? GDK.GDK_BUTTON_PRESS : GDK.GDK_BUTTON_RELEASE;
 				newButtonEvent.window = gdkWindow;
@@ -4444,6 +4450,7 @@ public boolean post (Event event) {
 					GDK.gdk_event_free (eventPtr);
 				}
 				return true;
+			}
 		}
 		return false;
 	}
