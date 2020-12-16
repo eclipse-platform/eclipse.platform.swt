@@ -2694,7 +2694,7 @@ public void setFont(Font font) {
 	// Chevron painting is cached as image and only recreated if number of hidden tabs changed.
 	// To apply the new font the cached image must be recreated with new font.
 	// Redraw request alone would only redraw the cached image with old font.
-	renderer.chevronFont = null; // renderer will pickup and adjust(!) the new font automatically
+	renderer.resetChevronFont(); // renderer will pickup and adjust(!) the new font automatically
 	updateChevronImage(true);
 	updateFolder(REDRAW);
 }

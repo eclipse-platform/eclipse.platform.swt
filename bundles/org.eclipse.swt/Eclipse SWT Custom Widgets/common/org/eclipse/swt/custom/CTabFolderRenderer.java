@@ -58,7 +58,7 @@ public class CTabFolderRenderer {
 	 */
 	Color lastBorderColor = null;
 
-	Font chevronFont = null;
+	private Font chevronFont = null;
 
 	//TOP_LEFT_CORNER_HILITE is laid out in reverse (ie. top to bottom)
 	//so can fade in same direction as right swoop curve
@@ -1727,6 +1727,13 @@ public class CTabFolderRenderer {
 			return false;
 
 		return true;
+	}
+
+	void resetChevronFont() {
+		if (chevronFont != null) {
+			chevronFont.dispose();
+			chevronFont = null;
+		}
 	}
 
 	void setSelectionHighlightGradientColor(Color start) {
