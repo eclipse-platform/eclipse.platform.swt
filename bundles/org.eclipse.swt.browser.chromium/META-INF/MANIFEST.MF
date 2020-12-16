@@ -3,7 +3,7 @@ Fragment-Host: org.eclipse.swt;bundle-version="[3.115.0,4.0.0)"
 Bundle-Name: Chromium SWT Widget
 Bundle-Vendor: Eclipse.org
 Bundle-SymbolicName: org.eclipse.swt.browser.chromium;singleton:=true
-Bundle-Version: 3.115.200.qualifier
+Bundle-Version: 3.116.0.qualifier
 Bundle-ManifestVersion: 2
 Eclipse-PlatformFilter: (osgi.arch=x86_64)
 SWT-Arch: x86_64

@@ -41,9 +41,70 @@ import org.eclipse.swt.*;
 public abstract class Resource {
 
 	/**
+	 * Stack recorded at resource allocation time, wraped as Exception for
+	 * convenience
+	 *
+	 * @since 3.116
+	 */
+	public static class NonDisposedException extends Exception {
+		static final long serialVersionUID = 1;
+	}
+
+	/**
+	 * Reports not disposed SWT resource
+	 *
+	 * @since 3.116
+	 */
+	public interface NonDisposedReporter {
+		/**
+		 * Note that this is called as part of {@link Object#finalize()}, please
+		 * read its docs.
+		 *
+		 * @param resource        the Resource which wasn't properly disposed
+		 * @param allocationStack stack trace that allocated the Resource, or
+		 *                        null if {@link #collectAllocationStacks} is
+		 *                        false.
+		 * @see Resource#trackNonDisposed(boolean, NonDisposedReporter)
+		 */
+		void onNonDisposedResource(Resource resource, NonDisposedException allocationStack);
+	}
+
+	/**
 	 * the device where this resource was created
 	 */
 	Device device;
+
+	/**
+	 * Used to report not disposed SWT resources, null by default
+	 */
+	private static NonDisposedReporter nonDisposedReporter;
+
+	/**
+	 * Set to {@code true} if leak detector should ignore not disposed resource
+	 */
+	boolean nonDisposedIgnore;
+
+	/**
+	 * Set to {@code true} if leak detector should create exceptions for not disposed resources
+	 */
+	private static boolean collectAllocationStacks;
+
+	/**
+	 * Recorded at object creation if {@link #trackNonDisposed(boolean)} was
+	 * called with {@code true}, used to track resource disposal
+	 */
+	private NonDisposedException allocationStack;
+
+	static {
+		final String property = System.getProperty("org.eclipse.swt.graphics.Resource.reportNonDisposed");
+		if (property != null) {
+			if (property.equalsIgnoreCase("stacks")) {
+				trackNonDisposed(true);
+			} else if (property.equalsIgnoreCase("true")) {
+				trackNonDisposed(false);
+			}
+		}
+	}
 
 public Resource() {
 }
@@ -52,6 +113,9 @@ Resource(Device device) {
 	if (device == null) device = Device.getDevice();
 	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	this.device = device;
+	if (collectAllocationStacks) {
+		allocationStack = new NonDisposedException();
+	}
 }
 
 void destroy() {
@@ -69,6 +133,17 @@ public void dispose() {
 	destroy();
 	if (device.tracking) device.dispose_Object(this);
 	device = null;
+}
+
+/**
+ * Returns the allocation stack if {@link #collectAllocationStacks} is enabled.
+ * Otherwise, will return {@code null}.
+ *
+ * @see #trackNonDisposed(boolean)
+ * @since 3.116
+ */
+public NonDisposedException getAllocationStack() {
+	return allocationStack;
 }
 
 /**
@@ -100,5 +175,58 @@ void init() {
  * @return <code>true</code> when the resource is disposed and <code>false</code> otherwise
  */
 public abstract boolean isDisposed();
+
+@Override
+protected void finalize() {
+	if (nonDisposedIgnore) return;
+	if (nonDisposedReporter == null) return;
+	if (isDisposed()) return;
+
+	// Color doesn't really have any resource to be leaked, ignore
+	if (this instanceof Color) return;
+
+	nonDisposedReporter.onNonDisposedResource(this, allocationStack);
+}
+
+/**
+ * Enables detection of Resource objects for which {@link #dispose()} wasn't
+ * called, which means a leak of native memory and/or OS resources.
+ *
+ * @param collectAllocationStacks whether to collect allocation stacks for
+ *                                better reports. This is a performance
+ *                                tradeoff. Changing this value will only affect
+ *                                future objects.
+ * @param reporter                object used to report detected errors. Use
+ *                                null to disable tracking. Setting a new
+ *                                reporter has an immediate effect.
+ *
+ * @see #getAllocationStack()
+ * @since 3.116
+ */
+public static void trackNonDisposed(boolean collectAllocationStacks, NonDisposedReporter reporter) {
+	nonDisposedReporter = reporter;
+	Resource.collectAllocationStacks = collectAllocationStacks;
+}
+
+/**
+ * Enables detection of Resource objects for which {@link #dispose()} wasn't
+ * called, which means a leak of native memory and/or OS resources. Uses default
+ * reporter that will print to {@link System#err}.
+ *
+ * @param collectAllocationStacks whether to collect allocation stacks for
+ *                                better reports. This is a performance
+ *                                tradeoff. Changing this value will only affect
+ *                                future objects.
+ *
+ * @see #getAllocationStack()
+ * @since 3.116
+ */
+public static void trackNonDisposed(boolean collectAllocationStacks) {
+	trackNonDisposed(collectAllocationStacks, (object, exception) -> {
+		System.err.println("Resource was not properly disposed: " + object);
+		if (exception != null)
+			exception.printStackTrace();
+	});
+}
 
 }

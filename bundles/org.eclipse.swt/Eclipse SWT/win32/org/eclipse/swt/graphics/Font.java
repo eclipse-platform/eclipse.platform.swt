@@ -269,6 +269,12 @@ public String toString () {
 public static Font win32_new(Device device, long handle) {
 	Font font = new Font(device);
 	font.handle = handle;
+	/*
+	 * When created this way, Font doesn't own its .handle, and
+	 * for this reason it can't be disposed. Tell leak detector
+	 * to just ignore it.
+	 */
+	font.nonDisposedIgnore = true;
 	return font;
 }
 

@@ -97,6 +97,12 @@ public Region(Device device) {
 Region(Device device, long handle) {
 	super(device);
 	this.handle = handle;
+	/*
+	 * When created this way, Font doesn't own its .handle, and
+	 * for this reason it can't be disposed. Tell leak detector
+	 * to just ignore it.
+	 */
+	this.nonDisposedIgnore = true;
 }
 
 /**
