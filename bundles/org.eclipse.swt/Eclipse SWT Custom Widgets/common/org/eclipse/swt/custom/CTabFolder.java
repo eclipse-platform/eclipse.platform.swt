@@ -1463,7 +1463,9 @@ void initAccessible() {
 				pt = getParent().toDisplay(location.x, location.y);
 			} else {
 				if (childID >= 0 && childID < items.length && items[childID].showing) {
-					location = items[childID].getBounds();
+					if (!items[childID].isDisposed()) {
+						location = items[childID].getBounds();
+					}
 				}
 				if (location != null) {
 					pt = toDisplay(location.x, location.y);
