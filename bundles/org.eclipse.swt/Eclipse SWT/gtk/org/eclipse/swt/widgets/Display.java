@@ -523,10 +523,15 @@ public class Display extends Device {
 //		PACKAGE_NAME = name.substring (0, index + 1);
 //	}
 
-	/* GTK Version */
+	/* Minimum GTK version requirement */
 	static final int GTK3_MAJOR = 3;
 	static final int GTK3_MINOR = 20;
 	static final int GTK3_MICRO = 0;
+
+	/* Latest GTK version support */
+	static final int GTK4_MAJOR = 4;
+	static final int GTK4_MINOR = 0;
+	static final int GTK4_MICRO = 0;
 
 	/* Display Data */
 	Object data;

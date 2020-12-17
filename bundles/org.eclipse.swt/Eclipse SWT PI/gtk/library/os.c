@@ -14531,6 +14531,23 @@ JNIEXPORT void JNICALL GTK_NATIVE(gtk_1window_1fullscreen)
 }
 #endif
 
+#ifndef NO_gtk_1window_1get_1default_1size
+JNIEXPORT void JNICALL GTK_NATIVE(gtk_1window_1get_1default_1size)
+	(JNIEnv *env, jclass that, jlong arg0, jintArray arg1, jintArray arg2)
+{
+	jint *lparg1=NULL;
+	jint *lparg2=NULL;
+	GTK_NATIVE_ENTER(env, that, gtk_1window_1get_1default_1size_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	if (arg2) if ((lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL)) == NULL) goto fail;
+	gtk_window_get_default_size((GtkWindow *)arg0, (gint *)lparg1, (gint *)lparg2);
+fail:
+	if (arg2 && lparg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	if (arg1 && lparg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
+	GTK_NATIVE_EXIT(env, that, gtk_1window_1get_1default_1size_FUNC);
+}
+#endif
+
 #ifndef NO_gtk_1window_1get_1default_1widget
 JNIEXPORT jlong JNICALL GTK_NATIVE(gtk_1window_1get_1default_1widget)
 	(JNIEnv *env, jclass that, jlong arg0)
@@ -14826,6 +14843,16 @@ JNIEXPORT void JNICALL GTK_NATIVE(gtk_1window_1set_1default)
 	GTK_NATIVE_ENTER(env, that, gtk_1window_1set_1default_FUNC);
 	gtk_window_set_default((GtkWindow *)arg0, (GtkWidget *)arg1);
 	GTK_NATIVE_EXIT(env, that, gtk_1window_1set_1default_FUNC);
+}
+#endif
+
+#ifndef NO_gtk_1window_1set_1default_1size
+JNIEXPORT void JNICALL GTK_NATIVE(gtk_1window_1set_1default_1size)
+	(JNIEnv *env, jclass that, jlong arg0, jint arg1, jint arg2)
+{
+	GTK_NATIVE_ENTER(env, that, gtk_1window_1set_1default_1size_FUNC);
+	gtk_window_set_default_size((GtkWindow *)arg0, (gint)arg1, (gint)arg2);
+	GTK_NATIVE_EXIT(env, that, gtk_1window_1set_1default_1size_FUNC);
 }
 #endif
 

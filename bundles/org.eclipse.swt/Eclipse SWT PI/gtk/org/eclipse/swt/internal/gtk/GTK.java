@@ -4039,6 +4039,18 @@ public class GTK extends OS {
 	public static final native void gtk_window_unmaximize(long handle);
 	/** @param window cast=(GtkWindow *) */
 	public static final native long gtk_window_get_default_widget(long window);
+	/**
+	 * @param window cast=(GtkWindow *)
+	 * @param width cast=(gint)
+	 * @param height cast=(gint)
+	 */
+	public static final native void gtk_window_set_default_size(long window, int width, int height);
+	/**
+	 * @param window cast=(GtkWindow *)
+	 * @param width cast=(gint *)
+	 * @param height cast=(gint *)
+	 */
+	public static final native void gtk_window_get_default_size(long window, int[] width, int[] height);
 
 	/* GtkWindow [GTK3 only, if-def'd in os.h] */
 	/**

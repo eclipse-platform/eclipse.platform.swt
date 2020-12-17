@@ -1763,7 +1763,11 @@ long gtk_size_allocate (long widget, long allocation) {
 	int width, height;
 	int[] widthA = new int [1];
 	int[] heightA = new int [1];
-	GTK.gtk_window_get_size(shellHandle, widthA, heightA);
+	if (GTK.GTK4) {
+		GTK.gtk_window_get_default_size(shellHandle, widthA, heightA);
+	} else {
+		GTK.gtk_window_get_size(shellHandle, widthA, heightA);
+	}
 	width = widthA[0];
 	height = heightA[0];
 
@@ -2256,7 +2260,13 @@ int setBounds (int x, int y, int width, int height, boolean move, boolean resize
 		* If the shell is created without a RESIZE style bit, and the
 		* minWidth/minHeight has been set, allow the resize.
 		*/
-		if ((style & SWT.RESIZE) != 0 || (minHeight != 0 || minWidth != 0)) GTK.gtk_window_resize (shellHandle, width, height);
+		if ((style & SWT.RESIZE) != 0 || (minHeight != 0 || minWidth != 0)) {
+			if (GTK.GTK4) {
+				GTK.gtk_window_set_default_size(shellHandle, width, height);
+			} else {
+				GTK.gtk_window_resize (shellHandle, width, height);
+			}
+		}
 		boolean changed = width != oldWidth || height != oldHeight;
 		if (changed) {
 			oldWidth = width;
@@ -2453,7 +2463,11 @@ void setInitialBounds () {
 			height = GDK.gdk_screen_height () * 5 / 8;
 		}
 		if ((style & SWT.RESIZE) != 0) {
-			GTK.gtk_window_resize (shellHandle, width, height);
+			if (GTK.GTK4) {
+				GTK.gtk_window_set_default_size(shellHandle, width, height);
+			} else {
+				GTK.gtk_window_resize (shellHandle, width, height);
+			}
 		}
 	}
 	resizeBounds (width, height, false);
