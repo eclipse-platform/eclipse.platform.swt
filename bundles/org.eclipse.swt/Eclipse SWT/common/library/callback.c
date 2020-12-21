@@ -1298,24 +1298,15 @@ jlong callback(int index, ...)
 	}
 #endif
 
-#ifdef JNI_VERSION_1_2
-	if (IS_JNI_1_2) {
-		(*JVM)->GetEnv(JVM, (void **)&env, JNI_VERSION_1_2);
-	}
+(*JVM)->GetEnv(JVM, (void **)&env, JNI_VERSION_1_4);
+
+if (env == NULL) {
+	(*JVM)->AttachCurrentThreadAsDaemon(JVM, (void **)&env, NULL);
+#ifdef DEBUG_CALL_PRINTS
+	fprintf(stderr, "SWT-JNI: AttachCurrentThreadAsDaemon\n");
 #endif
-	
-#ifdef JNI_VERSION_1_4
-	if (env == NULL) {
-		if (JNI_VERSION >= JNI_VERSION_1_4) {
-			(*JVM)->AttachCurrentThreadAsDaemon(JVM, (void **)&env, NULL);
-		}
-	}
-#endif
-	
-	if (env == NULL) {
-		(*JVM)->AttachCurrentThread(JVM, (void **)&env, NULL);
-		if (IS_JNI_1_2) detach = 1;
-	}
+	detach = 1;
+}
 	
 	/* If the current thread is not attached to the VM, it is not possible to call into the VM */
 	if (env == NULL) {
@@ -1391,6 +1382,9 @@ done:
 
 	if (detach) {
 		(*JVM)->DetachCurrentThread(JVM);
+#ifdef DEBUG_CALL_PRINTS
+		fprintf(stderr, "SWT-JNI: DetachCurrentThread\n");
+#endif
 		env = NULL;
 	}
 

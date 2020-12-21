@@ -116,7 +116,7 @@ esac
 case $SWT_OS.$SWT_ARCH in
 	"linux.x86_64")
 		if [ "${CC}" = "" ]; then
-			export CC=gcc
+			export CC="gcc -std=c99"
 		fi
 		if [ "${JAVA_HOME}" = "" ]; then
 			# Cross-platform method of finding JAVA_HOME.
