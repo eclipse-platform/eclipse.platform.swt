@@ -1244,12 +1244,13 @@ jlong callback(int index, ...)
 
 #ifdef DEBUG_CALL_PRINTS
 	{
+		int i;
 		va_list vaCopy;
 		va_copy(vaCopy, vl);
 
 		counter++;
 		fprintf(stderr, "SWT-JNI:%*scallback[%d](", counter, "", index);
-		for (int i=0; i<argCount; i++) {
+		for (i=0; i<argCount; i++) {
 			void* arg = va_arg(vaCopy, void*);
 			int isPrinted = 0;
 
