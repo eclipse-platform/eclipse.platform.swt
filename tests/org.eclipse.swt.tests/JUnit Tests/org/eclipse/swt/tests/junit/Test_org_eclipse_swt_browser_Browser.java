@@ -23,6 +23,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.junit.Assume.assumeFalse;
 import static org.junit.Assume.assumeTrue;
 
 import java.io.IOException;
@@ -85,7 +86,7 @@ public class Test_org_eclipse_swt_browser_Browser extends Test_org_eclipse_swt_w
 	public TestName name = new TestName();
 
 	Browser browser;
-	boolean isChromium = false;
+	boolean isChromium = false, isEdge = false;
 
 	static int[] webkitGtkVersionInts = new int[3];
 
@@ -111,10 +112,10 @@ public void setUp() {
 	shell.setLayout(new FillLayout());
 	browser = new Browser(shell, SWT.NONE);
 
+	isChromium = browser.getBrowserType().equals("chromium");
+	isEdge = browser.getBrowserType().equals("edge");
+
 	String shellTitle = name.getMethodName();
-	if (browser.getBrowserType().equals("chromium")) {
-	    isChromium = true;
-	}
 	if (SwtTestUtil.isGTK && browser.getBrowserType().equals("webkit")) {
 
 		// Note, webkitGtk version is only available once Browser is instantiated.
@@ -225,7 +226,7 @@ public void test_get_set_Cookies() {
 public void test_getChildren() {
 	// Win32's Browser is a special case. It has 1 child by default, the OleFrame.
 	// See Bug 499387 and Bug 511874
-	if (SwtTestUtil.isWindows && !isChromium) {
+	if (SwtTestUtil.isWindows && !isChromium && !isEdge) {
 		int childCount = composite.getChildren().length;
 		String msg = "Browser on Win32 is a special case, the first child is an OleFrame (ActiveX control). Actual child count is: " + childCount;
 		assertTrue(msg, childCount == 1);
@@ -318,7 +319,7 @@ public void test_LocationListener_changing() {
 		browser.setText("Hello world");
 	}
 	boolean passed = waitForPassCondition(changingFired::get);
-	assertTrue("LocationListener.changing() event was never fixed", passed);
+	assertTrue("LocationListener.changing() event was never fired", passed);
 }
 @Test
 public void test_LocationListener_changed() {
@@ -327,7 +328,7 @@ public void test_LocationListener_changed() {
 	shell.open();
 	browser.setText("Hello world");
 	boolean passed = waitForPassCondition(changedFired::get);
-	assertTrue("LocationListener.changing() event was never fixed", passed);
+	assertTrue("LocationListener.changed() event was never fired", passed);
 }
 @Test
 public void test_LocationListener_changingAndOnlyThenChanged() {
@@ -528,7 +529,7 @@ public void test_OpenWindowListener_openHasValidEventDetails() {
 	});
 
 	shell.open();
-	browser.setText("<html><script type='text/javascript'>window.open()</script>\n" +
+	browser.setText("<html><script type='text/javascript'>window.open('about:blank')</script>\n" +
 			"<body>This test uses javascript to open a new window.</body></html>");
 
 	boolean passed = waitForPassCondition(openFiredCorrectly::get);
@@ -560,7 +561,7 @@ public void test_OpenWindowListener_open_ChildPopup() {
 
 	browser.setText("<html>"
 			+ "<script type='text/javascript'>"
-			+ "var newWin = window.open();" // opens child window.
+			+ "var newWin = window.open('about:blank');" // opens child window.
 			+ "</script>\n" +
 			"<body>This test uses javascript to open a new window.</body></html>");
 
@@ -606,7 +607,7 @@ public void test_OpenWindow_Progress_Listener_ValidateEventOrder() {
 
 	browser.setText("<html>"
 			+ "<script type='text/javascript'>"
-			+ "var newWin = window.open();" // opens child window.
+			+ "var newWin = window.open('about:blank');" // opens child window.
 			+ "</script>\n" +
 			"<body>This test uses javascript to open a new window.</body></html>");
 
@@ -735,6 +736,8 @@ public void test_StatusTextListener_addAndRemove() {
  */
 @Test
 public void test_StatusTextListener_hoverMouseOverLink() {
+	assumeFalse(isEdge); // no API in Edge for this
+
 	AtomicBoolean statusChanged = new AtomicBoolean(false);
 	int size = 500;
 
@@ -1031,8 +1034,8 @@ public void test_VisibilityWindowListener_multiple_shells() {
 		shell.open();
 		browser.setText("<html>"
 				+ "<script type='text/javascript'>"
-				+ "window.open();" // opens child window.
-				+ "window.open();"
+				+ "window.open('about:blank');" // opens child window.
+				+ "window.open('about:blank');"
 				+ "</script>\n" +
 				"<body>This test uses javascript to open a new window.</body></html>");
 
@@ -1303,7 +1306,7 @@ public void test_OpenWindowListener_evaluateInCallback() {
 		event.required = true;
 	});
 	shell.open();
-	browser.evaluate("window.open()");
+	browser.evaluate("window.open('about:blank')");
 	boolean fired = waitForPassCondition(eventFired::get);
 	boolean evaluated = false;
 	try { evaluated = (Boolean) browser.evaluate("return SWTopenListener"); } catch (SWTException e) {}

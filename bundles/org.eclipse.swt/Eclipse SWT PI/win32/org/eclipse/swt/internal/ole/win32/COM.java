@@ -84,6 +84,8 @@ public class COM extends OS {
 	public static final GUID IIDIViewObject2 = IIDFromString("{00000127-0000-0000-C000-000000000046}"); //$NON-NLS-1$
 	public static final GUID CGID_DocHostCommandHandler = IIDFromString("{f38bc242-b950-11d1-8918-00c04fc2c836}"); //$NON-NLS-1$
 	public static final GUID CGID_Explorer = IIDFromString("{000214D0-0000-0000-C000-000000000046}"); //$NON-NLS-1$
+	public static final GUID IID_ICoreWebView2Environment2 = IIDFromString("{41F3632B-5EF4-404F-AD82-2D606C5A9A21}"); //$NON-NLS-1$
+	public static final GUID IID_ICoreWebView2_2 = IIDFromString("{9E8F0CF8-E670-4B5E-B2BC-73E061E3184C}"); //$NON-NLS-1$
 
 	// IA2 related GUIDS
 	public static final GUID IIDIAccessible2 = IIDFromString("{E89F726E-C4F4-4c19-BB19-B647D7FA8478}"); //$NON-NLS-1$
@@ -233,6 +235,10 @@ public class COM extends OS {
 	public static final short VT_UI4 = 19;
 	public static final short VT_UNKNOWN = 13;
 	public static final short VT_VARIANT = 12;
+
+	public static final int COREWEBVIEW2_MOVE_FOCUS_REASON_PROGRAMMATIC = 0;
+	public static final int COREWEBVIEW2_MOVE_FOCUS_REASON_NEXT = 1;
+	public static final int COREWEBVIEW2_MOVE_FOCUS_REASON_PREVIOUS = 2;
 
 	public static boolean FreeUnusedLibraries = true;
 
@@ -458,6 +464,8 @@ public static final native int SHCreateItemFromParsingName (char [] pszName, lon
  * @param ppstgOpen cast=(IStorage **)
  */
 public static final native int StgCreateDocfile(char[] pwcsName, int grfMode, int reserved, long[] ppstgOpen);
+/** @param pInit cast=(BYTE *),flags=critical */
+public static final native long SHCreateMemStream(byte[] pInit, int cbInit);
 /** @param pwcsName cast=(const WCHAR *),flags=no_out */
 public static final native int StgIsStorageFile(char[] pwcsName);
 /**
@@ -469,6 +477,8 @@ public static final native int StgIsStorageFile(char[] pwcsName);
 public static final native int StgOpenStorage(char[] pwcsName, long pstgPriority, int grfMode, long snbExclude, int reserved, long[] ppstgOpen);
 /** @param sz cast=(OLECHAR *),flags=no_out critical */
 public static final native long SysAllocString(char [] sz);
+/** @param sz cast=(OLECHAR *) */
+public static final native long SysAllocStringLen(char [] sz, int ui);
 /** @param bstr cast=(BSTR) */
 public static final native void SysFreeString(long bstr);
 /** @param bstr cast=(BSTR) */
@@ -488,6 +498,19 @@ public static final native void VariantInit(long pvarg);
 /** @param pStg cast=(IStorage *) */
 public static final native int WriteClassStg(long pStg, GUID rclsid);
 
+/**
+ * @method flags=dynamic
+ * @param browserExecutableFolder flags=no_out
+ * @param userDataFolder flags=no_out
+ */
+public static final native int CreateCoreWebView2EnvironmentWithOptions(char[] browserExecutableFolder, char[] userDataFolder, long environmentOptions, long environmentCreatedHandler);
+/** @method flags=no_gen */
+public static final native long CreateSwtWebView2Callback(ICoreWebView2SwtCallback handler);
+/** @method flags=no_gen */
+public static final native long CreateSwtWebView2Host(ICoreWebView2SwtHost host);
+/** @method flags=no_gen */
+public static final native long CreateSwtWebView2Options();
+
 public static final native int VtblCall(int fnNumber, long ppVtbl);
 public static final native int VtblCall(int fnNumber, long ppVtbl, int arg0);
 public static final native int VtblCall(int fnNumber, long ppVtbl, long arg0);
@@ -506,6 +529,7 @@ public static final native int VtblCall(int fnNumber, long ppVtbl, long arg0, lo
 public static final native int VtblCall(int fnNumber, long ppVtbl, char[] arg0);
 public static final native int VtblCall(int fnNumber, long ppVtbl, char[] arg0, int arg1);
 public static final native int VtblCall(int fnNumber, long ppVtbl, char[] arg0, long arg1);
+public static final native int VtblCall(int fnNumber, long ppVtbl, char[] arg0, long[] arg1);
 public static final native int VtblCall(int fnNumber, long ppVtbl, PROPERTYKEY arg0, long arg1);
 public static final native int VtblCall(int fnNumber, long ppVtbl, int arg0, int[] arg1);
 public static final native int VtblCall(int fnNumber, long ppVtbl, long arg0, int[] arg1);
@@ -518,6 +542,7 @@ public static final native int VtblCall(int fnNumber, long ppVtbl, POINT arg0, i
 public static final native int VtblCall(int fnNumber, long ppVtbl, char[] arg0, int arg1, int arg2, int arg3, long[] arg4);
 public static final native int VtblCall(int fnNumber, long ppVtbl, char[] arg0, long arg1, int arg2, int arg3, long[] arg4);
 public static final native int VtblCall(int fnNumber, long ppVtbl, char[] arg0, long arg1, int arg2, int arg3, int arg4, long[] arg5);
+public static final native int VtblCall(int fnNumber, long ppVtbl, char[] uri, char[] method, long l, char[] headers, long[] request);
 public static final native int VtblCall(int fnNumber, long ppVtbl, long arg0, long[] arg1);
 public static final native int VtblCall(int fnNumber, long ppVtbl, long arg0, int arg1, long[] arg2);
 public static final native int VtblCall(int fnNumber, long ppVtbl, long arg0, long arg1, long[] arg2);
@@ -551,10 +576,11 @@ public static final native int VtblCall(int fnNumber, long ppVtbl, RECT arg0);
 public static final native int VtblCall(int fnNumber, long ppVtbl, int arg0, long[] arg1, long[] arg2, int[] arg3, long[] arg4);
 public static final native int VtblCall(int fnNumber, long ppVtbl, int arg0, long[] arg1, int arg2, int[] arg3);
 public static final native int VtblCall(int fnNumber, long ppVtbl, int arg0, int arg1, int arg2, DISPPARAMS arg3, long arg4, EXCEPINFO arg5, long arg6);
-/**
- * @param arg0 flags=struct
- */
+
+/** @param arg0 flags=struct */
 public static final native int VtblCall(int fnNumber, long ppVtbl, RECT arg0, long arg1, long arg2);
+/** @param arg0 flags=struct */
+public static final native int VtblCall_put_Bounds(int fnNumber, long ppVtbl, RECT arg0);
 
 /** Accessibility constants */
 public static final int CHILDID_SELF = 0;

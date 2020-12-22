@@ -232,11 +232,7 @@ void destroyItem (TaskItem item) {
 
 String getIconsDir() {
 	if (iconsDir != null) return iconsDir;
-	String appData = System.getenv("LOCALAPPDATA");
-	String appName = Display.APP_NAME;
-	if (appData == null || appName == null) return null;
-	appName = appName.replaceAll("[\\\\/:*?\"<>|]", "_");
-	File dir = new File(appData + "\\" + appName + "\\ico_dir");
+	File dir = new File(display.appLocalDir + "\\ico_dir");
 	if (dir.exists()) {
 		// remove old icons
 		for (File file : dir.listFiles()) file.delete();

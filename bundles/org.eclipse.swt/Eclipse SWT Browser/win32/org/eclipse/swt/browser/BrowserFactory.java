@@ -20,10 +20,18 @@ class BrowserFactory {
 private Class<?> chromiumClass;
 
 WebBrowser createWebBrowser (int style) {
+	// This function can't throw, otherwise the Browser will be left in inconsistent state.
 	WebBrowser browser = null;
 	if ((style & SWT.CHROMIUM) != 0) {
 		browser = createChromium();
 		if (browser != null) return browser;
+	}
+	if ((style & SWT.EDGE) != 0) {
+		try {
+			return new Edge();
+		} catch (SWTError e) {
+			System.err.println(e);
+		}
 	}
 	return new IE ();
 }

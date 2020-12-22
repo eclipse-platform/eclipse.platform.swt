@@ -2529,6 +2529,20 @@ public class SWT {
 	public static final int CHROMIUM = 1 << 17;
 
 	/**
+	 * Style constant specifying that a Browser should use Edge (WebView2)
+	 * for rendering its content (value is 1&lt;&lt;16).
+	 * <p>NOTE: Edge integration is experimental, it isn't a drop-in replacement
+	 * for Internet Explorer.</p>
+	 * <p><b>Used By:</b></p>
+	 * <ul>
+	 * <li><code>Browser</code></li>
+	 * </ul>
+	 *
+	 * @since 3.116
+	 */
+	public static final int EDGE = 1 << 18;
+
+	/**
 	 * Style constant for balloon behavior (value is 1&lt;&lt;12).
 	 * <p><b>Used By:</b></p>
 	 * <ul>

@@ -2264,6 +2264,9 @@ public static final long MAKEWPARAM (int l, int h) { return MAKELPARAM (l, h); }
 public static final void POINTSTOPOINT (POINT pt, long pts) { pt.x = (short)LOWORD (pts); pt.y = (short)HIWORD (pts); }
 public static final int PRIMARYLANGID (int lgid) { return lgid & 0x3ff; }
 public static final int TOUCH_COORD_TO_PIXEL (int touchCoord) { return touchCoord / 100; }
+public static int HRESULT_FROM_WIN32(int x) {
+	return x <= 0 ? x : ((x & 0x0000FFFF) | 0x80070000);
+}
 
 /** Natives */
 

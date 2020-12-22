@@ -120,6 +120,7 @@ public class Display extends Device {
 
 	static String APP_NAME = "SWT"; //$NON-NLS-1$
 	static String APP_VERSION = ""; //$NON-NLS-1$
+	String appLocalDir;
 
 	/* Windows and Events */
 	Event [] eventQueue;
@@ -305,6 +306,7 @@ public class Display extends Device {
 	static final String USE_OWNDC_KEY = "org.eclipse.swt.internal.win32.useOwnDC"; //$NON-NLS-1$
 	static final String ACCEL_KEY_HIT = "org.eclipse.swt.internal.win32.accelKeyHit"; //$NON-NLS-1$
 	static final String EXTERNAL_EVENT_LOOP_KEY = "org.eclipse.swt.internal.win32.externalEventLoop"; //$NON-NLS-1$
+	static final String APPLOCAL_DIR_KEY = "org.eclipse.swt.internal.win32.appLocalDir"; //$NON-NLS-1$
 	Thread thread;
 
 	/* Display Shutdown */
@@ -1754,6 +1756,9 @@ public Object getData (String key) {
 	if (key.equals (ACCEL_KEY_HIT)) {
 		return accelKeyHit;
 	}
+	if (key.equals (APPLOCAL_DIR_KEY)) {
+		return appLocalDir;
+	}
 	if (keys == null) return null;
 	for (int i=0; i<keys.length; i++) {
 		if (keys [i].equals (key)) return values [i];
@@ -2794,6 +2799,9 @@ protected void init () {
 			pList.Release ();
 		}
 	}
+
+	/* Application-specific data directory. */
+	appLocalDir = System.getenv("LOCALAPPDATA") + "\\" + Display.APP_NAME.replaceAll("[\\\\/:*?\"<>|]", "_");
 
 	/* Initialize buffered painting */
 	OS.BufferedPaintInit ();

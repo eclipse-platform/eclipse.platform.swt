@@ -21,6 +21,7 @@
 #define AccessibleObjectFromWindow_LIB "oleacc.dll"
 #define CreateStdAccessibleObject_LIB "oleacc.dll"
 #define LresultFromObject_LIB "oleacc.dll"
+#define CreateCoreWebView2EnvironmentWithOptions_LIB "WebView2Loader.dll"
 
 /* Custom functions */
 #ifdef __cplusplus
