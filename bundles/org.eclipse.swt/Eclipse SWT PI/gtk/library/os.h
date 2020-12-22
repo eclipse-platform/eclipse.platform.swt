@@ -646,7 +646,11 @@
 // No GtkIconPaintable
 #define NO_gtk_1icon_1paintable_1get_1file
 
+// No GtkText
 #define NO_gtk_1text_1get_1buffer
+// No GtkPopoverMenuFlags
+#define NO_gtk_1popover_1menu_1new_1from_1model_1full
+
 
 #endif
 

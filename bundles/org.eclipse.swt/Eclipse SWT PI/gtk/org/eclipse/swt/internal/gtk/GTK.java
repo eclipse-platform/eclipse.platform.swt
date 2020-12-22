@@ -89,6 +89,7 @@ public class GTK extends OS {
 	public static final int GTK_PHASE_TARGET = 3;
 	public static final int GTK_PROGRESS_LEFT_TO_RIGHT = 0x0;
 	public static final int GTK_PROGRESS_BOTTOM_TO_TOP = 0x2;
+	public static final int GTK_POPOVER_MENU_NESTED = 1;
 	public static final int GTK_RESPONSE_CANCEL = 0xfffffffa;
 	public static final int GTK_RESPONSE_OK = 0xfffffffb;
 	public static final int GTK_RESPONSE_ACCEPT = -3;
@@ -1876,6 +1877,27 @@ public class GTK extends OS {
 	/* GtkPopover */
 	/** @param popover cast=(GtkPopover *) */
 	public static final native void gtk_popover_popdown(long popover);
+	/** @param popover cast=(GtkPopover *) */
+	public static final native void gtk_popover_popup(long popover);
+	/**
+	 * @param popover cast=(GtkPopover *)
+	 * @param position cast=(GtkPositionType)
+	 */
+	public static final native void gtk_popover_set_position(long popover, int position);
+
+	/**
+	 * @param popover cast=(GtkPopover *)
+	 * @param rect cast=(const GdkRectangle *)
+	 */
+	public static final native void gtk_popover_set_pointing_to(long popover, GdkRectangle rect);
+
+	/* GtkPopover [GTK4 only] */
+	/**
+	 * @method flags=dynamic
+	 * @param popover cast=(GtkPopover *)
+	 */
+	public static final native void gtk_popover_set_has_arrow(long popover, boolean has_arrow);
+
 
 	/* GtkPopoverMenuBar [GTK4 only] */
 	/**
@@ -1887,9 +1909,15 @@ public class GTK extends OS {
 	/**
 	 * @method flags=dynamic
 	 * @param model cast=(GMenuModel *)
+	 * @param flags cast=(GtkPopoverMenuFlags)
 	 */
-	public static final native long gtk_popover_menu_new_from_model(long model);
-
+	public static final native long gtk_popover_menu_new_from_model_full(long model, int flags);
+	/**
+	 * @method flags=dynamic
+	 * @param popover cast=(GtkPopoverMenu *)
+	 * @param model cast=(GMenuModel *)
+	 */
+	public static final native void gtk_popover_menu_set_menu_model(long popover, long model);
 
 	/* GtkMenuButton */
 	public static final native long gtk_menu_button_new();

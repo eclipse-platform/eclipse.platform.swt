@@ -8864,23 +8864,41 @@ JNIEXPORT jlong JNICALL GTK_NATIVE(gtk_1popover_1menu_1bar_1new_1from_1model)
 }
 #endif
 
-#ifndef NO_gtk_1popover_1menu_1new_1from_1model
-JNIEXPORT jlong JNICALL GTK_NATIVE(gtk_1popover_1menu_1new_1from_1model)
-	(JNIEnv *env, jclass that, jlong arg0)
+#ifndef NO_gtk_1popover_1menu_1new_1from_1model_1full
+JNIEXPORT jlong JNICALL GTK_NATIVE(gtk_1popover_1menu_1new_1from_1model_1full)
+	(JNIEnv *env, jclass that, jlong arg0, jint arg1)
 {
 	jlong rc = 0;
-	GTK_NATIVE_ENTER(env, that, gtk_1popover_1menu_1new_1from_1model_FUNC);
+	GTK_NATIVE_ENTER(env, that, gtk_1popover_1menu_1new_1from_1model_1full_FUNC);
 /*
-	rc = (jlong)gtk_popover_menu_new_from_model((GMenuModel *)arg0);
+	rc = (jlong)gtk_popover_menu_new_from_model_full((GMenuModel *)arg0, (GtkPopoverMenuFlags)arg1);
 */
 	{
-		GTK_LOAD_FUNCTION(fp, gtk_popover_menu_new_from_model)
+		GTK_LOAD_FUNCTION(fp, gtk_popover_menu_new_from_model_full)
 		if (fp) {
-			rc = (jlong)((jlong (CALLING_CONVENTION*)(GMenuModel *))fp)((GMenuModel *)arg0);
+			rc = (jlong)((jlong (CALLING_CONVENTION*)(GMenuModel *, GtkPopoverMenuFlags))fp)((GMenuModel *)arg0, (GtkPopoverMenuFlags)arg1);
 		}
 	}
-	GTK_NATIVE_EXIT(env, that, gtk_1popover_1menu_1new_1from_1model_FUNC);
+	GTK_NATIVE_EXIT(env, that, gtk_1popover_1menu_1new_1from_1model_1full_FUNC);
 	return rc;
+}
+#endif
+
+#ifndef NO_gtk_1popover_1menu_1set_1menu_1model
+JNIEXPORT void JNICALL GTK_NATIVE(gtk_1popover_1menu_1set_1menu_1model)
+	(JNIEnv *env, jclass that, jlong arg0, jlong arg1)
+{
+	GTK_NATIVE_ENTER(env, that, gtk_1popover_1menu_1set_1menu_1model_FUNC);
+/*
+	gtk_popover_menu_set_menu_model((GtkPopoverMenu *)arg0, (GMenuModel *)arg1);
+*/
+	{
+		GTK_LOAD_FUNCTION(fp, gtk_popover_menu_set_menu_model)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(GtkPopoverMenu *, GMenuModel *))fp)((GtkPopoverMenu *)arg0, (GMenuModel *)arg1);
+		}
+	}
+	GTK_NATIVE_EXIT(env, that, gtk_1popover_1menu_1set_1menu_1model_FUNC);
 }
 #endif
 
@@ -8891,6 +8909,58 @@ JNIEXPORT void JNICALL GTK_NATIVE(gtk_1popover_1popdown)
 	GTK_NATIVE_ENTER(env, that, gtk_1popover_1popdown_FUNC);
 	gtk_popover_popdown((GtkPopover *)arg0);
 	GTK_NATIVE_EXIT(env, that, gtk_1popover_1popdown_FUNC);
+}
+#endif
+
+#ifndef NO_gtk_1popover_1popup
+JNIEXPORT void JNICALL GTK_NATIVE(gtk_1popover_1popup)
+	(JNIEnv *env, jclass that, jlong arg0)
+{
+	GTK_NATIVE_ENTER(env, that, gtk_1popover_1popup_FUNC);
+	gtk_popover_popup((GtkPopover *)arg0);
+	GTK_NATIVE_EXIT(env, that, gtk_1popover_1popup_FUNC);
+}
+#endif
+
+#ifndef NO_gtk_1popover_1set_1has_1arrow
+JNIEXPORT void JNICALL GTK_NATIVE(gtk_1popover_1set_1has_1arrow)
+	(JNIEnv *env, jclass that, jlong arg0, jboolean arg1)
+{
+	GTK_NATIVE_ENTER(env, that, gtk_1popover_1set_1has_1arrow_FUNC);
+/*
+	gtk_popover_set_has_arrow((GtkPopover *)arg0, arg1);
+*/
+	{
+		GTK_LOAD_FUNCTION(fp, gtk_popover_set_has_arrow)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(GtkPopover *, jboolean))fp)((GtkPopover *)arg0, arg1);
+		}
+	}
+	GTK_NATIVE_EXIT(env, that, gtk_1popover_1set_1has_1arrow_FUNC);
+}
+#endif
+
+#ifndef NO_gtk_1popover_1set_1pointing_1to
+JNIEXPORT void JNICALL GTK_NATIVE(gtk_1popover_1set_1pointing_1to)
+	(JNIEnv *env, jclass that, jlong arg0, jobject arg1)
+{
+	GdkRectangle _arg1, *lparg1=NULL;
+	GTK_NATIVE_ENTER(env, that, gtk_1popover_1set_1pointing_1to_FUNC);
+	if (arg1) if ((lparg1 = getGdkRectangleFields(env, arg1, &_arg1)) == NULL) goto fail;
+	gtk_popover_set_pointing_to((GtkPopover *)arg0, (const GdkRectangle *)lparg1);
+fail:
+	if (arg1 && lparg1) setGdkRectangleFields(env, arg1, lparg1);
+	GTK_NATIVE_EXIT(env, that, gtk_1popover_1set_1pointing_1to_FUNC);
+}
+#endif
+
+#ifndef NO_gtk_1popover_1set_1position
+JNIEXPORT void JNICALL GTK_NATIVE(gtk_1popover_1set_1position)
+	(JNIEnv *env, jclass that, jlong arg0, jint arg1)
+{
+	GTK_NATIVE_ENTER(env, that, gtk_1popover_1set_1position_FUNC);
+	gtk_popover_set_position((GtkPopover *)arg0, (GtkPositionType)arg1);
+	GTK_NATIVE_EXIT(env, that, gtk_1popover_1set_1position_FUNC);
 }
 #endif
 
@@ -15757,6 +15827,18 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(g_1action_1get_1enabled)
 }
 #endif
 
+#ifndef NO_g_1action_1get_1state
+JNIEXPORT jlong JNICALL OS_NATIVE(g_1action_1get_1state)
+	(JNIEnv *env, jclass that, jlong arg0)
+{
+	jlong rc = 0;
+	OS_NATIVE_ENTER(env, that, g_1action_1get_1state_FUNC);
+	rc = (jlong)g_action_get_state((GAction *)arg0);
+	OS_NATIVE_EXIT(env, that, g_1action_1get_1state_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_g_1action_1map_1add_1action
 JNIEXPORT void JNICALL OS_NATIVE(g_1action_1map_1add_1action)
 	(JNIEnv *env, jclass that, jlong arg0, jlong arg1)
@@ -17601,6 +17683,22 @@ fail:
 }
 #endif
 
+#ifndef NO_g_1simple_1action_1new_1stateful
+JNIEXPORT jlong JNICALL OS_NATIVE(g_1simple_1action_1new_1stateful)
+	(JNIEnv *env, jclass that, jbyteArray arg0, jlong arg1, jlong arg2)
+{
+	jbyte *lparg0=NULL;
+	jlong rc = 0;
+	OS_NATIVE_ENTER(env, that, g_1simple_1action_1new_1stateful_FUNC);
+	if (arg0) if ((lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL)) == NULL) goto fail;
+	rc = (jlong)g_simple_action_new_stateful((const gchar *)lparg0, (const GVariantType *)arg1, (GVariant *)arg2);
+fail:
+	if (arg0 && lparg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
+	OS_NATIVE_EXIT(env, that, g_1simple_1action_1new_1stateful_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_g_1simple_1action_1set_1enabled
 JNIEXPORT void JNICALL OS_NATIVE(g_1simple_1action_1set_1enabled)
 	(JNIEnv *env, jclass that, jlong arg0, jboolean arg1)
@@ -17608,6 +17706,16 @@ JNIEXPORT void JNICALL OS_NATIVE(g_1simple_1action_1set_1enabled)
 	OS_NATIVE_ENTER(env, that, g_1simple_1action_1set_1enabled_FUNC);
 	g_simple_action_set_enabled((GSimpleAction *)arg0, arg1);
 	OS_NATIVE_EXIT(env, that, g_1simple_1action_1set_1enabled_FUNC);
+}
+#endif
+
+#ifndef NO_g_1simple_1action_1set_1state
+JNIEXPORT void JNICALL OS_NATIVE(g_1simple_1action_1set_1state)
+	(JNIEnv *env, jclass that, jlong arg0, jlong arg1)
+{
+	OS_NATIVE_ENTER(env, that, g_1simple_1action_1set_1state_FUNC);
+	g_simple_action_set_state((GSimpleAction *)arg0, (GVariant *)arg1);
+	OS_NATIVE_EXIT(env, that, g_1simple_1action_1set_1state_FUNC);
 }
 #endif
 

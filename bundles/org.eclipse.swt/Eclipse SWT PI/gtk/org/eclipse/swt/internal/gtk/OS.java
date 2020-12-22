@@ -634,7 +634,7 @@ public class OS extends C {
 		String menuLocationProperty = "SWT_MENU_LOCATION_DEBUGGING";
 		String menuLocationCheck = getEnvironmentalVariable(menuLocationProperty);
 		boolean menuLocationDebuggingEnabled = false;
-		if (menuLocationCheck != null && menuLocationCheck.equals("1")) {
+		if (menuLocationCheck != null && menuLocationCheck.equals("1") && !GTK.GTK4) {
 			menuLocationDebuggingEnabled = true;
 		}
 		SWT_MENU_LOCATION_DEBUGGING = menuLocationDebuggingEnabled;
@@ -2352,6 +2352,12 @@ public static final native long g_simple_action_group_new();
  */
 public static final native long g_simple_action_new(byte[] name, long parameter_type);
 /**
+ * @param name cast=(const gchar *)
+ * @param parameter_type cast=(const GVariantType *)
+ * @param initial_state cast=(GVariant *)
+ */
+public static final native long g_simple_action_new_stateful(byte[] name, long parameter_type, long initial_state);
+/**
  * @param action_map cast=(GActionMap *)
  * @param action cast=(GAction *)
  */
@@ -2360,4 +2366,11 @@ public static final native void g_action_map_add_action(long action_map, long ac
 public static final native boolean g_action_get_enabled(long action);
 /** @param simple_action cast=(GSimpleAction *) */
 public static final native void g_simple_action_set_enabled(long simple_action, boolean enabled);
+/** @param action cast=(GAction *) */
+public static final native long g_action_get_state(long action);
+/**
+ * @param simple_action cast=(GSimpleAction *)
+ * @param value cast=(GVariant *)
+ */
+public static final native void g_simple_action_set_state(long simple_action, long value);
 }

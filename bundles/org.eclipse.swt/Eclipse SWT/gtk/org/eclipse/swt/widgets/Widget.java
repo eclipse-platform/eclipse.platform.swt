@@ -492,7 +492,7 @@ void destroyWidget () {
 	releaseHandle ();
 	if (topHandle != 0 && (state & HANDLE) != 0) {
 		if (GTK.GTK4) {
-			OS.g_object_unref(topHandle);
+			GTK.gtk_widget_unparent(topHandle);
 		} else {
 			GTK.gtk_widget_destroy(topHandle);
 		}

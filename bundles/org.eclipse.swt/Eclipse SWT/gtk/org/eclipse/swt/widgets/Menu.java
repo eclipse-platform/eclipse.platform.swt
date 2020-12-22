@@ -51,8 +51,9 @@ public class Menu extends Widget {
 	ImageList imageList;
 	int poppedUpCount;
 
-	/** GTK4 only field */
+	/** GTK4 only fields */
 	long modelHandle, actionGroup, shortcutController, sectionModelHandle;
+	ArrayList<MenuItem> items;
 
 /**
  * Constructs a new instance of this class given its parent,
@@ -287,59 +288,55 @@ void _setVisible (boolean visible) {
 			} else {
 				long eventPtr = 0;
 				if (ableToSetLocation()) {
-					// Create the GdkEvent manually as we need to control
-					// certain fields like the event window
-					eventPtr = GDK.gdk_event_new(GTK.GTK4 ? GDK.GDK4_BUTTON_PRESS : GDK.GDK_BUTTON_PRESS);
-					GdkEventButton event = new GdkEventButton ();
-					event.type = GTK.GTK4 ? GDK.GDK4_BUTTON_PRESS : GDK.GDK_BUTTON_PRESS;
-					event.device = GDK.gdk_get_pointer(GDK.gdk_display_get_default());
-					event.time = display.getLastEventTime();
+					if (GTK.GTK4) {
+						GdkRectangle popoverPosition = new GdkRectangle();
+						popoverPosition.x = x;
+						popoverPosition.y = y;
+						popoverPosition.width = popoverPosition.height = 1;
+						GTK.gtk_popover_set_pointing_to(handle, popoverPosition);
 
-					// Create the rectangle relative to the parent (in this case, global) GdkWindow
-					GdkRectangle rect = new GdkRectangle();
-					if (OS.isX11()) {
-						// Get and (add reference to) the global GdkWindow/GdkSurface
-						if (GTK.GTK4) {
-							event.window = GDK.gdk_x11_display_get_default_group(GDK.gdk_display_get_default());
-						} else {
-							event.window = GDK.gdk_display_get_default_group(GDK.gdk_display_get_default());
-						}
-
-						OS.g_object_ref(event.window);
-						OS.memmove (eventPtr, event, GdkEventButton.sizeof);
-						/*
-						 * Get the origin of the global GdkWindow/GdkSurface to calculate the size of any offsets
-						 * such as client side decorations, or the system tray.
-						 */
-						int [] globalWindowOriginY = new int [1];
-						int [] globalWindowOriginX = new int [1];
-						if (GTK.GTK4) {
-							GDK.gdk_surface_get_origin (event.window, globalWindowOriginX, globalWindowOriginY);
-						} else {
-							GDK.gdk_window_get_origin (event.window, globalWindowOriginX, globalWindowOriginY);
-						}
-						rect.x = this.x - globalWindowOriginX[0];
-						rect.y = this.y - globalWindowOriginY[0];
+						GTK.gtk_popover_popup(handle);
 					} else {
-						// On Wayland, get the relative GdkWindow from the parent shell.
-						long gdkResource;
-						if (GTK.GTK4) {
-							long surface = GTK.gtk_native_get_surface(GTK.gtk_widget_get_native (getShell().topHandle()));
-							gdkResource = GTK.gtk_native_get_surface (surface);
+						// Create the GdkEvent manually as we need to control
+						// certain fields like the event window
+						eventPtr = GDK.gdk_event_new(GDK.GDK_BUTTON_PRESS);
+						GdkEventButton event = new GdkEventButton();
+						event.type = GDK.GDK_BUTTON_PRESS;
+						event.device = GDK.gdk_get_pointer(GDK.gdk_display_get_default());
+						event.time = display.getLastEventTime();
+
+						// Create the rectangle relative to the parent (in this case, global) GdkWindow
+						GdkRectangle rect = new GdkRectangle();
+						if (OS.isX11()) {
+							// Get and (add reference to) the global GdkWindow/GdkSurface
+							event.window = GDK.gdk_display_get_default_group(GDK.gdk_display_get_default());
+							OS.g_object_ref(event.window);
+							OS.memmove (eventPtr, event, GdkEventButton.sizeof);
+
+							/*
+							 * Get the origin of the global GdkWindow/GdkSurface to calculate the size of any offsets
+							 * such as client side decorations, or the system tray.
+							 */
+							int [] globalWindowOriginY = new int [1];
+							int [] globalWindowOriginX = new int [1];
+							GDK.gdk_window_get_origin (event.window, globalWindowOriginX, globalWindowOriginY);
+							rect.x = this.x - globalWindowOriginX[0];
+							rect.y = this.y - globalWindowOriginY[0];
 						} else {
-							gdkResource = GTK.gtk_widget_get_window (getShell().topHandle());
+							// On Wayland, get the relative GdkWindow from the parent shell.
+							long gdkResource = GTK.gtk_widget_get_window (getShell().topHandle());
+							event.window = OS.g_object_ref(gdkResource);
+							OS.memmove (eventPtr, event, GdkEventButton.sizeof);
+							// Bug in GTK?: testing with SWT_MENU_LOCATION_DEBUGGING=1 shows final_rect.x and
+							// final_rect.y popup menu position is off by 1 compared to this.x and this.y
+							rect.x = this.x + 1;
+							rect.y = this.y + 1;
 						}
-						event.window = OS.g_object_ref(gdkResource);
-						OS.memmove (eventPtr, event, GdkEventButton.sizeof);
-						// Bug in GTK?: testing with SWT_MENU_LOCATION_DEBUGGING=1 shows final_rect.x and
-						// final_rect.y popup menu position is off by 1 compared to this.x and this.y
-						rect.x = this.x + 1;
-						rect.y = this.y + 1;
+						// Popup the menu and pin it at the top left corner of the GdkRectangle relative to the GdkWindow
+						GTK.gtk_menu_popup_at_rect(handle, event.window, rect, GDK.GDK_GRAVITY_NORTH_WEST,
+								GDK.GDK_GRAVITY_NORTH_WEST, eventPtr);
+						gdk_event_free (eventPtr);
 					}
-					// Popup the menu and pin it at the top left corner of the GdkRectangle relative to the GdkWindow
-					GTK.gtk_menu_popup_at_rect(handle, event.window, rect, GDK.GDK_GRAVITY_NORTH_WEST,
-							GDK.GDK_GRAVITY_NORTH_WEST, eventPtr);
-					gdk_event_free (eventPtr);
 				} else {
 					/*
 					 *  GTK Feature: gtk_menu_popup is deprecated as of GTK3.22 and the new method gtk_menu_popup_at_pointer
@@ -452,6 +449,8 @@ void createHandle (int index) {
 		modelHandle = OS.g_menu_new();
 		if (modelHandle == 0) error(SWT.ERROR_NO_HANDLES);
 
+		items = new ArrayList<>();
+
 		switch (style & bits) {
 			case SWT.BAR:
 				handle = GTK.gtk_popover_menu_bar_new_from_model(modelHandle);
@@ -464,7 +463,11 @@ void createHandle (int index) {
 				break;
 			case SWT.POP_UP:
 			default:
-				handle = GTK.gtk_popover_menu_new_from_model(modelHandle);
+				handle = GTK.gtk_popover_menu_new_from_model_full(modelHandle, GTK.GTK_POPOVER_MENU_NESTED);
+				GTK.gtk_widget_set_parent(handle, parent.handle);
+				GTK.gtk_popover_set_position(handle, GTK.GTK_POS_BOTTOM);
+				GTK.gtk_popover_set_has_arrow(handle, false);
+				GTK.gtk_widget_set_halign(handle, GTK.GTK_ALIGN_START);
 				if (handle == 0) error(SWT.ERROR_NO_HANDLES);
 		}
 
@@ -644,16 +647,6 @@ public MenuItem [] getItems () {
 	checkWidget();
 
 	if (GTK.GTK4) {
-		long itemHandle = GTK.gtk_widget_get_first_child(handle);
-		if (itemHandle == 0) return new MenuItem[0];
-
-		ArrayList<MenuItem> items = new ArrayList<>();
-		while (itemHandle != 0) {
-			MenuItem item = (MenuItem) display.getWidget(itemHandle);
-			if (item != null) items.add(item);
-			itemHandle = GTK.gtk_widget_get_next_sibling(itemHandle);
-		}
-
 		return items.toArray(new MenuItem[items.size()]);
 	} else {
 		long list = GTK.gtk_container_get_children (handle);
@@ -889,8 +882,8 @@ long gtk_menu_popped_up (long widget, long flipped_rect, long final_rect, long f
 
 
 @Override
-void hookEvents () {
-	super.hookEvents ();
+void hookEvents() {
+	super.hookEvents();
 
 	if (GTK.GTK4) {
 		shortcutController = GTK.gtk_shortcut_controller_new();
@@ -898,15 +891,16 @@ void hookEvents () {
 		GTK.gtk_shortcut_controller_set_scope(shortcutController, GTK.GTK_SHORTCUT_SCOPE_GLOBAL);
 		GTK.gtk_widget_add_controller(parent.handle, shortcutController);
 	} else {
-		OS.g_signal_connect_closure_by_id (handle, display.signalIds [SHOW_HELP], 0, display.getClosure (SHOW_HELP), false);
+		OS.g_signal_connect_closure_by_id(handle, display.signalIds[SHOW_HELP], 0, display.getClosure(SHOW_HELP), false);
+
+		// Hook into the "popped-up" signal on GTK3.22+ if SWT_MENU_LOCATION_DEBUGGING has been set
+		if (GTK.GTK_VERSION >= OS.VERSION(3, 22, 0) && OS.SWT_MENU_LOCATION_DEBUGGING) {
+			OS.g_signal_connect_closure_by_id(handle, display.signalIds[POPPED_UP], 0, display.getClosure(POPPED_UP), false);
+		}
 	}
 
-	OS.g_signal_connect_closure_by_id (handle, display.signalIds [SHOW], 0, display.getClosure (SHOW), false);
-	OS.g_signal_connect_closure_by_id (handle, display.signalIds [HIDE], 0, display.getClosure (HIDE), false);
-	// Hook into the "popped-up" signal on GTK3.22+ if SWT_MENU_LOCATION_DEBUGGING has been set
-	if (GTK.GTK_VERSION >= OS.VERSION(3, 22, 0) && OS.SWT_MENU_LOCATION_DEBUGGING) {
-		OS.g_signal_connect_closure_by_id (handle, display.signalIds [POPPED_UP], 0, display.getClosure (POPPED_UP), false);
-	}
+	OS.g_signal_connect_closure_by_id(handle, display.signalIds[SHOW], 0, display.getClosure(SHOW), false);
+	OS.g_signal_connect_closure_by_id(handle, display.signalIds[HIDE], 0, display.getClosure(HIDE), false);
 }
 
 /**

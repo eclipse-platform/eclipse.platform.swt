@@ -272,12 +272,28 @@ void createHandle (int index) {
 				handle = OS.g_menu_item_new_section(null, modelHandle);
 				parent.sectionModelHandle = modelHandle;
 				break;
+			case SWT.RADIO:
+				Menu popoverMenuWidget = parent;
+				while (popoverMenuWidget.actionGroup == 0) {
+					popoverMenuWidget = popoverMenuWidget.cascade.parent;
+				}
+
+				long stringVariantType = OS.g_variant_type_new(OS.G_VARIANT_TYPE_STRING);
+				actionHandle = OS.g_simple_action_new_stateful(
+						Converter.javaStringToCString(String.valueOf(this.hashCode())),
+						stringVariantType,
+						OS.g_variant_new_string(Converter.javaStringToCString("untoggled")));
+				OS.g_action_map_add_action(popoverMenuWidget.actionGroup, actionHandle);
+				actionName = String.valueOf(popoverMenuWidget.hashCode()) + "." + String.valueOf(this.hashCode()) + "::toggled";
+				handle = OS.g_menu_item_new(null, Converter.javaStringToCString(actionName));
+				OS.g_variant_type_free(stringVariantType);
+				break;
 			case SWT.CASCADE:
 				handle = OS.g_menu_item_new_submenu(null, modelHandle);
 				break;
 			case SWT.PUSH:
 			default:
-				Menu popoverMenuWidget = parent;
+				popoverMenuWidget = parent;
 				while (popoverMenuWidget.actionGroup == 0) {
 					popoverMenuWidget = popoverMenuWidget.cascade.parent;
 				}
@@ -296,6 +312,7 @@ void createHandle (int index) {
 		}
 
 		parentMenuPosition = index;
+		parent.items.add(this);
 	} else {
 		switch (style & bits) {
 			case SWT.SEPARATOR:
@@ -571,7 +588,14 @@ public Menu getParent () {
 public boolean getSelection () {
 	checkWidget();
 	if ((style & (SWT.CHECK | SWT.RADIO)) == 0) return false;
-	return GTK.gtk_check_menu_item_get_active(handle);
+
+	if (GTK.GTK4) {
+		long gVariantState = OS.g_action_get_state(actionHandle);
+		String stateString = Converter.cCharPtrToJavaString(OS.g_variant_get_string(gVariantState, null), false);
+		return stateString.equals("toggled");
+	} else {
+		return GTK.gtk_check_menu_item_get_active(handle);
+	}
 }
 
 /**
@@ -595,19 +619,17 @@ public String getToolTipText () {
 long gtk_activate (long widget) {
 	if ((style & SWT.CASCADE) != 0 && menu != null) return 0;
 
-	if (!GTK.GTK4) {
-		/*
-		* Bug in GTK.  When an ancestor menu is disabled and
-		* the user types an accelerator key, GTK delivers the
-		* the activate signal even though the menu item cannot
-		* be invoked using the mouse.  The fix is to ignore
-		* activate signals when an ancestor menu is disabled.
-		*/
-		if (!isEnabled ()) return 0;
-		if ((style & SWT.RADIO) != 0) {
-			if ((parent.getStyle () & SWT.NO_RADIO_GROUP) == 0) {
-				selectRadio ();
-			}
+	/*
+	* Bug in GTK.  When an ancestor menu is disabled and
+	* the user types an accelerator key, GTK delivers the
+	* the activate signal even though the menu item cannot
+	* be invoked using the mouse.  The fix is to ignore
+	* activate signals when an ancestor menu is disabled.
+	*/
+	if (!isEnabled ()) return 0;
+	if ((style & SWT.RADIO) != 0) {
+		if ((parent.getStyle () & SWT.NO_RADIO_GROUP) == 0) {
+			selectRadio ();
 		}
 	}
 
@@ -1108,10 +1130,15 @@ boolean setRadioSelection (boolean value) {
 public void setSelection (boolean selected) {
 	checkWidget();
 	if ((style & (SWT.CHECK | SWT.RADIO)) == 0) return;
-	OS.g_signal_handlers_block_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, ACTIVATE);
-	GTK.gtk_check_menu_item_set_active (handle, selected);
-	if ((style & SWT.RADIO) != 0) GTK.gtk_check_menu_item_set_active (groupHandle, !selected);
-	OS.g_signal_handlers_unblock_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, ACTIVATE);
+
+	if (GTK.GTK4) {
+		OS.g_simple_action_set_state(actionHandle, OS.g_variant_new_string(Converter.javaStringToCString(selected ? "toggled" : "untoggled")));
+	} else {
+		OS.g_signal_handlers_block_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, ACTIVATE);
+		GTK.gtk_check_menu_item_set_active (handle, selected);
+		if ((style & SWT.RADIO) != 0) GTK.gtk_check_menu_item_set_active (groupHandle, !selected);
+		OS.g_signal_handlers_unblock_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, ACTIVATE);
+	}
 }
 
 /**

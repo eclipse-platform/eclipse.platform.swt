@@ -470,6 +470,8 @@ private void hookMouseSignals(long eventHandle) {
 
 	if (GTK.GTK4) {
 		long clickGesture = GTK.gtk_gesture_click_new();
+		GTK.gtk_event_controller_set_propagation_phase(clickGesture, GTK.GTK_PHASE_TARGET);
+		GTK.gtk_gesture_single_set_button(clickGesture, 0);
 		GTK.gtk_widget_add_controller(eventHandle, clickGesture);
 		OS.g_signal_connect(clickGesture, OS.pressed, display.gesturePressReleaseProc, GESTURE_PRESSED);
 		OS.g_signal_connect(clickGesture, OS.released, display.gesturePressReleaseProc, GESTURE_RELEASED);
@@ -3408,15 +3410,19 @@ long gtk_gesture_press_event (long gesture, int n_press, double x, double y, lon
 	mouseDown = true;
 	dragBegun = false;
 
-	double [] eventX = new double [1];
-	double [] eventY = new double [1];
-	GDK.gdk_event_get_position(event, eventX, eventY);
+	if ((state & MENU) == 0) {
+		int eventButton = GDK.gdk_button_event_get_button(event);
+
+		if (eventButton == 3) {
+			showMenu ((int)x, (int)y);
+		}
+	}
 
 	int eventButton = GDK.gdk_button_event_get_button(event);
 	int eventTime = GDK.gdk_event_get_time(event);
 	int eventState = GDK.gdk_event_get_modifier_state(event);
 
-	boolean mouseEventSent = sendMouseEvent(SWT.MouseDown, eventButton, n_press, 0, false, eventTime, eventX[0], eventY[0], true, eventState);
+	boolean mouseEventSent = sendMouseEvent(SWT.MouseDown, eventButton, n_press, 0, false, eventTime, x, y, true, eventState);
 
 	return mouseEventSent ? 1 : 0;
 }
@@ -6226,12 +6232,30 @@ boolean showMenu (int x, int y, int detail) {
 	if (isDisposed ()) return false;
 	if (event.doit) {
 		if (menu != null && !menu.isDisposed ()) {
-			Rectangle rect = DPIUtil.autoScaleUp (event.getBounds ());
-			if (rect.x != x || rect.y != y) {
-				menu.setLocationInPixels (rect.x, rect.y);
+			if (GTK.GTK4) {
+
+				long temp = 0;
+				if (GTK.gtk_widget_get_parent(menu.handle) != 0) {
+					temp = OS.g_object_ref(menu.handle);
+					GTK.gtk_widget_unparent(menu.handle);
+				}
+				GTK.gtk_widget_set_parent(menu.handle, this.handle);
+				if (temp != 0) OS.g_object_unref(temp);
+
+
+				menu.setLocationInPixels(x, y);
+				menu.setVisible(true);
+
+				return true;
+			} else {
+				Rectangle rect = DPIUtil.autoScaleUp (event.getBounds ());
+				if (rect.x != x || rect.y != y) {
+					menu.setLocationInPixels (rect.x, rect.y);
+				}
+				menu.setVisible (true);
+				return true;
 			}
-			menu.setVisible (true);
-			return true;
+
 		}
 	}
 	return false;
