@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2016 IBM Corporation and others.
+ * Copyright (c) 2000, 2020 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -10,6 +10,7 @@
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
+ *     Christoph Läubrich - Bug 569750 - Terminate button doesn't change state for process that is terminated at breakpoint
  *******************************************************************************/
 package org.eclipse.swt.widgets;
 
@@ -957,10 +958,7 @@ void releaseWidget () {
 	hotImage = disabledImage = null;
 	toolTipText = null;
 
-	if (defaultDisableImage != null) {
-		defaultDisableImage.dispose();
-		defaultDisableImage = null;
-	}
+	disposeDefault();
 }
 
 /**
@@ -1095,6 +1093,7 @@ public void setDisabledImage (Image image) {
 		if (!enabled) {
 			_setImage(image);
 		}
+		disposeDefault();
 	}
 }
 
@@ -1120,6 +1119,7 @@ public void setEnabled (boolean enabled) {
 	if (this.enabled == enabled) return;
 	this.enabled = enabled;
 
+	GTK.gtk_widget_set_sensitive(topHandle, enabled);
 	if (!enabled) {
 		if (disabledImage == null) {
 			if (defaultDisableImage == null && image != null) {
@@ -1132,7 +1132,6 @@ public void setEnabled (boolean enabled) {
 	}
 	if (enabled && image != null) _setImage(image);
 
-	GTK.gtk_widget_set_sensitive(topHandle, enabled);
 }
 
 boolean setFocus () {
@@ -1220,10 +1219,18 @@ public void setImage (Image image) {
 	checkWidget();
 	if ((style & SWT.SEPARATOR) != 0) return;
 	super.setImage (image);
+	disposeDefault();
 	if (!enabled && disabledImage != image && disabledImage != null) {
 		return;
 	}
 	_setImage(image);
+}
+
+private void disposeDefault() {
+	if (defaultDisableImage != null) {
+		defaultDisableImage.dispose();
+		defaultDisableImage = null;
+	}
 }
 
 void _setImage (Image image) {
