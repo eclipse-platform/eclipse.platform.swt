@@ -95,7 +95,9 @@ public class Tree extends Composite {
 	boolean expandAll;
 	int drawState, drawFlags;
 	GdkRGBA background, foreground, drawForegroundRGBA;
-	boolean ownerDraw, ignoreSize, ignoreAccessibility, pixbufSizeSet, hasChildren;
+	/** The owner of the widget is responsible for drawing */
+	boolean isOwnerDrawn;
+	boolean ignoreSize, ignoreAccessibility, pixbufSizeSet, hasChildren;
 	int pixbufHeight, pixbufWidth, headerHeight;
 	boolean headerVisible;
 	TreeItem topItem;
@@ -159,12 +161,12 @@ public Tree (Composite parent, int style) {
 @Override
 void _addListener (int eventType, Listener listener) {
 	super._addListener (eventType, listener);
-	if (!ownerDraw) {
+	if (!isOwnerDrawn) {
 		switch (eventType) {
 			case SWT.MeasureItem:
 			case SWT.EraseItem:
 			case SWT.PaintItem:
-				ownerDraw = true;
+				isOwnerDrawn = true;
 				recreateRenderers ();
 				break;
 		}
@@ -288,7 +290,7 @@ long cellDataProc (long tree_column, long cell, long tree_model, long iter, long
 		}
 	}
 	if (customDraw) {
-		if (!ownerDraw) {
+		if (!isOwnerDrawn) {
 			ptr [0] = 0;
 			GTK.gtk_tree_model_get (tree_model, iter, modelIndex + CELL_BACKGROUND, ptr, -1);
 			if (ptr [0] != 0) {
@@ -1007,18 +1009,25 @@ void createRenderers (long columnHandle, int modelIndex, boolean check, int colu
 		GTK.gtk_tree_view_column_pack_start (columnHandle, checkRenderer, false);
 		GTK.gtk_tree_view_column_add_attribute (columnHandle, checkRenderer, OS.active, CHECKED_COLUMN);
 		GTK.gtk_tree_view_column_add_attribute (columnHandle, checkRenderer, OS.inconsistent, GRAYED_COLUMN);
-		if (!ownerDraw) GTK.gtk_tree_view_column_add_attribute (columnHandle, checkRenderer, OS.cell_background_rgba, BACKGROUND_COLUMN);
-		if (ownerDraw) {
+		if (!isOwnerDrawn) GTK.gtk_tree_view_column_add_attribute (columnHandle, checkRenderer, OS.cell_background_rgba, BACKGROUND_COLUMN);
+		if (isOwnerDrawn) {
 			GTK.gtk_tree_view_column_set_cell_data_func (columnHandle, checkRenderer, display.cellDataProc, handle, 0);
 			OS.g_object_set_qdata (checkRenderer, Display.SWT_OBJECT_INDEX1, columnHandle);
 		}
 	}
-	long pixbufRenderer = ownerDraw ? OS.g_object_new (display.gtk_cell_renderer_pixbuf_get_type (), 0) : GTK.gtk_cell_renderer_pixbuf_new ();
+
+	long pixbufRenderer;
+	if (GTK.GTK4) {
+		pixbufRenderer = GTK.gtk_cell_renderer_pixbuf_new();
+	} else {
+		pixbufRenderer = isOwnerDrawn ? OS.g_object_new (display.gtk_cell_renderer_pixbuf_get_type (), 0) : GTK.gtk_cell_renderer_pixbuf_new ();
+	}
+
 	if (pixbufRenderer == 0) {
 		error (SWT.ERROR_NO_HANDLES);
 	} else {
 		// set default size this size is used for calculating the icon and text positions in a tree
-		if ((!ownerDraw)) {
+		if ((!isOwnerDrawn)) {
 			/*
 			 * When SWT.VIRTUAL is specified, size the pixbuf renderer
 			 * according to the size of the first image set. If no image
@@ -1036,10 +1045,10 @@ void createRenderers (long columnHandle, int modelIndex, boolean check, int colu
 			}
 		}
 	}
-	long textRenderer = ownerDraw ? OS.g_object_new (display.gtk_cell_renderer_text_get_type (), 0) : GTK.gtk_cell_renderer_text_new ();
+	long textRenderer = isOwnerDrawn ? OS.g_object_new (display.gtk_cell_renderer_text_get_type (), 0) : GTK.gtk_cell_renderer_text_new ();
 	if (textRenderer == 0) error (SWT.ERROR_NO_HANDLES);
 
-	if (ownerDraw) {
+	if (isOwnerDrawn) {
 		OS.g_object_set_qdata (pixbufRenderer, Display.SWT_OBJECT_INDEX1, columnHandle);
 		OS.g_object_set_qdata (textRenderer, Display.SWT_OBJECT_INDEX1, columnHandle);
 	}
@@ -1079,7 +1088,7 @@ void createRenderers (long columnHandle, int modelIndex, boolean check, int colu
 	 * use the same underlying GTK structure.
 	 */
 	GTK.gtk_tree_view_column_add_attribute (columnHandle, pixbufRenderer, OS.pixbuf, modelIndex + CELL_PIXBUF);
-	if (!ownerDraw) {
+	if (!isOwnerDrawn) {
 		GTK.gtk_tree_view_column_add_attribute (columnHandle, pixbufRenderer, OS.cell_background_rgba, BACKGROUND_COLUMN);
 		GTK.gtk_tree_view_column_add_attribute (columnHandle, textRenderer, OS.cell_background_rgba, BACKGROUND_COLUMN);
 	}
@@ -1096,7 +1105,7 @@ void createRenderers (long columnHandle, int modelIndex, boolean check, int colu
 			}
 		}
 	}
-	if ((style & SWT.VIRTUAL) != 0 || customDraw || ownerDraw) {
+	if ((style & SWT.VIRTUAL) != 0 || customDraw || isOwnerDrawn) {
 		GTK.gtk_tree_view_column_set_cell_data_func (columnHandle, textRenderer, display.cellDataProc, handle, 0);
 		GTK.gtk_tree_view_column_set_cell_data_func (columnHandle, pixbufRenderer, display.cellDataProc, handle, 0);
 	}
@@ -2496,7 +2505,7 @@ long gtk_draw (long widget, long cairo) {
 	 * If the tree was resized since the last paint, we ignore this draw request
 	 * and queue another draw request so that the pixel cache is properly invalidated.
 	 */
-	if (ownerDraw && haveBoundsChanged) {
+	if (isOwnerDrawn && haveBoundsChanged) {
 		GTK.gtk_widget_queue_draw(handle);
 		return 0;
 	}
@@ -2849,7 +2858,7 @@ void recreateRenderers () {
 	if (checkRenderer != 0) {
 		display.removeWidget (checkRenderer);
 		OS.g_object_unref (checkRenderer);
-		checkRenderer = ownerDraw ? OS.g_object_new (display.gtk_cell_renderer_toggle_get_type(), 0) : GTK.gtk_cell_renderer_toggle_new ();
+		checkRenderer = isOwnerDrawn ? OS.g_object_new (display.gtk_cell_renderer_toggle_get_type(), 0) : GTK.gtk_cell_renderer_toggle_new ();
 		if (checkRenderer == 0) error (SWT.ERROR_NO_HANDLES);
 		OS.g_object_ref (checkRenderer);
 		display.addWidget (checkRenderer, this);
@@ -3398,7 +3407,7 @@ private GC getGC(long cr) {
 }
 
 void resetCustomDraw () {
-	if ((style & SWT.VIRTUAL) != 0 || ownerDraw) return;
+	if ((style & SWT.VIRTUAL) != 0 || isOwnerDrawn) return;
 	int end = Math.max (1, columnCount);
 	for (int i=0; i<end; i++) {
 		boolean customDraw = columnCount != 0 ? columns [i].customDraw : firstCustomDraw;
@@ -3597,7 +3606,7 @@ void setBackgroundGdkRGBA (long context, long handle, GdkRGBA rgba) {
 
 @Override
 void setBackgroundSurface (Image image) {
-	ownerDraw = true;
+	isOwnerDrawn = true;
 	recreateRenderers ();
 }
 
@@ -3873,7 +3882,7 @@ void setOrientation (boolean create) {
 
 @Override
 void setParentBackground () {
-	ownerDraw = true;
+	isOwnerDrawn = true;
 	recreateRenderers ();
 }
 

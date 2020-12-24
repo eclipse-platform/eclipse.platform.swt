@@ -1183,26 +1183,31 @@ void createDisplay (DeviceData data) {
 		text_renderer_type = OS.g_type_register_static (GTK.GTK_TYPE_CELL_RENDERER_TEXT (), type_name, text_renderer_info_ptr, 0);
 	}
 
-	// TODO: GTK4 These classes no longer exist (ignore initialization of them for time being)
-	if (pixbuf_renderer_type == 0 && !GTK.GTK4) {
-		GTypeInfo renderer_info = new GTypeInfo ();
-		renderer_info.class_size = (short) GTK.GtkCellRendererPixbufClass_sizeof ();
-		renderer_info.class_init = rendererClassInitProc;
-		renderer_info.instance_size = (short) GTK.GtkCellRendererPixbuf_sizeof ();
-		pixbuf_renderer_info_ptr = OS.g_malloc (GTypeInfo.sizeof);
-		OS.memmove (pixbuf_renderer_info_ptr, renderer_info, GTypeInfo.sizeof);
-		byte [] type_name = Converter.wcsToMbcs ("SwtPixbufRenderer", true); //$NON-NLS-1$
-		pixbuf_renderer_type = OS.g_type_register_static (GTK.GTK_TYPE_CELL_RENDERER_PIXBUF (), type_name, pixbuf_renderer_info_ptr, 0);
-	}
-	if (toggle_renderer_type == 0 && !GTK.GTK4) {
-		GTypeInfo renderer_info = new GTypeInfo ();
-		renderer_info.class_size = (short) GTK.GtkCellRendererToggleClass_sizeof ();
-		renderer_info.class_init = rendererClassInitProc;
-		renderer_info.instance_size = (short) GTK.GtkCellRendererToggle_sizeof ();
-		toggle_renderer_info_ptr = OS.g_malloc (GTypeInfo.sizeof);
-		OS.memmove (toggle_renderer_info_ptr, renderer_info, GTypeInfo.sizeof);
-		byte [] type_name = Converter.wcsToMbcs ("SwtToggleRenderer", true); //$NON-NLS-1$
-		toggle_renderer_type = OS.g_type_register_static (GTK.GTK_TYPE_CELL_RENDERER_TOGGLE (), type_name, toggle_renderer_info_ptr, 0);
+	/*
+	 * In GTK4, GtkCellRendererPixbuf & GtkCellRendererToggle are final structs, and
+	 * we no longer have access to them in order to register our own type.
+	 */
+	if (!GTK.GTK4) {
+		if (pixbuf_renderer_type == 0) {
+			GTypeInfo renderer_info = new GTypeInfo();
+			renderer_info.class_size = (short) GTK.GtkCellRendererPixbufClass_sizeof();
+			renderer_info.class_init = rendererClassInitProc;
+			renderer_info.instance_size = (short) GTK.GtkCellRendererPixbuf_sizeof();
+			pixbuf_renderer_info_ptr = OS.g_malloc(GTypeInfo.sizeof);
+			OS.memmove(pixbuf_renderer_info_ptr, renderer_info, GTypeInfo.sizeof);
+			byte[] type_name = Converter.wcsToMbcs("SwtPixbufRenderer", true); //$NON-NLS-1$
+			pixbuf_renderer_type = OS.g_type_register_static(GTK.GTK_TYPE_CELL_RENDERER_PIXBUF(), type_name, pixbuf_renderer_info_ptr, 0);
+		}
+		if (toggle_renderer_type == 0) {
+			GTypeInfo renderer_info = new GTypeInfo();
+			renderer_info.class_size = (short) GTK.GtkCellRendererToggleClass_sizeof();
+			renderer_info.class_init = rendererClassInitProc;
+			renderer_info.instance_size = (short) GTK.GtkCellRendererToggle_sizeof();
+			toggle_renderer_info_ptr = OS.g_malloc(GTypeInfo.sizeof);
+			OS.memmove(toggle_renderer_info_ptr, renderer_info, GTypeInfo.sizeof);
+			byte[] type_name = Converter.wcsToMbcs("SwtToggleRenderer", true); //$NON-NLS-1$
+			toggle_renderer_type = OS.g_type_register_static(GTK.GTK_TYPE_CELL_RENDERER_TOGGLE (), type_name, toggle_renderer_info_ptr, 0);
+		}
 	}
 
 	GTK.gtk_widget_set_default_direction (GTK.GTK_TEXT_DIR_LTR);
