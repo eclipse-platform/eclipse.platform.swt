@@ -14714,7 +14714,15 @@ JNIEXPORT void JNICALL GTK_NATIVE(gtk_1window_1get_1size)
 	GTK_NATIVE_ENTER(env, that, gtk_1window_1get_1size_FUNC);
 	if (arg1) if ((lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL)) == NULL) goto fail;
 	if (arg2) if ((lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL)) == NULL) goto fail;
+/*
 	gtk_window_get_size((GtkWindow *)arg0, (gint *)lparg1, (gint *)lparg2);
+*/
+	{
+		GTK_LOAD_FUNCTION(fp, gtk_window_get_size)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(GtkWindow *, gint *, gint *))fp)((GtkWindow *)arg0, (gint *)lparg1, (gint *)lparg2);
+		}
+	}
 fail:
 	if (arg2 && lparg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
 	if (arg1 && lparg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
@@ -14857,7 +14865,15 @@ JNIEXPORT void JNICALL GTK_NATIVE(gtk_1window_1resize)
 	(JNIEnv *env, jclass that, jlong arg0, jint arg1, jint arg2)
 {
 	GTK_NATIVE_ENTER(env, that, gtk_1window_1resize_FUNC);
+/*
 	gtk_window_resize((GtkWindow *)arg0, (gint)arg1, (gint)arg2);
+*/
+	{
+		GTK_LOAD_FUNCTION(fp, gtk_window_resize)
+		if (fp) {
+			((void (CALLING_CONVENTION*)(GtkWindow *, gint, gint))fp)((GtkWindow *)arg0, (gint)arg1, (gint)arg2);
+		}
+	}
 	GTK_NATIVE_EXIT(env, that, gtk_1window_1resize_FUNC);
 }
 #endif

@@ -4010,18 +4010,6 @@ public class GTK extends OS {
 	/** @param handle cast=(GtkWindow *) */
 	public static final native void gtk_window_unfullscreen(long handle);
 	/**
-	 * @param handle cast=(GtkWindow *)
-	 * @param x cast=(gint)
-	 * @param y cast=(gint)
-	 */
-	public static final native void gtk_window_resize(long handle, int x, int y);
-	/**
-	 * @param handle cast=(GtkWindow *)
-	 * @param width cast=(gint *)
-	 * @param height cast=(gint *)
-	 */
-	public static final native void gtk_window_get_size(long handle, int[] width, int[] height);
-	/**
 	 * @param window cast=(GtkWindow *)
 	 * @param decorated cast=(gboolean)
 	 */
@@ -4136,6 +4124,20 @@ public class GTK extends OS {
 	public static final native void gtk_window_get_position(long handle, int[] x, int[] y);
 	/** @param window cast=(GtkWindow *) */
 	public static final native int gtk_window_get_mnemonic_modifier(long window);
+	/**
+	 * @method flags=dynamic
+	 * @param handle cast=(GtkWindow *)
+	 * @param x cast=(gint)
+	 * @param y cast=(gint)
+	 */
+	public static final native void gtk_window_resize(long handle, int x, int y);
+	/**
+	 * @method flags=dynamic
+	 * @param handle cast=(GtkWindow *)
+	 * @param width cast=(gint *)
+	 * @param height cast=(gint *)
+	 */
+	public static final native void gtk_window_get_size(long handle, int[] width, int[] height);
 
 	/* GtkWindow [GTK4 only, if-def'd in os.h] */
 	public static final native long gtk_window_new();
