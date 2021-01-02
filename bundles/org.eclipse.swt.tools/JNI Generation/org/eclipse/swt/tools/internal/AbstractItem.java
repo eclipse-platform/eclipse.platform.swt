@@ -40,13 +40,7 @@ public String flatten() {
 		if (value instanceof String) {
 			valueStr = (String)value;
 		} else if (value instanceof String[]) {
-			String[] values = (String[])value;
-			StringBuilder valueBuffer = new StringBuilder();
-			for (int i = 0; i < values.length; i++) {
-				if (i != 0) valueBuffer.append(" ");
-				valueBuffer.append(values[i]);
-			}
-			valueStr = valueBuffer.toString();
+			valueStr = String.join(" ", (String[])value);
 		} else {
 			valueStr = value.toString();
 		}

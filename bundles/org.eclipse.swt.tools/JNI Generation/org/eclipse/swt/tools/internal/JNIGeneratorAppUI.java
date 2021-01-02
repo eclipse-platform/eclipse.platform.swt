@@ -913,12 +913,7 @@ String getClassString(JNIType type) {
 
 String getFlagsString(String[] flags) {
 	if (flags.length == 0) return "";
-	StringBuilder buffer = new StringBuilder();
-	for (String flag : flags) {
-		if (buffer.length() != 0) buffer.append(", ");
-		buffer.append(flag);
-	}
-	return buffer.toString();
+	return String.join(", ", flags);
 }
 
 String getMethodString(JNIMethod method) {
