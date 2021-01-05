@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2020 IBM Corporation and others. All rights reserved.
+ * Copyright (c) 2000, 2021 IBM Corporation and others. All rights reserved.
  * The contents of this file are made available under the terms
  * of the GNU Lesser General Public License (LGPL) Version 2.1 that
  * accompanies this distribution (lgpl-v21.txt).  The LGPL is also
@@ -79,6 +79,7 @@ typedef enum {
 	gdk_1display_1get_1monitor_1at_1point_FUNC,
 	gdk_1display_1get_1monitor_1at_1surface_FUNC,
 	gdk_1display_1get_1monitor_1at_1window_FUNC,
+	gdk_1display_1get_1monitors_FUNC,
 	gdk_1display_1get_1n_1monitors_FUNC,
 	gdk_1display_1get_1primary_1clipboard_FUNC,
 	gdk_1display_1get_1primary_1monitor_FUNC,
@@ -1289,6 +1290,8 @@ typedef enum {
 	g_1list_1free_FUNC,
 	g_1list_1last_FUNC,
 	g_1list_1length_FUNC,
+	g_1list_1model_1get_1item_FUNC,
+	g_1list_1model_1get_1n_1items_FUNC,
 	g_1list_1next_FUNC,
 	g_1list_1nth_1data_FUNC,
 	g_1list_1previous_FUNC,

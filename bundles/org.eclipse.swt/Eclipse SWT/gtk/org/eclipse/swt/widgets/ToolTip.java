@@ -146,17 +146,24 @@ void configure () {
 	 */
 	Point point = getLocation();
 	boolean multipleMonitors;
-	int monitorNumber;
 	GdkRectangle dest = new GdkRectangle ();
 	if (GTK.GTK_VERSION >= OS.VERSION(3, 22, 0)) {
 		long display = GDK.gdk_display_get_default();
-		multipleMonitors = GDK.gdk_display_get_n_monitors(display) > 1;
+
+		if (GTK.GTK4) {
+			long monitorList = GDK.gdk_display_get_monitors(display);
+			multipleMonitors = OS.g_list_model_get_n_items(monitorList) > 1;
+		} else {
+			multipleMonitors = GDK.gdk_display_get_n_monitors(display) > 1;
+		}
+
+
 		long monitor = GDK.gdk_display_get_monitor_at_point(display, point.x, point.y);
 		GDK.gdk_monitor_get_geometry (monitor, dest);
 	} else {
 		long screen = GDK.gdk_screen_get_default ();
 		multipleMonitors = GDK.gdk_screen_get_n_monitors(screen) > 1;
-		monitorNumber = GDK.gdk_screen_get_monitor_at_point(screen, point.x, point.y);
+		int monitorNumber = GDK.gdk_screen_get_monitor_at_point(screen, point.x, point.y);
 		GDK.gdk_screen_get_monitor_geometry(screen, monitorNumber, dest);
 	}
 	point = getSize (dest.width / 4);

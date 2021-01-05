@@ -706,6 +706,26 @@ JNIEXPORT jlong JNICALL GDK_NATIVE(gdk_1display_1get_1monitor_1at_1window)
 }
 #endif
 
+#ifndef NO_gdk_1display_1get_1monitors
+JNIEXPORT jlong JNICALL GDK_NATIVE(gdk_1display_1get_1monitors)
+	(JNIEnv *env, jclass that, jlong arg0)
+{
+	jlong rc = 0;
+	GDK_NATIVE_ENTER(env, that, gdk_1display_1get_1monitors_FUNC);
+/*
+	rc = (jlong)gdk_display_get_monitors((GdkDisplay *)arg0);
+*/
+	{
+		GDK_LOAD_FUNCTION(fp, gdk_display_get_monitors)
+		if (fp) {
+			rc = (jlong)((jlong (CALLING_CONVENTION*)(GdkDisplay *))fp)((GdkDisplay *)arg0);
+		}
+	}
+	GDK_NATIVE_EXIT(env, that, gdk_1display_1get_1monitors_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_gdk_1display_1get_1n_1monitors
 JNIEXPORT jint JNICALL GDK_NATIVE(gdk_1display_1get_1n_1monitors)
 	(JNIEnv *env, jclass that, jlong arg0)
@@ -16873,6 +16893,30 @@ JNIEXPORT jint JNICALL OS_NATIVE(g_1list_1length)
 	OS_NATIVE_ENTER(env, that, g_1list_1length_FUNC);
 	rc = (jint)g_list_length((GList *)arg0);
 	OS_NATIVE_EXIT(env, that, g_1list_1length_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_g_1list_1model_1get_1item
+JNIEXPORT jlong JNICALL OS_NATIVE(g_1list_1model_1get_1item)
+	(JNIEnv *env, jclass that, jlong arg0, jint arg1)
+{
+	jlong rc = 0;
+	OS_NATIVE_ENTER(env, that, g_1list_1model_1get_1item_FUNC);
+	rc = (jlong)g_list_model_get_item((GListModel *)arg0, (guint)arg1);
+	OS_NATIVE_EXIT(env, that, g_1list_1model_1get_1item_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_g_1list_1model_1get_1n_1items
+JNIEXPORT jint JNICALL OS_NATIVE(g_1list_1model_1get_1n_1items)
+	(JNIEnv *env, jclass that, jlong arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, g_1list_1model_1get_1n_1items_FUNC);
+	rc = (jint)g_list_model_get_n_items((GListModel *)arg0);
+	OS_NATIVE_EXIT(env, that, g_1list_1model_1get_1n_1items_FUNC);
 	return rc;
 }
 #endif

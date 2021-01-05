@@ -928,6 +928,14 @@ public class GDK extends OS {
 	 * @param event cast=(GdkEvent *)
 	 */
 	public static final native void gdk_display_put_event(long display, long event);
+
+	/* GdkDisplay [GTK4 only] */
+	/**
+	 * @method flags=dynamic
+	 * @param display cast=(GdkDisplay *)
+	 */
+	public static final native long gdk_display_get_monitors(long display);
+
 	/**
 	 * @method flags=dynamic
 	 * @param screen cast=(GdkScreen *)

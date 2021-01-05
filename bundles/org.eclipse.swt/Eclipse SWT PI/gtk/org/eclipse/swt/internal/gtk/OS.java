@@ -2396,4 +2396,14 @@ public static final native long g_action_get_state(long action);
  * @param value cast=(GVariant *)
  */
 public static final native void g_simple_action_set_state(long simple_action, long value);
+
+
+/* GListModel */
+/** @param list cast=(GListModel *) */
+public static final native int g_list_model_get_n_items(long list);
+/**
+ * @param list cast=(GListModel *)
+ * @param position cast=(guint)
+ */
+public static final native long g_list_model_get_item(long list, int position);
 }

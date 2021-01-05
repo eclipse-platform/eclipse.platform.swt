@@ -22,7 +22,7 @@ package org.eclipse.swt.internal.gtk;
 public class GTK extends OS {
 
 	public static final int GTK_VERSION = OS.VERSION(GTK.gtk_get_major_version(), GTK.gtk_get_minor_version(), GTK.gtk_get_micro_version());
-	public static final boolean GTK4 = GTK_VERSION >= OS.VERSION(3, 99, 3);
+	public static final boolean GTK4 = GTK_VERSION >= OS.VERSION(4, 0, 0);
 
 	/** Constants */
 	public static final int GTK_ACCEL_VISIBLE = 0x1;

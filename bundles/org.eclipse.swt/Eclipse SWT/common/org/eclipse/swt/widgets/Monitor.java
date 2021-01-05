@@ -113,7 +113,7 @@ void setClientArea (Rectangle rect) {
  */
 @Override
 public int hashCode () {
-	return (int)/*64*/handle;
+	return (int)handle;
 }
 
 }

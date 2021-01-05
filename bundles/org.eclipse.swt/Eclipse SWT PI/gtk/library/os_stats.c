@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2020 IBM Corporation and others. All rights reserved.
+ * Copyright (c) 2000, 2021 IBM Corporation and others. All rights reserved.
  * The contents of this file are made available under the terms
  * of the GNU Lesser General Public License (LGPL) Version 2.1 that
  * accompanies this distribution (lgpl-v21.txt).  The LGPL is also
@@ -69,6 +69,7 @@ char * GDK_nativeFunctionNames[] = {
 	"gdk_1display_1get_1monitor_1at_1point",
 	"gdk_1display_1get_1monitor_1at_1surface",
 	"gdk_1display_1get_1monitor_1at_1window",
+	"gdk_1display_1get_1monitors",
 	"gdk_1display_1get_1n_1monitors",
 	"gdk_1display_1get_1primary_1clipboard",
 	"gdk_1display_1get_1primary_1monitor",
@@ -1315,6 +1316,8 @@ char * OS_nativeFunctionNames[] = {
 	"g_1list_1free",
 	"g_1list_1last",
 	"g_1list_1length",
+	"g_1list_1model_1get_1item",
+	"g_1list_1model_1get_1n_1items",
 	"g_1list_1next",
 	"g_1list_1nth_1data",
 	"g_1list_1previous",

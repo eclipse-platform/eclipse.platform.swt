@@ -1739,27 +1739,36 @@ public Rectangle getClientArea () {
 
 Rectangle getBoundsInPixels () {
 	checkDevice ();
-	int monitorCount;
 	Rectangle bounds = new Rectangle(0, 0, 0, 0);
 	int maxWidth = 0, maxHeight = 0;
 	if (GTK.GTK_VERSION >= OS.VERSION(3, 22, 0)) {
-		long display = GDK.gdk_display_get_default ();
-		monitorCount = GDK.gdk_display_get_n_monitors (display);
+		long display = GDK.gdk_display_get_default();
+		int monitorCount = 0;
+		long monitorList = 0;
+		if (GTK.GTK4) {
+			monitorList = GDK.gdk_display_get_monitors(display);
+			monitorCount = OS.g_list_model_get_n_items(monitorList);
+		} else {
+			monitorCount = GDK.gdk_display_get_n_monitors(display);
+		}
+
 		if (monitorCount > 0) {
 			for (int i = 0; i < monitorCount; i++) {
-				long monitor = GDK.gdk_display_get_monitor(display, i);
-				GdkRectangle dest = new GdkRectangle ();
-				GDK.gdk_monitor_get_geometry (monitor, dest);
-				if ((dest.x + dest.width) > maxWidth) maxWidth = dest.x + dest.width;
-				if ((dest.y + dest.height) > maxHeight) maxHeight = dest.y + dest.height;
+				long monitor = GTK.GTK4 ? OS.g_list_model_get_item(monitorList, i) : GDK.gdk_display_get_monitor(display, i);
+				GdkRectangle geometry = new GdkRectangle();
+				GDK.gdk_monitor_get_geometry(monitor, geometry);
+
+				if ((geometry.x + geometry.width) > maxWidth) maxWidth = geometry.x + geometry.width;
+				if ((geometry.y + geometry.height) > maxHeight) maxHeight = geometry.y + geometry.height;
 			}
+
 			bounds.width = maxWidth;
 			bounds.height = maxHeight;
 			return bounds;
 		}
 	} else {
 		long screen = GDK.gdk_screen_get_default();
-		monitorCount = GDK.gdk_screen_get_n_monitors(screen);
+		int monitorCount = GDK.gdk_screen_get_n_monitors(screen);
 		if (monitorCount > 0) {
 			for (int i = 0; i < monitorCount; i++) {
 				GdkRectangle dest = new GdkRectangle ();
@@ -1772,6 +1781,7 @@ Rectangle getBoundsInPixels () {
 			return bounds;
 		}
 	}
+
 	if (GTK.GTK4) {
 		return new Rectangle (0, 0, 0, 0);
 	} else {
@@ -2590,42 +2600,52 @@ Rectangle getWorkArea() {
  *
  * @since 3.0
  */
-public Monitor [] getMonitors () {
-	checkDevice ();
-	Monitor [] monitors = null;
-	Rectangle workArea = DPIUtil.autoScaleDown (getWorkArea ());
+public Monitor[] getMonitors() {
+	checkDevice();
+	Monitor[] monitors = null;
+	Rectangle workArea = DPIUtil.autoScaleDown(getWorkArea ());
 	if (GTK.GTK_VERSION >= OS.VERSION(3, 22, 0)) {
-		long display = GDK.gdk_display_get_default ();
+		long display = GDK.gdk_display_get_default();
 		if (display != 0) {
-			int monitorCount = GDK.gdk_display_get_n_monitors (display);
+			int monitorCount;
+			long monitorList = 0;
+			if (GTK.GTK4) {
+				monitorList = GDK.gdk_display_get_monitors(display);
+				monitorCount = OS.g_list_model_get_n_items(monitorList);
+			} else {
+				monitorCount = GDK.gdk_display_get_n_monitors(display);
+			}
+
 			if (monitorCount > 0) {
-				monitors = new Monitor [monitorCount];
-				GdkRectangle dest = new GdkRectangle ();
+				monitors = new Monitor[monitorCount];
+				GdkRectangle geometry = new GdkRectangle();
 				for (int i = 0; i < monitorCount; i++) {
-					long gdkMonitor = GDK.gdk_display_get_monitor(display, i);
-					GDK.gdk_monitor_get_geometry (gdkMonitor, dest);
-					Monitor monitor = new Monitor ();
-					monitor.handle = i;
-					monitor.x = DPIUtil.autoScaleDown (dest.x);
-					monitor.y = DPIUtil.autoScaleDown (dest.y);
-					monitor.width = DPIUtil.autoScaleDown (dest.width);
-					monitor.height = DPIUtil.autoScaleDown (dest.height);
+					long gdkMonitor = GTK.GTK4 ? OS.g_list_model_get_item(monitorList, i) : GDK.gdk_display_get_monitor(display, i);
+					GDK.gdk_monitor_get_geometry(gdkMonitor, geometry);
+
+					Monitor monitor = new Monitor();
+					monitor.handle = gdkMonitor;
+					monitor.x = DPIUtil.autoScaleDown(geometry.x);
+					monitor.y = DPIUtil.autoScaleDown(geometry.y);
+					monitor.width = DPIUtil.autoScaleDown(geometry.width);
+					monitor.height = DPIUtil.autoScaleDown(geometry.height);
 					if (!OS.isX11()) {
-						int scale_factor = (int) GDK.gdk_monitor_get_scale_factor (
-								GDK.gdk_display_get_monitor (GDK.gdk_display_get_default (),  (int) monitor.handle));
-						monitor.zoom = scale_factor * 100;
+						int scaleFactor = (int) GDK.gdk_monitor_get_scale_factor(gdkMonitor);
+						monitor.zoom = scaleFactor * 100;
 					} else {
 						monitor.zoom = Display._getDeviceZoom(monitor.handle);
 					}
 
-					// workarea was defined in GTK 3.4. If present, it will return the best results
-					// since it takes into account per-monitor trim
-					GDK.gdk_monitor_get_workarea (gdkMonitor, dest);
-					monitor.clientX = DPIUtil.autoScaleDown (dest.x);
-					monitor.clientY = DPIUtil.autoScaleDown (dest.y);
-					monitor.clientWidth = DPIUtil.autoScaleDown (dest.width);
-					monitor.clientHeight = DPIUtil.autoScaleDown (dest.height);
-					monitors [i] = monitor;
+					/* workarea was defined in GTK 3.4. If present, it will return the best results
+					 * since it takes into account per-monitor trim. Not available in GTK4.
+					 */
+					if (!GTK.GTK4) GDK.gdk_monitor_get_workarea(gdkMonitor, geometry);
+					monitor.clientX = DPIUtil.autoScaleDown(geometry.x);
+					monitor.clientY = DPIUtil.autoScaleDown(geometry.y);
+					monitor.clientWidth = DPIUtil.autoScaleDown(geometry.width);
+					monitor.clientHeight = DPIUtil.autoScaleDown(geometry.height);
+
+					monitors[i] = monitor;
 				}
 			}
 		}
@@ -2661,8 +2681,8 @@ public Monitor [] getMonitors () {
 
 	if (monitors == null) {
 		/* No multimonitor support detected, default to one monitor */
-		Monitor monitor = new Monitor ();
-		Rectangle bounds = getBounds ();
+		Monitor monitor = new Monitor();
+		Rectangle bounds = getBounds();
 		monitor.x = bounds.x;
 		monitor.y = bounds.y;
 		monitor.width = bounds.width;
@@ -2678,8 +2698,9 @@ public Monitor [] getMonitors () {
 			monitor.clientWidth = monitor.width;
 			monitor.clientHeight = monitor.height;
 		}
-		monitors = new Monitor [] { monitor };
+		monitors = new Monitor[] { monitor };
 	}
+
 	return monitors;
 }
 
@@ -2690,33 +2711,36 @@ public Monitor [] getMonitors () {
  *
  * @since 3.0
  */
-public Monitor getPrimaryMonitor () {
+public Monitor getPrimaryMonitor() {
 	//Developer note, for testing see:
 	//org.eclipse.swt.tests.junit.Test_org_eclipse_swt_widgets_Display.test_getPrimaryMonitor()
 
-	checkDevice ();
-	Monitor [] monitors = getMonitors ();
+	checkDevice();
+	Monitor[] monitors = getMonitors();
 	int primaryMonitorIndex = 0;
 
-	//attempt to find actual primary monitor if one is configured:
-	if (GTK.GTK_VERSION >= OS.VERSION(3, 22, 0)) {
+	if (GTK.GTK4) {
+		primaryMonitorIndex = 0;
+	} else if (GTK.GTK_VERSION >= OS.VERSION(3, 22, 0)) {
+		//attempt to find actual primary monitor if one is configured:
 		long display = GDK.gdk_display_get_default();
 		long monitor = GDK.gdk_display_get_primary_monitor(display);
-		long toCompare;
 		for (int i = 0; i < monitors.length; i++) {
-			toCompare = GDK.gdk_display_get_monitor(display, i);
+			long toCompare = GDK.gdk_display_get_monitor(display, i);
 			if (toCompare == monitor) {
-				return monitors[i];
+				primaryMonitorIndex = i;
+				break;
 			}
 		}
 	} else {
-		long screen = GDK.gdk_screen_get_default ();
+		long screen = GDK.gdk_screen_get_default();
 		if (screen != 0) {
 			//if no primary monitor is configured by the user, this returns 0.
-			primaryMonitorIndex = GDK.gdk_screen_get_primary_monitor (screen);
+			primaryMonitorIndex = GDK.gdk_screen_get_primary_monitor(screen);
 		}
 	}
-	return monitors [primaryMonitorIndex];
+
+	return monitors[primaryMonitorIndex];
 }
 
 
