@@ -379,7 +379,6 @@
 // GdkCursor removals
 #define NO_gdk_1cursor_1new_1for_1display
 #define NO_gdk_1cursor_1new_1from_1pixbuf
-#define NO_gdk_1display_1supports_1cursor_1color
 #define NO_gdk_1cursor_1new_1from_1name__JLjava_lang_String_2
 
 // GdkKeymap removals
@@ -553,8 +552,6 @@
 
 // No GdkClipboard on GTK3
 #define NO_gdk_1clipboard_1set_1content
-#define NO_gdk_1display_1get_1clipboard
-#define NO_gdk_1display_1get_1primary_1clipboard
 
 // No GtkSnapshot on GTK3
 #define NO_gtk_1snapshot_1append_1cairo
@@ -570,7 +567,6 @@
 #define NO_gtk_1style_1context_1add_1provider_1for_1display
 #define NO_gtk_1css_1provider_1load_1from_1data__I_3BI
 #define NO_gtk_1css_1provider_1load_1from_1data__J_3BJ
-#define NO_gdk_1display_1is_1composited
 #define NO_gtk_1style_1context_1get_1margin
 
 // GdkCursor API changes from GTK3 -> GTK4

@@ -576,7 +576,15 @@ JNIEXPORT jlong JNICALL GDK_NATIVE(gdk_1display_1get_1clipboard)
 {
 	jlong rc = 0;
 	GDK_NATIVE_ENTER(env, that, gdk_1display_1get_1clipboard_FUNC);
+/*
 	rc = (jlong)gdk_display_get_clipboard((GdkDisplay *)arg0);
+*/
+	{
+		GDK_LOAD_FUNCTION(fp, gdk_display_get_clipboard)
+		if (fp) {
+			rc = (jlong)((jlong (CALLING_CONVENTION*)(GdkDisplay *))fp)((GdkDisplay *)arg0);
+		}
+	}
 	GDK_NATIVE_EXIT(env, that, gdk_1display_1get_1clipboard_FUNC);
 	return rc;
 }
@@ -641,12 +649,12 @@ JNIEXPORT jlong JNICALL GDK_NATIVE(gdk_1display_1get_1monitor)
 	jlong rc = 0;
 	GDK_NATIVE_ENTER(env, that, gdk_1display_1get_1monitor_FUNC);
 /*
-	rc = (jlong)gdk_display_get_monitor(arg0, arg1);
+	rc = (jlong)gdk_display_get_monitor((GdkDisplay *)arg0, arg1);
 */
 	{
 		GDK_LOAD_FUNCTION(fp, gdk_display_get_monitor)
 		if (fp) {
-			rc = (jlong)((jlong (CALLING_CONVENTION*)(jlong, jint))fp)(arg0, arg1);
+			rc = (jlong)((jlong (CALLING_CONVENTION*)(GdkDisplay *, jint))fp)((GdkDisplay *)arg0, arg1);
 		}
 	}
 	GDK_NATIVE_EXIT(env, that, gdk_1display_1get_1monitor_FUNC);
@@ -661,12 +669,12 @@ JNIEXPORT jlong JNICALL GDK_NATIVE(gdk_1display_1get_1monitor_1at_1point)
 	jlong rc = 0;
 	GDK_NATIVE_ENTER(env, that, gdk_1display_1get_1monitor_1at_1point_FUNC);
 /*
-	rc = (jlong)gdk_display_get_monitor_at_point(arg0, arg1, arg2);
+	rc = (jlong)gdk_display_get_monitor_at_point((GdkDisplay *)arg0, arg1, arg2);
 */
 	{
 		GDK_LOAD_FUNCTION(fp, gdk_display_get_monitor_at_point)
 		if (fp) {
-			rc = (jlong)((jlong (CALLING_CONVENTION*)(jlong, jint, jint))fp)(arg0, arg1, arg2);
+			rc = (jlong)((jlong (CALLING_CONVENTION*)(GdkDisplay *, jint, jint))fp)((GdkDisplay *)arg0, arg1, arg2);
 		}
 	}
 	GDK_NATIVE_EXIT(env, that, gdk_1display_1get_1monitor_1at_1point_FUNC);
@@ -733,12 +741,12 @@ JNIEXPORT jint JNICALL GDK_NATIVE(gdk_1display_1get_1n_1monitors)
 	jint rc = 0;
 	GDK_NATIVE_ENTER(env, that, gdk_1display_1get_1n_1monitors_FUNC);
 /*
-	rc = (jint)gdk_display_get_n_monitors(arg0);
+	rc = (jint)gdk_display_get_n_monitors((GdkDisplay *)arg0);
 */
 	{
 		GDK_LOAD_FUNCTION(fp, gdk_display_get_n_monitors)
 		if (fp) {
-			rc = (jint)((jint (CALLING_CONVENTION*)(jlong))fp)(arg0);
+			rc = (jint)((jint (CALLING_CONVENTION*)(GdkDisplay *))fp)((GdkDisplay *)arg0);
 		}
 	}
 	GDK_NATIVE_EXIT(env, that, gdk_1display_1get_1n_1monitors_FUNC);
@@ -752,7 +760,15 @@ JNIEXPORT jlong JNICALL GDK_NATIVE(gdk_1display_1get_1primary_1clipboard)
 {
 	jlong rc = 0;
 	GDK_NATIVE_ENTER(env, that, gdk_1display_1get_1primary_1clipboard_FUNC);
+/*
 	rc = (jlong)gdk_display_get_primary_clipboard((GdkDisplay *)arg0);
+*/
+	{
+		GDK_LOAD_FUNCTION(fp, gdk_display_get_primary_clipboard)
+		if (fp) {
+			rc = (jlong)((jlong (CALLING_CONVENTION*)(GdkDisplay *))fp)((GdkDisplay *)arg0);
+		}
+	}
 	GDK_NATIVE_EXIT(env, that, gdk_1display_1get_1primary_1clipboard_FUNC);
 	return rc;
 }
@@ -765,12 +781,12 @@ JNIEXPORT jlong JNICALL GDK_NATIVE(gdk_1display_1get_1primary_1monitor)
 	jlong rc = 0;
 	GDK_NATIVE_ENTER(env, that, gdk_1display_1get_1primary_1monitor_FUNC);
 /*
-	rc = (jlong)gdk_display_get_primary_monitor(arg0);
+	rc = (jlong)gdk_display_get_primary_monitor((GdkDisplay *)arg0);
 */
 	{
 		GDK_LOAD_FUNCTION(fp, gdk_display_get_primary_monitor)
 		if (fp) {
-			rc = (jlong)((jlong (CALLING_CONVENTION*)(jlong))fp)(arg0);
+			rc = (jlong)((jlong (CALLING_CONVENTION*)(GdkDisplay *))fp)((GdkDisplay *)arg0);
 		}
 	}
 	GDK_NATIVE_EXIT(env, that, gdk_1display_1get_1primary_1monitor_FUNC);
@@ -784,7 +800,15 @@ JNIEXPORT jboolean JNICALL GDK_NATIVE(gdk_1display_1is_1composited)
 {
 	jboolean rc = 0;
 	GDK_NATIVE_ENTER(env, that, gdk_1display_1is_1composited_FUNC);
+/*
 	rc = (jboolean)gdk_display_is_composited((GdkDisplay *)arg0);
+*/
+	{
+		GDK_LOAD_FUNCTION(fp, gdk_display_is_composited)
+		if (fp) {
+			rc = (jboolean)((jboolean (CALLING_CONVENTION*)(GdkDisplay *))fp)((GdkDisplay *)arg0);
+		}
+	}
 	GDK_NATIVE_EXIT(env, that, gdk_1display_1is_1composited_FUNC);
 	return rc;
 }
@@ -833,7 +857,15 @@ JNIEXPORT jboolean JNICALL GDK_NATIVE(gdk_1display_1supports_1cursor_1color)
 {
 	jboolean rc = 0;
 	GDK_NATIVE_ENTER(env, that, gdk_1display_1supports_1cursor_1color_FUNC);
+/*
 	rc = (jboolean)gdk_display_supports_cursor_color((GdkDisplay *)arg0);
+*/
+	{
+		GDK_LOAD_FUNCTION(fp, gdk_display_supports_cursor_color)
+		if (fp) {
+			rc = (jboolean)((jboolean (CALLING_CONVENTION*)(GdkDisplay *))fp)((GdkDisplay *)arg0);
+		}
+	}
 	GDK_NATIVE_EXIT(env, that, gdk_1display_1supports_1cursor_1color_FUNC);
 	return rc;
 }
