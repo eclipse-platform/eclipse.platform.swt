@@ -509,12 +509,20 @@ void redrawWidget (int x, int y, int width, int height, boolean redrawAll, boole
 		rect.width = allocation.width;
 		rect.height = allocation.height;
 	} else {
-		int [] destX = new int [1], destY = new int [1];
-		GTK.gtk_widget_translate_coordinates (paintHandle, topHandle, x, y, destX, destY);
-		rect.x = destX [0];
-		rect.y = destY [0];
-		rect.width = Math.max (0, width);
-		rect.height = Math.max (0, height);
+		if (GTK.GTK4) {
+			double[] destX = new double[1], destY = new double[1];
+			GTK.gtk_widget_translate_coordinates(paintHandle, topHandle, x, y, destX, destY);
+			rect.x = (int)destX[0];
+			rect.y = (int)destY[0];
+		} else {
+			int[] destX = new int[1], destY = new int[1];
+			GTK.gtk_widget_translate_coordinates(paintHandle, topHandle, x, y, destX, destY);
+			rect.x = destX[0];
+			rect.y = destY[0];
+		}
+
+		rect.width = Math.max(0, width);
+		rect.height = Math.max(0, height);
 	}
 	if (GTK.GTK4) {
 		/* TODO: GTK4 no ability to invalidate surfaces, may need to keep track of

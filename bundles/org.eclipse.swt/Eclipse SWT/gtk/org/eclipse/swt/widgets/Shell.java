@@ -1118,25 +1118,38 @@ void forceResize (int width, int height) {
 	GtkRequisition minimumSize = new GtkRequisition ();
 	GtkRequisition naturalSize = new GtkRequisition ();
 	GTK.gtk_widget_get_preferred_size (vboxHandle, minimumSize, naturalSize);
+
 	/*
 	 * Bug 535075, 536153: On Wayland, we need to set the position of the GtkBox container
 	 * relative to the shellHandle to prevent window contents rendered with offset.
 	 */
 	if (!OS.isX11()) {
-		int [] dest_x = new int[1];
-		int [] dest_y = new int[1];
-		GTK.gtk_widget_translate_coordinates(vboxHandle, shellHandle, 0, 0, dest_x, dest_y);
-		if (dest_x[0] != -1 && dest_y[0] != -1 && !isMappedToPopup()) {
-			allocation.x += dest_x[0];
-			allocation.y += dest_y[0];
+		if (GTK.GTK4) {
+			double[] window_offset_x = new double[1], window_offset_y = new double[1];
+
+			boolean validTranslation = GTK.gtk_widget_translate_coordinates(vboxHandle, shellHandle, 0, 0, window_offset_x, window_offset_y);
+			if (validTranslation && !isMappedToPopup()) {
+				allocation.x += window_offset_x[0];
+				allocation.y += window_offset_y[0];
+			}
+		} else {
+			int [] dest_x = new int[1];
+			int [] dest_y = new int[1];
+			GTK.gtk_widget_translate_coordinates(vboxHandle, shellHandle, 0, 0, dest_x, dest_y);
+			if (dest_x[0] != -1 && dest_y[0] != -1 && !isMappedToPopup()) {
+				allocation.x += dest_x[0];
+				allocation.y += dest_y[0];
+			}
 		}
 	}
+
 	if (GTK.GTK4) {
-		GTK.gtk_widget_size_allocate (vboxHandle, allocation, -1);
+		GTK.gtk_widget_size_allocate(vboxHandle, allocation, -1);
 	} else {
-		GTK.gtk_widget_size_allocate (vboxHandle, allocation);
+		GTK.gtk_widget_size_allocate(vboxHandle, allocation);
 	}
-	if ((style & SWT.MIRRORED) != 0) moveChildren (clientWidth);
+
+	if ((style & SWT.MIRRORED) != 0) moveChildren(clientWidth);
 }
 
 /**
