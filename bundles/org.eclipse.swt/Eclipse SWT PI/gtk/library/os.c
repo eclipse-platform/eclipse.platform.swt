@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2020 IBM Corporation and others. All rights reserved.
+ * Copyright (c) 2000, 2021 IBM Corporation and others. All rights reserved.
  * The contents of this file are made available under the terms
  * of the GNU Lesser General Public License (LGPL) Version 2.1 that
  * accompanies this distribution (lgpl-v21.txt).  The LGPL is also
@@ -7401,7 +7401,7 @@ JNIEXPORT jboolean JNICALL GTK_NATIVE(gtk_1im_1context_1filter_1keypress)
 {
 	jboolean rc = 0;
 	GTK_NATIVE_ENTER(env, that, gtk_1im_1context_1filter_1keypress_FUNC);
-	rc = (jboolean)gtk_im_context_filter_keypress((GtkIMContext *)arg0, (GdkEvent *)arg1);
+	rc = (jboolean)gtk_im_context_filter_keypress((GtkIMContext *)arg0, (GdkEventKey *)arg1);
 	GTK_NATIVE_EXIT(env, that, gtk_1im_1context_1filter_1keypress_FUNC);
 	return rc;
 }

@@ -1556,7 +1556,7 @@ public class GTK extends OS {
 
 	/**
 	 * @param context cast=(GtkIMContext *)
-	 * @param event cast=(GdkEvent *)
+	 * @param event cast=(GdkEventKey *)
 	 */
 	public static final native boolean gtk_im_context_filter_keypress(long context, long event);
 	/** @param context cast=(GtkIMContext *) */
