@@ -1,5 +1,5 @@
 Manifest-Version: 1.0
-Fragment-Host: org.eclipse.swt;bundle-version="[3.115.0,4.0.0)"
+Fragment-Host: org.eclipse.swt;bundle-version="[3.116.0,4.0.0)"
 Bundle-Name: Chromium SWT Widget
 Bundle-Vendor: Eclipse.org
 Bundle-SymbolicName: org.eclipse.swt.browser.chromium;singleton:=true
