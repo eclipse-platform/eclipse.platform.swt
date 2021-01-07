@@ -577,6 +577,7 @@
 
 // No GdkTexture on GTK3
 #define NO_gdk_1texture_1new_1for_1pixbuf
+#define NO_gdk_1texture_1new_1from_1file
 #define NO_gdk_1pixbuf_1get_1from_1texture
 
 // GdkEvent functions which do not exist on GTK3
@@ -647,6 +648,9 @@
 // No GtkPopoverMenuFlags
 #define NO_gtk_1popover_1menu_1new_1from_1model_1full
 
+// Color function signature changes
+#define NO_gtk_1hsv_1to_1rgb__FFF_3F_3F_3F
+#define NO_gtk_1rgb_1to_1hsv__FFF_3F_3F_3F
 
 #endif
 
