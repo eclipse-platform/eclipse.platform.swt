@@ -119,6 +119,10 @@ CFLAGS := $(CFLAGS) \
 		${SWT_PTR_CFLAGS}
 LFLAGS = -shared -fPIC ${SWT_LFLAGS}
 
+# Treat all warnings as errors. If your new code produces a warning, please
+# take time to properly understand and fix/silence it as necessary.
+CFLAGS += -Werror
+
 ifndef NO_STRIP
 	# -s = Remove all symbol table and relocation information from the executable.
 	#      i.e, more efficent code, but removes debug information. Should not be used if you want to debug.
