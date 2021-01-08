@@ -1486,11 +1486,23 @@ public class GTK extends OS {
 	 *  @param adjustment cast=(GtkAdjustment *)
 	 */
 	public static final native long gtk_scale_new(int orientation, long adjustment);
+
+
+	/* GtkScrollbar */
 	/**
 	 * @param orientation cast=(GtkOrientation)
 	 * @param adjustment cast=(GtkAdjustment *)
-	 * */
+	 */
 	public static final native long gtk_scrollbar_new(int orientation, long adjustment);
+
+	/* GtkScrollbar [GTK4 only] */
+	/**
+	 * @method flags=dynamic
+	 * @param scrollbar cast=(GtkScrollbar *)
+	 */
+	public static final native long gtk_scrollbar_get_adjustment(long scrollbar);
+
+
 	public static final native long gtk_search_entry_new();
 	/**
 	 * @param orientation cast=(GtkOrientation)

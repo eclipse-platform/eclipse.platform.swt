@@ -415,7 +415,7 @@ long gtk_motion_notify_event (long widget, long eventPtr) {
 	} else {
 		int [] origin_x = new int [1], origin_y = new int [1];
 		if (GTK.GTK4) {
-			GDK.gdk_surface_get_origin(gdkResource, origin_x, origin_y);
+			//TODO: GTK4 no gdk_surface_get_origin
 		} else {
 			GDK.gdk_window_get_origin (gdkResource, origin_x, origin_y);
 		}

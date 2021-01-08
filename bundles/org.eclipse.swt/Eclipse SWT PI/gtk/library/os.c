@@ -2536,25 +2536,6 @@ JNIEXPORT jint JNICALL GDK_NATIVE(gdk_1surface_1get_1height)
 }
 #endif
 
-#ifndef NO_gdk_1surface_1get_1origin
-JNIEXPORT jint JNICALL GDK_NATIVE(gdk_1surface_1get_1origin)
-	(JNIEnv *env, jclass that, jlong arg0, jintArray arg1, jintArray arg2)
-{
-	jint *lparg1=NULL;
-	jint *lparg2=NULL;
-	jint rc = 0;
-	GDK_NATIVE_ENTER(env, that, gdk_1surface_1get_1origin_FUNC);
-	if (arg1) if ((lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL)) == NULL) goto fail;
-	if (arg2) if ((lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL)) == NULL) goto fail;
-	rc = (jint)gdk_surface_get_origin((GdkSurface *)arg0, (gint *)lparg1, (gint *)lparg2);
-fail:
-	if (arg2 && lparg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
-	if (arg1 && lparg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
-	GDK_NATIVE_EXIT(env, that, gdk_1surface_1get_1origin_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO_gdk_1surface_1get_1width
 JNIEXPORT jint JNICALL GDK_NATIVE(gdk_1surface_1get_1width)
 	(JNIEnv *env, jclass that, jlong arg0)
@@ -9760,6 +9741,26 @@ JNIEXPORT jlong JNICALL GTK_NATIVE(gtk_1scrollable_1get_1vadjustment)
 	GTK_NATIVE_ENTER(env, that, gtk_1scrollable_1get_1vadjustment_FUNC);
 	rc = (jlong)gtk_scrollable_get_vadjustment((GtkScrollable *)arg0);
 	GTK_NATIVE_EXIT(env, that, gtk_1scrollable_1get_1vadjustment_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_gtk_1scrollbar_1get_1adjustment
+JNIEXPORT jlong JNICALL GTK_NATIVE(gtk_1scrollbar_1get_1adjustment)
+	(JNIEnv *env, jclass that, jlong arg0)
+{
+	jlong rc = 0;
+	GTK_NATIVE_ENTER(env, that, gtk_1scrollbar_1get_1adjustment_FUNC);
+/*
+	rc = (jlong)gtk_scrollbar_get_adjustment((GtkScrollbar *)arg0);
+*/
+	{
+		GTK_LOAD_FUNCTION(fp, gtk_scrollbar_get_adjustment)
+		if (fp) {
+			rc = (jlong)((jlong (CALLING_CONVENTION*)(GtkScrollbar *))fp)((GtkScrollbar *)arg0);
+		}
+	}
+	GTK_NATIVE_EXIT(env, that, gtk_1scrollbar_1get_1adjustment_FUNC);
 	return rc;
 }
 #endif

@@ -1668,20 +1668,23 @@ public void setLayoutData (Object layoutData) {
  *
  * @since 2.1
  */
-public Point toControl (int x, int y) {
-	checkWidget ();
-	int [] origin_x = new int [1], origin_y = new int [1];
+public Point toControl(int x, int y) {
+	checkWidget();
+	int[] origin_x = new int[1], origin_y = new int[1];
 	if (GTK.GTK4) {
-		long surface = eventSurface ();
-		GDK.gdk_surface_get_origin (surface, origin_x, origin_y);
+		Point origin = getControlOrigin();
+		origin_x[0] = origin.x;
+		origin_y[0] = origin.y;
 	} else {
-		long window = eventWindow ();
-		GDK.gdk_window_get_origin (window, origin_x, origin_y);
+		long window = eventWindow();
+		GDK.gdk_window_get_origin(window, origin_x, origin_y);
 	}
-	x -= DPIUtil.autoScaleDown (origin_x [0]);
-	y -= DPIUtil.autoScaleDown (origin_y [0]);
-	if ((style & SWT.MIRRORED) != 0) x = DPIUtil.autoScaleDown (getClientWidth ()) - x;
-	return new Point (x, y);
+
+	x -= DPIUtil.autoScaleDown(origin_x[0]);
+	y -= DPIUtil.autoScaleDown(origin_y[0]);
+	if ((style & SWT.MIRRORED) != 0) x = DPIUtil.autoScaleDown(getClientWidth()) - x;
+
+	return new Point(x, y);
 }
 
 /**
@@ -1730,36 +1733,43 @@ public Point toControl (Point point) {
  *
  * @since 2.1
  */
-public Point toDisplay (int x, int y) {
+public Point toDisplay(int x, int y) {
 	checkWidget();
-	int [] origin_x = new int [1], origin_y = new int [1];
+	int[] origin_x = new int[1], origin_y = new int[1];
 	if (GTK.GTK4) {
-		long surface = eventSurface ();
-		GDK.gdk_surface_get_origin (surface, origin_x, origin_y);
+		Point origin = getControlOrigin();
+		origin_x[0] = origin.x;
+		origin_y[0] = origin.y;
 	} else {
-		long window = eventWindow ();
-		GDK.gdk_window_get_origin (window, origin_x, origin_y);
+		long window = eventWindow();
+		GDK.gdk_window_get_origin(window, origin_x, origin_y);
 	}
-	if ((style & SWT.MIRRORED) != 0) x = DPIUtil.autoScaleDown (getClientWidth ()) - x;
-	x += DPIUtil.autoScaleDown (origin_x [0]);
-	y += DPIUtil.autoScaleDown (origin_y [0]);
-	return new Point (x, y);
+
+	if ((style & SWT.MIRRORED) != 0) x = DPIUtil.autoScaleDown(getClientWidth()) - x;
+	x += DPIUtil.autoScaleDown(origin_x[0]);
+	y += DPIUtil.autoScaleDown(origin_y[0]);
+
+	return new Point(x, y);
 }
 
-Point toDisplayInPixels (int x, int y) {
+Point toDisplayInPixels(int x, int y) {
 	checkWidget();
-	int [] origin_x = new int [1], origin_y = new int [1];
+
+	int[] origin_x = new int[1], origin_y = new int[1];
 	if (GTK.GTK4) {
-		long surface = eventSurface ();
-		GDK.gdk_surface_get_origin (surface, origin_x, origin_y);
+		Point origin = getControlOrigin();
+		origin_x[0] = origin.x;
+		origin_y[0] = origin.y;
 	} else {
-		long window = eventWindow ();
-		GDK.gdk_window_get_origin (window, origin_x, origin_y);
+		long window = eventWindow();
+		GDK.gdk_window_get_origin(window, origin_x, origin_y);
 	}
-	if ((style & SWT.MIRRORED) != 0) x = getClientWidth () - x;
-	x += origin_x [0];
-	y += origin_y [0];
-	return new Point (x, y);
+
+	if ((style & SWT.MIRRORED) != 0) x = getClientWidth() - x;
+	x += origin_x[0];
+	y += origin_y[0];
+
+	return new Point(x, y);
 }
 
 /**
@@ -1793,6 +1803,18 @@ Point toDisplayInPixels (Point point) {
 	if (point == null) error (SWT.ERROR_NULL_ARGUMENT);
 	return toDisplayInPixels (point.x, point.y);
 }
+
+/**
+ * GTK4 only function to replace gdk_surface_get_origin
+ * @return the origin of the Control's SWTFixed container relative to the Shell
+ */
+Point getControlOrigin() {
+	double[] originX = new double[1], originY = new double[1];
+	boolean success = GTK.gtk_widget_translate_coordinates(fixedHandle, getShell().shellHandle, 0, 0, originX, originY);
+
+	return success ? new Point((int)originX[0], (int)originY[0]) : new Point(0, 0);
+}
+
 /**
  * Adds the listener to the collection of listeners who will
  * be notified when the control is moved or resized, by sending
@@ -6813,12 +6835,9 @@ Point getWindowOrigin () {
  * @return the origin
  */
 Point getSurfaceOrigin () {
-	int [] x = new int [1];
-	int [] y = new int [1];
+	double[] originX = new double[1], originY = new double[1];
+	boolean success = GTK.gtk_widget_translate_coordinates(fixedHandle, getShell().shellHandle, 0, 0, originX, originY);
 
-	long surface = eventSurface ();
-	GDK.gdk_surface_get_origin (surface, x, y);
-
-	return new Point (x [0], y [0]);
+	return success ? new Point((int)originX[0], (int)originY[0]) : new Point(0, 0);
 }
 }

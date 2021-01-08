@@ -1105,13 +1105,6 @@ public class GDK extends OS {
 	/* [GTK3 only, if-def'd in os.h] */
 	public static final native int gdk_window_get_origin(long window, int[] x, int[] y);
 	/**
-	 * @param surface cast=(GdkSurface *)
-	 * @param x cast=(gint *)
-	 * @param y cast=(gint *)
-	 */
-	/* [GTK4 only, if-def'd in os.h] */
-	public static final native int gdk_surface_get_origin(long surface, int[] x, int[] y);
-	/**
 	 * @param window cast=(GdkWindow *)
 	 * @param device cast=(GdkDevice *)
 	 * @param x cast=(gint *)

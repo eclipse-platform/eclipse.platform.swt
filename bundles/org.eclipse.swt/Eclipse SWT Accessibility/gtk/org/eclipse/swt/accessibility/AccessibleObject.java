@@ -4523,7 +4523,7 @@ class AccessibleObject {
 			return 0;
 		}
 		if (GTK.GTK4) {
-			GDK.gdk_surface_get_origin (gdkResource, origin_x, origin_y);
+			//TODO: GTK4 no gdk_surface_get_origin
 		} else {
 			GDK.gdk_window_get_origin (gdkResource, origin_x, origin_y);
 		}
@@ -4543,9 +4543,7 @@ class AccessibleObject {
 		if (widget == 0) return;
 
 		if (GTK.GTK4) {
-			long topLevel = GTK.gtk_widget_get_native(widget);
-			long surface = GTK.gtk_native_get_surface(topLevel);
-			GDK.gdk_surface_get_origin (surface, x, y);
+			//TODO: GTK4 no gdk_surface_get_origin
 		} else {
 			long topLevel = GTK.gtk_widget_get_toplevel (widget);
 			long window = GTK.gtk_widget_get_window (topLevel);
