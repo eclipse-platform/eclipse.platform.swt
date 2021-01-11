@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2020 IBM Corporation and others.
+ * Copyright (c) 2000, 2021 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -1968,42 +1968,6 @@ JNIEXPORT jint JNICALL OS_NATIVE(GESTUREINFO_1sizeof)
 }
 #endif
 
-#ifndef NO_GET_1WHEEL_1DELTA_1WPARAM
-JNIEXPORT jint JNICALL OS_NATIVE(GET_1WHEEL_1DELTA_1WPARAM)
-	(JNIEnv *env, jclass that, jlong arg0)
-{
-	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, GET_1WHEEL_1DELTA_1WPARAM_FUNC);
-	rc = (jint)GET_WHEEL_DELTA_WPARAM(arg0);
-	OS_NATIVE_EXIT(env, that, GET_1WHEEL_1DELTA_1WPARAM_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO_GET_1X_1LPARAM
-JNIEXPORT jint JNICALL OS_NATIVE(GET_1X_1LPARAM)
-	(JNIEnv *env, jclass that, jlong arg0)
-{
-	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, GET_1X_1LPARAM_FUNC);
-	rc = (jint)GET_X_LPARAM(arg0);
-	OS_NATIVE_EXIT(env, that, GET_1X_1LPARAM_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO_GET_1Y_1LPARAM
-JNIEXPORT jint JNICALL OS_NATIVE(GET_1Y_1LPARAM)
-	(JNIEnv *env, jclass that, jlong arg0)
-{
-	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, GET_1Y_1LPARAM_FUNC);
-	rc = (jint)GET_Y_LPARAM(arg0);
-	OS_NATIVE_EXIT(env, that, GET_1Y_1LPARAM_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO_GID_1ROTATE_1ANGLE_1FROM_1ARGUMENT
 JNIEXPORT jdouble JNICALL OS_NATIVE(GID_1ROTATE_1ANGLE_1FROM_1ARGUMENT)
 	(JNIEnv *env, jclass that, jlong arg0)
@@ -3807,18 +3771,6 @@ JNIEXPORT jint JNICALL OS_NATIVE(HIGHCONTRAST_1sizeof)
 }
 #endif
 
-#ifndef NO_HIWORD
-JNIEXPORT jint JNICALL OS_NATIVE(HIWORD)
-	(JNIEnv *env, jclass that, jlong arg0)
-{
-	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, HIWORD_FUNC);
-	rc = (jint)HIWORD(arg0);
-	OS_NATIVE_EXIT(env, that, HIWORD_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO_HeapAlloc
 JNIEXPORT jlong JNICALL OS_NATIVE(HeapAlloc)
 	(JNIEnv *env, jclass that, jlong arg0, jint arg1, jint arg2)
@@ -4633,18 +4585,6 @@ JNIEXPORT jint JNICALL OS_NATIVE(LITEM_1sizeof)
 }
 #endif
 
-#ifndef NO_LODWORD
-JNIEXPORT jint JNICALL OS_NATIVE(LODWORD)
-	(JNIEnv *env, jclass that, jlong arg0)
-{
-	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, LODWORD_FUNC);
-	rc = (jint)LODWORD(arg0);
-	OS_NATIVE_EXIT(env, that, LODWORD_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO_LOGBRUSH_1sizeof
 JNIEXPORT jint JNICALL OS_NATIVE(LOGBRUSH_1sizeof)
 	(JNIEnv *env, jclass that)
@@ -4677,18 +4617,6 @@ JNIEXPORT jint JNICALL OS_NATIVE(LOGPEN_1sizeof)
 	OS_NATIVE_ENTER(env, that, LOGPEN_1sizeof_FUNC);
 	rc = (jint)LOGPEN_sizeof();
 	OS_NATIVE_EXIT(env, that, LOGPEN_1sizeof_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO_LOWORD
-JNIEXPORT jint JNICALL OS_NATIVE(LOWORD)
-	(JNIEnv *env, jclass that, jlong arg0)
-{
-	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, LOWORD_FUNC);
-	rc = (jint)LOWORD(arg0);
-	OS_NATIVE_EXIT(env, that, LOWORD_FUNC);
 	return rc;
 }
 #endif
@@ -4841,54 +4769,6 @@ JNIEXPORT jlong JNICALL OS_NATIVE(LocalFree)
 	OS_NATIVE_ENTER(env, that, LocalFree_FUNC);
 	rc = (jlong)LocalFree((HLOCAL)arg0);
 	OS_NATIVE_EXIT(env, that, LocalFree_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO_MAKELPARAM
-JNIEXPORT jlong JNICALL OS_NATIVE(MAKELPARAM)
-	(JNIEnv *env, jclass that, jint arg0, jint arg1)
-{
-	jlong rc = 0;
-	OS_NATIVE_ENTER(env, that, MAKELPARAM_FUNC);
-	rc = (jlong)MAKELPARAM(arg0, arg1);
-	OS_NATIVE_EXIT(env, that, MAKELPARAM_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO_MAKELRESULT
-JNIEXPORT jlong JNICALL OS_NATIVE(MAKELRESULT)
-	(JNIEnv *env, jclass that, jint arg0, jint arg1)
-{
-	jlong rc = 0;
-	OS_NATIVE_ENTER(env, that, MAKELRESULT_FUNC);
-	rc = (jlong)MAKELRESULT(arg0, arg1);
-	OS_NATIVE_EXIT(env, that, MAKELRESULT_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO_MAKEWORD
-JNIEXPORT jint JNICALL OS_NATIVE(MAKEWORD)
-	(JNIEnv *env, jclass that, jint arg0, jint arg1)
-{
-	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, MAKEWORD_FUNC);
-	rc = (jint)MAKEWORD(arg0, arg1);
-	OS_NATIVE_EXIT(env, that, MAKEWORD_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO_MAKEWPARAM
-JNIEXPORT jlong JNICALL OS_NATIVE(MAKEWPARAM)
-	(JNIEnv *env, jclass that, jint arg0, jint arg1)
-{
-	jlong rc = 0;
-	OS_NATIVE_ENTER(env, that, MAKEWPARAM_FUNC);
-	rc = (jlong)MAKEWPARAM(arg0, arg1);
-	OS_NATIVE_EXIT(env, that, MAKEWPARAM_FUNC);
 	return rc;
 }
 #endif
@@ -6866,20 +6746,6 @@ JNIEXPORT jint JNICALL OS_NATIVE(PAINTSTRUCT_1sizeof)
 }
 #endif
 
-#ifndef NO_POINTSTOPOINT
-JNIEXPORT void JNICALL OS_NATIVE(POINTSTOPOINT)
-	(JNIEnv *env, jclass that, jobject arg0, jlong arg1)
-{
-	POINT _arg0, *lparg0=NULL;
-	OS_NATIVE_ENTER(env, that, POINTSTOPOINT_FUNC);
-	if (arg0) if ((lparg0 = getPOINTFields(env, arg0, &_arg0)) == NULL) goto fail;
-	POINTSTOPOINT(*lparg0, arg1);
-fail:
-	if (arg0 && lparg0) setPOINTFields(env, arg0, lparg0);
-	OS_NATIVE_EXIT(env, that, POINTSTOPOINT_FUNC);
-}
-#endif
-
 #ifndef NO_POINT_1sizeof
 JNIEXPORT jint JNICALL OS_NATIVE(POINT_1sizeof)
 	(JNIEnv *env, jclass that)
@@ -6888,18 +6754,6 @@ JNIEXPORT jint JNICALL OS_NATIVE(POINT_1sizeof)
 	OS_NATIVE_ENTER(env, that, POINT_1sizeof_FUNC);
 	rc = (jint)POINT_sizeof();
 	OS_NATIVE_EXIT(env, that, POINT_1sizeof_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO_PRIMARYLANGID
-JNIEXPORT jshort JNICALL OS_NATIVE(PRIMARYLANGID)
-	(JNIEnv *env, jclass that, jint arg0)
-{
-	jshort rc = 0;
-	OS_NATIVE_ENTER(env, that, PRIMARYLANGID_FUNC);
-	rc = (jshort)PRIMARYLANGID(arg0);
-	OS_NATIVE_EXIT(env, that, PRIMARYLANGID_FUNC);
 	return rc;
 }
 #endif
@@ -9541,18 +9395,6 @@ JNIEXPORT jint JNICALL OS_NATIVE(TOUCHINPUT_1sizeof)
 	OS_NATIVE_ENTER(env, that, TOUCHINPUT_1sizeof_FUNC);
 	rc = (jint)TOUCHINPUT_sizeof();
 	OS_NATIVE_EXIT(env, that, TOUCHINPUT_1sizeof_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO_TOUCH_1COORD_1TO_1PIXEL
-JNIEXPORT jlong JNICALL OS_NATIVE(TOUCH_1COORD_1TO_1PIXEL)
-	(JNIEnv *env, jclass that, jlong arg0)
-{
-	jlong rc = 0;
-	OS_NATIVE_ENTER(env, that, TOUCH_1COORD_1TO_1PIXEL_FUNC);
-	rc = (jlong)TOUCH_COORD_TO_PIXEL(arg0);
-	OS_NATIVE_EXIT(env, that, TOUCH_1COORD_1TO_1PIXEL_FUNC);
 	return rc;
 }
 #endif

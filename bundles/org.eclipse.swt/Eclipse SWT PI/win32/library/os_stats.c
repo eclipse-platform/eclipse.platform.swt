@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2020 IBM Corporation and others.
+ * Copyright (c) 2000, 2021 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -162,9 +162,6 @@ char * OS_nativeFunctionNames[] = {
 	"GCP_1RESULTS_1sizeof",
 	"GESTURECONFIG_1sizeof",
 	"GESTUREINFO_1sizeof",
-	"GET_1WHEEL_1DELTA_1WPARAM",
-	"GET_1X_1LPARAM",
-	"GET_1Y_1LPARAM",
 	"GID_1ROTATE_1ANGLE_1FROM_1ARGUMENT",
 	"GRADIENT_1RECT_1sizeof",
 	"GUITHREADINFO_1sizeof",
@@ -292,7 +289,6 @@ char * OS_nativeFunctionNames[] = {
 	"HDLAYOUT_1sizeof",
 	"HELPINFO_1sizeof",
 	"HIGHCONTRAST_1sizeof",
-	"HIWORD",
 	"HeapAlloc",
 	"HeapFree",
 	"HideCaret",
@@ -353,11 +349,9 @@ char * OS_nativeFunctionNames[] = {
 	"KEYBDINPUT_1sizeof",
 	"KillTimer",
 	"LITEM_1sizeof",
-	"LODWORD",
 	"LOGBRUSH_1sizeof",
 	"LOGFONT_1sizeof",
 	"LOGPEN_1sizeof",
-	"LOWORD",
 	"LPtoDP",
 	"LVCOLUMN_1sizeof",
 	"LVHITTESTINFO_1sizeof",
@@ -370,10 +364,6 @@ char * OS_nativeFunctionNames[] = {
 	"LoadIconMetric",
 	"LoadImage",
 	"LocalFree",
-	"MAKELPARAM",
-	"MAKELRESULT",
-	"MAKEWORD",
-	"MAKEWPARAM",
 	"MARGINS_1sizeof",
 	"MCHITTESTINFO_1sizeof",
 	"MEASUREITEMSTRUCT_1sizeof",
@@ -521,9 +511,7 @@ char * OS_nativeFunctionNames[] = {
 	"OpenProcess",
 	"OpenThemeData",
 	"PAINTSTRUCT_1sizeof",
-	"POINTSTOPOINT",
 	"POINT_1sizeof",
-	"PRIMARYLANGID",
 	"PRINTDLG_1sizeof",
 	"PROCESS_1INFORMATION_1sizeof",
 	"PROPERTYKEY_1sizeof",
@@ -705,7 +693,6 @@ char * OS_nativeFunctionNames[] = {
 	"TF_1DISPLAYATTRIBUTE_1sizeof",
 	"TOOLINFO_1sizeof",
 	"TOUCHINPUT_1sizeof",
-	"TOUCH_1COORD_1TO_1PIXEL",
 	"TRACKMOUSEEVENT_1sizeof",
 	"TRIVERTEX_1sizeof",
 	"TVHITTESTINFO_1sizeof",

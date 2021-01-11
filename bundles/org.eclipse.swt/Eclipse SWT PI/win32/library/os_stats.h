@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2020 IBM Corporation and others.
+ * Copyright (c) 2000, 2021 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -172,9 +172,6 @@ typedef enum {
 	GCP_1RESULTS_1sizeof_FUNC,
 	GESTURECONFIG_1sizeof_FUNC,
 	GESTUREINFO_1sizeof_FUNC,
-	GET_1WHEEL_1DELTA_1WPARAM_FUNC,
-	GET_1X_1LPARAM_FUNC,
-	GET_1Y_1LPARAM_FUNC,
 	GID_1ROTATE_1ANGLE_1FROM_1ARGUMENT_FUNC,
 	GRADIENT_1RECT_1sizeof_FUNC,
 	GUITHREADINFO_1sizeof_FUNC,
@@ -302,7 +299,6 @@ typedef enum {
 	HDLAYOUT_1sizeof_FUNC,
 	HELPINFO_1sizeof_FUNC,
 	HIGHCONTRAST_1sizeof_FUNC,
-	HIWORD_FUNC,
 	HeapAlloc_FUNC,
 	HeapFree_FUNC,
 	HideCaret_FUNC,
@@ -363,11 +359,9 @@ typedef enum {
 	KEYBDINPUT_1sizeof_FUNC,
 	KillTimer_FUNC,
 	LITEM_1sizeof_FUNC,
-	LODWORD_FUNC,
 	LOGBRUSH_1sizeof_FUNC,
 	LOGFONT_1sizeof_FUNC,
 	LOGPEN_1sizeof_FUNC,
-	LOWORD_FUNC,
 	LPtoDP_FUNC,
 	LVCOLUMN_1sizeof_FUNC,
 	LVHITTESTINFO_1sizeof_FUNC,
@@ -380,10 +374,6 @@ typedef enum {
 	LoadIconMetric_FUNC,
 	LoadImage_FUNC,
 	LocalFree_FUNC,
-	MAKELPARAM_FUNC,
-	MAKELRESULT_FUNC,
-	MAKEWORD_FUNC,
-	MAKEWPARAM_FUNC,
 	MARGINS_1sizeof_FUNC,
 	MCHITTESTINFO_1sizeof_FUNC,
 	MEASUREITEMSTRUCT_1sizeof_FUNC,
@@ -531,9 +521,7 @@ typedef enum {
 	OpenProcess_FUNC,
 	OpenThemeData_FUNC,
 	PAINTSTRUCT_1sizeof_FUNC,
-	POINTSTOPOINT_FUNC,
 	POINT_1sizeof_FUNC,
-	PRIMARYLANGID_FUNC,
 	PRINTDLG_1sizeof_FUNC,
 	PROCESS_1INFORMATION_1sizeof_FUNC,
 	PROPERTYKEY_1sizeof_FUNC,
@@ -715,7 +703,6 @@ typedef enum {
 	TF_1DISPLAYATTRIBUTE_1sizeof_FUNC,
 	TOOLINFO_1sizeof_FUNC,
 	TOUCHINPUT_1sizeof_FUNC,
-	TOUCH_1COORD_1TO_1PIXEL_FUNC,
 	TRACKMOUSEEVENT_1sizeof_FUNC,
 	TRIVERTEX_1sizeof_FUNC,
 	TVHITTESTINFO_1sizeof_FUNC,

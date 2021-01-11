@@ -2998,7 +2998,7 @@ boolean sendGestureEvent (GESTUREINFO gi) {
 		case OS.GID_ZOOM:
 			type = SWT.Gesture;
 			event.detail = SWT.GESTURE_MAGNIFY;
-			int fingerDistance = OS.LODWORD (gi.ullArguments);
+			int fingerDistance = (int)gi.ullArguments;
 			if ((gi.dwFlags & OS.GF_BEGIN) != 0) {
 				event.detail = SWT.GESTURE_BEGIN;
 				display.magStartDistance = display.lastDistance = fingerDistance;
@@ -3033,7 +3033,7 @@ boolean sendGestureEvent (GESTUREINFO gi) {
 		case OS.GID_ROTATE:
 			type = SWT.Gesture;
 			event.detail = SWT.GESTURE_ROTATE;
-			double rotationInRadians = OS.GID_ROTATE_ANGLE_FROM_ARGUMENT (OS.LODWORD (gi.ullArguments));
+			double rotationInRadians = OS.GID_ROTATE_ANGLE_FROM_ARGUMENT (gi.ullArguments);
 			if ((gi.dwFlags & OS.GF_BEGIN) != 0) {
 				event.detail = SWT.GESTURE_BEGIN;
 				display.rotationAngle = rotationInRadians;
@@ -3084,8 +3084,8 @@ void sendTouchEvent (TOUCHINPUT touchInput []) {
 		if ((ti.dwFlags & OS.TOUCHEVENTF_UP) != 0) state = SWT.TOUCHSTATE_UP;
 		if ((ti.dwFlags & OS.TOUCHEVENTF_MOVE) != 0) state = SWT.TOUCHSTATE_MOVE;
 		boolean primary = (ti.dwFlags & OS.TOUCHEVENTF_PRIMARY) != 0;
-		int x = (int)OS.TOUCH_COORD_TO_PIXEL (ti.x);
-		int y = (int)OS.TOUCH_COORD_TO_PIXEL (ti.y);
+		int x = OS.TOUCH_COORD_TO_PIXEL (ti.x);
+		int y = OS.TOUCH_COORD_TO_PIXEL (ti.y);
 		touches [i] = new Touch (ti.dwID, inputSource, state, primary, x, y);
 	}
 	event.touches = touches;

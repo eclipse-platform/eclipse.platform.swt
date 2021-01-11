@@ -15,9 +15,9 @@
 package org.eclipse.swt.internal.win32;
 
 
-import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.*;
-import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.*;
 
 public class OS extends C {
 	static {
@@ -2248,6 +2248,21 @@ public static final int UrlCreateFromPath (TCHAR pszPath, TCHAR pszURL, int[] pc
 	return UrlCreateFromPath (path, url, pcchUrl, flags);
 }
 
+/* Macros */
+
+public static final int GET_WHEEL_DELTA_WPARAM (long wParam) { return (short)HIWORD (wParam); }
+public static final int GET_X_LPARAM (long lp) { return (short)LOWORD (lp); }
+public static final int GET_Y_LPARAM (long lp) { return (short)HIWORD (lp); }
+public static final int HIWORD (long l) { return (int)l >>> 16; }
+public static final int LOWORD (long l) { return (int)l & 0xffff; }
+public static final int MAKEWORD (int l, int h) { return (l & 0xff) | ((h & 0xff) << 8); }
+public static final long MAKELPARAM (int l, int h) { return ((l & 0xffff) | (h << 16)) & 0xffffffffL; }
+public static final long MAKELRESULT (int l, int h) { return MAKELPARAM (l, h); }
+public static final long MAKEWPARAM (int l, int h) { return MAKELPARAM (l, h); }
+public static final void POINTSTOPOINT (POINT pt, long pts) { pt.x = (short)LOWORD (pts); pt.y = (short)HIWORD (pts); }
+public static final int PRIMARYLANGID (int lgid) { return lgid & 0x3ff; }
+public static final int TOUCH_COORD_TO_PIXEL (int touchCoord) { return touchCoord / 100; }
+
 /** Natives */
 
 /** @param hdc cast=(HDC) */
@@ -2624,9 +2639,6 @@ public static final native int ExtractIconEx (char [] lpszFile, int nIconIndex, 
 public static final native int FillRect (long hDC, RECT lprc, long hbr);
 /** @param dwLimit cast=(DWORD) */
 public static final native int GdiSetBatchLimit (int dwLimit);
-public static final native int GET_WHEEL_DELTA_WPARAM(long wParam);
-public static final native int GET_X_LPARAM(long lp);
-public static final native int GET_Y_LPARAM(long lp);
 public static final native int GetACP ();
 public static final native long GetActiveWindow ();
 /** @param hDC cast=(HDC) */
@@ -2974,7 +2986,6 @@ public static final native boolean GlobalUnlock (long hMem);
  * @param dwMode cast=(ULONG)
  */
 public static final native boolean GradientFill (long hdc, long pVertex, int dwNumVertex, long pMesh, int dwNumMesh, int dwMode);
-public static final native int HIWORD(long l);
 /** @param hHeap cast=(HANDLE) */
 public static final native long HeapAlloc (long hHeap, int dwFlags, int dwBytes);
 /**
@@ -3183,14 +3194,8 @@ public static final native int LoadIconMetric (long hinst, long pszName, int lim
 public static final native long LoadImage (long hinst, long lpszName, int uType, int cxDesired, int cyDesired, int fuLoad);
 /** @param hMem cast=(HLOCAL) */
 public static final native long LocalFree (long hMem);
-public static final native int LODWORD (long l);
-public static final native int LOWORD (long l);
 /** @param hdc cast=(HDC) */
 public static final native boolean LPtoDP (long hdc, POINT lpPoints, int nCount);
-public static final native int MAKEWORD(int l, int h);
-public static final native long MAKEWPARAM(int l, int h);
-public static final native long MAKELPARAM(int l, int h);
-public static final native long MAKELRESULT(int l, int h);
 public static final native int MapVirtualKey (int uCode, int uMapType);
 /**
  * @param hWndFrom cast=(HWND)
@@ -3711,8 +3716,6 @@ public static final native boolean PathIsExe (long szfile);
 public static final native boolean PeekMessage (MSG lpMsg, long hWnd, int wMsgFilterMin, int wMsgFilterMax, int wRemoveMsg);
 /** @param hdc cast=(HDC) */
 public static final native boolean Pie (long hdc, int nLeftRect, int nTopRect, int nRightRect, int nBottomRect, int nXStartArc, int nYStartArc, int nXEndArc, int nYEndArc);
-/** @param pt flags=struct */
-public static final native void POINTSTOPOINT(POINT pt, long pts);
 /**
  * @param hdc cast=(HDC)
  * @param points cast=(CONST POINT *),flags=no_out critical
@@ -3734,7 +3737,6 @@ public static final native boolean PostMessage (long hWnd, int Msg, long wParam,
  * @param lParam cast=(LPARAM)
  */
 public static final native boolean PostThreadMessage (int idThread, int Msg, long wParam, long lParam);
-public static final native short PRIMARYLANGID (int lgid);
 /** @param lppd cast=(LPPRINTDLGW) */
 public static final native boolean PrintDlg (PRINTDLG lppd);
 /**
@@ -4361,7 +4363,6 @@ public static final native boolean SystemParametersInfo (int uiAction, int uiPar
  * @param pwszBuff cast=(LPWSTR)
  */
 public static final native int ToUnicode (int wVirtKey, int wScanCode, byte [] lpKeyState, char [] pwszBuff, int cchBuff, int wFlags);
-public static final native long TOUCH_COORD_TO_PIXEL(long touchCoord);
 /**
  * @param hwndTV cast=(HWND)
  * @param hitem cast=(HTREEITEM)
