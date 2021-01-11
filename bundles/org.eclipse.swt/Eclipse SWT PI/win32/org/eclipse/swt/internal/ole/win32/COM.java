@@ -247,18 +247,28 @@ private static GUID IIDFromString(String lpsz) {
 
 /** Natives */
 
-/** @param lpszProgID cast=(LPCOLESTR) */
+/**
+ * @param lpszProgID cast=(LPCOLESTR),flags=no_out
+ * @param pclsid flags=no_in
+ */
 public static final native int CLSIDFromProgID(char[] lpszProgID, GUID pclsid);
-/** @param lpsz cast=(LPOLESTR) */
+/**
+ * @param lpsz cast=(LPOLESTR),flags=no_out
+ * @param pclsid flags=no_in
+ */
 public static final native int CLSIDFromString(char[] lpsz, GUID pclsid);
 /**
+ * @param rclsid flags=no_out
  * @param pUnkOuter cast=(LPUNKNOWN)
+ * @param riid flags=no_out
  * @param ppv cast=(LPVOID *)
  */
 public static final native int CoCreateInstance(GUID rclsid, long pUnkOuter, int dwClsContext, GUID riid, long[] ppv);
 public static final native void CoFreeUnusedLibraries();
 /**
+ * @param rclsid flags=no_out
  * @param pServerInfo cast=(COSERVERINFO *)
+ * @param riid flags=no_out
  * @param ppv cast=(LPVOID *)
  */
 public static final native int CoGetClassObject(GUID rclsid, int dwClsContext, long pServerInfo, GUID riid, long[] ppv);
@@ -274,10 +284,20 @@ public static final native int CoLockObjectExternal(long pUnk, boolean fLock, bo
  * @param pdwEffect cast=(LPDWORD)
  */
 public static final native int DoDragDrop(long pDataObject, long pDropSource, int dwOKEffect, int[] pdwEffect);
-/** @param szFileName cast=(LPCWSTR) */
+/**
+ * @param szFileName cast=(LPCWSTR),flags=no_out
+ * @param clsid flags=no_in
+ */
 public static final native int GetClassFile(char[] szFileName, GUID clsid);
-/** @param lpsz cast=(LPOLESTR) */
+/**
+ * @param lpsz cast=(LPOLESTR),flags=no_out
+ * @param lpiid flags=no_in
+ */
 public static final native int IIDFromString(char[] lpsz, GUID lpiid);
+/**
+ * @param rguid1 flags=no_out
+ * @param rguid2 flags=no_out
+ */
 public static final native boolean IsEqualGUID(GUID rguid1, GUID rguid2);
 /**
  * @param Destination cast=(PVOID)
@@ -340,13 +360,19 @@ public static final native void MoveMemory(VARDESC Destination, long Source, int
  */
 public static final native void MoveMemory(VARIANT Destination, long Source, int Length);
 /**
+ * @param rclsid flags=no_out
+ * @param riid flags=no_out
+ * @param pFormatEtc flags=no_out
  * @param pClientSite cast=(IOleClientSite *)
  * @param pStg cast=(IStorage *)
  * @param ppvObject cast=(void **)
  */
 public static final native int OleCreate(GUID rclsid, GUID riid, int renderopt, FORMATETC pFormatEtc, long pClientSite, long pStg, long[] ppvObject);
 /**
- * @param lpszFileName cast=(LPCOLESTR)
+ * @param rclsid flags=no_out
+ * @param lpszFileName cast=(LPCOLESTR),flags=no_out
+ * @param riid flags=no_out
+ * @param pFormatEtc flags=no_out
  * @param pClientSite cast=(LPOLECLIENTSITE)
  * @param pStg cast=(LPSTORAGE)
  * @param ppvObj cast=(LPVOID *)
@@ -354,7 +380,7 @@ public static final native int OleCreate(GUID rclsid, GUID riid, int renderopt, 
 public static final native int OleCreateFromFile(GUID rclsid, char[] lpszFileName, GUID riid, int renderopt, FORMATETC pFormatEtc, long pClientSite, long pStg, long[] ppvObj);
 /**
  * @param hwndOwner cast=(HWND)
- * @param lpszCaption cast=(LPCOLESTR)
+ * @param lpszCaption cast=(LPCOLESTR),flags=no_out
  * @param lplpUnk cast=(LPUNKNOWN FAR*)
  * @param lpPageClsID cast=(LPCLSID)
  * @param lcid cast=(LCID)
@@ -406,7 +432,10 @@ public static final native int OleTranslateColor(int clr, long hpal, int[] pcolo
  * @param ppidl cast=(PIDLIST_ABSOLUTE *)
  */
 public static final native int PathToPIDL (char [] pszName, long [] ppidl);
-/** @param lplpszProgID cast=(LPOLESTR *) */
+/**
+ * @param clsid flags=no_out
+ * @param lplpszProgID cast=(LPOLESTR *)
+ */
 public static final native int ProgIDFromCLSID(GUID clsid, long[] lplpszProgID);
 /**
  * @param hwnd cast=(HWND)
@@ -418,24 +447,27 @@ public static final native void ReleaseStgMedium(long pmedium);
 /** @param hwnd cast=(HWND) */
 public static final native int RevokeDragDrop(long hwnd);
 /**
- * @param pszName cast=(PCWSTR)
+ * @param pszName cast=(PCWSTR),flags=no_out
  * @param pbc cast=(IBindCtx *)
- * @param riid cast=(REFIID)
+ * @param riid flags=no_out
  * @param ppv cast=(void **)
  */
 public static final native int SHCreateItemFromParsingName (char [] pszName, long pbc, GUID riid, long [] ppv);
-/** @param ppstgOpen cast=(IStorage **) */
+/**
+ * @param pwcsName cast=(const WCHAR *),flags=no_out
+ * @param ppstgOpen cast=(IStorage **)
+ */
 public static final native int StgCreateDocfile(char[] pwcsName, int grfMode, int reserved, long[] ppstgOpen);
-/** @param pwcsName cast=(const WCHAR *) */
+/** @param pwcsName cast=(const WCHAR *),flags=no_out */
 public static final native int StgIsStorageFile(char[] pwcsName);
 /**
- * @param pwcsName cast=(const WCHAR *)
+ * @param pwcsName cast=(const WCHAR *),flags=no_out
  * @param pstgPriority cast=(IStorage *)
  * @param snbExclude cast=(SNB)
  * @param ppstgOpen cast=(IStorage **)
  */
 public static final native int StgOpenStorage(char[] pwcsName, long pstgPriority, int grfMode, long snbExclude, int reserved, long[] ppstgOpen);
-/** @param sz cast=(OLECHAR *) */
+/** @param sz cast=(OLECHAR *),flags=no_out critical */
 public static final native long SysAllocString(char [] sz);
 /** @param bstr cast=(BSTR) */
 public static final native void SysFreeString(long bstr);
@@ -658,11 +690,12 @@ public static final int IA2_SCROLL_TYPE_ANYWHERE = 6;
 
 /**
  * @param hwnd cast=(HWND)
+ * @param riidInterface flags=no_out
  * @param ppvObject cast=(LPVOID *)
  */
 public static final native int CreateStdAccessibleObject (long hwnd, int idObject, GUID riidInterface, long[] ppvObject);
 /**
- * @method flags=dynamic
+ * @param riid flags=no_out
  * @param pAcc cast=(LPUNKNOWN)
  */
 public static final native long LresultFromObject (GUID riid, long wParam, long pAcc);

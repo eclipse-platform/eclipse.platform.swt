@@ -27,11 +27,20 @@ public class WGL extends Platform {
 	public static final int PFD_DRAW_TO_WINDOW          = 0x00000004;
 	public static final int PFD_SUPPORT_OPENGL          = 0x00000020;
 
-/** @param hdc cast=(HDC) */
+/**
+ * @param hdc cast=(HDC)
+ * @param ppfd flags=no_out
+ */
 public static final native int ChoosePixelFormat(long hdc, PIXELFORMATDESCRIPTOR ppfd);
-/** @param hdc cast=(HDC) */
+/**
+ * @param hdc cast=(HDC)
+ * @param ppfd flags=no_in
+ */
 public static final native int DescribePixelFormat(long hdc, int iPixelFormat, int nBytes, PIXELFORMATDESCRIPTOR ppfd);
-/** @param hdc cast=(HDC) */
+/**
+ * @param hdc cast=(HDC)
+ * @param ppfd flags=no_out
+ */
 public static final native boolean SetPixelFormat(long hdc, int iPixelFormat, PIXELFORMATDESCRIPTOR ppfd);
 /** @param hdc cast=(HDC) */
 public static final native boolean SwapBuffers(long hdc);

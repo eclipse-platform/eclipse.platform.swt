@@ -18,14 +18,4 @@
 #define LOGPEN_sizeof() sizeof(LOGPEN)
 
 /* Libraries for dynamic loaded functions */
-#define CloseGestureInfoHandle_LIB "user32.dll"
-#define CloseTouchInputHandle_LIB "user32.dll"
-#define GetCurrentProcessExplicitAppUserModelID_LIB "shell32.dll"
 #define GetDpiForMonitor_LIB "shcore.dll"
-#define GetGestureInfo_LIB "user32.dll"
-#define GetTouchInputInfo_LIB "user32.dll"
-#define IsTouchWindow_LIB "user32.dll"
-#define RegisterTouchWindow_LIB "user32.dll"
-#define SetCurrentProcessExplicitAppUserModelID_LIB "shell32.dll"
-#define SetGestureConfig_LIB "user32.dll"
-#define UnregisterTouchWindow_LIB "user32.dll"

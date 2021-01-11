@@ -33,7 +33,6 @@ JNIEXPORT jint JNICALL WGL_NATIVE(ChoosePixelFormat)
 	if (arg1) if ((lparg1 = getPIXELFORMATDESCRIPTORFields(env, arg1, &_arg1)) == NULL) goto fail;
 	rc = (jint)ChoosePixelFormat((HDC)arg0, lparg1);
 fail:
-	if (arg1 && lparg1) setPIXELFORMATDESCRIPTORFields(env, arg1, lparg1);
 	WGL_NATIVE_EXIT(env, that, ChoosePixelFormat_FUNC);
 	return rc;
 }
@@ -46,7 +45,7 @@ JNIEXPORT jint JNICALL WGL_NATIVE(DescribePixelFormat)
 	PIXELFORMATDESCRIPTOR _arg3, *lparg3=NULL;
 	jint rc = 0;
 	WGL_NATIVE_ENTER(env, that, DescribePixelFormat_FUNC);
-	if (arg3) if ((lparg3 = getPIXELFORMATDESCRIPTORFields(env, arg3, &_arg3)) == NULL) goto fail;
+	if (arg3) if ((lparg3 = &_arg3) == NULL) goto fail;
 	rc = (jint)DescribePixelFormat((HDC)arg0, arg1, arg2, lparg3);
 fail:
 	if (arg3 && lparg3) setPIXELFORMATDESCRIPTORFields(env, arg3, lparg3);
@@ -65,7 +64,6 @@ JNIEXPORT jboolean JNICALL WGL_NATIVE(SetPixelFormat)
 	if (arg2) if ((lparg2 = getPIXELFORMATDESCRIPTORFields(env, arg2, &_arg2)) == NULL) goto fail;
 	rc = (jboolean)SetPixelFormat((HDC)arg0, arg1, lparg2);
 fail:
-	if (arg2 && lparg2) setPIXELFORMATDESCRIPTORFields(env, arg2, lparg2);
 	WGL_NATIVE_EXIT(env, that, SetPixelFormat_FUNC);
 	return rc;
 }

@@ -126,7 +126,6 @@ public GLData getGLData () {
 	checkWidget ();
 	GLData data = new GLData ();
 	PIXELFORMATDESCRIPTOR pfd = new PIXELFORMATDESCRIPTOR ();
-	pfd.nSize = (short) PIXELFORMATDESCRIPTOR.sizeof;
 	long hDC = OS.GetDC (handle);
 	WGL.DescribePixelFormat (hDC, pixelFormat, PIXELFORMATDESCRIPTOR.sizeof, pfd);
 	OS.ReleaseDC (handle, hDC);
