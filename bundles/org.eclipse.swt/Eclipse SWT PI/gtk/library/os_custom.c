@@ -455,7 +455,9 @@ static void swt_fixed_realize (GtkWidget *widget) {
 	gtk_widget_set_window (widget, window);
 	gdk_window_set_user_data (window, widget);
 	if (NULL != gtk_check_version (3, 18, 0)) {
+	    G_GNUC_BEGIN_IGNORE_DEPRECATIONS
 		gtk_style_context_set_background (gtk_widget_get_style_context (widget), window);
+		G_GNUC_END_IGNORE_DEPRECATIONS
 	}
 }
 

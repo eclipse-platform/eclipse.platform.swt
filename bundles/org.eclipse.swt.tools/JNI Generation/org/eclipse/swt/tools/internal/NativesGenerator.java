@@ -184,6 +184,7 @@ public void generate(JNIMethod method) {
 	JNIParameter[] params = method.getParameters();
 	String function = getFunctionName(method);
 	generateSourceStart(function);
+	generateIgnoreDeprecationsStart(method);
 	boolean isCPP = getCPP();
 	if (isCPP) {
 		output("extern \"C\" ");
@@ -195,6 +196,7 @@ public void generate(JNIMethod method) {
 	}
 	generateFunctionPrototype(method, function, params, returnType, false);
 	generateFunctionBody(method, function, params, returnType);
+	generateIgnoreDeprecationsEnd(method);
 	generateSourceEnd();
 	outputln();
 }
@@ -923,6 +925,16 @@ void generateSourceStart(String function) {
 
 void generateSourceEnd() {
 	outputln("#endif");
+}
+
+void generateIgnoreDeprecationsStart(JNIMethod method) {
+	if (method.getFlag(Flags.FLAG_IGNORE_DEPRECATIONS))
+		outputln("G_GNUC_BEGIN_IGNORE_DEPRECATIONS");
+}
+
+void generateIgnoreDeprecationsEnd(JNIMethod method) {
+	if (method.getFlag(Flags.FLAG_IGNORE_DEPRECATIONS))
+		outputln("G_GNUC_END_IGNORE_DEPRECATIONS");
 }
 
 boolean isCritical(JNIParameter param) {

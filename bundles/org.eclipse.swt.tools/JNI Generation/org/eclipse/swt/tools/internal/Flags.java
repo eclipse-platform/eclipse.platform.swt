@@ -39,4 +39,5 @@ public interface Flags {
 	public static final String FLAG_SETTER = "setter";
 	public static final String FLAG_GETTER = "getter";
 	public static final String FLAG_ADDER = "adder";
+	public static final String FLAG_IGNORE_DEPRECATIONS = "ignore_deprecations";
 }

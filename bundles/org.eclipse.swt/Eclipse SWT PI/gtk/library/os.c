@@ -1584,6 +1584,7 @@ fail:
 #endif
 
 #ifndef NO_gdk_1pixbuf_1animation_1get_1iter
+G_GNUC_BEGIN_IGNORE_DEPRECATIONS
 JNIEXPORT jlong JNICALL GDK_NATIVE(gdk_1pixbuf_1animation_1get_1iter)
 	(JNIEnv *env, jclass that, jlong arg0, jlong arg1)
 {
@@ -1593,6 +1594,7 @@ JNIEXPORT jlong JNICALL GDK_NATIVE(gdk_1pixbuf_1animation_1get_1iter)
 	GDK_NATIVE_EXIT(env, that, gdk_1pixbuf_1animation_1get_1iter_FUNC);
 	return rc;
 }
+G_GNUC_END_IGNORE_DEPRECATIONS
 #endif
 
 #ifndef NO_gdk_1pixbuf_1animation_1get_1static_1image
@@ -1620,6 +1622,7 @@ JNIEXPORT jboolean JNICALL GDK_NATIVE(gdk_1pixbuf_1animation_1is_1static_1image)
 #endif
 
 #ifndef NO_gdk_1pixbuf_1animation_1iter_1advance
+G_GNUC_BEGIN_IGNORE_DEPRECATIONS
 JNIEXPORT jboolean JNICALL GDK_NATIVE(gdk_1pixbuf_1animation_1iter_1advance)
 	(JNIEnv *env, jclass that, jlong arg0, jlong arg1)
 {
@@ -1629,6 +1632,7 @@ JNIEXPORT jboolean JNICALL GDK_NATIVE(gdk_1pixbuf_1animation_1iter_1advance)
 	GDK_NATIVE_EXIT(env, that, gdk_1pixbuf_1animation_1iter_1advance_FUNC);
 	return rc;
 }
+G_GNUC_END_IGNORE_DEPRECATIONS
 #endif
 
 #ifndef NO_gdk_1pixbuf_1animation_1iter_1get_1delay_1time
@@ -2661,6 +2665,7 @@ JNIEXPORT jlong JNICALL GDK_NATIVE(gdk_1texture_1new_1from_1file)
 #endif
 
 #ifndef NO_gdk_1threads_1leave
+G_GNUC_BEGIN_IGNORE_DEPRECATIONS
 JNIEXPORT void JNICALL GDK_NATIVE(gdk_1threads_1leave)
 	(JNIEnv *env, jclass that)
 {
@@ -2668,6 +2673,7 @@ JNIEXPORT void JNICALL GDK_NATIVE(gdk_1threads_1leave)
 	gdk_threads_leave();
 	GDK_NATIVE_EXIT(env, that, gdk_1threads_1leave_FUNC);
 }
+G_GNUC_END_IGNORE_DEPRECATIONS
 #endif
 
 #ifndef NO_gdk_1toplevel_1focus
@@ -3115,6 +3121,7 @@ JNIEXPORT void JNICALL GDK_NATIVE(gdk_1window_1restack)
 #endif
 
 #ifndef NO_gdk_1window_1set_1background_1pattern
+G_GNUC_BEGIN_IGNORE_DEPRECATIONS
 JNIEXPORT void JNICALL GDK_NATIVE(gdk_1window_1set_1background_1pattern)
 	(JNIEnv *env, jclass that, jlong arg0, jlong arg1)
 {
@@ -3122,6 +3129,7 @@ JNIEXPORT void JNICALL GDK_NATIVE(gdk_1window_1set_1background_1pattern)
 	gdk_window_set_background_pattern((GdkWindow *)arg0, (cairo_pattern_t *)arg1);
 	GDK_NATIVE_EXIT(env, that, gdk_1window_1set_1background_1pattern_FUNC);
 }
+G_GNUC_END_IGNORE_DEPRECATIONS
 #endif
 
 #ifndef NO_gdk_1window_1set_1cursor
@@ -10387,6 +10395,7 @@ JNIEXPORT void JNICALL GTK_NATIVE(gtk_1spin_1button_1update)
 #endif
 
 #ifndef NO_gtk_1status_1icon_1get_1geometry
+G_GNUC_BEGIN_IGNORE_DEPRECATIONS
 JNIEXPORT jboolean JNICALL GTK_NATIVE(gtk_1status_1icon_1get_1geometry)
 	(JNIEnv *env, jclass that, jlong arg0, jlong arg1, jobject arg2, jlong arg3)
 {
@@ -10400,9 +10409,11 @@ fail:
 	GTK_NATIVE_EXIT(env, that, gtk_1status_1icon_1get_1geometry_FUNC);
 	return rc;
 }
+G_GNUC_END_IGNORE_DEPRECATIONS
 #endif
 
 #ifndef NO_gtk_1status_1icon_1get_1visible
+G_GNUC_BEGIN_IGNORE_DEPRECATIONS
 JNIEXPORT jboolean JNICALL GTK_NATIVE(gtk_1status_1icon_1get_1visible)
 	(JNIEnv *env, jclass that, jlong arg0)
 {
@@ -10412,9 +10423,11 @@ JNIEXPORT jboolean JNICALL GTK_NATIVE(gtk_1status_1icon_1get_1visible)
 	GTK_NATIVE_EXIT(env, that, gtk_1status_1icon_1get_1visible_FUNC);
 	return rc;
 }
+G_GNUC_END_IGNORE_DEPRECATIONS
 #endif
 
 #ifndef NO_gtk_1status_1icon_1new
+G_GNUC_BEGIN_IGNORE_DEPRECATIONS
 JNIEXPORT jlong JNICALL GTK_NATIVE(gtk_1status_1icon_1new)
 	(JNIEnv *env, jclass that)
 {
@@ -10424,6 +10437,7 @@ JNIEXPORT jlong JNICALL GTK_NATIVE(gtk_1status_1icon_1new)
 	GTK_NATIVE_EXIT(env, that, gtk_1status_1icon_1new_FUNC);
 	return rc;
 }
+G_GNUC_END_IGNORE_DEPRECATIONS
 #endif
 
 #ifndef NO_gtk_1status_1icon_1position_1menu_1func
@@ -10439,6 +10453,7 @@ JNIEXPORT jlong JNICALL GTK_NATIVE(gtk_1status_1icon_1position_1menu_1func)
 #endif
 
 #ifndef NO_gtk_1status_1icon_1set_1from_1pixbuf
+G_GNUC_BEGIN_IGNORE_DEPRECATIONS
 JNIEXPORT void JNICALL GTK_NATIVE(gtk_1status_1icon_1set_1from_1pixbuf)
 	(JNIEnv *env, jclass that, jlong arg0, jlong arg1)
 {
@@ -10446,9 +10461,11 @@ JNIEXPORT void JNICALL GTK_NATIVE(gtk_1status_1icon_1set_1from_1pixbuf)
 	gtk_status_icon_set_from_pixbuf((GtkStatusIcon*)arg0, (GdkPixbuf*)arg1);
 	GTK_NATIVE_EXIT(env, that, gtk_1status_1icon_1set_1from_1pixbuf_FUNC);
 }
+G_GNUC_END_IGNORE_DEPRECATIONS
 #endif
 
 #ifndef NO_gtk_1status_1icon_1set_1tooltip_1text
+G_GNUC_BEGIN_IGNORE_DEPRECATIONS
 JNIEXPORT void JNICALL GTK_NATIVE(gtk_1status_1icon_1set_1tooltip_1text)
 	(JNIEnv *env, jclass that, jlong arg0, jbyteArray arg1)
 {
@@ -10460,9 +10477,11 @@ fail:
 	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
 	GTK_NATIVE_EXIT(env, that, gtk_1status_1icon_1set_1tooltip_1text_FUNC);
 }
+G_GNUC_END_IGNORE_DEPRECATIONS
 #endif
 
 #ifndef NO_gtk_1status_1icon_1set_1visible
+G_GNUC_BEGIN_IGNORE_DEPRECATIONS
 JNIEXPORT void JNICALL GTK_NATIVE(gtk_1status_1icon_1set_1visible)
 	(JNIEnv *env, jclass that, jlong arg0, jboolean arg1)
 {
@@ -10470,6 +10489,7 @@ JNIEXPORT void JNICALL GTK_NATIVE(gtk_1status_1icon_1set_1visible)
 	gtk_status_icon_set_visible((GtkStatusIcon*)arg0, (gboolean)arg1);
 	GTK_NATIVE_EXIT(env, that, gtk_1status_1icon_1set_1visible_FUNC);
 }
+G_GNUC_END_IGNORE_DEPRECATIONS
 #endif
 
 #ifndef NO_gtk_1style_1context_1add_1class
@@ -16822,6 +16842,7 @@ JNIEXPORT void JNICALL OS_NATIVE(g_1free)
 #endif
 
 #ifndef NO_g_1get_1current_1time
+G_GNUC_BEGIN_IGNORE_DEPRECATIONS
 JNIEXPORT void JNICALL OS_NATIVE(g_1get_1current_1time)
 	(JNIEnv *env, jclass that, jlong arg0)
 {
@@ -16829,6 +16850,7 @@ JNIEXPORT void JNICALL OS_NATIVE(g_1get_1current_1time)
 	g_get_current_time((GTimeVal *)arg0);
 	OS_NATIVE_EXIT(env, that, g_1get_1current_1time_FUNC);
 }
+G_GNUC_END_IGNORE_DEPRECATIONS
 #endif
 
 #ifndef NO_g_1get_1user_1name
@@ -17959,6 +17981,7 @@ fail:
 #endif
 
 #ifndef NO_g_1time_1val_1add
+G_GNUC_BEGIN_IGNORE_DEPRECATIONS
 JNIEXPORT void JNICALL OS_NATIVE(g_1time_1val_1add)
 	(JNIEnv *env, jclass that, jlong arg0, jlong arg1)
 {
@@ -17966,6 +17989,7 @@ JNIEXPORT void JNICALL OS_NATIVE(g_1time_1val_1add)
 	g_time_val_add((GTimeVal *)arg0, (glong)arg1);
 	OS_NATIVE_EXIT(env, that, g_1time_1val_1add_FUNC);
 }
+G_GNUC_END_IGNORE_DEPRECATIONS
 #endif
 
 #ifndef NO_g_1timeout_1add

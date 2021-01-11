@@ -2544,6 +2544,7 @@ public class GTK extends OS {
 	/* [GTK4 only, if-def'd in os.h] */
 	public static final native long gtk_snapshot_append_cairo(long snapshot, long rect);
 	/**
+	 * @method flags=ignore_deprecations
 	 * @param handle cast=(GtkStatusIcon*)
 	 * @param screen cast=(GdkScreen**)
 	 * @param area cast=(GdkRectangle*)
@@ -2551,24 +2552,33 @@ public class GTK extends OS {
 	 */
 	/* [GTK3 only, if-def'd in os.h] */
 	public static final native boolean gtk_status_icon_get_geometry(long handle, long screen, GdkRectangle area, long orientation);
-	/** @param handle cast=(GtkStatusIcon*) */
+	/**
+	 * @method flags=ignore_deprecations
+	 * @param handle cast=(GtkStatusIcon*)
+	 */
 	/* [GTK3 only, if-def'd in os.h] */
 	public static final native boolean gtk_status_icon_get_visible(long handle);
+	/**
+	 * @method flags=ignore_deprecations
+	 */
 	/* [GTK3 only, if-def'd in os.h] */
 	public static final native long gtk_status_icon_new();
 	/**
+	 * @method flags=ignore_deprecations
 	 * @param handle cast=(GtkStatusIcon*)
 	 * @param pixbuf cast=(GdkPixbuf*)
 	 */
 	/* [GTK3 only, if-def'd in os.h] */
 	public static final native void gtk_status_icon_set_from_pixbuf(long handle, long pixbuf);
 	/**
+	 * @method flags=ignore_deprecations
 	 * @param handle cast=(GtkStatusIcon*)
 	 * @param visible cast=(gboolean)
 	 */
 	/* [GTK3 only, if-def'd in os.h] */
 	public static final native void gtk_status_icon_set_visible(long handle, boolean visible);
 	/**
+	 * @method flags=ignore_deprecations
 	 * @param handle cast=(GtkStatusIcon *)
 	 * @param tip_text cast=(const gchar *)
 	 */

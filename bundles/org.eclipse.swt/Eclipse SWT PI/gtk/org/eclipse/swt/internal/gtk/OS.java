@@ -1040,10 +1040,14 @@ public static final native void g_free(long mem);
  * @param variable cast=(const gchar *),flags=no_out
  */
 public static final native long g_getenv(byte [] variable);
-/** @param result cast=(GTimeVal *)*/
+/**
+ * @method flags=ignore_deprecations
+ * @param result cast=(GTimeVal *)
+ */
 public static final native void g_get_current_time(long result);
 public static final native long g_get_user_name();
 /**
+ * @method flags=ignore_deprecations
  * @param result cast=(GTimeVal *)
  * @param microseconds cast=(glong)
  */

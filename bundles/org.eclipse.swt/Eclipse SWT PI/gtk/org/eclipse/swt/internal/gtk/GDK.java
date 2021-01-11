@@ -647,11 +647,13 @@ public class GDK extends OS {
 	/** @param iter cast=(GdkPixbufAnimationIter *) */
 	public static final native long gdk_pixbuf_animation_iter_get_pixbuf(long iter);
 	/**
+	 * @method flags=ignore_deprecations
 	 * @param iter cast=(GdkPixbufAnimationIter *)
 	 * @param current_time cast=(const GTimeVal *)
 	 */
 	public static final native boolean gdk_pixbuf_animation_iter_advance(long iter, long current_time);
 	/**
+	 * @method flags=ignore_deprecations
 	 * @param animation cast=(GdkPixbufAnimation *)
 	 * @param start_time cast=(const GTimeVal *)
 	 */
@@ -1058,6 +1060,9 @@ public class GDK extends OS {
 	public static final native long gdk_texture_new_from_file(long file, long error);
 
 
+	/**
+	 * @method flags=ignore_deprecations
+	 */
 	public static final native void gdk_threads_leave ();
 	public static final native  int gdk_unicode_to_keyval(int wc);
 	/**
@@ -1210,6 +1215,7 @@ public class GDK extends OS {
 	/* [GTK3 only, if-def'd in os.h] */
 	public static final native void gdk_window_restack(long window, long sibling, boolean above);
 	/**
+	 * @method flags=ignore_deprecations
 	 * @param window cast=(GdkWindow *)
 	 * @param pattern cast=(cairo_pattern_t *)
 	 */
