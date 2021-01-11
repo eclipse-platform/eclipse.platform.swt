@@ -288,7 +288,13 @@ static gboolean webkitgtk_extension_execute_script (const guint64 page_id, gchar
 	JSStringRef url_string = JSStringCreateWithUTF8CString (url);
 	JSStringRef script_string = JSStringCreateWithUTF8CString (script);
 
+	/*
+	 * TODO Bug 570285: Replace with webkit_frame_get_js_context()
+	 * when minimal WebKitGTK version is 2.22+
+	 */
+	G_GNUC_BEGIN_IGNORE_DEPRECATIONS
 	JSGlobalContextRef context = webkit_frame_get_javascript_global_context (main_frame);
+	G_GNUC_END_IGNORE_DEPRECATIONS
 
 	JSValueRef exception;
 	JSValueRef result = JSEvaluateScript(context, script_string, NULL, url_string, 0,  &exception);
@@ -393,7 +399,13 @@ static void window_object_cleared_callback (WebKitScriptWorld *world, WebKitWebP
     JSObjectRef        globalObject;
     JSValueRef exception = 0;
 
+    /*
+     * TODO Bug 570285: Replace with webkit_frame_get_js_context_for_script_world()
+     * when minimal WebKitGTK version is 2.22+
+     */
+    G_GNUC_BEGIN_IGNORE_DEPRECATIONS
     jsContext = webkit_frame_get_javascript_context_for_script_world (frame, world);
+    G_GNUC_END_IGNORE_DEPRECATIONS
     globalObject = JSContextGetGlobalObject (jsContext);
 
     JSStringRef function_name = JSStringCreateWithUTF8CString("webkit2callJava"); // Func reference by javascript
