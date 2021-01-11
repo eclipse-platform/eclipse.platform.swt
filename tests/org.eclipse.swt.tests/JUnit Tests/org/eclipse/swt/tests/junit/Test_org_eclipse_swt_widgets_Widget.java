@@ -251,6 +251,26 @@ protected void processEvents(int timeoutMs, BooleanSupplier breakCondition) thro
 	}
 }
 
+/**
+ * Renders the shell and process events for duration.
+ * Convenience method for debugging tests, ⚠️ should not be
+ * called for headless tests!
+ * @param shell The shell to render.
+ * @param durationMs duration in milliseconds. Method exits after duration.
+ * @throws InterruptedException
+ */
+protected void render(Shell shell, int durationMs) throws InterruptedException {
+	long timestamp = System.currentTimeMillis();
+	shell.pack();
+	shell.layout();
+	shell.setVisible(true);
+	while (System.currentTimeMillis() - timestamp < durationMs) {
+		if (!shell.getDisplay().readAndDispatch()) {
+			Thread.sleep(50);
+		}
+	}
+}
+
 protected void assertNotExists(Widget[] widgetTable, Widget w) {
 	for (Widget widget : widgetTable) {
 		if(widget == w) {

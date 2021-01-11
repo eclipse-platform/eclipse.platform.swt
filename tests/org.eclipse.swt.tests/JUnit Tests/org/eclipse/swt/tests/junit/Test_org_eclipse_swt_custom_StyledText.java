@@ -4925,10 +4925,11 @@ public void test_verticalIndent_changeRelativeBounds() {
 }
 
 @Test
-public void test_verticalIndent_keepsCurrentCaretAndLinePosition() throws InterruptedException {
+public void test_verticalIndent_keepsCurrentCaretAndLinePosition() {
 	String _50lines = IntStream.range(1, 50).mapToObj(Integer::toString).collect(Collectors.joining("\n"));
 	text.setText(_50lines);
 	text.setSize(500, 200);
+	final int INDENT = 34;
 	int line = 30;
 	int offset = text.getOffsetAtLine(line);
 	text.setSelection(offset);
@@ -4937,49 +4938,62 @@ public void test_verticalIndent_keepsCurrentCaretAndLinePosition() throws Interr
 	line = text.getLineIndex(text.getClientArea().height / 2);
 	offset = text.getOffsetAtLine(line);
 	text.setSelection(offset);
+	int initialTopPixel = text.getTopPixel();
 	Point caretLocation = text.getCaret().getLocation();
 	Point offsetLocation = text.getLocationAtOffset(offset);
 
 	// on active line
-	text.setLineVerticalIndent(line, 34);
+	text.setLineVerticalIndent(line, INDENT);
 	assertEquals(caretLocation, text.getCaret().getLocation());
 	assertEquals(offsetLocation, text.getLocationAtOffset(offset));
+	assertEquals("vertical scroll should have been updated", initialTopPixel + INDENT, text.getTopPixel());
 	text.setLineVerticalIndent(line, 0);
 	assertEquals(caretLocation, text.getCaret().getLocation());
 	assertEquals(offsetLocation, text.getLocationAtOffset(offset));
+	assertEquals("vertical scroll should have been restored", initialTopPixel, text.getTopPixel());
 
 	// above visible area
-	text.setLineVerticalIndent(0, 34);
+	//render(shell, 5000);
+	text.setLineVerticalIndent(0, INDENT);
+	//render(shell, 5000);
 	assertEquals(caretLocation, text.getCaret().getLocation());
 	assertEquals(offsetLocation, text.getLocationAtOffset(offset));
+	assertEquals("vertical scroll should have been updated", initialTopPixel + INDENT, text.getTopPixel());
 	text.setLineVerticalIndent(0, 0);
 	assertEquals(caretLocation, text.getCaret().getLocation());
 	assertEquals(offsetLocation, text.getLocationAtOffset(offset));
+	assertEquals("vertical scroll should have been updated", initialTopPixel, text.getTopPixel());
 
 	//below visible area
 	int nextInvisibleLine = text.getLineIndex(text.getClientArea().height - 1) + 1;
-	text.setLineVerticalIndent(nextInvisibleLine, 34);
+	text.setLineVerticalIndent(nextInvisibleLine, INDENT);
 	assertEquals(caretLocation, text.getCaret().getLocation());
 	assertEquals(offsetLocation, text.getLocationAtOffset(offset));
+	assertEquals("Vertical scroll shouldn't be modified",initialTopPixel, text.getTopPixel());
 	text.setLineVerticalIndent(nextInvisibleLine, 0);
 	assertEquals(caretLocation, text.getCaret().getLocation());
 	assertEquals(offsetLocation, text.getLocationAtOffset(offset));
+	assertEquals("Vertical scroll shouldn't be modified",initialTopPixel, text.getTopPixel());
 
 	// above active line, in visible area
-	text.setLineVerticalIndent(line - 2, 34);
+	text.setLineVerticalIndent(line - 2, INDENT);
 	assertEquals(caretLocation, text.getCaret().getLocation());
 	assertEquals(offsetLocation, text.getLocationAtOffset(offset));
+	assertEquals("Vertical scroll should have been updated",initialTopPixel + INDENT, text.getTopPixel());
 	text.setLineVerticalIndent(line - 2, 0);
 	assertEquals(caretLocation, text.getCaret().getLocation());
 	assertEquals(offsetLocation, text.getLocationAtOffset(offset));
+	assertEquals("Vertical scroll should have been restored",initialTopPixel, text.getTopPixel());
 
 	// below active line, in visible area
-	text.setLineVerticalIndent(line + 2, 34);
+	text.setLineVerticalIndent(line + 2, INDENT);
 	assertEquals(caretLocation, text.getCaret().getLocation());
 	assertEquals(offsetLocation, text.getLocationAtOffset(offset));
+	assertEquals("Vertical scroll shouldn't be modified",initialTopPixel, text.getTopPixel());
 	text.setLineVerticalIndent(line + 2, 0);
 	assertEquals(caretLocation, text.getCaret().getLocation());
 	assertEquals(offsetLocation, text.getLocationAtOffset(offset));
+	assertEquals("Vertical scroll shouldn't be modified",initialTopPixel, text.getTopPixel());
 }
 
 @Test

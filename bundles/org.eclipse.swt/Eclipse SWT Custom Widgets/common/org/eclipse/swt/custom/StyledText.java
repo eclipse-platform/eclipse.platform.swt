@@ -9449,15 +9449,18 @@ public void setLineVerticalIndent(int lineIndex, int verticalLineIndent) {
 	}
 	int initialTopPixel = getTopPixel();
 	int initialTopIndex = getPartialTopIndex();
-	int initialBottonIndex = getPartialBottomIndex();
+	int initialBottomIndex = getPartialBottomIndex();
 	int verticalIndentDiff = verticalLineIndent - previousVerticalIndent;
 	renderer.setLineVerticalIndent(lineIndex, verticalLineIndent);
 	this.hasVerticalIndent = verticalLineIndent != 0 || renderer.hasVerticalIndent();
 	resetCache(lineIndex, 1);
-	if (lineIndex < initialTopIndex || lineIndex > getPartialBottomIndex()) {
+	if (lineIndex < initialTopIndex) {
+		verticalScrollOffset += verticalIndentDiff; // just change value, don't actually scroll/redraw
+		setScrollBars(true);
+	} else if (lineIndex > initialBottomIndex) {
 		setScrollBars(true);
 	} else {
-		if (getCaretLine() >= initialTopIndex && getCaretLine() <= initialBottonIndex) { // caret line with caret mustn't move
+		if (getCaretLine() >= initialTopIndex && getCaretLine() <= initialBottomIndex) { // caret line with caret mustn't move
 			if (getCaretLine() < lineIndex) {
 				redrawLines(lineIndex, getPartialBottomIndex() - lineIndex + 1, true);
 			} else {
@@ -9471,6 +9474,7 @@ public void setLineVerticalIndent(int lineIndex, int verticalLineIndent) {
 				redrawLines(lineIndex, getPartialBottomIndex() - lineIndex + 1, true);
 			}
 		}
+		setScrollBars(true);
 	}
 }
 
