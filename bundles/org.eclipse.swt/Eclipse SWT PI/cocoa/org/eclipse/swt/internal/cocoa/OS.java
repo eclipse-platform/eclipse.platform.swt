@@ -133,7 +133,7 @@ public class OS extends C {
 
 	/** 10.12 selector */
 	public static final long sel_setAllowsAutomaticWindowTabbing_ = Selector.sel_setAllowsAutomaticWindowTabbing.value;
-	
+
 	/** 10.14 selectors */
 	public static final long sel_selectedContentBackgroundColor = Selector.sel_selectedContentBackgroundColor.value;
 	public static final long sel_unemphasizedSelectedContentBackgroundColor = Selector.sel_unemphasizedSelectedContentBackgroundColor.value;
@@ -3720,53 +3720,53 @@ public static final native int NSSize_sizeof();
 /** Memmove natives */
 
 /**
- * @param dest cast=(void *),flags=no_in critical
- * @param src cast=(void *),flags=critical
+ * @param dest cast=(void *)
+ * @param src flags=no_out
  */
 public static final native void memmove(long dest, CGPathElement src, long size);
 /**
- * @param dest cast=(void *),flags=no_in critical
- * @param src cast=(void *),flags=critical
+ * @param dest flags=no_in
+ * @param src cast=(void *)
  */
 public static final native void memmove(CGPathElement dest, long src, long size);
 /**
- * @param dest cast=(void *),flags=no_in critical
- * @param src cast=(void *),flags=critical
+ * @param dest cast=(void *)
+ * @param src flags=no_out
  */
 public static final native void memmove(long dest, NSPoint src, long size);
 /**
- * @param dest cast=(void *),flags=no_in critical
- * @param src cast=(void *),flags=critical
+ * @param dest flags=no_in
+ * @param src cast=(void *)
  */
 public static final native void memmove(NSPoint dest, long src, long size);
 /**
- * @param dest cast=(void *),flags=no_in critical
- * @param src cast=(void *),flags=critical
+ * @param dest cast=(void *)
+ * @param src flags=no_out
  */
 public static final native void memmove(long dest, NSRange src, long size);
 /**
- * @param dest cast=(void *),flags=no_in critical
- * @param src cast=(void *),flags=critical
+ * @param dest flags=no_in
+ * @param src cast=(void *)
  */
 public static final native void memmove(NSRange dest, long src, long size);
 /**
- * @param dest cast=(void *),flags=no_in critical
- * @param src cast=(void *),flags=critical
+ * @param dest cast=(void *)
+ * @param src flags=no_out
  */
 public static final native void memmove(long dest, NSRect src, long size);
 /**
- * @param dest cast=(void *),flags=no_in critical
- * @param src cast=(void *),flags=critical
+ * @param dest flags=no_in
+ * @param src cast=(void *)
  */
 public static final native void memmove(NSRect dest, long src, long size);
 /**
- * @param dest cast=(void *),flags=no_in critical
- * @param src cast=(void *),flags=critical
+ * @param dest cast=(void *)
+ * @param src flags=no_out
  */
 public static final native void memmove(long dest, NSSize src, long size);
 /**
- * @param dest cast=(void *),flags=no_in critical
- * @param src cast=(void *),flags=critical
+ * @param dest flags=no_in
+ * @param src cast=(void *)
  */
 public static final native void memmove(NSSize dest, long src, long size);
 

@@ -1389,10 +1389,9 @@ void generateStructNatives() {
 	for (String struct : memmoveSet) {
 		out("/**");
 		outln();
-		out(" * @param dest cast=(void *),flags=no_in critical");
+		out(" * @param dest cast=(void *)");
 		outln();
-		out(" * @param src cast=(void *),flags=critical");
-//		out(" * @param src cast=(void *),flags=no_out critical");
+		out(" * @param src flags=no_out");
 		outln();
 		out(" */");
 		outln();
@@ -1403,10 +1402,9 @@ void generateStructNatives() {
 		outln();
 		out("/**");
 		outln();
-		out(" * @param dest cast=(void *),flags=no_in critical");
+		out(" * @param dest flags=no_in");
 		outln();
-		out(" * @param src cast=(void *),flags=critical");
-//		out(" * @param src cast=(void *),flags=no_out critical");
+		out(" * @param src cast=(void *)");
 		outln();
 		out(" */");
 		outln();

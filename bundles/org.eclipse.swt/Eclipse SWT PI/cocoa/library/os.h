@@ -72,7 +72,7 @@ extern jint CPSSetProcessName(void *, jlong);
 #define OS_NATIVE_ENTER(env, that, func) \
 	@try {  
 #define OS_NATIVE_EXIT(env, that, func) \
-	} \
+	; } \
 	@catch (NSException *nsx) { \
 		DUMP_EXCEPTION \
 	}
