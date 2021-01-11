@@ -5005,19 +5005,6 @@ fail:
 }
 #endif
 
-#ifndef NO_MoveMemory__JLorg_eclipse_swt_internal_win32_GESTURECONFIG_2I
-JNIEXPORT void JNICALL OS_NATIVE(MoveMemory__JLorg_eclipse_swt_internal_win32_GESTURECONFIG_2I)
-	(JNIEnv *env, jclass that, jlong arg0, jobject arg1, jint arg2)
-{
-	GESTURECONFIG _arg1, *lparg1=NULL;
-	OS_NATIVE_ENTER(env, that, MoveMemory__JLorg_eclipse_swt_internal_win32_GESTURECONFIG_2I_FUNC);
-	if (arg1) if ((lparg1 = getGESTURECONFIGFields(env, arg1, &_arg1)) == NULL) goto fail;
-	MoveMemory((PVOID)arg0, (CONST VOID *)lparg1, arg2);
-fail:
-	OS_NATIVE_EXIT(env, that, MoveMemory__JLorg_eclipse_swt_internal_win32_GESTURECONFIG_2I_FUNC);
-}
-#endif
-
 #ifndef NO_MoveMemory__JLorg_eclipse_swt_internal_win32_GRADIENT_1RECT_2I
 JNIEXPORT void JNICALL OS_NATIVE(MoveMemory__JLorg_eclipse_swt_internal_win32_GRADIENT_1RECT_2I)
 	(JNIEnv *env, jclass that, jlong arg0, jobject arg1, jint arg2)
@@ -5028,19 +5015,6 @@ JNIEXPORT void JNICALL OS_NATIVE(MoveMemory__JLorg_eclipse_swt_internal_win32_GR
 	MoveMemory((PVOID)arg0, (CONST VOID *)lparg1, arg2);
 fail:
 	OS_NATIVE_EXIT(env, that, MoveMemory__JLorg_eclipse_swt_internal_win32_GRADIENT_1RECT_2I_FUNC);
-}
-#endif
-
-#ifndef NO_MoveMemory__JLorg_eclipse_swt_internal_win32_KEYBDINPUT_2I
-JNIEXPORT void JNICALL OS_NATIVE(MoveMemory__JLorg_eclipse_swt_internal_win32_KEYBDINPUT_2I)
-	(JNIEnv *env, jclass that, jlong arg0, jobject arg1, jint arg2)
-{
-	KEYBDINPUT _arg1, *lparg1=NULL;
-	OS_NATIVE_ENTER(env, that, MoveMemory__JLorg_eclipse_swt_internal_win32_KEYBDINPUT_2I_FUNC);
-	if (arg1) if ((lparg1 = getKEYBDINPUTFields(env, arg1, &_arg1)) == NULL) goto fail;
-	MoveMemory((PVOID)arg0, (CONST VOID *)lparg1, arg2);
-fail:
-	OS_NATIVE_EXIT(env, that, MoveMemory__JLorg_eclipse_swt_internal_win32_KEYBDINPUT_2I_FUNC);
 }
 #endif
 
@@ -5080,19 +5054,6 @@ JNIEXPORT void JNICALL OS_NATIVE(MoveMemory__JLorg_eclipse_swt_internal_win32_MI
 	MoveMemory((PVOID)arg0, (CONST VOID *)lparg1, arg2);
 fail:
 	OS_NATIVE_EXIT(env, that, MoveMemory__JLorg_eclipse_swt_internal_win32_MINMAXINFO_2I_FUNC);
-}
-#endif
-
-#ifndef NO_MoveMemory__JLorg_eclipse_swt_internal_win32_MOUSEINPUT_2I
-JNIEXPORT void JNICALL OS_NATIVE(MoveMemory__JLorg_eclipse_swt_internal_win32_MOUSEINPUT_2I)
-	(JNIEnv *env, jclass that, jlong arg0, jobject arg1, jint arg2)
-{
-	MOUSEINPUT _arg1, *lparg1=NULL;
-	OS_NATIVE_ENTER(env, that, MoveMemory__JLorg_eclipse_swt_internal_win32_MOUSEINPUT_2I_FUNC);
-	if (arg1) if ((lparg1 = getMOUSEINPUTFields(env, arg1, &_arg1)) == NULL) goto fail;
-	MoveMemory((PVOID)arg0, (CONST VOID *)lparg1, arg2);
-fail:
-	OS_NATIVE_EXIT(env, that, MoveMemory__JLorg_eclipse_swt_internal_win32_MOUSEINPUT_2I_FUNC);
 }
 #endif
 
@@ -7952,11 +7913,14 @@ JNIEXPORT jlong JNICALL OS_NATIVE(SelectObject)
 
 #ifndef NO_SendInput
 JNIEXPORT jint JNICALL OS_NATIVE(SendInput)
-	(JNIEnv *env, jclass that, jint arg0, jlong arg1, jint arg2)
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jint arg2)
 {
+	INPUT _arg1, *lparg1=NULL;
 	jint rc = 0;
 	OS_NATIVE_ENTER(env, that, SendInput_FUNC);
-	rc = (jint)SendInput(arg0, (LPINPUT)arg1, arg2);
+	if (arg1) if ((lparg1 = getINPUTFields(env, arg1, &_arg1)) == NULL) goto fail;
+	rc = (jint)SendInput(arg0, lparg1, arg2);
+fail:
 	OS_NATIVE_EXIT(env, that, SendInput_FUNC);
 	return rc;
 }
@@ -8599,11 +8563,14 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(SetForegroundWindow)
 
 #ifndef NO_SetGestureConfig
 JNIEXPORT jboolean JNICALL OS_NATIVE(SetGestureConfig)
-	(JNIEnv *env, jclass that, jlong arg0, jint arg1, jint arg2, jlong arg3, jint arg4)
+	(JNIEnv *env, jclass that, jlong arg0, jint arg1, jint arg2, jobject arg3, jint arg4)
 {
+	GESTURECONFIG _arg3, *lparg3=NULL;
 	jboolean rc = 0;
 	OS_NATIVE_ENTER(env, that, SetGestureConfig_FUNC);
-	rc = (jboolean)SetGestureConfig((HWND)arg0, arg1, arg2, (PGESTURECONFIG)arg3, arg4);
+	if (arg3) if ((lparg3 = getGESTURECONFIGFields(env, arg3, &_arg3)) == NULL) goto fail;
+	rc = (jboolean)SetGestureConfig((HWND)arg0, arg1, arg2, lparg3, arg4);
+fail:
 	OS_NATIVE_EXIT(env, that, SetGestureConfig_FUNC);
 	return rc;
 }

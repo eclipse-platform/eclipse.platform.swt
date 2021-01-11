@@ -1916,7 +1916,7 @@ void setINITCOMMONCONTROLSEXFields(JNIEnv *env, jobject lpObject, INITCOMMONCONT
 typedef struct INPUT_FID_CACHE {
 	int cached;
 	jclass clazz;
-	jfieldID type;
+	jfieldID type, ki, mi;
 } INPUT_FID_CACHE;
 
 INPUT_FID_CACHE INPUTFc;
@@ -1926,6 +1926,8 @@ void cacheINPUTFields(JNIEnv *env, jobject lpObject)
 	if (INPUTFc.cached) return;
 	INPUTFc.clazz = (*env)->GetObjectClass(env, lpObject);
 	INPUTFc.type = (*env)->GetFieldID(env, INPUTFc.clazz, "type", "I");
+	INPUTFc.ki = (*env)->GetFieldID(env, INPUTFc.clazz, "ki", "Lorg/eclipse/swt/internal/win32/KEYBDINPUT;");
+	INPUTFc.mi = (*env)->GetFieldID(env, INPUTFc.clazz, "mi", "Lorg/eclipse/swt/internal/win32/MOUSEINPUT;");
 	INPUTFc.cached = 1;
 }
 
@@ -1933,6 +1935,14 @@ INPUT *getINPUTFields(JNIEnv *env, jobject lpObject, INPUT *lpStruct)
 {
 	if (!INPUTFc.cached) cacheINPUTFields(env, lpObject);
 	lpStruct->type = (*env)->GetIntField(env, lpObject, INPUTFc.type);
+	{
+	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, INPUTFc.ki);
+	if (lpObject1 != NULL) getKEYBDINPUTFields(env, lpObject1, &lpStruct->ki);
+	}
+	{
+	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, INPUTFc.mi);
+	if (lpObject1 != NULL) getMOUSEINPUTFields(env, lpObject1, &lpStruct->mi);
+	}
 	return lpStruct;
 }
 
@@ -1940,6 +1950,14 @@ void setINPUTFields(JNIEnv *env, jobject lpObject, INPUT *lpStruct)
 {
 	if (!INPUTFc.cached) cacheINPUTFields(env, lpObject);
 	(*env)->SetIntField(env, lpObject, INPUTFc.type, (jint)lpStruct->type);
+	{
+	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, INPUTFc.ki);
+	if (lpObject1 != NULL) setKEYBDINPUTFields(env, lpObject1, &lpStruct->ki);
+	}
+	{
+	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, INPUTFc.mi);
+	if (lpObject1 != NULL) setMOUSEINPUTFields(env, lpObject1, &lpStruct->mi);
+	}
 }
 #endif
 

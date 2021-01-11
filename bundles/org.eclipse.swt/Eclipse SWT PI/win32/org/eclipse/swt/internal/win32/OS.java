@@ -3688,21 +3688,6 @@ public static final native void MoveMemory (SCRIPT_PROPERTIES Destination, long 
  * @param Destination cast=(PVOID)
  * @param Source cast=(CONST VOID *),flags=no_out
  */
-public static final native void MoveMemory (long Destination, KEYBDINPUT Source, int Length);
-/**
- * @param Destination cast=(PVOID)
- * @param Source cast=(CONST VOID *),flags=no_out
- */
-public static final native void MoveMemory (long Destination, MOUSEINPUT Source, int Length);
-/**
- * @param Destination cast=(PVOID)
- * @param Source cast=(CONST VOID *),flags=no_out
- */
-public static final native void MoveMemory (long Destination, GESTURECONFIG Source, int Length);
-/**
- * @param Destination cast=(PVOID)
- * @param Source cast=(CONST VOID *),flags=no_out
- */
 public static final native void MoveMemory (long Destination, CIDA Source, int Length);
 /**
  * @param Destination cast=(PVOID),flags=no_in
@@ -4044,8 +4029,8 @@ public static final native int SelectClipRgn (long hdc, long hrgn);
  * @param HGDIObj cast=(HGDIOBJ)
  */
 public static final native long SelectObject (long hDC, long HGDIObj);
-/** @param pInputs cast=(LPINPUT) */
-public static final native int SendInput (int nInputs, long pInputs, int cbSize);
+/** @param pInputs flags=no_out */
+public static final native int SendInput (int nInputs, INPUT pInputs, int cbSize);
 /**
  * @param hWnd cast=(HWND)
  * @param wParam cast=(WPARAM)
@@ -4259,9 +4244,9 @@ public static final native long SetFocus (long hWnd);
 public static final native boolean SetForegroundWindow (long hWnd);
 /**
  * @param hwnd cast=(HWND)
- * @param pGestureConfig cast=(PGESTURECONFIG)
+ * @param pGestureConfig flags=no_out
  */
-public static final native boolean SetGestureConfig(long hwnd, int dwReserved, int cIDs, long pGestureConfig, int cbSize);
+public static final native boolean SetGestureConfig(long hwnd, int dwReserved, int cIDs, GESTURECONFIG pGestureConfig, int cbSize);
 /** @param hdc cast=(HDC) */
 public static final native int SetGraphicsMode (long hdc, int iMode);
 /** @param hwnd cast=(HWND) */

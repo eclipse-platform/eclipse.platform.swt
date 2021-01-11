@@ -728,17 +728,11 @@ void checkGesture () {
 			 * Feature in Windows 7: All gestures are enabled by default except GID_ROTATE.
 			 * Enable it explicitly by calling SetGestureConfig.
 			 */
-			long hHeap = OS.GetProcessHeap ();
-			long pConfigs = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY,  GESTURECONFIG.sizeof);
-			if (pConfigs != 0) {
-				GESTURECONFIG config = new GESTURECONFIG();
-				config.dwID = OS.GID_ROTATE;
-				config.dwWant = 1;
-				config.dwBlock = 0;
-				OS.MoveMemory (pConfigs, config, GESTURECONFIG.sizeof);
-				OS.SetGestureConfig (handle, 0, 1, pConfigs, GESTURECONFIG.sizeof);
-				OS.HeapFree (hHeap, 0, pConfigs);
-			}
+			GESTURECONFIG config = new GESTURECONFIG();
+			config.dwID = OS.GID_ROTATE;
+			config.dwWant = 1;
+			config.dwBlock = 0;
+			OS.SetGestureConfig (handle, 0, 1, config, GESTURECONFIG.sizeof);
 		}
 	}
 }

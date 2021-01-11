@@ -15,5 +15,8 @@ package org.eclipse.swt.internal.win32;
 
 public class INPUT {
 	public int type;
+	// union
+	public KEYBDINPUT ki;
+	public MOUSEINPUT mi;
 	public static final int sizeof = OS.INPUT_sizeof ();
 }

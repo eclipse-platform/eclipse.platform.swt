@@ -3495,14 +3495,10 @@ public boolean post (Event event) {
 					case OS.VK_DIVIDE:
 						inputs.dwFlags |= OS.KEYEVENTF_EXTENDEDKEY;
 				}
-				long hHeap = OS.GetProcessHeap ();
-				long pInputs = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, INPUT.sizeof);
-				OS.MoveMemory(pInputs, new int[] {OS.INPUT_KEYBOARD}, 4);
-				//TODO - DWORD type of INPUT structure aligned to 8 bytes on 64 bit
-				OS.MoveMemory (pInputs + C.PTR_SIZEOF, inputs, KEYBDINPUT.sizeof);
-				boolean result = OS.SendInput (1, pInputs, INPUT.sizeof) != 0;
-				OS.HeapFree (hHeap, 0, pInputs);
-				return result;
+				INPUT pInputs = new INPUT ();
+				pInputs.type = OS.INPUT_KEYBOARD;
+				pInputs.ki = inputs;
+				return OS.SendInput (1, pInputs, INPUT.sizeof) != 0;
 			}
 			case SWT.MouseDown:
 			case SWT.MouseMove:
@@ -3551,14 +3547,10 @@ public boolean post (Event event) {
 						}
 					}
 				}
-				long hHeap = OS.GetProcessHeap ();
-				long pInputs = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, INPUT.sizeof);
-				OS.MoveMemory(pInputs, new int[] {OS.INPUT_MOUSE}, 4);
-				//TODO - DWORD type of INPUT structure aligned to 8 bytes on 64 bit
-				OS.MoveMemory (pInputs + C.PTR_SIZEOF, inputs, MOUSEINPUT.sizeof);
-				boolean result = OS.SendInput (1, pInputs, INPUT.sizeof) != 0;
-				OS.HeapFree (hHeap, 0, pInputs);
-				return result;
+				INPUT pInputs = new INPUT ();
+				pInputs.type = OS.INPUT_MOUSE;
+				pInputs.mi = inputs;
+				return OS.SendInput (1, pInputs, INPUT.sizeof) != 0;
 			}
 		}
 		return false;
