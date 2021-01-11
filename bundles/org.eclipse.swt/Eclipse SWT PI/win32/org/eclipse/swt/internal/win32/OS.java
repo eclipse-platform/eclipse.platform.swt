@@ -589,8 +589,6 @@ public class OS extends C {
 	public static final int HWND_TOP = 0x0;
 	public static final int HWND_TOPMOST = 0xffffffff;
 	public static final int HWND_NOTOPMOST = -2;
-	public static final int ICC_COOL_CLASSES = 0x400;
-	public static final int ICC_DATE_CLASSES = 0x100;
 	public static final int ICON_BIG = 0x1;
 	public static final int ICON_SMALL = 0x0;
 	public static final int I_IMAGECALLBACK = -1;
@@ -3095,7 +3093,6 @@ public static final native boolean ImmSetCandidateWindow (long hIMC, CANDIDATEFO
 public static final native boolean ImmSetConversionStatus (long hIMC, int fdwConversion, int dwSentence);
 /** @param hIMC cast=(HIMC) */
 public static final native boolean ImmSetOpenStatus (long hIMC, boolean fOpen);
-public static final native void InitCommonControls ();
 public static final native boolean InitCommonControlsEx (INITCOMMONCONTROLSEX lpInitCtrls);
 /**
  * @param hMenu cast=(HMENU)

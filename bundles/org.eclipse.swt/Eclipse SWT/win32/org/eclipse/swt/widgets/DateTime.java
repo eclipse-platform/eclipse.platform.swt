@@ -58,12 +58,6 @@ public class DateTime extends Composite {
 	static final long CalendarProc;
 	static final TCHAR CalendarClass = new TCHAR (0, OS.MONTHCAL_CLASS, true);
 	static {
-		INITCOMMONCONTROLSEX icex = new INITCOMMONCONTROLSEX ();
-		icex.dwSize = INITCOMMONCONTROLSEX.sizeof;
-		icex.dwICC = OS.ICC_DATE_CLASSES;
-		OS.InitCommonControlsEx (icex);
-	}
-	static {
 		WNDCLASS lpWndClass = new WNDCLASS ();
 		OS.GetClassInfo (0, DateTimeClass, lpWndClass);
 		DateTimeProc = lpWndClass.lpfnWndProc;

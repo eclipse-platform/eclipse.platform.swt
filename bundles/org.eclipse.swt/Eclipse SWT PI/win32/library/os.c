@@ -4350,16 +4350,6 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(ImmSetOpenStatus)
 }
 #endif
 
-#ifndef NO_InitCommonControls
-JNIEXPORT void JNICALL OS_NATIVE(InitCommonControls)
-	(JNIEnv *env, jclass that)
-{
-	OS_NATIVE_ENTER(env, that, InitCommonControls_FUNC);
-	InitCommonControls();
-	OS_NATIVE_EXIT(env, that, InitCommonControls_FUNC);
-}
-#endif
-
 #ifndef NO_InitCommonControlsEx
 JNIEXPORT jboolean JNICALL OS_NATIVE(InitCommonControlsEx)
 	(JNIEnv *env, jclass that, jobject arg0)

@@ -112,7 +112,10 @@ public abstract class Widget {
 
 	/* Initialize the Common Controls DLL */
 	static {
-		OS.InitCommonControls ();
+		INITCOMMONCONTROLSEX icce = new INITCOMMONCONTROLSEX ();
+		icce.dwSize = INITCOMMONCONTROLSEX.sizeof;
+		icce.dwICC = 0xffff;
+		OS.InitCommonControlsEx (icce);
 	}
 
 /**

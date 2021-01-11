@@ -333,7 +333,6 @@ char * OS_nativeFunctionNames[] = {
 	"ImmSetCompositionWindow",
 	"ImmSetConversionStatus",
 	"ImmSetOpenStatus",
-	"InitCommonControls",
 	"InitCommonControlsEx",
 	"InsertMenuItem",
 	"InternetGetCookie",
