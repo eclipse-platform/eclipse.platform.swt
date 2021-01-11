@@ -134,7 +134,7 @@ static String getFunctionName(JNIMethod method, JNIType[] paramTypes) {
 		buffer.append(function);
 		buffer.append("__");
 		for (JNIType paramType : paramTypes) {
-			buffer.append(toC(paramType.getTypeSignature(false)));
+			buffer.append(toC(paramType.getTypeSignature()));
 		}
 		return buffer.toString();
 	}

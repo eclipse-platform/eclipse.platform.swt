@@ -105,63 +105,56 @@ public String getSimpleName() {
 }
 
 @Override
-public String getTypeSignature(boolean define) {
+public String getTypeSignature() {
 	if (isPrimitive()) {
-		if (define) {
-			if (name.equals("I")) return "I_J";
-			if (name.equals("J")) return "I_J";
-			if (name.equals("F")) return "F_D";
-			if (name.equals("D")) return "F_D";
-		}
 		return name;
 	}
 	if (isArray()) {
-		if (define) return getComponentType().getTypeSignature(define) + "Array";
-		return "[" + getComponentType().getTypeSignature(define);
+		return "[" + getComponentType().getTypeSignature();
 	}
 	return name;
 }
 
 @Override
-public String getTypeSignature1(boolean define) {
+public String getTypeSignature1() {
 	if (isPrimitive()) {
 		if (name.equals("V")) return "Void";
-		if (name.equals("I")) return define ? "IntLong" : "Int";
+		if (name.equals("I")) return "Int";
 		if (name.equals("Z")) return "Boolean";
-		if (name.equals("J")) return define ? "IntLong" : "Long";
+		if (name.equals("J")) return "Long";
 		if (name.equals("S")) return "Short";
 		if (name.equals("C")) return "Char";
 		if (name.equals("B")) return "Byte";
-		if (name.equals("F")) return define ? "FloatDouble" : "Float";
-		if (name.equals("D")) return define ? "FloatDouble" : "Double";
+		if (name.equals("F")) return "Float";
+		if (name.equals("D")) return "Double";
 	}
 	if (name.equals("Ljava/lang/String;")) return "String";
 	return "Object";
 }
 
 @Override
-public String getTypeSignature2(boolean define) {
+public String getTypeSignature2() {
 	if (isPrimitive()) {
 		if (name.equals("V")) return "void";
-		if (name.equals("I")) return define ? "jintLong" : "jint";
+		if (name.equals("I")) return "jint";
 		if (name.equals("Z")) return "jboolean";
-		if (name.equals("J")) return define ? "jintLong" : "jlong";
+		if (name.equals("J")) return "jlong";
 		if (name.equals("S")) return "jshort";
 		if (name.equals("C")) return "jchar";
 		if (name.equals("B")) return "jbyte";
-		if (name.equals("F")) return define ? "jfloatDouble" : "jfloat";
-		if (name.equals("D")) return define ? "jfloatDouble" : "jdouble";
+		if (name.equals("F")) return "jfloat";
+		if (name.equals("D")) return "jdouble";
 	}
 	if (name.equals("Ljava/lang/String;")) return "jstring";
 	if (name.equals("Ljava/lang/Class;")) return "jclass";
 	if (isArray()) {
-		return getComponentType().getTypeSignature2(define) + "Array";
+		return getComponentType().getTypeSignature2() + "Array";
 	}
 	return "jobject";
 }
 
 @Override
-public String getTypeSignature3(boolean define) {
+public String getTypeSignature3() {
 	if (isPrimitive()) {
 		if (name.equals("V")) return "void";
 		if (name.equals("I")) return "int";
@@ -175,27 +168,27 @@ public String getTypeSignature3(boolean define) {
 	}
 	if (name.equals("Ljava/lang/String;")) return "String";
 	if (isArray()) {
-		return getComponentType().getTypeSignature3(define) + "[]";
+		return getComponentType().getTypeSignature3() + "[]";
 	}
 	return getName();
 }
 
 @Override
-public String getTypeSignature4(boolean define, boolean struct) {
+public String getTypeSignature4(boolean struct) {
 	if (isPrimitive()) {
 		if (name.equals("V")) return "void";
-		if (name.equals("I")) return define ? "jintLong" : "jint";
+		if (name.equals("I")) return "jint";
 		if (name.equals("Z")) return "jboolean";
-		if (name.equals("J")) return define ? "jintLong" : "jlong";
+		if (name.equals("J")) return "jlong";
 		if (name.equals("S")) return "jshort";
 		if (name.equals("C")) return "jchar";
 		if (name.equals("B")) return "jbyte";
-		if (name.equals("F")) return define ? "jfloatDouble" : "jfloat";
-		if (name.equals("D")) return define ? "jfloatDouble" : "jdouble";
+		if (name.equals("F")) return "jfloat";
+		if (name.equals("D")) return "jdouble";
 	}
 	if (name.equals("Ljava/lang/String;")) return "jstring";
 	if (isArray()) {
-		String sig = getComponentType().getTypeSignature4(define, struct);
+		String sig = getComponentType().getTypeSignature4(struct);
 		return struct ? sig : sig + " *";
 	}
 	String sig = getSimpleName(); 

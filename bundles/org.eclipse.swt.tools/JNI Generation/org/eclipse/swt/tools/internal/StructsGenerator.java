@@ -263,7 +263,7 @@ void generateCacheFunction(JNIClass clazz) {
 		JNIType type = field.getType();
 		output("\", ");
 		output("\"");
-		output(type.getTypeSignature(false));
+		output(type.getTypeSignature());
 		output("\"");
 		outputln(");");
 	}
@@ -314,7 +314,7 @@ void generateGetFields(JNIClass clazz) {
 			} else {
 				output("(*env)->Get");
 			}
-			output(type.getTypeSignature1(false));
+			output(type.getTypeSignature1());
 			if (isCPP) {
 				output("Field(lpObject, ");
 			} else {
@@ -329,9 +329,9 @@ void generateGetFields(JNIClass clazz) {
 			if (componentType.isPrimitive()) {
 				outputln("\t{");
 				output("\t");				
-				output(type.getTypeSignature2(false));
+				output(type.getTypeSignature2());
 				output(" lpObject1 = (");
-				output(type.getTypeSignature2(false));
+				output(type.getTypeSignature2());
 				if (isCPP) {
 					output(")env->GetObjectField(lpObject, ");
 				} else {
@@ -346,7 +346,7 @@ void generateGetFields(JNIClass clazz) {
 				} else {
 					output("\t(*env)->Get");
 				}
-				output(componentType.getTypeSignature1(false));
+				output(componentType.getTypeSignature1());
 				if (isCPP) {
 					output("ArrayRegion(lpObject1, 0, sizeof(lpStruct->");
 				} else {
@@ -356,11 +356,11 @@ void generateGetFields(JNIClass clazz) {
 				output(")");
 				if (!componentType.isType("byte")) {
 					output(" / sizeof(");
-					output(componentType.getTypeSignature2(false));
+					output(componentType.getTypeSignature2());
 					output(")");
 				}
 				output(", (");
-				output(type.getTypeSignature4(false, false));
+				output(type.getTypeSignature4(false));
 				output(")");
 				if (field.getFlag(FLAG_STRUCT)) {
 					output("&");
@@ -462,7 +462,7 @@ void generateSetFields(JNIClass clazz) {
 			} else {
 				output("\t(*env)->Set");
 			}
-			output(type.getTypeSignature1(false));
+			output(type.getTypeSignature1());
 			if (isCPP) {
 				output("Field(lpObject, ");
 			} else {
@@ -472,7 +472,7 @@ void generateSetFields(JNIClass clazz) {
 			output("Fc.");
 			output(field.getName());
 			output(", (");
-			output(type.getTypeSignature2(false));
+			output(type.getTypeSignature2());
 			output(")lpStruct->");
 			output(accessor);
 			output(");");
@@ -481,9 +481,9 @@ void generateSetFields(JNIClass clazz) {
 			if (componentType.isPrimitive()) {
 				outputln("\t{");
 				output("\t");				
-				output(type.getTypeSignature2(false));
+				output(type.getTypeSignature2());
 				output(" lpObject1 = (");
-				output(type.getTypeSignature2(false));
+				output(type.getTypeSignature2());
 				if (isCPP) {
 					output(")env->GetObjectField(lpObject, ");
 				} else {
@@ -498,7 +498,7 @@ void generateSetFields(JNIClass clazz) {
 				} else {
 					output("\t(*env)->Set");
 				}
-				output(componentType.getTypeSignature1(false));
+				output(componentType.getTypeSignature1());
 				if (isCPP) {
 					output("ArrayRegion(lpObject1, 0, sizeof(lpStruct->");
 				} else {
@@ -508,11 +508,11 @@ void generateSetFields(JNIClass clazz) {
 				output(")");
 				if (!componentType.isType("byte")) {
 					output(" / sizeof(");
-					output(componentType.getTypeSignature2(false));
+					output(componentType.getTypeSignature2());
 					output(")");
 				}
 				output(", (");
-				output(type.getTypeSignature4(false, false));				
+				output(type.getTypeSignature4(false));
 				output(")");
 				if (field.getFlag(FLAG_STRUCT)) {
 					output("&");

@@ -44,9 +44,6 @@ extern JavaVM *JVM;
 #define CHECK_DLERROR
 #endif
 
-/* For JNIGen */
-#define jintLong jlong
-
 #ifdef __APPLE__
 #define CALLING_CONVENTION
 #define LOAD_FUNCTION(var, name) \

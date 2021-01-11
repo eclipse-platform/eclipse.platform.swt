@@ -58,7 +58,7 @@ public void generate(JNIField field) {
 			output("\t");
 			output(modifiersStr);
 			if (modifiersStr.length() > 0) output(" ");
-			output(field.getType().getTypeSignature3(false));
+			output(field.getType().getTypeSignature3());
 			output(" " );
 			output(field.getName());
 			output(" = ");
