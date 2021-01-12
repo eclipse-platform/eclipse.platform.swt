@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2008, 2020 IBM Corporation and others.
+ * Copyright (c) 2008, 2021 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -581,8 +581,8 @@ TreeMap<String, Object[]> getGeneratedStructs() {
 
 void copyClassMethodsDown(final Map<String, Object[]> classes) {
 	ArrayList<Object[]> sortedClasses = Collections.list(Collections.enumeration(classes.values()));
-	sortedClasses.sort(new Comparator<Object>() {
-		int getHierarchyLevel(Node node) {
+	sortedClasses.sort(new Comparator<>() {
+		private int getHierarchyLevel(Node node) {
 			String superclass = getSuperclassName(node);
 			int level = 0;
 			while (!superclass.equals("id") && !superclass.equals("NSObject")) {
@@ -592,8 +592,8 @@ void copyClassMethodsDown(final Map<String, Object[]> classes) {
 			return level;
 		}
 		@Override
-		public int compare(Object arg0, Object arg1) {
-			return getHierarchyLevel((Node)((Object[])arg0)[0]) - getHierarchyLevel((Node)((Object[])arg1)[0]);
+		public int compare(Object[] arg0, Object[] arg1) {
+			return getHierarchyLevel((Node)arg0[0]) - getHierarchyLevel((Node)arg1[0]);
 		}
 	});
 	for (Object[] clazz : sortedClasses) {
