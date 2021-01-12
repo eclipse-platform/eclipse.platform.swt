@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2019 IBM Corporation and others. All rights reserved.
+ * Copyright (c) 2000, 2021 IBM Corporation and others. All rights reserved.
  * The contents of this file are made available under the terms
  * of the GNU Lesser General Public License (LGPL) Version 2.1 that
  * accompanies this distribution (lgpl-v21.txt).  The LGPL is also
@@ -565,11 +565,9 @@ public class OS extends C {
 	 * Minimum Glib version requirement of gtk can be found in gtk's 'configure.ac' file, see line 'm4_define([glib_required_version],[2.*.*]).
 	 *
 	 * For reference:
-	 * Gtk3.14 has min version of glib 2.41.2
-	 * Gtk3.16 has min version of glib 2.43.4
-	 * Gtk3.18 has min version of glib 2.45.8
-	 * Gtk3.20 has min version of glib 2.45.8
 	 * Gtk3.22 has min version of glib 2.49.4
+	 * Gtk3.24 has min version of glib 2.58
+	 * Gtk4.0 has min version of glib 2.66
 	 */
 	public static final int GLIB_VERSION = VERSION(glib_major_version(), glib_minor_version(), glib_micro_version());
 
