@@ -2113,7 +2113,7 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(GetClassInfo)
 	jboolean rc = 0;
 	OS_NATIVE_ENTER(env, that, GetClassInfo_FUNC);
 	if (arg1) if ((lparg1 = (*env)->GetCharArrayElements(env, arg1, NULL)) == NULL) goto fail;
-	if (arg2) if ((lparg2 = &_arg2) == NULL) goto fail;
+	if (arg2) if ((lparg2 = getWNDCLASSFields(env, arg2, &_arg2)) == NULL) goto fail;
 	rc = (jboolean)GetClassInfo((HINSTANCE)arg0, (LPWSTR)lparg1, lparg2);
 fail:
 	if (arg2 && lparg2) setWNDCLASSFields(env, arg2, lparg2);
