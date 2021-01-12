@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2004, 2015 IBM Corporation and others.
+ * Copyright (c) 2004, 2021 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -39,7 +39,7 @@ void checkMembers() {
 	if (fields != null) return;
 	String source = null;
 	source = JNIGenerator.loadFile(sourcePath);
-	ASTParser parser = ASTParser.newParser(AST.JLS11);
+	ASTParser parser = ASTParser.newParser(AST.JLS15);
 	parser.setSource(source.toCharArray());
 	parser.createAST(null);
 	
