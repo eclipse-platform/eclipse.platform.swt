@@ -248,22 +248,6 @@
             </message_arguments>
         </filter>
     </resource>
-    <resource path="Eclipse SWT/cocoa/org/eclipse/swt/widgets/Display.java" type="org.eclipse.swt.widgets.Display">
-        <filter id="336744520">
-            <message_arguments>
-                <message_argument value="@noextend"/>
-                <message_argument value="org.eclipse.swt.widgets.Display"/>
-            </message_arguments>
-        </filter>
-    </resource>
-    <resource path="Eclipse SWT/common/org/eclipse/swt/SWT.java" type="org.eclipse.swt.SWT">
-        <filter comment="new SWT.CHROMIUM constant for Browser" id="336658481">
-            <message_arguments>
-                <message_argument value="org.eclipse.swt.SWT"/>
-                <message_argument value="CHROMIUM"/>
-            </message_arguments>
-        </filter>
-    </resource>
     <resource path="Eclipse SWT/common/org/eclipse/swt/events/ArmListener.java" type="org.eclipse.swt.events.ArmListener">
         <filter id="576720909">
             <message_arguments>
