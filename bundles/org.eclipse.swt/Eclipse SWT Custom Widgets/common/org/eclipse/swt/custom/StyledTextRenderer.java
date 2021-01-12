@@ -675,7 +675,7 @@ int getLineHeight(int lineIndex, boolean exact) {
 				return Math.round(averageLineHeight);
 			}
 		} else {
-			line.height = getLineHeight() + getLineSpacing(lineIndex);
+			line.height = getLineHeight() + getLineSpacing(lineIndex) + getLineVerticalIndent(lineIndex);
 		}
 	}
 	return line.height;
@@ -1476,7 +1476,12 @@ void setLineVerticalIndent(int lineIndex, int verticalLineIndent) {
 		lines[lineIndex] = new LineInfo();
 	}
 	lines[lineIndex].flags |= VERTICAL_INDENT;
+	int delta = verticalLineIndent - lines[lineIndex].verticalIndent;
 	lines[lineIndex].verticalIndent = verticalLineIndent;
+	LineSizeInfo info = getLineSize(lineIndex);
+	if (!info.needsRecalculateHeight()) {
+		info.height += delta;
+	}
 }
 void setLineWrapIndent(int startLine, int count, int wrapIndent) {
 	if (lines == null) lines = new LineInfo[lineCount];

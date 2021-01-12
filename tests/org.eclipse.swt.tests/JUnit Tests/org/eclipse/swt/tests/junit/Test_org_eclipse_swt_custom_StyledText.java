@@ -71,6 +71,7 @@ import org.eclipse.swt.printing.Printer;
 import org.eclipse.swt.widgets.Caret;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.ScrollBar;
 import org.eclipse.swt.widgets.Widget;
 import org.eclipse.test.Screenshots;
 import org.junit.After;
@@ -4925,7 +4926,10 @@ public void test_verticalIndent_changeRelativeBounds() {
 }
 
 @Test
-public void test_verticalIndent_keepsCurrentCaretAndLinePosition() {
+public void test_verticalIndent_keepsCurrentCaretAndLinePosition() throws InterruptedException {
+	text.dispose();
+	text = new StyledText(shell, SWT.V_SCROLL);
+	setWidget(text);
 	String _50lines = IntStream.range(1, 50).mapToObj(Integer::toString).collect(Collectors.joining("\n"));
 	text.setText(_50lines);
 	text.setSize(500, 200);
@@ -4941,28 +4945,44 @@ public void test_verticalIndent_keepsCurrentCaretAndLinePosition() {
 	int initialTopPixel = text.getTopPixel();
 	Point caretLocation = text.getCaret().getLocation();
 	Point offsetLocation = text.getLocationAtOffset(offset);
+	ScrollBar scrollbar = text.getVerticalBar();
+	int scrollMini = scrollbar.getMinimum();
+	int scrollMaxi = scrollbar.getMaximum();
+	int scrollOffset = scrollbar.getSelection();
 
 	// on active line
 	text.setLineVerticalIndent(line, INDENT);
 	assertEquals(caretLocation, text.getCaret().getLocation());
 	assertEquals(offsetLocation, text.getLocationAtOffset(offset));
 	assertEquals("vertical scroll should have been updated", initialTopPixel + INDENT, text.getTopPixel());
+	assertEquals(scrollMini, scrollbar.getMinimum());
+	assertEquals(scrollMaxi + INDENT, scrollbar.getMaximum());
+	assertEquals(scrollOffset + INDENT, scrollbar.getSelection());
 	text.setLineVerticalIndent(line, 0);
 	assertEquals(caretLocation, text.getCaret().getLocation());
 	assertEquals(offsetLocation, text.getLocationAtOffset(offset));
 	assertEquals("vertical scroll should have been restored", initialTopPixel, text.getTopPixel());
+	assertEquals(scrollMini, scrollbar.getMinimum());
+	assertEquals(scrollMaxi, scrollbar.getMaximum());
+	assertEquals(scrollOffset, scrollbar.getSelection());
 
 	// above visible area
-	//render(shell, 5000);
+	render(shell, 5000);
 	text.setLineVerticalIndent(0, INDENT);
-	//render(shell, 5000);
+	render(shell, 5000);
 	assertEquals(caretLocation, text.getCaret().getLocation());
 	assertEquals(offsetLocation, text.getLocationAtOffset(offset));
 	assertEquals("vertical scroll should have been updated", initialTopPixel + INDENT, text.getTopPixel());
+	assertEquals(scrollMini, scrollbar.getMinimum());
+	assertEquals(scrollMaxi + INDENT, scrollbar.getMaximum());
+	assertEquals(scrollOffset + INDENT, scrollbar.getSelection());
 	text.setLineVerticalIndent(0, 0);
 	assertEquals(caretLocation, text.getCaret().getLocation());
 	assertEquals(offsetLocation, text.getLocationAtOffset(offset));
 	assertEquals("vertical scroll should have been updated", initialTopPixel, text.getTopPixel());
+	assertEquals(scrollMini, scrollbar.getMinimum());
+	assertEquals(scrollMaxi, scrollbar.getMaximum());
+	assertEquals(scrollOffset, scrollbar.getSelection());
 
 	//below visible area
 	int nextInvisibleLine = text.getLineIndex(text.getClientArea().height - 1) + 1;

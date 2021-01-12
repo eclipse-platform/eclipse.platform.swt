@@ -9453,13 +9453,19 @@ public void setLineVerticalIndent(int lineIndex, int verticalLineIndent) {
 	int verticalIndentDiff = verticalLineIndent - previousVerticalIndent;
 	renderer.setLineVerticalIndent(lineIndex, verticalLineIndent);
 	this.hasVerticalIndent = verticalLineIndent != 0 || renderer.hasVerticalIndent();
-	resetCache(lineIndex, 1);
+	ScrollBar verticalScrollbar = getVerticalBar();
 	if (lineIndex < initialTopIndex) {
 		verticalScrollOffset += verticalIndentDiff; // just change value, don't actually scroll/redraw
-		setScrollBars(true);
+		if (verticalScrollbar != null) {
+			verticalScrollbar.setSelection(verticalScrollOffset);
+			verticalScrollbar.setMaximum(verticalScrollbar.getMaximum() + verticalIndentDiff);
+		}
 	} else if (lineIndex > initialBottomIndex) {
-		setScrollBars(true);
+		if (verticalScrollbar != null) {
+			verticalScrollbar.setMaximum(verticalScrollbar.getMaximum() + verticalIndentDiff);
+		}
 	} else {
+		resetCache(lineIndex, 1);
 		if (getCaretLine() >= initialTopIndex && getCaretLine() <= initialBottomIndex) { // caret line with caret mustn't move
 			if (getCaretLine() < lineIndex) {
 				redrawLines(lineIndex, getPartialBottomIndex() - lineIndex + 1, true);
