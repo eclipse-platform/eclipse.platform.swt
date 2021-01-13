@@ -19,9 +19,6 @@ import org.eclipse.swt.layout.*;
 import org.eclipse.swt.widgets.*;
 
 public class Bug561444_JvmCrash_SetRedraw {
-	static Text textS;
-	static Text textM;
-
 	static void paintRightSide(Control control) {
 		GC gc = new GC(control);
 		gc.setBackground(control.getDisplay().getSystemColor(SWT.COLOR_RED));
@@ -44,107 +41,137 @@ public class Bug561444_JvmCrash_SetRedraw {
 	public static void main(String[] args) {
 		Display display = new Display();
 		Shell shell = new Shell(display);
-		shell.setLayout(new RowLayout(SWT.VERTICAL));
+		shell.setLayout(new GridLayout(1, true));
 
 		final Text hint = new Text(shell, SWT.READ_ONLY | SWT.MULTI);
+		hint.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		hint.setText(
+			"Common bugs\n" +
+			"----\n" +
+			"1) Disable (A) + Enable (A)\n" +
+			"   Combo and Single-line Text will stop responding to mouse events\n" +
+			"2) Click (C)\n" +
+			"   Weird part of Combo will be painted.\n" +
+			"   This is because wrong GdkWindow is used for constructing GC.\n" +
+			"3) Click (C) then (D)\n" +
+			"   Combo and Single-line Text will not be redrawn\n" +
+			"\n" +
 			"How to enable XIM input method\n" +
 			"----\n" +
-			"   On GNOME, use env var:\n" +
-			"       GTK_IM_MODULE=xim\n" +
-			"   On XFCE, configure:\n" +
-			"       OS \"Applications\" menu | Settings | Input Method Selector\n" +
-			"       'Use X compose table'\n" +
+			"On GNOME, use env var:\n" +
+			"   GTK_IM_MODULE=xim\n" +
+			"On XFCE, configure:\n" +
+			"   OS \"Applications\" menu | Settings | Input Method Selector\n" +
+			"   'Use X compose table'\n" +
 			"\n" +
 			"Bugs with XIM\n" +
 			"----\n" +
-			"1) Uncheck 'Control.setRedraw()'\n" +
+			"1) Disable (A)\n" +
 			"   SWT will crash with 'received an X Window System error'\n" +
-			"2) Click 'GC()' button\n" +
+			"2) Click (C)\n" +
 			"   SWT will crash with 'received an X Window System error'\n" +
 			"\n" +
-			"Bugs without XIM\n" +
+			"Bugs not fixed in this patch\n" +
 			"----\n" +
-			"1) Uncheck and check 'Control.setRedraw()'\n" +
-			"   Single-line Text will stop responding to mouse events\n" +
-			"2) Click 'GC()', then Control.setRedraw()\n" +
-			"   Single-line Text will not be redrawn\n"
+			"1) Enable (B) + Disable (B)\n" +
+			"   Combo will no longer have selection background.\n" +
+			"\n" +
+			"Tests that should work before and after patch\n" +
+			"----\n" +
+			"1) Enable (B) + Press (D)\n" +
+			"   Left side shall be painted blue for tested controls\n" +
+			"2) Click (E)\n" +
+			"   Mouse cursor shall change for tested controls\n" +
+			""
 		);
 
-		textS = new Text(shell, SWT.NONE);
-		textS.setText("Single-line text");
+		Composite composite = new Composite(shell, 0);
+		composite.setLayout(new GridLayout(2, false));
 
-		textM = new Text(shell, SWT.MULTI);
-		textM.setText("Multi-line text");
+		Group grpTestControls = new Group(composite, 0);
+		grpTestControls.setText("Tested controls");
+		grpTestControls.setLayout(new GridLayout(1, true));
 
-		Button button;
+		new Label(grpTestControls, 0).setText("Single-line text:");
+		final Text textS = new Text(grpTestControls, SWT.BORDER);
+		textS.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
-		button = new Button(shell, SWT.NONE);
-		button.setText("Control.getMonitor(): report to console");
-		button.addListener(SWT.Selection, e -> {
-			Monitor monitor1 = shell.getMonitor();
-			Monitor monitor2 = textS.getMonitor();
-			Monitor monitor3 = textM.getMonitor();
+		new Label(grpTestControls, 0).setText("Multi-line text:");
+		final Text textM = new Text(grpTestControls, SWT.BORDER | SWT.MULTI);
+		textM.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+		// Disable textview's own background so that it doesn't overpaint our SWT.Paint.
+		// Note that child text's background covers entire control anyway.
+		textM.setData("org.eclipse.swt.internal.gtk.css", "textview {background-color: transparent;}");
 
-			if (monitor1.equals(monitor2) && monitor2.equals(monitor3))
-				System.out.println("All good");
-			else
-				System.out.println("Some monitors are wrong");
-		});
+		new Label(grpTestControls, 0).setText("Combo:");
+		final Combo combo = new Combo(grpTestControls, 0);
+		combo.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+		combo.add("Combo item 1");
+		combo.add("Combo item 2");
 
-		button = new Button(shell, SWT.CHECK);
-		button.setText("Control.setRedraw()");
+		final Control[] testControls = new Control[] {textS, textM, combo};
+
+		Group grpTests = new Group(composite, 0);
+		grpTests.setText("Available tests");
+		grpTests.setLayout(new GridLayout(1, true));
+
+		Button button = new Button(grpTests, SWT.CHECK);
+		button.setText("(A) Enable redrawing for test controls");
 		button.setSelection(true);
 		button.addListener(SWT.Selection, e -> {
 			final boolean isSelected = ((Button)e.widget).getSelection();
-			textS.setRedraw(isSelected);
-			textM.setRedraw(isSelected);
+			for (Control control : testControls) {
+				control.setRedraw(isSelected);
+			}
 		});
 
 		final Listener paintLeftSideListener = e -> {
 			paintLeftSide((Control)e.widget, e.gc);
 		};
 
-		button = new Button(shell, SWT.CHECK);
-		button.setText("Control.gtk_draw(): paint left side (also click button below and then 'Control.redrawWidget()')");
+		Color oldBackground[] = new Color[testControls.length];
+		button = new Button(grpTests, SWT.CHECK);
+		button.setText("(B) Paint via SWT.Paint");
 		button.addListener(SWT.Selection, e -> {
 			final boolean isSelected = ((Button)e.widget).getSelection();
 			if (isSelected) {
-				textM.addListener(SWT.Paint, paintLeftSideListener);
-				textS.addListener(SWT.Paint, paintLeftSideListener);
+				for (Control control : testControls) {
+					// Without disabling default background, anything we paint in SWT.Paint gets over-painted by default 'draw' in GTK
+					control.setData(control.getBackground());
+					control.setBackground(display.getSystemColor(SWT.COLOR_TRANSPARENT));
+
+					control.addListener(SWT.Paint, paintLeftSideListener);
+				}
 			} else {
-				textM.removeListener(SWT.Paint, paintLeftSideListener);
-				textS.removeListener(SWT.Paint, paintLeftSideListener);
+				for (Control control : testControls) {
+					control.setBackground((Color)control.getData());
+					control.removeListener(SWT.Paint, paintLeftSideListener);
+				}
 			}
 		});
 
-		button = new Button(shell, SWT.NONE);
-		button.setText("Remove default background of Text (required for painting left side)");
+		button = new Button(grpTests, SWT.NONE);
+		button.setText("(C) Paint via GC()");
 		button.addListener(SWT.Selection, e -> {
-			// Without disabling default background, anything we paint in SWT.Paint gets over-painted by default 'draw' in GTK
-			textS.setData("org.eclipse.swt.internal.gtk.css", "entry {background-color: transparent;}");
-			textM.setData("org.eclipse.swt.internal.gtk.css", "textview {background-color: transparent;} textview text {background-color: transparent;}");
+			for (Control control : testControls) {
+				paintRightSide(control);
+			}
 		});
 
-		button = new Button(shell, SWT.NONE);
-		button.setText("GC(): paint right side");
+		button = new Button(grpTests, SWT.NONE);
+		button.setText("(D) Invoke Control.redraw()");
 		button.addListener(SWT.Selection, e -> {
-			paintRightSide(textS);
-			paintRightSide(textM);
+			for (Control control : testControls) {
+				control.redraw();
+			}
 		});
 
-		button = new Button(shell, SWT.NONE);
-		button.setText("Control.redrawWidget()");
+		button = new Button(grpTests, SWT.NONE);
+		button.setText("(E) Invoke Text.setCursor()");
 		button.addListener(SWT.Selection, e -> {
-			textS.redraw();
-			textM.redraw();
-		});
-
-		button = new Button(shell, SWT.NONE);
-		button.setText("Text.setCursor()");
-		button.addListener(SWT.Selection, e -> {
-			textS.setCursor(new Cursor(display, SWT.CURSOR_HAND));
-			textM.setCursor(new Cursor(display, SWT.CURSOR_HAND));
+			for (Control control : testControls) {
+				control.setCursor(new Cursor(display, SWT.CURSOR_HAND));
+			}
 		});
 
 		shell.pack();

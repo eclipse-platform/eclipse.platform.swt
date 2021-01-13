@@ -1031,7 +1031,29 @@ long enterExitHandle () {
 
 @Override
 long eventWindow () {
-	return paintWindow ();
+	if ((style & SWT.READ_ONLY) != 0) {
+		GTK.gtk_widget_realize (handle);
+		return gtk_widget_get_window (handle);
+	}
+
+	/*
+	 * Single-line Text (GtkEntry in GTK) uses a GDK_INPUT_ONLY
+	 * internal window. This window can't be used for any kind
+	 * of painting, but this is the window to which functions
+	 * like Control.setCursor() should apply.
+	 */
+	GTK.gtk_widget_realize (entryHandle);
+	long window = gtk_widget_get_window (entryHandle);
+	// Find the internal GDK_INPUT_ONLY window
+	long children = GDK.gdk_window_get_children (window);
+	if (children != 0) {
+		do {
+			window = OS.g_list_data (children);
+		} while ((children = OS.g_list_next (children)) != 0);
+	}
+	OS.g_list_free (children);
+
+	return window;
 }
 
 @Override
@@ -1867,33 +1889,16 @@ boolean isFocusHandle(long widget) {
 }
 
 @Override
-long paintWindow () {
-	long childHandle =  entryHandle != 0 ? entryHandle : handle;
-	GTK.gtk_widget_realize (childHandle);
-	long window = gtk_widget_get_window (childHandle);
-	if ((style & SWT.READ_ONLY) != 0) return window;
-	long children = GDK.gdk_window_get_children (window);
-	if (children != 0) {
-		/*
-		 * The only direct child of GtkComboBox since 3.20 is GtkBox thus the children
-		 * have to be traversed to get to the entry one.
-		 */
-		do {
-			window = OS.g_list_data (children);
-		} while ((children = OS.g_list_next (children)) != 0);
-	}
-	OS.g_list_free (children);
-
-	return window;
-}
-
-@Override
 long paintSurface () {
 	long childHandle =  entryHandle != 0 ? entryHandle : handle;
 	GTK.gtk_widget_realize (childHandle);
 	long surface = gtk_widget_get_surface (childHandle);
 	if ((style & SWT.READ_ONLY) != 0) return surface;
-	/* TODO: GTK4 no access to children of the surface, for combobox may need to use gtk_combo_box_get_child () */
+	/*
+	 * TODO: GTK4 no access to children of the surface
+	 * for combobox may need to use gtk_combo_box_get_child ().
+	 * See also Bug 570331, maybe entire function just needs to be removed
+	 */
 
 	return surface;
 }
