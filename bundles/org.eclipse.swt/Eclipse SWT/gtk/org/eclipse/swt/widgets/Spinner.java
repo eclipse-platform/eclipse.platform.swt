@@ -806,8 +806,8 @@ long gtk_populate_popup (long widget, long menu) {
 }
 
 @Override
-long gtk_value_changed (long widget) {
-	sendSelectionEvent (SWT.Selection);
+long gtk_value_changed(long range) {
+	sendSelectionEvent(SWT.Selection);
 	return 0;
 }
 

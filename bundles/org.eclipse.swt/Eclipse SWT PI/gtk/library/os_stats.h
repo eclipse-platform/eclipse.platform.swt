@@ -718,6 +718,7 @@ typedef enum {
 	gtk_1radio_1menu_1item_1new_FUNC,
 	gtk_1range_1get_1adjustment_FUNC,
 	gtk_1range_1get_1slider_1range_FUNC,
+	gtk_1range_1get_1value_FUNC,
 	gtk_1range_1set_1increments_FUNC,
 	gtk_1range_1set_1inverted_FUNC,
 	gtk_1range_1set_1range_FUNC,

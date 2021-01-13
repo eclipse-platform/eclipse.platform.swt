@@ -9573,6 +9573,18 @@ fail:
 }
 #endif
 
+#ifndef NO_gtk_1range_1get_1value
+JNIEXPORT jdouble JNICALL GTK_NATIVE(gtk_1range_1get_1value)
+	(JNIEnv *env, jclass that, jlong arg0)
+{
+	jdouble rc = 0;
+	GTK_NATIVE_ENTER(env, that, gtk_1range_1get_1value_FUNC);
+	rc = (jdouble)gtk_range_get_value((GtkRange *)arg0);
+	GTK_NATIVE_EXIT(env, that, gtk_1range_1get_1value_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_gtk_1range_1set_1increments
 JNIEXPORT void JNICALL GTK_NATIVE(gtk_1range_1set_1increments)
 	(JNIEnv *env, jclass that, jlong arg0, jdouble arg1, jdouble arg2)

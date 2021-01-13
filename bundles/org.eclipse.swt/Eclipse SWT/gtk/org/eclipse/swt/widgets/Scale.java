@@ -241,8 +241,8 @@ public int getSelection () {
 }
 
 @Override
-long gtk_value_changed (long adjustment) {
-	sendSelectionEvent  (SWT.Selection);
+long gtk_value_changed(long range) {
+	sendSelectionEvent(SWT.Selection);
 	return 0;
 }
 

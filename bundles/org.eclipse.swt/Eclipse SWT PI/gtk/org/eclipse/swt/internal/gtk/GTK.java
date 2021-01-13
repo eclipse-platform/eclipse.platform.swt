@@ -2379,6 +2379,7 @@ public class GTK extends OS {
 	public static final native long gtk_radio_button_new(long group);
 
 
+	/* GtkRange */
 	/** @param range cast=(GtkRange *) */
 	public static final native long gtk_range_get_adjustment(long range);
 	/** @param range cast=(GtkRange *) */
@@ -2388,6 +2389,8 @@ public class GTK extends OS {
 	/** @param range cast=(GtkRange *) */
 	public static final native void gtk_range_set_range(long range, double min, double max);
 	/** @param range cast=(GtkRange *) */
+	public static final native double gtk_range_get_value(long range);
+	/** @param range cast=(GtkRange *) */
 	public static final native void gtk_range_set_value(long range, double value);
 	/**
 	 *  @param range cast=(GtkRange *)
@@ -2395,6 +2398,8 @@ public class GTK extends OS {
 	 *  @param slider_end cast=(gint *)
 	 */
 	public static final native void gtk_range_get_slider_range(long range, int[] slider_start, int[] slider_end);
+
+
 	/**
 	 * @param scale cast=(GtkScale *)
 	 * @param digits cast=(gint)

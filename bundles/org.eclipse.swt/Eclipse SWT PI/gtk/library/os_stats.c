@@ -720,6 +720,7 @@ char * GTK_nativeFunctionNames[] = {
 	"gtk_1radio_1menu_1item_1new",
 	"gtk_1range_1get_1adjustment",
 	"gtk_1range_1get_1slider_1range",
+	"gtk_1range_1get_1value",
 	"gtk_1range_1set_1increments",
 	"gtk_1range_1set_1inverted",
 	"gtk_1range_1set_1range",

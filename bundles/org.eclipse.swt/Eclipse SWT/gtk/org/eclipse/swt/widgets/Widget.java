@@ -713,13 +713,13 @@ long gtk_activate (long widget) {
 	return 0;
 }
 
-void gtk_adjustment_get (long hAdjustment, GtkAdjustment adjustment) {
-	adjustment.lower = GTK.gtk_adjustment_get_lower (hAdjustment);
-	adjustment.upper = GTK.gtk_adjustment_get_upper (hAdjustment);
-	adjustment.page_increment = GTK.gtk_adjustment_get_page_increment (hAdjustment);
-	adjustment.step_increment = GTK.gtk_adjustment_get_step_increment (hAdjustment);
-	adjustment.page_size = GTK.gtk_adjustment_get_page_size (hAdjustment);
-	adjustment.value = GTK.gtk_adjustment_get_value (hAdjustment);
+void gtk_adjustment_get(long adjustmentHandle, GtkAdjustment adjustment) {
+	adjustment.lower = GTK.gtk_adjustment_get_lower(adjustmentHandle);
+	adjustment.upper = GTK.gtk_adjustment_get_upper(adjustmentHandle);
+	adjustment.page_increment = GTK.gtk_adjustment_get_page_increment(adjustmentHandle);
+	adjustment.step_increment = GTK.gtk_adjustment_get_step_increment(adjustmentHandle);
+	adjustment.page_size = GTK.gtk_adjustment_get_page_size(adjustmentHandle);
+	adjustment.value = GTK.gtk_adjustment_get_value(adjustmentHandle);
 }
 
 long gtk_button_press_event (long widget, long event) {
@@ -1018,7 +1018,7 @@ long gtk_unrealize (long widget) {
 	return 0;
 }
 
-long gtk_value_changed (long adjustment) {
+long gtk_value_changed(long range) {
 	return 0;
 }
 
@@ -2293,7 +2293,7 @@ long windowProc (long handle, long user_data) {
 		case SELECT: return gtk_select (handle);
 		case SELECTION_DONE: return gtk_selection_done (handle);
 		case SHOW: return gtk_show (handle);
-		case VALUE_CHANGED: return gtk_value_changed (handle);
+		case VALUE_CHANGED: return gtk_value_changed(handle);
 		case UNMAP: return gtk_unmap (handle);
 		case UNREALIZE: return gtk_unrealize (handle);
 		default: return 0;

@@ -542,7 +542,7 @@ boolean gtk_change_value (long widget, int scroll, double value, long user_data)
 }
 
 @Override
-long gtk_value_changed (long adjustment) {
+long gtk_value_changed (long range) {
 	Event event = new Event ();
 	dragSent = detail == GTK.GTK_SCROLL_JUMP;
 	switch (detail) {
