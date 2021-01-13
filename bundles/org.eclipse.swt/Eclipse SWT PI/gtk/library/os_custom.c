@@ -2157,6 +2157,22 @@ jlong call_accessible_object_function (const char *method_name, const char *meth
 		va_start(arg_list, method_signature);
 		result = (*env)->CallStaticLongMethodV(env, cls, mid, arg_list);
 		va_end(arg_list);
+
+		// JNI documentation says:
+		//   The JNI functions that invoke a Java method return the result of
+		//   the Java method. The programmer must call ExceptionOccurred() to
+		//   check for possible exceptions that occurred during the execution
+		//   of the Java method.
+		if ((*env)->ExceptionCheck(env)) {
+			g_critical("JNI method thrown exception: %s\n", method_name);
+			// Note that this also clears the exception. That's good because
+			// we don't want the unexpected exception to cause even more
+			// problems in later JNI calls.
+			(*env)->ExceptionDescribe(env);
+			// Exceptions are not expected, but still, let's do at least
+			// something to avoid possible confusion.
+			result = 0;
+		}
 	}
 
 	return result;
