@@ -8098,6 +8098,9 @@ void resetCache(SortedSet<Integer> lines) {
 	}
 	setScrollBars(true);
 	if (!isFixedLineHeight()) {
+		if (topIndex > lines.iterator().next()) {
+			verticalScrollOffset = -1;
+		}
 		renderer.calculateIdle();
 	}
 }
@@ -8110,6 +8113,9 @@ void resetCache(int firstLine, int count) {
 	}
 	setScrollBars(true);
 	if (!isFixedLineHeight()) {
+		if (topIndex > firstLine) {
+			verticalScrollOffset = -1;
+		}
 		renderer.calculateIdle();
 	}
 }

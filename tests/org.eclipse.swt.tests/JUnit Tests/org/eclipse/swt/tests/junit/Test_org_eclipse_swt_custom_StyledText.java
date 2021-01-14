@@ -4967,9 +4967,7 @@ public void test_verticalIndent_keepsCurrentCaretAndLinePosition() throws Interr
 	assertEquals(scrollOffset, scrollbar.getSelection());
 
 	// above visible area
-	render(shell, 5000);
 	text.setLineVerticalIndent(0, INDENT);
-	render(shell, 5000);
 	assertEquals(caretLocation, text.getCaret().getLocation());
 	assertEquals(offsetLocation, text.getLocationAtOffset(offset));
 	assertEquals("vertical scroll should have been updated", initialTopPixel + INDENT, text.getTopPixel());
@@ -5018,6 +5016,9 @@ public void test_verticalIndent_keepsCurrentCaretAndLinePosition() throws Interr
 
 @Test
 public void test_notFixedLineHeightDoesntChangeLinePixelIfUnnecessary() {
+	text.dispose();
+	text = new StyledText(shell, SWT.V_SCROLL);
+	setWidget(text);
 	String _50lines = IntStream.range(1, 50).mapToObj(Integer::toString).collect(Collectors.joining("\n"));
 	text.setText(_50lines);
 	text.setSize(500, 200);
@@ -5025,9 +5026,13 @@ public void test_notFixedLineHeightDoesntChangeLinePixelIfUnnecessary() {
 	int offset = text.getOffsetAtLine(line);
 	text.setSelection(offset);
 	text.showSelection();
-	int firstLinePixel = text.getLinePixel(0);
+	int firstLinePixel = text.getLinePixel(line);
 	text.setWordWrap(true); // make non fixed line height
-	assertEquals(firstLinePixel, text.getLinePixel(0));
+	assertEquals(firstLinePixel, text.getLinePixel(line));
+	text.replaceTextRange(0, 1, "X");
+	assertEquals(0, text.getTopIndex());
+	assertEquals(0, text.getLinePixel(0));
+	assertEquals(0, text.getTopPixel());
 }
 
 @Test
