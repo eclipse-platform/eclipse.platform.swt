@@ -770,7 +770,24 @@ public void create (Composite parent, int style) {
 	 */
 	Webkit2AsyncToSync.setCookieBrowser(browser);
 
-	webView = WebKitGTK.webkit_web_view_new ();
+
+	Composite parentShell = parent.getParent();
+	Browser parentBrowser = null;
+	if (parentShell != null) {
+		Control[] children = parentShell.getChildren();
+		for (int i = 0; i < children.length; i++) {
+			if (children[i] instanceof Browser) {
+				parentBrowser = (Browser) children[i];
+				break;
+			}
+		}
+	}
+
+	if (parentBrowser == null) {
+		webView = WebKitGTK.webkit_web_view_new();
+	} else {
+		webView = WebKitGTK.webkit_web_view_new_with_related_view(((WebKit)parentBrowser.webBrowser).webView);
+	}
 
 	// Bug 522733 Webkit2 workaround for crash
 	//   As of Webkitgtk 2.18, webkitgtk2 crashes if the first instance of webview is not referenced when JVM shuts down.

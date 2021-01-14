@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2009, 2020 IBM Corporation and others. All rights reserved.
+ * Copyright (c) 2009, 2021 IBM Corporation and others. All rights reserved.
  * The contents of this file are made available under the terms
  * of the GNU Lesser General Public License (LGPL) Version 2.1 that
  * accompanies this distribution (lgpl-v21.txt).  The LGPL is also
@@ -1997,6 +1997,26 @@ JNIEXPORT jlong JNICALL WebKitGTK_NATIVE(webkit_1web_1view_1new)
 		}
 	}
 	WebKitGTK_NATIVE_EXIT(env, that, webkit_1web_1view_1new_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_webkit_1web_1view_1new_1with_1related_1view
+JNIEXPORT jlong JNICALL WebKitGTK_NATIVE(webkit_1web_1view_1new_1with_1related_1view)
+	(JNIEnv *env, jclass that, jlong arg0)
+{
+	jlong rc = 0;
+	WebKitGTK_NATIVE_ENTER(env, that, webkit_1web_1view_1new_1with_1related_1view_FUNC);
+/*
+	rc = (jlong)webkit_web_view_new_with_related_view(arg0);
+*/
+	{
+		WebKitGTK_LOAD_FUNCTION(fp, webkit_web_view_new_with_related_view)
+		if (fp) {
+			rc = (jlong)((jlong (CALLING_CONVENTION*)(jlong))fp)(arg0);
+		}
+	}
+	WebKitGTK_NATIVE_EXIT(env, that, webkit_1web_1view_1new_1with_1related_1view_FUNC);
 	return rc;
 }
 #endif

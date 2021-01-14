@@ -441,6 +441,8 @@ public static final native void webkit_web_view_load_uri(long web_view, byte[] u
 
 /** @method flags=dynamic */
 public static final native long webkit_web_view_new();
+/** @method flags=dynamic */
+public static final native long webkit_web_view_new_with_related_view(long web_view);
 
 
 /** @method flags=dynamic */ // @param context cast=(WebKitWebContext*)  @param directory cast=(const gchar *)

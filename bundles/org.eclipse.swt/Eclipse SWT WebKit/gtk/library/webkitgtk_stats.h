@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2009, 2020 IBM Corporation and others. All rights reserved.
+ * Copyright (c) 2009, 2021 IBM Corporation and others. All rights reserved.
  * The contents of this file are made available under the terms
  * of the GNU Lesser General Public License (LGPL) Version 2.1 that
  * accompanies this distribution (lgpl-v21.txt).  The LGPL is also
@@ -128,6 +128,7 @@ typedef enum {
 	webkit_1web_1view_1load_1request_FUNC,
 	webkit_1web_1view_1load_1uri_FUNC,
 	webkit_1web_1view_1new_FUNC,
+	webkit_1web_1view_1new_1with_1related_1view_FUNC,
 	webkit_1web_1view_1reload_FUNC,
 	webkit_1web_1view_1run_1javascript_FUNC,
 	webkit_1web_1view_1run_1javascript_1finish_FUNC,
