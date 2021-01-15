@@ -5980,8 +5980,10 @@ public void setTextDirection(int textDirection) {
  */
 public void setToolTipText (String string) {
 	checkWidget();
-	setToolTipText (_getShell (), string);
-	toolTipText = string;
+	if (!Objects.equals(string, toolTipText)) {
+		toolTipText = string;
+		setToolTipText (_getShell (), string);
+	}
 }
 
 void setToolTipText (Shell shell, String newString) {

@@ -99,6 +99,9 @@ public abstract class Widget {
 	/* Bidi "auto" text direction */
 	static final int HAS_AUTO_DIRECTION = 1<<22;
 
+	/* Mouse cursor is over the widget flag */
+	static final int MOUSE_OVER = 1<<23;
+
 	/* Default size for widgets */
 	static final int DEFAULT_WIDTH	= 64;
 	static final int DEFAULT_HEIGHT	= 64;
@@ -2056,6 +2059,7 @@ LRESULT wmMouseHover (long hwnd, long wParam, long lParam) {
 }
 
 LRESULT wmMouseLeave (long hwnd, long wParam, long lParam) {
+	state &= ~MOUSE_OVER;
 	if (!hooks (SWT.MouseExit) && !filters (SWT.MouseExit)) return null;
 	int pos = OS.GetMessagePos ();
 	POINT pt = new POINT ();
@@ -2078,12 +2082,9 @@ LRESULT wmMouseMove (long hwnd, long wParam, long lParam) {
 		boolean mouseExit = hooks (SWT.MouseExit) || display.filters (SWT.MouseExit);
 		boolean mouseHover = hooks (SWT.MouseHover) || display.filters (SWT.MouseHover);
 		if (trackMouse || mouseEnter || mouseExit || mouseHover) {
-			TRACKMOUSEEVENT lpEventTrack = new TRACKMOUSEEVENT ();
-			lpEventTrack.cbSize = TRACKMOUSEEVENT.sizeof;
-			lpEventTrack.dwFlags = OS.TME_QUERY;
-			lpEventTrack.hwndTrack = hwnd;
-			OS.TrackMouseEvent (lpEventTrack);
-			if (lpEventTrack.dwFlags == 0) {
+			if ((state & MOUSE_OVER) == 0) {
+				TRACKMOUSEEVENT lpEventTrack = new TRACKMOUSEEVENT ();
+				lpEventTrack.cbSize = TRACKMOUSEEVENT.sizeof;
 				lpEventTrack.dwFlags = OS.TME_LEAVE | OS.TME_HOVER;
 				lpEventTrack.hwndTrack = hwnd;
 				OS.TrackMouseEvent (lpEventTrack);
@@ -2102,9 +2103,7 @@ LRESULT wmMouseMove (long hwnd, long wParam, long lParam) {
 					}
 					sendMouseEvent (SWT.MouseEnter, 0, hwnd, lParam);
 				}
-			} else {
-				lpEventTrack.dwFlags = OS.TME_HOVER;
-				OS.TrackMouseEvent (lpEventTrack);
+				state |= MOUSE_OVER;
 			}
 		}
 		if (pos != display.lastMouse) {

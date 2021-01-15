@@ -14,6 +14,8 @@
  *******************************************************************************/
 package org.eclipse.swt.widgets;
 
+import java.util.*;
+
 import org.eclipse.swt.*;
 import org.eclipse.swt.accessibility.*;
 import org.eclipse.swt.events.*;
@@ -4352,8 +4354,10 @@ public void setTextDirection(int textDirection) {
  */
 public void setToolTipText (String string) {
 	checkWidget();
-	toolTipText = string;
-	checkToolTip (null);
+	if (!Objects.equals(string, toolTipText)) {
+		toolTipText = string;
+		checkToolTip (null);
+	}
 }
 
 /**
