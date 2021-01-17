@@ -2082,29 +2082,27 @@ LRESULT wmMouseMove (long hwnd, long wParam, long lParam) {
 		boolean mouseExit = hooks (SWT.MouseExit) || display.filters (SWT.MouseExit);
 		boolean mouseHover = hooks (SWT.MouseHover) || display.filters (SWT.MouseHover);
 		if (trackMouse || mouseEnter || mouseExit || mouseHover) {
-			if ((state & MOUSE_OVER) == 0) {
-				TRACKMOUSEEVENT lpEventTrack = new TRACKMOUSEEVENT ();
-				lpEventTrack.cbSize = TRACKMOUSEEVENT.sizeof;
-				lpEventTrack.dwFlags = OS.TME_LEAVE | OS.TME_HOVER;
-				lpEventTrack.hwndTrack = hwnd;
-				OS.TrackMouseEvent (lpEventTrack);
-				if (mouseEnter) {
-					/*
-					* Force all outstanding WM_MOUSELEAVE messages to be dispatched before
-					* issuing a mouse enter.  This causes mouse exit events to be processed
-					* before mouse enter events.  Note that WM_MOUSELEAVE is posted to the
-					* event queue by TrackMouseEvent().
-					*/
-					MSG msg = new MSG ();
-					int flags = OS.PM_REMOVE | OS.PM_NOYIELD | OS.PM_QS_INPUT | OS.PM_QS_POSTMESSAGE;
-					while (OS.PeekMessage (msg, 0, OS.WM_MOUSELEAVE, OS.WM_MOUSELEAVE, flags)) {
-						OS.TranslateMessage (msg);
-						OS.DispatchMessage (msg);
-					}
-					sendMouseEvent (SWT.MouseEnter, 0, hwnd, lParam);
+			TRACKMOUSEEVENT lpEventTrack = new TRACKMOUSEEVENT ();
+			lpEventTrack.cbSize = TRACKMOUSEEVENT.sizeof;
+			lpEventTrack.dwFlags = OS.TME_LEAVE | OS.TME_HOVER;
+			lpEventTrack.hwndTrack = hwnd;
+			OS.TrackMouseEvent (lpEventTrack);
+			if (mouseEnter && (state & MOUSE_OVER) == 0) {
+				/*
+				 * Force all outstanding WM_MOUSELEAVE messages to be dispatched before
+				 * issuing a mouse enter.  This causes mouse exit events to be processed
+				 * before mouse enter events.  Note that WM_MOUSELEAVE is posted to the
+				 * event queue by TrackMouseEvent().
+				 */
+				MSG msg = new MSG ();
+				int flags = OS.PM_REMOVE | OS.PM_NOYIELD | OS.PM_QS_INPUT | OS.PM_QS_POSTMESSAGE;
+				while (OS.PeekMessage (msg, 0, OS.WM_MOUSELEAVE, OS.WM_MOUSELEAVE, flags)) {
+					OS.TranslateMessage (msg);
+					OS.DispatchMessage (msg);
 				}
-				state |= MOUSE_OVER;
+				sendMouseEvent (SWT.MouseEnter, 0, hwnd, lParam);
 			}
+			state |= MOUSE_OVER;
 		}
 		if (pos != display.lastMouse) {
 			display.lastMouse = pos;
