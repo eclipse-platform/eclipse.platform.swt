@@ -877,10 +877,6 @@ void createDisplay (DeviceData data) {
 		int pid = OS.getpid ();
 		long ptr = getApplicationName().UTF8String();
 		if (ptr != 0) OS.CPSSetProcessName (psn, ptr);
-		if (!isBundled ()) {
-			application.setActivationPolicy (OS.NSApplicationActivationPolicyRegular);
-			NSRunningApplication.currentApplication().activateWithOptions (OS.NSApplicationActivateIgnoringOtherApps);
-		}
 		ptr = C.getenv (ascii ("APP_ICON_" + pid));
 		if (ptr != 0) {
 			NSString path = NSString.stringWithUTF8String (ptr);
@@ -937,6 +933,7 @@ void createDisplay (DeviceData data) {
 		OS.class_addMethod(cls, OS.sel_hide_, appProc3, "@:@");
 		OS.class_addMethod(cls, OS.sel_unhideAllApplications_, appProc3, "@:@");
 		OS.class_addMethod(cls, OS.sel_applicationDidBecomeActive_, appProc3, "@:@");
+		OS.class_addMethod(cls, OS.sel_applicationDidFinishLaunching_, appProc3, "@:@");
 		OS.class_addMethod(cls, OS.sel_applicationDidResignActive_, appProc3, "@:@");
 		OS.class_addMethod(cls, OS.sel_applicationDockMenu_, appProc3, "@:@");
 		OS.class_addMethod(cls, OS.sel_application_openFile_, appProc4, "@:@@");
@@ -5447,6 +5444,13 @@ void applicationSendEvent (long id, long sel, long event) {
 	if (type != OS.NSAppKitDefined) sendEvent = false;
 }
 
+void applicationDidFinishLaunching (long id, long sel, long notification) {
+	if (!isBundled()) {
+		application.setActivationPolicy (OS.NSApplicationActivationPolicyRegular);
+		application.activateIgnoringOtherApps (true);
+	}
+}
+
 void applicationWillFinishLaunching (long id, long sel, long notification) {
 	boolean loaded = false;
 
@@ -5579,6 +5583,10 @@ static long applicationProc(long id, long sel, long arg0) {
 	switch (Selector.valueOf(sel)) {
 		case sel_sendEvent_: {
 			display.applicationSendEvent (id, sel, arg0);
+			return 0;
+		}
+		case sel_applicationDidFinishLaunching_: {
+			display.applicationDidFinishLaunching(id, sel, arg0);
 			return 0;
 		}
 		case sel_applicationWillFinishLaunching_: {

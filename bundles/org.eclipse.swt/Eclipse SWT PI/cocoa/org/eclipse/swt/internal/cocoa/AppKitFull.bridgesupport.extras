@@ -2524,15 +2524,6 @@
 			<retval swt_gen="true"></retval>
 		</method>
 	</class>
-	<class name="NSRunningApplication" swt_gen="mixed">
-		<method selector="activateWithOptions:" swt_gen="true">
-			<arg swt_gen="true"></arg>
-			<retval swt_gen="true"></retval>
-		</method>
-		<method class_method="true" selector="currentApplication" swt_gen="true">
-			<retval swt_gen="true"></retval>
-		</method>
-	</class>
 	<class name="NSSavePanel" swt_gen="mixed" swt_superclass="NSPanel">
 		<method selector="filename" swt_gen="true">
 			<retval swt_gen="true"></retval>
@@ -4671,6 +4662,10 @@
 			<retval></retval>
 		</method>
 		<method selector="applicationDidBecomeActive:" swt_gen="true">
+			<arg swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
+		</method>
+		<method selector="applicationDidFinishLaunching:" swt_gen="true">
 			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
