@@ -102,7 +102,7 @@ Region(Device device, long handle) {
 	 * for this reason it can't be disposed. Tell leak detector
 	 * to just ignore it.
 	 */
-	this.nonDisposedIgnore = true;
+	this.ignoreNonDisposed();
 }
 
 /**

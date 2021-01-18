@@ -297,7 +297,7 @@ public static Font cocoa_new(Device device, NSFont handle) {
 	 * for this reason it can't be disposed. Tell leak detector
 	 * to just ignore it.
 	 */
-	font.nonDisposedIgnore = true;
+	font.ignoreNonDisposed();
 	return font;
 }
 

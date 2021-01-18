@@ -22,8 +22,7 @@ import org.eclipse.swt.widgets.*;
 
 public class Bug569752_DetectNonDisposedOsResources {
 	public static void main(String[] args) {
-		// System.setProperty("org.eclipse.swt.graphics.Resource.reportNonDisposed", "stacks");
-		// System.setProperty("org.eclipse.swt.graphics.Resource.reportNonDisposed", "false");
+		// System.setProperty("org.eclipse.swt.graphics.Resource.reportNonDisposed", "true");
 
 		final Display display = new Display();
 		final Shell shell = new Shell(display);
@@ -51,10 +50,12 @@ public class Bug569752_DetectNonDisposedOsResources {
 			System.gc();
 		});
 
-		Resource.trackNonDisposed(true, (object, exception) -> {
-			System.err.println("Snippet reporter: Resource was not properly disposed: " + object);
-			if (exception != null)
+		Resource.setNonDisposeHandler(exception -> {
+			if (exception != null) {
 				exception.printStackTrace();
+			} else {
+				System.err.println("Snippet reporter: SWT Resource was not properly disposed"); //$NON-NLS-1$
+			}
 		});
 
 		shell.pack();

@@ -238,7 +238,7 @@ public static Font gtk_new(Device device, long handle) {
 	 * for this reason it can't be disposed. Tell leak detector
 	 * to just ignore it.
 	 */
-	font.nonDisposedIgnore = true;
+	font.ignoreNonDisposed();
 	return font;
 }
 
