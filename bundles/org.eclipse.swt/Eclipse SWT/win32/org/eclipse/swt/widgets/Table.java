@@ -6882,9 +6882,15 @@ LRESULT wmNotifyHeader (NMHDR hdr, long wParam, long lParam) {
 					int pixel = getHeaderBackgroundPixel();
 					if ((nmcd.uItemState & OS.CDIS_SELECTED) != 0) {
 						pixel = getDifferentColor(pixel);
-					} else if (columns[(int) nmcd.dwItemSpec] == sortColumn && sortDirection != SWT.NONE) {
-//						pixel = getSlightlyDifferentColor(pixel);
 					}
+					/*
+					 * Don't change the header background color for set selected column, similar to
+					 * Windows 10 which itself does not use any different color for sort header. For
+					 * more details refer bug 536020
+					 */
+//					else if (columns[(int) nmcd.dwItemSpec] == sortColumn && sortDirection != SWT.NONE) {
+//						pixel = getSlightlyDifferentColor(pixel);
+//					}
 					long brush = OS.CreateSolidBrush(pixel);
 					OS.FillRect(nmcd.hdc, rect, brush);
 					OS.DeleteObject(brush);
