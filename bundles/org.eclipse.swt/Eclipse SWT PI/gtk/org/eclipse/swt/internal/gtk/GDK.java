@@ -1033,7 +1033,11 @@ public class GDK extends OS {
 	 * @param length cast=(gint *)
 	 */
 	public static final native boolean gdk_x11_display_utf8_to_compound_text(long display, byte[] str, long [] encoding, int[] format, long [] ctext, int[] length);
-	/** @param str cast=(const gchar *) */
+	/**
+	 * @method flags=dynamic
+	 * @param str cast=(const gchar *)
+	 */
+	/* [GTK3 only] */
 	public static final native long gdk_utf8_to_string_target(byte[] str);
 	/**
 	 * @param display cast=(GdkDisplay *)

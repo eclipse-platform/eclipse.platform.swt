@@ -853,6 +853,7 @@ public class GTK extends OS {
 	public static final native int gtk_dialog_run(long dialog);
 
 
+	/* Drag and Drop Api [GTK3 only] */
 	/**
 	 * @method flags=dynamic
 	 * @param widget cast=(GtkWidget *)
@@ -863,18 +864,8 @@ public class GTK extends OS {
 	 * @param x cast=(gint)
 	 * @param y cast=(gint)
 	 */
-	/* [GTK3 only, if-def'd in os.h] */
+	/* [if-def'd in os.h] */
 	public static final native long gtk_drag_begin_with_coordinates(long widget, long targets, int actions, int button, long event, int x, int y);
-	/**
-	 * @param widget cast=(GtkWidget *)
-	 * @param device cast=(GdkDevice *)
-	 * @param targets cast=(GdkContentFormats *)
-	 * @param actions cast=(GdkDragAction)
-	 * @param x cast=(gint)
-	 * @param y cast=(gint)
-	 */
-	/* [GTK4 only, if-def'd in os.h] */
-	public static final native long gtk_drag_begin_with_coordinates(long widget, long device, long targets, int actions, int x, int y);
 	/**
 	 * @param widget cast=(GtkWidget *)
 	 * @param start_x cast=(gint)
@@ -890,9 +881,12 @@ public class GTK extends OS {
 	 * @param n_targets cast=(gint)
 	 * @param actions cast=(GdkDragAction)
 	 */
-	/* [GTK3 only, if-def'd in os.h] */
+	/* [if-def'd in os.h] */
 	public static final native void gtk_drag_dest_set(long widget, int flags, long targets, int n_targets, int actions);
-	/** @param widget cast=(GtkWidget *) */
+	/**
+	 * @method flags=dynamic
+	 * @param widget cast=(GtkWidget *)
+	 */
 	public static final native void gtk_drag_dest_unset(long widget);
 	/**
 	 * @param context cast=(GdkDragContext *)
@@ -900,7 +894,7 @@ public class GTK extends OS {
 	 * @param delete cast=(gboolean)
 	 * @param time cast=(guint32)
 	 */
-	/* [GTK3 only, if-def'd in os.h] */
+	/* [if-def'd in os.h] */
 	public static final native void gtk_drag_finish(long context, boolean success, boolean delete, int time);
 	/**
 	 * @param widget cast=(GtkWidget *)
@@ -908,20 +902,13 @@ public class GTK extends OS {
 	 * @param target cast=(GdkAtom)
 	 * @param time cast=(guint32)
 	 */
-	/* [GTK3 only, if-def'd in os.h] */
+	/* [if-def'd in os.h] */
 	public static final native void gtk_drag_get_data(long widget, long context, long target, int time);
-	/**
-	 * @param widget cast=(GtkWidget *)
-	 * @param drop cast=(GdkDrop *)
-	 * @param target cast=(GdkAtom)
-	 */
-	/* [GTK4 only, if-def'd in os.h] */
-	public static final native void gtk_drag_get_data(long widget, long drop, long target);
 	/**
 	 * @param context cast=(GdkDragContext *)
 	 * @param surface cast=(cairo_surface_t *)
 	 */
-	/* [GTK3 only, if-def'd in os.h] */
+	/* [if-def'd in os.h] */
 	public static final native void gtk_drag_set_icon_surface(long context, long surface);
 
 
@@ -1470,10 +1457,20 @@ public class GTK extends OS {
 	 */
 	/* [GTK3 only] */
 	public static final native long gtk_get_event_widget(long event);
-	/** @param widget cast=(GtkWidget *) */
+
+
+	/* GtkGrab [GTK3 only] */
+	/**
+	 * @method flags=dynamic
+	 * @param widget cast=(GtkWidget *)
+	 */
 	public static final native void gtk_grab_add(long widget);
+	/** @method flags=dynamic */
 	public static final native long gtk_grab_get_current();
-	/** @param widget cast=(GtkWidget *) */
+	/**
+	 * @method flags=dynamic
+	 * @param widget cast=(GtkWidget *)
+	 */
 	public static final native void gtk_grab_remove(long widget);
 
 	/**

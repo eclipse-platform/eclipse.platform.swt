@@ -278,17 +278,9 @@
 #define NO_gtk_1container_1get_1children
 #define NO_gtk_1container_1remove
 
-/**
- * Some gtk_drag_* functions exist on both versions,
- * but with different signatures. Define them in both GTK4
- * and GTK3.
- */
-#define NO_gtk_1drag_1begin_1with_1coordinates__IIIIIII
-#define NO_gtk_1drag_1begin_1with_1coordinates__JJIIJII
-#define NO_gtk_1drag_1get_1data__IIII
-#define NO_gtk_1drag_1get_1data__JJJI
-
-// Some gtk_drag_* functions were removed in GTK4
+// GTK3 Drag api removed
+#define NO_gtk_1drag_1begin_1with_1coordinates
+#define NO_gtk_1drag_1get_1data
 #define NO_gtk_1drag_1begin
 #define NO_gtk_1drag_1dest_1set
 #define NO_gtk_1drag_1dest_1find_1target
@@ -513,16 +505,6 @@
 #define NO_GTK_1IS_1CONTAINER
 
 #else
-
-/**
- * Some gtk_drag_* functions exist on both versions,
- * but with different signatures. Define them in both GTK4
- * and GTK3.
- */
-#define NO_gtk_1drag_1begin_1with_1coordinates__IIIIII
-#define NO_gtk_1drag_1begin_1with_1coordinates__JJJIII
-#define NO_gtk_1drag_1get_1data__III
-#define NO_gtk_1drag_1get_1data__JJJ
 
 // No GdkSurface on GTK3
 #define NO_gtk_1widget_1set_1parent_1surface
