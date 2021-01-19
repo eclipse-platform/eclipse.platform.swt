@@ -2216,9 +2216,9 @@ void setButtonBackgroundGdkRGBA (GdkRGBA rgba) {
 		OS.g_object_unref(buttonProvider);
 	}
 	if (GTK.GTK4) {
-		GTK.gtk_css_provider_load_from_data (provider, Converter.wcsToMbcs (finalCss, true), -1);
+		GTK.gtk_css_provider_load_from_data (buttonProvider, Converter.wcsToMbcs (finalCss, true), -1);
 	} else {
-		GTK.gtk_css_provider_load_from_data (provider, Converter.wcsToMbcs (finalCss, true), -1, null);
+		GTK.gtk_css_provider_load_from_data (buttonProvider, Converter.wcsToMbcs (finalCss, true), -1, null);
 	}
 }
 
@@ -2253,8 +2253,7 @@ void setBackgroundGdkRGBA (long context, long handle, GdkRGBA rgba) {
 	} else {
 		background = rgba;
 	}
-	// CSS to be parsed for various widgets within Combo
-	String css = "* {";
+
 	String color, menuColor;
 	if (rgba != null) {
 		color = display.gtk_rgba_to_css_string (rgba);
@@ -2268,8 +2267,9 @@ void setBackgroundGdkRGBA (long context, long handle, GdkRGBA rgba) {
 
 		menuColor = display.gtk_rgba_to_css_string (display.COLOR_LIST_BACKGROUND_RGBA);
 	}
-	css += "background: " + color + ";}\n";
 
+	// CSS to be parsed for various widgets within Combo
+	String css = "* {background: " + color + ";}\n";
 	// Set the selected background color
 	GdkRGBA selectedBackground = display.getSystemColor(SWT.COLOR_LIST_SELECTION).handle;
 	GdkRGBA selectedForeground = display.getSystemColor(SWT.COLOR_LIST_SELECTION_TEXT).handle;
