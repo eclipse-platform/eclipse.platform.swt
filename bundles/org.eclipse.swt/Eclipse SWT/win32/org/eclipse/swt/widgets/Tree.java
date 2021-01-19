@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2018 IBM Corporation and others.
+ * Copyright (c) 2000, 2021 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -7668,9 +7668,15 @@ LRESULT wmNotifyHeader (NMHDR hdr, long wParam, long lParam) {
 					int pixel = getHeaderBackgroundPixel();
 					if ((nmcd.uItemState & OS.CDIS_SELECTED) != 0) {
 						pixel = getDifferentColor(pixel);
-					} else if (columns[(int) nmcd.dwItemSpec] == sortColumn && sortDirection != SWT.NONE) {
-						pixel = getSlightlyDifferentColor(pixel);
 					}
+					/*
+					 * Don't change the header background color for set selected column, similar to
+					 * Windows 10 which itself does not use any different color for sort header. For
+					 * more details refer bug 570468
+					 */
+//					else if (columns[(int) nmcd.dwItemSpec] == sortColumn && sortDirection != SWT.NONE) {
+//						 pixel = getSlightlyDifferentColor(pixel);
+//					}
 					long brush = OS.CreateSolidBrush(pixel);
 					OS.FillRect(nmcd.hdc, rect, brush);
 					OS.DeleteObject(brush);
