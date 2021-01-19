@@ -470,7 +470,6 @@ private void hookMouseSignals(long eventHandle) {
 
 	if (GTK.GTK4) {
 		long clickGesture = GTK.gtk_gesture_click_new();
-		GTK.gtk_event_controller_set_propagation_phase(clickGesture, GTK.GTK_PHASE_TARGET);
 		GTK.gtk_gesture_single_set_button(clickGesture, 0);
 		GTK.gtk_widget_add_controller(eventHandle, clickGesture);
 		OS.g_signal_connect(clickGesture, OS.pressed, display.gesturePressReleaseProc, GESTURE_PRESSED);

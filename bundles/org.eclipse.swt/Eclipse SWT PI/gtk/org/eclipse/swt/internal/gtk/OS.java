@@ -2311,6 +2311,22 @@ public static final native long g_object_ref_sink(long object);
  */
 public static final native void g_date_time_get_ymd(long dateTime, int[] year, int[] month, int[] day);
 
+/**
+ * Ranges:
+ * year must be between 1 - 9999,
+ * month must be between 1 - 12,
+ * day must be between 1 and 28, 29, 30, 31,
+ * hour must be between 0 - 23,
+ * minute must be between 0 - 59,
+ * seconds must be between 0.0 - 60.0
+ *
+ * @param year cast=(gint)
+ * @param month cast=(gint)
+ * @param day cast=(gint)
+ * @param hour cast=(gint)
+ * @param minute cast=(gint)
+ * @param seconds cast=(gdouble)
+ */
 public static final native long g_date_time_new_local(int year, int month, int day, int hour, int minute, double seconds);
 
 /** @param file cast=(GFile *) */

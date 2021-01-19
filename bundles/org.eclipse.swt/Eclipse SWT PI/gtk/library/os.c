@@ -16223,7 +16223,7 @@ JNIEXPORT jlong JNICALL OS_NATIVE(g_1date_1time_1new_1local)
 {
 	jlong rc = 0;
 	OS_NATIVE_ENTER(env, that, g_1date_1time_1new_1local_FUNC);
-	rc = (jlong)g_date_time_new_local(arg0, arg1, arg2, arg3, arg4, arg5);
+	rc = (jlong)g_date_time_new_local((gint)arg0, (gint)arg1, (gint)arg2, (gint)arg3, (gint)arg4, (gdouble)arg5);
 	OS_NATIVE_EXIT(env, that, g_1date_1time_1new_1local_FUNC);
 	return rc;
 }

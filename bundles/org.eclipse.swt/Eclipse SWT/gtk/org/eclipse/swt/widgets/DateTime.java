@@ -1507,7 +1507,7 @@ public void setDate (int year, int month, int day) {
 		this.day = day;
 
 		if (GTK.GTK4) {
-			long dateTime = OS.g_date_time_new_local(year, month, day, 0, 0, 0);
+			long dateTime = OS.g_date_time_new_local(year, month + 1, day, 0, 0, 0);
 			GTK.gtk_calendar_select_day(calendarHandle, dateTime);
 		} else {
 			GTK.gtk_calendar_select_month (calendarHandle, month, year);
@@ -1542,7 +1542,7 @@ public void setDay (int day) {
 		this.day = day;
 
 		if (GTK.GTK4) {
-			long dateTime = OS.g_date_time_new_local(this.year, this.month, day, 0, 0, 0);
+			long dateTime = OS.g_date_time_new_local(this.year, this.month + 1, day, 0, 0, 0);
 			GTK.gtk_calendar_select_day(calendarHandle, dateTime);
 		} else {
 			GTK.gtk_calendar_select_day (calendarHandle, day);
