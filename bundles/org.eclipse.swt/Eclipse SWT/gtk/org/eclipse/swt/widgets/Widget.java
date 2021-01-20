@@ -1724,6 +1724,13 @@ public void setData (String key, Object value) {
 	}
 }
 
+/**
+ * @param fontDescription Font description in the form of
+ *                        <code>PangoFontDescription*</code>. This pointer
+ *                        will never be used by GTK after calling this
+ *                        function, so it's safe to free it as soon as the
+ *                        function completes.
+ */
 void setFontDescription(long widget, long fontDescription) {
 	if (GTK.GTK4) {
 		long styleContext = GTK.gtk_widget_get_style_context(widget);
@@ -1731,8 +1738,11 @@ void setFontDescription(long widget, long fontDescription) {
 		GTK.gtk_style_context_add_provider(styleContext, provider, GTK.GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
 		OS.g_object_unref(provider);
 
-		GTK.gtk_css_provider_load_from_data(provider, Converter.javaStringToCString(convertPangoFontDescriptionToCss(fontDescription)), -1);
+		String css = convertPangoFontDescriptionToCss(fontDescription);
+		GTK.gtk_css_provider_load_from_data(provider, Converter.javaStringToCString(css), -1);
 	} else {
+		// gtk_widget_override_font() copies the fields from 'fontDescription'
+		// and does not remember the pointer passed to it.
 		GTK.gtk_widget_override_font(widget, fontDescription);
 		long context = GTK.gtk_widget_get_style_context(widget);
 		GTK.gtk_style_context_invalidate(context);

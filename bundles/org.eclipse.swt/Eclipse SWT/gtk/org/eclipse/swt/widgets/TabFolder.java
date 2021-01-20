@@ -334,7 +334,9 @@ void createItem (TabItem item, int index) {
 		item.setForegroundGdkRGBA (item.handle, getForegroundGdkRGBA());
 	}
 	if ((state & FONT) != 0) {
-		item.setFontDescription (getFontDescription());
+		long fontDesc = getFontDescription ();
+		item.setFontDescription (fontDesc);
+		OS.pango_font_description_free (fontDesc);
 	}
 	if (itemCount == 1) {
 		OS.g_signal_handlers_block_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, SWITCH_PAGE);

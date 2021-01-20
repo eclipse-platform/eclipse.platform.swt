@@ -1182,7 +1182,12 @@ public int getItemCount () {
  */
 public int getItemHeight () {
 	checkWidget();
-	return fontHeight (getFontDescription (), handle);
+
+	long fontDesc = getFontDescription ();
+	int result = fontHeight (fontDesc, handle);
+	OS.pango_font_description_free(fontDesc);
+
+	return result;
 }
 
 /**

@@ -3128,12 +3128,19 @@ public Font getFont () {
 	return font != null ? font : defaultFont ();
 }
 
+/**
+ * @return A newly allocated <code>PangoFontDescription*</code>, caller
+ *         must free it with {@link OS#pango_font_description_free}.
+ */
 long getFontDescription () {
 	long fontHandle = fontHandle ();
 	long [] fontDesc = new long [1];
 	long context = GTK.gtk_widget_get_style_context (fontHandle);
 	if ("ppc64le".equals(System.getProperty("os.arch"))) {
-		return GTK.gtk_style_context_get_font(context, GTK.GTK_STATE_FLAG_NORMAL);
+		// Unlike 'gtk_style_context_get()', 'gtk_style_context_get_font()'
+		// returns pointer owned by GTK. The workaround is to make a copy of the data.
+		long gtkOwnedPointer = GTK.gtk_style_context_get_font(context, GTK.GTK_STATE_FLAG_NORMAL);
+		return OS.pango_font_description_copy(gtkOwnedPointer);
 	} else if (GTK.GTK4) {
 		GTK.gtk_style_context_get(context, GTK.gtk_style_property_font, fontDesc, 0);
 		return fontDesc [0];

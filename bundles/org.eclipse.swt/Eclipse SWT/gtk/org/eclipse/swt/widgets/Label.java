@@ -207,6 +207,7 @@ Point computeSizeInPixels (int wHint, int hHint, boolean changed) {
 		long lang = OS.pango_context_get_language (context);
 		long font = getFontDescription ();
 		long metrics = OS.pango_context_get_metrics (context, font, lang);
+		OS.pango_font_description_free (font);
 		int ascent = OS.PANGO_PIXELS (OS.pango_font_metrics_get_ascent (metrics));
 		int descent = OS.PANGO_PIXELS (OS.pango_font_metrics_get_descent (metrics));
 		OS.pango_font_metrics_unref (metrics);

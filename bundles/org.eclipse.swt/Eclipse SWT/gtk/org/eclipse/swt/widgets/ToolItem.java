@@ -311,7 +311,9 @@ void createHandle (int index) {
 	}
 
 	if ((parent.state & FONT) != 0) {
-		setFontDescription (parent.getFontDescription());
+		long fontDesc = parent.getFontDescription ();
+		setFontDescription (fontDesc);
+		OS.pango_font_description_free (fontDesc);
 	}
 
 	/*

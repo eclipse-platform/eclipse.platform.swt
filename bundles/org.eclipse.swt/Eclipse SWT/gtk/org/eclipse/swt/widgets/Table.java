@@ -741,7 +741,9 @@ void createItem (TableColumn column, int index) {
 	System.arraycopy (columns, index, columns, index + 1, columnCount++ - index);
 	columns [index] = column;
 	if ((state & FONT) != 0) {
-		column.setFontDescription (getFontDescription ());
+		long fontDesc = getFontDescription ();
+		column.setFontDescription (fontDesc);
+		OS.pango_font_description_free (fontDesc);
 	}
 	if (columnCount >= 1) {
 		for (int i=0; i<itemCount; i++) {

@@ -5575,7 +5575,9 @@ void showIMWindow (Control control) {
 		if (widget == null) widget = control;
 		widget.setBackgroundGdkRGBA (preeditWindow, control.getBackgroundGdkRGBA());
 		widget.setForegroundGdkRGBA (preeditLabel, control.getForegroundGdkRGBA());
-		widget.setFontDescription (preeditLabel, control.getFontDescription ());
+		long fontDesc = control.getFontDescription ();
+		widget.setFontDescription (preeditLabel, fontDesc);
+		OS.pango_font_description_free (fontDesc);
 		if (pangoAttrs [0] != 0) GTK.gtk_label_set_attributes (preeditLabel, pangoAttrs[0]);
 		GTK.gtk_label_set_text (preeditLabel, preeditString [0]);
 		Point point = control.toDisplayInPixels (control.getIMCaretPos ());
