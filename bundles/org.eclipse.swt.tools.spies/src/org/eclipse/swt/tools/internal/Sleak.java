@@ -14,17 +14,21 @@
 package org.eclipse.swt.tools.internal;
 
 import java.io.*;
+import java.util.*;
+import java.util.stream.*;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.layout.*;
 import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.widgets.List;
 
 /**
  * Instructions on how to use the Sleak tool with a standlaone SWT example:
- * 
+ *
  * Modify the main method below to launch your application.
  * Run Sleak.
- * 
+ *
  */
 public class Sleak {
 	List list;
@@ -32,7 +36,7 @@ public class Sleak {
 	Button enableTracking, snapshot, diff, stackTrace, saveAs, save;
 	Text text;
 	Label label;
-	
+
 	String filterPath = "";
 	String fileName = "sleakout";
 	String selectedName = null;
@@ -40,10 +44,8 @@ public class Sleak {
 	boolean saveImages = true;
 	int fileCount = 0;
 
-	Object [] oldObjects = new Object [0];
-	Error [] oldErrors = new Error [0];
-	Object [] objects = new Object [0];
-	Error [] errors = new Error [0];
+	java.util.List<ObjectWithError> oldObjects = new ArrayList<> ();
+	java.util.List<ObjectWithError> objects = new ArrayList<> ();
 
 public static void main (String [] args) {
 	DeviceData data = new DeviceData();
@@ -54,21 +56,32 @@ public static void main (String [] args) {
 	shell.setText ("S-Leak");
 	Point size = shell.getSize ();
 	shell.setSize (size.x / 2, size.y / 2);
+	GridLayout layout = new GridLayout(2, false);
+	layout.horizontalSpacing = 0;
+	layout.verticalSpacing = 0;
+	shell.setLayout(layout);
 	sleak.create (shell);
 	shell.open();
-	
+
 	// Launch your application here
-	// e.g.		
-//	Shell shell = new Shell(display);
-//	Button button1 = new Button(shell, SWT.PUSH);
+	// e.g.
+//	Shell shell2 = new Shell(display);
+//	Button button1 = new Button(shell2, SWT.PUSH);
 //	button1.setBounds(10, 10, 100, 50);
 //	button1.setText("Hello World");
 //	Image image = new Image(display, 20, 20);
-//	Button button2 = new Button(shell, SWT.PUSH);
+//	Button button2 = new Button(shell2, SWT.PUSH);
 //	button2.setBounds(10, 70, 100, 50);
 //	button2.setImage(image);
-//	shell.open();
-	
+//	button1.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
+//		Font oldFont = button1.getFont();
+//		int style = oldFont.getFontData()[0].getStyle() ^ SWT.BOLD;
+//		button1.setFont(new Font(display, "Arial", 10, style));
+//		button1.setForeground(new Color(100,200,100));
+//		oldFont.dispose();
+//	}));
+//	shell2.open();
+
 	while (!shell.isDisposed ()) {
 		if (!display.readAndDispatch ()) display.sleep ();
 	}
@@ -76,39 +89,44 @@ public static void main (String [] args) {
 }
 
 public void create (Composite parent) {
-	list = new List (parent, SWT.BORDER | SWT.V_SCROLL);
-	list.addListener (SWT.Selection, event -> refreshObject ());
-	text = new Text (parent, SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL);
-	canvas = new Canvas (parent, SWT.BORDER);
-	canvas.addListener (SWT.Paint, event -> paintCanvas (event));
 	enableTracking = new Button (parent, SWT.CHECK);
 	enableTracking.setText ("Enable");
 	enableTracking.setToolTipText("Enable Device resource tracking. Only resources allocated once enabled will be tracked. To track devices created before view is created, turn on tracing options, see https://www.eclipse.org/swt/tools.php");
 	enableTracking.addListener (SWT.Selection, e -> toggleEnableTracking ());
 	enableTracking.setSelection(enableTracking.getDisplay().isTracking());
-	stackTrace = new Button (parent, SWT.CHECK);
-	stackTrace.setText ("Stack");
-	stackTrace.addListener (SWT.Selection, e -> toggleStackTrace ());
+	canvas = new Canvas (parent, SWT.BORDER);
+	canvas.addListener (SWT.Paint, event -> paintCanvas (event));
+	canvas.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 10));
+	text = new Text (parent, SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL);
+	text.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 10));
+	setVisible(text,  false);
 	snapshot = new Button (parent, SWT.PUSH);
 	snapshot.setText ("Snap");
 	snapshot.addListener (SWT.Selection, event -> refreshAll ());
+	snapshot.setLayoutData(new GridData(SWT.FILL, SWT.NONE, false, false));
 	diff = new Button (parent, SWT.PUSH);
 	diff.setText ("Diff");
 	diff.addListener (SWT.Selection, event -> refreshDifference ());
-	label = new Label (parent, SWT.BORDER);
+	diff.setLayoutData(new GridData(SWT.FILL, SWT.NONE, false, false));
+	stackTrace = new Button (parent, SWT.CHECK);
+	stackTrace.setText ("Stack");
+	stackTrace.addListener (SWT.Selection, e -> toggleStackTrace ());
+	list = new List (parent, SWT.BORDER | SWT.V_SCROLL);
+	list.addListener (SWT.Selection, event -> refreshObject ());
+	list.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, true));
+	label = new Label (parent, SWT.NONE);
 	label.setText ("0 object(s)");
 	saveAs = new Button (parent, SWT.PUSH);
 	saveAs.setText ("Save As...");
 	saveAs.setToolTipText("Saves the contents of the list to a file, optionally with the stack traces if selected.");
 	saveAs.addListener (SWT.Selection, event -> saveToFile (true));
+	saveAs.setLayoutData(new GridData(SWT.FILL, SWT.NONE, false, false));
 	save = new Button (parent, SWT.PUSH);
 	save.setText ("Save");
 	save.setToolTipText("Saves to the previously selected file.");
 	save.addListener (SWT.Selection, event -> saveToFile (false));
-	parent.addListener (SWT.Resize, e -> layout ());
+	save.setLayoutData(new GridData(SWT.FILL, SWT.NONE, false, false));
 	stackTrace.setSelection (false);
-	text.setVisible (false);
-	layout();
 }
 
 private void toggleEnableTracking() {
@@ -118,33 +136,30 @@ private void toggleEnableTracking() {
 }
 
 void refreshLabel () {
-	int cursors = 0, fonts = 0, gcs = 0, images = 0;
-	int paths = 0, patterns = 0, regions = 0, textLayouts = 0, transforms= 0;
-	for (Object object : objects) {
-		if (object instanceof Cursor) cursors++;
-		if (object instanceof Font) fonts++;
-		if (object instanceof GC) gcs++;
-		if (object instanceof Image) images++;
-		if (object instanceof Path) paths++;
-		if (object instanceof Pattern) patterns++;
-		if (object instanceof Region) regions++;
-		if (object instanceof TextLayout) textLayouts++;
-		if (object instanceof Transform) transforms++;
+	Map<String, Long> deleted = oldObjects.stream().collect(
+			Collectors.groupingBy(o -> o.object.getClass().getSimpleName(), Collectors.counting()));
+	Map<String, Long> created = objects.stream().collect(
+			Collectors.groupingBy(o -> o.object.getClass().getSimpleName(), Collectors.counting()));
+	StringBuilder sb = new StringBuilder();
+	Stream.concat(deleted.keySet().stream(), created.keySet().stream()).distinct().sorted().
+		forEach(type -> addCounts(sb, type, deleted.get(type), created.get(type)));
+	label.setText (sb.length() > 0 ? sb.toString() : "0 object(s)");
+	canvas.getParent().layout();
+}
+
+void addCounts (StringBuilder string, String type, Long deleted, Long created) {
+	if (deleted != null || created != null) {
+		if (deleted != null) {
+			string.append("-" + deleted);
+			if (created != null) {
+				string.append(" / ");
+			}
+		}
+		if (created != null) {
+			string.append(created);
+		}
+		string.append(" " + type + "(s)\n");
 	}
-	String string = "";
-	if (cursors != 0) string += cursors + " Cursor(s)\n";
-	if (fonts != 0) string += fonts + " Font(s)\n";
-	if (gcs != 0) string += gcs + " GC(s)\n";
-	if (images != 0) string += images + " Image(s)\n";
-	if (paths != 0) string += paths + " Paths(s)\n";
-	if (patterns != 0) string += patterns + " Pattern(s)\n";
-	if (regions != 0) string += regions + " Region(s)\n";
-	if (textLayouts != 0) string += textLayouts + " TextLayout(s)\n";
-	if (transforms != 0) string += transforms + " Transform(s)\n";
-	if (string.length () != 0) {
-		string = string.substring (0, string.length () - 1);
-	}
-	label.setText (string);
 }
 
 void refreshDifference () {
@@ -160,50 +175,32 @@ void refreshDifference () {
 			toggleEnableTracking();
 		}
 	}
-	int size = 0;
-	for (int i = 0; i < info.objects.length; i++) {
-		if (!(info.objects[i] instanceof Color)) {
-			size++;
+
+	oldObjects = new ArrayList<> (objects);
+	objects.clear ();
+	for (int i=0; i<info.objects.length; i++) {
+		boolean found = false;
+		Iterator<ObjectWithError> oldObject = oldObjects.iterator ();
+		if (!(info.objects [i] instanceof Color)) {
+			// Bug 563018: Colors don't require disposal, so exclude them from the list of allocated objects.
+			while (oldObject.hasNext () && !found) {
+				if (info.objects [i] == oldObject.next ().object) {
+					oldObject.remove ();
+					found = true;
+				}
+			}
+			if (!found) {
+				objects.add (new ObjectWithError (info.objects [i], info.errors[i]));
+			}
 		}
 	}
-	Object [] newObjects = new Object[size];
-	Error [] newErrors = new Error[size];
-	for (int i = 0, out_i = 0; i < info.objects.length; i++) {
-		// Bug 563018: Colors don't require disposal, so exclude
-		// them from the list of allocated objects.
-		if (!(info.objects[i] instanceof Color)) {
-			newObjects[out_i] = info.objects[i];
-			newErrors[out_i] = info.errors[i];
-			out_i++;
-		}
-	}
-	Object [] diffObjects = new Object [newObjects.length];
-	Error [] diffErrors = new Error [newErrors.length];
-	int count = 0;
-	for (int i=0; i<newObjects.length; i++) {
-		int index = 0;
-		while (index < oldObjects.length) {
-			if (newObjects [i] == oldObjects [index]) break;
-			index++;
-		}
-		if (index == oldObjects.length) {
-			diffObjects [count] = newObjects [i];
-			diffErrors [count] = newErrors [i];
-			count++;
-		}
-	}
-	objects = new Object [count];
-	errors = new Error [count];
-	System.arraycopy (diffObjects, 0, objects, 0, count);
-	System.arraycopy (diffErrors, 0, errors, 0, count);
 	list.removeAll ();
 	text.setText ("");
 	canvas.redraw ();
-	for (Object object : objects) {
-		list.add (object.toString());
+	for (ObjectWithError object : objects) {
+		list.add (object.object.toString());
 	}
 	refreshLabel ();
-	layout ();
 }
 
 private void saveToFile(boolean prompt) {
@@ -236,13 +233,14 @@ private void saveToFile(boolean prompt) {
 		fileName = String.format("%s_%03d", fileName, fileCount++);
 	}
 	try (PrintWriter file = new PrintWriter(new FileOutputStream(fileName))) {
-
-		for (int i = 0; i < errors.length; i++) {
-			Object object = objects[i];
-			Error error = errors[i];
+		
+		int i = 0;
+		for (ObjectWithError o : objects) {
+			Object object = o.object;
+			Error error = o.error;
 			file.print(object.toString());
 			if (saveImages) {
-				String suffix = String.format("%05d.png", i);
+				String suffix = String.format("%05d.png", i++);
 				String pngName = String.format("%s_%s", fileName, suffix);
 				Image image = new Image(saveAs.getDisplay(), 100, 100);
 				try {
@@ -278,7 +276,7 @@ private void saveToFile(boolean prompt) {
 
 void toggleStackTrace () {
 	refreshObject ();
-	layout ();
+	canvas.getParent().layout ();
 }
 
 void paintCanvas (Event event) {
@@ -286,7 +284,7 @@ void paintCanvas (Event event) {
 	int index = list.getSelectionIndex ();
 	if (index == -1) return;
 	GC gc = event.gc;
-	Object object = objects [index];
+	Object object = objects.get(index).object;
 	draw(gc, object);
 }
 
@@ -357,60 +355,46 @@ void refreshObject () {
 	int index = list.getSelectionIndex ();
 	if (index == -1) return;
 	if (stackTrace.getSelection ()) {
-		ByteArrayOutputStream stream = new ByteArrayOutputStream ();
-		PrintStream s = new PrintStream (stream);
-		errors [index].printStackTrace (s);
-		text.setText (stream.toString ());
-		text.setVisible (true);
-		canvas.setVisible (false);
+		text.setText (objects.get(index).getStack());
+		setVisible(text, true);
+		setVisible(canvas, false);
+		canvas.getParent().layout();
 	} else {
-		canvas.setVisible (true);
-		text.setVisible (false);
+		setVisible(canvas, true);
+		setVisible(text, false);
 		canvas.redraw ();
 	}
 }
 
-void refreshAll () {
-	oldObjects = new Object [0];
-	oldErrors = new Error [0];
-	refreshDifference ();
-	oldObjects = objects;
-	oldErrors = errors;
+private void setVisible(Control control, boolean visible) {
+	control.setVisible(visible);
+	((GridData)control.getLayoutData()).exclude = !visible;
 }
 
-void layout () {
-	Composite parent = canvas.getParent();
-	Rectangle rect = parent.getClientArea ();
-	int width = 0;
-	String [] items = list.getItems ();
-	GC gc = new GC (list);
-	for (int i=0; i<objects.length; i++) {
-		width = Math.max (width, gc.stringExtent (items [i]).x);
-	}
-	gc.dispose ();
-	Point enableTrackingSize = enableTracking.computeSize (SWT.DEFAULT, SWT.DEFAULT);
-	Point snapshotSize = snapshot.computeSize (SWT.DEFAULT, SWT.DEFAULT);
-	Point diffSize = diff.computeSize (SWT.DEFAULT, SWT.DEFAULT);
-	Point stackSize = stackTrace.computeSize (SWT.DEFAULT, SWT.DEFAULT);
-	Point labelSize = label.computeSize (SWT.DEFAULT, SWT.DEFAULT);
-	Point saveAsSize = saveAs.computeSize (SWT.DEFAULT, SWT.DEFAULT);
-	Point saveSize = save.computeSize (SWT.DEFAULT, SWT.DEFAULT);
-	width = Math.max (enableTrackingSize.x, width);
-	width = Math.max (snapshotSize.x, Math.max (diffSize.x, Math.max (stackSize.x, width)));
-	width = Math.max (saveAsSize.x, Math.max (saveSize.x, width));
-	width = Math.max (labelSize.x, list.computeSize (width, SWT.DEFAULT).x);
-	width = Math.max (64, width);
-	enableTracking.setBounds (0, 0, width, enableTrackingSize.y);
-	snapshot.setBounds (0, enableTrackingSize.y, width, snapshotSize.y);
-	diff.setBounds (0, enableTrackingSize.y + snapshotSize.y, width, diffSize.y);
-	stackTrace.setBounds (0, enableTrackingSize.y + snapshotSize.y + diffSize.y, width, stackSize.y);
-	label.setBounds (0, rect.height - saveSize.y - saveAsSize.y - labelSize.y, width, labelSize.y);
-	saveAs.setBounds (0, rect.height - saveSize.y - saveAsSize.y, width, saveAsSize.y);
-	save.setBounds (0, rect.height - saveSize.y, width, saveSize.y);
-	int height = enableTrackingSize.y + snapshotSize.y + diffSize.y + stackSize.y;
-	list.setBounds (0, height, width, rect.height - height - labelSize.y - saveAsSize.y -saveSize.y);
-	text.setBounds (width, 0, rect.width - width, rect.height);
-	canvas.setBounds (width, 0, rect.width - width, rect.height);
+void refreshAll () {
+	objects.clear();
+	refreshDifference ();
+	oldObjects = new ArrayList<>(objects);
 }
-		
+
+private static final class ObjectWithError {
+	final Object object;
+	final Error error;
+	String stack;
+
+	ObjectWithError(Object o, Error e) {
+		this.object = o;
+		this.error = e;
+	}
+
+	String getStack() {
+		if (stack == null) {
+			ByteArrayOutputStream stream = new ByteArrayOutputStream();
+			PrintStream s = new PrintStream(stream);
+			error.printStackTrace(s);
+			stack = stream.toString();
+		}
+		return stack;
+	}
+}
 }
