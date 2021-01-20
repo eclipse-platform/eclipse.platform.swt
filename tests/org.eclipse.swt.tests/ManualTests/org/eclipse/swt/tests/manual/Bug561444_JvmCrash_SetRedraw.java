@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2020 Syntevo and others.
+ * Copyright (c) 2020, 2021 Syntevo and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -13,10 +13,24 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.manual;
 
-import org.eclipse.swt.*;
-import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.layout.*;
-import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Cursor;
+import org.eclipse.swt.graphics.GC;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Combo;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Group;
+import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Text;
 
 public class Bug561444_JvmCrash_SetRedraw {
 	static void paintRightSide(Control control) {
@@ -129,7 +143,6 @@ public class Bug561444_JvmCrash_SetRedraw {
 			paintLeftSide((Control)e.widget, e.gc);
 		};
 
-		Color oldBackground[] = new Color[testControls.length];
 		button = new Button(grpTests, SWT.CHECK);
 		button.setText("(B) Paint via SWT.Paint");
 		button.addListener(SWT.Selection, e -> {

@@ -4926,7 +4926,7 @@ public void test_verticalIndent_changeRelativeBounds() {
 }
 
 @Test
-public void test_verticalIndent_keepsCurrentCaretAndLinePosition() throws InterruptedException {
+public void test_verticalIndent_keepsCurrentCaretAndLinePosition() {
 	text.dispose();
 	text = new StyledText(shell, SWT.V_SCROLL);
 	setWidget(text);
