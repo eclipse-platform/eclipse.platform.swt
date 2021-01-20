@@ -35,6 +35,9 @@ extern jint CPSSetProcessName(void *, jlong);
 #define objc_msgSendSuper_bool objc_msgSendSuper
 
 #define objc_msgSend_floatret objc_msgSend_fpret
+#ifndef __i386__
+#define objc_msgSend_fpret objc_msgSend
+#endif
 
 /* The structure objc_super defines "class" in i386/ppc and "super_class" in x86_64 */
 #ifdef __x86_64__
