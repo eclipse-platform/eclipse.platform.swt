@@ -34,6 +34,7 @@ public class Sleak {
 	List list;
 	Canvas canvas;
 	Button enableTracking, snapshot, diff, stackTrace, saveAs, save;
+	Combo diffType;
 	Text text;
 	Label label;
 
@@ -108,6 +109,12 @@ public void create (Composite parent) {
 	diff.setText ("Diff");
 	diff.addListener (SWT.Selection, event -> refreshDifference ());
 	diff.setLayoutData(new GridData(SWT.FILL, SWT.NONE, false, false));
+	diffType = new Combo (parent, SWT.CHECK);
+	diffType.add ("Object identity");
+	diffType.add ("Creator class and line");
+	diffType.add ("Creator class");
+	diffType.select(0);
+	diffType.setLayoutData(new GridData(SWT.FILL, SWT.NONE, false, false));
 	stackTrace = new Button (parent, SWT.CHECK);
 	stackTrace.setText ("Stack");
 	stackTrace.addListener (SWT.Selection, e -> toggleStackTrace ());
@@ -194,6 +201,19 @@ void refreshDifference () {
 			}
 		}
 	}
+	if (diffType.getSelectionIndex() > 0) {
+		Iterator<ObjectWithError> object = objects.iterator ();
+		while (object.hasNext ()) {
+			StackTraceElement stack = object.next ().getCreator ();
+			Iterator<ObjectWithError> old = oldObjects.iterator ();
+			while (old.hasNext ()) {
+				if (creatorEquals(stack, old.next().getCreator ())) {
+					old.remove ();
+					object.remove ();
+				}
+			}
+		}
+	}
 	list.removeAll ();
 	text.setText ("");
 	canvas.redraw ();
@@ -203,6 +223,13 @@ void refreshDifference () {
 	refreshLabel ();
 }
 
+boolean creatorEquals (StackTraceElement first, StackTraceElement second) {
+	switch (diffType.getSelectionIndex()) {
+		case 1: return first.equals(second);
+		case 2: return first.getClassName().equals(second.getClassName());
+		default: throw new IllegalArgumentException();
+	}
+}
 private void saveToFile(boolean prompt) {
 	if (prompt || selectedName == null) {
 		FileDialog dialog = new FileDialog(saveAs.getShell(), SWT.SAVE);
@@ -381,10 +408,26 @@ private static final class ObjectWithError {
 	final Object object;
 	final Error error;
 	String stack;
+	StackTraceElement creator;
 
 	ObjectWithError(Object o, Error e) {
 		this.object = o;
 		this.error = e;
+	}
+
+	StackTraceElement getCreator() {
+		if (creator == null) {
+			String objectType = object.getClass().getName();
+			Iterator<StackTraceElement> stack = Arrays.asList(error.getStackTrace()).iterator();
+			while (stack.hasNext()) {
+				StackTraceElement element = stack.next();
+				if (element.getClassName().equals(objectType) && element.getMethodName().equals("<init>")) {
+					creator = stack.hasNext() ? stack.next() : null;
+					break;
+				}
+			}
+		}
+		return creator;
 	}
 
 	String getStack() {
