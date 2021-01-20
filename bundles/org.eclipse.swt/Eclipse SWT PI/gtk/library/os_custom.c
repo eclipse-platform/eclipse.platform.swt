@@ -718,7 +718,6 @@ static void swt_fixed_finalize(GObject* object);
 static void swt_fixed_get_property (GObject *object, guint prop_id, GValue *value, GParamSpec *pspec);
 static void swt_fixed_set_property (GObject *object, guint prop_id, const GValue *value, GParamSpec *pspec);
 
-static void swt_fixed_map (GtkWidget *widget);
 static void swt_fixed_measure (GtkWidget *widget, GtkOrientation  orientation, int for_size, int *minimum,
 		int *natural, int *minimum_baseline, int *natural_baseline);
 static void swt_fixed_size_allocate (GtkWidget *widget, int width, int height, int baseline);
@@ -869,25 +868,6 @@ static void swt_fixed_set_property (GObject *object, guint prop_id, const GValue
 			G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 			break;
     }
-}
-
-static void swt_fixed_map (GtkWidget *widget) {
-	SwtFixedPrivate *priv = swt_fixed_get_instance_private(SWT_FIXED(widget));
-	GList *list;
-
-	list = priv->children;
-	while (list) {
-		SwtFixedChild *child_data = list->data;
-		GtkWidget *child = child_data->widget;
-		list = list->next;
-		if (gtk_widget_get_visible (child)) {
-			if (!gtk_widget_get_mapped (child)) gtk_widget_map (child);
-		}
-	}
-
-	//TODO: SWTFixed needs to show without raising. To have an effect that widgets are drawn beneath the previous one.
-
-	return GTK_WIDGET_CLASS (swt_fixed_parent_class)->map (widget);
 }
 
 static void swt_fixed_measure (GtkWidget *widget, GtkOrientation  orientation, int for_size, int *minimum, int *natural, int *minimum_baseline, int *natural_baseline) {
