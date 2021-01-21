@@ -74,4 +74,15 @@
          fragment="true"
          unpack="false"/>
 
+   <plugin
+         id="org.eclipse.swt.cocoa.macosx.arm64"
+         os="macosx"
+         ws="cocoa"
+         arch="arm64"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         fragment="true"
+         unpack="false"/>
+
 </feature>
