@@ -247,6 +247,18 @@ JNIEXPORT jint JNICALL GTK3_NATIVE(gtk_1dialog_1run)
 }
 #endif
 
+#ifndef NO_gtk_1events_1pending
+JNIEXPORT jboolean JNICALL GTK3_NATIVE(gtk_1events_1pending)
+	(JNIEnv *env, jclass that)
+{
+	jboolean rc = 0;
+	GTK3_NATIVE_ENTER(env, that, gtk_1events_1pending_FUNC);
+	rc = (jboolean)gtk_events_pending();
+	GTK3_NATIVE_EXIT(env, that, gtk_1events_1pending_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_gtk_1get_1current_1event
 JNIEXPORT jlong JNICALL GTK3_NATIVE(gtk_1get_1current_1event)
 	(JNIEnv *env, jclass that)
@@ -377,6 +389,18 @@ JNIEXPORT void JNICALL GTK3_NATIVE(gtk_1main_1do_1event)
 	GTK3_NATIVE_ENTER(env, that, gtk_1main_1do_1event_FUNC);
 	gtk_main_do_event((GdkEvent *)arg0);
 	GTK3_NATIVE_EXIT(env, that, gtk_1main_1do_1event_FUNC);
+}
+#endif
+
+#ifndef NO_gtk_1main_1iteration_1do
+JNIEXPORT jboolean JNICALL GTK3_NATIVE(gtk_1main_1iteration_1do)
+	(JNIEnv *env, jclass that, jboolean arg0)
+{
+	jboolean rc = 0;
+	GTK3_NATIVE_ENTER(env, that, gtk_1main_1iteration_1do_FUNC);
+	rc = (jboolean)gtk_main_iteration_do(arg0);
+	GTK3_NATIVE_EXIT(env, that, gtk_1main_1iteration_1do_FUNC);
+	return rc;
 }
 #endif
 

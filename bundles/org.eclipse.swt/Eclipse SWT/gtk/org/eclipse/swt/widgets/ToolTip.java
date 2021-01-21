@@ -851,7 +851,13 @@ public void setVisible (boolean visible) {
 			byte [] buffer = Converter.wcsToMbcs (string.toString(), true);
 			GTK.gtk_widget_set_tooltip_text(vboxHandle, buffer);
 		}
-		if (autohide) timerId = OS.g_timeout_add (DELAY, display.windowTimerProc, handle);
+		if (autohide) {
+			if (GTK.GTK4) {
+				timerId = OS.g_timeout_add (DELAY, display.windowTimerProc, handle);
+			} else {
+				timerId = GDK.gdk_threads_add_timeout (DELAY, display.windowTimerProc, handle);
+			}
+		}
 	} else {
 		if ((style & SWT.BALLOON) != 0) {
 			GTK.gtk_widget_hide (handle);

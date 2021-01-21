@@ -2160,6 +2160,22 @@ jlong call_accessible_object_function (const char *method_name, const char *meth
 	return result;
 }
 
+static GRecMutex swt_gdk_lock;
+
+static void swt_threads_enter(void) {
+	g_rec_mutex_lock(&swt_gdk_lock);
+}
+
+static void swt_threads_leave(void) {
+	g_rec_mutex_unlock(&swt_gdk_lock);
+}
+
+void swt_set_lock_functions() {
+	G_GNUC_BEGIN_IGNORE_DEPRECATIONS
+	gdk_threads_set_lock_functions(&swt_threads_enter, &swt_threads_leave);
+	G_GNUC_END_IGNORE_DEPRECATIONS
+}
+
 //Add ability to debug gtk warnings for SWT snippets via SWT_FATAL_WARNINGS=1
 // env variable. Please see Eclipse bug 471477.
 // PLEASE NOTE: this functionality is only available on GTK3.

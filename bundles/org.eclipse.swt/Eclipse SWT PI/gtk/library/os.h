@@ -250,13 +250,21 @@
 #define NO_gdk_1screen_1get_1window_1stack
 #define NO_gdk_1screen_1is_1composited
 
+// No GDK lock
+#define NO_gtk_1events_1pending
+#define NO_gtk_1main_1iteration_1do
+#define NO_gdk_1threads_1add_1idle
+#define NO_gdk_1threads_1add_1timeout
+#define NO_gdk_1threads_1enter
+#define NO_gdk_1threads_1init
+#define NO_gdk_1threads_1leave
+
 // Miscellaneous functions removed from GTK4
 #define NO_gtk_1misc_1set_1alignment
 #define NO_gdk_1test_1simulate_1button
 #define NO_gdk_1test_1simulate_1key
 #define NO_gdk_1atom_1name
 #define NO_gdk_1cairo_1create
-#define NO_gdk_1threads_1leave
 #define NO_gdk_1selection_1owner_1set
 #define NO_gdk_1selection_1owner_1get
 #define NO_gdk_1visual_1get_1depth

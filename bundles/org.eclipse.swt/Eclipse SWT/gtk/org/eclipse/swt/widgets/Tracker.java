@@ -870,14 +870,11 @@ public boolean open () {
 			display.runSkin ();
 			display.runDeferredLayouts ();
 			display.sendPreExternalEventDispatchEvent ();
-			/*
-			* This call to gdk_threads_leave() is a temporary work around
-			* to avoid deadlocks when gdk_threads_init() is called by native
-			* code outside of SWT (i.e AWT, etc). It ensures that the current
-			* thread leaves the GTK lock before calling the function below.
-			*/
-			if (!GTK.GTK4) GDK.gdk_threads_leave();
-			OS.g_main_context_iteration (0, true);
+			if (GTK.GTK4) {
+				OS.g_main_context_iteration (0, true);
+			} else {
+				GTK3.gtk_main_iteration_do (true);
+			}
 			display.sendPostExternalEventDispatchEvent ();
 			display.runAsyncMessages (false);
 		}

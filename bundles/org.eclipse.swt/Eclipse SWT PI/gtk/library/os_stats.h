@@ -207,6 +207,10 @@ typedef enum {
 	gdk_1text_1property_1to_1utf8_1list_1for_1display_FUNC,
 	gdk_1texture_1new_1for_1pixbuf_FUNC,
 	gdk_1texture_1new_1from_1file_FUNC,
+	gdk_1threads_1add_1idle_FUNC,
+	gdk_1threads_1add_1timeout_FUNC,
+	gdk_1threads_1enter_FUNC,
+	gdk_1threads_1init_FUNC,
 	gdk_1threads_1leave_FUNC,
 	gdk_1toplevel_1layout_1new_FUNC,
 	gdk_1toplevel_1present_FUNC,
@@ -1519,5 +1523,6 @@ typedef enum {
 	swt_1fixed_1remove_FUNC,
 	swt_1fixed_1resize_FUNC,
 	swt_1fixed_1restack_FUNC,
+	swt_1set_1lock_1functions_FUNC,
 	ubuntu_1menu_1proxy_1get_FUNC,
 } OS_FUNCS;

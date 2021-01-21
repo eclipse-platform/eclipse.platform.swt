@@ -96,13 +96,6 @@ public static PrinterData[] getPrinterList() {
 	gtk_init();
 	Callback printerCallback = new Callback(Printer.class, "GtkPrinterFunc_List", 2); //$NON-NLS-1$
 	GTK.gtk_enumerate_printers(printerCallback.getAddress(), 0, 0, true);
-	/*
-	* This call to gdk_threads_leave() is a temporary work around
-	* to avoid deadlocks when gdk_threads_init() is called by native
-	* code outside of SWT (i.e AWT, etc). It ensures that the current
-	* thread leaves the GTK lock acquired by the function above.
-	*/
-	if (!GTK.GTK4) GDK.gdk_threads_leave();
 	printerCallback.dispose ();
 	return printerList;
 }
@@ -142,13 +135,6 @@ public static PrinterData getDefaultPrinterData() {
 	gtk_init();
 	Callback printerCallback = new Callback(Printer.class, "GtkPrinterFunc_Default", 2); //$NON-NLS-1$
 	GTK.gtk_enumerate_printers(printerCallback.getAddress(), 0, 0, true);
-	/*
-	* This call to gdk_threads_leave() is a temporary work around
-	* to avoid deadlocks when gdk_threads_init() is called by native
-	* code outside of SWT (i.e AWT, etc). It ensures that the current
-	* thread leaves the GTK lock acquired by the function above.
-	*/
-	if (!GTK.GTK4) GDK.gdk_threads_leave();
 	printerCallback.dispose ();
 	return findData;
 }
@@ -167,13 +153,6 @@ static long gtkPrinterFromPrinterData(PrinterData data) {
 	findPrinter = 0;
 	findData = data;
 	GTK.gtk_enumerate_printers(printerCallback.getAddress(), 0, 0, true);
-	/*
-	* This call to gdk_threads_leave() is a temporary work around
-	* to avoid deadlocks when gdk_threads_init() is called by native
-	* code outside of SWT (i.e AWT, etc). It ensures that the current
-	* thread leaves the GTK lock acquired by the function above.
-	*/
-	if (!GTK.GTK4) GDK.gdk_threads_leave();
 	printerCallback.dispose ();
 	return findPrinter;
 }

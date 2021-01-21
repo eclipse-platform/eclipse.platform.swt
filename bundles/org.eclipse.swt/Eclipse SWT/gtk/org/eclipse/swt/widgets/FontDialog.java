@@ -201,13 +201,6 @@ public FontData open () {
 		display.externalEventLoop = true;
 		display.sendPreExternalEventDispatchEvent();
 		response = GTK3.gtk_dialog_run(handle);
-		/*
-		* This call to gdk_threads_leave() is a temporary work around
-		* to avoid deadlocks when gdk_threads_init() is called by native
-		* code outside of SWT (i.e AWT, etc). It ensures that the current
-		* thread leaves the GTK lock acquired by the function above.
-		*/
-		GDK.gdk_threads_leave();
 		display.externalEventLoop = false;
 		display.sendPostExternalEventDispatchEvent();
 	}

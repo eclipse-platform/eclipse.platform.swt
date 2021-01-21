@@ -103,7 +103,11 @@ void createHandle (int index) {
 	int orientation = (style & SWT.VERTICAL) != 0 ? GTK.GTK_PROGRESS_BOTTOM_TO_TOP : GTK.GTK_PROGRESS_LEFT_TO_RIGHT;
 	gtk_orientable_set_orientation (handle, orientation);
 	if ((style & SWT.INDETERMINATE) != 0) {
-		timerId = OS.g_timeout_add (DELAY, display.windowTimerProc, handle);
+		if (GTK.GTK4) {
+			timerId = OS.g_timeout_add (DELAY, display.windowTimerProc, handle);
+		} else {
+			timerId = GDK.gdk_threads_add_timeout (DELAY, display.windowTimerProc, handle);
+		}
 	}
 }
 

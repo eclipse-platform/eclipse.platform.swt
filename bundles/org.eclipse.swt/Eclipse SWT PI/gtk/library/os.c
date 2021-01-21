@@ -2684,6 +2684,58 @@ JNIEXPORT jlong JNICALL GDK_NATIVE(gdk_1texture_1new_1from_1file)
 }
 #endif
 
+#ifndef NO_gdk_1threads_1add_1idle
+G_GNUC_BEGIN_IGNORE_DEPRECATIONS
+JNIEXPORT jint JNICALL GDK_NATIVE(gdk_1threads_1add_1idle)
+	(JNIEnv *env, jclass that, jlong arg0, jlong arg1)
+{
+	jint rc = 0;
+	GDK_NATIVE_ENTER(env, that, gdk_1threads_1add_1idle_FUNC);
+	rc = (jint)gdk_threads_add_idle((GSourceFunc)arg0, (gpointer)arg1);
+	GDK_NATIVE_EXIT(env, that, gdk_1threads_1add_1idle_FUNC);
+	return rc;
+}
+G_GNUC_END_IGNORE_DEPRECATIONS
+#endif
+
+#ifndef NO_gdk_1threads_1add_1timeout
+G_GNUC_BEGIN_IGNORE_DEPRECATIONS
+JNIEXPORT jint JNICALL GDK_NATIVE(gdk_1threads_1add_1timeout)
+	(JNIEnv *env, jclass that, jint arg0, jlong arg1, jlong arg2)
+{
+	jint rc = 0;
+	GDK_NATIVE_ENTER(env, that, gdk_1threads_1add_1timeout_FUNC);
+	rc = (jint)gdk_threads_add_timeout(arg0, (GSourceFunc)arg1, (gpointer)arg2);
+	GDK_NATIVE_EXIT(env, that, gdk_1threads_1add_1timeout_FUNC);
+	return rc;
+}
+G_GNUC_END_IGNORE_DEPRECATIONS
+#endif
+
+#ifndef NO_gdk_1threads_1enter
+G_GNUC_BEGIN_IGNORE_DEPRECATIONS
+JNIEXPORT void JNICALL GDK_NATIVE(gdk_1threads_1enter)
+	(JNIEnv *env, jclass that)
+{
+	GDK_NATIVE_ENTER(env, that, gdk_1threads_1enter_FUNC);
+	gdk_threads_enter();
+	GDK_NATIVE_EXIT(env, that, gdk_1threads_1enter_FUNC);
+}
+G_GNUC_END_IGNORE_DEPRECATIONS
+#endif
+
+#ifndef NO_gdk_1threads_1init
+G_GNUC_BEGIN_IGNORE_DEPRECATIONS
+JNIEXPORT void JNICALL GDK_NATIVE(gdk_1threads_1init)
+	(JNIEnv *env, jclass that)
+{
+	GDK_NATIVE_ENTER(env, that, gdk_1threads_1init_FUNC);
+	gdk_threads_init();
+	GDK_NATIVE_EXIT(env, that, gdk_1threads_1init_FUNC);
+}
+G_GNUC_END_IGNORE_DEPRECATIONS
+#endif
+
 #ifndef NO_gdk_1threads_1leave
 G_GNUC_BEGIN_IGNORE_DEPRECATIONS
 JNIEXPORT void JNICALL GDK_NATIVE(gdk_1threads_1leave)
@@ -19574,6 +19626,16 @@ JNIEXPORT void JNICALL OS_NATIVE(swt_1fixed_1restack)
 	OS_NATIVE_ENTER(env, that, swt_1fixed_1restack_FUNC);
 	swt_fixed_restack((SwtFixed*)arg0, (GtkWidget*)arg1, (GtkWidget*)arg2, arg3);
 	OS_NATIVE_EXIT(env, that, swt_1fixed_1restack_FUNC);
+}
+#endif
+
+#ifndef NO_swt_1set_1lock_1functions
+JNIEXPORT void JNICALL OS_NATIVE(swt_1set_1lock_1functions)
+	(JNIEnv *env, jclass that)
+{
+	OS_NATIVE_ENTER(env, that, swt_1set_1lock_1functions_FUNC);
+	swt_set_lock_functions();
+	OS_NATIVE_EXIT(env, that, swt_1set_1lock_1functions_FUNC);
 }
 #endif
 

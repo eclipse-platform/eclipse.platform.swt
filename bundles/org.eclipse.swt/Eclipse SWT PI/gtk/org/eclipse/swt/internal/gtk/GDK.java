@@ -1059,11 +1059,28 @@ public class GDK extends OS {
 	 * @param error cast=(GError **)
 	 */
 	public static final native long gdk_texture_new_from_file(long file, long error);
-
-
 	/**
 	 * @method flags=ignore_deprecations
+	 * @param function cast=(GSourceFunc)
+	 * @param data cast=(gpointer)
 	 */
+	/* [GTK3 only, if-def'd in os.h] */
+	public static final native int gdk_threads_add_idle(long function, long data);
+	/**
+	 * @method flags=ignore_deprecations
+	 * @param function cast=(GSourceFunc)
+	 * @param data cast=(gpointer)
+	 */
+	/* [GTK3 only, if-def'd in os.h] */
+	public static final native int gdk_threads_add_timeout (int interval, long function, long data);
+	/** @method flags=ignore_deprecations */
+	/* [GTK3 only, if-def'd in os.h] */
+	public static final native void gdk_threads_enter ();
+	/** @method flags=ignore_deprecations */
+	/* [GTK3 only, if-def'd in os.h] */
+	public static final native void gdk_threads_init ();
+	/** @method flags=ignore_deprecations */
+	/* [GTK3 only, if-def'd in os.h] */
 	public static final native void gdk_threads_leave ();
 	public static final native  int gdk_unicode_to_keyval(int wc);
 	/**

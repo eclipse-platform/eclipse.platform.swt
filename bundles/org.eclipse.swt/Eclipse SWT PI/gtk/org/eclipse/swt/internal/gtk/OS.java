@@ -527,7 +527,7 @@ public class OS extends C {
 	 * @category custom
 	 */
 	public static final native void swt_fixed_remove(long container, long widget);
-
+	public static final native void swt_set_lock_functions();
 	/** @param str cast=(const gchar *)
 	 * @category custom
 	 */

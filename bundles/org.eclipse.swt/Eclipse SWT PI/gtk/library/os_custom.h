@@ -180,6 +180,7 @@ void swt_fixed_accessible_register_accessible (AtkObject *obj, gboolean is_nativ
 #endif
 jlong call_accessible_object_function (const char *method_name, const char *method_signature,...);
 
+void swt_set_lock_functions();
 void swt_debug_on_fatal_warnings() ;
 
 #endif /* ORG_ECLIPSE_SWT_GTK_OS_CUSTOM_H (include guard, this should be the last line) */

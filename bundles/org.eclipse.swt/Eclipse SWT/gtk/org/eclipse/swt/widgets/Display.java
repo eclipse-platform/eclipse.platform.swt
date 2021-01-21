@@ -727,7 +727,11 @@ void addIdleProc() {
 	synchronized (idleLock){
 		this.idleNeeded = true;
 		if (idleHandle == 0) {
-			idleHandle = OS.g_idle_add (idleProc, 0);
+			if (GTK.GTK4) {
+				idleHandle = OS.g_idle_add (idleProc, 0);
+			} else {
+				idleHandle = GDK.gdk_threads_add_idle (idleProc, 0);
+			}
 		}
 	}
 }
@@ -821,7 +825,11 @@ long allChildrenProc (long widget, long recurse) {
 
 void addMouseHoverTimeout (long handle) {
 	if (mouseHoverId != 0) OS.g_source_remove (mouseHoverId);
-	mouseHoverId = OS.g_timeout_add (400, mouseHoverProc, handle);
+	if (GTK.GTK4) {
+		mouseHoverId = OS.g_timeout_add (400, mouseHoverProc, handle);
+	} else {
+		mouseHoverId = GDK.gdk_threads_add_timeout (400, mouseHoverProc, handle);
+	}
 	mouseHoverHandle = handle;
 }
 
@@ -921,8 +929,12 @@ public void asyncExec (Runnable runnable) {
 		if (isDisposed ()) error (SWT.ERROR_DEVICE_DISPOSED);
 		synchronized (idleLock) {
 			if (idleNeeded && idleHandle == 0) {
-				//NOTE: calling unlocked function in OS
-				idleHandle = OS.g_idle_add (idleProc, 0);
+				if (GTK.GTK4) {
+					idleHandle = OS.g_idle_add (idleProc, 0);
+				} else {
+					idleHandle = GDK.gdk_threads_add_idle (idleProc, 0);
+				}
+
 			}
 		}
 		synchronizer.asyncExec (runnable);
@@ -1134,6 +1146,16 @@ boolean checkAndSetThemeDetails (String themeName) {
 }
 
 void createDisplay (DeviceData data) {
+	if (!GTK.GTK4) {
+		/*
+		 * AWT/Swing components always use GDK lock when calling GTK functions.
+		 * To allow them to be created on the main thread, GDK lock has to be reentrant.
+		 * This call replaces the standard GDK lock (GMutex) with GRecMutex.
+		 */
+		OS.swt_set_lock_functions ();
+		GDK.gdk_threads_init ();
+		GDK.gdk_threads_enter ();
+	}
 	boolean init;
 	if (GTK.GTK4) {
 		init = GTK4.gtk_init_check();
@@ -1141,7 +1163,6 @@ void createDisplay (DeviceData data) {
 		init = GTK3.gtk_init_check(new long[]{0}, null);
 	}
 	if (!init) SWT.error(SWT.ERROR_NO_HANDLES, null, " [gtk_init_check() failed]"); //$NON-NLS-1$
-
 	checkIMModule();
 	//set GTK+ Theme name as property for introspection purposes
 	themeName = OS.GTK_THEME_SET ? OS.GTK_THEME_SET_NAME : OS.getThemeName();
@@ -1419,6 +1440,7 @@ protected void destroy () {
 }
 
 void destroyDisplay () {
+	if (!GTK.GTK4) GDK.gdk_threads_leave ();
 }
 
 long emissionProc (long ihint, long n_param_values, long param_values, long data) {
@@ -4566,14 +4588,13 @@ public boolean readAndDispatch () {
 	boolean events = false;
 	events |= runSettings ();
 	events |= runPopups ();
-	/*
-	* This call to gdk_threads_leave() is a temporary work around
-	* to avoid deadlocks when gdk_threads_init() is called by native
-	* code outside of SWT (i.e AWT, etc). It ensures that the current
-	* thread leaves the GTK lock before calling the function below.
-	*/
-	if (!GTK.GTK4) GDK.gdk_threads_leave();
-	events |= OS.g_main_context_iteration (0, false);
+
+	if (GTK.GTK4) {
+		events |= OS.g_main_context_iteration (0, false);
+	} else {
+		events |= GTK3.gtk_events_pending ();
+		GTK3.gtk_main_iteration_do (false);
+	}
 	if (events) {
 		runDeferredEvents ();
 		return true;
@@ -5628,6 +5649,11 @@ public boolean sleep () {
 	}
 	if (getMessageCount () != 0) return true;
 	sendPreExternalEventDispatchEvent ();
+	if (!GTK.GTK4) GDK.gdk_threads_leave ();
+	/*
+	 * The code below replicates event waiting behavior of g_main_context_iteration
+	 * but leaves out event dispatch.
+	 */
 	if (fds == 0) {
 		allocated_nfds = 2;
 		fds = OS.g_malloc (OS.GPollFD_sizeof () * allocated_nfds);
@@ -5663,6 +5689,7 @@ public boolean sleep () {
 		}
 	} while (!result && getMessageCount () == 0 && !wake);
 	wake = false;
+	if (!GTK.GTK4) GDK.gdk_threads_enter ();
 	sendPostExternalEventDispatchEvent ();
 	return true;
 }
@@ -5723,7 +5750,12 @@ public void timerExec (int milliseconds, Runnable runnable) {
 			timerIds = newTimerIds;
 		}
 	}
-	int timerId = OS.g_timeout_add (milliseconds, timerProc, index);
+	int timerId;
+	if (GTK.GTK4) {
+		timerId = OS.g_timeout_add (milliseconds, timerProc, index);
+	} else {
+		timerId = GDK.gdk_threads_add_timeout (milliseconds, timerProc, index);
+	}
 	if (timerId != 0) {
 		timerIds [index] = timerId;
 		timerList [index] = runnable;
@@ -5763,7 +5795,11 @@ long caretProc (long clientData) {
 		 * state to draw/redraw the caret. See Bug 517487.
 		 */
 		currentCaret.getParent().blink = true;
-		caretId = OS.g_timeout_add (blinkRate, caretProc, 0);
+		if (GTK.GTK4) {
+			caretId = OS.g_timeout_add (blinkRate, caretProc, 0);
+		} else {
+			caretId = GDK.gdk_threads_add_timeout (blinkRate, caretProc, 0);
+		}
 	} else {
 		currentCaret = null;
 	}
@@ -5777,7 +5813,11 @@ long caretProc (long clientData) {
 void resetCaretTiming() {
 	if (caretId != 0) {
 		OS.g_source_remove(caretId);
-		caretId = OS.g_timeout_add(currentCaret.blinkRate, caretProc, 0);
+		if (GTK.GTK4) {
+			caretId = OS.g_timeout_add (currentCaret.blinkRate, caretProc, 0);
+		} else {
+			caretId = GDK.gdk_threads_add_timeout (currentCaret.blinkRate, caretProc, 0);
+		}
 	}
 }
 
@@ -5894,7 +5934,11 @@ void setCurrentCaret (Caret caret) {
 	currentCaret = caret;
 	if (caret == null) return;
 	int blinkRate = currentCaret.blinkRate;
-	caretId = OS.g_timeout_add (blinkRate, caretProc, 0);
+	if (GTK.GTK4) {
+		caretId = OS.g_timeout_add (blinkRate, caretProc, 0);
+	} else {
+		caretId = GDK.gdk_threads_add_timeout (blinkRate, caretProc, 0);
+	}
 }
 
 long shellMapProc (long handle, long arg0, long user_data) {
@@ -5941,8 +5985,11 @@ public void syncExec (Runnable runnable) {
 		synchronizer = this.synchronizer;
 		synchronized (idleLock) {
 			if (idleNeeded && idleHandle == 0) {
-				//NOTE: calling unlocked function in OS
-				idleHandle = OS.g_idle_add (idleProc, 0);
+				if (GTK.GTK4) {
+					idleHandle = OS.g_idle_add (idleProc, 0);
+				} else {
+					idleHandle = GDK.gdk_threads_add_idle (idleProc, 0);
+				}
 			}
 		}
 	}

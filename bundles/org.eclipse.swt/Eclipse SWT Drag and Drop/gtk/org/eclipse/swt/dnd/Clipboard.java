@@ -294,24 +294,10 @@ public Object getContents(Transfer transfer, int clipboards) {
 	for (int i = 0; i < typeIds.length; i++) {
 		if ((clipboards & DND.CLIPBOARD) != 0) {
 			selection_data = gtk_clipboard_wait_for_contents(GTKCLIPBOARD, typeIds[i]);
-			/*
-			* This call to gdk_threads_leave() is a temporary work around
-			* to avoid deadlocks when gdk_threads_init() is called by native
-			* code outside of SWT (i.e AWT, etc). It ensures that the current
-			* thread leaves the GTK lock acquired by the function above.
-			*/
-			if (!GTK.GTK4) GDK.gdk_threads_leave();
 		}
 		if (selection_data != 0) break;
 		if ((clipboards & DND.SELECTION_CLIPBOARD) != 0) {
 			selection_data = gtk_clipboard_wait_for_contents(GTKPRIMARYCLIPBOARD, typeIds[i]);
-			/*
-			* This call to gdk_threads_leave() is a temporary work around
-			* to avoid deadlocks when gdk_threads_init() is called by native
-			* code outside of SWT (i.e AWT, etc). It ensures that the current
-			* thread leaves the GTK lock acquired by the function above.
-			*/
-			if (!GTK.GTK4) GDK.gdk_threads_leave();
 		}
 	}
 	if (selection_data == 0) return null;
@@ -593,13 +579,6 @@ public String[] getAvailableTypeNames() {
 private  int[] getAvailablePrimaryTypes() {
 	int[] types = new int[0];
 	long selection_data = gtk_clipboard_wait_for_contents(GTKPRIMARYCLIPBOARD, TARGET);
-	/*
-	* This call to gdk_threads_leave() is a temporary work around
-	* to avoid deadlocks when gdk_threads_init() is called by native
-	* code outside of SWT (i.e AWT, etc). It ensures that the current
-	* thread leaves the GTK lock acquired by the function above.
-	*/
-	if (!GTK.GTK4) GDK.gdk_threads_leave();
 	if (selection_data != 0) {
 		try {
 			int length = GTK.gtk_selection_data_get_length(selection_data);
@@ -618,13 +597,6 @@ private  int[] getAvailablePrimaryTypes() {
 private int[] getAvailableClipboardTypes () {
 	int[] types = new int[0];
 	long selection_data  = gtk_clipboard_wait_for_contents(GTKCLIPBOARD, TARGET);
-	/*
-	* This call to gdk_threads_leave() is a temporary work around
-	* to avoid deadlocks when gdk_threads_init() is called by native
-	* code outside of SWT (i.e AWT, etc). It ensures that the current
-	* thread leaves the GTK lock acquired by the function above.
-	*/
-	if (!GTK.GTK4) GDK.gdk_threads_leave();
 	if (selection_data != 0) {
 		try {
 			int length = GTK.gtk_selection_data_get_length(selection_data);

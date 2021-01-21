@@ -1428,10 +1428,8 @@ private static class Webkit2AsyncToSync {
 		Webkit2AsyncReturnObj retObj = new Webkit2AsyncReturnObj();
 		int callbackId = CallBackMap.putObject(retObj);
 		asyncFunc.accept(callbackId);
-		Display display = browser.getDisplay();
 		final Instant timeOut = Instant.now().plusMillis(ASYNC_EXEC_TIMEOUT_MS);
 		while (!browser.isDisposed()) {
-			boolean eventsDispatched = OS.g_main_context_iteration (0, false);
 			if (retObj.callbackFinished)
 				break;
 			else if (Instant.now().isAfter(timeOut)) {
@@ -1450,8 +1448,13 @@ private static class Webkit2AsyncToSync {
 				retObj.swtAsyncTimeout = true;
 				break;
 			}
-			else if (!eventsDispatched)
-				display.sleep();
+			else {
+				if (GTK.GTK4) {
+					OS.g_main_context_iteration (0, true);
+				} else {
+					GTK3.gtk_main_iteration_do (true);
+				}
+			}
 		}
 		CallBackMap.removeObject(callbackId);
 		return retObj;

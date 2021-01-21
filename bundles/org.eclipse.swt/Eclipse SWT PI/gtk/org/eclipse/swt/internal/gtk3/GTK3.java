@@ -179,6 +179,8 @@ public class GTK3 {
 	public static final native long gtk_get_event_widget(long event);
 	/** @param event cast=(GdkEvent *) */
 	public static final native void gtk_main_do_event(long event);
+	public static final native boolean gtk_main_iteration_do(boolean blocking);
+	public static final native boolean gtk_events_pending ();
 
 	/* GtkWindow */
 	/**

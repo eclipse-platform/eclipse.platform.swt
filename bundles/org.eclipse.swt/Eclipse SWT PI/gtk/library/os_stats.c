@@ -197,6 +197,10 @@ char * GDK_nativeFunctionNames[] = {
 	"gdk_1text_1property_1to_1utf8_1list_1for_1display",
 	"gdk_1texture_1new_1for_1pixbuf",
 	"gdk_1texture_1new_1from_1file",
+	"gdk_1threads_1add_1idle",
+	"gdk_1threads_1add_1timeout",
+	"gdk_1threads_1enter",
+	"gdk_1threads_1init",
 	"gdk_1threads_1leave",
 	"gdk_1toplevel_1layout_1new",
 	"gdk_1toplevel_1present",
@@ -1545,6 +1549,7 @@ char * OS_nativeFunctionNames[] = {
 	"swt_1fixed_1remove",
 	"swt_1fixed_1resize",
 	"swt_1fixed_1restack",
+	"swt_1set_1lock_1functions",
 	"ubuntu_1menu_1proxy_1get",
 };
 #define NATIVE_FUNCTION_COUNT sizeof(OS_nativeFunctionNames) / sizeof(char*)

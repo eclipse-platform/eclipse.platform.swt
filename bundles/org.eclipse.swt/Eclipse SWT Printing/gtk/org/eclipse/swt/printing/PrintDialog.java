@@ -396,13 +396,6 @@ public PrinterData open() {
 	display.setData (key, Boolean.TRUE);
 	display.sendPreExternalEventDispatchEvent ();
 	int response = GTK3.gtk_dialog_run (handle);
-	/*
-	* This call to gdk_threads_leave() is a temporary work around
-	* to avoid deadlocks when gdk_threads_init() is called by native
-	* code outside of SWT (i.e AWT, etc). It ensures that the current
-	* thread leaves the GTK lock acquired by the function above.
-	*/
-	if (!GTK.GTK4) GDK.gdk_threads_leave();
 	display.setData (key, Boolean.FALSE);
 	display.sendPostExternalEventDispatchEvent ();
 	if (GTK.gtk_window_get_modal (handle)) {
