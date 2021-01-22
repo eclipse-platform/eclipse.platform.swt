@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright (c) 2020 Equo
+ * Copyright (c) 2020, 2021 Equo and others
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License 2.0 which is available at
@@ -22,7 +22,7 @@
 
 #ifndef NO_cefswt_1cstring_1to_1java
 JNIEXPORT jstring JNICALL ChromiumLib_NATIVE(cefswt_1cstring_1to_1java)
-(JNIEnv *env, jclass that, jintLong arg0)
+(JNIEnv *env, jclass that, jlong arg0)
 {
 	jstring rc = 0;
 	ChromiumLib_NATIVE_ENTER(env, that, cefswt_1cstring_1to_1java_FUNC);
@@ -34,7 +34,7 @@ JNIEXPORT jstring JNICALL ChromiumLib_NATIVE(cefswt_1cstring_1to_1java)
 
 #ifndef NO_cefswt_1cefstring_1to_1java
 JNIEXPORT jstring JNICALL ChromiumLib_NATIVE(cefswt_1cefstring_1to_1java)
-(JNIEnv *env, jclass that, jintLong arg0)
+(JNIEnv *env, jclass that, jlong arg0)
 {
 	jstring rc = 0;
 	ChromiumLib_NATIVE_ENTER(env, that, cefswt_1cefstring_1to_1java_FUNC);
@@ -47,7 +47,7 @@ JNIEXPORT jstring JNICALL ChromiumLib_NATIVE(cefswt_1cefstring_1to_1java)
 
 #ifndef NO_cefswt_1request_1to_1java
 JNIEXPORT jstring JNICALL ChromiumLib_NATIVE(cefswt_1request_1to_1java)
-(JNIEnv *env, jclass that, jintLong arg0)
+(JNIEnv *env, jclass that, jlong arg0)
 {
 	jstring rc = 0;
 	ChromiumLib_NATIVE_ENTER(env, that, cefswt_1request_1to_1java_FUNC);
@@ -60,7 +60,7 @@ JNIEXPORT jstring JNICALL ChromiumLib_NATIVE(cefswt_1request_1to_1java)
 
 #ifndef NO_cefswt_1cookie_1to_1java
 JNIEXPORT jstring JNICALL ChromiumLib_NATIVE(cefswt_1cookie_1to_1java)
-(JNIEnv *env, jclass that, jintLong arg0)
+(JNIEnv *env, jclass that, jlong arg0)
 {
 	jstring rc = 0;
 	ChromiumLib_NATIVE_ENTER(env, that, cefswt_1cookie_1to_1java_FUNC);
@@ -73,7 +73,7 @@ JNIEXPORT jstring JNICALL ChromiumLib_NATIVE(cefswt_1cookie_1to_1java)
 
 #ifndef NO_cefswt_1cookie_1value
 JNIEXPORT jstring JNICALL ChromiumLib_NATIVE(cefswt_1cookie_1value)
-(JNIEnv *env, jclass that, jintLong arg0)
+(JNIEnv *env, jclass that, jlong arg0)
 {
 	jstring rc = 0;
 	ChromiumLib_NATIVE_ENTER(env, that, cefswt_1cookie_1value_FUNC);
