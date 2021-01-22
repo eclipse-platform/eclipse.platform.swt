@@ -7454,6 +7454,18 @@ fail:
 }
 #endif
 
+#ifndef NO_gtk_1im_1context_1filter_1keypress
+JNIEXPORT jboolean JNICALL GTK_NATIVE(gtk_1im_1context_1filter_1keypress)
+	(JNIEnv *env, jclass that, jlong arg0, jlong arg1)
+{
+	jboolean rc = 0;
+	GTK_NATIVE_ENTER(env, that, gtk_1im_1context_1filter_1keypress_FUNC);
+	rc = (jboolean)gtk_im_context_filter_keypress((GtkIMContext *)arg0, (GdkEventKey *)arg1);
+	GTK_NATIVE_EXIT(env, that, gtk_1im_1context_1filter_1keypress_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_gtk_1im_1context_1focus_1in
 JNIEXPORT void JNICALL GTK_NATIVE(gtk_1im_1context_1focus_1in)
 	(JNIEnv *env, jclass that, jlong arg0)

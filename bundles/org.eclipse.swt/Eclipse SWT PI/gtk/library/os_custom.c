@@ -155,20 +155,6 @@ JNIEXPORT jlong JNICALL OS_NATIVE(printerOptionWidgetNewProc_1CALLBACK)
 }
 #endif
 
-#ifndef NO__1gtk_1im_1context_1filter_1keypress
-JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_gtk_GTK__1gtk_1im_1context_1filter_1keypress
-	(JNIEnv *env, jclass that, jlong arg0, jlong arg1)
-{
-	jboolean rc = 0;
-	OS_NATIVE_ENTER(env, that, _1gtk_1im_1context_1filter_1keypress_FUNC);
-#pragma GCC diagnostic ignored "-Wincompatible-pointer-types"
-	rc = (jboolean)gtk_im_context_filter_keypress((GtkIMContext *)arg0, (GdkEvent *)arg1);
-#pragma GCC diagnostic pop
-	OS_NATIVE_EXIT(env, that, _1gtk_1im_1context_1filter_1keypress_FUNC);
-	return rc;
-}
-#endif
-
 glong g_utf16_strlen(const gchar *str, glong max) {
 	const gchar *s = str;
 	guchar ch;

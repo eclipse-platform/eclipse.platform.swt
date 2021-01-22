@@ -1563,19 +1563,11 @@ public class GTK extends OS {
 	public static final native long gtk_icon_paintable_get_file(long paintable);
 
 
-	/* GtkIMContext */
 	/**
-	 * @method flags=no_gen
 	 * @param context cast=(GtkIMContext *)
-	 * @param event cast=(GdkEvent *)
-	 *
-	 * Note: This is a temporary solution until Bug 570533 is resolved.
-	 * Remove this and code from 'os_custom.c' when this is done.
+	 * @param event cast=(GdkEventKey *)
 	 */
-	public static final native boolean _gtk_im_context_filter_keypress(long context, long event);
-	public static final boolean gtk_im_context_filter_keypress(long context, long event) {
-		return _gtk_im_context_filter_keypress(context, event);
-	}
+	public static final native boolean gtk_im_context_filter_keypress(long context, long event);
 	/** @param context cast=(GtkIMContext *) */
 	public static final native void gtk_im_context_focus_in(long context);
 	/** @param context cast=(GtkIMContext *) */
@@ -1600,9 +1592,6 @@ public class GTK extends OS {
 	 * @param area cast=(GdkRectangle *),flags=no_out
 	 */
 	public static final native void gtk_im_context_set_cursor_location(long context, GdkRectangle area);
-
-
-	/* GtkIMMulticontext */
 	public static final native long gtk_im_multicontext_new();
 
 
