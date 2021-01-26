@@ -66,12 +66,6 @@ public void generate(JNIClass clazz) {
 }
 
 @Override
-public void generate() {
-	if (!header && getClasses().length == 0) return;
-	super.generate();
-}
-
-@Override
 public String getExtension() {
 	return header ? ".h" : super.getExtension();
 }
