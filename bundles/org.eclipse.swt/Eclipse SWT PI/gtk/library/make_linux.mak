@@ -101,7 +101,12 @@ CHROMIUMCFLAGS = -I$(CHROMIUM_HEADERS)
 
 SWT_OBJECTS = swt.o c.o c_stats.o callback.o
 AWT_OBJECTS = swt_awt.o
-SWTPI_OBJECTS = swt.o os.o os_structs.o os_custom.o os_stats.o
+ifeq ($(GTK_VERSION), 4.0)
+GTKX_OBJECTS = gtk4.o gtk4_stats.o gtk4_structs.o
+else
+GTKX_OBJECTS = gtk3.o gtk3_stats.o gtk3_structs.o
+endif
+SWTPI_OBJECTS = swt.o os.o os_structs.o os_custom.o os_stats.o $(GTKX_OBJECTS)
 CAIRO_OBJECTS = swt.o cairo.o cairo_structs.o cairo_stats.o
 ATK_OBJECTS = swt.o atk.o atk_structs.o atk_custom.o atk_stats.o
 WEBKIT_OBJECTS = swt.o webkitgtk.o webkitgtk_structs.o webkitgtk_stats.o webkitgtk_custom.o
@@ -158,6 +163,20 @@ os_custom.o: os_custom.c os_structs.h os.h swt.h
 	$(CC) $(CFLAGS) $(GTKCFLAGS) -c os_custom.c
 os_stats.o: os_stats.c os_structs.h os.h os_stats.h swt.h
 	$(CC) $(CFLAGS) $(GTKCFLAGS) -c os_stats.c
+
+gtk3.o: gtk3.c gtk3.h swt.h
+	$(CC) $(CFLAGS) $(GTKCFLAGS) -c gtk3.c
+gtk3_structs.o: gtk3_structs.c gtk3_structs.h gtk3.h swt.h
+	$(CC) $(CFLAGS) $(GTKCFLAGS) -c gtk3_structs.c
+gtk3_stats.o: gtk3_stats.c gtk3_structs.h gtk3.h gtk3_stats.h swt.h
+	$(CC) $(CFLAGS) $(GTKCFLAGS) -c gtk3_stats.c
+
+gtk4.o: gtk4.c gtk4.h swt.h
+	$(CC) $(CFLAGS) $(GTKCFLAGS) -c gtk4.c
+gtk4_structs.o: gtk4_structs.c gtk4_structs.h gtk4.h swt.h
+	$(CC) $(CFLAGS) $(GTKCFLAGS) -c gtk4_structs.c
+gtk4_stats.o: gtk4_stats.c gtk4_structs.h gtk4.h gtk4_stats.h swt.h
+	$(CC) $(CFLAGS) $(GTKCFLAGS) -c gtk4_stats.c
 
 #
 # CAIRO libs
