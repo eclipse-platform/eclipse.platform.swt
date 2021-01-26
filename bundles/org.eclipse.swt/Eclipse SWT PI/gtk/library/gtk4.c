@@ -19,3 +19,19 @@
 #include "gtk4_structs.h"
 #include "gtk4_stats.h"
 
+#ifndef GTK4_NATIVE
+#define GTK4_NATIVE(func) Java_org_eclipse_swt_internal_gtk4_GTK4_##func
+#endif
+
+#ifndef NO_gtk_1im_1context_1filter_1keypress
+JNIEXPORT jboolean JNICALL GTK4_NATIVE(gtk_1im_1context_1filter_1keypress)
+	(JNIEnv *env, jclass that, jlong arg0, jlong arg1)
+{
+	jboolean rc = 0;
+	GTK4_NATIVE_ENTER(env, that, gtk_1im_1context_1filter_1keypress_FUNC);
+	rc = (jboolean)gtk_im_context_filter_keypress((GtkIMContext *)arg0, (GdkEvent *)arg1);
+	GTK4_NATIVE_EXIT(env, that, gtk_1im_1context_1filter_1keypress_FUNC);
+	return rc;
+}
+#endif
+

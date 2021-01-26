@@ -25,6 +25,8 @@ import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.cairo.*;
 import org.eclipse.swt.internal.gtk.*;
+import org.eclipse.swt.internal.gtk3.*;
+import org.eclipse.swt.internal.gtk4.*;
 
 /**
  * Control is the abstract superclass of all windowed user interface classes.
@@ -2829,7 +2831,10 @@ boolean dragDetect (int x, int y, boolean filter, boolean dragOnTimeout, boolean
 boolean filterKey (int keyval, long event) {
 	long imHandle = imHandle ();
 	if (imHandle != 0) {
-		return GTK.gtk_im_context_filter_keypress (imHandle, event);
+		if (GTK.GTK4)
+			return GTK4.gtk_im_context_filter_keypress (imHandle, event);
+		else
+			return GTK3.gtk_im_context_filter_keypress (imHandle, event);
 	}
 	return false;
 }
@@ -3982,7 +3987,11 @@ long gtk_key_release_event (long widget, long event) {
 	if (!hasFocus ()) return 0;
 	long imHandle = imHandle ();
 	if (imHandle != 0) {
-		if (GTK.gtk_im_context_filter_keypress (imHandle, event)) return 1;
+		if (GTK.GTK4) {
+			if (GTK4.gtk_im_context_filter_keypress(imHandle, event)) return 1;
+		} else {
+			if (GTK3.gtk_im_context_filter_keypress(imHandle, event)) return 1;
+		}
 	}
 	return super.gtk_key_release_event (widget, event);
 }

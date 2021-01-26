@@ -17,4 +17,9 @@ package org.eclipse.swt.internal.gtk4;
  * This class contains native functions that are present in GTK4 only.
  */
 public class GTK4 {
+	/**
+	 * @param context cast=(GtkIMContext *)
+	 * @param event cast=(GdkEvent *)
+	 */
+	public static final native boolean gtk_im_context_filter_keypress(long context, long event);
 }

@@ -19,6 +19,8 @@ import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.gtk.*;
+import org.eclipse.swt.internal.gtk3.*;
+import org.eclipse.swt.internal.gtk4.*;
 
 /**
  * Instances of this class are selectable user interface
@@ -399,7 +401,10 @@ boolean filterKey (int keyval, long event) {
 		lastEventTime = time;
 		long imContext = imContext ();
 		if (imContext != 0) {
-			return GTK.gtk_im_context_filter_keypress (imContext, event);
+			if (GTK.GTK4)
+				return GTK4.gtk_im_context_filter_keypress (imContext, event);
+			else
+				return GTK3.gtk_im_context_filter_keypress (imContext, event);
 		}
 	}
 	gdkEventKey = event;
@@ -418,7 +423,11 @@ void fixIM () {
 	if (gdkEventKey != 0 && gdkEventKey != -1) {
 		long imContext = imContext ();
 		if (imContext != 0) {
-			GTK.gtk_im_context_filter_keypress (imContext, gdkEventKey);
+			if (GTK.GTK4)
+				GTK4.gtk_im_context_filter_keypress (imContext, gdkEventKey);
+			else
+				GTK3.gtk_im_context_filter_keypress (imContext, gdkEventKey);
+
 			gdkEventKey = -1;
 			return;
 		}

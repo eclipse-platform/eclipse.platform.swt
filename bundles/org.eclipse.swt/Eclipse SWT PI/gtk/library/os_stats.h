@@ -552,7 +552,6 @@ typedef enum {
 	gtk_1icon_1theme_1load_1icon_FUNC,
 	gtk_1icon_1theme_1lookup_1by_1gicon_FUNC,
 	gtk_1icon_1theme_1lookup_1icon_FUNC,
-	gtk_1im_1context_1filter_1keypress_FUNC,
 	gtk_1im_1context_1focus_1in_FUNC,
 	gtk_1im_1context_1focus_1out_FUNC,
 	gtk_1im_1context_1get_1preedit_1string_FUNC,

@@ -554,7 +554,6 @@ char * GTK_nativeFunctionNames[] = {
 	"gtk_1icon_1theme_1load_1icon",
 	"gtk_1icon_1theme_1lookup_1by_1gicon",
 	"gtk_1icon_1theme_1lookup_1icon",
-	"gtk_1im_1context_1filter_1keypress",
 	"gtk_1im_1context_1focus_1in",
 	"gtk_1im_1context_1focus_1out",
 	"gtk_1im_1context_1get_1preedit_1string",

@@ -17,4 +17,9 @@ package org.eclipse.swt.internal.gtk3;
  * This class contains native functions that are present in GTK3 only.
  */
 public class GTK3 {
+	/**
+	 * @param context cast=(GtkIMContext *)
+	 * @param event cast=(GdkEventKey *)
+	 */
+	public static final native boolean gtk_im_context_filter_keypress(long context, long event);
 }

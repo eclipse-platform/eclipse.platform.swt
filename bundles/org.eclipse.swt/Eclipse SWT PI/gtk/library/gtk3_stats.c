@@ -18,3 +18,33 @@
 #include "swt.h"
 #include "gtk3_stats.h"
 
+#ifdef NATIVE_STATS
+
+char * GTK3_nativeFunctionNames[] = {
+	"gtk_1im_1context_1filter_1keypress",
+};
+#define NATIVE_FUNCTION_COUNT sizeof(GTK3_nativeFunctionNames) / sizeof(char*)
+int GTK3_nativeFunctionCount = NATIVE_FUNCTION_COUNT;
+int GTK3_nativeFunctionCallCount[NATIVE_FUNCTION_COUNT];
+
+#define STATS_NATIVE(func) Java_org_eclipse_swt_tools_internal_NativeStats_##func
+
+JNIEXPORT jint JNICALL STATS_NATIVE(GTK3_1GetFunctionCount)
+	(JNIEnv *env, jclass that)
+{
+	return GTK3_nativeFunctionCount;
+}
+
+JNIEXPORT jstring JNICALL STATS_NATIVE(GTK3_1GetFunctionName)
+	(JNIEnv *env, jclass that, jint index)
+{
+	return (*env)->NewStringUTF(env, GTK3_nativeFunctionNames[index]);
+}
+
+JNIEXPORT jint JNICALL STATS_NATIVE(GTK3_1GetFunctionCallCount)
+	(JNIEnv *env, jclass that, jint index)
+{
+	return GTK3_nativeFunctionCallCount[index];
+}
+
+#endif

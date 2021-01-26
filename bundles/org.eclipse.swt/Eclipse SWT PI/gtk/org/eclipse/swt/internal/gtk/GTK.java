@@ -1563,11 +1563,6 @@ public class GTK extends OS {
 	public static final native long gtk_icon_paintable_get_file(long paintable);
 
 
-	/**
-	 * @param context cast=(GtkIMContext *)
-	 * @param event cast=(GdkEventKey *)
-	 */
-	public static final native boolean gtk_im_context_filter_keypress(long context, long event);
 	/** @param context cast=(GtkIMContext *) */
 	public static final native void gtk_im_context_focus_in(long context);
 	/** @param context cast=(GtkIMContext *) */
