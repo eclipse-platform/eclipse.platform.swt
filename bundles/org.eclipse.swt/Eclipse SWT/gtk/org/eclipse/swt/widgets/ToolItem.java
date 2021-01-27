@@ -287,7 +287,7 @@ void createHandle (int index) {
 		if (GTK.GTK4) {
 			labelHandle = GTK.gtk_label_new_with_mnemonic(null);
 			if (labelHandle == 0) error(SWT.ERROR_NO_HANDLES);
-			imageHandle = GTK.gtk_image_new_from_pixbuf(0);
+			imageHandle = GTK.gtk_image_new_from_surface(0);
 			if (imageHandle == 0) error(SWT.ERROR_NO_HANDLES);
 
 			GTK.gtk_widget_set_valign(boxHandle, GTK.GTK_ALIGN_CENTER);
@@ -300,7 +300,7 @@ void createHandle (int index) {
 		} else {
 			labelHandle = GTK.gtk_label_new_with_mnemonic(null);
 			if (labelHandle == 0) error(SWT.ERROR_NO_HANDLES);
-			imageHandle = GTK.gtk_image_new_from_pixbuf(0);
+			imageHandle = GTK.gtk_image_new_from_surface(0);
 			if (imageHandle == 0) error(SWT.ERROR_NO_HANDLES);
 
 			GTK.gtk_tool_button_set_icon_widget(handle, imageHandle);
@@ -659,7 +659,7 @@ long gtk_create_menu_proxy (long widget) {
 		if (imageList != null) {
 			int index = imageList.indexOf (image);
 			if (index != -1) {
-				long pixbuf = imageList.getPixbuf (index);
+				long surface = imageList.getSurface (index);
 				byte[] label = null;
 				int [] showImages = new int []{1};
 				/*
@@ -691,7 +691,7 @@ long gtk_create_menu_proxy (long widget) {
 				GTK.gtk_label_set_xalign (labelHandle, 0);
 				GTK.gtk_widget_set_halign (labelHandle, GTK.GTK_ALIGN_FILL);
 
-				long menuImage = GTK.gtk_image_new_from_pixbuf (pixbuf);
+				long menuImage = GTK.gtk_image_new_from_surface(surface);
 				if (menuImage == 0) error (SWT.ERROR_NO_HANDLES);
 
 				GTK.gtk_container_add (boxHandle, menuImage);
@@ -738,9 +738,9 @@ long gtk_enter_notify_event (long widget, long event) {
 			int index = imageList.indexOf(hotImage);
 			if (index != -1 && imageHandle != 0) {
 				if (GTK.GTK4) {
-					GTK.gtk_image_set_from_pixbuf(imageHandle, imageList.getPixbuf(index));
+					//TODO: GTK4 gtk_image_set_from_paintable
 				} else {
-					GTK.gtk_image_set_from_surface(imageHandle, hotImage.surface);
+					GTK.gtk_image_set_from_surface(imageHandle, imageList.getSurface(index));
 				}
 			}
 		}
@@ -799,9 +799,9 @@ long gtk_leave_notify_event (long widget, long event) {
 				int index = imageList.indexOf(image);
 				if (index != -1 && imageHandle != 0) {
 					if (GTK.GTK4) {
-						GTK.gtk_image_set_from_pixbuf(imageHandle, imageList.getPixbuf(index));
+						//TODO: GTK4 gtk_image_set_from_paintable
 					} else {
-						GTK.gtk_image_set_from_surface(imageHandle, image.surface);
+						GTK.gtk_image_set_from_surface(imageHandle, imageList.getSurface(index));
 					}
 				}
 			}
@@ -1249,9 +1249,9 @@ void _setImage (Image image) {
 
 		if (GTK.GTK4) {
 			GTK.gtk_widget_show(imageHandle);
-			GTK.gtk_image_set_from_pixbuf(imageHandle, imageList.getPixbuf(imageIndex));
+			//TODO: GTK4 use gtk_image_set_from_paintable
 		} else {
-			GTK.gtk_image_set_from_surface(imageHandle, image.surface);
+			GTK.gtk_image_set_from_surface(imageHandle, imageList.getSurface(imageIndex));
 		}
 	} else {
 		if(GTK.GTK4) {

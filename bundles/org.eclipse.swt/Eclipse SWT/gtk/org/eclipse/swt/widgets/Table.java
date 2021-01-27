@@ -109,7 +109,8 @@ public class Table extends Composite {
 	static final int CELL_FOREGROUND = 2;
 	static final int CELL_BACKGROUND = 3;
 	static final int CELL_FONT = 4;
-	static final int CELL_TYPES = CELL_FONT + 1;
+	static final int CELL_SURFACE = 5;
+	static final int CELL_TYPES = CELL_SURFACE + 1;
 
 /**
  * Constructs a new instance of this class given its parent
@@ -1339,6 +1340,7 @@ long [] getColumnTypes (int columnCount) {
 	// per cell data
 	for (int i=FIRST_COLUMN; i<types.length; i+=CELL_TYPES) {
 		types [i + CELL_PIXBUF] = GDK.GDK_TYPE_PIXBUF ();
+		types [i + CELL_SURFACE] = OS.G_TYPE_LONG();
 		types [i + CELL_TEXT] = OS.G_TYPE_STRING ();
 		types [i + CELL_FOREGROUND] = GDK.GDK_TYPE_RGBA();
 		types [i + CELL_BACKGROUND] = GDK.GDK_TYPE_RGBA();

@@ -831,6 +831,8 @@ public static final native long G_TYPE_DOUBLE();
 /** @method flags=const */
 public static final native long G_TYPE_FLOAT();
 /** @method flags=const */
+public static final native long G_TYPE_LONG();
+/** @method flags=const */
 public static final native long G_TYPE_INT();
 /** @method flags=const */
 public static final native long G_TYPE_INT64();

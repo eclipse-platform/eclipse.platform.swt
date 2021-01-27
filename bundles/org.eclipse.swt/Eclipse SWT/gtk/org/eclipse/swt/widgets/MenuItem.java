@@ -961,41 +961,25 @@ public void setImage (Image image) {
 		ImageList imageList = parent.imageList;
 		if (imageList == null) imageList = parent.imageList = new ImageList ();
 		int imageIndex = imageList.indexOf (image);
-		long pixbuf = 0;
+		long surface = 0;
 		if (imageIndex == -1) {
 			imageIndex = imageList.add (image);
-			pixbuf = imageList.getPixbuf (imageIndex);
-			/*
-			 * Bug in GTK the default renderer does scale again on pixbuf.
-			 * Need to scaledown here and no need to scaledown id device scale is 1
-			 *
-			 * We should resize pixbuf and update pixbuf array in the imagelist only if
-			 * the image is added to the imagelist in this call. If the image is already
-			 * add imageList.getPixbuf returns resized pixbuf.
-			 */
-			if (DPIUtil.useCairoAutoScale()) {
-				Rectangle imgSize = image.getBounds();
-				long scaledPixbuf = GDK.gdk_pixbuf_scale_simple(pixbuf, imgSize.width, imgSize.height, GDK.GDK_INTERP_BILINEAR);
-				if (scaledPixbuf !=0) {
-					pixbuf = scaledPixbuf;
-				}
-				imageList.replacePixbuf(imageIndex, pixbuf);
-			}
+			surface = imageList.getSurface (imageIndex);
 		} else {
 			imageList.put (imageIndex, image);
-			pixbuf = imageList.getPixbuf (imageIndex);
+			surface = imageList.getSurface (imageIndex);
 		}
 
 		if (!GTK.GTK4 && !GTK.GTK_IS_MENU_ITEM (handle)) return;
 		if (OS.SWT_PADDED_MENU_ITEMS && imageHandle != 0) {
-			GTK.gtk_image_set_from_surface(imageHandle, image.surface);
+			GTK.gtk_image_set_from_surface(imageHandle, surface);
 		} else {
 			if (imageHandle == 0 && boxHandle != 0) {
-				imageHandle = GTK.gtk_image_new_from_pixbuf (pixbuf);
+				imageHandle = GTK.gtk_image_new_from_surface(surface);
 				GTK.gtk_container_add (boxHandle, imageHandle);
 				GTK.gtk_box_reorder_child (boxHandle, imageHandle, 0);
 			} else {
-				GTK.gtk_image_set_from_surface(imageHandle, image.surface);
+				GTK.gtk_image_set_from_surface(imageHandle, surface);
 			}
 			if (boxHandle == 0) error (SWT.ERROR_NO_HANDLES);
 		}

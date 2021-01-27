@@ -182,18 +182,21 @@ Color _getForeground (int index) {
 	return Color.gtk_new(display, gdkRGBA);
 }
 
-Image _getImage (int index) {
-	int count = Math.max (1, parent.getColumnCount ());
+Image _getImage(int index) {
+	int count = Math.max(1, parent.getColumnCount());
 	if (0 > index || index > count - 1) return null;
-	long [] ptr = new long [1];
+
+	long[] surfaceHandle = new long[1];
 	int modelIndex = parent.columnCount == 0 ? Table.FIRST_COLUMN : parent.columns [index].modelIndex;
-	GTK.gtk_tree_model_get (parent.modelHandle, handle, modelIndex + Table.CELL_PIXBUF, ptr, -1);
-	if (ptr [0] == 0) return null;
-	ImageList imageList = parent.imageList;
-	int imageIndex = imageList.indexOf (ptr [0]);
-	OS.g_object_unref (ptr [0]);
-	if (imageIndex == -1) return null;
-	return imageList.get (imageIndex);
+	GTK.gtk_tree_model_get (parent.modelHandle, handle, modelIndex + Table.CELL_SURFACE, surfaceHandle, -1);
+	if (surfaceHandle[0] == 0) return null;
+
+	int imageIndex = parent.imageList.indexOf(surfaceHandle[0]);
+	if (imageIndex == -1) {
+		return null;
+	} else {
+		return parent.imageList.get(imageIndex);
+	}
 }
 
 String _getText (int index) {
@@ -1190,56 +1193,28 @@ public void setGrayed (boolean grayed) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
-public void setImage (int index, Image image) {
-	checkWidget ();
-	if (image != null && image.isDisposed ()) {
+public void setImage(int index, Image image) {
+	checkWidget();
+	if (image != null && image.isDisposed()) {
 		error(SWT.ERROR_INVALID_ARGUMENT);
 	}
 	if (image != null && image.type == SWT.ICON) {
-		if (image.equals (_getImage (index))) return;
+		if (image.equals(_getImage(index))) return;
 	}
-	int count = Math.max (1, parent.getColumnCount ());
+	int count = Math.max(1, parent.getColumnCount());
 	if (0 > index || index > count - 1) return;
-	long pixbuf = 0;
+
+	long pixbuf = 0, surface = 0;
 	if (image != null) {
 		ImageList imageList = parent.imageList;
-		if (imageList == null) imageList = parent.imageList = new ImageList ();
-		int imageIndex = imageList.indexOf (image);
+		if (imageList == null) imageList = parent.imageList = new ImageList();
+		int imageIndex = imageList.indexOf(image);
 		if (imageIndex == -1) {
-			imageIndex = imageList.add (image);
-			pixbuf = imageList.getPixbuf (imageIndex);
-			/*
-			 * Reset size of pixbufRenderer if we have an image being set that is larger
-			 * than the current size of the pixbufRenderer. Fix for bug 457196.
-			 * We only do this if the size of the pixbufRenderer has not yet been set.
-			 * Otherwise, the pixbufRenderer retains the same size as the first image added.
-			 * See comment #4, Bug 478560. Note that all columns need to have their
-			 * pixbufRenderer set to this size after the initial image is set. NOTE: this
-			 * change has been ported to Tables since Tables/Trees both use the same
-			 * underlying GTK structure.
-			 */
-			if (DPIUtil.useCairoAutoScale()) {
-				/*
-				 * Bug in GTK the default renderer does scale again on pixbuf.
-				 * Need to scaledown here and no need to scaledown id device scale is 1
-				 *
-				 * We should resize pixbuf and update pixbuf array in the imagelist only if
-				 * the image is added to the imagelist in this call. If the image is already
-				 * add imageList.getPixbuf returns resized pixbuf.
-				 */
-
-				if ((DPIUtil.getDeviceZoom() != 100)) {
-					Rectangle imgSize = image.getBounds();
-					long scaledPixbuf = GDK.gdk_pixbuf_scale_simple(pixbuf, imgSize.width, imgSize.height, GDK.GDK_INTERP_BILINEAR);
-					if (scaledPixbuf !=0) {
-						pixbuf = scaledPixbuf;
-					}
-					imageList.replacePixbuf(imageIndex, pixbuf);
-				}
-			}
-		} else {
-			pixbuf = imageList.getPixbuf (imageIndex);
+			imageIndex = imageList.add(image);
 		}
+
+		surface = imageList.getSurface(imageIndex);
+		pixbuf = ImageList.createPixbuf(surface);
 	}
 
 	long parentHandle = parent.handle;
@@ -1278,6 +1253,7 @@ public void setImage (int index, Image image) {
 	}
 	int modelIndex = parent.columnCount == 0 ? Table.FIRST_COLUMN : parent.columns [index].modelIndex;
 	GTK.gtk_list_store_set (parent.modelHandle, handle, modelIndex + Table.CELL_PIXBUF, pixbuf, -1);
+	GTK.gtk_list_store_set (parent.modelHandle, handle, modelIndex + Table.CELL_SURFACE, surface, -1);
 	cached = true;
 	/*
 	 * Bug 465056: single column Tables have a very small initial width.

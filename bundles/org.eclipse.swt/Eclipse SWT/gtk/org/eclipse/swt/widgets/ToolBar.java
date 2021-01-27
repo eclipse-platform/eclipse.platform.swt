@@ -752,5 +752,4 @@ public void setToolTipText (String string) {
 		shell.setToolTipText (items [i].handle, newString);
 	}
 }
-
 }

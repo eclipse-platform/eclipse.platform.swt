@@ -1100,8 +1100,8 @@ public void setGrayed (boolean grayed) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
-public void setImage (Image image) {
-	checkWidget ();
+public void setImage(Image image) {
+	checkWidget();
 	if ((style & SWT.ARROW) != 0) return;
 
 	if (image != null) {

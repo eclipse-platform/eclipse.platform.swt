@@ -401,6 +401,7 @@ boolean hasFocus () {
 
 @Override
 void hookEvents () {
+	super.hookEvents();
 	long focusHandle = focusHandle();
 	hookKeyboardAndFocusSignals(focusHandle);
 	hookMouseSignals(eventHandle());

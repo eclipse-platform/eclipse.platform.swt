@@ -472,9 +472,8 @@ public void setHighlightImage (Image image) {
  */
 @Override
 public void setImage (Image image) {
-	checkWidget ();
-	if (image != null && image.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
-	this.image = image;
+	super.setImage(image);
+
 	if (image != null) {
 		if (imageList == null) imageList = new ImageList ();
 		int imageIndex = imageList.indexOf (image);
@@ -483,7 +482,7 @@ public void setImage (Image image) {
 		} else {
 			imageList.put (imageIndex, image);
 		}
-		long pixbuf = imageList.getPixbuf (imageIndex);
+		long pixbuf = ImageList.createPixbuf(image);
 		GTK.gtk_status_icon_set_from_pixbuf (handle, pixbuf);
 		GTK.gtk_status_icon_set_visible (handle, true);
 	} else {

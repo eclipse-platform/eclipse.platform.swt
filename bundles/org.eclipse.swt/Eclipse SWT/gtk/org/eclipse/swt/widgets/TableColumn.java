@@ -631,9 +631,9 @@ public void setImage (Image image) {
 		int imageIndex = headerImageList.indexOf (image);
 		if (imageIndex == -1) imageIndex = headerImageList.add (image);
 		if (GTK.GTK4) {
-			GTK.gtk_image_set_from_pixbuf(imageHandle, headerImageList.getPixbuf(imageIndex));
+			//TODO: GTK4 use gtk_image_set_from_paintable
 		} else {
-			GTK.gtk_image_set_from_surface(imageHandle, image.surface);
+			GTK.gtk_image_set_from_surface(imageHandle, headerImageList.getSurface(imageIndex));
 		}
 		GTK.gtk_widget_show(imageHandle);
 	} else {
