@@ -207,7 +207,7 @@ static long getMsgProc(long code, long wParam, long lParam) {
 				if (widget != null) break;
 				hwnd = OS.GetParent (hwnd);
 			}
-			if (widget != null && widget instanceof OleClientSite) {
+			if (widget instanceof OleClientSite) {
 				OleClientSite site = (OleClientSite)widget;
 				if (site.handle == hwnd) {
 					boolean consumed = false;

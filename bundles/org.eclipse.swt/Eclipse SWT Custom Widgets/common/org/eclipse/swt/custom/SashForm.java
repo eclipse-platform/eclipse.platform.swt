@@ -179,7 +179,7 @@ public int[] getWeights() {
 	int[] ratios = new int[cArray.length];
 	for (int i = 0; i < cArray.length; i++) {
 		Object data = cArray[i].getLayoutData();
-		if (data != null && data instanceof SashFormData) {
+		if (data instanceof SashFormData) {
 			ratios[i] = (int)(((SashFormData)data).weight * 1000 >> 16);
 		} else {
 			ratios[i] = 200;

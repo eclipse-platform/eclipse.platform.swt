@@ -2305,7 +2305,7 @@ public class Accessible {
 					hItem = OS.SendMessage (hwnd, OS.TVM_MAPACCIDTOHTREEITEM, v.lVal, 0);
 					Widget widget = tree.getDisplay ().findWidget (hwnd, hItem);
 					event.result = "";
-					if (widget != null && widget instanceof TreeItem) {
+					if (widget instanceof TreeItem) {
 						TreeItem item = (TreeItem) widget;
 						for (int i = 1; i < columnCount; i++) {
 							if (tree.isDisposed() || item.isDisposed()) {

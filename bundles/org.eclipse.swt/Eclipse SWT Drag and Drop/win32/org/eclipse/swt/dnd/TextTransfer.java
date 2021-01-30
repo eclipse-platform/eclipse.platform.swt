@@ -188,7 +188,7 @@ protected String[] getTypeNames(){
 }
 
 boolean checkText(Object object) {
-	return (object != null  && object instanceof String && ((String)object).length() > 0);
+	return (object instanceof String && ((String)object).length() > 0);
 }
 
 @Override

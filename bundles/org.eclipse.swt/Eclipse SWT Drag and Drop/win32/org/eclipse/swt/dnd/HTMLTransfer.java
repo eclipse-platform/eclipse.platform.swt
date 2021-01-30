@@ -210,7 +210,7 @@ protected String[] getTypeNames(){
 	return new String[] {HTML_FORMAT};
 }
 boolean checkHTML(Object object) {
-	return (object != null && object instanceof String && ((String)object).length() > 0);
+	return (object instanceof String && ((String)object).length() > 0);
 }
 @Override
 protected boolean validate(Object object) {

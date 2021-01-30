@@ -2262,7 +2262,7 @@ public Shell [] getShells () {
 	int index = 0;
 	Shell [] result = new Shell [16];
 	for (Control control : controlTable) {
-		if (control != null && control instanceof Shell) {
+		if (control instanceof Shell) {
 			int j = 0;
 			while (j < index) {
 				if (result [j] == control) break;

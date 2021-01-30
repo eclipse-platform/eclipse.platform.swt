@@ -104,7 +104,7 @@ int computeTrim(Control c) {
 @Override
 protected boolean flushCache(Control control) {
 	Object data = control.getLayoutData();
-	if (data != null && data instanceof CLayoutData) ((CLayoutData)data).flushCache();
+	if (data instanceof CLayoutData) ((CLayoutData)data).flushCache();
 	return true;
 }
 

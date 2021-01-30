@@ -60,7 +60,7 @@ protected Point computeSize(Composite composite, int wHint, int hHint, boolean f
 	long total = 0;
 	for (int i = 0; i < cArray.length; i++) {
 		Object data = cArray[i].getLayoutData();
-		if (data != null && data instanceof SashFormData) {
+		if (data instanceof SashFormData) {
 			ratios[i] = ((SashFormData)data).weight;
 		} else {
 			data = new SashFormData();
@@ -144,7 +144,7 @@ protected void layout(Composite composite, boolean flushCache) {
 	long total = 0;
 	for (int i = 0; i < controls.length; i++) {
 		Object data = controls[i].getLayoutData();
-		if (data != null && data instanceof SashFormData) {
+		if (data instanceof SashFormData) {
 			ratios[i] = ((SashFormData)data).weight;
 		} else {
 			data = new SashFormData();
