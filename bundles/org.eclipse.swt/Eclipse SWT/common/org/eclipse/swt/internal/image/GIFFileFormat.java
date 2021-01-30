@@ -445,8 +445,10 @@ public final class GIFFileFormat extends FileFormat {
 						for (int j=0; j<colors.length; j++) {
 							if (!(rgbs[j].red == colors[j].red &&
 								rgbs[j].green == colors[j].green &&
-								rgbs[j].blue == colors[j].blue))
-									globalTable = 0;
+								rgbs[j].blue == colors[j].blue)) {
+								globalTable = 0;
+								break;
+							}
 						}
 					}
 				}
