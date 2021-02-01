@@ -41,6 +41,7 @@ import org.eclipse.swt.internal.gtk.*;
  * @noextend This class is not intended to be subclassed by clients.
  */
 public class TreeColumn extends Item {
+	long headerButtonCSSProvider = 0;
 	long labelHandle, imageHandle, buttonHandle;
 	Tree parent;
 	int modelIndex, lastButton, lastTime, lastX, lastWidth;
@@ -789,6 +790,29 @@ void setWidthInPixels (int width) {
 		}
 	}
 	sendEvent (SWT.Resize);
+}
+
+void setHeaderCSS(String css) {
+	if (headerButtonCSSProvider == 0) {
+		headerButtonCSSProvider = GTK.gtk_css_provider_new();
+		GTK.gtk_style_context_add_provider(GTK.gtk_widget_get_style_context(buttonHandle), headerButtonCSSProvider, GTK.GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+	}
+
+	if (GTK.GTK4) {
+		GTK.gtk_css_provider_load_from_data(headerButtonCSSProvider, Converter.javaStringToCString(css), -1);
+	} else {
+		GTK.gtk_css_provider_load_from_data(headerButtonCSSProvider, Converter.javaStringToCString(css), -1, null);
+	}
+}
+
+@Override
+public void dispose() {
+	super.dispose();
+
+	if (headerButtonCSSProvider != 0) {
+		OS.g_object_unref(headerButtonCSSProvider);
+		headerButtonCSSProvider = 0;
+	}
 }
 
 @Override

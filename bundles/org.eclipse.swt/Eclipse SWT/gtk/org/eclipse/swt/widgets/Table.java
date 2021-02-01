@@ -88,7 +88,6 @@ public class Table extends Composite {
 	int drawState, drawFlags;
 	GdkRGBA background, foreground, drawForegroundRGBA;
 	Color headerBackground, headerForeground;
-	String headerCSSBackground, headerCSSForeground;
 	boolean ownerDraw, ignoreSize, ignoreAccessibility, pixbufSizeSet, hasChildren;
 	int maxWidth = 0;
 	int topIndex;
@@ -772,6 +771,9 @@ void createItem (TableColumn column, int index) {
 			}
 		}
 	}
+
+	updateHeaderCSS();
+
 	/*
 	 * Feature in GTK. The tree view does not resize immediately if a table
 	 * column is created when the table is not visible. If the width of the
@@ -3576,38 +3578,29 @@ void setForegroundGdkRGBA (GdkRGBA rgba) {
 public void setHeaderBackground(Color color) {
 	checkWidget();
 	if (color != null) {
-		if (color.isDisposed())
-			error(SWT.ERROR_INVALID_ARGUMENT);
-		if (color.equals(headerBackground))
-			return;
+		if (color.isDisposed())	error(SWT.ERROR_INVALID_ARGUMENT);
+		if (color.equals(headerBackground)) return;
 	}
 	headerBackground = color;
-	GdkRGBA background;
+
+	updateHeaderCSS();
+}
+
+void updateHeaderCSS() {
+	StringBuilder css = new StringBuilder("button {");
 	if (headerBackground != null) {
-		background = headerBackground.handle;
-	} else {
-		background = defaultBackground();
+		css.append("background-color: " + display.gtk_rgba_to_css_string(headerBackground.handle) + "; ");
 	}
-	// background works for 3.18 and later, background-color only as of 3.20
-	String css = "button {background: " + display.gtk_rgba_to_css_string(background) + ";}\n";
-	headerCSSBackground = css;
-	String finalCss = display.gtk_css_create_css_color_string (headerCSSBackground, headerCSSForeground, SWT.BACKGROUND);
+	if (headerForeground != null) {
+		css.append("color: " + display.gtk_rgba_to_css_string(headerForeground.handle) + "; ");
+	}
+	css.append("}\n");
+
 	for (TableColumn column : columns) {
 		if (column != null) {
-			long context = GTK.gtk_widget_get_style_context(column.buttonHandle);
-			// Create provider as we need it attached to the proper context which is not the widget one
-			long provider = GTK.gtk_css_provider_new ();
-			GTK.gtk_style_context_add_provider (context, provider, GTK.GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
-			OS.g_object_unref (provider);
-			if (GTK.GTK4) {
-				GTK.gtk_css_provider_load_from_data (provider, Converter.wcsToMbcs (finalCss, true), -1);
-			} else {
-				GTK.gtk_css_provider_load_from_data (provider, Converter.wcsToMbcs (finalCss, true), -1, null);
-			}
-			GTK.gtk_style_context_invalidate(context);
+			column.setHeaderCSS(css.toString());
 		}
 	}
-	// Redraw not necessary, GTK handles the CSS update.
 }
 
 /**
@@ -3629,40 +3622,15 @@ public void setHeaderBackground(Color color) {
  * </ul>
  * @since 3.106
  */
-public void setHeaderForeground (Color color) {
+public void setHeaderForeground(Color color) {
 	checkWidget();
 	if (color != null) {
-		if (color.isDisposed())
-			error(SWT.ERROR_INVALID_ARGUMENT);
-		if (color.equals(headerForeground))
-			return;
+		if (color.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
+		if (color.equals(headerForeground)) return;
 	}
 	headerForeground = color;
-	GdkRGBA foreground;
-	if (headerForeground != null) {
-		foreground = headerForeground.handle;
-	} else {
-		foreground = display.COLOR_LIST_FOREGROUND_RGBA;
-	}
-	String css = "button {color: " + display.gtk_rgba_to_css_string(foreground) + ";}";
-	headerCSSForeground = css;
-	String finalCss = display.gtk_css_create_css_color_string (headerCSSBackground, headerCSSForeground, SWT.FOREGROUND);
-	for (TableColumn column : columns) {
-		if (column != null) {
-			long context = GTK.gtk_widget_get_style_context(column.buttonHandle);
-			// Create provider as we need it attached to the proper context which is not the widget one
-			long provider = GTK.gtk_css_provider_new ();
-			GTK.gtk_style_context_add_provider (context, provider, GTK.GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
-			OS.g_object_unref (provider);
-			if (GTK.GTK4) {
-				GTK.gtk_css_provider_load_from_data (provider, Converter.wcsToMbcs (finalCss, true), -1);
-			} else {
-				GTK.gtk_css_provider_load_from_data (provider, Converter.wcsToMbcs (finalCss, true), -1, null);
-			}
-			GTK.gtk_style_context_invalidate(context);
-		}
-	}
-	// Redraw not necessary, GTK handles the CSS update.
+
+	updateHeaderCSS();
 }
 
 /**
