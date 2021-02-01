@@ -40,7 +40,6 @@ import org.eclipse.swt.internal.gtk.*;
 public class ExpandItem extends Item {
 	ExpandBar parent;
 	Control control;
-	ImageList imageList;
 	long clientHandle, boxHandle, labelHandle, imageHandle;
 	boolean expanded;
 	int x, y, width, height;
@@ -441,9 +440,7 @@ void releaseHandle () {
 @Override
 void releaseWidget () {
 	super.releaseWidget ();
-	if (imageList != null) imageList.dispose ();
 	if (parent.lastFocus == this) parent.lastFocus = null;
-	imageList = null;
 	control = null;
 }
 
@@ -638,15 +635,11 @@ void setHeightInPixels (int height) {
 @Override
 public void setImage (Image image) {
 	super.setImage (image);
-	if (imageList != null) imageList.dispose ();
-	imageList = null;
 
 	if (image != null) {
 		if (image.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
-		imageList = new ImageList();
-		int index = imageList.add(image);
 		if (GTK.GTK4) {
-			GTK.gtk_image_set_from_pixbuf(imageHandle, imageList.getPixbuf(index));
+			//TODO: GTK4 use gtk_image_set_from_paintable
 		} else {
 			GTK.gtk_image_set_from_surface(imageHandle, image.surface);
 		}

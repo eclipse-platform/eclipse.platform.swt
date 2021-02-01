@@ -54,7 +54,6 @@ import org.eclipse.swt.internal.gtk.*;
  */
 public class Label extends Control {
 	long frameHandle, labelHandle, imageHandle, boxHandle;
-	ImageList imageList;
 	Image image;
 	String text;
 
@@ -464,8 +463,6 @@ void releaseHandle () {
 @Override
 void releaseWidget () {
 	super.releaseWidget ();
-	if (imageList != null) imageList.dispose ();
-	imageList = null;
 	image = null;
 	text = null;
 }
@@ -635,13 +632,9 @@ public void setImage (Image image) {
 	}
 	if ((style & SWT.SEPARATOR) != 0) return;
 	this.image = image;
-	if (imageList != null) imageList.dispose ();
-	imageList = null;
 	if (image != null) {
-		imageList = new ImageList ();
-		int index = imageList.add(image);
 		if (GTK.GTK4) {
-			GTK.gtk_image_set_from_pixbuf(imageHandle, imageList.getPixbuf(index));
+			//TODO: GTK4 use gtk_image_set_from_paintable
 		} else {
 			GTK.gtk_image_set_from_surface(imageHandle, image.surface);
 		}

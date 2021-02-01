@@ -52,7 +52,6 @@ public class Button extends Control {
 	boolean selected, grayed;
 	/** True iff this toggle button requires special theme handling. See bug 546552.*/
 	boolean toggleButtonTheming;
-	ImageList imageList;
 	Image image;
 	String text;
 	GdkRGBA background;
@@ -726,8 +725,6 @@ void releaseWidget () {
 		groupHandle = 0;
 	}
 
-	if (imageList != null) imageList.dispose ();
-	imageList = null;
 	image = null;
 	text = null;
 }
@@ -1106,15 +1103,11 @@ public void setGrayed (boolean grayed) {
 public void setImage (Image image) {
 	checkWidget ();
 	if ((style & SWT.ARROW) != 0) return;
-	if (imageList != null) imageList.dispose ();
-	imageList = null;
 
 	if (image != null) {
 		if (image.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
-		imageList = new ImageList();
-		int index = imageList.add(image);
 		if (GTK.GTK4) {
-			GTK.gtk_image_set_from_pixbuf(imageHandle, imageList.getPixbuf(index));
+			//TODO: GTK4 use gtk_image_set_from_paintable
 		} else {
 			GTK.gtk_image_set_from_surface(imageHandle, image.surface);
 		}
