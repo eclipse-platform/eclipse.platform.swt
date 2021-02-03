@@ -2996,7 +2996,7 @@ public void setVisible (boolean visible) {
 		}
 	} else {
 		fixActiveShell ();
-		checkAndUnrabFocus();
+		checkAndUngrabFocus();
 		GTK.gtk_widget_hide (shellHandle);
 		sendEvent (SWT.Hide);
 	}
@@ -3268,7 +3268,7 @@ boolean requiresUngrab () {
  * SWT.ON_TOP shells on Wayland requires gdk_seat_grab to grab keyboard/input focus,
  * the grabbed focus need to be removed when Shell is disposed/hidden.
  */
-void checkAndUnrabFocus () {
+void checkAndUngrabFocus () {
 	/*
 	 * Bug 515773, 542104: Wayland POPUP window limitations
 	 * In bringToTop(), we grabbed keyboard/pointer focus to popup shell, which needs to
@@ -3310,7 +3310,7 @@ public void dispose () {
 	*/
 	if (isDisposed()) return;
 	fixActiveShell ();
-	checkAndUnrabFocus();
+	checkAndUngrabFocus();
 	/*
 	 * Bug 540166: Dispose the popup child if any when the parent is disposed so that
 	 * it does not remain open forever.
