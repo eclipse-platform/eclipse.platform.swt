@@ -71,7 +71,7 @@ public class BarChart extends Canvas {
 			Rectangle rect = getClientArea();
 			Display display = getDisplay();
 			int count = data.size();
-			Point valueSize = gc.stringExtent (Integer.valueOf(valueMax).toString());
+			Point valueSize = gc.stringExtent (Integer.toString(valueMax));
 			int leftX = rect.x + 2 * GAP + valueSize.x;
 			int bottomY = rect.y + rect.height - 2 * GAP - valueSize.y;
 			int unitWidth = (rect.width - 4 * GAP - valueSize.x - AXIS_WIDTH) / count - GAP;
@@ -87,7 +87,7 @@ public class BarChart extends Canvas {
 			for (int i1 = valueMin; i1 <= valueMax; i1+=valueIncrement) {
 				int y = bottomY - i1 * unitHeight;
 				gc.drawLine(leftX, y, leftX - GAP, y);
-				gc.drawString(Integer.valueOf(i1).toString(), rect.x + GAP, y - valueSize.y);
+				gc.drawString(Integer.toString(i1), rect.x + GAP, y - valueSize.y);
 			}
 			// draw the x axis and item labels
 			gc.drawLine(leftX, bottomY, rect.x + rect.width - GAP, bottomY);
@@ -319,7 +319,7 @@ public class BarChart extends Canvas {
 		int count = data.size();
 		GC gc = new GC (this);
 		int titleWidth = gc.stringExtent (title).x;
-		Point valueSize = gc.stringExtent (Integer.valueOf(valueMax).toString());
+		Point valueSize = gc.stringExtent (Integer.toString(valueMax));
 		int itemWidth = 0;
 		for (int i = 0; i < count; i++) {
 			Object [] dataItem = data.get(i);
@@ -405,7 +405,7 @@ public class BarChart extends Canvas {
 	Rectangle itemBounds(int index) {
 		Rectangle rect = getClientArea();
 		GC gc = new GC (BarChart.this);
-		Point valueSize = gc.stringExtent (Integer.valueOf(valueMax).toString());
+		Point valueSize = gc.stringExtent (Integer.toString(valueMax));
 		gc.dispose();
 		int leftX = rect.x + 2 * GAP + valueSize.x;
 		int bottomY = rect.y + rect.height - 2 * GAP - valueSize.y;
