@@ -623,8 +623,8 @@ class GridLayoutTab extends Tab {
 		for (int i = 0; i < children.length; i++) {
 			data = new GridData ();
 			/* Set widthHint and heightHint */
-			data.widthHint = Integer.valueOf(items [i].getText (WIDTH_COL)).intValue ();
-			data.heightHint = Integer.valueOf(items [i].getText (HEIGHT_COL)).intValue ();
+			data.widthHint = Integer.parseInt(items [i].getText (WIDTH_COL));
+			data.heightHint = Integer.parseInt(items [i].getText (HEIGHT_COL));
 			/* Set vertical alignment and horizontal alignment */
 			hAlign = items [i].getText (HALIGN_COL);
 			if (hAlign.equals ("CENTER")) {
@@ -647,13 +647,13 @@ class GridLayoutTab extends Tab {
 				data.verticalAlignment = SWT.CENTER;
 			}
 			/* Set spans and indents */
-			hSpan = Integer.valueOf (items [i].getText (HSPAN_COL));
+			hSpan = Integer.parseInt (items [i].getText (HSPAN_COL));
 			data.horizontalSpan = hSpan;
-			vSpan = Integer.valueOf(items [i].getText (VSPAN_COL));
+			vSpan = Integer.parseInt(items [i].getText (VSPAN_COL));
 			data.verticalSpan = vSpan;
-			hIndent = Integer.valueOf(items [i].getText (HINDENT_COL));
+			hIndent = Integer.parseInt(items [i].getText (HINDENT_COL));
 			data.horizontalIndent = hIndent;
-			vIndent = Integer.valueOf(items [i].getText (VINDENT_COL));
+			vIndent = Integer.parseInt(items [i].getText (VINDENT_COL));
 			data.verticalIndent = vIndent;
 			/* Set grabs */
 			hGrab = items [i].getText (HGRAB_COL);
@@ -661,8 +661,8 @@ class GridLayoutTab extends Tab {
 			vGrab = items [i].getText (VGRAB_COL);
 			data.grabExcessVerticalSpace = vGrab.equals ("true");
 			/* Set minimum width and height */
-			data.minimumWidth = Integer.valueOf(items [i].getText (MINWIDTH_COL));
-			data.minimumHeight = Integer.valueOf(items [i].getText (MINHEIGHT_COL));
+			data.minimumWidth = Integer.parseInt(items [i].getText (MINWIDTH_COL));
+			data.minimumHeight = Integer.parseInt(items [i].getText (MINHEIGHT_COL));
 			/* Set exclude boolean */
 			exclude = items [i].getText (EXCLUDE_COL);
 			data.exclude = exclude.equals ("true");

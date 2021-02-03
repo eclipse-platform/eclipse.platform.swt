@@ -1108,7 +1108,7 @@ abstract class Tab {
 					String strings[] = split(value, ',');
 					int[] ints = new int[strings.length];
 					for (int j = 0; j < strings.length; j++) {
-						ints[j] = Integer.valueOf(strings[j]).intValue();
+						ints[j] = Integer.parseInt(strings[j]);
 					}
 					parameter = new Object[] {ints};
 				} else if (typeName.equals("[C")) {

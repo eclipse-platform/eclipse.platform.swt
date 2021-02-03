@@ -408,8 +408,8 @@ class RowLayoutTab extends Tab {
 		int width, height;
 		String exclude;
 		for (int i = 0; i < children.length; i++) {
-			width = Integer.valueOf(items [i].getText (WIDTH_COL)).intValue ();
-			height = Integer.valueOf(items [i].getText (HEIGHT_COL)).intValue ();
+			width = Integer.parseInt(items [i].getText (WIDTH_COL));
+			height = Integer.parseInt(items [i].getText (HEIGHT_COL));
 			data = new RowData (width, height);
 			exclude = items [i].getText (EXCLUDE_COL);
 			data.exclude = exclude.equals ("true");
