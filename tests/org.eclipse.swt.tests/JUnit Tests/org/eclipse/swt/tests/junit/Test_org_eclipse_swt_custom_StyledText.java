@@ -234,7 +234,7 @@ public void test_addExtendedModifyListenerLorg_eclipse_swt_custom_ExtendedModify
 		listenerCalled = true;
 		assertEquals("ExtendedModify event data invalid", 0, event.start);
 		assertEquals("ExtendedModify event data invalid", line.length(), event.length);
-		assertEquals("ExtendedModify event data invalid", line + line.substring(1, line.length()) + line, event.replacedText);
+		assertEquals("ExtendedModify event data invalid", line + line.substring(1) + line, event.replacedText);
 	};
 	text.addExtendedModifyListener(listener);
 	text.setText(line);
@@ -576,7 +576,7 @@ public void test_addVerifyListenerLorg_eclipse_swt_events_VerifyListener() {
 	textLength = text.getCharCount() - 1 + newLine.length();
 	text.replaceTextRange(0, 1, line);
 	assertTrue("replaceTextRange does not send event", listenerCalled);
-	assertEquals("Listener failed", newLine + newLine.substring(1, newLine.length()) + newLine, text.getText());
+	assertEquals("Listener failed", newLine + newLine.substring(1) + newLine, text.getText());
 
 	listenerCalled = false;
 	text.removeVerifyListener(listener);

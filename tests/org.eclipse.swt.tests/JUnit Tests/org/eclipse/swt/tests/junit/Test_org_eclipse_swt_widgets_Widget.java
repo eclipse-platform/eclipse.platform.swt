@@ -216,7 +216,7 @@ protected String getTestName() {
 	String test = name.getMethodName();
 	int index = test.lastIndexOf('_');
 	if(index != -1)
-		test = test.substring(index+1, test.length());
+		test = test.substring(index+1);
 	String clss = getClassName();
 	if((!test.equals("MenuDetect") || clss.equals("Table") || test.startsWith("Chevron")) &&
 		(!test.equals("DragDetect") || clss.equals("Tree") || test.startsWith("Chevron")) &&
@@ -231,7 +231,7 @@ protected String getClassName() {
 	String clazz = getClass().getName();
 	int index = clazz.lastIndexOf('_');
 	if(index != -1)
-		clazz = clazz.substring(index+1, clazz.length());
+		clazz = clazz.substring(index+1);
 	return clazz;
 }
 

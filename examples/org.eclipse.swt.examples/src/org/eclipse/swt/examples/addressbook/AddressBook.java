@@ -166,7 +166,7 @@ private String[] decodeLine(String line) {
 		int index = line.indexOf(DELIMITER);
 		if (index > -1) {
 			parsedLine[i] = line.substring(0, index);
-			line = line.substring(index + DELIMITER.length(), line.length());
+			line = line.substring(index + DELIMITER.length());
 		} else {
 			return null;
 		}
