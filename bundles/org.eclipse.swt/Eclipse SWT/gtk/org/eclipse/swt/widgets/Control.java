@@ -6016,7 +6016,7 @@ void setToolTipText (Shell shell, String newString) {
 	* under the pointer).
 	*/
 	if (display.currentControl == this) {
-		shell.setToolTipText (shell.handle, eventHandle (), newString);
+		shell.setToolTipText(shell.handle, newString);
 	}
 }
 

@@ -3423,28 +3423,16 @@ void releaseWidget () {
 	}
 }
 
-void setToolTipText (long tipWidget, String string) {
-	setToolTipText (tipWidget, tipWidget, string);
+void setToolTipText(long tipWidget, String string) {
+	byte[] buffer = null;
+	if (string != null && !string.isEmpty()) {
+		char[] chars = fixMnemonic(string, false, true);
+		buffer = Converter.wcsToMbcs(chars, true);
+	}
+
+	GTK.gtk_widget_set_tooltip_text(tipWidget, buffer);
 }
 
-void setToolTipText (long rootWidget, long tipWidget, String string) {
-	byte [] buffer = null;
-	if (string != null && string.length () > 0) {
-		char [] chars = fixMnemonic (string, false, true);
-		buffer = Converter.wcsToMbcs (chars, true);
-	}
-	long oldTooltip = GTK.gtk_widget_get_tooltip_text (rootWidget);
-	boolean same = false;
-	if (buffer == null && oldTooltip == 0) {
-		same = true;
-	} else if (buffer != null && oldTooltip != 0) {
-		same = OS.strcmp (oldTooltip, buffer) == 0;
-	}
-	if (oldTooltip != 0) OS.g_free(oldTooltip);
-	if (same) return;
-
-	GTK.gtk_widget_set_tooltip_text (rootWidget, buffer);
-}
 @Override
 Point getWindowOrigin () {
 	if (!mapped) {
