@@ -106,6 +106,8 @@ public class Tree extends Composite {
 	boolean boundsChangedSinceLastDraw, wasScrolled;
 	boolean rowActivated;
 
+	private long headerCSSProvider;
+
 	static final int ID_COLUMN = 0;
 	static final int CHECKED_COLUMN = 1;
 	static final int GRAYED_COLUMN = 2;
@@ -3738,9 +3740,23 @@ void updateHeaderCSS() {
 	}
 	css.append("}\n");
 
-	for (TreeColumn column : columns) {
-		if (column != null) {
-			column.setHeaderCSS(css.toString());
+	if (columnCount == 0) {
+		long buttonHandle = GTK.gtk_tree_view_column_get_button(GTK.gtk_tree_view_get_column(handle, 0));
+		if (headerCSSProvider == 0) {
+			headerCSSProvider = GTK.gtk_css_provider_new();
+			GTK.gtk_style_context_add_provider(GTK.gtk_widget_get_style_context(buttonHandle), headerCSSProvider, GTK.GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+		}
+
+		if (GTK.GTK4) {
+			GTK.gtk_css_provider_load_from_data(headerCSSProvider, Converter.javaStringToCString(css.toString()), -1);
+		} else {
+			GTK.gtk_css_provider_load_from_data(headerCSSProvider, Converter.javaStringToCString(css.toString()), -1, null);
+		}
+	} else {
+		for (TreeColumn column : columns) {
+			if (column != null) {
+				column.setHeaderCSS(css.toString());
+			}
 		}
 	}
 }
@@ -4293,5 +4309,15 @@ void checkSetDataInProcessBeforeRemoval() {
 private void throwCannotRemoveItem(int i) {
 	String message = "Cannot remove item with index " + i + ".";
 	throw new SWTException(message);
+}
+
+@Override
+public void dispose() {
+	super.dispose();
+
+	if (headerCSSProvider != 0) {
+		OS.g_object_unref(headerCSSProvider);
+		headerCSSProvider = 0;
+	}
 }
 }
