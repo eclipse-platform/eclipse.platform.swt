@@ -10074,24 +10074,6 @@ JNIEXPORT jlong JNICALL GTK_NATIVE(gtk_1style_1context_1get_1parent)
 }
 #endif
 
-#ifndef NO_gtk_1style_1context_1invalidate
-JNIEXPORT void JNICALL GTK_NATIVE(gtk_1style_1context_1invalidate)
-	(JNIEnv *env, jclass that, jlong arg0)
-{
-	GTK_NATIVE_ENTER(env, that, gtk_1style_1context_1invalidate_FUNC);
-/*
-	gtk_style_context_invalidate(arg0);
-*/
-	{
-		GTK_LOAD_FUNCTION(fp, gtk_style_context_invalidate)
-		if (fp) {
-			((void (CALLING_CONVENTION*)(jlong))fp)(arg0);
-		}
-	}
-	GTK_NATIVE_EXIT(env, that, gtk_1style_1context_1invalidate_FUNC);
-}
-#endif
-
 #ifndef NO_gtk_1style_1context_1remove_1class
 JNIEXPORT void JNICALL GTK_NATIVE(gtk_1style_1context_1remove_1class)
 	(JNIEnv *env, jclass that, jlong arg0, jbyteArray arg1)

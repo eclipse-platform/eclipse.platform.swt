@@ -764,7 +764,6 @@ char * GTK_nativeFunctionNames[] = {
 	"gtk_1style_1context_1get_1padding__JILorg_eclipse_swt_internal_gtk_GtkBorder_2",
 	"gtk_1style_1context_1get_1padding__JLorg_eclipse_swt_internal_gtk_GtkBorder_2",
 	"gtk_1style_1context_1get_1parent",
-	"gtk_1style_1context_1invalidate",
 	"gtk_1style_1context_1remove_1class",
 	"gtk_1style_1context_1restore",
 	"gtk_1style_1context_1save",

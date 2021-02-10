@@ -921,7 +921,6 @@ private void setTrackerBackground(boolean opaque) {
 	} else {
 		GTK.gtk_css_provider_load_from_data (provider, Converter.wcsToMbcs (css, true), -1, null);
 	}
-	GTK.gtk_style_context_invalidate (context);
 	long region = Cairo.cairo_region_create ();
 
 	if (GTK.GTK4) {
