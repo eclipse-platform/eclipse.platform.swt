@@ -422,6 +422,10 @@ public String open () {
 			NSArray extensions = getSelectedExtensions();
 			if (extensions != null) panel.setAllowedFileTypes(extensions);
 			panel.setAllowsOtherFileTypes(true);
+		} else {
+			if (OS.VERSION >= OS.VERSION(10, 11, 0)) {
+				((NSOpenPanel)panel).setAccessoryViewDisclosed(true);
+			}
 		}
 	} else {
 		panel.setTreatsFilePackagesAsDirectories(false);

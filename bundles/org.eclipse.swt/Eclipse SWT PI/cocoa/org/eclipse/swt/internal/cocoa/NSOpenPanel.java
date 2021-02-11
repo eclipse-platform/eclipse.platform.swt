@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2019 IBM Corporation and others.
+ * Copyright (c) 2000, 2021 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -35,6 +35,10 @@ public NSArray filenames() {
 public static NSOpenPanel openPanel() {
 	long result = OS.objc_msgSend(OS.class_NSOpenPanel, OS.sel_openPanel);
 	return result != 0 ? new NSOpenPanel(result) : null;
+}
+
+public void setAccessoryViewDisclosed(boolean accessoryViewDisclosed) {
+	OS.objc_msgSend(this.id, OS.sel_setAccessoryViewDisclosed_, accessoryViewDisclosed);
 }
 
 public void setAllowsMultipleSelection(boolean allowsMultipleSelection) {

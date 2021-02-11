@@ -1642,6 +1642,7 @@ public static final long sel_set = Selector.sel_set.value;
 public static final long sel_setAcceptsMouseMovedEvents_ = Selector.sel_setAcceptsMouseMovedEvents_.value;
 public static final long sel_setAcceptsTouchEvents_ = Selector.sel_setAcceptsTouchEvents_.value;
 public static final long sel_setAccessoryView_ = Selector.sel_setAccessoryView_.value;
+public static final long sel_setAccessoryViewDisclosed_ = Selector.sel_setAccessoryViewDisclosed_.value;
 public static final long sel_setAction_ = Selector.sel_setAction_.value;
 public static final long sel_setActivationPolicy_ = Selector.sel_setActivationPolicy_.value;
 public static final long sel_setAlertStyle_ = Selector.sel_setAlertStyle_.value;

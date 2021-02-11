@@ -915,6 +915,7 @@ public enum Selector {
 	, sel_setAcceptsMouseMovedEvents_("setAcceptsMouseMovedEvents:")
 	, sel_setAcceptsTouchEvents_("setAcceptsTouchEvents:")
 	, sel_setAccessoryView_("setAccessoryView:")
+	, sel_setAccessoryViewDisclosed_("setAccessoryViewDisclosed:")
 	, sel_setAction_("setAction:")
 	, sel_setActivationPolicy_("setActivationPolicy:")
 	, sel_setAlertStyle_("setAlertStyle:")
