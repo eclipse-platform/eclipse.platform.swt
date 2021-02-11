@@ -2356,8 +2356,8 @@ long gtk_key_press_event (long widget, long event) {
 			int keymask = gdk_event_get_state (event);
 			if ((keymask & (GDK.GDK_SUPER_MASK | GDK.GDK_META_MASK | GDK.GDK_HYPER_MASK | GDK.GDK_MOD1_MASK)) == 0) {
 				sendTreeDefaultSelection ();
-				return 0; // Avoid doubling the enter event to other widgets when it is a DefaultSelectionEvent
 			}
+			break;
 	}
 
 	return super.gtk_key_press_event (widget, event);
