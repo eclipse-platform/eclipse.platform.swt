@@ -424,6 +424,7 @@ public boolean startJob(String jobName) {
 			operation.setJobTitle(NSString.stringWith(jobName));
 		}
 		if (createContext()) {
+			NSGraphicsContext.setCurrentContext(operation.context());
 			view.beginDocument();
 			return true;
 		}
