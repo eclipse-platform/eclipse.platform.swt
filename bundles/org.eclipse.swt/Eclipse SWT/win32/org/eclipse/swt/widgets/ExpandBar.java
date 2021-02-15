@@ -768,7 +768,7 @@ LRESULT WM_MOUSEMOVE (long wParam, long lParam) {
 
 @Override
 LRESULT WM_MOUSEWHEEL (long wParam, long lParam) {
-	return wmScrollWheel (true, wParam, lParam);
+	return wmScrollWheel (true, wParam, lParam, false);
 }
 
 @Override

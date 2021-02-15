@@ -346,7 +346,12 @@ LRESULT WM_HSCROLL (long wParam, long lParam) {
 
 @Override
 LRESULT WM_MOUSEWHEEL (long wParam, long lParam) {
-	return wmScrollWheel ((state & CANVAS) != 0, wParam, lParam);
+	return wmScrollWheel ((state & CANVAS) != 0, wParam, lParam, false);
+}
+
+@Override
+LRESULT WM_MOUSEHWHEEL (long wParam, long lParam) {
+	return wmScrollWheel ((state & CANVAS) != 0, wParam, lParam, true);
 }
 
 @Override
@@ -368,23 +373,28 @@ LRESULT WM_VSCROLL (long wParam, long lParam) {
 	return result;
 }
 
-LRESULT wmScrollWheel (boolean update, long wParam, long lParam) {
+LRESULT wmScrollWheel (boolean update, long wParam, long lParam, boolean horzWheel) {
 	LRESULT result = super.WM_MOUSEWHEEL (wParam, lParam);
 	if (result != null) return result;
 	/*
-	* Translate WM_MOUSEWHEEL to WM_VSCROLL or WM_HSCROLL.
+	* Translate WM_MOUSEWHEEL and WM_MOUSEHWHEEL to WM_VSCROLL or WM_HSCROLL.
 	*/
 	if (update) {
-		if ((wParam & (OS.MK_SHIFT | OS.MK_CONTROL)) != 0)
+		if ((wParam & OS.MK_CONTROL) != 0) {
 			return null;
+		}
+		if ((wParam & OS.MK_SHIFT) != 0) {
+			horzWheel = !horzWheel;
+		}
 
 		boolean vertical;
-		if (verticalBar != null && verticalBar.getEnabled ())
+		if (verticalBar != null && verticalBar.getEnabled () && !horzWheel) {
 			vertical = true;
-		else if (horizontalBar != null && horizontalBar.getEnabled ())
+		} else if (horizontalBar != null && horizontalBar.getEnabled () && horzWheel) {
 			vertical = false;
-		else
+		} else {
 			return null;
+		}
 
 		ScrollBar bar = vertical ? verticalBar : horizontalBar;
 		MouseWheelData wheelData = new MouseWheelData(vertical, bar, wParam, display.scrollRemainderBar);
