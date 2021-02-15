@@ -949,6 +949,19 @@ void reflectScrolledClipView (long /*int*/ id, long /*int*/ sel, long /*int*/ aC
 }
 
 @Override
+void redrawWidget(NSView view, boolean redrawChildren) {
+	super.redrawWidget(view, redrawChildren);
+	if (redrawChildren) {
+		Control[] _getChildren = _getChildren();
+		for (Control child : _getChildren) {
+			if (child != null && !child.isDisposed () && child.isVisible()) {
+				child.redrawWidget(child.view, redrawChildren);
+			}
+		}
+	}
+}
+
+@Override
 void releaseChildren (boolean destroy) {
 	Control [] children = _getChildren ();
 	for (int i=0; i<children.length; i++) {
