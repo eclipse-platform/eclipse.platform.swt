@@ -64,59 +64,6 @@ public static long convertSurface(Image image) {
 	return newSurface;
 }
 
-public static long createPixbuf(long surface) {
-	int format = Cairo.cairo_image_surface_get_format(surface);
-	int width = Cairo.cairo_image_surface_get_width(surface);
-	int height = Cairo.cairo_image_surface_get_height(surface);
-	boolean hasAlpha = format == Cairo.CAIRO_FORMAT_ARGB32;
-	long pixbuf = GDK.gdk_pixbuf_new (GDK.GDK_COLORSPACE_RGB, hasAlpha, 8, width, height);
-	if (pixbuf == 0) SWT.error (SWT.ERROR_NO_HANDLES);
-	int stride = GDK.gdk_pixbuf_get_rowstride (pixbuf);
-	long pixels = GDK.gdk_pixbuf_get_pixels (pixbuf);
-	int oa, or, og, ob;
-	if (OS.BIG_ENDIAN) {
-		oa = 0; or = 1; og = 2; ob = 3;
-	} else {
-		oa = 3; or = 2; og = 1; ob = 0;
-	}
-	byte[] line = new byte[stride];
-	long surfaceData = Cairo.cairo_image_surface_get_data(surface);
-	if (hasAlpha) {
-		for (int y = 0; y < height; y++) {
-			C.memmove (line, surfaceData + (y * stride), stride);
-			for (int x = 0, offset = 0; x < width; x++, offset += 4) {
-				int a = line[offset + oa] & 0xFF;
-				int r = line[offset + or] & 0xFF;
-				int g = line[offset + og] & 0xFF;
-				int b = line[offset + ob] & 0xFF;
-				line[offset + 3] = (byte)a;
-				if (a != 0) {
-					line[offset + 0] = (byte)(((r * 0xFF) + a / 2) / a);
-					line[offset + 1] = (byte)(((g * 0xFF) + a / 2) / a);
-					line[offset + 2] = (byte)(((b * 0xFF) + a / 2) / a);
-				}
-			}
-			C.memmove (pixels + (y * stride), line, stride);
-		}
-	} else {
-		int cairoStride = Cairo.cairo_image_surface_get_stride(surface);
-		byte[] cairoLine = new byte[cairoStride];
-		for (int y = 0; y < height; y++) {
-			C.memmove (cairoLine, surfaceData + (y * cairoStride), cairoStride);
-			for (int x = 0, offset = 0, cairoOffset = 0; x < width; x++, offset += 3, cairoOffset += 4) {
-				byte r = cairoLine[cairoOffset + or];
-				byte g = cairoLine[cairoOffset + og];
-				byte b = cairoLine[cairoOffset + ob];
-				line[offset + 0] = r;
-				line[offset + 1] = g;
-				line[offset + 2] = b;
-			}
-			C.memmove (pixels + (y * stride), line, stride);
-		}
-	}
-	return pixbuf;
-}
-
 public static long createPixbuf(Image image) {
 	long surface = convertSurface(image);
 	int format = Cairo.cairo_image_surface_get_format(surface);
@@ -261,9 +208,21 @@ public void remove(Image image) {
 }
 
 void set (int index, Image image) {
-	long surface = image.surface;
+	long surface = convertSurface(image);
 	int w = Cairo.cairo_image_surface_get_width(surface);
 	int h = Cairo.cairo_image_surface_get_height(surface);
+	Rectangle bounds;
+	if (DPIUtil.useCairoAutoScale()) {
+		bounds = image.getBounds();
+	} else {
+		bounds = image.getBoundsInPixels();
+	}
+	if (w == 0) {
+		w = bounds.width;
+	}
+	if (h == 0) {
+		h = bounds.height;
+	}
 	if (width == -1 || height == -1) {
 		width = w;
 		height = h;
@@ -293,7 +252,13 @@ long scaleSurface(Image image, int width, int height) {
 
 	Rectangle bounds;
 	if (DPIUtil.useCairoAutoScale()) {
-		bounds = new Rectangle(0,0,Cairo.cairo_image_surface_get_width(image.surface), Cairo.cairo_image_surface_get_height(image.surface));
+		int w = Cairo.cairo_image_surface_get_width(image.surface);
+		int h = Cairo.cairo_image_surface_get_height(image.surface);
+		if ((w == 0) && (h == 0)) {
+			bounds = image.getBounds();
+		} else {
+			bounds = new Rectangle(0, 0, w, h);
+		}
 
 		double sx[] = new double[1];
 		double sy[] = new double[1];
@@ -315,4 +280,5 @@ long scaleSurface(Image image, int width, int height) {
 
 	return scaledSurface;
 }
+
 }

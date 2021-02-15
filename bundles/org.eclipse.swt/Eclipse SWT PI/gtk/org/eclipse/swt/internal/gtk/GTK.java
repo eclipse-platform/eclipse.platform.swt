@@ -1592,6 +1592,13 @@ public class GTK extends OS {
 
 	/* GtkImage */
 	public static final native long gtk_image_new();
+	/** @param pixbuf cast=(GdkPixbuf *) */
+	public static final native long gtk_image_new_from_pixbuf(long pixbuf);
+	/**
+	 * @param image cast=(GtkImage *)
+	 * @param pixbuf cast=(GdkPixbuf *)
+	 */
+	public static final native void gtk_image_set_from_pixbuf(long image, long pixbuf);
 	/**
 	 * @param image cast=(GtkImage *)
 	 * @param pixel_size cast=(gint)

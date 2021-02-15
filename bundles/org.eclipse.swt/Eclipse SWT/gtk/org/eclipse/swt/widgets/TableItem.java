@@ -1209,12 +1209,11 @@ public void setImage(int index, Image image) {
 		ImageList imageList = parent.imageList;
 		if (imageList == null) imageList = parent.imageList = new ImageList();
 		int imageIndex = imageList.indexOf(image);
+		pixbuf = ImageList.createPixbuf(image);
 		if (imageIndex == -1) {
 			imageIndex = imageList.add(image);
 		}
-
 		surface = imageList.getSurface(imageIndex);
-		pixbuf = ImageList.createPixbuf(surface);
 	}
 
 	long parentHandle = parent.handle;

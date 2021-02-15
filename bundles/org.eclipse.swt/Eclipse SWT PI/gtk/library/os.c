@@ -2798,6 +2798,18 @@ JNIEXPORT jint JNICALL GDK_NATIVE(gdk_1visual_1get_1depth)
 }
 #endif
 
+#ifndef NO_gdk_1window_1create_1similar_1surface
+JNIEXPORT jlong JNICALL GDK_NATIVE(gdk_1window_1create_1similar_1surface)
+	(JNIEnv *env, jclass that, jlong arg0, jint arg1, jint arg2, jint arg3)
+{
+	jlong rc = 0;
+	GDK_NATIVE_ENTER(env, that, gdk_1window_1create_1similar_1surface_FUNC);
+	rc = (jlong)gdk_window_create_similar_surface((GdkWindow *)arg0, (cairo_content_t)arg1, arg2, arg3);
+	GDK_NATIVE_EXIT(env, that, gdk_1window_1create_1similar_1surface_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_gdk_1window_1destroy
 JNIEXPORT void JNICALL GDK_NATIVE(gdk_1window_1destroy)
 	(JNIEnv *env, jclass that, jlong arg0)
@@ -7617,6 +7629,18 @@ fail:
 }
 #endif
 
+#ifndef NO_gtk_1image_1new_1from_1pixbuf
+JNIEXPORT jlong JNICALL GTK_NATIVE(gtk_1image_1new_1from_1pixbuf)
+	(JNIEnv *env, jclass that, jlong arg0)
+{
+	jlong rc = 0;
+	GTK_NATIVE_ENTER(env, that, gtk_1image_1new_1from_1pixbuf_FUNC);
+	rc = (jlong)gtk_image_new_from_pixbuf((GdkPixbuf *)arg0);
+	GTK_NATIVE_EXIT(env, that, gtk_1image_1new_1from_1pixbuf_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_gtk_1image_1new_1from_1surface
 JNIEXPORT jlong JNICALL GTK_NATIVE(gtk_1image_1new_1from_1surface)
 	(JNIEnv *env, jclass that, jlong arg0)
@@ -7656,6 +7680,16 @@ JNIEXPORT void JNICALL GTK_NATIVE(gtk_1image_1set_1from_1icon_1name)
 fail:
 	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
 	GTK_NATIVE_EXIT(env, that, gtk_1image_1set_1from_1icon_1name_FUNC);
+}
+#endif
+
+#ifndef NO_gtk_1image_1set_1from_1pixbuf
+JNIEXPORT void JNICALL GTK_NATIVE(gtk_1image_1set_1from_1pixbuf)
+	(JNIEnv *env, jclass that, jlong arg0, jlong arg1)
+{
+	GTK_NATIVE_ENTER(env, that, gtk_1image_1set_1from_1pixbuf_FUNC);
+	gtk_image_set_from_pixbuf((GtkImage *)arg0, (GdkPixbuf *)arg1);
+	GTK_NATIVE_EXIT(env, that, gtk_1image_1set_1from_1pixbuf_FUNC);
 }
 #endif
 
