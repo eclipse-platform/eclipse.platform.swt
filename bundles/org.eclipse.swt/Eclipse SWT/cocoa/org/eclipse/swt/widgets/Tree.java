@@ -98,8 +98,12 @@ public class Tree extends Composite {
 
 	static int NEXT_ID;
 
-	/* Value has been determined experimentally, see bug 516472. On macOS 10.12, right end of expando triangle is at x=16. */
-	static final int FIRST_COLUMN_MINIMUM_WIDTH = 17;
+	/*
+	 * Value has been determined experimentally, see bug 516472.
+	 * On macOS 10.12, right end of expando triangle is at x=16.
+	 * On macOS 11, value less than 19 doesn't work.
+	 */
+	static final int FIRST_COLUMN_MINIMUM_WIDTH = 19;
 	static final int IMAGE_GAP = 3;
 	static final int TEXT_GAP = 2;
 	static final int CELL_GAP = 1;
