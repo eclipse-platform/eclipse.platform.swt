@@ -4149,7 +4149,9 @@ public void setRedraw (boolean redraw) {
 	if (redraw) {
 		if (--drawCount == 0) {
 			invalidateVisibleRegion ();
-			redrawWidget(topView (), true);
+			NSView topView = topView ();
+			redrawWidget(topView, true);
+			if (view.id != topView.id) redrawWidget(view, true);
 		}
 	} else {
 		if (drawCount == 0) {
