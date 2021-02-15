@@ -221,6 +221,17 @@ public class OS extends C {
 		OS.objc_msgSend(NSApplication.sharedApplication().id, sel_appAppearanceChanged, isDarkTheme ? 1 : 0);
 	}
 
+	/**
+	 * @return true for macOS BigSur or later, returns false for macOS 10.15 and older
+	 */
+	public static boolean isBigSurOrLater () {
+		/*
+		 * Currently Big Sur OS version matches with 10.16 and not 11.0. This may be temporary.
+		 * Creating a method, so that it can be fixed in one place if/when this changes.
+		 */
+		return OS.VERSION >= OS.VERSION_MMB(10, 16, 0);
+	}
+
 /** JNI natives */
 
 /** @method flags=jni */
