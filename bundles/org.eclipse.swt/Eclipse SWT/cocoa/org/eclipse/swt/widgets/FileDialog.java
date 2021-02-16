@@ -57,6 +57,7 @@ public class FileDialog extends Dialog {
 	long methodImpl = 0;
 	boolean overwrite = false;
 	static final char EXTENSION_SEPARATOR = ';';
+	private String selectedExtension;
 
 /**
  * Constructs a new instance of this class given only its parent.
@@ -121,37 +122,15 @@ long _overwriteExistingFileCheck (long id, long sel, long str) {
 }
 
 /**
- * Appends the extension to the filename, only if the filename has no extension already.
- */
-private NSString appendExtension (NSString filename, String extension) {
-	if (filename != null && extension != null) {
-		NSString ext = filename.pathExtension();
-		if (ext == null || ext.length() == 0) {
-			filename = filename.stringByAppendingPathExtension(NSString.stringWith(extension));
-		}
-	}
-	return filename;
-}
-
-/**
  * Appends the extension selected in the filter pop-up to the filename,
  * only if the filename has no extension already.
  */
 private NSString appendSelectedExtension (NSString filename) {
 	String extension = getSelectedExtension();
-	return appendExtension(filename, extension);
-}
-
-/**
- * Returns the filename without the extension from the full file path.
- */
-private NSString fileNameWithoutExtension (NSString filePath) {
-	NSString filename = filePath.lastPathComponent();
-	if (filename != null) {
+	if (filename != null && extension != null) {
 		NSString ext = filename.pathExtension();
-		while (ext != null && ext.length() > 0) {
-			filename = filename.stringByDeletingPathExtension();
-			ext = filename.pathExtension();
+		if (ext == null || ext.length() == 0) {
+			filename = filename.stringByAppendingPathExtension(NSString.stringWith(extension));
 		}
 	}
 	return filename;
@@ -250,26 +229,44 @@ public boolean getOverwrite () {
  * Returns null if no extension is selected or if the selected filter is * or *.*
  */
 private String getSelectedExtension () {
-	if (popup != null) {
-		filterIndex = (int)popup.indexOfSelectedItem();
-	} else {
-		filterIndex = -1;
-	}
+	return selectedExtension;
+}
+
+private NSMutableArray getSelectedExtensions () {
+	int filterIndex = popup != null ? (int)popup.indexOfSelectedItem() : -1;
 	if (filterExtensions != null && filterExtensions.length != 0) {
 		if (0 <= filterIndex && filterIndex < filterExtensions.length) {
 			String exts = filterExtensions [filterIndex];
-			int length = exts.length ();
 			int index = exts.indexOf (EXTENSION_SEPARATOR);
-			if (index == -1) index = length;
-			String filter = exts.substring (0, index).trim ();
-			if (!filter.equals ("*") && !filter.equals ("*.*")) {
-				if (filter.startsWith ("*.")) {
-					filter = filter.substring (2);
-				} else if (filter.startsWith (".")) {
-					filter = filter.substring (1);
+			String[] extensions = index != -1 ? exts.split(";") : new String[] {exts};
+
+			int length = extensions.length;
+			NSMutableArray allowedFileTypes = NSMutableArray.arrayWithCapacity(length);
+			for (int j = length - 1; j >= 0; j--) {
+				String ext = extensions[j];
+				String filter = ext.trim ();
+				if (!filter.equals ("*") && !filter.equals ("*.*")) {
+					if (filter.startsWith ("*.")) {
+						filter = filter.substring (2);
+					} else if (filter.startsWith (".")) {
+						filter = filter.substring (1);
+					}
+					selectedExtension = filter;
+					/*
+					 * Mac doesn't support multi-part extensions, use only the last part as
+					 * extension in this case.
+					 */
+					int i = filter.lastIndexOf(".");
+					if (i != -1 && ((i + 1) < filter.length())) {
+						filter = filter.substring(i + 1);
+					}
+					allowedFileTypes.insertObject(NSString.stringWith(filter), 0);
+				} else {
+					selectedExtension = null;
+					return null;
 				}
-				return filter;
 			}
+			return allowedFileTypes;
 		}
 	}
 	return null;
@@ -281,6 +278,8 @@ void handleResponse (long response) {
 	}
 	Display display = parent != null ? parent.getDisplay() : Display.getCurrent();
 	display.setModalDialog(null);
+
+	filterIndex = popup != null ? (int)popup.indexOfSelectedItem() : -1;
 
 	if (response == OS.NSFileHandlingPanelOKButton) {
 		NSString filename = panel.filename();
@@ -353,6 +352,14 @@ public String open () {
 		panel = openPanel;
 	}
 	panel.setCanCreateDirectories(true);
+	panel.setTitle(NSString.stringWith(title != null ? title : ""));
+	if (filterPath != null && filterPath.length() > 0) {
+		NSString dir = NSString.stringWith(filterPath);
+		panel.setDirectoryURL(NSURL.fileURLWithPath(dir));
+	}
+	if (fileName != null && fileName.length() > 0) {
+		panel.setNameFieldStringValue(NSString.stringWith(fileName));
+	}
 	/*
 	 * This line is intentionally commented. Don't show hidden files forcefully,
 	 * instead allow File dialog to use the system preference.
@@ -388,23 +395,14 @@ public String open () {
 		panel.setAccessoryView(widget);
 		popup = widget;
 		panel.setTreatsFilePackagesAsDirectories(shouldTreatAppAsDirectory(filterExtensions[selectionIndex]));
+		if ((style & SWT.SAVE) != 0) {
+			NSArray extensions = getSelectedExtensions();
+			if (extensions != null) panel.setAllowedFileTypes(extensions);
+			panel.setAllowsOtherFileTypes(true);
+		}
 	} else {
 		panel.setTreatsFilePackagesAsDirectories(false);
 	}
-	panel.setTitle(NSString.stringWith(title != null ? title : ""));
-	if (filterPath != null && filterPath.length() > 0) {
-		NSString dir = NSString.stringWith(filterPath);
-		panel.setDirectoryURL(NSURL.fileURLWithPath(dir));
-	}
-	if (fileName != null && fileName.length() > 0) {
-		panel.setNameFieldStringValue(NSString.stringWith(fileName));
-	}
-	NSString nameFieldStringValue = panel.nameFieldStringValue();
-	if (nameFieldStringValue != null) {
-		nameFieldStringValue = appendSelectedExtension(nameFieldStringValue);
-		panel.setNameFieldStringValue(nameFieldStringValue);
-	}
-
 	Display display = parent != null ? parent.getDisplay() : Display.getCurrent();
 	display.setModalDialog(this, panel);
 	if (parent != null && (style & SWT.SHEET) != 0) {
@@ -509,17 +507,12 @@ void sendSelection (long id, long sel, long arg) {
 		String fileTypes = filterExtensions[(int)popup.indexOfSelectedItem ()];
 		panel.setTreatsFilePackagesAsDirectories (shouldTreatAppAsDirectory (fileTypes));
 
-		/* Update the name field in the dialog with the correct extension */
+		/*
+		 * Update the allowed file types in the dialog. If extension is not hidden, this
+		 * updates the extension in the name field.
+		 */
 		if ((style & SWT.SAVE) != 0) {
-			String selectedExt = getSelectedExtension();
-			if (selectedExt != null) {
-				NSString filePath = panel.filename();
-				if (filePath != null) {
-					NSString filenameNoExt = fileNameWithoutExtension(filePath);
-					NSString filename = appendExtension(filenameNoExt, selectedExt);
-					if (filename != null) panel.setNameFieldStringValue(filename);
-				}
-			}
+			panel.setAllowedFileTypes(getSelectedExtensions());
 			return;
 		}
 	}

@@ -1281,6 +1281,7 @@ public static final long sel_insertColor_key_atIndex_ = Selector.sel_insertColor
 public static final long sel_insertItem_atIndex_ = Selector.sel_insertItem_atIndex_.value;
 public static final long sel_insertItemWithItemIdentifier_atIndex_ = Selector.sel_insertItemWithItemIdentifier_atIndex_.value;
 public static final long sel_insertItemWithObjectValue_atIndex_ = Selector.sel_insertItemWithObjectValue_atIndex_.value;
+public static final long sel_insertObject_atIndex_ = Selector.sel_insertObject_atIndex_.value;
 public static final long sel_insertTabViewItem_atIndex_ = Selector.sel_insertTabViewItem_atIndex_.value;
 public static final long sel_insertText_ = Selector.sel_insertText_.value;
 public static final long sel_intValue = Selector.sel_intValue.value;

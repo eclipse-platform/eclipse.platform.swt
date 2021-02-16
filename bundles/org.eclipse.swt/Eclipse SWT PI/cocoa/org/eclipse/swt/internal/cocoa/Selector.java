@@ -554,6 +554,7 @@ public enum Selector {
 	, sel_insertItem_atIndex_("insertItem:atIndex:")
 	, sel_insertItemWithItemIdentifier_atIndex_("insertItemWithItemIdentifier:atIndex:")
 	, sel_insertItemWithObjectValue_atIndex_("insertItemWithObjectValue:atIndex:")
+	, sel_insertObject_atIndex_("insertObject:atIndex:")
 	, sel_insertTabViewItem_atIndex_("insertTabViewItem:atIndex:")
 	, sel_insertText_("insertText:")
 	, sel_intValue("intValue")
