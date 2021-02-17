@@ -633,7 +633,10 @@ public void setImage (Image image) {
 		int imageIndex = headerImageList.indexOf (image);
 		if (imageIndex == -1) imageIndex = headerImageList.add (image);
 		if (GTK.GTK4) {
-			//TODO: GTK4 use gtk_image_set_from_paintable
+			long pixbuf = ImageList.createPixbuf(image);
+			long texture = GDK.gdk_texture_new_for_pixbuf(pixbuf);
+			OS.g_object_unref(pixbuf);
+			GTK.gtk_image_set_from_paintable(imageHandle, texture);
 		} else {
 			GTK.gtk_image_set_from_surface(imageHandle, headerImageList.getSurface(imageIndex));
 		}

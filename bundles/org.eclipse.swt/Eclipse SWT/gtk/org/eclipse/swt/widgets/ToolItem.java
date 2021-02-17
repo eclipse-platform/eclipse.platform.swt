@@ -289,7 +289,7 @@ void createHandle (int index) {
 		if (GTK.GTK4) {
 			labelHandle = GTK.gtk_label_new_with_mnemonic(null);
 			if (labelHandle == 0) error(SWT.ERROR_NO_HANDLES);
-			imageHandle = GTK.gtk_image_new_from_surface(0);
+			imageHandle = GTK.gtk_image_new();
 			if (imageHandle == 0) error(SWT.ERROR_NO_HANDLES);
 
 			GTK.gtk_widget_set_valign(boxHandle, GTK.GTK_ALIGN_CENTER);
@@ -740,7 +740,10 @@ long gtk_enter_notify_event (long widget, long event) {
 			int index = imageList.indexOf(hotImage);
 			if (index != -1 && imageHandle != 0) {
 				if (GTK.GTK4) {
-					//TODO: GTK4 gtk_image_set_from_paintable
+					long pixbuf = ImageList.createPixbuf(hotImage);
+					long texture = GDK.gdk_texture_new_for_pixbuf(pixbuf);
+					OS.g_object_unref(pixbuf);
+					GTK.gtk_image_set_from_paintable(imageHandle, texture);
 				} else {
 					GTK.gtk_image_set_from_surface(imageHandle, imageList.getSurface(index));
 				}
@@ -801,7 +804,10 @@ long gtk_leave_notify_event (long widget, long event) {
 				int index = imageList.indexOf(image);
 				if (index != -1 && imageHandle != 0) {
 					if (GTK.GTK4) {
-						//TODO: GTK4 gtk_image_set_from_paintable
+						long pixbuf = ImageList.createPixbuf(image);
+						long texture = GDK.gdk_texture_new_for_pixbuf(pixbuf);
+						OS.g_object_unref(pixbuf);
+						GTK.gtk_image_set_from_paintable(imageHandle, texture);
 					} else {
 						GTK.gtk_image_set_from_surface(imageHandle, imageList.getSurface(index));
 					}
@@ -1251,7 +1257,10 @@ void _setImage (Image image) {
 
 		if (GTK.GTK4) {
 			GTK.gtk_widget_show(imageHandle);
-			//TODO: GTK4 use gtk_image_set_from_paintable
+			long pixbuf = ImageList.createPixbuf(image);
+			long texture = GDK.gdk_texture_new_for_pixbuf(pixbuf);
+			OS.g_object_unref(pixbuf);
+			GTK.gtk_image_set_from_paintable(imageHandle, texture);
 		} else {
 			GTK.gtk_image_set_from_surface(imageHandle, imageList.getSurface(imageIndex));
 		}

@@ -107,4 +107,13 @@ public class GTK4 {
 	public static final native void gtk_check_button_set_active(long check_button, boolean setting);
 	/** @param check_button cast=(GtkCheckButton *) */
 	public static final native boolean gtk_check_button_get_active(long check_button);
+
+
+	/* GtkPicture */
+	public static final native long gtk_picture_new();
+	/**
+	 * @param picture cast=(GtkPicture *)
+	 * @param paintable cast=(GdkPaintable *)
+	 */
+	public static final native void gtk_picture_set_paintable(long picture, long paintable);
 }

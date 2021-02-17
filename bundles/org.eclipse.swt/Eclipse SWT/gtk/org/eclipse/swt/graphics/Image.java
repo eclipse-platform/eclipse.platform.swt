@@ -656,7 +656,8 @@ public Image(Device device, ImageFileNameProvider imageFileNameProvider) {
 	boolean[] found = new boolean[1];
 	String filename = DPIUtil.validateAndGetImagePathAtZoom (imageFileNameProvider, currentDeviceZoom, found);
 	if (found[0]) {
-		initNative (filename);
+		initNative(filename);
+
 		if (this.surface == 0) {
 			ImageData data = new ImageData(filename);
 			init(data);
@@ -806,16 +807,13 @@ boolean refreshImageForZoom () {
 
 void initNative(String filename) {
 	try {
-		int length = filename.length ();
-		char [] chars = new char [length];
-		filename.getChars (0, length, chars, 0);
-		byte [] buffer = Converter.wcsToMbcs(chars, true);
-		long pixbuf = GDK.gdk_pixbuf_new_from_file(buffer, null);
+		byte[] fileNameBuffer = Converter.javaStringToCString(filename);
+		long pixbuf = GDK.gdk_pixbuf_new_from_file(fileNameBuffer, null);
 		if (pixbuf != 0) {
 			try {
-				createFromPixbuf (SWT.BITMAP, pixbuf);
+				createFromPixbuf(SWT.BITMAP, pixbuf);
 			} finally {
-				if (pixbuf != 0) OS.g_object_unref (pixbuf);
+				if (pixbuf != 0) OS.g_object_unref(pixbuf);
 			}
 		}
 	} catch (SWTException e) {}

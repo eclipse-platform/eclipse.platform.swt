@@ -215,6 +215,28 @@ JNIEXPORT jboolean JNICALL GTK4_NATIVE(gtk_1im_1context_1filter_1keypress)
 }
 #endif
 
+#ifndef NO_gtk_1picture_1new
+JNIEXPORT jlong JNICALL GTK4_NATIVE(gtk_1picture_1new)
+	(JNIEnv *env, jclass that)
+{
+	jlong rc = 0;
+	GTK4_NATIVE_ENTER(env, that, gtk_1picture_1new_FUNC);
+	rc = (jlong)gtk_picture_new();
+	GTK4_NATIVE_EXIT(env, that, gtk_1picture_1new_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_gtk_1picture_1set_1paintable
+JNIEXPORT void JNICALL GTK4_NATIVE(gtk_1picture_1set_1paintable)
+	(JNIEnv *env, jclass that, jlong arg0, jlong arg1)
+{
+	GTK4_NATIVE_ENTER(env, that, gtk_1picture_1set_1paintable_FUNC);
+	gtk_picture_set_paintable((GtkPicture *)arg0, (GdkPaintable *)arg1);
+	GTK4_NATIVE_EXIT(env, that, gtk_1picture_1set_1paintable_FUNC);
+}
+#endif
+
 #ifndef NO_gtk_1rgb_1to_1hsv
 JNIEXPORT void JNICALL GTK4_NATIVE(gtk_1rgb_1to_1hsv)
 	(JNIEnv *env, jclass that, jfloat arg0, jfloat arg1, jfloat arg2, jfloatArray arg3, jfloatArray arg4, jfloatArray arg5)

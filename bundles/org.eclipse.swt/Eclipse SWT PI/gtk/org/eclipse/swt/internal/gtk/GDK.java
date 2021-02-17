@@ -750,6 +750,11 @@ public class GDK extends OS {
 	 * @param texture cast=(GdkTexture *)
 	 */
 	public static final native long gdk_pixbuf_get_from_texture(long texture);
+	/**
+	 * @method flags=dynamic
+	 * @param surface cast=(cairo_surface_t *)
+	 */
+	public static final native long gdk_pixbuf_get_from_surface(long surface, int src_x, int src_y, int width, int height);
 
 
 	/* GdkDevice */

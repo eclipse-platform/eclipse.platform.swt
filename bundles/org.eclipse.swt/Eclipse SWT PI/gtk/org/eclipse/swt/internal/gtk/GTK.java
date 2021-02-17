@@ -1324,13 +1324,6 @@ public class GTK extends OS {
 
 	/* GtkImage */
 	public static final native long gtk_image_new();
-	/** @param pixbuf cast=(GdkPixbuf *) */
-	public static final native long gtk_image_new_from_pixbuf(long pixbuf);
-	/**
-	 * @param image cast=(GtkImage *)
-	 * @param pixbuf cast=(GdkPixbuf *)
-	 */
-	public static final native void gtk_image_set_from_pixbuf(long image, long pixbuf);
 	/**
 	 * @param image cast=(GtkImage *)
 	 * @param pixel_size cast=(gint)
@@ -1372,9 +1365,14 @@ public class GTK extends OS {
 	/**
 	 * @method flags=dynamic
 	 * @param image cast=(GtkImage *)
+	 * @param paintable cast=(GdkPaintable *)
+	 */
+	public static final native long gtk_image_set_from_paintable(long image, long paintable);
+	/**
+	 * @method flags=dynamic
+	 * @param image cast=(GtkImage *)
 	 */
 	public static final native void gtk_image_clear(long image);
-
 
 	/**
 	 * @method flags=dynamic

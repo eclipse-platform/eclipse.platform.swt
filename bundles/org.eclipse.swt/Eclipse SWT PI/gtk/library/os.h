@@ -538,6 +538,10 @@
 #define NO_gdk_1texture_1new_1for_1pixbuf
 #define NO_gdk_1texture_1new_1from_1file
 #define NO_gdk_1pixbuf_1get_1from_1texture
+#define NO_gdk_1texture_1new_1from_1file__J_3J
+#define NO_gdk_1texture_1new_1from_1file___3B_3J
+
+#define NO_gtk_1image_1set_1from_1paintable
 
 // GdkEvent functions which do not exist on GTK3
 #define NO_gdk_1focus_1event_1get_1in

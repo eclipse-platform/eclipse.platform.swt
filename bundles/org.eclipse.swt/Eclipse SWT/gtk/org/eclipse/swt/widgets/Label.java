@@ -248,26 +248,35 @@ void createHandle (int index) {
 		if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 	} else {
 		if (GTK.GTK4) {
-			handle = gtk_box_new (GTK.GTK_ORIENTATION_HORIZONTAL, false, 0);
-		} else {
-			handle = GTK.gtk_event_box_new();
-			boxHandle = gtk_box_new (GTK.GTK_ORIENTATION_HORIZONTAL, false, 0);
-			if (boxHandle == 0) error (SWT.ERROR_NO_HANDLES);
-		}
-		if (handle == 0) error (SWT.ERROR_NO_HANDLES);
-		labelHandle = GTK.gtk_label_new_with_mnemonic (null);
-		if (labelHandle == 0) error (SWT.ERROR_NO_HANDLES);
-		imageHandle = GTK.gtk_image_new ();
-		if (imageHandle == 0) error (SWT.ERROR_NO_HANDLES);
-		if (GTK.GTK4) {
+			handle = gtk_box_new(GTK.GTK_ORIENTATION_HORIZONTAL, false, 0);
+			if (handle == 0) error(SWT.ERROR_NO_HANDLES);
+
+			labelHandle = GTK.gtk_label_new_with_mnemonic(null);
+			if (labelHandle == 0) error(SWT.ERROR_NO_HANDLES);
+
+			imageHandle = GTK4.gtk_picture_new();
+			if (imageHandle == 0) error(SWT.ERROR_NO_HANDLES);
+
 			GTK4.gtk_box_append(handle, labelHandle);
 			GTK4.gtk_box_append(handle, imageHandle);
 			gtk_box_set_child_packing(handle, labelHandle, true, true, 0, GTK.GTK_PACK_START);
 			gtk_box_set_child_packing(handle, imageHandle, true, true, 0, GTK.GTK_PACK_START);
 		} else {
-			GTK3.gtk_container_add (handle, boxHandle);
-			GTK3.gtk_container_add (boxHandle, labelHandle);
-			GTK3.gtk_container_add (boxHandle, imageHandle);
+			handle = GTK.gtk_event_box_new();
+			if (handle == 0) error(SWT.ERROR_NO_HANDLES);
+
+			boxHandle = gtk_box_new(GTK.GTK_ORIENTATION_HORIZONTAL, false, 0);
+			if (boxHandle == 0) error(SWT.ERROR_NO_HANDLES);
+
+			labelHandle = GTK.gtk_label_new_with_mnemonic(null);
+			if (labelHandle == 0) error(SWT.ERROR_NO_HANDLES);
+
+			imageHandle = GTK.gtk_image_new();
+			if (imageHandle == 0) error(SWT.ERROR_NO_HANDLES);
+
+			GTK3.gtk_container_add(handle, boxHandle);
+			GTK3.gtk_container_add(boxHandle, labelHandle);
+			GTK3.gtk_container_add(boxHandle, imageHandle);
 			gtk_box_set_child_packing(boxHandle, labelHandle, true, true, 0, GTK.GTK_PACK_START);
 			gtk_box_set_child_packing(boxHandle, imageHandle, true, true, 0, GTK.GTK_PACK_START);
 		}
@@ -636,7 +645,10 @@ public void setImage (Image image) {
 	this.image = image;
 	if (image != null) {
 		if (GTK.GTK4) {
-			//TODO: GTK4 use gtk_image_set_from_paintable
+			long pixbuf = ImageList.createPixbuf(image);
+			long texture = GDK.gdk_texture_new_for_pixbuf(pixbuf);
+			OS.g_object_unref(pixbuf);
+			GTK4.gtk_picture_set_paintable(imageHandle, texture);
 		} else {
 			GTK.gtk_image_set_from_surface(imageHandle, image.surface);
 		}
@@ -644,7 +656,7 @@ public void setImage (Image image) {
 		GTK.gtk_widget_show (imageHandle);
 	} else {
 		if (GTK.GTK4) {
-			GTK.gtk_image_clear(imageHandle);
+			GTK4.gtk_picture_set_paintable(imageHandle, 0);
 		} else {
 			GTK.gtk_image_set_from_surface(imageHandle, 0);
 		}

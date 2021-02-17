@@ -48,5 +48,7 @@ typedef enum {
 	gtk_1check_1button_1set_1use_1underline_FUNC,
 	gtk_1hsv_1to_1rgb_FUNC,
 	gtk_1im_1context_1filter_1keypress_FUNC,
+	gtk_1picture_1new_FUNC,
+	gtk_1picture_1set_1paintable_FUNC,
 	gtk_1rgb_1to_1hsv_FUNC,
 } GTK4_FUNCS;

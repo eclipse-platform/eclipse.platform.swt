@@ -1705,6 +1705,26 @@ JNIEXPORT jint JNICALL GDK_NATIVE(gdk_1pixbuf_1get_1bits_1per_1sample)
 }
 #endif
 
+#ifndef NO_gdk_1pixbuf_1get_1from_1surface
+JNIEXPORT jlong JNICALL GDK_NATIVE(gdk_1pixbuf_1get_1from_1surface)
+	(JNIEnv *env, jclass that, jlong arg0, jint arg1, jint arg2, jint arg3, jint arg4)
+{
+	jlong rc = 0;
+	GDK_NATIVE_ENTER(env, that, gdk_1pixbuf_1get_1from_1surface_FUNC);
+/*
+	rc = (jlong)gdk_pixbuf_get_from_surface((cairo_surface_t *)arg0, arg1, arg2, arg3, arg4);
+*/
+	{
+		GDK_LOAD_FUNCTION(fp, gdk_pixbuf_get_from_surface)
+		if (fp) {
+			rc = (jlong)((jlong (CALLING_CONVENTION*)(cairo_surface_t *, jint, jint, jint, jint))fp)((cairo_surface_t *)arg0, arg1, arg2, arg3, arg4);
+		}
+	}
+	GDK_NATIVE_EXIT(env, that, gdk_1pixbuf_1get_1from_1surface_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_gdk_1pixbuf_1get_1from_1texture
 JNIEXPORT jlong JNICALL GDK_NATIVE(gdk_1pixbuf_1get_1from_1texture)
 	(JNIEnv *env, jclass that, jlong arg0)
@@ -6963,18 +6983,6 @@ fail:
 }
 #endif
 
-#ifndef NO_gtk_1image_1new_1from_1pixbuf
-JNIEXPORT jlong JNICALL GTK_NATIVE(gtk_1image_1new_1from_1pixbuf)
-	(JNIEnv *env, jclass that, jlong arg0)
-{
-	jlong rc = 0;
-	GTK_NATIVE_ENTER(env, that, gtk_1image_1new_1from_1pixbuf_FUNC);
-	rc = (jlong)gtk_image_new_from_pixbuf((GdkPixbuf *)arg0);
-	GTK_NATIVE_EXIT(env, that, gtk_1image_1new_1from_1pixbuf_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO_gtk_1image_1new_1from_1surface
 JNIEXPORT jlong JNICALL GTK_NATIVE(gtk_1image_1new_1from_1surface)
 	(JNIEnv *env, jclass that, jlong arg0)
@@ -7017,13 +7025,23 @@ fail:
 }
 #endif
 
-#ifndef NO_gtk_1image_1set_1from_1pixbuf
-JNIEXPORT void JNICALL GTK_NATIVE(gtk_1image_1set_1from_1pixbuf)
+#ifndef NO_gtk_1image_1set_1from_1paintable
+JNIEXPORT jlong JNICALL GTK_NATIVE(gtk_1image_1set_1from_1paintable)
 	(JNIEnv *env, jclass that, jlong arg0, jlong arg1)
 {
-	GTK_NATIVE_ENTER(env, that, gtk_1image_1set_1from_1pixbuf_FUNC);
-	gtk_image_set_from_pixbuf((GtkImage *)arg0, (GdkPixbuf *)arg1);
-	GTK_NATIVE_EXIT(env, that, gtk_1image_1set_1from_1pixbuf_FUNC);
+	jlong rc = 0;
+	GTK_NATIVE_ENTER(env, that, gtk_1image_1set_1from_1paintable_FUNC);
+/*
+	rc = (jlong)gtk_image_set_from_paintable((GtkImage *)arg0, (GdkPaintable *)arg1);
+*/
+	{
+		GTK_LOAD_FUNCTION(fp, gtk_image_set_from_paintable)
+		if (fp) {
+			rc = (jlong)((jlong (CALLING_CONVENTION*)(GtkImage *, GdkPaintable *))fp)((GtkImage *)arg0, (GdkPaintable *)arg1);
+		}
+	}
+	GTK_NATIVE_EXIT(env, that, gtk_1image_1set_1from_1paintable_FUNC);
+	return rc;
 }
 #endif
 
