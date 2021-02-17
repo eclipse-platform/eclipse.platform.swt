@@ -351,7 +351,7 @@ LRESULT WM_MOUSEWHEEL (long wParam, long lParam) {
 
 @Override
 LRESULT WM_MOUSEHWHEEL (long wParam, long lParam) {
-	return wmScrollWheel ((state & CANVAS) != 0, wParam, lParam, true);
+	return wmScrollWheel ((state & CANVAS) != 0, -1 * wParam, lParam, true);
 }
 
 @Override
