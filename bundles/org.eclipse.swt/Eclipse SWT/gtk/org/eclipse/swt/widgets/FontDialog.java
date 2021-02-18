@@ -236,7 +236,7 @@ public FontData open () {
 	display.removeIdleProc ();
 
 	if (GTK.GTK4) {
-		OS.g_object_unref(handle);
+		GTK.gtk_window_destroy(handle);
 	} else {
 		GTK.gtk_widget_destroy(handle);
 	}

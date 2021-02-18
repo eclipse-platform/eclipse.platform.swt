@@ -44,7 +44,7 @@ public class SyncDialogUtil {
 		}
 
 		while (!display.isDisposed()) {
-			boolean eventsDispatched = OS.g_main_context_iteration (0, false);
+			boolean eventsDispatched = OS.g_main_context_iteration(0, false);
 			if (responseID != -1) {
 				break;
 			} else if (!eventsDispatched) {
@@ -72,10 +72,12 @@ public class SyncDialogUtil {
 
 	/**
 	 * Callback function for the "response" signal in GtkDialog widgets.
-	 * Destroys the dialog after a response is given.
+	 * Responsibility of destroying the dialog is the owner of the dialog
+	 * handle.
+	 *
+	 * Note: Native dialogs are platform dialogs that don't use GtkDialog or GtkWindow.
 	 */
-	static void dialogResponseProc(long dialog, int response_id, long user_date) {
+	static void dialogResponseProc(long dialog, int response_id, long user_data) {
 		responseID = response_id;
-		GTK.gtk_window_destroy(dialog);
 	}
 }
