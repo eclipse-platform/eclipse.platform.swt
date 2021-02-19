@@ -19,6 +19,7 @@ import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.gtk.*;
+import org.eclipse.swt.internal.gtk3.*;
 
 /**
  * Instances of this class represent a column in a table widget.
@@ -698,7 +699,7 @@ void setOrientation (boolean create) {
 		if (buttonHandle != 0) {
 			int dir = (parent.style & SWT.RIGHT_TO_LEFT) != 0 ? GTK.GTK_TEXT_DIR_RTL : GTK.GTK_TEXT_DIR_LTR;
 			GTK.gtk_widget_set_direction (buttonHandle, dir);
-			GTK.gtk_container_forall (buttonHandle, display.setDirectionProc, dir);
+			GTK3.gtk_container_forall (buttonHandle, display.setDirectionProc, dir);
 		}
 	}
 }

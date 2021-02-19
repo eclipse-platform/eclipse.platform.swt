@@ -19,6 +19,8 @@ import org.eclipse.swt.accessibility.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.gtk.*;
+import org.eclipse.swt.internal.gtk3.*;
+import org.eclipse.swt.internal.gtk4.*;
 
 /**
  * Instances of this class represent a non-selectable
@@ -258,14 +260,14 @@ void createHandle (int index) {
 		imageHandle = GTK.gtk_image_new ();
 		if (imageHandle == 0) error (SWT.ERROR_NO_HANDLES);
 		if (GTK.GTK4) {
-			GTK.gtk_box_append(handle, labelHandle);
-			GTK.gtk_box_append(handle, imageHandle);
+			GTK4.gtk_box_append(handle, labelHandle);
+			GTK4.gtk_box_append(handle, imageHandle);
 			gtk_box_set_child_packing(handle, labelHandle, true, true, 0, GTK.GTK_PACK_START);
 			gtk_box_set_child_packing(handle, imageHandle, true, true, 0, GTK.GTK_PACK_START);
 		} else {
-			GTK.gtk_container_add (handle, boxHandle);
-			GTK.gtk_container_add (boxHandle, labelHandle);
-			GTK.gtk_container_add (boxHandle, imageHandle);
+			GTK3.gtk_container_add (handle, boxHandle);
+			GTK3.gtk_container_add (boxHandle, labelHandle);
+			GTK3.gtk_container_add (boxHandle, imageHandle);
 			gtk_box_set_child_packing(boxHandle, labelHandle, true, true, 0, GTK.GTK_PACK_START);
 			gtk_box_set_child_packing(boxHandle, imageHandle, true, true, 0, GTK.GTK_PACK_START);
 		}
@@ -277,15 +279,15 @@ void createHandle (int index) {
 			OS.swt_fixed_add(fixedHandle, frameHandle);
 			GTK.gtk_frame_set_child(frameHandle, handle);
 		} else {
-			GTK.gtk_container_add (fixedHandle, frameHandle);
-			GTK.gtk_container_add (frameHandle, handle);
+			GTK3.gtk_container_add (fixedHandle, frameHandle);
+			GTK3.gtk_container_add (frameHandle, handle);
 			GTK.gtk_frame_set_shadow_type (frameHandle, GTK.GTK_SHADOW_ETCHED_IN);
 		}
 	} else {
 		if (GTK.GTK4) {
 			OS.swt_fixed_add(fixedHandle, handle);
 		} else {
-			GTK.gtk_container_add (fixedHandle, handle);
+			GTK3.gtk_container_add (fixedHandle, handle);
 		}
 	}
 	if ((style & SWT.SEPARATOR) != 0) return;

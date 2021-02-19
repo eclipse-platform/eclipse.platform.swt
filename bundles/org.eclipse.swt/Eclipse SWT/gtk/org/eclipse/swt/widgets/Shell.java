@@ -20,6 +20,8 @@ import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.cairo.*;
 import org.eclipse.swt.internal.gtk.*;
+import org.eclipse.swt.internal.gtk3.*;
+import org.eclipse.swt.internal.gtk4.*;
 
 /**
  * Instances of this class represent the "windows"
@@ -816,9 +818,9 @@ void createHandle (int index) {
 	vboxHandle = gtk_box_new(GTK.GTK_ORIENTATION_VERTICAL, false, 0);
 	if (vboxHandle == 0) error(SWT.ERROR_NO_HANDLES);
 	if (GTK.GTK4) {
-		GTK.gtk_box_append(vboxHandle, scrolledHandle);
+		GTK4.gtk_box_append(vboxHandle, scrolledHandle);
 	} else {
-		GTK.gtk_container_add(vboxHandle, scrolledHandle);
+		GTK3.gtk_container_add(vboxHandle, scrolledHandle);
 		gtk_box_set_child_packing(vboxHandle, scrolledHandle, true, true, 0, GTK.GTK_PACK_END);
 	}
 
@@ -3040,9 +3042,9 @@ void showWidget () {
 				GTK.gtk_widget_unparent(child);
 			}
 		} else {
-			long list = GTK.gtk_container_get_children (shellHandle);
+			long list = GTK3.gtk_container_get_children (shellHandle);
 			while (list != 0) {
-				GTK.gtk_container_remove (shellHandle, OS.g_list_data (list));
+				GTK3.gtk_container_remove (shellHandle, OS.g_list_data (list));
 				list = OS.g_list_next(list);
 			}
 			OS.g_list_free (list);
@@ -3052,7 +3054,7 @@ void showWidget () {
 	if (GTK.GTK4) {
 		GTK.gtk_window_set_child (shellHandle, vboxHandle);
 	} else {
-		GTK.gtk_container_add (shellHandle, vboxHandle);
+		GTK3.gtk_container_add (shellHandle, vboxHandle);
 	}
 
 	if (scrolledHandle != 0) GTK.gtk_widget_show (scrolledHandle);

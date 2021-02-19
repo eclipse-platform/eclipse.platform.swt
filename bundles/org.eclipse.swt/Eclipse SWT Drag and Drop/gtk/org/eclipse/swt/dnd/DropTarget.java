@@ -18,6 +18,7 @@ import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.gtk.*;
+import org.eclipse.swt.internal.gtk3.*;
 import org.eclipse.swt.widgets.*;
 
 /**
@@ -705,7 +706,7 @@ public void setTransfer(Transfer... transferAgents){
 	int actions = opToOsOp(getStyle());
 	if (control instanceof Combo) {
 		if ((control.getStyle() & SWT.READ_ONLY) == 0) {
-			long entryHandle = GTK.gtk_bin_get_child (control.handle);
+			long entryHandle = GTK3.gtk_bin_get_child (control.handle);
 			if (entryHandle != 0) {
 				GTK.gtk_drag_dest_unset(entryHandle);
 			}

@@ -269,15 +269,6 @@
 #define NO_gdk_1pixbuf_1get_1from_1window
 #define NO_gtk_1widget_1destroy
 
-// Some GtkContainer functions don't exist on GTK4
-#define NO_gtk_1container_1propagate_1draw
-#define NO_gtk_1container_1set_1border_1width
-#define NO_gtk_1container_1get_1border_1width
-#define NO_gtk_1container_1add
-#define NO_gtk_1container_1forall
-#define NO_gtk_1container_1get_1children
-#define NO_gtk_1container_1remove
-
 // GTK3 Drag api removed
 #define NO_gtk_1drag_1begin_1with_1coordinates
 #define NO_gtk_1drag_1get_1data
@@ -377,9 +368,6 @@
 #define NO_gdk_1keymap_1translate_1keyboard_1state
 #define NO_gdk_1keymap_1get_1entries_1for_1keyval
 
-// GtkCalendarDisplayOptions removed
-#define NO_gtk_1calendar_1set_1display_1options
-
 // GtkToolbar & toolbar item related objects removed
 #define NO_gtk_1toolbar_1new
 #define NO_gtk_1toolbar_1insert
@@ -469,23 +457,12 @@
 #define NO_gtk_1window_1add_1accel_1group
 #define NO_gtk_1window_1remove_1accel_1group
 
-// GtkAccelLabel removed
-#define NO_gtk_1accel_1label_1set_1accel
-#define NO_gtk_1accel_1label_1set_1accel_1widget
-
-// GtkBin removed
-#define NO_gtk_1bin_1get_1child
-
 // Accessibility interface changes
 #define NO_GTK_1TYPE_1TEXT_1VIEW_1ACCESSIBLE
 #define NO_swt_1fixed_1accessible_1register_1accessible
 
 // GtkScrolledWindow changes
 #define NO_gtk_1scrolled_1window_1new__JJ
-
-// Color function signature changes
-#define NO_gtk_1hsv_1to_1rgb__DDD_3D_3D_3D
-#define NO_gtk_1rgb_1to_1hsv__DDD_3D_3D_3D
 
 // GtkRadioButton removed
 #define NO_gtk_1radio_1button_1get_1group
@@ -630,9 +607,6 @@
 // No GtkPopoverMenuFlags
 #define NO_gtk_1popover_1menu_1new_1from_1model_1full
 
-// Color function signature changes
-#define NO_gtk_1hsv_1to_1rgb__FFF_3F_3F_3F
-#define NO_gtk_1rgb_1to_1hsv__FFF_3F_3F_3F
 
 #endif
 

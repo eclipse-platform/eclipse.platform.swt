@@ -17,6 +17,7 @@ package org.eclipse.swt.widgets;
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.gtk.*;
+import org.eclipse.swt.internal.gtk3.*;
 
 /**
  * Instances of the receiver represent an unselectable
@@ -95,7 +96,7 @@ void createHandle (int index) {
 	if (GTK.GTK4) {
 		OS.swt_fixed_add(fixedHandle, handle);
 	} else {
-		GTK.gtk_container_add (fixedHandle, handle);
+		GTK3.gtk_container_add (fixedHandle, handle);
 	}
 
 	int orientation = (style & SWT.VERTICAL) != 0 ? GTK.GTK_PROGRESS_BOTTOM_TO_TOP : GTK.GTK_PROGRESS_LEFT_TO_RIGHT;

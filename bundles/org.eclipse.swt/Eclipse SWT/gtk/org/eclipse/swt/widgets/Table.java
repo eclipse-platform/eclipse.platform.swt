@@ -21,6 +21,8 @@ import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.cairo.*;
 import org.eclipse.swt.internal.gtk.*;
+import org.eclipse.swt.internal.gtk3.*;
+import org.eclipse.swt.internal.gtk4.*;
 
 /**
  * Instances of this class implement a selectable user interface
@@ -665,8 +667,8 @@ void createHandle (int index) {
 		OS.swt_fixed_add(fixedHandle, scrolledHandle);
 		GTK.gtk_scrolled_window_set_child(scrolledHandle, handle);
 	} else {
-		GTK.gtk_container_add(fixedHandle, scrolledHandle);
-		GTK.gtk_container_add(scrolledHandle, handle);
+		GTK3.gtk_container_add(fixedHandle, scrolledHandle);
+		GTK3.gtk_container_add(scrolledHandle, handle);
 	}
 
 	int mode = (style & SWT.MULTI) != 0 ? GTK.GTK_SELECTION_MULTIPLE : GTK.GTK_SELECTION_BROWSE;
@@ -718,13 +720,13 @@ void createItem (TableColumn column, int index) {
 	if (imageHandle == 0) error(SWT.ERROR_NO_HANDLES);
 
 	if (GTK.GTK4) {
-		GTK.gtk_box_append(boxHandle, imageHandle);
-		GTK.gtk_box_append(boxHandle, labelHandle);
+		GTK4.gtk_box_append(boxHandle, imageHandle);
+		GTK4.gtk_box_append(boxHandle, labelHandle);
 
 		GTK.gtk_widget_hide(imageHandle);
 	} else {
-		GTK.gtk_container_add (boxHandle, imageHandle);
-		GTK.gtk_container_add (boxHandle, labelHandle);
+		GTK3.gtk_container_add (boxHandle, imageHandle);
+		GTK3.gtk_container_add (boxHandle, labelHandle);
 
 		GTK.gtk_widget_show (boxHandle);
 		GTK.gtk_widget_show (labelHandle);
@@ -4193,7 +4195,7 @@ void updateScrollBarValue (ScrollBar bar) {
 		* force the position to be corrected.
 		*/
 		long parentHandle = parentingHandle ();
-		long list = GTK.gtk_container_get_children (parentHandle);
+		long list = GTK3.gtk_container_get_children (parentHandle);
 		if (list == 0) return;
 		long temp = list;
 		while (temp != 0) {

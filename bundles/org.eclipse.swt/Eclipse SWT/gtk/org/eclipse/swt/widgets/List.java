@@ -19,6 +19,7 @@ import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.gtk.*;
+import org.eclipse.swt.internal.gtk3.*;
 
 /**
  * Instances of this class represent a selectable user interface
@@ -231,8 +232,8 @@ void createHandle (int index) {
 		OS.swt_fixed_add(fixedHandle, scrolledHandle);
 		GTK.gtk_scrolled_window_set_child(scrolledHandle, handle);
 	} else {
-		GTK.gtk_container_add (fixedHandle, scrolledHandle);
-		GTK.gtk_container_add (scrolledHandle, handle);
+		GTK3.gtk_container_add (fixedHandle, scrolledHandle);
+		GTK3.gtk_container_add (scrolledHandle, handle);
 	}
 
 	int mode = (style & SWT.MULTI) != 0 ? GTK.GTK_SELECTION_MULTIPLE : GTK.GTK_SELECTION_BROWSE;

@@ -19,6 +19,7 @@ import java.util.List;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.internal.gtk.*;
+import org.eclipse.swt.internal.gtk3.*;
 import org.eclipse.swt.widgets.*;
 
 /**
@@ -503,7 +504,7 @@ public class Accessible {
 					}
 				}
 			} else {
-				long list = GTK.gtk_container_get_children (result);
+				long list = GTK3.gtk_container_get_children (result);
 				if (list != 0) {
 					long temp = list;
 					while (temp != 0) {

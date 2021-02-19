@@ -29,6 +29,8 @@ import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.GDBus.*;
 import org.eclipse.swt.internal.cairo.*;
 import org.eclipse.swt.internal.gtk.*;
+import org.eclipse.swt.internal.gtk3.*;
+import org.eclipse.swt.internal.gtk4.*;
 
 /**
  * Instances of this class are responsible for managing the
@@ -812,7 +814,7 @@ private void gdbus_init_methods() {
 long allChildrenProc (long widget, long recurse) {
 	allChildren = OS.g_list_append (allChildren, widget);
 	if (recurse != 0 && GTK.GTK_IS_CONTAINER (widget)) {
-		GTK.gtk_container_forall (widget, allChildrenProc, recurse);
+		GTK3.gtk_container_forall (widget, allChildrenProc, recurse);
 	}
 	return 0;
 }
@@ -3060,12 +3062,12 @@ GdkRGBA toGdkRGBA (GdkRGBA rgba, double brightness) {
 		float[] h = new float[1];
 		float[] s = new float[1];
 		float[] v = new float[1];
-		GTK.gtk_rgb_to_hsv((float)rgba.red, (float)rgba.green, (float)rgba.blue, h, s, v);
+		GTK4.gtk_rgb_to_hsv((float)rgba.red, (float)rgba.green, (float)rgba.blue, h, s, v);
 		hue[0] = (double)h[0];
 		saturationHSV[0] = (double)s[0];
 		value[0] = (double)v[0];
 	} else {
-		GTK.gtk_rgb_to_hsv(rgba.red, rgba.green, rgba.blue, hue, saturationHSV, value);
+		GTK3.gtk_rgb_to_hsv(rgba.red, rgba.green, rgba.blue, hue, saturationHSV, value);
 	}
 
 	// Calculate luminosity
@@ -3090,12 +3092,12 @@ GdkRGBA toGdkRGBA (GdkRGBA rgba, double brightness) {
 		float[] r = new float[1];
 		float[] g = new float[1];
 		float[] b = new float[1];
-		GTK.gtk_hsv_to_rgb((float)hue[0], (float)saturationHSV[0], (float)value[0], r, g, b);
+		GTK4.gtk_hsv_to_rgb((float)hue[0], (float)saturationHSV[0], (float)value[0], r, g, b);
 		newRGBA.red = r[0];
 		newRGBA.green = g[0];
 		newRGBA.blue = b[0];
 	} else {
-		GTK.gtk_hsv_to_rgb(hue[0], saturationHSV[0], value[0], hue, saturationHSV, value);
+		GTK3.gtk_hsv_to_rgb(hue[0], saturationHSV[0], value[0], hue, saturationHSV, value);
 		newRGBA.red = hue[0];
 		newRGBA.green = saturationHSV[0];
 		newRGBA.blue = value[0];
@@ -3277,7 +3279,7 @@ private void initializeSystemColorsLink() {
 	if (GTK.GTK4) {
 		GTK.gtk_window_set_child(window, label);
 	} else {
-		GTK.gtk_container_add(window, label);
+		GTK3.gtk_container_add(window, label);
 	}
 
 	long styleContextLink = GTK.gtk_widget_get_style_context (label);
@@ -3337,7 +3339,7 @@ void initializeSystemColorsDisabled() {
 	if (GTK.GTK4) {
 		GTK.gtk_window_set_child(window, entry);
 	} else {
-		GTK.gtk_container_add(window, entry);
+		GTK3.gtk_container_add(window, entry);
 	}
 
 	long context = GTK.gtk_widget_get_style_context (entry);
@@ -5431,11 +5433,11 @@ long setDirectionProc (long widget, long direction) {
 		long submenu = GTK.gtk_menu_item_get_submenu (widget);
 		if (submenu != 0) {
 			GTK.gtk_widget_set_direction (submenu, (int)direction);
-			GTK.gtk_container_forall (submenu, setDirectionProc, direction);
+			GTK3.gtk_container_forall (submenu, setDirectionProc, direction);
 		}
 	}
 	if (GTK.GTK_IS_CONTAINER (widget)) {
-		GTK.gtk_container_forall (widget, setDirectionProc, direction);
+		GTK3.gtk_container_forall (widget, setDirectionProc, direction);
 	}
 	return 0;
 }
@@ -5562,7 +5564,7 @@ void showIMWindow (Control control) {
 		if (GTK.GTK4) {
 			GTK.gtk_window_set_child(preeditWindow, preeditLabel);
 		} else {
-			GTK.gtk_container_add (preeditWindow, preeditLabel);
+			GTK3.gtk_container_add (preeditWindow, preeditLabel);
 			GTK.gtk_widget_show (preeditLabel);
 		}
 	}

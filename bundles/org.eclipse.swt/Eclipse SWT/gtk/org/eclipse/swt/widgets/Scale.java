@@ -18,6 +18,7 @@ import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.gtk.*;
+import org.eclipse.swt.internal.gtk3.*;
 
 /**
  * Instances of the receiver represent a selectable user
@@ -143,7 +144,7 @@ void createHandle (int index) {
 	if (GTK.GTK4) {
 		OS.swt_fixed_add(fixedHandle, handle);
 	} else {
-		GTK.gtk_container_add (fixedHandle, handle);
+		GTK3.gtk_container_add (fixedHandle, handle);
 	}
 
 	GTK.gtk_scale_set_digits (handle, 0);

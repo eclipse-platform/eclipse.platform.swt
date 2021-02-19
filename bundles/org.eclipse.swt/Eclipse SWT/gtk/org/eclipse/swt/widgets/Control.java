@@ -1451,7 +1451,7 @@ void setRelations () {
 			handle = GTK.gtk_widget_get_prev_sibling(GTK.gtk_widget_get_last_child(parentHandle));
 		}
 	} else {
-		long list = GTK.gtk_container_get_children (parentHandle);
+		long list = GTK3.gtk_container_get_children (parentHandle);
 		if (list == 0) return;
 		int count = OS.g_list_length (list);
 		if (count > 1) {
@@ -6310,7 +6310,7 @@ void showWidget () {
 	if (GTK.GTK4) {
 		OS.swt_fixed_add(parentHandle, topHandle);
 	} else {
-		GTK.gtk_container_add(parentHandle, topHandle);
+		GTK3.gtk_container_add(parentHandle, topHandle);
 	}
 	if (handle != 0 && handle != topHandle) GTK.gtk_widget_show (handle);
 	if ((state & (ZERO_WIDTH | ZERO_HEIGHT)) == 0) {

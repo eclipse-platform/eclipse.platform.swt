@@ -31,5 +31,27 @@ extern char* GTK3_nativeFunctionNames[];
 #endif
 
 typedef enum {
+	gtk_1accel_1label_1new_FUNC,
+	gtk_1accel_1label_1set_1accel_FUNC,
+	gtk_1accel_1label_1set_1accel_1widget_FUNC,
+	gtk_1bin_1get_1child_FUNC,
+	gtk_1box_1pack_1end_FUNC,
+	gtk_1box_1reorder_1child_FUNC,
+	gtk_1box_1set_1child_1packing_FUNC,
+	gtk_1button_1set_1image_FUNC,
+	gtk_1calendar_1get_1date_FUNC,
+	gtk_1calendar_1select_1day_FUNC,
+	gtk_1calendar_1select_1month_FUNC,
+	gtk_1calendar_1set_1display_1options_FUNC,
+	gtk_1container_1add_FUNC,
+	gtk_1container_1forall_FUNC,
+	gtk_1container_1get_1border_1width_FUNC,
+	gtk_1container_1get_1children_FUNC,
+	gtk_1container_1propagate_1draw_FUNC,
+	gtk_1container_1remove_FUNC,
+	gtk_1container_1set_1border_1width_FUNC,
+	gtk_1dialog_1run_FUNC,
+	gtk_1hsv_1to_1rgb_FUNC,
 	gtk_1im_1context_1filter_1keypress_FUNC,
+	gtk_1rgb_1to_1hsv_FUNC,
 } GTK3_FUNCS;

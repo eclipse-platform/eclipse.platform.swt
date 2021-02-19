@@ -269,28 +269,6 @@ public class GTK extends OS {
 	/** @param button cast=(GtkButton *) */
 	public static final native void gtk_button_set_use_underline(long button, boolean use_underline);
 
-	/* GtkButton [GTK3 only] */
-	/**
-	 * @method flags=dynamic
-	 * @param button cast=(GtkButton *)
-	 * @param image cast=(GtkWidget *)
-	 */
-	public static final native void gtk_button_set_image(long button, long image);
-
-	/* GtkButton [GTK4 only] */
-	/**
-	 * @method flags=dynamic
-	 * @param icon_name cast=(const gchar *)
-	 */
-	public static final native long gtk_button_new_from_icon_name(byte[] icon_name);
-	/**
-	 * @method flags=dynamic
-	 * @param button cast=(GtkButton *)
-	 * @param child cast=(GtkWidget *)
-	 */
-	public static final native void gtk_button_set_child(long button, long child);
-
-
 	/* Keyboard Accelerators */
 	public static final native int gtk_accelerator_get_default_mod_mask();
 	/**
@@ -312,27 +290,6 @@ public class GTK extends OS {
 	public static final native void gtk_accelerator_parse(byte[] accelerator, int[] accelerator_key, int[] accelerator_mods);
 	/** @method flags=dynamic */
 	public static final native long gtk_accel_group_new();
-
-
-	/* GtkAccelLabel [GTK3 only] */
-	/**
-	 * @method flags=dynamic
-	 * @param label cast=(const gchar *)
-	 */
-	public static final native long gtk_accel_label_new(byte[] label);
-	/**
-	 * @method flags=dynamic
-	 * @param accel_label cast=(GtkAccelLabel *)
-	 * @param accel_widget cast=(GtkWidget *)
-	 */
-	public static final native void gtk_accel_label_set_accel_widget(long accel_label, long accel_widget);
-	/**
-	 * @method flags=dynamic
-	 * @param accel_label cast=(GtkAccelLabel *)
-	 * @param accel_key cast=(guint)
-	 * @param accel_mods cast=(GdkModifierType)
-	 */
-	public static final native void gtk_accel_label_set_accel(long accel_label, int accel_key, int accel_mods);
 
 
 	/**
@@ -394,10 +351,6 @@ public class GTK extends OS {
 	/** @param border cast=(GtkBorder *) */
 	public static final native void gtk_border_free(long border);
 
-	/* GtkBin [GTK3 only] */
-	/** @param bin cast=(GtkBin *) */
-	public static final native long gtk_bin_get_child(long bin);
-
 	/* GtkBox */
 	/** @param box cast=(GtkBox *) */
 	public static final native void gtk_box_set_spacing(long box, int spacing);
@@ -412,58 +365,6 @@ public class GTK extends OS {
 	 */
 	public static final native void gtk_box_set_homogeneous(long box, boolean homogeneous);
 
-	/* GtkBox [GTK3 only] */
-	/**
-	 * @method flags=dynamic
-	 * @param box cast=(GtkBox *)
-	 * @param child cast=(GtkWidget *)
-	 */
-	public static final native void gtk_box_set_child_packing(long box, long child, boolean expand, boolean fill, int padding, int pack_type);
-
-	/**
-	 * @method flags=dynamic
-	 * @param box cast=(GtkBox *)
-	 * @param child cast=(GtkWidget *)
-	 */
-	public static final native void gtk_box_set_child_packing(long box, long child, int pack_type);
-	/**
-	 * @method flags=dynamic
-	 * @param box cast=(GtkBox *)
-	 * @param child cast=(GtkWidget *)
-	 * @param position cast=(gint)
-	 */
-	public static final native void gtk_box_reorder_child(long box, long child, int position);
-	/**
-	 * @method flags=dynamic
-	 * @param box cast=(GtkBox *)
-	 * @param widget cast=(GtkWidget *)
-	 * @param expand cast=(gboolean)
-	 * @param fill cast=(gboolean)
-	 * @param padding cast=(guint)
-	 */
-	public static final native void gtk_box_pack_end(long box, long widget, boolean expand, boolean fill, int padding);
-
-	/* GtkBox [GTK4 only] */
-	/**
-	 * @method flags=dynamic
-	 * @param box cast=(GtkBox *)
-	 * @param child cast=(GtkWidget *)
-	 */
-	public static final native void gtk_box_append(long box, long child);
-	/**
-	 * @method flags=dynamic
-	 * @param box cast=(GtkBox *)
-	 * @param child cast=(GtkWidget *)
-	 */
-	public static final native void gtk_box_prepend(long box, long child);
-
-	/**
-	 * @method flags=dynamic
-	 * @param box cast=(GtkBox *)
-	 * @param child cast=(GtkWidget *)
-	 * @param sibling cast=(GtkWidget *)
-	 */
-	public static final native void gtk_box_insert_child_after(long box, long child, long sibling);
 
 	/* GtkCalendar */
 	public static final native long gtk_calendar_new();
@@ -477,66 +378,6 @@ public class GTK extends OS {
 	 */
 	public static final native void gtk_calendar_clear_marks(long calendar);
 
-	/* GtkCalendar [GTK3 only] */
-	/**
-	 * @method flags=dynamic
-	 * @param calendar cast=(GtkCalendar *)
-	 * @param month cast=(guint)
-	 * @param year cast=(guint)
-	 */
-	public static final native void /*long*/ gtk_calendar_select_month(long calendar, int month, int year);
-	/**
-	 * @method flags=dynamic
-	 * @param calendar cast=(GtkCalendar *)
-	 * @param day cast=(guint)
-	 */
-	public static final native void gtk_calendar_select_day(long calendar, int day);
-	/**
-	 * @method flags=dynamic
-	 * @param calendar cast=(GtkCalendar *)
-	 * @param flags cast=(GtkCalendarDisplayOptions)
-	 */
-	/* [GTK3 only] */
-	public static final native void gtk_calendar_set_display_options(long calendar, int flags);
-	/**
-	 * @method flags=dynamic
-	 * @param calendar cast=(GtkCalendar *)
-	 * @param year cast=(guint *)
-	 * @param month cast=(guint *)
-	 * @param day cast=(guint *)
-	 */
-	public static final native void gtk_calendar_get_date(long calendar, int[] year, int[] month, int[] day);
-
-	/* GtkCalendar [GTK4 only] */
-	/**
-	 * @method flags=dynamic
-	 * @param calendar cast=(GtkCalendar *)
-	 */
-	public static final native long gtk_calendar_get_date(long calendar);
-	/**
-	 * @method flags=dynamic
-	 * @param calendar cast=(GtkCalendar *)
-	 * @param date cast=(GDateTime *)
-	 */
-	public static final native void gtk_calendar_select_day(long calendar, long date);
-	/**
-	 * @method flags=dynamic
-	 * @param calendar cast=(GtkCalendar *)
-	 * @param value cast=(gboolean)
-	 */
-	public static final native void gtk_calendar_set_show_day_names(long calendar, boolean value);
-	/**
-	 * @method flags=dynamic
-	 * @param calendar cast=(GtkCalendar *)
-	 * @param value cast=(gboolean)
-	 */
-	public static final native void gtk_calendar_set_show_heading(long calendar, boolean value);
-	/**
-	 * @method flags=dynamic
-	 * @param calendar cast=(GtkCalendar *)
-	 * @param value cast=(gboolean)
-	 */
-	public static final native void gtk_calendar_set_show_week_numbers(long calendar, boolean value);
 
 	/** @param cell_layout cast=(GtkCellLayout *) */
 	public static final native void gtk_cell_layout_clear(long cell_layout);
@@ -595,36 +436,9 @@ public class GTK extends OS {
 	 */
 	public static final native void gtk_cell_view_set_fit_model(long cell_view, boolean fit_model);
 
+
 	/* GtkCheckButton */
 	public static final native long gtk_check_button_new();
-
-	/* GtkCheckButton [GTK4 only] */
-	/**
-	 * @method flags=dynamic
-	 * @param check_button cast=(GtkCheckButton *)
-	 */
-	public static final native void gtk_check_button_set_use_underline(long check_button, boolean use_underline);
-	/**
-	 * @method flags=dynamic
-	 * @param check_button cast=(GtkCheckButton *)
-	 */
-	public static final native void gtk_check_button_set_inconsistent(long check_button, boolean inconsistent);
-	/**
-	 * @method flags=dynamic
-	 * @param check_button cast=(GtkCheckButton *)
-	 * @param group cast=(GtkCheckButton *)
-	 */
-	public static final native void gtk_check_button_set_group(long check_button, long group);
-	/**
-	 * @method flags=dynamic
-	 * @param check_button cast=(GtkCheckButton *)
-	 */
-	public static final native void gtk_check_button_set_active(long check_button, boolean setting);
-	/**
-	 * @method flags=dynamic
-	 * @param check_button cast=(GtkCheckButton *)
-	 */
-	public static final native boolean gtk_check_button_get_active(long check_button);
 
 
 	public static final native long gtk_check_version(int required_major, int required_minor, int required_micro);
@@ -697,42 +511,6 @@ public class GTK extends OS {
 	 */
 	public static final native long gtk_color_chooser_dialog_new(byte[] title, long parent);
 
-	/* GtkColorChooser Interface [GTK3 only] */
-	/**
-	 * @method flags=dynamic
-	 * @param h cast=(gdouble)
-	 * @param s cast=(gdouble)
-	 * @param v cast=(gdouble)
-	 * @param r cast=(gdouble *)
-	 * @param g cast=(gdouble *)
-	 * @param b cast=(gdouble *)
-	 */
-	public static final native void gtk_hsv_to_rgb(double h, double s, double v, double[] r, double[] g, double[] b);
-	/**
-	 * @method flags=dynamic
-	 * @param r cast=(gdouble)
-	 * @param g cast=(gdouble)
-	 * @param b cast=(gdouble)
-	 * @param h cast=(gdouble *)
-	 * @param s cast=(gdouble *)
-	 * @param v cast=(gdouble *)
-	 */
-	public static final native void gtk_rgb_to_hsv(double r, double g, double b, double[] h, double[] s, double[] v);
-
-	/* GtkColorChooser Interface [GTK4 only] */
-	/**
-	 * @param r cast=(float *)
-	 * @param g cast=(float *)
-	 * @param b cast=(float *)
-	 */
-	public static final native void gtk_hsv_to_rgb(float h, float s, float v, float[] r, float[] g, float[] b);
-	/**
-	 * @param h cast=(float *)
-	 * @param s cast=(float *)
-	 * @param v cast=(float *)
-	 */
-	public static final native void gtk_rgb_to_hsv(float r, float g, float b, float[] h, float[] s, float[] v);
-
 
 	/* GtkComboBox */
 	public static final native long gtk_combo_box_text_new();
@@ -798,45 +576,6 @@ public class GTK extends OS {
 	public static final native long gtk_combo_box_get_child(long combo_box);
 
 
-	/* GtkContainer [GTK3 only] */
-	/**
-	 * @param container cast=(GtkContainer *)
-	 * @param widget cast=(GtkWidget *)
-	 */
-	public static final native void gtk_container_add(long container, long widget);
-	//Do not confuse this function with gtk_container_foreach(..).
-	//Make sure you know what you are doing when using this. Please be attentive to swt_fixed_forall(..)
-	// found in os_custom.c, which overrides this function for swtFixed container with custom behaviour.
-	/**
-	 * @param container cast=(GtkContainer *)
-	 * @param callback cast=(GtkCallback)
-	 * @param callback_data cast=(gpointer)
-	 */
-	public static final native void gtk_container_forall(long container, long callback, long callback_data);
-	/**
-	 * @param container cast=(GtkContainer *)
-	 * @param child cast=(GtkWidget *)
-	 * @param cairo cast=(cairo_t *)
-	 */
-	public static final native void gtk_container_propagate_draw(long container, long child, long cairo);
-	/**
-	 * @param container cast=(GtkContainer *)
-	 */
-	public static final native int gtk_container_get_border_width(long container);
-	/** @param container cast=(GtkContainer *) */
-	public static final native long gtk_container_get_children(long container);
-	/**
-	 * @param container cast=(GtkContainer *)
-	 * @param widget cast=(GtkWidget *)
-	 */
-	public static final native void gtk_container_remove(long container, long widget);
-	/**
-	 * @param container cast=(GtkContainer *)
-	 * @param border_width cast=(guint)
-	 */
-	public static final native void gtk_container_set_border_width(long container, int border_width);
-
-
 	/* GtkDialog */
 	/**
 	 * @param dialog cast=(GtkDialog *)
@@ -844,13 +583,6 @@ public class GTK extends OS {
 	 * @param response_id cast=(gint)
 	 */
 	public static final native long gtk_dialog_add_button(long dialog, byte[] button_text, int response_id);
-
-	/* GtkDialog [GTK3 only] */
-	/**
-	 * @method flags=dynamic
-	 * @param dialog cast=(GtkDialog *)
-	 */
-	public static final native int gtk_dialog_run(long dialog);
 
 
 	/* Drag and Drop Api [GTK3 only] */

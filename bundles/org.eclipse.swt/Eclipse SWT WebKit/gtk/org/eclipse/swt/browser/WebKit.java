@@ -28,6 +28,7 @@ import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.gtk.*;
+import org.eclipse.swt.internal.gtk3.*;
 import org.eclipse.swt.internal.webkit.*;
 import org.eclipse.swt.internal.webkit.GdkRectangle;
 import org.eclipse.swt.layout.*;
@@ -807,7 +808,7 @@ public void create (Composite parent, int style) {
 	}
 
 	// Webkit2 Signal Documentation: https://webkitgtk.org/reference/webkit2gtk/stable/WebKitWebView.html#WebKitWebView--title
-	GTK.gtk_container_add (browser.handle, webView);
+	GTK3.gtk_container_add (browser.handle, webView);
 	OS.g_signal_connect (webView, WebKitGTK.close, Proc2.getAddress (), CLOSE_WEB_VIEW);
 	OS.g_signal_connect (webView, WebKitGTK.ready_to_show, Proc2.getAddress (), WEB_VIEW_READY);
 	OS.g_signal_connect (webView, WebKitGTK.decide_policy, Proc4.getAddress (), DECIDE_POLICY);
@@ -1978,7 +1979,7 @@ void onDispose (Event e) {
 		// If you change dispose logic, to check that you haven't introduced memory leaks, test via:
 		// org.eclipse.swt.tests.junit.memoryleak.Test_Memory_Leak.test_Browser()
 		OS.g_object_ref (webView);
-		GTK.gtk_container_remove (GTK.gtk_widget_get_parent (webView), webView);
+		GTK3.gtk_container_remove (GTK.gtk_widget_get_parent (webView), webView);
 		long webViewTempRef = webView;
 		Display.getDefault().asyncExec(() -> {
 			OS.g_object_unref(webViewTempRef);

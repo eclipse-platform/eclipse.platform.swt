@@ -20,6 +20,8 @@ import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.gtk.*;
+import org.eclipse.swt.internal.gtk3.*;
+import org.eclipse.swt.internal.gtk4.*;
 
 /**
  * This class is the abstract superclass of all user interface objects.
@@ -2100,9 +2102,8 @@ void gtk_box_set_child_packing (long box, long child, boolean expand, boolean fi
 			GTK.gtk_widget_set_halign(child, GTK.GTK_ALIGN_FILL);
 			GTK.gtk_widget_set_valign(child, GTK.GTK_ALIGN_FILL);
 		}
-		GTK.gtk_box_set_child_packing(box, child, pack_type);
 	} else {
-		GTK.gtk_box_set_child_packing(box, child, expand, fill, padding, pack_type);
+		GTK3.gtk_box_set_child_packing(box, child, expand, fill, padding, pack_type);
 	}
 }
 
@@ -2114,9 +2115,9 @@ void gtk_box_pack_end (long box, long child, boolean expand, boolean fill, int p
 			GTK.gtk_widget_set_halign(child, GTK.GTK_ALIGN_FILL);
 			GTK.gtk_widget_set_valign(child, GTK.GTK_ALIGN_FILL);
 		}
-		GTK.gtk_box_append(box, child);
+		GTK4.gtk_box_append(box, child);
 	} else {
-		GTK.gtk_box_pack_end(box, child, expand, fill, padding);
+		GTK3.gtk_box_pack_end(box, child, expand, fill, padding);
 	}
 }
 
@@ -2418,7 +2419,7 @@ int gtk_container_get_border_width_or_margin (long handle) {
 		int marginEnd = GTK.gtk_widget_get_margin_end(handle);
 		return Math.max(Math.max(marginTop, marginBottom), Math.max(marginStart, marginEnd));
 	} else {
-		return GTK.gtk_container_get_border_width(handle);
+		return GTK3.gtk_container_get_border_width(handle);
 	}
 }
 /**
@@ -2433,7 +2434,7 @@ void gtk_container_set_border_width (long handle, int border_width) {
 		GTK.gtk_widget_set_margin_start(handle, border_width);
 		GTK.gtk_widget_set_margin_end(handle, border_width);
 	} else {
-		GTK.gtk_container_set_border_width (handle, border_width);
+		GTK3.gtk_container_set_border_width (handle, border_width);
 	}
 }
 

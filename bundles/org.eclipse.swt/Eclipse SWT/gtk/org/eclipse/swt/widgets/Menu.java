@@ -20,6 +20,8 @@ import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.gtk.*;
+import org.eclipse.swt.internal.gtk3.*;
+import org.eclipse.swt.internal.gtk4.*;
 
 /**
  * Instances of this class are user interface objects that contain
@@ -456,7 +458,7 @@ void createHandle (int index) {
 				handle = GTK.gtk_popover_menu_bar_new_from_model(modelHandle);
 				if (handle == 0) error(SWT.ERROR_NO_HANDLES);
 
-				GTK.gtk_box_prepend(parent.vboxHandle, handle);
+				GTK4.gtk_box_prepend(parent.vboxHandle, handle);
 				break;
 			case SWT.DROP_DOWN:
 				handle = modelHandle;
@@ -491,7 +493,7 @@ void createHandle (int index) {
 			if (handle == 0) error(SWT.ERROR_NO_HANDLES);
 
 			long vboxHandle = parent.vboxHandle;
-			GTK.gtk_container_add(vboxHandle, handle);
+			GTK3.gtk_container_add(vboxHandle, handle);
 			gtk_box_set_child_packing(vboxHandle, handle, false, true, 0, GTK.GTK_PACK_START);
 		} else {
 			handle = GTK.gtk_menu_new();
@@ -591,7 +593,7 @@ public MenuItem getItem (int index) {
 
 		return (MenuItem) display.getWidget(itemHandle);
 	} else {
-		long list = GTK.gtk_container_get_children (handle);
+		long list = GTK3.gtk_container_get_children (handle);
 		if (list == 0) error (SWT.ERROR_CANNOT_GET_ITEM);
 		int count = OS.g_list_length (list);
 		if (!(0 <= index && index < count)) error (SWT.ERROR_INVALID_RANGE);
@@ -619,7 +621,7 @@ public int getItemCount () {
 		return OS.g_menu_model_get_n_items(sectionModelHandle);
 	} else {
 		int count = 0;
-		long list = GTK.gtk_container_get_children (handle);
+		long list = GTK3.gtk_container_get_children (handle);
 		if (list == 0) return 0;
 		count = OS.g_list_length (list);
 		OS.g_list_free (list);
@@ -649,7 +651,7 @@ public MenuItem [] getItems () {
 	if (GTK.GTK4) {
 		return items.toArray(new MenuItem[items.size()]);
 	} else {
-		long list = GTK.gtk_container_get_children (handle);
+		long list = GTK3.gtk_container_get_children (handle);
 		if (list == 0) return new MenuItem [0];
 		long originalList = list;
 		int count = OS.g_list_length (list);

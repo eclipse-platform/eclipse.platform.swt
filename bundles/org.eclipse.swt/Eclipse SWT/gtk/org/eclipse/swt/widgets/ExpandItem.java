@@ -17,6 +17,8 @@ import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.gtk.*;
+import org.eclipse.swt.internal.gtk3.*;
+import org.eclipse.swt.internal.gtk4.*;
 
 /**
  * Instances of this class represent a selectable user interface object
@@ -132,7 +134,7 @@ void createHandle (int index) {
 	if (GTK.GTK4) {
 		GTK.gtk_expander_set_child(handle, clientHandle);
 	} else {
-		GTK.gtk_container_add (handle, clientHandle);
+		GTK3.gtk_container_add (handle, clientHandle);
 	}
 	boxHandle = gtk_box_new (GTK.GTK_ORIENTATION_HORIZONTAL, false, 4);
 	if (boxHandle == 0) error (SWT.ERROR_NO_HANDLES);
@@ -142,11 +144,11 @@ void createHandle (int index) {
 	if (imageHandle == 0) error (SWT.ERROR_NO_HANDLES);
 
 	if (GTK.GTK4) {
-		GTK.gtk_box_append(boxHandle, imageHandle);
-		GTK.gtk_box_append(boxHandle, labelHandle);
+		GTK4.gtk_box_append(boxHandle, imageHandle);
+		GTK4.gtk_box_append(boxHandle, labelHandle);
 	} else {
-		GTK.gtk_container_add (boxHandle, imageHandle);
-		GTK.gtk_container_add (boxHandle, labelHandle);
+		GTK3.gtk_container_add (boxHandle, imageHandle);
+		GTK3.gtk_container_add (boxHandle, labelHandle);
 	}
 
 	GTK.gtk_expander_set_label_widget (handle, boxHandle);
@@ -662,7 +664,7 @@ void setOrientation (boolean create) {
 	if ((parent.style & SWT.RIGHT_TO_LEFT) != 0 || !create) {
 		int dir = (parent.style & SWT.RIGHT_TO_LEFT) != 0 ? GTK.GTK_TEXT_DIR_RTL : GTK.GTK_TEXT_DIR_LTR;
 		GTK.gtk_widget_set_direction (handle, dir);
-		GTK.gtk_container_forall (handle, display.setDirectionProc, dir);
+		GTK3.gtk_container_forall (handle, display.setDirectionProc, dir);
 	}
 }
 
@@ -675,7 +677,7 @@ public void setText (String string) {
 
 void showWidget (int index) {
 	if (GTK.GTK4) {
-		GTK.gtk_box_append(parent.handle, handle);
+		GTK4.gtk_box_append(parent.handle, handle);
 		gtk_box_set_child_packing (parent.handle, handle, false, false, 0, GTK.GTK_PACK_START);
 	} else {
 		GTK.gtk_widget_show (handle);
@@ -684,7 +686,7 @@ void showWidget (int index) {
 			GTK.gtk_widget_show (labelHandle);
 		if (boxHandle != 0)
 			GTK.gtk_widget_show (boxHandle);
-		GTK.gtk_container_add (parent.handle, handle);
+		GTK3.gtk_container_add (parent.handle, handle);
 		gtk_box_set_child_packing (parent.handle, handle, false, false, 0, GTK.GTK_PACK_START);
 	}
 }

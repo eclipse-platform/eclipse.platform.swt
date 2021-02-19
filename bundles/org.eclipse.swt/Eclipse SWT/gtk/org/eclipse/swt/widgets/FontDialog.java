@@ -18,6 +18,7 @@ import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.gtk.*;
+import org.eclipse.swt.internal.gtk3.*;
 
 /**
  * Instances of this class allow the user to select a font
@@ -199,7 +200,7 @@ public FontData open () {
 	} else {
 		display.externalEventLoop = true;
 		display.sendPreExternalEventDispatchEvent();
-		response = GTK.gtk_dialog_run(handle);
+		response = GTK3.gtk_dialog_run(handle);
 		/*
 		* This call to gdk_threads_leave() is a temporary work around
 		* to avoid deadlocks when gdk_threads_init() is called by native

@@ -21,7 +21,29 @@
 #ifdef NATIVE_STATS
 
 char * GTK3_nativeFunctionNames[] = {
+	"gtk_1accel_1label_1new",
+	"gtk_1accel_1label_1set_1accel",
+	"gtk_1accel_1label_1set_1accel_1widget",
+	"gtk_1bin_1get_1child",
+	"gtk_1box_1pack_1end",
+	"gtk_1box_1reorder_1child",
+	"gtk_1box_1set_1child_1packing",
+	"gtk_1button_1set_1image",
+	"gtk_1calendar_1get_1date",
+	"gtk_1calendar_1select_1day",
+	"gtk_1calendar_1select_1month",
+	"gtk_1calendar_1set_1display_1options",
+	"gtk_1container_1add",
+	"gtk_1container_1forall",
+	"gtk_1container_1get_1border_1width",
+	"gtk_1container_1get_1children",
+	"gtk_1container_1propagate_1draw",
+	"gtk_1container_1remove",
+	"gtk_1container_1set_1border_1width",
+	"gtk_1dialog_1run",
+	"gtk_1hsv_1to_1rgb",
 	"gtk_1im_1context_1filter_1keypress",
+	"gtk_1rgb_1to_1hsv",
 };
 #define NATIVE_FUNCTION_COUNT sizeof(GTK3_nativeFunctionNames) / sizeof(char*)
 int GTK3_nativeFunctionCount = NATIVE_FUNCTION_COUNT;

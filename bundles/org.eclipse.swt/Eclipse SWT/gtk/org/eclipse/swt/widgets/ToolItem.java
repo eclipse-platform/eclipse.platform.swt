@@ -20,6 +20,8 @@ import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.gtk.*;
+import org.eclipse.swt.internal.gtk3.*;
+import org.eclipse.swt.internal.gtk4.*;
 
 /**
  * Instances of this class represent a selectable user interface object
@@ -217,13 +219,13 @@ void createHandle (int index) {
 
 				long button = GTK.gtk_button_new();
 				if (button == 0) error(SWT.ERROR_NO_HANDLES);
-				GTK.gtk_button_set_child(button, boxHandle);
+				GTK4.gtk_button_set_child(button, boxHandle);
 
 				long menuButton = GTK.gtk_menu_button_new();
 				if (menuButton == 0) error(SWT.ERROR_NO_HANDLES);
 
-				GTK.gtk_box_append(handle, button);
-				GTK.gtk_box_append(handle, menuButton);
+				GTK4.gtk_box_append(handle, button);
+				GTK4.gtk_box_append(handle, menuButton);
 
 				arrowHandle = GTK.gtk_widget_get_first_child(menuButton);
 				GTK.gtk_menu_button_set_use_underline(menuButton, true);
@@ -231,8 +233,8 @@ void createHandle (int index) {
 				handle = GTK.gtk_menu_tool_button_new(0, null);
 				if (handle == 0) error(SWT.ERROR_NO_HANDLES);
 
-				long child = GTK.gtk_bin_get_child(handle);
-				long list = GTK.gtk_container_get_children(child);
+				long child = GTK3.gtk_bin_get_child(handle);
+				long list = GTK3.gtk_container_get_children(child);
 				arrowHandle = OS.g_list_nth_data(list, 1);
 			}
 
@@ -257,7 +259,7 @@ void createHandle (int index) {
 				boxHandle = GTK.gtk_box_new(GTK.GTK_ORIENTATION_VERTICAL, 0);
 				if (boxHandle == 0) error(SWT.ERROR_NO_HANDLES);
 
-				GTK.gtk_button_set_child(handle, boxHandle);
+				GTK4.gtk_button_set_child(handle, boxHandle);
 				GTK.gtk_button_set_use_underline(handle, true);
 			} else {
 				handle = GTK.gtk_toggle_tool_button_new();
@@ -272,7 +274,7 @@ void createHandle (int index) {
 				boxHandle = GTK.gtk_box_new(GTK.GTK_ORIENTATION_VERTICAL, 0);
 				if (boxHandle == 0) error(SWT.ERROR_NO_HANDLES);
 
-				GTK.gtk_button_set_child(handle, boxHandle);
+				GTK4.gtk_button_set_child(handle, boxHandle);
 
 				GTK.gtk_button_set_use_underline(handle, true);
 			} else {
@@ -292,8 +294,8 @@ void createHandle (int index) {
 
 			GTK.gtk_widget_set_valign(boxHandle, GTK.GTK_ALIGN_CENTER);
 
-			GTK.gtk_box_append(boxHandle, imageHandle);
-			GTK.gtk_box_append(boxHandle, labelHandle);
+			GTK4.gtk_box_append(boxHandle, imageHandle);
+			GTK4.gtk_box_append(boxHandle, labelHandle);
 
 			GTK.gtk_widget_hide(imageHandle);
 			GTK.gtk_widget_hide(labelHandle);
@@ -686,7 +688,7 @@ long gtk_create_menu_proxy (long widget) {
 				long boxHandle = gtk_box_new (GTK.GTK_ORIENTATION_HORIZONTAL, false, 6);
 				if (boxHandle == 0) error (SWT.ERROR_NO_HANDLES);
 
-				long menuLabel = GTK.gtk_accel_label_new (label);
+				long menuLabel = GTK3.gtk_accel_label_new (label);
 				if (menuLabel == 0) error (SWT.ERROR_NO_HANDLES);
 				GTK.gtk_label_set_xalign (labelHandle, 0);
 				GTK.gtk_widget_set_halign (labelHandle, GTK.GTK_ALIGN_FILL);
@@ -694,9 +696,9 @@ long gtk_create_menu_proxy (long widget) {
 				long menuImage = GTK.gtk_image_new_from_surface(surface);
 				if (menuImage == 0) error (SWT.ERROR_NO_HANDLES);
 
-				GTK.gtk_container_add (boxHandle, menuImage);
+				GTK3.gtk_container_add (boxHandle, menuImage);
 				gtk_box_pack_end (boxHandle, menuLabel, true, true, 0);
-				GTK.gtk_container_add (menuItem, boxHandle);
+				GTK3.gtk_container_add (menuItem, boxHandle);
 				GTK.gtk_tool_item_set_proxy_menu_item (widget, buffer, menuItem);
 
 				/*
@@ -832,7 +834,7 @@ void hookEvents () {
 	 * such as button-press, enter-notify to it. The fix is to assign
 	 * the listener to child (GtkButton) of the tool-item.
 	 */
-	eventHandle = GTK.GTK4 ? GTK.gtk_widget_get_first_child(handle) : GTK.gtk_bin_get_child(handle);
+	eventHandle = GTK.GTK4 ? GTK.gtk_widget_get_first_child(handle) : GTK3.gtk_bin_get_child(handle);
 	if ((style & SWT.DROP_DOWN) != 0) {
 		if (GTK.GTK4) {
 			eventHandle = GTK.gtk_widget_get_first_child(handle);
@@ -842,7 +844,7 @@ void hookEvents () {
 				GTK.gtk_widget_add_controller(arrowHandle, clickGesture);
 			}
 		} else {
-			long list = GTK.gtk_container_get_children(eventHandle);
+			long list = GTK3.gtk_container_get_children(eventHandle);
 			eventHandle = OS.g_list_nth_data(list, 0);
 			if (arrowHandle != 0) OS.g_signal_connect_closure (arrowHandle, OS.clicked, display.getClosure (CLICKED), false);
 		}
@@ -1451,9 +1453,9 @@ void setToolTipText (Shell shell, String newString) {
 	if (GTK.GTK4) {
 		shell.setToolTipText(handle, newString);
 	} else {
-		long child = GTK.gtk_bin_get_child (handle);
+		long child = GTK3.gtk_bin_get_child (handle);
 		if ((style & SWT.DROP_DOWN) != 0) {
-			long list = GTK.gtk_container_get_children (child);
+			long list = GTK3.gtk_container_get_children (child);
 			child = OS.g_list_nth_data (list, 0);
 			if (arrowHandle != 0) shell.setToolTipText (arrowHandle, newString);
 		}
@@ -1494,13 +1496,13 @@ void setWidthInPixels (int width) {
 void showWidget (int index) {
 	if (GTK.GTK4) {
 		if (index == 0) {
-			GTK.gtk_box_prepend(parent.handle, handle);
+			GTK4.gtk_box_prepend(parent.handle, handle);
 		} else if (index < 0) {
-			GTK.gtk_box_append(parent.handle, handle);
+			GTK4.gtk_box_append(parent.handle, handle);
 		} else {
 			for (long sibling = GTK.gtk_widget_get_first_child(parent.handle); sibling != 0; sibling = GTK.gtk_widget_get_next_sibling(sibling)) {
 				if (index == 1) {
-					GTK.gtk_box_insert_child_after(parent.handle, handle, sibling);
+					GTK4.gtk_box_insert_child_after(parent.handle, handle, sibling);
 					break;
 				}
 

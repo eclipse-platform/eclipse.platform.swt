@@ -19,6 +19,8 @@ import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.gtk.*;
+import org.eclipse.swt.internal.gtk3.*;
+import org.eclipse.swt.internal.gtk4.*;
 
 /**
  * Instances of this class implement the notebook user interface
@@ -260,7 +262,7 @@ void createHandle (int index) {
 	if (GTK.GTK4) {
 		OS.swt_fixed_add(fixedHandle, handle);
 	} else {
-		GTK.gtk_container_add (fixedHandle, handle);
+		GTK3.gtk_container_add (fixedHandle, handle);
 	}
 
 	GTK.gtk_notebook_set_show_tabs (handle, true);
@@ -281,7 +283,7 @@ void createItem (TabItem item, int index) {
 	if (GTK.GTK4) {
 		itemCount = GTK.gtk_notebook_get_n_pages(handle);
 	} else {
-		long list = GTK.gtk_container_get_children (handle);
+		long list = GTK3.gtk_container_get_children (handle);
 		if (list != 0) {
 			itemCount = OS.g_list_length (list);
 			OS.g_list_free (list);
@@ -302,11 +304,11 @@ void createItem (TabItem item, int index) {
 	if (imageHandle == 0) error (SWT.ERROR_NO_HANDLES);
 
 	if (GTK.GTK4) {
-		GTK.gtk_box_append(boxHandle, imageHandle);
-		GTK.gtk_box_append(boxHandle, labelHandle);
+		GTK4.gtk_box_append(boxHandle, imageHandle);
+		GTK4.gtk_box_append(boxHandle, labelHandle);
 	} else {
-		GTK.gtk_container_add(boxHandle, imageHandle);
-		GTK.gtk_container_add(boxHandle, labelHandle);
+		GTK3.gtk_container_add(boxHandle, imageHandle);
+		GTK3.gtk_container_add(boxHandle, labelHandle);
 	}
 
 	long pageHandle = OS.g_object_new (display.gtk_fixed_get_type (), 0);
@@ -406,7 +408,7 @@ Control[] _getChildren() {
 					}
 				}
 			} else {
-				long list = GTK.gtk_container_get_children (parentHandle);
+				long list = GTK3.gtk_container_get_children (parentHandle);
 				if (list != 0) {
 					long handle = OS.g_list_data (list);
 					if (handle != 0) {
@@ -461,7 +463,7 @@ public TabItem getItem (int index) {
 		long child = GTK.gtk_widget_get_first_child(handle);
 		if (child == 0) error(SWT.ERROR_CANNOT_GET_ITEM);
 	} else {
-		long list = GTK.gtk_container_get_children (handle);
+		long list = GTK3.gtk_container_get_children (handle);
 		if (list == 0) error (SWT.ERROR_CANNOT_GET_ITEM);
 		int itemCount = OS.g_list_length (list);
 		OS.g_list_free (list);
@@ -518,7 +520,7 @@ public int getItemCount () {
 	if (GTK.GTK4) {
 		itemCount = GTK.gtk_notebook_get_n_pages(handle);
 	} else {
-		long list = GTK.gtk_container_get_children (handle);
+		long list = GTK3.gtk_container_get_children (handle);
 		if (list == 0) return 0;
 		itemCount = OS.g_list_length (list);
 		OS.g_list_free (list);

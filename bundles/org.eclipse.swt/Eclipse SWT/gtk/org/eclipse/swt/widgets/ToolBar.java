@@ -20,6 +20,7 @@ import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.gtk.*;
+import org.eclipse.swt.internal.gtk3.*;
 
 /**
  * Instances of this class support the layout of selectable
@@ -144,7 +145,7 @@ void createHandle (int index) {
 	if (GTK.GTK4) {
 		OS.swt_fixed_add(fixedHandle, handle);
 	} else {
-		GTK.gtk_container_add (fixedHandle, handle);
+		GTK3.gtk_container_add (fixedHandle, handle);
 	}
 
 	/*
@@ -347,7 +348,7 @@ public int getItemCount () {
 			itemCount++;
 		}
 	} else {
-		long list = GTK.gtk_container_get_children (handle);
+		long list = GTK3.gtk_container_get_children (handle);
 		if (list == 0) return 0;
 		itemCount = OS.g_list_length (list);
 		OS.g_list_free (list);
@@ -389,7 +390,7 @@ ToolItem[] _getItems () {
 
 		return childrenList.toArray(new ToolItem[childrenList.size()]);
 	} else {
-		long list = GTK.gtk_container_get_children (handle);
+		long list = GTK3.gtk_container_get_children (handle);
 		if (list == 0) return new ToolItem [0];
 		int count = OS.g_list_length (list);
 		ToolItem [] items = new ToolItem [count];

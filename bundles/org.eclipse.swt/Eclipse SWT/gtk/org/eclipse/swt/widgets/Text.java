@@ -233,7 +233,7 @@ void createHandle (int index) {
 			textHandle = GTK.gtk_widget_get_first_child(handle);
 			bufferHandle = GTK.gtk_entry_get_buffer(handle);
 		} else {
-			GTK.gtk_container_add(fixedHandle, handle);
+			GTK3.gtk_container_add(fixedHandle, handle);
 		}
 
 		GTK.gtk_editable_set_editable(handle, (style & SWT.READ_ONLY) == 0);
@@ -272,8 +272,8 @@ void createHandle (int index) {
 			OS.swt_fixed_add(fixedHandle, scrolledHandle);
 			GTK.gtk_scrolled_window_set_child(scrolledHandle, handle);
 		} else {
-			GTK.gtk_container_add (fixedHandle, scrolledHandle);
-			GTK.gtk_container_add (scrolledHandle, handle);
+			GTK3.gtk_container_add (fixedHandle, scrolledHandle);
+			GTK3.gtk_container_add (scrolledHandle, handle);
 		}
 
 		GTK.gtk_text_view_set_editable (handle, (style & SWT.READ_ONLY) == 0);
@@ -1859,7 +1859,7 @@ long gtk_key_press_event (long widget, long event) {
 long gtk_populate_popup (long widget, long menu) {
 	if ((style & SWT.RIGHT_TO_LEFT) != 0) {
 		GTK.gtk_widget_set_direction (menu, GTK.GTK_TEXT_DIR_RTL);
-		GTK.gtk_container_forall (menu, display.setDirectionProc, GTK.GTK_TEXT_DIR_RTL);
+		GTK3.gtk_container_forall (menu, display.setDirectionProc, GTK.GTK_TEXT_DIR_RTL);
 	}
 	return 0;
 }

@@ -18,6 +18,7 @@ import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.gtk.*;
+import org.eclipse.swt.internal.gtk3.*;
 
 /**
  * Instances of this class provide an etched border
@@ -192,8 +193,8 @@ void createHandle(int index) {
 		OS.swt_fixed_add(fixedHandle, handle);
 		GTK.gtk_frame_set_child(handle, clientHandle);
 	} else {
-		GTK.gtk_container_add (fixedHandle, handle);
-		GTK.gtk_container_add (handle, clientHandle);
+		GTK3.gtk_container_add (fixedHandle, handle);
+		GTK3.gtk_container_add (handle, clientHandle);
 
 		if ((style & SWT.SHADOW_IN) != 0) {
 			GTK.gtk_frame_set_shadow_type (handle, GTK.GTK_SHADOW_IN);

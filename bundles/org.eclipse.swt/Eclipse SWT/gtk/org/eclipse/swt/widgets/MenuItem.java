@@ -19,6 +19,8 @@ import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.gtk.*;
+import org.eclipse.swt.internal.gtk3.*;
+import org.eclipse.swt.internal.gtk4.*;
 
 /**
  * Instances of this class represent a selectable user interface object
@@ -338,7 +340,7 @@ void createHandle (int index) {
 				handle = GTK.gtk_radio_menu_item_new (group);
 				if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 
-				labelHandle = GTK.gtk_accel_label_new (buffer);
+				labelHandle = GTK3.gtk_accel_label_new (buffer);
 				if (labelHandle == 0) error (SWT.ERROR_NO_HANDLES);
 
 				boxHandle = gtk_box_new (GTK.GTK_ORIENTATION_HORIZONTAL, false, 6);
@@ -353,7 +355,7 @@ void createHandle (int index) {
 				handle = GTK.gtk_check_menu_item_new ();
 				if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 
-				labelHandle = GTK.gtk_accel_label_new (buffer);
+				labelHandle = GTK3.gtk_accel_label_new (buffer);
 				if (labelHandle == 0) error (SWT.ERROR_NO_HANDLES);
 
 				boxHandle = gtk_box_new (GTK.GTK_ORIENTATION_HORIZONTAL, false, 6);
@@ -371,7 +373,7 @@ void createHandle (int index) {
 				handle = GTK.gtk_menu_item_new ();
 				if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 
-				labelHandle = GTK.gtk_accel_label_new (buffer);
+				labelHandle = GTK3.gtk_accel_label_new (buffer);
 				if (labelHandle == 0) error (SWT.ERROR_NO_HANDLES);
 
 				boxHandle = gtk_box_new (GTK.GTK_ORIENTATION_HORIZONTAL, false, 6);
@@ -389,7 +391,7 @@ void createHandle (int index) {
 				handle = GTK.gtk_menu_item_new ();
 				if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 
-				labelHandle = GTK.gtk_accel_label_new (buffer);
+				labelHandle = GTK3.gtk_accel_label_new (buffer);
 				if (labelHandle == 0) error (SWT.ERROR_NO_HANDLES);
 
 				boxHandle = gtk_box_new (GTK.GTK_ORIENTATION_HORIZONTAL, false, 6);
@@ -406,9 +408,9 @@ void createHandle (int index) {
 				GTK.gtk_image_set_pixel_size (imageHandle, 16);
 			}
 			if (GTK.GTK4) {
-				GTK.gtk_box_append(boxHandle, imageHandle);
+				GTK4.gtk_box_append(boxHandle, imageHandle);
 			} else {
-				GTK.gtk_container_add (boxHandle, imageHandle);
+				GTK3.gtk_container_add (boxHandle, imageHandle);
 				GTK.gtk_widget_show (imageHandle);
 			}
 		}
@@ -422,15 +424,15 @@ void createHandle (int index) {
 			if (GTK.GTK4) {
 				// TODO: need to implement how menu items will be populated, currently no value for handle
 			} else {
-				GTK.gtk_container_add (handle, boxHandle);
+				GTK3.gtk_container_add (handle, boxHandle);
 				GTK.gtk_widget_show (boxHandle);
 			}
 		}
 		if ((style & SWT.SEPARATOR) == 0) {
 			if (boxHandle == 0) {
-				labelHandle = GTK.gtk_bin_get_child (handle);
+				labelHandle = GTK3.gtk_bin_get_child (handle);
 			}
-			GTK.gtk_accel_label_set_accel_widget (labelHandle, 0);
+			GTK3.gtk_accel_label_set_accel_widget (labelHandle, 0);
 		}
 		long parentHandle = parent.handle;
 		boolean enabled = GTK.gtk_widget_get_sensitive (parentHandle);
@@ -976,8 +978,8 @@ public void setImage (Image image) {
 		} else {
 			if (imageHandle == 0 && boxHandle != 0) {
 				imageHandle = GTK.gtk_image_new_from_surface(surface);
-				GTK.gtk_container_add (boxHandle, imageHandle);
-				GTK.gtk_box_reorder_child (boxHandle, imageHandle, 0);
+				GTK3.gtk_container_add (boxHandle, imageHandle);
+				GTK3.gtk_box_reorder_child (boxHandle, imageHandle, 0);
 			} else {
 				GTK.gtk_image_set_from_surface(imageHandle, surface);
 			}
@@ -988,14 +990,14 @@ public void setImage (Image image) {
 	} else {
 		if (imageHandle != 0 && boxHandle != 0) {
 			if (OS.SWT_PADDED_MENU_ITEMS) {
-				GTK.gtk_container_remove(boxHandle, imageHandle);
+				GTK3.gtk_container_remove(boxHandle, imageHandle);
 				imageHandle = GTK.gtk_image_new ();
 				if (imageHandle == 0) error (SWT.ERROR_NO_HANDLES);
 				GTK.gtk_image_set_pixel_size (imageHandle, 16);
-				GTK.gtk_container_add (boxHandle, imageHandle);
+				GTK3.gtk_container_add (boxHandle, imageHandle);
 				GTK.gtk_widget_show (imageHandle);
 			} else {
-				GTK.gtk_container_remove(boxHandle, imageHandle);
+				GTK3.gtk_container_remove(boxHandle, imageHandle);
 				imageHandle = 0;
 			}
 		}
@@ -1084,7 +1086,7 @@ void setOrientation (boolean create) {
 	if ((parent.style & SWT.RIGHT_TO_LEFT) != 0 || !create) {
 		int dir = (parent.style & SWT.RIGHT_TO_LEFT) != 0 ? GTK.GTK_TEXT_DIR_RTL : GTK.GTK_TEXT_DIR_LTR;
 		GTK.gtk_widget_set_direction (handle, dir);
-		GTK.gtk_container_forall (handle, display.setDirectionProc, dir);
+		GTK3.gtk_container_forall (handle, display.setDirectionProc, dir);
 		if (menu != null) menu._setOrientation (parent.style & (SWT.RIGHT_TO_LEFT | SWT.LEFT_TO_RIGHT));
 	}
 }
@@ -1195,8 +1197,8 @@ public void setText (String string) {
 			if (GTK.GTK_IS_ACCEL_LABEL (labelHandle)) {
 				MaskKeysym maskKeysym = getMaskKeysym();
 				if (maskKeysym != null) {
-					GTK.gtk_accel_label_set_accel_widget (labelHandle, handle);
-					GTK.gtk_accel_label_set_accel (labelHandle,
+					GTK3.gtk_accel_label_set_accel_widget (labelHandle, handle);
+					GTK3.gtk_accel_label_set_accel (labelHandle,
 							maskKeysym.keysym, maskKeysym.mask);
 				}
 				// A workaround for Ubuntu Unity global menu

@@ -19,6 +19,7 @@ import java.io.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.gtk.*;
+import org.eclipse.swt.internal.gtk3.*;
 
 /**
  * Instances of this class allow the user to navigate
@@ -245,7 +246,7 @@ void GTK3setNativeDialogMessage(long handle, String message) {
 		long label = GTK.gtk_label_new (buffer);
 		if (label == 0) error(SWT.ERROR_NO_HANDLES);
 
-		GTK.gtk_container_add(box, label);
+		GTK3.gtk_container_add(box, label);
 		GTK.gtk_widget_show(label);
 		GTK.gtk_label_set_line_wrap(label, true);
 

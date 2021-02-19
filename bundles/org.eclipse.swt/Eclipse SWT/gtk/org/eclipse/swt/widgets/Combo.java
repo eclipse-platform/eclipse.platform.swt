@@ -191,7 +191,7 @@ public void add(String string, int index) {
 
 	gtk_combo_box_insert(string, index);
 	if ((style & SWT.RIGHT_TO_LEFT) != 0 && popupHandle != 0) {
-		GTK.gtk_container_forall (popupHandle, display.setDirectionProc, GTK.GTK_TEXT_DIR_RTL);
+		GTK3.gtk_container_forall (popupHandle, display.setDirectionProc, GTK.GTK_TEXT_DIR_RTL);
 	}
 }
 
@@ -540,7 +540,7 @@ void createHandle (int index) {
 		handle = GTK.gtk_combo_box_text_new();
 		if (handle == 0) error(SWT.ERROR_NO_HANDLES);
 
-		cellHandle = GTK.GTK4 ? GTK.gtk_combo_box_get_child(handle) : GTK.gtk_bin_get_child (handle);
+		cellHandle = GTK.GTK4 ? GTK.gtk_combo_box_get_child(handle) : GTK3.gtk_bin_get_child (handle);
 		if (cellHandle == 0) error(SWT.ERROR_NO_HANDLES);
 
 		gtk_combo_box_toggle_wrap(true);
@@ -548,7 +548,7 @@ void createHandle (int index) {
 		handle = GTK.gtk_combo_box_text_new_with_entry();
 		if (handle == 0) error(SWT.ERROR_NO_HANDLES);
 
-		entryHandle = GTK.GTK4 ? GTK.gtk_combo_box_get_child(handle) : GTK.gtk_bin_get_child(handle);
+		entryHandle = GTK.GTK4 ? GTK.gtk_combo_box_get_child(handle) : GTK3.gtk_bin_get_child(handle);
 		if (entryHandle == 0) error(SWT.ERROR_NO_HANDLES);
 
 		imContext = OS.imContextLast();
@@ -558,7 +558,7 @@ void createHandle (int index) {
 		OS.swt_fixed_add(fixedHandle, handle);
 	} else {
 		popupHandle = findPopupHandle(oldList);
-		GTK.gtk_container_add (fixedHandle, handle);
+		GTK3.gtk_container_add (fixedHandle, handle);
 	}
 
 	textRenderer = GTK.gtk_cell_renderer_text_new();
@@ -736,7 +736,7 @@ long findButtonHandle() {
 		 * GtkBox has to be retrieved first.
 		 * As it's internal child one can't get it in other way.
 		 */
-		GTK.gtk_container_forall(handle, display.allChildrenProc, 0);
+		GTK3.gtk_container_forall(handle, display.allChildrenProc, 0);
 		if (display.allChildren != 0) {
 			long list = display.allChildren;
 			while (list != 0) {
@@ -752,7 +752,7 @@ long findButtonHandle() {
 		}
 		buttonBoxHandle = childHandle;
 
-		GTK.gtk_container_forall (childHandle, display.allChildrenProc, 0);
+		GTK3.gtk_container_forall (childHandle, display.allChildrenProc, 0);
 		if (display.allChildren != 0) {
 			long list = display.allChildren;
 			while (list != 0) {
@@ -784,7 +784,7 @@ long findArrowHandle() {
 				}
 			}
 		} else {
-			GTK.gtk_container_forall (cellBoxHandle, display.allChildrenProc, 0);
+			GTK3.gtk_container_forall (cellBoxHandle, display.allChildrenProc, 0);
 			if (display.allChildren != 0) {
 				long list = display.allChildren;
 				while (list != 0) {
@@ -817,7 +817,7 @@ long findMenuHandle() {
 	long result = 0;
 
 	if (popupHandle != 0) {
-		GTK.gtk_container_forall(popupHandle, display.allChildrenProc, 0);
+		GTK3.gtk_container_forall(popupHandle, display.allChildrenProc, 0);
 		if (display.allChildren != 0) {
 			long list = display.allChildren;
 			while (list != 0) {
@@ -1819,7 +1819,7 @@ long gtk_key_press_event (long widget, long event) {
 long gtk_populate_popup (long widget, long menu) {
 	if ((style & SWT.RIGHT_TO_LEFT) != 0) {
 		GTK.gtk_widget_set_direction (menu, GTK.GTK_TEXT_DIR_RTL);
-		GTK.gtk_container_forall (menu, display.setDirectionProc, GTK.GTK_TEXT_DIR_RTL);
+		GTK3.gtk_container_forall (menu, display.setDirectionProc, GTK.GTK_TEXT_DIR_RTL);
 	}
 	return 0;
 }
@@ -2449,7 +2449,7 @@ public void setItem (int index, String string) {
 	gtk_combo_box_insert(string, index);
 
 	if ((style & SWT.RIGHT_TO_LEFT) != 0 && popupHandle != 0) {
-		GTK.gtk_container_forall (popupHandle, display.setDirectionProc, GTK.GTK_TEXT_DIR_RTL);
+		GTK3.gtk_container_forall (popupHandle, display.setDirectionProc, GTK.GTK_TEXT_DIR_RTL);
 	}
 }
 
@@ -2482,7 +2482,7 @@ public void setItems (String... items) {
 		String string = items [i];
 		gtk_combo_box_insert(string, i);
 		if ((style & SWT.RIGHT_TO_LEFT) != 0 && popupHandle != 0) {
-			GTK.gtk_container_forall (popupHandle, display.setDirectionProc, GTK.GTK_TEXT_DIR_RTL);
+			GTK3.gtk_container_forall (popupHandle, display.setDirectionProc, GTK.GTK_TEXT_DIR_RTL);
 		}
 	}
 }
@@ -2528,7 +2528,7 @@ void setOrientation (boolean create) {
 		if (entryHandle != 0) GTK.gtk_widget_set_direction (entryHandle, dir);
 		if (cellHandle != 0) GTK.gtk_widget_set_direction (cellHandle, dir);
 		if (!create) {
-			if (popupHandle != 0) GTK.gtk_container_forall (popupHandle, display.setDirectionProc, dir);
+			if (popupHandle != 0) GTK3.gtk_container_forall (popupHandle, display.setDirectionProc, dir);
 		}
 	}
 }

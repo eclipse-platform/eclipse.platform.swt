@@ -18,6 +18,7 @@ import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.gtk.*;
+import org.eclipse.swt.internal.gtk3.*;
 
 /**
  * Instances of this class support the layout of selectable
@@ -152,19 +153,19 @@ void createHandle (int index) {
 			OS.swt_fixed_add(fixedHandle, scrolledHandle);
 			GTK.gtk_scrolled_window_set_child(scrolledHandle, handle);
 		} else {
-			GTK.gtk_container_add (fixedHandle, scrolledHandle);
-			GTK.gtk_container_add(scrolledHandle, handle);
+			GTK3.gtk_container_add (fixedHandle, scrolledHandle);
+			GTK3.gtk_container_add(scrolledHandle, handle);
 		}
 
 		if (!GTK.GTK4) {
-			long viewport = GTK.gtk_bin_get_child (scrolledHandle);
+			long viewport = GTK3.gtk_bin_get_child (scrolledHandle);
 			GTK.gtk_viewport_set_shadow_type (viewport, GTK.GTK_SHADOW_NONE);
 		}
 	} else {
 		if (GTK.GTK4) {
 			OS.swt_fixed_add(fixedHandle, handle);
 		} else {
-			GTK.gtk_container_add (fixedHandle, handle);
+			GTK3.gtk_container_add (fixedHandle, handle);
 		}
 	}
 	gtk_container_set_border_width (handle, 0);

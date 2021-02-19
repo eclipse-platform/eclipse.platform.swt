@@ -17,6 +17,7 @@ package org.eclipse.swt.printing;
 import org.eclipse.swt.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.gtk.*;
+import org.eclipse.swt.internal.gtk3.*;
 import org.eclipse.swt.widgets.*;
 
 /**
@@ -394,7 +395,7 @@ public PrinterData open() {
 	String key = "org.eclipse.swt.internal.gtk.externalEventLoop"; //$NON-NLS-1$
 	display.setData (key, Boolean.TRUE);
 	display.sendPreExternalEventDispatchEvent ();
-	int response = GTK.gtk_dialog_run (handle);
+	int response = GTK3.gtk_dialog_run (handle);
 	/*
 	* This call to gdk_threads_leave() is a temporary work around
 	* to avoid deadlocks when gdk_threads_init() is called by native

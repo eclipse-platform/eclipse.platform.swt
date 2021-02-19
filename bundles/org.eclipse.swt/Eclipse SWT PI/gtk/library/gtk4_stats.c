@@ -21,7 +21,24 @@
 #ifdef NATIVE_STATS
 
 char * GTK4_nativeFunctionNames[] = {
+	"gtk_1box_1append",
+	"gtk_1box_1insert_1child_1after",
+	"gtk_1box_1prepend",
+	"gtk_1button_1new_1from_1icon_1name",
+	"gtk_1button_1set_1child",
+	"gtk_1calendar_1get_1date",
+	"gtk_1calendar_1select_1day",
+	"gtk_1calendar_1set_1show_1day_1names",
+	"gtk_1calendar_1set_1show_1heading",
+	"gtk_1calendar_1set_1show_1week_1numbers",
+	"gtk_1check_1button_1get_1active",
+	"gtk_1check_1button_1set_1active",
+	"gtk_1check_1button_1set_1group",
+	"gtk_1check_1button_1set_1inconsistent",
+	"gtk_1check_1button_1set_1use_1underline",
+	"gtk_1hsv_1to_1rgb",
 	"gtk_1im_1context_1filter_1keypress",
+	"gtk_1rgb_1to_1hsv",
 };
 #define NATIVE_FUNCTION_COUNT sizeof(GTK4_nativeFunctionNames) / sizeof(char*)
 int GTK4_nativeFunctionCount = NATIVE_FUNCTION_COUNT;

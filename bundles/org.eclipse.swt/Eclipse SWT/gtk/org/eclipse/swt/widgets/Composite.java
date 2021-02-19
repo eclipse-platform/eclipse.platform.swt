@@ -21,6 +21,7 @@ import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.cairo.*;
 import org.eclipse.swt.internal.gtk.*;
+import org.eclipse.swt.internal.gtk3.*;
 
 /**
  * Instances of this class are controls which are capable
@@ -173,7 +174,7 @@ Control[] _getChildren () {
 
 		return childrenList.toArray(new Control[childrenList.size()]);
 	} else {
-		long list = GTK.gtk_container_get_children (parentHandle);
+		long list = GTK3.gtk_container_get_children (parentHandle);
 		if (list == 0) return new Control [0];
 		int count = OS.g_list_length (list);
 		Control [] children = new Control [count];
@@ -353,7 +354,7 @@ void createHandle (int index, boolean fixed, boolean scrolled) {
 			if (GTK.GTK4) {
 				OS.swt_fixed_add(fixedHandle, scrolledHandle);
 			} else {
-				GTK.gtk_container_add (fixedHandle, scrolledHandle);
+				GTK3.gtk_container_add (fixedHandle, scrolledHandle);
 			}
 		}
 		if (GTK.GTK4) {
@@ -366,7 +367,7 @@ void createHandle (int index, boolean fixed, boolean scrolled) {
 			*/
 			boolean warnings = display.getWarnings ();
 			display.setWarnings (false);
-			GTK.gtk_container_add (scrolledHandle, handle);
+			GTK3.gtk_container_add (scrolledHandle, handle);
 			display.setWarnings (warnings);
 		}
 
@@ -390,7 +391,7 @@ void createHandle (int index, boolean fixed, boolean scrolled) {
 		} else {
 			socketHandle = GTK.gtk_socket_new ();
 			if (socketHandle == 0) error (SWT.ERROR_NO_HANDLES);
-			GTK.gtk_container_add (handle, socketHandle);
+			GTK3.gtk_container_add (handle, socketHandle);
 		}
 	}
 	if ((style & SWT.NO_REDRAW_RESIZE) != 0 && (style & SWT.RIGHT_TO_LEFT) == 0) {
@@ -768,7 +769,7 @@ int getChildrenCount () {
 		* NOTE: The current implementation will count
 		* non-registered children.
 		*/
-		long list = GTK.gtk_container_get_children(handle);
+		long list = GTK3.gtk_container_get_children(handle);
 		if (list != 0) {
 			count = OS.g_list_length(list);
 			OS.g_list_free(list);
@@ -1468,7 +1469,7 @@ void propagateDraw (long container, long cairo) {
 				//TODO: GTK4 no gtk_container_propagate_draw. Possibly not required at all.
 			}
 		} else {
-			long list = GTK.gtk_container_get_children (container);
+			long list = GTK3.gtk_container_get_children (container);
 			long temp = list;
 			while (temp != 0) {
 				long child = OS.g_list_data (temp);
@@ -1495,10 +1496,10 @@ void propagateDraw (long container, long cairo) {
 									GDK.gdk_window_raise(window);
 									childrenLowered.put(widget, false);
 								}
-								GTK.gtk_container_propagate_draw(container, child, cairo);
+								GTK3.gtk_container_propagate_draw(container, child, cairo);
 							}
 						} else {
-							GTK.gtk_container_propagate_draw(container, child, cairo);
+							GTK3.gtk_container_propagate_draw(container, child, cairo);
 						}
 					}
 				}
