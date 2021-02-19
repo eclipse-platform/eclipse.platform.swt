@@ -573,7 +573,12 @@ public void setFilterPath (String string) {
  * Sets the flag that the dialog will use to
  * determine whether to prompt the user for file
  * overwrite if the selected file already exists.
- *
+ * <p>
+ * Note: On some platforms where suppressing the overwrite prompt
+ * is not supported, the prompt is shown even when invoked with
+ * overwrite false.
+ * </p>
+ * 
  * @param overwrite true if the dialog will prompt for file overwrite, false otherwise
  *
  * @since 3.4

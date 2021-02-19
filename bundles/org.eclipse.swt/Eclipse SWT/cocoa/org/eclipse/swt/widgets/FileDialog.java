@@ -58,9 +58,9 @@ public class FileDialog extends Dialog {
 	long methodImpl_overwriteExistingFileCheck = 0;
 	long method_performKeyEquivalent = 0;
 	long methodImpl_performKeyEquivalent = 0;
-	boolean overwrite = false;
 	static final char EXTENSION_SEPARATOR = ';';
 	private String selectedExtension;
+	boolean overwrite = (OS.VERSION >= OS.VERSION(10, 15, 0)) ? true : false;
 
 /**
  * Constructs a new instance of this class given only its parent.
@@ -659,13 +659,22 @@ public void setFilterPath (String string) {
  * Sets the flag that the dialog will use to
  * determine whether to prompt the user for file
  * overwrite if the selected file already exists.
+ * <p>
+ * Note: On some platforms where suppressing the overwrite prompt
+ * is not supported, the prompt is shown even when invoked with
+ * overwrite false.
+ * </p>
  *
  * @param overwrite true if the dialog will prompt for file overwrite, false otherwise
  *
  * @since 3.4
  */
 public void setOverwrite (boolean overwrite) {
-	this.overwrite = overwrite;
+	/**
+	 * Since macOS 10.15, overwriteExistingFileCheck private method is not available.
+	 * Hence, there is no way to suppress the overwrite prompt and overwrite is always set to true.
+	 */
+	this.overwrite = (OS.VERSION >= OS.VERSION(10, 15, 0)) ? true : overwrite;
 }
 
 /**
