@@ -553,7 +553,6 @@ public enum Selector {
 	, sel_initWithString_attributes_("initWithString:attributes:")
 	, sel_initWithTitle_("initWithTitle:")
 	, sel_initWithTitle_action_keyEquivalent_("initWithTitle:action:keyEquivalent:")
-	, sel_initWithTransform_("initWithTransform:")
 	, sel_initWithType_location_("initWithType:location:")
 	, sel_insertColor_key_atIndex_("insertColor:key:atIndex:")
 	, sel_insertItem_atIndex_("insertItem:atIndex:")

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2011 IBM Corporation and others.
+ * Copyright (c) 2000, 2021 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -14,7 +14,6 @@
 package org.eclipse.swt.graphics;
 
 import org.eclipse.swt.*;
-import org.eclipse.swt.internal.cocoa.*;
 
 /**
  * Instances of this class represent transformation matrices for
@@ -35,19 +34,7 @@ import org.eclipse.swt.internal.cocoa.*;
  * @since 3.1
  */
 public class Transform extends Resource {
-	/**
-	 * the OS resource for the Transform
-	 * (Warning: This field is platform dependent)
-	 * <p>
-	 * <b>IMPORTANT:</b> This field is <em>not</em> part of the SWT
-	 * public API. It is marked public only so that it can be shared
-	 * within the packages provided by SWT. It is not available on all
-	 * platforms and should never be accessed from application code.
-	 * </p>
-	 *
-	 * @noreference This field is not intended to be referenced by clients.
-	 */
-	public NSAffineTransform handle;
+	double m11, m12, m21, m22, dx, dy;
 
 /**
  * Constructs a new identity Transform.
@@ -65,17 +52,12 @@ public class Transform extends Resource {
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if device is null and there is no current device</li>
  * </ul>
- * @exception SWTException <ul>
- *    <li>ERROR_NO_GRAPHICS_LIBRARY - if advanced graphics are not available</li>
- * </ul>
- * @exception SWTError <ul>
- *    <li>ERROR_NO_HANDLES if a handle for the Transform could not be obtained</li>
- * </ul>
  *
  * @see #dispose()
  */
 public Transform (Device device) {
-	this(device, 1, 0, 0, 1, 0, 0);
+	super(device);
+	identity();
 }
 
 /**
@@ -97,17 +79,14 @@ public Transform (Device device) {
  *    <li>ERROR_NULL_ARGUMENT - if device is null and there is no current device, or the elements array is null</li>
  *    <li>ERROR_INVALID_ARGUMENT - if the elements array is too small to hold the matrix values</li>
  * </ul>
- * @exception SWTException <ul>
- *    <li>ERROR_NO_GRAPHICS_LIBRARY - if advanced graphics are not available</li>
- * </ul>
- * @exception SWTError <ul>
- *    <li>ERROR_NO_HANDLES if a handle for the Transform could not be obtained</li>
- * </ul>
  *
  * @see #dispose()
  */
 public Transform(Device device, float[] elements) {
-	this (device, checkTransform(elements)[0], elements[1], elements[2], elements[3], elements[4], elements[5]);
+	super(device);
+	if (elements == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	if (elements.length < 6) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	setElements(elements);
 }
 
 /**
@@ -133,40 +112,12 @@ public Transform(Device device, float[] elements) {
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if device is null and there is no current device</li>
  * </ul>
- * @exception SWTException <ul>
- *    <li>ERROR_NO_GRAPHICS_LIBRARY - if advanced graphics are not available</li>
- * </ul>
- * @exception SWTError <ul>
- *    <li>ERROR_NO_HANDLES if a handle for the Transform could not be obtained</li>
- * </ul>
  *
  * @see #dispose()
  */
 public Transform (Device device, float m11, float m12, float m21, float m22, float dx, float dy) {
 	super(device);
-	NSAutoreleasePool pool = null;
-	if (!NSThread.isMainThread()) pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
-	try {
-		handle = NSAffineTransform.transform();
-		if (handle == null) SWT.error(SWT.ERROR_NO_HANDLES);
-		handle.retain();
-		setElements(m11, m12, m21, m22, dx, dy);
-		init();
-	} finally {
-		if (pool != null) pool.release();
-	}
-}
-
-static float[] checkTransform(float[] elements) {
-	if (elements == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	if (elements.length < 6) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	return elements;
-}
-
-@Override
-void destroy() {
-	handle.release();
-	handle = null;
+	setElements(m11, m12, m21, m22, dx, dy);
 }
 
 /**
@@ -175,55 +126,44 @@ void destroy() {
  *
  * @param elements array to hold the matrix values
  *
- * @exception SWTException <ul>
- *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
- * </ul>
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the parameter is null</li>
  *    <li>ERROR_INVALID_ARGUMENT - if the parameter is too small to hold the matrix values</li>
  * </ul>
  */
 public void getElements(float[] elements) {
-	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (elements == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (elements.length < 6) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	NSAutoreleasePool pool = null;
-	if (!NSThread.isMainThread()) pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
-	try {
-		NSAffineTransformStruct struct = handle.transformStruct();
-		elements[0] = (float)struct.m11;
-		elements[1] = (float)struct.m12;
-		elements[2] = (float)struct.m21;
-		elements[3] = (float)struct.m22;
-		elements[4] = (float)struct.tX;
-		elements[5] = (float)struct.tY;
-	} finally {
-		if (pool != null) pool.release();
-	}
+	elements[0] = (float)m11;
+	elements[1] = (float)m12;
+	elements[2] = (float)m21;
+	elements[3] = (float)m22;
+	elements[4] = (float)dx;
+	elements[5] = (float)dy;
+}
+
+void getElements(double[] elements) {
+	elements[0] = m11;
+	elements[1] = m12;
+	elements[2] = m21;
+	elements[3] = m22;
+	elements[4] = dx;
+	elements[5] = dy;
 }
 
 /**
  * Modifies the receiver such that the matrix it represents becomes the
  * identity matrix.
  *
- * @exception SWTException <ul>
- *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
- * </ul>
- *
  * @since 3.4
  */
 public void identity() {
-	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	NSAutoreleasePool pool = null;
-	if (!NSThread.isMainThread()) pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
-	try {
-		NSAffineTransformStruct struct = new NSAffineTransformStruct();
-		struct.m11 = 1;
-		struct.m22 = 1;
-		handle.setTransformStruct(struct);
-	} finally {
-		if (pool != null) pool.release();
-	}
+	m11 = 1.;
+	m12 = 0.;
+	m21 = 0.;
+	m22 = 1.;
+	dx = 0.;
+	dy = 0.;
 }
 
 /**
@@ -231,23 +171,25 @@ public void identity() {
  * the mathematical inverse of the matrix it previously represented.
  *
  * @exception SWTException <ul>
- *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_CANNOT_INVERT_MATRIX - if the matrix is not invertible</li>
  * </ul>
  */
 public void invert() {
-	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	NSAutoreleasePool pool = null;
-	if (!NSThread.isMainThread()) pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
-	try {
-		NSAffineTransformStruct struct = handle.transformStruct();
-		if ((struct.m11 * struct.m22 - struct.m12 * struct.m21) == 0) {
-			SWT.error(SWT.ERROR_CANNOT_INVERT_MATRIX);
-		}
-		handle.invert();
-	} finally {
-		if (pool != null) pool.release();
-	}
+	double m11 = this.m11;
+	double m12 = this.m12;
+	double m21 = this.m21;
+	double m22 = this.m22;
+	double dx = this.dx;
+	double dy = this.dy;
+	double det = m11 * m22 - m12 * m21;
+	if (det == 0. || !Double.isFinite(det)) SWT.error(SWT.ERROR_CANNOT_INVERT_MATRIX);
+	double dinv = 1. / det;
+	this.m11 = m22 * dinv;
+	this.m12 = -m12 * dinv;
+	this.m21 = -m21 * dinv;
+	this.m22 = m11 * dinv;
+	this.dx = (m21 * dy - m22 * dx) * dinv;
+	this.dy = (m12 * dx - m11 * dy) * dinv;
 }
 
 /**
@@ -262,7 +204,7 @@ public void invert() {
  */
 @Override
 public boolean isDisposed() {
-	return handle == null;
+	return device == null;
 }
 
 /**
@@ -272,15 +214,7 @@ public boolean isDisposed() {
  * @return <code>true</code> if the receiver is an identity Transform, and <code>false</code> otherwise
  */
 public boolean isIdentity() {
-	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	NSAutoreleasePool pool = null;
-	if (!NSThread.isMainThread()) pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
-	try {
-		NSAffineTransformStruct struct = handle.transformStruct();
-		return struct.m11 == 1 && struct.m12 == 0 && struct.m21 == 0 && struct.m22 == 1 && struct.tX == 0 && struct.tY == 0;
-	} finally {
-		if (pool != null) pool.release();
-	}
+	return m11 == 1. && m12 == 0. && m21 == 0. && m22 == 1. && dx == 0. && dy == 0.;
 }
 
 /**
@@ -290,25 +224,25 @@ public boolean isIdentity() {
  *
  * @param matrix the matrix to multiply the receiver by
  *
- * @exception SWTException <ul>
- *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
- * </ul>
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the parameter is null</li>
  *    <li>ERROR_INVALID_ARGUMENT - if the parameter has been disposed</li>
  * </ul>
  */
 public void multiply(Transform matrix) {
-	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (matrix == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	if (matrix.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	NSAutoreleasePool pool = null;
-	if (!NSThread.isMainThread()) pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
-	try {
-		handle.prependTransform(matrix.handle);
-	} finally {
-		if (pool != null) pool.release();
-	}
+	double m11 = this.m11;
+	double m12 = this.m12;
+	double m21 = this.m21;
+	double m22 = this.m22;
+	double dx = this.dx;
+	double dy = this.dy;
+	this.m11 = m11 * matrix.m11 + m12 * matrix.m21;
+	this.m12 = m11 * matrix.m12 + m12 * matrix.m22;
+	this.m21 = m21 * matrix.m11 + m22 * matrix.m21;
+	this.m22 = m21 * matrix.m12 + m22 * matrix.m22;
+	this.dx = dx * matrix.m11 + dy * matrix.m21 + matrix.dx;
+	this.dy = dx * matrix.m12 + dy * matrix.m22 + matrix.dy;
 }
 
 /**
@@ -319,20 +253,19 @@ public void multiply(Transform matrix) {
  * while a negative value indicates a counter-clockwise rotation.
  *
  * @param angle the angle to rotate the transformation by
- *
- * @exception SWTException <ul>
- *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
- * </ul>
  */
 public void rotate(float angle) {
-	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	NSAutoreleasePool pool = null;
-	if (!NSThread.isMainThread()) pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
-	try {
-		handle.rotateByDegrees(angle);
-	} finally {
-		if (pool != null) pool.release();
-	}
+	double m11 = this.m11;
+	double m12 = this.m12;
+	double m21 = this.m21;
+	double m22 = this.m22;
+	double rangle = Math.toRadians(angle);
+	double sin = Math.sin(rangle);
+	double cos = Math.cos(rangle);
+	this.m11 = cos * m11 + sin * m21;
+	this.m12 = cos * m12 + sin * m22;
+	this.m21 = -sin * m11 + cos * m21;
+	this.m22 = -sin * m12 + cos * m22;
 }
 
 /**
@@ -341,20 +274,12 @@ public void rotate(float angle) {
  *
  * @param scaleX the amount to scale in the X direction
  * @param scaleY the amount to scale in the Y direction
- *
- * @exception SWTException <ul>
- *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
- * </ul>
  */
 public void scale(float scaleX, float scaleY) {
-	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	NSAutoreleasePool pool = null;
-	if (!NSThread.isMainThread()) pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
-	try {
-		handle.scaleXBy(scaleX, scaleY);
-	} finally {
-		if (pool != null) pool.release();
-	}
+	m11 *= scaleX;
+	m12 *= scaleX;
+	m21 *= scaleY;
+	m22 *= scaleY;
 }
 
 /**
@@ -367,27 +292,32 @@ public void scale(float scaleX, float scaleY) {
  * @param m22 the second element of the second row of the matrix
  * @param dx the third element of the first row of the matrix
  * @param dy the third element of the second row of the matrix
- *
- * @exception SWTException <ul>
- *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
- * </ul>
  */
 public void setElements(float m11, float m12, float m21, float m22, float dx, float dy) {
-	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	NSAutoreleasePool pool = null;
-	if (!NSThread.isMainThread()) pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
-	try {
-		NSAffineTransformStruct struct = new NSAffineTransformStruct();
-		struct.m11 = m11;
-		struct.m12 = m12;
-		struct.m21 = m21;
-		struct.m22 = m22;
-		struct.tX = dx;
-		struct.tY = dy;
-		handle.setTransformStruct(struct);
-	} finally {
-		if (pool != null) pool.release();
-	}
+	this.m11 = m11;
+	this.m12 = m12;
+	this.m21 = m21;
+	this.m22 = m22;
+	this.dx = dx;
+	this.dy = dy;
+}
+
+void setElements(float [] elements) {
+	m11 = elements[0];
+	m12 = elements[1];
+	m21 = elements[2];
+	m22 = elements[3];
+	dx = elements[4];
+	dy = elements[5];
+}
+
+void setElements(double [] elements) {
+	m11 = elements[0];
+	m12 = elements[1];
+	m21 = elements[2];
+	m22 = elements[3];
+	dx = elements[4];
+	dy = elements[5];
 }
 
 /**
@@ -397,28 +327,17 @@ public void setElements(float m11, float m12, float m21, float m22, float dx, fl
  * @param shearX the shear factor in the X direction
  * @param shearY the shear factor in the Y direction
  *
- * @exception SWTException <ul>
- *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
- * </ul>
- *
  * @since 3.4
  */
 public void shear(float shearX, float shearY) {
-	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	NSAutoreleasePool pool = null;
-	if (!NSThread.isMainThread()) pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
-	try {
-		NSAffineTransformStruct struct = new NSAffineTransformStruct();
-		struct.m11 = 1;
-		struct.m12 = shearX;
-		struct.m21 = shearY;
-		struct.m22 = 1;
-		NSAffineTransform matrix = NSAffineTransform.transform();
-		matrix.setTransformStruct(struct);
-		handle.prependTransform(matrix);
-	} finally {
-		if (pool != null) pool.release();
-	}
+	double m11 = this.m11;
+	double m12 = this.m12;
+	double m21 = this.m21;
+	double m22 = this.m22;
+	this.m11 += shearY * m21;
+	this.m12 += shearY * m22;
+	this.m21 += shearX * m11;
+	this.m22 += shearX * m12;
 }
 
 /**
@@ -431,27 +350,15 @@ public void shear(float shearX, float shearY) {
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the point array is null</li>
  * </ul>
- * @exception SWTException <ul>
- *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
- * </ul>
  */
 public void transform(float[] pointArray) {
-	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (pointArray == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	NSAutoreleasePool pool = null;
-	if (!NSThread.isMainThread()) pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
-	try {
-		NSPoint point = new NSPoint();
-		int length = pointArray.length / 2;
-		for (int i = 0, j = 0; i < length; i++, j += 2) {
-			point.x = pointArray[j];
-			point.y = pointArray[j + 1];
-			point = handle.transformPoint(point);
-			pointArray[j] = (float)point.x;
-			pointArray[j + 1] = (float)point.y;
-		}
-	} finally {
-		if (pool != null) pool.release();
+	int length = pointArray.length;
+	for (int i = 0; i < length; i += 2) {
+		float x = pointArray[i];
+		float y = pointArray[i+1];
+		pointArray[i] = (float)(x * m11 + y * m21 + dx);
+		pointArray[i+1] = (float)(x * m12 + y * m22 + dy);
 	}
 }
 
@@ -461,20 +368,10 @@ public void transform(float[] pointArray) {
  *
  * @param offsetX the distance to translate in the X direction
  * @param offsetY the distance to translate in the Y direction
- *
- * @exception SWTException <ul>
- *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
- * </ul>
  */
 public void translate(float offsetX, float offsetY) {
-	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	NSAutoreleasePool pool = null;
-	if (!NSThread.isMainThread()) pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
-	try {
-		handle.translateXBy(offsetX, offsetY);
-	} finally {
-		if (pool != null) pool.release();
-	}
+	dx += offsetX * m11 + offsetY * m21;
+	dy += offsetX * m12 + offsetY * m22;
 }
 
 /**
@@ -485,10 +382,7 @@ public void translate(float offsetX, float offsetY) {
  */
 @Override
 public String toString() {
-	if (isDisposed()) return "Transform {*DISPOSED*}";
-	float[] elements = new float[6];
-	getElements(elements);
-	return "Transform {" + elements [0] + ", " + elements [1] + ", " +elements [2] + ", " +elements [3] + ", " +elements [4] + ", " +elements [5] + "}";
+	return "Transform {" + m11 + ", " + m12 + ", " + m21 + ", " + m22 + ", " + dx + ", " + dy + "}";
 }
 
 }

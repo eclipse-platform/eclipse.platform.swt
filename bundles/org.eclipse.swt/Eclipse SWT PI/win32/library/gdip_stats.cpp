@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2019 IBM Corporation and others.
+ * Copyright (c) 2000, 2021 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -147,16 +147,11 @@ char * Gdip_nativeFunctionNames[] = {
 	"Matrix_1Invert",
 	"Matrix_1IsIdentity",
 	"Matrix_1Multiply",
-	"Matrix_1Rotate",
-	"Matrix_1Scale",
 	"Matrix_1SetElements",
-	"Matrix_1Shear",
-	"Matrix_1TransformPoints__JLorg_eclipse_swt_internal_gdip_PointF_2I",
-	"Matrix_1TransformPoints__J_3FI",
 	"Matrix_1TransformVectors",
-	"Matrix_1Translate",
 	"Matrix_1delete",
-	"Matrix_1new",
+	"Matrix_1new__",
+	"Matrix_1new__FFFFFF",
 	"MoveMemory__Lorg_eclipse_swt_internal_gdip_BitmapData_2J",
 	"MoveMemory__Lorg_eclipse_swt_internal_gdip_ColorPalette_2JI",
 	"PathGradientBrush_1SetCenterColor",

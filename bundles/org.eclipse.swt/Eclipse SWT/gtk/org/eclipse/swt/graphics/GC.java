@@ -2564,12 +2564,12 @@ public void getTransform(Transform transform) {
 		 * So we return whatever the client specified with setTransform.
 		 */
 		if (currentTransform != null) {
-			transform.handle = currentTransform.clone();
+			transform.setElements(currentTransform);
 		} else {
-			transform.handle = new double[] { 1.0, 0.0, 0.0, 1.0, 0.0, 0.0 };
+			transform.identity();
 		}
 	} else {
-		transform.setElements(1, 0, 0, 1, 0, 0);
+		transform.identity();
 	}
 }
 
@@ -3796,9 +3796,10 @@ public void setTransform(Transform transform) {
 	}
 	// Apply user transform on top of the current transformation matrix (and remember it)
 	if (transform != null) {
-		currentTransform = transform.handle.clone();
+		currentTransform = new double[6];
+		transform.getElements(currentTransform);
 		double[] transformMatrix = identity();
-		Cairo.cairo_matrix_multiply(transformMatrix, transform.handle, transformMatrix);
+		Cairo.cairo_matrix_multiply(transformMatrix, currentTransform, transformMatrix);
 		Cairo.cairo_transform(cairo, transformMatrix);
 	}
 	data.state &= ~DRAW_OFFSET;
