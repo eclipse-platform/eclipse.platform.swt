@@ -250,7 +250,7 @@ static class Writer {
 				start = i + 1;
 			}
 		}
-		sb.append(s, start, s.length() - 1);
+		sb.append(s, start, s.length());
 		sb.append('"');
 	}
 
