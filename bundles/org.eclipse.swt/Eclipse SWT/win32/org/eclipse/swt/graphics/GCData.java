@@ -36,7 +36,9 @@ public final class GCData {
 	public int background = -1;
 	public Font font;
 	public Pattern foregroundPattern;
+	public long gdipFgPatternBrushAlpha;
 	public Pattern backgroundPattern;
+	public long gdipBgPatternBrushAlpha;
 	public int lineStyle = SWT.LINE_SOLID;
 	public float lineWidth;
 	public int lineCap = SWT.CAP_FLAT;

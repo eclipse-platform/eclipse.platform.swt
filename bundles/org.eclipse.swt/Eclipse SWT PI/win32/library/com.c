@@ -1085,7 +1085,7 @@ JNIEXPORT jint JNICALL COM_NATIVE(VtblCall__IJ)
 {
 	jint rc = 0;
 	COM_NATIVE_ENTER(env, that, VtblCall__IJ_FUNC);
-	rc = (jint)((jint (STDMETHODCALLTYPE *)(jlong))(*(jlong **)arg1)[arg0])(arg1);
+	rc = (jint)((jint (STDMETHODCALLTYPE *)(jintLong))(*(jlong **)arg1)[arg0])(arg1);
 	COM_NATIVE_EXIT(env, that, VtblCall__IJ_FUNC);
 	return rc;
 }
@@ -1097,7 +1097,7 @@ JNIEXPORT jint JNICALL COM_NATIVE(VtblCall__IJI)
 {
 	jint rc = 0;
 	COM_NATIVE_ENTER(env, that, VtblCall__IJI_FUNC);
-	rc = (jint)((jint (STDMETHODCALLTYPE *)(jlong, jint))(*(jlong **)arg1)[arg0])(arg1, arg2);
+	rc = (jint)((jint (STDMETHODCALLTYPE *)(jintLong, jintLong))(*(jlong **)arg1)[arg0])(arg1, arg2);
 	COM_NATIVE_EXIT(env, that, VtblCall__IJI_FUNC);
 	return rc;
 }
@@ -1113,7 +1113,7 @@ JNIEXPORT jint JNICALL COM_NATIVE(VtblCall__IJIIILorg_eclipse_swt_internal_ole_w
 	COM_NATIVE_ENTER(env, that, VtblCall__IJIIILorg_eclipse_swt_internal_ole_win32_DISPPARAMS_2JLorg_eclipse_swt_internal_ole_win32_EXCEPINFO_2J_FUNC);
 	if (arg5) if ((lparg5 = getDISPPARAMSFields(env, arg5, &_arg5)) == NULL) goto fail;
 	if (arg7) if ((lparg7 = getEXCEPINFOFields(env, arg7, &_arg7)) == NULL) goto fail;
-	rc = (jint)((jint (STDMETHODCALLTYPE *)(jlong, jint, jint, jint, DISPPARAMS *, jlong, EXCEPINFO *, jlong))(*(jlong **)arg1)[arg0])(arg1, arg2, arg3, arg4, lparg5, arg6, lparg7, arg8);
+	rc = (jint)((jint (STDMETHODCALLTYPE *)(jintLong, jintLong, jintLong, jintLong, DISPPARAMS *, jintLong, EXCEPINFO *, jintLong))(*(jlong **)arg1)[arg0])(arg1, arg2, arg3, arg4, lparg5, arg6, lparg7, arg8);
 fail:
 	if (arg7 && lparg7) setEXCEPINFOFields(env, arg7, lparg7);
 	if (arg5 && lparg5) setDISPPARAMSFields(env, arg5, lparg5);
@@ -1130,7 +1130,7 @@ JNIEXPORT jint JNICALL COM_NATIVE(VtblCall__IJIIJLorg_eclipse_swt_internal_win32
 	jint rc = 0;
 	COM_NATIVE_ENTER(env, that, VtblCall__IJIIJLorg_eclipse_swt_internal_win32_SIZE_2_FUNC);
 	if (arg5) if ((lparg5 = getSIZEFields(env, arg5, &_arg5)) == NULL) goto fail;
-	rc = (jint)((jint (STDMETHODCALLTYPE *)(jlong, jint, jint, jlong, SIZE *))(*(jlong **)arg1)[arg0])(arg1, arg2, arg3, arg4, lparg5);
+	rc = (jint)((jint (STDMETHODCALLTYPE *)(jintLong, jintLong, jintLong, jintLong, SIZE *))(*(jlong **)arg1)[arg0])(arg1, arg2, arg3, arg4, lparg5);
 fail:
 	if (arg5 && lparg5) setSIZEFields(env, arg5, lparg5);
 	COM_NATIVE_EXIT(env, that, VtblCall__IJIIJLorg_eclipse_swt_internal_win32_SIZE_2_FUNC);
@@ -1144,7 +1144,7 @@ JNIEXPORT jint JNICALL COM_NATIVE(VtblCall__IJIJ)
 {
 	jint rc = 0;
 	COM_NATIVE_ENTER(env, that, VtblCall__IJIJ_FUNC);
-	rc = (jint)((jint (STDMETHODCALLTYPE *)(jlong, jint, jlong))(*(jlong **)arg1)[arg0])(arg1, arg2, arg3);
+	rc = (jint)((jint (STDMETHODCALLTYPE *)(jintLong, jintLong, jintLong))(*(jlong **)arg1)[arg0])(arg1, arg2, arg3);
 	COM_NATIVE_EXIT(env, that, VtblCall__IJIJ_FUNC);
 	return rc;
 }
@@ -1158,7 +1158,7 @@ JNIEXPORT jint JNICALL COM_NATIVE(VtblCall__IJIJI_3J)
 	jint rc = 0;
 	COM_NATIVE_ENTER(env, that, VtblCall__IJIJI_3J_FUNC);
 	if (arg5) if ((lparg5 = (*env)->GetLongArrayElements(env, arg5, NULL)) == NULL) goto fail;
-	rc = (jint)((jint (STDMETHODCALLTYPE *)(jlong, jint, jlong, jint, jlong *))(*(jlong **)arg1)[arg0])(arg1, arg2, arg3, arg4, lparg5);
+	rc = (jint)((jint (STDMETHODCALLTYPE *)(jintLong, jintLong, jintLong, jintLong, jintLong *))(*(jlong **)arg1)[arg0])(arg1, arg2, arg3, arg4, lparg5);
 fail:
 	if (arg5 && lparg5) (*env)->ReleaseLongArrayElements(env, arg5, lparg5, 0);
 	COM_NATIVE_EXIT(env, that, VtblCall__IJIJI_3J_FUNC);
@@ -1172,7 +1172,7 @@ JNIEXPORT jint JNICALL COM_NATIVE(VtblCall__IJIJJ)
 {
 	jint rc = 0;
 	COM_NATIVE_ENTER(env, that, VtblCall__IJIJJ_FUNC);
-	rc = (jint)((jint (STDMETHODCALLTYPE *)(jlong, jint, jlong, jlong))(*(jlong **)arg1)[arg0])(arg1, arg2, arg3, arg4);
+	rc = (jint)((jint (STDMETHODCALLTYPE *)(jintLong, jintLong, jintLong, jintLong))(*(jlong **)arg1)[arg0])(arg1, arg2, arg3, arg4);
 	COM_NATIVE_EXIT(env, that, VtblCall__IJIJJ_FUNC);
 	return rc;
 }
@@ -1186,7 +1186,7 @@ JNIEXPORT jint JNICALL COM_NATIVE(VtblCall__IJIJ_3I)
 	jint rc = 0;
 	COM_NATIVE_ENTER(env, that, VtblCall__IJIJ_3I_FUNC);
 	if (arg4) if ((lparg4 = (*env)->GetIntArrayElements(env, arg4, NULL)) == NULL) goto fail;
-	rc = (jint)((jint (STDMETHODCALLTYPE *)(jlong, jint, jlong, jint *))(*(jlong **)arg1)[arg0])(arg1, arg2, arg3, lparg4);
+	rc = (jint)((jint (STDMETHODCALLTYPE *)(jintLong, jintLong, jintLong, jintLong *))(*(jlong **)arg1)[arg0])(arg1, arg2, arg3, lparg4);
 fail:
 	if (arg4 && lparg4) (*env)->ReleaseIntArrayElements(env, arg4, lparg4, 0);
 	COM_NATIVE_EXIT(env, that, VtblCall__IJIJ_3I_FUNC);
@@ -1202,7 +1202,7 @@ JNIEXPORT jint JNICALL COM_NATIVE(VtblCall__IJILorg_eclipse_swt_internal_ole_win
 	jint rc = 0;
 	COM_NATIVE_ENTER(env, that, VtblCall__IJILorg_eclipse_swt_internal_ole_win32_GUID_2_FUNC);
 	if (arg3) if ((lparg3 = getGUIDFields(env, arg3, &_arg3)) == NULL) goto fail;
-	rc = (jint)((jint (STDMETHODCALLTYPE *)(jlong, jint, GUID *))(*(jlong **)arg1)[arg0])(arg1, arg2, lparg3);
+	rc = (jint)((jint (STDMETHODCALLTYPE *)(jintLong, jintLong, GUID *))(*(jlong **)arg1)[arg0])(arg1, arg2, lparg3);
 fail:
 	if (arg3 && lparg3) setGUIDFields(env, arg3, lparg3);
 	COM_NATIVE_EXIT(env, that, VtblCall__IJILorg_eclipse_swt_internal_ole_win32_GUID_2_FUNC);
@@ -1224,7 +1224,7 @@ JNIEXPORT jint JNICALL COM_NATIVE(VtblCall__IJILorg_eclipse_swt_internal_ole_win
 	if (arg6) if ((lparg6 = getDISPPARAMSFields(env, arg6, &_arg6)) == NULL) goto fail;
 	if (arg8) if ((lparg8 = getEXCEPINFOFields(env, arg8, &_arg8)) == NULL) goto fail;
 	if (arg9) if ((lparg9 = (*env)->GetIntArrayElements(env, arg9, NULL)) == NULL) goto fail;
-	rc = (jint)((jint (STDMETHODCALLTYPE *)(jlong, jint, GUID *, jint, jint, DISPPARAMS *, jlong, EXCEPINFO *, jint *))(*(jlong **)arg1)[arg0])(arg1, arg2, lparg3, arg4, arg5, lparg6, arg7, lparg8, lparg9);
+	rc = (jint)((jint (STDMETHODCALLTYPE *)(jintLong, jintLong, GUID *, jintLong, jintLong, DISPPARAMS *, jintLong, EXCEPINFO *, jintLong *))(*(jlong **)arg1)[arg0])(arg1, arg2, lparg3, arg4, arg5, lparg6, arg7, lparg8, lparg9);
 fail:
 	if (arg9 && lparg9) (*env)->ReleaseIntArrayElements(env, arg9, lparg9, 0);
 	if (arg8 && lparg8) setEXCEPINFOFields(env, arg8, lparg8);
@@ -1243,7 +1243,7 @@ JNIEXPORT jint JNICALL COM_NATIVE(VtblCall__IJILorg_eclipse_swt_internal_ole_win
 	jint rc = 0;
 	COM_NATIVE_ENTER(env, that, VtblCall__IJILorg_eclipse_swt_internal_ole_win32_GUID_2JJ_FUNC);
 	if (arg3) if ((lparg3 = getGUIDFields(env, arg3, &_arg3)) == NULL) goto fail;
-	rc = (jint)((jint (STDMETHODCALLTYPE *)(jlong, jint, GUID *, jlong, jlong))(*(jlong **)arg1)[arg0])(arg1, arg2, lparg3, arg4, arg5);
+	rc = (jint)((jint (STDMETHODCALLTYPE *)(jintLong, jintLong, GUID *, jintLong, jintLong))(*(jlong **)arg1)[arg0])(arg1, arg2, lparg3, arg4, arg5);
 fail:
 	if (arg3 && lparg3) setGUIDFields(env, arg3, lparg3);
 	COM_NATIVE_EXIT(env, that, VtblCall__IJILorg_eclipse_swt_internal_ole_win32_GUID_2JJ_FUNC);
@@ -1263,7 +1263,7 @@ JNIEXPORT jint JNICALL COM_NATIVE(VtblCall__IJILorg_eclipse_swt_internal_ole_win
 	if (arg3) if ((lparg3 = getGUIDFields(env, arg3, &_arg3)) == NULL) goto fail;
 	if (arg4) if ((lparg4 = getGUIDFields(env, arg4, &_arg4)) == NULL) goto fail;
 	if (arg5) if ((lparg5 = getGUIDFields(env, arg5, &_arg5)) == NULL) goto fail;
-	rc = (jint)((jint (STDMETHODCALLTYPE *)(jlong, jint, GUID *, GUID *, GUID *))(*(jlong **)arg1)[arg0])(arg1, arg2, lparg3, lparg4, lparg5);
+	rc = (jint)((jint (STDMETHODCALLTYPE *)(jintLong, jintLong, GUID *, GUID *, GUID *))(*(jlong **)arg1)[arg0])(arg1, arg2, lparg3, lparg4, lparg5);
 fail:
 	if (arg5 && lparg5) setGUIDFields(env, arg5, lparg5);
 	if (arg4 && lparg4) setGUIDFields(env, arg4, lparg4);
@@ -1283,7 +1283,7 @@ JNIEXPORT jint JNICALL COM_NATIVE(VtblCall__IJILorg_eclipse_swt_internal_win32_M
 	COM_NATIVE_ENTER(env, that, VtblCall__IJILorg_eclipse_swt_internal_win32_MSG_2JIJLorg_eclipse_swt_internal_win32_RECT_2_FUNC);
 	if (arg3) if ((lparg3 = getMSGFields(env, arg3, &_arg3)) == NULL) goto fail;
 	if (arg7) if ((lparg7 = getRECTFields(env, arg7, &_arg7)) == NULL) goto fail;
-	rc = (jint)((jint (STDMETHODCALLTYPE *)(jlong, jint, MSG *, jlong, jint, jlong, RECT *))(*(jlong **)arg1)[arg0])(arg1, arg2, lparg3, arg4, arg5, arg6, lparg7);
+	rc = (jint)((jint (STDMETHODCALLTYPE *)(jintLong, jintLong, MSG *, jintLong, jintLong, jintLong, RECT *))(*(jlong **)arg1)[arg0])(arg1, arg2, lparg3, arg4, arg5, arg6, lparg7);
 fail:
 	if (arg7 && lparg7) setRECTFields(env, arg7, lparg7);
 	if (arg3 && lparg3) setMSGFields(env, arg3, lparg3);
@@ -1300,7 +1300,7 @@ JNIEXPORT jint JNICALL COM_NATIVE(VtblCall__IJILorg_eclipse_swt_internal_win32_S
 	jint rc = 0;
 	COM_NATIVE_ENTER(env, that, VtblCall__IJILorg_eclipse_swt_internal_win32_SIZE_2_FUNC);
 	if (arg3) if ((lparg3 = getSIZEFields(env, arg3, &_arg3)) == NULL) goto fail;
-	rc = (jint)((jint (STDMETHODCALLTYPE *)(jlong, jint, SIZE *))(*(jlong **)arg1)[arg0])(arg1, arg2, lparg3);
+	rc = (jint)((jint (STDMETHODCALLTYPE *)(jintLong, jintLong, SIZE *))(*(jlong **)arg1)[arg0])(arg1, arg2, lparg3);
 fail:
 	if (arg3 && lparg3) setSIZEFields(env, arg3, lparg3);
 	COM_NATIVE_EXIT(env, that, VtblCall__IJILorg_eclipse_swt_internal_win32_SIZE_2_FUNC);
@@ -1316,7 +1316,7 @@ JNIEXPORT jint JNICALL COM_NATIVE(VtblCall__IJI_3I)
 	jint rc = 0;
 	COM_NATIVE_ENTER(env, that, VtblCall__IJI_3I_FUNC);
 	if (arg3) if ((lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL)) == NULL) goto fail;
-	rc = (jint)((jint (STDMETHODCALLTYPE *)(jlong, jint, jint *))(*(jlong **)arg1)[arg0])(arg1, arg2, lparg3);
+	rc = (jint)((jint (STDMETHODCALLTYPE *)(jintLong, jintLong, jintLong *))(*(jlong **)arg1)[arg0])(arg1, arg2, lparg3);
 fail:
 	if (arg3 && lparg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
 	COM_NATIVE_EXIT(env, that, VtblCall__IJI_3I_FUNC);
@@ -1332,7 +1332,7 @@ JNIEXPORT jint JNICALL COM_NATIVE(VtblCall__IJI_3J)
 	jint rc = 0;
 	COM_NATIVE_ENTER(env, that, VtblCall__IJI_3J_FUNC);
 	if (arg3) if ((lparg3 = (*env)->GetLongArrayElements(env, arg3, NULL)) == NULL) goto fail;
-	rc = (jint)((jint (STDMETHODCALLTYPE *)(jlong, jint, jlong *))(*(jlong **)arg1)[arg0])(arg1, arg2, lparg3);
+	rc = (jint)((jint (STDMETHODCALLTYPE *)(jintLong, jintLong, jintLong *))(*(jlong **)arg1)[arg0])(arg1, arg2, lparg3);
 fail:
 	if (arg3 && lparg3) (*env)->ReleaseLongArrayElements(env, arg3, lparg3, 0);
 	COM_NATIVE_EXIT(env, that, VtblCall__IJI_3J_FUNC);
@@ -1350,7 +1350,7 @@ JNIEXPORT jint JNICALL COM_NATIVE(VtblCall__IJI_3JI_3I)
 	COM_NATIVE_ENTER(env, that, VtblCall__IJI_3JI_3I_FUNC);
 	if (arg3) if ((lparg3 = (*env)->GetLongArrayElements(env, arg3, NULL)) == NULL) goto fail;
 	if (arg5) if ((lparg5 = (*env)->GetIntArrayElements(env, arg5, NULL)) == NULL) goto fail;
-	rc = (jint)((jint (STDMETHODCALLTYPE *)(jlong, jint, jlong *, jint, jint *))(*(jlong **)arg1)[arg0])(arg1, arg2, lparg3, arg4, lparg5);
+	rc = (jint)((jint (STDMETHODCALLTYPE *)(jintLong, jintLong, jintLong *, jintLong, jintLong *))(*(jlong **)arg1)[arg0])(arg1, arg2, lparg3, arg4, lparg5);
 fail:
 	if (arg5 && lparg5) (*env)->ReleaseIntArrayElements(env, arg5, lparg5, 0);
 	if (arg3 && lparg3) (*env)->ReleaseLongArrayElements(env, arg3, lparg3, 0);
@@ -1369,7 +1369,7 @@ JNIEXPORT jint JNICALL COM_NATIVE(VtblCall__IJI_3J_3I)
 	COM_NATIVE_ENTER(env, that, VtblCall__IJI_3J_3I_FUNC);
 	if (arg3) if ((lparg3 = (*env)->GetLongArrayElements(env, arg3, NULL)) == NULL) goto fail;
 	if (arg4) if ((lparg4 = (*env)->GetIntArrayElements(env, arg4, NULL)) == NULL) goto fail;
-	rc = (jint)((jint (STDMETHODCALLTYPE *)(jlong, jint, jlong *, jint *))(*(jlong **)arg1)[arg0])(arg1, arg2, lparg3, lparg4);
+	rc = (jint)((jint (STDMETHODCALLTYPE *)(jintLong, jintLong, jintLong *, jintLong *))(*(jlong **)arg1)[arg0])(arg1, arg2, lparg3, lparg4);
 fail:
 	if (arg4 && lparg4) (*env)->ReleaseIntArrayElements(env, arg4, lparg4, 0);
 	if (arg3 && lparg3) (*env)->ReleaseLongArrayElements(env, arg3, lparg3, 0);
@@ -1392,7 +1392,7 @@ JNIEXPORT jint JNICALL COM_NATIVE(VtblCall__IJI_3J_3J_3I_3J)
 	if (arg4) if ((lparg4 = (*env)->GetLongArrayElements(env, arg4, NULL)) == NULL) goto fail;
 	if (arg5) if ((lparg5 = (*env)->GetIntArrayElements(env, arg5, NULL)) == NULL) goto fail;
 	if (arg6) if ((lparg6 = (*env)->GetLongArrayElements(env, arg6, NULL)) == NULL) goto fail;
-	rc = (jint)((jint (STDMETHODCALLTYPE *)(jlong, jint, jlong *, jlong *, jint *, jlong *))(*(jlong **)arg1)[arg0])(arg1, arg2, lparg3, lparg4, lparg5, lparg6);
+	rc = (jint)((jint (STDMETHODCALLTYPE *)(jintLong, jintLong, jintLong *, jintLong *, jintLong *, jintLong *))(*(jlong **)arg1)[arg0])(arg1, arg2, lparg3, lparg4, lparg5, lparg6);
 fail:
 	if (arg6 && lparg6) (*env)->ReleaseLongArrayElements(env, arg6, lparg6, 0);
 	if (arg5 && lparg5) (*env)->ReleaseIntArrayElements(env, arg5, lparg5, 0);
@@ -1409,7 +1409,7 @@ JNIEXPORT jint JNICALL COM_NATIVE(VtblCall__IJJ)
 {
 	jint rc = 0;
 	COM_NATIVE_ENTER(env, that, VtblCall__IJJ_FUNC);
-	rc = (jint)((jint (STDMETHODCALLTYPE *)(jlong, jlong))(*(jlong **)arg1)[arg0])(arg1, arg2);
+	rc = (jint)((jint (STDMETHODCALLTYPE *)(jintLong, jintLong))(*(jlong **)arg1)[arg0])(arg1, arg2);
 	COM_NATIVE_EXIT(env, that, VtblCall__IJJ_FUNC);
 	return rc;
 }
@@ -1421,7 +1421,7 @@ JNIEXPORT jint JNICALL COM_NATIVE(VtblCall__IJJI)
 {
 	jint rc = 0;
 	COM_NATIVE_ENTER(env, that, VtblCall__IJJI_FUNC);
-	rc = (jint)((jint (STDMETHODCALLTYPE *)(jlong, jlong, jint))(*(jlong **)arg1)[arg0])(arg1, arg2, arg3);
+	rc = (jint)((jint (STDMETHODCALLTYPE *)(jintLong, jintLong, jintLong))(*(jlong **)arg1)[arg0])(arg1, arg2, arg3);
 	COM_NATIVE_EXIT(env, that, VtblCall__IJJI_FUNC);
 	return rc;
 }
@@ -1435,7 +1435,7 @@ JNIEXPORT jint JNICALL COM_NATIVE(VtblCall__IJJII_3J)
 	jint rc = 0;
 	COM_NATIVE_ENTER(env, that, VtblCall__IJJII_3J_FUNC);
 	if (arg5) if ((lparg5 = (*env)->GetLongArrayElements(env, arg5, NULL)) == NULL) goto fail;
-	rc = (jint)((jint (STDMETHODCALLTYPE *)(jlong, jlong, jint, jint, jlong *))(*(jlong **)arg1)[arg0])(arg1, arg2, arg3, arg4, lparg5);
+	rc = (jint)((jint (STDMETHODCALLTYPE *)(jintLong, jintLong, jintLong, jintLong, jintLong *))(*(jlong **)arg1)[arg0])(arg1, arg2, arg3, arg4, lparg5);
 fail:
 	if (arg5 && lparg5) (*env)->ReleaseLongArrayElements(env, arg5, lparg5, 0);
 	COM_NATIVE_EXIT(env, that, VtblCall__IJJII_3J_FUNC);
@@ -1451,7 +1451,7 @@ JNIEXPORT jint JNICALL COM_NATIVE(VtblCall__IJJI_3I)
 	jint rc = 0;
 	COM_NATIVE_ENTER(env, that, VtblCall__IJJI_3I_FUNC);
 	if (arg4) if ((lparg4 = (*env)->GetIntArrayElements(env, arg4, NULL)) == NULL) goto fail;
-	rc = (jint)((jint (STDMETHODCALLTYPE *)(jlong, jlong, jint, jint *))(*(jlong **)arg1)[arg0])(arg1, arg2, arg3, lparg4);
+	rc = (jint)((jint (STDMETHODCALLTYPE *)(jintLong, jintLong, jintLong, jintLong *))(*(jlong **)arg1)[arg0])(arg1, arg2, arg3, lparg4);
 fail:
 	if (arg4 && lparg4) (*env)->ReleaseIntArrayElements(env, arg4, lparg4, 0);
 	COM_NATIVE_EXIT(env, that, VtblCall__IJJI_3I_FUNC);
@@ -1467,7 +1467,7 @@ JNIEXPORT jint JNICALL COM_NATIVE(VtblCall__IJJI_3J)
 	jint rc = 0;
 	COM_NATIVE_ENTER(env, that, VtblCall__IJJI_3J_FUNC);
 	if (arg4) if ((lparg4 = (*env)->GetLongArrayElements(env, arg4, NULL)) == NULL) goto fail;
-	rc = (jint)((jint (STDMETHODCALLTYPE *)(jlong, jlong, jint, jlong *))(*(jlong **)arg1)[arg0])(arg1, arg2, arg3, lparg4);
+	rc = (jint)((jint (STDMETHODCALLTYPE *)(jintLong, jintLong, jintLong, jintLong *))(*(jlong **)arg1)[arg0])(arg1, arg2, arg3, lparg4);
 fail:
 	if (arg4 && lparg4) (*env)->ReleaseLongArrayElements(env, arg4, lparg4, 0);
 	COM_NATIVE_EXIT(env, that, VtblCall__IJJI_3J_FUNC);
@@ -1481,7 +1481,7 @@ JNIEXPORT jint JNICALL COM_NATIVE(VtblCall__IJJJ)
 {
 	jint rc = 0;
 	COM_NATIVE_ENTER(env, that, VtblCall__IJJJ_FUNC);
-	rc = (jint)((jint (STDMETHODCALLTYPE *)(jlong, jlong, jlong))(*(jlong **)arg1)[arg0])(arg1, arg2, arg3);
+	rc = (jint)((jint (STDMETHODCALLTYPE *)(jintLong, jintLong, jintLong))(*(jlong **)arg1)[arg0])(arg1, arg2, arg3);
 	COM_NATIVE_EXIT(env, that, VtblCall__IJJJ_FUNC);
 	return rc;
 }
@@ -1495,7 +1495,7 @@ JNIEXPORT jint JNICALL COM_NATIVE(VtblCall__IJJJI_3J)
 	jint rc = 0;
 	COM_NATIVE_ENTER(env, that, VtblCall__IJJJI_3J_FUNC);
 	if (arg5) if ((lparg5 = (*env)->GetLongArrayElements(env, arg5, NULL)) == NULL) goto fail;
-	rc = (jint)((jint (STDMETHODCALLTYPE *)(jlong, jlong, jlong, jint, jlong *))(*(jlong **)arg1)[arg0])(arg1, arg2, arg3, arg4, lparg5);
+	rc = (jint)((jint (STDMETHODCALLTYPE *)(jintLong, jintLong, jintLong, jintLong, jintLong *))(*(jlong **)arg1)[arg0])(arg1, arg2, arg3, arg4, lparg5);
 fail:
 	if (arg5 && lparg5) (*env)->ReleaseLongArrayElements(env, arg5, lparg5, 0);
 	COM_NATIVE_EXIT(env, that, VtblCall__IJJJI_3J_FUNC);
@@ -1509,7 +1509,7 @@ JNIEXPORT jint JNICALL COM_NATIVE(VtblCall__IJJJJ)
 {
 	jint rc = 0;
 	COM_NATIVE_ENTER(env, that, VtblCall__IJJJJ_FUNC);
-	rc = (jint)((jint (STDMETHODCALLTYPE *)(jlong, jlong, jlong, jlong))(*(jlong **)arg1)[arg0])(arg1, arg2, arg3, arg4);
+	rc = (jint)((jint (STDMETHODCALLTYPE *)(jintLong, jintLong, jintLong, jintLong))(*(jlong **)arg1)[arg0])(arg1, arg2, arg3, arg4);
 	COM_NATIVE_EXIT(env, that, VtblCall__IJJJJ_FUNC);
 	return rc;
 }
@@ -1521,7 +1521,7 @@ JNIEXPORT jint JNICALL COM_NATIVE(VtblCall__IJJJJJJ)
 {
 	jint rc = 0;
 	COM_NATIVE_ENTER(env, that, VtblCall__IJJJJJJ_FUNC);
-	rc = (jint)((jint (STDMETHODCALLTYPE *)(jlong, jlong, jlong, jlong, jlong, jlong))(*(jlong **)arg1)[arg0])(arg1, arg2, arg3, arg4, arg5, arg6);
+	rc = (jint)((jint (STDMETHODCALLTYPE *)(jintLong, jintLong, jintLong, jintLong, jintLong, jintLong))(*(jlong **)arg1)[arg0])(arg1, arg2, arg3, arg4, arg5, arg6);
 	COM_NATIVE_EXIT(env, that, VtblCall__IJJJJJJ_FUNC);
 	return rc;
 }
@@ -1537,7 +1537,7 @@ JNIEXPORT jint JNICALL COM_NATIVE(VtblCall__IJJJLorg_eclipse_swt_internal_ole_wi
 	COM_NATIVE_ENTER(env, that, VtblCall__IJJJLorg_eclipse_swt_internal_ole_win32_GUID_2J_3J_FUNC);
 	if (arg4) if ((lparg4 = getGUIDFields(env, arg4, &_arg4)) == NULL) goto fail;
 	if (arg6) if ((lparg6 = (*env)->GetLongArrayElements(env, arg6, NULL)) == NULL) goto fail;
-	rc = (jint)((jint (STDMETHODCALLTYPE *)(jlong, jlong, jlong, GUID *, jlong, jlong *))(*(jlong **)arg1)[arg0])(arg1, arg2, arg3, lparg4, arg5, lparg6);
+	rc = (jint)((jint (STDMETHODCALLTYPE *)(jintLong, jintLong, jintLong, GUID *, jintLong, jintLong *))(*(jlong **)arg1)[arg0])(arg1, arg2, arg3, lparg4, arg5, lparg6);
 fail:
 	if (arg6 && lparg6) (*env)->ReleaseLongArrayElements(env, arg6, lparg6, 0);
 	if (arg4 && lparg4) setGUIDFields(env, arg4, lparg4);
@@ -1554,7 +1554,7 @@ JNIEXPORT jint JNICALL COM_NATIVE(VtblCall__IJJJLorg_eclipse_swt_internal_win32_
 	jint rc = 0;
 	COM_NATIVE_ENTER(env, that, VtblCall__IJJJLorg_eclipse_swt_internal_win32_POINT_2I_FUNC);
 	if (arg4) if ((lparg4 = getPOINTFields(env, arg4, &_arg4)) == NULL) goto fail;
-	rc = (jint)((jint (STDMETHODCALLTYPE *)(jlong, jlong, jlong, POINT *, jint))(*(jlong **)arg1)[arg0])(arg1, arg2, arg3, lparg4, arg5);
+	rc = (jint)((jint (STDMETHODCALLTYPE *)(jintLong, jintLong, jintLong, POINT *, jintLong))(*(jlong **)arg1)[arg0])(arg1, arg2, arg3, lparg4, arg5);
 fail:
 	if (arg4 && lparg4) setPOINTFields(env, arg4, lparg4);
 	COM_NATIVE_EXIT(env, that, VtblCall__IJJJLorg_eclipse_swt_internal_win32_POINT_2I_FUNC);
@@ -1570,7 +1570,7 @@ JNIEXPORT jint JNICALL COM_NATIVE(VtblCall__IJJJ_3J)
 	jint rc = 0;
 	COM_NATIVE_ENTER(env, that, VtblCall__IJJJ_3J_FUNC);
 	if (arg4) if ((lparg4 = (*env)->GetLongArrayElements(env, arg4, NULL)) == NULL) goto fail;
-	rc = (jint)((jint (STDMETHODCALLTYPE *)(jlong, jlong, jlong, jlong *))(*(jlong **)arg1)[arg0])(arg1, arg2, arg3, lparg4);
+	rc = (jint)((jint (STDMETHODCALLTYPE *)(jintLong, jintLong, jintLong, jintLong *))(*(jlong **)arg1)[arg0])(arg1, arg2, arg3, lparg4);
 fail:
 	if (arg4 && lparg4) (*env)->ReleaseLongArrayElements(env, arg4, lparg4, 0);
 	COM_NATIVE_EXIT(env, that, VtblCall__IJJJ_3J_FUNC);
@@ -1586,7 +1586,7 @@ JNIEXPORT jint JNICALL COM_NATIVE(VtblCall__IJJLorg_eclipse_swt_internal_win32_P
 	jint rc = 0;
 	COM_NATIVE_ENTER(env, that, VtblCall__IJJLorg_eclipse_swt_internal_win32_POINT_2J_FUNC);
 	if (arg3) if ((lparg3 = getPOINTFields(env, arg3, &_arg3)) == NULL) goto fail;
-	rc = (jint)((jint (STDMETHODCALLTYPE *)(jlong, jlong, POINT *, jlong))(*(jlong **)arg1)[arg0])(arg1, arg2, lparg3, arg4);
+	rc = (jint)((jint (STDMETHODCALLTYPE *)(jintLong, jintLong, POINT *, jintLong))(*(jlong **)arg1)[arg0])(arg1, arg2, lparg3, arg4);
 fail:
 	if (arg3 && lparg3) setPOINTFields(env, arg3, lparg3);
 	COM_NATIVE_EXIT(env, that, VtblCall__IJJLorg_eclipse_swt_internal_win32_POINT_2J_FUNC);
@@ -1602,7 +1602,7 @@ JNIEXPORT jint JNICALL COM_NATIVE(VtblCall__IJJ_3I)
 	jint rc = 0;
 	COM_NATIVE_ENTER(env, that, VtblCall__IJJ_3I_FUNC);
 	if (arg3) if ((lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL)) == NULL) goto fail;
-	rc = (jint)((jint (STDMETHODCALLTYPE *)(jlong, jlong, jint *))(*(jlong **)arg1)[arg0])(arg1, arg2, lparg3);
+	rc = (jint)((jint (STDMETHODCALLTYPE *)(jintLong, jintLong, jintLong *))(*(jlong **)arg1)[arg0])(arg1, arg2, lparg3);
 fail:
 	if (arg3 && lparg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
 	COM_NATIVE_EXIT(env, that, VtblCall__IJJ_3I_FUNC);
@@ -1618,7 +1618,7 @@ JNIEXPORT jint JNICALL COM_NATIVE(VtblCall__IJJ_3J)
 	jint rc = 0;
 	COM_NATIVE_ENTER(env, that, VtblCall__IJJ_3J_FUNC);
 	if (arg3) if ((lparg3 = (*env)->GetLongArrayElements(env, arg3, NULL)) == NULL) goto fail;
-	rc = (jint)((jint (STDMETHODCALLTYPE *)(jlong, jlong, jlong *))(*(jlong **)arg1)[arg0])(arg1, arg2, lparg3);
+	rc = (jint)((jint (STDMETHODCALLTYPE *)(jintLong, jintLong, jintLong *))(*(jlong **)arg1)[arg0])(arg1, arg2, lparg3);
 fail:
 	if (arg3 && lparg3) (*env)->ReleaseLongArrayElements(env, arg3, lparg3, 0);
 	COM_NATIVE_EXIT(env, that, VtblCall__IJJ_3J_FUNC);
@@ -1634,7 +1634,7 @@ JNIEXPORT jint JNICALL COM_NATIVE(VtblCall__IJLorg_eclipse_swt_internal_ole_win3
 	jint rc = 0;
 	COM_NATIVE_ENTER(env, that, VtblCall__IJLorg_eclipse_swt_internal_ole_win32_CAUUID_2_FUNC);
 	if (arg2) if ((lparg2 = getCAUUIDFields(env, arg2, &_arg2)) == NULL) goto fail;
-	rc = (jint)((jint (STDMETHODCALLTYPE *)(jlong, CAUUID *))(*(jlong **)arg1)[arg0])(arg1, lparg2);
+	rc = (jint)((jint (STDMETHODCALLTYPE *)(jintLong, CAUUID *))(*(jlong **)arg1)[arg0])(arg1, lparg2);
 fail:
 	if (arg2 && lparg2) setCAUUIDFields(env, arg2, lparg2);
 	COM_NATIVE_EXIT(env, that, VtblCall__IJLorg_eclipse_swt_internal_ole_win32_CAUUID_2_FUNC);
@@ -1650,7 +1650,7 @@ JNIEXPORT jint JNICALL COM_NATIVE(VtblCall__IJLorg_eclipse_swt_internal_ole_win3
 	jint rc = 0;
 	COM_NATIVE_ENTER(env, that, VtblCall__IJLorg_eclipse_swt_internal_ole_win32_CONTROLINFO_2_FUNC);
 	if (arg2) if ((lparg2 = getCONTROLINFOFields(env, arg2, &_arg2)) == NULL) goto fail;
-	rc = (jint)((jint (STDMETHODCALLTYPE *)(jlong, CONTROLINFO *))(*(jlong **)arg1)[arg0])(arg1, lparg2);
+	rc = (jint)((jint (STDMETHODCALLTYPE *)(jintLong, CONTROLINFO *))(*(jlong **)arg1)[arg0])(arg1, lparg2);
 fail:
 	if (arg2 && lparg2) setCONTROLINFOFields(env, arg2, lparg2);
 	COM_NATIVE_EXIT(env, that, VtblCall__IJLorg_eclipse_swt_internal_ole_win32_CONTROLINFO_2_FUNC);
@@ -1666,7 +1666,7 @@ JNIEXPORT jint JNICALL COM_NATIVE(VtblCall__IJLorg_eclipse_swt_internal_ole_win3
 	jint rc = 0;
 	COM_NATIVE_ENTER(env, that, VtblCall__IJLorg_eclipse_swt_internal_ole_win32_FORMATETC_2_FUNC);
 	if (arg2) if ((lparg2 = getFORMATETCFields(env, arg2, &_arg2)) == NULL) goto fail;
-	rc = (jint)((jint (STDMETHODCALLTYPE *)(jlong, FORMATETC *))(*(jlong **)arg1)[arg0])(arg1, lparg2);
+	rc = (jint)((jint (STDMETHODCALLTYPE *)(jintLong, FORMATETC *))(*(jlong **)arg1)[arg0])(arg1, lparg2);
 fail:
 	if (arg2 && lparg2) setFORMATETCFields(env, arg2, lparg2);
 	COM_NATIVE_EXIT(env, that, VtblCall__IJLorg_eclipse_swt_internal_ole_win32_FORMATETC_2_FUNC);
@@ -1684,7 +1684,7 @@ JNIEXPORT jint JNICALL COM_NATIVE(VtblCall__IJLorg_eclipse_swt_internal_ole_win3
 	COM_NATIVE_ENTER(env, that, VtblCall__IJLorg_eclipse_swt_internal_ole_win32_FORMATETC_2Lorg_eclipse_swt_internal_ole_win32_STGMEDIUM_2_FUNC);
 	if (arg2) if ((lparg2 = getFORMATETCFields(env, arg2, &_arg2)) == NULL) goto fail;
 	if (arg3) if ((lparg3 = getSTGMEDIUMFields(env, arg3, &_arg3)) == NULL) goto fail;
-	rc = (jint)((jint (STDMETHODCALLTYPE *)(jlong, FORMATETC *, STGMEDIUM *))(*(jlong **)arg1)[arg0])(arg1, lparg2, lparg3);
+	rc = (jint)((jint (STDMETHODCALLTYPE *)(jintLong, FORMATETC *, STGMEDIUM *))(*(jlong **)arg1)[arg0])(arg1, lparg2, lparg3);
 fail:
 	if (arg3 && lparg3) setSTGMEDIUMFields(env, arg3, lparg3);
 	if (arg2 && lparg2) setFORMATETCFields(env, arg2, lparg2);
@@ -1701,7 +1701,7 @@ JNIEXPORT jint JNICALL COM_NATIVE(VtblCall__IJLorg_eclipse_swt_internal_ole_win3
 	jint rc = 0;
 	COM_NATIVE_ENTER(env, that, VtblCall__IJLorg_eclipse_swt_internal_ole_win32_GUID_2_FUNC);
 	if (arg2) if ((lparg2 = getGUIDFields(env, arg2, &_arg2)) == NULL) goto fail;
-	rc = (jint)((jint (STDMETHODCALLTYPE *)(jlong, GUID *))(*(jlong **)arg1)[arg0])(arg1, lparg2);
+	rc = (jint)((jint (STDMETHODCALLTYPE *)(jintLong, GUID *))(*(jlong **)arg1)[arg0])(arg1, lparg2);
 fail:
 	if (arg2 && lparg2) setGUIDFields(env, arg2, lparg2);
 	COM_NATIVE_EXIT(env, that, VtblCall__IJLorg_eclipse_swt_internal_ole_win32_GUID_2_FUNC);
@@ -1717,7 +1717,7 @@ JNIEXPORT jint JNICALL COM_NATIVE(VtblCall__IJLorg_eclipse_swt_internal_ole_win3
 	jint rc = 0;
 	COM_NATIVE_ENTER(env, that, VtblCall__IJLorg_eclipse_swt_internal_ole_win32_GUID_2IIJJ_FUNC);
 	if (arg2) if ((lparg2 = getGUIDFields(env, arg2, &_arg2)) == NULL) goto fail;
-	rc = (jint)((jint (STDMETHODCALLTYPE *)(jlong, GUID *, jint, jint, jlong, jlong))(*(jlong **)arg1)[arg0])(arg1, lparg2, arg3, arg4, arg5, arg6);
+	rc = (jint)((jint (STDMETHODCALLTYPE *)(jintLong, GUID *, jintLong, jintLong, jintLong, jintLong))(*(jlong **)arg1)[arg0])(arg1, lparg2, arg3, arg4, arg5, arg6);
 fail:
 	if (arg2 && lparg2) setGUIDFields(env, arg2, lparg2);
 	COM_NATIVE_EXIT(env, that, VtblCall__IJLorg_eclipse_swt_internal_ole_win32_GUID_2IIJJ_FUNC);
@@ -1735,7 +1735,7 @@ JNIEXPORT jint JNICALL COM_NATIVE(VtblCall__IJLorg_eclipse_swt_internal_ole_win3
 	COM_NATIVE_ENTER(env, that, VtblCall__IJLorg_eclipse_swt_internal_ole_win32_GUID_2ILorg_eclipse_swt_internal_ole_win32_OLECMD_2J_FUNC);
 	if (arg2) if ((lparg2 = getGUIDFields(env, arg2, &_arg2)) == NULL) goto fail;
 	if (arg4) if ((lparg4 = getOLECMDFields(env, arg4, &_arg4)) == NULL) goto fail;
-	rc = (jint)((jint (STDMETHODCALLTYPE *)(jlong, GUID *, jint, OLECMD *, jlong))(*(jlong **)arg1)[arg0])(arg1, lparg2, arg3, lparg4, arg5);
+	rc = (jint)((jint (STDMETHODCALLTYPE *)(jintLong, GUID *, jintLong, OLECMD *, jintLong))(*(jlong **)arg1)[arg0])(arg1, lparg2, arg3, lparg4, arg5);
 fail:
 	if (arg4 && lparg4) setOLECMDFields(env, arg4, lparg4);
 	if (arg2 && lparg2) setGUIDFields(env, arg2, lparg2);
@@ -1754,7 +1754,7 @@ JNIEXPORT jint JNICALL COM_NATIVE(VtblCall__IJLorg_eclipse_swt_internal_ole_win3
 	COM_NATIVE_ENTER(env, that, VtblCall__IJLorg_eclipse_swt_internal_ole_win32_GUID_2JII_3I_FUNC);
 	if (arg2) if ((lparg2 = getGUIDFields(env, arg2, &_arg2)) == NULL) goto fail;
 	if (arg6) if ((lparg6 = (*env)->GetIntArrayElements(env, arg6, NULL)) == NULL) goto fail;
-	rc = (jint)((jint (STDMETHODCALLTYPE *)(jlong, GUID *, jlong, jint, jint, jint *))(*(jlong **)arg1)[arg0])(arg1, lparg2, arg3, arg4, arg5, lparg6);
+	rc = (jint)((jint (STDMETHODCALLTYPE *)(jintLong, GUID *, jintLong, jintLong, jintLong, jintLong *))(*(jlong **)arg1)[arg0])(arg1, lparg2, arg3, arg4, arg5, lparg6);
 fail:
 	if (arg6 && lparg6) (*env)->ReleaseIntArrayElements(env, arg6, lparg6, 0);
 	if (arg2 && lparg2) setGUIDFields(env, arg2, lparg2);
@@ -1775,7 +1775,7 @@ JNIEXPORT jint JNICALL COM_NATIVE(VtblCall__IJLorg_eclipse_swt_internal_ole_win3
 	if (arg2) if ((lparg2 = getGUIDFields(env, arg2, &_arg2)) == NULL) goto fail;
 	if (arg3) if ((lparg3 = getGUIDFields(env, arg3, &_arg3)) == NULL) goto fail;
 	if (arg4) if ((lparg4 = (*env)->GetLongArrayElements(env, arg4, NULL)) == NULL) goto fail;
-	rc = (jint)((jint (STDMETHODCALLTYPE *)(jlong, GUID *, GUID *, jlong *))(*(jlong **)arg1)[arg0])(arg1, lparg2, lparg3, lparg4);
+	rc = (jint)((jint (STDMETHODCALLTYPE *)(jintLong, GUID *, GUID *, jintLong *))(*(jlong **)arg1)[arg0])(arg1, lparg2, lparg3, lparg4);
 fail:
 	if (arg4 && lparg4) (*env)->ReleaseLongArrayElements(env, arg4, lparg4, 0);
 	if (arg3 && lparg3) setGUIDFields(env, arg3, lparg3);
@@ -1795,7 +1795,7 @@ JNIEXPORT jint JNICALL COM_NATIVE(VtblCall__IJLorg_eclipse_swt_internal_ole_win3
 	COM_NATIVE_ENTER(env, that, VtblCall__IJLorg_eclipse_swt_internal_ole_win32_GUID_2_3J_FUNC);
 	if (arg2) if ((lparg2 = getGUIDFields(env, arg2, &_arg2)) == NULL) goto fail;
 	if (arg3) if ((lparg3 = (*env)->GetLongArrayElements(env, arg3, NULL)) == NULL) goto fail;
-	rc = (jint)((jint (STDMETHODCALLTYPE *)(jlong, GUID *, jlong *))(*(jlong **)arg1)[arg0])(arg1, lparg2, lparg3);
+	rc = (jint)((jint (STDMETHODCALLTYPE *)(jintLong, GUID *, jintLong *))(*(jlong **)arg1)[arg0])(arg1, lparg2, lparg3);
 fail:
 	if (arg3 && lparg3) (*env)->ReleaseLongArrayElements(env, arg3, lparg3, 0);
 	if (arg2 && lparg2) setGUIDFields(env, arg2, lparg2);
@@ -1812,7 +1812,7 @@ JNIEXPORT jint JNICALL COM_NATIVE(VtblCall__IJLorg_eclipse_swt_internal_ole_win3
 	jint rc = 0;
 	COM_NATIVE_ENTER(env, that, VtblCall__IJLorg_eclipse_swt_internal_ole_win32_LICINFO_2_FUNC);
 	if (arg2) if ((lparg2 = getLICINFOFields(env, arg2, &_arg2)) == NULL) goto fail;
-	rc = (jint)((jint (STDMETHODCALLTYPE *)(jlong, LICINFO *))(*(jlong **)arg1)[arg0])(arg1, lparg2);
+	rc = (jint)((jint (STDMETHODCALLTYPE *)(jintLong, LICINFO *))(*(jlong **)arg1)[arg0])(arg1, lparg2);
 fail:
 	if (arg2 && lparg2) setLICINFOFields(env, arg2, lparg2);
 	COM_NATIVE_EXIT(env, that, VtblCall__IJLorg_eclipse_swt_internal_ole_win32_LICINFO_2_FUNC);
@@ -1828,7 +1828,7 @@ JNIEXPORT jint JNICALL COM_NATIVE(VtblCall__IJLorg_eclipse_swt_internal_win32_MS
 	jint rc = 0;
 	COM_NATIVE_ENTER(env, that, VtblCall__IJLorg_eclipse_swt_internal_win32_MSG_2_FUNC);
 	if (arg2) if ((lparg2 = getMSGFields(env, arg2, &_arg2)) == NULL) goto fail;
-	rc = (jint)((jint (STDMETHODCALLTYPE *)(jlong, MSG *))(*(jlong **)arg1)[arg0])(arg1, lparg2);
+	rc = (jint)((jint (STDMETHODCALLTYPE *)(jintLong, MSG *))(*(jlong **)arg1)[arg0])(arg1, lparg2);
 fail:
 	if (arg2 && lparg2) setMSGFields(env, arg2, lparg2);
 	COM_NATIVE_EXIT(env, that, VtblCall__IJLorg_eclipse_swt_internal_win32_MSG_2_FUNC);
@@ -1844,7 +1844,7 @@ JNIEXPORT jint JNICALL COM_NATIVE(VtblCall__IJLorg_eclipse_swt_internal_win32_PO
 	jint rc = 0;
 	COM_NATIVE_ENTER(env, that, VtblCall__IJLorg_eclipse_swt_internal_win32_POINT_2I_FUNC);
 	if (arg2) if ((lparg2 = getPOINTFields(env, arg2, &_arg2)) == NULL) goto fail;
-	rc = (jint)((jint (STDMETHODCALLTYPE *)(jlong, POINT *, jint))(*(jlong **)arg1)[arg0])(arg1, lparg2, arg3);
+	rc = (jint)((jint (STDMETHODCALLTYPE *)(jintLong, POINT *, jintLong))(*(jlong **)arg1)[arg0])(arg1, lparg2, arg3);
 fail:
 	if (arg2 && lparg2) setPOINTFields(env, arg2, lparg2);
 	COM_NATIVE_EXIT(env, that, VtblCall__IJLorg_eclipse_swt_internal_win32_POINT_2I_FUNC);
@@ -1860,7 +1860,7 @@ JNIEXPORT jint JNICALL COM_NATIVE(VtblCall__IJLorg_eclipse_swt_internal_win32_PR
 	jint rc = 0;
 	COM_NATIVE_ENTER(env, that, VtblCall__IJLorg_eclipse_swt_internal_win32_PROPERTYKEY_2J_FUNC);
 	if (arg2) if ((lparg2 = getPROPERTYKEYFields(env, arg2, &_arg2)) == NULL) goto fail;
-	rc = (jint)((jint (STDMETHODCALLTYPE *)(jlong, PROPERTYKEY *, jlong))(*(jlong **)arg1)[arg0])(arg1, lparg2, arg3);
+	rc = (jint)((jint (STDMETHODCALLTYPE *)(jintLong, PROPERTYKEY *, jintLong))(*(jlong **)arg1)[arg0])(arg1, lparg2, arg3);
 fail:
 	if (arg2 && lparg2) setPROPERTYKEYFields(env, arg2, lparg2);
 	COM_NATIVE_EXIT(env, that, VtblCall__IJLorg_eclipse_swt_internal_win32_PROPERTYKEY_2J_FUNC);
@@ -1876,7 +1876,7 @@ JNIEXPORT jint JNICALL COM_NATIVE(VtblCall__IJLorg_eclipse_swt_internal_win32_RE
 	jint rc = 0;
 	COM_NATIVE_ENTER(env, that, VtblCall__IJLorg_eclipse_swt_internal_win32_RECT_2_FUNC);
 	if (arg2) if ((lparg2 = getRECTFields(env, arg2, &_arg2)) == NULL) goto fail;
-	rc = (jint)((jint (STDMETHODCALLTYPE *)(jlong, RECT *))(*(jlong **)arg1)[arg0])(arg1, lparg2);
+	rc = (jint)((jint (STDMETHODCALLTYPE *)(jintLong, RECT *))(*(jlong **)arg1)[arg0])(arg1, lparg2);
 fail:
 	if (arg2 && lparg2) setRECTFields(env, arg2, lparg2);
 	COM_NATIVE_EXIT(env, that, VtblCall__IJLorg_eclipse_swt_internal_win32_RECT_2_FUNC);
@@ -1892,7 +1892,7 @@ JNIEXPORT jint JNICALL COM_NATIVE(VtblCall__IJLorg_eclipse_swt_internal_win32_RE
 	jint rc = 0;
 	COM_NATIVE_ENTER(env, that, VtblCall__IJLorg_eclipse_swt_internal_win32_RECT_2JI_FUNC);
 	if (arg2) if ((lparg2 = getRECTFields(env, arg2, &_arg2)) == NULL) goto fail;
-	rc = (jint)((jint (STDMETHODCALLTYPE *)(jlong, RECT *, jlong, jint))(*(jlong **)arg1)[arg0])(arg1, lparg2, arg3, arg4);
+	rc = (jint)((jint (STDMETHODCALLTYPE *)(jintLong, RECT *, jintLong, jintLong))(*(jlong **)arg1)[arg0])(arg1, lparg2, arg3, arg4);
 fail:
 	if (arg2 && lparg2) setRECTFields(env, arg2, lparg2);
 	COM_NATIVE_EXIT(env, that, VtblCall__IJLorg_eclipse_swt_internal_win32_RECT_2JI_FUNC);
@@ -1908,7 +1908,7 @@ JNIEXPORT jint JNICALL COM_NATIVE(VtblCall__IJLorg_eclipse_swt_internal_win32_RE
 	jint rc = 0;
 	COM_NATIVE_ENTER(env, that, VtblCall__IJLorg_eclipse_swt_internal_win32_RECT_2JJ_FUNC);
 	if (arg2) if ((lparg2 = getRECTFields(env, arg2, &_arg2)) == NULL) goto fail;
-	rc = (jint)((jint (STDMETHODCALLTYPE *)(jlong, RECT, jlong, jlong))(*(jlong **)arg1)[arg0])(arg1, *lparg2, arg3, arg4);
+	rc = (jint)((jint (STDMETHODCALLTYPE *)(jintLong, RECT, jintLong, jintLong))(*(jlong **)arg1)[arg0])(arg1, *lparg2, arg3, arg4);
 fail:
 	if (arg2 && lparg2) setRECTFields(env, arg2, lparg2);
 	COM_NATIVE_EXIT(env, that, VtblCall__IJLorg_eclipse_swt_internal_win32_RECT_2JJ_FUNC);
@@ -1926,7 +1926,7 @@ JNIEXPORT jint JNICALL COM_NATIVE(VtblCall__IJLorg_eclipse_swt_internal_win32_RE
 	COM_NATIVE_ENTER(env, that, VtblCall__IJLorg_eclipse_swt_internal_win32_RECT_2Lorg_eclipse_swt_internal_win32_RECT_2_FUNC);
 	if (arg2) if ((lparg2 = getRECTFields(env, arg2, &_arg2)) == NULL) goto fail;
 	if (arg3) if ((lparg3 = getRECTFields(env, arg3, &_arg3)) == NULL) goto fail;
-	rc = (jint)((jint (STDMETHODCALLTYPE *)(jlong, RECT *, RECT *))(*(jlong **)arg1)[arg0])(arg1, lparg2, lparg3);
+	rc = (jint)((jint (STDMETHODCALLTYPE *)(jintLong, RECT *, RECT *))(*(jlong **)arg1)[arg0])(arg1, lparg2, lparg3);
 fail:
 	if (arg3 && lparg3) setRECTFields(env, arg3, lparg3);
 	if (arg2 && lparg2) setRECTFields(env, arg2, lparg2);
@@ -1943,7 +1943,7 @@ JNIEXPORT jint JNICALL COM_NATIVE(VtblCall__IJLorg_eclipse_swt_internal_win32_TF
 	jint rc = 0;
 	COM_NATIVE_ENTER(env, that, VtblCall__IJLorg_eclipse_swt_internal_win32_TF_1DISPLAYATTRIBUTE_2_FUNC);
 	if (arg2) if ((lparg2 = getTF_DISPLAYATTRIBUTEFields(env, arg2, &_arg2)) == NULL) goto fail;
-	rc = (jint)((jint (STDMETHODCALLTYPE *)(jlong, TF_DISPLAYATTRIBUTE *))(*(jlong **)arg1)[arg0])(arg1, lparg2);
+	rc = (jint)((jint (STDMETHODCALLTYPE *)(jintLong, TF_DISPLAYATTRIBUTE *))(*(jlong **)arg1)[arg0])(arg1, lparg2);
 fail:
 	if (arg2 && lparg2) setTF_DISPLAYATTRIBUTEFields(env, arg2, lparg2);
 	COM_NATIVE_EXIT(env, that, VtblCall__IJLorg_eclipse_swt_internal_win32_TF_1DISPLAYATTRIBUTE_2_FUNC);
@@ -1959,7 +1959,7 @@ JNIEXPORT jint JNICALL COM_NATIVE(VtblCall__IJ_3C)
 	jint rc = 0;
 	COM_NATIVE_ENTER(env, that, VtblCall__IJ_3C_FUNC);
 	if (arg2) if ((lparg2 = (*env)->GetCharArrayElements(env, arg2, NULL)) == NULL) goto fail;
-	rc = (jint)((jint (STDMETHODCALLTYPE *)(jlong, jchar *))(*(jlong **)arg1)[arg0])(arg1, lparg2);
+	rc = (jint)((jint (STDMETHODCALLTYPE *)(jintLong, jchar *))(*(jlong **)arg1)[arg0])(arg1, lparg2);
 fail:
 	if (arg2 && lparg2) (*env)->ReleaseCharArrayElements(env, arg2, lparg2, 0);
 	COM_NATIVE_EXIT(env, that, VtblCall__IJ_3C_FUNC);
@@ -1975,7 +1975,7 @@ JNIEXPORT jint JNICALL COM_NATIVE(VtblCall__IJ_3CI)
 	jint rc = 0;
 	COM_NATIVE_ENTER(env, that, VtblCall__IJ_3CI_FUNC);
 	if (arg2) if ((lparg2 = (*env)->GetCharArrayElements(env, arg2, NULL)) == NULL) goto fail;
-	rc = (jint)((jint (STDMETHODCALLTYPE *)(jlong, jchar *, jint))(*(jlong **)arg1)[arg0])(arg1, lparg2, arg3);
+	rc = (jint)((jint (STDMETHODCALLTYPE *)(jintLong, jchar *, jintLong))(*(jlong **)arg1)[arg0])(arg1, lparg2, arg3);
 fail:
 	if (arg2 && lparg2) (*env)->ReleaseCharArrayElements(env, arg2, lparg2, 0);
 	COM_NATIVE_EXIT(env, that, VtblCall__IJ_3CI_FUNC);
@@ -1993,7 +1993,7 @@ JNIEXPORT jint JNICALL COM_NATIVE(VtblCall__IJ_3CIII_3J)
 	COM_NATIVE_ENTER(env, that, VtblCall__IJ_3CIII_3J_FUNC);
 	if (arg2) if ((lparg2 = (*env)->GetCharArrayElements(env, arg2, NULL)) == NULL) goto fail;
 	if (arg6) if ((lparg6 = (*env)->GetLongArrayElements(env, arg6, NULL)) == NULL) goto fail;
-	rc = (jint)((jint (STDMETHODCALLTYPE *)(jlong, jchar *, jint, jint, jint, jlong *))(*(jlong **)arg1)[arg0])(arg1, lparg2, arg3, arg4, arg5, lparg6);
+	rc = (jint)((jint (STDMETHODCALLTYPE *)(jintLong, jchar *, jintLong, jintLong, jintLong, jintLong *))(*(jlong **)arg1)[arg0])(arg1, lparg2, arg3, arg4, arg5, lparg6);
 fail:
 	if (arg6 && lparg6) (*env)->ReleaseLongArrayElements(env, arg6, lparg6, 0);
 	if (arg2 && lparg2) (*env)->ReleaseCharArrayElements(env, arg2, lparg2, 0);
@@ -2014,7 +2014,7 @@ JNIEXPORT jint JNICALL COM_NATIVE(VtblCall__IJ_3CII_3I_3I)
 	if (arg2) if ((lparg2 = (*env)->GetCharArrayElements(env, arg2, NULL)) == NULL) goto fail;
 	if (arg5) if ((lparg5 = (*env)->GetIntArrayElements(env, arg5, NULL)) == NULL) goto fail;
 	if (arg6) if ((lparg6 = (*env)->GetIntArrayElements(env, arg6, NULL)) == NULL) goto fail;
-	rc = (jint)((jint (STDMETHODCALLTYPE *)(jlong, jchar *, jint, jint, jint *, jint *))(*(jlong **)arg1)[arg0])(arg1, lparg2, arg3, arg4, lparg5, lparg6);
+	rc = (jint)((jint (STDMETHODCALLTYPE *)(jintLong, jchar *, jintLong, jintLong, jintLong *, jintLong *))(*(jlong **)arg1)[arg0])(arg1, lparg2, arg3, arg4, lparg5, lparg6);
 fail:
 	if (arg6 && lparg6) (*env)->ReleaseIntArrayElements(env, arg6, lparg6, 0);
 	if (arg5 && lparg5) (*env)->ReleaseIntArrayElements(env, arg5, lparg5, 0);
@@ -2032,7 +2032,7 @@ JNIEXPORT jint JNICALL COM_NATIVE(VtblCall__IJ_3CJ)
 	jint rc = 0;
 	COM_NATIVE_ENTER(env, that, VtblCall__IJ_3CJ_FUNC);
 	if (arg2) if ((lparg2 = (*env)->GetCharArrayElements(env, arg2, NULL)) == NULL) goto fail;
-	rc = (jint)((jint (STDMETHODCALLTYPE *)(jlong, jchar *, jlong))(*(jlong **)arg1)[arg0])(arg1, lparg2, arg3);
+	rc = (jint)((jint (STDMETHODCALLTYPE *)(jintLong, jchar *, jintLong))(*(jlong **)arg1)[arg0])(arg1, lparg2, arg3);
 fail:
 	if (arg2 && lparg2) (*env)->ReleaseCharArrayElements(env, arg2, lparg2, 0);
 	COM_NATIVE_EXIT(env, that, VtblCall__IJ_3CJ_FUNC);
@@ -2050,7 +2050,7 @@ JNIEXPORT jint JNICALL COM_NATIVE(VtblCall__IJ_3CJIII_3J)
 	COM_NATIVE_ENTER(env, that, VtblCall__IJ_3CJIII_3J_FUNC);
 	if (arg2) if ((lparg2 = (*env)->GetCharArrayElements(env, arg2, NULL)) == NULL) goto fail;
 	if (arg7) if ((lparg7 = (*env)->GetLongArrayElements(env, arg7, NULL)) == NULL) goto fail;
-	rc = (jint)((jint (STDMETHODCALLTYPE *)(jlong, jchar *, jlong, jint, jint, jint, jlong *))(*(jlong **)arg1)[arg0])(arg1, lparg2, arg3, arg4, arg5, arg6, lparg7);
+	rc = (jint)((jint (STDMETHODCALLTYPE *)(jintLong, jchar *, jintLong, jintLong, jintLong, jintLong, jintLong *))(*(jlong **)arg1)[arg0])(arg1, lparg2, arg3, arg4, arg5, arg6, lparg7);
 fail:
 	if (arg7 && lparg7) (*env)->ReleaseLongArrayElements(env, arg7, lparg7, 0);
 	if (arg2 && lparg2) (*env)->ReleaseCharArrayElements(env, arg2, lparg2, 0);
@@ -2069,7 +2069,7 @@ JNIEXPORT jint JNICALL COM_NATIVE(VtblCall__IJ_3CJII_3J)
 	COM_NATIVE_ENTER(env, that, VtblCall__IJ_3CJII_3J_FUNC);
 	if (arg2) if ((lparg2 = (*env)->GetCharArrayElements(env, arg2, NULL)) == NULL) goto fail;
 	if (arg6) if ((lparg6 = (*env)->GetLongArrayElements(env, arg6, NULL)) == NULL) goto fail;
-	rc = (jint)((jint (STDMETHODCALLTYPE *)(jlong, jchar *, jlong, jint, jint, jlong *))(*(jlong **)arg1)[arg0])(arg1, lparg2, arg3, arg4, arg5, lparg6);
+	rc = (jint)((jint (STDMETHODCALLTYPE *)(jintLong, jchar *, jintLong, jintLong, jintLong, jintLong *))(*(jlong **)arg1)[arg0])(arg1, lparg2, arg3, arg4, arg5, lparg6);
 fail:
 	if (arg6 && lparg6) (*env)->ReleaseLongArrayElements(env, arg6, lparg6, 0);
 	if (arg2 && lparg2) (*env)->ReleaseCharArrayElements(env, arg2, lparg2, 0);
@@ -2088,7 +2088,7 @@ JNIEXPORT jint JNICALL COM_NATIVE(VtblCall__IJ_3C_3C)
 	COM_NATIVE_ENTER(env, that, VtblCall__IJ_3C_3C_FUNC);
 	if (arg2) if ((lparg2 = (*env)->GetCharArrayElements(env, arg2, NULL)) == NULL) goto fail;
 	if (arg3) if ((lparg3 = (*env)->GetCharArrayElements(env, arg3, NULL)) == NULL) goto fail;
-	rc = (jint)((jint (STDMETHODCALLTYPE *)(jlong, jchar *, jchar *))(*(jlong **)arg1)[arg0])(arg1, lparg2, lparg3);
+	rc = (jint)((jint (STDMETHODCALLTYPE *)(jintLong, jchar *, jchar *))(*(jlong **)arg1)[arg0])(arg1, lparg2, lparg3);
 fail:
 	if (arg3 && lparg3) (*env)->ReleaseCharArrayElements(env, arg3, lparg3, 0);
 	if (arg2 && lparg2) (*env)->ReleaseCharArrayElements(env, arg2, lparg2, 0);
@@ -2111,7 +2111,7 @@ JNIEXPORT jint JNICALL COM_NATIVE(VtblCall__IJ_3C_3CJ_3C_3J)
 	if (arg3) if ((lparg3 = (*env)->GetCharArrayElements(env, arg3, NULL)) == NULL) goto fail;
 	if (arg5) if ((lparg5 = (*env)->GetCharArrayElements(env, arg5, NULL)) == NULL) goto fail;
 	if (arg6) if ((lparg6 = (*env)->GetLongArrayElements(env, arg6, NULL)) == NULL) goto fail;
-	rc = (jint)((jint (STDMETHODCALLTYPE *)(jlong, jchar *, jchar *, jlong, jchar *, jlong *))(*(jlong **)arg1)[arg0])(arg1, lparg2, lparg3, arg4, lparg5, lparg6);
+	rc = (jint)((jint (STDMETHODCALLTYPE *)(jintLong, jchar *, jchar *, jintLong, jchar *, jintLong *))(*(jlong **)arg1)[arg0])(arg1, lparg2, lparg3, arg4, lparg5, lparg6);
 fail:
 	if (arg6 && lparg6) (*env)->ReleaseLongArrayElements(env, arg6, lparg6, 0);
 	if (arg5 && lparg5) (*env)->ReleaseCharArrayElements(env, arg5, lparg5, 0);
@@ -2132,7 +2132,7 @@ JNIEXPORT jint JNICALL COM_NATIVE(VtblCall__IJ_3C_3J)
 	COM_NATIVE_ENTER(env, that, VtblCall__IJ_3C_3J_FUNC);
 	if (arg2) if ((lparg2 = (*env)->GetCharArrayElements(env, arg2, NULL)) == NULL) goto fail;
 	if (arg3) if ((lparg3 = (*env)->GetLongArrayElements(env, arg3, NULL)) == NULL) goto fail;
-	rc = (jint)((jint (STDMETHODCALLTYPE *)(jlong, jchar *, jlong *))(*(jlong **)arg1)[arg0])(arg1, lparg2, lparg3);
+	rc = (jint)((jint (STDMETHODCALLTYPE *)(jintLong, jchar *, jintLong *))(*(jlong **)arg1)[arg0])(arg1, lparg2, lparg3);
 fail:
 	if (arg3 && lparg3) (*env)->ReleaseLongArrayElements(env, arg3, lparg3, 0);
 	if (arg2 && lparg2) (*env)->ReleaseCharArrayElements(env, arg2, lparg2, 0);
@@ -2149,7 +2149,7 @@ JNIEXPORT jint JNICALL COM_NATIVE(VtblCall__IJ_3I)
 	jint rc = 0;
 	COM_NATIVE_ENTER(env, that, VtblCall__IJ_3I_FUNC);
 	if (arg2) if ((lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL)) == NULL) goto fail;
-	rc = (jint)((jint (STDMETHODCALLTYPE *)(jlong, jint *))(*(jlong **)arg1)[arg0])(arg1, lparg2);
+	rc = (jint)((jint (STDMETHODCALLTYPE *)(jintLong, jintLong *))(*(jlong **)arg1)[arg0])(arg1, lparg2);
 fail:
 	if (arg2 && lparg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
 	COM_NATIVE_EXIT(env, that, VtblCall__IJ_3I_FUNC);
@@ -2169,7 +2169,7 @@ JNIEXPORT jint JNICALL COM_NATIVE(VtblCall__IJ_3ILorg_eclipse_swt_internal_ole_w
 	if (arg2) if ((lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL)) == NULL) goto fail;
 	if (arg3) if ((lparg3 = getGUIDFields(env, arg3, &_arg3)) == NULL) goto fail;
 	if (arg4) if ((lparg4 = (*env)->GetLongArrayElements(env, arg4, NULL)) == NULL) goto fail;
-	rc = (jint)((jint (STDMETHODCALLTYPE *)(jlong, jint *, GUID *, jlong *))(*(jlong **)arg1)[arg0])(arg1, lparg2, lparg3, lparg4);
+	rc = (jint)((jint (STDMETHODCALLTYPE *)(jintLong, jintLong *, GUID *, jintLong *))(*(jlong **)arg1)[arg0])(arg1, lparg2, lparg3, lparg4);
 fail:
 	if (arg4 && lparg4) (*env)->ReleaseLongArrayElements(env, arg4, lparg4, 0);
 	if (arg3 && lparg3) setGUIDFields(env, arg3, lparg3);
@@ -2187,7 +2187,7 @@ JNIEXPORT jint JNICALL COM_NATIVE(VtblCall__IJ_3J)
 	jint rc = 0;
 	COM_NATIVE_ENTER(env, that, VtblCall__IJ_3J_FUNC);
 	if (arg2) if ((lparg2 = (*env)->GetLongArrayElements(env, arg2, NULL)) == NULL) goto fail;
-	rc = (jint)((jint (STDMETHODCALLTYPE *)(jlong, jlong *))(*(jlong **)arg1)[arg0])(arg1, lparg2);
+	rc = (jint)((jint (STDMETHODCALLTYPE *)(jintLong, jintLong *))(*(jlong **)arg1)[arg0])(arg1, lparg2);
 fail:
 	if (arg2 && lparg2) (*env)->ReleaseLongArrayElements(env, arg2, lparg2, 0);
 	COM_NATIVE_EXIT(env, that, VtblCall__IJ_3J_FUNC);
@@ -2203,7 +2203,7 @@ JNIEXPORT jint JNICALL COM_NATIVE(VtblCall_1put_1Bounds)
 	jint rc = 0;
 	COM_NATIVE_ENTER(env, that, VtblCall_1put_1Bounds_FUNC);
 	if (arg2) if ((lparg2 = getRECTFields(env, arg2, &_arg2)) == NULL) goto fail;
-	rc = (jint)((jint (STDMETHODCALLTYPE *)(jlong, RECT))(*(jlong **)arg1)[arg0])(arg1, *lparg2);
+	rc = (jint)((jint (STDMETHODCALLTYPE *)(jintLong, RECT))(*(jlong **)arg1)[arg0])(arg1, *lparg2);
 fail:
 	if (arg2 && lparg2) setRECTFields(env, arg2, lparg2);
 	COM_NATIVE_EXIT(env, that, VtblCall_1put_1Bounds_FUNC);

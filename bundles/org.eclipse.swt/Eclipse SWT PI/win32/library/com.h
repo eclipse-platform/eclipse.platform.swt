@@ -18,6 +18,10 @@
 #include "os_structs.h"
 #include "com_custom.h"
 
+#ifndef jintLong
+#define jintLong jlong
+#endif
+
 #define COM_LOAD_FUNCTION LOAD_FUNCTION
 
 #endif /* INC_com_H */

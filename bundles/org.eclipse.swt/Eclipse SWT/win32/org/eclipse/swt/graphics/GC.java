@@ -197,7 +197,12 @@ void checkGC(int mask) {
 			long brush;
 			Pattern pattern = data.foregroundPattern;
 			if (pattern != null) {
-				brush = pattern.handle;
+				if(data.alpha == 0xFF) {
+					brush = pattern.handle;
+				} else {
+					brush = data.gdipFgPatternBrushAlpha != 0 ? Gdip.Brush_Clone(data.gdipFgPatternBrushAlpha) : createAlphaTextureBrush(pattern.handle, data.alpha);
+					data.gdipFgPatternBrushAlpha = brush;
+				}
 				if ((data.style & SWT.MIRRORED) != 0) {
 					switch (Gdip.Brush_GetType(brush)) {
 						case Gdip.BrushTypeTextureFill:
@@ -283,7 +288,12 @@ void checkGC(int mask) {
 			data.gdipBgBrush = 0;
 			Pattern pattern = data.backgroundPattern;
 			if (pattern != null) {
-				data.gdipBrush = pattern.handle;
+				if(data.alpha == 0xFF) {
+					data.gdipBrush = pattern.handle;
+				} else {
+					long brush = data.gdipBgPatternBrushAlpha != 0 ? Gdip.Brush_Clone(data.gdipBgPatternBrushAlpha) : createAlphaTextureBrush(pattern.handle, data.alpha);
+					data.gdipBrush = data.gdipBgBrush /*= data.gdipBgPatternBrushAlpha */ = brush;
+				}
 				if ((data.style & SWT.MIRRORED) != 0) {
 					switch (Gdip.Brush_GetType(data.gdipBrush)) {
 						case Gdip.BrushTypeTextureFill:
@@ -588,6 +598,46 @@ static long createGdipFont(long hDC, long hFont, long graphics, long fontCollect
 	return font;
 }
 
+/**
+ * Create a new brush with transparency from the image in {@link brush}.
+ *
+ * The returned brush has to be disposed by the caller.
+ *
+ * @param brush Brush with pattern
+ * @param alpha
+ * @return new brush with transparency
+ * @exception SWTError <ul>
+ *    <li>ERROR_CANNOT_BE_ZERO - if the image in the brush is null</li>
+ *    <li>ERROR_NO_HANDLES - if no handles are available to perform the operation</li>
+ * </ul>
+ */
+static long createAlphaTextureBrush(long brush, int alpha) {
+	long hatchImage = Gdip.TextureBrush_GetImage(brush);
+	if (hatchImage == 0) SWT.error(SWT.ERROR_CANNOT_BE_ZERO);
+	long transparentHatchImage = Gdip.Image_Clone(hatchImage);
+	if (transparentHatchImage == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+	long attrib = Gdip.ImageAttributes_new();
+	Gdip.ImageAttributes_SetWrapMode(attrib, Gdip.WrapModeTile);
+	float[] matrix = new float[]{
+		1,0,0,0,0,
+		0,1,0,0,0,
+		0,0,1,0,0,
+		0,0,0,alpha / (float)0xFF,0,
+		0,0,0,0,1,
+	};
+	Gdip.ImageAttributes_SetColorMatrix(attrib, matrix, Gdip.ColorMatrixFlagsDefault, Gdip.ColorAdjustTypeBitmap);
+	Rect rect = new Rect();
+	rect.X = 0;
+	rect.Y = 0;
+	rect.Width = Gdip.Image_GetWidth(transparentHatchImage);
+	rect.Height = Gdip.Image_GetHeight(transparentHatchImage);
+	long transparentBrush = Gdip.TextureBrush_new(transparentHatchImage, rect, attrib);
+	if (brush == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+	Gdip.ImageAttributes_delete(attrib);
+	Gdip.Image_delete(transparentHatchImage);
+	return transparentBrush;
+}
+
 static void destroyGdipBrush(long brush) {
 	int type = Gdip.Brush_GetType(brush);
 	switch (type) {
@@ -666,8 +716,11 @@ void disposeGdip() {
 	if (data.gdipFont != 0) Gdip.Font_delete(data.gdipFont);
 	if (data.hGDIFont != 0) OS.DeleteObject(data.hGDIFont);
 	if (data.gdipGraphics != 0) Gdip.Graphics_delete(data.gdipGraphics);
+	if (data.gdipBgPatternBrushAlpha != 0) destroyGdipBrush(data.gdipBgPatternBrushAlpha);
+	if (data.gdipFgPatternBrushAlpha != 0) destroyGdipBrush(data.gdipFgPatternBrushAlpha);
 	data.gdipGraphics = data.gdipBrush = data.gdipBgBrush = data.gdipFgBrush =
-		data.gdipFont = data.gdipPen = data.hGDIFont = 0;
+		data.gdipFont = data.gdipPen = data.hGDIFont = data.gdipBgPatternBrushAlpha =
+		data.gdipFgPatternBrushAlpha = 0;
 }
 
 /**
@@ -4106,6 +4159,14 @@ public void setAlpha(int alpha) {
 	initGdip();
 	data.alpha = alpha & 0xFF;
 	data.state &= ~(BACKGROUND | FOREGROUND);
+	if(data.gdipFgPatternBrushAlpha != 0) {
+		Gdip.TextureBrush_delete(data.gdipFgPatternBrushAlpha);
+		data.gdipFgPatternBrushAlpha = 0;
+	}
+	if(data.gdipBgPatternBrushAlpha != 0) {
+		Gdip.TextureBrush_delete(data.gdipBgPatternBrushAlpha);
+		data.gdipBgPatternBrushAlpha = 0;
+	}
 }
 
 /**
@@ -4165,6 +4226,10 @@ public void setBackgroundPattern (Pattern pattern) {
 	if (data.backgroundPattern == pattern) return;
 	data.backgroundPattern = pattern;
 	data.state &= ~BACKGROUND;
+	if(data.gdipBgPatternBrushAlpha != 0) {
+		Gdip.TextureBrush_delete(data.gdipBgPatternBrushAlpha);
+		data.gdipBgPatternBrushAlpha = 0;
+	}
 }
 
 void setClipping(long clipRgn) {
@@ -4410,6 +4475,10 @@ public void setForegroundPattern (Pattern pattern) {
 	if (data.foregroundPattern == pattern) return;
 	data.foregroundPattern = pattern;
 	data.state &= ~FOREGROUND;
+	if(data.gdipFgPatternBrushAlpha != 0) {
+		Gdip.TextureBrush_delete(data.gdipFgPatternBrushAlpha);
+		data.gdipFgPatternBrushAlpha = 0;
+	}
 }
 
 /**

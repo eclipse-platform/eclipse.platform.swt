@@ -810,6 +810,13 @@ public static final native int GraphicsPath_Transform(long path, long matrix);
  * @param backColor cast=(Color)
  */
 public static final native long HatchBrush_new(int hatchStyle, int foreColor, int backColor);
+/** @method flags=delete */
+public static final native void Image_delete(long image);
+/**
+ * @method flags=cpp
+ * @param image cast=(Image *)
+ */
+public static final native long Image_Clone(long image);
 /**
  * @method flags=cpp
  * @param image cast=(Image*)
@@ -1147,6 +1154,13 @@ public static final native int StringFormat_SetTabStops(long format, float first
  * @param wrapMode cast=(WrapMode)
  */
 public static final native long TextureBrush_new(long image, int wrapMode, float dstX, float dstY, float dstWidth, float dstHeight);
+/**
+ * @method flags=new
+ * @param image cast=(Image *)
+ * @param rect cast=(Rect *),flags=struct
+ * @param attribs cast=(ImageAttributes *)
+ */
+public static final native long TextureBrush_new(long image, Rect rect, long attribs);
 /** @method flags=delete */
 public static final native void TextureBrush_delete(long brush);
 /**
@@ -1172,4 +1186,9 @@ public static final native int TextureBrush_ScaleTransform(long brush, float sx,
  * @param order cast=(MatrixOrder)
  */
 public static final native int TextureBrush_TranslateTransform(long brush, float dx, float dy, int order);
+/**
+ * @method flags=cpp
+ * @param brush cast=(TextureBrush *)
+ */
+public static final native long TextureBrush_GetImage(long brush);
 }

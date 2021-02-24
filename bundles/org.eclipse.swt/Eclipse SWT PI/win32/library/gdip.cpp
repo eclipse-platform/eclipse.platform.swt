@@ -1568,6 +1568,19 @@ JNIEXPORT jlong JNICALL Gdip_NATIVE(ImageAttributes_1new)
 }
 #endif
 
+#ifndef NO_Image_1Clone
+extern "C" JNIEXPORT jlong JNICALL Gdip_NATIVE(Image_1Clone)(JNIEnv *env, jclass that, jlong arg0);
+JNIEXPORT jlong JNICALL Gdip_NATIVE(Image_1Clone)
+	(JNIEnv *env, jclass that, jlong arg0)
+{
+	jlong rc = 0;
+	Gdip_NATIVE_ENTER(env, that, Image_1Clone_FUNC);
+	rc = (jlong)((Image *)arg0)->Clone();
+	Gdip_NATIVE_EXIT(env, that, Image_1Clone_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_Image_1GetHeight
 extern "C" JNIEXPORT jint JNICALL Gdip_NATIVE(Image_1GetHeight)(JNIEnv *env, jclass that, jlong arg0);
 JNIEXPORT jint JNICALL Gdip_NATIVE(Image_1GetHeight)
@@ -1643,6 +1656,17 @@ JNIEXPORT jint JNICALL Gdip_NATIVE(Image_1GetWidth)
 	rc = (jint)((Image *)arg0)->GetWidth();
 	Gdip_NATIVE_EXIT(env, that, Image_1GetWidth_FUNC);
 	return rc;
+}
+#endif
+
+#ifndef NO_Image_1delete
+extern "C" JNIEXPORT void JNICALL Gdip_NATIVE(Image_1delete)(JNIEnv *env, jclass that, jlong arg0);
+JNIEXPORT void JNICALL Gdip_NATIVE(Image_1delete)
+	(JNIEnv *env, jclass that, jlong arg0)
+{
+	Gdip_NATIVE_ENTER(env, that, Image_1delete_FUNC);
+	delete (Image *)arg0;
+	Gdip_NATIVE_EXIT(env, that, Image_1delete_FUNC);
 }
 #endif
 
@@ -2434,6 +2458,19 @@ JNIEXPORT void JNICALL Gdip_NATIVE(StringFormat_1delete)
 }
 #endif
 
+#ifndef NO_TextureBrush_1GetImage
+extern "C" JNIEXPORT jlong JNICALL Gdip_NATIVE(TextureBrush_1GetImage)(JNIEnv *env, jclass that, jlong arg0);
+JNIEXPORT jlong JNICALL Gdip_NATIVE(TextureBrush_1GetImage)
+	(JNIEnv *env, jclass that, jlong arg0)
+{
+	jlong rc = 0;
+	Gdip_NATIVE_ENTER(env, that, TextureBrush_1GetImage_FUNC);
+	rc = (jlong)((TextureBrush *)arg0)->GetImage();
+	Gdip_NATIVE_EXIT(env, that, TextureBrush_1GetImage_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_TextureBrush_1ResetTransform
 extern "C" JNIEXPORT jint JNICALL Gdip_NATIVE(TextureBrush_1ResetTransform)(JNIEnv *env, jclass that, jlong arg0);
 JNIEXPORT jint JNICALL Gdip_NATIVE(TextureBrush_1ResetTransform)
@@ -2497,15 +2534,32 @@ JNIEXPORT void JNICALL Gdip_NATIVE(TextureBrush_1delete)
 }
 #endif
 
-#ifndef NO_TextureBrush_1new
-extern "C" JNIEXPORT jlong JNICALL Gdip_NATIVE(TextureBrush_1new)(JNIEnv *env, jclass that, jlong arg0, jint arg1, jfloat arg2, jfloat arg3, jfloat arg4, jfloat arg5);
-JNIEXPORT jlong JNICALL Gdip_NATIVE(TextureBrush_1new)
+#ifndef NO_TextureBrush_1new__JIFFFF
+extern "C" JNIEXPORT jlong JNICALL Gdip_NATIVE(TextureBrush_1new__JIFFFF)(JNIEnv *env, jclass that, jlong arg0, jint arg1, jfloat arg2, jfloat arg3, jfloat arg4, jfloat arg5);
+JNIEXPORT jlong JNICALL Gdip_NATIVE(TextureBrush_1new__JIFFFF)
 	(JNIEnv *env, jclass that, jlong arg0, jint arg1, jfloat arg2, jfloat arg3, jfloat arg4, jfloat arg5)
 {
 	jlong rc = 0;
-	Gdip_NATIVE_ENTER(env, that, TextureBrush_1new_FUNC);
+	Gdip_NATIVE_ENTER(env, that, TextureBrush_1new__JIFFFF_FUNC);
 	rc = (jlong)new TextureBrush((Image *)arg0, (WrapMode)arg1, arg2, arg3, arg4, arg5);
-	Gdip_NATIVE_EXIT(env, that, TextureBrush_1new_FUNC);
+	Gdip_NATIVE_EXIT(env, that, TextureBrush_1new__JIFFFF_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_TextureBrush_1new__JLorg_eclipse_swt_internal_gdip_Rect_2J
+extern "C" JNIEXPORT jlong JNICALL Gdip_NATIVE(TextureBrush_1new__JLorg_eclipse_swt_internal_gdip_Rect_2J)(JNIEnv *env, jclass that, jlong arg0, jobject arg1, jlong arg2);
+JNIEXPORT jlong JNICALL Gdip_NATIVE(TextureBrush_1new__JLorg_eclipse_swt_internal_gdip_Rect_2J)
+	(JNIEnv *env, jclass that, jlong arg0, jobject arg1, jlong arg2)
+{
+	Rect _arg1, *lparg1=NULL;
+	jlong rc = 0;
+	Gdip_NATIVE_ENTER(env, that, TextureBrush_1new__JLorg_eclipse_swt_internal_gdip_Rect_2J_FUNC);
+	if (arg1) if ((lparg1 = getRectFields(env, arg1, &_arg1)) == NULL) goto fail;
+	rc = (jlong)new TextureBrush((Image *)arg0, *(Rect *)lparg1, (ImageAttributes *)arg2);
+fail:
+	if (arg1 && lparg1) setRectFields(env, arg1, lparg1);
+	Gdip_NATIVE_EXIT(env, that, TextureBrush_1new__JLorg_eclipse_swt_internal_gdip_Rect_2J_FUNC);
 	return rc;
 }
 #endif
