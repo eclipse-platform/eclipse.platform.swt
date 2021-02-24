@@ -578,7 +578,7 @@ public void setFilterPath (String string) {
  * is not supported, the prompt is shown even when invoked with
  * overwrite false.
  * </p>
- * 
+ *
  * @param overwrite true if the dialog will prompt for file overwrite, false otherwise
  *
  * @since 3.4

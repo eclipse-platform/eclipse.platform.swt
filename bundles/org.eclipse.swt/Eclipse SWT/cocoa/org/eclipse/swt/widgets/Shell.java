@@ -1744,8 +1744,8 @@ public void setEnabled (boolean enabled) {
  * to either the maximized or normal states.
  * <p>
  * Note: The result of intermixing calls to <code>setFullScreen(true)</code>,
- * <code>setMaximized(true)</code>, <code>setMinimized(true)</code> and 
- * <code>setMaximumSize</code> will vary by platform. 
+ * <code>setMaximized(true)</code>, <code>setMinimized(true)</code> and
+ * <code>setMaximumSize</code> will vary by platform.
  * Typically, the behavior will match the platform user's
  * expectations, but not always. This should be avoided if possible.
  * </p>
@@ -1847,7 +1847,7 @@ public void setMaximized (boolean maximized) {
  * the receiver is resized to the new maximum size.
  * <p>
  * Note: The result of intermixing calls to <code>setMaximumSize</code> and
- * <code>setFullScreen(true)</code> will vary by platform. 
+ * <code>setFullScreen(true)</code> will vary by platform.
  * Typically, the behavior will match the platform user's
  * expectations, but not always. This should be avoided if possible.
  * </p>
@@ -1882,7 +1882,7 @@ public void setMaximumSize (int width, int height) {
  * the receiver is resized to the new maximum size.
  * <p>
  * Note: The result of intermixing calls to <code>setMaximumSize</code> and
- * <code>setFullScreen(true)</code> will vary by platform. 
+ * <code>setFullScreen(true)</code> will vary by platform.
  * Typically, the behavior will match the platform user's
  * expectations, but not always. This should be avoided if possible.
  * </p>
