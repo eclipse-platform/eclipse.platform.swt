@@ -204,7 +204,7 @@ static class Writer {
 		ESCAPED['\n'] = "\\n";
 		ESCAPED['\r'] = "\\r";
 		ESCAPED['\t'] = "\\t";
-		ESCAPED['"'] = "\"";
+		ESCAPED['"'] = "\\\"";
 	}
 
 	StringBuilder sb = new StringBuilder();
