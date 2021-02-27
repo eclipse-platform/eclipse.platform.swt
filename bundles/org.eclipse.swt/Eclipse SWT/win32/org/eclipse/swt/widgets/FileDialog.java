@@ -13,9 +13,10 @@
  *******************************************************************************/
 package org.eclipse.swt.widgets;
 
+import java.nio.file.*;
 
 import org.eclipse.swt.*;
-import org.eclipse.swt.internal.*;
+import org.eclipse.swt.internal.ole.win32.*;
 import org.eclipse.swt.internal.win32.*;
 
 /**
@@ -45,20 +46,8 @@ public class FileDialog extends Dialog {
 	String filterPath = "", fileName = "";
 	int filterIndex = 0;
 	boolean overwrite = false;
-	static final String FILTER = "*.*";
-	static int BUFFER_SIZE = 1024 * 32;
-	static boolean USE_HOOK = true;
-	static {
-		/*
-		*  Feature in Vista.  When OFN_ENABLEHOOK is set in the
-		*  save or open file dialog,  Vista uses the old XP look
-		*  and feel.  OFN_ENABLEHOOK is used to grow the file
-		*  name buffer in a multi-select file dialog.  The fix
-		*  is to only use OFN_ENABLEHOOK when the buffer has
-		*  overrun.
-		*/
-		USE_HOOK = false;
-	}
+	static final String DEFAULT_FILTER = "*.*";
+	static final String LONG_PATH_PREFIX = "\\\\?\\";
 
 /**
  * Constructs a new instance of this class given only its parent.
@@ -197,32 +186,21 @@ public boolean getOverwrite () {
 	return overwrite;
 }
 
-long OFNHookProc (long hdlg, long uiMsg, long wParam, long lParam) {
-	switch ((int)uiMsg) {
-		case OS.WM_NOTIFY:
-			OFNOTIFY ofn = new OFNOTIFY ();
-			OS.MoveMemory (ofn, lParam, OFNOTIFY.sizeof);
-			if (ofn.code == OS.CDN_SELCHANGE) {
-				int lResult = (int)OS.SendMessage (ofn.hwndFrom, OS.CDM_GETSPEC, 0, 0);
-				if (lResult > 0) {
-					lResult += OS.MAX_PATH;
-					OPENFILENAME lpofn = new OPENFILENAME ();
-					OS.MoveMemory (lpofn, ofn.lpOFN, OPENFILENAME.sizeof);
-					if (lpofn.nMaxFile < lResult) {
-						long hHeap = OS.GetProcessHeap ();
-						long lpstrFile = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, lResult * TCHAR.sizeof);
-						if (lpstrFile != 0) {
-							if (lpofn.lpstrFile != 0) OS.HeapFree (hHeap, 0, lpofn.lpstrFile);
-							lpofn.lpstrFile = lpstrFile;
-							lpofn.nMaxFile = lResult;
-							OS.MoveMemory (ofn.lpOFN, lpofn, OPENFILENAME.sizeof);
-						}
-					}
-				}
-			}
-		break;
+static Path getItemPath (IShellItem psi) {
+	long [] ppsz = new long [1];
+	if (psi.GetDisplayName(OS.SIGDN_FILESYSPATH, ppsz) == COM.S_OK) {
+		int length = OS.wcslen(ppsz[0]);
+		char[] buffer = new char[length];
+		OS.MoveMemory(buffer, ppsz[0], length * Character.BYTES);
+		OS.CoTaskMemFree(ppsz[0]);
+		String path = String.valueOf(buffer);
+		/* Feature in Windows. Paths longer than MAX_PATH are returned with a \\?\ prefix */
+		if (path.startsWith(LONG_PATH_PREFIX)) {
+			path = path.substring(LONG_PATH_PREFIX.length());
+		}
+		return Paths.get(path);
 	}
-	return 0;
+	return null;
 }
 
 /**
@@ -238,232 +216,157 @@ long OFNHookProc (long hdlg, long uiMsg, long wParam, long lParam) {
  * </ul>
  */
 public String open () {
-	long hHeap = OS.GetProcessHeap ();
+	/* Create Common Item Dialog */
+	long[] ppv = new long[1];
+	int hr;
+	if ((style & SWT.SAVE) != 0) {
+		hr = COM.CoCreateInstance(COM.CLSID_FileSaveDialog, 0, COM.CLSCTX_INPROC_SERVER, COM.IID_IFileSaveDialog, ppv);
+	} else {
+		hr = COM.CoCreateInstance(COM.CLSID_FileOpenDialog, 0, COM.CLSCTX_INPROC_SERVER, COM.IID_IFileOpenDialog, ppv);
+	}
+	if (hr != COM.S_OK) SWT.error(SWT.ERROR_NO_HANDLES);
+	IFileDialog fileDialog = new IFileDialog(ppv[0]);
 
-	/* Get the owner HWND for the dialog */
-	long hwndOwner = parent.handle;
-	long hwndParent = parent.handle;
+	/* Update dialog options */
+	int[] options = new int[1];
+	fileDialog.GetOptions(options);
+	options[0] |= OS.FOS_FORCEFILESYSTEM | OS.FOS_NOCHANGEDIR;
+	if ((style & SWT.SAVE) != 0) {
+		if (overwrite) options[0] |= OS.FOS_OVERWRITEPROMPT;
+	} else {
+		if ((style & SWT.MULTI) != 0) options[0] |= OS.FOS_ALLOWMULTISELECT;
+	}
+	fileDialog.SetOptions(options[0]);
 
-	/*
-	* Feature in Windows.  There is no API to set the orientation of a
-	* file dialog.  It is always inherited from the parent.  The fix is
-	* to create a hidden parent and set the orientation in the hidden
-	* parent for the dialog to inherit.
-	*/
-	boolean enabled = false;
-	int dialogOrientation = style & (SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT);
-	int parentOrientation = parent.style & (SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT);
-	if (dialogOrientation != parentOrientation) {
-		int exStyle = OS.WS_EX_NOINHERITLAYOUT;
-		if (dialogOrientation == SWT.RIGHT_TO_LEFT) exStyle |= OS.WS_EX_LAYOUTRTL;
-		hwndOwner = OS.CreateWindowEx (
-			exStyle,
-			Shell.DialogClass,
-			null,
-			0,
-			OS.CW_USEDEFAULT, 0, OS.CW_USEDEFAULT, 0,
-			hwndParent,
-			0,
-			OS.GetModuleHandle (null),
-			null);
-		enabled = OS.IsWindowEnabled (hwndParent);
-		if (enabled) OS.EnableWindow (hwndParent, false);
+	/* Set dialog title */
+	if (!title.isEmpty()) {
+		fileDialog.SetTitle((title + "\0").toCharArray());
 	}
 
-	/* Convert the title and copy it into lpstrTitle */
-	if (title == null) title = "";
-	TCHAR buffer3 = new TCHAR (0, title, true);
-	int byteCount3 = buffer3.length () * TCHAR.sizeof;
-	long lpstrTitle = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount3);
-	OS.MoveMemory (lpstrTitle, buffer3, byteCount3);
-
-	/* Compute filters and copy into lpstrFilter */
-	String strFilter = "";
-	if (filterNames == null) filterNames = new String [0];
-	if (filterExtensions == null) filterExtensions = new String [0];
-	for (int i=0; i<filterExtensions.length; i++) {
-		String filterName = filterExtensions [i];
-		if (i < filterNames.length) filterName = filterNames [i];
-		strFilter = strFilter + filterName + '\0' + filterExtensions [i] + '\0';
+	/* Apply extension filters */
+	String[] filterExtensions = this.filterExtensions;
+	String[] filterNames = this.filterNames;
+	if (filterExtensions == null || filterExtensions.length == 0) {
+		filterExtensions = filterNames = new String[] { DEFAULT_FILTER };
 	}
-	if (filterExtensions.length == 0) {
-		strFilter = strFilter + FILTER + '\0' + FILTER + '\0';
+	long hHeap = OS.GetProcessHeap();
+	long[] filterSpec = new long[filterExtensions.length * 2];
+	for (int i = 0; i < filterExtensions.length; i++) {
+		String extension = filterExtensions[i];
+		String name = (filterNames != null && i < filterNames.length) ? filterNames[i] : extension;
+		/*
+		 * Feature in Windows. If a filter name doesn't contain "*.", FileDialog appends
+		 * the filter pattern to the name. This might cause filters like (*) to appear
+		 * twice. The fix is to strip the pattern and let FileDialog re-append it.
+		 */
+		if (!name.contains("*.")) {
+			name = name.replace(" (" + extension + ")", "");
+		}
+		long lpstrName = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, (name.length() + 1) * Character.BYTES);
+		long lpstrExt = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, (extension.length() + 1) * Character.BYTES);
+		OS.MoveMemory(lpstrName, name.toCharArray(), name.length() * Character.BYTES);
+		OS.MoveMemory(lpstrExt, extension.toCharArray(), extension.length() * Character.BYTES);
+		filterSpec[i*2] = lpstrName;
+		filterSpec[i*2 + 1] = lpstrExt;
 	}
-	TCHAR buffer4 = new TCHAR (0, strFilter, true);
-	int byteCount4 = buffer4.length () * TCHAR.sizeof;
-	long lpstrFilter = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount4);
-	OS.MoveMemory (lpstrFilter, buffer4, byteCount4);
+	fileDialog.SetFileTypes(filterExtensions.length, filterSpec);
+	for (int i = 0; i < filterSpec.length; i++) {
+		OS.HeapFree(hHeap, 0, filterSpec[i]);
+	}
 
-	/* Convert the fileName and filterName to C strings */
-	if (fileName == null) fileName = "";
-	TCHAR name = new TCHAR (0, fileName, true);
+	/* Set initial filter */
+	fileDialog.SetFileTypeIndex(filterIndex + 1);
 
-	/*
-	* Copy the name into lpstrFile and ensure that the
-	* last byte is NULL and the buffer does not overrun.
-	*/
-	int nMaxFile = OS.MAX_PATH;
-	if ((style & SWT.MULTI) != 0) nMaxFile = Math.max (nMaxFile, BUFFER_SIZE);
-	int byteCount = nMaxFile * TCHAR.sizeof;
-	long lpstrFile = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
-	int byteCountFile = Math.min (name.length () * TCHAR.sizeof, byteCount - TCHAR.sizeof);
-	OS.MoveMemory (lpstrFile, name, byteCountFile);
-
-	/*
-	* Copy the path into lpstrInitialDir and ensure that
-	* the last byte is NULL and the buffer does not overrun.
-	*/
-	if (filterPath == null) filterPath = "";
-	TCHAR path = new TCHAR (0, filterPath.replace ('/', '\\'), true);
-	int byteCount5 = OS.MAX_PATH * TCHAR.sizeof;
-	long lpstrInitialDir = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount5);
-	int byteCountDir = Math.min (path.length () * TCHAR.sizeof, byteCount5 - TCHAR.sizeof);
-	OS.MoveMemory (lpstrInitialDir, path, byteCountDir);
-
-	/* Create the file dialog struct */
-	OPENFILENAME struct = new OPENFILENAME ();
-	struct.lStructSize = OPENFILENAME.sizeof;
-	struct.Flags = OS.OFN_HIDEREADONLY | OS.OFN_NOCHANGEDIR;
-	boolean save = (style & SWT.SAVE) != 0;
-	if (save && overwrite) struct.Flags |= OS.OFN_OVERWRITEPROMPT;
-	Callback callback = null;
-	if ((style & SWT.MULTI) != 0) {
-		struct.Flags |= OS.OFN_ALLOWMULTISELECT | OS.OFN_EXPLORER | OS.OFN_ENABLESIZING;
-		if (USE_HOOK) {
-			callback = new Callback (this, "OFNHookProc", 4); //$NON-NLS-1$
-			struct.lpfnHook = callback.getAddress ();
-			struct.Flags |= OS.OFN_ENABLEHOOK;
+	/* Set initial folder */
+	if (filterPath != null) {
+		char[] path = (filterPath.replace('/', '\\') + "\0").toCharArray();
+		if (COM.SHCreateItemFromParsingName(path, 0, COM.IID_IShellItem, ppv) == COM.S_OK) {
+			IShellItem psi = new IShellItem(ppv[0]);
+			fileDialog.SetDefaultFolder(psi);
+			psi.Release();
 		}
 	}
-	struct.hwndOwner = hwndOwner;
-	struct.lpstrTitle = lpstrTitle;
-	struct.lpstrFile = lpstrFile;
-	struct.nMaxFile = nMaxFile;
-	struct.lpstrInitialDir = lpstrInitialDir;
-	struct.lpstrFilter = lpstrFilter;
-	struct.nFilterIndex = filterIndex == 0 ? filterIndex : filterIndex + 1;
 
-	/*
-	* Set the default extension to an empty string.  If the
-	* user fails to type an extension and this extension is
-	* empty, Windows uses the current value of the filter
-	* extension at the time that the dialog is closed.
-	*/
-	long lpstrDefExt = 0;
-	if (save) {
-		lpstrDefExt = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, TCHAR.sizeof);
-		struct.lpstrDefExt = lpstrDefExt;
+	/* Set initial filename */
+	if (fileName != null) {
+		char[] name = (fileName.replace('/', '\\') + "\0").toCharArray();
+		fileDialog.SetFileName(name);
 	}
 
 	/* Make the parent shell be temporary modal */
 	Dialog oldModal = null;
-	Display display = parent.getDisplay ();
+	Display display = parent.getDisplay();
 	if ((style & (SWT.APPLICATION_MODAL | SWT.SYSTEM_MODAL)) != 0) {
-		oldModal = display.getModalDialog ();
-		display.setModalDialog (this);
+		oldModal = display.getModalDialog();
+		display.setModalDialog(this);
 	}
 
-	/*
-	* Feature in Windows.  For some reason, the WH_MSGFILTER filter
-	* does not run for GetSaveFileName() or GetOpenFileName().  The
-	* fix is to allow async messages to run in the WH_FOREGROUNDIDLE
-	* hook instead.
-	*/
-	boolean oldRunMessagesInIdle = display.runMessagesInIdle;
-	display.runMessagesInIdle = true;
+	/* Open the dialog */
 	display.externalEventLoop = true;
-	display.sendPreExternalEventDispatchEvent ();
-	/*
-	* Open the dialog.  If the open fails due to an invalid
-	* file name, use an empty file name and open it again.
-	*/
-	boolean success = (save) ? OS.GetSaveFileName (struct) : OS.GetOpenFileName (struct);
+	display.sendPreExternalEventDispatchEvent();
+	hr = fileDialog.Show(parent.handle);
 	display.externalEventLoop = false;
-	display.sendPostExternalEventDispatchEvent ();
-	switch (OS.CommDlgExtendedError ()) {
-		case OS.FNERR_INVALIDFILENAME:
-			OS.MoveMemory (lpstrFile, new char [1], TCHAR.sizeof);
-			display.externalEventLoop = true;
-			display.sendPreExternalEventDispatchEvent ();
-			success = (save) ? OS.GetSaveFileName (struct) : OS.GetOpenFileName (struct);
-			display.externalEventLoop = false;
-			display.sendPostExternalEventDispatchEvent ();
-			break;
-		case OS.FNERR_BUFFERTOOSMALL:
-			USE_HOOK = true;
-			break;
-	}
-	display.runMessagesInIdle = oldRunMessagesInIdle;
+	display.sendPostExternalEventDispatchEvent();
 
 	/* Clear the temporary dialog modal parent */
 	if ((style & (SWT.APPLICATION_MODAL | SWT.SYSTEM_MODAL)) != 0) {
-		display.setModalDialog (oldModal);
+		display.setModalDialog(oldModal);
 	}
 
-	/* Dispose the callback and reassign the buffer */
-	if (callback != null) callback.dispose ();
-	lpstrFile = struct.lpstrFile;
-
-	/* Set the new path, file name and filter */
-	fileNames = new String [0];
+	/* Extract result paths */
 	String fullPath = null;
-	if (success) {
-		char [] buffer = new char [struct.nMaxFile];
-		OS.MoveMemory (buffer, lpstrFile, buffer.length * TCHAR.sizeof);
-		int nFileOffset = struct.nFileOffset;
-		if (nFileOffset > 0) {
-			filterPath = new String (buffer, 0, nFileOffset - 1);
-
-			/*
-			* Get each file from the buffer.  Files are delimited
-			* by a NULL character with 2 NULL characters at the end.
-			*/
-			int count = 0;
-			fileNames = new String [(style & SWT.MULTI) != 0 ? 4 : 1];
-			int start = nFileOffset;
-			do {
-				int end = start;
-				while (end < buffer.length && buffer [end] != 0) end++;
-				String string = new String (buffer, start, end - start);
-				start = end + 1;
-				if (count == fileNames.length) {
-					String [] newFileNames = new String [fileNames.length + 4];
-					System.arraycopy (fileNames, 0, newFileNames, 0, fileNames.length);
-					fileNames = newFileNames;
-				}
-				fileNames [count++] = string;
-				if ((style & SWT.MULTI) == 0) break;
-			} while (start < buffer.length && buffer[start] != 0);
-
-			if (fileNames.length > 0) fileName = fileNames  [0];
-			String separator = "";
-			int length = filterPath.length ();
-			if (length > 0 && filterPath.charAt (length - 1) != '\\') {
-				separator = "\\";
+	fileNames = new String[0];
+	if (hr == COM.S_OK) {
+		if ((style & SWT.SAVE) != 0) {
+			if (fileDialog.GetResult(ppv) == COM.S_OK) {
+				IShellItem psi = new IShellItem(ppv[0]);
+				Path itemPath = getItemPath(psi);
+				psi.Release();
+				fileName = itemPath.getFileName().toString();
+				filterPath = itemPath.getParent().toString();
+				fileNames = new String[] { fileName };
+				fullPath = itemPath.toString();
 			}
-			fullPath = filterPath + separator + fileName;
-			if (count < fileNames.length) {
-				String [] newFileNames = new String [count];
-				System.arraycopy (fileNames, 0, newFileNames, 0, count);
-				fileNames = newFileNames;
+		} else {
+			if (fileDialog.GetResults(ppv) == COM.S_OK) {
+				IShellItemArray psia = new IShellItemArray(ppv[0]);
+				int[] piCount = new int[1];
+				psia.GetCount(piCount);
+				fileNames = new String[piCount[0]];
+				Path parentPath = null;
+				for (int i = 0; i < piCount[0]; i++) {
+					psia.GetItemAt(i, ppv);
+					IShellItem psi = new IShellItem(ppv[0]);
+					Path itemPath = getItemPath(psi);
+					psi.Release();
+					if (parentPath == null) {
+						parentPath = itemPath.getParent();
+						filterPath = parentPath.toString();
+						fullPath = itemPath.toString();
+					}
+					/*
+					 * Feature in Windows. Returned items might have different parent folders.
+					 * (E.g. when selecting from a virtual folder like Recent Files).
+					 * Return full paths names in this case.
+					 */
+					if (itemPath.getParent().equals(parentPath)) {
+						fileNames[i] = itemPath.getFileName().toString();
+					} else {
+						fileNames[i] = itemPath.toString();
+					}
+				}
+				fileName = fileNames[0];
+				psia.Release();
 			}
 		}
-		filterIndex = struct.nFilterIndex - 1;
+
+		int[] piIndex = new int[1];
+		if (fileDialog.GetFileTypeIndex(piIndex) == COM.S_OK) {
+			filterIndex = piIndex[0] - 1;
+		}
 	}
 
-	/* Free the memory that was allocated. */
-	OS.HeapFree (hHeap, 0, lpstrFile);
-	OS.HeapFree (hHeap, 0, lpstrFilter);
-	OS.HeapFree (hHeap, 0, lpstrInitialDir);
-	OS.HeapFree (hHeap, 0, lpstrTitle);
-	if (lpstrDefExt != 0) OS.HeapFree (hHeap, 0, lpstrDefExt);
-
-	/* Destroy the BIDI orientation window */
-	if (hwndParent != hwndOwner) {
-		if (enabled) OS.EnableWindow (hwndParent, true);
-		OS.SetActiveWindow (hwndParent);
-		OS.DestroyWindow (hwndOwner);
-	}
+	fileDialog.Release();
 
 	/* Answer the full path or null */
 	return fullPath;
@@ -586,4 +489,5 @@ public void setFilterPath (String string) {
 public void setOverwrite (boolean overwrite) {
 	this.overwrite = overwrite;
 }
+
 }

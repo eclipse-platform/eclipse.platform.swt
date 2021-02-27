@@ -27,6 +27,18 @@ public int Show(long hwndOwner) {
 
 // IFileDialog
 
+public int SetFileTypes(int cFileTypes, long [] rgFilterSpec) {
+	return COM.VtblCall(4, address, cFileTypes, rgFilterSpec);
+}
+
+public int SetFileTypeIndex(int iFileType) {
+	return COM.VtblCall(5, address, iFileType);
+}
+
+public int GetFileTypeIndex(int [] piFileType) {
+	return COM.VtblCall(6, address, piFileType);
+}
+
 public int SetOptions(int fos) {
 	return COM.VtblCall(9, address, fos);
 }
@@ -43,6 +55,10 @@ public int SetFolder(IShellItem psi) {
 	return COM.VtblCall(12, address, psi.address);
 }
 
+public int SetFileName(char [] pszName) {
+	return COM.VtblCall(15, address, pszName);
+}
+
 public int SetTitle(char[] pszTitle) {
 	return COM.VtblCall(17, address, pszTitle);
 }
@@ -53,6 +69,12 @@ public int GetResult(long[] ppsi) {
 
 public int ClearClientData() {
 	return COM.VtblCall(25, address);
+}
+
+// IFileOpenDialog
+
+public int GetResults(long [] ppenum) {
+	return COM.VtblCall(27, address, ppenum);
 }
 
 }

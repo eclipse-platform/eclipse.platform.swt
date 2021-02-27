@@ -22,7 +22,7 @@ public class COM extends OS {
 	public static final GUID CLSID_DragDropHelper = COM.IIDFromString("{4657278A-411B-11d2-839A-00C04FD918D0}"); //$NON-NLS-1$
 	public static final GUID CLSID_EnumerableObjectCollection = IIDFromString ("{2d3468c1-36a7-43b6-ac24-d3f02fd9607a}"); //$NON-NLS-1$
 	public static final GUID CLSID_FileOpenDialog = IIDFromString("{DC1C5A9C-E88A-4dde-A5A1-60F82A20AEF7}"); //$NON-NLS-1$
-	public static final GUID CLSID_FileSaveDialog = IIDFromString("{84bccd23-5fde-4cdb-aea4-af64b83d78ab}"); //$NON-NLS-1$
+	public static final GUID CLSID_FileSaveDialog = IIDFromString("{C0B4E2F3-BA21-4773-8DBA-335EC946EB8B}"); //$NON-NLS-1$
 	public static final GUID CLSID_ShellLink = IIDFromString ("{00021401-0000-0000-C000-000000000046}"); //$NON-NLS-1$
 	public static final GUID CLSID_TaskbarList = IIDFromString ("{56FDF344-FD6D-11d0-958A-006097C9A090}"); //$NON-NLS-1$
 	public static final GUID CLSID_TF_InputProcessorProfiles = IIDFromString("{33C53A50-F456-4884-B049-85FD643ECFED}"); //$NON-NLS-1$

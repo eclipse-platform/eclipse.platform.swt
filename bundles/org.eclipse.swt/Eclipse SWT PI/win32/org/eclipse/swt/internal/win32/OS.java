@@ -462,11 +462,11 @@ public class OS extends C {
 	public static final int FLICKDIRECTION_DOWN = 6;
 	public static final int FLICKDIRECTION_DOWNRIGHT = 7;
 	public static final int FLICKDIRECTION_INVALID = 8;
-	public static final int FNERR_INVALIDFILENAME = 0x3002;
-	public static final int FNERR_BUFFERTOOSMALL = 0x3003;
+	public static final int FOS_OVERWRITEPROMPT = 0x2;
 	public static final int FOS_NOCHANGEDIR = 0x8;
 	public static final int FOS_PICKFOLDERS = 0x20;
 	public static final int FOS_FORCEFILESYSTEM = 0x40;
+	public static final int FOS_ALLOWMULTISELECT = 0x200;
 	public static final int FR_PRIVATE = 0x10;
 	public static final int FSHIFT = 0x4;
 	public static final int FVIRTKEY = 0x1;
@@ -977,13 +977,6 @@ public class OS extends C {
 	public static final int OBM_CHECKBOXES = 0x7ff7;
 	public static final int ODS_SELECTED = 0x1;
 	public static final int ODT_MENU = 0x1;
-	public static final int OFN_ALLOWMULTISELECT = 0x200;
-	public static final int OFN_EXPLORER = 0x80000;
-	public static final int OFN_ENABLEHOOK = 0x20;
-	public static final int OFN_ENABLESIZING = 0x800000;
-	public static final int OFN_HIDEREADONLY = 0x4;
-	public static final int OFN_NOCHANGEDIR = 0x8;
-	public static final int OFN_OVERWRITEPROMPT = 0x2;
 	public static final int OIC_BANG = 0x7F03;
 	public static final int OIC_HAND = 0x7F01;
 	public static final int OIC_INFORMATION = 0x7F04;
@@ -1925,8 +1918,6 @@ public static final native int NMUPDOWN_sizeof ();
 public static final native int NONCLIENTMETRICS_sizeof ();
 /** @method flags=const */
 public static final native int NOTIFYICONDATA_V2_SIZE ();
-public static final native int OFNOTIFY_sizeof ();
-public static final native int OPENFILENAME_sizeof ();
 public static final native int OUTLINETEXTMETRIC_sizeof ();
 public static final native int PAINTSTRUCT_sizeof ();
 public static final native int POINT_sizeof ();
@@ -2370,7 +2361,6 @@ public static final native int CoInternetSetFeatureEnabled (int FeatureEntry, in
  * @param hrgnSrc2 cast=(HRGN)
  */
 public static final native int CombineRgn (long hrgnDest, long hrgnSrc1, long hrgnSrc2, int fnCombineMode);
-public static final native int CommDlgExtendedError ();
 /** @param hImage cast=(HANDLE) */
 public static final native long CopyImage (long hImage, int uType, int cxDesired, int cyDesired, int fuFlags);
 /** @param cb cast=(ULONG) */
@@ -2875,7 +2865,6 @@ public static final native int GetObject (long hgdiobj, int cbBuffer, LOGFONT lp
  * @param lpvObject cast=(LPVOID),flags=no_in
  */
 public static final native int GetObject (long hgdiobj, int cbBuffer, long lpvObject);
-public static final native boolean GetOpenFileName (OPENFILENAME lpofn);
 /** @param hdc cast=(HDC) */
 public static final native int GetOutlineTextMetrics (long hdc, int cbData, OUTLINETEXTMETRIC lpOTM);
 /** @param hWnd cast=(HWND) */
@@ -2920,7 +2909,6 @@ public static final native int GetRegionData (long hRgn, int dwCount, int [] lpR
 public static final native int GetRgnBox (long hrgn, RECT lprc);
 /** @param hdc cast=(HDC) */
 public static final native int GetROP2 (long hdc);
-public static final native boolean GetSaveFileName (OPENFILENAME lpofn);
 /** @param hwnd cast=(HWND) */
 public static final native boolean GetScrollBarInfo (long hwnd, int idObject, SCROLLBARINFO psbi);
 /** @param hwnd cast=(HWND) */
@@ -3375,11 +3363,6 @@ public static final native void MoveMemory (long Destination, UDACCEL Source, in
 public static final native void MoveMemory (long Destination, NMTTDISPINFO Source, int Length);
 /**
  * @param Destination cast=(PVOID)
- * @param Source cast=(CONST VOID *)
- */
-public static final native void MoveMemory (long Destination, OPENFILENAME Source, int Length);
-/**
- * @param Destination cast=(PVOID)
  * @param Source cast=(CONST VOID *),flags=no_out
  */
 public static final native void MoveMemory (long Destination, RECT Source, int Length);
@@ -3463,16 +3446,6 @@ public static final native void MoveMemory (MEASUREITEMSTRUCT Destination, long 
  * @param Source cast=(CONST VOID *)
  */
 public static final native void MoveMemory (MINMAXINFO Destination, long Source, int Length);
-/**
- * @param Destination cast=(PVOID)
- * @param Source cast=(CONST VOID *)
- */
-public static final native void MoveMemory (OFNOTIFY Destination, long Source, int Length);
-/**
- * @param Destination cast=(PVOID)
- * @param Source cast=(CONST VOID *)
- */
-public static final native void MoveMemory (OPENFILENAME Destination, long Source, int Length);
 /**
  * @param Destination cast=(PVOID),flags=no_in
  * @param Source cast=(CONST VOID *)

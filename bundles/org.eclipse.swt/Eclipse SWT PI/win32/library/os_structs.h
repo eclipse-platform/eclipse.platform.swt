@@ -965,30 +965,6 @@ void setNOTIFYICONDATAFields(JNIEnv *env, jobject lpObject, NOTIFYICONDATA *lpSt
 #define NOTIFYICONDATA_sizeof() 0
 #endif
 
-#ifndef NO_OFNOTIFY
-void cacheOFNOTIFYFields(JNIEnv *env, jobject lpObject);
-OFNOTIFY *getOFNOTIFYFields(JNIEnv *env, jobject lpObject, OFNOTIFY *lpStruct);
-void setOFNOTIFYFields(JNIEnv *env, jobject lpObject, OFNOTIFY *lpStruct);
-#define OFNOTIFY_sizeof() sizeof(OFNOTIFY)
-#else
-#define cacheOFNOTIFYFields(a,b)
-#define getOFNOTIFYFields(a,b,c) NULL
-#define setOFNOTIFYFields(a,b,c)
-#define OFNOTIFY_sizeof() 0
-#endif
-
-#ifndef NO_OPENFILENAME
-void cacheOPENFILENAMEFields(JNIEnv *env, jobject lpObject);
-OPENFILENAME *getOPENFILENAMEFields(JNIEnv *env, jobject lpObject, OPENFILENAME *lpStruct);
-void setOPENFILENAMEFields(JNIEnv *env, jobject lpObject, OPENFILENAME *lpStruct);
-#define OPENFILENAME_sizeof() sizeof(OPENFILENAME)
-#else
-#define cacheOPENFILENAMEFields(a,b)
-#define getOPENFILENAMEFields(a,b,c) NULL
-#define setOPENFILENAMEFields(a,b,c)
-#define OPENFILENAME_sizeof() 0
-#endif
-
 #ifndef NO_OUTLINETEXTMETRIC
 void cacheOUTLINETEXTMETRICFields(JNIEnv *env, jobject lpObject);
 OUTLINETEXTMETRIC *getOUTLINETEXTMETRICFields(JNIEnv *env, jobject lpObject, OUTLINETEXTMETRIC *lpStruct);

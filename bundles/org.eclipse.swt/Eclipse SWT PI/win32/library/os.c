@@ -679,18 +679,6 @@ JNIEXPORT jint JNICALL OS_NATIVE(CombineRgn)
 }
 #endif
 
-#ifndef NO_CommDlgExtendedError
-JNIEXPORT jint JNICALL OS_NATIVE(CommDlgExtendedError)
-	(JNIEnv *env, jclass that)
-{
-	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, CommDlgExtendedError_FUNC);
-	rc = (jint)CommDlgExtendedError();
-	OS_NATIVE_EXIT(env, that, CommDlgExtendedError_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO_CopyImage
 JNIEXPORT jlong JNICALL OS_NATIVE(CopyImage)
 	(JNIEnv *env, jclass that, jlong arg0, jint arg1, jint arg2, jint arg3, jint arg4)
@@ -2986,22 +2974,6 @@ fail:
 }
 #endif
 
-#ifndef NO_GetOpenFileName
-JNIEXPORT jboolean JNICALL OS_NATIVE(GetOpenFileName)
-	(JNIEnv *env, jclass that, jobject arg0)
-{
-	OPENFILENAME _arg0, *lparg0=NULL;
-	jboolean rc = 0;
-	OS_NATIVE_ENTER(env, that, GetOpenFileName_FUNC);
-	if (arg0) if ((lparg0 = getOPENFILENAMEFields(env, arg0, &_arg0)) == NULL) goto fail;
-	rc = (jboolean)GetOpenFileName(lparg0);
-fail:
-	if (arg0 && lparg0) setOPENFILENAMEFields(env, arg0, lparg0);
-	OS_NATIVE_EXIT(env, that, GetOpenFileName_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO_GetOutlineTextMetrics
 JNIEXPORT jint JNICALL OS_NATIVE(GetOutlineTextMetrics)
 	(JNIEnv *env, jclass that, jlong arg0, jint arg1, jobject arg2)
@@ -3155,22 +3127,6 @@ JNIEXPORT jint JNICALL OS_NATIVE(GetRgnBox)
 fail:
 	if (arg1 && lparg1) setRECTFields(env, arg1, lparg1);
 	OS_NATIVE_EXIT(env, that, GetRgnBox_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO_GetSaveFileName
-JNIEXPORT jboolean JNICALL OS_NATIVE(GetSaveFileName)
-	(JNIEnv *env, jclass that, jobject arg0)
-{
-	OPENFILENAME _arg0, *lparg0=NULL;
-	jboolean rc = 0;
-	OS_NATIVE_ENTER(env, that, GetSaveFileName_FUNC);
-	if (arg0) if ((lparg0 = getOPENFILENAMEFields(env, arg0, &_arg0)) == NULL) goto fail;
-	rc = (jboolean)GetSaveFileName(lparg0);
-fail:
-	if (arg0 && lparg0) setOPENFILENAMEFields(env, arg0, lparg0);
-	OS_NATIVE_EXIT(env, that, GetSaveFileName_FUNC);
 	return rc;
 }
 #endif
@@ -5148,20 +5104,6 @@ fail:
 }
 #endif
 
-#ifndef NO_MoveMemory__JLorg_eclipse_swt_internal_win32_OPENFILENAME_2I
-JNIEXPORT void JNICALL OS_NATIVE(MoveMemory__JLorg_eclipse_swt_internal_win32_OPENFILENAME_2I)
-	(JNIEnv *env, jclass that, jlong arg0, jobject arg1, jint arg2)
-{
-	OPENFILENAME _arg1, *lparg1=NULL;
-	OS_NATIVE_ENTER(env, that, MoveMemory__JLorg_eclipse_swt_internal_win32_OPENFILENAME_2I_FUNC);
-	if (arg1) if ((lparg1 = getOPENFILENAMEFields(env, arg1, &_arg1)) == NULL) goto fail;
-	MoveMemory((PVOID)arg0, (CONST VOID *)lparg1, arg2);
-fail:
-	if (arg1 && lparg1) setOPENFILENAMEFields(env, arg1, lparg1);
-	OS_NATIVE_EXIT(env, that, MoveMemory__JLorg_eclipse_swt_internal_win32_OPENFILENAME_2I_FUNC);
-}
-#endif
-
 #ifndef NO_MoveMemory__JLorg_eclipse_swt_internal_win32_RECT_2I
 JNIEXPORT void JNICALL OS_NATIVE(MoveMemory__JLorg_eclipse_swt_internal_win32_RECT_2I)
 	(JNIEnv *env, jclass that, jlong arg0, jobject arg1, jint arg2)
@@ -5851,34 +5793,6 @@ fail:
 }
 #endif
 
-#ifndef NO_MoveMemory__Lorg_eclipse_swt_internal_win32_OFNOTIFY_2JI
-JNIEXPORT void JNICALL OS_NATIVE(MoveMemory__Lorg_eclipse_swt_internal_win32_OFNOTIFY_2JI)
-	(JNIEnv *env, jclass that, jobject arg0, jlong arg1, jint arg2)
-{
-	OFNOTIFY _arg0, *lparg0=NULL;
-	OS_NATIVE_ENTER(env, that, MoveMemory__Lorg_eclipse_swt_internal_win32_OFNOTIFY_2JI_FUNC);
-	if (arg0) if ((lparg0 = getOFNOTIFYFields(env, arg0, &_arg0)) == NULL) goto fail;
-	MoveMemory((PVOID)lparg0, (CONST VOID *)arg1, arg2);
-fail:
-	if (arg0 && lparg0) setOFNOTIFYFields(env, arg0, lparg0);
-	OS_NATIVE_EXIT(env, that, MoveMemory__Lorg_eclipse_swt_internal_win32_OFNOTIFY_2JI_FUNC);
-}
-#endif
-
-#ifndef NO_MoveMemory__Lorg_eclipse_swt_internal_win32_OPENFILENAME_2JI
-JNIEXPORT void JNICALL OS_NATIVE(MoveMemory__Lorg_eclipse_swt_internal_win32_OPENFILENAME_2JI)
-	(JNIEnv *env, jclass that, jobject arg0, jlong arg1, jint arg2)
-{
-	OPENFILENAME _arg0, *lparg0=NULL;
-	OS_NATIVE_ENTER(env, that, MoveMemory__Lorg_eclipse_swt_internal_win32_OPENFILENAME_2JI_FUNC);
-	if (arg0) if ((lparg0 = getOPENFILENAMEFields(env, arg0, &_arg0)) == NULL) goto fail;
-	MoveMemory((PVOID)lparg0, (CONST VOID *)arg1, arg2);
-fail:
-	if (arg0 && lparg0) setOPENFILENAMEFields(env, arg0, lparg0);
-	OS_NATIVE_EXIT(env, that, MoveMemory__Lorg_eclipse_swt_internal_win32_OPENFILENAME_2JI_FUNC);
-}
-#endif
-
 #ifndef NO_MoveMemory__Lorg_eclipse_swt_internal_win32_POINT_2JI
 JNIEXPORT void JNICALL OS_NATIVE(MoveMemory__Lorg_eclipse_swt_internal_win32_POINT_2JI)
 	(JNIEnv *env, jclass that, jobject arg0, jlong arg1, jint arg2)
@@ -6482,30 +6396,6 @@ JNIEXPORT void JNICALL OS_NATIVE(NotifyWinEvent)
 	OS_NATIVE_ENTER(env, that, NotifyWinEvent_FUNC);
 	NotifyWinEvent((DWORD)arg0, (HWND)arg1, (LONG)arg2, (LONG)arg3);
 	OS_NATIVE_EXIT(env, that, NotifyWinEvent_FUNC);
-}
-#endif
-
-#ifndef NO_OFNOTIFY_1sizeof
-JNIEXPORT jint JNICALL OS_NATIVE(OFNOTIFY_1sizeof)
-	(JNIEnv *env, jclass that)
-{
-	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, OFNOTIFY_1sizeof_FUNC);
-	rc = (jint)OFNOTIFY_sizeof();
-	OS_NATIVE_EXIT(env, that, OFNOTIFY_1sizeof_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO_OPENFILENAME_1sizeof
-JNIEXPORT jint JNICALL OS_NATIVE(OPENFILENAME_1sizeof)
-	(JNIEnv *env, jclass that)
-{
-	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, OPENFILENAME_1sizeof_FUNC);
-	rc = (jint)OPENFILENAME_sizeof();
-	OS_NATIVE_EXIT(env, that, OPENFILENAME_1sizeof_FUNC);
-	return rc;
 }
 #endif
 
