@@ -45,7 +45,7 @@ public class TreeColumn extends Item {
 	long headerButtonCSSProvider = 0;
 	long labelHandle, imageHandle, buttonHandle;
 	Tree parent;
-	int modelIndex, lastButton, lastTime, lastX, lastWidth;
+	int modelIndex, lastTime, lastX, lastWidth;
 	boolean customDraw, useFixedWidth;
 	String toolTipText;
 
@@ -350,33 +350,24 @@ long gtk_clicked (long widget) {
 	* and testing for the double click interval.
 	*/
 	boolean doubleClick = false;
-	boolean postEvent = true;
 	long eventPtr = GTK3.gtk_get_current_event ();
 	if (eventPtr != 0) {
-		int [] eventButton = new int [1];
-		if (GTK.GTK4) {
-			eventButton[0] = GDK.gdk_button_event_get_button(eventPtr);
-		} else {
-			GDK.gdk_event_get_button(eventPtr, eventButton);
+		int eventType = GDK.gdk_event_get_event_type(eventPtr);
+		int eventTime = GDK.gdk_event_get_time(eventPtr);
+
+		if (eventType == GDK.GDK_BUTTON_RELEASE) {
+			int clickTime = display.getDoubleClickTime();
+			if (lastTime != 0 && Math.abs(lastTime - eventTime) <= clickTime) {
+				doubleClick = true;
+			}
+			lastTime = eventTime == 0 ? 1: eventTime;
 		}
 
-		int eventType = GDK.gdk_event_get_event_type(eventPtr);
-		eventType = Control.fixGdkEventTypeValues(eventType);
-		int eventTime = GDK.gdk_event_get_time(eventPtr);
-		switch (eventType) {
-			case GDK.GDK_BUTTON_RELEASE: {
-				int clickTime = display.getDoubleClickTime ();
-				if (lastButton == eventButton[0] && lastTime != 0 && Math.abs (lastTime - eventTime) <= clickTime) {
-					doubleClick = true;
-				}
-				lastTime = eventTime == 0 ? 1: eventTime;
-				lastButton = eventButton[0];
-				break;
-			}
-		}
-		gdk_event_free (eventPtr);
+		gdk_event_free(eventPtr);
 	}
-	if (postEvent) sendSelectionEvent (doubleClick ? SWT.DefaultSelection : SWT.Selection);
+
+	sendSelectionEvent(doubleClick ? SWT.DefaultSelection : SWT.Selection);
+
 	return 0;
 }
 
