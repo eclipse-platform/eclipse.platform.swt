@@ -732,12 +732,10 @@ long gtk_button_release_event (long widget, long event) {
 	return 0;
 }
 
-long gtk_gesture_press_event (long gesture, int n_press, double x, double y, long event) {
-	return 0;
+void gtk_gesture_press_event (long gesture, int n_press, double x, double y, long event) {
 }
 
-long gtk_gesture_release_event (long gesture, int n_press, double x, double y, long event) {
-	return 0;
+void gtk_gesture_release_event (long gesture, int n_press, double x, double y, long event) {
 }
 
 long gtk_changed (long widget) {
@@ -2218,20 +2216,17 @@ long keyPressReleaseProc(long controller, long handle, int keyval, int keycode, 
 	return result;
 }
 
-long gesturePressReleaseProc(long gesture, int n_press, double x, double y, long user_data) {
-	long result = 0;
+void gesturePressReleaseProc(long gesture, int n_press, double x, double y, long user_data) {
 	long event = GTK.gtk_event_controller_get_current_event(gesture);
 
 	switch ((int)user_data) {
 		case GESTURE_PRESSED:
-			result = gtk_gesture_press_event(gesture, n_press, x, y, event);
+			gtk_gesture_press_event(gesture, n_press, x, y, event);
 			break;
 		case GESTURE_RELEASED:
-			result = gtk_gesture_release_event(gesture, n_press, x, y, event);
+			gtk_gesture_release_event(gesture, n_press, x, y, event);
 			break;
 	}
-
-	return result;
 }
 
 long leaveProc(long controller, long handle, long user_data) {

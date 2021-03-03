@@ -2320,19 +2320,13 @@ long gtk_button_press_event (long widget, long event) {
 }
 
 @Override
-long gtk_gesture_press_event (long gesture, int n_press, double x, double y, long event) {
-	long result = super.gtk_gesture_press_event(gesture, n_press, x, y, event);
+void gtk_gesture_press_event (long gesture, int n_press, double x, double y, long event) {
+	super.gtk_gesture_press_event(gesture, n_press, x, y, event);
 
 	if (n_press == 2 && rowActivated) {
 		sendTreeDefaultSelection ();
 		rowActivated = false;
 	}
-	return result;
-}
-
-@Override
-long gtk_gesture_release_event(long gesture, int n_press, double x, double y, long event) {
-	return super.gtk_gesture_release_event(gesture, n_press, x, y, event);
 }
 
 @Override

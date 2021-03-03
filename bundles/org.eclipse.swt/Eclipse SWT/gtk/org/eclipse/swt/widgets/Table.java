@@ -2183,9 +2183,9 @@ long gtk_button_press_event (long widget, long event) {
 }
 
 @Override
-long gtk_gesture_press_event (long gesture, int n_press, double x, double y, long event) {
-	if (n_press == 1) return 0;
-	long result = super.gtk_gesture_press_event(gesture, n_press, x, y, event);
+void gtk_gesture_press_event (long gesture, int n_press, double x, double y, long event) {
+	if (n_press == 1) return;
+	super.gtk_gesture_press_event(gesture, n_press, x, y, event);
 
 	// TODO: GTK4 replicate gtk_button_press_event functions
 
@@ -2193,7 +2193,6 @@ long gtk_gesture_press_event (long gesture, int n_press, double x, double y, lon
 		sendTreeDefaultSelection ();
 		rowActivated = false;
 	}
-	return result;
 }
 
 @Override

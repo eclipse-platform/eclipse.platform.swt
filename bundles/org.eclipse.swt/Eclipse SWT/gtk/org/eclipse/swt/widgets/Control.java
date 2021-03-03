@@ -3440,7 +3440,7 @@ void gtk_style_context_get_border (long context, int state, GtkBorder padding) {
  * Handling multi-press event on GTK4
  */
 @Override
-long gtk_gesture_press_event (long gesture, int n_press, double x, double y, long event) {
+void gtk_gesture_press_event (long gesture, int n_press, double x, double y, long event) {
 	mouseDown = true;
 	dragBegun = false;
 
@@ -3456,13 +3456,11 @@ long gtk_gesture_press_event (long gesture, int n_press, double x, double y, lon
 	int eventTime = GDK.gdk_event_get_time(event);
 	int eventState = GDK.gdk_event_get_modifier_state(event);
 
-	boolean mouseEventSent = sendMouseEvent(SWT.MouseDown, eventButton, n_press, 0, false, eventTime, x, y, true, eventState);
-
-	return mouseEventSent ? 1 : 0;
+	sendMouseEvent(SWT.MouseDown, eventButton, n_press, 0, false, eventTime, x, y, true, eventState);
 }
 
 @Override
-long gtk_gesture_release_event (long gesture, int n_press, double x, double y, long event) {
+void gtk_gesture_release_event (long gesture, int n_press, double x, double y, long event) {
 	mouseDown = false;
 
 	double [] eventX = new double [1];
@@ -3475,8 +3473,8 @@ long gtk_gesture_release_event (long gesture, int n_press, double x, double y, l
 
 	lastInput.x = (int) eventX[0];
 	lastInput.y = (int) eventY[0];
-	if (containedInRegion(lastInput.x, lastInput.y)) return 0;
-	return sendMouseEvent(SWT.MouseUp, eventButton, display.clickCount, 0, false, eventTime, 0, 0, false, eventState) ? 0 : 1;
+	if (containedInRegion(lastInput.x, lastInput.y)) return;
+	sendMouseEvent(SWT.MouseUp, eventButton, display.clickCount, 0, false, eventTime, 0, 0, false, eventState);
 }
 
 @Override

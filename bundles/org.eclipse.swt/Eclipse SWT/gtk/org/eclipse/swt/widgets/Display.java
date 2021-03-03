@@ -3575,7 +3575,7 @@ void initializeCallbacks () {
 		closuresProc [Widget.MOTION] = enterMotionScrollProc;
 		closuresProc [Widget.SCROLL] = enterMotionScrollProc;
 
-		gesturePressReleaseCallback = new Callback (this, "gesturePressReleaseProc", long.class, new Type[] {
+		gesturePressReleaseCallback = new Callback (this, "gesturePressReleaseProc", void.class, new Type[] {
 				long.class, int.class, double.class, double.class, long.class}); //$NON-NLS-1$
 		gesturePressReleaseProc = gesturePressReleaseCallback.getAddress();
 
@@ -6024,11 +6024,11 @@ long keyPressReleaseProc (long controller, int keyval, int keycode, int state, l
 	return widget.keyPressReleaseProc(controller, handle, keyval, keycode, state, user_data);
 }
 
-long gesturePressReleaseProc (long gesture, int n_press, double x, double y, long user_data) {
+void gesturePressReleaseProc(long gesture, int n_press, double x, double y, long user_data) {
 	long handle = GTK.gtk_event_controller_get_widget(gesture);
-	Widget widget = getWidget (handle);
-	if (widget == null) return 0;
-	return widget.gesturePressReleaseProc (gesture, n_press, x, y, user_data);
+	Widget widget = getWidget(handle);
+
+	if (widget != null) widget.gesturePressReleaseProc(gesture, n_press, x, y, user_data);
 }
 
 long leaveProc (long controller, long user_data) {

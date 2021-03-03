@@ -295,7 +295,7 @@ long gtk_button_press_event (long widget, long event) {
 }
 
 @Override
-long gtk_gesture_press_event(long gesture, int n_press, double x, double y, long event) {
+void gtk_gesture_press_event(long gesture, int n_press, double x, double y, long event) {
 	switch (n_press) {
 		case 1: {
 			int eventButton = GDK.gdk_button_event_get_button(event);
@@ -313,8 +313,6 @@ long gtk_gesture_press_event(long gesture, int n_press, double x, double y, long
 		default:
 			break;
 	}
-
-	return 0;
 }
 
 @Override

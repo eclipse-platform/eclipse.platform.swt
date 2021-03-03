@@ -381,6 +381,13 @@ long gtk_clicked (long widget) {
 }
 
 @Override
+void gtk_gesture_press_event(long gesture, int n_press, double x, double y, long event) {
+	boolean doubleClick = n_press >= 2 ? true : false;
+
+	sendSelectionEvent(doubleClick ? SWT.DefaultSelection : SWT.Selection);
+}
+
+@Override
 long gtk_event_after (long widget, long gdkEvent) {
 	int eventType = GDK.gdk_event_get_event_type(gdkEvent);
 	eventType = Control.fixGdkEventTypeValues(eventType);
@@ -431,8 +438,18 @@ long gtk_size_allocate (long widget, long allocation) {
 
 @Override
 void hookEvents () {
-	super.hookEvents ();
-	OS.g_signal_connect_closure (handle, OS.clicked, display.getClosure (CLICKED), false);
+	super.hookEvents();
+
+	if (GTK.GTK4) {
+		 long clickController = GTK.gtk_gesture_click_new();
+		 GTK.gtk_widget_add_controller(buttonHandle, clickController);
+		 GTK.gtk_event_controller_set_propagation_phase(clickController, GTK.GTK_PHASE_CAPTURE);
+		 OS.g_signal_connect(clickController, OS.pressed, display.gesturePressReleaseProc, GESTURE_PRESSED);
+	} else {
+		OS.g_signal_connect_closure (handle, OS.clicked, display.getClosure (CLICKED), false);
+	}
+
+
 	if (buttonHandle != 0) {
 		if (GTK.GTK4) {
 			//TODO: GTK4 event-after, size-allocate signals (if necessary)
