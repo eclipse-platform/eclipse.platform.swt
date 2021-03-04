@@ -46,7 +46,7 @@ public class TreeColumn extends Item {
 	long labelHandle, imageHandle, buttonHandle;
 	Tree parent;
 	int modelIndex, lastTime, lastX, lastWidth;
-	boolean customDraw, useFixedWidth;
+	boolean customDraw;
 	String toolTipText;
 
 /**
@@ -336,7 +336,7 @@ int getWidthInPixels () {
 	if (!GTK.gtk_tree_view_column_get_visible (handle)) {
 		return 0;
 	}
-	if (useFixedWidth) return GTK.gtk_tree_view_column_get_fixed_width (handle);
+	//if (useFixedWidth) return GTK.gtk_tree_view_column_get_fixed_width (handle);
 	return GTK.gtk_tree_view_column_get_width (handle);
 }
 
@@ -411,7 +411,6 @@ long gtk_mnemonic_activate (long widget, long arg1) {
 
 @Override
 long gtk_size_allocate (long widget, long allocation) {
-	useFixedWidth = false;
 	GtkAllocation widgetAllocation = new GtkAllocation();
 	GTK.gtk_widget_get_allocation (widget, widgetAllocation);
 	int x = widgetAllocation.x;
@@ -747,18 +746,17 @@ void setToolTipText (Shell shell, String newString) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
-public void setWidth (int width) {
-	checkWidget ();
-	setWidthInPixels (DPIUtil.autoScaleUp (width));
+public void setWidth(int width) {
+	checkWidget();
+	setWidthInPixels(DPIUtil.autoScaleUp(width));
 }
 
-void setWidthInPixels (int width) {
+void setWidthInPixels(int width) {
 	checkWidget();
 	if (width < 0) return;
 	if (width == lastWidth) return;
 	if (width > 0) {
-		useFixedWidth = true;
-		GTK.gtk_tree_view_column_set_fixed_width (handle, width);
+		GTK.gtk_tree_view_column_set_fixed_width(handle, width);
 	}
 	/*
 	 * Bug in GTK.  For some reason, calling gtk_tree_view_column_set_visible()
