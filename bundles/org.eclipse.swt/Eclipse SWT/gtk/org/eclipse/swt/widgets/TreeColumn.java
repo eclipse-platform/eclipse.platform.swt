@@ -459,13 +459,14 @@ public void pack () {
 	checkWidget();
 	int width = 0;
 	if (buttonHandle != 0) {
-		GtkRequisition requisition = new GtkRequisition ();
 		/*
-		 * Check if the header button is hidden, otherwise GTK will
-		 * return a 1x1 size. See bug 546490.
+		 * Bug 546490: Ensure the header button is set to
+		 * true before getting preferred size of GtkTreeView
 		 */
 		boolean visible = GTK.gtk_widget_get_visible(buttonHandle);
-		if (!visible) GTK.gtk_widget_set_visible(buttonHandle, !visible);
+		if (!visible) GTK.gtk_widget_set_visible(buttonHandle, true);
+
+		GtkRequisition requisition = new GtkRequisition ();
 		gtk_widget_get_preferred_size (buttonHandle, requisition);
 		width = requisition.width;
 	}

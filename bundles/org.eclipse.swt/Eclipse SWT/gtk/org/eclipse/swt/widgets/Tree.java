@@ -600,17 +600,19 @@ Point computeSizeInPixels (int wHint, int hHint, boolean changed) {
 	if (wHint != SWT.DEFAULT && wHint < 0) wHint = 0;
 	if (hHint != SWT.DEFAULT && hHint < 0) hHint = 0;
 	/*
-	 * Set all the TreeColumn buttons visible otherwise
+	 * Bug 546490: Set all the TreeColumn buttons visible otherwise
 	 * gtk_widget_get_preferred_size() will not take their size
 	 * into account.
 	 */
-	if (firstCompute) {
-		for (int x = 0; x < columns.length; x++) {
-			TreeColumn column = columns[x];
-			if (column != null) GTK.gtk_widget_set_visible(column.buttonHandle, true);
+	if (!GTK.GTK4) {
+		if (firstCompute) {
+			for (TreeColumn column : columns) {
+				if (column != null) GTK.gtk_widget_set_visible(column.buttonHandle, true);
+			}
+			firstCompute = false;
 		}
-		firstCompute = false;
 	}
+
 	GTK.gtk_widget_realize(handle);
 	Point size = computeNativeSize (handle, wHint, hHint, changed);
 
