@@ -3591,7 +3591,13 @@ public void setHeaderBackground(Color color) {
 void updateHeaderCSS() {
 	StringBuilder css = new StringBuilder("button {");
 	if (headerBackground != null) {
-		css.append("background-color: " + display.gtk_rgba_to_css_string(headerBackground.handle) + "; ");
+		/*
+		 * Bug 571466: On some platforms & themes, the 'background-image'
+		 * css tag also needs to be set in order to change the
+		 * background color. Using 'background' tag as it overrides both
+		 * 'background-image' and 'background-color'.
+		 */
+		css.append("background: " + display.gtk_rgba_to_css_string(headerBackground.handle) + "; ");
 	}
 	if (headerForeground != null) {
 		css.append("color: " + display.gtk_rgba_to_css_string(headerForeground.handle) + "; ");
