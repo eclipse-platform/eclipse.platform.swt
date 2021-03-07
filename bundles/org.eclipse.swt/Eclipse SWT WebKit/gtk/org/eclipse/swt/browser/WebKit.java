@@ -942,7 +942,10 @@ public boolean close () {
 //         false = blocks disposal. In Browser.java, user is told widget was not disposed.
 // See Snippet326.
 boolean close (boolean showPrompters) {
-	if (!jsEnabled) return true;
+	// don't execute any JavaScript if it's disabled or requested to get disabled
+	// we need to check jsEnabledOnNextPage here because jsEnabled is updated asynchronously
+	// and may not reflect the proper state (bug 571746 and bug 567881)
+	if (!jsEnabled || !jsEnabledOnNextPage) return true;
 
 	String message1 = Compatibility.getMessage("SWT_OnBeforeUnload_Message1"); // $NON-NLS-1$
 	String message2 = Compatibility.getMessage("SWT_OnBeforeUnload_Message2"); // $NON-NLS-1$
