@@ -7222,11 +7222,11 @@ LRESULT wmColorChild (long wParam, long lParam) {
 
 @Override
 LRESULT wmNotify (NMHDR hdr, long wParam, long lParam) {
-	if (hdr.hwndFrom == itemToolTipHandle) {
+	if (hdr.hwndFrom == itemToolTipHandle && itemToolTipHandle != 0) {
 		LRESULT result = wmNotifyToolTip (hdr, wParam, lParam);
 		if (result != null) return result;
 	}
-	if (hdr.hwndFrom == hwndHeader) {
+	if (hdr.hwndFrom == hwndHeader && hwndHeader != 0) {
 		LRESULT result = wmNotifyHeader (hdr, wParam, lParam);
 		if (result != null) return result;
 	}
