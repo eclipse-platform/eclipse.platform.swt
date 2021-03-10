@@ -4,7 +4,7 @@ use chromium::utils;
 use chromium::cef;
 use chromium::app;
 
-use std::os::raw::{c_int};
+use std::os::raw::c_int;
 use std::ptr::null_mut;
 
 fn subp() {

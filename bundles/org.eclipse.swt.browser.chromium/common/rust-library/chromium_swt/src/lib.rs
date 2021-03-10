@@ -375,8 +375,8 @@ fn do_resize(win_handle: *mut c_void, width: i32, height: i32) {
     let mut changes = xlib::XWindowChanges {
         x: 0,
         y: 0,
-        width: width,
-        height: height,
+        width,
+        height,
         border_width: 0,
         sibling: 0,
         stack_mode: 0
@@ -708,10 +708,10 @@ pub extern fn cefswt_set_cookie(jurl: *const c_char, jname: *const c_char, jvalu
     }
 
     let cookie = cef::_cef_cookie_t {
-        name: name,
-        value: value,
-        domain: domain,
-        path: path,
+        name,
+        value,
+        domain,
+        path,
         secure,
         httponly,
         has_expires,

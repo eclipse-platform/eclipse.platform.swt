@@ -16,8 +16,8 @@ use utils;
 use gtk;
 
 use std::os::raw::{c_int, c_void};
-use std::mem::{size_of};
-use std::ptr::{null_mut};
+use std::mem::size_of;
+use std::ptr::null_mut;
 
 pub fn create_browser(canvas_hwnd: *mut c_void, url: &str, jclient: &mut cef::_cef_client_t, w: c_int, h: c_int, js: c_int, bg: cef::cef_color_t) -> *mut cef::cef_browser_t {
     //println!("create_browser in {}", canvas_hwnd);
@@ -92,7 +92,7 @@ extern "C" {
 
 #[cfg(target_os = "linux")]
 fn cef_window_info(hwnd: *mut c_void, w: c_int, h: c_int) -> cef::_cef_window_info_t {
-    use std::os::raw::{c_uint};
+    use std::os::raw::c_uint;
     let window_info = unsafe {
         let visual = gtk::gtk_widget_get_visual(hwnd);
         override_system_visual(visual);
@@ -114,7 +114,7 @@ fn cef_window_info(hwnd: *mut c_void, w: c_int, h: c_int) -> cef::_cef_window_in
 
 #[cfg(target_os = "linux")]
 pub fn set_window_parent(window_info: *mut cef::_cef_window_info_t, hwnd: *mut c_void, x: c_int, y: c_int, w: c_int, h: c_int) {
-    use std::os::raw::{c_uint};
+    use std::os::raw::c_uint;
     //unsafe {println!("orig window_info {} {:?}", hwnd, (*window_info)); };
     unsafe { 
         (*window_info).x = x as c_uint;
@@ -135,7 +135,7 @@ pub fn set_window_parent(window_info: *mut cef::_cef_window_info_t, hwnd: *mut c
 
 #[cfg(target_os = "macos")]
 fn cef_window_info(hwnd: *mut c_void, w: c_int, h: c_int) -> cef::_cef_window_info_t {
-    use std::os::raw::{c_void};
+    use std::os::raw::c_void;
     let window_info = cef::_cef_window_info_t {
         x: 0,
         y: 0,
@@ -153,7 +153,7 @@ fn cef_window_info(hwnd: *mut c_void, w: c_int, h: c_int) -> cef::_cef_window_in
 
 #[cfg(target_os = "macos")]
 pub fn set_window_parent(window_info: *mut cef::_cef_window_info_t, hwnd: *mut c_void, x: c_int, y: c_int, w: c_int, h: c_int) {
-    use std::os::raw::{c_void};
+    use std::os::raw::c_void;
     //unsafe { println!("orig window_info {} {:?}", hwnd, (*window_info)); };
     unsafe { 
         (*window_info).x = x;

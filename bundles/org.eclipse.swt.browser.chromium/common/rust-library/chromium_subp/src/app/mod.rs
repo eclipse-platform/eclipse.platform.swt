@@ -15,8 +15,8 @@ use utils;
 use socket;
 // use super::Step;
 // use Msg;
-use std::os::raw::{c_int};
-use std::{mem};
+use std::os::raw::c_int;
+use std::mem;
 use std::ffi::{CString, CStr};
 
 pub struct Base {
@@ -308,7 +308,7 @@ impl V8Handler {
     fn new(browser: *mut cef::_cef_browser_t) -> V8Handler {
         V8Handler {
             cef: V8Handler::cef_function_handler(),
-            browser: browser
+            browser
         }
     }
 

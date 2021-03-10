@@ -11,8 +11,8 @@
  *   Guillermo Zunino, Equo - initial implementation
  ********************************************************************************/
 use cef;
-use std::os::raw::{c_char};
-use std::ffi::{CStr};
+use std::os::raw::c_char;
+use std::ffi::CStr;
 #[cfg(windows)]
 extern crate winapi;
 
@@ -31,13 +31,12 @@ pub fn subp_path(cwd: &::std::path::Path, version: &str) -> String {
 
 #[cfg(unix)]
 pub fn prepare_args() -> cef::_cef_main_args_t {
-    use std::ffi::{CString};
+    use std::ffi::CString;
     let mut args: Vec<*mut c_char> = ::std::env::args().map(|arg| {
         // println!("arg: {:?}", arg);
         let carg_rslt = CString::new(arg);
         let carg = carg_rslt.expect("cant create arg");
-        let mp = carg.into_raw();
-        mp
+        carg.into_raw()
     }).collect();
     if cfg!(target_os = "macos") {
         let carg = CString::new("--disable-gpu-compositing").expect("cant create arg");
@@ -115,8 +114,7 @@ pub fn str_from_c(cstr: *const c_char) -> &'static str {
         ""
     } else {
         let slice = unsafe { CStr::from_ptr(cstr) };
-        let url = ::std::str::from_utf8(slice.to_bytes()).expect("failed from_utf8");
-        url
+        ::std::str::from_utf8(slice.to_bytes()).expect("failed from_utf8")
     }
 }
 
