@@ -53,7 +53,6 @@ public class ExpandBar extends Composite {
 	ExpandItem lastFocus;
 	int itemCount;
 	int spacing;
-	int yCurrentScroll;
 
 /**
  * Constructs a new instance of this class given its parent
@@ -185,7 +184,7 @@ void createItem (ExpandItem item, int style, int index) {
 	items [index] = item;
 	itemCount++;
 	item.width = Math.max (0, getClientAreaInPixels ().width - spacing * 2);
-	layoutItems (index, true);
+	layoutItems (index);
 }
 
 @Override
@@ -203,8 +202,7 @@ void destroyItem (ExpandItem item) {
 	if (index == itemCount) return;
 	System.arraycopy (items, index + 1, items, index, --itemCount - index);
 	items [itemCount] = null;
-	item.redraw ();
-	layoutItems (index, true);
+	layoutItems (index);
 }
 
 @Override
@@ -237,14 +235,6 @@ void hookEvents () {
 	if (scrolledHandle != 0) {
 		OS.g_signal_connect_closure (scrolledHandle, OS.size_allocate, display.getClosure (SIZE_ALLOCATE), true);
 	}
-}
-
-int getBandHeight () {
-	if (font == null) return ExpandItem.CHEVRON_SIZE;
-	GC gc = new GC (this);
-	FontMetrics metrics = gc.getFontMetrics ();
-	gc.dispose ();
-	return Math.max (ExpandItem.CHEVRON_SIZE, metrics.getHeight ());
 }
 
 /**
@@ -321,11 +311,6 @@ public int getSpacing () {
 	return DPIUtil.autoScaleDown(spacing);
 }
 
-int getSpacingInPixels () {
-	checkWidget ();
-	return spacing;
-}
-
 @Override
 long gtk_key_press_event (long widget, long event) {
 	if (!hasFocus ()) return 0;
@@ -387,17 +372,17 @@ public int indexOf (ExpandItem item) {
 	return -1;
 }
 
-void layoutItems (int index, boolean setScrollbar) {
+void layoutItems (int index) {
 	for (int i = 0; i < itemCount; i++) {
 		ExpandItem item = items [i];
-		if (item != null) item.resizeControl (yCurrentScroll);
+		if (item != null) item.resizeControl();
 	}
 }
 
 @Override
 long gtk_size_allocate (long widget, long allocation) {
 	long result = super.gtk_size_allocate (widget, allocation);
-	layoutItems (0, false);
+	layoutItems (0);
 	return result;
 }
 
@@ -465,7 +450,7 @@ void setFontDescription (long font) {
 	for (int i = 0; i < itemCount; i++) {
 		items[i].setFontDescription (font);
 	}
-	layoutItems (0, true);
+	layoutItems (0);
 }
 
 @Override
@@ -483,48 +468,6 @@ void setOrientation (boolean create) {
 		for (int i=0; i<items.length; i++) {
 			if (items[i] != null) items[i].setOrientation (create);
 		}
-	}
-}
-
-void setScrollbar () {
-	if (itemCount == 0) return;
-	if ((style & SWT.V_SCROLL) == 0) return;
-	int height = getClientAreaInPixels ().height;
-	ExpandItem item = items [itemCount - 1];
-	int maxHeight = item.y + getBandHeight () + spacing;
-	if (item.expanded) maxHeight += item.height;
-	long adjustmentHandle = GTK.gtk_scrolled_window_get_vadjustment (scrolledHandle);
-	GtkAdjustment adjustment = new GtkAdjustment ();
-	gtk_adjustment_get (adjustmentHandle, adjustment);
-	yCurrentScroll = (int)adjustment.value;
-
-	//claim bottom free space
-	if (yCurrentScroll > 0 && height > maxHeight) {
-		yCurrentScroll = Math.max (0, yCurrentScroll + maxHeight - height);
-		layoutItems (0, false);
-	}
-	maxHeight += yCurrentScroll;
-	adjustment.value = Math.min (yCurrentScroll, maxHeight);
-	adjustment.upper = maxHeight;
-	adjustment.page_size = height;
-	GTK.gtk_adjustment_configure(adjustmentHandle, adjustment.value, adjustment.lower, adjustment.upper,
-		adjustment.step_increment, adjustment.page_increment, adjustment.page_size);
-	int policy = maxHeight > height ? GTK.GTK_POLICY_ALWAYS : GTK.GTK_POLICY_NEVER;
-	GTK.gtk_scrolled_window_set_policy (scrolledHandle, GTK.GTK_POLICY_NEVER, policy);
-	GtkAllocation allocation = new GtkAllocation ();
-	GTK.gtk_widget_get_allocation (fixedHandle, allocation);
-	int width = allocation.width - spacing * 2;
-	if (policy == GTK.GTK_POLICY_ALWAYS) {
-		long vHandle = 0;
-		vHandle = GTK.gtk_scrolled_window_get_vscrollbar (scrolledHandle);
-		GtkRequisition requisition = new GtkRequisition ();
-		gtk_widget_get_preferred_size (vHandle, requisition);
-		width -= requisition.width;
-	}
-	width = Math.max (0,  width);
-	for (int i = 0; i < itemCount; i++) {
-		ExpandItem item2 = items[i];
-		item2.setBounds (0, 0, width, item2.height, false, true);
 	}
 }
 
@@ -553,19 +496,8 @@ void setSpacingInPixels (int spacing) {
 	gtk_container_set_border_width (handle, spacing);
 }
 
-void showItem (ExpandItem item) {
-	Control control = item.control;
-	if (control != null && !control.isDisposed ()) {
-		control.setVisible (item.expanded);
-	}
-	item.redraw ();
-	int index = indexOf (item);
-	layoutItems (index + 1, true);
-}
-
 @Override
 void updateScrollBarValue (ScrollBar bar) {
-	yCurrentScroll = bar.getSelection();
-	layoutItems (0, false);
+	layoutItems (0);
 }
 }

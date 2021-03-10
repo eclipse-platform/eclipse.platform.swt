@@ -45,10 +45,6 @@ public class ExpandItem extends Item {
 	long clientHandle, boxHandle, labelHandle, imageHandle;
 	boolean expanded;
 	int x, y, width, height;
-	int imageHeight, imageWidth;
-	static final int TEXT_INSET = 6;
-	static final int BORDER = 1;
-	static final int CHEVRON_SIZE = 24;
 
 /**
  * Constructs a new instance of this class given its parent
@@ -188,69 +184,6 @@ void destroyWidget () {
 	super.destroyWidget ();
 }
 
-void drawChevron (GC gc, int x, int y) {
-	int [] polyline1, polyline2;
-	if (expanded) {
-		int px = x + 4 + 5;
-		int py = y + 4 + 7;
-		polyline1 = new int [] {
-				px,py, px+1,py, px+1,py-1, px+2,py-1, px+2,py-2, px+3,py-2, px+3,py-3,
-				px+3,py-2, px+4,py-2, px+4,py-1, px+5,py-1, px+5,py, px+6,py};
-		py += 4;
-		polyline2 = new int [] {
-				px,py, px+1,py, px+1,py-1, px+2,py-1, px+2,py-2, px+3,py-2, px+3,py-3,
-				px+3,py-2, px+4,py-2, px+4,py-1,  px+5,py-1, px+5,py, px+6,py};
-	} else {
-		int px = x + 4 + 5;
-		int py = y + 4 + 4;
-		polyline1 = new int[] {
-				px,py, px+1,py, px+1,py+1, px+2,py+1, px+2,py+2, px+3,py+2, px+3,py+3,
-				px+3,py+2, px+4,py+2, px+4,py+1,  px+5,py+1, px+5,py, px+6,py};
-		py += 4;
-		polyline2 = new int [] {
-				px,py, px+1,py, px+1,py+1, px+2,py+1, px+2,py+2, px+3,py+2, px+3,py+3,
-				px+3,py+2, px+4,py+2, px+4,py+1,  px+5,py+1, px+5,py, px+6,py};
-	}
-	gc.setForeground (display.getSystemColor (SWT.COLOR_TITLE_FOREGROUND));
-	gc.drawPolyline (DPIUtil.autoScaleDown(polyline1));
-	gc.drawPolyline (DPIUtil.autoScaleDown(polyline2));
-}
-
-void drawItem (GC gc, boolean drawFocus) {
-	int headerHeight = parent.getBandHeight ();
-	Display display = getDisplay ();
-	gc.setForeground (display.getSystemColor (SWT.COLOR_TITLE_BACKGROUND));
-	gc.setBackground (display.getSystemColor (SWT.COLOR_TITLE_BACKGROUND_GRADIENT));
-	gc.fillGradientRectangle (x, y, width, headerHeight, true);
-	if (expanded) {
-		gc.setForeground (display.getSystemColor (SWT.COLOR_TITLE_BACKGROUND_GRADIENT));
-		gc.drawLine (x, y + headerHeight, x, y + headerHeight + height - 1);
-		gc.drawLine (x, y + headerHeight + height - 1, x + width - 1, y + headerHeight + height - 1);
-		gc.drawLine (x + width - 1, y + headerHeight + height - 1, x + width - 1, y + headerHeight);
-	}
-	int drawX = x;
-	if (image != null) {
-		drawX += ExpandItem.TEXT_INSET;
-		if (imageHeight > headerHeight) {
-			gc.drawImage (image, drawX, y + headerHeight - imageHeight);
-		} else {
-			gc.drawImage (image, drawX, y + (headerHeight - imageHeight) / 2);
-		}
-		drawX += imageWidth;
-	}
-	if (text.length() > 0) {
-		drawX += ExpandItem.TEXT_INSET;
-		Point size = gc.stringExtent (text);
-		gc.setForeground (parent.getForeground ());
-		gc.drawString (text, drawX, y + (headerHeight - size.y) / 2, true);
-	}
-	int chevronSize = ExpandItem.CHEVRON_SIZE;
-	drawChevron (gc, x + width - chevronSize, y + (headerHeight - chevronSize) / 2);
-	if (drawFocus) {
-		gc.drawFocus (x + 1, y + 1, width - 2, headerHeight - 2);
-	}
-}
-
 /**
  * Returns the control that is shown when the item is expanded.
  * If no control has been set, return <code>null</code>.
@@ -346,17 +279,6 @@ public ExpandBar getParent () {
 	return parent;
 }
 
-int getPreferredWidth (GC gc) {
-	int width = ExpandItem.TEXT_INSET * 2 + ExpandItem.CHEVRON_SIZE;
-	if (image != null) {
-		width += ExpandItem.TEXT_INSET + imageWidth;
-	}
-	if (text.length() > 0) {
-		width += gc.stringExtent (text).x;
-	}
-	return width;
-}
-
 @Override
 long gtk_activate (long widget) {
 	Event event = new Event ();
@@ -381,7 +303,7 @@ long gtk_focus_out_event (long widget, long event) {
 
 @Override
 long gtk_size_allocate (long widget, long allocation) {
-	parent.layoutItems (0, false);
+	parent.layoutItems (0);
 	return 0;
 }
 
@@ -420,9 +342,6 @@ void hookEvents () {
 	}
 }
 
-void redraw () {
-}
-
 @Override
 void register () {
 	super.register ();
@@ -446,7 +365,7 @@ void releaseWidget () {
 	control = null;
 }
 
-void resizeControl (int yScroll) {
+void resizeControl () {
 	if (control != null && !control.isDisposed ()) {
 		boolean visible = GTK.gtk_expander_get_expanded (handle);
 		GtkAllocation allocation = new GtkAllocation ();
@@ -507,28 +426,6 @@ void resizeControl (int yScroll) {
 	}
 }
 
-void setBounds (int x, int y, int width, int height, boolean move, boolean size) {
-	redraw ();
-	int headerHeight = parent.getBandHeight ();
-	if (move) {
-		if (imageHeight > headerHeight) {
-			y += (imageHeight - headerHeight);
-		}
-		this.x = x;
-		this.y = y;
-		redraw ();
-	}
-	if (size) {
-		this.width = width;
-		this.height = height;
-		redraw ();
-	}
-	if (control != null && !control.isDisposed ()) {
-		if (move) control.setLocationInPixels (x + BORDER, y + headerHeight);
-		if (size) control.setSizeInPixels (Math.max (0, width - 2 * BORDER), Math.max (0, height - BORDER));
-	}
-}
-
 /**
  * Sets the control that is shown when the item is expanded.
  *
@@ -551,7 +448,6 @@ public void setControl (Control control) {
 	}
 	if (this.control == control) return;
 
-
 	this.control = control;
 	if (control != null) {
 		control.setVisible (expanded);
@@ -563,7 +459,7 @@ public void setControl (Control control) {
 		//This is simmilar to TabFolder.
 		Control.gtk_widget_reparent (control, clientHandle ());
 	}
-	parent.layoutItems (0, true);
+	parent.layoutItems (0);
 }
 
 long clientHandle () {
@@ -585,7 +481,7 @@ public void setExpanded (boolean expanded) {
 	checkWidget ();
 	this.expanded = expanded;
 	GTK.gtk_expander_set_expanded (handle, expanded);
-	parent.layoutItems (0, true);
+	parent.layoutItems (0);
 }
 
 boolean setFocus () {
@@ -631,7 +527,7 @@ void setHeightInPixels (int height) {
 	if (height < 0) return;
 	this.height = height;
 	GTK.gtk_widget_set_size_request (clientHandle, -1, height);
-	parent.layoutItems (0, false);
+	parent.layoutItems (0);
 }
 
 @Override
@@ -696,7 +592,7 @@ long windowProc (long handle, long user_data) {
 	switch ((int)user_data) {
 		case ACTIVATE_INVERSE: {
 			expanded = GTK.gtk_expander_get_expanded (handle);
-			parent.layoutItems (0, false);
+			parent.layoutItems (0);
 			return 0;
 		}
 	}
