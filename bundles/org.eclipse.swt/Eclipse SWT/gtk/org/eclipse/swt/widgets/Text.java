@@ -247,6 +247,7 @@ void createHandle (int index) {
 			long context = GTK.gtk_widget_get_style_context(handle);
 			String background = display.gtk_rgba_to_css_string(display.COLOR_LIST_BACKGROUND_RGBA);
 			gtk_css_provider_load_from_css(context, "entry {border: solid; background: " + background + ";}");
+			GTK.gtk_style_context_invalidate(context);
 		}
 
 		float alignment = 0.0f;

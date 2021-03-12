@@ -2398,6 +2398,9 @@ public class GTK extends OS {
 	 */
 	/* [GTK4 only] */
 	public static final native void gtk_style_context_get_border(long context, GtkBorder padding);
+	/** @method flags=dynamic */
+	/* [GTK3; 3.12 deprecated] */
+	public static final native void gtk_style_context_invalidate(long context);
 	/**
 	 * @param self cast=(GtkStyleContext *)
 	 */

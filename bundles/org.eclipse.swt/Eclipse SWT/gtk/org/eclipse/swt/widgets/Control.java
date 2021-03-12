@@ -5171,6 +5171,7 @@ void setBackgroundGdkRGBA (long handle, GdkRGBA rgba) {
 	}
 	long context = GTK.gtk_widget_get_style_context (handle);
 	setBackgroundGdkRGBA (context, handle, rgba);
+	GTK.gtk_style_context_invalidate (context);
 	return;
 }
 /**
