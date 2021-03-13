@@ -14,7 +14,6 @@
 package org.eclipse.swt.internal.win32;
 
 public class NMTBCUSTOMDRAW extends NMCUSTOMDRAW {
-	public NMCUSTOMDRAW nmcd;
 	/** @field cast=(HBRUSH) */
 	public long hbrMonoDither;
 	/** @field cast=(HBRUSH) */

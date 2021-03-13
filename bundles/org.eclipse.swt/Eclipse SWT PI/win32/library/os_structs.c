@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2020 IBM Corporation and others.
+ * Copyright (c) 2000, 2021 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -3503,7 +3503,7 @@ void setNMREBARCHILDSIZEFields(JNIEnv *env, jobject lpObject, NMREBARCHILDSIZE *
 typedef struct NMTBCUSTOMDRAW_FID_CACHE {
 	int cached;
 	jclass clazz;
-	jfieldID nmcd, hbrMonoDither, hbrLines, hpenLines, clrText, clrMark, clrTextHighlight, clrBtnFace, clrBtnHighlight, clrHighlightHotTrack, rcText_left, rcText_top, rcText_right, rcText_bottom, nStringBkMode, nHLStringBkMode, iListGap;
+	jfieldID hbrMonoDither, hbrLines, hpenLines, clrText, clrMark, clrTextHighlight, clrBtnFace, clrBtnHighlight, clrHighlightHotTrack, rcText_left, rcText_top, rcText_right, rcText_bottom, nStringBkMode, nHLStringBkMode, iListGap;
 } NMTBCUSTOMDRAW_FID_CACHE;
 
 NMTBCUSTOMDRAW_FID_CACHE NMTBCUSTOMDRAWFc;
@@ -3513,7 +3513,6 @@ void cacheNMTBCUSTOMDRAWFields(JNIEnv *env, jobject lpObject)
 	if (NMTBCUSTOMDRAWFc.cached) return;
 	cacheNMCUSTOMDRAWFields(env, lpObject);
 	NMTBCUSTOMDRAWFc.clazz = (*env)->GetObjectClass(env, lpObject);
-	NMTBCUSTOMDRAWFc.nmcd = (*env)->GetFieldID(env, NMTBCUSTOMDRAWFc.clazz, "nmcd", "Lorg/eclipse/swt/internal/win32/NMCUSTOMDRAW;");
 	NMTBCUSTOMDRAWFc.hbrMonoDither = (*env)->GetFieldID(env, NMTBCUSTOMDRAWFc.clazz, "hbrMonoDither", "J");
 	NMTBCUSTOMDRAWFc.hbrLines = (*env)->GetFieldID(env, NMTBCUSTOMDRAWFc.clazz, "hbrLines", "J");
 	NMTBCUSTOMDRAWFc.hpenLines = (*env)->GetFieldID(env, NMTBCUSTOMDRAWFc.clazz, "hpenLines", "J");
@@ -3537,10 +3536,6 @@ NMTBCUSTOMDRAW *getNMTBCUSTOMDRAWFields(JNIEnv *env, jobject lpObject, NMTBCUSTO
 {
 	if (!NMTBCUSTOMDRAWFc.cached) cacheNMTBCUSTOMDRAWFields(env, lpObject);
 	getNMCUSTOMDRAWFields(env, lpObject, (NMCUSTOMDRAW *)lpStruct);
-	{
-	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, NMTBCUSTOMDRAWFc.nmcd);
-	if (lpObject1 != NULL) getNMCUSTOMDRAWFields(env, lpObject1, &lpStruct->nmcd);
-	}
 	lpStruct->hbrMonoDither = (HBRUSH)(*env)->GetLongField(env, lpObject, NMTBCUSTOMDRAWFc.hbrMonoDither);
 	lpStruct->hbrLines = (HBRUSH)(*env)->GetLongField(env, lpObject, NMTBCUSTOMDRAWFc.hbrLines);
 	lpStruct->hpenLines = (HPEN)(*env)->GetLongField(env, lpObject, NMTBCUSTOMDRAWFc.hpenLines);
@@ -3564,10 +3559,6 @@ void setNMTBCUSTOMDRAWFields(JNIEnv *env, jobject lpObject, NMTBCUSTOMDRAW *lpSt
 {
 	if (!NMTBCUSTOMDRAWFc.cached) cacheNMTBCUSTOMDRAWFields(env, lpObject);
 	setNMCUSTOMDRAWFields(env, lpObject, (NMCUSTOMDRAW *)lpStruct);
-	{
-	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, NMTBCUSTOMDRAWFc.nmcd);
-	if (lpObject1 != NULL) setNMCUSTOMDRAWFields(env, lpObject1, &lpStruct->nmcd);
-	}
 	(*env)->SetLongField(env, lpObject, NMTBCUSTOMDRAWFc.hbrMonoDither, (jlong)lpStruct->hbrMonoDither);
 	(*env)->SetLongField(env, lpObject, NMTBCUSTOMDRAWFc.hbrLines, (jlong)lpStruct->hbrLines);
 	(*env)->SetLongField(env, lpObject, NMTBCUSTOMDRAWFc.hpenLines, (jlong)lpStruct->hpenLines);
