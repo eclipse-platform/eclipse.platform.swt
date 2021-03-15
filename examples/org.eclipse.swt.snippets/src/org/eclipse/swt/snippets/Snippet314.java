@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2009, 2016 IBM Corporation and others.
+ * Copyright (c) 2009, 2021 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -39,12 +39,24 @@ public class Snippet314 {
 		MenuItem saveItem = new MenuItem (fileMenu, SWT.PUSH);
 		saveItem.setText ("&Save\tCtrl+S");
 		saveItem.setAccelerator (SWT.MOD1 + 'S');
-		saveItem.addListener (SWT.Selection, e -> shell.setModified (false));
+		saveItem.addListener (SWT.Selection, e -> {
+			shell.setModified (false);
+			// Update Shell title, to hint that it's not in modified state.
+			if(shell.getText().startsWith("*")) {
+				shell.setText (shell.getText().substring(1));
+			}
+		});
 		MenuItem exitItem =  new MenuItem (fileMenu, SWT.PUSH);
 		exitItem.setText ("Exit");
 		exitItem.addListener (SWT.Selection, e -> shell.close ());
 		Text text = new Text (shell, SWT.H_SCROLL | SWT.V_SCROLL | SWT.BORDER);
-		text.addListener (SWT.Modify, e -> shell.setModified (true));
+		text.addListener (SWT.Modify, e -> {
+			shell.setModified (true);
+			// Update Shell title, to hint that it's in modified state.
+			if(!shell.getText().startsWith("*")) {
+				shell.setText ("*" + shell.getText());
+			}
+		});
 		shell.addListener (SWT.Close, e -> {
 			if (shell.getModified()) {
 				MessageBox box = new MessageBox (shell, SWT.PRIMARY_MODAL | SWT.OK | SWT.CANCEL);
