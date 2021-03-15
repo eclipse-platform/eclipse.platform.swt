@@ -121,8 +121,7 @@
 		<delete dir="${copy.src.dir}" quiet="true"/>
 		<copy todir="${copy.src.dir}" failonerror="true" overwrite="true">
 			<fileset dir="${plugindir}/Eclipse SWT/cocoa/"/>
-			<fileset dir="${plugindir}/Eclipse SWT/common/"/>
-			<fileset dir="${plugindir}/Eclipse SWT/common_j2se/" excludes="**/*._properties"/>
+			<fileset dir="${plugindir}/Eclipse SWT/common/" excludes="**/*._properties"/>
 			<fileset dir="${plugindir}/Eclipse SWT/emulated/bidi/"/>
 			<fileset dir="${plugindir}/Eclipse SWT/emulated/coolbar/"/>
 			<fileset dir="${plugindir}/Eclipse SWT/emulated/expand/"/>
@@ -154,8 +153,7 @@
 		<delete dir="${copy.src.dir}" quiet="true"/>
 		<copy todir="${copy.src.dir}" failonerror="true" overwrite="true">
 			<fileset dir="${plugindir}/Eclipse SWT/cairo/"/>
-			<fileset dir="${plugindir}/Eclipse SWT/common/"/>
-			<fileset dir="${plugindir}/Eclipse SWT/common_j2se/" excludes="**/*._properties"/>
+			<fileset dir="${plugindir}/Eclipse SWT/common/" excludes="**/*._properties"/>
 			<fileset dir="${plugindir}/Eclipse SWT/emulated/bidi/"/>
 			<fileset dir="${plugindir}/Eclipse SWT/emulated/coolbar/"/>
 			<fileset dir="${plugindir}/Eclipse SWT/emulated/taskbar/"/>
@@ -188,8 +186,7 @@
 		<property name="copy.src.dir" value="${temp.folder}/@dot.src"/>
 		<delete dir="${copy.src.dir}" quiet="true"/>
 		<copy todir="${copy.src.dir}" failonerror="true" overwrite="true">
-			<fileset dir="${plugindir}/Eclipse SWT/common/"/>
-			<fileset dir="${plugindir}/Eclipse SWT/common_j2se/" excludes="**/*._properties"/>
+			<fileset dir="${plugindir}/Eclipse SWT/common/" excludes="**/*._properties"/>
 			<fileset dir="${plugindir}/Eclipse SWT/win32/"/>
 			<fileset dir="${plugindir}/Eclipse SWT Accessibility/common/"/>
 			<fileset dir="${plugindir}/Eclipse SWT Accessibility/win32/"/>
@@ -215,7 +212,7 @@
 
 	<target name="copy.translationfiles" if="includetranslationfiles">
 		<copy todir="${copy.src.dir}" failonerror="true" overwrite="true">
-			<fileset dir="${plugindir}/Eclipse SWT/common_j2se/" includes="**/*._properties"/>
+			<fileset dir="${plugindir}/Eclipse SWT/common/" includes="**/*._properties"/>
 			<mapper type="glob" from="*._properties" to="*.properties" />
 		</copy>
 	</target>

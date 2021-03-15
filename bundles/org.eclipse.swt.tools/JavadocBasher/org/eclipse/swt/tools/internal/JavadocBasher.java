@@ -100,8 +100,6 @@ public class JavadocBasher {
 		String[] targetSubdirs = new String[] { "cairo", // used by gtk
 				"cocoa",
 				// "common",
-				// "common_j2me",
-				// "common_j2se",
 				"emulated", "emulated/bidi", // used by carbon, cocoa
 				"emulated/coolbar", // used by cocoa, gtk
 				"emulated/expand", // used by cocoa
