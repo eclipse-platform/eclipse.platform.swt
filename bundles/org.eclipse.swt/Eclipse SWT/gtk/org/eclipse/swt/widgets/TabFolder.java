@@ -599,24 +599,33 @@ long gtk_focus (long widget, long directionType) {
 
 @Override
 long gtk_switch_page(long notebook, long page, int page_num) {
-	int index = GTK.gtk_notebook_get_current_page (handle);
-	if (index != -1) {
-		Control control = items [index].getControl ();
-		if (control != null && !control.isDisposed ()) {
-			control.setVisible (false);
-		}
-	} else {
-		return 0;
-	}
-	TabItem item = items [page_num];
-	Control control = item.getControl ();
-	if (control != null && !control.isDisposed ()) {
+	TabItem item = items[page_num];
+
+	if (GTK.GTK4) {
+		Control control = item.getControl();
 		control.setBoundsInPixels(getClientAreaInPixels());
-		control.setVisible (true);
+	} else {
+		int index = GTK.gtk_notebook_get_current_page(handle);
+		if (index != -1) {
+			Control control = items [index].getControl();
+			if (control != null && !control.isDisposed()) {
+				control.setVisible(false);
+			}
+		} else {
+			return 0;
+		}
+
+		Control control = item.getControl();
+		if (control != null && !control.isDisposed()) {
+			control.setBoundsInPixels(getClientAreaInPixels());
+			control.setVisible(true);
+		}
 	}
+
 	Event event = new Event();
 	event.item = item;
-	sendSelectionEvent (SWT.Selection, event, false);
+	sendSelectionEvent(SWT.Selection, event, false);
+
 	return 0;
 }
 

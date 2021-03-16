@@ -37,7 +37,8 @@ import org.eclipse.swt.internal.gtk.*;
  * @noextend This class is not intended to be subclassed by clients.
  */
 public class TabItem extends Item {
-	long labelHandle, imageHandle, pageHandle, provider;
+	long labelHandle, imageHandle, pageHandle;
+	long cssProvider;
 	Control control;
 	TabFolder parent;
 	String toolTipText;
@@ -265,9 +266,10 @@ void release (boolean destroy) {
 }
 
 @Override
-void releaseHandle () {
-	super.releaseHandle ();
+void releaseHandle() {
+	super.releaseHandle();
 	pageHandle = labelHandle = imageHandle = 0;
+	cssProvider = 0;
 	parent = null;
 }
 
@@ -295,52 +297,55 @@ void releaseParent () {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
-public void setControl (Control control) {
-	checkWidget ();
+public void setControl(Control control) {
+	checkWidget();
 	if (control != null) {
-		if (control.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
-		if (control.parent != parent) error (SWT.ERROR_INVALID_PARENT);
+		if (control.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
+		if (control.parent != parent) error(SWT.ERROR_INVALID_PARENT);
 	}
 
-	if (control != null) {
-		// To understand why we reparent, see implementation note about bug 454936 at the start of TabFolder.
-		if (GTK.GTK4) {
+	if (GTK.GTK4) {
+		this.control = control;
+
+		if (control != null) {
 			long widget = control.topHandle();
-			long parentContainer = GTK.gtk_widget_get_parent (widget);
-			if (parentContainer != 0) {
-				OS.g_object_ref (widget); //so that it won't get destroyed due to lack of references.
-				OS.swt_fixed_remove (parentContainer, widget);
-				OS.swt_fixed_add (pageHandle, widget);
-				OS.g_object_unref (widget);
-				GTK.gtk_widget_show(widget);
+			long widgetParentContainer = GTK.gtk_widget_get_parent(widget);
+			if (widgetParentContainer != 0) {
+				OS.g_object_ref(widget);
+				OS.swt_fixed_remove(widgetParentContainer, widget);
+				OS.swt_fixed_add(pageHandle, widget);
+				OS.g_object_unref(widget);
 			}
-		} else {
+		}
+	} else {
+		if (control != null) {
+			// To understand why we reparent, see implementation note about bug 454936 at the start of TabFolder.
 			Control.gtk_widget_reparent (control, pageHandle);
 		}
-	}
 
-	Control oldControl = this.control, newControl = control;
-	this.control = control;
-	int index = parent.indexOf (this), selectionIndex = parent.getSelectionIndex();
-	if (index != selectionIndex) {
-		if (newControl != null) {
-			if (selectionIndex != -1) {
-				Control selectedControl = parent.getItem(selectionIndex).getControl();
-				if (selectedControl == newControl) return;
+		Control oldControl = this.control, newControl = control;
+		this.control = control;
+		int index = parent.indexOf (this), selectionIndex = parent.getSelectionIndex();
+		if (index != selectionIndex) {
+			if (newControl != null) {
+				if (selectionIndex != -1) {
+					Control selectedControl = parent.getItem(selectionIndex).getControl();
+					if (selectedControl == newControl) return;
+				}
+				newControl.setVisible(false);
+				return;
 			}
-			newControl.setVisible(false);
-			return;
 		}
-	}
-	if (newControl != null) {
-		newControl.setBoundsInPixels (parent.getClientAreaInPixels ());
-		newControl.setVisible (true);
-	}
-
-	if ((oldControl != null) && (oldControl != newControl)) {
-		Control.gtk_widget_reparent (oldControl, parent.parentingHandle());
 		if (newControl != null) {
-			oldControl.setVisible (false);
+			newControl.setBoundsInPixels (parent.getClientAreaInPixels ());
+			newControl.setVisible (true);
+		}
+
+		if ((oldControl != null) && (oldControl != newControl)) {
+			Control.gtk_widget_reparent (oldControl, parent.parentingHandle());
+			if (newControl != null) {
+				oldControl.setVisible (false);
+			}
 		}
 	}
 }
@@ -371,18 +376,21 @@ void setForegroundGdkRGBA (long handle, GdkRGBA rgba) {
 	gtk_css_provider_load_from_css(context, css);
 }
 
-void gtk_css_provider_load_from_css (long context, String css) {
-	/* Utility function. */
-	//@param css : a 'css java' string like "{\nbackground: red;\n}".
-	if (provider == 0) {
-		provider = GTK.gtk_css_provider_new ();
-		GTK.gtk_style_context_add_provider (context, provider, GTK.GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
-		OS.g_object_unref (provider);
+/**
+ * @param context the GtkStyleContext belonging to the widget which the CSS is to be applied to
+ * @param css Java string representing the CSS
+ */
+void gtk_css_provider_load_from_css(long styleContext, String css) {
+	if (cssProvider == 0) {
+		cssProvider = GTK.gtk_css_provider_new();
+		GTK.gtk_style_context_add_provider(styleContext, cssProvider, GTK.GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+		OS.g_object_unref(cssProvider);
 	}
+
 	if (GTK.GTK4) {
-		GTK.gtk_css_provider_load_from_data (provider, Converter.wcsToMbcs (css, true), -1);
+		GTK.gtk_css_provider_load_from_data(cssProvider, Converter.javaStringToCString(css), -1);
 	} else {
-		GTK.gtk_css_provider_load_from_data (provider, Converter.wcsToMbcs (css, true), -1, null);
+		GTK.gtk_css_provider_load_from_data(cssProvider, Converter.javaStringToCString(css), -1, null);
 	}
 }
 
