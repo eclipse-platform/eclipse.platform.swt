@@ -598,7 +598,7 @@ long gtk_focus (long widget, long directionType) {
 }
 
 @Override
-long gtk_switch_page (long widget, long page, long page_num) {
+long gtk_switch_page(long notebook, long page, int page_num) {
 	int index = GTK.gtk_notebook_get_current_page (handle);
 	if (index != -1) {
 		Control control = items [index].getControl ();
@@ -608,7 +608,7 @@ long gtk_switch_page (long widget, long page, long page_num) {
 	} else {
 		return 0;
 	}
-	TabItem item = items [(int)page_num];
+	TabItem item = items [page_num];
 	Control control = item.getControl ();
 	if (control != null && !control.isDisposed ()) {
 		control.setBoundsInPixels(getClientAreaInPixels());

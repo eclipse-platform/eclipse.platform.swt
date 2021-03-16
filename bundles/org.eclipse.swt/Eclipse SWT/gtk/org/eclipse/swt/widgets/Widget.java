@@ -972,7 +972,7 @@ long gtk_style_updated (long widget) {
 	return 0;
 }
 
-long gtk_switch_page (long widget, long page, long page_num) {
+long gtk_switch_page (long notebook, long page, int page_num) {
 	return 0;
 }
 
@@ -2368,7 +2368,7 @@ long windowProc (long handle, long arg0, long arg1, long user_data) {
 		case ROW_ACTIVATED: return gtk_row_activated (handle, arg0, arg1);
 		case SCROLL_CHILD: return gtk_scroll_child (handle, arg0, arg1);
 		case STATUS_ICON_POPUP_MENU: return gtk_status_icon_popup_menu (handle, arg0, arg1);
-		case SWITCH_PAGE: return gtk_switch_page (handle, arg0, arg1);
+		case SWITCH_PAGE: return gtk_switch_page(handle, arg0, (int)arg1);
 		case TEST_COLLAPSE_ROW: return gtk_test_collapse_row (handle, arg0, arg1);
 		case TEST_EXPAND_ROW: return gtk_test_expand_row(handle, arg0, arg1);
 		case ROW_INSERTED: return gtk_row_inserted (handle, arg0, arg1);
