@@ -141,10 +141,12 @@ Point computeSizeInPixels (int wHint, int hHint, boolean changed) {
 @Override
 void createHandle (int index) {
 	state |= HANDLE | THEME_BACKGROUND;
-	handle = OS.g_object_new (display.gtk_fixed_get_type (), 0);
-	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
-	gtk_widget_set_has_surface_or_window (handle, true);
-	GTK.gtk_widget_set_can_focus (handle, true);
+
+	handle = OS.g_object_new(display.gtk_fixed_get_type(), 0);
+	if (handle == 0) error(SWT.ERROR_NO_HANDLES);
+	if (!GTK.GTK4) GTK.gtk_widget_set_has_window(handle, true);
+	GTK.gtk_widget_set_can_focus(handle, true);
+
 	if ((style & SWT.VERTICAL) != 0) {
 		if (GTK.GTK4) {
 			defaultCursor = GDK.gdk_cursor_new_from_name("sb_h_double_arrow", 0);

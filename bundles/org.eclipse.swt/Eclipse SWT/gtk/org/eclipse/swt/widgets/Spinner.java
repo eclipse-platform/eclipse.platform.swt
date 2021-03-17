@@ -325,7 +325,6 @@ void createHandle (int index) {
 	state |= HANDLE | MENU;
 	fixedHandle = OS.g_object_new (display.gtk_fixed_get_type (), 0);
 	if (fixedHandle == 0) error (SWT.ERROR_NO_HANDLES);
-	gtk_widget_set_has_surface_or_window (fixedHandle, true);
 	long adjustment = GTK.gtk_adjustment_new (0, 0, 100, 1, 10, 0);
 	if (adjustment == 0) error (SWT.ERROR_NO_HANDLES);
 	handle = GTK.gtk_spin_button_new (adjustment, climbRate, 0);
@@ -335,6 +334,7 @@ void createHandle (int index) {
 		OS.swt_fixed_add(fixedHandle, handle);
 		entryHandle = GTK.gtk_widget_get_first_child(handle);
 	} else {
+		GTK.gtk_widget_set_has_window(fixedHandle, true);
 		GTK3.gtk_container_add (fixedHandle, handle);
 	}
 	GTK.gtk_editable_set_editable (GTK.GTK4 ? entryHandle : handle, (style & SWT.READ_ONLY) == 0);

@@ -131,7 +131,6 @@ void createHandle (int index) {
 	state |= HANDLE | THEME_BACKGROUND;
 	fixedHandle = OS.g_object_new (display.gtk_fixed_get_type (), 0);
 	if (fixedHandle == 0) error (SWT.ERROR_NO_HANDLES);
-	gtk_widget_set_has_surface_or_window (fixedHandle, true);
 	long hAdjustment = GTK.gtk_adjustment_new (0, 0, 100, 1, 10, 0);
 	if (hAdjustment == 0) error (SWT.ERROR_NO_HANDLES);
 	if ((style & SWT.HORIZONTAL) != 0) {
@@ -144,6 +143,7 @@ void createHandle (int index) {
 	if (GTK.GTK4) {
 		OS.swt_fixed_add(fixedHandle, handle);
 	} else {
+		GTK.gtk_widget_set_has_window(fixedHandle, true);
 		GTK3.gtk_container_add (fixedHandle, handle);
 	}
 

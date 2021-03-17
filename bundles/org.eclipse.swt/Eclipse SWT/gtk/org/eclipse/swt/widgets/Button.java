@@ -298,9 +298,11 @@ void createHandle (int index) {
 	state |= HANDLE;
 	if ((style & (SWT.PUSH | SWT.TOGGLE)) == 0) state |= THEME_BACKGROUND;
 	int bits = SWT.ARROW | SWT.TOGGLE | SWT.CHECK | SWT.RADIO | SWT.PUSH;
-	fixedHandle = OS.g_object_new (display.gtk_fixed_get_type (), 0);
-	if (fixedHandle == 0) error (SWT.ERROR_NO_HANDLES);
-	gtk_widget_set_has_surface_or_window (fixedHandle, true);
+
+	fixedHandle = OS.g_object_new(display.gtk_fixed_get_type(), 0);
+	if (fixedHandle == 0) error(SWT.ERROR_NO_HANDLES);
+	if (!GTK.GTK4) GTK.gtk_widget_set_has_window(fixedHandle, true);
+
 	switch (style & bits) {
 		case SWT.ARROW:
 			byte arrowType [] = GTK.GTK_NAMED_ICON_GO_UP;

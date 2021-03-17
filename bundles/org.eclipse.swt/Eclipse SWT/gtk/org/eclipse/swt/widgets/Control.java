@@ -583,7 +583,7 @@ long paintHandle () {
 	if (GTK.GTK4) return topHandle;
 	long paintHandle = handle;
 	while (paintHandle != topHandle) {
-		if (gtk_widget_get_has_surface_or_window (paintHandle)) break;
+		if (GTK.gtk_widget_get_has_window(paintHandle)) break;
 		paintHandle = GTK.gtk_widget_get_parent (paintHandle);
 	}
 	return paintHandle;

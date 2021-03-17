@@ -2006,29 +2006,6 @@ long gtk_widget_get_surface (long widget){
 	return GTK.gtk_native_get_surface(GTK.gtk_widget_get_native (widget));
 }
 
-void gtk_widget_set_has_surface_or_window (long widget, boolean has) {
-	if (GTK.GTK4) {
-		if (has && OS.G_OBJECT_TYPE(widget) == OS.swt_fixed_get_type()) {
-			return;
-		}
-		//TODO: GTK4 no has_surface property
-	} else {
-		GTK.gtk_widget_set_has_window(widget, has);
-	}
-}
-
-boolean gtk_widget_get_has_surface_or_window (long widget) {
-	if (GTK.GTK4) {
-		return GTK.gtk_widget_get_native(widget) != 0;
-	} else {
-		return GTK.gtk_widget_get_has_window(widget);
-	}
-}
-
-void gtk_widget_set_visible (long widget, boolean visible) {
-	GTK.gtk_widget_set_visible (widget, visible);
-}
-
 void gdk_window_get_size (long drawable, int[] width, int[] height) {
 	width[0] = GDK.gdk_window_get_width (drawable);
 	height[0] = GDK.gdk_window_get_height (drawable);
