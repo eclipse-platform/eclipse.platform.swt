@@ -860,7 +860,10 @@ public class TextEditor {
 		for (StyleRange rangeToDispose : ranges) {
 			boolean disposeFont = true;
 			for (StyleRange range : allRanges) {
-				if (disposeFont && rangeToDispose.font == range.font) disposeFont = false;
+				if (disposeFont && rangeToDispose.font == range.font) {
+					disposeFont = false;
+					break;
+				}
 			}
 			if (disposeFont && rangeToDispose.font != textFont && rangeToDispose.font != null)  rangeToDispose.font.dispose();
 
