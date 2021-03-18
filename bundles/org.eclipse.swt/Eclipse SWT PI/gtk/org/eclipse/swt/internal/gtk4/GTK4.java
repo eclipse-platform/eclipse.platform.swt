@@ -23,7 +23,6 @@ public class GTK4 {
 	 */
 	public static final native boolean gtk_im_context_filter_keypress(long context, long event);
 
-
 	/* GtkButton */
 	/** @param icon_name cast=(const gchar *) */
 	public static final native long gtk_button_new_from_icon_name(byte[] icon_name);
@@ -32,7 +31,6 @@ public class GTK4 {
 	 * @param child cast=(GtkWidget *)
 	 */
 	public static final native void gtk_button_set_child(long button, long child);
-
 
 	/* GtkColorChooser Interface */
 	/**
@@ -47,7 +45,6 @@ public class GTK4 {
 	 * @param v cast=(float *)
 	 */
 	public static final native void gtk_rgb_to_hsv(float r, float g, float b, float[] h, float[] s, float[] v);
-
 
 	/* GtkBox */
 	/**
@@ -66,7 +63,6 @@ public class GTK4 {
 	 * @param sibling cast=(GtkWidget *)
 	 */
 	public static final native void gtk_box_insert_child_after(long box, long child, long sibling);
-
 
 	/* GtkCalendar */
 	/** @param calendar cast=(GtkCalendar *) */
@@ -92,7 +88,6 @@ public class GTK4 {
 	 */
 	public static final native void gtk_calendar_set_show_week_numbers(long calendar, boolean value);
 
-
 	/* GtkCheckButton */
 	/** @param check_button cast=(GtkCheckButton *) */
 	public static final native void gtk_check_button_set_use_underline(long check_button, boolean use_underline);
@@ -108,7 +103,6 @@ public class GTK4 {
 	/** @param check_button cast=(GtkCheckButton *) */
 	public static final native boolean gtk_check_button_get_active(long check_button);
 
-
 	/* GtkPicture */
 	public static final native long gtk_picture_new();
 	/**
@@ -116,4 +110,7 @@ public class GTK4 {
 	 * @param paintable cast=(GdkPaintable *)
 	 */
 	public static final native void gtk_picture_set_paintable(long picture, long paintable);
+
+	/* GTK Initialization */
+	public static final native boolean gtk_init_check();
 }

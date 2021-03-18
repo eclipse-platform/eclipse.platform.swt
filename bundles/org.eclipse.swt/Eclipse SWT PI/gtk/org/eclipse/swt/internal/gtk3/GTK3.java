@@ -23,14 +23,12 @@ public class GTK3 {
 	 */
 	public static final native boolean gtk_im_context_filter_keypress(long context, long event);
 
-
 	/* GtkButton */
 	/**
 	 * @param button cast=(GtkButton *)
 	 * @param image cast=(GtkWidget *)
 	 */
 	public static final native void gtk_button_set_image(long button, long image);
-
 
 	/* GtkAccelLabel */
 	/**
@@ -49,11 +47,9 @@ public class GTK3 {
 	 */
 	public static final native void gtk_accel_label_set_accel(long accel_label, int accel_key, int accel_mods);
 
-
 	/* GtkBin */
 	/** @param bin cast=(GtkBin *) */
 	public static final native long gtk_bin_get_child(long bin);
-
 
 	/* GtkBox */
 	/**
@@ -75,7 +71,6 @@ public class GTK3 {
 	 * @param padding cast=(guint)
 	 */
 	public static final native void gtk_box_pack_end(long box, long widget, boolean expand, boolean fill, int padding);
-
 
 	/* GtkCalendar */
 	/**
@@ -102,7 +97,6 @@ public class GTK3 {
 	 */
 	public static final native void gtk_calendar_get_date(long calendar, int[] year, int[] month, int[] day);
 
-
 	/* GtkColorChooser Interface */
 	/**
 	 * @param h cast=(gdouble)
@@ -122,7 +116,6 @@ public class GTK3 {
 	 * @param v cast=(gdouble *)
 	 */
 	public static final native void gtk_rgb_to_hsv(double r, double g, double b, double[] h, double[] s, double[] v);
-
 
 	/* GtkContainer */
 	/**
@@ -160,8 +153,30 @@ public class GTK3 {
 	 */
 	public static final native void gtk_container_set_border_width(long container, int border_width);
 
-
 	/* GtkDialog */
 	/** @param dialog cast=(GtkDialog *) */
 	public static final native int gtk_dialog_run(long dialog);
+
+	/* GTK Initialization */
+	/**
+	 * @param argc cast=(int *)
+	 * @param argv cast=(char ***)
+	 */
+	public static final native boolean gtk_init_check(long [] argc, long [] argv);
+
+	/* GtkGrab */
+	/** @param widget cast=(GtkWidget *) */
+	public static final native void gtk_grab_add(long widget);
+	public static final native long gtk_grab_get_current();
+	/** @param widget cast=(GtkWidget *) */
+	public static final native void gtk_grab_remove(long widget);
+
+	/* Events */
+	public static final native long gtk_get_current_event();
+	/** @param state cast=(GdkModifierType*) */
+	public static final native boolean gtk_get_current_event_state(int[] state);
+	/** @param event cast=(GdkEvent *) */
+	public static final native long gtk_get_event_widget(long event);
+	/** @param event cast=(GdkEvent *) */
+	public static final native void gtk_main_do_event(long event);
 }

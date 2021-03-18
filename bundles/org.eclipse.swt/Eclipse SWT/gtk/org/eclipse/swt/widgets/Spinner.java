@@ -659,7 +659,7 @@ long gtk_changed (long widget) {
 	* is to post the modify event when the user is typing.
 	*/
 	boolean keyPress = false;
-	long eventPtr = GTK.GTK4 ? 0 : GTK.gtk_get_current_event();
+	long eventPtr = GTK.GTK4 ? 0 : GTK3.gtk_get_current_event();
 	if (eventPtr != 0) {
 		int eventType = GDK.gdk_event_get_event_type(eventPtr);
 		eventType = fixGdkEventTypeValues(eventType);
@@ -1297,7 +1297,7 @@ String verifyText (String string, int start, int end) {
 	event.text = string;
 	event.start = start;
 	event.end = end;
-	long eventPtr = GTK.gtk_get_current_event ();
+	long eventPtr = GTK3.gtk_get_current_event ();
 	if (eventPtr != 0) {
 		int type = GDK.gdk_event_get_event_type(eventPtr);
 		type = fixGdkEventTypeValues(type);

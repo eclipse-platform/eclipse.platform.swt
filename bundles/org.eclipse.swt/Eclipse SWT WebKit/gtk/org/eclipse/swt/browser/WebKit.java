@@ -1585,7 +1585,7 @@ boolean handleDOMEvent (long event, int type) {
 
 	/* key event */
 	int keyEventState = 0;
-	long eventPtr = GTK.gtk_get_current_event ();
+	long eventPtr = GTK3.gtk_get_current_event ();
 	if (eventPtr != 0) {
 		int eventType = GDK.gdk_event_get_event_type(eventPtr);
 		int [] state = new int[1];

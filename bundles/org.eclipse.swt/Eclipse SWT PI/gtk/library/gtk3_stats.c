@@ -41,8 +41,16 @@ char * GTK3_nativeFunctionNames[] = {
 	"gtk_1container_1remove",
 	"gtk_1container_1set_1border_1width",
 	"gtk_1dialog_1run",
+	"gtk_1get_1current_1event",
+	"gtk_1get_1current_1event_1state",
+	"gtk_1get_1event_1widget",
+	"gtk_1grab_1add",
+	"gtk_1grab_1get_1current",
+	"gtk_1grab_1remove",
 	"gtk_1hsv_1to_1rgb",
 	"gtk_1im_1context_1filter_1keypress",
+	"gtk_1init_1check",
+	"gtk_1main_1do_1event",
 	"gtk_1rgb_1to_1hsv",
 };
 #define NATIVE_FUNCTION_COUNT sizeof(GTK3_nativeFunctionNames) / sizeof(char*)

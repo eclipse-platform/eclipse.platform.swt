@@ -354,7 +354,7 @@ long gtk_clicked (long widget) {
 	*/
 	boolean doubleClick = false;
 	boolean postEvent = true;
-	long eventPtr = GTK.gtk_get_current_event ();
+	long eventPtr = GTK3.gtk_get_current_event ();
 	if (eventPtr != 0) {
 		int [] eventButton = new int [1];
 		if (GTK.GTK4) {

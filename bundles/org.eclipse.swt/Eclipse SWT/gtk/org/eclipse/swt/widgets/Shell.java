@@ -603,7 +603,7 @@ void bringToTop (boolean force) {
 			OS.XSetInputFocus (xDisplay, xWindow, OS.RevertToParent, OS.CurrentTime);
 			GDK.gdk_x11_display_error_trap_pop_ignored(gdkDisplay);
 		} else {
-			GTK.gtk_grab_add(shellHandle);
+			GTK3.gtk_grab_add(shellHandle);
 			long gdkDisplay;
 			if (GTK.GTK4) {
 				gdkDisplay = GDK.gdk_surface_get_display(gdkResource);
@@ -1492,7 +1492,7 @@ long gtk_button_press_event (long widget, long event) {
 		if (requiresUngrab()) {
 			long seat = GDK.gdk_event_get_seat(event);
 			GDK.gdk_seat_ungrab(seat);
-			GTK.gtk_grab_remove(shellHandle);
+			GTK3.gtk_grab_remove(shellHandle);
 		}
 		return 0;
 	}
@@ -3299,7 +3299,7 @@ void checkAndUngrabFocus () {
 		}
 		long seat = GDK.gdk_display_get_default_seat(display);
 		GDK.gdk_seat_ungrab(seat);
-		GTK.gtk_grab_remove(shellHandle);
+		GTK3.gtk_grab_remove(shellHandle);
 		grabbedFocus = false;
 	}
 }

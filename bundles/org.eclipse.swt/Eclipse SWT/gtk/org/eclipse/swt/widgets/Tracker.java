@@ -20,6 +20,7 @@ import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.cairo.*;
 import org.eclipse.swt.internal.gtk.*;
+import org.eclipse.swt.internal.gtk3.*;
 
 /**
  *  Instances of this class implement rubber banding rectangles that are
@@ -939,7 +940,7 @@ private void setTrackerBackground(boolean opaque) {
 boolean processEvent (long eventPtr) {
 	int eventType = GDK.gdk_event_get_event_type(eventPtr);
 	eventType = Control.fixGdkEventTypeValues(eventType);
-	long widget = GTK.gtk_get_event_widget (eventPtr);
+	long widget = GTK3.gtk_get_event_widget (eventPtr);
 	switch (eventType) {
 		case GDK.GDK_MOTION_NOTIFY: gtk_motion_notify_event (widget, eventPtr); break;
 		case GDK.GDK_BUTTON_RELEASE: gtk_button_release_event (widget, eventPtr); break;
@@ -954,7 +955,7 @@ boolean processEvent (long eventPtr) {
 			break;
 		case GDK.GDK_EXPOSE:
 			update ();
-			GTK.gtk_main_do_event (eventPtr);
+			GTK3.gtk_main_do_event (eventPtr);
 			break;
 		default:
 			return true;

@@ -19,6 +19,8 @@ import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.cairo.*;
 import org.eclipse.swt.internal.gtk.*;
+import org.eclipse.swt.internal.gtk3.*;
+import org.eclipse.swt.internal.gtk4.*;
 
 /**
  * Instances of this class are used to print to a printer.
@@ -69,9 +71,14 @@ public final class Printer extends Device {
 	static boolean disablePrinting = OS.IsWin32 || System.getProperty("org.eclipse.swt.internal.gtk.disablePrinting") != null; //$NON-NLS-1$
 
 static void gtk_init() {
-	if (!GTK.gtk_init_check (new long [] {0}, null)) {
-		SWT.error (SWT.ERROR_NO_HANDLES, null, " [gtk_init_check() failed]");
+	boolean init;
+	if (GTK.GTK4) {
+		init = GTK4.gtk_init_check();
+	} else {
+		init = GTK3.gtk_init_check(new long[]{0}, null);
 	}
+
+	if (!init) SWT.error(SWT.ERROR_NO_HANDLES, null, " [gtk_init_check() failed]");
 }
 
 /**

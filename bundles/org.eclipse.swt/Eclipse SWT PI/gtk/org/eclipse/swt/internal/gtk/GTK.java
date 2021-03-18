@@ -1174,37 +1174,8 @@ public class GTK extends OS {
 	 */
 	public static final native void gtk_frame_set_child(long frame, long child);
 
-	/* [GTK3 only, if-def'd in os.h] */
-	public static final native long gtk_get_current_event();
-	/**
-	 * @method flags=dynamic
-	 * @param state cast=(GdkModifierType*)
-	 */
-	/* [GTK3 only] */
-	public static final native boolean gtk_get_current_event_state(int[] state);
+	/* GTK Initialization */
 	public static final native long gtk_get_default_language();
-	/**
-	 * @method flags=dynamic
-	 * @param event cast=(GdkEvent *)
-	 */
-	/* [GTK3 only] */
-	public static final native long gtk_get_event_widget(long event);
-
-
-	/* GtkGrab [GTK3 only] */
-	/**
-	 * @method flags=dynamic
-	 * @param widget cast=(GtkWidget *)
-	 */
-	public static final native void gtk_grab_add(long widget);
-	/** @method flags=dynamic */
-	public static final native long gtk_grab_get_current();
-	/**
-	 * @method flags=dynamic
-	 * @param widget cast=(GtkWidget *)
-	 */
-	public static final native void gtk_grab_remove(long widget);
-
 	/**
 	 * @method flags=dynamic
 	 */
@@ -1373,19 +1344,6 @@ public class GTK extends OS {
 	 * @param image cast=(GtkImage *)
 	 */
 	public static final native void gtk_image_clear(long image);
-
-	/**
-	 * @method flags=dynamic
-	 * @param argc cast=(int *)
-	 * @param argv cast=(char ***)
-	 */
-	/* [GTK3 only] */
-	public static final native boolean gtk_init_check(long [] argc, long [] argv);
-	/**
-	 * @method flags=dynamic
-	 */
-	/* [GTK4 only] */
-	public static final native boolean gtk_init_check();
 
 	/* GtkLabel */
 	public static final native long gtk_label_get_type();
@@ -1557,11 +1515,6 @@ public class GTK extends OS {
 	public static final native int gtk_get_major_version();
 	public static final native int gtk_get_minor_version();
 	public static final native int gtk_get_micro_version();
-	/**
-	 * @method flags=dynamic
-	 * @param event cast=(GdkEvent *)
-	 */
-	public static final native void gtk_main_do_event(long event);
 
 	/** @method flags=dynamic */
 	/* [GTK2/GTK3; 3.22 deprecated, replaced] */

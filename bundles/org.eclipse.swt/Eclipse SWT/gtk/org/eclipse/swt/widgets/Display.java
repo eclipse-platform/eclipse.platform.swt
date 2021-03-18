@@ -712,7 +712,7 @@ void addGdkEvent (long event) {
 		gdkEventWidgets = newWidgets;
 	}
 	Widget widget = null;
-	long handle = GTK.gtk_get_event_widget (event);
+	long handle = GTK3.gtk_get_event_widget (event);
 	if (handle != 0) {
 		do {
 			widget = getWidget (handle);
@@ -1134,8 +1134,14 @@ boolean checkAndSetThemeDetails (String themeName) {
 }
 
 void createDisplay (DeviceData data) {
-	boolean init = GTK.GTK4 ? GTK.gtk_init_check () : GTK.gtk_init_check (new long [] {0}, null);
-	if (!init) SWT.error (SWT.ERROR_NO_HANDLES, null, " [gtk_init_check() failed]"); //$NON-NLS-1$
+	boolean init;
+	if (GTK.GTK4) {
+		init = GTK4.gtk_init_check();
+	} else {
+		init = GTK3.gtk_init_check(new long[]{0}, null);
+	}
+	if (!init) SWT.error(SWT.ERROR_NO_HANDLES, null, " [gtk_init_check() failed]"); //$NON-NLS-1$
+
 	checkIMModule();
 	//set GTK+ Theme name as property for introspection purposes
 	themeName = OS.GTK_THEME_SET ? OS.GTK_THEME_SET_NAME : OS.getThemeName();
@@ -1536,7 +1542,7 @@ long eventProc (long event, long data) {
 	if (tracker != null) {
 		dispatch = tracker.processEvent (event);
 	}
-	if (dispatch) GTK.gtk_main_do_event (event);
+	if (dispatch) GTK3.gtk_main_do_event (event);
 	if (dispatchEvents == null) putGdkEvents ();
 	return 0;
 }

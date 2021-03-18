@@ -586,7 +586,7 @@ long gtk_button_release_event (long widget, long event) {
 long gtk_clicked (long widget) {
 	Event event = new Event ();
 	if ((style & SWT.DROP_DOWN) != 0) {
-		long eventPtr = GTK.gtk_get_current_event ();
+		long eventPtr = GTK3.gtk_get_current_event ();
 		if (eventPtr != 0) {
 			int eventType = GDK.gdk_event_get_event_type(eventPtr);
 			eventType = Control.fixGdkEventTypeValues(eventType);

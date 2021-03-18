@@ -18,6 +18,7 @@ import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.gtk.*;
+import org.eclipse.swt.internal.gtk3.*;
 
 /**
  * Instances of this class represent icons that can be placed on the
@@ -256,7 +257,7 @@ long gtk_activate (long widget) {
 	long nextEvent = GDK.gdk_event_peek();
 	if (nextEvent != 0) {
 		int nextEventType = GDK.GDK_EVENT_TYPE (nextEvent);
-		long currEvent = GTK.gtk_get_current_event ();
+		long currEvent = GTK3.gtk_get_current_event ();
 		int currEventType = 0;
 		if (currEvent != 0) {
 			currEventType = GDK.GDK_EVENT_TYPE (currEvent);

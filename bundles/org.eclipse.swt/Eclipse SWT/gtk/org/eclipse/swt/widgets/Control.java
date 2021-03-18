@@ -2745,7 +2745,7 @@ boolean dragDetect (int x, int y, boolean filter, boolean dragOnTimeout, boolean
 			long timeout = System.currentTimeMillis() + 500;
 			display.sendPreExternalEventDispatchEvent();
 			while (System.currentTimeMillis() < timeout) {
-				eventPtr = GTK.GTK4 ? GTK.gtk_get_current_event() : GDK.gdk_event_get ();
+				eventPtr = GTK.GTK4 ? GTK3.gtk_get_current_event() : GDK.gdk_event_get ();
 				if (eventPtr != 0) {
 					break;
 				} else {
@@ -2821,7 +2821,7 @@ boolean dragDetect (int x, int y, boolean filter, boolean dragOnTimeout, boolean
 					break;
 				}
 				default:
-					GTK.gtk_main_do_event (eventPtr);
+					GTK3.gtk_main_do_event (eventPtr);
 			}
 			gdk_event_free (eventPtr);
 		}
@@ -3770,7 +3770,7 @@ long gtk_event_after (long widget, long gdkEvent) {
 				}
 			} else {
 				display.ignoreFocus = false;
-				long grabHandle = GTK.gtk_grab_get_current ();
+				long grabHandle = GTK3.gtk_grab_get_current ();
 				if (grabHandle != 0) {
 					if (OS.G_OBJECT_TYPE (grabHandle) == GTK.GTK_TYPE_MENU ()) {
 						display.ignoreFocus = true;
@@ -4057,7 +4057,7 @@ long gtk_leave_notify_event (long widget, long event) {
 @Override
 long gtk_mnemonic_activate (long widget, long arg1) {
 	int result = 0;
-	long eventPtr = GTK.gtk_get_current_event ();
+	long eventPtr = GTK3.gtk_get_current_event ();
 	if (eventPtr != 0) {
 		int type = GDK.gdk_event_get_event_type(eventPtr);
 		type = fixGdkEventTypeValues(type);
@@ -5629,7 +5629,7 @@ static void rotateProc(long gesture, double angle, double angle_delta, long user
 		int [] state = new int[1];
 		double [] x = new double[1];
 		double [] y = new double[1];
-		GTK.gtk_get_current_event_state(state);
+		GTK3.gtk_get_current_event_state(state);
 		GTK.gtk_gesture_get_point(gesture, GTK.gtk_gesture_get_last_updated_sequence(gesture), x, y);
 		/*
 		 * Returning delta is off by two decimal points and is returning negative numbers on
@@ -5648,7 +5648,7 @@ static void magnifyProc(long gesture, double zoom, long user_data) {
 		int [] state = new int[1];
 		double [] x = new double[1];
 		double [] y = new double[1];
-		GTK.gtk_get_current_event_state(state);
+		GTK3.gtk_get_current_event_state(state);
 		GTK.gtk_gesture_get_point(gesture, GTK.gtk_gesture_get_last_updated_sequence(gesture), x, y);
 		double delta = GTK.gtk_gesture_zoom_get_scale_delta(gesture);
 		Control control = getControl(user_data);
@@ -5664,7 +5664,7 @@ static void swipeProc(long gesture, double velocity_x, double velocity_y, long u
 			int [] state = new int[1];
 			double [] x = new double[1];
 			double [] y = new double[1];
-			GTK.gtk_get_current_event_state(state);
+			GTK3.gtk_get_current_event_state(state);
 			GTK.gtk_gesture_get_point(gesture, GTK.gtk_gesture_get_last_updated_sequence(gesture), x, y);
 			Control control = getControl(user_data);
 			control.sendGestureEvent(state[0], SWT.GESTURE_SWIPE, (int) x[0], (int) y[0], xVelocity[0], yVelocity[0]);
@@ -5677,7 +5677,7 @@ static void gestureBeginProc(long gesture, long sequence, long user_data) {
 		int [] state = new int[1];
 		double [] x = new double[1];
 		double [] y = new double[1];
-		GTK.gtk_get_current_event_state(state);
+		GTK3.gtk_get_current_event_state(state);
 		GTK.gtk_gesture_get_point(gesture, sequence, x, y);
 		Control control = getControl(user_data);
 		control.sendGestureEvent(state[0], SWT.GESTURE_BEGIN, (int) x[0], (int) y[0], 0);
@@ -5689,7 +5689,7 @@ static void gestureEndProc(long gesture, long sequence, long user_data) {
 		int [] state = new int[1];
 		double [] x = new double[1];
 		double [] y = new double[1];
-		GTK.gtk_get_current_event_state(state);
+		GTK3.gtk_get_current_event_state(state);
 		GTK.gtk_gesture_get_point(gesture, GTK.gtk_gesture_get_last_updated_sequence(gesture), x, y);
 		Control control = getControl(user_data);
 		control.sendGestureEvent(state[0], SWT.GESTURE_END, (int) x[0], (int) y[0], 0);

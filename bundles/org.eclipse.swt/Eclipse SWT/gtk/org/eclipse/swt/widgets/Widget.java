@@ -1496,7 +1496,7 @@ char [] sendIMKeyEvent (int type, long event, char [] chars) {
 	int index = 0, count = 0, state = 0;
 	long ptr = 0;
 	if (event == 0) {
-		ptr = GTK.gtk_get_current_event ();
+		ptr = GTK3.gtk_get_current_event ();
 		if (ptr != 0) {
 			int eventType = GDK.gdk_event_get_event_type(ptr);
 			eventType = Control.fixGdkEventTypeValues(eventType);
@@ -1517,7 +1517,7 @@ char [] sendIMKeyEvent (int type, long event, char [] chars) {
 			}
 		} else {
 			int [] buffer = new int [1];
-			GTK.gtk_get_current_event_state (buffer);
+			GTK3.gtk_get_current_event_state (buffer);
 			state = buffer [0];
 		}
 	} else {
@@ -1565,7 +1565,7 @@ void sendSelectionEvent (int eventType, Event event, boolean send) {
 		return;
 	}
 	if (event == null) event = new Event ();
-	long ptr = GTK.GTK4 ? 0 : GTK.gtk_get_current_event ();
+	long ptr = GTK.GTK4 ? 0 : GTK3.gtk_get_current_event ();
 	if (ptr != 0) {
 		int currentEventType = GDK.gdk_event_get_event_type(ptr);
 		currentEventType = Control.fixGdkEventTypeValues(currentEventType);

@@ -215,6 +215,18 @@ JNIEXPORT jboolean JNICALL GTK4_NATIVE(gtk_1im_1context_1filter_1keypress)
 }
 #endif
 
+#ifndef NO_gtk_1init_1check
+JNIEXPORT jboolean JNICALL GTK4_NATIVE(gtk_1init_1check)
+	(JNIEnv *env, jclass that)
+{
+	jboolean rc = 0;
+	GTK4_NATIVE_ENTER(env, that, gtk_1init_1check_FUNC);
+	rc = (jboolean)gtk_init_check();
+	GTK4_NATIVE_EXIT(env, that, gtk_1init_1check_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_gtk_1picture_1new
 JNIEXPORT jlong JNICALL GTK4_NATIVE(gtk_1picture_1new)
 	(JNIEnv *env, jclass that)

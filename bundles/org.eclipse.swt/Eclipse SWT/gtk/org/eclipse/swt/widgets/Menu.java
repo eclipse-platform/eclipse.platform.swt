@@ -345,7 +345,7 @@ void _setVisible (boolean visible) {
 					 *  requires an event to hook on to. This requires the popup & events related to the menu be handled
 					 *  immediately and not as a post event in display, requiring the current event.
 					 */
-					eventPtr = GTK.gtk_get_current_event();
+					eventPtr = GTK3.gtk_get_current_event();
 					if (eventPtr == 0) {
 						eventPtr = GDK.gdk_event_new(GTK.GTK4 ? GDK.GDK4_BUTTON_PRESS : GDK.GDK_BUTTON_PRESS);
 						GdkEventButton event = new GdkEventButton ();

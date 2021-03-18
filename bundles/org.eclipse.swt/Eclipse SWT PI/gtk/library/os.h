@@ -357,7 +357,6 @@
 #define NO_gdk_1event_1get_1state
 #define NO_GDK_1EVENT_1TYPE
 #define NO_GDK_1EVENT_1WINDOW
-#define NO_gtk_1get_1current_1event
 
 // GdkCursor removals
 #define NO_gdk_1cursor_1new_1for_1display
