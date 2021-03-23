@@ -6168,8 +6168,8 @@ void setZOrder (Control sibling, boolean above, boolean fixRelations, boolean fi
 				if (above) {
 					//TODO: GTK4 no gdk_window_raise function. In GTK4, alternative may be gdk_toplevel_present
 				} else {
-					if (enableSurface != 0) GDK.gdk_toplevel_lower (enableSurface);
-					GDK.gdk_toplevel_lower (surface);
+					if (enableSurface != 0) GTK4.gdk_toplevel_lower (enableSurface);
+					GTK4.gdk_toplevel_lower (surface);
 				}
 			} else {
 				/* TODO: GTK4 no longer has ability for changing the Z-order of the windowing system directly.

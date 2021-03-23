@@ -113,4 +113,17 @@ public class GTK4 {
 
 	/* GTK Initialization */
 	public static final native boolean gtk_init_check();
+
+	/* GdkToplevel */
+	/** @param toplevel cast=(GdkToplevel *) */
+	public static final native int gdk_toplevel_get_state(long toplevel);
+	/**
+	 * @param toplevel cast=(GdkToplevel *)
+	 * @param textures cast=(GList *)
+	 */
+	public static final native void gdk_toplevel_set_icon_list(long toplevel, long textures);
+	/** @param toplevel cast=(GdkToplevel *) */
+	public static final native boolean gdk_toplevel_lower(long toplevel);
+	/** @param surface cast=(GdkToplevel *) */
+	public static final native void gdk_toplevel_focus(long surface, int timestamp);
 }

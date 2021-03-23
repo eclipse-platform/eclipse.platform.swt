@@ -23,6 +23,50 @@
 #define GTK4_NATIVE(func) Java_org_eclipse_swt_internal_gtk4_GTK4_##func
 #endif
 
+#ifndef NO_gdk_1toplevel_1focus
+JNIEXPORT void JNICALL GTK4_NATIVE(gdk_1toplevel_1focus)
+	(JNIEnv *env, jclass that, jlong arg0, jint arg1)
+{
+	GTK4_NATIVE_ENTER(env, that, gdk_1toplevel_1focus_FUNC);
+	gdk_toplevel_focus((GdkToplevel *)arg0, arg1);
+	GTK4_NATIVE_EXIT(env, that, gdk_1toplevel_1focus_FUNC);
+}
+#endif
+
+#ifndef NO_gdk_1toplevel_1get_1state
+JNIEXPORT jint JNICALL GTK4_NATIVE(gdk_1toplevel_1get_1state)
+	(JNIEnv *env, jclass that, jlong arg0)
+{
+	jint rc = 0;
+	GTK4_NATIVE_ENTER(env, that, gdk_1toplevel_1get_1state_FUNC);
+	rc = (jint)gdk_toplevel_get_state((GdkToplevel *)arg0);
+	GTK4_NATIVE_EXIT(env, that, gdk_1toplevel_1get_1state_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_gdk_1toplevel_1lower
+JNIEXPORT jboolean JNICALL GTK4_NATIVE(gdk_1toplevel_1lower)
+	(JNIEnv *env, jclass that, jlong arg0)
+{
+	jboolean rc = 0;
+	GTK4_NATIVE_ENTER(env, that, gdk_1toplevel_1lower_FUNC);
+	rc = (jboolean)gdk_toplevel_lower((GdkToplevel *)arg0);
+	GTK4_NATIVE_EXIT(env, that, gdk_1toplevel_1lower_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_gdk_1toplevel_1set_1icon_1list
+JNIEXPORT void JNICALL GTK4_NATIVE(gdk_1toplevel_1set_1icon_1list)
+	(JNIEnv *env, jclass that, jlong arg0, jlong arg1)
+{
+	GTK4_NATIVE_ENTER(env, that, gdk_1toplevel_1set_1icon_1list_FUNC);
+	gdk_toplevel_set_icon_list((GdkToplevel *)arg0, (GList *)arg1);
+	GTK4_NATIVE_EXIT(env, that, gdk_1toplevel_1set_1icon_1list_FUNC);
+}
+#endif
+
 #ifndef NO_gtk_1box_1append
 JNIEXPORT void JNICALL GTK4_NATIVE(gtk_1box_1append)
 	(JNIEnv *env, jclass that, jlong arg0, jlong arg1)

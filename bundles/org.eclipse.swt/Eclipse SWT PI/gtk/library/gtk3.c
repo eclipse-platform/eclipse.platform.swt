@@ -400,3 +400,13 @@ fail:
 }
 #endif
 
+#ifndef NO_gtk_1window_1set_1icon_1list
+JNIEXPORT void JNICALL GTK3_NATIVE(gtk_1window_1set_1icon_1list)
+	(JNIEnv *env, jclass that, jlong arg0, jlong arg1)
+{
+	GTK3_NATIVE_ENTER(env, that, gtk_1window_1set_1icon_1list_FUNC);
+	gtk_window_set_icon_list((GtkWindow *)arg0, (GList *)arg1);
+	GTK3_NATIVE_EXIT(env, that, gtk_1window_1set_1icon_1list_FUNC);
+}
+#endif
+

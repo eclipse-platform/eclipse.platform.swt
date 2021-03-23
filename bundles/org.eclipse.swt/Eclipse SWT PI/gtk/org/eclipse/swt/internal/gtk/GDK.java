@@ -347,11 +347,6 @@ public class GDK extends OS {
 	/* [GTK4 only, if-def'd in os.h] */
 	public static final native int gdk_surface_get_width(long surface);
 	/**
-	 * @param toplevel cast=(GdkToplevel *)
-	 */
-	/* [GTK4 only, if-def'd in os.h] */
-	public static final native int gdk_toplevel_get_state(long toplevel);
-	/**
 	 * @param window cast=(GdkWindow *)
 	 */
 	/* [GTK3 only, if-def'd in os.h] */
@@ -1103,9 +1098,6 @@ public class GDK extends OS {
 	/** @param window cast=(GdkWindow *) */
 	/* [GTK3 only, if-def'd in os.h] */
 	public static final native void gdk_window_focus(long window, int timestamp);
-	/** @param surface cast=(GdkToplevel *) */
-	/* [GTK4 only, if-def'd in os.h] */
-	public static final native void gdk_toplevel_focus(long surface, int timestamp);
 	/**
 	 * @param window cast=(GdkWindow *)
 	 * @param rect cast=(GdkRectangle *),flags=no_in
@@ -1197,9 +1189,6 @@ public class GDK extends OS {
 	/** @param window cast=(GdkWindow *) */
 	/* [GTK3 only, if-def'd in os.h] */
 	public static final native void gdk_window_lower(long window);
-	/** @param toplevel cast=(GdkToplevel *) */
-	/* [GTK4 only, if-def'd in os.h] */
-	public static final native boolean gdk_toplevel_lower(long toplevel);
 	/** @param window cast=(GdkWindow *) */
 	/* [GTK3 only, if-def'd in os.h] */
 	public static final native void gdk_window_raise(long window);

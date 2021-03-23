@@ -2696,28 +2696,6 @@ JNIEXPORT void JNICALL GDK_NATIVE(gdk_1threads_1leave)
 G_GNUC_END_IGNORE_DEPRECATIONS
 #endif
 
-#ifndef NO_gdk_1toplevel_1focus
-JNIEXPORT void JNICALL GDK_NATIVE(gdk_1toplevel_1focus)
-	(JNIEnv *env, jclass that, jlong arg0, jint arg1)
-{
-	GDK_NATIVE_ENTER(env, that, gdk_1toplevel_1focus_FUNC);
-	gdk_toplevel_focus((GdkToplevel *)arg0, arg1);
-	GDK_NATIVE_EXIT(env, that, gdk_1toplevel_1focus_FUNC);
-}
-#endif
-
-#ifndef NO_gdk_1toplevel_1get_1state
-JNIEXPORT jint JNICALL GDK_NATIVE(gdk_1toplevel_1get_1state)
-	(JNIEnv *env, jclass that, jlong arg0)
-{
-	jint rc = 0;
-	GDK_NATIVE_ENTER(env, that, gdk_1toplevel_1get_1state_FUNC);
-	rc = (jint)gdk_toplevel_get_state((GdkToplevel *)arg0);
-	GDK_NATIVE_EXIT(env, that, gdk_1toplevel_1get_1state_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO_gdk_1toplevel_1layout_1new
 JNIEXPORT jlong JNICALL GDK_NATIVE(gdk_1toplevel_1layout_1new)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
@@ -2734,18 +2712,6 @@ JNIEXPORT jlong JNICALL GDK_NATIVE(gdk_1toplevel_1layout_1new)
 		}
 	}
 	GDK_NATIVE_EXIT(env, that, gdk_1toplevel_1layout_1new_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO_gdk_1toplevel_1lower
-JNIEXPORT jboolean JNICALL GDK_NATIVE(gdk_1toplevel_1lower)
-	(JNIEnv *env, jclass that, jlong arg0)
-{
-	jboolean rc = 0;
-	GDK_NATIVE_ENTER(env, that, gdk_1toplevel_1lower_FUNC);
-	rc = (jboolean)gdk_toplevel_lower((GdkToplevel *)arg0);
-	GDK_NATIVE_EXIT(env, that, gdk_1toplevel_1lower_FUNC);
 	return rc;
 }
 #endif
@@ -14266,16 +14232,6 @@ JNIEXPORT void JNICALL GTK_NATIVE(gtk_1window_1set_1geometry_1hints)
 	gtk_window_set_geometry_hints((GtkWindow *)arg0, (GtkWidget *)arg1, lparg2, arg3);
 fail:
 	GTK_NATIVE_EXIT(env, that, gtk_1window_1set_1geometry_1hints_FUNC);
-}
-#endif
-
-#ifndef NO_gtk_1window_1set_1icon_1list
-JNIEXPORT void JNICALL GTK_NATIVE(gtk_1window_1set_1icon_1list)
-	(JNIEnv *env, jclass that, jlong arg0, jlong arg1)
-{
-	GTK_NATIVE_ENTER(env, that, gtk_1window_1set_1icon_1list_FUNC);
-	gtk_window_set_icon_list((GtkWindow *)arg0, (GList *)arg1);
-	GTK_NATIVE_EXIT(env, that, gtk_1window_1set_1icon_1list_FUNC);
 }
 #endif
 

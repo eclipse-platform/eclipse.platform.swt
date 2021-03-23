@@ -163,6 +163,10 @@ public int open() {
 	// Copy parent's icon
 	if (parentHandle != 0) {
 		if (GTK.GTK4) {
+			/*
+			 * TODO: This may not work as we are setting the icon list of the GtkWindow through
+			 * GdkToplevel (which has no way of retrieving the icon list set. See bug 572200.
+			 */
 			long iconName = GTK.gtk_window_get_icon_name(parentHandle);
 			if (iconName != 0) {
 				GTK.gtk_window_set_icon_name(handle, iconName);
@@ -170,7 +174,7 @@ public int open() {
 		} else {
 			long pixbufs = GTK.gtk_window_get_icon_list(parentHandle);
 			if (pixbufs != 0) {
-				GTK.gtk_window_set_icon_list(handle, pixbufs);
+				GTK3.gtk_window_set_icon_list(handle, pixbufs);
 				OS.g_list_free (pixbufs);
 			}
 		}

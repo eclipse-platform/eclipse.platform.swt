@@ -3835,11 +3835,6 @@ public class GTK extends OS {
 	public static final native long gtk_window_get_icon_list(long window);
 	/**
 	 * @param window cast=(GtkWindow *)
-	 * @param list cast=(GList *)
-	 */
-	public static final native void gtk_window_set_icon_list(long window, long list);
-	/**
-	 * @param window cast=(GtkWindow *)
 	 * @param attach_widget cast=(GtkWidget *)
 	 */
 	public static final native void gtk_window_set_attached_to(long window, long attach_widget);

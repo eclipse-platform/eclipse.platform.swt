@@ -179,4 +179,11 @@ public class GTK3 {
 	public static final native long gtk_get_event_widget(long event);
 	/** @param event cast=(GdkEvent *) */
 	public static final native void gtk_main_do_event(long event);
+
+	/* GtkWindow */
+	/**
+	 * @param window cast=(GtkWindow *)
+	 * @param list cast=(GList *)
+	 */
+	public static final native void gtk_window_set_icon_list(long window, long list);
 }

@@ -21,6 +21,10 @@
 #ifdef NATIVE_STATS
 
 char * GTK4_nativeFunctionNames[] = {
+	"gdk_1toplevel_1focus",
+	"gdk_1toplevel_1get_1state",
+	"gdk_1toplevel_1lower",
+	"gdk_1toplevel_1set_1icon_1list",
 	"gtk_1box_1append",
 	"gtk_1box_1insert_1child_1after",
 	"gtk_1box_1prepend",

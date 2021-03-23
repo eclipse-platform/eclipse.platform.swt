@@ -628,7 +628,7 @@ void bringToTop (boolean force) {
 		}
 	} else {
 		if (GTK.GTK4) {
-			GDK.gdk_toplevel_focus (gdkResource, display.lastUserEventTime);
+			GTK4.gdk_toplevel_focus (gdkResource, display.lastUserEventTime);
 		} else {
 			GDK.gdk_window_focus (gdkResource, display.lastUserEventTime);
 		}
@@ -1952,7 +1952,7 @@ long gtk_window_state_event (long widget, long event) {
 long notifyState (long object, long arg0) {
 	// GTK4 equivalent of gtk_window_state_event
 	assert GTK.GTK4;
-	int gdkSurfaceState = GDK.gdk_toplevel_get_state (object);
+	int gdkSurfaceState = GTK4.gdk_toplevel_get_state (object);
 	minimized = (gdkSurfaceState & GDK.GDK_SURFACE_STATE_MINIMIZED) != 0;
 	maximized = (gdkSurfaceState & GDK.GDK_SURFACE_STATE_MAXIMIZED) != 0;
 	fullScreen = (gdkSurfaceState & GDK.GDK_SURFACE_STATE_FULLSCREEN) != 0;

@@ -17,6 +17,8 @@ import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.gtk.*;
+import org.eclipse.swt.internal.gtk3.*;
+import org.eclipse.swt.internal.gtk4.*;
 
 /**
  * Instances of this class provide the appearance and
@@ -179,23 +181,40 @@ void _setImages (Image [] images) {
 		sort (bestImages);
 		images = bestImages;
 	}
-	long pixbufs = 0;
+
+	// Allocate GList of icons
+	long icon_list = 0;
 	if (images != null) {
-		for (int i = 0; i < images.length; i++) {
-			Image image = images [i];
-			long pixbuf = ImageList.createPixbuf (image);
-			pixbufs = OS.g_list_append (pixbufs, pixbuf);
+		for (Image image : images) {
+			long pixbuf = ImageList.createPixbuf(image);
+			if (GTK.GTK4) {
+				long texture = GDK.gdk_texture_new_for_pixbuf(pixbuf);
+				OS.g_object_unref(pixbuf);
+				icon_list = OS.g_list_append(icon_list, texture);
+			} else {
+				icon_list = OS.g_list_append(icon_list, pixbuf);
+			}
 		}
 	}
-	GTK.gtk_window_set_icon_list (topHandle (), pixbufs);
-	long [] data = new long [1];
-	long temp = pixbufs;
-	while (temp != 0) {
-		C.memmove (data, temp, C.PTR_SIZEOF);
-		OS.g_object_unref (data [0]);
-		temp = OS.g_list_next (temp);
+
+	if (GTK.GTK4) {
+		/*
+		 * Set texture list to window's surface. Can no longer
+		 * use GtkWindow functions as they require a themed icon.
+		 */
+		long surface = GTK.gtk_native_get_surface(topHandle());
+		GTK4.gdk_toplevel_set_icon_list(surface, icon_list);
+	} else {
+		GTK3.gtk_window_set_icon_list(topHandle(), icon_list);
 	}
-	if (pixbufs != 0) OS.g_list_free (pixbufs);
+
+	// Release GList
+	long temp = icon_list;
+	while (temp != 0) {
+		OS.g_object_unref(OS.g_list_data(temp));
+		temp = OS.g_list_next(temp);
+	}
+	if (icon_list != 0) OS.g_list_free(icon_list);
 }
 
 void addMenu (Menu menu) {

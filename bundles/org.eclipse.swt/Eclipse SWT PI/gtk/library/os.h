@@ -503,9 +503,6 @@
 #define NO_gdk_1surface_1set_1opaque_1region
 
 // No GdkToplevel on GTK3
-#define NO_gdk_1toplevel_1focus
-#define NO_gdk_1toplevel_1get_1state
-#define NO_gdk_1toplevel_1lower
 #define NO_gdk_1toplevel_1present
 
 // No GdkClipboard on GTK3
