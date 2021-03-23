@@ -21,6 +21,7 @@ import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.accessibility.gtk.*;
 import org.eclipse.swt.internal.gtk.*;
+import org.eclipse.swt.internal.gtk3.*;
 import org.eclipse.swt.widgets.*;
 
 class AccessibleObject {
@@ -44,20 +45,26 @@ class AccessibleObject {
 
 	AccessibleObject (long type, long widget, Accessible accessible, boolean isLightweight) {
 		super ();
-		if (type == OS.swt_fixed_get_type()) {
-			if (widget != 0 && !isLightweight) {
-				atkHandle = GTK.gtk_widget_get_accessible(widget);
-			} else {
-				// Lightweight widgets map to no "real" GTK widget, so we
-				// just instantiate a new SwtFixedAccessible
-				atkHandle = OS.g_object_new (OS.swt_fixed_accessible_get_type(), 0);
-			}
-			OS.swt_fixed_accessible_register_accessible(atkHandle, false, widget);
+
+		if (GTK.GTK4) {
+			//TODO: Make use of Accessibility interface of GtkWidget rather than atk object which has been removed
 		} else {
-			// TODO_a11y: accessibility listeners on the Java side have not yet
-			// been implemented for native GTK widgets on GTK3.
-			atkHandle = GTK.gtk_widget_get_accessible(widget);
+			if (type == OS.swt_fixed_get_type()) {
+				if (widget != 0 && !isLightweight) {
+					atkHandle = GTK3.gtk_widget_get_accessible(widget);
+				} else {
+					// Lightweight widgets map to no "real" GTK widget, so we
+					// just instantiate a new SwtFixedAccessible
+					atkHandle = OS.g_object_new (OS.swt_fixed_accessible_get_type(), 0);
+				}
+				OS.swt_fixed_accessible_register_accessible(atkHandle, false, widget);
+			} else {
+				// TODO_a11y: accessibility listeners on the Java side have not yet
+				// been implemented for native GTK widgets on GTK3.
+				atkHandle = GTK3.gtk_widget_get_accessible(widget);
+			}
 		}
+
 		this.accessible = accessible;
 		this.isLightweight = isLightweight;
 		AccessibleObjects.put (new LONG (atkHandle), this);

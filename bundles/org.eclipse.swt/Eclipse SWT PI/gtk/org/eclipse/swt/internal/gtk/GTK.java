@@ -3560,11 +3560,6 @@ public class GTK extends OS {
 	 * @method flags=dynamic
 	 * @param widget cast=(GtkWidget *)
 	 */
-	public static final native long gtk_widget_get_accessible(long widget);
-	/**
-	 * @method flags=dynamic
-	 * @param widget cast=(GtkWidget *)
-	 */
 	public static final native boolean gtk_widget_get_has_window(long widget);
 	/**
 	 * @method flags=dynamic

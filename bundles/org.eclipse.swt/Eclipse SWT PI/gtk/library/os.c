@@ -12298,26 +12298,6 @@ JNIEXPORT jboolean JNICALL GTK_NATIVE(gtk_1widget_1event)
 }
 #endif
 
-#ifndef NO_gtk_1widget_1get_1accessible
-JNIEXPORT jlong JNICALL GTK_NATIVE(gtk_1widget_1get_1accessible)
-	(JNIEnv *env, jclass that, jlong arg0)
-{
-	jlong rc = 0;
-	GTK_NATIVE_ENTER(env, that, gtk_1widget_1get_1accessible_FUNC);
-/*
-	rc = (jlong)gtk_widget_get_accessible((GtkWidget *)arg0);
-*/
-	{
-		GTK_LOAD_FUNCTION(fp, gtk_widget_get_accessible)
-		if (fp) {
-			rc = (jlong)((jlong (CALLING_CONVENTION*)(GtkWidget *))fp)((GtkWidget *)arg0);
-		}
-	}
-	GTK_NATIVE_EXIT(env, that, gtk_1widget_1get_1accessible_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO_gtk_1widget_1get_1allocation
 JNIEXPORT void JNICALL GTK_NATIVE(gtk_1widget_1get_1allocation)
 	(JNIEnv *env, jclass that, jlong arg0, jobject arg1)

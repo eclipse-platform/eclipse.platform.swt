@@ -52,6 +52,7 @@ char * GTK3_nativeFunctionNames[] = {
 	"gtk_1init_1check",
 	"gtk_1main_1do_1event",
 	"gtk_1rgb_1to_1hsv",
+	"gtk_1widget_1get_1accessible",
 	"gtk_1window_1set_1icon_1list",
 };
 #define NATIVE_FUNCTION_COUNT sizeof(GTK3_nativeFunctionNames) / sizeof(char*)

@@ -62,5 +62,6 @@ typedef enum {
 	gtk_1init_1check_FUNC,
 	gtk_1main_1do_1event_FUNC,
 	gtk_1rgb_1to_1hsv_FUNC,
+	gtk_1widget_1get_1accessible_FUNC,
 	gtk_1window_1set_1icon_1list_FUNC,
 } GTK3_FUNCS;

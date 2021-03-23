@@ -400,6 +400,18 @@ fail:
 }
 #endif
 
+#ifndef NO_gtk_1widget_1get_1accessible
+JNIEXPORT jlong JNICALL GTK3_NATIVE(gtk_1widget_1get_1accessible)
+	(JNIEnv *env, jclass that, jlong arg0)
+{
+	jlong rc = 0;
+	GTK3_NATIVE_ENTER(env, that, gtk_1widget_1get_1accessible_FUNC);
+	rc = (jlong)gtk_widget_get_accessible((GtkWidget *)arg0);
+	GTK3_NATIVE_EXIT(env, that, gtk_1widget_1get_1accessible_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_gtk_1window_1set_1icon_1list
 JNIEXPORT void JNICALL GTK3_NATIVE(gtk_1window_1set_1icon_1list)
 	(JNIEnv *env, jclass that, jlong arg0, jlong arg1)

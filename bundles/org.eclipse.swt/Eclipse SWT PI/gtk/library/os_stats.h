@@ -935,7 +935,6 @@ typedef enum {
 	gtk_1widget_1destroy_FUNC,
 	gtk_1widget_1draw_FUNC,
 	gtk_1widget_1event_FUNC,
-	gtk_1widget_1get_1accessible_FUNC,
 	gtk_1widget_1get_1allocation_FUNC,
 	gtk_1widget_1get_1can_1default_FUNC,
 	gtk_1widget_1get_1child_1visible_FUNC,

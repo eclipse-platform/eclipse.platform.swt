@@ -186,4 +186,8 @@ public class GTK3 {
 	 * @param list cast=(GList *)
 	 */
 	public static final native void gtk_window_set_icon_list(long window, long list);
+
+	/* GtkWidget */
+	/** @param widget cast=(GtkWidget *) */
+	public static final native long gtk_widget_get_accessible(long widget);
 }

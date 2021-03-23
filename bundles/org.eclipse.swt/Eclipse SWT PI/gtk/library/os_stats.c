@@ -937,7 +937,6 @@ char * GTK_nativeFunctionNames[] = {
 	"gtk_1widget_1destroy",
 	"gtk_1widget_1draw",
 	"gtk_1widget_1event",
-	"gtk_1widget_1get_1accessible",
 	"gtk_1widget_1get_1allocation",
 	"gtk_1widget_1get_1can_1default",
 	"gtk_1widget_1get_1child_1visible",
