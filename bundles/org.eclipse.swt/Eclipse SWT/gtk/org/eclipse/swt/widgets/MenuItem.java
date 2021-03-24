@@ -621,14 +621,17 @@ public String getToolTipText () {
 long gtk_activate (long widget) {
 	if ((style & SWT.CASCADE) != 0 && menu != null) return 0;
 
-	/*
-	* Bug in GTK.  When an ancestor menu is disabled and
-	* the user types an accelerator key, GTK delivers the
-	* the activate signal even though the menu item cannot
-	* be invoked using the mouse.  The fix is to ignore
-	* activate signals when an ancestor menu is disabled.
-	*/
-	if (!isEnabled ()) return 0;
+	if (!GTK.GTK4) {
+		/*
+		* Bug in GTK.  When an ancestor menu is disabled and
+		* the user types an accelerator key, GTK delivers the
+		* the activate signal even though the menu item cannot
+		* be invoked using the mouse.  The fix is to ignore
+		* activate signals when an ancestor menu is disabled.
+		*/
+		if (!isEnabled()) return 0;
+	}
+
 	if ((style & SWT.RADIO) != 0) {
 		if ((parent.getStyle () & SWT.NO_RADIO_GROUP) == 0) {
 			selectRadio ();
@@ -667,7 +670,8 @@ void hookEvents () {
 	super.hookEvents ();
 
 	if (GTK.GTK4) {
-		if ((style & SWT.SEPARATOR) == 0) {
+		// Bind activate signal only for menu items with actions (SWT.CHECK and SWT.RADIO)
+		if (actionHandle != 0) {
 			OS.g_signal_connect(actionHandle, OS.activate, display.activateProc, handle);
 		}
 	} else {
@@ -1050,6 +1054,7 @@ public void setMenu (Menu menu) {
 	if (oldMenu == menu) return;
 
 	if (GTK.GTK4) {
+		this.menu = menu;
 		if (menu != null) {
 			menu.cascade = this;
 			OS.g_menu_item_set_submenu(handle, menu.modelHandle);

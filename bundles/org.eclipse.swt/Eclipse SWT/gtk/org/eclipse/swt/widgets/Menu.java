@@ -552,9 +552,26 @@ public MenuItem getDefaultItem () {
  *
  * @see #isEnabled
  */
-public boolean getEnabled () {
+public boolean getEnabled() {
 	checkWidget();
-	return GTK.gtk_widget_get_sensitive (handle);
+
+	if (GTK.GTK4) {
+		if ((style & SWT.DROP_DOWN) != 0) {
+			/*
+			 * In GTK4, SWT.DROP_DOWN represents an wrapper of
+			 * GMenu menu model. With this style the Menu object
+			 * is just a structure to hold MenuItems. We return true
+			 * in all cases as this is just a model. If the dropdown menu
+			 * is to be disabled, the corresponding SWT.CASCADE
+			 * menu item should be disabled.
+			 */
+			return true;
+		} else {
+			return GTK.gtk_widget_get_sensitive(handle);
+		}
+	} else {
+		return GTK.gtk_widget_get_sensitive(handle);
+	}
 }
 
 /**
@@ -1122,9 +1139,22 @@ public void setDefaultItem (MenuItem item) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
-public void setEnabled (boolean enabled) {
+public void setEnabled(boolean enabled) {
 	checkWidget();
-	GTK.gtk_widget_set_sensitive (handle, enabled);
+
+	if (GTK.GTK4) {
+		if ((style & SWT.DROP_DOWN) != 0) {
+			/*
+			 * In GTK4, SWT.DROP_DOWN acts solely as a wrapper
+			 * of the GMenu menu model. See getEnabled for more info.
+			 */
+			return;
+		} else {
+			GTK.gtk_widget_set_sensitive(handle, enabled);
+		}
+	} else {
+		GTK.gtk_widget_set_sensitive(handle, enabled);
+	}
 }
 
 /**
