@@ -299,10 +299,6 @@ void createHandle (int index) {
 	if ((style & (SWT.PUSH | SWT.TOGGLE)) == 0) state |= THEME_BACKGROUND;
 	int bits = SWT.ARROW | SWT.TOGGLE | SWT.CHECK | SWT.RADIO | SWT.PUSH;
 
-	fixedHandle = OS.g_object_new(display.gtk_fixed_get_type(), 0);
-	if (fixedHandle == 0) error(SWT.ERROR_NO_HANDLES);
-	if (!GTK.GTK4) GTK.gtk_widget_set_has_window(fixedHandle, true);
-
 	switch (style & bits) {
 		case SWT.ARROW:
 			byte arrowType [] = GTK.GTK_NAMED_ICON_GO_UP;
@@ -359,6 +355,7 @@ void createHandle (int index) {
 			if (GTK.GTK4) {
 				groupHandle = GTK.gtk_check_button_new();
 				if (groupHandle == 0) error(SWT.ERROR_NO_HANDLES);
+				OS.g_object_ref_sink(groupHandle);
 				handle = GTK.gtk_check_button_new();
 				if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 				GTK4.gtk_check_button_set_group(handle, groupHandle);
@@ -417,10 +414,13 @@ void createHandle (int index) {
 		}
 	}
 
+	fixedHandle = OS.g_object_new(display.gtk_fixed_get_type(), 0);
+	if (fixedHandle == 0) error(SWT.ERROR_NO_HANDLES);
 	if (GTK.GTK4) {
 		OS.swt_fixed_add(fixedHandle, handle);
 	} else {
-		GTK3.gtk_container_add (fixedHandle, handle);
+		GTK.gtk_widget_set_has_window(fixedHandle, true);
+		GTK3.gtk_container_add(fixedHandle, handle);
 	}
 
 	if ((style & SWT.ARROW) != 0) return;
@@ -726,13 +726,16 @@ void releaseHandle () {
 }
 
 @Override
-void releaseWidget () {
-	super.releaseWidget ();
+void releaseWidget() {
+	super.releaseWidget();
 
-	if (!GTK.GTK4) {
-		if (groupHandle != 0) OS.g_object_unref (groupHandle);
-		groupHandle = 0;
+	if (GTK.GTK4) {
+		if (boxHandle != 0) GTK.gtk_widget_unparent(boxHandle);
 	}
+
+	// Release reference to hidden GtkCheckButton that allows for SWT.RADIO behavior
+	if (groupHandle != 0) OS.g_object_unref(groupHandle);
+	groupHandle = 0;
 
 	image = null;
 	text = null;
