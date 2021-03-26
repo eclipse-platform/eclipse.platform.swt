@@ -336,8 +336,8 @@ int getWidthInPixels () {
 	if (!GTK.gtk_tree_view_column_get_visible (handle)) {
 		return 0;
 	}
-	//if (useFixedWidth) return GTK.gtk_tree_view_column_get_fixed_width (handle);
-	return GTK.gtk_tree_view_column_get_width (handle);
+
+	return GTK.gtk_tree_view_column_get_fixed_width(handle);
 }
 
 @Override
