@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others.
+ * Copyright (c) 2000, 2021 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -258,9 +258,22 @@ public String open () {
 		 * Feature in Windows. If a filter name doesn't contain "*.", FileDialog appends
 		 * the filter pattern to the name. This might cause filters like (*) to appear
 		 * twice. The fix is to strip the pattern and let FileDialog re-append it.
+		 *
+		 * Note: Registry entry for "Hide extensions for known file types" needs to be
+		 * checked before we apply above work-around.
 		 */
 		if (!name.contains("*.")) {
-			name = name.replace(" (" + extension + ")", "");
+			/* By default value is on, in case of missing registry entry assumed to be on */
+			int result = 1;
+			try {
+				result = OS.readRegistryDword(OS.HKEY_CURRENT_USER,
+						"Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced", "HideFileExt");
+			} catch (Exception e) {
+				/* Registry entry not found, hence honor the default value */
+			}
+			if (result == 0) {
+				name = name.replace(" (" + extension + ")", "");
+			}
 		}
 		long lpstrName = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, (name.length() + 1) * Character.BYTES);
 		long lpstrExt = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, (extension.length() + 1) * Character.BYTES);
