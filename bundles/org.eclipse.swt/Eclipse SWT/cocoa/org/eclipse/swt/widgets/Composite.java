@@ -958,6 +958,25 @@ void redrawWidget(NSView view, boolean redrawChildren) {
 }
 
 @Override
+public void redraw(int x, int y, int width, int height, boolean all) {
+	super.redraw(x, y, width, height, all);
+	if (all) {
+		Control[] children = _getChildren();
+		for (Control child : children) {
+			if (child != null && !child.isDisposed () && child.isVisible()) {
+				NSRect rect = new NSRect();
+				rect.x = x;
+				rect.y = y;
+				rect.width = width;
+				rect.height = height;
+				rect = view.convertRect_toView_(rect, child.view);
+				child.redraw((int)rect.x, (int)rect.y, (int)rect.width, (int)rect.height, all);
+			}
+		}
+	}
+}
+
+@Override
 void reflectScrolledClipView (long id, long sel, long aClipView) {
 	if ((state & CANVAS) != 0) return;
 	super.reflectScrolledClipView (id, sel, aClipView);
