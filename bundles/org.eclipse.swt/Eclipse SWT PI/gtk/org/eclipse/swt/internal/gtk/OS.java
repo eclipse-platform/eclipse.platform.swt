@@ -302,6 +302,7 @@ public class OS extends C {
 	public static final byte[] drag_end = ascii("drag_end");
 	public static final byte[] drag_leave = ascii("drag_leave");
 	public static final byte[] drag_motion = ascii("drag_motion");
+	public static final byte[] prepare = ascii("prepare");
 	public static final byte[] draw = ascii("draw");
 	public static final byte[] end = ascii("end");
 	public static final byte[] enter_notify_event = ascii("enter-notify-event");

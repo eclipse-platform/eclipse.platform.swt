@@ -23,6 +23,44 @@
 #define GTK4_NATIVE(func) Java_org_eclipse_swt_internal_gtk4_GTK4_##func
 #endif
 
+#ifndef NO_gdk_1content_1formats_1builder_1add_1mime_1type
+JNIEXPORT void JNICALL GTK4_NATIVE(gdk_1content_1formats_1builder_1add_1mime_1type)
+	(JNIEnv *env, jclass that, jlong arg0, jbyteArray arg1)
+{
+	jbyte *lparg1=NULL;
+	GTK4_NATIVE_ENTER(env, that, gdk_1content_1formats_1builder_1add_1mime_1type_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	gdk_content_formats_builder_add_mime_type((GdkContentFormatsBuilder *)arg0, (const char *)lparg1);
+fail:
+	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	GTK4_NATIVE_EXIT(env, that, gdk_1content_1formats_1builder_1add_1mime_1type_FUNC);
+}
+#endif
+
+#ifndef NO_gdk_1content_1formats_1builder_1free_1to_1formats
+JNIEXPORT jlong JNICALL GTK4_NATIVE(gdk_1content_1formats_1builder_1free_1to_1formats)
+	(JNIEnv *env, jclass that, jlong arg0)
+{
+	jlong rc = 0;
+	GTK4_NATIVE_ENTER(env, that, gdk_1content_1formats_1builder_1free_1to_1formats_FUNC);
+	rc = (jlong)gdk_content_formats_builder_free_to_formats((GdkContentFormatsBuilder *)arg0);
+	GTK4_NATIVE_EXIT(env, that, gdk_1content_1formats_1builder_1free_1to_1formats_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_gdk_1content_1formats_1builder_1new
+JNIEXPORT jlong JNICALL GTK4_NATIVE(gdk_1content_1formats_1builder_1new)
+	(JNIEnv *env, jclass that)
+{
+	jlong rc = 0;
+	GTK4_NATIVE_ENTER(env, that, gdk_1content_1formats_1builder_1new_FUNC);
+	rc = (jlong)gdk_content_formats_builder_new();
+	GTK4_NATIVE_EXIT(env, that, gdk_1content_1formats_1builder_1new_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_gdk_1toplevel_1focus
 JNIEXPORT void JNICALL GTK4_NATIVE(gdk_1toplevel_1focus)
 	(JNIEnv *env, jclass that, jlong arg0, jint arg1)
@@ -224,6 +262,60 @@ JNIEXPORT void JNICALL GTK4_NATIVE(gtk_1check_1button_1set_1use_1underline)
 	GTK4_NATIVE_ENTER(env, that, gtk_1check_1button_1set_1use_1underline_FUNC);
 	gtk_check_button_set_use_underline((GtkCheckButton *)arg0, arg1);
 	GTK4_NATIVE_EXIT(env, that, gtk_1check_1button_1set_1use_1underline_FUNC);
+}
+#endif
+
+#ifndef NO_gtk_1drag_1source_1new
+JNIEXPORT jlong JNICALL GTK4_NATIVE(gtk_1drag_1source_1new)
+	(JNIEnv *env, jclass that)
+{
+	jlong rc = 0;
+	GTK4_NATIVE_ENTER(env, that, gtk_1drag_1source_1new_FUNC);
+	rc = (jlong)gtk_drag_source_new();
+	GTK4_NATIVE_EXIT(env, that, gtk_1drag_1source_1new_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_gtk_1drag_1source_1set_1actions
+JNIEXPORT void JNICALL GTK4_NATIVE(gtk_1drag_1source_1set_1actions)
+	(JNIEnv *env, jclass that, jlong arg0, jint arg1)
+{
+	GTK4_NATIVE_ENTER(env, that, gtk_1drag_1source_1set_1actions_FUNC);
+	gtk_drag_source_set_actions((GtkDragSource *)arg0, (GdkDragAction)arg1);
+	GTK4_NATIVE_EXIT(env, that, gtk_1drag_1source_1set_1actions_FUNC);
+}
+#endif
+
+#ifndef NO_gtk_1drag_1source_1set_1icon
+JNIEXPORT void JNICALL GTK4_NATIVE(gtk_1drag_1source_1set_1icon)
+	(JNIEnv *env, jclass that, jlong arg0, jlong arg1, jint arg2, jint arg3)
+{
+	GTK4_NATIVE_ENTER(env, that, gtk_1drag_1source_1set_1icon_FUNC);
+	gtk_drag_source_set_icon((GtkDragSource *)arg0, (GdkPaintable *)arg1, arg2, arg3);
+	GTK4_NATIVE_EXIT(env, that, gtk_1drag_1source_1set_1icon_FUNC);
+}
+#endif
+
+#ifndef NO_gtk_1drop_1target_1async_1new
+JNIEXPORT jlong JNICALL GTK4_NATIVE(gtk_1drop_1target_1async_1new)
+	(JNIEnv *env, jclass that, jlong arg0, jint arg1)
+{
+	jlong rc = 0;
+	GTK4_NATIVE_ENTER(env, that, gtk_1drop_1target_1async_1new_FUNC);
+	rc = (jlong)gtk_drop_target_async_new((GdkContentFormats *)arg0, (GdkDragAction)arg1);
+	GTK4_NATIVE_EXIT(env, that, gtk_1drop_1target_1async_1new_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_gtk_1drop_1target_1async_1set_1formats
+JNIEXPORT void JNICALL GTK4_NATIVE(gtk_1drop_1target_1async_1set_1formats)
+	(JNIEnv *env, jclass that, jlong arg0, jlong arg1)
+{
+	GTK4_NATIVE_ENTER(env, that, gtk_1drop_1target_1async_1set_1formats_FUNC);
+	gtk_drop_target_async_set_formats((GtkDropTargetAsync *)arg0, (GdkContentFormats *)arg1);
+	GTK4_NATIVE_EXIT(env, that, gtk_1drop_1target_1async_1set_1formats_FUNC);
 }
 #endif
 

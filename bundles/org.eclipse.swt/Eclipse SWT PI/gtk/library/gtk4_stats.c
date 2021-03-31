@@ -21,6 +21,9 @@
 #ifdef NATIVE_STATS
 
 char * GTK4_nativeFunctionNames[] = {
+	"gdk_1content_1formats_1builder_1add_1mime_1type",
+	"gdk_1content_1formats_1builder_1free_1to_1formats",
+	"gdk_1content_1formats_1builder_1new",
 	"gdk_1toplevel_1focus",
 	"gdk_1toplevel_1get_1state",
 	"gdk_1toplevel_1lower",
@@ -40,6 +43,11 @@ char * GTK4_nativeFunctionNames[] = {
 	"gtk_1check_1button_1set_1group",
 	"gtk_1check_1button_1set_1inconsistent",
 	"gtk_1check_1button_1set_1use_1underline",
+	"gtk_1drag_1source_1new",
+	"gtk_1drag_1source_1set_1actions",
+	"gtk_1drag_1source_1set_1icon",
+	"gtk_1drop_1target_1async_1new",
+	"gtk_1drop_1target_1async_1set_1formats",
 	"gtk_1hsv_1to_1rgb",
 	"gtk_1im_1context_1filter_1keypress",
 	"gtk_1init_1check",

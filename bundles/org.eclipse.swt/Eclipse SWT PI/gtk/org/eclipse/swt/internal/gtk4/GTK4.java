@@ -126,4 +126,39 @@ public class GTK4 {
 	public static final native boolean gdk_toplevel_lower(long toplevel);
 	/** @param surface cast=(GdkToplevel *) */
 	public static final native void gdk_toplevel_focus(long surface, int timestamp);
+
+	/* GtkDragSource */
+	public static final native long gtk_drag_source_new();
+	/**
+	 * @param source cast=(GtkDragSource *)
+	 * @param actions cast=(GdkDragAction)
+	 */
+	public static final native void gtk_drag_source_set_actions(long source, int actions);
+	/**
+	 * @param source cast=(GtkDragSource *)
+	 * @param paintable cast=(GdkPaintable *)
+	 */
+	public static final native void gtk_drag_source_set_icon(long source, long paintable, int hot_x, int hot_y);
+
+	/* GtkDropTarget */
+	/**
+	 * @param formats cast=(GdkContentFormats *)
+	 * @param actions cast=(GdkDragAction)
+	 */
+	public static final native long gtk_drop_target_async_new(long formats, int actions);
+	/**
+	 * @param target cast=(GtkDropTargetAsync *)
+	 * @param formats cast=(GdkContentFormats *)
+	 */
+	public static final native void gtk_drop_target_async_set_formats(long target, long formats);
+
+	/* GdkContentFormats */
+	public static final native long gdk_content_formats_builder_new();
+	/**
+	 * @param builder cast=(GdkContentFormatsBuilder *)
+	 * @param mime_type cast=(const char *)
+	 */
+	public static final native void gdk_content_formats_builder_add_mime_type(long builder, byte[] mime_type);
+	/** @param builder cast=(GdkContentFormatsBuilder *) */
+	public static final native long gdk_content_formats_builder_free_to_formats(long builder);
 }
