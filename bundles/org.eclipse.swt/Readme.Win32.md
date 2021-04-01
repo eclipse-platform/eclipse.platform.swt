@@ -4,7 +4,7 @@ The document is structured so that you only need to read up to the point that yo
 
 The SWT windows port is based on the Win32 api.
 
-The natives are compiled via an ant build.xml script with the Microsoft Visual Studio (2017) C++ compiler.
+The natives are compiled via an ant build.xml script with the Microsoft Visual Studio (2019) C++ compiler.
 
 # Development overview
 SWT is made up of 2 parts, Java and the natives (written in C).

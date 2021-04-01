@@ -1,5 +1,5 @@
 @rem ***************************************************************************
-@rem Copyright (c) 2000, 2018 IBM Corporation and others.
+@rem Copyright (c) 2000, 2021 IBM Corporation and others.
 @rem
 @rem This program and the accompanying materials
 @rem are made available under the terms of the Eclipse Public License 2.0
@@ -23,12 +23,18 @@ echo INFO Starting build of binaries. Detailed system setup instructions can be 
 IF "x.%SWT_BUILDDIR%"=="x." set "SWT_BUILDDIR=W:"
 echo SWT build dir: %SWT_BUILDDIR%
 
-IF "x.%MSVC_HOME%"=="x." set "MSVC_HOME=%SWT_BUILDDIR%\Microsoft\Visual Studio\2017\"
-IF NOT EXIST "%MSVC_HOME%" set "MSVC_HOME=%ProgramFiles(x86)%\Microsoft Visual Studio\2017"
+@rem Specify VisualStudio Edition: 'Community', 'Enterprise', 'Professional' etc.
+IF "x.%MSVC_EDITION%"=="x." set "MSVC_EDITION=Community"
+
+@rem Specify VisualStudio Version: '2017' or newer '2019'
+IF "x.%MSVC_VERSION%"=="x." set "MSVC_VERSION=2019"
+
+IF "x.%MSVC_HOME%"=="x." set "MSVC_HOME=%SWT_BUILDDIR%\Microsoft\Visual Studio\%MSVC_VERSION%\"
+IF NOT EXIST "%MSVC_HOME%" set "MSVC_HOME=%ProgramFiles(x86)%\Microsoft Visual Studio\%MSVC_VERSION%\%MSVC_EDITION%"
 IF EXIST "%MSVC_HOME%" (
-	echo "Microsoft Visual Studio 2017 dir: %MSVC_HOME%"
+	echo "Microsoft Visual Studio %MSVC_VERSION% dir: %MSVC_HOME%"
 ) ELSE (
-	echo "WARNING: Microsoft Visual Studio 2017 was not found."
+	echo "WARNING: Microsoft Visual Studio %MSVC_VERSION% was not found."
 )
 
 IF "x.%1"=="x.x86" GOTO X86
@@ -42,7 +48,7 @@ IF "x.%SWT_JAVA_HOME%"=="x." (
 ) ELSE (
     echo "SWT_JAVA_HOME x86: %SWT_JAVA_HOME%"
 )
-call "%MSVC_HOME%\Community\VC\Auxiliary\Build\vcvarsall.bat" x86
+call "%MSVC_HOME%\VC\Auxiliary\Build\vcvarsall.bat" x86
 IF x.%1==x.x86 shift
 GOTO MAKE
 
@@ -74,7 +80,7 @@ IF "x.%CHROMIUM_RUST_DIR%"=="x." (
     set CHROMIUM_HEADERS=%CHROMIUM_RUST_DIR%\chromium_subp\cef_win32
     set CHROMIUM_TARGET=%CHROMIUM_RUST_DIR%\chromium_swt\target\release
 )
-call "%MSVC_HOME%\Community\VC\Auxiliary\Build\vcvarsall.bat" x64
+call "%MSVC_HOME%\VC\Auxiliary\Build\vcvarsall.bat" x64
 shift
 GOTO MAKE
 
