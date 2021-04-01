@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2017 IBM Corporation and others.
+ * Copyright (c) 2000, 2021 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -1069,12 +1069,14 @@ public void setToolTipText (String toolTip) {
 
 	if (toolTip == null && itemToolTip != null) {
 		itemToolTip.setVisible (false);
+		itemToolTip.dispose();
 		itemToolTip = null;
 	}
 
 	if (toolTip == null || toolTip.trim().length() == 0
 			|| (itemToolTip != null && toolTip.equals(itemToolTip.getMessage()))) return;
 
+	if (itemToolTip != null) itemToolTip.dispose();
 	itemToolTip = new MenuItemToolTip (this.getParent().getShell());
 	itemToolTip.setMessage (toolTip);
 	itemToolTip.setVisible (false);
