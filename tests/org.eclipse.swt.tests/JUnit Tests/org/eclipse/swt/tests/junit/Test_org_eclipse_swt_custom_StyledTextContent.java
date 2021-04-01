@@ -34,7 +34,7 @@ import org.junit.Test;
 public class Test_org_eclipse_swt_custom_StyledTextContent {
 	int XINSET = 0;
 
-	class ContentImplementation implements StyledTextContent {
+	static class ContentImplementation implements StyledTextContent {
 		String textContent = "";
 
 		@Override

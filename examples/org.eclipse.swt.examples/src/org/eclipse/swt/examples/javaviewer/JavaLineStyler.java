@@ -209,7 +209,7 @@ public void parseBlockComments(String text) {
 /**
  * A simple fuzzy scanner for Java
  */
-public class JavaScanner {
+public static class JavaScanner {
 
 	protected Map<String, Integer> fgKeys= null;
 	protected StringBuilder fBuffer= new StringBuilder();

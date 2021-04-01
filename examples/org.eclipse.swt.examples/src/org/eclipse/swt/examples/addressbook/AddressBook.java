@@ -769,7 +769,7 @@ private void createHelpMenu(Menu menuBar) {
 /**
  * To compare entries (rows) by the given column
  */
-private class RowComparator implements Comparator<String[]> {
+private static class RowComparator implements Comparator<String[]> {
 	private int column;
 
 	/**
