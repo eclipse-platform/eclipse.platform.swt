@@ -30,7 +30,7 @@ IF "x.%MSVC_EDITION%"=="x." set "MSVC_EDITION=Community"
 IF "x.%MSVC_VERSION%"=="x." set "MSVC_VERSION=2019"
 
 IF "x.%MSVC_HOME%"=="x." set "MSVC_HOME=%SWT_BUILDDIR%\Microsoft\Visual Studio\%MSVC_VERSION%\"
-IF NOT EXIST "%MSVC_HOME%" set "MSVC_HOME=%ProgramFiles(x86)%\Microsoft Visual Studio\%MSVC_VERSION%"
+IF NOT EXIST "%MSVC_HOME%" set "MSVC_HOME=%ProgramFiles(x86)%\Microsoft Visual Studio\%MSVC_VERSION%\%MSVC_EDITION%"
 IF EXIST "%MSVC_HOME%" (
 	echo "Microsoft Visual Studio %MSVC_VERSION% dir: %MSVC_HOME%"
 ) ELSE (
@@ -48,7 +48,7 @@ IF "x.%SWT_JAVA_HOME%"=="x." (
 ) ELSE (
     echo "SWT_JAVA_HOME x86: %SWT_JAVA_HOME%"
 )
-call "%MSVC_HOME%\%MSVC_EDITION%\VC\Auxiliary\Build\vcvarsall.bat" x86
+call "%MSVC_HOME%\VC\Auxiliary\Build\vcvarsall.bat" x86
 IF x.%1==x.x86 shift
 GOTO MAKE
 
@@ -80,7 +80,7 @@ IF "x.%CHROMIUM_RUST_DIR%"=="x." (
     set CHROMIUM_HEADERS=%CHROMIUM_RUST_DIR%\chromium_subp\cef_win32
     set CHROMIUM_TARGET=%CHROMIUM_RUST_DIR%\chromium_swt\target\release
 )
-call "%MSVC_HOME%\%MSVC_EDITION%\VC\Auxiliary\Build\vcvarsall.bat" x64
+call "%MSVC_HOME%\VC\Auxiliary\Build\vcvarsall.bat" x64
 shift
 GOTO MAKE
 
