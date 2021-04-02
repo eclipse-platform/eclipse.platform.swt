@@ -29,8 +29,8 @@ IF "x.%MSVC_EDITION%"=="x." set "MSVC_EDITION=Community"
 @rem Specify VisualStudio Version: '2017' or newer '2019'
 IF "x.%MSVC_VERSION%"=="x." set "MSVC_VERSION=2019"
 
-IF "x.%MSVC_HOME%"=="x." set "MSVC_HOME=%SWT_BUILDDIR%\Microsoft\Visual Studio\%MSVC_VERSION%\%MSVC_EDITION%\"
-IF NOT EXIST "%MSVC_HOME%" set "MSVC_HOME=%ProgramFiles(x86)%\Microsoft Visual Studio\%MSVC_VERSION%\%MSVC_EDITION%"
+IF "x.%MSVC_HOME%"=="x." set "MSVC_HOME=%SWT_BUILDDIR%\Microsoft\Visual Studio\%MSVC_VERSION%\"
+IF NOT EXIST "%MSVC_HOME%" set "MSVC_HOME=%ProgramFiles(x86)%\Microsoft Visual Studio\%MSVC_VERSION%"
 IF EXIST "%MSVC_HOME%" (
 	echo "Microsoft Visual Studio %MSVC_VERSION% dir: %MSVC_HOME%"
 ) ELSE (
