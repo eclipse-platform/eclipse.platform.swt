@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2003, 2018 IBM Corporation and others.
+ * Copyright (c) 2003, 2021 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -182,9 +182,6 @@ static int checkStyle(int style) {
 				String current = value.substring(index, newIndex).trim();
 				if (current.equalsIgnoreCase ("webkit")) { //$NON-NLS-1$
 					DefaultType = SWT.WEBKIT;
-					break;
-				} if (current.equalsIgnoreCase ("chromium")) { //$NON-NLS-1$
-					DefaultType = SWT.CHROMIUM;
 					break;
 				} else if (current.equalsIgnoreCase ("edge") && "win32".equals (platform)) { //$NON-NLS-1$ //$NON-NLS-2$
 					DefaultType = SWT.EDGE;

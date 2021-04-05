@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2010, 2012 IBM Corporation and others.
+ * Copyright (c) 2010, 2021 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -13,49 +13,17 @@
  *******************************************************************************/
 package org.eclipse.swt.browser;
 
-import org.eclipse.swt.*;
 import org.eclipse.swt.internal.gtk.*;
 
 class BrowserFactory {
 
-private Class<?> chromiumClass;
-
 WebBrowser createWebBrowser (int style) {
-	WebBrowser browser = null;
-	if ((style & SWT.CHROMIUM) != 0) {
-		browser = createChromium();
-		if (browser != null) return browser;
-	}
-	if (OS.IsWin32) return createChromium();
+	if (OS.IsWin32) return null;
 	if (GTK.GTK4) return null;
 	boolean webkitInstalled = WebKit.IsInstalled ();
-	if (!webkitInstalled && (style & SWT.CHROMIUM) == 0) return createChromium();
+	if (!webkitInstalled) return null;
 
 	return new WebKit ();
-}
-
-private WebBrowser createChromium() {
-	if (!OS.isX11()) {
-		System.err.println ("SWT.CHROMIUM style is not supported in Wayland.");
-		return null;
-	}
-	if (chromiumClass == null) {
-		try {
-			chromiumClass = Class.forName ("org.eclipse.swt.browser.ChromiumImpl"); //$NON-NLS-1$
-			return (WebBrowser) chromiumClass.newInstance();
-		} catch (ClassNotFoundException e) {
-			/* chromium fragments missing */
-			System.err.println ("SWT.CHROMIUM style was used but chromium.swt fragment/jar is missing from classpath."); //$NON-NLS-1$
-		} catch (NoClassDefFoundError | InstantiationException | IllegalAccessException  e) {
-			/* second attempt, do not print */
-		} catch (UnsatisfiedLinkError e) {
-			System.err.println ("SWT.CHROMIUM style was used but chromium.swt " + SWT.getPlatform() +  " (or CEF binaries) fragment/jar is missing."); //$NON-NLS-1$
-		} catch (SWTError e) {
-			// a more specific error determined by the implementation.
-			System.err.println (e.getMessage()); //$NON-NLS-1$
-		}
-	}
-	return null;
 }
 
 }

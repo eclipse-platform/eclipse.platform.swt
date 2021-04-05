@@ -2519,13 +2519,17 @@ public class SWT {
 	/**
 	 * Style constant specifying that a Browser should use Chromium Embedded Framework
 	 * for rendering its content (value is 1&lt;&lt;17).
+	 * <p><b>Note:</b> No longer supported and ignored.</p>
 	 * <p><b>Used By:</b></p>
 	 * <ul>
 	 * <li><code>Browser</code></li>
 	 * </ul>
 	 *
 	 * @since 3.115
+	 * @deprecated Support for Chromium was limited to ancient and full of CVEs version of Chromium.
+	 * See <a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=572010">bug report</a> for details
 	 */
+	@Deprecated
 	public static final int CHROMIUM = 1 << 17;
 
 	/**
