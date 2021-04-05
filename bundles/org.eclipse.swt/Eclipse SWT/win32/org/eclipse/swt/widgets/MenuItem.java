@@ -556,6 +556,11 @@ void releaseWidget () {
 		parent.destroyAccelerators ();
 	}
 	accelerator = 0;
+	if (itemToolTip!= null && !itemToolTip.isDisposed()) {
+		itemToolTip.setVisible (false);
+		itemToolTip.dispose();
+		itemToolTip = null;
+	}
 	display.removeMenuItem (this);
 }
 
