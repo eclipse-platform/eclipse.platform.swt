@@ -3915,14 +3915,12 @@ public class GTK extends OS {
 	 */
 	public static final native boolean gtk_widget_translate_coordinates(long src_widget, long dest_widget, int src_x, int src_y, int[] dest_x, int[] dest_y);
 	/**
-	 * @method flags=dynamic
 	 * @param widget cast=(GtkWidget *)
 	 * @param property_name cast=(const gchar *)
 	 * @param terminator cast=(const gchar *),flags=sentinel
 	 */
 	public static final native void gtk_widget_style_get(long widget, byte[] property_name, int[] value, long terminator);
 	/**
-	 * @method flags=dynamic
 	 * @param widget cast=(GtkWidget *)
 	 * @param property_name cast=(const gchar *)
 	 * @param terminator cast=(const gchar *),flags=sentinel
