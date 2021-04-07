@@ -959,6 +959,9 @@ public void setID (int id) {
  */
 @Override
 public void setImage (Image image) {
+	//TODO: GTK4 Menu images with text are no longer supported
+	if (GTK.GTK4) return;
+
 	checkWidget();
 	if ((style & SWT.SEPARATOR) != 0) return;
 	super.setImage (image);
@@ -976,23 +979,23 @@ public void setImage (Image image) {
 			surface = imageList.getSurface (imageIndex);
 		}
 
-		if (!GTK.GTK4 && !GTK.GTK_IS_MENU_ITEM (handle)) return;
+		if (!GTK.GTK_IS_MENU_ITEM (handle)) return;
 		if (OS.SWT_PADDED_MENU_ITEMS && imageHandle != 0) {
 			GTK.gtk_image_set_from_surface(imageHandle, surface);
 		} else {
-			if (imageHandle == 0 && boxHandle != 0) {
+			if (imageHandle == 0) {
 				imageHandle = GTK.gtk_image_new_from_surface(surface);
-				GTK3.gtk_container_add (boxHandle, imageHandle);
-				GTK3.gtk_box_reorder_child (boxHandle, imageHandle, 0);
+				if (imageHandle == 0) error(SWT.ERROR_NO_HANDLES);
+
+				GTK3.gtk_container_add(boxHandle, imageHandle);
+				GTK3.gtk_box_reorder_child(boxHandle, imageHandle, 0);
 			} else {
 				GTK.gtk_image_set_from_surface(imageHandle, surface);
 			}
-			if (boxHandle == 0) error (SWT.ERROR_NO_HANDLES);
 		}
-		if (imageHandle == 0) error (SWT.ERROR_NO_HANDLES);
-		GTK.gtk_widget_show (imageHandle);
+		GTK.gtk_widget_show(imageHandle);
 	} else {
-		if (imageHandle != 0 && boxHandle != 0) {
+		if (imageHandle != 0) {
 			if (OS.SWT_PADDED_MENU_ITEMS) {
 				GTK3.gtk_container_remove(boxHandle, imageHandle);
 				imageHandle = GTK.gtk_image_new ();
