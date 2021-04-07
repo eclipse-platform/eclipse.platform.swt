@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2015 IBM Corporation and others.
+ * Copyright (c) 2000, 2021 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -918,7 +918,7 @@ Rectangle getTextBoundsInPixels (int index) {
 	RECT rect = getBounds (index, true, false, true);
 	if (index == 0) rect.left += Tree.INSET - 1;
 	rect.left = Math.min (rect.left, rect.right);
-	rect.right = rect.right - Tree.INSET;
+	rect.right = rect.right - Tree.INSET + 1; // Add 1 px margin to avoid truncation of text seen with "Segoe UI" font
 	int width = Math.max (0, rect.right - rect.left);
 	int height = Math.max (0, rect.bottom - rect.top);
 	return new Rectangle (rect.left, rect.top, width, height);
