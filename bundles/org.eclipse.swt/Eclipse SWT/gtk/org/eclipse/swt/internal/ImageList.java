@@ -114,6 +114,20 @@ public static long createPixbuf(long surface) {
 			C.memmove (pixels + (y * stride), line, stride);
 		}
 	}
+	/*
+	 * At this point the new pixbuf is created with the same size as surface.
+	 * if the surface has higher device scale we need to down size pixbuf accordingly
+	 *
+	 * We have to do this as surface has inherent auto scaling capability but pixbuf doesnot
+	 */
+	if (DPIUtil.useCairoAutoScale()) {
+		double sx[] = new double[1];
+		double sy[] = new double[1];
+		Cairo.cairo_surface_get_device_scale(surface, sx, sy);
+		if (sx[0] > 1 && sy[0] > 1){
+			pixbuf = GDK.gdk_pixbuf_scale_simple(pixbuf, width/(int)sx[0], height/(int)sy[0], GDK.GDK_INTERP_BILINEAR);
+		}
+	}
 	return pixbuf;
 }
 
