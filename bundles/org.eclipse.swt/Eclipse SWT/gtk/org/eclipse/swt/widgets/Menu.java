@@ -589,26 +589,13 @@ public boolean getEnabled() {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
-public MenuItem getItem (int index) {
+public MenuItem getItem(int index) {
 	checkWidget();
 
 	if (GTK.GTK4) {
-		long itemHandle = GTK.gtk_widget_get_first_child(handle);
-		if (itemHandle == 0) error(SWT.ERROR_CANNOT_GET_ITEM);
+		if (index < 0 || index >= items.size()) error(SWT.ERROR_INVALID_RANGE);
 
-		int childIndex = 0;
-		while (itemHandle != 0) {
-			if (childIndex == index) {
-				break;
-			}
-			childIndex++;
-			itemHandle = GTK.gtk_widget_get_next_sibling(itemHandle);
-		}
-
-		if (index < 0 || index >= childIndex) error(SWT.ERROR_INVALID_RANGE);
-		if (itemHandle == 0) error(SWT.ERROR_CANNOT_GET_ITEM);
-
-		return (MenuItem) display.getWidget(itemHandle);
+		return items.get(index);
 	} else {
 		long list = GTK3.gtk_container_get_children (handle);
 		if (list == 0) error (SWT.ERROR_CANNOT_GET_ITEM);
