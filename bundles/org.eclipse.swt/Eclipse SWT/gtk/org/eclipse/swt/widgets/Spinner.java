@@ -821,14 +821,27 @@ long gtk_value_changed(long range) {
 }
 
 @Override
-void hookEvents () {
+void hookEvents() {
 	super.hookEvents();
-	OS.g_signal_connect_closure (handle, OS.changed, display.getClosure (CHANGED), true);
-	OS.g_signal_connect_closure (handle, OS.insert_text, display.getClosure (INSERT_TEXT), false);
-	OS.g_signal_connect_closure (handle, OS.delete_text, display.getClosure (DELETE_TEXT), false);
-	OS.g_signal_connect_closure (handle, OS.value_changed, display.getClosure (VALUE_CHANGED), false);
-	OS.g_signal_connect_closure (handle, OS.activate, display.getClosure (ACTIVATE), false);
-	OS.g_signal_connect_closure (handle, OS.populate_popup, display.getClosure (POPULATE_POPUP), false);
+
+	/* GtkEditable signals */
+	OS.g_signal_connect_closure(handle, OS.changed, display.getClosure(CHANGED), true);
+	OS.g_signal_connect_closure(handle, OS.insert_text, display.getClosure(INSERT_TEXT), false);
+	OS.g_signal_connect_closure(handle, OS.delete_text, display.getClosure(DELETE_TEXT), false);
+
+	/* GtkSpinButton signals */
+	OS.g_signal_connect_closure(handle, OS.value_changed, display.getClosure(VALUE_CHANGED), false);
+
+	if (GTK.GTK4) {
+		/* GtkText signals */
+		long textHandle = GTK.gtk_widget_get_first_child(handle);
+		OS.g_signal_connect_closure(textHandle, OS.activate, display.getClosure(ACTIVATE), false);
+	} else {
+		/* GtkEntry signals */
+		OS.g_signal_connect_closure(handle, OS.activate, display.getClosure(ACTIVATE), false);
+		OS.g_signal_connect_closure(handle, OS.populate_popup, display.getClosure(POPULATE_POPUP), false);
+	}
+
 	long imContext = imContext ();
 	if (imContext != 0) {
 		OS.g_signal_connect_closure (imContext, OS.commit, display.getClosure (COMMIT), false);
