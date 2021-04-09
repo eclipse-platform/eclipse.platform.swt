@@ -39,7 +39,7 @@ void checkMembers() {
 	if (fields != null) return;
 	String source = null;
 	source = JNIGenerator.loadFile(sourcePath);
-	ASTParser parser = ASTParser.newParser(AST.JLS15);
+	ASTParser parser = ASTParser.newParser(AST.JLS_Latest);
 	parser.setSource(source.toCharArray());
 	parser.createAST(null);
 	
