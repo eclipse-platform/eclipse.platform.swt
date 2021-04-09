@@ -233,10 +233,11 @@ boolean hasFocus () {
 }
 
 @Override
-void hookEvents () {
-	super.hookEvents ();
-	if (scrolledHandle != 0) {
-		OS.g_signal_connect_closure (scrolledHandle, OS.size_allocate, display.getClosure (SIZE_ALLOCATE), true);
+void hookEvents() {
+	super.hookEvents();
+
+	if (!GTK.GTK4) {
+		if (scrolledHandle != 0) OS.g_signal_connect_closure(scrolledHandle, OS.size_allocate, display.getClosure(SIZE_ALLOCATE), true);
 	}
 }
 
