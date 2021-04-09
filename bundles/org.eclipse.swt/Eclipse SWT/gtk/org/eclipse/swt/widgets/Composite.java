@@ -1356,11 +1356,7 @@ void moveChildren(int oldWidth) {
 		if (oldWidth > 0) x = oldWidth - controlWidth - x;
 		int clientWidth = getClientWidth ();
 		x = clientWidth - controlWidth - x;
-		if (GTK.GTK4) {
-			/* TODO: GTK4 gdk_surface_move replaced with gdk_toplevel_begin_move which is begins some
-			 * interactive operation. Need to reconsider how this is implemented.
-			 */
-		} else {
+		if (!GTK.GTK4) {
 			if (child.enableWindow != 0) {
 				GDK.gdk_window_move (child.enableWindow, x, y);
 			}

@@ -2210,10 +2210,6 @@ public void setAlpha (int alpha) {
 void resizeBounds (int width, int height, boolean notify) {
 	int border = gtk_container_get_border_width_or_margin (shellHandle);
 	if (GTK.GTK4) {
-		/* TODO: GTK4 gdk_surface_resize no longer exist & have been replaced with
-		 * gdk_toplevel_begin_resize. These functions might change the
-		 * design of resizing in GTK4 */
-
 		if (parent != null) {
 			GtkAllocation allocation = new GtkAllocation();
 			allocation.width = width;
@@ -2330,15 +2326,12 @@ int setBounds (int x, int y, int width, int height, boolean move, boolean resize
 
 @Override
 void setCursor (long cursor) {
-	if (GTK.GTK4) {
-		if (enableSurface != 0) {
-			GDK.gdk_surface_set_cursor (enableSurface, cursor);
-		}
-	} else {
+	if (!GTK.GTK4) {
 		if (enableWindow != 0) {
-			GDK.gdk_window_set_cursor (enableWindow, cursor);
+			GDK.gdk_window_set_cursor(enableWindow, cursor);
 		}
 	}
+
 	super.setCursor (cursor);
 }
 
@@ -2362,30 +2355,7 @@ public void setEnabled (boolean enabled) {
 	}
 	enableWidget (enabled);
 	if (isDisposed ()) return;
-	if (GTK.GTK4) {
-		if (enabled) {
-			if (enableSurface != 0) {
-				cleanupEnableSurface();
-			}
-		} else {
-			long parentHandle = shellHandle;
-			GTK.gtk_widget_realize (parentHandle);
-			Rectangle bounds = getBoundsInPixels ();
-			enableSurface = GDK.gdk_surface_new_popup(parentHandle, false);
-			if (enableSurface != 0) {
-				if (cursor != null) {
-					GDK.gdk_surface_set_cursor (enableSurface, cursor.handle);
-				}
-
-				GdkRectangle anchor = new GdkRectangle();
-				anchor.width = bounds.width;
-				anchor.height = bounds.height;
-
-				long layout = GDK.gdk_popup_layout_new(anchor, GDK.GDK_GRAVITY_NORTH_WEST, GDK.GDK_GRAVITY_NORTH_WEST);
-				GDK.gdk_popup_present(enableSurface, bounds.width, bounds.height, layout);
-			}
-		}
-	} else {
+	if (!GTK.GTK4) {
 		if (enabled) {
 			if (enableWindow != 0) {
 				cleanupEnableWindow();
@@ -2411,6 +2381,7 @@ public void setEnabled (boolean enabled) {
 			}
 		}
 	}
+
 	if (fixFocus) fixFocus (control);
 	if (enabled && display.activeShell == this) {
 		if (!restoreFocus ()) traverseGroup (false);
@@ -2915,15 +2886,8 @@ public void setVisible (boolean visible) {
 		 *  Feature in GTK: This handles grabbing the keyboard focus from a SWT.ON_TOP window
 		 *  if it has editable fields and is running Wayland. Refer to bug 515773.
 		 */
-		if (GTK.GTK4) {
-			if (enableSurface != 0) {
-				int width = GDK.gdk_surface_get_width(enableSurface);
-				int height = GDK.gdk_surface_get_height(enableSurface);
-				long layout = GDK.gdk_toplevel_layout_new(geometry.min_width, geometry.min_height);
-				GDK.gdk_toplevel_present(enableSurface, width, height, layout);
-			}
-		} else {
-			if (enableWindow != 0) GDK.gdk_window_raise (enableWindow);
+		if (!GTK.GTK4) {
+			if (enableWindow != 0) GDK.gdk_window_raise(enableWindow);
 		}
 		if (isDisposed ()) return;
 		if (!(OS.isX11() && GTK.GTK_IS_PLUG (shellHandle))) {
