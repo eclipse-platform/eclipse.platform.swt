@@ -44,7 +44,7 @@ public class ExpandItem extends Item {
 	Control control;
 	long clientHandle, boxHandle, labelHandle, imageHandle;
 	boolean expanded;
-	int x, y, width, height;
+	int width, height;
 
 /**
  * Constructs a new instance of this class given its parent
@@ -248,6 +248,7 @@ int getHeaderHeightInPixels () {
 	}
 	return headerHeight;
 }
+
 /**
  * Gets the height of the receiver.
  *
@@ -258,14 +259,9 @@ int getHeaderHeightInPixels () {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
-public int getHeight () {
-	checkWidget ();
-	return DPIUtil.autoScaleDown(getHeightInPixels());
-}
-
-int getHeightInPixels () {
-	checkWidget ();
-	return height;
+public int getHeight() {
+	checkWidget();
+	return DPIUtil.autoScaleDown(height);
 }
 
 /**
@@ -307,7 +303,7 @@ long gtk_focus_out_event (long widget, long event) {
 
 @Override
 long gtk_size_allocate (long widget, long allocation) {
-	parent.layoutItems (0);
+	parent.layoutItems();
 	return 0;
 }
 
@@ -461,15 +457,10 @@ public void setControl (Control control) {
 		//As ExpandItem's child can be created before the ExpandItem, our only
 		//option is to reparent the child upon the setControl(..) call.
 		//This is simmilar to TabFolder.
-		Control.gtk_widget_reparent (control, clientHandle ());
+		Control.gtk_widget_reparent (control, clientHandle);
 	}
-	parent.layoutItems (0);
+	parent.layoutItems();
 }
-
-long clientHandle () {
-	return clientHandle;
-}
-
 
 /**
  * Sets the expanded state of the receiver.
@@ -485,7 +476,7 @@ public void setExpanded (boolean expanded) {
 	checkWidget ();
 	this.expanded = expanded;
 	GTK.gtk_expander_set_expanded (handle, expanded);
-	parent.layoutItems (0);
+	parent.layoutItems();
 }
 
 boolean setFocus () {
@@ -531,7 +522,7 @@ void setHeightInPixels (int height) {
 	if (height < 0) return;
 	this.height = height;
 	GTK.gtk_widget_set_size_request (clientHandle, -1, height);
-	parent.layoutItems (0);
+	parent.layoutItems();
 }
 
 @Override
@@ -599,7 +590,7 @@ long windowProc (long handle, long user_data) {
 	switch ((int)user_data) {
 		case ACTIVATE_INVERSE: {
 			expanded = GTK.gtk_expander_get_expanded (handle);
-			parent.layoutItems (0);
+			parent.layoutItems();
 			return 0;
 		}
 	}

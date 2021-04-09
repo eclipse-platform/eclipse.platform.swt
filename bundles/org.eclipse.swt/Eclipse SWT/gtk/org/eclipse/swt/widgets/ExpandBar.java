@@ -187,7 +187,7 @@ void createItem (ExpandItem item, int style, int index) {
 	items [index] = item;
 	itemCount++;
 	item.width = Math.max (0, getClientAreaInPixels ().width - spacing * 2);
-	layoutItems (index);
+	layoutItems();
 }
 
 @Override
@@ -205,7 +205,7 @@ void destroyItem (ExpandItem item) {
 	if (index == itemCount) return;
 	System.arraycopy (items, index + 1, items, index, --itemCount - index);
 	items [itemCount] = null;
-	layoutItems (index);
+	layoutItems();
 }
 
 @Override
@@ -376,7 +376,7 @@ public int indexOf (ExpandItem item) {
 	return -1;
 }
 
-void layoutItems (int index) {
+void layoutItems() {
 	for (int i = 0; i < itemCount; i++) {
 		ExpandItem item = items [i];
 		if (item != null) item.resizeControl();
@@ -386,7 +386,7 @@ void layoutItems (int index) {
 @Override
 long gtk_size_allocate (long widget, long allocation) {
 	long result = super.gtk_size_allocate (widget, allocation);
-	layoutItems (0);
+	layoutItems();
 	return result;
 }
 
@@ -454,7 +454,7 @@ void setFontDescription (long font) {
 	for (int i = 0; i < itemCount; i++) {
 		items[i].setFontDescription (font);
 	}
-	layoutItems (0);
+	layoutItems();
 }
 
 @Override
@@ -502,6 +502,6 @@ void setSpacingInPixels (int spacing) {
 
 @Override
 void updateScrollBarValue (ScrollBar bar) {
-	layoutItems (0);
+	layoutItems();
 }
 }
