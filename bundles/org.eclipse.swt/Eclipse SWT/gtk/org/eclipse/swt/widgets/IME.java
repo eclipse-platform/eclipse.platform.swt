@@ -302,6 +302,19 @@ long gtk_preedit_changed (long imcontext) {
 		byte [] buffer = new byte [length];
 		C.memmove (buffer, preeditString [0], length);
 		chars = Converter.mbcsToWcs (buffer);
+
+		/*
+		 * Bug 571740: GTK has a bug in 'gtk-im-context-simple' IM context
+		 * which is default. It incorrectly reports 'cursorPos' in bytes
+		 * instead of characters. Somewhere around GTK 3.24.26 this IM
+		 * was reworked and it started sending 'gtk_preedit_changed' where
+		 * it previously did not, causing SWT to step on that old bug.
+		 * If caret's position is already at the end, this will result in
+		 * trying to set caret outside the text. The workaround is to limit
+		 * caret's position.
+		 */
+		caretOffset = Math.min(caretOffset, chars.length);
+
 		if (pangoAttrs [0] != 0) {
 			int count = 0;
 			long iterator = OS.pango_attr_list_get_iterator (pangoAttrs [0]);
