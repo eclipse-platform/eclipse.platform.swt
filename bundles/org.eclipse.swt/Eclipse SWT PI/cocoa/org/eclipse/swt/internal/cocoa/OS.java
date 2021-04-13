@@ -27,6 +27,8 @@ public class OS extends C {
 		return (major << 16) + (minor << 8) + bugfix;
 	}
 
+	private static final boolean IS_X86_64 = System.getProperty("os.arch").equals("x86_64"); //$NON-NLS-1$
+
 	/*
 	 *  Magic number explanation, from Cocoa's TextSizingExample:
 	 *
@@ -2298,10 +2300,10 @@ public static final int NSTableViewNoColumnAutoresizing = 0;
 public static final int NSTableViewSolidVerticalGridLineMask = 1;
 public static final int NSTerminateCancel = 0;
 public static final int NSTerminateNow = 1;
-public static final int NSTextAlignmentCenter = 2;
+public static final int NSTextAlignmentCenter = IS_X86_64 ? 2 : 1;
 public static final int NSTextAlignmentJustified = 3;
 public static final int NSTextAlignmentLeft = 0;
-public static final int NSTextAlignmentRight = 1;
+public static final int NSTextAlignmentRight = IS_X86_64 ? 1 : 2;
 public static final int NSTextFieldAndStepperDatePickerStyle = 0;
 public static final int NSTextFieldDatePickerStyle = 2;
 public static final int NSTitledWindowMask = 1;
