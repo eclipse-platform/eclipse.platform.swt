@@ -155,6 +155,7 @@ public class GTK extends OS {
 	public static final int GTK_WRAP_WORD = 2;
 	public static final int GTK_WRAP_WORD_CHAR = 3;
 	public static final int GTK_SHORTCUT_SCOPE_GLOBAL = 2;
+	public static final int GTK_INPUT_HINT_NO_EMOJI = 1024;
 
 	/** Classes */
 	public static final byte[] GTK_STYLE_CLASS_VIEW = OS.ascii("view");
@@ -823,6 +824,11 @@ public class GTK extends OS {
 	 */
 	public static final native long gtk_entry_get_buffer(long entry);
 
+	/**
+	 * @param entry cast=(GtkEntry *)
+	 * @param hint cast=(GtkInputHints)
+	 */
+	public static final native void gtk_entry_set_input_hints(long entry, int hint);
 
 	/* GtkEntryBuffer */
 	/**

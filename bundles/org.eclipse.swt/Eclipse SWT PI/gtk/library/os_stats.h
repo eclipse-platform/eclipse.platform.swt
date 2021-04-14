@@ -428,6 +428,7 @@ typedef enum {
 	gtk_1entry_1set_1icon_1activatable_FUNC,
 	gtk_1entry_1set_1icon_1from_1icon_1name_FUNC,
 	gtk_1entry_1set_1icon_1sensitive_FUNC,
+	gtk_1entry_1set_1input_1hints_FUNC,
 	gtk_1entry_1set_1invisible_1char_FUNC,
 	gtk_1entry_1set_1max_1length_FUNC,
 	gtk_1entry_1set_1placeholder_1text_FUNC,

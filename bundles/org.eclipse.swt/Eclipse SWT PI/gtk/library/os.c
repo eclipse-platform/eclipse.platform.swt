@@ -5324,6 +5324,16 @@ JNIEXPORT void JNICALL GTK_NATIVE(gtk_1entry_1set_1icon_1sensitive)
 }
 #endif
 
+#ifndef NO_gtk_1entry_1set_1input_1hints
+JNIEXPORT void JNICALL GTK_NATIVE(gtk_1entry_1set_1input_1hints)
+	(JNIEnv *env, jclass that, jlong arg0, jint arg1)
+{
+	GTK_NATIVE_ENTER(env, that, gtk_1entry_1set_1input_1hints_FUNC);
+	gtk_entry_set_input_hints((GtkEntry *)arg0, (GtkInputHints)arg1);
+	GTK_NATIVE_EXIT(env, that, gtk_1entry_1set_1input_1hints_FUNC);
+}
+#endif
+
 #ifndef NO_gtk_1entry_1set_1invisible_1char
 JNIEXPORT void JNICALL GTK_NATIVE(gtk_1entry_1set_1invisible_1char)
 	(JNIEnv *env, jclass that, jlong arg0, jchar arg1)

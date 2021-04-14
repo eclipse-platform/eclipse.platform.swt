@@ -430,6 +430,7 @@ char * GTK_nativeFunctionNames[] = {
 	"gtk_1entry_1set_1icon_1activatable",
 	"gtk_1entry_1set_1icon_1from_1icon_1name",
 	"gtk_1entry_1set_1icon_1sensitive",
+	"gtk_1entry_1set_1input_1hints",
 	"gtk_1entry_1set_1invisible_1char",
 	"gtk_1entry_1set_1max_1length",
 	"gtk_1entry_1set_1placeholder_1text",
