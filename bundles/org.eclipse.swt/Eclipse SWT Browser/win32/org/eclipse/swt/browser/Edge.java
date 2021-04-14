@@ -631,7 +631,7 @@ public boolean isBackEnabled() {
 @Override
 public boolean isForwardEnabled() {
 	int[] pval = new int[1];
-	webView.get_CanGoBack(pval);
+	webView.get_CanGoForward(pval);
 	return pval[0] != 0;
 }
 
