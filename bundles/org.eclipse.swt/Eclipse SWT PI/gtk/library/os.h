@@ -277,15 +277,6 @@
 #define NO_gdk_1pixbuf_1get_1from_1window
 #define NO_gtk_1widget_1destroy
 
-// GTK3 Drag api removed
-#define NO_gtk_1drag_1begin_1with_1coordinates
-#define NO_gtk_1drag_1get_1data
-#define NO_gtk_1drag_1begin
-#define NO_gtk_1drag_1dest_1set
-#define NO_gtk_1drag_1dest_1find_1target
-#define NO_gtk_1drag_1finish
-#define NO_gtk_1drag_1set_1icon_1surface
-
 // Some sizing functions are not available on GTK4
 #define NO_gtk_1window_1set_1geometry_1hints
 

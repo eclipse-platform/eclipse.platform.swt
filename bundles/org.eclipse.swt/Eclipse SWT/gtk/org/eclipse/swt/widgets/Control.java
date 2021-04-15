@@ -2708,7 +2708,7 @@ boolean dragDetect (int x, int y, boolean filter, boolean dragOnTimeout, boolean
 		double [] startY = new double [1];
 		if (GTK.gtk_gesture_drag_get_start_point(dragGesture, startX, startY)) {
 			GTK.gtk_gesture_drag_get_offset(dragGesture, offsetX, offsetY);
-			if (GTK.gtk_drag_check_threshold(handle, (int)startX[0], (int) startY[0], (int) startX[0]
+			if (GTK3.gtk_drag_check_threshold(handle, (int)startX[0], (int) startY[0], (int) startX[0]
 					+ (int) offsetX[0], (int) startY[0] + (int) offsetY[0])) {
 				dragging = true;
 			}
@@ -2750,7 +2750,7 @@ boolean dragDetect (int x, int y, boolean filter, boolean dragOnTimeout, boolean
 					break;
 				} else {
 					currPos = display.getCursorLocationInPixels();
-					dragging = GTK.gtk_drag_check_threshold (handle,
+					dragging = GTK3.gtk_drag_check_threshold (handle,
 								startPos.x, startPos.y, currPos.x, currPos.y);
 					if (dragging) break;
 				}
@@ -2776,7 +2776,7 @@ boolean dragDetect (int x, int y, boolean filter, boolean dragOnTimeout, boolean
 					}
 
 					if ((state[0] & GDK.GDK_BUTTON1_MASK) != 0) {
-						if (GTK.gtk_drag_check_threshold (handle, x, y, (int) eventX[0], (int) eventY[0])) {
+						if (GTK3.gtk_drag_check_threshold (handle, x, y, (int) eventX[0], (int) eventY[0])) {
 							dragging = true;
 							quit = true;
 						}

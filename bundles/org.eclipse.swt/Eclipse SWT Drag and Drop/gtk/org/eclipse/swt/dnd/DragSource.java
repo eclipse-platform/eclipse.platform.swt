@@ -22,6 +22,7 @@ import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.dnd.gtk.*;
 import org.eclipse.swt.internal.gtk.*;
+import org.eclipse.swt.internal.gtk3.*;
 import org.eclipse.swt.internal.gtk4.*;
 import org.eclipse.swt.widgets.*;
 
@@ -393,9 +394,9 @@ void drag(Event dragEvent) {
 	int actions = opToOsOp(getStyle());
 	Image image = event.image;
 	long context;
-	context = GTK.gtk_drag_begin_with_coordinates(control.handle, targetList, actions, 1, 0, -1, -1);
+	context = GTK3.gtk_drag_begin_with_coordinates(control.handle, targetList, actions, 1, 0, -1, -1);
 	if (context != 0 && image != null) {
-		GTK.gtk_drag_set_icon_surface(context, image.surface);
+		GTK3.gtk_drag_set_icon_surface(context, image.surface);
 	}
 }
 
@@ -418,7 +419,7 @@ void dragBegin(long widget, long context) {
 		if (targetList == 0) return;
 		Image image = event.image;
 		if (context != 0 && image != null) {
-			GTK.gtk_drag_set_icon_surface(context, image.surface);
+			GTK3.gtk_drag_set_icon_surface(context, image.surface);
 		}
 	}
 }

@@ -586,65 +586,6 @@ public class GTK extends OS {
 	public static final native long gtk_dialog_add_button(long dialog, byte[] button_text, int response_id);
 
 
-	/* Drag and Drop Api [GTK3 only] */
-	/**
-	 * @method flags=dynamic
-	 * @param widget cast=(GtkWidget *)
-	 * @param targets cast=(GtkTargetList *)
-	 * @param actions cast=(GdkDragAction)
-	 * @param button cast=(gint)
-	 * @param event cast=(GdkEvent *)
-	 * @param x cast=(gint)
-	 * @param y cast=(gint)
-	 */
-	/* [if-def'd in os.h] */
-	public static final native long gtk_drag_begin_with_coordinates(long widget, long targets, int actions, int button, long event, int x, int y);
-	/**
-	 * @param widget cast=(GtkWidget *)
-	 * @param start_x cast=(gint)
-	 * @param start_y cast=(gint)
-	 * @param current_x cast=(gint)
-	 * @param current_y cast=(gint)
-	 */
-	public static final native boolean gtk_drag_check_threshold(long widget, int start_x, int start_y, int current_x, int current_y);
-	/**
-	 * @param widget cast=(GtkWidget *)
-	 * @param flags cast=(GtkDestDefaults)
-	 * @param targets cast=(const GtkTargetEntry *)
-	 * @param n_targets cast=(gint)
-	 * @param actions cast=(GdkDragAction)
-	 */
-	/* [if-def'd in os.h] */
-	public static final native void gtk_drag_dest_set(long widget, int flags, long targets, int n_targets, int actions);
-	/**
-	 * @method flags=dynamic
-	 * @param widget cast=(GtkWidget *)
-	 */
-	public static final native void gtk_drag_dest_unset(long widget);
-	/**
-	 * @param context cast=(GdkDragContext *)
-	 * @param success cast=(gboolean)
-	 * @param delete cast=(gboolean)
-	 * @param time cast=(guint32)
-	 */
-	/* [if-def'd in os.h] */
-	public static final native void gtk_drag_finish(long context, boolean success, boolean delete, int time);
-	/**
-	 * @param widget cast=(GtkWidget *)
-	 * @param context cast=(GdkDragContext *)
-	 * @param target cast=(GdkAtom)
-	 * @param time cast=(guint32)
-	 */
-	/* [if-def'd in os.h] */
-	public static final native void gtk_drag_get_data(long widget, long context, long target, int time);
-	/**
-	 * @param context cast=(GdkDragContext *)
-	 * @param surface cast=(cairo_surface_t *)
-	 */
-	/* [if-def'd in os.h] */
-	public static final native void gtk_drag_set_icon_surface(long context, long surface);
-
-
 	/* GtkEditable Interface */
 	/**
 	 * @param editable cast=(GtkEditable *)

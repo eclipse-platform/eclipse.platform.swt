@@ -247,6 +247,80 @@ JNIEXPORT jint JNICALL GTK3_NATIVE(gtk_1dialog_1run)
 }
 #endif
 
+#ifndef NO_gtk_1drag_1begin_1with_1coordinates
+JNIEXPORT jlong JNICALL GTK3_NATIVE(gtk_1drag_1begin_1with_1coordinates)
+	(JNIEnv *env, jclass that, jlong arg0, jlong arg1, jint arg2, jint arg3, jlong arg4, jint arg5, jint arg6)
+{
+	jlong rc = 0;
+	GTK3_NATIVE_ENTER(env, that, gtk_1drag_1begin_1with_1coordinates_FUNC);
+	rc = (jlong)gtk_drag_begin_with_coordinates((GtkWidget *)arg0, (GtkTargetList *)arg1, (GdkDragAction)arg2, (gint)arg3, (GdkEvent *)arg4, (gint)arg5, (gint)arg6);
+	GTK3_NATIVE_EXIT(env, that, gtk_1drag_1begin_1with_1coordinates_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_gtk_1drag_1check_1threshold
+JNIEXPORT jboolean JNICALL GTK3_NATIVE(gtk_1drag_1check_1threshold)
+	(JNIEnv *env, jclass that, jlong arg0, jint arg1, jint arg2, jint arg3, jint arg4)
+{
+	jboolean rc = 0;
+	GTK3_NATIVE_ENTER(env, that, gtk_1drag_1check_1threshold_FUNC);
+	rc = (jboolean)gtk_drag_check_threshold((GtkWidget *)arg0, (gint)arg1, (gint)arg2, (gint)arg3, (gint)arg4);
+	GTK3_NATIVE_EXIT(env, that, gtk_1drag_1check_1threshold_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_gtk_1drag_1dest_1set
+JNIEXPORT void JNICALL GTK3_NATIVE(gtk_1drag_1dest_1set)
+	(JNIEnv *env, jclass that, jlong arg0, jint arg1, jlong arg2, jint arg3, jint arg4)
+{
+	GTK3_NATIVE_ENTER(env, that, gtk_1drag_1dest_1set_FUNC);
+	gtk_drag_dest_set((GtkWidget *)arg0, (GtkDestDefaults)arg1, (const GtkTargetEntry *)arg2, (gint)arg3, (GdkDragAction)arg4);
+	GTK3_NATIVE_EXIT(env, that, gtk_1drag_1dest_1set_FUNC);
+}
+#endif
+
+#ifndef NO_gtk_1drag_1dest_1unset
+JNIEXPORT void JNICALL GTK3_NATIVE(gtk_1drag_1dest_1unset)
+	(JNIEnv *env, jclass that, jlong arg0)
+{
+	GTK3_NATIVE_ENTER(env, that, gtk_1drag_1dest_1unset_FUNC);
+	gtk_drag_dest_unset((GtkWidget *)arg0);
+	GTK3_NATIVE_EXIT(env, that, gtk_1drag_1dest_1unset_FUNC);
+}
+#endif
+
+#ifndef NO_gtk_1drag_1finish
+JNIEXPORT void JNICALL GTK3_NATIVE(gtk_1drag_1finish)
+	(JNIEnv *env, jclass that, jlong arg0, jboolean arg1, jboolean arg2, jint arg3)
+{
+	GTK3_NATIVE_ENTER(env, that, gtk_1drag_1finish_FUNC);
+	gtk_drag_finish((GdkDragContext *)arg0, (gboolean)arg1, (gboolean)arg2, (guint32)arg3);
+	GTK3_NATIVE_EXIT(env, that, gtk_1drag_1finish_FUNC);
+}
+#endif
+
+#ifndef NO_gtk_1drag_1get_1data
+JNIEXPORT void JNICALL GTK3_NATIVE(gtk_1drag_1get_1data)
+	(JNIEnv *env, jclass that, jlong arg0, jlong arg1, jlong arg2, jint arg3)
+{
+	GTK3_NATIVE_ENTER(env, that, gtk_1drag_1get_1data_FUNC);
+	gtk_drag_get_data((GtkWidget *)arg0, (GdkDragContext *)arg1, (GdkAtom)arg2, (guint32)arg3);
+	GTK3_NATIVE_EXIT(env, that, gtk_1drag_1get_1data_FUNC);
+}
+#endif
+
+#ifndef NO_gtk_1drag_1set_1icon_1surface
+JNIEXPORT void JNICALL GTK3_NATIVE(gtk_1drag_1set_1icon_1surface)
+	(JNIEnv *env, jclass that, jlong arg0, jlong arg1)
+{
+	GTK3_NATIVE_ENTER(env, that, gtk_1drag_1set_1icon_1surface_FUNC);
+	gtk_drag_set_icon_surface((GdkDragContext *)arg0, (cairo_surface_t *)arg1);
+	GTK3_NATIVE_EXIT(env, that, gtk_1drag_1set_1icon_1surface_FUNC);
+}
+#endif
+
 #ifndef NO_gtk_1events_1pending
 JNIEXPORT jboolean JNICALL GTK3_NATIVE(gtk_1events_1pending)
 	(JNIEnv *env, jclass that)

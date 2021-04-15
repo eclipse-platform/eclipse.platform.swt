@@ -383,7 +383,7 @@ void drag_data_received ( long widget, long context, int x, int y, long selectio
 	OS.g_signal_stop_emission_by_name(widget, OS.drag_data_received);
 
 	//notify source of action taken
-	GTK.gtk_drag_finish(context, selectedOperation != DND.DROP_NONE, selectedOperation== DND.DROP_MOVE, time);
+	GTK3.gtk_drag_finish(context, selectedOperation != DND.DROP_NONE, selectedOperation== DND.DROP_MOVE, time);
 	return;
 }
 
@@ -420,7 +420,7 @@ boolean drag_drop(long widget, long context, int x, int y, int time) {
 		return false;
 	}
 	// ask drag source for dropped data
-	GTK.gtk_drag_get_data(widget, context, selectedDataType.type, time);
+	GTK3.gtk_drag_get_data(widget, context, selectedDataType.type, time);
 	return true;
 }
 
@@ -610,7 +610,7 @@ void onDispose(){
 	OS.g_signal_handler_disconnect(control.handle, drag_data_received_handler);
 	OS.g_signal_handler_disconnect(control.handle, drag_drop_handler);
 	if (transferAgents.length != 0)
-		GTK.gtk_drag_dest_unset(control.handle);
+		GTK3.gtk_drag_dest_unset(control.handle);
 	transferAgents = null;
 	if (controlListener != null)
 		control.removeListener(SWT.Dispose, controlListener);
@@ -697,7 +697,7 @@ public void setTransfer(Transfer... transferAgents){
 		if (transferAgents == null) DND.error(SWT.ERROR_NULL_ARGUMENT);
 
 		if (this.transferAgents.length != 0) {
-			GTK.gtk_drag_dest_unset(control.handle);
+			GTK3.gtk_drag_dest_unset(control.handle);
 		}
 		this.transferAgents = transferAgents;
 
@@ -731,11 +731,11 @@ public void setTransfer(Transfer... transferAgents){
 			if ((control.getStyle() & SWT.READ_ONLY) == 0) {
 				long entryHandle = GTK3.gtk_bin_get_child (control.handle);
 				if (entryHandle != 0) {
-					GTK.gtk_drag_dest_unset(entryHandle);
+					GTK3.gtk_drag_dest_unset(entryHandle);
 				}
 			}
 		}
-		GTK.gtk_drag_dest_set(control.handle, 0, pTargets, targets.length, actions);
+		GTK3.gtk_drag_dest_set(control.handle, 0, pTargets, targets.length, actions);
 
 		for (int i = 0; i < targets.length; i++) {
 			OS.g_free(targets[i].target);
