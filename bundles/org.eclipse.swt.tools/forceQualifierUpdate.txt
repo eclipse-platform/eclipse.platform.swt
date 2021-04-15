@@ -1,2 +1,3 @@
 Bug 510973 - Missing source bundle for org.eclipse.swt.tools
 Bug 534597 - Unanticipated comparator errors in I20180511-2000
+Bug 572789 - Comparator errors in I20210412-1800 after moving to compiler from 4.20 M1
