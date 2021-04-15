@@ -19,6 +19,8 @@ import java.io.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.gtk.*;
+import org.eclipse.swt.internal.gtk3.*;
+import org.eclipse.swt.internal.gtk4.*;
 
 /**
  * Instances of this class allow the user to navigate
@@ -109,12 +111,12 @@ String computeResultChooserDialog () {
 	if ((style & SWT.MULTI) != 0) {
 		long list = 0;
 		if (GTK.GTK4) {
-			list = GTK.gtk_file_chooser_get_files(handle);
+			list = GTK4.gtk_file_chooser_get_files(handle);
 		} else {
 			if (uriMode) {
-				list = GTK.gtk_file_chooser_get_uris (handle);
+				list = GTK3.gtk_file_chooser_get_uris (handle);
 			} else {
-				list = GTK.gtk_file_chooser_get_filenames (handle);
+				list = GTK3.gtk_file_chooser_get_filenames (handle);
 			}
 		}
 
@@ -165,18 +167,18 @@ String computeResultChooserDialog () {
 		long utf8Ptr = 0;
 		if (uriMode) {
 			if (GTK.GTK4) {
-				long file = GTK.gtk_file_chooser_get_file(handle);
+				long file = GTK4.gtk_file_chooser_get_file(handle);
 				utf8Ptr = OS.g_file_get_uri(file);
 			} else {
-				utf8Ptr = GTK.gtk_file_chooser_get_uri (handle);
+				utf8Ptr = GTK3.gtk_file_chooser_get_uri (handle);
 			}
 		} else {
 			long path;
 			if (GTK.GTK4) {
-				long file = GTK.gtk_file_chooser_get_file(handle);
+				long file = GTK4.gtk_file_chooser_get_file(handle);
 				path = OS.g_file_get_path(file);
 			} else {
-				path = GTK.gtk_file_chooser_get_filename (handle);
+				path = GTK3.gtk_file_chooser_get_filename (handle);
 			}
 
 			if (path != 0) {
@@ -346,7 +348,7 @@ String openNativeChooserDialog () {
 
 	if (uriMode && !GTK.GTK4) {
 		// GTK4 file chooser works on GFiles and does not need to worry about this
-		GTK.gtk_file_chooser_set_local_only (handle, false);
+		GTK3.gtk_file_chooser_set_local_only (handle, false);
 	}
 	presetChooserDialog ();
 	display.addIdleProc ();
@@ -396,10 +398,10 @@ void presetChooserDialog () {
 
 				if (GTK.GTK4) {
 					long file = OS.g_file_new_for_uri(buffer);
-					GTK.gtk_file_chooser_set_current_folder (handle, file, 0);
+					GTK4.gtk_file_chooser_set_current_folder (handle, file, 0);
 					OS.g_object_unref(file);
 				} else {
-					GTK.gtk_file_chooser_set_current_folder_uri (handle, buffer);
+					GTK3.gtk_file_chooser_set_current_folder_uri (handle, buffer);
 				}
 
 			} else {
@@ -414,10 +416,10 @@ void presetChooserDialog () {
 				if (ptr != 0) {
 					if (GTK.GTK4) {
 						long file = OS.g_file_new_for_path(buffer);
-						GTK.gtk_file_chooser_set_current_folder (handle, file, 0);
+						GTK4.gtk_file_chooser_set_current_folder (handle, file, 0);
 						OS.g_object_unref(file);
 					} else {
-						GTK.gtk_file_chooser_set_current_folder (handle, ptr);
+						GTK3.gtk_file_chooser_set_current_folder (handle, ptr);
 					}
 					OS.g_free (ptr);
 				}
@@ -471,21 +473,21 @@ void presetChooserDialog () {
 			long file;
 			if (uriMode) {
 				file = OS.g_file_new_for_uri(buffer);
-				GTK.gtk_file_chooser_set_file (handle, file, 0);
+				GTK4.gtk_file_chooser_set_file (handle, file, 0);
 			} else {
 				file = OS.g_file_new_for_path(buffer);
 
 				if (fileName.length() > 0) {
-					GTK.gtk_file_chooser_set_file (handle, file, 0);
+					GTK4.gtk_file_chooser_set_file (handle, file, 0);
 				} else {
-					GTK.gtk_file_chooser_set_current_folder (handle, file, 0);
+					GTK4.gtk_file_chooser_set_current_folder (handle, file, 0);
 				}
 			}
 
 			OS.g_object_unref(file);
 		} else {
 			if (uriMode) {
-				GTK.gtk_file_chooser_set_uri (handle, buffer);
+				GTK3.gtk_file_chooser_set_uri (handle, buffer);
 			} else {
 				/*
 				 * in GTK version 2.10, gtk_file_chooser_set_current_folder requires path
@@ -495,9 +497,9 @@ void presetChooserDialog () {
 				long ptr = OS.realpath (buffer, null);
 				if (ptr != 0) {
 					if (fileName.length() > 0) {
-						GTK.gtk_file_chooser_set_filename (handle, ptr);
+						GTK3.gtk_file_chooser_set_filename (handle, ptr);
 					} else {
-						GTK.gtk_file_chooser_set_current_folder (handle, ptr);
+						GTK3.gtk_file_chooser_set_current_folder (handle, ptr);
 					}
 					OS.g_free (ptr);
 				}
@@ -510,7 +512,7 @@ void presetChooserDialog () {
 		if (GTK.GTK4) {
 			// TODO: GTK4 does not this property for the file chooser, not sure what the default behavior is. Must test before trying an alternative.
 		} else {
-			GTK.gtk_file_chooser_set_do_overwrite_confirmation (handle, overwrite);
+			GTK3.gtk_file_chooser_set_do_overwrite_confirmation (handle, overwrite);
 		}
 	}
 

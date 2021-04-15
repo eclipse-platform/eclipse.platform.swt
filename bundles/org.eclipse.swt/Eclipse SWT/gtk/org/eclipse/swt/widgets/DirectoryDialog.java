@@ -20,6 +20,7 @@ import org.eclipse.swt.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.gtk.*;
 import org.eclipse.swt.internal.gtk3.*;
+import org.eclipse.swt.internal.gtk4.*;
 
 /**
  * Instances of this class allow the user to navigate
@@ -156,10 +157,10 @@ String openNativeChooserDialog () {
 		if (ptr != 0) {
 			if (GTK.GTK4) {
 				long file = OS.g_file_new_for_path(buffer);
-				GTK.gtk_file_chooser_set_current_folder (handle, file, 0);
+				GTK4.gtk_file_chooser_set_current_folder (handle, file, 0);
 				OS.g_object_unref(file);
 			} else {
-				GTK.gtk_file_chooser_set_current_folder (handle, ptr);
+				GTK3.gtk_file_chooser_set_current_folder (handle, ptr);
 			}
 			OS.g_free (ptr);
 		}
@@ -193,10 +194,10 @@ String openNativeChooserDialog () {
 	if (response == GTK.GTK_RESPONSE_ACCEPT) {
 		long path;
 		if (GTK.GTK4) {
-			long file = GTK.gtk_file_chooser_get_file (handle);
+			long file = GTK4.gtk_file_chooser_get_file (handle);
 			path = OS.g_file_get_path(file);
 		} else {
-			path = GTK.gtk_file_chooser_get_filename (handle);
+			path = GTK3.gtk_file_chooser_get_filename (handle);
 		}
 
 		if (path != 0) {
@@ -245,7 +246,7 @@ void GTK3setNativeDialogMessage(long handle, String message) {
 
 		GTK.gtk_box_set_homogeneous(box, false);
 		GTK.gtk_label_set_justify(label, GTK.GTK_JUSTIFY_CENTER);
-		GTK.gtk_file_chooser_set_extra_widget(handle, box);
+		GTK3.gtk_file_chooser_set_extra_widget(handle, box);
 	}
 }
 

@@ -822,12 +822,6 @@ public class GTK extends OS {
 	 */
 	public static final native void gtk_file_chooser_set_current_name(long chooser, byte[] name);
 	/**
-	 * @method flags=dynamic
-	 * @param chooser cast=(GtkFileChooser *)
-	 * @param extra_widget cast=(GtkWidget *)
-	 */
-	public static final native void gtk_file_chooser_set_extra_widget(long chooser, long extra_widget);
-	/**
 	 * @param chooser cast=(GtkFileChooser *)
 	 * @param filter cast=(GtkFileFilter *)
 	 */
@@ -837,85 +831,6 @@ public class GTK extends OS {
 	 * @param select_multiple cast=(gboolean)
 	 */
 	public static final native void gtk_file_chooser_set_select_multiple(long chooser, boolean select_multiple);
-
-	/* GtkFileChooser [GTK3] */
-	/**
-	 * @method flags=dynamic
-	 * @param chooser cast=(GtkFileChooser *)
-	 * */
-	public static final native long gtk_file_chooser_get_filename(long chooser);
-	/**
-	 * @method flags=dynamic
-	 * @param chooser cast=(GtkFileChooser *)
-	 * */
-	public static final native long gtk_file_chooser_get_filenames(long chooser);
-	/**
-	 * @method flags=dynamic
-	 * @param chooser cast=(GtkFileChooser *)
-	 * */
-	public static final native long gtk_file_chooser_get_uri(long chooser);
-	/**
-	 * @method flags=dynamic
-	 * @param chooser cast=(GtkFileChooser *)
-	 * */
-	public static final native long gtk_file_chooser_get_uris(long chooser);
-	/**
-	 * @method flags=dynamic
-	 * @param chooser cast=(GtkFileChooser *)
-	 * @param filename cast=(const gchar *)
-	 */
-	public static final native void gtk_file_chooser_set_current_folder(long chooser, long filename);
-	/**
-	 * @method flags=dynamic
-	 * @param chooser cast=(GtkFileChooser *)
-	 * @param uri cast=(const gchar *)
-	 */
-	public static final native void gtk_file_chooser_set_current_folder_uri(long chooser, byte [] uri);
-	/**
-	 * @method flags=dynamic
-	 * @param chooser cast=(GtkFileChooser *)
-	 * @param local_only cast=(gboolean)
-	 */
-	public static final native void gtk_file_chooser_set_local_only(long chooser, boolean local_only);
-	/**
-	 * @method flags=dynamic
-	 * @param chooser cast=(GtkFileChooser *)
-	 * @param do_overwrite_confirmation cast=(gboolean)
-	 */
-	public static final native void gtk_file_chooser_set_do_overwrite_confirmation(long chooser, boolean do_overwrite_confirmation);
-	/**
-	 * @method flags=dynamic
-	 * @param chooser cast=(GtkFileChooser *)
-	 * @param name cast=(const gchar *)
-	 */
-	public static final native void gtk_file_chooser_set_filename(long chooser, long name);
-	/**
-	 * @method flags=dynamic
-	 * @param chooser cast=(GtkFileChooser *)
-	 * @param uri cast=(const char *)
-	 */
-	public static final native void gtk_file_chooser_set_uri(long chooser, byte [] uri);
-
-	/* GtkFileChooser [GTK4] */
-	/** @param chooser cast=(GtkFileChooser *) */
-	public static final native long gtk_file_chooser_get_files(long chooser);
-	/** @param chooser cast=(GtkFileChooser *) */
-	public static final native long gtk_file_chooser_get_file(long chooser);
-	/**
-	 * @method flags=dynamic
-	 * @param chooser cast=(GtkFileChooser *)
-	 * @param file cast=(GFile *)
-	 * @param error cast=(GError **)
-	 */
-	public static final native boolean gtk_file_chooser_set_current_folder(long chooser, long file, long error);
-	/**
-	 * @method flags=dynamic
-	 * @param chooser cast=(GtkFileChooser *)
-	 * @param file cast=(GFile *)
-	 * @param error cast=(GError **)
-	 */
-	public static final native boolean gtk_file_chooser_set_file(long chooser, long file, long error);
-
 
 	/* GtkEventController */
 	/**

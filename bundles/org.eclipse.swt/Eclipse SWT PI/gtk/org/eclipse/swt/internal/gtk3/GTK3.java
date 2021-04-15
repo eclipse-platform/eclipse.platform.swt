@@ -241,4 +241,49 @@ public class GTK3 {
 	 * @param surface cast=(cairo_surface_t *)
 	 */
 	public static final native void gtk_drag_set_icon_surface(long context, long surface);
+
+	/* GtkFileChooser */
+	/** @param chooser cast=(GtkFileChooser *) */
+	public static final native long gtk_file_chooser_get_filename(long chooser);
+	/** @param chooser cast=(GtkFileChooser *) */
+	public static final native long gtk_file_chooser_get_filenames(long chooser);
+	/** @param chooser cast=(GtkFileChooser *) */
+	public static final native long gtk_file_chooser_get_uri(long chooser);
+	/** @param chooser cast=(GtkFileChooser *) */
+	public static final native long gtk_file_chooser_get_uris(long chooser);
+	/**
+	 * @param chooser cast=(GtkFileChooser *)
+	 * @param filename cast=(const gchar *)
+	 */
+	public static final native void gtk_file_chooser_set_current_folder(long chooser, long filename);
+	/**
+	 * @param chooser cast=(GtkFileChooser *)
+	 * @param uri cast=(const gchar *)
+	 */
+	public static final native void gtk_file_chooser_set_current_folder_uri(long chooser, byte [] uri);
+	/**
+	 * @param chooser cast=(GtkFileChooser *)
+	 * @param local_only cast=(gboolean)
+	 */
+	public static final native void gtk_file_chooser_set_local_only(long chooser, boolean local_only);
+	/**
+	 * @param chooser cast=(GtkFileChooser *)
+	 * @param do_overwrite_confirmation cast=(gboolean)
+	 */
+	public static final native void gtk_file_chooser_set_do_overwrite_confirmation(long chooser, boolean do_overwrite_confirmation);
+	/**
+	 * @param chooser cast=(GtkFileChooser *)
+	 * @param name cast=(const gchar *)
+	 */
+	public static final native void gtk_file_chooser_set_filename(long chooser, long name);
+	/**
+	 * @param chooser cast=(GtkFileChooser *)
+	 * @param uri cast=(const char *)
+	 */
+	public static final native void gtk_file_chooser_set_uri(long chooser, byte [] uri);
+	/**
+	 * @param chooser cast=(GtkFileChooser *)
+	 * @param extra_widget cast=(GtkWidget *)
+	 */
+	public static final native void gtk_file_chooser_set_extra_widget(long chooser, long extra_widget);
 }
