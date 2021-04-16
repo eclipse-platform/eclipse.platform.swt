@@ -5560,6 +5560,18 @@ JNIEXPORT jboolean JNICALL GTK_NATIVE(gtk_1expander_1get_1expanded)
 }
 #endif
 
+#ifndef NO_gtk_1expander_1get_1label_1widget
+JNIEXPORT jlong JNICALL GTK_NATIVE(gtk_1expander_1get_1label_1widget)
+	(JNIEnv *env, jclass that, jlong arg0)
+{
+	jlong rc = 0;
+	GTK_NATIVE_ENTER(env, that, gtk_1expander_1get_1label_1widget_FUNC);
+	rc = (jlong)gtk_expander_get_label_widget((GtkExpander *)arg0);
+	GTK_NATIVE_EXIT(env, that, gtk_1expander_1get_1label_1widget_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_gtk_1expander_1new
 JNIEXPORT jlong JNICALL GTK_NATIVE(gtk_1expander_1new)
 	(JNIEnv *env, jclass that, jbyteArray arg0)

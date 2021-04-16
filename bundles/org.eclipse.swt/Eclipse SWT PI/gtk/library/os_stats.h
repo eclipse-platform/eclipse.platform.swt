@@ -442,6 +442,7 @@ typedef enum {
 	gtk_1event_1controller_1scroll_1new_FUNC,
 	gtk_1event_1controller_1set_1propagation_1phase_FUNC,
 	gtk_1expander_1get_1expanded_FUNC,
+	gtk_1expander_1get_1label_1widget_FUNC,
 	gtk_1expander_1new_FUNC,
 	gtk_1expander_1set_1child_FUNC,
 	gtk_1expander_1set_1expanded_FUNC,

@@ -43,7 +43,6 @@ public class ExpandItem extends Item {
 	ExpandBar parent;
 	Control control;
 	long clientHandle, boxHandle, labelHandle, imageHandle;
-	boolean expanded;
 	int width, height;
 
 /**
@@ -215,9 +214,9 @@ public Control getControl () {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
-public boolean getExpanded () {
-	checkWidget ();
-	return expanded;
+public boolean getExpanded() {
+	checkWidget();
+	return GTK.gtk_expander_get_expanded(handle);
 }
 
 /**
@@ -235,18 +234,13 @@ public int getHeaderHeight () {
 	return DPIUtil.autoScaleDown (getHeaderHeightInPixels ());
 }
 
-int getHeaderHeightInPixels () {
-	checkWidget ();
-	GtkAllocation allocation = new GtkAllocation ();
-	GTK.gtk_widget_get_allocation (handle, allocation);
-	// allocation.height normally returns the header height instead of the whole
-	// widget itself. This is to prevent situations where allocation.height actually
-	// returns the correct header height.
-	int headerHeight = allocation.height - (expanded ? height : 0);
-	if (expanded && headerHeight < 0) {
-		return allocation.height;
-	}
-	return headerHeight;
+int getHeaderHeightInPixels() {
+	checkWidget();
+
+	GtkAllocation allocation = new GtkAllocation();
+	GTK.gtk_widget_get_allocation(GTK.gtk_expander_get_label_widget(handle), allocation);
+
+	return allocation.height;
 }
 
 /**
@@ -380,48 +374,46 @@ void resizeControl () {
 		* As of GTK3, the hierarchy is changed, this affected child-size allocation and a fix
 		* is now neccessary.
 		* See also other 454940 notes and similar fix in: 453827 */
-		int x = 0 ;
+		int x = 0;
 		int y = 0;
-
-		if (x != -1 && y != -1) {
-			int width = allocation.width;
-			int height = allocation.height;
-			/*
-			 * Focus line width is done via CSS in GTK4, and does not contribute
-			 * to the size of the widget.
-			 */
-			if (!GTK.GTK4) {
-				int [] property = new int [1];
-				GTK.gtk_widget_style_get (handle, OS.focus_line_width, property, 0);
-				y += property [0] * 2;
-				height -= property [0] * 2;
-			}
-
-			/*
-			* Feature in GTK. When the ExpandBar is resize too small the control
-			* shows up on top of the vertical scrollbar. This happen because the
-			* GtkExpander does not set the size of child smaller than the request
-			* size of its parent and because the control is not parented in the
-			* hierarchy of the GtkScrolledWindow.
-			* The fix is calculate the width ourselves when the scrollbar is visible.
-			*/
-			ScrollBar vBar = parent.verticalBar;
-			if (vBar != null) {
-				if (GTK.gtk_widget_get_visible (vBar.handle)) {
-					GTK.gtk_widget_get_allocation (parent.scrolledHandle, allocation);
-					width = allocation.width - parent.vScrollBarWidth () - 2 * parent.spacing;
-				}
-			}
-			// Bug 479242: Bound calculation is correct without needing to use yScroll in GTK3
-			/*
-			 * Bug 538114: ExpandBar has no content until resized or collapsed/expanded.
-			 * When widget is first created inside ExpandItem's control, the size is allocated
-			 * to be zero, and the widget is never shown during a layout operation, similar to
-			 * Bug 487757. The fix is to show the control before setting any bounds.
-			 */
-			if (visible) GTK.gtk_widget_show(control.topHandle ());
-			control.setBounds (x, y, width, Math.max (0, height), true, true);
+		int width = allocation.width;
+		int height = allocation.height;
+		/*
+		 * Focus line width is done via CSS in GTK4, and does not contribute
+		 * to the size of the widget.
+		 */
+		if (!GTK.GTK4) {
+			int [] property = new int [1];
+			GTK.gtk_widget_style_get (handle, OS.focus_line_width, property, 0);
+			y += property [0] * 2;
+			height -= property [0] * 2;
 		}
+
+		/*
+		* Feature in GTK. When the ExpandBar is resize too small the control
+		* shows up on top of the vertical scrollbar. This happen because the
+		* GtkExpander does not set the size of child smaller than the request
+		* size of its parent and because the control is not parented in the
+		* hierarchy of the GtkScrolledWindow.
+		* The fix is calculate the width ourselves when the scrollbar is visible.
+		*/
+		ScrollBar vBar = parent.verticalBar;
+		if (vBar != null) {
+			if (GTK.gtk_widget_get_visible (vBar.handle)) {
+				GTK.gtk_widget_get_allocation (parent.scrolledHandle, allocation);
+				width = allocation.width - parent.vScrollBarWidth () - 2 * parent.spacing;
+			}
+		}
+		// Bug 479242: Bound calculation is correct without needing to use yScroll in GTK3
+		/*
+		 * Bug 538114: ExpandBar has no content until resized or collapsed/expanded.
+		 * When widget is first created inside ExpandItem's control, the size is allocated
+		 * to be zero, and the widget is never shown during a layout operation, similar to
+		 * Bug 487757. The fix is to show the control before setting any bounds.
+		 */
+		if (visible) GTK.gtk_widget_show(control.topHandle ());
+		control.setBounds (x, y, width, Math.max (0, height), true, true);
+
 		control.setVisible (visible);
 	}
 }
@@ -450,7 +442,6 @@ public void setControl (Control control) {
 
 	this.control = control;
 	if (control != null) {
-		control.setVisible (expanded);
 		//454940 ExpandBar DND fix.
 		//Reparenting on the GTK side.
 		//Proper hierachy on gtk side is required for DND to function properly.
@@ -472,10 +463,9 @@ public void setControl (Control control) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
-public void setExpanded (boolean expanded) {
-	checkWidget ();
-	this.expanded = expanded;
-	GTK.gtk_expander_set_expanded (handle, expanded);
+public void setExpanded(boolean expanded) {
+	checkWidget();
+	GTK.gtk_expander_set_expanded(handle, expanded);
 	parent.layoutItems();
 }
 
@@ -589,7 +579,6 @@ void showWidget (int index) {
 long windowProc (long handle, long user_data) {
 	switch ((int)user_data) {
 		case ACTIVATE_INVERSE: {
-			expanded = GTK.gtk_expander_get_expanded (handle);
 			parent.layoutItems();
 			return 0;
 		}

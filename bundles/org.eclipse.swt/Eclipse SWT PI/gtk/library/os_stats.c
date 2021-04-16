@@ -444,6 +444,7 @@ char * GTK_nativeFunctionNames[] = {
 	"gtk_1event_1controller_1scroll_1new",
 	"gtk_1event_1controller_1set_1propagation_1phase",
 	"gtk_1expander_1get_1expanded",
+	"gtk_1expander_1get_1label_1widget",
 	"gtk_1expander_1new",
 	"gtk_1expander_1set_1child",
 	"gtk_1expander_1set_1expanded",

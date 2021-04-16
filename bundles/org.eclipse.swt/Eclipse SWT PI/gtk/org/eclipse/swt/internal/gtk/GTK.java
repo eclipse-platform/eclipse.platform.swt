@@ -798,6 +798,8 @@ public class GTK extends OS {
 	 * @param label_widget cast=(GtkWidget *)
 	 */
 	public static final native void gtk_expander_set_label_widget(long expander, long label_widget);
+	/** @param expander cast=(GtkExpander *) */
+	public static final native long gtk_expander_get_label_widget(long expander);
 
 	/* GtkExpander [GTK4 only] */
 	/**
