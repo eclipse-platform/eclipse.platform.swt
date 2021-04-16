@@ -110,6 +110,8 @@ public class GTK4 {
 	 * @param paintable cast=(GdkPaintable *)
 	 */
 	public static final native void gtk_picture_set_paintable(long picture, long paintable);
+	/** @param picture cast=(GtkPicture *) */
+	public static final native void gtk_picture_set_can_shrink(long picture, boolean can_shrink);
 
 	/* GTK Initialization */
 	public static final native boolean gtk_init_check();

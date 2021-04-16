@@ -423,6 +423,16 @@ JNIEXPORT jlong JNICALL GTK4_NATIVE(gtk_1picture_1new)
 }
 #endif
 
+#ifndef NO_gtk_1picture_1set_1can_1shrink
+JNIEXPORT void JNICALL GTK4_NATIVE(gtk_1picture_1set_1can_1shrink)
+	(JNIEnv *env, jclass that, jlong arg0, jboolean arg1)
+{
+	GTK4_NATIVE_ENTER(env, that, gtk_1picture_1set_1can_1shrink_FUNC);
+	gtk_picture_set_can_shrink((GtkPicture *)arg0, arg1);
+	GTK4_NATIVE_EXIT(env, that, gtk_1picture_1set_1can_1shrink_FUNC);
+}
+#endif
+
 #ifndef NO_gtk_1picture_1set_1paintable
 JNIEXPORT void JNICALL GTK4_NATIVE(gtk_1picture_1set_1paintable)
 	(JNIEnv *env, jclass that, jlong arg0, jlong arg1)

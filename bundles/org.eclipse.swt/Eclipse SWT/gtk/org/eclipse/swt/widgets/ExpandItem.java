@@ -139,6 +139,7 @@ void createHandle (int index) {
 	if (GTK.GTK4) {
 		imageHandle = GTK4.gtk_picture_new();
 		if (imageHandle == 0) error(SWT.ERROR_NO_HANDLES);
+		GTK4.gtk_picture_set_can_shrink(imageHandle, false);
 
 		GTK4.gtk_box_append(boxHandle, imageHandle);
 		GTK4.gtk_box_append(boxHandle, labelHandle);
@@ -327,6 +328,8 @@ void hookEvents () {
 
 		long enterAddress = display.enterMotionScrollCallback.getAddress();
 		OS.g_signal_connect (motionController, OS.enter, enterAddress, ENTER);
+
+		OS.g_signal_connect(clientHandle, OS.resize, display.resizeProc, 0);
 	} else {
 		OS.g_signal_connect_closure(clientHandle, OS.size_allocate, display.getClosure(SIZE_ALLOCATE), true);
 

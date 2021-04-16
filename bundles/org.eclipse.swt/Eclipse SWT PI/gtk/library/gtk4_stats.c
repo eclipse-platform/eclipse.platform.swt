@@ -56,6 +56,7 @@ char * GTK4_nativeFunctionNames[] = {
 	"gtk_1im_1context_1filter_1keypress",
 	"gtk_1init_1check",
 	"gtk_1picture_1new",
+	"gtk_1picture_1set_1can_1shrink",
 	"gtk_1picture_1set_1paintable",
 	"gtk_1rgb_1to_1hsv",
 };
