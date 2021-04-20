@@ -631,6 +631,8 @@ jlong callback(int index, ...);
 	(jlong)FND(255, args), \
 },
 
+#else
+#define NUM_DOUBLE_CALLBACKS 0
 #endif
 
 /**
