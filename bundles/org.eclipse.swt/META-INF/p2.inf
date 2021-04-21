@@ -31,6 +31,6 @@ requires.6.range = [$version$,$version$]
 requires.6.filter = (&(osgi.os=linux)(osgi.ws=gtk)(osgi.arch=aarch64)(!(org.eclipse.swt.buildtime=true)))
 
 requires.7.namespace = org.eclipse.equinox.p2.iu
-requires.7.name = org.eclipse.swt.cocoa.macosx.arm64
+requires.7.name = org.eclipse.swt.cocoa.macosx.aarch64
 requires.7.range = [$version$,$version$]
-requires.7.filter = (&(osgi.os=macosx)(osgi.ws=cocoa)(osgi.arch=arm64)(!(org.eclipse.swt.buildtime=true)))
+requires.7.filter = (&(osgi.os=macosx)(osgi.ws=cocoa)(osgi.arch=aarch64)(!(org.eclipse.swt.buildtime=true)))

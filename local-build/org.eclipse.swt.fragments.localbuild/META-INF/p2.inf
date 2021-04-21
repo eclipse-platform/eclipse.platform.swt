@@ -25,6 +25,6 @@ requires.5.range = 0.0.0
 requires.5.filter = (&(osgi.os=linux)(osgi.ws=gtk)(osgi.arch=aarch64))
 
 requires.6.namespace = org.eclipse.equinox.p2.iu
-requires.6.name = org.eclipse.swt.cocoa.macosx.arm64
+requires.6.name = org.eclipse.swt.cocoa.macosx.aarch64
 requires.6.range = 0.0.0
-requires.6.filter = (&(osgi.os=macosx)(osgi.ws=cocoa)(osgi.arch=arm64))
+requires.6.filter = (&(osgi.os=macosx)(osgi.ws=cocoa)(osgi.arch=aarch64))
