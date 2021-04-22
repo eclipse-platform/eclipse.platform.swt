@@ -1000,7 +1000,20 @@ void setFontDescription (long fontDesc) {
 		return;
 	} else {
 		super.setFontDescription (fontDesc);
-		if (labelHandle != 0) setFontDescription (labelHandle, fontDesc);
+
+		if (GTK.GTK4) {
+			if (labelHandle != 0) setFontDescription(labelHandle, fontDesc);
+		} else {
+			/*
+			 * GTK3 Workaround for bug which causes incorrect size
+			 * calculation when the button (radio/check) is set active
+			 * before setting font description.
+			 */
+			boolean selected = getSelection();
+			if (selected) setSelection(!selected);
+			if (labelHandle != 0) setFontDescription(labelHandle, fontDesc);
+			setSelection(selected);
+		}
 	}
 }
 
