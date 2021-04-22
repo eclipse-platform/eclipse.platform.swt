@@ -443,41 +443,6 @@ public class GTK extends OS {
 
 
 	public static final native long gtk_check_version(int required_major, int required_minor, int required_micro);
-	/** @param clipboard cast=(GtkClipboard *) */
-	/* [GTK3 only, if-def'd in os.h] */
-	public static final native void gtk_clipboard_clear(long clipboard);
-	/** @param selection cast=(GdkAtom) */
-	/* [GTK3 only, if-def'd in os.h] */
-	public static final native long gtk_clipboard_get(long selection);
-	/**
-	 * @param clipboard cast=(GtkClipboard *)
-	 * @param target cast=(const GtkTargetEntry *)
-	 * @param n_targets cast=(guint)
-	 * @param get_func cast=(GtkClipboardGetFunc)
-	 * @param clear_func cast=(GtkClipboardClearFunc)
-	 * @param user_data cast=(GObject *)
-	 */
-	/* [GTK3 only, if-def'd in os.h] */
-	public static final native boolean gtk_clipboard_set_with_owner(long clipboard, long target, int n_targets, long get_func, long clear_func, long user_data);
-	/**
-	 * @param clipboard cast=(GtkClipboard *)
-	 * @param targets cast=(const GtkTargetEntry *)
-	 * @param n_targets cast=(gint)
-	 */
-	/* [GTK3 only, if-def'd in os.h] */
-	public static final native void gtk_clipboard_set_can_store(long clipboard, long targets, int n_targets);
-	/**
-	 * @param clipboard cast=(GtkClipboard *)
-	 */
-	/* [GTK3 only, if-def'd in os.h] */
-	public static final native void gtk_clipboard_store(long clipboard);
-	/**
-	 * @param clipboard cast=(GtkClipboard *)
-	 * @param target cast=(GdkAtom)
-	 */
-	/* [GTK3 only, if-def'd in os.h] */
-	public static final native long gtk_clipboard_wait_for_contents(long clipboard, long target);
-
 	/* GtkColorChooser Interface */
 	/**
 	 * @param chooser cast=(GtkColorChooser *)
@@ -1507,11 +1472,6 @@ public class GTK extends OS {
 	/** @param dialog cast=(GtkNativeDialog *) */
 	public static final native void gtk_native_dialog_show(long dialog);
 
-	/* GtkNativeDialog [GTK3 only] */
-	/** @param dialog cast=(GtkNativeDialog *) */
-	public static final native int gtk_native_dialog_run(long dialog);
-
-
 	/* GtkNotebook */
 	public static final native long gtk_notebook_new();
 	/** @param notebook cast=(GtkNotebook *) */
@@ -1910,19 +1870,6 @@ public class GTK extends OS {
 	public static final native void gtk_progress_bar_set_inverted(long pbar, boolean inverted);
 
 
-	/* GtkRadioButton [GTK3 only] */
-	/**
-	 * @method flags=dynamic
-	 * @param radio_button cast=(GtkRadioButton *)
-	 */
-	public static final native long gtk_radio_button_get_group(long radio_button);
-	/**
-	 * @method flags=dynamic
-	 * @param group cast=(GSList *)
-	 */
-	public static final native long gtk_radio_button_new(long group);
-
-
 	/* GtkRange */
 	/** @param range cast=(GtkRange *) */
 	public static final native long gtk_range_get_adjustment(long range);
@@ -1996,32 +1943,6 @@ public class GTK extends OS {
 	 * @param adjustment cast=(GtkAdjustment *)
 	 *  */
 	public static final native void gtk_scrolled_window_set_hadjustment(long scrolled_window, long adjustment);
-
-	/* GtkScrolledWindow [GTK3 only, if-def'd in os.h] */
-	/**
-	 * @param hadjustment cast=(GtkAdjustment *)
-	 * @param vadjustment cast=(GtkAdjustment *)
-	 */
-	public static final native long gtk_scrolled_window_new(long hadjustment, long vadjustment);
-	/**
-	 * @param scrolled_window cast=(GtkScrolledWindow *)
-	 * @param type cast=(GtkShadowType)
-	 */
-	public static final native void gtk_scrolled_window_set_shadow_type(long scrolled_window, int type);
-	/** @param scrolled_window cast=(GtkScrolledWindow *) */
-	public static final native int gtk_scrolled_window_get_shadow_type(long scrolled_window);
-
-	/* GtkScrolledWindow [GTK4 only, if-def'd in os.h] */
-	public static final native long gtk_scrolled_window_new();
-	/** @param scrolled_window cast=(GtkScrolledWindow *) */
-	public static final native void gtk_scrolled_window_set_has_frame(long scrolled_window, boolean has_frame);
-	/** @param scrolled_window cast=(GtkScrolledWindow *) */
-	public static final native boolean gtk_scrolled_window_get_has_frame(long scrolled_window);
-	/**
-	 * @param scrolled_window cast=(GtkScrolledWindow *)
-	 * @param child cast=(GtkWidget *)
-	 *  */
-	public static final native void gtk_scrolled_window_set_child(long scrolled_window, long child);
 
 
 	public static final native long gtk_settings_get_default();
@@ -2099,38 +2020,6 @@ public class GTK extends OS {
 	 */
 	/* [GTK3 only, if-def'd in os.h] */
 	public static final native boolean gtk_status_icon_get_geometry(long handle, long screen, GdkRectangle area, long orientation);
-	/**
-	 * @method flags=ignore_deprecations
-	 * @param handle cast=(GtkStatusIcon*)
-	 */
-	/* [GTK3 only, if-def'd in os.h] */
-	public static final native boolean gtk_status_icon_get_visible(long handle);
-	/**
-	 * @method flags=ignore_deprecations
-	 */
-	/* [GTK3 only, if-def'd in os.h] */
-	public static final native long gtk_status_icon_new();
-	/**
-	 * @method flags=ignore_deprecations
-	 * @param handle cast=(GtkStatusIcon*)
-	 * @param pixbuf cast=(GdkPixbuf*)
-	 */
-	/* [GTK3 only, if-def'd in os.h] */
-	public static final native void gtk_status_icon_set_from_pixbuf(long handle, long pixbuf);
-	/**
-	 * @method flags=ignore_deprecations
-	 * @param handle cast=(GtkStatusIcon*)
-	 * @param visible cast=(gboolean)
-	 */
-	/* [GTK3 only, if-def'd in os.h] */
-	public static final native void gtk_status_icon_set_visible(long handle, boolean visible);
-	/**
-	 * @method flags=ignore_deprecations
-	 * @param handle cast=(GtkStatusIcon *)
-	 * @param tip_text cast=(const gchar *)
-	 */
-	/* [GTK3 only, if-def'd in os.h] */
-	public static final native void gtk_status_icon_set_tooltip_text(long handle, byte[] tip_text);
 	/**
 	 * @param context cast=(GtkStyleContext *)
 	 * @param class_name cast=(const gchar *)
@@ -2229,15 +2118,6 @@ public class GTK extends OS {
 	 * @param flags cast=(GtkStateFlags)
 	 */
 	public static final native void gtk_style_context_set_state(long context, long flags);
-	/**
-	 * @param targets cast=(const GtkTargetEntry *)
-	 * @param ntargets cast=(guint)
-	 */
-	/* [GTK3 only, if-def'd in os.h] */
-	public static final native long gtk_target_list_new(long targets, int ntargets);
-	/** @param list cast=(GtkTargetList *) */
-	/* [GTK3 only, if-def'd in os.h] */
-	public static final native void gtk_target_list_unref(long list);
 	/**
 	 * @method flags=dynamic
 	 * @param buffer cast=(GtkTextBuffer *)

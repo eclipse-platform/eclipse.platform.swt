@@ -19,6 +19,7 @@ import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.gtk.*;
 import org.eclipse.swt.internal.gtk3.*;
+import org.eclipse.swt.internal.gtk4.*;
 
 /**
  * Instances of this class support the layout of selectable
@@ -144,16 +145,16 @@ void createHandle (int index) {
 
 	if ((style & SWT.V_SCROLL) != 0) {
 		if (GTK.GTK4) {
-			scrolledHandle = GTK.gtk_scrolled_window_new();
+			scrolledHandle = GTK4.gtk_scrolled_window_new();
 		} else {
-			scrolledHandle = GTK.gtk_scrolled_window_new (0, 0);
+			scrolledHandle = GTK3.gtk_scrolled_window_new (0, 0);
 		}
 		if (scrolledHandle == 0) error (SWT.ERROR_NO_HANDLES);
 		GTK.gtk_scrolled_window_set_policy (scrolledHandle, GTK.GTK_POLICY_NEVER, GTK.GTK_POLICY_AUTOMATIC);
 
 		if (GTK.GTK4) {
 			OS.swt_fixed_add(fixedHandle, scrolledHandle);
-			GTK.gtk_scrolled_window_set_child(scrolledHandle, handle);
+			GTK4.gtk_scrolled_window_set_child(scrolledHandle, handle);
 		} else {
 			GTK3.gtk_container_add (fixedHandle, scrolledHandle);
 			GTK3.gtk_container_add(scrolledHandle, handle);

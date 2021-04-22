@@ -20,6 +20,7 @@ import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.gtk.*;
 import org.eclipse.swt.internal.gtk3.*;
+import org.eclipse.swt.internal.gtk4.*;
 
 /**
  * Instances of this class represent a selectable user interface
@@ -205,10 +206,10 @@ void createHandle (int index) {
 	if (fixedHandle == 0) error (SWT.ERROR_NO_HANDLES);
 
 	if (GTK.GTK4) {
-		scrolledHandle = GTK.gtk_scrolled_window_new();
+		scrolledHandle = GTK4.gtk_scrolled_window_new();
 	} else {
 		GTK.gtk_widget_set_has_window(fixedHandle, true);
-		scrolledHandle = GTK.gtk_scrolled_window_new (0, 0);
+		scrolledHandle = GTK3.gtk_scrolled_window_new (0, 0);
 	}
 	if (scrolledHandle == 0) error (SWT.ERROR_NO_HANDLES);
 	/*
@@ -231,7 +232,7 @@ void createHandle (int index) {
 
 	if (GTK.GTK4) {
 		OS.swt_fixed_add(fixedHandle, scrolledHandle);
-		GTK.gtk_scrolled_window_set_child(scrolledHandle, handle);
+		GTK4.gtk_scrolled_window_set_child(scrolledHandle, handle);
 	} else {
 		GTK3.gtk_container_add (fixedHandle, scrolledHandle);
 		GTK3.gtk_container_add (scrolledHandle, handle);
@@ -246,9 +247,9 @@ void createHandle (int index) {
 	GTK.gtk_scrolled_window_set_policy (scrolledHandle, hsp, vsp);
 	if ((style & SWT.BORDER) != 0) {
 		if (GTK.GTK4) {
-			GTK.gtk_scrolled_window_set_has_frame(scrolledHandle, true);
+			GTK4.gtk_scrolled_window_set_has_frame(scrolledHandle, true);
 		} else {
-			GTK.gtk_scrolled_window_set_shadow_type (scrolledHandle, GTK.GTK_SHADOW_ETCHED_IN);
+			GTK3.gtk_scrolled_window_set_shadow_type (scrolledHandle, GTK.GTK_SHADOW_ETCHED_IN);
 		}
 	}
 	/*

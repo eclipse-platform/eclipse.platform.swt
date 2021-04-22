@@ -18,6 +18,8 @@ import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.gtk.*;
+import org.eclipse.swt.internal.gtk3.*;
+import org.eclipse.swt.internal.gtk4.*;
 
 /**
  * This class is the abstract superclass of all classes which
@@ -130,9 +132,9 @@ Rectangle computeTrimInPixels (int x, int y, int width, int height) {
 	if (scrolledHandle != 0) {
 		boolean hasFrame;
 		if (GTK.GTK4) {
-			hasFrame = GTK.gtk_scrolled_window_get_has_frame(scrolledHandle);
+			hasFrame = GTK4.gtk_scrolled_window_get_has_frame(scrolledHandle);
 		} else {
-			hasFrame = GTK.gtk_scrolled_window_get_shadow_type (scrolledHandle) != GTK.GTK_SHADOW_NONE;
+			hasFrame = GTK3.gtk_scrolled_window_get_shadow_type (scrolledHandle) != GTK.GTK_SHADOW_NONE;
 		}
 
 		if (hasFrame) {
@@ -218,9 +220,9 @@ int getBorderWidthInPixels () {
 
 		boolean hasFrame;
 		if (GTK.GTK4) {
-			hasFrame = GTK.gtk_scrolled_window_get_has_frame(scrolledHandle);
+			hasFrame = GTK4.gtk_scrolled_window_get_has_frame(scrolledHandle);
 		} else {
-			hasFrame = GTK.gtk_scrolled_window_get_shadow_type (scrolledHandle) != GTK.GTK_SHADOW_NONE;
+			hasFrame = GTK3.gtk_scrolled_window_get_shadow_type (scrolledHandle) != GTK.GTK_SHADOW_NONE;
 		}
 		if (hasFrame) {
 			border += getThickness (scrolledHandle).x;

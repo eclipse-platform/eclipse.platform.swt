@@ -22,6 +22,7 @@ import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.cairo.*;
 import org.eclipse.swt.internal.gtk.*;
 import org.eclipse.swt.internal.gtk3.*;
+import org.eclipse.swt.internal.gtk4.*;
 
 /**
  * Instances of this class are controls which are capable
@@ -326,13 +327,13 @@ void createHandle (int index, boolean fixed, boolean scrolled) {
 		if (hadj == 0) error (SWT.ERROR_NO_HANDLES);
 
 		if (GTK.GTK4) {
-			scrolledHandle = GTK.gtk_scrolled_window_new();
+			scrolledHandle = GTK4.gtk_scrolled_window_new();
 			GTK.gtk_scrolled_window_set_hadjustment(scrolledHandle, hadj);
 			GTK.gtk_scrolled_window_set_vadjustment(scrolledHandle, vadj);
 			GTK.gtk_widget_set_hexpand(scrolledHandle, true);
 			GTK.gtk_widget_set_vexpand(scrolledHandle, true);
 		} else {
-			scrolledHandle = GTK.gtk_scrolled_window_new (hadj, vadj);
+			scrolledHandle = GTK3.gtk_scrolled_window_new (hadj, vadj);
 		}
 		if (scrolledHandle == 0) error (SWT.ERROR_NO_HANDLES);
 	}
@@ -360,7 +361,7 @@ void createHandle (int index, boolean fixed, boolean scrolled) {
 			}
 		}
 		if (GTK.GTK4) {
-			GTK.gtk_scrolled_window_set_child(scrolledHandle, handle);
+			GTK4.gtk_scrolled_window_set_child(scrolledHandle, handle);
 		} else {
 			/*
 			* Force the scrolledWindow to have a single child that is
@@ -378,9 +379,9 @@ void createHandle (int index, boolean fixed, boolean scrolled) {
 		GTK.gtk_scrolled_window_set_policy (scrolledHandle, hsp, vsp);
 		if (hasBorder ()) {
 			if (GTK.GTK4) {
-				GTK.gtk_scrolled_window_set_has_frame(scrolledHandle, true);
+				GTK4.gtk_scrolled_window_set_has_frame(scrolledHandle, true);
 			} else {
-				GTK.gtk_scrolled_window_set_shadow_type (scrolledHandle, GTK.GTK_SHADOW_ETCHED_IN);
+				GTK3.gtk_scrolled_window_set_shadow_type (scrolledHandle, GTK.GTK_SHADOW_ETCHED_IN);
 			}
 		}
 	}

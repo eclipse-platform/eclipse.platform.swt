@@ -360,10 +360,10 @@ void createHandle (int index) {
 				if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 				GTK4.gtk_check_button_set_group(handle, groupHandle);
 			} else {
-				groupHandle = GTK.gtk_radio_button_new (0);
+				groupHandle = GTK3.gtk_radio_button_new (0);
 				if (groupHandle == 0) error (SWT.ERROR_NO_HANDLES);
 				OS.g_object_ref_sink (groupHandle);
-				handle = GTK.gtk_radio_button_new (GTK.gtk_radio_button_get_group (groupHandle));
+				handle = GTK3.gtk_radio_button_new (GTK3.gtk_radio_button_get_group (groupHandle));
 				if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 			}
 

@@ -463,3 +463,47 @@ fail:
 }
 #endif
 
+#ifndef NO_gtk_1scrolled_1window_1get_1has_1frame
+JNIEXPORT jboolean JNICALL GTK4_NATIVE(gtk_1scrolled_1window_1get_1has_1frame)
+	(JNIEnv *env, jclass that, jlong arg0)
+{
+	jboolean rc = 0;
+	GTK4_NATIVE_ENTER(env, that, gtk_1scrolled_1window_1get_1has_1frame_FUNC);
+	rc = (jboolean)gtk_scrolled_window_get_has_frame((GtkScrolledWindow *)arg0);
+	GTK4_NATIVE_EXIT(env, that, gtk_1scrolled_1window_1get_1has_1frame_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_gtk_1scrolled_1window_1new
+JNIEXPORT jlong JNICALL GTK4_NATIVE(gtk_1scrolled_1window_1new)
+	(JNIEnv *env, jclass that)
+{
+	jlong rc = 0;
+	GTK4_NATIVE_ENTER(env, that, gtk_1scrolled_1window_1new_FUNC);
+	rc = (jlong)gtk_scrolled_window_new();
+	GTK4_NATIVE_EXIT(env, that, gtk_1scrolled_1window_1new_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_gtk_1scrolled_1window_1set_1child
+JNIEXPORT void JNICALL GTK4_NATIVE(gtk_1scrolled_1window_1set_1child)
+	(JNIEnv *env, jclass that, jlong arg0, jlong arg1)
+{
+	GTK4_NATIVE_ENTER(env, that, gtk_1scrolled_1window_1set_1child_FUNC);
+	gtk_scrolled_window_set_child((GtkScrolledWindow *)arg0, (GtkWidget *)arg1);
+	GTK4_NATIVE_EXIT(env, that, gtk_1scrolled_1window_1set_1child_FUNC);
+}
+#endif
+
+#ifndef NO_gtk_1scrolled_1window_1set_1has_1frame
+JNIEXPORT void JNICALL GTK4_NATIVE(gtk_1scrolled_1window_1set_1has_1frame)
+	(JNIEnv *env, jclass that, jlong arg0, jboolean arg1)
+{
+	GTK4_NATIVE_ENTER(env, that, gtk_1scrolled_1window_1set_1has_1frame_FUNC);
+	gtk_scrolled_window_set_has_frame((GtkScrolledWindow *)arg0, arg1);
+	GTK4_NATIVE_EXIT(env, that, gtk_1scrolled_1window_1set_1has_1frame_FUNC);
+}
+#endif
+

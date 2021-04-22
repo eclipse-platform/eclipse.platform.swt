@@ -181,4 +181,16 @@ public class GTK4 {
 	 * @param error cast=(GError **)
 	 */
 	public static final native boolean gtk_file_chooser_set_file(long chooser, long file, long error);
+
+	/* GtkScrolledWindow */
+	public static final native long gtk_scrolled_window_new();
+	/** @param scrolled_window cast=(GtkScrolledWindow *) */
+	public static final native void gtk_scrolled_window_set_has_frame(long scrolled_window, boolean has_frame);
+	/** @param scrolled_window cast=(GtkScrolledWindow *) */
+	public static final native boolean gtk_scrolled_window_get_has_frame(long scrolled_window);
+	/**
+	 * @param scrolled_window cast=(GtkScrolledWindow *)
+	 * @param child cast=(GtkWidget *)
+	 */
+	public static final native void gtk_scrolled_window_set_child(long scrolled_window, long child);
 }

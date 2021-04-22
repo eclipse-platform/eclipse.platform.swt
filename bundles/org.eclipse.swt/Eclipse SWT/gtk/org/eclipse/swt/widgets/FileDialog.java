@@ -366,7 +366,7 @@ String openNativeChooserDialog () {
 	} else {
 		display.externalEventLoop = true;
 		display.sendPreExternalEventDispatchEvent ();
-		response = GTK.gtk_native_dialog_run(handle);
+		response = GTK3.gtk_native_dialog_run(handle);
 		display.externalEventLoop = false;
 		display.sendPostExternalEventDispatchEvent ();
 	}

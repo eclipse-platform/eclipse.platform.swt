@@ -286,4 +286,92 @@ public class GTK3 {
 	 * @param extra_widget cast=(GtkWidget *)
 	 */
 	public static final native void gtk_file_chooser_set_extra_widget(long chooser, long extra_widget);
+
+	/* GtkRadioButton */
+	/** @param radio_button cast=(GtkRadioButton *) */
+	public static final native long gtk_radio_button_get_group(long radio_button);
+	/** @param group cast=(GSList *) */
+	public static final native long gtk_radio_button_new(long group);
+
+	/* GtkNativeDialog */
+	/** @param dialog cast=(GtkNativeDialog *) */
+	public static final native int gtk_native_dialog_run(long dialog);
+
+	/* GtkScrolledWindow */
+	/**
+	 * @param hadjustment cast=(GtkAdjustment *)
+	 * @param vadjustment cast=(GtkAdjustment *)
+	 */
+	public static final native long gtk_scrolled_window_new(long hadjustment, long vadjustment);
+	/**
+	 * @param scrolled_window cast=(GtkScrolledWindow *)
+	 * @param type cast=(GtkShadowType)
+	 */
+	public static final native void gtk_scrolled_window_set_shadow_type(long scrolled_window, int type);
+	/** @param scrolled_window cast=(GtkScrolledWindow *) */
+	public static final native int gtk_scrolled_window_get_shadow_type(long scrolled_window);
+
+	/* GtkClipboard */
+	/** @param clipboard cast=(GtkClipboard *) */
+	public static final native void gtk_clipboard_clear(long clipboard);
+	/** @param selection cast=(GdkAtom) */
+	public static final native long gtk_clipboard_get(long selection);
+	/**
+	 * @param clipboard cast=(GtkClipboard *)
+	 * @param target cast=(const GtkTargetEntry *)
+	 * @param n_targets cast=(guint)
+	 * @param get_func cast=(GtkClipboardGetFunc)
+	 * @param clear_func cast=(GtkClipboardClearFunc)
+	 * @param user_data cast=(GObject *)
+	 */
+	public static final native boolean gtk_clipboard_set_with_owner(long clipboard, long target, int n_targets, long get_func, long clear_func, long user_data);
+	/**
+	 * @param clipboard cast=(GtkClipboard *)
+	 * @param targets cast=(const GtkTargetEntry *)
+	 * @param n_targets cast=(gint)
+	 */
+	public static final native void gtk_clipboard_set_can_store(long clipboard, long targets, int n_targets);
+	/** @param clipboard cast=(GtkClipboard *) */
+	public static final native void gtk_clipboard_store(long clipboard);
+	/**
+	 * @param clipboard cast=(GtkClipboard *)
+	 * @param target cast=(GdkAtom)
+	 */
+	public static final native long gtk_clipboard_wait_for_contents(long clipboard, long target);
+
+	/* GtkStatusIcon */
+	/**
+	 * @method flags=ignore_deprecations
+	 * @param handle cast=(GtkStatusIcon*)
+	 */
+	public static final native boolean gtk_status_icon_get_visible(long handle);
+	/** @method flags=ignore_deprecations */
+	public static final native long gtk_status_icon_new();
+	/**
+	 * @method flags=ignore_deprecations
+	 * @param handle cast=(GtkStatusIcon*)
+	 * @param pixbuf cast=(GdkPixbuf*)
+	 */
+	public static final native void gtk_status_icon_set_from_pixbuf(long handle, long pixbuf);
+	/**
+	 * @method flags=ignore_deprecations
+	 * @param handle cast=(GtkStatusIcon*)
+	 * @param visible cast=(gboolean)
+	 */
+	public static final native void gtk_status_icon_set_visible(long handle, boolean visible);
+	/**
+	 * @method flags=ignore_deprecations
+	 * @param handle cast=(GtkStatusIcon *)
+	 * @param tip_text cast=(const gchar *)
+	 */
+	public static final native void gtk_status_icon_set_tooltip_text(long handle, byte[] tip_text);
+
+	/* GtkTargetList */
+	/**
+	 * @param targets cast=(const GtkTargetEntry *)
+	 * @param ntargets cast=(guint)
+	 */
+	public static final native long gtk_target_list_new(long targets, int ntargets);
+	/** @param list cast=(GtkTargetList *) */
+	public static final native void gtk_target_list_unref(long list);
 }

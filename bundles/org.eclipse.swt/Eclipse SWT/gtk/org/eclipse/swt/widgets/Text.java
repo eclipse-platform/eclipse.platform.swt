@@ -265,9 +265,9 @@ void createHandle (int index) {
 		}
 	} else {
 		if (GTK.GTK4) {
-			scrolledHandle = GTK.gtk_scrolled_window_new();
+			scrolledHandle = GTK4.gtk_scrolled_window_new();
 		} else {
-			scrolledHandle = GTK.gtk_scrolled_window_new (0, 0);
+			scrolledHandle = GTK3.gtk_scrolled_window_new (0, 0);
 		}
 		if (scrolledHandle == 0) error (SWT.ERROR_NO_HANDLES);
 		handle = GTK.gtk_text_view_new ();
@@ -277,7 +277,7 @@ void createHandle (int index) {
 
 		if (GTK.GTK4) {
 			OS.swt_fixed_add(fixedHandle, scrolledHandle);
-			GTK.gtk_scrolled_window_set_child(scrolledHandle, handle);
+			GTK4.gtk_scrolled_window_set_child(scrolledHandle, handle);
 		} else {
 			GTK3.gtk_container_add (fixedHandle, scrolledHandle);
 			GTK3.gtk_container_add (scrolledHandle, handle);
@@ -290,9 +290,9 @@ void createHandle (int index) {
 		GTK.gtk_scrolled_window_set_policy (scrolledHandle, hsp, vsp);
 		if ((style & SWT.BORDER) != 0) {
 			if (GTK.GTK4) {
-				GTK.gtk_scrolled_window_set_has_frame(scrolledHandle, true);
+				GTK4.gtk_scrolled_window_set_has_frame(scrolledHandle, true);
 			} else {
-				GTK.gtk_scrolled_window_set_shadow_type (scrolledHandle, GTK.GTK_SHADOW_ETCHED_IN);
+				GTK3.gtk_scrolled_window_set_shadow_type (scrolledHandle, GTK.GTK_SHADOW_ETCHED_IN);
 			}
 		}
 		int just = GTK.GTK_JUSTIFY_LEFT;
@@ -736,7 +736,7 @@ public void copy () {
 			GTK.gtk_editable_copy_clipboard(handle);
 		}
 	} else {
-		long clipboard = GTK.GTK4 ? GDK.gdk_display_get_clipboard(GDK.gdk_display_get_default()) : GTK.gtk_clipboard_get (GDK.GDK_NONE);
+		long clipboard = GTK.GTK4 ? GDK.gdk_display_get_clipboard(GDK.gdk_display_get_default()) : GTK3.gtk_clipboard_get (GDK.GDK_NONE);
 		clearSegments (true);
 		GTK.gtk_text_buffer_copy_clipboard (bufferHandle, clipboard);
 		applySegments ();
@@ -764,7 +764,7 @@ public void cut () {
 			GTK.gtk_editable_cut_clipboard(handle);
 		}
 	} else {
-		long clipboard = GTK.GTK4 ? GDK.gdk_display_get_clipboard(GDK.gdk_display_get_default()) : GTK.gtk_clipboard_get (GDK.GDK_NONE);
+		long clipboard = GTK.GTK4 ? GDK.gdk_display_get_clipboard(GDK.gdk_display_get_default()) : GTK3.gtk_clipboard_get (GDK.GDK_NONE);
 		clearSegments (true);
 		GTK.gtk_text_buffer_cut_clipboard (bufferHandle, clipboard, GTK.gtk_text_view_get_editable (handle));
 		applySegments ();
@@ -2096,7 +2096,7 @@ public void paste () {
 			GTK.gtk_editable_paste_clipboard (handle);
 		}
 	} else {
-		long clipboard = GTK.GTK4 ? GDK.gdk_display_get_clipboard(GDK.gdk_display_get_default()) : GTK.gtk_clipboard_get (GDK.GDK_NONE);
+		long clipboard = GTK.GTK4 ? GDK.gdk_display_get_clipboard(GDK.gdk_display_get_default()) : GTK3.gtk_clipboard_get (GDK.GDK_NONE);
 		clearSegments (true);
 		GTK.gtk_text_buffer_paste_clipboard (bufferHandle, clipboard, null, GTK.gtk_text_view_get_editable (handle));
 		applySegments ();

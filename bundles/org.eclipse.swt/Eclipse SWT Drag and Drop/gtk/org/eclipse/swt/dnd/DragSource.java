@@ -620,7 +620,7 @@ public Transfer[] getTransfer(){
 void onDispose() {
 	if (control == null) return;
 	if (targetList != 0) {
-		GTK.gtk_target_list_unref(targetList);
+		GTK3.gtk_target_list_unref(targetList);
 	}
 	targetList = 0;
 	if (controlListener != null) {
@@ -709,7 +709,7 @@ public void setTransfer(Transfer... transferAgents){
 		this.transferAgents = transferAgents;
 	} else {
 		if (targetList != 0) {
-			GTK.gtk_target_list_unref(targetList);
+			GTK3.gtk_target_list_unref(targetList);
 			targetList = 0;
 		}
 		this.transferAgents = transferAgents;
@@ -739,7 +739,7 @@ public void setTransfer(Transfer... transferAgents){
 		for (int i = 0; i < targets.length; i++) {
 			OS.memmove(pTargets + i*GtkTargetEntry.sizeof, targets[i], GtkTargetEntry.sizeof);
 		}
-		targetList = GTK.gtk_target_list_new(pTargets, targets.length);
+		targetList = GTK3.gtk_target_list_new(pTargets, targets.length);
 
 		for (int i = 0; i < targets.length; i++) {
 			OS.g_free(targets[i].target);

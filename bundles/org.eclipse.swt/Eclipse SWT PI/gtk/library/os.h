@@ -214,26 +214,9 @@
 #define NO_memmove__Lorg_eclipse_swt_internal_gtk_GdkEventWindowState_2II
 #define NO_memmove__Lorg_eclipse_swt_internal_gtk_GdkEventWindowState_2JJ
 
-// No GtkClipboard on GTK4
-#define NO_gtk_1clipboard_1clear
-#define NO_gtk_1clipboard_1get
-#define NO_gtk_1clipboard_1set_1can_1store
-#define NO_gtk_1clipboard_1set_1with_1owner
-#define NO_gtk_1clipboard_1store
-#define NO_gtk_1clipboard_1wait_1for_1contents
-
 // No GtkStatusIcon on GTK4
 #define NO_gtk_1status_1icon_1get_1geometry
-#define NO_gtk_1status_1icon_1get_1visible
-#define NO_gtk_1status_1icon_1new
 #define NO_gtk_1status_1icon_1position_1menu_1func
-#define NO_gtk_1status_1icon_1set_1from_1pixbuf
-#define NO_gtk_1status_1icon_1set_1tooltip_1text
-#define NO_gtk_1status_1icon_1set_1visible
-
-// No GtkTargetList on GTK4
-#define NO_gtk_1target_1list_1new
-#define NO_gtk_1target_1list_1unref
 
 // No GdkScreen on GTK4, including parameter casts
 #define NO_gtk_1style_1context_1add_1provider_1for_1screen
@@ -425,8 +408,6 @@
 
 // No GtkShadowType in GTK4
 #define NO_gtk_1viewport_1set_1shadow_1type
-#define NO_gtk_1scrolled_1window_1set_1shadow_1type
-#define NO_gtk_1scrolled_1window_1get_1shadow_1type
 #define NO_gtk_1frame_1set_1shadow_1type
 
 // GtkIconTheme API changes
@@ -458,16 +439,6 @@
 // Accessibility interface changes
 #define NO_GTK_1TYPE_1TEXT_1VIEW_1ACCESSIBLE
 #define NO_swt_1fixed_1accessible_1register_1accessible
-
-// GtkScrolledWindow changes
-#define NO_gtk_1scrolled_1window_1new__JJ
-
-// GtkRadioButton removed
-#define NO_gtk_1radio_1button_1get_1group
-
-// GtkDialog changes
-#define NO_gtk_1dialog_1run
-#define NO_gtk_1native_1dialog_1run
 
 // GtkCellRenderer changes
 #define NO_GtkCellRendererPixbufClass_1sizeof
@@ -576,20 +547,12 @@
 #define NO_gtk_1icon_1theme_1lookup_1icon
 #define NO_gtk_1icon_1theme_1lookup_1by_1gicon__JJIIII
 
-// GtkScrollWindow
-#define NO_gtk_1scrolled_1window_1set_1has_1frame
-#define NO_gtk_1scrolled_1window_1get_1has_1frame
-#define NO_gtk_1scrolled_1window_1set_1child
-
 // GtkTreeViewColumn
 #define NO_gtk_1tree_1view_1column_1cell_1get_1size__J_3I_3I_3I_3I
 
 // SWTFixed changes
 #define NO_swt_1fixed_1add
 #define NO_swt_1fixed_1remove
-
-// GtkScrolledWindow signature change
-#define NO_gtk_1scrolled_1window_1new__
 
 // GtkShortcut and related functions
 #define NO_gtk_1shortcut_1controller_1add_1shortcut

@@ -158,10 +158,10 @@ void createWidget (int index) {
 @Override
 void createHandle (int index) {
 	state |= HANDLE;
-	handle = GTK.gtk_status_icon_new ();
+	handle = GTK3.gtk_status_icon_new ();
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 	imageHandle = GTK.gtk_image_new ();
-	GTK.gtk_status_icon_set_visible (handle,true);
+	GTK3.gtk_status_icon_set_visible (handle,true);
 }
 
 @Override
@@ -353,7 +353,7 @@ void hookEvents () {
  */
 public boolean getVisible () {
 	checkWidget ();
-	return GTK.gtk_status_icon_get_visible (handle);
+	return GTK3.gtk_status_icon_get_visible (handle);
 }
 
 @Override
@@ -482,12 +482,12 @@ public void setImage (Image image) {
 			imageList.put (imageIndex, image);
 		}
 		long pixbuf = ImageList.createPixbuf(image);
-		GTK.gtk_status_icon_set_from_pixbuf (handle, pixbuf);
-		GTK.gtk_status_icon_set_visible (handle, true);
+		GTK3.gtk_status_icon_set_from_pixbuf (handle, pixbuf);
+		GTK3.gtk_status_icon_set_visible (handle, true);
 	} else {
 		GTK.gtk_widget_set_size_request (handle, 1, 1);
-		GTK.gtk_status_icon_set_from_pixbuf (handle, 0);
-		GTK.gtk_status_icon_set_visible (handle, false);
+		GTK3.gtk_status_icon_set_from_pixbuf (handle, 0);
+		GTK3.gtk_status_icon_set_visible (handle, false);
 	}
 }
 
@@ -544,7 +544,7 @@ public void setToolTipText (String string) {
 	if (string != null && string.length () > 0) {
 		buffer = Converter.wcsToMbcs (string, true);
 	}
-	GTK.gtk_status_icon_set_tooltip_text (handle, buffer);
+	GTK3.gtk_status_icon_set_tooltip_text (handle, buffer);
 }
 
 /**
@@ -560,7 +560,7 @@ public void setToolTipText (String string) {
  */
 public void setVisible (boolean visible) {
 	checkWidget ();
-	if(GTK.gtk_status_icon_get_visible (handle) == visible) return;
+	if(GTK3.gtk_status_icon_get_visible (handle) == visible) return;
 	if (visible) {
 		/*
 		* It is possible (but unlikely), that application
@@ -569,9 +569,9 @@ public void setVisible (boolean visible) {
 		*/
 		sendEvent (SWT.Show);
 		if (isDisposed ()) return;
-		GTK.gtk_status_icon_set_visible (handle, visible);
+		GTK3.gtk_status_icon_set_visible (handle, visible);
 	} else {
-		GTK.gtk_status_icon_set_visible (handle, visible);
+		GTK3.gtk_status_icon_set_visible (handle, visible);
 		sendEvent (SWT.Hide);
 	}
 }

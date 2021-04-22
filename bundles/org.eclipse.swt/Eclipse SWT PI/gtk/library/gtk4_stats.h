@@ -69,4 +69,8 @@ typedef enum {
 	gtk_1picture_1set_1can_1shrink_FUNC,
 	gtk_1picture_1set_1paintable_FUNC,
 	gtk_1rgb_1to_1hsv_FUNC,
+	gtk_1scrolled_1window_1get_1has_1frame_FUNC,
+	gtk_1scrolled_1window_1new_FUNC,
+	gtk_1scrolled_1window_1set_1child_FUNC,
+	gtk_1scrolled_1window_1set_1has_1frame_FUNC,
 } GTK4_FUNCS;

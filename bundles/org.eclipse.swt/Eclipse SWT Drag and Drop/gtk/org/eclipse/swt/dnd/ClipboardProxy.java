@@ -16,6 +16,7 @@ package org.eclipse.swt.dnd;
 
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.gtk.*;
+import org.eclipse.swt.internal.gtk3.*;
 import org.eclipse.swt.widgets.*;
 
 class ClipboardProxy {
@@ -70,7 +71,7 @@ void gtk_gdk_clipboard_clear(long clipboard) {
 	if (GTK.GTK4) {
 		GDK.gdk_clipboard_set_content(clipboard, 0);
 	} else {
-		GTK.gtk_clipboard_clear(clipboard);
+		GTK3.gtk_clipboard_clear(clipboard);
 	}
 }
 
@@ -91,10 +92,10 @@ long clearFunc(long clipboard,long user_data_or_owner){
 void dispose () {
 	if (display == null) return;
 	if (activeClipboard != null) {
-		GTK.gtk_clipboard_store(Clipboard.GTKCLIPBOARD);
+		GTK3.gtk_clipboard_store(Clipboard.GTKCLIPBOARD);
 	}
 	if (activePrimaryClipboard != null) {
-		GTK.gtk_clipboard_store(Clipboard.GTKPRIMARYCLIPBOARD);
+		GTK3.gtk_clipboard_store(Clipboard.GTKPRIMARYCLIPBOARD);
 	}
 	display = null;
 	if (getFunc != null ) getFunc.dispose();
@@ -186,10 +187,10 @@ boolean setData(Clipboard owner, Object[] data, Transfer[] dataTypes, int clipbo
 			* though we set the data again. So, this API has to be used whenever we
 			* are setting the contents.
 			*/
-			if (!GTK.gtk_clipboard_set_with_owner (Clipboard.GTKCLIPBOARD, pTargetsList, entries.length, getFuncProc, clearFuncProc, clipboardOwner)) {
+			if (!GTK3.gtk_clipboard_set_with_owner (Clipboard.GTKCLIPBOARD, pTargetsList, entries.length, getFuncProc, clearFuncProc, clipboardOwner)) {
 				return false;
 			}
-			GTK.gtk_clipboard_set_can_store(Clipboard.GTKCLIPBOARD, 0, 0);
+			GTK3.gtk_clipboard_set_can_store(Clipboard.GTKCLIPBOARD, 0, 0);
 			activeClipboard = owner;
 		}
 		if ((clipboards & DND.SELECTION_CLIPBOARD) != 0) {
@@ -197,10 +198,10 @@ boolean setData(Clipboard owner, Object[] data, Transfer[] dataTypes, int clipbo
 			primaryClipboardDataTypes = dataTypes;
 			long getFuncProc = getFunc.getAddress();
 			long clearFuncProc = clearFunc.getAddress();
-			if (!GTK.gtk_clipboard_set_with_owner (Clipboard.GTKPRIMARYCLIPBOARD, pTargetsList, entries.length, getFuncProc, clearFuncProc, clipboardOwner)) {
+			if (!GTK3.gtk_clipboard_set_with_owner (Clipboard.GTKPRIMARYCLIPBOARD, pTargetsList, entries.length, getFuncProc, clearFuncProc, clipboardOwner)) {
 				return false;
 			}
-			GTK.gtk_clipboard_set_can_store(Clipboard.GTKPRIMARYCLIPBOARD, 0, 0);
+			GTK3.gtk_clipboard_set_can_store(Clipboard.GTKPRIMARYCLIPBOARD, 0, 0);
 			activePrimaryClipboard = owner;
 		}
 		return true;
