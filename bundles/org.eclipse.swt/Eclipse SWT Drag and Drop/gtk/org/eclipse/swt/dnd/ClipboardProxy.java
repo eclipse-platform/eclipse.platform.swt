@@ -17,6 +17,7 @@ package org.eclipse.swt.dnd;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.gtk.*;
 import org.eclipse.swt.internal.gtk3.*;
+import org.eclipse.swt.internal.gtk4.*;
 import org.eclipse.swt.widgets.*;
 
 class ClipboardProxy {
@@ -28,7 +29,7 @@ class ClipboardProxy {
 	Object[] primaryClipboardData;
 	Transfer[] primaryClipboardDataTypes;
 
-	long clipboardOwner = GTK.GTK4 ? GTK.gtk_window_new() : GTK.gtk_window_new(GTK.GTK_WINDOW_TOPLEVEL);
+	long clipboardOwner = GTK.GTK4 ? GTK4.gtk_window_new() : GTK3.gtk_window_new(GTK.GTK_WINDOW_TOPLEVEL);
 
 	Display display;
 	Clipboard activeClipboard = null;
@@ -108,7 +109,7 @@ void dispose () {
 	primaryClipboardDataTypes = null;
 	if (clipboardOwner != 0) {
 		if (GTK.GTK4) {
-			GTK.gtk_window_destroy(clipboardOwner);
+			GTK4.gtk_window_destroy(clipboardOwner);
 		} else {
 			GTK.gtk_widget_destroy(clipboardOwner);
 		}
@@ -122,7 +123,7 @@ void dispose () {
  */
 long getFunc(long clipboard, long selection_data, long info, long user_data_or_owner){
 	if (selection_data == 0) return 0;
-	long target = GTK.gtk_selection_data_get_target(selection_data);
+	long target = GTK3.gtk_selection_data_get_target(selection_data);
 	TransferData tdata = new TransferData();
 	tdata.type = target;
 	Transfer[] types = (clipboard == Clipboard.GTKCLIPBOARD) ? clipboardDataTypes : primaryClipboardDataTypes;
@@ -139,7 +140,7 @@ long getFunc(long clipboard, long selection_data, long info, long user_data_or_o
 	if (tdata.format < 8 || tdata.format % 8 != 0) {
 		return 0;
 	}
-	GTK.gtk_selection_data_set(selection_data, tdata.type, tdata.format, tdata.pValue, tdata.length);
+	GTK3.gtk_selection_data_set(selection_data, tdata.type, tdata.format, tdata.pValue, tdata.length);
 	OS.g_free(tdata.pValue);
 	return 1;
 }

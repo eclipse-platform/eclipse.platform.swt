@@ -137,7 +137,7 @@ void createHandle (int index) {
 		GTK.gtk_widget_add_css_class(handle, Converter.javaStringToCString("toolbar"));
 	} else {
 		GTK.gtk_widget_set_has_window(fixedHandle, true);
-		handle = GTK.gtk_toolbar_new ();
+		handle = GTK3.gtk_toolbar_new ();
 	}
 
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
@@ -158,7 +158,7 @@ void createHandle (int index) {
 	* tool bar preferred size is too big with GTK_ICON_SIZE_LARGE_TOOLBAR
 	* when the tool bar item has no image or text.
 	*/
-	if (!GTK.GTK4) GTK.gtk_toolbar_set_icon_size (handle, GTK.GTK_ICON_SIZE_SMALL_TOOLBAR);
+	if (!GTK.GTK4) GTK3.gtk_toolbar_set_icon_size (handle, GTK.GTK_ICON_SIZE_SMALL_TOOLBAR);
 
 	// In GTK 3 font description is inherited from parent widget which is not how SWT has always worked,
 	// reset to default font to get the usual behavior
@@ -187,9 +187,9 @@ Point computeSizeInPixels (int wHint, int hHint, boolean changed) {
 		 * to display. The fix is to disable it before the computation of
 		 * size and enable it if WRAP style is set.
 		 */
-		GTK.gtk_toolbar_set_show_arrow (handle, false);
+		GTK3.gtk_toolbar_set_show_arrow (handle, false);
 		size = computeNativeSize (handle, wHint, hHint, changed);
-		if ((style & SWT.WRAP) != 0) GTK.gtk_toolbar_set_show_arrow (handle, true);
+		if ((style & SWT.WRAP) != 0) GTK3.gtk_toolbar_set_show_arrow (handle, true);
 	}
 
 	return size;
@@ -581,7 +581,7 @@ void relayout () {
 		} else if (hasImage) {
 			type = GTK.GTK_TOOLBAR_ICONS;
 		}
-		GTK.gtk_toolbar_set_style (handle, type);
+		GTK3.gtk_toolbar_set_style (handle, type);
 	}
 }
 
@@ -628,7 +628,7 @@ void reskinChildren (int flags) {
 
 @Override
 int setBounds (int x, int y, int width, int height, boolean move, boolean resize) {
-	if (!GTK.GTK4) GTK.gtk_toolbar_set_show_arrow (handle, false);
+	if (!GTK.GTK4) GTK3.gtk_toolbar_set_show_arrow (handle, false);
 	int result = super.setBounds (x, y, width, height, move, resize);
 	if ((result & RESIZED) != 0) relayout ();
 	if ((style & SWT.WRAP) != 0) {
@@ -637,7 +637,7 @@ int setBounds (int x, int y, int width, int height, boolean move, boolean resize
 			 * overflow menu. May require the use of the "toolbar" style class
 			 * applied to the widget.  */
 		} else {
-			GTK.gtk_toolbar_set_show_arrow (handle, true);
+			GTK3.gtk_toolbar_set_show_arrow (handle, true);
 		}
 	}
 

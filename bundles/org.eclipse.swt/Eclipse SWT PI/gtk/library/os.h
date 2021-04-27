@@ -349,78 +349,9 @@
 #define NO_gdk_1keymap_1translate_1keyboard_1state
 #define NO_gdk_1keymap_1get_1entries_1for_1keyval
 
-// GtkToolbar & toolbar item related objects removed
-#define NO_gtk_1toolbar_1new
-#define NO_gtk_1toolbar_1insert
-#define NO_gtk_1toolbar_1set_1icon_1size
-#define NO_gtk_1toolbar_1set_1style
-#define NO_gtk_1toolbar_1set_1show_1arrow
-#define NO_gtk_1separator_1tool_1item_1new
-#define NO_gtk_1separator_1tool_1item_1set_1draw
-#define NO_gtk_1toggle_1tool_1button_1new
-#define NO_gtk_1toggle_1tool_1button_1get_1active
-#define NO_gtk_1toggle_1tool_1button_1set_1active
-#define NO_gtk_1tool_1button_1new
-#define NO_gtk_1tool_1button_1set_1label_1widget
-#define NO_gtk_1tool_1button_1set_1icon_1widget
-#define NO_gtk_1tool_1button_1set_1use_1underline
-#define NO_gtk_1tool_1item_1set_1homogeneous
-#define NO_gtk_1tool_1item_1set_1is_1important
-#define NO_gtk_1tool_1item_1retrieve_1proxy_1menu_1item
-#define NO_gtk_1tool_1item_1set_1proxy_1menu_1item
-#define NO_gtk_1tool_1item_1get_1proxy_1menu_1item
-#define NO_gtk_1menu_1tool_1button_1new
-
-// GtkMenu, GtkMenuBar and GtkMenuItem removed
-#define NO_GTK_1TYPE_1MENU
-#define NO_GTK_1IS_1MENU_1ITEM
-#define NO_gtk_1menu_1bar_1new
-#define NO_gtk_1menu_1new
-#define NO_gtk_1menu_1popdown
-#define NO_gtk_1menu_1item_1new
-#define NO_gtk_1menu_1item_1set_1submenu
-#define NO_gtk_1menu_1item_1get_1submenu
-#define NO_gtk_1menu_1shell_1insert
-#define NO_gtk_1menu_1shell_1set_1take_1focus
-#define NO_gtk_1menu_1shell_1deactivate
-#define NO_gtk_1separator_1menu_1item_1new
-#define NO_gtk_1radio_1menu_1item_1new
-#define NO_gtk_1radio_1menu_1item_1get_1group
-#define NO_gtk_1check_1menu_1item_1new
-#define NO_gtk_1check_1menu_1item_1set_1active
-#define NO_gtk_1check_1menu_1item_1get_1active
-
-// GtkWindow changes
-#define NO_gtk_1window_1new__I
-#define NO_gtk_1window_1set_1default
-#define NO_gtk_1window_1deiconify
-#define NO_gtk_1window_1iconify
-#define NO_gtk_1window_1activate_1default
-#define NO_gtk_1window_1set_1type_1hint
-#define NO_gtk_1window_1set_1skip_1taskbar_1hint
-#define NO_gtk_1window_1set_1keep_1above
-#define NO_gtk_1window_1set_1icon_1list
-#define NO_gtk_1window_1get_1icon_1list
-#define NO_gtk_1window_1set_1attached_1to
-#define NO_gtk_1window_1move
-#define NO_gtk_1window_1get_1position
-#define NO_gtk_1window_1get_1mnemonic_1modifier
-
 // No GtkShadowType in GTK4
 #define NO_gtk_1viewport_1set_1shadow_1type
 #define NO_gtk_1frame_1set_1shadow_1type
-
-// GtkIconTheme API changes
-#define NO_gtk_1icon_1info_1load_1icon
-
-// GtkSelectionData removed
-#define NO_gtk_1selection_1data_1free
-#define NO_gtk_1selection_1data_1get_1data
-#define NO_gtk_1selection_1data_1get_1data_1type
-#define NO_gtk_1selection_1data_1get_1format
-#define NO_gtk_1selection_1data_1get_1length
-#define NO_gtk_1selection_1data_1get_1target
-#define NO_gtk_1selection_1data_1set
 
 // GdkAtom removed
 #define NO_gtk_1drag_1get_1data__JJJ
@@ -433,8 +364,6 @@
 // GtkAccelGroup removed
 #define NO_gtk_1widget_1add_1accelerator
 #define NO_gtk_1widget_1remove_1accelerator
-#define NO_gtk_1window_1add_1accel_1group
-#define NO_gtk_1window_1remove_1accel_1group
 
 // Accessibility interface changes
 #define NO_GTK_1TYPE_1TEXT_1VIEW_1ACCESSIBLE
@@ -526,26 +455,10 @@
 // GdkCursor API changes
 #define NO_gdk_1cursor_1new_1from_1name__Ljava_lang_String_2J
 
-// No GtkNative on GTK3
-#define NO_gtk_1native_1get_1surface
-
 // No GdkPopup on GTK3
 #define NO_gdk_1popup_1get_1parent
 #define NO_gdk_1popup_1layout_1new
 #define NO_gdk_1popup_1present
-
-// GtkWindow changes
-#define NO_gtk_1window_1new__
-#define NO_gtk_1window_1minimize
-#define NO_gtk_1window_1unminimize
-#define NO_gtk_1window_1set_1default_1widget
-#define NO_gtk_1window_1set_1child
-#define NO_gtk_1window_1destroy
-
-// GtkIconTheme API changes
-#define NO_gtk_1icon_1theme_1get_1for_1display
-#define NO_gtk_1icon_1theme_1lookup_1icon
-#define NO_gtk_1icon_1theme_1lookup_1by_1gicon__JJIIII
 
 // GtkTreeViewColumn
 #define NO_gtk_1tree_1view_1column_1cell_1get_1size__J_3I_3I_3I_3I
@@ -553,22 +466,6 @@
 // SWTFixed changes
 #define NO_swt_1fixed_1add
 #define NO_swt_1fixed_1remove
-
-// GtkShortcut and related functions
-#define NO_gtk_1shortcut_1controller_1add_1shortcut
-#define NO_gtk_1shortcut_1controller_1remove_1shortcut
-#define NO_gtk_1shortcut_1controller_1new
-#define NO_gtk_1shortcut_1controller_1set_1scope
-#define NO_gtk_1shortcut_1new
-
-// No GtkIconPaintable
-#define NO_gtk_1icon_1paintable_1get_1file
-
-// No GtkText
-#define NO_gtk_1text_1get_1buffer
-// No GtkPopoverMenuFlags
-#define NO_gtk_1popover_1menu_1new_1from_1model_1full
-
 
 #endif
 

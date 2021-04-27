@@ -23,6 +23,8 @@ import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.gtk.*;
+import org.eclipse.swt.internal.gtk3.*;
+import org.eclipse.swt.internal.gtk4.*;
 import org.eclipse.swt.widgets.*;
 
 /**
@@ -151,17 +153,17 @@ public ImageData getImageData() {
 	ImageData data = null;
 	long icon_theme;
 	if (GTK.GTK4) {
-		icon_theme = GTK.gtk_icon_theme_get_for_display(GDK.gdk_display_get_default());
+		icon_theme = GTK4.gtk_icon_theme_get_for_display(GDK.gdk_display_get_default());
 	} else {
-		icon_theme = GTK.gtk_icon_theme_get_default();
+		icon_theme = GTK3.gtk_icon_theme_get_default();
 	}
 
 	byte[] icon = Converter.wcsToMbcs (iconPath, true);
 	long gicon = OS.g_icon_new_for_string(icon, null);
 	if (gicon != 0) {
-		long gicon_info = GTK.gtk_icon_theme_lookup_by_gicon (icon_theme, gicon, 16/*size*/, 0);
+		long gicon_info = GTK3.gtk_icon_theme_lookup_by_gicon (icon_theme, gicon, 16/*size*/, 0);
 		if (gicon_info != 0) {
-			long pixbuf = GTK.gtk_icon_info_load_icon(gicon_info, null);
+			long pixbuf = GTK3.gtk_icon_info_load_icon(gicon_info, null);
 			if (pixbuf != 0) {
 				int stride = GDK.gdk_pixbuf_get_rowstride(pixbuf);
 				long pixels = GDK.gdk_pixbuf_get_pixels(pixbuf);

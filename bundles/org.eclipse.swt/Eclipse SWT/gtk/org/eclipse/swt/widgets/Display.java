@@ -1248,9 +1248,9 @@ void createDisplay (DeviceData data) {
 
 	/* Initialize the hidden shell */
 	if (GTK.GTK4) {
-		shellHandle = GTK.gtk_window_new();
+		shellHandle = GTK4.gtk_window_new();
 	} else {
-		shellHandle = GTK.gtk_window_new (GTK.GTK_WINDOW_TOPLEVEL);
+		shellHandle = GTK3.gtk_window_new (GTK.GTK_WINDOW_TOPLEVEL);
 	}
 	if (shellHandle == 0) error (SWT.ERROR_NO_HANDLES);
 	GTK.gtk_widget_realize (shellHandle);
@@ -1370,9 +1370,9 @@ Image createImage (String name) {
 
 	long pixbuf;
 	if (GTK.GTK4) {
-		long iconTheme = GTK.gtk_icon_theme_get_for_display(GDK.gdk_display_get_default());
-		long paintable = GTK.gtk_icon_theme_lookup_icon(iconTheme, buffer, 0, 48, 1, GTK.GTK_TEXT_DIR_LTR, GTK.GTK_ICON_LOOKUP_FORCE_REGULAR);
-		long file = GTK.gtk_icon_paintable_get_file(paintable);
+		long iconTheme = GTK4.gtk_icon_theme_get_for_display(GDK.gdk_display_get_default());
+		long paintable = GTK4.gtk_icon_theme_lookup_icon(iconTheme, buffer, 0, 48, 1, GTK.GTK_TEXT_DIR_LTR, GTK.GTK_ICON_LOOKUP_FORCE_REGULAR);
+		long file = GTK4.gtk_icon_paintable_get_file(paintable);
 		long texture = GDK.gdk_texture_new_from_file(file, 0);
 		pixbuf = GDK.gdk_pixbuf_get_from_texture(texture);
 
@@ -1380,8 +1380,8 @@ Image createImage (String name) {
 		OS.g_object_unref(file);
 		OS.g_object_unref(paintable);
 	} else {
-		long iconTheme = GTK.gtk_icon_theme_get_default();
-		pixbuf = GTK.gtk_icon_theme_load_icon(iconTheme, buffer, 48, GTK.GTK_ICON_LOOKUP_FORCE_SIZE, 0);
+		long iconTheme = GTK3.gtk_icon_theme_get_default();
+		pixbuf = GTK3.gtk_icon_theme_load_icon(iconTheme, buffer, 48, GTK.GTK_ICON_LOOKUP_FORCE_SIZE, 0);
 	}
 
 	if (pixbuf == 0) return null;
@@ -1992,7 +1992,7 @@ Point getCursorLocationInPixels() {
 			Shell tempShell = activeShell;
 			int [] offsetX = new int [1], offsetY = new int [1];
 			while (tempShell.getParent() != null) {
-				GTK.gtk_window_get_position(tempShell.shellHandle, offsetX, offsetY);
+				GTK3.gtk_window_get_position(tempShell.shellHandle, offsetX, offsetY);
 				x[0]+= offsetX[0];
 				y[0]+= offsetY[0];
 				tempShell = tempShell.getParent().getShell();
@@ -3299,13 +3299,13 @@ private void initializeSystemColorsLink() {
 	// The 'Clearlooks-Phenix' theme sets 'color:' for 'window {' css node, so a stand-alone label is not enough
 	long window;
 	if (GTK.GTK4) {
-		window = GTK.gtk_window_new();
+		window = GTK4.gtk_window_new();
 	} else {
-		window = GTK.gtk_window_new (GTK.GTK_WINDOW_TOPLEVEL);
+		window = GTK3.gtk_window_new (GTK.GTK_WINDOW_TOPLEVEL);
 	}
 	long label = GTK.gtk_label_new(null);
 	if (GTK.GTK4) {
-		GTK.gtk_window_set_child(window, label);
+		GTK4.gtk_window_set_child(window, label);
 	} else {
 		GTK3.gtk_container_add(window, label);
 	}
@@ -3314,7 +3314,7 @@ private void initializeSystemColorsLink() {
 	COLOR_LINK_FOREGROUND_RGBA = styleContextGetColor (styleContextLink, GTK.GTK_STATE_FLAG_LINK);
 
 	if (GTK.GTK4) {
-		GTK.gtk_window_destroy(window);
+		GTK4.gtk_window_destroy(window);
 	} else {
 		GTK.gtk_widget_destroy(window);
 	}
@@ -3359,13 +3359,13 @@ void initializeSystemColorsDisabled() {
 	 */
 	long window;
 	if (GTK.GTK4) {
-		window = GTK.gtk_window_new();
+		window = GTK4.gtk_window_new();
 	} else {
-		window = GTK.gtk_window_new (GTK.GTK_WINDOW_TOPLEVEL);
+		window = GTK3.gtk_window_new (GTK.GTK_WINDOW_TOPLEVEL);
 	}
 	long entry = GTK.gtk_entry_new ();
 	if (GTK.GTK4) {
-		GTK.gtk_window_set_child(window, entry);
+		GTK4.gtk_window_set_child(window, entry);
 	} else {
 		GTK3.gtk_container_add(window, entry);
 	}
@@ -3376,7 +3376,7 @@ void initializeSystemColorsDisabled() {
 	COLOR_TEXT_DISABLED_BACKGROUND_RGBA = styleContextEstimateBackgroundColor (context, GTK.GTK_STATE_FLAG_INSENSITIVE);
 
 	if (GTK.GTK4) {
-		GTK.gtk_window_destroy(window);
+		GTK4.gtk_window_destroy(window);
 	} else {
 		GTK.gtk_widget_destroy(window);
 	}
@@ -3543,7 +3543,7 @@ void initializeCallbacks () {
 	 * SWT_MENU_LOCATION_DEBUGGING environment variable.
 	 */
 	if (GTK.GTK_VERSION >= OS.VERSION(3, 22, 0) && OS.SWT_MENU_LOCATION_DEBUGGING) {
-		long menuType = GTK.GTK_TYPE_MENU ();
+		long menuType = GTK3.GTK_TYPE_MENU ();
 		OS.g_type_class_ref (menuType);
 		signalIds [Widget.POPPED_UP] = OS.g_signal_lookup (OS.popped_up, menuType);
 	} else {
@@ -4731,7 +4731,7 @@ void releaseDisplay () {
 	/* Dispose preedit window */
 	if (preeditWindow != 0) {
 		if (GTK.GTK4) {
-			GTK.gtk_window_destroy(preeditWindow);
+			GTK4.gtk_window_destroy(preeditWindow);
 		} else {
 			GTK.gtk_widget_destroy(preeditWindow);
 		}
@@ -4845,7 +4845,7 @@ void releaseDisplay () {
 	/* Dispose the hidden shell */
 	if (shellHandle != 0) {
 		if (GTK.GTK4) {
-			GTK.gtk_window_destroy(shellHandle);
+			GTK4.gtk_window_destroy(shellHandle);
 		} else {
 			GTK.gtk_widget_destroy(shellHandle);
 		}
@@ -5456,8 +5456,8 @@ public void setData (Object data) {
 
 long setDirectionProc (long widget, long direction) {
 	GTK.gtk_widget_set_direction (widget, (int)direction);
-	if (!GTK.GTK4 && GTK.GTK_IS_MENU_ITEM (widget)) {
-		long submenu = GTK.gtk_menu_item_get_submenu (widget);
+	if (!GTK.GTK4 && GTK3.GTK_IS_MENU_ITEM (widget)) {
+		long submenu = GTK3.gtk_menu_item_get_submenu (widget);
 		if (submenu != 0) {
 			GTK.gtk_widget_set_direction (submenu, (int)direction);
 			GTK3.gtk_container_forall (submenu, setDirectionProc, direction);
@@ -5583,13 +5583,13 @@ public final Consumer<Error> getErrorHandler () {
 void showIMWindow (Control control) {
 	imControl = control;
 	if (preeditWindow == 0) {
-		preeditWindow = GTK.gtk_window_new (GTK.GTK_WINDOW_POPUP);
+		preeditWindow = GTK3.gtk_window_new (GTK.GTK_WINDOW_POPUP);
 		if (preeditWindow == 0) error (SWT.ERROR_NO_HANDLES);
 		preeditLabel = GTK.gtk_label_new (null);
 		if (preeditLabel == 0) error (SWT.ERROR_NO_HANDLES);
 
 		if (GTK.GTK4) {
-			GTK.gtk_window_set_child(preeditWindow, preeditLabel);
+			GTK4.gtk_window_set_child(preeditWindow, preeditLabel);
 		} else {
 			GTK3.gtk_container_add (preeditWindow, preeditLabel);
 			GTK.gtk_widget_show (preeditLabel);
@@ -5610,10 +5610,10 @@ void showIMWindow (Control control) {
 		if (pangoAttrs [0] != 0) GTK.gtk_label_set_attributes (preeditLabel, pangoAttrs[0]);
 		GTK.gtk_label_set_text (preeditLabel, preeditString [0]);
 		Point point = control.toDisplayInPixels (control.getIMCaretPos ());
-		GTK.gtk_window_move (preeditWindow, point.x, point.y);
+		GTK3.gtk_window_move (preeditWindow, point.x, point.y);
 		GtkRequisition requisition = new GtkRequisition ();
 		GTK.gtk_widget_get_preferred_size (preeditLabel, requisition, null);
-		GTK.gtk_window_resize (preeditWindow, requisition.width, requisition.height);
+		GTK3.gtk_window_resize (preeditWindow, requisition.width, requisition.height);
 		GTK.gtk_widget_show (preeditWindow);
 	} else {
 		GTK.gtk_widget_hide (preeditWindow);

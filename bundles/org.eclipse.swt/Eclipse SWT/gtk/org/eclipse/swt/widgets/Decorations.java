@@ -202,7 +202,7 @@ void _setImages (Image [] images) {
 		 * Set texture list to window's surface. Can no longer
 		 * use GtkWindow functions as they require a themed icon.
 		 */
-		long surface = GTK.gtk_native_get_surface(topHandle());
+		long surface = GTK4.gtk_native_get_surface(topHandle());
 		GTK4.gdk_toplevel_set_icon_list(surface, icon_list);
 	} else {
 		GTK3.gtk_window_set_icon_list(topHandle(), icon_list);
@@ -262,7 +262,7 @@ void createAccelGroup () {
 	if (accelGroup == 0) error (SWT.ERROR_NO_HANDLES);
 	//FIXME - what should we do for Decorations
 	long shellHandle = topHandle ();
-	GTK.gtk_window_add_accel_group (shellHandle, accelGroup);
+	GTK3.gtk_window_add_accel_group (shellHandle, accelGroup);
 }
 
 @Override
@@ -274,7 +274,7 @@ void createWidget (int index) {
 void destroyAccelGroup () {
 	if (accelGroup == 0) return;
 	long shellHandle = topHandle ();
-	GTK.gtk_window_remove_accel_group (shellHandle, accelGroup);
+	GTK3.gtk_window_remove_accel_group (shellHandle, accelGroup);
 	//TEMPORARY CODE
 //	OS.g_object_unref (accelGroup);
 	accelGroup = 0;
@@ -595,9 +595,9 @@ public void setDefaultButton (Button button) {
 	}
 
 	if (GTK.GTK4) {
-		GTK.gtk_window_set_default_widget (topHandle(), buttonHandle);
+		GTK4.gtk_window_set_default_widget (topHandle(), buttonHandle);
 	} else {
-		GTK.gtk_window_set_default (topHandle (), buttonHandle);
+		GTK3.gtk_window_set_default (topHandle (), buttonHandle);
 	}
 }
 
@@ -826,7 +826,7 @@ boolean traverseReturn () {
 		long defaultWidget = GTK.gtk_window_get_default_widget(shellHandle);
 		return GTK.gtk_widget_activate(defaultWidget);
 	} else {
-		return GTK.gtk_window_activate_default (shellHandle);
+		return GTK3.gtk_window_activate_default (shellHandle);
 	}
 }
 

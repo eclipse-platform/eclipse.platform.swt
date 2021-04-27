@@ -318,7 +318,7 @@ void createHandle (int index) {
 	} else {
 		switch (style & bits) {
 			case SWT.SEPARATOR:
-				handle = GTK.gtk_separator_menu_item_new ();
+				handle = GTK3.gtk_separator_menu_item_new ();
 				if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 				break;
 			case SWT.RADIO:
@@ -333,11 +333,11 @@ void createHandle (int index) {
 				* to the same group.  This allows the visible button to be
 				* unselected.
 				*/
-				groupHandle = GTK.gtk_radio_menu_item_new (0);
+				groupHandle = GTK3.gtk_radio_menu_item_new (0);
 				if (groupHandle == 0) error (SWT.ERROR_NO_HANDLES);
 				OS.g_object_ref_sink (groupHandle);
-				long group = GTK.gtk_radio_menu_item_get_group (groupHandle);
-				handle = GTK.gtk_radio_menu_item_new (group);
+				long group = GTK3.gtk_radio_menu_item_get_group (groupHandle);
+				handle = GTK3.gtk_radio_menu_item_new (group);
 				if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 
 				labelHandle = GTK3.gtk_accel_label_new (buffer);
@@ -352,7 +352,7 @@ void createHandle (int index) {
 				}
 				break;
 			case SWT.CHECK:
-				handle = GTK.gtk_check_menu_item_new ();
+				handle = GTK3.gtk_check_menu_item_new ();
 				if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 
 				labelHandle = GTK3.gtk_accel_label_new (buffer);
@@ -370,7 +370,7 @@ void createHandle (int index) {
 			// menus are used, the "head" menu item (such as File, Edit, Help, etc.) should
 			// not be padded. We only care about this in Gtk3.
 			case SWT.CASCADE:
-				handle = GTK.gtk_menu_item_new ();
+				handle = GTK3.gtk_menu_item_new ();
 				if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 
 				labelHandle = GTK3.gtk_accel_label_new (buffer);
@@ -388,7 +388,7 @@ void createHandle (int index) {
 				break;
 			case SWT.PUSH:
 			default:
-				handle = GTK.gtk_menu_item_new ();
+				handle = GTK3.gtk_menu_item_new ();
 				if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 
 				labelHandle = GTK3.gtk_accel_label_new (buffer);
@@ -437,7 +437,7 @@ void createHandle (int index) {
 		long parentHandle = parent.handle;
 		boolean enabled = GTK.gtk_widget_get_sensitive (parentHandle);
 		if (!enabled) GTK.gtk_widget_set_sensitive (parentHandle, true);
-		GTK.gtk_menu_shell_insert (parentHandle, handle, index);
+		GTK3.gtk_menu_shell_insert (parentHandle, handle, index);
 		if (!enabled) GTK.gtk_widget_set_sensitive (parentHandle, false);
 		GTK.gtk_widget_show (handle);
 	}
@@ -596,7 +596,7 @@ public boolean getSelection () {
 		String stateString = Converter.cCharPtrToJavaString(OS.g_variant_get_string(gVariantState, null), false);
 		return stateString.equals("toggled");
 	} else {
-		return GTK.gtk_check_menu_item_get_active(handle);
+		return GTK3.gtk_check_menu_item_get_active(handle);
 	}
 }
 
@@ -659,7 +659,7 @@ long gtk_show_help (long widget, long helpType) {
 	}
 	if (handled) {
 		// TODO: GTK4 there is no idea of a menu shell
-		GTK.gtk_menu_shell_deactivate (parent.handle);
+		GTK3.gtk_menu_shell_deactivate (parent.handle);
 		return 1;
 	}
 	return 0;
@@ -849,7 +849,7 @@ public void setAccelerator (int accelerator) {
 
 	if (GTK.GTK4) {
 		if (shortcutHandle != 0) {
-			GTK.gtk_shortcut_controller_remove_shortcut(parent.shortcutController, shortcutHandle);
+			GTK4.gtk_shortcut_controller_remove_shortcut(parent.shortcutController, shortcutHandle);
 		}
 
 		this.accelerator = accelerator;
@@ -883,12 +883,12 @@ void addShortcut(int accelerator) {
 	}
 
 	if (keyval != 0) {
-		shortcutHandle = GTK.gtk_shortcut_new(
-				GTK.gtk_keyval_trigger_new(keyval, mask),
-				GTK.gtk_named_action_new(Converter.javaStringToCString(actionName))
+		shortcutHandle = GTK4.gtk_shortcut_new(
+				GTK4.gtk_keyval_trigger_new(keyval, mask),
+				GTK4.gtk_named_action_new(Converter.javaStringToCString(actionName))
 			);
 		if (shortcutHandle == 0) error(SWT.ERROR_NO_HANDLES);
-		GTK.gtk_shortcut_controller_add_shortcut(parent.shortcutController, shortcutHandle);
+		GTK4.gtk_shortcut_controller_add_shortcut(parent.shortcutController, shortcutHandle);
 	}
 }
 
@@ -979,7 +979,7 @@ public void setImage (Image image) {
 			surface = imageList.getSurface (imageIndex);
 		}
 
-		if (!GTK.GTK_IS_MENU_ITEM (handle)) return;
+		if (!GTK3.GTK_IS_MENU_ITEM (handle)) return;
 		if (OS.SWT_PADDED_MENU_ITEMS && imageHandle != 0) {
 			GTK.gtk_image_set_from_surface(imageHandle, surface);
 		} else {
@@ -1078,11 +1078,11 @@ public void setMenu (Menu menu) {
 			* to replace or GTK will destroy it.
 			*/
 			OS.g_object_ref (oldMenu.handle);
-			GTK.gtk_menu_item_set_submenu (handle, 0);
+			GTK3.gtk_menu_item_set_submenu (handle, 0);
 		}
 		if ((this.menu = menu) != null) {
 			menu.cascade = this;
-			GTK.gtk_menu_item_set_submenu (handle, menu.handle);
+			GTK3.gtk_menu_item_set_submenu (handle, menu.handle);
 		}
 		if (accelGroup != 0) addAccelerators (accelGroup);
 	}
@@ -1129,8 +1129,8 @@ public void setSelection (boolean selected) {
 		OS.g_simple_action_set_state(actionHandle, OS.g_variant_new_string(Converter.javaStringToCString(selected ? "toggled" : "untoggled")));
 	} else {
 		OS.g_signal_handlers_block_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, ACTIVATE);
-		GTK.gtk_check_menu_item_set_active (handle, selected);
-		if ((style & SWT.RADIO) != 0) GTK.gtk_check_menu_item_set_active (groupHandle, !selected);
+		GTK3.gtk_check_menu_item_set_active (handle, selected);
+		if ((style & SWT.RADIO) != 0) GTK3.gtk_check_menu_item_set_active (groupHandle, !selected);
 		OS.g_signal_handlers_unblock_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, ACTIVATE);
 	}
 }

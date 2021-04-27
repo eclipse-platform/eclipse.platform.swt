@@ -21,6 +21,7 @@ import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.cairo.*;
 import org.eclipse.swt.internal.gtk.*;
 import org.eclipse.swt.internal.gtk3.*;
+import org.eclipse.swt.internal.gtk4.*;
 
 /**
  *  Instances of this class implement rubber banding rectangles that are
@@ -422,7 +423,7 @@ void drawRectangles (Rectangle [] rects) {
 	GTK.gtk_widget_shape_combine_region (overlay, region);
 	Cairo.cairo_region_destroy (region);
 	if (GTK.GTK4) {
-		long overlaySurface = GTK.gtk_native_get_surface(GTK.gtk_widget_get_native (overlay));
+		long overlaySurface = GTK4.gtk_native_get_surface(GTK.gtk_widget_get_native (overlay));
 		GDK.gdk_surface_hide (overlaySurface);
 		/* TODO: GTK does not provide a gdk_surface_show, probably will require use of the present api */
 	} else {
@@ -845,8 +846,8 @@ public boolean open () {
 	lastCursor = this.cursor != null ? this.cursor.handle : 0;
 
 	cachedCombinedDisplayResolution = Display.getDefault().getBounds(); // In case resolution was changed during run time.
-	overlay = GTK.gtk_window_new (GTK.GTK_WINDOW_POPUP);
-	GTK.gtk_window_set_skip_taskbar_hint (overlay, true);
+	overlay = GTK3.gtk_window_new (GTK.GTK_WINDOW_POPUP);
+	GTK3.gtk_window_set_skip_taskbar_hint (overlay, true);
 	GTK.gtk_window_set_title (overlay, new byte [1]);
 	if (parent != null) GTK.gtk_window_set_transient_for(overlay, parent.topHandle());
 	GTK.gtk_widget_realize (overlay);
@@ -856,8 +857,8 @@ public boolean open () {
 	}
 	setTrackerBackground(true);
 	Rectangle bounds = display.getBoundsInPixels();
-	GTK.gtk_window_move (overlay, bounds.x, bounds.y);
-	GTK.gtk_window_resize (overlay, bounds.width, bounds.height);
+	GTK3.gtk_window_move (overlay, bounds.x, bounds.y);
+	GTK3.gtk_window_resize (overlay, bounds.width, bounds.height);
 	GTK.gtk_widget_show (overlay);
 
 	/* Tracker behaves like a Dialog with its own OS event loop. */

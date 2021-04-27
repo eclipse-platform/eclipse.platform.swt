@@ -18,6 +18,7 @@ import org.eclipse.swt.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.gtk.*;
 import org.eclipse.swt.internal.gtk3.*;
+import org.eclipse.swt.internal.gtk4.*;
 import org.eclipse.swt.widgets.*;
 
 /**
@@ -489,7 +490,7 @@ public PrinterData open() {
 	}
 	display.setData (REMOVE_IDLE_PROC_KEY, null);
 	if (GTK.GTK4) {
-		GTK.gtk_window_destroy(handle);
+		GTK4.gtk_window_destroy(handle);
 	} else {
 		GTK.gtk_widget_destroy(handle);
 	}

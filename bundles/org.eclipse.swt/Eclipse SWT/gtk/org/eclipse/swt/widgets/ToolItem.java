@@ -204,9 +204,9 @@ void createHandle (int index) {
 				handle = GTK.gtk_separator_new(GTK.GTK_ORIENTATION_VERTICAL);
 				if (handle == 0) error(SWT.ERROR_NO_HANDLES);
 			} else {
-				handle = GTK.gtk_separator_tool_item_new ();
+				handle = GTK3.gtk_separator_tool_item_new ();
 				if (handle == 0) error(SWT.ERROR_NO_HANDLES);
-				GTK.gtk_separator_tool_item_set_draw(handle, true);
+				GTK3.gtk_separator_tool_item_set_draw(handle, true);
 			}
 			break;
 		case SWT.DROP_DOWN:
@@ -230,7 +230,7 @@ void createHandle (int index) {
 				arrowHandle = GTK.gtk_widget_get_first_child(menuButton);
 				GTK.gtk_menu_button_set_use_underline(menuButton, true);
 			} else {
-				handle = GTK.gtk_menu_tool_button_new(0, null);
+				handle = GTK3.gtk_menu_tool_button_new(0, null);
 				if (handle == 0) error(SWT.ERROR_NO_HANDLES);
 
 				long child = GTK3.gtk_bin_get_child(handle);
@@ -262,7 +262,7 @@ void createHandle (int index) {
 				GTK4.gtk_button_set_child(handle, boxHandle);
 				GTK.gtk_button_set_use_underline(handle, true);
 			} else {
-				handle = GTK.gtk_toggle_tool_button_new();
+				handle = GTK3.gtk_toggle_tool_button_new();
 				if (handle == 0) error(SWT.ERROR_NO_HANDLES);
 			}
 			break;
@@ -278,7 +278,7 @@ void createHandle (int index) {
 
 				GTK.gtk_button_set_use_underline(handle, true);
 			} else {
-				handle = GTK.gtk_tool_button_new (0, null);
+				handle = GTK3.gtk_tool_button_new (0, null);
 				if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 			}
 
@@ -305,10 +305,10 @@ void createHandle (int index) {
 			imageHandle = GTK.gtk_image_new_from_surface(0);
 			if (imageHandle == 0) error(SWT.ERROR_NO_HANDLES);
 
-			GTK.gtk_tool_button_set_icon_widget(handle, imageHandle);
-			GTK.gtk_tool_button_set_label_widget(handle, labelHandle);
+			GTK3.gtk_tool_button_set_icon_widget(handle, imageHandle);
+			GTK3.gtk_tool_button_set_label_widget(handle, labelHandle);
 
-			GTK.gtk_tool_button_set_use_underline (handle, true);
+			GTK3.gtk_tool_button_set_use_underline (handle, true);
 		}
 	}
 
@@ -325,7 +325,7 @@ void createHandle (int index) {
 	if (GTK.GTK4) {
 		GTK.gtk_box_set_homogeneous(parent.handle, false);
 	} else {
-		GTK.gtk_tool_item_set_homogeneous(handle, false);
+		GTK3.gtk_tool_item_set_homogeneous(handle, false);
 	}
 }
 
@@ -527,7 +527,7 @@ public boolean getSelection () {
 	if (GTK.GTK4) {
 		selection = GTK.gtk_toggle_button_get_active(handle);
 	} else {
-		selection = GTK.gtk_toggle_tool_button_get_active(handle);
+		selection = GTK3.gtk_toggle_tool_button_get_active(handle);
 	}
 
 	return selection;
@@ -652,7 +652,7 @@ long gtk_create_menu_proxy (long widget) {
 		 * for the tool-item. If the text/image of the item changes,
 		 * then the proxyMenu is reset.
 		 */
-		GTK.gtk_tool_item_set_proxy_menu_item (widget, buffer, proxyMenuItem);
+		GTK3.gtk_tool_item_set_proxy_menu_item (widget, buffer, proxyMenuItem);
 		return 1;
 	}
 
@@ -682,7 +682,7 @@ long gtk_create_menu_proxy (long widget) {
 				else {
 					label = Converter.wcsToMbcs(text, true);
 				}
-				long menuItem = GTK.gtk_menu_item_new ();
+				long menuItem = GTK3.gtk_menu_item_new ();
 				if (menuItem == 0) error (SWT.ERROR_NO_HANDLES);
 
 				long boxHandle = gtk_box_new (GTK.GTK_ORIENTATION_HORIZONTAL, false, 6);
@@ -699,14 +699,14 @@ long gtk_create_menu_proxy (long widget) {
 				GTK3.gtk_container_add (boxHandle, menuImage);
 				gtk_box_pack_end (boxHandle, menuLabel, true, true, 0);
 				GTK3.gtk_container_add (menuItem, boxHandle);
-				GTK.gtk_tool_item_set_proxy_menu_item (widget, buffer, menuItem);
+				GTK3.gtk_tool_item_set_proxy_menu_item (widget, buffer, menuItem);
 
 				/*
 				 * Since the arrow button does not appear in the drop_down
 				 * item, we request the menu-item and then, hook the
 				 * activate signal to send the Arrow selection signal.
 				 */
-				proxyMenuItem = GTK.gtk_tool_item_get_proxy_menu_item (widget, buffer);
+				proxyMenuItem = GTK3.gtk_tool_item_get_proxy_menu_item (widget, buffer);
 				OS.g_signal_connect(menuItem, OS.activate, ToolBar.menuItemSelectedFunc.getAddress(), handle);
 				return 1;
 			}
@@ -1282,7 +1282,7 @@ void _setImage (Image image) {
 			/* TODO: GTK4 have to implement our own overflow menu */
 		} else {
 			proxyMenuItem = 0;
-			proxyMenuItem = GTK.gtk_tool_item_retrieve_proxy_menu_item (handle);
+			proxyMenuItem = GTK3.gtk_tool_item_retrieve_proxy_menu_item (handle);
 			OS.g_signal_connect(proxyMenuItem, OS.activate, ToolBar.menuItemSelectedFunc.getAddress(), handle);
 		}
 	}
@@ -1328,7 +1328,7 @@ public void setSelection (boolean selected) {
 	if (GTK.GTK4) {
 		GTK.gtk_toggle_button_set_active (handle, selected);
 	} else {
-		GTK.gtk_toggle_tool_button_set_active (handle, selected);
+		GTK3.gtk_toggle_tool_button_set_active (handle, selected);
 	}
 	OS.g_signal_handlers_unblock_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CLICKED);
 }
@@ -1388,7 +1388,7 @@ public void setText (String string) {
 	 * See bug 543895.
 	 */
 	if ((parent.style & SWT.RIGHT) != 0) {
-		if (!GTK.GTK4) GTK.gtk_tool_item_set_is_important (handle, !string.isEmpty());
+		if (!GTK.GTK4) GTK3.gtk_tool_item_set_is_important (handle, !string.isEmpty());
 	}
 	/*
 	* If Text/Image of a tool-item changes, then it is
@@ -1400,7 +1400,7 @@ public void setText (String string) {
 			/* TODO: GTK4 have to implement our own overflow menu */
 		} else {
 			proxyMenuItem = 0;
-			proxyMenuItem = GTK.gtk_tool_item_retrieve_proxy_menu_item (handle);
+			proxyMenuItem = GTK3.gtk_tool_item_retrieve_proxy_menu_item (handle);
 			OS.g_signal_connect(proxyMenuItem, OS.activate, ToolBar.menuItemSelectedFunc.getAddress(), handle);
 		}
 	}
@@ -1452,7 +1452,7 @@ public void setToolTipText (String string) {
 			/* TODO: GTK4 have to implement our own overflow menu */
 		} else {
 			proxyMenuItem = 0;
-			proxyMenuItem = GTK.gtk_tool_item_retrieve_proxy_menu_item (handle);
+			proxyMenuItem = GTK3.gtk_tool_item_retrieve_proxy_menu_item (handle);
 			OS.g_signal_connect(proxyMenuItem, OS.activate, ToolBar.menuItemSelectedFunc.getAddress(), handle);
 		}
 	}
@@ -1522,7 +1522,7 @@ void showWidget (int index) {
 		if (handle != 0) GTK.gtk_widget_show (handle);
 		if (labelHandle != 0) GTK.gtk_widget_show (labelHandle);
 		if (imageHandle != 0) GTK.gtk_widget_show (imageHandle);
-		GTK.gtk_toolbar_insert(parent.handle, handle, index);
+		GTK3.gtk_toolbar_insert(parent.handle, handle, index);
 	}
 }
 

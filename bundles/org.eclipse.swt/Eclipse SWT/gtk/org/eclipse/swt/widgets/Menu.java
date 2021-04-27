@@ -261,7 +261,7 @@ void _setVisible (boolean visible) {
 					 * testing will be done to see if this type of fix is required.
 					 */
 				} else {
-					GTK.gtk_menu_shell_set_take_focus (handle, false);
+					GTK3.gtk_menu_shell_set_take_focus (handle, false);
 				}
 			}
 			if (GTK.GTK_VERSION < OS.VERSION(3, 22, 0)) {
@@ -376,7 +376,7 @@ void _setVisible (boolean visible) {
 		if (GTK.GTK4) {
 			GTK.gtk_popover_popdown(handle);
 		} else {
-			GTK.gtk_menu_popdown (handle);
+			GTK3.gtk_menu_popdown (handle);
 		}
 	}
 }
@@ -455,7 +455,7 @@ void createHandle (int index) {
 
 		switch (style & bits) {
 			case SWT.BAR:
-				handle = GTK.gtk_popover_menu_bar_new_from_model(modelHandle);
+				handle = GTK4.gtk_popover_menu_bar_new_from_model(modelHandle);
 				if (handle == 0) error(SWT.ERROR_NO_HANDLES);
 
 				GTK4.gtk_box_prepend(parent.vboxHandle, handle);
@@ -465,10 +465,10 @@ void createHandle (int index) {
 				break;
 			case SWT.POP_UP:
 			default:
-				handle = GTK.gtk_popover_menu_new_from_model_full(modelHandle, GTK.GTK_POPOVER_MENU_NESTED);
+				handle = GTK4.gtk_popover_menu_new_from_model_full(modelHandle, GTK.GTK_POPOVER_MENU_NESTED);
 				GTK.gtk_widget_set_parent(handle, parent.handle);
 				GTK.gtk_popover_set_position(handle, GTK.GTK_POS_BOTTOM);
-				GTK.gtk_popover_set_has_arrow(handle, false);
+				GTK4.gtk_popover_set_has_arrow(handle, false);
 				GTK.gtk_widget_set_halign(handle, GTK.GTK_ALIGN_START);
 				if (handle == 0) error(SWT.ERROR_NO_HANDLES);
 		}
@@ -489,14 +489,14 @@ void createHandle (int index) {
 		}
 	} else {
 		if ((style & SWT.BAR) != 0) {
-			handle = GTK.gtk_menu_bar_new();
+			handle = GTK3.gtk_menu_bar_new();
 			if (handle == 0) error(SWT.ERROR_NO_HANDLES);
 
 			long vboxHandle = parent.vboxHandle;
 			GTK3.gtk_container_add(vboxHandle, handle);
 			gtk_box_set_child_packing(vboxHandle, handle, false, true, 0, GTK.GTK_PACK_START);
 		} else {
-			handle = GTK.gtk_menu_new();
+			handle = GTK3.gtk_menu_new();
 		}
 	}
 }
@@ -855,7 +855,7 @@ long gtk_show (long widget) {
 long gtk_show_help (long widget, long helpType) {
 	if (sendHelpEvent (helpType)) {
 		// TODO: GTK4 there is no idea of a menu shell
-		GTK.gtk_menu_shell_deactivate (handle);
+		GTK3.gtk_menu_shell_deactivate (handle);
 		return 1;
 	}
 	return 0;
@@ -892,9 +892,9 @@ void hookEvents() {
 	super.hookEvents();
 
 	if (GTK.GTK4) {
-		shortcutController = GTK.gtk_shortcut_controller_new();
+		shortcutController = GTK4.gtk_shortcut_controller_new();
 		if (shortcutController == 0) error(SWT.ERROR_NO_HANDLES);
-		GTK.gtk_shortcut_controller_set_scope(shortcutController, GTK.GTK_SHORTCUT_SCOPE_GLOBAL);
+		GTK4.gtk_shortcut_controller_set_scope(shortcutController, GTK.GTK_SHORTCUT_SCOPE_GLOBAL);
 		GTK.gtk_widget_add_controller(parent.handle, shortcutController);
 	} else {
 		OS.g_signal_connect_closure_by_id(handle, display.signalIds[SHOW_HELP], 0, display.getClosure(SHOW_HELP), false);

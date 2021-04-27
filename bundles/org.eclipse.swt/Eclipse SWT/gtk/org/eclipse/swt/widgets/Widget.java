@@ -2001,7 +2001,7 @@ long gtk_widget_get_window (long widget){
 
 long gtk_widget_get_surface (long widget){
 	GTK.gtk_widget_realize(widget);
-	return GTK.gtk_native_get_surface(GTK.gtk_widget_get_native (widget));
+	return GTK4.gtk_native_get_surface(GTK.gtk_widget_get_native (widget));
 }
 
 void gdk_window_get_size (long drawable, int[] width, int[] height) {

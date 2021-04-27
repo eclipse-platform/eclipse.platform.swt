@@ -958,7 +958,7 @@ void hookEvents(long [] handles) {
 					OS.g_signal_connect_closure_by_id (eventHandle, display.signalIds [EVENT_AFTER], 0, display.getClosure (EVENT_AFTER), false);
 				}
 
-				if (OS.G_OBJECT_TYPE (eventHandle) == GTK.GTK_TYPE_MENU ()) {
+				if (OS.G_OBJECT_TYPE (eventHandle) == GTK3.GTK_TYPE_MENU ()) {
 					OS.g_signal_connect_closure(eventHandle, OS.selection_done, display.getClosure (SELECTION_DONE), true);
 				}
 			}

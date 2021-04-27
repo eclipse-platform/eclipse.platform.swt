@@ -436,7 +436,7 @@ void dragEnd(long widget, long context){
 	 */
 	long display;
 	if (GTK.GTK4) {
-		long surface = GTK.gtk_native_get_surface(GTK.gtk_widget_get_native (widget));
+		long surface = GTK4.gtk_native_get_surface(GTK.gtk_widget_get_native (widget));
 		display = GDK.gdk_surface_get_display(surface);
 	} else {
 		display = GDK.gdk_window_get_display(GTK.gtk_widget_get_window(widget));
@@ -510,10 +510,10 @@ void dragEnd(long widget, long context){
 
 void dragGetData(long widget, long context, long selection_data,  int info, int time){
 	if (selection_data == 0) return;
-	int length = GTK.gtk_selection_data_get_length(selection_data);
-	int format = GTK.gtk_selection_data_get_format(selection_data);
-	long data = GTK.gtk_selection_data_get_data(selection_data);
-	long target = GTK.gtk_selection_data_get_target(selection_data);
+	int length = GTK3.gtk_selection_data_get_length(selection_data);
+	int format = GTK3.gtk_selection_data_get_format(selection_data);
+	long data = GTK3.gtk_selection_data_get_data(selection_data);
+	long target = GTK3.gtk_selection_data_get_target(selection_data);
 	if (target == 0) return;
 
 	TransferData transferData = new TransferData();
@@ -539,7 +539,7 @@ void dragGetData(long widget, long context, long selection_data,  int info, int 
 	if (transfer == null) return;
 	transfer.javaToNative(event.data, transferData);
 	if (transferData.result != 1) return;
-	GTK.gtk_selection_data_set(selection_data, transferData.type, transferData.format, transferData.pValue, transferData.length);
+	GTK3.gtk_selection_data_set(selection_data, transferData.type, transferData.format, transferData.pValue, transferData.length);
 	OS.g_free(transferData.pValue);
 	return;
 }

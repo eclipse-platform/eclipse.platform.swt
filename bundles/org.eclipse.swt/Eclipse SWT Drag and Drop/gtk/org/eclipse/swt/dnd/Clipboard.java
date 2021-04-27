@@ -303,12 +303,12 @@ public Object getContents(Transfer transfer, int clipboards) {
 	}
 	if (selection_data == 0) return null;
 	TransferData tdata = new TransferData();
-	tdata.type = GTK.gtk_selection_data_get_data_type(selection_data);
-	tdata.pValue = GTK.gtk_selection_data_get_data(selection_data);
-	tdata.length = GTK.gtk_selection_data_get_length(selection_data);
-	tdata.format = GTK.gtk_selection_data_get_format(selection_data);
+	tdata.type = GTK3.gtk_selection_data_get_data_type(selection_data);
+	tdata.pValue = GTK3.gtk_selection_data_get_data(selection_data);
+	tdata.length = GTK3.gtk_selection_data_get_length(selection_data);
+	tdata.format = GTK3.gtk_selection_data_get_format(selection_data);
 	Object result = transfer.nativeToJava(tdata);
-	GTK.gtk_selection_data_free(selection_data);
+	GTK3.gtk_selection_data_free(selection_data);
 	return result;
 }
 
@@ -582,15 +582,15 @@ private  int[] getAvailablePrimaryTypes() {
 	long selection_data = gtk_clipboard_wait_for_contents(GTKPRIMARYCLIPBOARD, TARGET);
 	if (selection_data != 0) {
 		try {
-			int length = GTK.gtk_selection_data_get_length(selection_data);
-			int format = GTK.gtk_selection_data_get_format(selection_data);
-			long data = GTK.gtk_selection_data_get_data(selection_data);
+			int length = GTK3.gtk_selection_data_get_length(selection_data);
+			int format = GTK3.gtk_selection_data_get_format(selection_data);
+			long data = GTK3.gtk_selection_data_get_data(selection_data);
 			if (length != 0) {
 				types = new int[length * 8 / format];
 				C.memmove(types, data, length);
 			}
 		} finally {
-			GTK.gtk_selection_data_free(selection_data);
+			GTK3.gtk_selection_data_free(selection_data);
 		}
 	}
 	return types;
@@ -600,15 +600,15 @@ private int[] getAvailableClipboardTypes () {
 	long selection_data  = gtk_clipboard_wait_for_contents(GTKCLIPBOARD, TARGET);
 	if (selection_data != 0) {
 		try {
-			int length = GTK.gtk_selection_data_get_length(selection_data);
-			int format = GTK.gtk_selection_data_get_format(selection_data);
-			long data = GTK.gtk_selection_data_get_data(selection_data);
+			int length = GTK3.gtk_selection_data_get_length(selection_data);
+			int format = GTK3.gtk_selection_data_get_format(selection_data);
+			long data = GTK3.gtk_selection_data_get_data(selection_data);
 			if (length != 0) {
 				types = new int[length * 8 / format];
 				C.memmove(types, data, length);
 			}
 		} finally {
-			GTK.gtk_selection_data_free(selection_data);
+			GTK3.gtk_selection_data_free(selection_data);
 		}
 	}
 	return types;

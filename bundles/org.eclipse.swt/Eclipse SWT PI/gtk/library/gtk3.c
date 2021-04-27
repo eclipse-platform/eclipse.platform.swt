@@ -23,6 +23,30 @@
 #define GTK3_NATIVE(func) Java_org_eclipse_swt_internal_gtk3_GTK3_##func
 #endif
 
+#ifndef NO_GTK_1IS_1MENU_1ITEM
+JNIEXPORT jboolean JNICALL GTK3_NATIVE(GTK_1IS_1MENU_1ITEM)
+	(JNIEnv *env, jclass that, jlong arg0)
+{
+	jboolean rc = 0;
+	GTK3_NATIVE_ENTER(env, that, GTK_1IS_1MENU_1ITEM_FUNC);
+	rc = (jboolean)GTK_IS_MENU_ITEM(arg0);
+	GTK3_NATIVE_EXIT(env, that, GTK_1IS_1MENU_1ITEM_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_GTK_1TYPE_1MENU
+JNIEXPORT jlong JNICALL GTK3_NATIVE(GTK_1TYPE_1MENU)
+	(JNIEnv *env, jclass that)
+{
+	jlong rc = 0;
+	GTK3_NATIVE_ENTER(env, that, GTK_1TYPE_1MENU_FUNC);
+	rc = (jlong)GTK_TYPE_MENU;
+	GTK3_NATIVE_EXIT(env, that, GTK_1TYPE_1MENU_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_gtk_1accel_1label_1new
 JNIEXPORT jlong JNICALL GTK3_NATIVE(gtk_1accel_1label_1new)
 	(JNIEnv *env, jclass that, jbyteArray arg0)
@@ -158,6 +182,40 @@ JNIEXPORT void JNICALL GTK3_NATIVE(gtk_1calendar_1set_1display_1options)
 	GTK3_NATIVE_ENTER(env, that, gtk_1calendar_1set_1display_1options_FUNC);
 	gtk_calendar_set_display_options((GtkCalendar *)arg0, (GtkCalendarDisplayOptions)arg1);
 	GTK3_NATIVE_EXIT(env, that, gtk_1calendar_1set_1display_1options_FUNC);
+}
+#endif
+
+#ifndef NO_gtk_1check_1menu_1item_1get_1active
+JNIEXPORT jboolean JNICALL GTK3_NATIVE(gtk_1check_1menu_1item_1get_1active)
+	(JNIEnv *env, jclass that, jlong arg0)
+{
+	jboolean rc = 0;
+	GTK3_NATIVE_ENTER(env, that, gtk_1check_1menu_1item_1get_1active_FUNC);
+	rc = (jboolean)gtk_check_menu_item_get_active((GtkCheckMenuItem *)arg0);
+	GTK3_NATIVE_EXIT(env, that, gtk_1check_1menu_1item_1get_1active_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_gtk_1check_1menu_1item_1new
+JNIEXPORT jlong JNICALL GTK3_NATIVE(gtk_1check_1menu_1item_1new)
+	(JNIEnv *env, jclass that)
+{
+	jlong rc = 0;
+	GTK3_NATIVE_ENTER(env, that, gtk_1check_1menu_1item_1new_FUNC);
+	rc = (jlong)gtk_check_menu_item_new();
+	GTK3_NATIVE_EXIT(env, that, gtk_1check_1menu_1item_1new_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_gtk_1check_1menu_1item_1set_1active
+JNIEXPORT void JNICALL GTK3_NATIVE(gtk_1check_1menu_1item_1set_1active)
+	(JNIEnv *env, jclass that, jlong arg0, jboolean arg1)
+{
+	GTK3_NATIVE_ENTER(env, that, gtk_1check_1menu_1item_1set_1active_FUNC);
+	gtk_check_menu_item_set_active((GtkCheckMenuItem *)arg0, (gboolean)arg1);
+	GTK3_NATIVE_EXIT(env, that, gtk_1check_1menu_1item_1set_1active_FUNC);
 }
 #endif
 
@@ -617,6 +675,62 @@ fail:
 }
 #endif
 
+#ifndef NO_gtk_1icon_1info_1load_1icon
+JNIEXPORT jlong JNICALL GTK3_NATIVE(gtk_1icon_1info_1load_1icon)
+	(JNIEnv *env, jclass that, jlong arg0, jlongArray arg1)
+{
+	jlong *lparg1=NULL;
+	jlong rc = 0;
+	GTK3_NATIVE_ENTER(env, that, gtk_1icon_1info_1load_1icon_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetLongArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	rc = (jlong)gtk_icon_info_load_icon((GtkIconInfo *)arg0, (GError **)lparg1);
+fail:
+	if (arg1 && lparg1) (*env)->ReleaseLongArrayElements(env, arg1, lparg1, 0);
+	GTK3_NATIVE_EXIT(env, that, gtk_1icon_1info_1load_1icon_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_gtk_1icon_1theme_1get_1default
+JNIEXPORT jlong JNICALL GTK3_NATIVE(gtk_1icon_1theme_1get_1default)
+	(JNIEnv *env, jclass that)
+{
+	jlong rc = 0;
+	GTK3_NATIVE_ENTER(env, that, gtk_1icon_1theme_1get_1default_FUNC);
+	rc = (jlong)gtk_icon_theme_get_default();
+	GTK3_NATIVE_EXIT(env, that, gtk_1icon_1theme_1get_1default_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_gtk_1icon_1theme_1load_1icon
+JNIEXPORT jlong JNICALL GTK3_NATIVE(gtk_1icon_1theme_1load_1icon)
+	(JNIEnv *env, jclass that, jlong arg0, jbyteArray arg1, jint arg2, jint arg3, jlong arg4)
+{
+	jbyte *lparg1=NULL;
+	jlong rc = 0;
+	GTK3_NATIVE_ENTER(env, that, gtk_1icon_1theme_1load_1icon_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	rc = (jlong)gtk_icon_theme_load_icon((GtkIconTheme *)arg0, (const gchar *)lparg1, (gint)arg2, (GtkIconLookupFlags)arg3, (GError **)arg4);
+fail:
+	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	GTK3_NATIVE_EXIT(env, that, gtk_1icon_1theme_1load_1icon_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_gtk_1icon_1theme_1lookup_1by_1gicon
+JNIEXPORT jlong JNICALL GTK3_NATIVE(gtk_1icon_1theme_1lookup_1by_1gicon)
+	(JNIEnv *env, jclass that, jlong arg0, jlong arg1, jint arg2, jint arg3)
+{
+	jlong rc = 0;
+	GTK3_NATIVE_ENTER(env, that, gtk_1icon_1theme_1lookup_1by_1gicon_FUNC);
+	rc = (jlong)gtk_icon_theme_lookup_by_gicon((GtkIconTheme *)arg0, (GIcon *)arg1, (gint)arg2, (GtkIconLookupFlags)arg3);
+	GTK3_NATIVE_EXIT(env, that, gtk_1icon_1theme_1lookup_1by_1gicon_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_gtk_1im_1context_1filter_1keypress
 JNIEXPORT jboolean JNICALL GTK3_NATIVE(gtk_1im_1context_1filter_1keypress)
 	(JNIEnv *env, jclass that, jlong arg0, jlong arg1)
@@ -670,6 +784,120 @@ JNIEXPORT jboolean JNICALL GTK3_NATIVE(gtk_1main_1iteration_1do)
 }
 #endif
 
+#ifndef NO_gtk_1menu_1bar_1new
+JNIEXPORT jlong JNICALL GTK3_NATIVE(gtk_1menu_1bar_1new)
+	(JNIEnv *env, jclass that)
+{
+	jlong rc = 0;
+	GTK3_NATIVE_ENTER(env, that, gtk_1menu_1bar_1new_FUNC);
+	rc = (jlong)gtk_menu_bar_new();
+	GTK3_NATIVE_EXIT(env, that, gtk_1menu_1bar_1new_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_gtk_1menu_1item_1get_1submenu
+JNIEXPORT jlong JNICALL GTK3_NATIVE(gtk_1menu_1item_1get_1submenu)
+	(JNIEnv *env, jclass that, jlong arg0)
+{
+	jlong rc = 0;
+	GTK3_NATIVE_ENTER(env, that, gtk_1menu_1item_1get_1submenu_FUNC);
+	rc = (jlong)gtk_menu_item_get_submenu((GtkMenuItem *)arg0);
+	GTK3_NATIVE_EXIT(env, that, gtk_1menu_1item_1get_1submenu_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_gtk_1menu_1item_1new
+JNIEXPORT jlong JNICALL GTK3_NATIVE(gtk_1menu_1item_1new)
+	(JNIEnv *env, jclass that)
+{
+	jlong rc = 0;
+	GTK3_NATIVE_ENTER(env, that, gtk_1menu_1item_1new_FUNC);
+	rc = (jlong)gtk_menu_item_new();
+	GTK3_NATIVE_EXIT(env, that, gtk_1menu_1item_1new_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_gtk_1menu_1item_1set_1submenu
+JNIEXPORT void JNICALL GTK3_NATIVE(gtk_1menu_1item_1set_1submenu)
+	(JNIEnv *env, jclass that, jlong arg0, jlong arg1)
+{
+	GTK3_NATIVE_ENTER(env, that, gtk_1menu_1item_1set_1submenu_FUNC);
+	gtk_menu_item_set_submenu((GtkMenuItem *)arg0, (GtkWidget *)arg1);
+	GTK3_NATIVE_EXIT(env, that, gtk_1menu_1item_1set_1submenu_FUNC);
+}
+#endif
+
+#ifndef NO_gtk_1menu_1new
+JNIEXPORT jlong JNICALL GTK3_NATIVE(gtk_1menu_1new)
+	(JNIEnv *env, jclass that)
+{
+	jlong rc = 0;
+	GTK3_NATIVE_ENTER(env, that, gtk_1menu_1new_FUNC);
+	rc = (jlong)gtk_menu_new();
+	GTK3_NATIVE_EXIT(env, that, gtk_1menu_1new_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_gtk_1menu_1popdown
+JNIEXPORT void JNICALL GTK3_NATIVE(gtk_1menu_1popdown)
+	(JNIEnv *env, jclass that, jlong arg0)
+{
+	GTK3_NATIVE_ENTER(env, that, gtk_1menu_1popdown_FUNC);
+	gtk_menu_popdown((GtkMenu *)arg0);
+	GTK3_NATIVE_EXIT(env, that, gtk_1menu_1popdown_FUNC);
+}
+#endif
+
+#ifndef NO_gtk_1menu_1shell_1deactivate
+JNIEXPORT void JNICALL GTK3_NATIVE(gtk_1menu_1shell_1deactivate)
+	(JNIEnv *env, jclass that, jlong arg0)
+{
+	GTK3_NATIVE_ENTER(env, that, gtk_1menu_1shell_1deactivate_FUNC);
+	gtk_menu_shell_deactivate((GtkMenuShell *)arg0);
+	GTK3_NATIVE_EXIT(env, that, gtk_1menu_1shell_1deactivate_FUNC);
+}
+#endif
+
+#ifndef NO_gtk_1menu_1shell_1insert
+JNIEXPORT void JNICALL GTK3_NATIVE(gtk_1menu_1shell_1insert)
+	(JNIEnv *env, jclass that, jlong arg0, jlong arg1, jint arg2)
+{
+	GTK3_NATIVE_ENTER(env, that, gtk_1menu_1shell_1insert_FUNC);
+	gtk_menu_shell_insert((GtkMenuShell *)arg0, (GtkWidget *)arg1, (gint)arg2);
+	GTK3_NATIVE_EXIT(env, that, gtk_1menu_1shell_1insert_FUNC);
+}
+#endif
+
+#ifndef NO_gtk_1menu_1shell_1set_1take_1focus
+JNIEXPORT void JNICALL GTK3_NATIVE(gtk_1menu_1shell_1set_1take_1focus)
+	(JNIEnv *env, jclass that, jlong arg0, jboolean arg1)
+{
+	GTK3_NATIVE_ENTER(env, that, gtk_1menu_1shell_1set_1take_1focus_FUNC);
+	gtk_menu_shell_set_take_focus((GtkMenuShell *)arg0, (gboolean)arg1);
+	GTK3_NATIVE_EXIT(env, that, gtk_1menu_1shell_1set_1take_1focus_FUNC);
+}
+#endif
+
+#ifndef NO_gtk_1menu_1tool_1button_1new
+JNIEXPORT jlong JNICALL GTK3_NATIVE(gtk_1menu_1tool_1button_1new)
+	(JNIEnv *env, jclass that, jlong arg0, jbyteArray arg1)
+{
+	jbyte *lparg1=NULL;
+	jlong rc = 0;
+	GTK3_NATIVE_ENTER(env, that, gtk_1menu_1tool_1button_1new_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	rc = (jlong)gtk_menu_tool_button_new((GtkWidget *)arg0, (const gchar *)lparg1);
+fail:
+	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	GTK3_NATIVE_EXIT(env, that, gtk_1menu_1tool_1button_1new_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_gtk_1native_1dialog_1run
 JNIEXPORT jint JNICALL GTK3_NATIVE(gtk_1native_1dialog_1run)
 	(JNIEnv *env, jclass that, jlong arg0)
@@ -702,6 +930,30 @@ JNIEXPORT jlong JNICALL GTK3_NATIVE(gtk_1radio_1button_1new)
 	GTK3_NATIVE_ENTER(env, that, gtk_1radio_1button_1new_FUNC);
 	rc = (jlong)gtk_radio_button_new((GSList *)arg0);
 	GTK3_NATIVE_EXIT(env, that, gtk_1radio_1button_1new_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_gtk_1radio_1menu_1item_1get_1group
+JNIEXPORT jlong JNICALL GTK3_NATIVE(gtk_1radio_1menu_1item_1get_1group)
+	(JNIEnv *env, jclass that, jlong arg0)
+{
+	jlong rc = 0;
+	GTK3_NATIVE_ENTER(env, that, gtk_1radio_1menu_1item_1get_1group_FUNC);
+	rc = (jlong)gtk_radio_menu_item_get_group((GtkRadioMenuItem *)arg0);
+	GTK3_NATIVE_EXIT(env, that, gtk_1radio_1menu_1item_1get_1group_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_gtk_1radio_1menu_1item_1new
+JNIEXPORT jlong JNICALL GTK3_NATIVE(gtk_1radio_1menu_1item_1new)
+	(JNIEnv *env, jclass that, jlong arg0)
+{
+	jlong rc = 0;
+	GTK3_NATIVE_ENTER(env, that, gtk_1radio_1menu_1item_1new_FUNC);
+	rc = (jlong)gtk_radio_menu_item_new((GSList *)arg0);
+	GTK3_NATIVE_EXIT(env, that, gtk_1radio_1menu_1item_1new_FUNC);
 	return rc;
 }
 #endif
@@ -757,6 +1009,120 @@ JNIEXPORT void JNICALL GTK3_NATIVE(gtk_1scrolled_1window_1set_1shadow_1type)
 	GTK3_NATIVE_ENTER(env, that, gtk_1scrolled_1window_1set_1shadow_1type_FUNC);
 	gtk_scrolled_window_set_shadow_type((GtkScrolledWindow *)arg0, (GtkShadowType)arg1);
 	GTK3_NATIVE_EXIT(env, that, gtk_1scrolled_1window_1set_1shadow_1type_FUNC);
+}
+#endif
+
+#ifndef NO_gtk_1selection_1data_1free
+JNIEXPORT void JNICALL GTK3_NATIVE(gtk_1selection_1data_1free)
+	(JNIEnv *env, jclass that, jlong arg0)
+{
+	GTK3_NATIVE_ENTER(env, that, gtk_1selection_1data_1free_FUNC);
+	gtk_selection_data_free((GtkSelectionData *)arg0);
+	GTK3_NATIVE_EXIT(env, that, gtk_1selection_1data_1free_FUNC);
+}
+#endif
+
+#ifndef NO_gtk_1selection_1data_1get_1data
+JNIEXPORT jlong JNICALL GTK3_NATIVE(gtk_1selection_1data_1get_1data)
+	(JNIEnv *env, jclass that, jlong arg0)
+{
+	jlong rc = 0;
+	GTK3_NATIVE_ENTER(env, that, gtk_1selection_1data_1get_1data_FUNC);
+	rc = (jlong)gtk_selection_data_get_data((GtkSelectionData *)arg0);
+	GTK3_NATIVE_EXIT(env, that, gtk_1selection_1data_1get_1data_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_gtk_1selection_1data_1get_1data_1type
+JNIEXPORT jlong JNICALL GTK3_NATIVE(gtk_1selection_1data_1get_1data_1type)
+	(JNIEnv *env, jclass that, jlong arg0)
+{
+	jlong rc = 0;
+	GTK3_NATIVE_ENTER(env, that, gtk_1selection_1data_1get_1data_1type_FUNC);
+	rc = (jlong)gtk_selection_data_get_data_type((GtkSelectionData *)arg0);
+	GTK3_NATIVE_EXIT(env, that, gtk_1selection_1data_1get_1data_1type_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_gtk_1selection_1data_1get_1format
+JNIEXPORT jint JNICALL GTK3_NATIVE(gtk_1selection_1data_1get_1format)
+	(JNIEnv *env, jclass that, jlong arg0)
+{
+	jint rc = 0;
+	GTK3_NATIVE_ENTER(env, that, gtk_1selection_1data_1get_1format_FUNC);
+	rc = (jint)gtk_selection_data_get_format((GtkSelectionData *)arg0);
+	GTK3_NATIVE_EXIT(env, that, gtk_1selection_1data_1get_1format_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_gtk_1selection_1data_1get_1length
+JNIEXPORT jint JNICALL GTK3_NATIVE(gtk_1selection_1data_1get_1length)
+	(JNIEnv *env, jclass that, jlong arg0)
+{
+	jint rc = 0;
+	GTK3_NATIVE_ENTER(env, that, gtk_1selection_1data_1get_1length_FUNC);
+	rc = (jint)gtk_selection_data_get_length((GtkSelectionData *)arg0);
+	GTK3_NATIVE_EXIT(env, that, gtk_1selection_1data_1get_1length_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_gtk_1selection_1data_1get_1target
+JNIEXPORT jlong JNICALL GTK3_NATIVE(gtk_1selection_1data_1get_1target)
+	(JNIEnv *env, jclass that, jlong arg0)
+{
+	jlong rc = 0;
+	GTK3_NATIVE_ENTER(env, that, gtk_1selection_1data_1get_1target_FUNC);
+	rc = (jlong)gtk_selection_data_get_target((GtkSelectionData *)arg0);
+	GTK3_NATIVE_EXIT(env, that, gtk_1selection_1data_1get_1target_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_gtk_1selection_1data_1set
+JNIEXPORT void JNICALL GTK3_NATIVE(gtk_1selection_1data_1set)
+	(JNIEnv *env, jclass that, jlong arg0, jlong arg1, jint arg2, jlong arg3, jint arg4)
+{
+	GTK3_NATIVE_ENTER(env, that, gtk_1selection_1data_1set_FUNC);
+	gtk_selection_data_set((GtkSelectionData *)arg0, (GdkAtom)arg1, (gint)arg2, (const guchar *)arg3, (gint)arg4);
+	GTK3_NATIVE_EXIT(env, that, gtk_1selection_1data_1set_FUNC);
+}
+#endif
+
+#ifndef NO_gtk_1separator_1menu_1item_1new
+JNIEXPORT jlong JNICALL GTK3_NATIVE(gtk_1separator_1menu_1item_1new)
+	(JNIEnv *env, jclass that)
+{
+	jlong rc = 0;
+	GTK3_NATIVE_ENTER(env, that, gtk_1separator_1menu_1item_1new_FUNC);
+	rc = (jlong)gtk_separator_menu_item_new();
+	GTK3_NATIVE_EXIT(env, that, gtk_1separator_1menu_1item_1new_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_gtk_1separator_1tool_1item_1new
+JNIEXPORT jlong JNICALL GTK3_NATIVE(gtk_1separator_1tool_1item_1new)
+	(JNIEnv *env, jclass that)
+{
+	jlong rc = 0;
+	GTK3_NATIVE_ENTER(env, that, gtk_1separator_1tool_1item_1new_FUNC);
+	rc = (jlong)gtk_separator_tool_item_new();
+	GTK3_NATIVE_EXIT(env, that, gtk_1separator_1tool_1item_1new_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_gtk_1separator_1tool_1item_1set_1draw
+JNIEXPORT void JNICALL GTK3_NATIVE(gtk_1separator_1tool_1item_1set_1draw)
+	(JNIEnv *env, jclass that, jlong arg0, jboolean arg1)
+{
+	GTK3_NATIVE_ENTER(env, that, gtk_1separator_1tool_1item_1set_1draw_FUNC);
+	gtk_separator_tool_item_set_draw((GtkSeparatorToolItem *)arg0, (gboolean)arg1);
+	GTK3_NATIVE_EXIT(env, that, gtk_1separator_1tool_1item_1set_1draw_FUNC);
 }
 #endif
 
@@ -850,6 +1216,200 @@ JNIEXPORT void JNICALL GTK3_NATIVE(gtk_1target_1list_1unref)
 }
 #endif
 
+#ifndef NO_gtk_1toggle_1tool_1button_1get_1active
+JNIEXPORT jboolean JNICALL GTK3_NATIVE(gtk_1toggle_1tool_1button_1get_1active)
+	(JNIEnv *env, jclass that, jlong arg0)
+{
+	jboolean rc = 0;
+	GTK3_NATIVE_ENTER(env, that, gtk_1toggle_1tool_1button_1get_1active_FUNC);
+	rc = (jboolean)gtk_toggle_tool_button_get_active((GtkToggleToolButton *)arg0);
+	GTK3_NATIVE_EXIT(env, that, gtk_1toggle_1tool_1button_1get_1active_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_gtk_1toggle_1tool_1button_1new
+JNIEXPORT jlong JNICALL GTK3_NATIVE(gtk_1toggle_1tool_1button_1new)
+	(JNIEnv *env, jclass that)
+{
+	jlong rc = 0;
+	GTK3_NATIVE_ENTER(env, that, gtk_1toggle_1tool_1button_1new_FUNC);
+	rc = (jlong)gtk_toggle_tool_button_new();
+	GTK3_NATIVE_EXIT(env, that, gtk_1toggle_1tool_1button_1new_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_gtk_1toggle_1tool_1button_1set_1active
+JNIEXPORT void JNICALL GTK3_NATIVE(gtk_1toggle_1tool_1button_1set_1active)
+	(JNIEnv *env, jclass that, jlong arg0, jboolean arg1)
+{
+	GTK3_NATIVE_ENTER(env, that, gtk_1toggle_1tool_1button_1set_1active_FUNC);
+	gtk_toggle_tool_button_set_active((GtkToggleToolButton *)arg0, (gboolean)arg1);
+	GTK3_NATIVE_EXIT(env, that, gtk_1toggle_1tool_1button_1set_1active_FUNC);
+}
+#endif
+
+#ifndef NO_gtk_1tool_1button_1new
+JNIEXPORT jlong JNICALL GTK3_NATIVE(gtk_1tool_1button_1new)
+	(JNIEnv *env, jclass that, jlong arg0, jbyteArray arg1)
+{
+	jbyte *lparg1=NULL;
+	jlong rc = 0;
+	GTK3_NATIVE_ENTER(env, that, gtk_1tool_1button_1new_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	rc = (jlong)gtk_tool_button_new((GtkWidget *)arg0, (const gchar *)lparg1);
+fail:
+	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	GTK3_NATIVE_EXIT(env, that, gtk_1tool_1button_1new_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_gtk_1tool_1button_1set_1icon_1widget
+JNIEXPORT void JNICALL GTK3_NATIVE(gtk_1tool_1button_1set_1icon_1widget)
+	(JNIEnv *env, jclass that, jlong arg0, jlong arg1)
+{
+	GTK3_NATIVE_ENTER(env, that, gtk_1tool_1button_1set_1icon_1widget_FUNC);
+	gtk_tool_button_set_icon_widget((GtkToolButton *)arg0, (GtkWidget *)arg1);
+	GTK3_NATIVE_EXIT(env, that, gtk_1tool_1button_1set_1icon_1widget_FUNC);
+}
+#endif
+
+#ifndef NO_gtk_1tool_1button_1set_1label_1widget
+JNIEXPORT void JNICALL GTK3_NATIVE(gtk_1tool_1button_1set_1label_1widget)
+	(JNIEnv *env, jclass that, jlong arg0, jlong arg1)
+{
+	GTK3_NATIVE_ENTER(env, that, gtk_1tool_1button_1set_1label_1widget_FUNC);
+	gtk_tool_button_set_label_widget((GtkToolButton *)arg0, (GtkWidget *)arg1);
+	GTK3_NATIVE_EXIT(env, that, gtk_1tool_1button_1set_1label_1widget_FUNC);
+}
+#endif
+
+#ifndef NO_gtk_1tool_1button_1set_1use_1underline
+JNIEXPORT void JNICALL GTK3_NATIVE(gtk_1tool_1button_1set_1use_1underline)
+	(JNIEnv *env, jclass that, jlong arg0, jboolean arg1)
+{
+	GTK3_NATIVE_ENTER(env, that, gtk_1tool_1button_1set_1use_1underline_FUNC);
+	gtk_tool_button_set_use_underline((GtkToolButton *)arg0, (gboolean)arg1);
+	GTK3_NATIVE_EXIT(env, that, gtk_1tool_1button_1set_1use_1underline_FUNC);
+}
+#endif
+
+#ifndef NO_gtk_1tool_1item_1get_1proxy_1menu_1item
+JNIEXPORT jlong JNICALL GTK3_NATIVE(gtk_1tool_1item_1get_1proxy_1menu_1item)
+	(JNIEnv *env, jclass that, jlong arg0, jbyteArray arg1)
+{
+	jbyte *lparg1=NULL;
+	jlong rc = 0;
+	GTK3_NATIVE_ENTER(env, that, gtk_1tool_1item_1get_1proxy_1menu_1item_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	rc = (jlong)gtk_tool_item_get_proxy_menu_item((GtkToolItem *)arg0, (const gchar *)lparg1);
+fail:
+	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	GTK3_NATIVE_EXIT(env, that, gtk_1tool_1item_1get_1proxy_1menu_1item_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_gtk_1tool_1item_1retrieve_1proxy_1menu_1item
+JNIEXPORT jlong JNICALL GTK3_NATIVE(gtk_1tool_1item_1retrieve_1proxy_1menu_1item)
+	(JNIEnv *env, jclass that, jlong arg0)
+{
+	jlong rc = 0;
+	GTK3_NATIVE_ENTER(env, that, gtk_1tool_1item_1retrieve_1proxy_1menu_1item_FUNC);
+	rc = (jlong)gtk_tool_item_retrieve_proxy_menu_item((GtkToolItem *)arg0);
+	GTK3_NATIVE_EXIT(env, that, gtk_1tool_1item_1retrieve_1proxy_1menu_1item_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_gtk_1tool_1item_1set_1homogeneous
+JNIEXPORT void JNICALL GTK3_NATIVE(gtk_1tool_1item_1set_1homogeneous)
+	(JNIEnv *env, jclass that, jlong arg0, jboolean arg1)
+{
+	GTK3_NATIVE_ENTER(env, that, gtk_1tool_1item_1set_1homogeneous_FUNC);
+	gtk_tool_item_set_homogeneous((GtkToolItem *)arg0, (gboolean)arg1);
+	GTK3_NATIVE_EXIT(env, that, gtk_1tool_1item_1set_1homogeneous_FUNC);
+}
+#endif
+
+#ifndef NO_gtk_1tool_1item_1set_1is_1important
+JNIEXPORT void JNICALL GTK3_NATIVE(gtk_1tool_1item_1set_1is_1important)
+	(JNIEnv *env, jclass that, jlong arg0, jboolean arg1)
+{
+	GTK3_NATIVE_ENTER(env, that, gtk_1tool_1item_1set_1is_1important_FUNC);
+	gtk_tool_item_set_is_important((GtkToolItem *)arg0, (gboolean)arg1);
+	GTK3_NATIVE_EXIT(env, that, gtk_1tool_1item_1set_1is_1important_FUNC);
+}
+#endif
+
+#ifndef NO_gtk_1tool_1item_1set_1proxy_1menu_1item
+JNIEXPORT void JNICALL GTK3_NATIVE(gtk_1tool_1item_1set_1proxy_1menu_1item)
+	(JNIEnv *env, jclass that, jlong arg0, jbyteArray arg1, jlong arg2)
+{
+	jbyte *lparg1=NULL;
+	GTK3_NATIVE_ENTER(env, that, gtk_1tool_1item_1set_1proxy_1menu_1item_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	gtk_tool_item_set_proxy_menu_item((GtkToolItem *)arg0, (const gchar *)lparg1, (GtkWidget *)arg2);
+fail:
+	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	GTK3_NATIVE_EXIT(env, that, gtk_1tool_1item_1set_1proxy_1menu_1item_FUNC);
+}
+#endif
+
+#ifndef NO_gtk_1toolbar_1insert
+JNIEXPORT void JNICALL GTK3_NATIVE(gtk_1toolbar_1insert)
+	(JNIEnv *env, jclass that, jlong arg0, jlong arg1, jint arg2)
+{
+	GTK3_NATIVE_ENTER(env, that, gtk_1toolbar_1insert_FUNC);
+	gtk_toolbar_insert((GtkToolbar *)arg0, (GtkToolItem *)arg1, arg2);
+	GTK3_NATIVE_EXIT(env, that, gtk_1toolbar_1insert_FUNC);
+}
+#endif
+
+#ifndef NO_gtk_1toolbar_1new
+JNIEXPORT jlong JNICALL GTK3_NATIVE(gtk_1toolbar_1new)
+	(JNIEnv *env, jclass that)
+{
+	jlong rc = 0;
+	GTK3_NATIVE_ENTER(env, that, gtk_1toolbar_1new_FUNC);
+	rc = (jlong)gtk_toolbar_new();
+	GTK3_NATIVE_EXIT(env, that, gtk_1toolbar_1new_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_gtk_1toolbar_1set_1icon_1size
+JNIEXPORT void JNICALL GTK3_NATIVE(gtk_1toolbar_1set_1icon_1size)
+	(JNIEnv *env, jclass that, jlong arg0, jint arg1)
+{
+	GTK3_NATIVE_ENTER(env, that, gtk_1toolbar_1set_1icon_1size_FUNC);
+	gtk_toolbar_set_icon_size((GtkToolbar *)arg0, arg1);
+	GTK3_NATIVE_EXIT(env, that, gtk_1toolbar_1set_1icon_1size_FUNC);
+}
+#endif
+
+#ifndef NO_gtk_1toolbar_1set_1show_1arrow
+JNIEXPORT void JNICALL GTK3_NATIVE(gtk_1toolbar_1set_1show_1arrow)
+	(JNIEnv *env, jclass that, jlong arg0, jboolean arg1)
+{
+	GTK3_NATIVE_ENTER(env, that, gtk_1toolbar_1set_1show_1arrow_FUNC);
+	gtk_toolbar_set_show_arrow((GtkToolbar *)arg0, (gboolean)arg1);
+	GTK3_NATIVE_EXIT(env, that, gtk_1toolbar_1set_1show_1arrow_FUNC);
+}
+#endif
+
+#ifndef NO_gtk_1toolbar_1set_1style
+JNIEXPORT void JNICALL GTK3_NATIVE(gtk_1toolbar_1set_1style)
+	(JNIEnv *env, jclass that, jlong arg0, jint arg1)
+{
+	GTK3_NATIVE_ENTER(env, that, gtk_1toolbar_1set_1style_FUNC);
+	gtk_toolbar_set_style((GtkToolbar *)arg0, (GtkToolbarStyle)arg1);
+	GTK3_NATIVE_EXIT(env, that, gtk_1toolbar_1set_1style_FUNC);
+}
+#endif
+
 #ifndef NO_gtk_1widget_1get_1accessible
 JNIEXPORT jlong JNICALL GTK3_NATIVE(gtk_1widget_1get_1accessible)
 	(JNIEnv *env, jclass that, jlong arg0)
@@ -862,6 +1422,168 @@ JNIEXPORT jlong JNICALL GTK3_NATIVE(gtk_1widget_1get_1accessible)
 }
 #endif
 
+#ifndef NO_gtk_1window_1activate_1default
+JNIEXPORT jboolean JNICALL GTK3_NATIVE(gtk_1window_1activate_1default)
+	(JNIEnv *env, jclass that, jlong arg0)
+{
+	jboolean rc = 0;
+	GTK3_NATIVE_ENTER(env, that, gtk_1window_1activate_1default_FUNC);
+	rc = (jboolean)gtk_window_activate_default((GtkWindow *)arg0);
+	GTK3_NATIVE_EXIT(env, that, gtk_1window_1activate_1default_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_gtk_1window_1add_1accel_1group
+JNIEXPORT void JNICALL GTK3_NATIVE(gtk_1window_1add_1accel_1group)
+	(JNIEnv *env, jclass that, jlong arg0, jlong arg1)
+{
+	GTK3_NATIVE_ENTER(env, that, gtk_1window_1add_1accel_1group_FUNC);
+	gtk_window_add_accel_group((GtkWindow *)arg0, (GtkAccelGroup *)arg1);
+	GTK3_NATIVE_EXIT(env, that, gtk_1window_1add_1accel_1group_FUNC);
+}
+#endif
+
+#ifndef NO_gtk_1window_1deiconify
+JNIEXPORT void JNICALL GTK3_NATIVE(gtk_1window_1deiconify)
+	(JNIEnv *env, jclass that, jlong arg0)
+{
+	GTK3_NATIVE_ENTER(env, that, gtk_1window_1deiconify_FUNC);
+	gtk_window_deiconify((GtkWindow *)arg0);
+	GTK3_NATIVE_EXIT(env, that, gtk_1window_1deiconify_FUNC);
+}
+#endif
+
+#ifndef NO_gtk_1window_1get_1icon_1list
+JNIEXPORT jlong JNICALL GTK3_NATIVE(gtk_1window_1get_1icon_1list)
+	(JNIEnv *env, jclass that, jlong arg0)
+{
+	jlong rc = 0;
+	GTK3_NATIVE_ENTER(env, that, gtk_1window_1get_1icon_1list_FUNC);
+	rc = (jlong)gtk_window_get_icon_list((GtkWindow *)arg0);
+	GTK3_NATIVE_EXIT(env, that, gtk_1window_1get_1icon_1list_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_gtk_1window_1get_1mnemonic_1modifier
+JNIEXPORT jint JNICALL GTK3_NATIVE(gtk_1window_1get_1mnemonic_1modifier)
+	(JNIEnv *env, jclass that, jlong arg0)
+{
+	jint rc = 0;
+	GTK3_NATIVE_ENTER(env, that, gtk_1window_1get_1mnemonic_1modifier_FUNC);
+	rc = (jint)gtk_window_get_mnemonic_modifier((GtkWindow *)arg0);
+	GTK3_NATIVE_EXIT(env, that, gtk_1window_1get_1mnemonic_1modifier_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_gtk_1window_1get_1position
+JNIEXPORT void JNICALL GTK3_NATIVE(gtk_1window_1get_1position)
+	(JNIEnv *env, jclass that, jlong arg0, jintArray arg1, jintArray arg2)
+{
+	jint *lparg1=NULL;
+	jint *lparg2=NULL;
+	GTK3_NATIVE_ENTER(env, that, gtk_1window_1get_1position_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	if (arg2) if ((lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL)) == NULL) goto fail;
+	gtk_window_get_position((GtkWindow *)arg0, (gint *)lparg1, (gint *)lparg2);
+fail:
+	if (arg2 && lparg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	if (arg1 && lparg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
+	GTK3_NATIVE_EXIT(env, that, gtk_1window_1get_1position_FUNC);
+}
+#endif
+
+#ifndef NO_gtk_1window_1get_1size
+JNIEXPORT void JNICALL GTK3_NATIVE(gtk_1window_1get_1size)
+	(JNIEnv *env, jclass that, jlong arg0, jintArray arg1, jintArray arg2)
+{
+	jint *lparg1=NULL;
+	jint *lparg2=NULL;
+	GTK3_NATIVE_ENTER(env, that, gtk_1window_1get_1size_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	if (arg2) if ((lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL)) == NULL) goto fail;
+	gtk_window_get_size((GtkWindow *)arg0, (gint *)lparg1, (gint *)lparg2);
+fail:
+	if (arg2 && lparg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	if (arg1 && lparg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
+	GTK3_NATIVE_EXIT(env, that, gtk_1window_1get_1size_FUNC);
+}
+#endif
+
+#ifndef NO_gtk_1window_1iconify
+JNIEXPORT void JNICALL GTK3_NATIVE(gtk_1window_1iconify)
+	(JNIEnv *env, jclass that, jlong arg0)
+{
+	GTK3_NATIVE_ENTER(env, that, gtk_1window_1iconify_FUNC);
+	gtk_window_iconify((GtkWindow *)arg0);
+	GTK3_NATIVE_EXIT(env, that, gtk_1window_1iconify_FUNC);
+}
+#endif
+
+#ifndef NO_gtk_1window_1move
+JNIEXPORT void JNICALL GTK3_NATIVE(gtk_1window_1move)
+	(JNIEnv *env, jclass that, jlong arg0, jint arg1, jint arg2)
+{
+	GTK3_NATIVE_ENTER(env, that, gtk_1window_1move_FUNC);
+	gtk_window_move((GtkWindow *)arg0, (gint)arg1, (gint)arg2);
+	GTK3_NATIVE_EXIT(env, that, gtk_1window_1move_FUNC);
+}
+#endif
+
+#ifndef NO_gtk_1window_1new
+JNIEXPORT jlong JNICALL GTK3_NATIVE(gtk_1window_1new)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jlong rc = 0;
+	GTK3_NATIVE_ENTER(env, that, gtk_1window_1new_FUNC);
+	rc = (jlong)gtk_window_new((GtkWindowType)arg0);
+	GTK3_NATIVE_EXIT(env, that, gtk_1window_1new_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_gtk_1window_1remove_1accel_1group
+JNIEXPORT void JNICALL GTK3_NATIVE(gtk_1window_1remove_1accel_1group)
+	(JNIEnv *env, jclass that, jlong arg0, jlong arg1)
+{
+	GTK3_NATIVE_ENTER(env, that, gtk_1window_1remove_1accel_1group_FUNC);
+	gtk_window_remove_accel_group((GtkWindow *)arg0, (GtkAccelGroup *)arg1);
+	GTK3_NATIVE_EXIT(env, that, gtk_1window_1remove_1accel_1group_FUNC);
+}
+#endif
+
+#ifndef NO_gtk_1window_1resize
+JNIEXPORT void JNICALL GTK3_NATIVE(gtk_1window_1resize)
+	(JNIEnv *env, jclass that, jlong arg0, jint arg1, jint arg2)
+{
+	GTK3_NATIVE_ENTER(env, that, gtk_1window_1resize_FUNC);
+	gtk_window_resize((GtkWindow *)arg0, (gint)arg1, (gint)arg2);
+	GTK3_NATIVE_EXIT(env, that, gtk_1window_1resize_FUNC);
+}
+#endif
+
+#ifndef NO_gtk_1window_1set_1attached_1to
+JNIEXPORT void JNICALL GTK3_NATIVE(gtk_1window_1set_1attached_1to)
+	(JNIEnv *env, jclass that, jlong arg0, jlong arg1)
+{
+	GTK3_NATIVE_ENTER(env, that, gtk_1window_1set_1attached_1to_FUNC);
+	gtk_window_set_attached_to((GtkWindow *)arg0, (GtkWidget *)arg1);
+	GTK3_NATIVE_EXIT(env, that, gtk_1window_1set_1attached_1to_FUNC);
+}
+#endif
+
+#ifndef NO_gtk_1window_1set_1default
+JNIEXPORT void JNICALL GTK3_NATIVE(gtk_1window_1set_1default)
+	(JNIEnv *env, jclass that, jlong arg0, jlong arg1)
+{
+	GTK3_NATIVE_ENTER(env, that, gtk_1window_1set_1default_FUNC);
+	gtk_window_set_default((GtkWindow *)arg0, (GtkWidget *)arg1);
+	GTK3_NATIVE_EXIT(env, that, gtk_1window_1set_1default_FUNC);
+}
+#endif
+
 #ifndef NO_gtk_1window_1set_1icon_1list
 JNIEXPORT void JNICALL GTK3_NATIVE(gtk_1window_1set_1icon_1list)
 	(JNIEnv *env, jclass that, jlong arg0, jlong arg1)
@@ -869,6 +1591,36 @@ JNIEXPORT void JNICALL GTK3_NATIVE(gtk_1window_1set_1icon_1list)
 	GTK3_NATIVE_ENTER(env, that, gtk_1window_1set_1icon_1list_FUNC);
 	gtk_window_set_icon_list((GtkWindow *)arg0, (GList *)arg1);
 	GTK3_NATIVE_EXIT(env, that, gtk_1window_1set_1icon_1list_FUNC);
+}
+#endif
+
+#ifndef NO_gtk_1window_1set_1keep_1above
+JNIEXPORT void JNICALL GTK3_NATIVE(gtk_1window_1set_1keep_1above)
+	(JNIEnv *env, jclass that, jlong arg0, jboolean arg1)
+{
+	GTK3_NATIVE_ENTER(env, that, gtk_1window_1set_1keep_1above_FUNC);
+	gtk_window_set_keep_above((GtkWindow *)arg0, (gboolean)arg1);
+	GTK3_NATIVE_EXIT(env, that, gtk_1window_1set_1keep_1above_FUNC);
+}
+#endif
+
+#ifndef NO_gtk_1window_1set_1skip_1taskbar_1hint
+JNIEXPORT void JNICALL GTK3_NATIVE(gtk_1window_1set_1skip_1taskbar_1hint)
+	(JNIEnv *env, jclass that, jlong arg0, jboolean arg1)
+{
+	GTK3_NATIVE_ENTER(env, that, gtk_1window_1set_1skip_1taskbar_1hint_FUNC);
+	gtk_window_set_skip_taskbar_hint((GtkWindow *)arg0, (gboolean)arg1);
+	GTK3_NATIVE_EXIT(env, that, gtk_1window_1set_1skip_1taskbar_1hint_FUNC);
+}
+#endif
+
+#ifndef NO_gtk_1window_1set_1type_1hint
+JNIEXPORT void JNICALL GTK3_NATIVE(gtk_1window_1set_1type_1hint)
+	(JNIEnv *env, jclass that, jlong arg0, jint arg1)
+{
+	GTK3_NATIVE_ENTER(env, that, gtk_1window_1set_1type_1hint_FUNC);
+	gtk_window_set_type_hint((GtkWindow *)arg0, arg1);
+	GTK3_NATIVE_EXIT(env, that, gtk_1window_1set_1type_1hint_FUNC);
 }
 #endif
 

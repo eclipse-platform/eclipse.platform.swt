@@ -387,6 +387,46 @@ fail:
 }
 #endif
 
+#ifndef NO_gtk_1icon_1paintable_1get_1file
+JNIEXPORT jlong JNICALL GTK4_NATIVE(gtk_1icon_1paintable_1get_1file)
+	(JNIEnv *env, jclass that, jlong arg0)
+{
+	jlong rc = 0;
+	GTK4_NATIVE_ENTER(env, that, gtk_1icon_1paintable_1get_1file_FUNC);
+	rc = (jlong)gtk_icon_paintable_get_file((GtkIconPaintable *)arg0);
+	GTK4_NATIVE_EXIT(env, that, gtk_1icon_1paintable_1get_1file_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_gtk_1icon_1theme_1get_1for_1display
+JNIEXPORT jlong JNICALL GTK4_NATIVE(gtk_1icon_1theme_1get_1for_1display)
+	(JNIEnv *env, jclass that, jlong arg0)
+{
+	jlong rc = 0;
+	GTK4_NATIVE_ENTER(env, that, gtk_1icon_1theme_1get_1for_1display_FUNC);
+	rc = (jlong)gtk_icon_theme_get_for_display((GdkDisplay *)arg0);
+	GTK4_NATIVE_EXIT(env, that, gtk_1icon_1theme_1get_1for_1display_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_gtk_1icon_1theme_1lookup_1icon
+JNIEXPORT jlong JNICALL GTK4_NATIVE(gtk_1icon_1theme_1lookup_1icon)
+	(JNIEnv *env, jclass that, jlong arg0, jbyteArray arg1, jlong arg2, jint arg3, jint arg4, jint arg5, jint arg6)
+{
+	jbyte *lparg1=NULL;
+	jlong rc = 0;
+	GTK4_NATIVE_ENTER(env, that, gtk_1icon_1theme_1lookup_1icon_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	rc = (jlong)gtk_icon_theme_lookup_icon((GtkIconTheme *)arg0, (const char *)lparg1, (const char **)arg2, (gint)arg3, (gint)arg4, (GtkTextDirection)arg5, (GtkIconLookupFlags)arg6);
+fail:
+	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	GTK4_NATIVE_EXIT(env, that, gtk_1icon_1theme_1lookup_1icon_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_gtk_1im_1context_1filter_1keypress
 JNIEXPORT jboolean JNICALL GTK4_NATIVE(gtk_1im_1context_1filter_1keypress)
 	(JNIEnv *env, jclass that, jlong arg0, jlong arg1)
@@ -407,6 +447,46 @@ JNIEXPORT jboolean JNICALL GTK4_NATIVE(gtk_1init_1check)
 	GTK4_NATIVE_ENTER(env, that, gtk_1init_1check_FUNC);
 	rc = (jboolean)gtk_init_check();
 	GTK4_NATIVE_EXIT(env, that, gtk_1init_1check_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_gtk_1keyval_1trigger_1new
+JNIEXPORT jlong JNICALL GTK4_NATIVE(gtk_1keyval_1trigger_1new)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	jlong rc = 0;
+	GTK4_NATIVE_ENTER(env, that, gtk_1keyval_1trigger_1new_FUNC);
+	rc = (jlong)gtk_keyval_trigger_new((guint)arg0, (GdkModifierType)arg1);
+	GTK4_NATIVE_EXIT(env, that, gtk_1keyval_1trigger_1new_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_gtk_1named_1action_1new
+JNIEXPORT jlong JNICALL GTK4_NATIVE(gtk_1named_1action_1new)
+	(JNIEnv *env, jclass that, jbyteArray arg0)
+{
+	jbyte *lparg0=NULL;
+	jlong rc = 0;
+	GTK4_NATIVE_ENTER(env, that, gtk_1named_1action_1new_FUNC);
+	if (arg0) if ((lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL)) == NULL) goto fail;
+	rc = (jlong)gtk_named_action_new((const char *)lparg0);
+fail:
+	if (arg0 && lparg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
+	GTK4_NATIVE_EXIT(env, that, gtk_1named_1action_1new_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_gtk_1native_1get_1surface
+JNIEXPORT jlong JNICALL GTK4_NATIVE(gtk_1native_1get_1surface)
+	(JNIEnv *env, jclass that, jlong arg0)
+{
+	jlong rc = 0;
+	GTK4_NATIVE_ENTER(env, that, gtk_1native_1get_1surface_FUNC);
+	rc = (jlong)gtk_native_get_surface((GtkNative *)arg0);
+	GTK4_NATIVE_EXIT(env, that, gtk_1native_1get_1surface_FUNC);
 	return rc;
 }
 #endif
@@ -440,6 +520,50 @@ JNIEXPORT void JNICALL GTK4_NATIVE(gtk_1picture_1set_1paintable)
 	GTK4_NATIVE_ENTER(env, that, gtk_1picture_1set_1paintable_FUNC);
 	gtk_picture_set_paintable((GtkPicture *)arg0, (GdkPaintable *)arg1);
 	GTK4_NATIVE_EXIT(env, that, gtk_1picture_1set_1paintable_FUNC);
+}
+#endif
+
+#ifndef NO_gtk_1popover_1menu_1bar_1new_1from_1model
+JNIEXPORT jlong JNICALL GTK4_NATIVE(gtk_1popover_1menu_1bar_1new_1from_1model)
+	(JNIEnv *env, jclass that, jlong arg0)
+{
+	jlong rc = 0;
+	GTK4_NATIVE_ENTER(env, that, gtk_1popover_1menu_1bar_1new_1from_1model_FUNC);
+	rc = (jlong)gtk_popover_menu_bar_new_from_model((GMenuModel *)arg0);
+	GTK4_NATIVE_EXIT(env, that, gtk_1popover_1menu_1bar_1new_1from_1model_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_gtk_1popover_1menu_1new_1from_1model_1full
+JNIEXPORT jlong JNICALL GTK4_NATIVE(gtk_1popover_1menu_1new_1from_1model_1full)
+	(JNIEnv *env, jclass that, jlong arg0, jint arg1)
+{
+	jlong rc = 0;
+	GTK4_NATIVE_ENTER(env, that, gtk_1popover_1menu_1new_1from_1model_1full_FUNC);
+	rc = (jlong)gtk_popover_menu_new_from_model_full((GMenuModel *)arg0, (GtkPopoverMenuFlags)arg1);
+	GTK4_NATIVE_EXIT(env, that, gtk_1popover_1menu_1new_1from_1model_1full_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_gtk_1popover_1menu_1set_1menu_1model
+JNIEXPORT void JNICALL GTK4_NATIVE(gtk_1popover_1menu_1set_1menu_1model)
+	(JNIEnv *env, jclass that, jlong arg0, jlong arg1)
+{
+	GTK4_NATIVE_ENTER(env, that, gtk_1popover_1menu_1set_1menu_1model_FUNC);
+	gtk_popover_menu_set_menu_model((GtkPopoverMenu *)arg0, (GMenuModel *)arg1);
+	GTK4_NATIVE_EXIT(env, that, gtk_1popover_1menu_1set_1menu_1model_FUNC);
+}
+#endif
+
+#ifndef NO_gtk_1popover_1set_1has_1arrow
+JNIEXPORT void JNICALL GTK4_NATIVE(gtk_1popover_1set_1has_1arrow)
+	(JNIEnv *env, jclass that, jlong arg0, jboolean arg1)
+{
+	GTK4_NATIVE_ENTER(env, that, gtk_1popover_1set_1has_1arrow_FUNC);
+	gtk_popover_set_has_arrow((GtkPopover *)arg0, arg1);
+	GTK4_NATIVE_EXIT(env, that, gtk_1popover_1set_1has_1arrow_FUNC);
 }
 #endif
 
@@ -504,6 +628,156 @@ JNIEXPORT void JNICALL GTK4_NATIVE(gtk_1scrolled_1window_1set_1has_1frame)
 	GTK4_NATIVE_ENTER(env, that, gtk_1scrolled_1window_1set_1has_1frame_FUNC);
 	gtk_scrolled_window_set_has_frame((GtkScrolledWindow *)arg0, arg1);
 	GTK4_NATIVE_EXIT(env, that, gtk_1scrolled_1window_1set_1has_1frame_FUNC);
+}
+#endif
+
+#ifndef NO_gtk_1shortcut_1controller_1add_1shortcut
+JNIEXPORT void JNICALL GTK4_NATIVE(gtk_1shortcut_1controller_1add_1shortcut)
+	(JNIEnv *env, jclass that, jlong arg0, jlong arg1)
+{
+	GTK4_NATIVE_ENTER(env, that, gtk_1shortcut_1controller_1add_1shortcut_FUNC);
+	gtk_shortcut_controller_add_shortcut((GtkShortcutController *)arg0, (GtkShortcut *)arg1);
+	GTK4_NATIVE_EXIT(env, that, gtk_1shortcut_1controller_1add_1shortcut_FUNC);
+}
+#endif
+
+#ifndef NO_gtk_1shortcut_1controller_1new
+JNIEXPORT jlong JNICALL GTK4_NATIVE(gtk_1shortcut_1controller_1new)
+	(JNIEnv *env, jclass that)
+{
+	jlong rc = 0;
+	GTK4_NATIVE_ENTER(env, that, gtk_1shortcut_1controller_1new_FUNC);
+	rc = (jlong)gtk_shortcut_controller_new();
+	GTK4_NATIVE_EXIT(env, that, gtk_1shortcut_1controller_1new_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_gtk_1shortcut_1controller_1remove_1shortcut
+JNIEXPORT void JNICALL GTK4_NATIVE(gtk_1shortcut_1controller_1remove_1shortcut)
+	(JNIEnv *env, jclass that, jlong arg0, jlong arg1)
+{
+	GTK4_NATIVE_ENTER(env, that, gtk_1shortcut_1controller_1remove_1shortcut_FUNC);
+	gtk_shortcut_controller_remove_shortcut((GtkShortcutController *)arg0, (GtkShortcut *)arg1);
+	GTK4_NATIVE_EXIT(env, that, gtk_1shortcut_1controller_1remove_1shortcut_FUNC);
+}
+#endif
+
+#ifndef NO_gtk_1shortcut_1controller_1set_1scope
+JNIEXPORT void JNICALL GTK4_NATIVE(gtk_1shortcut_1controller_1set_1scope)
+	(JNIEnv *env, jclass that, jlong arg0, jint arg1)
+{
+	GTK4_NATIVE_ENTER(env, that, gtk_1shortcut_1controller_1set_1scope_FUNC);
+	gtk_shortcut_controller_set_scope((GtkShortcutController *)arg0, (GtkShortcutScope)arg1);
+	GTK4_NATIVE_EXIT(env, that, gtk_1shortcut_1controller_1set_1scope_FUNC);
+}
+#endif
+
+#ifndef NO_gtk_1shortcut_1new
+JNIEXPORT jlong JNICALL GTK4_NATIVE(gtk_1shortcut_1new)
+	(JNIEnv *env, jclass that, jlong arg0, jlong arg1)
+{
+	jlong rc = 0;
+	GTK4_NATIVE_ENTER(env, that, gtk_1shortcut_1new_FUNC);
+	rc = (jlong)gtk_shortcut_new((GtkShortcutTrigger *)arg0, (GtkShortcutAction *)arg1);
+	GTK4_NATIVE_EXIT(env, that, gtk_1shortcut_1new_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_gtk_1text_1get_1buffer
+JNIEXPORT jlong JNICALL GTK4_NATIVE(gtk_1text_1get_1buffer)
+	(JNIEnv *env, jclass that, jlong arg0)
+{
+	jlong rc = 0;
+	GTK4_NATIVE_ENTER(env, that, gtk_1text_1get_1buffer_FUNC);
+	rc = (jlong)gtk_text_get_buffer((GtkText *)arg0);
+	GTK4_NATIVE_EXIT(env, that, gtk_1text_1get_1buffer_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_gtk_1window_1destroy
+JNIEXPORT void JNICALL GTK4_NATIVE(gtk_1window_1destroy)
+	(JNIEnv *env, jclass that, jlong arg0)
+{
+	GTK4_NATIVE_ENTER(env, that, gtk_1window_1destroy_FUNC);
+	gtk_window_destroy((GtkWindow *)arg0);
+	GTK4_NATIVE_EXIT(env, that, gtk_1window_1destroy_FUNC);
+}
+#endif
+
+#ifndef NO_gtk_1window_1get_1icon_1name
+JNIEXPORT jlong JNICALL GTK4_NATIVE(gtk_1window_1get_1icon_1name)
+	(JNIEnv *env, jclass that, jlong arg0)
+{
+	jlong rc = 0;
+	GTK4_NATIVE_ENTER(env, that, gtk_1window_1get_1icon_1name_FUNC);
+	rc = (jlong)gtk_window_get_icon_name((GtkWindow *)arg0);
+	GTK4_NATIVE_EXIT(env, that, gtk_1window_1get_1icon_1name_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_gtk_1window_1minimize
+JNIEXPORT void JNICALL GTK4_NATIVE(gtk_1window_1minimize)
+	(JNIEnv *env, jclass that, jlong arg0)
+{
+	GTK4_NATIVE_ENTER(env, that, gtk_1window_1minimize_FUNC);
+	gtk_window_minimize((GtkWindow *)arg0);
+	GTK4_NATIVE_EXIT(env, that, gtk_1window_1minimize_FUNC);
+}
+#endif
+
+#ifndef NO_gtk_1window_1new
+JNIEXPORT jlong JNICALL GTK4_NATIVE(gtk_1window_1new)
+	(JNIEnv *env, jclass that)
+{
+	jlong rc = 0;
+	GTK4_NATIVE_ENTER(env, that, gtk_1window_1new_FUNC);
+	rc = (jlong)gtk_window_new();
+	GTK4_NATIVE_EXIT(env, that, gtk_1window_1new_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_gtk_1window_1set_1child
+JNIEXPORT void JNICALL GTK4_NATIVE(gtk_1window_1set_1child)
+	(JNIEnv *env, jclass that, jlong arg0, jlong arg1)
+{
+	GTK4_NATIVE_ENTER(env, that, gtk_1window_1set_1child_FUNC);
+	gtk_window_set_child((GtkWindow *)arg0, (GtkWidget *)arg1);
+	GTK4_NATIVE_EXIT(env, that, gtk_1window_1set_1child_FUNC);
+}
+#endif
+
+#ifndef NO_gtk_1window_1set_1default_1widget
+JNIEXPORT void JNICALL GTK4_NATIVE(gtk_1window_1set_1default_1widget)
+	(JNIEnv *env, jclass that, jlong arg0, jlong arg1)
+{
+	GTK4_NATIVE_ENTER(env, that, gtk_1window_1set_1default_1widget_FUNC);
+	gtk_window_set_default_widget((GtkWindow *)arg0, (GtkWidget *)arg1);
+	GTK4_NATIVE_EXIT(env, that, gtk_1window_1set_1default_1widget_FUNC);
+}
+#endif
+
+#ifndef NO_gtk_1window_1set_1icon_1name
+JNIEXPORT void JNICALL GTK4_NATIVE(gtk_1window_1set_1icon_1name)
+	(JNIEnv *env, jclass that, jlong arg0, jlong arg1)
+{
+	GTK4_NATIVE_ENTER(env, that, gtk_1window_1set_1icon_1name_FUNC);
+	gtk_window_set_icon_name((GtkWindow *)arg0, (const char *)arg1);
+	GTK4_NATIVE_EXIT(env, that, gtk_1window_1set_1icon_1name_FUNC);
+}
+#endif
+
+#ifndef NO_gtk_1window_1unminimize
+JNIEXPORT void JNICALL GTK4_NATIVE(gtk_1window_1unminimize)
+	(JNIEnv *env, jclass that, jlong arg0)
+{
+	GTK4_NATIVE_ENTER(env, that, gtk_1window_1unminimize_FUNC);
+	gtk_window_unminimize((GtkWindow *)arg0);
+	GTK4_NATIVE_EXIT(env, that, gtk_1window_1unminimize_FUNC);
 }
 #endif
 

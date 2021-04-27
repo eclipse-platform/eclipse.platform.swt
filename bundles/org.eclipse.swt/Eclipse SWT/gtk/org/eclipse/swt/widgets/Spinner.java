@@ -560,7 +560,7 @@ public String getText() {
 
 	long stringPtr;
 	if (GTK.GTK4) {
-		long bufferHandle = GTK.gtk_text_get_buffer(entryHandle);
+		long bufferHandle = GTK4.gtk_text_get_buffer(entryHandle);
 		stringPtr = GTK.gtk_entry_buffer_get_text(bufferHandle);
 	} else {
 		stringPtr = GTK.gtk_entry_get_text(handle);
@@ -630,7 +630,7 @@ long gtk_activate (long widget) {
 long gtk_changed (long widget) {
 	long stringPtr;
 	if (GTK.GTK4) {
-		long bufferHandle = GTK.gtk_text_get_buffer(entryHandle);
+		long bufferHandle = GTK4.gtk_text_get_buffer(entryHandle);
 		stringPtr = GTK.gtk_entry_buffer_get_text(bufferHandle);
 	} else {
 		stringPtr = GTK.gtk_entry_get_text(handle);

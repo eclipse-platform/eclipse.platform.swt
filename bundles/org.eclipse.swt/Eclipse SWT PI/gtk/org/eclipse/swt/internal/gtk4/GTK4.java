@@ -193,4 +193,112 @@ public class GTK4 {
 	 * @param child cast=(GtkWidget *)
 	 */
 	public static final native void gtk_scrolled_window_set_child(long scrolled_window, long child);
+
+	/* GtkWindow */
+	public static final native long gtk_window_new();
+	/** @param window cast=(GtkWindow *) */
+	public static final native void gtk_window_minimize(long window);
+	/** @param window cast=(GtkWindow *) */
+	public static final native void gtk_window_unminimize(long window);
+	/**
+	 * @param window cast=(GtkWindow *)
+	 * @param default_widget cast=(GtkWidget *)
+	 */
+	public static final native void gtk_window_set_default_widget(long window, long default_widget);
+	/**
+	 * @param window cast=(GtkWindow *)
+	 * @param child cast=(GtkWidget *)
+	 */
+	public static final native void gtk_window_set_child(long window, long child);
+	/** @param window cast=(GtkWindow *) */
+	public static final native void gtk_window_destroy(long window);
+	/** @param window cast=(GtkWindow *) */
+	public static final native long gtk_window_get_icon_name(long window);
+	/**
+	 * @param window cast=(GtkWindow *)
+	 * @param name cast=(const char *)
+	 * */
+	public static final native void gtk_window_set_icon_name(long window, long name);
+
+	/* GtkShortcutController */
+	public static final native long gtk_shortcut_controller_new();
+	/**
+	 * @param controller cast=(GtkShortcutController *)
+	 * @param scope cast=(GtkShortcutScope)
+	 */
+	public static final native void gtk_shortcut_controller_set_scope(long controller, int scope);
+	/**
+	 * @param controller cast=(GtkShortcutController *)
+	 * @param shortcut cast=(GtkShortcut *)
+	 */
+	public static final native void gtk_shortcut_controller_add_shortcut(long controller, long shortcut);
+	/**
+	 * @param controller cast=(GtkShortcutController *)
+	 * @param shortcut cast=(GtkShortcut *)
+	 */
+	public static final native void gtk_shortcut_controller_remove_shortcut(long controller, long shortcut);
+
+	/* GtkShortcut */
+	/**
+	 * @param trigger cast=(GtkShortcutTrigger *)
+	 * @param action cast=(GtkShortcutAction *)
+	 */
+	public static final native long gtk_shortcut_new(long trigger, long action);
+
+	/* GtkShortcutTrigger */
+	/**
+	 * @param keyval cast=(guint)
+	 * @param modifiers cast=(GdkModifierType)
+	 */
+	public static final native long gtk_keyval_trigger_new(int keyval, int modifiers);
+
+	/* GtkShortcutAction */
+	/** @param name cast=(const char *) */
+	public static final native long gtk_named_action_new(byte[] name);
+
+	/* GtkIconPaintable */
+	/** @param paintable cast=(GtkIconPaintable *) */
+	public static final native long gtk_icon_paintable_get_file(long paintable);
+
+	/* GtkText */
+	/** @param self cast=(GtkText *) */
+	public static final native long gtk_text_get_buffer(long self);
+
+	/* GtkPopoverMenu */
+	/**
+	 * @param model cast=(GMenuModel *)
+	 * @param flags cast=(GtkPopoverMenuFlags)
+	 */
+	public static final native long gtk_popover_menu_new_from_model_full(long model, int flags);
+	/**
+	 * @param popover cast=(GtkPopoverMenu *)
+	 * @param model cast=(GMenuModel *)
+	 */
+	public static final native void gtk_popover_menu_set_menu_model(long popover, long model);
+
+	/* GtkPopover */
+	/** @param popover cast=(GtkPopover *) */
+	public static final native void gtk_popover_set_has_arrow(long popover, boolean has_arrow);
+
+	/* GtkPopoverMenuBar */
+	/** @param model cast=(GMenuModel *) */
+	public static final native long gtk_popover_menu_bar_new_from_model(long model);
+
+	/* GtkIconTheme */
+	/** @param display cast=(GdkDisplay *) */
+	public static final native long gtk_icon_theme_get_for_display(long display);
+	/**
+	 * @param self cast=(GtkIconTheme *)
+	 * @param icon_name cast=(const char *)
+	 * @param fallbacks cast=(const char **)
+	 * @param size cast=(gint)
+	 * @param scale cast=(gint)
+	 * @param direction cast=(GtkTextDirection)
+	 * @param flags cast=(GtkIconLookupFlags)
+	 */
+	public static final native long gtk_icon_theme_lookup_icon(long self, byte[] icon_name, long fallbacks, int size, int scale, int direction, int flags);
+
+	/* GtkNative */
+	/** @param self cast=(GtkNative *) */
+	public static final native long gtk_native_get_surface(long self);
 }

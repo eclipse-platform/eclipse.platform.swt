@@ -3758,7 +3758,7 @@ long gtk_event_after (long widget, long gdkEvent) {
 				display.ignoreFocus = false;
 				long grabHandle = GTK3.gtk_grab_get_current ();
 				if (grabHandle != 0) {
-					if (OS.G_OBJECT_TYPE (grabHandle) == GTK.GTK_TYPE_MENU ()) {
+					if (OS.G_OBJECT_TYPE (grabHandle) == GTK3.GTK_TYPE_MENU ()) {
 						display.ignoreFocus = true;
 						break;
 					}
@@ -6475,7 +6475,7 @@ boolean translateMnemonic (int keyval, long event) {
 		if (GTK.GTK4) {
 			if (state[0] != GDK.GDK_MOD1_MASK) return false;
 		} else {
-			if ((state[0] & mask) != GTK.gtk_window_get_mnemonic_modifier (shell.shellHandle)) return false;
+			if ((state[0] & mask) != GTK3.gtk_window_get_mnemonic_modifier (shell.shellHandle)) return false;
 		}
 	}
 	Decorations shell = menuShell ();
@@ -6724,7 +6724,7 @@ long windowProc (long handle, long arg0, long user_data) {
 				if (control == null) control = this;
 				long gdkResource;
 				if (GTK.GTK4) {
-					gdkResource = GTK.gtk_native_get_surface(GTK.gtk_widget_get_native (handle));
+					gdkResource = GTK4.gtk_native_get_surface(GTK.gtk_widget_get_native (handle));
 					drawBackground (control, gdkResource, cairo, rect.x, rect.y, rect.width, rect.height);
 				} else {
 					gdkResource = GTK.gtk_widget_get_window(handle);

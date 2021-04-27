@@ -18,6 +18,7 @@ import org.eclipse.swt.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.gtk.*;
 import org.eclipse.swt.internal.gtk3.*;
+import org.eclipse.swt.internal.gtk4.*;
 
 /**
  * Instances of this class are used to inform or warn the user.
@@ -167,12 +168,12 @@ public int open() {
 			 * TODO: This may not work as we are setting the icon list of the GtkWindow through
 			 * GdkToplevel (which has no way of retrieving the icon list set. See bug 572200.
 			 */
-			long iconName = GTK.gtk_window_get_icon_name(parentHandle);
+			long iconName = GTK4.gtk_window_get_icon_name(parentHandle);
 			if (iconName != 0) {
-				GTK.gtk_window_set_icon_name(handle, iconName);
+				GTK4.gtk_window_set_icon_name(handle, iconName);
 			}
 		} else {
-			long pixbufs = GTK.gtk_window_get_icon_list(parentHandle);
+			long pixbufs = GTK3.gtk_window_get_icon_list(parentHandle);
 			if (pixbufs != 0) {
 				GTK3.gtk_window_set_icon_list(handle, pixbufs);
 				OS.g_list_free (pixbufs);
@@ -225,7 +226,7 @@ public int open() {
 	display.removeIdleProc();
 
 	if (GTK.GTK4) {
-		GTK.gtk_window_destroy(handle);
+		GTK4.gtk_window_destroy(handle);
 	} else {
 		GTK.gtk_widget_destroy(handle);
 	}

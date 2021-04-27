@@ -233,7 +233,6 @@ public class GTK extends OS {
 	public static final native boolean GTK_IS_CELL_RENDERER_PIXBUF(long obj);
 	public static final native boolean GTK_IS_CELL_RENDERER_TEXT(long obj);
 	public static final native boolean GTK_IS_CELL_RENDERER_TOGGLE(long obj);
-	public static final native boolean GTK_IS_MENU_ITEM(long obj);
 	public static final native boolean GTK_IS_PLUG(long obj);
 	/** @method flags=const */
 	public static final native long GTK_TYPE_CELL_RENDERER_TEXT();
@@ -243,8 +242,6 @@ public class GTK extends OS {
 	public static final native long GTK_TYPE_CELL_RENDERER_TOGGLE();
 	/** @method flags=const */
 	public static final native long GTK_TYPE_IM_MULTICONTEXT();
-	/** @method flags=const */
-	public static final native long GTK_TYPE_MENU();
 	/** @method flags=const */
 	public static final native long GTK_TYPE_WIDGET();
 	/** @method flags=const */
@@ -836,60 +833,10 @@ public class GTK extends OS {
 	/** @param gesture cast=(GtkGestureSingle *) */
 	public static final native int gtk_gesture_single_get_current_button(long gesture);
 
-
-
-
 	/* GtkGestureClick [GTK4 only] */
 	/** @method flags=dynamic */
 	public static final native long gtk_gesture_click_new();
 
-
-	/* GtkShortcutController [GTK4 only] */
-	/** @method flags=dynamic */
-	public static final native long gtk_shortcut_controller_new();
-	/**
-	 * @method flags=dynamic
-	 * @param controller cast=(GtkShortcutController *)
-	 * @param scope cast=(GtkShortcutScope)
-	 */
-	public static final native void gtk_shortcut_controller_set_scope(long controller, int scope);
-	/**
-	 * @method flags=dynamic
-	 * @param controller cast=(GtkShortcutController *)
-	 * @param shortcut cast=(GtkShortcut *)
-	 */
-	public static final native void gtk_shortcut_controller_add_shortcut(long controller, long shortcut);
-	/**
-	 * @method flags=dynamic
-	 * @param controller cast=(GtkShortcutController *)
-	 * @param shortcut cast=(GtkShortcut *)
-	 */
-	public static final native void gtk_shortcut_controller_remove_shortcut(long controller, long shortcut);
-
-	/* GtkShortcut [GTK4 only] */
-	/**
-	 * @method flags=dynamic
-	 * @param trigger cast=(GtkShortcutTrigger *)
-	 * @param action cast=(GtkShortcutAction *)
-	 */
-	public static final native long gtk_shortcut_new(long trigger, long action);
-
-
-	/* GtkShortcutTrigger [GTK4 only] */
-	/**
-	 * @method flags=dynamic
-	 * @param keyval cast=(guint)
-	 * @param modifiers cast=(GdkModifierType)
-	 */
-	public static final native long gtk_keyval_trigger_new(int keyval, int modifiers);
-
-
-	/* GtkShortcutAction [GTK4 only] */
-	/**
-	 * @method flags=dynamic
-	 * @param name cast=(const char *)
-	 */
-	public static final native long gtk_named_action_new(byte[] name);
 
 	/**
 	 * @method flags=dynamic
@@ -1040,60 +987,6 @@ public class GTK extends OS {
 	// Get function pointer to gtk_status_icon_position_menu
 	// See os_custom.h
 	public static final native long gtk_status_icon_position_menu_func();
-
-	/* GtkIconTheme [GTK3 only, if-def'd in os.h] */
-	/**
-	 * @method flags=dynamic
-	 * @param icon_info cast=(GtkIconInfo *)
-	 * @param error cast=(GError **)
-	 */
-	public static final native long gtk_icon_info_load_icon(long icon_info, long error[]);
-	/** @method flags=dynamic */
-	public static final native long gtk_icon_theme_get_default();
-	/**
-	 * @method flags=dynamic
-	 * @param icon_theme cast=(GtkIconTheme *)
-	 * @param icon_name cast=(const gchar *)
-	 * @param size cast=(gint)
-	 * @param flags cast=(GtkIconLookupFlags)
-	 * @param error cast=(GError **)
-	 */
-	public static final native long gtk_icon_theme_load_icon(long icon_theme, byte[] icon_name, int size, int flags, long error);
-	/**
-	 * @method flags=dynamic
-	 * @param icon_theme cast=(GtkIconTheme *)
-	 * @param icon cast=(GIcon *)
-	 * @param size cast=(gint)
-	 * @param flags cast=(GtkIconLookupFlags)
-	 */
-	public static final native long gtk_icon_theme_lookup_by_gicon(long icon_theme, long icon, int size, int flags);
-
-	/* GtkIconTheme [GTK4 only, if-def'd in os.h] */
-	/**
-	 * @method flags=dynamic
-	 * @param display cast=(GdkDisplay *)
-	 */
-	public static final native long gtk_icon_theme_get_for_display(long display);
-	/**
-	 * @method flags=dynamic
-	 * @param self cast=(GtkIconTheme *)
-	 * @param icon_name cast=(const char *)
-	 * @param fallbacks cast=(const char **)
-	 * @param size cast=(gint)
-	 * @param scale cast=(gint)
-	 * @param direction cast=(GtkTextDirection)
-	 * @param flags cast=(GtkIconLookupFlags)
-	 */
-	public static final native long gtk_icon_theme_lookup_icon(long self, byte[] icon_name, long fallbacks, int size, int scale, int direction, int flags);
-
-
-	/* GtkIconPaintable [GTK4 only] */
-	/**
-	 * @method flags=dynamic
-	 * @param paintable cast=(GtkIconPaintable *)
-	 */
-	public static final native long gtk_icon_paintable_get_file(long paintable);
-
 
 	/** @param context cast=(GtkIMContext *) */
 	public static final native void gtk_im_context_focus_in(long context);
@@ -1353,48 +1246,6 @@ public class GTK extends OS {
 	/** @method flags=dynamic */
 	public static final native void gtk_menu_popup_at_rect(long menu, long rect_window, GdkRectangle rect, int rect_anchor, int menu_anchor, long trigger_event);
 
-	/* GtkMenu/GtkMenuItem [GTK3 only, if-def'd in os.h] */
-	public static final native long gtk_menu_bar_new();
-	/** @param menu_item cast=(GtkMenuItem *) */
-	public static final native long gtk_menu_item_get_submenu(long menu_item);
-	public static final native long gtk_menu_item_new();
-	/**
-	 * @param menu_item cast=(GtkMenuItem *)
-	 * @param submenu cast=(GtkWidget *)
-	 */
-	public static final native void gtk_menu_item_set_submenu(long menu_item, long submenu);
-	public static final native long gtk_menu_new();
-	/** @param menu cast=(GtkMenu *) */
-	public static final native void gtk_menu_popdown(long menu);
-	/** @param menu_shell cast=(GtkMenuShell *) */
-	public static final native void gtk_menu_shell_deactivate(long menu_shell);
-	/**
-	 * @param menu_shell cast=(GtkMenuShell *)
-	 * @param child cast=(GtkWidget *)
-	 * @param position cast=(gint)
-	 */
-	public static final native void gtk_menu_shell_insert(long menu_shell, long child, int position);
-	/**
-	 * @param menu_shell cast=(GtkMenuShell *)
-	 * @param take_focus cast=(gboolean)
-	 */
-	public static final native void gtk_menu_shell_set_take_focus(long menu_shell, boolean take_focus);
-
-	/** @param check_menu_item cast=(GtkCheckMenuItem *) */
-	public static final native boolean gtk_check_menu_item_get_active(long check_menu_item);
-	public static final native long gtk_check_menu_item_new();
-	/**
-	 * @param wid cast=(GtkCheckMenuItem *)
-	 * @param active cast=(gboolean)
-	 */
-	public static final native void gtk_check_menu_item_set_active(long wid, boolean active);
-	/** @param radio_menu_item cast=(GtkRadioMenuItem *) */
-	public static final native long gtk_radio_menu_item_get_group(long radio_menu_item);
-	/** @param group cast=(GSList *) */
-	public static final native long gtk_radio_menu_item_new(long group);
-	public static final native long gtk_separator_menu_item_new();
-
-
 	/* GtkPopover */
 	/** @param popover cast=(GtkPopover *) */
 	public static final native void gtk_popover_popdown(long popover);
@@ -1411,34 +1262,6 @@ public class GTK extends OS {
 	 * @param rect cast=(const GdkRectangle *)
 	 */
 	public static final native void gtk_popover_set_pointing_to(long popover, GdkRectangle rect);
-
-	/* GtkPopover [GTK4 only] */
-	/**
-	 * @method flags=dynamic
-	 * @param popover cast=(GtkPopover *)
-	 */
-	public static final native void gtk_popover_set_has_arrow(long popover, boolean has_arrow);
-
-
-	/* GtkPopoverMenuBar [GTK4 only] */
-	/**
-	 * @method flags=dynamic
-	 * @param model cast=(GMenuModel *) */
-	public static final native long gtk_popover_menu_bar_new_from_model(long model);
-
-	/* GtkPopoverMenu [GTK4 only] */
-	/**
-	 * @method flags=dynamic
-	 * @param model cast=(GMenuModel *)
-	 * @param flags cast=(GtkPopoverMenuFlags)
-	 */
-	public static final native long gtk_popover_menu_new_from_model_full(long model, int flags);
-	/**
-	 * @method flags=dynamic
-	 * @param popover cast=(GtkPopoverMenu *)
-	 * @param model cast=(GMenuModel *)
-	 */
-	public static final native void gtk_popover_menu_set_menu_model(long popover, long model);
 
 	/* GtkMenuButton */
 	public static final native long gtk_menu_button_new();
@@ -1946,36 +1769,6 @@ public class GTK extends OS {
 
 
 	public static final native long gtk_settings_get_default();
-	/** @param selection_data cast=(GtkSelectionData *) */
-	public static final native void gtk_selection_data_free(long selection_data);
-	/**
-	 * @param selection_data cast=(GtkSelectionData *)
-	 */
-	public static final native long gtk_selection_data_get_data(long selection_data);
-	/**
-	 * @param selection_data cast=(GtkSelectionData *)
-	 */
-	public static final native int gtk_selection_data_get_format(long selection_data);
-	/**
-	 * @param selection_data cast=(GtkSelectionData *)
-	 */
-	public static final native int gtk_selection_data_get_length(long selection_data);
-	/**
-	 * @param selection_data cast=(GtkSelectionData *)
-	 */
-	public static final native long gtk_selection_data_get_target(long selection_data);
-	/**
-	 * @param selection_data cast=(GtkSelectionData *)
-	 */
-	public static final native long gtk_selection_data_get_data_type(long selection_data);
-	/**
-	 * @param selection_data cast=(GtkSelectionData *)
-	 * @param type cast=(GdkAtom)
-	 * @param format cast=(gint)
-	 * @param data cast=(const guchar *)
-	 * @param length cast=(gint)
-	 */
-	public static final native void gtk_selection_data_set(long selection_data, long type, int format, long data, int length);
 	/** @param socket cast=(GtkSocket *) */
 	public static final native long gtk_socket_get_id(long socket);
 	public static final native long gtk_socket_new();
@@ -2236,10 +2029,6 @@ public class GTK extends OS {
 	/** @param iter cast=(const GtkTextIter *) */
 	public static final native int gtk_text_iter_get_offset(byte[] iter);
 
-	/* GtkText [GTK4 only] */
-	/** @param self cast=(GtkText *) */
-	public static final native long gtk_text_get_buffer(long self);
-
 	/* GtkTextView */
 	public static final native long gtk_text_view_new();
 	/**
@@ -2346,92 +2135,6 @@ public class GTK extends OS {
 	 * @param setting cast=(gboolean)
 	 */
 	public static final native void gtk_toggle_button_set_inconsistent(long toggle_button, boolean setting);
-
-
-	/* GtkToolbar & related tool items [GTK3 only] */
-	/**
-	 * @param icon_widget cast=(GtkWidget *)
-	 * @param label cast=(const gchar *)
-	 */
-	public static final native long gtk_tool_button_new(long icon_widget, byte[] label);
-	/**
-	 * @param button cast=(GtkToolButton *)
-	 * @param widget cast=(GtkWidget *)
-	 */
-	public static final native void gtk_tool_button_set_icon_widget(long button, long widget);
-	/**
-	 * @param button cast=(GtkToolButton *)
-	 * @param widget cast=(GtkWidget *)
-	 */
-	public static final native void gtk_tool_button_set_label_widget(long button,  long widget);
-	/**
-	 * @param item cast=(GtkToolButton *)
-	 * @param underline cast=(gboolean)
-	 */
-	public static final native void gtk_tool_button_set_use_underline(long item, boolean underline);
-
-	/** @param button cast=(GtkToggleToolButton *) */
-	public static final native boolean gtk_toggle_tool_button_get_active(long button);
-	public static final native long gtk_toggle_tool_button_new();
-	/**
-	 * @param item cast=(GtkToggleToolButton *)
-	 * @param selected cast=(gboolean)
-	 */
-	public static final native void gtk_toggle_tool_button_set_active(long item, boolean selected);
-
-	/**
-	 * @param item cast=(GtkToolItem *)
-	 * @param menu_id cast=(const gchar *)
-	 */
-	public static final native long gtk_tool_item_get_proxy_menu_item(long item, byte[] menu_id);
-	/** @param item cast=(GtkToolItem *) */
-	public static final native long gtk_tool_item_retrieve_proxy_menu_item(long item);
-	/**
-	 * @param item cast=(GtkToolItem *)
-	 * @param important cast=(gboolean)
-	 */
-	public static final native void gtk_tool_item_set_is_important(long item, boolean important);
-	/**
-	 * @param item cast=(GtkToolItem *)
-	 * @param homogeneous cast=(gboolean)
-	 */
-	public static final native void gtk_tool_item_set_homogeneous(long item, boolean homogeneous);
-	/**
-	 * @param item cast=(GtkToolItem *)
-	 * @param menu_id cast=(const gchar *)
-	 * @param widget cast=(GtkWidget *)
-	 */
-	public static final native void gtk_tool_item_set_proxy_menu_item(long item, byte[] menu_id, long widget);
-	/**
-	 * @param toolbar cast=(GtkToolbar *)
-	 * @param item cast=(GtkToolItem *)
-	 */
-	public static final native void gtk_toolbar_insert(long toolbar, long item, int pos);
-	public static final native long gtk_toolbar_new();
-	/**
-	 * @param toolbar cast=(GtkToolbar *)
-	 * @param show_arrow cast=(gboolean)
-	 */
-	public static final native void gtk_toolbar_set_show_arrow(long toolbar, boolean show_arrow);
-	/**
-	 * @param toolbar cast=(GtkToolbar *)
-	 * @param style cast=(GtkToolbarStyle)
-	 */
-	public static final native void gtk_toolbar_set_style(long toolbar, int style);
-	/** @param toolbar cast=(GtkToolbar *)*/
-	public static final native void gtk_toolbar_set_icon_size(long toolbar, int size);
-	/**
-	 * @param icon_widget cast=(GtkWidget *)
-	 * @param label cast=(const gchar *)
-	 */
-	public static final native long gtk_menu_tool_button_new(long icon_widget, byte[] label);
-	public static final native long gtk_separator_tool_item_new();
-	/**
-	 * @param item cast=(GtkSeparatorToolItem *)
-	 * @param draw cast=(gboolean)
-	 */
-	public static final native void gtk_separator_tool_item_set_draw(long item, boolean draw);
-
 
 
 	public static final native long gtk_tooltip_get_type();
@@ -2904,11 +2607,6 @@ public class GTK extends OS {
 	 */
 	/* [GTK3 only, if-def'd in os.h] */
 	public static final native void gtk_viewport_set_shadow_type(long viewport, int type);
-
-	/* GtkNative [GTK4 only] */
-	/** @param self cast=(GtkNative *) */
-	public static final native long gtk_native_get_surface(long self);
-
 
 	/**
 	 * @param context cast=(GtkStyleContext *)
@@ -3528,107 +3226,11 @@ public class GTK extends OS {
 	 */
 	public static final native void gtk_window_get_default_size(long window, int[] width, int[] height);
 
-	/* GtkWindow [GTK3 only, if-def'd in os.h] */
-	/**
-	 * @param window cast=(GtkWindow *)
-	 * @param accel_group cast=(GtkAccelGroup *)
-	 */
-	public static final native void gtk_window_add_accel_group(long window, long accel_group);
-	/**
-	 * @param window cast=(GtkWindow *)
-	 * @param accel_group cast=(GtkAccelGroup *)
-	 */
-	public static final native void gtk_window_remove_accel_group(long window, long accel_group);
+	/* GtkWindow [GTK3] */
 	/**
 	 * @param window cast=(GtkWindow *)
 	 * @param geometry_widget cast=(GtkWidget *)
 	 * @param geometry flags=no_out
 	 */
 	public static final native void gtk_window_set_geometry_hints(long window, long geometry_widget, GdkGeometry geometry, int geom_mask);
-	/** @param handle cast=(GtkWindow *) */
-	public static final native void gtk_window_deiconify(long handle);
-	/** @param handle cast=(GtkWindow *) */
-	public static final native void gtk_window_iconify(long handle);
-	/**
-	 * @param window cast=(GtkWindow *)
-	 * @param widget cast=(GtkWidget *)
-	 */
-	public static final native void gtk_window_set_default(long window, long widget);
-	/** @param window cast=(GtkWindow *) */
-	public static final native boolean gtk_window_activate_default(long window);
-	/** @param window cast=(GtkWindow *) */
-	public static final native void gtk_window_set_type_hint(long window, int hint);
-	/**
-	 * @param window cast=(GtkWindow *)
-	 * @param skips_taskbar cast=(gboolean)
-	 */
-	public static final native void gtk_window_set_skip_taskbar_hint(long window, boolean skips_taskbar);
-	/**
-	 * @param window cast=(GtkWindow *)
-	 * @param setting cast=(gboolean)
-	 */
-	public static final native void gtk_window_set_keep_above(long window, boolean setting);
-	/** @param window cast=(GtkWindow *) */
-	public static final native long gtk_window_get_icon_list(long window);
-	/**
-	 * @param window cast=(GtkWindow *)
-	 * @param attach_widget cast=(GtkWidget *)
-	 */
-	public static final native void gtk_window_set_attached_to(long window, long attach_widget);
-	/**
-	 * @param handle cast=(GtkWindow *)
-	 * @param x cast=(gint)
-	 * @param y cast=(gint)
-	 */
-	public static final native void gtk_window_move(long handle, int x, int y);
-	/** @param type cast=(GtkWindowType) */
-	public static final native long gtk_window_new(int type);
-	/**
-	 * @param handle cast=(GtkWindow *)
-	 * @param x cast=(gint *)
-	 * @param y cast=(gint *)
-	 */
-	public static final native void gtk_window_get_position(long handle, int[] x, int[] y);
-	/** @param window cast=(GtkWindow *) */
-	public static final native int gtk_window_get_mnemonic_modifier(long window);
-	/**
-	 * @method flags=dynamic
-	 * @param handle cast=(GtkWindow *)
-	 * @param x cast=(gint)
-	 * @param y cast=(gint)
-	 */
-	public static final native void gtk_window_resize(long handle, int x, int y);
-	/**
-	 * @method flags=dynamic
-	 * @param handle cast=(GtkWindow *)
-	 * @param width cast=(gint *)
-	 * @param height cast=(gint *)
-	 */
-	public static final native void gtk_window_get_size(long handle, int[] width, int[] height);
-
-	/* GtkWindow [GTK4 only, if-def'd in os.h] */
-	public static final native long gtk_window_new();
-	/** @param window cast=(GtkWindow *) */
-	public static final native void gtk_window_minimize(long window);
-	/** @param window cast=(GtkWindow *) */
-	public static final native void gtk_window_unminimize(long window);
-	/**
-	 * @param window cast=(GtkWindow *)
-	 * @param default_widget cast=(GtkWidget *)
-	 */
-	public static final native void gtk_window_set_default_widget(long window, long default_widget);
-	/**
-	 * @param window cast=(GtkWindow *)
-	 * @param child cast=(GtkWidget *)
-	 */
-	public static final native void gtk_window_set_child(long window, long child);
-	/** @param window cast=(GtkWindow *) */
-	public static final native void gtk_window_destroy(long window);
-	/** @param window cast=(GtkWindow *) */
-	public static final native long gtk_window_get_icon_name(long window);
-	/**
-	 * @param window cast=(GtkWindow *)
-	 * @param name cast=(const char *)
-	 * */
-	public static final native void gtk_window_set_icon_name(long window, long name);
 }

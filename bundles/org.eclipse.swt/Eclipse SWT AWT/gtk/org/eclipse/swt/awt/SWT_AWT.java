@@ -26,6 +26,7 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.gtk.*;
+import org.eclipse.swt.internal.gtk4.*;
 import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.widgets.Composite;
 
@@ -191,7 +192,7 @@ public static Frame new_Frame (final Composite parent) {
 
 					long xWindow;
 					if (GTK.GTK4) {
-						xWindow = GDK.gdk_x11_surface_get_xid(GTK.gtk_native_get_surface (GTK.gtk_widget_get_native(shell.handle)));
+						xWindow = GDK.gdk_x11_surface_get_xid(GTK4.gtk_native_get_surface (GTK.gtk_widget_get_native(shell.handle)));
 					} else {
 						xWindow = GDK.gdk_x11_window_get_xid (GTK.gtk_widget_get_window (GTK.gtk_widget_get_toplevel (shell.handle)));
 					}

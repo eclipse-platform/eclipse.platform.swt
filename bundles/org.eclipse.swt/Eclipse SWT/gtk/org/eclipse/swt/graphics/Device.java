@@ -22,6 +22,8 @@ import org.eclipse.swt.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.cairo.*;
 import org.eclipse.swt.internal.gtk.*;
+import org.eclipse.swt.internal.gtk3.*;
+import org.eclipse.swt.internal.gtk4.*;
 
 /**
  * This class is the abstract superclass of all device objects,
@@ -677,9 +679,9 @@ protected void init () {
 	OS.pango_tab_array_set_tab(emptyTab, 0, OS.PANGO_TAB_LEFT, 1);
 
 	if (GTK.GTK4) {
-		shellHandle = GTK.gtk_window_new();
+		shellHandle = GTK4.gtk_window_new();
 	} else {
-		shellHandle = GTK.gtk_window_new (GTK.GTK_WINDOW_TOPLEVEL);
+		shellHandle = GTK3.gtk_window_new (GTK.GTK_WINDOW_TOPLEVEL);
 	}
 	if (shellHandle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	GTK.gtk_widget_realize(shellHandle);
@@ -975,7 +977,7 @@ static synchronized void register (Device device) {
 protected void release () {
 	if (shellHandle != 0) {
 		if (GTK.GTK4) {
-			GTK.gtk_window_destroy(shellHandle);
+			GTK4.gtk_window_destroy(shellHandle);
 		} else {
 			GTK.gtk_widget_destroy(shellHandle);
 		}
@@ -1105,7 +1107,7 @@ protected int getDeviceZoom() {
 		long monitor;
 
 		if (GTK.GTK4) {
-			long surface = GTK.gtk_native_get_surface(GTK.gtk_widget_get_native(shellHandle));
+			long surface = GTK4.gtk_native_get_surface(GTK.gtk_widget_get_native(shellHandle));
 			monitor = GDK.gdk_display_get_monitor_at_surface(display, surface);
 		} else {
 			monitor = GDK.gdk_display_get_monitor_at_point(display, 0, 0);

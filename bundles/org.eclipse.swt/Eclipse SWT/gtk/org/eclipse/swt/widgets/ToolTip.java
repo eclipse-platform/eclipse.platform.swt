@@ -20,6 +20,8 @@ import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.cairo.*;
 import org.eclipse.swt.internal.gtk.*;
+import org.eclipse.swt.internal.gtk3.*;
+import org.eclipse.swt.internal.gtk4.*;
 
 /**
  * Instances of this class represent popup windows that are used
@@ -172,7 +174,7 @@ void configure () {
 	point = getLocation ();
 	int x = point.x;
 	int y = point.y;
-	GTK.gtk_window_resize (handle, w, h + TIP_HEIGHT);
+	GTK3.gtk_window_resize (handle, w, h + TIP_HEIGHT);
 	int[] polyline;
 	Rectangle bounds = display.getBounds();
 	int width = bounds != null && GTK.GTK4 ? bounds.width : GDK.gdk_screen_width();
@@ -202,7 +204,7 @@ void configure () {
 				borderPolygon[12] = w-35;
 				borderPolygon[14] = borderPolygon[16]  = w-16;
 			}
-			GTK.gtk_window_move (handle, Math.max(0, x - 17), y);
+			GTK3.gtk_window_move (handle, Math.max(0, x - 17), y);
 		} else {
 			polyline = new int[] {
 				0, 5, 1, 5, 1, 3, 3, 1,  5, 1, 5, 0,
@@ -225,7 +227,7 @@ void configure () {
 				borderPolygon[36] = borderPolygon[38] = w-17;
 				borderPolygon [40] = w-35;
 			}
-			GTK.gtk_window_move (handle, Math.max(0, x - 17), y - h - TIP_HEIGHT);
+			GTK3.gtk_window_move (handle, Math.max(0, x - 17), y - h - TIP_HEIGHT);
 		}
 	} else {
 		if (dest.height >= y + h + TIP_HEIGHT) {
@@ -251,7 +253,7 @@ void configure () {
 				borderPolygon[12] =  borderPolygon[14] = 16;
 				borderPolygon [16] = 35;
 			}
-			GTK.gtk_window_move (handle, Math.max(dest.width- w, x - w + 17), y);
+			GTK3.gtk_window_move (handle, Math.max(dest.width- w, x - w + 17), y);
 		} else {
 			polyline = new int[] {
 				0, 5, 1, 5, 1, 3, 3, 1,  5, 1, 5, 0,
@@ -274,7 +276,7 @@ void configure () {
 				borderPolygon[36] = 35;
 				borderPolygon[38] = borderPolygon [40] = 17;
 			}
-			GTK.gtk_window_move (handle, Math.max(dest.width - w, x - w + 17), y - h - TIP_HEIGHT);
+			GTK3.gtk_window_move (handle, Math.max(dest.width - w, x - w + 17), y - h - TIP_HEIGHT);
 		}
 	}
 	GTK.gtk_widget_realize(handle);
@@ -288,14 +290,14 @@ void configure () {
 void createHandle (int index) {
 	if ((style & SWT.BALLOON) != 0) {
 		state |= HANDLE;
-		handle = GTK.gtk_window_new (GTK.GTK_WINDOW_POPUP);
+		handle = GTK3.gtk_window_new (GTK.GTK_WINDOW_POPUP);
 		Color background = display.getSystemColor (SWT.COLOR_INFO_BACKGROUND);
 		long context = GTK.gtk_widget_get_style_context (handle);
 		GdkRGBA bgRGBA = background.handle;
 		String css = "window {background-color: " + display.gtk_rgba_to_css_string(bgRGBA) + ";}";
 		gtk_css_provider_load_from_css (context, css);
 		GTK.gtk_style_context_invalidate (context);
-		GTK.gtk_window_set_type_hint (handle, GDK.GDK_WINDOW_TYPE_HINT_TOOLTIP);
+		GTK3.gtk_window_set_type_hint (handle, GDK.GDK_WINDOW_TYPE_HINT_TOOLTIP);
 	}
 }
 
@@ -530,12 +532,12 @@ void drawTooltip (long cairo) {
 		if (buffer != null) {
 			long iconTheme;
 			if (GTK.GTK4) {
-				iconTheme = GTK.gtk_icon_theme_get_for_display(GDK.gdk_display_get_default());
+				iconTheme = GTK4.gtk_icon_theme_get_for_display(GDK.gdk_display_get_default());
 			} else {
-				iconTheme = GTK.gtk_icon_theme_get_default();
+				iconTheme = GTK3.gtk_icon_theme_get_default();
 			}
 
-			long pixbuf = GTK.gtk_icon_theme_load_icon(iconTheme, buffer, GTK.GTK_ICON_SIZE_MENU, 0, 0);
+			long pixbuf = GTK3.gtk_icon_theme_load_icon(iconTheme, buffer, GTK.GTK_ICON_SIZE_MENU, 0, 0);
 			GDK.gdk_cairo_set_source_pixbuf(cairo, pixbuf, x, y);
 			Cairo.cairo_paint (cairo);
 			OS.g_object_unref (pixbuf);
@@ -588,7 +590,7 @@ long gtk_size_allocate (long widget, long allocation) {
 	int h = widgetAllocation.height;
 	if (dest.height < y + h) y -= h;
 	if (dest.width < x + w) x -= w;
-	GTK.gtk_window_move (widget, x, y);
+	GTK3.gtk_window_move (widget, x, y);
 	return 0;
 }
 

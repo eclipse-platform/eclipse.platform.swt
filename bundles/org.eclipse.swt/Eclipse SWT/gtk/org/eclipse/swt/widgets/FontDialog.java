@@ -19,6 +19,7 @@ import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.gtk.*;
 import org.eclipse.swt.internal.gtk3.*;
+import org.eclipse.swt.internal.gtk4.*;
 
 /**
  * Instances of this class allow the user to select a font
@@ -229,7 +230,7 @@ public FontData open () {
 	display.removeIdleProc ();
 
 	if (GTK.GTK4) {
-		GTK.gtk_window_destroy(handle);
+		GTK4.gtk_window_destroy(handle);
 	} else {
 		GTK.gtk_widget_destroy(handle);
 	}

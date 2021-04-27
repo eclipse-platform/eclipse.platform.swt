@@ -350,10 +350,10 @@ void drag_data_received ( long widget, long context, int x, int y, long selectio
 	// Get data in a Java format
 	Object object = null;
 	TransferData transferData = new TransferData();
-	int length = GTK.gtk_selection_data_get_length(selection_data);
-	int format = GTK.gtk_selection_data_get_format(selection_data);
-	long data = GTK.gtk_selection_data_get_data(selection_data);
-	long type = GTK.gtk_selection_data_get_data_type(selection_data);
+	int length = GTK3.gtk_selection_data_get_length(selection_data);
+	int format = GTK3.gtk_selection_data_get_format(selection_data);
+	long data = GTK3.gtk_selection_data_get_data(selection_data);
+	long type = GTK3.gtk_selection_data_get_data_type(selection_data);
 	if (data != 0) {
 		transferData.type = type;
 		transferData.length = length;
