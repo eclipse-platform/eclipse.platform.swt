@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2018 IBM Corporation and others.
+ * Copyright (c) 2000, 2021 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -199,6 +199,7 @@ public Path (Device device, PathData data) {
  * </ul>
  */
 public void addArc (float x, float y, float width, float height, float startAngle, float arcAngle) {
+	if (width == 0 || height == 0 || arcAngle == 0) return;
 	Drawable drawable = getDevice();
 	x = DPIUtil.autoScaleUp(drawable, x);
 	y = DPIUtil.autoScaleUp(drawable, y);
@@ -217,7 +218,6 @@ void addArcInPixels(float x, float y, float width, float height, float startAngl
 		y = y + height;
 		height = -height;
 	}
-	if (width == 0 || height == 0 || arcAngle == 0) return;
 	if (width == height) {
 		Gdip.GraphicsPath_AddArc(handle, x, y, width, height, -startAngle, -arcAngle);
 	} else {
