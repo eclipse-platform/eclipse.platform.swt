@@ -942,23 +942,23 @@ void hookEvents () {
 	}
 	if (GTK.GTK4) {
 		OS.g_signal_connect_closure (shellHandle, OS.close_request, display.getClosure (CLOSE_REQUEST), false);
-		long keyController = GTK.gtk_event_controller_key_new();
+		long keyController = GTK4.gtk_event_controller_key_new();
 		GTK.gtk_widget_add_controller(shellHandle, keyController);
 		GTK.gtk_event_controller_set_propagation_phase(keyController, GTK.GTK_PHASE_TARGET);
 		OS.g_signal_connect (keyController, OS.key_pressed, display.keyPressReleaseProc, KEY_PRESSED);
 
-		long focusController = GTK.gtk_event_controller_focus_new();
+		long focusController = GTK4.gtk_event_controller_focus_new();
 		GTK.gtk_widget_add_controller(shellHandle, focusController);
 		OS.g_signal_connect (focusController, OS.enter, display.focusProc, FOCUS_IN);
 		OS.g_signal_connect (focusController, OS.leave, display.focusProc, FOCUS_OUT);
 
-		long enterLeaveController = GTK.gtk_event_controller_motion_new();
+		long enterLeaveController = GTK4.gtk_event_controller_motion_new();
 		GTK.gtk_widget_add_controller(shellHandle, enterLeaveController);
 
 		long enterMotionAddress = display.enterMotionScrollCallback.getAddress();
 		OS.g_signal_connect (enterLeaveController, OS.enter, enterMotionAddress, ENTER);
 		if (isCustomResize()) {
-			long motionController = GTK.gtk_event_controller_motion_new();
+			long motionController = GTK4.gtk_event_controller_motion_new();
 			GTK.gtk_widget_add_controller(shellHandle, motionController);
 			GTK.gtk_event_controller_set_propagation_phase(motionController, GTK.GTK_PHASE_TARGET);
 

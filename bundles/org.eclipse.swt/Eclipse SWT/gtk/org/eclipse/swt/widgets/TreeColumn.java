@@ -20,6 +20,7 @@ import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.gtk.*;
 import org.eclipse.swt.internal.gtk3.*;
+import org.eclipse.swt.internal.gtk4.*;
 
 /**
  * Instances of this class represent a column in a tree widget.
@@ -431,7 +432,7 @@ void hookEvents () {
 	super.hookEvents();
 
 	if (GTK.GTK4) {
-		 long clickController = GTK.gtk_gesture_click_new();
+		 long clickController = GTK4.gtk_gesture_click_new();
 		 GTK.gtk_widget_add_controller(buttonHandle, clickController);
 		 GTK.gtk_event_controller_set_propagation_phase(clickController, GTK.GTK_PHASE_CAPTURE);
 		 OS.g_signal_connect(clickController, OS.pressed, display.gesturePressReleaseProc, GESTURE_PRESSED);

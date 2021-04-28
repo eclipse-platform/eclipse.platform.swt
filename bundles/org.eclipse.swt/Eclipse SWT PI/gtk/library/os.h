@@ -349,10 +349,6 @@
 #define NO_gdk_1keymap_1translate_1keyboard_1state
 #define NO_gdk_1keymap_1get_1entries_1for_1keyval
 
-// No GtkShadowType in GTK4
-#define NO_gtk_1viewport_1set_1shadow_1type
-#define NO_gtk_1frame_1set_1shadow_1type
-
 // GdkAtom removed
 #define NO_gtk_1drag_1get_1data__JJJ
 #define NO_gdk_1text_1property_1to_1utf8_1list_1for_1display

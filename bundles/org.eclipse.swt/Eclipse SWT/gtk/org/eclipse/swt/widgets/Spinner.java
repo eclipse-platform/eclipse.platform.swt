@@ -225,7 +225,7 @@ Point computeSizeInPixels (int wHint, int hHint, boolean changed) {
 		return new Point(trim.width, trim.height);
 	} else {
 		GTK.gtk_widget_realize (handle);
-		long layout = GTK.gtk_entry_get_layout (handle);
+		long layout = GTK3.gtk_entry_get_layout (handle);
 		long hAdjustment = GTK.gtk_spin_button_get_adjustment (handle);
 		double upper = GTK.gtk_adjustment_get_upper (hAdjustment);
 		int digits = GTK.gtk_spin_button_get_digits (handle);
@@ -316,7 +316,7 @@ public void copy () {
 		long textHandle = GTK.gtk_widget_get_first_child(entryHandle);
 		GTK.gtk_widget_activate_action(textHandle, OS.action_copy_clipboard, null);
 	} else {
-		GTK.gtk_editable_copy_clipboard(handle);
+		GTK3.gtk_editable_copy_clipboard(handle);
 	}
 }
 
@@ -363,7 +363,7 @@ public void cut () {
 		long textHandle = GTK.gtk_widget_get_first_child(entryHandle);
 		GTK.gtk_widget_activate_action(textHandle, OS.action_cut_clipboard, null);
 	} else {
-		GTK.gtk_editable_cut_clipboard(handle);
+		GTK3.gtk_editable_cut_clipboard(handle);
 	}
 }
 
@@ -563,7 +563,7 @@ public String getText() {
 		long bufferHandle = GTK4.gtk_text_get_buffer(entryHandle);
 		stringPtr = GTK.gtk_entry_buffer_get_text(bufferHandle);
 	} else {
-		stringPtr = GTK.gtk_entry_get_text(handle);
+		stringPtr = GTK3.gtk_entry_get_text(handle);
 	}
 	if (stringPtr == 0) return "";
 
@@ -633,7 +633,7 @@ long gtk_changed (long widget) {
 		long bufferHandle = GTK4.gtk_text_get_buffer(entryHandle);
 		stringPtr = GTK.gtk_entry_buffer_get_text(bufferHandle);
 	} else {
-		stringPtr = GTK.gtk_entry_get_text(handle);
+		stringPtr = GTK3.gtk_entry_get_text(handle);
 	}
 
 	int length = C.strlen(stringPtr);
@@ -720,7 +720,7 @@ long gtk_commit (long imContext, long text) {
 @Override
 long gtk_delete_text (long widget, long start_pos, long end_pos) {
 	if (!hooks (SWT.Verify) && !filters (SWT.Verify)) return 0;
-	long ptr = GTK.gtk_entry_get_text (GTK.GTK4 ? entryHandle : handle);
+	long ptr = GTK3.gtk_entry_get_text (GTK.GTK4 ? entryHandle : handle);
 	if (end_pos == -1) end_pos = OS.g_utf8_strlen (ptr, -1);
 	int start = (int)OS.g_utf8_offset_to_utf16_offset (ptr, start_pos);
 	int end = (int)OS.g_utf8_offset_to_utf16_offset (ptr, end_pos);
@@ -764,7 +764,7 @@ long gtk_insert_text (long widget, long new_text, long new_text_length, long pos
 	String oldText = new String (Converter.mbcsToWcs (buffer));
 	int [] pos = new int [1];
 	C.memmove (pos, position, 4);
-	long ptr = GTK.gtk_entry_get_text (GTK.GTK4 ? entryHandle : handle);
+	long ptr = GTK3.gtk_entry_get_text (GTK.GTK4 ? entryHandle : handle);
 	if (pos [0] == -1) pos [0] = (int)OS.g_utf8_strlen (ptr, -1);
 	int start = (int)OS.g_utf16_pointer_to_offset (ptr, pos [0]);
 	String newText = verifyText (oldText, start, start);
@@ -886,7 +886,7 @@ long paintSurface () {
  */
 public void paste () {
 	checkWidget ();
-	GTK.gtk_editable_paste_clipboard (GTK.GTK4? entryHandle : handle);
+	GTK3.gtk_editable_paste_clipboard (GTK.GTK4? entryHandle : handle);
 }
 
 @Override

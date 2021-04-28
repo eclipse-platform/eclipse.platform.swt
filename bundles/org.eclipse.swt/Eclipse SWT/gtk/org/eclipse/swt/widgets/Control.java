@@ -446,13 +446,13 @@ void hookEvents () {
 
 private void hookKeyboardAndFocusSignals(long focusHandle) {
 	if (GTK.GTK4) {
-		long keyController = GTK.gtk_event_controller_key_new();
+		long keyController = GTK4.gtk_event_controller_key_new();
 		GTK.gtk_event_controller_set_propagation_phase(keyController, GTK.GTK_PHASE_TARGET);
 		GTK.gtk_widget_add_controller(focusHandle, keyController);
 		OS.g_signal_connect(keyController, OS.key_pressed, display.keyPressReleaseProc, KEY_PRESSED);
 		OS.g_signal_connect(keyController, OS.key_released, display.keyPressReleaseProc, KEY_RELEASED);
 
-		long focusController = GTK.gtk_event_controller_focus_new();
+		long focusController = GTK4.gtk_event_controller_focus_new();
 		GTK.gtk_event_controller_set_propagation_phase(focusController, GTK.GTK_PHASE_TARGET);
 		GTK.gtk_widget_add_controller(focusHandle, focusController);
 		OS.g_signal_connect(focusController, OS.enter, display.focusProc, FOCUS_IN);
@@ -471,23 +471,23 @@ private void hookMouseSignals(long eventHandle) {
 	long enterExitHandle = enterExitHandle();
 
 	if (GTK.GTK4) {
-		long clickGesture = GTK.gtk_gesture_click_new();
+		long clickGesture = GTK4.gtk_gesture_click_new();
 		GTK.gtk_gesture_single_set_button(clickGesture, 0);
 		GTK.gtk_widget_add_controller(eventHandle, clickGesture);
 		OS.g_signal_connect(clickGesture, OS.pressed, display.gesturePressReleaseProc, GESTURE_PRESSED);
 		OS.g_signal_connect(clickGesture, OS.released, display.gesturePressReleaseProc, GESTURE_RELEASED);
 
-		long scrollController = GTK.gtk_event_controller_scroll_new(GTK.GTK_EVENT_CONTROLLER_SCROLL_BOTH_AXES);
+		long scrollController = GTK4.gtk_event_controller_scroll_new(GTK.GTK_EVENT_CONTROLLER_SCROLL_BOTH_AXES);
 		GTK.gtk_event_controller_set_propagation_phase(scrollController, GTK.GTK_PHASE_TARGET);
 		GTK.gtk_widget_add_controller(eventHandle, scrollController);
 		OS.g_signal_connect(scrollController, OS.scroll, display.enterMotionScrollProc, SCROLL);
 
-		long motionController = GTK.gtk_event_controller_motion_new();
+		long motionController = GTK4.gtk_event_controller_motion_new();
 		GTK.gtk_event_controller_set_propagation_phase(motionController, GTK.GTK_PHASE_TARGET);
 		GTK.gtk_widget_add_controller(eventHandle, motionController);
 		OS.g_signal_connect(motionController, OS.motion, display.enterMotionScrollProc, MOTION);
 
-		long enterExitController = GTK.gtk_event_controller_motion_new();
+		long enterExitController = GTK4.gtk_event_controller_motion_new();
 		GTK.gtk_event_controller_set_propagation_phase(enterExitController, GTK.GTK_PHASE_TARGET);
 		GTK.gtk_widget_add_controller(enterExitHandle, enterExitController);
 		OS.g_signal_connect(enterExitController, OS.enter, display.enterMotionScrollProc, ENTER);
@@ -4097,7 +4097,7 @@ long gtk_motion_notify_event (long widget, long event) {
 			}
 		}
 		if (dragging) {
-			GTK.gtk_event_controller_handle_event(dragGesture,event);
+			GTK3.gtk_event_controller_handle_event(dragGesture,event);
 			int eventType = GDK.gdk_event_get_event_type(event);
 			if (eventType == GDK.GDK_3BUTTON_PRESS) return 0;
 

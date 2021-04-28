@@ -1943,12 +1943,12 @@ void setText (String dateTimeText) {
 		byte [] dateTimeConverted = Converter.wcsToMbcs (dateTimeText, true);
 
 		if (GTK.GTK4) {
-			long bufferHandle = isDateWithDropDownButton() ? GTK.gtk_entry_get_buffer(textEntryHandle) : GTK4.gtk_text_get_buffer(textEntryHandle);
+			long bufferHandle = isDateWithDropDownButton() ? GTK4.gtk_entry_get_buffer(textEntryHandle) : GTK4.gtk_text_get_buffer(textEntryHandle);
 			GTK.gtk_entry_buffer_set_text(bufferHandle, dateTimeConverted, dateTimeText.length());
 		} else {
 			//note, this is ignored if the control is in a fill-layout.
-			GTK.gtk_entry_set_width_chars(textEntryHandle, dateTimeText.length());
-			GTK.gtk_entry_set_text(textEntryHandle, dateTimeConverted);
+			GTK3.gtk_entry_set_width_chars(textEntryHandle, dateTimeText.length());
+			GTK3.gtk_entry_set_text(textEntryHandle, dateTimeConverted);
 		}
 
 		if (popupCalendar != null && calendar != null) {
@@ -2055,10 +2055,10 @@ String getText() {
 		long stringPtr;
 
 		if (GTK.GTK4) {
-			long bufferHandle = isDateWithDropDownButton() ? GTK.gtk_entry_get_buffer(textEntryHandle) : GTK4.gtk_text_get_buffer(textEntryHandle);
+			long bufferHandle = isDateWithDropDownButton() ? GTK4.gtk_entry_get_buffer(textEntryHandle) : GTK4.gtk_text_get_buffer(textEntryHandle);
 			stringPtr = GTK.gtk_entry_buffer_get_text(bufferHandle);
 		} else {
-			stringPtr = GTK.gtk_entry_get_text(textEntryHandle);
+			stringPtr = GTK3.gtk_entry_get_text(textEntryHandle);
 		}
 
 		if (stringPtr == 0) return "";
@@ -2104,10 +2104,10 @@ Point getTextSelection() {
 
 	long stringPtr;
 	if (GTK.GTK4) {
-		long bufferHandle = isDateWithDropDownButton() ? GTK.gtk_entry_get_buffer(textEntryHandle) : GTK4.gtk_text_get_buffer(textEntryHandle);
+		long bufferHandle = isDateWithDropDownButton() ? GTK4.gtk_entry_get_buffer(textEntryHandle) : GTK4.gtk_text_get_buffer(textEntryHandle);
 		stringPtr = GTK.gtk_entry_buffer_get_text(bufferHandle);
 	} else {
-		stringPtr = GTK.gtk_entry_get_text (textEntryHandle);
+		stringPtr = GTK3.gtk_entry_get_text (textEntryHandle);
 	}
 
 	start[0] = (int)OS.g_utf8_offset_to_utf16_offset(stringPtr, start[0]);
@@ -2122,10 +2122,10 @@ void setTextSelection(int start, int end) {
 
 	long stringPtr;
 	if (GTK.GTK4) {
-		long bufferHandle = isDateWithDropDownButton() ? GTK.gtk_entry_get_buffer(textEntryHandle) : GTK4.gtk_text_get_buffer(textEntryHandle);
+		long bufferHandle = isDateWithDropDownButton() ? GTK4.gtk_entry_get_buffer(textEntryHandle) : GTK4.gtk_text_get_buffer(textEntryHandle);
 		stringPtr = GTK.gtk_entry_buffer_get_text(bufferHandle);
 	} else {
-		stringPtr = GTK.gtk_entry_get_text(textEntryHandle);
+		stringPtr = GTK3.gtk_entry_get_text(textEntryHandle);
 	}
 
 	start = (int) OS.g_utf16_offset_to_utf8_offset(stringPtr, start);

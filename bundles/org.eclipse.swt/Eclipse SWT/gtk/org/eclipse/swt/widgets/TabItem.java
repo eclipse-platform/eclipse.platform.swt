@@ -18,6 +18,7 @@ import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.gtk.*;
+import org.eclipse.swt.internal.gtk4.*;
 
 /**
  * Instances of this class represent a selectable user interface object
@@ -237,7 +238,7 @@ void hookEvents () {
 	super.hookEvents ();
 	if (labelHandle != 0) OS.g_signal_connect_closure_by_id (labelHandle, display.signalIds [MNEMONIC_ACTIVATE], 0, display.getClosure (MNEMONIC_ACTIVATE), false);
 	if (GTK.GTK4) {
-		long motionController = GTK.gtk_event_controller_motion_new();
+		long motionController = GTK4.gtk_event_controller_motion_new();
 		GTK.gtk_widget_add_controller(handle, motionController);
 		GTK.gtk_event_controller_set_propagation_phase(motionController, GTK.GTK_PHASE_TARGET);
 

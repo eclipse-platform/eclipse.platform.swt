@@ -591,24 +591,6 @@ public class GTK extends OS {
 	 */
 	public static final native void gtk_editable_insert_text(long editable, byte[] new_text, int new_text_length, int[] position);
 
-	/* GtkEditable Interface [GTK3 only] */
-	/**
-	 * @method flags=dynamic
-	 * @param editable cast=(GtkEditable *)
-	 */
-	public static final native void gtk_editable_copy_clipboard(long editable);
-	/**
-	 * @method flags=dynamic
-	 * @param editable cast=(GtkEditable *)
-	 */
-	public static final native void gtk_editable_cut_clipboard(long editable);
-	/**
-	 * @method flags=dynamic
-	 * @param editable cast=(GtkEditable *)
-	 */
-	public static final native void gtk_editable_paste_clipboard(long editable);
-
-
 	/* GtkEntry */
 	public static final native long gtk_entry_new();
 	/** @param entry cast=(GtkEntry *) */
@@ -677,62 +659,6 @@ public class GTK extends OS {
 	 */
 	public static final native void gtk_entry_set_tabs(long entry, long tabs);
 
-	/* GtkEntry [GTK3 only] */
-	/**
-	 * @method flags=dynamic
-	 * @param self cast=(GtkEntry *)
-	 * @param n_chars cast=(gint)
-	 */
-	public static final native void gtk_entry_set_width_chars(long self, int n_chars);
-	/**
-	 * @method flags=dynamic
-	 * @param entry cast=(GtkEntry *)
-	 */
-	public static final native long gtk_entry_get_layout(long entry);
-	/**
-	 * @method flags=dynamic
-	 * @param entry cast=(GtkEntry *)
-	 * @param x cast=(gint *)
-	 * @param y cast=(gint *)
-	 */
-	public static final native void gtk_entry_get_layout_offsets(long entry, int[] x, int[] y);
-	/**
-	 * @method flags=dynamic
-	 * @param entry cast=(GtkEntry *)
-	 * @param index cast=(gint)
-	 */
-	public static final native int gtk_entry_text_index_to_layout_index(long entry, int index);
-	/**
-	 * @method flags=dynamic
-	 * @param entry cast=(GtkEntry *)
-	 */
-	public static final native long gtk_entry_get_text(long entry);
-	/**
-	 * @method flags=dynamic
-	 * @param entry cast=(GtkEntry *)
-	 * @param text cast=(const gchar *)
-	 */
-	public static final native void gtk_entry_set_text(long entry, byte[] text);
-
-	/* GtkEntry [GTK4 only] */
-	/**
-	 * @method flags=dynamic
-	 * @param entry cast=(GtkEntry *)
-	 * @param buffer cast=(GtkEntryBuffer *)
-	 */
-	public static final native void gtk_entry_set_buffer(long entry, long buffer);
-	/**
-	 * @method flags=dynamic
-	 * @param entry cast=(GtkEntry *)
-	 */
-	public static final native long gtk_entry_get_buffer(long entry);
-
-	/**
-	 * @param entry cast=(GtkEntry *)
-	 * @param hint cast=(GtkInputHints)
-	 */
-	public static final native void gtk_entry_set_input_hints(long entry, int hint);
-
 	/* GtkEntryBuffer */
 	/**
 	 * @param buffer cast=(GtkEntryBuffer *)
@@ -746,7 +672,6 @@ public class GTK extends OS {
 	public static final native void gtk_entry_buffer_set_text(long buffer, byte[] chars, int n_chars);
 	/** @param buffer cast=(GtkEntryBuffer *) */
 	public static final native long gtk_entry_buffer_get_text(long buffer);
-
 
 	/* GtkExpander */
 	/** @param label cast=(const gchar *) */
@@ -762,15 +687,6 @@ public class GTK extends OS {
 	public static final native void gtk_expander_set_label_widget(long expander, long label_widget);
 	/** @param expander cast=(GtkExpander *) */
 	public static final native long gtk_expander_get_label_widget(long expander);
-
-	/* GtkExpander [GTK4 only] */
-	/**
-	 * @method flags=dynamic
-	 * @param expander cast=(GtkExpander *)
-	 * @param child cast=(GtkWidget *)
-	 */
-	public static final native void gtk_expander_set_child(long expander, long child);
-
 
 	/* GtkFileChooser */
 	/**
@@ -805,38 +721,11 @@ public class GTK extends OS {
 	/** @param controller cast=(GtkEventController *) */
 	public static final native long gtk_event_controller_get_widget(long controller);
 
-	/* GtkEventController [GTK3 only] */
-	/** @method flags=dynamic */
-	public static final native void gtk_event_controller_handle_event(long gesture, long event);
-
-	/* GtkEventController [GTK4 only] */
-	/** @method flags=dynamic */
-	public static final native long gtk_event_controller_legacy_new();
-	/** @method flags=dynamic */
-	public static final native long gtk_event_controller_focus_new();
-	/**
-	 * @method flags=dynamic
-	 * @param controller cast=(GtkEventController *)
-	 * */
-	public static final native long gtk_event_controller_get_current_event(long controller);
-	/** @method flags=dynamic */
-	public static final native long gtk_event_controller_key_new();
-	/** @method flags=dynamic */
-	public static final native long gtk_event_controller_motion_new();
-	/** @method flags=dynamic */
-	public static final native long gtk_event_controller_scroll_new(int flag);
-
-
 	/* GtkGestureSingle */
 	/** @method flags=dynamic */
 	public static final native void gtk_gesture_single_set_button(long gesture, int button);
 	/** @param gesture cast=(GtkGestureSingle *) */
 	public static final native int gtk_gesture_single_get_current_button(long gesture);
-
-	/* GtkGestureClick [GTK4 only] */
-	/** @method flags=dynamic */
-	public static final native long gtk_gesture_click_new();
-
 
 	/**
 	 * @method flags=dynamic
@@ -935,21 +824,6 @@ public class GTK extends OS {
 	 */
 	public static final native void gtk_frame_set_label_widget(long frame, long label_widget);
 
-	/* GtkFrame [GTK3 only] */
-	/**
-	 * @param frame cast=(GtkFrame *)
-	 * @param type cast=(GtkShadowType)
-	 */
-	public static final native void gtk_frame_set_shadow_type(long frame, int type);
-
-	/* GtkFrame [GTK4 only] */
-	/**
-	 * @method flags=dynamic
-	 * @param frame cast=(GtkFrame *)
-	 * @param child cast=(GtkWidget *)
-	 */
-	public static final native void gtk_frame_set_child(long frame, long child);
-
 	/* GTK Initialization */
 	public static final native long gtk_get_default_language();
 	/**
@@ -970,13 +844,6 @@ public class GTK extends OS {
 	 * @param adjustment cast=(GtkAdjustment *)
 	 */
 	public static final native long gtk_scrollbar_new(int orientation, long adjustment);
-
-	/* GtkScrollbar [GTK4 only] */
-	/**
-	 * @method flags=dynamic
-	 * @param scrollbar cast=(GtkScrollbar *)
-	 */
-	public static final native long gtk_scrollbar_get_adjustment(long scrollbar);
 
 
 	public static final native long gtk_search_entry_new();
@@ -2600,13 +2467,6 @@ public class GTK extends OS {
 	 */
 	public static final native void gtk_tree_view_convert_bin_window_to_widget_coords(long tree_view, int bx, int by, int[]wx, int[] wy);
 
-
-	/**
-	 * @param viewport cast=(GtkViewport *)
-	 * @param type cast=(GtkShadowType)
-	 */
-	/* [GTK3 only, if-def'd in os.h] */
-	public static final native void gtk_viewport_set_shadow_type(long viewport, int type);
 
 	/**
 	 * @param context cast=(GtkStyleContext *)

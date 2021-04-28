@@ -845,7 +845,7 @@ void hookEvents () {
 		if (GTK.GTK4) {
 			eventHandle = GTK.gtk_widget_get_first_child(handle);
 			if (arrowHandle != 0) {
-				long clickGesture = GTK.gtk_gesture_click_new();
+				long clickGesture = GTK4.gtk_gesture_click_new();
 				OS.g_signal_connect(clickGesture, OS.pressed, display.gesturePressReleaseProc, GESTURE_PRESSED);
 				GTK.gtk_widget_add_controller(arrowHandle, clickGesture);
 			}
@@ -857,14 +857,14 @@ void hookEvents () {
 	}
 
 	if (GTK.GTK4) {
-		long focusController = GTK.gtk_event_controller_focus_new();
+		long focusController = GTK4.gtk_event_controller_focus_new();
 		GTK.gtk_widget_add_controller(eventHandle, focusController);
 		GTK.gtk_event_controller_set_propagation_phase(focusController, GTK.GTK_PHASE_TARGET);
 
 		OS.g_signal_connect (focusController, OS.enter, display.focusProc, FOCUS_IN);
 		OS.g_signal_connect (focusController, OS.leave, display.focusProc, FOCUS_OUT);
 
-		long motionController = GTK.gtk_event_controller_motion_new();
+		long motionController = GTK4.gtk_event_controller_motion_new();
 		GTK.gtk_widget_add_controller(eventHandle, motionController);
 		GTK.gtk_event_controller_set_propagation_phase(motionController, GTK.GTK_PHASE_TARGET);
 
@@ -896,7 +896,7 @@ void hookEvents () {
 	GTK.gtk_widget_add_events (eventHandle, mask);
 	if (GTK.GTK4) {
 		//TODO: event-after
-		long clickController = GTK.gtk_gesture_click_new();
+		long clickController = GTK4.gtk_gesture_click_new();
 		GTK.gtk_widget_add_controller(eventHandle, clickController);
 		OS.g_signal_connect(clickController, OS.pressed, display.gesturePressReleaseProc, GESTURE_PRESSED);
 	} else {

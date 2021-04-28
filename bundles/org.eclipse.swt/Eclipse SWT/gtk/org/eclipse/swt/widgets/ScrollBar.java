@@ -19,6 +19,7 @@ import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.gtk.*;
+import org.eclipse.swt.internal.gtk4.*;
 
 /**
  * Instances of this class are selectable user interface
@@ -606,7 +607,7 @@ void hookEvents () {
 	if (GTK.GTK4) {
 		//TODO: GTK4 change-value moved to gtk_scroll_child in Composite, event-after
 
-		long clickGesture = GTK.gtk_gesture_click_new();
+		long clickGesture = GTK4.gtk_gesture_click_new();
 		GTK.gtk_widget_add_controller(handle, clickGesture);
 		OS.g_signal_connect(clickGesture, OS.pressed, display.gesturePressReleaseProc, GESTURE_PRESSED);
 	} else {

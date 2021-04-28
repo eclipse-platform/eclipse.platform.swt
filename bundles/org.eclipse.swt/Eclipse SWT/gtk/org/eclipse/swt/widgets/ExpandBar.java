@@ -162,7 +162,7 @@ void createHandle (int index) {
 
 		if (!GTK.GTK4) {
 			long viewport = GTK3.gtk_bin_get_child (scrolledHandle);
-			GTK.gtk_viewport_set_shadow_type (viewport, GTK.GTK_SHADOW_NONE);
+			GTK3.gtk_viewport_set_shadow_type (viewport, GTK.GTK_SHADOW_NONE);
 		}
 	} else {
 		if (GTK.GTK4) {

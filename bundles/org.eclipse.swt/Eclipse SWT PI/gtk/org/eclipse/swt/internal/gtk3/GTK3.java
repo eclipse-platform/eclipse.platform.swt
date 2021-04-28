@@ -625,4 +625,60 @@ public class GTK3 {
 	 * @param error cast=(GError **)
 	 */
 	public static final native long gtk_icon_info_load_icon(long icon_info, long error[]);
+
+	/* GtkEditable Interface */
+	/** @param editable cast=(GtkEditable *) */
+	public static final native void gtk_editable_copy_clipboard(long editable);
+	/** @param editable cast=(GtkEditable *) */
+	public static final native void gtk_editable_cut_clipboard(long editable);
+	/** @param editable cast=(GtkEditable *) */
+	public static final native void gtk_editable_paste_clipboard(long editable);
+
+	/* GtkEntry */
+	/**
+	 * @param self cast=(GtkEntry *)
+	 * @param n_chars cast=(gint)
+	 */
+	public static final native void gtk_entry_set_width_chars(long self, int n_chars);
+	/** @param entry cast=(GtkEntry *) */
+	public static final native long gtk_entry_get_layout(long entry);
+	/**
+	 * @param entry cast=(GtkEntry *)
+	 * @param x cast=(gint *)
+	 * @param y cast=(gint *)
+	 */
+	public static final native void gtk_entry_get_layout_offsets(long entry, int[] x, int[] y);
+	/**
+	 * @param entry cast=(GtkEntry *)
+	 * @param index cast=(gint)
+	 */
+	public static final native int gtk_entry_text_index_to_layout_index(long entry, int index);
+	/** @param entry cast=(GtkEntry *) */
+	public static final native long gtk_entry_get_text(long entry);
+	/**
+	 * @param entry cast=(GtkEntry *)
+	 * @param text cast=(const gchar *)
+	 */
+	public static final native void gtk_entry_set_text(long entry, byte[] text);
+
+	/* GtkEventController */
+	/**
+	 * @param gesture cast=(GtkEventController *)
+	 * @param event cast=(const GdkEvent *)
+	 */
+	public static final native void gtk_event_controller_handle_event(long gesture, long event);
+
+	/* GtkFrame */
+	/**
+	 * @param frame cast=(GtkFrame *)
+	 * @param type cast=(GtkShadowType)
+	 */
+	public static final native void gtk_frame_set_shadow_type(long frame, int type);
+
+	/* GtkViewport */
+	/**
+	 * @param viewport cast=(GtkViewport *)
+	 * @param type cast=(GtkShadowType)
+	 */
+	public static final native void gtk_viewport_set_shadow_type(long viewport, int type);
 }

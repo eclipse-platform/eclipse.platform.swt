@@ -186,7 +186,7 @@ public Text (Composite parent, int style) {
 		}
 	}
 	if (DISABLE_EMOJI && GTK.GTK_VERSION >= OS.VERSION(3, 22, 20)) {
-	    GTK.gtk_entry_set_input_hints(handle, GTK.GTK_INPUT_HINT_NO_EMOJI);
+	    GTK4.gtk_entry_set_input_hints(handle, GTK.GTK_INPUT_HINT_NO_EMOJI);
 	}
 }
 
@@ -237,7 +237,7 @@ void createHandle (int index) {
 		if (GTK.GTK4) {
 			OS.swt_fixed_add(fixedHandle, handle);
 			textHandle = GTK.gtk_widget_get_first_child(handle);
-			bufferHandle = GTK.gtk_entry_get_buffer(handle);
+			bufferHandle = GTK4.gtk_entry_get_buffer(handle);
 		} else {
 			GTK.gtk_widget_set_has_window(fixedHandle, true);
 			GTK3.gtk_container_add(fixedHandle, handle);
@@ -302,7 +302,7 @@ void createHandle (int index) {
 	}
 	imContext = OS.imContextLast();
 	if ((style & SWT.SINGLE) != 0) {
-		GTK.gtk_entry_set_width_chars(handle, 1);
+		GTK3.gtk_entry_set_width_chars(handle, 1);
 	}
 	// In GTK 3 font description is inherited from parent widget which is not how SWT has always worked,
 	// reset to default font to get the usual behavior
@@ -522,7 +522,7 @@ void applySegments () {
 				separator [0] = segmentsChars [i];
 			}
 			byte [] buffer = Converter.wcsToMbcs (separator, false);
-			long ptr = GTK.gtk_entry_get_text (handle);
+			long ptr = GTK3.gtk_entry_get_text (handle);
 			pos [0] = (int)OS.g_utf16_offset_to_utf8_offset (ptr, pos [0]);
 			GTK.gtk_editable_insert_text (handle, buffer, buffer.length, pos);
 		}
@@ -559,7 +559,7 @@ void clearSegments (boolean applyText) {
 		OS.g_signal_handlers_block_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 		if (applyText) {
 			OS.g_signal_handlers_block_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, DELETE_TEXT);
-			long ptr = GTK.gtk_entry_get_text (handle);
+			long ptr = GTK3.gtk_entry_get_text (handle);
 			int start, end;
 			for (int i = 0; i < nSegments; i++) {
 				start = (int)OS.g_utf16_offset_to_utf8_offset (ptr, segments[i]);
@@ -619,7 +619,7 @@ Point computeSizeInPixels (int wHint, int hHint, boolean changed) {
 	int[] w = new int [1], h = new int [1];
 	if ((style & SWT.SINGLE) != 0) {
 		GTK.gtk_widget_realize (handle);
-		long layout = GTK.gtk_entry_get_layout (handle);
+		long layout = GTK3.gtk_entry_get_layout (handle);
 		OS.pango_layout_get_pixel_size (layout, w, h);
 	} else {
 		byte [] start =  new byte [ITER_SIZEOF], end  =  new byte [ITER_SIZEOF];
@@ -733,7 +733,7 @@ public void copy () {
 		if (GTK.GTK4) {
 			GTK.gtk_widget_activate_action(textHandle, OS.action_copy_clipboard, null);
 		} else {
-			GTK.gtk_editable_copy_clipboard(handle);
+			GTK3.gtk_editable_copy_clipboard(handle);
 		}
 	} else {
 		long clipboard = GTK.GTK4 ? GDK.gdk_display_get_clipboard(GDK.gdk_display_get_default()) : GTK3.gtk_clipboard_get (GDK.GDK_NONE);
@@ -761,7 +761,7 @@ public void cut () {
 		if (GTK.GTK4) {
 			GTK.gtk_widget_activate_action(textHandle, OS.action_cut_clipboard, null);
 		} else {
-			GTK.gtk_editable_cut_clipboard(handle);
+			GTK3.gtk_editable_cut_clipboard(handle);
 		}
 	} else {
 		long clipboard = GTK.GTK4 ? GDK.gdk_display_get_clipboard(GDK.gdk_display_get_default()) : GTK3.gtk_clipboard_get (GDK.GDK_NONE);
@@ -938,10 +938,10 @@ Point getCaretLocationInPixels () {
 	checkWidget ();
 	if ((style & SWT.SINGLE) != 0) {
 		int index = GTK.gtk_editable_get_position (handle);
-		index = GTK.gtk_entry_text_index_to_layout_index (handle, index);
+		index = GTK3.gtk_entry_text_index_to_layout_index (handle, index);
 		int [] offset_x = new int [1], offset_y = new int [1];
-		GTK.gtk_entry_get_layout_offsets (handle, offset_x, offset_y);
-		long layout = GTK.gtk_entry_get_layout (handle);
+		GTK3.gtk_entry_get_layout_offsets (handle, offset_x, offset_y);
+		long layout = GTK3.gtk_entry_get_layout (handle);
 		PangoRectangle pos = new PangoRectangle ();
 		OS.pango_layout_index_to_pos (layout, index, pos);
 		int x = offset_x [0] + OS.PANGO_PIXELS (pos.x) - getBorderWidthInPixels ();
@@ -977,7 +977,7 @@ public int getCaretPosition () {
 	checkWidget ();
 	int result;
 	if ((style & SWT.SINGLE) != 0)  {
-		long ptr = GTK.gtk_entry_get_text (handle);
+		long ptr = GTK3.gtk_entry_get_text (handle);
 		result = (int)OS.g_utf8_offset_to_utf16_offset (ptr, GTK.gtk_editable_get_position (handle));
 	} else {
 		byte [] position = new byte [ITER_SIZEOF];
@@ -1006,7 +1006,7 @@ public int getCharCount () {
 	checkWidget ();
 	int result;
 	if ((style & SWT.SINGLE) != 0) {
-		long ptr = GTK.gtk_entry_get_text (handle);
+		long ptr = GTK3.gtk_entry_get_text (handle);
 		result = (int)OS.g_utf16_strlen (ptr, -1);
 	} else {
 		byte [] startIter =  new byte [ITER_SIZEOF];
@@ -1181,7 +1181,7 @@ public int getOrientation () {
 	if ((style & SWT.SINGLE) != 0) {
 		int [] index = new int [1];
 		int [] trailing = new int [1];
-		long layout = GTK.gtk_entry_get_layout (handle);
+		long layout = GTK3.gtk_entry_get_layout (handle);
 		OS.pango_layout_xy_to_index (layout, point.x * OS.PANGO_SCALE, point.y * OS.PANGO_SCALE, index, trailing);
 		long ptr = OS.pango_layout_get_text (layout);
 		position = (int)OS.g_utf16_pointer_to_offset (ptr, ptr + index[0]) + trailing[0];
@@ -1222,7 +1222,7 @@ public Point getSelection () {
 		int [] start = new int [1];
 		int [] end = new int [1];
 		GTK.gtk_editable_get_selection_bounds (handle, start, end);
-		long ptr = GTK.gtk_entry_get_text (handle);
+		long ptr = GTK3.gtk_entry_get_text (handle);
 		start[0] = (int)OS.g_utf8_offset_to_utf16_offset (ptr, start[0]);
 		end[0] = (int)OS.g_utf8_offset_to_utf16_offset (ptr, end[0]);
 		selection = new Point (start [0], end [0]);
@@ -1390,7 +1390,7 @@ public char [] getTextChars () {
 		if (GTK.GTK4) {
 			address = GTK.gtk_entry_buffer_get_text(bufferHandle);
 		} else {
-			address = GTK.gtk_entry_get_text(handle);
+			address = GTK3.gtk_entry_get_text(handle);
 		}
 	} else {
 		byte [] start =  new byte [ITER_SIZEOF];
@@ -1667,7 +1667,7 @@ long gtk_delete_range (long widget, long iter1, long iter2) {
 @Override
 long gtk_delete_text (long widget, long start_pos, long end_pos) {
 	if (!hooks (SWT.Verify) && !filters (SWT.Verify)) return 0;
-	long ptr = GTK.gtk_entry_get_text (handle);
+	long ptr = GTK3.gtk_entry_get_text (handle);
 	if (end_pos == -1) end_pos = OS.g_utf8_strlen (ptr, -1);
 	int start = (int)OS.g_utf8_offset_to_utf16_offset (ptr, start_pos);
 	int end = (int)OS.g_utf8_offset_to_utf16_offset (ptr, end_pos);
@@ -1787,7 +1787,7 @@ long gtk_insert_text (long widget, long new_text, long new_text_length, long pos
 	String oldText = new String (Converter.mbcsToWcs (buffer));
 	int [] pos = new int [1];
 	C.memmove (pos, position, 4);
-	long ptr = GTK.gtk_entry_get_text (handle);
+	long ptr = GTK3.gtk_entry_get_text (handle);
 	if (pos [0] == -1) pos [0] = (int)OS.g_utf8_strlen (ptr, -1);
 	/* Use the selection when the text was deleted */
 	int start = pos [0], end = pos [0];
@@ -2094,7 +2094,7 @@ public void paste () {
 		if (GTK.GTK4) {
 			GTK.gtk_widget_activate_action(textHandle, OS.action_paste_clipboard, null);
 		} else {
-			GTK.gtk_editable_paste_clipboard (handle);
+			GTK3.gtk_editable_paste_clipboard (handle);
 		}
 	} else {
 		long clipboard = GTK.GTK4 ? GDK.gdk_display_get_clipboard(GDK.gdk_display_get_default()) : GTK3.gtk_clipboard_get (GDK.GDK_NONE);
@@ -2472,7 +2472,7 @@ public void setSelection (int start) {
 	checkWidget ();
 	start = translateOffset (start);
 	if ((style & SWT.SINGLE) != 0) {
-		long ptr = GTK.gtk_entry_get_text (handle);
+		long ptr = GTK3.gtk_entry_get_text (handle);
 		start = (int)OS.g_utf16_offset_to_utf8_offset (ptr, start);
 		GTK.gtk_editable_set_position (handle, start);
 	} else {
@@ -2522,7 +2522,7 @@ public void setSelection (int start, int end) {
 		if (GTK.GTK4) {
 			ptr = GTK.gtk_entry_buffer_get_text(bufferHandle);
 		} else {
-			ptr = GTK.gtk_entry_get_text (handle);
+			ptr = GTK3.gtk_entry_get_text (handle);
 		}
 		start = (int)OS.g_utf16_offset_to_utf8_offset (ptr, start);
 		end = (int)OS.g_utf16_offset_to_utf8_offset (ptr, end);
@@ -2699,7 +2699,7 @@ void setText (char [] text) {
 		if (GTK.GTK4) {
 			GTK.gtk_entry_buffer_set_text(bufferHandle, buffer, -1);
 		} else {
-			GTK.gtk_entry_set_text(handle, buffer);
+			GTK3.gtk_entry_set_text(handle, buffer);
 		}
 		OS.g_signal_handlers_unblock_matched(handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 		OS.g_signal_handlers_unblock_matched(handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, DELETE_TEXT);

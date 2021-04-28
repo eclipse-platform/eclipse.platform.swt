@@ -288,11 +288,11 @@ void createHandle (int index) {
 		if (frameHandle == 0) error (SWT.ERROR_NO_HANDLES);
 		if (GTK.GTK4) {
 			OS.swt_fixed_add(fixedHandle, frameHandle);
-			GTK.gtk_frame_set_child(frameHandle, handle);
+			GTK4.gtk_frame_set_child(frameHandle, handle);
 		} else {
 			GTK3.gtk_container_add (fixedHandle, frameHandle);
 			GTK3.gtk_container_add (frameHandle, handle);
-			GTK.gtk_frame_set_shadow_type (frameHandle, GTK.GTK_SHADOW_ETCHED_IN);
+			GTK3.gtk_frame_set_shadow_type (frameHandle, GTK.GTK_SHADOW_ETCHED_IN);
 		}
 	} else {
 		if (GTK.GTK4) {

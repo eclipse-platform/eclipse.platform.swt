@@ -2164,7 +2164,7 @@ boolean translateTraversal (int event) {
 
 long enterMotionScrollProc(long controller, long handle, double x, double y, long user_data) {
 	long result = 0;
-	long event = GTK.gtk_event_controller_get_current_event(controller);
+	long event = GTK4.gtk_event_controller_get_current_event(controller);
 
 	switch ((int)user_data) {
 		case ENTER:
@@ -2186,7 +2186,7 @@ long enterMotionScrollProc(long controller, long handle, double x, double y, lon
 
 long focusProc(long controller, long handle, long user_data) {
 	long result = 0;
-	long event = GTK.gtk_event_controller_get_current_event(controller);
+	long event = GTK4.gtk_event_controller_get_current_event(controller);
 
 	switch ((int)user_data) {
 		case FOCUS_IN:
@@ -2202,7 +2202,7 @@ long focusProc(long controller, long handle, long user_data) {
 
 long keyPressReleaseProc(long controller, long handle, int keyval, int keycode, int state, long user_data) {
 	long result = 0;
-	long event = GTK.gtk_event_controller_get_current_event(controller);
+	long event = GTK4.gtk_event_controller_get_current_event(controller);
 
 	switch ((int)user_data) {
 		case KEY_PRESSED:
@@ -2217,7 +2217,7 @@ long keyPressReleaseProc(long controller, long handle, int keyval, int keycode, 
 }
 
 void gesturePressReleaseProc(long gesture, int n_press, double x, double y, long user_data) {
-	long event = GTK.gtk_event_controller_get_current_event(gesture);
+	long event = GTK4.gtk_event_controller_get_current_event(gesture);
 
 	switch ((int)user_data) {
 		case GESTURE_PRESSED:
@@ -2231,7 +2231,7 @@ void gesturePressReleaseProc(long gesture, int n_press, double x, double y, long
 
 long leaveProc(long controller, long handle, long user_data) {
 	long result = 0;
-	long event = GTK.gtk_event_controller_get_current_event(controller);
+	long event = GTK4.gtk_event_controller_get_current_event(controller);
 
 	switch ((int)user_data) {
 		case LEAVE:

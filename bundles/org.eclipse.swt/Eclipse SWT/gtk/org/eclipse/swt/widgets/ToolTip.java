@@ -601,7 +601,7 @@ void hookEvents () {
 		OS.g_signal_connect_closure_by_id (handle, display.signalIds [EXPOSE_EVENT_INVERSE], 0, display.getClosure (EXPOSE_EVENT_INVERSE), true);
 
 		if (GTK.GTK4) {
-			long clickController = GTK.gtk_gesture_click_new();
+			long clickController = GTK4.gtk_gesture_click_new();
 			GTK.gtk_widget_add_controller(handle, clickController);
 			OS.g_signal_connect(clickController, OS.pressed, display.gesturePressReleaseProc, GESTURE_PRESSED);
 		} else {

@@ -301,4 +301,48 @@ public class GTK4 {
 	/* GtkNative */
 	/** @param self cast=(GtkNative *) */
 	public static final native long gtk_native_get_surface(long self);
+
+	/* GtkEntry */
+	/**
+	 * @param entry cast=(GtkEntry *)
+	 * @param buffer cast=(GtkEntryBuffer *)
+	 */
+	public static final native void gtk_entry_set_buffer(long entry, long buffer);
+	/** @param entry cast=(GtkEntry *) */
+	public static final native long gtk_entry_get_buffer(long entry);
+	/**
+	 * @param entry cast=(GtkEntry *)
+	 * @param hint cast=(GtkInputHints)
+	 */
+	public static final native void gtk_entry_set_input_hints(long entry, int hint);
+
+	/* GtkExpander */
+	/**
+	 * @param expander cast=(GtkExpander *)
+	 * @param child cast=(GtkWidget *)
+	 */
+	public static final native void gtk_expander_set_child(long expander, long child);
+
+	/* GtkEventController */
+	public static final native long gtk_event_controller_focus_new();
+	/** @param controller cast=(GtkEventController *) */
+	public static final native long gtk_event_controller_get_current_event(long controller);
+	public static final native long gtk_event_controller_key_new();
+	public static final native long gtk_event_controller_motion_new();
+	/** @param flag cast=(GtkEventControllerScrollFlags) */
+	public static final native long gtk_event_controller_scroll_new(int flag);
+
+	/* GtkGestureClick */
+	public static final native long gtk_gesture_click_new();
+
+	/* GtkFrame */
+	/**
+	 * @param frame cast=(GtkFrame *)
+	 * @param child cast=(GtkWidget *)
+	 */
+	public static final native void gtk_frame_set_child(long frame, long child);
+
+	/* GtkScrollbar */
+	/** @param scrollbar cast=(GtkScrollbar *) */
+	public static final native long gtk_scrollbar_get_adjustment(long scrollbar);
 }

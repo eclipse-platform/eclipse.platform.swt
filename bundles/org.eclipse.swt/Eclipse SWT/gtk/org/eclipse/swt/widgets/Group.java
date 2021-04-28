@@ -19,6 +19,7 @@ import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.gtk.*;
 import org.eclipse.swt.internal.gtk3.*;
+import org.eclipse.swt.internal.gtk4.*;
 
 /**
  * Instances of this class provide an etched border
@@ -191,22 +192,22 @@ void createHandle(int index) {
 
 	if (GTK.GTK4) {
 		OS.swt_fixed_add(fixedHandle, handle);
-		GTK.gtk_frame_set_child(handle, clientHandle);
+		GTK4.gtk_frame_set_child(handle, clientHandle);
 	} else {
 		GTK3.gtk_container_add (fixedHandle, handle);
 		GTK3.gtk_container_add (handle, clientHandle);
 
 		if ((style & SWT.SHADOW_IN) != 0) {
-			GTK.gtk_frame_set_shadow_type (handle, GTK.GTK_SHADOW_IN);
+			GTK3.gtk_frame_set_shadow_type (handle, GTK.GTK_SHADOW_IN);
 		}
 		if ((style & SWT.SHADOW_OUT) != 0) {
-			GTK.gtk_frame_set_shadow_type (handle, GTK.GTK_SHADOW_OUT);
+			GTK3.gtk_frame_set_shadow_type (handle, GTK.GTK_SHADOW_OUT);
 		}
 		if ((style & SWT.SHADOW_ETCHED_IN) != 0) {
-			GTK.gtk_frame_set_shadow_type (handle, GTK.GTK_SHADOW_ETCHED_IN);
+			GTK3.gtk_frame_set_shadow_type (handle, GTK.GTK_SHADOW_ETCHED_IN);
 		}
 		if ((style & SWT.SHADOW_ETCHED_OUT) != 0) {
-			GTK.gtk_frame_set_shadow_type (handle, GTK.GTK_SHADOW_ETCHED_OUT);
+			GTK3.gtk_frame_set_shadow_type (handle, GTK.GTK_SHADOW_ETCHED_OUT);
 		}
 	}
 
