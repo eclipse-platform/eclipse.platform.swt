@@ -4542,10 +4542,10 @@ class AccessibleObject {
 	}
 
 	static void windowPoint (AccessibleObject object, int [] x, int [] y) {
-		long widget = GTK.gtk_accessible_get_widget(object.atkHandle);
+		long widget = GTK3.gtk_accessible_get_widget(object.atkHandle);
 		while (widget == 0 && object.parent != null) {
 			object = object.parent;
-			widget = GTK.gtk_accessible_get_widget(object.atkHandle);
+			widget = GTK3.gtk_accessible_get_widget(object.atkHandle);
 		}
 		if (widget == 0) return;
 

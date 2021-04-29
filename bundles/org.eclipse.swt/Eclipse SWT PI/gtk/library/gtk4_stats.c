@@ -43,6 +43,7 @@ char * GTK4_nativeFunctionNames[] = {
 	"gtk_1check_1button_1set_1group",
 	"gtk_1check_1button_1set_1inconsistent",
 	"gtk_1check_1button_1set_1use_1underline",
+	"gtk_1combo_1box_1get_1child",
 	"gtk_1drag_1source_1new",
 	"gtk_1drag_1source_1set_1actions",
 	"gtk_1drag_1source_1set_1icon",

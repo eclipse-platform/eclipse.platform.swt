@@ -3911,26 +3911,6 @@ fail:
 }
 #endif
 
-#ifndef NO_gtk_1accessible_1get_1widget
-JNIEXPORT jlong JNICALL GTK_NATIVE(gtk_1accessible_1get_1widget)
-	(JNIEnv *env, jclass that, jlong arg0)
-{
-	jlong rc = 0;
-	GTK_NATIVE_ENTER(env, that, gtk_1accessible_1get_1widget_FUNC);
-/*
-	rc = (jlong)gtk_accessible_get_widget((GtkAccessible *)arg0);
-*/
-	{
-		GTK_LOAD_FUNCTION(fp, gtk_accessible_get_widget)
-		if (fp) {
-			rc = (jlong)((jlong (CALLING_CONVENTION*)(GtkAccessible *))fp)((GtkAccessible *)arg0);
-		}
-	}
-	GTK_NATIVE_EXIT(env, that, gtk_1accessible_1get_1widget_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO_gtk_1adjustment_1configure
 JNIEXPORT void JNICALL GTK_NATIVE(gtk_1adjustment_1configure)
 	(JNIEnv *env, jclass that, jlong arg0, jdouble arg1, jdouble arg2, jdouble arg3, jdouble arg4, jdouble arg5, jdouble arg6)
@@ -4019,7 +3999,7 @@ JNIEXPORT jlong JNICALL GTK_NATIVE(gtk_1adjustment_1new)
 {
 	jlong rc = 0;
 	GTK_NATIVE_ENTER(env, that, gtk_1adjustment_1new_FUNC);
-	rc = (jlong)gtk_adjustment_new((gdouble)arg0, (gdouble)arg1, (gdouble)arg2, (gdouble)arg3, (gdouble)arg4, arg5);
+	rc = (jlong)gtk_adjustment_new((gdouble)arg0, (gdouble)arg1, (gdouble)arg2, (gdouble)arg3, (gdouble)arg4, (gdouble)arg5);
 	GTK_NATIVE_EXIT(env, that, gtk_1adjustment_1new_FUNC);
 	return rc;
 }
@@ -4455,26 +4435,6 @@ JNIEXPORT jint JNICALL GTK_NATIVE(gtk_1combo_1box_1get_1active)
 }
 #endif
 
-#ifndef NO_gtk_1combo_1box_1get_1child
-JNIEXPORT jlong JNICALL GTK_NATIVE(gtk_1combo_1box_1get_1child)
-	(JNIEnv *env, jclass that, jlong arg0)
-{
-	jlong rc = 0;
-	GTK_NATIVE_ENTER(env, that, gtk_1combo_1box_1get_1child_FUNC);
-/*
-	rc = (jlong)gtk_combo_box_get_child((GtkComboBox *)arg0);
-*/
-	{
-		GTK_LOAD_FUNCTION(fp, gtk_combo_box_get_child)
-		if (fp) {
-			rc = (jlong)((jlong (CALLING_CONVENTION*)(GtkComboBox *))fp)((GtkComboBox *)arg0);
-		}
-	}
-	GTK_NATIVE_EXIT(env, that, gtk_1combo_1box_1get_1child_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO_gtk_1combo_1box_1get_1model
 JNIEXPORT jlong JNICALL GTK_NATIVE(gtk_1combo_1box_1get_1model)
 	(JNIEnv *env, jclass that, jlong arg0)
@@ -4483,26 +4443,6 @@ JNIEXPORT jlong JNICALL GTK_NATIVE(gtk_1combo_1box_1get_1model)
 	GTK_NATIVE_ENTER(env, that, gtk_1combo_1box_1get_1model_FUNC);
 	rc = (jlong)gtk_combo_box_get_model((GtkComboBox *)arg0);
 	GTK_NATIVE_EXIT(env, that, gtk_1combo_1box_1get_1model_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO_gtk_1combo_1box_1get_1wrap_1width
-JNIEXPORT jint JNICALL GTK_NATIVE(gtk_1combo_1box_1get_1wrap_1width)
-	(JNIEnv *env, jclass that, jlong arg0)
-{
-	jint rc = 0;
-	GTK_NATIVE_ENTER(env, that, gtk_1combo_1box_1get_1wrap_1width_FUNC);
-/*
-	rc = (jint)gtk_combo_box_get_wrap_width((GtkComboBox *)arg0);
-*/
-	{
-		GTK_LOAD_FUNCTION(fp, gtk_combo_box_get_wrap_width)
-		if (fp) {
-			rc = (jint)((jint (CALLING_CONVENTION*)(GtkComboBox *))fp)((GtkComboBox *)arg0);
-		}
-	}
-	GTK_NATIVE_EXIT(env, that, gtk_1combo_1box_1get_1wrap_1width_FUNC);
 	return rc;
 }
 #endif
@@ -4534,24 +4474,6 @@ JNIEXPORT void JNICALL GTK_NATIVE(gtk_1combo_1box_1set_1active)
 	GTK_NATIVE_ENTER(env, that, gtk_1combo_1box_1set_1active_FUNC);
 	gtk_combo_box_set_active((GtkComboBox *)arg0, (gint)arg1);
 	GTK_NATIVE_EXIT(env, that, gtk_1combo_1box_1set_1active_FUNC);
-}
-#endif
-
-#ifndef NO_gtk_1combo_1box_1set_1wrap_1width
-JNIEXPORT void JNICALL GTK_NATIVE(gtk_1combo_1box_1set_1wrap_1width)
-	(JNIEnv *env, jclass that, jlong arg0, jint arg1)
-{
-	GTK_NATIVE_ENTER(env, that, gtk_1combo_1box_1set_1wrap_1width_FUNC);
-/*
-	gtk_combo_box_set_wrap_width((GtkComboBox *)arg0, (gint)arg1);
-*/
-	{
-		GTK_LOAD_FUNCTION(fp, gtk_combo_box_set_wrap_width)
-		if (fp) {
-			((void (CALLING_CONVENTION*)(GtkComboBox *, gint))fp)((GtkComboBox *)arg0, (gint)arg1);
-		}
-	}
-	GTK_NATIVE_EXIT(env, that, gtk_1combo_1box_1set_1wrap_1width_FUNC);
 }
 #endif
 
@@ -5014,26 +4936,6 @@ JNIEXPORT void JNICALL GTK_NATIVE(gtk_1enumerate_1printers)
 	GTK_NATIVE_ENTER(env, that, gtk_1enumerate_1printers_FUNC);
 	gtk_enumerate_printers((GtkPrinterFunc)arg0, (gpointer)arg1, (GDestroyNotify)arg2, (gboolean)arg3);
 	GTK_NATIVE_EXIT(env, that, gtk_1enumerate_1printers_FUNC);
-}
-#endif
-
-#ifndef NO_gtk_1event_1box_1new
-JNIEXPORT jlong JNICALL GTK_NATIVE(gtk_1event_1box_1new)
-	(JNIEnv *env, jclass that)
-{
-	jlong rc = 0;
-	GTK_NATIVE_ENTER(env, that, gtk_1event_1box_1new_FUNC);
-/*
-	rc = (jlong)gtk_event_box_new();
-*/
-	{
-		GTK_LOAD_FUNCTION(fp, gtk_event_box_new)
-		if (fp) {
-			rc = (jlong)((jlong (CALLING_CONVENTION*)())fp)();
-		}
-	}
-	GTK_NATIVE_EXIT(env, that, gtk_1event_1box_1new_FUNC);
-	return rc;
 }
 #endif
 

@@ -265,6 +265,18 @@ JNIEXPORT void JNICALL GTK4_NATIVE(gtk_1check_1button_1set_1use_1underline)
 }
 #endif
 
+#ifndef NO_gtk_1combo_1box_1get_1child
+JNIEXPORT jlong JNICALL GTK4_NATIVE(gtk_1combo_1box_1get_1child)
+	(JNIEnv *env, jclass that, jlong arg0)
+{
+	jlong rc = 0;
+	GTK4_NATIVE_ENTER(env, that, gtk_1combo_1box_1get_1child_FUNC);
+	rc = (jlong)gtk_combo_box_get_child((GtkComboBox *)arg0);
+	GTK4_NATIVE_EXIT(env, that, gtk_1combo_1box_1get_1child_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_gtk_1drag_1source_1new
 JNIEXPORT jlong JNICALL GTK4_NATIVE(gtk_1drag_1source_1new)
 	(JNIEnv *env, jclass that)

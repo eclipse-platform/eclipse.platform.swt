@@ -264,7 +264,7 @@ void createHandle (int index) {
 			gtk_box_set_child_packing(handle, labelHandle, true, true, 0, GTK.GTK_PACK_START);
 			gtk_box_set_child_packing(handle, imageHandle, true, true, 0, GTK.GTK_PACK_START);
 		} else {
-			handle = GTK.gtk_event_box_new();
+			handle = GTK3.gtk_event_box_new();
 			if (handle == 0) error(SWT.ERROR_NO_HANDLES);
 
 			boxHandle = gtk_box_new(GTK.GTK_ORIENTATION_HORIZONTAL, false, 0);

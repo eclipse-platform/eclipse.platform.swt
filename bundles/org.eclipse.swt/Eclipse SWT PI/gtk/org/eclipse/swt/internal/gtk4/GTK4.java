@@ -412,4 +412,8 @@ public class GTK4 {
 	public static final native void gtk_widget_class_add_binding_signal(long widget_class, int keyval, int mods, byte[] signal, byte[] format_string, boolean arg1, boolean arg2, boolean arg3);
 	/** @param widget cast=(GtkWidget *) */
 	public static final native boolean gtk_widget_get_receives_default(long widget);
+
+	/* GtkComboBox */
+	/** @param combo_box cast=(GtkComboBox *) */
+	public static final native long gtk_combo_box_get_child(long combo_box);
 }

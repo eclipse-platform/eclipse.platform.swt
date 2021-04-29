@@ -815,4 +815,24 @@ public class GTK3 {
 	 * @param type cast=(GtkShadowType)
 	 */
 	public static final native void gtk_viewport_set_shadow_type(long viewport, int type);
+
+	/* GtkAccessible */
+	/** @param accessible cast=(GtkAccessible *) */
+	public static final native long gtk_accessible_get_widget(long accessible);
+
+	/* GtkComboBox */
+	/**
+	 * @param combo_box cast=(GtkComboBox *)
+	 * @param width cast=(gint)
+	 */
+	/* Do not use directly. Instead use Combo.gtk_combo_box_toggle_wrap(..) */
+	public static final native void gtk_combo_box_set_wrap_width(long combo_box, int width);
+	/**
+	 * @param combo_box cast=(GtkComboBox *)
+	 * @return cast=(gint)
+	 */
+	public static final native int gtk_combo_box_get_wrap_width(long combo_box);
+
+	/* GtkEventBox */
+	public static final native long gtk_event_box_new();
 }

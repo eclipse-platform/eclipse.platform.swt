@@ -233,8 +233,8 @@ private void gtk_combo_box_insert(String string, int index) {
 private void gtk_combo_box_toggle_wrap (boolean wrap) {
 	if (handle == 0 || GTK.GTK4) return;
 	if (!wrap) {
-		if (GTK.gtk_combo_box_get_wrap_width(handle) == 1) {
-			GTK.gtk_combo_box_set_wrap_width(handle, 0);
+		if (GTK3.gtk_combo_box_get_wrap_width(handle) == 1) {
+			GTK3.gtk_combo_box_set_wrap_width(handle, 0);
 		}
 	} else  {
 		if (delayedEnableWrap) {
@@ -243,7 +243,7 @@ private void gtk_combo_box_toggle_wrap (boolean wrap) {
 			delayedEnableWrap = true;
 			display.asyncExec(() -> {
 				if (!isDisposed() && handle != 0) {
-					GTK.gtk_combo_box_set_wrap_width(handle, 1);
+					GTK3.gtk_combo_box_set_wrap_width(handle, 1);
 					delayedEnableWrap = false;
 				}
 			});
@@ -541,7 +541,7 @@ void createHandle (int index) {
 		handle = GTK.gtk_combo_box_text_new();
 		if (handle == 0) error(SWT.ERROR_NO_HANDLES);
 
-		cellHandle = GTK.GTK4 ? GTK.gtk_combo_box_get_child(handle) : GTK3.gtk_bin_get_child (handle);
+		cellHandle = GTK.GTK4 ? GTK4.gtk_combo_box_get_child(handle) : GTK3.gtk_bin_get_child (handle);
 		if (cellHandle == 0) error(SWT.ERROR_NO_HANDLES);
 
 		gtk_combo_box_toggle_wrap(true);
@@ -549,7 +549,7 @@ void createHandle (int index) {
 		handle = GTK.gtk_combo_box_text_new_with_entry();
 		if (handle == 0) error(SWT.ERROR_NO_HANDLES);
 
-		entryHandle = GTK.GTK4 ? GTK.gtk_combo_box_get_child(handle) : GTK3.gtk_bin_get_child(handle);
+		entryHandle = GTK.GTK4 ? GTK4.gtk_combo_box_get_child(handle) : GTK3.gtk_bin_get_child(handle);
 		if (entryHandle == 0) error(SWT.ERROR_NO_HANDLES);
 
 		imContext = OS.imContextLast();

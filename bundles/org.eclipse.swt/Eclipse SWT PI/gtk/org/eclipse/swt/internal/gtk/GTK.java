@@ -289,15 +289,8 @@ public class GTK extends OS {
 	/** @method flags=dynamic */
 	public static final native long gtk_accel_group_new();
 
-
-	/**
-	 * @method flags=dynamic
-	 * @param accessible cast=(GtkAccessible *)
-	 */
-	public static final native long gtk_accessible_get_widget(long accessible);
-	/**
-	 * @param adjustment cast=(GtkAdjustment *)
-	 */
+	/* GtkAdjustment */
+	/** @param adjustment cast=(GtkAdjustment *) */
 	public static final native void gtk_adjustment_configure(long adjustment, double value, double lower, double upper, double step_increment, double page_increment, double page_size);
 	/**
 	 * @param value cast=(gdouble)
@@ -305,31 +298,20 @@ public class GTK extends OS {
 	 * @param upper cast=(gdouble)
 	 * @param step_increment cast=(gdouble)
 	 * @param page_increment cast=(gdouble)
+	 * @param page_size cast=(gdouble)
 	 */
 	public static final native long gtk_adjustment_new(double value, double lower, double upper, double step_increment, double page_increment, double page_size);
-	/**
-	 * @param adjustment cast=(GtkAdjustment *)
-	 */
+	/** @param adjustment cast=(GtkAdjustment *) */
 	public static final native double gtk_adjustment_get_lower(long adjustment);
-	/**
-	 * @param adjustment cast=(GtkAdjustment *)
-	 */
+	/** @param adjustment cast=(GtkAdjustment *) */
 	public static final native double gtk_adjustment_get_page_increment(long adjustment);
-	/**
-	 * @param adjustment cast=(GtkAdjustment *)
-	 */
+	/** @param adjustment cast=(GtkAdjustment *) */
 	public static final native double gtk_adjustment_get_page_size(long adjustment);
-	/**
-	 * @param adjustment cast=(GtkAdjustment *)
-	 */
+	/** @param adjustment cast=(GtkAdjustment *) */
 	public static final native double gtk_adjustment_get_step_increment(long adjustment);
-	/**
-	 * @param adjustment cast=(GtkAdjustment *)
-	 */
+	/** @param adjustment cast=(GtkAdjustment *) */
 	public static final native double gtk_adjustment_get_upper(long adjustment);
-	/**
-	 * @param adjustment cast=(GtkAdjustment *)
-	 */
+	/** @param adjustment cast=(GtkAdjustment *) */
 	public static final native double gtk_adjustment_get_value(long adjustment);
 	/**
 	 * @param adjustment cast=(GtkAdjustment *)
@@ -346,6 +328,8 @@ public class GTK extends OS {
 	 * @param value cast=(gdouble)
 	 */
 	public static final native void gtk_adjustment_set_page_increment(long adjustment, double value);
+
+	/* GtkBorder */
 	/** @param border cast=(GtkBorder *) */
 	public static final native void gtk_border_free(long border);
 
@@ -362,7 +346,6 @@ public class GTK extends OS {
 	 * @param homogeneous cast=(gboolean)
 	 */
 	public static final native void gtk_box_set_homogeneous(long box, boolean homogeneous);
-
 
 	/* GtkCalendar */
 	public static final native long gtk_calendar_new();
@@ -474,7 +457,6 @@ public class GTK extends OS {
 	 */
 	public static final native long gtk_color_chooser_dialog_new(byte[] title, long parent);
 
-
 	/* GtkComboBox */
 	public static final native long gtk_combo_box_text_new();
 	public static final native long gtk_combo_box_text_new_with_entry();
@@ -516,29 +498,6 @@ public class GTK extends OS {
 	*/
 	public static final native void gtk_combo_box_popdown(long combo_box);
 
-	/* GtkComboBox [GTK3 only] */
-	/**
-	 * @method flags=dynamic
-	 * @param combo_box cast=(GtkComboBox *)
-	 * @param width cast=(gint)
-	 */
-	/* Do not use directly. Instead use Combo.gtk_combo_box_toggle_wrap(..) */
-	public static final native void gtk_combo_box_set_wrap_width(long combo_box, int width);
-	/**
-	 * @method flags=dynamic
-	 * @param combo_box cast=(GtkComboBox *)
-	 * @return cast=(gint)
-	 */
-	public static final native int gtk_combo_box_get_wrap_width(long combo_box);
-
-	/* GtkComboBox [GTK4 only] */
-	/**
-	 * @method flags=dynamic
-	 * @param combo_box cast=(GtkComboBox *)
-	 * */
-	public static final native long gtk_combo_box_get_child(long combo_box);
-
-
 	/* GtkDialog */
 	/**
 	 * @param dialog cast=(GtkDialog *)
@@ -546,7 +505,6 @@ public class GTK extends OS {
 	 * @param response_id cast=(gint)
 	 */
 	public static final native long gtk_dialog_add_button(long dialog, byte[] button_text, int response_id);
-
 
 	/* GtkEditable Interface */
 	/**
@@ -727,6 +685,7 @@ public class GTK extends OS {
 	/** @param gesture cast=(GtkGestureSingle *) */
 	public static final native int gtk_gesture_single_get_current_button(long gesture);
 
+	/* GtkFileChooserNative */
 	/**
 	 * @method flags=dynamic
 	 * @param title cast=(const gchar *),flags=no_out
@@ -826,17 +785,23 @@ public class GTK extends OS {
 
 	/* GTK Initialization */
 	public static final native long gtk_get_default_language();
-	/**
-	 * @method flags=dynamic
-	 */
-	/* [GTK3 only] */
-	public static final native long gtk_event_box_new();
+
+	/* GtkScale */
 	/**
 	 *  @param orientation cast=(GtkOrientation)
 	 *  @param adjustment cast=(GtkAdjustment *)
 	 */
 	public static final native long gtk_scale_new(int orientation, long adjustment);
-
+	/**
+	 * @param scale cast=(GtkScale *)
+	 * @param digits cast=(gint)
+	 */
+	public static final native void gtk_scale_set_digits(long scale, int digits);
+	/**
+	 * @param scale cast=(GtkScale *)
+	 * @param draw_value cast=(gboolean)
+	 */
+	public static final native void gtk_scale_set_draw_value(long scale, boolean draw_value);
 
 	/* GtkScrollbar */
 	/**
@@ -1581,16 +1546,6 @@ public class GTK extends OS {
 	public static final native void gtk_range_get_slider_range(long range, int[] slider_start, int[] slider_end);
 
 
-	/**
-	 * @param scale cast=(GtkScale *)
-	 * @param digits cast=(gint)
-	 */
-	public static final native void gtk_scale_set_digits(long scale, int digits);
-	/**
-	 * @param scale cast=(GtkScale *)
-	 * @param draw_value cast=(gboolean)
-	 */
-	public static final native void gtk_scale_set_draw_value(long scale, boolean draw_value);
 	/** @param scrollable cast=(GtkScrollable *) */
 	public static final native long gtk_scrollable_get_vadjustment(long scrollable);
 
