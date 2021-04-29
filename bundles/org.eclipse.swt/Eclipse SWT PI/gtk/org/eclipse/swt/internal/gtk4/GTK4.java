@@ -345,4 +345,71 @@ public class GTK4 {
 	/* GtkScrollbar */
 	/** @param scrollbar cast=(GtkScrollbar *) */
 	public static final native long gtk_scrollbar_get_adjustment(long scrollbar);
+
+	/* GtkWidget */
+	/**
+	 * @param widget cast=(GtkWidget *)
+	 * @param child cast=(GtkWidget *)
+	 * @param snapshot cast=(GtkSnapshot *)
+	 */
+	public static final native void gtk_widget_snapshot_child(long widget, long child, long snapshot);
+	/**
+	 * @param src_widget cast=(GtkWidget *)
+	 * @param dest_widget cast=(GtkWidget *)
+	 * @param dest_x cast=(double *)
+	 * @param dest_y cast=(double *)
+	 */
+	public static final native boolean gtk_widget_translate_coordinates(long src_widget, long dest_widget, double src_x, double src_y, double[] dest_x, double[] dest_y);
+	/**
+	 * @param widget cast=(GtkWidget *)
+	 * @param cursor cast=(GdkCursor *)
+	 */
+	public static final native void gtk_widget_set_cursor(long widget, long cursor);
+	/**
+	 * @param widget cast=(GtkWidget *)
+	 * @param orientation cast=(GtkOrientation)
+	 * @param for_size cast=(int)
+	 * @param minimum cast=(int *)
+	 * @param natural cast=(int *)
+	 * @param minimum_baseline cast=(int *)
+	 * @param natural_baseline cast=(int *)
+	 */
+	public static final native void gtk_widget_measure(long widget, int orientation, int for_size, int[] minimum, int[] natural, int[] minimum_baseline, int[] natural_baseline);
+	/** @param widget cast=(GtkWidget *) */
+	public static final native long gtk_widget_get_native(long widget);
+	/**
+	 * @param widget cast=(GtkWidget *)
+	 * @param name cast=(const char *)
+	 * @param format_string cast=(const char *)
+	 */
+	public static final native boolean gtk_widget_activate_action(long widget, byte[] name, byte[] format_string);
+	/**
+	 * @param widget cast=(GtkWidget *)
+	 * @param action_name cast=(const char *)
+	 */
+	public static final native void gtk_widget_action_set_enabled(long widget, byte[] action_name, boolean enabled);
+	/**
+	 * @param widget cast=(GtkWidget *)
+	 * @param controller cast=(GtkEventController *)
+	 */
+	public static final native void gtk_widget_add_controller(long widget, long controller);
+	/** @param widget cast=(GtkWidget *) */
+	public static final native long gtk_widget_get_first_child(long widget);
+	/** @param widget cast=(GtkWidget *) */
+	public static final native long gtk_widget_get_last_child(long widget);
+	/** @param widget cast=(GtkWidget *) */
+	public static final native long gtk_widget_get_next_sibling(long widget);
+	/** @param widget cast=(GtkWidget *) */
+	public static final native long gtk_widget_get_prev_sibling(long widget);
+	/** @param widget cast=(GtkWidget *) */
+	public static final native long gtk_widget_get_root(long widget);
+	/**
+	 * @param widget_class cast=(GtkWidgetClass *)
+	 * @param mods cast=(GdkModifierType)
+	 * @param signal cast=(const char *)
+	 * @param format_string cast=(const char *)
+	 */
+	public static final native void gtk_widget_class_add_binding_signal(long widget_class, int keyval, int mods, byte[] signal, byte[] format_string, boolean arg1, boolean arg2, boolean arg3);
+	/** @param widget cast=(GtkWidget *) */
+	public static final native boolean gtk_widget_get_receives_default(long widget);
 }

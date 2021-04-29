@@ -648,7 +648,7 @@ void createHandle (int index) {
 	if (GTK.GTK4) {
 		scrolledHandle = GTK4.gtk_scrolled_window_new();
 	} else {
-		GTK.gtk_widget_set_has_window(fixedHandle, true);
+		GTK3.gtk_widget_set_has_window(fixedHandle, true);
 		scrolledHandle = GTK3.gtk_scrolled_window_new (0, 0);
 	}
 	if (scrolledHandle == 0) error (SWT.ERROR_NO_HANDLES);
@@ -3795,7 +3795,7 @@ void setParentGdkResource (Control child) {
 		// TODO: implement connectFixedHandleDraw with the "snapshot" signal
 	} else {
 		long parentGdkWindow = eventWindow ();
-		GTK.gtk_widget_set_parent_window (child.topHandle(), parentGdkWindow);
+		GTK3.gtk_widget_set_parent_window (child.topHandle(), parentGdkWindow);
 		hasChildren = true;
 		connectFixedHandleDraw();
 	}
@@ -4238,7 +4238,7 @@ long windowProc (long handle, long arg0, long user_data) {
 					Control control = findBackgroundControl ();
 					if (control != null) {
 						long window = GTK.gtk_tree_view_get_bin_window (handle);
-						if (window == GTK.gtk_widget_get_window(handle)) {
+						if (window == GTK3.gtk_widget_get_window(handle)) {
 							GdkRectangle rect = new GdkRectangle ();
 							GDK.gdk_cairo_get_clip_rectangle (arg0, rect);
 							drawBackground (control, window, arg0, rect.x, rect.y, rect.width, rect.height);

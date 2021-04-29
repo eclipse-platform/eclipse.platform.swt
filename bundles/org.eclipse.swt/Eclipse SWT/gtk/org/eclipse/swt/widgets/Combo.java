@@ -520,8 +520,8 @@ public void copy () {
 	checkWidget ();
 	if (entryHandle != 0) {
 		if (GTK.GTK4) {
-			long textHandle = GTK.gtk_widget_get_first_child(entryHandle);
-			GTK.gtk_widget_activate_action(textHandle, OS.action_copy_clipboard, null);
+			long textHandle = GTK4.gtk_widget_get_first_child(entryHandle);
+			GTK4.gtk_widget_activate_action(textHandle, OS.action_copy_clipboard, null);
 		} else {
 			GTK3.gtk_editable_copy_clipboard(entryHandle);
 		}
@@ -534,7 +534,7 @@ void createHandle (int index) {
 
 	fixedHandle = OS.g_object_new(display.gtk_fixed_get_type(), 0);
 	if (fixedHandle == 0) error(SWT.ERROR_NO_HANDLES);
-	if (!GTK.GTK4) GTK.gtk_widget_set_has_window(fixedHandle, true);
+	if (!GTK.GTK4) GTK3.gtk_widget_set_has_window(fixedHandle, true);
 
 	long oldList = GTK.gtk_window_list_toplevels();
 	if ((style & SWT.READ_ONLY) != 0) {
@@ -620,8 +620,8 @@ public void cut () {
 	checkWidget ();
 	if (entryHandle != 0) {
 		if (GTK.GTK4) {
-			long textHandle = GTK.gtk_widget_get_first_child(entryHandle);
-			GTK.gtk_widget_activate_action(textHandle, OS.action_cut_clipboard, null);
+			long textHandle = GTK4.gtk_widget_get_first_child(entryHandle);
+			GTK4.gtk_widget_activate_action(textHandle, OS.action_cut_clipboard, null);
 		} else {
 			GTK3.gtk_editable_cut_clipboard(entryHandle);
 		}
@@ -716,14 +716,14 @@ long findButtonHandle() {
 	long result = 0;
 
 	if (GTK.GTK4) {
-		for (long child = GTK.gtk_widget_get_first_child(handle); child != 0; child = GTK.gtk_widget_get_next_sibling(child)) {
+		for (long child = GTK4.gtk_widget_get_first_child(handle); child != 0; child = GTK4.gtk_widget_get_next_sibling(child)) {
 			if (GTK.GTK_IS_BOX(child)) {
 				buttonBoxHandle = child;
 				break;
 			}
 		}
 
-		for (long child = GTK.gtk_widget_get_first_child(buttonBoxHandle); child != 0; child = GTK.gtk_widget_get_next_sibling(child)) {
+		for (long child = GTK4.gtk_widget_get_first_child(buttonBoxHandle); child != 0; child = GTK4.gtk_widget_get_next_sibling(child)) {
 			if (GTK.GTK_IS_BUTTON(child)) {
 				result = child;
 				break;
@@ -777,7 +777,7 @@ long findArrowHandle() {
 
 	if (cellBoxHandle != 0) {
 		if (GTK.GTK4) {
-			for (long child = GTK.gtk_widget_get_first_child(cellBoxHandle); child != 0; child = GTK.gtk_widget_get_next_sibling(child)) {
+			for (long child = GTK4.gtk_widget_get_first_child(cellBoxHandle); child != 0; child = GTK4.gtk_widget_get_next_sibling(child)) {
 				String name = display.gtk_widget_get_name(child);
 				if (name != null && name.equals("GtkBuiltinIcon")) {
 					result = child;
@@ -924,19 +924,19 @@ void hookEvents(long [] handles) {
 		if (eventHandle != 0) {
 			if (GTK.GTK4) {
 				long motionController = GTK4.gtk_event_controller_motion_new();
-				GTK.gtk_widget_add_controller(eventHandle, motionController);
+				GTK4.gtk_widget_add_controller(eventHandle, motionController);
 				OS.g_signal_connect (motionController, OS.motion, display.enterMotionScrollProc, MOTION);
 				OS.g_signal_connect (motionController, OS.motion, display.enterMotionScrollProc, MOTION_INVERSE);
 
 				long gestureController = GTK4.gtk_gesture_click_new();
-				GTK.gtk_widget_add_controller(eventHandle, gestureController);
+				GTK4.gtk_widget_add_controller(eventHandle, gestureController);
 				OS.g_signal_connect(gestureController, OS.pressed, display.gesturePressReleaseProc, GESTURE_PRESSED);
 				OS.g_signal_connect(gestureController, OS.released, display.gesturePressReleaseProc, GESTURE_RELEASED);
 
 				//TODO: GTK4 event-after
 			} else {
 				int eventMask =	GDK.GDK_POINTER_MOTION_MASK | GDK.GDK_BUTTON_PRESS_MASK | GDK.GDK_BUTTON_RELEASE_MASK;
-				GTK.gtk_widget_add_events (eventHandle, eventMask);
+				GTK3.gtk_widget_add_events (eventHandle, eventMask);
 				OS.g_signal_connect_closure_by_id (eventHandle, display.signalIds [MOTION_NOTIFY_EVENT], 0, display.getClosure (MOTION_NOTIFY_EVENT), false);
 				OS.g_signal_connect_closure_by_id (eventHandle, display.signalIds [MOTION_NOTIFY_EVENT], 0, display.getClosure (MOTION_NOTIFY_EVENT_INVERSE), true);
 

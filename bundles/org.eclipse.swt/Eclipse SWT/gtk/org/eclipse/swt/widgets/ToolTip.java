@@ -282,7 +282,7 @@ void configure () {
 	GTK.gtk_widget_realize(handle);
 	Region region = new Region (display);
 	region.add(DPIUtil.autoScaleDown(polyline));
-	GTK.gtk_widget_shape_combine_region (handle, region.handle);
+	GTK3.gtk_widget_shape_combine_region (handle, region.handle);
 	region.dispose ();
 }
 
@@ -335,7 +335,7 @@ void destroyWidget () {
 			if (GTK.GTK4) {
 				OS.g_object_unref(topHandle);
 			} else {
-				GTK.gtk_widget_destroy(topHandle);
+				GTK3.gtk_widget_destroy(topHandle);
 			}
 		} else {
 			OS.g_object_unref(topHandle);
@@ -602,10 +602,10 @@ void hookEvents () {
 
 		if (GTK.GTK4) {
 			long clickController = GTK4.gtk_gesture_click_new();
-			GTK.gtk_widget_add_controller(handle, clickController);
+			GTK4.gtk_widget_add_controller(handle, clickController);
 			OS.g_signal_connect(clickController, OS.pressed, display.gesturePressReleaseProc, GESTURE_PRESSED);
 		} else {
-			GTK.gtk_widget_add_events(handle, GDK.GDK_BUTTON_PRESS_MASK);
+			GTK3.gtk_widget_add_events(handle, GDK.GDK_BUTTON_PRESS_MASK);
 			OS.g_signal_connect_closure(handle, OS.button_press_event, display.getClosure (BUTTON_PRESS_EVENT), false);
 		}
 	}

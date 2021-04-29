@@ -172,7 +172,7 @@ void createHandle(int index) {
 
 	fixedHandle = OS.g_object_new (display.gtk_fixed_get_type (), 0);
 	if (fixedHandle == 0) error (SWT.ERROR_NO_HANDLES);
-	if (!GTK.GTK4) GTK.gtk_widget_set_has_window(fixedHandle, true);
+	if (!GTK.GTK4) GTK3.gtk_widget_set_has_window(fixedHandle, true);
 
 	handle = GTK.gtk_frame_new (null);
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
@@ -188,7 +188,7 @@ void createHandle(int index) {
 	 * it can listen to events (clicking/tooltip etc.) and so that
 	 * background can be drawn on it.
 	 */
-	if (!GTK.GTK4) GTK.gtk_widget_set_has_window(clientHandle, true);
+	if (!GTK.GTK4) GTK3.gtk_widget_set_has_window(clientHandle, true);
 
 	if (GTK.GTK4) {
 		OS.swt_fixed_add(fixedHandle, handle);
@@ -431,7 +431,7 @@ long paintHandle() {
 	/* we draw all our children on the clientHandle*/
 	long paintHandle = clientHandle;
 	while (paintHandle != topHandle) {
-		if (GTK.gtk_widget_get_has_window(paintHandle)) break;
+		if (GTK3.gtk_widget_get_has_window(paintHandle)) break;
 		paintHandle = GTK.gtk_widget_get_parent (paintHandle);
 	}
 	return paintHandle;

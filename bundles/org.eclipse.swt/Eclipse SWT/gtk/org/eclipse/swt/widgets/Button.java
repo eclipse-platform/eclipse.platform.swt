@@ -127,7 +127,7 @@ GtkBorder getBorder (byte[] border, long handle, int defaultBorder) {
 		gtk_style_context_get_border(context, stateFlag, gtkBorder);
 		return gtkBorder;
 	} else {
-		GTK.gtk_widget_style_get (handle, border, borderPtr,0);
+		GTK3.gtk_widget_style_get (handle, border, borderPtr,0);
 		if (borderPtr[0] != 0) {
 			OS.memmove (gtkBorder, borderPtr[0], GtkBorder.sizeof);
 			GTK.gtk_border_free(borderPtr[0]);
@@ -213,9 +213,9 @@ Point computeSizeInPixels (int wHint, int hHint, boolean changed) {
 		int trimWidth, trimHeight;
 		if (!GTK.GTK4) {
 			int[] focusWidth = new int[1];
-			GTK.gtk_widget_style_get (handle, OS.focus_line_width, focusWidth, 0);
+			GTK3.gtk_widget_style_get (handle, OS.focus_line_width, focusWidth, 0);
 			int[] focusPadding = new int[1];
-			GTK.gtk_widget_style_get (handle, OS.focus_padding, focusPadding, 0);
+			GTK3.gtk_widget_style_get (handle, OS.focus_padding, focusPadding, 0);
 			trimWidth = 2 * (borderWidth + focusWidth [0] + focusPadding [0]);
 		} else {
 			trimWidth = 2 * borderWidth;
@@ -224,7 +224,7 @@ Point computeSizeInPixels (int wHint, int hHint, boolean changed) {
 		int indicatorHeight = 0;
 		if ((style & (SWT.CHECK | SWT.RADIO)) != 0) {
 			if (GTK.GTK4) {
-				long icon = GTK.gtk_widget_get_first_child(handle);
+				long icon = GTK4.gtk_widget_get_first_child(handle);
 				GtkRequisition minimum = new GtkRequisition ();
 				GTK.gtk_widget_get_preferred_size(icon, minimum, null);
 				long context = GTK.gtk_widget_get_style_context(icon);
@@ -234,8 +234,8 @@ Point computeSizeInPixels (int wHint, int hHint, boolean changed) {
 			} else {
 				int[] indicatorSize = new int[1];
 				int[] indicatorSpacing = new int[1];
-				GTK.gtk_widget_style_get (handle, OS.indicator_size, indicatorSize, 0);
-				GTK.gtk_widget_style_get (handle, OS.indicator_spacing, indicatorSpacing, 0);
+				GTK3.gtk_widget_style_get (handle, OS.indicator_size, indicatorSize, 0);
+				GTK3.gtk_widget_style_get (handle, OS.indicator_spacing, indicatorSpacing, 0);
 				indicatorHeight = indicatorSize [0] + 2 * indicatorSpacing [0];
 				trimWidth += indicatorHeight + indicatorSpacing [0];
 			}
@@ -246,7 +246,7 @@ Point computeSizeInPixels (int wHint, int hHint, boolean changed) {
 			GtkBorder innerBorder = getBorder (OS.inner_border, handle, INNER_BORDER);
 			trimWidth += innerBorder.left + innerBorder.right;
 			trimHeight += innerBorder.top + innerBorder.bottom;
-			boolean canDefault = GTK.GTK4 ? GTK.gtk_widget_get_receives_default(handle) : GTK.gtk_widget_get_can_default(handle);
+			boolean canDefault = GTK.GTK4 ? GTK4.gtk_widget_get_receives_default(handle) : GTK3.gtk_widget_get_can_default(handle);
 			if (canDefault) {
 				GtkBorder defaultBorder = getBorder(OS.default_border, handle, DEFAULT_BORDER);
 				trimWidth += defaultBorder.left + defaultBorder.right;
@@ -283,7 +283,7 @@ Point computeSizeInPixels (int wHint, int hHint, boolean changed) {
 		GTK.gtk_widget_set_size_request (boxHandle, reqWidth [0], reqHeight [0]);
 	}
 	if (wHint != SWT.DEFAULT || hHint != SWT.DEFAULT) {
-		boolean canDefault = GTK.GTK4 ? GTK.gtk_widget_get_receives_default(handle) : GTK.gtk_widget_get_can_default(handle);
+		boolean canDefault = GTK.GTK4 ? GTK4.gtk_widget_get_receives_default(handle) : GTK3.gtk_widget_get_can_default(handle);
 		if (canDefault) {
 			GtkBorder border = getBorder(OS.default_border, handle, DEFAULT_BORDER);
 			if (wHint != SWT.DEFAULT) size.x += border.left + border.right;
@@ -310,7 +310,7 @@ void createHandle (int index) {
 			if (GTK.GTK4) {
 				handle = GTK4.gtk_button_new_from_icon_name(arrowType);
 				if (handle == 0) error (SWT.ERROR_NO_HANDLES);
-				arrowHandle = GTK.gtk_widget_get_first_child(handle);
+				arrowHandle = GTK4.gtk_widget_get_first_child(handle);
 				if (arrowHandle == 0) error (SWT.ERROR_NO_HANDLES);
 			} else {
 				arrowHandle = GTK.gtk_image_new_from_icon_name(arrowType, GTK.GTK_ICON_SIZE_MENU);
@@ -376,7 +376,7 @@ void createHandle (int index) {
 		default:
 			handle = GTK.gtk_button_new ();
 			if (handle == 0) error (SWT.ERROR_NO_HANDLES);
-			if (!GTK.GTK4) GTK.gtk_widget_set_can_default (handle, true);
+			if (!GTK.GTK4) GTK3.gtk_widget_set_can_default (handle, true);
 			break;
 	}
 
@@ -419,7 +419,7 @@ void createHandle (int index) {
 	if (GTK.GTK4) {
 		OS.swt_fixed_add(fixedHandle, handle);
 	} else {
-		GTK.gtk_widget_set_has_window(fixedHandle, true);
+		GTK3.gtk_widget_set_has_window(fixedHandle, true);
 		GTK3.gtk_container_add(fixedHandle, handle);
 	}
 

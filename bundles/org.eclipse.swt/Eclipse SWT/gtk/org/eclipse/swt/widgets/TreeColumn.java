@@ -433,7 +433,7 @@ void hookEvents () {
 
 	if (GTK.GTK4) {
 		 long clickController = GTK4.gtk_gesture_click_new();
-		 GTK.gtk_widget_add_controller(buttonHandle, clickController);
+		 GTK4.gtk_widget_add_controller(buttonHandle, clickController);
 		 GTK.gtk_event_controller_set_propagation_phase(clickController, GTK.GTK_PHASE_CAPTURE);
 		 OS.g_signal_connect(clickController, OS.pressed, display.gesturePressReleaseProc, GESTURE_PRESSED);
 	} else {

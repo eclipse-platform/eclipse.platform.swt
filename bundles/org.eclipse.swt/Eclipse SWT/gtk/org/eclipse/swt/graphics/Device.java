@@ -979,7 +979,7 @@ protected void release () {
 		if (GTK.GTK4) {
 			GTK4.gtk_window_destroy(shellHandle);
 		} else {
-			GTK.gtk_widget_destroy(shellHandle);
+			GTK3.gtk_widget_destroy(shellHandle);
 		}
 	}
 	shellHandle = 0;
@@ -1107,7 +1107,7 @@ protected int getDeviceZoom() {
 		long monitor;
 
 		if (GTK.GTK4) {
-			long surface = GTK4.gtk_native_get_surface(GTK.gtk_widget_get_native(shellHandle));
+			long surface = GTK4.gtk_native_get_surface(GTK4.gtk_widget_get_native(shellHandle));
 			monitor = GDK.gdk_display_get_monitor_at_surface(display, surface);
 		} else {
 			monitor = GDK.gdk_display_get_monitor_at_point(display, 0, 0);

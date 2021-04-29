@@ -233,7 +233,7 @@ void createHandle (int index) {
 
 	fixedHandle = OS.g_object_new(display.gtk_fixed_get_type(), 0);
 	if (fixedHandle == 0) error(SWT.ERROR_NO_HANDLES);
-	if (!GTK.GTK4) GTK.gtk_widget_set_has_window(fixedHandle, true);
+	if (!GTK.GTK4) GTK3.gtk_widget_set_has_window(fixedHandle, true);
 
 	if ((style & SWT.SEPARATOR) != 0) {
 		if ((style & SWT.HORIZONTAL)!= 0) {

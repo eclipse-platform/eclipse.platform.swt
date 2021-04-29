@@ -496,7 +496,7 @@ void destroyWidget () {
 		if (GTK.GTK4) {
 			GTK.gtk_widget_unparent(topHandle);
 		} else {
-			GTK.gtk_widget_destroy(topHandle);
+			GTK3.gtk_widget_destroy(topHandle);
 		}
 	}
 }
@@ -1743,7 +1743,7 @@ void setFontDescription(long widget, long fontDescription) {
 	} else {
 		// gtk_widget_override_font() copies the fields from 'fontDescription'
 		// and does not remember the pointer passed to it.
-		GTK.gtk_widget_override_font(widget, fontDescription);
+		GTK3.gtk_widget_override_font(widget, fontDescription);
 		long context = GTK.gtk_widget_get_style_context(widget);
 		GTK.gtk_style_context_invalidate(context);
 	}
@@ -1996,12 +1996,12 @@ void snapshotToDraw (long handle, long snapshot) {
 
 long gtk_widget_get_window (long widget){
 	GTK.gtk_widget_realize(widget);
-	return GTK.gtk_widget_get_window (widget);
+	return GTK3.gtk_widget_get_window (widget);
 }
 
 long gtk_widget_get_surface (long widget){
 	GTK.gtk_widget_realize(widget);
-	return GTK4.gtk_native_get_surface(GTK.gtk_widget_get_native (widget));
+	return GTK4.gtk_native_get_surface(GTK4.gtk_widget_get_native (widget));
 }
 
 void gdk_window_get_size (long drawable, int[] width, int[] height) {

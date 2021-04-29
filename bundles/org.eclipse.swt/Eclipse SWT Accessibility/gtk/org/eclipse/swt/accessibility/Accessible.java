@@ -20,6 +20,7 @@ import java.util.List;
 import org.eclipse.swt.*;
 import org.eclipse.swt.internal.gtk.*;
 import org.eclipse.swt.internal.gtk3.*;
+import org.eclipse.swt.internal.gtk4.*;
 import org.eclipse.swt.widgets.*;
 
 /**
@@ -497,7 +498,7 @@ public class Accessible {
 
 		if (control instanceof Label) {
 			if (GTK.GTK4) {
-				for (long child = GTK.gtk_widget_get_first_child(result); child != 0; child = GTK.gtk_widget_get_next_sibling(child)) {
+				for (long child = GTK4.gtk_widget_get_first_child(result); child != 0; child = GTK4.gtk_widget_get_next_sibling(child)) {
 					if (GTK.gtk_widget_get_visible(child)) {
 						result = child;
 						break;

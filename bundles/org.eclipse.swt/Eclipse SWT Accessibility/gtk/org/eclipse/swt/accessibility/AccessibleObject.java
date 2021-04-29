@@ -4552,8 +4552,8 @@ class AccessibleObject {
 		if (GTK.GTK4) {
 			//TODO: GTK4 no gdk_surface_get_origin
 		} else {
-			long topLevel = GTK.gtk_widget_get_toplevel (widget);
-			long window = GTK.gtk_widget_get_window (topLevel);
+			long topLevel = GTK3.gtk_widget_get_toplevel (widget);
+			long window = GTK3.gtk_widget_get_window (topLevel);
 			GDK.gdk_window_get_origin (window, x, y);
 		}
 	}

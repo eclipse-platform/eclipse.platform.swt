@@ -160,7 +160,7 @@ public DropTarget(Control control, int style) {
 		int actions = opToOsOp(style);
 		dropController = GTK4.gtk_drop_target_async_new(0, actions);
 
-		GTK.gtk_widget_add_controller(control.handle, dropController);
+		GTK4.gtk_widget_add_controller(control.handle, dropController);
 	} else {
 		if (Drag_Motion == null || Drag_Leave == null || Drag_Data_Received == null || Drag_Drop == null) {
 			DND.error(DND.ERROR_CANNOT_INIT_DROP);
@@ -801,7 +801,7 @@ boolean setEventData(long context, int x, int y, int time, DNDEvent event) {
 	if (GTK.GTK4) {
 		// TODO: GTK4 no gdk_surface_get_origin
 	} else {
-		long window = GTK.gtk_widget_get_window (control.handle);
+		long window = GTK3.gtk_widget_get_window (control.handle);
 		GDK.gdk_window_get_origin(window, origin_x, origin_y);
 	}
 	Point coordinates = DPIUtil.autoScaleDown(new Point(origin_x[0] + x, origin_y[0] + y));

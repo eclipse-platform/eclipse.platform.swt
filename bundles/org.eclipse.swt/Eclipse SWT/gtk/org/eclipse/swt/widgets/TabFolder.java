@@ -261,7 +261,7 @@ void createHandle (int index) {
 	if (GTK.GTK4) {
 		OS.swt_fixed_add(fixedHandle, handle);
 	} else {
-		GTK.gtk_widget_set_has_window(fixedHandle, true);
+		GTK3.gtk_widget_set_has_window(fixedHandle, true);
 		GTK3.gtk_container_add (fixedHandle, handle);
 	}
 
@@ -400,7 +400,7 @@ Control[] _getChildren() {
 			long parentHandle = tabItem.pageHandle;
 
 			if (GTK.GTK4) {
-				for (long child = GTK.gtk_widget_get_first_child(parentHandle); child != 0; child = GTK.gtk_widget_get_next_sibling(child)) {
+				for (long child = GTK4.gtk_widget_get_first_child(parentHandle); child != 0; child = GTK4.gtk_widget_get_next_sibling(child)) {
 					Widget childWidget = display.getWidget(child);
 					if (childWidget != null && childWidget instanceof Control && childWidget != this) {
 						children[childrenCount] = (Control)childWidget;
@@ -460,7 +460,7 @@ public TabItem getItem (int index) {
 	if (!(0 <= index && index < getItemCount())) error (SWT.ERROR_INVALID_RANGE);
 
 	if (GTK.GTK4) {
-		long child = GTK.gtk_widget_get_first_child(handle);
+		long child = GTK4.gtk_widget_get_first_child(handle);
 		if (child == 0) error(SWT.ERROR_CANNOT_GET_ITEM);
 	} else {
 		long list = GTK3.gtk_container_get_children (handle);

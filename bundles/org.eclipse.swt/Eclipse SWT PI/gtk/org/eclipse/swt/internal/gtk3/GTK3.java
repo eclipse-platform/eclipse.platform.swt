@@ -266,6 +266,140 @@ public class GTK3 {
 	/* GtkWidget */
 	/** @param widget cast=(GtkWidget *) */
 	public static final native long gtk_widget_get_accessible(long widget);
+	/**
+	 * @method flags=ignore_deprecations
+	 * @param widget cast=(GtkWidget *)
+	 * @param font cast=(const PangoFontDescription *)
+	 */
+	/* deprecated as of 3.16 */
+	public static final native void gtk_widget_override_font(long widget, long font);
+	/**
+	 * @method flags=ignore_deprecations
+	 * @param widget cast=(GtkWidget *)
+	 * @param new_parent cast=(GtkWidget *)
+	 */
+	/* deprecated as of 3.14 */
+	public static final native void gtk_widget_reparent(long widget, long new_parent);
+	/**
+	 * @method flags=ignore_deprecations
+	 * @param widget cast=(GtkWidget *)
+	 * @param double_buffered cast=(gboolean)
+	 */
+	/* deprecated as of 3.14 */
+	public static final native void gtk_widget_set_double_buffered(long widget, boolean double_buffered);
+	/**
+	 * @param widget cast=(GtkWidget *)
+	 * @param width cast=(gint)
+	 * @param minimum_size cast=(gint *)
+	 * @param natural_size cast=(gint *)
+	 */
+	public static final native void gtk_widget_get_preferred_height_for_width(long widget, int width, int[] minimum_size, int[] natural_size);
+	/**
+	 * @param widget cast=(GtkWidget *)
+	 * @param minimum_size cast=(gint *)
+	 * @param natural_size cast=(gint *)
+	 */
+	public static final native void gtk_widget_get_preferred_height(long widget, int[] minimum_size, int[] natural_size);
+	/**
+	 * @param widget cast=(GtkWidget *)
+	 * @param height cast=(gint)
+	 * @param minimum_size cast=(gint *)
+	 * @param natural_size cast=(gint *)
+	 */
+	public static final native void gtk_widget_get_preferred_width_for_height(long widget, int height, int[] minimum_size, int[] natural_size);
+	/** @param widget cast=(GtkWidget *) */
+	public static final native long gtk_widget_get_screen(long widget);
+	/**
+	 * @param widget cast=(GtkWidget *)
+	 * @param has_window cast=(gboolean)
+	 */
+	public static final native void gtk_widget_set_has_window(long widget, boolean has_window);
+	/**
+	 * @param widget cast=(GtkWidget *)
+	 * @param accel_signal cast=(const gchar *)
+	 * @param accel_group cast=(GtkAccelGroup *)
+	 * @param accel_key cast=(guint)
+	 * @param accel_mods cast=(GdkModifierType)
+	 */
+	public static final native void gtk_widget_add_accelerator(long widget, byte[] accel_signal, long accel_group, int accel_key, int accel_mods, int accel_flags);
+	/**
+	 * @param widget cast=(GtkWidget *)
+	 * @param accel_group cast=(GtkAccelGroup *)
+	 * @param accel_key cast=(guint)
+	 * @param accel_mods cast=(GdkModifierType)
+	 */
+	public static final native void gtk_widget_remove_accelerator(long widget, long accel_group, int accel_key, int accel_mods);
+	/**
+	 * @param widget cast=(GtkWidget *)
+	 * @param events cast=(gint)
+	 */
+	public static final native void gtk_widget_add_events(long widget, int events);
+	/** @param widget cast=(GtkWidget *) */
+	public static final native void gtk_widget_destroy(long widget);
+	/** @param widget cast=(GtkWidget *) */
+	public static final native int gtk_widget_get_events(long widget);
+	/** @param widget cast=(GtkWidget *) */
+	public static final native long gtk_widget_get_window(long widget);
+	/** @param widget cast=(GtkWidget *) */
+	public static final native long gtk_widget_get_toplevel(long widget);
+	/**
+	 * @param widget cast=(GtkWidget *)
+	 * @param redraw cast=(gboolean)
+	 */
+	public static final native void gtk_widget_set_redraw_on_allocate(long widget, boolean redraw);
+	/**
+	 * @param widget cast=(GtkWidget *)
+	 * @param event cast=(GdkEvent *)
+	 */
+	public static final native boolean gtk_widget_event(long widget, long event);
+	/**
+	 * @param widget cast=(GtkWidget *)
+	 * @param cr cast=(cairo_t *)
+	 */
+	public static final native void gtk_widget_draw(long widget, long cr);
+	/** @param widget cast=(GtkWidget *) */
+	public static final native boolean gtk_widget_get_has_window(long widget);
+	/** @param widget cast=(GtkWidget *) */
+	public static final native boolean gtk_widget_get_can_default(long widget);
+	/**
+	 * @param widget cast=(GtkWidget *)
+	 * @param can_default cast=(gboolean)
+	 */
+	public static final native void gtk_widget_set_can_default(long widget, boolean can_default);
+	/**
+	 * @param widget cast=(GtkWidget *)
+	 * @param parent_window cast=(GdkWindow *)
+	 */
+	public static final native void gtk_widget_set_parent_window(long widget, long parent_window);
+	/**
+	 * @param widget cast=(GtkWidget *)
+	 * @param region cast=(cairo_region_t *)
+	 */
+	public static final native void gtk_widget_shape_combine_region(long widget, long region);
+	/**
+	 * @param src_widget cast=(GtkWidget *)
+	 * @param dest_widget cast=(GtkWidget *)
+	 * @param dest_x cast=(gint *)
+	 * @param dest_y cast=(gint *)
+	 */
+	public static final native boolean gtk_widget_translate_coordinates(long src_widget, long dest_widget, int src_x, int src_y, int[] dest_x, int[] dest_y);
+	/**
+	 * @param widget cast=(GtkWidget *)
+	 * @param property_name cast=(const gchar *)
+	 * @param terminator cast=(const gchar *),flags=sentinel
+	 */
+	public static final native void gtk_widget_style_get(long widget, byte[] property_name, int[] value, long terminator);
+	/**
+	 * @param widget cast=(GtkWidget *)
+	 * @param property_name cast=(const gchar *)
+	 * @param terminator cast=(const gchar *),flags=sentinel
+	 */
+	public static final native void gtk_widget_style_get(long widget, byte[] property_name, long[] value, long terminator);
+	/**
+	 * @param widget cast=(GtkWidget *)
+	 * @param region cast=(cairo_region_t *)
+	 */
+	public static final native void gtk_widget_input_shape_combine_region(long widget, long region);
 
 	/* Drag and Drop API */
 	/**

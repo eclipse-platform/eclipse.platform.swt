@@ -597,7 +597,7 @@ static long JSDOMEventProc (long arg0, long event, long user_data) {
 				}
 			}
 			if (browser != null) {
-				GTK.gtk_widget_event (browser.handle, event);
+				GTK3.gtk_widget_event (browser.handle, event);
 			}
 		}
 		return 0;

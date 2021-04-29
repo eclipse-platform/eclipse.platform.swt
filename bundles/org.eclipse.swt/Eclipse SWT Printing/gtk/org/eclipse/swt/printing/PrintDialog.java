@@ -492,7 +492,7 @@ public PrinterData open() {
 	if (GTK.GTK4) {
 		GTK4.gtk_window_destroy(handle);
 	} else {
-		GTK.gtk_widget_destroy(handle);
+		GTK3.gtk_widget_destroy(handle);
 	}
 	return data;
 }

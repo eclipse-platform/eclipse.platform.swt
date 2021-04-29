@@ -1273,9 +1273,9 @@ void updateAccelerator (long accelGroup, boolean add) {
 	/* When accel_key is zero, it causes GTK warnings */
 	if (keysym != 0) {
 		if (add) {
-			GTK.gtk_widget_add_accelerator(handle, OS.activate, accelGroup, keysym, mask, GTK.GTK_ACCEL_VISIBLE);
+			GTK3.gtk_widget_add_accelerator(handle, OS.activate, accelGroup, keysym, mask, GTK.GTK_ACCEL_VISIBLE);
 		} else {
-			GTK.gtk_widget_remove_accelerator(handle, accelGroup, keysym, mask);
+			GTK3.gtk_widget_remove_accelerator(handle, accelGroup, keysym, mask);
 		}
 	}
 }
@@ -1348,9 +1348,9 @@ boolean updateAcceleratorText (boolean show) {
 	if (maskKeysym.keysym != 0) {
 		long accelGroup = getAccelGroup ();
 		if (show) {
-			GTK.gtk_widget_add_accelerator (handle, OS.activate, accelGroup, maskKeysym.keysym, maskKeysym.mask, GTK.GTK_ACCEL_VISIBLE);
+			GTK3.gtk_widget_add_accelerator (handle, OS.activate, accelGroup, maskKeysym.keysym, maskKeysym.mask, GTK.GTK_ACCEL_VISIBLE);
 		} else {
-			GTK.gtk_widget_remove_accelerator (handle, accelGroup, maskKeysym.keysym, maskKeysym.mask);
+			GTK3.gtk_widget_remove_accelerator (handle, accelGroup, maskKeysym.keysym, maskKeysym.mask);
 		}
 	}
 	return maskKeysym.keysym != 0;

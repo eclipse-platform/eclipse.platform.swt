@@ -448,18 +448,18 @@ private void hookKeyboardAndFocusSignals(long focusHandle) {
 	if (GTK.GTK4) {
 		long keyController = GTK4.gtk_event_controller_key_new();
 		GTK.gtk_event_controller_set_propagation_phase(keyController, GTK.GTK_PHASE_TARGET);
-		GTK.gtk_widget_add_controller(focusHandle, keyController);
+		GTK4.gtk_widget_add_controller(focusHandle, keyController);
 		OS.g_signal_connect(keyController, OS.key_pressed, display.keyPressReleaseProc, KEY_PRESSED);
 		OS.g_signal_connect(keyController, OS.key_released, display.keyPressReleaseProc, KEY_RELEASED);
 
 		long focusController = GTK4.gtk_event_controller_focus_new();
 		GTK.gtk_event_controller_set_propagation_phase(focusController, GTK.GTK_PHASE_TARGET);
-		GTK.gtk_widget_add_controller(focusHandle, focusController);
+		GTK4.gtk_widget_add_controller(focusHandle, focusController);
 		OS.g_signal_connect(focusController, OS.enter, display.focusProc, FOCUS_IN);
 		OS.g_signal_connect(focusController, OS.leave, display.focusProc, FOCUS_OUT);
 	} else {
 		int focusMask = GDK.GDK_KEY_PRESS_MASK | GDK.GDK_KEY_RELEASE_MASK | GDK.GDK_FOCUS_CHANGE_MASK;
-		GTK.gtk_widget_add_events (focusHandle, focusMask);
+		GTK3.gtk_widget_add_events (focusHandle, focusMask);
 		OS.g_signal_connect_closure_by_id(focusHandle, display.signalIds[KEY_PRESS_EVENT], 0, display.getClosure(KEY_PRESS_EVENT), false);
 		OS.g_signal_connect_closure_by_id(focusHandle, display.signalIds[KEY_RELEASE_EVENT], 0, display.getClosure(KEY_RELEASE_EVENT), false);
 		OS.g_signal_connect_closure_by_id(focusHandle, display.signalIds[FOCUS_IN_EVENT], 0, display.getClosure(FOCUS_IN_EVENT), false);
@@ -473,35 +473,35 @@ private void hookMouseSignals(long eventHandle) {
 	if (GTK.GTK4) {
 		long clickGesture = GTK4.gtk_gesture_click_new();
 		GTK.gtk_gesture_single_set_button(clickGesture, 0);
-		GTK.gtk_widget_add_controller(eventHandle, clickGesture);
+		GTK4.gtk_widget_add_controller(eventHandle, clickGesture);
 		OS.g_signal_connect(clickGesture, OS.pressed, display.gesturePressReleaseProc, GESTURE_PRESSED);
 		OS.g_signal_connect(clickGesture, OS.released, display.gesturePressReleaseProc, GESTURE_RELEASED);
 
 		long scrollController = GTK4.gtk_event_controller_scroll_new(GTK.GTK_EVENT_CONTROLLER_SCROLL_BOTH_AXES);
 		GTK.gtk_event_controller_set_propagation_phase(scrollController, GTK.GTK_PHASE_TARGET);
-		GTK.gtk_widget_add_controller(eventHandle, scrollController);
+		GTK4.gtk_widget_add_controller(eventHandle, scrollController);
 		OS.g_signal_connect(scrollController, OS.scroll, display.enterMotionScrollProc, SCROLL);
 
 		long motionController = GTK4.gtk_event_controller_motion_new();
 		GTK.gtk_event_controller_set_propagation_phase(motionController, GTK.GTK_PHASE_TARGET);
-		GTK.gtk_widget_add_controller(eventHandle, motionController);
+		GTK4.gtk_widget_add_controller(eventHandle, motionController);
 		OS.g_signal_connect(motionController, OS.motion, display.enterMotionScrollProc, MOTION);
 
 		long enterExitController = GTK4.gtk_event_controller_motion_new();
 		GTK.gtk_event_controller_set_propagation_phase(enterExitController, GTK.GTK_PHASE_TARGET);
-		GTK.gtk_widget_add_controller(enterExitHandle, enterExitController);
+		GTK4.gtk_widget_add_controller(enterExitHandle, enterExitController);
 		OS.g_signal_connect(enterExitController, OS.enter, display.enterMotionScrollProc, ENTER);
 		OS.g_signal_connect(enterExitController, OS.leave, display.leaveProc, LEAVE);
 	} else {
 		int eventMask = GDK.GDK_POINTER_MOTION_MASK | GDK.GDK_BUTTON_PRESS_MASK | GDK.GDK_BUTTON_RELEASE_MASK | GDK.GDK_SCROLL_MASK | GDK.GDK_SMOOTH_SCROLL_MASK;
-		GTK.gtk_widget_add_events (eventHandle, eventMask);
+		GTK3.gtk_widget_add_events (eventHandle, eventMask);
 		OS.g_signal_connect_closure_by_id(eventHandle, display.signalIds[MOTION_NOTIFY_EVENT], 0, display.getClosure(MOTION_NOTIFY_EVENT), false);
 		OS.g_signal_connect_closure_by_id(eventHandle, display.signalIds[BUTTON_PRESS_EVENT], 0, display.getClosure(BUTTON_PRESS_EVENT), false);
 		OS.g_signal_connect_closure_by_id(eventHandle, display.signalIds[BUTTON_RELEASE_EVENT], 0, display.getClosure(BUTTON_RELEASE_EVENT), false);
 		OS.g_signal_connect_closure_by_id(eventHandle, display.signalIds[SCROLL_EVENT], 0, display.getClosure(SCROLL_EVENT), false);
 
 		int enterExitMask = GDK.GDK_ENTER_NOTIFY_MASK | GDK.GDK_LEAVE_NOTIFY_MASK;
-		GTK.gtk_widget_add_events (enterExitHandle, enterExitMask);
+		GTK3.gtk_widget_add_events (enterExitHandle, enterExitMask);
 		OS.g_signal_connect_closure_by_id(enterExitHandle, display.signalIds[ENTER_NOTIFY_EVENT], 0, display.getClosure(ENTER_NOTIFY_EVENT), false);
 		OS.g_signal_connect_closure_by_id(enterExitHandle, display.signalIds[LEAVE_NOTIFY_EVENT], 0, display.getClosure(LEAVE_NOTIFY_EVENT), false);
 	}
@@ -532,7 +532,7 @@ private void hookPaintSignals() {
 		OS.memmove(widgetClass, widgetClassStruct);
 	} else {
 		int paintMask = GDK.GDK_EXPOSURE_MASK;
-		GTK.gtk_widget_add_events (paintHandle, paintMask);
+		GTK3.gtk_widget_add_events (paintHandle, paintMask);
 		OS.g_signal_connect_closure_by_id (paintHandle, display.signalIds [DRAW], 0, display.getClosure (EXPOSE_EVENT_INVERSE), false);
 		OS.g_signal_connect_closure_by_id (paintHandle, display.signalIds [DRAW], 0, display.getClosure (DRAW), true);
 		OS.g_signal_connect_closure_by_id (paintHandle, display.signalIds [STYLE_UPDATED], 0, display.getClosure (STYLE_UPDATED), false);
@@ -582,7 +582,7 @@ long paintHandle () {
 	if (GTK.GTK4) return topHandle;
 	long paintHandle = handle;
 	while (paintHandle != topHandle) {
-		if (GTK.gtk_widget_get_has_window(paintHandle)) break;
+		if (GTK3.gtk_widget_get_has_window(paintHandle)) break;
 		paintHandle = GTK.gtk_widget_get_parent (paintHandle);
 	}
 	return paintHandle;
@@ -640,7 +640,7 @@ public boolean print (GC gc) {
 	// Prevent allocation warnings
 	GTK.gtk_widget_get_preferred_size(topHandle, null, null);
 	GTK.gtk_widget_size_allocate(topHandle, allocation);
-	GTK.gtk_widget_draw(topHandle, gc.handle);
+	GTK3.gtk_widget_draw(topHandle, gc.handle);
 	return true;
 }
 
@@ -854,16 +854,16 @@ Point computeNativeSize (long h, int wHint, int hHint, boolean changed) {
 		int [] natural_size = new int [1];
 		if (wHint == SWT.DEFAULT) {
 			if (GTK.GTK4) {
-				GTK.gtk_widget_measure(h, GTK.GTK_ORIENTATION_HORIZONTAL, height, null, natural_size, null, null);
+				GTK4.gtk_widget_measure(h, GTK.GTK_ORIENTATION_HORIZONTAL, height, null, natural_size, null, null);
 			} else {
-				GTK.gtk_widget_get_preferred_width_for_height (h, height, null, natural_size);
+				GTK3.gtk_widget_get_preferred_width_for_height (h, height, null, natural_size);
 			}
 			width = natural_size [0];
 		} else {
 			if (GTK.GTK4) {
-				GTK.gtk_widget_measure(h, GTK.GTK_ORIENTATION_VERTICAL, width, null, natural_size, null, null);
+				GTK4.gtk_widget_measure(h, GTK.GTK_ORIENTATION_VERTICAL, width, null, natural_size, null, null);
 			} else {
-				GTK.gtk_widget_get_preferred_height_for_width (h, width, null, natural_size);
+				GTK3.gtk_widget_get_preferred_height_for_width (h, width, null, natural_size);
 			}
 			height = natural_size [0];
 		}
@@ -1395,7 +1395,7 @@ public void setRegion (Region region) {
 	long topHandle = topHandle ();
 
 	if (OS.G_OBJECT_TYPE(topHandle) == GTK.GTK_TYPE_WINDOW()) {
-		GTK.gtk_widget_shape_combine_region(topHandle, shape_region);
+		GTK3.gtk_widget_shape_combine_region(topHandle, shape_region);
 		/*
 		 * Bug in GTK: on Wayland, pixels in window outside shape_region
 		 * is black instead of transparent when the widget is fully opaque (i.e. opacity == 1.0)
@@ -1424,12 +1424,12 @@ void setRelations () {
 
 	if (GTK.GTK4) {
 		int count = 0;
-		for (long child = GTK.gtk_widget_get_first_child(parentHandle); child != 0; child = GTK.gtk_widget_get_next_sibling(child)) {
+		for (long child = GTK4.gtk_widget_get_first_child(parentHandle); child != 0; child = GTK4.gtk_widget_get_next_sibling(child)) {
 			count++;
 		}
 
 		if (count > 1) {
-			handle = GTK.gtk_widget_get_prev_sibling(GTK.gtk_widget_get_last_child(parentHandle));
+			handle = GTK4.gtk_widget_get_prev_sibling(GTK4.gtk_widget_get_last_child(parentHandle));
 		}
 	} else {
 		long list = GTK3.gtk_container_get_children (parentHandle);
@@ -1793,7 +1793,7 @@ Point toDisplayInPixels (Point point) {
  */
 Point getControlOrigin() {
 	double[] originX = new double[1], originY = new double[1];
-	boolean success = GTK.gtk_widget_translate_coordinates(fixedHandle, getShell().shellHandle, 0, 0, originX, originY);
+	boolean success = GTK4.gtk_widget_translate_coordinates(fixedHandle, getShell().shellHandle, 0, 0, originX, originY);
 
 	return success ? new Point((int)originX[0], (int)originY[0]) : new Point(0, 0);
 }
@@ -2878,7 +2878,7 @@ static void gtk_widget_reparent (Control control, long newParentHandle) {
 			// gtk_widget_reparent (..) is deprecated as of Gtk 3.14 and removed in Gtk4.
 			// However, the current alternative of removing/adding widget from/to a container causes errors. (see note below).
 			// TODO - research a better way to reparent. See 534089.
-			GTK.gtk_widget_reparent(widget, newParentHandle);
+			GTK3.gtk_widget_reparent(widget, newParentHandle);
 
 			// Removing/Adding containers doesn't seem to reparent sub-gdkWindows properly and throws errors.
 			// Steps to reproduce:
@@ -4052,7 +4052,7 @@ long gtk_mnemonic_activate (long widget, long arg1) {
 			long focusHandle = focusControl != null ? focusControl.focusHandle () : 0;
 			if (focusHandle != 0) {
 				display.mnemonicControl = this;
-				GTK.gtk_widget_event (focusHandle, eventPtr);
+				GTK3.gtk_widget_event (focusHandle, eventPtr);
 				display.mnemonicControl = null;
 			}
 			result = 1;
@@ -4224,8 +4224,8 @@ long gtk_scroll_event (long widget, long eventPtr) {
 	double [] eventRX = new double[1];
 	double [] eventRY = new double[1];
 	if (GTK.GTK4) {
-		long root = GTK.gtk_widget_get_root(widget);
-		GTK.gtk_widget_translate_coordinates(widget, root, eventX[0], eventY[0], eventRX, eventRY);
+		long root = GTK4.gtk_widget_get_root(widget);
+		GTK4.gtk_widget_translate_coordinates(widget, root, eventX[0], eventY[0], eventRX, eventRY);
 	} else {
 		GDK.gdk_event_get_root_coords(eventPtr, eventRX, eventRY);
 	}
@@ -5192,7 +5192,7 @@ public void setBackgroundImage (Image image) {
 }
 
 void setBackgroundSurface (Image image) {
-	long window = GTK.gtk_widget_get_window (paintHandle ());
+	long window = GTK3.gtk_widget_get_window (paintHandle ());
 	if (GTK.GTK_VERSION >= OS.VERSION(3, 22, 0)) {
 		// gdk_window_set_background_pattern() deprecated in GTK3.22+
 		return;
@@ -5261,7 +5261,7 @@ public void setCursor (Cursor cursor) {
 void setCursor (long cursor) {
 	if (GTK.GTK4) {
 		long eventHandle = eventHandle ();
-		GTK.gtk_widget_set_cursor (eventHandle, cursor);
+		GTK4.gtk_widget_set_cursor (eventHandle, cursor);
 	} else {
 		long window = eventWindow ();
 		if (window != 0) {
@@ -5838,7 +5838,7 @@ public void setRedraw (boolean redraw) {
 					/* Explicitly hiding the window avoids flicker on GTK+ >= 2.6 */
 					GDK.gdk_window_hide (redrawWindow);
 					GDK.gdk_window_destroy (redrawWindow);
-					GDK.gdk_window_set_events (window, GTK.gtk_widget_get_events (paintHandle ()));
+					GDK.gdk_window_set_events (window, GTK3.gtk_widget_get_events (paintHandle ()));
 					redrawWindow = 0;
 				}
 			}
@@ -6100,7 +6100,7 @@ void setZOrder (Control sibling, boolean above, boolean fixRelations, boolean fi
 				if (above && sibling.enableWindow != 0) {
 					siblingWindow = enableWindow;
 				} else {
-					siblingWindow = GTK.gtk_widget_get_window (siblingHandle);
+					siblingWindow = GTK3.gtk_widget_get_window (siblingHandle);
 				}
 			}
 			long redrawWindow = fixChildren ? parent.redrawWindow : 0;
@@ -6724,10 +6724,10 @@ long windowProc (long handle, long arg0, long user_data) {
 				if (control == null) control = this;
 				long gdkResource;
 				if (GTK.GTK4) {
-					gdkResource = GTK4.gtk_native_get_surface(GTK.gtk_widget_get_native (handle));
+					gdkResource = GTK4.gtk_native_get_surface(GTK4.gtk_widget_get_native (handle));
 					drawBackground (control, gdkResource, cairo, rect.x, rect.y, rect.width, rect.height);
 				} else {
-					gdkResource = GTK.gtk_widget_get_window(handle);
+					gdkResource = GTK3.gtk_widget_get_window(handle);
 					if (gdkResource != 0) {
 						drawBackground (control, gdkResource, 0, rect.x, rect.y, rect.width, rect.height);
 					} else {
@@ -6770,7 +6770,7 @@ Point getWindowOrigin () {
  */
 Point getSurfaceOrigin () {
 	double[] originX = new double[1], originY = new double[1];
-	boolean success = GTK.gtk_widget_translate_coordinates(fixedHandle, getShell().shellHandle, 0, 0, originX, originY);
+	boolean success = GTK4.gtk_widget_translate_coordinates(fixedHandle, getShell().shellHandle, 0, 0, originX, originY);
 
 	return success ? new Point((int)originX[0], (int)originY[0]) : new Point(0, 0);
 }

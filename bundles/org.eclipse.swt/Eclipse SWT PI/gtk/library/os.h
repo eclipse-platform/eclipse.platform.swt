@@ -251,22 +251,15 @@
 #define NO_gdk_1selection_1owner_1set
 #define NO_gdk_1selection_1owner_1get
 #define NO_gdk_1visual_1get_1depth
-#define NO_gtk_1widget_1style_1get__I_3B_3II
-#define NO_gtk_1widget_1style_1get__J_3B_3IJ
-#define NO_gtk_1widget_1style_1get__I_3B_3JI
-#define NO_gtk_1widget_1style_1get__J_3B_3JJ
 #define NO_gtk_1css_1provider_1load_1from_1data__I_3BI_3I
 #define NO_gtk_1css_1provider_1load_1from_1data__J_3BJ_3J
 #define NO_gdk_1pixbuf_1get_1from_1window
-#define NO_gtk_1widget_1destroy
 
 // Some sizing functions are not available on GTK4
 #define NO_gtk_1window_1set_1geometry_1hints
 
 // No GdkWindow on GTK4, this includes parameter casting
-#define NO_gtk_1widget_1set_1has_1window
 #define NO_gtk_1im_1context_1set_1client_1window
-#define NO_gtk_1widget_1set_1parent_1window
 #define NO_gdk_1cairo_1set_1source_1window
 #define NO_gdk_1device_1grab
 #define NO_gdk_1device_1warp
@@ -357,10 +350,6 @@
 // GtkTreeViewColumn changes
 #define NO_gtk_1tree_1view_1column_1cell_1get_1size__JLorg_eclipse_swt_internal_gtk_GdkRectangle_2_3I_3I_3I_3I
 
-// GtkAccelGroup removed
-#define NO_gtk_1widget_1add_1accelerator
-#define NO_gtk_1widget_1remove_1accelerator
-
 // Accessibility interface changes
 #define NO_GTK_1TYPE_1TEXT_1VIEW_1ACCESSIBLE
 #define NO_swt_1fixed_1accessible_1register_1accessible
@@ -378,7 +367,6 @@
 #else
 
 // No GdkSurface on GTK3
-#define NO_gtk_1widget_1set_1parent_1surface
 #define NO_gdk_1surface_1create_1similar_1surface
 #define NO_gdk_1surface_1destroy
 #define NO_gdk_1surface_1get_1origin
@@ -405,7 +393,6 @@
 
 // No GtkSnapshot on GTK3
 #define NO_gtk_1snapshot_1append_1cairo
-#define NO_gtk_1widget_1snapshot_1child
 
 // No Graphene library on GTK3
 #define NO_graphene_1rect_1alloc
@@ -413,7 +400,6 @@
 #define NO_graphene_1rect_1init
 
 // Miscellaneous functions not present on GTK3
-#define NO_gtk_1widget_1measure
 #define NO_gtk_1style_1context_1add_1provider_1for_1display
 #define NO_gtk_1css_1provider_1load_1from_1data__I_3BI
 #define NO_gtk_1css_1provider_1load_1from_1data__J_3BJ
@@ -423,7 +409,6 @@
 #define NO_gdk_1cursor_1new_1from_1name___3BI
 #define NO_gdk_1cursor_1new_1from_1name___3BJ
 #define NO_gdk_1cursor_1new_1from_1texture
-#define NO_gtk_1widget_1set_1cursor
 
 // No GdkTexture on GTK3
 #define NO_gdk_1texture_1new_1for_1pixbuf

@@ -285,9 +285,9 @@ Rectangle computeTrimInPixels (int x, int y, int width, int height) {
 	 */
 	if (!GTK.GTK4) {
 		int [] property = new int [1];
-		GTK.gtk_widget_style_get (handle, OS.interior_focus, property, 0);
+		GTK3.gtk_widget_style_get (handle, OS.interior_focus, property, 0);
 		if (property [0] == 0) {
-			GTK.gtk_widget_style_get (handle, OS.focus_line_width, property, 0);
+			GTK3.gtk_widget_style_get (handle, OS.focus_line_width, property, 0);
 			xborder += property [0];
 			yborder += property [0];
 		}
@@ -313,8 +313,8 @@ Rectangle computeTrimInPixels (int x, int y, int width, int height) {
 public void copy () {
 	checkWidget ();
 	if (GTK.GTK4) {
-		long textHandle = GTK.gtk_widget_get_first_child(entryHandle);
-		GTK.gtk_widget_activate_action(textHandle, OS.action_copy_clipboard, null);
+		long textHandle = GTK4.gtk_widget_get_first_child(entryHandle);
+		GTK4.gtk_widget_activate_action(textHandle, OS.action_copy_clipboard, null);
 	} else {
 		GTK3.gtk_editable_copy_clipboard(handle);
 	}
@@ -332,9 +332,9 @@ void createHandle (int index) {
 
 	if (GTK.GTK4) {
 		OS.swt_fixed_add(fixedHandle, handle);
-		entryHandle = GTK.gtk_widget_get_first_child(handle);
+		entryHandle = GTK4.gtk_widget_get_first_child(handle);
 	} else {
-		GTK.gtk_widget_set_has_window(fixedHandle, true);
+		GTK3.gtk_widget_set_has_window(fixedHandle, true);
 		GTK3.gtk_container_add (fixedHandle, handle);
 	}
 	GTK.gtk_editable_set_editable (GTK.GTK4 ? entryHandle : handle, (style & SWT.READ_ONLY) == 0);
@@ -360,8 +360,8 @@ void createHandle (int index) {
 public void cut () {
 	checkWidget ();
 	if (GTK.GTK4) {
-		long textHandle = GTK.gtk_widget_get_first_child(entryHandle);
-		GTK.gtk_widget_activate_action(textHandle, OS.action_cut_clipboard, null);
+		long textHandle = GTK4.gtk_widget_get_first_child(entryHandle);
+		GTK4.gtk_widget_activate_action(textHandle, OS.action_cut_clipboard, null);
 	} else {
 		GTK3.gtk_editable_cut_clipboard(handle);
 	}
@@ -834,7 +834,7 @@ void hookEvents() {
 
 	if (GTK.GTK4) {
 		/* GtkText signals */
-		long textHandle = GTK.gtk_widget_get_first_child(handle);
+		long textHandle = GTK4.gtk_widget_get_first_child(handle);
 		OS.g_signal_connect_closure(textHandle, OS.activate, display.getClosure(ACTIVATE), false);
 	} else {
 		/* GtkEntry signals */

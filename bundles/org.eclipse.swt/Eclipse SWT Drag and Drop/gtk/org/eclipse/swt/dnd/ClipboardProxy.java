@@ -111,7 +111,7 @@ void dispose () {
 		if (GTK.GTK4) {
 			GTK4.gtk_window_destroy(clipboardOwner);
 		} else {
-			GTK.gtk_widget_destroy(clipboardOwner);
+			GTK3.gtk_widget_destroy(clipboardOwner);
 		}
 	}
 	clipboardOwner = 0;

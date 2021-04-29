@@ -239,7 +239,7 @@ void hookEvents () {
 	if (labelHandle != 0) OS.g_signal_connect_closure_by_id (labelHandle, display.signalIds [MNEMONIC_ACTIVATE], 0, display.getClosure (MNEMONIC_ACTIVATE), false);
 	if (GTK.GTK4) {
 		long motionController = GTK4.gtk_event_controller_motion_new();
-		GTK.gtk_widget_add_controller(handle, motionController);
+		GTK4.gtk_widget_add_controller(handle, motionController);
 		GTK.gtk_event_controller_set_propagation_phase(motionController, GTK.GTK_PHASE_TARGET);
 
 		long enterMotionAddress = display.enterMotionScrollCallback.getAddress();

@@ -143,7 +143,7 @@ void createHandle (int index) {
 	if (GTK.GTK4) {
 		OS.swt_fixed_add(fixedHandle, handle);
 	} else {
-		GTK.gtk_widget_set_has_window(fixedHandle, true);
+		GTK3.gtk_widget_set_has_window(fixedHandle, true);
 		GTK3.gtk_container_add (fixedHandle, handle);
 	}
 

@@ -19,6 +19,7 @@ import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.gtk.*;
+import org.eclipse.swt.internal.gtk3.*;
 import org.eclipse.swt.internal.gtk4.*;
 
 /**
@@ -348,7 +349,7 @@ Rectangle getThumbBoundsInPixels() {
 	checkWidget();
 
 	int[] slider_start = new int[1], slider_end = new int[1];
-	long rangeHandle = GTK.GTK4 ? GTK.gtk_widget_get_first_child(handle) : handle;
+	long rangeHandle = GTK.GTK4 ? GTK4.gtk_widget_get_first_child(handle) : handle;
 	GTK.gtk_range_get_slider_range(rangeHandle, slider_start, slider_end);
 
 	int x, y, width, height;
@@ -369,12 +370,12 @@ Rectangle getThumbBoundsInPixels() {
 	Rectangle rect = new Rectangle(x, y, width, height);
 	if (GTK.GTK4) {
 		double[] origin_x = new double[1], origin_y = new double[1];
-		boolean success = GTK.gtk_widget_translate_coordinates(parent.scrolledHandle, parent.getShell().shellHandle, 0, 0, origin_x, origin_y);
+		boolean success = GTK4.gtk_widget_translate_coordinates(parent.scrolledHandle, parent.getShell().shellHandle, 0, 0, origin_x, origin_y);
 		if (success) {
 			rect.x += origin_x[0];
 			rect.y += origin_y[0];
 		}
-		success = GTK.gtk_widget_translate_coordinates(parent.handle, parent.getShell().shellHandle, 0, 0, origin_x, origin_y);
+		success = GTK4.gtk_widget_translate_coordinates(parent.handle, parent.getShell().shellHandle, 0, 0, origin_x, origin_y);
 		if (success) {
 			rect.x -= origin_x[0];
 			rect.y -= origin_y[0];
@@ -424,13 +425,13 @@ Rectangle getThumbTrackBoundsInPixels () {
 	boolean hasB = false, hasB2 = false, hasF = false, hasF2 = false;
 	if (!GTK.GTK4) {
 		int[] has_stepper = new int[1];
-		GTK.gtk_widget_style_get(handle, OS.has_backward_stepper, has_stepper, 0);
+		GTK3.gtk_widget_style_get(handle, OS.has_backward_stepper, has_stepper, 0);
 		hasB = has_stepper[0] != 0;
-		GTK.gtk_widget_style_get(handle, OS.has_secondary_backward_stepper, has_stepper, 0);
+		GTK3.gtk_widget_style_get(handle, OS.has_secondary_backward_stepper, has_stepper, 0);
 		hasB2 = has_stepper[0] != 0;
-		GTK.gtk_widget_style_get(handle, OS.has_forward_stepper, has_stepper, 0);
+		GTK3.gtk_widget_style_get(handle, OS.has_forward_stepper, has_stepper, 0);
 		hasF = has_stepper[0] != 0;
-		GTK.gtk_widget_style_get(handle, OS.has_secondary_forward_stepper, has_stepper, 0);
+		GTK3.gtk_widget_style_get(handle, OS.has_secondary_forward_stepper, has_stepper, 0);
 		hasF2 = has_stepper[0] != 0;
 	}
 
@@ -447,7 +448,7 @@ Rectangle getThumbTrackBoundsInPixels () {
 		if (hasF) height -= stepperSize;
 		if (height < 0) {
 			int[] slider_start = new int[1], slider_end = new int[1];
-			long rangeHandle = GTK.GTK4 ? GTK.gtk_widget_get_first_child(handle) : handle;
+			long rangeHandle = GTK.GTK4 ? GTK4.gtk_widget_get_first_child(handle) : handle;
 			GTK.gtk_range_get_slider_range(rangeHandle, slider_start, slider_end);
 			y = slider_start[0];
 			height = 0;
@@ -463,7 +464,7 @@ Rectangle getThumbTrackBoundsInPixels () {
 		height = allocation.height;
 		if (width < 0) {
 			int[] slider_start = new int[1], slider_end = new int[1];
-			long rangeHandle = GTK.GTK4 ? GTK.gtk_widget_get_first_child(handle) : handle;
+			long rangeHandle = GTK.GTK4 ? GTK4.gtk_widget_get_first_child(handle) : handle;
 			GTK.gtk_range_get_slider_range(rangeHandle, slider_start, slider_end);
 			x = slider_start[0];
 			width = 0;
@@ -473,12 +474,12 @@ Rectangle getThumbTrackBoundsInPixels () {
 	Rectangle rect = new Rectangle(x, y, width, height);
 	if (GTK.GTK4) {
 		double[] origin_x = new double[1], origin_y = new double[1];
-		boolean success = GTK.gtk_widget_translate_coordinates(parent.scrolledHandle, parent.getShell().shellHandle, 0, 0, origin_x, origin_y);
+		boolean success = GTK4.gtk_widget_translate_coordinates(parent.scrolledHandle, parent.getShell().shellHandle, 0, 0, origin_x, origin_y);
 		if (success) {
 			rect.x += origin_x[0];
 			rect.y += origin_y[0];
 		}
-		success = GTK.gtk_widget_translate_coordinates(parent.handle, parent.getShell().shellHandle, 0, 0, origin_x, origin_y);
+		success = GTK4.gtk_widget_translate_coordinates(parent.handle, parent.getShell().shellHandle, 0, 0, origin_x, origin_y);
 		if (success) {
 			rect.x -= origin_x[0];
 			rect.y -= origin_y[0];
@@ -608,7 +609,7 @@ void hookEvents () {
 		//TODO: GTK4 change-value moved to gtk_scroll_child in Composite, event-after
 
 		long clickGesture = GTK4.gtk_gesture_click_new();
-		GTK.gtk_widget_add_controller(handle, clickGesture);
+		GTK4.gtk_widget_add_controller(handle, clickGesture);
 		OS.g_signal_connect(clickGesture, OS.pressed, display.gesturePressReleaseProc, GESTURE_PRESSED);
 	} else {
 		OS.g_signal_connect_closure (handle, OS.change_value, display.getClosure (CHANGE_VALUE), false);

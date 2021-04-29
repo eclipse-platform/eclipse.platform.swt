@@ -354,7 +354,7 @@ void drawRectangles (Rectangle [] rects) {
 	if (gdkResource == 0) return;
 
 	if (overlay == 0) return;
-	GTK.gtk_widget_shape_combine_region (overlay, 0);
+	GTK3.gtk_widget_shape_combine_region (overlay, 0);
 
 	// Bug 498217.
 	// As of Gtk 3.9.1, Commit a60ccd3672467efb454b121993febc36f33cbc79, off-screen GDK windows are not processed.
@@ -420,14 +420,14 @@ void drawRectangles (Rectangle [] rects) {
 		setTrackerBackground(false);
 	}
 
-	GTK.gtk_widget_shape_combine_region (overlay, region);
+	GTK3.gtk_widget_shape_combine_region (overlay, region);
 	Cairo.cairo_region_destroy (region);
 	if (GTK.GTK4) {
-		long overlaySurface = GTK4.gtk_native_get_surface(GTK.gtk_widget_get_native (overlay));
+		long overlaySurface = GTK4.gtk_native_get_surface(GTK4.gtk_widget_get_native (overlay));
 		GDK.gdk_surface_hide (overlaySurface);
 		/* TODO: GTK does not provide a gdk_surface_show, probably will require use of the present api */
 	} else {
-		long overlayWindow = GTK.gtk_widget_get_window (overlay);
+		long overlayWindow = GTK3.gtk_widget_get_window (overlay);
 		GDK.gdk_window_hide (overlayWindow);
 		GDK.gdk_window_show (overlayWindow);
 	}
@@ -852,7 +852,7 @@ public boolean open () {
 	if (parent != null) GTK.gtk_window_set_transient_for(overlay, parent.topHandle());
 	GTK.gtk_widget_realize (overlay);
 	if (!GTK.GTK4) {
-		long overlayWindow = GTK.gtk_widget_get_window (overlay);
+		long overlayWindow = GTK3.gtk_widget_get_window (overlay);
 		GDK.gdk_window_set_override_redirect (overlayWindow, true);
 	}
 	setTrackerBackground(true);
@@ -884,7 +884,7 @@ public boolean open () {
 	}
 	ungrab ();
 	if (overlay != 0) {
-		GTK.gtk_widget_destroy (overlay);
+		GTK3.gtk_widget_destroy (overlay);
 		overlay = 0;
 	}
 	window = 0;
@@ -928,8 +928,8 @@ private void setTrackerBackground(boolean opaque) {
 		//GDK.gdk_surface_set_opaque_region(context, region);
 		//GDK.gdk_surface_set_input_region(context, region);
 	} else {
-		GTK.gtk_widget_shape_combine_region (overlay, region);
-		GTK.gtk_widget_input_shape_combine_region (overlay, region);
+		GTK3.gtk_widget_shape_combine_region (overlay, region);
+		GTK3.gtk_widget_input_shape_combine_region (overlay, region);
 	}
 
 	Cairo.cairo_region_destroy (region);

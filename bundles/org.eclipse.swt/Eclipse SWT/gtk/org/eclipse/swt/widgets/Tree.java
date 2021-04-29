@@ -459,7 +459,7 @@ int calculateWidth (long column, long iter, boolean recurse) {
 				GTK.gtk_widget_get_allocation(image, allocation);
 				width += allocation.width + TreeItem.EXPANDER_EXTRA_PADDING;
 			} else {
-				GTK.gtk_widget_style_get (handle, OS.expander_size, w, 0);
+				GTK3.gtk_widget_style_get (handle, OS.expander_size, w, 0);
 				width += w [0] + TreeItem.EXPANDER_EXTRA_PADDING;
 			}
 		}
@@ -469,7 +469,7 @@ int calculateWidth (long column, long iter, boolean recurse) {
 	 * to the size of the widget.
 	 */
 	if (!GTK.GTK4) {
-		GTK.gtk_widget_style_get(handle, OS.focus_line_width, w, 0);
+		GTK3.gtk_widget_style_get(handle, OS.focus_line_width, w, 0);
 		width += 2 * w [0];
 	}
 	long list = GTK.gtk_cell_layout_get_cells(column);
@@ -505,7 +505,7 @@ int calculateWidth (long column, long iter, boolean recurse) {
 		 * Grid line width is handled via CSS in GTK4.
 		 */
 		if (!GTK.GTK4) {
-			GTK.gtk_widget_style_get (handle, OS.grid_line_width, w, 0) ;
+			GTK3.gtk_widget_style_get (handle, OS.grid_line_width, w, 0) ;
 			width += 2 * w [0];
 		}
 	}
@@ -809,7 +809,7 @@ void createHandle (int index) {
 	if (GTK.GTK4) {
 		scrolledHandle = GTK4.gtk_scrolled_window_new();
 	} else {
-		GTK.gtk_widget_set_has_window(fixedHandle, true);
+		GTK3.gtk_widget_set_has_window(fixedHandle, true);
 		scrolledHandle = GTK3.gtk_scrolled_window_new (0, 0);
 	}
 	if (scrolledHandle == 0) error (SWT.ERROR_NO_HANDLES);
@@ -876,13 +876,13 @@ void bindArrowKeyBindings() {
 
 	int[] keyval = new int[1];
 	GTK.gtk_accelerator_parse(Converter.javaStringToCString("Left"), keyval, null);
-	GTK.gtk_widget_class_add_binding_signal(GTK.GTK_WIDGET_GET_CLASS(handle), keyval[0], 0,
+	GTK4.gtk_widget_class_add_binding_signal(GTK.GTK_WIDGET_GET_CLASS(handle), keyval[0], 0,
 			Converter.javaStringToCString("expand-collapse-cursor-row"),
 			Converter.javaStringToCString("(bbb)"),
 			false, false, false);
 
 	GTK.gtk_accelerator_parse(Converter.javaStringToCString("Right"), keyval, null);
-	GTK.gtk_widget_class_add_binding_signal(GTK.GTK_WIDGET_GET_CLASS(handle), keyval[0], 0,
+	GTK4.gtk_widget_class_add_binding_signal(GTK.GTK_WIDGET_GET_CLASS(handle), keyval[0], 0,
 			Converter.javaStringToCString("expand-collapse-cursor-row"),
 			Converter.javaStringToCString("(bbb)"),
 			false, true, false);
@@ -3896,7 +3896,7 @@ void setParentGdkResource (Control child) {
 		// TODO: implement connectFixedHandleDraw with the "snapshot" signal
 	} else {
 		long parentGdkWindow = eventWindow ();
-		GTK.gtk_widget_set_parent_window (child.topHandle(), parentGdkWindow);
+		GTK3.gtk_widget_set_parent_window (child.topHandle(), parentGdkWindow);
 		hasChildren = true;
 		connectFixedHandleDraw();
 	}
@@ -4249,7 +4249,7 @@ long windowProc (long handle, long arg0, long user_data) {
 					Control control = findBackgroundControl ();
 					if (control != null) {
 						long window = GTK.gtk_tree_view_get_bin_window (handle);
-						if (window == GTK.gtk_widget_get_window(handle)) {
+						if (window == GTK3.gtk_widget_get_window(handle)) {
 							GdkRectangle rect = new GdkRectangle ();
 							GDK.gdk_cairo_get_clip_rectangle (arg0, rect);
 							drawBackground (control, window, arg0, rect.x, rect.y, rect.width, rect.height);

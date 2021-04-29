@@ -513,12 +513,12 @@ void redrawWidget (int x, int y, int width, int height, boolean redrawAll, boole
 	} else {
 		if (GTK.GTK4) {
 			double[] destX = new double[1], destY = new double[1];
-			GTK.gtk_widget_translate_coordinates(paintHandle, topHandle, x, y, destX, destY);
+			GTK4.gtk_widget_translate_coordinates(paintHandle, topHandle, x, y, destX, destY);
 			rect.x = (int)destX[0];
 			rect.y = (int)destY[0];
 		} else {
 			int[] destX = new int[1], destY = new int[1];
-			GTK.gtk_widget_translate_coordinates(paintHandle, topHandle, x, y, destX, destY);
+			GTK3.gtk_widget_translate_coordinates(paintHandle, topHandle, x, y, destX, destY);
 			rect.x = destX[0];
 			rect.y = destY[0];
 		}
@@ -619,7 +619,7 @@ private Point scrollBarSize(long scrollBarHandle) {
 	gtk_widget_get_preferred_size (scrollBarHandle, requisition);
 	int [] padding = new int [1];
 	// Only GTK3 needs this, GTK4 has the size built-in via gtk_widget_get_preferred_size()
-	if (!GTK.GTK4) GTK.gtk_widget_style_get(scrolledHandle, OS.scrollbar_spacing, padding, 0);
+	if (!GTK.GTK4) GTK3.gtk_widget_style_get(scrolledHandle, OS.scrollbar_spacing, padding, 0);
 	int spacing = padding[0];
 	return new Point(requisition.width + spacing, requisition.height + spacing);
 }

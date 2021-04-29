@@ -208,7 +208,7 @@ void createHandle (int index) {
 	if (GTK.GTK4) {
 		scrolledHandle = GTK4.gtk_scrolled_window_new();
 	} else {
-		GTK.gtk_widget_set_has_window(fixedHandle, true);
+		GTK3.gtk_widget_set_has_window(fixedHandle, true);
 		scrolledHandle = GTK3.gtk_scrolled_window_new (0, 0);
 	}
 	if (scrolledHandle == 0) error (SWT.ERROR_NO_HANDLES);

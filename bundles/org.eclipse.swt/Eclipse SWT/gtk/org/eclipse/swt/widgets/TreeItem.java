@@ -18,6 +18,7 @@ import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.gtk.*;
+import org.eclipse.swt.internal.gtk3.*;
 
 /**
  * Instances of this class represent a selectable user interface object
@@ -494,7 +495,7 @@ Rectangle getBoundsInPixels () {
 		GTK.gtk_widget_get_allocation(separator, allocation);
 		horizontalSeparator = allocation.height;
 	} else {
-		GTK.gtk_widget_style_get (parentHandle, OS.horizontal_separator, buffer, 0);
+		GTK3.gtk_widget_style_get (parentHandle, OS.horizontal_separator, buffer, 0);
 		horizontalSeparator = buffer[0];
 	}
 	rect.x += horizontalSeparator;
@@ -971,7 +972,7 @@ Rectangle getTextBoundsInPixels (int index) {
 		GTK.gtk_widget_get_allocation(separator, allocation);
 		horizontalSeparator = allocation.height;
 	} else {
-		GTK.gtk_widget_style_get (parentHandle, OS.horizontal_separator, buffer, 0);
+		GTK3.gtk_widget_style_get (parentHandle, OS.horizontal_separator, buffer, 0);
 		horizontalSeparator = buffer[0];
 	}
 	rect.x += horizontalSeparator;

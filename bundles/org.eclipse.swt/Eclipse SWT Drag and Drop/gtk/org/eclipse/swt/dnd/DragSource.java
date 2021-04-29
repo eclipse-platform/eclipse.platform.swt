@@ -184,7 +184,7 @@ public DragSource(Control control, int style) {
 		control.setData(DND.DRAG_SOURCE_KEY, this);
 
 		long dragSourceController = GTK4.gtk_drag_source_new();
-		GTK.gtk_widget_add_controller(control.handle, dragSourceController);
+		GTK4.gtk_widget_add_controller(control.handle, dragSourceController);
 
 		OS.g_signal_connect(dragSourceController, OS.drag_begin, dragBeginProc.getAddress(), 0);
 		OS.g_signal_connect(dragSourceController, OS.prepare, dragPrepareProc.getAddress(), 0);
@@ -436,10 +436,10 @@ void dragEnd(long widget, long context){
 	 */
 	long display;
 	if (GTK.GTK4) {
-		long surface = GTK4.gtk_native_get_surface(GTK.gtk_widget_get_native (widget));
+		long surface = GTK4.gtk_native_get_surface(GTK4.gtk_widget_get_native (widget));
 		display = GDK.gdk_surface_get_display(surface);
 	} else {
-		display = GDK.gdk_window_get_display(GTK.gtk_widget_get_window(widget));
+		display = GDK.gdk_window_get_display(GTK3.gtk_widget_get_window(widget));
 	}
 	long pointer = GDK.gdk_get_pointer(display);
 

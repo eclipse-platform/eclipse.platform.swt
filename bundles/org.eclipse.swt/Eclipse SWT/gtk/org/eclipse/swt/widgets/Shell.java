@@ -943,23 +943,23 @@ void hookEvents () {
 	if (GTK.GTK4) {
 		OS.g_signal_connect_closure (shellHandle, OS.close_request, display.getClosure (CLOSE_REQUEST), false);
 		long keyController = GTK4.gtk_event_controller_key_new();
-		GTK.gtk_widget_add_controller(shellHandle, keyController);
+		GTK4.gtk_widget_add_controller(shellHandle, keyController);
 		GTK.gtk_event_controller_set_propagation_phase(keyController, GTK.GTK_PHASE_TARGET);
 		OS.g_signal_connect (keyController, OS.key_pressed, display.keyPressReleaseProc, KEY_PRESSED);
 
 		long focusController = GTK4.gtk_event_controller_focus_new();
-		GTK.gtk_widget_add_controller(shellHandle, focusController);
+		GTK4.gtk_widget_add_controller(shellHandle, focusController);
 		OS.g_signal_connect (focusController, OS.enter, display.focusProc, FOCUS_IN);
 		OS.g_signal_connect (focusController, OS.leave, display.focusProc, FOCUS_OUT);
 
 		long enterLeaveController = GTK4.gtk_event_controller_motion_new();
-		GTK.gtk_widget_add_controller(shellHandle, enterLeaveController);
+		GTK4.gtk_widget_add_controller(shellHandle, enterLeaveController);
 
 		long enterMotionAddress = display.enterMotionScrollCallback.getAddress();
 		OS.g_signal_connect (enterLeaveController, OS.enter, enterMotionAddress, ENTER);
 		if (isCustomResize()) {
 			long motionController = GTK4.gtk_event_controller_motion_new();
-			GTK.gtk_widget_add_controller(shellHandle, motionController);
+			GTK4.gtk_widget_add_controller(shellHandle, motionController);
 			GTK.gtk_event_controller_set_propagation_phase(motionController, GTK.GTK_PHASE_TARGET);
 
 			OS.g_signal_connect (motionController, OS.motion, enterMotionAddress, MOTION);
@@ -977,7 +977,7 @@ void hookEvents () {
 	if (isCustomResize ()) {
 		if (!GTK.GTK4) {
 			int mask = GDK.GDK_POINTER_MOTION_MASK | GDK.GDK_BUTTON_RELEASE_MASK | GDK.GDK_BUTTON_PRESS_MASK |  GDK.GDK_ENTER_NOTIFY_MASK | GDK.GDK_LEAVE_NOTIFY_MASK;
-			GTK.gtk_widget_add_events (shellHandle, mask);
+			GTK3.gtk_widget_add_events (shellHandle, mask);
 			OS.g_signal_connect_closure_by_id (shellHandle, display.signalIds [MOTION_NOTIFY_EVENT], 0, display.getClosure (MOTION_NOTIFY_EVENT), false);
 			OS.g_signal_connect_closure_by_id (shellHandle, display.signalIds [LEAVE_NOTIFY_EVENT], 0, display.getClosure (LEAVE_NOTIFY_EVENT), false);
 
@@ -1130,7 +1130,7 @@ void forceResize (int width, int height) {
 		if (GTK.GTK4) {
 			double[] window_offset_x = new double[1], window_offset_y = new double[1];
 
-			boolean validTranslation = GTK.gtk_widget_translate_coordinates(vboxHandle, shellHandle, 0, 0, window_offset_x, window_offset_y);
+			boolean validTranslation = GTK4.gtk_widget_translate_coordinates(vboxHandle, shellHandle, 0, 0, window_offset_x, window_offset_y);
 			if (validTranslation && !isMappedToPopup()) {
 				allocation.x += window_offset_x[0];
 				allocation.y += window_offset_y[0];
@@ -1138,7 +1138,7 @@ void forceResize (int width, int height) {
 		} else {
 			int [] dest_x = new int[1];
 			int [] dest_y = new int[1];
-			GTK.gtk_widget_translate_coordinates(vboxHandle, shellHandle, 0, 0, dest_x, dest_y);
+			GTK3.gtk_widget_translate_coordinates(vboxHandle, shellHandle, 0, 0, dest_x, dest_y);
 			if (dest_x[0] != -1 && dest_y[0] != -1 && !isMappedToPopup()) {
 				allocation.x += dest_x[0];
 				allocation.y += dest_y[0];
@@ -1175,7 +1175,7 @@ public int getAlpha () {
 		long display = GDK.gdk_display_get_default();
 		composited = GDK.gdk_display_is_composited(display);
 	} else {
-		long screen = GTK.gtk_widget_get_screen(shellHandle);
+		long screen = GTK3.gtk_widget_get_screen(shellHandle);
 		composited = GDK.gdk_screen_is_composited(screen);
 	}
 	if (composited) {
@@ -1630,7 +1630,7 @@ long gtk_leave_notify_event (long widget, long event) {
 
 			if ((state[0] & GDK.GDK_BUTTON1_MASK) == 0) {
 				if (GTK.GTK4) {
-					GTK.gtk_widget_set_cursor (shellHandle, 0);
+					GTK4.gtk_widget_set_cursor (shellHandle, 0);
 				} else {
 					long window = gtk_widget_get_window (shellHandle);
 					GDK.gdk_window_set_cursor (window, 0);
@@ -1747,7 +1747,7 @@ long gtk_motion_notify_event (long widget, long event) {
 				if (mode != display.resizeMode) {
 					long cursor = display.getSystemCursor(mode).handle;
 					if (GTK.GTK4) {
-						GTK.gtk_widget_set_cursor (shellHandle, cursor);
+						GTK4.gtk_widget_set_cursor (shellHandle, cursor);
 					} else {
 						long window = gtk_widget_get_window (shellHandle);
 						GDK.gdk_window_set_cursor (window, cursor);
@@ -2199,7 +2199,7 @@ public void setAlpha (int alpha) {
 		long display = GDK.gdk_display_get_default();
 		composited = GDK.gdk_display_is_composited(display);
 	} else {
-		long screen = GTK.gtk_widget_get_screen(shellHandle);
+		long screen = GTK3.gtk_widget_get_screen(shellHandle);
 		composited = GDK.gdk_screen_is_composited(screen);
 	}
 	if (composited) {
@@ -2934,7 +2934,7 @@ public void setVisible (boolean visible) {
 		mapped = true;
 
 		if ((style & mask) != 0) {
-			gdk_pointer_ungrab (GTK.gtk_widget_get_window (shellHandle), GDK.GDK_CURRENT_TIME);
+			gdk_pointer_ungrab (GTK3.gtk_widget_get_window (shellHandle), GDK.GDK_CURRENT_TIME);
 		}
 		opened = true;
 		if (!moved) {
@@ -2999,7 +2999,7 @@ void showWidget () {
 		}
 
 		if (GTK.GTK4) {
-			for (long child = GTK.gtk_widget_get_first_child(shellHandle); child != 0; child = GTK.gtk_widget_get_next_sibling(child)) {
+			for (long child = GTK4.gtk_widget_get_first_child(shellHandle); child != 0; child = GTK4.gtk_widget_get_next_sibling(child)) {
 				GTK.gtk_widget_unparent(child);
 			}
 		} else {
@@ -3328,7 +3328,7 @@ Rectangle getBoundsInPixels () {
 			 * root coordinates. Ideas include using the popup GdkSurface which allows you to get
 			 * parent relative x and y coords. */
 		} else {
-			GDK.gdk_window_get_root_origin(GTK.gtk_widget_get_window(shellHandle), x, y);
+			GDK.gdk_window_get_root_origin(GTK3.gtk_widget_get_window(shellHandle), x, y);
 		}
 	}
 	GtkAllocation allocation = new GtkAllocation ();

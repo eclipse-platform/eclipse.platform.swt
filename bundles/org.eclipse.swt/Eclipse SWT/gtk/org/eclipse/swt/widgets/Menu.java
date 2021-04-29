@@ -326,7 +326,7 @@ void _setVisible (boolean visible) {
 							rect.y = this.y - globalWindowOriginY[0];
 						} else {
 							// On Wayland, get the relative GdkWindow from the parent shell.
-							long gdkResource = GTK.gtk_widget_get_window (getShell().topHandle());
+							long gdkResource = GTK3.gtk_widget_get_window (getShell().topHandle());
 							event.window = OS.g_object_ref(gdkResource);
 							OS.memmove (eventPtr, event, GdkEventButton.sizeof);
 							// Bug in GTK?: testing with SWT_MENU_LOCATION_DEBUGGING=1 shows final_rect.x and
@@ -352,7 +352,7 @@ void _setVisible (boolean visible) {
 						event.type = GTK.GTK4 ? GDK.GDK4_BUTTON_PRESS : GDK.GDK_BUTTON_PRESS;
 						// Only assign a window on X11, as on Wayland the window is that of the mouse pointer
 						if (OS.isX11()) {
-							event.window = OS.g_object_ref(GTK.gtk_widget_get_window (getShell().handle));
+							event.window = OS.g_object_ref(GTK3.gtk_widget_get_window (getShell().handle));
 						}
 						event.device = GDK.gdk_get_pointer(GDK.gdk_display_get_default ());
 						event.time = display.getLastEventTime ();
@@ -895,7 +895,7 @@ void hookEvents() {
 		shortcutController = GTK4.gtk_shortcut_controller_new();
 		if (shortcutController == 0) error(SWT.ERROR_NO_HANDLES);
 		GTK4.gtk_shortcut_controller_set_scope(shortcutController, GTK.GTK_SHORTCUT_SCOPE_GLOBAL);
-		GTK.gtk_widget_add_controller(parent.handle, shortcutController);
+		GTK4.gtk_widget_add_controller(parent.handle, shortcutController);
 	} else {
 		OS.g_signal_connect_closure_by_id(handle, display.signalIds[SHOW_HELP], 0, display.getClosure(SHOW_HELP), false);
 
@@ -1323,15 +1323,15 @@ void verifyMenuPosition (int itemCount) {
 			 * Menus are height-for-width only: use gtk_widget_get_preferred_height()
 			 * instead of gtk_widget_get_preferred_size().
 			 */
-			GTK.gtk_widget_get_preferred_height(handle, null, naturalHeight);
+			GTK3.gtk_widget_get_preferred_height(handle, null, naturalHeight);
 			if (naturalHeight[0] > 0) {
 				if (GTK.GTK4) {
 					/* TODO: GTK4 gdk_surface_resize/move no longer exist & have been replaced with
 					 * gdk_toplevel_begin_resize & gdk_toplevel_begin_move. These functions might change the
 					 * design of resizing and moving in GTK4 */
 				} else {
-					long topLevelWidget = GTK.gtk_widget_get_toplevel(handle);
-					long topLevelWindow = GTK.gtk_widget_get_window(topLevelWidget);
+					long topLevelWidget = GTK3.gtk_widget_get_toplevel(handle);
+					long topLevelWindow = GTK3.gtk_widget_get_window(topLevelWidget);
 					int width = GDK.gdk_window_get_width(topLevelWindow);
 					GDK.gdk_window_resize(topLevelWindow, width, naturalHeight[0]);
 				}

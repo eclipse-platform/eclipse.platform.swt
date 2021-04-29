@@ -1266,11 +1266,11 @@ void createDisplay (DeviceData data) {
 	if (!GTK.GTK4) {
 		byte[] atomName = Converter.wcsToMbcs ("SWT_Window_" + APP_NAME, true); //$NON-NLS-1$
 		long atom = GDK.gdk_atom_intern(atomName, false);
-		GDK.gdk_selection_owner_set(GTK.gtk_widget_get_window(shellHandle), atom, OS.CurrentTime, false);
+		GDK.gdk_selection_owner_set(GTK3.gtk_widget_get_window(shellHandle), atom, OS.CurrentTime, false);
 		GDK.gdk_selection_owner_get(atom);
 
 		// No GdkWindow on GTK4
-		GTK.gtk_widget_add_events (shellHandle, GDK.GDK_PROPERTY_CHANGE_MASK);
+		GTK3.gtk_widget_add_events (shellHandle, GDK.GDK_PROPERTY_CHANGE_MASK);
 		OS.g_signal_connect (shellHandle, OS.property_notify_event, signalProc, PROPERTY_NOTIFY);
 	}
 
@@ -1446,9 +1446,9 @@ void destroyDisplay () {
 long emissionProc (long ihint, long n_param_values, long param_values, long data) {
 	long topLevel;
 	if (GTK.GTK4) {
-		topLevel = GTK.gtk_widget_get_native (OS.g_value_peek_pointer(param_values));
+		topLevel = GTK4.gtk_widget_get_native (OS.g_value_peek_pointer(param_values));
 	} else {
-		topLevel = GTK.gtk_widget_get_toplevel (OS.g_value_peek_pointer(param_values));
+		topLevel = GTK3.gtk_widget_get_toplevel (OS.g_value_peek_pointer(param_values));
 	}
 
 	if (topLevel == data) {
@@ -1664,11 +1664,11 @@ static long snapshotDrawProc (long handle, long snapshot) {
 	Display display = getCurrent ();
 	Widget widget = display.getWidget (handle);
 	if (widget != null) widget.snapshotToDraw(handle, snapshot);
-	long child = GTK.gtk_widget_get_first_child(handle);
+	long child = GTK4.gtk_widget_get_first_child(handle);
 	// Propagate the snapshot down the widget tree
 	while (child != 0) {
-		GTK.gtk_widget_snapshot_child(handle, child, snapshot);
-		child = GTK.gtk_widget_get_next_sibling(child);
+		GTK4.gtk_widget_snapshot_child(handle, child, snapshot);
+		child = GTK4.gtk_widget_get_next_sibling(child);
 	}
 	return 0;
 }
@@ -3316,7 +3316,7 @@ private void initializeSystemColorsLink() {
 	if (GTK.GTK4) {
 		GTK4.gtk_window_destroy(window);
 	} else {
-		GTK.gtk_widget_destroy(window);
+		GTK3.gtk_widget_destroy(window);
 	}
 }
 
@@ -3378,7 +3378,7 @@ void initializeSystemColorsDisabled() {
 	if (GTK.GTK4) {
 		GTK4.gtk_window_destroy(window);
 	} else {
-		GTK.gtk_widget_destroy(window);
+		GTK3.gtk_widget_destroy(window);
 	}
 }
 
@@ -4733,7 +4733,7 @@ void releaseDisplay () {
 		if (GTK.GTK4) {
 			GTK4.gtk_window_destroy(preeditWindow);
 		} else {
-			GTK.gtk_widget_destroy(preeditWindow);
+			GTK3.gtk_widget_destroy(preeditWindow);
 		}
 	}
 	preeditWindow = 0;
@@ -4847,7 +4847,7 @@ void releaseDisplay () {
 		if (GTK.GTK4) {
 			GTK4.gtk_window_destroy(shellHandle);
 		} else {
-			GTK.gtk_widget_destroy(shellHandle);
+			GTK3.gtk_widget_destroy(shellHandle);
 		}
 	}
 	shellHandle = 0;

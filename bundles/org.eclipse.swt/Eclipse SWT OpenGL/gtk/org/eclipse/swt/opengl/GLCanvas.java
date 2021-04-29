@@ -17,6 +17,7 @@ import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.gtk.*;
+import org.eclipse.swt.internal.gtk3.*;
 import org.eclipse.swt.internal.opengl.glx.*;
 import org.eclipse.swt.widgets.*;
 
@@ -109,7 +110,7 @@ public GLCanvas (Composite parent, int style, GLData data) {
 	}
 	glxAttrib [pos++] = 0;
 	GTK.gtk_widget_realize (handle);
-	long window = GTK.gtk_widget_get_window (handle);
+	long window = GTK3.gtk_widget_get_window (handle);
 
 	long xDisplay = GDK.gdk_x11_display_get_xdisplay(GDK.gdk_window_get_display(window));
 	long infoPtr = GLX.glXChooseVisual (xDisplay, OS.XDefaultScreen (xDisplay), glxAttrib);
@@ -169,7 +170,7 @@ public GLCanvas (Composite parent, int style, GLData data) {
 			GDK.gdk_window_resize (glWindow, clientArea.width, clientArea.height);
 			break;
 		case SWT.Dispose:
-			long window1 = GTK.gtk_widget_get_window (handle);
+			long window1 = GTK3.gtk_widget_get_window (handle);
 			long xDisplay1 = gdk_x11_display_get_xdisplay (window1);
 			if (context != 0) {
 				if (GLX.glXGetCurrentContext () == context) {
@@ -201,7 +202,7 @@ public GLCanvas (Composite parent, int style, GLData data) {
  */
 public GLData getGLData () {
 	checkWidget ();
-	long window = GTK.gtk_widget_get_window (handle);
+	long window = GTK3.gtk_widget_get_window (handle);
 	long xDisplay = gdk_x11_display_get_xdisplay (window);
 	GLData data = new GLData ();
 	int [] value = new int [1];
@@ -264,7 +265,7 @@ public boolean isCurrent () {
 public void setCurrent () {
 	checkWidget ();
 	if (GLX.glXGetCurrentContext () == context) return;
-	long window = GTK.gtk_widget_get_window (handle);
+	long window = GTK3.gtk_widget_get_window (handle);
 	long xDisplay = gdk_x11_display_get_xdisplay (window);
 	GLX.glXMakeCurrent (xDisplay, xWindow, context);
 }
@@ -279,7 +280,7 @@ public void setCurrent () {
  */
 public void swapBuffers () {
 	checkWidget ();
-	long window = GTK.gtk_widget_get_window (handle);
+	long window = GTK3.gtk_widget_get_window (handle);
 	long xDisplay = gdk_x11_display_get_xdisplay (window);
 	GLX.glXSwapBuffers (xDisplay, xWindow);
 }

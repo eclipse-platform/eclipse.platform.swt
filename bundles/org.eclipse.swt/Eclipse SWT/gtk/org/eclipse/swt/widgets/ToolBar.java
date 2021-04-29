@@ -21,6 +21,7 @@ import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.gtk.*;
 import org.eclipse.swt.internal.gtk3.*;
+import org.eclipse.swt.internal.gtk4.*;
 
 /**
  * Instances of this class support the layout of selectable
@@ -136,7 +137,7 @@ void createHandle (int index) {
 		handle = GTK.gtk_box_new(GTK.GTK_ORIENTATION_HORIZONTAL, 0);
 		GTK.gtk_widget_add_css_class(handle, Converter.javaStringToCString("toolbar"));
 	} else {
-		GTK.gtk_widget_set_has_window(fixedHandle, true);
+		GTK3.gtk_widget_set_has_window(fixedHandle, true);
 		handle = GTK3.gtk_toolbar_new ();
 	}
 
@@ -344,7 +345,7 @@ public int getItemCount () {
 
 	int itemCount = 0;
 	if (GTK.GTK4) {
-		for (long child = GTK.gtk_widget_get_first_child(handle); child != 0; child = GTK.gtk_widget_get_next_sibling(child)) {
+		for (long child = GTK4.gtk_widget_get_first_child(handle); child != 0; child = GTK4.gtk_widget_get_next_sibling(child)) {
 			itemCount++;
 		}
 	} else {
@@ -381,7 +382,7 @@ public ToolItem [] getItems () {
 ToolItem[] _getItems () {
 	if (GTK.GTK4) {
 		ArrayList<ToolItem> childrenList = new ArrayList<>();
-		for (long child = GTK.gtk_widget_get_first_child(handle); child != 0; child = GTK.gtk_widget_get_next_sibling(child)) {
+		for (long child = GTK4.gtk_widget_get_first_child(handle); child != 0; child = GTK4.gtk_widget_get_next_sibling(child)) {
 			Widget childWidget = display.getWidget(child);
 			if (childWidget != null) {
 				childrenList.add((ToolItem)childWidget);

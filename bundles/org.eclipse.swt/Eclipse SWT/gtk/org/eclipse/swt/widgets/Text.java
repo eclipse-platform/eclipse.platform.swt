@@ -236,10 +236,10 @@ void createHandle (int index) {
 
 		if (GTK.GTK4) {
 			OS.swt_fixed_add(fixedHandle, handle);
-			textHandle = GTK.gtk_widget_get_first_child(handle);
+			textHandle = GTK4.gtk_widget_get_first_child(handle);
 			bufferHandle = GTK4.gtk_entry_get_buffer(handle);
 		} else {
-			GTK.gtk_widget_set_has_window(fixedHandle, true);
+			GTK3.gtk_widget_set_has_window(fixedHandle, true);
 			GTK3.gtk_container_add(fixedHandle, handle);
 		}
 
@@ -701,9 +701,9 @@ Rectangle computeTrimInPixels (int x, int y, int width, int height) {
 	 */
 	if (!GTK.GTK4) {
 		int [] property = new int [1];
-		GTK.gtk_widget_style_get (handle, OS.interior_focus, property, 0);
+		GTK3.gtk_widget_style_get (handle, OS.interior_focus, property, 0);
 		if (property [0] == 0) {
-			GTK.gtk_widget_style_get (handle, OS.focus_line_width, property, 0);
+			GTK3.gtk_widget_style_get (handle, OS.focus_line_width, property, 0);
 			xborder += property [0];
 			yborder += property [0];
 		}
@@ -731,7 +731,7 @@ public void copy () {
 	checkWidget ();
 	if ((style & SWT.SINGLE) != 0) {
 		if (GTK.GTK4) {
-			GTK.gtk_widget_activate_action(textHandle, OS.action_copy_clipboard, null);
+			GTK4.gtk_widget_activate_action(textHandle, OS.action_copy_clipboard, null);
 		} else {
 			GTK3.gtk_editable_copy_clipboard(handle);
 		}
@@ -759,7 +759,7 @@ public void cut () {
 	checkWidget ();
 	if ((style & SWT.SINGLE) != 0) {
 		if (GTK.GTK4) {
-			GTK.gtk_widget_activate_action(textHandle, OS.action_cut_clipboard, null);
+			GTK4.gtk_widget_activate_action(textHandle, OS.action_cut_clipboard, null);
 		} else {
 			GTK3.gtk_editable_cut_clipboard(handle);
 		}
@@ -2092,7 +2092,7 @@ public void paste () {
 	checkWidget ();
 	if ((style & SWT.SINGLE) != 0) {
 		if (GTK.GTK4) {
-			GTK.gtk_widget_activate_action(textHandle, OS.action_paste_clipboard, null);
+			GTK4.gtk_widget_activate_action(textHandle, OS.action_paste_clipboard, null);
 		} else {
 			GTK3.gtk_editable_paste_clipboard (handle);
 		}

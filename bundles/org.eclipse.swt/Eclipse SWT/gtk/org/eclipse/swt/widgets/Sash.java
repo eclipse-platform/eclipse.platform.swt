@@ -19,6 +19,7 @@ import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.gtk.*;
+import org.eclipse.swt.internal.gtk3.*;
 
 /**
  * Instances of the receiver represent a selectable user interface object
@@ -144,7 +145,7 @@ void createHandle (int index) {
 
 	handle = OS.g_object_new(display.gtk_fixed_get_type(), 0);
 	if (handle == 0) error(SWT.ERROR_NO_HANDLES);
-	if (!GTK.GTK4) GTK.gtk_widget_set_has_window(handle, true);
+	if (!GTK.GTK4) GTK3.gtk_widget_set_has_window(handle, true);
 	GTK.gtk_widget_set_can_focus(handle, true);
 
 	if ((style & SWT.VERTICAL) != 0) {
@@ -483,7 +484,7 @@ long gtk_realize (long widget) {
 @Override
 void hookEvents () {
 	super.hookEvents ();
-	GTK.gtk_widget_add_events (handle, GDK.GDK_POINTER_MOTION_HINT_MASK);
+	GTK3.gtk_widget_add_events (handle, GDK.GDK_POINTER_MOTION_HINT_MASK);
 }
 
 @Override

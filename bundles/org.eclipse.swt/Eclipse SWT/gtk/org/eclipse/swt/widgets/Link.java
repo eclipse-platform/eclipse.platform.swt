@@ -20,6 +20,7 @@ import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.gtk.*;
+import org.eclipse.swt.internal.gtk3.*;
 
 /**
  * Instances of this class represent a selectable
@@ -151,7 +152,7 @@ void createHandle(int index) {
 
 	handle = OS.g_object_new(display.gtk_fixed_get_type(), 0);
 	if (handle == 0) error(SWT.ERROR_NO_HANDLES);
-	if (!GTK.GTK4) GTK.gtk_widget_set_has_window(handle, true);
+	if (!GTK.GTK4) GTK3.gtk_widget_set_has_window(handle, true);
 	GTK.gtk_widget_set_can_focus(handle, true);
 
 	layout = new TextLayout (display);

@@ -418,7 +418,7 @@ void createHandle () {
 private void createHandleForFixed () {
 	fixedHandle = OS.g_object_new (display.gtk_fixed_get_type (), 0);
 	if (fixedHandle == 0) error (SWT.ERROR_NO_HANDLES);
-	if (!GTK.GTK4) GTK.gtk_widget_set_has_window(fixedHandle, true);
+	if (!GTK.GTK4) GTK3.gtk_widget_set_has_window(fixedHandle, true);
 }
 
 private void createHandleForCalendar () {
@@ -474,7 +474,7 @@ private void createHandleForDateTime () {
 	long adjusment = GTK.gtk_adjustment_new (0, -9999, 9999, 1, 0, 0);
 	if (GTK.GTK4) {
 		handle =  GTK.gtk_spin_button_new(adjusment, 1, 0);
-		textEntryHandle = GTK.gtk_widget_get_first_child(handle);
+		textEntryHandle = GTK4.gtk_widget_get_first_child(handle);
 		containerHandle = spinButtonHandle;
 	} else {
 		textEntryHandle = GTK.gtk_spin_button_new (adjusment, 1, 0);
@@ -956,7 +956,7 @@ void hookEvents () {
 		hookEventsForCalendar ();
 	} else {
 		int eventMask =	GDK.GDK_POINTER_MOTION_MASK | GDK.GDK_BUTTON_PRESS_MASK | GDK.GDK_BUTTON_RELEASE_MASK;
-		GTK.gtk_widget_add_events (textEntryHandle, eventMask);
+		GTK3.gtk_widget_add_events (textEntryHandle, eventMask);
 
 
 		if ((style & SWT.DROP_DOWN) == 0 ) {

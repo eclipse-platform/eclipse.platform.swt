@@ -227,7 +227,7 @@ void createHandle (int index) {
 				GTK4.gtk_box_append(handle, button);
 				GTK4.gtk_box_append(handle, menuButton);
 
-				arrowHandle = GTK.gtk_widget_get_first_child(menuButton);
+				arrowHandle = GTK4.gtk_widget_get_first_child(menuButton);
 				GTK.gtk_menu_button_set_use_underline(menuButton, true);
 			} else {
 				handle = GTK3.gtk_menu_tool_button_new(0, null);
@@ -840,14 +840,14 @@ void hookEvents () {
 	 * such as button-press, enter-notify to it. The fix is to assign
 	 * the listener to child (GtkButton) of the tool-item.
 	 */
-	eventHandle = GTK.GTK4 ? GTK.gtk_widget_get_first_child(handle) : GTK3.gtk_bin_get_child(handle);
+	eventHandle = GTK.GTK4 ? GTK4.gtk_widget_get_first_child(handle) : GTK3.gtk_bin_get_child(handle);
 	if ((style & SWT.DROP_DOWN) != 0) {
 		if (GTK.GTK4) {
-			eventHandle = GTK.gtk_widget_get_first_child(handle);
+			eventHandle = GTK4.gtk_widget_get_first_child(handle);
 			if (arrowHandle != 0) {
 				long clickGesture = GTK4.gtk_gesture_click_new();
 				OS.g_signal_connect(clickGesture, OS.pressed, display.gesturePressReleaseProc, GESTURE_PRESSED);
-				GTK.gtk_widget_add_controller(arrowHandle, clickGesture);
+				GTK4.gtk_widget_add_controller(arrowHandle, clickGesture);
 			}
 		} else {
 			long list = GTK3.gtk_container_get_children(eventHandle);
@@ -858,14 +858,14 @@ void hookEvents () {
 
 	if (GTK.GTK4) {
 		long focusController = GTK4.gtk_event_controller_focus_new();
-		GTK.gtk_widget_add_controller(eventHandle, focusController);
+		GTK4.gtk_widget_add_controller(eventHandle, focusController);
 		GTK.gtk_event_controller_set_propagation_phase(focusController, GTK.GTK_PHASE_TARGET);
 
 		OS.g_signal_connect (focusController, OS.enter, display.focusProc, FOCUS_IN);
 		OS.g_signal_connect (focusController, OS.leave, display.focusProc, FOCUS_OUT);
 
 		long motionController = GTK4.gtk_event_controller_motion_new();
-		GTK.gtk_widget_add_controller(eventHandle, motionController);
+		GTK4.gtk_widget_add_controller(eventHandle, motionController);
 		GTK.gtk_event_controller_set_propagation_phase(motionController, GTK.GTK_PHASE_TARGET);
 
 		OS.g_signal_connect (motionController, OS.enter, display.enterMotionScrollProc, ENTER);
@@ -893,11 +893,11 @@ void hookEvents () {
 		GDK.GDK_ENTER_NOTIFY_MASK | GDK.GDK_LEAVE_NOTIFY_MASK |
 		GDK.GDK_KEY_PRESS_MASK | GDK.GDK_KEY_RELEASE_MASK |
 		GDK.GDK_FOCUS_CHANGE_MASK;
-	GTK.gtk_widget_add_events (eventHandle, mask);
+	GTK3.gtk_widget_add_events (eventHandle, mask);
 	if (GTK.GTK4) {
 		//TODO: event-after
 		long clickController = GTK4.gtk_gesture_click_new();
-		GTK.gtk_widget_add_controller(eventHandle, clickController);
+		GTK4.gtk_widget_add_controller(eventHandle, clickController);
 		OS.g_signal_connect(clickController, OS.pressed, display.gesturePressReleaseProc, GESTURE_PRESSED);
 	} else {
 		OS.g_signal_connect_closure_by_id (eventHandle, display.signalIds [BUTTON_PRESS_EVENT], 0, display.getClosure (BUTTON_PRESS_EVENT), false);
@@ -1509,7 +1509,7 @@ void showWidget (int index) {
 		} else if (index < 0) {
 			GTK4.gtk_box_append(parent.handle, handle);
 		} else {
-			for (long sibling = GTK.gtk_widget_get_first_child(parent.handle); sibling != 0; sibling = GTK.gtk_widget_get_next_sibling(sibling)) {
+			for (long sibling = GTK4.gtk_widget_get_first_child(parent.handle); sibling != 0; sibling = GTK4.gtk_widget_get_next_sibling(sibling)) {
 				if (index == 1) {
 					GTK4.gtk_box_insert_child_after(parent.handle, handle, sibling);
 					break;

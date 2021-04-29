@@ -19,6 +19,7 @@ import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.gtk.*;
 import org.eclipse.swt.internal.gtk3.*;
+import org.eclipse.swt.internal.gtk4.*;
 
 /**
  * Instances of this class are selectable user interface
@@ -180,7 +181,7 @@ void createHandle (int index) {
 	 * On GTK4, the GtkRange widget is a child of the GtkScrollbar
 	 * On GTK3, GtkRange is the base class for GtkScrollbar
 	 */
-	rangeHandle = GTK.GTK4 ? GTK.gtk_widget_get_first_child(handle) : handle;
+	rangeHandle = GTK.GTK4 ? GTK4.gtk_widget_get_first_child(handle) : handle;
 
 	/*
 	* Bug in GTK. In GTK 2.10, the buttons on either end of
@@ -197,7 +198,7 @@ void createHandle (int index) {
 	if (GTK.GTK4) {
 		OS.swt_fixed_add(fixedHandle, handle);
 	} else {
-		GTK.gtk_widget_set_has_window(fixedHandle, true);
+		GTK3.gtk_widget_set_has_window(fixedHandle, true);
 		GTK3.gtk_container_add(fixedHandle, handle);
 	}
 }

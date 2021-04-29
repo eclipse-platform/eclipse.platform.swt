@@ -833,6 +833,212 @@ JNIEXPORT jlong JNICALL GTK4_NATIVE(gtk_1text_1get_1buffer)
 }
 #endif
 
+#ifndef NO_gtk_1widget_1action_1set_1enabled
+JNIEXPORT void JNICALL GTK4_NATIVE(gtk_1widget_1action_1set_1enabled)
+	(JNIEnv *env, jclass that, jlong arg0, jbyteArray arg1, jboolean arg2)
+{
+	jbyte *lparg1=NULL;
+	GTK4_NATIVE_ENTER(env, that, gtk_1widget_1action_1set_1enabled_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	gtk_widget_action_set_enabled((GtkWidget *)arg0, (const char *)lparg1, arg2);
+fail:
+	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	GTK4_NATIVE_EXIT(env, that, gtk_1widget_1action_1set_1enabled_FUNC);
+}
+#endif
+
+#ifndef NO_gtk_1widget_1activate_1action
+JNIEXPORT jboolean JNICALL GTK4_NATIVE(gtk_1widget_1activate_1action)
+	(JNIEnv *env, jclass that, jlong arg0, jbyteArray arg1, jbyteArray arg2)
+{
+	jbyte *lparg1=NULL;
+	jbyte *lparg2=NULL;
+	jboolean rc = 0;
+	GTK4_NATIVE_ENTER(env, that, gtk_1widget_1activate_1action_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	if (arg2) if ((lparg2 = (*env)->GetByteArrayElements(env, arg2, NULL)) == NULL) goto fail;
+	rc = (jboolean)gtk_widget_activate_action((GtkWidget *)arg0, (const char *)lparg1, (const char *)lparg2);
+fail:
+	if (arg2 && lparg2) (*env)->ReleaseByteArrayElements(env, arg2, lparg2, 0);
+	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	GTK4_NATIVE_EXIT(env, that, gtk_1widget_1activate_1action_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_gtk_1widget_1add_1controller
+JNIEXPORT void JNICALL GTK4_NATIVE(gtk_1widget_1add_1controller)
+	(JNIEnv *env, jclass that, jlong arg0, jlong arg1)
+{
+	GTK4_NATIVE_ENTER(env, that, gtk_1widget_1add_1controller_FUNC);
+	gtk_widget_add_controller((GtkWidget *)arg0, (GtkEventController *)arg1);
+	GTK4_NATIVE_EXIT(env, that, gtk_1widget_1add_1controller_FUNC);
+}
+#endif
+
+#ifndef NO_gtk_1widget_1class_1add_1binding_1signal
+JNIEXPORT void JNICALL GTK4_NATIVE(gtk_1widget_1class_1add_1binding_1signal)
+	(JNIEnv *env, jclass that, jlong arg0, jint arg1, jint arg2, jbyteArray arg3, jbyteArray arg4, jboolean arg5, jboolean arg6, jboolean arg7)
+{
+	jbyte *lparg3=NULL;
+	jbyte *lparg4=NULL;
+	GTK4_NATIVE_ENTER(env, that, gtk_1widget_1class_1add_1binding_1signal_FUNC);
+	if (arg3) if ((lparg3 = (*env)->GetByteArrayElements(env, arg3, NULL)) == NULL) goto fail;
+	if (arg4) if ((lparg4 = (*env)->GetByteArrayElements(env, arg4, NULL)) == NULL) goto fail;
+	gtk_widget_class_add_binding_signal((GtkWidgetClass *)arg0, arg1, (GdkModifierType)arg2, (const char *)lparg3, (const char *)lparg4, arg5, arg6, arg7);
+fail:
+	if (arg4 && lparg4) (*env)->ReleaseByteArrayElements(env, arg4, lparg4, 0);
+	if (arg3 && lparg3) (*env)->ReleaseByteArrayElements(env, arg3, lparg3, 0);
+	GTK4_NATIVE_EXIT(env, that, gtk_1widget_1class_1add_1binding_1signal_FUNC);
+}
+#endif
+
+#ifndef NO_gtk_1widget_1get_1first_1child
+JNIEXPORT jlong JNICALL GTK4_NATIVE(gtk_1widget_1get_1first_1child)
+	(JNIEnv *env, jclass that, jlong arg0)
+{
+	jlong rc = 0;
+	GTK4_NATIVE_ENTER(env, that, gtk_1widget_1get_1first_1child_FUNC);
+	rc = (jlong)gtk_widget_get_first_child((GtkWidget *)arg0);
+	GTK4_NATIVE_EXIT(env, that, gtk_1widget_1get_1first_1child_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_gtk_1widget_1get_1last_1child
+JNIEXPORT jlong JNICALL GTK4_NATIVE(gtk_1widget_1get_1last_1child)
+	(JNIEnv *env, jclass that, jlong arg0)
+{
+	jlong rc = 0;
+	GTK4_NATIVE_ENTER(env, that, gtk_1widget_1get_1last_1child_FUNC);
+	rc = (jlong)gtk_widget_get_last_child((GtkWidget *)arg0);
+	GTK4_NATIVE_EXIT(env, that, gtk_1widget_1get_1last_1child_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_gtk_1widget_1get_1native
+JNIEXPORT jlong JNICALL GTK4_NATIVE(gtk_1widget_1get_1native)
+	(JNIEnv *env, jclass that, jlong arg0)
+{
+	jlong rc = 0;
+	GTK4_NATIVE_ENTER(env, that, gtk_1widget_1get_1native_FUNC);
+	rc = (jlong)gtk_widget_get_native((GtkWidget *)arg0);
+	GTK4_NATIVE_EXIT(env, that, gtk_1widget_1get_1native_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_gtk_1widget_1get_1next_1sibling
+JNIEXPORT jlong JNICALL GTK4_NATIVE(gtk_1widget_1get_1next_1sibling)
+	(JNIEnv *env, jclass that, jlong arg0)
+{
+	jlong rc = 0;
+	GTK4_NATIVE_ENTER(env, that, gtk_1widget_1get_1next_1sibling_FUNC);
+	rc = (jlong)gtk_widget_get_next_sibling((GtkWidget *)arg0);
+	GTK4_NATIVE_EXIT(env, that, gtk_1widget_1get_1next_1sibling_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_gtk_1widget_1get_1prev_1sibling
+JNIEXPORT jlong JNICALL GTK4_NATIVE(gtk_1widget_1get_1prev_1sibling)
+	(JNIEnv *env, jclass that, jlong arg0)
+{
+	jlong rc = 0;
+	GTK4_NATIVE_ENTER(env, that, gtk_1widget_1get_1prev_1sibling_FUNC);
+	rc = (jlong)gtk_widget_get_prev_sibling((GtkWidget *)arg0);
+	GTK4_NATIVE_EXIT(env, that, gtk_1widget_1get_1prev_1sibling_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_gtk_1widget_1get_1receives_1default
+JNIEXPORT jboolean JNICALL GTK4_NATIVE(gtk_1widget_1get_1receives_1default)
+	(JNIEnv *env, jclass that, jlong arg0)
+{
+	jboolean rc = 0;
+	GTK4_NATIVE_ENTER(env, that, gtk_1widget_1get_1receives_1default_FUNC);
+	rc = (jboolean)gtk_widget_get_receives_default((GtkWidget *)arg0);
+	GTK4_NATIVE_EXIT(env, that, gtk_1widget_1get_1receives_1default_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_gtk_1widget_1get_1root
+JNIEXPORT jlong JNICALL GTK4_NATIVE(gtk_1widget_1get_1root)
+	(JNIEnv *env, jclass that, jlong arg0)
+{
+	jlong rc = 0;
+	GTK4_NATIVE_ENTER(env, that, gtk_1widget_1get_1root_FUNC);
+	rc = (jlong)gtk_widget_get_root((GtkWidget *)arg0);
+	GTK4_NATIVE_EXIT(env, that, gtk_1widget_1get_1root_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_gtk_1widget_1measure
+JNIEXPORT void JNICALL GTK4_NATIVE(gtk_1widget_1measure)
+	(JNIEnv *env, jclass that, jlong arg0, jint arg1, jint arg2, jintArray arg3, jintArray arg4, jintArray arg5, jintArray arg6)
+{
+	jint *lparg3=NULL;
+	jint *lparg4=NULL;
+	jint *lparg5=NULL;
+	jint *lparg6=NULL;
+	GTK4_NATIVE_ENTER(env, that, gtk_1widget_1measure_FUNC);
+	if (arg3) if ((lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL)) == NULL) goto fail;
+	if (arg4) if ((lparg4 = (*env)->GetIntArrayElements(env, arg4, NULL)) == NULL) goto fail;
+	if (arg5) if ((lparg5 = (*env)->GetIntArrayElements(env, arg5, NULL)) == NULL) goto fail;
+	if (arg6) if ((lparg6 = (*env)->GetIntArrayElements(env, arg6, NULL)) == NULL) goto fail;
+	gtk_widget_measure((GtkWidget *)arg0, (GtkOrientation)arg1, (int)arg2, (int *)lparg3, (int *)lparg4, (int *)lparg5, (int *)lparg6);
+fail:
+	if (arg6 && lparg6) (*env)->ReleaseIntArrayElements(env, arg6, lparg6, 0);
+	if (arg5 && lparg5) (*env)->ReleaseIntArrayElements(env, arg5, lparg5, 0);
+	if (arg4 && lparg4) (*env)->ReleaseIntArrayElements(env, arg4, lparg4, 0);
+	if (arg3 && lparg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
+	GTK4_NATIVE_EXIT(env, that, gtk_1widget_1measure_FUNC);
+}
+#endif
+
+#ifndef NO_gtk_1widget_1set_1cursor
+JNIEXPORT void JNICALL GTK4_NATIVE(gtk_1widget_1set_1cursor)
+	(JNIEnv *env, jclass that, jlong arg0, jlong arg1)
+{
+	GTK4_NATIVE_ENTER(env, that, gtk_1widget_1set_1cursor_FUNC);
+	gtk_widget_set_cursor((GtkWidget *)arg0, (GdkCursor *)arg1);
+	GTK4_NATIVE_EXIT(env, that, gtk_1widget_1set_1cursor_FUNC);
+}
+#endif
+
+#ifndef NO_gtk_1widget_1snapshot_1child
+JNIEXPORT void JNICALL GTK4_NATIVE(gtk_1widget_1snapshot_1child)
+	(JNIEnv *env, jclass that, jlong arg0, jlong arg1, jlong arg2)
+{
+	GTK4_NATIVE_ENTER(env, that, gtk_1widget_1snapshot_1child_FUNC);
+	gtk_widget_snapshot_child((GtkWidget *)arg0, (GtkWidget *)arg1, (GtkSnapshot *)arg2);
+	GTK4_NATIVE_EXIT(env, that, gtk_1widget_1snapshot_1child_FUNC);
+}
+#endif
+
+#ifndef NO_gtk_1widget_1translate_1coordinates
+JNIEXPORT jboolean JNICALL GTK4_NATIVE(gtk_1widget_1translate_1coordinates)
+	(JNIEnv *env, jclass that, jlong arg0, jlong arg1, jdouble arg2, jdouble arg3, jdoubleArray arg4, jdoubleArray arg5)
+{
+	jdouble *lparg4=NULL;
+	jdouble *lparg5=NULL;
+	jboolean rc = 0;
+	GTK4_NATIVE_ENTER(env, that, gtk_1widget_1translate_1coordinates_FUNC);
+	if (arg4) if ((lparg4 = (*env)->GetDoubleArrayElements(env, arg4, NULL)) == NULL) goto fail;
+	if (arg5) if ((lparg5 = (*env)->GetDoubleArrayElements(env, arg5, NULL)) == NULL) goto fail;
+	rc = (jboolean)gtk_widget_translate_coordinates((GtkWidget *)arg0, (GtkWidget *)arg1, arg2, arg3, (double *)lparg4, (double *)lparg5);
+fail:
+	if (arg5 && lparg5) (*env)->ReleaseDoubleArrayElements(env, arg5, lparg5, 0);
+	if (arg4 && lparg4) (*env)->ReleaseDoubleArrayElements(env, arg4, lparg4, 0);
+	GTK4_NATIVE_EXIT(env, that, gtk_1widget_1translate_1coordinates_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_gtk_1window_1destroy
 JNIEXPORT void JNICALL GTK4_NATIVE(gtk_1window_1destroy)
 	(JNIEnv *env, jclass that, jlong arg0)

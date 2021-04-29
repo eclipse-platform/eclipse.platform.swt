@@ -319,11 +319,11 @@ void hookEvents () {
 	OS.g_signal_connect_closure (handle, OS.activate, display.getClosure (ACTIVATE_INVERSE), true);
 	if (GTK.GTK4) {
 		long clickController = GTK4.gtk_gesture_click_new();
-		GTK.gtk_widget_add_controller(handle, clickController);
+		GTK4.gtk_widget_add_controller(handle, clickController);
 		OS.g_signal_connect(clickController, OS.pressed, display.gesturePressReleaseProc, GESTURE_PRESSED);
 
 		long motionController = GTK4.gtk_event_controller_motion_new();
-		GTK.gtk_widget_add_controller(handle, motionController);
+		GTK4.gtk_widget_add_controller(handle, motionController);
 		GTK.gtk_event_controller_set_propagation_phase(motionController, GTK.GTK_PHASE_TARGET);
 
 		long enterAddress = display.enterMotionScrollCallback.getAddress();
@@ -387,7 +387,7 @@ void resizeControl () {
 		 */
 		if (!GTK.GTK4) {
 			int [] property = new int [1];
-			GTK.gtk_widget_style_get (handle, OS.focus_line_width, property, 0);
+			GTK3.gtk_widget_style_get (handle, OS.focus_line_width, property, 0);
 			y += property [0] * 2;
 			height -= property [0] * 2;
 		}
