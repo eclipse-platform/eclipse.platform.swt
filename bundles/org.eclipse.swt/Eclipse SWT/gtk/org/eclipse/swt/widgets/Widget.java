@@ -1988,7 +1988,7 @@ void snapshotToDraw (long handle, long snapshot) {
 	GTK.gtk_widget_get_allocation(handle, allocation);
 	long rect = Graphene.graphene_rect_alloc();
 	Graphene.graphene_rect_init(rect, 0, 0, allocation.width, allocation.height);
-	long cairo = GTK.gtk_snapshot_append_cairo(snapshot, rect);
+	long cairo = GTK4.gtk_snapshot_append_cairo(snapshot, rect);
 	if (cairo != 0) gtk_draw(handle, cairo);
 	Graphene.graphene_rect_free(rect);
 	return;

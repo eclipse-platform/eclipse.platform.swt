@@ -530,7 +530,7 @@ public void setImage (Image image) {
 			OS.g_object_unref(pixbuf);
 			GTK4.gtk_picture_set_paintable(imageHandle, texture);
 		} else {
-			GTK.gtk_image_set_from_surface(imageHandle, image.surface);
+			GTK3.gtk_image_set_from_surface(imageHandle, image.surface);
 		}
 		if (text.length () == 0) GTK.gtk_widget_hide (labelHandle);
 		GTK.gtk_widget_show(imageHandle);
@@ -538,7 +538,7 @@ public void setImage (Image image) {
 		if (GTK.GTK4) {
 			GTK4.gtk_picture_set_paintable(imageHandle, 0);
 		} else {
-			GTK.gtk_image_set_from_surface(imageHandle, 0);
+			GTK3.gtk_image_set_from_surface(imageHandle, 0);
 		}
 		GTK.gtk_widget_show(labelHandle);
 		GTK.gtk_widget_hide(imageHandle);

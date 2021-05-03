@@ -313,7 +313,7 @@ void createHandle (int index) {
 				arrowHandle = GTK4.gtk_widget_get_first_child(handle);
 				if (arrowHandle == 0) error (SWT.ERROR_NO_HANDLES);
 			} else {
-				arrowHandle = GTK.gtk_image_new_from_icon_name(arrowType, GTK.GTK_ICON_SIZE_MENU);
+				arrowHandle = GTK3.gtk_image_new_from_icon_name(arrowType, GTK.GTK_ICON_SIZE_MENU);
 				if (arrowHandle == 0) error (SWT.ERROR_NO_HANDLES);
 				handle = GTK.gtk_button_new();
 				if (handle == 0) error (SWT.ERROR_NO_HANDLES);
@@ -834,7 +834,7 @@ void _setAlignment (int alignment) {
 			case SWT.LEFT: arrowType = isRTL ? GTK.GTK_NAMED_ICON_GO_NEXT : GTK.GTK_NAMED_ICON_GO_PREVIOUS; break;
 			case SWT.RIGHT: arrowType = isRTL ? GTK.GTK_NAMED_ICON_GO_PREVIOUS : GTK.GTK_NAMED_ICON_GO_NEXT; break;
 		}
-		GTK.gtk_image_set_from_icon_name (arrowHandle, arrowType, GTK.GTK_ICON_SIZE_MENU);
+		GTK3.gtk_image_set_from_icon_name (arrowHandle, arrowType, GTK.GTK_ICON_SIZE_MENU);
 		return;
 	}
 	if ((alignment & (SWT.LEFT | SWT.RIGHT | SWT.CENTER)) == 0) return;
@@ -1124,13 +1124,13 @@ public void setImage(Image image) {
 			OS.g_object_unref(pixbuf);
 			GTK4.gtk_picture_set_paintable(imageHandle, texture);
 		} else {
-			GTK.gtk_image_set_from_surface(imageHandle, image.surface);
+			GTK3.gtk_image_set_from_surface(imageHandle, image.surface);
 		}
 	} else {
 		if (GTK.GTK4) {
 			GTK4.gtk_picture_set_paintable(imageHandle, 0);
 		} else {
-			GTK.gtk_image_set_from_surface(imageHandle, 0);
+			GTK3.gtk_image_set_from_surface(imageHandle, 0);
 		}
 	}
 	this.image = image;
@@ -1149,8 +1149,8 @@ void setOrientation (boolean create) {
 		if (arrowHandle != 0) {
 			byte arrowType [] = (style & SWT.RIGHT_TO_LEFT) != 0 ? GTK.GTK_NAMED_ICON_GO_NEXT : GTK.GTK_NAMED_ICON_GO_PREVIOUS;
 			switch (style & (SWT.LEFT | SWT.RIGHT)) {
-				case SWT.LEFT: GTK.gtk_image_set_from_icon_name (arrowHandle, arrowType, GTK.GTK_ICON_SIZE_MENU); break;
-				case SWT.RIGHT: GTK.gtk_image_set_from_icon_name (arrowHandle, arrowType, GTK.GTK_ICON_SIZE_MENU); break;
+				case SWT.LEFT: GTK3.gtk_image_set_from_icon_name (arrowHandle, arrowType, GTK.GTK_ICON_SIZE_MENU); break;
+				case SWT.RIGHT: GTK3.gtk_image_set_from_icon_name (arrowHandle, arrowType, GTK.GTK_ICON_SIZE_MENU); break;
 			}
 		}
 	}

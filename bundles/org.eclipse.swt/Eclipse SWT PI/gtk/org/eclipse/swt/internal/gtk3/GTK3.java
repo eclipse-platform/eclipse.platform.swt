@@ -186,7 +186,7 @@ public class GTK3 {
 	/** @param event cast=(GdkEvent *) */
 	public static final native void gtk_main_do_event(long event);
 	public static final native boolean gtk_main_iteration_do(boolean blocking);
-	public static final native boolean gtk_events_pending ();
+	public static final native boolean gtk_events_pending();
 
 	/* GtkWindow */
 	/**
@@ -835,4 +835,24 @@ public class GTK3 {
 
 	/* GtkEventBox */
 	public static final native long gtk_event_box_new();
+
+	/* GtkImage */
+	/**
+	 * @param image cast=(GtkImage *)
+	 * @param surface cast=(cairo_surface_t *)
+	 */
+	public static final native void gtk_image_set_from_surface(long image, long surface);
+	/**
+	 * @param icon_name cast=(const gchar *)
+	 * @param size cast=(GtkIconSize)
+	 */
+	public static final native long gtk_image_new_from_icon_name(byte[] icon_name, int size);
+	/**
+	 * @param image cast=(GtkImage *)
+	 * @param icon_name cast=(const gchar *)
+	 * @param size cast=(GtkIconSize)
+	 */
+	public static final native void gtk_image_set_from_icon_name(long image, byte[] icon_name, int size);
+	/** @param surface cast=(cairo_surface_t *) */
+	public static final native long gtk_image_new_from_surface(long surface);
 }

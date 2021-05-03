@@ -3019,7 +3019,7 @@ long rendererSnapshotProc (long cell, long snapshot, long widget, long backgroun
 	GdkRectangle gdkRectangle = new GdkRectangle ();
 	OS.memmove(gdkRectangle, background_area, GdkRectangle.sizeof);
 	Graphene.graphene_rect_init(rect, gdkRectangle.x, gdkRectangle.y, gdkRectangle.width, gdkRectangle.height);
-	long cairo = GTK.gtk_snapshot_append_cairo(snapshot, rect);
+	long cairo = GTK4.gtk_snapshot_append_cairo(snapshot, rect);
 	rendererRender (cell, cairo, snapshot, widget, background_area, cell_area, 0, flags);
 	return 0;
 }

@@ -454,10 +454,10 @@ int calculateWidth (long column, long iter, boolean recurse) {
 		/* expander */
 		if (!GTK.gtk_tree_view_column_get_visible(column)) {
 			if (GTK.GTK4) {
-				long image = GTK.gtk_image_new_from_icon_name(GTK.GTK_NAMED_ICON_PAN_DOWN, GTK.GTK_ICON_SIZE_MENU);
-				GtkAllocation allocation = new GtkAllocation ();
-				GTK.gtk_widget_get_allocation(image, allocation);
-				width += allocation.width + TreeItem.EXPANDER_EXTRA_PADDING;
+				long image = GTK4.gtk_image_new_from_icon_name(GTK.GTK_NAMED_ICON_PAN_DOWN);
+				GtkRequisition requisition = new GtkRequisition ();
+				GTK.gtk_widget_get_preferred_size(image, requisition, null);
+				width += requisition.width + TreeItem.EXPANDER_EXTRA_PADDING;
 			} else {
 				GTK3.gtk_widget_style_get (handle, OS.expander_size, w, 0);
 				width += w [0] + TreeItem.EXPANDER_EXTRA_PADDING;
@@ -3166,7 +3166,7 @@ long rendererSnapshotProc (long cell, long snapshot, long widget, long backgroun
 	GdkRectangle gdkRectangle = new GdkRectangle ();
 	OS.memmove(gdkRectangle, background_area, GdkRectangle.sizeof);
 	Graphene.graphene_rect_init(rect, gdkRectangle.x, gdkRectangle.y, gdkRectangle.width, gdkRectangle.height);
-	long cairo = GTK.gtk_snapshot_append_cairo(snapshot, rect);
+	long cairo = GTK4.gtk_snapshot_append_cairo(snapshot, rect);
 	rendererRender (cell, cairo, snapshot, widget, background_area, cell_area, 0, flags);
 	return 0;
 }

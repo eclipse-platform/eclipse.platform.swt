@@ -302,7 +302,7 @@ void createHandle (int index) {
 		} else {
 			labelHandle = GTK.gtk_label_new_with_mnemonic(null);
 			if (labelHandle == 0) error(SWT.ERROR_NO_HANDLES);
-			imageHandle = GTK.gtk_image_new_from_surface(0);
+			imageHandle = GTK3.gtk_image_new_from_surface(0);
 			if (imageHandle == 0) error(SWT.ERROR_NO_HANDLES);
 
 			GTK3.gtk_tool_button_set_icon_widget(handle, imageHandle);
@@ -693,7 +693,7 @@ long gtk_create_menu_proxy (long widget) {
 				GTK.gtk_label_set_xalign (labelHandle, 0);
 				GTK.gtk_widget_set_halign (labelHandle, GTK.GTK_ALIGN_FILL);
 
-				long menuImage = GTK.gtk_image_new_from_surface(surface);
+				long menuImage = GTK3.gtk_image_new_from_surface(surface);
 				if (menuImage == 0) error (SWT.ERROR_NO_HANDLES);
 
 				GTK3.gtk_container_add (boxHandle, menuImage);
@@ -743,9 +743,9 @@ long gtk_enter_notify_event (long widget, long event) {
 					long pixbuf = ImageList.createPixbuf(hotImage);
 					long texture = GDK.gdk_texture_new_for_pixbuf(pixbuf);
 					OS.g_object_unref(pixbuf);
-					GTK.gtk_image_set_from_paintable(imageHandle, texture);
+					GTK4.gtk_image_set_from_paintable(imageHandle, texture);
 				} else {
-					GTK.gtk_image_set_from_surface(imageHandle, imageList.getSurface(index));
+					GTK3.gtk_image_set_from_surface(imageHandle, imageList.getSurface(index));
 				}
 			}
 		}
@@ -807,9 +807,9 @@ long gtk_leave_notify_event (long widget, long event) {
 						long pixbuf = ImageList.createPixbuf(image);
 						long texture = GDK.gdk_texture_new_for_pixbuf(pixbuf);
 						OS.g_object_unref(pixbuf);
-						GTK.gtk_image_set_from_paintable(imageHandle, texture);
+						GTK4.gtk_image_set_from_paintable(imageHandle, texture);
 					} else {
-						GTK.gtk_image_set_from_surface(imageHandle, imageList.getSurface(index));
+						GTK3.gtk_image_set_from_surface(imageHandle, imageList.getSurface(index));
 					}
 				}
 			}
@@ -1260,16 +1260,16 @@ void _setImage (Image image) {
 			long pixbuf = ImageList.createPixbuf(image);
 			long texture = GDK.gdk_texture_new_for_pixbuf(pixbuf);
 			OS.g_object_unref(pixbuf);
-			GTK.gtk_image_set_from_paintable(imageHandle, texture);
+			GTK4.gtk_image_set_from_paintable(imageHandle, texture);
 		} else {
-			GTK.gtk_image_set_from_surface(imageHandle, imageList.getSurface(imageIndex));
+			GTK3.gtk_image_set_from_surface(imageHandle, imageList.getSurface(imageIndex));
 		}
 	} else {
 		if(GTK.GTK4) {
-			GTK.gtk_image_clear(imageHandle);
+			GTK4.gtk_image_clear(imageHandle);
 			GTK.gtk_widget_hide(imageHandle);
 		} else {
-			GTK.gtk_image_set_from_surface(imageHandle, 0);
+			GTK3.gtk_image_set_from_surface(imageHandle, 0);
 		}
 	}
 	/*

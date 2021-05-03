@@ -565,6 +565,42 @@ JNIEXPORT jboolean JNICALL GTK4_NATIVE(gtk_1im_1context_1filter_1keypress)
 }
 #endif
 
+#ifndef NO_gtk_1image_1clear
+JNIEXPORT void JNICALL GTK4_NATIVE(gtk_1image_1clear)
+	(JNIEnv *env, jclass that, jlong arg0)
+{
+	GTK4_NATIVE_ENTER(env, that, gtk_1image_1clear_FUNC);
+	gtk_image_clear((GtkImage *)arg0);
+	GTK4_NATIVE_EXIT(env, that, gtk_1image_1clear_FUNC);
+}
+#endif
+
+#ifndef NO_gtk_1image_1new_1from_1icon_1name
+JNIEXPORT jlong JNICALL GTK4_NATIVE(gtk_1image_1new_1from_1icon_1name)
+	(JNIEnv *env, jclass that, jbyteArray arg0)
+{
+	jbyte *lparg0=NULL;
+	jlong rc = 0;
+	GTK4_NATIVE_ENTER(env, that, gtk_1image_1new_1from_1icon_1name_FUNC);
+	if (arg0) if ((lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL)) == NULL) goto fail;
+	rc = (jlong)gtk_image_new_from_icon_name((const char *)lparg0);
+fail:
+	if (arg0 && lparg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
+	GTK4_NATIVE_EXIT(env, that, gtk_1image_1new_1from_1icon_1name_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_gtk_1image_1set_1from_1paintable
+JNIEXPORT void JNICALL GTK4_NATIVE(gtk_1image_1set_1from_1paintable)
+	(JNIEnv *env, jclass that, jlong arg0, jlong arg1)
+{
+	GTK4_NATIVE_ENTER(env, that, gtk_1image_1set_1from_1paintable_FUNC);
+	gtk_image_set_from_paintable((GtkImage *)arg0, (GdkPaintable *)arg1);
+	GTK4_NATIVE_EXIT(env, that, gtk_1image_1set_1from_1paintable_FUNC);
+}
+#endif
+
 #ifndef NO_gtk_1init_1check
 JNIEXPORT jboolean JNICALL GTK4_NATIVE(gtk_1init_1check)
 	(JNIEnv *env, jclass that)
@@ -819,6 +855,18 @@ JNIEXPORT jlong JNICALL GTK4_NATIVE(gtk_1shortcut_1new)
 	GTK4_NATIVE_ENTER(env, that, gtk_1shortcut_1new_FUNC);
 	rc = (jlong)gtk_shortcut_new((GtkShortcutTrigger *)arg0, (GtkShortcutAction *)arg1);
 	GTK4_NATIVE_EXIT(env, that, gtk_1shortcut_1new_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_gtk_1snapshot_1append_1cairo
+JNIEXPORT jlong JNICALL GTK4_NATIVE(gtk_1snapshot_1append_1cairo)
+	(JNIEnv *env, jclass that, jlong arg0, jlong arg1)
+{
+	jlong rc = 0;
+	GTK4_NATIVE_ENTER(env, that, gtk_1snapshot_1append_1cairo_FUNC);
+	rc = (jlong)gtk_snapshot_append_cairo((GtkSnapshot *)arg0, (const graphene_rect_t *)arg1);
+	GTK4_NATIVE_EXIT(env, that, gtk_1snapshot_1append_1cairo_FUNC);
 	return rc;
 }
 #endif

@@ -615,16 +615,16 @@ public void setImage (Image image) {
 			long pixbuf = ImageList.createPixbuf(image);
 			long texture = GDK.gdk_texture_new_for_pixbuf(pixbuf);
 			OS.g_object_unref(pixbuf);
-			GTK.gtk_image_set_from_paintable(imageHandle, texture);
+			GTK4.gtk_image_set_from_paintable(imageHandle, texture);
 		} else {
-			GTK.gtk_image_set_from_surface(imageHandle, headerImageList.getSurface(imageIndex));
+			GTK3.gtk_image_set_from_surface(imageHandle, headerImageList.getSurface(imageIndex));
 		}
 		GTK.gtk_widget_show(imageHandle);
 	} else {
 		if (GTK.GTK4) {
-			GTK.gtk_image_clear(imageHandle);
+			GTK4.gtk_image_clear(imageHandle);
 		} else {
-			GTK.gtk_image_set_from_surface(imageHandle, 0);
+			GTK3.gtk_image_set_from_surface(imageHandle, 0);
 		}
 		GTK.gtk_widget_hide(imageHandle);
 	}

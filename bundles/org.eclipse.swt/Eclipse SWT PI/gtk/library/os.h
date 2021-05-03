@@ -234,8 +234,6 @@
 #define NO_gdk_1screen_1is_1composited
 
 // No GDK lock
-#define NO_gtk_1events_1pending
-#define NO_gtk_1main_1iteration_1do
 #define NO_gdk_1threads_1add_1idle
 #define NO_gdk_1threads_1add_1timeout
 #define NO_gdk_1threads_1enter
@@ -391,9 +389,6 @@
 // No GdkClipboard on GTK3
 #define NO_gdk_1clipboard_1set_1content
 
-// No GtkSnapshot on GTK3
-#define NO_gtk_1snapshot_1append_1cairo
-
 // No Graphene library on GTK3
 #define NO_graphene_1rect_1alloc
 #define NO_graphene_1rect_1free
@@ -416,8 +411,6 @@
 #define NO_gdk_1pixbuf_1get_1from_1texture
 #define NO_gdk_1texture_1new_1from_1file__J_3J
 #define NO_gdk_1texture_1new_1from_1file___3B_3J
-
-#define NO_gtk_1image_1set_1from_1paintable
 
 // GdkEvent functions which do not exist on GTK3
 #define NO_gdk_1focus_1event_1get_1in

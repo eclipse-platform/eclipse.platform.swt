@@ -852,7 +852,6 @@ public class GTK extends OS {
 	public static final native void gtk_im_context_set_cursor_location(long context, GdkRectangle area);
 	public static final native long gtk_im_multicontext_new();
 
-
 	/* GtkImage */
 	public static final native long gtk_image_new();
 	/**
@@ -860,50 +859,6 @@ public class GTK extends OS {
 	 * @param pixel_size cast=(gint)
 	 */
 	public static final native void gtk_image_set_pixel_size(long image, int pixel_size);
-
-	/* GtkImage [GTK3 only] */
-	/**
-	 * @method flags=dynamic
-	 * @param image cast=(GtkImage *)
-	 * @param surface cast=(cairo_surface_t *)
-	 */
-	public static final native void gtk_image_set_from_surface(long image, long surface);
-	/**
-	 * @method flags=dynamic
-	 * @param icon_name cast=(const gchar *)
-	 * @param size cast=(GtkIconSize)
-	 */
-	public static final native long gtk_image_new_from_icon_name(byte[] icon_name, int size);
-	/**
-	 * @method flags=dynamic
-	 * @param image cast=(GtkImage *)
-	 * @param icon_name cast=(const gchar *)
-	 * @param size cast=(GtkIconSize)
-	 */
-	public static final native void gtk_image_set_from_icon_name(long image, byte[] icon_name, int size);
-	/**
-	 * @method flags=dynamic
-	 * @param surface cast=(cairo_surface_t *)
-	 */
-	public static final native long gtk_image_new_from_surface(long surface);
-
-	/* GtkImage [GTK4 only] */
-	/**
-	 * @method flags=dynamic
-	 * @param icon_name cast=(const gchar *)
-	 */
-	public static final native long gtk_image_new_from_icon_name(byte[] icon_name);
-	/**
-	 * @method flags=dynamic
-	 * @param image cast=(GtkImage *)
-	 * @param paintable cast=(GdkPaintable *)
-	 */
-	public static final native long gtk_image_set_from_paintable(long image, long paintable);
-	/**
-	 * @method flags=dynamic
-	 * @param image cast=(GtkImage *)
-	 */
-	public static final native void gtk_image_clear(long image);
 
 	/* GtkLabel */
 	public static final native long gtk_label_get_type();
@@ -1626,12 +1581,6 @@ public class GTK extends OS {
 	public static final native void gtk_spin_button_set_wrap(long spin_button, boolean wrap);
 	/** @param spin_button cast=(GtkSpinButton*) */
 	public static final native void gtk_spin_button_update(long spin_button);
-	/**
-	 * @param snapshot cast=(GtkSnapshot *)
-	 * @param rect cast=(const graphene_rect_t *)
-	 */
-	/* [GTK4 only, if-def'd in os.h] */
-	public static final native long gtk_snapshot_append_cairo(long snapshot, long rect);
 	/**
 	 * @method flags=ignore_deprecations
 	 * @param handle cast=(GtkStatusIcon*)

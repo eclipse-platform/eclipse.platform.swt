@@ -19,6 +19,7 @@ import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.gtk.*;
 import org.eclipse.swt.internal.gtk3.*;
+import org.eclipse.swt.internal.gtk4.*;
 
 /**
  * Instances of this class represent a selectable user interface object
@@ -335,7 +336,7 @@ Rectangle getBoundsinPixels () {
 	int [] buffer = new int [1];
 	if (GTK.gtk_tree_view_get_expander_column (parentHandle) == column) {
 		if (GTK.GTK4) {
-			long image = GTK.gtk_image_new_from_icon_name(GTK.GTK_NAMED_ICON_PAN_DOWN, GTK.GTK_ICON_SIZE_MENU);
+			long image = GTK4.gtk_image_new_from_icon_name(GTK.GTK_NAMED_ICON_PAN_DOWN);
 			GtkAllocation allocation = new GtkAllocation ();
 			GTK.gtk_widget_get_allocation(image, allocation);
 			rect.x += allocation.width + TreeItem.EXPANDER_EXTRA_PADDING;
@@ -793,7 +794,7 @@ Rectangle getTextBoundsInPixels (int index) {
 	int [] buffer = new int [1];
 	if (GTK.gtk_tree_view_get_expander_column (parentHandle) == column) {
 		if (GTK.GTK4) {
-			long image = GTK.gtk_image_new_from_icon_name(GTK.GTK_NAMED_ICON_PAN_DOWN, GTK.GTK_ICON_SIZE_MENU);
+			long image = GTK4.gtk_image_new_from_icon_name(GTK.GTK_NAMED_ICON_PAN_DOWN);
 			GtkAllocation allocation = new GtkAllocation ();
 			GTK.gtk_widget_get_allocation(image, allocation);
 			rect.x += allocation.width + TreeItem.EXPANDER_EXTRA_PADDING;

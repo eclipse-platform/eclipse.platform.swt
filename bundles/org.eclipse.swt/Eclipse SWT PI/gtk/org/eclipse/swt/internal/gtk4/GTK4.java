@@ -411,4 +411,22 @@ public class GTK4 {
 	/* GtkComboBox */
 	/** @param combo_box cast=(GtkComboBox *) */
 	public static final native long gtk_combo_box_get_child(long combo_box);
+
+	/* GtkSnapshot */
+	/**
+	 * @param snapshot cast=(GtkSnapshot *)
+	 * @param rect cast=(const graphene_rect_t *)
+	 */
+	public static final native long gtk_snapshot_append_cairo(long snapshot, long rect);
+
+	/* GtkImage */
+	/**
+	 * @param image cast=(GtkImage *)
+	 * @param paintable cast=(GdkPaintable *)
+	 */
+	public static final native void gtk_image_set_from_paintable(long image, long paintable);
+	/** @param icon_name cast=(const char *) */
+	public static final native long gtk_image_new_from_icon_name(byte[] icon_name);
+	/** @param image cast=(GtkImage *) */
+	public static final native void gtk_image_clear(long image);
 }

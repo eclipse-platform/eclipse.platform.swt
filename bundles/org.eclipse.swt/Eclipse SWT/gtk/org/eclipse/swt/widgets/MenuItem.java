@@ -981,16 +981,16 @@ public void setImage (Image image) {
 
 		if (!GTK3.GTK_IS_MENU_ITEM (handle)) return;
 		if (OS.SWT_PADDED_MENU_ITEMS && imageHandle != 0) {
-			GTK.gtk_image_set_from_surface(imageHandle, surface);
+			GTK3.gtk_image_set_from_surface(imageHandle, surface);
 		} else {
 			if (imageHandle == 0) {
-				imageHandle = GTK.gtk_image_new_from_surface(surface);
+				imageHandle = GTK3.gtk_image_new_from_surface(surface);
 				if (imageHandle == 0) error(SWT.ERROR_NO_HANDLES);
 
 				GTK3.gtk_container_add(boxHandle, imageHandle);
 				GTK3.gtk_box_reorder_child(boxHandle, imageHandle, 0);
 			} else {
-				GTK.gtk_image_set_from_surface(imageHandle, surface);
+				GTK3.gtk_image_set_from_surface(imageHandle, surface);
 			}
 		}
 		GTK.gtk_widget_show(imageHandle);

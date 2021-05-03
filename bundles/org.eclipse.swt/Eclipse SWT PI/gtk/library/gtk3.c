@@ -916,6 +916,58 @@ JNIEXPORT jboolean JNICALL GTK3_NATIVE(gtk_1im_1context_1filter_1keypress)
 }
 #endif
 
+#ifndef NO_gtk_1image_1new_1from_1icon_1name
+JNIEXPORT jlong JNICALL GTK3_NATIVE(gtk_1image_1new_1from_1icon_1name)
+	(JNIEnv *env, jclass that, jbyteArray arg0, jint arg1)
+{
+	jbyte *lparg0=NULL;
+	jlong rc = 0;
+	GTK3_NATIVE_ENTER(env, that, gtk_1image_1new_1from_1icon_1name_FUNC);
+	if (arg0) if ((lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL)) == NULL) goto fail;
+	rc = (jlong)gtk_image_new_from_icon_name((const gchar *)lparg0, (GtkIconSize)arg1);
+fail:
+	if (arg0 && lparg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
+	GTK3_NATIVE_EXIT(env, that, gtk_1image_1new_1from_1icon_1name_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_gtk_1image_1new_1from_1surface
+JNIEXPORT jlong JNICALL GTK3_NATIVE(gtk_1image_1new_1from_1surface)
+	(JNIEnv *env, jclass that, jlong arg0)
+{
+	jlong rc = 0;
+	GTK3_NATIVE_ENTER(env, that, gtk_1image_1new_1from_1surface_FUNC);
+	rc = (jlong)gtk_image_new_from_surface((cairo_surface_t *)arg0);
+	GTK3_NATIVE_EXIT(env, that, gtk_1image_1new_1from_1surface_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_gtk_1image_1set_1from_1icon_1name
+JNIEXPORT void JNICALL GTK3_NATIVE(gtk_1image_1set_1from_1icon_1name)
+	(JNIEnv *env, jclass that, jlong arg0, jbyteArray arg1, jint arg2)
+{
+	jbyte *lparg1=NULL;
+	GTK3_NATIVE_ENTER(env, that, gtk_1image_1set_1from_1icon_1name_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	gtk_image_set_from_icon_name((GtkImage *)arg0, (const gchar *)lparg1, (GtkIconSize)arg2);
+fail:
+	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	GTK3_NATIVE_EXIT(env, that, gtk_1image_1set_1from_1icon_1name_FUNC);
+}
+#endif
+
+#ifndef NO_gtk_1image_1set_1from_1surface
+JNIEXPORT void JNICALL GTK3_NATIVE(gtk_1image_1set_1from_1surface)
+	(JNIEnv *env, jclass that, jlong arg0, jlong arg1)
+{
+	GTK3_NATIVE_ENTER(env, that, gtk_1image_1set_1from_1surface_FUNC);
+	gtk_image_set_from_surface((GtkImage *)arg0, (cairo_surface_t *)arg1);
+	GTK3_NATIVE_EXIT(env, that, gtk_1image_1set_1from_1surface_FUNC);
+}
+#endif
+
 #ifndef NO_gtk_1init_1check
 JNIEXPORT jboolean JNICALL GTK3_NATIVE(gtk_1init_1check)
 	(JNIEnv *env, jclass that, jlongArray arg0, jlongArray arg1)
