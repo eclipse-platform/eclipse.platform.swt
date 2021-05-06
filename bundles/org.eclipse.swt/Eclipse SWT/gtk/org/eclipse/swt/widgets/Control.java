@@ -5192,11 +5192,12 @@ public void setBackgroundImage (Image image) {
 }
 
 void setBackgroundSurface (Image image) {
-	long window = GTK3.gtk_widget_get_window (paintHandle ());
 	if (GTK.GTK_VERSION >= OS.VERSION(3, 22, 0)) {
 		// gdk_window_set_background_pattern() deprecated in GTK3.22+
 		return;
 	}
+
+	long window = GTK3.gtk_widget_get_window (paintHandle ());
 	if (window != 0) {
 		if (image.surface != 0) {
 			long pattern = Cairo.cairo_pattern_create_for_surface(image.surface);

@@ -2934,7 +2934,7 @@ public void setVisible (boolean visible) {
 		mapped = true;
 
 		if ((style & mask) != 0) {
-			gdk_pointer_ungrab (GTK3.gtk_widget_get_window (shellHandle), GDK.GDK_CURRENT_TIME);
+			if (!GTK.GTK4) gdk_pointer_ungrab (GTK3.gtk_widget_get_window (shellHandle), GDK.GDK_CURRENT_TIME);
 		}
 		opened = true;
 		if (!moved) {
