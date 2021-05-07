@@ -829,6 +829,7 @@ long eventWindow () {
 		long window = super.paintWindow ();
 		long children = GDK.gdk_window_get_children (window);
 		if (children != 0) {
+			long childrenIterator = children;
 			/*
 			 * When search or cancel icons are added to Text, those
 			 * icon window(s) are added to the beginning of the list.
@@ -836,8 +837,8 @@ long eventWindow () {
 			 * browse to the end of the list.
 			 */
 			do {
-				window = OS.g_list_data (children);
-			} while ((children = OS.g_list_next (children)) != 0);
+				window = OS.g_list_data (childrenIterator);
+			} while ((childrenIterator = OS.g_list_next (childrenIterator)) != 0);
 		}
 		OS.g_list_free (children);
 		return window;

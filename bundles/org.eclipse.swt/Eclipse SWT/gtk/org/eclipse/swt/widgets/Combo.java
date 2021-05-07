@@ -1057,9 +1057,10 @@ long eventWindow () {
 	// Find the internal GDK_INPUT_ONLY window
 	long children = GDK.gdk_window_get_children (window);
 	if (children != 0) {
+		long childrenIterator = children;
 		do {
-			window = OS.g_list_data (children);
-		} while ((children = OS.g_list_next (children)) != 0);
+			window = OS.g_list_data (childrenIterator);
+		} while ((childrenIterator = OS.g_list_next (childrenIterator)) != 0);
 	}
 	OS.g_list_free (children);
 

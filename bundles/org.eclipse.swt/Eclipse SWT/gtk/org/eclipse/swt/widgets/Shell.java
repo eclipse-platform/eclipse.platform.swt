@@ -3004,9 +3004,10 @@ void showWidget () {
 			}
 		} else {
 			long list = GTK3.gtk_container_get_children (shellHandle);
-			while (list != 0) {
-				GTK3.gtk_container_remove (shellHandle, OS.g_list_data (list));
-				list = OS.g_list_next(list);
+			long listIterator = list;
+			while (listIterator != 0) {
+				GTK3.gtk_container_remove (shellHandle, OS.g_list_data (listIterator));
+				listIterator = OS.g_list_next(listIterator);
 			}
 			OS.g_list_free (list);
 		}
