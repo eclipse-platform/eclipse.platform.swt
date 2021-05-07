@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2017 IBM Corporation and others.
+ * Copyright (c) 2000, 2021 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -639,7 +639,7 @@ void createHandle () {
 	widget.addTableColumn (firstColumn);
 	widget.setOutlineTableColumn (firstColumn);
 	dataCell = (NSTextFieldCell)new SWTImageTextCell ().alloc ().init ();
-	dataCell.setLineBreakMode(OS.NSLineBreakByTruncatingTail);
+	dataCell.setLineBreakMode(OS.NSLineBreakByClipping);
 	firstColumn.setDataCell (dataCell);
 
 	scrollView = scrollWidget;
