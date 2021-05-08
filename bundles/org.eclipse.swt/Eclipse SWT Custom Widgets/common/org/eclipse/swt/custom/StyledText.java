@@ -9472,7 +9472,10 @@ public void setLineVerticalIndent(int lineIndex, int verticalLineIndent) {
 		}
 	} else {
 		resetCache(lineIndex, 1);
-		if (getCaretLine() >= initialTopIndex && getCaretLine() <= initialBottomIndex) { // caret line with caret mustn't move
+		if((initialTopIndex == 0) && (initialBottomIndex == (content.getLineCount() - 1))) { // not scrollable editor
+		    setCaretLocation();
+			redrawLines(lineIndex, getBottomIndex() - lineIndex + 1, true);
+		} else if (getCaretLine() >= initialTopIndex && getCaretLine() <= initialBottomIndex) { // caret line with caret mustn't move
 			if (getCaretLine() < lineIndex) {
 				redrawLines(lineIndex, getPartialBottomIndex() - lineIndex + 1, true);
 			} else {
