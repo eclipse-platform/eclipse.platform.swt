@@ -19,7 +19,6 @@ import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.gtk.*;
 import org.eclipse.swt.internal.gtk3.*;
-import org.eclipse.swt.internal.gtk4.*;
 
 /**
  * Instances of this class represent a selectable user interface object
@@ -333,18 +332,7 @@ Rectangle getBoundsinPixels () {
 	gtk_cell_renderer_get_preferred_size (textRenderer, parentHandle, w, null);
 	parent.ignoreSize = false;
 	rect.width = w [0];
-	int [] buffer = new int [1];
-	if (GTK.gtk_tree_view_get_expander_column (parentHandle) == column) {
-		if (GTK.GTK4) {
-			long image = GTK4.gtk_image_new_from_icon_name(GTK.GTK_NAMED_ICON_PAN_DOWN);
-			GtkAllocation allocation = new GtkAllocation ();
-			GTK.gtk_widget_get_allocation(image, allocation);
-			rect.x += allocation.width + TreeItem.EXPANDER_EXTRA_PADDING;
-		} else {
-			GTK3.gtk_widget_style_get (parentHandle, OS.expander_size, buffer, 0);
-			rect.x += buffer [0] + TreeItem.EXPANDER_EXTRA_PADDING;
-		}
-	}
+
 	int horizontalSeparator;
 	if (GTK.GTK4) {
 		long separator = GTK.gtk_separator_new(GTK.GTK_ORIENTATION_HORIZONTAL);
@@ -352,6 +340,7 @@ Rectangle getBoundsinPixels () {
 		GTK.gtk_widget_get_allocation(separator, allocation);
 		horizontalSeparator = allocation.height;
 	} else {
+		int[] buffer = new int[1];
 		GTK3.gtk_widget_style_get (parentHandle, OS.horizontal_separator, buffer, 0);
 		horizontalSeparator = buffer[0];
 	}
@@ -791,18 +780,7 @@ Rectangle getTextBoundsInPixels (int index) {
 	parent.ignoreSize = true;
 	gtk_cell_renderer_get_preferred_size (textRenderer, parentHandle, w, null);
 	parent.ignoreSize = false;
-	int [] buffer = new int [1];
-	if (GTK.gtk_tree_view_get_expander_column (parentHandle) == column) {
-		if (GTK.GTK4) {
-			long image = GTK4.gtk_image_new_from_icon_name(GTK.GTK_NAMED_ICON_PAN_DOWN);
-			GtkAllocation allocation = new GtkAllocation ();
-			GTK.gtk_widget_get_allocation(image, allocation);
-			rect.x += allocation.width + TreeItem.EXPANDER_EXTRA_PADDING;
-		} else {
-			GTK3.gtk_widget_style_get (parentHandle, OS.expander_size, buffer, 0);
-			rect.x += buffer [0] + TreeItem.EXPANDER_EXTRA_PADDING;
-		}
-	}
+
 	int horizontalSeparator;
 	if (GTK.GTK4) {
 		long separator = GTK.gtk_separator_new(GTK.GTK_ORIENTATION_HORIZONTAL);
@@ -810,6 +788,7 @@ Rectangle getTextBoundsInPixels (int index) {
 		GTK.gtk_widget_get_allocation(separator, allocation);
 		horizontalSeparator = allocation.height;
 	} else {
+		int[] buffer = new int[1];
 		GTK3.gtk_widget_style_get (parentHandle, OS.horizontal_separator, buffer, 0);
 		horizontalSeparator = buffer[0];
 	}
