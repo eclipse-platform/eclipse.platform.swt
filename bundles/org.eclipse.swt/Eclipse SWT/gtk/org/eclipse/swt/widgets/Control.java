@@ -52,6 +52,10 @@ import org.eclipse.swt.internal.gtk4.*;
  * @noextend This class is not intended to be subclassed by clients.
  */
 public abstract class Control extends Widget implements Drawable {
+
+	// allows to disable context menu entry for "insert emoji"
+	static final boolean DISABLE_EMOJI = Boolean.getBoolean("SWT_GTK_INPUT_HINT_NO_EMOJI");
+
 	long fixedHandle;
 	long redrawWindow, enableWindow, provider;
 	int drawCount, backgroundAlpha = 255;

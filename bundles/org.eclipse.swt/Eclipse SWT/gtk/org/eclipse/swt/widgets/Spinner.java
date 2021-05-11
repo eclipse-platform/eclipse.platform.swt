@@ -329,6 +329,9 @@ void createHandle (int index) {
 	if (adjustment == 0) error (SWT.ERROR_NO_HANDLES);
 	handle = GTK.gtk_spin_button_new (adjustment, climbRate, 0);
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
+	if (DISABLE_EMOJI && GTK.GTK_VERSION >= OS.VERSION(3, 22, 20)) {
+		GTK.gtk_entry_set_input_hints(handle, GTK.GTK_INPUT_HINT_NO_EMOJI);
+	}
 
 	if (GTK.GTK4) {
 		OS.swt_fixed_add(fixedHandle, handle);

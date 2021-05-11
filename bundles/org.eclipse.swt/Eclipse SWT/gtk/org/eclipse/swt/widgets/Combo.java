@@ -551,6 +551,9 @@ void createHandle (int index) {
 
 		entryHandle = GTK.GTK4 ? GTK4.gtk_combo_box_get_child(handle) : GTK3.gtk_bin_get_child(handle);
 		if (entryHandle == 0) error(SWT.ERROR_NO_HANDLES);
+		if (DISABLE_EMOJI && GTK.GTK_VERSION >= OS.VERSION(3, 22, 20)) {
+		    GTK.gtk_entry_set_input_hints(entryHandle, GTK.GTK_INPUT_HINT_NO_EMOJI);
+		}
 
 		imContext = OS.imContextLast();
 	}

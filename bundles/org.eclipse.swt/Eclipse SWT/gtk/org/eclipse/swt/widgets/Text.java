@@ -65,10 +65,6 @@ import org.eclipse.swt.internal.gtk4.*;
  * @noextend This class is not intended to be subclassed by clients.
  */
 public class Text extends Scrollable {
-
-	// allows to disable context menu entry for "insert emoji"
-	private static final boolean DISABLE_EMOJI = Boolean.getBoolean("SWT_GTK_INPUT_HINT_NO_EMOJI");
-
 	long bufferHandle;
 	long imContext;
 	int tabs = 8, lastEventTime = 0;
@@ -185,9 +181,6 @@ public Text (Composite parent, int style) {
 			this.style &= ~SWT.ICON_CANCEL;
 		}
 	}
-	if (DISABLE_EMOJI && GTK.GTK_VERSION >= OS.VERSION(3, 22, 20)) {
-	    GTK.gtk_entry_set_input_hints(handle, GTK.GTK_INPUT_HINT_NO_EMOJI);
-	}
 }
 
 static int checkStyle (int style) {
@@ -262,6 +255,10 @@ void createHandle (int index) {
 		if ((style & SWT.RIGHT) != 0) alignment = 1.0f;
 		if (alignment > 0.0f) {
 			GTK.gtk_entry_set_alignment (handle, alignment);
+		}
+
+		if (DISABLE_EMOJI && GTK.GTK_VERSION >= OS.VERSION(3, 22, 20)) {
+		    GTK.gtk_entry_set_input_hints(handle, GTK.GTK_INPUT_HINT_NO_EMOJI);
 		}
 	} else {
 		if (GTK.GTK4) {
