@@ -61,7 +61,6 @@ typedef enum {
 	gtk_1drop_1target_1async_1set_1formats_FUNC,
 	gtk_1entry_1get_1buffer_FUNC,
 	gtk_1entry_1set_1buffer_FUNC,
-	gtk_1entry_1set_1input_1hints_FUNC,
 	gtk_1event_1controller_1focus_1new_FUNC,
 	gtk_1event_1controller_1get_1current_1event_FUNC,
 	gtk_1event_1controller_1key_1new_FUNC,

@@ -51,7 +51,6 @@ char * GTK4_nativeFunctionNames[] = {
 	"gtk_1drop_1target_1async_1set_1formats",
 	"gtk_1entry_1get_1buffer",
 	"gtk_1entry_1set_1buffer",
-	"gtk_1entry_1set_1input_1hints",
 	"gtk_1event_1controller_1focus_1new",
 	"gtk_1event_1controller_1get_1current_1event",
 	"gtk_1event_1controller_1key_1new",

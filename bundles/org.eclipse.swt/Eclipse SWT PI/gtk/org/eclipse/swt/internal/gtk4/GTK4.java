@@ -310,11 +310,6 @@ public class GTK4 {
 	public static final native void gtk_entry_set_buffer(long entry, long buffer);
 	/** @param entry cast=(GtkEntry *) */
 	public static final native long gtk_entry_get_buffer(long entry);
-	/**
-	 * @param entry cast=(GtkEntry *)
-	 * @param hint cast=(GtkInputHints)
-	 */
-	public static final native void gtk_entry_set_input_hints(long entry, int hint);
 
 	/* GtkExpander */
 	/**

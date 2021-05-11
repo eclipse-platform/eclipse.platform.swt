@@ -353,16 +353,6 @@ JNIEXPORT void JNICALL GTK4_NATIVE(gtk_1entry_1set_1buffer)
 }
 #endif
 
-#ifndef NO_gtk_1entry_1set_1input_1hints
-JNIEXPORT void JNICALL GTK4_NATIVE(gtk_1entry_1set_1input_1hints)
-	(JNIEnv *env, jclass that, jlong arg0, jint arg1)
-{
-	GTK4_NATIVE_ENTER(env, that, gtk_1entry_1set_1input_1hints_FUNC);
-	gtk_entry_set_input_hints((GtkEntry *)arg0, (GtkInputHints)arg1);
-	GTK4_NATIVE_EXIT(env, that, gtk_1entry_1set_1input_1hints_FUNC);
-}
-#endif
-
 #ifndef NO_gtk_1event_1controller_1focus_1new
 JNIEXPORT jlong JNICALL GTK4_NATIVE(gtk_1event_1controller_1focus_1new)
 	(JNIEnv *env, jclass that)

@@ -617,6 +617,12 @@ public class GTK extends OS {
 	 */
 	public static final native void gtk_entry_set_tabs(long entry, long tabs);
 
+	/**
+	 * @param entry cast=(GtkEntry *)
+	 * @param hint cast=(GtkInputHints)
+	 */
+	public static final native void gtk_entry_set_input_hints(long entry, int hint);
+
 	/* GtkEntryBuffer */
 	/**
 	 * @param buffer cast=(GtkEntryBuffer *)
