@@ -855,4 +855,13 @@ public class GTK3 {
 	public static final native void gtk_image_set_from_icon_name(long image, byte[] icon_name, int size);
 	/** @param surface cast=(cairo_surface_t *) */
 	public static final native long gtk_image_new_from_surface(long surface);
+
+	/* GtkCssProvider */
+	/**
+	 * @param css_provider cast=(GtkCssProvider *)
+	 * @param data cast=(const gchar *)
+	 * @param length cast=(gssize)
+	 * @param error cast=(GError **)
+	 */
+	public static final native boolean gtk_css_provider_load_from_data(long css_provider, byte[] data, long length, long error[]);
 }

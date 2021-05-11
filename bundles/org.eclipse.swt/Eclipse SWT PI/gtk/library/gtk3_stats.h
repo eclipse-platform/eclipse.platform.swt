@@ -64,6 +64,7 @@ typedef enum {
 	gtk_1container_1propagate_1draw_FUNC,
 	gtk_1container_1remove_FUNC,
 	gtk_1container_1set_1border_1width_FUNC,
+	gtk_1css_1provider_1load_1from_1data_FUNC,
 	gtk_1dialog_1run_FUNC,
 	gtk_1drag_1begin_1with_1coordinates_FUNC,
 	gtk_1drag_1check_1threshold_FUNC,

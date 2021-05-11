@@ -393,6 +393,25 @@ JNIEXPORT void JNICALL GTK3_NATIVE(gtk_1container_1set_1border_1width)
 }
 #endif
 
+#ifndef NO_gtk_1css_1provider_1load_1from_1data
+JNIEXPORT jboolean JNICALL GTK3_NATIVE(gtk_1css_1provider_1load_1from_1data)
+	(JNIEnv *env, jclass that, jlong arg0, jbyteArray arg1, jlong arg2, jlongArray arg3)
+{
+	jbyte *lparg1=NULL;
+	jlong *lparg3=NULL;
+	jboolean rc = 0;
+	GTK3_NATIVE_ENTER(env, that, gtk_1css_1provider_1load_1from_1data_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	if (arg3) if ((lparg3 = (*env)->GetLongArrayElements(env, arg3, NULL)) == NULL) goto fail;
+	rc = (jboolean)gtk_css_provider_load_from_data((GtkCssProvider *)arg0, (const gchar *)lparg1, (gssize)arg2, (GError **)lparg3);
+fail:
+	if (arg3 && lparg3) (*env)->ReleaseLongArrayElements(env, arg3, lparg3, 0);
+	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	GTK3_NATIVE_EXIT(env, that, gtk_1css_1provider_1load_1from_1data_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_gtk_1dialog_1run
 JNIEXPORT jint JNICALL GTK3_NATIVE(gtk_1dialog_1run)
 	(JNIEnv *env, jclass that, jlong arg0)

@@ -373,8 +373,6 @@ char * GTK_nativeFunctionNames[] = {
 	"gtk_1combo_1box_1text_1new_1with_1entry",
 	"gtk_1combo_1box_1text_1remove",
 	"gtk_1combo_1box_1text_1remove_1all",
-	"gtk_1css_1provider_1load_1from_1data__J_3BJ",
-	"gtk_1css_1provider_1load_1from_1data__J_3BJ_3J",
 	"gtk_1css_1provider_1new",
 	"gtk_1css_1provider_1to_1string",
 	"gtk_1dialog_1add_1button",

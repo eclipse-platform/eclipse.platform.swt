@@ -1715,9 +1715,9 @@ public void setData (String key, Object value) {
 		if (context != 0 && provider != 0) {
 			GTK.gtk_style_context_add_provider (context, provider, GTK.GTK_STYLE_PROVIDER_PRIORITY_USER);
 			if (GTK.GTK4) {
-				GTK.gtk_css_provider_load_from_data (provider, Converter.wcsToMbcs ((String) value, true), -1);
+				GTK4.gtk_css_provider_load_from_data (provider, Converter.wcsToMbcs ((String) value, true), -1);
 			} else {
-				GTK.gtk_css_provider_load_from_data (provider, Converter.wcsToMbcs ((String) value, true), -1, null);
+				GTK3.gtk_css_provider_load_from_data (provider, Converter.wcsToMbcs ((String) value, true), -1, null);
 			}
 			OS.g_object_unref (provider);
 		}
@@ -1739,7 +1739,7 @@ void setFontDescription(long widget, long fontDescription) {
 		OS.g_object_unref(provider);
 
 		String css = convertPangoFontDescriptionToCss(fontDescription);
-		GTK.gtk_css_provider_load_from_data(provider, Converter.javaStringToCString(css), -1);
+		GTK4.gtk_css_provider_load_from_data(provider, Converter.javaStringToCString(css), -1);
 	} else {
 		// gtk_widget_override_font() copies the fields from 'fontDescription'
 		// and does not remember the pointer passed to it.

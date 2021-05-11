@@ -429,4 +429,12 @@ public class GTK4 {
 	public static final native long gtk_image_new_from_icon_name(byte[] icon_name);
 	/** @param image cast=(GtkImage *) */
 	public static final native void gtk_image_clear(long image);
+
+	/* GtkCssProvider */
+	/**
+	 * @param css_provider cast=(GtkCssProvider *)
+	 * @param data cast=(const gchar *)
+	 * @param length cast=(gssize)
+	 */
+	public static final native void gtk_css_provider_load_from_data(long css_provider, byte[] data, long length);
 }

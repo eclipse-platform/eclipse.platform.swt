@@ -955,21 +955,6 @@ public class GTK extends OS {
 	 * @param types cast=(GType *)
 	 */
 	public static final native long gtk_list_store_newv(int numColumns, long [] types);
-	/**
-	 * @param css_provider cast=(GtkCssProvider *)
-	 * @param data cast=(const gchar *)
-	 * @param length cast=(gssize)
-	 * @param error cast=(GError **)
-	 */
-	/* [GTK3 only, if-def'd in os.h] */
-	public static final native boolean gtk_css_provider_load_from_data(long css_provider, byte[] data, long length, long error[]);
-	/**
-	 * @param css_provider cast=(GtkCssProvider *)
-	 * @param data cast=(const gchar *)
-	 * @param length cast=(gssize)
-	 */
-	/* [GTK4 only, if-def'd in os.h] */
-	public static final native void gtk_css_provider_load_from_data(long css_provider, byte[] data, long length);
 	public static final native long gtk_css_provider_new();
 	/**
 	 * @param provider cast=(GtkCssProvider *)

@@ -3752,9 +3752,9 @@ void updateHeaderCSS() {
 		}
 
 		if (GTK.GTK4) {
-			GTK.gtk_css_provider_load_from_data(headerCSSProvider, Converter.javaStringToCString(css.toString()), -1);
+			GTK4.gtk_css_provider_load_from_data(headerCSSProvider, Converter.javaStringToCString(css.toString()), -1);
 		} else {
-			GTK.gtk_css_provider_load_from_data(headerCSSProvider, Converter.javaStringToCString(css.toString()), -1, null);
+			GTK3.gtk_css_provider_load_from_data(headerCSSProvider, Converter.javaStringToCString(css.toString()), -1, null);
 		}
 	} else {
 		for (TreeColumn column : columns) {

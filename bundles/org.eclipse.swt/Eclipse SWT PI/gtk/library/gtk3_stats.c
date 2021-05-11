@@ -54,6 +54,7 @@ char * GTK3_nativeFunctionNames[] = {
 	"gtk_1container_1propagate_1draw",
 	"gtk_1container_1remove",
 	"gtk_1container_1set_1border_1width",
+	"gtk_1css_1provider_1load_1from_1data",
 	"gtk_1dialog_1run",
 	"gtk_1drag_1begin_1with_1coordinates",
 	"gtk_1drag_1check_1threshold",

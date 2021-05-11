@@ -277,6 +277,20 @@ JNIEXPORT jlong JNICALL GTK4_NATIVE(gtk_1combo_1box_1get_1child)
 }
 #endif
 
+#ifndef NO_gtk_1css_1provider_1load_1from_1data
+JNIEXPORT void JNICALL GTK4_NATIVE(gtk_1css_1provider_1load_1from_1data)
+	(JNIEnv *env, jclass that, jlong arg0, jbyteArray arg1, jlong arg2)
+{
+	jbyte *lparg1=NULL;
+	GTK4_NATIVE_ENTER(env, that, gtk_1css_1provider_1load_1from_1data_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	gtk_css_provider_load_from_data((GtkCssProvider *)arg0, (const gchar *)lparg1, (gssize)arg2);
+fail:
+	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	GTK4_NATIVE_EXIT(env, that, gtk_1css_1provider_1load_1from_1data_FUNC);
+}
+#endif
+
 #ifndef NO_gtk_1drag_1source_1new
 JNIEXPORT jlong JNICALL GTK4_NATIVE(gtk_1drag_1source_1new)
 	(JNIEnv *env, jclass that)

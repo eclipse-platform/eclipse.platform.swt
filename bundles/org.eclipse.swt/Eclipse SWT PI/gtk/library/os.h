@@ -249,8 +249,6 @@
 #define NO_gdk_1selection_1owner_1set
 #define NO_gdk_1selection_1owner_1get
 #define NO_gdk_1visual_1get_1depth
-#define NO_gtk_1css_1provider_1load_1from_1data__I_3BI_3I
-#define NO_gtk_1css_1provider_1load_1from_1data__J_3BJ_3J
 #define NO_gdk_1pixbuf_1get_1from_1window
 
 // Some sizing functions are not available on GTK4
@@ -396,8 +394,6 @@
 
 // Miscellaneous functions not present on GTK3
 #define NO_gtk_1style_1context_1add_1provider_1for_1display
-#define NO_gtk_1css_1provider_1load_1from_1data__I_3BI
-#define NO_gtk_1css_1provider_1load_1from_1data__J_3BJ
 #define NO_gtk_1style_1context_1get_1margin
 
 // GdkCursor API changes from GTK3 -> GTK4

@@ -371,8 +371,6 @@ typedef enum {
 	gtk_1combo_1box_1text_1new_1with_1entry_FUNC,
 	gtk_1combo_1box_1text_1remove_FUNC,
 	gtk_1combo_1box_1text_1remove_1all_FUNC,
-	gtk_1css_1provider_1load_1from_1data__J_3BJ_FUNC,
-	gtk_1css_1provider_1load_1from_1data__J_3BJ_3J_FUNC,
 	gtk_1css_1provider_1new_FUNC,
 	gtk_1css_1provider_1to_1string_FUNC,
 	gtk_1dialog_1add_1button_FUNC,

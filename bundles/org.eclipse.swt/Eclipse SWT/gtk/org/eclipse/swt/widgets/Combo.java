@@ -2232,9 +2232,9 @@ void setButtonBackgroundGdkRGBA (GdkRGBA rgba) {
 		OS.g_object_unref(buttonProvider);
 	}
 	if (GTK.GTK4) {
-		GTK.gtk_css_provider_load_from_data (buttonProvider, Converter.wcsToMbcs (finalCss, true), -1);
+		GTK4.gtk_css_provider_load_from_data (buttonProvider, Converter.wcsToMbcs (finalCss, true), -1);
 	} else {
-		GTK.gtk_css_provider_load_from_data (buttonProvider, Converter.wcsToMbcs (finalCss, true), -1, null);
+		GTK3.gtk_css_provider_load_from_data (buttonProvider, Converter.wcsToMbcs (finalCss, true), -1, null);
 	}
 }
 
@@ -2256,9 +2256,9 @@ void setButtonForegroundGdkRGBA (GdkRGBA rgba) {
 		OS.g_object_unref(buttonProvider);
 	}
 	if (GTK.GTK4) {
-		GTK.gtk_css_provider_load_from_data (provider, Converter.wcsToMbcs (finalCss, true), -1);
+		GTK4.gtk_css_provider_load_from_data (provider, Converter.wcsToMbcs (finalCss, true), -1);
 	} else {
-		GTK.gtk_css_provider_load_from_data (provider, Converter.wcsToMbcs (finalCss, true), -1, null);
+		GTK3.gtk_css_provider_load_from_data (provider, Converter.wcsToMbcs (finalCss, true), -1, null);
 	}
 }
 
@@ -2306,7 +2306,12 @@ void setBackgroundGdkRGBA (long context, long handle, GdkRGBA rgba) {
 	}
 
 	String menuCss = "menu { background: " + menuColor + ";}";
-	GTK.gtk_css_provider_load_from_data (getComboProvider(), Converter.wcsToMbcs (menuCss, true), -1, null);
+	if (GTK.GTK4) {
+		GTK4.gtk_css_provider_load_from_data(getComboProvider(), Converter.wcsToMbcs(menuCss, true), -1);
+	} else {
+		GTK3.gtk_css_provider_load_from_data(getComboProvider(), Converter.wcsToMbcs(menuCss, true), -1, null);
+	}
+
 }
 
 long getComboProvider() {

@@ -54,6 +54,7 @@ typedef enum {
 	gtk_1check_1button_1set_1inconsistent_FUNC,
 	gtk_1check_1button_1set_1use_1underline_FUNC,
 	gtk_1combo_1box_1get_1child_FUNC,
+	gtk_1css_1provider_1load_1from_1data_FUNC,
 	gtk_1drag_1source_1new_FUNC,
 	gtk_1drag_1source_1set_1actions_FUNC,
 	gtk_1drag_1source_1set_1icon_FUNC,
