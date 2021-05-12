@@ -5146,17 +5146,16 @@ void setBackgroundGdkRGBA (long handle, GdkRGBA rgba) {
 			if (control == null) control = this;
 			rgba = control.getBackgroundGdkRGBA();
 		}
-	}
-	else {
+	} else {
 		alpha = backgroundAlpha;
 	}
 	if (rgba != null) {
 		rgba.alpha = alpha / (float)255;
 	}
-	long context = GTK.gtk_widget_get_style_context (handle);
-	setBackgroundGdkRGBA (context, handle, rgba);
-	GTK.gtk_style_context_invalidate (context);
-	return;
+
+	long context = GTK.gtk_widget_get_style_context(handle);
+	setBackgroundGdkRGBA(context, handle, rgba);
+	if (!GTK.GTK4) GTK3.gtk_style_context_invalidate(context);
 }
 /**
  * Sets the receiver's background image to the image specified

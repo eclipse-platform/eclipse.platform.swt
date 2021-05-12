@@ -150,6 +150,7 @@ typedef enum {
 	gtk_1status_1icon_1set_1from_1pixbuf_FUNC,
 	gtk_1status_1icon_1set_1tooltip_1text_FUNC,
 	gtk_1status_1icon_1set_1visible_FUNC,
+	gtk_1style_1context_1invalidate_FUNC,
 	gtk_1target_1list_1new_FUNC,
 	gtk_1target_1list_1unref_FUNC,
 	gtk_1toggle_1tool_1button_1get_1active_FUNC,

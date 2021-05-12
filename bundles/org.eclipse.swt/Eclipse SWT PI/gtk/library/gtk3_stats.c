@@ -140,6 +140,7 @@ char * GTK3_nativeFunctionNames[] = {
 	"gtk_1status_1icon_1set_1from_1pixbuf",
 	"gtk_1status_1icon_1set_1tooltip_1text",
 	"gtk_1status_1icon_1set_1visible",
+	"gtk_1style_1context_1invalidate",
 	"gtk_1target_1list_1new",
 	"gtk_1target_1list_1unref",
 	"gtk_1toggle_1tool_1button_1get_1active",

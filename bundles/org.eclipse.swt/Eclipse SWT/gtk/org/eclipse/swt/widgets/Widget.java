@@ -1745,7 +1745,7 @@ void setFontDescription(long widget, long fontDescription) {
 		// and does not remember the pointer passed to it.
 		GTK3.gtk_widget_override_font(widget, fontDescription);
 		long context = GTK.gtk_widget_get_style_context(widget);
-		GTK.gtk_style_context_invalidate(context);
+		GTK3.gtk_style_context_invalidate(context);
 	}
 }
 

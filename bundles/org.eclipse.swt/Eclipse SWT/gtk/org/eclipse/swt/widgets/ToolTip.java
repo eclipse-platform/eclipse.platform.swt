@@ -290,14 +290,18 @@ void configure () {
 void createHandle (int index) {
 	if ((style & SWT.BALLOON) != 0) {
 		state |= HANDLE;
-		handle = GTK3.gtk_window_new (GTK.GTK_WINDOW_POPUP);
-		Color background = display.getSystemColor (SWT.COLOR_INFO_BACKGROUND);
-		long context = GTK.gtk_widget_get_style_context (handle);
-		GdkRGBA bgRGBA = background.handle;
-		String css = "window {background-color: " + display.gtk_rgba_to_css_string(bgRGBA) + ";}";
-		gtk_css_provider_load_from_css (context, css);
-		GTK.gtk_style_context_invalidate (context);
-		GTK3.gtk_window_set_type_hint (handle, GDK.GDK_WINDOW_TYPE_HINT_TOOLTIP);
+		if (GTK.GTK4) {
+			//TODO: GTK4 implementation of ToolTips
+		} else {
+			handle = GTK3.gtk_window_new (GTK.GTK_WINDOW_POPUP);
+			Color background = display.getSystemColor (SWT.COLOR_INFO_BACKGROUND);
+			long context = GTK.gtk_widget_get_style_context (handle);
+			GdkRGBA bgRGBA = background.handle;
+			String css = "window {background-color: " + display.gtk_rgba_to_css_string(bgRGBA) + ";}";
+			gtk_css_provider_load_from_css (context, css);
+			GTK3.gtk_style_context_invalidate (context);
+			GTK3.gtk_window_set_type_hint (handle, GDK.GDK_WINDOW_TYPE_HINT_TOOLTIP);
+		}
 	}
 }
 
