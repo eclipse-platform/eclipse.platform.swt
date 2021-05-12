@@ -306,7 +306,6 @@ static Program gio_getProgram (Display display, long application) {
 			}
 			OS.g_free(icon_name);
 		}
-		OS.g_object_unref(icon);
 	}
 	return program.command != null ? program : null;
 }
@@ -328,6 +327,7 @@ static Program[] getPrograms(Display display) {
 				program = gio_getProgram(display, application);
 				if (program != null) programs.add(program);
 //			}
+				OS.g_object_unref(application);
 		}
 		list = OS.g_list_next(list);
 	}
