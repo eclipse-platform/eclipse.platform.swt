@@ -833,44 +833,56 @@ long gtk_mnemonic_activate (long widget, long arg1) {
 void hookEvents () {
 	super.hookEvents ();
 	if ((style & SWT.SEPARATOR) != 0) return;
-	OS.g_signal_connect_closure (handle, OS.clicked, display.getClosure (CLICKED), false);
 
-	/*
-	 * Feature in GTK. GtkToolItem does not respond to basic listeners
-	 * such as button-press, enter-notify to it. The fix is to assign
-	 * the listener to child (GtkButton) of the tool-item.
-	 */
-	eventHandle = GTK.GTK4 ? GTK4.gtk_widget_get_first_child(handle) : GTK3.gtk_bin_get_child(handle);
-	if ((style & SWT.DROP_DOWN) != 0) {
-		if (GTK.GTK4) {
-			eventHandle = GTK4.gtk_widget_get_first_child(handle);
+	if (GTK.GTK4) {
+		if ((style & SWT.DROP_DOWN) != 0) {
 			if (arrowHandle != 0) {
 				long clickGesture = GTK4.gtk_gesture_click_new();
 				OS.g_signal_connect(clickGesture, OS.pressed, display.gesturePressReleaseProc, GESTURE_PRESSED);
 				GTK4.gtk_widget_add_controller(arrowHandle, clickGesture);
 			}
+
+			/*
+			 * SWT.DROP_DOWN's handle is of the top level GtkBox which holds the main GtkButton & arrow GtkMenuButton.
+			 * Therefore, we connect to the first child of the GtkBox, which is the main GtkButton
+			 */
+			OS.g_signal_connect_closure(GTK4.gtk_widget_get_first_child(handle), OS.clicked, display.getClosure(CLICKED), false);
 		} else {
+			OS.g_signal_connect_closure(handle, OS.clicked, display.getClosure (CLICKED), false);
+		}
+
+		long focusController = GTK4.gtk_event_controller_focus_new();
+		GTK4.gtk_widget_add_controller(handle, focusController);
+		GTK.gtk_event_controller_set_propagation_phase(focusController, GTK.GTK_PHASE_TARGET);
+
+		OS.g_signal_connect(focusController, OS.enter, display.focusProc, FOCUS_IN);
+		OS.g_signal_connect(focusController, OS.leave, display.focusProc, FOCUS_OUT);
+
+		long motionController = GTK4.gtk_event_controller_motion_new();
+		GTK4.gtk_widget_add_controller(handle, motionController);
+		GTK.gtk_event_controller_set_propagation_phase(motionController, GTK.GTK_PHASE_TARGET);
+
+		OS.g_signal_connect(motionController, OS.enter, display.enterMotionScrollProc, ENTER);
+		OS.g_signal_connect(motionController, OS.leave, display.leaveProc, LEAVE);
+
+		//TODO: event-after
+		long clickController = GTK4.gtk_gesture_click_new();
+		GTK4.gtk_widget_add_controller(handle, clickController);
+		OS.g_signal_connect(clickController, OS.pressed, display.gesturePressReleaseProc, GESTURE_PRESSED);
+	} else {
+		/*
+		 * Feature in GTK. GtkToolItem does not respond to basic listeners
+		 * such as button-press, enter-notify to it. The fix is to assign
+		 * the listener to child (GtkButton) of the tool-item.
+		 */
+		eventHandle = GTK3.gtk_bin_get_child(handle);
+		if ((style & SWT.DROP_DOWN) != 0) {
 			long list = GTK3.gtk_container_get_children(eventHandle);
 			eventHandle = OS.g_list_nth_data(list, 0);
 			if (arrowHandle != 0) OS.g_signal_connect_closure (arrowHandle, OS.clicked, display.getClosure (CLICKED), false);
 		}
-	}
 
-	if (GTK.GTK4) {
-		long focusController = GTK4.gtk_event_controller_focus_new();
-		GTK4.gtk_widget_add_controller(eventHandle, focusController);
-		GTK.gtk_event_controller_set_propagation_phase(focusController, GTK.GTK_PHASE_TARGET);
-
-		OS.g_signal_connect (focusController, OS.enter, display.focusProc, FOCUS_IN);
-		OS.g_signal_connect (focusController, OS.leave, display.focusProc, FOCUS_OUT);
-
-		long motionController = GTK4.gtk_event_controller_motion_new();
-		GTK4.gtk_widget_add_controller(eventHandle, motionController);
-		GTK.gtk_event_controller_set_propagation_phase(motionController, GTK.GTK_PHASE_TARGET);
-
-		OS.g_signal_connect (motionController, OS.enter, display.enterMotionScrollProc, ENTER);
-		OS.g_signal_connect (motionController, OS.leave, display.leaveProc, LEAVE);
-	} else {
+		OS.g_signal_connect_closure (handle, OS.clicked, display.getClosure (CLICKED), false);
 		OS.g_signal_connect_closure (handle, OS.create_menu_proxy, display.getClosure (CREATE_MENU_PROXY), false);
 
 		OS.g_signal_connect_closure_by_id (eventHandle, display.signalIds [FOCUS_IN_EVENT], 0, display.getClosure (FOCUS_IN_EVENT), false);
@@ -878,28 +890,23 @@ void hookEvents () {
 
 		OS.g_signal_connect_closure_by_id (eventHandle, display.signalIds [ENTER_NOTIFY_EVENT], 0, display.getClosure (ENTER_NOTIFY_EVENT), false);
 		OS.g_signal_connect_closure_by_id (eventHandle, display.signalIds [LEAVE_NOTIFY_EVENT], 0, display.getClosure (LEAVE_NOTIFY_EVENT), false);
-	}
-	/*
-	* Feature in GTK.  Usually, GTK widgets propagate all events to their
-	* parent when they are done their own processing.  However, in contrast
-	* to other widgets, the buttons that make up the tool items, do not propagate
-	* the mouse up/down events. It is interesting to note that they DO propagate
-	* mouse motion events.  The fix is to explicitly forward mouse up/down events
-	* to the parent.
-	*/
-	int mask =
-		GDK.GDK_EXPOSURE_MASK | GDK.GDK_POINTER_MOTION_MASK |
-		GDK.GDK_BUTTON_PRESS_MASK | GDK.GDK_BUTTON_RELEASE_MASK |
-		GDK.GDK_ENTER_NOTIFY_MASK | GDK.GDK_LEAVE_NOTIFY_MASK |
-		GDK.GDK_KEY_PRESS_MASK | GDK.GDK_KEY_RELEASE_MASK |
-		GDK.GDK_FOCUS_CHANGE_MASK;
-	GTK3.gtk_widget_add_events (eventHandle, mask);
-	if (GTK.GTK4) {
-		//TODO: event-after
-		long clickController = GTK4.gtk_gesture_click_new();
-		GTK4.gtk_widget_add_controller(eventHandle, clickController);
-		OS.g_signal_connect(clickController, OS.pressed, display.gesturePressReleaseProc, GESTURE_PRESSED);
-	} else {
+
+		/*
+		* Feature in GTK.  Usually, GTK widgets propagate all events to their
+		* parent when they are done their own processing.  However, in contrast
+		* to other widgets, the buttons that make up the tool items, do not propagate
+		* the mouse up/down events. It is interesting to note that they DO propagate
+		* mouse motion events.  The fix is to explicitly forward mouse up/down events
+		* to the parent.
+		*/
+		int mask =
+			GDK.GDK_EXPOSURE_MASK | GDK.GDK_POINTER_MOTION_MASK |
+			GDK.GDK_BUTTON_PRESS_MASK | GDK.GDK_BUTTON_RELEASE_MASK |
+			GDK.GDK_ENTER_NOTIFY_MASK | GDK.GDK_LEAVE_NOTIFY_MASK |
+			GDK.GDK_KEY_PRESS_MASK | GDK.GDK_KEY_RELEASE_MASK |
+			GDK.GDK_FOCUS_CHANGE_MASK;
+		GTK3.gtk_widget_add_events (eventHandle, mask);
+
 		OS.g_signal_connect_closure_by_id (eventHandle, display.signalIds [BUTTON_PRESS_EVENT], 0, display.getClosure (BUTTON_PRESS_EVENT), false);
 		OS.g_signal_connect_closure_by_id (eventHandle, display.signalIds [BUTTON_RELEASE_EVENT], 0, display.getClosure (BUTTON_RELEASE_EVENT), false);
 		OS.g_signal_connect_closure_by_id (eventHandle, display.signalIds [EVENT_AFTER], 0, display.getClosure (EVENT_AFTER), false);
