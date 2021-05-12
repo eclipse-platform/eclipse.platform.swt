@@ -236,6 +236,7 @@ void createHandle (int index) {
 				long child = GTK3.gtk_bin_get_child(handle);
 				long list = GTK3.gtk_container_get_children(child);
 				arrowHandle = OS.g_list_nth_data(list, 1);
+				OS.g_list_free(list);
 			}
 
 			/*
@@ -879,6 +880,7 @@ void hookEvents () {
 		if ((style & SWT.DROP_DOWN) != 0) {
 			long list = GTK3.gtk_container_get_children(eventHandle);
 			eventHandle = OS.g_list_nth_data(list, 0);
+			OS.g_list_free(list);
 			if (arrowHandle != 0) OS.g_signal_connect_closure (arrowHandle, OS.clicked, display.getClosure (CLICKED), false);
 		}
 
@@ -1473,6 +1475,7 @@ void setToolTipText (Shell shell, String newString) {
 		if ((style & SWT.DROP_DOWN) != 0) {
 			long list = GTK3.gtk_container_get_children (child);
 			child = OS.g_list_nth_data (list, 0);
+			OS.g_list_free(list);
 			if (arrowHandle != 0) shell.setToolTipText (arrowHandle, newString);
 		}
 		shell.setToolTipText (child != 0 ? child : handle, newString);
