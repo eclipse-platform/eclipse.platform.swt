@@ -955,15 +955,14 @@ void hookEvents () {
 	if (isCalendar ()) {
 		hookEventsForCalendar ();
 	} else {
-		int eventMask =	GDK.GDK_POINTER_MOTION_MASK | GDK.GDK_BUTTON_PRESS_MASK | GDK.GDK_BUTTON_RELEASE_MASK;
-		GTK3.gtk_widget_add_events (textEntryHandle, eventMask);
-
-
 		if ((style & SWT.DROP_DOWN) == 0 ) {
 			hookEventsForDateTimeSpinner ();
 		}
 
 		if (!GTK.GTK4) {
+			int eventMask =	GDK.GDK_POINTER_MOTION_MASK | GDK.GDK_BUTTON_PRESS_MASK | GDK.GDK_BUTTON_RELEASE_MASK;
+			GTK3.gtk_widget_add_events(textEntryHandle, eventMask);
+
 			if (OS.G_OBJECT_TYPE (textEntryHandle) == GTK3.GTK_TYPE_MENU ()) {
 				hookEventsForMenu ();
 			}

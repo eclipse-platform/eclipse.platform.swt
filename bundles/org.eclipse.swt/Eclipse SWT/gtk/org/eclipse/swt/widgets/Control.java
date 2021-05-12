@@ -3139,15 +3139,29 @@ long getFontDescription () {
 		// returns pointer owned by GTK. The workaround is to make a copy of the data.
 		long gtkOwnedPointer = GTK.gtk_style_context_get_font(context, GTK.GTK_STATE_FLAG_NORMAL);
 		return OS.pango_font_description_copy(gtkOwnedPointer);
-	} else if (GTK.GTK4) {
-		GTK.gtk_style_context_get(context, GTK.gtk_style_property_font, fontDesc, 0);
-		return fontDesc [0];
 	} else {
-		GTK.gtk_style_context_save(context);
-		GTK.gtk_style_context_set_state(context, GTK.GTK_STATE_FLAG_NORMAL);
-		GTK.gtk_style_context_get(context, GTK.GTK_STATE_FLAG_NORMAL, GTK.gtk_style_property_font, fontDesc, 0);
-		GTK.gtk_style_context_restore(context);
-		return fontDesc [0];
+		if (GTK.GTK4) {
+			long[] fontPtr = new long[1];
+			long settings = GTK.gtk_settings_get_default();
+			OS.g_object_get(settings, GTK.gtk_style_property_font, fontPtr, 0);
+			if (fontPtr[0] != 0) {
+				int length = C.strlen(fontPtr[0]);
+				if (length != 0) {
+					byte[] fontString = new byte[length + 1];
+					C.memmove(fontString, fontPtr[0], length);
+					OS.g_free(fontPtr[0]);
+					return OS.pango_font_description_from_string(fontString);
+				}
+			}
+
+			return 0;
+		} else {
+			GTK.gtk_style_context_save(context);
+			GTK.gtk_style_context_set_state(context, GTK.GTK_STATE_FLAG_NORMAL);
+			GTK.gtk_style_context_get(context, GTK.GTK_STATE_FLAG_NORMAL, GTK.gtk_style_property_font, fontDesc, 0);
+			GTK.gtk_style_context_restore(context);
+			return fontDesc [0];
+		}
 	}
 }
 

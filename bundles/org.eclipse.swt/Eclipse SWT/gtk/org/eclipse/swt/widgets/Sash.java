@@ -484,7 +484,7 @@ long gtk_realize (long widget) {
 @Override
 void hookEvents () {
 	super.hookEvents ();
-	GTK3.gtk_widget_add_events (handle, GDK.GDK_POINTER_MOTION_HINT_MASK);
+	if (!GTK.GTK4) GTK3.gtk_widget_add_events(handle, GDK.GDK_POINTER_MOTION_HINT_MASK);
 }
 
 @Override

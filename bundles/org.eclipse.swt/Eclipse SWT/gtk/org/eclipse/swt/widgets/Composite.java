@@ -397,20 +397,23 @@ void createHandle (int index, boolean fixed, boolean scrolled) {
 			GTK3.gtk_container_add (handle, socketHandle);
 		}
 	}
-	if ((style & SWT.NO_REDRAW_RESIZE) != 0 && (style & SWT.RIGHT_TO_LEFT) == 0) {
-		GTK3.gtk_widget_set_redraw_on_allocate (handle, false);
-	}
-	/*
-	* Bug in GTK.  When a widget is double buffered and the back
-	* pixmap is null, the double buffer pixmap is filled with the
-	* background of the widget rather than the current contents of
-	* the screen.  If nothing is drawn during an expose event,
-	* the pixels are altered.  The fix is to clear double buffering
-	* when NO_BACKGROUND is set and DOUBLE_BUFFERED
-	* is not explicitly set.
-	*/
-	if ((style & SWT.DOUBLE_BUFFERED) == 0 && (style & SWT.NO_BACKGROUND) != 0) {
-		GTK3.gtk_widget_set_double_buffered (handle, false);
+
+	if (!GTK.GTK4) {
+		if ((style & SWT.NO_REDRAW_RESIZE) != 0 && (style & SWT.RIGHT_TO_LEFT) == 0) {
+			GTK3.gtk_widget_set_redraw_on_allocate (handle, false);
+		}
+		/*
+		* Bug in GTK.  When a widget is double buffered and the back
+		* pixmap is null, the double buffer pixmap is filled with the
+		* background of the widget rather than the current contents of
+		* the screen.  If nothing is drawn during an expose event,
+		* the pixels are altered.  The fix is to clear double buffering
+		* when NO_BACKGROUND is set and DOUBLE_BUFFERED
+		* is not explicitly set.
+		*/
+		if ((style & SWT.DOUBLE_BUFFERED) == 0 && (style & SWT.NO_BACKGROUND) != 0) {
+			GTK3.gtk_widget_set_double_buffered (handle, false);
+		}
 	}
 }
 
