@@ -338,6 +338,7 @@ int getImageFormat(long loader) {
 	long format = GDK.gdk_pixbuf_loader_get_format(loader);
 	long name = GDK.gdk_pixbuf_format_get_name(format);
 	String nameStr = Converter.cCharPtrToJavaString(name, false);
+	OS.g_free(name);
 	switch (nameStr) {
 		case "bmp": return SWT.IMAGE_BMP;
 		case "gif": return SWT.IMAGE_GIF;
