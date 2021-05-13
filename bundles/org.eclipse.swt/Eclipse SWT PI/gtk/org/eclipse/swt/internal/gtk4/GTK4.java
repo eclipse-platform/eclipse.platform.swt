@@ -17,6 +17,9 @@ package org.eclipse.swt.internal.gtk4;
  * This class contains native functions that are present in GTK4 only.
  */
 public class GTK4 {
+
+	public static final int GTK_POPOVER_MENU_NESTED = 1 << 0;
+
 	/**
 	 * @param context cast=(GtkIMContext *)
 	 * @param event cast=(GdkEvent *)

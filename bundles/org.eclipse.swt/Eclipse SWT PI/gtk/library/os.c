@@ -11359,6 +11359,20 @@ JNIEXPORT void JNICALL OS_NATIVE(g_1action_1map_1add_1action)
 }
 #endif
 
+#ifndef NO_g_1action_1map_1remove_1action
+JNIEXPORT void JNICALL OS_NATIVE(g_1action_1map_1remove_1action)
+	(JNIEnv *env, jclass that, jlong arg0, jbyteArray arg1)
+{
+	jbyte *lparg1=NULL;
+	OS_NATIVE_ENTER(env, that, g_1action_1map_1remove_1action_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	g_action_map_remove_action((GActionMap *)arg0, (const gchar *)lparg1);
+fail:
+	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	OS_NATIVE_EXIT(env, that, g_1action_1map_1remove_1action_FUNC);
+}
+#endif
+
 #ifndef NO_g_1app_1info_1create_1from_1commandline
 JNIEXPORT jlong JNICALL OS_NATIVE(g_1app_1info_1create_1from_1commandline)
 	(JNIEnv *env, jclass that, jbyteArray arg0, jbyteArray arg1, jlong arg2, jlong arg3)
@@ -12722,18 +12736,6 @@ JNIEXPORT void JNICALL OS_NATIVE(g_1menu_1item_1set_1submenu)
 	OS_NATIVE_ENTER(env, that, g_1menu_1item_1set_1submenu_FUNC);
 	g_menu_item_set_submenu((GMenuItem *)arg0, (GMenuModel *)arg1);
 	OS_NATIVE_EXIT(env, that, g_1menu_1item_1set_1submenu_FUNC);
-}
-#endif
-
-#ifndef NO_g_1menu_1model_1get_1n_1items
-JNIEXPORT jint JNICALL OS_NATIVE(g_1menu_1model_1get_1n_1items)
-	(JNIEnv *env, jclass that, jlong arg0)
-{
-	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, g_1menu_1model_1get_1n_1items_FUNC);
-	rc = (jint)g_menu_model_get_n_items((GMenuModel *)arg0);
-	OS_NATIVE_EXIT(env, that, g_1menu_1model_1get_1n_1items_FUNC);
-	return rc;
 }
 #endif
 

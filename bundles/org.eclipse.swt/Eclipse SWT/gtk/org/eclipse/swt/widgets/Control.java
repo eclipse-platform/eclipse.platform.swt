@@ -5792,8 +5792,11 @@ public boolean setParent (Composite parent) {
 	Menu [] menus = oldShell.findMenus (this);
 	if (oldShell != newShell || oldDecorations != newDecorations) {
 		fixChildren (newShell, oldShell, newDecorations, oldDecorations, menus);
-		newDecorations.fixAccelGroup ();
-		oldDecorations.fixAccelGroup ();
+
+		if (!GTK.GTK4) {
+			newDecorations.fixAccelGroup ();
+			oldDecorations.fixAccelGroup ();
+		}
 	}
 	long newParent = parent.parentingHandle();
 	gtk_widget_reparent(this, newParent);

@@ -54,8 +54,47 @@ public class Menu extends Widget {
 	int poppedUpCount;
 
 	/** GTK4 only fields */
-	long modelHandle, actionGroup, shortcutController, sectionModelHandle;
-	ArrayList<MenuItem> items;
+	long modelHandle, actionGroup, shortcutController;
+
+	class Section {
+		LinkedList<MenuItem> sectionItems;
+		private MenuItem separator;
+		private long sectionHandle;
+
+		public Section() {
+			this.sectionItems = new LinkedList<>();
+		}
+
+		public Section(MenuItem separator) {
+			this();
+			this.separator = separator;
+		}
+
+		public Section(long sectionHandle) {
+			this();
+
+			this.sectionHandle = sectionHandle;
+		}
+
+		public long getSectionHandle() {
+			return sectionHandle != 0 ? sectionHandle : separator.modelHandle;
+		}
+
+		public int getItemPosition(MenuItem item) {
+			return sectionItems.indexOf(item);
+		}
+
+		public int getSectionSize() {
+			return sectionItems.size();
+		}
+
+		public int getSectionPosition() {
+			return items.indexOf(separator);
+		}
+	}
+
+	LinkedList<Section> sections;
+	LinkedList<MenuItem> items;
 
 /**
  * Constructs a new instance of this class given its parent,
@@ -451,7 +490,8 @@ void createHandle (int index) {
 		modelHandle = OS.g_menu_new();
 		if (modelHandle == 0) error(SWT.ERROR_NO_HANDLES);
 
-		items = new ArrayList<>();
+		items = new LinkedList<>();
+		sections = new LinkedList<>();
 
 		switch (style & bits) {
 			case SWT.BAR:
@@ -465,7 +505,7 @@ void createHandle (int index) {
 				break;
 			case SWT.POP_UP:
 			default:
-				handle = GTK4.gtk_popover_menu_new_from_model_full(modelHandle, GTK.GTK_POPOVER_MENU_NESTED);
+				handle = GTK4.gtk_popover_menu_new_from_model_full(modelHandle, GTK4.GTK_POPOVER_MENU_NESTED);
 				GTK.gtk_widget_set_parent(handle, parent.handle);
 				GTK.gtk_popover_set_position(handle, GTK.GTK_POS_BOTTOM);
 				GTK4.gtk_popover_set_has_arrow(handle, false);
@@ -473,20 +513,20 @@ void createHandle (int index) {
 				if (handle == 0) error(SWT.ERROR_NO_HANDLES);
 		}
 
-		sectionModelHandle = OS.g_menu_new();
-		if (sectionModelHandle == 0) error(SWT.ERROR_NO_HANDLES);
+		// Create first section
+		long firstSection = OS.g_menu_new();
+		if (firstSection == 0) error(SWT.ERROR_NO_HANDLES);
+		sections.add(new Section(firstSection));
 
-		long defaultSection = OS.g_menu_item_new_section(null, sectionModelHandle);
-		OS.g_menu_insert_item(modelHandle, index, defaultSection);
+		long defaultSection = OS.g_menu_item_new_section(null, firstSection);
+		OS.g_menu_insert_item(modelHandle, 0, defaultSection);
 		OS.g_object_unref(defaultSection);
 
-		if ((style & SWT.DROP_DOWN) == 0) {
-			actionGroup = OS.g_simple_action_group_new();
-			if (actionGroup == 0) error(SWT.ERROR_NO_HANDLES);
+		actionGroup = OS.g_simple_action_group_new();
+		if (actionGroup == 0) error(SWT.ERROR_NO_HANDLES);
 
-			long shellHandle = parent.getShell().topHandle();
-			GTK.gtk_widget_insert_action_group(shellHandle, Converter.javaStringToCString(String.valueOf(this.hashCode())), actionGroup);
-		}
+		long shellHandle = parent.getShell().topHandle();
+		GTK.gtk_widget_insert_action_group(shellHandle, Converter.javaStringToCString(String.valueOf(this.hashCode())), actionGroup);
 	} else {
 		if ((style & SWT.BAR) != 0) {
 			handle = GTK3.gtk_menu_bar_new();
@@ -623,7 +663,7 @@ public int getItemCount () {
 	checkWidget();
 
 	if (GTK.GTK4) {
-		return OS.g_menu_model_get_n_items(sectionModelHandle);
+		return items.size();
 	} else {
 		int count = 0;
 		long list = GTK3.gtk_container_get_children (handle);
@@ -896,6 +936,12 @@ void hookEvents() {
 		if (shortcutController == 0) error(SWT.ERROR_NO_HANDLES);
 		GTK4.gtk_shortcut_controller_set_scope(shortcutController, GTK.GTK_SHORTCUT_SCOPE_GLOBAL);
 		GTK4.gtk_widget_add_controller(parent.handle, shortcutController);
+
+		if ((style & SWT.DROP_DOWN) == 0) {
+			OS.g_signal_connect_closure_by_id(handle, display.signalIds[SHOW], 0, display.getClosure(SHOW), false);
+			OS.g_signal_connect_closure_by_id(handle, display.signalIds[HIDE], 0, display.getClosure(HIDE), false);
+		}
+
 	} else {
 		OS.g_signal_connect_closure_by_id(handle, display.signalIds[SHOW_HELP], 0, display.getClosure(SHOW_HELP), false);
 
@@ -903,10 +949,10 @@ void hookEvents() {
 		if (GTK.GTK_VERSION >= OS.VERSION(3, 22, 0) && OS.SWT_MENU_LOCATION_DEBUGGING) {
 			OS.g_signal_connect_closure_by_id(handle, display.signalIds[POPPED_UP], 0, display.getClosure(POPPED_UP), false);
 		}
-	}
 
-	OS.g_signal_connect_closure_by_id(handle, display.signalIds[SHOW], 0, display.getClosure(SHOW), false);
-	OS.g_signal_connect_closure_by_id(handle, display.signalIds[HIDE], 0, display.getClosure(HIDE), false);
+		OS.g_signal_connect_closure_by_id(handle, display.signalIds[SHOW], 0, display.getClosure(SHOW), false);
+		OS.g_signal_connect_closure_by_id(handle, display.signalIds[HIDE], 0, display.getClosure(HIDE), false);
+	}
 }
 
 /**

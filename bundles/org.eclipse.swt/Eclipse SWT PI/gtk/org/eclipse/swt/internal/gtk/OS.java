@@ -2385,14 +2385,10 @@ public static final native void g_menu_item_set_label(long menu_item, byte[] lab
  */
 public static final native void g_menu_item_set_attribute(long menu_item, byte[] attribute, byte[] format_string, long data);
 
-
-/* GMenuModel */
-/** @param model cast=(GMenuModel *) */
-public static final native int g_menu_model_get_n_items(long model);
-
-
-/* GAction */
+/* GSimpleActionGroup */
 public static final native long g_simple_action_group_new();
+
+/* GSimpleAction */
 /**
  * @param name cast=(const gchar *)
  * @param parameter_type cast=(const GVariantType *)
@@ -2405,22 +2401,30 @@ public static final native long g_simple_action_new(byte[] name, long parameter_
  */
 public static final native long g_simple_action_new_stateful(byte[] name, long parameter_type, long initial_state);
 /**
- * @param action_map cast=(GActionMap *)
- * @param action cast=(GAction *)
- */
-public static final native void g_action_map_add_action(long action_map, long action);
-/** @param action cast=(GAction *) */
-public static final native boolean g_action_get_enabled(long action);
-/** @param simple_action cast=(GSimpleAction *) */
-public static final native void g_simple_action_set_enabled(long simple_action, boolean enabled);
-/** @param action cast=(GAction *) */
-public static final native long g_action_get_state(long action);
-/**
  * @param simple_action cast=(GSimpleAction *)
  * @param value cast=(GVariant *)
  */
 public static final native void g_simple_action_set_state(long simple_action, long value);
+/** @param simple_action cast=(GSimpleAction *) */
+public static final native void g_simple_action_set_enabled(long simple_action, boolean enabled);
 
+/* GAction */
+/** @param action cast=(GAction *) */
+public static final native boolean g_action_get_enabled(long action);
+/** @param action cast=(GAction *) */
+public static final native long g_action_get_state(long action);
+
+/* GActionMap */
+/**
+ * @param action_map cast=(GActionMap *)
+ * @param action cast=(GAction *)
+ */
+public static final native void g_action_map_add_action(long action_map, long action);
+/**
+ * @param action_map cast=(GActionMap *)
+ * @param action_name cast=(const gchar *)
+ */
+public static final native void g_action_map_remove_action(long action_map, byte[] action_name);
 
 /* GListModel */
 /** @param list cast=(GListModel *) */
