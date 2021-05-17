@@ -3365,6 +3365,7 @@ void rendererRender (long cell, long cr, long snapshot, long widget, long backgr
 					GTK.gtk_widget_realize (handle);
 					path = GTK.gtk_tree_model_get_path (modelHandle, iter);
 					GTK.gtk_tree_view_get_cell_area (handle, path, columnHandle, rect3);
+					GTK.gtk_tree_path_free (path);
 					contentX[0] += rect3.x;
 				}
 				GC gc = getGC(cr);
