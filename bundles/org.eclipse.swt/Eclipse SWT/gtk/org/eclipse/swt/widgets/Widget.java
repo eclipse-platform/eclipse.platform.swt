@@ -239,7 +239,9 @@ public abstract class Widget {
 	static final int NOTIFY_STATE = 102;
 	static final int SIZE_ALLOCATE_GTK4 = 103;
 	static final int DPI_CHANGED = 104;
-	static final int LAST_SIGNAL = 105;
+	static final int NOTIFY_DEFAULT_HEIGHT = 105;
+	static final int NOTIFY_DEFAULT_WIDTH = 106;
+	static final int LAST_SIGNAL = 107;
 
 	static final String IS_ACTIVE = "org.eclipse.swt.internal.control.isactive"; //$NON-NLS-1$
 	static final String KEY_CHECK_SUBWINDOW = "org.eclipse.swt.internal.control.checksubwindow"; //$NON-NLS-1$
@@ -2246,6 +2248,9 @@ long notifyProc (long object, long arg0, long user_data) {
 	switch ((int)user_data) {
 		case DPI_CHANGED: return dpiChanged(object, arg0);
 		case NOTIFY_STATE: return notifyState(object, arg0);
+		case NOTIFY_DEFAULT_HEIGHT:
+		case NOTIFY_DEFAULT_WIDTH:
+			return gtk_size_allocate(object, 0);
 	}
 	return 0;
 }

@@ -375,6 +375,8 @@ public class OS extends C {
 	public static final byte[] value_changed = ascii("value-changed");
 	public static final byte[] window_state_event = ascii("window-state-event");
 	public static final byte[] notify_state = ascii("notify::state");
+	public static final byte[] notify_default_height = ascii("notify::default-height");
+	public static final byte[] notify_default_width = ascii("notify::default-width");
 	public static final byte[] notify_theme_change = ascii("notify::gtk-application-prefer-dark-theme");
 	public static final byte[] response = ascii("response");
 

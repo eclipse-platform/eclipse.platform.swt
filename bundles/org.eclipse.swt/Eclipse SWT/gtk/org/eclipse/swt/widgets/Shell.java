@@ -933,7 +933,8 @@ void hookEvents () {
 		GTK.gtk_widget_realize(shellHandle);
 		long gdkSurface = gtk_widget_get_surface (shellHandle);
 		OS.g_signal_connect (gdkSurface, OS.notify_state, display.notifyProc, shellHandle);
-		OS.g_signal_connect(handle, OS.resize, display.resizeProc, 0);
+		OS.g_signal_connect(shellHandle, OS.notify_default_height, display.notifyProc, Widget.NOTIFY_DEFAULT_HEIGHT);
+		OS.g_signal_connect(shellHandle, OS.notify_default_width, display.notifyProc, Widget.NOTIFY_DEFAULT_WIDTH);
 	} else {
 		OS.g_signal_connect_closure_by_id (shellHandle, display.signalIds [WINDOW_STATE_EVENT], 0, display.getClosure (WINDOW_STATE_EVENT), false);
 		OS.g_signal_connect_closure_by_id (shellHandle, display.signalIds [CONFIGURE_EVENT], 0, display.getClosure (CONFIGURE_EVENT), false);
@@ -1129,11 +1130,12 @@ void forceResize (int width, int height) {
 	if (!OS.isX11()) {
 		if (GTK.GTK4) {
 			double[] window_offset_x = new double[1], window_offset_y = new double[1];
-
 			boolean validTranslation = GTK4.gtk_widget_translate_coordinates(vboxHandle, shellHandle, 0, 0, window_offset_x, window_offset_y);
+
 			if (validTranslation && !isMappedToPopup()) {
 				allocation.x += window_offset_x[0];
 				allocation.y += window_offset_y[0];
+				allocation.height -= window_offset_y[0];
 			}
 		} else {
 			int [] dest_x = new int[1];
