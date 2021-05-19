@@ -37,7 +37,7 @@ public class SpyView extends ViewPart {
 	static final int TIMEOUT = 100;
 
 	private static final ImageDescriptor SPY_IMAGE_DESCRIPTOR = ImageDescriptor.createFromURL(
-			FileLocator.find(Platform.getBundle(SpiesPlugin.PLUGIN_ID), new Path("icons/spy.png"), null));
+			FileLocator.find(Platform.getBundle(SpiesConstants.PLUGIN_ID), new Path("icons/spy.png"), null));
 	/**
 	 * This is a callback that will allow us
 	 * to create the viewer and initialize it.

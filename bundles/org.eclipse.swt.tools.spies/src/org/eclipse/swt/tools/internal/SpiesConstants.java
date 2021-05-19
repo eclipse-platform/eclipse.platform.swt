@@ -12,9 +12,11 @@
 package org.eclipse.swt.tools.internal;
 
 /**
- * Class containing constants pertaining to the Spies plug-in.
+ * Interface containing constants for the Spies plug-in.
+ * 
  */
-public final class SpiesPlugin {
+
+public interface SpiesConstants {
 	/**
 	 * Identifies the spies plug-in.
 	 */
