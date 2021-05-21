@@ -125,7 +125,9 @@ public static long createPixbuf(long surface) {
 		double sy[] = new double[1];
 		Cairo.cairo_surface_get_device_scale(surface, sx, sy);
 		if (sx[0] > 1 && sy[0] > 1){
+			long oldPixbuf = pixbuf;
 			pixbuf = GDK.gdk_pixbuf_scale_simple(pixbuf, width/(int)sx[0], height/(int)sy[0], GDK.GDK_INTERP_BILINEAR);
+			OS.g_object_unref(oldPixbuf);
 		}
 	}
 	return pixbuf;
