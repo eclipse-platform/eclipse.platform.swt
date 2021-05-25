@@ -5747,42 +5747,6 @@ JNIEXPORT void JNICALL GTK_NATIVE(gtk_1label_1set_1justify)
 }
 #endif
 
-#ifndef NO_gtk_1label_1set_1line_1wrap
-JNIEXPORT void JNICALL GTK_NATIVE(gtk_1label_1set_1line_1wrap)
-	(JNIEnv *env, jclass that, jlong arg0, jboolean arg1)
-{
-	GTK_NATIVE_ENTER(env, that, gtk_1label_1set_1line_1wrap_FUNC);
-/*
-	gtk_label_set_line_wrap((GtkLabel *)arg0, (gboolean)arg1);
-*/
-	{
-		GTK_LOAD_FUNCTION(fp, gtk_label_set_line_wrap)
-		if (fp) {
-			((void (CALLING_CONVENTION*)(GtkLabel *, gboolean))fp)((GtkLabel *)arg0, (gboolean)arg1);
-		}
-	}
-	GTK_NATIVE_EXIT(env, that, gtk_1label_1set_1line_1wrap_FUNC);
-}
-#endif
-
-#ifndef NO_gtk_1label_1set_1line_1wrap_1mode
-JNIEXPORT void JNICALL GTK_NATIVE(gtk_1label_1set_1line_1wrap_1mode)
-	(JNIEnv *env, jclass that, jlong arg0, jint arg1)
-{
-	GTK_NATIVE_ENTER(env, that, gtk_1label_1set_1line_1wrap_1mode_FUNC);
-/*
-	gtk_label_set_line_wrap_mode((GtkLabel *)arg0, (PangoWrapMode)arg1);
-*/
-	{
-		GTK_LOAD_FUNCTION(fp, gtk_label_set_line_wrap_mode)
-		if (fp) {
-			((void (CALLING_CONVENTION*)(GtkLabel *, PangoWrapMode))fp)((GtkLabel *)arg0, (PangoWrapMode)arg1);
-		}
-	}
-	GTK_NATIVE_EXIT(env, that, gtk_1label_1set_1line_1wrap_1mode_FUNC);
-}
-#endif
-
 #ifndef NO_gtk_1label_1set_1text__JJ
 JNIEXPORT void JNICALL GTK_NATIVE(gtk_1label_1set_1text__JJ)
 	(JNIEnv *env, jclass that, jlong arg0, jlong arg1)
@@ -5818,42 +5782,6 @@ JNIEXPORT void JNICALL GTK_NATIVE(gtk_1label_1set_1text_1with_1mnemonic)
 fail:
 	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
 	GTK_NATIVE_EXIT(env, that, gtk_1label_1set_1text_1with_1mnemonic_FUNC);
-}
-#endif
-
-#ifndef NO_gtk_1label_1set_1wrap
-JNIEXPORT void JNICALL GTK_NATIVE(gtk_1label_1set_1wrap)
-	(JNIEnv *env, jclass that, jlong arg0, jboolean arg1)
-{
-	GTK_NATIVE_ENTER(env, that, gtk_1label_1set_1wrap_FUNC);
-/*
-	gtk_label_set_wrap((GtkLabel *)arg0, (gboolean)arg1);
-*/
-	{
-		GTK_LOAD_FUNCTION(fp, gtk_label_set_wrap)
-		if (fp) {
-			((void (CALLING_CONVENTION*)(GtkLabel *, gboolean))fp)((GtkLabel *)arg0, (gboolean)arg1);
-		}
-	}
-	GTK_NATIVE_EXIT(env, that, gtk_1label_1set_1wrap_FUNC);
-}
-#endif
-
-#ifndef NO_gtk_1label_1set_1wrap_1mode
-JNIEXPORT void JNICALL GTK_NATIVE(gtk_1label_1set_1wrap_1mode)
-	(JNIEnv *env, jclass that, jlong arg0, jint arg1)
-{
-	GTK_NATIVE_ENTER(env, that, gtk_1label_1set_1wrap_1mode_FUNC);
-/*
-	gtk_label_set_wrap_mode((GtkLabel *)arg0, (PangoWrapMode)arg1);
-*/
-	{
-		GTK_LOAD_FUNCTION(fp, gtk_label_set_wrap_mode)
-		if (fp) {
-			((void (CALLING_CONVENTION*)(GtkLabel *, PangoWrapMode))fp)((GtkLabel *)arg0, (PangoWrapMode)arg1);
-		}
-	}
-	GTK_NATIVE_EXIT(env, that, gtk_1label_1set_1wrap_1mode_FUNC);
 }
 #endif
 
@@ -5999,60 +5927,6 @@ JNIEXPORT jlong JNICALL GTK_NATIVE(gtk_1menu_1button_1new)
 	rc = (jlong)gtk_menu_button_new();
 	GTK_NATIVE_EXIT(env, that, gtk_1menu_1button_1new_FUNC);
 	return rc;
-}
-#endif
-
-#ifndef NO_gtk_1menu_1button_1set_1use_1underline
-JNIEXPORT void JNICALL GTK_NATIVE(gtk_1menu_1button_1set_1use_1underline)
-	(JNIEnv *env, jclass that, jlong arg0, jboolean arg1)
-{
-	GTK_NATIVE_ENTER(env, that, gtk_1menu_1button_1set_1use_1underline_FUNC);
-/*
-	gtk_menu_button_set_use_underline((GtkMenuButton *)arg0, arg1);
-*/
-	{
-		GTK_LOAD_FUNCTION(fp, gtk_menu_button_set_use_underline)
-		if (fp) {
-			((void (CALLING_CONVENTION*)(GtkMenuButton *, jboolean))fp)((GtkMenuButton *)arg0, arg1);
-		}
-	}
-	GTK_NATIVE_EXIT(env, that, gtk_1menu_1button_1set_1use_1underline_FUNC);
-}
-#endif
-
-#ifndef NO_gtk_1menu_1popup
-JNIEXPORT void JNICALL GTK_NATIVE(gtk_1menu_1popup)
-	(JNIEnv *env, jclass that, jlong arg0, jlong arg1, jlong arg2, jlong arg3, jlong arg4, jint arg5, jint arg6)
-{
-	GTK_NATIVE_ENTER(env, that, gtk_1menu_1popup_FUNC);
-/*
-	gtk_menu_popup(arg0, arg1, arg2, arg3, arg4, arg5, arg6);
-*/
-	{
-		GTK_LOAD_FUNCTION(fp, gtk_menu_popup)
-		if (fp) {
-			((void (CALLING_CONVENTION*)(jlong, jlong, jlong, jlong, jlong, jint, jint))fp)(arg0, arg1, arg2, arg3, arg4, arg5, arg6);
-		}
-	}
-	GTK_NATIVE_EXIT(env, that, gtk_1menu_1popup_FUNC);
-}
-#endif
-
-#ifndef NO_gtk_1menu_1popup_1at_1pointer
-JNIEXPORT void JNICALL GTK_NATIVE(gtk_1menu_1popup_1at_1pointer)
-	(JNIEnv *env, jclass that, jlong arg0, jlong arg1)
-{
-	GTK_NATIVE_ENTER(env, that, gtk_1menu_1popup_1at_1pointer_FUNC);
-/*
-	gtk_menu_popup_at_pointer(arg0, arg1);
-*/
-	{
-		GTK_LOAD_FUNCTION(fp, gtk_menu_popup_at_pointer)
-		if (fp) {
-			((void (CALLING_CONVENTION*)(jlong, jlong))fp)(arg0, arg1);
-		}
-	}
-	GTK_NATIVE_EXIT(env, that, gtk_1menu_1popup_1at_1pointer_FUNC);
 }
 #endif
 
@@ -7638,34 +7512,6 @@ JNIEXPORT void JNICALL GTK_NATIVE(gtk_1style_1context_1add_1provider)
 	GTK_NATIVE_ENTER(env, that, gtk_1style_1context_1add_1provider_FUNC);
 	gtk_style_context_add_provider((GtkStyleContext *)arg0, (GtkStyleProvider *)arg1, (guint)arg2);
 	GTK_NATIVE_EXIT(env, that, gtk_1style_1context_1add_1provider_FUNC);
-}
-#endif
-
-#ifndef NO_gtk_1style_1context_1add_1provider_1for_1display
-JNIEXPORT void JNICALL GTK_NATIVE(gtk_1style_1context_1add_1provider_1for_1display)
-	(JNIEnv *env, jclass that, jlong arg0, jlong arg1, jint arg2)
-{
-	GTK_NATIVE_ENTER(env, that, gtk_1style_1context_1add_1provider_1for_1display_FUNC);
-/*
-	gtk_style_context_add_provider_for_display((GdkDisplay *)arg0, (GtkStyleProvider *)arg1, (guint)arg2);
-*/
-	{
-		GTK_LOAD_FUNCTION(fp, gtk_style_context_add_provider_for_display)
-		if (fp) {
-			((void (CALLING_CONVENTION*)(GdkDisplay *, GtkStyleProvider *, guint))fp)((GdkDisplay *)arg0, (GtkStyleProvider *)arg1, (guint)arg2);
-		}
-	}
-	GTK_NATIVE_EXIT(env, that, gtk_1style_1context_1add_1provider_1for_1display_FUNC);
-}
-#endif
-
-#ifndef NO_gtk_1style_1context_1add_1provider_1for_1screen
-JNIEXPORT void JNICALL GTK_NATIVE(gtk_1style_1context_1add_1provider_1for_1screen)
-	(JNIEnv *env, jclass that, jlong arg0, jlong arg1, jint arg2)
-{
-	GTK_NATIVE_ENTER(env, that, gtk_1style_1context_1add_1provider_1for_1screen_FUNC);
-	gtk_style_context_add_provider_for_screen((GdkScreen *)arg0, (GtkStyleProvider *)arg1, (guint)arg2);
-	GTK_NATIVE_EXIT(env, that, gtk_1style_1context_1add_1provider_1for_1screen_FUNC);
 }
 #endif
 

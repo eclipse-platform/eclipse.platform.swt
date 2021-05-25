@@ -228,7 +228,7 @@ void createHandle (int index) {
 				GTK4.gtk_box_append(handle, menuButton);
 
 				arrowHandle = GTK4.gtk_widget_get_first_child(menuButton);
-				GTK.gtk_menu_button_set_use_underline(menuButton, true);
+				GTK4.gtk_menu_button_set_use_underline(menuButton, true);
 			} else {
 				handle = GTK3.gtk_menu_tool_button_new(0, null);
 				if (handle == 0) error(SWT.ERROR_NO_HANDLES);

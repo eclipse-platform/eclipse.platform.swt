@@ -639,6 +639,36 @@ JNIEXPORT jlong JNICALL GTK4_NATIVE(gtk_1keyval_1trigger_1new)
 }
 #endif
 
+#ifndef NO_gtk_1label_1set_1wrap
+JNIEXPORT void JNICALL GTK4_NATIVE(gtk_1label_1set_1wrap)
+	(JNIEnv *env, jclass that, jlong arg0, jboolean arg1)
+{
+	GTK4_NATIVE_ENTER(env, that, gtk_1label_1set_1wrap_FUNC);
+	gtk_label_set_wrap((GtkLabel *)arg0, (gboolean)arg1);
+	GTK4_NATIVE_EXIT(env, that, gtk_1label_1set_1wrap_FUNC);
+}
+#endif
+
+#ifndef NO_gtk_1label_1set_1wrap_1mode
+JNIEXPORT void JNICALL GTK4_NATIVE(gtk_1label_1set_1wrap_1mode)
+	(JNIEnv *env, jclass that, jlong arg0, jint arg1)
+{
+	GTK4_NATIVE_ENTER(env, that, gtk_1label_1set_1wrap_1mode_FUNC);
+	gtk_label_set_wrap_mode((GtkLabel *)arg0, (PangoWrapMode)arg1);
+	GTK4_NATIVE_EXIT(env, that, gtk_1label_1set_1wrap_1mode_FUNC);
+}
+#endif
+
+#ifndef NO_gtk_1menu_1button_1set_1use_1underline
+JNIEXPORT void JNICALL GTK4_NATIVE(gtk_1menu_1button_1set_1use_1underline)
+	(JNIEnv *env, jclass that, jlong arg0, jboolean arg1)
+{
+	GTK4_NATIVE_ENTER(env, that, gtk_1menu_1button_1set_1use_1underline_FUNC);
+	gtk_menu_button_set_use_underline((GtkMenuButton *)arg0, arg1);
+	GTK4_NATIVE_EXIT(env, that, gtk_1menu_1button_1set_1use_1underline_FUNC);
+}
+#endif
+
 #ifndef NO_gtk_1named_1action_1new
 JNIEXPORT jlong JNICALL GTK4_NATIVE(gtk_1named_1action_1new)
 	(JNIEnv *env, jclass that, jbyteArray arg0)
@@ -882,6 +912,16 @@ JNIEXPORT jlong JNICALL GTK4_NATIVE(gtk_1snapshot_1append_1cairo)
 	rc = (jlong)gtk_snapshot_append_cairo((GtkSnapshot *)arg0, (const graphene_rect_t *)arg1);
 	GTK4_NATIVE_EXIT(env, that, gtk_1snapshot_1append_1cairo_FUNC);
 	return rc;
+}
+#endif
+
+#ifndef NO_gtk_1style_1context_1add_1provider_1for_1display
+JNIEXPORT void JNICALL GTK4_NATIVE(gtk_1style_1context_1add_1provider_1for_1display)
+	(JNIEnv *env, jclass that, jlong arg0, jlong arg1, jint arg2)
+{
+	GTK4_NATIVE_ENTER(env, that, gtk_1style_1context_1add_1provider_1for_1display_FUNC);
+	gtk_style_context_add_provider_for_display((GdkDisplay *)arg0, (GtkStyleProvider *)arg1, (guint)arg2);
+	GTK4_NATIVE_EXIT(env, that, gtk_1style_1context_1add_1provider_1for_1display_FUNC);
 }
 #endif
 

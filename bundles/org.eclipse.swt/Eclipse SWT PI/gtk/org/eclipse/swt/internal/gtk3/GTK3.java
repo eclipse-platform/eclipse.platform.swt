@@ -605,8 +605,32 @@ public class GTK3 {
 	 */
 	public static final native void gtk_selection_data_set(long selection_data, long type, int format, long data, int length);
 
-	/* GtkMenu/GtkMenuItem */
+	/* GtkMenu */
+	public static final native long gtk_menu_new();
+	/** @param menu cast=(GtkMenu *) */
+	public static final native void gtk_menu_popdown(long menu);
+	/**
+	 * @method flags=ignore_deprecations
+	 * @param menu cast=(GtkMenu *)
+	 * @param parent_menu_shell cast=(GtkWidget *)
+	 * @param parent_menu_item cast=(GtkWidget *)
+	 * @param func cast=(GtkMenuPositionFunc)
+	 * @param data cast=(gpointer)
+	 * @param button cast=(guint)
+	 * @param activate_time cast=(guint32)
+	 */
+	/* [GTK2/GTK3; 3.22 deprecated, replaced] */
+	public static final native void gtk_menu_popup(long menu, long parent_menu_shell, long parent_menu_item, long func, long data, int button, int activate_time);
+	/**
+	 * @param menu cast=(GtkMenu *)
+	 * @param trigger_event cast=(const GdkEvent*)
+	 */
+	public static final native void gtk_menu_popup_at_pointer(long menu, long trigger_event);
+
+	/* GtkMenuBar */
 	public static final native long gtk_menu_bar_new();
+
+	/* GtkMenuItem */
 	/** @param menu_item cast=(GtkMenuItem *) */
 	public static final native long gtk_menu_item_get_submenu(long menu_item);
 	public static final native long gtk_menu_item_new();
@@ -615,22 +639,6 @@ public class GTK3 {
 	 * @param submenu cast=(GtkWidget *)
 	 */
 	public static final native void gtk_menu_item_set_submenu(long menu_item, long submenu);
-	public static final native long gtk_menu_new();
-	/** @param menu cast=(GtkMenu *) */
-	public static final native void gtk_menu_popdown(long menu);
-	/** @param menu_shell cast=(GtkMenuShell *) */
-	public static final native void gtk_menu_shell_deactivate(long menu_shell);
-	/**
-	 * @param menu_shell cast=(GtkMenuShell *)
-	 * @param child cast=(GtkWidget *)
-	 * @param position cast=(gint)
-	 */
-	public static final native void gtk_menu_shell_insert(long menu_shell, long child, int position);
-	/**
-	 * @param menu_shell cast=(GtkMenuShell *)
-	 * @param take_focus cast=(gboolean)
-	 */
-	public static final native void gtk_menu_shell_set_take_focus(long menu_shell, boolean take_focus);
 	/** @param check_menu_item cast=(GtkCheckMenuItem *) */
 	public static final native boolean gtk_check_menu_item_get_active(long check_menu_item);
 	public static final native long gtk_check_menu_item_new();
@@ -644,6 +652,21 @@ public class GTK3 {
 	/** @param group cast=(GSList *) */
 	public static final native long gtk_radio_menu_item_new(long group);
 	public static final native long gtk_separator_menu_item_new();
+
+	/* GtkMenuShell */
+	/** @param menu_shell cast=(GtkMenuShell *) */
+	public static final native void gtk_menu_shell_deactivate(long menu_shell);
+	/**
+	 * @param menu_shell cast=(GtkMenuShell *)
+	 * @param child cast=(GtkWidget *)
+	 * @param position cast=(gint)
+	 */
+	public static final native void gtk_menu_shell_insert(long menu_shell, long child, int position);
+	/**
+	 * @param menu_shell cast=(GtkMenuShell *)
+	 * @param take_focus cast=(gboolean)
+	 */
+	public static final native void gtk_menu_shell_set_take_focus(long menu_shell, boolean take_focus);
 
 	/* GtkToolbar */
 	public static final native long gtk_toolbar_new();
@@ -871,4 +894,24 @@ public class GTK3 {
 	 * @param context cast=(GtkStyleContext *)
 	 */
 	public static final native void gtk_style_context_invalidate(long context);
+
+	/* GtkLabel */
+	/**
+	 * @param label cast=(GtkLabel *)
+	 * @param wrap cast=(gboolean)
+	 */
+	public static final native void gtk_label_set_line_wrap(long label, boolean wrap);
+	/**
+	 * @param label cast=(GtkLabel *)
+	 * @param wrap_mode cast=(PangoWrapMode)
+	 */
+	public static final native void gtk_label_set_line_wrap_mode(long label, int wrap_mode);
+
+	/* GtkStyleContext */
+	/**
+	 * @param screen cast=(GdkScreen *)
+	 * @param provider cast=(GtkStyleProvider *)
+	 * @param priority cast=(guint)
+	 */
+	public static final native void gtk_style_context_add_provider_for_screen(long screen, long provider, int priority);
 }

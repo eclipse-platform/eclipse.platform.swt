@@ -242,7 +242,7 @@ void GTK3setNativeDialogMessage(long handle, String message) {
 
 		GTK3.gtk_container_add(box, label);
 		GTK.gtk_widget_show(label);
-		GTK.gtk_label_set_line_wrap(label, true);
+		GTK3.gtk_label_set_line_wrap(label, true);
 
 		GTK.gtk_box_set_homogeneous(box, false);
 		GTK.gtk_label_set_justify(label, GTK.GTK_JUSTIFY_CENTER);

@@ -1006,6 +1006,26 @@ fail:
 }
 #endif
 
+#ifndef NO_gtk_1label_1set_1line_1wrap
+JNIEXPORT void JNICALL GTK3_NATIVE(gtk_1label_1set_1line_1wrap)
+	(JNIEnv *env, jclass that, jlong arg0, jboolean arg1)
+{
+	GTK3_NATIVE_ENTER(env, that, gtk_1label_1set_1line_1wrap_FUNC);
+	gtk_label_set_line_wrap((GtkLabel *)arg0, (gboolean)arg1);
+	GTK3_NATIVE_EXIT(env, that, gtk_1label_1set_1line_1wrap_FUNC);
+}
+#endif
+
+#ifndef NO_gtk_1label_1set_1line_1wrap_1mode
+JNIEXPORT void JNICALL GTK3_NATIVE(gtk_1label_1set_1line_1wrap_1mode)
+	(JNIEnv *env, jclass that, jlong arg0, jint arg1)
+{
+	GTK3_NATIVE_ENTER(env, that, gtk_1label_1set_1line_1wrap_1mode_FUNC);
+	gtk_label_set_line_wrap_mode((GtkLabel *)arg0, (PangoWrapMode)arg1);
+	GTK3_NATIVE_EXIT(env, that, gtk_1label_1set_1line_1wrap_1mode_FUNC);
+}
+#endif
+
 #ifndef NO_gtk_1main_1do_1event
 JNIEXPORT void JNICALL GTK3_NATIVE(gtk_1main_1do_1event)
 	(JNIEnv *env, jclass that, jlong arg0)
@@ -1093,6 +1113,28 @@ JNIEXPORT void JNICALL GTK3_NATIVE(gtk_1menu_1popdown)
 	GTK3_NATIVE_ENTER(env, that, gtk_1menu_1popdown_FUNC);
 	gtk_menu_popdown((GtkMenu *)arg0);
 	GTK3_NATIVE_EXIT(env, that, gtk_1menu_1popdown_FUNC);
+}
+#endif
+
+#ifndef NO_gtk_1menu_1popup
+G_GNUC_BEGIN_IGNORE_DEPRECATIONS
+JNIEXPORT void JNICALL GTK3_NATIVE(gtk_1menu_1popup)
+	(JNIEnv *env, jclass that, jlong arg0, jlong arg1, jlong arg2, jlong arg3, jlong arg4, jint arg5, jint arg6)
+{
+	GTK3_NATIVE_ENTER(env, that, gtk_1menu_1popup_FUNC);
+	gtk_menu_popup((GtkMenu *)arg0, (GtkWidget *)arg1, (GtkWidget *)arg2, (GtkMenuPositionFunc)arg3, (gpointer)arg4, (guint)arg5, (guint32)arg6);
+	GTK3_NATIVE_EXIT(env, that, gtk_1menu_1popup_FUNC);
+}
+G_GNUC_END_IGNORE_DEPRECATIONS
+#endif
+
+#ifndef NO_gtk_1menu_1popup_1at_1pointer
+JNIEXPORT void JNICALL GTK3_NATIVE(gtk_1menu_1popup_1at_1pointer)
+	(JNIEnv *env, jclass that, jlong arg0, jlong arg1)
+{
+	GTK3_NATIVE_ENTER(env, that, gtk_1menu_1popup_1at_1pointer_FUNC);
+	gtk_menu_popup_at_pointer((GtkMenu *)arg0, (const GdkEvent*)arg1);
+	GTK3_NATIVE_EXIT(env, that, gtk_1menu_1popup_1at_1pointer_FUNC);
 }
 #endif
 
@@ -1436,6 +1478,16 @@ JNIEXPORT void JNICALL GTK3_NATIVE(gtk_1status_1icon_1set_1visible)
 	GTK3_NATIVE_EXIT(env, that, gtk_1status_1icon_1set_1visible_FUNC);
 }
 G_GNUC_END_IGNORE_DEPRECATIONS
+#endif
+
+#ifndef NO_gtk_1style_1context_1add_1provider_1for_1screen
+JNIEXPORT void JNICALL GTK3_NATIVE(gtk_1style_1context_1add_1provider_1for_1screen)
+	(JNIEnv *env, jclass that, jlong arg0, jlong arg1, jint arg2)
+{
+	GTK3_NATIVE_ENTER(env, that, gtk_1style_1context_1add_1provider_1for_1screen_FUNC);
+	gtk_style_context_add_provider_for_screen((GdkScreen *)arg0, (GtkStyleProvider *)arg1, (guint)arg2);
+	GTK3_NATIVE_EXIT(env, that, gtk_1style_1context_1add_1provider_1for_1screen_FUNC);
+}
 #endif
 
 #ifndef NO_gtk_1style_1context_1invalidate

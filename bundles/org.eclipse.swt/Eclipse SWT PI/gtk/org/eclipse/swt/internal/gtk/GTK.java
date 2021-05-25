@@ -421,8 +421,13 @@ public class GTK extends OS {
 	/* GtkCheckButton */
 	public static final native long gtk_check_button_new();
 
-
+	/* General Gtk Functions */
 	public static final native long gtk_check_version(int required_major, int required_minor, int required_micro);
+	public static final native long gtk_get_default_language();
+	public static final native int gtk_get_major_version();
+	public static final native int gtk_get_minor_version();
+	public static final native int gtk_get_micro_version();
+
 	/* GtkColorChooser Interface */
 	/**
 	 * @param chooser cast=(GtkColorChooser *)
@@ -701,12 +706,13 @@ public class GTK extends OS {
 	 */
 	public static final native long gtk_file_chooser_native_new(byte[] title, long parent, int action, byte[] accept_label, byte[] cancel_label);
 
+	/* GtkFileFilter */
+	public static final native long gtk_file_filter_new();
 	/**
 	 * @param filter cast=(GtkFileFilter *)
 	 * @param pattern cast=(const gchar *)
 	 */
 	public static final native void gtk_file_filter_add_pattern(long filter, byte[] pattern);
-	public static final native long gtk_file_filter_new();
 	/** @param filter cast=(GtkFileFilter *) */
 	public static final native long gtk_file_filter_get_name(long filter);
 	/**
@@ -714,6 +720,7 @@ public class GTK extends OS {
 	 * @param name cast=(const gchar *)
 	 */
 	public static final native void gtk_file_filter_set_name(long filter, byte[] name);
+
 	/**
 	 * @method flags=dynamic
 	 */
@@ -762,15 +769,15 @@ public class GTK extends OS {
 	 */
 	public static final native double gtk_gesture_zoom_get_scale_delta(long gesture);
 
-
+	/* GtkFontChooserDialog */
 	/**
 	 * @param title cast=(const gchar *)
 	 * @param parent cast=(GtkWindow *)
 	 */
 	public static final native long gtk_font_chooser_dialog_new(byte[] title, long parent);
-	/**
-	 * @param fontchooser cast=(GtkFontChooser *)
-	 */
+
+	/* GtkFontChooser Interface */
+	/** @param fontchooser cast=(GtkFontChooser *) */
 	public static final native long gtk_font_chooser_get_font(long fontchooser);
 	/**
 	 * @param fsd cast=(GtkFontChooser *)
@@ -788,9 +795,6 @@ public class GTK extends OS {
 	 * @param label_widget cast=(GtkWidget *)
 	 */
 	public static final native void gtk_frame_set_label_widget(long frame, long label_widget);
-
-	/* GTK Initialization */
-	public static final native long gtk_get_default_language();
 
 	/* GtkScale */
 	/**
@@ -816,16 +820,18 @@ public class GTK extends OS {
 	 */
 	public static final native long gtk_scrollbar_new(int orientation, long adjustment);
 
-
+	/* GtkSearchEntry */
 	public static final native long gtk_search_entry_new();
-	/**
-	 * @param orientation cast=(GtkOrientation)
-	 */
+
+	/* GtkSeparator */
+	/** @param orientation cast=(GtkOrientation) */
 	public static final native long gtk_separator_new(int orientation);
+
 	// Get function pointer to gtk_status_icon_position_menu
 	// See os_custom.h
 	public static final native long gtk_status_icon_position_menu_func();
 
+	/* GtkIMContext */
 	/** @param context cast=(GtkIMContext *) */
 	public static final native void gtk_im_context_focus_in(long context);
 	/** @param context cast=(GtkIMContext *) */
@@ -850,6 +856,8 @@ public class GTK extends OS {
 	 * @param area cast=(GdkRectangle *),flags=no_out
 	 */
 	public static final native void gtk_im_context_set_cursor_location(long context, GdkRectangle area);
+
+	/* GtkIMMulticontext */
 	public static final native long gtk_im_multicontext_new();
 
 	/* GtkImage */
@@ -908,35 +916,7 @@ public class GTK extends OS {
 	*/
 	public static final native void gtk_label_set_yalign(long label, float yalign);
 
-	/* GtkLabel [GTK3 only] */
-	/**
-	 * @method flags=dynamic
-	 * @param label cast=(GtkLabel *)
-	 * @param wrap cast=(gboolean)
-	 */
-	public static final native void gtk_label_set_line_wrap(long label, boolean wrap);
-	/**
-	 * @method flags=dynamic
-	 * @param label cast=(GtkLabel *)
-	 * @param wrap_mode cast=(PangoWrapMode)
-	 */
-	public static final native void gtk_label_set_line_wrap_mode(long label, int wrap_mode);
-
-	/* GtkLabel [GTK4 only] */
-	/**
-	 * @method flags=dynamic
-	 * @param label cast=(GtkLabel *)
-	 * @param wrap cast=(gboolean)
-	 */
-	public static final native void gtk_label_set_wrap(long label, boolean wrap);
-	/**
-	 * @method flags=dynamic
-	 * @param label cast=(GtkLabel *)
-	 * @param wrap_mode cast=(PangoWrapMode)
-	 */
-	public static final native void gtk_label_set_wrap_mode(long label, int wrap_mode);
-
-
+	/* GtkListStore */
 	/**
 	 * @param list_store cast=(GtkListStore *)
 	 * @param iter cast=(GtkTreeIter *)
@@ -955,32 +935,6 @@ public class GTK extends OS {
 	 * @param types cast=(GType *)
 	 */
 	public static final native long gtk_list_store_newv(int numColumns, long [] types);
-	public static final native long gtk_css_provider_new();
-	/**
-	 * @param provider cast=(GtkCssProvider *)
-	 */
-	public static final native long gtk_css_provider_to_string(long provider);
-	/**
-	 * @param screen cast=(GdkScreen *)
-	 * @param provider cast=(GtkStyleProvider *)
-	 * @param priority cast=(guint)
-	 */
-	/* [GTK3 only, if-def'd in os.h] */
-	public static final native void gtk_style_context_add_provider_for_screen(long screen, long provider, int priority);
-	/**
-	 * @method flags=dynamic
-	 * @param display cast=(GdkDisplay *)
-	 * @param provider cast=(GtkStyleProvider *)
-	 * @param priority cast=(guint)
-	 */
-	/* [GTK4 only] */
-	public static final native void gtk_style_context_add_provider_for_display(long display, long provider, int priority);
-	/**
-	 * @param context cast=(GtkStyleContext *)
-	 * @param provider cast=(GtkStyleProvider *)
-	 * @param priority cast=(guint)
-	 */
-	public static final native void gtk_style_context_add_provider(long context, long provider, int priority);
 	/**
 	 * @param list_store cast=(GtkListStore *)
 	 * @param iter cast=(GtkTreeIter *)
@@ -1012,15 +966,21 @@ public class GTK extends OS {
 	 * @param iter cast=(GtkTreeIter *)
 	 */
 	public static final native void gtk_list_store_set(long store, long iter, int column, boolean value, int terminator);
-	public static final native int gtk_get_major_version();
-	public static final native int gtk_get_minor_version();
-	public static final native int gtk_get_micro_version();
 
-	/** @method flags=dynamic */
-	/* [GTK2/GTK3; 3.22 deprecated, replaced] */
-	public static final native void gtk_menu_popup(long menu, long parent_menu_shell, long parent_menu_item, long func, long data, int button, int activate_time);
-	/** @method flags=dynamic */
-	public static final native void gtk_menu_popup_at_pointer(long menu, long trigger_event);
+	/* GtkCssProvider */
+	public static final native long gtk_css_provider_new();
+	/** @param provider cast=(GtkCssProvider *) */
+	public static final native long gtk_css_provider_to_string(long provider);
+
+	/* GtkStyleContext */
+	/**
+	 * @param context cast=(GtkStyleContext *)
+	 * @param provider cast=(GtkStyleProvider *)
+	 * @param priority cast=(guint)
+	 */
+	public static final native void gtk_style_context_add_provider(long context, long provider, int priority);
+
+	/* GtkMenuItem [GTK3 only] */
 	/** @method flags=dynamic */
 	public static final native void gtk_menu_popup_at_rect(long menu, long rect_window, GdkRectangle rect, int rect_anchor, int menu_anchor, long trigger_event);
 
@@ -1043,14 +1003,6 @@ public class GTK extends OS {
 
 	/* GtkMenuButton */
 	public static final native long gtk_menu_button_new();
-
-	/* GtkMenuButton [GTK4 only] */
-	/**
-	 * @method flags=dynamic
-	 * @param menu_button cast=(GtkMenuButton *)
-	 */
-	public static final native void gtk_menu_button_set_use_underline(long menu_button, boolean use_underline);
-
 
 	/* GtkMessageDialog */
 	/**

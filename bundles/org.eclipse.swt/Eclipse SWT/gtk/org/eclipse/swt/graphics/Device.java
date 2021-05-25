@@ -814,14 +814,14 @@ private void overrideThemeValues () {
 			System.err.println("SWT Warning: Override of theme values failed. Reason: could not acquire display or provider.");
 			return;
 		}
-		GTK.gtk_style_context_add_provider_for_display (display, provider, GTK.GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+		GTK4.gtk_style_context_add_provider_for_display (display, provider, GTK.GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
 	} else {
 		long screen = GDK.gdk_screen_get_default();
 		if (screen == 0 || provider == 0) {
 			System.err.println("SWT Warning: Override of theme values failed. Reason: could not acquire screen or provider.");
 			return;
 		}
-		GTK.gtk_style_context_add_provider_for_screen (screen, provider, GTK.GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+		GTK3.gtk_style_context_add_provider_for_screen (screen, provider, GTK.GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
 	}
 	if (GTK.GTK4) {
 		GTK4.gtk_css_provider_load_from_data (provider, Converter.wcsToMbcs (combinedCSS.toString(), true), -1);

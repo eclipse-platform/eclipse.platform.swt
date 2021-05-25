@@ -219,7 +219,6 @@
 #define NO_gtk_1status_1icon_1position_1menu_1func
 
 // No GdkScreen on GTK4, including parameter casts
-#define NO_gtk_1style_1context_1add_1provider_1for_1screen
 #define NO_gdk_1screen_1get_1default
 #define NO_gdk_1screen_1get_1monitor_1at_1point
 #define NO_gdk_1screen_1get_1monitor_1at_1window
@@ -393,7 +392,6 @@
 #define NO_graphene_1rect_1init
 
 // Miscellaneous functions not present on GTK3
-#define NO_gtk_1style_1context_1add_1provider_1for_1display
 #define NO_gtk_1style_1context_1get_1margin
 
 // GdkCursor API changes from GTK3 -> GTK4

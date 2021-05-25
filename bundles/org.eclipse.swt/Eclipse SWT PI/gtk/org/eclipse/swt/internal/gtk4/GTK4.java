@@ -437,4 +437,28 @@ public class GTK4 {
 	 * @param length cast=(gssize)
 	 */
 	public static final native void gtk_css_provider_load_from_data(long css_provider, byte[] data, long length);
+
+	/* GtkLabel */
+	/**
+	 * @param label cast=(GtkLabel *)
+	 * @param wrap cast=(gboolean)
+	 */
+	public static final native void gtk_label_set_wrap(long label, boolean wrap);
+	/**
+	 * @param label cast=(GtkLabel *)
+	 * @param wrap_mode cast=(PangoWrapMode)
+	 */
+	public static final native void gtk_label_set_wrap_mode(long label, int wrap_mode);
+
+	/* GtkStyleContext */
+	/**
+	 * @param display cast=(GdkDisplay *)
+	 * @param provider cast=(GtkStyleProvider *)
+	 * @param priority cast=(guint)
+	 */
+	public static final native void gtk_style_context_add_provider_for_display(long display, long provider, int priority);
+
+	/* GtkMenuButton */
+	/** @param menu_button cast=(GtkMenuButton *) */
+	public static final native void gtk_menu_button_set_use_underline(long menu_button, boolean use_underline);
 }
