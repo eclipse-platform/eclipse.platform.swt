@@ -14,7 +14,6 @@ package org.eclipse.swt.browser;
 import java.io.File;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.internal.cocoa.*;
 import org.eclipse.swt.internal.mozilla.*;

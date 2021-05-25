@@ -11,7 +11,6 @@
 package org.eclipse.swt.printing;
 
 import org.eclipse.swt.*;
-import org.eclipse.swt.printing.PrinterData;
 import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.cocoa.*;
