@@ -326,6 +326,7 @@
 
 		<!-- Commit the files -->
 		<antcall target="commit_sources"/>
+		<antcall target="commit_chromium_properties"/>
 	</target>
 
 	<target name="commit_sources" depends="get_version" if="natives_changed">
@@ -338,6 +339,18 @@
 		<exec dir="${repo.src}" executable="git" failonerror="true">
 			<arg line="commit -m 'v${swt_version}'"/>
 		</exec>
+	</target>
+	
+	<target name="commit_chromium_properties" depends="get_version" if="natives_changed">
+			<exec dir="${repo.bin}" executable="git" failonerror="true">
+				<arg line="add 'bundles/org.eclipse.swt.browser.chromium.*/chromium-*/chromium.properties'"/>
+			</exec>
+			<exec dir="${repo.bin}" executable="git" failonerror="true">
+				<arg line="status"/>
+			</exec>
+			<exec dir="${repo.bin}" executable="git" failonerror="true">
+				<arg line="commit -m 'v${swt_version}'"/>
+			</exec>
 	</target>
 
 	<target name="increment_version" depends="get_version" if="natives_changed">
@@ -999,6 +1012,9 @@
 			<arg line="fetch"/>
 		</exec>
 		<exec dir="${repo.src}" executable="git" failonerror="true">
+			<arg line="status"/>
+		</exec>
+		<exec dir="${repo.src}" executable="git" failonerror="true">
 			<arg line="rebase origin/${TAG}"/>
 		</exec>
 		<exec dir="${repo.src}" executable="git" failonerror="true">
@@ -1006,6 +1022,9 @@
 		</exec>
 		<exec dir="${repo.bin}" executable="git" failonerror="true">
 			<arg line="fetch"/>
+		</exec>
+		<exec dir="${repo.bin}" executable="git" failonerror="true">
+			<arg line="status"/>
 		</exec>
 		<exec dir="${repo.bin}" executable="git" failonerror="true">
 			<arg line="rebase origin/${TAG}"/>
