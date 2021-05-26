@@ -306,9 +306,6 @@
 #define NO_gdk_1drag_1context_1list_1targets
 #define NO_gdk_1drag_1status
 
-// Some widgets have removed access to their GdkWindows in GTK4
-#define NO_gtk_1tree_1view_1get_1bin_1window
-
 // Event related functions removed in GTK4
 #define NO_gdk_1event_1copy
 #define NO_gdk_1event_1free

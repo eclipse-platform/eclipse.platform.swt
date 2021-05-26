@@ -963,7 +963,7 @@ long gtk_button_release_event (long widget, long event) {
 	if (GTK.GTK4) {
 		if (eventGdkResource != gtk_widget_get_surface (handle)) return 0;
 	} else {
-		if (eventGdkResource != GTK.gtk_tree_view_get_bin_window (handle)) return 0;
+		if (eventGdkResource != GTK3.gtk_tree_view_get_bin_window (handle)) return 0;
 	}
 	/*
 	 * Feature in GTK. In multi-select tree view there is a problem with using DnD operations while also selecting multiple items.
@@ -1117,7 +1117,7 @@ public boolean isSelected (int index) {
 long paintWindow () {
 	GTK.gtk_widget_realize (handle);
 	// TODO: this function has been removed on GTK4
-	return GTK.gtk_tree_view_get_bin_window (handle);
+	return GTK3.gtk_tree_view_get_bin_window (handle);
 }
 
 @Override

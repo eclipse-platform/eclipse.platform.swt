@@ -709,7 +709,7 @@ protected void init () {
 	long defaultFont = 0;
 	long context = GTK.gtk_widget_get_style_context (shellHandle);
 	if ("ppc64le".equals(System.getProperty("os.arch"))) {
-		defaultFont = GTK.gtk_style_context_get_font (context, GTK.GTK_STATE_FLAG_NORMAL);
+		defaultFont = GTK3.gtk_style_context_get_font (context, GTK.GTK_STATE_FLAG_NORMAL);
 	} else {
 		if (GTK.GTK4) {
 			long[] fontPtr = new long[1];
@@ -727,7 +727,7 @@ protected void init () {
 		} else {
 			GTK.gtk_style_context_save(context);
 			GTK.gtk_style_context_set_state(context, GTK.GTK_STATE_FLAG_NORMAL);
-			GTK.gtk_style_context_get(context, GTK.GTK_STATE_FLAG_NORMAL, GTK.gtk_style_property_font, defaultFontArray, 0);
+			GTK3.gtk_style_context_get(context, GTK.GTK_STATE_FLAG_NORMAL, GTK.gtk_style_property_font, defaultFontArray, 0);
 			GTK.gtk_style_context_restore(context);
 			defaultFont = defaultFontArray [0];
 		}

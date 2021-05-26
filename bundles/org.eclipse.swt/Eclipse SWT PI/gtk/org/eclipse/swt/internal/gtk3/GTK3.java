@@ -894,6 +894,28 @@ public class GTK3 {
 	 * @param context cast=(GtkStyleContext *)
 	 */
 	public static final native void gtk_style_context_invalidate(long context);
+	/**
+	 * @param screen cast=(GdkScreen *)
+	 * @param provider cast=(GtkStyleProvider *)
+	 * @param priority cast=(guint)
+	 */
+	public static final native void gtk_style_context_add_provider_for_screen(long screen, long provider, int priority);
+	/**
+	 * @method flags=ignore_deprecations
+	 * @param context cast=(GtkStyleContext *)
+	 * @param state cast=(GtkStateFlags)
+	 */
+	/* [GTK3; 3.8 deprecated, replaced] */
+	public static final native long gtk_style_context_get_font(long context, int state);
+	/** @param context cast=(GtkStyleContext *) */
+	public static final native long gtk_style_context_get_parent(long context);
+	/**
+	 * @param context cast=(GtkStyleContext *)
+	 * @param state cast=(GtkStateFlags)
+	 * @param property cast=(const gchar *),flags=no_out
+	 * @param terminator cast=(const gchar *),flags=sentinel
+	 */
+	public static final native void gtk_style_context_get(long context, int state, byte [] property, long [] value, long terminator);
 
 	/* GtkLabel */
 	/**
@@ -907,11 +929,21 @@ public class GTK3 {
 	 */
 	public static final native void gtk_label_set_line_wrap_mode(long label, int wrap_mode);
 
-	/* GtkStyleContext */
+	/* GtkTextView */
 	/**
-	 * @param screen cast=(GdkScreen *)
-	 * @param provider cast=(GtkStyleProvider *)
-	 * @param priority cast=(guint)
+	 * @param text_view cast=(GtkTextView *)
+	 * @param win cast=(GtkTextWindowType)
 	 */
-	public static final native void gtk_style_context_add_provider_for_screen(long screen, long provider, int priority);
+	public static final native long gtk_text_view_get_window(long text_view, int win);
+
+	/* GtkToggleButton */
+	/**
+	 * @param toggle_button cast=(GtkToggleButton *)
+	 * @param setting cast=(gboolean)
+	 */
+	public static final native void gtk_toggle_button_set_inconsistent(long toggle_button, boolean setting);
+
+	/* GtkTreeView */
+	/** @param tree_view cast=(GtkTreeView *) */
+	public static final native long gtk_tree_view_get_bin_window(long tree_view);
 }

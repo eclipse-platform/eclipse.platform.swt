@@ -1259,7 +1259,7 @@ Rectangle getClientAreaInPixels() {
 	} else {
 		GTK.gtk_widget_realize(handle);
 		long fixedWindow = gtk_widget_get_window(fixedHandle);
-		long binWindow = GTK.gtk_tree_view_get_bin_window(handle);
+		long binWindow = GTK3.gtk_tree_view_get_bin_window(handle);
 		int[] binX = new int[1], binY = new int[1];
 		GDK.gdk_window_get_origin(binWindow, binX, binY);
 		int[] fixedX = new int[1], fixedY = new int[1];
@@ -1278,7 +1278,7 @@ int getClientWidth () {
 		gdk_surface_get_size(surface, w, h);
 	} else {
 		GTK.gtk_widget_realize (handle);
-		gdk_window_get_size(GTK.gtk_tree_view_get_bin_window(handle), w, h);
+		gdk_window_get_size(GTK3.gtk_tree_view_get_bin_window(handle), w, h);
 	}
 	return w[0];
 }
@@ -1573,7 +1573,7 @@ int getHeaderHeightInPixels () {
 		} else {
 			GTK.gtk_widget_realize (handle);
 			long fixedWindow = gtk_widget_get_window (fixedHandle);
-			long binWindow = GTK.gtk_tree_view_get_bin_window (handle);
+			long binWindow = GTK3.gtk_tree_view_get_bin_window (handle);
 			int [] binY = new int [1];
 			GDK.gdk_window_get_origin (binWindow, null, binY);
 			int [] fixedY = new int [1];
@@ -2087,7 +2087,7 @@ long gtk_button_press_event (long widget, long event) {
 
 
 	long eventGdkResource = gdk_event_get_surface_or_window(event);
-	if (eventGdkResource != GTK.gtk_tree_view_get_bin_window (handle)) return 0;
+	if (eventGdkResource != GTK3.gtk_tree_view_get_bin_window (handle)) return 0;
 
 	long result = super.gtk_button_press_event (widget, event);
 	if (result != 0) return result;
@@ -2296,7 +2296,7 @@ long gtk_button_release_event (long widget, long event) {
 	if (GTK.GTK4) {
 		if (eventGdkResource != gtk_widget_get_surface (handle)) return 0;
 	} else {
-		if (eventGdkResource != GTK.gtk_tree_view_get_bin_window (handle)) return 0;
+		if (eventGdkResource != GTK3.gtk_tree_view_get_bin_window (handle)) return 0;
 	}
 	// Check region since super.gtk_button_release_event() isn't called
 	lastInput.x = (int) eventX[0];
@@ -2351,7 +2351,7 @@ void drawInheritedBackground (long cairo) {
 				gdkResource = gtk_widget_get_surface(handle);
 				gdk_surface_get_size (gdkResource, width, height);
 			} else {
-				gdkResource = GTK.gtk_tree_view_get_bin_window (handle);
+				gdkResource = GTK3.gtk_tree_view_get_bin_window (handle);
 				gdk_window_get_size (gdkResource, width, height);
 			}
 			int bottom = 0;
@@ -2401,7 +2401,7 @@ long gtk_motion_notify_event (long widget, long event) {
 		if (surface != gtk_widget_get_surface(handle)) return 0;
 	} else {
 		long window = GDK.GDK_EVENT_WINDOW (event);
-		if (window != GTK.gtk_tree_view_get_bin_window (handle)) return 0;
+		if (window != GTK3.gtk_tree_view_get_bin_window (handle)) return 0;
 	}
 	return super.gtk_motion_notify_event (widget, event);
 }
@@ -2615,7 +2615,7 @@ boolean mnemonicMatch (char key) {
 long paintWindow () {
 	GTK.gtk_widget_realize (handle);
 	// TODO: this function has been removed on GTK4
-	return GTK.gtk_tree_view_get_bin_window (handle);
+	return GTK3.gtk_tree_view_get_bin_window (handle);
 }
 
 @Override
@@ -4237,7 +4237,7 @@ long windowProc (long handle, long arg0, long user_data) {
 				if ((state & PARENT_BACKGROUND) != 0 || backgroundImage != null) {
 					Control control = findBackgroundControl ();
 					if (control != null) {
-						long window = GTK.gtk_tree_view_get_bin_window (handle);
+						long window = GTK3.gtk_tree_view_get_bin_window (handle);
 						if (window == GTK3.gtk_widget_get_window(handle)) {
 							GdkRectangle rect = new GdkRectangle ();
 							GDK.gdk_cairo_get_clip_rectangle (arg0, rect);

@@ -1490,6 +1490,49 @@ JNIEXPORT void JNICALL GTK3_NATIVE(gtk_1style_1context_1add_1provider_1for_1scre
 }
 #endif
 
+#ifndef NO_gtk_1style_1context_1get
+JNIEXPORT void JNICALL GTK3_NATIVE(gtk_1style_1context_1get)
+	(JNIEnv *env, jclass that, jlong arg0, jint arg1, jbyteArray arg2, jlongArray arg3, jlong arg4)
+{
+	jbyte *lparg2=NULL;
+	jlong *lparg3=NULL;
+	GTK3_NATIVE_ENTER(env, that, gtk_1style_1context_1get_FUNC);
+	if (arg2) if ((lparg2 = (*env)->GetByteArrayElements(env, arg2, NULL)) == NULL) goto fail;
+	if (arg3) if ((lparg3 = (*env)->GetLongArrayElements(env, arg3, NULL)) == NULL) goto fail;
+	gtk_style_context_get((GtkStyleContext *)arg0, (GtkStateFlags)arg1, (const gchar *)lparg2, lparg3, (const gchar *)NULL);
+fail:
+	if (arg3 && lparg3) (*env)->ReleaseLongArrayElements(env, arg3, lparg3, 0);
+	if (arg2 && lparg2) (*env)->ReleaseByteArrayElements(env, arg2, lparg2, JNI_ABORT);
+	GTK3_NATIVE_EXIT(env, that, gtk_1style_1context_1get_FUNC);
+}
+#endif
+
+#ifndef NO_gtk_1style_1context_1get_1font
+G_GNUC_BEGIN_IGNORE_DEPRECATIONS
+JNIEXPORT jlong JNICALL GTK3_NATIVE(gtk_1style_1context_1get_1font)
+	(JNIEnv *env, jclass that, jlong arg0, jint arg1)
+{
+	jlong rc = 0;
+	GTK3_NATIVE_ENTER(env, that, gtk_1style_1context_1get_1font_FUNC);
+	rc = (jlong)gtk_style_context_get_font((GtkStyleContext *)arg0, (GtkStateFlags)arg1);
+	GTK3_NATIVE_EXIT(env, that, gtk_1style_1context_1get_1font_FUNC);
+	return rc;
+}
+G_GNUC_END_IGNORE_DEPRECATIONS
+#endif
+
+#ifndef NO_gtk_1style_1context_1get_1parent
+JNIEXPORT jlong JNICALL GTK3_NATIVE(gtk_1style_1context_1get_1parent)
+	(JNIEnv *env, jclass that, jlong arg0)
+{
+	jlong rc = 0;
+	GTK3_NATIVE_ENTER(env, that, gtk_1style_1context_1get_1parent_FUNC);
+	rc = (jlong)gtk_style_context_get_parent((GtkStyleContext *)arg0);
+	GTK3_NATIVE_EXIT(env, that, gtk_1style_1context_1get_1parent_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_gtk_1style_1context_1invalidate
 G_GNUC_BEGIN_IGNORE_DEPRECATIONS
 JNIEXPORT void JNICALL GTK3_NATIVE(gtk_1style_1context_1invalidate)
@@ -1521,6 +1564,28 @@ JNIEXPORT void JNICALL GTK3_NATIVE(gtk_1target_1list_1unref)
 	GTK3_NATIVE_ENTER(env, that, gtk_1target_1list_1unref_FUNC);
 	gtk_target_list_unref((GtkTargetList *)arg0);
 	GTK3_NATIVE_EXIT(env, that, gtk_1target_1list_1unref_FUNC);
+}
+#endif
+
+#ifndef NO_gtk_1text_1view_1get_1window
+JNIEXPORT jlong JNICALL GTK3_NATIVE(gtk_1text_1view_1get_1window)
+	(JNIEnv *env, jclass that, jlong arg0, jint arg1)
+{
+	jlong rc = 0;
+	GTK3_NATIVE_ENTER(env, that, gtk_1text_1view_1get_1window_FUNC);
+	rc = (jlong)gtk_text_view_get_window((GtkTextView *)arg0, (GtkTextWindowType)arg1);
+	GTK3_NATIVE_EXIT(env, that, gtk_1text_1view_1get_1window_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_gtk_1toggle_1button_1set_1inconsistent
+JNIEXPORT void JNICALL GTK3_NATIVE(gtk_1toggle_1button_1set_1inconsistent)
+	(JNIEnv *env, jclass that, jlong arg0, jboolean arg1)
+{
+	GTK3_NATIVE_ENTER(env, that, gtk_1toggle_1button_1set_1inconsistent_FUNC);
+	gtk_toggle_button_set_inconsistent((GtkToggleButton *)arg0, (gboolean)arg1);
+	GTK3_NATIVE_EXIT(env, that, gtk_1toggle_1button_1set_1inconsistent_FUNC);
 }
 #endif
 
@@ -1715,6 +1780,18 @@ JNIEXPORT void JNICALL GTK3_NATIVE(gtk_1toolbar_1set_1style)
 	GTK3_NATIVE_ENTER(env, that, gtk_1toolbar_1set_1style_FUNC);
 	gtk_toolbar_set_style((GtkToolbar *)arg0, (GtkToolbarStyle)arg1);
 	GTK3_NATIVE_EXIT(env, that, gtk_1toolbar_1set_1style_FUNC);
+}
+#endif
+
+#ifndef NO_gtk_1tree_1view_1get_1bin_1window
+JNIEXPORT jlong JNICALL GTK3_NATIVE(gtk_1tree_1view_1get_1bin_1window)
+	(JNIEnv *env, jclass that, jlong arg0)
+{
+	jlong rc = 0;
+	GTK3_NATIVE_ENTER(env, that, gtk_1tree_1view_1get_1bin_1window_FUNC);
+	rc = (jlong)gtk_tree_view_get_bin_window((GtkTreeView *)arg0);
+	GTK3_NATIVE_EXIT(env, that, gtk_1tree_1view_1get_1bin_1window_FUNC);
+	return rc;
 }
 #endif
 

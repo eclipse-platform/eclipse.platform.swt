@@ -3153,7 +3153,7 @@ static int inversePremultipliedColor(int color, int alpha) {
 private static void renderAllBackgrounds(long styleContext, long cairo) {
 	if (!GTK.GTK4) {
 		// GTK4 GtkStyleContext has no concept of parents
-		long parentStyleContext = GTK.gtk_style_context_get_parent (styleContext);
+		long parentStyleContext = GTK3.gtk_style_context_get_parent (styleContext);
 		if (parentStyleContext != 0) renderAllBackgrounds (parentStyleContext, cairo);
 	}
 

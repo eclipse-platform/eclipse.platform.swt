@@ -3137,7 +3137,7 @@ long getFontDescription () {
 	if ("ppc64le".equals(System.getProperty("os.arch"))) {
 		// Unlike 'gtk_style_context_get()', 'gtk_style_context_get_font()'
 		// returns pointer owned by GTK. The workaround is to make a copy of the data.
-		long gtkOwnedPointer = GTK.gtk_style_context_get_font(context, GTK.GTK_STATE_FLAG_NORMAL);
+		long gtkOwnedPointer = GTK3.gtk_style_context_get_font(context, GTK.GTK_STATE_FLAG_NORMAL);
 		return OS.pango_font_description_copy(gtkOwnedPointer);
 	} else {
 		if (GTK.GTK4) {
@@ -3158,7 +3158,7 @@ long getFontDescription () {
 		} else {
 			GTK.gtk_style_context_save(context);
 			GTK.gtk_style_context_set_state(context, GTK.GTK_STATE_FLAG_NORMAL);
-			GTK.gtk_style_context_get(context, GTK.GTK_STATE_FLAG_NORMAL, GTK.gtk_style_property_font, fontDesc, 0);
+			GTK3.gtk_style_context_get(context, GTK.GTK_STATE_FLAG_NORMAL, GTK.gtk_style_property_font, fontDesc, 0);
 			GTK.gtk_style_context_restore(context);
 			return fontDesc [0];
 		}

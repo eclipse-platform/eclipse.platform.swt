@@ -612,7 +612,7 @@ long gtk_clicked (long widget) {
 				GTK4.gtk_check_button_set_inconsistent(handle, inconsistent);
 			} else {
 				boolean inconsistent = grayed && GTK.gtk_toggle_button_get_active(handle);
-				GTK.gtk_toggle_button_set_inconsistent(handle, inconsistent);
+				GTK3.gtk_toggle_button_set_inconsistent(handle, inconsistent);
 			}
 		}
 	}
@@ -1102,7 +1102,7 @@ public void setGrayed (boolean grayed) {
 		GTK4.gtk_check_button_set_inconsistent(handle, inconsistent);
 	} else {
 		boolean inconsistent = grayed && GTK.gtk_toggle_button_get_active(handle);
-		GTK.gtk_toggle_button_set_inconsistent(handle, inconsistent);
+		GTK3.gtk_toggle_button_set_inconsistent(handle, inconsistent);
 	}
 }
 
@@ -1202,7 +1202,7 @@ public void setSelection (boolean selected) {
 		if (GTK.GTK4) {
 			GTK4.gtk_check_button_set_inconsistent(handle, inconsistent);
 		} else {
-			GTK.gtk_toggle_button_set_inconsistent(handle, inconsistent);
+			GTK3.gtk_toggle_button_set_inconsistent(handle, inconsistent);
 		}
 	}
 	if ((style & SWT.RADIO) != 0) {

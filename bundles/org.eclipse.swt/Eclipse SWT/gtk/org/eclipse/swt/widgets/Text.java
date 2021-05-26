@@ -300,7 +300,7 @@ void createHandle (int index) {
 		GTK.gtk_text_view_set_justification (handle, just);
 	}
 	imContext = OS.imContextLast();
-	
+
 	// In GTK 3 font description is inherited from parent widget which is not how SWT has always worked,
 	// reset to default font to get the usual behavior
 	setFontDescription(defaultFont().handle);
@@ -2073,9 +2073,13 @@ long paintWindow () {
 	if ((style & SWT.SINGLE) != 0) {
 		return super.paintWindow ();
 	} else {
-		GTK.gtk_widget_realize (handle);
-		// TODO: this function has been removed on GTK4
-		return GTK.gtk_text_view_get_window (handle, GTK.GTK_TEXT_WINDOW_TEXT);
+		if (GTK.GTK4) {
+			// TODO: this function has been removed on GTK4, check bug 561444
+			return 0;
+		} else {
+			GTK.gtk_widget_realize (handle);
+			return GTK3.gtk_text_view_get_window (handle, GTK.GTK_TEXT_WINDOW_TEXT);
+		}
 	}
 }
 

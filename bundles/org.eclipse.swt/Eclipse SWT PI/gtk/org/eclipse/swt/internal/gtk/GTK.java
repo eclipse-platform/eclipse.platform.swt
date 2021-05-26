@@ -427,6 +427,49 @@ public class GTK extends OS {
 	public static final native int gtk_get_major_version();
 	public static final native int gtk_get_minor_version();
 	public static final native int gtk_get_micro_version();
+	/**
+	 * @param context cast=(GtkStyleContext *)
+	 * @param cr cast=(cairo_t *)
+	 * @param x cast=(gdouble)
+	 * @param y cast=(gdouble)
+	 * @param width cast=(gdouble)
+	 * @param height cast=(gdouble)
+	 */
+	public static final native void gtk_render_frame(long context, long cr, double x , double y, double width, double height);
+	/**
+	 * @param context cast=(GtkStyleContext *)
+	 * @param cr cast=(cairo_t *)
+	 * @param x cast=(gdouble)
+	 * @param y cast=(gdouble)
+	 * @param width cast=(gdouble)
+	 * @param height cast=(gdouble)
+	 */
+	public static final native void gtk_render_background(long context, long cr, double x , double y, double width, double height);
+	/**
+	* @param context cast=(GtkStyleContext *)
+	* @param cr cast=(cairo_t *)
+	* @param x cast=(gdouble)
+	* @param y cast=(gdouble)
+	* @param width cast=(gdouble)
+	* @param height cast=(gdouble)
+	*/
+	public static final native void gtk_render_focus(long context, long cr,  double x , double y, double width, double height);
+	/**
+	 * @param context cast=(GtkStyleContext *)
+	 * @param cr cast=(cairo_t *)
+	 * @param x cast=(gdouble)
+	 * @param y cast=(gdouble)
+	 * @param width cast=(gdouble)
+	 * @param height cast=(gdouble)
+	 */
+	public static final native void gtk_render_handle(long context, long cr, double x , double y, double width, double height);
+	/**
+	 * @param func cast=(GtkPrinterFunc)
+	 * @param data cast=(gpointer)
+	 * @param destroy cast=(GDestroyNotify)
+	 * @param wait cast=(gboolean)
+	 */
+	public static final native void gtk_enumerate_printers(long func, long data, long destroy, boolean wait);
 
 	/* GtkColorChooser Interface */
 	/**
@@ -979,6 +1022,25 @@ public class GTK extends OS {
 	 * @param priority cast=(guint)
 	 */
 	public static final native void gtk_style_context_add_provider(long context, long provider, int priority);
+	/**
+	 * @param context cast=(GtkStyleContext *)
+	 * @param class_name cast=(const gchar *)
+	 */
+	public static final native void gtk_style_context_add_class(long context, byte[] class_name);
+	/**
+	 * @param context cast=(GtkStyleContext *)
+	 * @param class_name cast=(const gchar *)
+	 */
+	public static final native void gtk_style_context_remove_class(long context, byte[] class_name);
+	/** @param self cast=(GtkStyleContext *) */
+	public static final native void gtk_style_context_save(long self);
+	/** @param self cast=(GtkStyleContext *) */
+	public static final native void gtk_style_context_restore(long self);
+	/**
+	 * @param context cast=(GtkStyleContext *)
+	 * @param flags cast=(GtkStateFlags)
+	 */
+	public static final native void gtk_style_context_set_state(long context, long flags);
 
 	/* GtkMenuItem [GTK3 only] */
 	/** @method flags=dynamic */
@@ -1070,25 +1132,23 @@ public class GTK extends OS {
 	 */
 	public static final native void gtk_notebook_set_tab_pos(long notebook, int pos);
 
-
+	/* GtkOrientable Interface */
 	/**
 	 * @param orientable cast=(GtkOrientable *)
 	 * @param orientation cast=(GtkOrientation)
 	 */
 	public static final native void gtk_orientable_set_orientation(long orientable, int orientation);
+
+	/* GtkPageSetup */
 	public static final native long gtk_page_setup_new();
-	/**
-	 * @param setup cast=(GtkPageSetup *)
-	 */
+	/** @param setup cast=(GtkPageSetup *) */
 	public static final native int gtk_page_setup_get_orientation(long setup);
 	/**
 	 * @param setup cast=(GtkPageSetup *)
 	 * @param orientation cast=(GtkPageOrientation)
 	 */
 	public static final native void gtk_page_setup_set_orientation(long setup, int orientation);
-	/**
-	 * @param setup cast=(GtkPageSetup *)
-	 */
+	/** @param setup cast=(GtkPageSetup *) */
 	public static final native long gtk_page_setup_get_paper_size(long setup);
 	/**
 	 * @param setup cast=(GtkPageSetup *)
@@ -1109,7 +1169,6 @@ public class GTK extends OS {
 	/**
 	 * @param setup cast=(GtkPageSetup *)
 	 * @param unit cast=(GtkUnit)
-	 *
 	 */
 	public static final native double gtk_page_setup_get_bottom_margin(long setup, int unit);
 	/**
@@ -1160,40 +1219,11 @@ public class GTK extends OS {
 	 * @param unit cast=(GtkUnit)
 	 */
 	public static final native double gtk_page_setup_get_page_height(long setup, int unit);
-	/**
-	 * @param context cast=(GtkStyleContext *)
-	 * @param cr cast=(cairo_t *)
-	 * @param x cast=(gdouble)
-	 * @param y cast=(gdouble)
-	 * @param width cast=(gdouble)
-	 * @param height cast=(gdouble)
-	 */
-	public static final native void gtk_render_frame(long context, long cr, double x , double y, double width, double height);
-	/**
-	 * @param context cast=(GtkStyleContext *)
-	 * @param cr cast=(cairo_t *)
-	 * @param x cast=(gdouble)
-	 * @param y cast=(gdouble)
-	 * @param width cast=(gdouble)
-	 * @param height cast=(gdouble)
-	 */
-	public static final native void gtk_render_background(long context, long cr, double x , double y, double width, double height);
-	/**
-	* @param context cast=(GtkStyleContext *)
-	* @param cr cast=(cairo_t *)
-	* @param x cast=(gdouble)
-	* @param y cast=(gdouble)
-	* @param width cast=(gdouble)
-	* @param height cast=(gdouble)
-	*/
-	public static final native void gtk_render_focus(long context, long cr,  double x , double y, double width, double height);
-	/**
-	 * @param size cast=(GtkPaperSize *)
-	 */
+
+	/* GtkPaperSize */
+	/** @param size cast=(GtkPaperSize *) */
 	public static final native void gtk_paper_size_free(long size);
-	/**
-	 * @param name cast=(const gchar *)
-	 */
+	/** @param name cast=(const gchar *) */
 	public static final native long gtk_paper_size_new(byte [] name);
 	/**
 	 * @param ppd_name cast=(const gchar *)
@@ -1210,17 +1240,11 @@ public class GTK extends OS {
 	 * @param unit cast=(GtkUnit)
 	 */
 	public static final native long gtk_paper_size_new_custom(byte [] name, byte [] display_name, double width, double height, int unit);
-	/**
-	 * @param size cast=(GtkPaperSize *)
-	 */
+	/** @param size cast=(GtkPaperSize *) */
 	public static final native long gtk_paper_size_get_name(long size);
-	/**
-	 * @param size cast=(GtkPaperSize *)
-	 */
+	/** @param size cast=(GtkPaperSize *) */
 	public static final native long gtk_paper_size_get_display_name(long size);
-	/**
-	 * @param size cast=(GtkPaperSize *)
-	 */
+	/** @param size cast=(GtkPaperSize *) */
 	public static final native long gtk_paper_size_get_ppd_name(long size);
 	/**
 	 * @param size cast=(GtkPaperSize *)
@@ -1232,30 +1256,18 @@ public class GTK extends OS {
 	 * @param unit cast=(GtkUnit)
 	 */
 	public static final native double gtk_paper_size_get_height(long size, int unit);
-	/**
-	 * @param size cast=(GtkPaperSize *)
-	 */
+	/** @param size cast=(GtkPaperSize *) */
 	public static final native boolean gtk_paper_size_is_custom(long size);
-	public static final native long gtk_plug_new(long socket_id);
-	/**
-	 * @param printer cast=(GtkPrinter *)
-	 */
+
+	/* GtkPrinter */
+	/** @param printer cast=(GtkPrinter *) */
 	public static final native long gtk_printer_get_backend(long printer);
-	/**
-	 * @param printer cast=(GtkPrinter *)
-	 */
+	/** @param printer cast=(GtkPrinter *) */
 	public static final native long gtk_printer_get_name(long printer);
-	/**
-	 * @param printer cast=(GtkPrinter *)
-	 */
+	/** @param printer cast=(GtkPrinter *) */
 	public static final native boolean gtk_printer_is_default(long printer);
-	/**
-	 * @param func cast=(GtkPrinterFunc)
-	 * @param data cast=(gpointer)
-	 * @param destroy cast=(GDestroyNotify)
-	 * @param wait cast=(gboolean)
-	 */
-	public static final native void gtk_enumerate_printers(long func, long data, long destroy, boolean wait);
+
+	/* GtkPrintJob */
 	/**
 	 * @param title cast=(const gchar *)
 	 * @param printer cast=(GtkPrinter *)
@@ -1275,6 +1287,8 @@ public class GTK extends OS {
 	 * @param dnotify cast=(GDestroyNotify)
 	 */
 	public static final native void gtk_print_job_send(long job, long callback, long user_data, long dnotify);
+
+	/* GtkPrintSettings */
 	public static final native long gtk_print_settings_new();
 	/**
 	 * @param settings cast=(GtkPrintSettings *)
@@ -1303,36 +1317,28 @@ public class GTK extends OS {
 	 * @param orientation cast=(GtkPageOrientation)
 	 */
 	public static final native void gtk_print_settings_set_orientation(long settings, int orientation);
-	/**
-	 * @param settings cast=(GtkPrintSettings *)
-	 */
+	/** @param settings cast=(GtkPrintSettings *) */
 	public static final native boolean gtk_print_settings_get_collate(long settings);
 	/**
 	 * @param settings cast=(GtkPrintSettings *)
 	 * @param collate cast=(gboolean)
 	 */
 	public static final native void gtk_print_settings_set_collate(long settings, boolean collate);
-	/**
-	 * @param settings cast=(GtkPrintSettings *)
-	 */
+	/** @param settings cast=(GtkPrintSettings *) */
 	public static final native int gtk_print_settings_get_duplex(long settings);
 	/**
 	 * @param settings cast=(GtkPrintSettings *)
 	 * @param duplex cast=(GtkPrintDuplex)
 	 */
 	public static final native void gtk_print_settings_set_duplex(long settings, int duplex);
-	/**
-	 * @param settings cast=(GtkPrintSettings *)
-	 */
+	/** @param settings cast=(GtkPrintSettings *) */
 	public static final native int gtk_print_settings_get_n_copies(long settings);
 	/**
 	 * @param settings cast=(GtkPrintSettings *)
 	 * @param num_copies cast=(gint)
 	 */
 	public static final native void gtk_print_settings_set_n_copies(long settings, int num_copies);
-	/**
-	 * @param settings cast=(GtkPrintSettings *)
-	 */
+	/** @param settings cast=(GtkPrintSettings *) */
 	public static final native int gtk_print_settings_get_print_pages(long settings);
 	/**
 	 * @param settings cast=(GtkPrintSettings *)
@@ -1350,10 +1356,10 @@ public class GTK extends OS {
 	 * @param num_ranges cast=(gint)
 	 */
 	public static final native void gtk_print_settings_set_page_ranges(long settings, int[] page_ranges, int num_ranges);
-	/**
-	 * @param settings cast=(GtkPrintSettings *)
-	 */
+	/** @param settings cast=(GtkPrintSettings *) */
 	public static final native int gtk_print_settings_get_resolution(long settings);
+
+	/* GtkPrintUnixDialog */
 	/**
 	 * @param title cast=(const gchar *)
 	 * @param parent cast=(GtkWindow *)
@@ -1369,45 +1375,35 @@ public class GTK extends OS {
 	 * @param page_setup cast=(GtkPageSetup *)
 	 */
 	public static final native void gtk_print_unix_dialog_set_page_setup(long dialog, long page_setup);
-	/**
-	 * @param dialog cast=(GtkPrintUnixDialog *)
-	 */
+	/** @param dialog cast=(GtkPrintUnixDialog *) */
 	public static final native long gtk_print_unix_dialog_get_page_setup(long dialog);
 	/**
 	 * @param dialog cast=(GtkPrintUnixDialog *)
 	 * @param current_page cast=(gint)
 	 */
 	public static final native void gtk_print_unix_dialog_set_current_page(long dialog, int current_page);
-	/**
-	 * @param dialog cast=(GtkPrintUnixDialog *)
-	 */
+	/** @param dialog cast=(GtkPrintUnixDialog *) */
 	public static final native int gtk_print_unix_dialog_get_current_page(long dialog);
 	/**
 	 * @param dialog cast=(GtkPrintUnixDialog *)
 	 * @param settings cast=(GtkPrintSettings *)
 	 */
 	public static final native void gtk_print_unix_dialog_set_settings(long dialog, long settings);
-	/**
-	 * @param dialog cast=(GtkPrintUnixDialog *)
-	 */
+	/** @param dialog cast=(GtkPrintUnixDialog *) */
 	public static final native long gtk_print_unix_dialog_get_settings(long dialog);
-	/**
-	 * @param dialog cast=(GtkPrintUnixDialog *)
-	 */
+	/** @param dialog cast=(GtkPrintUnixDialog *) */
 	public static final native long gtk_print_unix_dialog_get_selected_printer(long dialog);
 	/**
 	 * @param dialog cast=(GtkPrintUnixDialog *)
 	 * @param capabilities cast=(GtkPrintCapabilities)
 	 */
 	public static final native void gtk_print_unix_dialog_set_manual_capabilities(long dialog, long capabilities);
-	/**
-	 * @param dialog cast=(GtkPrintUnixDialog *)
-	 */
+	/** @param dialog cast=(GtkPrintUnixDialog *) */
 	public static final native void gtk_print_unix_dialog_set_support_selection(long dialog, boolean support_selection);
-	/**
-	 * @param dialog cast=(GtkPrintUnixDialog *)
-	 */
+	/** @param dialog cast=(GtkPrintUnixDialog *) */
 	public static final native void gtk_print_unix_dialog_set_has_selection(long dialog, boolean has_selection);
+
+	/* GtkProgressBar */
 	public static final native long gtk_progress_bar_new();
 	/** @param pbar cast=(GtkProgressBar *) */
 	public static final native void gtk_progress_bar_pulse(long pbar);
@@ -1421,7 +1417,6 @@ public class GTK extends OS {
 	 * @param inverted cast=(gboolean)
 	 */
 	public static final native void gtk_progress_bar_set_inverted(long pbar, boolean inverted);
-
 
 	/* GtkRange */
 	/** @param range cast=(GtkRange *) */
@@ -1443,10 +1438,9 @@ public class GTK extends OS {
 	 */
 	public static final native void gtk_range_get_slider_range(long range, int[] slider_start, int[] slider_end);
 
-
+	/* GtkScrollable */
 	/** @param scrollable cast=(GtkScrollable *) */
 	public static final native long gtk_scrollable_get_vadjustment(long scrollable);
-
 
 	/* GtkScrolledWindow */
 	/** @param scrolled_window cast=(GtkScrolledWindow *) */
@@ -1461,9 +1455,7 @@ public class GTK extends OS {
 	public static final native void gtk_scrolled_window_get_policy(long scrolled_window, int[] hscrollbar_policy, int[] vscrollbar_policy);
 	/** @param scrolled_window cast=(GtkScrolledWindow *) */
 	public static final native long gtk_scrolled_window_get_vadjustment(long scrolled_window);
-	/**
-	 * @param scrolled_window cast=(GtkScrolledWindow *)
-	 */
+	/** @param scrolled_window cast=(GtkScrolledWindow *) */
 	public static final native long gtk_scrolled_window_get_vscrollbar(long scrolled_window);
 	/**
 	 * @param scrolled_window cast=(GtkScrolledWindow *)
@@ -1471,10 +1463,7 @@ public class GTK extends OS {
 	 * @param vscrollbar_policy cast=(GtkPolicyType)
 	 */
 	public static final native void gtk_scrolled_window_set_policy(long scrolled_window, int hscrollbar_policy, int vscrollbar_policy);
-	/**
-	 * @method flags=dynamic
-	 * @param scrolled_window cast=(GtkScrolledWindow *)
-	 */
+	/** @param scrolled_window cast=(GtkScrolledWindow *) */
 	public static final native boolean gtk_scrolled_window_get_overlay_scrolling(long scrolled_window);
 	/**
 	 * @param scrolled_window cast=(GtkScrolledWindow *)
@@ -1487,11 +1476,10 @@ public class GTK extends OS {
 	 *  */
 	public static final native void gtk_scrolled_window_set_hadjustment(long scrolled_window, long adjustment);
 
-
+	/* GtkSettings */
 	public static final native long gtk_settings_get_default();
-	/** @param socket cast=(GtkSocket *) */
-	public static final native long gtk_socket_get_id(long socket);
-	public static final native long gtk_socket_new();
+
+	/* GtkSpinButton */
 	/** @param adjustment cast=(GtkAdjustment *) */
 	public static final native long gtk_spin_button_new(long adjustment, double climb_rate, int digits);
 	/**
@@ -1518,6 +1506,7 @@ public class GTK extends OS {
 	public static final native void gtk_spin_button_set_wrap(long spin_button, boolean wrap);
 	/** @param spin_button cast=(GtkSpinButton*) */
 	public static final native void gtk_spin_button_update(long spin_button);
+
 	/**
 	 * @method flags=ignore_deprecations
 	 * @param handle cast=(GtkStatusIcon*)
@@ -1527,16 +1516,7 @@ public class GTK extends OS {
 	 */
 	/* [GTK3 only, if-def'd in os.h] */
 	public static final native boolean gtk_status_icon_get_geometry(long handle, long screen, GdkRectangle area, long orientation);
-	/**
-	 * @param context cast=(GtkStyleContext *)
-	 * @param class_name cast=(const gchar *)
-	 */
-	public static final native void gtk_style_context_add_class(long context, byte[] class_name);
-	/**
-	 * @param context cast=(GtkStyleContext *)
-	 * @param class_name cast=(const gchar *)
-	 */
-	public static final native void gtk_style_context_remove_class(long context, byte[] class_name);
+
 	/**
 	 * @method flags=dynamic
 	 * @param context cast=(GtkStyleContext *)
@@ -1552,9 +1532,6 @@ public class GTK extends OS {
 	 */
 	/* [GTK4 only] */
 	public static final native void gtk_style_context_get_color(long context, GdkRGBA color);
-	/** @method flags=dynamic */
-	/* [GTK3; 3.8 deprecated, replaced] */
-	public static final native long gtk_style_context_get_font(long context, int state);
 	/**
 	 * @method flags=dynamic
 	 * @param context cast=(GtkStyleContext *)
@@ -1563,12 +1540,6 @@ public class GTK extends OS {
 	 */
 	/* [GTK3 only] */
 	public static final native void gtk_style_context_get_padding(long context, int state, GtkBorder padding);
-	/**
-	 * @method flags=dynamic
-	 * @param context cast=(GtkStyleContext *)
-	 */
-	/* [GTK3 only] */
-	public static final native long gtk_style_context_get_parent(long context);
 	/**
 	 * @method flags=dynamic
 	 * @param context cast=(GtkStyleContext *)
@@ -1584,18 +1555,6 @@ public class GTK extends OS {
 	public static final native void gtk_style_context_get_margin(long context, GtkBorder margin);
 	/**
 	 * @method flags=dynamic
-	 * @param property cast=(const gchar *),flags=no_out
-	 * @param terminator cast=(const gchar *),flags=sentinel
-	 */
-	public static final native void gtk_style_context_get(long context, int state, byte [] property, long [] value, long terminator);
-	/**
-	 * @method flags=dynamic
-	 * @param property cast=(const gchar *),flags=no_out
-	 * @param terminator cast=(const gchar *),flags=sentinel
-	 */
-	public static final native void gtk_style_context_get(long context, byte [] property, long [] value, long terminator);
-	/**
-	 * @method flags=dynamic
 	 * @param context cast=(GtkStyleContext *)
 	 * @param state cast=(GtkStateFlags)
 	 * @param padding cast=(GtkBorder *),flags=no_in
@@ -1609,19 +1568,8 @@ public class GTK extends OS {
 	 */
 	/* [GTK4 only] */
 	public static final native void gtk_style_context_get_border(long context, GtkBorder padding);
-	/**
-	 * @param self cast=(GtkStyleContext *)
-	 */
-	public static final native void gtk_style_context_save(long self);
-	/**
-	 * @param context cast=(GtkStyleContext *)
-	 */
-	public static final native void gtk_style_context_restore(long context);
-	/**
-	 * @param context cast=(GtkStyleContext *)
-	 * @param flags cast=(GtkStateFlags)
-	 */
-	public static final native void gtk_style_context_set_state(long context, long flags);
+
+	/* GtkTextBuffer */
 	/**
 	 * @method flags=dynamic
 	 * @param buffer cast=(GtkTextBuffer *)
@@ -1735,6 +1683,8 @@ public class GTK extends OS {
 	 * @param len cast=(gint)
 	 */
 	public static final native void gtk_text_buffer_set_text(long buffer, byte[] text, int len);
+
+	/* GtkTextIter */
 	/** @param iter cast=(const GtkTextIter *) */
 	public static final native int gtk_text_iter_get_line(byte[] iter);
 	/** @param iter cast=(const GtkTextIter *) */
@@ -1820,15 +1770,6 @@ public class GTK extends OS {
 	/** @param text_view cast=(GtkTextView *) */
 	public static final native void gtk_text_view_set_wrap_mode(long text_view, int wrap_mode);
 
-	/* GtkTextView [GTK3 only] */
-	/**
-	 * @method flags=dynamic
-	 * @param text_view cast=(GtkTextView *)
-	 * @param win cast=(GtkTextWindowType)
-	 */
-	public static final native long gtk_text_view_get_window(long text_view, int win);
-
-
 	/* GtkToggleButton */
 	public static final native long gtk_toggle_button_new();
 	/** @param toggle_button cast=(GtkToggleButton *) */
@@ -1839,21 +1780,15 @@ public class GTK extends OS {
 	 */
 	public static final native void gtk_toggle_button_set_active(long toggle_button, boolean is_active);
 
-	/* GtkToggleButton [GTK3 only] */
-	/**
-	 * @method flags=dynamic
-	 * @param toggle_button cast=(GtkToggleButton *)
-	 * @param setting cast=(gboolean)
-	 */
-	public static final native void gtk_toggle_button_set_inconsistent(long toggle_button, boolean setting);
-
-
+	/* GtkToolTip */
 	public static final native long gtk_tooltip_get_type();
 	/**
 	 * @param tooltip cast=(GtkTooltip *)
 	 * @param custom_widget cast=(GtkWidget *)
 	 */
 	public static final native void gtk_tooltip_set_custom(long tooltip, long custom_widget);
+
+	/* GtkTreeModel */
 	/**
 	 * @param tree_model cast=(GtkTreeModel *)
 	 * @param iter cast=(GtkTreeIter *)
@@ -1905,6 +1840,8 @@ public class GTK extends OS {
 	 * @param parent cast=(GtkTreeIter *)
 	 */
 	public static final native boolean gtk_tree_model_iter_nth_child(long tree_model, long iter, long parent, int n);
+
+	/* GtkTreePath */
 	/** @param path cast=(GtkTreePath *) */
 	public static final native void gtk_tree_path_append_index(long path, int index);
 	/**
@@ -1929,9 +1866,9 @@ public class GTK extends OS {
 	public static final native boolean gtk_tree_path_prev(long path);
 	/** @param path cast=(GtkTreePath *) */
 	public static final native boolean gtk_tree_path_up(long path);
-	/**
-	 * @param selection cast=(GtkTreeSelection *)
-	 */
+
+	/* GtkTreeSelection */
+	/** @param selection cast=(GtkTreeSelection *) */
 	public static final native int gtk_tree_selection_count_selected_rows(long selection);
 	/**
 	 * @param selection cast=(GtkTreeSelection *)
@@ -1974,6 +1911,8 @@ public class GTK extends OS {
 	 * @param iter cast=(GtkTreeIter *)
 	 */
 	public static final native void gtk_tree_selection_unselect_iter(long selection, long iter);
+
+	/* GtkTreeStore */
 	/**
 	 * @param store cast=(GtkTreeStore *)
 	 * @param iter cast=(GtkTreeIter *)
@@ -2028,16 +1967,8 @@ public class GTK extends OS {
 	 * @param iter cast=(GtkTreeIter *)
 	 */
 	public static final native void gtk_tree_store_set(long store, long iter, int column, boolean value, int terminator);
-	/**
-	 * @param view cast=(GtkTreeView *)
-	 * @param path cast=(GtkTreePath *)
-	 */
-	public static final native long gtk_tree_view_create_row_drag_icon(long view, long path);
-	/**
-	 * @param view cast=(GtkTreeView *)
-	 * @param path cast=(GtkTreePath *)
-	 */
-	public static final native boolean gtk_tree_view_collapse_row(long view, long path);
+
+	/* GtkTreeViewColumn */
 	/**
 	 * @param treeColumn cast=(GtkTreeViewColumn *)
 	 * @param cellRenderer cast=(GtkCellRenderer *)
@@ -2079,9 +2010,7 @@ public class GTK extends OS {
 	public static final native void gtk_tree_view_column_cell_set_cell_data(long tree_column, long tree_model, long iter, boolean is_expander, boolean is_expanded);
 	/** @param tree_column cast=(GtkTreeViewColumn *) */
 	public static final native void gtk_tree_view_column_clear(long tree_column);
-	/**
-	 * @param column cast=(GtkTreeViewColumn *)
-	 */
+	/** @param column cast=(GtkTreeViewColumn *) */
 	public static final native long gtk_tree_view_column_get_button(long column);
 	/** @param column cast=(GtkTreeViewColumn *) */
 	public static final native int gtk_tree_view_column_get_fixed_width(long column);
@@ -2163,6 +2092,18 @@ public class GTK extends OS {
 	 * @param widget cast=(GtkWidget *)
 	 */
 	public static final native void gtk_tree_view_column_set_widget(long tree_column, long widget);
+
+	/* GtkTreeView */
+	/**
+	 * @param view cast=(GtkTreeView *)
+	 * @param path cast=(GtkTreePath *)
+	 */
+	public static final native long gtk_tree_view_create_row_drag_icon(long view, long path);
+	/**
+	 * @param view cast=(GtkTreeView *)
+	 * @param path cast=(GtkTreePath *)
+	 */
+	public static final native boolean gtk_tree_view_collapse_row(long view, long path);
 	/**
 	 * @param view cast=(GtkTreeView *)
 	 * @param path cast=(GtkTreePath *)
@@ -2181,11 +2122,6 @@ public class GTK extends OS {
 	 * @param rect cast=(GdkRectangle *)
 	 */
 	public static final native void gtk_tree_view_get_background_area(long tree_view, long path, long column, GdkRectangle rect);
-	/**
-	 * @param tree_view cast=(GtkTreeView *)
-	 */
-	/* [GTK3 only, if-def'd in os.h] */
-	public static final native long gtk_tree_view_get_bin_window(long tree_view);
 	/**
 	 * @param tree_view cast=(GtkTreeView *)
 	 * @param path cast=(GtkTreePath *)
@@ -2277,9 +2213,7 @@ public class GTK extends OS {
 	 * @param grid_lines cast=(GtkTreeViewGridLines)
 	 */
 	public static final native void gtk_tree_view_set_grid_lines(long tree_view, int grid_lines);
-	/**
-	 * @param tree_view cast=(GtkTreeView*)
-	 */
+	/** @param tree_view cast=(GtkTreeView*) */
 	public static final native int gtk_tree_view_get_grid_lines(long tree_view);
 	/**
 	 * @param tree_view cast=(GtkTreeView *)
@@ -2310,20 +2244,6 @@ public class GTK extends OS {
 	 * @param wy cast=(int *)
 	 */
 	public static final native void gtk_tree_view_convert_bin_window_to_widget_coords(long tree_view, int bx, int by, int[]wx, int[] wy);
-
-
-	/**
-	 * @param context cast=(GtkStyleContext *)
-	 * @param cr cast=(cairo_t *)
-	 * @param x cast=(gdouble)
-	 * @param y cast=(gdouble)
-	 * @param width cast=(gdouble)
-	 * @param height cast=(gdouble)
-	 */
-	public static final native void gtk_render_handle(long context, long cr, double x , double y, double width, double height);
-	/** @method flags=dynamic */
-	public static final native long gtk_printer_option_widget_get_type();
-
 
 	/* GtkWidget */
 	/** @param widget cast=(GtkWidget *) */
@@ -2678,4 +2598,16 @@ public class GTK extends OS {
 	 * @param geometry flags=no_out
 	 */
 	public static final native void gtk_window_set_geometry_hints(long window, long geometry_widget, GdkGeometry geometry, int geom_mask);
+
+	/* GtkPlug */
+	public static final native long gtk_plug_new(long socket_id);
+
+	/* GtkPrinterOption */
+	/** @method flags=dynamic */
+	public static final native long gtk_printer_option_widget_get_type();
+
+	/* GtkSocket */
+	public static final native long gtk_socket_new();
+	/** @param socket cast=(GtkSocket *) */
+	public static final native long gtk_socket_get_id(long socket);
 }
