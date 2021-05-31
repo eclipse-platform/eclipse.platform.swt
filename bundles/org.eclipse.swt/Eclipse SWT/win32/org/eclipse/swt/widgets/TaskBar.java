@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2010, 2017 IBM Corporation and others.
+ * Copyright (c) 2010, 2021 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -167,6 +167,11 @@ IShellLink createShellLink (MenuItem item) {
 				if (item.hBitmap != 0) {
 					Image image2 = Image.win32_new (display, SWT.BITMAP, item.hBitmap);
 					data = image2.getImageData (DPIUtil.getDeviceZoom ());
+					/*
+					 * image2 instance doesn't own the handle and shall not be disposed. Make it
+					 * appear disposed to cause leak trackers to ignore it.
+					 */
+					image2.handle = 0;
 				} else {
 					data = image.getImageData (DPIUtil.getDeviceZoom ());
 				}
