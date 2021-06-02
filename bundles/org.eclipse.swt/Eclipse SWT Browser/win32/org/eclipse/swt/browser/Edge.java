@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2020 Nikita Nemkin and others.
+ * Copyright (c) 2020, 2021 Nikita Nemkin and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -25,7 +25,7 @@ import org.eclipse.swt.widgets.*;
 
 class Edge extends WebBrowser {
 	static {
-		Library.loadLibrary("WebView2Loader", false);
+		Library.loadLibrary("WebView2Loader");
 	}
 
 	// WebView2Loader.dll compatible version. This is NOT the minimal required version.

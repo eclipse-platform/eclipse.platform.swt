@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2020 IBM Corporation and others.
+ * Copyright (c) 2000, 2021 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -279,15 +279,20 @@ public static void loadLibrary (String name, boolean mapName) {
 	}
 
 	/* Compute the library name and mapped name */
-	String libName1, libName2, mappedName1, mappedName2;
+	final int candidates = 3;
+	String[] libNames = new String[candidates], mappedNames = new String[candidates];
 	if (mapName) {
 		String version = getVersionString ();
-		libName1 = name + "-" + Platform.PLATFORM + "-" + version;  //$NON-NLS-1$ //$NON-NLS-2$
-		libName2 = name + "-" + Platform.PLATFORM;  //$NON-NLS-1$
-		mappedName1 = mapLibraryName (libName1);
-		mappedName2 = mapLibraryName (libName2);
+		libNames[0] = name + "-" + Platform.PLATFORM + "-" + version;  //$NON-NLS-1$ //$NON-NLS-2$
+		libNames[1] = name + "-" + Platform.PLATFORM;  //$NON-NLS-1$
+		libNames[2] = name;
+		for (int i = 0; i < candidates; i++) {
+			mappedNames[i] = mapLibraryName (libNames[i]);
+		}
 	} else {
-		libName1 = libName2 = mappedName1 = mappedName2 = name;
+		for (int i = 0; i < candidates; i++) {
+			libNames[i] = mappedNames[i] = name;
+		}
 	}
 
 	StringBuilder message = new StringBuilder();
@@ -296,20 +301,24 @@ public static void loadLibrary (String name, boolean mapName) {
 	String path = System.getProperty (SWT_LIB_PATH); //$NON-NLS-1$
 	if (path != null) {
 		path = new File (path).getAbsolutePath ();
-		if (load (path + SEPARATOR + mappedName1, message)) return;
-		if (mapName && load (path + SEPARATOR + mappedName2, message)) return;
+		for (int i = 0; i < candidates; i++) {
+			if ((i == 0 || mapName) && load (path + SEPARATOR + mappedNames[i], message)) return;
+		}
 	}
 
 	/* Try loading library from java library path */
-	if (load (libName1, message)) return;
-	if (mapName && load (libName2, message)) return;
+	for (int i = 0; i < candidates; i++) {
+		if ((i == 0 || mapName) && load (libNames[i], message)) return;
+	}
 
 	/* Try loading library from the tmp directory if swt library path is not specified.
 	 * Create the tmp folder if it doesn't exist. Tmp folder looks like this:
 	 * ~/.swt/lib/<platform>/<arch>/
 	 */
-	String fileName1 = mappedName1;
-	String fileName2 = mappedName2;
+	String[] fileNames = new String[candidates];
+	for (int i = 0; i < candidates; i++) {
+		fileNames[i] = mappedNames[i];
+	}
 	if (path == null) {
 		path = USER_HOME;
 		File dir = new File (path, SWT_LIB_DIR);
@@ -317,20 +326,21 @@ public static void loadLibrary (String name, boolean mapName) {
 			path = dir.getAbsolutePath ();
 		} else {
 			/* fall back to using the home dir directory */
-			fileName1 = mapLibraryName (libName1 + SUFFIX_64);
-			fileName2 = mapLibraryName (libName2 + SUFFIX_64);
+			for (int i = 0; i < candidates; i++) {
+				fileNames[i] = mapLibraryName (libNames[i] + SUFFIX_64);
+			}
 		}
-		if (load (path + SEPARATOR + fileName1, message)) return;
-		if (mapName && load (path + SEPARATOR + fileName2, message)) return;
+		for (int i = 0; i < candidates; i++) {
+			if ((i == 0 || mapName) && load (path + SEPARATOR + fileNames[i], message)) return;
+		}
 	}
 
 	/* Try extracting and loading library from jar. */
 	if (path != null) {
-		if (extract (path + SEPARATOR + fileName1, mappedName1)) {
-			if (load(path + SEPARATOR + fileName1, message)) return;
-		}
-		if (mapName && extract (path + SEPARATOR + fileName2, mappedName2)) {
-			if (load(path + SEPARATOR + fileName2, message)) return;
+		for (int i = 0; i < candidates; i++) {
+			if ((i == 0 || mapName) && extract (path + SEPARATOR + fileNames[i], mappedNames[i])) {
+				if (load(path + SEPARATOR + fileNames[i], message)) return;
+			}
 		}
 	}
 
