@@ -551,6 +551,18 @@ JNIEXPORT jlong JNICALL GTK4_NATIVE(gtk_1icon_1theme_1get_1for_1display)
 }
 #endif
 
+#ifndef NO_gtk_1icon_1theme_1lookup_1by_1gicon
+JNIEXPORT jlong JNICALL GTK4_NATIVE(gtk_1icon_1theme_1lookup_1by_1gicon)
+	(JNIEnv *env, jclass that, jlong arg0, jlong arg1, jint arg2, jint arg3, jint arg4, jint arg5)
+{
+	jlong rc = 0;
+	GTK4_NATIVE_ENTER(env, that, gtk_1icon_1theme_1lookup_1by_1gicon_FUNC);
+	rc = (jlong)gtk_icon_theme_lookup_by_gicon((GtkIconTheme *)arg0, (GIcon *)arg1, arg2, arg3, (GtkTextDirection)arg4, (GtkIconLookupFlags)arg5);
+	GTK4_NATIVE_EXIT(env, that, gtk_1icon_1theme_1lookup_1by_1gicon_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_gtk_1icon_1theme_1lookup_1icon
 JNIEXPORT jlong JNICALL GTK4_NATIVE(gtk_1icon_1theme_1lookup_1icon)
 	(JNIEnv *env, jclass that, jlong arg0, jbyteArray arg1, jlong arg2, jint arg3, jint arg4, jint arg5, jint arg6)
@@ -559,7 +571,7 @@ JNIEXPORT jlong JNICALL GTK4_NATIVE(gtk_1icon_1theme_1lookup_1icon)
 	jlong rc = 0;
 	GTK4_NATIVE_ENTER(env, that, gtk_1icon_1theme_1lookup_1icon_FUNC);
 	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
-	rc = (jlong)gtk_icon_theme_lookup_icon((GtkIconTheme *)arg0, (const char *)lparg1, (const char **)arg2, (gint)arg3, (gint)arg4, (GtkTextDirection)arg5, (GtkIconLookupFlags)arg6);
+	rc = (jlong)gtk_icon_theme_lookup_icon((GtkIconTheme *)arg0, (const char *)lparg1, (const char **)arg2, arg3, arg4, (GtkTextDirection)arg5, (GtkIconLookupFlags)arg6);
 fail:
 	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
 	GTK4_NATIVE_EXIT(env, that, gtk_1icon_1theme_1lookup_1icon_FUNC);

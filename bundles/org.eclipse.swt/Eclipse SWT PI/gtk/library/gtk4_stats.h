@@ -77,6 +77,7 @@ typedef enum {
 	gtk_1hsv_1to_1rgb_FUNC,
 	gtk_1icon_1paintable_1get_1file_FUNC,
 	gtk_1icon_1theme_1get_1for_1display_FUNC,
+	gtk_1icon_1theme_1lookup_1by_1gicon_FUNC,
 	gtk_1icon_1theme_1lookup_1icon_FUNC,
 	gtk_1im_1context_1filter_1keypress_FUNC,
 	gtk_1image_1clear_FUNC,

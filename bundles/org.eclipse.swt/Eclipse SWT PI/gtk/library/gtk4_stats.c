@@ -67,6 +67,7 @@ char * GTK4_nativeFunctionNames[] = {
 	"gtk_1hsv_1to_1rgb",
 	"gtk_1icon_1paintable_1get_1file",
 	"gtk_1icon_1theme_1get_1for_1display",
+	"gtk_1icon_1theme_1lookup_1by_1gicon",
 	"gtk_1icon_1theme_1lookup_1icon",
 	"gtk_1im_1context_1filter_1keypress",
 	"gtk_1image_1clear",

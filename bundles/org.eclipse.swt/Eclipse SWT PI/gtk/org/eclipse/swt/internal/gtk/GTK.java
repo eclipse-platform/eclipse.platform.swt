@@ -125,6 +125,7 @@ public class GTK extends OS {
 	public static final int GTK_STATE_FLAG_FOCUSED = 1 << 5;
 	public static final int GTK_STATE_FLAG_BACKDROP  = 1 << 6;
 	public static final int GTK_STATE_FLAG_LINK = 1 << 9;
+	public static final int GTK_TEXT_DIR_NONE = 0;
 	public static final int GTK_TEXT_DIR_LTR = 1;
 	public static final int GTK_TEXT_DIR_RTL = 2;
 	public static final int GTK_TEXT_WINDOW_TEXT = 2;

@@ -151,52 +151,72 @@ public static Program[] getPrograms() {
 public ImageData getImageData() {
 	if (iconPath == null) return null;
 	ImageData data = null;
-	long icon_theme;
-	if (GTK.GTK4) {
-		icon_theme = GTK4.gtk_icon_theme_get_for_display(GDK.gdk_display_get_default());
-	} else {
-		icon_theme = GTK3.gtk_icon_theme_get_default();
+
+	long gicon = OS.g_icon_new_for_string(Converter.javaStringToCString(iconPath), null);
+	if (gicon != 0) {
+		long pixbuf = 0;
+		if (GTK.GTK4) {
+			/*
+			 * Specified size will not be respected as in order to get the pixbuf,
+			 * we get the original image file which could be any size. Also, note
+			 * that gtk_icon_theme_lookup_by_gicon never returns NULL, it will
+			 * return a error icon if gicon can't be found.
+			 */
+			long icon_theme = GTK4.gtk_icon_theme_get_for_display(GDK.gdk_display_get_default());
+			long paintable = GTK4.gtk_icon_theme_lookup_by_gicon(icon_theme, gicon, 16, 1, GTK.GTK_TEXT_DIR_NONE, GTK.GTK_ICON_LOOKUP_FORCE_REGULAR);
+			long file = GTK4.gtk_icon_paintable_get_file(paintable);
+			long texture = GDK.gdk_texture_new_from_file(file, 0);
+			pixbuf = GDK.gdk_pixbuf_get_from_texture(texture);
+
+			OS.g_object_unref(texture);
+			OS.g_object_unref(file);
+			OS.g_object_unref(paintable);
+		} else {
+			long icon_theme = GTK3.gtk_icon_theme_get_default();
+			long gicon_info = GTK3.gtk_icon_theme_lookup_by_gicon(icon_theme, gicon, 16/*size*/, 0);
+			if (gicon_info != 0) {
+				pixbuf = GTK3.gtk_icon_info_load_icon(gicon_info, null);
+				OS.g_object_unref(gicon_info);
+			}
+		}
+
+		// Unref gicon as we have retrieved the required pixbuf
+		OS.g_object_unref(gicon);
+
+		if (pixbuf != 0) {
+			int stride = GDK.gdk_pixbuf_get_rowstride(pixbuf);
+			long pixels = GDK.gdk_pixbuf_get_pixels(pixbuf);
+			int height = GDK.gdk_pixbuf_get_height(pixbuf);
+			int width = GDK.gdk_pixbuf_get_width(pixbuf);
+			boolean hasAlpha = GDK.gdk_pixbuf_get_has_alpha(pixbuf);
+
+			// Move pixbuf memory to srcData and unref pixbuf
+			byte[] srcData = new byte[stride * height];
+			C.memmove(srcData, pixels, srcData.length);
+			OS.g_object_unref(pixbuf);
+
+			if (hasAlpha) {
+				PaletteData palette = new PaletteData(0xFF000000, 0xFF0000, 0xFF00);
+				data = new ImageData(width, height, 32, palette, 4, srcData);
+				data.bytesPerLine = stride;
+				int s = 3, a = 0;
+				byte[] alphaData = new byte[width * height];
+				for (int y = 0; y < height; y++) {
+					for (int x = 0; x < width; x++) {
+						alphaData[a++] = srcData[s];
+						srcData[s] = 0;
+						s+=4;
+					}
+				}
+				data.alphaData = alphaData;
+			} else {
+				PaletteData palette = new PaletteData(0xFF0000, 0xFF00, 0xFF);
+				data = new ImageData(width, height, 24, palette, 4, srcData);
+				data.bytesPerLine = stride;
+			}
+		}
 	}
 
-	byte[] icon = Converter.wcsToMbcs (iconPath, true);
-	long gicon = OS.g_icon_new_for_string(icon, null);
-	if (gicon != 0) {
-		long gicon_info = GTK3.gtk_icon_theme_lookup_by_gicon (icon_theme, gicon, 16/*size*/, 0);
-		if (gicon_info != 0) {
-			long pixbuf = GTK3.gtk_icon_info_load_icon(gicon_info, null);
-			if (pixbuf != 0) {
-				int stride = GDK.gdk_pixbuf_get_rowstride(pixbuf);
-				long pixels = GDK.gdk_pixbuf_get_pixels(pixbuf);
-				int height = GDK.gdk_pixbuf_get_height(pixbuf);
-				int width = GDK.gdk_pixbuf_get_width(pixbuf);
-				boolean hasAlpha = GDK.gdk_pixbuf_get_has_alpha(pixbuf);
-				byte[] srcData = new byte[stride * height];
-				C.memmove(srcData, pixels, srcData.length);
-				OS.g_object_unref(pixbuf);
-				if (hasAlpha) {
-					PaletteData palette = new PaletteData(0xFF000000, 0xFF0000, 0xFF00);
-					data = new ImageData(width, height, 32, palette, 4, srcData);
-					data.bytesPerLine = stride;
-					int s = 3, a = 0;
-					byte[] alphaData = new byte[width*height];
-					for (int y=0; y<height; y++) {
-						for (int x=0; x<width; x++) {
-							alphaData[a++] = srcData[s];
-							srcData[s] = 0;
-							s+=4;
-						}
-					}
-					data.alphaData = alphaData;
-				} else {
-					PaletteData palette = new PaletteData(0xFF0000, 0xFF00, 0xFF);
-					data = new ImageData(width, height, 24, palette, 4, srcData);
-					data.bytesPerLine = stride;
-				}
-			}
-			OS.g_object_unref(gicon_info);
-		}
-		OS.g_object_unref(gicon);
-	}
 	return data;
 }
 

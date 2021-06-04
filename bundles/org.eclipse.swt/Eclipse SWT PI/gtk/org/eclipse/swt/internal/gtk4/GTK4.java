@@ -291,12 +291,17 @@ public class GTK4 {
 	 * @param self cast=(GtkIconTheme *)
 	 * @param icon_name cast=(const char *)
 	 * @param fallbacks cast=(const char **)
-	 * @param size cast=(gint)
-	 * @param scale cast=(gint)
 	 * @param direction cast=(GtkTextDirection)
 	 * @param flags cast=(GtkIconLookupFlags)
 	 */
 	public static final native long gtk_icon_theme_lookup_icon(long self, byte[] icon_name, long fallbacks, int size, int scale, int direction, int flags);
+	/**
+	 * @param self cast=(GtkIconTheme *)
+	 * @param icon cast=(GIcon *)
+	 * @param direction cast=(GtkTextDirection)
+	 * @param flags cast=(GtkIconLookupFlags)
+	 */
+	public static final native long gtk_icon_theme_lookup_by_gicon(long self, long icon, int size, int scale, int direction, int flags);
 
 	/* GtkNative */
 	/** @param self cast=(GtkNative *) */
