@@ -87,8 +87,6 @@ public class GTK extends OS {
 	public static final int GTK_PHASE_CAPTURE = 1;
 	public static final int GTK_PHASE_BUBBLE = 2;
 	public static final int GTK_PHASE_TARGET = 3;
-	public static final int GTK_PROGRESS_LEFT_TO_RIGHT = 0x0;
-	public static final int GTK_PROGRESS_BOTTOM_TO_TOP = 0x2;
 	public static final int GTK_POPOVER_MENU_NESTED = 1;
 	public static final int GTK_RESPONSE_CANCEL = 0xfffffffa;
 	public static final int GTK_RESPONSE_OK = 0xfffffffb;

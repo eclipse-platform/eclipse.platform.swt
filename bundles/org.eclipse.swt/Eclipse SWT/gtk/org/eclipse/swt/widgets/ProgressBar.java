@@ -75,44 +75,52 @@ public class ProgressBar extends Control {
  * @see Widget#checkSubclass
  * @see Widget#getStyle
  */
-public ProgressBar (Composite parent, int style) {
-	super (parent, checkStyle(style));
+public ProgressBar(Composite parent, int style) {
+	super(parent, checkStyle(style));
 }
 
-static int checkStyle (int style) {
+static int checkStyle(int style) {
 	style |= SWT.NO_FOCUS;
-	return checkBits (style, SWT.HORIZONTAL, SWT.VERTICAL, 0, 0, 0, 0);
+	return checkBits(style, SWT.HORIZONTAL, SWT.VERTICAL, 0, 0, 0, 0);
 }
 
 @Override
-void createHandle (int index) {
+void createHandle(int index) {
 	state |= HANDLE;
-	fixedHandle = OS.g_object_new (display.gtk_fixed_get_type (), 0);
-	if (fixedHandle == 0) error (SWT.ERROR_NO_HANDLES);
 
-	handle = GTK.gtk_progress_bar_new ();
+	fixedHandle = OS.g_object_new(display.gtk_fixed_get_type(), 0);
+	if (fixedHandle == 0) error(SWT.ERROR_NO_HANDLES);
+
+	handle = GTK.gtk_progress_bar_new();
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 
 	if (GTK.GTK4) {
 		OS.swt_fixed_add(fixedHandle, handle);
 	} else {
 		GTK3.gtk_widget_set_has_window(fixedHandle, true);
-		GTK3.gtk_container_add (fixedHandle, handle);
+		GTK3.gtk_container_add(fixedHandle, handle);
 	}
 
-	int orientation = (style & SWT.VERTICAL) != 0 ? GTK.GTK_PROGRESS_BOTTOM_TO_TOP : GTK.GTK_PROGRESS_LEFT_TO_RIGHT;
-	gtk_orientable_set_orientation (handle, orientation);
+	boolean vertical = (style & SWT.VERTICAL) != 0;
+	if (vertical) {
+		GTK.gtk_orientable_set_orientation(handle, GTK.GTK_ORIENTATION_VERTICAL);
+		GTK.gtk_progress_bar_set_inverted(handle, true);
+	} else {
+		GTK.gtk_orientable_set_orientation(handle, GTK.GTK_ORIENTATION_HORIZONTAL);
+		GTK.gtk_progress_bar_set_inverted(handle, false);
+	}
+
 	if ((style & SWT.INDETERMINATE) != 0) {
 		if (GTK.GTK4) {
-			timerId = OS.g_timeout_add (DELAY, display.windowTimerProc, handle);
+			timerId = OS.g_timeout_add(DELAY, display.windowTimerProc, handle);
 		} else {
-			timerId = GDK.gdk_threads_add_timeout (DELAY, display.windowTimerProc, handle);
+			timerId = GDK.gdk_threads_add_timeout(DELAY, display.windowTimerProc, handle);
 		}
 	}
 }
 
 @Override
-long eventHandle () {
+long eventHandle() {
 	return fixedHandle;
 }
 
@@ -126,8 +134,8 @@ long eventHandle () {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
-public int getMaximum () {
-	checkWidget ();
+public int getMaximum() {
+	checkWidget();
 	return maximum;
 }
 
@@ -141,8 +149,8 @@ public int getMaximum () {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
-public int getMinimum () {
-	checkWidget ();
+public int getMinimum() {
+	checkWidget();
 	return minimum;
 }
 
@@ -156,8 +164,8 @@ public int getMinimum () {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
-public int getSelection () {
-	checkWidget ();
+public int getSelection() {
+	checkWidget();
 	return selection;
 }
 
@@ -178,14 +186,14 @@ public int getSelection () {
  *
  * @since 3.4
  */
-public int getState () {
-	checkWidget ();
+public int getState() {
+	checkWidget();
 	return SWT.NORMAL;
 }
 
 @Override
-long gtk_realize (long widget) {
-	long result = super.gtk_realize (widget);
+long gtk_realize(long widget) {
+	long result = super.gtk_realize(widget);
 	if (result != 0) return result;
 	/*
 	* Bug in GTK.  When a progress bar has been unrealized after being
@@ -193,7 +201,7 @@ long gtk_realize (long widget) {
 	* fix is to update the progress bar state only when realized and restore
 	* the state when the progress bar becomes realized.
 	*/
-	updateBar (selection, minimum, maximum);
+	updateBar();
 	return 0;
 }
 
@@ -203,21 +211,21 @@ long gtk_realize (long widget) {
  * 2 warnings. For this reason, do not perform GtkCSSNode calculations.
  */
 @Override
-Point resizeCalculationsGTK3 (long widget, int width, int height) {
-	// avoid warnings in GTK caused by too narrow progress bars
+Point resizeCalculationsGTK3(long widget, int width, int height) {
+	// Avoid warnings in GTK caused by too narrow progress bars
 	width = Math.max(2, width);
-	return new Point (width, height);
+	return new Point(width, height);
 }
 
 @Override
-void releaseWidget () {
-	super.releaseWidget ();
-	if (timerId != 0) OS.g_source_remove (timerId);
+void releaseWidget() {
+	super.releaseWidget();
+	if (timerId != 0) OS.g_source_remove(timerId);
 	timerId = 0;
 }
 
 @Override
-void setParentBackground () {
+void setParentBackground() {
 	/*
 	* Bug in GTK.  For some reason, some theme managers will crash
 	* when the progress bar is inheriting the background from a parent.
@@ -239,12 +247,13 @@ void setParentBackground () {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
-public void setMaximum (int value) {
-	checkWidget ();
+public void setMaximum(int value) {
+	checkWidget();
 	if (value <= minimum) return;
+
 	maximum = value;
-	selection = Math.min (selection, maximum);
-	updateBar (selection, minimum, maximum);
+	selection = Math.min(selection, maximum);
+	updateBar();
 }
 
 /**
@@ -260,12 +269,13 @@ public void setMaximum (int value) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
-public void setMinimum (int value) {
-	checkWidget ();
+public void setMinimum(int value) {
+	checkWidget();
 	if (value < 0 || value >= maximum) return;
+
 	minimum = value;
-	selection = Math.max (selection, minimum);
-	updateBar (selection, minimum, maximum);
+	selection = Math.max(selection, minimum);
+	updateBar();
 }
 
 /**
@@ -280,10 +290,11 @@ public void setMinimum (int value) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
-public void setSelection (int value) {
-	checkWidget ();
-	selection = Math.max (minimum, Math.min (maximum, value));
-	updateBar (selection, minimum, maximum);
+public void setSelection(int value) {
+	checkWidget();
+
+	selection = Math.max(minimum, Math.min(maximum, value));
+	updateBar();
 }
 
 /**
@@ -307,40 +318,27 @@ public void setSelection (int value) {
  *
  * @since 3.4
  */
-public void setState (int state) {
-	checkWidget ();
-	//NOT IMPLEMENTED
+public void setState(int state) {
+	checkWidget();
+	//NOT SUPPORTED BY GTK
 }
 
 @Override
-long timerProc (long widget) {
-	if (isVisible ()) GTK.gtk_progress_bar_pulse (handle);
+long timerProc(long widget) {
+	if (isVisible()) GTK.gtk_progress_bar_pulse(handle);
 	return 1;
 }
 
-void updateBar (int selection, int minimum, int maximum) {
+void updateBar() {
 	/*
 	* Bug in GTK.  When a progress bar has been unrealized after being
 	* realized at least once, gtk_progress_bar_set_fraction() GP's.  The
 	* fix is to update the progress bar state only when realized and restore
 	* the state when the progress bar becomes realized.
 	*/
-	if (!GTK.gtk_widget_get_realized (handle)) return;
+	if (!GTK.gtk_widget_get_realized(handle)) return;
 
 	double fraction = minimum == maximum ? 1 : (double)(selection - minimum) / (maximum - minimum);
-	GTK.gtk_progress_bar_set_fraction (handle, fraction);
-}
-
-void gtk_orientable_set_orientation (long pbar, int orientation) {
-	switch (orientation) {
-		case GTK.GTK_PROGRESS_BOTTOM_TO_TOP:
-			GTK.gtk_orientable_set_orientation(pbar, GTK.GTK_ORIENTATION_VERTICAL);
-			GTK.gtk_progress_bar_set_inverted(pbar, true);
-			break;
-		case GTK.GTK_PROGRESS_LEFT_TO_RIGHT:
-			GTK.gtk_orientable_set_orientation(pbar, GTK.GTK_ORIENTATION_HORIZONTAL);
-			GTK.gtk_progress_bar_set_inverted(pbar, false);
-			break;
-	}
+	GTK.gtk_progress_bar_set_fraction(handle, fraction);
 }
 }
