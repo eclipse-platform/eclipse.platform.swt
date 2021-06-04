@@ -30,6 +30,7 @@ IF "x.%MSVC_EDITION%"=="x." set "MSVC_EDITION=Community"
 IF "x.%MSVC_VERSION%"=="x." set "MSVC_VERSION=2019"
 
 IF "x.%MSVC_HOME%"=="x." set "MSVC_HOME=%SWT_BUILDDIR%\Microsoft\Visual Studio\%MSVC_VERSION%\"
+IF NOT EXIST "%MSVC_HOME%" set "MSVC_HOME=%ProgramFiles(x86)%\Microsoft Visual Studio\%MSVC_VERSION%\BuildTools"
 IF NOT EXIST "%MSVC_HOME%" set "MSVC_HOME=%ProgramFiles(x86)%\Microsoft Visual Studio\%MSVC_VERSION%\%MSVC_EDITION%"
 IF EXIST "%MSVC_HOME%" (
 	echo "Microsoft Visual Studio %MSVC_VERSION% dir: %MSVC_HOME%"
@@ -55,7 +56,7 @@ GOTO MAKE
 :X86_64
 set PROCESSOR_ARCHITECTURE=AMD64
 IF "x.%OUTPUT_DIR%"=="x." set OUTPUT_DIR=..\..\..\org.eclipse.swt.win32.win32.x86_64
-
+IF "x.%SWT_JAVA_HOME%"=="x." set "SWT_JAVA_HOME=%ProgramFiles%\AdoptOpenJDK\jdk-8.0.292.10-hotspot"
 IF "x.%SWT_JAVA_HOME%"=="x." (
     IF exist "%SWT_BUILDDIR%\Java\Oracle\jdk1.8.0-latest\x64" (
         set "SWT_JAVA_HOME=%SWT_BUILDDIR%\Java\Oracle\jdk1.8.0-latest\x64"
