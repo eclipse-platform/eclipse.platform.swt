@@ -183,18 +183,6 @@ void createHandle (int index) {
 	 */
 	rangeHandle = GTK.GTK4 ? GTK4.gtk_widget_get_first_child(handle) : handle;
 
-	/*
-	* Bug in GTK. In GTK 2.10, the buttons on either end of
-	* a horizontal slider are created taller then the slider bar
-	* when the GTK_CAN_FOCUS flag is set. The fix is not to set
-	* the flag for horizontal bars in all versions of 2.10. Note
-	* that a bug has been logged with GTK about this issue.
-	* (http://bugzilla.gnome.org/show_bug.cgi?id=475909)
-	*/
-	if ((style & SWT.VERTICAL) != 0) {
-		GTK.gtk_widget_set_can_focus(handle, true);
-	}
-
 	if (GTK.GTK4) {
 		OS.swt_fixed_add(fixedHandle, handle);
 	} else {
