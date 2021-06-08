@@ -961,6 +961,7 @@ typedef enum {
 	g_1credentials_1new_FUNC,
 	g_1date_1time_1get_1ymd_FUNC,
 	g_1date_1time_1new_1local_FUNC,
+	g_1date_1time_1unref_FUNC,
 	g_1dbus_1auth_1observer_1new_FUNC,
 	g_1dbus_1connection_1call_FUNC,
 	g_1dbus_1connection_1call_1finish_FUNC,

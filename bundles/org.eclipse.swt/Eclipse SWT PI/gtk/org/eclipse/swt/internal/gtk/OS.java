@@ -2311,6 +2311,7 @@ public static final native void g_variant_unref(long value);
  */
 public static final native long g_object_ref_sink(long object);
 
+/* GDateTime */
 /**
  * @param dateTime cast=(GDateTime *)
  * @param year cast=(gint *)
@@ -2318,7 +2319,6 @@ public static final native long g_object_ref_sink(long object);
  * @param day cast=(gint *)
  */
 public static final native void g_date_time_get_ymd(long dateTime, int[] year, int[] month, int[] day);
-
 /**
  * Ranges:
  * year must be between 1 - 9999,
@@ -2336,6 +2336,8 @@ public static final native void g_date_time_get_ymd(long dateTime, int[] year, i
  * @param seconds cast=(gdouble)
  */
 public static final native long g_date_time_new_local(int year, int month, int day, int hour, int minute, double seconds);
+/** @param datetime cast=(GDateTime *) */
+public static final native void g_date_time_unref(long datetime);
 
 /** @param file cast=(GFile *) */
 public static final native long g_file_get_path(long file);

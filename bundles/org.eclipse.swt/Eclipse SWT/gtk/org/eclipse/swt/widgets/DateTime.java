@@ -388,62 +388,54 @@ Rectangle computeTrimInPixels (int x, int y, int width, int height) {
 
 
 @Override
-void createHandle (int index) {
-	createHandle ();
-}
-
-/**
- * Here we carefully define the three internal handles:
- *  textEntryHandle
- *  containerHandle
- *  calendarHandle
- */
-void createHandle () {
-	if (isCalendar ()) {
+void createHandle(int index) {
+	if (isCalendar()) {
 		state |= HANDLE;
-		createHandleForFixed ();
-		createHandleForCalendar ();
 
+		createSWTFixedHandle();
+		createHandleForCalendar ();
 	} else {
-		createHandleForFixed ();
-		if (isDateWithDropDownButton ()) {
-			createHandleForDateWithDropDown ();
+		createSWTFixedHandle();
+		if (isDateWithDropDownButton()) {
+			createHandleForDateWithDropDown();
 		} else {
-			createHandleForDateTime ();
+			createHandleForDateTime();
 		}
-		GTK.gtk_editable_set_editable (textEntryHandle, (style & SWT.READ_ONLY) == 0);
+
+		GTK.gtk_editable_set_editable(textEntryHandle, (style & SWT.READ_ONLY) == 0);
 	}
 }
 
-private void createHandleForFixed () {
-	fixedHandle = OS.g_object_new (display.gtk_fixed_get_type (), 0);
-	if (fixedHandle == 0) error (SWT.ERROR_NO_HANDLES);
+private void createSWTFixedHandle() {
+	fixedHandle = OS.g_object_new(display.gtk_fixed_get_type(), 0);
+	if (fixedHandle == 0) error(SWT.ERROR_NO_HANDLES);
+
 	if (!GTK.GTK4) GTK3.gtk_widget_set_has_window(fixedHandle, true);
 }
 
-private void createHandleForCalendar () {
-	calendarHandle = GTK.gtk_calendar_new ();
-	if (calendarHandle == 0) error (SWT.ERROR_NO_HANDLES);
+private void createHandleForCalendar() {
+	handle = GTK.gtk_calendar_new();
+	if (handle == 0) error(SWT.ERROR_NO_HANDLES);
 
 	//Calendar becomes container in this case.
-	handle = calendarHandle;
+	calendarHandle = handle;
 	containerHandle = calendarHandle;
 
 	if (GTK.GTK4) {
-		OS.swt_fixed_add(fixedHandle, calendarHandle);
+		OS.swt_fixed_add(fixedHandle, handle);
 
-		GTK4.gtk_calendar_set_show_heading(calendarHandle, true);
-		GTK4.gtk_calendar_set_show_day_names(calendarHandle, true);
-		GTK4.gtk_calendar_set_show_week_numbers(calendarHandle, showWeekNumbers());
+		GTK4.gtk_calendar_set_show_heading(handle, true);
+		GTK4.gtk_calendar_set_show_day_names(handle, true);
+		GTK4.gtk_calendar_set_show_week_numbers(handle, showWeekNumbers());
 	} else {
-		GTK3.gtk_container_add (fixedHandle, calendarHandle);
+		GTK3.gtk_container_add(fixedHandle, handle);
 
 		int flags = GTK.GTK_CALENDAR_SHOW_HEADING | GTK.GTK_CALENDAR_SHOW_DAY_NAMES;
 		if (showWeekNumbers()) {
 			flags |= GTK.GTK_CALENDAR_SHOW_WEEK_NUMBERS;
 		}
-		GTK3.gtk_calendar_set_display_options (calendarHandle, flags);
-		GTK.gtk_widget_show (calendarHandle);
+		GTK3.gtk_calendar_set_display_options(handle, flags);
+		GTK.gtk_widget_show(handle);
 	}
 }
 
@@ -456,11 +448,11 @@ private void createHandleForDateWithDropDown () {
 	if (textEntryHandle == 0) error(SWT.ERROR_NO_HANDLES);
 
 	if (GTK.GTK4) {
-		OS.swt_fixed_add(fixedHandle, containerHandle);
-		GTK4.gtk_box_append(containerHandle, textEntryHandle);
+		OS.swt_fixed_add(fixedHandle, handle);
+		GTK4.gtk_box_append(handle, textEntryHandle);
 	} else {
-		GTK3.gtk_container_add(fixedHandle, containerHandle);
-		GTK3.gtk_container_add(containerHandle, textEntryHandle);
+		GTK3.gtk_container_add(fixedHandle, handle);
+		GTK3.gtk_container_add(handle, textEntryHandle);
 		GTK.gtk_widget_show(containerHandle);
 		GTK.gtk_widget_show(textEntryHandle);
 	}
@@ -470,27 +462,27 @@ private void createHandleForDateWithDropDown () {
 	setFontDescription(defaultFont().handle);
 }
 
-private void createHandleForDateTime () {
-	long adjusment = GTK.gtk_adjustment_new (0, -9999, 9999, 1, 0, 0);
+private void createHandleForDateTime() {
+	long adjustment = GTK.gtk_adjustment_new(0, -9999, 9999, 1, 0, 0);
 	if (GTK.GTK4) {
-		handle =  GTK.gtk_spin_button_new(adjusment, 1, 0);
-		textEntryHandle = GTK4.gtk_widget_get_first_child(handle);
-		containerHandle = spinButtonHandle;
+		handle = GTK.gtk_spin_button_new(adjustment, 1, 0);
+		textEntryHandle = GTK4.gtk_editable_get_delegate(handle);
+		containerHandle = textEntryHandle;
 	} else {
-		textEntryHandle = GTK.gtk_spin_button_new (adjusment, 1, 0);
-		handle = textEntryHandle;
+		handle = GTK.gtk_spin_button_new(adjustment, 1, 0);
+		textEntryHandle = handle;
 		containerHandle = textEntryHandle;
 	}
-	if (textEntryHandle == 0) error (SWT.ERROR_NO_HANDLES);
+	if (textEntryHandle == 0) error(SWT.ERROR_NO_HANDLES);
 
 	if (GTK.GTK4) {
 		OS.swt_fixed_add(fixedHandle, handle);
 	} else {
-		GTK3.gtk_container_add (fixedHandle, handle);
+		GTK3.gtk_container_add(fixedHandle, handle);
 	}
 
-	GTK.gtk_spin_button_set_numeric (handle, false);
-	GTK.gtk_spin_button_set_wrap (handle, (style & SWT.WRAP) != 0);
+	GTK.gtk_spin_button_set_numeric(handle, false);
+	GTK.gtk_spin_button_set_wrap(handle, (style & SWT.WRAP) != 0);
 }
 
 void createDropDownButton () {
@@ -720,21 +712,23 @@ String getFormattedString() {
 	return dateFormat.format(calendar.getTime());
 }
 
-void getDate () {
-	int [] y = new int [1];
-	int [] m = new int [1];
-	int [] d = new int [1];
+void getDate() {
+	int[] y = new int[1], m = new int[1], d = new int[1];
 
 	if (GTK.GTK4) {
 		long dateTime = GTK4.gtk_calendar_get_date(calendarHandle);
 		OS.g_date_time_get_ymd(dateTime, y, m, d);
-	} else {
-		GTK3.gtk_calendar_get_date (calendarHandle, y, m, d);
-	}
 
-	year = y[0];
-	month = m[0];
-	day = d[0];
+		year = y[0];
+		month = m[0] - 1;
+		day = d[0];
+	} else {
+		GTK3.gtk_calendar_get_date(calendarHandle, y, m, d);
+
+		year = y[0];
+		month = m[0];
+		day = d[0];
+	}
 }
 
 /**
@@ -1510,6 +1504,7 @@ public void setDate (int year, int month, int day) {
 		if (GTK.GTK4) {
 			long dateTime = OS.g_date_time_new_local(year, month + 1, day, 0, 0, 0);
 			GTK4.gtk_calendar_select_day(calendarHandle, dateTime);
+			OS.g_date_time_unref(dateTime);
 		} else {
 			GTK3.gtk_calendar_select_month (calendarHandle, month, year);
 			GTK3.gtk_calendar_select_day (calendarHandle, day);
@@ -1629,7 +1624,14 @@ public void setMonth (int month) {
 	if (!isValidDate (getYear (), month, getDay ())) return;
 	if (isCalendar ()) {
 		this.month = month;
-		GTK3.gtk_calendar_select_month (calendarHandle, month, year);
+
+		if (GTK.GTK4) {
+			long dateTime = OS.g_date_time_new_local(year, month + 1, day, 0, 0, 0);
+			GTK4.gtk_calendar_select_day(calendarHandle, dateTime);
+			OS.g_date_time_unref(dateTime);
+		} else {
+			GTK3.gtk_calendar_select_month(calendarHandle, month, year);
+		}
 	} else {
 		calendar.set (Calendar.MONTH, month);
 		updateControl ();
@@ -1712,7 +1714,14 @@ public void setYear (int year) {
 	if (!isValidDate (year, getMonth (), getDay ())) return;
 	if (isCalendar ()) {
 		this.year = year;
-		GTK3.gtk_calendar_select_month (calendarHandle, month, year);
+
+		if (GTK.GTK4) {
+			long dateTime = OS.g_date_time_new_local(year, month + 1, day, 0, 0, 0);
+			GTK4.gtk_calendar_select_day(calendarHandle, dateTime);
+			OS.g_date_time_unref(dateTime);
+		} else {
+			GTK3.gtk_calendar_select_month(calendarHandle, month, year);
+		}
 	} else {
 		calendar.set (Calendar.YEAR, year);
 		updateControl ();

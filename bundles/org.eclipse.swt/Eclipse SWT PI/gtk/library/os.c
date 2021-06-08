@@ -11656,6 +11656,16 @@ JNIEXPORT jlong JNICALL OS_NATIVE(g_1date_1time_1new_1local)
 }
 #endif
 
+#ifndef NO_g_1date_1time_1unref
+JNIEXPORT void JNICALL OS_NATIVE(g_1date_1time_1unref)
+	(JNIEnv *env, jclass that, jlong arg0)
+{
+	OS_NATIVE_ENTER(env, that, g_1date_1time_1unref_FUNC);
+	g_date_time_unref((GDateTime *)arg0);
+	OS_NATIVE_EXIT(env, that, g_1date_1time_1unref_FUNC);
+}
+#endif
+
 #ifndef NO_g_1dbus_1auth_1observer_1new
 JNIEXPORT jlong JNICALL OS_NATIVE(g_1dbus_1auth_1observer_1new)
 	(JNIEnv *env, jclass that)

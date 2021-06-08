@@ -987,6 +987,7 @@ char * OS_nativeFunctionNames[] = {
 	"g_1credentials_1new",
 	"g_1date_1time_1get_1ymd",
 	"g_1date_1time_1new_1local",
+	"g_1date_1time_1unref",
 	"g_1dbus_1auth_1observer_1new",
 	"g_1dbus_1connection_1call",
 	"g_1dbus_1connection_1call_1finish",
