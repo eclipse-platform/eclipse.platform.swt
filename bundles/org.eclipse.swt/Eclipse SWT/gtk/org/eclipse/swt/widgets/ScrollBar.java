@@ -157,15 +157,10 @@ void deregister () {
 	if (adjustmentHandle != 0) display.removeWidget (adjustmentHandle);
 }
 
-void destroyHandle () {
-	super.destroyWidget ();
-}
-
 @Override
 void destroyWidget () {
 	parent.destroyScrollBar (this);
 	releaseHandle ();
-	//parent.sendEvent (SWT.Resize);
 }
 
 /**

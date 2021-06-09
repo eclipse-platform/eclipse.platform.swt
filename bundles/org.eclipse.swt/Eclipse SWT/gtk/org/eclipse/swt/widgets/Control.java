@@ -4768,6 +4768,19 @@ void releaseWidget () {
 	}
 }
 
+@Override
+void destroyWidget() {
+	if (GTK.GTK4) {
+		// Remove widget from hierarchy  by removing it from parent container
+		if (parent != null) {
+			OS.swt_fixed_remove(parent.parentingHandle(), fixedHandle);
+		}
+		releaseHandle();
+	} else {
+		super.destroyWidget();
+	}
+}
+
 /**
  * GTK3 only, do not call on GTK4.
  * @param window a GdkWindow
