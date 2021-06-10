@@ -497,6 +497,7 @@ void createHandle (int index) {
 			gtk_box_set_child_packing(vboxHandle, handle, false, true, 0, GTK.GTK_PACK_START);
 		} else {
 			handle = GTK3.gtk_menu_new();
+			if (handle == 0) error(SWT.ERROR_NO_HANDLES);
 		}
 	}
 }
