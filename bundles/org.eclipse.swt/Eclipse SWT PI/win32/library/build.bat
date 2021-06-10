@@ -36,6 +36,7 @@ IF EXIST "%MSVC_HOME%" (
 	echo "Microsoft Visual Studio %MSVC_VERSION% dir: %MSVC_HOME%"
 ) ELSE (
 	echo "WARNING: Microsoft Visual Studio %MSVC_VERSION% was not found."
+    echo "     Refer steps for SWT Windows native setup: https://www.eclipse.org/swt/swt_win_native.php"
 )
 
 IF "x.%1"=="x.x86" GOTO X86
@@ -67,8 +68,9 @@ IF "x.%SWT_JAVA_HOME%"=="x." (
         )
     )
 )
-IF "x.%SWT_JAVA_HOME%"=="x." (
+IF NOT EXIST %SWT_JAVA_HOME% (
     echo "WARNING: x64 Java JDK not found. Please set SWT_JAVA_HOME to your JDK directory."
+    echo "     Refer steps for SWT Windows native setup: https://www.eclipse.org/swt/swt_win_native.php"
 ) ELSE (
     echo "SWT_JAVA_HOME x64: %SWT_JAVA_HOME%"
 )
@@ -91,5 +93,6 @@ WHERE cl
 if %ERRORLEVEL% NEQ 0 (
     echo "WARNING: cl (Microsoft C compiler) not found on path. Please install Microsoft Visual Studio."
     echo "     If already installed, try launching eclipse from the 'Developer Command Prompt for VS' "
+    echo "     Refer steps for SWT Windows native setup: https://www.eclipse.org/swt/swt_win_native.php"
 )
 nmake -f make_win32.mak %1 %2 %3 %4 %5 %6 %7 %8 %9
