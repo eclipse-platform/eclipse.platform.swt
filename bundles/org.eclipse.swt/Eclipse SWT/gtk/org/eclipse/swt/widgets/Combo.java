@@ -2691,9 +2691,9 @@ public void setTextLimit (int limit) {
 }
 
 @Override
-void setToolTipText (Shell shell, String newString) {
-	if (entryHandle != 0) shell.setToolTipText (entryHandle, newString);
-	if (buttonHandle != 0) shell.setToolTipText (buttonHandle, newString);
+void setToolTipText(Shell shell, String newString) {
+	if (entryHandle != 0) setToolTipText(entryHandle, newString);
+	if (buttonHandle != 0) setToolTipText(buttonHandle, newString);
 }
 
 /**

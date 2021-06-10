@@ -250,21 +250,6 @@ long enterExitHandle() {
 }
 
 @Override
-void fixChildren (Shell newShell, Shell oldShell, Decorations newDecorations, Decorations oldDecorations, Menu [] menus) {
-	super.fixChildren (newShell, oldShell, newDecorations, oldDecorations, menus);
-	ToolItem [] items = getItems ();
-	if (toolTipText == null) {
-		for (int i = 0; i < items.length; i++) {
-			ToolItem item = items [i];
-			if (item.toolTipText != null) {
-				item.setToolTipText(oldShell, null);
-				item.setToolTipText(newShell, item.toolTipText);
-			}
-		}
-	}
-}
-
-@Override
 boolean forceFocus (long focusHandle) {
 	int dir = GTK.GTK_DIR_TAB_FORWARD;
 	if ((style & SWT.MIRRORED) != 0) dir = GTK.GTK_DIR_TAB_BACKWARD;
@@ -744,14 +729,13 @@ void setOrientation (boolean create) {
 }
 
 @Override
-public void setToolTipText (String string) {
+public void setToolTipText(String string) {
 	checkWidget();
-	super.setToolTipText (string);
-	Shell shell = _getShell ();
-	ToolItem [] items = getItems ();
+	super.setToolTipText(string);
+	ToolItem[] items = getItems();
 	for (int i = 0; i < items.length; i++) {
-		String newString = string != null ? null : items [i].toolTipText;
-		shell.setToolTipText (items [i].handle, newString);
+		String newString = string != null ? null : items[i].toolTipText;
+		setToolTipText(items[i].handle, newString);
 	}
 }
 }

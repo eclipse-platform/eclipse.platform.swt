@@ -726,15 +726,10 @@ public void setText (String string) {
  *
  * @since 3.2
  */
-public void setToolTipText (String string) {
+public void setToolTipText(String string) {
 	checkWidget();
-	Shell shell = parent._getShell ();
-	setToolTipText (shell, string);
 	toolTipText = string;
-}
-
-void setToolTipText (Shell shell, String newString) {
-	shell.setToolTipText (buttonHandle, newString);
+	setToolTipText(buttonHandle, string);
 }
 
 /**

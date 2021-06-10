@@ -5967,15 +5967,16 @@ public void setTextDirection(int textDirection) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
-public void setToolTipText (String string) {
+public void setToolTipText(String string) {
 	checkWidget();
+
 	if (!Objects.equals(string, toolTipText)) {
 		toolTipText = string;
-		setToolTipText (_getShell (), string);
+		setToolTipText(_getShell(), string);
 	}
 }
 
-void setToolTipText (Shell shell, String newString) {
+void setToolTipText(Shell shell, String newString) {
 	/*
 	* Feature in GTK.  In order to prevent children widgets
 	* from inheriting their parent's tooltip, the tooltip is
@@ -5989,7 +5990,7 @@ void setToolTipText (Shell shell, String newString) {
 	* under the pointer).
 	*/
 	if (display.currentControl == this) {
-		shell.setToolTipText(shell.handle, newString);
+		setToolTipText(shell.handle, newString);
 	}
 }
 

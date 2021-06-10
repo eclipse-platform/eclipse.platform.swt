@@ -2415,4 +2415,13 @@ void gtk_container_set_border_width (long handle, int border_width) {
 	}
 }
 
+void setToolTipText(long tipWidget, String string) {
+	byte[] buffer = null;
+	if (string != null && !string.isEmpty()) {
+		char[] chars = fixMnemonic(string, false, true);
+		buffer = Converter.wcsToMbcs(chars, true);
+	}
+
+	GTK.gtk_widget_set_tooltip_text(tipWidget, buffer);
+}
 }

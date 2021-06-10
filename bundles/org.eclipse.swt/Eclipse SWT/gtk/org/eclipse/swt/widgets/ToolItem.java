@@ -1441,12 +1441,23 @@ public void setText (String string) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
-public void setToolTipText (String string) {
+public void setToolTipText(String string) {
 	checkWidget();
 	if (toolTipText == string || (toolTipText != null && toolTipText.equals(string))) return;
+
 	if (parent.toolTipText == null) {
-		Shell shell = parent._getShell ();
-		setToolTipText (shell, string);
+		if (GTK.GTK4) {
+			setToolTipText(handle, string);
+		} else {
+			long child = GTK3.gtk_bin_get_child(handle);
+			if ((style & SWT.DROP_DOWN) != 0) {
+				long list = GTK3.gtk_container_get_children(child);
+				child = OS.g_list_nth_data(list, 0);
+				OS.g_list_free(list);
+				if (arrowHandle != 0) setToolTipText(arrowHandle, string);
+			}
+			setToolTipText(child != 0 ? child : handle, string);
+		}
 	}
 	toolTipText = string;
 	/*
@@ -1464,21 +1475,6 @@ public void setToolTipText (String string) {
 			proxyMenuItem = GTK3.gtk_tool_item_retrieve_proxy_menu_item (handle);
 			OS.g_signal_connect(proxyMenuItem, OS.activate, ToolBar.menuItemSelectedFunc.getAddress(), handle);
 		}
-	}
-}
-
-void setToolTipText (Shell shell, String newString) {
-	if (GTK.GTK4) {
-		shell.setToolTipText(handle, newString);
-	} else {
-		long child = GTK3.gtk_bin_get_child (handle);
-		if ((style & SWT.DROP_DOWN) != 0) {
-			long list = GTK3.gtk_container_get_children (child);
-			child = OS.g_list_nth_data (list, 0);
-			OS.g_list_free(list);
-			if (arrowHandle != 0) shell.setToolTipText (arrowHandle, newString);
-		}
-		shell.setToolTipText (child != 0 ? child : handle, newString);
 	}
 }
 

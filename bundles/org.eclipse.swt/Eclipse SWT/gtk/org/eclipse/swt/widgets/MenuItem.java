@@ -1246,11 +1246,12 @@ public void setText (String string) {
  *
  * @since 3.104
  */
-public void setToolTipText (String toolTip) {
+public void setToolTipText(String toolTip) {
 	checkWidget();
-	if (toolTip != null && (toolTip.trim().length() == 0 || toolTip.equals (toolTipText))) return;
+	if (toolTip != null && (toolTip.trim().length() == 0 || toolTip.equals(toolTipText))) return;
 
-	this.parent.getShell().setToolTipText (handle, (toolTipText = toolTip));
+	toolTipText = toolTip;
+	setToolTipText(handle, toolTip);
 }
 
 void updateAccelerator (long accelGroup, boolean add) {

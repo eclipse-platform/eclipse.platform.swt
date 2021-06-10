@@ -505,11 +505,11 @@ public void setText (String string) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
-public void setToolTipText (String string) {
-	checkWidget ();
-	Shell shell = parent._getShell ();
-	shell.setToolTipText (handle, string);
+public void setToolTipText(String string) {
+	checkWidget();
+
 	toolTipText = string;
+	setToolTipText(handle, string);
 }
 
 @Override
