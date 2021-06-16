@@ -31,7 +31,7 @@ static CALLBACK_DATA callbackData[MAX_CALLBACKS];
 static int callbackEnabled = 1;
 static int callbackEntryCount = 0;
 static int initialized = 0;
-static jint JNI_VERSION = 0;
+static jmethodID mid_Throwable_addSuppressed = NULL;
 
 #ifdef DEBUG_CALL_PRINTS
 	static int counter = 0;
@@ -1513,6 +1513,40 @@ jlong fnx_array[MAX_ARGS+1+NUM_DOUBLE_CALLBACKS][MAX_CALLBACKS] = {
 	#endif
 };
 
+void initialize_mid_Throwable_addSuppressed(JNIEnv* env)
+{
+	jclass classThrowable = NULL;
+
+	classThrowable = (*env)->FindClass(env, "java/lang/Throwable");
+	if (!classThrowable || (*env)->ExceptionCheck(env)) {
+		/* Shall never happen, but let's still try to handle it */
+		fprintf(stderr, "SWT-JNI: ERROR(%d): Failed to resolve 'java/lang/Throwable'\n", __LINE__);
+		fflush(stderr);
+		(*env)->ExceptionClear(env);
+		return;
+	}
+
+	mid_Throwable_addSuppressed = (*env)->GetMethodID(env, classThrowable, "addSuppressed", "(Ljava/lang/Throwable;)V");
+	if (!mid_Throwable_addSuppressed || (*env)->ExceptionCheck(env))
+	{
+		/* Shall never happen, but let's still try to handle it */
+		fprintf(stderr, "SWT-JNI: ERROR(%d): Failed to resolve 'addSuppressed' in 'java/lang/Throwable'\n", __LINE__);
+		fflush(stderr);
+		(*env)->ExceptionClear(env);
+		return;
+	}
+}
+
+void initialize(JNIEnv* env)
+{
+	if (initialized) return;
+
+	memset(&callbackData, 0, sizeof(callbackData));
+	initialize_mid_Throwable_addSuppressed(env);
+
+	initialized = 1;
+}
+
 /* --------------- callback class calls --------------- */
 
 JNIEXPORT jlong JNICALL CALLBACK_NATIVE(bind)
@@ -1523,11 +1557,9 @@ JNIEXPORT jlong JNICALL CALLBACK_NATIVE(bind)
 	jclass javaClass = that;
 	const char *methodString = NULL, *sigString = NULL;
 	jlong result = 0;
-	if (JNI_VERSION == 0) JNI_VERSION = (*env)->GetVersion(env);
-	if (!initialized) {
-		memset(&callbackData, 0, sizeof(callbackData));
-		initialized = 1;
-	}
+
+	initialize(env);
+
 	if (method) methodString = (const char *) (*env)->GetStringUTFChars(env, method, NULL);
 	if (signature) sigString = (const char *) (*env)->GetStringUTFChars(env, signature, NULL);
 	if (object && methodString && sigString) {
@@ -1774,7 +1806,6 @@ jlong callback(int index, ...)
 {
 	if (!callbackEnabled) return 0;
 
-	{
 	JNIEnv *env = NULL;
 	jmethodID mid = callbackData[index].methodID;
 	jobject object = callbackData[index].object;
@@ -1782,7 +1813,8 @@ jlong callback(int index, ...)
 	jboolean isArrayBased = callbackData[index].isArrayBased;
 	jint argCount = callbackData[index].argCount;
 	jlong result = callbackData[index].errorResult;
-	jthrowable ex;
+	jthrowable oldException = NULL;
+	jthrowable curException = NULL;
 	int detach = 0;
 	va_list vl;
 
@@ -1845,15 +1877,15 @@ jlong callback(int index, ...)
 	}
 #endif
 
-(*JVM)->GetEnv(JVM, (void **)&env, JNI_VERSION_1_4);
+	(*JVM)->GetEnv(JVM, (void **)&env, JNI_VERSION_1_4);
 
-if (env == NULL) {
-	(*JVM)->AttachCurrentThreadAsDaemon(JVM, (void **)&env, NULL);
+	if (env == NULL) {
+		(*JVM)->AttachCurrentThreadAsDaemon(JVM, (void **)&env, NULL);
 #ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "SWT-JNI: AttachCurrentThreadAsDaemon\n");
+		fprintf(stderr, "SWT-JNI: AttachCurrentThreadAsDaemon\n");
 #endif
-	detach = 1;
-}
+		detach = 1;
+	}
 	
 	/* If the current thread is not attached to the VM, it is not possible to call into the VM */
 	if (env == NULL) {
@@ -1864,14 +1896,32 @@ if (env == NULL) {
 		goto noEnv;
 	}
 
-	/* If an exception has occurred in previous callbacks do not call into the VM. */
-	if ((ex = (*env)->ExceptionOccurred(env))) {
+	/*
+	 * Bug 562408: Sometimes a single native API can call multiple callbacks.
+	 * Java side of the callback might throw an exception for one of such
+	 * callbacks. The exception will stay until it can be delivered, that is,
+	 * until execution returns from native API back to Java. This leaves us
+	 * with the following options for concurrent callbacks:
+	 * 1) Do nothing
+	 *    Since the exception is still pending on JVM's thread, attempts to
+	 *    call another Java callback will just immediately terminate on the
+	 *    same exception. Hence the callback will not be executed. But caller's
+	 *    contract does not always allow callback to be silently skipped. This
+	 *    sometimes causes caller to crash JVM and/or do something weird.
+	 * 2) Early-return from this function
+	 *    This is basically the same as (1).
+	 * 3) Temporarily put the exception aside
+	 *    This allows the new callback to execute independently. Note that it
+	 *    can throw as well.
+	 * Here, option (3) is implemented.
+	 */
+	oldException = (*env)->ExceptionOccurred(env);
+	if (oldException) {
 #ifdef DEBUG_CALL_PRINTS
 		fprintf(stderr, "SWT-JNI:%*s ERROR(%d): (*env)->ExceptionOccurred()\n", counter, "", __LINE__);
 		fflush(stderr);
 #endif
-		(*env)->DeleteLocalRef(env, ex);
-		goto done;
+		(*env)->ExceptionClear(env);
 	}
 
 	/* Call into the VM. */
@@ -1908,23 +1958,64 @@ if (env == NULL) {
 	}
 	ATOMIC_DEC(callbackEntryCount);
 
-done:
 	va_end(vl);
 
-	/* If an exception has occurred in Java, return the error result. */
-	if ((ex = (*env)->ExceptionOccurred(env))) {
-		(*env)->DeleteLocalRef(env, ex);
+	/* Handle exceptions in Java side of the callback */
+	curException = (*env)->ExceptionOccurred(env);
+	if (curException) {
+		if (oldException && mid_Throwable_addSuppressed) {
+			/*
+			 * Current exception needs to be cleared to be able to use
+			 * CallVoidMethod() below. That's fine because old exception will
+			 * be re-thrown soon and the current one is no longer needed.
+			 */
+			(*env)->ExceptionClear(env);
+			
+			/*
+			 * If there's an old exception already, attach the new exception as
+			 * 'Throwable.addSuppressed()' in old exception. Java has suppressed
+			 * exceptions exactly for such cases where additional exceptions
+			 * occur while delivering the first one.
+			 */
+			(*env)->CallVoidMethod(env, oldException, mid_Throwable_addSuppressed, curException);
+		}
+
+		/* See comment for DeleteLocalRef() below */
+		(*env)->DeleteLocalRef(env, curException);
+
 #ifdef DEBUG_CALL_PRINTS
 		fprintf(stderr, "SWT-JNI:%*s ERROR(%d): (*env)->ExceptionOccurred()\n", counter, "", __LINE__);
 		fflush(stderr);
 
-		/* 
+		/*
 		 * WARNING: ExceptionDescribe() also clears exception as if it never happened.
 		 * Don't do this because it changes the behavior of debugged program significantly.
-		 * (*env)->ExceptionDescribe(env);
+
+		 (*env)->ExceptionDescribe(env);
 		 */
 #endif
+
+		/*
+		 * We don't have a return value because Java side terminated with an
+		 * exception. Use a predetermined per-callback value and hope that
+		 * caller won't die on it.
+		 */
 		result = callbackData[index].errorResult;
+	}
+
+	/* Rethrow the old exception, if any */
+	if (oldException) {
+		(*env)->Throw(env, oldException);
+
+		/*
+		 * Every ExceptionOccurred() creates a new local reference, and JVM asks to
+		 * avoid having many of these at once. If there's a bunch of callbacks called
+		 * by a single native API and one of them throws exception, then every
+		 * subsequent callback will add another reference. The problem can be seen
+		 * with '-Xcheck:jni', for example with snippet for 'SWT.Arm' from Bug 562408.
+		 * The solution is to properly clean up these references.
+		 */
+		(*env)->DeleteLocalRef(env, oldException);
 	}
 
 	if (detach) {
@@ -1944,7 +2035,6 @@ noEnv:
 #endif
 
 	return result;
-	}
 }
 
 /* ------------- callback class calls end --------------- */
