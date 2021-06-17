@@ -15,6 +15,7 @@ package org.eclipse.swt.browser;
 
 import java.nio.charset.*;
 import java.util.*;
+import java.util.function.*;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
@@ -45,7 +46,7 @@ class Edge extends WebBrowser {
 	static ICoreWebView2Environment Environment;
 
 	ICoreWebView2 webView;
-	ICoreWebView2_2 webView2;
+	ICoreWebView2_2 webView_2;
 	ICoreWebView2Controller controller;
 	ICoreWebView2Settings settings;
 	ICoreWebView2Environment2 environment2;
@@ -71,6 +72,10 @@ static String bstrToString(long bstr) {
 	return String.valueOf(data);
 }
 
+static char[] stringToWstr(String s) {
+	return (s != null) ? (s + "\0").toCharArray() : null;
+}
+
 static void error(int code, int hr) {
 	SWT.error(code, null, String.format(" [0x%08x]", hr));
 }
@@ -92,6 +97,45 @@ IUnknown newHostObject(ICoreWebView2SwtHost handler) {
 	long pdisp = COM.CreateSwtWebView2Host(handler);
 	if (pdisp == 0) error(SWT.ERROR_NO_HANDLES, COM.E_OUTOFMEMORY);
 	return new IUnknown(pdisp);
+}
+
+static int callAndWait(long[] ppv, ToIntFunction<IUnknown> callable) {
+	int[] phr = {COM.S_OK};
+	IUnknown completion = newCallback((result, pv) -> {
+		phr[0] = (int)result;
+		if ((int)result == COM.S_OK) {
+			ppv[0] = pv;
+			new IUnknown(pv).AddRef();
+		}
+		return COM.S_OK;
+	});
+	ppv[0] = 0;
+	phr[0] = callable.applyAsInt(completion);
+	completion.Release();
+	Display display = Display.getCurrent();
+	while (phr[0] == COM.S_OK && ppv[0] == 0) {
+		if (!display.readAndDispatch()) display.sleep();
+	}
+	return phr[0];
+}
+
+static int callAndWait(String[] pstr, ToIntFunction<IUnknown> callable) {
+	int[] phr = new int[1];
+	IUnknown completion = newCallback((result, pszJson) -> {
+		phr[0] = (int)result;
+		if ((int)result == COM.S_OK) {
+			pstr[0] = wstrToString(pszJson, false);
+		}
+		return COM.S_OK;
+	});
+	pstr[0] = null;
+	phr[0] = callable.applyAsInt(completion);
+	completion.Release();
+	Display display = Display.getCurrent();
+	while (phr[0] == COM.S_OK && pstr[0] == null) {
+		if (!display.readAndDispatch()) display.sleep();
+	}
+	return phr[0];
 }
 
 void checkDeadlock() {
@@ -122,42 +166,29 @@ ICoreWebView2Environment createEnvironment() {
 	long pOpts = COM.CreateSwtWebView2Options();
 	if (pOpts == 0) error(SWT.ERROR_NO_HANDLES, COM.E_OUTOFMEMORY);
 	ICoreWebView2EnvironmentOptions options = new ICoreWebView2EnvironmentOptions(pOpts);
-	char[] pVersion = (SDK_TARGET_VERSION + "\0").toCharArray();
+	char[] pVersion = stringToWstr(SDK_TARGET_VERSION);
 	options.put_TargetCompatibleBrowserVersion(pVersion);
 	if (browserArgs != null) {
-		char[] pBrowserArgs = (browserArgs + "\0").toCharArray();
+		char[] pBrowserArgs = stringToWstr(browserArgs);
 		options.put_AdditionalBrowserArguments(pBrowserArgs);
 	}
 	if (language != null) {
-		char[] pLanguage = (language + "\0").toCharArray();
+		char[] pLanguage = stringToWstr(language);
 		options.put_Language(pLanguage);
 	}
 
 	// Create the environment
-	char[] pBrowserDir = (browserDir != null) ? (browserDir + "\0").toCharArray() : null;
-	char[] pDataDir = (dataDir + "\0").toCharArray();
-	int[] pResult = {COM.S_OK};
-	long[] ppEnv = new long[1];
-	IUnknown completion = newCallback((result, pEnv) -> {
-		pResult[0] = (int)result;
-		if ((int)result == COM.S_OK) {
-			ppEnv[0] = pEnv;
-			new IUnknown(pEnv).AddRef();
-		}
-		return COM.S_OK;
-	});
-	pResult[0] = COM.CreateCoreWebView2EnvironmentWithOptions(
-						pBrowserDir, pDataDir, options.getAddress(), completion.getAddress());
-	completion.Release();
+	char[] pBrowserDir = stringToWstr(browserDir);
+	char[] pDataDir = stringToWstr(dataDir);
+	long[] ppv = new long[1];
+	int hr = callAndWait(ppv, completion -> COM.CreateCoreWebView2EnvironmentWithOptions(
+					pBrowserDir, pDataDir, options.getAddress(), completion.getAddress()));
 	options.Release();
-	if (pResult[0] == OS.HRESULT_FROM_WIN32(OS.ERROR_FILE_NOT_FOUND)) {
+	if (hr == OS.HRESULT_FROM_WIN32(OS.ERROR_FILE_NOT_FOUND)) {
 		SWT.error(SWT.ERROR_NOT_IMPLEMENTED, null, " [WebView2 runtime not found]");
 	}
-	while (pResult[0] == COM.S_OK && ppEnv[0] == 0) {
-		if (!display.readAndDispatch()) display.sleep();
-	}
-	if (pResult[0] != COM.S_OK) error(SWT.ERROR_NO_HANDLES, pResult[0]);
-	Environment = new ICoreWebView2Environment(ppEnv[0]);
+	if (hr != COM.S_OK) error(SWT.ERROR_NO_HANDLES, hr);
+	Environment = new ICoreWebView2Environment(ppv[0]);
 	DataDir = dataDir;
 
 	// Save Edge version for reporting
@@ -179,34 +210,20 @@ public void create(Composite parent, int style) {
 	checkDeadlock();
 	ICoreWebView2Environment environment = createEnvironment();
 
-	int[] pResult = {COM.S_OK};
-	long[] ppv = new long[1], ppHost = new long[1];
+	long[] ppv = new long[1];
 	int hr = environment.QueryInterface(COM.IID_ICoreWebView2Environment2, ppv);
 	if (hr == COM.S_OK) environment2 = new ICoreWebView2Environment2(ppv[0]);
 
-	IUnknown completion = newCallback((result, pHost) -> {
-		pResult[0] = (int)result;
-		if ((int)result == COM.S_OK) {
-			ppHost[0] = pHost;
-			new IUnknown(pHost).AddRef();
-		}
-		return COM.S_OK;
-	});
-	pResult[0] = environment.CreateCoreWebView2Controller(browser.handle, completion);
-	completion.Release();
-	Display display = browser.getDisplay();
-	while (pResult[0] == COM.S_OK && ppHost[0] == 0) {
-		if (!display.readAndDispatch()) display.sleep();
-	}
-	if (pResult[0] != COM.S_OK) error(SWT.ERROR_NO_HANDLES, pResult[0]);
-	controller = new ICoreWebView2Controller(ppHost[0]);
+	hr = callAndWait(ppv, completion -> environment.CreateCoreWebView2Controller(browser.handle, completion));
+	if (hr != COM.S_OK) error(SWT.ERROR_NO_HANDLES, hr);
+	controller = new ICoreWebView2Controller(ppv[0]);
 
 	controller.get_CoreWebView2(ppv);
 	webView = new ICoreWebView2(ppv[0]);
 	webView.get_Settings(ppv);
 	settings = new ICoreWebView2Settings(ppv[0]);
 	hr = webView.QueryInterface(COM.IID_ICoreWebView2_2, ppv);
-	if (hr == COM.S_OK) webView2 = new ICoreWebView2_2(ppv[0]);
+	if (hr == COM.S_OK) webView_2 = new ICoreWebView2_2(ppv[0]);
 
 	long[] token = new long[1];
 	IUnknown handler;
@@ -237,9 +254,9 @@ public void create(Composite parent, int style) {
 	handler = newCallback(this::handleMoveFocusRequested);
 	controller.add_MoveFocusRequested(handler, token);
 	handler.Release();
-	if (webView2 != null) {
+	if (webView_2 != null) {
 		handler = newCallback(this::handleDOMContentLoaded);
-		webView2.add_DOMContentLoaded(handler, token);
+		webView_2.add_DOMContentLoaded(handler, token);
 		handler.Release();
 	}
 
@@ -255,11 +272,11 @@ public void create(Composite parent, int style) {
 }
 
 void browserDispose(Event event) {
-	if (webView2 != null) webView2.Release();
+	if (webView_2 != null) webView_2.Release();
 	if (environment2 != null) environment2.Release();
 	settings.Release();
 	webView.Release();
-	webView2 = null;
+	webView_2 = null;
 	environment2 = null;
 	settings = null;
 	webView = null;
@@ -304,23 +321,11 @@ public Object evaluate(String script) throws SWTException {
 	// Disallow programmatic execution manually.
 	if (!jsEnabled) return null;
 
-	int[] pResult = new int[1];
+	String script2 = "(function() {try { " + script + " } catch (e) { return '" + ERROR_ID + "' + e.message; } })();\0";
 	String[] pJson = new String[1];
-	IUnknown completion = newCallback((result, pszJson) -> {
-		pResult[0] = (int)result;
-		if ((int)result == COM.S_OK) {
-			pJson[0] = wstrToString(pszJson, false);
-		}
-		return COM.S_OK;
-	});
-	script = "(function() {try { " + script + " } catch (e) { return '" + ERROR_ID + "' + e.message; } })();\0";
-	pResult[0] = webView.ExecuteScript(script.toCharArray(), completion);
-	completion.Release();
-	Display display = browser.getDisplay();
-	while (pResult[0] == COM.S_OK && pJson[0] == null) {
-		if (!display.readAndDispatch()) display.sleep();
-	}
-	if (pResult[0] != COM.S_OK) error(SWT.ERROR_FAILED_EVALUATE, pResult[0]);
+	int hr = callAndWait(pJson, completion -> webView.ExecuteScript(script2.toCharArray(), completion));
+	if (hr != COM.S_OK) error(SWT.ERROR_FAILED_EVALUATE, hr);
+
 	Object data = JSON.parse(pJson[0]);
 	if (data instanceof String && ((String) data).startsWith(ERROR_ID)) {
 		String errorMessage = ((String) data).substring(ERROR_ID.length());
@@ -336,7 +341,7 @@ public boolean execute(String script) {
 	if (!jsEnabled) return false;
 
 	IUnknown completion = newCallback((long result, long json) -> COM.S_OK);
-	int hr = webView.ExecuteScript((script + "\0").toCharArray(), completion);
+	int hr = webView.ExecuteScript(stringToWstr(script), completion);
 	completion.Release();
 	return hr == COM.S_OK;
 }
@@ -522,7 +527,7 @@ int handleNavigationCompleted(long pView, long pArgs, boolean top) {
 	long[] pNavId = new long[1];
 	args.get_NavigationId(pNavId);
 	LocationEvent startEvent = navigations.remove(pNavId[0]);
-	if (webView2 == null && startEvent != null && startEvent.top) {
+	if (webView_2 == null && startEvent != null && startEvent.top) {
 		// If DOMContentLoaded isn't available, fire
 		// ProgressListener.completed from here.
 		sendProgressCompleted();
@@ -672,9 +677,9 @@ public boolean setUrl(String url, String postData, String[] headers) {
 		url = "http://" + url;
 	}
 	int hr;
-	char[] pszUrl = (url + "\0").toCharArray();
+	char[] pszUrl = stringToWstr(url);
 	if (postData != null || headers != null) {
-		if (environment2 == null || webView2 == null) {
+		if (environment2 == null || webView_2 == null) {
 			SWT.error(SWT.ERROR_NOT_IMPLEMENTED, null, " [WebView2 version 88+ is required to set postData and headers]");
 		}
 		long[] ppRequest = new long[1];
@@ -699,7 +704,7 @@ public boolean setUrl(String url, String postData, String[] headers) {
 		if (stream != null) stream.Release();
 		if (hr != COM.S_OK) error(SWT.ERROR_NO_HANDLES, hr);
 		IUnknown request = new IUnknown(ppRequest[0]);
-		hr = webView2.NavigateWithWebResourceRequest(request);
+		hr = webView_2.NavigateWithWebResourceRequest(request);
 		request.Release();
 	} else {
 		hr = webView.Navigate(pszUrl);
