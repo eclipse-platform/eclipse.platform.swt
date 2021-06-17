@@ -46,18 +46,19 @@ IF NOT "x.%1"=="x.x86_64" (
 
 set PROCESSOR_ARCHITECTURE=AMD64
 IF "x.%OUTPUT_DIR%"=="x." set OUTPUT_DIR=..\..\..\org.eclipse.swt.win32.win32.x86_64
-IF "x.%SWT_JAVA_HOME%"=="x." set "SWT_JAVA_HOME=%ProgramFiles%\AdoptOpenJDK\jdk-8.0.292.10-hotspot"
-IF "x.%SWT_JAVA_HOME%"=="x." (
-    IF exist "%SWT_BUILDDIR%\Java\Oracle\jdk1.8.0-latest\x64" (
-        set "SWT_JAVA_HOME=%SWT_BUILDDIR%\Java\Oracle\jdk1.8.0-latest\x64"
-    ) ELSE (
-        IF exist "C:\Program Files\Java\jdk*" (
-            echo "Found Java in C:\Program Files\Java\jdk, automatically setting SWT_JAVA_HOME to latest java"
-            for /d %%i in ("\Program Files\Java\jdk*") do set SWT_JAVA_HOME=%%i
-        )
-    )
-)
-IF NOT EXIST %SWT_JAVA_HOME% (
+
+:: Search for a usable JDK
+:: -----------------------
+IF "%SWT_JAVA_HOME%"=="" ECHO 'SWT_JAVA_HOME' was not provided, auto-searching for JDK...
+:: Bug 572733: JDK path used on Azure build machines
+IF "%SWT_JAVA_HOME%"=="" CALL :TryToUseJdk "%ProgramFiles%\AdoptOpenJDK\jdk-8.0.292.10-hotspot"
+:: Bug 526802: Probably some kind of legacy build machine path
+IF "%SWT_JAVA_HOME%"=="" CALL :TryToUseJdk "%SWT_BUILDDIR%\Java\Oracle\jdk1.8.0-latest\x64"
+:: Search for generic JDKs so that user can build with little configuration
+:: Note that first found JDK wins, so sort them by order of preference.
+IF "%SWT_JAVA_HOME%"=="" CALL :TryToUseJdk "%ProgramFiles%\Java\jdk*"
+IF "%SWT_JAVA_HOME%"=="" CALL :TryToUseJdk "%ProgramFiles%\AdoptOpenJDK\jdk*"
+IF NOT EXIST "%SWT_JAVA_HOME%" (
     echo "WARNING: x64 Java JDK not found. Please set SWT_JAVA_HOME to your JDK directory."
     echo "     Refer steps for SWT Windows native setup: https://www.eclipse.org/swt/swt_win_native.php"
 ) ELSE (
@@ -83,3 +84,23 @@ if %ERRORLEVEL% NEQ 0 (
     echo "     Refer steps for SWT Windows native setup: https://www.eclipse.org/swt/swt_win_native.php"
 )
 nmake -f make_win32.mak %1 %2 %3 %4 %5 %6 %7 %8 %9
+GOTO :EOF
+
+:TryToUseJdk
+SET TESTED_JDK_PATH_MASK=%~1
+:: Loop over all directories matching mask.
+:: Note that directories are iterated in alphabetical order and *last* hit will
+:: be selected in hopes to select the highest available JDK version.
+FOR /D %%I IN ("%TESTED_JDK_PATH_MASK%") DO (
+	IF NOT EXIST "%%~I" (
+		ECHO -- JDK '%%~I' doesn't exist on disk
+		GOTO :EOF
+	)
+	IF NOT EXIST "%%~I\include\jni.h" (
+		ECHO -- JDK '%%~I' is bad: no jni.h
+		GOTO :EOF
+	)
+	ECHO -- JDK '%%~I' looks good, selecting it
+	SET SWT_JAVA_HOME=%%~I
+)
+GOTO :EOF
