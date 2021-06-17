@@ -39,22 +39,11 @@ IF EXIST "%MSVC_HOME%" (
     echo "     Refer steps for SWT Windows native setup: https://www.eclipse.org/swt/swt_win_native.php"
 )
 
-IF "x.%1"=="x.x86" GOTO X86
-IF "x.%1"=="x.x86_64" GOTO X86_64
-
-:X86
-IF "x.%OUTPUT_DIR%"=="x." set OUTPUT_DIR=..\..\..\org.eclipse.swt.win32.win32.x86
-IF "x.%SWT_JAVA_HOME%"=="x." set "SWT_JAVA_HOME=%SWT_BUILDDIR%\Java\Oracle\jdk1.8.0-latest\x86"
-IF "x.%SWT_JAVA_HOME%"=="x." (
-    echo "WARNING: x86 Java JDK not found. Please set SWT_JAVA_HOME to your JDK directory."
-) ELSE (
-    echo "SWT_JAVA_HOME x86: %SWT_JAVA_HOME%"
+IF NOT "x.%1"=="x.x86_64" (
+	ECHO 32-bit builds are no longer supported.
+	EXIT /B 1
 )
-call "%MSVC_HOME%\VC\Auxiliary\Build\vcvarsall.bat" x86
-IF x.%1==x.x86 shift
-GOTO MAKE
 
-:X86_64
 set PROCESSOR_ARCHITECTURE=AMD64
 IF "x.%OUTPUT_DIR%"=="x." set OUTPUT_DIR=..\..\..\org.eclipse.swt.win32.win32.x86_64
 IF "x.%SWT_JAVA_HOME%"=="x." set "SWT_JAVA_HOME=%ProgramFiles%\AdoptOpenJDK\jdk-8.0.292.10-hotspot"
@@ -85,9 +74,7 @@ IF "x.%CHROMIUM_RUST_DIR%"=="x." (
 )
 call "%MSVC_HOME%\VC\Auxiliary\Build\vcvarsall.bat" x64
 shift
-GOTO MAKE
 
-:MAKE
 @rem if call to vcvarsall.bat (which sets up environment) silently fails, then provide advice to user.
 WHERE cl
 if %ERRORLEVEL% NEQ 0 (
