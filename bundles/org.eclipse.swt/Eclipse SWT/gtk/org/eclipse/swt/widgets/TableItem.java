@@ -1261,7 +1261,9 @@ public void setImage(int index, Image image) {
 	 * Bug 573633: gtk_list_store_set() will reference the handle. So we unref the pixbuf here,
 	 * and leave the destruction of the handle to be done later on by the GTK+ tree.
 	 */
-	OS.g_object_unref(pixbuf);
+	if (pixbuf != 0) {
+		OS.g_object_unref(pixbuf);
+	}
 	GTK.gtk_list_store_set (parent.modelHandle, handle, modelIndex + Table.CELL_SURFACE, surface, -1);
 	cached = true;
 	/*
