@@ -13,7 +13,9 @@
  *******************************************************************************/
 package org.eclipse.swt.browser;
 
+import java.net.*;
 import java.nio.charset.*;
+import java.time.*;
 import java.util.*;
 import java.util.function.*;
 
@@ -44,6 +46,7 @@ class Edge extends WebBrowser {
 
 	static String DataDir;
 	static ICoreWebView2Environment Environment;
+	static ArrayList<Edge> Instances = new ArrayList<>();
 
 	ICoreWebView2 webView;
 	ICoreWebView2_2 webView_2;
@@ -54,6 +57,113 @@ class Edge extends WebBrowser {
 	static boolean inCallback;
 	boolean inNewWindow;
 	HashMap<Long, LocationEvent> navigations = new HashMap<>();
+
+	static {
+		NativeClearSessions = () -> {
+			ICoreWebView2CookieManager manager = getCookieManager();
+			if (manager == null) return;
+
+			long[] ppv = new long[1];
+			int hr = callAndWait(ppv, completion -> manager.GetCookies(null, completion));
+			if (hr != COM.S_OK) error(SWT.ERROR_NO_HANDLES, hr);
+			ICoreWebView2CookieList cookieList = new ICoreWebView2CookieList(ppv[0]);
+
+			int[] count = new int[1], isSession = new int[1];
+			cookieList.get_Count(count);
+			for (int i = 0; i < count[0]; i++) {
+				hr = cookieList.GetValueAtIndex(i, ppv);
+				if (hr != COM.S_OK) error(SWT.ERROR_NO_HANDLES, hr);
+				ICoreWebView2Cookie cookie = new ICoreWebView2Cookie(ppv[0]);
+				cookie.get_IsSession(isSession);
+				if (isSession[0] != 0) {
+					manager.DeleteCookie(cookie);
+				}
+				cookie.Release();
+			}
+			cookieList.Release();
+			manager.Release();
+
+			// Bug in WebView2. DeleteCookie is asynchronous. Wait a short while for it to take effect.
+			try {
+				Thread.sleep(5);
+			} catch (InterruptedException e) {
+				Thread.currentThread().interrupt();
+			}
+		};
+
+		NativeGetCookie = () -> {
+			ICoreWebView2CookieManager manager = getCookieManager();
+			if (manager == null) return;
+
+			char[] uri = stringToWstr(CookieUrl);
+			long[] ppv = new long[1];
+			int hr = callAndWait(ppv, completion -> manager.GetCookies(uri, completion));
+			if (hr != COM.S_OK) error(SWT.ERROR_NO_HANDLES, hr);
+			ICoreWebView2CookieList cookieList = new ICoreWebView2CookieList(ppv[0]);
+
+			int[] count = new int[1];
+			cookieList.get_Count(count);
+			for (int i = 0; i < count[0]; i++) {
+				hr = cookieList.GetValueAtIndex(i, ppv);
+				if (hr != COM.S_OK) error(SWT.ERROR_NO_HANDLES, hr);
+				ICoreWebView2Cookie cookie = new ICoreWebView2Cookie(ppv[0]);
+				cookie.get_Name(ppv);
+				String name = wstrToString(ppv[0], true);
+				if (CookieName.equals(name)) {
+					cookie.get_Value(ppv);
+					CookieValue = wstrToString(ppv[0], true);
+				}
+				cookie.Release();
+				if (CookieValue != null) {
+					break;
+				}
+			}
+			cookieList.Release();
+			manager.Release();
+		};
+
+		NativeSetCookie = () -> {
+			HttpCookie parser = HttpCookie.parse(CookieValue).get(0);
+			URL origin;
+			try {
+				origin = new URL(CookieUrl);
+			} catch (MalformedURLException e) {
+				return;
+			}
+			if (parser.getDomain() == null) {
+				parser.setDomain(origin.getHost());
+			}
+			if (parser.getPath() == null) {
+				parser.setPath(origin.getPath());
+			}
+
+			ICoreWebView2CookieManager manager = getCookieManager();
+			if (manager == null) return;
+
+			char[] name = stringToWstr(parser.getName());
+			char[] value = stringToWstr(parser.getValue());
+			char[] domain = stringToWstr(parser.getDomain());
+			char[] path = stringToWstr(parser.getPath());
+			long[] ppv = new long[1];
+			int hr = manager.CreateCookie(name, value, domain, path, ppv);
+			if (hr != COM.S_OK) {
+				manager.Release();
+				return;
+			}
+			ICoreWebView2Cookie cookie = new ICoreWebView2Cookie(ppv[0]);
+
+			if (parser.getMaxAge() != -1) {
+				cookie.put_Expires(Instant.now().getEpochSecond() + parser.getMaxAge());
+			}
+			cookie.put_IsSecure(parser.getSecure());
+			cookie.put_IsHttpOnly(parser.isHttpOnly());
+			hr = manager.AddOrUpdateCookie(cookie);
+			cookie.Release();
+			manager.Release();
+
+			CookieResult = hr >= COM.S_OK;
+		};
+	}
 
 static String wstrToString(long psz, boolean free) {
 	if (psz == 0) return "";
@@ -136,6 +246,21 @@ static int callAndWait(String[] pstr, ToIntFunction<IUnknown> callable) {
 		if (!display.readAndDispatch()) display.sleep();
 	}
 	return phr[0];
+}
+
+static ICoreWebView2CookieManager getCookieManager() {
+	if (Instances.isEmpty()) {
+		SWT.error(SWT.ERROR_NOT_IMPLEMENTED, null, " [WebView2: cookie access requires a Browser instance]");
+	}
+	Edge instance = Instances.get(0);
+	if (instance.webView_2 == null) {
+		SWT.error(SWT.ERROR_NOT_IMPLEMENTED, null, " [WebView2 version 88+ is required to access cookies]");
+	}
+
+	long[] ppv = new long[1];
+	int hr = instance.webView_2.get_CookieManager(ppv);
+	if (hr != COM.S_OK) error(SWT.ERROR_NO_HANDLES, hr);
+	return new ICoreWebView2CookieManager(ppv[0]);
 }
 
 void checkDeadlock() {
@@ -269,9 +394,13 @@ public void create(Composite parent, int style) {
 	browser.addListener(SWT.FocusIn, this::browserFocusIn);
 	browser.addListener(SWT.Resize, this::browserResize);
 	browser.addListener(SWT.Move, this::browserMove);
+
+	Instances.add(this);
 }
 
 void browserDispose(Event event) {
+	Instances.remove(this);
+
 	if (webView_2 != null) webView_2.Release();
 	if (environment2 != null) environment2.Release();
 	settings.Release();

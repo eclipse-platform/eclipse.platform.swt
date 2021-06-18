@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2020 Nikita Nemkin and others.
+ * Copyright (c) 2021 Nikita Nemkin and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -13,22 +13,18 @@
  *******************************************************************************/
 package org.eclipse.swt.internal.ole.win32;
 
-public class ICoreWebView2_2 extends ICoreWebView2 {
+public class ICoreWebView2CookieList extends IUnknown {
 
-public ICoreWebView2_2(long address) {
+public ICoreWebView2CookieList(long address) {
 	super(address);
 }
 
-public int NavigateWithWebResourceRequest(IUnknown request) {
-	return COM.VtblCall(63, address, request.address);
+public int get_Count(int[] count) {
+	return COM.VtblCall(3, address, count);
 }
 
-public int add_DOMContentLoaded(IUnknown handler, long[] token) {
-	return COM.VtblCall(64, address, handler.getAddress(), token);
-}
-
-public int get_CookieManager(long[] cookieManager) {
-	return COM.VtblCall(66, address, cookieManager);
+public int GetValueAtIndex(int index, long[] cookie) {
+	return COM.VtblCall(4, address, index, cookie);
 }
 
 }

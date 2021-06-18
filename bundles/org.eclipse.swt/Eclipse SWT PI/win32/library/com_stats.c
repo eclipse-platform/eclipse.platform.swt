@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2020 IBM Corporation and others.
+ * Copyright (c) 2000, 2021 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -98,6 +98,7 @@ char * COM_nativeFunctionNames[] = {
 	"VariantClear",
 	"VariantInit",
 	"VtblCall__IJ",
+	"VtblCall__IJD",
 	"VtblCall__IJI",
 	"VtblCall__IJIIILorg_eclipse_swt_internal_ole_win32_DISPPARAMS_2JLorg_eclipse_swt_internal_ole_win32_EXCEPINFO_2J",
 	"VtblCall__IJIIJLorg_eclipse_swt_internal_win32_SIZE_2",
@@ -159,6 +160,7 @@ char * COM_nativeFunctionNames[] = {
 	"VtblCall__IJ_3CJII_3J",
 	"VtblCall__IJ_3C_3C",
 	"VtblCall__IJ_3C_3CJ_3C_3J",
+	"VtblCall__IJ_3C_3C_3C_3C_3J",
 	"VtblCall__IJ_3C_3J",
 	"VtblCall__IJ_3I",
 	"VtblCall__IJ_3ILorg_eclipse_swt_internal_ole_win32_GUID_2_3J",

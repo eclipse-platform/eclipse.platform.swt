@@ -576,6 +576,8 @@ public static final native int VtblCall(int fnNumber, long ppVtbl, RECT arg0);
 public static final native int VtblCall(int fnNumber, long ppVtbl, int arg0, long[] arg1, long[] arg2, int[] arg3, long[] arg4);
 public static final native int VtblCall(int fnNumber, long ppVtbl, int arg0, long[] arg1, int arg2, int[] arg3);
 public static final native int VtblCall(int fnNumber, long ppVtbl, int arg0, int arg1, int arg2, DISPPARAMS arg3, long arg4, EXCEPINFO arg5, long arg6);
+public static final native int VtblCall(int fnNumber, long address, char[] arg0, char[] arg1, char[] arg2, char[] arg3, long[] arg4);
+public static final native int VtblCall(int fnNumber, long address, double arg0);
 
 /** @param arg0 flags=struct */
 public static final native int VtblCall(int fnNumber, long ppVtbl, RECT arg0, long arg1, long arg2);

@@ -252,7 +252,7 @@ public static String getCookie (String name, String url) {
  * Example value strings:
  * <code>foo=bar</code> (basic session cookie)
  * <code>foo=bar; path=/; domain=.eclipse.org</code> (session cookie)
- * <code>foo=bar; expires=Thu, 01-Jan-2030 00:00:01 GMT</code> (persistent cookie)
+ * <code>foo=bar; expires=Tue, 01-Jan-2030 00:00:01 GMT</code> (persistent cookie)
  * <code>foo=; expires=Thu, 01-Jan-1970 00:00:01 GMT</code> (deletes cookie <code>foo</code>)
  *
  * @param value the cookie value
