@@ -3670,33 +3670,61 @@ static void register (Display display) {
  */
 @Override
 protected void release () {
-	sendEvent (SWT.Dispose, new Event ());
-	for (Shell shell : getShells ()) {
-		if (!shell.isDisposed ()) shell.dispose ();
-	}
-	if (tray != null) tray.dispose ();
-	tray = null;
-	if (taskBar != null) taskBar.dispose ();
-	taskBar = null;
-	while (readAndDispatch ()) {}
-	if (disposeList != null) {
-		for (Runnable next : disposeList) {
-			if (next != null) {
+	try (ExceptionStash exceptions = new ExceptionStash ()) {
+		try {
+			sendEvent (SWT.Dispose, new Event ());
+		} catch (Error | RuntimeException ex) {
+			exceptions.stash (ex);
+		}
+
+		for (Shell shell : getShells ()) {
+			try {
+				if (!shell.isDisposed ()) shell.dispose ();
+			} catch (Error | RuntimeException ex) {
+				exceptions.stash (ex);
+			}
+		}
+
+		try {
+			if (tray != null) tray.dispose ();
+		} catch (Error | RuntimeException ex) {
+			exceptions.stash (ex);
+		}
+		tray = null;
+
+		try {
+			if (taskBar != null) taskBar.dispose ();
+		} catch (Error | RuntimeException ex) {
+			exceptions.stash (ex);
+		}
+		taskBar = null;
+
+		for (;;) {
+			try {
+				if (!readAndDispatch ()) break;
+			} catch (Error | RuntimeException ex) {
+				exceptions.stash (ex);
+			}
+		}
+
+		if (disposeList != null) {
+			for (Runnable next : disposeList) {
+				if (next == null) continue;
+
 				try {
 					next.run ();
-				} catch (RuntimeException exception) {
-					runtimeExceptionHandler.accept (exception);
-				} catch (Error error) {
-					errorHandler.accept (error);
+				} catch (Error | RuntimeException ex) {
+					exceptions.stash (ex);
 				}
 			}
 		}
+		disposeList = null;
+
+		synchronizer.releaseSynchronizer ();
+		synchronizer = null;
+		releaseDisplay ();
+		super.release ();
 	}
-	disposeList = null;
-	synchronizer.releaseSynchronizer ();
-	synchronizer = null;
-	releaseDisplay ();
-	super.release ();
 }
 
 void releaseDisplay () {

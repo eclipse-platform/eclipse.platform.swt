@@ -316,17 +316,25 @@ protected void destroy () {
  */
 public void dispose () {
 	synchronized (Device.class) {
-		if (isDisposed()) return;
-		checkDevice ();
-		release ();
-		destroy ();
-		disposed = true;
-		if (tracking) {
-			synchronized (trackingLock) {
-				printErrors ();
-				objects = null;
-				errors = null;
-				trackingLock = null;
+		try (ExceptionStash exceptions = new ExceptionStash ()) {
+			if (isDisposed ()) return;
+			checkDevice ();
+
+			try {
+				release ();
+			} catch (Error | RuntimeException ex) {
+				exceptions.stash (ex);
+			}
+
+			destroy ();
+			disposed = true;
+			if (tracking) {
+				synchronized (trackingLock) {
+					printErrors ();
+					objects = null;
+					errors = null;
+					trackingLock = null;
+				}
 			}
 		}
 	}

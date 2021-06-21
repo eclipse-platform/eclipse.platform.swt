@@ -3887,41 +3887,78 @@ static void register (Display display) {
  */
 @Override
 protected void release () {
-	disposing = true;
-	sendEvent (SWT.Dispose, new Event ());
-	Shell [] shells = getShells ();
-	for (int i=0; i<shells.length; i++) {
-		Shell shell = shells [i];
-		if (!shell.isDisposed ()) shell.dispose ();
-	}
-	if (tray != null) tray.dispose ();
-	tray = null;
-	if (taskBar != null) taskBar.dispose ();
-	taskBar = null;
-	while (readAndDispatch ()) {}
-	if (disposeList != null) {
-		for (int i=0; i<disposeList.length; i++) {
-			Runnable next = disposeList [i];
-			if (next != null) {
+	try (ExceptionStash exceptions = new ExceptionStash ()) {
+		disposing = true;
+
+		try {
+			sendEvent (SWT.Dispose, new Event ());
+		} catch (Error | RuntimeException ex) {
+			exceptions.stash (ex);
+		}
+
+		for (Shell shell : getShells ()) {
+			try {
+				if (!shell.isDisposed ()) shell.dispose ();
+			} catch (Error | RuntimeException ex) {
+				exceptions.stash (ex);
+			}
+		}
+
+		try {
+			if (tray != null) tray.dispose ();
+		} catch (Error | RuntimeException ex) {
+			exceptions.stash (ex);
+		}
+		tray = null;
+
+		try {
+			if (taskBar != null) taskBar.dispose ();
+		} catch (Error | RuntimeException ex) {
+			exceptions.stash (ex);
+		}
+		taskBar = null;
+
+		for (;;) {
+			try {
+				if (!readAndDispatch ()) break;
+			} catch (Error | RuntimeException ex) {
+				exceptions.stash (ex);
+			}
+		}
+
+		if (disposeList != null) {
+			for (Runnable next : disposeList) {
+				if (next == null) continue;
+
 				try {
 					next.run ();
-				} catch (RuntimeException exception) {
-					runtimeExceptionHandler.accept (exception);
-				} catch (Error error) {
-					errorHandler.accept (error);
+				} catch (Error | RuntimeException ex) {
+					exceptions.stash (ex);
 				}
 			}
 		}
+		disposeList = null;
+
+		synchronizer.releaseSynchronizer ();
+		synchronizer = null;
+
+		try {
+			if (appMenu != null) appMenu.dispose();
+		} catch (Error | RuntimeException ex) {
+			exceptions.stash (ex);
+		}
+		appMenu = null;
+
+		try {
+			if (appMenuBar != null) appMenuBar.dispose();
+		} catch (Error | RuntimeException ex) {
+			exceptions.stash (ex);
+		}
+		appMenuBar = null;
+
+		releaseDisplay ();
+		super.release ();
 	}
-	disposeList = null;
-	synchronizer.releaseSynchronizer ();
-	synchronizer = null;
-	if (appMenu != null) appMenu.dispose();
-	appMenu = null;
-	if (appMenuBar != null) appMenuBar.dispose();
-	appMenuBar = null;
-	releaseDisplay ();
-	super.release ();
 }
 
 void releaseDisplay () {

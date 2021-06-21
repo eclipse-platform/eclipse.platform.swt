@@ -79,7 +79,7 @@ public boolean hooks (int eventType) {
 public void sendEvent (Event event) {
 	if (types == null) return;
 	level += level >= 0 ? 1 : -1;
-	try {
+	try (ExceptionStash exceptions = new ExceptionStash ()) {
 		for (int i=0; i<types.length; i++) {
 			if (event.type == SWT.None) return;
 			if (types [i] == event.type) {
@@ -87,22 +87,8 @@ public void sendEvent (Event event) {
 				if (listener != null) {
 					try {
 						listener.handleEvent (event);
-					} catch (RuntimeException runtimeException) {
-						Display display = Display.getCurrent ();
-
-						if (display == null) {
-							throw runtimeException;
-						}
-
-						display.getRuntimeExceptionHandler ().accept (runtimeException);
-					} catch (Error error) {
-						Display display = Display.getCurrent ();
-
-						if (display == null) {
-							throw error;
-						}
-
-						display.getErrorHandler ().accept (error);
+					} catch (Error | RuntimeException ex) {
+						exceptions.stash (ex);
 					}
 				}
 			}

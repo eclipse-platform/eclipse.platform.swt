@@ -4638,36 +4638,56 @@ static void register (Display display) {
  */
 @Override
 protected void release () {
-	sendEvent (SWT.Dispose, new Event ());
-	Shell [] shells = getShells ();
-	for (int i=0; i<shells.length; i++) {
-		Shell shell = shells [i];
-		if (!shell.isDisposed ())  shell.dispose ();
-	}
-	if (tray != null) tray.dispose ();
-	tray = null;
-	while (readAndDispatch ()) {}
-	if (disposeList != null) {
-		for (int i=0; i<disposeList.length; i++) {
-			Runnable next = disposeList [i];
-			if (next != null) {
+	try (ExceptionStash exceptions = new ExceptionStash ()) {
+		try {
+			sendEvent (SWT.Dispose, new Event ());
+		} catch (Error | RuntimeException ex) {
+			exceptions.stash (ex);
+		}
+
+		for (Shell shell : getShells ()) {
+			try {
+				if (!shell.isDisposed ()) shell.dispose ();
+			} catch (Error | RuntimeException ex) {
+				exceptions.stash (ex);
+			}
+		}
+
+		try {
+			if (tray != null) tray.dispose ();
+		} catch (Error | RuntimeException ex) {
+			exceptions.stash (ex);
+		}
+		tray = null;
+
+		for (;;) {
+			try {
+				if (!readAndDispatch ()) break;
+			} catch (Error | RuntimeException ex) {
+				exceptions.stash (ex);
+			}
+		}
+
+		if (disposeList != null) {
+			for (Runnable next : disposeList) {
+				if (next == null) continue;
+
 				try {
 					next.run ();
-				} catch (RuntimeException exception) {
-					runtimeExceptionHandler.accept (exception);
-				} catch (Error error) {
-					errorHandler.accept (error);
+				} catch (Error | RuntimeException ex) {
+					exceptions.stash (ex);
 				}
 			}
 		}
+		disposeList = null;
+
+		synchronizer.releaseSynchronizer ();
+		synchronizer = null;
+		releaseDBusServices ();
+		releaseSessionManager ();
+		releaseDisplay ();
+		super.release ();
 	}
-	disposeList = null;
-	synchronizer.releaseSynchronizer ();
-	synchronizer = null;
-	releaseDBusServices ();
-	releaseSessionManager ();
-	releaseDisplay ();
-	super.release ();
 }
 
 void releaseDisplay () {

@@ -269,16 +269,24 @@ protected void create (DeviceData data) {
  */
 public void dispose () {
 	synchronized (Device.class) {
-		if (isDisposed()) return;
-		checkDevice ();
-		release ();
-		destroy ();
-		deregister (this);
-		xDisplay = 0;
-		disposed = true;
-		if (tracking) {
-			tracking = false;
-			stopTracking();
+		try (ExceptionStash exceptions = new ExceptionStash ()) {
+			if (isDisposed ()) return;
+			checkDevice ();
+
+			try {
+				release ();
+			} catch (Error | RuntimeException ex) {
+				exceptions.stash (ex);
+			}
+
+			destroy ();
+			deregister (this);
+			xDisplay = 0;
+			disposed = true;
+			if (tracking) {
+				tracking = false;
+				stopTracking ();
+			}
 		}
 	}
 }
