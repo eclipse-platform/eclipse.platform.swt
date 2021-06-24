@@ -225,7 +225,8 @@ public void test_checkSize() {
 	shell.open();
 	int folderY = folder.getSize().y;
 	int expectedminHeight = systemImage.getImageData().height + text2.getFont().getFontData()[0].getHeight();
-	assertTrue("\nBug 507611 - CTabFolder is too thin for its actual content. \nCtabFolder height:"+folderY+"\nExpected min:"+expectedminHeight,  folderY > expectedminHeight);
+	assertTrue("\nBug 507611 - CTabFolder is too thin for its actual content. \nCtabFolder height:"
+								+folderY+"\nExpected min:"+expectedminHeight,  folderY > expectedminHeight);
 }
 
 /**
@@ -560,10 +561,12 @@ private void assertTabElementsInLine() {
 	Rectangle maxBound = tabBarElementBounds.get(0);
 	for (Rectangle bound : tabBarElementBounds) {
 		if (bound.height > maxBound.height) {
-			assertTrue("Element at " + maxBound + " is not on line.", bound.y <= maxBound.y && bound.y + bound.height >= maxBound.y + maxBound.height);
+			assertTrue("Element at " + maxBound + " is not on line.",
+					bound.y <= maxBound.y && (bound.y + bound.height) >= (maxBound.y + maxBound.height));
 			maxBound = bound;
 		} else {
-			assertTrue("Element at " + bound + " is not on line.", bound.y >= maxBound.y && bound.y + bound.height <= maxBound.y + maxBound.height);
+			assertTrue("Element at " + bound + " is not on line.",
+					bound.y >= maxBound.y && (bound.y + bound.height) <= (maxBound.y + maxBound.height));
 		}
 	}
 }

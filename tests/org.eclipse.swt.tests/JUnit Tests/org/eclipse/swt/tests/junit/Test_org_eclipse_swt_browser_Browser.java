@@ -163,7 +163,7 @@ public void test_evalute_Cookies () {
 	// Retrieve entire cookie store
 	String res = (String) browser.evaluate("return document.cookie;");
 
-	assertTrue(!res.isEmpty());
+	assertFalse(res.isEmpty());
 }
 
 @Test
@@ -481,7 +481,7 @@ public void test_LocationListener_ProgressListener_noExtraEvents() {
 	browser.setText("Hello world");
 
 	// We have to wait to check that no extra events are fired.
-	// On Gtk, Quad Core, pcie this takes 80 ms. ~1000ms for stability.
+	// On Gtk, Quad Core, pcie this takes 80 ms. ~600ms for stability.
 	waitForMilliseconds(600);
 	boolean passed = changedCount.get() == 1 && completedCount.get() == 1;
 	String errorMsg = "\nIncorrect event sequences. Events missing or too many fired:"
@@ -530,7 +530,7 @@ public void test_OpenWindowListener_openHasValidEventDetails() {
 
 	shell.open();
 	browser.setText("<html><script type='text/javascript'>window.open('about:blank')</script>\n" +
-			"<body>This test uses javascript to open a new window.</body></html>");
+			"<body>This test uses Javascript to open a new window.</body></html>");
 
 	boolean passed = waitForPassCondition(openFiredCorrectly::get);
 	assertTrue("Test timed out. OpenWindow event not fired.", passed);
@@ -585,7 +585,8 @@ public void test_OpenWindow_Progress_Listener_ValidateEventOrder() {
 
 	browser.addOpenWindowListener(event -> {
 		event.browser = browserChild;
-		assertFalse("OpenWindowListenr should have been fired first", visibilityShowed.get() || childCompleted.get()); // Validate event order.
+		assertFalse("OpenWindowListener should have been fired first",
+				visibilityShowed.get() || childCompleted.get()); // Validate event order.
 		windowOpenFired.set(true);
 	});
 
@@ -730,7 +731,7 @@ public void test_StatusTextListener_addAndRemove() {
  * Note: Historically one could execute some javascript to change status bar (window.status=txt).
  * But most browsers don't support this anymore. Only hovering over a hyperlink changes status.
  *
- * StatusTextListener may be triggerd upon page load also. So this test can pass if
+ * StatusTextListener may be triggered upon page load also. So this test can pass if
  * a page load sets the status text (on older browsers) or passes when the mouse hovers
  * over the hyperlink (newer Webkit2+) browser.
  */
@@ -754,7 +755,7 @@ public void test_StatusTextListener_hoverMouseOverLink() {
 	shell.setSize(size, size);
 
 	browser.addProgressListener(completedAdapter(event -> {
-		// * 3) Upon compleation of page load, move cursor across whole shell.
+		// * 3) Upon completion of page load, move cursor across whole shell.
 		// * (Note, in current jUnit, browser sometimes only takes up half the shell).
 		Display display = event.display;
 		Point cachedLocation = display.getCursorLocation();
@@ -774,7 +775,7 @@ public void test_StatusTextListener_hoverMouseOverLink() {
 
 	shell.open();
 	boolean passed = waitForPassCondition(statusChanged::get);
-	String msg = "Mouse movent over text was suppose to trigger StatusTextListener. But it didn't";
+	String msg = "Mouse movement over text was suppose to trigger StatusTextListener. But it didn't";
 	assertTrue(msg, passed);
 }
 
@@ -1145,13 +1146,13 @@ public void test_setJavascriptEnabled() {
 		pageLoadCount.incrementAndGet();
 		if (pageLoadCount.get() == 1) {
 			browser.setJavascriptEnabled(false);
-			browser.setText("Second page with javascript dissabled");
+			browser.setText("Second page with javascript disabled");
 		} else if (pageLoadCount.get() == 2) {
 			Boolean expectedNull = null;
 			try {
 				expectedNull = (Boolean) browser.evaluate("return true");
 			} catch (Exception e) {
-				fail("1) if javascript is dissabled, browser.evaluate() should return null. But an Exception was thrown");
+				fail("1) if javascript is disabled, browser.evaluate() should return null. But an Exception was thrown");
 			}
 			assertNull("2) Javascript should not have executed. But not-null was returned:" + expectedNull,
 					expectedNull);
@@ -1162,7 +1163,7 @@ public void test_setJavascriptEnabled() {
 	}));
 
 	shell.open();
-	browser.setText("First page with javascript enabled. This should not be visiable as a second page should load");
+	browser.setText("First page with javascript enabled. This should not be visible as a second page should load");
 
 	waitForPassCondition(testFinished::get);
 	assertTrue("3) Javascript was executed on the second page. But it shouldn't have", testPassed.get());
@@ -1353,8 +1354,7 @@ public void test_isBackEnabled() {
 		browser.back();
 	}
 	/* going back 10 times in history - expecting false is returned */
-	boolean result = browser.isBackEnabled();
-	assertFalse(result);
+	assertFalse(browser.isBackEnabled());
 }
 
 /**
@@ -1371,8 +1371,7 @@ public void test_isForwardEnabled() {
 		browser.forward();
 	}
 	/* going forward 10 times in history - expecting false is returned */
-	boolean result = browser.isForwardEnabled();
-	assertFalse(result);
+	assertFalse(browser.isForwardEnabled());
 }
 
 /**
@@ -1403,7 +1402,7 @@ public void test_setFocus_toChild_beforeOpen() {
 @Test
 public void test_getText() {
 	if (SwtTestUtil.isWindows || isChromium) {
-		// Window's Browser implementation returns the processed HTML rather than the original one.
+		// Windows' Browser implementation returns the processed HTML rather than the original one.
 		// The processed webpage has html tags added to it.
 		getText_helper("helloWorld", "<html><head></head><body>helloWorld</body></html>");
 	} else {
@@ -1420,12 +1419,12 @@ public void test_getText_html() {
 }
 
 /** Ensure we get webpage before javascript processed it.
- *  E.g js would add 'style' tag to body after processing. */
+ *  E.g JS would add 'style' tag to body after processing. */
 @Test
 public void test_getText_script() {
 	String testString = "<html><head></head><body>hello World<script>document.body.style.backgroundColor = \"red\";</script></body></html>";
 	if (SwtTestUtil.isWindows || isChromium) {
-		// Window's Browser implementation returns the processed HTML rather than the original one.
+		// Windows' Browser implementation returns the processed HTML rather than the original one.
 		// The processed page injects "style" property into the body from the script.
 		getText_helper(testString, "<html><head></head><body style=\"background-color: red;\">hello World<script>document.body.style.backgroundColor = \"red\";</script></body></html>");
 	} else {
@@ -1441,7 +1440,7 @@ public void test_getText_script() {
 public void test_getText_doctype() {
 	String testString = "<!DOCTYPE html><html><head></head><body>hello World</body></html>";
 	if (SwtTestUtil.isWindows && !isChromium) {
-		// Window's Browser implementation returns the processed HTML rather than the original one.
+		// Windows' Browser implementation returns the processed HTML rather than the original one.
 		// The processed page strips out DOCTYPE.
 		getText_helper(testString, "<html><head></head><body>hello World</body></html>");
 	} else  {
@@ -1463,13 +1462,12 @@ private void getText_helper(String testString, String expectedOutput) {
 	}));
 	shell.open();
 	waitForPassCondition(finished::get);
-	boolean passed = returnString.get().equals(expectedOutput);
 	String error_msg = finished.get() ?
 			"Test did not return correct string.\n"
 			+ "Expected:"+testString+"\n"
 			+ "Actual:"+returnString.get()
 			: "Test timed out";
-	assertTrue(error_msg, passed);
+	assertTrue(error_msg, returnString.get().equals(expectedOutput));
 }
 
 /**
@@ -1556,8 +1554,8 @@ public void test_evaluate_returnMoved() {
 @Test
 public void test_evaluate_number_normal() {
 	Double testNum = 123.0;
-	boolean passed = evaluate_number_helper(testNum);
-	assertTrue("Failed to evaluate number: " + testNum.toString(), passed);
+	assertTrue("Failed to evaluate number: " + testNum.toString(),
+			evaluate_number_helper(testNum));
 }
 
 /**
@@ -1567,8 +1565,8 @@ public void test_evaluate_number_normal() {
 @Test
 public void test_evaluate_number_negative() {
 	Double testNum = -123.0;
-	boolean passed = evaluate_number_helper(testNum);
-	assertTrue("Failed to evaluate number: " + testNum.toString(), passed);
+	assertTrue("Failed to evaluate number: " + testNum.toString(),
+			evaluate_number_helper(testNum));
 }
 
 /**
@@ -1578,8 +1576,8 @@ public void test_evaluate_number_negative() {
 @Test
 public void test_evaluate_number_big() {
 	Double testNum = 10000000000.0;
-	boolean passed = evaluate_number_helper(testNum);
-	assertTrue("Failed to evaluate number: " + testNum.toString(), passed);
+	assertTrue("Failed to evaluate number: " + testNum.toString(),
+			evaluate_number_helper(testNum));
 }
 
 boolean evaluate_number_helper(Double testNum) {
@@ -1654,7 +1652,7 @@ public void test_evaluate_invalid_return_value() {
 	final AtomicInteger exception = new AtomicInteger(-1);
 	browser.addProgressListener(completedAdapter(event -> {
 		try {
-			browser.evaluate("return new Date()"); // Date is not supoprted as return value.
+			browser.evaluate("return new Date()"); // Date is not supported as return value.
 		} catch (SWTException e) {
 			exception.set(e.code);
 		}
@@ -1725,7 +1723,7 @@ public void test_evaluate_array_numbers() {
 
 	// Small note:
 	// evaluate() returns 'Double' type. Java doesn't have AtomicDouble
-	// for convienience we simply convert double to int as we're dealing with integers anyway.
+	// for convenience we simply convert double to int as we're dealing with integers anyway.
 	final AtomicIntegerArray atomicIntArray = new AtomicIntegerArray(3);
 	atomicIntArray.set(0, -1);
 	browser.addProgressListener(completedAdapter(event -> {
@@ -1750,7 +1748,8 @@ public void test_evaluate_array_numbers() {
 		}
 		return false;
 	});
-	String message = "".equals(additionalErrorInfo.get()) ? "Javascript did not call java" : "Javasscript called java, but passed wrong values: " + additionalErrorInfo.get();
+	String message = "".equals(additionalErrorInfo.get()) ? "Javascript did not call java" :
+				"Javascript called java, but passed wrong values: " + additionalErrorInfo.get();
 	assertTrue(message, passed);
 }
 
@@ -1788,7 +1787,8 @@ public void test_evaluate_array_strings () {
 	});
 	String message = "".equals(additionalErrorInfo.get()) ?
 			"Expected an array of strings, but did not receive array or got the wrong result."
-			: "Received a callback from javascript, but: " + additionalErrorInfo.get() + " : " + atomicStringArray.toString();
+			: "Received a callback from javascript, but: " + additionalErrorInfo.get() +
+			" : " + atomicStringArray.toString();
 	assertTrue(message, passed);
 }
 
@@ -1824,7 +1824,8 @@ public void test_evaluate_array_mixedTypes () {
 		}
 		return false;
 	});
-	String message = "".equals(additionalErrorInfo.get()) ? "Javascript did not call java" : "Javascript called java but passed wrong values: " + atomicArray.toString();
+	String message = "".equals(additionalErrorInfo.get()) ? "Javascript did not call java" :
+					"Javascript called java but passed wrong values: " + atomicArray.toString();
 	assertTrue(message, passed);
 }
 
@@ -1859,7 +1860,7 @@ public void test_BrowserFunction_callback () {
 			+ "}"
 			+ "</script>\n"
 			+ "</head>\n"
-			+ "<body> I'm going to make a callback to java </body>\n"
+			+ "<body> Going to make a callback to Java </body>\n"
 			+ "</html>\n";
 
 	browser.setText(htmlWithScript);
@@ -1902,7 +1903,7 @@ public void test_BrowserFunction_callback_with_integer () {
 			+ "}"
 			+ "</script>\n"
 			+ "</head>\n"
-			+ "<body> I'm going to make a callback to java </body>\n"
+			+ "<body> Going to make a callback to Java </body>\n"
 			+ "</html>\n";
 
 	browser.setText(htmlWithScript);
@@ -1912,7 +1913,7 @@ public void test_BrowserFunction_callback_with_integer () {
 
 	shell.open();
 	boolean passed = waitForPassCondition(() -> returnInt.get() == 5);
-	String message = "Javascript should have passed an integer to java. But this did not happen";
+	String message = "Javascript should have passed an integer to Java, but this did not happen.";
 	assertTrue(message, passed);
 }
 
@@ -1947,7 +1948,7 @@ public void test_BrowserFunction_callback_with_boolean () {
 			+ "}"
 			+ "</script>\n"
 			+ "</head>\n"
-			+ "<body> I'm going to make a callback to java </body>\n"
+			+ "<body> Going to make a callback to Java </body>\n"
 			+ "</html>\n";
 
 	browser.setText(htmlWithScript);
@@ -1957,7 +1958,7 @@ public void test_BrowserFunction_callback_with_boolean () {
 
 	shell.open();
 	boolean passed = waitForPassCondition(javaCallbackExecuted::get);
-	String message = "Javascript did not pass a boolean back to java";
+	String message = "Javascript did not pass a boolean back to Java.";
 	assertTrue(message, passed);
 }
 
@@ -1990,7 +1991,7 @@ public void test_BrowserFunction_callback_with_String () {
 			+ "}"
 			+ "</script>\n"
 			+ "</head>\n"
-			+ "<body> I'm going to make a callback to java </body>\n"
+			+ "<body> Going to make a callback to Java </body>\n"
 			+ "</html>\n";
 
 	browser.setText(htmlWithScript);
@@ -2000,7 +2001,8 @@ public void test_BrowserFunction_callback_with_String () {
 
 	shell.open();
 	boolean passed = waitForPassCondition(() -> "hellojava".equals(returnValue.get()));
-	String message = "Javascript was suppose to call java with a String. But it seems java did not receive the call or wrong value was passed";
+	String message = "Javascript was suppose to call java with a String, " +
+				"but it seems Java did not receive the call or an incorrect value was passed.";
 	assertTrue(message, passed);
 }
 
@@ -2011,7 +2013,7 @@ public void test_BrowserFunction_callback_with_String () {
  */
 @Test
 public void test_BrowserFunction_callback_with_multipleValues () {
-	final AtomicReferenceArray<Object> atomicArray = new AtomicReferenceArray<>(3); // Strin, Double, Boolean
+	final AtomicReferenceArray<Object> atomicArray = new AtomicReferenceArray<>(3); // String, Double, Boolean
 	atomicArray.set(0, "executing");
 
 	class JavascriptCallback extends BrowserFunction { // Note: Local class defined inside method.
@@ -2036,7 +2038,7 @@ public void test_BrowserFunction_callback_with_multipleValues () {
 			+ "}"
 			+ "</script>\n"
 			+ "</head>\n"
-			+ "<body> I'm going to make a callback to java </body>\n"
+			+ "<body> Going to make a callback to Java </body>\n"
 			+ "</html>\n";
 
 	browser.setText(htmlWithScript);
@@ -2045,7 +2047,8 @@ public void test_BrowserFunction_callback_with_multipleValues () {
 	browser.addProgressListener(callCustomFunctionUponLoad);
 
 	shell.open();
-//	Screenshots.takeScreenshot(getClass(), "test_BrowserFunction_callback_with_multipleValues__BeforeWaiting"); // Useful if investigating build failures on Hudson
+	//Function below useful if investigating build failures on Hudson
+	//Screenshots.takeScreenshot(getClass(), "test_BrowserFunction_callback_with_multipleValues__BeforeWaiting");
 
 	boolean passed = waitForPassCondition(() -> {
 		if (atomicArray.get(0).equals("hellojava")
@@ -2056,7 +2059,8 @@ public void test_BrowserFunction_callback_with_multipleValues () {
 			return false;
 		}
 	});
-//	Screenshots.takeScreenshot(getClass(), "test_BrowserFunction_callback_with_multipleValues__AfterWaiting");  // Useful if investigating build failures on Hudson
+	//Function below useful if investigating build failures on Hudson
+	//Screenshots.takeScreenshot(getClass(), "test_BrowserFunction_callback_with_multipleValues__AfterWaiting");
 
 	String msg = "Values not set. Test timed out. Array should be [\"hellojava\", 5, true], but is: " + atomicArray.toString();
 	assertTrue(msg, passed);
@@ -2115,7 +2119,7 @@ public void test_BrowserFunction_callback_with_javaReturningInt () {
 			+ "}"
 			+ "</script>\n"
 			+ "</head>\n"
-			+ "<body> If you see this, javascript did not receive anything from Java. This page should just be '42' </body>\n"
+			+ "<body> If you see this, Javascript did not receive anything from Java. This page should just be '42' </body>\n"
 			+ "</html>\n";
 	// 1)
 	browser.setText(htmlWithScript);
@@ -2126,7 +2130,7 @@ public void test_BrowserFunction_callback_with_javaReturningInt () {
 
 	shell.open();
 	boolean passed = waitForPassCondition(() -> returnInt.get() == 42);
-	String message = "Java should have returned something back to javascript. But something went wrong";
+	String message = "Java should have returned something back to Javascript. But something went wrong";
 	assertTrue(message, passed);
 }
 
@@ -2144,7 +2148,7 @@ public void test_BrowserFunction_callback_with_javaReturningInt () {
  * - new page load triggers 'completed' listener
  * - completed listener calls the registered function again.
  *
- * - once regiseterd function is called a 2nd time, it sets the test to pass.
+ * - once registered function is called a 2nd time, it sets the test to pass.
  */
 @Test
 public void test_BrowserFunction_callback_afterPageReload() {
@@ -2175,7 +2179,7 @@ public void test_BrowserFunction_callback_afterPageReload() {
 
 	shell.open();
 	boolean passed = waitForPassCondition(javaCallbackExecuted::get);
-	String message = "A javascript callback should work after a page has been reloaded. But something went wrong";
+	String message = "A Javascript callback should work after a page has been reloaded, but something went wrong.";
 	assertTrue(message, passed);
 }
 

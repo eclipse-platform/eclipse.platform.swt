@@ -235,16 +235,16 @@ public void test_setBackgroundRadioButton() {
 	assertEquals("getBackground not equal after setBackground for SWT.RADIO Button",
 			color, radioButton.getBackground());
 	radioButton.setBackground(null);
-	assertTrue("getBackground unchanged after setBackground(null) for SWT.RADIO Button",
-			!radioButton.getBackground().equals(color));
+	assertFalse("getBackground unchanged after setBackground(null) for SWT.RADIO Button",
+			radioButton.getBackground().equals(color));
 	color.dispose();
 	color = new Color(255, 0, 0, 0);
 	radioButton.setBackground(color);
 	assertEquals("getBackground not equal after setBackground with 0 alpha for SWT.RADIO Button",
 			color, radioButton.getBackground());
 	radioButton.setBackground(null);
-	assertTrue("getBackground unchanged after setBackground(null) with 0 alpha for SWT.RADIO Button",
-			!radioButton.getBackground().equals(color));
+	assertFalse("getBackground unchanged after setBackground(null) with 0 alpha for SWT.RADIO Button",
+			radioButton.getBackground().equals(color));
 	if ("gtk".equals(SWT.getPlatform ())) {
 		Color fg = new Color(0, 255, 0);
 		radioButton.setBackground(color);

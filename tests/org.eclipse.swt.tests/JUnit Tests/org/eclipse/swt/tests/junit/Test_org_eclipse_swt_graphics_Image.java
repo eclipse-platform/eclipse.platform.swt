@@ -354,6 +354,7 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLjava_io_InputStream
 				} catch (SWTException e) {
 // Bug 70167 - Image(Device, InputStream) throws incorrect exception for bad PNG
 // remove comment when bug is fixed.
+// Bug appears fixed on Bugzilla, however, removing the comment below still results in a failed test as of June 2021
 //					assertEquals("Incorrect exception thrown for invalid image InputStream", SWT.ERROR_INVALID_IMAGE, e);
 				}
 			}
@@ -437,6 +438,7 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLjava_lang_String() 
 				} catch (SWTException e) {
 //					 Bug 70167 - Image(Device, InputStream) throws incorrect exception for bad PNG
 //					 remove comment when bug is fixed.
+//					 Bug is fixed yet still results in a failed test as of June 2021.
 //					assertEquals("Incorrect exception thrown for invalid image file name", SWT.ERROR_INVALID_IMAGE, e);
 				}
 			}
