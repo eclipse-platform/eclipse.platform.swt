@@ -307,7 +307,6 @@ public class Display extends Device {
 	long shellHandle;
 	boolean settingsChanged, runSettings;
 	static final int STYLE_UPDATED = 1;
-	static final int PROPERTY_NOTIFY = 2;
 
 	/* Entry focus behaviour */
 	boolean entrySelectOnFocus;
@@ -1268,10 +1267,6 @@ void createDisplay (DeviceData data) {
 		long atom = GDK.gdk_atom_intern(atomName, false);
 		GDK.gdk_selection_owner_set(GTK3.gtk_widget_get_window(shellHandle), atom, OS.CurrentTime, false);
 		GDK.gdk_selection_owner_get(atom);
-
-		// No GdkWindow on GTK4
-		GTK3.gtk_widget_add_events (shellHandle, GDK.GDK_PROPERTY_CHANGE_MASK);
-		OS.g_signal_connect (shellHandle, OS.property_notify_event, signalProc, PROPERTY_NOTIFY);
 	}
 
 	latinKeyGroup = findLatinKeyGroup ();
