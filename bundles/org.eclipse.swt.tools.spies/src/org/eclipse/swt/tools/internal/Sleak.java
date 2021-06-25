@@ -210,6 +210,7 @@ void refreshDifference () {
 				if (creatorEquals(stack, old.next().getCreator ())) {
 					old.remove ();
 					object.remove ();
+					break;
 				}
 			}
 		}
