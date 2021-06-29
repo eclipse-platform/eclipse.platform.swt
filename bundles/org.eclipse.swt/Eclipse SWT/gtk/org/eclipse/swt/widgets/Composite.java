@@ -340,8 +340,13 @@ void createHandle (int index, boolean fixed, boolean scrolled) {
 
 	handle = OS.g_object_new(display.gtk_fixed_get_type(), 0);
 	if (handle == 0) error(SWT.ERROR_NO_HANDLES);
-	if (!GTK.GTK4) GTK3.gtk_widget_set_has_window(handle, true);
-	GTK.gtk_widget_set_can_focus (handle, true);
+
+	if (GTK.GTK4) {
+		GTK4.gtk_widget_set_focusable(handle, true);
+	} else {
+		GTK3.gtk_widget_set_has_window(handle, true);
+	}
+	GTK.gtk_widget_set_can_focus(handle, true);
 
 	if ((style & SWT.EMBEDDED) == 0) {
 		if ((state & CANVAS) != 0) {

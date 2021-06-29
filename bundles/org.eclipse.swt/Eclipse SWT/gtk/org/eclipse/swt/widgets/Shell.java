@@ -950,8 +950,8 @@ void hookEvents () {
 
 		long focusController = GTK4.gtk_event_controller_focus_new();
 		GTK4.gtk_widget_add_controller(shellHandle, focusController);
-		OS.g_signal_connect (focusController, OS.enter, display.focusProc, FOCUS_IN);
-		OS.g_signal_connect (focusController, OS.leave, display.focusProc, FOCUS_OUT);
+		OS.g_signal_connect(focusController, OS.enter, display.focusProc, FOCUS_IN);
+		OS.g_signal_connect(focusController, OS.leave, display.focusProc, FOCUS_OUT);
 
 		long enterLeaveController = GTK4.gtk_event_controller_motion_new();
 		GTK4.gtk_widget_add_controller(shellHandle, enterLeaveController);

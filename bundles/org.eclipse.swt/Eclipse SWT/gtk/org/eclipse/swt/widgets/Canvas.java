@@ -194,11 +194,13 @@ long gtk_draw (long widget, long cairo) {
 	return result;
 }
 
-private void drawCaret (long widget, long cairo) {
+private void drawCaret(long widget, long cairo) {
 	if(this.isDisposed()) return;
 	if (cairo == 0) error(SWT.ERROR_NO_HANDLES);
+
 	if (drawFlag) {
 		Cairo.cairo_save(cairo);
+
 		if (caret.image != null && !caret.image.isDisposed() && caret.image.mask == 0) {
 			Cairo.cairo_set_source_rgb(cairo, 1, 1, 1);
 			Cairo.cairo_set_operator(cairo, Cairo.CAIRO_OPERATOR_DIFFERENCE);
@@ -225,14 +227,14 @@ private void drawCaret (long widget, long cairo) {
 			int nX = caret.x;
 			if ((style & SWT.MIRRORED) != 0) nX = getClientWidth () - nWidth - nX;
 			Cairo.cairo_rectangle(cairo, nX, caret.y, nWidth, nHeight);
-			}
+		}
+
 		Cairo.cairo_fill(cairo);
 		Cairo.cairo_restore(cairo);
 		drawFlag = false;
 	} else {
 		drawFlag = true;
-		}
-	return;
+	}
 }
 
 @Override

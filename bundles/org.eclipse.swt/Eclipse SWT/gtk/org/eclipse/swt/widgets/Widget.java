@@ -2196,20 +2196,17 @@ long enterMotionScrollProc(long controller, long handle, double x, double y, lon
 	return result;
 }
 
-long focusProc(long controller, long handle, long user_data) {
-	long result = 0;
+void focusProc(long controller, long handle, long user_data) {
 	long event = GTK4.gtk_event_controller_get_current_event(controller);
 
 	switch ((int)user_data) {
 		case FOCUS_IN:
-			result = gtk_focus_in_event(handle, event);
+			gtk_focus_in_event(handle, event);
 			break;
 		case FOCUS_OUT:
-			result = gtk_focus_out_event(handle, event);
+			gtk_focus_out_event(handle, event);
 			break;
 	}
-
-	return result;
 }
 
 long keyPressReleaseProc(long controller, long handle, int keyval, int keycode, int state, long user_data) {

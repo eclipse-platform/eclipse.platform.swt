@@ -20,6 +20,7 @@ import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.gtk.*;
 import org.eclipse.swt.internal.gtk3.*;
+import org.eclipse.swt.internal.gtk4.*;
 
 /**
  * Instances of the receiver represent a selectable user interface object
@@ -145,22 +146,24 @@ void createHandle (int index) {
 
 	handle = OS.g_object_new(display.gtk_fixed_get_type(), 0);
 	if (handle == 0) error(SWT.ERROR_NO_HANDLES);
-	if (!GTK.GTK4) GTK3.gtk_widget_set_has_window(handle, true);
-	GTK.gtk_widget_set_can_focus(handle, true);
 
-	if ((style & SWT.VERTICAL) != 0) {
-		if (GTK.GTK4) {
+	if (GTK.GTK4) {
+		GTK4.gtk_widget_set_focusable(handle, true);
+		if ((style & SWT.VERTICAL) != 0) {
 			defaultCursor = GDK.gdk_cursor_new_from_name("sb_h_double_arrow", 0);
 		} else {
-			defaultCursor = GDK.gdk_cursor_new_from_name (GDK.gdk_display_get_default(), "sb_h_double_arrow");
+			defaultCursor = GDK.gdk_cursor_new_from_name("sb_v_double_arrow", 0);
 		}
 	} else {
-		if (GTK.GTK4) {
-			defaultCursor = GDK.gdk_cursor_new_from_name("sb_v_double_arrow", 0);
+		GTK3.gtk_widget_set_has_window(handle, true);
+		if ((style & SWT.VERTICAL) != 0) {
+			defaultCursor = GDK.gdk_cursor_new_from_name(GDK.gdk_display_get_default(), "sb_h_double_arrow");
 		} else {
-			defaultCursor = GDK.gdk_cursor_new_from_name (GDK.gdk_display_get_default(), "sb_v_double_arrow");
+			defaultCursor = GDK.gdk_cursor_new_from_name(GDK.gdk_display_get_default(), "sb_v_double_arrow");
 		}
 	}
+
+	GTK.gtk_widget_set_can_focus(handle, true);
 }
 
 void drawBand (int x, int y, int width, int height) {

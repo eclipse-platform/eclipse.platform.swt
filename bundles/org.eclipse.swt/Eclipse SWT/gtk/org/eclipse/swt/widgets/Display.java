@@ -3577,9 +3577,8 @@ void initializeCallbacks () {
 		closuresProc [Widget.KEY_PRESSED] = keyPressReleaseProc;
 		closuresProc [Widget.KEY_RELEASED] = keyPressReleaseProc;
 
-		focusCallback = new Callback (this, "focusProc", long.class, new Type[] {
-				long.class, long.class}); //$NON-NLS-1$
-		focusProc = focusCallback.getAddress ();
+		focusCallback = new Callback (this, "focusProc", void.class, new Type[] {long.class, long.class}); //$NON-NLS-1$
+		focusProc = focusCallback.getAddress();
 
 		closuresProc [Widget.FOCUS_IN] = focusProc;
 		closuresProc [Widget.FOCUS_OUT] = focusProc;
@@ -6072,11 +6071,11 @@ long enterMotionScrollProc (long controller, double x, double y, long user_data)
 	return widget.enterMotionScrollProc(controller, handle, x, y, user_data);
 }
 
-long focusProc (long controller, long user_data) {
+void focusProc(long controller, long user_data) {
 	long handle = GTK.gtk_event_controller_get_widget(controller);
-	Widget widget = getWidget (handle);
-	if (widget == null) return 0;
-	return widget.focusProc(controller, handle, user_data);
+	Widget widget = getWidget(handle);
+
+	if (widget != null) widget.focusProc(controller, handle, user_data);
 }
 
 long keyPressReleaseProc (long controller, int keyval, int keycode, int state, long user_data) {

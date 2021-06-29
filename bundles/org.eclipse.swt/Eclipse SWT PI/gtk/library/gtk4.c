@@ -1126,6 +1126,16 @@ JNIEXPORT void JNICALL GTK4_NATIVE(gtk_1widget_1set_1cursor)
 }
 #endif
 
+#ifndef NO_gtk_1widget_1set_1focusable
+JNIEXPORT void JNICALL GTK4_NATIVE(gtk_1widget_1set_1focusable)
+	(JNIEnv *env, jclass that, jlong arg0, jboolean arg1)
+{
+	GTK4_NATIVE_ENTER(env, that, gtk_1widget_1set_1focusable_FUNC);
+	gtk_widget_set_focusable((GtkWidget *)arg0, arg1);
+	GTK4_NATIVE_EXIT(env, that, gtk_1widget_1set_1focusable_FUNC);
+}
+#endif
+
 #ifndef NO_gtk_1widget_1snapshot_1child
 JNIEXPORT void JNICALL GTK4_NATIVE(gtk_1widget_1snapshot_1child)
 	(JNIEnv *env, jclass that, jlong arg0, jlong arg1, jlong arg2)

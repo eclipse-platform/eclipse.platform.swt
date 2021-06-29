@@ -114,6 +114,7 @@ char * GTK4_nativeFunctionNames[] = {
 	"gtk_1widget_1get_1root",
 	"gtk_1widget_1measure",
 	"gtk_1widget_1set_1cursor",
+	"gtk_1widget_1set_1focusable",
 	"gtk_1widget_1snapshot_1child",
 	"gtk_1widget_1translate_1coordinates",
 	"gtk_1window_1destroy",

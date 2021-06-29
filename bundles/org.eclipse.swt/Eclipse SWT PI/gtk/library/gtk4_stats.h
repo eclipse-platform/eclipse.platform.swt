@@ -124,6 +124,7 @@ typedef enum {
 	gtk_1widget_1get_1root_FUNC,
 	gtk_1widget_1measure_FUNC,
 	gtk_1widget_1set_1cursor_FUNC,
+	gtk_1widget_1set_1focusable_FUNC,
 	gtk_1widget_1snapshot_1child_FUNC,
 	gtk_1widget_1translate_1coordinates_FUNC,
 	gtk_1window_1destroy_FUNC,

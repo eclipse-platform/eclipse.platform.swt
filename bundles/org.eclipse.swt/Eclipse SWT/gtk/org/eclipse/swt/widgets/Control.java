@@ -457,7 +457,6 @@ private void hookKeyboardAndFocusSignals(long focusHandle) {
 		OS.g_signal_connect(keyController, OS.key_released, display.keyPressReleaseProc, KEY_RELEASED);
 
 		long focusController = GTK4.gtk_event_controller_focus_new();
-		GTK.gtk_event_controller_set_propagation_phase(focusController, GTK.GTK_PHASE_TARGET);
 		GTK4.gtk_widget_add_controller(focusHandle, focusController);
 		OS.g_signal_connect(focusController, OS.enter, display.focusProc, FOCUS_IN);
 		OS.g_signal_connect(focusController, OS.leave, display.focusProc, FOCUS_OUT);
