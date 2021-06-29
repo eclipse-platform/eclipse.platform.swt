@@ -3449,19 +3449,21 @@ void gtk_gesture_press_event (long gesture, int n_press, double x, double y, lon
 	mouseDown = true;
 	dragBegun = false;
 
-	if ((state & MENU) == 0) {
-		int eventButton = GDK.gdk_button_event_get_button(event);
-
-		if (eventButton == 3) {
-			showMenu ((int)x, (int)y);
-		}
-	}
-
 	int eventButton = GDK.gdk_button_event_get_button(event);
 	int eventTime = GDK.gdk_event_get_time(event);
 	int eventState = GDK.gdk_event_get_modifier_state(event);
 
-	sendMouseEvent(SWT.MouseDown, eventButton, n_press, 0, false, eventTime, x, y, true, eventState);
+	display.clickCount = n_press;
+	if (n_press == 1) {
+		sendMouseEvent(SWT.MouseDown, eventButton, n_press, 0, false, eventTime, x, y, false, eventState);
+		if ((state & MENU) == 0) {
+			if (eventButton == 3) {
+				showMenu ((int)x, (int)y);
+			}
+		}
+	} else if (n_press == 2) {
+		sendMouseEvent(SWT.MouseDoubleClick, eventButton, n_press, 0, false, eventTime, x, y, false, eventState);
+	}
 }
 
 @Override
