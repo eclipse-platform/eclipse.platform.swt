@@ -1595,6 +1595,17 @@ void adjustChildClipping (long widget) {
 	 */
 	if (widget == cellHandle && (style & SWT.READ_ONLY) != 0 && !unselected) {
 		/*
+		 * Currently in GTK4, when a new combo is created it does not follow setBounds.
+		 * This could be the reason gtk_cell_view_set_fit_model does not work like in GTK3.
+		 * This bug will need to be revisited once setBounds is working again.
+		 * See bug 567215
+		 */
+		if(GTK.GTK4) {
+			super.adjustChildClipping(widget);
+			return;
+		}
+
+		/*
 		 * Set "fit-model" mode for READ_ONLY Combos on GTK3.20+ to false.
 		 * This means the GtkCellView rendering the text can be set to
 		 * a size other than the maximum. See bug 539367.
