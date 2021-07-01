@@ -168,6 +168,17 @@ public class Display extends Device {
 		SWT_OBJECT_INDEX1 = OS.g_quark_from_string (buffer);
 		buffer = Converter.wcsToMbcs ("SWT_OBJECT_INDEX2", true); //$NON-NLS-1$
 		SWT_OBJECT_INDEX2 = OS.g_quark_from_string (buffer);
+
+		if (!GTK.GTK4) {
+			/*
+			 * AWT/Swing components always use GDK lock when calling GTK functions.
+			 * To allow them to be created on the main thread, GDK lock has to be reentrant.
+			 * This call replaces the standard GDK lock (GMutex) with GRecMutex.
+			 */
+			OS.swt_set_lock_functions ();
+			GDK.gdk_threads_init ();
+			GDK.gdk_threads_enter ();
+		}
 	}
 
 	/* Modality */
@@ -1145,16 +1156,6 @@ boolean checkAndSetThemeDetails (String themeName) {
 }
 
 void createDisplay (DeviceData data) {
-	if (!GTK.GTK4) {
-		/*
-		 * AWT/Swing components always use GDK lock when calling GTK functions.
-		 * To allow them to be created on the main thread, GDK lock has to be reentrant.
-		 * This call replaces the standard GDK lock (GMutex) with GRecMutex.
-		 */
-		OS.swt_set_lock_functions ();
-		GDK.gdk_threads_init ();
-		GDK.gdk_threads_enter ();
-	}
 	boolean init;
 	if (GTK.GTK4) {
 		init = GTK4.gtk_init_check();
