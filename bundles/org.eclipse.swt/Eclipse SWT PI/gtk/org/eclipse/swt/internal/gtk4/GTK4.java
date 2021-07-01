@@ -103,6 +103,9 @@ public class GTK4 {
 	/** @param check_button cast=(GtkCheckButton *) */
 	public static final native boolean gtk_check_button_get_active(long check_button);
 
+	/** @param editable cast=(GtkEditable *) */
+	public static final native long gtk_editable_get_text(long editable);
+
 	/* GtkPicture */
 	public static final native long gtk_picture_new();
 	/**

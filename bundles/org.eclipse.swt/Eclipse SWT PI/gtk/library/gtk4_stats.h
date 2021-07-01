@@ -60,6 +60,7 @@ typedef enum {
 	gtk_1drag_1source_1set_1icon_FUNC,
 	gtk_1drop_1target_1async_1new_FUNC,
 	gtk_1drop_1target_1async_1set_1formats_FUNC,
+	gtk_1editable_1get_1text_FUNC,
 	gtk_1entry_1get_1buffer_FUNC,
 	gtk_1entry_1set_1buffer_FUNC,
 	gtk_1event_1controller_1focus_1new_FUNC,

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2018 IBM Corporation and others.
+ * Copyright (c) 2000, 2021 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -1009,7 +1009,12 @@ public int getCharCount () {
 	checkWidget ();
 	int result;
 	if ((style & SWT.SINGLE) != 0) {
-		long ptr = GTK3.gtk_entry_get_text (handle);
+		long ptr;
+		if (GTK.GTK4) {
+			ptr = GTK4.gtk_editable_get_text(handle);
+		} else {
+			ptr = GTK3.gtk_entry_get_text (handle);
+		}
 		result = (int)OS.g_utf16_strlen (ptr, -1);
 	} else {
 		byte [] startIter =  new byte [ITER_SIZEOF];

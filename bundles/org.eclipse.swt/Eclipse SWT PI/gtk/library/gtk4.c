@@ -345,6 +345,18 @@ JNIEXPORT void JNICALL GTK4_NATIVE(gtk_1drop_1target_1async_1set_1formats)
 }
 #endif
 
+#ifndef NO_gtk_1editable_1get_1text
+JNIEXPORT jlong JNICALL GTK4_NATIVE(gtk_1editable_1get_1text)
+	(JNIEnv *env, jclass that, jlong arg0)
+{
+	jlong rc = 0;
+	GTK4_NATIVE_ENTER(env, that, gtk_1editable_1get_1text_FUNC);
+	rc = (jlong)gtk_editable_get_text((GtkEditable *)arg0);
+	GTK4_NATIVE_EXIT(env, that, gtk_1editable_1get_1text_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_gtk_1entry_1get_1buffer
 JNIEXPORT jlong JNICALL GTK4_NATIVE(gtk_1entry_1get_1buffer)
 	(JNIEnv *env, jclass that, jlong arg0)

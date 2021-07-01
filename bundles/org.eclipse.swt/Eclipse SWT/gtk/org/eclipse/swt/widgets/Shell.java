@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2018 IBM Corporation and others.
+ * Copyright (c) 2000, 2021 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -603,11 +603,11 @@ void bringToTop (boolean force) {
 			OS.XSetInputFocus (xDisplay, xWindow, OS.RevertToParent, OS.CurrentTime);
 			GDK.gdk_x11_display_error_trap_pop_ignored(gdkDisplay);
 		} else {
-			GTK3.gtk_grab_add(shellHandle);
 			long gdkDisplay;
 			if (GTK.GTK4) {
 				gdkDisplay = GDK.gdk_surface_get_display(gdkResource);
 			} else {
+				GTK3.gtk_grab_add(shellHandle);
 				gdkDisplay = GDK.gdk_window_get_display(gdkResource);
 			}
 			long seat = GDK.gdk_display_get_default_seat(gdkDisplay);
@@ -3260,10 +3260,10 @@ void checkAndUngrabFocus () {
 		} else {
 			gdkResource = gtk_widget_get_window (shellHandle);
 			display = GDK.gdk_window_get_display(gdkResource);
+			GTK3.gtk_grab_remove(shellHandle);
 		}
 		long seat = GDK.gdk_display_get_default_seat(display);
 		GDK.gdk_seat_ungrab(seat);
-		GTK3.gtk_grab_remove(shellHandle);
 		grabbedFocus = false;
 	}
 }
