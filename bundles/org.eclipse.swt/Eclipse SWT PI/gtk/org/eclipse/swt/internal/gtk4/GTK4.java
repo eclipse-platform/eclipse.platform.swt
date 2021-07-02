@@ -105,6 +105,8 @@ public class GTK4 {
 
 	/** @param editable cast=(GtkEditable *) */
 	public static final native long gtk_editable_get_text(long editable);
+	/** @param editable cast=(GtkEditable *) */
+	public static final native long gtk_editable_get_delegate(long editable);
 
 	/* GtkPicture */
 	public static final native long gtk_picture_new();
@@ -266,6 +268,18 @@ public class GTK4 {
 	/* GtkText */
 	/** @param self cast=(GtkText *) */
 	public static final native long gtk_text_get_buffer(long self);
+	/** @param self cast=(GtkText *) */
+	public static final native void gtk_text_set_visibility(long self, boolean visible);
+	/**
+	 * @param self cast=(GtkText *)
+	 * @param text cast=(const gchar *)
+	 */
+	public static final native void gtk_text_set_placeholder_text(long self, byte[] text);
+	/**
+	 * @param entry cast=(GtkText *)
+	 * @param tabs cast=(PangoTabArray *)
+	 */
+	public static final native void gtk_text_set_tabs(long entry, long tabs);
 
 	/* GtkPopoverMenu */
 	/**

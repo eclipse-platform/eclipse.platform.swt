@@ -169,12 +169,16 @@ public Text (Composite parent, int style) {
 
 		if ((style & SWT.ICON_SEARCH) == 0) {
 			this.style &= ~SWT.ICON_SEARCH;
-			GTK.gtk_entry_set_icon_from_icon_name(handle, GTK.GTK_ENTRY_ICON_PRIMARY, null);
+			if (!GTK.GTK4) {
+				GTK.gtk_entry_set_icon_from_icon_name(handle, GTK.GTK_ENTRY_ICON_PRIMARY, null);
+			}
 		} else {
 			// Default GtkSearchEntry always shows inactive "find" icon
 			// make it active and sensitive to be consistent with other platforms
-			GTK.gtk_entry_set_icon_activatable(handle, GTK.GTK_ENTRY_ICON_PRIMARY, true);
-			GTK.gtk_entry_set_icon_sensitive(handle, GTK.GTK_ENTRY_ICON_PRIMARY, true);
+			if (!GTK.GTK4) {
+				GTK.gtk_entry_set_icon_activatable(handle, GTK.GTK_ENTRY_ICON_PRIMARY, true);
+				GTK.gtk_entry_set_icon_sensitive(handle, GTK.GTK_ENTRY_ICON_PRIMARY, true);
+			}
 		}
 
 		if ((style & SWT.ICON_CANCEL) == 0) {
@@ -229,8 +233,12 @@ void createHandle (int index) {
 
 		if (GTK.GTK4) {
 			OS.swt_fixed_add(fixedHandle, handle);
-			textHandle = GTK4.gtk_widget_get_first_child(handle);
-			bufferHandle = GTK4.gtk_entry_get_buffer(handle);
+			textHandle = GTK4.gtk_editable_get_delegate(handle);
+			if ((style & SWT.SEARCH) == 0) {
+				bufferHandle = GTK4.gtk_entry_get_buffer(handle);
+			} else {
+				bufferHandle = GTK4.gtk_text_get_buffer(textHandle);
+			}
 		} else {
 			GTK3.gtk_widget_set_has_window(fixedHandle, true);
 			GTK3.gtk_container_add(fixedHandle, handle);
@@ -239,7 +247,11 @@ void createHandle (int index) {
 		}
 
 		GTK.gtk_editable_set_editable(handle, (style & SWT.READ_ONLY) == 0);
-		GTK.gtk_entry_set_visibility(handle, (style & SWT.PASSWORD) == 0);
+		if(GTK.GTK4) {
+			GTK4.gtk_text_set_visibility(textHandle, (style & SWT.PASSWORD) == 0);
+		} else {
+			GTK.gtk_entry_set_visibility(handle, (style & SWT.PASSWORD) == 0);
+		}
 		/*
 		 * We need to handle borders differently in GTK3.20+. GtkEntry without frame will have a blank background color.
 		 * So let's set border via css and override the background in this case to be COLOR_LIST_BACKGROUND.
@@ -687,12 +699,14 @@ Rectangle computeTrimInPixels (int x, int y, int width, int height) {
 			trim.width += tmp.left + tmp.right;
 			trim.height += tmp.top + tmp.bottom;
 		}
-		GdkRectangle icon_area = new GdkRectangle();
-		GTK.gtk_entry_get_icon_area(handle, GTK.GTK_ENTRY_ICON_PRIMARY, icon_area);
-		trim.x -= icon_area.width;
-		trim.width += icon_area.width;
-		GTK.gtk_entry_get_icon_area(handle, GTK.GTK_ENTRY_ICON_SECONDARY, icon_area);
-		trim.width += icon_area.width;
+		if (!GTK.GTK4 ||  ((style & SWT.SEARCH) == 0) ) {
+			GdkRectangle icon_area = new GdkRectangle();
+			GTK.gtk_entry_get_icon_area(handle, GTK.GTK_ENTRY_ICON_PRIMARY, icon_area);
+			trim.x -= icon_area.width;
+			trim.width += icon_area.width;
+			GTK.gtk_entry_get_icon_area(handle, GTK.GTK_ENTRY_ICON_SECONDARY, icon_area);
+			trim.width += icon_area.width;
+		}
 	} else {
 		int borderWidth = gtk_container_get_border_width_or_margin (handle);
 		xborder += borderWidth;
@@ -1573,7 +1587,7 @@ long gtk_changed (long widget) {
 	} else {
 		sendEvent (SWT.Modify);
 	}
-	if ((style & SWT.SEARCH) != 0) {
+	if ((style & SWT.SEARCH) != 0 && !GTK.GTK4) {
 		if ((style & SWT.ICON_CANCEL) == 0) {
 			// Default GtkSearchEntry shows "clear" icon when there is text, manually revert this
 			// when "cancel" icon style is not set
@@ -1928,7 +1942,7 @@ void hookEvents() {
 		if (!GTK.GTK4) {
 			OS.g_signal_connect_closure(handle, OS.grab_focus, display.getClosure (GRAB_FOCUS), false);
 		}
-		if ((style & SWT.SEARCH) != 0) {
+		if ((style & SWT.SEARCH) != 0 && !GTK.GTK4) {
 			OS.g_signal_connect_closure(handle, OS.icon_release, display.getClosure (ICON_RELEASE), false);
 		}
 	} else {
@@ -2429,7 +2443,11 @@ public void setMessage (String message) {
 	this.message = message;
 	if ((style & SWT.SINGLE) != 0) {
 		byte [] buffer = Converter.wcsToMbcs (message, true);
-		GTK.gtk_entry_set_placeholder_text (handle, buffer);
+		if (GTK.GTK4) {
+			GTK4.gtk_text_set_placeholder_text (textHandle, buffer);
+		} else {
+			GTK.gtk_entry_set_placeholder_text (handle, buffer);
+		}
 		return;
 	}
 	redraw (false);
@@ -2616,7 +2634,11 @@ void setTabStops (int tabs) {
 	long tabArray = OS.pango_tab_array_new (1, false);
 	OS.pango_tab_array_set_tab (tabArray, 0, OS.PANGO_TAB_LEFT, tabWidth);
 	if ((style & SWT.SINGLE) != 0) {
-		GTK.gtk_entry_set_tabs (handle, tabArray);
+		if (GTK.GTK4) {
+			GTK4.gtk_text_set_tabs (textHandle, tabArray);
+		} else {
+			GTK.gtk_entry_set_tabs (handle, tabArray);
+		}
 	} else {
 		GTK.gtk_text_view_set_tabs (handle, tabArray);
 	}
@@ -2734,7 +2756,7 @@ void setText (char [] text) {
 		Arrays.fill (buffer, (byte) 0);
 	}
 	sendEvent (SWT.Modify);
-	if ((style & SWT.SEARCH) != 0) {
+	if ((style & SWT.SEARCH) != 0 && !GTK.GTK4) {
 		if ((style & SWT.ICON_CANCEL) == 0) {
 			GTK.gtk_entry_set_icon_from_icon_name(handle, GTK.GTK_ENTRY_ICON_SECONDARY, null);
 		}

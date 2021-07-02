@@ -345,6 +345,18 @@ JNIEXPORT void JNICALL GTK4_NATIVE(gtk_1drop_1target_1async_1set_1formats)
 }
 #endif
 
+#ifndef NO_gtk_1editable_1get_1delegate
+JNIEXPORT jlong JNICALL GTK4_NATIVE(gtk_1editable_1get_1delegate)
+	(JNIEnv *env, jclass that, jlong arg0)
+{
+	jlong rc = 0;
+	GTK4_NATIVE_ENTER(env, that, gtk_1editable_1get_1delegate_FUNC);
+	rc = (jlong)gtk_editable_get_delegate((GtkEditable *)arg0);
+	GTK4_NATIVE_EXIT(env, that, gtk_1editable_1get_1delegate_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_gtk_1editable_1get_1text
 JNIEXPORT jlong JNICALL GTK4_NATIVE(gtk_1editable_1get_1text)
 	(JNIEnv *env, jclass that, jlong arg0)
@@ -958,6 +970,40 @@ JNIEXPORT jlong JNICALL GTK4_NATIVE(gtk_1text_1get_1buffer)
 	rc = (jlong)gtk_text_get_buffer((GtkText *)arg0);
 	GTK4_NATIVE_EXIT(env, that, gtk_1text_1get_1buffer_FUNC);
 	return rc;
+}
+#endif
+
+#ifndef NO_gtk_1text_1set_1placeholder_1text
+JNIEXPORT void JNICALL GTK4_NATIVE(gtk_1text_1set_1placeholder_1text)
+	(JNIEnv *env, jclass that, jlong arg0, jbyteArray arg1)
+{
+	jbyte *lparg1=NULL;
+	GTK4_NATIVE_ENTER(env, that, gtk_1text_1set_1placeholder_1text_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	gtk_text_set_placeholder_text((GtkText *)arg0, (const gchar *)lparg1);
+fail:
+	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	GTK4_NATIVE_EXIT(env, that, gtk_1text_1set_1placeholder_1text_FUNC);
+}
+#endif
+
+#ifndef NO_gtk_1text_1set_1tabs
+JNIEXPORT void JNICALL GTK4_NATIVE(gtk_1text_1set_1tabs)
+	(JNIEnv *env, jclass that, jlong arg0, jlong arg1)
+{
+	GTK4_NATIVE_ENTER(env, that, gtk_1text_1set_1tabs_FUNC);
+	gtk_text_set_tabs((GtkText *)arg0, (PangoTabArray *)arg1);
+	GTK4_NATIVE_EXIT(env, that, gtk_1text_1set_1tabs_FUNC);
+}
+#endif
+
+#ifndef NO_gtk_1text_1set_1visibility
+JNIEXPORT void JNICALL GTK4_NATIVE(gtk_1text_1set_1visibility)
+	(JNIEnv *env, jclass that, jlong arg0, jboolean arg1)
+{
+	GTK4_NATIVE_ENTER(env, that, gtk_1text_1set_1visibility_FUNC);
+	gtk_text_set_visibility((GtkText *)arg0, arg1);
+	GTK4_NATIVE_EXIT(env, that, gtk_1text_1set_1visibility_FUNC);
 }
 #endif
 
