@@ -10384,7 +10384,7 @@ public void setSelectionRange(int start, int length) {
  *   <li>ERROR_INVALID_ARGUMENT when ranges are null or size isn't valid (not pair)</li>
  * </ul>
  * @see #getSelectionRanges()
- * @since 3.116
+ * @since 3.117
  */
 public void setSelectionRanges(int[] ranges) {
 	checkWidget();
