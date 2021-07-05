@@ -1560,7 +1560,14 @@ long gtk_commit (long imContext, long text) {
 @Override
 long gtk_delete_text (long widget, long start_pos, long end_pos) {
 	if (!hooks (SWT.Verify) && !filters (SWT.Verify)) return 0;
-	long ptr = GTK3.gtk_entry_get_text (entryHandle);
+	long ptr;
+	if(GTK.GTK4) {
+		long bufferPtr = GTK4.gtk_entry_get_buffer(entryHandle);
+		ptr = GTK.gtk_entry_buffer_get_text(bufferPtr);
+	}
+	else {
+		ptr = GTK3.gtk_entry_get_text(entryHandle);
+	}
 	if (end_pos == -1) end_pos = OS.g_utf8_strlen (ptr, -1);
 	int start = (int)OS.g_utf8_offset_to_utf16_offset (ptr, start_pos);
 	int end = (int)OS.g_utf8_offset_to_utf16_offset (ptr, end_pos);
@@ -1743,7 +1750,15 @@ long gtk_insert_text (long widget, long new_text, long new_text_length, long pos
 	String oldText = new String (Converter.mbcsToWcs (buffer));
 	int [] pos = new int [1];
 	C.memmove (pos, position, 4);
-	long ptr = GTK3.gtk_entry_get_text (entryHandle);
+	long ptr;
+	if(GTK.GTK4) {
+		long bufferPtr = GTK4.gtk_entry_get_buffer(entryHandle);
+		ptr = GTK.gtk_entry_buffer_get_text(bufferPtr);
+	}
+	else {
+		ptr = GTK3.gtk_entry_get_text (entryHandle);
+	}
+
 	if (pos [0] == -1) pos [0] = (int)OS.g_utf8_strlen (ptr, -1);
 	int start = (int)OS.g_utf8_offset_to_utf16_offset (ptr, pos [0]);
 	String newText = verifyText (oldText, start, start);
