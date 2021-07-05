@@ -332,6 +332,8 @@ public class GTK4 {
 	public static final native void gtk_entry_set_buffer(long entry, long buffer);
 	/** @param entry cast=(GtkEntry *) */
 	public static final native long gtk_entry_get_buffer(long entry);
+	/** @param entry cast=(GtkEntry *) */
+	public static final native int gtk_entry_get_text_length(long entry);
 
 	/* GtkExpander */
 	/**
@@ -434,6 +436,8 @@ public class GTK4 {
 	 * @param focusable cast(gboolean)
 	 */
 	public static final native void gtk_widget_set_focusable(long widget, boolean focusable);
+	/** @param widget cast=(GtkWidget *) */
+	public static final native long gtk_widget_get_clipboard(long widget);
 
 	/* GtkComboBox */
 	/** @param combo_box cast=(GtkComboBox *) */

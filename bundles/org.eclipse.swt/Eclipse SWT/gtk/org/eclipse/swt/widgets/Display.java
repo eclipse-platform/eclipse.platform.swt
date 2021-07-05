@@ -4357,6 +4357,12 @@ long findFocusedWindow() {
  *
  */
 public boolean post (Event event) {
+	/*
+	 * GdkEvents are now strictly read-only
+	 * https://docs.gtk.org/gtk4/migrating-3to4.html#adapt-to-gdkevent-api-changes
+	 */
+	if (GTK.GTK4) return false;
+
 	synchronized (Device.class) {
 		if (isDisposed ()) error (SWT.ERROR_DEVICE_DISPOSED);
 		if (event == null) error (SWT.ERROR_NULL_ARGUMENT);

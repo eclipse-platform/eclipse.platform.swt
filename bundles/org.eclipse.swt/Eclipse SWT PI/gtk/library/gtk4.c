@@ -381,6 +381,18 @@ JNIEXPORT jlong JNICALL GTK4_NATIVE(gtk_1entry_1get_1buffer)
 }
 #endif
 
+#ifndef NO_gtk_1entry_1get_1text_1length
+JNIEXPORT jint JNICALL GTK4_NATIVE(gtk_1entry_1get_1text_1length)
+	(JNIEnv *env, jclass that, jlong arg0)
+{
+	jint rc = 0;
+	GTK4_NATIVE_ENTER(env, that, gtk_1entry_1get_1text_1length_FUNC);
+	rc = (jint)gtk_entry_get_text_length((GtkEntry *)arg0);
+	GTK4_NATIVE_EXIT(env, that, gtk_1entry_1get_1text_1length_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_gtk_1entry_1set_1buffer
 JNIEXPORT void JNICALL GTK4_NATIVE(gtk_1entry_1set_1buffer)
 	(JNIEnv *env, jclass that, jlong arg0, jlong arg1)
@@ -1064,6 +1076,18 @@ fail:
 	if (arg4 && lparg4) (*env)->ReleaseByteArrayElements(env, arg4, lparg4, 0);
 	if (arg3 && lparg3) (*env)->ReleaseByteArrayElements(env, arg3, lparg3, 0);
 	GTK4_NATIVE_EXIT(env, that, gtk_1widget_1class_1add_1binding_1signal_FUNC);
+}
+#endif
+
+#ifndef NO_gtk_1widget_1get_1clipboard
+JNIEXPORT jlong JNICALL GTK4_NATIVE(gtk_1widget_1get_1clipboard)
+	(JNIEnv *env, jclass that, jlong arg0)
+{
+	jlong rc = 0;
+	GTK4_NATIVE_ENTER(env, that, gtk_1widget_1get_1clipboard_FUNC);
+	rc = (jlong)gtk_widget_get_clipboard((GtkWidget *)arg0);
+	GTK4_NATIVE_EXIT(env, that, gtk_1widget_1get_1clipboard_FUNC);
+	return rc;
 }
 #endif
 
