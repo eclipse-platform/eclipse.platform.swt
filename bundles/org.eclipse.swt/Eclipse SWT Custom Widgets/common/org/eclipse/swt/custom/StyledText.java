@@ -9024,7 +9024,6 @@ void setCaretOffsets(int[] newOffsets, int alignment) {
 	}
 	if (!Arrays.equals(caretOffsets, newOffsets)) {
 		caretOffsets = newOffsets;
-		setCaretLocations();
 		if (isListening(ST.CaretMoved)) {
 			StyledTextEvent event = new StyledTextEvent(content);
 			event.end = caretOffsets[caretOffsets.length - 1];
@@ -10337,6 +10336,7 @@ void setSelection(int[] regions, boolean sendEvent, boolean doBlock) {
 			selectionAnchors = Arrays.stream(selection).mapToInt(p -> p.x).toArray();
 			setCaretOffsets(Arrays.stream(selection).mapToInt(p -> p.y).toArray(), PREVIOUS_OFFSET_TRAILING);
 		}
+		setCaretLocations();
 		if (sendEvent && !Arrays.equals(formerSelection, selection)) {
 			sendSelectionEvent();
 		}
@@ -11128,7 +11128,7 @@ boolean showLocation(Rectangle rect, boolean scrollPage) {
  */
 void showCaret() {
 	Rectangle bounds = getBoundsAtOffset(caretOffsets[0]);
-	if (!showLocation(bounds, true)) {
+	if (!showLocation(bounds, true) || caretOffsets.length != carets.length) {
 		setCaretLocations();
 	}
 }

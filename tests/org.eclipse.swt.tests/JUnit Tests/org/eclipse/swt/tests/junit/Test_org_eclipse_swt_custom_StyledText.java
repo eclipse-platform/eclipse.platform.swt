@@ -1817,6 +1817,28 @@ public void test_getSelectionRange() {
 }
 
 @Test
+public void test_textChangeAfterSelection() {
+	// tests https://bugs.eclipse.org/bugs/show_bug.cgi?id=562676#c5
+	shell.setLayout(new GridLayout(1, false));
+	GridData layoutData = new GridData(SWT.FILL, SWT.FILL,true, true);
+	text.setLayoutData(layoutData);
+	// requires visible shell to get locations computed
+	shell.setVisible(true);
+	// requires variable line height
+	text.setWordWrap(true);
+	text.setText(IntStream.range(1, 50).mapToObj(Integer::toString).collect(Collectors.joining("\n")));
+	int startOffset = text.getOffsetAtLine(text.getLineCount() - 1);
+	text.setSelection(startOffset, startOffset + 1);
+	text.showSelection();
+	StyledText other = new StyledText(shell, SWT.NONE);
+	other.setText(IntStream.range(1, 100).mapToObj(Integer::toString).collect(Collectors.joining("\n")));
+	StyledTextContent otherContent = other.getContent();
+	other.dispose();
+	// need setContent to reproduce bug to cascade to text.reset()
+	text.setContent(otherContent);
+}
+
+@Test
 public void test_getSelectionCount(){
 	text.setText("01234567890");
 	assertTrue(":a:", text.getSelectionCount()==0);
