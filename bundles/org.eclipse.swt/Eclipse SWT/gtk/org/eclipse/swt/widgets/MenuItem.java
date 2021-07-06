@@ -650,7 +650,7 @@ long gtk_select (long item) {
 }
 
 @Override
-long gtk_show_help (long widget, long helpType) {
+long gtk3_show_help (long widget, long helpType) {
 	boolean handled = hooks (SWT.Help);
 	if (handled) {
 		postEvent (SWT.Help);
@@ -658,7 +658,6 @@ long gtk_show_help (long widget, long helpType) {
 		handled = parent.sendHelpEvent (helpType);
 	}
 	if (handled) {
-		// TODO: GTK4 there is no idea of a menu shell
 		GTK3.gtk_menu_shell_deactivate (parent.handle);
 		return 1;
 	}
@@ -666,8 +665,8 @@ long gtk_show_help (long widget, long helpType) {
 }
 
 @Override
-void hookEvents () {
-	super.hookEvents ();
+void hookEvents() {
+	super.hookEvents();
 
 	if (GTK.GTK4) {
 		// Bind activate signal only for menu items with actions (SWT.CHECK and SWT.RADIO)
@@ -676,8 +675,8 @@ void hookEvents () {
 		}
 	} else {
 		OS.g_signal_connect_closure(handle, OS.activate, display.getClosure (ACTIVATE), false);
-		OS.g_signal_connect_closure (handle, OS.select, display.getClosure (SELECT), false);
-		OS.g_signal_connect_closure_by_id (handle, display.signalIds [SHOW_HELP], 0, display.getClosure (SHOW_HELP), false);
+		OS.g_signal_connect_closure(handle, OS.select, display.getClosure (SELECT), false);
+		OS.g_signal_connect_closure_by_id(handle, display.signalIds[SHOW_HELP], 0, display.getClosure(SHOW_HELP), false);
 	}
 }
 

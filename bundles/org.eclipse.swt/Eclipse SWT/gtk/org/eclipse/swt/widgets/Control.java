@@ -4299,7 +4299,7 @@ long gtk_scroll_event (long widget, long eventPtr) {
 }
 
 @Override
-long gtk_show_help (long widget, long helpType) {
+long gtk3_show_help (long widget, long helpType) {
 	if (!hasFocus ()) return 0;
 	return sendHelpEvent (helpType) ? 1 : 0;
 }

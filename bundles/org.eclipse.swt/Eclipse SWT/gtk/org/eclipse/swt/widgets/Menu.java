@@ -853,9 +853,8 @@ long gtk_show (long widget) {
 
 
 @Override
-long gtk_show_help (long widget, long helpType) {
+long gtk3_show_help (long widget, long helpType) {
 	if (sendHelpEvent (helpType)) {
-		// TODO: GTK4 there is no idea of a menu shell
 		GTK3.gtk_menu_shell_deactivate (handle);
 		return 1;
 	}

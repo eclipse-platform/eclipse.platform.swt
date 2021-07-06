@@ -956,7 +956,7 @@ long gtk_show (long widget) {
 	return 0;
 }
 
-long gtk_show_help (long widget, long helpType) {
+long gtk3_show_help (long widget, long helpType) {
 	return 0;
 }
 
@@ -2333,7 +2333,7 @@ long windowProc (long handle, long arg0, long user_data) {
 		case MOVE_FOCUS: return gtk_move_focus (handle, arg0);
 		case POPULATE_POPUP: return gtk_populate_popup (handle, arg0);
 		case SCROLL_EVENT:	return gtk_scroll_event (handle, arg0);
-		case SHOW_HELP: return gtk_show_help (handle, arg0);
+		case SHOW_HELP: return gtk3_show_help(handle, arg0);
 		case SIZE_ALLOCATE: return gtk_size_allocate (handle, arg0);
 		case TOGGLED: return gtk_toggled (handle, arg0);
 		case UNMAP_EVENT: return gtk_unmap_event (handle, arg0);
