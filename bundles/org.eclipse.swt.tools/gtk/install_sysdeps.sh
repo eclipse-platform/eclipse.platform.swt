@@ -36,8 +36,8 @@ func_configure_fedora () {
 	set -x
 	sudo $INSTALL_CMD -y groups install "C Development Tools and Libraries"
 
-	func_echo_plus "Installing Java 8 development packages that include jni.h for JNI bindings. Update this script to '9' when java 9 comes out"
-	sudo $INSTALL_CMD -y install java-1.8.0-openjdk-devel.x86_64
+	func_echo_plus "Installing Java 11 development packages that include jni.h for JNI bindings."
+	sudo $INSTALL_CMD -y install java-11-openjdk-devel.x86_64
 
 	func_echo_plus "Installing Gtk3 development packages"
 	sudo $INSTALL_CMD -y install gtk3-devel
