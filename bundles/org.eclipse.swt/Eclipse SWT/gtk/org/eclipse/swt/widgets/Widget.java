@@ -734,10 +734,14 @@ long gtk_button_release_event (long widget, long event) {
 	return 0;
 }
 
-void gtk_gesture_press_event (long gesture, int n_press, double x, double y, long event) {
-}
+void gtk_gesture_press_event(long gesture, int n_press, double x, double y, long event) {}
 
-void gtk_gesture_release_event (long gesture, int n_press, double x, double y, long event) {
+void gtk_gesture_release_event(long gesture, int n_press, double x, double y, long event) {}
+
+void gtk4_motion_event(long controller, double x, double y, long event) {}
+
+boolean gtk4_key_press_event(long controller, int keyval, int keycode, int state, long event) {
+	return sendKeyEvent(SWT.KeyDown, event);
 }
 
 long gtk_changed (long widget) {
@@ -2174,26 +2178,22 @@ boolean translateTraversal (int event) {
 	return false;
 }
 
-long enterMotionScrollProc(long controller, long handle, double x, double y, long user_data) {
-	long result = 0;
+void enterMotionScrollProc(long controller, double x, double y, long user_data) {
 	long event = GTK4.gtk_event_controller_get_current_event(controller);
 
 	switch ((int)user_data) {
 		case ENTER:
-			result = gtk_enter_notify_event(handle, event);
+			gtk_enter_notify_event(handle, event);
 			break;
 		case MOTION:
-			result = gtk_motion_notify_event(handle, event);
+			gtk4_motion_event(controller, x, y, event);
 			break;
 		case MOTION_INVERSE:
-			result = 1;
 			break;
 		case SCROLL:
-			result = gtk_scroll_event(handle, event);
+			gtk_scroll_event(handle, event);
 			break;
 	}
-
-	return result;
 }
 
 void focusProc(long controller, long handle, long user_data) {
@@ -2209,20 +2209,19 @@ void focusProc(long controller, long handle, long user_data) {
 	}
 }
 
-long keyPressReleaseProc(long controller, long handle, int keyval, int keycode, int state, long user_data) {
+boolean keyPressReleaseProc(long controller, int keyval, int keycode, int state, long user_data) {
 	long result = 0;
 	long event = GTK4.gtk_event_controller_get_current_event(controller);
 
 	switch ((int)user_data) {
 		case KEY_PRESSED:
-			result = gtk_key_press_event(handle, event);
-			break;
+			return gtk4_key_press_event(controller, keyval, keycode, state, event);
 		case KEY_RELEASED:
 			result = gtk_key_release_event(handle, event);
 			break;
 	}
 
-	return result;
+	return result == 0;
 }
 
 void gesturePressReleaseProc(long gesture, int n_press, double x, double y, long user_data) {

@@ -3565,7 +3565,7 @@ void initializeCallbacks () {
 	windowProc2 = windowCallback2.getAddress ();
 
 	if (GTK.GTK4) {
-		keyPressReleaseCallback = new Callback (this, "keyPressReleaseProc", long.class, new Type[] {
+		keyPressReleaseCallback = new Callback (this, "keyPressReleaseProc", boolean.class, new Type[] {
 				long.class, int.class, int.class, int.class, long.class}); //$NON-NLS-1$
 		keyPressReleaseProc = keyPressReleaseCallback.getAddress ();
 
@@ -3583,7 +3583,7 @@ void initializeCallbacks () {
 		closuresProc [Widget.FOCUS_IN] = focusProc;
 		closuresProc [Widget.FOCUS_OUT] = focusProc;
 
-		enterMotionScrollCallback = new Callback (this, "enterMotionScrollProc", long.class, new Type[] {
+		enterMotionScrollCallback = new Callback (this, "enterMotionScrollProc", void.class, new Type[] {
 				long.class, double.class, double.class, long.class}); //$NON-NLS-1$
 		enterMotionScrollProc = enterMotionScrollCallback.getAddress ();
 
@@ -6064,11 +6064,11 @@ void wakeThread () {
 	wake = true;
 }
 
-long enterMotionScrollProc (long controller, double x, double y, long user_data) {
+void enterMotionScrollProc(long controller, double x, double y, long user_data) {
 	long handle = GTK.gtk_event_controller_get_widget(controller);
-	Widget widget = getWidget (handle);
-	if (widget == null) return 0;
-	return widget.enterMotionScrollProc(controller, handle, x, y, user_data);
+	Widget widget = getWidget(handle);
+
+	if (widget != null) widget.enterMotionScrollProc(controller, x, y, user_data);
 }
 
 void focusProc(long controller, long user_data) {
@@ -6078,11 +6078,12 @@ void focusProc(long controller, long user_data) {
 	if (widget != null) widget.focusProc(controller, handle, user_data);
 }
 
-long keyPressReleaseProc (long controller, int keyval, int keycode, int state, long user_data) {
+boolean keyPressReleaseProc(long controller, int keyval, int keycode, int state, long user_data) {
 	long handle = GTK.gtk_event_controller_get_widget(controller);
-	Widget widget = getWidget (handle);
-	if (widget == null) return 0;
-	return widget.keyPressReleaseProc(controller, handle, keyval, keycode, state, user_data);
+	Widget widget = getWidget(handle);
+	if (widget == null) return false;
+
+	return widget.keyPressReleaseProc(controller, keyval, keycode, state, user_data);
 }
 
 void gesturePressReleaseProc(long gesture, int n_press, double x, double y, long user_data) {

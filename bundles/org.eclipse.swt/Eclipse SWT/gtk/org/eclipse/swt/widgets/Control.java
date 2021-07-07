@@ -486,7 +486,6 @@ private void hookMouseSignals(long eventHandle) {
 		OS.g_signal_connect(scrollController, OS.scroll, display.enterMotionScrollProc, SCROLL);
 
 		long motionController = GTK4.gtk_event_controller_motion_new();
-		GTK.gtk_event_controller_set_propagation_phase(motionController, GTK.GTK_PHASE_TARGET);
 		GTK4.gtk_widget_add_controller(eventHandle, motionController);
 		OS.g_signal_connect(motionController, OS.motion, display.enterMotionScrollProc, MOTION);
 
