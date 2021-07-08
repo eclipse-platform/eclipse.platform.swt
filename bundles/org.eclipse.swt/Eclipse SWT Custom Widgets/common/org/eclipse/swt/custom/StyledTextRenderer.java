@@ -454,6 +454,12 @@ int drawLine(int lineIndex, int paintX, int paintY, GC gc, Color widgetBackgroun
 	String line = content.getLine(lineIndex);
 	int lineOffset = content.getOffsetAtLine(lineIndex);
 	int lineLength = line.length();
+	Point selection = styledText.getSelection();
+	int selectionStart = selection.x - lineOffset;
+	int selectionEnd = selection.y - lineOffset;
+	if (styledText.getBlockSelection()) {
+		selectionStart = selectionEnd = 0;
+	}
 	Rectangle client = styledText.getClientArea();
 	Color lineBackground = getLineBackground(lineIndex, null);
 	StyledTextEvent event = styledText.getLineBackgroundData(lineOffset, line);
@@ -472,23 +478,23 @@ int drawLine(int lineIndex, int paintX, int paintY, GC gc, Color widgetBackgroun
 		styledText.drawBackground(gc, client.x, paintY, client.width, height);
 	}
 	gc.setForeground(widgetForeground);
-	Point[] selection = intersectingRelativeNonEmptySelections(lineOffset, lineOffset + lineLength);
-	if (styledText.getBlockSelection() || selection.length == 0) {
+	if (selectionStart == selectionEnd || (selectionEnd <= 0 && selectionStart > lineLength - 1)) {
 		layout.draw(gc, paintX, paintY);
 	} else {
+		int start = Math.max(0, selectionStart);
+		int end = Math.min(lineLength, selectionEnd);
 		Color selectionFg = styledText.getSelectionForeground();
 		Color selectionBg = styledText.getSelectionBackground();
-		final int baseFlags = (styledText.getStyle() & SWT.FULL_SELECTION) != 0 ? SWT.FULL_SELECTION : SWT.DELIMITER_SELECTION;
-		for (Point relativeSelection : selection) {
-			int start = Math.max(0, relativeSelection.x);
-			int end = Math.min(lineLength, relativeSelection.y);
-			int flags = baseFlags;
-			if (relativeSelection.x <= lineLength && lineLength < relativeSelection.y ) {
-				flags |= SWT.LAST_LINE_SELECTION;
-			}
-			// TODO calling draw multiple times here prints line multiple times, overriding some colors
-			layout.draw(gc, paintX, paintY, start, end - 1, selectionFg, selectionBg, flags);
+		int flags;
+		if ((styledText.getStyle() & SWT.FULL_SELECTION) != 0) {
+			flags = SWT.FULL_SELECTION;
+		} else {
+			flags = SWT.DELIMITER_SELECTION;
 		}
+		if (selectionStart <= lineLength && lineLength < selectionEnd ) {
+			flags |= SWT.LAST_LINE_SELECTION;
+		}
+		layout.draw(gc, paintX, paintY, start, end - 1, selectionFg, selectionBg, flags);
 	}
 
 	// draw objects
@@ -538,21 +544,6 @@ int drawLine(int lineIndex, int paintX, int paintY, GC gc, Color widgetBackgroun
 	disposeTextLayout(layout);
 	return height;
 }
-private Point[] intersectingRelativeNonEmptySelections(int fromOffset, int toOffset) {
-	int[] selectionRanges = styledText.getSelectionRanges();
-	int lineLength = toOffset - fromOffset;
-	List<Point> res = new ArrayList<>();
-	for (int i = 0; i < selectionRanges.length; i += 2) {
-		// ranges are assumed to be sorted by start offset, then (positive)length or higher end offset
-		Point relativeSelection = new Point(selectionRanges[i] - fromOffset, selectionRanges[i] + selectionRanges[i + 1] - fromOffset);
-		if (relativeSelection.x != relativeSelection.y &&
-			relativeSelection.x <= lineLength  && relativeSelection.y >= 0) {
-			res.add(relativeSelection);
-		}
-	}
-	return res.toArray(new Point[res.size()]);
-}
-
 int getBaseline() {
 	return ascent;
 }
@@ -932,7 +923,7 @@ TextLayout getTextLayout(int lineIndex) {
 			 */
 			lineSpacingComputing = true;
 			styledText.resetCache(lineIndex, 1);
-			styledText.setCaretLocations();
+			styledText.setCaretLocation();
 			styledText.redraw();
 		} finally {
 			lineSpacingComputing = false;
@@ -1303,7 +1294,7 @@ TextLayout getTextLayout(int lineIndex, int orientation, int width, int lineSpac
 			}
 			if (styledText.isBidiCaret()) styledText.createCaretBitmaps();
 			styledText.caretDirection = SWT.NULL;
-			styledText.setCaretLocations();
+			styledText.setCaretLocation();
 			styledText.redraw();
 		}
 	}
