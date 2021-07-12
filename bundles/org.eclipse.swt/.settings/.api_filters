@@ -464,12 +464,4 @@
             </message_arguments>
         </filter>
     </resource>
-    <resource path="META-INF/MANIFEST.MF">
-        <filter comment="Revert for bug 562676" id="926941240">
-            <message_arguments>
-                <message_argument value="3.117.0"/>
-                <message_argument value="3.116.100"/>
-            </message_arguments>
-        </filter>
-    </resource>
 </component>

@@ -44,8 +44,11 @@ import org.junit.runners.Suite;
 		Test_org_eclipse_swt_widgets_Monitor.class,
 		Test_org_eclipse_swt_custom_StyleRange.class, Test_org_eclipse_swt_custom_CCombo.class,
 		Test_org_eclipse_swt_custom_CLabel.class,
-		Test_org_eclipse_swt_custom_CTabItem.class, Test_org_eclipse_swt_custom_StyledText.class,
-		Test_org_eclipse_swt_custom_StyledText_VariableLineHeight.class, Test_org_eclipse_swt_custom_StyledTextLineSpacingProvider.class,
+		Test_org_eclipse_swt_custom_CTabItem.class,
+		Test_org_eclipse_swt_custom_StyledText.class,
+		Test_org_eclipse_swt_custom_StyledText_VariableLineHeight.class,
+		Test_org_eclipse_swt_custom_StyledText_multiCaretsSelections.class,
+		Test_org_eclipse_swt_custom_StyledTextLineSpacingProvider.class,
 		Test_org_eclipse_swt_custom_CTabFolder.class, Test_org_eclipse_swt_widgets_Spinner.class,
 		Test_org_eclipse_swt_widgets_ScrolledComposite.class})
 public class AllWidgetTests {

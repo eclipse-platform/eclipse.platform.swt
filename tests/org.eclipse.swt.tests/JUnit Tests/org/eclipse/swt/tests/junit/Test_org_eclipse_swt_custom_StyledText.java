@@ -17,6 +17,7 @@ package org.eclipse.swt.tests.junit;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThrows;
@@ -164,12 +165,13 @@ private Color getColor(RGB rgb) {
 }
 // this method must not be public so that the auto-gen tool keeps it
 protected void initializeColors() {
-	colors.put(RED, new Color (RED));
-	colors.put(BLUE, new Color (BLUE));
-	colors.put(GREEN, new Color (GREEN));
-	colors.put(YELLOW, new Color (YELLOW));
-	colors.put(CYAN, new Color (CYAN));
-	colors.put(PURPLE, new Color (PURPLE));
+	Display display = Display.getDefault();
+	colors.put(RED, new Color (display, RED));
+	colors.put(BLUE, new Color (display, BLUE));
+	colors.put(GREEN, new Color (display, GREEN));
+	colors.put(YELLOW, new Color (display, YELLOW));
+	colors.put(CYAN, new Color (display, CYAN));
+	colors.put(PURPLE, new Color (display, PURPLE));
 }
 
 @Override
@@ -234,7 +236,7 @@ public void test_addExtendedModifyListenerLorg_eclipse_swt_custom_ExtendedModify
 		listenerCalled = true;
 		assertEquals("ExtendedModify event data invalid", 0, event.start);
 		assertEquals("ExtendedModify event data invalid", line.length(), event.length);
-		assertEquals("ExtendedModify event data invalid", line + line.substring(1) + line, event.replacedText);
+		assertEquals("ExtendedModify event data invalid", line + line.substring(1, line.length()) + line, event.replacedText);
 	};
 	text.addExtendedModifyListener(listener);
 	text.setText(line);
@@ -576,7 +578,7 @@ public void test_addVerifyListenerLorg_eclipse_swt_events_VerifyListener() {
 	textLength = text.getCharCount() - 1 + newLine.length();
 	text.replaceTextRange(0, 1, line);
 	assertTrue("replaceTextRange does not send event", listenerCalled);
-	assertEquals("Listener failed", newLine + newLine.substring(1) + newLine, text.getText());
+	assertEquals("Listener failed", newLine + newLine.substring(1, newLine.length()) + newLine, text.getText());
 
 	listenerCalled = false;
 	text.removeVerifyListener(listener);
@@ -1816,6 +1818,28 @@ public void test_getSelectionRange() {
 }
 
 @Test
+public void test_textChangeAfterSelection() {
+	// tests https://bugs.eclipse.org/bugs/show_bug.cgi?id=562676#c5
+	shell.setLayout(new GridLayout(1, false));
+	GridData layoutData = new GridData(SWT.FILL, SWT.FILL,true, true);
+	text.setLayoutData(layoutData);
+	// requires visible shell to get locations computed
+	shell.setVisible(true);
+	// requires variable line height
+	text.setWordWrap(true);
+	text.setText(IntStream.range(1, 50).mapToObj(Integer::toString).collect(Collectors.joining("\n")));
+	int startOffset = text.getOffsetAtLine(text.getLineCount() - 1);
+	text.setSelection(startOffset, startOffset + 1);
+	text.showSelection();
+	StyledText other = new StyledText(shell, SWT.NONE);
+	other.setText(IntStream.range(1, 100).mapToObj(Integer::toString).collect(Collectors.joining("\n")));
+	StyledTextContent otherContent = other.getContent();
+	other.dispose();
+	// need setContent to reproduce bug to cascade to text.reset()
+	text.setContent(otherContent);
+}
+
+@Test
 public void test_getSelectionCount(){
 	text.setText("01234567890");
 	assertTrue(":a:", text.getSelectionCount()==0);
@@ -2282,8 +2306,10 @@ public void test_invokeActionI() {
 	assertEquals("LineL\r\n", text.getSelectionText());
 
 	text.invokeAction(ST.LINE_END);
+	assertEquals(12, text.getCaretOffset());
 	text.invokeAction(ST.SELECT_LINE_UP);
 	assertEquals("\r\nLineW", text.getSelectionText());
+	assertEquals(5, text.getCaretOffset());
 
 	text.invokeAction(ST.SELECT_LINE_START);
 	assertEquals("LineL\r\nLineW", text.getSelectionText());
@@ -2328,6 +2354,7 @@ public void test_invokeActionI() {
 	assertEquals("LineL", text.getSelectionText());
 
 	text.invokeAction(ST.SELECT_LINE_END);
+	assertEquals("LineL", text.getSelectionText());
 	text.invokeAction(ST.CUT);
 	assertEquals("\r\nLineW", text.getText());
 
@@ -5575,6 +5602,14 @@ public void test_variableToFixedLineHeight() throws InterruptedException {
 	assertFalse(hasPixel(text, colorForVariableHeight));
 }
 
+/**
+ * Check if StyledText widget contains the given color.
+ *
+ * @param text widget to check
+ * @param expectedColor color to find
+ * @return <code>true</code> if the given color was found in current text widget
+ *         bounds
+ */
 private boolean hasPixel(StyledText text, Color expectedColor) {
 	return SwtTestUtil.hasPixel(text, expectedColor);
 }
@@ -5973,5 +6008,30 @@ private Event keyEvent(int key, int type, Widget w) {
 	e.type = type;
 	e.widget = w;
 	return e;
+}
+
+@Test
+public void test_lineUpMovesCaret() {
+	shell.setVisible(true);
+	shell.setLayout(new GridLayout(1, false));
+	text.setText("a\nb\nc");
+	text.setCaretOffset(2);
+	Point caretLocation = text.getCaret().getLocation();
+	text.invokeAction(ST.LINE_UP);
+	assertNotEquals(caretLocation, text.getCaret().getLocation());
+}
+
+
+@Test
+public void test_rangeSelectionKeepsCaret() {
+	shell.setVisible(true);
+	shell.setLayout(new GridLayout(1, false));
+	text.setText("abcdefghij\nABCDEFGHIJ\n0123456789");
+	int initialOffset = 16;
+	text.setSelection(initialOffset, initialOffset - 3);
+	assertEquals(13, text.getCaretOffset());
+	text.invokeAction(ST.SELECT_LINE_DOWN);
+	assertEquals("Selection does not start from caret", initialOffset, text.getSelection().x);
+	assertNotEquals("Selection is not left-to-right", text.getSelection().x, text.getCaretOffset());
 }
 }
