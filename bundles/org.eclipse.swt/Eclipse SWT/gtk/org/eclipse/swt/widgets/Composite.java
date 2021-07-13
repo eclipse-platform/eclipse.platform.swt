@@ -896,6 +896,30 @@ long gtk_button_press_event (long widget, long event) {
 	return result;
 }
 
+
+
+@Override
+boolean gtk4_key_press_event(long controller, int keyval, int keycode, int state, long event) {
+	boolean handled = super.gtk4_key_press_event(controller, keyval, keycode, state, event);
+	if (!handled) {
+		/*
+		* Feature in GTK.  The default behavior when the return key
+		* is pressed is to select the default button.  This is not the
+		* expected behavior for Composite and its subclasses.  The
+		* fix is to avoid calling the default handler.
+		*/
+		if ((state & CANVAS) != 0) {
+			switch (keyval) {
+				case GDK.GDK_Return:
+				case GDK.GDK_KP_Enter:
+					return true;
+			}
+		}
+	}
+
+	return handled;
+}
+
 @Override
 long gtk_key_press_event (long widget, long event) {
 	long result = super.gtk_key_press_event (widget, event);
@@ -908,11 +932,7 @@ long gtk_key_press_event (long widget, long event) {
 	*/
 	if ((state & CANVAS) != 0 && socketHandle == 0) {
 		int [] eventKeyval = new int [1];
-		if (GTK.GTK4) {
-			eventKeyval[0] = GDK.gdk_key_event_get_keyval(event);
-		} else {
-			GDK.gdk_event_get_keyval(event, eventKeyval);
-		}
+		GDK.gdk_event_get_keyval(event, eventKeyval);
 
 		switch (eventKeyval[0]) {
 			case GDK.GDK_Return:

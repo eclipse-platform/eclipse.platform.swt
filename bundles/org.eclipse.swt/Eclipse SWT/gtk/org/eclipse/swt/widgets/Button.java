@@ -669,10 +669,22 @@ long gtk_focus_out_event (long widget, long event) {
 }
 
 @Override
+boolean gtk4_key_press_event(long controller, int keyval, int keycode, int state, long event) {
+	boolean handled = super.gtk4_key_press_event(controller, keyval, keycode, state, event);
+	if (!handled) {
+		if ((style & SWT.RADIO) != 0) selected = getSelection();
+	}
+
+	return handled;
+}
+
+@Override
 long gtk_key_press_event (long widget, long event) {
 	long result = super.gtk_key_press_event (widget, event);
 	if (result != 0) return result;
-	if ((style & SWT.RADIO) != 0) selected  = getSelection ();
+	if ((style & SWT.RADIO) != 0) {
+		selected  = getSelection ();
+	}
 	return result;
 }
 

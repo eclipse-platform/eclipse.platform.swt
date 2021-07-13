@@ -21,6 +21,7 @@ import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.gtk.*;
 import org.eclipse.swt.internal.gtk3.*;
+import org.eclipse.swt.internal.gtk4.*;
 
 /**
  * Instances of this class represent a selectable
@@ -51,6 +52,11 @@ public class Link extends Control {
 	Point selection;
 	String [] ids;
 	int [] mnemonics;
+
+	/**
+	 * Index of the currently focused link in the text.
+	 * Equals -1, if the text has not been set through setText
+	 */
 	int focusIndex;
 
 	static final RGB LINK_DISABLED_FOREGROUND = new RGB (172, 168, 153);
@@ -152,7 +158,11 @@ void createHandle(int index) {
 
 	handle = OS.g_object_new(display.gtk_fixed_get_type(), 0);
 	if (handle == 0) error(SWT.ERROR_NO_HANDLES);
-	if (!GTK.GTK4) GTK3.gtk_widget_set_has_window(handle, true);
+	if (GTK.GTK4) {
+		GTK4.gtk_widget_set_focusable(handle, true);
+	} else {
+		GTK3.gtk_widget_set_has_window(handle, true);
+	}
 	GTK.gtk_widget_set_can_focus(handle, true);
 
 	layout = new TextLayout (display);
@@ -453,17 +463,43 @@ long gtk_event_after (long widget, long gdkEvent) {
 }
 
 @Override
+boolean gtk4_key_press_event(long controller, int keyval, int keycode, int state, long event) {
+	boolean handled = super.gtk4_key_press_event(controller, keyval, keycode, state, event);
+	if (!handled && focusIndex != -1) {
+		switch (keyval) {
+			case GDK.GDK_Return:
+			case GDK.GDK_KP_Enter:
+			case GDK.GDK_space:
+				Event jEvent = new Event();
+				jEvent.text = ids[focusIndex];
+				sendSelectionEvent(SWT.Selection, jEvent, true);
+				break;
+			case GDK.GDK_Tab:
+				if (focusIndex < offsets.length - 1) {
+					focusIndex++;
+					redraw();
+				}
+				break;
+			case GDK.GDK_ISO_Left_Tab:
+				if (focusIndex > 0) {
+					focusIndex--;
+					redraw();
+				}
+				break;
+		}
+	}
+
+	return handled;
+}
+
+@Override
 long gtk_key_press_event (long widget, long eventPtr) {
 	long result = super.gtk_key_press_event (widget, eventPtr);
 	if (result != 0) return result;
 	if (focusIndex == -1) return result;
 
 	int [] key = new int [1];
-	if (GTK.GTK4) {
-		key[0] = GDK.gdk_key_event_get_keyval(eventPtr);
-	} else {
-		GDK.gdk_event_get_keyval(eventPtr, key);
-	}
+	GDK.gdk_event_get_keyval(eventPtr, key);
 
 	switch (key[0]) {
 		case GDK.GDK_Return:

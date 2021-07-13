@@ -740,8 +740,27 @@ void gtk_gesture_release_event(long gesture, int n_press, double x, double y, lo
 
 void gtk4_motion_event(long controller, double x, double y, long event) {}
 
+/**
+ * @param controller the corresponding controller responsible for capturing the event
+ * @param keyval the pressed key
+ * @param keycode raw code of the pressed key
+ * @param state the bitmask, representing the state of the modifier keys and pointer buttons
+ * @param event the GdkEvent captured by the controlled
+ * @return TRUE if the event has been fully/properly handled, otherwise FALSE
+ */
 boolean gtk4_key_press_event(long controller, int keyval, int keycode, int state, long event) {
-	return sendKeyEvent(SWT.KeyDown, event);
+	return !sendKeyEvent(SWT.KeyDown, event);
+}
+
+/**
+ * @param controller the corresponding controller responsible for capturing the event
+ * @param keyval the released key
+ * @param keycode raw code of the released key
+ * @param state the bitmask, representing the state of the modifier keys and pointer buttons
+ * @param event the GdkEvent captured by the controlled
+ */
+void gtk4_key_release_event(long controller, int keyval, int keycode, int state, long event) {
+	sendKeyEvent(SWT.KeyUp, event);
 }
 
 long gtk_changed (long widget) {
@@ -2210,18 +2229,17 @@ void focusProc(long controller, long handle, long user_data) {
 }
 
 boolean keyPressReleaseProc(long controller, int keyval, int keycode, int state, long user_data) {
-	long result = 0;
 	long event = GTK4.gtk_event_controller_get_current_event(controller);
 
 	switch ((int)user_data) {
 		case KEY_PRESSED:
 			return gtk4_key_press_event(controller, keyval, keycode, state, event);
 		case KEY_RELEASED:
-			result = gtk_key_release_event(handle, event);
+			gtk4_key_release_event(controller, keyval, keycode, state, event);
 			break;
 	}
 
-	return result == 0;
+	return false;
 }
 
 void gesturePressReleaseProc(long gesture, int n_press, double x, double y, long user_data) {

@@ -451,7 +451,6 @@ void hookEvents () {
 private void hookKeyboardAndFocusSignals(long focusHandle) {
 	if (GTK.GTK4) {
 		long keyController = GTK4.gtk_event_controller_key_new();
-		GTK.gtk_event_controller_set_propagation_phase(keyController, GTK.GTK_PHASE_TARGET);
 		GTK4.gtk_widget_add_controller(focusHandle, keyController);
 		OS.g_signal_connect(keyController, OS.key_pressed, display.keyPressReleaseProc, KEY_PRESSED);
 		OS.g_signal_connect(keyController, OS.key_released, display.keyPressReleaseProc, KEY_RELEASED);
@@ -2812,7 +2811,7 @@ boolean dragDetect (int x, int y, boolean filter, boolean dragOnTimeout, boolean
 	return dragging;
 }
 
-boolean filterKey (int keyval, long event) {
+boolean filterKey (long event) {
 	long imHandle = imHandle ();
 	if (imHandle != 0) {
 		if (GTK.GTK4)
@@ -3952,14 +3951,27 @@ long gtk_focus_out_event (long widget, long event) {
 	return 0;
 }
 
+
+@Override
+boolean gtk4_key_press_event(long controller, int keyval, int keycode, int state, long event) {
+	if (!hasFocus()) return false;
+
+	if (translateMnemonic(keyval, event)) return true;
+	if (isDisposed()) return false;
+
+	if (filterKey(event)) return true;
+	if (isDisposed()) return false;
+
+	if (translateTraversal(event)) return true;
+	if (isDisposed()) return false;
+
+	return super.gtk4_key_press_event(controller, keyval, keycode, state, event);
+}
+
 @Override
 long gtk_key_press_event (long widget, long event) {
 	int [] eventKeyval = new int [1];
-	if (GTK.GTK4) {
-		eventKeyval[0] = GDK.gdk_key_event_get_keyval(event);
-	} else {
-		GDK.gdk_event_get_keyval(event, eventKeyval);
-	}
+	GDK.gdk_event_get_keyval(event, eventKeyval);
 
 	if (!hasFocus ()) {
 		/*
@@ -3969,7 +3981,7 @@ long gtk_key_press_event (long widget, long event) {
 		* and call filterKey() only.
 		*/
 		if (display.getActiveShell () == null) {
-			if (filterKey (eventKeyval[0], event)) return 1;
+			if (filterKey (event)) return 1;
 		}
 		return 0;
 	}
@@ -3977,7 +3989,7 @@ long gtk_key_press_event (long widget, long event) {
 	// widget could be disposed at this point
 	if (isDisposed ()) return 0;
 
-	if (filterKey (eventKeyval[0], event)) return 1;
+	if (filterKey (event)) return 1;
 	// widget could be disposed at this point
 	if (isDisposed ()) return 0;
 
@@ -3988,15 +4000,23 @@ long gtk_key_press_event (long widget, long event) {
 }
 
 @Override
+void gtk4_key_release_event(long controller, int keyval, int keycode, int state, long event) {
+	if (!hasFocus()) return;
+
+	long imContext = imHandle();
+	if (imContext != 0) {
+		GTK4.gtk_im_context_filter_keypress(imContext, event);
+	}
+
+	super.gtk4_key_release_event(controller, keyval, keycode, state, event);
+}
+
+@Override
 long gtk_key_release_event (long widget, long event) {
 	if (!hasFocus ()) return 0;
 	long imHandle = imHandle ();
 	if (imHandle != 0) {
-		if (GTK.GTK4) {
-			if (GTK4.gtk_im_context_filter_keypress(imHandle, event)) return 1;
-		} else {
-			if (GTK3.gtk_im_context_filter_keypress(imHandle, event)) return 1;
-		}
+		if (GTK3.gtk_im_context_filter_keypress(imHandle, event)) return 1;
 	}
 	return super.gtk_key_release_event (widget, event);
 }
