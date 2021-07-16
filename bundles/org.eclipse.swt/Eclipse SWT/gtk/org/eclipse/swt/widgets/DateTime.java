@@ -74,6 +74,12 @@ public class DateTime extends Composite {
 	containerHandle,
 	calendarHandle;
 
+	/**
+	 * GTK4 field used to hold the main GtkEditable widget.
+	 * Primarily used for styles SWT.DROP_DOWN & SWT.TIME
+	 */
+	long editableHandle;
+
 	/* Emulated DATE and TIME fields */
 	Calendar calendar;
 	Button down;
@@ -363,15 +369,15 @@ Rectangle computeTrimInPixels (int x, int y, int width, int height) {
 	Rectangle trim = super.computeTrimInPixels (x, y, width, height);
 	int xborder = 0, yborder = 0;
 		GtkBorder tmp = new GtkBorder ();
-		long context = GTK.gtk_widget_get_style_context (textEntryHandle);
-		int state_flag = GTK.gtk_widget_get_state_flags(textEntryHandle);
+		long context = GTK.gtk_widget_get_style_context (GTK.GTK4 ? editableHandle : textEntryHandle);
+		int state_flag = GTK.gtk_widget_get_state_flags(GTK.GTK4 ? editableHandle : textEntryHandle);
 		gtk_style_context_get_padding(context, state_flag, tmp);
 		trim.x -= tmp.left;
 		trim.y -= tmp.top;
 		trim.width += tmp.left + tmp.right;
 		trim.height += tmp.top + tmp.bottom;
 		if ((style & SWT.BORDER) != 0) {
-			int state = GTK.gtk_widget_get_state_flags(textEntryHandle);
+			int state = GTK.gtk_widget_get_state_flags(GTK.GTK4 ? editableHandle : textEntryHandle);
 			gtk_style_context_get_border(context, state, tmp);
 			trim.x -= tmp.left;
 			trim.y -= tmp.top;
@@ -444,29 +450,36 @@ private void createHandleForDateWithDropDown () {
 	if (handle == 0) error(SWT.ERROR_NO_HANDLES);
 	containerHandle = handle;
 
-	textEntryHandle = GTK.gtk_entry_new();
-	if (textEntryHandle == 0) error(SWT.ERROR_NO_HANDLES);
-
 	if (GTK.GTK4) {
+		editableHandle = GTK.gtk_entry_new();
+		if (editableHandle == 0) error(SWT.ERROR_NO_HANDLES);
+
+		textEntryHandle = GTK4.gtk_editable_get_delegate(editableHandle);
+
 		OS.swt_fixed_add(fixedHandle, handle);
-		GTK4.gtk_box_append(handle, textEntryHandle);
+		GTK4.gtk_box_append(handle, editableHandle);
 	} else {
+		textEntryHandle = GTK.gtk_entry_new();
+		if (textEntryHandle == 0) error(SWT.ERROR_NO_HANDLES);
+
 		GTK3.gtk_container_add(fixedHandle, handle);
 		GTK3.gtk_container_add(handle, textEntryHandle);
 		GTK.gtk_widget_show(containerHandle);
 		GTK.gtk_widget_show(textEntryHandle);
-	}
 
-	// In GTK 3 font description is inherited from parent widget which is not how SWT has always worked,
-	// reset to default font to get the usual behavior
-	setFontDescription(defaultFont().handle);
+
+		// In GTK 3 font description is inherited from parent widget which is not how SWT has always worked,
+		// reset to default font to get the usual behavior
+		setFontDescription(defaultFont().handle);
+	}
 }
 
 private void createHandleForDateTime() {
 	long adjustment = GTK.gtk_adjustment_new(0, -9999, 9999, 1, 0, 0);
 	if (GTK.GTK4) {
 		handle = GTK.gtk_spin_button_new(adjustment, 1, 0);
-		textEntryHandle = GTK4.gtk_editable_get_delegate(handle);
+		editableHandle = handle;
+		textEntryHandle = GTK4.gtk_editable_get_delegate(editableHandle);
 		containerHandle = textEntryHandle;
 	} else {
 		handle = GTK.gtk_spin_button_new(adjustment, 1, 0);
@@ -932,11 +945,7 @@ private long dateTimeHandle () {
 	if (isCalendar () && calendarHandle != 0) {
 		return calendarHandle;
 	} else if ((isDate () || isTime ())) {
-		if (GTK.GTK4) {
-			return handle;
-		} else {
-			if (textEntryHandle != 0) return textEntryHandle;
-		}
+		if (textEntryHandle != 0) return textEntryHandle;
 		return super.focusHandle ();
 	} else {
 		return super.focusHandle ();
@@ -1733,7 +1742,7 @@ void setBoundsInPixels (int x, int y, int width, int height) {
 
 	//Date with Drop down is in container. Needs extra handling.
 	if (isDateWithDropDownButton ()) {
-		long sizingHandle = textEntryHandle;
+		long sizingHandle = GTK.GTK4 ? editableHandle : textEntryHandle;
 		GtkRequisition requisition = new GtkRequisition ();
 		GTK.gtk_widget_get_preferred_size (sizingHandle, null, requisition);
 		int oldHeight = requisition.height; //Entry should not expand vertically. It is single liner.
@@ -1748,21 +1757,19 @@ void setBoundsInPixels (int x, int y, int width, int height) {
 /**
  * Usually called when control is resized or first initialized.
  */
-private void setDropDownButtonSize () {
-	Rectangle rect = getClientAreaInPixels ();
+private void setDropDownButtonSize() {
+	Rectangle rect = getClientAreaInPixels();
 	int parentWidth = rect.width;
 	int parentHeight = rect.height;
-	Point buttonSize = down.computeSizeInPixels (SWT.DEFAULT, parentHeight);
+	Point buttonSize = down.computeSizeInPixels(SWT.DEFAULT, parentHeight);
 
-	//TAG_GTK3__NO_VERTICAL_FILL_ADJUSTMENT
-	int dateEntryHeight = computeNativeSize (textEntryHandle, SWT.DEFAULT, SWT.DEFAULT, false).y;
-	int newHeight = dateEntryHeight;
+	int dateEntryHeight = computeNativeSize(GTK.GTK4 ? editableHandle : textEntryHandle, SWT.DEFAULT, SWT.DEFAULT, false).y;
 
 	//Move button a little closer to entry field, by amount of padding.
 	int newXpos = parentWidth - buttonSize.x - getGtkBorderPadding().left - getGtkBorderPadding().right;
 
 	int newYPos = parentHeight/2 - dateEntryHeight/2;
-	down.setBoundsInPixels (newXpos, newYPos, buttonSize.x, newHeight);
+	down.setBoundsInPixels (newXpos, newYPos, buttonSize.x, dateEntryHeight);
 }
 
 /**
@@ -1774,7 +1781,7 @@ private void setDropDownButtonSize () {
 GtkBorder getGtkBorderPadding () {
 	//In Gtk3, acquire border.
 	GtkBorder gtkBorderPadding = new GtkBorder ();
-	long contextHandle = textEntryHandle;
+	long contextHandle = GTK.GTK4 ? editableHandle : textEntryHandle;
 	long context = GTK.gtk_widget_get_style_context (contextHandle);
 	int state_flag = GTK.gtk_widget_get_state_flags(contextHandle);
 	gtk_style_context_get_padding(context, state_flag, gtkBorderPadding);
@@ -1879,8 +1886,8 @@ void updateControl() {
 }
 
 @Override
-void register () {
-	super.register ();
+void register() {
+	super.register();
 	if (handle != 0 && display.getWidget(handle) == null) display.addWidget(handle, this);
 	if (containerHandle != 0 && containerHandle != handle) display.addWidget (containerHandle, this);
 	if (textEntryHandle != 0 && textEntryHandle != containerHandle) display.addWidget (textEntryHandle, this);
@@ -1946,13 +1953,12 @@ int getArrow(long widget) {
  * Calculates appropriate width of GtkEntry and
  * adds Date/Time string to the Date/Time Spinner
  */
-void setText (String dateTimeText) {
-	if (dateTimeText != null){
-		byte [] dateTimeConverted = Converter.wcsToMbcs (dateTimeText, true);
+void setText(String dateTimeText) {
+	if (dateTimeText != null) {
+		byte[] dateTimeConverted = Converter.javaStringToCString(dateTimeText);
 
 		if (GTK.GTK4) {
-			long bufferHandle = isDateWithDropDownButton() ? GTK4.gtk_entry_get_buffer(textEntryHandle) : GTK4.gtk_text_get_buffer(textEntryHandle);
-			GTK.gtk_entry_buffer_set_text(bufferHandle, dateTimeConverted, dateTimeText.length());
+			GTK.gtk_entry_buffer_set_text(GTK4.gtk_text_get_buffer(textEntryHandle), dateTimeConverted, dateTimeText.length());
 		} else {
 			//note, this is ignored if the control is in a fill-layout.
 			GTK3.gtk_entry_set_width_chars(textEntryHandle, dateTimeText.length());
@@ -1983,14 +1989,55 @@ void setText (String dateTimeText) {
 }
 
 @Override
+boolean gtk4_key_press_event(long controller, int keyval, int keycode, int state, long event) {
+	if (!isReadOnly() && (isTime() || isDate())) {
+		switch (keyval) {
+		case GDK.GDK_Up:
+		case GDK.GDK_KP_Up:
+			incrementField(+1);
+			break;
+		case GDK.GDK_Down:
+		case GDK.GDK_KP_Down:
+			incrementField(-1);
+			break;
+		case GDK.GDK_Tab:
+		case GDK.GDK_Right:
+		case GDK.GDK_KP_Right:
+			selectField(getNextField(currentField));
+			sendEvent(SWT.Traverse);
+			break;
+		case GDK.GDK_Left:
+		case GDK.GDK_KP_Left:
+			selectField(getPreviousField(currentField));
+			sendEvent(SWT.Traverse);
+			break;
+		case GDK.GDK_Home:
+		case GDK.GDK_KP_Home:
+			/* Set the value of the current field to its minimum */
+			if (currentField != null) {
+				setTextField(currentField, calendar.getActualMinimum(getCalendarField(currentField)));
+			}
+			break;
+		case GDK.GDK_End:
+		case GDK.GDK_KP_End:
+			/* Set the value of the current field to its maximum */
+			if (currentField != null) {
+				setTextField(currentField, calendar.getActualMaximum(getCalendarField(currentField)));
+			}
+			break;
+		default:
+			onNumberKeyInput(keyval);
+		}
+	}
+
+	return true;
+}
+
+@Override
 long gtk_key_press_event (long widget, long event) {
 	if (!isReadOnly () && (isTime () || isDate ())) {
 		int [] key = new int[1];
-		if (GTK.GTK4) {
-			key[0] = GDK.gdk_key_event_get_keyval(event);
-		} else {
-			GDK.gdk_event_get_keyval(event, key);
-		}
+		GDK.gdk_event_get_keyval(event, key);
 
 		switch (key[0]) {
 		case GDK.GDK_Up:
@@ -2063,16 +2110,16 @@ String getText() {
 		long stringPtr;
 
 		if (GTK.GTK4) {
-			long bufferHandle = isDateWithDropDownButton() ? GTK4.gtk_entry_get_buffer(textEntryHandle) : GTK4.gtk_text_get_buffer(textEntryHandle);
-			stringPtr = GTK.gtk_entry_buffer_get_text(bufferHandle);
+			stringPtr = GTK.gtk_entry_buffer_get_text(GTK4.gtk_text_get_buffer(textEntryHandle));
 		} else {
 			stringPtr = GTK3.gtk_entry_get_text(textEntryHandle);
 		}
-
 		if (stringPtr == 0) return "";
+
 		int length = C.strlen(stringPtr);
 		byte[] buffer = new byte[length];
 		C.memmove(buffer, stringPtr, length);
+
 		return new String(Converter.mbcsToWcs(buffer));
 	} else {
 		return "";
@@ -2080,22 +2127,28 @@ String getText() {
 }
 
 /**
- * returns GtkEntry starting from index and ending with index
- * provided by the user
+ * Gets the substring between start and end indices of the
+ * caller provided string. Checks are done to ensure that start
+ * and end indices are well formed.
+ *
+ * @return substring of str between start & end. If start & end
+ * indices are malformed, an empty string is returned.
  */
-String getText (String str,int start, int end) {
+String getText(String str, int start, int end) {
 	checkWidget ();
 	if (!(start <= end && 0 <= end)) return "";
-	int length = str.length ();
-	end = Math.min (end, length - 1);
+
+	int length = str.length();
+	end = Math.min(end, length - 1);
 	if (start > end) return "";
-	start = Math.max (0, start);
+	start = Math.max(0, start);
+
 	/*
 	* NOTE: The current implementation uses substring ()
 	* which can reference a potentially large character
 	* array.
 	*/
-	return str.substring (start, end + 1);
+	return str.substring(start, end + 1);
 }
 
 /**
@@ -2112,8 +2165,7 @@ Point getTextSelection() {
 
 	long stringPtr;
 	if (GTK.GTK4) {
-		long bufferHandle = isDateWithDropDownButton() ? GTK4.gtk_entry_get_buffer(textEntryHandle) : GTK4.gtk_text_get_buffer(textEntryHandle);
-		stringPtr = GTK.gtk_entry_buffer_get_text(bufferHandle);
+		stringPtr = GTK.gtk_entry_buffer_get_text(GTK4.gtk_text_get_buffer(textEntryHandle));
 	} else {
 		stringPtr = GTK3.gtk_entry_get_text (textEntryHandle);
 	}
@@ -2130,8 +2182,7 @@ void setTextSelection(int start, int end) {
 
 	long stringPtr;
 	if (GTK.GTK4) {
-		long bufferHandle = isDateWithDropDownButton() ? GTK4.gtk_entry_get_buffer(textEntryHandle) : GTK4.gtk_text_get_buffer(textEntryHandle);
-		stringPtr = GTK.gtk_entry_buffer_get_text(bufferHandle);
+		stringPtr = GTK.gtk_entry_buffer_get_text(GTK4.gtk_text_get_buffer(textEntryHandle));
 	} else {
 		stringPtr = GTK3.gtk_entry_get_text(textEntryHandle);
 	}
