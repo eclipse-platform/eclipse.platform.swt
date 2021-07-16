@@ -6407,13 +6407,15 @@ void handlePaint(Event event) {
 			gc.setAdvanced(false);
 		}
 	}
-	for (int i = 1; i < carets.length; i++) { //skip 1st caret that's already drawn
-		Caret caret = carets[i];
-		if (caret.isVisible()) {
-			if (caret.getImage() != null) {
-				gc.drawImage(caret.getImage(), caret.getBounds().x, caret.getBounds().y);
-			} else {
-				gc.drawRectangle(caret.getBounds().x, caret.getBounds().y, caret.getBounds().width, getLineHeight(caretOffsets[i]));
+	if(carets != null) {
+		for (int i = 1; i < carets.length; i++) { //skip 1st caret that's already drawn
+			Caret caret = carets[i];
+			if (caret.isVisible()) {
+				if (caret.getImage() != null) {
+					gc.drawImage(caret.getImage(), caret.getBounds().x, caret.getBounds().y);
+				} else {
+					gc.drawRectangle(caret.getBounds().x, caret.getBounds().y, caret.getBounds().width, getLineHeight(caretOffsets[i]));
+				}
 			}
 		}
 	}
@@ -8823,8 +8825,10 @@ public void setCaret(Caret caret) {
 	caretDirection = SWT.NULL;
 	if (caret != null) {
 		setCaretLocations();
-		for (int i = 1; i < carets.length; i++) {
-			carets[i].dispose();
+		if(carets != null) {
+			for (int i = 1; i < carets.length; i++) {
+				carets[i].dispose();
+			}
 		}
 		carets = new Caret[] {caret};
 	} else {
@@ -11128,7 +11132,7 @@ boolean showLocation(Rectangle rect, boolean scrollPage) {
  */
 void showCaret() {
 	Rectangle bounds = getBoundsAtOffset(caretOffsets[0]);
-	if (!showLocation(bounds, true) || caretOffsets.length != carets.length) {
+	if (!showLocation(bounds, true) || (carets != null && caretOffsets.length != carets.length)) {
 		setCaretLocations();
 	}
 }
