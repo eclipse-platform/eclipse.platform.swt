@@ -552,7 +552,16 @@ void createHandle () {
 	spacing.width = spacing.height = CELL_GAP;
 	widget.setIntercellSpacing(spacing);
 	widget.setDoubleAction(OS.sel_sendDoubleSelection);
-	if (!hasBorder()) widget.setFocusRingType(OS.NSFocusRingTypeNone);
+
+	/*
+	 * Table didn't have focus ring in SWT for years, because SWT didn't
+	 * have layer backing, and even when it gets it, there were no focus rings
+	 * due to macOS compatibility code. However, sometimes macOS misbehaves
+	 * (see for example Bug 574618 snippet test 2). On the other hand, most
+	 * macOS builtin apps don't have focus rings for Table, see for example
+	 * Activity Monitor. So just disable it in SWT as well.
+	 */
+	widget.setFocusRingType(OS.NSFocusRingTypeNone);
 
 	headerView = (NSTableHeaderView)new SWTTableHeaderView ().alloc ().init ();
 	widget.setHeaderView (null);
@@ -3664,38 +3673,6 @@ void updateCursorRects (boolean enabled) {
 	updateCursorRects (enabled, headerView);
 }
 
-void updateHeaderVisibility() {
-	if (headerView == null) return;
-
-	/*
-	 * Bug in macOS: During 'Control.setParent()',
-	 * '-[NSView _recursiveLostHiddenAncestor]' is called before
-	 * 'NSView._superview' is updated. As a result,
-	 * '-[NSView _updateLayerHiddenFromView]' incorrectly makes layer
-	 * invisible if *old* parent is invisible, even if new parent is
-	 * visible. This causes Table's header to be invisible. The
-	 * workaround is to force layer to be visible.
-	 * Note that this code is copied in Table and Tree.
-	 */
-
-	/*
-	 * Bug only occurs on macOS 10.14 and 10.15, no longer happens
-	 * on macOS 11.0.
-	 */
-	if ((OS.VERSION < OS.VERSION(10, 14, 0)) || OS.isBigSurOrLater()) {
-		return;
-	}
-
-	 /*
-	 * Workaround is only needed for visible controls, because macOS
-	 * doesn't have the bug on 'Control.setVisible()' path.
-	 */
-	if (headerView.isHiddenOrHasHiddenAncestor()) return;
-
-	final CALayer layer = headerView.layer();
-	if (layer != null) layer.setHidden(false);
-}
-
 void updateRowCount() {
 	NSTableView widget = (NSTableView)view;
 	setRedraw(false);
@@ -3704,12 +3681,6 @@ void updateRowCount() {
 	ignoreSelect = false;
 	widget.tile();
 	setRedraw(true);
-}
-
-@Override
-void viewDidMoveToWindow(long id, long sel) {
-	if ((headerView != null) && (id == headerView.id))
-		updateHeaderVisibility();
 }
 
 }

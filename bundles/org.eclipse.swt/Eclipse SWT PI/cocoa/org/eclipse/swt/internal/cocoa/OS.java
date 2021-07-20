@@ -1536,6 +1536,7 @@ public static final long sel_rectValue = Selector.sel_rectValue.value;
 public static final long sel_redComponent = Selector.sel_redComponent.value;
 public static final long sel_redo = Selector.sel_redo.value;
 public static final long sel_reflectScrolledClipView_ = Selector.sel_reflectScrolledClipView_.value;
+public static final long sel_registerDefaults_ = Selector.sel_registerDefaults_.value;
 public static final long sel_registerForDraggedTypes_ = Selector.sel_registerForDraggedTypes_.value;
 public static final long sel_release = Selector.sel_release.value;
 public static final long sel_reload_ = Selector.sel_reload_.value;

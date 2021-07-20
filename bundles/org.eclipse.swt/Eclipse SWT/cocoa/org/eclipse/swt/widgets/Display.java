@@ -376,6 +376,10 @@ public class Display extends Device {
 		};
 	}
 
+	static {
+		configureSystemOptions ();
+	}
+
 /*
 * TEMPORARY CODE.
 */
@@ -814,6 +818,49 @@ public void close () {
 	Event event = new Event ();
 	sendEvent (SWT.Close, event);
 	if (event.doit) dispose ();
+}
+
+static private void configureSystemOption (String option, boolean value) {
+	NSDictionary dictionary = NSDictionary.dictionaryWithObject (NSNumber.numberWithBool (value), NSString.stringWith (option));
+	NSUserDefaults.standardUserDefaults ().registerDefaults (dictionary);
+}
+
+static private void configureSystemOptions () {
+	/*
+	 * Most native applications are layer backed. This means that everything
+	 * painted by the application is cached for performance reasons, such as
+	 * not having to repaint everything when scrolling.
+	 *
+	 * The condition for default layer backing is being compatible with
+	 * responsive scrolling, and SWT is not compatible because it handles
+	 * 'scrollWheel:' and 'drawRect:' in 'NSScrollView'. Making SWT compatible
+	 * is not trivial.
+	 *
+	 * Requesting layer directly is possible, but I decided that it's better to
+	 * just enable system option for older macOS, because it's what happens when
+	 * using newer Java anyway.
+	 *
+	 * The workaround is to enable root layer backing. macOS 10.14 and 10.15
+	 * already enable this option if app was linked with sdk 10.14+ and
+	 * macOS 11 always enables it regardless of sdk. The option is force
+	 * enabled here in case SWT runs with java/launcher linked with older sdk.
+	 */
+	if (!OS.isBigSurOrLater ())
+		configureSystemOption ("NSViewAllowsRootLayerBacking", true);
+
+	/*
+	 * Starting with macOS 11, layer backing is always enabled. That's fine.
+	 * What is not fine however is that macOS uses "automatic" image format for
+	 * it. This means that instead of actual rendering, macOS's GC only remembers
+	 * the operations performed. This causes macOS to ignore clip rect and paint
+	 * entire visible rect whenever something changes, and that's a lot of
+	 * painting. Example: Table will now repaint all visible items when a single
+	 * item is selected/deselected. In case of owner drawn Table, this makes
+	 * things a lot slower. The workaround is to disable the "automatic" image
+	 * format.
+	 */
+	if (OS.isBigSurOrLater ())
+		configureSystemOption ("NSViewUsesAutomaticLayerBackingStores", false);
 }
 
 /**
@@ -2940,7 +2987,6 @@ void initClasses () {
 	OS.class_addMethod(cls, OS.sel_menuForEvent_, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_headerRectOfColumn_, headerRectOfColumnProc, "@:i");
 	OS.class_addMethod(cls, OS.sel_columnAtPoint_, columnAtPointProc, "@:{NSPoint}");
-	OS.class_addMethod(cls, OS.sel_viewDidMoveToWindow, proc2, "@:");
 	//TODO hitTestProc and drawRectProc should be set Control.setRegion()?
 	OS.objc_registerClassPair(cls);
 

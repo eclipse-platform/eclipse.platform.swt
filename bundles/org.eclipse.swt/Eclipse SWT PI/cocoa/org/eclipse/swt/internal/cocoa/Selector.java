@@ -807,6 +807,7 @@ public enum Selector {
 	, sel_redComponent("redComponent")
 	, sel_redo("redo")
 	, sel_reflectScrolledClipView_("reflectScrolledClipView:")
+	, sel_registerDefaults_("registerDefaults:")
 	, sel_registerForDraggedTypes_("registerForDraggedTypes:")
 	, sel_release("release")
 	, sel_reload_("reload:")

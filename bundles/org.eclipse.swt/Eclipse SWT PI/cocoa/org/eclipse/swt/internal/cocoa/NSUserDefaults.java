@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2015 IBM Corporation and others.
+ * Copyright (c) 2000, 2021 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -30,6 +30,10 @@ public NSUserDefaults(id id) {
 public id objectForKey(NSString defaultName) {
 	long result = OS.objc_msgSend(this.id, OS.sel_objectForKey_, defaultName != null ? defaultName.id : 0);
 	return result != 0 ? new id(result) : null;
+}
+
+public void registerDefaults(NSDictionary registrationDictionary) {
+	OS.objc_msgSend(this.id, OS.sel_registerDefaults_, registrationDictionary != null ? registrationDictionary.id : 0);
 }
 
 public void setInteger(long value, NSString defaultName) {
