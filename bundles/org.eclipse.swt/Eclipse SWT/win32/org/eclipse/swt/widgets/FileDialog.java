@@ -232,7 +232,7 @@ public String open () {
 	fileDialog.GetOptions(options);
 	options[0] |= OS.FOS_FORCEFILESYSTEM | OS.FOS_NOCHANGEDIR;
 	if ((style & SWT.SAVE) != 0) {
-		if (overwrite) options[0] |= OS.FOS_OVERWRITEPROMPT;
+		if (!overwrite) options[0] &= ~OS.FOS_OVERWRITEPROMPT;
 	} else {
 		if ((style & SWT.MULTI) != 0) options[0] |= OS.FOS_ALLOWMULTISELECT;
 	}
