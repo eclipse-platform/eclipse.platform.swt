@@ -3733,11 +3733,7 @@ long gtk_event_after (long widget, long gdkEvent) {
 				GDK.gdk_event_get_root_coords(gdkEvent, eventRX, eventRY);
 
 				int [] eventButton = new int [1];
-				if (GTK.GTK4) {
-					eventButton[0] = GDK.gdk_button_event_get_button(gdkEvent);
-				} else {
-					GDK.gdk_event_get_button(gdkEvent, eventButton);
-				}
+				GDK.gdk_event_get_button(gdkEvent, eventButton);
 
 				if (eventButton[0] == 3) {
 					showMenu ((int) eventRX[0], (int) eventRY[0]);
@@ -3748,13 +3744,9 @@ long gtk_event_after (long widget, long gdkEvent) {
 		case GDK.GDK_FOCUS_CHANGE: {
 			if (!isFocusHandle (widget)) break;
 			boolean [] focusIn = new boolean [1];
-			if (GTK.GTK4) {
-				focusIn[0] = GDK.gdk_focus_event_get_in(gdkEvent);
-			} else {
-				GdkEventFocus gdkEventFocus = new GdkEventFocus ();
-				OS.memmove (gdkEventFocus, gdkEvent, GdkEventFocus.sizeof);
-				focusIn[0] = gdkEventFocus.in != 0;
-			}
+			GdkEventFocus gdkEventFocus = new GdkEventFocus ();
+			OS.memmove (gdkEventFocus, gdkEvent, GdkEventFocus.sizeof);
+			focusIn[0] = gdkEventFocus.in != 0;
 
 			/*
 			 * Feature in GTK. The GTK combo box popup under some window managers
@@ -3843,27 +3835,29 @@ void cairoClipRegion (long cairo) {
 	eventRegion = actualRegion;
 }
 
+
+
+@Override
+void gtk4_draw(long widget, long cairo, Rectangle bounds) {
+	if (!hooksPaint()) return;
+
+	GCData data = new GCData();
+	data.cairo = cairo;
+	GC gc = GC.gtk_new(this, data);
+
+	Event event = new Event();
+	event.count = 1;
+	event.gc = gc;
+	event.setBounds(bounds);
+
+	drawWidget(gc);
+	sendEvent(SWT.Paint, event);
+	gc.dispose();
+	event.gc = null;
+}
+
 @Override
 long gtk_draw (long widget, long cairo) {
-	if (GTK.GTK4) {
-		if (!hooksPaint()) return 0;
-
-		GCData data = new GCData();
-		data.cairo = cairo;
-		GC gc = GC.gtk_new(this, data);
-
-		Event event = new Event();
-		event.count = 1;
-		event.gc = gc;
-
-		drawWidget(gc);
-		sendEvent(SWT.Paint, event);
-		gc.dispose();
-		event.gc = null;
-
-		return 0;
-	}
-
 	if (checkScaleFactor) {
 		long surface = Cairo.cairo_get_target(cairo);
 		if (surface != 0) {
@@ -3938,6 +3932,13 @@ long gtk_focus_in_event (long widget, long event) {
 }
 
 @Override
+void gtk4_focus_enter_event(long controller, long event) {
+	super.gtk4_focus_enter_event(controller, event);
+
+	sendFocusEvent(SWT.FocusIn);
+}
+
+@Override
 long gtk_focus_out_event (long widget, long event) {
 	// widget could be disposed at this point
 	if (handle != 0) {
@@ -3951,6 +3952,12 @@ long gtk_focus_out_event (long widget, long event) {
 	return 0;
 }
 
+@Override
+void gtk4_focus_leave_event(long controller, long event) {
+	super.gtk4_focus_leave_event(controller, event);
+
+	sendFocusEvent(SWT.FocusOut);
+}
 
 @Override
 boolean gtk4_key_press_event(long controller, int keyval, int keycode, int state, long event) {
@@ -4101,6 +4108,35 @@ long gtk_mnemonic_activate (long widget, long arg1) {
 }
 
 @Override
+void gtk4_motion_event(long controller, double x, double y, long event) {
+	if (mouseDown) {
+		dragBegun = true;
+	}
+
+	if (this == display.currentControl && (hooks(SWT.MouseHover) || filters(SWT.MouseHover))) {
+		display.addMouseHoverTimeout(handle);
+	}
+
+	int time = GDK.gdk_event_get_time(event);
+	int state = GDK.gdk_event_get_modifier_state(event);
+	boolean isHint = false;
+
+	if (this != display.currentControl) {
+		if (display.currentControl != null && !display.currentControl.isDisposed ()) {
+			display.removeMouseHoverTimeout(display.currentControl.handle);
+			Point pt = display.mapInPixels(this, display.currentControl, (int)x, (int)y);
+			display.currentControl.sendMouseEvent(SWT.MouseExit,  0, time, pt.x, pt.y, isHint, state);
+		}
+		if (!isDisposed ()) {
+			display.currentControl = this;
+			sendMouseEvent(SWT.MouseEnter, 0, time, x, y, isHint, state);
+		}
+	}
+
+	sendMouseEvent(SWT.MouseMove, 0, time, x, y, isHint, state);
+}
+
+@Override
 long gtk_motion_notify_event (long widget, long event) {
 	int result;
 	if (mouseDown) {
@@ -4109,11 +4145,7 @@ long gtk_motion_notify_event (long widget, long event) {
 
 	double[] eventX = new double[1];
 	double[] eventY = new double[1];
-	if (GTK.GTK4) {
-		GDK.gdk_event_get_position(event, eventX, eventY);
-	} else {
-		GDK.gdk_event_get_coords(event, eventX, eventY);
-	}
+	GDK.gdk_event_get_coords(event, eventX, eventY);
 
 	lastInput.x = (int)eventX[0];
 	lastInput.y = (int)eventY[0];
@@ -4987,7 +5019,8 @@ boolean sendMouseEvent (int type, int button, int count, int detail, boolean sen
 //			long surface = eventSurface ();
 //			GDK.gdk_surface_get_origin (surface, origin_x, origin_y);
 //			eventRect = new Rectangle ((int)x - origin_x [0], (int)y - origin_y [0], 0, 0);
-//			event.setBounds (DPIUtil.autoScaleDown (eventRect));
+			eventRect = new Rectangle ((int)x, (int)y, 0, 0);
+			event.setBounds (DPIUtil.autoScaleDown (eventRect));
 		} else {
 			long window = eventWindow ();
 			GDK.gdk_window_get_origin (window, origin_x, origin_y);

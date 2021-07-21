@@ -1655,7 +1655,7 @@ static long rendererClassInitProc (long g_class, long class_data) {
 	return 0;
 }
 
-static long snapshotDrawProc (long handle, long snapshot) {
+void snapshotDrawProc(long handle, long snapshot) {
 	Display display = getCurrent ();
 	Widget widget = display.getWidget (handle);
 	if (widget != null) widget.snapshotToDraw(handle, snapshot);
@@ -1665,7 +1665,6 @@ static long snapshotDrawProc (long handle, long snapshot) {
 		GTK4.gtk_widget_snapshot_child(handle, child, snapshot);
 		child = GTK4.gtk_widget_get_next_sibling(child);
 	}
-	return 0;
 }
 
 static long rendererGetPreferredWidthProc (long cell, long handle, long minimun_size, long natural_size) {
@@ -3557,8 +3556,8 @@ void initializeCallbacks () {
 	signalIds [Widget.WINDOW_STATE_EVENT] = OS.g_signal_lookup (OS.window_state_event, GTK.GTK_TYPE_WIDGET ());
 
 	if (GTK.GTK4) {
-		snapshotDraw = new Callback (getClass (), "snapshotDrawProc", 2); //$NON-NLS-1$
-		snapshotDrawProc = snapshotDraw.getAddress ();
+		snapshotDraw = new Callback(this, "snapshotDrawProc", void.class, new Type[] {long.class, long.class}); //$NON-NLS-1$
+		snapshotDrawProc = snapshotDraw.getAddress();
 	}
 
 	windowCallback2 = new Callback (this, "windowProc", 2); //$NON-NLS-1$
@@ -6081,7 +6080,7 @@ void focusProc(long controller, long user_data) {
 	long handle = GTK.gtk_event_controller_get_widget(controller);
 	Widget widget = getWidget(handle);
 
-	if (widget != null) widget.focusProc(controller, handle, user_data);
+	if (widget != null) widget.focusProc(controller, user_data);
 }
 
 boolean keyPressReleaseProc(long controller, int keyval, int keycode, int state, long user_data) {

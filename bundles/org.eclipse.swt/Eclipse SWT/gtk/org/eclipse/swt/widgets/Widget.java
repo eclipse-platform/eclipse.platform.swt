@@ -18,6 +18,7 @@ import java.util.*;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
+import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.gtk.*;
 import org.eclipse.swt.internal.gtk3.*;
@@ -763,6 +764,9 @@ void gtk4_key_release_event(long controller, int keyval, int keycode, int state,
 	sendKeyEvent(SWT.KeyUp, event);
 }
 
+void gtk4_focus_enter_event(long controller, long event) {}
+void gtk4_focus_leave_event(long controller, long event) {}
+
 long gtk_changed (long widget) {
 	return 0;
 }
@@ -826,6 +830,8 @@ long gtk_expand_collapse_cursor_row (long widget, long logical, long expand, lon
 long gtk_draw (long widget, long cairo) {
 	return 0;
 }
+
+void gtk4_draw(long widget, long cairo, Rectangle bounds) {}
 
 long gtk_focus (long widget, long event) {
 	return 0;
@@ -2019,14 +2025,18 @@ long sizeRequestProc (long handle, long arg0, long user_data) {
  * @param snapshot the actual GtkSnapshot
  */
 void snapshotToDraw (long handle, long snapshot) {
-	GtkAllocation allocation = new GtkAllocation ();
+	GtkAllocation allocation = new GtkAllocation();
 	GTK.gtk_widget_get_allocation(handle, allocation);
 	long rect = Graphene.graphene_rect_alloc();
 	Graphene.graphene_rect_init(rect, 0, 0, allocation.width, allocation.height);
+
 	long cairo = GTK4.gtk_snapshot_append_cairo(snapshot, rect);
-	if (cairo != 0) gtk_draw(handle, cairo);
+	if (cairo != 0) {
+		Rectangle bounds = new Rectangle(0, 0, allocation.width, allocation.height);
+		gtk4_draw(handle, cairo, bounds);
+	}
+
 	Graphene.graphene_rect_free(rect);
-	return;
 }
 
 long gtk_widget_get_window (long widget){
@@ -2215,15 +2225,15 @@ void enterMotionScrollProc(long controller, double x, double y, long user_data) 
 	}
 }
 
-void focusProc(long controller, long handle, long user_data) {
+void focusProc(long controller, long user_data) {
 	long event = GTK4.gtk_event_controller_get_current_event(controller);
 
 	switch ((int)user_data) {
 		case FOCUS_IN:
-			gtk_focus_in_event(handle, event);
+			gtk4_focus_enter_event(controller, event);
 			break;
 		case FOCUS_OUT:
-			gtk_focus_out_event(handle, event);
+			gtk4_focus_leave_event(controller, event);
 			break;
 	}
 }
