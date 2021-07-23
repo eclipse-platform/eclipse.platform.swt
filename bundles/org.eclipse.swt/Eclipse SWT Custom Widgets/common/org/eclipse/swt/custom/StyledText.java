@@ -1811,6 +1811,21 @@ boolean copySelection(int type) {
 				clipboard.setContents(data, types, type);
 				return true;
 			}
+		} else if (getSelectionRanges().length > 2) {
+			StringBuilder text = new StringBuilder();
+			int[] ranges = getSelectionRanges();
+			for (int i = 0; i < ranges.length; i += 2) {
+				int offset = ranges[i];
+				int length = ranges[i + 1];
+				text.append(length == 0 ? "" : getText(offset, offset + length - 1));
+				text.append(PlatformLineDelimiter);
+			}
+			text.deleteCharAt(text.length() - 1);
+			if (text.length() > 0) {
+				//TODO RTF support
+				clipboard.setContents(new Object[]{text.toString()},  new Transfer[]{TextTransfer.getInstance()}, type);
+				return true;
+			}
 		} else {
 			int length = selection[0].y - selection[0].x;
 			if (length > 0) {
@@ -1837,7 +1852,7 @@ boolean copySelection(int type) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- *
+ *R
  * @see #getLineAlignment(int)
  *
  * @since 3.2
@@ -7640,6 +7655,10 @@ public void paste(){
 			clearBlockSelection(true, true);
 			setCaretLocations();
 			return;
+		} else if (getSelectionRanges().length / 2 > 1) { // multi selection
+			insertMultiSelectionText(text);
+			setCaretLocations();
+			return;
 		}
 		Event event = new Event();
 		event.start = selection[0].x;
@@ -7656,6 +7675,22 @@ public void paste(){
 		sendKeyEvent(event);
 	}
 }
+
+private void insertMultiSelectionText(String text) {
+	String[] blocks = text.split(PlatformLineDelimiter);
+	int[] ranges = getSelectionRanges();
+	for (int i = ranges.length / 2 - 1; i >= 0; i --) {
+		int offset = ranges[2 * i];
+		int length = ranges[2 * i + 1];
+		String toPaste = blocks.length > i ? blocks[i] : blocks[blocks.length - 1];
+		Event event = new Event();
+		event.start = offset;
+		event.end = offset + length;
+		event.text = toPaste;
+		sendKeyEvent(event);
+	}
+}
+
 private void pasteOnMiddleClick(Event event) {
 	String text = (String)getClipboardContent(DND.SELECTION_CLIPBOARD);
 	if (text != null && text.length() > 0) {

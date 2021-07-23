@@ -204,4 +204,15 @@ public class Test_org_eclipse_swt_custom_StyledText_multiCaretsSelections {
 		assertEquals("1245\n1245", text.getText());
 		assertArrayEquals(new int[] { 2, 0, 7, 0 }, text.getSelectionRanges());
 	}
+
+	@Test
+	public void test_MultiCarets_CopyPaste() {
+		text.setText("1\n2");
+		text.setSelectionRanges(new int[] { 0, 1, 2, 1 });
+		text.copy();
+		text.setSelectionRanges(new int[] { 1, 0, 3, 0 });
+		text.paste();
+		assertEquals("11\n22", text.getText());
+		assertArrayEquals(new int[] { 2, 0, 5, 0 }, text.getSelectionRanges());
+	}
 }
