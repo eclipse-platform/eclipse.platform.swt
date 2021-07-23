@@ -58,6 +58,9 @@ public class Button extends Control {
 	String text;
 	GdkRGBA background;
 
+	Image defaultDisableImage;
+	boolean enabled = true;
+
 	static final int INNER_BORDER = 1;
 	static final int DEFAULT_BORDER = 1;
 
@@ -751,6 +754,8 @@ void releaseWidget() {
 
 	image = null;
 	text = null;
+
+	disposeDefaultDisabledImage();
 }
 
 /**
@@ -1139,6 +1144,17 @@ public void setGrayed (boolean grayed) {
  */
 public void setImage(Image image) {
 	checkWidget();
+	if ((style & SWT.SEPARATOR) != 0) return;
+	disposeDefaultDisabledImage();
+	if (!enabled && defaultDisableImage != image && defaultDisableImage != null) {
+		return;
+	}
+	this.image = image;
+	_setImage(image);
+}
+
+private void _setImage (Image image) {
+	checkWidget();
 	if ((style & SWT.ARROW) != 0) return;
 
 	if (image != null) {
@@ -1158,7 +1174,6 @@ public void setImage(Image image) {
 			GTK3.gtk_image_set_from_surface(imageHandle, 0);
 		}
 	}
-	this.image = image;
 	updateWidgetsVisibility();
 	_setAlignment (style);
 }
@@ -1341,5 +1356,45 @@ long dpiChanged(long object, long arg0) {
 	}
 
 	return 0;
+}
+
+/**
+* Enables the receiver if the argument is <code>true</code>,
+* and disables it otherwise.
+* <p>
+* A disabled control is typically
+* not selectable from the user interface and draws with an
+* inactive or "grayed" look.
+* </p>
+*
+* @param enabled the new enabled state
+*
+* @exception SWTException <ul>
+*    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+*    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+* </ul>
+*/
+@Override
+public void setEnabled (boolean enabled) {
+	checkWidget();
+	if (this.enabled == enabled) return;
+	this.enabled = enabled;
+
+	super.setEnabled(enabled);
+
+	if (!enabled) {
+		if (defaultDisableImage == null && image != null) {
+			defaultDisableImage = new Image(getDisplay(), image, SWT.IMAGE_DISABLE);
+		}
+		_setImage(defaultDisableImage);
+	}
+	if (enabled && image != null) _setImage(image);
+}
+
+private void disposeDefaultDisabledImage() {
+	if (defaultDisableImage != null) {
+		defaultDisableImage.dispose();
+		defaultDisableImage = null;
+	}
 }
 }
