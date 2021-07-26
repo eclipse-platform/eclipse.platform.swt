@@ -1139,6 +1139,11 @@ public void setEnabled (boolean enabled) {
 	this.enabled = enabled;
 
 	GTK.gtk_widget_set_sensitive(topHandle, enabled);
+	_setEnabledOrDisabledImage();
+
+}
+
+private void _setEnabledOrDisabledImage() {
 	if (!enabled) {
 		if (disabledImage == null) {
 			if (defaultDisableImage == null && image != null) {
@@ -1150,7 +1155,6 @@ public void setEnabled (boolean enabled) {
 		}
 	}
 	if (enabled && image != null) _setImage(image);
-
 }
 
 boolean setFocus () {
@@ -1242,7 +1246,7 @@ public void setImage (Image image) {
 	if (!enabled && disabledImage != image && disabledImage != null) {
 		return;
 	}
-	_setImage(image);
+	_setEnabledOrDisabledImage();
 }
 
 private void disposeDefault() {
