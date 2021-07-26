@@ -62,6 +62,9 @@ public class MenuItem extends Item {
 	int accelerator, userId;
 	String toolTipText;
 
+	Image defaultDisableImage;
+	boolean enabled = true;
+
 	/** GTK4 only fields */
 	long modelHandle, actionHandle, shortcutHandle;
 	Section section;
@@ -757,6 +760,8 @@ void releaseWidget() {
 	}
 
 	accelerator = 0;
+
+	disposeDefaultDisabledImage();
 }
 
 @Override
@@ -977,6 +982,21 @@ public void setEnabled (boolean enabled) {
 		GTK.gtk_widget_set_sensitive(handle, enabled);
 		if (accelGroup != 0) addAccelerator(accelGroup);
 	}
+
+	if (this.enabled == enabled) return;
+	this.enabled = enabled;
+
+	_setEnabledOrDisabledImage();
+}
+
+private void _setEnabledOrDisabledImage() {
+	if (!enabled) {
+		if (defaultDisableImage == null && image != null) {
+			defaultDisableImage = new Image(getDisplay(), image, SWT.IMAGE_DISABLE);
+		}
+		_setImage(defaultDisableImage);
+	}
+	if (enabled && image != null) _setImage(image);
 }
 
 /**
@@ -1024,8 +1044,13 @@ public void setImage (Image image) {
 
 	checkWidget();
 	if ((style & SWT.SEPARATOR) != 0) return;
+	disposeDefaultDisabledImage();
 	super.setImage (image);
 
+	_setEnabledOrDisabledImage();
+}
+
+private void _setImage (Image image) {
 	if (image != null) {
 		ImageList imageList = parent.imageList;
 		if (imageList == null) imageList = parent.imageList = new ImageList ();
@@ -1435,4 +1460,10 @@ long dpiChanged(long object, long arg0) {
 	return 0;
 }
 
+private void disposeDefaultDisabledImage() {
+	if (defaultDisableImage != null) {
+		defaultDisableImage.dispose();
+		defaultDisableImage = null;
+	}
+}
 }
