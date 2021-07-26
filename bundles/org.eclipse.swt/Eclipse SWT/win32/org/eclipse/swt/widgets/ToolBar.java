@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2014 IBM Corporation and others.
+ * Copyright (c) 2000, 2021 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -48,7 +48,7 @@ import org.eclipse.swt.internal.win32.*;
  * @noextend This class is not intended to be subclassed by clients.
  */
 public class ToolBar extends Composite {
-	int lastFocusId, lastArrowId, lastHotId;
+	int lastFocusId, lastArrowId, lastHotId, _width, _height, _count = -1, _wHint = -1, _hHint = -1;
 	ToolItem [] items;
 	ToolItem [] tabItemList;
 	boolean ignoreResize, ignoreMouse;
@@ -192,11 +192,18 @@ protected void checkSubclass () {
 }
 
 @Override Point computeSizeInPixels (int wHint, int hHint, boolean changed) {
+	int count = (int)OS.SendMessage (handle, OS.TB_BUTTONCOUNT, 0, 0);
+	if (count == this._count && wHint == this._wHint && hHint == this._hHint) {
+		// Return already cached values calculated previously
+		return new Point (_width, _height);
+	}
+	this._count = count;
+	this._wHint = wHint;
+	this._hHint = hHint;
 	int width = 0, height = 0;
 	if ((style & SWT.VERTICAL) != 0) {
 		RECT rect = new RECT ();
 		TBBUTTON lpButton = new TBBUTTON ();
-		int count = (int)OS.SendMessage (handle, OS.TB_BUTTONCOUNT, 0, 0);
 		for (int i=0; i<count; i++) {
 			OS.SendMessage (handle, OS.TB_GETITEMRECT, i, rect);
 			height = Math.max (height, rect.bottom);
@@ -224,7 +231,6 @@ protected void checkSubclass () {
 		if (redraw) OS.UpdateWindow (handle);
 		int flags = OS.SWP_NOACTIVATE | OS.SWP_NOMOVE | OS.SWP_NOREDRAW | OS.SWP_NOZORDER;
 		OS.SetWindowPos (handle, 0, 0, 0, newWidth, newHeight, flags);
-		int count = (int)OS.SendMessage (handle, OS.TB_BUTTONCOUNT, 0, 0);
 		if (count != 0) {
 			RECT rect = new RECT ();
 			OS.SendMessage (handle, OS.TB_GETITEMRECT, count - 1, rect);
@@ -249,6 +255,12 @@ protected void checkSubclass () {
 	if (hHint != SWT.DEFAULT) height = hHint;
 	Rectangle trim = computeTrimInPixels (0, 0, width, height);
 	width = trim.width;  height = trim.height;
+	/*
+	 * Cache this size information for possible re-use as this method gets called
+	 * too many times, for more details see performance Bug 574641
+	 */
+	this._width = width;
+	this._height = height;
 	return new Point (width, height);
 }
 
