@@ -170,7 +170,7 @@ boolean setData(Clipboard owner, Object[] data, Transfer[] dataTypes, int clipbo
 		pTargetsList = OS.g_malloc(GtkTargetEntry.sizeof * entries.length);
 		int offset = 0;
 		for (int i = 0; i < entries.length; i++) {
-			OS.memmove(pTargetsList + offset, entries[i], GtkTargetEntry.sizeof);
+			GTK3.memmove(pTargetsList + offset, entries[i], GtkTargetEntry.sizeof);
 			offset += GtkTargetEntry.sizeof;
 		}
 		if ((clipboards & DND.CLIPBOARD) != 0) {

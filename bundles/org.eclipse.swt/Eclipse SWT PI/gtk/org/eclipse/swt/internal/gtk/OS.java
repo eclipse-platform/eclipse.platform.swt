@@ -14,7 +14,6 @@
  *******************************************************************************/
 package org.eclipse.swt.internal.gtk;
 
-
 import java.util.*;
 
 import org.eclipse.swt.internal.*;
@@ -1424,25 +1423,7 @@ public static final native void memmove(long dest, GTypeInfo src, int size);
  * @param src cast=(const void *),flags=no_out
  * @param size cast=(size_t)
  */
-public static final native void memmove(long dest, GtkTargetEntry src, long size);
-/**
- * @param dest cast=(void *)
- * @param src cast=(const void *),flags=no_out
- * @param size cast=(size_t)
- */
 public static final native void memmove(long dest, GdkRGBA src, long size);
-/**
- * @param dest cast=(void *)
- * @param src cast=(const void *),flags=no_out
- * @param size cast=(size_t)
- */
-public static final native void memmove(long dest, GdkEventButton src, long size);
-/**
- * @param dest cast=(void *)
- * @param src cast=(const void *),flags=no_out
- * @param size cast=(size_t)
- */
-public static final native void memmove(long dest, GdkEventKey src, long size);
 /** @param src flags=no_out */
 public static final native void memmove(long dest, GtkWidgetClass src);
 /**
@@ -1471,42 +1452,6 @@ public static final native void memmove(GdkKeymapKey dest, long src, long size);
  * @param size cast=(size_t)
  */
 public static final native void memmove(GdkRGBA dest, long src, long size);
-/**
- * @param dest cast=(void *),flags=no_in
- * @param src cast=(const void *)
- * @param size cast=(size_t)
- */
-public static final native void memmove(GdkEventButton dest, long src, long size);
-/**
- * @param dest cast=(void *),flags=no_in
- * @param src cast=(const void *)
- * @param size cast=(size_t)
- */
-public static final native void memmove(GdkEventCrossing dest, long src, long size);
-/**
- * @param dest cast=(void *),flags=no_in
- * @param src cast=(const void *)
- * @param size cast=(size_t)
- */
-public static final native void memmove(GdkEventFocus dest, long src, long size);
-/**
- * @param dest cast=(void *),flags=no_in
- * @param src cast=(const void *)
- * @param size cast=(size_t)
- */
-public static final native void memmove(GdkEventKey dest, long src, long size);
-/**
- * @param dest cast=(void *),flags=no_in
- * @param src cast=(const void *)
- * @param size cast=(size_t)
- */
-public static final native void memmove(GdkEventMotion dest, long src, long size);
-/**
- * @param dest cast=(void *),flags=no_in
- * @param src cast=(const void *)
- * @param size cast=(size_t)
- */
-public static final native void memmove(GdkEventWindowState dest, long src, long size);
 public static final native void memmove(long dest, GtkCellRendererClass src);
 public static final native void memmove(GtkCellRendererClass dest, long src);
 /**

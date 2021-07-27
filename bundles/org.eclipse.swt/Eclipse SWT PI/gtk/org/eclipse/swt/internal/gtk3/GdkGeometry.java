@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2006 IBM Corporation and others. All rights reserved.
+ * Copyright (c) 2000, 2021 IBM Corporation and others. All rights reserved.
  * The contents of this file are made available under the terms
  * of the GNU Lesser General Public License (LGPL) Version 2.1 that
  * accompanies this distribution (lgpl-v21.txt).  The LGPL is also
@@ -12,8 +12,7 @@
  * Contributors:
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
-package org.eclipse.swt.internal.gtk;
-
+package org.eclipse.swt.internal.gtk3;
 
 public class GdkGeometry {
 	public int min_width;
@@ -27,5 +26,5 @@ public class GdkGeometry {
 	public double min_aspect;
 	public double max_aspect;
 	public int win_gravity;
-	public static final int sizeof = GDK.GdkGeometry_sizeof();
+	public static final int sizeof = GTK3.GdkGeometry_sizeof();
 }

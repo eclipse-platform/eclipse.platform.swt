@@ -352,7 +352,7 @@ void _setVisible (boolean visible) {
 							// Get and (add reference to) the global GdkWindow/GdkSurface
 							event.window = GDK.gdk_display_get_default_group(GDK.gdk_display_get_default());
 							OS.g_object_ref(event.window);
-							OS.memmove (eventPtr, event, GdkEventButton.sizeof);
+							GTK3.memmove (eventPtr, event, GdkEventButton.sizeof);
 
 							/*
 							 * Get the origin of the global GdkWindow/GdkSurface to calculate the size of any offsets
@@ -367,7 +367,7 @@ void _setVisible (boolean visible) {
 							// On Wayland, get the relative GdkWindow from the parent shell.
 							long gdkResource = GTK3.gtk_widget_get_window (getShell().topHandle());
 							event.window = OS.g_object_ref(gdkResource);
-							OS.memmove (eventPtr, event, GdkEventButton.sizeof);
+							GTK3.memmove (eventPtr, event, GdkEventButton.sizeof);
 							// Bug in GTK?: testing with SWT_MENU_LOCATION_DEBUGGING=1 shows final_rect.x and
 							// final_rect.y popup menu position is off by 1 compared to this.x and this.y
 							rect.x = this.x + 1;
@@ -395,7 +395,7 @@ void _setVisible (boolean visible) {
 						}
 						event.device = GDK.gdk_get_pointer(GDK.gdk_display_get_default ());
 						event.time = display.getLastEventTime ();
-						OS.memmove (eventPtr, event, GdkEventButton.sizeof);
+						GTK3.memmove (eventPtr, event, GdkEventButton.sizeof);
 					}
 					adjustParentWindowWayland(eventPtr);
 					verifyMenuPosition(getItemCount());
@@ -1323,15 +1323,15 @@ void adjustParentWindowWayland (long eventPtr) {
 		switch (eventType) {
 			case GDK.GDK_BUTTON_PRESS:
 				GdkEventButton eventButton = new GdkEventButton();
-				OS.memmove (eventButton, eventPtr, GdkEventButton.sizeof);
+				GTK3.memmove (eventButton, eventPtr, GdkEventButton.sizeof);
 				eventButton.window = deviceResource;
-				OS.memmove(eventPtr, eventButton, GdkEventButton.sizeof);
+				GTK3.memmove(eventPtr, eventButton, GdkEventButton.sizeof);
 				break;
 			case GDK.GDK_KEY_PRESS:
 				GdkEventKey eventKey = new GdkEventKey();
-				OS.memmove (eventKey, eventPtr, GdkEventKey.sizeof);
+				GTK3.memmove (eventKey, eventPtr, GdkEventKey.sizeof);
 				eventKey.window = deviceResource;
-				OS.memmove(eventPtr, eventKey, GdkEventKey.sizeof);
+				GTK3.memmove(eventPtr, eventKey, GdkEventKey.sizeof);
 				break;
 		}
 	}

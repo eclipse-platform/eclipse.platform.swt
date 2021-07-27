@@ -84,102 +84,6 @@ JNIEXPORT jlong JNICALL GDK_NATIVE(GDK_1TYPE_1RGBA)
 }
 #endif
 
-#ifndef NO_GdkEventButton_1sizeof
-JNIEXPORT jint JNICALL GDK_NATIVE(GdkEventButton_1sizeof)
-	(JNIEnv *env, jclass that)
-{
-	jint rc = 0;
-	GDK_NATIVE_ENTER(env, that, GdkEventButton_1sizeof_FUNC);
-	rc = (jint)GdkEventButton_sizeof();
-	GDK_NATIVE_EXIT(env, that, GdkEventButton_1sizeof_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO_GdkEventCrossing_1sizeof
-JNIEXPORT jint JNICALL GDK_NATIVE(GdkEventCrossing_1sizeof)
-	(JNIEnv *env, jclass that)
-{
-	jint rc = 0;
-	GDK_NATIVE_ENTER(env, that, GdkEventCrossing_1sizeof_FUNC);
-	rc = (jint)GdkEventCrossing_sizeof();
-	GDK_NATIVE_EXIT(env, that, GdkEventCrossing_1sizeof_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO_GdkEventFocus_1sizeof
-JNIEXPORT jint JNICALL GDK_NATIVE(GdkEventFocus_1sizeof)
-	(JNIEnv *env, jclass that)
-{
-	jint rc = 0;
-	GDK_NATIVE_ENTER(env, that, GdkEventFocus_1sizeof_FUNC);
-	rc = (jint)GdkEventFocus_sizeof();
-	GDK_NATIVE_EXIT(env, that, GdkEventFocus_1sizeof_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO_GdkEventKey_1sizeof
-JNIEXPORT jint JNICALL GDK_NATIVE(GdkEventKey_1sizeof)
-	(JNIEnv *env, jclass that)
-{
-	jint rc = 0;
-	GDK_NATIVE_ENTER(env, that, GdkEventKey_1sizeof_FUNC);
-	rc = (jint)GdkEventKey_sizeof();
-	GDK_NATIVE_EXIT(env, that, GdkEventKey_1sizeof_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO_GdkEventMotion_1sizeof
-JNIEXPORT jint JNICALL GDK_NATIVE(GdkEventMotion_1sizeof)
-	(JNIEnv *env, jclass that)
-{
-	jint rc = 0;
-	GDK_NATIVE_ENTER(env, that, GdkEventMotion_1sizeof_FUNC);
-	rc = (jint)GdkEventMotion_sizeof();
-	GDK_NATIVE_EXIT(env, that, GdkEventMotion_1sizeof_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO_GdkEventWindowState_1sizeof
-JNIEXPORT jint JNICALL GDK_NATIVE(GdkEventWindowState_1sizeof)
-	(JNIEnv *env, jclass that)
-{
-	jint rc = 0;
-	GDK_NATIVE_ENTER(env, that, GdkEventWindowState_1sizeof_FUNC);
-	rc = (jint)GdkEventWindowState_sizeof();
-	GDK_NATIVE_EXIT(env, that, GdkEventWindowState_1sizeof_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO_GdkEvent_1sizeof
-JNIEXPORT jint JNICALL GDK_NATIVE(GdkEvent_1sizeof)
-	(JNIEnv *env, jclass that)
-{
-	jint rc = 0;
-	GDK_NATIVE_ENTER(env, that, GdkEvent_1sizeof_FUNC);
-	rc = (jint)GdkEvent_sizeof();
-	GDK_NATIVE_EXIT(env, that, GdkEvent_1sizeof_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO_GdkGeometry_1sizeof
-JNIEXPORT jint JNICALL GDK_NATIVE(GdkGeometry_1sizeof)
-	(JNIEnv *env, jclass that)
-{
-	jint rc = 0;
-	GDK_NATIVE_ENTER(env, that, GdkGeometry_1sizeof_FUNC);
-	rc = (jint)GdkGeometry_sizeof();
-	GDK_NATIVE_EXIT(env, that, GdkGeometry_1sizeof_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO_GdkKeymapKey_1sizeof
 JNIEXPORT jint JNICALL GDK_NATIVE(GdkKeymapKey_1sizeof)
 	(JNIEnv *env, jclass that)
@@ -212,18 +116,6 @@ JNIEXPORT jint JNICALL GDK_NATIVE(GdkRectangle_1sizeof)
 	GDK_NATIVE_ENTER(env, that, GdkRectangle_1sizeof_FUNC);
 	rc = (jint)GdkRectangle_sizeof();
 	GDK_NATIVE_EXIT(env, that, GdkRectangle_1sizeof_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO_GdkWindowAttr_1sizeof
-JNIEXPORT jint JNICALL GDK_NATIVE(GdkWindowAttr_1sizeof)
-	(JNIEnv *env, jclass that)
-{
-	jint rc = 0;
-	GDK_NATIVE_ENTER(env, that, GdkWindowAttr_1sizeof_FUNC);
-	rc = (jint)GdkWindowAttr_sizeof();
-	GDK_NATIVE_EXIT(env, that, GdkWindowAttr_1sizeof_FUNC);
 	return rc;
 }
 #endif
@@ -3113,21 +3005,6 @@ JNIEXPORT void JNICALL GDK_NATIVE(gdk_1window_1move_1resize)
 }
 #endif
 
-#ifndef NO_gdk_1window_1new
-JNIEXPORT jlong JNICALL GDK_NATIVE(gdk_1window_1new)
-	(JNIEnv *env, jclass that, jlong arg0, jobject arg1, jint arg2)
-{
-	GdkWindowAttr _arg1, *lparg1=NULL;
-	jlong rc = 0;
-	GDK_NATIVE_ENTER(env, that, gdk_1window_1new_FUNC);
-	if (arg1) if ((lparg1 = getGdkWindowAttrFields(env, arg1, &_arg1)) == NULL) goto fail;
-	rc = (jlong)gdk_window_new((GdkWindow *)arg0, lparg1, arg2);
-fail:
-	GDK_NATIVE_EXIT(env, that, gdk_1window_1new_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO_gdk_1window_1raise
 JNIEXPORT void JNICALL GDK_NATIVE(gdk_1window_1raise)
 	(JNIEnv *env, jclass that, jlong arg0)
@@ -3790,18 +3667,6 @@ JNIEXPORT jint JNICALL GTK_NATIVE(GtkRequisition_1sizeof)
 	GTK_NATIVE_ENTER(env, that, GtkRequisition_1sizeof_FUNC);
 	rc = (jint)GtkRequisition_sizeof();
 	GTK_NATIVE_EXIT(env, that, GtkRequisition_1sizeof_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO_GtkTargetEntry_1sizeof
-JNIEXPORT jint JNICALL GTK_NATIVE(GtkTargetEntry_1sizeof)
-	(JNIEnv *env, jclass that)
-{
-	jint rc = 0;
-	GTK_NATIVE_ENTER(env, that, GtkTargetEntry_1sizeof_FUNC);
-	rc = (jint)GtkTargetEntry_sizeof();
-	GTK_NATIVE_EXIT(env, that, GtkTargetEntry_1sizeof_FUNC);
 	return rc;
 }
 #endif
@@ -10554,19 +10419,6 @@ JNIEXPORT void JNICALL GTK_NATIVE(gtk_1window_1set_1destroy_1with_1parent)
 }
 #endif
 
-#ifndef NO_gtk_1window_1set_1geometry_1hints
-JNIEXPORT void JNICALL GTK_NATIVE(gtk_1window_1set_1geometry_1hints)
-	(JNIEnv *env, jclass that, jlong arg0, jlong arg1, jobject arg2, jint arg3)
-{
-	GdkGeometry _arg2, *lparg2=NULL;
-	GTK_NATIVE_ENTER(env, that, gtk_1window_1set_1geometry_1hints_FUNC);
-	if (arg2) if ((lparg2 = getGdkGeometryFields(env, arg2, &_arg2)) == NULL) goto fail;
-	gtk_window_set_geometry_hints((GtkWindow *)arg0, (GtkWidget *)arg1, lparg2, arg3);
-fail:
-	GTK_NATIVE_EXIT(env, that, gtk_1window_1set_1geometry_1hints_FUNC);
-}
-#endif
-
 #ifndef NO_gtk_1window_1set_1modal
 JNIEXPORT void JNICALL GTK_NATIVE(gtk_1window_1set_1modal)
 	(JNIEnv *env, jclass that, jlong arg0, jboolean arg1)
@@ -14224,32 +14076,6 @@ fail:
 }
 #endif
 
-#ifndef NO_memmove__JLorg_eclipse_swt_internal_gtk_GdkEventButton_2J
-JNIEXPORT void JNICALL OS_NATIVE(memmove__JLorg_eclipse_swt_internal_gtk_GdkEventButton_2J)
-	(JNIEnv *env, jclass that, jlong arg0, jobject arg1, jlong arg2)
-{
-	GdkEventButton _arg1, *lparg1=NULL;
-	OS_NATIVE_ENTER(env, that, memmove__JLorg_eclipse_swt_internal_gtk_GdkEventButton_2J_FUNC);
-	if (arg1) if ((lparg1 = getGdkEventButtonFields(env, arg1, &_arg1)) == NULL) goto fail;
-	memmove((void *)arg0, (const void *)lparg1, (size_t)arg2);
-fail:
-	OS_NATIVE_EXIT(env, that, memmove__JLorg_eclipse_swt_internal_gtk_GdkEventButton_2J_FUNC);
-}
-#endif
-
-#ifndef NO_memmove__JLorg_eclipse_swt_internal_gtk_GdkEventKey_2J
-JNIEXPORT void JNICALL OS_NATIVE(memmove__JLorg_eclipse_swt_internal_gtk_GdkEventKey_2J)
-	(JNIEnv *env, jclass that, jlong arg0, jobject arg1, jlong arg2)
-{
-	GdkEventKey _arg1, *lparg1=NULL;
-	OS_NATIVE_ENTER(env, that, memmove__JLorg_eclipse_swt_internal_gtk_GdkEventKey_2J_FUNC);
-	if (arg1) if ((lparg1 = getGdkEventKeyFields(env, arg1, &_arg1)) == NULL) goto fail;
-	memmove((void *)arg0, (const void *)lparg1, (size_t)arg2);
-fail:
-	OS_NATIVE_EXIT(env, that, memmove__JLorg_eclipse_swt_internal_gtk_GdkEventKey_2J_FUNC);
-}
-#endif
-
 #ifndef NO_memmove__JLorg_eclipse_swt_internal_gtk_GdkRGBA_2J
 JNIEXPORT void JNICALL OS_NATIVE(memmove__JLorg_eclipse_swt_internal_gtk_GdkRGBA_2J)
 	(JNIEnv *env, jclass that, jlong arg0, jobject arg1, jlong arg2)
@@ -14270,19 +14096,6 @@ JNIEXPORT void JNICALL OS_NATIVE(memmove__JLorg_eclipse_swt_internal_gtk_GtkCell
 	OS_NATIVE_ENTER(env, that, memmove__JLorg_eclipse_swt_internal_gtk_GtkCellRendererClass_2_FUNC);
 	if (arg1) getGtkCellRendererClassFields(env, arg1, (GtkCellRendererClass *)arg0);
 	OS_NATIVE_EXIT(env, that, memmove__JLorg_eclipse_swt_internal_gtk_GtkCellRendererClass_2_FUNC);
-}
-#endif
-
-#ifndef NO_memmove__JLorg_eclipse_swt_internal_gtk_GtkTargetEntry_2J
-JNIEXPORT void JNICALL OS_NATIVE(memmove__JLorg_eclipse_swt_internal_gtk_GtkTargetEntry_2J)
-	(JNIEnv *env, jclass that, jlong arg0, jobject arg1, jlong arg2)
-{
-	GtkTargetEntry _arg1, *lparg1=NULL;
-	OS_NATIVE_ENTER(env, that, memmove__JLorg_eclipse_swt_internal_gtk_GtkTargetEntry_2J_FUNC);
-	if (arg1) if ((lparg1 = getGtkTargetEntryFields(env, arg1, &_arg1)) == NULL) goto fail;
-	memmove((void *)arg0, (const void *)lparg1, (size_t)arg2);
-fail:
-	OS_NATIVE_EXIT(env, that, memmove__JLorg_eclipse_swt_internal_gtk_GtkTargetEntry_2J_FUNC);
 }
 #endif
 
@@ -14319,90 +14132,6 @@ JNIEXPORT void JNICALL OS_NATIVE(memmove__JLorg_eclipse_swt_internal_gtk_XExpose
 	memmove((void *)arg0, (const void *)lparg1, (size_t)arg2);
 fail:
 	OS_NATIVE_EXIT(env, that, memmove__JLorg_eclipse_swt_internal_gtk_XExposeEvent_2J_FUNC);
-}
-#endif
-
-#ifndef NO_memmove__Lorg_eclipse_swt_internal_gtk_GdkEventButton_2JJ
-JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_gtk_GdkEventButton_2JJ)
-	(JNIEnv *env, jclass that, jobject arg0, jlong arg1, jlong arg2)
-{
-	GdkEventButton _arg0, *lparg0=NULL;
-	OS_NATIVE_ENTER(env, that, memmove__Lorg_eclipse_swt_internal_gtk_GdkEventButton_2JJ_FUNC);
-	if (arg0) if ((lparg0 = &_arg0) == NULL) goto fail;
-	memmove((void *)lparg0, (const void *)arg1, (size_t)arg2);
-fail:
-	if (arg0 && lparg0) setGdkEventButtonFields(env, arg0, lparg0);
-	OS_NATIVE_EXIT(env, that, memmove__Lorg_eclipse_swt_internal_gtk_GdkEventButton_2JJ_FUNC);
-}
-#endif
-
-#ifndef NO_memmove__Lorg_eclipse_swt_internal_gtk_GdkEventCrossing_2JJ
-JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_gtk_GdkEventCrossing_2JJ)
-	(JNIEnv *env, jclass that, jobject arg0, jlong arg1, jlong arg2)
-{
-	GdkEventCrossing _arg0, *lparg0=NULL;
-	OS_NATIVE_ENTER(env, that, memmove__Lorg_eclipse_swt_internal_gtk_GdkEventCrossing_2JJ_FUNC);
-	if (arg0) if ((lparg0 = &_arg0) == NULL) goto fail;
-	memmove((void *)lparg0, (const void *)arg1, (size_t)arg2);
-fail:
-	if (arg0 && lparg0) setGdkEventCrossingFields(env, arg0, lparg0);
-	OS_NATIVE_EXIT(env, that, memmove__Lorg_eclipse_swt_internal_gtk_GdkEventCrossing_2JJ_FUNC);
-}
-#endif
-
-#ifndef NO_memmove__Lorg_eclipse_swt_internal_gtk_GdkEventFocus_2JJ
-JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_gtk_GdkEventFocus_2JJ)
-	(JNIEnv *env, jclass that, jobject arg0, jlong arg1, jlong arg2)
-{
-	GdkEventFocus _arg0, *lparg0=NULL;
-	OS_NATIVE_ENTER(env, that, memmove__Lorg_eclipse_swt_internal_gtk_GdkEventFocus_2JJ_FUNC);
-	if (arg0) if ((lparg0 = &_arg0) == NULL) goto fail;
-	memmove((void *)lparg0, (const void *)arg1, (size_t)arg2);
-fail:
-	if (arg0 && lparg0) setGdkEventFocusFields(env, arg0, lparg0);
-	OS_NATIVE_EXIT(env, that, memmove__Lorg_eclipse_swt_internal_gtk_GdkEventFocus_2JJ_FUNC);
-}
-#endif
-
-#ifndef NO_memmove__Lorg_eclipse_swt_internal_gtk_GdkEventKey_2JJ
-JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_gtk_GdkEventKey_2JJ)
-	(JNIEnv *env, jclass that, jobject arg0, jlong arg1, jlong arg2)
-{
-	GdkEventKey _arg0, *lparg0=NULL;
-	OS_NATIVE_ENTER(env, that, memmove__Lorg_eclipse_swt_internal_gtk_GdkEventKey_2JJ_FUNC);
-	if (arg0) if ((lparg0 = &_arg0) == NULL) goto fail;
-	memmove((void *)lparg0, (const void *)arg1, (size_t)arg2);
-fail:
-	if (arg0 && lparg0) setGdkEventKeyFields(env, arg0, lparg0);
-	OS_NATIVE_EXIT(env, that, memmove__Lorg_eclipse_swt_internal_gtk_GdkEventKey_2JJ_FUNC);
-}
-#endif
-
-#ifndef NO_memmove__Lorg_eclipse_swt_internal_gtk_GdkEventMotion_2JJ
-JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_gtk_GdkEventMotion_2JJ)
-	(JNIEnv *env, jclass that, jobject arg0, jlong arg1, jlong arg2)
-{
-	GdkEventMotion _arg0, *lparg0=NULL;
-	OS_NATIVE_ENTER(env, that, memmove__Lorg_eclipse_swt_internal_gtk_GdkEventMotion_2JJ_FUNC);
-	if (arg0) if ((lparg0 = &_arg0) == NULL) goto fail;
-	memmove((void *)lparg0, (const void *)arg1, (size_t)arg2);
-fail:
-	if (arg0 && lparg0) setGdkEventMotionFields(env, arg0, lparg0);
-	OS_NATIVE_EXIT(env, that, memmove__Lorg_eclipse_swt_internal_gtk_GdkEventMotion_2JJ_FUNC);
-}
-#endif
-
-#ifndef NO_memmove__Lorg_eclipse_swt_internal_gtk_GdkEventWindowState_2JJ
-JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_gtk_GdkEventWindowState_2JJ)
-	(JNIEnv *env, jclass that, jobject arg0, jlong arg1, jlong arg2)
-{
-	GdkEventWindowState _arg0, *lparg0=NULL;
-	OS_NATIVE_ENTER(env, that, memmove__Lorg_eclipse_swt_internal_gtk_GdkEventWindowState_2JJ_FUNC);
-	if (arg0) if ((lparg0 = &_arg0) == NULL) goto fail;
-	memmove((void *)lparg0, (const void *)arg1, (size_t)arg2);
-fail:
-	if (arg0 && lparg0) setGdkEventWindowStateFields(env, arg0, lparg0);
-	OS_NATIVE_EXIT(env, that, memmove__Lorg_eclipse_swt_internal_gtk_GdkEventWindowState_2JJ_FUNC);
 }
 #endif
 

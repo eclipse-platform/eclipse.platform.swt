@@ -1937,7 +1937,7 @@ long gtk_realize (long widget) {
 @Override
 long gtk_window_state_event (long widget, long event) {
 	GdkEventWindowState gdkEvent = new GdkEventWindowState ();
-	OS.memmove (gdkEvent, event, GdkEventWindowState.sizeof);
+	GTK3.memmove (gdkEvent, event, GdkEventWindowState.sizeof);
 	minimized = (gdkEvent.new_window_state & GDK.GDK_WINDOW_STATE_ICONIFIED) != 0;
 	maximized = (gdkEvent.new_window_state & GDK.GDK_WINDOW_STATE_MAXIMIZED) != 0;
 	fullScreen = (gdkEvent.new_window_state & GDK.GDK_WINDOW_STATE_FULLSCREEN) != 0;
@@ -2383,7 +2383,7 @@ public void setEnabled (boolean enabled) {
 			attributes.event_mask = (0xFFFFFFFF & ~OS.ExposureMask);
 			attributes.wclass = GDK.GDK_INPUT_ONLY;
 			attributes.window_type = GDK.GDK_WINDOW_CHILD;
-			enableWindow = GDK.gdk_window_new (window, attributes, 0);
+			enableWindow = GTK3.gdk_window_new (window, attributes, 0);
 			if (enableWindow != 0) {
 				if (cursor != null) {
 					GDK.gdk_window_set_cursor (enableWindow, cursor.handle);
@@ -2625,7 +2625,7 @@ void setMinimumSizeInPixels (int width, int height) {
 	if (geometry.max_height > 0 || geometry.max_width > 0) {
 		hint = hint | GDK.GDK_HINT_MAX_SIZE;
 	}
-	GTK.gtk_window_set_geometry_hints (shellHandle, 0, geometry, hint);
+	GTK3.gtk_window_set_geometry_hints (shellHandle, 0, geometry, hint);
 }
 
 /**
@@ -2722,7 +2722,7 @@ void setMaximumSizeInPixels (int width, int height) {
 	if (geometry.min_width > 0 || geometry.min_height > 0) {
 		hint = hint | GDK.GDK_HINT_MIN_SIZE;
 	}
-	GTK.gtk_window_set_geometry_hints (shellHandle, 0, geometry, hint);
+	GTK3.gtk_window_set_geometry_hints (shellHandle, 0, geometry, hint);
 }
 
 /**

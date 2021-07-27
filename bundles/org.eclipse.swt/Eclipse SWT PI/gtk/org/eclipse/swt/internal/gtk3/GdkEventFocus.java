@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others. All rights reserved.
+ * Copyright (c) 2000, 2021 IBM Corporation and others. All rights reserved.
  * The contents of this file are made available under the terms
  * of the GNU Lesser General Public License (LGPL) Version 2.1 that
  * accompanies this distribution (lgpl-v21.txt).  The LGPL is also
@@ -12,31 +12,14 @@
  * Contributors:
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
-package org.eclipse.swt.internal.gtk;
+package org.eclipse.swt.internal.gtk3;
 
-
-public class GdkEventMotion extends GdkEvent {
+public class GdkEventFocus extends GdkEvent {
 	/** @field cast=(GdkWindow *) */
 	public long window;
 	/** @field cast=(gint8) */
 	public byte send_event;
-	/** @field cast=(guint32) */
-	public int time;
-	/** @field cast=(gdouble) */
-	public double x;
-	/** @field cast=(gdouble) */
-	public double y;
-	/** @field cast=(gdouble *) */
-	public long axes;
-	/** @field cast=(guint) */
-	public int state;
 	/** @field cast=(gint16) */
-	public short is_hint;
-	/** @field cast=(GdkDevice *) */
-	public long device;
-	/** @field cast=(gdouble) */
-	public double x_root;
-	/** @field cast=(gdouble) */
-	public double y_root;
-	public static final int sizeof = GDK.GdkEventMotion_sizeof();
+	public short in;
+	public static final int sizeof = GTK3.GdkEventFocus_sizeof();
 }

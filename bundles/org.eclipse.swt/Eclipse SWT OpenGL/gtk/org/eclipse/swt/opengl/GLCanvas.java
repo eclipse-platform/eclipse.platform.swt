@@ -136,7 +136,7 @@ public GLCanvas (Composite parent, int style, GLData data) {
 		GDK.GDK_EXPOSURE_MASK | GDK.GDK_POINTER_MOTION_HINT_MASK;
 	attrs.window_type = GDK.GDK_WINDOW_CHILD;
 	attrs.visual = gdkvisual;
-	glWindow = GDK.gdk_window_new (window, attrs, GDK.GDK_WA_VISUAL);
+	glWindow = GTK3.gdk_window_new (window, attrs, GDK.GDK_WA_VISUAL);
 	GDK.gdk_window_set_user_data (glWindow, handle);
 	if ((style & SWT.NO_BACKGROUND) != 0) {
 		//TODO: implement this on GTK3 as pixmaps are gone.

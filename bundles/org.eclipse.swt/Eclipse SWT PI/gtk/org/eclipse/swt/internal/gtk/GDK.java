@@ -239,17 +239,7 @@ public class GDK extends OS {
 	/** sizeof(TYPE) for 32/64 bit support */
 	public static final native int GdkKeymapKey_sizeof();
 	public static final native int GdkRGBA_sizeof();
-	public static final native int GdkEvent_sizeof();
-	public static final native int GdkEventButton_sizeof();
-	public static final native int GdkEventCrossing_sizeof();
-	public static final native int GdkEventFocus_sizeof();
-	public static final native int GdkEventKey_sizeof();
-	public static final native int GdkEventMotion_sizeof();
-	public static final native int GdkEventWindowState_sizeof();
-	public static final native int GdkGeometry_sizeof();
 	public static final native int GdkRectangle_sizeof();
-	public static final native int GdkWindowAttr_sizeof();
-
 
 	/** Macros */
 	/** @param event cast=(GdkEvent *) */
@@ -1187,12 +1177,6 @@ public class GDK extends OS {
 	/** @param window cast=(GdkWindow *) */
 	/* [GTK3 only, if-def'd in os.h] */
 	public static final native void gdk_window_move_resize(long window, int x, int y, int width, int height);
-	/**
-	 * @param parent cast=(GdkWindow *)
-	 * @param attributes flags=no_out
-	 */
-	/* [GTK3 only, if-def'd in os.h] */
-	public static final native long gdk_window_new(long parent, GdkWindowAttr attributes, int attributes_mask);
 	/**
 	 * @method flags=dynamic
 	 * @param display cast=(GdkDisplay *)

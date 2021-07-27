@@ -3686,7 +3686,7 @@ long gtk_enter_notify_event (long widget, long event) {
 	if (GTK.GTK4) {
 		crossingMode[0] = GDK.gdk_crossing_event_get_mode(event);
 	} else {
-		OS.memmove(gdkEvent, event, GdkEventCrossing.sizeof);
+		GTK3.memmove(gdkEvent, event, GdkEventCrossing.sizeof);
 		crossingMode[0] = gdkEvent.mode;
 		childGdkResource = gdkEvent.subwindow;
 	}
@@ -3745,7 +3745,7 @@ long gtk_event_after (long widget, long gdkEvent) {
 			if (!isFocusHandle (widget)) break;
 			boolean [] focusIn = new boolean [1];
 			GdkEventFocus gdkEventFocus = new GdkEventFocus ();
-			OS.memmove (gdkEventFocus, gdkEvent, GdkEventFocus.sizeof);
+			GTK3.memmove (gdkEventFocus, gdkEvent, GdkEventFocus.sizeof);
 			focusIn[0] = gdkEventFocus.in != 0;
 
 			/*
@@ -4070,7 +4070,7 @@ long gtk_leave_notify_event (long widget, long event) {
 	if (GTK.GTK4) {
 		crossingMode[0] = GDK.gdk_crossing_event_get_mode(event);
 	} else {
-		OS.memmove(gdkEvent, event, GdkEventCrossing.sizeof);
+		GTK3.memmove(gdkEvent, event, GdkEventCrossing.sizeof);
 		crossingMode[0] = gdkEvent.mode;
 	}
 
@@ -4210,7 +4210,7 @@ long gtk_motion_notify_event (long widget, long event) {
 		y = eventRY[0];
 
 		GdkEventMotion gdkEvent = new GdkEventMotion();
-		OS.memmove(gdkEvent, event, GdkEventMotion.sizeof);
+		GTK3.memmove(gdkEvent, event, GdkEventMotion.sizeof);
 		state[0] = gdkEvent.state;
 		isHint = gdkEvent.is_hint != 0;
 
@@ -5430,7 +5430,7 @@ public void setEnabled (boolean enabled) {
 			attributes.event_mask = (0xFFFFFFFF & ~OS.ExposureMask);
 			attributes.wclass = GDK.GDK_INPUT_ONLY;
 			attributes.window_type = GDK.GDK_WINDOW_CHILD;
-			enableWindow = GDK.gdk_window_new (window, attributes, GDK.GDK_WA_X | GDK.GDK_WA_Y);
+			enableWindow = GTK3.gdk_window_new (window, attributes, GDK.GDK_WA_X | GDK.GDK_WA_Y);
 			if (enableWindow != 0) {
 				GDK.gdk_window_set_user_data (enableWindow, parentHandle);
 				restackWindow (enableWindow, gtk_widget_get_window (topHandle), true);
@@ -5941,7 +5941,7 @@ public void setRedraw (boolean redraw) {
 					attributes.height = bounds.height;
 					attributes.event_mask = GDK.GDK_EXPOSURE_MASK;
 					attributes.window_type = GDK.GDK_WINDOW_CHILD;
-					redrawWindow = GDK.gdk_window_new (window, attributes, 0);
+					redrawWindow = GTK3.gdk_window_new (window, attributes, 0);
 					if (redrawWindow != 0) {
 						int mouseMask = GDK.GDK_BUTTON_PRESS_MASK | GDK.GDK_BUTTON_RELEASE_MASK |
 							GDK.GDK_ENTER_NOTIFY_MASK | GDK.GDK_LEAVE_NOTIFY_MASK |

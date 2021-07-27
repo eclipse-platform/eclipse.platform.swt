@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others. All rights reserved.
+ * Copyright (c) 2000, 2021 IBM Corporation and others. All rights reserved.
  * The contents of this file are made available under the terms
  * of the GNU Lesser General Public License (LGPL) Version 2.1 that
  * accompanies this distribution (lgpl-v21.txt).  The LGPL is also
@@ -12,14 +12,14 @@
  * Contributors:
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
-package org.eclipse.swt.internal.gtk;
+package org.eclipse.swt.internal.gtk3;
 
-
-public class GdkEventWindowState extends GdkEvent {
-	/** @field cast=(GdkWindow *) */
-	public long window;
-	public byte send_event;
-	public int changed_mask;
-	public int new_window_state;
-	public static final int sizeof = GDK.GdkEventWindowState_sizeof();
+public class GtkTargetEntry {
+	/** @field cast=(gchar *) */
+	public long target;
+	/** @field cast=(guint) */
+	public int flags;
+	/** @field cast=(guint) */
+	public int info;
+	public static final int sizeof = GTK3.GtkTargetEntry_sizeof();
 }

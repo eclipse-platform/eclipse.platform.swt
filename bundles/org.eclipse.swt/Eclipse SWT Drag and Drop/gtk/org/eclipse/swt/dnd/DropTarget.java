@@ -723,7 +723,7 @@ public void setTransfer(Transfer... transferAgents){
 
 		long pTargets = OS.g_malloc(targets.length * GtkTargetEntry.sizeof);
 		for (int i = 0; i < targets.length; i++) {
-			OS.memmove(pTargets + i*GtkTargetEntry.sizeof, targets[i], GtkTargetEntry.sizeof);
+			GTK3.memmove(pTargets + i*GtkTargetEntry.sizeof, targets[i], GtkTargetEntry.sizeof);
 		}
 
 		int actions = opToOsOp(getStyle());

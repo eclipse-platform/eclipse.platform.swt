@@ -202,7 +202,6 @@ public class GTK extends OS {
 	public static final native int GtkAllocation_sizeof();
 	public static final native int GtkBorder_sizeof();
 	public static final native int GtkRequisition_sizeof();
-	public static final native int GtkTargetEntry_sizeof();
 	public static final native int GtkTextIter_sizeof();
 	public static final native int GtkCellRendererText_sizeof();
 	public static final native int GtkCellRendererTextClass_sizeof();
@@ -2586,14 +2585,6 @@ public class GTK extends OS {
 	 * @param height cast=(gint *)
 	 */
 	public static final native void gtk_window_get_default_size(long window, int[] width, int[] height);
-
-	/* GtkWindow [GTK3] */
-	/**
-	 * @param window cast=(GtkWindow *)
-	 * @param geometry_widget cast=(GtkWidget *)
-	 * @param geometry flags=no_out
-	 */
-	public static final native void gtk_window_set_geometry_hints(long window, long geometry_widget, GdkGeometry geometry, int geom_mask);
 
 	/* GtkPlug */
 	public static final native long gtk_plug_new(long socket_id);

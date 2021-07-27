@@ -4455,7 +4455,7 @@ public boolean post (Event event) {
 				newKeyEvent.group = (byte) effective_group[0];
 				newKeyEvent.is_modifier = is_modifier;
 
-				OS.memmove(eventPtr, newKeyEvent, GdkEventKey.sizeof);
+				GTK3.memmove(eventPtr, newKeyEvent, GdkEventKey.sizeof);
 				GDK.gdk_event_set_device (eventPtr, GDK.gdk_seat_get_keyboard(gdkSeat));
 				if (GTK.GTK4) {
 					GDK.gdk_display_put_event(gdkDisplay, eventPtr);
@@ -4493,7 +4493,7 @@ public boolean post (Event event) {
 				newButtonEvent.button = event.button;
 				newButtonEvent.device = gdkPointerDevice;
 
-				OS.memmove(eventPtr, newButtonEvent, GdkEventButton.sizeof);
+				GTK3.memmove(eventPtr, newButtonEvent, GdkEventButton.sizeof);
 				GDK.gdk_event_set_device(eventPtr, gdkPointerDevice);
 
 				GDK.gdk_event_put(eventPtr);

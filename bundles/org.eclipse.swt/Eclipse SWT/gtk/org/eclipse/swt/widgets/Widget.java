@@ -1504,7 +1504,7 @@ boolean sendKeyEvent (int type, long event) {
 		/* TODO: GTK4 no access to key event string */
 	} else {
 		GdkEventKey gdkEvent = new GdkEventKey ();
-		OS.memmove(gdkEvent, event, GdkEventKey.sizeof);
+		GTK3.memmove(gdkEvent, event, GdkEventKey.sizeof);
 		length = gdkEvent.length;
 		string = gdkEvent.string;
 	}
@@ -1875,7 +1875,7 @@ boolean setKeyState (Event javaEvent, long event) {
 		group = GDK.gdk_key_event_get_layout(event);
 	} else {
 		GdkEventKey gdkEvent = new GdkEventKey ();
-		OS.memmove(gdkEvent, event, GdkEventKey.sizeof);
+		GTK3.memmove(gdkEvent, event, GdkEventKey.sizeof);
 		length = gdkEvent.length;
 		string = gdkEvent.string;
 		group = gdkEvent.group;

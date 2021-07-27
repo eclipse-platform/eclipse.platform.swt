@@ -1759,7 +1759,7 @@ long gtk_event_after (long widget, long gdkEvent) {
 					focusIn[0] = GDK.gdk_focus_event_get_in(gdkEvent);
 				} else {
 					GdkEventFocus gdkEventFocus = new GdkEventFocus ();
-					OS.memmove (gdkEventFocus, gdkEvent, GdkEventFocus.sizeof);
+					GTK3.memmove (gdkEventFocus, gdkEvent, GdkEventFocus.sizeof);
 					focusIn[0] = gdkEventFocus.in != 0;
 				}
 				if (focusIn[0]) {
@@ -1883,7 +1883,7 @@ long gtk_key_press_event (long widget, long event) {
 			GDK.gdk_event_get_state(event, state);
 
 			GdkEventKey gdkEvent = new GdkEventKey ();
-			OS.memmove(gdkEvent, event, GdkEventKey.sizeof);
+			GTK3.memmove(gdkEvent, event, GdkEventKey.sizeof);
 			length = gdkEvent.length;
 		}
 

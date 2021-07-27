@@ -264,6 +264,12 @@ public class GTK3 {
 	 * @param height cast=(gint *)
 	 */
 	public static final native void gtk_window_get_size(long handle, int[] width, int[] height);
+	/**
+	 * @param window cast=(GtkWindow *)
+	 * @param geometry_widget cast=(GtkWidget *)
+	 * @param geometry flags=no_out
+	 */
+	public static final native void gtk_window_set_geometry_hints(long window, long geometry_widget, GdkGeometry geometry, int geom_mask);
 
 	/* GtkWidget */
 	/** @param widget cast=(GtkWidget *) */
@@ -956,4 +962,79 @@ public class GTK3 {
 	/* GtkTreeView */
 	/** @param tree_view cast=(GtkTreeView *) */
 	public static final native long gtk_tree_view_get_bin_window(long tree_view);
+
+	/* GdkWindow */
+	/**
+	 * @param parent cast=(GdkWindow *)
+	 * @param attributes flags=no_out
+	 */
+	public static final native long gdk_window_new(long parent, GdkWindowAttr attributes, int attributes_mask);
+
+	/* Memmove */
+	/**
+	 * @param dest cast=(void *),flags=no_in
+	 * @param src cast=(const void *)
+	 * @param size cast=(size_t)
+	 */
+	public static final native void memmove(GdkEventButton dest, long src, long size);
+	/**
+	 * @param dest cast=(void *),flags=no_in
+	 * @param src cast=(const void *)
+	 * @param size cast=(size_t)
+	 */
+	public static final native void memmove(GdkEventCrossing dest, long src, long size);
+	/**
+	 * @param dest cast=(void *),flags=no_in
+	 * @param src cast=(const void *)
+	 * @param size cast=(size_t)
+	 */
+	public static final native void memmove(GdkEventFocus dest, long src, long size);
+	/**
+	 * @param dest cast=(void *),flags=no_in
+	 * @param src cast=(const void *)
+	 * @param size cast=(size_t)
+	 */
+	public static final native void memmove(GdkEventKey dest, long src, long size);
+	/**
+	 * @param dest cast=(void *),flags=no_in
+	 * @param src cast=(const void *)
+	 * @param size cast=(size_t)
+	 */
+	public static final native void memmove(GdkEventMotion dest, long src, long size);
+	/**
+	 * @param dest cast=(void *),flags=no_in
+	 * @param src cast=(const void *)
+	 * @param size cast=(size_t)
+	 */
+	public static final native void memmove(GdkEventWindowState dest, long src, long size);
+	/**
+	 * @param dest cast=(void *)
+	 * @param src cast=(const void *),flags=no_out
+	 * @param size cast=(size_t)
+	 */
+	public static final native void memmove(long dest, GdkEventButton src, long size);
+	/**
+	 * @param dest cast=(void *)
+	 * @param src cast=(const void *),flags=no_out
+	 * @param size cast=(size_t)
+	 */
+	public static final native void memmove(long dest, GdkEventKey src, long size);
+	/**
+	 * @param dest cast=(void *)
+	 * @param src cast=(const void *),flags=no_out
+	 * @param size cast=(size_t)
+	 */
+	public static final native void memmove(long dest, GtkTargetEntry src, long size);
+
+	/* Sizeof */
+	public static final native int GtkTargetEntry_sizeof();
+	public static final native int GdkEvent_sizeof();
+	public static final native int GdkEventButton_sizeof();
+	public static final native int GdkEventCrossing_sizeof();
+	public static final native int GdkEventFocus_sizeof();
+	public static final native int GdkEventKey_sizeof();
+	public static final native int GdkEventMotion_sizeof();
+	public static final native int GdkEventWindowState_sizeof();
+	public static final native int GdkGeometry_sizeof();
+	public static final native int GdkWindowAttr_sizeof();
 }

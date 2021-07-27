@@ -549,7 +549,7 @@ long gtk_motion_notify_event(long widget, long eventPtr) {
 	long gdkResource = gdk_event_get_surface_or_window(eventPtr);
 	boolean isHint;
 	GdkEventMotion gdkEvent = new GdkEventMotion();
-	OS.memmove(gdkEvent, eventPtr, GdkEventMotion.sizeof);
+	GTK3.memmove(gdkEvent, eventPtr, GdkEventMotion.sizeof);
 	isHint = gdkEvent.is_hint != 0;
 
 	if (isHint) {
