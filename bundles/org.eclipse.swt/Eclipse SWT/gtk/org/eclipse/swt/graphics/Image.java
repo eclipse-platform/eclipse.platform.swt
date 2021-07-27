@@ -310,16 +310,6 @@ public Image(Device device, Image srcImage, int flag) {
 		}
 		switch (flag) {
 			case SWT.IMAGE_DISABLE: {
-				Color zeroColor = device.getSystemColor(SWT.COLOR_WIDGET_NORMAL_SHADOW);
-				RGB zeroRGB = zeroColor.getRGB();
-				int zeroRed = zeroRGB.red;
-				int zeroGreen = zeroRGB.green;
-				int zeroBlue = zeroRGB.blue;
-				Color oneColor = device.getSystemColor(SWT.COLOR_WIDGET_BACKGROUND);
-				RGB oneRGB = oneColor.getRGB();
-				int oneRed = oneRGB.red;
-				int oneGreen = oneRGB.green;
-				int oneBlue = oneRGB.blue;
 				byte[] line = new byte[stride];
 				for (int y=0; y<height; y++) {
 					C.memmove(line, data + (y * stride), stride);
@@ -328,33 +318,10 @@ public Image(Device device, Image srcImage, int flag) {
 						int r = line[offset + or] & 0xFF;
 						int g = line[offset + og] & 0xFF;
 						int b = line[offset + ob] & 0xFF;
-						if (hasAlpha && a != 0) {
-							r = ((r * 0xFF) + a / 2) / a;
-							g = ((g * 0xFF) + a / 2) / a;
-							b = ((b * 0xFF) + a / 2) / a;
-						}
-						int intensity = r * r + g * g + b * b;
-						if (intensity < 98304) {
-							r = zeroRed;
-							g = zeroGreen;
-							b = zeroBlue;
-						} else {
-							r = oneRed;
-							g = oneGreen;
-							b = oneBlue;
-						}
-						if (hasAlpha) {
-							/* pre-multiplied alpha */
-							r = (r * a) + 128;
-							r = (r + (r >> 8)) >> 8;
-							g = (g * a) + 128;
-							g = (g + (g >> 8)) >> 8;
-							b = (b * a) + 128;
-							b = (b + (b >> 8)) >> 8;
-						}
-						line[offset + or] = (byte)r;
-						line[offset + og] = (byte)g;
-						line[offset + ob] = (byte)b;
+						line[offset + oa] = (byte) Math.round((double) a * 0.5);
+						line[offset + or] = (byte) Math.round((double) r * 0.5);
+						line[offset + og] = (byte) Math.round((double) g * 0.5);
+						line[offset + ob] = (byte) Math.round((double) b * 0.5);
 					}
 					C.memmove(data + (y * stride), line, stride);
 				}
