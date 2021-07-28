@@ -243,7 +243,7 @@ void hookEvents () {
 		GTK4.gtk_widget_add_controller(handle, motionController);
 		GTK.gtk_event_controller_set_propagation_phase(motionController, GTK.GTK_PHASE_TARGET);
 
-		long enterMotionAddress = display.enterMotionScrollCallback.getAddress();
+		long enterMotionAddress = display.enterMotionCallback.getAddress();
 		OS.g_signal_connect (motionController, OS.enter, enterMotionAddress, ENTER);
 	} else {
 		OS.g_signal_connect_closure_by_id (handle, display.signalIds [ENTER_NOTIFY_EVENT], 0, display.getClosure (ENTER_NOTIFY_EVENT), false);

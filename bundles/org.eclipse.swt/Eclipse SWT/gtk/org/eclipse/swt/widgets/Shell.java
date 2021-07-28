@@ -958,7 +958,7 @@ void hookEvents () {
 		long enterLeaveController = GTK4.gtk_event_controller_motion_new();
 		GTK4.gtk_widget_add_controller(shellHandle, enterLeaveController);
 
-		long enterMotionAddress = display.enterMotionScrollCallback.getAddress();
+		long enterMotionAddress = display.enterMotionCallback.getAddress();
 		OS.g_signal_connect (enterLeaveController, OS.enter, enterMotionAddress, ENTER);
 		if (isCustomResize()) {
 			long motionController = GTK4.gtk_event_controller_motion_new();

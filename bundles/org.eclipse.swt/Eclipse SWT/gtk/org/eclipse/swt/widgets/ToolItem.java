@@ -863,7 +863,7 @@ void hookEvents () {
 		GTK4.gtk_widget_add_controller(handle, motionController);
 		GTK.gtk_event_controller_set_propagation_phase(motionController, GTK.GTK_PHASE_TARGET);
 
-		OS.g_signal_connect(motionController, OS.enter, display.enterMotionScrollProc, ENTER);
+		OS.g_signal_connect(motionController, OS.enter, display.enterMotionProc, ENTER);
 		OS.g_signal_connect(motionController, OS.leave, display.leaveProc, LEAVE);
 
 		//TODO: event-after

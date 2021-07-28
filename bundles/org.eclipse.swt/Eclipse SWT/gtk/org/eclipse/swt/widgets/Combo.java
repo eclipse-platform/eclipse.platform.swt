@@ -928,8 +928,8 @@ void hookEvents(long [] handles) {
 			if (GTK.GTK4) {
 				long motionController = GTK4.gtk_event_controller_motion_new();
 				GTK4.gtk_widget_add_controller(eventHandle, motionController);
-				OS.g_signal_connect (motionController, OS.motion, display.enterMotionScrollProc, MOTION);
-				OS.g_signal_connect (motionController, OS.motion, display.enterMotionScrollProc, MOTION_INVERSE);
+				OS.g_signal_connect (motionController, OS.motion, display.enterMotionProc, MOTION);
+				OS.g_signal_connect (motionController, OS.motion, display.enterMotionProc, MOTION_INVERSE);
 
 				long gestureController = GTK4.gtk_gesture_click_new();
 				GTK4.gtk_widget_add_controller(eventHandle, gestureController);

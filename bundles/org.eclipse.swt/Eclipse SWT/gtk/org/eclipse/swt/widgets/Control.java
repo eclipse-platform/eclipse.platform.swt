@@ -482,16 +482,16 @@ private void hookMouseSignals(long eventHandle) {
 		long scrollController = GTK4.gtk_event_controller_scroll_new(GTK.GTK_EVENT_CONTROLLER_SCROLL_BOTH_AXES);
 		GTK.gtk_event_controller_set_propagation_phase(scrollController, GTK.GTK_PHASE_TARGET);
 		GTK4.gtk_widget_add_controller(eventHandle, scrollController);
-		OS.g_signal_connect(scrollController, OS.scroll, display.enterMotionScrollProc, SCROLL);
+		OS.g_signal_connect(scrollController, OS.scroll, display.scrollProc, SCROLL);
 
 		long motionController = GTK4.gtk_event_controller_motion_new();
 		GTK4.gtk_widget_add_controller(eventHandle, motionController);
-		OS.g_signal_connect(motionController, OS.motion, display.enterMotionScrollProc, MOTION);
+		OS.g_signal_connect(motionController, OS.motion, display.enterMotionProc, MOTION);
 
 		long enterExitController = GTK4.gtk_event_controller_motion_new();
 		GTK.gtk_event_controller_set_propagation_phase(enterExitController, GTK.GTK_PHASE_TARGET);
 		GTK4.gtk_widget_add_controller(enterExitHandle, enterExitController);
-		OS.g_signal_connect(enterExitController, OS.enter, display.enterMotionScrollProc, ENTER);
+		OS.g_signal_connect(enterExitController, OS.enter, display.enterMotionProc, ENTER);
 		OS.g_signal_connect(enterExitController, OS.leave, display.leaveProc, LEAVE);
 	} else {
 		int eventMask = GDK.GDK_POINTER_MOTION_MASK | GDK.GDK_BUTTON_PRESS_MASK | GDK.GDK_BUTTON_RELEASE_MASK | GDK.GDK_SCROLL_MASK | GDK.GDK_SMOOTH_SCROLL_MASK;
@@ -3627,23 +3627,27 @@ long gtk_commit (long imcontext, long text) {
 	return 0;
 }
 
+
+
 @Override
-long gtk_enter_notify_event (long widget, long event) {
-	if (GTK.GTK4) {
-		if (display.currentControl == this) return 0;
+void gtk4_enter_event(long controller, double x, double y, long event) {
+	if (display.currentControl == this) return;
 
-		if (display.currentControl != null && !display.currentControl.isDisposed ()) {
-			display.removeMouseHoverTimeout (display.currentControl.handle);
-			display.currentControl.sendMouseEvent (SWT.MouseExit,  0, 0, 0, 0, false, 0);
-		}
-		if (!isDisposed ()) {
-			display.currentControl = this;
-			return sendMouseEvent (SWT.MouseEnter, 0, 0, 0, 0, false, 0) ? 0 : 1;
-		}
-
-		return 0;
+	// Disconnect previous current Control and send MouseExit event to it
+	if (display.currentControl != null && !display.currentControl.isDisposed()) {
+		display.removeMouseHoverTimeout(display.currentControl.handle);
+		display.currentControl.sendMouseEvent(SWT.MouseExit, 0, 0, x, y, false, 0);
 	}
 
+	// Set display's current control and send MouseEnter event
+	if (!isDisposed()) {
+		display.currentControl = this;
+		sendMouseEvent(SWT.MouseEnter, 0, 0, x, y, false, 0);
+	}
+}
+
+@Override
+long gtk_enter_notify_event (long widget, long event) {
 	/*
 	 * Feature in GTK. Children of a shell will inherit and display the shell's
 	 * tooltip if they do not have a tooltip of their own. The fix is to use the
@@ -3662,13 +3666,8 @@ long gtk_enter_notify_event (long widget, long event) {
 	int [] state = new int [1];
 	double [] eventX = new double [1];
 	double [] eventY = new double [1];
-	if (GTK.GTK4) {
-		state[0] = GDK.gdk_event_get_modifier_state(event);
-		GDK.gdk_event_get_position(event, eventX, eventY);
-	} else {
-		GDK.gdk_event_get_state(event, state);
-		GDK.gdk_event_get_coords(event, eventX, eventY);
-	}
+	GDK.gdk_event_get_state(event, state);
+	GDK.gdk_event_get_coords(event, eventX, eventY);
 
 	int time = GDK.gdk_event_get_time(event);
 
@@ -3683,13 +3682,9 @@ long gtk_enter_notify_event (long widget, long event) {
 	GdkEventCrossing gdkEvent = new GdkEventCrossing ();
 	long childGdkResource = 0;
 	int [] crossingMode = new int[1];
-	if (GTK.GTK4) {
-		crossingMode[0] = GDK.gdk_crossing_event_get_mode(event);
-	} else {
-		GTK3.memmove(gdkEvent, event, GdkEventCrossing.sizeof);
-		crossingMode[0] = gdkEvent.mode;
-		childGdkResource = gdkEvent.subwindow;
-	}
+	GTK3.memmove(gdkEvent, event, GdkEventCrossing.sizeof);
+	crossingMode[0] = gdkEvent.mode;
+	childGdkResource = gdkEvent.subwindow;
 
 	/*
 	 * It is possible to send out too many enter/exit events if entering a
@@ -4029,31 +4024,25 @@ long gtk_key_release_event (long widget, long event) {
 }
 
 @Override
-long gtk_leave_notify_event (long widget, long event) {
-	if (GTK.GTK4) {
-		if (display.currentControl != this) return 0;
+void gtk4_leave_event(long controller, long event) {
+	if (display.currentControl != this) return;
 
-		display.removeMouseHoverTimeout (handle);
-		int result = 0;
-		if (sendLeaveNotify () || display.getCursorControl () == null) {
-			result = sendMouseEvent (SWT.MouseExit, 0, 0, 0, 0, false, 0) ? 0 : 1;
-			display.currentControl = null;
-		}
-		return result;
+	display.removeMouseHoverTimeout(handle);
+
+	if (sendLeaveNotify() || display.getCursorControl() == null) {
+		sendMouseEvent(SWT.MouseExit, 0, 0, 0, 0, false, 0);
 	}
+}
 
-
+@Override
+long gtk_leave_notify_event (long widget, long event) {
 	if (display.currentControl != this) return 0;
 	int [] state = new int [1];
+	GDK.gdk_event_get_state(event, state);
+
 	double [] eventX = new double [1];
 	double [] eventY = new double [1];
-	if (GTK.GTK4) {
-		state[0] = GDK.gdk_event_get_modifier_state(event);
-		GDK.gdk_event_get_position(event, eventX, eventY);
-	} else {
-		GDK.gdk_event_get_state(event, state);
-		GDK.gdk_event_get_coords(event, eventX, eventY);
-	}
+	GDK.gdk_event_get_coords(event, eventX, eventY);
 
 	int time = GDK.gdk_event_get_time(event);
 
@@ -4067,16 +4056,12 @@ long gtk_leave_notify_event (long widget, long event) {
 
 	GdkEventCrossing gdkEvent = new GdkEventCrossing ();
 	int [] crossingMode = new int[1];
-	if (GTK.GTK4) {
-		crossingMode[0] = GDK.gdk_crossing_event_get_mode(event);
-	} else {
-		GTK3.memmove(gdkEvent, event, GdkEventCrossing.sizeof);
-		crossingMode[0] = gdkEvent.mode;
-	}
+	GTK3.memmove(gdkEvent, event, GdkEventCrossing.sizeof);
+	crossingMode[0] = gdkEvent.mode;
 
 	display.removeMouseHoverTimeout (handle);
 	int result = 0;
-	if (sendLeaveNotify () || display.getCursorControl () == null) {
+	if (sendLeaveNotify() || display.getCursorControl () == null) {
 		if (crossingMode[0] != GDK.GDK_CROSSING_NORMAL && crossingMode[0] != GDK.GDK_CROSSING_UNGRAB) return 0;
 		if ((state[0] & (GDK.GDK_BUTTON1_MASK | GDK.GDK_BUTTON2_MASK | GDK.GDK_BUTTON3_MASK)) != 0) return 0;
 		result = sendMouseEvent (SWT.MouseExit, 0, time, eventRX[0], eventRY[0], false, state[0]) ? 0 : 1;
@@ -4124,8 +4109,8 @@ void gtk4_motion_event(long controller, double x, double y, long event) {
 	if (this != display.currentControl) {
 		if (display.currentControl != null && !display.currentControl.isDisposed ()) {
 			display.removeMouseHoverTimeout(display.currentControl.handle);
-			Point pt = display.mapInPixels(this, display.currentControl, (int)x, (int)y);
-			display.currentControl.sendMouseEvent(SWT.MouseExit,  0, time, pt.x, pt.y, isHint, state);
+
+			display.currentControl.sendMouseEvent(SWT.MouseExit,  0, time, (int)x, (int)y, isHint, state);
 		}
 		if (!isDisposed ()) {
 			display.currentControl = this;
@@ -4278,38 +4263,63 @@ long gtk_realize (long widget) {
 }
 
 @Override
+boolean gtk4_scroll_event(long controller, double dx, double dy, long event) {
+	boolean handled = false;
+
+	int time = GDK.gdk_event_get_time(event);
+	int state = GDK.gdk_event_get_modifier_state(event);
+
+	int direction = GDK.gdk_scroll_event_get_direction(event);
+	boolean discreteScrolling = direction != GDK.GDK_SCROLL_SMOOTH;
+
+	// Note about GTK4: Scroll events do not provide coordinates of the event (gdk_event_get_position returns Nan)
+	if (discreteScrolling) {
+		switch (direction) {
+			case GDK.GDK_SCROLL_UP:
+				return !sendMouseEvent(SWT.MouseWheel, 0, 3, SWT.SCROLL_LINE, true, time, 0, 0, false, state);
+			case GDK.GDK_SCROLL_DOWN:
+				return !sendMouseEvent(SWT.MouseWheel, 0, -3, SWT.SCROLL_LINE, true, time, 0, 0, false, state);
+			case GDK.GDK_SCROLL_LEFT:
+				return !sendMouseEvent(SWT.MouseHorizontalWheel, 0, 3, 0, true, time, 0, 0, false, state);
+			case GDK.GDK_SCROLL_RIGHT:
+				return !sendMouseEvent(SWT.MouseHorizontalWheel, 0, -3, 0, true, time, 0, 0, false, state);
+		}
+	} else {
+		double[] delta_x = new double[1], delta_y = new double [1];
+		GDK.gdk_scroll_event_get_deltas(event, delta_x, delta_y);
+
+		if (delta_x[0] != 0) {
+			handled = !sendMouseEvent(SWT.MouseHorizontalWheel, 0, (int)(-3 * delta_x[0]), 0, true, time, 0, 0, false, state);
+		}
+		if (delta_y[0] != 0) {
+			handled = !sendMouseEvent(SWT.MouseWheel, 0, (int)(-3 * delta_y[0]), SWT.SCROLL_LINE, true, time, 0, 0, false, state);
+		}
+
+		return handled;
+	}
+
+	return false;
+}
+
+@Override
 long gtk_scroll_event (long widget, long eventPtr) {
 	long result = 0;
+
 	double [] eventX = new double [1];
 	double [] eventY = new double [1];
+	GDK.gdk_event_get_coords(eventPtr, eventX, eventY);
+
 	int [] state = new int [1];
-	if (GTK.GTK4) {
-		// GTK4 Position returns NaN
-		state[0] = GDK.gdk_event_get_modifier_state(eventPtr);
-	} else {
-		GDK.gdk_event_get_coords(eventPtr, eventX, eventY);
-		GDK.gdk_event_get_state(eventPtr, state);
-	}
+	GDK.gdk_event_get_state(eventPtr, state);
 
 	double [] eventRX = new double[1];
 	double [] eventRY = new double[1];
-	if (GTK.GTK4) {
-		long root = GTK4.gtk_widget_get_root(widget);
-		GTK4.gtk_widget_translate_coordinates(widget, root, eventX[0], eventY[0], eventRX, eventRY);
-	} else {
-		GDK.gdk_event_get_root_coords(eventPtr, eventRX, eventRY);
-	}
+	GDK.gdk_event_get_root_coords(eventPtr, eventRX, eventRY);
 
 	int time = GDK.gdk_event_get_time(eventPtr);
 
 	int [] direction = new int[1];
-	boolean fetched;
-	if (GTK.GTK4) {
-		direction[0] = GDK.gdk_scroll_event_get_direction(eventPtr);
-		fetched = direction[0] != GDK.GDK_SCROLL_SMOOTH;
-	} else {
-		fetched = GDK.gdk_event_get_scroll_direction(eventPtr, direction);
-	}
+	boolean fetched = GDK.gdk_event_get_scroll_direction(eventPtr, direction);
 
 	lastInput.x = (int) eventX[0];
 	lastInput.y = (int) eventY[0];
@@ -4329,14 +4339,7 @@ long gtk_scroll_event (long widget, long eventPtr) {
 		}
 	} else {
 		double[] delta_x = new double[1], delta_y = new double [1];
-		boolean deltasAvailable;
-		if (GTK.GTK4) {
-			GDK.gdk_scroll_event_get_deltas(eventPtr, delta_x, delta_y);
-			// In GTK4, deltas is always available but zero when not GDK_SMOOTH_SCROLL
-			deltasAvailable = true;
-		} else {
-			deltasAvailable = GDK.gdk_event_get_scroll_deltas (eventPtr, delta_x, delta_y);
-		}
+		boolean deltasAvailable = GDK.gdk_event_get_scroll_deltas (eventPtr, delta_x, delta_y);
 
 		if (deltasAvailable) {
 			if (delta_x [0] != 0) {

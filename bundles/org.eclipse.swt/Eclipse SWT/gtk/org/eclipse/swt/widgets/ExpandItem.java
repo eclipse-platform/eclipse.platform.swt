@@ -326,7 +326,7 @@ void hookEvents () {
 		GTK4.gtk_widget_add_controller(handle, motionController);
 		GTK.gtk_event_controller_set_propagation_phase(motionController, GTK.GTK_PHASE_TARGET);
 
-		long enterAddress = display.enterMotionScrollCallback.getAddress();
+		long enterAddress = display.enterMotionCallback.getAddress();
 		OS.g_signal_connect (motionController, OS.enter, enterAddress, ENTER);
 
 		OS.g_signal_connect(clientHandle, OS.resize, display.resizeProc, 0);

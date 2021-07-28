@@ -735,10 +735,30 @@ long gtk_button_release_event (long widget, long event) {
 	return 0;
 }
 
+/**
+ * @param gesture the corresponding controller responsible for capturing the event
+ * @param n_press how many touch/button presses happened with this one
+ * @param x the x coordinate, in widget allocation coordinates
+ * @param y the y coordinate, in widget allocation coordinates
+ * @param event the GdkEvent captured
+ */
 void gtk_gesture_press_event(long gesture, int n_press, double x, double y, long event) {}
 
+/**
+ * @param gesture the corresponding controller responsible for capturing the event
+ * @param n_press how many touch/button presses happened with this one
+ * @param x the x coordinate, in widget allocation coordinates
+ * @param y the y coordinate, in widget allocation coordinates
+ * @param event the GdkEvent captured
+ */
 void gtk_gesture_release_event(long gesture, int n_press, double x, double y, long event) {}
 
+/**
+ * @param controller the corresponding controller responsible for capturing the event
+ * @param x the x coordinate
+ * @param y the y coordinate
+ * @param event the GdkEvent captured
+ */
 void gtk4_motion_event(long controller, double x, double y, long event) {}
 
 /**
@@ -746,7 +766,7 @@ void gtk4_motion_event(long controller, double x, double y, long event) {}
  * @param keyval the pressed key
  * @param keycode raw code of the pressed key
  * @param state the bitmask, representing the state of the modifier keys and pointer buttons
- * @param event the GdkEvent captured by the controlled
+ * @param event the GdkEvent captured
  * @return TRUE if the event has been fully/properly handled, otherwise FALSE
  */
 boolean gtk4_key_press_event(long controller, int keyval, int keycode, int state, long event) {
@@ -758,14 +778,48 @@ boolean gtk4_key_press_event(long controller, int keyval, int keycode, int state
  * @param keyval the released key
  * @param keycode raw code of the released key
  * @param state the bitmask, representing the state of the modifier keys and pointer buttons
- * @param event the GdkEvent captured by the controlled
+ * @param event the GdkEvent captured
  */
 void gtk4_key_release_event(long controller, int keyval, int keycode, int state, long event) {
 	sendKeyEvent(SWT.KeyUp, event);
 }
 
+/**
+ * @param controller the corresponding controller responsible for capturing the event
+ * @param event the GdkEvent captured
+ */
 void gtk4_focus_enter_event(long controller, long event) {}
+
+/**
+ * @param controller the corresponding controller responsible for capturing the event
+ * @param event the GdkEvent captured
+ */
 void gtk4_focus_leave_event(long controller, long event) {}
+
+/**
+ * @param controller the corresponding controller responsible for capturing the event
+ * @param x x coordinate of pointer location
+ * @param y y coordinate of pointer location
+ * @param event the GdkEvent captured
+ */
+void gtk4_enter_event(long controller, double x, double y, long event) {}
+
+/**
+ * @param controller the corresponding controller responsible for capturing the event
+ * @param event the GdkEvent captured
+ */
+void gtk4_leave_event(long controller, long event) {}
+
+/**
+ * @param controller the corresponding controller responsible for capturing the event
+ * @param dx x delta
+ * @param dy y delta
+ * @param event the GdkEvent captured
+ * @return TRUE if the scroll event was handled, FALSE otherwise
+ */
+boolean gtk4_scroll_event(long controller, double dx, double dy, long event) {
+	return false;
+}
 
 long gtk_changed (long widget) {
 	return 0;
@@ -2207,22 +2261,31 @@ boolean translateTraversal (int event) {
 	return false;
 }
 
-void enterMotionScrollProc(long controller, double x, double y, long user_data) {
+void enterMotionProc(long controller, double x, double y, long user_data) {
 	long event = GTK4.gtk_event_controller_get_current_event(controller);
 
 	switch ((int)user_data) {
 		case ENTER:
-			gtk_enter_notify_event(handle, event);
+			// Possible bug in GTK4, event = 0, therefore unable to access event information
+			gtk4_enter_event(controller, x, y, event);
 			break;
 		case MOTION:
 			gtk4_motion_event(controller, x, y, event);
 			break;
 		case MOTION_INVERSE:
 			break;
-		case SCROLL:
-			gtk_scroll_event(handle, event);
-			break;
 	}
+}
+
+boolean scrollProc(long controller, double dx, double dy, long user_data) {
+	long event = GTK4.gtk_event_controller_get_current_event(controller);
+
+	switch ((int)user_data) {
+		case SCROLL:
+			return gtk4_scroll_event(controller, dx, dy, event);
+	}
+
+	return false;
 }
 
 void focusProc(long controller, long user_data) {
@@ -2265,17 +2328,15 @@ void gesturePressReleaseProc(long gesture, int n_press, double x, double y, long
 	}
 }
 
-long leaveProc(long controller, long handle, long user_data) {
-	long result = 0;
+void leaveProc(long controller, long handle, long user_data) {
 	long event = GTK4.gtk_event_controller_get_current_event(controller);
 
 	switch ((int)user_data) {
 		case LEAVE:
-			result = gtk_leave_notify_event(handle, event);
+			// Possible bug in GTK4, event = 0, therefore unable to access event information
+			gtk4_leave_event(controller, event);
 			break;
 	}
-
-	return result;
 }
 
 long notifyProc (long object, long arg0, long user_data) {

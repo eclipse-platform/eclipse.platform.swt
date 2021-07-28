@@ -130,14 +130,14 @@ public class Display extends Device {
 	int [] max_priority = new int [1], timeout = new int [1];
 	Callback eventCallback;
 	long eventProc, windowProc2, windowProc3, windowProc4, windowProc5, windowProc6;
-	long snapshotDrawProc, changeValueProc;
-	long keyPressReleaseProc, focusProc, enterMotionScrollProc, leaveProc, resizeProc, activateProc;
-	long gesturePressReleaseProc;
+	long changeValueProc;
+	long snapshotDrawProc, keyPressReleaseProc, focusProc, enterMotionProc, leaveProc,
+		 scrollProc, resizeProc, activateProc, gesturePressReleaseProc;
 	long notifyProc;
 	Callback windowCallback2, windowCallback3, windowCallback4, windowCallback5, windowCallback6;
-	Callback snapshotDraw, changeValue;
-	Callback keyPressReleaseCallback, focusCallback, enterMotionScrollCallback, leaveCallback, resizeCallback, activateCallback;
-	Callback gesturePressReleaseCallback;
+	Callback changeValue;
+	Callback snapshotDraw, keyPressReleaseCallback, focusCallback, enterMotionCallback,
+			 scrollCallback, leaveCallback, resizeCallback, activateCallback, gesturePressReleaseCallback;
 	Callback notifyCallback;
 	EventTable eventTable, filterTable;
 	static String APP_NAME = "SWT"; //$NON-NLS-1$
@@ -3555,62 +3555,40 @@ void initializeCallbacks () {
 	signalIds [Widget.UNREALIZE] = OS.g_signal_lookup (OS.realize, GTK.GTK_TYPE_WIDGET ());
 	signalIds [Widget.WINDOW_STATE_EVENT] = OS.g_signal_lookup (OS.window_state_event, GTK.GTK_TYPE_WIDGET ());
 
-	if (GTK.GTK4) {
-		snapshotDraw = new Callback(this, "snapshotDrawProc", void.class, new Type[] {long.class, long.class}); //$NON-NLS-1$
-		snapshotDrawProc = snapshotDraw.getAddress();
-	}
-
 	windowCallback2 = new Callback (this, "windowProc", 2); //$NON-NLS-1$
 	windowProc2 = windowCallback2.getAddress ();
 
 	if (GTK.GTK4) {
-		keyPressReleaseCallback = new Callback (this, "keyPressReleaseProc", boolean.class, new Type[] {
+		snapshotDraw = new Callback(this, "snapshotDrawProc", void.class, new Type[] {long.class, long.class}); //$NON-NLS-1$
+		snapshotDrawProc = snapshotDraw.getAddress();
+
+		keyPressReleaseCallback = new Callback(this, "keyPressReleaseProc", boolean.class, new Type[] {
 				long.class, int.class, int.class, int.class, long.class}); //$NON-NLS-1$
-		keyPressReleaseProc = keyPressReleaseCallback.getAddress ();
+		keyPressReleaseProc = keyPressReleaseCallback.getAddress();
 
-		/*
-		 * Usually GTK4 signals will be connected via g_signal_connect(),
-		 * i.e. without closures, but we will assign the closures anyways
-		 * just to be safe.
-		 */
-		closuresProc [Widget.KEY_PRESSED] = keyPressReleaseProc;
-		closuresProc [Widget.KEY_RELEASED] = keyPressReleaseProc;
-
-		focusCallback = new Callback (this, "focusProc", void.class, new Type[] {long.class, long.class}); //$NON-NLS-1$
+		focusCallback = new Callback(this, "focusProc", void.class, new Type[] {long.class, long.class}); //$NON-NLS-1$
 		focusProc = focusCallback.getAddress();
 
-		closuresProc [Widget.FOCUS_IN] = focusProc;
-		closuresProc [Widget.FOCUS_OUT] = focusProc;
-
-		enterMotionScrollCallback = new Callback (this, "enterMotionScrollProc", void.class, new Type[] {
+		enterMotionCallback = new Callback(this, "enterMotionProc", void.class, new Type[] {
 				long.class, double.class, double.class, long.class}); //$NON-NLS-1$
-		enterMotionScrollProc = enterMotionScrollCallback.getAddress ();
+		enterMotionProc = enterMotionCallback.getAddress ();
 
-		closuresProc [Widget.ENTER] = enterMotionScrollProc;
-		closuresProc [Widget.MOTION] = enterMotionScrollProc;
-		closuresProc [Widget.SCROLL] = enterMotionScrollProc;
+		scrollCallback = new Callback(this, "scrollProc", boolean.class, new Type[] {
+				long.class, double.class, double.class, long.class}); //$NON-NLS-1$
+		scrollProc = scrollCallback.getAddress();
 
-		gesturePressReleaseCallback = new Callback (this, "gesturePressReleaseProc", void.class, new Type[] {
+		gesturePressReleaseCallback = new Callback(this, "gesturePressReleaseProc", void.class, new Type[] {
 				long.class, int.class, double.class, double.class, long.class}); //$NON-NLS-1$
 		gesturePressReleaseProc = gesturePressReleaseCallback.getAddress();
 
-		closuresProc [Widget.GESTURE_PRESSED] = gesturePressReleaseProc;
-		closuresProc [Widget.GESTURE_RELEASED] = gesturePressReleaseProc;
+		leaveCallback = new Callback(this, "leaveProc", void.class, new Type[] {long.class, long.class}); //$NON-NLS-1$
+		leaveProc = leaveCallback.getAddress();
 
-		leaveCallback = new Callback (this, "leaveProc", long.class, new Type[] {
-				long.class, long.class}); //$NON-NLS-1$
-		leaveProc = leaveCallback.getAddress ();
+		resizeCallback = new Callback(this, "resizeProc", void.class, new Type[] {long.class, int.class, int.class}); //$NON-NLS-1$
+		resizeProc = resizeCallback.getAddress();
 
-		resizeCallback = new Callback (this, "resizeProc", void.class, new Type[] {
-				long.class, int.class, int.class}); //$NON-NLS-1$
-		resizeProc = resizeCallback.getAddress ();
-
-		activateCallback = new Callback(this, "activateProc", void.class, new Type[] {
-				long.class, long.class, long.class
-		});
+		activateCallback = new Callback(this, "activateProc", void.class, new Type[] {long.class, long.class, long.class}); //$NON-NLS-1$
 		activateProc = activateCallback.getAddress();
-
-		closuresProc [Widget.LEAVE] = leaveProc;
 	}
 
 	notifyCallback = new Callback(this, "notifyProc", long.class, new Type[] {
@@ -4718,9 +4696,13 @@ void releaseDisplay () {
 		focusCallback = null;
 		focusProc = 0;
 
-		enterMotionScrollCallback.dispose();
-		enterMotionScrollCallback = null;
-		enterMotionScrollProc = 0;
+		enterMotionCallback.dispose();
+		enterMotionCallback = null;
+		enterMotionProc = 0;
+
+		scrollCallback.dispose();
+		scrollCallback = null;
+		scrollProc = 0;
 
 		leaveCallback.dispose();
 		leaveCallback = null;
@@ -4729,6 +4711,10 @@ void releaseDisplay () {
 		resizeCallback.dispose();
 		resizeCallback = null;
 		resizeProc = 0;
+
+		activateCallback.dispose();
+		activateCallback = null;
+		activateProc = 0;
 
 		gesturePressReleaseCallback.dispose();
 		gesturePressReleaseCallback = null;
@@ -6069,11 +6055,20 @@ void wakeThread () {
 	wake = true;
 }
 
-void enterMotionScrollProc(long controller, double x, double y, long user_data) {
+void enterMotionProc(long controller, double x, double y, long user_data) {
 	long handle = GTK.gtk_event_controller_get_widget(controller);
 	Widget widget = getWidget(handle);
 
-	if (widget != null) widget.enterMotionScrollProc(controller, x, y, user_data);
+	if (widget != null) widget.enterMotionProc(controller, x, y, user_data);
+}
+
+boolean scrollProc(long controller, double dx, double dy, long user_data) {
+	long handle = GTK.gtk_event_controller_get_widget(controller);
+	Widget widget = getWidget(handle);
+
+	if (widget != null) return widget.scrollProc(controller, dx, dy, user_data);
+
+	return false;
 }
 
 void focusProc(long controller, long user_data) {
@@ -6098,11 +6093,11 @@ void gesturePressReleaseProc(long gesture, int n_press, double x, double y, long
 	if (widget != null) widget.gesturePressReleaseProc(gesture, n_press, x, y, user_data);
 }
 
-long leaveProc (long controller, long user_data) {
+void leaveProc(long controller, long user_data) {
 	long handle = GTK.gtk_event_controller_get_widget(controller);
-	Widget widget = getWidget (handle);
-	if (widget == null) return 0;
-	return widget.leaveProc(controller, handle, user_data);
+	Widget widget = getWidget(handle);
+
+	if (widget != null) widget.leaveProc(controller, handle, user_data);
 }
 
 void activateProc(long action, long parameter, long user_data) {
