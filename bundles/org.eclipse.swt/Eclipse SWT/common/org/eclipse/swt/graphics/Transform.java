@@ -14,6 +14,7 @@
 package org.eclipse.swt.graphics;
 
 import org.eclipse.swt.*;
+import org.eclipse.swt.internal.*;
 
 /**
  * Instances of this class represent transformation matrices for
@@ -117,7 +118,7 @@ public Transform(Device device, float[] elements) {
  */
 public Transform (Device device, float m11, float m12, float m21, float m22, float dx, float dy) {
 	super(device);
-	setElements(m11, m12, m21, m22, dx, dy);
+	setElements(m11, m12, m21, m22, DPIUtil.autoScaleUp(device, dx), DPIUtil.autoScaleUp(device, dy));
 }
 
 /**
@@ -134,12 +135,13 @@ public Transform (Device device, float m11, float m12, float m21, float m22, flo
 public void getElements(float[] elements) {
 	if (elements == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (elements.length < 6) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	Drawable drawable = getDevice();
 	elements[0] = (float)m11;
 	elements[1] = (float)m12;
 	elements[2] = (float)m21;
 	elements[3] = (float)m22;
-	elements[4] = (float)dx;
-	elements[5] = (float)dy;
+	elements[4] = DPIUtil.autoScaleDown(drawable, (float)dx);
+	elements[5] = DPIUtil.autoScaleDown(drawable, (float)dy);
 }
 
 void getElements(double[] elements) {
@@ -294,12 +296,13 @@ public void scale(float scaleX, float scaleY) {
  * @param dy the third element of the second row of the matrix
  */
 public void setElements(float m11, float m12, float m21, float m22, float dx, float dy) {
+	Drawable drawable = getDevice();
 	this.m11 = m11;
 	this.m12 = m12;
 	this.m21 = m21;
 	this.m22 = m22;
-	this.dx = dx;
-	this.dy = dy;
+	this.dx = DPIUtil.autoScaleUp(drawable, dx);
+	this.dy = DPIUtil.autoScaleUp(drawable, dy);
 }
 
 void setElements(float [] elements) {
@@ -354,11 +357,12 @@ public void shear(float shearX, float shearY) {
 public void transform(float[] pointArray) {
 	if (pointArray == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	int length = pointArray.length;
+	Drawable drawable = getDevice();
 	for (int i = 0; i < length; i += 2) {
-		float x = pointArray[i];
-		float y = pointArray[i+1];
-		pointArray[i] = (float)(x * m11 + y * m21 + dx);
-		pointArray[i+1] = (float)(x * m12 + y * m22 + dy);
+		float x = DPIUtil.autoScaleUp(drawable, pointArray[i]);
+		float y = DPIUtil.autoScaleUp(drawable, pointArray[i+1]);
+		pointArray[i] = DPIUtil.autoScaleDown(drawable, (float)(x * m11 + y * m21 + dx));
+		pointArray[i+1] = DPIUtil.autoScaleDown(drawable, (float)(x * m12 + y * m22 + dy));
 	}
 }
 
@@ -370,8 +374,11 @@ public void transform(float[] pointArray) {
  * @param offsetY the distance to translate in the Y direction
  */
 public void translate(float offsetX, float offsetY) {
-	dx += offsetX * m11 + offsetY * m21;
-	dy += offsetX * m12 + offsetY * m22;
+	Drawable drawable = getDevice();
+	float x = DPIUtil.autoScaleUp(drawable, offsetX);
+	float y = DPIUtil.autoScaleUp(drawable, offsetY);
+	dx += x * m11 + y * m21;
+	dy += x * m12 + y * m22;
 }
 
 /**
