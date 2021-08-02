@@ -5151,7 +5151,7 @@ public void update () {
 }
 
 boolean update (boolean all) {
-	if (!FORCE_RUN_UPDATE && OS.isBigSurOrLater()) {
+	if (!FORCE_RUN_UPDATE) {
 		/*
 		 * Bigsur seems to force the use of the Automatic Deferred Painting mechanism.
 		 * This behavior was applicable only for applications linked with 10.14, but with BigSur
