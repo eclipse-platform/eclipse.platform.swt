@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2017 IBM Corporation and others.
+ * Copyright (c) 2000, 2021 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -5154,9 +5154,10 @@ boolean update (boolean all) {
 	if (!FORCE_RUN_UPDATE) {
 		/*
 		 * Bigsur seems to force the use of the Automatic Deferred Painting mechanism.
-		 * This behavior was applicable only for applications linked with 10.14, but with BigSur
-		 * it seems this is forced on all applications.
-		 * So, we don't do anything here on BigSur.
+		 * This behavior was applicable only for applications linked with 10.14, but
+		 * with BigSur it seems this is forced on all applications. So, we don't do
+		 * anything here on BigSur. Since MAC Launcher is now rebuilt using 10.14 SDK,
+		 * we don't do anything for any of the MAC versions(See Bug 574351 for details)
 		 */
 		return true;
 	}
