@@ -418,24 +418,6 @@ void hookEvents () {
 	setRotateGesture();
 
 	long eventHandle = eventHandle ();
-	long blockHandle = fixedHandle != 0 ? fixedHandle : eventHandle;
-	/*
-	* Feature in GTK3.  Events such as mouse move are propagate up
-	* the widget hierarchy and are seen by the parent.  This is the
-	* correct GTK behavior but not correct for SWT.  The fix is to
-	* hook a signal after and stop the propagation using a negative
-	* event number to distinguish this case.
-	*
-	* The signal is hooked to the fixedHandle to catch events sent to
-	* lightweight widgets.
-	*
-	* In GTK4, event propagation is set in the event controller
-	*/
-	if (!GTK.GTK4) {
-		OS.g_signal_connect_closure_by_id(blockHandle, display.signalIds[BUTTON_PRESS_EVENT], 0, display.getClosure(BUTTON_PRESS_EVENT_INVERSE), true);
-		OS.g_signal_connect_closure_by_id(blockHandle, display.signalIds[BUTTON_RELEASE_EVENT], 0, display.getClosure(BUTTON_RELEASE_EVENT_INVERSE), true);
-		OS.g_signal_connect_closure_by_id(blockHandle, display.signalIds[MOTION_NOTIFY_EVENT], 0, display.getClosure(MOTION_NOTIFY_EVENT_INVERSE), true);
-	}
 
 	/* Connect the event_after signal for both key and mouse */
 	if (GTK.GTK4) {
@@ -473,23 +455,25 @@ private void hookMouseSignals(long eventHandle) {
 	long enterExitHandle = enterExitHandle();
 
 	if (GTK.GTK4) {
+		// Click & motion events are limited only to the target widget
 		long clickGesture = GTK4.gtk_gesture_click_new();
+		GTK.gtk_event_controller_set_propagation_phase(clickGesture, GTK.GTK_PHASE_TARGET);
 		GTK.gtk_gesture_single_set_button(clickGesture, 0);
 		GTK4.gtk_widget_add_controller(eventHandle, clickGesture);
 		OS.g_signal_connect(clickGesture, OS.pressed, display.gesturePressReleaseProc, GESTURE_PRESSED);
 		OS.g_signal_connect(clickGesture, OS.released, display.gesturePressReleaseProc, GESTURE_RELEASED);
+
+		long motionController = GTK4.gtk_event_controller_motion_new();
+		GTK.gtk_event_controller_set_propagation_phase(motionController, GTK.GTK_PHASE_TARGET);
+		GTK4.gtk_widget_add_controller(eventHandle, motionController);
+		OS.g_signal_connect(motionController, OS.motion, display.enterMotionProc, MOTION);
 
 		long scrollController = GTK4.gtk_event_controller_scroll_new(GTK.GTK_EVENT_CONTROLLER_SCROLL_BOTH_AXES);
 		GTK.gtk_event_controller_set_propagation_phase(scrollController, GTK.GTK_PHASE_TARGET);
 		GTK4.gtk_widget_add_controller(eventHandle, scrollController);
 		OS.g_signal_connect(scrollController, OS.scroll, display.scrollProc, SCROLL);
 
-		long motionController = GTK4.gtk_event_controller_motion_new();
-		GTK4.gtk_widget_add_controller(eventHandle, motionController);
-		OS.g_signal_connect(motionController, OS.motion, display.enterMotionProc, MOTION);
-
 		long enterExitController = GTK4.gtk_event_controller_motion_new();
-		GTK.gtk_event_controller_set_propagation_phase(enterExitController, GTK.GTK_PHASE_TARGET);
 		GTK4.gtk_widget_add_controller(enterExitHandle, enterExitController);
 		OS.g_signal_connect(enterExitController, OS.enter, display.enterMotionProc, ENTER);
 		OS.g_signal_connect(enterExitController, OS.leave, display.leaveProc, LEAVE);
@@ -505,6 +489,21 @@ private void hookMouseSignals(long eventHandle) {
 		GTK3.gtk_widget_add_events (enterExitHandle, enterExitMask);
 		OS.g_signal_connect_closure_by_id(enterExitHandle, display.signalIds[ENTER_NOTIFY_EVENT], 0, display.getClosure(ENTER_NOTIFY_EVENT), false);
 		OS.g_signal_connect_closure_by_id(enterExitHandle, display.signalIds[LEAVE_NOTIFY_EVENT], 0, display.getClosure(LEAVE_NOTIFY_EVENT), false);
+
+		/*
+		* Feature in GTK3.  Events such as mouse move are propagate up
+		* the widget hierarchy and are seen by the parent.  This is the
+		* correct GTK behavior but not correct for SWT.  The fix is to
+		* hook a signal after and stop the propagation using a negative
+		* event number to distinguish this case.
+		*
+		* The signal is hooked to the fixedHandle to catch events sent to
+		* lightweight widgets.
+		*/
+		long blockHandle = fixedHandle != 0 ? fixedHandle : eventHandle;
+		OS.g_signal_connect_closure_by_id(blockHandle, display.signalIds[BUTTON_PRESS_EVENT], 0, display.getClosure(BUTTON_PRESS_EVENT_INVERSE), true);
+		OS.g_signal_connect_closure_by_id(blockHandle, display.signalIds[BUTTON_RELEASE_EVENT], 0, display.getClosure(BUTTON_RELEASE_EVENT_INVERSE), true);
+		OS.g_signal_connect_closure_by_id(blockHandle, display.signalIds[MOTION_NOTIFY_EVENT], 0, display.getClosure(MOTION_NOTIFY_EVENT_INVERSE), true);
 	}
 }
 
@@ -4107,12 +4106,16 @@ void gtk4_motion_event(long controller, double x, double y, long event) {
 	boolean isHint = false;
 
 	if (this != display.currentControl) {
-		if (display.currentControl != null && !display.currentControl.isDisposed ()) {
+		if (display.currentControl != null && !display.currentControl.isDisposed()) {
 			display.removeMouseHoverTimeout(display.currentControl.handle);
-
-			display.currentControl.sendMouseEvent(SWT.MouseExit,  0, time, (int)x, (int)y, isHint, state);
+			/*
+			 *  Note: for GTK4, the call to display.mapInPixels function was removed due to the
+			 *  inability to get the origin of surfaces. Testing needs to be done to see if
+			 *  the x, y, coordinates suffice.
+			 */
+			display.currentControl.sendMouseEvent(SWT.MouseExit, 0, time, x, y, isHint, state);
 		}
-		if (!isDisposed ()) {
+		if (!isDisposed()) {
 			display.currentControl = this;
 			sendMouseEvent(SWT.MouseEnter, 0, time, x, y, isHint, state);
 		}
