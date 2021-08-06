@@ -1820,7 +1820,7 @@ boolean copySelection(int type) {
 				text.append(length == 0 ? "" : getText(offset, offset + length - 1));
 				text.append(PlatformLineDelimiter);
 			}
-			text.deleteCharAt(text.length() - 1);
+			text.delete(text.length() - PlatformLineDelimiter.length(), text.length());
 			if (text.length() > 0) {
 				//TODO RTF support
 				clipboard.setContents(new Object[]{text.toString()},  new Transfer[]{TextTransfer.getInstance()}, type);
