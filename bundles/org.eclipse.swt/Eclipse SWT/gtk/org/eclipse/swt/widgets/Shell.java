@@ -137,6 +137,8 @@ public class Shell extends Decorations {
 	static final int MAXIMUM_TRIM = 128;
 	static final int BORDER = 3;
 
+	private final double SHELL_TO_MONITOR_RATIO = 0.625; // Fractional: 5 / 8
+
 /**
  * Constructs a new instance of this class. This is equivalent
  * to calling <code>Shell((Display) null)</code>.
@@ -2310,7 +2312,15 @@ int setBounds (int x, int y, int width, int height, boolean move, boolean resize
 		*/
 		if ((style & SWT.RESIZE) != 0 || (geometry.min_height != 0 || geometry.min_width != 0 || geometry.max_height != 0 || geometry.max_width != 0)) {
 			if (GTK.GTK4) {
-				GTK.gtk_window_set_default_size(shellHandle, width, height);
+				/*
+				 * On GTK4, GtkWindow size includes the header bar. In order to keep window size allocation of the client area
+				 * consistent with previous versions of SWT, we need to include the header bar height in addition to the given height value.
+				 */
+				long header = GTK4.gtk_widget_get_next_sibling(GTK4.gtk_widget_get_first_child(shellHandle));
+				int[] headerNaturalHeight = new int[1];
+				GTK4.gtk_widget_measure(header, GTK.GTK_ORIENTATION_VERTICAL, 0, null, headerNaturalHeight, null, null);
+
+				GTK.gtk_window_set_default_size(shellHandle, width, height + headerNaturalHeight[0]);
 			} else {
 				GTK3.gtk_window_resize (shellHandle, width, height);
 			}
@@ -2448,53 +2458,71 @@ public void setImeInputMode (int mode) {
 }
 
 @Override
-void setInitialBounds () {
+void setInitialBounds() {
 	int width = 0, height = 0;
+
 	if ((state & FOREIGN_HANDLE) != 0) {
 		GtkAllocation allocation = new GtkAllocation ();
 		GTK.gtk_widget_get_allocation (shellHandle, allocation);
 		width = allocation.width;
 		height = allocation.height;
 	} else {
-		GdkRectangle dest = new GdkRectangle ();
-		if (GTK.GTK_VERSION >= OS.VERSION(3, 22, 0)) {
+		GdkRectangle dest = new GdkRectangle();
+
+		if (GTK.GTK4) {
 			long display = GDK.gdk_display_get_default();
 			if (display != 0) {
-				long monitor;
-				if (GTK.GTK4) {
-					monitor = GDK.gdk_display_get_monitor_at_surface(display, paintSurface());
-				} else {
-					monitor = GDK.gdk_display_get_monitor_at_window(display, paintWindow());
-				}
+				long monitor = GDK.gdk_display_get_monitor_at_surface(display, paintSurface());
 				GDK.gdk_monitor_get_geometry(monitor, dest);
-				width = dest.width * 5 / 8;
-				height = dest.height * 5 / 8;
+				width = (int) (dest.width * SHELL_TO_MONITOR_RATIO);
+				height = (int) (dest.height * SHELL_TO_MONITOR_RATIO);
+			}
+
+			if ((style & SWT.RESIZE) != 0) {
+				/*
+				 * On GTK4, GtkWindow size includes the header bar. In order to keep window size allocation of the client area
+				 * consistent with previous versions of SWT, we need to include the header bar height in addition to the given height value.
+				 */
+				long header = GTK4.gtk_widget_get_next_sibling(GTK4.gtk_widget_get_first_child(shellHandle));
+				int[] headerNaturalHeight = new int[1];
+				GTK4.gtk_widget_measure(header, GTK.GTK_ORIENTATION_VERTICAL, 0, null, headerNaturalHeight, null, null);
+
+				GTK.gtk_window_set_default_size(shellHandle, width, height + headerNaturalHeight[0]);
 			}
 		} else {
-			long screen = GDK.gdk_screen_get_default ();
-			if (screen != 0) {
-				if (GDK.gdk_screen_get_n_monitors (screen) > 1) {
-					int monitorNumber = GDK.gdk_screen_get_monitor_at_window (screen, paintWindow ());
-					GDK.gdk_screen_get_monitor_geometry (screen, monitorNumber, dest);
-					width = dest.width * 5 / 8;
-					height = dest.height * 5 / 8;
+			if (GTK.GTK_VERSION >= OS.VERSION(3, 22, 0)) {
+				long display = GDK.gdk_display_get_default();
+				if (display != 0) {
+					long monitor = GDK.gdk_display_get_monitor_at_window(display, paintWindow());
+					GDK.gdk_monitor_get_geometry(monitor, dest);
+					width = (int) (dest.width * SHELL_TO_MONITOR_RATIO);
+					height = (int) (dest.height * SHELL_TO_MONITOR_RATIO);
+				}
+			} else {
+				long screen = GDK.gdk_screen_get_default();
+				if (screen != 0) {
+					if (GDK.gdk_screen_get_n_monitors(screen) > 1) {
+						int monitorNumber = GDK.gdk_screen_get_monitor_at_window(screen, paintWindow());
+						GDK.gdk_screen_get_monitor_geometry(screen, monitorNumber, dest);
+						width = (int) (dest.width * SHELL_TO_MONITOR_RATIO);
+						height = (int) (dest.height * SHELL_TO_MONITOR_RATIO);
+					}
 				}
 			}
-		}
-		if (width == 0 && height == 0 && !GTK.GTK4) {
-			// if the above failed, use gdk_screen_height/width as a fallback
-			width = GDK.gdk_screen_width () * 5 / 8;
-			height = GDK.gdk_screen_height () * 5 / 8;
-		}
-		if ((style & SWT.RESIZE) != 0) {
-			if (GTK.GTK4) {
-				GTK.gtk_window_set_default_size(shellHandle, width, height);
-			} else {
-				GTK3.gtk_window_resize (shellHandle, width, height);
+
+			if (width == 0 && height == 0) {
+				// if the above failed, use gdk_screen_height/width as a fallback
+				width = (int) (GDK.gdk_screen_width() * SHELL_TO_MONITOR_RATIO);
+				height = (int) (GDK.gdk_screen_height() * SHELL_TO_MONITOR_RATIO);
+			}
+
+			if ((style & SWT.RESIZE) != 0) {
+				GTK3.gtk_window_resize(shellHandle, width, height);
 			}
 		}
 	}
-	resizeBounds (width, height, false);
+
+	resizeBounds(width, height, false);
 }
 
 @Override
