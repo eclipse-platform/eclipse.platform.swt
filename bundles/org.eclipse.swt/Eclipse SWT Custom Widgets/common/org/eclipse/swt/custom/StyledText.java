@@ -6337,8 +6337,16 @@ void handleMouseDown(Event event) {
 			int lineIndex = content.getLineAtOffset(offset);
 			int lineOffset = content.getOffsetAtLine(lineIndex);
 			if (wordSelect) {
+				String line = content.getLine(lineIndex);
+				int lineLength = line.length();
 				int min = blockSelection ? lineOffset : 0;
-				int max = blockSelection ? lineOffset + content.getLine(lineIndex).length() : content.getCharCount();
+				int max = blockSelection ? lineOffset + lineLength : content.getCharCount();
+				final Point offsetPoint = getPointAtOffset(offset);
+				if (event.x > offsetPoint.x
+						&& offset < Math.min(max, lineOffset + lineLength) // Not beyond EOL
+						&& !Character.isWhitespace(line.charAt(offset - lineOffset))) { // Not on whitespace
+					offset++;
+				}
 				int start = Math.max(min, getWordPrevious(offset, SWT.MOVEMENT_WORD_START));
 				int end = Math.min(max, getWordNext(start, SWT.MOVEMENT_WORD_END));
 				setSelection(new int[] {start, end - start }, false, true);

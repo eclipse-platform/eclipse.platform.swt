@@ -5184,6 +5184,147 @@ public void test_doubleClickWithRightMouseButtonDoesNotSelectWord() {
 }
 
 @Test
+public void test_doubleClickAtStartOfWordSelectsNextWord() {
+	text.setText("Hello world" + System.lineSeparator() + "Bye bye");
+	Point onW = text.getLocationAtOffset(6);
+
+	Event event = new Event();
+	event.button = 1;
+	event.count = 2;
+	event.x = onW.x + 1;
+	event.y = onW.y;
+	text.notifyListeners(SWT.MouseDown, event);
+
+	assertEquals("world", text.getSelectionText());
+}
+
+@Test
+public void test_doubleClickAtEndOfWordSelectsCurrentWord() {
+	text.setText("Hello world" + System.lineSeparator() + "Bye bye");
+	Point onWs = text.getLocationAtOffset(5);
+
+	Event event = new Event();
+	event.button = 1;
+	event.count = 2;
+	event.x = onWs.x - 1;
+	event.y = onWs.y;
+	text.notifyListeners(SWT.MouseDown, event);
+
+	assertEquals("Hello", text.getSelectionText());
+}
+
+@Test
+public void test_doubleClickAtEndOfWordSelectsCurrentWord2() {
+	// Same as above, but at line end
+	text.setText("Hello world" + System.lineSeparator() + "Bye bye");
+	Point onD = text.getLocationAtOffset(10);
+
+	Event event = new Event();
+	event.button = 1;
+	event.count = 2;
+	event.x = onD.x + 1;
+	event.y = onD.y;
+	text.notifyListeners(SWT.MouseDown, event);
+
+	assertEquals("world", text.getSelectionText());
+}
+
+@Test
+public void test_doubleClickBetweenWordsSelectsPrevWord() {
+	text.setText("Hello world" + System.lineSeparator() + "Bye bye");
+	Point onW = text.getLocationAtOffset(6);
+	Point onWs = text.getLocationAtOffset(5);
+
+	Event event = new Event();
+	event.button = 1;
+	event.count = 2;
+	event.x = (onWs.x + onW.x) / 2; // Middle of the blank before 'w'
+	event.y = onWs.y;
+	text.notifyListeners(SWT.MouseDown, event);
+
+	assertEquals("Hello", text.getSelectionText());
+}
+
+@Test
+public void test_doubleClickJustBeforeNextWordSelectsPrevWord() {
+	text.setText("Hello world" + System.lineSeparator() + "Bye bye");
+	Point onW = text.getLocationAtOffset(6);
+
+	Event event = new Event();
+	event.button = 1;
+	event.count = 2;
+	event.x = onW.x;
+	event.y = onW.y;
+	text.notifyListeners(SWT.MouseDown, event);
+
+	assertEquals("Hello", text.getSelectionText());
+}
+
+@Test
+public void test_doubleClickBeyondEolSelectsLastWord() {
+	text.setText("Hello world" + System.lineSeparator() + "Bye bye");
+	text.setSize(1000, 1000);
+	Point onD = text.getLocationAtOffset(10);
+
+	Event event = new Event();
+	event.button = 1;
+	event.count = 2;
+	event.x = Math.min(onD.x + 100, 999);
+	event.y = onD.y;
+	text.notifyListeners(SWT.MouseDown, event);
+
+	assertEquals("world", text.getSelectionText());
+}
+
+@Test
+public void test_doubleClickBeyondEndOfTextSelectsLastWord() {
+	text.setText("Hello world" + System.lineSeparator() + "Bye bye");
+	text.setSize(1000, 1000);
+	Point onE = text.getLocationAtOffset(text.getOffsetAtLine(1) + 6);
+
+	Event event = new Event();
+	event.button = 1;
+	event.count = 2;
+	event.x = Math.min(onE.x + 100, 999);
+	event.y = Math.min(onE.y + 100, 999);
+	text.notifyListeners(SWT.MouseDown, event);
+
+	assertEquals("bye", text.getSelectionText());
+}
+
+@Test
+public void test_doubleClickAtStartOfWordLastLineNoEol() {
+	text.setText("Hello world" + System.lineSeparator() + "Bye bye");
+	text.setSize(1000, 1000);
+	Point onB = text.getLocationAtOffset(text.getOffsetAtLine(1) + 4);
+
+	Event event = new Event();
+	event.button = 1;
+	event.count = 2;
+	event.x = onB.x + 1;
+	event.y = onB.y;
+	text.notifyListeners(SWT.MouseDown, event);
+
+	assertEquals("bye", text.getSelectionText());
+}
+
+@Test
+public void test_doubleClickAtEndOfWordLastLineNoEol() {
+	text.setText("Hello world" + System.lineSeparator() + "Bye bye");
+	text.setSize(1000, 1000);
+	Point onB = text.getLocationAtOffset(text.getOffsetAtLine(1) + 6);
+
+	Event event = new Event();
+	event.button = 1;
+	event.count = 2;
+	event.x = onB.x + 1;
+	event.y = onB.y;
+	text.notifyListeners(SWT.MouseDown, event);
+
+	assertEquals("bye", text.getSelectionText());
+}
+
+@Test
 public void test_doubleClickDoesNotSelectIfDoubleClickIsDisabled() {
 	text.setText("Test1 Test2");
 	text.setDoubleClickEnabled(false);
