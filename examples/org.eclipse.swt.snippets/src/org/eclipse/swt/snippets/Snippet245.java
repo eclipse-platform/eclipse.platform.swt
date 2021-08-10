@@ -26,8 +26,8 @@ import org.eclipse.swt.widgets.*;
 public class Snippet245 {
 
 public static void main(String [] args) {
-	final Display display = new Display();
-	final Shell shell = new Shell(display);
+	var display = new Display();
+	var shell = new Shell(display);
 	shell.setText("Snippet 245");
 	shell.addPaintListener(event -> {
 		Rectangle rect = shell.getClientArea();
