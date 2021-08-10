@@ -1042,10 +1042,6 @@ public class GTK extends OS {
 	 */
 	public static final native void gtk_style_context_set_state(long context, long flags);
 
-	/* GtkMenuItem [GTK3 only] */
-	/** @method flags=dynamic */
-	public static final native void gtk_menu_popup_at_rect(long menu, long rect_window, GdkRectangle rect, int rect_anchor, int menu_anchor, long trigger_event);
-
 	/* GtkPopover */
 	/** @param popover cast=(GtkPopover *) */
 	public static final native void gtk_popover_popdown(long popover);

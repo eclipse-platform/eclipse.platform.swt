@@ -126,6 +126,7 @@ typedef enum {
 	gtk_1menu_1popdown_FUNC,
 	gtk_1menu_1popup_FUNC,
 	gtk_1menu_1popup_1at_1pointer_FUNC,
+	gtk_1menu_1popup_1at_1rect_FUNC,
 	gtk_1menu_1shell_1deactivate_FUNC,
 	gtk_1menu_1shell_1insert_FUNC,
 	gtk_1menu_1shell_1set_1take_1focus_FUNC,

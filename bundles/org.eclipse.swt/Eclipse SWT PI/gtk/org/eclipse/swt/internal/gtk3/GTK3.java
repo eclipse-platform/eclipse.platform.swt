@@ -13,6 +13,8 @@
  *******************************************************************************/
 package org.eclipse.swt.internal.gtk3;
 
+import org.eclipse.swt.internal.gtk.*;
+
 /**
  * This class contains native functions that are present in GTK3 only.
  */
@@ -652,6 +654,14 @@ public class GTK3 {
 	/** @param group cast=(GSList *) */
 	public static final native long gtk_radio_menu_item_new(long group);
 	public static final native long gtk_separator_menu_item_new();
+	/**
+	 * @param menu cast=(GtkMenu *)
+	 * @param rect_window cast=(GdkWindow *)
+	 * @param rect_anchor cast=(GdkGravity)
+	 * @param menu_anchor cast=(GdkGravity)
+	 * @param trigger_event cast=(const GdkEvent *)
+	 */
+	public static final native void gtk_menu_popup_at_rect(long menu, long rect_window, GdkRectangle rect, int rect_anchor, int menu_anchor, long trigger_event);
 
 	/* GtkMenuShell */
 	/** @param menu_shell cast=(GtkMenuShell *) */

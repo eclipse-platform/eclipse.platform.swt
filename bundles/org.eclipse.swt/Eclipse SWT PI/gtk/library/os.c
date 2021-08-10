@@ -5930,28 +5930,6 @@ JNIEXPORT jlong JNICALL GTK_NATIVE(gtk_1menu_1button_1new)
 }
 #endif
 
-#ifndef NO_gtk_1menu_1popup_1at_1rect
-JNIEXPORT void JNICALL GTK_NATIVE(gtk_1menu_1popup_1at_1rect)
-	(JNIEnv *env, jclass that, jlong arg0, jlong arg1, jobject arg2, jint arg3, jint arg4, jlong arg5)
-{
-	GdkRectangle _arg2, *lparg2=NULL;
-	GTK_NATIVE_ENTER(env, that, gtk_1menu_1popup_1at_1rect_FUNC);
-	if (arg2) if ((lparg2 = getGdkRectangleFields(env, arg2, &_arg2)) == NULL) goto fail;
-/*
-	gtk_menu_popup_at_rect(arg0, arg1, lparg2, arg3, arg4, arg5);
-*/
-	{
-		GTK_LOAD_FUNCTION(fp, gtk_menu_popup_at_rect)
-		if (fp) {
-			((void (CALLING_CONVENTION*)(jlong, jlong, GdkRectangle *, jint, jint, jlong))fp)(arg0, arg1, lparg2, arg3, arg4, arg5);
-		}
-	}
-fail:
-	if (arg2 && lparg2) setGdkRectangleFields(env, arg2, lparg2);
-	GTK_NATIVE_EXIT(env, that, gtk_1menu_1popup_1at_1rect_FUNC);
-}
-#endif
-
 #ifndef NO_gtk_1message_1dialog_1format_1secondary_1text
 JNIEXPORT void JNICALL GTK_NATIVE(gtk_1message_1dialog_1format_1secondary_1text)
 	(JNIEnv *env, jclass that, jlong arg0, jbyteArray arg1, jbyteArray arg2)

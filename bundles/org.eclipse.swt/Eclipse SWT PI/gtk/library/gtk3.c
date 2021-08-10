@@ -18,6 +18,7 @@
 #include "swt.h"
 #include "gtk3_structs.h"
 #include "gtk3_stats.h"
+#include "os_structs.h"
 
 #ifndef GTK3_NATIVE
 #define GTK3_NATIVE(func) Java_org_eclipse_swt_internal_gtk3_GTK3_##func
@@ -1135,6 +1136,20 @@ JNIEXPORT void JNICALL GTK3_NATIVE(gtk_1menu_1popup_1at_1pointer)
 	GTK3_NATIVE_ENTER(env, that, gtk_1menu_1popup_1at_1pointer_FUNC);
 	gtk_menu_popup_at_pointer((GtkMenu *)arg0, (const GdkEvent*)arg1);
 	GTK3_NATIVE_EXIT(env, that, gtk_1menu_1popup_1at_1pointer_FUNC);
+}
+#endif
+
+#ifndef NO_gtk_1menu_1popup_1at_1rect
+JNIEXPORT void JNICALL GTK3_NATIVE(gtk_1menu_1popup_1at_1rect)
+	(JNIEnv *env, jclass that, jlong arg0, jlong arg1, jobject arg2, jint arg3, jint arg4, jlong arg5)
+{
+	GdkRectangle _arg2, *lparg2=NULL;
+	GTK3_NATIVE_ENTER(env, that, gtk_1menu_1popup_1at_1rect_FUNC);
+	if (arg2) if ((lparg2 = getGdkRectangleFields(env, arg2, &_arg2)) == NULL) goto fail;
+	gtk_menu_popup_at_rect((GtkMenu *)arg0, (GdkWindow *)arg1, lparg2, (GdkGravity)arg3, (GdkGravity)arg4, (const GdkEvent *)arg5);
+fail:
+	if (arg2 && lparg2) setGdkRectangleFields(env, arg2, lparg2);
+	GTK3_NATIVE_EXIT(env, that, gtk_1menu_1popup_1at_1rect_FUNC);
 }
 #endif
 

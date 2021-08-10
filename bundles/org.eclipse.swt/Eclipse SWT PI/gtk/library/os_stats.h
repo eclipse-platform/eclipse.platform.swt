@@ -476,7 +476,6 @@ typedef enum {
 	gtk_1list_1store_1set__JJIZI_FUNC,
 	gtk_1list_1store_1set__JJI_3BI_FUNC,
 	gtk_1menu_1button_1new_FUNC,
-	gtk_1menu_1popup_1at_1rect_FUNC,
 	gtk_1message_1dialog_1format_1secondary_1text_FUNC,
 	gtk_1message_1dialog_1new_FUNC,
 	gtk_1native_1dialog_1show_FUNC,

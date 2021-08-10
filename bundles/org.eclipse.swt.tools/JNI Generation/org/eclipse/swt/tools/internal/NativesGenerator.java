@@ -41,11 +41,13 @@ public void generateIncludes() {
 	output(outputName);
 	outputln("_stats.h\"");
 	
-	/* Include common structs shared between multiple GTK versions.
+	/* 
+	 * Note: Only applies to Linux versions of SWT.
+	 * Include common structs shared between multiple GTK versions.
 	 * Reference Bug 570533, the initial work for separation between 
 	 * functions in different GTK versions.
 	 */
-	if (!outputName.equals("os")) outputln("#include \"os_structs.h\"");
+	if (outputName.equals("gtk3") || outputName.equals("gtk4")) outputln("#include \"os_structs.h\"");
 	outputln();
 }
 

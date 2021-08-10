@@ -374,7 +374,7 @@ void _setVisible (boolean visible) {
 							rect.y = this.y + 1;
 						}
 						// Popup the menu and pin it at the top left corner of the GdkRectangle relative to the GdkWindow
-						GTK.gtk_menu_popup_at_rect(handle, event.window, rect, GDK.GDK_GRAVITY_NORTH_WEST,
+						GTK3.gtk_menu_popup_at_rect(handle, event.window, rect, GDK.GDK_GRAVITY_NORTH_WEST,
 								GDK.GDK_GRAVITY_NORTH_WEST, eventPtr);
 						gdk_event_free (eventPtr);
 					}

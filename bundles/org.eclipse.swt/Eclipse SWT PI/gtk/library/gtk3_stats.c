@@ -116,6 +116,7 @@ char * GTK3_nativeFunctionNames[] = {
 	"gtk_1menu_1popdown",
 	"gtk_1menu_1popup",
 	"gtk_1menu_1popup_1at_1pointer",
+	"gtk_1menu_1popup_1at_1rect",
 	"gtk_1menu_1shell_1deactivate",
 	"gtk_1menu_1shell_1insert",
 	"gtk_1menu_1shell_1set_1take_1focus",

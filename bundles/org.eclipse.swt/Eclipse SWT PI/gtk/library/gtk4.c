@@ -18,6 +18,7 @@
 #include "swt.h"
 #include "gtk4_structs.h"
 #include "gtk4_stats.h"
+#include "os_structs.h"
 
 #ifndef GTK4_NATIVE
 #define GTK4_NATIVE(func) Java_org_eclipse_swt_internal_gtk4_GTK4_##func
