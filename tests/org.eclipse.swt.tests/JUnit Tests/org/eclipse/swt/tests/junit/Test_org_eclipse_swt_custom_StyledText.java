@@ -5216,7 +5216,7 @@ public void test_doubleClickDoesNotSelectIfDoubleClickIsDisabled() {
 }
 
 @Test
-public void test_trippleClickSelectsSentance() {
+public void test_tripleClickSelectsSentance() {
 	text.setText("Test1 Test2\nTest3 Test4");
 
 	Event event = new Event();
@@ -5230,7 +5230,7 @@ public void test_trippleClickSelectsSentance() {
 }
 
 @Test
-public void test_trippleClickOnLastLineSelectsSentance() {
+public void test_tripleClickOnLastLineSelectsSentance() {
 	text.setText("Test1 Test2\nTest3 Test4");
 
 	Event event = new Event();
@@ -5244,7 +5244,7 @@ public void test_trippleClickOnLastLineSelectsSentance() {
 }
 
 @Test
-public void test_trippleClickDoesNotSelectIfDoubleClickIsDisabled() {
+public void test_tripleClickDoesNotSelectIfDoubleClickIsDisabled() {
 	text.setText("Test1 Test2\nTest3 Test4");
 	text.setDoubleClickEnabled(false);
 
@@ -5380,7 +5380,7 @@ public void test_cutAndPasteInBlockSelection() {
 }
 
 @Test
-public void test_trippleClickInBlockSelectionSelectsLine() {
+public void test_tripleClickInBlockSelectionSelectsLine() {
 	text.setText("  Sample Test Selection  " + System.lineSeparator() + "  Sample Test Selection  "
 			+ System.lineSeparator());
 	text.setSize(1000, 1000);
