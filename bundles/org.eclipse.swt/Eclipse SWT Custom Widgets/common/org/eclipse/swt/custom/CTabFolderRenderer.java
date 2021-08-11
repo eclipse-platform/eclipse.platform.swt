@@ -85,7 +85,7 @@ public class CTabFolderRenderer {
 	static final int[] SIMPLE_BOTTOM_LEFT_CORNER_BORDERLESS = new int[] {0,-3, 1,-2, 2,-1, 3,0};
 	static final int[] SIMPLE_BOTTOM_RIGHT_CORNER_BORDERLESS = new int[] {-4,0, -3,-1, -2,-2, -1,-3};
 
-	static final RGB CLOSE_FILL = new RGB(252, 160, 160);
+	static final RGB CLOSE_FILL = new RGB(240, 64, 64);
 
 	static final int BUTTON_SIZE = 16;
 	static final int BUTTON_TRIM = 1;
@@ -863,46 +863,24 @@ public class CTabFolderRenderer {
 
 	void drawClose(GC gc, Rectangle closeRect, int closeImageState) {
 		if (closeRect.width == 0 || closeRect.height == 0) return;
-		Display display = parent.getDisplay();
 
-		// draw X 9x9
-		int x = closeRect.x + Math.max(1, (closeRect.width-9)/2);
-		int y = closeRect.y + Math.max(1, (closeRect.height-9)/2);
+		// draw X with length of this constant
+		final int lineLength = 8;
+		int x = closeRect.x + Math.max(1, (closeRect.width-lineLength)/2);
+		int y = closeRect.y + Math.max(1, (closeRect.height-lineLength)/2);
 		y += parent.onBottom ? -1 : 1;
-
-		Color closeBorder = display.getSystemColor(BUTTON_BORDER);
+		int originalLineWidth = gc.getLineWidth();
 		switch (closeImageState & (SWT.HOT | SWT.SELECTED | SWT.BACKGROUND)) {
 			case SWT.NONE: {
-				int[] shape = new int[] {x,y, x+2,y, x+4,y+2, x+5,y+2, x+7,y, x+9,y,
-										 x+9,y+2, x+7,y+4, x+7,y+5, x+9,y+7, x+9,y+9,
-										 x+7,y+9, x+5,y+7, x+4,y+7, x+2,y+9, x,y+9,
-										 x,y+7, x+2,y+5, x+2,y+4, x,y+2};
-				gc.setBackground(display.getSystemColor(BUTTON_FILL));
-				gc.fillPolygon(shape);
-				gc.setForeground(closeBorder);
-				gc.drawPolygon(shape);
+				drawCloseLines(gc, x, y , lineLength, false);
 				break;
 			}
 			case SWT.HOT: {
-				int[] shape = new int[] {x,y, x+2,y, x+4,y+2, x+5,y+2, x+7,y, x+9,y,
-										 x+9,y+2, x+7,y+4, x+7,y+5, x+9,y+7, x+9,y+9,
-										 x+7,y+9, x+5,y+7, x+4,y+7, x+2,y+9, x,y+9,
-										 x,y+7, x+2,y+5, x+2,y+4, x,y+2};
-				gc.setBackground(getFillColor());
-				gc.fillPolygon(shape);
-				gc.setForeground(closeBorder);
-				gc.drawPolygon(shape);
+				drawCloseLines(gc, x, y , lineLength, true);
 				break;
 			}
 			case SWT.SELECTED: {
-				int[] shape = new int[] {x+1,y+1, x+3,y+1, x+5,y+3, x+6,y+3, x+8,y+1, x+10,y+1,
-										 x+10,y+3, x+8,y+5, x+8,y+6, x+10,y+8, x+10,y+10,
-										 x+8,y+10, x+6,y+8, x+5,y+8, x+3,y+10, x+1,y+10,
-										 x+1,y+8, x+3,y+6, x+3,y+5, x+1,y+3};
-				gc.setBackground(getFillColor());
-				gc.fillPolygon(shape);
-				gc.setForeground(closeBorder);
-				gc.drawPolygon(shape);
+				drawCloseLines(gc, x, y , lineLength, true);
 				break;
 			}
 			case SWT.BACKGROUND: {
@@ -911,6 +889,16 @@ public class CTabFolderRenderer {
 				break;
 			}
 		}
+		gc.setLineWidth(originalLineWidth);
+	}
+
+	private void drawCloseLines(GC gc, int x, int y, int lineLength, boolean hot) {
+		if (hot) {
+			gc.setLineWidth(gc.getLineWidth() + 2);
+			gc.setForeground(getFillColor());
+		}
+		gc.drawLine(x, y, x + lineLength, y + lineLength);
+		gc.drawLine(x, y + lineLength, x + lineLength, y);
 	}
 
 	void drawChevron(GC gc, Rectangle chevronRect, int chevronImageState) {
