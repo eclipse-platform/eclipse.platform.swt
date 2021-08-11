@@ -3567,7 +3567,7 @@ void sendEraseItemEvent (TableItem item, NMLVCUSTOMDRAW nmcd, long lParam, Event
 					rect.right += EXPLORER_EXTRA;
 					pClipRect.right += EXPLORER_EXTRA;
 				}
-				long hTheme = OS.OpenThemeData (handle, Display.LISTVIEW);
+				long hTheme = OS.OpenThemeData (handle, Display.TREEVIEW);
 				int iStateId = selected ? OS.LISS_SELECTED : OS.LISS_HOT;
 				if (OS.GetFocus () != handle && selected && !drawHot) iStateId = OS.LISS_SELECTEDNOTFOCUS;
 				if (drawDrophilited) iStateId = OS.LISS_SELECTED;
