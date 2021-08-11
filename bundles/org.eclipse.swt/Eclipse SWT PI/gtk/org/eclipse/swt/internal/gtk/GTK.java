@@ -1502,68 +1502,6 @@ public class GTK extends OS {
 	/** @param spin_button cast=(GtkSpinButton*) */
 	public static final native void gtk_spin_button_update(long spin_button);
 
-	/**
-	 * @method flags=ignore_deprecations
-	 * @param handle cast=(GtkStatusIcon*)
-	 * @param screen cast=(GdkScreen**)
-	 * @param area cast=(GdkRectangle*)
-	 * @param orientation cast=(GtkOrientation*)
-	 */
-	/* [GTK3 only, if-def'd in os.h] */
-	public static final native boolean gtk_status_icon_get_geometry(long handle, long screen, GdkRectangle area, long orientation);
-
-	/**
-	 * @method flags=dynamic
-	 * @param context cast=(GtkStyleContext *)
-	 * @param state cast=(GtkStateFlags)
-	 * @param color cast=(GdkRGBA *)
-	 */
-	/* [GTK3 only] */
-	public static final native void gtk_style_context_get_color(long context, int state, GdkRGBA color);
-	/**
-	 * @method flags=dynamic
-	 * @param context cast=(GtkStyleContext *)
-	 * @param color cast=(GdkRGBA *)
-	 */
-	/* [GTK4 only] */
-	public static final native void gtk_style_context_get_color(long context, GdkRGBA color);
-	/**
-	 * @method flags=dynamic
-	 * @param context cast=(GtkStyleContext *)
-	 * @param state cast=(GtkStateFlags)
-	 * @param padding cast=(GtkBorder *),flags=no_in
-	 */
-	/* [GTK3 only] */
-	public static final native void gtk_style_context_get_padding(long context, int state, GtkBorder padding);
-	/**
-	 * @method flags=dynamic
-	 * @param context cast=(GtkStyleContext *)
-	 * @param padding cast=(GtkBorder *),flags=no_in
-	 */
-	/* [GTK4 only] */
-	public static final native void gtk_style_context_get_padding(long context, GtkBorder padding);
-	/**
-	 * @param context cast=(GtkStyleContext *)
-	 * @param margin cast=(GtkBorder *),flags=no_in
-	 */
-	/* [GTK4 only, if-def'd in os.h] */
-	public static final native void gtk_style_context_get_margin(long context, GtkBorder margin);
-	/**
-	 * @method flags=dynamic
-	 * @param context cast=(GtkStyleContext *)
-	 * @param state cast=(GtkStateFlags)
-	 * @param padding cast=(GtkBorder *),flags=no_in
-	 */
-	/* [GTK3 only] */
-	public static final native void gtk_style_context_get_border(long context, int state, GtkBorder padding);
-	/**
-	 * @method flags=dynamic
-	 * @param context cast=(GtkStyleContext *)
-	 * @param padding cast=(GtkBorder *),flags=no_in
-	 */
-	/* [GTK4 only] */
-	public static final native void gtk_style_context_get_border(long context, GtkBorder padding);
-
 	/* GtkTextBuffer */
 	/**
 	 * @method flags=dynamic
@@ -1978,25 +1916,6 @@ public class GTK extends OS {
 	 * @param width cast=(gint *)
 	 */
 	public static final native boolean gtk_tree_view_column_cell_get_position(long tree_column, long cell_renderer, int[] start_pos, int[] width);
-	/**
-	 * @param tree_column cast=(GtkTreeViewColumn *)
-	 * @param cell_area cast=(GdkRectangle *),flags=no_in
-	 * @param x_offset cast=(gint *)
-	 * @param y_offset cast=(gint *)
-	 * @param width cast=(gint *)
-	 * @param height cast=(gint *)
-	 */
-	/* [GTK3 only, if-def'd in os.h] */
-	public static final native void gtk_tree_view_column_cell_get_size(long tree_column, GdkRectangle cell_area, int[] x_offset, int[] y_offset, int[] width, int[] height);
-	/**
-	 * @param tree_column cast=(GtkTreeViewColumn *)
-	 * @param x_offset cast=(int *)
-	 * @param y_offset cast=(int *)
-	 * @param width cast=(int *)
-	 * @param height cast=(int *)
-	 */
-	/* [GTK4 only, if-def'd in os.h] */
-	public static final native void gtk_tree_view_column_cell_get_size(long tree_column, int[] x_offset, int[] y_offset, int[] width, int[] height);
 	/**
 	 * @param tree_column cast=(GtkTreeViewColumn *)
 	 * @param tree_model cast=(GtkTreeModel *)
@@ -2476,39 +2395,6 @@ public class GTK extends OS {
 	 * @param group cast=(GActionGroup *)
 	 */
 	public static final native void gtk_widget_insert_action_group(long widget, byte[] name, long group);
-
-	/* GtkWidget [GTK3 only] */
-	/**
-	 * @method flags=dynamic
-	 * @param widget cast=(GtkWidget *)
-	 */
-	public static final native void gtk_widget_set_clip(long widget, GtkAllocation allocation);
-	/**
-	 * @method flags=dynamic
-	 * @param widget cast=(GtkWidget *)
-	 */
-	public static final native void gtk_widget_get_clip(long widget, GtkAllocation allocation);
-	/**
-	 * @method flags=dynamic
-	 * @param widget cast=(GtkWidget *)
-	 * @param allocation cast=(GtkAllocation *),flags=no_out
-	 */
-	public static final native void gtk_widget_set_allocation(long widget, GtkAllocation allocation);
-	/**
-	 * @method flags=dynamic
-	 * @param widget cast=(GtkWidget *)
-	 * @param allocation cast=(GtkAllocation *),flags=no_out
-	 */
-	public static final native void gtk_widget_size_allocate(long widget, GtkAllocation allocation);
-
-	/* GtkWidget [GTK4 only] */
-	/**
-	 * @method flags=dynamic
-	 * @param widget cast=(GtkWidget *)
-	 * @param allocation cast=(GtkAllocation *),flags=no_out
-	 */
-	public static final native void gtk_widget_size_allocate(long widget, GtkAllocation allocation, int baseline);
-
 
 	/* GtkWindow */
 	/** @param window cast=(GtkWindow *) */

@@ -974,6 +974,62 @@ JNIEXPORT void JNICALL GTK4_NATIVE(gtk_1style_1context_1add_1provider_1for_1disp
 }
 #endif
 
+#ifndef NO_gtk_1style_1context_1get_1border
+JNIEXPORT void JNICALL GTK4_NATIVE(gtk_1style_1context_1get_1border)
+	(JNIEnv *env, jclass that, jlong arg0, jobject arg1)
+{
+	GtkBorder _arg1, *lparg1=NULL;
+	GTK4_NATIVE_ENTER(env, that, gtk_1style_1context_1get_1border_FUNC);
+	if (arg1) if ((lparg1 = &_arg1) == NULL) goto fail;
+	gtk_style_context_get_border((GtkStyleContext *)arg0, (GtkBorder *)lparg1);
+fail:
+	if (arg1 && lparg1) setGtkBorderFields(env, arg1, lparg1);
+	GTK4_NATIVE_EXIT(env, that, gtk_1style_1context_1get_1border_FUNC);
+}
+#endif
+
+#ifndef NO_gtk_1style_1context_1get_1color
+JNIEXPORT void JNICALL GTK4_NATIVE(gtk_1style_1context_1get_1color)
+	(JNIEnv *env, jclass that, jlong arg0, jobject arg1)
+{
+	GdkRGBA _arg1, *lparg1=NULL;
+	GTK4_NATIVE_ENTER(env, that, gtk_1style_1context_1get_1color_FUNC);
+	if (arg1) if ((lparg1 = getGdkRGBAFields(env, arg1, &_arg1)) == NULL) goto fail;
+	gtk_style_context_get_color((GtkStyleContext *)arg0, (GdkRGBA *)lparg1);
+fail:
+	if (arg1 && lparg1) setGdkRGBAFields(env, arg1, lparg1);
+	GTK4_NATIVE_EXIT(env, that, gtk_1style_1context_1get_1color_FUNC);
+}
+#endif
+
+#ifndef NO_gtk_1style_1context_1get_1margin
+JNIEXPORT void JNICALL GTK4_NATIVE(gtk_1style_1context_1get_1margin)
+	(JNIEnv *env, jclass that, jlong arg0, jobject arg1)
+{
+	GtkBorder _arg1, *lparg1=NULL;
+	GTK4_NATIVE_ENTER(env, that, gtk_1style_1context_1get_1margin_FUNC);
+	if (arg1) if ((lparg1 = &_arg1) == NULL) goto fail;
+	gtk_style_context_get_margin((GtkStyleContext *)arg0, (GtkBorder *)lparg1);
+fail:
+	if (arg1 && lparg1) setGtkBorderFields(env, arg1, lparg1);
+	GTK4_NATIVE_EXIT(env, that, gtk_1style_1context_1get_1margin_FUNC);
+}
+#endif
+
+#ifndef NO_gtk_1style_1context_1get_1padding
+JNIEXPORT void JNICALL GTK4_NATIVE(gtk_1style_1context_1get_1padding)
+	(JNIEnv *env, jclass that, jlong arg0, jobject arg1)
+{
+	GtkBorder _arg1, *lparg1=NULL;
+	GTK4_NATIVE_ENTER(env, that, gtk_1style_1context_1get_1padding_FUNC);
+	if (arg1) if ((lparg1 = &_arg1) == NULL) goto fail;
+	gtk_style_context_get_padding((GtkStyleContext *)arg0, (GtkBorder *)lparg1);
+fail:
+	if (arg1 && lparg1) setGtkBorderFields(env, arg1, lparg1);
+	GTK4_NATIVE_EXIT(env, that, gtk_1style_1context_1get_1padding_FUNC);
+}
+#endif
+
 #ifndef NO_gtk_1text_1get_1buffer
 JNIEXPORT jlong JNICALL GTK4_NATIVE(gtk_1text_1get_1buffer)
 	(JNIEnv *env, jclass that, jlong arg0)
@@ -1017,6 +1073,29 @@ JNIEXPORT void JNICALL GTK4_NATIVE(gtk_1text_1set_1visibility)
 	GTK4_NATIVE_ENTER(env, that, gtk_1text_1set_1visibility_FUNC);
 	gtk_text_set_visibility((GtkText *)arg0, arg1);
 	GTK4_NATIVE_EXIT(env, that, gtk_1text_1set_1visibility_FUNC);
+}
+#endif
+
+#ifndef NO_gtk_1tree_1view_1column_1cell_1get_1size
+JNIEXPORT void JNICALL GTK4_NATIVE(gtk_1tree_1view_1column_1cell_1get_1size)
+	(JNIEnv *env, jclass that, jlong arg0, jintArray arg1, jintArray arg2, jintArray arg3, jintArray arg4)
+{
+	jint *lparg1=NULL;
+	jint *lparg2=NULL;
+	jint *lparg3=NULL;
+	jint *lparg4=NULL;
+	GTK4_NATIVE_ENTER(env, that, gtk_1tree_1view_1column_1cell_1get_1size_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	if (arg2) if ((lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL)) == NULL) goto fail;
+	if (arg3) if ((lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL)) == NULL) goto fail;
+	if (arg4) if ((lparg4 = (*env)->GetIntArrayElements(env, arg4, NULL)) == NULL) goto fail;
+	gtk_tree_view_column_cell_get_size((GtkTreeViewColumn *)arg0, (int *)lparg1, (int *)lparg2, (int *)lparg3, (int *)lparg4);
+fail:
+	if (arg4 && lparg4) (*env)->ReleaseIntArrayElements(env, arg4, lparg4, 0);
+	if (arg3 && lparg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
+	if (arg2 && lparg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	if (arg1 && lparg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
+	GTK4_NATIVE_EXIT(env, that, gtk_1tree_1view_1column_1cell_1get_1size_FUNC);
 }
 #endif
 
@@ -1214,8 +1293,21 @@ JNIEXPORT void JNICALL GTK4_NATIVE(gtk_1widget_1set_1focusable)
 	(JNIEnv *env, jclass that, jlong arg0, jboolean arg1)
 {
 	GTK4_NATIVE_ENTER(env, that, gtk_1widget_1set_1focusable_FUNC);
-	gtk_widget_set_focusable((GtkWidget *)arg0, arg1);
+	gtk_widget_set_focusable((GtkWidget *)arg0, (gboolean)arg1);
 	GTK4_NATIVE_EXIT(env, that, gtk_1widget_1set_1focusable_FUNC);
+}
+#endif
+
+#ifndef NO_gtk_1widget_1size_1allocate
+JNIEXPORT void JNICALL GTK4_NATIVE(gtk_1widget_1size_1allocate)
+	(JNIEnv *env, jclass that, jlong arg0, jobject arg1, jint arg2)
+{
+	GtkAllocation _arg1, *lparg1=NULL;
+	GTK4_NATIVE_ENTER(env, that, gtk_1widget_1size_1allocate_FUNC);
+	if (arg1) if ((lparg1 = getGtkAllocationFields(env, arg1, &_arg1)) == NULL) goto fail;
+	gtk_widget_size_allocate((GtkWidget *)arg0, (GtkAllocation *)lparg1, arg2);
+fail:
+	GTK4_NATIVE_EXIT(env, that, gtk_1widget_1size_1allocate_FUNC);
 }
 #endif
 

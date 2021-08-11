@@ -408,6 +408,20 @@ public class GTK3 {
 	 * @param region cast=(cairo_region_t *)
 	 */
 	public static final native void gtk_widget_input_shape_combine_region(long widget, long region);
+	/** @param widget cast=(GtkWidget *)*/
+	public static final native void gtk_widget_set_clip(long widget, GtkAllocation allocation);
+	/** @param widget cast=(GtkWidget *)*/
+	public static final native void gtk_widget_get_clip(long widget, GtkAllocation allocation);
+	/**
+	 * @param widget cast=(GtkWidget *)
+	 * @param allocation cast=(GtkAllocation *),flags=no_out
+	 */
+	public static final native void gtk_widget_set_allocation(long widget, GtkAllocation allocation);
+	/**
+	 * @param widget cast=(GtkWidget *)
+	 * @param allocation cast=(GtkAllocation *),flags=no_out
+	 */
+	public static final native void gtk_widget_size_allocate(long widget, GtkAllocation allocation);
 
 	/* Drag and Drop API */
 	/**
@@ -581,6 +595,14 @@ public class GTK3 {
 	 * @param tip_text cast=(const gchar *)
 	 */
 	public static final native void gtk_status_icon_set_tooltip_text(long handle, byte[] tip_text);
+	/**
+	 * @method flags=ignore_deprecations
+	 * @param handle cast=(GtkStatusIcon*)
+	 * @param screen cast=(GdkScreen**)
+	 * @param area cast=(GdkRectangle*)
+	 * @param orientation cast=(GtkOrientation*)
+	 */
+	public static final native boolean gtk_status_icon_get_geometry(long handle, long screen, GdkRectangle area, long orientation);
 
 	/* GtkTargetList */
 	/**
@@ -663,6 +685,7 @@ public class GTK3 {
 	/**
 	 * @param menu cast=(GtkMenu *)
 	 * @param rect_window cast=(GdkWindow *)
+	 * @param rect cast=(GdkRectangle *)
 	 * @param rect_anchor cast=(GdkGravity)
 	 * @param menu_anchor cast=(GdkGravity)
 	 * @param trigger_event cast=(const GdkEvent *)
@@ -932,6 +955,24 @@ public class GTK3 {
 	 * @param terminator cast=(const gchar *),flags=sentinel
 	 */
 	public static final native void gtk_style_context_get(long context, int state, byte [] property, long [] value, long terminator);
+	/**
+	 * @param context cast=(GtkStyleContext *)
+	 * @param state cast=(GtkStateFlags)
+	 * @param padding cast=(GtkBorder *),flags=no_in
+	 */
+	public static final native void gtk_style_context_get_padding(long context, int state, GtkBorder padding);
+	/**
+	 * @param context cast=(GtkStyleContext *)
+	 * @param state cast=(GtkStateFlags)
+	 * @param color cast=(GdkRGBA *)
+	 */
+	public static final native void gtk_style_context_get_color(long context, int state, GdkRGBA color);
+	/**
+	 * @param context cast=(GtkStyleContext *)
+	 * @param state cast=(GtkStateFlags)
+	 * @param padding cast=(GtkBorder *),flags=no_in
+	 */
+	public static final native void gtk_style_context_get_border(long context, int state, GtkBorder padding);
 
 	/* GtkLabel */
 	/**
@@ -962,6 +1003,17 @@ public class GTK3 {
 	/* GtkTreeView */
 	/** @param tree_view cast=(GtkTreeView *) */
 	public static final native long gtk_tree_view_get_bin_window(long tree_view);
+
+	/* GtkTreeViewColumn */
+	/**
+	 * @param tree_column cast=(GtkTreeViewColumn *)
+	 * @param cell_area cast=(GdkRectangle *),flags=no_in
+	 * @param x_offset cast=(gint *)
+	 * @param y_offset cast=(gint *)
+	 * @param width cast=(gint *)
+	 * @param height cast=(gint *)
+	 */
+	public static final native void gtk_tree_view_column_cell_get_size(long tree_column, GdkRectangle cell_area, int[] x_offset, int[] y_offset, int[] width, int[] height);
 
 	/* GdkWindow */
 	/**

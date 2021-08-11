@@ -232,7 +232,7 @@ Point computeSizeInPixels (int wHint, int hHint, boolean changed) {
 				GTK.gtk_widget_get_preferred_size(icon, minimum, null);
 				long context = GTK.gtk_widget_get_style_context(icon);
 				GtkBorder margin = new GtkBorder ();
-				GTK.gtk_style_context_get_margin(context, margin);
+				GTK4.gtk_style_context_get_margin(context, margin);
 				trimWidth += minimum.width + margin.right;
 			} else {
 				int[] indicatorSize = new int[1];
@@ -1005,7 +1005,7 @@ int setBounds (int x, int y, int width, int height, boolean move, boolean resize
 		Point sizes = resizeCalculationsGTK3(boxHandle, boxWidth, boxHeight);
 		allocation.width = sizes.x;
 		allocation.height = sizes.y;
-		GTK.gtk_widget_size_allocate (boxHandle, allocation);
+		GTK3.gtk_widget_size_allocate (boxHandle, allocation);
 	}
 	return result;
 }

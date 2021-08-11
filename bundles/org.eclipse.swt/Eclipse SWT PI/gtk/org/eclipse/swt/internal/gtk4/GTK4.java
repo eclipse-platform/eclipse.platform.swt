@@ -13,6 +13,8 @@
  *******************************************************************************/
 package org.eclipse.swt.internal.gtk4;
 
+import org.eclipse.swt.internal.gtk.*;
+
 /**
  * This class contains native functions that are present in GTK4 only.
  */
@@ -436,11 +438,16 @@ public class GTK4 {
 	public static final native boolean gtk_widget_get_receives_default(long widget);
 	/**
 	 * @param widget cast=(GtkWidget *)
-	 * @param focusable cast(gboolean)
+	 * @param focusable cast=(gboolean)
 	 */
 	public static final native void gtk_widget_set_focusable(long widget, boolean focusable);
 	/** @param widget cast=(GtkWidget *) */
 	public static final native long gtk_widget_get_clipboard(long widget);
+	/**
+	 * @param widget cast=(GtkWidget *)
+	 * @param allocation cast=(GtkAllocation *),flags=no_out
+	 */
+	public static final native void gtk_widget_size_allocate(long widget, GtkAllocation allocation, int baseline);
 
 	/* GtkComboBox */
 	/** @param combo_box cast=(GtkComboBox *) */
@@ -491,8 +498,38 @@ public class GTK4 {
 	 * @param priority cast=(guint)
 	 */
 	public static final native void gtk_style_context_add_provider_for_display(long display, long provider, int priority);
+	/**
+	 * @param context cast=(GtkStyleContext *)
+	 * @param color cast=(GdkRGBA *)
+	 */
+	public static final native void gtk_style_context_get_color(long context, GdkRGBA color);
+	/**
+	 * @param context cast=(GtkStyleContext *)
+	 * @param padding cast=(GtkBorder *),flags=no_in
+	 */
+	public static final native void gtk_style_context_get_padding(long context, GtkBorder padding);
+	/**
+	 * @param context cast=(GtkStyleContext *)
+	 * @param margin cast=(GtkBorder *),flags=no_in
+	 */
+	public static final native void gtk_style_context_get_margin(long context, GtkBorder margin);
+	/**
+	 * @param context cast=(GtkStyleContext *)
+	 * @param padding cast=(GtkBorder *),flags=no_in
+	 */
+	public static final native void gtk_style_context_get_border(long context, GtkBorder padding);
 
 	/* GtkMenuButton */
 	/** @param menu_button cast=(GtkMenuButton *) */
 	public static final native void gtk_menu_button_set_use_underline(long menu_button, boolean use_underline);
+
+	/* GtkTreeViewColumn */
+	/**
+	 * @param tree_column cast=(GtkTreeViewColumn *)
+	 * @param x_offset cast=(int *)
+	 * @param y_offset cast=(int *)
+	 * @param width cast=(int *)
+	 * @param height cast=(int *)
+	 */
+	public static final native void gtk_tree_view_column_cell_get_size(long tree_column, int[] x_offset, int[] y_offset, int[] width, int[] height);
 }

@@ -585,7 +585,7 @@ int setBounds (int x, int y, int width, int height, boolean move, boolean resize
 		GTK.gtk_widget_get_allocation(labelHandle, allocation);
 		allocation.width = labelWidth;
 		allocation.height = labelHeight;
-		GTK.gtk_widget_size_allocate (labelHandle, allocation);
+		GTK3.gtk_widget_size_allocate (labelHandle, allocation);
 	}
 	return result;
 }

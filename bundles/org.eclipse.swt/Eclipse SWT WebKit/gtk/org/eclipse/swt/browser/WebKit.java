@@ -2520,7 +2520,7 @@ long webkit_load_changed (long web_view, int status, long user_data) {
 			if (firstLoad) {
 				GtkAllocation allocation = new GtkAllocation ();
 				GTK.gtk_widget_get_allocation(browser.handle, allocation);
-				GTK.gtk_widget_size_allocate(browser.handle, allocation);
+				GTK3.gtk_widget_size_allocate(browser.handle, allocation);
 				firstLoad = false;
 			}
 

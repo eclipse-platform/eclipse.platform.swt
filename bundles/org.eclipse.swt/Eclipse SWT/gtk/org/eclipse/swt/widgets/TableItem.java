@@ -19,6 +19,7 @@ import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.gtk.*;
 import org.eclipse.swt.internal.gtk3.*;
+import org.eclipse.swt.internal.gtk4.*;
 
 /**
  * Instances of this class represent a selectable user interface object
@@ -415,9 +416,9 @@ Rectangle getBoundsInPixels (int index) {
 	int [] columnWidth = new int [1], columnHeight = new int [1];
 	parent.ignoreSize = true;
 	if (GTK.GTK4) {
-		GTK.gtk_tree_view_column_cell_get_size(column, null, null, columnWidth, columnHeight);
+		GTK4.gtk_tree_view_column_cell_get_size(column, null, null, columnWidth, columnHeight);
 	} else {
-		GTK.gtk_tree_view_column_cell_get_size(column, null, null, null, columnWidth, columnHeight);
+		GTK3.gtk_tree_view_column_cell_get_size(column, null, null, null, columnWidth, columnHeight);
 	}
 	parent.ignoreSize = false;
 	rect.height = columnHeight [0];

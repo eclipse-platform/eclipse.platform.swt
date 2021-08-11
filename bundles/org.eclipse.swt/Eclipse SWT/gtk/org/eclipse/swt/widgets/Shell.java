@@ -1151,9 +1151,9 @@ void forceResize (int width, int height) {
 	}
 
 	if (GTK.GTK4) {
-		GTK.gtk_widget_size_allocate(vboxHandle, allocation, -1);
+		GTK4.gtk_widget_size_allocate(vboxHandle, allocation, -1);
 	} else {
-		GTK.gtk_widget_size_allocate(vboxHandle, allocation);
+		GTK3.gtk_widget_size_allocate(vboxHandle, allocation);
 	}
 
 	if ((style & SWT.MIRRORED) != 0) moveChildren(clientWidth);
@@ -2218,7 +2218,7 @@ void resizeBounds (int width, int height, boolean notify) {
 			GtkAllocation allocation = new GtkAllocation();
 			allocation.width = width;
 			allocation.height = height;
-			GTK.gtk_widget_size_allocate(shellHandle, allocation, -1);
+			GTK4.gtk_widget_size_allocate(shellHandle, allocation, -1);
 		}
 	} else {
 		if (redrawWindow != 0) {

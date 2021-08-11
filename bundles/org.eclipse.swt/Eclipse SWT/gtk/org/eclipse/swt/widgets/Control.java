@@ -639,7 +639,7 @@ public boolean print (GC gc) {
 	GTK.gtk_widget_get_allocation(topHandle, allocation);
 	// Prevent allocation warnings
 	GTK.gtk_widget_get_preferred_size(topHandle, null, null);
-	GTK.gtk_widget_size_allocate(topHandle, allocation);
+	GTK3.gtk_widget_size_allocate(topHandle, allocation);
 	GTK3.gtk_widget_draw(topHandle, gc.handle);
 	return true;
 }
@@ -883,9 +883,9 @@ void forceResize () {
 	GtkAllocation allocation = new GtkAllocation ();
 	GTK.gtk_widget_get_allocation(topHandle, allocation);
 	if (GTK.GTK4) {
-		GTK.gtk_widget_size_allocate (topHandle, allocation, -1);
+		GTK4.gtk_widget_size_allocate (topHandle, allocation, -1);
 	} else {
-		GTK.gtk_widget_size_allocate (topHandle, allocation);
+		GTK3.gtk_widget_size_allocate (topHandle, allocation);
 	}
 }
 
@@ -1154,9 +1154,9 @@ int setBounds (int x, int y, int width, int height, boolean move, boolean resize
 			GTK.gtk_widget_show(topHandle);
 			gtk_widget_get_preferred_size (topHandle, requisition);
 			if (GTK.GTK4) {
-				GTK.gtk_widget_size_allocate (topHandle, allocation, -1);
+				GTK4.gtk_widget_size_allocate (topHandle, allocation, -1);
 			} else {
-				GTK.gtk_widget_size_allocate (topHandle, allocation);
+				GTK3.gtk_widget_size_allocate (topHandle, allocation);
 			}
 			GTK.gtk_widget_hide(topHandle);
 			/* Bug 540002: Showing and hiding widget causes original focused control to loose focus,
@@ -1167,11 +1167,11 @@ int setBounds (int x, int y, int width, int height, boolean move, boolean resize
 			}
 		} else {
 			if (GTK.GTK4) {
-				GTK.gtk_widget_size_allocate (topHandle, allocation, -1);
+				GTK4.gtk_widget_size_allocate (topHandle, allocation, -1);
 			} else {
 				// Prevent GTK+ allocation warnings, preferred size should be retrieved before setting allocation size.
 				GTK.gtk_widget_get_preferred_size(topHandle, null, null);
-				GTK.gtk_widget_size_allocate (topHandle, allocation);
+				GTK3.gtk_widget_size_allocate (topHandle, allocation);
 			}
 		}
 	}
@@ -3424,17 +3424,17 @@ Point getThickness (long widget) {
 
 void gtk_style_context_get_padding(long context, int state, GtkBorder padding) {
 	if (GTK.GTK4) {
-		GTK.gtk_style_context_get_padding(context, padding);
+		GTK4.gtk_style_context_get_padding(context, padding);
 	} else {
-		GTK.gtk_style_context_get_padding(context, state, padding);
+		GTK3.gtk_style_context_get_padding(context, state, padding);
 	}
 }
 
 void gtk_style_context_get_border (long context, int state, GtkBorder padding) {
 	if (GTK.GTK4) {
-		GTK.gtk_style_context_get_border(context, padding);
+		GTK4.gtk_style_context_get_border(context, padding);
 	} else {
-		GTK.gtk_style_context_get_border(context, state, padding);
+		GTK3.gtk_style_context_get_border(context, state, padding);
 	}
 }
 
@@ -5600,7 +5600,7 @@ void setInitialBounds () {
 			}
 			// Prevent GTK+ allocation warnings, preferred size should be retrieved before setting allocation size.
 			GTK.gtk_widget_get_preferred_size(topHandle, null, null);
-			GTK.gtk_widget_size_allocate (topHandle, allocation);
+			GTK3.gtk_widget_size_allocate (topHandle, allocation);
 		}
 	} else {
 		resizeHandle (1, 1);
@@ -5876,9 +5876,9 @@ public boolean setParent (Composite parent) {
 	allocation.width = width;
 	allocation.height = height;
 	if (GTK.GTK4) {
-		GTK.gtk_widget_size_allocate (topHandle, allocation, -1);
+		GTK4.gtk_widget_size_allocate (topHandle, allocation, -1);
 	} else {
-		GTK.gtk_widget_size_allocate (topHandle, allocation);
+		GTK3.gtk_widget_size_allocate (topHandle, allocation);
 	}
 	this.parent = parent;
 	setZOrder (null, false, true);

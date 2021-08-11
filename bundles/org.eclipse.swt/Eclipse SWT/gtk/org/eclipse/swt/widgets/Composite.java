@@ -454,7 +454,7 @@ void adjustChildClipping (long widget) {
 	GtkAllocation clip = new GtkAllocation ();
 	GtkAllocation allocation = new GtkAllocation ();
 	GTK.gtk_widget_get_allocation(widget, allocation);
-	GTK.gtk_widget_get_clip(widget, clip);
+	GTK3.gtk_widget_get_clip(widget, clip);
 	/*
 	 * If the clip is negative, add the x coordinate to the width
 	 * and set the x coordinate to 0.
@@ -473,15 +473,15 @@ void adjustChildClipping (long widget) {
 			GTK.gtk_widget_get_preferred_size(widget, minimumSize, naturalSize);
 			// Allocate and queue a resize event
 			if (GTK.GTK4) {
-				GTK.gtk_widget_size_allocate(widget, allocation, -1);
+				GTK4.gtk_widget_size_allocate(widget, allocation, -1);
 			} else {
-				GTK.gtk_widget_size_allocate(widget, allocation);
+				GTK3.gtk_widget_size_allocate(widget, allocation);
 			}
 			GTK.gtk_widget_queue_resize(widget);
 		}
 	}
 	// Adjust the clip
-	GTK.gtk_widget_set_clip(widget, allocation);
+	GTK3.gtk_widget_set_clip(widget, allocation);
 }
 
 @Override
@@ -1401,9 +1401,9 @@ void moveChildren(int oldWidth) {
 		allocation.x = x;
 		allocation.y = y;
 		if (GTK.GTK4) {
-			GTK.gtk_widget_size_allocate (topHandle, allocation, -1);
+			GTK4.gtk_widget_size_allocate (topHandle, allocation, -1);
 		} else {
-			GTK.gtk_widget_size_allocate (topHandle, allocation);
+			GTK3.gtk_widget_size_allocate (topHandle, allocation);
 		}
 		Control control = child.findBackgroundControl ();
 		if (control != null && control.backgroundImage != null) {

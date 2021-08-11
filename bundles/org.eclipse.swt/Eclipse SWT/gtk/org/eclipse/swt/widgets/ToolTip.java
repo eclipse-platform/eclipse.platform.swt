@@ -371,7 +371,7 @@ Point getLocation () {
 	if (item != null) {
 		long itemHandle = item.handle;
 		GdkRectangle area = new GdkRectangle ();
-		GTK.gtk_status_icon_get_geometry (itemHandle, 0, area, 0);
+		GTK3.gtk_status_icon_get_geometry (itemHandle, 0, area, 0);
 		x = area.x + area.width / 2;
 		y = area.y + area.height / 2;
 	}

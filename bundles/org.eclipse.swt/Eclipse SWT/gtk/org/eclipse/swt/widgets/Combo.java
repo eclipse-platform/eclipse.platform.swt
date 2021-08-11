@@ -1627,7 +1627,7 @@ void adjustChildClipping (long widget) {
 		GTK.gtk_widget_get_allocation(cellHandle, cellViewAllocation);
 
 		cellViewAllocation.width = (iconAllocation.x - iconAllocation.width);
-		GTK.gtk_widget_set_clip(widget, cellViewAllocation);
+		GTK3.gtk_widget_set_clip(widget, cellViewAllocation);
 		return;
 	} else {
 		super.adjustChildClipping(widget);
@@ -2445,11 +2445,11 @@ void setInitialBounds () {
 		allocation.y = 0;
 		GTK.gtk_widget_set_visible(topHandle, true);
 		if (GTK.GTK4) {
-			GTK.gtk_widget_size_allocate (topHandle, allocation, -1);
+			GTK4.gtk_widget_size_allocate (topHandle, allocation, -1);
 		} else {
 			// Prevent GTK+ allocation warnings, preferred size should be retrieved before setting allocation size.
 			GTK.gtk_widget_get_preferred_size(topHandle, null, null);
-			GTK.gtk_widget_set_allocation(topHandle, allocation);
+			GTK3.gtk_widget_set_allocation(topHandle, allocation);
 		}
 	} else {
 		super.setInitialBounds();

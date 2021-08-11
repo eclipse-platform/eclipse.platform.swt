@@ -1038,7 +1038,7 @@ void resizeHandle(int width, int height) {
 	GTK.gtk_widget_get_allocation (handle, allocation);
 	allocation.width = width;
 	allocation.height = height;
-	GTK.gtk_widget_size_allocate (handle, allocation);
+	GTK3.gtk_widget_size_allocate (handle, allocation);
 }
 
 void selectRadio () {

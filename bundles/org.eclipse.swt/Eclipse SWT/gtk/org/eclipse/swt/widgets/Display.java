@@ -3385,11 +3385,11 @@ GdkRGBA styleContextGetColor(long context, int flag) {
 	*/
 	GdkRGBA rgba = new GdkRGBA ();
 	if (GTK.GTK4) {
-		GTK.gtk_style_context_get_color(context, rgba);
+		GTK4.gtk_style_context_get_color(context, rgba);
 	} else {
 		GTK.gtk_style_context_save(context);
 		GTK.gtk_style_context_set_state(context, flag);
-		GTK.gtk_style_context_get_color (context, flag, rgba);
+		GTK3.gtk_style_context_get_color (context, flag, rgba);
 		GTK.gtk_style_context_restore(context);
 	}
 	return rgba;
