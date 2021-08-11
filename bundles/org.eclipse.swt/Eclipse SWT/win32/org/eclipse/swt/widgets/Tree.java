@@ -1901,6 +1901,7 @@ void createHeaderToolTips () {
 		OS.GetModuleHandle (null),
 		null);
 	if (headerToolTipHandle == 0) error (SWT.ERROR_NO_HANDLES);
+	maybeEnableDarkSystemTheme(headerToolTipHandle);
 	/*
 	* Feature in Windows.  Despite the fact that the
 	* tool tip text contains \r\n, the tooltip will
@@ -2186,6 +2187,7 @@ void createItemToolTips () {
 		OS.GetModuleHandle (null),
 		null);
 	if (itemToolTipHandle == 0) error (SWT.ERROR_NO_HANDLES);
+	maybeEnableDarkSystemTheme(itemToolTipHandle);
 	OS.SendMessage (itemToolTipHandle, OS.TTM_SETDELAYTIME, OS.TTDT_INITIAL, 0);
 	/*
 	* Feature in Windows.  Despite the fact that the
@@ -2273,6 +2275,7 @@ void createParent () {
 	/* Old code, not sure if needed */
 	OS.SetWindowLongPtr (hwndHeader, OS.GWLP_ID, hwndHeader);
 
+	maybeEnableDarkSystemTheme(hwndHeader);
 	/* Copy Tree's font to header */
 	long hFont = OS.SendMessage (handle, OS.WM_GETFONT, 0, 0);
 	if (hFont != 0) OS.SendMessage (hwndHeader, OS.WM_SETFONT, hFont, 0);

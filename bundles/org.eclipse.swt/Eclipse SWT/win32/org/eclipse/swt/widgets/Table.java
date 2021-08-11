@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2020 IBM Corporation and others.
+ * Copyright (c) 2000, 2021 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -84,7 +84,7 @@ public class Table extends Composite {
 	TableColumn sortColumn;
 	RECT focusRect;
 	boolean [] columnVisible;
-	long headerToolTipHandle, hwndHeader;
+	long headerToolTipHandle, hwndHeader, itemToolTipHandle;
 	boolean ignoreCustomDraw, ignoreDrawForeground, ignoreDrawBackground, ignoreDrawFocus, ignoreDrawSelection, ignoreDrawHot;
 	boolean customDraw, dragStarted, explorerTheme, firstColumnImage, fixScrollWidth, tipRequested, wasSelected, wasResized, painted;
 	boolean ignoreActivate, ignoreSelect, ignoreShrink, ignoreResize, ignoreColumnMove, ignoreColumnResize, fullRowSelect, settingItemHeight;
@@ -1503,6 +1503,7 @@ void createHandle () {
 
 	/* Get the header window handle */
 	hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
+	maybeEnableDarkSystemTheme(hwndHeader);
 
 	/* Set the checkbox image list */
 	if ((style & SWT.CHECK) != 0) {
@@ -1589,6 +1590,7 @@ void createHeaderToolTips () {
 		OS.GetModuleHandle (null),
 		null);
 	if (headerToolTipHandle == 0) error (SWT.ERROR_NO_HANDLES);
+	maybeEnableDarkSystemTheme(headerToolTipHandle);
 	/*
 	* Feature in Windows.  Despite the fact that the
 	* tool tip text contains \r\n, the tooltip will
@@ -6500,6 +6502,10 @@ LRESULT wmMeasureChild (long wParam, long lParam) {
 LRESULT wmNotify (NMHDR hdr, long wParam, long lParam) {
 	long hwndToolTip = OS.SendMessage (handle, OS.LVM_GETTOOLTIPS, 0, 0);
 	if (hdr.hwndFrom == hwndToolTip) {
+		if (hdr.hwndFrom != itemToolTipHandle) {
+			maybeEnableDarkSystemTheme(hdr.hwndFrom);
+			itemToolTipHandle = hdr.hwndFrom;
+		}
 		LRESULT result = wmNotifyToolTip (hdr, wParam, lParam);
 		if (result != null) return result;
 	}

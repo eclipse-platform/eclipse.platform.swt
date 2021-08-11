@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2016 IBM Corporation and others.
+ * Copyright (c) 2000, 2021 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -1907,6 +1907,7 @@ void setToolTipText (long hwnd, String text) {
 	lpti.hwnd = handle;
 	lpti.uId = hwnd;
 	long hwndToolTip = toolTipHandle ();
+	maybeEnableDarkSystemTheme(hwndToolTip);
 	if (text == null) {
 		OS.SendMessage (hwndToolTip, OS.TTM_DELTOOL, 0, lpti);
 	} else if (OS.SendMessage (hwndToolTip, OS.TTM_GETTOOLINFO, 0, lpti) == 0) {
