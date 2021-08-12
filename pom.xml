@@ -25,7 +25,7 @@
   <packaging>pom</packaging>
 
   <properties>
-    <tycho.scmUrl>scm:git:git://git.eclipse.org/gitroot/platform/eclipse.platform.swt.git</tycho.scmUrl>
+    <tycho.scmUrl>scm:git:https://git.eclipse.org/r/platform/eclipse.platform.swt.git</tycho.scmUrl>
     <os-jvm-flags></os-jvm-flags>
   </properties>
 
