@@ -706,7 +706,7 @@ protected void init () {
 			surface = Cairo.cairo_image_surface_create(Cairo.CAIRO_FORMAT_RGB24, 10, 10);
 		} else {
 			gdkResource = GDK.gdk_get_default_root_window();
-			surface = GDK.gdk_window_create_similar_image_surface(gdkResource, Cairo.CAIRO_FORMAT_RGB24, 10, 10, 0);
+			surface = GDK.gdk_window_create_similar_surface(gdkResource, Cairo.CAIRO_CONTENT_COLOR, 10, 10);
 		}
 		Cairo.cairo_surface_get_device_scale(surface, sx, sy);
 		DPIUtil.setUseCairoAutoScale((sx[0]*100) == DPIUtil.getDeviceZoom() || OS.isGNOME);

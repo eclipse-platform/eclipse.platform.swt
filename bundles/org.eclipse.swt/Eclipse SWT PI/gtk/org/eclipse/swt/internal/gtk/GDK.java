@@ -1079,10 +1079,10 @@ public class GDK extends OS {
 	public static final native int gdk_visual_get_depth(long visual);
 	/**
 	 * @param window cast=(GdkWindow *)
-	 * @param format cast=(cairo_format_t)
+	 * @param content cast=(cairo_content_t)
 	 */
 	/* [GTK3 only, if-def'd in os.h] */
-	public static final native long gdk_window_create_similar_image_surface(long window, int format, int width, int height, int scale);
+	public static final native long gdk_window_create_similar_surface(long window, int content, int width, int height);
 	/**
 	 * @param window cast=(GdkSurface *)
 	 * @param content cast=(cairo_content_t)
