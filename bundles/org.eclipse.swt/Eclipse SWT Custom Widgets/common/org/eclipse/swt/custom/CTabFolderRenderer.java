@@ -60,6 +60,8 @@ public class CTabFolderRenderer {
 
 	private Font chevronFont = null;
 
+	private boolean antiAlias = true;
+
 	//TOP_LEFT_CORNER_HILITE is laid out in reverse (ie. top to bottom)
 	//so can fade in same direction as right swoop curve
 	static final int[] TOP_LEFT_CORNER_HILITE = new int[] {5,2, 4,2, 3,3, 2,4, 2,5, 1,6};
@@ -870,6 +872,13 @@ public class CTabFolderRenderer {
 		int y = closeRect.y + Math.max(1, (closeRect.height-lineLength)/2);
 		y += parent.onBottom ? -1 : 1;
 		int originalLineWidth = gc.getLineWidth();
+		if (antiAlias)  {
+			try  {
+				gc.setAntialias(SWT.ON);
+			} catch (SWTException e)  {
+				antiAlias = false;
+			}
+		}
 		switch (closeImageState & (SWT.HOT | SWT.SELECTED | SWT.BACKGROUND)) {
 			case SWT.NONE: {
 				drawCloseLines(gc, x, y , lineLength, false);
