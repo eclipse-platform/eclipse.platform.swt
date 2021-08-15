@@ -1144,7 +1144,7 @@ public void setGrayed (boolean grayed) {
  */
 public void setImage(Image image) {
 	checkWidget();
-	if ((style & SWT.SEPARATOR) != 0) return;
+	if ((style & SWT.ARROW) != 0) return;
 	disposeDefaultDisabledImage();
 	if (!enabled && defaultDisableImage != image && defaultDisableImage != null) {
 		return;
