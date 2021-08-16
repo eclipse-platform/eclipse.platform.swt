@@ -49,6 +49,7 @@ import org.eclipse.swt.internal.win32.*;
  */
 public class ToolBar extends Composite {
 	int lastFocusId, lastArrowId, lastHotId, _width, _height, _count = -1, _wHint = -1, _hHint = -1;
+	long currentToolItemToolTip;
 	ToolItem [] items;
 	ToolItem [] tabItemList;
 	boolean ignoreResize, ignoreMouse;
@@ -1159,6 +1160,10 @@ String toolTipText (NMTTDISPINFO hdr) {
 	int index = (int)hdr.idFrom;
 	long hwndToolTip = OS.SendMessage (handle, OS.TB_GETTOOLTIPS, 0, 0);
 	if (hwndToolTip == hdr.hwndFrom) {
+		if (currentToolItemToolTip != hwndToolTip) {
+			maybeEnableDarkSystemTheme(hdr.hwndFrom);
+			currentToolItemToolTip = hdr.hwndFrom;
+		}
 		/*
 		* Bug in Windows. For some reason the reading order
 		* in NMTTDISPINFO is sometimes set incorrectly.  The

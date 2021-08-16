@@ -1560,9 +1560,9 @@ void createHandle () {
 	if ((style & SWT.RIGHT_TO_LEFT) != 0) {
 		int bits2 = OS.GetWindowLong (hwndHeader, OS.GWL_EXSTYLE);
 		OS.SetWindowLong (hwndHeader, OS.GWL_EXSTYLE, bits2 | OS.WS_EX_LAYOUTRTL);
-		long hwndTooltop = OS.SendMessage (handle, OS.LVM_GETTOOLTIPS, 0, 0);
-		int bits3 = OS.GetWindowLong (hwndTooltop, OS.GWL_EXSTYLE);
-		OS.SetWindowLong (hwndTooltop, OS.GWL_EXSTYLE, bits3 | OS.WS_EX_LAYOUTRTL);
+		long hwndTooltip = OS.SendMessage (handle, OS.LVM_GETTOOLTIPS, 0, 0);
+		int bits3 = OS.GetWindowLong (hwndTooltip, OS.GWL_EXSTYLE);
+		OS.SetWindowLong (hwndTooltip, OS.GWL_EXSTYLE, bits3 | OS.WS_EX_LAYOUTRTL);
 	}
 }
 
