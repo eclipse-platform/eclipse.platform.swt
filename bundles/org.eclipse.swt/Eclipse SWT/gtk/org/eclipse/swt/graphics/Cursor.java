@@ -236,7 +236,7 @@ public Cursor(Device device, ImageData source, ImageData mask, int hotspotX, int
 		maskData[i] = (byte) ~maskData[i];
 	}
 	maskData = ImageData.convertPad(maskData, mask.width, mask.height, mask.depth, mask.scanlinePad, 1);
-	handle = createCursor(maskData, sourceData, source.width, source.height, hotspotX, hotspotY, true);
+	handle = createCursor(sourceData, maskData, source.width, source.height, hotspotX, hotspotY, true);
 	if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	init();
 }
