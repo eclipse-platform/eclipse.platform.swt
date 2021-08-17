@@ -1213,6 +1213,7 @@ private static final class MenuItemToolTip extends ToolTip {
 
 	public MenuItemToolTip(Shell parent) {
 		super(parent, 0);
+		maybeEnableDarkSystemTheme(hwndToolTip ());
 	}
 
 	@Override

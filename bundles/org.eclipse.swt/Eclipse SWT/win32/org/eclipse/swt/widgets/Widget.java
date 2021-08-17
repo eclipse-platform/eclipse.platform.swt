@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2019 IBM Corporation and others.
+ * Copyright (c) 2000, 2021 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -295,6 +295,13 @@ void checkParent (Widget parent) {
 	if (parent.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
 	parent.checkWidget ();
 	parent.checkOpened ();
+}
+
+void maybeEnableDarkSystemTheme(long handle) {
+	if (display.useDarkModeExplorerTheme) {
+		OS.AllowDarkModeForWindow(handle, true);
+		OS.SetWindowTheme(handle, Display.EXPLORER, null);
+	}
 }
 
 /**

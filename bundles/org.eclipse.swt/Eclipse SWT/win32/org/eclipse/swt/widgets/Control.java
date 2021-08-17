@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2020 IBM Corporation and others.
+ * Copyright (c) 2000, 2021 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -971,13 +971,6 @@ void enableDrag (boolean enabled) {
 
 void maybeEnableDarkSystemTheme() {
 	maybeEnableDarkSystemTheme(handle);
-}
-
-void maybeEnableDarkSystemTheme(long handle) {
-	if (display.useDarkModeExplorerTheme) {
-		OS.AllowDarkModeForWindow(handle, true);
-		OS.SetWindowTheme(handle, Display.EXPLORER, null);
-	}
 }
 
 void enableWidget (boolean enabled) {
