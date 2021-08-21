@@ -14,6 +14,8 @@
 package org.eclipse.swt.program;
 
 import java.util.*;
+import java.util.concurrent.*;
+import java.util.stream.*;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
@@ -218,20 +220,28 @@ static Program getProgram (String key, String extension) {
  * @return an array of programs
  */
 public static Program [] getPrograms () {
-	LinkedHashSet<Program> programs = new LinkedHashSet<>(1024);
 	char [] lpName = new char [1024];
 	int [] lpcName = new int [] {lpName.length};
 	int dwIndex = 0;
+	LinkedHashSet<String> paths = new LinkedHashSet<>();
+	// enumerating all class names takes ~ 1/5 of the time:
 	while (OS.RegEnumKeyEx (OS.HKEY_CLASSES_ROOT, dwIndex, lpName, lpcName, null, null, null, 0) != OS.ERROR_NO_MORE_ITEMS) {
 		String path = new String (lpName, 0, lpcName [0]);
 		lpcName [0] = lpName.length;
-		Program program = getProgram (path, null);
-		if (program != null) {
-			programs.add(program);
-		}
+		paths.add(path);
 		dwIndex++;
 	}
-	return programs.toArray(new Program[programs.size()]);
+	//map paths to programs in parallel which takes now ~ 4/5 of time:
+	ConcurrentHashMap<String, Program> programs = new ConcurrentHashMap<>(paths.size());
+	paths.stream().parallel().forEach(path -> {
+		Program program = getProgram(path, null); // getProgram takes most time
+		if (program != null) {
+			programs.put(path, program);
+		}
+	});
+	// restore sort order and make distinct in terms of Program::equals:
+	LinkedHashSet<Program> sortedPrograms = paths.stream().map(name->programs.get(name)).filter(p->p!=null).collect(Collectors.toCollection(LinkedHashSet::new));
+	return sortedPrograms.toArray(new Program[sortedPrograms.size()]);
 }
 
 /**
