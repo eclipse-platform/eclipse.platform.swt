@@ -25,7 +25,6 @@ import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.gtk.*;
 import org.eclipse.swt.internal.gtk3.*;
 import org.eclipse.swt.internal.gtk4.*;
-import org.eclipse.swt.widgets.*;
 
 /**
  * Instances of this class represent programs and
@@ -39,7 +38,6 @@ public final class Program {
 	String name = ""; //$NON-NLS-1$
 	String command;
 	String iconPath;
-	Display display;
 
 	/* GIO specific
 	 * true if command expects a URI
@@ -114,31 +112,12 @@ static String[] parseCommand(String cmd) {
  *	</ul>
  */
 public static Program findProgram(String extension) {
-	return findProgram(Display.getCurrent(), extension);
-}
-
-/*
- *  API: When support for multiple displays is added, this method will
- *       become public and the original method above can be deprecated.
- */
-static Program findProgram(Display display, String extension) {
 	if (extension == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (extension.length() == 0) return null;
 	if (extension.charAt(0) != '.') extension = "." + extension;
 	String mimeType = gio_getMimeType(extension);
 	if (mimeType == null) return null;
-	return gio_getProgram(display, mimeType);
-}
-
-/**
- * Answers all available programs in the operating system.  Note
- * that a <code>Display</code> must already exist to guarantee
- * that this method returns an appropriate result.
- *
- * @return an array of programs
- */
-public static Program[] getPrograms() {
-	return getPrograms(Display.getCurrent());
+	return gio_getProgram(mimeType);
 }
 
 /**
@@ -162,7 +141,7 @@ public ImageData getImageData() {
 			 * that gtk_icon_theme_lookup_by_gicon never returns NULL, it will
 			 * return a error icon if gicon can't be found.
 			 */
-			long icon_theme = GTK4.gtk_icon_theme_get_for_display(GDK.gdk_display_get_default());
+			long icon_theme = GTK4.gtk_icon_theme_get_for_display(GDK.gdk_display_get_default()); // default display needs to exist
 			long paintable = GTK4.gtk_icon_theme_lookup_by_gicon(icon_theme, gicon, 16, 1, GTK.GTK_TEXT_DIR_NONE, GTK.GTK_ICON_LOOKUP_FORCE_REGULAR);
 			long file = GTK4.gtk_icon_paintable_get_file(paintable);
 			long texture = GDK.gdk_texture_new_from_file(file, 0);
@@ -280,19 +259,18 @@ static String gio_getMimeType(String extension) {
 	return mimeType;
 }
 
-static Program gio_getProgram(Display display, String mimeType) {
+static Program gio_getProgram(String mimeType) {
 	Program program = null;
 	byte[] mimeTypeBuffer = Converter.wcsToMbcs (mimeType, true);
 	long application = OS.g_app_info_get_default_for_type (mimeTypeBuffer, false);
 	if (application != 0) {
-		program = gio_getProgram(display, application);
+		program = gio_getProgram(application);
 	}
 	return program;
 }
 
-static Program gio_getProgram (Display display, long application) {
+static Program gio_getProgram (long application) {
 	Program program = new Program();
-	program.display = display;
 	int length;
 	byte[] buffer;
 	long applicationName = OS.g_app_info_get_name (application);
@@ -330,11 +308,14 @@ static Program gio_getProgram (Display display, long application) {
 	return program.command != null ? program : null;
 }
 
-/*
- *  API: When support for multiple displays is added, this method will
- *       become public and the original method above can be deprecated.
+/**
+ * Answers all available programs in the operating system.  Note
+ * that a <code>Display</code> must already exist to guarantee
+ * that this method returns an appropriate result.
+ *
+ * @return an array of programs
  */
-static Program[] getPrograms(Display display) {
+public static Program[] getPrograms() {
 	long applicationList = OS.g_app_info_get_all ();
 	long list = applicationList;
 	Program program;
@@ -344,7 +325,7 @@ static Program[] getPrograms(Display display) {
 		if (application != 0) {
 			//TODO: Should the list be filtered or not?
 //			if (OS.g_app_info_should_show(application)) {
-				program = gio_getProgram(display, application);
+				program = gio_getProgram(application);
 				if (program != null) programs.add(program);
 //			}
 				OS.g_object_unref(application);
@@ -460,7 +441,7 @@ public static String[] getExtensions() {
  * </ul>
  */
 public static boolean launch(String fileName) {
-	return launch(Display.getCurrent(), fileName, null);
+	return launch(fileName, null);
 }
 
 /**
@@ -483,14 +464,6 @@ public static boolean launch(String fileName) {
  * @since 3.6
  */
 public static boolean launch (String fileName, String workingDir) {
-	return launch(Display.getCurrent(), fileName, workingDir);
-}
-
-/*
- *  API: When support for multiple displays is added, this method will
- *       become public and the original method above can be deprecated.
- */
-static boolean launch (Display display, String fileName, String workingDir) {
 	if (fileName == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 	if (workingDir != null && isExecutable(fileName)) {
 		try {
@@ -504,14 +477,14 @@ static boolean launch (Display display, String fileName, String workingDir) {
 	int index = fileName.lastIndexOf ('.');
 	if (index != -1) {
 		String extension = fileName.substring (index);
-		Program program = Program.findProgram (display, extension);
+		Program program = Program.findProgram (extension);
 		if (program != null && program.execute (fileName)) return true;
 	}
 	String lowercaseName = fileName.toLowerCase ();
 	if (lowercaseName.startsWith (PREFIX_HTTP) || lowercaseName.startsWith (PREFIX_HTTPS)) {
-		Program program = Program.findProgram (display, ".html"); //$NON-NLS-1$
+		Program program = Program.findProgram (".html"); //$NON-NLS-1$
 		if (program == null) {
-			program = Program.findProgram (display, ".htm"); //$NON-NLS-1$
+			program = Program.findProgram (".htm"); //$NON-NLS-1$
 		}
 		if (program != null && program.execute (fileName)) return true;
 	}
@@ -539,7 +512,7 @@ public boolean equals(Object other) {
 	if (this == other) return true;
 	if (!(other instanceof Program)) return false;
 	Program program = (Program)other;
-	return display == program.display && name.equals(program.name) && command.equals(program.command)
+	return name.equals(program.name) && command.equals(program.command)
 			&& gioExpectUri == program.gioExpectUri;
 }
 
