@@ -905,6 +905,8 @@ public class CTabFolderRenderer {
 		if (hot) {
 			gc.setLineWidth(gc.getLineWidth() + 2);
 			gc.setForeground(getFillColor());
+		} else {
+			gc.setForeground(parent.getDisplay().getSystemColor(BUTTON_BORDER));
 		}
 		gc.drawLine(x, y, x + lineLength, y + lineLength);
 		gc.drawLine(x, y + lineLength, x + lineLength, y);
