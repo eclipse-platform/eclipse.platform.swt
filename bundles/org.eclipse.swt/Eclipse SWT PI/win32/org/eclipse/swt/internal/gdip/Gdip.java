@@ -908,8 +908,6 @@ public static final native int LinearGradientBrush_ScaleTransform(long brush, fl
  * @param order cast=(MatrixOrder)
  */
 public static final native int LinearGradientBrush_TranslateTransform(long brush, float dx, float dy, int order);
-/** @method flags=new */
-public static final native long Matrix_new();
 /**
  * @method flags=new
  * @param m11 cast=(REAL)
@@ -948,8 +946,50 @@ public static final native int Matrix_Multiply(long matrix, long matrix1, int or
 /**
  * @method flags=cpp
  * @param matrix cast=(Matrix *)
+ * @param angle cast=(REAL)
+ * @param order cast=(MatrixOrder)
+ */
+public static final native int Matrix_Rotate(long matrix, float angle, int order);
+/**
+ * @method flags=cpp
+ * @param matrix cast=(Matrix *)
+ * @param scaleX cast=(REAL)
+ * @param scaleY cast=(REAL)
+ * @param order cast=(MatrixOrder)
+ */
+public static final native int Matrix_Scale(long matrix, float scaleX, float scaleY, int order);
+/**
+ * @method flags=cpp
+ * @param matrix cast=(Matrix *)
+ * @param shearX cast=(REAL)
+ * @param shearY cast=(REAL)
+ * @param order cast=(MatrixOrder)
+ */
+public static final native int Matrix_Shear(long matrix, float shearX, float shearY, int order);
+/**
+ * @method flags=cpp
+ * @param matrix cast=(Matrix *)
+ */
+public static final native int Matrix_TransformPoints(long matrix, PointF pts, int count);
+/**
+ * @method flags=cpp
+ * @param matrix cast=(Matrix *)
+ * @param pts cast=(PointF *)
+ */
+public static final native int Matrix_TransformPoints(long matrix, float[] pts, int count);
+/**
+ * @method flags=cpp
+ * @param matrix cast=(Matrix *)
  */
 public static final native int Matrix_TransformVectors(long matrix, PointF pts, int count);
+/**
+ * @method flags=cpp
+ * @param matrix cast=(Matrix *)
+ * @param offsetX cast=(REAL)
+ * @param offsetY cast=(REAL)
+ * @param order cast=(MatrixOrder)
+ */
+public static final native int Matrix_Translate(long matrix, float offsetX, float offsetY, int order);
 /**
  * @method flags=cpp
  * @param matrix cast=(Matrix *)

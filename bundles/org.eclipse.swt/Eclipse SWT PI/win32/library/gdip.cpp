@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2021 IBM Corporation and others.
+ * Copyright (c) 2000, 2019 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -1829,6 +1829,32 @@ JNIEXPORT jint JNICALL Gdip_NATIVE(Matrix_1Multiply)
 }
 #endif
 
+#ifndef NO_Matrix_1Rotate
+extern "C" JNIEXPORT jint JNICALL Gdip_NATIVE(Matrix_1Rotate)(JNIEnv *env, jclass that, jlong arg0, jfloat arg1, jint arg2);
+JNIEXPORT jint JNICALL Gdip_NATIVE(Matrix_1Rotate)
+	(JNIEnv *env, jclass that, jlong arg0, jfloat arg1, jint arg2)
+{
+	jint rc = 0;
+	Gdip_NATIVE_ENTER(env, that, Matrix_1Rotate_FUNC);
+	rc = (jint)((Matrix *)arg0)->Rotate((REAL)arg1, (MatrixOrder)arg2);
+	Gdip_NATIVE_EXIT(env, that, Matrix_1Rotate_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_Matrix_1Scale
+extern "C" JNIEXPORT jint JNICALL Gdip_NATIVE(Matrix_1Scale)(JNIEnv *env, jclass that, jlong arg0, jfloat arg1, jfloat arg2, jint arg3);
+JNIEXPORT jint JNICALL Gdip_NATIVE(Matrix_1Scale)
+	(JNIEnv *env, jclass that, jlong arg0, jfloat arg1, jfloat arg2, jint arg3)
+{
+	jint rc = 0;
+	Gdip_NATIVE_ENTER(env, that, Matrix_1Scale_FUNC);
+	rc = (jint)((Matrix *)arg0)->Scale((REAL)arg1, (REAL)arg2, (MatrixOrder)arg3);
+	Gdip_NATIVE_EXIT(env, that, Matrix_1Scale_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_Matrix_1SetElements
 extern "C" JNIEXPORT jint JNICALL Gdip_NATIVE(Matrix_1SetElements)(JNIEnv *env, jclass that, jlong arg0, jfloat arg1, jfloat arg2, jfloat arg3, jfloat arg4, jfloat arg5, jfloat arg6);
 JNIEXPORT jint JNICALL Gdip_NATIVE(Matrix_1SetElements)
@@ -1838,6 +1864,53 @@ JNIEXPORT jint JNICALL Gdip_NATIVE(Matrix_1SetElements)
 	Gdip_NATIVE_ENTER(env, that, Matrix_1SetElements_FUNC);
 	rc = (jint)((Matrix *)arg0)->SetElements((REAL)arg1, (REAL)arg2, (REAL)arg3, (REAL)arg4, (REAL)arg5, (REAL)arg6);
 	Gdip_NATIVE_EXIT(env, that, Matrix_1SetElements_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_Matrix_1Shear
+extern "C" JNIEXPORT jint JNICALL Gdip_NATIVE(Matrix_1Shear)(JNIEnv *env, jclass that, jlong arg0, jfloat arg1, jfloat arg2, jint arg3);
+JNIEXPORT jint JNICALL Gdip_NATIVE(Matrix_1Shear)
+	(JNIEnv *env, jclass that, jlong arg0, jfloat arg1, jfloat arg2, jint arg3)
+{
+	jint rc = 0;
+	Gdip_NATIVE_ENTER(env, that, Matrix_1Shear_FUNC);
+	rc = (jint)((Matrix *)arg0)->Shear((REAL)arg1, (REAL)arg2, (MatrixOrder)arg3);
+	Gdip_NATIVE_EXIT(env, that, Matrix_1Shear_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_Matrix_1TransformPoints__JLorg_eclipse_swt_internal_gdip_PointF_2I
+extern "C" JNIEXPORT jint JNICALL Gdip_NATIVE(Matrix_1TransformPoints__JLorg_eclipse_swt_internal_gdip_PointF_2I)(JNIEnv *env, jclass that, jlong arg0, jobject arg1, jint arg2);
+JNIEXPORT jint JNICALL Gdip_NATIVE(Matrix_1TransformPoints__JLorg_eclipse_swt_internal_gdip_PointF_2I)
+	(JNIEnv *env, jclass that, jlong arg0, jobject arg1, jint arg2)
+{
+	PointF _arg1, *lparg1=NULL;
+	jint rc = 0;
+	Gdip_NATIVE_ENTER(env, that, Matrix_1TransformPoints__JLorg_eclipse_swt_internal_gdip_PointF_2I_FUNC);
+	if (arg1) if ((lparg1 = getPointFFields(env, arg1, &_arg1)) == NULL) goto fail;
+	rc = (jint)((Matrix *)arg0)->TransformPoints(lparg1, arg2);
+fail:
+	if (arg1 && lparg1) setPointFFields(env, arg1, lparg1);
+	Gdip_NATIVE_EXIT(env, that, Matrix_1TransformPoints__JLorg_eclipse_swt_internal_gdip_PointF_2I_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_Matrix_1TransformPoints__J_3FI
+extern "C" JNIEXPORT jint JNICALL Gdip_NATIVE(Matrix_1TransformPoints__J_3FI)(JNIEnv *env, jclass that, jlong arg0, jfloatArray arg1, jint arg2);
+JNIEXPORT jint JNICALL Gdip_NATIVE(Matrix_1TransformPoints__J_3FI)
+	(JNIEnv *env, jclass that, jlong arg0, jfloatArray arg1, jint arg2)
+{
+	jfloat *lparg1=NULL;
+	jint rc = 0;
+	Gdip_NATIVE_ENTER(env, that, Matrix_1TransformPoints__J_3FI_FUNC);
+	if (arg1) if ((lparg1 = env->GetFloatArrayElements(arg1, NULL)) == NULL) goto fail;
+	rc = (jint)((Matrix *)arg0)->TransformPoints((PointF *)lparg1, arg2);
+fail:
+	if (arg1 && lparg1) env->ReleaseFloatArrayElements(arg1, lparg1, 0);
+	Gdip_NATIVE_EXIT(env, that, Matrix_1TransformPoints__J_3FI_FUNC);
 	return rc;
 }
 #endif
@@ -1859,6 +1932,19 @@ fail:
 }
 #endif
 
+#ifndef NO_Matrix_1Translate
+extern "C" JNIEXPORT jint JNICALL Gdip_NATIVE(Matrix_1Translate)(JNIEnv *env, jclass that, jlong arg0, jfloat arg1, jfloat arg2, jint arg3);
+JNIEXPORT jint JNICALL Gdip_NATIVE(Matrix_1Translate)
+	(JNIEnv *env, jclass that, jlong arg0, jfloat arg1, jfloat arg2, jint arg3)
+{
+	jint rc = 0;
+	Gdip_NATIVE_ENTER(env, that, Matrix_1Translate_FUNC);
+	rc = (jint)((Matrix *)arg0)->Translate((REAL)arg1, (REAL)arg2, (MatrixOrder)arg3);
+	Gdip_NATIVE_EXIT(env, that, Matrix_1Translate_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_Matrix_1delete
 extern "C" JNIEXPORT void JNICALL Gdip_NATIVE(Matrix_1delete)(JNIEnv *env, jclass that, jlong arg0);
 JNIEXPORT void JNICALL Gdip_NATIVE(Matrix_1delete)
@@ -1870,28 +1956,15 @@ JNIEXPORT void JNICALL Gdip_NATIVE(Matrix_1delete)
 }
 #endif
 
-#ifndef NO_Matrix_1new__
-extern "C" JNIEXPORT jlong JNICALL Gdip_NATIVE(Matrix_1new__)(JNIEnv *env, jclass that);
-JNIEXPORT jlong JNICALL Gdip_NATIVE(Matrix_1new__)
-	(JNIEnv *env, jclass that)
-{
-	jlong rc = 0;
-	Gdip_NATIVE_ENTER(env, that, Matrix_1new___FUNC);
-	rc = (jlong)new Matrix();
-	Gdip_NATIVE_EXIT(env, that, Matrix_1new___FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO_Matrix_1new__FFFFFF
-extern "C" JNIEXPORT jlong JNICALL Gdip_NATIVE(Matrix_1new__FFFFFF)(JNIEnv *env, jclass that, jfloat arg0, jfloat arg1, jfloat arg2, jfloat arg3, jfloat arg4, jfloat arg5);
-JNIEXPORT jlong JNICALL Gdip_NATIVE(Matrix_1new__FFFFFF)
+#ifndef NO_Matrix_1new
+extern "C" JNIEXPORT jlong JNICALL Gdip_NATIVE(Matrix_1new)(JNIEnv *env, jclass that, jfloat arg0, jfloat arg1, jfloat arg2, jfloat arg3, jfloat arg4, jfloat arg5);
+JNIEXPORT jlong JNICALL Gdip_NATIVE(Matrix_1new)
 	(JNIEnv *env, jclass that, jfloat arg0, jfloat arg1, jfloat arg2, jfloat arg3, jfloat arg4, jfloat arg5)
 {
 	jlong rc = 0;
-	Gdip_NATIVE_ENTER(env, that, Matrix_1new__FFFFFF_FUNC);
+	Gdip_NATIVE_ENTER(env, that, Matrix_1new_FUNC);
 	rc = (jlong)new Matrix((REAL)arg0, (REAL)arg1, (REAL)arg2, (REAL)arg3, (REAL)arg4, (REAL)arg5);
-	Gdip_NATIVE_EXIT(env, that, Matrix_1new__FFFFFF_FUNC);
+	Gdip_NATIVE_EXIT(env, that, Matrix_1new_FUNC);
 	return rc;
 }
 #endif

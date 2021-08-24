@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2021 IBM Corporation and others.
+ * Copyright (c) 2000, 2019 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -159,11 +159,16 @@ typedef enum {
 	Matrix_1Invert_FUNC,
 	Matrix_1IsIdentity_FUNC,
 	Matrix_1Multiply_FUNC,
+	Matrix_1Rotate_FUNC,
+	Matrix_1Scale_FUNC,
 	Matrix_1SetElements_FUNC,
+	Matrix_1Shear_FUNC,
+	Matrix_1TransformPoints__JLorg_eclipse_swt_internal_gdip_PointF_2I_FUNC,
+	Matrix_1TransformPoints__J_3FI_FUNC,
 	Matrix_1TransformVectors_FUNC,
+	Matrix_1Translate_FUNC,
 	Matrix_1delete_FUNC,
-	Matrix_1new___FUNC,
-	Matrix_1new__FFFFFF_FUNC,
+	Matrix_1new_FUNC,
 	MoveMemory__Lorg_eclipse_swt_internal_gdip_BitmapData_2J_FUNC,
 	MoveMemory__Lorg_eclipse_swt_internal_gdip_ColorPalette_2JI_FUNC,
 	PathGradientBrush_1SetCenterColor_FUNC,

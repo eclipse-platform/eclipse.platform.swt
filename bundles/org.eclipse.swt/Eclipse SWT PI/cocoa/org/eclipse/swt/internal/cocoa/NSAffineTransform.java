@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2021 IBM Corporation and others.
+ * Copyright (c) 2000, 2012 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -35,8 +35,8 @@ public void set() {
 	OS.objc_msgSend(this.id, OS.sel_set);
 }
 
-public NSAffineTransform init() {
-	long result = OS.objc_msgSend(this.id, OS.sel_init);
+public NSAffineTransform initWithTransform(NSAffineTransform transform) {
+	long result = OS.objc_msgSend(this.id, OS.sel_initWithTransform_, transform != null ? transform.id : 0);
 	return result == this.id ? this : (result != 0 ? new NSAffineTransform(result) : null);
 }
 

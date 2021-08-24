@@ -1282,6 +1282,7 @@ public static final long sel_initWithString_ = Selector.sel_initWithString_.valu
 public static final long sel_initWithString_attributes_ = Selector.sel_initWithString_attributes_.value;
 public static final long sel_initWithTitle_ = Selector.sel_initWithTitle_.value;
 public static final long sel_initWithTitle_action_keyEquivalent_ = Selector.sel_initWithTitle_action_keyEquivalent_.value;
+public static final long sel_initWithTransform_ = Selector.sel_initWithTransform_.value;
 public static final long sel_initWithType_location_ = Selector.sel_initWithType_location_.value;
 public static final long sel_insertColor_key_atIndex_ = Selector.sel_insertColor_key_atIndex_.value;
 public static final long sel_insertItem_atIndex_ = Selector.sel_insertItem_atIndex_.value;

@@ -3012,14 +3012,9 @@ public void getTransform (Transform transform) {
 	NSAffineTransform cmt = data.transform;
 	if (cmt != null) {
 		NSAffineTransformStruct struct = cmt.transformStruct();
-		transform.m11 = struct.m11;
-		transform.m12 = struct.m12;
-		transform.m21 = struct.m21;
-		transform.m22 = struct.m22;
-		transform.dx = struct.tX;
-		transform.dy = struct.tY;
+		transform.handle.setTransformStruct(struct);
 	} else {
-		transform.identity();
+		transform.setElements(1, 0, 0, 1, 0, 0);
 	}
 }
 
@@ -3167,6 +3162,11 @@ public boolean isClipped() {
 @Override
 public boolean isDisposed() {
 	return handle == null;
+}
+
+boolean isIdentity(float[] transform) {
+	return transform[0] == 1 && transform[1] == 0 && transform[2] == 0
+		&& transform[3] == 1 && transform[4] == 0 && transform[5] == 0;
 }
 
 /**
@@ -4033,19 +4033,11 @@ public void setTransform(Transform transform) {
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (transform != null && transform.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	if (transform != null) {
-		NSAffineTransformStruct struct = new NSAffineTransformStruct();
-		struct.m11 = transform.m11;
-		struct.m12 = transform.m12;
-		struct.m21 = transform.m21;
-		struct.m22 = transform.m22;
-		struct.tX = transform.dx;
-		struct.tY = transform.dy;
 		if (data.transform != null) data.transform.release();
 		if (data.inverseTransform != null) data.inverseTransform.release();
-		data.transform = ((NSAffineTransform)new NSAffineTransform().alloc()).init();
-		data.inverseTransform = ((NSAffineTransform)new NSAffineTransform().alloc()).init();
-		data.transform.setTransformStruct(struct);
-		data.inverseTransform.setTransformStruct(struct);
+		data.transform = ((NSAffineTransform)new NSAffineTransform().alloc()).initWithTransform(transform.handle);
+		data.inverseTransform = ((NSAffineTransform)new NSAffineTransform().alloc()).initWithTransform(transform.handle);
+		NSAffineTransformStruct struct = data.inverseTransform.transformStruct();
 		if ((struct.m11 * struct.m22 - struct.m12 * struct.m21) != 0) {
 			data.inverseTransform.invert();
 		}

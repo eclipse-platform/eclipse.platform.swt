@@ -172,7 +172,13 @@ public static final native int cairo_matrix_invert(double[] matrix);
  */
 public static final native void cairo_matrix_multiply(double[] result, double[] a, double[] b);
 /** @param matrix cast=(cairo_matrix_t *) */
+public static final native void cairo_matrix_rotate(double[] matrix, double radians);
+/** @param matrix cast=(cairo_matrix_t *) */
+public static final native void cairo_matrix_scale(double[] matrix, double sx, double sy);
+/** @param matrix cast=(cairo_matrix_t *) */
 public static final native void cairo_matrix_transform_point(double[] matrix, double[] x, double[] y);
+/** @param matrix cast=(cairo_matrix_t *) */
+public static final native void cairo_matrix_translate(double[] matrix, double tx, double ty);
 /** @param cr cast=(cairo_t *) */
 public static final native void cairo_move_to(long cr, double x, double y);
 /** @param cr cast=(cairo_t *) */

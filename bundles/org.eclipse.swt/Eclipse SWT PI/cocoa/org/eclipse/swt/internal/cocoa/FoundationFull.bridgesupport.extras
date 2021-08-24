@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF8"?>
 <signatures swt_gen="mixed">
 	<class name="NSAffineTransform" swt_gen="mixed">
-		<method selector="init" swt_gen="true">
+		<method selector="initWithTransform:" swt_gen="true">
+			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="invert" swt_gen="true">

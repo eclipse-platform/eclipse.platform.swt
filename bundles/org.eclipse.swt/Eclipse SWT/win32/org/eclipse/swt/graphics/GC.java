@@ -3795,18 +3795,13 @@ public void getTransform(Transform transform) {
 	if (transform.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	long gdipGraphics = data.gdipGraphics;
 	if (gdipGraphics != 0) {
+		Gdip.Graphics_GetTransform(gdipGraphics, transform.handle);
 		long identity = identity();
-		long matrix = Gdip.Matrix_new();
 		Gdip.Matrix_Invert(identity);
-		Gdip.Graphics_GetTransform(gdipGraphics, matrix);
-		Gdip.Matrix_Multiply(matrix, identity, Gdip.MatrixOrderAppend);
-		float[] elements = new float[6];
-		Gdip.Matrix_GetElements(matrix, elements);
-		Gdip.Matrix_delete(matrix);
+		Gdip.Matrix_Multiply(transform.handle, identity, Gdip.MatrixOrderAppend);
 		Gdip.Matrix_delete(identity);
-		transform.setElements(elements);
 	} else {
-		transform.identity();
+		transform.setElements(1, 0, 0, 1, 0, 0);
 	}
 }
 
@@ -4922,13 +4917,7 @@ public void setTransform(Transform transform) {
 	initGdip();
 	long identity = identity();
 	if (transform != null) {
-		long matrix = Gdip.Matrix_new();
-		Gdip.Matrix_SetElements(matrix,
-				(float)transform.m11, (float)transform.m12,
-				(float)transform.m21, (float)transform.m22,
-				(float)transform.dx, (float)transform.dy);
-		Gdip.Matrix_Multiply(identity, matrix, Gdip.MatrixOrderPrepend);
-		Gdip.Matrix_delete(matrix);
+		Gdip.Matrix_Multiply(identity, transform.handle, Gdip.MatrixOrderPrepend);
 	}
 	Gdip.Graphics_SetTransform(data.gdipGraphics, identity);
 	Gdip.Matrix_delete(identity);

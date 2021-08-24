@@ -485,6 +485,34 @@ fail:
 }
 #endif
 
+#ifndef NO_cairo_1matrix_1rotate
+JNIEXPORT void JNICALL Cairo_NATIVE(cairo_1matrix_1rotate)
+	(JNIEnv *env, jclass that, jdoubleArray arg0, jdouble arg1)
+{
+	jdouble *lparg0=NULL;
+	Cairo_NATIVE_ENTER(env, that, cairo_1matrix_1rotate_FUNC);
+	if (arg0) if ((lparg0 = (*env)->GetDoubleArrayElements(env, arg0, NULL)) == NULL) goto fail;
+	cairo_matrix_rotate((cairo_matrix_t *)lparg0, arg1);
+fail:
+	if (arg0 && lparg0) (*env)->ReleaseDoubleArrayElements(env, arg0, lparg0, 0);
+	Cairo_NATIVE_EXIT(env, that, cairo_1matrix_1rotate_FUNC);
+}
+#endif
+
+#ifndef NO_cairo_1matrix_1scale
+JNIEXPORT void JNICALL Cairo_NATIVE(cairo_1matrix_1scale)
+	(JNIEnv *env, jclass that, jdoubleArray arg0, jdouble arg1, jdouble arg2)
+{
+	jdouble *lparg0=NULL;
+	Cairo_NATIVE_ENTER(env, that, cairo_1matrix_1scale_FUNC);
+	if (arg0) if ((lparg0 = (*env)->GetDoubleArrayElements(env, arg0, NULL)) == NULL) goto fail;
+	cairo_matrix_scale((cairo_matrix_t *)lparg0, arg1, arg2);
+fail:
+	if (arg0 && lparg0) (*env)->ReleaseDoubleArrayElements(env, arg0, lparg0, 0);
+	Cairo_NATIVE_EXIT(env, that, cairo_1matrix_1scale_FUNC);
+}
+#endif
+
 #ifndef NO_cairo_1matrix_1transform_1point
 JNIEXPORT void JNICALL Cairo_NATIVE(cairo_1matrix_1transform_1point)
 	(JNIEnv *env, jclass that, jdoubleArray arg0, jdoubleArray arg1, jdoubleArray arg2)
@@ -502,6 +530,20 @@ fail:
 	if (arg1 && lparg1) (*env)->ReleaseDoubleArrayElements(env, arg1, lparg1, 0);
 	if (arg0 && lparg0) (*env)->ReleaseDoubleArrayElements(env, arg0, lparg0, 0);
 	Cairo_NATIVE_EXIT(env, that, cairo_1matrix_1transform_1point_FUNC);
+}
+#endif
+
+#ifndef NO_cairo_1matrix_1translate
+JNIEXPORT void JNICALL Cairo_NATIVE(cairo_1matrix_1translate)
+	(JNIEnv *env, jclass that, jdoubleArray arg0, jdouble arg1, jdouble arg2)
+{
+	jdouble *lparg0=NULL;
+	Cairo_NATIVE_ENTER(env, that, cairo_1matrix_1translate_FUNC);
+	if (arg0) if ((lparg0 = (*env)->GetDoubleArrayElements(env, arg0, NULL)) == NULL) goto fail;
+	cairo_matrix_translate((cairo_matrix_t *)lparg0, arg1, arg2);
+fail:
+	if (arg0 && lparg0) (*env)->ReleaseDoubleArrayElements(env, arg0, lparg0, 0);
+	Cairo_NATIVE_EXIT(env, that, cairo_1matrix_1translate_FUNC);
 }
 #endif
 
