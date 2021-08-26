@@ -209,7 +209,7 @@ public class OS extends C {
 		 * Currently Big Sur OS version matches with 10.16 and not 11.0. This may be temporary.
 		 * Creating a method, so that it can be fixed in one place if/when this changes.
 		 */
-		return OS.VERSION >= OS.VERSION(10, 16, 0);
+		return OS.VERSION >= OS.VERSION_MMB(10, 16, 0);
 	}
 
 /** JNI natives */
