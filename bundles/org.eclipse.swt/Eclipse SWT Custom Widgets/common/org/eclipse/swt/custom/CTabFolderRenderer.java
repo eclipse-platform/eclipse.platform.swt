@@ -872,6 +872,7 @@ public class CTabFolderRenderer {
 		int y = closeRect.y + Math.max(1, (closeRect.height-lineLength)/2);
 		y += parent.onBottom ? -1 : 1;
 		int originalLineWidth = gc.getLineWidth();
+		Color originalForeground = gc.getForeground();
 		if (antiAlias)  {
 			try  {
 				gc.setAntialias(SWT.ON);
@@ -899,14 +900,13 @@ public class CTabFolderRenderer {
 			}
 		}
 		gc.setLineWidth(originalLineWidth);
+		gc.setForeground(originalForeground);
 	}
 
 	private void drawCloseLines(GC gc, int x, int y, int lineLength, boolean hot) {
 		if (hot) {
 			gc.setLineWidth(gc.getLineWidth() + 2);
 			gc.setForeground(getFillColor());
-		} else {
-			gc.setForeground(parent.getDisplay().getSystemColor(BUTTON_BORDER));
 		}
 		gc.drawLine(x, y, x + lineLength, y + lineLength);
 		gc.drawLine(x, y + lineLength, x + lineLength, y);
@@ -1457,6 +1457,8 @@ public class CTabFolderRenderer {
 
 				// draw a Focus rectangle
 				if (parent.isFocusControl()) {
+					Color orginalForeground = gc.getForeground();
+					Color orginalBackground = gc.getBackground();
 					Display display = parent.getDisplay();
 					if (parent.simple || parent.single) {
 						gc.setBackground(display.getSystemColor(SWT.COLOR_BLACK));
@@ -1466,6 +1468,8 @@ public class CTabFolderRenderer {
 						gc.setForeground(display.getSystemColor(BUTTON_BORDER));
 						gc.drawLine(xDraw, textY+extent.y+1, xDraw+extent.x+1, textY+extent.y+1);
 					}
+					gc.setForeground(orginalForeground);
+					gc.setBackground(orginalBackground);
 				}
 			}
 			if (parent.showClose || item.showClose) drawClose(gc, item.closeRect, item.closeImageState);
