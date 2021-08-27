@@ -51,7 +51,6 @@ public class CTabFolderRenderer {
 	Color selectedOuterColor = null;
 	Color selectedInnerColor = null;
 	Color tabAreaColor = null;
-	Color minMaxBorderColor = null;
 	/*
 	 * Border color that was used in computing the cached anti-alias Colors.
 	 * We have to recompute the colors if the border color changes
@@ -544,7 +543,6 @@ public class CTabFolderRenderer {
 		disposeSelectionHighlightGradientColors();
 
 		fillColor = null;
-		minMaxBorderColor = null;
 
 		if (chevronFont != null) {
 			chevronFont.dispose();
@@ -593,12 +591,6 @@ public class CTabFolderRenderer {
 	 * @since 3.6
 	 */
 	protected void draw (int part, int state, Rectangle bounds, GC gc) {
-		if (minMaxBorderColor == null) {
-			// this color has to be identical to the colors used in the PNG files of
-			// the view drop down menu located in
-			// org.eclipse.e4.ui.workbench.renderers.swt/icons/full/elcl16/view_menu.png
-			minMaxBorderColor = new Color (105, 105, 105);
-		}
 		switch (part) {
 			case PART_BACKGROUND:
 				this.drawBackground(gc, bounds, state);
@@ -1096,23 +1088,18 @@ public class CTabFolderRenderer {
 
 	void drawMaximize(GC gc, Rectangle maxRect, int maxImageState) {
 		if (maxRect.width == 0 || maxRect.height == 0) return;
-		Display display = parent.getDisplay();
 		// 5x4 or 7x9
 		int x = maxRect.x + (maxRect.width - 10)/2;
 		int y = maxRect.y + 3;
 
-		gc.setForeground(minMaxBorderColor);
-		gc.setBackground(display.getSystemColor(BUTTON_FILL));
+		gc.setForeground(parent.getForeground());
 
 		switch (maxImageState & (SWT.HOT | SWT.SELECTED)) {
 			case SWT.NONE: {
 				if (!parent.getMaximized()) {
-					gc.fillRectangle(x, y, 9, 9);
 					gc.drawRectangle(x, y, 9, 9);
 					gc.drawLine(x, y+2, x+9, y+2);
 				} else {
-					gc.fillRectangle(x, y+3, 5, 4);
-					gc.fillRectangle(x+2, y, 5, 4);
 					gc.drawRectangle(x, y+3, 5, 4);
 					gc.drawRectangle(x+2, y, 5, 4);
 					gc.drawLine(x+2, y+1, x+7, y+1);
@@ -1123,12 +1110,9 @@ public class CTabFolderRenderer {
 			case SWT.HOT: {
 				drawRoundRectangle(gc, maxRect);
 				if (!parent.getMaximized()) {
-					gc.fillRectangle(x, y, 9, 9);
 					gc.drawRectangle(x, y, 9, 9);
 					gc.drawLine(x, y+2, x+9, y+2);
 				} else {
-					gc.fillRectangle(x, y+3, 5, 4);
-					gc.fillRectangle(x+2, y, 5, 4);
 					gc.drawRectangle(x, y+3, 5, 4);
 					gc.drawRectangle(x+2, y, 5, 4);
 					gc.drawLine(x+2, y+1, x+7, y+1);
@@ -1139,12 +1123,9 @@ public class CTabFolderRenderer {
 			case SWT.SELECTED: {
 				drawRoundRectangle(gc, maxRect);
 				if (!parent.getMaximized()) {
-					gc.fillRectangle(x+1, y+1, 9, 9);
 					gc.drawRectangle(x+1, y+1, 9, 9);
 					gc.drawLine(x+1, y+3, x+10, y+3);
 				} else {
-					gc.fillRectangle(x+1, y+4, 5, 4);
-					gc.fillRectangle(x+3, y+1, 5, 4);
 					gc.drawRectangle(x+1, y+4, 5, 4);
 					gc.drawRectangle(x+3, y+1, 5, 4);
 					gc.drawLine(x+3, y+2, x+8, y+2);
@@ -1156,22 +1137,17 @@ public class CTabFolderRenderer {
 	}
 	void drawMinimize(GC gc, Rectangle minRect, int minImageState) {
 		if (minRect.width == 0 || minRect.height == 0) return;
-		Display display = parent.getDisplay();
 		// 5x4 or 9x3
 		int x = minRect.x + (minRect.width - 10)/2;
 		int y = minRect.y + 3;
 
-		gc.setForeground(minMaxBorderColor);
-		gc.setBackground(display.getSystemColor(BUTTON_FILL));
+		gc.setForeground(parent.getForeground());
 
 		switch (minImageState & (SWT.HOT | SWT.SELECTED)) {
 			case SWT.NONE: {
 				if (!parent.getMinimized()) {
-					gc.fillRectangle(x, y, 9, 3);
 					gc.drawRectangle(x, y, 9, 3);
 				} else {
-					gc.fillRectangle(x, y+3, 5, 4);
-					gc.fillRectangle(x+2, y, 5, 4);
 					gc.drawRectangle(x, y+3, 5, 4);
 					gc.drawRectangle(x+2, y, 5, 4);
 					gc.drawLine(x+3, y+1, x+6, y+1);
@@ -1182,11 +1158,8 @@ public class CTabFolderRenderer {
 			case SWT.HOT: {
 				drawRoundRectangle(gc, minRect);
 				if (!parent.getMinimized()) {
-					gc.fillRectangle(x, y, 9, 3);
 					gc.drawRectangle(x, y, 9, 3);
 				} else {
-					gc.fillRectangle(x, y+3, 5, 4);
-					gc.fillRectangle(x+2, y, 5, 4);
 					gc.drawRectangle(x, y+3, 5, 4);
 					gc.drawRectangle(x+2, y, 5, 4);
 					gc.drawLine(x+3, y+1, x+6, y+1);
@@ -1197,11 +1170,8 @@ public class CTabFolderRenderer {
 			case SWT.SELECTED: {
 				drawRoundRectangle(gc, minRect);
 				if (!parent.getMinimized()) {
-					gc.fillRectangle(x+1, y+1, 9, 3);
 					gc.drawRectangle(x+1, y+1, 9, 3);
 				} else {
-					gc.fillRectangle(x+1, y+4, 5, 4);
-					gc.fillRectangle(x+3, y+1, 5, 4);
 					gc.drawRectangle(x+1, y+4, 5, 4);
 					gc.drawRectangle(x+3, y+1, 5, 4);
 					gc.drawLine(x+4, y+2, x+7, y+2);
