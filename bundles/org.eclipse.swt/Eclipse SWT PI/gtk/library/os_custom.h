@@ -19,6 +19,7 @@
 
 /* Special sizeof's */
 #define GPollFD_sizeof() sizeof(GPollFD)
+#define GValue_sizeof() sizeof(GValue)
 #define GtkCellRendererText_sizeof() sizeof(GtkCellRendererText)
 #define GtkCellRendererTextClass_sizeof() sizeof(GtkCellRendererTextClass)
 #if !defined(GTK4)

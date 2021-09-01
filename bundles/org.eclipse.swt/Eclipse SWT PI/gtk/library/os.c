@@ -5783,6 +5783,16 @@ fail:
 }
 #endif
 
+#ifndef NO_gtk_1list_1store_1set_1value
+JNIEXPORT void JNICALL GTK_NATIVE(gtk_1list_1store_1set_1value)
+	(JNIEnv *env, jclass that, jlong arg0, jlong arg1, jint arg2, jlong arg3)
+{
+	GTK_NATIVE_ENTER(env, that, gtk_1list_1store_1set_1value_FUNC);
+	gtk_list_store_set_value((GtkListStore *)arg0, (GtkTreeIter *)arg1, arg2, (GValue *)arg3);
+	GTK_NATIVE_EXIT(env, that, gtk_1list_1store_1set_1value_FUNC);
+}
+#endif
+
 #ifndef NO_gtk_1menu_1button_1new
 JNIEXPORT jlong JNICALL GTK_NATIVE(gtk_1menu_1button_1new)
 	(JNIEnv *env, jclass that)
@@ -8070,6 +8080,16 @@ JNIEXPORT jlong JNICALL GTK_NATIVE(gtk_1tree_1model_1get_1type)
 }
 #endif
 
+#ifndef NO_gtk_1tree_1model_1get_1value
+JNIEXPORT void JNICALL GTK_NATIVE(gtk_1tree_1model_1get_1value)
+	(JNIEnv *env, jclass that, jlong arg0, jlong arg1, jint arg2, jlong arg3)
+{
+	GTK_NATIVE_ENTER(env, that, gtk_1tree_1model_1get_1value_FUNC);
+	gtk_tree_model_get_value((GtkTreeModel *)arg0, (GtkTreeIter *)arg1, arg2, (GValue *)arg3);
+	GTK_NATIVE_EXIT(env, that, gtk_1tree_1model_1get_1value_FUNC);
+}
+#endif
+
 #ifndef NO_gtk_1tree_1model_1iter_1children
 JNIEXPORT jboolean JNICALL GTK_NATIVE(gtk_1tree_1model_1iter_1children)
 	(JNIEnv *env, jclass that, jlong arg0, jlong arg1, jlong arg2)
@@ -8478,6 +8498,16 @@ JNIEXPORT void JNICALL GTK_NATIVE(gtk_1tree_1store_1set__JJI_3BI)
 fail:
 	if (arg3 && lparg3) (*env)->ReleaseByteArrayElements(env, arg3, lparg3, 0);
 	GTK_NATIVE_EXIT(env, that, gtk_1tree_1store_1set__JJI_3BI_FUNC);
+}
+#endif
+
+#ifndef NO_gtk_1tree_1store_1set_1value
+JNIEXPORT void JNICALL GTK_NATIVE(gtk_1tree_1store_1set_1value)
+	(JNIEnv *env, jclass that, jlong arg0, jlong arg1, jint arg2, jlong arg3)
+{
+	GTK_NATIVE_ENTER(env, that, gtk_1tree_1store_1set_1value_FUNC);
+	gtk_tree_store_set_value((GtkTreeStore *)arg0, (GtkTreeIter *)arg1, arg2, (GValue *)arg3);
+	GTK_NATIVE_EXIT(env, that, gtk_1tree_1store_1set_1value_FUNC);
 }
 #endif
 
@@ -10273,6 +10303,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(GTypeInfo_1sizeof)
 	OS_NATIVE_ENTER(env, that, GTypeInfo_1sizeof_FUNC);
 	rc = (jint)GTypeInfo_sizeof();
 	OS_NATIVE_EXIT(env, that, GTypeInfo_1sizeof_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_GValue_1sizeof
+JNIEXPORT jint JNICALL OS_NATIVE(GValue_1sizeof)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, GValue_1sizeof_FUNC);
+	rc = (jint)GValue_sizeof();
+	OS_NATIVE_EXIT(env, that, GValue_1sizeof_FUNC);
 	return rc;
 }
 #endif

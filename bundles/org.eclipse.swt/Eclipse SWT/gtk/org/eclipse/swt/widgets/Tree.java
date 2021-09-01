@@ -653,74 +653,53 @@ Point computeSizeInPixels (int wHint, int hHint, boolean changed) {
 	return size;
 }
 
-void copyModel (long oldModel, int oldStart, long newModel, int newStart, long [] types, long oldParent, long newParent, int modelLength) {
+void copyModel (long oldModel, int oldStart, long newModel, int newStart, long oldParent, long newParent, int modelLength) {
 	long iter = OS.g_malloc(GTK.GtkTreeIter_sizeof ());
+	long value = OS.g_malloc (OS.GValue_sizeof ());
+	// GValue needs to be initialized with G_VALUE_INIT, which is zeroes
+	OS.memset (value, 0, OS.GValue_sizeof ());
+
 	if (GTK.gtk_tree_model_iter_children (oldModel, iter, oldParent))  {
 		long [] oldItems = new long [GTK.gtk_tree_model_iter_n_children (oldModel, oldParent)];
 		int oldIndex = 0;
-		long [] ptr = new long [1];
-		int [] ptr1 = new int [1];
+		int [] intBuffer = new int [1];
 		do {
-			long newItem = OS.g_malloc (GTK.GtkTreeIter_sizeof ());
-			if (newItem == 0) error (SWT.ERROR_NO_HANDLES);
-			GTK.gtk_tree_store_append (newModel, newItem, newParent);
-			GTK.gtk_tree_model_get (oldModel, iter, ID_COLUMN, ptr1, -1);
-			int index = ptr1[0];
+			long newIterator = OS.g_malloc (GTK.GtkTreeIter_sizeof ());
+			if (newIterator == 0) error (SWT.ERROR_NO_HANDLES);
+			GTK.gtk_tree_store_append (newModel, newIterator, newParent);
+			GTK.gtk_tree_model_get (oldModel, iter, ID_COLUMN, intBuffer, -1);
+			int index = intBuffer[0];
 			TreeItem item = null;
 			if (index != -1) {
 				item = items [index];
 				if (item != null) {
-					long oldItem = item.handle;
-					oldItems[oldIndex++] = oldItem;
-					/* the columns before FOREGROUND_COLUMN contain int values, subsequent columns contain pointers */
-					for (int j = 0; j < FOREGROUND_COLUMN; j++) {
-						GTK.gtk_tree_model_get (oldModel, oldItem, j, ptr1, -1);
-						GTK.gtk_tree_store_set (newModel, newItem, j, ptr1 [0], -1);
+					long oldIterator = item.handle;
+					oldItems[oldIndex++] = oldIterator;
+
+					// Copy header fields
+					for (int iColumn = 0; iColumn < FIRST_COLUMN; iColumn++) {
+						GTK.gtk_tree_model_get_value (oldModel, oldIterator, iColumn, value);
+						GTK.gtk_tree_store_set_value (newModel, newIterator, iColumn, value);
+						OS.g_value_unset (value);
 					}
-					for (int j = FOREGROUND_COLUMN; j < FIRST_COLUMN; j++) {
-						GTK.gtk_tree_model_get (oldModel, oldItem, j, ptr, -1);
-						GTK.gtk_tree_store_set (newModel, newItem, j, ptr [0], -1);
-						if (ptr [0] != 0) {
-							if (types[j] == GDK.GDK_TYPE_RGBA()) {
-								GDK.gdk_rgba_free(ptr[0]);
-							}
-							if (types [j] == OS.G_TYPE_STRING ()) {
-								OS.g_free ((ptr [0]));
-							} else if (types[j] == GDK.GDK_TYPE_PIXBUF()) {
-								OS.g_object_unref(ptr[0]);
-							} else if (types[j] == OS.PANGO_TYPE_FONT_DESCRIPTION()) {
-								OS.pango_font_description_free(ptr[0]);
-							}
-						}
-					}
-					for (int j= 0; j<modelLength - FIRST_COLUMN; j++) {
-						int newIndex = newStart + j;
-						GTK.gtk_tree_model_get (oldModel, oldItem, oldStart + j, ptr, -1);
-						GTK.gtk_tree_store_set (newModel, newItem, newIndex, ptr [0], -1);
-						if (ptr[0] != 0) {
-							if (types[newIndex] == GDK.GDK_TYPE_RGBA()) {
-								GDK.gdk_rgba_free(ptr[0]);
-							}
-							if (types [newIndex] == OS.G_TYPE_STRING ()) {
-								OS.g_free ((ptr [0]));
-							} else if (types[newIndex] == GDK.GDK_TYPE_PIXBUF()) {
-								OS.g_object_unref(ptr[0]);
-							} else if (types[newIndex] == OS.PANGO_TYPE_FONT_DESCRIPTION()) {
-								OS.pango_font_description_free(ptr[0]);
-							}
-						}
+
+					// Copy requested columns
+					for (int iOffset = 0; iOffset < modelLength - FIRST_COLUMN; iOffset++) {
+						GTK.gtk_tree_model_get_value (oldModel, oldIterator, oldStart + iOffset, value);
+						GTK.gtk_tree_store_set_value (newModel, newIterator, newStart + iOffset, value);
+						OS.g_value_unset (value);
 					}
 				}
 			} else {
-				GTK.gtk_tree_store_set (newModel, newItem, ID_COLUMN, -1, -1);
+				GTK.gtk_tree_store_set (newModel, newIterator, ID_COLUMN, -1, -1);
 			}
 			// recurse through children
-			copyModel(oldModel, oldStart, newModel, newStart, types, iter, newItem, modelLength);
+			copyModel(oldModel, oldStart, newModel, newStart, iter, newIterator, modelLength);
 
 			if (item!= null) {
-				item.handle = newItem;
+				item.handle = newIterator;
 			} else {
-				OS.g_free (newItem);
+				OS.g_free (newIterator);
 			}
 		} while (GTK.gtk_tree_model_iter_next(oldModel, iter));
 		for (int i = 0; i < oldItems.length; i++) {
@@ -731,6 +710,8 @@ void copyModel (long oldModel, int oldStart, long newModel, int newStart, long [
 			}
 		}
 	}
+
+	OS.g_free (value);
 	OS.g_free (iter);
 }
 
@@ -761,7 +742,7 @@ void createColumn (TreeColumn column, int index) {
 			long [] types = getColumnTypes (columnCount + 4); // grow by 4 rows at a time
 			long newModel = GTK.gtk_tree_store_newv (types.length, types);
 			if (newModel == 0) error (SWT.ERROR_NO_HANDLES);
-			copyModel (oldModel, FIRST_COLUMN, newModel, FIRST_COLUMN, types, (long )0, (long )0, modelLength);
+			copyModel (oldModel, FIRST_COLUMN, newModel, FIRST_COLUMN, (long )0, (long )0, modelLength);
 			GTK.gtk_tree_view_set_model (handle, newModel);
 			setModel (newModel);
 		}
@@ -1211,7 +1192,7 @@ void destroyItem (TreeColumn column) {
 		long [] types = getColumnTypes (1);
 		long newModel = GTK.gtk_tree_store_newv (types.length, types);
 		if (newModel == 0) error (SWT.ERROR_NO_HANDLES);
-		copyModel(oldModel, column.modelIndex, newModel, FIRST_COLUMN, types, (long )0, (long )0, FIRST_COLUMN + CELL_TYPES);
+		copyModel(oldModel, column.modelIndex, newModel, FIRST_COLUMN, (long )0, (long )0, FIRST_COLUMN + CELL_TYPES);
 		GTK.gtk_tree_view_set_model (handle, newModel);
 		setModel (newModel);
 		createColumn (null, 0);

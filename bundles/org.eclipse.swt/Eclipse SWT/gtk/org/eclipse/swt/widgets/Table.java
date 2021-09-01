@@ -544,6 +544,51 @@ Point computeSizeInPixels (int wHint, int hHint, boolean changed) {
 	return size;
 }
 
+void copyModel(long oldModel, int oldStart, long newModel, int newStart, int modelLength) {
+	long value = OS.g_malloc (OS.GValue_sizeof ());
+	// GValue needs to be initialized with G_VALUE_INIT, which is zeroes
+	OS.memset (value, 0, OS.GValue_sizeof ());
+
+	for (int i=0; i<itemCount; i++) {
+		long newIterator = OS.g_malloc (GTK.GtkTreeIter_sizeof ());
+		if (newIterator == 0) error (SWT.ERROR_NO_HANDLES);
+		GTK.gtk_list_store_append (newModel, newIterator);
+
+		TableItem item = items [i];
+		if (item == null) {
+			/*
+			 * In `SWT.VIRTUAL` mode, `items[]` is not populated, and
+			 * iterators are not remembered. Instead, SWT will use
+			 * `gtk_tree_model_iter_nth_child()`.
+			 */
+			OS.g_free (newIterator);
+			continue;
+		}
+
+		long oldIterator = item.handle;
+
+		// Copy header fields
+		for (int iColumn = 0; iColumn < FIRST_COLUMN; iColumn++) {
+			GTK.gtk_tree_model_get_value (oldModel, oldIterator, iColumn, value);
+			GTK.gtk_list_store_set_value (newModel, newIterator, iColumn, value);
+			OS.g_value_unset (value);
+		}
+
+		// Copy requested columns
+		for (int iOffset = 0; iOffset < modelLength - FIRST_COLUMN; iOffset++) {
+			GTK.gtk_tree_model_get_value (oldModel, oldIterator, oldStart + iOffset, value);
+			GTK.gtk_list_store_set_value (newModel, newIterator, newStart + iOffset, value);
+			OS.g_value_unset (value);
+		}
+
+		GTK.gtk_list_store_remove (oldModel, oldIterator);
+		OS.g_free (oldIterator);
+		item.handle = newIterator;
+	}
+
+	OS.g_free (value);
+}
+
 void createColumn (TableColumn column, int index) {
 	int modelIndex = FIRST_COLUMN;
 	if (columnCount != 0) {
@@ -564,43 +609,7 @@ void createColumn (TableColumn column, int index) {
 			long [] types = getColumnTypes (columnCount + 4); // grow by 4 rows at a time
 			long newModel = GTK.gtk_list_store_newv (types.length, types);
 			if (newModel == 0) error (SWT.ERROR_NO_HANDLES);
-			long [] ptr = new long [1];
-			int [] ptr1 = new int [1];
-			for (int i=0; i<itemCount; i++) {
-				long newItem = OS.g_malloc (GTK.GtkTreeIter_sizeof ());
-				if (newItem == 0) error (SWT.ERROR_NO_HANDLES);
-				GTK.gtk_list_store_append (newModel, newItem);
-				TableItem item = items [i];
-				if (item != null) {
-					long oldItem = item.handle;
-					/* the columns before FOREGROUND_COLUMN contain int values, subsequent columns contain pointers */
-					for (int j=0; j<FOREGROUND_COLUMN; j++) {
-						GTK.gtk_tree_model_get (oldModel, oldItem, j, ptr1, -1);
-						GTK.gtk_list_store_set (newModel, newItem, j, ptr1 [0], -1);
-					}
-					for (int j=FOREGROUND_COLUMN; j<modelLength; j++) {
-						GTK.gtk_tree_model_get (oldModel, oldItem, j, ptr, -1);
-						GTK.gtk_list_store_set (newModel, newItem, j, ptr [0], -1);
-						if (ptr [0] != 0) {
-							if (types[j] == GDK.GDK_TYPE_RGBA()) {
-								GDK.gdk_rgba_free(ptr[0]);
-							}
-							if (types [j] == OS.G_TYPE_STRING ()) {
-								OS.g_free ((ptr [0]));
-							} else if (types [j] == GDK.GDK_TYPE_PIXBUF()) {
-								OS.g_object_unref (ptr [0]);
-							} else if (types [j] == OS.PANGO_TYPE_FONT_DESCRIPTION()) {
-								OS.pango_font_description_free (ptr [0]);
-							}
-						}
-					}
-					GTK.gtk_list_store_remove (oldModel, oldItem);
-					OS.g_free (oldItem);
-					item.handle = newItem;
-				} else {
-					OS.g_free (newItem);
-				}
-			}
+			copyModel (oldModel, FIRST_COLUMN, newModel, FIRST_COLUMN, modelLength);
 			GTK.gtk_tree_view_set_model (handle, newModel);
 			setModel (newModel);
 		}
@@ -1050,57 +1059,7 @@ void destroyItem (TableColumn column) {
 		long [] types = getColumnTypes (1);
 		long newModel = GTK.gtk_list_store_newv (types.length, types);
 		if (newModel == 0) error (SWT.ERROR_NO_HANDLES);
-		long [] ptr = new long [1];
-		int [] ptr1 = new int [1];
-		for (int i=0; i<itemCount; i++) {
-			long newItem = OS.g_malloc (GTK.GtkTreeIter_sizeof ());
-			if (newItem == 0) error (SWT.ERROR_NO_HANDLES);
-			GTK.gtk_list_store_append (newModel, newItem);
-			TableItem item = items [i];
-			if (item != null) {
-				long oldItem = item.handle;
-				/* the columns before FOREGROUND_COLUMN contain int values, subsequent columns contain pointers */
-				for (int j=0; j<FOREGROUND_COLUMN; j++) {
-					GTK.gtk_tree_model_get (oldModel, oldItem, j, ptr1, -1);
-					GTK.gtk_list_store_set (newModel, newItem, j, ptr1 [0], -1);
-				}
-				for (int j=FOREGROUND_COLUMN; j<FIRST_COLUMN; j++) {
-					GTK.gtk_tree_model_get (oldModel, oldItem, j, ptr, -1);
-					GTK.gtk_list_store_set (newModel, newItem, j, ptr [0], -1);
-					if (ptr [0] != 0) {
-						if (j == FOREGROUND_COLUMN || j == BACKGROUND_COLUMN) {
-							GDK.gdk_rgba_free (ptr [0]);
-						} else if (j == FONT_COLUMN) {
-							OS.pango_font_description_free (ptr [0]);
-						}
-					}
-				}
-				GTK.gtk_tree_model_get (oldModel, oldItem, column.modelIndex + CELL_PIXBUF, ptr, -1);
-				GTK.gtk_list_store_set (newModel, newItem, FIRST_COLUMN + CELL_PIXBUF, ptr [0], -1);
-				if (ptr [0] != 0) OS.g_object_unref (ptr [0]);
-				GTK.gtk_tree_model_get (oldModel, oldItem, column.modelIndex + CELL_TEXT, ptr, -1);
-				GTK.gtk_list_store_set (newModel, newItem, FIRST_COLUMN + CELL_TEXT, ptr [0], -1);
-				OS.g_free (ptr [0]);
-				GTK.gtk_tree_model_get (oldModel, oldItem, column.modelIndex + CELL_FOREGROUND, ptr, -1);
-				GTK.gtk_list_store_set (newModel, newItem, FIRST_COLUMN + CELL_FOREGROUND, ptr [0], -1);
-				if (ptr [0] != 0) {
-					GDK.gdk_rgba_free (ptr [0]);
-				}
-				GTK.gtk_tree_model_get (oldModel, oldItem, column.modelIndex + CELL_BACKGROUND, ptr, -1);
-				GTK.gtk_list_store_set (newModel, newItem, FIRST_COLUMN + CELL_BACKGROUND, ptr [0], -1);
-				if (ptr [0] != 0) {
-					GDK.gdk_rgba_free (ptr [0]);
-				}
-				GTK.gtk_tree_model_get (oldModel, oldItem, column.modelIndex + CELL_FONT, ptr, -1);
-				GTK.gtk_list_store_set (newModel, newItem, FIRST_COLUMN + CELL_FONT, ptr [0], -1);
-				if (ptr [0] != 0) OS.pango_font_description_free (ptr [0]);
-				GTK.gtk_list_store_remove (oldModel, oldItem);
-				OS.g_free (oldItem);
-				item.handle = newItem;
-			} else {
-				OS.g_free (newItem);
-			}
-		}
+		copyModel (oldModel, column.modelIndex, newModel, FIRST_COLUMN, FIRST_COLUMN + CELL_TYPES);
 		GTK.gtk_tree_view_set_model (handle, newModel);
 		setModel (newModel);
 		createColumn (null, 0);

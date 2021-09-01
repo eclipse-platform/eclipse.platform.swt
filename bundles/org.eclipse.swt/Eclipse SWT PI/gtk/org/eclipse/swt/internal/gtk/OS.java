@@ -707,6 +707,7 @@ public static boolean isX11 () {
 /** 64 bit */
 public static final native int GPollFD_sizeof ();
 public static final native int GTypeInfo_sizeof ();
+public static final native int GValue_sizeof();
 public static final native int PangoAttribute_sizeof();
 public static final native int PangoAttrColor_sizeof();
 public static final native int PangoAttrInt_sizeof();

@@ -1008,6 +1008,12 @@ public class GTK extends OS {
 	 * @param iter cast=(GtkTreeIter *)
 	 */
 	public static final native void gtk_list_store_set(long store, long iter, int column, boolean value, int terminator);
+	/**
+	 * @param store cast=(GtkListStore *)
+	 * @param iter cast=(GtkTreeIter *)
+	 * @param value cast=(GValue *)
+	 */
+	public static final native void gtk_list_store_set_value(long store, long iter, int column, long value);
 
 	/* GtkCssProvider */
 	public static final native long gtk_css_provider_new();
@@ -1752,6 +1758,13 @@ public class GTK extends OS {
 	public static final native long gtk_tree_model_get_path(long tree_model, long iter);
 	public static final native long gtk_tree_model_get_type();
 	/**
+	 * @param tree_model cast=(GtkTreeModel *)
+	 * @param iter cast=(GtkTreeIter *)
+	 * @param value cast=(GValue *)
+	 */
+	public static final native void gtk_tree_model_get_value(long tree_model, long iter, int column, long value);
+
+	/**
 	 * @param model cast=(GtkTreeModel *)
 	 * @param iter cast=(GtkTreeIter *)
 	 * @param parent cast=(GtkTreeIter *)
@@ -1900,6 +1913,12 @@ public class GTK extends OS {
 	 * @param iter cast=(GtkTreeIter *)
 	 */
 	public static final native void gtk_tree_store_set(long store, long iter, int column, boolean value, int terminator);
+	/**
+	 * @param store cast=(GtkTreeStore *)
+	 * @param iter cast=(GtkTreeIter *)
+	 * @param value cast=(GValue *)
+	 */
+	public static final native void gtk_tree_store_set_value(long store, long iter, int column, long value);
 
 	/* GtkTreeViewColumn */
 	/**
