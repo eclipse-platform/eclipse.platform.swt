@@ -609,6 +609,15 @@ void createColumn (TableColumn column, int index) {
 			long [] types = getColumnTypes (columnCount + 4); // grow by 4 rows at a time
 			long newModel = GTK.gtk_list_store_newv (types.length, types);
 			if (newModel == 0) error (SWT.ERROR_NO_HANDLES);
+			/*
+			 * In VIRTUAL Table, GTK may react to `gtk_list_store_remove()` by
+			 * calling `cellDataProc()`, and SWT will be confused because
+			 * `items[]` no longer match the GTK model, which has some rows
+			 * deleted by `gtk_list_store_remove()`. The fix is to disconnect
+			 * model during rebuilding. The new model will replace the old one
+			 * anyway, so it doesn't matter if old is removed a bit earlier.
+			 */
+			GTK.gtk_tree_view_set_model (handle, 0);
 			copyModel (oldModel, FIRST_COLUMN, newModel, FIRST_COLUMN, modelLength);
 			GTK.gtk_tree_view_set_model (handle, newModel);
 			setModel (newModel);
@@ -1059,6 +1068,15 @@ void destroyItem (TableColumn column) {
 		long [] types = getColumnTypes (1);
 		long newModel = GTK.gtk_list_store_newv (types.length, types);
 		if (newModel == 0) error (SWT.ERROR_NO_HANDLES);
+		/*
+		 * In VIRTUAL Table, GTK may react to `gtk_list_store_remove()` by
+		 * calling `cellDataProc()`, and SWT will be confused because
+		 * `items[]` no longer match the GTK model, which has some rows
+		 * deleted by `gtk_list_store_remove()`. The fix is to disconnect
+		 * model during rebuilding. The new model will replace the old one
+		 * anyway, so it doesn't matter if old is removed a bit earlier.
+		 */
+		GTK.gtk_tree_view_set_model (handle, 0);
 		copyModel (oldModel, column.modelIndex, newModel, FIRST_COLUMN, FIRST_COLUMN + CELL_TYPES);
 		GTK.gtk_tree_view_set_model (handle, newModel);
 		setModel (newModel);
