@@ -612,6 +612,9 @@ static long createGdipFont(long hDC, long hFont, long graphics, long fontCollect
  * </ul>
  */
 static long createAlphaTextureBrush(long brush, int alpha) {
+	if (Gdip.Brush_GetType(brush) != Gdip.BrushTypeTextureFill) {
+		return Gdip.Brush_Clone(brush);
+	}
 	long hatchImage = Gdip.TextureBrush_GetImage(brush);
 	if (hatchImage == 0) SWT.error(SWT.ERROR_CANNOT_BE_ZERO);
 	long transparentHatchImage = Gdip.Image_Clone(hatchImage);
