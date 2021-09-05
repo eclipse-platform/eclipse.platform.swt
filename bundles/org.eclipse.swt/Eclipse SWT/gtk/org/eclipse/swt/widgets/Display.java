@@ -6001,6 +6001,28 @@ public void syncExec (Runnable runnable) {
 	synchronizer.syncExec (runnable);
 }
 
+
+/**
+ * Runs the supplier in the user-interface thread and returns the supplied value.
+ *
+ * @param supplier
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_FAILED_EXEC - if an exception occurred when executing the runnable</li>
+ *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ *
+ * @see #syncExec(Runnable)
+ * @since 3.118
+ */
+public <T> T syncExec(Supplier<T> supplier) {
+	Objects.nonNull(supplier);
+	@SuppressWarnings("unchecked")
+	T[] t = (T[]) new Object[1];
+	syncExec(() -> t[0] = supplier.get());
+	return t[0];
+}
+
 static int translateKey (int key) {
 	for (int i=0; i<KeyTable.length; i++) {
 		if (KeyTable [i] [0] == key) return KeyTable [i] [1];
