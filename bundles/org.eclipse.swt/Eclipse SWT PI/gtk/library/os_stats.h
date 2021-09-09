@@ -679,6 +679,7 @@ typedef enum {
 	gtk_1tree_1store_1append_FUNC,
 	gtk_1tree_1store_1clear_FUNC,
 	gtk_1tree_1store_1insert_FUNC,
+	gtk_1tree_1store_1insert_1after_FUNC,
 	gtk_1tree_1store_1newv_FUNC,
 	gtk_1tree_1store_1prepend_FUNC,
 	gtk_1tree_1store_1remove_FUNC,

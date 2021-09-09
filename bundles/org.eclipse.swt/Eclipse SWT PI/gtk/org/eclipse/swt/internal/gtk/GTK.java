@@ -1874,6 +1874,13 @@ public class GTK extends OS {
 	 * @param position cast=(gint)
 	 */
 	public static final native void gtk_tree_store_insert(long store, long iter, long parent, int position);
+	/**
+	 * @param store cast=(GtkTreeStore *)
+	 * @param iter cast=(GtkTreeIter *)
+	 * @param parent cast=(GtkTreeIter *)
+	 * @param sibling cast=(GtkTreeIter *)
+	 */
+	public static final native void gtk_tree_store_insert_after(long store, long iter, long parent, long sibling);
 	/** @param types cast=(GType *) */
 	public static final native long gtk_tree_store_newv(int numColumns, long [] types);
 	/**

@@ -8408,6 +8408,16 @@ JNIEXPORT void JNICALL GTK_NATIVE(gtk_1tree_1store_1insert)
 }
 #endif
 
+#ifndef NO_gtk_1tree_1store_1insert_1after
+JNIEXPORT void JNICALL GTK_NATIVE(gtk_1tree_1store_1insert_1after)
+	(JNIEnv *env, jclass that, jlong arg0, jlong arg1, jlong arg2, jlong arg3)
+{
+	GTK_NATIVE_ENTER(env, that, gtk_1tree_1store_1insert_1after_FUNC);
+	gtk_tree_store_insert_after((GtkTreeStore *)arg0, (GtkTreeIter *)arg1, (GtkTreeIter *)arg2, (GtkTreeIter *)arg3);
+	GTK_NATIVE_EXIT(env, that, gtk_1tree_1store_1insert_1after_FUNC);
+}
+#endif
+
 #ifndef NO_gtk_1tree_1store_1newv
 JNIEXPORT jlong JNICALL GTK_NATIVE(gtk_1tree_1store_1newv)
 	(JNIEnv *env, jclass that, jint arg0, jlongArray arg1)

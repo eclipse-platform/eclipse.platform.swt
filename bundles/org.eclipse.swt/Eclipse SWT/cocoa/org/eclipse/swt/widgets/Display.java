@@ -563,7 +563,7 @@ void addPopup (Menu menu) {
 
 void addSkinnableWidget (Widget widget) {
 	if (skinCount >= skinList.length) {
-		Widget[] newSkinWidgets = new Widget [skinList.length + GROW_SIZE];
+		Widget[] newSkinWidgets = new Widget [(skinList.length + 1) * 3 / 2];
 		System.arraycopy (skinList, 0, newSkinWidgets, 0, skinList.length);
 		skinList = newSkinWidgets;
 	}

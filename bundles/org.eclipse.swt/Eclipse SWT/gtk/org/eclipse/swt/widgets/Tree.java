@@ -86,6 +86,7 @@ public class Tree extends Composite {
 	int selectionCountOnPress,selectionCountOnRelease;
 	long ignoreCell;
 	TreeItem[] items;
+	int nextId;
 	TreeColumn [] columns;
 	TreeColumn sortColumn;
 	TreeItem currentItem;
@@ -205,20 +206,51 @@ TreeItem _getItem (long parentIter, int index) {
 	return items [id] = new TreeItem (this, parentIter, SWT.NONE, index, false);
 }
 
+void reallocateIds(int newSize) {
+	TreeItem [] newItems = new TreeItem [newSize];
+	System.arraycopy (items, 0, newItems, 0, items.length);
+	items = newItems;
+}
+
+int findAvailableId() {
+	// Adapt to cases where items[] array was resized since last search
+	// This also fixes cases where +1 below went too far
+	if (nextId >= items.length)
+		nextId = 0;
+
+	// Search from 'nextId' to end
+	for (int id = nextId; id < items.length; id++) {
+		if (items [id] == null) return id;
+	}
+
+	// Search from begin to nextId
+	for (int id = 0; id < nextId; id++) {
+		if (items [id] == null) return id;
+	}
+
+	// Still not found; no empty spots remaining
+	int newId = items.length;
+	if (drawCount <= 0) {
+		reallocateIds (items.length + 4);
+	} else {
+		// '.setRedraw(false)' is typically used during bulk operations.
+		// Reallocate to 1.5x the old size to avoid frequent reallocations.
+		reallocateIds ((items.length + 1) * 3 / 2);
+	}
+
+	return newId;
+}
+
 int getId (long iter, boolean queryModel) {
 	if (queryModel) {
 		int[] value = new int[1];
 		GTK.gtk_tree_model_get (modelHandle, iter, ID_COLUMN, value, -1);
 		if (value [0] != -1) return value [0];
 	}
-	// find next available id
-	int id = 0;
-	while (id < items.length && items [id] != null) id++;
-	if (id == items.length) {
-		TreeItem [] newItems = new TreeItem [items.length + 4];
-		System.arraycopy (items, 0, newItems, 0, items.length);
-		items = newItems;
-	}
+
+	int id = findAvailableId();
+	nextId = id + 1;
+
 	GTK.gtk_tree_store_set (modelHandle, iter, ID_COLUMN, id, -1);
 	return id;
 }
@@ -3466,20 +3498,33 @@ void setItemCount (long parentIter, int count) {
 		if (fixAccessibility ()) {
 			ignoreAccessibility = true;
 		}
-		for (int i=itemCount; i<count; i++) {
-			long iter = OS.g_malloc (GTK.GtkTreeIter_sizeof ());
-			if (iter == 0) error (SWT.ERROR_NO_HANDLES);
-			GTK.gtk_tree_store_append (modelHandle, iter, parentIter);
-			GTK.gtk_tree_store_set (modelHandle, iter, ID_COLUMN, -1, -1);
-			OS.g_free (iter);
+
+		long iters = OS.g_malloc (2 * GTK.GtkTreeIter_sizeof ());
+		if (iters == 0) error (SWT.ERROR_NO_HANDLES);
+
+		long iterResult = iters;
+		long iterInsertAfter;
+		if (itemCount != 0) {
+			iterInsertAfter = iters + GTK.GtkTreeIter_sizeof ();
+			GTK.gtk_tree_model_iter_nth_child(modelHandle, iterInsertAfter, parentIter, itemCount - 1);
+		} else {
+			iterInsertAfter = 0;
 		}
+
+		for (int i=itemCount; i<count; i++) {
+			GTK.gtk_tree_store_insert_after (modelHandle, iterResult, parentIter, iterInsertAfter);
+			GTK.gtk_tree_store_set (modelHandle, iterResult, ID_COLUMN, -1, -1);
+		}
+
+		OS.g_free (iters);
+
 		if (fixAccessibility ()) {
 			ignoreAccessibility = false;
 			OS.g_object_notify (handle, OS.model);
 		}
 	} else {
 		for (int i=itemCount; i<count; i++) {
-			new TreeItem (this, parentIter, SWT.NONE, i, true);
+			new TreeItem (this, parentIter, SWT.NONE, itemCount, true);
 		}
 	}
 	if (!isVirtual) setRedraw (true);
