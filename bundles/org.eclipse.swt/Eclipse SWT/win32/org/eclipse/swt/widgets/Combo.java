@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2019 IBM Corporation and others.
+ * Copyright (c) 2000, 2021 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -2699,6 +2699,13 @@ long windowProc (long hwnd, int msg, long wParam, long lParam) {
 				if (redraw) {
 					OS.DefWindowProc (hwndText, OS.WM_SETREDRAW, 1, 0);
 					OS.InvalidateRect (hwndText, null, true);
+					/*
+					 * When setting longer text on AUTO_TEXT_DIRECTION styled Combo orientation:
+					 * Combo should automatically scrolls selection's end into view. We need to
+					 * force it to do such scrolling, to make sure Caret no longer goes out of view.
+					 * For more details refer bug 575171.
+					 */
+					forceScrollingToCaret();
 				}
 				return code;
 			}
@@ -2962,6 +2969,12 @@ LRESULT WM_SIZE (long wParam, long lParam) {
 	*    This is just another form of problem 1.
 	* 3) Caret no longer goes out of view when shrinking control.
 	*/
+	forceScrollingToCaret();
+
+	return result;
+}
+
+void forceScrollingToCaret() {
 	if ((style & SWT.READ_ONLY) == 0) {
 		Point oldSelection = this.getSelection();
 		Point tmpSelection = new Point(0, 0);
@@ -2970,8 +2983,6 @@ LRESULT WM_SIZE (long wParam, long lParam) {
 			this.setSelection(oldSelection);
 		}
 	}
-
-	return result;
 }
 
 @Override
