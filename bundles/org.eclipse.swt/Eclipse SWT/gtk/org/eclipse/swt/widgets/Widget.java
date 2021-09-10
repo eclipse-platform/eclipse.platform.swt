@@ -1004,14 +1004,6 @@ long gtk_row_activated (long tree, long path, long column) {
 	// 'row-activated' is triggered. See Bug 312568, 518414.
 }
 
-long gtk_row_deleted (long model, long path) {
-	return 0;
-}
-
-long gtk_row_inserted (long model, long path, long iter) {
-	return 0;
-}
-
 long gtk_row_has_child_toggled (long model, long path, long iter) {
 	return 0;
 }
@@ -2428,7 +2420,6 @@ long windowProc (long handle, long arg0, long user_data) {
 		case TOGGLED: return gtk_toggled (handle, arg0);
 		case UNMAP_EVENT: return gtk_unmap_event (handle, arg0);
 		case WINDOW_STATE_EVENT: return gtk_window_state_event (handle, arg0);
-		case ROW_DELETED: return gtk_row_deleted (handle, arg0);
 		default: return 0;
 	}
 }
@@ -2444,7 +2435,6 @@ long windowProc (long handle, long arg0, long arg1, long user_data) {
 		case SWITCH_PAGE: return gtk_switch_page(handle, arg0, (int)arg1);
 		case TEST_COLLAPSE_ROW: return gtk_test_collapse_row (handle, arg0, arg1);
 		case TEST_EXPAND_ROW: return gtk_test_expand_row(handle, arg0, arg1);
-		case ROW_INSERTED: return gtk_row_inserted (handle, arg0, arg1);
 		case ROW_HAS_CHILD_TOGGLED: return gtk_row_has_child_toggled(handle, arg0, arg1);
 		default: return 0;
 	}

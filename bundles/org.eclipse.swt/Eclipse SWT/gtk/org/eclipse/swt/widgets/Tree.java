@@ -100,7 +100,7 @@ public class Tree extends Composite {
 	GdkRGBA background, foreground, drawForegroundRGBA;
 	/** The owner of the widget is responsible for drawing */
 	boolean isOwnerDrawn;
-	boolean ignoreSize, ignoreAccessibility, pixbufSizeSet, hasChildren;
+	boolean ignoreSize, pixbufSizeSet, hasChildren;
 	int pixbufHeight, pixbufWidth, headerHeight;
 	boolean headerVisible;
 	TreeItem topItem;
@@ -1326,21 +1326,6 @@ long eventWindow () {
 	return paintWindow ();
 }
 
-boolean fixAccessibility () {
-	/*
-	* Bug in GTK. With GTK 2.12, when assistive technologies is on, the time
-	* it takes to add or remove several rows to the model is very long. This
-	* happens because the accessible object asks each row for its data, including
-	* the rows that are not visible. The the fix is to block the accessible object
-	* from receiving row_added and row_removed signals and, at the end, send only
-	* a notify signal with the "model" detail.
-	*
-	* Note: The test bellow has to be updated when the real problem is fixed in
-	* the accessible object.
-	*/
-	return true;
-}
-
 @Override
 Rectangle getClientAreaInPixels () {
 	checkWidget();
@@ -2532,14 +2517,6 @@ long gtk_motion_notify_event (long widget, long event) {
 }
 
 @Override
-long gtk_row_deleted (long model, long path) {
-	if (ignoreAccessibility) {
-		OS.g_signal_stop_emission_by_name (model, OS.row_deleted);
-	}
-	return 0;
-}
-
-@Override
 long gtk_row_has_child_toggled (long model, long path, long iter) {
 	/*
 	* Feature in GTK. The expanded state of a row that lost
@@ -2559,14 +2536,6 @@ long gtk_row_has_child_toggled (long model, long path, long iter) {
 		OS.g_signal_handlers_block_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, TEST_EXPAND_ROW);
 		GTK.gtk_tree_view_expand_row (handle, path, false);
 		OS.g_signal_handlers_unblock_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, TEST_EXPAND_ROW);
-	}
-	return 0;
-}
-
-@Override
-long gtk_row_inserted (long model, long path, long iter) {
-	if (ignoreAccessibility) {
-		OS.g_signal_stop_emission_by_name (model, OS.row_inserted);
 	}
 	return 0;
 }
@@ -2745,10 +2714,6 @@ void hookEvents () {
 		OS.g_signal_connect_closure (checkRenderer, OS.toggled, display.getClosure (TOGGLED), false);
 	}
 	OS.g_signal_connect_closure (handle, OS.start_interactive_search, display.getClosure (START_INTERACTIVE_SEARCH), false);
-	if (fixAccessibility ()) {
-		OS.g_signal_connect_closure (modelHandle, OS.row_inserted, display.getClosure (ROW_INSERTED), true);
-		OS.g_signal_connect_closure (modelHandle, OS.row_deleted, display.getClosure (ROW_DELETED), true);
-	}
 }
 
 /**
@@ -2967,9 +2932,6 @@ void remove (long parentIter, int start, int end) {
 	long selection = GTK.gtk_tree_view_get_selection (handle);
 	long iter = OS.g_malloc (GTK.GtkTreeIter_sizeof ());
 	if (iter == 0) error (SWT.ERROR_NO_HANDLES);
-	if (fixAccessibility ()) {
-		ignoreAccessibility = true;
-	}
 	try {
 		for (int i = start; i <= end; i++) {
 			GTK.gtk_tree_model_iter_nth_child (modelHandle, iter, parentIter, start);
@@ -2993,10 +2955,6 @@ void remove (long parentIter, int start, int end) {
 			}
 		}
 	} finally {
-		if (fixAccessibility ()) {
-			ignoreAccessibility = false;
-			OS.g_object_notify (handle, OS.model);
-		}
 		OS.g_free (iter);
 	}
 }
@@ -3016,16 +2974,8 @@ public void removeAll () {
 	long selection = GTK.gtk_tree_view_get_selection (handle);
 	OS.g_signal_handlers_block_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 
-	if (fixAccessibility ()) {
-		ignoreAccessibility = true;
-	}
-
 	GTK.gtk_tree_store_clear (modelHandle);
 
-	if (fixAccessibility ()) {
-		ignoreAccessibility = false;
-		OS.g_object_notify (handle, OS.model);
-	}
 	OS.g_signal_handlers_unblock_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 
 	for (int i=0; i<items.length; i++) {
@@ -3495,10 +3445,6 @@ void setItemCount (long parentIter, int count) {
 		remove (parentIter, count, itemCount - 1);
 	}
 	if (isVirtual) {
-		if (fixAccessibility ()) {
-			ignoreAccessibility = true;
-		}
-
 		long iters = OS.g_malloc (2 * GTK.GtkTreeIter_sizeof ());
 		if (iters == 0) error (SWT.ERROR_NO_HANDLES);
 
@@ -3517,11 +3463,6 @@ void setItemCount (long parentIter, int count) {
 		}
 
 		OS.g_free (iters);
-
-		if (fixAccessibility ()) {
-			ignoreAccessibility = false;
-			OS.g_object_notify (handle, OS.model);
-		}
 	} else {
 		for (int i=itemCount; i<count; i++) {
 			new TreeItem (this, parentIter, SWT.NONE, itemCount, true);
@@ -3865,10 +3806,6 @@ void setModel (long newModel) {
 	OS.g_object_unref (modelHandle);
 	modelHandle = newModel;
 	display.addWidget (modelHandle, this);
-	if (fixAccessibility ()) {
-		OS.g_signal_connect_closure (modelHandle, OS.row_inserted, display.getClosure (ROW_INSERTED), true);
-		OS.g_signal_connect_closure (modelHandle, OS.row_deleted, display.getClosure (ROW_DELETED), true);
-	}
 }
 
 @Override

@@ -3671,7 +3671,6 @@ void initializeCallbacks () {
 	closuresProc [Widget.TOGGLED] = windowProc3;
 	closuresProc [Widget.UNMAP_EVENT] = windowProc3;
 	closuresProc [Widget.WINDOW_STATE_EVENT] = windowProc3;
-	closuresProc [Widget.ROW_DELETED] = windowProc3;
 	closuresProc [Widget.DIRECTION_CHANGED] = windowProc3;
 
 	windowCallback4 = new Callback (this, "windowProc", 4); //$NON-NLS-1$
@@ -3686,7 +3685,6 @@ void initializeCallbacks () {
 	closuresProc [Widget.SWITCH_PAGE] = windowProc4;
 	closuresProc [Widget.TEST_COLLAPSE_ROW] = windowProc4;
 	closuresProc [Widget.TEST_EXPAND_ROW] = windowProc4;
-	closuresProc [Widget.ROW_INSERTED] = windowProc4;
 	closuresProc [Widget.ROW_HAS_CHILD_TOGGLED] = windowProc4;
 	closuresProc [Widget.DELETE_FROM_CURSOR] = windowProc4;
 	closuresProc [Widget.DELETE_FROM_CURSOR_INVERSE] = windowProc4;

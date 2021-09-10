@@ -1107,9 +1107,6 @@ public void removeAll () {
 	if (length == 0) return;
 	long iter = OS.g_malloc (GTK.GtkTreeIter_sizeof ());
 	if (iter == 0) error (SWT.ERROR_NO_HANDLES);
-	if (parent.fixAccessibility ()) {
-		parent.ignoreAccessibility = true;
-	}
 	long selection = GTK.gtk_tree_view_get_selection (parent.handle);
 	int [] value = new int [1];
 	while (GTK.gtk_tree_model_iter_children (modelHandle, iter, handle)) {
@@ -1122,10 +1119,6 @@ public void removeAll () {
 			GTK.gtk_tree_store_remove (modelHandle, iter);
 			OS.g_signal_handlers_unblock_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 		}
-	}
-	if (parent.fixAccessibility ()) {
-		parent.ignoreAccessibility = false;
-		OS.g_object_notify (parent.handle, OS.model);
 	}
 	OS.g_free (iter);
 }

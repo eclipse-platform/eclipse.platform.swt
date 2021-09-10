@@ -19,7 +19,7 @@ import org.eclipse.swt.layout.*;
 import org.eclipse.swt.widgets.*;
 
 public class Bug575787_Tree_SetItemCount_Perf {
-	final static int 	 PERF_NUM_ITEMS 		= 10000;
+	final static int 	 PERF_NUM_ITEMS 		= 100_000;
 
 	public static void main (String[] args) {
 		final Display display = new Display ();
@@ -27,7 +27,7 @@ public class Bug575787_Tree_SetItemCount_Perf {
 		shell.setLayout (new GridLayout ());
 
 		Button btnTestPerf = new Button(shell, 0);
-		btnTestPerf.setText ("Test Tree.setItemCount() performance");
+		btnTestPerf.setText ("Test Tree/Table .setItemCount() performance");
 		btnTestPerf.addListener (SWT.Selection, e -> {
 			for (int iIter = 0; iIter < 20; iIter++) {
 				StringBuilder sb = new StringBuilder ();
@@ -38,7 +38,7 @@ public class Bug575787_Tree_SetItemCount_Perf {
 					tree.setRedraw (false);
 
 					sb.append (String.format (
-						"%.2fsec=REGULAR ",
+						"%.2fsec=Tree(REGULAR) ",
 						measureTime (() -> tree.setItemCount (PERF_NUM_ITEMS))
 					));
 
@@ -51,11 +51,37 @@ public class Bug575787_Tree_SetItemCount_Perf {
 					tree.setRedraw (false);
 
 					sb.append (String.format (
-						"%.2fsec=VIRTUAL ",
+						"%.2fsec=Tree(VIRTUAL) ",
 						measureTime (() -> tree.setItemCount (PERF_NUM_ITEMS))
 					));
 
 					tree.dispose ();
+				}
+
+				// Regular Table
+				{
+					final Table table = new Table (shell, 0);
+					table.setRedraw (false);
+
+					sb.append (String.format (
+						"%.2fsec=Table(REGULAR) ",
+						measureTime (() -> table.setItemCount (PERF_NUM_ITEMS))
+					));
+
+					table.dispose ();
+				}
+
+				// Virtual Table
+				{
+					final Table table = new Table (shell, SWT.VIRTUAL);
+					table.setRedraw (false);
+
+					sb.append (String.format (
+						"%.2fsec=Table(VIRTUAL) ",
+						measureTime (() -> table.setItemCount (PERF_NUM_ITEMS))
+					));
+
+					table.dispose ();
 				}
 
 				System.out.println (sb);
