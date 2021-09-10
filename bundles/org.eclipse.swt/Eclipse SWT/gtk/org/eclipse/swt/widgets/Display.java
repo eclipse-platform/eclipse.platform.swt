@@ -127,6 +127,7 @@ public class Display extends Device {
 	long fds;
 	int allocated_nfds;
 	boolean wake;
+	boolean windowSizeSet;
 	int [] max_priority = new int [1], timeout = new int [1];
 	Callback eventCallback;
 	long eventProc, windowProc2, windowProc3, windowProc4, windowProc5, windowProc6;
@@ -134,9 +135,10 @@ public class Display extends Device {
 	long snapshotDrawProc, keyPressReleaseProc, focusProc, enterMotionProc, leaveProc,
 		 scrollProc, resizeProc, activateProc, gesturePressReleaseProc;
 	long notifyProc;
+	long computeSizeProc;
 	Callback windowCallback2, windowCallback3, windowCallback4, windowCallback5, windowCallback6;
 	Callback changeValue;
-	Callback snapshotDraw, keyPressReleaseCallback, focusCallback, enterMotionCallback,
+	Callback snapshotDraw, keyPressReleaseCallback, focusCallback, enterMotionCallback, computeSizeCallback,
 			 scrollCallback, leaveCallback, resizeCallback, activateCallback, gesturePressReleaseCallback;
 	Callback notifyCallback;
 	EventTable eventTable, filterTable;
@@ -1156,6 +1158,7 @@ void createDisplay (DeviceData data) {
 		GDK.gdk_threads_enter ();
 	}
 	boolean init;
+	windowSizeSet = false;
 	if (GTK.GTK4) {
 		init = GTK4.gtk_init_check();
 	} else {
@@ -3532,6 +3535,7 @@ void initializeCallbacks () {
 	signalIds [Widget.MAP_EVENT] = OS.g_signal_lookup (OS.map_event, GTK.GTK_TYPE_WIDGET ());
 	signalIds [Widget.MNEMONIC_ACTIVATE] = OS.g_signal_lookup (OS.mnemonic_activate, GTK.GTK_TYPE_WIDGET ());
 	signalIds [Widget.MOTION_NOTIFY_EVENT] = OS.g_signal_lookup (OS.motion_notify_event, GTK.GTK_TYPE_WIDGET ());
+	signalIds [Widget.COMPUTE_SIZE] = OS.g_signal_lookup(OS.compute_size, GTK.GTK_TYPE_WIDGET() );
 	/*
 	 * Connect to the "popped-up" signal on GTK3.22+ if the user has specified the
 	 * SWT_MENU_LOCATION_DEBUGGING environment variable.
@@ -3589,6 +3593,9 @@ void initializeCallbacks () {
 
 		activateCallback = new Callback(this, "activateProc", void.class, new Type[] {long.class, long.class, long.class}); //$NON-NLS-1$
 		activateProc = activateCallback.getAddress();
+
+		computeSizeCallback = new Callback(this, "computeSizeProc", void.class, new Type[] {long.class, long.class, long.class}); //$NON-NLS-1$
+		computeSizeProc = computeSizeCallback.getAddress();
 	}
 
 	notifyCallback = new Callback(this, "notifyProc", long.class, new Type[] {
@@ -6098,6 +6105,16 @@ void leaveProc(long controller, long user_data) {
 	Widget widget = getWidget(handle);
 
 	if (widget != null) widget.leaveProc(controller, handle, user_data);
+}
+
+void computeSizeProc(long toplevel, long size, long user_data) {
+	Shell shell = (Shell)getWidget(user_data);
+	if(shell == null) return;
+	if(windowSizeSet && !shell.geometry.getResize() ) return;
+	GTK4.gdk_toplevel_size_set_size(size,shell.geometry.getRequestedWidth(),shell.geometry.getRequestedHeight() );
+	windowSizeSet = true;
+	shell.geometry.setResize(false);
+
 }
 
 void activateProc(long action, long parameter, long user_data) {

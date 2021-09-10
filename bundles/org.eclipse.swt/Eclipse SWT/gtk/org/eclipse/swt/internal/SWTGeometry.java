@@ -1,33 +1,29 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2021 IBM Corporation and others. All rights reserved.
- * The contents of this file are made available under the terms
- * of the GNU Lesser General Public License (LGPL) Version 2.1 that
- * accompanies this distribution (lgpl-v21.txt).  The LGPL is also
- * available at http://www.gnu.org/licenses/lgpl.html.  If the version
- * of the LGPL at http://www.gnu.org is different to the version of
- * the LGPL accompanying this distribution and there is any conflict
- * between the two license versions, the terms of the LGPL accompanying
- * this distribution shall govern.
+ * Copyright (c) 2021 IBM Corporation and others.
+ *
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License 2.0
+ * which accompanies this distribution, and is available at
+ * https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
-package org.eclipse.swt.internal.gtk3;
+package org.eclipse.swt.internal;
 
 import org.eclipse.swt.internal.gtk.*;
-public class GdkGeometry implements GeometryInterface{
+
+public class SWTGeometry implements GeometryInterface {
 	public int min_width;
 	public int min_height;
 	public int max_width;
 	public int max_height;
-	public int base_width;
-	public int base_height;
-	public int width_inc;
-	public int height_inc;
-	public double min_aspect;
-	public double max_aspect;
-	public int win_gravity;
-	public static final int sizeof = GTK3.GdkGeometry_sizeof();
+	public boolean resizeToplevel;
+	public boolean minSizeRequested;
+	public int requestedWidth;
+	public int requestedHeight;
 
 	@Override
 	public int getMinWidth() {
@@ -47,15 +43,15 @@ public class GdkGeometry implements GeometryInterface{
 	}
 	@Override
 	public boolean getResize() {
-		return false;
+		return resizeToplevel;
 	}
 	@Override
 	public int getRequestedWidth() {
-		return 0;
+		return requestedWidth;
 	}
 	@Override
 	public int getRequestedHeight() {
-		return 0;
+		return requestedHeight;
 	}
 	@Override
 	public void setMinWidth(int value) {
@@ -75,18 +71,22 @@ public class GdkGeometry implements GeometryInterface{
 	}
 	@Override
 	public void setResize(boolean value) {
+		resizeToplevel = value;
 	}
 	@Override
 	public void setRequestedWidth(int value) {
+		requestedWidth = value;
 	}
 	@Override
 	public void setRequestedHeight(int value) {
+		requestedHeight = value;
 	}
 	@Override
 	public boolean getMinSizeRequested() {
-		return false;
+		return minSizeRequested;
 	}
 	@Override
 	public void setMinSizeRequested(boolean value) {
+		minSizeRequested = value;
 	}
 }

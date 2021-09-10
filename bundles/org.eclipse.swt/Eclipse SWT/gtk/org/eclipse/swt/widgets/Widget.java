@@ -242,7 +242,8 @@ public abstract class Widget {
 	static final int DPI_CHANGED = 104;
 	static final int NOTIFY_DEFAULT_HEIGHT = 105;
 	static final int NOTIFY_DEFAULT_WIDTH = 106;
-	static final int LAST_SIGNAL = 107;
+	static final int COMPUTE_SIZE = 107;
+	static final int LAST_SIGNAL = 108;
 
 	static final String IS_ACTIVE = "org.eclipse.swt.internal.control.isactive"; //$NON-NLS-1$
 	static final String KEY_CHECK_SUBWINDOW = "org.eclipse.swt.internal.control.checksubwindow"; //$NON-NLS-1$

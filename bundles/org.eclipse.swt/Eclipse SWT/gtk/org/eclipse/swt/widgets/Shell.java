@@ -127,7 +127,7 @@ public class Shell extends Decorations {
 	long shellHandle, tooltipsHandle, tooltipWindow, group, modalGroup;
 	boolean mapped, moved, resized, opened, fullScreen, showWithParent, modified, center;
 	int oldX, oldY, oldWidth, oldHeight;
-	GdkGeometry geometry;
+	GeometryInterface geometry;
 	Control lastActive;
 	ToolTip [] toolTips;
 	boolean ignoreFocusOut, ignoreFocusIn;
@@ -290,7 +290,12 @@ Shell (Display display, Shell parent, int style, long handle, boolean embedded) 
 			state |= FOREIGN_HANDLE;
 		}
 	}
-	this.geometry = new GdkGeometry();
+	if(!GTK.GTK4) {
+		geometry = new GdkGeometry();
+	}
+	else {
+		geometry = new SWTGeometry();
+	}
 	reskinWidget();
 	createWidget (0);
 }
@@ -935,6 +940,7 @@ void hookEvents () {
 		GTK.gtk_widget_realize(shellHandle);
 		long gdkSurface = gtk_widget_get_surface (shellHandle);
 		OS.g_signal_connect (gdkSurface, OS.notify_state, display.notifyProc, shellHandle);
+		OS.g_signal_connect (gdkSurface, OS.compute_size, display.computeSizeProc, shellHandle);
 		OS.g_signal_connect(shellHandle, OS.notify_default_height, display.notifyProc, Widget.NOTIFY_DEFAULT_HEIGHT);
 		OS.g_signal_connect(shellHandle, OS.notify_default_width, display.notifyProc, Widget.NOTIFY_DEFAULT_WIDTH);
 	} else {
@@ -1279,8 +1285,8 @@ public Point getMinimumSize () {
 
 Point getMinimumSizeInPixels () {
 	checkWidget ();
-	int width = Math.max (1, geometry.min_width + trimWidth ());
-	int height = Math.max (1, geometry.min_height + trimHeight ());
+	int width = Math.max (1, geometry.getMinWidth() + trimWidth ());
+	int height = Math.max (1, geometry.getMinHeight() + trimHeight ());
 	return new Point (width, height);
 }
 
@@ -1307,8 +1313,8 @@ public Point getMaximumSize () {
 Point getMaximumSizeInPixels () {
 	checkWidget ();
 
-	int width = Math.min (Integer.MAX_VALUE, geometry.max_width + trimWidth ());
-	int height = Math.min (Integer.MAX_VALUE, geometry.max_height + trimHeight ());
+	int width = Math.min (Integer.MAX_VALUE, geometry.getMaxWidth() + trimWidth ());
+	int height = Math.min (Integer.MAX_VALUE, geometry.getMaxHeight() + trimHeight ());
 	return new Point (width, height);
 }
 
@@ -1689,8 +1695,8 @@ long gtk_motion_notify_event (long widget, long event) {
 				int y = display.resizeBoundsY;
 				int width = display.resizeBoundsWidth;
 				int height = display.resizeBoundsHeight;
-				int newWidth = Math.max(width - dx, Math.max(geometry.min_width, border + border));
-				int newHeight = Math.max(height - dy, Math.max(geometry.min_height, border + border));
+				int newWidth = Math.max(width - dx, Math.max(geometry.getMinWidth(), border + border));
+				int newHeight = Math.max(height - dy, Math.max(geometry.getMinHeight(), border + border));
 				switch (display.resizeMode) {
 					case SWT.CURSOR_SIZEW:
 						x += width - newWidth;
@@ -1707,24 +1713,24 @@ long gtk_motion_notify_event (long widget, long event) {
 						height = newHeight;
 						break;
 					case SWT.CURSOR_SIZENE:
-						width = Math.max(width + dx, Math.max(geometry.min_width, border + border));
+						width = Math.max(width + dx, Math.max(geometry.getMinWidth(), border + border));
 						y += height - newHeight;
 						height = newHeight;
 						break;
 					case SWT.CURSOR_SIZEE:
-						width = Math.max(width + dx, Math.max(geometry.min_width, border + border));
+						width = Math.max(width + dx, Math.max(geometry.getMinWidth(), border + border));
 						break;
 					case SWT.CURSOR_SIZESE:
-						width = Math.max(width + dx, Math.max(geometry.min_width, border + border));
-						height = Math.max(height + dy, Math.max(geometry.min_height, border + border));
+						width = Math.max(width + dx, Math.max(geometry.getMinWidth(), border + border));
+						height = Math.max(height + dy, Math.max(geometry.getMinHeight(), border + border));
 						break;
 					case SWT.CURSOR_SIZES:
-						height = Math.max(height + dy, Math.max(geometry.min_height, border + border));
+						height = Math.max(height + dy, Math.max(geometry.getMinHeight(), border + border));
 						break;
 					case SWT.CURSOR_SIZESW:
 						x += width - newWidth;
 						width = newWidth;
-						height = Math.max(height + dy, Math.max(geometry.min_height, border + border));
+						height = Math.max(height + dy, Math.max(geometry.getMinHeight(), border + border));
 						break;
 				}
 				if (x != display.resizeBoundsX || y != display.resizeBoundsY) {
@@ -2298,19 +2304,19 @@ int setBounds (int x, int y, int width, int height, boolean move, boolean resize
 		}
 	}
 	if (resize) {
-		width = Math.max (1, Math.max (geometry.min_width, width - trimWidth ()));
-		if (geometry.max_width > 0) {
-			width = Math.min( width, geometry.max_width);
+		width = Math.max (1, Math.max (geometry.getMinWidth(), width - trimWidth ()));
+		if (geometry.getMaxWidth() > 0) {
+			width = Math.min( width, geometry.getMaxWidth());
 		}
-		height = Math.max (1, Math.max (geometry.min_height, height - trimHeight ()));
-		if (geometry.max_height > 0) {
-			height = Math.min(height, geometry.max_height);
+		height = Math.max (1, Math.max (geometry.getMinHeight(), height - trimHeight ()));
+		if (geometry.getMaxHeight() > 0) {
+			height = Math.min(height, geometry.getMaxHeight());
 		}
 		/*
 		* If the shell is created without a RESIZE style bit, and the
 		* minWidth/minHeight/maxWidth/maxHeight have been set, allow the resize.
 		*/
-		if ((style & SWT.RESIZE) != 0 || (geometry.min_height != 0 || geometry.min_width != 0 || geometry.max_height != 0 || geometry.max_width != 0)) {
+		if ((style & SWT.RESIZE) != 0 || (geometry.getMinHeight()  != 0 || geometry.getMinWidth()  != 0 || geometry.getMaxHeight()  != 0 || geometry.getMaxWidth()  != 0)) {
 			if (GTK.GTK4) {
 				/*
 				 * On GTK4, GtkWindow size includes the header bar. In order to keep window size allocation of the client area
@@ -2320,6 +2326,9 @@ int setBounds (int x, int y, int width, int height, boolean move, boolean resize
 				int[] headerNaturalHeight = new int[1];
 				GTK4.gtk_widget_measure(header, GTK.GTK_ORIENTATION_VERTICAL, 0, null, headerNaturalHeight, null, null);
 
+				geometry.setRequestedWidth(width);
+				geometry.setRequestedHeight(height + headerNaturalHeight[0]);
+				geometry.setResize(true);
 				GTK.gtk_window_set_default_size(shellHandle, width, height + headerNaturalHeight[0]);
 			} else {
 				GTK3.gtk_window_resize (shellHandle, width, height);
@@ -2619,13 +2628,19 @@ public void setMinimumSize (int width, int height) {
 
 void setMinimumSizeInPixels (int width, int height) {
 	checkWidget ();
-	geometry.min_width = Math.max (width, trimWidth ()) - trimWidth ();
-	geometry.min_height = Math.max (height, trimHeight ()) - trimHeight ();
+	geometry.setMinWidth(Math.max (width, trimWidth ()) - trimWidth ());
+	geometry.setMinHeight(Math.max (height, trimHeight ()) - trimHeight ());
+
+	if(GTK.GTK4) {
+		geometry.setMinSizeRequested(true);
+		return;
+	}
+
 	int hint = GDK.GDK_HINT_MIN_SIZE;
-	if (geometry.max_height > 0 || geometry.max_width > 0) {
+	if (geometry.getMaxHeight() > 0 || geometry.getMaxWidth() > 0) {
 		hint = hint | GDK.GDK_HINT_MAX_SIZE;
 	}
-	GTK3.gtk_window_set_geometry_hints (shellHandle, 0, geometry, hint);
+	GTK3.gtk_window_set_geometry_hints (shellHandle, 0, (GdkGeometry) geometry, hint);
 }
 
 /**
@@ -2716,13 +2731,13 @@ void setMaximumSizeInPixels (Point size) {
 
 void setMaximumSizeInPixels (int width, int height) {
 	checkWidget ();
-	geometry.max_width = Math.max (width, trimWidth ()) - trimWidth ();
-	geometry.max_height = Math.max (height, trimHeight ()) - trimHeight ();
+	geometry.setMaxWidth(Math.max (width, trimWidth ()) - trimWidth ());
+	geometry.setMaxHeight(Math.max (height, trimHeight ()) - trimHeight ());
 	int hint = GDK.GDK_HINT_MAX_SIZE;
-	if (geometry.min_width > 0 || geometry.min_height > 0) {
+	if (geometry.getMinWidth() > 0 || geometry.getMinHeight() > 0) {
 		hint = hint | GDK.GDK_HINT_MIN_SIZE;
 	}
-	GTK3.gtk_window_set_geometry_hints (shellHandle, 0, geometry, hint);
+	GTK3.gtk_window_set_geometry_hints (shellHandle, 0, (GdkGeometry) geometry, hint);
 }
 
 /**

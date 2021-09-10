@@ -106,6 +106,43 @@ JNIEXPORT void JNICALL GTK4_NATIVE(gdk_1toplevel_1set_1icon_1list)
 }
 #endif
 
+#ifndef NO_gdk_1toplevel_1size_1get_1bounds
+JNIEXPORT void JNICALL GTK4_NATIVE(gdk_1toplevel_1size_1get_1bounds)
+	(JNIEnv *env, jclass that, jlong arg0, jintArray arg1, jintArray arg2)
+{
+	jint *lparg1=NULL;
+	jint *lparg2=NULL;
+	GTK4_NATIVE_ENTER(env, that, gdk_1toplevel_1size_1get_1bounds_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	if (arg2) if ((lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL)) == NULL) goto fail;
+	gdk_toplevel_size_get_bounds((GdkToplevelSize*)arg0, (int *)lparg1, (int *)lparg2);
+fail:
+	if (arg2 && lparg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	if (arg1 && lparg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
+	GTK4_NATIVE_EXIT(env, that, gdk_1toplevel_1size_1get_1bounds_FUNC);
+}
+#endif
+
+#ifndef NO_gdk_1toplevel_1size_1set_1min_1size
+JNIEXPORT void JNICALL GTK4_NATIVE(gdk_1toplevel_1size_1set_1min_1size)
+	(JNIEnv *env, jclass that, jlong arg0, jint arg1, jint arg2)
+{
+	GTK4_NATIVE_ENTER(env, that, gdk_1toplevel_1size_1set_1min_1size_FUNC);
+	gdk_toplevel_size_set_min_size((GdkToplevelSize*)arg0, (int)arg1, (int)arg2);
+	GTK4_NATIVE_EXIT(env, that, gdk_1toplevel_1size_1set_1min_1size_FUNC);
+}
+#endif
+
+#ifndef NO_gdk_1toplevel_1size_1set_1size
+JNIEXPORT void JNICALL GTK4_NATIVE(gdk_1toplevel_1size_1set_1size)
+	(JNIEnv *env, jclass that, jlong arg0, jint arg1, jint arg2)
+{
+	GTK4_NATIVE_ENTER(env, that, gdk_1toplevel_1size_1set_1size_FUNC);
+	gdk_toplevel_size_set_size((GdkToplevelSize*)arg0, (int)arg1, (int)arg2);
+	GTK4_NATIVE_EXIT(env, that, gdk_1toplevel_1size_1set_1size_FUNC);
+}
+#endif
+
 #ifndef NO_gtk_1box_1append
 JNIEXPORT void JNICALL GTK4_NATIVE(gtk_1box_1append)
 	(JNIEnv *env, jclass that, jlong arg0, jlong arg1)

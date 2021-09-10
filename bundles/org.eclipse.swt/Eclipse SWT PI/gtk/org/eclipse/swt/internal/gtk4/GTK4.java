@@ -532,4 +532,26 @@ public class GTK4 {
 	 * @param height cast=(int *)
 	 */
 	public static final native void gtk_tree_view_column_cell_get_size(long tree_column, int[] x_offset, int[] y_offset, int[] width, int[] height);
+
+	/* GdkToplevelSize */
+	/**
+	 * @param size cast=(GdkToplevelSize*)
+	 * @param bounds_width cast=(int *)
+	 * @param bounds_height cast=(int *)
+	 */
+	public static final native void gdk_toplevel_size_get_bounds(long size, int[] bounds_width, int[] bounds_height);
+	/**
+	 * @param size cast=(GdkToplevelSize*)
+	 * @param min_width cast=(int)
+	 * @param min_height cast=(int)
+	 */
+	public static final native void gdk_toplevel_size_set_min_size(long size, int min_width, int min_height);
+	/**
+	 * @param size cast=(GdkToplevelSize*)
+	 * @param width cast=(int)
+	 * @param height cast=(int)
+	 */
+	public static final native void gdk_toplevel_size_set_size(long size, int width, int height);
+
+
 }

@@ -377,6 +377,7 @@ public class OS extends C {
 	public static final byte[] notify_default_width = ascii("notify::default-width");
 	public static final byte[] notify_theme_change = ascii("notify::gtk-application-prefer-dark-theme");
 	public static final byte[] response = ascii("response");
+	public static final byte[] compute_size = ascii("compute-size");
 
 	/** Properties */
 	public static final byte[] active = ascii("active");
