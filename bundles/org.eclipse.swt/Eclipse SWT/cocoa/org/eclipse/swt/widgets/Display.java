@@ -5132,6 +5132,42 @@ public void syncExec (Runnable runnable) {
 }
 
 /**
+ * Calls the callable in the user-interface thread and returns the supplied value.
+ * The callable may throw an checked Exception. Any Exception is rethrown in the calling thread.
+ *
+ * @param callable
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_FAILED_EXEC - if an exception occurred when executing the runnable</li>
+ *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ *
+ * @see #syncExec(Runnable)
+ * @see org.eclipse.swt.SwtCallable#call()
+ * @since 3.118
+ * @author Joerg Kubitz
+ */
+public <T, E extends Exception> T syncCall(org.eclipse.swt.SwtCallable<T, E> callable) throws E {
+	Objects.nonNull(callable);
+	@SuppressWarnings("unchecked")
+	T[] t = (T[]) new Object[1];
+	Object[] ex = new Object[1];
+	syncExec(() -> {
+		try {
+			t[0] = callable.call();
+		} catch (Exception e) {
+			ex[0] = e;
+		}
+	});
+	if (ex[0] != null) {
+		@SuppressWarnings("unchecked")
+		E e = (E) ex[0];
+		throw e;
+	}
+	return t[0];
+}
+
+/**
  * Causes the <code>run()</code> method of the runnable to
  * be invoked by the user-interface thread after the specified
  * number of milliseconds have elapsed. If milliseconds is less

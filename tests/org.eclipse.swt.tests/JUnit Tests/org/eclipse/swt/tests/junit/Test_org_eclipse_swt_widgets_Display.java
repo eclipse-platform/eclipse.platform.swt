@@ -23,9 +23,11 @@ import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.io.IOException;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.SWTException;
 import org.eclipse.swt.graphics.DeviceData;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
@@ -1381,6 +1383,89 @@ public void test_syncExecLjava_lang_Runnable_dispose() {
 		display.syncExec(() -> display.dispose());
 	} finally {
 		assertTrue(display.isDisposed());
+	}
+}
+
+@Test
+public void test_syncCall() {
+	final Display display = new Display();
+	try {
+		int depth=display.syncCall(() -> display.getDepth());
+		assertEquals(display.getDepth(), depth);
+	} finally {
+		display.dispose();
+	}
+}
+
+@Test
+public void test_syncCall_dispose() {
+	final Display display = new Display();
+	try {
+		int magic=display.syncCall(() -> {display.dispose(); return 42;});
+		assertEquals(42, magic);
+	} finally {
+		assertTrue(display.isDisposed());
+	}
+}
+@Test
+public void test_syncCall_RuntimeException() {
+	final Display display = new Display();
+	try {
+		int depth=display.syncCall(() -> {throw new IllegalArgumentException("42");});
+		assertFalse("should not be reached "+depth, true);
+	} catch (RuntimeException e) {
+		assertEquals("42", e.getMessage());
+	} finally {
+		display.dispose();
+	}
+}
+@Test
+public void test_syncCall_Exception() {
+	final Display display = new Display();
+	try {
+		int depth=display.syncCall(() -> {throw new IOException("42");});
+		assertFalse("should not be reached "+depth, true);
+	} catch (IOException e) {
+		assertEquals("42", e.getMessage());
+	} finally {
+		display.dispose();
+	}
+}
+@Test
+public void test_syncCall_SWTException() {
+	final Display display = new Display();
+	display.dispose();
+	try {
+		int magic=display.syncCall(() -> {display.dispose(); return 42;});
+		assertFalse("should not be reached "+magic, true);
+	} catch (SWTException e) {
+		assertEquals("Device is disposed", e.getMessage());
+	}
+}
+@Test
+public void test_syncCall_concurrentCallable() {
+	final Display display = new Display();
+	try {
+		java.util.concurrent.Callable<Integer> c=() -> {return 42;};
+		int magic=display.syncCall(c::call);
+		assertEquals(42, magic);
+	} catch (Exception e) {
+		assertFalse("should not be reached ", true);
+	} finally {
+		display.dispose();
+	}
+}
+@Test
+public void test_syncCall_concurrentCallable_Exception() {
+	final Display display = new Display();
+	try {
+		java.util.concurrent.Callable<Integer> c=() -> {throw new IOException("42");};
+		int depth=display.syncCall(c::call);
+		assertFalse("should not be reached "+depth, true);
+	} catch (Exception e) {
+		assertEquals("42", e.getMessage());
+	} finally {
+		display.dispose();
 	}
 }
 
