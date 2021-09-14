@@ -245,8 +245,6 @@ public void test_imageDrawing() {
 		gc.dispose();
 		meter.stop();
 		image.dispose();
-		color1.dispose();
-		color2.dispose();
 		while(display.readAndDispatch()){/*empty*/}
 	}
 	disposeMeter(meter);
@@ -296,8 +294,6 @@ public void test_windowDrawing() {
 		gc.dispose();
 		meter.stop();
 		shell.dispose();
-		color1.dispose();
-		color2.dispose();
 		while(display.readAndDispatch()){/*empty*/}
 	}
 	disposeMeter(meter);
@@ -343,8 +339,6 @@ public void test_stringDrawing() {
 		gc.dispose();
 		meter.stop();
 		shell.dispose();
-		color1.dispose();
-		color2.dispose();
 		font1.dispose();
 		font2.dispose();
 		while(display.readAndDispatch()){/*empty*/}
@@ -391,8 +385,6 @@ public void test_fastStringDrawing() {
 		gc.dispose();
 		meter.stop();
 		shell.dispose();
-		color1.dispose();
-		color2.dispose();
 		font1.dispose();
 		font2.dispose();
 		while(display.readAndDispatch()){/*empty*/}

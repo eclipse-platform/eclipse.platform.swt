@@ -250,9 +250,6 @@ public void test_drawImageLorg_eclipse_swt_graphics_ImageII() {
 	image.dispose();
 	imageTransparent.dispose();
 	imageAlpha.dispose();
-	c1.dispose();
-	c2.dispose();
-	c3.dispose();
 }
 
 @Test
@@ -294,9 +291,6 @@ public void test_drawImageLorg_eclipse_swt_graphics_ImageIIIIIIII() {
 	image.dispose();
 	imageAlpha.dispose();
 	imageTransparent.dispose();
-	c1.dispose();
-	c2.dispose();
-	c3.dispose();
 }
 
 @Test

@@ -613,7 +613,6 @@ public void test_setBackgroundLorg_eclipse_swt_graphics_Color() {
 	assertEquals("getBackground not equal color after setBackground(color) for " + control, color, control.getBackground());
 	control.setBackground(null);
 	assertTrue("getBackground unchanged after setBackground(null) for " + control, !control.getBackground().equals(color));
-	color.dispose();
 	color = new Color(255, 0, 0, 0);
 	control.setBackground(color);
 	assertEquals("getBackground not equal color after setBackground(color) with 0 alpha for " + control + " " + control.getBackground(), color, control.getBackground());
@@ -628,7 +627,6 @@ public void test_setBackgroundLorg_eclipse_swt_graphics_Color() {
 		assertEquals("Setting a foreground onto a widget with a background failed for " + control,
 				fg, control.getForeground());
 	}
-	color.dispose();
 }
 @Test
 public void test_setBackgroundAlphaLorg_eclipse_swt_graphics_Color() {
@@ -638,8 +636,6 @@ public void test_setBackgroundAlphaLorg_eclipse_swt_graphics_Color() {
 	Color fg = new Color(0, 255, 0, 0);
 	control.setForeground(fg);
 	assertEquals(color, control.getBackground());
-	color.dispose();
-	fg.dispose();
 }
 @Test
 public void test_setBackgroundDisposedColorLorg_eclipse_swt_graphics_Color() {
@@ -763,7 +759,6 @@ public void test_setForegroundLorg_eclipse_swt_graphics_Color() {
 		assertEquals("Setting a background onto a widget with a foreground failed for " + control,
 				bg, control.getBackground());
 	}
-	color.dispose();
 }
 @Test
 public void test_setForegroundAlphaLorg_eclipse_swt_graphics_Color() {
@@ -775,8 +770,6 @@ public void test_setForegroundAlphaLorg_eclipse_swt_graphics_Color() {
 	Color bg = new Color(0, 255, 0, 0);
 	control.setBackground(bg);
 	assertEquals(color, control.getForeground());
-	color.dispose();
-	bg.dispose();
 }
 
 @Test

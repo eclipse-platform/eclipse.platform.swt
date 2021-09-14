@@ -221,8 +221,6 @@ public void test_setBackgroundAlphaTimeDateTime() {
 	Color fg = new Color(0, 255, 0, 0);
 	time.setForeground(fg);
 	assertEquals(color, time.getBackground());
-	color.dispose();
-	fg.dispose();
 	time.dispose();
 }
 

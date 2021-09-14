@@ -181,6 +181,5 @@ public void test_setLinkForegroundLorg_eclipse_swt_graphics_Color() {
 	assertEquals(color, link.getLinkForeground());
 	link.setLinkForeground(null);
 	assertFalse(link.getForeground().equals(color));
-	color.dispose();
 }
 }

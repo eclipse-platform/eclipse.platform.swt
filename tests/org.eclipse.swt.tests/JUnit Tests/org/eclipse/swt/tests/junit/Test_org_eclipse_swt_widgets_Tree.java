@@ -380,7 +380,6 @@ public void test_setHeaderBackgroundLorg_eclipse_swt_graphics_Color() {
 	assertEquals(color, tree.getHeaderBackground());
 	tree.setHeaderBackground(null);
 	assertFalse(tree.getHeaderBackground().equals(color));
-	color.dispose();
 }
 
 @Test
@@ -391,7 +390,6 @@ public void test_setHeaderForegroundLorg_eclipse_swt_graphics_Color() {
 	assertEquals(color, tree.getHeaderForeground());
 	tree.setHeaderForeground(null);
 	assertFalse(tree.getHeaderForeground().equals(color));
-	color.dispose();
 }
 
 @Test

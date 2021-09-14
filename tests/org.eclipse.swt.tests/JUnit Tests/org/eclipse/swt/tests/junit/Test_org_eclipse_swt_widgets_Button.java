@@ -191,7 +191,6 @@ public void test_setBackgroundCheckButton() {
 	checkButton.setBackground(null);
 	assertTrue("getBackground unchanged after setBackground(null) for SWT.CHECK Button",
 			!checkButton.getBackground().equals(color));
-	color.dispose();
 	color = new Color(255, 0, 0, 0);
 	checkButton.setBackground(color);
 	assertEquals("getBackground not equal after setBackground with 0 alpha for SWT.CHECK Button",
@@ -207,9 +206,7 @@ public void test_setBackgroundCheckButton() {
 				color, checkButton.getBackground());
 		assertEquals("Setting a foreground onto an SWT.CHECK Button with a background failed",
 				fg, checkButton.getForeground());
-		fg.dispose();
 	}
-	color.dispose();
 	checkButton.dispose();
 }
 
@@ -222,8 +219,6 @@ public void test_setBackgroundAlphaCheckButton() {
 	Color fg = new Color(0, 255, 0, 0);
 	checkButton.setForeground(fg);
 	assertEquals(color, checkButton.getBackground());
-	color.dispose();
-	fg.dispose();
 	checkButton.dispose();
 }
 
@@ -237,7 +232,6 @@ public void test_setBackgroundRadioButton() {
 	radioButton.setBackground(null);
 	assertFalse("getBackground unchanged after setBackground(null) for SWT.RADIO Button",
 			radioButton.getBackground().equals(color));
-	color.dispose();
 	color = new Color(255, 0, 0, 0);
 	radioButton.setBackground(color);
 	assertEquals("getBackground not equal after setBackground with 0 alpha for SWT.RADIO Button",
@@ -253,9 +247,7 @@ public void test_setBackgroundRadioButton() {
 				color, radioButton.getBackground());
 		assertEquals("Setting a foreground onto an SWT.RADIO Button with a background failed",
 				fg, radioButton.getForeground());
-		fg.dispose();
 	}
-	color.dispose();
 	radioButton.dispose();
 }
 
@@ -268,8 +260,6 @@ public void test_setBackgroundAlphaRadioButton() {
 	Color fg = new Color(0, 255, 0, 0);
 	radioButton.setForeground(fg);
 	assertEquals(color, radioButton.getBackground());
-	color.dispose();
-	fg.dispose();
 	radioButton.dispose();
 }
 
@@ -296,10 +286,8 @@ public void test_setForegroundCheckButton() {
 				color, checkButton.getForeground());
 		assertEquals("Setting a background onto an SWT.CHECK Button with a foreground failed",
 				bg, checkButton.getBackground());
-		bg.dispose();
 	}
-	color.dispose();
-	checkButton.dispose();
+        checkButton.dispose();
 }
 
 @Test
@@ -313,8 +301,6 @@ public void test_setForegroundAlphaCheckButton() {
 	Color bg = new Color(0, 255, 0, 0);
 	checkButton.setBackground(bg);
 	assertEquals(color, checkButton.getForeground());
-	color.dispose();
-	bg.dispose();
 	checkButton.dispose();
 }
 
@@ -334,9 +320,7 @@ public void test_setForegroundRadioButton() {
 				color, radioButton.getForeground());
 		assertEquals("Setting a background onto an SWT.RADIO Button with a foreground failed",
 				bg, radioButton.getBackground());
-		bg.dispose();
 	}
-	color.dispose();
 	radioButton.dispose();
 }
 
@@ -351,8 +335,6 @@ public void test_setForegroundAlphaRadiokButton() {
 	Color bg = new Color(0, 255, 0, 0);
 	radioButton.setBackground(bg);
 	assertEquals(color, radioButton.getForeground());
-	color.dispose();
-	bg.dispose();
 	radioButton.dispose();
 }
 

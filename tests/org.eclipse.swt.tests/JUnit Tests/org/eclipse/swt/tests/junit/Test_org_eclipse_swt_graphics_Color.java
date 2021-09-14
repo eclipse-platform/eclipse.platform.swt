@@ -95,49 +95,40 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceIII() {
 }
 
 @Test
+@SuppressWarnings("unused")
 public void test_ConstructorLorg_eclipse_swt_graphics_DeviceIII_with_device() {
 	// Test new Color(Device device, int red, int green, int blue)
 	// IllegalArgumentException if the red, green or blue argument is not between 0 and 255
 
 	// valid color (black)
 	Color color = new Color(display, 0, 0, 0);
-	color.dispose();
 
 	// valid color (black with alpha)
 	color = new Color(display, 0, 0, 0, 0);
-	color.dispose();
 
 	// valid color (white)
 	color = new Color(display, 255, 255, 255);
-	color.dispose();
 
 	// valid color (white with alpha)
 	color = new Color(display, 255, 255, 255, 0);
-	color.dispose();
 
 	// valid color (random grey)
 	color = new Color(display, 20, 20, 20);
-	color.dispose();
 
 	// valid color (random grey with alpha)
 	color = new Color(display, 20, 20, 20, 0);
-	color.dispose();
 
 	// valid color (random)
 	color = new Color(display, 102, 255, 0);
-	color.dispose();
 
 	// valid color (random with alpha)
 	color = new Color(display, 102, 255, 0, 0);
-	color.dispose();
 
 	// device == null (valid)
 	color = new Color(null, 0, 0, 0);
-	color.dispose();
 
 	// device == null (valid with alpha)
 	color = new Color(null, 0, 0, 0, 0);
-	color.dispose();
 
 	// illegal argument, rgb < 0
 	assertThrows("No exception thrown for rgb < 0", IllegalArgumentException.class, () -> new Color(display, -10, -10, -10));
@@ -211,49 +202,40 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_gra
 }
 
 @Test
+@SuppressWarnings("unused")
 public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_graphics_RGB_with_device() {
 	// Test new Color(Device device, RGB rgb)
 	// IllegalArgumentException if the red, green or blue argument is not between 0 and 255; or rgb is null
 
 	// valid color (black)
 	Color color = new Color(display, new RGB(0, 0, 0));
-	color.dispose();
 
 	// valid color (black with alpha)
 	color = new Color(display, new RGB(0, 0, 0), 0);
-	color.dispose();
 
 	// valid color (white)
 	color = new Color(display, new RGB(255, 255, 255));
-	color.dispose();
 
 	// valid color (white with alpha)
 	color = new Color(display, new RGB(255, 255, 255), 0);
-	color.dispose();
 
 	// valid color (random grey)
 	color = new Color(display, new RGB(10, 10, 10));
-	color.dispose();
 
 	// valid color (random grey with alpha)
 	color = new Color(display, new RGB(10, 10, 10), 0);
-	color.dispose();
 
 	// valid color (random)
 	color = new Color(display, new RGB(102, 255, 0));
-	color.dispose();
 
 	// valid color (random with alpha)
 	color = new Color(display, new RGB(102, 255, 0), 0);
-	color.dispose();
 
 	// device == null (valid)
 	color = new Color(null, new RGB(0, 0, 0));
-	color.dispose();
 
 	// device == null (valid with alpha)
 	color = new Color(null, new RGB(0, 0, 0), 0);
-	color.dispose();
 
 	// illegal argument, rgb < 0
 	assertThrows("No exception thrown for rgb < 0", IllegalArgumentException.class, () -> new Color(display, new RGB(-10, -10, -10)));
@@ -324,49 +306,40 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_gra
 }
 
 @Test
+@SuppressWarnings("unused")
 public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_graphics_RGBA_with_device() {
 	// Test new Color(Device device, RGBA rgba)
 	// IllegalArgumentException if the red, green, blue or alpha argument is not between 0 and 255; or rgba is null
 
 	// valid color (black)
 	Color color = new Color(display, new RGBA(0, 0, 0, 255));
-	color.dispose();
 
 	// valid color (black with alpha)
 	color = new Color(display, new RGBA(0, 0, 0, 0));
-	color.dispose();
 
 	// valid color (white)
 	color = new Color(display, new RGBA(255, 255, 255, 255));
-	color.dispose();
 
 	// valid color (white with alpha)
 	color = new Color(display, new RGBA(255, 255, 255, 0));
-	color.dispose();
 
 	// valid color (random grey)
 	color = new Color(display, new RGBA(10, 10, 10, 10));
-	color.dispose();
 
 	// valid color (random grey with alpha)
 	color = new Color(display, new RGBA(10, 10, 10, 0));
-	color.dispose();
 
 	// valid color (random)
 	color = new Color(display, new RGBA(102, 255, 0, 255));
-	color.dispose();
 
 	// valid color (random with alpha)
 	color = new Color(display, new RGBA(102, 255, 0, 0));
-	color.dispose();
 
 	// device == null (valid)
 	color = new Color(null, new RGBA(0, 0, 0, 255));
-	color.dispose();
 
 	// device == null (valid with alpha)
 	color = new Color(null, new RGBA(0, 0, 0, 0));
-	color.dispose();
 
 	// illegal argument, rgba < 0
 	assertThrows("No exception thrown for rgba < 0", IllegalArgumentException.class, () -> new Color(display, new RGBA(-10, -10, -10, -10)));
@@ -391,9 +364,7 @@ public void test_equalsLjava_lang_Object() {
 	Color sameColor2 = new Color(new RGB(1, 2, 3));
 	Color otherColor = new Color(5, 6, 7);
 	Color disposedColor = new Color(1, 2, 3);
-	disposedColor.dispose();
 	Color disposedColor2 = new Color(5, 6, 7);
-	disposedColor2.dispose();
 
 	// Test Color.equals(Object)
 	assertFalse("!color.equals((Object)null)", color.equals((Object)null));
@@ -433,44 +404,30 @@ public void test_equalsLjava_lang_Object_with_device() {
 	Color sameColor = new Color(display, 1, 2, 3);
 	Color sameColor2 = new Color(display, new RGB(1, 2, 3));
 	Color otherColor = new Color(display, 5, 6, 7);
-	try {
-		// Test Color.equals(Object)
-		assertFalse("!color.equals((Object)null)", color.equals((Object)null));
+	// Test Color.equals(Object)
+	assertFalse("!color.equals((Object)null)", color.equals((Object)null));
 
-		// Test Color.equals(Color)
-		assertFalse("!color.equals((Color)null)", color.equals((Color)null));
-		assertTrue("color.equals(color)", color.equals(color));
-		assertTrue("color.equals(sameColor)", color.equals(sameColor));
-		assertTrue("color.equals(sameColor2)", color.equals(sameColor2));
-		assertFalse("!color.equals(otherColor)", color.equals(otherColor));
-	} finally {
-		color.dispose();
-		sameColor.dispose();
-		sameColor2.dispose();
-		otherColor.dispose();
-	}
+	// Test Color.equals(Color)
+	assertFalse("!color.equals((Color)null)", color.equals((Color)null));
+	assertTrue("color.equals(color)", color.equals(color));
+	assertTrue("color.equals(sameColor)", color.equals(sameColor));
+	assertTrue("color.equals(sameColor2)", color.equals(sameColor2));
+	assertFalse("!color.equals(otherColor)", color.equals(otherColor));
 
 	// With alpha
 	color = new Color(display, 1, 2, 3, 0);
 	sameColor = new Color(display, 1, 2, 3, 0);
 	sameColor2 = new Color(display, new RGB(1, 2, 3), 0);
 	otherColor = new Color(display, 5, 6, 7, 0);
-	try {
-		// Test Color.equals(Object)
-		assertFalse("!color.equals((Object)null)", color.equals((Object)null));
+	// Test Color.equals(Object)
+	assertFalse("!color.equals((Object)null)", color.equals((Object)null));
 
-		// Test Color.equals(Color)
-		assertFalse("!color.equals((Color)null)", color.equals((Color)null));
-		assertTrue("color.equals(color)", color.equals(color));
-		assertTrue("color.equals(sameColor)", color.equals(sameColor));
-		assertTrue("color.equals(sameColor2)", color.equals(sameColor2));
-		assertFalse("!color.equals(otherColor)", color.equals(otherColor));
-	} finally {
-		color.dispose();
-		sameColor.dispose();
-		sameColor2.dispose();
-		otherColor.dispose();
-	}
+	// Test Color.equals(Color)
+	assertFalse("!color.equals((Color)null)", color.equals((Color)null));
+	assertTrue("color.equals(color)", color.equals(color));
+	assertTrue("color.equals(sameColor)", color.equals(sameColor));
+	assertTrue("color.equals(sameColor2)", color.equals(sameColor2));
+	assertFalse("!color.equals(otherColor)", color.equals(otherColor));
 }
 
 @Test
@@ -478,29 +435,21 @@ public void test_equalsLjava_lang_Object_mix() {
 	Color color = new Color(display, 1, 2, 3);
 	Color sameColorNoDevice = new Color(1, 2, 3);
 	Color otherColorNoDevice = new Color(5, 6, 7);
-	try {
-		// Test Color.equals(Color)
-		assertTrue("color.equals(sameColor)", color.equals(sameColorNoDevice));
-		assertFalse("!color.equals(otherColor)", color.equals(otherColorNoDevice));
-		assertTrue("color.equals(sameColor)", sameColorNoDevice.equals(color));
-		assertFalse("!color.equals(otherColor)", otherColorNoDevice.equals(color));
-	} finally {
-		color.dispose();
-	}
+	// Test Color.equals(Color)
+	assertTrue("color.equals(sameColor)", color.equals(sameColorNoDevice));
+	assertFalse("!color.equals(otherColor)", color.equals(otherColorNoDevice));
+	assertTrue("color.equals(sameColor)", sameColorNoDevice.equals(color));
+	assertFalse("!color.equals(otherColor)", otherColorNoDevice.equals(color));
 
 	// With alpha
 	color = new Color(display, 1, 2, 3, 0);
 	sameColorNoDevice = new Color(1, 2, 3, 0);
 	otherColorNoDevice = new Color(5, 6, 7, 0);
-	try {
-		// Test Color.equals(Color)
-		assertTrue("color.equals(sameColor)", color.equals(sameColorNoDevice));
-		assertFalse("!color.equals(otherColor)", color.equals(otherColorNoDevice));
-		assertTrue("color.equals(sameColor)", sameColorNoDevice.equals(color));
-		assertFalse("!color.equals(otherColor)", otherColorNoDevice.equals(color));
-	} finally {
-		color.dispose();
-	}
+	// Test Color.equals(Color)
+	assertTrue("color.equals(sameColor)", color.equals(sameColorNoDevice));
+	assertFalse("!color.equals(otherColor)", color.equals(otherColorNoDevice));
+	assertTrue("color.equals(sameColor)", sameColorNoDevice.equals(color));
+	assertFalse("!color.equals(otherColor)", otherColorNoDevice.equals(color));
 }
 
 @Test
@@ -514,12 +463,7 @@ public void test_getBlue() {
 public void test_getBlue_with_device() {
 	// Test Color.getBlue()
 	Color color = new Color(display, 0, 0, 255);
-	try {
-		assertEquals("color.getBlue()", color.getBlue(), 255);
-	} finally {
-		color.dispose();
-	}
-
+	assertEquals("color.getBlue()", color.getBlue(), 255);
 }
 
 @Test
@@ -533,11 +477,7 @@ public void test_getGreen() {
 public void test_getGreen_with_device() {
 	// Test Color.getGreen()
 	Color color = new Color(display, 0, 255, 0);
-	try {
-		assertEquals("color.getGreen()", color.getGreen(), 255);
-	} finally {
-		color.dispose();
-	}
+	assertEquals("color.getGreen()", color.getGreen(), 255);
 }
 
 @Test
@@ -552,7 +492,6 @@ public void test_getRGB_with_device() {
 	Color color = new Color(display, 255, 255, 255);
 	assertNotNull(color.getRGB());
 	assertEquals(new RGB(255, 255, 255), color.getRGB());
-	color.dispose();
 }
 
 @Test
@@ -566,11 +505,7 @@ public void test_getRed() {
 public void test_getRed_with_device() {
 	// Test Color.getRed()
 	Color color = new Color(display, 255, 0, 0);
-	try {
-		assertEquals("color.getRed()", color.getRed(), 255);
-	} finally {
-		color.dispose();
-	}
+	assertEquals("color.getRed()", color.getRed(), 255);
 }
 
 @Test
@@ -584,11 +519,7 @@ public void test_getAlpha() {
 public void test_getAlpha_with_device() {
 	// Test Color.getRed()
 	Color color = new Color(display, 255, 0, 0, 0);
-	try {
-		assertEquals("color.getAlpha()", color.getAlpha(), 0);
-	} finally {
-		color.dispose();
-	}
+	assertEquals("color.getAlpha()", color.getAlpha(), 0);
 }
 
 @Test
@@ -607,8 +538,6 @@ public void test_hashCode_with_device() {
 	if (color.equals(otherColor)) {
 		assertEquals("Hash codes of equal objects should be equal", color.hashCode(), otherColor.hashCode());
 	}
-	color.dispose();
-	otherColor.dispose();
 }
 
 /**
@@ -646,13 +575,9 @@ public void test_toString() {
 @Test
 public void test_toString_with_device() {
 	Color color = new Color(display, 0, 0, 255, 255);
-	try {
-		assertNotNull(color.toString());
-		assertFalse(color.toString().isEmpty());
-		assertEquals("Color {0, 0, 255, 255}", color.toString());
-	} finally {
-		color.dispose();
-	}
+	assertNotNull(color.toString());
+	assertFalse(color.toString().isEmpty());
+	assertEquals("Color {0, 0, 255, 255}", color.toString());
 }
 
 @Test
@@ -674,11 +599,7 @@ public void test_getDevice() {
 @Test
 public void test_getDevice_with_device() {
 	Color color = new Color(display, 0, 0, 255, 255);
-	try {
-		assertEquals("Color should return device as constructed", display, color.getDevice());
-	} finally {
-		color.dispose();
-	}
+	assertEquals("Color should return device as constructed", display, color.getDevice());
 
 	SWTException e = assertThrows("No exception thrown for getDevice on disposed Color", SWTException.class, () -> {
 		Color color1 = new Color(0, 0, 255, 255);

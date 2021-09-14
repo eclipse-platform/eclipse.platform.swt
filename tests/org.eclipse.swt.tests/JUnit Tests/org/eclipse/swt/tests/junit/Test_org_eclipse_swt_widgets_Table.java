@@ -1407,7 +1407,6 @@ public void test_setHeaderBackgroundLorg_eclipse_swt_graphics_Color() {
 	assertEquals(color, table.getHeaderBackground());
 	table.setHeaderBackground(null);
 	assertFalse(table.getHeaderBackground().equals(color));
-	color.dispose();
 }
 
 @Test
@@ -1418,7 +1417,6 @@ public void test_setHeaderForegroundLorg_eclipse_swt_graphics_Color() {
 	assertEquals(color, table.getHeaderForeground());
 	table.setHeaderForeground(null);
 	assertFalse(table.getHeaderForeground().equals(color));
-	color.dispose();
 }
 
 @Test

@@ -75,7 +75,6 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.ScrollBar;
 import org.eclipse.swt.widgets.Widget;
 import org.eclipse.test.Screenshots;
-import org.junit.After;
 import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Rule;
@@ -116,16 +115,6 @@ public void setUp() {
 	initializeColors();
 	text = new StyledText(shell, SWT.NULL);
 	setWidget(text);
-}
-
-@Override
-@After
-public void tearDown() {
-	for (Color color : colors.values()) {
-		color.dispose();
-	}
-	super.tearDown();
-
 }
 
 // this method must not be public so that the auto-gen tool keeps it
@@ -3513,12 +3502,6 @@ public void test_setEnabled(){
 	text.setForeground(null);
 	assertEquals(disabledBg, text.getBackground());
 	assertEquals(disabledFg, text.getForeground());
-
-	// Dispose colors
-	disabledBg.dispose();
-	disabledFg.dispose();
-	enabledBg.dispose();
-	enabledFg.dispose();
 }
 
 @Test

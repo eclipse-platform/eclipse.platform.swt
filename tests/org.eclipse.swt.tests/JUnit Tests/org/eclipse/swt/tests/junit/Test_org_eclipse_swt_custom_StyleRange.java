@@ -27,7 +27,6 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyleRange;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.RGB;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -53,13 +52,6 @@ protected void initializeColors() {
 @Before
 public void setUp() {
 	initializeColors();
-}
-
-@After
-public void tearDown() {
-	for (Color color : colors.values()) {
-		color.dispose();
-	}
 }
 
 @Test
@@ -126,7 +118,6 @@ public void test_hashCode() {
 	set.add(new StyleRange(0, 1, testColor, null));
 	set.add(new StyleRange(0, 1, testColor, testColor));
 	set.add(new StyleRange(0, 1, testColor, testColor, SWT.BOLD));
-	testColor.dispose();
 }
 
 @Test
