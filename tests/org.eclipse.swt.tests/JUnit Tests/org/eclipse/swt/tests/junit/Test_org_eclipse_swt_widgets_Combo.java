@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2018 IBM Corporation and others.
+ * Copyright (c) 2000, 2021 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -17,6 +17,8 @@ package org.eclipse.swt.tests.junit;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.junit.Assume.assumeTrue;
@@ -53,28 +55,20 @@ public void setUp() {
 @Override
 @Test
 public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI() {
-	try {
-		combo = new Combo(null, 0);
-		fail("No exception thrown for parent == null");
-	}
-	catch (IllegalArgumentException e) {
-	}
+	assertThrows("No exception thrown for parent == null", IllegalArgumentException.class, () ->
+		combo = new Combo(null, 0));
 
 	int[] cases = {SWT.DROP_DOWN, SWT.SIMPLE};
 	for (int i = 0; i < cases.length; i++) {
 		combo = new Combo(shell, cases[i]);
-		assertTrue(":a:" + String.valueOf(i), (combo.getStyle() & cases[i]) == cases[i]);
+		assertEquals(":a:" + String.valueOf(i), cases[i], (combo.getStyle() & cases[i]));
 	}
 }
 
 @Test
 public void test_addLjava_lang_String() {
-	try {
-		combo.add(null);
-		fail("No exception thrown for item == null");
-	}
-	catch (IllegalArgumentException e) {
-	}
+	assertThrows("No exception thrown for item == null", IllegalArgumentException.class, () ->
+		combo.add(null));
 
 	combo.add("");
 	assertArrayEquals(":a:", new String[]{""}, combo.getItems());
@@ -87,27 +81,15 @@ public void test_addLjava_lang_String() {
 
 @Test
 public void test_addLjava_lang_StringI() {
-	try {
-		combo.add(null, 0);
-		fail("No exception thrown for item == null");
-	}
-	catch (IllegalArgumentException e) {
-	}
+	assertThrows("No exception thrown for index == null", IllegalArgumentException.class, () ->
+		combo.add(null, 0));
 
-	try {
-		combo.add("string", -1);
-		fail("No exception thrown for index < 0");
-	}
-	catch (IllegalArgumentException e) {
-	}
+	assertThrows("No exception thrown for index < 0", IllegalArgumentException.class, () ->
+		combo.add("string", -1));
 
 	combo.add("string0", 0);
-	try {
-		combo.add("string1", 2);
-		fail("No exception thrown for index > size");
-	}
-	catch (IllegalArgumentException e) {
-	}
+	assertThrows("No exception thrown for index > size", IllegalArgumentException.class, () ->
+		combo.add("string1", 2));
 	combo.removeAll();
 
 	combo.add("fred", 0);
@@ -138,16 +120,8 @@ public void test_addLjava_lang_StringI() {
 
 @Test
 public void test_addModifyListenerLorg_eclipse_swt_events_ModifyListener() {
-	boolean exceptionThrown = false;
 	ModifyListener listener = event -> listenerCalled = true;
-	try {
-		combo.addModifyListener(null);
-	}
-	catch (IllegalArgumentException e) {
-		exceptionThrown = true;
-	}
-	assertTrue("Expected exception not thrown", exceptionThrown);
-	exceptionThrown = false;
+	assertThrows(IllegalArgumentException.class, () -> combo.addModifyListener(null));
 
 	// test whether all content modifying API methods send a Modify event
 	combo.addModifyListener(listener);
@@ -184,19 +158,13 @@ public void test_addModifyListenerLorg_eclipse_swt_events_ModifyListener() {
 	// cause to call the listener.
 	combo.setText("line");
 	assertFalse("Listener not removed", listenerCalled);
-	try {
-		combo.removeModifyListener(null);
-	}
-	catch (IllegalArgumentException e) {
-		exceptionThrown = true;
-	}
-	assertTrue("Expected exception not thrown", exceptionThrown);
+	assertThrows(IllegalArgumentException.class, () ->
+		combo.removeModifyListener(null));
 }
 
 @Test
 public void test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener() {
 	listenerCalled = false;
-	boolean exceptionThrown = false;
 	SelectionListener listener = new SelectionListener() {
 		@Override
 		public void widgetSelected(SelectionEvent event) {
@@ -206,25 +174,12 @@ public void test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener()
 		public void widgetDefaultSelected(SelectionEvent event) {
 		}
 	};
-	try {
-		combo.addSelectionListener(null);
-	}
-	catch (IllegalArgumentException e) {
-		exceptionThrown = true;
-	}
-	assertTrue("Expected exception not thrown", exceptionThrown);
-	exceptionThrown = false;
+	assertThrows(IllegalArgumentException.class, () -> combo.addSelectionListener(null));
 	combo.addSelectionListener(listener);
 	combo.select(0);
 	assertFalse(":a:", listenerCalled);
 	combo.removeSelectionListener(listener);
-	try {
-		combo.removeSelectionListener(null);
-	}
-	catch (IllegalArgumentException e) {
-		exceptionThrown = true;
-	}
-	assertTrue("Expected exception not thrown", exceptionThrown);
+	assertThrows(IllegalArgumentException.class, () ->	combo.removeSelectionListener(null));
 }
 
 @Test
@@ -248,14 +203,14 @@ public void test_clearSelection() {
 	for (int i = 0; i < number; i++)
 		combo.add("fred" + i);
 	combo.clearSelection();
-	assertTrue(":a:", combo.getSelection().equals(new Point(0, 0)));
+	assertEquals(":a:",new Point(0, 0), combo.getSelection());
 	combo.setSelection(new Point(0, 5));
-	assertTrue(":b:", combo.getSelection().equals(new Point(0, 0)));  //nothing is selected
+	assertEquals(":b:",new Point(0, 0), combo.getSelection());  //nothing is selected
 	combo.setText("some text");
 	combo.setSelection(new Point(0, 5));
-	assertTrue(":c:", combo.getSelection().equals(new Point(0, 5)));
+	assertEquals(":c:",new Point(0, 5), combo.getSelection());
 	combo.clearSelection();
-	assertTrue(":d:", combo.getSelection().x==combo.getSelection().y);
+	assertEquals(":d:", combo.getSelection().x, combo.getSelection().y);
 }
 
 @Override
@@ -279,7 +234,7 @@ public void test_copy() {
 	combo.copy();
 	combo.setSelection(new Point(0,0));
 	combo.paste();
-	assertTrue(":a:", combo.getText().equals("23123456"));
+	assertEquals(":a:","23123456", combo.getText());
 }
 
 @Test
@@ -295,7 +250,7 @@ public void test_cut() {
 	combo.setText("123456");
 	combo.setSelection(new Point(1,3));
 	combo.cut();
-	assertTrue(":a:", combo.getText().equals("1456"));
+	assertEquals(":a:","1456", combo.getText());
 }
 
 @Test
@@ -306,7 +261,7 @@ public void test_deselectAll() {
 	combo.select(0);
 	combo.select(2);
 	combo.deselectAll();
-	assertTrue(":a:", combo.getSelectionIndex()== -1);
+	assertEquals(":a:",-1, combo.getSelectionIndex());
 }
 @Test
 public void test_deselectI() {
@@ -325,9 +280,9 @@ public void test_deselectI() {
 		combo.add("fred" + i);
 	for (int i = 0; i < number; i++) {
 		combo.select(i);
-		assertTrue(":a:" + i, combo.getSelectionIndex()==i);
+		assertEquals(":a:" + i,i, combo.getSelectionIndex());
 		combo.deselect(i);
-		assertTrue(":b:" + i, combo.getSelectionIndex()==-1);
+		assertEquals(":b:" + i,-1, combo.getSelectionIndex());
 	}
 }
 
@@ -341,17 +296,17 @@ public void test_getChildren() {
 public void test_getItemCount() {
 	int number = 10;
 	for (int i = 0; i < number; i++) {
-		assertTrue(":a:" + i, combo.getItemCount() == i);
+		assertEquals(":a:" + i,i,  combo.getItemCount());
 		combo.add("fred" + i);
 	}
-	assertTrue(":aa:", combo.getItemCount() == number);
+	assertEquals(":aa:", number, combo.getItemCount());
 
 	for (int i = 0; i < number; i++) {
-		assertTrue(":b:" + i, combo.getItemCount() == number-i);
+		assertEquals(":b:" + i, number-i, combo.getItemCount());
 		combo.remove(0);
 	}
 	combo.removeAll();
-	assertTrue(":c:", combo.getItemCount() == 0);
+	assertEquals(":c:", 0, combo.getItemCount());
 }
 
 @Test
@@ -361,19 +316,14 @@ public void test_getItemHeight() {
 
 @Test
 public void test_getItemI() {
-	try {
-		combo.getItem(0);
-		fail("No exception thrown for illegal index argument");
-	}
-	catch (IllegalArgumentException e) {
-	}
+	assertThrows(IllegalArgumentException.class, () -> combo.getItem(0));
 
 	int number = 10;
 	for (int i = 0; i < number; i++) {
 		combo.add("fred" + i);
 	}
 	for (int i = 0; i < number; i++)
-		assertTrue(combo.getItem(i).equals("fred" + i));
+		assertEquals("fred" + i, combo.getItem(i));
 }
 
 @Test
@@ -383,10 +333,10 @@ public void test_getItems() {
 	combo.add("2");
 	combo.add("3");
 	String[] items = combo.getItems();
-	assertTrue(":a:", items.length==3);
-	assertTrue(":a:", items[0].equals("1"));
-	assertTrue(":a:", items[1].equals("2"));
-	assertTrue(":a:", items[2].equals("3"));
+	assertEquals(":a:", 3, items.length);
+	assertEquals(":a:", "1", items[0]);
+	assertEquals(":a:", "2", items[1]);
+	assertEquals(":a:", "3", items[2]);
 }
 
 @Test
@@ -399,7 +349,7 @@ public void test_getSelection() {
 	combo.setText("123456");
 	combo.setSelection(new Point(1,3));
 	combo.getSelection();
-	assertTrue(":a:", combo.getSelection().equals(new Point(1,3)));
+	assertEquals(":a:", new Point(1,3), combo.getSelection());
 }
 
 @Test
@@ -438,7 +388,7 @@ public void test_getText() {
 	String[] cases = {"", "fred", "fredfred"};
 	for (int i = 0; i < cases.length; i++) {
 		combo.setText(cases[i]);
-		assertTrue(":a:" + String.valueOf(i), cases[i].equals(combo.getText()));
+		assertEquals(":a:" + String.valueOf(i), cases[i], combo.getText());
 	}
 }
 
@@ -450,7 +400,7 @@ public void test_getTextHeight() {
 @Test
 public void test_getTextLimit() {
 	combo.setTextLimit(3);
-	assertTrue(":a:", combo.getTextLimit()==3);
+	assertEquals(":a:", 3, combo.getTextLimit());
 }
 
 @Test
@@ -461,12 +411,7 @@ public void test_hasFocus() {
 @Test
 public void test_indexOfLjava_lang_String() {
 	combo.add("string0");
-	try {
-		combo.indexOf(null);
-		fail("No exception thrown for string == null");
-	}
-	catch (IllegalArgumentException e) {
-	}
+	assertThrows(IllegalArgumentException.class, () -> combo.indexOf(null));
 	combo.removeAll();
 
 	int number = 5;
@@ -504,12 +449,7 @@ public void test_indexOfLjava_lang_String() {
 @Test
 public void test_indexOfLjava_lang_StringI() {
 	combo.add("string0");
-	try {
-		combo.indexOf(null);
-		fail("No exception thrown for string == null");
-	}
-	catch (IllegalArgumentException e) {
-	}
+	assertThrows(IllegalArgumentException.class, () ->	combo.indexOf(null));
 	assertEquals(-1, combo.indexOf("string0", -1));
 	combo.removeAll();
 
@@ -517,18 +457,18 @@ public void test_indexOfLjava_lang_StringI() {
 	for (int i = 0; i < number; i++)
 		combo.add("fred" + i);
 	for (int i = 0; i < number; i++)
-		assertTrue(":a:" + i, combo.indexOf("fred" + i, 0) == i);
+		assertEquals(":a:" + i, i, combo.indexOf("fred" + i, 0));
 	for (int i = 0; i < number; i++)
-		assertTrue(":b:" + i, combo.indexOf("fred" + i, i + 1) == -1);
+		assertEquals(":b:" + i, -1, combo.indexOf("fred" + i, i + 1));
 
 	for (int i = 0; i < number; i++)
 		combo.add("fred" + i);
 	for (int i = 0; i < 3; i++)
-		assertTrue(":a:" + i, combo.indexOf("fred" + i, 0) == i);
+		assertEquals(":a:" + i, i, combo.indexOf("fred" + i, 0));
 	for (int i = 3; i < number; i++)
-		assertTrue(":b:" + i, combo.indexOf("fred" + i, 3) == i);
+		assertEquals(":b:" + i, i, combo.indexOf("fred" + i, 3));
 	for (int i = 0; i < number; i++)
-		assertTrue(":b:" + i, combo.indexOf("fred" + i, i) == i);
+		assertEquals(":b:" + i, i, combo.indexOf("fred" + i, i));
 }
 
 @Test
@@ -544,9 +484,9 @@ public void test_paste() {
 	combo.setText("123456");
 	combo.setSelection(new Point(1,3));
 	combo.cut();
-	assertTrue(":a:", combo.getText().equals("1456"));
+	assertEquals(":a:", "1456", combo.getText());
 	combo.paste();
-	assertTrue(":a:", combo.getText().equals("123456"));
+	assertEquals(":a:", "123456", combo.getText());
 }
 
 @Test
@@ -554,32 +494,17 @@ public void test_removeAll() {
 	combo.add("1");
 	combo.add("2");
 	combo.removeAll();
-	assertTrue(":a:", combo.getItems().length==0);
+	assertEquals(":a:", 0, combo.getItems().length);
 }
 
 @Test
 public void test_removeI() {
-	try {
-		combo.remove(0);
-		fail("No exception thrown for illegal index argument");
-	}
-	catch (IllegalArgumentException e) {
-	}
+	assertThrows(IllegalArgumentException.class, () ->	combo.remove(0));
 
-	try {
-		combo.remove(3);
-		fail("No exception thrown for illegal index argument");
-	}
-	catch (IllegalArgumentException e) {
-	}
+	assertThrows(IllegalArgumentException.class, () ->	combo.remove(3));
 
 	combo.add("string0");
-	try {
-		combo.remove(-1);
-		fail("No exception thrown for illegal index argument");
-	}
-	catch (IllegalArgumentException e) {
-	}
+	assertThrows(IllegalArgumentException.class, () ->	combo.remove(-1));
 	combo.removeAll();
 
 	int number = 5;
@@ -667,19 +592,9 @@ public void test_removeII() {
 		combo.add("fred");
 	}
 
-	try {
-		combo.remove(2, 100);
-		fail("No exception thrown for illegal index argument");
-	}
-	catch (IllegalArgumentException e) {
-	}
+	assertThrows(IllegalArgumentException.class, () -> combo.remove(2, 100));
 
-	try {
-		combo.remove(-1, number-1);
-		fail("No exception thrown for start index < 0");
-	}
-	catch (IllegalArgumentException e) {
-	}
+	assertThrows(IllegalArgumentException.class, () ->	combo.remove(-1, number-1));
 
 	if (SwtTestUtil.isCocoa) {
 		// TODO Fix Cocoa failure.
@@ -693,14 +608,14 @@ public void test_removeII() {
 		combo.add("one");
 		combo.select(0);
 		combo.remove(0);
-		assertEquals("", combo.getText());
+		assertTrue(combo.getText().isEmpty());
 
 		combo.removeAll();
 		combo.add("one");
 		combo.add("two");
 		combo.select(0);
 		combo.remove(0, 1);
-		assertEquals("", combo.getText());
+		assertTrue(combo.getText().isEmpty());
 	}
 }
 
@@ -723,22 +638,14 @@ public void test_removeLjava_lang_String() {
 
 	for (int i = 0; i < number; i++)
 		combo.add("fred");
-	try {
-		combo.remove(null);
-		fail("No exception thrown for item == null");
-	}
-	catch (IllegalArgumentException e) {
-	}
+	assertThrows("No exception thrown for item == null", IllegalArgumentException.class,
+			() ->	combo.remove(null));
 
 	combo.removeAll();
 	for (int i = 0; i < number; i++)
 		combo.add("fred" + i);
-	try {
-		combo.remove("fred");
-		fail("No exception thrown for item not found");
-	}
-	catch (IllegalArgumentException e) {
-	}
+	assertThrows("No exception thrown for item not found", IllegalArgumentException.class,
+			() -> combo.remove("fred"));
 
 	assertEquals(number, combo.getItemCount());
 }
@@ -749,7 +656,7 @@ public void test_selectI() {
 	combo.add("456");
 	combo.add("789");
 	combo.select(1);
-	assertTrue(":a:", combo.getSelectionIndex()== 1);
+	assertEquals(":a:", 1, combo.getSelectionIndex());
 
 	// indices out of range are ignored
 	combo.select(10);
@@ -764,16 +671,15 @@ public void test_setBackgroundDropDownCombo() {
 	assertEquals("getBackground not equal after setBackground for SWT.DROP_DOWN Combo",
 			color, dropDown.getBackground());
 	dropDown.setBackground(null);
-	assertTrue("getBackground unchanged after setBackground(null) for SWT.DROP_DOWN Combo",
-			!dropDown.getBackground().equals(color));
-	color.dispose();
+	assertNotEquals("getBackground unchanged after setBackground(null) for SWT.DROP_DOWN Combo", color,
+			dropDown.getBackground());
 	color = new Color(255, 0, 0, 0);
 	dropDown.setBackground(color);
 	assertEquals("getBackground not equal after setBackground with 0 alpha for SWT.DROP_DOWN Combo",
 			color, dropDown.getBackground());
 	dropDown.setBackground(null);
-	assertTrue("getBackground unchanged after setBackground(null) with 0 alpha for SWT.DROP_DOWN Combo",
-			!dropDown.getBackground().equals(color));
+	assertNotEquals("getBackground unchanged after setBackground(null) with 0 alpha for SWT.DROP_DOWN Combo", color,
+			dropDown.getBackground());
 	if ("gtk".equals(SWT.getPlatform ())) {
 		Color fg = new Color(0, 255, 0);
 		dropDown.setBackground(color);
@@ -782,9 +688,7 @@ public void test_setBackgroundDropDownCombo() {
 				color, dropDown.getBackground());
 		assertEquals("Setting a foreground onto an SWT.DROP_DOWN Combo with a background failed",
 				fg, dropDown.getForeground());
-		fg.dispose();
 	}
-	color.dispose();
 	dropDown.dispose();
 }
 
@@ -797,8 +701,6 @@ public void test_setBackgroundAlphaDropDownCombo() {
 	Color fg = new Color(0, 255, 0, 0);
 	dropDown.setForeground(fg);
 	assertEquals(color, dropDown.getBackground());
-	color.dispose();
-	fg.dispose();
 	dropDown.dispose();
 }
 
@@ -810,16 +712,15 @@ public void test_setBackgroundSimpleCombo() {
 	assertEquals("getBackground not equal after setBackground for SWT.SIMPLE Combo",
 			color, simple.getBackground());
 	simple.setBackground(null);
-	assertTrue("getBackground unchanged after setBackground(null) for SWT.SIMPLE Combo",
-			!simple.getBackground().equals(color));
-	color.dispose();
+	assertNotEquals("getBackground unchanged after setBackground(null) for SWT.SIMPLE Combo",
+			color, simple.getBackground());
 	color = new Color(255, 0, 0, 0);
 	simple.setBackground(color);
 	assertEquals("getBackground not equal after setBackground with 0 alpha for SWT.SIMPLE Combo",
 			color, simple.getBackground());
 	simple.setBackground(null);
-	assertTrue("getBackground unchanged after setBackground(null) with 0 alpha for SWT.SIMPLE Combo",
-			!simple.getBackground().equals(color));
+	assertNotEquals("getBackground unchanged after setBackground(null) with 0 alpha for SWT.SIMPLE Combo",
+			color, simple.getBackground());
 	if ("gtk".equals(SWT.getPlatform ())) {
 		Color fg = new Color(0, 255, 0);
 		simple.setBackground(color);
@@ -828,9 +729,7 @@ public void test_setBackgroundSimpleCombo() {
 				color, simple.getBackground());
 		assertEquals("Setting a foreground onto an SWT.SIMPLE Combo with a background failed",
 				fg, simple.getForeground());
-		fg.dispose();
 	}
-	color.dispose();
 	simple.dispose();
 }
 
@@ -843,8 +742,6 @@ public void test_setBackgroundAlphaSimpleCombo() {
 	Color fg = new Color(0, 255, 0, 0);
 	simple.setForeground(fg);
 	assertEquals(color, simple.getBackground());
-	color.dispose();
-	fg.dispose();
 	simple.dispose();
 }
 
@@ -855,7 +752,7 @@ public void test_setForegroundDropDownCombo() {
 	dropDown.setForeground(color);
 	assertEquals(color, dropDown.getForeground());
 	dropDown.setForeground(null);
-	assertFalse(dropDown.getForeground().equals(color));
+	assertNotEquals(color, dropDown.getForeground());
 	if ("gtk".equals(SWT.getPlatform ())) {
 		Color bg = new Color(0, 255, 0);
 		dropDown.setForeground(color);
@@ -864,16 +761,14 @@ public void test_setForegroundDropDownCombo() {
 				color, dropDown.getForeground());
 		assertEquals("Setting a background onto an SWT.DROP_DOWN Combo with a foreground failed",
 				bg, dropDown.getBackground());
-		bg.dispose();
 	}
-	color.dispose();
 	dropDown.dispose();
 }
 
 @Test
 public void test_setForegroundAlphaDropDownCombo() {
 	Combo dropDown = new Combo(shell, SWT.DROP_DOWN);
-	assumeTrue("Alpha support for foreground colors does not exist on GTK2 or Win32",
+	assumeTrue("Alpha support for foreground colors does not exist on Win32",
 			SwtTestUtil.isCocoa || SwtTestUtil.isGTK);
 	Color color = new Color (255, 0, 0, 0);
 	dropDown.setForeground(color);
@@ -881,8 +776,6 @@ public void test_setForegroundAlphaDropDownCombo() {
 	Color bg = new Color(0, 255, 0, 0);
 	dropDown.setBackground(bg);
 	assertEquals(color, dropDown.getForeground());
-	color.dispose();
-	bg.dispose();
 	dropDown.dispose();
 }
 
@@ -893,7 +786,7 @@ public void test_setForegroundSimpleCombo() {
 	simple.setForeground(color);
 	assertEquals(color, simple.getForeground());
 	simple.setForeground(null);
-	assertFalse(simple.getForeground().equals(color));
+	assertNotEquals(color, simple.getForeground());
 	if ("gtk".equals(SWT.getPlatform ())) {
 		Color bg = new Color(0, 255, 0);
 		simple.setForeground(color);
@@ -902,16 +795,14 @@ public void test_setForegroundSimpleCombo() {
 				color, simple.getForeground());
 		assertEquals("Setting a background onto an SWT.SIMPLE Combo with a foreground failed",
 				bg, simple.getBackground());
-		bg.dispose();
 	}
-	color.dispose();
 	simple.dispose();
 }
 
 @Test
 public void test_setForegroundAlphaSimpleCombo() {
 	Combo simple = new Combo(shell, SWT.SIMPLE);
-	assumeTrue("Alpha support for foreground colors does not exist on GTK2 or Win32",
+	assumeTrue("Alpha support for foreground colors does not exist on Win32",
 			SwtTestUtil.isCocoa || SwtTestUtil.isGTK);
 	Color color = new Color (255, 0, 0, 0);
 	simple.setForeground(color);
@@ -919,59 +810,31 @@ public void test_setForegroundAlphaSimpleCombo() {
 	Color bg = new Color(0, 255, 0, 0);
 	simple.setBackground(bg);
 	assertEquals(color, simple.getForeground());
-	color.dispose();
-	bg.dispose();
 	simple.dispose();
 }
 
 @Test
 public void test_setItemILjava_lang_String() {
-	try {
-		combo.setItem(0, null);
-		fail("No exception thrown for item == null");
-	}
-	catch (IllegalArgumentException e) {
-	}
+	assertThrows("No exception thrown for item == null", IllegalArgumentException.class,
+		() -> combo.setItem(0, null));
 
-	try {
-		combo.setItem(3, null);
-		fail("No exception thrown for illegal index argument");
-	}
-	catch (IllegalArgumentException e) {
-	}
+	assertThrows(IllegalArgumentException.class, () -> combo.setItem(3, null));
 
-	try {
-		combo.setItem(0, "fred");
-		fail("No exception thrown for illegal index argument");
-	}
-	catch (IllegalArgumentException e) {
-	}
+	assertThrows(IllegalArgumentException.class, () -> combo.setItem(0, "fred"));
 
 	combo.add("string0");
-	try {
-		combo.setItem(0, null);
-		fail("No exception thrown for item == null");
-	}
-	catch (IllegalArgumentException e) {
-	}
+	assertThrows("No exception thrown for item == null", IllegalArgumentException.class, () ->
+		combo.setItem(0, null));
 
-	try {
-		combo.setItem(-1, "new value");
-		fail("No exception thrown for index < 0");
-	}
-	catch (IllegalArgumentException e) {
-	}
+	assertThrows("No exception thrown for index < 0", IllegalArgumentException.class, () ->
+		combo.setItem(-1, "new value"));
 
 	combo.add("joe");
 	combo.setItem(0, "fred");
-	assertTrue("fred", combo.getItem(0).equals("fred"));
+	assertEquals("fred", "fred", combo.getItem(0));
 
-	try {
-		combo.setItem(4, "fred");
-		fail("No exception thrown for illegal index argument");
-	}
-	catch (IllegalArgumentException e) {
-	}
+	assertThrows("No exception thrown for index < 0", IllegalArgumentException.class, () ->
+		combo.setItem(4, "fred"));
 
 	combo.removeAll();
 	int number = 5;
@@ -984,12 +847,8 @@ public void test_setItemILjava_lang_String() {
 
 @Test
 public void test_setItems$Ljava_lang_String() {
-	try {
-		combo.setItems((String [])null);
-		fail("No exception thrown for items == null");
-	}
-	catch (IllegalArgumentException e) {
-	}
+	assertThrows("No exception thrown for items == null", IllegalArgumentException.class, () ->
+		combo.setItems((String [])null));
 
 	String[][] items = {{}, {""}, {"", ""}, {"fred"}, {"fred0", "fred0"}, {"fred", "fred"}};
 
@@ -1002,71 +861,59 @@ public void test_setItems$Ljava_lang_String() {
 public void test_setOrientationI() {
 	combo.setOrientation(SWT.RIGHT_TO_LEFT);
 	if ((combo.getStyle() & SWT.MIRRORED) != 0) {
-		assertTrue(":a:", combo.getOrientation()==SWT.RIGHT_TO_LEFT);
+		assertEquals(":a:", SWT.RIGHT_TO_LEFT, combo.getOrientation());
 	}
 	combo.setOrientation(SWT.LEFT_TO_RIGHT);
-	assertTrue(":b:", combo.getOrientation()==SWT.LEFT_TO_RIGHT);
+	assertEquals(":b:", SWT.LEFT_TO_RIGHT, combo.getOrientation());
 }
 
 @Test
 public void test_setSelectionLorg_eclipse_swt_graphics_Point() {
-	try {
-		combo.setSelection(null);
-		fail("No exception thrown for point == null");
-	}
-	catch (IllegalArgumentException e) {
-	}
+	assertThrows("No exception thrown for point == null", IllegalArgumentException.class, () ->
+		combo.setSelection(null));
 
 	int number = 5;
 	for (int i = 0; i < number; i++)
 		combo.add("fred" + i);
 	combo.setSelection(new Point(0, 5));
-	assertTrue(":a:", combo.getSelection().equals(new Point(0, 0)));
+	assertEquals(":a:", new Point(0, 0), combo.getSelection());
 	combo.setText("some text");
 	combo.setSelection(new Point(0, 5));
-	assertTrue(":b:", combo.getSelection().equals(new Point(0, 5)));
+	assertEquals(":b:", new Point(0, 5), combo.getSelection());
 }
 
 @Test
 public void test_setTextLimitI() {
-	try {
-		combo.setTextLimit(0);
-		fail("No exception thrown for limit == 0");
-	}
-	catch (IllegalArgumentException e) {
-	}
+	assertThrows("No exception thrown for limit == 0", IllegalArgumentException.class, () ->
+		combo.setTextLimit(0));
 
 	combo.setTextLimit(3);
-	assertTrue(":a:", combo.getTextLimit()==3);
+	assertEquals(":a:", 3, combo.getTextLimit());
 }
 
 @Test
 public void test_setTextLjava_lang_String() {
-	try {
-		combo.setText(null);
-		fail("No exception thrown for text == null");
-	}
-	catch (IllegalArgumentException e) {
-	}
+	assertThrows("No exception thrown for text == null", IllegalArgumentException.class, () ->
+		combo.setText(null));
 
 	String[] cases = {"", "fred", "fred0"};
 	for (int i = 0; i < cases.length; i++) {
 		combo.setText(cases[i]);
-		assertTrue(":a:" + i, combo.getText().equals(cases[i]));
+		assertEquals(":a:" + i, cases[i], combo.getText());
 	}
 	for (int i = 0; i < 5; i++) {
 		combo.add("fred");
 	}
 	for (int i = 0; i < cases.length; i++) {
 		combo.setText(cases[i]);
-		assertTrue(":b:" + i, combo.getText().equals(cases[i]));
+		assertEquals(":b:" + i,cases[i], combo.getText());
 	}
 	for (int i = 0; i < 5; i++) {
 		combo.add("fred" + i);
 	}
 	for (int i = 0; i < cases.length; i++) {
 		combo.setText(cases[i]);
-		assertTrue(":c:" + i, combo.getText().equals(cases[i]));
+		assertEquals(":c:" + i, cases[i], combo.getText());
 	}
 }
 
@@ -1076,9 +923,9 @@ public void test_setTextLjava_lang_String() {
 public void test_setBoundsIIII() {
 	combo.setBounds(10, 20, 30, 40);
 	// only check x, y, and width - you can't set the height of a combo
-	assertTrue(combo.getBounds().x == 10);
-	assertTrue(combo.getBounds().y == 20);
-	assertTrue(combo.getBounds().width == 30);
+	assertEquals(10, combo.getBounds().x);
+	assertEquals(20, combo.getBounds().y);
+	assertEquals(30, combo.getBounds().width);
 }
 
 @Override
@@ -1086,9 +933,9 @@ public void test_setBoundsIIII() {
 public void test_setBoundsLorg_eclipse_swt_graphics_Rectangle() {
 	combo.setBounds(new Rectangle(10, 20, 30, 40));
 	// only check x, y, and width - you can't set the height of a combo
-	assertTrue(combo.getBounds().x == 10);
-	assertTrue(combo.getBounds().y == 20);
-	assertTrue(combo.getBounds().width == 30);
+	assertEquals(10, combo.getBounds().x);
+	assertEquals(20, combo.getBounds().y);
+	assertEquals(30, combo.getBounds().width);
 }
 
 @Override
@@ -1096,11 +943,11 @@ public void test_setBoundsLorg_eclipse_swt_graphics_Rectangle() {
 public void test_setSizeII() {
 	combo.setSize(30, 40);
 	// only check the width - you can't set the height of a combo
-	assertTrue(combo.getSize().x == 30);
+	assertEquals(30, combo.getSize().x);
 
 	combo.setSize(32, 43);
 	// only check the width - you can't set the height of a combo
-	assertTrue(combo.getSize().x == 32);
+	assertEquals(32, combo.getSize().x);
 }
 
 @Override
@@ -1108,17 +955,17 @@ public void test_setSizeII() {
 public void test_setSizeLorg_eclipse_swt_graphics_Point() {
 	combo.setSize(new Point(30, 40));
 	// only check the width - you can't set the height of a combo
-	assertTrue(combo.getSize().x == 30);
+	assertEquals(30, combo.getSize().x);
 
 	combo.setBounds(32, 43, 33, 44);
 	// only check the width - you can't set the height of a combo
-	assertTrue(combo.getSize().x == 33);
+	assertEquals(33, combo.getSize().x);
 
 	combo.setBounds(32, 43, 30, 40);
 	combo.setLocation(11, 22);
 	combo.setSize(new Point(32, 43));
 	// only check the width - you can't set the height of a combo
-	assertTrue(combo.getSize().x == 32);
+	assertEquals(32, combo.getSize().x);
 }
 
 private void add() {
@@ -1265,11 +1112,11 @@ private void doSegmentsTest (boolean isListening) {
 
 	combo.remove(1);
 	assertEquals(limit, combo.getTextLimit());
-	assertTrue(combo.getItemCount() == --count);
+	assertEquals(--count, combo.getItemCount());
 
 	combo.add(items[1], 1);
 	assertEquals(limit, combo.getTextLimit());
-	assertTrue(combo.getItemCount() == ++count);
+	assertEquals( ++count, combo.getItemCount());
 
 	combo.deselectAll();
 	assertEquals(limit, combo.getTextLimit());
@@ -1277,11 +1124,11 @@ private void doSegmentsTest (boolean isListening) {
 	combo.remove(1, 2);
 	count -=2;
 	assertEquals(limit, combo.getTextLimit());
-	assertTrue(combo.getItemCount() == count);
+	assertEquals(count, combo.getItemCount());
 
 	combo.removeAll();
 	assertEquals(limit, combo.getTextLimit());
-	assertTrue(combo.getItemCount() == 0);
+	assertEquals(0, combo.getItemCount());
 
 	combo.setItems(items);
 	count = items.length;
@@ -1297,7 +1144,7 @@ private void doSegmentsTest (boolean isListening) {
 	assertEquals(isListening, listenerCalled);
 	listenerCalled = false;
 	assertEquals(item, combo.getItem(count++));
-	assertTrue(combo.getItemCount() == count);
+	assertEquals(count, combo.getItemCount());
 
 	combo.select(1);
 
