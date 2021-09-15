@@ -17,6 +17,7 @@ package org.eclipse.swt.widgets;
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.*;
+import org.eclipse.swt.internal.cairo.*;
 import org.eclipse.swt.internal.gtk.*;
 import org.eclipse.swt.internal.gtk3.*;
 import org.eclipse.swt.internal.gtk4.*;
@@ -1193,7 +1194,8 @@ public void setImage(int index, Image image) {
 		int imageIndex = imageList.indexOf(image);
 		// When we create a blank image surface gets created with dimensions 0, 0.
         // This call recreates the surface with correct dimensions
-		surface = ImageList.convertSurface(image);
+		long tempSurface = ImageList.convertSurface(image);
+		Cairo.cairo_surface_destroy(tempSurface);
 		if (imageIndex == -1) {
 			imageIndex = imageList.add(image);
 		}
