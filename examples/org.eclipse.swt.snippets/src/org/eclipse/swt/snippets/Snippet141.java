@@ -93,7 +93,6 @@ public class Snippet141 {
 										}
 										offScreenImageGC.setBackground(bgColor != null ? bgColor : shellBackground);
 										offScreenImageGC.fillRectangle(imageData.x, imageData.y, imageData.width, imageData.height);
-										if (bgColor != null) bgColor.dispose();
 										break;
 									case SWT.DM_FILL_PREVIOUS:
 										/* Restore the previous image before drawing. */
