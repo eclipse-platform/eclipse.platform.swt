@@ -137,7 +137,7 @@ public class Shell extends Decorations {
 	static final int MAXIMUM_TRIM = 128;
 	static final int BORDER = 3;
 
-	private final double SHELL_TO_MONITOR_RATIO = 0.625; // Fractional: 5 / 8
+	static final double SHELL_TO_MONITOR_RATIO = 0.625; // Fractional: 5 / 8
 
 /**
  * Constructs a new instance of this class. This is equivalent
