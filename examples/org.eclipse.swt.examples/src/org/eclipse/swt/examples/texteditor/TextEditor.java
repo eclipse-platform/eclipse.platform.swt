@@ -1215,15 +1215,10 @@ public class TextEditor {
 
 		if (textFont != null) textFont.dispose();
 		textFont = null;
-		if (textForeground != null) textForeground.dispose();
 		textForeground = null;
-		if (textBackground != null) textBackground.dispose();
 		textBackground = null;
-		if (strikeoutColor != null) strikeoutColor.dispose();
 		strikeoutColor = null;
-		if (underlineColor != null) underlineColor.dispose();
 		underlineColor = null;
-		if (borderColor != null) borderColor.dispose();
 		borderColor = null;
 
 		if (font != null) font.dispose();

@@ -579,38 +579,26 @@ class TreeTab extends ScrollableTab {
 	@Override
 	void resetColorsAndFonts () {
 		super.resetColorsAndFonts ();
-		Color oldColor = itemForegroundColor;
 		itemForegroundColor = null;
 		setItemForeground ();
-		if (oldColor != null) oldColor.dispose();
-		oldColor = itemBackgroundColor;
 		itemBackgroundColor = null;
 		setItemBackground ();
-		if (oldColor != null) oldColor.dispose();
 		Font oldFont = font;
 		itemFont = null;
 		setItemFont ();
 		if (oldFont != null) oldFont.dispose();
-		oldColor = cellForegroundColor;
 		cellForegroundColor = null;
 		setCellForeground ();
-		if (oldColor != null) oldColor.dispose();
-		oldColor = cellBackgroundColor;
 		cellBackgroundColor = null;
 		setCellBackground ();
-		if (oldColor != null) oldColor.dispose();
 		oldFont = font;
 		cellFont = null;
 		setCellFont ();
 		if (oldFont != null) oldFont.dispose();
-		oldColor = headerBackgroundColor;
 		headerBackgroundColor = null;
 		setHeaderBackground ();
-		if (oldColor != null) oldColor.dispose();
-		oldColor = headerForegroundColor;
 		headerForegroundColor = null;
 		setHeaderForeground ();
-		if (oldColor != null) oldColor.dispose();
 
 	}
 

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2016 IBM Corporation and others.
+ * Copyright (c) 2000, 2021 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -393,23 +393,16 @@ class CTabFolderTab extends Tab {
 	@Override
 	void resetColorsAndFonts () {
 		super.resetColorsAndFonts ();
-		Color oldColor = selectionForegroundColor;
 		selectionForegroundColor = null;
 		setSelectionForeground ();
-		if (oldColor != null) oldColor.dispose();
-		oldColor = selectionBackgroundColor;
 		selectionBackgroundColor = null;
 		setSelectionBackground ();
-		if (oldColor != null) oldColor.dispose();
 		Font oldFont = itemFont;
 		itemFont = null;
 		setItemFont ();
 		if (oldFont != null) oldFont.dispose();
-		oldColor = itemForegroundColor;
 		itemForegroundColor = null;
 		setItemForeground ();
-		if (oldColor != null) oldColor.dispose();
-		oldColor = itemBackgroundColor;
 		itemBackgroundColor = null;
 		setItemBackground ();
 	}

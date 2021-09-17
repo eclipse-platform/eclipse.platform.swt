@@ -128,10 +128,8 @@ class LinkTab extends Tab {
 	@Override
 	void resetColorsAndFonts () {
 		super.resetColorsAndFonts ();
-		Color oldColor = linkForegroundColor;
 		linkForegroundColor = null;
 		setLinkForeground ();
-		if (oldColor != null) oldColor.dispose();
 	}
 
 	@Override
