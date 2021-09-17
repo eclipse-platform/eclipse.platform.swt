@@ -27,7 +27,7 @@ public interface SwtCallable<V, E extends Exception> {
 	 * Computes a value, or throws an exception.
 	 *
 	 * @return the result
-	 * @throws Exception of given type
+	 * @throws E the Exception of given type
 	 */
 	V call() throws E;
 }

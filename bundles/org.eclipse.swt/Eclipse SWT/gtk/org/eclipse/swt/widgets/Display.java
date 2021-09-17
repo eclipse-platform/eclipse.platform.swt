@@ -6007,10 +6007,10 @@ public void syncExec (Runnable runnable) {
 }
 
 /**
- * Calls the callable in the user-interface thread and returns the supplied value.
- * The callable may throw an checked Exception. Any Exception is rethrown in the calling thread.
+ * Calls the callable on the user-interface thread and returns the supplied value.
+ * The callable may throw checked Exception. Any Exception is rethrown in the calling thread.
  *
- * @param callable
+ * @param callable the code to run on the user-interface thread
  *
  * @exception SWTException <ul>
  *    <li>ERROR_FAILED_EXEC - if an exception occurred when executing the runnable</li>
@@ -6018,11 +6018,10 @@ public void syncExec (Runnable runnable) {
  * </ul>
  *
  * @see #syncExec(Runnable)
- * @see org.eclipse.swt.SwtCallable#call()
+ * @see SwtCallable#call()
  * @since 3.118
- * @author Joerg Kubitz
 */
-public <T, E extends Exception> T syncCall(org.eclipse.swt.SwtCallable<T, E> callable) throws E {
+public <T, E extends Exception> T syncCall(SwtCallable<T, E> callable) throws E {
 	Objects.nonNull(callable);
 	@SuppressWarnings("unchecked")
 	T[] t = (T[]) new Object[1];
