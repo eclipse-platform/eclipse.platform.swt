@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2016 IBM Corporation and others.
+ * Copyright (c) 2000, 2021 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -355,7 +355,6 @@ void onPaint(GC gc) {
 		gc.setForeground(color);
 		gc.drawPolyline(line2);
 		gc.drawPolyline(line3);
-		color.dispose();
 
 		// draw tail fading to background
 		int x1 = Math.max(0, curveStart - CURVE_TAIL);
