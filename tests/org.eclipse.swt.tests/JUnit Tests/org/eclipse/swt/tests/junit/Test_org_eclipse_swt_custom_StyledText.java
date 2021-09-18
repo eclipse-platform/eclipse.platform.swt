@@ -5921,6 +5921,28 @@ public void test_caretLocationOnArrowMove() {
 	assertEquals(text.getCaret().getLocation(), caretLocation);
 }
 
+
+/**
+ * Bug 576052 - ArrowDown does keep position after new line
+ */
+@Test
+public void test_arrowDownKeepsPositionAfterNewLine() {
+	text.setText(
+	  "...\n"
+	+ "\n"
+	+ "............................................................\n");
+
+	shell.open();
+	text.setSize(10, 50);
+	text.setSelection(2);
+
+	text.invokeAction(ST.LINE_DOWN);
+	assertEquals(4, text.getSelection().x);
+	text.invokeAction(ST.LINE_DOWN);
+	assertEquals(7, text.getSelection().x);
+}
+
+
 /**
  * Bug 565164 - SWT.BS event no longer working
  */

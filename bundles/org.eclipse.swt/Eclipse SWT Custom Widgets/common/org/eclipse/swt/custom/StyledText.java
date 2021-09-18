@@ -2674,7 +2674,7 @@ void doLineDown(boolean select) {
 	for (int i = 0; i < caretOffsets.length; i++) {
 		int caretOffset = caretOffsets[i];
 		int caretLine = content.getLineAtOffset(caretOffset);
-		int x = getPointAtOffset(caretOffset).x;
+		int x = caretOffsets.length == 1 ? columnX : getPointAtOffset(caretOffset).x;
 		int y = 0;
 		boolean lastLine = false;
 		if (isWordWrap()) {
@@ -2775,7 +2775,7 @@ void doLineUp(boolean select) {
 	for (int i = 0; i < caretOffsets.length; i++) {
 		int caretOffset = caretOffsets[i];
 		int caretLine = content.getLineAtOffset(caretOffset);
-		int x = getPointAtOffset(caretOffset).x;
+		int x = caretOffsets.length == 1 ? columnX : getPointAtOffset(caretOffset).x;
 		int y = 0;
 		boolean firstLine = false;
 		if (isWordWrap()) {
