@@ -62,7 +62,7 @@ import org.eclipse.swt.internal.cocoa.*;
  * <dt><b>Styles:</b></dt>
  * <dd>SINGLE, MULTI, CHECK, FULL_SELECTION, VIRTUAL, NO_SCROLL</dd>
  * <dt><b>Events:</b></dt>
- * <dd>Selection, DefaultSelection, Collapse, Expand, SetData, MeasureItem, EraseItem, PaintItem</dd>
+ * <dd>Selection, DefaultSelection, Collapse, Expand, SetData, MeasureItem, EraseItem, PaintItem, EmptinessChanged</dd>
  * </dl>
  * <p>
  * Note: Only one of the styles SINGLE and MULTI may be specified.
@@ -757,6 +757,11 @@ void createItem (TreeItem item, TreeItem parentItem, int index) {
 		widget.expandItem (parentItem.handle);
 	}
 	ignoreExpand = false;
+	if (parentItem == null && this.itemCount == 1) {
+		Event event = new Event ();
+		event.detail = 0;
+		sendEvent (SWT.EmptinessChanged, event);
+	}
 }
 
 @Override
@@ -988,6 +993,11 @@ void destroyItem (TreeItem item) {
 	setScrollWidth ();
 	if (this.itemCount == 0) imageBounds = null;
 	if (insertItem == item) insertItem = null;
+	if (parentItem == null && this.itemCount == 0) {
+		Event event = new Event ();
+		event.detail = 1;
+		sendEvent (SWT.EmptinessChanged, event);
+	}
 }
 
 @Override

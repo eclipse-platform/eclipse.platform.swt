@@ -64,7 +64,7 @@ import org.eclipse.swt.internal.win32.*;
  * <dt><b>Styles:</b></dt>
  * <dd>SINGLE, MULTI, CHECK, FULL_SELECTION, VIRTUAL, NO_SCROLL</dd>
  * <dt><b>Events:</b></dt>
- * <dd>Selection, DefaultSelection, Collapse, Expand, SetData, MeasureItem, EraseItem, PaintItem</dd>
+ * <dd>Selection, DefaultSelection, Collapse, Expand, SetData, MeasureItem, EraseItem, PaintItem, EmptinessChanged</dd>
  * </dl>
  * <p>
  * Note: Only one of the styles SINGLE and MULTI may be specified.
@@ -2158,6 +2158,14 @@ void createItem (TreeItem item, long hParent, long hInsertAfter, long hItem) {
 		 Later, setRedraw(true) will update scrollbars once.
 		 */
 		if (getDrawing ()) updateScrollBar ();
+		/*
+		 If this is the first item added fire an EmptinessChanged event.
+		 */
+		if (item != null && id == 0) {
+			Event event = new Event ();
+			event.detail = 0;
+			sendEvent (SWT.EmptinessChanged, event);
+		}
 	}
 }
 
@@ -2641,6 +2649,15 @@ void destroyItem (TreeItem item, long hItem) {
 	 Later, setRedraw(true) will update scrollbars once.
 	 */
 	if (getDrawing ()) updateScrollBar ();
+
+	/*
+	 If this is the last item removed fire an EmptinessChanged event.
+	 */
+	if (count == 0) {
+		Event event = new Event ();
+		event.detail = 1;
+		sendEvent (SWT.EmptinessChanged, event);
+	}
 }
 
 @Override

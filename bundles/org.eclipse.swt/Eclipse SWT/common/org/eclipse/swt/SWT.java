@@ -1020,6 +1020,20 @@ public class SWT {
 	 */
 	public static final int ZoomChanged = 55;
 
+	/**
+	 * The SWT emptiness change event type (value is 56).
+	 *
+	 * <p>
+	 * This event is sent on <code>Tree</code> when the first <code>TreeItem</code> was
+	 * added to it (with the <code>detail</code> field set to 0) or the last
+	 * <code>TreeItem</code> was removed from it (with the <code>detail</code> field
+	 * set to 1).
+	 * </p>
+	 *
+	 * @since 4.22
+	 */
+	public static final int EmptinessChanged = 56;
+
 	/* Event Details */
 
 	/**

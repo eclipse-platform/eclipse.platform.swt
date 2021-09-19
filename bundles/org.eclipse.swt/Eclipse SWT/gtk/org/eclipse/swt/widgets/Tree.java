@@ -67,7 +67,7 @@ import org.eclipse.swt.internal.gtk4.*;
  * <dt><b>Styles:</b></dt>
  * <dd>SINGLE, MULTI, CHECK, FULL_SELECTION, VIRTUAL, NO_SCROLL</dd>
  * <dt><b>Events:</b></dt>
- * <dd>Selection, DefaultSelection, Collapse, Expand, SetData, MeasureItem, EraseItem, PaintItem</dd>
+ * <dd>Selection, DefaultSelection, Collapse, Expand, SetData, MeasureItem, EraseItem, PaintItem, EmptinessChanged</dd>
  * </dl>
  * <p>
  * Note: Only one of the styles SINGLE and MULTI may be specified.
@@ -1024,6 +1024,18 @@ void createItem (TreeItem item, long parentIter, int index) {
 	int id = getId (item.handle, false);
 	items [id] = item;
 	modelChanged = true;
+
+	if (parentIter == 0 ) {
+		/*
+		 If this was the first root item fire an EmptinessChanged event.
+		 */
+		int roots = GTK.gtk_tree_model_iter_n_children (modelHandle, 0);
+		if (roots == 1) {
+			Event event = new Event ();
+			event.detail = 0;
+			sendEvent (SWT.EmptinessChanged, event);
+		}
+	}
 }
 
 void createRenderers (long columnHandle, int modelIndex, boolean check, int columnStyle) {
@@ -1277,6 +1289,16 @@ void destroyItem (TreeItem item) {
 	GTK.gtk_tree_store_remove (modelHandle, item.handle);
 	OS.g_signal_handlers_unblock_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 	modelChanged = true;
+
+	/*
+	 If this was the last root item fire an EmptinessChanged event.
+	 */
+	int roots = GTK.gtk_tree_model_iter_n_children (modelHandle, 0);
+	if (roots == 0) {
+		Event event = new Event ();
+		event.detail = 1;
+		sendEvent (SWT.EmptinessChanged, event);
+	}
 }
 
 @Override
