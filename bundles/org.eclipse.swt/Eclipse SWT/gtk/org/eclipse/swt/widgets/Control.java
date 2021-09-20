@@ -882,11 +882,7 @@ void forceResize () {
 	gtk_widget_get_preferred_size (topHandle, requisition);
 	GtkAllocation allocation = new GtkAllocation ();
 	GTK.gtk_widget_get_allocation(topHandle, allocation);
-	if (GTK.GTK4) {
-		GTK4.gtk_widget_size_allocate (topHandle, allocation, -1);
-	} else {
-		GTK3.gtk_widget_size_allocate (topHandle, allocation);
-	}
+	gtk_widget_size_allocate(topHandle, allocation, -1);
 }
 
 /**
@@ -1153,11 +1149,7 @@ int setBounds (int x, int y, int width, int height, boolean move, boolean resize
 			Control focusControl = display.getFocusControl();
 			GTK.gtk_widget_show(topHandle);
 			gtk_widget_get_preferred_size (topHandle, requisition);
-			if (GTK.GTK4) {
-				GTK4.gtk_widget_size_allocate (topHandle, allocation, -1);
-			} else {
-				GTK3.gtk_widget_size_allocate (topHandle, allocation);
-			}
+			gtk_widget_size_allocate(topHandle, allocation, -1);
 			GTK.gtk_widget_hide(topHandle);
 			/* Bug 540002: Showing and hiding widget causes original focused control to loose focus,
 			 * Reset focus to original focused control after dealing with allocation.
@@ -5875,11 +5867,7 @@ public boolean setParent (Composite parent) {
 	allocation.y = y;
 	allocation.width = width;
 	allocation.height = height;
-	if (GTK.GTK4) {
-		GTK4.gtk_widget_size_allocate (topHandle, allocation, -1);
-	} else {
-		GTK3.gtk_widget_size_allocate (topHandle, allocation);
-	}
+	gtk_widget_size_allocate(topHandle, allocation, -1);
 	this.parent = parent;
 	setZOrder (null, false, true);
 	reskin (SWT.ALL);

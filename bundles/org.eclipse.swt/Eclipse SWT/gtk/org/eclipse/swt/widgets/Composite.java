@@ -472,11 +472,7 @@ void adjustChildClipping (long widget) {
 			// Call gtk_widget_get_preferred_size() to prevent warnings
 			GTK.gtk_widget_get_preferred_size(widget, minimumSize, naturalSize);
 			// Allocate and queue a resize event
-			if (GTK.GTK4) {
-				GTK4.gtk_widget_size_allocate(widget, allocation, -1);
-			} else {
-				GTK3.gtk_widget_size_allocate(widget, allocation);
-			}
+			gtk_widget_size_allocate(widget, allocation, -1);
 			GTK.gtk_widget_queue_resize(widget);
 		}
 	}
@@ -1400,11 +1396,7 @@ void moveChildren(int oldWidth) {
 		gtk_widget_get_preferred_size (topHandle, requisition);
 		allocation.x = x;
 		allocation.y = y;
-		if (GTK.GTK4) {
-			GTK4.gtk_widget_size_allocate (topHandle, allocation, -1);
-		} else {
-			GTK3.gtk_widget_size_allocate (topHandle, allocation);
-		}
+		gtk_widget_size_allocate(topHandle, allocation, -1);
 		Control control = child.findBackgroundControl ();
 		if (control != null && control.backgroundImage != null) {
 			if (child.isVisible ()) child.redrawWidget (0, 0, 0, 0, true, true, true);

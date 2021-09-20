@@ -2510,4 +2510,12 @@ void setToolTipText(long tipWidget, String string) {
 
 	GTK.gtk_widget_set_tooltip_text(tipWidget, buffer);
 }
+
+void gtk_widget_size_allocate (long widget, GtkAllocation allocation, int baseline) {
+	if (GTK.GTK4) {
+		GTK4.gtk_widget_size_allocate(widget, allocation, baseline);
+	} else {
+		GTK3.gtk_widget_size_allocate(widget, allocation);
+	}
+}
 }

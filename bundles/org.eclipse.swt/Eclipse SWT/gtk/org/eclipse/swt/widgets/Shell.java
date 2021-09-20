@@ -1156,11 +1156,7 @@ void forceResize (int width, int height) {
 		}
 	}
 
-	if (GTK.GTK4) {
-		GTK4.gtk_widget_size_allocate(vboxHandle, allocation, -1);
-	} else {
-		GTK3.gtk_widget_size_allocate(vboxHandle, allocation);
-	}
+	gtk_widget_size_allocate(vboxHandle, allocation, -1);
 
 	if ((style & SWT.MIRRORED) != 0) moveChildren(clientWidth);
 }
