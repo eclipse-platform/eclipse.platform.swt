@@ -1030,7 +1030,7 @@ public class SWT {
 	 * set to 1).
 	 * </p>
 	 *
-	 * @since 4.22
+	 * @since 3.118
 	 */
 	public static final int EmptinessChanged = 56;
 
