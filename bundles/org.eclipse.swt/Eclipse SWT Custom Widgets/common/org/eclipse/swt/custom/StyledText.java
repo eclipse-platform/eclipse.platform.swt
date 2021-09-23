@@ -6327,9 +6327,16 @@ void handleMouseDown(Event event) {
 		return;
 	}
 	clickCount = event.count;
+	boolean addSelection = (event.stateMask & SWT.MOD3) != 0;
 	if (clickCount == 1) {
-		boolean select = (event.stateMask & SWT.MOD2) != 0;
-		doMouseLocationChange(event.x, event.y, select);
+		if (addSelection && !blockSelection) {
+			int offset = getOffsetAtPoint(event.x, event.y, null);
+			addSelection(offset, 0);
+			sendSelectionEvent();
+		} else {
+			boolean expandSelection = (event.stateMask & SWT.MOD2) != 0;
+			doMouseLocationChange(event.x, event.y, expandSelection);
+		}
 	} else {
 		if (doubleClickEnabled) {
 			boolean wordSelect = (clickCount & 1) == 0;
@@ -6349,7 +6356,14 @@ void handleMouseDown(Event event) {
 				}
 				int start = Math.max(min, getWordPrevious(offset, SWT.MOVEMENT_WORD_START));
 				int end = Math.min(max, getWordNext(start, SWT.MOVEMENT_WORD_END));
-				setSelection(new int[] {start, end - start }, false, true);
+				int[] regions = new int[2];
+				if (addSelection) {
+					int[] current = getSelectionRanges();
+					regions = Arrays.copyOf(current, current.length + 2);
+				}
+				regions[regions.length - 2] = start;
+				regions[regions.length - 1] = end - start;
+				setSelection(regions, false, true);
 				sendSelectionEvent();
 			} else {
 				if (blockSelection) {
@@ -6359,7 +6373,14 @@ void handleMouseDown(Event event) {
 					if (lineIndex + 1 < content.getLineCount()) {
 						lineEnd = content.getOffsetAtLine(lineIndex + 1);
 					}
-					setSelection(new int[] {lineOffset, lineEnd - lineOffset}, false, false);
+					int[] regions = new int[2];
+					if (addSelection) {
+						int[] current = getSelectionRanges();
+						regions = Arrays.copyOf(current, current.length + 2);
+					}
+					regions[regions.length - 2] = lineOffset;
+					regions[regions.length - 1] = lineEnd - lineOffset;
+					setSelection(regions, false, false);
 					sendSelectionEvent();
 				}
 			}
@@ -6368,6 +6389,15 @@ void handleMouseDown(Event event) {
 		}
 	}
 }
+
+void addSelection(int offset, int length) {
+	int[] ranges = getSelectionRanges();
+	ranges = Arrays.copyOf(ranges, ranges.length + 2);
+	ranges[ranges.length - 2] = offset;
+	ranges[ranges.length - 1] = length;
+	setSelection(ranges, true, true);
+}
+
 /**
  * Updates the caret location and selection if mouse button 1 is pressed
  * during the mouse move.
