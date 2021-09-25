@@ -899,6 +899,7 @@ public class CTabFolderRenderer {
 			gc.setLineWidth(gc.getLineWidth() + 2);
 			gc.setForeground(getFillColor());
 		}
+		gc.setLineCap(SWT.CAP_ROUND);
 		gc.drawLine(x, y, x + lineLength, y + lineLength);
 		gc.drawLine(x, y + lineLength, x + lineLength, y);
 	}
