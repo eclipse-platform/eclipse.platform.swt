@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2017 IBM Corporation and others.
+ * Copyright (c) 2000, 2021 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -739,6 +739,12 @@ public void setImage (Image image) {
 	checkWidget();
 	if ((style & SWT.SEPARATOR) != 0) return;
 	if (image != null && image.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
+	boolean changed = true;
+	// check if image size really changed for old and new images
+	if (super.image != null && !super.image.isDisposed() && image != null && !image.isDisposed()) {
+		changed = !super.image.getBounds().equals(image.getBounds());
+	}
+	parent.layout(changed);
 	super.setImage (image);
 	updateImages (getEnabled () && parent.getEnabled ());
 }

@@ -192,6 +192,16 @@ protected void checkSubclass () {
 	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
 }
 
+@Override
+public void layout (boolean changed) {
+	checkWidget ();
+	// If changed, discard the cached layout information
+	if (changed) {
+		_count = _wHint = _hHint = -1;
+	}
+	super.layout(changed);
+}
+
 @Override Point computeSizeInPixels (int wHint, int hHint, boolean changed) {
 	int count = (int)OS.SendMessage (handle, OS.TB_BUTTONCOUNT, 0, 0);
 	if (count == this._count && wHint == this._wHint && hHint == this._hHint) {
