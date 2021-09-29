@@ -21,6 +21,12 @@ import java.io.*;
 public final class WinBMPFileFormat extends FileFormat {
 	static final int BMPFileHeaderSize = 14;
 	static final int BMPHeaderFixedSize = 40;
+
+	static final int BI_RGB       = 0;
+	static final int BI_RLE8      = 1;
+	static final int BI_RLE4      = 2;
+	static final int BI_BITFIELDS = 3;
+
 	int importantColors;
 	Point pelsPerMeter = new Point(0, 0);
 
@@ -31,10 +37,10 @@ public final class WinBMPFileFormat extends FileFormat {
  * Answer the size of the compressed data.
  */
 int compress(int comp, byte[] src, int srcOffset, int numBytes, byte[] dest, boolean last) {
-	if (comp == 1) { // BMP_RLE8_COMPRESSION
+	if (comp == BI_RLE8) {
 		return compressRLE8Data(src, srcOffset, numBytes, dest, last);
 	}
-	if (comp == 2) { // BMP_RLE4_COMPRESSION
+	if (comp == BI_RLE4) {
 		return compressRLE4Data(src, srcOffset, numBytes, dest, last);
 	}
 	SWT.error(SWT.ERROR_INVALID_IMAGE);
@@ -271,12 +277,12 @@ void convertPixelsToBGR(ImageData image, byte[] dest) {
 	}
 }
 void decompressData(byte[] src, byte[] dest, int stride, int cmp) {
-	if (cmp == 1) { // BMP_RLE8_COMPRESSION
+	if (cmp == BI_RLE8) {
 		if (decompressRLE8Data(src, src.length, stride, dest, dest.length) <= 0)
 			SWT.error(SWT.ERROR_INVALID_IMAGE);
 		return;
 	}
-	if (cmp == 2) { // BMP_RLE4_COMPRESSION
+	if (cmp == BI_RLE4) {
 		if (decompressRLE4Data(src, src.length, stride, dest, dest.length) <= 0)
 			SWT.error(SWT.ERROR_INVALID_IMAGE);
 		return;
@@ -452,7 +458,7 @@ byte[] loadData(byte[] infoHeader, int stride) {
 	int dataSize = height * stride;
 	byte[] data = new byte[dataSize];
 	int cmp = (infoHeader[16] & 0xFF) | ((infoHeader[17] & 0xFF) << 8) | ((infoHeader[18] & 0xFF) << 16) | ((infoHeader[19] & 0xFF) << 24);
-	if (cmp == 0 || cmp == 3) { // BMP_NO_COMPRESSION
+	if (cmp == BI_RGB || cmp == BI_BITFIELDS) {
 		try {
 			if (inputStream.read(data) != dataSize)
 				SWT.error(SWT.ERROR_INVALID_IMAGE);
@@ -556,7 +562,7 @@ PaletteData loadPalette(byte[] infoHeader) {
 		return paletteFromBytes(buf, numColors);
 	}
 	if (depth == 16) {
-		if (this.compression == 3) {
+		if (this.compression == BI_BITFIELDS) {
 			try {
 				return new PaletteData(inputStream.readInt(), inputStream.readInt(), inputStream.readInt());
 			} catch (IOException e) {
@@ -566,9 +572,18 @@ PaletteData loadPalette(byte[] infoHeader) {
 		return new PaletteData(0x7C00, 0x3E0, 0x1F);
 	}
 	if (depth == 24) return new PaletteData(0xFF, 0xFF00, 0xFF0000);
-	if (this.compression == 3) {
+	if (this.compression == BI_BITFIELDS) {
 		try {
-			return new PaletteData(inputStream.readInt(), inputStream.readInt(), inputStream.readInt());
+			/*
+			 * ImageData is expected to be in big-endian format when
+			 * (bpp != 16); see 'ImageData.getByteOrder()'. At the same
+			 * time, 'inputStream' is a 'LEDataInputStream', that is,
+			 * low-endian. Therefore, masks need to be converted.
+			 */
+			final int maskR = Integer.reverseBytes(inputStream.readInt());
+			final int maskG = Integer.reverseBytes(inputStream.readInt());
+			final int maskB = Integer.reverseBytes(inputStream.readInt());
+			return new PaletteData(maskR, maskG, maskB);
 		} catch (IOException e) {
 			SWT.error(SWT.ERROR_IO, e);
 		}
