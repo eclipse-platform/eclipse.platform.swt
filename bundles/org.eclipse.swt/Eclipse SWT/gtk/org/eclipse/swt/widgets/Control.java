@@ -4999,7 +4999,13 @@ boolean sendMouseEvent (int type, int button, int count, int detail, boolean sen
 				sendOrPost(SWT.MouseDown, mouseDownEvent);
 			}
 		}
-		return true;
+		/* This checks for Wayland, a previous MouseDown || MouseMove in the
+		 * dragDetectionQueue and it checks if the current event is MouseMove
+		 * This will prevent them from not being queued, which caused
+		 * Bug 576215 - [Wayland] Mouse events not received as on other platforms.
+		 * In x11 this will always return true as before.
+		 */
+		if( (OS.isX11() || (dragDetectionQueue == null) || (type != SWT.MouseMove)) ) return true;
 	}
 	Event event = new Event ();
 	event.time = time;
