@@ -1043,6 +1043,7 @@ public void setImage (Image image) {
 	if (GTK.GTK4) return;
 
 	checkWidget();
+	if (this.image == image) return;
 	if ((style & SWT.SEPARATOR) != 0) return;
 	disposeDefaultDisabledImage();
 	super.setImage (image);

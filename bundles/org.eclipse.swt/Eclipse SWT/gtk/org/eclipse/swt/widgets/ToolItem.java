@@ -1106,6 +1106,7 @@ public void setControl (Control control) {
  */
 public void setDisabledImage (Image image) {
 	checkWidget();
+	if (this.disabledImage == image) return;
 	if ((style & SWT.SEPARATOR) != 0) return;
 	disabledImage = image;
 	if (image != null) {
@@ -1223,6 +1224,7 @@ void setForegroundRGBA (long handle, GdkRGBA rgba) {
  */
 public void setHotImage (Image image) {
 	checkWidget();
+	if (this.hotImage == image) return;
 	if ((style & SWT.SEPARATOR) != 0) return;
 	hotImage = image;
 	if (image != null) {
@@ -1240,6 +1242,7 @@ public void setHotImage (Image image) {
 @Override
 public void setImage (Image image) {
 	checkWidget();
+	if (this.image == image) return;
 	if ((style & SWT.SEPARATOR) != 0) return;
 	super.setImage (image);
 	disposeDefault();

@@ -704,6 +704,7 @@ public void setEnabled (boolean enabled) {
  */
 public void setDisabledImage (Image image) {
 	checkWidget();
+	if (this.disabledImage == image) return;
 	if ((style & SWT.SEPARATOR) != 0) return;
 	if (image != null && image.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
 	parent.layout(isImageSizeChanged(disabledImage, image));
@@ -730,6 +731,7 @@ public void setDisabledImage (Image image) {
  */
 public void setHotImage (Image image) {
 	checkWidget();
+	if (this.hotImage == image) return;
 	if ((style & SWT.SEPARATOR) != 0) return;
 	if (image != null && image.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
 	parent.layout(isImageSizeChanged(hotImage, image));
@@ -740,6 +742,7 @@ public void setHotImage (Image image) {
 @Override
 public void setImage (Image image) {
 	checkWidget();
+	if (this.image == image) return;
 	if ((style & SWT.SEPARATOR) != 0) return;
 	if (image != null && image.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
 	parent.layout(isImageSizeChanged(super.image, image));

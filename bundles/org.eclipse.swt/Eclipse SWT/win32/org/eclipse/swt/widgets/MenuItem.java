@@ -783,6 +783,7 @@ public void setID (int id) {
 @Override
 public void setImage (Image image) {
 	checkWidget ();
+	if (this.image == image) return;
 	if ((style & SWT.SEPARATOR) != 0) return;
 	super.setImage (image);
 	MENUITEMINFO info = new MENUITEMINFO ();

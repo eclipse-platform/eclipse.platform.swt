@@ -176,6 +176,7 @@ void releaseWidget () {
  */
 public void setImage (Image image) {
 	checkWidget ();
+	if (this.image == image) return;
 	if (image != null && image.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
 	this.image = image;
 }
