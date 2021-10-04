@@ -42,7 +42,6 @@ CAIRO_PREFIX = swt-cairo
 ATK_PREFIX = swt-atk
 WEBKIT_PREFIX = swt-webkit
 WEBKIT_EXTENSION_PREFIX=swt-webkit2extension
-CHROMIUM_PREFIX = swt-chromium
 GLX_PREFIX = swt-glx
 
 SWT_LIB = lib$(SWT_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
@@ -96,9 +95,6 @@ WEBKITLIBS +=  `pkg-config --libs-only-l webkit2gtk-4.0`
 WEBKITCFLAGS +=  `pkg-config --cflags webkit2gtk-4.0`
 endif
 
-CHROMIUMLIBS = -lchromium_swt_${SWT_VERSION} -L$(CHROMIUM_OUTPUT_DIR)/chromium-$(cef_ver) -Wl,--disable-new-dtags,-rpath,"\$$ORIGIN"
-CHROMIUMCFLAGS = -I$(CHROMIUM_HEADERS)
-
 SWT_OBJECTS = swt.o c.o c_stats.o callback.o
 AWT_OBJECTS = swt_awt.o
 ifeq ($(GTK_VERSION), 4.0)
@@ -110,7 +106,6 @@ SWTPI_OBJECTS = swt.o os.o os_structs.o os_custom.o os_stats.o $(GTKX_OBJECTS)
 CAIRO_OBJECTS = swt.o cairo.o cairo_structs.o cairo_stats.o
 ATK_OBJECTS = swt.o atk.o atk_structs.o atk_custom.o atk_stats.o
 WEBKIT_OBJECTS = swt.o webkitgtk.o webkitgtk_structs.o webkitgtk_stats.o webkitgtk_custom.o
-CHROMIUM_OBJECTS = chromiumlib.o chromiumlib_structs.o chromiumlib_custom.o chromiumlib_stats.o
 GLX_OBJECTS = swt.o glx.o glx_structs.o glx_stats.o
 
 CFLAGS := $(CFLAGS) \
@@ -253,26 +248,6 @@ webkitgtk_extension.o : webkitgtk_extension.c
 	$(CC) $(CFLAGS) $(WEBKIT_EXTENSION_CFLAGS) ${SWT_PTR_CFLAGS} -fPIC -c $^
 
 #
-# Chromium lib
-#
-chromium: $(CHROMIUM_LIB)
-
-$(CHROMIUM_LIB): $(CHROMIUM_OBJECTS)
-	$(CC) $(LFLAGS) -o $(CHROMIUM_LIB) $(CHROMIUM_OBJECTS) $(CHROMIUMLIBS)	
-
-chromiumlib.o: chromiumlib.c
-	$(CC) $(CFLAGS) $(CHROMIUMCFLAGS) -c chromiumlib.c
-
-chromiumlib_structs.o: chromiumlib_structs.c
-	$(CC) $(CFLAGS) $(CHROMIUMCFLAGS) -c chromiumlib_structs.c
-
-chromiumlib_custom.o: chromiumlib_custom.c
-	$(CC) $(CFLAGS) $(CHROMIUMCFLAGS) -c chromiumlib_custom.c
-
-chromiumlib_stats.o: chromiumlib_stats.c chromiumlib_stats.h
-	$(CC) $(CFLAGS) $(CHROMIUMCFLAGS) -c chromiumlib_stats.c
-
-#
 # GLX lib
 #
 make_glx: $(GLX_LIB)
@@ -312,14 +287,6 @@ ifeq ($(BUILD_WEBKIT2EXTENSION),yes)
 	-cp $(WEBKIT_EXTENSION_LIB) $(OUTPUT_DIR)/$(WEBEXTENSION_DIR)/
 endif
 
-chromium_cargo:
-	cd chromium_subp && cargo build --release
-	cd chromium_swt && cargo build --release
-	mkdir -p $(CHROMIUM_OUTPUT_DIR)/chromium-$(cef_ver)
-	cp chromium_subp/target/release/chromium_subp $(CHROMIUM_OUTPUT_DIR)/chromium-$(cef_ver)/chromium_subp-$(SWT_VERSION)
-	cp chromium_swt/target/release/libchromium_swt_$(SWT_VERSION).so $(CHROMIUM_OUTPUT_DIR)/chromium-$(cef_ver)
-chromium_install: chromium
-	cp $(CHROMIUM_LIB) $(CHROMIUM_OUTPUT_DIR)/chromium-$(cef_ver)
 #
 # Clean
 #

@@ -66,13 +66,6 @@ IF NOT EXIST "%SWT_JAVA_HOME%" (
 )
 
 set CFLAGS=-DJNI64
-IF "x.%CHROMIUM_RUST_DIR%"=="x." (
-    set CHROMIUM_HEADERS=chromium_subp\cef_win32
-    set CHROMIUM_TARGET=chromium_swt\target\release
-) ELSE (
-    set CHROMIUM_HEADERS=%CHROMIUM_RUST_DIR%\chromium_subp\cef_win32
-    set CHROMIUM_TARGET=%CHROMIUM_RUST_DIR%\chromium_swt\target\release
-)
 call "%MSVC_HOME%\VC\Auxiliary\Build\vcvarsall.bat" x64
 shift
 

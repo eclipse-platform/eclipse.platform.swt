@@ -39,15 +39,7 @@ LFLAGS = -bundle $(ARCHS) -framework Cocoa -framework WebKit -framework CoreServ
 SWT_OBJECTS = swt.o c.o c_stats.o callback.o
 SWTPI_OBJECTS = swt.o os.o os_structs.o os_stats.o os_custom.o
 
-CHROMIUM_PREFIX = swt-chromium
-CHROMIUM_LIB    = lib$(CHROMIUM_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).jnilib
-CHROMIUM_OBJECTS   = chromiumlib.o chromiumlib_structs.o chromiumlib_custom.o chromiumlib_stats.o
-CHROMIUM_CFLAGS = -I $(CHROMIUM_HEADERS)
-CHROMIUM_LFLAGS = -bundle $(ARCHS) -lchromium_swt_${SWT_VERSION} -L$(CHROMIUM_OUTPUT_DIR)/chromium-$(cef_ver)
-
 all: $(SWT_LIB) $(SWTPI_LIB) $(AWT_LIB)
-
-make_chromium: $(CHROMIUM_LIB)
 
 .c.o:
 	cc $(CFLAGS) $*.c
@@ -61,37 +53,8 @@ $(SWT_LIB): $(SWT_OBJECTS)
 $(SWTPI_LIB): $(SWTPI_OBJECTS)
 	cc -o $(SWTPI_LIB) $(LFLAGS) $(SWTPI_OBJECTS)
 
-chromiumlib.o:
-	cc $(CFLAGS) $(CHROMIUM_CFLAGS) chromiumlib.c
-
-chromiumlib_structs.o:
-	cc $(CFLAGS) $(CHROMIUM_CFLAGS) chromiumlib_structs.c
-
-chromiumlib_custom.o:
-	cc $(CFLAGS) $(CHROMIUM_CFLAGS) chromiumlib_custom.c
-
-chromiumlib_stats.o:
-	cc $(CFLAGS) $(CHROMIUM_CFLAGS) chromiumlib_stats.c
-
-$(CHROMIUM_LIB): $(CHROMIUM_OBJECTS)
-	cc -o $(CHROMIUM_LIB) $(CHROMIUM_LFLAGS) $(CHROMIUM_OBJECTS)
-
 install: all
 	cp *.jnilib $(OUTPUT_DIR)
-
-chromium_cargo:
-	cd chromium_subp && cargo build --release
-	cd chromium_swt && cargo build --release
-	mkdir -p $(CHROMIUM_OUTPUT_DIR)/chromium-$(cef_ver)/chromium_subp-$(SWT_VERSION).app/Contents/MacOS/
-	install_name_tool -change '@rpath/Frameworks/Chromium Embedded Framework.framework/Chromium Embedded Framework' '@loader_path/../../../Chromium Embedded Framework.framework/Chromium Embedded Framework' chromium_subp/target/release/chromium_subp
-	install_name_tool -change '@rpath/Frameworks/Chromium Embedded Framework.framework/Chromium Embedded Framework' '@loader_path/Chromium Embedded Framework.framework/Chromium Embedded Framework' chromium_swt/target/release/libchromium_swt_$(SWT_VERSION).dylib
-	install_name_tool -id '@loader_path/libchromium_swt_$(SWT_VERSION).dylib' chromium_swt/target/release/libchromium_swt_$(SWT_VERSION).dylib
-	strip -r -u chromium_swt/target/release/libchromium_swt_$(SWT_VERSION).dylib
-	cp chromium_subp/target/release/chromium_subp $(CHROMIUM_OUTPUT_DIR)/chromium-$(cef_ver)/chromium_subp-$(SWT_VERSION).app/Contents/MacOS/
-	cp chromium_swt/target/release/libchromium_swt_$(SWT_VERSION).dylib $(CHROMIUM_OUTPUT_DIR)/chromium-$(cef_ver)
-chromium_install: make_chromium
-	strip -r -u $(CHROMIUM_LIB)
-	cp $(CHROMIUM_LIB) "$(CHROMIUM_OUTPUT_DIR)/chromium-$(cef_ver)"
 
 clean:
 	rm -f *.jnilib *.o
