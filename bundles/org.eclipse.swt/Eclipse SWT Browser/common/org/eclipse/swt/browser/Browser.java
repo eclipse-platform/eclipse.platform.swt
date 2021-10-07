@@ -197,7 +197,7 @@ static int checkStyle(int style) {
 		}
 	}
 	/* If particular backend isn't specified, use the value from the system property. */
-	if ((style & (SWT.WEBKIT | SWT.CHROMIUM | SWT.EDGE)) == 0) {
+	if ((style & (SWT.WEBKIT | SWT.EDGE)) == 0) {
 		style |= DefaultType;
 	}
 	if ("win32".equals (platform) && (style & SWT.EDGE) != 0) { //$NON-NLS-1$

@@ -260,7 +260,7 @@
 		<copy todir="${destination.temp.folder}/${full.name}">
 			<fileset dir="${fragmentdir}" includes="fragment.properties,about.html,about_files/,swt*.dll,libswt*.so,libswt*.sl,libswt*.a,libswt*.jnilib,libXm.so.2,webkitextensions*/libswt*.so,META-INF/,WebView2Loader.dll" />
 		</copy>
-		<chmod perm="755" dir="${destination.temp.folder}/${full.name}" includes="swt*.dll,libswt*.so,libswt*.sl,libswt*.a,libswt*.jnilib,libXm.so.2,webkitextensions*/libswt*.so,chromium-*/*.so,WebView2Loader.dll" />
+		<chmod perm="755" dir="${destination.temp.folder}/${full.name}" includes="swt*.dll,libswt*.so,libswt*.sl,libswt*.a,libswt*.jnilib,libXm.so.2,webkitextensions*/libswt*.so,WebView2Loader.dll" />
 		<eclipse.versionReplacer path="${destination.temp.folder}/${full.name}" version="${version.suffix}" />
 	</target>
 

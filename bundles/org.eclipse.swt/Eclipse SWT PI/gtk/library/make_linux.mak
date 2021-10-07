@@ -51,7 +51,6 @@ CAIRO_LIB = lib$(CAIRO_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
 ATK_LIB = lib$(ATK_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
 GLX_LIB = lib$(GLX_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
 WEBKIT_LIB = lib$(WEBKIT_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
-CHROMIUM_LIB = lib$(CHROMIUM_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
 ALL_SWT_LIBS = $(SWT_LIB) $(AWT_LIB) $(SWTPI_LIB) $(CAIRO_LIB) $(ATK_LIB) $(GLX_LIB) $(WEBKIT_LIB)
 
 # Webkit extension lib has to be put into a separate folder and is treated differently from the other libraries.
