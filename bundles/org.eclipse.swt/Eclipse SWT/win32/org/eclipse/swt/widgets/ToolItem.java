@@ -579,6 +579,7 @@ public void setControl (Control control) {
 		if (control.parent != parent) error (SWT.ERROR_INVALID_PARENT);
 	}
 	if ((style & SWT.SEPARATOR) == 0) return;
+	parent.layout(true);
 	this.control = control;
 	/*
 	* Feature in Windows.  When a tool bar wraps, tool items
@@ -705,6 +706,7 @@ public void setDisabledImage (Image image) {
 	checkWidget();
 	if ((style & SWT.SEPARATOR) != 0) return;
 	if (image != null && image.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
+	parent.layout(isImageSizeChanged(disabledImage, image));
 	disabledImage = image;
 	updateImages (getEnabled () && parent.getEnabled ());
 }
@@ -730,6 +732,7 @@ public void setHotImage (Image image) {
 	checkWidget();
 	if ((style & SWT.SEPARATOR) != 0) return;
 	if (image != null && image.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
+	parent.layout(isImageSizeChanged(hotImage, image));
 	hotImage = image;
 	updateImages (getEnabled () && parent.getEnabled ());
 }
@@ -739,14 +742,18 @@ public void setImage (Image image) {
 	checkWidget();
 	if ((style & SWT.SEPARATOR) != 0) return;
 	if (image != null && image.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
-	boolean changed = true;
-	// check if image size really changed for old and new images
-	if (super.image != null && !super.image.isDisposed() && image != null && !image.isDisposed()) {
-		changed = !super.image.getBounds().equals(image.getBounds());
-	}
-	parent.layout(changed);
+	parent.layout(isImageSizeChanged(super.image, image));
 	super.setImage (image);
 	updateImages (getEnabled () && parent.getEnabled ());
+}
+
+boolean isImageSizeChanged(Image oldImage, Image image) {
+	boolean changed = true;
+	// check if image size really changed for old and new images
+	if (oldImage != null && !oldImage.isDisposed() && image != null && !image.isDisposed()) {
+		changed = !oldImage.getBounds().equals(image.getBounds());
+	}
+	return changed;
 }
 
 boolean setRadioSelection (boolean value) {

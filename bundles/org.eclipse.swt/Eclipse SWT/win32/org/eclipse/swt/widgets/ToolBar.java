@@ -195,11 +195,15 @@ protected void checkSubclass () {
 @Override
 public void layout (boolean changed) {
 	checkWidget ();
+	clearSizeCache(changed);
+	super.layout(changed);
+}
+
+void clearSizeCache(boolean changed) {
 	// If changed, discard the cached layout information
 	if (changed) {
 		_count = _wHint = _hHint = -1;
 	}
-	super.layout(changed);
 }
 
 @Override Point computeSizeInPixels (int wHint, int hHint, boolean changed) {
@@ -686,6 +690,7 @@ public int indexOf (ToolItem item) {
 }
 
 void layoutItems () {
+	clearSizeCache(true);
 	/*
 	* Feature in Windows.  When a tool bar has the style
 	* TBSTYLE_LIST and has a drop down item, Window leaves
