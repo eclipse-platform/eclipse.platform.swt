@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2015 IBM Corporation and others.
+ * Copyright (c) 2000, 2021 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -14,6 +14,7 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayOutputStream;
@@ -32,31 +33,31 @@ public class Test_org_eclipse_swt_SWTError {
 
 @Test
 public void test_Constructor() {
-	assertTrue (
+	assertEquals (
 		"did not fill in code properly",
-		new SWTError().code == SWT.ERROR_UNSPECIFIED);
+		SWT.ERROR_UNSPECIFIED, new SWTError().code);
 }
 
 @Test
 public void test_ConstructorI() {
-	assertTrue (
-		"did not fill in code properly",
-		new SWTError(SWT.ERROR_CANNOT_BE_ZERO).code == SWT.ERROR_CANNOT_BE_ZERO);
+	assertEquals(
+		"did not fill in code properly",SWT.ERROR_CANNOT_BE_ZERO,
+		new SWTError(SWT.ERROR_CANNOT_BE_ZERO).code );
 }
 
 @Test
 public void test_ConstructorILjava_lang_String() {
-	assertTrue (
-		"did not fill in code properly",
+	assertEquals (
+		"did not fill in code properly",SWT.ERROR_CANNOT_BE_ZERO,
 		new SWTError(SWT.ERROR_CANNOT_BE_ZERO, "An uninteresting message").code
-			== SWT.ERROR_CANNOT_BE_ZERO);
+		);
 }
 
 @Test
 public void test_ConstructorLjava_lang_String() {
-	assertTrue (
-		"did not fill in code properly",
-		new SWTError("An uninteresting message").code == SWT.ERROR_UNSPECIFIED);
+	assertEquals(
+		"did not fill in code properly",SWT.ERROR_UNSPECIFIED,
+		new SWTError("An uninteresting message").code);
 }
 
 @Test
@@ -69,15 +70,6 @@ public void test_getMessage() {
 
 @Test
 public void test_printStackTrace() {
-
-	// WARNING: this test is not CLDC safe, because it requires java.io.PrintStream
-
-	try {
-		Class.forName("java.io.PrintStream");
-	} catch (ClassNotFoundException e) {
-		// ignore test if running on CLDC
-		return;
-	}
 
 	// test default SWTError
 

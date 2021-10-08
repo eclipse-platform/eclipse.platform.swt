@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2016 IBM Corporation and others.
+ * Copyright (c) 2000, 2021 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -15,6 +15,8 @@
 package org.eclipse.swt.tests.junit;
 
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 
 import org.eclipse.swt.SWT;
@@ -46,21 +48,21 @@ public void test_modifyTextLorg_eclipse_swt_custom_ExtendedModifyEvent() {
 	ExtendedModifyListener listener = event -> {
 		switch(verify) {
 			case 1 : {
-				assertTrue(":1a:", event.start == 0);
-				assertTrue(":1b:", event.length == 1);
+				assertEquals(":1a:", 0, event.start);
+				assertEquals(":1b:", 1, event.length);
 				assertTrue(":1c:", event.replacedText.isEmpty());
 				break;
 			}
 			case 2 : {
-				assertTrue(":2a:", event.start == 0);
-				assertTrue(":2b:", event.length == 1);
-				assertTrue(":2c:", event.replacedText.equals("\n\n"));
+				assertEquals(":2a:", 0, event.start);
+				assertEquals(":2b:", 1, event.length);
+				assertEquals(":2c:", "\n\n", event.replacedText);
 				break;
 			}
 			case 3 : {
-				assertTrue(":3a:", event.start == 0);
-				assertTrue(":3b:", event.length == 2);
-				assertTrue(":3c:", event.replacedText.equals("a"));
+				assertEquals(":3a:", 0, event.start);
+				assertEquals(":3b:", 2, event.length);
+				assertEquals(":3c:", "a", event.replacedText);
 				break;
 			}
 			case 4: {
@@ -68,33 +70,33 @@ public void test_modifyTextLorg_eclipse_swt_custom_ExtendedModifyEvent() {
 				break;
 			}
 			case 5 : {
-				assertTrue(":5a:", event.start == 0);
-				assertTrue(":5b:", event.length == 1);
+				assertEquals(":5a:", 0, event.start);
+				assertEquals(":5b:", 1, event.length);
 				assertTrue(":5c:", event.replacedText.isEmpty());
 				break;
 			}
 			case 6 : {
-				assertTrue(":6a:", event.start == 21);
-				assertTrue(":6b:", event.length == 0);
-				assertTrue(":6c:", event.replacedText.equals("\nline 4"));
+				assertEquals(":6a:", 21, event.start);
+				assertEquals(":6b:", 0, event.length);
+				assertEquals(":6c:", "\nline 4", event.replacedText);
 				break;
 			}
 			case 7 : {
-				assertTrue(":7a:", event.start == 5);
-				assertTrue(":7b:", event.length == 0);
-				assertTrue(":7c:", event.replacedText.equals("is a test"));
+				assertEquals(":7a:", 5, event.start);
+				assertEquals(":7b:", 0, event.length);
+				assertEquals(":7c:", "is a test", event.replacedText);
 				break;
 			}
 			case 8 : {
-				assertTrue(":8a:", event.start == 7);
-				assertTrue(":8b:", event.length == 0);
-				assertTrue(":8c:", event.replacedText.equals("\r\n"));
+				assertEquals(":8a:", 7, event.start);
+				assertEquals(":8b:", 0, event.length);
+				assertEquals(":8c:", "\r\n", event.replacedText);
 				break;
 			}
 			case 9 : {
-				assertTrue(":9a:", event.start == 2);
-				assertTrue(":9b:", event.length == 4);
-				assertTrue(":9c:", event.replacedText.equals("\r\n"));
+				assertEquals(":9a:", 2, event.start);
+				assertEquals(":9b:", 4, event.length);
+				assertEquals(":9c:", "\r\n", event.replacedText);
 				break;
 			}
 			case 10:{
@@ -106,14 +108,14 @@ public void test_modifyTextLorg_eclipse_swt_custom_ExtendedModifyEvent() {
 				break;
 			}
 			case 12: {
-				assertTrue(":12a:", event.start == 3);
-				assertTrue(":12b:", event.length == 1);
+				assertEquals(":12a:", 3, event.start);
+				assertEquals(":12b:", 1, event.length);
 				assertTrue(":12c:", event.replacedText.isEmpty());
 				break;
 			}
 			case 13: {
-				assertTrue(":13a:", event.start == 2);
-				assertTrue(":13b:", event.length == 1);
+				assertEquals(":13a:", 2, event.start);
+				assertEquals(":13b:", 1, event.length);
 				assertTrue(":13c:", event.replacedText.isEmpty());
 				break;
 			}
@@ -122,9 +124,9 @@ public void test_modifyTextLorg_eclipse_swt_custom_ExtendedModifyEvent() {
 				break;
 			}
 			case 15: {
-				assertTrue(":15a:", event.start == 2);
-				assertTrue(":15b:", event.length == 6);
-				assertTrue(":15c:", event.replacedText.equals("\r\n"));
+				assertEquals(":15a:", 2, event.start);
+				assertEquals(":15b:", 6, event.length);
+				assertEquals(":15c:", "\r\n", event.replacedText);
 				break;
 			}
 			case 16:{
@@ -136,14 +138,14 @@ public void test_modifyTextLorg_eclipse_swt_custom_ExtendedModifyEvent() {
 				break;
 			}
 			case 18: {
-				assertTrue(":18a:", event.start == 3);
-				assertTrue(":18b:", event.length == 7);
+				assertEquals(":18a:", 3, event.start);
+				assertEquals(":18b:", 7, event.length);
 				assertTrue(":18c:", event.replacedText.isEmpty());
 				break;
 			}
 			case 19: {
-				assertTrue(":19a:", event.start == 2);
-				assertTrue(":19b:", event.length == 7);
+				assertEquals(":19a:", 2, event.start);
+				assertEquals(":19b:", 7, event.length);
 				assertTrue(":19c:", event.replacedText.isEmpty());
 				break;
 			}
@@ -152,16 +154,15 @@ public void test_modifyTextLorg_eclipse_swt_custom_ExtendedModifyEvent() {
 				break;
 			}
 			case 21: {
-				assertTrue(":21a:", event.start == 0);
-				assertTrue(":21b:", event.length == 16);
-				assertTrue(":21c:", event.replacedText.equals("L1\r\nL2\r\nL3\r\nL4\r\n"));
+				assertEquals(":21a:", 0, event.start);
+				assertEquals(":21b:", 16, event.length);
+				assertEquals(":21c:", "L1\r\nL2\r\nL3\r\nL4\r\n", event.replacedText);
 				break;
 			}
 		}
 	};
 	styledText.addExtendedModifyListener(listener);
 
-	boolean exceptionHandled = false;
 	verify = 0;
 	styledText.setText("testing");
 	verify = 1;
@@ -180,12 +181,7 @@ public void test_modifyTextLorg_eclipse_swt_custom_ExtendedModifyEvent() {
 	verify = 0;
 	styledText.setText("L1\r\nL2\r\nL3\r\nL4\r\n");
 	verify = 4;
-	try {styledText.replaceTextRange(3, 1, "test\n");}
-	catch (IllegalArgumentException ex) {
-		exceptionHandled = true;
-	}
-	assertTrue(":4: exception not thrown", exceptionHandled);
-	exceptionHandled = false;
+	assertThrows(IllegalArgumentException.class, () -> styledText.replaceTextRange(3, 1, "test\n"));
 
 	verify = 0;
 	styledText.setText("Line 1\r\nLine 2");
@@ -215,22 +211,12 @@ public void test_modifyTextLorg_eclipse_swt_custom_ExtendedModifyEvent() {
 	verify = 0;
 	styledText.setText("L1\r\n");
 	verify = 10;
-	try {styledText.replaceTextRange(3, 1, "");}
-	catch (IllegalArgumentException ex) {
-		exceptionHandled = true;
-	}
-	assertTrue(":10: exception not thrown", exceptionHandled);
-	exceptionHandled = false;
+	assertThrows(IllegalArgumentException.class, () ->styledText.replaceTextRange(3, 1, ""));
 
 	verify = 0;
 	styledText.setText("L1\r\nL2\r\nL3\r\nL4\r\n");
 	verify = 11;
-	try {styledText.replaceTextRange(1, 2, "");}
-	catch (IllegalArgumentException ex) {
-		exceptionHandled = true;
-	}
-	assertTrue(":11: exception not thrown", exceptionHandled);
-	exceptionHandled = false;
+	assertThrows(IllegalArgumentException.class, () -> styledText.replaceTextRange(1, 2, ""));
 
 	verify = 0;
 	styledText.setText("L1\r");
@@ -245,12 +231,7 @@ public void test_modifyTextLorg_eclipse_swt_custom_ExtendedModifyEvent() {
 	verify = 0;
 	styledText.setText("L1\r\n");
 	verify = 14;
-	try {styledText.replaceTextRange(3, 0, "test");}
-	catch (IllegalArgumentException ex) {
-		exceptionHandled = true;
-	}
-	assertTrue(":14: exception not thrown", exceptionHandled);
-	exceptionHandled = false;
+	assertThrows(IllegalArgumentException.class, () ->styledText.replaceTextRange(3, 0, "test"));
 
 	verify = 0;
 	styledText.setText("L1\r\n");
@@ -260,22 +241,12 @@ public void test_modifyTextLorg_eclipse_swt_custom_ExtendedModifyEvent() {
 	verify = 0;
 	styledText.setText("L1\r\n");
 	verify = 16;
-	try {styledText.replaceTextRange(3, 1, "test\r\n");}
-	catch (IllegalArgumentException ex) {
-		exceptionHandled = true;
-	}
-	assertTrue(":16: exception not thrown", exceptionHandled);
-	exceptionHandled = false;
+	assertThrows(IllegalArgumentException.class, () ->styledText.replaceTextRange(3, 1, "test\r\n"));
 
 	verify = 0;
 	styledText.setText("L1\r\nL2\r\nL3\r\nL4\r\n");
 	verify = 17;
-	try {styledText.replaceTextRange(1, 2, "test\n\n");}
-	catch (IllegalArgumentException ex) {
-		exceptionHandled = true;
-	}
-	assertTrue(":17: exception not thrown", exceptionHandled);
-	exceptionHandled = false;
+	assertThrows(IllegalArgumentException.class, () ->styledText.replaceTextRange(1, 2, "test\n\n"));
 
 	verify = 0;
 	styledText.setText("L1\r");
@@ -290,12 +261,7 @@ public void test_modifyTextLorg_eclipse_swt_custom_ExtendedModifyEvent() {
 	verify = 0;
 	styledText.setText("L1\r\nL2\r\nL3\r\nL4\r\n");
 	verify = 20;
-	try {styledText.replaceTextRange(3, 1, "test\n");}
-	catch (IllegalArgumentException ex) {
-		exceptionHandled = true;
-	}
-	assertTrue(":20: exception not thrown", exceptionHandled);
-	exceptionHandled = false;
+	assertThrows(IllegalArgumentException.class, () -> styledText.replaceTextRange(3, 1, "test\n"));
 
 	verify = 21;
 	styledText.setText("L1\r\nL2\r\nL3\r\nL4\r\n");

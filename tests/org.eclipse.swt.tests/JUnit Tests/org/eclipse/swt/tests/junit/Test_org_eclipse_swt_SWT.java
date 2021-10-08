@@ -14,6 +14,8 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -109,9 +111,9 @@ public void test_getMessageLjava_lang_String() {
 	} catch (Throwable t) {
 		fail ("exception " + t + " generated for SWT_Yes");
 	}
-	assertTrue (
+	assertEquals (
 		"invalid key did not return as itself",
-		"_NOT_FOUND_IN_PROPERTIES_".equals(SWT.getMessage("_NOT_FOUND_IN_PROPERTIES_")));
+		"_NOT_FOUND_IN_PROPERTIES_", SWT.getMessage("_NOT_FOUND_IN_PROPERTIES_"));
 
 }
 
@@ -119,7 +121,7 @@ public void test_getMessageLjava_lang_String() {
 public void test_getPlatform() {
 	// Can't test the list of platforms, since this may change,
 	// so just test to see it returns something.
-	assertTrue ("returned null platform name", SWT.getPlatform() != null);
+	assertNotNull ("returned null platform name", SWT.getPlatform());
 }
 
 @Test
