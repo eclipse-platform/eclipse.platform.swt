@@ -58,15 +58,15 @@ BOOL Validate_AllowDarkModeForWindow(const BYTE* functionPtr)
 
 #ifdef _M_X64
 	/* Win10 builds from 20236 */
-	if ((functionPtr[0x52] == 0xBA) &&						// mov     edx,
-	    (*(const DWORD*)(functionPtr + 0x53) == 0xA91E))	//             0A91Eh
+	if ((functionPtr[0x52] == 0xBA) &&                      // mov     edx,
+	    (*(const DWORD*)(functionPtr + 0x53) == 0xA91E))    //             0A91Eh
 	{
 		return TRUE;
 	}
 
 	/* Win10 builds from 17763 to 19041 */
-	if ((functionPtr[0x15] == 0xBA) &&						// mov     edx,
-	    (*(const DWORD*)(functionPtr + 0x16) == 0xA91E))	//             0A91Eh
+	if ((functionPtr[0x15] == 0xBA) &&                      // mov     edx,
+	    (*(const DWORD*)(functionPtr + 0x16) == 0xA91E))    //             0A91Eh
 	{
 		return TRUE;
 	}
@@ -102,27 +102,86 @@ TYPE_AllowDarkModeForWindow Locate_AllowDarkModeForWindow()
 	return (TYPE_AllowDarkModeForWindow)candidate;
 }
 
+BOOL Validate_AllowDarkModeForWindowWithTelemetryId(const BYTE* functionPtr)
+{
+#ifdef _M_X64
+	/* This function is rather long, but it uses an ATOM value of 0xA91E which is unlikely to change */
+
+	/* Win10 builds from 21301 */
+	if ((functionPtr[0x31] == 0xBA) &&                      // mov      edx,
+		(*(const DWORD*)(functionPtr + 0x32) == 0xA91E))    //              0A91Eh
+	{
+		return TRUE;
+	}
+
+	return FALSE;
+#else
+	#error Unsupported processor type
+#endif
+}
+
+typedef BOOL (WINAPI* TYPE_AllowDarkModeForWindowWithTelemetryId)(HWND a_HWND, BOOL a_Allow, int a_TelemetryID);
+TYPE_AllowDarkModeForWindowWithTelemetryId Locate_AllowDarkModeForWindowWithTelemetryId()
+{
+	const HMODULE hUxtheme = GetModuleHandle(L"uxtheme.dll");
+	if (!hUxtheme)
+		return 0;
+
+	/*
+	 * Function is only exported by ordinal.
+	 * Hopefully one day Microsoft will finally export it by name.
+	 */
+	const BYTE* candidate = (const BYTE*)GetProcAddress(hUxtheme, MAKEINTRESOURCEA(140));
+	if (!candidate)
+		return 0;
+
+	/*
+	 * In next Windows version, some other function can end up having this ordinal.
+	 * Compare function's code to known signature to make sure.
+	 */
+	if (!Validate_AllowDarkModeForWindowWithTelemetryId(candidate))
+		return 0;
+
+	return (TYPE_AllowDarkModeForWindowWithTelemetryId)candidate;
+}
+
 #ifndef NO_AllowDarkModeForWindow
 JNIEXPORT jboolean JNICALL OS_NATIVE(AllowDarkModeForWindow)
 (JNIEnv* env, jclass that, jlong arg0, jboolean arg1)
 {
 	/* Cache the search result for performance reasons */
 	static TYPE_AllowDarkModeForWindow fn_AllowDarkModeForWindow = 0;
+	static TYPE_AllowDarkModeForWindowWithTelemetryId fn_AllowDarkModeForWindowWithTelemetryId = 0;
 	static int isInitialized = 0;
 	if (!isInitialized)
 	{
 		fn_AllowDarkModeForWindow = Locate_AllowDarkModeForWindow();
+		fn_AllowDarkModeForWindowWithTelemetryId = Locate_AllowDarkModeForWindowWithTelemetryId();
 		isInitialized = 1;
 	}
 
-	if (!fn_AllowDarkModeForWindow)
-		return 0;
+	if (fn_AllowDarkModeForWindow)
+	{
+		jboolean rc = 0;
+		OS_NATIVE_ENTER(env, that, AllowDarkModeForWindow_FUNC);
+		rc = (jboolean)fn_AllowDarkModeForWindow((HWND)arg0, arg1);
+		OS_NATIVE_EXIT(env, that, AllowDarkModeForWindow_FUNC);
+		return rc;
+	}
 
-	jboolean rc = 0;
-	OS_NATIVE_ENTER(env, that, AllowDarkModeForWindow_FUNC);
-	rc = (jboolean)fn_AllowDarkModeForWindow((HWND)arg0, arg1);
-	OS_NATIVE_EXIT(env, that, AllowDarkModeForWindow_FUNC);
-	return rc;
+	// In Win11, 'AllowDarkModeForWindow' is a thin wrapper for 'AllowDarkModeForWindowWithTelemetryId'.
+	// It's hard to verify the wrapper, but it's easy enough to verify the target.
+	// For this reason, call 'AllowDarkModeForWindowWithTelemetryId' here.
+	if (fn_AllowDarkModeForWindowWithTelemetryId)
+	{
+		jboolean rc = 0;
+		OS_NATIVE_ENTER(env, that, AllowDarkModeForWindow_FUNC);
+		rc = (jboolean)fn_AllowDarkModeForWindowWithTelemetryId((HWND)arg0, arg1, 0);
+		OS_NATIVE_EXIT(env, that, AllowDarkModeForWindow_FUNC);
+		return rc;
+	}
+
+	return 0;
 }
 #endif
 
@@ -139,9 +198,9 @@ BOOL Validate_SetPreferredAppMode(const BYTE* functionPtr)
 		return FALSE;
 
 	return
-		(functionPtr[0x00] == 0x8B) && (functionPtr[0x01] == 0x05) &&	// mov     eax,dword ptr [uxtheme!g_preferredAppMode]
-		(functionPtr[0x06] == 0x87) && (functionPtr[0x07] == 0x0D) &&	// xchg    ecx,dword ptr [uxtheme!g_preferredAppMode]
-		(functionPtr[0x0C] == 0xC3);									// ret
+		(functionPtr[0x00] == 0x8B) && (functionPtr[0x01] == 0x05) &&   // mov     eax,dword ptr [uxtheme!g_preferredAppMode]
+		(functionPtr[0x06] == 0x87) && (functionPtr[0x07] == 0x0D) &&   // xchg    ecx,dword ptr [uxtheme!g_preferredAppMode]
+		(functionPtr[0x0C] == 0xC3);                                    // ret
 #else
 	#error Unsupported processor type
 #endif
@@ -196,6 +255,16 @@ JNIEXPORT jint JNICALL OS_NATIVE(SetPreferredAppMode)
 }
 #endif
 
+jboolean isDarkThemeAvailable() {
+    if (!Locate_SetPreferredAppMode())
+        return JNI_FALSE;
+
+    if (!Locate_AllowDarkModeForWindow() && !Locate_AllowDarkModeForWindowWithTelemetryId())
+        return JNI_FALSE;
+
+    return JNI_TRUE;
+}
+
 #ifndef NO_IsDarkModeAvailable
 JNIEXPORT jboolean JNICALL OS_NATIVE(IsDarkModeAvailable)
 (JNIEnv* env, jclass that)
@@ -205,7 +274,7 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(IsDarkModeAvailable)
 	static int isInitialized = 0;
 	if (!isInitialized)
 	{
-		isAvailable = (Locate_SetPreferredAppMode() && Locate_AllowDarkModeForWindow());
+		isAvailable = isDarkThemeAvailable();
 		isInitialized = 1;
 	}
 
