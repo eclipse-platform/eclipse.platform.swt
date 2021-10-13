@@ -4213,6 +4213,73 @@ void setNOTIFYICONDATAFields(JNIEnv *env, jobject lpObject, NOTIFYICONDATA *lpSt
 }
 #endif
 
+#ifndef NO_OSVERSIONINFOEX
+typedef struct OSVERSIONINFOEX_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID dwOSVersionInfoSize, dwMajorVersion, dwMinorVersion, dwBuildNumber, dwPlatformId, szCSDVersion, wServicePackMajor, wServicePackMinor, wSuiteMask, wProductType, wReserved;
+} OSVERSIONINFOEX_FID_CACHE;
+
+OSVERSIONINFOEX_FID_CACHE OSVERSIONINFOEXFc;
+
+void cacheOSVERSIONINFOEXFields(JNIEnv *env, jobject lpObject)
+{
+	if (OSVERSIONINFOEXFc.cached) return;
+	OSVERSIONINFOEXFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	OSVERSIONINFOEXFc.dwOSVersionInfoSize = (*env)->GetFieldID(env, OSVERSIONINFOEXFc.clazz, "dwOSVersionInfoSize", "I");
+	OSVERSIONINFOEXFc.dwMajorVersion = (*env)->GetFieldID(env, OSVERSIONINFOEXFc.clazz, "dwMajorVersion", "I");
+	OSVERSIONINFOEXFc.dwMinorVersion = (*env)->GetFieldID(env, OSVERSIONINFOEXFc.clazz, "dwMinorVersion", "I");
+	OSVERSIONINFOEXFc.dwBuildNumber = (*env)->GetFieldID(env, OSVERSIONINFOEXFc.clazz, "dwBuildNumber", "I");
+	OSVERSIONINFOEXFc.dwPlatformId = (*env)->GetFieldID(env, OSVERSIONINFOEXFc.clazz, "dwPlatformId", "I");
+	OSVERSIONINFOEXFc.szCSDVersion = (*env)->GetFieldID(env, OSVERSIONINFOEXFc.clazz, "szCSDVersion", "[C");
+	OSVERSIONINFOEXFc.wServicePackMajor = (*env)->GetFieldID(env, OSVERSIONINFOEXFc.clazz, "wServicePackMajor", "I");
+	OSVERSIONINFOEXFc.wServicePackMinor = (*env)->GetFieldID(env, OSVERSIONINFOEXFc.clazz, "wServicePackMinor", "I");
+	OSVERSIONINFOEXFc.wSuiteMask = (*env)->GetFieldID(env, OSVERSIONINFOEXFc.clazz, "wSuiteMask", "I");
+	OSVERSIONINFOEXFc.wProductType = (*env)->GetFieldID(env, OSVERSIONINFOEXFc.clazz, "wProductType", "I");
+	OSVERSIONINFOEXFc.wReserved = (*env)->GetFieldID(env, OSVERSIONINFOEXFc.clazz, "wReserved", "I");
+	OSVERSIONINFOEXFc.cached = 1;
+}
+
+OSVERSIONINFOEX *getOSVERSIONINFOEXFields(JNIEnv *env, jobject lpObject, OSVERSIONINFOEX *lpStruct)
+{
+	if (!OSVERSIONINFOEXFc.cached) cacheOSVERSIONINFOEXFields(env, lpObject);
+	lpStruct->dwOSVersionInfoSize = (*env)->GetIntField(env, lpObject, OSVERSIONINFOEXFc.dwOSVersionInfoSize);
+	lpStruct->dwMajorVersion = (*env)->GetIntField(env, lpObject, OSVERSIONINFOEXFc.dwMajorVersion);
+	lpStruct->dwMinorVersion = (*env)->GetIntField(env, lpObject, OSVERSIONINFOEXFc.dwMinorVersion);
+	lpStruct->dwBuildNumber = (*env)->GetIntField(env, lpObject, OSVERSIONINFOEXFc.dwBuildNumber);
+	lpStruct->dwPlatformId = (*env)->GetIntField(env, lpObject, OSVERSIONINFOEXFc.dwPlatformId);
+	{
+	jcharArray lpObject1 = (jcharArray)(*env)->GetObjectField(env, lpObject, OSVERSIONINFOEXFc.szCSDVersion);
+	(*env)->GetCharArrayRegion(env, lpObject1, 0, sizeof(lpStruct->szCSDVersion) / sizeof(jchar), (jchar *)lpStruct->szCSDVersion);
+	}
+	lpStruct->wServicePackMajor = (*env)->GetIntField(env, lpObject, OSVERSIONINFOEXFc.wServicePackMajor);
+	lpStruct->wServicePackMinor = (*env)->GetIntField(env, lpObject, OSVERSIONINFOEXFc.wServicePackMinor);
+	lpStruct->wSuiteMask = (*env)->GetIntField(env, lpObject, OSVERSIONINFOEXFc.wSuiteMask);
+	lpStruct->wProductType = (*env)->GetIntField(env, lpObject, OSVERSIONINFOEXFc.wProductType);
+	lpStruct->wReserved = (*env)->GetIntField(env, lpObject, OSVERSIONINFOEXFc.wReserved);
+	return lpStruct;
+}
+
+void setOSVERSIONINFOEXFields(JNIEnv *env, jobject lpObject, OSVERSIONINFOEX *lpStruct)
+{
+	if (!OSVERSIONINFOEXFc.cached) cacheOSVERSIONINFOEXFields(env, lpObject);
+	(*env)->SetIntField(env, lpObject, OSVERSIONINFOEXFc.dwOSVersionInfoSize, (jint)lpStruct->dwOSVersionInfoSize);
+	(*env)->SetIntField(env, lpObject, OSVERSIONINFOEXFc.dwMajorVersion, (jint)lpStruct->dwMajorVersion);
+	(*env)->SetIntField(env, lpObject, OSVERSIONINFOEXFc.dwMinorVersion, (jint)lpStruct->dwMinorVersion);
+	(*env)->SetIntField(env, lpObject, OSVERSIONINFOEXFc.dwBuildNumber, (jint)lpStruct->dwBuildNumber);
+	(*env)->SetIntField(env, lpObject, OSVERSIONINFOEXFc.dwPlatformId, (jint)lpStruct->dwPlatformId);
+	{
+	jcharArray lpObject1 = (jcharArray)(*env)->GetObjectField(env, lpObject, OSVERSIONINFOEXFc.szCSDVersion);
+	(*env)->SetCharArrayRegion(env, lpObject1, 0, sizeof(lpStruct->szCSDVersion) / sizeof(jchar), (jchar *)lpStruct->szCSDVersion);
+	}
+	(*env)->SetIntField(env, lpObject, OSVERSIONINFOEXFc.wServicePackMajor, (jint)lpStruct->wServicePackMajor);
+	(*env)->SetIntField(env, lpObject, OSVERSIONINFOEXFc.wServicePackMinor, (jint)lpStruct->wServicePackMinor);
+	(*env)->SetIntField(env, lpObject, OSVERSIONINFOEXFc.wSuiteMask, (jint)lpStruct->wSuiteMask);
+	(*env)->SetIntField(env, lpObject, OSVERSIONINFOEXFc.wProductType, (jint)lpStruct->wProductType);
+	(*env)->SetIntField(env, lpObject, OSVERSIONINFOEXFc.wReserved, (jint)lpStruct->wReserved);
+}
+#endif
+
 #ifndef NO_OUTLINETEXTMETRIC
 typedef struct OUTLINETEXTMETRIC_FID_CACHE {
 	int cached;

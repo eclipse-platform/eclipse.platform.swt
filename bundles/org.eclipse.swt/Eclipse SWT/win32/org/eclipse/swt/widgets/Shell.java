@@ -575,6 +575,24 @@ void createBalloonTipHandle () {
 	OS.SetWindowLongPtr (balloonTipHandle, OS.GWLP_WNDPROC, display.windowProc);
 }
 
+void setTitleColoring() {
+	int attributeID = 0;
+	if (OS.WIN32_BUILD >= OS.WIN32_BUILD_WIN10_2004) {
+		// Documented since build 20348, but was already present since build 19041
+		final int DWMWA_USE_IMMERSIVE_DARK_MODE = 20;
+		attributeID = DWMWA_USE_IMMERSIVE_DARK_MODE;
+	} else if (OS.WIN32_BUILD >= OS.WIN32_BUILD_WIN10_1809) {
+		// Undocumented value
+		attributeID = 19;
+	} else {
+		// Not supported
+		return;
+	}
+
+	int[] value = new int[] {1};
+	OS.DwmSetWindowAttribute (handle, attributeID, value, 4);
+}
+
 @Override
 void createHandle () {
 	boolean embedded = handle != 0 && (state & FOREIGN_HANDLE) == 0;
@@ -607,6 +625,10 @@ void createHandle () {
 //	if ((style & SWT.ON_TOP) != 0)  display.lockActiveWindow = false;
 
 	if (!embedded) {
+		if (display.useShellTitleColoring) {
+			setTitleColoring();
+		}
+
 		int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
 		bits &= ~(OS.WS_OVERLAPPED | OS.WS_CAPTION);
 		bits |= OS.WS_POPUP;

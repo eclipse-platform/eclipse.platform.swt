@@ -19,3 +19,4 @@
 
 /* Libraries for dynamic loaded functions */
 #define GetDpiForMonitor_LIB "shcore.dll"
+#define RtlGetVersion_LIB "ntdll.dll"

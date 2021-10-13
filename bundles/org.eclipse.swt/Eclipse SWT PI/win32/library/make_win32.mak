@@ -26,7 +26,7 @@ SWT_VERSION = $(maj_ver)$(min_ver)r$(rev)
 SWT_LIB     = $(SWT_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).dll
 SWT_LIBS    = comctl32.lib shell32.lib imm32.lib oleacc.lib usp10.lib \
 	wininet.lib Shlwapi.lib Uxtheme.lib Propsys.lib Urlmon.lib \
-	Msimg32.lib
+	Msimg32.lib Dwmapi.lib
 SWT_OBJS    = swt.obj callback.obj c.obj c_stats.obj \
 	os.obj os_structs.obj os_custom.obj os_stats.obj \
 	com_structs.obj com.obj com_stats.obj com_custom.obj
@@ -53,7 +53,7 @@ WGL_OBJS   = wgl.obj wgl_structs.obj wgl_stats.obj
 CFLAGS = -O1 -DNDEBUG -DUNICODE -D_UNICODE /c $(cflags) $(cvarsmt) $(CFLAGS) \
 	-DSWT_VERSION=$(maj_ver)$(min_ver) -DSWT_REVISION=$(rev) $(NATIVE_STATS) -DUSE_ASSEMBLER \
 	/I"$(SWT_JAVA_HOME)\include" /I"$(SWT_JAVA_HOME)\include\win32" /I.
-	
+
 RCFLAGS = $(rcflags) $(rcvars) $(RCFLAGS) -DSWT_FILE_VERSION=\"$(maj_ver).$(min_ver).$(rev).0\" -DSWT_COMMA_VERSION=$(comma_ver)
 ldebug = /RELEASE  /INCREMENTAL:NO /NOLOGO
 dlllflags = -dll

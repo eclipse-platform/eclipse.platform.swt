@@ -28,7 +28,27 @@ public class OS extends C {
 	* SWT Windows flags
 	*/
 	public static final boolean IsDBLocale;
+	/**
+	 * WARNING: This value can't be trusted since Win10. If the launcher's exe
+	 * doesn't have compatibility GUID in its manifest:<br>
+	 *   &lt;supportedOS Id="{8e0f7a12-bfb3-4fe8-b9a5-48fd50a15a9a}"/&gt;<br>
+	 * then '6.2.9200' will be returned (version number for Win8).
+	 * JDK11 has the compatibility GUID, but Eclipse's launcher doesn't!
+	 * This may cause different behavior in debugger and in released SWT.
+	 */
 	public static final int WIN32_VERSION;
+	/**
+	 * Always reports the correct build number, regardless of manifest and
+	 * compatibility GUIDs. Note that build number alone is sufficient to
+	 * identify Windows version.
+	 */
+	public static final int WIN32_BUILD;
+	/**
+	 * Values taken from https://en.wikipedia.org/wiki/List_of_Microsoft_Windows_versions
+	 */
+	public static final int WIN32_BUILD_WIN10_1809 = 17763; // "Windows 10 October 2018 Update"
+	public static final int WIN32_BUILD_WIN10_2004 = 19041; // "Windows 10 May 2020 Update"
+	public static final int WIN32_BUILD_WIN11_21H2 = 22000; // Initial Windows 11 release
 
 	public static final String NO_MANIFEST = "org.eclipse.swt.internal.win32.OS.NO_MANIFEST";
 
@@ -43,6 +63,20 @@ public class OS extends C {
 		/* Get the Windows version */
 		int dwVersion = OS.GetVersion ();
 		WIN32_VERSION = VERSION (dwVersion & 0xff, (dwVersion >> 8) & 0xff);
+
+		/*
+		 * Starting with Windows 10, GetVersionEx() lies about version unless
+		 * application manifest has a proper entry. RtlGetVersion() always
+		 * reports true version.
+		 */
+		OSVERSIONINFOEX osVersionInfoEx = new OSVERSIONINFOEX ();
+		osVersionInfoEx.dwOSVersionInfoSize = OSVERSIONINFOEX.sizeof;
+		if (0 == OS.RtlGetVersion (osVersionInfoEx)) {
+			WIN32_BUILD = osVersionInfoEx.dwBuildNumber;
+		} else {
+			System.err.println ("SWT: OS: Failed to detect Windows build number");
+			WIN32_BUILD = 0;
+		}
 
 		/* Load the manifest to force the XP Theme */
 		if (System.getProperty (NO_MANIFEST) == null) {
@@ -1919,6 +1953,7 @@ public static final native int NONCLIENTMETRICS_sizeof ();
 /** @method flags=const */
 public static final native int NOTIFYICONDATA_V2_SIZE ();
 public static final native int OUTLINETEXTMETRIC_sizeof ();
+public static final native int OSVERSIONINFOEX_sizeof ();
 public static final native int PAINTSTRUCT_sizeof ();
 public static final native int POINT_sizeof ();
 public static final native int PRINTDLG_sizeof ();
@@ -2211,6 +2246,7 @@ public static final void setTheme(boolean isDarkTheme) {
 		throw new NullPointerException("Display must be already created before you call OS.setTheme()");
 
 	display.setData("org.eclipse.swt.internal.win32.useDarkModeExplorerTheme", isDarkTheme);
+	display.setData("org.eclipse.swt.internal.win32.useShellTitleColoring",    isDarkTheme);
 	display.setData("org.eclipse.swt.internal.win32.menuBarForegroundColor",   isDarkTheme ? new Color(display, 0xD0, 0xD0, 0xD0) : null);
 	display.setData("org.eclipse.swt.internal.win32.menuBarBackgroundColor",   isDarkTheme ? new Color(display, 0x30, 0x30, 0x30) : null);
 	display.setData("org.eclipse.swt.internal.win32.menuBarBorderColor",       isDarkTheme ? new Color(display, 0x50, 0x50, 0x50) : null);
@@ -2562,6 +2598,8 @@ public static final native int DrawThemeBackground (long hTheme, long hdc, int i
  * @param pRect flags=no_out
  */
 public static final native int DrawThemeText (long hTheme, long hdc, int iPartId, int iStateId, char[] pszText, int iCharCount, int dwTextFlags, int dwTextFlags2, RECT pRect);
+/** @param hwnd cast=(HDC) */
+public static final native boolean DwmSetWindowAttribute (long hwnd, int dwAttribute, int[] pvAttribute, int cbAttribute);
 /** @param hdc cast=(HDC) */
 public static final native boolean Ellipse (long hdc, int nLeftRect, int nTopRect, int nRightRect, int nBottomRect);
 /** @param hMenu cast=(HMENU) */
@@ -3857,6 +3895,8 @@ public static final native boolean ReplyMessage (long lResult);
 public static final native boolean RestoreDC (long hdc, int nSavedDC);
 /** @param hdc cast=(HDC) */
 public static final native boolean RoundRect (long hdc, int nLeftRect, int nTopRect, int nRightRect, int nBottomRect, int nWidth, int nHeight);
+/** @method flags=dynamic */
+public static final native int RtlGetVersion (OSVERSIONINFOEX lpVersionInformation);
 /** @param hdc cast=(HDC) */
 public static final native int SaveDC (long hdc);
 /** @param hWnd cast=(HWND) */

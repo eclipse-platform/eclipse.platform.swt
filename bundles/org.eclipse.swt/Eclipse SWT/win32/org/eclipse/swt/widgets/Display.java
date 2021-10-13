@@ -184,6 +184,16 @@ public class Display extends Device {
 	static final String USE_DARKMODE_EXPLORER_THEME_KEY = "org.eclipse.swt.internal.win32.useDarkModeExplorerTheme";
 	boolean useDarkModeExplorerTheme;
 	/**
+	 * Sets Shell titles to match theme selected in Windows. That is, dark is system is dark.
+	 * Limitations:<br>
+	 * <ul>
+	 *   <li>Only available since Win10.</li>
+	 *   <li>Does not affect already created Shells.</li>
+	 * </ul>
+	 */
+	static final String USE_SHELL_TITLE_COLORING = "org.eclipse.swt.internal.win32.useShellTitleColoring";
+	boolean useShellTitleColoring;
+	/**
 	 * Configures background/foreground colors of Menu(SWT.BAR).<br>
 	 * Side effects:
 	 * <ul>
@@ -2093,9 +2103,9 @@ ImageList getImageListToolBarHot (int style, int width, int height) {
 public static boolean isSystemDarkTheme () {
 	boolean isDarkTheme = false;
 	/*
-	 * Win10 onwards we can read the Dark Theme from the OS registry.
+	 * The registry settings, and Dark Theme itself, is present since Win10 1809
 	 */
-	if (OS.WIN32_VERSION >= OS.VERSION (10, 0)) {
+	if (OS.WIN32_BUILD >= OS.WIN32_BUILD_WIN10_1809) {
 		try {
 			int result = OS.readRegistryDword(OS.HKEY_CURRENT_USER,
 					"Software\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize", "AppsUseLightTheme");
@@ -4411,6 +4421,9 @@ public void setData (String key, Object value) {
 			} else {
 				OS.SetPreferredAppMode(PreferredAppMode_Default);
 			}
+			return;
+		case USE_SHELL_TITLE_COLORING:
+			useShellTitleColoring = !disableCustomThemeTweaks && _toBoolean(value);
 			return;
 		case MENUBAR_FOREGROUND_COLOR_KEY:
 			menuBarForegroundPixel = disableCustomThemeTweaks ? -1 : _toColorPixel(value);

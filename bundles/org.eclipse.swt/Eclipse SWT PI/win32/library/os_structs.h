@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2020 IBM Corporation and others.
+ * Copyright (c) 2000, 2021 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -963,6 +963,18 @@ void setNOTIFYICONDATAFields(JNIEnv *env, jobject lpObject, NOTIFYICONDATA *lpSt
 #define getNOTIFYICONDATAFields(a,b,c) NULL
 #define setNOTIFYICONDATAFields(a,b,c)
 #define NOTIFYICONDATA_sizeof() 0
+#endif
+
+#ifndef NO_OSVERSIONINFOEX
+void cacheOSVERSIONINFOEXFields(JNIEnv *env, jobject lpObject);
+OSVERSIONINFOEX *getOSVERSIONINFOEXFields(JNIEnv *env, jobject lpObject, OSVERSIONINFOEX *lpStruct);
+void setOSVERSIONINFOEXFields(JNIEnv *env, jobject lpObject, OSVERSIONINFOEX *lpStruct);
+#define OSVERSIONINFOEX_sizeof() sizeof(OSVERSIONINFOEX)
+#else
+#define cacheOSVERSIONINFOEXFields(a,b)
+#define getOSVERSIONINFOEXFields(a,b,c) NULL
+#define setOSVERSIONINFOEXFields(a,b,c)
+#define OSVERSIONINFOEX_sizeof() 0
 #endif
 
 #ifndef NO_OUTLINETEXTMETRIC
