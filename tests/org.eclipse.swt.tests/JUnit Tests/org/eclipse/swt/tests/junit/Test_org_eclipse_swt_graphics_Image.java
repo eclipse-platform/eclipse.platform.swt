@@ -1116,6 +1116,11 @@ public void test_bug566545_efficientGrayscaleImage() {
 	ImageTestUtil.assertImagesEqual(imageDataIndexed, imageDataDirect);
 	ImageTestUtil.assertImagesEqual(imageIndexed.getImageData(), imageDirect.getImageData());
 	ImageTestUtil.assertImagesEqual(outImageIndexed.getImageData(), outImageDirect.getImageData());
+
+	imageIndexed.dispose();
+	imageDirect.dispose();
+	outImageIndexed.dispose();
+	outImageDirect.dispose();
 }
 
 }

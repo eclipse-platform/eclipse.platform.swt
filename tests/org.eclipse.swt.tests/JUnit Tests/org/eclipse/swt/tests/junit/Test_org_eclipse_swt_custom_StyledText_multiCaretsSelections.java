@@ -50,15 +50,18 @@ public class Test_org_eclipse_swt_custom_StyledText_multiCaretsSelections {
 
 	Shell shell;
 	StyledText text;
+	GC gc;
 
 	@Before
 	public void setUp() {
 		shell = new Shell();
 		text = new StyledText(shell, SWT.NULL);
+		gc = new GC(text);
 	}
 
 	@After
 	public void tearDown() {
+		gc.dispose();
 		shell.dispose();
 	}
 	@Test
@@ -184,7 +187,7 @@ public class Test_org_eclipse_swt_custom_StyledText_multiCaretsSelections {
 		paintEvent.height = text.getSize().y;
 		paintEvent.widget = text;
 		paintEvent.type = SWT.Paint;
-		paintEvent.gc = new GC(text);
+		paintEvent.gc = gc;
 		return paintEvent;
 	}
 

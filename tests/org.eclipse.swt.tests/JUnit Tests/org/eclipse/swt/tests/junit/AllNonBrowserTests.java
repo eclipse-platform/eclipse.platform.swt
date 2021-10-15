@@ -14,9 +14,15 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
+import org.eclipse.swt.graphics.Resource;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.runner.JUnitCore;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Suite for running most SWT test cases (all except for browser tests).
@@ -41,6 +47,50 @@ import org.junit.runners.Suite;
 		Test_org_eclipse_swt_accessibility_AccessibleEvent.class,
 		Test_org_eclipse_swt_accessibility_AccessibleTextEvent.class })
 public class AllNonBrowserTests {
+	private static List<Error> leakedResources;
+
+	@BeforeClass
+	public static void beforeClass() {
+		// Set up ResourceTracked to detect any leaks
+		leakedResources = new ArrayList<> ();
+		Resource.setNonDisposeHandler (error -> {
+			// Can't 'Assert.fail()' here, because Handler is called on
+			// some other thread and Exception will simply be ignored.
+			// Workaround: collect errors and report later.
+			leakedResources.add (error);
+		});
+	}
+
+	/*
+	 * It would be easier to understand if errors here were reported
+	 * through  a test and not through @AfterClass, but this is a
+	 * suite class and not a test class, so it can't have tests.
+	 */
+	@AfterClass
+	public static void afterClass() {
+		// Run GC in order do detect any outstanding leaks
+		System.gc ();
+		// And wait a bit to let Resource.ResourceTracker, that is
+		// queued to another thread, do its job. It is unfortunate that
+		// there is no simple better way to wait except waiting some
+		// fixed timeout.
+		try {
+			Thread.sleep (100);
+		} catch (InterruptedException e) {
+			// Just ignore
+		}
+
+		for (Error leak : leakedResources) {
+			// For some reason, printing to System.err in JUnit test has no effect
+			leak.printStackTrace (System.out);
+		}
+
+		if (0 != leakedResources.size ()) {
+			// In order to help tools to filter fail reason out of entire log, throw the first leak.
+			String hint = leakedResources.size () + " leaks found, the first is:";
+			throw new AssertionError(hint, leakedResources.get (0));
+		}
+	}
 
 	public static void main(String[] args) {
 		JUnitCore.main(AllNonBrowserTests.class.getName());
