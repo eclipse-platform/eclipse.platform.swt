@@ -1372,7 +1372,7 @@ void updateAccelerator (long accelGroup, boolean add) {
 	}
 }
 
-private class MaskKeysym {
+private static class MaskKeysym {
 	int mask = 0;
 	int keysym = 0;
 }
