@@ -1046,7 +1046,7 @@ public class StyledText extends Canvas {
 	 * has been called.
 	 * </p>
 	 */
-	class TextWriter {
+	static class TextWriter {
 		private StringBuilder buffer;
 		private int startOffset;	// offset of first character that will be written
 		private int endOffset;		// offset of last character that will be written.
