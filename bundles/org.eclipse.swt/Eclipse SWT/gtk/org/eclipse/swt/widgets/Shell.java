@@ -2321,10 +2321,6 @@ int setBounds (int x, int y, int width, int height, boolean move, boolean resize
 				long header = GTK4.gtk_widget_get_next_sibling(GTK4.gtk_widget_get_first_child(shellHandle));
 				int[] headerNaturalHeight = new int[1];
 				GTK4.gtk_widget_measure(header, GTK.GTK_ORIENTATION_VERTICAL, 0, null, headerNaturalHeight, null, null);
-
-				geometry.setRequestedWidth(width);
-				geometry.setRequestedHeight(height + headerNaturalHeight[0]);
-				geometry.setResize(true);
 				GTK.gtk_window_set_default_size(shellHandle, width, height + headerNaturalHeight[0]);
 			} else {
 				GTK3.gtk_window_resize (shellHandle, width, height);

@@ -6141,24 +6141,7 @@ void leaveProc(long controller, long user_data) {
 }
 
 void computeSizeProc(long toplevel, long size, long user_data) {
-	Shell shell = (Shell)getWidget(user_data);
-	if(shell == null) return;
-	if(shell.geometry.getResize()) {
-		GTK4.gdk_toplevel_size_set_size(size,shell.geometry.getRequestedWidth(),shell.geometry.getRequestedHeight() );
-		windowSizeSet = true;
-		shell.geometry.setResize(false);
-	}
-	if(windowSizeSet) return;
-
-	//Only used to set initial size if resize not requested
-	int[] defaultWidth = new int[1];
-	int [] defaultHeight = new int[1];
-	GTK4.gdk_toplevel_size_get_bounds(size, defaultWidth, defaultHeight);
-	defaultWidth[0] = (int) (defaultWidth[0] * Shell.SHELL_TO_MONITOR_RATIO);
-	defaultHeight[0] = (int) (defaultHeight[0] * Shell.SHELL_TO_MONITOR_RATIO);
-	GTK4.gdk_toplevel_size_set_size(size, defaultWidth[0], defaultHeight[0]);
-	windowSizeSet = true;
-	shell.geometry.setResize(false);
+	//TODO: GTK4 - Could be needed for minimum Size, signal remains connected
 }
 
 void activateProc(long action, long parameter, long user_data) {
