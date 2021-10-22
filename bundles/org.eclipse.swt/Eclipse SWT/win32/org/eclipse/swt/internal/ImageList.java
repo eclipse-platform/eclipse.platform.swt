@@ -334,6 +334,7 @@ public int indexOf (Image image) {
 }
 
 public void put (int index, Image image) {
+	if ((0 <= index && index < images.length) && (images [index] == image)) return;
 	int count = OS.ImageList_GetImageCount (handle);
 	if (!(0 <= index && index < count)) return;
 	if (image != null) set(index, image, count);

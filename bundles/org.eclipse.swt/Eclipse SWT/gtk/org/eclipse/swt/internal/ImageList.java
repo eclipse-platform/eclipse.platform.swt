@@ -255,6 +255,7 @@ public boolean isDisposed () {
 public void put (int index, Image image) {
 	int count = images.length;
 	if (!(0 <= index && index < count)) return;
+	if (images [index] == image) return;
 	if (image != null) {
 		set (index, image);
 	} else {
