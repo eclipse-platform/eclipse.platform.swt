@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2018 IBM Corporation and others.
+ * Copyright (c) 2000, 2021 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -1861,7 +1861,7 @@ public int getSelectionIndex () {
 		boolean foundIndex = false;
 		while (list != 0) {
 			long data = OS.g_list_data (list);
-			if (foundIndex == false) {
+			if (!foundIndex) {
 				long indices = GTK.gtk_tree_path_get_indices (data);
 				if (indices != 0) {
 					C.memmove (index, indices, 4);
