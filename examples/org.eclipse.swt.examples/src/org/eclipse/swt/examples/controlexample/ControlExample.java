@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2017 IBM Corporation and others.
+ * Copyright (c) 2000, 2021 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -37,7 +37,7 @@ public class ControlExample {
 	private ShellTab shellTab;
 	private TabFolder tabFolder;
 	private Tab [] tabs;
-	Image images[];
+	Image[] images;
 
 	static final int ciClosedFolder = 0, ciOpenFolder = 1, ciTarget = 2, ciBackground = 3, ciParentBackground = 4;
 	static final String[] imageLocations = {
@@ -224,7 +224,7 @@ public class ControlExample {
 		shell.setLayout(new FillLayout());
 		ControlExample instance = new ControlExample(shell);
 		shell.setText(getResourceString("window.title"));
-		setShellSize(instance, shell);
+		setShellSize(shell);
 		shell.open();
 		while (! shell.isDisposed()) {
 			if (! display.readAndDispatch()) display.sleep();
@@ -245,7 +245,7 @@ public class ControlExample {
 	 * unless that makes it larger than the monitor it is being displayed on,
 	 * in which case just set the shell size to be slightly smaller than the monitor.
 	 */
-	static void setShellSize(ControlExample instance, Shell shell) {
+	static void setShellSize(Shell shell) {
 		Point size = shell.computeSize(SWT.DEFAULT, SWT.DEFAULT);
 		Rectangle monitorArea = shell.getMonitor().getClientArea();
 		shell.setSize(Math.min(size.x, monitorArea.width), Math.min(size.y, monitorArea.height));
