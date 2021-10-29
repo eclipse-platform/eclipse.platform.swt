@@ -140,6 +140,10 @@ public class OS extends C {
 	public static final long sel_selectedContentBackgroundColor = Selector.sel_selectedContentBackgroundColor.value;
 	public static final long sel_unemphasizedSelectedContentBackgroundColor = Selector.sel_unemphasizedSelectedContentBackgroundColor.value;
 
+	/** 11.0 selector and enum */
+	public static final long sel_setStyle = Selector.sel_setStyle.value;
+	public static final int NSTableViewStylePlain = 4;
+
 	/* AWT application delegate. Remove these when JavaRuntimeSupport.framework has bridgesupport generated for it. */
 	public static final long class_JRSAppKitAWT = objc_getClass("JRSAppKitAWT");
 	public static final long sel_awtAppDelegate = Selector.sel_awtAppDelegate.value;

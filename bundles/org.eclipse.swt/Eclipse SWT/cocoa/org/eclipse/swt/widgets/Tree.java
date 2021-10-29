@@ -593,6 +593,10 @@ void createHandle () {
 	widget.setIntercellSpacing(spacing);
 	widget.setDoubleAction (OS.sel_sendDoubleSelection);
 
+	if (OS.isBigSurOrLater()) {
+		OS.objc_msgSend(widget.id, OS.sel_setStyle, OS.NSTableViewStylePlain);
+	}
+
 	// This is to mirror Table's behavior, see code comment there
 	widget.setFocusRingType(OS.NSFocusRingTypeNone);
 

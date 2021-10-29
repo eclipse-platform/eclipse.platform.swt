@@ -553,6 +553,10 @@ void createHandle () {
 	widget.setIntercellSpacing(spacing);
 	widget.setDoubleAction(OS.sel_sendDoubleSelection);
 
+	if (OS.isBigSurOrLater()) {
+		OS.objc_msgSend(widget.id, OS.sel_setStyle, OS.NSTableViewStylePlain);
+	}
+
 	/*
 	 * Table didn't have focus ring in SWT for years, because SWT didn't
 	 * have layer backing, and even when it gets it, there were no focus rings

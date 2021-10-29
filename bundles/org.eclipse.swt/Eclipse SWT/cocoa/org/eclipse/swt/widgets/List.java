@@ -267,6 +267,9 @@ void createHandle () {
 	spacing.width = spacing.height = CELL_GAP;
 	widget.setIntercellSpacing(spacing);
 	widget.setDoubleAction(OS.sel_sendDoubleSelection);
+	if (OS.isBigSurOrLater()) {
+		OS.objc_msgSend(widget.id, OS.sel_setStyle, OS.NSTableViewStylePlain);
+	}
 	if (!hasBorder()) widget.setFocusRingType(OS.NSFocusRingTypeNone);
 
 	column = (NSTableColumn)new NSTableColumn().alloc();

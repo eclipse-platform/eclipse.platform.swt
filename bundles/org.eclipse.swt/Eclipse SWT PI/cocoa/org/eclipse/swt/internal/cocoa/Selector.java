@@ -79,6 +79,9 @@ public enum Selector {
 	, sel_selectedContentBackgroundColor("selectedContentBackgroundColor")
 	, sel_unemphasizedSelectedContentBackgroundColor("unemphasizedSelectedContentBackgroundColor")
 
+	/** 11.0 selector */
+	, sel_setStyle("setStyle:")
+
 	, sel_awtAppDelegate("awtAppDelegate")
 
 	  /** This section is auto generated */
