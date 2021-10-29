@@ -2709,39 +2709,39 @@ public void test_replaceStyleRangesII$Lorg_eclipse_swt_custom_StyleRange() {
 	text.replaceStyleRanges(0, text.getCharCount(), defaultStyles());
 	text.replaceStyleRanges(58, 10, new StyleRange[] {getStyle(58,10,YELLOW,RED)});
 	styles = text.getStyleRanges();
-	assertTrue(":3:", styles.length == 3);
-	assertTrue(":3:", styles[0].equals(getStyle(0,48,RED,YELLOW)));
-	assertTrue(":3:", styles[1].equals(getStyle(58,10,YELLOW,RED)));
-	assertTrue(":3:", styles[2].equals(getStyle(68,10,GREEN,PURPLE)));
+	assertEquals(":3:", 3, styles.length);
+	assertEquals(":3:", getStyle(0,48,RED,YELLOW), styles[0]);
+	assertEquals(":3:", getStyle(58,10,YELLOW,RED), styles[1]);
+	assertEquals(":3:", getStyle(68,10,GREEN,PURPLE), styles[2]);
 
 	// Overlap end of one style
 	text.replaceStyleRanges(0, text.getCharCount(), defaultStyles());
 	text.replaceStyleRanges(38, 15, new StyleRange[] {getStyle(38,15,YELLOW,RED)});
 	styles = text.getStyleRanges();
-	assertTrue(":4:", styles.length == 4);
-	assertTrue(":4:", styles[0].equals(getStyle(0,38,RED,YELLOW)));
-	assertTrue(":4:", styles[1].equals(getStyle(38,15,YELLOW,RED)));
-	assertTrue(":4:", styles[2].equals(getStyle(58,10,BLUE,CYAN)));
-	assertTrue(":4:", styles[3].equals(getStyle(68,10,GREEN,PURPLE)));
+	assertEquals(":4:", 4, styles.length);
+	assertEquals(":4:", getStyle(0,38,RED,YELLOW), styles[0]);
+	assertEquals(":4:", getStyle(38,15,YELLOW,RED), styles[1]);
+	assertEquals(":4:", getStyle(58,10,BLUE,CYAN), styles[2]);
+	assertEquals(":4:", getStyle(68,10,GREEN,PURPLE), styles[3]);
 
 	// Overlap beginning of one style
 	text.replaceStyleRanges(0, text.getCharCount(), defaultStyles());
 	text.replaceStyleRanges(50, 10, new StyleRange[] {getStyle(50,10,YELLOW,RED)});
 	styles = text.getStyleRanges();
-	assertTrue(":5:", styles.length == 4);
-	assertTrue(":5:", styles[0].equals(getStyle(0,48,RED,YELLOW)));
-	assertTrue(":5:", styles[1].equals(getStyle(50,10,YELLOW,RED)));
-	assertTrue(":5:", styles[2].equals(getStyle(60,8,BLUE,CYAN)));
-	assertTrue(":5:", styles[3].equals(getStyle(68,10,GREEN,PURPLE)));
+	assertEquals(":5:", 4, styles.length);
+	assertEquals(":5:", getStyle(0,48,RED,YELLOW), styles[0]);
+	assertEquals(":5:", getStyle(50,10,YELLOW,RED), styles[1]);
+	assertEquals(":5:", getStyle(60,8,BLUE,CYAN), styles[2]);
+	assertEquals(":5:", getStyle(68,10,GREEN,PURPLE), styles[3]);
 
 	// Overlap complete style
 	text.replaceStyleRanges(0, text.getCharCount(), defaultStyles());
 	text.replaceStyleRanges(48, 20, new StyleRange[] {getStyle(48,20,YELLOW,RED)});
 	styles = text.getStyleRanges();
-	assertTrue(":6:", styles.length == 3);
-	assertTrue(":6:", styles[0].equals(getStyle(0,48,RED,YELLOW)));
-	assertTrue(":6:", styles[1].equals(getStyle(48,20,YELLOW,RED)));
-	assertTrue(":6:", styles[2].equals(getStyle(68,10,GREEN,PURPLE)));
+	assertEquals(":6:", 3, styles.length);
+	assertEquals(":6:", getStyle(0,48,RED,YELLOW), styles[0]);
+	assertEquals(":6:", getStyle(48,20,YELLOW,RED), styles[1]);
+	assertEquals(":6:", getStyle(68,10,GREEN,PURPLE), styles[2]);
 
 	// reset the environment
 	text.dispose();
@@ -2755,10 +2755,10 @@ public void test_replaceStyleRangesII$Lorg_eclipse_swt_custom_StyleRange() {
 	ranges[2] = getStyle(68,10,GREEN,PURPLE);
 	text.replaceStyleRanges(0, 78, ranges);
 	styles = text.getStyleRanges();
-	assertTrue(":7:", styles.length == 3);
-	assertTrue(":7:", styles[0].equals(getStyle(0,48,RED,YELLOW)));
-	assertTrue(":7:", styles[1].equals(getStyle(48,20,BLUE,CYAN)));
-	assertTrue(":7:", styles[2].equals(getStyle(68,10,GREEN,PURPLE)));
+	assertEquals(":7:", 3, styles.length);
+	assertEquals(":7:", getStyle(0,48,RED,YELLOW), styles[0]);
+	assertEquals(":7", getStyle(48,20,BLUE,CYAN), styles[1]);
+	assertEquals(":7:", getStyle(68,10,GREEN,PURPLE), styles[2]);
 
 	text.setText("012345678901234");
 	ranges = new StyleRange[2];
@@ -2766,9 +2766,9 @@ public void test_replaceStyleRangesII$Lorg_eclipse_swt_custom_StyleRange() {
 	ranges[1] = getStyle(10,5,BLUE,CYAN);
 	text.replaceStyleRanges(0, 15, ranges);
 	styles = text.getStyleRanges();
-	assertTrue(":8:", styles.length == 2);
-	assertTrue(":8:", styles[0].equals(getStyle(0,5,RED,YELLOW)));
-	assertTrue(":8:", styles[1].equals(getStyle(10,5,BLUE,CYAN)));
+	assertEquals(":8:", 2, styles.length);
+	assertEquals(":8:", getStyle(0,5,RED,YELLOW), styles[0]);
+	assertEquals(":8:", getStyle(10,5,BLUE,CYAN), styles[1]);
 
 	text.setText("redgreenblueyellowcyanpurple");
 	ranges = new StyleRange[4];
@@ -2778,19 +2778,19 @@ public void test_replaceStyleRangesII$Lorg_eclipse_swt_custom_StyleRange() {
 	ranges[3] = getStyle(12,6,YELLOW,null);
 	text.replaceStyleRanges(0, 18, ranges);
 	styles = text.getStyleRanges();
-	assertTrue(":9:", styles.length == 4);
-	assertTrue(":9:", styles[0].equals(getStyle(0,3,RED,null)));
-	assertTrue(":9:", styles[1].equals(getStyle(3,5,GREEN,null)));
-	assertTrue(":9:", styles[2].equals(getStyle(8,4,BLUE, null)));
-	assertTrue(":9:", styles[3].equals(getStyle(12,6,YELLOW,null)));
+	assertEquals(":9:", 4, styles.length);
+	assertEquals(":9:", getStyle(0,3,RED,null), styles[0]);
+	assertEquals(":9:", getStyle(3,5,GREEN,null), styles[1]);
+	assertEquals(":9:", getStyle(8,4,BLUE, null), styles[2]);
+	assertEquals(":9:", getStyle(12,6,YELLOW,null), styles[3]);
 	ranges = new StyleRange[2];
 	ranges[0] = getStyle(18,4,CYAN,null);
 	ranges[1] = getStyle(22,6,PURPLE,null);
 	text.replaceStyleRanges(18, 10, ranges);
 	styles = text.getStyleRanges();
-	assertTrue(":9:", styles.length == 6);
-	assertTrue(":9:", styles[4].equals(getStyle(18,4,CYAN,null)));
-	assertTrue(":9:", styles[5].equals(getStyle(22,6,PURPLE,null)));
+	assertEquals(":9:", 6, styles.length);
+	assertEquals(":9:", getStyle(18,4,CYAN,null), styles[4]);
+	assertEquals(":9:", getStyle(22,6,PURPLE,null), styles[5]);
 
 	// reset the environment
 	text.dispose();
@@ -2809,10 +2809,10 @@ public void test_replaceStyleRangesII$Lorg_eclipse_swt_custom_StyleRange() {
 	ranges[1] = getStyle(20,10,GREEN,PURPLE);
 	text.replaceStyleRanges(5, 25, ranges);
 	styles = text.getStyleRanges();
-	assertTrue(":10:", styles.length == 3);
-	assertTrue(":10:", styles[0].equals(getStyle(0,5,RED,YELLOW)));
-	assertTrue(":10:", styles[1].equals(getStyle(5,15,BLUE,CYAN)));
-	assertTrue(":10:", styles[2].equals(getStyle(20,15,GREEN,PURPLE)));
+	assertEquals(":10:", 3, styles.length);
+	assertEquals(":10:", getStyle(0,5,RED,YELLOW), styles[0]);
+	assertEquals(":10:", getStyle(5,15,BLUE,CYAN), styles[1]);
+	assertEquals(":10:", getStyle(20,15,GREEN,PURPLE), styles[2]);
 
 	text.setText("01234567890123456789");
 	ranges = new StyleRange[2];
@@ -2824,9 +2824,9 @@ public void test_replaceStyleRangesII$Lorg_eclipse_swt_custom_StyleRange() {
 	ranges[1] = getStyle(12,5,BLUE,CYAN);
 	text.replaceStyleRanges(5, 12, ranges);
 	styles = text.getStyleRanges();
-	assertTrue(":11:", styles.length == 2);
-	assertTrue(":11:", styles[0].equals(getStyle(0,8,RED,YELLOW)));
-	assertTrue(":11:", styles[1].equals(getStyle(12,8,BLUE,CYAN)));
+	assertEquals(":11:", 2, styles.length);
+	assertEquals(":11:", getStyle(0,8,RED,YELLOW), styles[0]);
+	assertEquals(":11:", getStyle(12,8,BLUE,CYAN), styles[1]);
 
 	text.setText("0123456789012345");
 	ranges = new StyleRange[3];
@@ -2839,8 +2839,8 @@ public void test_replaceStyleRangesII$Lorg_eclipse_swt_custom_StyleRange() {
 	ranges[1] = getStyle(10,5,RED,YELLOW);
 	text.replaceStyleRanges(5, 10, ranges);
 	styles = text.getStyleRanges();
-	assertTrue(":12:", styles.length == 1);
-	assertTrue(":12:", styles[0].equals(getStyle(0,15,RED,YELLOW)));
+	assertEquals(":12:", 1, styles.length);
+	assertEquals(":12:", getStyle(0,15,RED,YELLOW), styles[0]);
 
 	text.setText("0123456789012345");
 	ranges = new StyleRange[1];
@@ -2865,9 +2865,9 @@ public void test_replaceStyleRangesII$Lorg_eclipse_swt_custom_StyleRange() {
 	ranges[0] = getStyle(5,7,BLUE,CYAN);
 	text.replaceStyleRanges(5, 7, ranges);
 	styles = text.getStyleRanges();
-	assertTrue(":14:", styles.length == 2);
-	assertTrue(":14:", styles[0].equals(getStyle(0,5,RED,YELLOW)));
-	assertTrue(":14:", styles[1].equals(getStyle(5,10,BLUE,CYAN)));
+	assertEquals(":14:", 2, styles.length);
+	assertEquals(":14:", getStyle(0,5,RED,YELLOW), styles[0]);
+	assertEquals(":14:", getStyle(5,10,BLUE,CYAN), styles[1]);
 
 
 	// reset the environment
@@ -2894,21 +2894,21 @@ public void test_replaceStyleRangesII$Lorg_eclipse_swt_custom_StyleRange() {
 	ranges[0] = getStyle(38,25,YELLOW,RED);
 	text.replaceStyleRanges(38, 25, ranges);
 	styles = text.getStyleRanges();
-	assertTrue(":1a:", styles.length == 4);
-	assertTrue(":1a:", styles[0].equals(getStyle(0,38,RED,YELLOW)));
-	assertTrue(":1a:", styles[1].equals(getStyle(38,25,YELLOW,RED)));
-	assertTrue(":1a:", styles[2].equals(getStyle(63,5,BLUE,CYAN)));
-	assertTrue(":1a:", styles[3].equals(getStyle(68,10,GREEN,PURPLE)));
+	assertEquals(":1a:", 4, styles.length);
+	assertEquals(":1a:", getStyle(0,38,RED,YELLOW), styles[0]);
+	assertEquals(":1a:", getStyle(38,25,YELLOW,RED), styles[1]);
+	assertEquals(":1a:", getStyle(63,5,BLUE,CYAN), styles[2]);
+	assertEquals(":1a:", getStyle(68,10,GREEN,PURPLE), styles[3]);
 	text.setStyleRanges(defaultStyles());
 	ranges = new StyleRange[1];
 	ranges[0] = getStyle(63,10,YELLOW,RED);
 	text.replaceStyleRanges(63, 10, ranges);
 	styles = text.getStyleRanges();
-	assertTrue(":1a:", styles.length == 4);
-	assertTrue(":1a:", styles[0].equals(getStyle(0,48,RED,YELLOW)));
-	assertTrue(":1a:", styles[1].equals(getStyle(58,5,BLUE,CYAN)));
-	assertTrue(":1a:", styles[2].equals(getStyle(63,10,YELLOW,RED)));
-	assertTrue(":1a:", styles[3].equals(getStyle(73,5,GREEN,PURPLE)));
+	assertEquals(":1a:", 4, styles.length);
+	assertEquals(":1a:", getStyle(0,48,RED,YELLOW), styles[0]);
+	assertEquals(":1a:", getStyle(58,5,BLUE,CYAN), styles[1]);
+	assertEquals(":1a:", getStyle(63,10,YELLOW,RED), styles[2]);
+	assertEquals(":1a:", getStyle(73,5,GREEN,PURPLE), styles[3]);
 
 	// Complete overlap
 	text.setStyleRanges(defaultStyles());
@@ -2917,25 +2917,25 @@ public void test_replaceStyleRangesII$Lorg_eclipse_swt_custom_StyleRange() {
 	text.replaceStyleRanges(0, 78, ranges);
 	styles = text.getStyleRanges();
 	styles = text.getStyleRanges();
-	assertTrue(":2a:", styles.length == 1);
-	assertTrue(":2a:", styles[0].equals(getStyle(0,78,YELLOW,RED)));
+	assertEquals(":2a:", 1, styles.length);
+	assertEquals(":2a:", getStyle(0,78,YELLOW,RED), styles[0]);
 
 	text.setStyleRanges(defaultStyles());
 	ranges = new StyleRange[1];
 	ranges[0] = getStyle(0,68,YELLOW,RED);
 	text.replaceStyleRanges(0, 68, ranges);
 	styles = text.getStyleRanges();
-	assertTrue(":2a:", styles.length == 2);
-	assertTrue(":2a:", styles[0].equals(getStyle(0,68,YELLOW,RED)));
-	assertTrue(":2a:", styles[1].equals(getStyle(68,10,GREEN,PURPLE)));
+	assertEquals(":2a:", 2, styles.length);
+	assertEquals(":2a:", getStyle(0,68,YELLOW,RED), styles[0]);
+	assertEquals(":2a:", getStyle(68,10,GREEN,PURPLE), styles[1]);
 	text.setStyleRanges(defaultStyles());
 	ranges = new StyleRange[1];
 	ranges[0] = getStyle(58,20,YELLOW,RED);
 	text.replaceStyleRanges(58, 20, ranges);
 	styles = text.getStyleRanges();
-	assertTrue(":2a:", styles.length == 2);
-	assertTrue(":2a:", styles[0].equals(getStyle(0,48,RED,YELLOW)));
-	assertTrue(":2a:", styles[1].equals(getStyle(58,20,YELLOW,RED)));
+	assertEquals(":2a:", 2, styles.length);
+	assertEquals(":2a:", getStyle(0,48,RED,YELLOW), styles[0]);
+	assertEquals(":2a:", getStyle(58,20,YELLOW,RED), styles[1]);
 
 	// 1-N complete, beginning
 	text.setText("012345678901234567890123456789");
@@ -2948,10 +2948,10 @@ public void test_replaceStyleRangesII$Lorg_eclipse_swt_custom_StyleRange() {
 	ranges[0] = getStyle(5,23,YELLOW,RED);
 	text.replaceStyleRanges(5, 23, ranges);
 	styles = text.getStyleRanges();
-	assertTrue(":3a:", styles.length == 3);
-	assertTrue(":3a:", styles[0].equals(getStyle(0,5,RED,RED)));
-	assertTrue(":3a:", styles[1].equals(getStyle(5,23,YELLOW,RED)));
-	assertTrue(":3a:", styles[2].equals(getStyle(28,2,PURPLE,PURPLE)));
+	assertEquals(":3a:", 3, styles.length);
+	assertEquals(":3a:", getStyle(0,5,RED,RED), styles[0]);
+	assertEquals(":3a:", getStyle(5,23,YELLOW,RED), styles[1]);
+	assertEquals(":3a:", getStyle(28,2,PURPLE,PURPLE), styles[2]);
 
 	// end, 1-N complete, beginning
 	text.setStyleRanges(
@@ -2963,12 +2963,12 @@ public void test_replaceStyleRangesII$Lorg_eclipse_swt_custom_StyleRange() {
 	ranges[0] = getStyle(13,12,YELLOW,RED);
 	text.replaceStyleRanges(13, 12, ranges);
 	styles = text.getStyleRanges();
-	assertTrue(":3a:", styles.length == 5);
-	assertTrue(":3a:", styles[0].equals(getStyle(0,5,RED,RED)));
-	assertTrue(":3a:", styles[1].equals(getStyle(5,5,YELLOW,YELLOW)));
-	assertTrue(":3a:", styles[2].equals(getStyle(10,3,CYAN,CYAN)));
-	assertTrue(":3a:", styles[3].equals(getStyle(13,12,YELLOW,RED)));
-	assertTrue(":3a:", styles[4].equals(getStyle(25,5,PURPLE,PURPLE)));
+	assertEquals(":3a:", 5, styles.length);
+	assertEquals(":3a:", getStyle(0,5,RED,RED), styles[0]);
+	assertEquals(":3a:", getStyle(5,5,YELLOW,YELLOW), styles[1]);
+	assertEquals(":3a:", getStyle(10,3,CYAN,CYAN), styles[2]);
+	assertEquals(":3a:", getStyle(13,12,YELLOW,RED), styles[3]);
+	assertEquals(":3a:", getStyle(25,5,PURPLE,PURPLE), styles[4]);
 
 	// reset the environment
 	text.dispose();
@@ -2981,8 +2981,8 @@ public void test_replaceStyleRangesII$Lorg_eclipse_swt_custom_StyleRange() {
 	ranges[0] = getStyle(0,5,RED,YELLOW);
 	text.replaceStyleRanges(0, 10, ranges);
 	styles = text.getStyleRanges();
-	assertTrue(":1xa:", styles.length == 1);
-	assertTrue(":1xa:", styles[0].equals(getStyle(0,5,RED,YELLOW)));
+	assertEquals(":1xa:", 1, styles.length);
+	assertEquals(":1xa", getStyle(0,5,RED,YELLOW), styles[0]);
 
 	// insert before 1 style
 	text.setText("01234567890123456789");
@@ -2993,9 +2993,9 @@ public void test_replaceStyleRangesII$Lorg_eclipse_swt_custom_StyleRange() {
 	ranges[0] = getStyle(0,3,PURPLE,PURPLE);
 	text.replaceStyleRanges(0, 3, ranges);
 	styles = text.getStyleRanges();
-	assertTrue(":1xb:", styles.length == 2);
-	assertTrue(":1xb:", styles[0].equals(getStyle(0,3,PURPLE,PURPLE)));
-	assertTrue(":1xb:", styles[1].equals(getStyle(5,3,RED,YELLOW)));
+	assertEquals(":1xb:", 2, styles.length);
+	assertEquals(":1xb", getStyle(0,3,PURPLE,PURPLE), styles[0]);
+	assertEquals(":1xb", getStyle(5,3,RED,YELLOW), styles[1]);
 
 	// insert after 1 style
 	text.setText("01234567890123456789");
@@ -3006,9 +3006,9 @@ public void test_replaceStyleRangesII$Lorg_eclipse_swt_custom_StyleRange() {
 	ranges[0] = getStyle(8,1,PURPLE,PURPLE);
 	text.replaceStyleRanges(8, 1, ranges);
 	styles = text.getStyleRanges();
-	assertTrue(":1xc:", styles.length == 2);
-	assertTrue(":1xc:", styles[0].equals(getStyle(5,3,RED,YELLOW)));
-	assertTrue(":1xc:", styles[1].equals(getStyle(8,1,PURPLE,PURPLE)));
+	assertEquals(":1xc", 2, styles.length);
+	assertEquals(":1xc:", getStyle(5,3,RED,YELLOW), styles[0]);
+	assertEquals(":1xc:", getStyle(8,1,PURPLE,PURPLE), styles[1]);
 
 	// insert before 2 styles
 	text.setText("01234567890123456789");
@@ -3020,10 +3020,10 @@ public void test_replaceStyleRangesII$Lorg_eclipse_swt_custom_StyleRange() {
 	ranges[0] = getStyle(2,1,PURPLE,PURPLE);
 	text.replaceStyleRanges(2, 1, ranges);
 	styles = text.getStyleRanges();
-	assertTrue(":1xe:", styles.length == 3);
-	assertTrue(":1xe:", styles[0].equals(getStyle(2,1,PURPLE,PURPLE)));
-	assertTrue(":1xe:", styles[1].equals(getStyle(5,2,RED,YELLOW)));
-	assertTrue(":1xe:", styles[2].equals(getStyle(10,2,RED,YELLOW)));
+	assertEquals(":1xe:", 3, styles.length);
+	assertEquals(":1xe:", getStyle(2,1,PURPLE,PURPLE), styles[0]);
+	assertEquals(":1xe:", getStyle(5,2,RED,YELLOW), styles[1]);
+	assertEquals(":1xe:", getStyle(10,2,RED,YELLOW), styles[2]);
 
 	// insert after 2 styles
 	text.setText("01234567890123456789");
@@ -3035,10 +3035,10 @@ public void test_replaceStyleRangesII$Lorg_eclipse_swt_custom_StyleRange() {
 	ranges[0] = getStyle(12,1,PURPLE,PURPLE);
 	text.replaceStyleRanges(12, 1, ranges);
 	styles = text.getStyleRanges();
-	assertTrue(":1xf:", styles.length == 3);
-	assertTrue(":1xf:", styles[0].equals(getStyle(5,2,RED,YELLOW)));
-	assertTrue(":1xf:", styles[1].equals(getStyle(10,2,RED,YELLOW)));
-	assertTrue(":1xf:", styles[2].equals(getStyle(12,1,PURPLE,PURPLE)));
+	assertEquals(":1xf:", 3, styles.length);
+	assertEquals(":1xf", getStyle(5,2,RED,YELLOW), styles[0]);
+	assertEquals(":1xf:", getStyle(10,2,RED,YELLOW), styles[1]);
+	assertEquals(":1xf:", getStyle(12,1,PURPLE,PURPLE), styles[2]);
 
 	// insert middle 2 styles
 	text.setText("01234567890123456789");
@@ -3050,10 +3050,10 @@ public void test_replaceStyleRangesII$Lorg_eclipse_swt_custom_StyleRange() {
 	ranges[0] = getStyle(5,3,PURPLE,PURPLE);
 	text.replaceStyleRanges(5, 3, ranges);
 	styles = text.getStyleRanges();
-	assertTrue(":1xg:", styles.length == 3);
-	assertTrue(":1xg:", styles[0].equals(getStyle(1,2,RED,YELLOW)));
-	assertTrue(":1xg:", styles[1].equals(getStyle(5,3,PURPLE,PURPLE)));
-	assertTrue(":1xg:", styles[2].equals(getStyle(12,2,RED,YELLOW)));
+	assertEquals(":1xg:", 3, styles.length);
+	assertEquals(":1xg:", getStyle(1,2,RED,YELLOW), styles[0]);
+	assertEquals(":1xg:", getStyle(5,3,PURPLE,PURPLE), styles[1]);
+	assertEquals(":1xg:", getStyle(12,2,RED,YELLOW), styles[2]);
 
 	// insert middle 3 styles
 	text.setText("01234567890123456789");
@@ -3066,11 +3066,11 @@ public void test_replaceStyleRangesII$Lorg_eclipse_swt_custom_StyleRange() {
 	ranges[0] = getStyle(4,2,PURPLE,PURPLE);
 	text.replaceStyleRanges(4, 2, ranges);
 	styles = text.getStyleRanges();
-	assertTrue(":1xh:", styles.length == 4);
-	assertTrue(":1xh:", styles[0].equals(getStyle(1,3,RED,PURPLE)));
-	assertTrue(":1xh:", styles[1].equals(getStyle(4,2,PURPLE,PURPLE)));
-	assertTrue(":1xh:", styles[2].equals(getStyle(6,3,PURPLE,YELLOW)));
-	assertTrue(":1xh:", styles[3].equals(getStyle(12,3,RED,YELLOW)));
+	assertEquals(":1xh:", 4, styles.length);
+	assertEquals(":1xh:", getStyle(1,3,RED,PURPLE), styles[0]);
+	assertEquals(":1xh:", getStyle(4,2,PURPLE,PURPLE), styles[1]);
+	assertEquals(":1xh:", getStyle(6,3,PURPLE,YELLOW), styles[2]);
+	assertEquals(":1xh:", getStyle(12,3,RED,YELLOW), styles[3]);
 
 	// reset the environment
 	text.dispose();
@@ -3082,7 +3082,7 @@ public void test_replaceStyleRangesII$Lorg_eclipse_swt_custom_StyleRange() {
 	ranges[0] = getStyle(0,1,PURPLE,PURPLE);
 	text.replaceStyleRanges(0, 1, ranges);
 	styles = text.getStyleRanges();
-	assertTrue(":2xa:", styles.length == 1);
+	assertEquals(":2xa:", 1, styles.length);
 
 	text.setText("01");
 	ranges = new StyleRange[2];
@@ -3106,9 +3106,9 @@ public void test_replaceStyleRangesII$Lorg_eclipse_swt_custom_StyleRange() {
 	ranges[0] = getStyle(1,1,YELLOW,YELLOW);
 	text.replaceStyleRanges(1, 1, ranges);
 	styles = text.getStyleRanges();
-	assertTrue(":2xc:", styles.length == 2);
-	assertTrue(":2xc:", styles[0].equals(getStyle(0,1,PURPLE,PURPLE)));
-	assertTrue(":2xc:", styles[1].equals(getStyle(1,1,YELLOW,YELLOW)));
+	assertEquals(":2xc:", 2, styles.length);
+	assertEquals(":2xc:", getStyle(0,1,PURPLE,PURPLE), styles[0]);
+	assertEquals(":2xc:", getStyle(1,1,YELLOW,YELLOW), styles[1]);
 
 	text.setText("012");
 	ranges = new StyleRange[2];
@@ -3119,10 +3119,10 @@ public void test_replaceStyleRangesII$Lorg_eclipse_swt_custom_StyleRange() {
 	ranges[0] = getStyle(2,1,YELLOW,YELLOW);
 	text.replaceStyleRanges(2, 1, ranges);
 	styles = text.getStyleRanges();
-	assertTrue(":2xd:", styles.length == 3);
-	assertTrue(":2xd:", styles[0].equals(getStyle(0,1,PURPLE,PURPLE)));
-	assertTrue(":2xd:", styles[1].equals(getStyle(1,1,RED,RED)));
-	assertTrue(":2xd:", styles[2].equals(getStyle(2,1,YELLOW,YELLOW)));
+	assertEquals(":2xd", 3, styles.length);
+	assertEquals(":2xd", getStyle(0,1,PURPLE,PURPLE), styles[0]);
+	assertEquals(":2xd", getStyle(1,1,RED,RED), styles[1]);
+	assertEquals(":2xd:", getStyle(2,1,YELLOW,YELLOW), styles[2]);
 
 	text.setText("01234");
 	ranges = new StyleRange[3];
@@ -3134,16 +3134,16 @@ public void test_replaceStyleRangesII$Lorg_eclipse_swt_custom_StyleRange() {
 	ranges[0] = getStyle(4,1,YELLOW,YELLOW);
 	text.replaceStyleRanges(4, 1, ranges);
 	styles = text.getStyleRanges();
-	assertTrue(":2xe:", styles.length == 4);
-	assertTrue(":2xe:", styles[3].equals(getStyle(4,1,YELLOW,YELLOW)));
+	assertEquals(":2xe:", 4, styles.length);
+	assertEquals(":2xe:", getStyle(4,1,YELLOW,YELLOW), styles[3]);
 
 	text.setText("01234");
 	ranges = new StyleRange[1];
 	ranges[0] = getStyle(4,1,YELLOW,YELLOW);
 	text.replaceStyleRanges(4, 1, ranges);
 	styles = text.getStyleRanges();
-	assertTrue(":2xf:", styles.length == 1);
-	assertTrue(":2xf:", styles[0].equals(getStyle(4,1,YELLOW,YELLOW)));
+	assertEquals(":2xf:", 1, styles.length);
+	assertEquals(":2xf:", getStyle(4,1,YELLOW,YELLOW), styles[0]);
 
 	text.setText("01234");
 	ranges = new StyleRange[1];
@@ -3152,7 +3152,7 @@ public void test_replaceStyleRangesII$Lorg_eclipse_swt_custom_StyleRange() {
 	ranges = new StyleRange[0];
 	text.replaceStyleRanges(4, 1, ranges);
 	styles = text.getStyleRanges();
-	assertTrue(":2xg:", styles.length == 0);
+	assertEquals(":2xg:", 0 , styles.length);
 
 }
 
@@ -3185,7 +3185,7 @@ public void test_replaceTextRangeIILjava_lang_String(){
 	// select 2nd line including line break
 	text.setSelectionRange(selectionStart, selectionLength);
 	text.replaceTextRange(replaceStart, 0, newText);
-	assertTrue(":a:", text.getCharCount() == defaultTextLength + newTextLength);
+	assertEquals(":a:", defaultTextLength + newTextLength, text.getCharCount());
 	assertTrue(":b:", text.getSelectionRange().x == selectionStart && text.getSelectionRange().y == selectionLength);
 
 	// before selection
@@ -3193,7 +3193,7 @@ public void test_replaceTextRangeIILjava_lang_String(){
 	// select 2nd line including line break
 	text.setSelectionRange(selectionStart, selectionLength);
 	text.replaceTextRange(0, 0, newText);
-	assertTrue(":c:", text.getCharCount() == defaultTextLength + newTextLength);
+	assertEquals(":c:", defaultTextLength + newTextLength, text.getCharCount());
 	assertTrue(":d:", text.getSelectionRange().x == selectionStart + newTextLength && text.getSelectionRange().y == selectionLength);
 	assertEquals(text.getSelection(), selectionListener.eventSelection);
 
@@ -3203,7 +3203,7 @@ public void test_replaceTextRangeIILjava_lang_String(){
 	// select 2nd line including line break
 	text.setSelectionRange(selectionStart, selectionLength);
 	text.replaceTextRange(selectionStart + 1, 0, newText);
-	assertTrue(":e:", text.getCharCount() == defaultTextLength + newTextLength);
+	assertEquals(":e:", defaultTextLength + newTextLength, text.getCharCount());
 	assertTrue(":f:", text.getSelectionRange().x == selectionStart + 1 + newTextLength && text.getSelectionRange().y == 0);
 	assertEquals(text.getSelection(), selectionListener.eventSelection);
 
@@ -3243,7 +3243,7 @@ public void test_replaceTextRangeIILjava_lang_String(){
 	// append in empty widget
 	text.setText("");
 	text.replaceTextRange(text.getCharCount(), 0, newText);
-	assertTrue(":j:", text.getCharCount() == newTextLength);
+	assertEquals(":j:", newTextLength, text.getCharCount());
 	assertTrue(":k:", text.getSelectionRange().x == 0 && text.getSelectionRange().y == 0);
 
 	// append in non-empty widget (selection should always be preserved)
@@ -3251,14 +3251,14 @@ public void test_replaceTextRangeIILjava_lang_String(){
 	// select 2nd line including line break
 	text.setSelectionRange(selectionStart, selectionLength);
 	text.replaceTextRange(text.getCharCount(), 0, newText);
-	assertTrue(":l:", text.getCharCount() == defaultTextLength + newTextLength);
+	assertEquals(":l:", defaultTextLength + newTextLength, text.getCharCount());
 	assertTrue(":m:", text.getSelectionRange().x == selectionStart && text.getSelectionRange().y == selectionLength);
 
 	// place caret at end of text
 	text.setText(defaultText);
 	text.setSelectionRange(text.getCharCount(), 0);
 	text.replaceTextRange(text.getCharCount(), 0, newText);
-	assertTrue(":n:", text.getCharCount() == defaultTextLength + newTextLength);
+	assertEquals(":n:", defaultTextLength + newTextLength, text.getCharCount());
 	assertTrue(":o:", text.getSelectionRange().x == text.getCharCount() - newTextLength && text.getSelectionRange().y == 0);
 
 	// replace text
@@ -3268,7 +3268,7 @@ public void test_replaceTextRangeIILjava_lang_String(){
 	// select 2nd line including line break
 	text.setSelectionRange(selectionStart, selectionLength);
 	text.replaceTextRange(replaceStart, replaceLength, newText);
-	assertTrue(":p:", text.getCharCount() == defaultTextLength + newTextLength - replaceLength);
+	assertEquals(":p:", defaultTextLength + newTextLength - replaceLength, text.getCharCount());
 	assertTrue(":q:", text.getSelectionRange().x == selectionStart && text.getSelectionRange().y == selectionLength);
 
 	// before selection
@@ -3276,7 +3276,7 @@ public void test_replaceTextRangeIILjava_lang_String(){
 	// select 2nd line including line break
 	text.setSelectionRange(selectionStart, selectionLength);
 	text.replaceTextRange(0, replaceLength, newText);
-	assertTrue(":r:", text.getCharCount() == defaultTextLength + newTextLength - replaceLength);
+	assertEquals(":r:", defaultTextLength + newTextLength - replaceLength, text.getCharCount());
 	assertTrue(":s:", text.getSelectionRange().x == selectionStart + newTextLength - replaceLength && text.getSelectionRange().y == selectionLength);
 	assertEquals(text.getSelection(), selectionListener.eventSelection);
 
@@ -3285,7 +3285,7 @@ public void test_replaceTextRangeIILjava_lang_String(){
 	// select 2nd line including line break
 	text.setSelectionRange(selectionStart, selectionLength);
 	text.replaceTextRange(selectionStart + 1, replaceLength, newText);
-	assertTrue(":t:", text.getCharCount() == defaultTextLength + newTextLength - replaceLength);
+	assertEquals(":t:", defaultTextLength + newTextLength - replaceLength, text.getCharCount());
 	assertTrue(":u:", text.getSelectionRange().x == selectionStart + 1 + newTextLength && text.getSelectionRange().y == 0);
 	assertEquals(text.getSelection(), selectionListener.eventSelection);
 
@@ -3351,34 +3351,34 @@ public void test_setCaretLorg_eclipse_swt_widgets_Caret() {
 @Test
 public void test_setCaretOffsetI(){
 	text.setCaretOffset(-2);
-	assertTrue(":a:", text.getCaretOffset() == 0);
+	assertEquals(":a:", 0, text.getCaretOffset());
 	text.setCaretOffset(1);
-	assertTrue(":b:", text.getCaretOffset() == 0);
+	assertEquals(":b:", 0, text.getCaretOffset());
 	text.setCaretOffset(0);
-	assertTrue(":c:", text.getCaretOffset() == 0);
+	assertEquals(":c:", 0, text.getCaretOffset());
 
 	text.setText("Line0\r\n");
 	text.setCaretOffset(-2);
-	assertTrue(":d:", text.getCaretOffset() == 0);
+	assertEquals(":d:", 0, text.getCaretOffset());
 	text.setCaretOffset(1);
-	assertTrue(":e:", text.getCaretOffset() == 1);
+	assertEquals(":e:", 1, text.getCaretOffset());
 	text.setCaretOffset(0);
-	assertTrue(":f:", text.getCaretOffset() == 0);
+	assertEquals(":f:", 0, text.getCaretOffset());
 
 	text.setCaretOffset(text.getCharCount());
-	assertTrue(":g:", text.getCaretOffset() == text.getCharCount());
+	assertEquals(":g:", text.getCharCount(), text.getCaretOffset());
 	text.setCaretOffset(text.getCharCount() + 1);
-	assertTrue(":h:", text.getCaretOffset() == text.getCharCount());
+	assertEquals(":h:", text.getCharCount(), text.getCaretOffset());
 	text.setCaretOffset(5);
-	assertTrue(":i:", text.getCaretOffset() == 5);
+	assertEquals(":i:", 5, text.getCaretOffset());
 
 	text.setText("");
 	text.setCaretOffset(-2);
-	assertTrue(":j:", text.getCaretOffset() == 0);
+	assertEquals(":j:", 0, text.getCaretOffset());
 	text.setCaretOffset(1);
-	assertTrue(":k:", text.getCaretOffset() == 0);
+	assertEquals(":k:", 0, text.getCaretOffset());
 	text.setCaretOffset(0);
-	assertTrue(":l:", text.getCaretOffset() == 0);
+	assertEquals(":l:", 0, text.getCaretOffset());
 }
 
 @Test
@@ -3537,63 +3537,63 @@ public void test_setFontLorg_eclipse_swt_graphics_Font(){
 @Test
 public void test_setHorizontalIndexI(){
 	text.setHorizontalIndex(-1);
-	assertTrue(":a:", text.getHorizontalIndex() == 0);
+	assertEquals(":a:", 0 , text.getHorizontalIndex());
 	text.setHorizontalIndex(1);
-	assertTrue(":b:", text.getHorizontalIndex() == 0);
+	assertEquals(":b:", 0 , text.getHorizontalIndex());
 
 	text.setText("Line0");
 	text.setHorizontalIndex(-1);
-	assertTrue(":c:", text.getHorizontalIndex() == 0);
+	assertEquals(":c:", 0 , text.getHorizontalIndex());
 	text.setHorizontalIndex(1);
-	assertTrue(":d:", text.getHorizontalIndex() == 1);
+	assertEquals(":d:", 1 , text.getHorizontalIndex());
 	text.setHorizontalIndex(500);
 	assertTrue(":e:", text.getHorizontalIndex() > 0);
 	text.setHorizontalIndex(-1);
-	assertTrue(":f:", text.getHorizontalIndex() == 0);
+	assertEquals(":f:", 0 , text.getHorizontalIndex());
 	text.setHorizontalIndex(1);
-	assertTrue(":g:", text.getHorizontalIndex() == 1);
+	assertEquals(":g:", 1 , text.getHorizontalIndex());
 
 	text.setText("");
 	text.setHorizontalIndex(2);
-	assertTrue(":h:", text.getHorizontalIndex() == 0);
+	assertEquals(":h:", 0 , text.getHorizontalIndex());
 
 	// make sure the widget can be scrolled
 	shell.open();
 	text.setSize(10, 50);
 	text.setText("Line0");
 	text.setHorizontalIndex(1);
-	assertTrue(":i:", text.getHorizontalIndex() == 1);
+	assertEquals(":i:", 1 , text.getHorizontalIndex());
 }
 
 @Test
 public void test_setHorizontalPixelI(){
 	text.setHorizontalPixel(-1);
-	assertTrue(":a:", text.getHorizontalPixel() == 0);
+	assertEquals(":a:", 0 , text.getHorizontalPixel());
 	text.setHorizontalPixel(1);
-	assertTrue(":b:", text.getHorizontalPixel() == 0);
+	assertEquals(":b:", 0 , text.getHorizontalPixel());
 
 	text.setText("Line0");
 	text.setHorizontalPixel(-1);
-	assertTrue(":c:", text.getHorizontalPixel() == 0);
+	assertEquals(":c:", 0 , text.getHorizontalPixel());
 	text.setHorizontalPixel(1);
-	assertTrue(":d:", text.getHorizontalPixel() == 1);
+	assertEquals(":d:", 1 , text.getHorizontalPixel());
 	text.setHorizontalPixel(500);
 	assertTrue(":e:", text.getHorizontalPixel() > 0);
 	text.setHorizontalPixel(-1);
-	assertTrue(":f:", text.getHorizontalPixel() == 0);
+	assertEquals(":f:", 0 , text.getHorizontalPixel());
 	text.setHorizontalPixel(25);
-	assertTrue(":g:", text.getHorizontalPixel() == 25);
+	assertEquals(":g:", 25 , text.getHorizontalPixel());
 
 	text.setText("");
 	text.setHorizontalPixel(2);
-	assertTrue(":h:", text.getHorizontalPixel() == 0);
+	assertEquals(":h:", 0 , text.getHorizontalPixel());
 
 	// make sure the widget can be scrolled
 	shell.open();
 	text.setSize(10, 50);
 	text.setText("Line0");
 	text.setHorizontalPixel(5);
-	assertTrue(":i:", text.getHorizontalPixel() == 5);
+	assertEquals(":i:", 5 , text.getHorizontalPixel());
 }
 
 @Test
@@ -3607,27 +3607,27 @@ public void test_setLineBackgroundIILorg_eclipse_swt_graphics_Color(){
 	text.setLineBackground(2,1,getColor(BLUE));
 	text.setLineBackground(3,1,getColor(GREEN));
 	text.replaceTextRange(1,5,"");
-	assertTrue(":0a:", text.getLineBackground(0) == getColor(RED));
-	assertTrue(":0a:", text.getLineBackground(1) == getColor(GREEN));
+	assertEquals(":0a:", getColor(RED), text.getLineBackground(0));
+	assertEquals(":0a:", getColor(GREEN), text.getLineBackground(1));
 	text.setText(textString);
 	text.setLineBackground(0,1,getColor(RED));
 	text.setLineBackground(1,1,getColor(YELLOW));
 	text.setLineBackground(2,1,getColor(BLUE));
 	text.setLineBackground(3,1,getColor(GREEN));
 	text.replaceTextRange(0,4,"");
-	assertTrue(":0b:", text.getLineBackground(0) == getColor(YELLOW));
-	assertTrue(":0b:", text.getLineBackground(1) == getColor(BLUE));
-	assertTrue(":0b:", text.getLineBackground(2) == getColor(GREEN));
+	assertEquals(":0b:", getColor(YELLOW), text.getLineBackground(0));
+	assertEquals(":0b:", getColor(BLUE), text.getLineBackground(1));
+	assertEquals(":0b:", getColor(GREEN), text.getLineBackground(2));
 	text.setText(textString);
 	text.setLineBackground(0,1,getColor(RED));
 	text.setLineBackground(1,1,getColor(YELLOW));
 	text.setLineBackground(2,1,getColor(BLUE));
 	text.setLineBackground(3,1,getColor(GREEN));
 	text.replaceTextRange(1,1,"");
-	assertTrue(":0c:", text.getLineBackground(0) == getColor(RED));
-	assertTrue(":0c:", text.getLineBackground(1) == getColor(YELLOW));
-	assertTrue(":0c:", text.getLineBackground(2) == getColor(BLUE));
-	assertTrue(":0c:", text.getLineBackground(3) == getColor(GREEN));
+	assertEquals(":0c:", getColor(RED), text.getLineBackground(0));
+	assertEquals(":0c:", getColor(YELLOW), text.getLineBackground(1));
+	assertEquals(":0c:", getColor(BLUE), text.getLineBackground(2));
+	assertEquals(":0c:", getColor(GREEN), text.getLineBackground(3));
 	text.setText(textString);
 	text.setLineBackground(0,1,getColor(RED));
 	text.setLineBackground(1,1,getColor(YELLOW));
