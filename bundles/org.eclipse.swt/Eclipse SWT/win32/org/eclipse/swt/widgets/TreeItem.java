@@ -82,7 +82,7 @@ public class TreeItem extends Item {
  * @see Widget#getStyle
  */
 public TreeItem (Tree parent, int style) {
-	this (parent, style, OS.TVGN_ROOT, OS.TVI_LAST, 0);
+	this (parent, style, OS.TVI_ROOT, OS.TVI_LAST, 0);
 }
 
 /**
@@ -114,7 +114,7 @@ public TreeItem (Tree parent, int style) {
  * @see Tree#setRedraw
  */
 public TreeItem (Tree parent, int style, int index) {
-	this (parent, style, OS.TVGN_ROOT, findPrevious (parent, index), 0);
+	this (parent, style, OS.TVI_ROOT, findPrevious (parent, index), 0);
 }
 
 /**
@@ -1711,9 +1711,7 @@ public void setImage (Image image) {
 public void setItemCount (int count) {
 	checkWidget ();
 	count = Math.max (0, count);
-	long hwnd = parent.handle;
-	long hItem = OS.SendMessage (hwnd, OS.TVM_GETNEXTITEM, OS.TVGN_CHILD, handle);
-	parent.setItemCount (count, handle, hItem);
+	parent.setItemCount (count, handle);
 }
 
 /**

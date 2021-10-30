@@ -2118,7 +2118,7 @@ void createItem (TreeItem item, long hParent, long hInsertAfter, long hItem) {
 		* indicator.  The fix is to detect the case when the first
 		* child is added to a visible parent item and redraw the parent.
 		*/
-		if (fixParent) {
+		if (fixParent && (hParent != OS.TVI_ROOT)) {
 			if (getDrawing () && OS.IsWindowVisible (handle)) {
 				RECT rect = new RECT ();
 				if (OS.TreeView_GetItemRect (handle, hParent, rect, false)) {
@@ -4126,11 +4126,12 @@ public void setInsertMark (TreeItem item, boolean before) {
 public void setItemCount (int count) {
 	checkWidget ();
 	count = Math.max (0, count);
-	long hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_ROOT, 0);
-	setItemCount (count, OS.TVGN_ROOT, hItem);
+	setItemCount (count, OS.TVI_ROOT);
 }
 
-void setItemCount (int count, long hParent, long hItem) {
+void setItemCount (int count, long hParent) {
+	long hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_CHILD, hParent);
+
 	boolean redraw = false;
 	if (OS.SendMessage (handle, OS.TVM_GETCOUNT, 0, 0) == 0) {
 		redraw = getDrawing () && OS.IsWindowVisible (handle);
@@ -4144,7 +4145,7 @@ void setItemCount (int count, long hParent, long hItem) {
 	boolean expanded = false;
 	TVITEM tvItem = new TVITEM ();
 	tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_PARAM;
-	if (!redraw && (style & SWT.VIRTUAL) != 0) {
+	if (!redraw && (style & SWT.VIRTUAL) != 0 && (hParent != OS.TVI_ROOT)) {
 		/*
 		* Bug in Windows.  Despite the fact that TVM_GETITEMSTATE claims
 		* to return only the bits specified by the stateMask, when called
