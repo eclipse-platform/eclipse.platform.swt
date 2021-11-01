@@ -384,7 +384,7 @@ class WebKit extends WebBrowser {
 		static long gdbus_init() {
 			if (WebKitGTK.webkit_get_minor_version() < 4) {
 				System.err.println("SWT Webkit: Warning, You are using an old version of webkitgtk. (pre 2.4)"
-						+ " BrowserFunction functionality will not be avaliable");
+						+ " BrowserFunction functionality will not be available");
 				return 0;
 			}
 
