@@ -264,14 +264,9 @@ public String open () {
 		 */
 		if (!name.contains("*.")) {
 			/* By default value is on, in case of missing registry entry assumed to be on */
-			int result = 1;
-			try {
-				result = OS.readRegistryDword(OS.HKEY_CURRENT_USER,
-						"Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced", "HideFileExt");
-			} catch (Exception e) {
-				/* Registry entry not found, hence honor the default value */
-			}
-			if (result == 0) {
+			int[] result = OS.readRegistryDwords(OS.HKEY_CURRENT_USER,
+					"Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced", "HideFileExt");
+			if (result != null && result[0] == 0) {
 				name = name.replace(" (" + extension + ")", "");
 			}
 		}

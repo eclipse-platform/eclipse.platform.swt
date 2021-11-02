@@ -2106,12 +2106,10 @@ public static boolean isSystemDarkTheme () {
 	 * The registry settings, and Dark Theme itself, is present since Win10 1809
 	 */
 	if (OS.WIN32_BUILD >= OS.WIN32_BUILD_WIN10_1809) {
-		try {
-			int result = OS.readRegistryDword(OS.HKEY_CURRENT_USER,
-					"Software\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize", "AppsUseLightTheme");
-			isDarkTheme = (result == 0);
-		} catch (Exception e) {
-			// Registry entry not found
+		int[] result = OS.readRegistryDwords(OS.HKEY_CURRENT_USER,
+				"Software\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize", "AppsUseLightTheme");
+		if (result!=null) {
+			isDarkTheme = (result[0] == 0);
 		}
 	}
 	return isDarkTheme;
@@ -2848,11 +2846,9 @@ boolean isXMouseActive () {
 	* NOTE: X-Mouse is active when bit 1 of the UserPreferencesMask is set.
 	*/
 	boolean xMouseActive = false;
-	try {
-		int result = OS.readRegistryDword(OS.HKEY_CURRENT_USER, "Control Panel\\Desktop", "UserPreferencesMask");
-		xMouseActive = (result & 0x01) != 0;
-	} catch (Exception e) {
-		// Registry entry not found
+	int[] result = OS.readRegistryDwords(OS.HKEY_CURRENT_USER, "Control Panel\\Desktop", "UserPreferencesMask");
+	if (result!=null) {
+		xMouseActive = (result[0] & 0x01) != 0;
 	}
 	return xMouseActive;
 }
