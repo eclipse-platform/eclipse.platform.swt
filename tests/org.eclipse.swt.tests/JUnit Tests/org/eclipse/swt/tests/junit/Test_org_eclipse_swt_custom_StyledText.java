@@ -1068,40 +1068,18 @@ public void test_getLineCount() {
 
 @Test
 public void test_getLineAtOffsetI() {
-	boolean exceptionThrown = false;
-
 	assertEquals(":a:", 0, text.getLineAtOffset(0));
-	try {
-		text.getLineAtOffset(-1);
-	}
-	catch (IllegalArgumentException e) {
-		exceptionThrown = true;
-	}
-	assertTrue(":b:", exceptionThrown == true);
-	exceptionThrown = false;
 
-	try {
-		text.getLineAtOffset(100);
-	}
-	catch (IllegalArgumentException e) {
-		exceptionThrown = true;
-	}
-	assertTrue(":c:", exceptionThrown == true);
-	exceptionThrown = false;
+	assertThrows(IllegalArgumentException.class, () ->text.getLineAtOffset(-1));
+	assertThrows(IllegalArgumentException.class, () ->text.getLineAtOffset(100));
 
 	text.setText("Line0\r\n");
 	assertEquals(":d:", 0, text.getLineAtOffset(4));
 	assertEquals(":e:", 0, text.getLineAtOffset(5));
 	assertEquals(":f:", 0, text.getLineAtOffset(6));
 	assertEquals(":g:", 1, text.getLineAtOffset(7));
-	try {
-		text.getLineAtOffset(8);
-	}
-	catch (IllegalArgumentException e) {
-		exceptionThrown = true;
-	}
-	assertTrue(":h:", exceptionThrown == true);
-	exceptionThrown = false;
+
+	assertThrows(IllegalArgumentException.class, () ->text.getLineAtOffset(8));
 }
 
 @Test
@@ -1307,7 +1285,7 @@ public void test_getLocationAtOffsetI(){
 	// copy from StyledText, has to match value used by StyledText
 	final int XINSET = isBidiCaret() ? 2 : 0;
 
-	assertTrue(":a:", text.getLocationAtOffset(0).equals(new Point(XINSET, 0)));
+	assertEquals(":a:", new Point(XINSET, 0), text.getLocationAtOffset(0));
 	try {
 		text.getLocationAtOffset(-1);
 		fail("No exception thrown for offset == -1");
@@ -1389,7 +1367,7 @@ public void test_getOffsetAtLocationLorg_eclipse_swt_graphics_Point() {
 	Point location;
 	final int XINSET = isBidiCaret() ? 2 : 0;
 
-	assertTrue(":a:", text.getOffsetAtLocation(new Point(XINSET, 0)) == 0);
+	assertEquals(":a:", 0, text.getOffsetAtLocation(new Point(XINSET, 0)));
 	try {
 		text.getOffsetAtLocation(new Point(-1, 0));
 	}
@@ -1411,9 +1389,9 @@ public void test_getOffsetAtLocationLorg_eclipse_swt_graphics_Point() {
 	text.setText("Line0\r\nLine1");
 	location = text.getLocationAtOffset(5);
 	assertTrue(":d:", text.getOffsetAtLocation(new Point(10, 0)) > 0);
-	assertTrue(":e:", text.getOffsetAtLocation(new Point(location.x - 1, 0)) == 5);
+	assertEquals(":e:", 5, text.getOffsetAtLocation(new Point(location.x - 1, 0)));
 	location = text.getLocationAtOffset(7);
-	assertTrue(":f:", text.getOffsetAtLocation(location) == 7);
+	assertEquals(":f:", 7, text.getOffsetAtLocation(location));
 	try {
 		text.getOffsetAtLocation(new Point(100, 0));
 	}
@@ -1433,17 +1411,17 @@ public void test_getOffsetAtLocationLorg_eclipse_swt_graphics_Point() {
 	exceptionThrown = false;
 
 	text.setTopIndex(1);
-	assertTrue(":i:", text.getOffsetAtLocation(new Point(XINSET, -5)) == 0);
-	assertTrue(":j:", text.getOffsetAtLocation(new Point(XINSET, 0)) == 7);
+	assertEquals(":i:", 0, text.getOffsetAtLocation(new Point(XINSET, -5)));
+	assertEquals(":j:", 7, text.getOffsetAtLocation(new Point(XINSET, 0)));
 
 	text.setHorizontalIndex(1);
-	assertTrue(":k:", text.getOffsetAtLocation(new Point(XINSET + -5, -5)) == 0);
-	assertTrue(":l:", text.getOffsetAtLocation(new Point(XINSET + -5, 0)) == 7);
+	assertEquals(":k:", 0, text.getOffsetAtLocation(new Point(XINSET + -5, -5)));
+	assertEquals(":l:", 7, text.getOffsetAtLocation(new Point(XINSET + -5, 0)));
 
 	// 1GL4ZVE
-	assertTrue(":m:", text.getOffsetAtLocation(text.getLocationAtOffset(2)) == 2);
+	assertEquals(":m:", 2, text.getOffsetAtLocation(text.getLocationAtOffset(2)));
 	text.setHorizontalIndex(0);
-	assertTrue(":n:", text.getOffsetAtLocation(text.getLocationAtOffset(2)) == 2);
+	assertEquals(":n:", 2, text.getOffsetAtLocation(text.getLocationAtOffset(2)));
 }
 
 @Test
@@ -3093,9 +3071,9 @@ public void test_replaceStyleRangesII$Lorg_eclipse_swt_custom_StyleRange() {
 	ranges[0] = getStyle(0,1,YELLOW,YELLOW);
 	text.replaceStyleRanges(0, 1, ranges);
 	styles = text.getStyleRanges();
-	assertTrue(":2xb:", styles.length == 2);
-	assertTrue(":2xb:", styles[0].equals(getStyle(0,1,YELLOW,YELLOW)));
-	assertTrue(":2xb:", styles[1].equals(getStyle(1,1,RED,RED)));
+	assertEquals(":2xb:", 2, styles.length);
+	assertEquals(":2xb:", getStyle(0,1,YELLOW,YELLOW), styles[0]);
+	assertEquals(":2xb:", getStyle(1,1,RED,RED), styles[1]);
 
 	text.setText("01");
 	ranges = new StyleRange[2];
