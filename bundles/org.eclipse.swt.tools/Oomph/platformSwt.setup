@@ -161,7 +161,8 @@
     </targlet>
   </setupTask>
   <setupTask
-      xsi:type="setup.workingsets:WorkingSetTask">
+      xsi:type="setup.workingsets:WorkingSetTask"
+      id="workingsets.platform.swt">
     <workingSet
         name="SWT Tools">
       <predicate
@@ -207,7 +208,7 @@
             project="org.eclipse.swt"/>
         <operand
             xsi:type="workingsets:ExclusionPredicate"
-            excludedWorkingSet="//@setupTasks.8/@workingSets.2 //@setupTasks.8/@workingSets.1 //@setupTasks.8/@workingSets.0"/>
+            excludedWorkingSet="//'workingsets.platform.swt'/@workingSets[name='SWT%20Examples'] //'workingsets.platform.swt'/@workingSets[name='SWT%20Tests'] //'workingsets.platform.swt'/@workingSets[name='SWT%20Tools']"/>
       </predicate>
     </workingSet>
     <workingSet
