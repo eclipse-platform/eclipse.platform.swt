@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2020 IBM Corporation and others.
+ * Copyright (c) 2000, 2021 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -5084,12 +5084,7 @@ String dumpWidgetTableInfo() {
 	for (int i = 0; i < widgetTable.length; i++) {
 		Widget w = widgetTable[i];
 		if (w != null && w.isDisposed()) {
-			Collection<Integer> list = disposed.get(w);
-			if (list == null) {
-				list = new ArrayList<>();
-				disposed.put(w, list);
-			}
-			list.add(Integer.valueOf(i));
+			disposed.computeIfAbsent(w, k -> new ArrayList<>()).add(Integer.valueOf(i));
 		}
 	}
 	if (!disposed.isEmpty()) {
