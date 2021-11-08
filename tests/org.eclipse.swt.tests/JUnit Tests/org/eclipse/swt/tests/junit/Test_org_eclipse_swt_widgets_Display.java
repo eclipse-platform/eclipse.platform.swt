@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2019 IBM Corporation and others.
+ * Copyright (c) 2000, 2021 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -278,7 +278,7 @@ public void test_getClientArea() {
 public void test_getCurrent() {
 	Display display = new Display();
 	try {
-		assertTrue(display.getThread() == Thread.currentThread());
+		assertSame(display.getThread(), Thread.currentThread());
 	} finally {
 		display.dispose();
 	}
@@ -399,7 +399,7 @@ public void test_getShells() {
 	try {
 		Shell shell1 = new Shell(display);
 		Shell shell2 = new Shell(display);
-		assertTrue(display.getShells().length == 2);
+		assertEquals(2, display.getShells().length);
 		shell1.dispose();
 		shell2.dispose();
 	} finally {
@@ -483,7 +483,7 @@ public void test_getSystemFont() {
 public void test_getThread() {
 	Display display = new Display();
 	try {
-		assertTrue(display.getThread() == Thread.currentThread());
+		assertSame(display.getThread(), Thread.currentThread());
 	} finally {
 		display.dispose();
 	}
@@ -1250,7 +1250,7 @@ public void test_setDataLjava_lang_Object() {
 		display.setData(Integer.valueOf(10));
 		Integer i = (Integer)display.getData();
 		assertNotNull(i);
-		assertTrue(i.equals(Integer.valueOf(10)));
+		assertEquals(Integer.valueOf(10), i);
 	} finally {
 		display.dispose();
 	}
@@ -1264,10 +1264,10 @@ public void test_setDataLjava_lang_StringLjava_lang_Object() {
 		display.setData("String", "xyz");
 		Integer i = (Integer)display.getData("Integer");
 		assertNotNull(i);
-		assertTrue(i.equals(Integer.valueOf(10)));
+		assertEquals(Integer.valueOf(10), i);
 		String s = (String)display.getData("String");
 		assertNotNull(s);
-		assertTrue(s.equals("xyz"));
+		assertEquals("xyz", s);
 	} finally {
 		display.dispose();
 	}
