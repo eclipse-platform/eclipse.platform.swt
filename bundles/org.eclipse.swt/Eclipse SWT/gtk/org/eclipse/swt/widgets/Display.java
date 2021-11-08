@@ -227,13 +227,13 @@ public class Display extends Device {
 	 * other areas of SWT (i.e. WebKit). See bug 540060.
 	 */
 	/** @noreference */
-	public ArrayList<Long> dBusServers = new ArrayList<>();
+	public java.util.List<Long> dBusServers = new ArrayList<>();
 	/** @noreference */
-	public ArrayList<Long> dBusAuthObservers = new ArrayList<>();
+	public java.util.List<Long> dBusAuthObservers = new ArrayList<>();
 	/** @noreference */
-	public ArrayList<Long> dBusGUIDS = new ArrayList<>();
+	public java.util.List<Long> dBusGUIDS = new ArrayList<>();
 	/** @noreference */
-	public ArrayList<Long> dBusConnections = new ArrayList<>();
+	public java.util.List<Long> dBusConnections = new ArrayList<>();
 
 	/* Deferred Layout list */
 	Composite[] layoutDeferred;
