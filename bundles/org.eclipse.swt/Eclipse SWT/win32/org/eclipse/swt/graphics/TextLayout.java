@@ -3450,11 +3450,18 @@ boolean shape (long hdc, StyleItem run, char[] chars, int[] glyphCount, int maxG
 			return false;
 		}
 	}
-	int hr = OS.ScriptShape(hdc, run.psc, chars, chars.length, maxGlyphs, run.analysis, run.glyphs, run.clusters, run.visAttrs, glyphCount);
-	run.glyphCount = glyphCount[0];
-	if (useCMAPcheck) return true;
+	int scriptShaprHr = OS.ScriptShape(hdc, run.psc, chars, chars.length, maxGlyphs, run.analysis, run.glyphs,
+			run.clusters, run.visAttrs, glyphCount);
+	if (scriptShaprHr == OS.S_OK) {
+		run.glyphCount = glyphCount[0];
+		if (useCMAPcheck) return true;
 
-	if (hr != OS.USP_E_SCRIPT_NOT_IN_FONT) {
+		/*
+		 * scriptShapeHr could have been OS.USP_E_SCRIPT_NOT_IN_FONT which indicates
+		 * the whole run doesn't work with the font. The rest of this method verifies that
+		 * none of the individual glyphs are missing an entry in the font.
+		 * The fallback is to try other fonts (See caller)
+		 */
 		if (run.analysis.fNoGlyphIndex) return true;
 		SCRIPT_FONTPROPERTIES fp = new SCRIPT_FONTPROPERTIES ();
 		fp.cBytes = SCRIPT_FONTPROPERTIES.sizeof;
