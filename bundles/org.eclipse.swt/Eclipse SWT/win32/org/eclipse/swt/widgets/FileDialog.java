@@ -282,6 +282,9 @@ public String open () {
 		OS.HeapFree(hHeap, 0, filterSpec[i]);
 	}
 
+	/* Enable automatic appending of extensions to saved file names */
+	fileDialog.SetDefaultExtension(new char[1]);
+
 	/* Set initial filter */
 	fileDialog.SetFileTypeIndex(filterIndex + 1);
 

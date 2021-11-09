@@ -67,6 +67,10 @@ public int GetResult(long[] ppsi) {
 	return COM.VtblCall(20, address, ppsi);
 }
 
+public int SetDefaultExtension(char[] pszDefaultExtension) {
+	return COM.VtblCall(22, address, pszDefaultExtension);
+}
+
 public int ClearClientData() {
 	return COM.VtblCall(25, address);
 }
