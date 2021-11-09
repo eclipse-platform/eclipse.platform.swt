@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others.
+ * Copyright (c) 2000, 2021 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -242,6 +242,7 @@ int calculateWidth (int index, GC gc) {
 //	NSSize size = cell.cellSize ();
 
 	int width = (int)Math.ceil (size.width);
+	if (OS.isBigSurOrLater()) width += Tree.TEXT_GAP; // To fix truncation
 	boolean sendMeasure = true;
 	if ((parent.style & SWT.VIRTUAL) != 0) {
 		sendMeasure = cached;
