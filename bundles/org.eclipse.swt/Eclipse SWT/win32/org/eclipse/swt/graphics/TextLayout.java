@@ -1697,10 +1697,8 @@ Rectangle getBoundsInPixels (int start, int end) {
 				GlyphMetrics metrics = run.style.metrics;
 				cx = metrics.getWidthInPixels() * (start - run.start);
 			} else if (!run.tab) {
-				int[] piX = new int[1];
-				long advances = run.justify != 0 ? run.justify : run.advances;
-				OS.ScriptCPtoX(start - run.start, false, run.length, run.glyphCount, run.clusters, run.visAttrs, advances, run.analysis, piX);
-				cx = isRTL ? run.width - piX[0] : piX[0];
+				int iX = ScriptCPtoX(start - run.start, false, run);
+				cx = isRTL ? run.width - iX : iX;
 			}
 			if (run.analysis.fRTL ^ isRTL) {
 				runTrail = run.x + cx;
@@ -1714,10 +1712,8 @@ Rectangle getBoundsInPixels (int start, int end) {
 				GlyphMetrics metrics = run.style.metrics;
 				cx = metrics.getWidthInPixels() * (end - run.start + 1);
 			} else if (!run.tab) {
-				int[] piX = new int[1];
-				long advances = run.justify != 0 ? run.justify : run.advances;
-				OS.ScriptCPtoX(end - run.start, true, run.length, run.glyphCount, run.clusters, run.visAttrs, advances, run.analysis, piX);
-				cx = isRTL ? run.width - piX[0] : piX[0];
+				int iX = ScriptCPtoX(end - run.start, true, run);
+				cx = isRTL ? run.width - iX : iX;
 			}
 			if (run.analysis.fRTL ^ isRTL) {
 				runLead = run.x + cx;
@@ -2088,17 +2084,31 @@ Point getLocationInPixels (int offset, boolean trailing) {
 				width = (trailing || (offset == length)) ? run.width : 0;
 			} else {
 				int runOffset = offset - run.start;
-				int cChars = run.length;
-				int gGlyphs = run.glyphCount;
-				int[] piX = new int[1];
-				long advances = run.justify != 0 ? run.justify : run.advances;
-				OS.ScriptCPtoX(runOffset, trailing, cChars, gGlyphs, run.clusters, run.visAttrs, advances, run.analysis, piX);
-				width = (orientation & SWT.RIGHT_TO_LEFT) != 0 ? run.width - piX[0] : piX[0];
+				final int iX = ScriptCPtoX(runOffset, trailing, run);
+				width = (orientation & SWT.RIGHT_TO_LEFT) != 0 ? run.width - iX : iX;
 			}
 			return new Point(run.x + width, DPIUtil.autoScaleUp(getDevice(), lineY[line]) + getScaledVerticalIndent());
 		}
 	}
 	return new Point(0, 0);
+}
+
+/**
+ * Wrapper around
+ * {@link OS#ScriptCPtoX(int, boolean, int, int, long, long, long, SCRIPT_ANALYSIS, int[])}
+ * to handle common arguments consistently.
+ *
+ * @param characterPosition the first argument of OS.ScriptCPtoX
+ * @param trailing          the first argument of OS.ScriptCPtoX
+ * @param run               used to define remaining arguments of OS.ScriptCPtoX
+ * @return x position of the caret.
+ */
+private int ScriptCPtoX(int characterPosition, boolean trailing, StyleItem run) {
+	int[] piX = new int[1];
+	long advances = run.justify != 0 ? run.justify : run.advances;
+	OS.ScriptCPtoX(characterPosition, trailing, run.length, run.glyphCount, run.clusters, run.visAttrs, advances,
+			run.analysis, piX);
+	return piX[0];
 }
 
 /**
@@ -2360,16 +2370,12 @@ void getPartialSelection(StyleItem run, int selectionStart, int selectionEnd, RE
 	int end = run.start + run.length - 1;
 	int selStart = Math.max(selectionStart, run.start) - run.start;
 	int selEnd = Math.min(selectionEnd, end) - run.start;
-	int cChars = run.length;
-	int gGlyphs = run.glyphCount;
-	int[] piX = new int[1];
 	int x = rect.left;
-	long advances = run.justify != 0 ? run.justify : run.advances;
-	OS.ScriptCPtoX(selStart, false, cChars, gGlyphs, run.clusters, run.visAttrs, advances, run.analysis, piX);
-	int runX = (orientation & SWT.RIGHT_TO_LEFT) != 0 ? run.width - piX[0] : piX[0];
+	int iX = ScriptCPtoX(selStart, false, run);
+	int runX = (orientation & SWT.RIGHT_TO_LEFT) != 0 ? run.width - iX : iX;
 	rect.left = x + runX;
-	OS.ScriptCPtoX(selEnd, true, cChars, gGlyphs, run.clusters, run.visAttrs, advances, run.analysis, piX);
-	runX = (orientation & SWT.RIGHT_TO_LEFT) != 0 ? run.width - piX[0] : piX[0];
+	iX = ScriptCPtoX(selEnd, true, run);
+	runX = (orientation & SWT.RIGHT_TO_LEFT) != 0 ? run.width - iX : iX;
 	rect.right = x + runX;
 }
 
