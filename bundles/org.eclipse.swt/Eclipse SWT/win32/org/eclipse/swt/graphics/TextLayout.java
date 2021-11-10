@@ -266,6 +266,11 @@ void computeRuns (GC gc) {
 					run.width = tabX - lineWidth;
 				}
 			}
+
+			/*
+			 * This block adjusts the indentation after merged tabs stops.
+			 * The extra tabs are removed in merge.
+			 */
 			int length = run.length;
 			if (length > 1) {
 				int stop = j + length - 1;
@@ -2818,6 +2823,13 @@ StyleItem[] merge (long items, int itemCount) {
 				OS.MoveMemory(scriptItem, items + nextItemIndex * SCRIPT_ITEM.sizeof, SCRIPT_ITEM.sizeof);
 				itemLimit = scriptItem.iCharPos;
 			}
+
+			/*
+			 * This block merges a bunch of tabs or non-complex scripts into a single item
+			 * run. This is done so that less item runs are needed and is used when there
+			 * could be a performance penalty because of too many runs.
+			 * The tabs need to be "restored", see computeRuns
+			 */
 			if (nextItemIndex < itemCount && merge) {
 				if (!item.lineBreak) {
 					OS.MoveMemory(sp, device.scripts[item.analysis.eScript], SCRIPT_PROPERTIES.sizeof);
