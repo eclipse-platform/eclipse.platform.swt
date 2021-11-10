@@ -2927,26 +2927,16 @@ public void setVisible (boolean visible) {
 			if (enableWindow != 0) GDK.gdk_window_raise(enableWindow);
 		}
 		if (isDisposed ()) return;
-		if (!(OS.isX11() && GTK.GTK_IS_PLUG (shellHandle))) {
-			if (GTK.GTK4) {
-				display.dispatchEvents = new int [] {
-						GDK.GDK4_EXPOSE,
-						GDK.GDK4_FOCUS_CHANGE,
-						GDK.GDK4_CONFIGURE,
-						GDK.GDK4_MAP,
-						GDK.GDK4_UNMAP,
-					};
-			} else {
-				display.dispatchEvents = new int [] {
-						GDK.GDK_EXPOSE,
-						GDK.GDK_FOCUS_CHANGE,
-						GDK.GDK_CONFIGURE,
-						GDK.GDK_MAP,
-						GDK.GDK_UNMAP,
-						GDK.GDK_NO_EXPOSE,
-						GDK.GDK_WINDOW_STATE
-					};
-			}
+		if (!( !GTK.GTK4 && OS.isX11() && GTK.GTK_IS_PLUG (shellHandle))) {
+			display.dispatchEvents = new int [] {
+				GDK.GDK_EXPOSE,
+				GDK.GDK_FOCUS_CHANGE,
+				GDK.GDK_CONFIGURE,
+				GDK.GDK_MAP,
+				GDK.GDK_UNMAP,
+				GDK.GDK_NO_EXPOSE,
+				GDK.GDK_WINDOW_STATE
+			};
 			Display display = this.display;
 			display.putGdkEvents();
 			boolean iconic = false;
@@ -3156,7 +3146,7 @@ int trimWidth () {
 }
 
 void updateModal () {
-	if (OS.isX11() && GTK.GTK_IS_PLUG (shellHandle)) return;
+	if (!GTK.GTK4 && OS.isX11() && GTK.GTK_IS_PLUG (shellHandle)) return;
 	long group = 0;
 	boolean isModalShell = false;
 	if (display.getModalDialog () == null) {
