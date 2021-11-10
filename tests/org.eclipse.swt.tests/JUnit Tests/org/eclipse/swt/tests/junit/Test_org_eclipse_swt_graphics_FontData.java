@@ -15,7 +15,7 @@
 package org.eclipse.swt.tests.junit;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -104,7 +104,7 @@ public void test_hashCode() {
 	assertEquals(fd1,fd2);
 	assertEquals(fd1.hashCode(),fd2.hashCode());
 	FontData fd3 = new FontData(SwtTestUtil.testFontName, 10, SWT.BOLD);
-	assertFalse(fd1.hashCode() == fd3.hashCode());
+	assertNotEquals(fd3.hashCode(), fd1.hashCode());
 }
 
 @Test

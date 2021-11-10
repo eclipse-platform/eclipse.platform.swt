@@ -17,6 +17,7 @@ package org.eclipse.swt.tests.junit;
 import static org.eclipse.swt.tests.junit.SwtTestUtil.assertSWTProblem;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -465,23 +466,23 @@ public void test_getStyle() {
 	Canvas canvas = new Canvas(shell, SWT.NULL);
 	GC testGC = new GC(canvas, SWT.LEFT_TO_RIGHT);
 	int style = testGC.getStyle();
-	assertTrue((style & SWT.LEFT_TO_RIGHT) != 0);
+	assertNotEquals(0, (style & SWT.LEFT_TO_RIGHT));
 	testGC.dispose();
 	testGC = new GC(canvas);
 	style = testGC.getStyle();
-	assertTrue((style & SWT.LEFT_TO_RIGHT) != 0);
+	assertNotEquals(0, (style & SWT.LEFT_TO_RIGHT));
 	testGC.dispose();
 	testGC = new GC(canvas, SWT.RIGHT_TO_LEFT);
 	style = testGC.getStyle();
-	assertTrue((style &  SWT.RIGHT_TO_LEFT) != 0);
+	assertNotEquals(0, (style & SWT.RIGHT_TO_LEFT));
 	testGC.dispose();
 }
 
 @Test
 public void test_hashCode() {
-	assertTrue(gc.hashCode() == gc.hashCode());
+	assertEquals(gc.hashCode(), gc.hashCode());
 	GC gc2 = new GC(shell);
-	assertFalse(gc.hashCode() == gc2.hashCode());
+	assertNotEquals(gc2.hashCode(), gc.hashCode());
 	gc2.dispose();
 }
 
@@ -560,7 +561,7 @@ public void test_setClippingLorg_eclipse_swt_graphics_Rectangle() {
 public void test_setFontLorg_eclipse_swt_graphics_Font() {
 	gc.setFont(shell.getDisplay().getSystemFont());
 	Font font = gc.getFont();
-	assertTrue(font.equals(shell.getDisplay().getSystemFont()));
+	assertEquals(shell.getDisplay().getSystemFont(), font);
 }
 
 @Test
@@ -585,23 +586,23 @@ public void test_setForegroundLorg_eclipse_swt_graphics_Color() {
 @Test
 public void test_setLineStyleI() {
 	gc.setLineStyle(SWT.LINE_SOLID);
-	assertTrue(gc.getLineStyle() == SWT.LINE_SOLID);
+	assertEquals(SWT.LINE_SOLID, gc.getLineStyle());
 	gc.setLineStyle(SWT.LINE_DASH);
-	assertTrue(gc.getLineStyle() == SWT.LINE_DASH);
+	assertEquals(SWT.LINE_DASH, gc.getLineStyle());
 	gc.setLineStyle(SWT.LINE_DOT);
-	assertTrue(gc.getLineStyle() == SWT.LINE_DOT);
+	assertEquals(SWT.LINE_DOT, gc.getLineStyle());
 	gc.setLineStyle(SWT.LINE_DASHDOT);
-	assertTrue(gc.getLineStyle() == SWT.LINE_DASHDOT);
+	assertEquals(SWT.LINE_DASHDOT, gc.getLineStyle());
 	gc.setLineStyle(SWT.LINE_DASHDOTDOT);
-	assertTrue(gc.getLineStyle() == SWT.LINE_DASHDOTDOT);
+	assertEquals(SWT.LINE_DASHDOTDOT, gc.getLineStyle());
 }
 
 @Test
 public void test_setLineWidthI() {
 	gc.setLineWidth(10);
-	assertTrue(gc.getLineWidth() == 10);
+	assertEquals(10, gc.getLineWidth());
 	gc.setLineWidth(0);
-	assertTrue(gc.getLineWidth() == 0);
+	assertEquals(0, gc.getLineWidth());
 }
 
 @Test

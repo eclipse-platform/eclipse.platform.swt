@@ -15,6 +15,7 @@ package org.eclipse.swt.tests.junit;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -157,7 +158,8 @@ public void test_setAlignmentI() {
 	assertEquals(SWT.CENTER, button.getAlignment());
 
 	button.setAlignment(SWT.UP); // bad value for push button
-	assertTrue(SWT.UP != button.getAlignment());
+	assertNotEquals(SWT.UP, button.getAlignment());
+
 
 	Button arrowButton = new Button(shell, SWT.ARROW);
 	arrowButton.setAlignment(SWT.LEFT);
@@ -173,12 +175,12 @@ public void test_setAlignmentI() {
 	assertEquals(SWT.DOWN, arrowButton.getAlignment());
 
 	arrowButton.setAlignment(SWT.CENTER); // bad value for arrow button
-	assertTrue(SWT.CENTER != arrowButton.getAlignment());
+	assertNotEquals(SWT.CENTER, arrowButton.getAlignment());
 	arrowButton.dispose();
 
 	int alignment = 55; // some bogus number
 	button.setAlignment(alignment);
-	assertTrue(alignment != button.getAlignment());
+	assertNotEquals(alignment, button.getAlignment());
 }
 
 @Test
@@ -189,15 +191,16 @@ public void test_setBackgroundCheckButton() {
 	assertEquals("getBackground not equal after setBackground for SWT.CHECK Button",
 			color, checkButton.getBackground());
 	checkButton.setBackground(null);
-	assertTrue("getBackground unchanged after setBackground(null) for SWT.CHECK Button",
-			!checkButton.getBackground().equals(color));
+	assertNotEquals("getBackground unchanged after setBackground(null) for SWT.CHECK Button",
+			color, checkButton.getBackground());
+
 	color = new Color(255, 0, 0, 0);
 	checkButton.setBackground(color);
 	assertEquals("getBackground not equal after setBackground with 0 alpha for SWT.CHECK Button",
 			color, checkButton.getBackground());
 	checkButton.setBackground(null);
-	assertTrue("getBackground unchanged after setBackground(null) with 0 alpha for SWT.CHECK Button",
-			!checkButton.getBackground().equals(color));
+	assertNotEquals("getBackground unchanged after setBackground(null) with 0 alpha for SWT.CHECK Button",
+			color, checkButton.getBackground());
 	if ("gtk".equals(SWT.getPlatform ())) {
 		Color fg = new Color(0, 255, 0);
 		checkButton.setBackground(color);
@@ -230,15 +233,15 @@ public void test_setBackgroundRadioButton() {
 	assertEquals("getBackground not equal after setBackground for SWT.RADIO Button",
 			color, radioButton.getBackground());
 	radioButton.setBackground(null);
-	assertFalse("getBackground unchanged after setBackground(null) for SWT.RADIO Button",
-			radioButton.getBackground().equals(color));
+	assertNotEquals("getBackground unchanged after setBackground(null) for SWT.RADIO Button",
+			color, radioButton.getBackground());
 	color = new Color(255, 0, 0, 0);
 	radioButton.setBackground(color);
 	assertEquals("getBackground not equal after setBackground with 0 alpha for SWT.RADIO Button",
 			color, radioButton.getBackground());
 	radioButton.setBackground(null);
-	assertFalse("getBackground unchanged after setBackground(null) with 0 alpha for SWT.RADIO Button",
-			radioButton.getBackground().equals(color));
+	assertNotEquals("getBackground unchanged after setBackground(null) with 0 alpha for SWT.RADIO Button",
+			color, radioButton.getBackground());
 	if ("gtk".equals(SWT.getPlatform ())) {
 		Color fg = new Color(0, 255, 0);
 		radioButton.setBackground(color);
@@ -277,7 +280,7 @@ public void test_setForegroundCheckButton() {
 	checkButton.setForeground(color);
 	assertEquals(color, checkButton.getForeground());
 	checkButton.setForeground(null);
-	assertFalse(checkButton.getForeground().equals(color));
+	assertNotEquals(color, checkButton.getForeground());
 	if ("gtk".equals(SWT.getPlatform ())) {
 		Color bg = new Color(0, 255, 0);
 		checkButton.setForeground(color);
@@ -311,7 +314,7 @@ public void test_setForegroundRadioButton() {
 	radioButton.setForeground(color);
 	assertEquals(color, radioButton.getForeground());
 	radioButton.setForeground(null);
-	assertFalse(radioButton.getForeground().equals(color));
+	assertNotEquals(color, radioButton.getForeground());
 	if ("gtk".equals(SWT.getPlatform ())) {
 		Color bg = new Color(0, 255, 0);
 		radioButton.setForeground(color);
@@ -409,7 +412,7 @@ public void test_setTextLjava_lang_String() {
 	int goodCases = 4;
 	for (int i=0; i<goodCases; i++){
 		button.setText(cases[i]);
-		assertTrue("good case: " + String.valueOf(i), button.getText().equals(cases[i]));
+		assertEquals("good case: " + String.valueOf(i), cases[i], button.getText());
 	}
 
 	try {
