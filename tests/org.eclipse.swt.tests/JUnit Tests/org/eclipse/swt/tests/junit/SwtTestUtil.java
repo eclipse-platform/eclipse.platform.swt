@@ -16,6 +16,7 @@ package org.eclipse.swt.tests.junit;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -28,8 +29,11 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.ImageData;
+import org.eclipse.swt.graphics.PaletteData;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.layout.FillLayout;
+import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
@@ -74,6 +78,7 @@ public class SwtTestUtil {
 	public static String[] transparentImageFilenames = new String[] {"transparent.png"};
 
 	public static final String testFontName;
+	public static final String testFontNameFixedWidth;
 	// isWindows refers to windows platform, i.e. win32 windowing system; see also isWindowsOS
 	public final static boolean isWindows = SWT.getPlatform().startsWith("win32");
 	public final static boolean isCocoa = SWT.getPlatform().startsWith("cocoa");
@@ -88,8 +93,24 @@ public class SwtTestUtil {
 	public final static boolean isX11 = isGTK
 			&& "x11".equals(System.getProperty("org.eclipse.swt.internal.gdk.backend"));
 
+
+	/**
+	 * The palette used by images. See {@link #getAllPixels(Image)} and {@link #createImage}
+	 */
+	private static final PaletteData palette = new PaletteData (0xFF00, 0xFF0000, 0xFF000000);
+
 	static {
 		testFontName = "Helvetica";
+		if (SwtTestUtil.isCocoa) {
+			testFontNameFixedWidth = "Monaco";
+		} else if (SwtTestUtil.isGTK) {
+			testFontNameFixedWidth = "Monospace";
+		} else if (SwtTestUtil.isWindows) {
+			testFontNameFixedWidth = "Consolas";
+		} else {
+			testFontNameFixedWidth = null;
+			fail("A fixed width font is needed for this platform");
+		}
 	}
 
 public static void assertSWTProblem(String message, int expectedCode, Throwable actualThrowable) {
@@ -150,6 +171,142 @@ public static void openShell(Shell shell) {
 		}
 
 	}
+}
+
+/**
+ * When debugging a test that draws to an Image it can be useful to see the
+ * image in a shell. Call this method with the image to open it.
+ *
+ * This method is blocking, so should not be called in committed code or else
+ * the test will hang.
+ *
+ * @param image to display
+ */
+public static void debugDisplayImage(Image image) {
+	Display display = (Display) image.getDevice();
+	Shell shell = new Shell(display);
+	shell.setLayout(new FillLayout());
+	shell.setSize(image.getBounds().width + 50, image.getBounds().height + 100);
+	Canvas canvas = new Canvas(shell, SWT.NONE);
+	// Create a paint handler for the canvas
+	canvas.addPaintListener(e -> e.gc.drawImage(image, 10, 10));
+	SwtTestUtil.openShell(shell);
+	while (!shell.isDisposed()) {
+		if (!display.readAndDispatch())
+			display.sleep();
+	}
+}
+
+/**
+ * Convert the 2D array of pixels (possibly returned by {@link #getAllPixels(Image)})
+ * and display them using {@link #debugDisplayImage(Image)}
+ * @param pixels 2d array, first index is column (x), second index is row (y)
+ */
+public static void debugDisplayImage(int[][] pixels, int startColumn, int numColumns) {
+	Image image = createImage(pixels, startColumn, numColumns);
+	try {
+		debugDisplayImage(image);
+	} finally {
+		image.dispose();
+	}
+
+}
+
+private static boolean displayExpected = true;
+
+public static void debugDisplayDifferences(Image expected, Image actual) {
+	Display display = (Display) expected.getDevice();
+	Shell shell = new Shell(display);
+	shell.setLayout(new FillLayout());
+	int width = Math.max(expected.getBounds().width, actual.getBounds().width) + 50;
+	int height = Math.max(expected.getBounds().height, actual.getBounds().height) + 100;
+	shell.setSize(width, height);
+	Canvas canvas = new Canvas(shell, SWT.NONE);
+	canvas.addPaintListener(e -> {
+		e.gc.setBackground(display.getSystemColor(SWT.COLOR_WHITE));
+		e.gc.fillRectangle(new Rectangle(0, 0, width, height));
+		System.out.println("Drawing " + (displayExpected ? "expected" : "actual"));
+		e.gc.drawImage(displayExpected ? expected : actual, 10, 10);
+	});
+	Runnable runnable = new Runnable() {
+		@Override
+		public void run() {
+			displayExpected = !displayExpected;
+			canvas.redraw();
+			display.timerExec(500, this);
+		}
+	};
+	display.timerExec(500, runnable);
+
+	SwtTestUtil.openShell(shell);
+	while (!shell.isDisposed()) {
+		if (!display.readAndDispatch())
+			display.sleep();
+	}
+
+}
+
+
+public static Image createImage(int[][] pixels, int startColumn, int numColumns) {
+	int width = pixels.length;
+	int height = width > 0 ? pixels[0].length : 0;
+	int displayWidth = numColumns;
+	ImageData imageData = new ImageData(displayWidth, height, 32, palette);
+	for (int x = 0; x < displayWidth; x++) {
+		for (int y = 0; y < height; y++) {
+			imageData.setPixel(x, y, pixels[x + startColumn][y]);
+		}
+	}
+	Image image = new Image(Display.getDefault(), imageData);
+	return image;
+}
+
+/**
+ * Convert an image into a 2D array of pixel values.
+ *
+ * @param image to extract pixel values from
+ * @return Returns 2d array, first index is column (x), second index is row (y)
+ */
+public static int[][] getAllPixels(Image image) {
+	ImageData imageData = image.getImageData();
+	Rectangle bounds = image.getBounds();
+	int[][] pixels = new int[bounds.width][];
+	for (int x = 0; x < bounds.width; x++) {
+		pixels[x] = new int[bounds.height];
+		for (int y = 0; y < bounds.height; y++) {
+			pixels[x][y] = imageData.getPixel(x, y);
+		}
+	}
+	return pixels;
+}
+
+/**
+ * Compares two pixels as returned by {@link #getAllPixels(Image)} to see if they have
+ * the same brightness.
+ * @param message Message used in assertion
+ * @param expected expected pixel value
+ * @param actual actual pixel value
+ */
+public static void assertSimilarBrightness(String message, int expected, int actual) {
+	if (expected != actual) {
+		// Use https://www.w3.org/TR/AERT/#color-contrast which
+		// provides an algorithm to determine if colors are too
+		// close together to be readable.
+		// 1) Convert colour with -> 0.299R + 0.587G + 0.114B to brightness (aka greyscale)
+		// 2) and ensure  brightness is within 12.5% of the range.
+		double expectedIntensity = getBrightness(expected);
+		double actualIntensity = getBrightness(actual);
+		assertEquals(message, expectedIntensity, actualIntensity, 255f / 8);
+	}
+}
+
+/**
+ * Converts one pixel as returned by {@link #getAllPixels(Image)} to its
+ * intensity (how light/dark it is).
+ */
+private static double getBrightness(int pixel) {
+	RGB rgb = palette.getRGB(pixel);
+	return 0.299 * rgb.red +   0.587 * rgb.green + 0.114 * rgb.blue;
 }
 
 /**
@@ -230,4 +387,40 @@ public static boolean hasPixel(Image image, Color expectedColor, Rectangle rect)
 	return false;
 }
 
+/**
+ * Check if image contains any pixel not matching the given color. The effective
+ * search range to find the color is the union of image size and given
+ * rectangle.
+ *
+ * This is useful for checking that some pixels don't match a background color. If
+ * possible use {@link #hasPixel(Image, Color, Rectangle)}, but on Linux where
+ * Antialias can't be turned off for test matching the foreground color can be
+ * impossible.
+ *
+ * @param image            image to check for the expected color
+ * @param nonMatchingColor not matching the given color
+ * @param rect             the bounds where the color is searched in. Can
+ *                         overlap the image bounds or <code>null</code> to
+ *                         check the whole image.
+ * @return <code>true</code> if any color other than the given color was found
+ *         in search range of image
+ */
+public static boolean hasPixelNotMatching(Image image, Color nonMatchingColor, Rectangle rect) {
+	ImageData imageData = image.getImageData();
+	if (rect == null) {
+		rect = new Rectangle(0, 0, image.getBounds().width, image.getBounds().height);
+	}
+	RGB nonMatchingRGB = nonMatchingColor.getRGB();
+	int xEnd = rect.x + rect.width;
+	int yEnd = rect.y + rect.height;
+	for (int x = Math.max(rect.x, 1); x < xEnd && x < image.getBounds().width - 1; x++) { // ignore first and last columns
+		for (int y = rect.y; y < yEnd && y < image.getBounds().height; y++) {
+			RGB pixelRGB = imageData.palette.getRGB(imageData.getPixel(x, y));
+			if (!nonMatchingRGB.equals(pixelRGB)) {
+				return true;
+			}
+		}
+	}
+	return false;
+}
 }

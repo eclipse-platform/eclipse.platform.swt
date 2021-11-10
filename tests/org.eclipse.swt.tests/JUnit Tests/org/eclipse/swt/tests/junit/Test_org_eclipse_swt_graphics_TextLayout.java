@@ -20,6 +20,8 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.util.Arrays;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.GC;
@@ -1024,4 +1026,158 @@ public void test_bug568740_multilineTextStyle() {
 			font.dispose();
 	}
 }
+
+/**
+ * Draw the layout on a new image and return it - note the Image needs to be
+ * disposed by caller.
+ */
+private Image draw(TextLayout layout, int antialias) {
+	GC gc = null;
+	try {
+		Image image = new Image(display, layout.getBounds());
+		gc = new GC(image);
+		gc.setBackground(display.getSystemColor(SWT.COLOR_WHITE));
+		gc.fillRectangle(image.getBounds());
+		gc.setAntialias(antialias);
+
+		layout.draw(gc, 0, 0);
+		return image;
+	} finally {
+		if (gc != null)
+			gc.dispose();
+	}
+}
+
+/**
+ * Draw the input and return a 2d array (indexed [x][y]) of all the pixel
+ * values.
+ */
+private int[][] draw(String input, int antialias) {
+	Font font = null;
+	Image image = null;
+	TextLayout layout = null;
+	try {
+		// These tests need to use fixed width font to make sure that kerning doesn't
+		// make repeated characters overlap.
+		font = new Font(display, SwtTestUtil.testFontNameFixedWidth, 16, SWT.NORMAL);
+
+		layout = new TextLayout(display);
+		layout.setFont(font);
+		layout.setText(input);
+		image = draw(layout, antialias);
+//		SwtTestUtil.debugDisplayImage(image);
+		assertTrue("Found no drawn pixels, nothing at all was drawn!",
+		SwtTestUtil.hasPixelNotMatching(image, display.getSystemColor(SWT.COLOR_WHITE), image.getBounds()));
+		return SwtTestUtil.getAllPixels(image);
+
+	} finally {
+		if (layout != null)
+			layout.dispose();
+		if (image != null)
+			image.dispose();
+		if (font != null)
+			font.dispose();
+	}
+}
+
+private void check(String input, int repeat, int antialias) {
+	// First draw the short version of the text
+	int[][] pixelsOnce = draw(input, antialias);
+	// Then draw it repeated however many times needed
+	int[][] pixelsRepeated = draw(input.repeat(repeat), antialias);
+
+	// Then compare the drawn short version again and again with each iteration of the repeated version
+	for (int i = 0; i < repeat; i++) {
+		// Ignore the first and last column in the short version because Windows will tend
+		// to draw characters together a little even with fixed width fonts.
+		for (int x = 1; x < pixelsOnce.length - 1; x++) {
+			try {
+				int[] extepectedColumn = pixelsOnce[x];
+				int[] actualColumn = pixelsRepeated[x + pixelsOnce.length * i];
+				if (Arrays.equals(extepectedColumn, actualColumn)) {
+					continue;
+				}
+				for (int y = 0; y < extepectedColumn.length; y++) {
+					SwtTestUtil.assertSimilarBrightness("", extepectedColumn[y], actualColumn[y]);
+				}
+			} catch (AssertionError e) {
+				// When this assertion fails it can be useful to debug it by displaying the two
+				// image parts so that the SwtTestUtil.assertSimilarBrightness can be tuned if needed
+				// debugCompareTwoImages(pixelsOnce, pixelsRepeated, i);
+				throw e;
+			}
+		}
+	}
+
+	// Make sure there are no leftover pixels
+	assertEquals(repeat * pixelsOnce.length, pixelsRepeated.length);
+}
+
+// Only used when debugging, see catch block above
+@SuppressWarnings("unused")
+private void debugCompareTwoImages(int[][] pixelsOnce, int[][] pixelsRepeated, int offsetInRepeated) {
+	Image expected = SwtTestUtil.createImage(pixelsOnce, 0, pixelsOnce.length);
+	try {
+		Image actual = SwtTestUtil.createImage(pixelsRepeated, pixelsOnce.length * offsetInRepeated,
+				pixelsOnce.length);
+		try {
+			SwtTestUtil.debugDisplayDifferences(expected, actual);
+		} finally {
+			actual.dispose();
+		}
+	} finally {
+		expected.dispose();
+	}
+}
+
+private void check(String input, int repeat) {
+	// Run with antialias in multiple modes as it causes different rendering engines
+	// to be used (GDI or GDI+)
+	check(input, repeat, SWT.DEFAULT);
+	check(input, repeat, SWT.ON);
+	check(input, repeat, SWT.OFF);
+}
+
+
+/**
+ * Bug 23406 - [Win32] TextLayout does not draw lines that are too long
+ *
+ * This code tests org.eclipse.swt.graphics.TextLayout.splitLongRun(StyleItem) - however
+ * to make it easier to debug the test to see what is happening, try reducing
+ * org.eclipse.swt.graphics.TextLayout.MAX_RUN_LENGTH and MAX_SEARCH_RUN_BREAK
+ * to smaller values so that the splitting happens over shorter runs of text.
+ */
+@Test
+public void test_bug23406_longLines() {
+	if (!SwtTestUtil.isWindows) {
+		// TODO This test was written for the platform specific parts of TextLayout and
+		// on Linux (and possibly mac)
+		// the size of images needed to run the tests causes failures.
+		if (SwtTestUtil.verbose) {
+			System.out.println(
+					"Excluded test_bug23406_longLines(org.eclipse.swt.tests.junit.Test_org_eclipse_swt_graphics_TextLayout).");
+		}
+		return;
+	}
+
+	// These first two checks really test the test works fine and
+	// should pass with or without the fix to Bug 23406
+	check("A", 100);
+	check("AV", 100);
+
+	check("A", 100000);
+	check("A A", 30000);
+	// This is a single code point, if this gets split then the drawing is corrupted
+	String crocodile = "\uD83D\uDC0A";
+	check(crocodile, 30000);
+	// This contains single glyphs requiring multiple characters, if those groups of
+	// characters gets split then the drawing is corrupted
+	// "This is the best computer program." translated into Thai:
+	// "นี่คือโปรแกรมคอมพิวเตอร์ที่ดีที่สุด" then encoded so that java file encoding
+	// errors can't corrupt it.
+	String bestProgramInThai = "\u0E19\u0E35\u0E48\u0E04\u0E37\u0E2D\u0E42\u0E1B\u0E23\u0E41\u0E01\u0E23\u0E21\u0E04"
+			+ "\u0E2D\u0E21\u0E1E\u0E34\u0E27\u0E40\u0E15\u0E2D\u0E23\u0E4C\u0E17\u0E35\u0E48\u0E14\u0E35\u0E17\u0E35\u0E48\u0E2A\u0E38\u0E14";
+	check(bestProgramInThai, 1000);
+}
+
 }

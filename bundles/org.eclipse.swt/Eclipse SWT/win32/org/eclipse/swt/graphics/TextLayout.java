@@ -69,6 +69,32 @@ public final class TextLayout extends Resource {
 	static final int GOFFSET_SIZEOF = 8;
 	static final int MERGE_MAX = 512;
 	static final int TOO_MANY_RUNS = 1024;
+	/**
+	 * Runs over a certain length (32000 characters / 65536 Glyphs / 32768 pixels -
+	 * these numbers come from WinAPI docs + analysis done in Bug 23406 Comment 31)
+	 * will fail to render in ScriptTextOut, ScriptShape, ScriptPlace so such
+	 * long runs need to be split into shorter runs. Because it is expensive to
+	 * keep testing (with Script*) to maximize the length we use this heuristic
+	 * to minimize the length. However splitting the runs into too short pieces
+	 * affects performance, so this is a balance.
+	 */
+	static final int MAX_RUN_LENGTH = 32000;
+	/**
+	 * When splitting a run (see {@link #MAX_RUN_LENGTH}) the run needs to split
+	 * in a way that does not affect the display of the glyphs, so it is important
+	 * to not split the run in the middle of a glyph. We use the same info to find
+	 * where we can wrap text to find where we can break the runs (ScriptBreak's info).
+	 * This setting limits how far back from {@link #MAX_RUN_LENGTH} the code
+	 * will search for a break before forcing a break at {@link #MAX_RUN_LENGTH}.
+	 */
+	static final int MAX_SEARCH_RUN_BREAK = 1000;
+	{
+		// While developing the splitting long runs it can be useful to
+		// make these constants smaller, but these invariants must
+		// preserved even in such cases.
+		assert MAX_RUN_LENGTH > 1;
+		assert MAX_SEARCH_RUN_BREAK < MAX_RUN_LENGTH;
+	}
 
 	/* IME has a copy of these constants */
 	static final int UNDERLINE_IME_DOT = 1 << 16;
@@ -105,6 +131,7 @@ public final class TextLayout extends Resource {
 		long justify;
 
 		/* ScriptBreak */
+		int pslaAllocSize;
 		long psla;
 
 		long fallbackFont;
@@ -222,6 +249,7 @@ void breakRun(StyleItem run) {
 	char[] chars = new char[run.length];
 	segmentsText.getChars(run.start, run.start + run.length, chars, 0);
 	long hHeap = OS.GetProcessHeap();
+	run.pslaAllocSize = SCRIPT_LOGATTR.sizeof * chars.length;
 	run.psla = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, SCRIPT_LOGATTR.sizeof * chars.length);
 	if (run.psla == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	OS.ScriptBreak(chars, chars.length, run.analysis, run.psla);
@@ -2775,9 +2803,10 @@ StyleItem[] merge (long items, int itemCount) {
 	final int end = segmentsText.length();
 	int start = 0, itemIndex = 0, styleIndex = 0;
 	/*
-	 * Maximum size of runs is each itemized item + each style needing its own run.
+	 * Maximum size of runs is each itemized item + each style needing its own run +
+	 * enough space for splitting runs that are too long.
 	 */
-	List<StyleItem> runs = new ArrayList<>(itemCount + stylesCount);
+	List<StyleItem> runs = new ArrayList<>(itemCount + stylesCount + (end + MAX_RUN_LENGTH - 1) / MAX_RUN_LENGTH);
 	SCRIPT_ITEM scriptItem = new SCRIPT_ITEM();
 	int itemLimit = -1;
 	int nextItemIndex = 0;
@@ -2844,18 +2873,24 @@ StyleItem[] merge (long items, int itemCount) {
 
 		int styleLimit = translateOffset(styles[styleIndex + 1].start);
 		if (styleLimit <= itemLimit) {
-			styleIndex++;
-			start = styleLimit;
-			if (start < itemLimit && 0 < start && start < end) {
-				char pChar = segmentsText.charAt(start - 1);
-				char tChar = segmentsText.charAt(start);
-				if (Character.isLetter(pChar) && Character.isLetter(tChar)) {
-					item.analysis.fLinkAfter = true;
-					linkBefore = true;
+			int runLen = styleLimit - start;
+			if (runLen < MAX_RUN_LENGTH) {
+				styleIndex++;
+				start = styleLimit;
+				if (start < itemLimit && 0 < start && start < end) {
+					char pChar = segmentsText.charAt(start - 1);
+					char tChar = segmentsText.charAt(start);
+					if (Character.isLetter(pChar) && Character.isLetter(tChar)) {
+						item.analysis.fLinkAfter = true;
+						linkBefore = true;
+					}
 				}
 			}
 		}
-		if (itemLimit <= styleLimit) {
+		int runLen = itemLimit - start;
+		if (runLen > MAX_RUN_LENGTH) {
+			start += splitLongRun(item);
+		} else if (itemLimit <= styleLimit) {
 			itemIndex = nextItemIndex;
 			start = itemLimit;
 			itemLimit = -1;
@@ -2868,6 +2903,41 @@ StyleItem[] merge (long items, int itemCount) {
 	item.analysis = scriptItem.a;
 	runs.add(item);
 	return runs.toArray(StyleItem[]::new);
+}
+
+/**
+ * Use OS.ScriptBreak to identify where in the run it is safe to split a character.
+ * @param run the run to split
+ * @return how many characters into the run is the best place to split
+ */
+int splitLongRun(StyleItem run) {
+	run.length = MAX_RUN_LENGTH;
+	breakRun(run);
+	SCRIPT_LOGATTR logAttr = new SCRIPT_LOGATTR();
+	int best = MAX_RUN_LENGTH;
+	for (int i = MAX_RUN_LENGTH - 1; i >= MAX_RUN_LENGTH - MAX_SEARCH_RUN_BREAK; i--) {
+		int memoryIndex = i * SCRIPT_LOGATTR.sizeof;
+		if (memoryIndex + SCRIPT_LOGATTR.sizeof > run.pslaAllocSize) {
+			throw new IndexOutOfBoundsException();
+		}
+		OS.MoveMemory(logAttr, run.psla + memoryIndex, SCRIPT_LOGATTR.sizeof);
+		if (logAttr.fSoftBreak || logAttr.fWhiteSpace || logAttr.fWordStop) {
+			best = i;
+			break;
+		}
+	}
+
+	/*
+	 * In the improbable case that the entire run has nowhere to split we need to
+	 * make sure that at least we don't split a surrogate pair. This can happen
+	 * if ScriptBreak above identifies nowhere that can be split, and the last
+	 * character is the first part of a surrogate pair.
+	 */
+	if (Character.isHighSurrogate(segmentsText.charAt(run.start + best - 1))) {
+		best--;
+	}
+
+	return best;
 }
 
 /*
