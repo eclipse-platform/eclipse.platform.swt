@@ -1316,4 +1316,9 @@ void updateLayout (boolean all) {
 	}
 }
 
+@Override
+public String toString() {
+	return super.toString() + " [layout=" + layout + "]";
+}
+
 }

@@ -1961,4 +1961,9 @@ LRESULT wmNotify (NMHDR hdr, long wParam, long lParam) {
 	return super.wmNotify (hdr, wParam, lParam);
 }
 
+@Override
+public String toString() {
+	return super.toString() + " [layout=" + layout + "]";
+}
+
 }
