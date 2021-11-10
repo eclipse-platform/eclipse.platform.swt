@@ -2784,8 +2784,12 @@ StyleItem[] merge (long items, int itemCount) {
 		System.arraycopy(styles, 0, newStyles, 0, stylesCount);
 		styles = newStyles;
 	}
-	int count = 0, start = 0, end = segmentsText.length(), itemIndex = 0, styleIndex = 0;
-	StyleItem[] runs = new StyleItem[itemCount + stylesCount];
+	final int end = segmentsText.length();
+	int start = 0, itemIndex = 0, styleIndex = 0;
+	/*
+	 * Maximum size of runs is each itemized item + each style needing its own run.
+	 */
+	List<StyleItem> runs = new ArrayList<>(itemCount + stylesCount);
 	SCRIPT_ITEM scriptItem = new SCRIPT_ITEM();
 	int itemLimit = -1;
 	int nextItemIndex = 0;
@@ -2796,7 +2800,7 @@ StyleItem[] merge (long items, int itemCount) {
 		StyleItem item = new StyleItem();
 		item.start = start;
 		item.style = styles[styleIndex].style;
-		runs[count++] = item;
+		runs.add(item);
 		OS.MoveMemory(scriptItem, items + itemIndex * SCRIPT_ITEM.sizeof, SCRIPT_ITEM.sizeof);
 		item.analysis = scriptItem.a;
 		scriptItem.a = new SCRIPT_ANALYSIS();
@@ -2874,13 +2878,8 @@ StyleItem[] merge (long items, int itemCount) {
 	item.start = end;
 	OS.MoveMemory(scriptItem, items + itemCount * SCRIPT_ITEM.sizeof, SCRIPT_ITEM.sizeof);
 	item.analysis = scriptItem.a;
-	runs[count++] = item;
-	if (runs.length != count) {
-		StyleItem[] result = new StyleItem[count];
-		System.arraycopy(runs, 0, result, 0, count);
-		return result;
-	}
-	return runs;
+	runs.add(item);
+	return runs.toArray(StyleItem[]::new);
 }
 
 /*
