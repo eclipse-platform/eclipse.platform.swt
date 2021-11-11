@@ -12,7 +12,7 @@
  *     Syntevo - initial API and implementation
  *******************************************************************************/
 
-package org.eclipse.swt.tests.manual;
+package org.eclipse.swt.tests.gtk.snippets;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.layout.*;
@@ -32,64 +32,56 @@ public class Bug575787_Tree_SetItemCount_Perf {
 			for (int iIter = 0; iIter < 20; iIter++) {
 				StringBuilder sb = new StringBuilder ();
 
-				// Tree
-				for (int iVirtual = 0; iVirtual < 2; iVirtual++)
+				// Regular Tree
 				{
-					Tree tree;
-					if (iVirtual != 0) {
-						tree = new Tree (shell, SWT.VIRTUAL);
-						sb.append ("Tree-VIRTUAL:{");
-					} else {
-						tree = new Tree (shell, 0);
-						sb.append ("Tree-REGULAR:{");
-					}
-
-					// The best way to insert many items is to do so when
-					// 1) Redraw is disabled
-					// 2) Parent item is collapsed
-					// see documentation in TreeItem.TreeItem(org.eclipse.swt.widgets.TreeItem, int, int)
-					final TreeItem treeItem = new TreeItem (tree, 0);
+					final Tree tree = new Tree (shell, 0);
 					tree.setRedraw (false);
 
 					sb.append (String.format (
-						"%.2fsec=setItemCount ",
-						measureTime (() -> treeItem.setItemCount (PERF_NUM_ITEMS))
+						"%.2fsec=Tree(REGULAR) ",
+						measureTime (() -> tree.setItemCount (PERF_NUM_ITEMS))
 					));
 
-					sb.append (String.format (
-						"%.2fsec=dispose",
-						measureTime (() -> tree.dispose ())
-					));
-
-					sb.append ("} ");
+					tree.dispose ();
 				}
 
-				// Table
-				for (int iVirtual = 0; iVirtual < 2; iVirtual++)
+				// Virtual Tree
 				{
-					Table table;
-					if (iVirtual != 0) {
-						table = new Table (shell, SWT.VIRTUAL);
-						sb.append ("Table-VIRTUAL:{");
-					} else {
-						table = new Table (shell, 0);
-						sb.append ("Table-REGULAR:{");
-					}
+					final Tree tree = new Tree (shell, SWT.VIRTUAL);
+					tree.setRedraw (false);
 
-					// The best way to insert many items is to do so when redraw is disabled.
+					sb.append (String.format (
+						"%.2fsec=Tree(VIRTUAL) ",
+						measureTime (() -> tree.setItemCount (PERF_NUM_ITEMS))
+					));
+
+					tree.dispose ();
+				}
+
+				// Regular Table
+				{
+					final Table table = new Table (shell, 0);
 					table.setRedraw (false);
 
 					sb.append (String.format (
-						"%.2fsec=setItemCount ",
+						"%.2fsec=Table(REGULAR) ",
 						measureTime (() -> table.setItemCount (PERF_NUM_ITEMS))
 					));
 
+					table.dispose ();
+				}
+
+				// Virtual Table
+				{
+					final Table table = new Table (shell, SWT.VIRTUAL);
+					table.setRedraw (false);
+
 					sb.append (String.format (
-						"%.2fsec=dispose",
-						measureTime (() -> table.dispose ())
+						"%.2fsec=Table(VIRTUAL) ",
+						measureTime (() -> table.setItemCount (PERF_NUM_ITEMS))
 					));
 
-					sb.append ("} ");
+					table.dispose ();
 				}
 
 				System.out.println (sb);
@@ -106,7 +98,7 @@ public class Bug575787_Tree_SetItemCount_Perf {
 			shellTest.setLayout (new GridLayout (2, true));
 
 			final Label hint = new Label (shellTest, 0);
-			GridData gridData = new GridData (SWT.FILL, SWT.FILL, true, false);
+			GridData gridData = new GridData (SWT.FILL, SWT.FILL, true, true);
 			gridData.horizontalSpan = 2;
 			hint.setLayoutData (gridData);
 			hint.setText ("Both Trees are expected to show increasing numbers");
@@ -119,55 +111,25 @@ public class Bug575787_Tree_SetItemCount_Perf {
 				final Tree tree = new Tree (shellTest, virtual | SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL);
 				tree.setLayoutData (new GridData (SWT.FILL, SWT.FILL, true, true));
 
-				// Test root items
-				{
-					new TreeItem (tree, 0).setText ("0");
-					new TreeItem (tree, 0).setText ("2");
-					new TreeItem (tree, 0, 1).setText ("1");
+				new TreeItem(tree, 0).setText ("0");
+				new TreeItem(tree, 0).setText ("2");
+				new TreeItem(tree, 0, 1).setText ("1");
 
-					tree.setItemCount (6);
+				tree.setItemCount (6);
 
-					tree.getItem (3).setText ("3");
-					tree.getItem (4).setText ("4");
-					tree.getItem (5).setText ("5");
+				tree.getItem (3).setText ("3");
+				tree.getItem (4).setText ("4");
+				tree.getItem (5).setText ("5");
 
-					new TreeItem (tree, 0).setText ("6");
-					new TreeItem (tree, 0).setText ("8");
-					new TreeItem (tree, 0, 7).setText ("7");
+				new TreeItem(tree, 0).setText ("6");
+				new TreeItem(tree, 0).setText ("8");
+				new TreeItem(tree, 0, 7).setText ("7");
 
-					tree.setItemCount (12);
+				tree.setItemCount (12);
 
-					tree.getItem (9).setText ("9");
-					tree.getItem (10).setText ("10");
-					tree.getItem (11).setText ("11");
-				}
-
-				// Test child items
-				{
-					TreeItem item = tree.getItem (0);
-
-					new TreeItem (item, 0).setText ("0");
-					new TreeItem (item, 0).setText ("2");
-					new TreeItem (item, 0, 1).setText ("1");
-
-					item.setItemCount (6);
-
-					item.getItem (3).setText ("3");
-					item.getItem (4).setText ("4");
-					item.getItem (5).setText ("5");
-
-					new TreeItem (item, 0).setText ("6");
-					new TreeItem (item, 0).setText ("8");
-					new TreeItem (item, 0, 7).setText ("7");
-
-					item.setItemCount (12);
-
-					item.getItem (9).setText ("9");
-					item.getItem (10).setText ("10");
-					item.getItem (11).setText ("11");
-
-					item.setExpanded (true);
-				}
+				tree.getItem (9).setText ("9");
+				tree.getItem (10).setText ("10");
+				tree.getItem (11).setText ("11");
 			}
 
 			shellTest.pack ();
