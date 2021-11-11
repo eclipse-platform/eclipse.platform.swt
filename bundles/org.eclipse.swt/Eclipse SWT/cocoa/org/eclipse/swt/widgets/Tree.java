@@ -709,7 +709,10 @@ void createItem (TreeColumn column, int index) {
 	}
 }
 
-// For fast bulk insert, see comments for TreeItem#TreeItem(TreeItem,int,int)
+/**
+ * The fastest way to insert many items is documented in {@link TreeItem#TreeItem(org.eclipse.swt.widgets.Tree,int,int)}
+ * and {@link TreeItem#setItemCount}
+ */
 void createItem (TreeItem item, TreeItem parentItem, int index) {
 	int count;
 	TreeItem [] items;
@@ -3054,6 +3057,9 @@ public void setHeaderVisible (boolean show) {
 
 /**
  * Sets the number of root-level items contained in the receiver.
+ * <p>
+ * The fastest way to insert many items is documented in {@link TreeItem#TreeItem(org.eclipse.swt.widgets.Tree,int,int)}
+ * and {@link TreeItem#setItemCount}
  *
  * @param count the number of items
  *
