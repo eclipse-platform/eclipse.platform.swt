@@ -13,6 +13,7 @@
  *******************************************************************************/
 package org.eclipse.swt.widgets;
 
+import java.lang.Runtime.*;
 import java.util.*;
 import java.util.function.*;
 
@@ -2407,12 +2408,9 @@ protected void init () {
 	OS.CFRunLoopAddObserver (OS.CFRunLoopGetCurrent (), runLoopObserver, OS.kCFRunLoopCommonModes ());
 
 	// Add AWT Runloop mode for SWT/AWT.
-	long cls = OS.objc_lookUpClass("JNFRunLoop"); //$NON-NLS-1$
-	if (cls != 0) {
-		long mode = OS.objc_msgSend(cls, OS.sel_javaRunLoopMode);
-		if (mode != 0) {
-			OS.CFRunLoopAddObserver (OS.CFRunLoopGetCurrent (), runLoopObserver, mode);
-		}
+	NSString javaRunLoopMode = getAwtRunLoopMode();
+	if (javaRunLoopMode != null) {
+		OS.CFRunLoopAddObserver (OS.CFRunLoopGetCurrent (), runLoopObserver, javaRunLoopMode.id);
 	}
 
 	cursorSetCallback = new Callback(this, "cursorSetProc", 2);
@@ -2445,6 +2443,52 @@ protected void init () {
 
 	isPainting = (NSMutableArray)new NSMutableArray().alloc();
 	isPainting = isPainting.initWithCapacity(12);
+}
+
+private static NSString getAwtRunLoopMode() {
+	// Special run loop mode mode used by AWT enters when it only wants related messages processed.
+	// The name of this mode is a defacto contract established by the JavaNativeFoundation (JNF) libary.
+	// It could be accessed via OS.objc_lookUpClass("JNFRunLoop").
+	//
+	// However, in JDK 11.0.12 / 13.0.8 / 15.0.4 / 17 this broke:
+	// 1) JNF was dropped from JDK:
+	//    https://bugs.openjdk.java.net/browse/JDK-8260616
+	//    https://bugs.openjdk.java.net/browse/JDK-8261693
+	// 2) The contract was broken, since the name was changed from "AWTRunLoopMode" to "jnfRunLoopMode":
+	//    https://www.mail-archive.com/awt-dev@openjdk.java.net/msg17946.html
+	//
+	// JNF is also not available in arm64.
+	//
+	// In JDK 11.0.14 / 13.0.9 / 15.0.5 / 17.0.0.1 the name was changed back to "AWTRunLoopMode":
+	// https://bugs.openjdk.java.net/browse/JDK-8270216
+	// There is no concept yet to update this:
+	// https://bugs.openjdk.java.net/browse/JDK-8270211
+	//
+	// Therefore, for now, we follow this approach:
+
+	// 1) If JNFRunLoop is available, we keep using it
+	long cls = OS.objc_lookUpClass("JNFRunLoop");
+	if (cls != 0) {
+		long mode = OS.objc_msgSend(cls, OS.sel_javaRunLoopMode);
+		if (mode != 0) {
+			return new NSString(mode);
+		}
+	}
+
+	// 2) If the version is new enough to contain the fix https://bugs.openjdk.java.net/browse/JDK-8270216
+	//    we are optimistic
+	Version version = Runtime.version();
+	if (version.feature() > 17 //
+			|| version.feature() == 17 && Version.parse("17.0.1").compareToIgnoreOptional(version) <= 0 //
+			|| version.feature() == 11 && Version.parse("11.0.14").compareToIgnoreOptional(version) <= 0 //
+			|| version.feature() == 15 && Version.parse("15.0.5").compareToIgnoreOptional(version) <= 0 //
+			|| version.feature() == 13 && Version.parse("13.0.9").compareToIgnoreOptional(version) <= 0) {
+		return NSString.stringWith("AWTRunLoopMode");
+	}
+
+	// 3) Otherwise, for the few broken Java versions inbetween, we are pessimistic to avoid any immediate
+	//    deadlocks in calling code (although deadlocks will probably still occurr later down the road).
+	return null;
 }
 
 void addEventMethods (long cls, long proc2, long proc3, long drawRectProc, long hitTestProc, long needsDisplayInRectProc) {
@@ -4263,11 +4307,8 @@ boolean runAsyncMessages (boolean all) {
 }
 
 boolean runAWTInvokeLater() {
-	long cls = OS.objc_lookUpClass("JNFRunLoop");
-	if (cls == 0) return false;
-	long mode = OS.objc_msgSend(cls, OS.sel_javaRunLoopMode);
-	if (mode == 0) return false;
-	NSString javaRunLoopMode = new NSString(mode);
+	NSString javaRunLoopMode = getAwtRunLoopMode();
+	if (javaRunLoopMode == null) return false;
 	allowTimers = runAsyncMessages = false;
 	NSRunLoop.currentRunLoop().runMode(javaRunLoopMode, NSDate.distantFuture());
 	allowTimers = runAsyncMessages = true;
