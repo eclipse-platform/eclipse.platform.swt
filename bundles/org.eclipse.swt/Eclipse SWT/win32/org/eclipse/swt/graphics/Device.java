@@ -716,6 +716,7 @@ protected void init () {
 	int [] piNumScripts = new int [1];
 	OS.ScriptGetProperties (ppSp, piNumScripts);
 	scripts = new long [piNumScripts [0]];
+	// TODO do all the movememories here
 	OS.MoveMemory (scripts, ppSp [0], scripts.length * C.PTR_SIZEOF);
 }
 /**
