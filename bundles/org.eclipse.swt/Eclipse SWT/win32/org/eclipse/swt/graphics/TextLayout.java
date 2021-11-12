@@ -2721,7 +2721,11 @@ StyleItem[] itemize () {
 	OS.ScriptApplyDigitSubstitution(0, scriptControl, scriptState);
 
 	long hHeap = OS.GetProcessHeap();
-	long pItems = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, MAX_ITEM * SCRIPT_ITEM.sizeof);
+	// This buffer needs to be one entry bigger than the cMaxItems param to ScriptItemize
+	// see https://docs.microsoft.com/en-us/windows/win32/api/usp10/nf-usp10-scriptitemize
+	// and https://bugzilla.mozilla.org/show_bug.cgi?id=366643 which was a similar bug
+	// in Mozilla. The MSDN docs have been updated since the Mozilla bug to make this clear
+	long pItems = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, (1 + MAX_ITEM) * SCRIPT_ITEM.sizeof);
 	if (pItems == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	int[] pcItems = new int[1];
 	char[] chars = new char[length];
