@@ -2717,18 +2717,6 @@ StyleItem[] itemize () {
 		scriptState.fArabicNumContext = true;
 	}
 
-	/*
-	* In the version of Usp10.h that SWT is compiled the fReserved field is declared
-	* as a bitfield size 8. In newer versions of the Uniscribe, the first bit of fReserved
-	* was used to implement the fMergeNeutralItems feature which can be used to increase
-	* performance by reducing the number of SCRIPT_ITEM returned by ScriptItemize.
-	*
-	* Note: This code is wrong on a big endian machine.
-	*
-	* Note: This code is intentionally commented because it causes bug#377472.
-	*/
-//	scriptControl.fReserved = 0x1;
-
 	OS.ScriptApplyDigitSubstitution(0, scriptControl, scriptState);
 
 	long hHeap = OS.GetProcessHeap();
