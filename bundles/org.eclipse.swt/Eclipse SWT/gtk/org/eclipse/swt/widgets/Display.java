@@ -5287,6 +5287,17 @@ public static void setAppVersion (String version) {
  * @since 2.1
  */
 public void setCursorLocation (int x, int y) {
+	/*
+	 * Wayland does not support mouse warping, thus setCursorLocation
+	 * is not supported due to gdk_device_warp not being implemented
+	 * in Wayland. There currently is no good solution that could be
+	 * implemented, so a log entry was determined to be sufficient.
+	 *
+	 * See Bug 577099
+	 */
+	if(!OS.isX11()) {
+		System.err.println("SWT Display.java Error: setCursorLocation only supported on X11. \n");
+	}
 	setCursorLocation(new Point (x, y));
 }
 
