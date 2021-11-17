@@ -14,6 +14,7 @@
 package org.eclipse.swt.tests.junit;
 
 import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -66,7 +67,7 @@ public void test_computeTrimIIII() {
 public void test_getItemCount() {
 	int number = 10;
 	for (int i = 0; i<number ; i++){
-		assertTrue(":a:" + i, toolBar.getItemCount()==i);
+		assertEquals(":a:" + i, i, toolBar.getItemCount());
 		new ToolItem(toolBar, 0);
 	}
 }
@@ -130,7 +131,7 @@ public void test_getRowCount() {
 	for (int i = 0; i<number ; i++){
 		items[i] = new ToolItem(toolBar, 0);
 	}
-	assertTrue(":a:" + toolBar.getRowCount(), toolBar.getRowCount()==number);  //????  because of Size(0, 0)
+	assertEquals(":a:" + toolBar.getRowCount(), number, toolBar.getRowCount()); //????  because of Size(0, 0)
 
 	toolBar = new ToolBar(shell, 0);
 	number = 5;
@@ -138,7 +139,7 @@ public void test_getRowCount() {
 	for (int i = 0; i<number ; i++){
 		items[i] = new ToolItem(toolBar, 0);
 	}
-	assertTrue(":a:", toolBar.getRowCount()==1);
+	assertEquals(":a:", 1, toolBar.getRowCount());
 }
 
 @Test

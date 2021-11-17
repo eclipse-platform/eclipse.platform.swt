@@ -119,13 +119,13 @@ public void test_getWidth() {
 //	}
 
 	treeColumn.setWidth(0);
-	assertTrue(":a: width=" + treeColumn.getWidth() + " should be=" + 0, treeColumn.getWidth() == 0);
+	assertEquals(":a: width=" + treeColumn.getWidth() + " should be=" + 0, 0, treeColumn.getWidth());
 
 	treeColumn.setWidth(testWidth);
-	assertTrue(":b: width=" + treeColumn.getWidth() + " should be=" + testWidth, treeColumn.getWidth() == testWidth);
+	assertEquals(":b: width=" + treeColumn.getWidth() + " should be=" + testWidth, testWidth, treeColumn.getWidth());
 
 	treeColumn.setWidth(testWidth);
-	assertTrue(":c: width=" + treeColumn.getWidth() + " should be=" + testWidth, treeColumn.getWidth() == testWidth);
+	assertEquals(":c: width=" + treeColumn.getWidth() + " should be=" + testWidth, testWidth, treeColumn.getWidth());
 }
 
 @Test
@@ -149,25 +149,25 @@ public void test_removeSelectionListenerLorg_eclipse_swt_events_SelectionListene
 public void test_setAlignmentI() {
 	TreeColumn column2;
 
-	assertTrue(":a:", treeColumn.getAlignment() == SWT.LEFT);
+	assertEquals(":a:", SWT.LEFT, treeColumn.getAlignment());
 
 	treeColumn.setAlignment(-1);
-	assertTrue(":b:", treeColumn.getAlignment() == SWT.LEFT);
+	assertEquals(":b:", SWT.LEFT, treeColumn.getAlignment());
 
 	treeColumn.setAlignment(SWT.RIGHT);
-	assertTrue(
-		":c: Should not be allowed to set alignment of the first column",
-		treeColumn.getAlignment() == SWT.LEFT);
+	assertEquals(
+			":c: Should not be allowed to set alignment of the first column",
+			SWT.LEFT, treeColumn.getAlignment());
 
 	column2 = new TreeColumn(tree, SWT.NULL);
 	column2.setAlignment(SWT.RIGHT);
-	assertTrue(":d:", column2.getAlignment() == SWT.RIGHT);
+	assertEquals(":d:", SWT.RIGHT, column2.getAlignment());
 
 	column2.setAlignment(SWT.CENTER);
-	assertTrue(":e:", column2.getAlignment() == SWT.CENTER);
+	assertEquals(":e:", SWT.CENTER, column2.getAlignment());
 
 	column2.setAlignment(SWT.LEFT);
-	assertTrue(":f:", column2.getAlignment() == SWT.LEFT);
+	assertEquals(":f:", SWT.LEFT, column2.getAlignment());
 }
 
 @Override

@@ -135,14 +135,14 @@ public void test_getBounds() {
 
 	TreeItem subItem = new TreeItem(treeItem, SWT.NONE);
 	bounds = subItem.getBounds();
-	assertTrue(":1e:", bounds.equals(new Rectangle(0, 0, 0, 0)));
+	assertEquals(":1e:", new Rectangle(0, 0, 0, 0), bounds);
 	treeItem.setExpanded(true);
 	bounds = subItem.getBounds();
 	bounds2 = treeItem.getBounds();
 	assertTrue(":1f:", bounds.x > bounds2.x && bounds.y >= bounds2.y + bounds2.height && bounds.height > 0);
 	treeItem.setExpanded(false);
 	bounds = subItem.getBounds();
-	assertTrue(":1g:", bounds.equals(new Rectangle(0, 0, 0, 0)));
+	assertEquals(":1g:", new Rectangle(0, 0, 0, 0), bounds);
 
 	treeItem.setExpanded(true);
 	subItem.setText(string);
@@ -182,19 +182,19 @@ void getBoundsIA() {
 	bounds = treeItem.getBounds(0);
 	assertTrue(":1a:", bounds.x > 0 && bounds.height > 0);
 	bounds = treeItem.getBounds(-1);
-	assertTrue(":1b:", bounds.equals(new Rectangle(0, 0, 0, 0)));
+	assertEquals(":1b:", new Rectangle(0, 0, 0, 0), bounds);
 	bounds = treeItem.getBounds(1);
-	assertTrue(":1c:", bounds.equals(new Rectangle(0, 0, 0, 0)));
+	assertEquals(":1c:", new Rectangle(0, 0, 0, 0), bounds);
 	// unexpanded item
 	TreeItem subItem = new TreeItem(treeItem, SWT.NONE);
 	bounds = subItem.getBounds(0);
-	assertTrue(":1d:", bounds.equals(new Rectangle(0, 0, 0, 0)));
+	assertEquals(":1d:", new Rectangle(0, 0, 0, 0), bounds);
 	treeItem.setExpanded(true);
 	bounds = subItem.getBounds(0);
 	assertTrue(":1e:", bounds.x > 0 && bounds.height > 0);
 	treeItem.setExpanded(false);
 	bounds = subItem.getBounds(0);
-	assertTrue(":1f:", bounds.equals(new Rectangle(0, 0, 0, 0)));
+	assertEquals(":1f:", new Rectangle(0, 0, 0, 0), bounds);
 	treeItem.setExpanded(true);
 	subItem.setText(string);
 	bounds = subItem.getBounds(0);
@@ -251,19 +251,19 @@ void getBoundsIB() {
 	bounds = treeItem2.getBounds(0);
 	assertTrue(":2a:", bounds.x > 0 && bounds.height > 0);
 	bounds = treeItem2.getBounds(-1);
-	assertTrue(":2b:", bounds.equals(new Rectangle(0, 0, 0, 0)));
+	assertEquals(":2b:", new Rectangle(0, 0, 0, 0), bounds);
 	bounds = treeItem2.getBounds(1);
-	assertTrue(":2c:", bounds.equals(new Rectangle(0, 0, 0, 0)));
+	assertEquals(":2c:", new Rectangle(0, 0, 0, 0), bounds);
 	// unexpanded item
 	TreeItem subItem2 = new TreeItem(treeItem2, SWT.NONE);
 	bounds = subItem2.getBounds(0);
-	assertTrue(":2d:", bounds.equals(new Rectangle(0, 0, 0, 0)));
+	assertEquals(":2d:", new Rectangle(0, 0, 0, 0), bounds);
 	treeItem2.setExpanded(true);
 	bounds = subItem2.getBounds(0);
 	assertTrue(":2e:", bounds.x > 0 && bounds.height > 0);
 	treeItem2.setExpanded(false);
 	bounds = subItem2.getBounds(0);
-	assertTrue(":2f:", bounds.equals(new Rectangle(0, 0, 0, 0)));
+	assertEquals(":2f", new Rectangle(0, 0, 0, 0), bounds);
 	treeItem2.setExpanded(true);
 	subItem2.setText(string);
 	bounds = subItem2.getBounds(0);
@@ -330,19 +330,19 @@ void getBoundsIC() {
 	bounds = treeItem.getBounds(1);
 	assertTrue(":3b:", /*bounds.x > 0 &&*/ bounds.height > 0 && bounds.width == 0); // TODO bounds.x == 0 Is this right?
 	bounds = treeItem.getBounds(-1);
-	assertTrue(":3c:", bounds.equals(new Rectangle(0, 0, 0, 0)));
+	assertEquals(":3c:", new Rectangle(0, 0, 0, 0), bounds);
 	bounds = treeItem.getBounds(2);
-	assertTrue(":3d:", bounds.equals(new Rectangle(0, 0, 0, 0)));
+	assertEquals(":3d:", new Rectangle(0, 0, 0, 0), bounds);
 	// unexpanded item
 	TreeItem subItem = new TreeItem(treeItem, SWT.NONE);
 	bounds = subItem.getBounds(0);
-	assertTrue(":3e:", bounds.equals(new Rectangle(0, 0, 0, 0)));
+	assertEquals(":3e:", new Rectangle(0, 0, 0, 0), bounds);
 	treeItem.setExpanded(true);
 	bounds = subItem.getBounds(0);
 	assertTrue(":3f:", bounds.x > 0 && bounds.height > 0);
 	treeItem.setExpanded(false);
 	bounds = subItem.getBounds(0);
-	assertTrue(":3g:", bounds.equals(new Rectangle(0, 0, 0, 0)));
+	assertEquals(":3g:", new Rectangle(0, 0, 0, 0), bounds);
 	treeItem.setExpanded(true);
 	subItem.setText(new String[] {string1, string2});
 	bounds = subItem.getBounds(0);
@@ -440,19 +440,19 @@ void getBoundsID() {
 	bounds = treeItem2.getBounds(1);
 	assertTrue(":4b:", /*bounds.x > 0 &&*/ bounds.height > 0 && bounds.width == 0); // TODO bounds.x == 0 Is this right?
 	bounds = treeItem2.getBounds(-1);
-	assertTrue(":4c:", bounds.equals(new Rectangle(0, 0, 0, 0)));
+	assertEquals(":4c:", new Rectangle(0, 0, 0, 0), bounds);
 	bounds = treeItem2.getBounds(2);
-	assertTrue(":4d:", bounds.equals(new Rectangle(0, 0, 0, 0)));
+	assertEquals(":4d:", new Rectangle(0, 0, 0, 0), bounds);
 	// unexpanded item
 	TreeItem subItem2 = new TreeItem(treeItem2, SWT.NONE);
 	bounds = subItem2.getBounds(0);
-	assertTrue(":4e:", bounds.equals(new Rectangle(0, 0, 0, 0)));
+	assertEquals(":4e:", new Rectangle(0, 0, 0, 0), bounds);
 	treeItem2.setExpanded(true);
 	bounds = subItem2.getBounds(0);
 	assertTrue(":4f:", bounds.x > 0 && bounds.height > 0);
 	treeItem2.setExpanded(false);
 	bounds = subItem2.getBounds(0);
-	assertTrue(":4g:", bounds.equals(new Rectangle(0, 0, 0, 0)));
+	assertEquals(":4g:", new Rectangle(0, 0, 0, 0), bounds);
 	treeItem2.setExpanded(true);
 	subItem2.setText(new String[] {string1, string2});
 	bounds = subItem2.getBounds(0);
@@ -572,7 +572,7 @@ public void test_getImageBoundsI() {
 
 	// TODO - should this width be 0 or a value?
 	bounds = treeItem.getImageBounds(0);
-	assertTrue(":b:", bounds.width == 0);
+	assertEquals(":b:", 0, bounds.width);
 
 	assertEquals(new Rectangle(0, 0, 0, 0), treeItem.getImageBounds(1));
 
@@ -671,7 +671,7 @@ public void test_getItemCount() {
 		assertEquals(i, treeItem.getItemCount());
 		new TreeItem(treeItem, 0);
 	}
-	assertTrue("b: ", treeItem.getItemCount() == 10);
+	assertEquals("b: ", 10, treeItem.getItemCount());
 }
 
 @Test
@@ -810,14 +810,14 @@ public void test_setExpandedZ() {
 public void test_setFontLorg_eclipse_swt_graphics_Font() {
 	Font font = treeItem.getFont();
 	treeItem.setFont(font);
-	assertTrue(font.equals(treeItem.getFont()));
+	assertEquals(treeItem.getFont(), font);
 
 	font = new Font(treeItem.getDisplay(), SwtTestUtil.testFontName, 10, SWT.NORMAL);
 	treeItem.setFont(font);
-	assertTrue(font.equals(treeItem.getFont()));
+	assertEquals(treeItem.getFont(), font);
 
 	treeItem.setFont(null);
-	assertTrue(tree.getFont().equals( treeItem.getFont()));
+	assertEquals(treeItem.getFont(), tree.getFont());
 
 	font.dispose();
 	try {
@@ -834,14 +834,14 @@ public void test_setFontILorg_eclipse_swt_graphics_Font() {
 	Font font = new Font(display, SwtTestUtil.testFontName, 10, SWT.NORMAL);
 
 	// no columns
-	assertTrue(tree.getFont().equals( treeItem.getFont(0)));
-	assertTrue(treeItem.getFont().equals(treeItem.getFont(0)));
+	assertEquals(treeItem.getFont(0), tree.getFont());
+	assertEquals(treeItem.getFont(0), treeItem.getFont());
 	treeItem.setFont(0, font);
-	assertTrue(font.equals(treeItem.getFont(0)));
+	assertEquals(treeItem.getFont(0), font);
 
 	// index beyond range - no error
 	treeItem.setFont(10, font);
-	assertTrue(treeItem.getFont().equals(treeItem.getFont(10)));
+	assertEquals(treeItem.getFont(10), treeItem.getFont());
 
 	// with columns
 	new TreeColumn(tree, SWT.LEFT);
@@ -849,24 +849,24 @@ public void test_setFontILorg_eclipse_swt_graphics_Font() {
 
 	// index beyond range - no error
 	treeItem.setFont(10, font);
-	assertTrue(treeItem.getFont().equals(treeItem.getFont(10)));
+	assertEquals(treeItem.getFont(10), treeItem.getFont());
 
 	treeItem.setFont(0, font);
-	assertTrue(font.equals(treeItem.getFont(0)));
+	assertEquals(treeItem.getFont(0), font);
 	treeItem.setFont(0, null);
-	assertTrue(tree.getFont().equals(treeItem.getFont(0)));
+	assertEquals(treeItem.getFont(0), tree.getFont());
 
 	Font font2 = new Font(display, SwtTestUtil.testFontName, 20, SWT.NORMAL);
 
 	treeItem.setFont(0, font);
 	treeItem.setFont(font2);
-	assertTrue(font.equals(treeItem.getFont(0)));
+	assertEquals(treeItem.getFont(0), font);
 
 	treeItem.setFont(0, null);
-	assertTrue(font2.equals(treeItem.getFont(0)));
+	assertEquals(treeItem.getFont(0), font2);
 
 	treeItem.setFont(null);
-	assertTrue(tree.getFont().equals(treeItem.getFont(0)));
+	assertEquals(treeItem.getFont(0), tree.getFont());
 
 	font.dispose();
 	font2.dispose();

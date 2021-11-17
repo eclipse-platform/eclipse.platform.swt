@@ -15,7 +15,6 @@ package org.eclipse.swt.tests.junit;
 
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import org.eclipse.swt.SWT;
@@ -53,9 +52,9 @@ public void test_ConstructorLorg_eclipse_swt_widgets_ToolBarI() {
 @Test
 public void test_getToolTipText() {
 	toolItem.setToolTipText("fred");
-	assertTrue(":a: ", toolItem.getToolTipText().equals("fred"));
+	assertEquals(":a:", "fred", toolItem.getToolTipText());
 	toolItem.setToolTipText("fredttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttt");
-	assertTrue(":a: ", toolItem.getToolTipText().equals("fredttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttt"));
+	assertEquals(":a:", "fredttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttt", toolItem.getToolTipText());
 }
 
 @Override
