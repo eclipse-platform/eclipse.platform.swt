@@ -120,13 +120,13 @@ public void test_getWidth() {
 //	}
 
 	tableColumn.setWidth(0);
-	assertTrue(":a: width=" + tableColumn.getWidth() + " should be=" + 0, tableColumn.getWidth() == 0);
+	assertEquals(":a: width=" + tableColumn.getWidth() + " should be=" + 0, 0, tableColumn.getWidth());
 
 	tableColumn.setWidth(testWidth);
-	assertTrue(":b: width=" + tableColumn.getWidth() + " should be=" + testWidth, tableColumn.getWidth() == testWidth);
+	assertEquals(":b: width=" + tableColumn.getWidth() + " should be=" + testWidth, testWidth, tableColumn.getWidth());
 
 	tableColumn.setWidth(testWidth);
-	assertTrue(":c: width=" + tableColumn.getWidth() + " should be=" + testWidth, tableColumn.getWidth() == testWidth);
+	assertEquals(":c: width=" + tableColumn.getWidth() + " should be=" + testWidth, testWidth, tableColumn.getWidth());
 }
 
 @Test
@@ -150,25 +150,25 @@ public void test_removeSelectionListenerLorg_eclipse_swt_events_SelectionListene
 public void test_setAlignmentI() {
 	TableColumn column2;
 
-	assertTrue(":a:", tableColumn.getAlignment() == SWT.LEFT);
+	assertEquals(":a:", SWT.LEFT, tableColumn.getAlignment());
 
 	tableColumn.setAlignment(-1);
-	assertTrue(":b:", tableColumn.getAlignment() == SWT.LEFT);
+	assertEquals(":b:", SWT.LEFT, tableColumn.getAlignment());
 
 	tableColumn.setAlignment(SWT.RIGHT);
-	assertTrue(
-		":c: Should not be allowed to set alignment of the first column",
-		tableColumn.getAlignment() == SWT.LEFT);
+	assertEquals(
+			":c: Should not be allowed to set alignment of the first column",
+			SWT.LEFT, tableColumn.getAlignment());
 
 	column2 = new TableColumn(table, SWT.NULL);
 	column2.setAlignment(SWT.RIGHT);
-	assertTrue(":d:", column2.getAlignment() == SWT.RIGHT);
+	assertEquals(":d:", SWT.RIGHT, column2.getAlignment());
 
 	column2.setAlignment(SWT.CENTER);
-	assertTrue(":e:", column2.getAlignment() == SWT.CENTER);
+	assertEquals(":e:", SWT.CENTER, column2.getAlignment());
 
 	column2.setAlignment(SWT.LEFT);
-	assertTrue(":f:", column2.getAlignment() == SWT.LEFT);
+	assertEquals(":f:", SWT.LEFT, column2.getAlignment());
 }
 
 @Override

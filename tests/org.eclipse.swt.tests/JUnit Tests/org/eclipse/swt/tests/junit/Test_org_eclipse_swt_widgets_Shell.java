@@ -57,7 +57,7 @@ public void setUp() {
 	super.setUp();
 	testShell = new Shell(shell, SWT.NULL);
 	setWidget(shell);
-	assertTrue(testShell.getParent() == shell);
+	assertEquals(shell, testShell.getParent());
 }
 
 @Test
@@ -75,7 +75,7 @@ public void test_ConstructorI() {
 	Shell newShell;
 	for (int i = 0; i < cases.length; i++) {
 		newShell = new Shell(cases[i]);
-		assertTrue("a " +i, newShell.getDisplay() == shell.getDisplay());
+		assertEquals("a " + i, shell.getDisplay(), newShell.getDisplay());
 		assertNotEquals(0, newShell.getStyle() & cases[i]);
 		newShell.dispose();
 	}
@@ -85,7 +85,7 @@ public void test_ConstructorI() {
 public void test_ConstructorLorg_eclipse_swt_widgets_Display() {
 	Display display = shell.getDisplay();
 	Shell newShell = new Shell(display);
-	assertTrue("a: ", newShell.getDisplay() == display);
+	assertEquals("a: ", display, newShell.getDisplay());
 	newShell.dispose();
 }
 
@@ -97,7 +97,7 @@ public void test_ConstructorLorg_eclipse_swt_widgets_DisplayI() {
 	Display display = shell.getDisplay();
 	for (int i = 0; i < cases.length; i++) {
 		newShell = new Shell(display, cases[i]);
-		assertTrue("a " +i, newShell.getDisplay() == shell.getDisplay());
+		assertEquals("a " + i, shell.getDisplay(), newShell.getDisplay());
 		newShell.dispose();
 	}
 }
@@ -105,7 +105,7 @@ public void test_ConstructorLorg_eclipse_swt_widgets_DisplayI() {
 @Test
 public void test_ConstructorLorg_eclipse_swt_widgets_Shell() {
 	Shell newShell = new Shell(shell);
-	assertTrue("a: ", newShell.getParent() == shell);
+	assertEquals("a: ", shell, newShell.getParent());
 	newShell.dispose();
 }
 
@@ -117,7 +117,7 @@ public void test_ConstructorLorg_eclipse_swt_widgets_ShellI() {
 	Shell newShell;
 	for (int i = 0; i < cases.length; i++) {
 		newShell = new Shell(shell, cases[i]);
-		assertTrue("a " +i, newShell.getParent() == shell);
+		assertEquals("a: " + i, shell, newShell.getParent());
 		newShell.dispose();
 	}
 }
@@ -455,29 +455,29 @@ public void test_getImeInputMode() {
 @Test
 public void test_getLocation() {
 	shell.setLocation(10,15);
-	assertTrue(":a:", shell.getLocation().x == 10);
-	assertTrue(":b:", shell.getLocation().y == 15);
+	assertEquals(":a:", 10, shell.getLocation().x);
+	assertEquals(":b:", 15, shell.getLocation().y);
 }
 
 @Override
 @Test
 public void test_getShell() {
-	assertTrue(":a:", shell.getShell()==shell);
+	assertEquals(":a:", shell, shell.getShell());
 	Shell shell_1 = new Shell(shell);
-	assertTrue(":b:", shell_1.getShell()== shell_1);
+	assertEquals(":b:", shell_1, shell_1.getShell());
 	shell_1.dispose();
 }
 
 @Test
 public void test_getShells() {
 	int num = shell.getShells().length;
-	assertTrue(":a:", num == 1);
+	assertEquals(":a:", 1, num);
 	Shell shell_1 = new Shell(shell);
 	num = shell.getShells().length;
-	assertTrue(":b:", num == 2);
+	assertEquals(":b:", 2, num);
 	shell_1.dispose();
 	num = shell.getShells().length;
-	assertTrue(":c:", num == 1);
+	assertEquals(":c:", 1, num);
 }
 
 @Override
@@ -554,7 +554,7 @@ public void test_setEnabledZ() {
 @Test
 public void test_setImeInputModeI() {
 	shell.setImeInputMode(SWT.NONE);
-	assertTrue(":a:", shell.getImeInputMode() == SWT.NONE);
+	assertEquals(":a:", SWT.NONE, shell.getImeInputMode());
 }
 
 @Override
@@ -573,7 +573,7 @@ public void test_setVisibleZ() {
 public void test_getParent () {
 	// overriding Control.test_getParent
 	assertNull(shell.getParent());
-	assertTrue(testShell.getParent() == shell);
+	assertEquals(shell, testShell.getParent());
 }
 
 @Test
@@ -724,7 +724,7 @@ public void a_test_setRegion() {
 	Shell shell2 = new Shell(display, SWT.NO_TRIM);
 	assertNull(":d:", shell2.getRegion());
 	shell2.setRegion(region);
-	assertTrue(":e:", shell2.getRegion().handle == region.handle);
+	assertEquals(":e:", region.handle, shell2.getRegion().handle);
 	region.dispose();
 	assertTrue(":f:", shell2.getRegion().isDisposed());
 	shell2.setRegion(null);

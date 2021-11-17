@@ -92,7 +92,7 @@ public void test_getClientArea() {
 public void test_getItemCount() {
 	int number = 10;
 	for (int i = 0; i<number ; i++){
-		assertTrue(":a:" + i, tabFolder.getItemCount()==i);
+		assertEquals(":a:" + i, i, tabFolder.getItemCount());
 		new TabItem(tabFolder, 0);
 	}
 }
@@ -106,7 +106,7 @@ public void test_getItemI() {
 	}
 
 	for (int i = 0; i < number; i++) {
-		assertTrue(":a:" +String.valueOf(i), tabFolder.getItem(i).equals(items[i]));
+		assertEquals(":a:" + String.valueOf(i), items[i], tabFolder.getItem(i));
 	}
 	try {
 		tabFolder.getItem(number);
@@ -182,10 +182,10 @@ public void test_getSelection() {
 	for (int i = 0; i<number ; i++){
 		tis[i] = new TabItem(tabFolder, 0);
 	}
-	assertTrue(":a:", tabFolder.getSelection()[0] == tis[0]);
+	assertEquals(":a:", tis[0], tabFolder.getSelection()[0]);
 	for (int i = 0; i<number ; i++){
 		tabFolder.setSelection(i);
-		assertTrue(":b:" + i, tabFolder.getSelection()[0]==tis[i]);
+		assertEquals(":b:" + i, tis[i], tabFolder.getSelection()[0]);
 	}
 }
 
@@ -196,16 +196,16 @@ public void test_getSelectionIndex() {
 	for (int i = 0; i < number; i++)
 		items[i] = new TabItem(tabFolder, 0);
 
-	assertTrue(":a:", tabFolder.getSelectionIndex()==0);
+	assertEquals(":a:", 0, tabFolder.getSelectionIndex());
 
 	tabFolder.setSelection(new TabItem[]{items[2], items[number-1], items[10]});
-	assertTrue(":b:", tabFolder.getSelectionIndex()==2);
+	assertEquals(":b:", 2, tabFolder.getSelectionIndex());
 
 	tabFolder.setSelection(items);
-	assertTrue(":c:", tabFolder.getSelectionIndex()==0);
+	assertEquals(":c:", 0, tabFolder.getSelectionIndex());
 
 	tabFolder.setSelection(items[2]);
-	assertTrue(":d:", tabFolder.getSelectionIndex()==2);
+	assertEquals(":d:", 2, tabFolder.getSelectionIndex());
 }
 
 @Test

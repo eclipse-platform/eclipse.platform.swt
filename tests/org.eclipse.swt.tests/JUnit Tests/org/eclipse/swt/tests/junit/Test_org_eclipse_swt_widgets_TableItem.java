@@ -89,9 +89,9 @@ public void test_getBoundsI() {
 	bounds = tableItem.getBounds(0);
 	assertTrue(":1a:", bounds.x > 0 && bounds.height > 0);
 	bounds = tableItem.getBounds(-1);
-	assertTrue(":1b:", bounds.equals(new Rectangle(0, 0, 0, 0)));
+	assertEquals(":1b:", new Rectangle(0, 0, 0, 0), bounds);
 	bounds = tableItem.getBounds(1);
-	assertTrue(":1c:", bounds.equals(new Rectangle(0, 0, 0, 0)));
+	assertEquals(":1c:", new Rectangle(0, 0, 0, 0), bounds);
 
 	tableItem.setText("hello");
 	bounds = tableItem.getBounds(0);
@@ -129,9 +129,9 @@ public void test_getBoundsI() {
 	bounds = tableItem2.getBounds(0);
 	assertTrue(":2a:", bounds.x > 0 && bounds.height > 0);
 	bounds = tableItem2.getBounds(-1);
-	assertTrue(":2b:", bounds.equals(new Rectangle(0, 0, 0, 0)));
+	assertEquals(":2b:", new Rectangle(0, 0, 0, 0), bounds);
 	bounds = tableItem2.getBounds(1);
-	assertTrue(":2c:", bounds.equals(new Rectangle(0, 0, 0, 0)));
+	assertEquals(":2c:", new Rectangle(0, 0, 0, 0), bounds);
 
 	tableItem2.setText("hello");
 	bounds = tableItem2.getBounds(0);
@@ -177,9 +177,9 @@ public void test_getBoundsI() {
 	bounds = tableItem.getBounds(1);
 	assertTrue(":3b:", /*bounds.x > 0 &&*/ bounds.height > 0 && bounds.width == 0); // TODO bounds.x == 0 Is this right?
 	bounds = tableItem.getBounds(-1);
-	assertTrue(":3c:", bounds.equals(new Rectangle(0, 0, 0, 0)));
+	assertEquals(":3c:", new Rectangle(0, 0, 0, 0), bounds);
 	bounds = tableItem.getBounds(2);
-	assertTrue(":3d:", bounds.equals(new Rectangle(0, 0, 0, 0)));
+	assertEquals(":3d:", new Rectangle(0, 0, 0, 0), bounds);
 
 	column0.setWidth(100);
 	bounds = tableItem.getBounds(0);
@@ -256,9 +256,9 @@ public void test_getBoundsI() {
 	bounds = tableItem2.getBounds(1);
 	assertTrue(":4b:", /*bounds.x > 0 &&*/ bounds.height > 0 && bounds.width == 0); // TODO bounds.x == 0 Is this right?
 	bounds = tableItem2.getBounds(-1);
-	assertTrue(":4c:", bounds.equals(new Rectangle(0, 0, 0, 0)));
+	assertEquals(":4c:", new Rectangle(0, 0, 0, 0), bounds);
 	bounds = tableItem2.getBounds(2);
-	assertTrue(":4d:", bounds.equals(new Rectangle(0, 0, 0, 0)));
+	assertEquals(":4d:", new Rectangle(0, 0, 0, 0), bounds);
 
 	column0.setWidth(100);
 	bounds = tableItem2.getBounds(0);
@@ -342,14 +342,14 @@ public void test_getImageBoundsI() {
 	assertEquals(new Rectangle(0, 0, 0, 0), tableItem.getImageBounds(-1));
 
 	bounds = tableItem.getImageBounds(0);
-	assertTrue(":b:", bounds.width == 0);
+	assertEquals(":b:", 0, bounds.width);
 
 	assertEquals(new Rectangle(0, 0, 0, 0), tableItem.getImageBounds(1));
 
 	assertEquals(new Rectangle(0, 0, 0, 0), tableItem2.getImageBounds(-1));
 
 	bounds = tableItem2.getImageBounds(0);
-	assertTrue(":e:", bounds.width == 0);
+	assertEquals(":e:", 0, bounds.width);
 
 	assertEquals(new Rectangle(0, 0, 0, 0), tableItem2.getImageBounds(1));
 	//
@@ -492,14 +492,14 @@ public void test_setFontLorg_eclipse_swt_graphics_Font() {
 	Display display = tableItem.getDisplay();
 	Font font = tableItem.getFont();
 	tableItem.setFont(font);
-	assertTrue(font.equals(tableItem.getFont()));
+	assertEquals(tableItem.getFont(), font);
 
 	font = new Font(display, SwtTestUtil.testFontName, 10, SWT.NORMAL);
 	tableItem.setFont(font);
-	assertTrue(font.equals( tableItem.getFont()));
+	assertEquals(tableItem.getFont(), font);
 
 	tableItem.setFont(null);
-	assertTrue(table.getFont().equals(tableItem.getFont()));
+	assertEquals(tableItem.getFont(), table.getFont());
 
 	font.dispose();
 	try {
@@ -516,14 +516,14 @@ public void test_setFontILorg_eclipse_swt_graphics_Font() {
 	Font font = new Font(display, SwtTestUtil.testFontName, 10, SWT.NORMAL);
 
 	// no columns
-	assertTrue(table.getFont().equals(tableItem.getFont(0)));
-	assertTrue(tableItem.getFont().equals(tableItem.getFont(0)));
+	assertEquals(tableItem.getFont(0), table.getFont());
+	assertEquals(tableItem.getFont(0), tableItem.getFont());
 	tableItem.setFont(0, font);
-	assertTrue(font.equals(tableItem.getFont(0)));
+	assertEquals(tableItem.getFont(0), font);
 
 	// index beyond range - no error
 	tableItem.setFont(10, font);
-	assertTrue(tableItem.getFont().equals(tableItem.getFont(10)));
+	assertEquals(tableItem.getFont(10), tableItem.getFont());
 
 	// with columns
 	new TableColumn(table, SWT.LEFT);
@@ -531,24 +531,24 @@ public void test_setFontILorg_eclipse_swt_graphics_Font() {
 
 	// index beyond range - no error
 	tableItem.setFont(10, font);
-	assertTrue(tableItem.getFont().equals(tableItem.getFont(10)));
+	assertEquals(tableItem.getFont(10), tableItem.getFont());
 
 	tableItem.setFont(0, font);
-	assertTrue(font.equals(tableItem.getFont(0)));
+	assertEquals(tableItem.getFont(0), font);
 	tableItem.setFont(0, null);
-	assertTrue(table.getFont().equals(tableItem.getFont(0)));
+	assertEquals(tableItem.getFont(0), table.getFont());
 
 	Font font2 = new Font(display, SwtTestUtil.testFontName, 20, SWT.NORMAL);
 
 	tableItem.setFont(0, font);
 	tableItem.setFont(font2);
-	assertTrue(font.equals(tableItem.getFont(0)));
+	assertEquals(tableItem.getFont(0), font);
 
 	tableItem.setFont(0, null);
-	assertTrue(font2.equals(tableItem.getFont(0)));
+	assertEquals(tableItem.getFont(0), font2);
 
 	tableItem.setFont(null);
-	assertTrue(table.getFont().equals(tableItem.getFont(0)));
+	assertEquals(tableItem.getFont(0), table.getFont());
 
 	font.dispose();
 	font2.dispose();

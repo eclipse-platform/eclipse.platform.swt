@@ -116,36 +116,36 @@ public void test_getIncrement() {
 	for (int i=0; i<cases.length; i++)
 	{
 		slider.setIncrement(cases[i]);
-		assertTrue("case: " + String.valueOf(i), slider.getIncrement()==cases[i]);
+		assertEquals("case:" + String.valueOf(i), cases[i], slider.getIncrement());
 	}
 }
 
 @Test
 public void test_getMaximum() {
 	slider.setMaximum(2000);
-	assertTrue(":a:", slider.getMaximum() == 2000);
+	assertEquals(":a:", 2000, slider.getMaximum());
 	slider.setMaximum(20);
-	assertTrue(":b:", slider.getMaximum() == 20);
+	assertEquals(":b:", 20, slider.getMaximum());
 	slider.setMaximum(-1);
-	assertTrue(":c:", slider.getMaximum() == 20);
+	assertEquals(":c:", 20, slider.getMaximum());
 	slider.setMaximum(0);
-	assertTrue(":d:", slider.getMaximum() == 20);
+	assertEquals(":d:", 20, slider.getMaximum());
 	slider.setMaximum(10);
-	assertTrue(":d:", slider.getMaximum() == 10);
+	assertEquals(":d:", 10, slider.getMaximum());
 }
 
 @Test
 public void test_getMinimum() {
 	slider.setMinimum(5);
-	assertTrue(":a:", slider.getMinimum() == 5);
+	assertEquals(":a:", 5, slider.getMinimum());
 	slider.setMinimum(20);
-	assertTrue(":b:", slider.getMinimum() == 20);
+	assertEquals(":b:", 20, slider.getMinimum());
 	slider.setMinimum(-1);
-	assertTrue(":c:", slider.getMinimum() == 20);
+	assertEquals(":c:", 20, slider.getMinimum());
 	slider.setMinimum(0);
-	assertTrue(":d:", slider.getMinimum() == 0);
+	assertEquals(":d:", 0, slider.getMinimum());
 	slider.setMinimum(10);
-	assertTrue(":d:", slider.getMinimum() == 10);
+	assertEquals(":d:", 10, slider.getMinimum());
 }
 
 @Test
@@ -154,14 +154,14 @@ public void test_getPageIncrement() {
 	for (int i=0; i<cases.length; i++)
 	{
 		slider.setPageIncrement(cases[i]);
-		assertTrue("case: " + String.valueOf(i), slider.getPageIncrement()==cases[i]);
+		assertEquals("case: " + String.valueOf(i), cases[i], slider.getPageIncrement());
 	}
 }
 
 @Test
 public void test_getSelection() {
 	slider.setSelection(10);
-	assertTrue(":a:", slider.getSelection()== 10);
+	assertEquals(":a:", 10, slider.getSelection());
 
 }
 
@@ -203,7 +203,7 @@ public void test_setMinimumI() {
 @Test
 public void test_setPageIncrementI() {
 	slider.setPageIncrement(3);
-	assertTrue(":a:", slider.getPageIncrement()== 3);
+	assertEquals(":a:", 3, slider.getPageIncrement());
 }
 
 @Test
@@ -233,12 +233,12 @@ public void test_setThumbI() {
 @Test
 public void test_setValuesIIIIII() {
 	slider.setValues(10, 10, 50, 2, 5, 10);
-	assertTrue(":a:", slider.getSelection() == 10);
-	assertTrue(":b:", slider.getMinimum() == 10);
-	assertTrue(":c:", slider.getMaximum() == 50);
-	assertTrue(":d:", slider.getThumb() == 2);
-	assertTrue(":e:", slider.getIncrement() == 5);
-	assertTrue(":f:", slider.getPageIncrement() == 10);
+	assertEquals(":a:", 10, slider.getSelection());
+	assertEquals(":b:", 10, slider.getMinimum());
+	assertEquals(":c:", 50, slider.getMaximum());
+	assertEquals(":d:", 2, slider.getThumb());
+	assertEquals(":e:", 5, slider.getIncrement());
+	assertEquals(":f:", 10, slider.getPageIncrement());
 }
 
 

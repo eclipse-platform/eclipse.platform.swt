@@ -17,7 +17,6 @@ package org.eclipse.swt.tests.junit;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThrows;
-import static org.junit.Assert.assertTrue;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Control;
@@ -100,9 +99,9 @@ public void test_setTextLjava_lang_String() {
 @Test
 public void test_setToolTipTextLjava_lang_String() {
 	tabItem.setToolTipText("fred");
-	assertTrue(":a: ", tabItem.getToolTipText().equals("fred"));
+	assertEquals(":a:", "fred", tabItem.getToolTipText());
 	tabItem.setToolTipText("fredttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttt");
-	assertTrue(":b: ", tabItem.getToolTipText().equals("fredttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttt"));
+	assertEquals(":b:", "fredttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttt", tabItem.getToolTipText());
 	tabItem.setToolTipText(null);
 	assertNull(":c: ", tabItem.getToolTipText());
 }
