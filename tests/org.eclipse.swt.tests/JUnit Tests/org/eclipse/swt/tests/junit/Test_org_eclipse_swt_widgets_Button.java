@@ -296,7 +296,7 @@ public void test_setForegroundCheckButton() {
 @Test
 public void test_setForegroundAlphaCheckButton() {
 	Button checkButton = new Button(shell, SWT.CHECK);
-	assumeTrue("Alpha support for foreground colors does not exist on GTK2 or Win32",
+	assumeTrue("Alpha support for foreground colors does not exist on Win32",
 			SwtTestUtil.isCocoa || SwtTestUtil.isGTK);
 	Color color = new Color (255, 0, 0, 0);
 	checkButton.setForeground(color);
@@ -330,7 +330,7 @@ public void test_setForegroundRadioButton() {
 @Test
 public void test_setForegroundAlphaRadiokButton() {
 	Button radioButton = new Button(shell, SWT.RADIO);
-	assumeTrue("Alpha support for foreground colors does not exist on GTK2 or Win32",
+	assumeTrue("Alpha support for foreground colors does not exist Win32",
 			SwtTestUtil.isCocoa || SwtTestUtil.isGTK);
 	Color color = new Color (255, 0, 0, 0);
 	radioButton.setForeground(color);

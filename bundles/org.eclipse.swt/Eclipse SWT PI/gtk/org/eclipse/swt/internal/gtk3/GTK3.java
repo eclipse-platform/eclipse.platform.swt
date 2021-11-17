@@ -649,7 +649,7 @@ public class GTK3 {
 	 * @param button cast=(guint)
 	 * @param activate_time cast=(guint32)
 	 */
-	/* [GTK2/GTK3; 3.22 deprecated, replaced] */
+	/* [GTK3; 3.22 deprecated, replaced] */
 	public static final native void gtk_menu_popup(long menu, long parent_menu_shell, long parent_menu_item, long func, long data, int button, int activate_time);
 	/**
 	 * @param menu cast=(GtkMenu *)

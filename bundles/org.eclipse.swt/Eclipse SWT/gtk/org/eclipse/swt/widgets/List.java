@@ -1711,9 +1711,6 @@ public void setTopIndex (int index) {
 	/*
 	 * Feature in GTK: cache the GtkAdjustment value for future use in
 	 * getTopIndex(). Set topIndex to index.
-	 *
-	 * Use gtk_tree_view_get_view_get_vadjustment for GTK2, GtkScrollable
-	 * doesn't exist on GTK2.
 	 */
 	long vAdjustment = GTK.gtk_scrollable_get_vadjustment (handle);
 	cachedAdjustment = GTK.gtk_adjustment_get_value (vAdjustment);

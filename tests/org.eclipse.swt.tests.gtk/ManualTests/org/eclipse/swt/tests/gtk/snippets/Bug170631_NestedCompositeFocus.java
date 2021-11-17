@@ -28,7 +28,6 @@ import org.eclipse.swt.widgets.Text;
  * How to run: launch snippet and hit tab
  * Bug description: Text does not get focus
  * Expected results: Text should get focus and keep it.
- * GTK Version(s): GTK2.x
  */
 public class Bug170631_NestedCompositeFocus {
 

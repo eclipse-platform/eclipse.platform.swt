@@ -30,7 +30,6 @@ import org.eclipse.swt.widgets.Text;
  * How to run: launch snippet and scroll TableEditor.
  * Bug description: TableEditor flickers when scrolling.
  * Expected results: TableEditor should scroll smoothly.
- * GTK Version(s): GTK2.x
  */
 public class Bug166720_TableEditorFlicker {
 	public static void main(String[] args) {

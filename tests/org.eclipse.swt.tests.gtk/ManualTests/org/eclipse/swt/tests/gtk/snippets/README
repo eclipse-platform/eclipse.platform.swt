@@ -11,7 +11,7 @@ that explains how the snippet works, what it does, and what the expected result 
  * How to run: launch snippet and scroll TableEditor.
  * Bug description: TableEditor flickers when scrolling.
  * Expected results: TableEditor should scroll smoothly.
- * GTK version(s): GTK2.x
+ * GTK version(s): GTK3.x
  */
 
  Alternatively: code instructions into the snippet itself, so that users can simply run the snippet

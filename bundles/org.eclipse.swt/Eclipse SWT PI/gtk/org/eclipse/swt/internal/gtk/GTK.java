@@ -251,7 +251,7 @@ public class GTK extends OS {
 	public static final native boolean GTK_IS_CONTAINER(long obj);
 
 	// See os_custom.h
-	// Dynamically get's the function pointer to gtk_false(). Gtk2/Gtk3.
+	// Dynamically get's the function pointer to gtk_false(). Gtk3.
 	public static final native long GET_FUNCTION_POINTER_gtk_false();
 
 

@@ -534,11 +534,6 @@ void adjustTrim () {
 	} else {
 		trimStyle = Display.TRIM_NONE;
 	}
-	/*
-	 * The workaround for bug 445900 seems to cause problems for some
-	 * users on GTK2, see bug 492695. The fix is to only adjust the
-	 * shell size on GTK3.
-	 */
 	Rectangle bounds = getBoundsInPixels();
 	int widthAdjustment = display.trimWidths[trimStyle] - trimWidth;
 	int heightAdjustment = display.trimHeights[trimStyle] - trimHeight;
@@ -2249,7 +2244,6 @@ void resizeBounds (int width, int height, boolean notify) {
 
 @Override
 int setBounds (int x, int y, int width, int height, boolean move, boolean resize) {
-	// bug in GTK2 crashes JVM, in GTK3 the new shell only. See bug 472743
 	width = Math.min(width, (2 << 14) - 1);
 	height = Math.min(height, (2 << 14) - 1);
 

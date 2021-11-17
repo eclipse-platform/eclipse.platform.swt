@@ -36,7 +36,7 @@ import org.eclipse.swt.widgets.Shell;
  * How to run: launch snippet and try to use the browser widget
  * Bug description: Nothing is visible except the text bar
  * Expected results: The browser should be rendering web content
- * GTK Version(s): GTK2 all
+ * GTK Version(s): all
  */
 public class Bug326117_EmbeddedBrowser{
 

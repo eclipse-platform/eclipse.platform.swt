@@ -61,15 +61,6 @@ public class TabFolder extends Composite {
 	 * rather than tabfolder's parent swtFixed container.
 	 * Note, this reparenting is only on the GTK side, not on the SWT side.
 	 *
-	 * GTK2 and GTK3 child nesting behaviour differs now.
-	 * GTK2:
-	 *   swtFixed
-	 *   |-- GtkNoteBook
-	 *   |   |-- tabLabel1
-	 *   |   |-- tabLabel2
-	 *   |-- swtFixed (child1)  //child is sibling of Notebook
-	 *   |-- swtFixed (child2)
-	 *
 	 * GTK3+:
 	 * 	swtFixed
 	 * 	|--	GtkNoteBook
@@ -82,8 +73,6 @@ public class TabFolder extends Composite {
 	 *
 	 * This changes the hierarchy so that children are beneath gtkNotebook (as oppose to
 	 * being siblings) and thus fixes DND and background color issues.
-	 * In gtk2, reparenting doesn't function properly (tab content appear blank),
-	 * so this is a gtk3-specific behavior.
 	 *
 	 * Note about the reason for reparenting:
 	 * Reparenting (as opposed to adding widget to a tab in the first place) is necessary

@@ -759,7 +759,7 @@ public void test_setSizeII() {
 public void test_setSizeCustomResize() {
 	/*
 	 * Bug 319612: test the case where Shells with SWT.RESIZE and SWT.ON_TOP
-	 * were shrinking in size. Only applicable to GTK (both GTK2 and GTK3).
+	 * were shrinking in size. Only applicable to GTK.
 	 */
 	if (SwtTestUtil.isGTK) {
 		Shell testShell = new Shell (shell, SWT.RESIZE | SWT.ON_TOP);

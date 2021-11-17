@@ -584,8 +584,6 @@ void drawInPixels(GC gc, int x, int y, int selectionStart, int selectionEnd, Col
 	Cairo.cairo_new_path(cairo);
 }
 
-// Bug 477950: In order to support GTK2 and GTK3 colors simultaneously, this method's parameters
-// were modified to accept SWT Color objects instead of GdkColor structs.
 void drawWithCairo(GC gc, int x, int y, int start, int end, boolean fullSelection, GdkRGBA fg, GdkRGBA bg) {
 	GCData data = gc.data;
 	long cairo = data.cairo;

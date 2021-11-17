@@ -40,7 +40,7 @@ import org.eclipse.swt.widgets.Text;
  * How to run: Run snippet. Try to edit cells.
  * Bug description: Passive table/tree editors were not working.
  * Expected results: Cells can be edited.
- * GTK Version(s): Gtk3.22, Gtk2.24. x11/Wayland.
+ * GTK Version(s): Gtk3.22
  */
 public class Bug510803_TabFolder_TreeEditor_Regression {
 

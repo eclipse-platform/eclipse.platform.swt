@@ -25,7 +25,7 @@ import org.eclipse.swt.widgets.Shell;
  * How to run: launch snippet and observe StyledText widget
  * Bug description: Only "hello" is displayed
  * Expected results: "helloworld" should be displayed
- * GTK Version(s): GTK2, GTK3
+ * GTK Version(s): GTK3
  */
 public class Bug528691_StyledTextNull {
 

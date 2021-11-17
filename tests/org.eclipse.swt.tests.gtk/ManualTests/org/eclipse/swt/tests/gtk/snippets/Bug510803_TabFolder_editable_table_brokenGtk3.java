@@ -29,7 +29,6 @@ import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 
 // clicking on a row item and typing appends characters.
-// Gtk2: Works as expected.
 // Gtk3: Spam of errors, black second window.
 //(SWT:7324): Gdk-WARNING **: gdk_window_new(): parent is destroyed
 //(SWT:7324): Gdk-CRITICAL **: gdk_window_set_user_data: assertion 'GDK_IS_WINDOW (window)' failed

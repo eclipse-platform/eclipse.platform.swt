@@ -268,7 +268,7 @@ public class OS extends C {
 
 
 	/** Signals */
-	public static final byte[] accel_closures_changed = ascii("accel-closures-changed");		// Gtk2,3,4
+	public static final byte[] accel_closures_changed = ascii("accel-closures-changed");		// Gtk3,4
 	public static final byte[] activate = ascii("activate");	// ?
 	public static final byte[] angle_changed = ascii("angle_changed");	// Gtk3/4, Guesture related.
 	public static final byte[] authorize_authenticated_peer = ascii("authorize-authenticated-peer");

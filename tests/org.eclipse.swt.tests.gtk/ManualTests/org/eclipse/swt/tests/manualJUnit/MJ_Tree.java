@@ -163,7 +163,7 @@ public class MJ_Tree extends MJ_root {
 			final int SCALE_MIN = -30; final int SCALE_MAX = 30;
 			final int SCALE_RANGE = Math.abs(SCALE_MIN - SCALE_MAX);
 
-			Shell shell = mkShell(" Gtk3:broken, no erasing (1st March 2018)   Gtk2: Background is used as bar-chart of sort. See screenshot.");
+			Shell shell = mkShell(" Gtk3:broken, no erasing (1st March 2018) See screenshot.");
 			final Color blue = display.getSystemColor(SWT.COLOR_BLUE);
 			final Color white = display.getSystemColor(SWT.COLOR_WHITE);
 			final Color red = display.getSystemColor(SWT.COLOR_RED);

@@ -70,7 +70,7 @@ public class Bug497705_setBoundsAfterSetVisible {
 	}
 
 	@Test
-	public void fails_test2_setBoundsAfterVisibility() { // Works on Gtk2, Fails on Gtk3.
+	public void fails_test2_setBoundsAfterVisibility() {
 		testControl.setVisible(false);
 		testControl.setVisible(true);
 
@@ -80,7 +80,7 @@ public class Bug497705_setBoundsAfterSetVisible {
 		verifyBounds();
 	}
 	@Test
-	public void fails_test2b_setBoundsInvisibleWidgets() { // Works on Gtk2, Fails on Gtk3.
+	public void fails_test2b_setBoundsInvisibleWidgets() {
 		testControl.setVisible(false);
 
 		testControl.setBounds(x, y, width, height);
@@ -91,7 +91,7 @@ public class Bug497705_setBoundsAfterSetVisible {
 
 
 	@Test
-	public void fails_test3_setBoundsBetweenVisibility() { // Works on Gtk2, Fails on Gtk3.
+	public void fails_test3_setBoundsBetweenVisibility() {
 		testControl.setVisible(false);
 		testControl.setBounds(x, y, width, height);
 		testControl.setVisible(true);
@@ -117,7 +117,7 @@ public class Bug497705_setBoundsAfterSetVisible {
 	}
 
 	@Test
-	public void fails_unecessaryEvents() { // Breaks on Gtk3.8 & onwards
+	public void fails_unecessaryEvents() {
 		testControl.setVisible(false);
 
 		AtomicInteger resizeCount = new AtomicInteger(0);

@@ -1066,7 +1066,7 @@ Point resizeCalculationsGTK3 (long widget, int width, int height) {
 }
 
 int setBounds (int x, int y, int width, int height, boolean move, boolean resize) {
-	// bug in GTK2 crashes JVM, in GTK3 the new shell only. See bug 472743
+	// bug in GTK3 the crashes new shell only. See bug 472743
 	width = Math.min(width, (2 << 14) - 1);
 	height = Math.min(height, (2 << 14) - 1);
 
@@ -5037,7 +5037,6 @@ boolean sendMouseEvent (int type, int button, int count, int detail, boolean sen
 
 	/**
 	 * Bug 510446:
-	 * In the original gtk2 DnD architecture, Drag detection was done in mouseDown.
 	 * For Wayland support, Drag detection is now done in mouseMove (as does gtk internally).
 	 *
 	 * However, traditionally external widgets (e.g StyledText or non-SWT widgets) expect to
@@ -5050,7 +5049,7 @@ boolean sendMouseEvent (int type, int button, int count, int detail, boolean sen
 	 * - To ensure we follow 'send/post' contract as per parameter, we
 	 *   temporarily utilize event.data to hold send/post flag.
 	 *   There's also logic in place such that mouseDown/mouseMotion is always sent before mouseUp.
-	 * - On Gtk2, mouseMove is sent during DnD. On Gtk3x11 it's not due to hacky implementation of DnD.
+	 * - On Gtk3x11 it's not due to hacky implementation of DnD.
 	 *   On Wayland mouseMove is once again sent during DnD as per improved architecture.
 	 */
 	event.data = Boolean.valueOf(send);

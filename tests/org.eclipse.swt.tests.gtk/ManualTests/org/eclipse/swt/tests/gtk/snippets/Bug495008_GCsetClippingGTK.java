@@ -23,7 +23,7 @@ import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 
-public class Bug495008_GCsetClippingGTK2 {
+public class Bug495008_GCsetClippingGTK {
 	public static void main(String[] args) {
 		final Display display = new Display();
 

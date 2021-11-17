@@ -1775,7 +1775,6 @@ private void setDropDownButtonSize() {
 /**
  * Gets the border padding structure, which can be used to determine the inner padding of the text field.
  * Note, this function returns the correct padding only under GTK3.
- * Under Gtk2, it returns a constant.
  * @return GtkBorder object that holds the padding values.
  */
 GtkBorder getGtkBorderPadding () {
@@ -2250,7 +2249,7 @@ void gtk_gesture_release_event(long gesture, int n_press, double x, double y, lo
 
 /**
  * Output signal is called when Spinner's arrow buttons are triggered,
- * usually by clicking the mouse on the [gtk2: up/down] [gtk3: +/-] buttons.
+ * usually by clicking the mouse on the [gtk3: +/-] buttons.
  * On every click output is called twice presenting current and previous value.
  * This method compares two values and determines if Up or down arrow was called.
  */

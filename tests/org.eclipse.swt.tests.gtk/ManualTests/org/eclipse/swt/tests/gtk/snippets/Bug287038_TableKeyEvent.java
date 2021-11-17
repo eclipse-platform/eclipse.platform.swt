@@ -29,7 +29,7 @@ import org.eclipse.swt.widgets.TableItem;
  * How to run: launch snippet and type into the Table
  * Bug description: KeyEvents are only fired for first key pressed and ESC key.
  * Expected results: KeyEvents should fire properly for all keys pressed.
- * GTK Version(s): GTK2.x, GTK3.x
+ * GTK Version(s): GTK3.x
  */
 public class Bug287038_TableKeyEvent {
 	public static void main(String[] args) {

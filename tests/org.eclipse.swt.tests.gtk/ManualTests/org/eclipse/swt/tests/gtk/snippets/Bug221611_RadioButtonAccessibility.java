@@ -29,7 +29,6 @@ import org.eclipse.swt.widgets.Shell;
  * Bug description: Checking button 2, button 3, will cause Orca to read button 3
  * as a checkbox button
  * Expected results: All buttons should be read as radio buttons
- * GTK Version(s): GTK2
  */
 
 public class Bug221611_RadioButtonAccessibility {

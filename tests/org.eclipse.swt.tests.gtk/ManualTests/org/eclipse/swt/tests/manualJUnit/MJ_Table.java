@@ -186,7 +186,7 @@ public class MJ_Table extends MJ_root {
 			final int SCALE_MIN = -30; final int SCALE_MAX = 30;
 			final int SCALE_RANGE = Math.abs(SCALE_MIN - SCALE_MAX);
 
-			Shell shell = mkShell(" Gtk3:broken, no erasing (1st March 2018)   Gtk2: Background is used as bar-chart of sort. See screenshot.");
+			Shell shell = mkShell(" Gtk3:broken, no erasing (1st March 2018)  See screenshot.");
 			final Color blue = display.getSystemColor(SWT.COLOR_BLUE);
 			final Color white = display.getSystemColor(SWT.COLOR_WHITE);
 			final Color red = display.getSystemColor(SWT.COLOR_RED);
@@ -693,7 +693,7 @@ public class MJ_Table extends MJ_root {
 
 	@Test
 	public void column_headers_Snippet38() {
-		Shell shell = mkShell("Matrix with rows & columns and columns with description. (BUG gtk2/3 text seems slightly cut off, Bug 531875)");
+		Shell shell = mkShell("Matrix with rows & columns and columns with description. (BUG gtk3 text seems slightly cut off, Bug 531875)");
 		knownToBeBrokenGtk("Text in column is cut off at the moment. See Bug 531875");
 
 		shell.setLayout(new GridLayout());

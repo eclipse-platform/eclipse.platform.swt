@@ -40,7 +40,6 @@ import org.eclipse.swt.widgets.Shell;
  * How to run: launch snippet, drag source button to target.
  * Bug description: When the shell appears, clicking outside of it does not dismiss it
  * Expected results: The shell should be dismissed.
- * GTK Version(s): GTK2.x
  */
 public class Bug186038_DNDActivateEvent {
 

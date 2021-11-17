@@ -30,7 +30,7 @@ import org.eclipse.swt.widgets.TreeItem;
  * How to run: launch snippet and click the first row of either Table/Tree widget
  * Bug description: The red selection foreground color is not displayed for either Table/Tree
  * Expected results: The selected items of each widget should have a red foreground color
- * GTK Version(s): GTK2, GTK3
+ * GTK Version(s): GTK3
  */
 public class Bug528155_TableTreeForegroundDrawing {
 

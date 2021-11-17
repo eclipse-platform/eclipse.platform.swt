@@ -28,7 +28,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
-public class Bug496302_GroupComputeSizeGTK2 {
+public class Bug496302_GroupComputeSizeGTK {
 
 	private static Group group;
 	private static Group groupSmall;

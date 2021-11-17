@@ -29,8 +29,7 @@ import org.eclipse.swt.widgets.Shell;
 
 /*
  * Title: Adding items in combo box grows at O(n^2).
- * how to run: Run on Gtk2/3 with/without fix to observe different run times.
- * Gtk2,  +-20 ms
+ * how to run: Run on Gtk3 with/without fix to observe different run times.
  * Gtk3,  +- 1000ms
  * Gtk3 with fix: += 10ms.
  *

@@ -29,7 +29,7 @@ import org.eclipse.swt.widgets.Text;
  * How to run: launch snippet and observe size of Text widgets
  * Bug description: One widget is only one line in height when it should be two
  * Expected results: Both widgets should be 2 lines in height
- * GTK Version(s): GTK2.x, GTK3.x
+ * GTK Version(s): GTK3.x
  */
 public class Bug290650_FillLayoutComputeSize {
 	private static int margin = 100;

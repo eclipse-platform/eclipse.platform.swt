@@ -688,10 +688,7 @@ public void setID (int id) {
  * <p>
  * Note: This operation is a <em>HINT</em> and is not supported on
  * platforms that do not have this concept (for example, Windows NT).
- * Furthermore, some platforms (such as GTK2), cannot display both
- * a check box and an image at the same time.  Instead, they hide
- * the image and display the check box. Some platforms (such as GTK3)
- * support images alongside check boxes.
+ * Some platforms (such as GTK3) support images alongside check boxes.
  * </p>
  *
  * @param image the image to display on the receiver (may be null)

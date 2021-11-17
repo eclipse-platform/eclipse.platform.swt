@@ -33,7 +33,6 @@ import org.eclipse.swt.widgets.Shell;
  * How to run: launch snippet and press button
  * Bug description: Shell does not receive deactivate event
  * Expected results: shell should receive deactivate event
- * GTK Version(s): GTK2.x
  */
 public class Bug306067_DesktopEffectShellEvent {
 	static Display display = null;
