@@ -63,7 +63,7 @@ public void test_setImageLorg_eclipse_swt_graphics_Image() {
 public void test_setTextLjava_lang_String() {
 	String testStr = "test string";
 	item.setText(testStr);
-	assertTrue("a", item.getText().equals(testStr));
+	assertEquals("a", testStr, item.getText());
 	item.setText("");
 	assertTrue("b", item.getText().isEmpty());
 	try {

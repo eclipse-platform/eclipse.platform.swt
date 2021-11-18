@@ -1111,7 +1111,7 @@ public void test_removeI() {
 	list.remove(1);
 	assertEquals(2, list.getItemCount());
 	//////////////////////////////////////////////////////
-	assertTrue(list.getItem(1).equals("text3"));
+	assertEquals("text3", list.getItem(1));
 
 	list.setItems(items);
 	assertEquals(list.getItemCount(), 3);

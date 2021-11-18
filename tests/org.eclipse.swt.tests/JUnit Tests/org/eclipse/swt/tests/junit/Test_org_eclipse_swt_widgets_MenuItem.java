@@ -59,19 +59,19 @@ public void test_ConstructorLorg_eclipse_swt_widgets_MenuI() {
 	catch (IllegalArgumentException e) {
 	}
 	mItem = new MenuItem(menu, SWT.CHECK);
-	assertTrue(mItem.getStyle()==SWT.CHECK);
+	assertEquals(SWT.CHECK, mItem.getStyle());
 	mItem.dispose();
 	mItem = new MenuItem(menu, SWT.CASCADE);
-	assertTrue(mItem.getStyle()==SWT.CASCADE);
+	assertEquals(SWT.CASCADE, mItem.getStyle());
 	mItem.dispose();
 	mItem = new MenuItem(menu, SWT.PUSH);
-	assertTrue(mItem.getStyle()==SWT.PUSH);
+	assertEquals(SWT.PUSH, mItem.getStyle());
 	mItem.dispose();
 	mItem = new MenuItem(menu, SWT.SEPARATOR);
-	assertTrue(mItem.getStyle()==SWT.SEPARATOR);
+	assertEquals(SWT.SEPARATOR, mItem.getStyle());
 	mItem.dispose();
 	mItem = new MenuItem(menu, SWT.RADIO);
-	assertTrue(mItem.getStyle()==SWT.RADIO);
+	assertEquals(SWT.RADIO, mItem.getStyle());
 	mItem.dispose();
 }
 
@@ -79,10 +79,10 @@ public void test_ConstructorLorg_eclipse_swt_widgets_MenuI() {
 public void test_ConstructorLorg_eclipse_swt_widgets_MenuII() {
 	MenuItem mItem = new MenuItem(menu, SWT.NULL, 0); //create a menu item at index 0
 	assertNotNull(mItem);
-	assertTrue(menu.getItem(0).equals(mItem));
+	assertEquals(mItem, menu.getItem(0));
 	mItem = new MenuItem(menu, SWT.NULL, 1);
 	assertNotNull(mItem);
-	assertTrue(menu.getItem(1).equals(mItem));
+	assertEquals(mItem, menu.getItem(1));
 }
 
 @Test
@@ -261,7 +261,7 @@ public void test_setSelectionZ() {
 @Test
 public void test_setTextLjava_lang_String() {
 	menuItem.setText("ABCDEFG");
-	assertTrue(menuItem.getText().equals("ABCDEFG"));
+	assertEquals("ABCDEFG", menuItem.getText());
 	try {
 		menuItem.setText(null);
 		fail("No exception thrown for addArmListener with null argument");
@@ -272,7 +272,7 @@ public void test_setTextLjava_lang_String() {
 	assertTrue(menuItem.getText().startsWith("ABCDEFG"));
 	menuItem.setAccelerator(0);
 	menuItem.setText("AB&CDEFG");
-	assertTrue(menuItem.getText().equals("AB&CDEFG"));
+	assertEquals("AB&CDEFG", menuItem.getText());
 }
 
 /* custom */

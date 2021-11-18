@@ -82,8 +82,8 @@ public void test_getImage() {
 @Test
 public void test_getLocation() {
 	decorations.setLocation(10,15);
-	assertTrue(":a:", decorations.getLocation().x == 10);
-	assertTrue(":b:", decorations.getLocation().y == 15);
+	assertEquals(":a:", 10, decorations.getLocation().x);
+	assertEquals(":b:", 15, decorations.getLocation().y);
 }
 
 @Test
@@ -97,7 +97,7 @@ public void test_getMenuBar() {
 @Test
 public void test_getText() {
 	decorations.setText("test");
-	assertTrue(":a:", decorations.getText().equals("test"));
+	assertEquals(":a:", "test", decorations.getText());
 }
 
 @Override
@@ -170,7 +170,7 @@ public void test_setTextLjava_lang_String() {
 
 	String testStr = "test string";
 	decorations.setText(testStr);
-	assertTrue("a", decorations.getText().equals(testStr));
+	assertEquals("a", testStr, decorations.getText());
 	decorations.setText("");
 	assertTrue("b", decorations.getText().isEmpty());
 	try {

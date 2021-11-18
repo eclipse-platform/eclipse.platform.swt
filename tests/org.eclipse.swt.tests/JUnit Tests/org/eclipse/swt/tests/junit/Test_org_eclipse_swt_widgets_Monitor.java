@@ -14,9 +14,9 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import org.eclipse.swt.graphics.Rectangle;
@@ -90,7 +90,7 @@ public void test_getZoom() {
 public void test_hashCode() {
 	for (Monitor monitor : monitors) {
 		if (primary.equals(monitor)) {
-			assertTrue(primary.hashCode() == monitor.hashCode());
+			assertEquals(monitor.hashCode(), primary.hashCode());
 			break;
 		}
 	}

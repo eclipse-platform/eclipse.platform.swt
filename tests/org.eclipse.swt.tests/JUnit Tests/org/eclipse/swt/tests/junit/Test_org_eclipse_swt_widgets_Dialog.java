@@ -13,6 +13,7 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -56,7 +57,7 @@ public void test_setTextLjava_lang_String() {
 	assertTrue(":1:", dialog.getText() == "");
 	String testStr = "test string";
 	dialog.setText(testStr);
-	assertTrue(":2:", dialog.getText().equals(testStr));
+	assertEquals(":2:", testStr, dialog.getText());
 	dialog.setText("");
 	assertTrue(":3:", dialog.getText().isEmpty());
 	try {

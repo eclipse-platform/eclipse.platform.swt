@@ -13,6 +13,8 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -58,11 +60,11 @@ public void test_setFilterPathLjava_lang_String() {
 	assertTrue(":1:", dirDialog.getFilterPath() == "");
 	String testStr = "./*";
 	dirDialog.setFilterPath(testStr);
-	assertTrue(":2:", dirDialog.getFilterPath().equals(testStr));
+	assertEquals(":2:", testStr, dirDialog.getFilterPath());
 	dirDialog.setFilterPath("");
 	assertTrue(":3:", dirDialog.getFilterPath().isEmpty());
 	dirDialog.setFilterPath(null);
-	assertTrue(":4:", dirDialog.getFilterPath() == null);
+	assertNull(":4:", dirDialog.getFilterPath());
 }
 
 @Test
@@ -70,7 +72,7 @@ public void test_setMessageLjava_lang_String() {
 	assertTrue(":1:", dirDialog.getMessage() == "");
 	String testStr = "test string";
 	dirDialog.setMessage(testStr);
-	assertTrue(":2:", dirDialog.getMessage().equals(testStr));
+	assertEquals(":2:", testStr, dirDialog.getMessage());
 	dirDialog.setMessage("");
 	assertTrue(":3:", dirDialog.getMessage().isEmpty());
 	try {

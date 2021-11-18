@@ -13,7 +13,7 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
 import org.eclipse.swt.SWT;
@@ -66,7 +66,7 @@ public void test_setTextLjava_lang_String() {
 	String[] cases = {"", "some text", "ldkashdoehufweovcnhslvhregojebckreavbkuhxbiufvcyhbifuyewvbiureyd.,cmnesljliewjfchvbwoifivbeworixuieurvbiuvbohflksjeahfcliureafgyciabelitvyrwtlicuyrtliureybcliuyreuceyvbliureybct"};
 	for (int i = 0; i < cases.length; i++) {
 		group.setText(cases[i]);
-		assertTrue("case: " + String.valueOf(i), group.getText().equals(cases[i]));
+		assertEquals("case: " + String.valueOf(i), cases[i], group.getText());
 	}
 }
 

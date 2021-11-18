@@ -14,6 +14,7 @@
 package org.eclipse.swt.tests.junit;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 
 import org.eclipse.swt.SWT;
@@ -49,7 +50,6 @@ protected String valueString(int[] intArray) {
 @Test
 public void test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener() {
 	listenerCalled = false;
-	boolean exceptionThrown = false;
 	SelectionListener listener = new SelectionListener() {
 		@Override
 		public void widgetSelected(SelectionEvent event) {
@@ -59,25 +59,13 @@ public void test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener()
 		public void widgetDefaultSelected(SelectionEvent event) {
 		}
 	};
-	try {
-		scrollBar.addSelectionListener(null);
-	}
-	catch (IllegalArgumentException e) {
-		exceptionThrown = true;
-	}
-	assertTrue("Expected exception not thrown", exceptionThrown);
-	exceptionThrown = false;
+
+	assertThrows(IllegalArgumentException.class, () ->scrollBar.addSelectionListener(null));
 	scrollBar.addSelectionListener(listener);
 	scrollBar.setSelection(100);
-	assertTrue(":a:", listenerCalled == false);
+	assertEquals(":a:", false, listenerCalled);
 	scrollBar.removeSelectionListener(listener);
-	try {
-		scrollBar.removeSelectionListener(null);
-	}
-	catch (IllegalArgumentException e) {
-		exceptionThrown = true;
-	}
-	assertTrue("Expected exception not thrown", exceptionThrown);
+	assertThrows(IllegalArgumentException.class, () ->scrollBar.removeSelectionListener(null));
 }
 
 @Test
@@ -87,7 +75,7 @@ public void test_addSelectionListenerWidgetSelectedAdapterLorg_eclipse_swt_event
 
 	scrollBar.addSelectionListener(listener);
 	scrollBar.setSelection(100);
-	assertTrue(":a:", listenerCalled == false);
+	assertEquals(":a:", false, listenerCalled);
 	scrollBar.removeSelectionListener(listener);
 }
 
@@ -203,12 +191,12 @@ public void test_setThumbI(){
 @Test
 public void test_setValuesIIIIII() {
 	scrollBar.setValues(10, 10, 50, 2, 5, 10);
-	assertTrue(":a:", scrollBar.getSelection() == 10);
-	assertTrue(":b:", scrollBar.getMinimum() == 10);
-	assertTrue(":c:", scrollBar.getMaximum() == 50);
-	assertTrue(":d:", scrollBar.getThumb() == 2);
-	assertTrue(":e:", scrollBar.getIncrement() == 5);
-	assertTrue(":f:", scrollBar.getPageIncrement() == 10);
+	assertEquals(":a:", 10, scrollBar.getSelection());
+	assertEquals(":b:", 10, scrollBar.getMinimum());
+	assertEquals(":c:", 50, scrollBar.getMaximum());
+	assertEquals(":d:", 2, scrollBar.getThumb());
+	assertEquals(":e:", 5, scrollBar.getIncrement());
+	assertEquals(":f:", 10, scrollBar.getPageIncrement());
 }
 
 @Test

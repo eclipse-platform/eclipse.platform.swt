@@ -149,7 +149,7 @@ public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI() {
 public void test_getItemCount() {
 	int number = 10;
 	for (int i = 0; i < number; i++) {
-		assertTrue(":a:" + i, expandBar.getItemCount() == i);
+		assertEquals(":a:" + i, i, expandBar.getItemCount());
 		new ExpandItem(expandBar, 0);
 	}
 }

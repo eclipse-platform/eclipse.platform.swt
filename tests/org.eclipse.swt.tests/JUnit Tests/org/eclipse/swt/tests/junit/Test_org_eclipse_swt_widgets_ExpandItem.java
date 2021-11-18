@@ -56,10 +56,10 @@ public void test_ConstructorLorg_eclipse_swt_widgets_ExpandItemI() {
 public void test_ConstructorLorg_eclipse_swt_widgets_ExpandItemII() {
 	ExpandItem item = new ExpandItem(expandBar, SWT.NULL, 0); //create an expand item at index 0
 	assertNotNull(item);
-	assertTrue(expandBar.getItem(0).equals(item));
+	assertEquals(item, expandBar.getItem(0));
 	item = new ExpandItem(expandBar, SWT.NULL, 1);
 	assertNotNull(item);
-	assertTrue(expandBar.getItem(1).equals(item));
+	assertEquals(item, expandBar.getItem(1));
 }
 
 @Test
@@ -137,7 +137,7 @@ public void test_setImageLorg_eclipse_swt_graphics_Image() {
 @Test
 public void test_setTextLjava_lang_String() {
 	expandItem.setText("ABCDEFG");
-	assertTrue(expandItem.getText().equals("ABCDEFG"));
+	assertEquals("ABCDEFG", expandItem.getText());
 	try {
 		expandItem.setText(null);
 		fail("No exception thrown for addArmListener with null argument");
