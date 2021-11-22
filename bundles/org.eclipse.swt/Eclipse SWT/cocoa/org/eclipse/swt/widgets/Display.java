@@ -5173,7 +5173,7 @@ public void syncExec (Runnable runnable) {
 }
 
 /**
- * Calls the callable on the user-interface thread and returns the supplied value.
+ * Calls the callable in the user-interface thread and returns the supplied value.
  * The callable may throw checked Exception. Any Exception is rethrown in the calling thread.
  *
  * @param callable the code to run on the user-interface thread

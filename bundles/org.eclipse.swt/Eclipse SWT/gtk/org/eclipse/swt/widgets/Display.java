@@ -6013,7 +6013,7 @@ public void syncExec (Runnable runnable) {
 }
 
 /**
- * Calls the callable on the user-interface thread and returns the supplied value.
+ * Calls the callable in the user-interface thread and returns the supplied value.
  * The callable may throw checked Exception. Any Exception is rethrown in the calling thread.
  *
  * @param callable the code to run on the user-interface thread
@@ -6026,7 +6026,7 @@ public void syncExec (Runnable runnable) {
  * @see #syncExec(Runnable)
  * @see SwtCallable#call()
  * @since 3.118
-*/
+ */
 public <T, E extends Exception> T syncCall(SwtCallable<T, E> callable) throws E {
 	Objects.nonNull(callable);
 	@SuppressWarnings("unchecked")
