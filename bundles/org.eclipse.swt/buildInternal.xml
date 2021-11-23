@@ -16,9 +16,6 @@
 
 <!--
 	Build file used only by internal SWT build that generates the libraries & tags.
-
-	lib.dir is set to point to xmltask.jar on the internal hudson used to build SWT libraries.
-	This can be overriden by setting the property on commandline.
  -->
 
 <project name="swtinternalbuild" basedir=".">
@@ -27,24 +24,27 @@
 	<property name="file_bin_parent_pom" value="bundles/binaries-parent/pom.xml"/>
 	<property name="lib.dir" value="/var/lib/hudson/antlib"/>
 	
-	<taskdef name="xmltask" classname="com.oopsconsultancy.xmltask.ant.XmlTask">
-		<classpath>
-			<pathelement location="${lib.dir}/xmltask.jar"/>
-		</classpath>
-	</taskdef>
-	
 	<!-- When there are build changes, generates the time-stamp qualifiers and updates the pom files in source and binaries repo -->
 	<target name="generate_qualifier" depends="check_build_changed" if="build_changed">
 		<tstamp><format property="build.qualifier" pattern="yyyyMMdd-HHmm"/></tstamp>
 		<echo>${build.qualifier}</echo>
 	</target>
 	
+	<!--
+		Update forceContextQualifier property in <SWT source repo>/bundles/org.eclipse.swt/pom.xml and 
+		<SWT binaries repo>/bundles/binaries-parent/pom.xml
+		
+		We match existing forceContextQualifier in the format vyyyyMMdd-HHmm and replace this with v${build.qualifier}
+		
+		See https://bugs.eclipse.org/bugs/show_bug.cgi?id=577391 
+	-->
+	
 	<target name="write_qualifier" depends="generate_qualifier" if="build.qualifier" description="writes the generated qualifier in pom.xml in src and binaries repo">
-		<xmltask source="${repo.src}/${file_src_pom}" dest="${repo.src}/${file_src_pom}" failWithoutMatch="true">
-			<replace path="/:project/:properties/:forceContextQualifier/text()" withText="v${build.qualifier}"/>
-		</xmltask>
-		<xmltask source="${repo.bin}/${file_bin_parent_pom}" dest="${repo.bin}/${file_bin_parent_pom}" failWithoutMatch="true">
-			<replace path="/:project/:properties/:forceContextQualifier/text()" withText="v${build.qualifier}"/>
-		</xmltask>
+		<replaceregexp file="${repo.src}/${file_src_pom}"
+			match="v\d+-\d+"
+			replace="v${build.qualifier}"/>
+		<replaceregexp file="${repo.bin}/${file_bin_parent_pom}"
+			match="v\d+-\d+"
+			replace="v${build.qualifier}"/>
 	</target>
 </project>
