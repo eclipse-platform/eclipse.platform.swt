@@ -16,6 +16,7 @@ package org.eclipse.swt.tests.junit;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -62,11 +63,11 @@ public void test_ConstructorLorg_eclipse_swt_widgets_CanvasI() {
 public void test_getBounds() {
 	Rectangle rect = new Rectangle(0,0,30,30);
 	caret.setBounds(rect);
-	assertTrue(caret.getBounds().equals(rect));
+	assertEquals(rect, caret.getBounds());
 
 	rect = new Rectangle(0,0,30,30);
 	caret.setBounds(rect);
-	assertFalse(caret.getBounds().equals(new Rectangle (0,0,60,70)));
+	assertNotEquals(new Rectangle (0,0,60,70), caret.getBounds());
 }
 
 @Test

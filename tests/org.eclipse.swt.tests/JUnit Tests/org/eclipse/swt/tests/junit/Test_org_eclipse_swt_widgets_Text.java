@@ -15,6 +15,7 @@ package org.eclipse.swt.tests.junit;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -104,7 +105,6 @@ public void test_addModifyListenerLorg_eclipse_swt_events_ModifyListener() {
 
 @Test
 public void test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener() {
-	boolean exceptionThrown = false;
 	listenerCalled = false;
 	SelectionListener listener = new SelectionListener() {
 		@Override
@@ -115,26 +115,16 @@ public void test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener()
 		public void widgetDefaultSelected(SelectionEvent event) {
 		}
 	};
-	try {
-		text.addSelectionListener(null);
-	}
-	catch (IllegalArgumentException e) {
-		exceptionThrown = true;
-	}
-	assertTrue("Expected exception not thrown", exceptionThrown);
-	exceptionThrown = false;
+
+	assertThrows(IllegalArgumentException.class, () ->text.addSelectionListener(null));
+
 	text.addSelectionListener(listener);
 	text.setText("12345");
 	text.setSelection(1,3);
-	assertTrue(":a:", listenerCalled == false);
+	assertEquals(":a:", false, listenerCalled);
 	text.removeSelectionListener(listener);
-	try {
-		text.removeSelectionListener(null);
-	}
-	catch (IllegalArgumentException e) {
-		exceptionThrown = true;
-	}
-	assertTrue("Expected exception not thrown", exceptionThrown);
+
+	assertThrows(IllegalArgumentException.class, () ->text.removeSelectionListener(null));
 }
 
 @Test
@@ -401,23 +391,23 @@ public void test_getCaretLineNumber() {
 		return;
 	}
 	text.setBounds(0, 0, 500, 500);
-	assertTrue(":a:", text.getCaretLineNumber() == 0);
+	assertEquals(":a:", 0, text.getCaretLineNumber());
 	text.setText("Line0\r\n");
-	assertTrue(":b:", text.getCaretLineNumber() == 0);
+	assertEquals(":b:", 0, text.getCaretLineNumber());
 	text.setTopIndex(1);
-	assertTrue(":c:", text.getCaretLineNumber() == 0);
+	assertEquals(":c:", 0, text.getCaretLineNumber());
 
 	text.append("Line1");
-	assertTrue(":d:", text.getCaretLineNumber() == 1);
+	assertEquals(":d:", 1, text.getCaretLineNumber());
 	String newText = "Line-1\r\n";
 	text.setSelection(0,0);
 	text.insert(newText);
-	assertTrue(":e:", text.getCaretLineNumber() == 1);
+	assertEquals(":e:", 1, text.getCaretLineNumber());
 
 	text.setSelection(0,0);
-	assertTrue(":f:", text.getCaretLineNumber() == 0);
+	assertEquals(":f:", 0, text.getCaretLineNumber());
 	text.setSelection(8,8);
-	assertTrue(":g:", text.getCaretLineNumber() == 1);
+	assertEquals(":g:", 1, text.getCaretLineNumber());
 }
 
 @Test
@@ -440,12 +430,12 @@ public void test_getCaretLocation() {
 @Test
 public void test_getCaretPosition() {
 	text.setText("Line");
-	assertTrue(":a:", text.getCaretPosition() == 0);
+	assertEquals(":a:", 0, text.getCaretPosition());
 	text.append("123");
-	assertTrue(":b:", text.getCaretPosition() == 7);
+	assertEquals(":b:", 7, text.getCaretPosition());
 	text.setSelection(1,3);
 	text.insert("123");
-	assertTrue(":b:", text.getCaretPosition() == 4);
+	assertEquals(":b:", 4, text.getCaretPosition());
 }
 
 @Test
@@ -562,7 +552,7 @@ public void test_getLineDelimiter() {
 	String platform = SWT.getPlatform();
 	String delimiter = text.getLineDelimiter();
 	if (platform.equals("win32")) {
-		assertTrue(":a:", delimiter.equals("\r\n"));
+		assertEquals(":a:", "\r\n", delimiter);
 	}
 }
 
@@ -575,34 +565,34 @@ public void test_getLineHeight() {
 public void test_getSelection() {
 	text.setText("01234567890");
 	text.setSelection(new Point(2, 2));
-	assertTrue(":b:", text.getSelection().equals(new Point(2, 2)));
+	assertEquals(":b:", new Point(2, 2), text.getSelection());
 	text.setSelection(new Point(2, 3));
-	assertTrue(":c:", text.getSelection().equals(new Point(2, 3)));
+	assertEquals(":c:", new Point(2, 3), text.getSelection());
 	text.setSelection(new Point(3, 11));
-	assertTrue(":d:", text.getSelection().equals(new Point(3, 11)));
+	assertEquals(":d:", new Point(3, 11), text.getSelection());
 	text.setText("01234567890");
 	text.setSelection(4);
-	assertTrue(":a:", text.getSelection().equals(new Point(4, 4)));
+	assertEquals(":a:", new Point(4, 4), text.getSelection());
 	text.setSelection(11);
-	assertTrue(":b:", text.getSelection().equals(new Point(11, 11)));
+	assertEquals(":b:", new Point(11, 11), text.getSelection());
 	text.setSelection(new Point(3, 2));
-	assertTrue(":c:", text.getSelection().equals(new Point(2, 3)));
+	assertEquals(":c:", new Point(2, 3), text.getSelection());
 }
 
 @Test
 public void test_getSelectionCount() {
 	text.setText("01234567890");
-	assertTrue(":a:", text.getSelectionCount()==0);
+	assertEquals(":a:", 0, text.getSelectionCount());
 	text.setSelection(2, 4);
-	assertTrue(":b:", text.getSelectionCount()==2);
+	assertEquals(":b:", 2, text.getSelectionCount());
 	text.setSelection(2, 11);
-	assertTrue(":c:", text.getSelectionCount()==9);
+	assertEquals(":c:", 9, text.getSelectionCount());
 	text.setText("0123\n4567890");
-	assertTrue(":d:", text.getSelectionCount()==0);
+	assertEquals(":d:", 0, text.getSelectionCount());
 	text.setSelection(2, 4);
-	assertTrue(":e:", text.getSelectionCount()==2);
+	assertEquals(":e:", 2, text.getSelectionCount());
 	text.setSelection(2, 12);
-	assertTrue(":f:", text.getSelectionCount()==10);
+	assertEquals(":f:", 10, text.getSelectionCount());
 }
 
 @Test
@@ -621,13 +611,13 @@ public void test_getTabs() {
 	if (SWT.getPlatform().equals("win32") || SWT.getPlatform().equals("gtk")) {
 		// API not supported on all platforms
 		text.setTabs(1);
-		assertTrue(":a:", text.getTabs() == 1);
+		assertEquals(":a:", 1, text.getTabs());
 		text.setTabs(8);
-		assertTrue(":b:", text.getTabs() == 8);
+		assertEquals(":b:", 8, text.getTabs());
 		text.setText("Line\t1\r\n");
-		assertTrue(":c:", text.getTabs() == 8);
+		assertEquals(":c:", 8, text.getTabs());
 		text.setTabs(7);
-		assertTrue(":d:", text.getTabs() == 7);
+		assertEquals(":d:", 7, text.getTabs());
 	}
 }
 
@@ -847,7 +837,7 @@ public void test_getTextLimit() {
 		return;
 	}
 	text.setTextLimit(10);
-	assertTrue(":a:", text.getTextLimit() == 10);
+	assertEquals(":a:", 10, text.getTextLimit());
 }
 
 @Test
@@ -880,20 +870,20 @@ public void test_getTopPixel() {
 	}
 	text.setText("Line0\r\nLine0a\r\n");
 
-	assertTrue(":a:", text.getTopPixel() == 0);
+	assertEquals(":a:", 0, text.getTopPixel());
 	text.setTopIndex(-2);
-	assertTrue(":b:", text.getTopPixel() == 0);
+	assertEquals(":b:", 0, text.getTopPixel());
 	text.setTopIndex(-1);
-	assertTrue(":c:", text.getTopPixel() == 0);
+	assertEquals(":c:", 0, text.getTopPixel());
 	text.setTopIndex(1);
-	assertTrue(":d:", text.getTopPixel() == text.getLineHeight());
+	assertEquals(":d:", text.getLineHeight(), text.getTopPixel());
 	text.setSize(10, text.getLineHeight());
 	text.setTopIndex(2);
-	assertTrue(":e:", text.getTopPixel() == text.getLineHeight() * 2);
+	assertEquals(":e:", text.getLineHeight() * 2, text.getTopPixel());
 	text.setTopIndex(0);
-	assertTrue(":f:", text.getTopPixel() == 0);
+	assertEquals(":f:", 0, text.getTopPixel());
 	text.setTopIndex(3);
-	assertTrue(":g:", text.getTopPixel() == text.getLineHeight() * 2);
+	assertEquals(":g:", text.getLineHeight() * 2, text.getTopPixel());
 }
 
 @Test
@@ -1178,10 +1168,10 @@ public void test_setForegroundAfterBackground() {
 public void test_setOrientationI() {
 	text.setOrientation(SWT.RIGHT_TO_LEFT);
 	if ((text.getStyle() & SWT.MIRRORED) != 0) {
-		assertTrue(":a:", text.getOrientation()==SWT.RIGHT_TO_LEFT);
+		assertEquals(":a:", SWT.RIGHT_TO_LEFT, text.getOrientation());
 	}
 	text.setOrientation(SWT.LEFT_TO_RIGHT);
-	assertTrue(":b:", text.getOrientation()==SWT.LEFT_TO_RIGHT);
+	assertEquals(":b:", SWT.LEFT_TO_RIGHT, text.getOrientation());
 }
 
 @Override
@@ -1323,10 +1313,10 @@ public void test_setTextLimitI() {
 	boolean exceptionThrown = false;
 
 	text.setTextLimit(10);
-	assertTrue(":a:", text.getTextLimit() == 10);
+	assertEquals(":a:", 10, text.getTextLimit());
 
 	text.setTextLimit(Text.LIMIT);
-	assertTrue(":b:", text.getTextLimit() == Text.LIMIT);
+	assertEquals(":b:", Text.LIMIT, text.getTextLimit());
 
 	try {
 		text.setTextLimit(0);

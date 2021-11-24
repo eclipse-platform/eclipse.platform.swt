@@ -15,6 +15,7 @@
 package org.eclipse.swt.tests.junit;
 
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -34,13 +35,13 @@ public class Test_org_eclipse_swt_layout_GridData {
 public void test_Constructor() {
 	GridData data = new GridData();
 	assertNotNull(data);
-	assertTrue(data.verticalAlignment == GridData.CENTER);
-	assertTrue(data.horizontalAlignment == GridData.BEGINNING);
-	assertTrue(data.widthHint == SWT.DEFAULT);
-	assertTrue(data.heightHint == SWT.DEFAULT);
-	assertTrue(data.horizontalIndent == 0);
-	assertTrue(data.horizontalSpan == 1);
-	assertTrue(data.verticalSpan == 1);
+	assertEquals(GridData.CENTER, data.verticalAlignment);
+	assertEquals(GridData.BEGINNING, data.horizontalAlignment);
+	assertEquals(SWT.DEFAULT, data.widthHint);
+	assertEquals(SWT.DEFAULT, data.heightHint);
+	assertEquals(0, data.horizontalIndent);
+	assertEquals(1, data.horizontalSpan);
+	assertEquals(1, data.verticalSpan);
 	assertFalse(data.grabExcessHorizontalSpace);
 	assertFalse(data.grabExcessVerticalSpace);
 }
@@ -49,8 +50,8 @@ public void test_Constructor() {
 public void test_ConstructorI() {
 	GridData data = new GridData(GridData.FILL_BOTH);
 	assertNotNull(data);
-	assertTrue(data.verticalAlignment == GridData.FILL);
-	assertTrue(data.horizontalAlignment == GridData.FILL);
+	assertEquals(GridData.FILL, data.verticalAlignment);
+	assertEquals(GridData.FILL, data.horizontalAlignment);
 	assertTrue(data.grabExcessHorizontalSpace);
 	assertTrue(data.grabExcessVerticalSpace);
 }
@@ -59,7 +60,7 @@ public void test_ConstructorI() {
 public void test_ConstructorII() {
 	GridData data = new GridData(100, 100);
 	assertNotNull(data);
-	assertTrue(data.widthHint == 100);
-	assertTrue(data.heightHint == 100);
+	assertEquals(100, data.widthHint);
+	assertEquals(100, data.heightHint);
 }
 }

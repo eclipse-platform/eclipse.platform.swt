@@ -16,7 +16,6 @@ package org.eclipse.swt.tests.junit;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import org.eclipse.swt.SWT;
@@ -104,7 +103,7 @@ public void test_setFontLorg_eclipse_swt_graphics_Font() {
 	FontData fontData = canvas.getFont().getFontData()[0];
 	Font font = new Font(canvas.getDisplay(), fontData.getName(), 8, fontData.getStyle());
 	canvas.setFont(font);
-	assertTrue(":a:", canvas.getFont().equals(font));
+	assertEquals(":a:", font, canvas.getFont());
 	canvas.setFont(null);
 	font.dispose();
 }

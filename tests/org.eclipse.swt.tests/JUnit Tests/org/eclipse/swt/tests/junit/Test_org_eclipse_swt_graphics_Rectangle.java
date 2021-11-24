@@ -174,7 +174,7 @@ public void test_equalsLjava_lang_Object() {
 public void test_hashCode() {
 	Rectangle r1 = new Rectangle(5, 4, 3, 2);
 	Rectangle r2 = new Rectangle(5, 4, 3, 2);
-	assertTrue("Rectangles should have the same hashCode", r1.hashCode() == r2.hashCode());
+	assertEquals("Rectangles should have the same hashCode", r2.hashCode(), r1.hashCode());
 }
 
 @Test

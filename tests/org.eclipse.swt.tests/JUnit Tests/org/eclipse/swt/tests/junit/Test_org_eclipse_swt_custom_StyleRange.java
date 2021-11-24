@@ -15,6 +15,7 @@
 package org.eclipse.swt.tests.junit;
 
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
@@ -57,31 +58,31 @@ public void setUp() {
 @Test
 public void test_Constructor() {
 	StyleRange styleRange = new StyleRange();
-	assertTrue(":a:", styleRange.start == 0);
-	assertTrue(":a:", styleRange.length == 0);
+	assertEquals(":a:", 0, styleRange.start);
+	assertEquals(":a:", 0, styleRange.length);
 	assertNull(":a:", styleRange.foreground);
 	assertNull(":a:", styleRange.background);
-	assertTrue(":a:", styleRange.fontStyle == SWT.NORMAL);
+	assertEquals(":a:", SWT.NORMAL, styleRange.fontStyle);
 }
 
 @Test
 public void test_ConstructorIILorg_eclipse_swt_graphics_ColorLorg_eclipse_swt_graphics_Color() {
 	StyleRange styleRange = new StyleRange(5, 10, getColor(RED), getColor(BLUE));
-	assertTrue(":b:", styleRange.start == 5);
-	assertTrue(":b:", styleRange.length == 10);
-	assertTrue(":b:", styleRange.foreground == getColor(RED));
-	assertTrue(":b:", styleRange.background == getColor(BLUE));
-	assertTrue(":b:", styleRange.fontStyle == SWT.NORMAL);
+	assertEquals(":b:", 5, styleRange.start);
+	assertEquals(":b:", 10, styleRange.length);
+	assertEquals(":b:", getColor(RED), styleRange.foreground);
+	assertEquals(":b:", getColor(BLUE), styleRange.background);
+	assertEquals(":b:", SWT.NORMAL, styleRange.fontStyle);
 }
 
 @Test
 public void test_ConstructorIILorg_eclipse_swt_graphics_ColorLorg_eclipse_swt_graphics_ColorI() {
 	StyleRange styleRange = new StyleRange(5, 10, getColor(RED), getColor(BLUE), SWT.BOLD);
-	assertTrue(":c:", styleRange.start == 5);
-	assertTrue(":c:", styleRange.length == 10);
-	assertTrue(":c:", styleRange.foreground == getColor(RED));
-	assertTrue(":c:", styleRange.background == getColor(BLUE));
-	assertTrue(":c:", styleRange.fontStyle == SWT.BOLD);
+	assertEquals(":c:", 5, styleRange.start);
+	assertEquals(":c:", 10, styleRange.length);
+	assertEquals(":c:", getColor(RED), styleRange.foreground);
+	assertEquals(":c:", getColor(BLUE), styleRange.background);
+	assertEquals(":c:", SWT.BOLD, styleRange.fontStyle);
 }
 
 @Test

@@ -64,7 +64,7 @@ public void test_equalsLjava_lang_Object() {
 public void test_hashCode() {
 	Point p1 = new Point(5, 5);
 	Point p2 = new Point(5, 5);
-	assertTrue("Points should have the same hashCode", p1.hashCode() == p2.hashCode());
+	assertEquals("Points should have the same hashCode", p2.hashCode(), p1.hashCode());
 }
 
 @Test

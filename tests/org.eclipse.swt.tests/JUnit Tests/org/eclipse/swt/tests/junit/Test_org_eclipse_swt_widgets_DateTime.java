@@ -15,6 +15,7 @@ package org.eclipse.swt.tests.junit;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assume.assumeTrue;
@@ -150,15 +151,15 @@ public void test_setBackgroundCalendarDateTime() {
 	assertEquals("getBackground not equal after setBackground for SWT.CALENDAR DateTime",
 			color, calendar.getBackground());
 	calendar.setBackground(null);
-	assertFalse("getBackground unchanged after setBackground(null) for SWT.CALENDAR DateTime",
-			calendar.getBackground().equals(color));
+	assertNotEquals("getBackground unchanged after setBackground(null) for SWT.CALENDAR DateTime",
+			color, calendar.getBackground());
 	color = new Color(255, 0, 0, 0);
 	calendar.setBackground(color);
 	assertEquals("getBackground not equal after setBackground with 0 alpha for SWT.CALENDAR DateTime",
 			color, calendar.getBackground());
 	calendar.setBackground(null);
-	assertTrue("getBackground unchanged after setBackground(null) with 0 alpha for SWT.CALENDAR DateTime",
-			!calendar.getBackground().equals(color));
+	assertNotEquals("getBackground unchanged after setBackground(null) with 0 alpha for SWT.CALENDAR DateTime",
+			color, calendar.getBackground());
 	if ("gtk".equals(SWT.getPlatform ())) {
 		Color fg = new Color(0, 255, 0);
 		calendar.setBackground(color);
@@ -191,15 +192,15 @@ public void test_setBackgroundTimeDateTime() {
 	assertEquals("getBackground not equal after setBackground for SWT.TIME DateTime",
 			color, time.getBackground());
 	time.setBackground(null);
-	assertFalse("getBackground unchanged after setBackground(null) for SWT.TIME DateTime",
-			time.getBackground().equals(color));
+	assertNotEquals("getBackground unchanged after setBackground(null) for SWT.TIME DateTime",
+			color, time.getBackground());
 	color = new Color(255, 0, 0, 0);
 	time.setBackground(color);
 	assertEquals("getBackground not equal after setBackground with 0 alpha for SWT.TIME DateTime",
 			color, time.getBackground());
 	time.setBackground(null);
-	assertFalse("getBackground unchanged after setBackground(null) with 0 alpha for SWT.TIME DateTime",
-			time.getBackground().equals(color));
+	assertNotEquals("getBackground unchanged after setBackground(null) with 0 alpha for SWT.TIME DateTime",
+			color, time.getBackground());
 	if ("gtk".equals(SWT.getPlatform ())) {
 		Color fg = new Color(0, 255, 0);
 		time.setBackground(color);
@@ -232,15 +233,15 @@ public void test_setBackgroundDateDateTime() {
 	assertEquals("getBackground not equal after setBackground for SWT.DATE DateTime",
 			color, date.getBackground());
 	date.setBackground(null);
-	assertFalse("getBackground unchanged after setBackground(null) for SWT.DATE DateTime",
-			date.getBackground().equals(color));
+	assertNotEquals("getBackground unchanged after setBackground(null) for SWT.DATE DateTime",
+			color, date.getBackground());
 	color = new Color(255, 0, 0, 0);
 	date.setBackground(color);
 	assertEquals("getBackground not equal after setBackground with 0 alpha for SWT.DATE DateTime",
 			color, date.getBackground());
 	date.setBackground(null);
-	assertFalse("getBackground unchanged after setBackground(null) with 0 alpha for SWT.DATE DateTime",
-			date.getBackground().equals(color));
+	assertNotEquals("getBackground unchanged after setBackground(null) with 0 alpha for SWT.DATE DateTime",
+			color, date.getBackground());
 	if ("gtk".equals(SWT.getPlatform ())) {
 		Color fg = new Color(0, 255, 0);
 		date.setBackground(color);
@@ -398,7 +399,7 @@ public void test_setForegroundCalendarDateTime() {
 	calendar.setForeground(color);
 	assertEquals(color, calendar.getForeground());
 	calendar.setForeground(null);
-	assertFalse(calendar.getForeground().equals(color));
+	assertNotEquals(color, calendar.getForeground());
 	if ("gtk".equals(SWT.getPlatform ())) {
 		Color bg = new Color(0, 255, 0);
 		calendar.setForeground(color);
@@ -432,7 +433,7 @@ public void test_setForegroundTimeDateTime() {
 	time.setForeground(color);
 	assertEquals(color, time.getForeground());
 	time.setForeground(null);
-	assertFalse(time.getForeground().equals(color));
+	assertNotEquals(color, time.getForeground());
 	if ("gtk".equals(SWT.getPlatform ())) {
 		Color bg = new Color(0, 255, 0);
 		time.setForeground(color);
@@ -466,7 +467,7 @@ public void test_setForegroundDateDateTime() {
 	date.setForeground(color);
 	assertEquals(color, date.getForeground());
 	date.setForeground(null);
-	assertFalse(date.getForeground().equals(color));
+	assertNotEquals(color, date.getForeground());
 	if ("gtk".equals(SWT.getPlatform ())) {
 		Color bg = new Color(0, 255, 0);
 		date.setForeground(color);

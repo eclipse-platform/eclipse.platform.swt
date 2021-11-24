@@ -15,6 +15,7 @@
 package org.eclipse.swt.tests.junit;
 
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import org.eclipse.swt.SWT;
@@ -52,7 +53,7 @@ public void test_verifyKeyLorg_eclipse_swt_events_VerifyEvent() {
 	Event e = new Event();
 	e.character = 'a';
 	styledText.notifyListeners(SWT.KeyDown, e);
-	assertTrue(":1:", styledText.getText().equals("a"));
+	assertEquals(":1:", "a", styledText.getText());
 
 	verify = 2;
 	styledText.setText("");

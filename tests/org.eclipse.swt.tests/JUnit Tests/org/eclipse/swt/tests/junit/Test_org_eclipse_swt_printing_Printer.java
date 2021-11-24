@@ -15,6 +15,7 @@
 package org.eclipse.swt.tests.junit;
 
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
@@ -163,11 +164,11 @@ public void test_getPrinterList() {
 				 * on GTK it is still possible to have a print
 				 * to file backend
 				 */
-				assertTrue(list[0].driver.equals("GtkPrintBackendFile"));
+				assertEquals("GtkPrintBackendFile", list[0].driver);
 			}
 		} else {
-		assertTrue("printer list contains items even though there are no printers",
-				list.length == 0);
+		assertEquals("printer list contains items even though there are no printers",
+				0 , list.length);
 		}
 	} else {
 		/* If there is at least a default printer, verify

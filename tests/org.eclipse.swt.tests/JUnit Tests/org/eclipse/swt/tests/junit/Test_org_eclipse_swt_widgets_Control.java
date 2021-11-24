@@ -16,6 +16,7 @@ package org.eclipse.swt.tests.junit;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -488,7 +489,7 @@ public void test_getBorderWidth() {
 @Test
 public void test_getLocation() {
 	control.setBounds(32, 43, 30, 40);
-	assertTrue(control.getLocation().equals(new Point(32, 43)));
+	assertEquals(new Point(32, 43), control.getLocation());
 }
 @Test
 public void test_getMonitor() {
@@ -612,12 +613,14 @@ public void test_setBackgroundLorg_eclipse_swt_graphics_Color() {
 	control.setBackground(color);
 	assertEquals("getBackground not equal color after setBackground(color) for " + control, color, control.getBackground());
 	control.setBackground(null);
-	assertTrue("getBackground unchanged after setBackground(null) for " + control, !control.getBackground().equals(color));
+	assertNotEquals("getBackground unchanged after setBackground(null) for" + control,
+			color, control.getBackground());
 	color = new Color(255, 0, 0, 0);
 	control.setBackground(color);
 	assertEquals("getBackground not equal color after setBackground(color) with 0 alpha for " + control + " " + control.getBackground(), color, control.getBackground());
 	control.setBackground(null);
-	assertTrue("getBackground unchanged after setBackground(null) alpha for " + control + " " + control.getBackground() + " " + control, !control.getBackground().equals(color));
+	assertNotEquals("getBackground unchanged after setBackground(null) alpha for " + control + " " + control.getBackground() + " " + control,
+			color, control.getBackground());
 	if ("gtk".equals(SWT.getPlatform ())) {
 		Color fg = new Color(0, 255, 0);
 		control.setBackground(color);
@@ -654,7 +657,7 @@ public void test_setBoundsIIII() {
 	assertEquals(new Rectangle(10, 20, 30, 40), control.getBounds());
 
 	control.setBounds(20, 30, 40, 50);
-	assertFalse(control.getBounds().equals(new Rectangle(10, 20, 30, 40)));
+	assertNotEquals(new Rectangle(10, 20, 30, 40), control.getBounds());
 
 	control.setBounds(10, 20, 30, 40);
 }
@@ -664,7 +667,7 @@ public void test_setBoundsLorg_eclipse_swt_graphics_Rectangle() {
 	assertEquals(new Rectangle(10, 20, 30, 40), control.getBounds());
 
 	control.setBounds(new Rectangle(20, 30, 40, 50));
-	assertFalse(control.getBounds().equals(new Rectangle(10, 20, 30, 40)));
+	assertNotEquals(new Rectangle(10, 20, 30, 40), control.getBounds());
 
 	try {
 		control.setBounds(null);
@@ -749,7 +752,7 @@ public void test_setForegroundLorg_eclipse_swt_graphics_Color() {
 	control.setForeground(color);
 	assertEquals(color, control.getForeground());
 	control.setForeground(null);
-	assertFalse(control.getForeground().equals(color));
+	assertNotEquals(color, control.getForeground());
 	if ("gtk".equals(SWT.getPlatform ())) {
 		Color bg = new Color(0, 255, 0);
 		control.setForeground(color);
