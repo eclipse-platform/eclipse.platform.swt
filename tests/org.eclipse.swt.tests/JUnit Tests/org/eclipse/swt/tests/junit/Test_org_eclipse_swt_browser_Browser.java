@@ -21,6 +21,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.junit.Assume.assumeFalse;
@@ -228,7 +229,7 @@ public void test_getChildren() {
 	if (SwtTestUtil.isWindows && !isEdge) {
 		int childCount = composite.getChildren().length;
 		String msg = "Browser on Win32 is a special case, the first child is an OleFrame (ActiveX control). Actual child count is: " + childCount;
-		assertTrue(msg, childCount == 1);
+		assertEquals(msg, 1, childCount);
 	} else {
 		super.test_getChildren();
 	}
@@ -509,8 +510,8 @@ public void test_OpenWindowListener_openHasValidEventDetails() {
 	AtomicBoolean openFiredCorrectly = new AtomicBoolean(false);
 	final Browser browserChild = new Browser(shell, SWT.None);
 	browser.addOpenWindowListener(event -> {
-		assertTrue("Expected Browser1 instance, but have another instance", (Browser) event.widget == browser);
-		assertTrue("Expected event.browser to be null", event.browser == null);
+		assertSame("Expected Browser1 instance, but have another instance", browser, event.widget);
+		assertNull("Expected event.browser to be null", event.browser);
 		openFiredCorrectly.set(true);
 		event.browser = browserChild;
 	});
@@ -903,7 +904,7 @@ private void validateTitleChanged(String expectedTitle, Runnable browserSetFunc)
 	final AtomicReference<String> actualTitle = new AtomicReference<>("");
 	browser.addTitleListener(event ->  {
 		testLog.append("TitleListener fired");
-		assertTrue("event title is empty" + testLog.toString(), event.title != null);
+		assertNotNull("event title is empty" + testLog.toString(), event.title);
 		actualTitle.set(event.title);
 	});
 	browserSetFunc.run();
@@ -1445,7 +1446,7 @@ private void getText_helper(String testString, String expectedOutput) {
 			+ "Expected:"+testString+"\n"
 			+ "Actual:"+returnString.get()
 			: "Test timed out";
-	assertTrue(error_msg, returnString.get().equals(expectedOutput));
+	assertEquals(error_msg, expectedOutput, returnString.get());
 }
 
 /**
