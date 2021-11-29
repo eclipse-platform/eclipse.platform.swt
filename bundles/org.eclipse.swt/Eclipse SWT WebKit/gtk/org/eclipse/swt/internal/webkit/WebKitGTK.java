@@ -257,7 +257,7 @@ public static final native boolean webkit_authentication_request_is_retry(long r
 public static final native void webkit_cookie_manager_add_cookie(long cookie_manager, long cookie, long cancellable, long cb, long user_data);
 
 /** @method flags=dynamic */
-public static final native boolean webkit_cookie_manager_add_cookie_finish(long cookie_manager, long result, long error []);
+public static final native boolean webkit_cookie_manager_add_cookie_finish(long cookie_manager, long result, long[] error );
 
 /**
  * @method flags=dynamic
@@ -265,7 +265,7 @@ public static final native boolean webkit_cookie_manager_add_cookie_finish(long 
 public static final native void webkit_cookie_manager_get_cookies(long cookie_manager, byte [] uri, long cancellable, long cb, long user_data);
 
 /** @method flags=dynamic */
-public static final native long webkit_cookie_manager_get_cookies_finish(long cookie_manager, long result, long error []);
+public static final native long webkit_cookie_manager_get_cookies_finish(long cookie_manager, long result, long[] error );
 
 /** @method flags=dynamic */
 public static final native void webkit_credential_free(long credential);
@@ -478,7 +478,7 @@ public static final native void webkit_web_view_run_javascript(long web_view, by
 public static final native void webkit_web_resource_get_data(long webKitWebResource, long gCancellable, long GAsyncReadyCallback, long user_data);
 
 /** @method flags=dynamic */
-public static final native long webkit_web_resource_get_data_finish(long WebKitWebResource, long GAsyncResult, long [] gsize, long GError[]);
+public static final native long webkit_web_resource_get_data_finish(long WebKitWebResource, long GAsyncResult, long [] gsize, long[] GError);
 
 
 /**

@@ -2607,11 +2607,11 @@ Rectangle getWorkArea() {
 	Rectangle result = null;
 	if (data [0] != 0) {
 		if (actualLength [0] == 16) {
-			int values [] = new int [4];
+			int[] values  = new int [4];
 			C.memmove (values, data[0], 16);
 			result = new Rectangle (values [0],values [1],values [2],values [3]);
 		} else if (actualLength [0] == 32) {
-			long values [] = new long [4];
+			long[] values  = new long [4];
 			C.memmove (values, data[0], 32);
 			result = new Rectangle ((int)values [0],(int)values [1],(int)values [2],(int)values [3]);
 		}

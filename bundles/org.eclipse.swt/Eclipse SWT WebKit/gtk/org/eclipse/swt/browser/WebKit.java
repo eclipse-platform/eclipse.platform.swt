@@ -1017,7 +1017,7 @@ void nonBlockingExecute(String script) {
  * @return true if the action succeeded (or was performed asynchronously), false if it failed
  */
 private boolean webkit_extension_modify_function (long pageId, String function, String url, String action){
-	long args[] = { OS.g_variant_new_uint64(pageId),
+	long[] args = { OS.g_variant_new_uint64(pageId),
 			OS.g_variant_new_string (Converter.javaStringToCString(function)),
 			OS.g_variant_new_string (Converter.javaStringToCString(url))};
 	final long argsTuple = OS.g_variant_new_tuple(args, args.length);
