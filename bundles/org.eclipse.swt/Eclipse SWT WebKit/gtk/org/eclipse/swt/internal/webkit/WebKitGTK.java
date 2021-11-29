@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2019 IBM Corporation and others. All rights reserved.
+ * Copyright (c) 2000, 2021 IBM Corporation and others. All rights reserved.
  * The contents of this file are made available under the terms
  * of the GNU Lesser General Public License (LGPL) Version 2.1 that
  * accompanies this distribution (lgpl-v21.txt).  The LGPL is also
@@ -48,7 +48,7 @@ public class WebKitGTK extends C {
 			System.out.println("SWT_LIB  WebKit2   WebKitGTK:"+ webkit_get_major_version()+"."+ webkit_get_minor_version() + "."
 					+ webkit_get_micro_version() + "  (WebKitGTK >=2.5 is WebKit2) " + swtWebkitGlueCodeVersion + swtWebkitGlueCodeVersionInfo);
 		}
-	};
+	}
 
 	/** Constants */
 	public static final int kJSTypeUndefined = 0;

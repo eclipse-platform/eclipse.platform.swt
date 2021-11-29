@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2010, 2019 IBM Corporation and others.
+ * Copyright (c) 2010, 2021 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -1199,9 +1199,8 @@ private static class Webkit2AsyncToSync {
 		} else {
 			// Callback logic: Initiate an async callback and wait for it to finish.
 			// The callback comes back in runjavascript_callback(..) below.
-			Consumer <Integer> asyncFunc = (callbackId) -> {
+			Consumer <Integer> asyncFunc = (callbackId) ->
 				WebKitGTK.webkit_web_view_run_javascript(webView, Converter.wcsToMbcs(script, true), 0, runjavascript_callback.getAddress(), callbackId);
-			};
 
 			Webkit2AsyncReturnObj retObj = execAsyncAndWaitForReturn(browser, asyncFunc, " The following javascript was executed:\n" + script +"\n\n");
 
@@ -1987,9 +1986,7 @@ void onDispose (Event e) {
 		OS.g_object_ref (webView);
 		GTK3.gtk_container_remove (GTK.gtk_widget_get_parent (webView), webView);
 		long webViewTempRef = webView;
-		Display.getDefault().asyncExec(() -> {
-			OS.g_object_unref(webViewTempRef);
-		});
+		Display.getDefault().asyncExec(() -> OS.g_object_unref(webViewTempRef));
 		webView = 0;
 	}
 }
