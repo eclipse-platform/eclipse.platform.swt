@@ -1399,6 +1399,28 @@ JNIEXPORT jlong JNICALL GTK4_NATIVE(gtk_1window_1get_1icon_1name)
 }
 #endif
 
+#ifndef NO_gtk_1window_1is_1maximized
+JNIEXPORT jboolean JNICALL GTK4_NATIVE(gtk_1window_1is_1maximized)
+	(JNIEnv *env, jclass that, jlong arg0)
+{
+	jboolean rc = 0;
+	GTK4_NATIVE_ENTER(env, that, gtk_1window_1is_1maximized_FUNC);
+	rc = (jboolean)gtk_window_is_maximized((GtkWindow *)arg0);
+	GTK4_NATIVE_EXIT(env, that, gtk_1window_1is_1maximized_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_gtk_1window_1maximize
+JNIEXPORT void JNICALL GTK4_NATIVE(gtk_1window_1maximize)
+	(JNIEnv *env, jclass that, jlong arg0)
+{
+	GTK4_NATIVE_ENTER(env, that, gtk_1window_1maximize_FUNC);
+	gtk_window_maximize((GtkWindow *)arg0);
+	GTK4_NATIVE_EXIT(env, that, gtk_1window_1maximize_FUNC);
+}
+#endif
+
 #ifndef NO_gtk_1window_1minimize
 JNIEXPORT void JNICALL GTK4_NATIVE(gtk_1window_1minimize)
 	(JNIEnv *env, jclass that, jlong arg0)

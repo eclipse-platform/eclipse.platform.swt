@@ -938,6 +938,7 @@ void hookEvents () {
 		OS.g_signal_connect (gdkSurface, OS.compute_size, display.computeSizeProc, shellHandle);
 		OS.g_signal_connect(shellHandle, OS.notify_default_height, display.notifyProc, Widget.NOTIFY_DEFAULT_HEIGHT);
 		OS.g_signal_connect(shellHandle, OS.notify_default_width, display.notifyProc, Widget.NOTIFY_DEFAULT_WIDTH);
+		OS.g_signal_connect(shellHandle, OS.notify_maximized, display.notifyProc, Widget.NOTIFY_MAXIMIZED);
 	} else {
 		OS.g_signal_connect_closure_by_id (shellHandle, display.signalIds [WINDOW_STATE_EVENT], 0, display.getClosure (WINDOW_STATE_EVENT), false);
 		OS.g_signal_connect_closure_by_id (shellHandle, display.signalIds [CONFIGURE_EVENT], 0, display.getClosure (CONFIGURE_EVENT), false);
@@ -1806,10 +1807,41 @@ long gtk_key_press_event (long widget, long event) {
 @Override
 long gtk_size_allocate (long widget, long allocation) {
 	int width, height;
+	GdkRectangle monitorSize = new GdkRectangle();
 	int[] widthA = new int [1];
 	int[] heightA = new int [1];
+
+	/*Bug 577431:
+	 * In GTK4 using gtk_window_get_default_size returns the previously set size even
+	 * if the window is maximized. Due to this it cannot be used when the shell has
+	 * been maximized. To fix this, get the monitor geometry ONLY when the window is
+	 * maximized and use this as the dimensions. Furthermore, the headerBar size needs
+	 * to be taken into account,otherwise some content will be off screen.
+	 *
+	 * While this fix allows the usage of the entire horizontal space, the vertical
+	 * space is more tricky. Under Wayland, getting the work area of the display is
+	 * not possible and not supported. A "hacky" way has been used in GTK4 thus far
+	 * to get the header bar height, which is then subtracted from the display height.
+	 * This gets the height *mostly* correct, but there is about 10 pixels that
+	 * are not used.
+	 *
+	 * This should be revisited at a later time, when the GTK4 port is more mature.
+	 * TODO: Make use of the entire vertical height
+	 */
 	if (GTK.GTK4) {
-		GTK.gtk_window_get_default_size(shellHandle, widthA, heightA);
+		if(!GTK4.gtk_window_is_maximized(shellHandle)) {
+			GTK.gtk_window_get_default_size(shellHandle, widthA, heightA);
+		}
+		else {
+			long display = GDK.gdk_display_get_default();
+			long monitor = GDK.gdk_display_get_monitor_at_surface(display, paintSurface());
+			GDK.gdk_monitor_get_geometry(monitor, monitorSize);
+			long header = GTK4.gtk_widget_get_next_sibling(GTK4.gtk_widget_get_first_child(shellHandle));
+			int[] headerNaturalHeight = new int[1];
+			GTK4.gtk_widget_measure(header, GTK.GTK_ORIENTATION_VERTICAL, 0, null, headerNaturalHeight, null, null);
+			widthA[0] = monitorSize.width;
+			heightA[0] = monitorSize.height - headerNaturalHeight[0];
+		}
 	} else {
 		GTK3.gtk_window_get_size(shellHandle, widthA, heightA);
 	}

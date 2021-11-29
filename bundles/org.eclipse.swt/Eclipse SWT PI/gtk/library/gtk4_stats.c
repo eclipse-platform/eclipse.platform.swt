@@ -135,6 +135,8 @@ char * GTK4_nativeFunctionNames[] = {
 	"gtk_1widget_1translate_1coordinates",
 	"gtk_1window_1destroy",
 	"gtk_1window_1get_1icon_1name",
+	"gtk_1window_1is_1maximized",
+	"gtk_1window_1maximize",
 	"gtk_1window_1minimize",
 	"gtk_1window_1new",
 	"gtk_1window_1set_1child",

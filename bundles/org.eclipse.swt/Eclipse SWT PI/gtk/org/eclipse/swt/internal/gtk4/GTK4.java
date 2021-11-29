@@ -207,9 +207,13 @@ public class GTK4 {
 	/* GtkWindow */
 	public static final native long gtk_window_new();
 	/** @param window cast=(GtkWindow *) */
+	public static final native void gtk_window_maximize(long window);
+	/** @param window cast=(GtkWindow *) */
 	public static final native void gtk_window_minimize(long window);
 	/** @param window cast=(GtkWindow *) */
 	public static final native void gtk_window_unminimize(long window);
+	/** @param window cast=(GtkWindow *) */
+	public static final native boolean gtk_window_is_maximized(long window);
 	/**
 	 * @param window cast=(GtkWindow *)
 	 * @param default_widget cast=(GtkWidget *)

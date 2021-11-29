@@ -145,6 +145,8 @@ typedef enum {
 	gtk_1widget_1translate_1coordinates_FUNC,
 	gtk_1window_1destroy_FUNC,
 	gtk_1window_1get_1icon_1name_FUNC,
+	gtk_1window_1is_1maximized_FUNC,
+	gtk_1window_1maximize_FUNC,
 	gtk_1window_1minimize_FUNC,
 	gtk_1window_1new_FUNC,
 	gtk_1window_1set_1child_FUNC,
