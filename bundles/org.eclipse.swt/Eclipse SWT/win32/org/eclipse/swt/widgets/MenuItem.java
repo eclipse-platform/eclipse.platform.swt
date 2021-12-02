@@ -497,11 +497,11 @@ public boolean getSelection () {
  */
 public String getToolTipText () {
 	checkWidget();
-	return (itemToolTip == null) ? null : itemToolTip.getMessage();
+	return (itemToolTip == null || itemToolTip.isDisposed()) ? null : itemToolTip.getMessage();
 }
 
 void hideToolTip () {
-	if (itemToolTip == null) return;
+	if (itemToolTip == null || itemToolTip.isDisposed()) return;
 	itemToolTip.setVisible (false);
 }
 
@@ -1071,8 +1071,10 @@ public void setToolTipText (String toolTip) {
 	checkWidget ();
 
 	if (toolTip == null && itemToolTip != null) {
-		itemToolTip.setVisible (false);
-		itemToolTip.dispose();
+		 if(!itemToolTip.isDisposed()) {
+			 itemToolTip.setVisible (false);
+			 itemToolTip.dispose();
+		 }
 		itemToolTip = null;
 	}
 
@@ -1086,7 +1088,7 @@ public void setToolTipText (String toolTip) {
 }
 
 void showTooltip (int x, int y) {
-	if (itemToolTip == null) return;
+	if (itemToolTip == null || itemToolTip.isDisposed()) return;
 	itemToolTip.setLocationInPixels (x, y);
 	itemToolTip.setVisible (true);
 }
