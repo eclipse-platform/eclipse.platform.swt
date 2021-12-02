@@ -557,6 +557,7 @@ void createHandle (int index) {
 		imContext = OS.imContextLast();
 	}
 
+	//TODO: popupHandle is currently not mapped in GTK4, need to see if that is an issue.
 	if (GTK.GTK4) {
 		OS.swt_fixed_add(fixedHandle, handle);
 	} else {
@@ -815,7 +816,15 @@ long findMenuHandle() {
 	*/
 	long result = 0;
 
-	if (popupHandle != 0) {
+	if(GTK.GTK4) {
+		for (long child = GTK4.gtk_widget_get_first_child(handle); child != 0; child = GTK4.gtk_widget_get_next_sibling(child)) {
+			String name = display.gtk_widget_get_name(child);
+			if (name != null && name.equals("GtkTreePopover")) {
+				result = GTK4.gtk_widget_get_first_child(child);
+				break;
+			}
+		}
+	} else if(popupHandle != 0) {
 		GTK3.gtk_container_forall(popupHandle, display.allChildrenProc, 0);
 		if (display.allChildren != 0) {
 			long list = display.allChildren;
