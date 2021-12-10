@@ -569,7 +569,24 @@ void createColumn (TreeItem item, int index) {
 @Override
 void createHandle () {
 	NSScrollView scrollWidget = (NSScrollView) new SWTScrollView ().alloc ();
-	scrollWidget.init ();
+
+	/*
+	 * Bug in macOS 11: during initial layout, Table/Tree with header
+	 * is incorrectly considered to be obscured by titlebar. If
+	 * remaining "unobscured" height is not sufficient to fit header,
+	 * Table/Tree gets incorrectly scrolled before it's shown. The
+	 * workaround is to use initial rect such that even when wrongly
+	 * considered to be obscured by titlebar (28px on my machine) rect
+	 * can still fit header (also 28px on my machine). (100,100,100,100)
+	 * sounds like a safe bet. More details in commit message.
+	 */
+	NSRect rect = new NSRect ();
+	rect.x = 100;
+	rect.y = 100;
+	rect.width = 100;
+	rect.height = 100;
+	scrollWidget.initWithFrame (rect);
+
 	scrollWidget.setHasHorizontalScroller ((style & SWT.H_SCROLL) != 0);
 	scrollWidget.setHasVerticalScroller ((style & SWT.V_SCROLL) != 0);
 	scrollWidget.setAutohidesScrollers (true);
