@@ -140,6 +140,22 @@ public void addSelectionListener (SelectionListener listener) {
 }
 
 void configure () {
+	/*
+	 * Bug in GTK4: A lot of the functions that SWT uses to configure tooltips
+	 * in this function were removed from GTK4. Due to this, whenever configure()
+	 * gets called it causes a crash. The replacement functions for
+	 * gtk_widget_shape_combine_region has not been found. So for now, allow this
+	 * function to be called without causing the program to crash.
+	 *
+	 * TODO: Find the replacement for all GTK3 functions called here
+	 *
+	 * See Bug 577600
+	 */
+	if(GTK.GTK4) {
+		System.err.println("SWT Error: ToolTip.java: ToolTip with style SWT.BALLOON not supported on GTK 4.");
+		return;
+	}
+
 	GTK.gtk_widget_realize (handle);
 	/*
 	 * Feature in GTK: using gdk_screen_get_monitor_at_window() does not accurately get the correct monitor on the machine.
