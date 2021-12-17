@@ -465,6 +465,11 @@ private void releaseCOMInterfaces() {
 	iDataObject = null;
 }
 
+boolean canBeginDrag() {
+	if (transferAgents == null || transferAgents.length == 0) return false;
+	return true;
+}
+
 private void drag(Event dragEvent) {
 	DNDEvent event = new DNDEvent();
 	event.widget = this;
@@ -473,7 +478,7 @@ private void drag(Event dragEvent) {
 	event.time = OS.GetMessageTime();
 	event.doit = true;
 	notifyListeners(DND.DragStart,event);
-	if (!event.doit || transferAgents == null || transferAgents.length == 0 ) return;
+	if (!event.doit || !canBeginDrag()) return;
 
 	int[] pdwEffect = new int[1];
 	int operations = opToOs(getStyle());

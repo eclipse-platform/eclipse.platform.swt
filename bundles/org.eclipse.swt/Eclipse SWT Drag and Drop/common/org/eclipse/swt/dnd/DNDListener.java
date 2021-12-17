@@ -31,11 +31,21 @@ public void handleEvent (Event e) {
 	switch (e.type) {
 		case DND.DragStart: {
 			DragSourceEvent event = new DragSourceEvent((DNDEvent)e);
-			DragSourceEffect sourceEffect = ((DragSource) dndWidget).getDragSourceEffect();
-			if (sourceEffect != null) {
+			DragSource dragSource = (DragSource) dndWidget;
+			DragSourceEffect sourceEffect = dragSource.getDragSourceEffect();
+
+			// First call user listeners to see if they want to cancel
+			((DragSourceListener) eventListener).dragStart (event);
+
+			// If drag&drop is canceled, don't call 'sourceEffect.dragStart()':
+			// 1) It may leak resources, because it will never receive a
+			//    corresponding 'sourceEffect.dragFinished()'.
+			// 2) It simply makes no sense to prepare drag image if drag&drop
+			//    is not going to happen.
+			if (event.doit && dragSource.canBeginDrag() && (sourceEffect != null)) {
 				sourceEffect.dragStart (event);
 			}
-			((DragSourceListener) eventListener).dragStart (event);
+
 			event.updateEvent((DNDEvent)e);
 			break;
 		}

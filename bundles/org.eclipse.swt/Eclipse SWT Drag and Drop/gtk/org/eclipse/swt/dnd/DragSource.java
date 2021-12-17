@@ -379,6 +379,12 @@ protected void checkSubclass () {
 	}
 }
 
+boolean canBeginDrag() {
+	if (transferAgents == null || transferAgents.length == 0) return false;
+	if (targetList == 0) return false;
+	return true;
+}
+
 void drag(Event dragEvent) {
 	moveData = false;
 	DNDEvent event = new DNDEvent();
@@ -388,8 +394,7 @@ void drag(Event dragEvent) {
 	event.time = dragEvent.time;
 	event.doit = true;
 	notifyListeners(DND.DragStart, event);
-	if (!event.doit || transferAgents == null || transferAgents.length == 0) return;
-	if (targetList == 0) return;
+	if (!event.doit || !canBeginDrag()) return;
 
 	int actions = opToOsOp(getStyle());
 	Image image = event.image;
