@@ -2961,6 +2961,10 @@ void rendererRender (long cell, long cr, long snapshot, long widget, long backgr
 			}
 		}
 	}
+
+	GdkRectangle backround_area_rect = new GdkRectangle ();
+	OS.memmove (backround_area_rect, background_area, GdkRectangle.sizeof);
+
 	if (item != null) {
 		if (GTK.GTK_IS_CELL_RENDERER_TOGGLE (cell) || (columnIndex != 0 || (style & SWT.CHECK) == 0)) {
 			drawFlags = (int)flags;
@@ -2980,10 +2984,7 @@ void rendererRender (long cell, long cr, long snapshot, long widget, long backgr
 				if ((flags & GTK.GTK_CELL_RENDERER_FOCUSED) != 0) drawState |= SWT.FOCUSED;
 			}
 
-			GdkRectangle rect = new GdkRectangle ();
-			long path = GTK.gtk_tree_model_get_path (modelHandle, iter);
-			GTK.gtk_tree_view_get_background_area (handle, path, columnHandle, rect);
-			GTK.gtk_tree_path_free (path);
+			Rectangle rect = backround_area_rect.toRectangle ();
 			if ((drawState & SWT.SELECTED) == 0) {
 				if ((state & PARENT_BACKGROUND) != 0 || backgroundImage != null) {
 					Control control = findBackgroundControl ();
@@ -3029,11 +3030,11 @@ void rendererRender (long cell, long cr, long snapshot, long widget, long backgr
 				if (cr != 0) {
 					GdkRectangle r = new GdkRectangle();
 					GDK.gdk_cairo_get_clip_rectangle(cr, r);
-					Rectangle rect2 = DPIUtil.autoScaleDown(new Rectangle(rect.x, r.y, r.width, r.height));
+					Rectangle rect2 = DPIUtil.autoScaleDown(rect);
 					// Caveat: rect2 is necessary because GC#setClipping(Rectangle) got broken by bug 446075
 					gc.setClipping(rect2.x, rect2.y, rect2.width, rect2.height);
 				} else {
-					Rectangle rect2 = DPIUtil.autoScaleDown(new Rectangle(rect.x, rect.y, rect.width, rect.height));
+					Rectangle rect2 = DPIUtil.autoScaleDown(rect);
 					// Caveat: rect2 is necessary because GC#setClipping(Rectangle) got broken by bug 446075
 					gc.setClipping(rect2.x, rect2.y, rect2.width, rect2.height);
 
@@ -3074,9 +3075,7 @@ void rendererRender (long cell, long cr, long snapshot, long widget, long backgr
 	if ((drawState & SWT.BACKGROUND) != 0 && (drawState & SWT.SELECTED) == 0) {
 		GC gc = getGC(cr);
 		gc.setBackground (item.getBackground (columnIndex));
-		GdkRectangle rect = new GdkRectangle ();
-		OS.memmove (rect, background_area, GdkRectangle.sizeof);
-		gc.fillRectangle(DPIUtil.autoScaleDown(new Rectangle(rect.x, rect.y, rect.width, rect.height)));
+		gc.fillRectangle (DPIUtil.autoScaleDown (backround_area_rect.toRectangle ()));
 		gc.dispose ();
 	}
 	if ((drawState & SWT.FOREGROUND) != 0 || GTK.GTK_IS_CELL_RENDERER_TOGGLE (cell)) {
@@ -3102,10 +3101,7 @@ void rendererRender (long cell, long cr, long snapshot, long widget, long backgr
 		if (GTK.GTK_IS_CELL_RENDERER_TEXT (cell)) {
 			if (hooks (SWT.PaintItem)) {
 				if (wasSelected) drawState |= SWT.SELECTED;
-				GdkRectangle rect = new GdkRectangle ();
-				long path = GTK.gtk_tree_model_get_path (modelHandle, iter);
-				GTK.gtk_tree_view_get_background_area (handle, path, columnHandle, rect);
-				GTK.gtk_tree_path_free (path);
+				Rectangle rect = backround_area_rect.toRectangle ();
 				ignoreSize = true;
 				int [] contentX = new int [1], contentWidth = new int [1];
 				gtk_cell_renderer_get_preferred_size (cell, handle, contentWidth, null);
@@ -3149,7 +3145,7 @@ void rendererRender (long cell, long cr, long snapshot, long widget, long backgr
 				gc.setFont (item.getFont (columnIndex));
 				if ((style & SWT.MIRRORED) != 0) rect.x = getClientWidth () - rect.width - rect.x;
 
-				Rectangle rect2 = DPIUtil.autoScaleDown(new Rectangle(rect.x, rect.y, rect.width, rect.height));
+				Rectangle rect2 = DPIUtil.autoScaleDown(rect);
 				// Caveat: rect2 is necessary because GC#setClipping(Rectangle) got broken by bug 446075
 				gc.setClipping(rect2.x, rect2.y, rect2.width, rect2.height);
 

@@ -85,8 +85,6 @@ public class TreeDragSourceEffect extends DragSourceEffect {
 		dragSourceImage = null;
 
 		Tree tree = (Tree) control;
-		//TEMPORARY CODE
-		if (tree.isListening(SWT.EraseItem) || tree.isListening (SWT.PaintItem)) return null;
 
 		/*
 		 * Bug in GTK.  gtk_tree_selection_get_selected_rows() segmentation faults

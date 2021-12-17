@@ -14,6 +14,7 @@
  *******************************************************************************/
 package org.eclipse.swt.internal.gtk;
 
+import org.eclipse.swt.graphics.Rectangle;
 
 public class GdkRectangle {
 	/** @field cast=(gint) */
@@ -35,5 +36,9 @@ public class GdkRectangle {
 	@Override
 	public String toString() {
 		return "GdkRectangle {" + x + ", " + y + ", " + width + ", " + height + "}"; //$NON-NLS-1$//$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
+	}
+
+	public Rectangle toRectangle() {
+		return new Rectangle(x, y, width, height);
 	}
 }
