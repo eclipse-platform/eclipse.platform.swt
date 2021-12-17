@@ -398,7 +398,12 @@ void drag(Event dragDetectEvent) {
 
 void dragOutlineViewStart(Event dragDetectEvent) {
 	DNDEvent event = startDrag(dragDetectEvent);
-	if (event == null) return;
+	if (event == null) {
+		// This causes our 'outlineView:writeItems:toPasteboard:' listener
+		// to return NO to cancel drag.
+		dragDetectEvent.doit = false;
+		return;
+	}
 
 	// Save off the custom image, if any.
 	dragImageFromListener = event.image;
