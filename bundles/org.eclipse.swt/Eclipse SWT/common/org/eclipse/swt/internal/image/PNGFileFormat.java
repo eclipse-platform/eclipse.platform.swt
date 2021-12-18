@@ -283,6 +283,9 @@ void setPixelData(byte[] data, ImageData imageData) {
 			*/
 			if (headerChunk.getBitDepth() > 8) srcBytesPerLine /= 2;
 			if (destBytesPerLine != srcBytesPerLine) {
+				// Resize 'ImageData.data' to avoid bugs related to using 'ImageData.data.length'
+				imageData.data = new byte[destBytesPerLine*height];
+
 				for (int y = 0; y < height; y++) {
 					System.arraycopy(data, y * srcBytesPerLine, imageData.data, y * destBytesPerLine, srcBytesPerLine);
 				}
