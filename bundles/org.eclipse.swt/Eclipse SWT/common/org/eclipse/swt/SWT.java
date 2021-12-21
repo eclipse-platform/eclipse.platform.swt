@@ -2275,6 +2275,7 @@ public class SWT {
 	 * <p><b>Used By:</b></p>
 	 * <ul>
 	 * <li><code>FormAttachment</code> in a <code>FormLayout</code></li>
+	 * <li><code>BoderData</code> in a <code>BoderLayout</code></li>
 	 * </ul>
 	 */
 	public static final int TOP = UP;
@@ -2299,6 +2300,7 @@ public class SWT {
 	 * <ul>
 	 * <li><code>FormAttachment</code> in a <code>FormLayout</code></li>
 	 * <li><code>TabFolder</code></li>
+	 * <li><code>BoderData</code> in a <code>BoderLayout</code></li>
 	 * </ul>
 	 */
 	public static final int BOTTOM             = DOWN;
@@ -2329,6 +2331,10 @@ public class SWT {
 	 * This constant can also be used to representing the left keyboard
 	 * location during a key event.
 	 * </p>
+	 * <p><b>Used By:</b></p>
+	 * <ul>
+	 * <li><code>BoderData</code> in a <code>BoderLayout</code></li>
+	 * </ul>
 	 */
 	public static final int LEFT               = LEAD;
 
@@ -2358,6 +2364,10 @@ public class SWT {
 	 * This constant can also be used to representing the right keyboard
 	 * location during a key event.
 	 * </p>
+	 * <p><b>Used By:</b></p>
+	 * <ul>
+	 * <li><code>BoderData</code> in a <code>BoderLayout</code></li>
+	 * </ul>
 	 */
 	public static final int RIGHT              = TRAIL;
 
@@ -2369,6 +2379,7 @@ public class SWT {
 	 * <li><code>Label</code></li>
 	 * <li><code>TableColumn</code></li>
 	 * <li><code>FormAttachment</code> in a <code>FormLayout</code></li>
+	 * <li><code>BoderData</code> in a <code>BoderLayout</code></li>
 	 * </ul>
 	 */
 	public static final int CENTER = 1 << 24;
