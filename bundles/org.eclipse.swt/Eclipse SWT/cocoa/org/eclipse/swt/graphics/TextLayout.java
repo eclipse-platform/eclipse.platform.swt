@@ -1769,6 +1769,40 @@ public void setDescent (int descent) {
 }
 
 /**
+ * Forces line heights in receiver to obey provided value. This is
+ * useful with texts that contain glyphs from different scripts,
+ * such as mixing latin glyphs with hieroglyphs or emojis.
+ * <p>
+ * Text lines with different metrics will be forced to fit. This means
+ * painting text in such a way that its baseline is where specified by
+ * given 'metrics'. This can sometimes introduce small visual artifacs,
+ * such as taller lines overpainting or being clipped by content above
+ * and below.
+ * </p>
+ * The possible ways to set FontMetrics include:
+ * <ul>
+ * <li>Obtaining 'FontMetrics' via {@link GC#getFontMetrics}. Note that
+ * this will only obtain metrics for currently selected font and will not
+ * account for font fallbacks (for example, with a latin font selected,
+ * painting hieroglyphs usually involves a fallback font).</li>
+ * <li>Obtaining 'FontMetrics' via a temporary 'TextLayout'. This would
+ * involve setting a desired text sample to 'TextLayout', then measuring
+ * it with {@link org.eclipse.swt.graphics.TextLayout#getLineMetrics(int)}. This approach will also
+ * take fallback fonts into account.</li>
+ * </ul>
+ *
+ * NOTE: Does not currently support (as in, undefined behavior) multi-line
+ * layouts, including those caused by word wrapping. StyledText uses one
+ * TextLayout per line and is only affected by word wrap restriction.
+ *
+ * @since 3.125
+ */
+public void setFixedLineMetrics (FontMetrics metrics) {
+	if (metrics == null) return;
+	SWT.error(SWT.ERROR_NOT_IMPLEMENTED);
+}
+
+/**
  * Sets the default font which will be used by the receiver
  * to draw and measure text. If the
  * argument is null, then a default font appropriate

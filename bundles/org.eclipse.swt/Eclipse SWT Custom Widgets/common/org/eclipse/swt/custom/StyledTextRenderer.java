@@ -36,6 +36,9 @@ class StyledTextRenderer {
 	StyledTextLineSpacingProvider lineSpacingProvider;
 	boolean lineSpacingComputing;
 
+	/* Custom line metrics */
+	private FontMetrics fixedLineMetrics;
+
 	/* Font info */
 	Font regularFont, boldFont, italicFont, boldItalicFont;
 	int tabWidth;
@@ -1193,6 +1196,7 @@ TextLayout getTextLayout(int lineIndex, int orientation, int width, int lineSpac
 	layout.setFont(regularFont);
 	layout.setAscent(ascent);
 	layout.setDescent(descent);
+	layout.setFixedLineMetrics(fixedLineMetrics);
 	layout.setText(line);
 	layout.setOrientation(orientation);
 	layout.setSegments(segments);
@@ -1378,6 +1382,16 @@ void setContent(StyledTextContent content) {
 	maxWidthLineIndex = -1;
 	reset(0, lineCount);
 }
+
+/**
+ * See {@link TextLayout#setFixedLineMetrics}
+ *
+ * @since 3.125
+ */
+public void setFixedLineMetrics(FontMetrics metrics) {
+	fixedLineMetrics = metrics;
+}
+
 void setFont(Font font, int tabs) {
 	TextLayout layout = new TextLayout(device);
 	layout.setFont(regularFont);
