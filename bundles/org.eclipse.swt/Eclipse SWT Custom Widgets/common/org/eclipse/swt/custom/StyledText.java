@@ -8752,6 +8752,15 @@ private boolean hasMultipleCarets() {
 }
 
 /**
+ * See {@link TextLayout#setFixedLineMetrics}
+ *
+ * @since 3.125
+ */
+public void setFixedLineMetrics(FontMetrics metrics) {
+	renderer.setFixedLineMetrics (metrics);
+}
+
+/**
  * Sets a new font to render text with.
  * <p>
  * <b>NOTE:</b> Italic fonts are not supported unless they have no overhang
