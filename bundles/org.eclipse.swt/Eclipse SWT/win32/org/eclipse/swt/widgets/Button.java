@@ -1329,10 +1329,33 @@ LRESULT wmNotifyChild (NMHDR hdr, long wParam, long lParam) {
 						if ((style & SWT.TOGGLE) != 0 && isChecked()) {
 							pixel = getDifferentColor(buttonBackground);
 						}
-						RECT rect = new RECT ();
-						OS.SetRect (rect, nmcd.left+2, nmcd.top+2, nmcd.right-2, nmcd.bottom-2);
+
 						long brush = OS.CreateSolidBrush(pixel);
-						OS.FillRect(nmcd.hdc, rect, brush);
+
+						int inset = 2;
+						int radius = 3;
+
+						int l = nmcd.left + inset;
+						int t = nmcd.top + inset;
+						int r = nmcd.right - inset;
+						int b = nmcd.bottom - inset;
+
+						if (OS.WIN32_BUILD >= OS.WIN32_BUILD_WIN11_21H2) {
+							// 'RoundRect' has left/top pixel reserved for border
+							l += 1;
+							t += 1;
+
+							// Win11 has buttons with rounded corners
+							OS.SaveDC(nmcd.hdc);
+							OS.SelectObject(nmcd.hdc, brush);
+							OS.SelectObject(nmcd.hdc, OS.GetStockObject(OS.NULL_PEN));
+							OS.RoundRect(nmcd.hdc, l, t, r, b, radius, radius);
+							OS.RestoreDC(nmcd.hdc, -1);
+						} else {
+							RECT rect = new RECT (l, t, r, b);
+							OS.FillRect(nmcd.hdc, rect, brush);
+						}
+
 						OS.DeleteObject(brush);
 					}
 					if (customForegroundDrawing()) {
