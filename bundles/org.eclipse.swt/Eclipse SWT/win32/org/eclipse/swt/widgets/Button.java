@@ -1406,7 +1406,7 @@ LRESULT wmNotifyChild (NMHDR hdr, long wParam, long lParam) {
 									OS.SetRect (focusRect, nmcd.left+1+radioOrCheckTextPadding, nmcd.top, nmcd.right-2, nmcd.bottom-1);
 								}
 							} else {
-								OS.SetRect (focusRect, nmcd.left+2, nmcd.top+3, nmcd.right-2, nmcd.bottom-3);
+								OS.SetRect (focusRect, nmcd.left+4, nmcd.top+4, nmcd.right-4, nmcd.bottom-4);
 							}
 							OS.DrawFocusRect(nmcd.hdc, focusRect);
 						}
