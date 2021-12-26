@@ -53,9 +53,6 @@ public class Button extends Control {
 	Image image, disabledImage;
 	ImageList imageList;
 	boolean ignoreMouse, grayed, useDarkModeExplorerTheme;
-	int buttonBackground = -1;
-	// we need our own field, because setting Control.background causes two colored pixels around the button.
-	int buttonBackgroundAlpha = 255;
 	static final int MARGIN = 4;
 	static final int CHECK_WIDTH, CHECK_HEIGHT;
 	static final int ICON_WIDTH = 128, ICON_HEIGHT = 128;
@@ -453,7 +450,7 @@ void createHandle () {
 }
 
 private boolean customBackgroundDrawing() {
-	return buttonBackground != -1 && !isRadioOrCheck();
+	return background != -1 && !isRadioOrCheck();
 }
 
 private boolean customDrawing() {
@@ -538,18 +535,6 @@ public int getAlignment () {
 	if ((style & SWT.CENTER) != 0) return SWT.CENTER;
 	if ((style & SWT.RIGHT) != 0) return SWT.RIGHT;
 	return SWT.LEFT;
-}
-
-@Override
-public Color getBackground () {
-	if (isRadioOrCheck()) {
-		return super.getBackground();
-	}
-	checkWidget ();
-	if (buttonBackground != -1) {
-		return Color.win32_new (display, buttonBackground, buttonBackgroundAlpha);
-	}
-	return Color.win32_new (display, defaultBackground());
 }
 
 boolean getDefault () {
@@ -818,26 +803,8 @@ public void setAlignment (int alignment) {
  */
 @Override
 public void setBackground (Color color) {
-	checkWidget ();
-	if (isRadioOrCheck()) {
-		super.setBackground(color);
-	} else {
-		setButtonBackground (color);
-	}
-}
-
-private void setButtonBackground (Color color) {
-	int pixel = -1;
-	int alpha = 255;
-	if (color != null) {
-		if (color.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
-		pixel = color.handle;
-		alpha = color.getAlpha();
-	}
-	if (pixel == buttonBackground && alpha == buttonBackgroundAlpha) return;
-	buttonBackground = pixel;
-	buttonBackgroundAlpha = alpha;
-	updateBackgroundColor ();
+	// This method only exists in order to provide custom documentation
+	super.setBackground(color);
 }
 
 void setDefault (boolean value) {
@@ -1134,6 +1101,21 @@ long windowProc () {
 }
 
 @Override
+LRESULT wmColorChild (long wParam, long lParam) {
+	if (isRadioOrCheck()) {
+		// In order to match old SWT behavior and SWT behavior on other
+		// platforms, Radio and Check have their own background instead
+		// of showing parent's background.
+		return super.wmColorChild(wParam, lParam);
+	} else {
+		// Button has "transparent" portions which need to be filled with
+		// parent's (and not Button's) background. For example, SWT.PUSH
+		// button ~2px transparent area around the button.
+		return parent.wmColorChild(wParam, lParam);
+	}
+}
+
+@Override
 LRESULT WM_GETDLGCODE (long wParam, long lParam) {
 	LRESULT result = super.WM_GETDLGCODE (wParam, lParam);
 	if (result != null) return result;
@@ -1323,14 +1305,14 @@ LRESULT wmNotifyChild (NMHDR hdr, long wParam, long lParam) {
 				case OS.CDDS_PREPAINT: {
 					// buttons are ignoring SetBkColor, SetBkMode and SetTextColor
 					if (customBackgroundDrawing()) {
-						int pixel = buttonBackground;
+						int pixel = background;
 						if ((nmcd.uItemState & OS.CDIS_SELECTED) != 0) {
-							pixel = getDifferentColor(buttonBackground);
+							pixel = getDifferentColor(background);
 						} else if ((nmcd.uItemState & OS.CDIS_HOT) != 0) {
-							pixel = getSlightlyDifferentColor(buttonBackground);
+							pixel = getSlightlyDifferentColor(background);
 						}
 						if ((style & SWT.TOGGLE) != 0 && isChecked()) {
-							pixel = getDifferentColor(buttonBackground);
+							pixel = getDifferentColor(background);
 						}
 
 						long brush = OS.CreateSolidBrush(pixel);
