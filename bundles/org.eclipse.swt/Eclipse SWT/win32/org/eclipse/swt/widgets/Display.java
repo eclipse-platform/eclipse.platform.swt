@@ -169,7 +169,8 @@ public class Display extends Device {
 	 * Changes Windows theme to 'DarkMode_Explorer' for Controls that can benefit from it.
 	 * Effects as of Windows 10 version 1909:<br>
 	 * <ul>
-	 *   <li>Dark scrollbars - this is the most important change for many applications.</li>
+	 *   <li>Button - default background/foreground colors</li>
+	 *   <li>Scrollbars in controls tha have them - this is the most important change for many applications.</li>
 	 *   <li>Tree - dark theme compatible expander icon.</li>
 	 *   <li>Tree - dark theme compatible colors for selected and hovered items.</li>
 	 *   <li>The list is not exhaustive. Also, effects can change, because Windows dark theme is not yet official.</li>

@@ -29,6 +29,11 @@ public class Bug577042_DarkButton {
 		Green,
 	};
 
+	enum Themes {
+		Default,
+		Dark,
+	}
+
 	static void setColors(Control control, Colors color) {
 		switch (color) {
 			case Default:
@@ -60,10 +65,24 @@ public class Bug577042_DarkButton {
 		shell.setLayout(new GridLayout(1, true));
 		coloredControls.add(shell);
 
+		final Label hint = new Label(shell, 0);
+		hint.setText(
+			"1) Run on Windows 10 or 11\n" +
+			"2) Bug 577042: Focus rectangle position is suboptimal\n" +
+			"3) Bug 577042: Colored buttons have thick light frame around them\n" +
+			"4) Bug 577042: On Windows 11, rounded corners are broken\n" +
+			"5) Bug 577042: Support native dark theme for Button (currently only PUSH and TOGGLE)\n" +
+			"NOTE: Click PUSH button to make it default (there could only be one default button)"
+		);
+		coloredControls.add(hint);
+
+		for (Themes theme : Themes.values())
 		for (Colors color : Colors.values())
 		{
+			display.setData("org.eclipse.swt.internal.win32.useDarkModeExplorerTheme", theme == Themes.Dark);
+
 			Label label = new Label(shell, 0);
-			label.setText("Color:" + color.name());
+			label.setText("Theme:" + theme.name() + " Color:" + color.name());
 			coloredControls.add(label);
 
 			Composite composite = new Composite(shell, 0);
@@ -75,6 +94,8 @@ public class Bug577042_DarkButton {
 			button = new Button(composite, SWT.PUSH);
 			button.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 			button.setText("This is a button");
+			final Button defaultButton = button;
+			button.addListener(SWT.Selection, e -> shell.setDefaultButton(defaultButton));
 			otherControls.add(button);
 			setColors(button, color);
 

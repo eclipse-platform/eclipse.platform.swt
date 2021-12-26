@@ -52,7 +52,7 @@ public class Button extends Control {
 	String text = "", message = "";
 	Image image, disabledImage;
 	ImageList imageList;
-	boolean ignoreMouse, grayed;
+	boolean ignoreMouse, grayed, useDarkModeExplorerTheme;
 	int buttonBackground = -1;
 	// we need our own field, because setting Control.background causes two colored pixels around the button.
 	int buttonBackgroundAlpha = 255;
@@ -446,6 +446,9 @@ void createHandle () {
 		if ((style & SWT.RADIO) != 0) {
 			state |= DRAW_BACKGROUND;
 		}
+
+		useDarkModeExplorerTheme = display.useDarkModeExplorerTheme;
+		maybeEnableDarkSystemTheme();
 	}
 }
 
@@ -1334,6 +1337,11 @@ LRESULT wmNotifyChild (NMHDR hdr, long wParam, long lParam) {
 
 						int inset = 2;
 						int radius = 3;
+						if (useDarkModeExplorerTheme && (OS.WIN32_BUILD >= OS.WIN32_BUILD_WIN11_21H2)) {
+							// On Win11, Light theme and Dark theme images have different sizes
+							inset = 1;
+							radius = 4;
+						}
 
 						int l = nmcd.left + inset;
 						int t = nmcd.top + inset;
