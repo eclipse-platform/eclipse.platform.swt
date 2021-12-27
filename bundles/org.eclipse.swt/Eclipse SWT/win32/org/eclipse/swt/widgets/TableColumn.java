@@ -324,6 +324,75 @@ int getWidthInPixels () {
 }
 
 /**
+ * WINAPI doesn't provide any means to request column's optimal size.
+ * There is only an API to resize to optimal size. The workaround is to
+ * 1) disable redraw
+ * 2) resize to optimal
+ * 3) query new column size
+ * 4) set old column size
+ * 5) enable redraw
+ * This preserves old column size. As a consequence, no painting is
+ * needed after enabling redraw.
+ */
+private int calcAutoWidth(int index, boolean withHeader) {
+	long hwnd = parent.handle;
+
+	// WM_SETREDRAW has a side effect of forcing Control to be visible.
+	// On the other hand, if control is invisible, 'WM_SETREDRAW' is not needed.
+	int style = OS.GetWindowLong (hwnd, OS.GWL_STYLE);
+	boolean isTableVisible = ((style & OS.WS_VISIBLE) != 0);
+	boolean isTableDrawing = parent.getDrawing ();
+	boolean needsDisableRedraw = isTableVisible && isTableDrawing;
+
+	try {
+		if (needsDisableRedraw) {
+			// WM_SETREDRAW is used directly, because 'Control.setRedraw()'
+			// also repaints, which is to be avoided in this function.
+			OS.SendMessage (hwnd, OS.WM_SETREDRAW, 0, 0);
+		}
+
+		int oldWidth = (int)OS.SendMessage (hwnd, OS.LVM_GETCOLUMNWIDTH, index, 0);
+
+		/*
+		 * Feature in Windows.  When LVSCW_AUTOSIZE_USEHEADER is used
+		 * with LVM_SETCOLUMNWIDTH to resize the last column, the last
+		 * column is expanded to fill the client area.  The fix is to
+		 * resize the table to be small, set the column width and then
+		 * restore the table to its original size.
+		 *
+		 * Note: temporarily setting LVS_EX_COLUMNSNAPPOINTS may be a
+		 * less intrusive workaround.
+		 */
+		RECT rect = null;
+		boolean fixWidth = index == parent.getColumnCount () - 1;
+		if (fixWidth) {
+			rect = new RECT ();
+			OS.GetWindowRect (hwnd, rect);
+			OS.UpdateWindow (hwnd);
+			int flags = OS.SWP_NOACTIVATE | OS.SWP_NOMOVE | OS.SWP_NOREDRAW | OS.SWP_NOZORDER;
+			OS.SetWindowPos (hwnd, 0, 0, 0, 0, rect.bottom - rect.top, flags);
+		}
+
+		int resizeType = withHeader ? OS.LVSCW_AUTOSIZE_USEHEADER : OS.LVSCW_AUTOSIZE;
+		OS.SendMessage (hwnd, OS.LVM_SETCOLUMNWIDTH, index, resizeType);
+
+		if (fixWidth) {
+			int flags = OS.SWP_NOACTIVATE | OS.SWP_NOMOVE | OS.SWP_NOZORDER;
+			OS.SetWindowPos (hwnd, 0, 0, 0, rect.right - rect.left, rect.bottom - rect.top, flags);
+		}
+
+		int newWidth = (int)OS.SendMessage (hwnd, OS.LVM_GETCOLUMNWIDTH, index, 0);
+		OS.SendMessage (hwnd, OS.LVM_SETCOLUMNWIDTH, index, oldWidth);
+
+		return newWidth;
+	} finally {
+		if (needsDisableRedraw) {
+			OS.SendMessage (hwnd, OS.WM_SETREDRAW, 1, 0);
+		}
+	}
+}
+
+/**
  * Causes the receiver to be resized to its preferred size.
  * For a composite, this involves computing the preferred size
  * from its layout, if there is one.
@@ -381,10 +450,8 @@ public void pack () {
 		}
 		if (newFont != 0) OS.SelectObject (hDC, oldFont);
 		OS.ReleaseDC (hwnd, hDC);
-		OS.SendMessage (hwnd, OS.LVM_SETCOLUMNWIDTH, index, columnWidth);
 	} else {
-		OS.SendMessage (hwnd, OS.LVM_SETCOLUMNWIDTH, index, OS.LVSCW_AUTOSIZE);
-		columnWidth = (int)OS.SendMessage (hwnd, OS.LVM_GETCOLUMNWIDTH, index, 0);
+		columnWidth = calcAutoWidth (index, false);
 		if (index == 0) {
 			/*
 			* Bug in Windows.  When LVM_SETCOLUMNWIDTH is used with LVSCW_AUTOSIZE
@@ -412,38 +479,19 @@ public void pack () {
 	}
 	if (headerWidth > columnWidth) {
 		if (!hasHeaderImage) {
-			/*
-			* Feature in Windows.  When LVSCW_AUTOSIZE_USEHEADER is used
-			* with LVM_SETCOLUMNWIDTH to resize the last column, the last
-			* column is expanded to fill the client area.  The fix is to
-			* resize the table to be small, set the column width and then
-			* restore the table to its original size.
-			*/
-			RECT rect = null;
-			boolean fixWidth = index == parent.getColumnCount () - 1;
-			if (fixWidth) {
-				rect = new RECT ();
-				OS.GetWindowRect (hwnd, rect);
-				OS.UpdateWindow (hwnd);
-				int flags = OS.SWP_NOACTIVATE | OS.SWP_NOMOVE | OS.SWP_NOREDRAW | OS.SWP_NOZORDER;
-				OS.SetWindowPos (hwnd, 0, 0, 0, 0, rect.bottom - rect.top, flags);
-			}
-			OS.SendMessage (hwnd, OS.LVM_SETCOLUMNWIDTH, index, OS.LVSCW_AUTOSIZE_USEHEADER);
-			if (fixWidth) {
-				int flags = OS.SWP_NOACTIVATE | OS.SWP_NOMOVE | OS.SWP_NOZORDER;
-				OS.SetWindowPos (hwnd, 0, 0, 0, rect.right - rect.left, rect.bottom - rect.top, flags);
-			}
+			// The code has been there for years and it's no longer clear why
+			// not just use 'headerWidth' here. Maybe because SWT's size
+			// calculation is imperfect and WINAPI will do it better?
+			columnWidth = calcAutoWidth (index, true);
 		} else {
-			OS.SendMessage (hwnd, OS.LVM_SETCOLUMNWIDTH, index, headerWidth);
-		}
-	} else {
-		if (index == 0) {
-			OS.SendMessage (hwnd, OS.LVM_SETCOLUMNWIDTH, index, columnWidth);
+			columnWidth = headerWidth;
 		}
 	}
+
+	OS.SendMessage (hwnd, OS.LVM_SETCOLUMNWIDTH, index, columnWidth);
+
 	parent.ignoreColumnResize = false;
-	int newWidth = (int)OS.SendMessage (hwnd, OS.LVM_GETCOLUMNWIDTH, index, 0);
-	if (oldWidth != newWidth) {
+	if (oldWidth != columnWidth) {
 		updateToolTip (index);
 		sendEvent (SWT.Resize);
 		if (isDisposed ()) return;
