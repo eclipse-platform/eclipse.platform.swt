@@ -5173,15 +5173,28 @@ public void syncExec (Runnable runnable) {
 }
 
 /**
- * Calls the callable in the user-interface thread and returns the supplied value.
- * The callable may throw checked Exception. Any Exception is rethrown in the calling thread.
+ * Calls the callable on the user-interface thread at the next reasonable
+ * opportunity, and returns the its result from this method. The thread which
+ * calls this method is suspended until the callable completes.
+ * <p>
+ * Note that at the time the callable is invoked, widgets that have the receiver
+ * as their display may have been disposed. Therefore, it is necessary to check
+ * for this case inside the callable before accessing the widget.
+ * </p>
+ * <p>
+ * Any exception that is thrown from the callable is re-thrown in the calling
+ * thread. Note: The exception retains its original stack trace from the
+ * throwing thread. The call to {@code syncCall} will not be present in the
+ * stack trace.
+ * </p>
  *
- * @param callable the code to run on the user-interface thread
+ * @param callable the code to call on the user-interface thread
  *
- * @exception SWTException <ul>
- *    <li>ERROR_FAILED_EXEC - if an exception occurred when executing the runnable</li>
- *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
- * </ul>
+ * @exception SWTException <code>ERROR_DEVICE_DISPOSED</code> - if the receiver
+ *                         has been disposed
+ * @exception E            An exception that is thrown by the callable on the
+ *                         user-interface thread, and re-thrown on the calling
+ *                         thread
  *
  * @see #syncExec(Runnable)
  * @see SwtCallable#call()
