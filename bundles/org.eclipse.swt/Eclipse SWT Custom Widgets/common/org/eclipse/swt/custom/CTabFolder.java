@@ -3933,6 +3933,7 @@ void updateBkImages(boolean colorChanged) {
 					int height = this.getSize().y;
 					boolean wrapped = onBottom ? bounds.y + bounds.height < height - tabHeight : bounds.y > tabHeight;
 					if (wrapped || gradientColors == null) {
+						bkImageBounds[i]=null;
 						control.setBackgroundImage(null);
 						control.setBackground(getBackground());
 					} else {
