@@ -2676,22 +2676,6 @@ void setFont (NSFont font) {
 	setScrollWidth (items, true);
 }
 
-@Override
-void setFrameSize (long id, long sel, NSSize size) {
-	super.setFrameSize(id, sel, size);
-
-	/*
-	 * Bug 577767: Since macOS 10.15, NSTableView has 'autoresizingMask'
-	 * set to follow resizes of its NSClipView. This sometimes causes
-	 * Table/Tree to have wrong scroll range (note that size of NSClipView
-	 * is what you see and size of NSTableView is the size of entire
-	 * content, this defines scroll range). The workaround is to recalc
-	 * layout after resizing.
-	 */
-	if ((scrollView != null) && (id == scrollView.id))
-		((NSTableView)view).tile();
-}
-
 /**
  * Sets the header background color to the color specified
  * by the argument, or to the default system color if the argument is null.
