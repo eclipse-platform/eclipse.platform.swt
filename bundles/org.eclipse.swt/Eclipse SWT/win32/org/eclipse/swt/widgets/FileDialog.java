@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2021 IBM Corporation and others.
+ * Copyright (c) 2000, 2022 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -293,7 +293,8 @@ public String open () {
 		char[] path = (filterPath.replace('/', '\\') + "\0").toCharArray();
 		if (COM.SHCreateItemFromParsingName(path, 0, COM.IID_IShellItem, ppv) == COM.S_OK) {
 			IShellItem psi = new IShellItem(ppv[0]);
-			fileDialog.SetDefaultFolder(psi);
+			// Bug 577190: Hard override the filter path using SetFolder.
+			fileDialog.SetFolder(psi);
 			psi.Release();
 		}
 	}
