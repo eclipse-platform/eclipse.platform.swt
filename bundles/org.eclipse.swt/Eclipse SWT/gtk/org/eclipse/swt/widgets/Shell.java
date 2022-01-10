@@ -2270,6 +2270,10 @@ void resizeBounds (int width, int height, boolean notify) {
 		if (layout != null) {
 			markLayout (false, false);
 			updateLayout (false);
+			if (isCustomResize()) {
+				// bug 546961: trigger an extra resize to prevent scrollbar sliders paint problems after custom resize
+				forceResize(boxWidth, boxHeight);
+			}
 		}
 	}
 }
