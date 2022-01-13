@@ -829,7 +829,7 @@ public boolean setFocus () {
 	* it selects the button in WM_SETFOCUS.  The fix is to
 	* not assign focus to an unselected radio button.
 	*/
-	if ((style & SWT.RADIO) != 0 && !isChecked () && display.fixFocus) return false;
+	if ((style & SWT.RADIO) != 0 && !isChecked ()) return false;
 	return super.setFocus ();
 }
 

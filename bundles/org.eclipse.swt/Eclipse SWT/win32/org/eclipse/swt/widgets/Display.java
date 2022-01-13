@@ -275,7 +275,6 @@ public class Display extends Device {
 	/* Focus */
 	int focusEvent;
 	Control focusControl;
-	boolean fixFocus;
 
 	/* Menus */
 	Menu [] bars, popups;
