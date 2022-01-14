@@ -629,18 +629,32 @@ public void beep () {
 
 void cascadeWindow (NSWindow window, NSScreen screen) {
 	NSDictionary dictionary = screen.deviceDescription();
-	int screenNumber = new NSNumber(dictionary.objectForKey(NSString.stringWith("NSScreenNumber")).id).intValue();
-	int index = 0;
-	while (screenID[index] != 0 && screenID[index] != screenNumber) index++;
-	screenID[index] = screenNumber;
-	NSPoint cascade = screenCascade[index];
-	if (cascade == null) {
-		NSRect frame = screen.frame();
-		cascade = new NSPoint();
-		cascade.x = frame.x;
-		cascade.y = frame.y + frame.height;
+	if (dictionary != null) {
+		id screenNumberObject = dictionary.objectForKey(NSString.stringWith("NSScreenNumber"));
+		if (screenNumberObject != null) {
+			int screenNumber = new NSNumber(screenNumberObject.id).intValue();
+			int index = 0;
+			while (screenID[index] != 0 && screenID[index] != screenNumber) index++;
+			screenID[index] = screenNumber;
+			NSPoint cascade = screenCascade[index];
+			if (cascade == null) {
+				NSRect frame = screen.frame();
+				cascade = new NSPoint();
+				cascade.x = frame.x;
+				cascade.y = frame.y + frame.height;
+			}
+			screenCascade[index] = window.cascadeTopLeftFromPoint(cascade);
+			return;
+		}
 	}
-	screenCascade[index] = window.cascadeTopLeftFromPoint(cascade);
+	/*
+	 * Handle any unexpected cases when dictionary or screenNumberObject may be null.
+	 */
+	NSRect frame = screen.frame();
+	NSPoint cascade = new NSPoint();
+	cascade.x = frame.x;
+	cascade.y = frame.y + frame.height;
+	window.cascadeTopLeftFromPoint(cascade);
 }
 
 @Override
