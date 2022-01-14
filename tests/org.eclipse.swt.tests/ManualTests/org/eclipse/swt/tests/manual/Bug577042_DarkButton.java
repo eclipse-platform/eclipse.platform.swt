@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2021 Syntevo and others.
+ * Copyright (c) 2021, 2022 Syntevo and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -14,12 +14,19 @@
 
 package org.eclipse.swt.tests.manual;
 
+import java.util.ArrayList;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.layout.*;
-import org.eclipse.swt.widgets.*;
-
-import java.util.ArrayList;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.Shell;
 
 public class Bug577042_DarkButton {
 	enum Colors {
@@ -27,7 +34,7 @@ public class Bug577042_DarkButton {
 		Light,
 		Dark,
 		Green,
-	};
+	}
 
 	enum Themes {
 		Default,
