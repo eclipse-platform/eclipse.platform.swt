@@ -78,10 +78,6 @@ import org.eclipse.swt.widgets.*;
  * Some good resources that I found are as following:
  * - Webkit2 reference: https://webkitgtk.org/reference/webkit2gtk/stable/
  *
- * - My github repository has a lot of snippets to prototype individual features (e.g gdbus, barebone webkit extension, GVariants etc..):
- *   https://github.com/LeoUfimtsev/LeoGtk3
- *   Be also mindful about snippets found in org.eclipse.swt.gtk.linux.x86_64 -> snippets -> widget.browser.
- *
  * - To understand GDBus, consider reading this guide:
  *   http://www.cs.grinnell.edu/~rebelsky/Courses/CSC195/2013S/Outlines/
  *   And then see the relevant reference I made in WebkitGDBus.java.
