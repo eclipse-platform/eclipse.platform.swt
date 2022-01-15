@@ -459,7 +459,7 @@ public class StyledText extends Canvas {
 		} else if (scope == PrinterData.SELECTION) {
 			startLine = content.getLineAtOffset(selection[0].x);
 			if (selection[0].y > 0) {
-				endLine = content.getLineAtOffset(selection[0].x + selection[0].y - 1);
+				endLine = content.getLineAtOffset(selection[0].y);
 			} else {
 				endLine = startLine - 1;
 			}
