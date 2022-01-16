@@ -126,16 +126,6 @@ public final class Image extends Resource implements Drawable {
 	GC memGC;
 
 	/**
-	 * The alpha data of the image.
-	 */
-	byte[] alphaData;
-
-	/**
-	 * The global alpha value to be used for every pixel.
-	 */
-	int alpha = -1;
-
-	/**
 	 * The width of the image.
 	 */
 	int width = -1;
@@ -276,11 +266,6 @@ public Image(Device device, Image srcImage, int flag) {
 	this.currentDeviceZoom = srcImage.currentDeviceZoom;
 
 	if (flag != SWT.IMAGE_DISABLE) transparentPixel = srcImage.transparentPixel;
-	alpha = srcImage.alpha;
-	if (srcImage.alphaData != null) {
-		alphaData = new byte[srcImage.alphaData.length];
-		System.arraycopy(srcImage.alphaData, 0, alphaData, 0, alphaData.length);
-	}
 
 	long imageSurface = srcImage.surface;
 	int width = this.width = srcImage.width;
@@ -817,8 +802,7 @@ void createFromPixbuf(int type, long pixbuf) {
 	}
 	byte[] line = new byte[stride];
 	if (hasAlpha) {
-		alphaData = new byte[pixbufWidth * pixbufHeight];
-		for (int y = 0, alphaOffset = 0; y < pixbufHeight; y++) {
+		for (int y = 0; y < pixbufHeight; y++) {
 			C.memmove(line, pixels + (y * stride), stride);
 			for (int x = 0, offset = 0; x < pixbufWidth; x++, offset += 4) {
 				int a = line[offset + 3] & 0xFF;
@@ -832,7 +816,6 @@ void createFromPixbuf(int type, long pixbuf) {
 				line[offset + or] = (byte)r;
 				line[offset + og] = (byte)g;
 				line[offset + ob] = (byte)b;
-				alphaData[alphaOffset++] = (byte)a;
 			}
 			C.memmove(data + (y * stride), line, stride);
 		}
@@ -1367,15 +1350,10 @@ void init(ImageData image) {
 			}
 		}
 	} else {
-		this.alpha = image.alpha;
-		if (image.alpha == -1 && image.alphaData != null) {
-			this.alphaData = new byte[image.alphaData.length];
-			System.arraycopy(image.alphaData, 0, this.alphaData, 0, alphaData.length);
-		}
-		if (this.alpha != -1) {
+		if (image.alpha != -1) {
+			int alpha = image.alpha;
 			for (int y = 0, offset = 0; y < imageDataHeight; y++) {
 				for (int x=0; x<imageDataWidth; x++, offset += 4) {
-					int alpha = this.alpha;
 					/* pre-multiplied alpha */
 					int r = ((buffer[offset + or] & 0xFF) * alpha) + 128;
 					r = (r + (r >> 8)) >> 8;
@@ -1389,7 +1367,8 @@ void init(ImageData image) {
 					buffer[offset + ob] = (byte)b;
 				}
 			}
-		} else if (this.alphaData != null) {
+		} else if (image.alphaData != null) {
+			byte[] alphaData = image.alphaData;
 			for (int y = 0, offset = 0; y < imageDataHeight; y++) {
 				for (int x=0; x<imageDataWidth; x++, offset += 4) {
 					int alpha = alphaData [y*imageDataWidth+x] & 0xFF;
