@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2017 Red Hat and others. All rights reserved.
+ * Copyright (c) 2017, 2022 Red Hat and others. All rights reserved.
  * The contents of this file are made available under the terms
  * of the GNU Lesser General Public License (LGPL) Version 2.1 that
  * accompanies this distribution (lgpl-v21.txt).  The LGPL is also
@@ -16,6 +16,7 @@
 package org.eclipse.swt.browser;
 
 import java.util.*;
+import java.util.Map.*;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.internal.*;
@@ -204,9 +205,7 @@ class WebkitGDBus {
 	 * @param displayToSet the Display to set
 	 */
 	static void setDisplay (Display displayToSet) {
-		if (attachedToDisplay) {
-			return;
-		} else {
+		if (!attachedToDisplay) {
 			display = displayToSet;
 
 			/*
@@ -276,7 +275,7 @@ class WebkitGDBus {
 				}
 			} else if (java_method_name.equals(webkitWebExtensionIdentifier)) {
 				Object [] serverAddress = (Object []) convertGVariantToJava(gvar_parameters);
-				if (serverAddress[0] != null && serverAddress[0] instanceof String) {
+				if (serverAddress[0] instanceof String) {
 					EXTENSION_DBUS_SERVER_CLIENT_ADDRESS = (String) serverAddress[0];
 					// Connect to the extension's server by creating a connection asynchronously
 					createConnectionToExtension();
@@ -316,7 +315,7 @@ class WebkitGDBus {
 	private static long authenticatePeerCB (long observer, long stream, long credentials, long user_data) {
 		boolean authorized = false;
 		if (credentials != 0) {
-			long error [] = new long [1];
+			long[] error  = new long [1];
 			long ownCredentials = OS.g_credentials_new();
 			authorized = OS.g_credentials_is_same_user(credentials, ownCredentials, error);
 			if (error[0] != 0) {
@@ -339,7 +338,7 @@ class WebkitGDBus {
 		assert gdBusNodeInfo != 0 : "SWT WebKitGDBus: introspection data should not be 0";
 
 		long interface_info = OS.g_dbus_node_info_lookup_interface(gdBusNodeInfo, WEBKITGDBUS_INTERFACE_NAME);
-		long vtable [] = { handleMethodCB.getAddress(), 0, 0 };
+		long[] vtable  = { handleMethodCB.getAddress(), 0, 0 };
 
 		OS.g_dbus_connection_register_object(
 				connection,
@@ -419,8 +418,8 @@ class WebkitGDBus {
 				System.err.println("SWT WebKitGDBus: error creating empty BrowserFunction GVariant tuple, skipping.");
 			}
 		} else {
-			for (long id : map.keySet()) {
-				ArrayList<ArrayList<String>> list = map.get(id);
+			for (Entry<Long, ArrayList<ArrayList<String>>> entry : map.entrySet()) {
+				ArrayList<ArrayList<String>> list = entry.getValue();
 				if (list != null) {
 					for (ArrayList<String> stringList : list) {
 						Object [] stringArray = stringList.toArray();
@@ -428,7 +427,7 @@ class WebkitGDBus {
 							System.err.println("SWT WebKitGDBus: String array with BrowserFunction and URL should never have"
 									+ "more than 2 Strings");
 						}
-						tupleArray[0] = id;
+						tupleArray[0] = entry.getKey();
 						System.arraycopy(stringArray, 0, tupleArray, 1, 2);
 						long tupleGVariant = convertJavaToGVariant(tupleArray);
 						if (tupleGVariant != 0) {
@@ -450,7 +449,6 @@ class WebkitGDBus {
 		OS.g_dbus_method_invocation_return_value(invocation, finalGVariant);
 		OS.g_variant_builder_unref(builder);
 		OS.g_variant_type_free(type);
-		return;
 	}
 
 	private static void invokeReturnValue (Object result, long invocation) {
@@ -463,7 +461,6 @@ class WebkitGDBus {
 			resultGVariant = convertJavaToGVariant(new Object [] {errMsg});
 		}
 		OS.g_dbus_method_invocation_return_value(invocation, resultGVariant);
-		return; // void return value.
 	}
 
 	/**
