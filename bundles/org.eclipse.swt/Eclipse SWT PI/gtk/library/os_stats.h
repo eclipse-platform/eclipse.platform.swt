@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2021 IBM Corporation and others. All rights reserved.
+ * Copyright (c) 2000, 2022 IBM Corporation and others. All rights reserved.
  * The contents of this file are made available under the terms
  * of the GNU Lesser General Public License (LGPL) Version 2.1 that
  * accompanies this distribution (lgpl-v21.txt).  The LGPL is also
@@ -964,6 +964,8 @@ typedef enum {
 	g_1dir_1make_1tmp_FUNC,
 	g_1error_1free_FUNC,
 	g_1error_1get_1message_FUNC,
+	g_1error_1matches_FUNC,
+	g_1file_1error_1quark_FUNC,
 	g_1file_1get_1path_FUNC,
 	g_1file_1get_1uri_FUNC,
 	g_1file_1info_1get_1content_1type_FUNC,

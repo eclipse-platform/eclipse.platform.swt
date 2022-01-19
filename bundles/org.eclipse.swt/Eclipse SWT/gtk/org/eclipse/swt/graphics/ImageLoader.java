@@ -17,11 +17,13 @@ package org.eclipse.swt.graphics;
 
 import java.io.*;
 import java.util.*;
+import java.util.List;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.gtk.*;
 import org.eclipse.swt.internal.image.*;
+import org.eclipse.swt.widgets.*;
 
 /**
  * Instances of this class are used to load images from,
@@ -193,7 +195,18 @@ ImageData [] getImageDataArrayFromStream(InputStream stream) {
 		// 2) Copy byte array to C memory, write to GdkPixbufLoader
 		long buffer_ptr = OS.g_malloc(data_buffer.length);
 		C.memmove(buffer_ptr, data_buffer, data_buffer.length);
-		GDK.gdk_pixbuf_loader_write(loader, buffer_ptr, data_buffer.length, null);
+		long [] error = new long [1];
+		GDK.gdk_pixbuf_loader_write(loader, buffer_ptr, data_buffer.length, error);
+		if(error[0] != 0) {
+			/* Bug 576484
+			 * It is safe just to assume if this fails it is most likely an IO error
+			 * since unsupported format is checked before, and invalid image right after.
+			 * Still, check if it belongs to the G_FILE_ERROR domain and IO error code
+			 */
+			if(OS.g_error_matches(error[0], OS.g_file_error_quark(), OS.G_FILE_ERROR_IO)){
+				SWT.error(SWT.ERROR_IO, null, Display.extractFreeGError(error[0]));
+			}
+		}
 		GDK.gdk_pixbuf_loader_close(loader, null);
 
 		// 3) Get GdkPixbufAnimation from loader

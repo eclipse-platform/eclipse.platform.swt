@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2021 IBM Corporation and others. All rights reserved.
+ * Copyright (c) 2000, 2022 IBM Corporation and others. All rights reserved.
  * The contents of this file are made available under the terms
  * of the GNU Lesser General Public License (LGPL) Version 2.1 that
  * accompanies this distribution (lgpl-v21.txt).  The LGPL is also
@@ -990,6 +990,8 @@ char * OS_nativeFunctionNames[] = {
 	"g_1dir_1make_1tmp",
 	"g_1error_1free",
 	"g_1error_1get_1message",
+	"g_1error_1matches",
+	"g_1file_1error_1quark",
 	"g_1file_1get_1path",
 	"g_1file_1get_1uri",
 	"g_1file_1info_1get_1content_1type",

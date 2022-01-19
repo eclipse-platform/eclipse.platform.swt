@@ -145,6 +145,7 @@ public class OS extends C {
 	}
 
 	/** Constants */
+	public static final int G_FILE_ERROR_IO = 21;
 	public static final int G_FILE_TEST_IS_DIR = 1 << 2;
 	public static final int G_FILE_TEST_IS_EXECUTABLE = 1 << 3;
 	public static final int G_SIGNAL_MATCH_DATA = 1 << 4;
@@ -899,6 +900,12 @@ public static final native boolean g_app_info_supports_uris(long appInfo);
  * @param error cast=(GError *)
  */
 public static final native long g_error_get_message(long error);
+/**
+ * @param error cast=(const GError *)
+ * @param domain cast=(GQuark)
+ * @param code cast=(gint)
+ */
+public static final native boolean g_error_matches(long error, int domain, int code);
 
 /**
  * @param gerror cast=(GError *)
@@ -922,6 +929,7 @@ public static final native long g_credentials_new();
  * @param error cast=(GError **)
  */
 public static final native boolean g_credentials_is_same_user(long credentials, long other_credentials, long [] error);
+public static final native int g_file_error_quark();
 /**
  * @param info cast=(GFileInfo *)
  */

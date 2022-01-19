@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2021 IBM Corporation and others. All rights reserved.
+ * Copyright (c) 2000, 2022 IBM Corporation and others. All rights reserved.
  * The contents of this file are made available under the terms
  * of the GNU Lesser General Public License (LGPL) Version 2.1 that
  * accompanies this distribution (lgpl-v21.txt).  The LGPL is also
@@ -11613,6 +11613,30 @@ JNIEXPORT jlong JNICALL OS_NATIVE(g_1error_1get_1message)
 	OS_NATIVE_ENTER(env, that, g_1error_1get_1message_FUNC);
 	rc = (jlong)g_error_get_message((GError *)arg0);
 	OS_NATIVE_EXIT(env, that, g_1error_1get_1message_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_g_1error_1matches
+JNIEXPORT jboolean JNICALL OS_NATIVE(g_1error_1matches)
+	(JNIEnv *env, jclass that, jlong arg0, jint arg1, jint arg2)
+{
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, g_1error_1matches_FUNC);
+	rc = (jboolean)g_error_matches((const GError *)arg0, (GQuark)arg1, (gint)arg2);
+	OS_NATIVE_EXIT(env, that, g_1error_1matches_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_g_1file_1error_1quark
+JNIEXPORT jint JNICALL OS_NATIVE(g_1file_1error_1quark)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, g_1file_1error_1quark_FUNC);
+	rc = (jint)g_file_error_quark();
+	OS_NATIVE_EXIT(env, that, g_1file_1error_1quark_FUNC);
 	return rc;
 }
 #endif
