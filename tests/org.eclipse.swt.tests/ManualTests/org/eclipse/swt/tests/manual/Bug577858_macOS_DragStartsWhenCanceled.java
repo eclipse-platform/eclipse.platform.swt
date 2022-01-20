@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2021 Syntevo and others.
+ * Copyright (c) 2021, 2022 Syntevo and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -14,11 +14,22 @@
 
 package org.eclipse.swt.tests.manual;
 
-import org.eclipse.swt.*;
-import org.eclipse.swt.dnd.*;
-import org.eclipse.swt.graphics.Resource;
-import org.eclipse.swt.layout.*;
-import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.dnd.DND;
+import org.eclipse.swt.dnd.DragSource;
+import org.eclipse.swt.dnd.DragSourceEvent;
+import org.eclipse.swt.dnd.DragSourceListener;
+import org.eclipse.swt.dnd.DropTarget;
+import org.eclipse.swt.dnd.TextTransfer;
+import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Table;
+import org.eclipse.swt.widgets.TableItem;
+import org.eclipse.swt.widgets.Tree;
+import org.eclipse.swt.widgets.TreeItem;
 
 public final class Bug577858_macOS_DragStartsWhenCanceled {
 	public static void main(String[] args) {
