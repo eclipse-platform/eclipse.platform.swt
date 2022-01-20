@@ -29,24 +29,6 @@
     <plugins>
       <plugin>
         <groupId>org.eclipse.tycho</groupId>
-        <artifactId>target-platform-configuration</artifactId>
-        <configuration>
-          <!-- Make all platform-specific fragments available (and optional) via a feature -->
-	      <dependency-resolution>
-	         <extraRequirements>
-	            <requirement>
-	               <type>eclipse-feature</type>
-	               <id>org.eclipse.swt.tests.fragments.feature</id>
-	               <versionRange>0.0.0</versionRange>
-	            </requirement>
-	         </extraRequirements>
-	      </dependency-resolution>
-	      <!-- but only resolve against current environment as we don't want all fragments simultaneously in test -->
-	      <environments combine.self="override"/> <!--  we only want platform specific artifacts here -->
-        </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.eclipse.tycho</groupId>
         <artifactId>tycho-surefire-plugin</artifactId>
         <configuration>
           <skipTests>true</skipTests> <!-- Skip all tests on build servers, because it contains platform specific code -->
