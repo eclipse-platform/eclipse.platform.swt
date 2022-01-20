@@ -14,11 +14,27 @@
 
 package org.eclipse.swt.tests.manual;
 
-import org.eclipse.swt.*;
-import org.eclipse.swt.dnd.*;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.dnd.DND;
+import org.eclipse.swt.dnd.DragSource;
+import org.eclipse.swt.dnd.DragSourceEvent;
+import org.eclipse.swt.dnd.DragSourceListener;
+import org.eclipse.swt.dnd.DropTarget;
+import org.eclipse.swt.dnd.TextTransfer;
+import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.graphics.Resource;
-import org.eclipse.swt.layout.*;
-import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Item;
+import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Table;
+import org.eclipse.swt.widgets.TableItem;
+import org.eclipse.swt.widgets.Tree;
+import org.eclipse.swt.widgets.TreeItem;
 
 public final class Bug572242_LeakInTreeDragSourceEffect {
 	interface ControlType {
@@ -114,7 +130,7 @@ public final class Bug572242_LeakInTreeDragSourceEffect {
 				Item itemCancelStart   = controlType.createItem("Drag me -> leak via cancel in dragStart()");
 				Item itemNoAgents      = controlType.createItem("Drag me -> leak via no transfer agents");
 				Item itemCancelSetData = controlType.createItem("Drag me -> cancel in dragSetData()");
-				Item itemRegular       = controlType.createItem("Drag me -> ok");
+				/* Item itemRegular = */ controlType.createItem("Drag me -> ok");
 
 				DragSource dragSource = new DragSource (control, DND.DROP_MOVE | DND.DROP_COPY);
 				dragSource.addDragListener (new DragSourceListener () {
@@ -124,7 +140,7 @@ public final class Bug572242_LeakInTreeDragSourceEffect {
 							event.doit = false;
 
 						if (itemNoAgents == controlType.getSelectedItem())
-							dragSource.setTransfer (null);
+							dragSource.setTransfer ((Transfer[])null);
 						else
 							dragSource.setTransfer (TextTransfer.getInstance ());
 					}
