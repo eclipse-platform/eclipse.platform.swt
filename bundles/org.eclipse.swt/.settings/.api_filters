@@ -464,4 +464,12 @@
             </message_arguments>
         </filter>
     </resource>
+    <resource path="META-INF/MANIFEST.MF">
+        <filter comment="False positive, see bug 578228" id="924844039">
+            <message_arguments>
+                <message_argument value="3.118.100"/>
+                <message_argument value="3.118.0"/>
+            </message_arguments>
+        </filter>
+    </resource>
 </component>
