@@ -173,7 +173,8 @@ NSSize cellSizeForBounds (long id, long sel, NSRect cellFrame) {
 		NSAttributedString attribStr = createString(text, null, foreground, style, true, true, true);
 		NSRect rect = attribStr.boundingRectWithSize(wrapSize, OS.NSStringDrawingUsesLineFragmentOrigin);
 		attribStr.release();
-		double trimHeight = size.height - titleRect.height;
+		// Avoid trim height to be set to a negative value
+		double trimHeight = Math.max(size.height - titleRect.height, 0);
 		size.height = rect.height;
 		if (image != null && ((style & (SWT.CHECK|SWT.RADIO)) !=0)) {
 			NSSize imageSize = image.handle.size();
