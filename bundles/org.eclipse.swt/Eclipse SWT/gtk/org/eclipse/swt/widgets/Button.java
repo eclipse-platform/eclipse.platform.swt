@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2020 IBM Corporation and others.
+ * Copyright (c) 2000, 2022 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -304,7 +304,7 @@ void createHandle (int index) {
 
 	switch (style & bits) {
 		case SWT.ARROW:
-			byte arrowType [] = GTK.GTK_NAMED_ICON_GO_UP;
+			byte[] arrowType  = GTK.GTK_NAMED_ICON_GO_UP;
 			if ((style & SWT.UP) != 0) arrowType = GTK.GTK_NAMED_ICON_GO_UP;
 			if ((style & SWT.DOWN) != 0) arrowType = GTK.GTK_NAMED_ICON_GO_DOWN;
 			if ((style & SWT.LEFT) != 0) arrowType = GTK.GTK_NAMED_ICON_GO_PREVIOUS;
@@ -844,7 +844,7 @@ void _setAlignment (int alignment) {
 		style &= ~(SWT.UP | SWT.DOWN | SWT.LEFT | SWT.RIGHT);
 		style |= alignment & (SWT.UP | SWT.DOWN | SWT.LEFT | SWT.RIGHT);
 		boolean isRTL = (style & SWT.RIGHT_TO_LEFT) != 0;
-		byte arrowType [] = GTK.GTK_NAMED_ICON_GO_UP;
+		byte[] arrowType  = GTK.GTK_NAMED_ICON_GO_UP;
 		switch (alignment) {
 			case SWT.UP: arrowType = GTK.GTK_NAMED_ICON_GO_UP; break;
 			case SWT.DOWN: arrowType = GTK.GTK_NAMED_ICON_GO_DOWN; break;
@@ -1187,7 +1187,7 @@ void setOrientation (boolean create) {
 		if (labelHandle != 0) GTK.gtk_widget_set_direction (labelHandle, dir);
 		if (imageHandle != 0) GTK.gtk_widget_set_direction (imageHandle, dir);
 		if (arrowHandle != 0) {
-			byte arrowType [] = (style & SWT.RIGHT_TO_LEFT) != 0 ? GTK.GTK_NAMED_ICON_GO_NEXT : GTK.GTK_NAMED_ICON_GO_PREVIOUS;
+			byte[] arrowType  = (style & SWT.RIGHT_TO_LEFT) != 0 ? GTK.GTK_NAMED_ICON_GO_NEXT : GTK.GTK_NAMED_ICON_GO_PREVIOUS;
 			switch (style & (SWT.LEFT | SWT.RIGHT)) {
 				case SWT.LEFT: GTK3.gtk_image_set_from_icon_name (arrowHandle, arrowType, GTK.GTK_ICON_SIZE_MENU); break;
 				case SWT.RIGHT: GTK3.gtk_image_set_from_icon_name (arrowHandle, arrowType, GTK.GTK_ICON_SIZE_MENU); break;
