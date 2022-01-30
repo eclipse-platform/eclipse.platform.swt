@@ -270,7 +270,7 @@ class WebkitGDBus {
 					result = WebKit.WebKitExtension.webkit2callJavaCallback(java_parameters);
 				} catch (Exception e) {
 					// gdbus should always return to prevent extension from hanging.
-					result = (String) WebBrowser.CreateErrorString (e.getLocalizedMessage ());
+					result = WebBrowser.CreateErrorString (e.getLocalizedMessage ());
 					System.err.println("SWT WebkitGDBus: Exception occured in Webkit2 callback logic.");
 				}
 			} else if (java_method_name.equals(webkitWebExtensionIdentifier)) {
@@ -291,7 +291,7 @@ class WebkitGDBus {
 				return 0;
 			}
 		} else {
-			result = (String) "SWT WebkitGDBus: GDBus called an unknown method?";
+			result = "SWT WebkitGDBus: GDBus called an unknown method?";
 			System.err.println("SWT WebkitGDBus: Received a call from an unknown method: " + java_method_name);
 		}
 		invokeReturnValue(result, invocation);
@@ -457,7 +457,7 @@ class WebkitGDBus {
 			resultGVariant = convertJavaToGVariant(new Object [] {result}); // Result has to be a tuple.
 		} catch (SWTException e) {
 			// gdbus should always return to prevent extension from hanging.
-			String errMsg = (String) WebBrowser.CreateErrorString (e.getLocalizedMessage ());
+			String errMsg = WebBrowser.CreateErrorString (e.getLocalizedMessage ());
 			resultGVariant = convertJavaToGVariant(new Object [] {errMsg});
 		}
 		OS.g_dbus_method_invocation_return_value(invocation, resultGVariant);
@@ -502,9 +502,9 @@ class WebkitGDBus {
 			if (msg != null && (!msg.contains("Timeout") && !msg.contains("timeout"))) {
 				System.err.println("SWT WebKitGDBus: there was an error executing something synchronously with the extension.");
 				System.err.println("SWT WebKitGDBus: the error message is: " + msg);
-				return (Object) false;
+				return false;
 			}
-			return (Object) "timeout";
+			return "timeout";
 		}
 		Object resultObject = gVariant != 0 ? convertGVariantToJava(gVariant) : (Object) false;
 		// Sometimes we get back tuples from GDBus, which get converted into Object arrays. In this case
@@ -651,7 +651,7 @@ class WebkitGDBus {
 				return OS.g_variant_new_byte(WebkitGDBus.SWT_DBUS_MAGIC_NUMBER_EMPTY_ARRAY);  // see: WebKitGTK.java 'TYPE NOTES'
 			}
 
-			long variants[] = new long [length];
+			long[] variants = new long [length];
 
 			for (int i = 0; i < length; i++) {
 				variants[i] = convertJavaToGVariant(arrayValue[i]);
