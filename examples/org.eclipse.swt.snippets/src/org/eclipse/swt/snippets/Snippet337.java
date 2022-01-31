@@ -64,7 +64,7 @@ public static void main(String args[]) {
 
 		mainPanel.add(new JTextField("a JTextField"));
 		mainPanel.add(launchBrowserButton);
-		mainFrame.getContentPane().add(mainPanel, BorderLayout.CENTER);
+		mainFrame.getContentPane().add(mainPanel, java.awt.BorderLayout.CENTER);
 		mainFrame.pack();
 		mainFrame.setVisible(true);
 	});

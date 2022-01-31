@@ -54,7 +54,7 @@ public class Snippet154 {
 
 		/* Create and setting up frame */
 		Frame frame = SWT_AWT.new_Frame(composite);
-		Panel panel = new Panel(new BorderLayout()) {
+		Panel panel = new Panel(new java.awt.BorderLayout()) {
 			@Override
 			public void update(java.awt.Graphics g) {
 				/* Do not erase the background */
@@ -84,7 +84,7 @@ public class Snippet154 {
 		table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 		table.createDefaultColumnsFromModel();
 		JScrollPane scrollPane = new JScrollPane(table);
-		contentPane.setLayout(new BorderLayout());
+		contentPane.setLayout(new java.awt.BorderLayout());
 		contentPane.add(scrollPane);
 
 		shell.open();
