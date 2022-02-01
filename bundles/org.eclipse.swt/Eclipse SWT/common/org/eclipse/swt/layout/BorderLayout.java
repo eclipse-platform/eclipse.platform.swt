@@ -111,7 +111,7 @@ public class BorderLayout extends Layout {
 	 */
 	public int controlSpacing = 0;
 	/**
-	 * If the width of the {@link #LEFT} and {@link #RIGHT} region exceeds the
+	 * If the width of the {@link SWT#LEFT} and {@link SWT#RIGHT} region exceeds the
 	 * available space this factor is used to distribute the size to the controls,
 	 * valid values range between [0 ... 1]
 	 *
@@ -119,7 +119,7 @@ public class BorderLayout extends Layout {
 	 */
 	public double widthDistributionFactor = 0.5;
 	/**
-	 * If the height of the {@link #TOP} and {@link #BOTTOM} region exceeds the
+	 * If the height of the {@link SWT#TOP} and {@link SWT#BOTTOM} region exceeds the
 	 * available space this factor is used to distribute the size to the controls,
 	 * valid values range between [0 ... 1]
 	 *
