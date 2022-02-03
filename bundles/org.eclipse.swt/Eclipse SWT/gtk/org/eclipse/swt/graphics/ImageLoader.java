@@ -205,6 +205,8 @@ ImageData [] getImageDataArrayFromStream(InputStream stream) {
 			 */
 			if(OS.g_error_matches(error[0], OS.g_file_error_quark(), OS.G_FILE_ERROR_IO)){
 				SWT.error(SWT.ERROR_IO, null, Display.extractFreeGError(error[0]));
+			} else {
+				OS.g_error_free(error[0]);
 			}
 		}
 		GDK.gdk_pixbuf_loader_close(loader, null);
