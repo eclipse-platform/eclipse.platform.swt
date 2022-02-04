@@ -1028,13 +1028,13 @@ void createMainMenu () {
 	appleMenu.initWithTitle(emptyStr);
 	OS.objc_msgSend(application.id, OS.sel_registerName("setAppleMenu:"), appleMenu.id);
 
-	title = NSString.stringWith(SWT.getMessage("About") + " " + appName);
+	title = NSString.stringWith(SWT.getMessage("SWT_About") + " " + appName);
 	menuItem = appleMenu.addItemWithTitle(title, OS.sel_orderFrontStandardAboutPanel_, emptyStr);
 	menuItem.setTarget(applicationDelegate);
 
 	appleMenu.addItem(NSMenuItem.separatorItem());
 
-	title = NSString.stringWith(SWT.getMessage("Preferences..."));
+	title = NSString.stringWith(SWT.getMessage("SWT_Preferences"));
 	menuItem = appleMenu.addItemWithTitle(title, 0, NSString.stringWith(","));
 
 	/*
@@ -1045,7 +1045,7 @@ void createMainMenu () {
 
 	appleMenu.addItem(NSMenuItem.separatorItem());
 
-	title = NSString.stringWith(SWT.getMessage("Services"));
+	title = NSString.stringWith(SWT.getMessage("SWT_Services"));
 	menuItem = appleMenu.addItemWithTitle(title, 0, emptyStr);
 	NSMenu servicesMenu = (NSMenu)new NSMenu().alloc();
 	servicesMenu.initWithTitle(emptyStr);
@@ -1055,22 +1055,22 @@ void createMainMenu () {
 
 	appleMenu.addItem(NSMenuItem.separatorItem());
 
-	title = NSString.stringWith(SWT.getMessage("Hide") + " " + appName);
+	title = NSString.stringWith(SWT.getMessage("SWT_Hide") + " " + appName);
 	menuItem = appleMenu.addItemWithTitle(title, OS.sel_hide_, NSString.stringWith("h"));
 	menuItem.setTarget(applicationDelegate);
 
-	title = NSString.stringWith(SWT.getMessage("Hide Others"));
+	title = NSString.stringWith(SWT.getMessage("SWT_HideOthers"));
 	menuItem = appleMenu.addItemWithTitle(title, OS.sel_hideOtherApplications_, NSString.stringWith("h"));
 	menuItem.setKeyEquivalentModifierMask(OS.NSCommandKeyMask | OS.NSAlternateKeyMask);
 	menuItem.setTarget(applicationDelegate);
 
-	title = NSString.stringWith(SWT.getMessage("Show All"));
+	title = NSString.stringWith(SWT.getMessage("SWT_ShowAll"));
 	menuItem = appleMenu.addItemWithTitle(title, OS.sel_unhideAllApplications_, emptyStr);
 	menuItem.setTarget(applicationDelegate);
 
 	appleMenu.addItem(NSMenuItem.separatorItem());
 
-	title = NSString.stringWith(SWT.getMessage("Quit") + " " + appName);
+	title = NSString.stringWith(SWT.getMessage("SWT_Quit") + " " + appName);
 	menuItem = appleMenu.addItemWithTitle(title, OS.sel_applicationShouldTerminate_, NSString.stringWith("q"));
 	menuItem.setTarget(applicationDelegate);
 
