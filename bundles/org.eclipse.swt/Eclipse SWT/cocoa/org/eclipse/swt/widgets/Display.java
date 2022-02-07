@@ -5659,12 +5659,16 @@ void applicationWillFinishLaunching (long id, long sel, long notification) {
 	 * 		/System/Library/..../Resources/en.lproj/DefaultApp.nib.
 	 */
 	NSString path;
+	boolean createMainMenu = false;
 	NSDictionary dict = NSDictionary.dictionaryWithObject(applicationDelegate, NSString.stringWith("NSOwner"));
-	NSBundle bundle = NSBundle.bundleWithIdentifier(NSString.stringWith("com.apple.JavaVM"));
+	NSBundle bundle = NSBundle.bundleWithPath(NSString.stringWith("/System/Library/Frameworks/JavaVM.framework/"));
 	if (bundle != null) {
 		path = bundle.pathForResource(NSString.stringWith("DefaultApp"), NSString.stringWith("nib"), null, languageDisplayName);
 		if (path == null) path = bundle.pathForResource(NSString.stringWith("DefaultApp"), NSString.stringWith("nib"), null, NSString.stringWith(languageISOValue));
-		if (path == null) path = bundle.pathForResource(NSString.stringWith("DefaultApp"), NSString.stringWith("nib"));
+		if (path == null) {
+			createMainMenu = !languageISOValue.equals("en");
+			path = bundle.pathForResource(NSString.stringWith("DefaultApp"), NSString.stringWith("nib"));
+		}
 		if (!loaded) loaded = path != null && NSBundle.loadNibFile(path, dict, 0);
 		if (!loaded) {
 			path = bundle.pathForResource(NSString.stringWith("DefaultApp"), NSString.stringWith("nib"), null, NSString.stringWith("English"));
@@ -5672,11 +5676,10 @@ void applicationWillFinishLaunching (long id, long sel, long notification) {
 			loaded = path != null && NSBundle.loadNibFile(path, dict, 0);
 		}
 	}
-	if (!loaded) {
-		path = NSString.stringWith(System.getProperty("java.home") + "/../Resources/English.lproj/DefaultApp.nib");
-		loaded = path != null && NSBundle.loadNibFile(path, dict, 0);
-	}
-	if (!loaded) {
+	/*
+	 * Create the main menu ourselves if Default.nib was not loaded or was not found for the specific language
+	 */
+	if (!loaded || createMainMenu) {
 		createMainMenu();
 	}
 
