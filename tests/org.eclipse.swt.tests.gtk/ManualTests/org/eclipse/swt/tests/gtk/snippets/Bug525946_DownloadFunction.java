@@ -34,8 +34,8 @@ public class Bug525946_DownloadFunction {
 		shell.setBounds(10, 10, 400, 400);
 		shell.setLayout(new FillLayout());
 		final Browser browser = new Browser(shell, SWT.NONE);
-//		browser.setUrl("http://download.eclipse.org/eclipse/downloads/drops4/I20180416-2000/download.php?dropFile=eclipse-test-framework-I20180416-2000.zip"); // 2.3 mb
-		browser.setUrl("http://download.eclipse.org/tools/orbit/downloads/drops/R20170516192513/orbit-buildrepo-R20170516192513.zip"); // 400mb
+//		browser.setUrl("https://download.eclipse.org/eclipse/downloads/drops4/I20180416-2000/download.php?dropFile=eclipse-test-framework-I20180416-2000.zip"); // 2.3 mb
+		browser.setUrl("https://download.eclipse.org/tools/orbit/downloads/drops/R20170516192513/orbit-buildrepo-R20170516192513.zip"); // 400mb
 		shell.open();
 		while (!shell.isDisposed()) {
 			if (!display.readAndDispatch())

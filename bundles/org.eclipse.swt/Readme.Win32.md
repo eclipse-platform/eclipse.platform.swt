@@ -21,7 +21,7 @@ libraries in the binary repository.
 
 * Download & install Java *JDK* (Last tested on JDK9) http://www.oracle.com/technetwork/java/javase/downloads/index.html
 * Download and install Eclipse. Either the "Eclipse IDE for Eclipse Committers" or a recent integration build:
-  http://download.eclipse.org/eclipse/downloads/
+  https://download.eclipse.org/eclipse/downloads/
 * (Optionally) install CDT from marketplace if you want to work on C/Native parts of SWT.
 * (if not already installed) installed EGit integration.
 * Open the git perspective. Add the following two repositories, which can be found on: (use git protocol)
