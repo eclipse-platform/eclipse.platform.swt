@@ -1220,7 +1220,9 @@ void drawBitmap(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight,
 			data.hNullBitmap = 0;
 		}
 	}
-	if (bm.bmPlanes * bm.bmBitsPixel == 32) {
+	boolean isDib = bm.bmBits != 0;
+	int depth = bm.bmPlanes * bm.bmBitsPixel;
+	if (isDib && depth == 32) {
 		drawBitmapAlpha(srcImage, srcX, srcY, srcWidth, srcHeight, destX, destY, destWidth, destHeight, simple);
 	} else if (srcImage.transparentPixel != -1) {
 		drawBitmapTransparent(srcImage, srcX, srcY, srcWidth, srcHeight, destX, destY, destWidth, destHeight, simple, bm, imgWidth, imgHeight);
