@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2017 IBM Corporation and others.
+ * Copyright (c) 2000, 2021 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -205,7 +205,7 @@ public class ImageAnalyzer {
 		shell.setText(bundle.getString("Image_analyzer"));
 
 		// Hook resize and dispose listeners.
-		shell.addControlListener(ControlListener.controlResizedAdapter(e-> resizeShell(e)));
+		shell.addControlListener(ControlListener.controlResizedAdapter(this::resizeShell));
 		shell.addShellListener(ShellListener.shellClosedAdapter(e -> {
 			animate = false; // stop any animation in progress
 			if (animateThread != null) {
@@ -833,7 +833,7 @@ public class ImageAnalyzer {
 			loader = new ImageLoader();
 			if (incremental) {
 				// Prepare to handle incremental events.
-				loader.addImageLoaderListener(event -> incrementalDataLoaded(event));
+				loader.addImageLoaderListener(this::incrementalDataLoaded);
 				incrementalThreadStart();
 			}
 			// Read the new image(s) from the chosen file.
@@ -884,7 +884,7 @@ public class ImageAnalyzer {
 				loader = new ImageLoader();
 				if (incremental) {
 					// Prepare to handle incremental events.
-					loader.addImageLoaderListener(event -> incrementalDataLoaded(event));
+					loader.addImageLoaderListener(this::incrementalDataLoaded);
 					incrementalThreadStart();
 				}
 				// Read the new image(s) from the chosen URL.
@@ -929,7 +929,7 @@ public class ImageAnalyzer {
 					// Synchronize so we don't try to remove when the vector is null.
 					synchronized (ImageAnalyzer.this) {
 						if (incrementalEvents != null) {
-							if (incrementalEvents.size() > 0) {
+							if (!incrementalEvents.isEmpty()) {
 								ImageLoaderEvent event = incrementalEvents.remove(0);
 								if (image != null) image.dispose();
 								image = new Image(display, event.imageData);
@@ -1655,22 +1655,19 @@ public class ImageAnalyzer {
 		shell.setText(string);
 
 		if (imageDataArray.length > 1) {
-			string = createMsg(bundle.getString("Type_index"),
-			                   new Object[] {fileTypeString(imageData.type),
-			                                 Integer.valueOf(imageDataIndex + 1),
-			                                 Integer.valueOf(imageDataArray.length)});
+			string = createMsg(bundle.getString("Type_index"), fileTypeString(imageData.type),
+					Integer.valueOf(imageDataIndex + 1), Integer.valueOf(imageDataArray.length));
 		} else {
 			string = createMsg(bundle.getString("Type_string"), fileTypeString(imageData.type));
 		}
 		typeLabel.setText(string);
 
 		string = createMsg(bundle.getString("Size_value"),
-					 new Object[] {Integer.valueOf(imageData.width),
-								Integer.valueOf(imageData.height)});
+					 Integer.valueOf(imageData.width), Integer.valueOf(imageData.height));
 		sizeLabel.setText(string);
 
 		string = createMsg(bundle.getString("Depth_value"),
-				new Object[] {Integer.valueOf(imageData.depth), Integer.valueOf(display.getDepth())});
+				Integer.valueOf(imageData.depth), Integer.valueOf(display.getDepth()));
 		depthLabel.setText(string);
 
 		string = createMsg(bundle.getString("Transparent_pixel_value"), pixelInfo(imageData.transparentPixel));
@@ -1680,27 +1677,25 @@ public class ImageAnalyzer {
 		timeToLoadLabel.setText(string);
 
 		string = createMsg(bundle.getString("Animation_size_value"),
-		                      new Object[] {Integer.valueOf(loader.logicalScreenWidth),
-								Integer.valueOf(loader.logicalScreenHeight)});
+		                      Integer.valueOf(loader.logicalScreenWidth), Integer.valueOf(loader.logicalScreenHeight));
 		screenSizeLabel.setText(string);
 
 		string = createMsg(bundle.getString("Background_pixel_value"), pixelInfo(loader.backgroundPixel));
 		backgroundPixelLabel.setText(string);
 
 		string = createMsg(bundle.getString("Image_location_value"),
-		                      new Object[] {Integer.valueOf(imageData.x), Integer.valueOf(imageData.y)});
+		                      Integer.valueOf(imageData.x), Integer.valueOf(imageData.y));
 		locationLabel.setText(string);
 
 		string = createMsg(bundle.getString("Disposal_value"),
-		                      new Object[] {Integer.valueOf(imageData.disposalMethod),
-		                          disposalString(imageData.disposalMethod)});
+		                      Integer.valueOf(imageData.disposalMethod), disposalString(imageData.disposalMethod));
 		disposalMethodLabel.setText(string);
 
 		int delay = imageData.delayTime * 10;
 		int delayUsed = visibleDelay(delay);
 		if (delay != delayUsed) {
 			string = createMsg(bundle.getString("Delay_value"),
-			                   new Object[] {Integer.valueOf(delay), Integer.valueOf(delayUsed)});
+			                   Integer.valueOf(delay), Integer.valueOf(delayUsed));
 		} else {
 			string = createMsg(bundle.getString("Delay_used"), Integer.valueOf(delay));
 		}
@@ -1722,12 +1717,11 @@ public class ImageAnalyzer {
 
 		string = createMsg(
 				bundle.getString("Pixel_data_value"),
-				new Object[] {
 						Integer.valueOf(imageData.bytesPerLine),
 						Integer.valueOf(imageData.scanlinePad),
 						depthInfo(imageData.depth),
 						(imageData.alphaData != null && imageData.alphaData.length > 0) ?
-								bundle.getString("Scroll_for_alpha") : "" });
+								bundle.getString("Scroll_for_alpha") : "");
 		dataLabel.setText(string);
 
 		String data = dataHexDump(dataText.getLineDelimiter());
@@ -2083,7 +2077,7 @@ public class ImageAnalyzer {
 	 */
 	void showErrorDialog(String operation, String filename, Throwable e) {
 		MessageBox box = new MessageBox(shell, SWT.ICON_ERROR);
-		String message = createMsg(bundle.getString("Error"), new String[] {operation, filename});
+		String message = createMsg(bundle.getString("Error"), operation, filename);
 		String errorMessage = "";
 		if (e != null) {
 			if (e instanceof SWTException) {
@@ -2168,16 +2162,13 @@ public class ImageAnalyzer {
 		Object[] args = {Integer.valueOf(depth), ""};
 		switch (depth) {
 			case 1:
-				args[1] = createMsg(bundle.getString("Multi_pixels"),
-				                    new Object[] {Integer.valueOf(8), " [01234567]"});
+				args[1] = createMsg(bundle.getString("Multi_pixels"), Integer.valueOf(8), " [01234567]");
 				break;
 			case 2:
-				args[1] = createMsg(bundle.getString("Multi_pixels"),
-				                    new Object[] {Integer.valueOf(4), "[00112233]"});
+				args[1] = createMsg(bundle.getString("Multi_pixels"), Integer.valueOf(4), "[00112233]");
 				break;
 			case 4:
-				args[1] = createMsg(bundle.getString("Multi_pixels"),
-				                    new Object[] {Integer.valueOf(2), "[00001111]"});
+				args[1] = createMsg(bundle.getString("Multi_pixels"), Integer.valueOf(2), "[00001111]");
 				break;
 			case 8:
 				args[1] = bundle.getString("One_byte");
@@ -2353,13 +2344,9 @@ public class ImageAnalyzer {
 		compressionRatioLabel.setEnabled(false);
 	}
 
-	static String createMsg(String msg, Object[] args) {
+	static String createMsg(String msg, Object... args) {
 		MessageFormat formatter = new MessageFormat(msg);
 		return formatter.format(args);
 	}
 
-	static String createMsg(String msg, Object arg) {
-		MessageFormat formatter = new MessageFormat(msg);
-		return formatter.format(new Object[]{arg});
-	}
 }
