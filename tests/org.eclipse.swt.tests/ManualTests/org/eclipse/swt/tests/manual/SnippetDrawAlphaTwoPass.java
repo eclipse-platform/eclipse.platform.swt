@@ -77,7 +77,7 @@ public class SnippetDrawAlphaTwoPass {
 		ImageData imageMaskData = null;
 
 		if (imageData.getTransparencyType() == SWT.TRANSPARENCY_ALPHA) {
-			imageMaskData = new ImageData(width, height, 8, ALPHA_PALETTE, imageData.scanlinePad, imageData.alphaData);
+			imageMaskData = new ImageData(width, height, 8, ALPHA_PALETTE, 1, imageData.alphaData);
 		} else if (imageData.getTransparencyType() == SWT.TRANSPARENCY_PIXEL || imageData.getTransparencyType() == SWT.TRANSPARENCY_MASK) {
 			ImageData transparencyMaskData = imageData.getTransparencyMask();
 			imageMaskData = new ImageData(width, height, 1, BW_PALETTE, transparencyMaskData.scanlinePad, transparencyMaskData.data);
@@ -127,12 +127,33 @@ public class SnippetDrawAlphaTwoPass {
 				scaledResult.maskPad = scaledResultMaskData.scanlinePad;
 				scaledResult.maskData = scaledResultMaskData.data;
 			} else {
-				scaledResult.alphaData = scaledResultMaskData.data;
+				byte[] alphaData = scaledResultMaskData.data;
+				if (scaledResultMaskData.scanlinePad != 1) {
+					alphaData = convertPad(scaledResultMaskData.data, scaledResultMaskData.width, scaledResultMaskData.height,
+							scaledResultMaskData.depth, scaledResultMaskData.scanlinePad, 1);
+				}
+				scaledResult.alphaData = alphaData;
 			}
 		}
 
 		result.dispose();
 		resultMask.dispose();
 		return scaledResult;
+	}
+
+	// copied from ImageData.convertPad as it is not accessible outside the org.eclipse.swt package
+	private static byte[] convertPad(byte[] data, int width, int height, int depth, int pad, int newPad) {
+		if (pad == newPad) return data;
+		int stride = (width * depth + 7) / 8;
+		int bpl = (stride + (pad - 1)) / pad * pad;
+		int newBpl = (stride + (newPad - 1)) / newPad * newPad;
+		byte[] newData = new byte[height * newBpl];
+		int srcIndex = 0, destIndex = 0;
+		for (int y = 0; y < height; y++) {
+			System.arraycopy(data, srcIndex, newData, destIndex, stride);
+			srcIndex += bpl;
+			destIndex += newBpl;
+		}
+		return newData;
 	}
 }
