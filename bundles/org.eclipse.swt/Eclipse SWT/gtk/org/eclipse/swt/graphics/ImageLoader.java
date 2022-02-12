@@ -580,49 +580,7 @@ public void save(OutputStream stream, int format) {
 		SWT.error(SWT.ERROR_UNSUPPORTED_FORMAT);
 	}
 	long [] len = new long [1];
-	long [] option_keys = new long[1];
-	long [] option_values = new long[1];
-	int compressionArg = -1;
-	String optionStr = "";
-
-	/*	Bug 569551
-	 * 	Previously, we were not taking into account compression when saving a file.
-	 *  With this patch compression is now taken into account, however, only for
-	 *  JPG and PNG currently.
-	 *
-	 *  NOTE: The goal is to increase the number of image types that we support
-	 *  compression for. The ImageAnalyzer example only has support for JPG and
-	 *  PNG compression values, so starting off with just those two is reasonable.
-	 *
-	 *  Compression is mapped in the following way:
-	 *  For JPG: Values can be in the range of [1,100], thus no mapping required
-	 *  For PNG: Values are in the range of [0,3] as per SWT, but mapped to [0,9]
-	 *  		 per GDK so compression * 3 results in the correct mapping.
-	 */
-	switch (format) {
-		case SWT.IMAGE_JPEG:
-			optionStr = "quality";
-			compressionArg = compression >= 1 && compression <= 100 ? compression : 75;
-			break;
-		case SWT.IMAGE_PNG:
-			optionStr = "compression";
-			compressionArg = compression >= 0 && compression <= 3 ? (compression*3) : 0;
-			break;
-	}
-
-	if(compressionArg != -1) {
-		byte [] keysArray = Converter.wcsToMbcs(optionStr, true);
-		option_keys[0] = OS.g_malloc(keysArray.length);
-		C.memmove(option_keys[0], keysArray, keysArray.length);
-		byte [] valArray = Converter.wcsToMbcs(String.valueOf(compressionArg), true);
-		option_values[0] = OS.g_malloc(valArray.length);
-		C.memmove(option_values[0], valArray, valArray.length);
-		GDK.gdk_pixbuf_save_to_bufferv(pixbuf, buffer, len, type, option_keys, option_values, null);
-		OS.g_free(option_keys[0]);
-		OS.g_free(option_values[0]);
-	}
-	else GDK.gdk_pixbuf_save_to_bufferv(pixbuf, buffer, len, type, null, null, null);
-
+	GDK.gdk_pixbuf_save_to_bufferv(pixbuf, buffer, len, type, null, null, null);
 	byte[] byteArray = new byte[(int) len[0]];
 	C.memmove(byteArray, buffer[0], byteArray.length);
 	try {
