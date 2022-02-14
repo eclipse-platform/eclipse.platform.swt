@@ -112,6 +112,16 @@ public final class Image extends Resource implements Drawable {
 	GC memGC;
 
 	/**
+	 * the alpha data for the image
+	 */
+	byte[] alphaData;
+
+	/**
+	 * the global alpha value to be used for every pixel
+	 */
+	int alpha = -1;
+
+	/**
 	 * ImageFileNameProvider to provide file names at various Zoom levels
 	 */
 	private ImageFileNameProvider imageFileNameProvider;
@@ -273,6 +283,11 @@ public Image(Device device, Image srcImage, int flag) {
 					device.internal_dispose_GC(hDC, null);
 
 					transparentPixel = srcImage.transparentPixel;
+					alpha = srcImage.alpha;
+					if (srcImage.alphaData != null) {
+						alphaData = new byte[srcImage.alphaData.length];
+						System.arraycopy(srcImage.alphaData, 0, alphaData, 0, alphaData.length);
+					}
 					break;
 				case SWT.ICON:
 					handle = OS.CopyImage(srcImage.handle, OS.IMAGE_ICON, rect.width, rect.height, 0);
@@ -962,10 +977,9 @@ void initNative(String filename) {
 long [] createGdipImage() {
 	switch (type) {
 		case SWT.BITMAP: {
-			BITMAP bm = new BITMAP();
-			OS.GetObject(handle, BITMAP.sizeof, bm);
-			int depth = bm.bmPlanes * bm.bmBitsPixel;
-			if (depth == 32 || transparentPixel != -1) {
+			if (alpha != -1 || alphaData != null || transparentPixel != -1) {
+				BITMAP bm = new BITMAP();
+				OS.GetObject(handle, BITMAP.sizeof, bm);
 				int imgWidth = bm.bmWidth;
 				int imgHeight = bm.bmHeight;
 				long hDC = device.internal_new_GC(null);
@@ -979,14 +993,8 @@ long [] createGdipImage() {
 				OS.GetObject(memDib, BITMAP.sizeof, dibBM);
 				int sizeInBytes = dibBM.bmWidthBytes * dibBM.bmHeight;
 				OS.BitBlt(memHdc, 0, 0, imgWidth, imgHeight, srcHdc, 0, 0, OS.SRCCOPY);
-				long hHeap = OS.GetProcessHeap();
-				long pixels = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, sizeInBytes);
-				if (pixels == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 				byte red = 0, green = 0, blue = 0;
-				if (depth == 32) {
-					OS.MoveMemory(pixels, bm.bmBits, sizeInBytes);
-				}
-				else {
+				if (transparentPixel != -1) {
 					if (bm.bmBitsPixel <= 8)  {
 						byte[] color = new byte[4];
 						OS.GetDIBColorTable(srcHdc, transparentPixel, 1, color);
@@ -1021,8 +1029,30 @@ long [] createGdipImage() {
 								break;
 						}
 					}
-					byte[] srcData = new byte[sizeInBytes];
-					OS.MoveMemory(srcData, dibBM.bmBits, sizeInBytes);
+				}
+				OS.SelectObject(srcHdc, oldSrcBitmap);
+				OS.SelectObject(memHdc, oldMemBitmap);
+				OS.DeleteObject(srcHdc);
+				OS.DeleteObject(memHdc);
+				byte[] srcData = new byte[sizeInBytes];
+				OS.MoveMemory(srcData, dibBM.bmBits, sizeInBytes);
+				OS.DeleteObject(memDib);
+				device.internal_dispose_GC(hDC, null);
+				if (alpha != -1) {
+					for (int y = 0, dp = 0; y < imgHeight; ++y) {
+						for (int x = 0; x < imgWidth; ++x) {
+							srcData[dp + 3] = (byte)alpha;
+							dp += 4;
+						}
+					}
+				} else if (alphaData != null) {
+					for (int y = 0, dp = 0, ap = 0; y < imgHeight; ++y) {
+						for (int x = 0; x < imgWidth; ++x) {
+							srcData[dp + 3] = alphaData[ap++];
+							dp += 4;
+						}
+					}
+				} else if (transparentPixel != -1) {
 					for (int y = 0, dp = 0; y < imgHeight; ++y) {
 						for (int x = 0; x < imgWidth; ++x) {
 							if (srcData[dp] == blue && srcData[dp + 1] == green && srcData[dp + 2] == red) {
@@ -1033,15 +1063,12 @@ long [] createGdipImage() {
 							dp += 4;
 						}
 					}
-					OS.MoveMemory(pixels, srcData, sizeInBytes);
 				}
-				OS.SelectObject(srcHdc, oldSrcBitmap);
-				OS.SelectObject(memHdc, oldMemBitmap);
-				OS.DeleteObject(srcHdc);
-				OS.DeleteObject(memHdc);
-				OS.DeleteObject(memDib);
-				int pixelFormat = depth == 32 ? Gdip.PixelFormat32bppPARGB : Gdip.PixelFormat32bppARGB;
-				return new long []{Gdip.Bitmap_new(imgWidth, imgHeight, dibBM.bmWidthBytes, pixelFormat, pixels), pixels};
+				long hHeap = OS.GetProcessHeap();
+				long pixels = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, srcData.length);
+				if (pixels == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+				OS.MoveMemory(pixels, srcData, sizeInBytes);
+				return new long []{Gdip.Bitmap_new(imgWidth, imgHeight, dibBM.bmWidthBytes, Gdip.PixelFormat32bppARGB, pixels), pixels};
 			}
 			return new long []{Gdip.Bitmap_new(handle, 0), 0};
 		}
@@ -1606,32 +1633,10 @@ public ImageData getImageDataAtCurrentZoom() {
 			/* Construct and return the ImageData */
 			ImageData imageData = new ImageData(width, height, depth, palette, 4, data);
 			imageData.transparentPixel = this.transparentPixel;
-			if (depth == 32) {
-				byte straightData[] = new byte[imageSize];
-				byte alphaData[] = new byte[width * height];
-				boolean validAlpha = true;
-				for (int ap = 0, dp = 0; validAlpha && ap < alphaData.length; ap++, dp += 4) {
-					int b = data[dp    ] & 0xFF;
-					int g = data[dp + 1] & 0xFF;
-					int r = data[dp + 2] & 0xFF;
-					int a = data[dp + 3] & 0xFF;
-					alphaData[ap] = (byte) a;
-					validAlpha = validAlpha && b <= a && g <= a && r <= a;
-					if (a != 0) {
-						straightData[dp    ] = (byte) (((b * 0xFF) + a / 2) / a);
-						straightData[dp + 1] = (byte) (((g * 0xFF) + a / 2) / a);
-						straightData[dp + 2] = (byte) (((r * 0xFF) + a / 2) / a);
-					}
-				}
-				if (validAlpha) {
-					imageData.data = straightData;
-					imageData.alphaData = alphaData;
-				}
-				else {
-					for (int dp = 3; dp < imageSize; dp += 4) {
-						data[dp] = (byte) 0xFF;
-					}
-				}
+			imageData.alpha = alpha;
+			if (alpha == -1 && alphaData != null) {
+				imageData.alphaData = new byte[alphaData.length];
+				System.arraycopy(alphaData, 0, imageData.alphaData, 0, alphaData.length);
 			}
 			return imageData;
 		}
@@ -1724,9 +1729,6 @@ static long [] init(Device device, Image image, ImageData i) {
 		img.alphaData = i.alphaData;
 		i = img;
 	}
-
-	boolean hasAlpha = i.alpha != -1 || i.alphaData != null;
-
 	/*
 	 * Windows supports 16-bit mask of (0x7C00, 0x3E0, 0x1F),
 	 * 24-bit mask of (0xFF0000, 0xFF00, 0xFF) and 32-bit mask
@@ -1743,56 +1745,51 @@ static long [] init(Device device, Image image, ImageData i) {
 		int newOrder = ImageData.MSB_FIRST;
 		PaletteData newPalette = null;
 
-		if (hasAlpha) {
-			newDepth = 32;
-			newPalette = new PaletteData(0xFF00, 0xFF0000, 0xFF000000);
-		}
-		else {
-			switch (i.depth) {
-				case 8:
-					/*
-					 * Bug 566545. Usually each color mask selects a different part of the pixel
-					 * value to encode the according color. In this common case it is rather trivial
-					 * to convert an 8-bit direct color image to the Windows supported 16-bit image.
-					 * However there is no enforcement for the color masks to be disjunct. For
-					 * example an 8-bit image where all color masks select the same 8-bit of pixel
-					 * value (mask = 0xFF and shift = 0 for all colors) results in a very efficient
-					 * 8-bit gray-scale image without the need of defining a color table.
-					 *
-					 * That's why we need to calculate the actual required depth if all colors are
-					 * stored non-overlapping which might require 24-bit instead of the usual
-					 * expected 16-bit.
-					 */
-					int minDepth = ImageData.getChannelWidth(redMask, palette.redShift)
-							+ ImageData.getChannelWidth(greenMask, palette.greenShift)
-							+ ImageData.getChannelWidth(blueMask, palette.blueShift);
-					if (minDepth <= 16) {
-						newDepth = 16;
-						newOrder = ImageData.LSB_FIRST;
-						newPalette = new PaletteData(0x7C00, 0x3E0, 0x1F);
-					} else {
-						newDepth = 24;
-						newPalette = new PaletteData(0xFF, 0xFF00, 0xFF0000);
-					}
-					break;
-				case 16:
+		switch (i.depth) {
+			case 8:
+				/*
+				 * Bug 566545. Usually each color mask selects a different part of the pixel
+				 * value to encode the according color. In this common case it is rather trivial
+				 * to convert an 8-bit direct color image to the Windows supported 16-bit image.
+				 * However there is no enforcement for the color masks to be disjunct. For
+				 * example an 8-bit image where all color masks select the same 8-bit of pixel
+				 * value (mask = 0xFF and shift = 0 for all colors) results in a very efficient
+				 * 8-bit gray-scale image without the need of defining a color table.
+				 *
+				 * That's why we need to calculate the actual required depth if all colors are
+				 * stored non-overlapping which might require 24-bit instead of the usual
+				 * expected 16-bit.
+				 */
+				int minDepth = ImageData.getChannelWidth(redMask, palette.redShift)
+						+ ImageData.getChannelWidth(greenMask, palette.greenShift)
+						+ ImageData.getChannelWidth(blueMask, palette.blueShift);
+				if (minDepth <= 16) {
+					newDepth = 16;
 					newOrder = ImageData.LSB_FIRST;
-					if (!(redMask == 0x7C00 && greenMask == 0x3E0 && blueMask == 0x1F)) {
-						newPalette = new PaletteData(0x7C00, 0x3E0, 0x1F);
-					}
-					break;
-				case 24:
-					if (!(redMask == 0xFF && greenMask == 0xFF00 && blueMask == 0xFF0000)) {
-						newPalette = new PaletteData(0xFF, 0xFF00, 0xFF0000);
-					}
-					break;
-				case 32:
+					newPalette = new PaletteData(0x7C00, 0x3E0, 0x1F);
+				} else {
 					newDepth = 24;
 					newPalette = new PaletteData(0xFF, 0xFF00, 0xFF0000);
-					break;
-				default:
-					SWT.error(SWT.ERROR_UNSUPPORTED_DEPTH);
-			}
+				}
+				break;
+			case 16:
+				newOrder = ImageData.LSB_FIRST;
+				if (!(redMask == 0x7C00 && greenMask == 0x3E0 && blueMask == 0x1F)) {
+					newPalette = new PaletteData(0x7C00, 0x3E0, 0x1F);
+				}
+				break;
+			case 24:
+				if (!(redMask == 0xFF && greenMask == 0xFF00 && blueMask == 0xFF0000)) {
+					newPalette = new PaletteData(0xFF, 0xFF00, 0xFF0000);
+				}
+				break;
+			case 32:
+				if (!(redMask == 0xFF00 && greenMask == 0xFF0000 && blueMask == 0xFF000000)) {
+					newPalette = new PaletteData(0xFF00, 0xFF0000, 0xFF000000);
+				}
+				break;
+			default:
+				SWT.error(SWT.ERROR_UNSUPPORTED_DEPTH);
 		}
 		if (newPalette != null) {
 			ImageData img = new ImageData(i.width, i.height, newDepth, newPalette);
@@ -1811,73 +1808,6 @@ static long [] init(Device device, Image image, ImageData i) {
 			i = img;
 		}
 	}
-	else if (hasAlpha) {
-		int newDepth = 32;
-		PaletteData newPalette = new PaletteData(0xFF00, 0xFF0000, 0xFF000000);
-		int newOrder = ImageData.MSB_FIRST;
-		RGB[] rgbs = i.palette.getRGBs();
-		int length = rgbs.length;
-		byte[] srcReds = new byte[length];
-		byte[] srcGreens = new byte[length];
-		byte[] srcBlues = new byte[length];
-		for (int j = 0; j < rgbs.length; j++) {
-			RGB rgb = rgbs[j];
-			if (rgb == null) continue;
-			srcReds[j] = (byte)rgb.red;
-			srcGreens[j] = (byte)rgb.green;
-			srcBlues[j] = (byte)rgb.blue;
-		}
-		ImageData img = new ImageData(i.width, i.height, newDepth, newPalette);
-		ImageData.blit(ImageData.BLIT_SRC,
-				i.data, i.depth, i.bytesPerLine, i.getByteOrder(), 0, 0, i.width, i.height, srcReds, srcGreens, srcBlues,
-				ImageData.ALPHA_OPAQUE, null, 0, 0, 0,
-				img.data, img.depth, img.bytesPerLine, newOrder, 0, 0, img.width, img.height, newPalette.redMask, newPalette.greenMask, newPalette.blueMask,
-				false, false);
-
-		if (i.transparentPixel != -1) {
-			img.transparentPixel = newPalette.getPixel(i.palette.getRGB(i.transparentPixel));
-		}
-		img.maskPad = i.maskPad;
-		img.maskData = i.maskData;
-		img.alpha = i.alpha;
-		img.alphaData = i.alphaData;
-		i = img;
-	}
-	if (i.alpha != -1) {
-		int alpha = i.alpha & 0xFF;
-		byte[] data = i.data;
-		for (int dp = 0; dp < i.data.length; dp += 4) {
-			/* pre-multiplied alpha */
-			int r = ((data[dp    ] & 0xFF) * alpha) + 128;
-			r = (r + (r >> 8)) >> 8;
-			int g = ((data[dp + 1] & 0xFF) * alpha) + 128;
-			g = (g + (g >> 8)) >> 8;
-			int b = ((data[dp + 2] & 0xFF) * alpha) + 128;
-			b = (b + (b >> 8)) >> 8;
-			data[dp    ] = (byte) b;
-			data[dp + 1] = (byte) g;
-			data[dp + 2] = (byte) r;
-			data[dp + 3] = (byte) alpha;
-		}
-	}
-	else if (i.alphaData != null) {
-		byte[] data = i.data;
-		for (int ap = 0, dp = 0; dp < i.data.length; ap++, dp += 4) {
-			/* pre-multiplied alpha */
-			int a = i.alphaData[ap] & 0xFF;
-			int r = ((data[dp    ] & 0xFF) * a) + 128;
-			r = (r + (r >> 8)) >> 8;
-			int g = ((data[dp + 1] & 0xFF) * a) + 128;
-			g = (g + (g >> 8)) >> 8;
-			int b = ((data[dp + 2] & 0xFF) * a) + 128;
-			b = (b + (b >> 8)) >> 8;
-			data[dp    ] = (byte) r;
-			data[dp + 1] = (byte) g;
-			data[dp + 2] = (byte) b;
-			data[dp + 3] = (byte) a;
-		}
-	}
-
 	/* Construct bitmap info header by hand */
 	RGB[] rgbs = i.palette.getRGBs();
 	BITMAPINFOHEADER bmiHeader = new BITMAPINFOHEADER();
@@ -1964,6 +1894,14 @@ static long [] init(Device device, Image image, ImageData i) {
 			image.handle = hDib;
 			image.type = SWT.BITMAP;
 			image.transparentPixel = i.transparentPixel;
+			if (image.transparentPixel == -1) {
+				image.alpha = i.alpha;
+				if (i.alpha == -1 && i.alphaData != null) {
+					int length = i.alphaData.length;
+					image.alphaData = new byte[length];
+					System.arraycopy(i.alphaData, 0, image.alphaData, 0, length);
+				}
+			}
 		}
 	}
 	return result;

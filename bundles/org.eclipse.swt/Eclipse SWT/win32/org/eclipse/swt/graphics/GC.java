@@ -1220,8 +1220,8 @@ void drawBitmap(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight,
 			data.hNullBitmap = 0;
 		}
 	}
-	if (bm.bmPlanes * bm.bmBitsPixel == 32) {
-		drawBitmapAlpha(srcImage, srcX, srcY, srcWidth, srcHeight, destX, destY, destWidth, destHeight, simple);
+	if (srcImage.alpha != -1 || srcImage.alphaData != null) {
+		drawBitmapAlpha(srcImage, srcX, srcY, srcWidth, srcHeight, destX, destY, destWidth, destHeight, simple, imgWidth, imgHeight);
 	} else if (srcImage.transparentPixel != -1) {
 		drawBitmapTransparent(srcImage, srcX, srcY, srcWidth, srcHeight, destX, destY, destWidth, destHeight, simple, bm, imgWidth, imgHeight);
 	} else {
@@ -1233,47 +1233,22 @@ void drawBitmap(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight,
 	}
 }
 
-void drawBitmapAlpha(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, int destX, int destY, int destWidth, int destHeight, boolean simple) {
+void drawBitmapAlpha(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, int destX, int destY, int destWidth, int destHeight, boolean simple, int imgWidth, int imgHeight) {
+	/* Simple cases */
+	if (srcImage.alpha == 0) return;
+	if (srcImage.alpha == 255) {
+		drawBitmapColor(srcImage, srcX, srcY, srcWidth, srcHeight, destX, destY, destWidth, destHeight, simple);
+		return;
+	}
+
 	boolean alphaBlendSupport = true;
 	boolean isPrinter = OS.GetDeviceCaps(handle, OS.TECHNOLOGY) == OS.DT_RASPRINTER;
-	int sourceAlpha = -1;
 	if (isPrinter) {
 		int caps = OS.GetDeviceCaps(handle, OS.SHADEBLENDCAPS);
 		if (caps != 0) {
-			long srcHdc = OS.CreateCompatibleDC(handle);
-			long oldSrcBitmap = OS.SelectObject(srcHdc, srcImage.handle);
-			long memDib = Image.createDIB(srcWidth, srcHeight, 32);
-			if (memDib == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-			long memHdc = OS.CreateCompatibleDC(handle);
-			long oldMemBitmap = OS.SelectObject(memHdc, memDib);
-			BITMAP dibBM = new BITMAP();
-			OS.GetObject(memDib, BITMAP.sizeof, dibBM);
-			OS.BitBlt(memHdc, 0, 0, srcWidth, srcHeight, srcHdc, srcX, srcY, OS.SRCCOPY);
-			byte[] srcData = new byte[dibBM.bmWidthBytes * dibBM.bmHeight];
-			OS.MoveMemory(srcData, dibBM.bmBits, srcData.length);
-			int size = srcData.length;
-			sourceAlpha = srcData[3] & 0xFF;
-			for (int sp = 7; sp < size; sp += 4) {
-				int currentAlpha = srcData[sp] & 0xFF;
-				if (sourceAlpha != currentAlpha) {
-					sourceAlpha = -1;
-					break;
-				}
-			}
-			OS.SelectObject(memHdc, oldMemBitmap);
-			OS.DeleteDC(memHdc);
-			OS.DeleteObject(memDib);
-			OS.SelectObject(srcHdc, oldSrcBitmap);
-			OS.DeleteDC(srcHdc);
-			if (sourceAlpha != -1) {
-				if (sourceAlpha == 0) return;
-				if (sourceAlpha == 255) {
-					drawBitmapColor(srcImage, srcX, srcY, srcWidth, srcHeight, destX, destY, destWidth, destHeight, simple);
-					return;
-				}
+			if (srcImage.alpha != -1) {
 				alphaBlendSupport = (caps & OS.SB_CONST_ALPHA) != 0;
-			}
-			else {
+			} else {
 				alphaBlendSupport = (caps & OS.SB_PIXEL_ALPHA) != 0;
 			}
 		}
@@ -1283,9 +1258,47 @@ void drawBitmapAlpha(Image srcImage, int srcX, int srcY, int srcWidth, int srcHe
 		blend.BlendOp = OS.AC_SRC_OVER;
 		long srcHdc = OS.CreateCompatibleDC(handle);
 		long oldSrcBitmap = OS.SelectObject(srcHdc, srcImage.handle);
-		blend.SourceConstantAlpha = (byte)sourceAlpha;
-		blend.AlphaFormat = OS.AC_SRC_ALPHA;
-		OS.AlphaBlend(handle, destX, destY, destWidth, destHeight, srcHdc, 0, 0, srcWidth, srcHeight, blend);
+		if (srcImage.alpha != -1) {
+			blend.SourceConstantAlpha = (byte)srcImage.alpha;
+			OS.AlphaBlend(handle, destX, destY, destWidth, destHeight, srcHdc, srcX, srcY, srcWidth, srcHeight, blend);
+		} else {
+			long memDib = Image.createDIB(srcWidth, srcHeight, 32);
+			if (memDib == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+			long memHdc = OS.CreateCompatibleDC(handle);
+			long oldMemBitmap = OS.SelectObject(memHdc, memDib);
+			BITMAP dibBM = new BITMAP();
+			OS.GetObject(memDib, BITMAP.sizeof, dibBM);
+			OS.BitBlt(memHdc, 0, 0, srcWidth, srcHeight, srcHdc, srcX, srcY, OS.SRCCOPY);
+			byte[] srcData = new byte[dibBM.bmWidthBytes * dibBM.bmHeight];
+			OS.MoveMemory(srcData, dibBM.bmBits, srcData.length);
+			final int apinc = imgWidth - srcWidth;
+			int ap = srcY * imgWidth + srcX, sp = 0;
+			byte[] alphaData = srcImage.alphaData;
+			for (int y = 0; y < srcHeight; ++y) {
+				for (int x = 0; x < srcWidth; ++x) {
+					int alpha = alphaData[ap++] & 0xff;
+					int r = ((srcData[sp + 0] & 0xFF) * alpha) + 128;
+					r = (r + (r >> 8)) >> 8;
+					int g = ((srcData[sp + 1] & 0xFF) * alpha) + 128;
+					g = (g + (g >> 8)) >> 8;
+					int b = ((srcData[sp + 2] & 0xFF) * alpha) + 128;
+					b = (b + (b >> 8)) >> 8;
+					srcData[sp+0] = (byte)r;
+					srcData[sp+1] = (byte)g;
+					srcData[sp+2] = (byte)b;
+					srcData[sp+3] = (byte)alpha;
+					sp += 4;
+				}
+				ap += apinc;
+			}
+			OS.MoveMemory(dibBM.bmBits, srcData, srcData.length);
+			blend.SourceConstantAlpha = (byte)0xff;
+			blend.AlphaFormat = OS.AC_SRC_ALPHA;
+			OS.AlphaBlend(handle, destX, destY, destWidth, destHeight, memHdc, 0, 0, srcWidth, srcHeight, blend);
+			OS.SelectObject(memHdc, oldMemBitmap);
+			OS.DeleteDC(memHdc);
+			OS.DeleteObject(memDib);
+		}
 		OS.SelectObject(srcHdc, oldSrcBitmap);
 		OS.DeleteDC(srcHdc);
 		return;
@@ -1335,6 +1348,26 @@ void drawBitmapAlpha(Image srcImage, int srcX, int srcY, int srcWidth, int srcHe
 	byte[] srcData = new byte[sizeInBytes];
 	OS.MoveMemory(srcData, dibBM.bmBits, sizeInBytes);
 
+	/* Merge the alpha channel in place */
+	int alpha = srcImage.alpha;
+	final boolean hasAlphaChannel = (srcImage.alpha == -1);
+	if (hasAlphaChannel) {
+		final int apinc = imgWidth - srcWidth;
+		final int spinc = dibBM.bmWidthBytes - srcWidth * 4;
+		int ap = srcY * imgWidth + srcX, sp = 3;
+		byte[] alphaData = srcImage.alphaData;
+		for (int y = 0; y < srcHeight; ++y) {
+			for (int x = 0; x < srcWidth; ++x) {
+				srcData[sp] = alphaData[ap++];
+				sp += 4;
+			}
+			ap += apinc;
+			sp += spinc;
+		}
+	}
+
+	/* Scale the foreground pixels with alpha */
+	OS.MoveMemory(dibBM.bmBits, srcData, sizeInBytes);
 	/*
 	* When drawing to a printer, StretchBlt does not correctly stretch if
 	* the source and destination HDCs are the same.  The workaround is to
@@ -1370,10 +1403,10 @@ void drawBitmapAlpha(Image srcImage, int srcX, int srcY, int srcWidth, int srcHe
 	int dp = 0;
 	for (int y = 0; y < destHeight; ++y) {
 		for (int x = 0; x < destWidth; ++x) {
-			int alpha = srcData[dp + 3] & 0xFF;
-			destData[dp    ] += (srcData[dp    ] & 0xFF) - (destData[dp    ] & 0xFF) * alpha / 255;
-			destData[dp + 1] += (srcData[dp + 1] & 0xFF) - (destData[dp + 1] & 0xFF) * alpha / 255;
-			destData[dp + 2] += (srcData[dp + 2] & 0xFF) - (destData[dp + 2] & 0xFF) * alpha / 255;
+			if (hasAlphaChannel) alpha = srcData[dp + 3] & 0xff;
+			destData[dp] += ((srcData[dp] & 0xff) - (destData[dp] & 0xff)) * alpha / 255;
+			destData[dp + 1] += ((srcData[dp + 1] & 0xff) - (destData[dp + 1] & 0xff)) * alpha / 255;
+			destData[dp + 2] += ((srcData[dp + 2] & 0xff) - (destData[dp + 2] & 0xff)) * alpha / 255;
 			dp += 4;
 		}
 		dp += dpinc;
