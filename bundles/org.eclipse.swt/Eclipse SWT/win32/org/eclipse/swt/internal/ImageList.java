@@ -151,10 +151,16 @@ long copyWithAlpha (long hBitmap, int background, byte[] alphaData, int destWidt
 	/* Merge the alpha channel in place */
 	if (alphaData != null) {
 		int spinc = dibBM.bmWidthBytes - srcWidth * 4;
-		int ap = 0, sp = 3;
+		int ap = 0, sp = 0;
 		for (int y = 0; y < srcHeight; ++y) {
 			for (int x = 0; x < srcWidth; ++x) {
-				srcData [sp] = alphaData [ap++];
+				int a = alphaData [ap++] & 0xFF;
+				if (a != 0) {
+					srcData [sp    ] = (byte)((((srcData [sp    ] & 0xFF) * 0xFF) + a / 2) / a);
+					srcData [sp + 1] = (byte)((((srcData [sp + 1] & 0xFF) * 0xFF) + a / 2) / a);
+					srcData [sp + 2] = (byte)((((srcData [sp + 2] & 0xFF) * 0xFF) + a / 2) / a);
+				}
+				srcData [sp + 3] = (byte)a;
 				sp += 4;
 			}
 			sp += spinc;

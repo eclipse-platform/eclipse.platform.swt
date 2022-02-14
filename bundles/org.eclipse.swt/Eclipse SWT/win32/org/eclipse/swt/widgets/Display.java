@@ -991,39 +991,6 @@ static long create32bitDIB (Image image) {
 				dp += 4;
 			}
 		}
-	} else if (alpha != -1) {
-		for (int y = 0, dp = 0; y < imgHeight; ++y) {
-			for (int x = 0; x < imgWidth; ++x) {
-				int r = ((srcData[dp + 0] & 0xFF) * alpha) + 128;
-				r = (r + (r >> 8)) >> 8;
-				int g = ((srcData[dp + 1] & 0xFF) * alpha) + 128;
-				g = (g + (g >> 8)) >> 8;
-				int b = ((srcData[dp + 2] & 0xFF) * alpha) + 128;
-				b = (b + (b >> 8)) >> 8;
-				srcData[dp+0] = (byte)r;
-				srcData[dp+1] = (byte)g;
-				srcData[dp+2] = (byte)b;
-				srcData[dp+3] = (byte)alpha;
-				dp += 4;
-			}
-		}
-	} else if (alphaData != null) {
-		for (int y = 0, dp = 0, ap = 0; y < imgHeight; ++y) {
-			for (int x = 0; x < imgWidth; ++x) {
-				int a = alphaData[ap++] & 0xFF;
-				int r = ((srcData[dp + 0] & 0xFF) * a) + 128;
-				r = (r + (r >> 8)) >> 8;
-				int g = ((srcData[dp + 1] & 0xFF) * a) + 128;
-				g = (g + (g >> 8)) >> 8;
-				int b = ((srcData[dp + 2] & 0xFF) * a) + 128;
-				b = (b + (b >> 8)) >> 8;
-				srcData[dp+0] = (byte)r;
-				srcData[dp+1] = (byte)g;
-				srcData[dp+2] = (byte)b;
-				srcData[dp+3] = (byte)a;
-				dp += 4;
-			}
-		}
 	} else if (transparentPixel != -1) {
 		for (int y = 0, dp = 0; y < imgHeight; ++y) {
 			for (int x = 0; x < imgWidth; ++x) {
@@ -1035,7 +1002,7 @@ static long create32bitDIB (Image image) {
 				dp += 4;
 			}
 		}
-	} else {
+	} else if (alpha == -1 && alphaData == null) {
 		for (int y = 0, dp = 0; y < imgHeight; ++y) {
 			for (int x = 0; x < imgWidth; ++x) {
 				srcData [dp + 3] = (byte)0xFF;
@@ -1117,6 +1084,11 @@ static long create32bitDIB (long hBitmap, int alpha, byte [] alphaData, int tran
 	if (alpha != -1) {
 		for (int y = 0, dp = 0; y < imgHeight; ++y) {
 			for (int x = 0; x < imgWidth; ++x) {
+				if (alpha != 0) {
+					srcData [dp    ] = (byte)((((srcData[dp    ] & 0xFF) * 0xFF) + alpha / 2) / alpha);
+					srcData [dp + 1] = (byte)((((srcData[dp + 1] & 0xFF) * 0xFF) + alpha / 2) / alpha);
+					srcData [dp + 2] = (byte)((((srcData[dp + 2] & 0xFF) * 0xFF) + alpha / 2) / alpha);
+				}
 				srcData [dp + 3] = (byte)alpha;
 				dp += 4;
 			}
@@ -1124,7 +1096,13 @@ static long create32bitDIB (long hBitmap, int alpha, byte [] alphaData, int tran
 	} else if (alphaData != null) {
 		for (int y = 0, dp = 0, ap = 0; y < imgHeight; ++y) {
 			for (int x = 0; x < imgWidth; ++x) {
-				srcData [dp + 3] = alphaData [ap++];
+				int a = alphaData [ap++] & 0xFF;
+				if (a != 0) {
+					srcData [dp    ] = (byte)((((srcData[dp    ] & 0xFF) * 0xFF) + a / 2) / a);
+					srcData [dp + 1] = (byte)((((srcData[dp + 1] & 0xFF) * 0xFF) + a / 2) / a);
+					srcData [dp + 2] = (byte)((((srcData[dp + 2] & 0xFF) * 0xFF) + a / 2) / a);
+				}
+				srcData [dp + 3] = (byte)a;
 				dp += 4;
 			}
 		}
