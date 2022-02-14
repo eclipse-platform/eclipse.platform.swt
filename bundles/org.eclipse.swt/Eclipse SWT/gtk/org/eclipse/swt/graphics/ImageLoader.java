@@ -178,16 +178,12 @@ boolean isInterlacedPNG(byte [] imageAsByteArray) {
 }
 
 ImageData [] getImageDataArrayFromStream(InputStream stream) {
-	byte[] buffer = new byte[2048];
 	long loader = GDK.gdk_pixbuf_loader_new();
-	int length;
 	List<ImageData> imgDataList = new ArrayList<>();
 	try {
 		// 1) Load InputStream into byte array
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		while ((length = stream.read(buffer)) > -1) {
-			baos.write(buffer, 0, length);
-		}
+		stream.transferTo(baos);
 		baos.flush();
 		byte[] data_buffer = baos.toByteArray();
 		if (data_buffer.length == 0) SWT.error(SWT.ERROR_UNSUPPORTED_FORMAT);	// empty stream
