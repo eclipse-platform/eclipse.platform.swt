@@ -1727,6 +1727,7 @@ public class ImageAnalyzer {
 		String data = dataHexDump(dataText.getLineDelimiter());
 		dataText.setText(data);
 
+		ArrayList<StyleRange> ranges = new ArrayList<>();
 		// bold the first column all the way down
 		int index = 0;
 		while((index = data.indexOf(':', index+1)) != -1) {
@@ -1736,8 +1737,9 @@ public class ImageAnalyzer {
 				start = index - ALPHA_CHARS;
 				length = ALPHA_CHARS;
 			}
-			dataText.setStyleRange(new StyleRange(start, length, dataText.getForeground(), dataText.getBackground(), SWT.BOLD));
+			ranges.add(new StyleRange(start, length, dataText.getForeground(), dataText.getBackground(), SWT.BOLD));
 		}
+		if(!ranges.isEmpty()) dataText.setStyleRanges(ranges.toArray(new StyleRange[0]));
 
 		statusLabel.setText("");
 
