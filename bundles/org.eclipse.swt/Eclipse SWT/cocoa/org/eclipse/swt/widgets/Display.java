@@ -5654,32 +5654,25 @@ void applicationWillFinishLaunching (long id, long sel, long notification) {
 	/* To find the nib look for each of these paths, in order, until one is found:
 	 * 		/System/Library/..../Resources/<display name>.lproj/DefaultApp.nib
 	 * 		/System/Library/..../Resources/<language>.lproj/DefaultApp.nib
-	 * 		/System/Library/..../Resources/<user's default language>.lproj/DefaultApp.nib
-	 * 		/System/Library/..../Resources/English.lproj/DefaultApp.nib.
-	 * 		/System/Library/..../Resources/en.lproj/DefaultApp.nib.
+	 * 		/System/Library/..../Resources/Base.lproj/DefaultApp.nib
+	 *
+	 * If nib file is not found, use the fallback method createMainMenu() to create menu with localized strings.
 	 */
 	NSString path;
-	boolean createMainMenu = false;
 	NSDictionary dict = NSDictionary.dictionaryWithObject(applicationDelegate, NSString.stringWith("NSOwner"));
 	NSBundle bundle = NSBundle.bundleWithPath(NSString.stringWith("/System/Library/Frameworks/JavaVM.framework/"));
 	if (bundle != null) {
 		path = bundle.pathForResource(NSString.stringWith("DefaultApp"), NSString.stringWith("nib"), null, languageDisplayName);
 		if (path == null) path = bundle.pathForResource(NSString.stringWith("DefaultApp"), NSString.stringWith("nib"), null, NSString.stringWith(languageISOValue));
-		if (path == null) {
-			createMainMenu = !languageISOValue.equals("en");
+		if (path == null && languageISOValue.equals("en")) {
 			path = bundle.pathForResource(NSString.stringWith("DefaultApp"), NSString.stringWith("nib"));
 		}
 		if (!loaded) loaded = path != null && NSBundle.loadNibFile(path, dict, 0);
-		if (!loaded) {
-			path = bundle.pathForResource(NSString.stringWith("DefaultApp"), NSString.stringWith("nib"), null, NSString.stringWith("English"));
-			if (path == null) path = bundle.pathForResource(NSString.stringWith("DefaultApp"), NSString.stringWith("nib"), null, NSString.stringWith("en"));
-			loaded = path != null && NSBundle.loadNibFile(path, dict, 0);
-		}
 	}
 	/*
 	 * Create the main menu ourselves if Default.nib was not loaded or was not found for the specific language
 	 */
-	if (!loaded || createMainMenu) {
+	if (!loaded) {
 		createMainMenu();
 	}
 
