@@ -18,6 +18,7 @@ import javax.annotation.*;
 
 import org.eclipse.e4.ui.di.*;
 import org.eclipse.swt.*;
+import org.eclipse.swt.layout.*;
 import org.eclipse.swt.tools.internal.*;
 import org.eclipse.swt.widgets.*;
 
@@ -32,6 +33,8 @@ public class SleakView {
 	@PostConstruct
 	public void createPartControl(Composite parent) {
 		composite = new Composite(parent, SWT.NONE);
+		GridLayout gridLayout = new GridLayout(2, false);
+		composite.setLayout(gridLayout);
 		Sleak sleak = new Sleak ();
 		sleak.create(composite);
 	}
