@@ -255,7 +255,9 @@ public abstract class Widget {
 /**
  * Prevents uninitialized instances from being created outside the package.
  */
-Widget () {}
+Widget () {
+	notifyCreationTracker();
+}
 
 /**
  * Constructs a new instance of this class given its parent
@@ -292,6 +294,7 @@ public Widget (Widget parent, int style) {
 	this.style = style;
 	display = parent.display;
 	reskinWidget ();
+	notifyCreationTracker();
 }
 
 void _addListener (int eventType, Listener listener) {
@@ -1345,6 +1348,7 @@ void release (boolean destroy) {
 				releaseHandle ();
 			}
 		}
+		notifyDisposalTracker();
 	}
 }
 
@@ -2520,4 +2524,17 @@ void gtk_widget_size_allocate (long widget, GtkAllocation allocation, int baseli
 		GTK3.gtk_widget_size_allocate(widget, allocation);
 	}
 }
+
+void notifyCreationTracker() {
+	if (WidgetSpy.isEnabled) {
+		WidgetSpy.getInstance().widgetCreated(this);
+	}
+}
+
+void notifyDisposalTracker() {
+	if (WidgetSpy.isEnabled) {
+		WidgetSpy.getInstance().widgetDisposed(this);
+	}
+}
+
 }

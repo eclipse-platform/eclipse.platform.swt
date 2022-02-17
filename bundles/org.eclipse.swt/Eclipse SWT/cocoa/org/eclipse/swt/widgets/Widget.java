@@ -105,7 +105,7 @@ public abstract class Widget {
 	static final int DEFAULT_HEIGHT	= 64;
 
 Widget () {
-	/* Do nothing */
+	notifyCreationTracker();
 }
 
 /**
@@ -143,6 +143,7 @@ public Widget (Widget parent, int style) {
 	this.style = style;
 	display = parent.display;
 	reskinWidget ();
+	notifyCreationTracker();
 }
 
 long accessibleHandle() {
@@ -1376,6 +1377,7 @@ void release (boolean destroy) {
 			}
 		}
 	}
+	notifyDisposalTracker();
 }
 
 void releaseChildren (boolean destroy) {
@@ -2188,6 +2190,18 @@ long validRequestorForSendType(long id, long sel, long sendType, long returnType
 
 boolean writeSelectionToPasteboard(long id, long sel, long pasteboard, long types) {
 	return false;
+}
+
+void notifyCreationTracker() {
+	if (WidgetSpy.isEnabled) {
+		WidgetSpy.getInstance().widgetCreated(this);
+	}
+}
+
+void notifyDisposalTracker() {
+	if (WidgetSpy.isEnabled) {
+		WidgetSpy.getInstance().widgetDisposed(this);
+	}
 }
 
 }
