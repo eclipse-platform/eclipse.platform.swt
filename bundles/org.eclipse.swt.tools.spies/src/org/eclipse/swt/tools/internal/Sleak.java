@@ -15,9 +15,11 @@ package org.eclipse.swt.tools.internal;
 
 import java.io.*;
 import java.util.*;
+import java.util.function.*;
 import java.util.stream.*;
 
 import org.eclipse.swt.*;
+import org.eclipse.swt.custom.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.layout.*;
 import org.eclipse.swt.widgets.*;
@@ -33,17 +35,17 @@ import org.eclipse.swt.widgets.List;
 public class Sleak {
 	List list;
 	Canvas canvas;
-	Button enableTracking, snapshot, diff, stackTrace, saveAs, save;
+	Button enableTracking, diff, stackTrace, saveAs, save;
 	Combo diffType;
 	Text text;
 	Label label;
 
 	String filterPath = "";
 	String fileName = "sleakout";
-	String selectedName = null;
+	String selectedName;
 	boolean incrementFileNames = true;
 	boolean saveImages = true;
-	int fileCount = 0;
+	int fileCount;
 
 	java.util.List<ObjectWithError> oldObjects = new ArrayList<> ();
 	java.util.List<ObjectWithError> objects = new ArrayList<> ();
@@ -90,49 +92,84 @@ public static void main (String [] args) {
 }
 
 public void create (Composite parent) {
-	enableTracking = new Button (parent, SWT.CHECK);
-	enableTracking.setText ("Enable");
+
+	SashForm sash = new SashForm(parent, SWT.SMOOTH);
+	sash.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+	sash.setOrientation(SWT.HORIZONTAL);
+	sash.setVisible(true);
+
+	Composite left = new Composite(sash, 0);
+	left.setLayout(new GridLayout());
+	left.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+
+	Composite right = new Composite(sash, 0);
+	right.setLayout(new GridLayout());
+
+	sash.setWeights(new int[] {40,60});
+
+	// Right side
+	canvas = new Canvas (right, SWT.BORDER);
+	canvas.addListener (SWT.Paint, event -> paintCanvas (event));
+	canvas.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 10));
+	text = new Text (right, SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL);
+	text.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 10));
+	setVisible(text,  false);
+
+	// Left side
+	enableTracking = new Button (left, SWT.CHECK);
+	enableTracking.setText ("Enable resource tracking");
 	enableTracking.setToolTipText("Enable Device resource tracking. Only resources allocated once enabled will be tracked. To track devices created before view is created, turn on tracing options, see https://www.eclipse.org/swt/tools.php");
 	enableTracking.addListener (SWT.Selection, e -> toggleEnableTracking ());
 	enableTracking.setSelection(enableTracking.getDisplay().isTracking());
-	canvas = new Canvas (parent, SWT.BORDER);
-	canvas.addListener (SWT.Paint, event -> paintCanvas (event));
-	canvas.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 10));
-	text = new Text (parent, SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL);
-	text.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 10));
-	setVisible(text,  false);
-	snapshot = new Button (parent, SWT.PUSH);
-	snapshot.setText ("Snap");
-	snapshot.addListener (SWT.Selection, event -> refreshAll ());
-	snapshot.setLayoutData(new GridData(SWT.FILL, SWT.NONE, false, false));
-	diff = new Button (parent, SWT.PUSH);
-	diff.setText ("Diff");
+	enableTracking.setLayoutData(new GridData(SWT.NONE, SWT.NONE, false, false));
+
+	Composite buttons = new Composite(left, 0);
+	buttons.setLayout(new GridLayout(4, false));
+	buttons.setLayoutData(new GridData(SWT.FILL, SWT.NONE, true, false));
+
+	diff = new Button (buttons, SWT.PUSH);
+	diff.setText ("Snap && Diff");
 	diff.addListener (SWT.Selection, event -> refreshDifference ());
-	diff.setLayoutData(new GridData(SWT.FILL, SWT.NONE, false, false));
-	diffType = new Combo (parent, SWT.CHECK);
-	diffType.add ("Object identity");
-	diffType.add ("Creator class and line");
-	diffType.add ("Creator class");
-	diffType.select(0);
-	diffType.setLayoutData(new GridData(SWT.FILL, SWT.NONE, false, false));
-	stackTrace = new Button (parent, SWT.CHECK);
-	stackTrace.setText ("Stack");
-	stackTrace.addListener (SWT.Selection, e -> toggleStackTrace ());
-	list = new List (parent, SWT.BORDER | SWT.V_SCROLL);
-	list.addListener (SWT.Selection, event -> refreshObject ());
-	list.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, true));
-	label = new Label (parent, SWT.NONE);
-	label.setText ("0 object(s)");
-	saveAs = new Button (parent, SWT.PUSH);
-	saveAs.setText ("Save As...");
-	saveAs.setToolTipText("Saves the contents of the list to a file, optionally with the stack traces if selected.");
-	saveAs.addListener (SWT.Selection, event -> saveToFile (true));
-	saveAs.setLayoutData(new GridData(SWT.FILL, SWT.NONE, false, false));
-	save = new Button (parent, SWT.PUSH);
+	GridData diffData = new GridData(SWT.FILL, SWT.NONE, true, false);
+	diffData.horizontalSpan = 2;
+	diff.setLayoutData(diffData);
+
+	save = new Button (buttons, SWT.PUSH);
 	save.setText ("Save");
 	save.setToolTipText("Saves to the previously selected file.");
 	save.addListener (SWT.Selection, event -> saveToFile (false));
 	save.setLayoutData(new GridData(SWT.FILL, SWT.NONE, false, false));
+
+	saveAs = new Button (buttons, SWT.PUSH);
+	saveAs.setText ("Save As...");
+	saveAs.setToolTipText("Saves the contents of the list to a file, optionally with the stack traces if selected.");
+	saveAs.addListener (SWT.Selection, event -> saveToFile (true));
+	saveAs.setLayoutData(new GridData(SWT.FILL, SWT.NONE, false, false));
+
+	Composite checkboxAndCombo = new Composite(left, 0);
+	checkboxAndCombo.setLayout(new GridLayout(2, false));
+	checkboxAndCombo.setLayoutData(new GridData(SWT.FILL, SWT.NONE, true, false));
+
+	diffType = new Combo (checkboxAndCombo, SWT.CHECK);
+	diffType.add ("Object identity");
+	diffType.add ("Creator class and line");
+	diffType.add ("Creator class");
+	diffType.select(0);
+	diffType.setLayoutData(new GridData(SWT.NONE, SWT.NONE, false, false));
+
+	stackTrace = new Button (checkboxAndCombo, SWT.CHECK);
+	stackTrace.setText ("Show Stack");
+	stackTrace.addListener (SWT.Selection, e -> toggleStackTrace ());
+	stackTrace.setLayoutData(new GridData(SWT.RIGHT, SWT.NONE, true, false));
+
+	list = new List (left, SWT.BORDER | SWT.V_SCROLL);
+	list.addListener (SWT.Selection, event -> refreshObject ());
+	list.setLayoutData(new GridData(SWT.FILL, SWT.NONE, true, true));
+
+	label = new Label (left, SWT.WRAP);
+	label.setText ("0 object(s)");
+	label.setLayoutData(new GridData(SWT.FILL, SWT.NONE, false, false));
+
 	stackTrace.setSelection (false);
 }
 
@@ -142,19 +179,25 @@ private void toggleEnableTracking() {
 	display.setTracking(!tracking);
 }
 
-void refreshLabel () {
-	Map<String, Long> deleted = oldObjects.stream().collect(
-			Collectors.groupingBy(o -> o.object.getClass().getSimpleName(), Collectors.counting()));
-	Map<String, Long> created = objects.stream().collect(
-			Collectors.groupingBy(o -> o.object.getClass().getSimpleName(), Collectors.counting()));
+void refreshLabel (java.util.List<ObjectWithError> createdObjects, java.util.List<ObjectWithError> deletedObjects) {
+	Function<? super ObjectWithError, ? extends String> classifier = o -> o.object.getClass().getSimpleName();
+
+	Map<String, Long> deleted = deletedObjects.stream().collect(
+			Collectors.groupingBy(classifier, Collectors.counting()));
+
+	Map<String, Long> created = createdObjects.stream().collect(
+			Collectors.groupingBy(classifier, Collectors.counting()));
+
 	StringBuilder sb = new StringBuilder();
-	Stream.concat(deleted.keySet().stream(), created.keySet().stream()).distinct().sorted().
-		forEach(type -> addCounts(sb, type, deleted.get(type), created.get(type)));
-	label.setText (sb.length() > 0 ? sb.toString() : "0 object(s)");
-	canvas.getParent().layout();
+	Stream<String> deletedAndCreated = Stream.concat(deleted.keySet().stream(), created.keySet().stream());
+	deletedAndCreated.distinct().sorted().forEach(type -> addCounts(sb, type, deleted.get(type), created.get(type)));
+
+	String description = sb.length() > 0 ? sb.toString() :  "0 object(s)";
+	label.setText (description.strip());
+	label.getParent().layout();
 }
 
-void addCounts (StringBuilder string, String type, Long deleted, Long created) {
+static void addCounts (StringBuilder string, String type, Long deleted, Long created) {
 	if (deleted != null || created != null) {
 		if (deleted != null) {
 			string.append("-" + deleted);
@@ -171,6 +214,86 @@ void addCounts (StringBuilder string, String type, Long deleted, Long created) {
 
 void refreshDifference () {
 	Display display = canvas.getDisplay();
+	DeviceData info = getDeviceData(display);
+
+	boolean hasOldData = !oldObjects.isEmpty();
+
+	java.util.List<ObjectWithError> old = new ArrayList<>(oldObjects);
+	java.util.List<ObjectWithError> disposed = new ArrayList<>();
+	java.util.List<ObjectWithError> created = new ArrayList<>();
+	java.util.List<ObjectWithError> same = collectNewObjects(info, old, disposed, created);
+
+
+	if (diffType.getSelectionIndex() > 0) {
+		Iterator<ObjectWithError> object = created.iterator ();
+		while (object.hasNext ()) {
+			StackTraceElement stack = object.next ().getCreator ();
+			Iterator<ObjectWithError> equal = same.iterator ();
+			while (equal.hasNext ()) {
+				if (creatorEquals(stack, equal.next().getCreator ())) {
+					equal.remove ();
+					object.remove ();
+					break;
+				}
+			}
+		}
+	}
+
+	objects.clear();
+	objects.addAll(created);
+
+	oldObjects.clear();
+	oldObjects.addAll(same);
+	oldObjects.addAll(created);
+
+
+	list.removeAll ();
+	text.setText ("");
+	canvas.redraw ();
+	if(hasOldData) {
+		for (ObjectWithError object : created) {
+			list.add (object.object.toString());
+		}
+	}
+	if(hasOldData) {
+		refreshLabel (created, disposed);
+	} else {
+		refreshLabel (Collections.emptyList(), Collections.emptyList());
+	}
+}
+
+private static java.util.List<ObjectWithError> collectNewObjects(DeviceData info,
+		java.util.List<ObjectWithError> oldObjects,
+		java.util.List<ObjectWithError> disposedObjects,
+		java.util.List<ObjectWithError> createdObjects
+		) {
+	disposedObjects.addAll(oldObjects);
+	ArrayList<ObjectWithError> sameObjects = new ArrayList<>();
+
+	for (int i=0; i<info.objects.length; i++) {
+		boolean found = false;
+		Iterator<ObjectWithError> oldObject = oldObjects.iterator ();
+		Object infoObject = info.objects [i];
+		if (!(infoObject instanceof Color)) {
+			// Bug 563018: Colors don't require disposal, so exclude them from the list of allocated objects.
+			while (oldObject.hasNext () && !found) {
+				ObjectWithError next = oldObject.next ();
+				if (infoObject == next.object) {
+					sameObjects.add(next);
+					found = true;
+				}
+			}
+			if (!found) {
+				createdObjects.add(new ObjectWithError (infoObject, info.errors[i]));
+			}
+		}
+	}
+	// objects that were not found in new system state are disposed
+	disposedObjects.removeAll(sameObjects);
+	return sameObjects;
+}
+
+private DeviceData getDeviceData(Display display) {
 	DeviceData info = display.getDeviceData ();
 	if (!info.tracking) {
 		Shell shell = canvas.getShell();
@@ -182,46 +305,7 @@ void refreshDifference () {
 			toggleEnableTracking();
 		}
 	}
-
-	oldObjects = new ArrayList<> (objects);
-	objects.clear ();
-	for (int i=0; i<info.objects.length; i++) {
-		boolean found = false;
-		Iterator<ObjectWithError> oldObject = oldObjects.iterator ();
-		if (!(info.objects [i] instanceof Color)) {
-			// Bug 563018: Colors don't require disposal, so exclude them from the list of allocated objects.
-			while (oldObject.hasNext () && !found) {
-				if (info.objects [i] == oldObject.next ().object) {
-					oldObject.remove ();
-					found = true;
-				}
-			}
-			if (!found) {
-				objects.add (new ObjectWithError (info.objects [i], info.errors[i]));
-			}
-		}
-	}
-	if (diffType.getSelectionIndex() > 0) {
-		Iterator<ObjectWithError> object = objects.iterator ();
-		while (object.hasNext ()) {
-			StackTraceElement stack = object.next ().getCreator ();
-			Iterator<ObjectWithError> old = oldObjects.iterator ();
-			while (old.hasNext ()) {
-				if (creatorEquals(stack, old.next().getCreator ())) {
-					old.remove ();
-					object.remove ();
-					break;
-				}
-			}
-		}
-	}
-	list.removeAll ();
-	text.setText ("");
-	canvas.redraw ();
-	for (ObjectWithError object : objects) {
-		list.add (object.object.toString());
-	}
-	refreshLabel ();
+	return info;
 }
 
 boolean creatorEquals (StackTraceElement first, StackTraceElement second) {
@@ -261,7 +345,7 @@ private void saveToFile(boolean prompt) {
 		fileName = String.format("%s_%03d", fileName, fileCount++);
 	}
 	try (PrintWriter file = new PrintWriter(new FileOutputStream(fileName))) {
-		
+
 		int i = 0;
 		for (ObjectWithError o : objects) {
 			Object object = o.object;
@@ -386,7 +470,7 @@ void refreshObject () {
 		text.setText (objects.get(index).getStack());
 		setVisible(text, true);
 		setVisible(canvas, false);
-		canvas.getParent().layout();
+		text.getParent().layout();
 	} else {
 		setVisible(canvas, true);
 		setVisible(text, false);
@@ -397,12 +481,6 @@ void refreshObject () {
 private void setVisible(Control control, boolean visible) {
 	control.setVisible(visible);
 	((GridData)control.getLayoutData()).exclude = !visible;
-}
-
-void refreshAll () {
-	objects.clear();
-	refreshDifference ();
-	oldObjects = new ArrayList<>(objects);
 }
 
 private static final class ObjectWithError {
