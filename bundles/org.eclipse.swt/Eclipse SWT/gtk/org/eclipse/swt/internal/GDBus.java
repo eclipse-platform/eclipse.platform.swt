@@ -335,7 +335,7 @@ public class GDBus {
 	 *
 	 * @param gVariant a pointer to the native GVariant
 	 */
-	private static Object[] convertGVariantToJava(long gVariant) {
+	public static Object[] convertGVariantToJava(long gVariant) {
 		Object retVal = convertGVariantToJavaHelper(gVariant);
 		if (retVal instanceof Object[]) {
 			return (Object[]) retVal;
@@ -405,7 +405,7 @@ public class GDBus {
 	 *
 	 * @return pointer GVariant *
 	 */
-	private static long convertJavaToGVariant(Object javaObject) throws SWTException {
+	public static long convertJavaToGVariant(Object javaObject) throws SWTException {
 		if (javaObject == null) {
 			return 0;
 		}

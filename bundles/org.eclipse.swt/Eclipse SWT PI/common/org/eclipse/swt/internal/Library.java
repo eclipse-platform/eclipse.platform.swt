@@ -14,10 +14,8 @@
 package org.eclipse.swt.internal;
 
 import java.io.*;
-import java.lang.reflect.*;
 import java.net.*;
 import java.nio.file.*;
-import java.util.function.*;
 import java.util.jar.*;
 
 public class Library {
@@ -381,106 +379,5 @@ public static String getVersionString () {
 	}
 	return version;
 }
-
-public static File findResource(String subDir, String resourceName, boolean mapResourceName){
-	return findResource(subDir, resourceName, mapResourceName, true, true);
-}
-/**
- * Locates a resource located either in java library path, swt library path, or attempts to extract it from inside swt.jar file.
- * This function supports a single level subfolder, e.g SubFolder/resource.
- *
- * Dev note: (17/12/07) This has been developed and throughly tested on GTK. Designed to work on Cocoa/Win as well, but not tested.
- *
- * @param subDir  'null' or a folder name without slashes. E.g Correct: 'mysubdir',  incorrect: '/subdir/'.
- *                Platform specific Slashes will be added automatically.
- * @param resourceName e.g swt-webkitgtk
- * @param mapResourceName  true if you like platform specific mapping applied to resource name. e.g  MyLib -> libMyLib-gtk-4826.so
- */
-public static File findResource(String subDir, String resourceName, boolean mapResourceName, boolean replaceDylib, boolean searchInOsgi){
-
-	//We construct a 'maybe' subdirectory path. 'Maybe' because if no subDir given, then it's an empty string "".
-	                                                                         //       subdir  e.g:  subdir
-	String maybeSubDirPath = subDir != null ? subDir + SEPARATOR : "";       //               e.g:  subdir/  or ""
-	String maybeSubDirPathWithPrefix = subDir != null ? SEPARATOR + maybeSubDirPath : ""; //  e.g: /subdir/  or ""
-	final String finalResourceName = mapResourceName ?
-			mapLibraryName(resourceName + "-" + Platform.PLATFORM + "-" + getVersionString (), replaceDylib) // e.g libMyLib-gtk-3826.so
-			: resourceName;
-
-	// 1) Look for the resource in the java/swt library path(s)
-	// This code commonly finds the resource if the swt project is a required project and the swt binary (for your platform)
-	// project is open in your workplace  (found in the JAVA_LIBRARY_PATH) or if you're explicitly specified SWT_LIBRARY_PATH.
-	{
-		Function<String, File> lookForFileInPath = searchPath -> {
-			String classpath = System.getProperty(searchPath);
-			if (classpath != null){
-				String[] paths = classpath.split(File.pathSeparator);
-				for (String path : paths) {
-				File file = new File(path + SEPARATOR + maybeSubDirPath + finalResourceName);
-					if (file.exists()){
-						return file;
-					}
-				}
-			}
-			return null;
-		};
-		File result = null;
-		for (String path : new String[] {JAVA_LIB_PATH,SWT_LIB_PATH}) {
-			result = lookForFileInPath.apply(path);
-			if (result != null)
-				return result;
-		}
-	}
-
-	// 2) If SWT is ran as OSGI bundle (e.g inside Eclipse), then local resources are extracted to
-	// eclipse/configuration/org.eclipse.osgi/NN/N/.cp/<resource> and we're given a pointer to the file.
-	if (searchInOsgi) {
-		// If this is an OSGI bundle look for the resource using getResource
-		URL url = Library.class.getClassLoader().getResource(maybeSubDirPathWithPrefix + finalResourceName);
-		URLConnection connection;
-		try {
-			connection = url.openConnection();
-			Method getFileURLMethod = connection.getClass().getMethod("getFileURL");
-			if (getFileURLMethod != null){
-				// This method does the actual extraction of file to: ../eclipse/configuration/org.eclipse.osgi/NN/N/.cp/<SubDir>/resource.ext
-				URL result = (URL) getFileURLMethod.invoke(connection);
-				return new File(result.toURI());
-			}
-		} catch (Exception e) {
-			// If any exceptions are thrown the resource cannot be located this way.
-		}
-	}
-
-	// 3) Need to try to pull the resource out of the swt.jar.
-	// Look for the resource in the user's home directory, (if already extracted in the temp swt folder. (~/.swt/lib...)
-	// Extract from the swt.jar if not there already.
-	{
-		// Developer note:
-		// To test this piece of code, you need to compile SWT into a jar and use it in a test project. E.g
-		//   cd ~/git/eclipse.platform.swt.binaries/bundles/org.eclipse.swt.gtk.linux.x86_64/
-		//   mvn clean verify -Pbuild-individual-bundles -Dnative=gtk.linux.x86_64
-		// then ./target/ will contain org.eclipse.swt.gtk.linux.x86_64-3.106.100-SNAPSHOT.jar (and it's source),
-		//  you can copy those into your test swt project and test that your resource is extracted into something like ~/.swt/...
-		// Lastly, if using subDir, you need to edit the build.properties and specify the folder you wish to have included in your jar in the includes.
-		File file = new File (USER_HOME + SEPARATOR +  SWT_LIB_DIR + maybeSubDirPathWithPrefix, finalResourceName);
-		if (file.exists()){
-			return file;
-		} else { // Try to extract file from jar if not found.
-
-			// Create temp directory if it doesn't exist
-			File tempDir = new File (USER_HOME, SWT_LIB_DIR + maybeSubDirPathWithPrefix);
-			if ((!tempDir.exists () || tempDir.isDirectory ())) {
-				tempDir.mkdirs ();
-			}
-
-			if (extract(file.getPath(), maybeSubDirPath + finalResourceName)) {
-				if (file.exists()) {
-					return file;
-				}
-			}
-		}
-	}
-	throw new UnsatisfiedLinkError("Could not find resource " + resourceName +  (subDir != null ? " (in subdirectory: " + subDir + " )" : ""));
-}
-
 
 }

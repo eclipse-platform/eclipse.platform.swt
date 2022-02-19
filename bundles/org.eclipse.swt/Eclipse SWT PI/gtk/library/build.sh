@@ -265,14 +265,6 @@ func_echo_plus "Building SWT/GTK+ for Architectures: $SWT_OS $SWT_ARCH"
 func_build_gtk4 () {
 	export GTK_VERSION=4.0
 
-	# Dictate Webkit2 Extension only if pkg-config flags exist
-	pkg-config --exists webkit2gtk-web-extension-4.0
-	if [ $? = 0 ]; then
-		export BUILD_WEBKIT2EXTENSION="yes";
-	else
-		func_echo_error "Warning: Cannot compile Webkit2 Extension because 'pkg-config --exists webkit2gtk-web-extension-4.0' check failed. Please install webkitgtk4-devel.ARCH on your system."
-	fi
-
 	func_echo_plus "Building GTK4 bindings:"
 	${MAKE_TYPE} -f $MAKEFILE all $MAKE_CAIRO $MAKE_AWT "${@}"
 	RETURN_VALUE=$?   #make can return 1 or 2 if it fails. Thus need to cache it in case it's used programmatically somewhere.
@@ -286,14 +278,6 @@ func_build_gtk4 () {
 
 func_build_gtk3 () {
 	export GTK_VERSION=3.0
-
-	# Dictate Webkit2 Extension only if pkg-config flags exist
-	pkg-config --exists webkit2gtk-web-extension-4.0
-	if [ $? = 0 ]; then
-		export BUILD_WEBKIT2EXTENSION="yes";
-	else
-		func_echo_error "Warning: Cannot compile Webkit2 Extension because 'pkg-config --exists webkit2gtk-web-extension-4.0' check failed. Please install webkitgtk4-devel.ARCH on your system."
-	fi
 
 	func_echo_plus "Building GTK3 bindings:"
 	${MAKE_TYPE} -f $MAKEFILE all $MAKE_CAIRO $MAKE_AWT "${@}"

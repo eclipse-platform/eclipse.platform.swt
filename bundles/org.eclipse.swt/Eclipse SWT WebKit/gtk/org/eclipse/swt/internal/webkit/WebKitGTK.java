@@ -114,9 +114,6 @@ public class WebKitGTK extends C {
 	public static final byte[] failed = ascii ("failed"); // $NON-NLS-1$
 	public static final byte[] finished = ascii ("finished"); // $NON-NLS-1$
 
-	// Webkit2 extension
-	public static final byte[] initialize_web_extensions = ascii ("initialize-web-extensions");
-
 	// Status text signals
 	public static final byte[] mouse_target_changed = ascii ("mouse-target-changed"); // $NON-NLS-1$
 
@@ -180,9 +177,6 @@ public static final native long JSObjectGetProperty(long ctx, long object, long 
 public static final native long JSObjectGetPropertyAtIndex(long ctx, long object, int propertyIndex, long [] exception);
 
 /** @method flags=dynamic */
-public static final native long JSObjectMakeArray(long ctx, long argumentCount, long [] arguments, long [] exception);
-
-/** @method flags=dynamic */
 public static final native long JSStringCreateWithUTF8CString(byte[] string);
 
 /** @method flags=dynamic */
@@ -201,18 +195,6 @@ public static final native void webkit_javascript_result_unref(long js_result);
 
 /** @method flags=dynamic */
 public static final native int JSValueGetType(long ctx, long value);
-
-/** @method flags=dynamic */
-public static final native long JSValueMakeBoolean(long ctx, int bool);
-
-/** @method flags=dynamic */
-public static final native long JSValueMakeNumber(long ctx, double number);
-
-/** @method flags=dynamic */
-public static final native long JSValueMakeString(long ctx, long string);
-
-/** @method flags=dynamic */
-public static final native long JSValueMakeUndefined(long ctx);
 
 /** @method flags=dynamic */
 public static final native double JSValueToNumber(long ctx, long value, long [] exception);
@@ -443,14 +425,6 @@ public static final native void webkit_web_view_load_uri(long web_view, byte[] u
 public static final native long webkit_web_view_new();
 /** @method flags=dynamic */
 public static final native long webkit_web_view_new_with_related_view(long web_view);
-
-
-/** @method flags=dynamic */ // @param context cast=(WebKitWebContext*)  @param directory cast=(const gchar *)
-public static final native void webkit_web_context_set_web_extensions_directory(long context, byte[] directory);
-
-/** @method flags=dynamic */
-public static final native void webkit_web_context_set_web_extensions_initialization_user_data(long /* int */ context, long /* int */ user_data);
-
 
 /**
  * @method flags=dynamic

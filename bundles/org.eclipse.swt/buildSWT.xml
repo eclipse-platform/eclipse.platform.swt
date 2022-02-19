@@ -66,15 +66,15 @@
 			<param name="fragment" value="org.eclipse.swt.cocoa.macosx.x86_64"/>
 		</antcall>
 		<antcall target="check_fragment_libraries">
-			<param name="library_count" value="8"/>
+			<param name="library_count" value="7"/>
 			<param name="fragment" value="org.eclipse.swt.gtk.linux.aarch64"/>
 		</antcall>
 		<antcall target="check_fragment_libraries">
-			<param name="library_count" value="8"/>
+			<param name="library_count" value="7"/>
 			<param name="fragment" value="org.eclipse.swt.gtk.linux.ppc64le"/>
 		</antcall>
 		<antcall target="check_fragment_libraries">
-			<param name="library_count" value="8"/>
+			<param name="library_count" value="7"/>
 			<param name="fragment" value="org.eclipse.swt.gtk.linux.x86_64"/>
 		</antcall>
 		<antcall target="check_fragment_libraries">
@@ -615,7 +615,6 @@
 		<!-- Get list of files to commit -->
 		<fileset id="addid" dir="${repo.bin}">
 			<include name="bundles/*/*${swt_version}*"/>
-			<include name="bundles/*/webkitextensions${swt_version}/*${swt_version}*"/>
 			<include name="bundles/*/build.sha1"/>
 			<exclude name="**/.git/**"/>
 			<exclude name="**/tmpdir/**"/>
@@ -788,12 +787,6 @@
 			port="${port}"
 			keyfile="${keyfile}"
 			trust="true"/>
-		<scp file="swtbuild@${build_machine}:${lib_output}/webkitextensions${swt_version}/*"
-			todir="${output_dir}/webkitextensions${swt_version}/"
-			port="${port}"
-			keyfile="${keyfile}"
-			trust="true"
-			failonerror="false"/>
 		<sshexec host="${build_machine}"
 			username="swtbuild"
 			port="${port}"
@@ -804,10 +797,6 @@
 
 	<target name="build_local">
 		<property name="gtk_version" value="3.0" />
-		<exec executable="mkdir">
-			<arg value="-p"/>
-			<arg value="${output_dir}/webkitextensions${swt_version}/"/>
-		</exec>
 		<exec dir="${build_dir}" executable="sh" failonerror="true">
 			<arg line="build.sh"/>
 			<env key="GTK_VERSION" value="${gtk_version}"/>

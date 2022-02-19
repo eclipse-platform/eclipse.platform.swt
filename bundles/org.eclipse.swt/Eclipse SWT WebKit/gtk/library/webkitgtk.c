@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2009, 2021 IBM Corporation and others. All rights reserved.
+ * Copyright (c) 2009, 2022 IBM Corporation and others. All rights reserved.
  * The contents of this file are made available under the terms
  * of the GNU Lesser General Public License (LGPL) Version 2.1 that
  * accompanies this distribution (lgpl-v21.txt).  The LGPL is also
@@ -80,33 +80,6 @@ JNIEXPORT jlong JNICALL WebKitGTK_NATIVE(JSObjectGetPropertyAtIndex)
 fail:
 	if (arg3 && lparg3) (*env)->ReleaseLongArrayElements(env, arg3, lparg3, 0);
 	WebKitGTK_NATIVE_EXIT(env, that, JSObjectGetPropertyAtIndex_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO_JSObjectMakeArray
-JNIEXPORT jlong JNICALL WebKitGTK_NATIVE(JSObjectMakeArray)
-	(JNIEnv *env, jclass that, jlong arg0, jlong arg1, jlongArray arg2, jlongArray arg3)
-{
-	jlong *lparg2=NULL;
-	jlong *lparg3=NULL;
-	jlong rc = 0;
-	WebKitGTK_NATIVE_ENTER(env, that, JSObjectMakeArray_FUNC);
-	if (arg2) if ((lparg2 = (*env)->GetLongArrayElements(env, arg2, NULL)) == NULL) goto fail;
-	if (arg3) if ((lparg3 = (*env)->GetLongArrayElements(env, arg3, NULL)) == NULL) goto fail;
-/*
-	rc = (jlong)JSObjectMakeArray(arg0, arg1, lparg2, lparg3);
-*/
-	{
-		WebKitGTK_LOAD_FUNCTION(fp, JSObjectMakeArray)
-		if (fp) {
-			rc = (jlong)((jlong (CALLING_CONVENTION*)(jlong, jlong, jlong *, jlong *))fp)(arg0, arg1, lparg2, lparg3);
-		}
-	}
-fail:
-	if (arg3 && lparg3) (*env)->ReleaseLongArrayElements(env, arg3, lparg3, 0);
-	if (arg2 && lparg2) (*env)->ReleaseLongArrayElements(env, arg2, lparg2, 0);
-	WebKitGTK_NATIVE_EXIT(env, that, JSObjectMakeArray_FUNC);
 	return rc;
 }
 #endif
@@ -213,86 +186,6 @@ JNIEXPORT jint JNICALL WebKitGTK_NATIVE(JSValueGetType)
 		}
 	}
 	WebKitGTK_NATIVE_EXIT(env, that, JSValueGetType_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO_JSValueMakeBoolean
-JNIEXPORT jlong JNICALL WebKitGTK_NATIVE(JSValueMakeBoolean)
-	(JNIEnv *env, jclass that, jlong arg0, jint arg1)
-{
-	jlong rc = 0;
-	WebKitGTK_NATIVE_ENTER(env, that, JSValueMakeBoolean_FUNC);
-/*
-	rc = (jlong)JSValueMakeBoolean(arg0, arg1);
-*/
-	{
-		WebKitGTK_LOAD_FUNCTION(fp, JSValueMakeBoolean)
-		if (fp) {
-			rc = (jlong)((jlong (CALLING_CONVENTION*)(jlong, jint))fp)(arg0, arg1);
-		}
-	}
-	WebKitGTK_NATIVE_EXIT(env, that, JSValueMakeBoolean_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO_JSValueMakeNumber
-JNIEXPORT jlong JNICALL WebKitGTK_NATIVE(JSValueMakeNumber)
-	(JNIEnv *env, jclass that, jlong arg0, jdouble arg1)
-{
-	jlong rc = 0;
-	WebKitGTK_NATIVE_ENTER(env, that, JSValueMakeNumber_FUNC);
-/*
-	rc = (jlong)JSValueMakeNumber(arg0, arg1);
-*/
-	{
-		WebKitGTK_LOAD_FUNCTION(fp, JSValueMakeNumber)
-		if (fp) {
-			rc = (jlong)((jlong (CALLING_CONVENTION*)(jlong, jdouble))fp)(arg0, arg1);
-		}
-	}
-	WebKitGTK_NATIVE_EXIT(env, that, JSValueMakeNumber_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO_JSValueMakeString
-JNIEXPORT jlong JNICALL WebKitGTK_NATIVE(JSValueMakeString)
-	(JNIEnv *env, jclass that, jlong arg0, jlong arg1)
-{
-	jlong rc = 0;
-	WebKitGTK_NATIVE_ENTER(env, that, JSValueMakeString_FUNC);
-/*
-	rc = (jlong)JSValueMakeString(arg0, arg1);
-*/
-	{
-		WebKitGTK_LOAD_FUNCTION(fp, JSValueMakeString)
-		if (fp) {
-			rc = (jlong)((jlong (CALLING_CONVENTION*)(jlong, jlong))fp)(arg0, arg1);
-		}
-	}
-	WebKitGTK_NATIVE_EXIT(env, that, JSValueMakeString_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO_JSValueMakeUndefined
-JNIEXPORT jlong JNICALL WebKitGTK_NATIVE(JSValueMakeUndefined)
-	(JNIEnv *env, jclass that, jlong arg0)
-{
-	jlong rc = 0;
-	WebKitGTK_NATIVE_ENTER(env, that, JSValueMakeUndefined_FUNC);
-/*
-	rc = (jlong)JSValueMakeUndefined(arg0);
-*/
-	{
-		WebKitGTK_LOAD_FUNCTION(fp, JSValueMakeUndefined)
-		if (fp) {
-			rc = (jlong)((jlong (CALLING_CONVENTION*)(jlong))fp)(arg0);
-		}
-	}
-	WebKitGTK_NATIVE_EXIT(env, that, JSValueMakeUndefined_FUNC);
 	return rc;
 }
 #endif
@@ -1544,46 +1437,6 @@ JNIEXPORT void JNICALL WebKitGTK_NATIVE(webkit_1web_1context_1set_1tls_1errors_1
 		}
 	}
 	WebKitGTK_NATIVE_EXIT(env, that, webkit_1web_1context_1set_1tls_1errors_1policy_FUNC);
-}
-#endif
-
-#ifndef NO_webkit_1web_1context_1set_1web_1extensions_1directory
-JNIEXPORT void JNICALL WebKitGTK_NATIVE(webkit_1web_1context_1set_1web_1extensions_1directory)
-	(JNIEnv *env, jclass that, jlong arg0, jbyteArray arg1)
-{
-	jbyte *lparg1=NULL;
-	WebKitGTK_NATIVE_ENTER(env, that, webkit_1web_1context_1set_1web_1extensions_1directory_FUNC);
-	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
-/*
-	webkit_web_context_set_web_extensions_directory(arg0, lparg1);
-*/
-	{
-		WebKitGTK_LOAD_FUNCTION(fp, webkit_web_context_set_web_extensions_directory)
-		if (fp) {
-			((void (CALLING_CONVENTION*)(jlong, jbyte *))fp)(arg0, lparg1);
-		}
-	}
-fail:
-	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
-	WebKitGTK_NATIVE_EXIT(env, that, webkit_1web_1context_1set_1web_1extensions_1directory_FUNC);
-}
-#endif
-
-#ifndef NO_webkit_1web_1context_1set_1web_1extensions_1initialization_1user_1data
-JNIEXPORT void JNICALL WebKitGTK_NATIVE(webkit_1web_1context_1set_1web_1extensions_1initialization_1user_1data)
-	(JNIEnv *env, jclass that, jlong arg0, jlong arg1)
-{
-	WebKitGTK_NATIVE_ENTER(env, that, webkit_1web_1context_1set_1web_1extensions_1initialization_1user_1data_FUNC);
-/*
-	webkit_web_context_set_web_extensions_initialization_user_data(arg0, arg1);
-*/
-	{
-		WebKitGTK_LOAD_FUNCTION(fp, webkit_web_context_set_web_extensions_initialization_user_data)
-		if (fp) {
-			((void (CALLING_CONVENTION*)(jlong, jlong))fp)(arg0, arg1);
-		}
-	}
-	WebKitGTK_NATIVE_EXIT(env, that, webkit_1web_1context_1set_1web_1extensions_1initialization_1user_1data_FUNC);
 }
 #endif
 

@@ -52,20 +52,7 @@ import org.eclipse.swt.widgets.*;
  *   (the exception is the webextension, because it runs as a separate process and is only loaded dynamically).
  * - Try to keep all of your logic in Java and avoid writing custom C-code. (I went down this pit). Because if you
  *   use native code, then you have to write dynamic native code (get function pointers, cast types etc.. big pain in the ass).
- *   (Webextension is again an exception).
  * - Don't try to add webkit2 include flags to pkg-config, as this will tie the swt-glue code to specific webkit versions. Thou shall not do this.
- *   (webextension is an exception).
- *
- * Webextension:
- * - On Webkit2, a webextension is used to provide browserfunction/javascript callback functionality. (See the whole WebkitGDBus.java business).
- * - I've initially implemented javascript execution by running javascript and then waiting in a display-loop until webkit makes a return call.
- *   I then added a whole bunch of logic to avoid deadlocks.
- *   In retrospec, the better approach would be to send things off via GDBus and let the webextension run the javascript synchronously.
- *   But this would take another 1-2 months of implementation time and wouldn't guarantee dead-lock free behaviour as callbacks could potentailly still
- *   cause deadlocks. It's an interesting thought however..
- * - Note, most GDBus tutorials talk about compiling GDBus bindings. But using them dynamically I found is much easier. See this guide:
- *   http://www.cs.grinnell.edu/~rebelsky/Courses/CSC195/2013S/Outlines/
- *
  *
  * EVENT_HANDLING_DOC:
  * - On webkit2, signals are implemented via regular gtk mechanism, hook events and pass them along as we receive them.
@@ -219,8 +206,6 @@ class WebKit extends WebBrowser {
 			Proc5 = new Callback (WebKit.class, "Proc", 5); //$NON-NLS-1$
 			new Webkit2AsyncToSync();
 
-			WebKitExtension.init();
-
 			JSDOMEventProc = new Callback (WebKit.class, "JSDOMEventProc", 3); //$NON-NLS-1$
 
 			NativeClearSessions = () -> {
@@ -264,48 +249,11 @@ class WebKit extends WebBrowser {
 
 	@Override
 	public void createFunction(BrowserFunction function) {
-		if (!WebkitGDBus.initialized) {
-			System.err.println("SWT webkit: WebkitGDBus and/or Webkit2Extension not loaded, BrowserFunction will not work." +
-				"Tried to create "+ function.name);
-			return;
-		}
 		super.createFunction(function);
-		String url = this.getUrl().isEmpty() ? "nullURL" : this.getUrl();
-		/*
-		 * If the proxy to the extension has not yet been loaded, store the BrowserFunction page ID,
-		 * function string, and URL in a HashMap. Once the proxy to the extension is loaded, these
-		 * functions will be sent to and registered in the extension.
-		 */
-		if (!WebkitGDBus.connectionToExtensionCreated) {
-			WebkitGDBus.functionsPending = true;
-			ArrayList<ArrayList<String>> list = new ArrayList<>();
-			ArrayList<String> functionAndUrl = new ArrayList<>();
-			functionAndUrl.add(0, function.functionString);
-			functionAndUrl.add(1, url);
-			list.add(functionAndUrl);
-			ArrayList<ArrayList<String>> existing = WebkitGDBus.pendingBrowserFunctions.putIfAbsent(this.pageId, list);
-			if (existing != null) {
-				existing.add(functionAndUrl);
-			}
-		} else {
-			// If the proxy to the extension is already loaded, register the function in the extension via DBus
-			boolean successful = webkit_extension_modify_function(this.pageId, function.functionString, url, "register");
-			if (!successful) {
-				System.err.println("SWT webkit: failure registering BrowserFunction " + function.name);
-			}
-		}
 	}
 
 	@Override
 	public void destroyFunction (BrowserFunction function) {
-		// Only deregister functions if the proxy to the extension has been loaded
-		if (WebkitGDBus.connectionToExtensionCreated) {
-			String url = this.getUrl().isEmpty() ? "nullURL" : this.getUrl();
-			boolean successful = webkit_extension_modify_function(this.pageId, function.functionString, url, "deregister");
-			if (!successful) {
-				System.err.println("SWT webkit: failure deregistering BrowserFunction from extension " + function.name);
-			}
-		}
 		super.destroyFunction(function);
 	}
 
@@ -330,170 +278,9 @@ class WebKit extends WebBrowser {
 		return sw.toString();
 	}
 
-	/**
-	 * This class deals with the WebKit extension.
-	 *
-	 * Extension is separately loaded and deals Javascript callbacks to Java.
-	 * Extension is needed so that Javascript can receive a return value from Java
-	 * (for which currently there is no api in WebkitGtk 2.18)
-	 */
-	static class WebKitExtension {
-		/** Note, if updating this, you need to change it also in webkitgtk_extension.c */
-		private static final String javaScriptFunctionName = "webkit2callJava";  // $NON-NLS-1$
-		private static final String webkitWebExtensionIdentifier = "webkitWebExtensionIdentifier";  // $NON-NLS-1$
-		private static Callback initializeWebExtensions_callback;
-
-		/** GDBusServer returned by WebkitGDBus */
-		private static long dBusServer = 0;
-
-		/**
-		 * Don't continue initialization if something failed. This allows Browser to carryout some functionality
-		 * even if the webextension failed to load.
-		 */
-		private static boolean loadFailed;
-
-		static String getJavaScriptFunctionName() {
-			return javaScriptFunctionName;
-		}
-		static String getWebExtensionIdentifier() {
-			return webkitWebExtensionIdentifier;
-		}
-		static String getJavaScriptFunctionDeclaration(long webView) {
-			return "if (!window.callJava) {\n"
-			+ "		window.callJava = function callJava(index, token, args) {\n"
-			+ "          return " + javaScriptFunctionName + "('" + String.valueOf(webView) +  "', index, token, args);\n"
-			+ "		}\n"
-			+ "};\n";
-		}
-
-		static void init() {
-			/*
-			 * Initialize GDBus before the extension, as the extension initialization callback at the C level
-			 * sends data back to SWT via GDBus. Failure to load GDBus here will result in crashes.
-			 * See bug 536141.
-			 */
-			dBusServer = gdbus_init();
-			if (dBusServer == 0) {
-				System.err.println("SWT WebKit: error initializing DBus server, dBusServer == 0");
-			}
-			initializeWebExtensions_callback = new Callback(WebKitExtension.class, "initializeWebExtensions_callback", void.class, new Type [] {long.class, long.class});
-			if (WebKitGTK.webkit_get_minor_version() >= 4) { // Callback exists only since 2.04
-				OS.g_signal_connect (WebKitGTK.webkit_web_context_get_default(), WebKitGTK.initialize_web_extensions, initializeWebExtensions_callback.getAddress(), 0);
-			}
-		}
-
-		/**
-		 * GDbus initialization can cause performance slow downs. So we int GDBus in lazy way.
-		 * It can be initialized upon first use of BrowserFunction.
-		 */
-		static long gdbus_init() {
-			if (WebKitGTK.webkit_get_minor_version() < 4) {
-				System.err.println("SWT Webkit: Warning, You are using an old version of webkitgtk. (pre 2.4)"
-						+ " BrowserFunction functionality will not be available");
-				return 0;
-			}
-
-
-			if (!loadFailed) {
-				return WebkitGDBus.init();
-			} else {
-				return 0;
-			}
-		}
-
-		/**
-		 * This callback is called to initialize webextension.
-		 * It is the optimum place to set extension directory and set initialization user data.
-		 *
-		 * I've experimented with loading webextension later (to see if we can get performance gains),
-		 * but found breakage. Webkitgtk doc says it should be loaded as early as possible and specifically best
-		 * to do it in this calllback.
-		 *
-		 * See documenation: WebKitWebExtension (Description)
-		 */
-		@SuppressWarnings("unused") // Only called directly from C
-		private static void initializeWebExtensions_callback (long WebKitWebContext, long user_data) {
-			// 1) GDBus:
-			// Normally we'd first initialize gdbus channel. But gdbus makes Browser slower and isn't always needed.
-			// So WebkitGDBus is lazy-initialized, although it can be initialized here if gdbus is ever needed
-			// for more than BrowserFunction, like:
-			// WebkitGDBus.init(String.valueOf(uniqueID));
-			// Also consider only loading gdbus if the extension initialized properly.
-
-			// 2) Load Webkit Extension:
-			// Webkit extensions should be in their own directory.
-			String swtVersion = Library.getVersionString();
-			File extension;
-			try {
-				extension = Library.findResource("webkitextensions" + swtVersion ,"swt-webkit2extension", true);
-				if (extension == null){
-					throw new UnsatisfiedLinkError("SWT Webkit could not find it's webextension");
-				}
-			} catch (UnsatisfiedLinkError e) {
-				System.err.println("SWT Webkit.java Error: Could not find webkit extension. BrowserFunction functionality will not be available. \n"
-						+ "(swt version: " + swtVersion + ")" + WebKitGTK.swtWebkitGlueCodeVersion + WebKitGTK.swtWebkitGlueCodeVersionInfo);
-				int [] vers = internalGetWebkitVersion();
-				System.err.println(String.format("WebKit2Gtk version %s.%s.%s", vers[0], vers[1], vers[2]));
-				System.err.println(getInternalErrorMsg());
-				loadFailed = true;
-				return;
-			}
-
-			String extensionsFolder = extension.getParent();
-			/* Dev note:
-			 * As per
-			 * - WebkitSrc: WebKitExtensionManager.cpp,
-			 * - IRC discussion with annulen
-			 * you cannot load the webextension GModule directly, (webkitgtk 2.18). You can only specify directory and user data.
-			 * So we need to treat this  '.so' in a special way.
-			 * (as a note, the webprocess would have to load the gmodule).
-			 */
-			WebKitGTK.webkit_web_context_set_web_extensions_directory(WebKitGTK.webkit_web_context_get_default(), Converter.wcsToMbcs (extensionsFolder, true));
-			long clientAddress = OS.g_dbus_server_get_client_address(dBusServer);
-			String clientAddressJava = Converter.cCharPtrToJavaString(clientAddress, false);
-			long gvariantUserData = OS.g_variant_new_string(clientAddress);
-			WebKitGTK.webkit_web_context_set_web_extensions_initialization_user_data(WebKitGTK.webkit_web_context_get_default(), gvariantUserData);
-		}
-
-		/**
-		 * @param cb_args Raw callback arguments by function.
-		 */
-		static Object webkit2callJavaCallback(Object [] cb_args) {
-			assert cb_args.length == 4;
-			Object returnValue = null;
-			Long webViewLocal = (Double.valueOf((String) cb_args[0])).longValue();
-			Browser browser = FindBrowser((long ) webViewLocal.longValue());
-			Integer functionIndex = ((Double) cb_args[1]).intValue();
-			String token = (String) cb_args[2];
-
-			BrowserFunction function = browser.webBrowser.functions.get(functionIndex);
-			if (function == null) {
-				System.err.println("SWT Webkit Error: Failed to find function with index: " + functionIndex);
-				return null;
-			}
-			if (!function.token.equals(token)) {
-				System.err.println("SWT Webkit Error: token mismatch for function with index: " + functionIndex);
-				return null;
-			}
-			try {
-				// Call user code. Exceptions can occur.
-				nonBlockingEvaluate++;
-				Object [] user_args = (Object []) cb_args[3];
-				returnValue = function.function(user_args);
-			} catch (Exception e ) {
-				// - Something went wrong in user code.
-				System.err.println("SWT Webkit: Exception occured in user code of function: " + function.name);
-				returnValue = WebBrowser.CreateErrorString (e.getLocalizedMessage ());
-			} finally {
-				nonBlockingEvaluate--;
-			}
-			return returnValue;
-		}
-	}
-
 	@Override
 	String getJavaCallDeclaration() {
-		return WebKitExtension.getJavaScriptFunctionDeclaration(webView);
+		return super.getJavaCallDeclaration();
 	}
 
 	/**
@@ -1005,46 +792,6 @@ void nonBlockingExecute(String script) {
 	}
 }
 
-/**
- * Modifies a BrowserFunction in the web extension. This method can be used to register/deregister BrowserFunctions
- * in the web extension, so that those BrowserFunctions are executed upon triggering of the object_cleared callback (in
- * the extension, not in Java).
- *
- * This function will return true if: the operation succeeds synchronously, or if the synchronous call timed out and an
- * asynchronous call was performed instead. All other cases will return false.
- *
- * Supported actions: "register" and "deregister"
- *
- * @param pageId the page ID of the WebKit instance/web page
- * @param function the function string
- * @param url the URL
- * @param action the action being performed on the function, which will be used to form the DBus method name.
- * @return true if the action succeeded (or was performed asynchronously), false if it failed
- */
-private boolean webkit_extension_modify_function (long pageId, String function, String url, String action){
-	long[] args = { OS.g_variant_new_uint64(pageId),
-			OS.g_variant_new_string (Converter.javaStringToCString(function)),
-			OS.g_variant_new_string (Converter.javaStringToCString(url))};
-	final long argsTuple = OS.g_variant_new_tuple(args, args.length);
-	if (argsTuple == 0) return false;
-	String dbusMethodName = "webkitgtk_extension_" + action + "_function";
-	Object returnVal = WebkitGDBus.callExtensionSync(argsTuple, dbusMethodName);
-	if (returnVal instanceof Boolean) {
-		return (Boolean) returnVal;
-	} else if (returnVal instanceof String) {
-		String returnString = (String) returnVal;
-		/*
-		 * Call the extension asynchronously if a synchronous call times out.
-		 * Note: this is a pretty rare case, and usually only happens when running test cases.
-		 * See bug 536141.
-		 */
-		if ("timeout".equals(returnString)) {
-			return WebkitGDBus.callExtensionAsync(argsTuple, dbusMethodName);
-		}
-	}
-	return false;
-}
-
 @Override
 public boolean execute (String script) {
 	if (!isJavascriptEnabled()) {
@@ -1174,27 +921,6 @@ private static class Webkit2AsyncToSync {
 	 * SWT implementation.
 	 *
 	 * If in doubt, you should use nonBlockingExecute() where possible :-).
-	 *
-	 * TODO_SOMEDAY:
-	 * - Instead of async js execution and waiting for return value, it might be
-	 *   better to use gdbus, connect to webextension and execute JS synchronously.
-	 *   See: https://blogs.igalia.com/carlosgc/2013/09/10/webkit2gtk-web-process-extensions/
-	 *    'Extending JavaScript'
-	 *   Pros:
-	 *    - less likely deadlocks would occur due to developer error/not being careful.
-	 *    - js execution can work in synchronous callbacks from webkit.
-	 *   Cons:
-	 *    - High implementation cost/complexity.
-	 *    - Unexpected errors/behaviour due to GDBus timeouts.
-	 *   Proof of concept:
-	 *   https://git.eclipse.org/r/#/c/23416/16/bundles/org.eclipse.swt/Eclipse+SWT+WebKit/gtk/library/webkit_extension.c
-	 *     > 'webkit_extension_execute_script'
-	 *   Tennative structure:
-	 *   - Webextension should create gdbus server, make & communicate UniqueID (pid) to main proc
-	 *   - main proc should make a note of webextension's name+uniqueID
-	 *   - implement mechanism for packaging Java objects into gvariants, (see WebkitGDBus.java),
-	 *   - call webextension over gdbus, parse return value.
-	 *
 	 */
 	static Object runjavascript(String script, Browser browser, long webView) {
 		if (nonBlockingEvaluate > 0) {
@@ -1373,7 +1099,7 @@ private static class Webkit2AsyncToSync {
 		 * triggers.
 		 */
 		Consumer<Integer> asyncFunc = (callbackID) -> WebKitGTK.webkit_cookie_manager_get_cookies(cookieManager, uri, 0,
-				getCookie_callback.getAddress(), WebkitGDBus.convertJavaToGVariant(new Object [] {cookieName, callbackID}));
+				getCookie_callback.getAddress(), GDBus.convertJavaToGVariant(new Object [] {cookieName, callbackID}));
 		Webkit2AsyncReturnObj retObj = execAsyncAndWaitForReturn(cookieBrowser, asyncFunc, " getCookie() was called");
 
 		if (retObj.swtAsyncTimeout) {
@@ -1385,7 +1111,7 @@ private static class Webkit2AsyncToSync {
 
 	@SuppressWarnings("unused") // Callback only called only by C directly
 	private static void getCookie_callback(long cookieManager, long result, long user_data) {
-		Object resultObject = WebkitGDBus.convertGVariantToJava(user_data);
+		Object resultObject = GDBus.convertGVariantToJava(user_data);
 
 		// We are expecting a GVariant tuple, anything else means something went wrong
 		if (resultObject instanceof Object []) {
@@ -2812,38 +2538,6 @@ private void webkit_settings_set(byte [] property, int value) {
 	}
 	long settings = WebKitGTK.webkit_web_view_get_settings (webView);
 	OS.g_object_set(settings, property, value, 0);
-}
-
-long convertToJS (long ctx, Object value) {
-	if (value == null) {
-		return WebKitGTK.JSValueMakeUndefined (ctx);
-	}
-	if (value instanceof String) {
-		byte[] bytes = ((String)value + '\0').getBytes (StandardCharsets.UTF_8); //$NON-NLS-1$
-		long stringRef = WebKitGTK.JSStringCreateWithUTF8CString (bytes);
-		long result = WebKitGTK.JSValueMakeString (ctx, stringRef);
-		WebKitGTK.JSStringRelease (stringRef);
-		return result;
-	}
-	if (value instanceof Boolean) {
-		return WebKitGTK.JSValueMakeBoolean (ctx, ((Boolean)value).booleanValue () ? 1 : 0);
-	}
-	if (value instanceof Number) {
-		return WebKitGTK.JSValueMakeNumber (ctx, ((Number)value).doubleValue ());
-	}
-	if (value instanceof Object[]) {
-		Object[] arrayValue = (Object[]) value;
-		int length = arrayValue.length;
-		long [] arguments = new long [length];
-		for (int i = 0; i < length; i++) {
-			Object javaObject = arrayValue[i];
-			long jsObject = convertToJS (ctx, javaObject);
-			arguments[i] = jsObject;
-		}
-		return WebKitGTK.JSObjectMakeArray (ctx, length, arguments, null);
-	}
-	SWT.error (SWT.ERROR_INVALID_RETURN_VALUE);
-	return 0;
 }
 
 static Object convertToJava (long ctx, long value) {

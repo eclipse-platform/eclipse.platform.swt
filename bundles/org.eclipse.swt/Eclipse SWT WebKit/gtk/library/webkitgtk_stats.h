@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2009, 2021 IBM Corporation and others. All rights reserved.
+ * Copyright (c) 2009, 2022 IBM Corporation and others. All rights reserved.
  * The contents of this file are made available under the terms
  * of the GNU Lesser General Public License (LGPL) Version 2.1 that
  * accompanies this distribution (lgpl-v21.txt).  The LGPL is also
@@ -35,16 +35,11 @@ typedef enum {
 	GdkRectangle_1sizeof_FUNC,
 	JSObjectGetProperty_FUNC,
 	JSObjectGetPropertyAtIndex_FUNC,
-	JSObjectMakeArray_FUNC,
 	JSStringCreateWithUTF8CString_FUNC,
 	JSStringGetMaximumUTF8CStringSize_FUNC,
 	JSStringGetUTF8CString_FUNC,
 	JSStringRelease_FUNC,
 	JSValueGetType_FUNC,
-	JSValueMakeBoolean_FUNC,
-	JSValueMakeNumber_FUNC,
-	JSValueMakeString_FUNC,
-	JSValueMakeUndefined_FUNC,
 	JSValueToNumber_FUNC,
 	JSValueToStringCopy_FUNC,
 	soup_1cookie_1get_1name_FUNC,
@@ -106,8 +101,6 @@ typedef enum {
 	webkit_1web_1context_1get_1type_FUNC,
 	webkit_1web_1context_1get_1website_1data_1manager_FUNC,
 	webkit_1web_1context_1set_1tls_1errors_1policy_FUNC,
-	webkit_1web_1context_1set_1web_1extensions_1directory_FUNC,
-	webkit_1web_1context_1set_1web_1extensions_1initialization_1user_1data_FUNC,
 	webkit_1web_1resource_1get_1data_FUNC,
 	webkit_1web_1resource_1get_1data_1finish_FUNC,
 	webkit_1web_1view_1can_1go_1back_FUNC,

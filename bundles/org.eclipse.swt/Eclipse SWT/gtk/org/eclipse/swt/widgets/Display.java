@@ -222,19 +222,6 @@ public class Display extends Device {
 	SessionManagerListener sessionManagerListener;
 	Runnable [] disposeList;
 
-	/*
-	 * DBus objects to be freed upong Display release. Only public for use in
-	 * other areas of SWT (i.e. WebKit). See bug 540060.
-	 */
-	/** @noreference */
-	public java.util.List<Long> dBusServers = new ArrayList<>();
-	/** @noreference */
-	public java.util.List<Long> dBusAuthObservers = new ArrayList<>();
-	/** @noreference */
-	public java.util.List<Long> dBusGUIDS = new ArrayList<>();
-	/** @noreference */
-	public java.util.List<Long> dBusConnections = new ArrayList<>();
-
 	/* Deferred Layout list */
 	Composite[] layoutDeferred;
 	int layoutDeferredCount;
@@ -3853,44 +3840,6 @@ void initializeSessionManager() {
 }
 
 /**
- * Some parts of SWT (like WebKit) use GDBus for IPC. Some of these objects
- * cannot be disposed of in their own classes due to design challenges.
- * In these instances we release them along with this Display. This ensures
- * no Browser will be using them at disposal time.
- */
-void releaseDBusServices() {
-	releaseSessionManager();
-	for (long connection : dBusConnections) {
-		if (OS.g_dbus_connection_is_closed(connection)) continue;
-		long [] error = new long [1];
-		boolean closed = OS.g_dbus_connection_close_sync(connection, 0, error);
-		if (error[0] != 0) {
-			String msg = extractFreeGError(error[0]);
-			System.err.println("SWT Display: error closing connection: " + msg);
-		}
-		if (closed) {
-			// Free this as we added a reference to it
-			OS.g_object_unref(connection);
-		}
-	}
-	for (long server : dBusServers) {
-		OS.g_dbus_server_stop(server);
-		OS.g_object_unref(server);
-	}
-	for (long authObserver : dBusAuthObservers) {
-		OS.g_object_unref(authObserver);
-	}
-	for (long guid : dBusGUIDS) {
-		OS.g_free(guid);
-	}
-	dBusConnections.clear();
-	dBusServers.clear();
-	dBusAuthObservers.clear();
-	dBusGUIDS.clear();
-	dBusServers = dBusAuthObservers = dBusGUIDS = dBusConnections = null;
-}
-
-/**
  * Helper method to extract GError messages. Only call if the pointer is valid (i.e. non-zero).
  *
  * @param errorPtr pointer to the GError
@@ -4673,7 +4622,6 @@ protected void release () {
 
 		synchronizer.releaseSynchronizer ();
 		synchronizer = null;
-		releaseDBusServices ();
 		releaseSessionManager ();
 		releaseDisplay ();
 		super.release ();
