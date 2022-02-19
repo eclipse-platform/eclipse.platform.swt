@@ -174,7 +174,7 @@ fi
 if [ ${SWT_OS} = 'win32' ]; then
 	AWT_LIB_EXPR="jawt.dll"
 else
-	AWT_LIB_EXPR="libjawt.*"
+	AWT_LIB_EXPR="libjawt.so"
 fi
 
 if [ -z "${AWT_LIB_PATH}" ]; then
