@@ -87,6 +87,8 @@ public class WebKitGTK extends C {
 
 	public static final int WEBKIT_WEBSITE_DATA_COOKIES = 1 << 8;
 
+	public static final int WEBKIT_USER_SCRIPT_INJECT_AT_DOCUMENT_START = 0;
+	public static final int WEBKIT_USER_CONTENT_INJECT_TOP_FRAME = 1;
 
 	/** Signals */
 
@@ -359,7 +361,13 @@ public static final native long webkit_web_context_get_cookie_manager(long conte
 public static final native long webkit_web_context_get_website_data_manager(long context);
 
 /** @method flags=dynamic */
+public static final native long webkit_web_context_get_security_manager(long context);
+
+/** @method flags=dynamic */
 public static final native void webkit_web_context_set_tls_errors_policy(long context, int policy);
+
+/** @method flags=dynamic */
+public static final native void webkit_web_context_register_uri_scheme(long context, byte[] scheme, long callback, long user_data, long user_data_destroy_func);
 
 /** @method flags=dynamic */
 public static final native int webkit_web_view_can_go_back(long web_view);
@@ -384,6 +392,9 @@ public static final native long webkit_web_view_get_page_id(long web_view);
 
 /** @method flags=dynamic */
 public static final native long webkit_web_view_get_settings(long web_view);
+
+/** @method flags=dynamic */
+public static final native long webkit_web_view_get_user_content_manager(long web_view);
 
 /** @method flags=dynamic */
 public static final native long webkit_web_view_get_title(long web_view);
@@ -485,6 +496,36 @@ public static final native long webkit_uri_request_get_uri(long request);
 
 /** @method flags=dynamic */
 public static final native long webkit_uri_response_get_mime_type(long responce);
+
+/**
+ * @method flags=dynamic
+ * @param content_type flags=no_out
+ */
+public static final native void webkit_uri_scheme_request_finish(long request, long stream, long stream_length, byte[] content_type);
+
+/** @method flags=dynamic */
+public static final native long webkit_uri_scheme_request_get_uri (long request);
+
+/** @method flags=dynamic */
+public static final native long webkit_uri_scheme_request_get_web_view(long request);
+
+/** @method flags=dynamic */
+public static final native long webkit_user_content_manager_add_script(long manager, long script);
+
+/** @method flags=dynamic */
+public static final native void webkit_user_content_manager_remove_all_scripts(long manager);
+
+/** @method flags=dynamic */
+public static final native void webkit_security_manager_register_uri_scheme_as_secure(long security_manager, byte[] scheme);
+
+/**
+ * @method flags=dynamic
+ * @param source flags=no_out
+ */
+public static final native long webkit_user_script_new (byte[] source, int injected_frames, int injection_time, long allow_list, long block_list);
+
+/** @method flags=dynamic */
+public static final native void webkit_user_script_unref (long user_script);
 
 /* --------------------- start SWT natives --------------------- */
 public static final native int GdkRectangle_sizeof();

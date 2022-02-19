@@ -10851,6 +10851,18 @@ JNIEXPORT jlong JNICALL OS_NATIVE(X_1EVENT_1WINDOW)
 }
 #endif
 
+#ifndef NO_addressof_1g_1free
+JNIEXPORT jlong JNICALL OS_NATIVE(addressof_1g_1free)
+	(JNIEnv *env, jclass that)
+{
+	jlong rc = 0;
+	OS_NATIVE_ENTER(env, that, addressof_1g_1free_FUNC);
+	rc = (jlong)&g_free;
+	OS_NATIVE_EXIT(env, that, addressof_1g_1free_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_call__JJJJJ
 JNIEXPORT jlong JNICALL OS_NATIVE(call__JJJJJ)
 	(JNIEnv *env, jclass that, jlong arg0, jlong arg1, jlong arg2, jlong arg3, jlong arg4)
@@ -11982,6 +11994,18 @@ JNIEXPORT jlong JNICALL OS_NATIVE(g_1malloc)
 	OS_NATIVE_ENTER(env, that, g_1malloc_FUNC);
 	rc = (jlong)g_malloc((gulong)arg0);
 	OS_NATIVE_EXIT(env, that, g_1malloc_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_g_1memory_1input_1stream_1new_1from_1data
+JNIEXPORT jlong JNICALL OS_NATIVE(g_1memory_1input_1stream_1new_1from_1data)
+	(JNIEnv *env, jclass that, jlong arg0, jlong arg1, jlong arg2)
+{
+	jlong rc = 0;
+	OS_NATIVE_ENTER(env, that, g_1memory_1input_1stream_1new_1from_1data_FUNC);
+	rc = (jlong)g_memory_input_stream_new_from_data((const void *)arg0, (gssize)arg1, (GDestroyNotify)arg2);
+	OS_NATIVE_EXIT(env, that, g_1memory_1input_1stream_1new_1from_1data_FUNC);
 	return rc;
 }
 #endif

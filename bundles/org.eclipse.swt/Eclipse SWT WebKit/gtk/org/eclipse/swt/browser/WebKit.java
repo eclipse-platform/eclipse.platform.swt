@@ -96,6 +96,7 @@ class WebKit extends WebBrowser {
 	String tlsErrorType;
 
 	boolean firstLoad = true;
+	static boolean FirstCreate = true;
 
 	/**
 	 * Stores the browser which is opening a new browser window,
@@ -168,6 +169,9 @@ class WebKit extends WebBrowser {
 	static final String DOMEVENT_MOUSEOVER = "mouseover"; //$NON-NLS-1$
 	static final String DOMEVENT_MOUSEWHEEL = "mousewheel"; //$NON-NLS-1$
 
+	static final byte[] SWT_PROTOCOL = Converter.wcsToMbcs("swt", true); // $NON-NLS-1$
+	static final byte[] JSON_MIME_TYPE = Converter.wcsToMbcs("application/json", true); // $NON-NLS-1$
+
 	/* WebKit signal data */
 	static final int NOTIFY_PROGRESS = 1;
 	static final int NOTIFY_TITLE = 2;
@@ -191,10 +195,7 @@ class WebKit extends WebBrowser {
 	static final String SWT_WEBKITGTK_VERSION = "org.eclipse.swt.internal.webkitgtk.version"; //$NON-NLS-1$
 
 	/* the following Callbacks are never freed */
-	static Callback Proc2, Proc3, Proc4, Proc5;
-
-	/** Process key/mouse events from javascript. */
-	static Callback JSDOMEventProc;
+	static Callback Proc2, Proc3, Proc4, Proc5, JSDOMEventProc, RequestProc;
 
 	/** Flag indicating whether TLS errors (like self-signed certificates) are to be ignored. */
 	static final boolean ignoreTls;
@@ -207,6 +208,7 @@ class WebKit extends WebBrowser {
 			new Webkit2AsyncToSync();
 
 			JSDOMEventProc = new Callback (WebKit.class, "JSDOMEventProc", 3); //$NON-NLS-1$
+			RequestProc = new Callback (WebKit.class, "RequestProc", 2); //$NON-NLS-1$
 
 			NativeClearSessions = () -> {
 				if (!WebKitGTK.LibraryLoaded) return;
@@ -250,11 +252,31 @@ class WebKit extends WebBrowser {
 	@Override
 	public void createFunction(BrowserFunction function) {
 		super.createFunction(function);
+		updateUserScript();
 	}
 
 	@Override
 	public void destroyFunction (BrowserFunction function) {
 		super.destroyFunction(function);
+		updateUserScript();
+	}
+
+	void updateUserScript() {
+		// Maintain a script bundle of BrowserFunctions to be injected on page navigation or reload.
+		long manager = WebKitGTK.webkit_web_view_get_user_content_manager(webView);
+		WebKitGTK.webkit_user_content_manager_remove_all_scripts(manager);
+		if (!functions.isEmpty()) {
+			StringBuilder sb = new StringBuilder();
+			for (BrowserFunction function : functions.values()) {
+				sb.append(function.functionString);
+			}
+			sb.append('\0');
+			byte[] scriptData = sb.toString().getBytes(StandardCharsets.UTF_8);
+			long script = WebKitGTK.webkit_user_script_new(
+					scriptData, WebKitGTK.WEBKIT_USER_SCRIPT_INJECT_AT_DOCUMENT_START, WebKitGTK.WEBKIT_USER_CONTENT_INJECT_TOP_FRAME, 0, 0);
+			WebKitGTK.webkit_user_content_manager_add_script(manager, script);
+			WebKitGTK.webkit_user_script_unref(script);
+		}
 	}
 
 	private static String getInternalErrorMsg () {
@@ -280,7 +302,14 @@ class WebKit extends WebBrowser {
 
 	@Override
 	String getJavaCallDeclaration() {
-		return super.getJavaCallDeclaration();
+		// callJava does a synchronous XMLHttpRequest, which is handled by RequestProc.
+		return "if (!window.callJava) { window.callJava = function(index, token, args) {\n"
+				+ "var xhr = new XMLHttpRequest();\n"
+				+ "var uri = 'swt://browserfunction/' + index + '/' + token + '?' + encodeURIComponent(JSON.stringify(args));\n"
+				+ "xhr.open('POST', uri, false);\n"
+				+ "xhr.send(null);\n"
+				+ "return JSON.parse(xhr.responseText);\n"
+				+ "}}\n";
 	}
 
 	/**
@@ -394,6 +423,54 @@ static long JSDOMEventProc (long arg0, long event, long user_data) {
 		}
 		return 0;
 	}
+	return 0;
+}
+
+static long RequestProc (long request, long user_data) {
+	// Custom protocol handler (swt://) for BrowserFunction callbacks.
+	// Note that a response must be sent regardless of any errors, otherwise the caller will hang.
+	String response = "null";
+
+	long webView = WebKitGTK.webkit_uri_scheme_request_get_web_view(request);
+	Browser browser = FindBrowser(webView);
+	if (browser != null) {
+		BrowserFunction function = null;
+		Object[] args = null;
+
+		long uriPtr = WebKitGTK.webkit_uri_scheme_request_get_uri(request);
+		String uriStr = Converter.cCharPtrToJavaString(uriPtr, false);
+		try {
+			URI uri = new URI(uriStr);
+			String[] parts = uri.getPath().split("/");
+			int index = Integer.parseInt(parts[1]);
+			String token = parts[2];
+
+			WebKit webkit = (WebKit)browser.webBrowser;
+			function = webkit.functions.get(index);
+			if (function != null && !function.token.equals(token)) {
+				function = null;
+			}
+
+			args = (Object[]) JSON.parse(uri.getQuery());
+		} catch (URISyntaxException | IllegalArgumentException | IndexOutOfBoundsException | ClassCastException e) {
+		}
+
+		if (function != null) {
+			Object result;
+			try {
+				result = function.function(args);
+			} catch (Exception e) {
+				result = WebBrowser.CreateErrorString(e.getLocalizedMessage());
+			}
+			response = JSON.stringify(result);
+		}
+	}
+
+	long[] outBytes = new long[1];
+	long dataPtr = OS.g_utf16_to_utf8(response.toCharArray(), response.length(), null, outBytes, null);
+	long stream = OS.g_memory_input_stream_new_from_data(dataPtr, outBytes[0], OS.addressof_g_free());
+	WebKitGTK.webkit_uri_scheme_request_finish(request, stream, outBytes[0], JSON_MIME_TYPE);
+	OS.g_object_unref(stream);
 	return 0;
 }
 
@@ -563,6 +640,14 @@ public void create (Composite parent, int style) {
 	 */
 	Webkit2AsyncToSync.setCookieBrowser(browser);
 
+	if (FirstCreate) {
+		FirstCreate = false;
+		// Register the swt:// custom protocol for BrowserFunction calls via XMLHttpRequest
+		long context = WebKitGTK.webkit_web_context_get_default();
+		WebKitGTK.webkit_web_context_register_uri_scheme(context, SWT_PROTOCOL, RequestProc.getAddress(), 0, 0);
+		long security = WebKitGTK.webkit_web_context_get_security_manager(context);
+		WebKitGTK.webkit_security_manager_register_uri_scheme_as_secure(security, SWT_PROTOCOL);
+	}
 
 	Composite parentShell = parent.getParent();
 	Browser parentBrowser = WebKit.parentBrowser;

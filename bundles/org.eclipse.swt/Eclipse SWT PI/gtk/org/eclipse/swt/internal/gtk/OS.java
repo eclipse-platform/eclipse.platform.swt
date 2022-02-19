@@ -1037,6 +1037,8 @@ public static final native long g_filename_from_utf8(long opsysstring, long len,
 public static final native long g_filename_from_uri(long uri, long [] hostname, long [] error);
 /** @param mem cast=(gpointer) */
 public static final native void g_free(long mem);
+/** @method accessor=g_free,flags=const address */
+public static final native long addressof_g_free();
 /**
  * @param variable cast=(const gchar *),flags=no_out
  */
@@ -2277,4 +2279,13 @@ public static final native int g_list_model_get_n_items(long list);
  * @param position cast=(guint)
  */
 public static final native long g_list_model_get_item(long list, int position);
+
+/* GMemoryInputStream */
+/**
+ * @param data cast=(const void *)
+ * @param len cast=(gssize)
+ * @param destroy cast=(GDestroyNotify)
+ */
+public static final native long g_memory_input_stream_new_from_data(long data, long len, long destroy);
+
 }

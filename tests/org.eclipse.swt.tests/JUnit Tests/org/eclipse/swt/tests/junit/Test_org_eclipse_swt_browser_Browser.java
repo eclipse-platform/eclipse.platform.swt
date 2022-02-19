@@ -2162,6 +2162,47 @@ public void test_BrowserFunction_callback_afterPageReload() {
 	assertTrue(message, passed);
 }
 
+@Test
+public void test_BrowserFunction_multiprocess() {
+	// Test that BrowserFunctions work in multiple Browser instances simultaneously.
+	Browser browser1 = new Browser(shell, SWT.NONE);
+	Browser browser2 = new Browser(shell, SWT.NONE);
+
+	class JavaFunc extends BrowserFunction {
+		JavaFunc(Browser browser) {
+			super(browser, "javaFunc");
+		}
+
+		@Override
+		public Object function(Object[] arguments) {
+			return arguments[0];
+		}
+	}
+	new JavaFunc(browser1);
+	new JavaFunc(browser2);
+	assertEquals("value1", browser1.evaluate("return javaFunc('value1')"));
+	assertEquals("value2", browser2.evaluate("return javaFunc('value2')"));
+
+	// Ensure that navigation to a different page preserves BrowserFunctions.
+	int[] completed = new int[1];
+	ProgressListener listener = new ProgressAdapter() {
+		@Override
+		public void completed(ProgressEvent event) {
+			completed[0]++;
+		}
+	};
+	browser1.addProgressListener(listener);
+	browser2.addProgressListener(listener);
+	browser1.setText("<body>new_page1");
+	browser2.setText("<body>new_page2");
+	waitForPassCondition(() -> completed[0] == 2);
+	assertEquals("value1", browser1.evaluate("return javaFunc('value1')"));
+	assertEquals("value2", browser2.evaluate("return javaFunc('value2')"));
+
+	browser1.dispose();
+	browser2.dispose();
+}
+
 
 /* custom */
 /**
