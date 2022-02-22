@@ -21,6 +21,7 @@ import java.util.stream.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.custom.*;
 import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.internal.WidgetSpy.*;
 import org.eclipse.swt.layout.*;
 import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.widgets.List;
@@ -38,7 +39,6 @@ public class Sleak {
 	Button enableTracking, diff, stackTrace, saveAs, save;
 	Combo diffType;
 	Text text;
-	Label label;
 
 	String filterPath = "";
 	String fileName = "sleakout";
@@ -49,6 +49,8 @@ public class Sleak {
 
 	java.util.List<ObjectWithError> oldObjects = new ArrayList<> ();
 	java.util.List<ObjectWithError> objects = new ArrayList<> ();
+
+	NonDisposedWidgetTracker nonDisposedWidgetTracker = new NonDisposedWidgetTracker();
 
 public static void main (String [] args) {
 	DeviceData data = new DeviceData();
@@ -164,19 +166,17 @@ public void create (Composite parent) {
 
 	list = new List (left, SWT.BORDER | SWT.V_SCROLL);
 	list.addListener (SWT.Selection, event -> refreshObject ());
-	list.setLayoutData(new GridData(SWT.FILL, SWT.NONE, true, true));
-
-	label = new Label (left, SWT.WRAP);
-	label.setText ("0 object(s)");
-	label.setLayoutData(new GridData(SWT.FILL, SWT.NONE, false, false));
+	list.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
 	stackTrace.setSelection (false);
+	filterNonDisposedWidgetTypes();
 }
 
 private void toggleEnableTracking() {
 	Display display = enableTracking.getDisplay();
 	boolean tracking = display.isTracking();
 	display.setTracking(!tracking);
+	setWidgetTrackingEnabled(tracking);
 }
 
 void refreshLabel (java.util.List<ObjectWithError> createdObjects, java.util.List<ObjectWithError> deletedObjects) {
@@ -193,8 +193,7 @@ void refreshLabel (java.util.List<ObjectWithError> createdObjects, java.util.Lis
 	deletedAndCreated.distinct().sorted().forEach(type -> addCounts(sb, type, deleted.get(type), created.get(type)));
 
 	String description = sb.length() > 0 ? sb.toString() :  "0 object(s)";
-	label.setText (description.strip());
-	label.getParent().layout();
+	list.setToolTipText(description);
 }
 
 static void addCounts (StringBuilder string, String type, Long deleted, Long created) {
@@ -222,23 +221,29 @@ void refreshDifference () {
 	java.util.List<ObjectWithError> disposed = new ArrayList<>();
 	java.util.List<ObjectWithError> created = new ArrayList<>();
 	java.util.List<ObjectWithError> same = collectNewObjects(info, old, disposed, created);
-
+	java.util.List<ObjectWithError> nonDisposedWidgets = getNonDisposedWidgets();
+	created.addAll(nonDisposedWidgets);
+	resetNonDisposedWidgets();
 
 	if (diffType.getSelectionIndex() > 0) {
-		Iterator<ObjectWithError> object = created.iterator ();
-		while (object.hasNext ()) {
-			StackTraceElement stack = object.next ().getCreator ();
-			Iterator<ObjectWithError> equal = same.iterator ();
-			while (equal.hasNext ()) {
-				if (creatorEquals(stack, equal.next().getCreator ())) {
-					equal.remove ();
-					object.remove ();
-					break;
+		old.removeAll(same);
+		if (!old.isEmpty()) {
+			Iterator<ObjectWithError> createdIter = created.iterator ();
+			while (createdIter.hasNext ()) {
+				ObjectWithError createdObj = createdIter.next ();
+				StackTraceElement stack = createdObj.getCreator ();
+				Iterator<ObjectWithError> oldIter = old.iterator ();
+				while (oldIter.hasNext ()) {
+					ObjectWithError oldObj = oldIter.next();
+					if (creatorEquals(stack, oldObj.getCreator ())) {
+						createdIter.remove ();
+						break;
+					}
 				}
 			}
 		}
 	}
-
+	
 	objects.clear();
 	objects.addAll(created);
 
@@ -481,6 +486,28 @@ void refreshObject () {
 private void setVisible(Control control, boolean visible) {
 	control.setVisible(visible);
 	((GridData)control.getLayoutData()).exclude = !visible;
+}
+
+private void filterNonDisposedWidgetTypes() {
+	java.util.List<Class<? extends Widget>> trackedTypes = Arrays.asList(
+//		Composite.class, 
+//		Menu.class
+	);
+	nonDisposedWidgetTracker.setTrackedTypes(trackedTypes);
+}
+
+private void setWidgetTrackingEnabled(boolean tracking) {
+	nonDisposedWidgetTracker.setTrackingEnabled(tracking);
+}
+
+private java.util.List<ObjectWithError> getNonDisposedWidgets() {
+	java.util.List<ObjectWithError> nonDisposedWidgets = new ArrayList<>();
+	nonDisposedWidgetTracker.getNonDisposedWidgets().forEach((w, e) -> nonDisposedWidgets.add(new ObjectWithError(w, e)));
+	return nonDisposedWidgets;
+}
+
+private void resetNonDisposedWidgets() {
+	nonDisposedWidgetTracker.startTracking();
 }
 
 private static final class ObjectWithError {
