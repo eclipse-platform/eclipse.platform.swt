@@ -248,7 +248,7 @@ void computeRuns() {
 		if (style.strikeout) {
 			attrStr.addAttribute(OS.NSStrikethroughStyleAttributeName, NSNumber.numberWithInt(OS.NSUnderlineStyleSingle), range);
 			Color strikeColor = style.strikeoutColor;
-			if (strikeColor != null) {
+			if (strikeColor != null && !strikeColor.isDisposed()) {
 				NSColor color = NSColor.colorWithDeviceRed(strikeColor.handle[0], strikeColor.handle[1], strikeColor.handle[2], 1);
 				attrStr.addAttribute(OS.NSStrikethroughColorAttributeName, color, range);
 			}
@@ -277,7 +277,7 @@ void computeRuns() {
 			if (underlineStyle != 0) {
 				attrStr.addAttribute(OS.NSUnderlineStyleAttributeName, NSNumber.numberWithInt(underlineStyle), range);
 				Color underlineColor = style.underlineColor;
-				if (underlineColor != null) {
+				if (underlineColor != null && !underlineColor.isDisposed()) {
 					NSColor color = NSColor.colorWithDeviceRed(underlineColor.handle[0], underlineColor.handle[1], underlineColor.handle[2], 1);
 					attrStr.addAttribute(OS.NSUnderlineColorAttributeName, color, range);
 				}
