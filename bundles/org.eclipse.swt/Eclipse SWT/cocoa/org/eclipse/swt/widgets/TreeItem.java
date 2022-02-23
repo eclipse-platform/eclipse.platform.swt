@@ -67,8 +67,8 @@ public class TreeItem extends Item {
  * Constructs <code>TreeItem</code> and <em>inserts</em> it into <code>Tree</code>.
  * Item is inserted as last direct child of the tree.
  * <p>
- * The fastest way to insert many items is documented in {@link org.eclipse.swt.widgets.TreeItem#TreeItem(Tree,int,int)}
- * and {@link org.eclipse.swt.widgets.TreeItem#setItemCount}
+ * The fastest way to insert many items is documented in {@link TreeItem#TreeItem(Tree,int,int)}
+ * and {@link TreeItem#setItemCount}
  *
  * @param parent a tree control which will be the parent of the new instance (cannot be null)
  * @param style no styles are currently supported, pass SWT.NONE
@@ -126,8 +126,8 @@ public TreeItem (Tree parent, int style, int index) {
  * Constructs <code>TreeItem</code> and <em>inserts</em> it into <code>Tree</code>.
  * Item is inserted as last direct child of the specified <code>TreeItem</code>.
  * <p>
- * The fastest way to insert many items is documented in {@link org.eclipse.swt.widgets.TreeItem#TreeItem(Tree,int,int)}
- * and {@link org.eclipse.swt.widgets.TreeItem#setItemCount}
+ * The fastest way to insert many items is documented in {@link TreeItem#TreeItem(Tree,int,int)}
+ * and {@link TreeItem#setItemCount}
  *
  * @param parentItem a tree control which will be the parent of the new instance (cannot be null)
  * @param style no styles are currently supported, pass SWT.NONE
@@ -152,8 +152,8 @@ public TreeItem (TreeItem parentItem, int style) {
  * Constructs <code>TreeItem</code> and <em>inserts</em> it into <code>Tree</code>.
  * Item is inserted as <code>index</code> direct child of the specified <code>TreeItem</code>.
  * <p>
- * The fastest way to insert many items is documented in {@link org.eclipse.swt.widgets.TreeItem#TreeItem(Tree,int,int)}
- * and {@link org.eclipse.swt.widgets.TreeItem#setItemCount}
+ * The fastest way to insert many items is documented in {@link TreeItem#TreeItem(Tree,int,int)}
+ * and {@link TreeItem#setItemCount}
  *
  * @param parentItem a tree control which will be the parent of the new instance (cannot be null)
  * @param style no styles are currently supported, pass SWT.NONE
