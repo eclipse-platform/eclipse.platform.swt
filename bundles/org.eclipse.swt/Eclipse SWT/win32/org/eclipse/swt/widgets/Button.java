@@ -1433,6 +1433,71 @@ LRESULT wmNotifyChild (NMHDR hdr, long wParam, long lParam) {
 	return super.wmNotifyChild (hdr, wParam, lParam);
 }
 
+static int getThemeStateId(int style, boolean pressed, boolean enabled) {
+	int direction = style & (SWT.UP | SWT.DOWN | SWT.LEFT | SWT.RIGHT);
+
+	/*
+	 * Feature in Windows.  DrawThemeBackground() does not mirror the drawing.
+	 * The fix is switch left to right and right to left.
+	 */
+	if ((style & SWT.MIRRORED) != 0) {
+		if        (direction == SWT.LEFT) {
+			direction = SWT.RIGHT;
+		} else if (direction == SWT.RIGHT) {
+			direction = SWT.LEFT;
+		}
+	}
+
+	/*
+	 * On Win11, scrollbars no longer show arrows by default.
+	 * Arrows only show up when hot/disabled/pushed.
+	 * The workaround is to use hot image in place of default.
+	 */
+	boolean hot = false;
+	if (OS.WIN32_BUILD >= OS.WIN32_BUILD_WIN11_21H2) {
+		if (!pressed && enabled) {
+			hot = true;
+		}
+	}
+
+	if (hot) {
+		switch (direction) {
+			case SWT.UP:    return OS.ABS_UPHOT;
+			case SWT.DOWN:  return OS.ABS_DOWNHOT;
+			case SWT.LEFT:  return OS.ABS_LEFTHOT;
+			case SWT.RIGHT: return OS.ABS_RIGHTHOT;
+		}
+	}
+
+	if (pressed) {
+		switch (direction) {
+			case SWT.UP:    return OS.ABS_UPPRESSED;
+			case SWT.DOWN:  return OS.ABS_DOWNPRESSED;
+			case SWT.LEFT:  return OS.ABS_LEFTPRESSED;
+			case SWT.RIGHT: return OS.ABS_RIGHTPRESSED;
+		}
+	}
+
+	if (!enabled) {
+		switch (direction) {
+			case SWT.UP:    return OS.ABS_UPDISABLED;
+			case SWT.DOWN:  return OS.ABS_DOWNDISABLED;
+			case SWT.LEFT:  return OS.ABS_LEFTDISABLED;
+			case SWT.RIGHT: return OS.ABS_RIGHTDISABLED;
+		}
+	}
+
+	switch (direction) {
+		case SWT.UP:    return OS.ABS_UPNORMAL;
+		case SWT.DOWN:  return OS.ABS_DOWNNORMAL;
+		case SWT.LEFT:  return OS.ABS_LEFTNORMAL;
+		case SWT.RIGHT: return OS.ABS_RIGHTNORMAL;
+	}
+
+	// Have some sane value if all else fails
+	return OS.ABS_LEFTNORMAL;
+}
+
 @Override
 LRESULT wmDrawChild (long wParam, long lParam) {
 	if ((style & SWT.ARROW) == 0) return super.wmDrawChild (wParam, lParam);
@@ -1441,29 +1506,9 @@ LRESULT wmDrawChild (long wParam, long lParam) {
 	RECT rect = new RECT ();
 	OS.SetRect (rect, struct.left, struct.top, struct.right, struct.bottom);
 	if (OS.IsAppThemed ()) {
-		int iStateId = OS.ABS_LEFTNORMAL;
-		switch (style & (SWT.UP | SWT.DOWN | SWT.LEFT | SWT.RIGHT)) {
-			case SWT.UP: iStateId = OS.ABS_UPNORMAL; break;
-			case SWT.DOWN: iStateId = OS.ABS_DOWNNORMAL; break;
-			case SWT.LEFT: iStateId = OS.ABS_LEFTNORMAL; break;
-			case SWT.RIGHT: iStateId = OS.ABS_RIGHTNORMAL; break;
-		}
-		/*
-		* Feature in Windows.  DrawThemeBackground() does not mirror the drawing.
-		* The fix is switch left to right and right to left.
-		*/
-		if ((style & SWT.MIRRORED) != 0) {
-			if ((style & (SWT.LEFT | SWT.RIGHT)) != 0) {
-				iStateId = iStateId == OS.ABS_RIGHTNORMAL ? OS.ABS_LEFTNORMAL : OS.ABS_RIGHTNORMAL;
-			}
-		}
-		/*
-		* NOTE: The normal, hot, pressed and disabled state is
-		* computed relying on the fact that the increment between
-		* the direction states is invariant (always separated by 4).
-		*/
-		if (!getEnabled ()) iStateId += OS.ABS_UPDISABLED - OS.ABS_UPNORMAL;
-		if ((struct.itemState & OS.ODS_SELECTED) != 0) iStateId += OS.ABS_UPPRESSED - OS.ABS_UPNORMAL;
+		boolean pressed = ((struct.itemState & OS.ODS_SELECTED) != 0);
+		boolean enabled = getEnabled ();
+		int iStateId = getThemeStateId(style, pressed, enabled);
 		OS.DrawThemeBackground (display.hScrollBarTheme (), struct.hDC, OS.SBP_ARROWBTN, iStateId, rect, null);
 	} else {
 		int uState = OS.DFCS_SCROLLLEFT;
