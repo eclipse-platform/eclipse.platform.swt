@@ -21,6 +21,17 @@ public class OS extends C {
 		Library.loadLibrary("swt-pi"); //$NON-NLS-1$
 	}
 
+	/*
+	 * macOS version, encoded as ((major << 16) + (minor << 8) + bugfix).
+	 *
+	 * Note that for macOS >= 11, it has "wrong" values if executable's
+	 * SDK is below 10.15 (or is it 11.0?), where 10.16.0 is reported
+	 * regardless of actual macOS version. On the other hand, with good
+	 * executable's SDK, real version is reported.
+	 *
+	 * This also means that executables with old SDK can't distinguish
+	 * macOS 11 from macOS 12.
+	 */
 	public static final int VERSION;
 
 	public static int VERSION (int major, int minor, int bugfix) {
@@ -190,10 +201,7 @@ public class OS extends C {
 	 * @return true for macOS BigSur or later, returns false for macOS 10.15 and older
 	 */
 	public static boolean isBigSurOrLater () {
-		/*
-		 * Currently Big Sur OS version matches with 10.16 and not 11.0. This may be temporary.
-		 * Creating a method, so that it can be fixed in one place if/when this changes.
-		 */
+		// See comment for OS.VERSION for an explanation
 		return OS.VERSION >= OS.VERSION(10, 16, 0);
 	}
 
