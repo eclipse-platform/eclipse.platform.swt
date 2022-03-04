@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2021 IBM Corporation and others.
+ * Copyright (c) 2000, 2022 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -32,12 +32,12 @@ public class Library {
 	/**
 	 * SWT Minor version number (must be in the range 0..999)
 	 */
-	static int MINOR_VERSION = 950;
+	static int MINOR_VERSION = 952;
 
 	/**
 	 * SWT revision number (must be >= 0)
 	 */
-	static int REVISION = 5;
+	static int REVISION = 1;
 
 	/**
 	 * The JAVA and SWT versions
