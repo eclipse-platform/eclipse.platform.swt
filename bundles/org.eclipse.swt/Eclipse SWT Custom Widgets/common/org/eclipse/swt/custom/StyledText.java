@@ -8962,6 +8962,7 @@ void setCaretLocations(final Point[] locations, int direction) {
 				carets[i] = new Caret(this, firstCaret.getStyle());
 				carets[i].setImage(firstCaret.getImage());
 				carets[i].setFont(firstCaret.getFont());
+				carets[i].setSize(firstCaret.getSize());
 			}
 		} else if (locations.length < carets.length) {
 			for (int i = locations.length; i < carets.length; i++) {
@@ -8969,7 +8970,7 @@ void setCaretLocations(final Point[] locations, int direction) {
 			}
 			carets = Arrays.copyOf(carets, locations.length);
 		}
-		for (int i = 0; i < Math.min(caretOffsets.length, locations.length); i++) {
+		for (int i = Math.min(caretOffsets.length, locations.length)-1; i>=0; i--) { // reverse order, seee bug 579028#c7
 			final Caret caret = carets[i];
 			final int caretOffset = caretOffsets[i];
 			final Point location = locations[i];
