@@ -9239,6 +9239,21 @@ public void setEnabled(boolean enabled) {
 		this.insideSetEnableCall = false;
 	}
 }
+
+@Override
+public boolean setFocus() {
+	boolean focusGained = super.setFocus();
+	if (focusGained && hasMultipleCarets()) {
+		// Multiple carets need to update their drawing. See bug 579179
+		setCaretLocations();
+	}
+	return focusGained;
+}
+
+private boolean hasMultipleCarets() {
+	return carets != null && carets.length > 1;
+}
+
 /**
  * Sets a new font to render text with.
  * <p>
