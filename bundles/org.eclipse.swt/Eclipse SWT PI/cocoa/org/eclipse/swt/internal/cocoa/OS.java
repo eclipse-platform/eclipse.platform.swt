@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2007, 2021 IBM Corporation and others.
+ * Copyright (c) 2007, 2022 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -178,6 +178,24 @@ public class OS extends C {
 	 * Custom message that will be sent when setTheme is called for example from Platform UI code.
 	 */
 	public static final long sel_appAppearanceChanged = OS.sel_registerName("appAppearanceChanged");
+	
+	/**
+	 * Experimental API for dark theme.
+	 * <p>
+	 * On Windows, there is no OS API for dark theme yet, and this method only
+	 * configures various tweaks. Some of these tweaks have drawbacks. The tweaks
+	 * are configured with defaults that fit Eclipse. Non-Eclipse applications are
+	 * expected to configure individual tweaks instead of calling this method.
+	 * Please see <code>Display#setData()</code> and documentation for string keys
+	 * used there.
+	 * </p>
+	 * <p>
+	 * On GTK, behavior may be different as the boolean flag doesn't force dark
+	 * theme instead it specify that dark theme is preferred.
+	 * </p>
+	 * 
+	 * @param isDarkTheme <code>true</code> for dark theme
+	 */
 	public static void setTheme(boolean isDarkTheme) {
 		OS.objc_msgSend(NSApplication.sharedApplication().id, sel_appAppearanceChanged, isDarkTheme ? 1 : 0);
 	}

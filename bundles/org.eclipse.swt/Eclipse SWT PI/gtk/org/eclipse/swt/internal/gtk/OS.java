@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2021 IBM Corporation and others. All rights reserved.
+ * Copyright (c) 2000, 2022 IBM Corporation and others. All rights reserved.
  * The contents of this file are made available under the terms
  * of the GNU Lesser General Public License (LGPL) Version 2.1 that
  * accompanies this distribution (lgpl-v21.txt).  The LGPL is also
@@ -1886,6 +1886,27 @@ public static final byte [] getThemeNameBytes() {
 		g_object_set(GTK.gtk_settings_get_default(), GTK.gtk_application_prefer_dark_theme, preferred, 0);
 		g_object_notify(GTK.gtk_settings_get_default(), GTK.gtk_application_prefer_dark_theme);
 	}
+
+/**
+ * Experimental API for dark theme.
+ * <p>
+ * On Windows, there is no OS API for dark theme yet, and this method only
+ * configures various tweaks. Some of these tweaks have drawbacks. The tweaks
+ * are configured with defaults that fit Eclipse. Non-Eclipse applications are
+ * expected to configure individual tweaks instead of calling this method.
+ * Please see <code>Display#setData()</code> and documentation for string keys
+ * used there.
+ * </p>
+ * <p>
+ * On GTK, behavior may be different as the boolean flag doesn't force dark
+ * theme instead it specify that dark theme is preferred.
+ * </p>
+ * 
+ * @param isDarkTheme <code>true</code> for dark theme
+ */
+public static final void setTheme(boolean isDarkTheme) {
+	setDarkThemePreferred (isDarkTheme);
+}
 
 /**
  * @param tmpl cast=(const gchar *)

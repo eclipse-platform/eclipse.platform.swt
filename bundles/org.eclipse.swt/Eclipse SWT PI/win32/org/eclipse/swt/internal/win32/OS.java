@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2020 IBM Corporation and others.
+ * Copyright (c) 2000, 2022 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -2237,6 +2237,11 @@ public static final long SendMessage (long hWnd, int Msg, long wParam, TCHAR lPa
  * expected to configure individual tweaks instead of calling this method.
  * Please see <code>Display#setData()</code> and documentation for string keys
  * used there.
+ * </p>
+ * <p>
+ * On GTK, behavior may be different as the boolean flag doesn't force dark
+ * theme instead it specify that dark theme is preferred.
+ * </p>
  *
  * @param isDarkTheme <code>true</code> for dark theme
  */
