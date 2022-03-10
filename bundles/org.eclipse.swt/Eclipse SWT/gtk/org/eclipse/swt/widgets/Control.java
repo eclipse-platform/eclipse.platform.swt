@@ -57,6 +57,7 @@ public abstract class Control extends Widget implements Drawable {
 	static final boolean DISABLE_EMOJI = Boolean.getBoolean("SWT_GTK_INPUT_HINT_NO_EMOJI");
 
 	long fixedHandle;
+	long firstFixedHandle = 0;
 	long redrawWindow, enableWindow, provider;
 	int drawCount, backgroundAlpha = 255;
 	long dragGesture, zoomGesture, rotateGesture, panGesture;
@@ -3923,6 +3924,25 @@ void gtk4_focus_enter_event(long controller, long event) {
 	super.gtk4_focus_enter_event(controller, event);
 
 	sendFocusEvent(SWT.FocusIn);
+}
+
+@Override
+void gtk4_focus_window_event(long handle, long event) {
+	super.gtk4_focus_window_event(handle, event);
+
+	if(firstFixedHandle == 0) {
+		long child = handle;
+		//3rd child of shell will be SWTFixed
+		for(int i = 0; i<3; i++) {
+			child = GTK4.gtk_widget_get_first_child(child);
+		}
+		firstFixedHandle = child != 0 ? child:0;
+	}
+
+	if(firstFixedHandle !=0 && GTK.gtk_widget_has_focus(firstFixedHandle)) {
+		if(event == SWT.FocusIn)sendFocusEvent(SWT.FocusIn);
+		else sendFocusEvent(SWT.FocusOut);
+	}
 }
 
 @Override

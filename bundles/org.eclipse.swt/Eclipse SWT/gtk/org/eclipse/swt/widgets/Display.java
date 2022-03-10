@@ -132,13 +132,13 @@ public class Display extends Device {
 	Callback eventCallback;
 	long eventProc, windowProc2, windowProc3, windowProc4, windowProc5, windowProc6;
 	long changeValueProc;
-	long snapshotDrawProc, keyPressReleaseProc, focusProc, enterMotionProc, leaveProc,
+	long snapshotDrawProc, keyPressReleaseProc, focusProc, windowActiveProc, enterMotionProc, leaveProc,
 		 scrollProc, resizeProc, activateProc, gesturePressReleaseProc;
 	long notifyProc;
 	long computeSizeProc;
 	Callback windowCallback2, windowCallback3, windowCallback4, windowCallback5, windowCallback6;
 	Callback changeValue;
-	Callback snapshotDraw, keyPressReleaseCallback, focusCallback, enterMotionCallback, computeSizeCallback,
+	Callback snapshotDraw, keyPressReleaseCallback, focusCallback, windowActiveCallback, enterMotionCallback, computeSizeCallback,
 			 scrollCallback, leaveCallback, resizeCallback, activateCallback, gesturePressReleaseCallback;
 	Callback notifyCallback;
 	EventTable eventTable, filterTable;
@@ -3573,6 +3573,9 @@ void initializeCallbacks () {
 		focusCallback = new Callback(this, "focusProc", void.class, new Type[] {long.class, long.class}); //$NON-NLS-1$
 		focusProc = focusCallback.getAddress();
 
+		windowActiveCallback = new Callback(this, "windowActiveProc", void.class, new Type[] {long.class, long.class}); //$NON-NLS-1$
+		windowActiveProc = windowActiveCallback.getAddress();
+
 		enterMotionCallback = new Callback(this, "enterMotionProc", void.class, new Type[] {
 				long.class, double.class, double.class, long.class}); //$NON-NLS-1$
 		enterMotionProc = enterMotionCallback.getAddress ();
@@ -4700,6 +4703,10 @@ void releaseDisplay () {
 		focusCallback.dispose();
 		focusCallback = null;
 		focusProc = 0;
+
+		windowActiveCallback.dispose();
+		windowActiveCallback = null;
+		windowActiveProc = 0;
 
 		enterMotionCallback.dispose();
 		enterMotionCallback = null;
@@ -6130,11 +6137,16 @@ boolean scrollProc(long controller, double dx, double dy, long user_data) {
 	return false;
 }
 
-void focusProc(long controller, long user_data) {
+void focusProc(long controller, long user_data) {;
 	long handle = GTK.gtk_event_controller_get_widget(controller);
 	Widget widget = getWidget(handle);
 
 	if (widget != null) widget.focusProc(controller, user_data);
+}
+
+void windowActiveProc(long handle, long user_data) {;
+	Widget widget = getWidget(handle);
+	if (widget != null) widget.windowActiveProc(handle, user_data);
 }
 
 boolean keyPressReleaseProc(long controller, int keyval, int keycode, int state, long user_data) {

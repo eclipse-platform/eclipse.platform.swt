@@ -947,6 +947,7 @@ void hookEvents () {
 	}
 	if (GTK.GTK4) {
 		OS.g_signal_connect_closure (shellHandle, OS.close_request, display.getClosure (CLOSE_REQUEST), false);
+		OS.g_signal_connect(shellHandle, OS.notify_is_active, display.windowActiveProc, FOCUS_IN);
 		long keyController = GTK4.gtk_event_controller_key_new();
 		GTK4.gtk_widget_add_controller(shellHandle, keyController);
 		GTK.gtk_event_controller_set_propagation_phase(keyController, GTK.GTK_PHASE_TARGET);

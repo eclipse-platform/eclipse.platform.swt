@@ -796,6 +796,12 @@ void gtk4_key_release_event(long controller, int keyval, int keycode, int state,
 void gtk4_focus_enter_event(long controller, long event) {}
 
 /**
+ * @param handle the handle of the window that caused the event
+ * @param event the type of event, should be FocusIn or FocusOut
+ */
+void gtk4_focus_window_event(long handle, long event) {}
+
+/**
  * @param controller the corresponding controller responsible for capturing the event
  * @param event the GdkEvent captured
  */
@@ -2297,6 +2303,12 @@ void focusProc(long controller, long user_data) {
 			gtk4_focus_leave_event(controller, event);
 			break;
 	}
+}
+
+void windowActiveProc(long handle, long user_data) {
+	long eventType = GTK.gtk_window_is_active(handle) ? SWT.FocusIn:SWT.FocusOut;
+
+	gtk4_focus_window_event(handle, eventType);
 }
 
 boolean keyPressReleaseProc(long controller, int keyval, int keycode, int state, long user_data) {
