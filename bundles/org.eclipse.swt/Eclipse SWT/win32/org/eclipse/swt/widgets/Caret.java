@@ -38,6 +38,9 @@ import org.eclipse.swt.internal.win32.*;
  * @noextend This class is not intended to be subclassed by clients.
  */
 public class Caret extends Widget {
+	/** The Caret last updated on the OS-level */
+	private static Caret currentCaret;
+
 	Canvas parent;
 	int x, y, width, height;
 	boolean moved, resized;
@@ -285,6 +288,7 @@ void killFocus () {
 
 void move () {
 	moved = false;
+	setCurrentCaret(this);
 	if (!OS.SetCaretPos (x, y)) return;
 	resizeIME ();
 }
@@ -332,6 +336,9 @@ void releaseParent () {
 @Override
 void releaseWidget () {
 	super.releaseWidget ();
+	if (isCurrentCaret()) {
+		setCurrentCaret(null);
+	}
 	parent = null;
 	image = null;
 	font = null;
@@ -390,7 +397,7 @@ public void setBounds (int x, int y, int width, int height) {
 void setBoundsInPixels (int x, int y, int width, int height) {
 	boolean samePosition = this.x == x && this.y == y;
 	boolean sameExtent = this.width == width && this.height == height;
-	if (samePosition && sameExtent) return;
+	if (samePosition && sameExtent && isCurrentCaret()) return;
 	this.x = x;
 	this.y = y;
 	this.width = width;
@@ -530,10 +537,18 @@ public void setLocation (int x, int y) {
 }
 
 void setLocationInPixels (int x, int y) {
-	if (this.x == x && this.y == y) return;
+	if (this.x == x && this.y == y && isCurrentCaret())  return;
 	this.x = x;  this.y = y;
 	moved = true;
 	if (isVisible && hasFocus ()) move ();
+}
+
+private boolean isCurrentCaret() {
+	return Caret.currentCaret == this;
+}
+
+private void setCurrentCaret(Caret caret) {
+	Caret.currentCaret = caret;
 }
 
 /**
@@ -572,7 +587,7 @@ public void setSize (int width, int height) {
 }
 
 void setSizeInPixels (int width, int height) {
-	if (this.width == width && this.height == height) return;
+	if (this.width == width && this.height == height && isCurrentCaret()) return;
 	this.width = width;  this.height = height;
 	resized = true;
 	if (isVisible && hasFocus ()) resize ();
