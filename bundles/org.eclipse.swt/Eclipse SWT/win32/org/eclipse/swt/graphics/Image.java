@@ -965,7 +965,9 @@ long [] createGdipImage() {
 			BITMAP bm = new BITMAP();
 			OS.GetObject(handle, BITMAP.sizeof, bm);
 			int depth = bm.bmPlanes * bm.bmBitsPixel;
-			if (depth == 32 || transparentPixel != -1) {
+			boolean isDib = bm.bmBits != 0;
+			boolean hasAlpha = isDib && depth == 32;
+			if (hasAlpha || transparentPixel != -1) {
 				int imgWidth = bm.bmWidth;
 				int imgHeight = bm.bmHeight;
 				long hDC = device.internal_new_GC(null);
@@ -983,7 +985,7 @@ long [] createGdipImage() {
 				long pixels = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, sizeInBytes);
 				if (pixels == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 				byte red = 0, green = 0, blue = 0;
-				if (depth == 32) {
+				if (hasAlpha) {
 					OS.MoveMemory(pixels, bm.bmBits, sizeInBytes);
 				}
 				else {
@@ -1040,7 +1042,7 @@ long [] createGdipImage() {
 				OS.DeleteObject(srcHdc);
 				OS.DeleteObject(memHdc);
 				OS.DeleteObject(memDib);
-				int pixelFormat = depth == 32 ? Gdip.PixelFormat32bppPARGB : Gdip.PixelFormat32bppARGB;
+				int pixelFormat = hasAlpha ? Gdip.PixelFormat32bppPARGB : Gdip.PixelFormat32bppARGB;
 				return new long []{Gdip.Bitmap_new(imgWidth, imgHeight, dibBM.bmWidthBytes, pixelFormat, pixels), pixels};
 			}
 			return new long []{Gdip.Bitmap_new(handle, 0), 0};
@@ -1606,7 +1608,7 @@ public ImageData getImageDataAtCurrentZoom() {
 			/* Construct and return the ImageData */
 			ImageData imageData = new ImageData(width, height, depth, palette, 4, data);
 			imageData.transparentPixel = this.transparentPixel;
-			if (depth == 32) {
+			if (isDib && depth == 32) {
 				byte straightData[] = new byte[imageSize];
 				byte alphaData[] = new byte[width * height];
 				boolean validAlpha = true;
@@ -1679,6 +1681,7 @@ void init(int width, int height) {
 		int planes = OS.GetDeviceCaps(hDC, OS.PLANES);
 		int depth = bits * planes;
 		if (depth < 16) depth = 16;
+		if (depth > 24) depth = 24;
 		handle = createDIB(width, height, depth);
 	}
 	if (handle != 0) {
