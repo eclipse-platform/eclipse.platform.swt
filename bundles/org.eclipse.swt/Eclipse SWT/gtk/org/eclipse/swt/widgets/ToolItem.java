@@ -59,6 +59,15 @@ public class ToolItem extends Item {
 	boolean mapHooked;
 	boolean enabled = true;
 
+	/**
+	 * The image that is currently used by the tool item.
+	 * Either the image set by client code via {@link #setImage(Image)}
+	 * or {@link #setDisabledImage(Image)}, depending on button state.
+	 * Or if the button is disabled but no disabled image is specified,
+	 * a grayed out version of the "normal" image.
+	 */
+	Image currentImage;
+
 /**
  * Constructs a new instance of this class given its parent
  * (which must be a <code>ToolBar</code>) and a style value
@@ -657,6 +666,7 @@ long gtk_create_menu_proxy (long widget) {
 		return 1;
 	}
 
+	Image image = currentImage;
 	if (image != null) {
 		ImageList imageList = parent.imageList;
 		if (imageList != null) {
@@ -1261,6 +1271,7 @@ private void disposeDefault() {
 
 void _setImage (Image image) {
 	if ((style & SWT.SEPARATOR) != 0) return;
+	currentImage = image;
 	if (image != null) {
 		ImageList imageList = parent.imageList;
 		if (imageList == null) imageList = parent.imageList = new ImageList ();
@@ -1293,15 +1304,7 @@ void _setImage (Image image) {
 	* required to reset the proxy menu. Otherwise, the
 	* old menuItem appears in the overflow menu.
 	*/
-	if ((style & SWT.DROP_DOWN) != 0) {
-		if (GTK.GTK4) {
-			/* TODO: GTK4 have to implement our own overflow menu */
-		} else {
-			proxyMenuItem = 0;
-			proxyMenuItem = GTK3.gtk_tool_item_retrieve_proxy_menu_item (handle);
-			OS.g_signal_connect(proxyMenuItem, OS.activate, ToolBar.menuItemSelectedFunc.getAddress(), handle);
-		}
-	}
+	recreateMenuProxy();
 	parent.relayout ();
 }
 
@@ -1411,15 +1414,7 @@ public void setText (String string) {
 	* required to reset the proxy menu. Otherwise, the
 	* old menuItem appears in the overflow menu.
 	*/
-	if ((style & SWT.DROP_DOWN) != 0) {
-		if (GTK.GTK4) {
-			/* TODO: GTK4 have to implement our own overflow menu */
-		} else {
-			proxyMenuItem = 0;
-			proxyMenuItem = GTK3.gtk_tool_item_retrieve_proxy_menu_item (handle);
-			OS.g_signal_connect(proxyMenuItem, OS.activate, ToolBar.menuItemSelectedFunc.getAddress(), handle);
-		}
-	}
+	recreateMenuProxy();
 	parent.relayout ();
 }
 
@@ -1474,15 +1469,7 @@ public void setToolTipText(String string) {
 	* Otherwise, the old menuItem appears in the overflow
 	* menu as a blank item.
 	*/
-	if ((style & SWT.DROP_DOWN) != 0) {
-		if (GTK.GTK4) {
-			/* TODO: GTK4 have to implement our own overflow menu */
-		} else {
-			proxyMenuItem = 0;
-			proxyMenuItem = GTK3.gtk_tool_item_retrieve_proxy_menu_item (handle);
-			OS.g_signal_connect(proxyMenuItem, OS.activate, ToolBar.menuItemSelectedFunc.getAddress(), handle);
-		}
-	}
+	recreateMenuProxy();
 }
 
 /**
@@ -1569,5 +1556,16 @@ long dpiChanged(long object, long arg0) {
 	}
 
 	return 0;
+}
+
+private void recreateMenuProxy() {
+	if ((style & SWT.DROP_DOWN) != 0 || proxyMenuItem != 0) {
+		if (GTK.GTK4) {
+			/* TODO: GTK4 have to implement our own overflow menu */
+		} else {
+			proxyMenuItem = 0;
+			proxyMenuItem = GTK3.gtk_tool_item_retrieve_proxy_menu_item (handle);
+		}
+	}
 }
 }
