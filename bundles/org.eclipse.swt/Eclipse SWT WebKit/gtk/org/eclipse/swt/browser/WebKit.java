@@ -111,6 +111,15 @@ class WebKit extends WebBrowser {
 	boolean firstLoad = true;
 
 	/**
+	 * Stores the browser which is opening a new browser window,
+	 * during a WebKit {@code create} signal. This browser
+	 * must be passed to a newly created browser as "related".
+	 *
+	 * See bug 579257.
+	 */
+	private static Browser parentBrowser;
+
+	/**
 	 * Timeout used for javascript execution / deadlock detection.
 	 * Loosely based on the 10s limit commonly found in browsers.
 	 * (Except for SWT browser we use 3s as chunks of the UI is blocked).
@@ -769,8 +778,8 @@ public void create (Composite parent, int style) {
 
 
 	Composite parentShell = parent.getParent();
-	Browser parentBrowser = null;
-	if (parentShell != null) {
+	Browser parentBrowser = WebKit.parentBrowser;
+	if (parentBrowser == null && parentShell != null) {
 		Control[] children = parentShell.getChildren();
 		for (int i = 0; i < children.length; i++) {
 			if (children[i] instanceof Browser) {
@@ -2325,10 +2334,12 @@ long webkit_create_web_view (long web_view, long frame) {
 	};
 	try {
 		nonBlockingEvaluate++; 	  // running evaluate() inside openWindowListener and waiting for return leads to deadlock. Bug 512001
+		parentBrowser = browser;
 		fireOpenWindowListeners.run();// Permit evaluate()/execute() to execute scripts in listener, but do not provide return value.
 	} catch (Exception e) {
 		throw e; // rethrow execption if thrown, but decrement counter first.
 	} finally {
+		parentBrowser = null;
 		nonBlockingEvaluate--;
 	}
 	Browser browser = null;
