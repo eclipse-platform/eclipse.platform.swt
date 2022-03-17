@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2021 IBM Corporation and others.
+ * Copyright (c) 2000, 2022 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -70,6 +70,7 @@ typedef enum {
 	gtk_1entry_1set_1buffer_FUNC,
 	gtk_1event_1controller_1focus_1new_FUNC,
 	gtk_1event_1controller_1get_1current_1event_FUNC,
+	gtk_1event_1controller_1get_1current_1event_1state_FUNC,
 	gtk_1event_1controller_1key_1new_FUNC,
 	gtk_1event_1controller_1motion_1new_FUNC,
 	gtk_1event_1controller_1scroll_1new_FUNC,

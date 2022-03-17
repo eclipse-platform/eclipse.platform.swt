@@ -1595,7 +1595,8 @@ char [] sendIMKeyEvent (int type, long event, char [] chars) {
 	int index = 0, count = 0, state = 0;
 	long ptr = 0;
 	if (event == 0) {
-		ptr = GTK3.gtk_get_current_event ();
+		long controller = Control.getControl(this.handle).keyController;
+		ptr = GTK.GTK4 ? GTK4.gtk_event_controller_get_current_event(controller):GTK3.gtk_get_current_event ();
 		if (ptr != 0) {
 			int eventType = GDK.gdk_event_get_event_type(ptr);
 			eventType = Control.fixGdkEventTypeValues(eventType);
@@ -1615,9 +1616,13 @@ char [] sendIMKeyEvent (int type, long event, char [] chars) {
 					break;
 			}
 		} else {
-			int [] buffer = new int [1];
-			GTK3.gtk_get_current_event_state (buffer);
-			state = buffer [0];
+			if(GTK.GTK4) {
+				state = GTK4.gtk_event_controller_get_current_event_state(controller);
+			} else {
+				int [] buffer = new int [1];
+				GTK3.gtk_get_current_event_state (buffer);
+				state = buffer [0];
+			}
 		}
 	} else {
 		ptr = event;
@@ -1639,13 +1644,13 @@ char [] sendIMKeyEvent (int type, long event, char [] chars) {
 		* the key by returning null.
 		*/
 		if (isDisposed ()) {
-			if (ptr != 0 && ptr != event) gdk_event_free (ptr);
+			if (ptr != 0 && ptr != event && !GTK.GTK4) gdk_event_free (ptr);
 			return null;
 		}
 		if (javaEvent.doit) chars [count++] = chars [index];
 		index++;
 	}
-	if (ptr != 0 && ptr != event) gdk_event_free (ptr);
+	if (ptr != 0 && ptr != event && !GTK.GTK4) gdk_event_free (ptr);
 	if (count == 0) return null;
 	if (index != count) {
 		char [] result = new char [count];

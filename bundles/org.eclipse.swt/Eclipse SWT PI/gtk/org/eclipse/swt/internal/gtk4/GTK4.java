@@ -355,6 +355,8 @@ public class GTK4 {
 	public static final native long gtk_event_controller_focus_new();
 	/** @param controller cast=(GtkEventController *) */
 	public static final native long gtk_event_controller_get_current_event(long controller);
+	/** @param controller cast=(GtkEventController *) */
+	public static final native int gtk_event_controller_get_current_event_state(long controller);
 	public static final native long gtk_event_controller_key_new();
 	public static final native long gtk_event_controller_motion_new();
 	/** @param flag cast=(GtkEventControllerScrollFlags) */

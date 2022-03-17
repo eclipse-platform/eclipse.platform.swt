@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2021 IBM Corporation and others.
+ * Copyright (c) 2000, 2022 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -461,6 +461,18 @@ JNIEXPORT jlong JNICALL GTK4_NATIVE(gtk_1event_1controller_1get_1current_1event)
 	GTK4_NATIVE_ENTER(env, that, gtk_1event_1controller_1get_1current_1event_FUNC);
 	rc = (jlong)gtk_event_controller_get_current_event((GtkEventController *)arg0);
 	GTK4_NATIVE_EXIT(env, that, gtk_1event_1controller_1get_1current_1event_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_gtk_1event_1controller_1get_1current_1event_1state
+JNIEXPORT jint JNICALL GTK4_NATIVE(gtk_1event_1controller_1get_1current_1event_1state)
+	(JNIEnv *env, jclass that, jlong arg0)
+{
+	jint rc = 0;
+	GTK4_NATIVE_ENTER(env, that, gtk_1event_1controller_1get_1current_1event_1state_FUNC);
+	rc = (jint)gtk_event_controller_get_current_event_state((GtkEventController *)arg0);
+	GTK4_NATIVE_EXIT(env, that, gtk_1event_1controller_1get_1current_1event_1state_FUNC);
 	return rc;
 }
 #endif
