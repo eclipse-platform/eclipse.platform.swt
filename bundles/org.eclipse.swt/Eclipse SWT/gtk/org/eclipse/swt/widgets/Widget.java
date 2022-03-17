@@ -799,7 +799,9 @@ void gtk4_focus_enter_event(long controller, long event) {}
  * @param handle the handle of the window that caused the event
  * @param event the type of event, should be FocusIn or FocusOut
  */
-void gtk4_focus_window_event(long handle, long event) {}
+void gtk4_focus_window_event(long handle, long event) {
+	gtk_focus_in_event (handle, event);
+}
 
 /**
  * @param controller the corresponding controller responsible for capturing the event
