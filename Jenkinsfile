@@ -21,7 +21,7 @@ spec:
         memory: "512Mi"
         cpu: "500m"  
   - name: container
-    image: akurtakov/swtbuild@sha256:2cd3dfdea1f250597c9e3797512953c03e2182344e86976c1b60117c5dd36a9e
+    image: akurtakov/swtbuild@sha256:fca953c5f0fa9fadb92b1875c1942f6042f4bd51327d1e1e8e40f39923103fe1
     tty: true
     command: [ "uid_entrypoint", "cat" ]
     resources:
