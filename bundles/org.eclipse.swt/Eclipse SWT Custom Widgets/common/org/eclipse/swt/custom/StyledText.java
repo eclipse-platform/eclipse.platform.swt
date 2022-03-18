@@ -9054,6 +9054,7 @@ void setCaretLocations(final Point[] locations, int direction) {
 			}
 		}
 		updateCaretVisibility();
+		super.redraw();
 	}
 	columnX = locations[0].x;
 }
@@ -11291,7 +11292,6 @@ void updateCaretVisibility() {
 				c.setVisible(visible);
 			});
 		}
-		redraw();
 	}
 }
 /**
