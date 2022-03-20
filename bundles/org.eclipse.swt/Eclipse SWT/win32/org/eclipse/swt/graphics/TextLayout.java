@@ -2871,10 +2871,12 @@ StyleItem[] merge (long items, int itemCount) {
 			}
 		}
 
+		boolean mayNeedSplit = true;
 		int styleLimit = translateOffset(styles[styleIndex + 1].start);
 		if (styleLimit <= itemLimit) {
 			int runLen = styleLimit - start;
 			if (runLen < MAX_RUN_LENGTH) {
+				mayNeedSplit = false;
 				styleIndex++;
 				start = styleLimit;
 				if (start < itemLimit && 0 < start && start < end) {
@@ -2888,7 +2890,7 @@ StyleItem[] merge (long items, int itemCount) {
 			}
 		}
 		int runLen = itemLimit - start;
-		if (runLen > MAX_RUN_LENGTH) {
+		if (mayNeedSplit && runLen > MAX_RUN_LENGTH) {
 			start += splitLongRun(item);
 		} else if (itemLimit <= styleLimit) {
 			itemIndex = nextItemIndex;
