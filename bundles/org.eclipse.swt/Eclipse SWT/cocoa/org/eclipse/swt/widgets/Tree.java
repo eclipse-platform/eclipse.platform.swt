@@ -2805,11 +2805,7 @@ boolean sendMouseEvent(NSEvent nsEvent, int type, boolean send) {
 	if (type == SWT.DragDetect) {
 		dragDetected = true;
 	} else if (type == SWT.MouseUp) {
-		/*
-		 * This code path handles the case of an unmodified click on an already-selected row.
-		 * To keep the order of events correct, deselect the other selected items and send the
-		 * selection event before MouseUp is sent. Ignore the next selection event.
-		 */
+		// See code comment in Table.handleClickSelected()
 		if (selectedRowIndex != -1) {
 			if (dragDetected) {
 				selectedRowIndex = -1;
@@ -2828,6 +2824,8 @@ boolean sendMouseEvent(NSEvent nsEvent, int type, boolean send) {
 
 				Event event = new Event ();
 				id itemID = widget.itemAtRow (selectedRowIndex);
+				// (itemID = null) means that item was removed after
+				// 'selectedRowIndex' was cached
 				if (itemID != null) {
 					Widget item = display.getWidget (itemID.id);
 					if (item != null && item instanceof TreeItem) {
