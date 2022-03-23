@@ -3169,8 +3169,28 @@ void rendererRender (long cell, long cr, long snapshot, long widget, long backgr
 		}
 	}
 
-	GdkRectangle backround_area_rect = new GdkRectangle ();
-	OS.memmove (backround_area_rect, background_area, GdkRectangle.sizeof);
+	GdkRectangle rendererRect = new GdkRectangle ();
+	GdkRectangle columnRect = new GdkRectangle ();
+	{
+		/*
+		 * SWT creates multiple renderers (kind of sub-columns) per column.
+		 * For example: one for checkbox, one for image, one for text.
+		 * 'background_area' argument in this function is area of currently
+		 * painted renderer. However, for SWT.EraseItem and SWT.PaintItem,
+		 * SWT wants entire column's area along with the event. There's api
+		 * 'gtk_tree_view_get_background_area()' but it calculates item's
+		 * rect in control, which will be have wrong Y if item is rendered
+		 * separately (for example, for drag image).
+		 * The workaround is to take X range from api and Y range from argument.
+		 */
+		OS.memmove (rendererRect, background_area, GdkRectangle.sizeof);
+
+		long path = GTK.gtk_tree_model_get_path (modelHandle, iter);
+		GTK.gtk_tree_view_get_background_area (handle, path, columnHandle, columnRect);
+		GTK.gtk_tree_path_free (path);
+
+		columnRect.y = rendererRect.y;
+	}
 
 	if (item != null) {
 		if (GTK.GTK_IS_CELL_RENDERER_TOGGLE (cell) || ( columnIndex != 0 || (style & SWT.CHECK) == 0)) {
@@ -3191,7 +3211,7 @@ void rendererRender (long cell, long cr, long snapshot, long widget, long backgr
 				if ((flags & GTK.GTK_CELL_RENDERER_FOCUSED) != 0) drawState |= SWT.FOCUSED;
 			}
 
-			Rectangle rect = backround_area_rect.toRectangle ();
+			Rectangle rect = columnRect.toRectangle ();
 			// Use the x and width information from the Cairo context. See bug 535124.
 			if (cr != 0) {
 				GdkRectangle r2 = new GdkRectangle ();
@@ -3278,7 +3298,7 @@ void rendererRender (long cell, long cr, long snapshot, long widget, long backgr
 	if ((drawState & SWT.BACKGROUND) != 0 && (drawState & SWT.SELECTED) == 0) {
 		GC gc = getGC(cr);
 		gc.setBackground (item.getBackground (columnIndex));
-		gc.fillRectangle (DPIUtil.autoScaleDown (backround_area_rect.toRectangle ()));
+		gc.fillRectangle (DPIUtil.autoScaleDown (rendererRect.toRectangle ()));
 		gc.dispose ();
 	}
 	if ((drawState & SWT.FOREGROUND) != 0 || GTK.GTK_IS_CELL_RENDERER_TOGGLE (cell)) {
@@ -3304,7 +3324,7 @@ void rendererRender (long cell, long cr, long snapshot, long widget, long backgr
 		if (GTK.GTK_IS_CELL_RENDERER_TEXT (cell)) {
 			if (hooks (SWT.PaintItem)) {
 				if (wasSelected) drawState |= SWT.SELECTED;
-				Rectangle rect = backround_area_rect.toRectangle ();
+				Rectangle rect = columnRect.toRectangle ();
 				ignoreSize = true;
 				int [] contentX = new int [1], contentWidth = new int [1];
 				gtk_cell_renderer_get_preferred_size (cell, handle, contentWidth, null);
