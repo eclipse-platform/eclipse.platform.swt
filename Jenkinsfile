@@ -129,7 +129,7 @@ spec:
 			}
 			steps {
 				container('jnlp') {
-					sh "wget https://raw.githubusercontent.com/eclipse-platform/eclipse.platform.releng.aggregator/master/scripts/verifyFreezePeriod.sh"
+					sh "wget https://download.eclipse.org/eclipse/relengScripts/scripts/verifyFreezePeriod.sh"
 					sh "chmod +x verifyFreezePeriod.sh"
 					withCredentials([string(credentialsId: 'google-api-key', variable: 'GOOGLE_API_KEY')]) {
 						sh './verifyFreezePeriod.sh'
