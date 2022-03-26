@@ -3171,6 +3171,7 @@ void rendererRender (long cell, long cr, long snapshot, long widget, long backgr
 
 	GdkRectangle rendererRect = new GdkRectangle ();
 	GdkRectangle columnRect = new GdkRectangle ();
+	int y_offset;
 	{
 		/*
 		 * SWT creates multiple renderers (kind of sub-columns) per column.
@@ -3179,7 +3180,7 @@ void rendererRender (long cell, long cr, long snapshot, long widget, long backgr
 		 * painted renderer. However, for SWT.EraseItem and SWT.PaintItem,
 		 * SWT wants entire column's area along with the event. There's api
 		 * 'gtk_tree_view_get_background_area()' but it calculates item's
-		 * rect in control, which will be have wrong Y if item is rendered
+		 * rect in control, which will have wrong Y if item is rendered
 		 * separately (for example, for drag image).
 		 * The workaround is to take X range from api and Y range from argument.
 		 */
@@ -3189,7 +3190,8 @@ void rendererRender (long cell, long cr, long snapshot, long widget, long backgr
 		GTK.gtk_tree_view_get_background_area (handle, path, columnHandle, columnRect);
 		GTK.gtk_tree_path_free (path);
 
-		columnRect.y = rendererRect.y;
+		y_offset = columnRect.y - rendererRect.y;
+		columnRect.y -= y_offset;
 	}
 
 	if (item != null) {
@@ -3271,14 +3273,27 @@ void rendererRender (long cell, long cr, long snapshot, long widget, long backgr
 					// Caveat: rect2 is necessary because GC#setClipping(Rectangle) got broken by bug 446075
 					gc.setClipping(rect2.x, rect2.y, rect2.width, rect2.height);
 				}
+
+				// SWT.PaintItem/SWT.EraseItem often expect that event.y matches
+				// what 'event.item.getBounds()' returns. The workaround is to
+				// adjust coordinate system temporarily.
 				Event event = new Event ();
-				event.item = item;
-				event.index = columnIndex;
-				event.gc = gc;
-				Rectangle eventRect = new Rectangle (rect.x, rect.y, rect.width, rect.height);
-				event.setBounds (DPIUtil.autoScaleDown (eventRect));
-				event.detail = drawState;
-				sendEvent (SWT.EraseItem, event);
+				try {
+					Rectangle eventRect = new Rectangle (rect.x, rect.y, rect.width, rect.height);
+
+					eventRect.y += y_offset;
+					Cairo.cairo_translate (cr, 0, -y_offset);
+
+					event.item = item;
+					event.index = columnIndex;
+					event.gc = gc;
+					event.detail = drawState;
+					event.setBounds (DPIUtil.autoScaleDown (eventRect));
+					sendEvent (SWT.EraseItem, event);
+				} finally {
+					Cairo.cairo_translate (cr, 0, y_offset);
+				}
+
 				drawForegroundRGBA = null;
 				drawState = event.doit ? event.detail : 0;
 				drawFlags &= ~(GTK.GTK_CELL_RENDERER_FOCUSED | GTK.GTK_CELL_RENDERER_SELECTED);
@@ -3381,14 +3396,26 @@ void rendererRender (long cell, long cr, long snapshot, long widget, long backgr
 				// Caveat: rect2 is necessary because GC#setClipping(Rectangle) got broken by bug 446075
 				gc.setClipping(rect2.x, rect2.y, rect2.width, rect2.height);
 
+				// SWT.PaintItem/SWT.EraseItem often expect that event.y matches
+				// what 'event.item.getBounds()' returns. The workaround is to
+				// adjust coordinate system temporarily.
 				Event event = new Event ();
-				event.item = item;
-				event.index = columnIndex;
-				event.gc = gc;
-				Rectangle eventRect = new Rectangle (rect.x + contentX [0], rect.y, contentWidth [0], rect.height);
-				event.setBounds (DPIUtil.autoScaleDown (eventRect));
-				event.detail = drawState;
-				sendEvent(SWT.PaintItem, event);
+				try {
+					Rectangle eventRect = new Rectangle (rect.x + contentX [0], rect.y, contentWidth [0], rect.height);
+
+					eventRect.y += y_offset;
+					Cairo.cairo_translate (cr, 0, -y_offset);
+
+					event.item = item;
+					event.index = columnIndex;
+					event.gc = gc;
+					event.detail = drawState;
+					event.setBounds (DPIUtil.autoScaleDown (eventRect));
+					sendEvent (SWT.PaintItem, event);
+				} finally {
+					Cairo.cairo_translate (cr, 0, y_offset);
+				}
+
 				gc.dispose();
 			}
 		}
