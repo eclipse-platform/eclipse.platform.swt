@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <!--
-    Copyright (c) 2009, 2020 IBM Corporation and others.
+    Copyright (c) 2009, 2022 IBM Corporation and others.
 
     This program and the accompanying materials
     are made available under the terms of the Eclipse Public License 2.0
@@ -31,7 +31,7 @@
 
 <project name="swtbuild" basedir=".">
 	
-	<property name="gitroot" value="committer-id@dev.eclipse.org:/gitroot/platform/"/>
+	<property name="gitroot" value="git@github.com:eclipse-platform/"/>
 	<property name="TAG" value="master"/>
 	<property name="tmphome" value="../../../tmp"/>
 	<property name="tmpdir" value="${tmphome}/check.compile.${TAG}"/>
