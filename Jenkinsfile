@@ -113,12 +113,6 @@ spec:
 					archiveArtifacts artifacts: '**/*.log,**/*.html,**/target/*.jar,**/target/*.zip'
 					publishIssues issues:[scanForIssues(tool: java()), scanForIssues(tool: mavenConsole())]
 				}
-				unstable {
-					gerritReview labels: [Verified: -1], message: "Build UNSTABLE (test failures) $BUILD_URL"
-				}
-				failure {
-					gerritReview labels: [Verified: -1], message: "Build FAILED $BUILD_URL"
-				}
 			}
 		}
 		stage('Check freeze period') {
@@ -136,16 +130,6 @@ spec:
 					}
 				}
 			}
-			post {
-				failure {
-					gerritReview labels: [Verified: -1], message: "Build and test are OK, but Eclipse project is currently in a code freeze period.\nPlease wait for end of code freeze period before merging.\n $BUILD_URL"
-				}
-			}
-		}
-	}
-	post {
-		success {
-			gerritReview labels: [Verified: 1], message: "Build Succcess $BUILD_URL"
 		}
 	}
 }
