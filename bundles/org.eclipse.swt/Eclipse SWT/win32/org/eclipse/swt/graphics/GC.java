@@ -1287,7 +1287,7 @@ void drawBitmapAlpha(Image srcImage, int srcX, int srcY, int srcWidth, int srcHe
 		long oldSrcBitmap = OS.SelectObject(srcHdc, srcImage.handle);
 		blend.SourceConstantAlpha = (byte)sourceAlpha;
 		blend.AlphaFormat = OS.AC_SRC_ALPHA;
-		OS.AlphaBlend(handle, destX, destY, destWidth, destHeight, srcHdc, 0, 0, srcWidth, srcHeight, blend);
+		OS.AlphaBlend(handle, destX, destY, destWidth, destHeight, srcHdc, srcX, srcY, srcWidth, srcHeight, blend);
 		OS.SelectObject(srcHdc, oldSrcBitmap);
 		OS.DeleteDC(srcHdc);
 		return;

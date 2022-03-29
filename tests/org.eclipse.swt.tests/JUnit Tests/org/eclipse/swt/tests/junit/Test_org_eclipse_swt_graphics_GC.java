@@ -641,6 +641,49 @@ public void test_toString() {
 	assertTrue(s.length() > 0);
 }
 
+@Test
+public void test_bug493455_drawImageAlpha_srcPos() {
+	RGB red = new RGB(255, 0, 0);
+	RGB green = new RGB(0, 255, 0);
+
+	ImageData initImageData = new ImageData(200, 200, 32, new PaletteData(0xff, 0xff00, 0xff0000));
+	initImageData.alphaData = new byte[200 * 200];
+	Image srcImage = new Image(display, initImageData);
+
+	GC srcImageGc = new GC(srcImage);
+	srcImageGc.setAdvanced(true);
+	srcImageGc.setBackground(new Color(red));
+	srcImageGc.fillRectangle(0, 0, 200, 200);
+	srcImageGc.setBackground(new Color(green));
+	srcImageGc.fillRectangle(100, 50, 100, 150);
+	srcImageGc.dispose();
+
+	gc.drawImage(srcImage, 100, 50, 100, 150, 0, 0, 100, 150);
+
+	ImageData srcImageData = srcImage.getImageData();
+	srcImage.dispose();
+
+	ImageData testImageData = image.getImageData();
+
+	assertNotNull(srcImageData.alphaData);
+
+	for (int i = 0; i < 200; ++i) {
+		for (int j = 0; j < 200; ++j) {
+			RGB expected = (i < 100 || j < 50) ? red : green;
+			RGB actual = srcImageData.palette.getRGB(srcImageData.getPixel(i, j));
+			assertEquals(expected, actual);
+		}
+	}
+
+	for (int i = 0; i < 100; ++i) {
+		for (int j = 0; j < 150; ++j) {
+			RGB rgb = testImageData.palette.getRGB(testImageData.getPixel(i, j));
+			assertEquals(green, rgb);
+		}
+	}
+
+}
+
 /* custom */
 Display display;
 Shell shell;
