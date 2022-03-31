@@ -31,13 +31,13 @@ Contact the project developers via the project's "dev" list.
 Search for bugs:
 ----------------
 
-This project uses Bugzilla to track ongoing development and issues.
+SWT used to track ongoing development and issues in Bugzilla .
 
 - <https://bugs.eclipse.org/bugs/buglist.cgi?product=Platform&component=SWT>
 
 Create a new bug:
 -----------------
 
-Be sure to search for existing bugs before you create another one. Remember that contributions are always welcome!
+You can register bugs and feature requests in the Github Issue Tracker. Remember that contributions are always welcome!
 
-- <https://bugs.eclipse.org/bugs/enter_bug.cgi?product=Platform&component=SWT>
+Please bear in mind that this project is almost entirely developed by volunteers. If you do not provide the implementation yourself (or pay someone to do it for you), the bug might never get fixed. If it is a serious bug, other people than you might care enough to provide a fix.
