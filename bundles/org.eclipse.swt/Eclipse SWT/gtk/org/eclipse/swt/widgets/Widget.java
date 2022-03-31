@@ -800,7 +800,8 @@ void gtk4_focus_enter_event(long controller, long event) {}
  * @param event the type of event, should be FocusIn or FocusOut
  */
 void gtk4_focus_window_event(long handle, long event) {
-	gtk_focus_in_event (handle, event);
+	if(event == SWT.FocusIn) gtk_focus_in_event (handle, event);
+	else gtk_focus_out_event(handle, event);
 }
 
 /**
