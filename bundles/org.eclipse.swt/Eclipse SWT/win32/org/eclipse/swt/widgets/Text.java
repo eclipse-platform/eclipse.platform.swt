@@ -76,6 +76,8 @@ public class Text extends Scrollable {
 	/* Custom icons defined in swt.rc */
 	static final int IDI_SEARCH = 101;
 	static final int IDI_CANCEL = 102;
+	static final int IDI_SEARCH_DARKTHEME = 103;
+	static final int IDI_CANCEL_DARKTHEME = 104;
 
 	/**
 	* The maximum number of characters that can be entered
@@ -337,10 +339,14 @@ void createHandle () {
 	if ((style & SWT.SEARCH) != 0) {
 		if (display.hIconSearch == 0) {
 			long [] phicon = new long [1];
-			int hresult = OS.LoadIconMetric (OS.GetLibraryHandle (), IDI_SEARCH, OS.LIM_SMALL, phicon);
+
+			int searchIconResource = display.textUseDarkthemeIcons ? IDI_SEARCH_DARKTHEME : IDI_SEARCH;
+			int hresult = OS.LoadIconMetric (OS.GetLibraryHandle (), searchIconResource, OS.LIM_SMALL, phicon);
 			if (hresult != OS.S_OK) error (SWT.ERROR_NO_HANDLES);
 			display.hIconSearch = phicon [0];
-			hresult = OS.LoadIconMetric (OS.GetLibraryHandle (), IDI_CANCEL, OS.LIM_SMALL, phicon);
+
+			int cancelIconResource = display.textUseDarkthemeIcons ? IDI_CANCEL_DARKTHEME : IDI_CANCEL;
+			hresult = OS.LoadIconMetric (OS.GetLibraryHandle (), cancelIconResource, OS.LIM_SMALL, phicon);
 			if (hresult != OS.S_OK) error (SWT.ERROR_NO_HANDLES);
 			display.hIconCancel = phicon [0];
 		}

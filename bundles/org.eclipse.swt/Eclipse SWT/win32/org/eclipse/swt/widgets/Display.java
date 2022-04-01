@@ -267,6 +267,16 @@ public class Display extends Device {
 	 */
 	static final String PROGRESSBAR_USE_COLORS = "org.eclipse.swt.internal.win32.ProgressBar.useColors"; //$NON-NLS-1$
 	boolean progressbarUseColors = false;
+	/**
+	 * Use dark theme compatible icons for Text with SWT.ICON_SEARCH, SWT.ICON_CANCEL
+	 * Limitations:<br>
+	 * <ul>
+	 *   <li>Must be configured before first Text is created.</li>
+	 * </ul>
+	 * Expects a <code>boolean</code> value.
+	 */
+	static final String USE_DARKTHEME_TEXT_ICONS = "org.eclipse.swt.internal.win32.Text.useDarkThemeIcons"; //$NON-NLS-1$
+	boolean textUseDarkthemeIcons = false;
 
 	/* Custom icons */
 	long hIconSearch;
@@ -4446,6 +4456,9 @@ public void setData (String key, Object value) {
 			break;
 		case PROGRESSBAR_USE_COLORS:
 			progressbarUseColors = !disableCustomThemeTweaks && _toBoolean(value);
+			break;
+		case USE_DARKTHEME_TEXT_ICONS:
+			textUseDarkthemeIcons = !disableCustomThemeTweaks && _toBoolean(value);
 			break;
 	}
 
