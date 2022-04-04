@@ -54,3 +54,5 @@ END
 /* Icons for Text widget */
 101 ICON "search.ico"
 102 ICON "cancel.ico"
+103 ICON "search_darktheme.ico"
+104 ICON "cancel_darktheme.ico"

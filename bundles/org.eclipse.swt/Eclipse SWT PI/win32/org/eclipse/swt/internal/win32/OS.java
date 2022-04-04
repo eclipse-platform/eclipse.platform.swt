@@ -2273,6 +2273,7 @@ public static final void setTheme(boolean isDarkTheme) {
 	display.setData("org.eclipse.swt.internal.win32.Label.disabledForegroundColor", isDarkTheme ? new Color(display, 0x80, 0x80, 0x80) : null);
 	display.setData("org.eclipse.swt.internal.win32.Combo.useDarkTheme",       isDarkTheme);
 	display.setData("org.eclipse.swt.internal.win32.ProgressBar.useColors",    isDarkTheme);
+	display.setData("org.eclipse.swt.internal.win32.Text.useDarkThemeIcons",   isDarkTheme);
 }
 
 public static final boolean SetWindowText (long hWnd, TCHAR lpString) {
