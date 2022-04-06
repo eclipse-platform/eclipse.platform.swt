@@ -343,6 +343,7 @@ public class OS extends C {
 	public static final int CW_USEDEFAULT = 0x80000000;
 	public static final int CWP_SKIPINVISIBLE = 0x0001;
 	public static final String DATETIMEPICK_CLASS = "SysDateTimePick32"; //$NON-NLS-1$
+	public static final int DC_BRUSH = 18;
 	public static final int DCX_CACHE = 0x2;
 	public static final int DEFAULT_CHARSET = 0x1;
 	public static final int DEFAULT_GUI_FONT = 0x11;
@@ -1310,6 +1311,7 @@ public class OS extends C {
 	public static final int S_OK = 0x0;
 	public static final int TABP_BODY = 10;
 	public static final int TBCDRF_USECDCOLORS = 0x800000;
+	public static final int TBCDRF_NOBACKGROUND = 0x00400000;
 	public static final int TBIF_COMMAND = 0x20;
 	public static final int TBIF_STATE = 0x4;
 	public static final int TBIF_IMAGE = 0x1;
@@ -1318,6 +1320,7 @@ public class OS extends C {
 	public static final int TBIF_STYLE = 0x8;
 	public static final int TBIF_TEXT = 0x2;
 	public static final int TB_GETEXTENDEDSTYLE = 0x400 + 85;
+	public static final int TB_GETRECT = 0x400 + 51;
 	public static final int TBM_GETLINESIZE = 0x418;
 	public static final int TBM_GETPAGESIZE = 0x416;
 	public static final int TBM_GETPOS = 0x400;
@@ -4265,6 +4268,7 @@ public static final native int SetCurrentProcessExplicitAppUserModelID (char[] A
 /** @param hCursor cast=(HCURSOR) */
 public static final native long SetCursor (long hCursor);
 public static final native boolean SetCursorPos (int X, int Y);
+public static final native int SetDCBrushColor (long hdc, int color);
 /**
  * @param hdc cast=(HDC)
  * @param pColors cast=(RGBQUAD *),flags=no_out critical

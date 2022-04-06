@@ -102,6 +102,9 @@ public abstract class Widget {
 	/* Mouse cursor is over the widget flag */
 	static final int MOUSE_OVER = 1<<23;
 
+	/* Child item requires custom draw */
+	static final int CUSTOM_DRAW_ITEM = 1<<24;
+
 	/* Default size for widgets */
 	static final int DEFAULT_WIDTH	= 64;
 	static final int DEFAULT_HEIGHT	= 64;

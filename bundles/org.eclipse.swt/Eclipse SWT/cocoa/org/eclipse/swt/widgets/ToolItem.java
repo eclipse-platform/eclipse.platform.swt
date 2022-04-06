@@ -14,6 +14,8 @@
 package org.eclipse.swt.widgets;
 
 
+import java.util.*;
+
 import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
@@ -48,6 +50,7 @@ public class ToolItem extends Item {
 	int width = DEFAULT_SEPARATOR_WIDTH;
 	ToolBar parent;
 	Image hotImage, disabledImage;
+	Color background, foreground;
 	String toolTipText;
 	Control control;
 	boolean selection;
@@ -402,7 +405,8 @@ void createHandle () {
 }
 
 NSAttributedString createString() {
-	NSAttributedString attribStr = parent.createString(text, null, parent.foreground, SWT.CENTER, false, true, true);
+	double[] fg = foreground != null ? foreground.handle : parent.foreground;
+	NSAttributedString attribStr = parent.createString(text, null, fg, SWT.CENTER, false, true, true);
 	attribStr.autorelease();
 	return attribStr;
 }
@@ -459,7 +463,7 @@ void drawImageWithFrameInView (long id, long sel, long image, NSRect rect, long 
 
 @Override
 NSRect drawTitleWithFrameInView (long id, long sel, long title, NSRect titleRect, long view) {
-	boolean hiliteShadow = new NSButtonCell(id).isHighlighted() && text.length() > 0 && image == null;
+	boolean hiliteShadow = background == null && image == null && text.length() > 0 && new NSButtonCell(id).isHighlighted();
 
 	// An unbordered cell doesn't draw any highlighting when pushed or selected, so we have to do it here.
 	if (hiliteShadow) {
@@ -486,7 +490,12 @@ void drawWidget (long id, NSGraphicsContext context, NSRect rect) {
 			boolean isDark = OS.isAppDarkAppearance();
 			float fillColor = isDark ? 0.9f : 0.1f;
 			float strokeColor = isDark ? 0.8f : 0.2f;
-			NSColor.colorWithDeviceRed(fillColor, fillColor, fillColor, 0.1f).setFill();
+			if (background != null) {
+				double[] color = background.handle;
+				NSColor.colorWithDeviceRed(color[0], color[1], color[2], color[3]).setFill();
+			} else {
+				NSColor.colorWithDeviceRed(fillColor, fillColor, fillColor, 0.1f).setFill();
+			}
 			NSColor.colorWithDeviceRed(strokeColor, strokeColor, strokeColor, 0.2f).setStroke();
 			NSBezierPath.fillRect(bounds);
 			bounds.x += 0.5f;
@@ -494,6 +503,13 @@ void drawWidget (long id, NSGraphicsContext context, NSRect rect) {
 			bounds.width -= 1;
 			bounds.height -= 1;
 			NSBezierPath.strokeRect(bounds);
+			context.restoreGraphicsState();
+		} else if (background != null) {
+			NSRect bounds = view.bounds();
+			context.saveGraphicsState();
+			double[] color = background.handle;
+			NSColor.colorWithDeviceRed(color[0], color[1], color[2], color[3]).setFill();
+			NSBezierPath.fillRect(bounds);
 			context.restoreGraphicsState();
 		}
 		if ((style & SWT.DROP_DOWN) != 0) {
@@ -528,6 +544,23 @@ void enableWidget(boolean enabled) {
 		((NSButton)button).setEnabled(enabled);
 		updateImage(true);
 	}
+}
+
+/**
+ * Returns the receiver's background color.
+ *
+ * @return the background color
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @since 3.120
+ */
+public Color getBackground () {
+	checkWidget ();
+	return background != null ? background : parent.getBackground ();
 }
 
 /**
@@ -619,6 +652,23 @@ boolean getDrawing () {
 public boolean getEnabled () {
 	checkWidget();
 	return (state & DISABLED) == 0;
+}
+
+/**
+ * Returns the foreground color that the receiver will use to draw.
+ *
+ * @return the receiver's foreground color
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @since 3.120
+ */
+public Color getForeground () {
+	checkWidget ();
+	return foreground != null ? foreground : parent.getForeground ();
 }
 
 /**
@@ -971,6 +1021,34 @@ void setBounds (int x, int y, int width, int height) {
 }
 
 /**
+ * Sets the receiver's background color to the color specified
+ * by the argument, or to the default system color for the item
+ * if the argument is null.
+ *
+ * @param color the new color (or null)
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if the argument has been disposed</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @since 3.120
+ */
+public void setBackground (Color color) {
+	checkWidget ();
+	if (color != null && color.isDisposed ()) {
+		error (SWT.ERROR_INVALID_ARGUMENT);
+	}
+	Color oldColor = background;
+	background = color;
+	if (Objects.equals (oldColor, background)) return;
+	view.setNeedsDisplay (true);
+}
+
+/**
  * Sets the control that is used to fill the bounds of
  * the item when the item is a <code>SEPARATOR</code>.
  *
@@ -1073,6 +1151,34 @@ boolean setFocus () {
 		return false;
 	}
 	return window.makeFirstResponder (button);
+}
+
+/**
+ * Sets the receiver's foreground color to the color specified
+ * by the argument, or to the default system color for the item
+ * if the argument is null.
+ *
+ * @param color the new color (or null)
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if the argument has been disposed</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @since 3.120
+ */
+public void setForeground (Color color) {
+	checkWidget ();
+	if (color != null && color.isDisposed ()) {
+		error (SWT.ERROR_INVALID_ARGUMENT);
+	}
+	Color oldColor = foreground;
+	foreground = color;
+	if (Objects.equals (oldColor, foreground)) return;
+	updateStyle ();
 }
 
 /**
@@ -1325,6 +1431,10 @@ void updateImage (boolean layout) {
 		widget.setImagePosition(text.length() != 0 ? OS.NSNoImage : OS.NSImageOnly);
 	}
 	parent.relayout();
+}
+
+void updateStyle () {
+	if (button != null) ((NSButton)button).setAttributedTitle(createString());
 }
 
 @Override

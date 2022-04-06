@@ -683,23 +683,12 @@ void setFontDescription (long font) {
 	relayout ();
 }
 
-void restoreBackground () {
-	/*
-	 * We need to restore the cached background color in order to prevent
-	 * setting the foreground color from overriding the background color
-	 * (or replacing it with black).
-	 */
-	long context = GTK.gtk_widget_get_style_context(handle);
-	String finalCss = display.gtk_css_create_css_color_string (this.cssBackground, this.cssForeground, SWT.BACKGROUND);
-	gtk_css_provider_load_from_css (context, finalCss);
-}
-
 @Override
 void setForegroundGdkRGBA (GdkRGBA rgba) {
 	super.setForegroundGdkRGBA (rgba);
 	ToolItem [] items = getItems ();
 	for (int i = 0; i < items.length; i++) {
-		items[i].setForegroundRGBA (rgba);
+		items[i].updateStyle ();
 	}
 }
 
