@@ -154,7 +154,7 @@ public class Display extends Device {
 	}
 
 	/* XP Themes */
-	long hButtonTheme, hEditTheme, hExplorerBarTheme, hScrollBarTheme, hTabTheme;
+	long hButtonTheme, hButtonThemeDark, hEditTheme, hExplorerBarTheme, hScrollBarTheme, hTabTheme;
 	static final char [] EXPLORER = new char [] {'E', 'X', 'P', 'L', 'O', 'R', 'E', 'R', 0};
 	static final char [] TREEVIEW = new char [] {'T', 'R', 'E', 'E', 'V', 'I', 'E', 'W', 0};
 	/* Emergency switch to be used in case of regressions. Not supposed to be changed when app is running. */
@@ -2625,6 +2625,20 @@ long hButtonTheme () {
 	return hButtonTheme = OS.OpenThemeData (hwndMessage, themeName);
 }
 
+long hButtonThemeDark () {
+	if (hButtonThemeDark != 0) return hButtonThemeDark;
+	final char[] themeName = "Darkmode_Explorer::BUTTON\0".toCharArray();
+	return hButtonThemeDark = OS.OpenThemeData (hwndMessage, themeName);
+}
+
+long hButtonThemeAuto () {
+	if (useDarkModeExplorerTheme) {
+		return hButtonThemeDark ();
+	} else {
+		return hButtonTheme ();
+	}
+}
+
 long hEditTheme () {
 	if (hEditTheme != 0) return hEditTheme;
 	final char[] themeName = "EDIT\0".toCharArray();
@@ -2653,6 +2667,10 @@ void resetThemes() {
 	if (hButtonTheme != 0) {
 		OS.CloseThemeData (hButtonTheme);
 		hButtonTheme = 0;
+	}
+	if (hButtonThemeDark != 0) {
+		OS.CloseThemeData (hButtonThemeDark);
+		hButtonThemeDark = 0;
 	}
 	if (hEditTheme != 0) {
 		OS.CloseThemeData (hEditTheme);
