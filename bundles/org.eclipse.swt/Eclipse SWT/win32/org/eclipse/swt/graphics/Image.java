@@ -970,10 +970,18 @@ long [] createGdipImage() {
 			if (hasAlpha || transparentPixel != -1) {
 				int imgWidth = bm.bmWidth;
 				int imgHeight = bm.bmHeight;
-				long hDC = device.internal_new_GC(null);
-				long srcHdc = OS.CreateCompatibleDC(hDC);
+				long srcHdc;
+				long memHdc;
+				{
+					long hDC = device.internal_new_GC(null);
+					if (hDC == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+					srcHdc = OS.CreateCompatibleDC(hDC);
+					memHdc = OS.CreateCompatibleDC(hDC);
+					device.internal_dispose_GC(hDC, null);
+				}
+				if (srcHdc == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+				if (memHdc == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 				long oldSrcBitmap = OS.SelectObject(srcHdc, handle);
-				long memHdc = OS.CreateCompatibleDC(hDC);
 				long memDib = createDIB(imgWidth, imgHeight, 32);
 				if (memDib == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 				long oldMemBitmap = OS.SelectObject(memHdc, memDib);
