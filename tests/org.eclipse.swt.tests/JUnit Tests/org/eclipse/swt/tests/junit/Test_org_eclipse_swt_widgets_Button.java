@@ -19,6 +19,7 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.junit.Assume.assumeFalse;
 import static org.junit.Assume.assumeTrue;
 
 import org.eclipse.swt.SWT;
@@ -29,7 +30,9 @@ import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.FillLayout;
+import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Text;
 import org.junit.Before;
@@ -423,6 +426,48 @@ public void test_setTextLjava_lang_String() {
 	}
 
 	button.setText("");
+}
+
+@Test
+public void test_traverseCheckButton() {
+	assumeFalse("Mnemonic not applicable on Cocoa", SwtTestUtil.isCocoa);
+    Composite composite = new Composite(shell, SWT.NONE);
+    composite.setLayout(new GridLayout ());
+
+	Button radioButtonA = new Button(composite, SWT.RADIO);
+	radioButtonA.setText("Button&A");
+	Button radioButtonB = new Button(composite, SWT.RADIO);
+	radioButtonB.setText("Button&B");
+	Button radioButtonC = new Button(composite, SWT.RADIO);
+	radioButtonC.setText("Button&C");
+	radioButtonC.setEnabled(false);
+
+	composite.pack();
+	shell.open();
+
+	assertTrue(radioButtonA.getSelection());
+	assertFalse(radioButtonB.getSelection());
+	assertFalse(radioButtonC.getSelection());
+
+	Event event1 = new Event();
+	event1.type = SWT.KeyDown;
+	event1.stateMask = SWT.ALT;
+	event1.character = 'B';
+	shell.traverse(SWT.TRAVERSE_NONE, event1);
+
+	assertFalse(radioButtonA.getSelection());
+	assertTrue(radioButtonB.getSelection());
+	assertFalse(radioButtonC.getSelection());
+
+	Event event2 = new Event();
+	event2.type = SWT.KeyDown;
+	event2.stateMask = SWT.ALT;
+	event2.character = 'C';
+	shell.traverse(SWT.TRAVERSE_NONE, event2);
+	
+	assertFalse(radioButtonA.getSelection());
+	assertTrue(radioButtonB.getSelection());
+	assertFalse(radioButtonC.getSelection());
 }
 
 //custom
