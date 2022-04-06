@@ -154,14 +154,8 @@ public class Display extends Device {
 	}
 
 	/* XP Themes */
-	long hButtonTheme, hEditTheme, hExplorerBarTheme, hScrollBarTheme, hTabTheme;
-	static final char [] BUTTON = new char [] {'B', 'U', 'T', 'T', 'O', 'N', 0};
-	static final char [] EDIT = new char [] {'E', 'D', 'I', 'T', 0};
+	long hButtonTheme, hButtonThemeDark, hEditTheme, hExplorerBarTheme, hScrollBarTheme, hTabTheme;
 	static final char [] EXPLORER = new char [] {'E', 'X', 'P', 'L', 'O', 'R', 'E', 'R', 0};
-	static final char [] EXPLORERBAR = new char [] {'E', 'X', 'P', 'L', 'O', 'R', 'E', 'R', 'B', 'A', 'R', 0};
-	static final char [] SCROLLBAR = new char [] {'S', 'C', 'R', 'O', 'L', 'L', 'B', 'A', 'R', 0};
-	static final char [] LISTVIEW = new char [] {'L', 'I', 'S', 'T', 'V', 'I', 'E', 'W', 0};
-	static final char [] TAB = new char [] {'T', 'A', 'B', 0};
 	static final char [] TREEVIEW = new char [] {'T', 'R', 'E', 'E', 'V', 'I', 'E', 'W', 0};
 	/* Emergency switch to be used in case of regressions. Not supposed to be changed when app is running. */
 	static final boolean disableCustomThemeTweaks = Boolean.valueOf(System.getProperty("org.eclipse.swt.internal.win32.disableCustomThemeTweaks")); //$NON-NLS-1$
@@ -2627,27 +2621,73 @@ public boolean getTouchEnabled () {
 
 long hButtonTheme () {
 	if (hButtonTheme != 0) return hButtonTheme;
-	return hButtonTheme = OS.OpenThemeData (hwndMessage, BUTTON);
+	final char[] themeName = "BUTTON\0".toCharArray();
+	return hButtonTheme = OS.OpenThemeData (hwndMessage, themeName);
+}
+
+long hButtonThemeDark () {
+	if (hButtonThemeDark != 0) return hButtonThemeDark;
+	final char[] themeName = "Darkmode_Explorer::BUTTON\0".toCharArray();
+	return hButtonThemeDark = OS.OpenThemeData (hwndMessage, themeName);
+}
+
+long hButtonThemeAuto () {
+	if (useDarkModeExplorerTheme) {
+		return hButtonThemeDark ();
+	} else {
+		return hButtonTheme ();
+	}
 }
 
 long hEditTheme () {
 	if (hEditTheme != 0) return hEditTheme;
-	return hEditTheme = OS.OpenThemeData (hwndMessage, EDIT);
+	final char[] themeName = "EDIT\0".toCharArray();
+	return hEditTheme = OS.OpenThemeData (hwndMessage, themeName);
 }
 
 long hExplorerBarTheme () {
 	if (hExplorerBarTheme != 0) return hExplorerBarTheme;
-	return hExplorerBarTheme = OS.OpenThemeData (hwndMessage, EXPLORERBAR);
+	final char[] themeName = "EXPLORERBAR\0".toCharArray();
+	return hExplorerBarTheme = OS.OpenThemeData (hwndMessage, themeName);
 }
 
 long hScrollBarTheme () {
 	if (hScrollBarTheme != 0) return hScrollBarTheme;
-	return hScrollBarTheme = OS.OpenThemeData (hwndMessage, SCROLLBAR);
+	final char[] themeName = "SCROLLBAR\0".toCharArray();
+	return hScrollBarTheme = OS.OpenThemeData (hwndMessage, themeName);
 }
 
 long hTabTheme () {
 	if (hTabTheme != 0) return hTabTheme;
-	return hTabTheme = OS.OpenThemeData (hwndMessage, TAB);
+	final char[] themeName = "TAB\0".toCharArray();
+	return hTabTheme = OS.OpenThemeData (hwndMessage, themeName);
+}
+
+void resetThemes() {
+	if (hButtonTheme != 0) {
+		OS.CloseThemeData (hButtonTheme);
+		hButtonTheme = 0;
+	}
+	if (hButtonThemeDark != 0) {
+		OS.CloseThemeData (hButtonThemeDark);
+		hButtonThemeDark = 0;
+	}
+	if (hEditTheme != 0) {
+		OS.CloseThemeData (hEditTheme);
+		hEditTheme = 0;
+	}
+	if (hExplorerBarTheme != 0) {
+		OS.CloseThemeData (hExplorerBarTheme);
+		hExplorerBarTheme = 0;
+	}
+	if (hScrollBarTheme != 0) {
+		OS.CloseThemeData (hScrollBarTheme);
+		hScrollBarTheme = 0;
+	}
+	if (hTabTheme != 0) {
+		OS.CloseThemeData (hTabTheme);
+		hTabTheme = 0;
+	}
 }
 
 /**
@@ -3234,12 +3274,7 @@ long messageProc (long hwnd, long msg, long wParam, long lParam) {
 			break;
 		}
 		case OS.WM_THEMECHANGED: {
-			if (hButtonTheme != 0) OS.CloseThemeData (hButtonTheme);
-			if (hEditTheme != 0) OS.CloseThemeData (hEditTheme);
-			if (hExplorerBarTheme != 0) OS.CloseThemeData (hExplorerBarTheme);
-			if (hScrollBarTheme != 0) OS.CloseThemeData (hScrollBarTheme);
-			if (hTabTheme != 0) OS.CloseThemeData (hTabTheme);
-			hButtonTheme = hEditTheme = hExplorerBarTheme = hScrollBarTheme = hTabTheme = 0;
+			resetThemes();
 			break;
 		}
 		case OS.WM_TIMER: {
@@ -3731,12 +3766,7 @@ void releaseDisplay () {
 	if (hIconCancel != 0) OS.DestroyIcon (hIconCancel);
 
 	/* Release XP Themes */
-	if (hButtonTheme != 0) OS.CloseThemeData (hButtonTheme);
-	if (hEditTheme != 0) OS.CloseThemeData (hEditTheme);
-	if (hExplorerBarTheme != 0) OS.CloseThemeData (hExplorerBarTheme);
-	if (hScrollBarTheme != 0) OS.CloseThemeData (hScrollBarTheme);
-	if (hTabTheme != 0) OS.CloseThemeData (hTabTheme);
-	hButtonTheme = hEditTheme = hExplorerBarTheme = hScrollBarTheme = hTabTheme = 0;
+	resetThemes();
 	if (menuBarBorderPen != 0) OS.DeleteObject (menuBarBorderPen);
 	menuBarBorderPen = 0;
 

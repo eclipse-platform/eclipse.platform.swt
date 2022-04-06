@@ -2783,7 +2783,7 @@ LRESULT WM_DRAWITEM (long wParam, long lParam) {
 	drawBackground (struct.hDC, rect, -1, pt.x, pt.y);
 	if (struct.CtlID == SWT.ICON_CANCEL && struct.hwndItem == hwndActiveIcon && OS.IsAppThemed()) {
 		int state = OS.GetKeyState (OS.VK_LBUTTON) < 0 ? OS.PBS_PRESSED : OS.PBS_HOT;
-		OS.DrawThemeBackground (display.hButtonTheme (), struct.hDC, OS.BP_PUSHBUTTON, state, rect, null);
+		OS.DrawThemeBackground (display.hButtonThemeAuto (), struct.hDC, OS.BP_PUSHBUTTON, state, rect, null);
 	}
 	long hIcon = (struct.CtlID == SWT.ICON_SEARCH) ? display.hIconSearch : display.hIconCancel;
 	int y = (rect.bottom - rect.right) / 2;
