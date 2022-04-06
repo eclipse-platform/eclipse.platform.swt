@@ -660,14 +660,13 @@ boolean isTabItem () {
 
 @Override
 boolean mnemonicHit (char ch) {
-	if (!setFocus ()) return false;
 	/*
-	* Feature in Windows.  When a radio button gets focus,
-	* it selects the button in WM_SETFOCUS.  Therefore, it
-	* is not necessary to click the button or send events
-	* because this has already happened in WM_SETFOCUS.
-	*/
-	if ((style & SWT.RADIO) == 0) click ();
+	 * Feature in Windows. When a radio button gets focus, it selects the button in
+	 * WM_SETFOCUS. Workaround is to never set focus to an unselected radio button.
+	 * Therefore, don't try to set focus on radio buttons, click will set focus.
+	 */
+	if ((style & SWT.RADIO) == 0 && !setFocus ()) return false;
+	click();
 	return true;
 }
 
