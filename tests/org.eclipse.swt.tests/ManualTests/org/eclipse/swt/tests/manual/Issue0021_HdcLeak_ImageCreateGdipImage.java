@@ -21,10 +21,10 @@ import org.eclipse.swt.widgets.*;
 
 public class Issue0021_HdcLeak_ImageCreateGdipImage {
 	static Image makeTrasparentImage(Display display) {
-		Image image = new Image(display, 10, 10);
+		Image image = new Image(display, 40, 40);
 		GC gc = new GC(image);
 		Rectangle bounds = image.getBounds();
-		Color transparent = new Color(display, 0x80, 0x00, 0x00);
+		Color transparent = new Color(display, 0x00, 0x00, 0x00);
 		Color contents = new Color(display, 0x00, 0x80, 0x00);
 		gc.setBackground(transparent);
 		gc.fillRectangle(bounds);
@@ -33,7 +33,7 @@ public class Issue0021_HdcLeak_ImageCreateGdipImage {
 		gc.dispose();
 
 		ImageData imageData = image.getImageData();
-		imageData.transparentPixel = transparent.handle;
+		imageData.transparentPixel = 0;
 		image.dispose();
 
 		return new Image(display, imageData);
