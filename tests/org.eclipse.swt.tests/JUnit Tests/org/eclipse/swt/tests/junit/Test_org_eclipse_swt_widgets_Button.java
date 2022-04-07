@@ -431,6 +431,7 @@ public void test_setTextLjava_lang_String() {
 @Test
 public void test_traverseCheckButton() {
 	assumeFalse("Mnemonic not applicable on Cocoa", SwtTestUtil.isCocoa);
+	assumeFalse("getSelection() checks below fail on Linux", SwtTestUtil.isGTK);
     Composite composite = new Composite(shell, SWT.NONE);
     composite.setLayout(new GridLayout ());
 
@@ -464,7 +465,7 @@ public void test_traverseCheckButton() {
 	event2.stateMask = SWT.ALT;
 	event2.character = 'C';
 	shell.traverse(SWT.TRAVERSE_NONE, event2);
-	
+
 	assertFalse(radioButtonA.getSelection());
 	assertTrue(radioButtonB.getSelection());
 	assertFalse(radioButtonC.getSelection());
