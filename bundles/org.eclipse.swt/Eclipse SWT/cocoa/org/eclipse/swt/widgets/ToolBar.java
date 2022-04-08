@@ -774,8 +774,15 @@ void setBounds (int x, int y, int width, int height, boolean move, boolean resiz
 @Override
 void setFont(NSFont font) {
 	for (int i = 0; i < itemCount; i++) {
-		ToolItem item = items[i];
-		if (item.button != null) ((NSButton)item.button).setAttributedTitle(item.createString());
+		items[i].updateStyle ();
+	}
+}
+
+@Override
+void setForeground (double [] color) {
+	super.setForeground (color);
+	for (int i = 0; i < itemCount; i++) {
+		items[i].updateStyle ();
 	}
 }
 

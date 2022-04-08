@@ -1565,17 +1565,28 @@ LRESULT wmCommandChild (long wParam, long lParam) {
 	return child.wmCommandChild (wParam, lParam);
 }
 
-private boolean customDrawing() {
-	return hasCustomBackground() || (hasCustomForeground() && OS.IsWindowEnabled(handle));
+int getForegroundPixel (ToolItem item) {
+	if (item != null && item.foreground != -1) {
+		return item.foreground;
+	}
+	return getForegroundPixel ();
+}
+
+int getBackgroundPixel (ToolItem item) {
+	if (item != null && item.background != -1) {
+		return item.background;
+	}
+	return getBackgroundPixel ();
 }
 
 @Override
 LRESULT wmNotifyChild (NMHDR hdr, long wParam, long lParam) {
+	ToolItem child;
 	switch (hdr.code) {
 		case OS.TBN_DROPDOWN:
 			NMTOOLBAR lpnmtb = new NMTOOLBAR ();
 			OS.MoveMemory (lpnmtb, lParam, NMTOOLBAR.sizeof);
-			ToolItem child = items [lpnmtb.iItem];
+			child = items [lpnmtb.iItem];
 			if (child != null) {
 				Event event = new Event ();
 				event.detail = SWT.ARROW;
@@ -1595,6 +1606,7 @@ LRESULT wmNotifyChild (NMHDR hdr, long wParam, long lParam) {
 			*/
 			NMTBCUSTOMDRAW nmcd = new NMTBCUSTOMDRAW ();
 			OS.MoveMemory (nmcd, lParam, NMTBCUSTOMDRAW.sizeof);
+			child = items [(int) nmcd.dwItemSpec];
 //			if (drawCount != 0 || !OS.IsWindowVisible (handle)) {
 //				if (OS.WindowFromDC (nmcd.hdc) == handle) break;
 //			}
@@ -1616,16 +1628,24 @@ LRESULT wmNotifyChild (NMHDR hdr, long wParam, long lParam) {
 					return new LRESULT (OS.CDRF_SKIPDEFAULT);
 				}
 				case OS.CDDS_PREPAINT: {
-					return new LRESULT (customDrawing() ? OS.CDRF_NOTIFYITEMDRAW : OS.CDRF_DODEFAULT);
+					long result = OS.CDRF_DODEFAULT;
+					if (background != -1 || (foreground != -1 && OS.IsWindowEnabled (handle)) || (state & CUSTOM_DRAW_ITEM) != 0) {
+						result = OS.CDRF_NOTIFYITEMDRAW;
+					}
+					return new LRESULT (result);
 				}
 				case OS.CDDS_ITEMPREPAINT: {
-					if (customDrawing()) {
-						nmcd.clrBtnFace = getBackgroundPixel();
-						nmcd.clrText = getForegroundPixel();
-						OS.MoveMemory(lParam, nmcd, NMTBCUSTOMDRAW.sizeof);
-						return new LRESULT(OS.TBCDRF_USECDCOLORS);
+					long result = OS.TBCDRF_USECDCOLORS;
+					nmcd.clrBtnFace = getBackgroundPixel (child);
+					nmcd.clrText = getForegroundPixel (child);
+					OS.MoveMemory (lParam, nmcd, NMTBCUSTOMDRAW.sizeof);
+					if (child != null && child.background != -1) {
+						RECT rect = new RECT (nmcd.left, nmcd.top, nmcd.right, nmcd.bottom);
+						OS.SetDCBrushColor (nmcd.hdc, child.background);
+						OS.FillRect (nmcd.hdc, rect, OS.GetStockObject (OS.DC_BRUSH));
+						result |= OS.TBCDRF_NOBACKGROUND;
 					}
-					return new LRESULT (OS.CDRF_DODEFAULT);
+					return new LRESULT (result);
 				}
 			}
 			break;

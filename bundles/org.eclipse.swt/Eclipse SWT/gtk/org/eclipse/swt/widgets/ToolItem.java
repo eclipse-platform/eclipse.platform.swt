@@ -15,6 +15,8 @@
 package org.eclipse.swt.widgets;
 
 
+import java.util.*;
+
 import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
@@ -53,6 +55,7 @@ public class ToolItem extends Item {
 	ToolBar parent;
 	Control control;
 	Image hotImage, disabledImage, defaultDisableImage;
+	Color background, foreground;
 	String toolTipText;
 	boolean drawHotImage;
 	/** True iff map has been hooked for this ToolItem. See bug 546914. */
@@ -375,6 +378,23 @@ public void dispose () {
 }
 
 /**
+ * Returns the receiver's background color.
+ *
+ * @return the background color
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @since 3.120
+ */
+public Color getBackground () {
+	checkWidget ();
+	return (background != null) ? background : parent.getBackground ();
+}
+
+/**
  * Returns a rectangle describing the receiver's size and location
  * relative to its parent.
  *
@@ -459,6 +479,23 @@ public boolean getEnabled () {
 	checkWidget();
 	long topHandle = topHandle ();
 	return GTK.gtk_widget_get_sensitive (topHandle);
+}
+
+/**
+ * Returns the foreground color that the receiver will use to draw.
+ *
+ * @return the receiver's foreground color
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @since 3.120
+ */
+public Color getForeground () {
+	checkWidget ();
+	return (foreground != null) ? foreground : parent.getForeground ();
 }
 
 /**
@@ -724,21 +761,6 @@ long gtk_create_menu_proxy (long widget) {
 		}
 	}
 	return 0;
-}
-
-void gtk_css_provider_load_from_css (long context, String css) {
-	/* Utility function. */
-	//@param css : a 'css java' string like "{\nbackground: red;\n}".
-	if (provider == 0) {
-		provider = GTK.gtk_css_provider_new ();
-		GTK.gtk_style_context_add_provider (context, provider, GTK.GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
-		OS.g_object_unref (provider);
-	}
-	if (GTK.GTK4) {
-		GTK4.gtk_css_provider_load_from_data (provider, Converter.wcsToMbcs (css, true), -1);
-	} else {
-		GTK3.gtk_css_provider_load_from_data (provider, Converter.wcsToMbcs (css, true), -1, null);
-	}
 }
 
 @Override
@@ -1063,6 +1085,34 @@ void selectRadio () {
 }
 
 /**
+ * Sets the receiver's background color to the color specified
+ * by the argument, or to the default system color for the item
+ * if the argument is null.
+ *
+ * @param color the new color (or null)
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if the argument has been disposed</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @since 3.120
+ */
+public void setBackground (Color color) {
+	checkWidget ();
+	if (color != null && color.isDisposed ()) {
+		error (SWT.ERROR_INVALID_ARGUMENT);
+	}
+	Color oldColor = background;
+	background = color;
+	if (Objects.equals (oldColor, background)) return;
+	updateStyle ();
+}
+
+/**
  * Sets the control that is used to fill the bounds of
  * the item when the item is a <code>SEPARATOR</code>.
  *
@@ -1176,43 +1226,32 @@ void setFontDescription (long font) {
 	if (labelHandle != 0) setFontDescription (labelHandle, font);
 }
 
-void setForegroundRGBA (GdkRGBA rgba) {
-	if (labelHandle != 0) setForegroundRGBA (labelHandle, rgba);
-}
-
-void setBackgroundRGBA (GdkRGBA rgba) {
-	if (handle != 0) setBackgroundRGBA (handle, rgba);
-}
-
-void setBackgroundRGBA (long handle, GdkRGBA rgba) {
-	// Form background string
-	long context = GTK.gtk_widget_get_style_context(handle);
-	String name = display.gtk_widget_class_get_css_name(handle);
-	String css = name + " {background-color: " + display.gtk_rgba_to_css_string(rgba) + "}";
-
-	// Apply background color and any foreground color
-	gtk_css_provider_load_from_css(context, css);
-}
-
-void setForegroundRGBA (long handle, GdkRGBA rgba) {
-	GdkRGBA toSet = new GdkRGBA();
-	if (rgba != null) {
-		toSet = rgba;
-	} else {
-		toSet = display.COLOR_WIDGET_FOREGROUND_RGBA;
+/**
+ * Sets the receiver's foreground color to the color specified
+ * by the argument, or to the default system color for the item
+ * if the argument is null.
+ *
+ * @param color the new color (or null)
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if the argument has been disposed</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @since 3.120
+ */
+public void setForeground (Color color) {
+	checkWidget ();
+	if (color != null && color.isDisposed ()) {
+		error (SWT.ERROR_INVALID_ARGUMENT);
 	}
-	long context = GTK.gtk_widget_get_style_context (handle);
-	// Form foreground string
-	String color = display.gtk_rgba_to_css_string(toSet);
-	String css = "* {color: " + color + ";}";
-
-	// Cache and apply foreground color
-	parent.cssForeground = css;
-	gtk_css_provider_load_from_css(context, css);
-
-	// We need to set the parent ToolBar's background
-	// otherwise setting the foreground will wipe it out.
-	parent.restoreBackground();
+	Color oldColor = foreground;
+	foreground = color;
+	if (Objects.equals (oldColor, foreground)) return;
+	updateStyle ();
 }
 
 /**
@@ -1523,6 +1562,45 @@ void showWidget (int index) {
 		if (labelHandle != 0) GTK.gtk_widget_show (labelHandle);
 		if (imageHandle != 0) GTK.gtk_widget_show (imageHandle);
 		GTK3.gtk_toolbar_insert(parent.handle, handle, index);
+	}
+}
+
+void updateStyle () {
+	if ((style & SWT.SEPARATOR) != 0) return;
+
+	if (provider == 0) {
+		provider = GTK.gtk_css_provider_new ();
+		if ((style & SWT.DROP_DOWN) != 0) {
+			long box = GTK3.gtk_bin_get_child (handle);
+			long list = GTK3.gtk_container_get_children (box);
+			for (int i = 0; i < 2; i++) {
+				long child = OS.g_list_nth_data(list, i);
+				long context = GTK.gtk_widget_get_style_context (child);
+				GTK.gtk_style_context_add_provider (context, provider, GTK.GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+			}
+			OS.g_list_free(list);
+		} else {
+			long child = GTK3.gtk_bin_get_child (handle);
+			long context = GTK.gtk_widget_get_style_context (child);
+			GTK.gtk_style_context_add_provider (context, provider, GTK.GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+		}
+		OS.g_object_unref (provider);
+	}
+
+	String css = "";
+	if (foreground != null) {
+		css += "button { color: " + display.gtk_rgba_to_css_string (foreground.handle) + "; }";
+	} else {
+		css += parent.cssForeground;
+	}
+	if (background != null) {
+		css += "button { background-image: none; background-color: " + display.gtk_rgba_to_css_string (background.handle) + "; }";
+	}
+
+	if (GTK.GTK4) {
+		GTK4.gtk_css_provider_load_from_data (provider, Converter.wcsToMbcs (css, true), -1);
+	} else {
+		GTK3.gtk_css_provider_load_from_data (provider, Converter.wcsToMbcs (css, true), -1, null);
 	}
 }
 

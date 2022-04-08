@@ -14,41 +14,73 @@
 package org.eclipse.swt.snippets;
 
 /*
- * ToolBar example snippet: update a status line when the mouse enters a tool item
+ * ToolBar example snippet: item colors and status text
  *
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
  */
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.layout.*;
 import org.eclipse.swt.widgets.*;
 
 public class Snippet153 {
 
-static String statusText = "";
 public static void main(String[] args) {
-	final Display display = new Display();
+	Display display = new Display();
 	Shell shell = new Shell(display);
 	shell.setText("Snippet 153");
-	shell.setBounds(10, 10, 200, 200);
-	final ToolBar bar = new ToolBar(shell, SWT.BORDER);
-	bar.setBounds(10, 10, 150, 50);
-	final Label statusLine = new Label(shell, SWT.BORDER);
-	statusLine.setBounds(10, 90, 150, 30);
-	new ToolItem(bar, SWT.NONE).setText("item 1");
-	new ToolItem(bar, SWT.NONE).setText("item 2");
-	new ToolItem(bar, SWT.NONE).setText("item 3");
-	bar.addMouseMoveListener(e -> {
-		ToolItem item = bar.getItem(new Point(e.x, e.y));
-		String name = "";
-		if (item != null) {
-			name = item.getText();
-		}
-		if (!statusText.equals(name)) {
-			statusLine.setText(name);
-			statusText = name;
+	RowLayout layout = new RowLayout(SWT.VERTICAL);
+	layout.fill = true;
+	shell.setLayout(layout);
+	ToolBar bar = new ToolBar(shell, SWT.BORDER);
+	Label statusLine = new Label(shell, SWT.BORDER);
+	ToolItem toggle = new ToolItem(bar, SWT.CHECK);
+	toggle.setText("Toggle Bar Colors");
+	new ToolItem(bar, SWT.SEPARATOR);
+	new ToolItem(bar, SWT.PUSH).setText("Push Button");
+	new ToolItem(bar, SWT.DROP_DOWN).setText("Drop Down");
+
+	toggle.addListener(SWT.Selection, event -> {
+		if (toggle.getSelection()) {
+			bar.setForeground(display.getSystemColor(SWT.COLOR_GREEN));
+			bar.setBackground(display.getSystemColor(SWT.COLOR_BLUE));
+		} else {
+			bar.setForeground(null);
+			bar.setBackground(null);
 		}
 	});
+
+	Listener barListener = new Listener() {
+		ToolItem item;
+		String statusText = "";
+
+		@Override
+		public void handleEvent(Event event) {
+			if (item != null) {
+				item.setForeground(null);
+				item.setBackground(null);
+			}
+			if (event.type == SWT.MouseMove) {
+				item = bar.getItem(new Point(event.x, event.y));
+			} else {
+				item = null;
+			}
+			if (item != null) {
+				item.setForeground(display.getSystemColor(SWT.COLOR_RED));
+				item.setBackground(display.getSystemColor(SWT.COLOR_YELLOW));
+			}
+			String name = (item != null) ? item.getText() : "";
+			if (!statusText.equals(name)) {
+				statusLine.setText(name);
+				statusText = name;
+			}
+		}
+	};
+	bar.addListener(SWT.MouseMove, barListener);
+	bar.addListener(SWT.MouseExit, barListener);
+
+	shell.pack();
 	shell.open();
 	while (!shell.isDisposed()) {
 		if (!display.readAndDispatch()) display.sleep();
