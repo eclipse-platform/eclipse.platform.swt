@@ -24,6 +24,42 @@
 #define GTK4_NATIVE(func) Java_org_eclipse_swt_internal_gtk4_GTK4_##func
 #endif
 
+#ifndef NO_gdk_1clipboard_1get_1content
+JNIEXPORT jlong JNICALL GTK4_NATIVE(gdk_1clipboard_1get_1content)
+	(JNIEnv *env, jclass that, jlong arg0)
+{
+	jlong rc = 0;
+	GTK4_NATIVE_ENTER(env, that, gdk_1clipboard_1get_1content_FUNC);
+	rc = (jlong)gdk_clipboard_get_content((GdkClipboard*)arg0);
+	GTK4_NATIVE_EXIT(env, that, gdk_1clipboard_1get_1content_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_gdk_1clipboard_1get_1formats
+JNIEXPORT void JNICALL GTK4_NATIVE(gdk_1clipboard_1get_1formats)
+	(JNIEnv *env, jclass that, jlong arg0)
+{
+	GTK4_NATIVE_ENTER(env, that, gdk_1clipboard_1get_1formats_FUNC);
+	gdk_clipboard_get_formats((GdkClipboard*)arg0);
+	GTK4_NATIVE_EXIT(env, that, gdk_1clipboard_1get_1formats_FUNC);
+}
+#endif
+
+#ifndef NO_gdk_1clipboard_1set_1text
+JNIEXPORT void JNICALL GTK4_NATIVE(gdk_1clipboard_1set_1text)
+	(JNIEnv *env, jclass that, jlong arg0, jbyteArray arg1)
+{
+	jbyte *lparg1=NULL;
+	GTK4_NATIVE_ENTER(env, that, gdk_1clipboard_1set_1text_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	gdk_clipboard_set_text((GdkClipboard*)arg0, (const char *)lparg1);
+fail:
+	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	GTK4_NATIVE_EXIT(env, that, gdk_1clipboard_1set_1text_FUNC);
+}
+#endif
+
 #ifndef NO_gdk_1content_1formats_1builder_1add_1mime_1type
 JNIEXPORT void JNICALL GTK4_NATIVE(gdk_1content_1formats_1builder_1add_1mime_1type)
 	(JNIEnv *env, jclass that, jlong arg0, jbyteArray arg1)
@@ -58,6 +94,22 @@ JNIEXPORT jlong JNICALL GTK4_NATIVE(gdk_1content_1formats_1builder_1new)
 	GTK4_NATIVE_ENTER(env, that, gdk_1content_1formats_1builder_1new_FUNC);
 	rc = (jlong)gdk_content_formats_builder_new();
 	GTK4_NATIVE_EXIT(env, that, gdk_1content_1formats_1builder_1new_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_gdk_1content_1provider_1get_1value
+JNIEXPORT jboolean JNICALL GTK4_NATIVE(gdk_1content_1provider_1get_1value)
+	(JNIEnv *env, jclass that, jlong arg0, jlong arg1, jlongArray arg2)
+{
+	jlong *lparg2=NULL;
+	jboolean rc = 0;
+	GTK4_NATIVE_ENTER(env, that, gdk_1content_1provider_1get_1value_FUNC);
+	if (arg2) if ((lparg2 = (*env)->GetLongArrayElements(env, arg2, NULL)) == NULL) goto fail;
+	rc = (jboolean)gdk_content_provider_get_value((GdkContentProvider *)arg0, (GValue *)arg1, (GError **)lparg2);
+fail:
+	if (arg2 && lparg2) (*env)->ReleaseLongArrayElements(env, arg2, lparg2, 0);
+	GTK4_NATIVE_EXIT(env, that, gdk_1content_1provider_1get_1value_FUNC);
 	return rc;
 }
 #endif

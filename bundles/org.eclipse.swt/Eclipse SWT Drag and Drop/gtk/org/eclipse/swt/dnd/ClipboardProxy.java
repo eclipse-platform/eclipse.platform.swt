@@ -93,10 +93,10 @@ long clearFunc(long clipboard,long user_data_or_owner){
 void dispose () {
 	if (display == null) return;
 	if (activeClipboard != null) {
-		GTK3.gtk_clipboard_store(Clipboard.GTKCLIPBOARD);
+		if(!GTK.GTK4) GTK3.gtk_clipboard_store(Clipboard.GTKCLIPBOARD);
 	}
 	if (activePrimaryClipboard != null) {
-		GTK3.gtk_clipboard_store(Clipboard.GTKPRIMARYCLIPBOARD);
+		if(!GTK.GTK4) GTK3.gtk_clipboard_store(Clipboard.GTKPRIMARYCLIPBOARD);
 	}
 	display = null;
 	if (getFunc != null ) getFunc.dispose();
@@ -146,6 +146,9 @@ long getFunc(long clipboard, long selection_data, long info, long user_data_or_o
 }
 
 boolean setData(Clipboard owner, Object[] data, Transfer[] dataTypes, int clipboards) {
+
+	if(GTK.GTK4) return setData_gtk4(owner, data, dataTypes, clipboards);
+
 	GtkTargetEntry[] entries = new  GtkTargetEntry [0];
 	long pTargetsList = 0;
 	try {
@@ -213,5 +216,35 @@ boolean setData(Clipboard owner, Object[] data, Transfer[] dataTypes, int clipbo
 		}
 		if (pTargetsList != 0) OS.g_free(pTargetsList);
 	}
+}
+
+private boolean setData_gtk4(Clipboard owner, Object[] data, Transfer[] dataTypes, int clipboards) {
+	boolean result = false;
+
+	//Handle the text transfer case first
+	for (int i = 0; i < dataTypes.length; i++) {
+		Transfer transfer = dataTypes[i];
+		String[] typeNames = transfer.getTypeNames();
+		if ((clipboards & DND.CLIPBOARD) != 0){
+			clipboardData = data;
+			clipboardDataTypes = dataTypes;
+			result = setContentFromType(Clipboard.GTKCLIPBOARD, typeNames[0], data[i]);
+			activeClipboard = owner;
+		}
+	}
+	//TODO: [GTK4] Other cases for setting data
+	return result;
+}
+
+private boolean setContentFromType(long clipboard, String string, Object data) {
+
+	//TextTransfer
+	if(data.getClass() == String.class) {
+		GTK4.gdk_clipboard_set_text(clipboard, Converter.javaStringToCString((String)data));
+		return true;
+	}
+
+
+	return false;
 }
 }

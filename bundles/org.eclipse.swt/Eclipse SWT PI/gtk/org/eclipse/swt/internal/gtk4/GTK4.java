@@ -559,5 +559,26 @@ public class GTK4 {
 	 */
 	public static final native void gdk_toplevel_size_set_size(long size, int width, int height);
 
+	/* GdkClipboard */
+	/**
+	 * @param clipboard cast=(GdkClipboard*)
+	 * @param text cast=(const char *)
+	 */
+	public static final native void gdk_clipboard_set_text(long clipboard, byte[] text);
+	/**
+	 * @param clipboard cast=(GdkClipboard*)
+	 */
+	public static final native void gdk_clipboard_get_formats(long clipboard);
+	/**
+	 * @param clipboard cast=(GdkClipboard*)
+	 */
+	public static final native long gdk_clipboard_get_content(long clipboard);
+	/**
+	 * @param provider cast=(GdkContentProvider *)
+	 * @param value cast=(GValue *)
+	 * @param error cast=(GError **)
+	 */
+	public static final native boolean gdk_content_provider_get_value(long provider, long value, long[] error);
+
 
 }
