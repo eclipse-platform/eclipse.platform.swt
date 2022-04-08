@@ -13088,6 +13088,18 @@ JNIEXPORT jlong JNICALL OS_NATIVE(g_1value_1get_1int64)
 }
 #endif
 
+#ifndef NO_g_1value_1get_1string
+JNIEXPORT jlong JNICALL OS_NATIVE(g_1value_1get_1string)
+	(JNIEnv *env, jclass that, jlong arg0)
+{
+	jlong rc = 0;
+	OS_NATIVE_ENTER(env, that, g_1value_1get_1string_FUNC);
+	rc = (jlong)g_value_get_string((GValue *)arg0);
+	OS_NATIVE_EXIT(env, that, g_1value_1get_1string_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_g_1value_1init
 JNIEXPORT jlong JNICALL OS_NATIVE(g_1value_1init)
 	(JNIEnv *env, jclass that, jlong arg0, jlong arg1)
@@ -13149,6 +13161,16 @@ JNIEXPORT void JNICALL OS_NATIVE(g_1value_1set_1int64)
 	OS_NATIVE_ENTER(env, that, g_1value_1set_1int64_FUNC);
 	g_value_set_int64((GValue *)arg0, arg1);
 	OS_NATIVE_EXIT(env, that, g_1value_1set_1int64_FUNC);
+}
+#endif
+
+#ifndef NO_g_1value_1set_1string
+JNIEXPORT void JNICALL OS_NATIVE(g_1value_1set_1string)
+	(JNIEnv *env, jclass that, jlong arg0, jlong arg1)
+{
+	OS_NATIVE_ENTER(env, that, g_1value_1set_1string_FUNC);
+	g_value_set_string((GValue *)arg0, (const gchar *)arg1);
+	OS_NATIVE_EXIT(env, that, g_1value_1set_1string_FUNC);
 }
 #endif
 

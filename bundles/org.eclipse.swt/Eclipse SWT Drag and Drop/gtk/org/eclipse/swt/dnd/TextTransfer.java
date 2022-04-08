@@ -142,6 +142,9 @@ protected int[] getTypeIds() {
 	if (OS.isX11()) {
 		return new int[] {UTF8_STRING_ID, COMPOUND_TEXT_ID, STRING_ID};
 	}
+	if(GTK.GTK4) {
+		return new int[] {(int) OS.G_TYPE_STRING()};
+	}
 	return new int[] {UTF8_STRING_ID, STRING_ID};
 }
 
@@ -150,6 +153,10 @@ protected String[] getTypeNames() {
 	if (OS.isX11()) {
 		return new String[] {UTF8_STRING, COMPOUND_TEXT, STRING};
 	}
+	if(GTK.GTK4) {
+		return new String[] {STRING};
+	}
+
 	return new String[] {UTF8_STRING, STRING};
 }
 
