@@ -2760,10 +2760,10 @@ StyleItem[] itemize () {
 	// enable font ligatures
 	scriptControl.fMergeNeutralItems = true;
 	/*
-	 * When Bidi is enabled i.e. RIGHT_TO_LEFT Arabic like characters are used, it's
-	 * not rendered properly. For more details refer bug 579626.
+	 * When RIGHT_TO_LEFT Arabic like characters are used, it's not rendered
+	 * properly. For more details refer bug 579626(SWT issue #37)
 	 */
-	if (!scriptState.fArabicNumContext) {
+	if (BidiUtil.resolveTextDirection(text) != SWT.RIGHT_TO_LEFT) {
 		/*
 		 * With font ligatures enabled: CJK characters are not rendered properly when
 		 * used in Java comments, workaround is to avoid ligatures between ascii and
