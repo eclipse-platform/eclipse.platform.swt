@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2020 IBM Corporation and others.
+ * Copyright (c) 2000, 2022 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -2760,25 +2760,31 @@ StyleItem[] itemize () {
 	// enable font ligatures
 	scriptControl.fMergeNeutralItems = true;
 	/*
-	 * With font ligatures enabled: CJK characters are not rendered properly when
-	 * used in Java comments, workaround is to avoid ligatures between ascii and
-	 * non-ascii chars. For more details refer bug 565526
+	 * When Bidi is enabled i.e. RIGHT_TO_LEFT Arabic like characters are used, it's
+	 * not rendered properly. For more details refer bug 579626.
 	 */
-	for (int i = 0, latestNeutralIndex = -2, latestUnicodeIndex = -2; i < length; i++) {
-		char c = chars[i];
+	if (!scriptState.fArabicNumContext) {
+		/*
+		 * With font ligatures enabled: CJK characters are not rendered properly when
+		 * used in Java comments, workaround is to avoid ligatures between ascii and
+		 * non-ascii chars. For more details refer bug 565526
+		 */
+		for (int i = 0, latestNeutralIndex = -2, latestUnicodeIndex = -2; i < length; i++) {
+			char c = chars[i];
 
-		if (c >= ' ' && c <= '~' && !Character.isAlphabetic(c)) {
-			latestNeutralIndex = i;
-		} else if (c > 255) {
-			latestUnicodeIndex = i;
-		} else {
-			continue;
-		}
+			if (c >= ' ' && c <= '~' && !Character.isAlphabetic(c)) {
+				latestNeutralIndex = i;
+			} else if (c > 255) {
+				latestUnicodeIndex = i;
+			} else {
+				continue;
+			}
 
-		// If the latest neutral and unicode characters are adjacent
-		if (Math.abs(latestNeutralIndex - latestUnicodeIndex) == 1) {
-			// Change the neutral into a non-neutral alphabet character
-			chars[latestNeutralIndex] = 'A';
+			// If the latest neutral and unicode characters are adjacent
+			if (Math.abs(latestNeutralIndex - latestUnicodeIndex) == 1) {
+				// Change the neutral into a non-neutral alphabet character
+				chars[latestNeutralIndex] = 'A';
+			}
 		}
 	}
 
