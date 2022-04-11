@@ -38,6 +38,7 @@ import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.junit.After;
+import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -643,6 +644,7 @@ public void test_toString() {
 
 @Test
 public void test_bug493455_drawImageAlpha_srcPos() {
+	Assume.assumeFalse("https://github.com/eclipse-platform/eclipse.platform.swt/issues/40 causes test to fail on Mac", SwtTestUtil.isCocoa);
 	RGB red = new RGB(255, 0, 0);
 	RGB green = new RGB(0, 255, 0);
 
