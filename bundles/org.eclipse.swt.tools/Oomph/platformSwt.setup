@@ -31,7 +31,7 @@
       </detail>
       <detail
           key="label">
-        <value>Platform SWT Git or Gerrit Repository</value>
+        <value>Platform SWT Github Repository</value>
       </detail>
       <detail
           key="target">
@@ -61,7 +61,7 @@
       </detail>
       <detail
           key="label">
-        <value>Platform SWT Git or Gerrit Repository</value>
+        <value>Platform SWT Github Repository</value>
       </detail>
       <detail
           key="target">
