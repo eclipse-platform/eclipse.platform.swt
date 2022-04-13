@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2016 IBM Corporation and others.
+ * Copyright (c) 2000, 2022 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -503,7 +503,7 @@ public static int resolveTextDirection (String text) {
 			OS.MoveMemory(order, result.lpOrder, 4);
 			if (order[0] == 0) {
 				textDirection = SWT.LEFT_TO_RIGHT;
-				break;
+				// Do-not break here, instead scan the complete text for any RTL possibility
 			}
 		}
 	}
