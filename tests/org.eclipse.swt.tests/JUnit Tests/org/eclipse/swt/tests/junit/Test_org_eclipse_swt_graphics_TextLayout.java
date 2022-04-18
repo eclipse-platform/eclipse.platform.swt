@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015, 2020 IBM Corporation and others.
+ * Copyright (c) 2015, 2022 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -1212,6 +1212,8 @@ public void test_Bug579335_win32_StyledText_LongLine() {
 
 		image = draw(layout, SWT.DEFAULT);
 
+		// reset for next test
+		image.dispose();
 		layout.setStyle(redStyle, 7, 7);
 		layout.setStyle(greenStyle, 8, 8 + 32909 - 1);
 
