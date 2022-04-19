@@ -3231,29 +3231,19 @@ public Menu getMenu () {
 public Monitor getMonitor () {
 	checkWidget ();
 	Monitor[] monitors = display.getMonitors ();
-	if (GTK.GTK_VERSION >= OS.VERSION(3, 22, 0)) {
-		long display = GDK.gdk_display_get_default ();
-		if (display != 0) {
-			long monitor;
-			if (GTK.GTK4) {
-				monitor = GDK.gdk_display_get_monitor_at_surface(display, paintSurface ());
-			} else {
-				monitor = GDK.gdk_display_get_monitor_at_window(display, paintWindow ());
-			}
-			long toCompare;
-			for (int i = 0; i < monitors.length; i++) {
-				toCompare = GDK.gdk_display_get_monitor(display, i);
-				if (toCompare == monitor) {
-					return monitors[i];
-				}
-			}
+	long displayHandle = GDK.gdk_display_get_default ();
+	if (displayHandle != 0) {
+		long monitor;
+		if (GTK.GTK4) {
+			monitor = GDK.gdk_display_get_monitor_at_surface(displayHandle, paintSurface ());
+		} else {
+			monitor = GDK.gdk_display_get_monitor_at_window(displayHandle, paintWindow ());
 		}
-	} else {
-		long screen = GDK.gdk_screen_get_default ();
-		if (screen != 0) {
-			int monitorNumber = GDK.gdk_screen_get_monitor_at_window (screen, paintWindow ());
-			if (monitorNumber >= 0 && monitorNumber < monitors.length) {
-				return monitors [monitorNumber];
+		long toCompare;
+		for (int i = 0; i < monitors.length; i++) {
+			toCompare = GDK.gdk_display_get_monitor(displayHandle, i);
+			if (toCompare == monitor) {
+				return monitors[i];
 			}
 		}
 	}
@@ -5306,21 +5296,6 @@ public void setBackgroundImage (Image image) {
 }
 
 void setBackgroundSurface (Image image) {
-	if (GTK.GTK_VERSION >= OS.VERSION(3, 22, 0)) {
-		// gdk_window_set_background_pattern() deprecated in GTK3.22+
-		return;
-	}
-
-	long window = GTK3.gtk_widget_get_window (paintHandle ());
-	if (window != 0) {
-		if (image.surface != 0) {
-			long pattern = Cairo.cairo_pattern_create_for_surface(image.surface);
-			if (pattern == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-			Cairo.cairo_pattern_set_extend(pattern, Cairo.CAIRO_EXTEND_REPEAT);
-			GDK.gdk_window_set_background_pattern(window, pattern);
-			Cairo.cairo_pattern_destroy(pattern);
-		}
-	}
 }
 
 /**
@@ -5976,10 +5951,6 @@ public void setRedraw (boolean redraw) {
 							GDK.GDK_BUTTON_MOTION_MASK | GDK.GDK_BUTTON1_MOTION_MASK |
 							GDK.GDK_BUTTON2_MOTION_MASK | GDK.GDK_BUTTON3_MOTION_MASK;
 						GDK.gdk_window_set_events (window, GDK.gdk_window_get_events (window) & ~mouseMask);
-						// No gdk_surface_set_background_pattern() on GTK4.
-						if (GTK.GTK_VERSION < OS.VERSION(3, 22, 0)) {
-							GDK.gdk_window_set_background_pattern(redrawWindow, 0);
-						}
 						GDK.gdk_window_show (redrawWindow);
 					}
 				}

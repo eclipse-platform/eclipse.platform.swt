@@ -697,20 +697,18 @@ protected void init () {
 	this.dpi = getDPI();
 	DPIUtil.setDeviceZoom (getDeviceZoom ());
 
-	if (GTK.GTK_VERSION >= OS.VERSION(3, 22, 0)) {
-		double sx[] = new double[1];
-		double sy[] = new double[1];
-		long gdkResource;
-		long surface;
-		if (GTK.GTK4) {
-			surface = Cairo.cairo_image_surface_create(Cairo.CAIRO_FORMAT_RGB24, 10, 10);
-		} else {
-			gdkResource = GDK.gdk_get_default_root_window();
-			surface = GDK.gdk_window_create_similar_surface(gdkResource, Cairo.CAIRO_CONTENT_COLOR, 10, 10);
-		}
-		Cairo.cairo_surface_get_device_scale(surface, sx, sy);
-		DPIUtil.setUseCairoAutoScale((sx[0]*100) == DPIUtil.getDeviceZoom() || OS.isGNOME);
+	double[] sx = new double[1];
+	double[] sy = new double[1];
+	long gdkResource;
+	long surface;
+	if (GTK.GTK4) {
+		surface = Cairo.cairo_image_surface_create(Cairo.CAIRO_FORMAT_RGB24, 10, 10);
+	} else {
+		gdkResource = GDK.gdk_get_default_root_window();
+		surface = GDK.gdk_window_create_similar_surface(gdkResource, Cairo.CAIRO_CONTENT_COLOR, 10, 10);
 	}
+	Cairo.cairo_surface_get_device_scale(surface, sx, sy);
+	DPIUtil.setUseCairoAutoScale((sx[0]*100) == DPIUtil.getDeviceZoom() || OS.isGNOME);
 
 	/* Initialize the system font slot */
 	long [] defaultFontArray = new long [1];
@@ -1110,27 +1108,18 @@ protected int getDeviceZoom() {
 	 * if gdk_screen_set_resolution has not been called.
 	 */
 	int dpi = 96;
-	if (GTK.GTK_VERSION >= OS.VERSION(3, 22, 0)) {
-		long display = GDK.gdk_display_get_default();
-		long monitor;
+	long display = GDK.gdk_display_get_default();
+	long monitor;
 
-		if (GTK.GTK4) {
-			long surface = GTK4.gtk_native_get_surface(GTK4.gtk_widget_get_native(shellHandle));
-			monitor = GDK.gdk_display_get_monitor_at_surface(display, surface);
-		} else {
-			monitor = GDK.gdk_display_get_monitor_at_point(display, 0, 0);
-		}
-
-		int scale = GDK.gdk_monitor_get_scale_factor(monitor);
-		dpi = dpi * scale;
+	if (GTK.GTK4) {
+		long surface = GTK4.gtk_native_get_surface(GTK4.gtk_widget_get_native(shellHandle));
+		monitor = GDK.gdk_display_get_monitor_at_surface(display, surface);
 	} else {
-		long screen = GDK.gdk_screen_get_default();
-		dpi = (int) GDK.gdk_screen_get_resolution (screen);
-		if (dpi <= 0) dpi = 96; // gdk_screen_get_resolution returns -1 in case of error
-		int monitor_num = GDK.gdk_screen_get_monitor_at_point (screen, 0, 0);
-		int scale = GDK.gdk_screen_get_monitor_scale_factor (screen, monitor_num);
-		dpi = dpi * scale;
+		monitor = GDK.gdk_display_get_monitor_at_point(display, 0, 0);
 	}
+
+	int scale = GDK.gdk_monitor_get_scale_factor(monitor);
+	dpi = dpi * scale;
 
 	return DPIUtil.mapDPIToZoom (dpi);
 }

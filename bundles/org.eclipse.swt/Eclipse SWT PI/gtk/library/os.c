@@ -2017,150 +2017,6 @@ JNIEXPORT jlong JNICALL GDK_NATIVE(gdk_1screen_1get_1default)
 }
 #endif
 
-#ifndef NO_gdk_1screen_1get_1monitor_1at_1point
-JNIEXPORT jint JNICALL GDK_NATIVE(gdk_1screen_1get_1monitor_1at_1point)
-	(JNIEnv *env, jclass that, jlong arg0, jint arg1, jint arg2)
-{
-	jint rc = 0;
-	GDK_NATIVE_ENTER(env, that, gdk_1screen_1get_1monitor_1at_1point_FUNC);
-/*
-	rc = (jint)gdk_screen_get_monitor_at_point((GdkScreen *)arg0, (gint)arg1, (gint)arg2);
-*/
-	{
-		GDK_LOAD_FUNCTION(fp, gdk_screen_get_monitor_at_point)
-		if (fp) {
-			rc = (jint)((jint (CALLING_CONVENTION*)(GdkScreen *, gint, gint))fp)((GdkScreen *)arg0, (gint)arg1, (gint)arg2);
-		}
-	}
-	GDK_NATIVE_EXIT(env, that, gdk_1screen_1get_1monitor_1at_1point_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO_gdk_1screen_1get_1monitor_1at_1window
-JNIEXPORT jint JNICALL GDK_NATIVE(gdk_1screen_1get_1monitor_1at_1window)
-	(JNIEnv *env, jclass that, jlong arg0, jlong arg1)
-{
-	jint rc = 0;
-	GDK_NATIVE_ENTER(env, that, gdk_1screen_1get_1monitor_1at_1window_FUNC);
-/*
-	rc = (jint)gdk_screen_get_monitor_at_window((GdkScreen *)arg0, (GdkWindow *)arg1);
-*/
-	{
-		GDK_LOAD_FUNCTION(fp, gdk_screen_get_monitor_at_window)
-		if (fp) {
-			rc = (jint)((jint (CALLING_CONVENTION*)(GdkScreen *, GdkWindow *))fp)((GdkScreen *)arg0, (GdkWindow *)arg1);
-		}
-	}
-	GDK_NATIVE_EXIT(env, that, gdk_1screen_1get_1monitor_1at_1window_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO_gdk_1screen_1get_1monitor_1geometry
-JNIEXPORT void JNICALL GDK_NATIVE(gdk_1screen_1get_1monitor_1geometry)
-	(JNIEnv *env, jclass that, jlong arg0, jint arg1, jobject arg2)
-{
-	GdkRectangle _arg2, *lparg2=NULL;
-	GDK_NATIVE_ENTER(env, that, gdk_1screen_1get_1monitor_1geometry_FUNC);
-	if (arg2) if ((lparg2 = &_arg2) == NULL) goto fail;
-/*
-	gdk_screen_get_monitor_geometry((GdkScreen *)arg0, arg1, lparg2);
-*/
-	{
-		GDK_LOAD_FUNCTION(fp, gdk_screen_get_monitor_geometry)
-		if (fp) {
-			((void (CALLING_CONVENTION*)(GdkScreen *, jint, GdkRectangle *))fp)((GdkScreen *)arg0, arg1, lparg2);
-		}
-	}
-fail:
-	if (arg2 && lparg2) setGdkRectangleFields(env, arg2, lparg2);
-	GDK_NATIVE_EXIT(env, that, gdk_1screen_1get_1monitor_1geometry_FUNC);
-}
-#endif
-
-#ifndef NO_gdk_1screen_1get_1monitor_1scale_1factor
-JNIEXPORT jint JNICALL GDK_NATIVE(gdk_1screen_1get_1monitor_1scale_1factor)
-	(JNIEnv *env, jclass that, jlong arg0, jint arg1)
-{
-	jint rc = 0;
-	GDK_NATIVE_ENTER(env, that, gdk_1screen_1get_1monitor_1scale_1factor_FUNC);
-/*
-	rc = (jint)gdk_screen_get_monitor_scale_factor((GdkScreen *)arg0, (gint)arg1);
-*/
-	{
-		GDK_LOAD_FUNCTION(fp, gdk_screen_get_monitor_scale_factor)
-		if (fp) {
-			rc = (jint)((jint (CALLING_CONVENTION*)(GdkScreen *, gint))fp)((GdkScreen *)arg0, (gint)arg1);
-		}
-	}
-	GDK_NATIVE_EXIT(env, that, gdk_1screen_1get_1monitor_1scale_1factor_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO_gdk_1screen_1get_1monitor_1workarea
-JNIEXPORT void JNICALL GDK_NATIVE(gdk_1screen_1get_1monitor_1workarea)
-	(JNIEnv *env, jclass that, jlong arg0, jint arg1, jobject arg2)
-{
-	GdkRectangle _arg2, *lparg2=NULL;
-	GDK_NATIVE_ENTER(env, that, gdk_1screen_1get_1monitor_1workarea_FUNC);
-	if (arg2) if ((lparg2 = &_arg2) == NULL) goto fail;
-/*
-	gdk_screen_get_monitor_workarea((GdkScreen *)arg0, arg1, lparg2);
-*/
-	{
-		GDK_LOAD_FUNCTION(fp, gdk_screen_get_monitor_workarea)
-		if (fp) {
-			((void (CALLING_CONVENTION*)(GdkScreen *, jint, GdkRectangle *))fp)((GdkScreen *)arg0, arg1, lparg2);
-		}
-	}
-fail:
-	if (arg2 && lparg2) setGdkRectangleFields(env, arg2, lparg2);
-	GDK_NATIVE_EXIT(env, that, gdk_1screen_1get_1monitor_1workarea_FUNC);
-}
-#endif
-
-#ifndef NO_gdk_1screen_1get_1n_1monitors
-JNIEXPORT jint JNICALL GDK_NATIVE(gdk_1screen_1get_1n_1monitors)
-	(JNIEnv *env, jclass that, jlong arg0)
-{
-	jint rc = 0;
-	GDK_NATIVE_ENTER(env, that, gdk_1screen_1get_1n_1monitors_FUNC);
-/*
-	rc = (jint)gdk_screen_get_n_monitors((GdkScreen *)arg0);
-*/
-	{
-		GDK_LOAD_FUNCTION(fp, gdk_screen_get_n_monitors)
-		if (fp) {
-			rc = (jint)((jint (CALLING_CONVENTION*)(GdkScreen *))fp)((GdkScreen *)arg0);
-		}
-	}
-	GDK_NATIVE_EXIT(env, that, gdk_1screen_1get_1n_1monitors_FUNC);
-	return rc;
-}
-#endif
-
-#ifndef NO_gdk_1screen_1get_1primary_1monitor
-JNIEXPORT jint JNICALL GDK_NATIVE(gdk_1screen_1get_1primary_1monitor)
-	(JNIEnv *env, jclass that, jlong arg0)
-{
-	jint rc = 0;
-	GDK_NATIVE_ENTER(env, that, gdk_1screen_1get_1primary_1monitor_FUNC);
-/*
-	rc = (jint)gdk_screen_get_primary_monitor((GdkScreen *)arg0);
-*/
-	{
-		GDK_LOAD_FUNCTION(fp, gdk_screen_get_primary_monitor)
-		if (fp) {
-			rc = (jint)((jint (CALLING_CONVENTION*)(GdkScreen *))fp)((GdkScreen *)arg0);
-		}
-	}
-	GDK_NATIVE_EXIT(env, that, gdk_1screen_1get_1primary_1monitor_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO_gdk_1screen_1get_1resolution
 JNIEXPORT jdouble JNICALL GDK_NATIVE(gdk_1screen_1get_1resolution)
 	(JNIEnv *env, jclass that, jlong arg0)
@@ -3033,18 +2889,6 @@ JNIEXPORT void JNICALL GDK_NATIVE(gdk_1window_1restack)
 	gdk_window_restack((GdkWindow *)arg0, (GdkWindow *)arg1, (gboolean)arg2);
 	GDK_NATIVE_EXIT(env, that, gdk_1window_1restack_FUNC);
 }
-#endif
-
-#ifndef NO_gdk_1window_1set_1background_1pattern
-G_GNUC_BEGIN_IGNORE_DEPRECATIONS
-JNIEXPORT void JNICALL GDK_NATIVE(gdk_1window_1set_1background_1pattern)
-	(JNIEnv *env, jclass that, jlong arg0, jlong arg1)
-{
-	GDK_NATIVE_ENTER(env, that, gdk_1window_1set_1background_1pattern_FUNC);
-	gdk_window_set_background_pattern((GdkWindow *)arg0, (cairo_pattern_t *)arg1);
-	GDK_NATIVE_EXIT(env, that, gdk_1window_1set_1background_1pattern_FUNC);
-}
-G_GNUC_END_IGNORE_DEPRECATIONS
 #endif
 
 #ifndef NO_gdk_1window_1set_1cursor
@@ -7303,18 +7147,6 @@ JNIEXPORT void JNICALL GTK_NATIVE(gtk_1spin_1button_1update)
 	GTK_NATIVE_ENTER(env, that, gtk_1spin_1button_1update_FUNC);
 	gtk_spin_button_update((GtkSpinButton*)arg0);
 	GTK_NATIVE_EXIT(env, that, gtk_1spin_1button_1update_FUNC);
-}
-#endif
-
-#ifndef NO_gtk_1status_1icon_1position_1menu_1func
-JNIEXPORT jlong JNICALL GTK_NATIVE(gtk_1status_1icon_1position_1menu_1func)
-	(JNIEnv *env, jclass that)
-{
-	jlong rc = 0;
-	GTK_NATIVE_ENTER(env, that, gtk_1status_1icon_1position_1menu_1func_FUNC);
-	rc = (jlong)gtk_status_icon_position_menu_func();
-	GTK_NATIVE_EXIT(env, that, gtk_1status_1icon_1position_1menu_1func_FUNC);
-	return rc;
 }
 #endif
 

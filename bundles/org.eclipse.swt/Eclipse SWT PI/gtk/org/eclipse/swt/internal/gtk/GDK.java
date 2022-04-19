@@ -934,49 +934,6 @@ public class GDK extends OS {
 	/* GdkScreen [GTK3 only, if-def'd in os.h; 3.22 deprecated, replaced] */
 	/**
 	 * @method flags=dynamic
-	 * @param screen cast=(GdkScreen *)
-	 * @param dest flags=no_in
-	 */
-	public static final native void gdk_screen_get_monitor_geometry(long screen, int monitor_num, GdkRectangle dest);
-	/**
-	 * @method flags=dynamic
-	 * @param screen cast=(GdkScreen *)
-	 * @param dest flags=no_in
-	 */
-	public static final native void gdk_screen_get_monitor_workarea(long screen, int monitor_num, GdkRectangle dest);
-	/**
-	 * @method flags=dynamic
-	 * @param screen cast=(GdkScreen *)
-	 */
-	public static final native int gdk_screen_get_n_monitors(long screen);
-	/**
-	 * @method flags=dynamic
-	 * @param screen cast=(GdkScreen *)
-	 */
-	public static final native int gdk_screen_get_primary_monitor(long screen);
-	/**
-	 * @method flags=dynamic
-	 * @param screen cast=(GdkScreen *)
-	 * @param monitor_num cast=(gint)
-	 */
-	public static final native int gdk_screen_get_monitor_scale_factor(long screen, int monitor_num);
-	/**
-	 * @method flags=dynamic
-	 * @param screen cast=(GdkScreen *)
-	 * @param x cast=(gint)
-	 * @param y cast=(gint)
-	 */
-	public static final native int gdk_screen_get_monitor_at_point(long screen, int x, int y);
-	/**
-	 * @method flags=dynamic
-	 * @param screen cast=(GdkScreen *)
-	 * @param window cast=(GdkWindow *)
-	 */
-	public static final native int gdk_screen_get_monitor_at_window(long screen, long window);
-
-
-	/**
-	 * @method flags=dynamic
 	 */
 	public static final native int gdk_screen_height();
 	/**
@@ -1209,13 +1166,6 @@ public class GDK extends OS {
 	 */
 	/* [GTK3 only, if-def'd in os.h] */
 	public static final native void gdk_window_restack(long window, long sibling, boolean above);
-	/**
-	 * @method flags=ignore_deprecations
-	 * @param window cast=(GdkWindow *)
-	 * @param pattern cast=(cairo_pattern_t *)
-	 */
-	/*  [GTK3 only; 3.22 deprecated] */
-	public static final native void gdk_window_set_background_pattern(long window, long pattern);
 	/**
 	 * @param window cast=(GdkWindow *)
 	 * @param cursor cast=(GdkCursor *)

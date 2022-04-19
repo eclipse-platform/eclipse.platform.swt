@@ -171,25 +171,17 @@ long gtk_commit (long imcontext, long text) {
 @Override
 long gtk_draw (long widget, long cairo) {
 	if ((state & OBSCURED) != 0) return 0;
-	long result;
-	if ( GTK.GTK_VERSION < OS.VERSION(3, 22, 0)) {
-		boolean isFocus = caret != null && caret.isFocusCaret ();
-		if (isFocus) caret.killFocus ();
-		result = super.gtk_draw (widget, cairo);
-		if (isFocus) caret.setFocus ();
-	} else {
-		result = super.gtk_draw (widget, cairo);
-		/*
-		 *  blink is needed to be checked as gtk_draw() signals sent from other parts of the canvas
-		 *  can interfere with the blinking state. This will ensure that we are only draw/redrawing the
-		 *  caret when it is intended to. See Bug 517487.
-		 *
-		 *  Additionally, only draw the caret if it has focus. See bug 528819.
-		 */
-		if (caret != null && blink == true && caret.isFocusCaret()) {
-			drawCaret(widget,cairo);
-			blink = false;
-		}
+	long result = super.gtk_draw (widget, cairo);
+	/*
+	 *  blink is needed to be checked as gtk_draw() signals sent from other parts of the canvas
+	 *  can interfere with the blinking state. This will ensure that we are only draw/redrawing the
+	 *  caret when it is intended to. See Bug 517487.
+	 *
+	 *  Additionally, only draw the caret if it has focus. See bug 528819.
+	 */
+	if (caret != null && blink == true && caret.isFocusCaret()) {
+		drawCaret(widget,cairo);
+		blink = false;
 	}
 	return result;
 }

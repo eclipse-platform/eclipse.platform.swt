@@ -304,108 +304,83 @@ void _setVisible (boolean visible) {
 					GTK3.gtk_menu_shell_set_take_focus (handle, false);
 				}
 			}
-			if (GTK.GTK_VERSION < OS.VERSION(3, 22, 0)) {
-				long address = 0;
-				hasLocation = false;
-				long data = 0;
-				/*
-				* Popup-menu to the status icon should be aligned to
-				* Tray rather than to cursor position. There is a
-				* possibility (unlikely) that TrayItem might have
-				* been disposed in the listener, for which case
-				* the menu should be shown in the cursor position.
-				*/
-				TrayItem item = display.currentTrayItem;
-				if (item != null && !item.isDisposed()) {
-					data = item.handle;
-					address = GTK.gtk_status_icon_position_menu_func ();
-				}
-				/*
-				* Bug in GTK.  The timestamp passed into gtk_menu_popup is used
-				* to perform an X pointer grab.  It cannot be zero, else the grab
-				* will fail.  The fix is to ensure that the timestamp of the last
-				* event processed is used.
-				*/
-				GTK3.gtk_menu_popup (handle, 0, 0, address, data, 0, display.getLastEventTime ());
-			} else {
-				long eventPtr = 0;
-				if (ableToSetLocation()) {
-					if (GTK.GTK4) {
-						GdkRectangle popoverPosition = new GdkRectangle();
-						popoverPosition.x = x;
-						popoverPosition.y = y;
-						popoverPosition.width = popoverPosition.height = 1;
-						GTK.gtk_popover_set_pointing_to(handle, popoverPosition);
+			long eventPtr = 0;
+			if (ableToSetLocation()) {
+				if (GTK.GTK4) {
+					GdkRectangle popoverPosition = new GdkRectangle();
+					popoverPosition.x = x;
+					popoverPosition.y = y;
+					popoverPosition.width = popoverPosition.height = 1;
+					GTK.gtk_popover_set_pointing_to(handle, popoverPosition);
 
-						GTK.gtk_popover_popup(handle);
-					} else {
-						// Create the GdkEvent manually as we need to control
-						// certain fields like the event window
-						eventPtr = GDK.gdk_event_new(GDK.GDK_BUTTON_PRESS);
-						GdkEventButton event = new GdkEventButton();
-						event.type = GDK.GDK_BUTTON_PRESS;
-						event.device = GDK.gdk_get_pointer(GDK.gdk_display_get_default());
-						event.time = display.getLastEventTime();
-
-						// Create the rectangle relative to the parent (in this case, global) GdkWindow
-						GdkRectangle rect = new GdkRectangle();
-						if (OS.isX11()) {
-							// Get and (add reference to) the global GdkWindow/GdkSurface
-							event.window = GDK.gdk_display_get_default_group(GDK.gdk_display_get_default());
-							OS.g_object_ref(event.window);
-							GTK3.memmove (eventPtr, event, GdkEventButton.sizeof);
-
-							/*
-							 * Get the origin of the global GdkWindow/GdkSurface to calculate the size of any offsets
-							 * such as client side decorations, or the system tray.
-							 */
-							int [] globalWindowOriginY = new int [1];
-							int [] globalWindowOriginX = new int [1];
-							GDK.gdk_window_get_origin (event.window, globalWindowOriginX, globalWindowOriginY);
-							rect.x = this.x - globalWindowOriginX[0];
-							rect.y = this.y - globalWindowOriginY[0];
-						} else {
-							// On Wayland, get the relative GdkWindow from the parent shell.
-							long gdkResource = GTK3.gtk_widget_get_window (getShell().topHandle());
-							event.window = OS.g_object_ref(gdkResource);
-							GTK3.memmove (eventPtr, event, GdkEventButton.sizeof);
-							// Bug in GTK?: testing with SWT_MENU_LOCATION_DEBUGGING=1 shows final_rect.x and
-							// final_rect.y popup menu position is off by 1 compared to this.x and this.y
-							rect.x = this.x + 1;
-							rect.y = this.y + 1;
-						}
-						// Popup the menu and pin it at the top left corner of the GdkRectangle relative to the GdkWindow
-						GTK3.gtk_menu_popup_at_rect(handle, event.window, rect, GDK.GDK_GRAVITY_NORTH_WEST,
-								GDK.GDK_GRAVITY_NORTH_WEST, eventPtr);
-						gdk_event_free (eventPtr);
-					}
+					GTK.gtk_popover_popup(handle);
 				} else {
-					/*
-					 *  GTK Feature: gtk_menu_popup is deprecated as of GTK3.22 and the new method gtk_menu_popup_at_pointer
-					 *  requires an event to hook on to. This requires the popup & events related to the menu be handled
-					 *  immediately and not as a post event in display, requiring the current event.
-					 */
-					eventPtr = GTK3.gtk_get_current_event();
-					if (eventPtr == 0) {
-						eventPtr = GDK.gdk_event_new(GTK.GTK4 ? GDK.GDK4_BUTTON_PRESS : GDK.GDK_BUTTON_PRESS);
-						GdkEventButton event = new GdkEventButton ();
-						event.type = GTK.GTK4 ? GDK.GDK4_BUTTON_PRESS : GDK.GDK_BUTTON_PRESS;
-						// Only assign a window on X11, as on Wayland the window is that of the mouse pointer
-						if (OS.isX11()) {
-							event.window = OS.g_object_ref(GTK3.gtk_widget_get_window (getShell().handle));
-						}
-						event.device = GDK.gdk_get_pointer(GDK.gdk_display_get_default ());
-						event.time = display.getLastEventTime ();
+					// Create the GdkEvent manually as we need to control
+					// certain fields like the event window
+					eventPtr = GDK.gdk_event_new(GDK.GDK_BUTTON_PRESS);
+					GdkEventButton event = new GdkEventButton();
+					event.type = GDK.GDK_BUTTON_PRESS;
+					event.device = GDK.gdk_get_pointer(GDK.gdk_display_get_default());
+					event.time = display.getLastEventTime();
+
+					// Create the rectangle relative to the parent (in this case, global) GdkWindow
+					GdkRectangle rect = new GdkRectangle();
+					if (OS.isX11()) {
+						// Get and (add reference to) the global GdkWindow/GdkSurface
+						event.window = GDK.gdk_display_get_default_group(GDK.gdk_display_get_default());
+						OS.g_object_ref(event.window);
 						GTK3.memmove (eventPtr, event, GdkEventButton.sizeof);
-					}
-					adjustParentWindowWayland(eventPtr);
-					verifyMenuPosition(getItemCount());
-					GTK3.gtk_menu_popup_at_pointer(handle, eventPtr);
-					if (GTK.GTK4) {
-						GDK.gdk_event_unref(eventPtr);
+
+						/*
+						 * Get the origin of the global GdkWindow/GdkSurface to calculate the size of any offsets
+						 * such as client side decorations, or the system tray.
+						 */
+						int [] globalWindowOriginY = new int [1];
+						int [] globalWindowOriginX = new int [1];
+						GDK.gdk_window_get_origin (event.window, globalWindowOriginX, globalWindowOriginY);
+						rect.x = this.x - globalWindowOriginX[0];
+						rect.y = this.y - globalWindowOriginY[0];
 					} else {
-						GDK.gdk_event_free(eventPtr);
+						// On Wayland, get the relative GdkWindow from the parent shell.
+						long gdkResource = GTK3.gtk_widget_get_window (getShell().topHandle());
+						event.window = OS.g_object_ref(gdkResource);
+						GTK3.memmove (eventPtr, event, GdkEventButton.sizeof);
+						// Bug in GTK?: testing with SWT_MENU_LOCATION_DEBUGGING=1 shows final_rect.x and
+						// final_rect.y popup menu position is off by 1 compared to this.x and this.y
+						rect.x = this.x + 1;
+						rect.y = this.y + 1;
 					}
+					// Popup the menu and pin it at the top left corner of the GdkRectangle relative to the GdkWindow
+					GTK3.gtk_menu_popup_at_rect(handle, event.window, rect, GDK.GDK_GRAVITY_NORTH_WEST,
+							GDK.GDK_GRAVITY_NORTH_WEST, eventPtr);
+					gdk_event_free (eventPtr);
+				}
+			} else {
+				/*
+				 *  GTK Feature: gtk_menu_popup is deprecated as of GTK3.22 and the new method gtk_menu_popup_at_pointer
+				 *  requires an event to hook on to. This requires the popup & events related to the menu be handled
+				 *  immediately and not as a post event in display, requiring the current event.
+				 */
+				eventPtr = GTK3.gtk_get_current_event();
+				if (eventPtr == 0) {
+					eventPtr = GDK.gdk_event_new(GTK.GTK4 ? GDK.GDK4_BUTTON_PRESS : GDK.GDK_BUTTON_PRESS);
+					GdkEventButton event = new GdkEventButton ();
+					event.type = GTK.GTK4 ? GDK.GDK4_BUTTON_PRESS : GDK.GDK_BUTTON_PRESS;
+					// Only assign a window on X11, as on Wayland the window is that of the mouse pointer
+					if (OS.isX11()) {
+						event.window = OS.g_object_ref(GTK3.gtk_widget_get_window (getShell().handle));
+					}
+					event.device = GDK.gdk_get_pointer(GDK.gdk_display_get_default ());
+					event.time = display.getLastEventTime ();
+					GTK3.memmove (eventPtr, event, GdkEventButton.sizeof);
+				}
+				adjustParentWindowWayland(eventPtr);
+				verifyMenuPosition(getItemCount());
+				GTK3.gtk_menu_popup_at_pointer(handle, eventPtr);
+				if (GTK.GTK4) {
+					GDK.gdk_event_unref(eventPtr);
+				} else {
+					GDK.gdk_event_free(eventPtr);
 				}
 			}
 			poppedUpCount = getItemCount();
@@ -948,8 +923,8 @@ void hookEvents() {
 	} else {
 		OS.g_signal_connect_closure_by_id(handle, display.signalIds[SHOW_HELP], 0, display.getClosure(SHOW_HELP), false);
 
-		// Hook into the "popped-up" signal on GTK3.22+ if SWT_MENU_LOCATION_DEBUGGING has been set
-		if (GTK.GTK_VERSION >= OS.VERSION(3, 22, 0) && OS.SWT_MENU_LOCATION_DEBUGGING) {
+		// Hook into the "popped-up" signal if SWT_MENU_LOCATION_DEBUGGING has been set
+		if (OS.SWT_MENU_LOCATION_DEBUGGING) {
 			OS.g_signal_connect_closure_by_id(handle, display.signalIds[POPPED_UP], 0, display.getClosure(POPPED_UP), false);
 		}
 
