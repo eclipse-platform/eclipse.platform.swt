@@ -494,6 +494,10 @@ public static int resolveTextDirection (String text) {
 			textDirection = SWT.RIGHT_TO_LEFT;
 			break;
 		}
+		if (textDirection == SWT.LEFT_TO_RIGHT) {
+			// If textDirection is already LTR, skip probing for LTR again.
+			continue;
+		}
 		ltrProbe[2] = ch;
 		OS.GetCharacterPlacement(hdc, ltrProbe, ltrProbe.length, 0, result, OS.GCP_REORDER);
 		OS.MoveMemory(order, result.lpOrder + 4, 4);
