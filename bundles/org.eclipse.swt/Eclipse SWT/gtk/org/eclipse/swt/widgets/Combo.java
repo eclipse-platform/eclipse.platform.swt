@@ -487,7 +487,7 @@ Point computeNativeSize (long h, int wHint, int hHint, boolean changed) {
 	 * This node can specify additional padding; if this padding is not taken into account,
 	 * Not all of the combo items text will be displayed. Some letters will be cut off, depending on how high the padding is set.
 	 */
-	if ((style & SWT.READ_ONLY) != 0 && !GTK.GTK4 && GTK.GTK_VERSION >= OS.VERSION(3, 22, 0)) {
+	if ((style & SWT.READ_ONLY) != 0 && !GTK.GTK4) {
 		GtkBorder buttonPadding = new GtkBorder();
 		long context = GTK.gtk_widget_get_style_context (buttonHandle);
 		int stateFlag = GTK.gtk_widget_get_state_flags(buttonHandle);

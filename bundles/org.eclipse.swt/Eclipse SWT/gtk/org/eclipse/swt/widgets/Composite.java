@@ -965,15 +965,6 @@ long gtk_map (long widget) {
 @Override
 long gtk_realize (long widget) {
 	long result = super.gtk_realize (widget);
-	if ((style & SWT.NO_BACKGROUND) != 0) {
-		// No gdk_surface_set_background_pattern() on GTK4.
-		if (GTK.GTK_VERSION < OS.VERSION(3, 22, 0)) {
-			long window = gtk_widget_get_window (paintHandle ());
-			if (window != 0) {
-				GDK.gdk_window_set_background_pattern(window, 0);
-			}
-		}
-	}
 	if (socketHandle != 0) {
 		embeddedHandle = GTK.gtk_socket_get_id (socketHandle);
 	}

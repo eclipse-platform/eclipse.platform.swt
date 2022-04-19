@@ -1013,7 +1013,7 @@ int setBounds (int x, int y, int width, int height, boolean move, boolean resize
 @Override
 void setFontDescription (long fontDesc) {
 	// Don't set the font if we have no text set
-	if (GTK.GTK_VERSION >= OS.VERSION(3, 22, 0) && ((text != null && text.isEmpty()) || text == null)) {
+	if ((text != null && text.isEmpty()) || text == null) {
 		return;
 	} else {
 		super.setFontDescription (fontDesc);
@@ -1286,9 +1286,7 @@ public void setText (String string) {
 	_setAlignment (style);
 	// Now that text has been added, set the font. This ensures
 	// the Button's size is correctly calculated/updated.
-	if (GTK.GTK_VERSION >= OS.VERSION(3, 22, 0)) {
-		setFontDescription(font == null ? defaultFont().handle : font.handle);
-	}
+	setFontDescription(font == null ? defaultFont().handle : font.handle);
 }
 
 private void updateWidgetsVisibility() {

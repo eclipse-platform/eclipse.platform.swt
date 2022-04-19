@@ -17,7 +17,6 @@ package org.eclipse.swt.widgets;
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.*;
-import org.eclipse.swt.internal.cairo.*;
 import org.eclipse.swt.internal.gtk.*;
 
 /**
@@ -102,42 +101,8 @@ void createWidget (int index) {
 boolean drawCaret () {
 	if (parent == null) return false;
 	if (parent.isDisposed ()) return false;
-	if (GTK.GTK_VERSION < OS.VERSION (3, 22, 0)) {
-		long window = parent.paintWindow ();
-		long cairo = GDK.gdk_cairo_create(window);
-		if (cairo == 0) error(SWT.ERROR_NO_HANDLES);
-		Cairo.cairo_set_source_rgba(cairo, 1.0, 1.0, 1.0, 1.0);
-		Cairo.cairo_set_operator(cairo, Cairo.CAIRO_OPERATOR_DIFFERENCE);
-		if (image != null && !image.isDisposed() && image.mask == 0) {
-			long surface = Cairo.cairo_get_target(cairo);
-			int nWidth = 0;
-			switch (Cairo.cairo_surface_get_type(surface)) {
-				case Cairo.CAIRO_SURFACE_TYPE_IMAGE:
-					nWidth = Cairo.cairo_image_surface_get_width(surface);
-					break;
-				case Cairo.CAIRO_SURFACE_TYPE_XLIB:
-					nWidth = Cairo.cairo_xlib_surface_get_width(surface);
-					break;
-			}
-			int nX = x;
-			if ((parent.style & SWT.MIRRORED) != 0) nX = parent.getClientWidth () - nWidth - nX;
-			Cairo.cairo_translate(cairo, nX, y);
-			Cairo.cairo_set_source_surface(cairo, image.surface, 0, 0);
-			Cairo.cairo_paint(cairo);
-		} else {
-			int nWidth = width, nHeight = height;
-			if (nWidth <= 0) nWidth = DEFAULT_WIDTH;
-			int nX = x;
-			if ((parent.style & SWT.MIRRORED) != 0) nX = parent.getClientWidth () - nWidth - nX;
-			Cairo.cairo_rectangle(cairo, nX, y, nWidth, nHeight);
-		}
-		Cairo.cairo_fill(cairo);
-		Cairo.cairo_destroy(cairo);
-		return true;
-	} else {
-		GTK.gtk_widget_queue_draw(parent.handle);
-		return true;
-	}
+	GTK.gtk_widget_queue_draw(parent.handle);
+	return true;
 }
 
 /**

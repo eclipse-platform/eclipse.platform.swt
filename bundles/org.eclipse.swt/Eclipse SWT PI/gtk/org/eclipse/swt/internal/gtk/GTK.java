@@ -869,10 +869,6 @@ public class GTK extends OS {
 	/** @param orientation cast=(GtkOrientation) */
 	public static final native long gtk_separator_new(int orientation);
 
-	// Get function pointer to gtk_status_icon_position_menu
-	// See os_custom.h
-	public static final native long gtk_status_icon_position_menu_func();
-
 	/* GtkIMContext */
 	/** @param context cast=(GtkIMContext *) */
 	public static final native void gtk_im_context_focus_in(long context);
