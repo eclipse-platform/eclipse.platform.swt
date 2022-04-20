@@ -326,7 +326,7 @@ private Object getContents_gtk4(Transfer transfer, int clipboards) {
 	C.memset (value, 0, OS.GValue_sizeof ());
 
 	//Pasting of text (TextTransfer)
-	if(transfer.getTypeNames()[0] == "STRING") {
+	if(transfer.getTypeNames()[0].equals("STRING")) {
 		OS.g_value_init(value, OS.G_TYPE_STRING());
 		if (!GTK4.gdk_content_provider_get_value (contents, value, null))
 			return null;
