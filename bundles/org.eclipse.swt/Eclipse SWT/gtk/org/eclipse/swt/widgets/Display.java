@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2021 IBM Corporation and others.
+ * Copyright (c) 2000, 2022 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -10,6 +10,7 @@
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
+ *     Christoph Läubrich - Issue #64 - Integration with java.util.concurrent framework
  *******************************************************************************/
 package org.eclipse.swt.widgets;
 
@@ -19,6 +20,7 @@ import java.lang.reflect.*;
 import java.net.*;
 import java.util.*;
 import java.util.Map.*;
+import java.util.concurrent.*;
 import java.util.function.*;
 import java.util.regex.*;
 import java.util.regex.Pattern;
@@ -111,7 +113,7 @@ import org.eclipse.swt.internal.gtk4.*;
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  * @noextend This class is not intended to be subclassed by clients.
  */
-public class Display extends Device {
+public class Display extends Device implements Executor {
 
 	static boolean strictChecks = System.getProperty("org.eclipse.swt.internal.gtk.enableStrictChecks") != null;
 
@@ -926,6 +928,56 @@ public void asyncExec (Runnable runnable) {
 			}
 		}
 		synchronizer.asyncExec (runnable);
+	}
+}
+
+/**
+ * Executes the given runnable in the user-interface thread of this Display.
+ * <ul>
+ * <li>If the calling thread is the user-interface thread of this display it is
+ * executed immediately and the method returns after the command has run, any
+ * runtime exception thrown will be rethrown at the caller</li>
+ * <li>In all other cases the command is asynchronously execute as with the
+ * method {@link Display#asyncExec(Runnable)} at the next reasonable
+ * opportunity. The caller of this method continues to run in parallel, and is
+ * not notified when the runnable has completed.</li>
+ * </ul>
+ * <p>
+ * This can be used in cases where one want to execute some piece of code should
+ * be guaranteed to run in the user-interface thread regardless of the current
+ * context thread.
+ * </p>
+ *
+ * <p>
+ * Note that at the time the runnable is invoked, widgets that have the receiver
+ * as their display may have been disposed. Therefore, it is advised to check
+ * for this case inside the runnable before accessing the widget.
+ * </p>
+ * <p>
+ * Also note that most users would find it more convenient to use
+ * {@link Display#executor()} instead of acquiring a Display first and then use
+ * the Display as an Executor, for example when using
+ * <code>CompletableFuture</code>:
+ *
+ * <pre>
+ * CompletableFuture.supplyAsync(() -&gt; {
+ * 	// do something in the background
+ * }).thenAcceptAsync(computedValue -&gt; {
+ * 	// update the UI with the computed value
+ * }, Display.executor());
+ * </pre>
+ * </p>
+ *
+ * @param runnable the runnable to execute in the user-interface thread, never
+ *                 <code>null</code>
+ */
+@Override
+public void execute(Runnable runnable) {
+	Objects.requireNonNull(runnable);
+	if (thread == Thread.currentThread()) {
+		runnable.run();
+	} else {
+		asyncExec(runnable);
 	}
 }
 
@@ -2347,6 +2399,19 @@ public static Display getDefault () {
 		if (Default == null) Default = new Display ();
 		return Default;
 	}
+}
+
+/**
+ * Returns an executor that will execute any submitted runnable in the user-interface thread, regardless of the calling thread
+ * @return an {@link Executor} that executes in the user-interface thread.
+ * @since 3.120
+ */
+public static Executor executor() {
+	Display current = Display.getCurrent();
+	if (current != null) {
+		return current;
+	}
+	return Display.getDefault();
 }
 
 static boolean isValidClass (Class<?> clazz) {
@@ -6198,4 +6263,5 @@ static int _getDeviceZoom (long monitor_num) {
 	dpi = dpi * scale;
 	return DPIUtil.mapDPIToZoom (dpi);
 }
+
 }
