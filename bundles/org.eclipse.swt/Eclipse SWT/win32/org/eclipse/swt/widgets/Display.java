@@ -493,7 +493,7 @@ public class Display extends Device {
 
 	/* Multiple Displays */
 	static Display Default;
-	static Display [] Displays = new Display [4];
+	static Display [] Displays = new Display [1];
 
 	/* Multiple Monitors */
 	Monitor[] monitors = null;
