@@ -1782,10 +1782,6 @@ Menu [] getMenus (Decorations shell) {
 	return result;
 }
 
-int getMessageCount () {
-	return synchronizer.getMessageCount ();
-}
-
 Dialog getModalDialog () {
 	return modalDialog;
 }
@@ -5166,7 +5162,7 @@ public final Consumer<Error> getErrorHandler () {
  */
 public boolean sleep () {
 	checkDevice ();
-	if (getMessageCount () != 0) return true;
+	if (!synchronizer.isMessagesEmpty()) return true;
 	sendPreExternalEventDispatchEvent ();
 	try {
 		addPool();
