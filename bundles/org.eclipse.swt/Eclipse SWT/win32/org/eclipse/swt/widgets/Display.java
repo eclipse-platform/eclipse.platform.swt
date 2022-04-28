@@ -1383,7 +1383,7 @@ public Widget findWidget (Widget widget, long id) {
 
 long foregroundIdleProc (long code, long wParam, long lParam) {
 	if (code >= 0) {
-		if (getMessageCount () != 0) {
+		if (!synchronizer.isMessagesEmpty()) {
 			sendPostExternalEventDispatchEvent ();
 			if (runMessagesInIdle) {
 				if (runMessagesInMessageProc) {
@@ -2107,17 +2107,6 @@ MenuItem getMenuItem (int id) {
 	if (0 <= id && id < items.length) return items [id];
 	return null;
 }
-
-int getMessageCount () {
-	/*
-	 * On Windows10 (update 18272), an NPE is seen in below code which leads to a
-	 * possible crash, adding a null check for synchronizer instance. For more
-	 * details refer bug 540762
-	 */
-	if (synchronizer != null) return synchronizer.getMessageCount ();
-	return 0;
-}
-
 
 Shell getModalShell () {
 	if (modalShells == null) return null;
@@ -4762,7 +4751,7 @@ int shiftedKey (int key) {
  */
 public boolean sleep () {
 	checkDevice ();
-	if (getMessageCount () != 0) return true;
+	if (!synchronizer.isMessagesEmpty()) return true;
 	sendPreExternalEventDispatchEvent ();
 	boolean result = OS.WaitMessage ();
 	sendPostExternalEventDispatchEvent ();

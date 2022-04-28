@@ -2548,10 +2548,6 @@ int getLastEventTime () {
 	return lastEventTime;
 }
 
-int getMessageCount () {
-	return synchronizer.getMessageCount ();
-}
-
 Dialog getModalDialog () {
 	return modalDialog;
 }
@@ -5566,7 +5562,7 @@ public boolean sleep () {
 		runSettings = true;
 		return false;
 	}
-	if (getMessageCount () != 0) return true;
+	if (!synchronizer.isMessagesEmpty()) return true;
 	sendPreExternalEventDispatchEvent ();
 	if (!GTK.GTK4) GDK.gdk_threads_leave ();
 	/*
@@ -5606,7 +5602,7 @@ public boolean sleep () {
 			OS.g_main_context_check (context, max_priority [0], fds, nfds);
 			OS.g_main_context_release (context);
 		}
-	} while (!result && getMessageCount () == 0 && !wake);
+	} while (!result && synchronizer.isMessagesEmpty() && !wake);
 	wake = false;
 	if (!GTK.GTK4) GDK.gdk_threads_enter ();
 	sendPostExternalEventDispatchEvent ();

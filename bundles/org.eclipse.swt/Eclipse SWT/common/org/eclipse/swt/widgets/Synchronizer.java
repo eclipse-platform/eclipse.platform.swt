@@ -13,6 +13,8 @@
  *******************************************************************************/
 package org.eclipse.swt.widgets;
 
+import java.util.concurrent.*;
+
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 
@@ -36,9 +38,7 @@ import org.eclipse.swt.graphics.*;
  */
 public class Synchronizer {
 	Display display;
-	int messageCount;
-	RunnableLock [] messages;
-	Object messageLock = new Object ();
+	final ConcurrentLinkedQueue<RunnableLock>  messages= new ConcurrentLinkedQueue<>();
 	Thread syncThread;
 	static final int GROW_SIZE = 4;
 	static final int MESSAGE_LIMIT = 64;
@@ -63,60 +63,13 @@ public Synchronizer (Display display) {
  * @param toReceiveTheEvents the synchronizer that will receive the events
  */
 void moveAllEventsTo (Synchronizer toReceiveTheEvents) {
-	RunnableLock[] oldMessages;
-	int oldMessageCount;
-	synchronized (messageLock) {
-		oldMessages = messages;
-		messages = null;
-		oldMessageCount = messageCount;
-		messageCount = 0;
-	}
-	toReceiveTheEvents.addFirst(oldMessages, oldMessageCount);
+	messages.removeIf(toReceiveTheEvents.messages::add);
 }
 
-/**
- * Adds the given events to the beginning of the message queue, to
- * be processed in order.
- *
- * @param toAdd events to add. Permits null if and only if numToAdd is 0.
- * @param numToAdd number of events to add from the beginning of the given array.
- */
-void addFirst (RunnableLock[] toAdd, int numToAdd) {
-	if (numToAdd <= 0) {
-		return;
-	}
-	boolean wake = false;
-	synchronized (messageLock) {
-		int nextSize = messageCount + Math.max(numToAdd, GROW_SIZE);
-		if (messages == null)
-			messages = new RunnableLock[nextSize];
-		if (messages.length < messageCount + numToAdd) {
-			RunnableLock[] newMessages = new RunnableLock[nextSize];
-			System.arraycopy(messages, 0, newMessages, numToAdd, messageCount);
-			messages = newMessages;
-		} else {
-			System.arraycopy(messages, 0, messages, numToAdd, messageCount);
-		}
-		System.arraycopy(toAdd, 0, messages, 0, numToAdd);
-		wake = (messageCount == 0);
-		messageCount += numToAdd;
-	}
-	if (wake)
-		display.wakeThread();
-}
 
 void addLast (RunnableLock lock) {
-	boolean wake = false;
-	synchronized (messageLock) {
-		if (messages == null) messages = new RunnableLock [GROW_SIZE];
-		if (messageCount == messages.length) {
-			RunnableLock[] newMessages = new RunnableLock [messageCount + GROW_SIZE];
-			System.arraycopy (messages, 0, newMessages, 0, messageCount);
-			messages = newMessages;
-		}
-		messages [messageCount++] = lock;
-		wake = messageCount == 1;
-	}
+	boolean wake = messages.isEmpty();
+	messages.add(lock);
 	if (wake) display.wakeThread ();
 }
 
@@ -142,30 +95,18 @@ protected void asyncExec (Runnable runnable) {
 	addLast (new RunnableLock (runnable));
 }
 
-int getMessageCount () {
-	synchronized (messageLock) {
-		return messageCount;
-	}
+boolean isMessagesEmpty() {
+	return messages.isEmpty();
 }
 
 void releaseSynchronizer () {
 	display = null;
-	messages = null;
-	messageLock = null;
+	messages.clear();
 	syncThread = null;
 }
 
 RunnableLock removeFirst () {
-	synchronized (messageLock) {
-		if (messageCount == 0) return null;
-		RunnableLock lock = messages [0];
-		System.arraycopy (messages, 1, messages, 0, --messageCount);
-		messages [messageCount] = null;
-		if (messageCount == 0) {
-			if (messages.length > MESSAGE_LIMIT) messages = null;
-		}
-		return lock;
-	}
+	return messages.poll();
 }
 
 boolean runAsyncMessages () {
