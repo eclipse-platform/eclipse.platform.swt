@@ -311,7 +311,7 @@ public class Display extends Device {
 	static final short [] ACCENTS = new short [] {'~', '`', '\'', '^', '"'};
 
 	/* Sync/Async Widget Communication */
-	Synchronizer synchronizer = new Synchronizer (this);
+	Synchronizer synchronizer;
 	Consumer<RuntimeException> runtimeExceptionHandler = DefaultExceptionHandler.RUNTIME_EXCEPTION_HANDLER;
 	Consumer<Error> errorHandler = DefaultExceptionHandler.RUNTIME_ERROR_HANDLER;
 	boolean runMessagesInIdle = false, runMessagesInMessageProc = true;
@@ -2730,6 +2730,7 @@ public long internal_new_GC (GCData data) {
  */
 @Override
 protected void init () {
+	this.synchronizer = new Synchronizer (this); // Field initialization happens after super constructor
 	super.init ();
 	DPIUtil.setDeviceZoom (getDeviceZoom ());
 
