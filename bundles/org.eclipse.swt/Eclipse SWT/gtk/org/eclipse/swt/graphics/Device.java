@@ -69,7 +69,7 @@ public abstract class Device implements Drawable {
 	Object trackingLock;
 
 	/* Disposed flag */
-	boolean disposed;
+	volatile boolean disposed;
 
 	/* Warning and Error Handlers */
 	long logProc;
@@ -883,9 +883,7 @@ public abstract void internal_dispose_GC (long hDC, GCData data);
  * @return <code>true</code> when the device is disposed and <code>false</code> otherwise
  */
 public boolean isDisposed () {
-	synchronized (Device.class) {
-		return disposed;
-	}
+	return disposed;
 }
 
 /**

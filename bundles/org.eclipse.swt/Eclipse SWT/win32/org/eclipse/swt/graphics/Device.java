@@ -54,7 +54,7 @@ public abstract class Device implements Drawable {
 	long fontCollection;
 	String[] loadedFonts;
 
-	boolean disposed;
+	volatile boolean disposed;
 
 	/* Auto-Scaling*/
 	boolean enableAutoScaling = true;
@@ -766,9 +766,7 @@ public abstract void /*long*/ internal_dispose_GC (long hDC, GCData data);
  * @return <code>true</code> when the device is disposed and <code>false</code> otherwise
  */
 public boolean isDisposed () {
-	synchronized (Device.class) {
-		return disposed;
-	}
+	return disposed;
 }
 
 /**
