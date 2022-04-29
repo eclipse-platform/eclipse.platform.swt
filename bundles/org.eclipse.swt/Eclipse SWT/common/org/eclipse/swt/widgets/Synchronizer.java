@@ -172,29 +172,35 @@ boolean runAsyncMessages () {
 	return runAsyncMessages (false);
 }
 
-boolean runAsyncMessages (boolean all) {
+/**
+ * @param all true => run all messages, false=> run single message, null => run
+ *            multiple messages for up to 1 millisecond
+ **/
+boolean runAsyncMessages(Boolean all) {
+	long start = all != null ? 0 : System.nanoTime();
 	boolean run = false;
 	do {
-		RunnableLock lock = removeFirst ();
-		if (lock == null) return run;
+		RunnableLock lock = removeFirst();
+		if (lock == null)
+			return run;
 		run = true;
 		synchronized (lock) {
 			syncThread = lock.thread;
 			display.sendPreEvent(SWT.None);
 			try {
-				lock.run (display);
+				lock.run(display);
 			} catch (Throwable t) {
 				lock.throwable = t;
-				SWT.error (SWT.ERROR_FAILED_EXEC, t);
+				SWT.error(SWT.ERROR_FAILED_EXEC, t);
 			} finally {
 				if (display != null && !display.isDisposed()) {
 					display.sendPostEvent(SWT.None);
 				}
 				syncThread = null;
-				lock.notifyAll ();
+				lock.notifyAll();
 			}
 		}
-	} while (all);
+	} while ((all != null && all) || (all == null && System.nanoTime() - start < 1_000_000));
 	return run;
 }
 

@@ -3655,7 +3655,7 @@ public boolean readAndDispatch () {
 		runDeferredEvents ();
 		return true;
 	}
-	return isDisposed () || runAsyncMessages (false);
+	return isDisposed () || runAsyncMessages (null); // handle multiple messages to avoid costly checks
 }
 
 static void register (Display display) {
@@ -4049,7 +4049,7 @@ void removePopup (Menu menu) {
 	}
 }
 
-boolean runAsyncMessages (boolean all) {
+boolean runAsyncMessages (Boolean all) {
 	return synchronizer.runAsyncMessages (all);
 }
 

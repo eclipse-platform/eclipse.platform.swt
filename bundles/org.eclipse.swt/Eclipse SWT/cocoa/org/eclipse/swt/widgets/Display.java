@@ -3969,7 +3969,7 @@ public boolean readAndDispatch () {
 		events |= runPaint ();
 		events |= runDeferredEvents ();
 		if (!events) {
-			events = isDisposed () || runAsyncMessages (false);
+			events = isDisposed () || runAsyncMessages (null);
 		}
 	} finally {
 		removePool ();
@@ -4345,7 +4345,7 @@ void resetSelectedControlColors() {
 	alternateSelectedControlColor = secondarySelectedControlColor = null;
 }
 
-boolean runAsyncMessages (boolean all) {
+boolean runAsyncMessages (Boolean all) {
 	return synchronizer.runAsyncMessages (all);
 }
 

@@ -4481,7 +4481,7 @@ public boolean readAndDispatch () {
 		runDeferredEvents ();
 		return true;
 	}
-	return isDisposed () || runAsyncMessages (false);
+	return isDisposed () || runAsyncMessages (null);
 }
 
 static void register (Display display) {
@@ -5000,7 +5000,7 @@ String dumpWidgetTableInfo() {
 	return sb.toString();
 }
 
-boolean runAsyncMessages (boolean all) {
+boolean runAsyncMessages (Boolean all) {
 	return synchronizer.runAsyncMessages (all);
 }
 
