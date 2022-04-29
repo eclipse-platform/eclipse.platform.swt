@@ -36,7 +36,8 @@ public abstract class Device implements Drawable {
 	Object trackingLock;
 
 	/* Disposed flag */
-	boolean disposed, warnings;
+	volatile boolean disposed;
+	boolean warnings;
 
 	Color COLOR_BLACK, COLOR_DARK_RED, COLOR_DARK_GREEN, COLOR_DARK_YELLOW, COLOR_DARK_BLUE;
 	Color COLOR_DARK_MAGENTA, COLOR_DARK_CYAN, COLOR_GRAY, COLOR_DARK_GRAY, COLOR_RED, COLOR_TRANSPARENT;
@@ -243,7 +244,7 @@ public void dispose () {
 			}
 
 			destroy ();
-			disposed = true;
+			disposed = true;			
 			if (tracking) {
 				synchronized (trackingLock) {
 					printErrors ();
@@ -663,9 +664,7 @@ public abstract void internal_dispose_GC (long hDC, GCData data);
  * @return <code>true</code> when the device is disposed and <code>false</code> otherwise
  */
 public boolean isDisposed () {
-	synchronized (Device.class) {
-		return disposed;
-	}
+	return disposed;
 }
 
 /**
