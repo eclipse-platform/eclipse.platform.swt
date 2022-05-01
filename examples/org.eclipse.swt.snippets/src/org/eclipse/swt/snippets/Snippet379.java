@@ -46,6 +46,7 @@ public class Snippet379 {
 		region(new Button(shell, SWT.PUSH), SWT.RIGHT).setText("East 2");
 		new Text(shell, SWT.MULTI | SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL).setText("Center 1");
 		new Text(shell, SWT.MULTI | SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL).setText("Center 2");
+		shell.pack(true);
 		shell.open();
 		while (!shell.isDisposed()) {
 			if (!display.readAndDispatch()) {

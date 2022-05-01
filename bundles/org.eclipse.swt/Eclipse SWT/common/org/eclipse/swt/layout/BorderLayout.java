@@ -61,6 +61,7 @@ import org.eclipse.swt.widgets.*;
  */
 public class BorderLayout extends Layout {
 
+	private static final String LAYOUT_KEY = BorderLayout.class.getName() + ".layoutData";
 	private static final ToIntFunction<Point> WIDTH = p -> p.x;
 	private static final ToIntFunction<Point> HEIGHT = p -> p.y;
 
@@ -119,9 +120,9 @@ public class BorderLayout extends Layout {
 	 */
 	public double widthDistributionFactor = 0.5;
 	/**
-	 * If the height of the {@link SWT#TOP} and {@link SWT#BOTTOM} region exceeds the
-	 * available space this factor is used to distribute the size to the controls,
-	 * valid values range between [0 ... 1]
+	 * If the height of the {@link SWT#TOP} and {@link SWT#BOTTOM} region exceeds
+	 * the available space this factor is used to distribute the size to the
+	 * controls, valid values range between [0 ... 1]
 	 *
 	 * The default value is 0.5 (equal distribution of available space)
 	 *
@@ -134,7 +135,7 @@ public class BorderLayout extends Layout {
 			return new Point(wHint, hHint);
 		}
 		Stream<Entry<Control, BorderData>> children = Arrays.stream(composite.getChildren())//
-				.map(control-> borderDataControl(control, flushCache));
+				.map(control -> borderDataControl(control, flushCache));
 		Map<Integer, List<Entry<Control, BorderData>>> regionMap = children
 				.collect(Collectors.groupingBy(BorderLayout::region));
 		int width;
@@ -253,7 +254,7 @@ public class BorderLayout extends Layout {
 		int clientWidth = clientArea.width - 2 * marginWidth;
 		int clientHeight = clientArea.height - 2 * marginHeight;
 		Stream<Entry<Control, BorderData>> children = Arrays.stream(composite.getChildren())//
-				.map(control-> borderDataControl(control, flushCache));
+				.map(control -> borderDataControl(control, flushCache));
 		Map<Integer, List<Entry<Control, BorderData>>> regionMap = children
 				.collect(Collectors.groupingBy(BorderLayout::region));
 		regionMap.getOrDefault(SWT.NONE, Collections.emptyList())
@@ -383,7 +384,7 @@ public class BorderLayout extends Layout {
 		}
 	}
 
-	private static <C extends Control> Entry<C, BorderData> borderDataControl(C control, boolean flushCache) {
+	private <C extends Control> Entry<C, BorderData> borderDataControl(C control, boolean flushCache) {
 		Object layoutData = control.getLayoutData();
 		if (layoutData instanceof BorderData) {
 			BorderData borderData = (BorderData) layoutData;
@@ -392,14 +393,18 @@ public class BorderLayout extends Layout {
 			}
 			return new SimpleEntry<>(control, borderData);
 		} else {
-			return new SimpleEntry<>(control, null);
+			BorderData borderData = flushCache ? null : (BorderData) control.getData(LAYOUT_KEY);
+			if (borderData == null) {
+				control.setData(LAYOUT_KEY, borderData = new BorderData());
+			}
+			return new SimpleEntry<>(control, borderData);
 		}
 	}
 
 	private static int region(Entry<Control, BorderData> entry) {
 		BorderData borderData = entry.getValue();
 		if (borderData == null) {
-			//we assume all controls without explicit data to be placed in the center area
+			// we assume all controls without explicit data to be placed in the center area
 			return SWT.CENTER;
 		}
 		return borderData.getRegion();
