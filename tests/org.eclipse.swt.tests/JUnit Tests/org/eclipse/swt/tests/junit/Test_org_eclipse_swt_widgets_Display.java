@@ -1278,6 +1278,8 @@ public void test_setSynchronizerLorg_eclipse_swt_widgets_Synchronizer() {
 	final Display display = new Display();
 	final boolean[] asyncExec0Ran = new boolean[] {false};
 	final boolean[] asyncExec1Ran = new boolean[] {false};
+	final boolean[] asyncExec2Ran = new boolean[] {false};
+	final boolean[] asyncExec3Ran = new boolean[] {false};
 
 	try {
 		try {
@@ -1300,15 +1302,20 @@ public void test_setSynchronizerLorg_eclipse_swt_widgets_Synchronizer() {
 		}
 
 		MySynchronizer mySynchronizer = new MySynchronizer(display);
+		mySynchronizer.asyncExec(() -> asyncExec3Ran[0] = asyncExec2Ran[0]); // assert it runs after 2
 		display.asyncExec(() -> asyncExec0Ran[0] = true);
+		display.asyncExec(() -> asyncExec2Ran[0] = asyncExec0Ran[0]); // assert it runs after 0
 		display.setSynchronizer(mySynchronizer);
 		display.asyncExec(() -> asyncExec1Ran[0] = true);
 		assertFalse(asyncExec0Ran[0]);
 		assertFalse(asyncExec1Ran[0]);
+		assertFalse(asyncExec2Ran[0]);
 		while (display.readAndDispatch()) {}
 		assertTrue(mySynchronizer.invoked);
 		assertTrue(asyncExec0Ran[0]);
 		assertTrue(asyncExec1Ran[0]);
+		assertTrue(asyncExec2Ran[0]);
+		assertTrue(asyncExec3Ran[0]);
 	} finally {
 		display.dispose();
 	}
