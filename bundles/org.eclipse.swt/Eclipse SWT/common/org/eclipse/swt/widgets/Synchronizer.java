@@ -190,8 +190,10 @@ boolean runAsyncMessages (boolean all) {
 				if (display != null && !display.isDisposed()) {
 					display.sendPostEvent(SWT.None);
 				}
-				syncThread = null;
-				lock.notifyAll ();
+				if (syncThread!=null) {
+					syncThread = null;
+					lock.notifyAll();
+				}
 			}
 		}
 	} while (all);
