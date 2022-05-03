@@ -23,6 +23,7 @@
 char * GTK4_nativeFunctionNames[] = {
 	"gdk_1clipboard_1get_1content",
 	"gdk_1clipboard_1get_1formats",
+	"gdk_1clipboard_1set",
 	"gdk_1clipboard_1set_1text",
 	"gdk_1content_1formats_1builder_1add_1mime_1type",
 	"gdk_1content_1formats_1builder_1free_1to_1formats",

@@ -567,6 +567,11 @@ public class GTK4 {
 	public static final native void gdk_clipboard_set_text(long clipboard, byte[] text);
 	/**
 	 * @param clipboard cast=(GdkClipboard*)
+	 * @param type cast=(GType)
+	 */
+	public static final native void gdk_clipboard_set(long clipboard, int type, long data);
+	/**
+	 * @param clipboard cast=(GdkClipboard*)
 	 */
 	public static final native void gdk_clipboard_get_formats(long clipboard);
 	/**

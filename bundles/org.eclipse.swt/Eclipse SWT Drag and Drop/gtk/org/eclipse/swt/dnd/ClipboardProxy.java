@@ -237,14 +237,12 @@ private boolean setData_gtk4(Clipboard owner, Object[] data, Transfer[] dataType
 }
 
 private boolean setContentFromType(long clipboard, String string, Object data) {
-
-	//TextTransfer
-	if(data.getClass() == String.class) {
-		GTK4.gdk_clipboard_set_text(clipboard, Converter.javaStringToCString((String)data));
+	if(data != null) {
+		if(string.equals("STRING") || string.equals("text/rtf")) {
+			GTK4.gdk_clipboard_set_text(clipboard, Converter.javaStringToCString((String)data));
+		}
 		return true;
 	}
-
-
 	return false;
 }
 }

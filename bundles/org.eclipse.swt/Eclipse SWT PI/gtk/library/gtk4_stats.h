@@ -33,6 +33,7 @@ extern char* GTK4_nativeFunctionNames[];
 typedef enum {
 	gdk_1clipboard_1get_1content_FUNC,
 	gdk_1clipboard_1get_1formats_FUNC,
+	gdk_1clipboard_1set_FUNC,
 	gdk_1clipboard_1set_1text_FUNC,
 	gdk_1content_1formats_1builder_1add_1mime_1type_FUNC,
 	gdk_1content_1formats_1builder_1free_1to_1formats_FUNC,
