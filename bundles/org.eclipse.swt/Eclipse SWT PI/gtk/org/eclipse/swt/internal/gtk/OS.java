@@ -155,6 +155,7 @@ public class OS extends C {
 	public static final int G_LOG_LEVEL_MASK = 0xfffffffc;
 	public static final int G_APP_INFO_CREATE_NONE = 0;
 	public static final int G_APP_INFO_CREATE_SUPPORTS_URIS  = (1 << 1);
+	public static final int GTK_TYPE_TEXT_BUFFER = 21;
 	public static final int PANGO_ALIGN_LEFT = 0;
 	public static final int PANGO_ALIGN_CENTER = 1;
 	public static final int PANGO_ALIGN_RIGHT = 2;

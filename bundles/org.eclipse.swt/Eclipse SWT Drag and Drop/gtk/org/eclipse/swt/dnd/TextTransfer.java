@@ -42,9 +42,9 @@ public class TextTransfer extends ByteArrayTransfer {
 	private static final String COMPOUND_TEXT = "COMPOUND_TEXT"; //$NON-NLS-1$
 	private static final String UTF8_STRING = "UTF8_STRING"; //$NON-NLS-1$
 	private static final String STRING = "STRING"; //$NON-NLS-1$
-	private static final int COMPOUND_TEXT_ID = registerType(COMPOUND_TEXT);
-	private static final int UTF8_STRING_ID = registerType(UTF8_STRING);
-	private static final int STRING_ID = registerType(STRING);
+	private static final int COMPOUND_TEXT_ID = GTK.GTK4 ? 0 : registerType(COMPOUND_TEXT);
+	private static final int UTF8_STRING_ID = GTK.GTK4 ? 0 : registerType(UTF8_STRING);
+	private static final int STRING_ID = GTK.GTK4 ? 0 : registerType(STRING);
 
 private TextTransfer() {}
 

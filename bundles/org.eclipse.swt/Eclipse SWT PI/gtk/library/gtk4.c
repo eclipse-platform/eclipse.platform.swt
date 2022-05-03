@@ -46,6 +46,16 @@ JNIEXPORT void JNICALL GTK4_NATIVE(gdk_1clipboard_1get_1formats)
 }
 #endif
 
+#ifndef NO_gdk_1clipboard_1set
+JNIEXPORT void JNICALL GTK4_NATIVE(gdk_1clipboard_1set)
+	(JNIEnv *env, jclass that, jlong arg0, jint arg1, jlong arg2)
+{
+	GTK4_NATIVE_ENTER(env, that, gdk_1clipboard_1set_FUNC);
+	gdk_clipboard_set((GdkClipboard*)arg0, (GType)arg1, arg2);
+	GTK4_NATIVE_EXIT(env, that, gdk_1clipboard_1set_FUNC);
+}
+#endif
+
 #ifndef NO_gdk_1clipboard_1set_1text
 JNIEXPORT void JNICALL GTK4_NATIVE(gdk_1clipboard_1set_1text)
 	(JNIEnv *env, jclass that, jlong arg0, jbyteArray arg1)

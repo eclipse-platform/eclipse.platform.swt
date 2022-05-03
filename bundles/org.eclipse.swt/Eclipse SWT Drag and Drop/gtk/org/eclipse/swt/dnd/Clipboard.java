@@ -322,14 +322,14 @@ public Object getContents(Transfer transfer, int clipboards) {
 private Object getContents_gtk4(Transfer transfer, int clipboards) {
 
 	long contents = GTK4.gdk_clipboard_get_content(Clipboard.GTKCLIPBOARD);
+	if(contents == 0) return null;
 	long value = OS.g_malloc (OS.GValue_sizeof ());
 	C.memset (value, 0, OS.GValue_sizeof ());
 
-	//Pasting of text (TextTransfer)
-	if(transfer.getTypeNames()[0].equals("STRING")) {
+	//Pasting of text (TextTransfer/RTFTransfer)
+	if(transfer.getTypeNames()[0].equals("STRING") || transfer.getTypeNames()[0].equals("text/rtf")) {
 		OS.g_value_init(value, OS.G_TYPE_STRING());
-		if (!GTK4.gdk_content_provider_get_value (contents, value, null))
-			return null;
+		if (!GTK4.gdk_content_provider_get_value (contents, value, null)) return null;
 		long cStr = OS.g_value_get_string(value);
 		long [] items_written = new long [1];
 		long utf16Ptr = OS.g_utf8_to_utf16(cStr, -1, null, items_written, null);
@@ -340,6 +340,12 @@ private Object getContents_gtk4(Transfer transfer, int clipboards) {
 		C.memmove(buffer, utf16Ptr, length * 2);
 		OS.g_free(utf16Ptr);
 		String str = new String(buffer);
+		if(transfer.getTypeNames()[0].equals("text/rtf") && !str.contains("{\\rtf1")) {
+			return null;
+		}
+		if(transfer.getTypeNames()[0].equals("STRING") && str.contains("{\\rtf1")){
+			return null;
+		}
 		return str;
 	}
 	//TODO: [GTK4] Other cases
