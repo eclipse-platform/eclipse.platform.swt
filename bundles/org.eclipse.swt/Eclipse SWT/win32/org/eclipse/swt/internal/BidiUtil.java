@@ -456,66 +456,77 @@ public static void removeLanguageListener (long hwnd) {
 public static void removeLanguageListener (Control control) {
 	removeLanguageListener(control.handle);
 }
+
 /**
  * Determine the base direction for the given text. The direction is derived
- * from that of the first strong bidirectional character. In case the text
- * doesn't contain any strong characters, the base direction is to be
- * derived from a higher-level protocol (e.g. the widget orientation).
+ * from the first strong bidirectional RIGHT_TO_LEFT character. Or if that does
+ * not exist from the first strong LEFT_TO_RIGHT character
  * <p>
  *
- * @param text
- *            Text base direction should be resolved for.
+ * @param text Text base direction should be resolved for.
  * @return SWT#LEFT_RIGHT or SWT#RIGHT_TO_LEFT if the text contains strong
  *         characters and thus the direction can be resolved, SWT#NONE
  *         otherwise.
  * @since 3.105
  */
-public static int resolveTextDirection (String text) {
-	if (text == null) return SWT.NONE;
-	int length = text.length();
-	if (length == 0) return SWT.NONE;
-	char[] rtlProbe = {' ', ' ', '1'};
-	char[] ltrProbe = {'\u202b', 'a', ' '};
-	char[] numberProbe = {'\u05d0', ' ', ' '};
-	GCP_RESULTS result = new GCP_RESULTS();
-	result.lStructSize = GCP_RESULTS.sizeof;
-	int nGlyphs = result.nGlyphs = ltrProbe.length;
-	long hHeap = OS.GetProcessHeap();
-	long lpOrder = result.lpOrder = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, nGlyphs * 4);
-	long hdc = OS.GetDC(0);
-	int[] order = new int[1];
+public static int resolveTextDirection(String text) {
+	if (text == null)
+		return SWT.NONE;
 	int textDirection = SWT.NONE;
-	for (int i = 0; i < length; i++) {
-		char ch = text.charAt(i);
-		rtlProbe[0] = ch;
-		OS.GetCharacterPlacement(hdc, rtlProbe, rtlProbe.length, 0, result, OS.GCP_REORDER);
-		OS.MoveMemory(order, result.lpOrder, 4);
-		if (order[0] == 2) {
-			textDirection = SWT.RIGHT_TO_LEFT;
+	for (int i = 0; i < text.length(); i++) {
+		char c = text.charAt(i);
+		byte directionality = Character.getDirectionality(c);
+		int strongDirection = getStrongDirection(directionality);
+		if (strongDirection != SWT.NONE) {
+			textDirection = strongDirection;
+		}
+		if (textDirection == SWT.RIGHT_TO_LEFT) {
 			break;
 		}
-		if (textDirection == SWT.LEFT_TO_RIGHT) {
-			// If textDirection is already LTR, skip probing for LTR again.
-			continue;
-		}
-		ltrProbe[2] = ch;
-		OS.GetCharacterPlacement(hdc, ltrProbe, ltrProbe.length, 0, result, OS.GCP_REORDER);
-		OS.MoveMemory(order, result.lpOrder + 4, 4);
-		if (order[0] == 1) {
-			numberProbe[2] = ch;
-			OS.GetCharacterPlacement(hdc, numberProbe, numberProbe.length, 0, result, OS.GCP_REORDER);
-			OS.MoveMemory(order, result.lpOrder, 4);
-			if (order[0] == 0) {
-				textDirection = SWT.LEFT_TO_RIGHT;
-				// Do-not break here, instead scan the complete text for any RTL possibility
-			}
-		}
 	}
-	OS.ReleaseDC (0, hdc);
-	OS.HeapFree(hHeap, 0, lpOrder);
 	return textDirection;
-
 }
+
+static int getStrongDirection(byte directionality) {
+	switch (directionality) {
+	// Strong bidirectional character types in the Unicode specification:
+	case Character.DIRECTIONALITY_LEFT_TO_RIGHT:
+		return SWT.LEFT_TO_RIGHT;
+	case Character.DIRECTIONALITY_RIGHT_TO_LEFT:
+	case Character.DIRECTIONALITY_RIGHT_TO_LEFT_ARABIC:
+		return SWT.RIGHT_TO_LEFT;
+
+	// Weak:
+//	case Character.DIRECTIONALITY_EUROPEAN_NUMBER: return SWT.NONE;
+//	case Character.DIRECTIONALITY_EUROPEAN_NUMBER_SEPARATOR: return SWT.NONE;
+//	case Character.DIRECTIONALITY_EUROPEAN_NUMBER_TERMINATOR: return SWT.NONE;
+	// XXX Arabic Number is not a strong direction, however former windows algorithm
+	// would detect some as LEFT_TO_RIGHT and some as RIGHT_TO_LEFT:
+//	case Character.DIRECTIONALITY_ARABIC_NUMBER: return SWT.RIGHT_TO_LEFT;
+//	case Character.DIRECTIONALITY_COMMON_NUMBER_SEPARATOR: return SWT.NONE;
+//	case Character.DIRECTIONALITY_NONSPACING_MARK: return SWT.LEFT_TO_RIGHT;
+//	case Character.DIRECTIONALITY_BOUNDARY_NEUTRAL: return SWT.NONE;
+
+	// Neutral:
+//	case Character.DIRECTIONALITY_PARAGRAPH_SEPARATOR: return SWT.LEFT_TO_RIGHT;
+//	case Character.DIRECTIONALITY_SEGMENT_SEPARATOR: return SWT.LEFT_TO_RIGHT;
+//	case Character.DIRECTIONALITY_WHITESPACE: return SWT.NONE;
+//	case Character.DIRECTIONALITY_OTHER_NEUTRALS: return SWT.NONE;
+
+	// Explicit Formatting:
+//	case Character.DIRECTIONALITY_LEFT_TO_RIGHT_EMBEDDING: return SWT.LEFT_TO_RIGHT;
+//	case Character.DIRECTIONALITY_LEFT_TO_RIGHT_OVERRIDE: return SWT.LEFT_TO_RIGHT;
+//	case Character.DIRECTIONALITY_RIGHT_TO_LEFT_EMBEDDING: return SWT.LEFT_TO_RIGHT;
+//	case Character.DIRECTIONALITY_RIGHT_TO_LEFT_OVERRIDE: return SWT.LEFT_TO_RIGHT;
+//	case Character.DIRECTIONALITY_POP_DIRECTIONAL_FORMAT: return SWT.LEFT_TO_RIGHT;
+//	case Character.DIRECTIONALITY_LEFT_TO_RIGHT_ISOLATE: return SWT.LEFT_TO_RIGHT;
+//	case Character.DIRECTIONALITY_RIGHT_TO_LEFT_ISOLATE: return SWT.LEFT_TO_RIGHT;
+//	case Character.DIRECTIONALITY_FIRST_STRONG_ISOLATE: return SWT.LEFT_TO_RIGHT;
+//	case Character.DIRECTIONALITY_POP_DIRECTIONAL_ISOLATE: return SWT.LEFT_TO_RIGHT;
+	}
+	return SWT.NONE;
+}
+
 /**
  * Switch the keyboard language to the specified language type.  We do
  * not distinguish between multiple bidi or multiple non-bidi languages, so
