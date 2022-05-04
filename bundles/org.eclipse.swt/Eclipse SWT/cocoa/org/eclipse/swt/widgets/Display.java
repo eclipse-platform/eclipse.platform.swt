@@ -621,15 +621,16 @@ public void asyncExec (Runnable runnable) {
  * <li>If the calling thread is the user-interface thread of this display it is
  * executed immediately and the method returns after the command has run, any
  * runtime exception thrown will be rethrown at the caller</li>
- * <li>In all other cases the the <code>run()</code> method of the runnable is asynchronously executed as with the
- * method {@link Display#asyncExec(Runnable)} at the next reasonable
- * opportunity. The caller of this method continues to run in parallel, and is
- * not notified when the runnable has completed.</li>
+ * <li>In all other cases the the <code>run()</code> method of the runnable is
+ * asynchronously executed as with the method
+ * {@link Display#asyncExec(Runnable)} at the next reasonable opportunity. The
+ * caller of this method continues to run in parallel, and is not notified when
+ * the runnable has completed.</li>
  * </ul>
  * <p>
- * This can be used in cases where one want to execute some piece of code that should
- * be guaranteed to run in the user-interface thread regardless of the current
- * thread.
+ * This can be used in cases where one want to execute some piece of code that
+ * should be guaranteed to run in the user-interface thread regardless of the
+ * current thread.
  * </p>
  *
  * <p>
@@ -654,14 +655,20 @@ public void asyncExec (Runnable runnable) {
  *
  * @param runnable the runnable to execute in the user-interface thread, never
  *                 <code>null</code>
+ * @throws RejectedExecutionException if this task cannot be accepted for
+ *                                    execution
+ * @throws NullPointerException       if runnable is null
  */
 @Override
-public void execute(Runnable command) {
-	Objects.requireNonNull(command);
+public void execute(Runnable runnable) {
+	Objects.requireNonNull(runnable);
+	if (isDisposed()) {
+		throw new RejectedExecutionException(new SWTException (SWT.ERROR_WIDGET_DISPOSED, null));
+	}
 	if (thread == Thread.currentThread()) {
-		command.run();
+		runnable.run();
 	} else {
-		asyncExec(command);
+		asyncExec(runnable);
 	}
 }
 
