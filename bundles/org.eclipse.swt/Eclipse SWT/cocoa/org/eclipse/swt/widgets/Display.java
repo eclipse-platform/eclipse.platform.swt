@@ -621,15 +621,15 @@ public void asyncExec (Runnable runnable) {
  * <li>If the calling thread is the user-interface thread of this display it is
  * executed immediately and the method returns after the command has run, any
  * runtime exception thrown will be rethrown at the caller</li>
- * <li>In all other cases the command is asynchronously execute as with the
+ * <li>In all other cases the the <code>run()</code> method of the runnable is asynchronously executed as with the
  * method {@link Display#asyncExec(Runnable)} at the next reasonable
  * opportunity. The caller of this method continues to run in parallel, and is
  * not notified when the runnable has completed.</li>
  * </ul>
  * <p>
- * This can be used in cases where one want to execute some piece of code should
+ * This can be used in cases where one want to execute some piece of code that should
  * be guaranteed to run in the user-interface thread regardless of the current
- * context thread.
+ * thread.
  * </p>
  *
  * <p>
