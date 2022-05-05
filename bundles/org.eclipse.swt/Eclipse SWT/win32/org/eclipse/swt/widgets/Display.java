@@ -848,7 +848,13 @@ public void execute(Runnable runnable) {
 		throw new RejectedExecutionException(new SWTException (SWT.ERROR_WIDGET_DISPOSED, null));
 	}
 	if (thread == Thread.currentThread()) {
-		runnable.run();
+		try {
+			runnable.run ();
+		} catch (RuntimeException exception) {
+			getRuntimeExceptionHandler ().accept (exception);
+		} catch (Error error) {
+			getErrorHandler ().accept (error);
+		}
 	} else {
 		asyncExec(runnable);
 	}
