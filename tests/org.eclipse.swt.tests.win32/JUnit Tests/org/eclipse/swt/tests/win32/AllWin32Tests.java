@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2018, 2022 Red Hat and others. All rights reserved.
+ * Copyright (c) 2018 Red Hat and others. All rights reserved.
  * The contents of this file are made available under the terms
  * of the GNU Lesser General Public License (LGPL) Version 2.1 that
  * accompanies this distribution (lgpl-v21.txt).  The LGPL is also
@@ -14,6 +14,7 @@
  */
 package org.eclipse.swt.tests.win32;
 
+import org.eclipse.swt.widgets.Test_org_eclipse_swt_widgets_Display;
 import org.junit.runner.JUnitCore;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
@@ -22,7 +23,7 @@ import org.junit.runners.Suite;
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
 	Test_org_eclipse_swt_dnd_DND.class,
-//	Test_org_eclipse_swt_widgets_Display.class,
+	Test_org_eclipse_swt_widgets_Display.class,
 })
 
 public class AllWin32Tests {
