@@ -259,6 +259,19 @@
 		<antcall target="check_preprocessing"/>
 	</target>
 	
+	<target name="check_compilation_one_platform">
+			<mkdir dir="${tmphome}"/>
+			<!-- <property name="tmpdir" value="${tmphome}/check.compile.${TAG}"/> -->
+			<property name="buildDir" value="${tmpdir}/build"/>
+			<property name="projectDir" value="${repo.src}/bundles/org.eclipse.swt"/>
+
+			<!-- 64 bit -->
+			<antcall target="build_classes">
+				<param name="cp" value="${platform_cp}"/>
+			</antcall>
+			<antcall target="check_preprocessing"/>
+		</target>
+	
 	<target name="update_sha1_file">
 		<!-- Update build.sha1 file -->
 		<exec dir="${repo.src}" executable="git" failonerror="true" outputproperty="HEAD_TAG">
