@@ -50,7 +50,7 @@ public class Test_Memory_Leak {
 
 		for (int i = 1; i <= count; i++) {
 			browser = new Browser(shell, SWT.None);
-			browser.setUrl("http://www.google.com");
+			browser.setUrl("https://www.google.com");
 			while (display.readAndDispatch()) {
 				// This loop is needed because some disposal is delayed and done asynchronously in main loop.
 				// This loop typically performs ~12 iterations.

@@ -42,13 +42,20 @@ jobs:
       uses: GabrielBB/xvfb-action@v1
       with:
        run: >- 
-        mvn --batch-mode 
-        -Pbuild-individual-bundles 
-        -Pbuild-individual-platform 
-        -Dswt.build.platform_cp=${{ matrix.config.cp }} 
-        -DforkCount=0 
-        -Dcompare-version-with-baselines.skip=false 
-        -Dmaven.compiler.failOnWarning=true 
-        -DskipTests 
+        mvn --batch-mode
+        -Pbuild-individual-bundles
+        -Pbuild-individual-platform
+        -Dswt.build.platform_cp=${{ matrix.config.cp }}
+        -DforkCount=1
+        -Dcompare-version-with-baselines.skip=false
+        -Dmaven.compiler.failOnWarning=true
+        -Dmaven.test.failure.ignore=true
         clean verify
        working-directory: eclipse.platform.swt
+    - name: Upload Test Results
+      uses: actions/upload-artifact@v3
+      with:
+        name: test-results-${{ matrix.config.native }}
+        if-no-files-found: error
+        path: |
+          ${{ github.workspace }}/**/target/surefire-reports/*.xml
