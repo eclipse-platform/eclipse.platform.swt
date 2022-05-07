@@ -151,7 +151,7 @@ public void test_evalute_Cookies () {
 	browser.addProgressListener(ProgressListener.completedAdapter(event -> loaded.set(true)));
 
 	// Using JavaScript Cookie API on local (file) URL gives DOM Exception 18
-	browser.setUrl("http://www.eclipse.org/swt");
+	browser.setUrl("https://www.eclipse.org/swt");
 	shell.open();
 	waitForPassCondition(loaded::get);
 
@@ -175,25 +175,25 @@ public void test_ClearAllSessionCookies () {
 	browser.addProgressListener(ProgressListener.completedAdapter(event -> loaded.set(true)));
 
 	// Using JavaScript Cookie API on local (file) URL gives DOM Exception 18
-	browser.setUrl("http://www.eclipse.org/swt");
+	browser.setUrl("https://www.eclipse.org/swt");
 	shell.open();
 	waitForPassCondition(loaded::get);
 
 	// Set the cookies
-	Browser.setCookie("cookie1=value1", "http://www.eclipse.org/swt");
-	Browser.setCookie("cookie2=value2", "http://www.eclipse.org/swt");
+	Browser.setCookie("cookie1=value1", "https://www.eclipse.org/swt");
+	Browser.setCookie("cookie2=value2", "https://www.eclipse.org/swt");
 
 	// Get the cookies
-	String v1 = Browser.getCookie("cookie1", "http://www.eclipse.org/swt");
-	String v2 = Browser.getCookie("cookie2", "http://www.eclipse.org/swt");
+	String v1 = Browser.getCookie("cookie1", "https://www.eclipse.org/swt");
+	String v2 = Browser.getCookie("cookie2", "https://www.eclipse.org/swt");
 	assertEquals("value1", v1);
 	assertEquals("value2", v2);
 
 	Browser.clearSessions();
 
 	// Should be empty
-	String e1 = Browser.getCookie("cookie1", "http://www.eclipse.org/swt");
-	String e2 = Browser.getCookie("cookie2", "http://www.eclipse.org/swt");
+	String e1 = Browser.getCookie("cookie1", "https://www.eclipse.org/swt");
+	String e2 = Browser.getCookie("cookie2", "https://www.eclipse.org/swt");
 	assertTrue(e1 == null || e1.isEmpty());
 	assertTrue(e2 == null || e2.isEmpty());
 }
@@ -206,18 +206,18 @@ public void test_get_set_Cookies() {
 	browser.addProgressListener(ProgressListener.completedAdapter(event -> loaded.set(true)));
 
 	// Using JavaScript Cookie API on local (file) URL gives DOM Exception 18
-	browser.setUrl("http://www.eclipse.org/swt");
+	browser.setUrl("https://www.eclipse.org/swt");
 	shell.open();
 	waitForPassCondition(loaded::get);
 
 	// Set the cookies
-	Browser.setCookie("cookie1=value1", "http://www.eclipse.org/swt");
-	Browser.setCookie("cookie2=value2", "http://www.eclipse.org/swt");
+	Browser.setCookie("cookie1=value1", "https://www.eclipse.org/swt");
+	Browser.setCookie("cookie2=value2", "https://www.eclipse.org/swt");
 
 	// Get the cookies
-	String v1 = Browser.getCookie("cookie1", "http://www.eclipse.org/swt");
+	String v1 = Browser.getCookie("cookie1", "https://www.eclipse.org/swt");
 	assertEquals("value1", v1);
-	String v2 = Browser.getCookie("cookie2", "http://www.eclipse.org/swt");
+	String v2 = Browser.getCookie("cookie2", "https://www.eclipse.org/swt");
 	assertEquals("value2", v2);
 }
 
@@ -849,7 +849,7 @@ public void test_setUrl_remote() {
 	// This test sometimes times out if build server has a bad connection. Thus for this test we have a longer timeout.
 	secondsToWaitTillFail = 35;
 
-	String url = "http://example.com"; // example.com loads very quickly and conveniently has a consistent title
+	String url = "https://example.com"; // example.com loads very quickly and conveniently has a consistent title
 
 	// Skip this test if we don't have a working Internet connection.
 	assumeTrue("Skipping test due to bad internet connection", checkInternet(url));
@@ -1455,7 +1455,7 @@ private void getText_helper(String testString, String expectedOutput) {
 @Test
 public void test_stop() {
 	/* THIS TEST REQUIRES WEB ACCESS! How else can we really test the http:// part of a browser widget? */
-	browser.setUrl("http://www.eclipse.org/swt");
+	browser.setUrl("https://www.eclipse.org/swt");
 	waitForMilliseconds(1000);
 	browser.stop();
 }
@@ -2266,6 +2266,9 @@ void waitForMilliseconds(final int milliseconds) {
  * @return true if server responded with correct code (200), false otherwise.
  */
 private static Boolean checkInternet(String url) {
+	if (url!=null && url.toLowerCase().startsWith("http://")) {
+		throw new IllegalArgumentException("please use https instead, http do not work on mac out of the box and your test will hang there!");
+	}
 	HttpURLConnection connection = null;
 	try {
 		connection = (HttpURLConnection) new URL(url).openConnection();
@@ -2274,7 +2277,7 @@ private static Boolean checkInternet(String url) {
 		if (code == 200)
 			return true;
 	} catch (MalformedURLException e) {
-		System.err.println("Given url is malformed: " + url + "Try a fully formed url like: http://www.example.com");
+		System.err.println("Given url is malformed: " + url + "Try a fully formed url like: https://www.example.com");
 		e.printStackTrace();
 	} catch (IOException e) {
 		// No connection was made.
