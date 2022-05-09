@@ -32,6 +32,7 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.time.Instant;
+import java.util.Locale;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicIntegerArray;
@@ -1446,7 +1447,7 @@ private void getText_helper(String testString, String expectedOutput) {
 			+ "Expected:"+testString+"\n"
 			+ "Actual:"+returnString.get()
 			: "Test timed out";
-	assertEquals(error_msg, expectedOutput, returnString.get());
+	assertEquals(error_msg, expectedOutput.toLowerCase(Locale.ENGLISH), returnString.get().replace("\r", "").replace("\n", "").toLowerCase(Locale.ENGLISH));
 }
 
 /**

@@ -19,6 +19,10 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import java.util.Arrays;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTError;
 import org.eclipse.swt.graphics.Point;
@@ -157,19 +161,39 @@ public void test_getPrinterList() {
 		/* If there aren't any printers, verify that the
 		 * printer list is empty.
 		 */
-		PrinterData list[] = Printer.getPrinterList();
-		if (list.length  == 1) {
-			if (SWT.getPlatform().equals("gtk")) {
-				/* Even though there is no default printer data,
-				 * on GTK it is still possible to have a print
-				 * to file backend
-				 */
-				assertEquals("GtkPrintBackendFile", list[0].driver);
-			}
-		} else {
-		assertEquals("printer list contains items even though there are no printers",
-				0 , list.length);
+		Stream<PrinterData> printerStream = Arrays.stream(Printer.getPrinterList());
+
+		if (SWT.getPlatform().equals("gtk")) {
+			/* Even though there is no default printer data,
+			 * on GTK it is still possible to have a print
+			 * to file backend
+			 */
+			printerStream = printerStream.filter(pd->{
+				if ("GtkPrintBackendFile".equals(pd.driver)) {
+					return false;
+				}
+				return true;
+			});
+		} else if (SWT.getPlatform().equals("win32")) {
+			printerStream = printerStream.filter(pd->{
+				if (pd.name != null) {
+					/*
+					 * Windows also has some default (non hardware) printer by default
+					 */
+					switch(pd.name.toLowerCase()) {
+					case "fax":
+					case "microsoft xps document writer":
+					case "microsoft print to pdf":
+						return false;
+					}
+				}
+				return true;
+			});
 		}
+		PrinterData[] list = printerStream.toArray(PrinterData[]::new);
+			String printerNames = Arrays.stream(list).map(String::valueOf).collect(Collectors.joining(", "));
+		assertEquals("printer list contains items even though there are no printers, printers from list are: "+printerNames,
+				0 , list.length);
 	} else {
 		/* If there is at least a default printer, verify
 		 * that the printer list is not empty.
