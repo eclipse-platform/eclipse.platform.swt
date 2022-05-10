@@ -24,6 +24,8 @@
   <properties>
     <code.ignoredWarnings>${tests.ignoredWarnings}</code.ignoredWarnings>
     <tycho.testArgLine></tycho.testArgLine>
+    <!-- Skip all tests on build servers, because it contains platform specific code -->
+    <skipNativeTests>true</skipNativeTests>
   </properties>
   <build>
     <plugins>
@@ -32,7 +34,7 @@
         <artifactId>tycho-surefire-plugin</artifactId>
         <configuration>
           <!-- When adding a test suite in the future, make sure to specify os-jvm-flags in argLine. See swt.tests pom.xml -->
-          <skipTests>true</skipTests> <!-- Skip all tests on build servers, because it contains platform specific code -->
+          <skipTests>${skipNativeTests}</skipTests> 
         </configuration>
       </plugin>
     </plugins>
