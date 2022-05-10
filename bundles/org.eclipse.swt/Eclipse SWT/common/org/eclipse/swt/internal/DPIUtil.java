@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2017 IBM Corporation and others.
+ * Copyright (c) 2022 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -471,10 +471,6 @@ public static int getZoomForAutoscaleProperty (int nativeDeviceZoom) {
 	}
 	if (zoom == 0) { // || "integer".equalsIgnoreCase (value) || "integer200".equalsIgnoreCase (value)
 		zoom = Math.max ((nativeDeviceZoom + 25) / 100 * 100, 100);
-		if (!"integer".equalsIgnoreCase(autoScaleValue)) {
-			// integer200, or default
-			zoom = Math.min (zoom, 200);
-		}
 	}
 	return zoom;
 }
