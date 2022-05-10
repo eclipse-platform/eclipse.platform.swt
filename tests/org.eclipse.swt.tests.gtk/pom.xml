@@ -24,6 +24,8 @@
   <properties>
     <code.ignoredWarnings>${tests.ignoredWarnings}</code.ignoredWarnings>
     <tycho.testArgLine></tycho.testArgLine>
+    <!-- Skip all tests on build servers, because it contains platform specific code -->
+    <skipNativeTests>true</skipNativeTests>
   </properties>
   <build>
     <plugins>
@@ -31,7 +33,7 @@
         <groupId>org.eclipse.tycho</groupId>
         <artifactId>tycho-surefire-plugin</artifactId>
         <configuration>
-          <skipTests>true</skipTests> <!-- Skip all tests on build servers, because it contains platform specific code -->
+          <skipTests>${skipNativeTests}</skipTests> 
         </configuration>
       </plugin>
     </plugins>
