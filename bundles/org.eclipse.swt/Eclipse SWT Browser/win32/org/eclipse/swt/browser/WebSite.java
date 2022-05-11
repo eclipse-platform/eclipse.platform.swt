@@ -184,7 +184,7 @@ protected void createCOMInterfaces () {
 }
 
 @Override
-protected void disposeCOMInterfaces() {
+protected void disposeCOMInterfaces() { 
 	super.disposeCOMInterfaces();
 	if (iDocHostUIHandler != null) {
 		iDocHostUIHandler.dispose();
