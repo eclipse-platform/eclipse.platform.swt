@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2021 IBM Corporation and others.
+ * Copyright (c) 2000, 2022 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -4929,8 +4929,27 @@ LRESULT WM_DPICHANGED (long wParam, long lParam) {
 		event.widget = this;
 		event.detail = newSWTZoom;
 		event.doit = true;
-		notifyListeners(SWT.ZoomChanged, event);
-		return LRESULT.ZERO;
+		/*
+		 * Update DPIUtil cached zoom value to new SWT zoom, otherwise 'SWT.ZoomChange'
+		 * event is not throw consistently on subsequent zoom changes. Also Note:-
+		 * DPIUtil cached zoom value to be updated only once per 'SWT.ZoomChanged' event
+		 */
+		if (this.getListeners(SWT.ZoomChanged).length > 0) {
+			/*
+			 * Under ideal scenario the order of updating DPIUtil zoom cache and notify
+			 * Listeners shouldn't matter, but currently SWT/Eclipse doesn't support dynamic
+			 * zoom switching, hence below order of updating DPIUtil zoom cache works to
+			 * consistently receive 'SWT.ZoomChange' event.
+			 */
+			if (DPIUtil.equalsDeviceStartZoom(newSWTZoom)) {
+				DPIUtil.setDeviceZoom(nativeZoom);
+				notifyListeners(SWT.ZoomChanged, event);
+			} else {
+				notifyListeners(SWT.ZoomChanged, event);
+				DPIUtil.setDeviceZoom(nativeZoom);
+			}
+			return LRESULT.ZERO;
+		}
 	}
 	return LRESULT.ONE;
 }
