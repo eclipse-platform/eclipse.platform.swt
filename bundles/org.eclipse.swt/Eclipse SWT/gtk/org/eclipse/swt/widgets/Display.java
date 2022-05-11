@@ -619,6 +619,7 @@ static void setDevice (Device device) {
  */
 public Display () {
 	this (null);
+	System.out.println("TEST CHANGE FOR WORKFLOW TESTING");
 }
 
 /**
