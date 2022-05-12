@@ -225,7 +225,7 @@ protected void create(DeviceData deviceData) {
 		/* Updating printInfo from PMPrintSettings overrides values in the printInfo dictionary. */
 		printInfo.updateFromPMPrintSettings();
 		NSMutableDictionary dict = printInfo.dictionary();
-		if (data.collate != false) dict.setValue(NSNumber.numberWithBool(data.collate), OS.NSPrintMustCollate);
+		if (data.collate) dict.setValue(NSNumber.numberWithBool(data.collate), OS.NSPrintMustCollate);
 		if (data.copyCount != 1) dict.setValue(NSNumber.numberWithInt(data.copyCount), OS.NSPrintCopies);
 		dict.setValue(NSNumber.numberWithInt(data.orientation == PrinterData.LANDSCAPE ? OS.NSLandscapeOrientation : OS.NSPortraitOrientation), OS.NSPrintOrientation);
 		if (data.printToFile) {
