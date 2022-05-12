@@ -403,7 +403,7 @@ public PrinterData open() {
 			devmode.dmFields |= OS.DM_COPIES;
 			devmode.dmCopies = (short)printerData.copyCount;
 		}
-		if (printerData.collate != false) {
+		if (printerData.collate) {
 			devmode.dmFields |= OS.DM_COLLATE;
 			devmode.dmCollate = OS.DMCOLLATE_TRUE;
 		}

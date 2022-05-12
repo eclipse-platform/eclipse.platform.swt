@@ -249,7 +249,7 @@ protected void create(DeviceData deviceData) {
 			devmode.dmFields |= OS.DM_COPIES;
 			devmode.dmCopies = (short)data.copyCount;
 		}
-		if (data.collate != false) {
+		if (data.collate) {
 			devmode.dmFields |= OS.DM_COLLATE;
 			devmode.dmCollate = OS.DMCOLLATE_TRUE;
 		}
