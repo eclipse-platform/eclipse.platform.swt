@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2021 IBM Corporation and others.
+ * Copyright (c) 2000, 2022 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -547,7 +547,7 @@ Point computeSizeInPixels (int wHint, int hHint, boolean changed) {
 void copyModel(long oldModel, int oldStart, long newModel, int newStart, int modelLength) {
 	long value = OS.g_malloc (OS.GValue_sizeof ());
 	// GValue needs to be initialized with G_VALUE_INIT, which is zeroes
-	OS.memset (value, 0, OS.GValue_sizeof ());
+	C.memset (value, 0, OS.GValue_sizeof ());
 
 	for (int i=0; i<itemCount; i++) {
 		long newIterator = OS.g_malloc (GTK.GtkTreeIter_sizeof ());
