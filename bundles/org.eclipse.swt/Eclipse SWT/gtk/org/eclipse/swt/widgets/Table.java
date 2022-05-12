@@ -276,6 +276,7 @@ long cellDataProc (long tree_column, long cell, long tree_model, long iter, long
 
 boolean checkData (TableItem item) {
 	if (item.cached) return true;
+	if (item.isDisposed()) return false;
 	if ((style & SWT.VIRTUAL) != 0) {
 		item.cached = true;
 		Event event = new Event ();
