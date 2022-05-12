@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2018 IBM Corporation and others.
+ * Copyright (c) 2000, 2022 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -689,7 +689,7 @@ void copyModel (long oldModel, int oldStart, long newModel, int newStart, long o
 	long iter = OS.g_malloc(GTK.GtkTreeIter_sizeof ());
 	long value = OS.g_malloc (OS.GValue_sizeof ());
 	// GValue needs to be initialized with G_VALUE_INIT, which is zeroes
-	OS.memset (value, 0, OS.GValue_sizeof ());
+	C.memset (value, 0, OS.GValue_sizeof ());
 
 	if (GTK.gtk_tree_model_iter_children (oldModel, iter, oldParent))  {
 		long [] oldItems = new long [GTK.gtk_tree_model_iter_n_children (oldModel, oldParent)];
