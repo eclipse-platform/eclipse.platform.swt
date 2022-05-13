@@ -1568,7 +1568,7 @@ void calculateTopIndex(int delta) {
 		// Set top index to partially visible top line if no line is fully
 		// visible but at least some of the widget client area is visible.
 		// Fixes bug 15088.
-		if (topIndex > 0) {
+		if (topIndex >= 0) {
 			if (clientAreaHeight > 0) {
 				int bottomPixel = getVerticalScrollOffset() + clientAreaHeight;
 				topIndexY = getLinePixel(topIndex);
