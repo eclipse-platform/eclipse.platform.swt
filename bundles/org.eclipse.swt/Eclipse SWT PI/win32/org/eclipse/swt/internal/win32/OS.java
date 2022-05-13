@@ -504,6 +504,7 @@ public class OS extends C {
 	public static final int FOS_PICKFOLDERS = 0x20;
 	public static final int FOS_FORCEFILESYSTEM = 0x40;
 	public static final int FOS_ALLOWMULTISELECT = 0x200;
+	public static final int FOS_FILEMUSTEXIST = 0x1000;
 	public static final int FR_PRIVATE = 0x10;
 	public static final int FSHIFT = 0x4;
 	public static final int FVIRTKEY = 0x1;
