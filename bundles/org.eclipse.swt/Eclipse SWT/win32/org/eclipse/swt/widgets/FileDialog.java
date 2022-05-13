@@ -231,6 +231,7 @@ public String open () {
 	int[] options = new int[1];
 	fileDialog.GetOptions(options);
 	options[0] |= OS.FOS_FORCEFILESYSTEM | OS.FOS_NOCHANGEDIR;
+	options[0] &= ~OS.FOS_FILEMUSTEXIST;
 	if ((style & SWT.SAVE) != 0) {
 		if (!overwrite) options[0] &= ~OS.FOS_OVERWRITEPROMPT;
 	} else {
@@ -293,8 +294,7 @@ public String open () {
 		char[] path = (filterPath.replace('/', '\\') + "\0").toCharArray();
 		if (COM.SHCreateItemFromParsingName(path, 0, COM.IID_IShellItem, ppv) == COM.S_OK) {
 			IShellItem psi = new IShellItem(ppv[0]);
-			// Bug 577190: Hard override the filter path using SetFolder.
-			fileDialog.SetFolder(psi);
+			fileDialog.SetDefaultFolder(psi);
 			psi.Release();
 		}
 	}
