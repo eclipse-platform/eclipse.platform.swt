@@ -5024,6 +5024,20 @@ public void test_notFixedLineHeightDoesntChangeLinePixelIfUnnecessary() {
 }
 
 @Test
+public void test_notFixedLineHeightDoesntChangeLinePixelAfterScroll() {
+	text.dispose();
+	text = new StyledText(shell, SWT.V_SCROLL);
+	setWidget(text);
+	String _50lines = ("a".repeat(500) + "\n").repeat(50);
+	text.setText(_50lines);
+	text.setSize(500, 200);
+	text.setTopPixel(20);
+	text.setTopPixel(0);
+	text.setWordWrap(true); // make non fixed line height
+	assertEquals(0, text.getLinePixel(0));
+}
+
+@Test
 public void test_setWordWrapZ(){
 	String testString = "Line1\nLine2";
 
