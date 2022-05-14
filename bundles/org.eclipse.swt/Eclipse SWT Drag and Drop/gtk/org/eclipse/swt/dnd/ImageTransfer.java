@@ -114,7 +114,7 @@ public void javaToNative(Object object, TransferData transferData) {
 		transferData.pValue = buffer[0];
 		transferData.length = (int)(len[0] + 3) / 4 * 4;
 		transferData.result = 1;
-		transferData.format = 32;
+		transferData.format = 16;
 	}
 	image.dispose();
 }
