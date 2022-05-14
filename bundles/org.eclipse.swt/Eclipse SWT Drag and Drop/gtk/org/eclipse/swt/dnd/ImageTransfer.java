@@ -114,7 +114,11 @@ public void javaToNative(Object object, TransferData transferData) {
 		transferData.pValue = buffer[0];
 		transferData.length = (int)(len[0] + 3) / 4 * 4;
 		transferData.result = 1;
-		transferData.format = 32;
+		// The following value has been changed from 32 to 8 as a simple fix for #146
+		// See https://www.cc.gatech.edu/data_files/public/doc/gtk/tutorial/gtk_tut-16.html where it states:
+		// "The format field is actually important here - the X server uses it to figure out whether the data 
+		// needs to be byte-swapped or not. Usually it will be 8 - i.e. a character - or 32 - i.e. a. integer."
+		transferData.format = 8;
 	}
 	image.dispose();
 }
