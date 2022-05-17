@@ -14,11 +14,14 @@
 package org.eclipse.swt.tests.junit;
 
 
+import org.eclipse.test.TracingSuite;
+import org.eclipse.test.TracingSuite.TracingOptions;
 import org.junit.runner.JUnitCore;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 
-@RunWith(Suite.class)
+@RunWith(TracingSuite.class)
+@TracingOptions(stackDumpTimeoutSeconds = 60)
 @Suite.SuiteClasses({
 	Test_org_eclipse_swt_browser_Browser.class,
 })
