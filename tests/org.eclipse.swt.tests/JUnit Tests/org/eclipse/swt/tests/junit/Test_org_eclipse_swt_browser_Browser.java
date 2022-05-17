@@ -33,12 +33,16 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.time.Instant;
 import java.util.Locale;
+import java.util.Map.Entry;
+import java.util.Set;
+import java.util.TreeMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicIntegerArray;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.atomic.AtomicReferenceArray;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTException;
@@ -62,16 +66,23 @@ import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.junit.Before;
+import org.junit.FixMethodOrder;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestName;
+import org.junit.runners.MethodSorters;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.browser.Browser
  *
  * @see org.eclipse.swt.browser.Browser
  */
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class Test_org_eclipse_swt_browser_Browser extends Test_org_eclipse_swt_widgets_Composite {
+
+	static {
+		printSystemEnv();
+	}
 
 	// CONFIG
 	/** This forces tests to display the shell/browser for a brief moment. Useful to see what's going on with broken jUnits */
@@ -128,6 +139,7 @@ public void setUp() {
 	setWidget(browser); // For browser to occupy the whole shell, not just half of it.
 
 	testLog = new StringBuilder("\nTest log:\n");
+	printMemoryUse();
 }
 
 
@@ -2290,4 +2302,50 @@ private static Boolean checkInternet(String url) {
 	return false;
 }
 
+
+private static void printMemoryUse() {
+	System.gc();
+	System.runFinalization();
+	long nax = Runtime.getRuntime().maxMemory();
+	long total = Runtime.getRuntime().totalMemory();
+	long free = Runtime.getRuntime().freeMemory();
+	long used = total - free;
+	System.out.print("\n########### Memory usage reported by JVM ########");
+	System.out.printf(Locale.GERMAN, "%n%,16d bytes max heap", nax);
+	System.out.printf(Locale.GERMAN, "%n%,16d bytes heap allocated", total);
+	System.out.printf(Locale.GERMAN, "%n%,16d bytes free heap", free);
+	System.out.printf(Locale.GERMAN, "%n%,16d bytes used heap", used);
+	System.out.println("\n#################################################\n");
+}
+
+private static void printSystemEnv() {
+    Set<Entry<String, String>> set = new TreeMap<>(System.getenv()).entrySet();
+    StringBuilder sb = new StringBuilder("\n###################### System environment ######################\n");
+    for (Entry<String, String> entry : set) {
+        sb.append(" ").append(entry.getKey()).append("=").append(entry.getValue()).append("\n");
+    }
+
+    sb.append("\n###################### System properties ######################\n");
+    Set<Entry<String, String>> props = getPropertiesSafe();
+    for (Entry<String, String> entry : props) {
+        sb.append(" ").append(entry.getKey()).append("=").append(entry.getValue()).append("\n");
+    }
+    String env = sb.toString();
+    System.out.println(env);
+}
+
+/**
+ * Retrieves properties safely. In case if someone tries to change the properties set
+ * while iterating over the collection, we repeat the procedure till this
+ * works without an error.
+ */
+private static Set<Entry<String, String>> getPropertiesSafe() {
+    try {
+        return new TreeMap<>(System.getProperties().entrySet().stream()
+                .collect(Collectors.toMap(e -> String.valueOf(e.getKey()),
+                        e -> String.valueOf(e.getValue())))).entrySet();
+    } catch (Exception e) {
+        return getPropertiesSafe();
+    }
+}
 }
