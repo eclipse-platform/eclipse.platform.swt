@@ -41,5 +41,7 @@ Create a new bug:
 -----------------
 
 You can register bugs and feature requests in the Github Issue Tracker. Remember that contributions are always welcome!
+- [View existing SWT issues](https://github.com/eclipse-platform/eclipse.platform.swt/issues)
+- [New SWT issue](https://github.com/eclipse-platform/eclipse.platform.swt/issues/new)
 
 Please bear in mind that this project is almost entirely developed by volunteers. If you do not provide the implementation yourself (or pay someone to do it for you), the bug might never get fixed. If it is a serious bug, other people than you might care enough to provide a fix.
