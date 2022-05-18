@@ -75,7 +75,7 @@ public void tearDown() {
 		}
 	}
 	assertTrue(shell.isDisposed());
-	if(SwtTestUtil.isCocoa) {
+	if(SwtTestUtil.isCocoa || SwtTestUtil.isGTK) {
 		// process pending events to properly close the shell
 		while (display != null && !display.isDisposed() && display.readAndDispatch()) {
 		}
@@ -213,7 +213,7 @@ protected void hookExpectedEvents(Widget w, String[] types, final java.util.List
 }
 
 protected String getTestName() {
-	String test = name.getMethodName();
+	String test = "" + name.getMethodName();
 	int index = test.lastIndexOf('_');
 	if(index != -1)
 		test = test.substring(index+1);

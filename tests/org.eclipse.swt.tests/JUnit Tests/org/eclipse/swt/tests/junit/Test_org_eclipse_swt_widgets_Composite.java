@@ -115,6 +115,7 @@ public void test_setVisibility_and_sizing() {
 	Point compSize = visibilityComposite.getSize();
 	assertTrue("Composite should be aprox 500 by 463 px, but instead it is: " + compSize.toString(),
 			compSize.x > 100 && compSize.y > 100); // If this is 1x1 or 0x0 then there was some fault in layout.
+	visibilityShell.dispose();
 }
 
 @Test
