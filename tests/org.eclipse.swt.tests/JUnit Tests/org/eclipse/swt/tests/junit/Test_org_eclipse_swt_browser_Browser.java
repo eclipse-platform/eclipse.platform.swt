@@ -28,10 +28,20 @@ import static org.junit.Assume.assumeFalse;
 import static org.junit.Assume.assumeTrue;
 
 import java.io.IOException;
+import java.lang.management.ManagementFactory;
+import java.lang.management.ThreadInfo;
+import java.lang.management.ThreadMXBean;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.file.DirectoryStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -65,6 +75,7 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.FixMethodOrder;
 import org.junit.Rule;
@@ -81,7 +92,11 @@ import org.junit.runners.MethodSorters;
 public class Test_org_eclipse_swt_browser_Browser extends Test_org_eclipse_swt_widgets_Composite {
 
 	static {
-		printSystemEnv();
+		try {
+			printSystemEnv();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	// CONFIG
@@ -109,11 +124,20 @@ public class Test_org_eclipse_swt_browser_Browser extends Test_org_eclipse_swt_w
 		testLog.append("  " + msg + "\n");
 	}
 
+	static int testNumber;
+	int openedDescriptors;
+	static List<String> initialOpenedDescriptors = new ArrayList<>();
+
+	List<Browser> createdBroswers = new ArrayList<>();
+	boolean ignoreNonDisposedShells;
+	static List<String> descriptors = new ArrayList<>();
 
 @Override
 @Before
 public void setUp() {
 	super.setUp();
+	testNumber ++;
+	ignoreNonDisposedShells = false;
 	secondsToWaitTillFail = Math.max(15, debug_show_browser_timeout_seconds);
 
 	// If webkit crashes, it's very hard to tell which jUnit caused the JVM crash.
@@ -123,7 +147,7 @@ public void setUp() {
 	System.out.println("Running Test_org_eclipse_swt_browser_Browser#" + name.getMethodName());
 
 	shell.setLayout(new FillLayout());
-	browser = new Browser(shell, SWT.NONE);
+	browser = createBrowser(shell, SWT.NONE);
 
 	isEdge = browser.getBrowserType().equals("edge");
 
@@ -139,9 +163,95 @@ public void setUp() {
 	setWidget(browser); // For browser to occupy the whole shell, not just half of it.
 
 	testLog = new StringBuilder("\nTest log:\n");
-	printMemoryUse();
+	if (SwtTestUtil.isGTK) {
+		// process pending events to properly cleanup GTK browser resources
+		processUiEvents();
+
+		descriptors = Collections.unmodifiableList(getOpenedDescriptors());
+		System.out.println("\n### Descriptors opened BEFORE " + name.getMethodName() + ": " + descriptors.size());
+	}
 }
 
+@Override
+@After
+public void tearDown() {
+	super.tearDown();
+	Shell[] shells = Display.getDefault().getShells();
+	int disposedShells = 0;
+	for (Shell shell : shells) {
+		if(!shell.isDisposed()) {
+			System.out.println("Not disposed shell: " + shell);
+			shell.dispose();
+			disposedShells ++;
+		}
+	}
+	if(!ignoreNonDisposedShells) {
+		assertEquals("Found " + disposedShells + " not disposed shells!", 0, disposedShells);
+	}
+
+	int disposedBrowsers = 0;
+	for (Browser browser : createdBroswers) {
+		if(!browser.isDisposed()) {
+			System.out.println("Not disposed browsers: " + browser);
+			browser.dispose();
+			disposedBrowsers ++;
+		}
+	}
+	assertEquals("Found " + disposedBrowsers + " not disposed browsers!", 0, disposedBrowsers);
+	boolean verbose = false;
+	if(verbose) {
+		if(testNumber % 2 == 0) {
+			printMemoryUse();
+		} else {
+			printThreadsInfo();
+		}
+	}
+	if (SwtTestUtil.isGTK) {
+		int descriptorDiff = reportOpenedDescriptors();
+		if(descriptorDiff > 0) {
+			processUiEvents();
+			try {
+				Thread.sleep(500);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+			processUiEvents();
+			descriptorDiff = reportOpenedDescriptors();
+			if(descriptorDiff > 0) {
+				processUiEvents();
+			}
+		}
+	}
+}
+
+private int reportOpenedDescriptors() {
+	List<String> newDescriptors = getOpenedDescriptors();
+	System.out.println("\n### Descriptors opened AFTER " + name.getMethodName() + ": " + newDescriptors.size());
+	int count = newDescriptors.size();
+	int diffToPrevious = count - descriptors.size();
+	int diffToInitial = count - initialOpenedDescriptors.size();
+	if(diffToPrevious > 0) {
+		System.out.println("Delta to previous test: " + diffToPrevious);
+		List<String> newDescriptorsCopy = new ArrayList<>(newDescriptors);
+		newDescriptors.removeAll(descriptors);
+		newDescriptors.forEach(p -> System.out.println("\t" + p));
+		System.out.println();
+
+		System.out.println("Delta to first test: " + diffToInitial);
+		if(diffToInitial > 50) {
+			newDescriptorsCopy.removeAll(initialOpenedDescriptors);
+			newDescriptorsCopy.forEach(p -> System.out.println("\t" + p));
+		}
+		System.out.println("########################################\n");
+	}
+	return diffToPrevious;
+}
+
+private Browser createBrowser(Shell s, int flags) {
+	Browser b = new Browser(s, flags);
+	createdBroswers.add(b);
+	return b;
+}
 
 /**
  * Test that if Browser is constructed with the parent being "null", Browser throws an exception.
@@ -149,12 +259,12 @@ public void setUp() {
 @Override
 @Test(expected = IllegalArgumentException.class)
 public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI() {
-	Browser browser = new Browser(shell, SWT.NONE);
+	Browser browser = createBrowser(shell, SWT.NONE);
 	browser.dispose();
-	browser = new Browser(shell, SWT.BORDER);
+	browser = createBrowser(shell, SWT.BORDER);
 	// System.out.println("Test_org_eclipse_swt_browser_Browser#test_Constructor*#getBrowserType(): " + browser.getBrowserType());
 	browser.dispose();
-	browser = new Browser(null, SWT.NONE); // Should throw.
+	browser = createBrowser(null, SWT.NONE); // Should throw.
 }
 
 
@@ -252,7 +362,7 @@ public void test_getChildren() {
 public void test_CloseWindowListener_closeShell() {
 	Display display = Display.getCurrent();
 	Shell shell = new Shell(display);
-	Browser browser = new Browser(shell, SWT.NONE);
+	Browser browser = createBrowser(shell, SWT.NONE);
 	browser.addCloseWindowListener(event -> {}); // shouldn't throw
 	shell.close();
 }
@@ -291,7 +401,7 @@ public void test_CloseWindowListener_close () {
 public void test_LocationListener_adapter_closeShell() {
 	Display display = Display.getCurrent();
 	Shell shell = new Shell(display);
-	Browser browser = new Browser(shell, SWT.NONE);
+	Browser browser = createBrowser(shell, SWT.NONE);
 	LocationAdapter adapter = new LocationAdapter() {};
 	browser.addLocationListener(adapter); // shouldn't throw
 	shell.close();
@@ -496,7 +606,7 @@ public void test_LocationListener_ProgressListener_noExtraEvents() {
 public void test_OpenWindowListener_closeShell() {
 	Display display = Display.getCurrent();
 	Shell shell = new Shell(display);
-	Browser browser = new Browser(shell, SWT.NONE);
+	Browser browser = createBrowser(shell, SWT.NONE);
 	browser.addOpenWindowListener(event -> {});
 	shell.close();
 }
@@ -521,7 +631,7 @@ public void test_OpenWindowListener_addAndRemove() {
 @Test
 public void test_OpenWindowListener_openHasValidEventDetails() {
 	AtomicBoolean openFiredCorrectly = new AtomicBoolean(false);
-	final Browser browserChild = new Browser(shell, SWT.None);
+	final Browser browserChild = createBrowser(shell, SWT.None);
 	browser.addOpenWindowListener(event -> {
 		assertSame("Expected Browser1 instance, but have another instance", browser, event.widget);
 		assertNull("Expected event.browser to be null", event.browser);
@@ -545,7 +655,7 @@ public void test_OpenWindowListener_open_ChildPopup() {
 	Shell childShell = new Shell(shell, SWT.None);
 	childShell.setText("Child shell");
 	childShell.setLayout(new FillLayout());
-	final Browser browserChild = new Browser(childShell, SWT.NONE);
+	final Browser browserChild = createBrowser(childShell, SWT.NONE);
 
 	browser.addOpenWindowListener(event -> {
 		event.browser = browserChild;
@@ -582,7 +692,7 @@ public void test_OpenWindow_Progress_Listener_ValidateEventOrder() {
 	Shell childShell = new Shell(shell, SWT.None);
 	childShell.setText("Child shell");
 	childShell.setLayout(new FillLayout());
-	final Browser browserChild = new Browser(childShell, SWT.NONE);
+	final Browser browserChild = createBrowser(childShell, SWT.NONE);
 
 	browser.addOpenWindowListener(event -> {
 		event.browser = browserChild;
@@ -632,7 +742,7 @@ public void test_ProgressListener_newProgressAdapter() {
 public void test_ProgressListener_newProgressAdapter_closeShell() {
 	Display display = Display.getCurrent();
 	Shell shell = new Shell(display);
-	Browser browser = new Browser(shell, SWT.NONE);
+	Browser browser = createBrowser(shell, SWT.NONE);
 	browser.addProgressListener(new ProgressAdapter() {});
 	shell.close();
 }
@@ -641,7 +751,7 @@ public void test_ProgressListener_newProgressAdapter_closeShell() {
 public void test_ProgressListener_newListener_closeShell() {
 	Display display = Display.getCurrent();
 	Shell shell = new Shell(display);
-	Browser browser = new Browser(shell, SWT.NONE);
+	Browser browser = createBrowser(shell, SWT.NONE);
 	browser.addProgressListener(new ProgressListener() {
 		@Override
 		public void changed(ProgressEvent event) {
@@ -744,7 +854,7 @@ public void test_StatusTextListener_hoverMouseOverLink() {
 	int size = 500;
 
 	// 1) Create a page that has a hyper link (covering the whole page)
-	Browser browser = new Browser(shell, SWT.NONE);
+	Browser browser = createBrowser(shell, SWT.NONE);
 	StringBuilder longhtml = new StringBuilder();
 	for (int i = 0; i < 200; i++) {
 		longhtml.append("text text text text text text text text text text text text text text text text text text text text text text text text<br>");
@@ -784,7 +894,7 @@ public void test_StatusTextListener_hoverMouseOverLink() {
 public void test_TitleListener_addListener_closeShell() {
 	Display display = Display.getCurrent();
 	Shell shell = new Shell(display);
-	Browser browser = new Browser(shell, SWT.NONE);
+	Browser browser = createBrowser(shell, SWT.NONE);
 	browser.addTitleListener(event -> {
 	});
 	shell.close();
@@ -946,7 +1056,7 @@ public void test_VisibilityWindowListener_newAdapter() {
 public void test_VisibilityWindowListener_newAdapter_closeShell() {
 	Display display = Display.getCurrent();
 	Shell shell = new Shell(display);
-	Browser browser = new Browser(shell, SWT.NONE);
+	Browser browser = createBrowser(shell, SWT.NONE);
 	browser.addVisibilityWindowListener(new VisibilityWindowAdapter(){});
 	shell.close();
 }
@@ -955,7 +1065,7 @@ public void test_VisibilityWindowListener_newAdapter_closeShell() {
 public void test_VisibilityWindowListener_newListener_closeShell() {
 	Display display = Display.getCurrent();
 	Shell shell = new Shell(display);
-	Browser browser = new Browser(shell, SWT.NONE);
+	Browser browser = createBrowser(shell, SWT.NONE);
 	browser.addVisibilityWindowListener(new VisibilityWindowListener() {
 		@Override
 		public void hide(WindowEvent event) {
@@ -1001,7 +1111,7 @@ public void test_VisibilityWindowListener_multiple_shells() {
 			Shell childShell = new Shell(shell);
 			childShell.setText("Child shell " + childCount.get());
 			childShell.setLayout(new FillLayout());
-			Browser browserChild = new Browser(childShell, SWT.NONE);
+			Browser browserChild = createBrowser(childShell, SWT.NONE);
 			event.browser = browserChild;
 			browserChild.setText("Child window");
 			browserChild.addVisibilityWindowListener(new VisibilityWindowAdapter() {
@@ -1060,7 +1170,7 @@ public void test_VisibilityWindowListener_eventSize() {
 	childShell.setSize(250, 350);
 	childShell.setText("Child shell");
 	childShell.setLayout(new FillLayout());
-	final Browser browserChild = new Browser(childShell, SWT.NONE);
+	final Browser browserChild = createBrowser(childShell, SWT.NONE);
 
 	browser.addOpenWindowListener(event -> {
 		event.browser = browserChild;
@@ -1180,7 +1290,7 @@ public void test_setJavascriptEnabled_multipleInstances() {
 	AtomicBoolean instanceTwoFinishedCorrectly = new AtomicBoolean(false);
 
 
-	Browser browserSecondInsance = new Browser(shell, SWT.None);
+	Browser browserSecondInsance = createBrowser(shell, SWT.None);
 
 	browser.addProgressListener(completedAdapter(event -> {
 		if (pageLoadCount.get() == 1) {
@@ -1830,6 +1940,8 @@ ProgressListener callCustomFunctionUponLoad = completedAdapter(event ->	browser.
  */
 @Test
 public void test_BrowserFunction_callback () {
+	// There are shells left opened after this test
+	ignoreNonDisposedShells = true;
 	AtomicBoolean javaCallbackExecuted = new AtomicBoolean(false);
 
 	class JavascriptCallback extends BrowserFunction { // Note: Local class defined inside method.
@@ -2178,8 +2290,8 @@ public void test_BrowserFunction_callback_afterPageReload() {
 @Test
 public void test_BrowserFunction_multiprocess() {
 	// Test that BrowserFunctions work in multiple Browser instances simultaneously.
-	Browser browser1 = new Browser(shell, SWT.NONE);
-	Browser browser2 = new Browser(shell, SWT.NONE);
+	Browser browser1 = createBrowser(shell, SWT.NONE);
+	Browser browser2 = createBrowser(shell, SWT.NONE);
 
 	class JavaFunc extends BrowserFunction {
 		JavaFunc(Browser browser) {
@@ -2306,19 +2418,41 @@ private static Boolean checkInternet(String url) {
 private static void printMemoryUse() {
 	System.gc();
 	System.runFinalization();
-	long nax = Runtime.getRuntime().maxMemory();
+	long max = Runtime.getRuntime().maxMemory();
 	long total = Runtime.getRuntime().totalMemory();
 	long free = Runtime.getRuntime().freeMemory();
 	long used = total - free;
 	System.out.print("\n########### Memory usage reported by JVM ########");
-	System.out.printf(Locale.GERMAN, "%n%,16d bytes max heap", nax);
+	System.out.printf(Locale.GERMAN, "%n%,16d bytes max heap", max);
 	System.out.printf(Locale.GERMAN, "%n%,16d bytes heap allocated", total);
 	System.out.printf(Locale.GERMAN, "%n%,16d bytes free heap", free);
 	System.out.printf(Locale.GERMAN, "%n%,16d bytes used heap", used);
 	System.out.println("\n#################################################\n");
 }
 
-private static void printSystemEnv() {
+
+private static void printThreadsInfo() {
+	System.out.println("\n########### Thread usage reported by JVM ########");
+	ThreadMXBean mxb = ManagementFactory.getThreadMXBean();
+	int peakThreadCount = mxb.getPeakThreadCount();
+	long[] threadIds = mxb.getAllThreadIds();
+	int threadCount = threadIds.length;
+	System.out.println("Peak threads count " + peakThreadCount);
+	System.out.println("Current threads count " + threadCount);
+
+	if(threadCount > 100) {
+		ThreadInfo[] allThreads = mxb.getThreadInfo(threadIds, 200);
+		System.out.println("Thread names:");
+		List<String> threadNames = new ArrayList<>();
+	    for (ThreadInfo threadInfo : allThreads) {
+	    	threadNames.add("\t" + threadInfo.getThreadName());
+	    }
+	    Collections.sort(threadNames);
+	    threadNames.forEach(n -> System.out.println(n));
+	}
+}
+
+private static void printSystemEnv() throws Exception {
     Set<Entry<String, String>> set = new TreeMap<>(System.getenv()).entrySet();
     StringBuilder sb = new StringBuilder("\n###################### System environment ######################\n");
     for (Entry<String, String> entry : set) {
@@ -2332,6 +2466,11 @@ private static void printSystemEnv() {
     }
     String env = sb.toString();
     System.out.println(env);
+
+    if (SwtTestUtil.isGTK) {
+    	System.out.println("/proc/sys/kernel/threads-max: " + new String(Files.readAllBytes(Paths.get("/proc/sys/kernel/threads-max"))));
+    	System.out.println("/proc/self/limits: " + new String(Files.readAllBytes(Paths.get("/proc/self/limits"))));
+    }
 }
 
 /**
@@ -2348,4 +2487,33 @@ private static Set<Entry<String, String>> getPropertiesSafe() {
         return getPropertiesSafe();
     }
 }
+
+private static List<String> getOpenedDescriptors() {
+	List<String> paths = new ArrayList<>();
+	Path fd = Paths.get("/proc/self/fd/");
+	try(DirectoryStream<Path> directoryStream = Files.newDirectoryStream(fd)){
+		directoryStream.forEach(f -> {
+			try {
+				paths.add(Files.isSymbolicLink(f)? Files.readSymbolicLink(f).toString() : f.toString());
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		});
+	} catch (IOException e1) {
+		e1.printStackTrace();
+	}
+	Collections.sort(paths);
+	if(initialOpenedDescriptors.size() == 0) {
+		initialOpenedDescriptors = Collections.unmodifiableList(paths);
+	}
+	return paths;
+}
+
+
+private static void processUiEvents() {
+	Display display = Display.getCurrent();
+	while (display != null && !display.isDisposed() && display.readAndDispatch()) {
+	}
+}
+
 }

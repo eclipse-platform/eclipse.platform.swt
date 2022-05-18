@@ -1075,7 +1075,7 @@ protected void consistencyEvent(final int paramA, final int paramB,
 						Assert.assertTrue(test,
 							ConsistencyUtility.postShellIconify(display, pt[1], paramA));
 						if(control instanceof Shell) {
-							display.syncExec(new Thread() {
+							display.syncExec(new Runnable() {
 								@Override
 								public void run() {
 									((Shell)control).setMinimized(false);
@@ -1084,7 +1084,7 @@ protected void consistencyEvent(final int paramA, final int paramB,
 							fail("Iconifying a non shell control");
 						break;
 				}
-				display.asyncExec(new Thread() {
+				display.asyncExec(new Runnable() {
 					@Override
 					public void run() {
 						shell.dispose();
