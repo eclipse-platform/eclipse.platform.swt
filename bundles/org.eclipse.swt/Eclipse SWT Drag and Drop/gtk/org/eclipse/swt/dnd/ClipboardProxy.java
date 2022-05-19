@@ -236,15 +236,13 @@ private boolean setData_gtk4(Clipboard owner, Object[] data, Transfer[] dataType
 }
 
 private boolean setContentFromType(long clipboard, String string, Object data) {
-	if(data != null) {
+	if (data == null ) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	else {
 		if(string.equals("STRING") || string.equals("text/rtf")) {
 			GTK4.gdk_clipboard_set_text(clipboard, Converter.javaStringToCString((String)data));
 		}
-		else if(string.equals("PIXBUF")) {
-			if (data == null ) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-			else if(!(data instanceof ImageData)) {
-				DND.error(DND.ERROR_INVALID_DATA);
-			}
+		if(string.equals("PIXBUF")) {
+			if(!(data instanceof ImageData)) DND.error(DND.ERROR_INVALID_DATA);
 			ImageData imgData = (ImageData)data;
 			Image image = new Image(Display.getCurrent(), imgData);
 			long pixbuf = ImageList.createPixbuf(image);
