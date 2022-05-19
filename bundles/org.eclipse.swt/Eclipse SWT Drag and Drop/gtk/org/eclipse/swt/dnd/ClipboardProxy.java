@@ -14,6 +14,8 @@
 package org.eclipse.swt.dnd;
 
 
+import org.eclipse.swt.*;
+import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.gtk.*;
 import org.eclipse.swt.internal.gtk3.*;
@@ -220,8 +222,6 @@ boolean setData(Clipboard owner, Object[] data, Transfer[] dataTypes, int clipbo
 
 private boolean setData_gtk4(Clipboard owner, Object[] data, Transfer[] dataTypes, int clipboards) {
 	boolean result = false;
-
-	//Handle the text transfer case first
 	for (int i = 0; i < dataTypes.length; i++) {
 		Transfer transfer = dataTypes[i];
 		String[] typeNames = transfer.getTypeNames();
@@ -232,7 +232,6 @@ private boolean setData_gtk4(Clipboard owner, Object[] data, Transfer[] dataType
 			activeClipboard = owner;
 		}
 	}
-	//TODO: [GTK4] Other cases for setting data
 	return result;
 }
 
@@ -240,6 +239,19 @@ private boolean setContentFromType(long clipboard, String string, Object data) {
 	if(data != null) {
 		if(string.equals("STRING") || string.equals("text/rtf")) {
 			GTK4.gdk_clipboard_set_text(clipboard, Converter.javaStringToCString((String)data));
+		}
+		else if(string.equals("PIXBUF")) {
+			if (data == null ) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+			else if(!(data instanceof ImageData)) {
+				DND.error(DND.ERROR_INVALID_DATA);
+			}
+			ImageData imgData = (ImageData)data;
+			Image image = new Image(Display.getCurrent(), imgData);
+			long pixbuf = ImageList.createPixbuf(image);
+			if (pixbuf != 0) {
+				GTK4.gdk_clipboard_set(clipboard, GDK.GDK_TYPE_PIXBUF(), pixbuf);
+			}
+			image.dispose();
 		}
 		return true;
 	}

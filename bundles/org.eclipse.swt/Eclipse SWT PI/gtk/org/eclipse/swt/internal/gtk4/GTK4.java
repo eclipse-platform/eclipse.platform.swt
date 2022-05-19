@@ -569,11 +569,11 @@ public class GTK4 {
 	 * @param clipboard cast=(GdkClipboard*)
 	 * @param type cast=(GType)
 	 */
-	public static final native void gdk_clipboard_set(long clipboard, int type, long data);
+	public static final native void gdk_clipboard_set(long clipboard, long type, long data);
 	/**
 	 * @param clipboard cast=(GdkClipboard*)
 	 */
-	public static final native void gdk_clipboard_get_formats(long clipboard);
+	public static final native long gdk_clipboard_get_formats(long clipboard);
 	/**
 	 * @param clipboard cast=(GdkClipboard*)
 	 */
@@ -584,6 +584,7 @@ public class GTK4 {
 	 * @param error cast=(GError **)
 	 */
 	public static final native boolean gdk_content_provider_get_value(long provider, long value, long[] error);
-
+	/** @param formats cast=(GdkContentFormats *) */
+	public static final native long gdk_content_formats_to_string(long formats);
 
 }

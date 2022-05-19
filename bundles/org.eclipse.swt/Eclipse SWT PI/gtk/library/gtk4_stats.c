@@ -28,6 +28,7 @@ char * GTK4_nativeFunctionNames[] = {
 	"gdk_1content_1formats_1builder_1add_1mime_1type",
 	"gdk_1content_1formats_1builder_1free_1to_1formats",
 	"gdk_1content_1formats_1builder_1new",
+	"gdk_1content_1formats_1to_1string",
 	"gdk_1content_1provider_1get_1value",
 	"gdk_1toplevel_1focus",
 	"gdk_1toplevel_1get_1state",
