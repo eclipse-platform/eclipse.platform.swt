@@ -15,6 +15,7 @@ package org.eclipse.swt.dnd;
 
 
 import org.eclipse.swt.*;
+import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.gtk.*;
 import org.eclipse.swt.internal.gtk3.*;
@@ -348,6 +349,18 @@ private Object getContents_gtk4(Transfer transfer, int clipboards) {
 		}
 		return str;
 	}
+	if(transfer.getTypeIds()[0] == (int)GDK.GDK_TYPE_PIXBUF()) {
+		ImageData imgData = null;
+		OS.g_value_init(value, GDK.GDK_TYPE_PIXBUF());
+		if (!GTK4.gdk_content_provider_get_value (contents, value, null)) return null;
+		long pixbufObj = OS.g_value_get_object(value);
+		if (pixbufObj != 0) {
+			Image img = Image.gtk_new_from_pixbuf(Display.getCurrent(), SWT.BITMAP, pixbufObj);
+			imgData = img.getImageData();
+			img.dispose();
+		}
+		return imgData;
+	}
 	//TODO: [GTK4] Other cases
 	return null;
 }
@@ -539,6 +552,8 @@ public TransferData[] getAvailableTypes() {
  */
 public TransferData[] getAvailableTypes(int clipboards) {
 	checkWidget();
+
+	//TODO: [GTK4] This currently will not work in GTK4
 	TransferData[] result = null;
 	if ((clipboards & DND.CLIPBOARD) != 0) {
 		int[] types = getAvailableClipboardTypes();
@@ -585,6 +600,12 @@ public TransferData[] getAvailableTypes(int clipboards) {
  */
 public String[] getAvailableTypeNames() {
 	checkWidget();
+	if(GTK.GTK4) {
+		long formatsCStr = GTK4.gdk_content_formats_to_string(GTK4.gdk_clipboard_get_formats(Clipboard.GTKCLIPBOARD));
+		String formatsStr = Converter.cCharPtrToJavaString(formatsCStr, true);
+		String[] types = formatsStr.split(" ");
+		return types;
+	}
 	int[] types1 = getAvailableClipboardTypes();
 	int[] types2 = getAvailablePrimaryTypes();
 	String[] result = new String[types1.length + types2.length];
@@ -636,12 +657,6 @@ private  int[] getAvailablePrimaryTypes() {
 	return types;
 }
 private int[] getAvailableClipboardTypes () {
-
-	if(GTK.GTK4) {
-		/*TODO: can use gdk_clipboard_get_formats and gdk_content_formats_to_string
-		 *Then from the comma separated list of formats find their respective IDs
-		 */
-	}
 
 	int[] types = new int[0];
 	long selection_data  = gtk_clipboard_wait_for_contents(GTKCLIPBOARD, TARGET);

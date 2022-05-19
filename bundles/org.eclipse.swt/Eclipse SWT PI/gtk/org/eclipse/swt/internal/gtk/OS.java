@@ -1382,6 +1382,8 @@ public static final native void g_value_set_string (long value, long v_string);
 /** @param value cast=(GValue *) */
 public static final native long g_value_get_string (long value);
 /** @param value cast=(GValue *) */
+public static final native long g_value_get_object (long value);
+/** @param value cast=(GValue *) */
 public static final native void g_value_unset (long value);
 /** @param value cast=(const GValue *) */
 public static final native long g_value_peek_pointer(long value);

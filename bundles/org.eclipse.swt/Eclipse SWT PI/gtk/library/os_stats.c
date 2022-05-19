@@ -1092,6 +1092,7 @@ char * OS_nativeFunctionNames[] = {
 	"g_1value_1get_1float",
 	"g_1value_1get_1int",
 	"g_1value_1get_1int64",
+	"g_1value_1get_1object",
 	"g_1value_1get_1string",
 	"g_1value_1init",
 	"g_1value_1peek_1pointer",

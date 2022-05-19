@@ -37,18 +37,20 @@ JNIEXPORT jlong JNICALL GTK4_NATIVE(gdk_1clipboard_1get_1content)
 #endif
 
 #ifndef NO_gdk_1clipboard_1get_1formats
-JNIEXPORT void JNICALL GTK4_NATIVE(gdk_1clipboard_1get_1formats)
+JNIEXPORT jlong JNICALL GTK4_NATIVE(gdk_1clipboard_1get_1formats)
 	(JNIEnv *env, jclass that, jlong arg0)
 {
+	jlong rc = 0;
 	GTK4_NATIVE_ENTER(env, that, gdk_1clipboard_1get_1formats_FUNC);
-	gdk_clipboard_get_formats((GdkClipboard*)arg0);
+	rc = (jlong)gdk_clipboard_get_formats((GdkClipboard*)arg0);
 	GTK4_NATIVE_EXIT(env, that, gdk_1clipboard_1get_1formats_FUNC);
+	return rc;
 }
 #endif
 
 #ifndef NO_gdk_1clipboard_1set
 JNIEXPORT void JNICALL GTK4_NATIVE(gdk_1clipboard_1set)
-	(JNIEnv *env, jclass that, jlong arg0, jint arg1, jlong arg2)
+	(JNIEnv *env, jclass that, jlong arg0, jlong arg1, jlong arg2)
 {
 	GTK4_NATIVE_ENTER(env, that, gdk_1clipboard_1set_FUNC);
 	gdk_clipboard_set((GdkClipboard*)arg0, (GType)arg1, arg2);
@@ -104,6 +106,18 @@ JNIEXPORT jlong JNICALL GTK4_NATIVE(gdk_1content_1formats_1builder_1new)
 	GTK4_NATIVE_ENTER(env, that, gdk_1content_1formats_1builder_1new_FUNC);
 	rc = (jlong)gdk_content_formats_builder_new();
 	GTK4_NATIVE_EXIT(env, that, gdk_1content_1formats_1builder_1new_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_gdk_1content_1formats_1to_1string
+JNIEXPORT jlong JNICALL GTK4_NATIVE(gdk_1content_1formats_1to_1string)
+	(JNIEnv *env, jclass that, jlong arg0)
+{
+	jlong rc = 0;
+	GTK4_NATIVE_ENTER(env, that, gdk_1content_1formats_1to_1string_FUNC);
+	rc = (jlong)gdk_content_formats_to_string((GdkContentFormats *)arg0);
+	GTK4_NATIVE_EXIT(env, that, gdk_1content_1formats_1to_1string_FUNC);
 	return rc;
 }
 #endif

@@ -1066,6 +1066,7 @@ typedef enum {
 	g_1value_1get_1float_FUNC,
 	g_1value_1get_1int_FUNC,
 	g_1value_1get_1int64_FUNC,
+	g_1value_1get_1object_FUNC,
 	g_1value_1get_1string_FUNC,
 	g_1value_1init_FUNC,
 	g_1value_1peek_1pointer_FUNC,

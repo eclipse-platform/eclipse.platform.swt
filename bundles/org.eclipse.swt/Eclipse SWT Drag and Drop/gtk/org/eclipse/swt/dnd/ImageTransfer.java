@@ -40,27 +40,27 @@ public class ImageTransfer extends ByteArrayTransfer {
 	private static ImageTransfer _instance = new ImageTransfer();
 
 	private static final String JPEG = "image/jpeg"; //$NON-NLS-1$
-	private static final int JPEG_ID = registerType(JPEG);
+	private static final int JPEG_ID = GTK.GTK4 ? 0: registerType(JPEG);
 	private static final String PNG = "image/png"; //$NON-NLS-1$
-	private static final int PNG_ID = registerType(PNG);
+	private static final int PNG_ID = GTK.GTK4 ? 0:registerType(PNG);
 	private static final String BMP = "image/bmp"; //$NON-NLS-1$
-	private static final int BMP_ID = registerType(BMP);
+	private static final int BMP_ID = GTK.GTK4 ? 0:registerType(BMP);
 	private static final String EPS = "image/eps"; //$NON-NLS-1$
-	private static final int EPS_ID = registerType(EPS);
+	private static final int EPS_ID = GTK.GTK4 ? 0:registerType(EPS);
 	private static final String PCX = "image/pcx"; //$NON-NLS-1$
-	private static final int PCX_ID = registerType(PCX);
+	private static final int PCX_ID = GTK.GTK4 ? 0:registerType(PCX);
 	private static final String PPM = "image/ppm"; //$NON-NLS-1$
-	private static final int PPM_ID = registerType(PPM);
+	private static final int PPM_ID = GTK.GTK4 ? 0:registerType(PPM);
 	private static final String RGB = "image/ppm"; //$NON-NLS-1$
-	private static final int RGB_ID = registerType(RGB);
+	private static final int RGB_ID = GTK.GTK4 ? 0:registerType(RGB);
 	private static final String TGA = "image/tga"; //$NON-NLS-1$
-	private static final int TGA_ID = registerType(TGA);
+	private static final int TGA_ID = GTK.GTK4 ? 0:registerType(TGA);
 	private static final String XBM = "image/xbm"; //$NON-NLS-1$
-	private static final int XBM_ID = registerType(XBM);
+	private static final int XBM_ID = GTK.GTK4 ? 0:registerType(XBM);
 	private static final String XPM = "image/xpm"; //$NON-NLS-1$
-	private static final int XPM_ID = registerType(XPM);
+	private static final int XPM_ID = GTK.GTK4 ? 0:registerType(XPM);
 	private static final String XV = "image/xv"; //$NON-NLS-1$
-	private static final int XV_ID = registerType(XV);
+	private static final int XV_ID = GTK.GTK4 ? 0:registerType(XV);
 
 private ImageTransfer() {}
 
@@ -116,7 +116,7 @@ public void javaToNative(Object object, TransferData transferData) {
 		transferData.result = 1;
 		// The following value has been changed from 32 to 8 as a simple fix for #146
 		// See https://www.cc.gatech.edu/data_files/public/doc/gtk/tutorial/gtk_tut-16.html where it states:
-		// "The format field is actually important here - the X server uses it to figure out whether the data 
+		// "The format field is actually important here - the X server uses it to figure out whether the data
 		// needs to be byte-swapped or not. Usually it will be 8 - i.e. a character - or 32 - i.e. a. integer."
 		transferData.format = 8;
 	}
@@ -156,11 +156,17 @@ public Object nativeToJava(TransferData transferData) {
 
 @Override
 protected int[] getTypeIds(){
+	if(GTK.GTK4) {
+		return new int[] {(int) GDK.GDK_TYPE_PIXBUF()};
+	}
 	return new int[]{PNG_ID, BMP_ID, EPS_ID, JPEG_ID, PCX_ID, PPM_ID, RGB_ID, TGA_ID, XBM_ID, XPM_ID, XV_ID};
 }
 
 @Override
 protected String[] getTypeNames(){
+	if(GTK.GTK4) {
+		return new String[]{"PIXBUF"};
+	}
 	return new String[]{PNG, BMP, EPS, JPEG, PCX, PPM, RGB, TGA, XBM, XPM, XV};
 }
 
