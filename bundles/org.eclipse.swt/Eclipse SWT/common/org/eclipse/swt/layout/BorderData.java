@@ -73,6 +73,17 @@ public final class BorderData {
 		return cachedSize.computeIfAbsent(control, c -> c.computeSize(wHint, hHint, true));
 	}
 
+	Point computeSize(Control control, int wHint, int hHint, boolean changed) {
+		if (wHint==SWT.DEFAULT) {
+			wHint = this.wHint;
+		}
+		if (hHint == SWT.DEFAULT) {
+			hHint = this.hHint;
+		}
+		return control.computeSize(wHint, hHint, changed);
+
+	}
+
 	void flushCache(Control control) {
 		cachedSize.remove(control);
 	}
