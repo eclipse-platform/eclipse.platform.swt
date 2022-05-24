@@ -238,10 +238,20 @@ public class BorderLayout extends Layout {
 	private static int getMax(ToIntFunction<Point> extractor, int region,
 			Map<Integer, List<Entry<Control, BorderData>>> regionMap) {
 		List<Entry<Control, BorderData>> list = regionMap.getOrDefault(region, Collections.emptyList());
-		return getMax(extractor, list);
+		return getMax(extractor, list, SWT.DEFAULT, SWT.DEFAULT, false);
 	}
 
-	private static int getMax(ToIntFunction<Point> extractor, List<Entry<Control, BorderData>> list) {
+	private static int getMax(ToIntFunction<Point> extractor, List<Entry<Control, BorderData>> list, int maxW, int maxH,
+			boolean flushCache) {
+		if (list.isEmpty()) {
+			return 0;
+		}
+		if (maxW != SWT.DEFAULT || maxH != SWT.DEFAULT) {
+			// we need to compute a restricted size to at least one of the given sizes
+			return list.stream()
+					.mapToInt(entry -> extractor.applyAsInt(entry.getValue().computeSize(entry.getKey(),maxW, maxH, flushCache))).max()
+					.orElse(0);
+		}
 		return list.stream().mapToInt(entry -> extractor.applyAsInt(entry.getValue().getSize(entry.getKey()))).max()
 				.orElse(0);
 	}
@@ -265,9 +275,11 @@ public class BorderLayout extends Layout {
 		List<Entry<Control, BorderData>> eastList = regionMap.getOrDefault(RIGHT, Collections.emptyList());
 		List<Entry<Control, BorderData>> centerList = regionMap.getOrDefault(CENTER, Collections.emptyList());
 		int northControlCount = northList.size();
-		int northControlHeight = getMax(HEIGHT, northList);
+		int northPerControlWidth = northControlCount > 0 ?(clientWidth - (northControlCount - 1) * controlSpacing) / northControlCount:0;
+		int northControlHeight = getMax(HEIGHT, northList, northPerControlWidth, SWT.DEFAULT, flushCache);
 		int southControlCount = southList.size();
-		int southControlHeight = getMax(HEIGHT, southList);
+		int southPerControlWidth =southControlCount > 0? (clientWidth - (southControlCount - 1) * controlSpacing) / southControlCount:0;
+		int southControlHeight = getMax(HEIGHT, southList,southPerControlWidth,SWT.DEFAULT, flushCache);
 		if (northControlHeight + southControlHeight > clientHeight) {
 			int distributionSize = (int) (clientHeight * heightDistributionFactor);
 			if (northControlHeight > distributionSize) {
@@ -277,9 +289,9 @@ public class BorderLayout extends Layout {
 		}
 		int centerControlHeight = clientHeight - northControlHeight - southControlHeight;
 		int westControlCount = westList.size();
-		int westControlWidth = getMax(WIDTH, westList);
+		int westControlWidth = getMax(WIDTH, westList, -1, -1, flushCache);
 		int eastControlCount = eastList.size();
-		int eastControlWidth = getMax(WIDTH, eastList);
+		int eastControlWidth = getMax(WIDTH, eastList, -1, -1, flushCache);
 		if (westControlWidth + eastControlWidth > clientWidth) {
 			int distributionSize = (int) (clientWidth * widthDistributionFactor);
 			if (westControlWidth > distributionSize) {
@@ -291,21 +303,19 @@ public class BorderLayout extends Layout {
 		int centerControlCount = centerList.size();
 		// Full width and preferred height for NORTH and SOUTH if possible
 		if (northControlCount > 0) {
-			int controlWidth = (clientWidth - (northControlCount - 1) * controlSpacing) / northControlCount;
 			int x = clientX;
 			int y = clientY;
 			for (Entry<Control, BorderData> entry : northList) {
-				entry.getKey().setBounds(x, y, controlWidth, northControlHeight);
-				x += controlWidth + controlSpacing;
+				entry.getKey().setBounds(x, y, northPerControlWidth, northControlHeight);
+				x += northPerControlWidth + controlSpacing;
 			}
 		}
 		if (southControlCount > 0) {
-			int controlWidth = (clientWidth - (southControlCount - 1) * controlSpacing) / southControlCount;
 			int x = clientX;
 			int y = clientY + centerControlHeight + northControlHeight;
 			for (Entry<Control, BorderData> entry : southList) {
-				entry.getKey().setBounds(x, y, controlWidth, southControlHeight);
-				x += controlWidth + controlSpacing;
+				entry.getKey().setBounds(x, y, southPerControlWidth, southControlHeight);
+				x += southPerControlWidth + controlSpacing;
 			}
 		}
 		// remaining height for WEST and EAST, preferred width for WEST and EAST if

@@ -14,6 +14,7 @@
 package org.eclipse.swt.tests.junit;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Point;
@@ -68,13 +69,30 @@ public class Test_org_eclipse_swt_layout_BorderLayout {
 		Shell shell = new Shell(display);
 		shell.setLayout(new BorderLayout());
 		shell.setSize(800, 600);
-		MockControl control = new MockControl(shell);
-		control.setLayoutData(new BorderData(SWT.TOP, 40, 50));
+		MockControl controlNorth = new MockControl(shell);
+		MockControl controlSouth = new MockControl(shell);
+		MockControl controlWest = new MockControl(shell);
+		MockControl controlEast = new MockControl(shell);
+		controlNorth.setLayoutData(new BorderData(SWT.TOP, 40, 50));
+		controlWest.setLayoutData(new BorderData(SWT.LEFT, 20, 30));
+		controlSouth.setLayoutData(new BorderData(SWT.BOTTOM));
+		controlEast.setLayoutData(new BorderData(SWT.RIGHT));
 		shell.open();
 		SwtTestUtil.processEvents();
-		// the expectation is that the hints are passed to the control
-		assertEquals(40, control.wHint);
-		assertEquals(50, control.hHint);
+		// the expectation is that the hint is not passed but the (larger) x-space is
+		// used to get optimal layout
+		assertTrue(controlNorth.wHint > 100);
+		// the expectation is that the hint is passed to the control
+		assertEquals(50, controlNorth.hHint);
+		//for the side areas, both hint should be passed
+		assertEquals(30, controlWest.hHint);
+		assertEquals(20, controlWest.wHint);
+		//for the bottom area, we expect that SWT default is passed for the height but a certain number for the width
+		assertTrue(controlSouth.wHint > 100);
+		assertEquals(SWT.DEFAULT, controlSouth.hHint);
+		//for the east, we want all the defaults
+		assertEquals(SWT.DEFAULT, controlEast.hHint);
+		assertEquals(SWT.DEFAULT, controlEast.wHint);
 		shell.dispose();
 	}
 
@@ -158,8 +176,6 @@ public class Test_org_eclipse_swt_layout_BorderLayout {
 
 		@Override
 		public Point computeSize(int wHint, int hHint, boolean changed) {
-			System.out.println(
-					"Test_org_eclipse_swt_layout_BorderLayout.MockControl.computeSize(" + wHint + "," + hHint + ")");
 			this.wHint = wHint;
 			this.hHint = hHint;
 			if (reportedHeight > 0 && reportedWidth > 0) {
