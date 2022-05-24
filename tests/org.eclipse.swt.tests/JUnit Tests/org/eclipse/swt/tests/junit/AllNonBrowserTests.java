@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2017 IBM Corporation and others.
+ * Copyright (c) 2000, 2022 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -14,15 +14,15 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.eclipse.swt.graphics.Resource;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.runner.JUnitCore;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Suite for running most SWT test cases (all except for browser tests).
@@ -39,7 +39,7 @@ import java.util.List;
 		Test_org_eclipse_swt_events_SelectionEvent.class, Test_org_eclipse_swt_events_HelpEvent.class,
 		Test_org_eclipse_swt_events_FocusEvent.class, Test_org_eclipse_swt_events_MouseEvent.class,
 		Test_org_eclipse_swt_events_MenuEvent.class, Test_org_eclipse_swt_events_TreeEvent.class,
-		Test_org_eclipse_swt_layout_FormAttachment.class, Test_org_eclipse_swt_layout_GridData.class,
+		Test_org_eclipse_swt_layout_FormAttachment.class, Test_org_eclipse_swt_layout_BorderLayout.class,
 		Test_org_eclipse_swt_printing_PrintDialog.class, Test_org_eclipse_swt_printing_PrinterData.class,
 		Test_org_eclipse_swt_printing_Printer.class, Test_org_eclipse_swt_program_Program.class,
 		Test_org_eclipse_swt_accessibility_Accessible.class,
