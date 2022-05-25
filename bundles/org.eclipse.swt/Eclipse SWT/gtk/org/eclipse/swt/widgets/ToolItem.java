@@ -379,7 +379,11 @@ public void dispose () {
 
 /**
  * Returns the receiver's background color.
- *
+ * <p>
+ * Note: This operation is a hint and may be overridden by the platform.
+ * For example, on some versions of Windows the background of a TabFolder,
+ * is a gradient rather than a solid color.
+ * </p>
  * @return the background color
  *
  * @exception SWTException <ul>
@@ -1086,9 +1090,11 @@ void selectRadio () {
 
 /**
  * Sets the receiver's background color to the color specified
- * by the argument, or to the default system color for the item
+ * by the argument, or to the default system color for the control
  * if the argument is null.
- *
+ * <p>
+ * Note: This operation is a hint and may be overridden by the platform.
+ * </p>
  * @param color the new color (or null)
  *
  * @exception IllegalArgumentException <ul>
@@ -1228,9 +1234,11 @@ void setFontDescription (long font) {
 
 /**
  * Sets the receiver's foreground color to the color specified
- * by the argument, or to the default system color for the item
+ * by the argument, or to the default system color for the control
  * if the argument is null.
- *
+ * <p>
+ * Note: This operation is a hint and may be overridden by the platform.
+ * </p>
  * @param color the new color (or null)
  *
  * @exception IllegalArgumentException <ul>
