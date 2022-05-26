@@ -52,7 +52,7 @@ public class GTK extends OS {
 	public static final int GTK_ICON_SIZE_SMALL_TOOLBAR = 2;
 	public static final int GTK_ICON_SIZE_DIALOG = 6;
 	public static final int GTK_ICON_LOOKUP_FORCE_SIZE = 4;
-	public static final int GTK_ICON_LOOKUP_FORCE_REGULAR = 0;
+	public static final int GTK_ICON_LOOKUP_FORCE_REGULAR = 32;
 	public static final int GTK_JUSTIFY_CENTER = 0x2;
 	public static final int GTK_JUSTIFY_LEFT = 0x0;
 	public static final int GTK_JUSTIFY_RIGHT = 0x1;
