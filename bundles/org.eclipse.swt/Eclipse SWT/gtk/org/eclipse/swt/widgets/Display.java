@@ -1366,7 +1366,7 @@ Image createImage (String name) {
 		OS.g_object_unref(paintable);
 	} else {
 		long iconTheme = GTK3.gtk_icon_theme_get_default();
-		pixbuf = GTK3.gtk_icon_theme_load_icon(iconTheme, buffer, 48, GTK.GTK_ICON_LOOKUP_FORCE_SIZE, 0);
+		pixbuf = GTK3.gtk_icon_theme_load_icon(iconTheme, buffer, 48, GTK.GTK_ICON_LOOKUP_FORCE_SIZE|GTK.GTK_ICON_LOOKUP_FORCE_REGULAR, 0);
 	}
 
 	if (pixbuf == 0) return null;
@@ -2934,23 +2934,23 @@ public Image getSystemImage (int id) {
 	switch (id) {
 		case SWT.ICON_ERROR:
 			if (errorImage == null) {
-				errorImage = createImage ("dialog-error"); //$NON-NLS-1$
+				errorImage = createImage ("dialog-error-symbolic"); //$NON-NLS-1$
 			}
 			return errorImage;
 		case SWT.ICON_INFORMATION:
 		case SWT.ICON_WORKING:
 			if (infoImage == null) {
-				infoImage = createImage ("dialog-information"); //$NON-NLS-1$
+				infoImage = createImage ("dialog-information-symbolic"); //$NON-NLS-1$
 			}
 			return infoImage;
 		case SWT.ICON_QUESTION:
 			if (questionImage == null) {
-				questionImage = createImage ("dialog-question"); //$NON-NLS-1$
+				questionImage = createImage ("dialog-question-symbolic"); //$NON-NLS-1$
 			}
 			return questionImage;
 		case SWT.ICON_WARNING:
 			if (warningImage == null) {
-				warningImage = createImage ("dialog-warning"); //$NON-NLS-1$
+				warningImage = createImage ("dialog-warning-symbolic"); //$NON-NLS-1$
 			}
 			return warningImage;
 	}
