@@ -23,7 +23,7 @@ If applicable, add screenshots to help explain your problem.
 
 **Environment:**
 - Select the platforms on which the behavior is seen.
-[ ] All OS
+[x] All OS
 [ ] Windows
 [ ] Linux
 [ ] macOS
