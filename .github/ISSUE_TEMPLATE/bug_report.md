@@ -32,9 +32,9 @@ If applicable, add screenshots to help explain your problem.
  
  - JRE/JDK version
  
-**Version since **
+**Version since**
  Eclipse or SWT version since when the behavior is seen [e.g. 4.23]
 
-**Additional context**
+**Workaround (or) Additional context**
 Add any other context about the problem here.
 Any known workarounds for the problem?
