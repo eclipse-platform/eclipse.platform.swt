@@ -1,6 +1,6 @@
 ---
 name: Bug report
-about: Create a report to help us improve
+about: Create a report to help us improve SWT
 title: ''
 labels: ''
 assignees: ''
@@ -37,3 +37,4 @@ If applicable, add screenshots to help explain your problem.
 
 **Additional context**
 Add any other context about the problem here.
+Any known workarounds for the problem?
