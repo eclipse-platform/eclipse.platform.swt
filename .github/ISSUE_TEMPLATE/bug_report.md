@@ -23,14 +23,17 @@ If applicable, add screenshots to help explain your problem.
 
 **Environment:**
 - Select the platforms on which the behavior is seen.
+[ ] All OS
 [ ] Windows
 [ ] Linux
 [ ] macOS
  
  - Additional OS info (e.g. OS version, Linux Desktop, etc)
  
-**Version**
- Eclipse or SWT version on which the behavior is seen [e.g. 4.23]
+ - JRE/JDK version
+ 
+**Version since **
+ Eclipse or SWT version since when the behavior is seen [e.g. 4.23]
 
 **Additional context**
 Add any other context about the problem here.
