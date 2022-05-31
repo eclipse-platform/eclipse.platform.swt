@@ -189,6 +189,7 @@ public class CTabFolder extends Composite {
 	boolean selectionGradientVertical;
 	Color selectionForeground;
 	Color selectionBackground;
+	int selectionHighlightBarThickness = 2;
 
 	/* Unselected item appearance */
 	Color[] gradientColors;
@@ -3471,6 +3472,27 @@ public void setSelectionForeground (Color color) {
 }
 
 /**
+ * Sets the thickness of the highlight bar on the selected tab. The highlight bar is drawn in the top margin of the selected tab.
+ *
+ * @param thickness the desired thickness. Most be positive and lower than {@link CTabFolderRenderer#ITEM_TOP_MARGIN} (that is either {@code 0} {@code 1} or {@code 2} at the moment),for correct results.
+ *                  Set to {@code 0} to not draw a highlight bar.
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if the parameter value is invalid</li>
+ * </ul>
+ * @implNote Default {@link CTabFolderRenderer} currently ignores this setting if {@link #getSimple()} is {@code true}.
+ * @since 3.121
+ */
+public void setSelectionBarThickness(int thickness) {
+	checkWidget();
+	if (thickness < 0) {
+		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	}
+	this.selectionHighlightBarThickness = thickness;
+}
+
+/**
  * Sets the shape that the CTabFolder will use to render itself.
  *
  * @param simple <code>true</code> if the CTabFolder should render itself in a simple, traditional style
@@ -4192,7 +4214,7 @@ public void setHighlightEnabled(boolean enabled) {
  * highlighted.
  *
  * @return <code>true</code> if the selected tab is rendered as
- *         highlighted
+ *         highlighted.
  *
  * @exception SWTException
  *                <ul>
