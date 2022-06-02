@@ -785,7 +785,14 @@ void createHandle (int index) {
 				}
 			}
 		} else if ((style & SWT.ON_TOP) != 0) {
-			GTK3.gtk_window_set_keep_above(shellHandle, true);
+			/*
+			 * gtk_window_set_keep_above is not available in GTK 4.
+			 * No replacements were provided. GTK dev suggestion is
+			 * to use platform-specific API if this functionality
+			 * is necessary.
+			 */
+
+			if(!GTK.GTK4)GTK3.gtk_window_set_keep_above(shellHandle, true);
 		}
 
 		GTK.gtk_window_set_title(shellHandle, new byte[1]);
@@ -2246,8 +2253,10 @@ void resizeBounds (int width, int height, boolean notify) {
 	if (GTK.GTK4) {
 		if (parent != null) {
 			GtkAllocation allocation = new GtkAllocation();
+			GtkAllocation currentSizeAlloc = new GtkAllocation();
+			GTK.gtk_widget_get_allocation(vboxHandle, currentSizeAlloc);
 			allocation.width = width;
-			allocation.height = height;
+			allocation.height = height + currentSizeAlloc.y;
 			GTK4.gtk_widget_size_allocate(shellHandle, allocation, -1);
 		}
 	} else {
@@ -2928,7 +2937,7 @@ public void setVisible (boolean visible) {
 		 * the screen. The fix is to set the default size to the smallest possible (1, 1)
 		 * before gtk_widget_show.
 		 */
-		if (oldWidth == 0 && oldHeight == 0) {
+		if (!GTK.GTK4 && (oldWidth == 0 && oldHeight == 0)) {
 			int [] init_width = new int[1], init_height = new int[1];
 			GTK3.gtk_window_get_size(shellHandle, init_width, init_height);
 			GTK3.gtk_window_resize(shellHandle, 1, 1);
