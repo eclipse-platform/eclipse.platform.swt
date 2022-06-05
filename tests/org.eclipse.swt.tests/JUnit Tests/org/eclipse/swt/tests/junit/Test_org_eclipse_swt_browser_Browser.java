@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2018 IBM Corporation and others.
+ * Copyright (c) 2000, 2022 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -1196,7 +1196,7 @@ public void test_VisibilityWindowListener_eventSize() {
 	browserChild.dispose();
 
 	boolean passed = false;
-	if (SwtTestUtil.isCocoa) {
+	if (!SwtTestUtil.isWindows) {
 		// On Cocoa, event height/width aren't respected if declared by javascript.
 		passed = finishedWithoutTimeout && result.get().x != 0 && result.get().y != 0;
 	} else
