@@ -17,8 +17,9 @@ package org.eclipse.swt.tests.junit;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 import java.util.Arrays;
 
@@ -57,14 +58,9 @@ public void test_getLevel() {
 	assertEquals(1, layout.getLevel(6));
 	if (!SwtTestUtil.isWindows) assertEquals(2, layout.getLevel(7));  // skipping windows due to fix for bug 565526
 	assertEquals(0, layout.getLevel(9));
-	try {
-		layout.getLevel(-1);
-		fail("invalid range expection expected");
-	} catch (Exception e) {}
-	try {
-		layout.getLevel(text.length() + 1);
-		fail("invalid range expection expected");
-	} catch (Exception e) {}
+	assertThrows("invalid range expection expected", IllegalArgumentException.class, () -> layout.getLevel(-1));
+	assertThrows("invalid range expection expected", IllegalArgumentException.class,
+			() -> layout.getLevel(text.length() + 1));
 	layout.dispose();
 }
 
@@ -122,11 +118,9 @@ public void test_getSegments() {
 	//Bug 241482 comment 64
 	layout.setText("\nAB");
 	layout.setSegments(new int[] {0, 1, 3});
-	int[] expected = new int[] {0, 1, 3};
+	int[] expected = {0, 1, 3};
 	int[] offsets = layout.getLineOffsets();
-	for (int i = 0; i < offsets.length; i++) {
-		assertEquals(" i = " + i, expected[i], offsets[i]);
-	}
+	assertArrayEquals(expected, offsets);
 	layout.dispose();
 	layout = new TextLayout(display);
 
@@ -285,36 +279,26 @@ public void test_getLineOffsets() {
 	String text = "0123456\n890123\n";
 	layout.setText(text);
 	int[] offsets = layout.getLineOffsets();
-	int[] expected = new int [] {0, 8, 15, 15};
-	for (int i = 0; i < offsets.length; i++) {
-		assertEquals(expected[i], offsets[i]);
-	}
+	int[] expected = {0, 8, 15, 15};
+	assertArrayEquals(expected, offsets);
 	layout.setText("");
 	offsets = layout.getLineOffsets();
 	expected = new int [] {0, 0};
-	for (int i = 0; i < offsets.length; i++) {
-		assertEquals(expected[i], offsets[i]);
-	}
+	assertArrayEquals(expected, offsets);
 	layout.setText("\n");
 	offsets = layout.getLineOffsets();
 	expected = new int [] {0, 1, 1};
-	for (int i = 0; i < offsets.length; i++) {
-		assertEquals(expected[i], offsets[i]);
-	}
+	assertArrayEquals(expected, offsets);
 	layout.setText("WMWM");
 	int width = layout.getBounds().width;
 	layout.setWidth(width / 4 + 1);
 	offsets = layout.getLineOffsets();
 	expected = new int [] {0, 1, 2, 3, 4};
-	for (int i = 0; i < offsets.length; i++) {
-		assertEquals(expected[i], offsets[i]);
-	}
+	assertArrayEquals(expected, offsets);
 	layout.setWidth(width / 2 + 1);
 	offsets = layout.getLineOffsets();
 	expected = new int [] {0, 2, 4};
-	for (int i = 0; i < offsets.length; i++) {
-		assertEquals(expected[i], offsets[i]);
-	}
+	assertArrayEquals(expected, offsets);
 
 	layout.dispose();
 }
@@ -339,14 +323,9 @@ public void test_getLineIndex() {
 	assertEquals(1, layout.getLineIndex(12));
 	assertEquals(1, layout.getLineIndex(14));
 	assertEquals(2, layout.getLineIndex(15));
-	try {
-		layout.getLineIndex(-1);
-		fail("invalid range expection expected");
-	} catch (Exception e) {}
-	try {
-		layout.getLineIndex(text.length() + 1);
-		fail("invalid range expection expected");
-	} catch (Exception e) {}
+	assertThrows("invalid range expection expected", IllegalArgumentException.class, ()-> layout.getLineIndex(-1));
+	assertThrows("invalid range expection expected", IllegalArgumentException.class, ()->
+		layout.getLineIndex(text.length() + 1));
 	layout.dispose();
 }
 
@@ -385,14 +364,8 @@ public void test_getLineBounds() {
 	assertEquals(100, newRect1.x);
 	assertEquals(bounds.height, rect0.height + rect1.height + rect2.height);
 
-	try {
-		layout.getLineBounds(-1);
-		fail("invalid range expection expected");
-	} catch (Exception e) {}
-	try {
-		layout.getLineBounds(3);
-		fail("invalid range expection expected");
-	} catch (Exception e) {}
+	assertThrows("invalid range expection expected", IllegalArgumentException.class, () -> layout.getLineBounds(-1));
+	assertThrows("invalid range expection expected", IllegalArgumentException.class, () -> layout.getLineBounds(3));
 	layout.dispose();
 }
 
@@ -408,12 +381,12 @@ public void test_setStyle() {
 	layout = new TextLayout (display);
 	layout.setText("aabbcc");
 	layout.setStyle (s1, 2, 3);
-	assertEquals(null, layout.getStyle(0));
-	assertEquals(null, layout.getStyle(1));
+	assertNull(layout.getStyle(0));
+	assertNull(layout.getStyle(1));
 	assertEquals(s1, layout.getStyle(2));
 	assertEquals(s1, layout.getStyle(3));
-	assertEquals(null, layout.getStyle(4));
-	assertEquals(null, layout.getStyle(5));
+	assertNull(layout.getStyle(4));
+	assertNull(layout.getStyle(5));
 	layout.dispose();
 
 	layout = new TextLayout (display);
@@ -533,12 +506,12 @@ public void test_setStyle() {
 	layout.setStyle (s2, 2, 3);
 	layout.setStyle (s3, 4, 5);
 	layout.setStyle (null, 0, 5);
-	assertEquals(null, layout.getStyle(0));
-	assertEquals(null, layout.getStyle(1));
-	assertEquals(null, layout.getStyle(2));
-	assertEquals(null, layout.getStyle(3));
-	assertEquals(null, layout.getStyle(4));
-	assertEquals(null, layout.getStyle(5));
+	assertNull(layout.getStyle(0));
+	assertNull(layout.getStyle(1));
+	assertNull(layout.getStyle(2));
+	assertNull(layout.getStyle(3));
+	assertNull(layout.getStyle(4));
+	assertNull(layout.getStyle(5));
 	layout.dispose();
 
 	layout = new TextLayout (display);
@@ -560,12 +533,12 @@ public void test_setStyle() {
 	layout.setStyle (s1, 2, 2);
 	layout.setStyle (s2, 2, 3);
 	layout.setStyle (null, 3, 3);
-	assertEquals(null, layout.getStyle(0));
-	assertEquals(null, layout.getStyle(1));
+	assertNull(layout.getStyle(0));
+	assertNull(layout.getStyle(1));
 	assertEquals(s2, layout.getStyle(2));
-	assertEquals(null, layout.getStyle(3));
-	assertEquals(null, layout.getStyle(4));
-	assertEquals(null, layout.getStyle(5));
+	assertNull(layout.getStyle(3));
+	assertNull(layout.getStyle(4));
+	assertNull(layout.getStyle(5));
 	layout.dispose();
 }
 
@@ -801,10 +774,7 @@ public void test_getLineSpacing() {
 	assertEquals(Short.MAX_VALUE, layout.getSpacing());
 	layout.setSpacing(50);
 	assertEquals(50, layout.getSpacing());
-	try {
-		layout.setSpacing(-1);
-		fail("invalid range expection expected");
-	} catch (Exception e) {}
+	assertThrows("invalid range expection expected", IllegalArgumentException.class, ()->layout.setSpacing(-1));
 	assertEquals(50, layout.getSpacing());
 	layout.setSpacing(0);
 	assertEquals(0, layout.getSpacing());
@@ -906,16 +876,13 @@ public void test_getOffset() {
 @Test
 public void test_getTabs() {
 	TextLayout layout = new TextLayout(display);
-	assertEquals(null, layout.getTabs());
-	int[] tabs = new int[] {8, 18, 28, 38, 50, 80};
+	assertNull(layout.getTabs());
+	int[] tabs = {8, 18, 28, 38, 50, 80};
 	layout.setTabs(tabs);
 	int[] result = layout.getTabs();
-	assertEquals(tabs.length, result.length);
-	for (int i = 0; i < result.length; i++) {
-		assertEquals("pos: " + i, tabs[i], result[i]);
-	}
+	assertArrayEquals(tabs, result);
 	layout.setTabs(null);
-	assertEquals(null, layout.getTabs());
+	assertNull(layout.getTabs());
 	layout.dispose();
 }
 
