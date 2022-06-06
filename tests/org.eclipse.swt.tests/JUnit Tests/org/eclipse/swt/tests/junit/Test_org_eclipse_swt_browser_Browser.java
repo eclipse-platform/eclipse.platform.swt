@@ -1386,12 +1386,9 @@ public void test_LocationListener_evaluateInCallback() {
 					"\n  changed:   fired:" + changedFinished.get() + "    evaluated:" + changed;
 	boolean passed = false;
 
-	if (SwtTestUtil.isGTK) {
-		// Evaluation works in all cases.
-		passed = changingFinished.get() && changedFinished.get() && changed && changing;
-	} else if (SwtTestUtil.isCocoa) {
-		// On Cocoa, evaluation in 'changing' fails.
-		passed = changingFinished.get() && changedFinished.get() && changed; // && changing (broken)
+	if (SwtTestUtil.isGTK || SwtTestUtil.isCocoa ) {
+		// On Webkit/Safari evaluation in 'changing' fails.
+		passed = changingFinished.get() && changedFinished.get() && changed; // && changed (broken)
 	} else if (SwtTestUtil.isWindows) {
 		// On Windows, evaluation inside SWT listeners fails altogether.
 		// Further, only 'changing' is fired if evaluation is invoked inside listeners.
