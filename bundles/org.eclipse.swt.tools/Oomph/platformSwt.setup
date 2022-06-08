@@ -220,8 +220,6 @@
         name="org.eclipse.jdt.feature.group"/>
     <requirement
         name="org.eclipse.pde.feature.group"/>
-    <requirement
-        name="org.eclipse.pde.api.tools.ee.feature.feature.group"/>
     <repository
         url="${eclipse.latest.p2}"/>
   </setupTask>
