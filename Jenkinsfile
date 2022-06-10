@@ -37,9 +37,9 @@ spec:
       mountPath: "/home/jenkins/.m2/settings.xml"
       subPath: "settings.xml"
       readOnly: true
-    - name: "toolchains-xml"
-      mountPath: "/home/jenkins/.m2/toolchains.xml"
-      subPath: "toolchains.xml"
+    - name: toolchains-xml
+      mountPath: /home/jenkins/.m2/toolchains.xml
+      subPath: toolchains.xml
       readOnly: true
     - name: "settings-security-xml"
       mountPath: "/home/jenkins/.m2/settings-security.xml"
