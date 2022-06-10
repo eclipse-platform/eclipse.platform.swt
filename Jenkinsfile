@@ -97,7 +97,7 @@ spec:
 			steps {
 				container('container') {
 					wrap([$class: 'Xvnc', useXauthority: true]) {
-					    withEnv(["JAVA_HOME=${ tool 'openjdk-jdk11-latest' }"]) {
+					    withEnv(["JAVA_HOME=${ tool 'openjdk-jdk17-latest' }"]) {
 					        dir ('eclipse.platform.swt.binaries') {
 					    	    sh '/opt/tools/apache-maven/latest/bin/mvn --batch-mode -Pbuild-individual-bundles -DforceContextQualifier=zzz -Dnative=gtk.linux.x86_64 -DskipJni -DskipRust -Dcompare-version-with-baselines.skip=true -Dmaven.compiler.failOnWarning=true install '
 					        }
