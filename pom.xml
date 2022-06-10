@@ -32,7 +32,7 @@
     <!-- needs to be adapted on every fork: <sonar.organization>eclipse-platform</sonar.organization> -->
     <sonar.host.url>https://sonarcloud.io</sonar.host.url>
     <!-- for build-individual-bundles: -->
-    <sonar.moduleKey>${artifactId}</sonar.moduleKey>
+    <sonar.moduleKey>${project.artifactId}</sonar.moduleKey>
     <!-- sonar fails to analyze .java files but can analyse compiled binaries: -->
     <sonar.java.binaries>target</sonar.java.binaries>
     <!-- sonar fails to analyse C sources. Disable them: -->
