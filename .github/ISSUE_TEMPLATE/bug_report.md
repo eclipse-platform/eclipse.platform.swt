@@ -22,15 +22,15 @@ A clear and concise description of what you expected to happen.
 If applicable, add screenshots to help explain your problem.
 
 **Environment:**
-- Select the platforms on which the behavior is seen.
-[x] All OS
-[ ] Windows
-[ ] Linux
-[ ] macOS
- 
- - Additional OS info (e.g. OS version, Linux Desktop, etc)
- 
- - JRE/JDK version
+1. Select the platform(s) on which the behavior is seen:
+- - [x] All OS
+- - [ ] Windows
+- - [ ] Linux
+- - [ ] macOS 
+
+2. Additional OS info (e.g. OS version, Linux Desktop, etc)
+
+3. JRE/JDK version
  
 **Version since**
  Eclipse or SWT version since when the behavior is seen [e.g. 4.23]
