@@ -90,6 +90,10 @@ public void sendEvent (Event event) {
 					} catch (Error | RuntimeException ex) {
 						exceptions.stash (ex);
 					}
+					if (event.widget != null && event.widget.isDisposed()
+							|| event.item != null && event.item.isDisposed()) {
+						break;
+					}
 				}
 			}
 		}
