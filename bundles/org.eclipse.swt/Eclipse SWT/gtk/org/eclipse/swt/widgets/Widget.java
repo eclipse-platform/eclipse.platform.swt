@@ -1981,7 +1981,8 @@ boolean setKeyState (Event javaEvent, long event) {
 				short [] keyCode = new short [1];
 				if (GTK.GTK4) {
 					keyCode[0] = (short) GDK.gdk_key_event_get_keycode(event);
-					javaEvent.keyCode = keyCode[0];
+					keyval[0] = (short) GDK.gdk_key_event_get_keyval(event);
+					javaEvent.keyCode = (int) GDK.gdk_keyval_to_unicode (keyval [0]);
 				} else {
 					GDK.gdk_event_get_keycode(event, keyCode);
 					if (GDK.gdk_keymap_translate_keyboard_state (keymap, keyCode[0],
