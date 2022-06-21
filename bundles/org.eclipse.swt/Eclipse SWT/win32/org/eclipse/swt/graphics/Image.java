@@ -1724,8 +1724,8 @@ static long [] init(Device device, Image image, ImageData i) {
 	if (i.depth == 2) {
 		ImageData img = new ImageData(i.width, i.height, 4, i.palette);
 		ImageData.blit(
-			  i.data,   i.depth,   i.bytesPerLine, i.getByteOrder(),   i.width,   i.height, null, null, null,
-			img.data, img.depth, img.bytesPerLine, i.getByteOrder(), img.width, img.height, null, null, null,
+			  i.data,   i.depth,   i.bytesPerLine, i.getByteOrder(),   i.width,   i.height,
+			img.data, img.depth, img.bytesPerLine, i.getByteOrder(), img.width, img.height,
 			false, false);
 		img.transparentPixel = i.transparentPixel;
 		img.maskPad = i.maskPad;

@@ -1148,8 +1148,8 @@ public ImageData scaledTo(int width, int height) {
 		dest.data, dest.depth, dest.bytesPerLine, dest.getByteOrder(), dest.width, dest.height, 0, 0, 0,
 		flipX, flipY);
 	else blit(
-		this.data, this.depth, this.bytesPerLine, this.getByteOrder(), this.width, this.height, null, null, null,
-		dest.data, dest.depth, dest.bytesPerLine, dest.getByteOrder(), dest.width, dest.height, null, null, null,
+		this.data, this.depth, this.bytesPerLine, this.getByteOrder(), this.width, this.height,
+		dest.data, dest.depth, dest.bytesPerLine, dest.getByteOrder(), dest.width, dest.height,
 		flipX, flipY);
 
 	/* Scale the image mask or alpha */
@@ -1161,16 +1161,16 @@ public ImageData scaledTo(int width, int height) {
 		int srcBpl = (this.width + 7) / 8;
 		srcBpl = (srcBpl + (this.maskPad - 1)) / this.maskPad * this.maskPad;
 		blit(
-			this.maskData, 1, srcBpl,  MSB_FIRST, this.width, this.height, null, null, null,
-			dest.maskData, 1, destBpl, MSB_FIRST, dest.width, dest.height, null, null, null,
+			this.maskData, 1, srcBpl,  MSB_FIRST, this.width, this.height,
+			dest.maskData, 1, destBpl, MSB_FIRST, dest.width, dest.height,
 			flipX, flipY);
 	} else if (alpha != -1) {
 		dest.alpha = this.alpha;
 	} else if (alphaData != null) {
 		dest.alphaData = new byte[dest.width * dest.height];
 		blit(
-			this.alphaData, 8, this.width, MSB_FIRST, this.width, this.height, null, null, null,
-			dest.alphaData, 8, dest.width, MSB_FIRST, dest.width, dest.height, null, null, null,
+			this.alphaData, 8, this.width, MSB_FIRST, this.width, this.height,
+			dest.alphaData, 8, dest.width, MSB_FIRST, dest.width, dest.height,
 			flipX, flipY);
 	}
 	return dest;
@@ -1993,9 +1993,6 @@ static void blit(
  *        ignored if srcDepth is not 1
  * @param srcWidth the width of the source blit region
  * @param srcHeight the height of the source blit region
- * @param srcReds the source palette red component intensities
- * @param srcGreens the source palette green component intensities
- * @param srcBlues the source palette blue component intensities
  * @param destData the destination byte array containing image data
  * @param destDepth the destination depth: one of 1, 2, 4, 8
  * @param destStride the destination number of bytes per line
@@ -2003,19 +2000,14 @@ static void blit(
  *        ignored if destDepth is not 1
  * @param destWidth the width of the destination blit region
  * @param destHeight the height of the destination blit region
- * @param destReds the destination palette red component intensities
- * @param destGreens the destination palette green component intensities
- * @param destBlues the destination palette blue component intensities
  * @param flipX if true the resulting image is flipped along the vertical axis
  * @param flipY if true the resulting image is flipped along the horizontal axis
  */
 static void blit(
 	byte[] srcData, int srcDepth, int srcStride, int srcOrder,
 	int srcWidth, int srcHeight,
-	byte[] srcReds, byte[] srcGreens, byte[] srcBlues,
 	byte[] destData, int destDepth, int destStride, int destOrder,
 	int destWidth, int destHeight,
-	byte[] destReds, byte[] destGreens, byte[] destBlues,
 	boolean flipX, boolean flipY) {
 	if ((destWidth <= 0) || (destHeight <= 0)) return;
 
@@ -2078,16 +2070,13 @@ static void blit(
 	/*** Blit ***/
 	int dp = dpr;
 	int sp = spr;
-	int destPaletteSize = 1 << destDepth;
-	if ((destReds != null) && (destReds.length < destPaletteSize)) destPaletteSize = destReds.length;
 	byte[] paletteMapping = null;
 
 	/*** If the palettes and formats are equivalent use a one-to-one mapping ***/
-	if ((stype == dtype) &&
-		(srcReds == destReds) && (srcGreens == destGreens) && (srcBlues == destBlues)) {
+	if (stype == dtype) {
 		paletteMapping = ONE_TO_ONE_MAPPING;
 	/*** If palettes have not been supplied, supply a suitable mapping ***/
-	} else if ((srcReds == null) || (destReds == null)) {
+	} else {
 		if (srcDepth <= destDepth) {
 			paletteMapping = ONE_TO_ONE_MAPPING;
 		} else {
@@ -2097,202 +2086,120 @@ static void blit(
 		}
 	}
 
-	if (paletteMapping != null) {
-		if (stype == dtype) {
-			/*** Fast blit (copy w/ mapping) ***/
-			switch (stype) {
-				case TYPE_INDEX_8:
-					for (int dy = destHeight, sfy = sfyi; dy > 0; --dy, sp = spr += (sfy >>> 16) * srcStride, sfy = (sfy & 0xffff) + sfyi, dp = dpr += dpryi) {
-						for (int dx = destWidth, sfx = sfxi; dx > 0; --dx, dp += dprxi, sfx = (sfx & 0xffff) + sfxi) {
-							destData[dp] = paletteMapping[srcData[sp] & 0xff];
-							sp += (sfx >>> 16);
-						}
-					}
-					break;
-				case TYPE_INDEX_4:
-					for (int dy = destHeight, sfy = sfyi; dy > 0; --dy, sp = spr += (sfy >>> 16) * srcStride, sfy = (sfy & 0xffff) + sfyi, dp = dpr += dpryi) {
-						for (int dx = destWidth, sfx = sfxi; dx > 0; --dx, dp += dprxi, sfx = (sfx & 0xffff) + sfxi) {
-							final int v;
-							if ((sp & 1) != 0) v = paletteMapping[srcData[sp >> 1] & 0x0f];
-							else v = (srcData[sp >> 1] >>> 4) & 0x0f;
-							sp += (sfx >>> 16);
-							if ((dp & 1) != 0) destData[dp >> 1] = (byte)((destData[dp >> 1] & 0xf0) | v);
-							else destData[dp >> 1] = (byte)((destData[dp >> 1] & 0x0f) | (v << 4));
-						}
-					}
-					break;
-				case TYPE_INDEX_2:
-					for (int dy = destHeight, sfy = sfyi; dy > 0; --dy, sp = spr += (sfy >>> 16) * srcStride, sfy = (sfy & 0xffff) + sfyi, dp = dpr += dpryi) {
-						for (int dx = destWidth, sfx = sfxi; dx > 0; --dx, dp += dprxi, sfx = (sfx & 0xffff) + sfxi) {
-							final int index = paletteMapping[(srcData[sp >> 2] >>> (6 - (sp & 3) * 2)) & 0x03];
-							sp += (sfx >>> 16);
-							final int shift = 6 - (dp & 3) * 2;
-							destData[dp >> 2] = (byte)(destData[dp >> 2] & ~(0x03 << shift) | (index << shift));
-						}
-					}
-					break;
-				case TYPE_INDEX_1_MSB:
-					for (int dy = destHeight, sfy = sfyi; dy > 0; --dy, sp = spr += (sfy >>> 16) * srcStride, sfy = (sfy & 0xffff) + sfyi, dp = dpr += dpryi) {
-						for (int dx = destWidth, sfx = sfxi; dx > 0; --dx, dp += dprxi, sfx = (sfx & 0xffff) + sfxi) {
-							final int index = paletteMapping[(srcData[sp >> 3] >>> (7 - (sp & 7))) & 0x01];
-							sp += (sfx >>> 16);
-							final int shift = 7 - (dp & 7);
-							destData[dp >> 3] = (byte)(destData[dp >> 3] & ~(0x01 << shift) | (index << shift));
-						}
-					}
-					break;
-				case TYPE_INDEX_1_LSB:
-					for (int dy = destHeight, sfy = sfyi; dy > 0; --dy, sp = spr += (sfy >>> 16) * srcStride, sfy = (sfy & 0xffff) + sfyi, dp = dpr += dpryi) {
-						for (int dx = destWidth, sfx = sfxi; dx > 0; --dx, dp += dprxi, sfx = (sfx & 0xffff) + sfxi) {
-							final int index = paletteMapping[(srcData[sp >> 3] >>> (sp & 7)) & 0x01];
-							sp += (sfx >>> 16);
-							final int shift = dp & 7;
-							destData[dp >> 3] = (byte)(destData[dp >> 3] & ~(0x01 << shift) | (index << shift));
-						}
-					}
-					break;
-			}
-		} else {
-			/*** Convert between indexed modes using mapping and mask ***/
-			for (int dy = destHeight, sfy = sfyi; dy > 0; --dy,
-					sp = spr += (sfy >>> 16) * srcStride,
-					sfy = (sfy & 0xffff) + sfyi,
-					dp = dpr += dpryi) {
-				for (int dx = destWidth, sfx = sfxi; dx > 0; --dx,
-						dp += dprxi,
-						sfx = (sfx & 0xffff) + sfxi) {
-					int index;
-					/*** READ NEXT PIXEL ***/
-					switch (stype) {
-						case TYPE_INDEX_8:
-							index = srcData[sp] & 0xff;
-							sp += (sfx >>> 16);
-							break;
-						case TYPE_INDEX_4:
-							if ((sp & 1) != 0) index = srcData[sp >> 1] & 0x0f;
-							else index = (srcData[sp >> 1] >>> 4) & 0x0f;
-							sp += (sfx >>> 16);
-							break;
-						case TYPE_INDEX_2:
-							index = (srcData[sp >> 2] >>> (6 - (sp & 3) * 2)) & 0x03;
-							sp += (sfx >>> 16);
-							break;
-						case TYPE_INDEX_1_MSB:
-							index = (srcData[sp >> 3] >>> (7 - (sp & 7))) & 0x01;
-							sp += (sfx >>> 16);
-							break;
-						case TYPE_INDEX_1_LSB:
-							index = (srcData[sp >> 3] >>> (sp & 7)) & 0x01;
-							sp += (sfx >>> 16);
-							break;
-						default:
-							return;
-					}
-					index = paletteMapping[index] & 0xff;
-
-					/*** WRITE NEXT PIXEL ***/
-					switch (dtype) {
-						case TYPE_INDEX_8:
-							destData[dp] = (byte) index;
-							break;
-						case TYPE_INDEX_4:
-							if ((dp & 1) != 0) destData[dp >> 1] = (byte)((destData[dp >> 1] & 0xf0) | index);
-							else destData[dp >> 1] = (byte)((destData[dp >> 1] & 0x0f) | (index << 4));
-							break;
-						case TYPE_INDEX_2: {
-							final int shift = 6 - (dp & 3) * 2;
-							destData[dp >> 2] = (byte)(destData[dp >> 2] & ~(0x03 << shift) | (index << shift));
-						} break;
-						case TYPE_INDEX_1_MSB: {
-							final int shift = 7 - (dp & 7);
-							destData[dp >> 3] = (byte)(destData[dp >> 3] & ~(0x01 << shift) | (index << shift));
-						} break;
-						case TYPE_INDEX_1_LSB: {
-							final int shift = dp & 7;
-							destData[dp >> 3] = (byte)(destData[dp >> 3] & ~(0x01 << shift) | (index << shift));
-						} break;
+	if (stype == dtype) {
+		/*** Fast blit (copy w/ mapping) ***/
+		switch (stype) {
+			case TYPE_INDEX_8:
+				for (int dy = destHeight, sfy = sfyi; dy > 0; --dy, sp = spr += (sfy >>> 16) * srcStride, sfy = (sfy & 0xffff) + sfyi, dp = dpr += dpryi) {
+					for (int dx = destWidth, sfx = sfxi; dx > 0; --dx, dp += dprxi, sfx = (sfx & 0xffff) + sfxi) {
+						destData[dp] = paletteMapping[srcData[sp] & 0xff];
+						sp += (sfx >>> 16);
 					}
 				}
-			}
+				break;
+			case TYPE_INDEX_4:
+				for (int dy = destHeight, sfy = sfyi; dy > 0; --dy, sp = spr += (sfy >>> 16) * srcStride, sfy = (sfy & 0xffff) + sfyi, dp = dpr += dpryi) {
+					for (int dx = destWidth, sfx = sfxi; dx > 0; --dx, dp += dprxi, sfx = (sfx & 0xffff) + sfxi) {
+						final int v;
+						if ((sp & 1) != 0) v = paletteMapping[srcData[sp >> 1] & 0x0f];
+						else v = (srcData[sp >> 1] >>> 4) & 0x0f;
+						sp += (sfx >>> 16);
+						if ((dp & 1) != 0) destData[dp >> 1] = (byte)((destData[dp >> 1] & 0xf0) | v);
+						else destData[dp >> 1] = (byte)((destData[dp >> 1] & 0x0f) | (v << 4));
+					}
+				}
+				break;
+			case TYPE_INDEX_2:
+				for (int dy = destHeight, sfy = sfyi; dy > 0; --dy, sp = spr += (sfy >>> 16) * srcStride, sfy = (sfy & 0xffff) + sfyi, dp = dpr += dpryi) {
+					for (int dx = destWidth, sfx = sfxi; dx > 0; --dx, dp += dprxi, sfx = (sfx & 0xffff) + sfxi) {
+						final int index = paletteMapping[(srcData[sp >> 2] >>> (6 - (sp & 3) * 2)) & 0x03];
+						sp += (sfx >>> 16);
+						final int shift = 6 - (dp & 3) * 2;
+						destData[dp >> 2] = (byte)(destData[dp >> 2] & ~(0x03 << shift) | (index << shift));
+					}
+				}
+				break;
+			case TYPE_INDEX_1_MSB:
+				for (int dy = destHeight, sfy = sfyi; dy > 0; --dy, sp = spr += (sfy >>> 16) * srcStride, sfy = (sfy & 0xffff) + sfyi, dp = dpr += dpryi) {
+					for (int dx = destWidth, sfx = sfxi; dx > 0; --dx, dp += dprxi, sfx = (sfx & 0xffff) + sfxi) {
+						final int index = paletteMapping[(srcData[sp >> 3] >>> (7 - (sp & 7))) & 0x01];
+						sp += (sfx >>> 16);
+						final int shift = 7 - (dp & 7);
+						destData[dp >> 3] = (byte)(destData[dp >> 3] & ~(0x01 << shift) | (index << shift));
+					}
+				}
+				break;
+			case TYPE_INDEX_1_LSB:
+				for (int dy = destHeight, sfy = sfyi; dy > 0; --dy, sp = spr += (sfy >>> 16) * srcStride, sfy = (sfy & 0xffff) + sfyi, dp = dpr += dpryi) {
+					for (int dx = destWidth, sfx = sfxi; dx > 0; --dx, dp += dprxi, sfx = (sfx & 0xffff) + sfxi) {
+						final int index = paletteMapping[(srcData[sp >> 3] >>> (sp & 7)) & 0x01];
+						sp += (sfx >>> 16);
+						final int shift = dp & 7;
+						destData[dp >> 3] = (byte)(destData[dp >> 3] & ~(0x01 << shift) | (index << shift));
+					}
+				}
+				break;
 		}
-		return;
-	}
-
-	/*** Comprehensive blit (apply transformations) ***/
-	int index = 0;
-	int lastindex = 0, lastr = -1, lastg = -1, lastb = -1;
-
-	for (int dy = destHeight, sfy = sfyi; dy > 0; --dy,
-			sp = spr += (sfy >>> 16) * srcStride,
-			sfy = (sfy & 0xffff) + sfyi,
-			dp = dpr += dpryi) {
-		for (int dx = destWidth, sfx = sfxi; dx > 0; --dx,
-				dp += dprxi,
-				sfx = (sfx & 0xffff) + sfxi) {
-			/*** READ NEXT PIXEL ***/
-			switch (stype) {
-				case TYPE_INDEX_8:
-					index = srcData[sp] & 0xff;
-					sp += (sfx >>> 16);
-					break;
-				case TYPE_INDEX_4:
-					if ((sp & 1) != 0) index = srcData[sp >> 1] & 0x0f;
-					else index = (srcData[sp >> 1] >>> 4) & 0x0f;
-					sp += (sfx >>> 16);
-					break;
-				case TYPE_INDEX_2:
-					index = (srcData[sp >> 2] >>> (6 - (sp & 3) * 2)) & 0x03;
-					sp += (sfx >>> 16);
-					break;
-				case TYPE_INDEX_1_MSB:
-					index = (srcData[sp >> 3] >>> (7 - (sp & 7))) & 0x01;
-					sp += (sfx >>> 16);
-					break;
-				case TYPE_INDEX_1_LSB:
-					index = (srcData[sp >> 3] >>> (sp & 7)) & 0x01;
-					sp += (sfx >>> 16);
-					break;
-			}
-
-			/*** DO SPECIAL PROCESSING IF REQUIRED ***/
-			int r = srcReds[index] & 0xff, g = srcGreens[index] & 0xff, b = srcBlues[index] & 0xff;
-			if (r != lastr || g != lastg || b != lastb) {
-				// moving the variable declarations out seems to make the JDK JIT happier...
-				for (int j = 0, dr, dg, db, distance, minDistance = 0x7fffffff; j < destPaletteSize; ++j) {
-					dr = (destReds[j] & 0xff) - r;
-					dg = (destGreens[j] & 0xff) - g;
-					db = (destBlues[j] & 0xff) - b;
-					distance = dr * dr + dg * dg + db * db;
-					if (distance < minDistance) {
-						lastindex = j;
-						if (distance == 0) break;
-						minDistance = distance;
-					}
+	} else {
+		/*** Convert between indexed modes using mapping and mask ***/
+		for (int dy = destHeight, sfy = sfyi; dy > 0; --dy,
+				sp = spr += (sfy >>> 16) * srcStride,
+				sfy = (sfy & 0xffff) + sfyi,
+				dp = dpr += dpryi) {
+			for (int dx = destWidth, sfx = sfxi; dx > 0; --dx,
+					dp += dprxi,
+					sfx = (sfx & 0xffff) + sfxi) {
+				int index;
+				/*** READ NEXT PIXEL ***/
+				switch (stype) {
+					case TYPE_INDEX_8:
+						index = srcData[sp] & 0xff;
+						sp += (sfx >>> 16);
+						break;
+					case TYPE_INDEX_4:
+						if ((sp & 1) != 0) index = srcData[sp >> 1] & 0x0f;
+						else index = (srcData[sp >> 1] >>> 4) & 0x0f;
+						sp += (sfx >>> 16);
+						break;
+					case TYPE_INDEX_2:
+						index = (srcData[sp >> 2] >>> (6 - (sp & 3) * 2)) & 0x03;
+						sp += (sfx >>> 16);
+						break;
+					case TYPE_INDEX_1_MSB:
+						index = (srcData[sp >> 3] >>> (7 - (sp & 7))) & 0x01;
+						sp += (sfx >>> 16);
+						break;
+					case TYPE_INDEX_1_LSB:
+						index = (srcData[sp >> 3] >>> (sp & 7)) & 0x01;
+						sp += (sfx >>> 16);
+						break;
+					default:
+						return;
 				}
-				lastr = r; lastg = g; lastb = b;
-			}
+				index = paletteMapping[index] & 0xff;
 
-			/*** WRITE NEXT PIXEL ***/
-			switch (dtype) {
-				case TYPE_INDEX_8:
-					destData[dp] = (byte) lastindex;
-					break;
-				case TYPE_INDEX_4:
-					if ((dp & 1) != 0) destData[dp >> 1] = (byte)((destData[dp >> 1] & 0xf0) | lastindex);
-					else destData[dp >> 1] = (byte)((destData[dp >> 1] & 0x0f) | (lastindex << 4));
-					break;
-				case TYPE_INDEX_2: {
-					final int shift = 6 - (dp & 3) * 2;
-					destData[dp >> 2] = (byte)(destData[dp >> 2] & ~(0x03 << shift) | (lastindex << shift));
-				} break;
-				case TYPE_INDEX_1_MSB: {
-					final int shift = 7 - (dp & 7);
-					destData[dp >> 3] = (byte)(destData[dp >> 3] & ~(0x01 << shift) | (lastindex << shift));
-				} break;
-				case TYPE_INDEX_1_LSB: {
-					final int shift = dp & 7;
-					destData[dp >> 3] = (byte)(destData[dp >> 3] & ~(0x01 << shift) | (lastindex << shift));
-				} break;
+				/*** WRITE NEXT PIXEL ***/
+				switch (dtype) {
+					case TYPE_INDEX_8:
+						destData[dp] = (byte) index;
+						break;
+					case TYPE_INDEX_4:
+						if ((dp & 1) != 0) destData[dp >> 1] = (byte)((destData[dp >> 1] & 0xf0) | index);
+						else destData[dp >> 1] = (byte)((destData[dp >> 1] & 0x0f) | (index << 4));
+						break;
+					case TYPE_INDEX_2: {
+						final int shift = 6 - (dp & 3) * 2;
+						destData[dp >> 2] = (byte)(destData[dp >> 2] & ~(0x03 << shift) | (index << shift));
+					} break;
+					case TYPE_INDEX_1_MSB: {
+						final int shift = 7 - (dp & 7);
+						destData[dp >> 3] = (byte)(destData[dp >> 3] & ~(0x01 << shift) | (index << shift));
+					} break;
+					case TYPE_INDEX_1_LSB: {
+						final int shift = dp & 7;
+						destData[dp >> 3] = (byte)(destData[dp >> 3] & ~(0x01 << shift) | (index << shift));
+					} break;
+				}
 			}
 		}
 	}
