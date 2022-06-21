@@ -1611,47 +1611,6 @@ static PaletteData bwPalette() {
 	return new PaletteData(new RGB(0, 0, 0), new RGB(255, 255, 255));
 }
 
-/**
- * Gets the offset of the most significant bit for
- * the given mask.
- */
-static int getMSBOffset(int mask) {
-	for (int i = 31; i >= 0; i--) {
-		if (((mask >> i) & 0x1) != 0) return i + 1;
-	}
-	return 0;
-}
-
-/**
- * Finds the closest match.
- */
-static int closestMatch(int depth, byte red, byte green, byte blue, int redMask, int greenMask, int blueMask, byte[] reds, byte[] greens, byte[] blues) {
-	if (depth > 8) {
-		int rshift = 32 - getMSBOffset(redMask);
-		int gshift = 32 - getMSBOffset(greenMask);
-		int bshift = 32 - getMSBOffset(blueMask);
-		return (((red << 24) >>> rshift) & redMask) |
-			(((green << 24) >>> gshift) & greenMask) |
-			(((blue << 24) >>> bshift) & blueMask);
-	}
-	int r, g, b;
-	int minDistance = 0x7fffffff;
-	int nearestPixel = 0;
-	int n = reds.length;
-	for (int j = 0; j < n; j++) {
-		r = (reds[j] & 0xFF) - (red & 0xFF);
-		g = (greens[j] & 0xFF) - (green & 0xFF);
-		b = (blues[j] & 0xFF) - (blue & 0xFF);
-		int distance = r*r + g*g + b*b;
-		if (distance < minDistance) {
-			nearestPixel = j;
-			if (distance == 0) break;
-			minDistance = distance;
-		}
-	}
-	return nearestPixel;
-}
-
 static ImageData convertMask(ImageData mask) {
 	if (mask.depth == 1) return mask;
 	PaletteData palette = new PaletteData(new RGB(0, 0, 0), new RGB(255,255,255));
@@ -2808,14 +2767,6 @@ static int getChannelWidth(int mask, int shift) {
 		mask >>>= 1;
 	}
 	return i - shift;
-}
-
-/**
- * Extracts a field from packed RGB data given a mask for that field.
- */
-static byte getChannelField(int data, int mask) {
-	final int shift = getChannelShift(mask);
-	return ANY_TO_EIGHT[getChannelWidth(mask, shift)][(data & mask) >>> shift];
 }
 
 /**
