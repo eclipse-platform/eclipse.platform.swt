@@ -259,7 +259,7 @@ public Cursor(Device device, ImageData source, int hotspotX, int hotspotY) {
 		PaletteData newPalette = new PaletteData(0xFF00, 0xFF0000, 0xFF000000);
 		ImageData img = new ImageData(source.width, source.height, 32, newPalette);
 		if (palette.isDirect) {
-			ImageData.blit(ImageData.BLIT_SRC,
+			ImageData.blit(
 				source.data, source.depth, source.bytesPerLine, source.getByteOrder(), 0, 0, source.width, source.height, palette.redMask, palette.greenMask, palette.blueMask,
 				ImageData.ALPHA_OPAQUE, null, 0, 0, 0,
 				img.data, img.depth, img.bytesPerLine, img.getByteOrder(), 0, 0, img.width, img.height, newPalette.redMask, newPalette.greenMask, newPalette.blueMask,
@@ -277,7 +277,7 @@ public Cursor(Device device, ImageData source, int hotspotX, int hotspotY) {
 				srcGreens[i] = (byte)rgb.green;
 				srcBlues[i] = (byte)rgb.blue;
 			}
-			ImageData.blit(ImageData.BLIT_SRC,
+			ImageData.blit(
 				source.data, source.depth, source.bytesPerLine, source.getByteOrder(), 0, 0, source.width, source.height, srcReds, srcGreens, srcBlues,
 				ImageData.ALPHA_OPAQUE, null, 0, 0, 0,
 				img.data, img.depth, img.bytesPerLine, img.getByteOrder(), 0, 0, img.width, img.height, newPalette.redMask, newPalette.greenMask, newPalette.blueMask,

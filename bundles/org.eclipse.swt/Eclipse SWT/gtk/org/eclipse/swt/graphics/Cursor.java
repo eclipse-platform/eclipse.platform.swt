@@ -292,7 +292,7 @@ public Cursor(Device device, ImageData source, int hotspotX, int hotspotY) {
 		if (!palette.isDirect || source.depth != 24 || stride != source.bytesPerLine || palette.redMask != 0xFF000000 || palette.greenMask != 0xFF0000 || palette.blueMask != 0xFF00) {
 			buffer = new byte[source.width * source.height * 4];
 			if (palette.isDirect) {
-				ImageData.blit(ImageData.BLIT_SRC,
+				ImageData.blit(
 					source.data, source.depth, source.bytesPerLine, source.getByteOrder(), 0, 0, source.width, source.height, palette.redMask, palette.greenMask, palette.blueMask,
 					ImageData.ALPHA_OPAQUE, null, 0, 0, 0,
 					buffer, 32, source.width * 4, ImageData.MSB_FIRST, 0, 0, source.width, source.height, 0xFF000000, 0xFF0000, 0xFF00,
@@ -310,7 +310,7 @@ public Cursor(Device device, ImageData source, int hotspotX, int hotspotY) {
 					srcGreens[i] = (byte)rgb.green;
 					srcBlues[i] = (byte)rgb.blue;
 				}
-				ImageData.blit(ImageData.BLIT_SRC,
+				ImageData.blit(
 					source.data, source.depth, source.bytesPerLine, source.getByteOrder(), 0, 0, source.width, source.height, srcReds, srcGreens, srcBlues,
 					ImageData.ALPHA_OPAQUE, null, 0, 0, 0,
 					buffer, 32, source.width * 4, ImageData.MSB_FIRST, 0, 0, source.width, source.height, 0xFF000000, 0xFF0000, 0xFF00,
@@ -370,7 +370,7 @@ public Cursor(Device device, ImageData source, int hotspotX, int hotspotY) {
 			/* Convert the source to a black and white image of depth 1 */
 			PaletteData palette = source.palette;
 			if (palette.isDirect) {
-				ImageData.blit(ImageData.BLIT_SRC,
+				ImageData.blit(
 						source.data, source.depth, source.bytesPerLine, source.getByteOrder(), 0, 0, source.width, source.height, palette.redMask, palette.greenMask, palette.blueMask,
 						ImageData.ALPHA_OPAQUE, null, 0, 0, 0,
 						newSource.data, newSource.depth, newSource.bytesPerLine, newSource.getByteOrder(), 0, 0, newSource.width, newSource.height, newReds, newGreens, newBlues,
@@ -388,7 +388,7 @@ public Cursor(Device device, ImageData source, int hotspotX, int hotspotY) {
 					srcGreens[i] = (byte)rgb.green;
 					srcBlues[i] = (byte)rgb.blue;
 				}
-				ImageData.blit(ImageData.BLIT_SRC,
+				ImageData.blit(
 						source.data, source.depth, source.bytesPerLine, source.getByteOrder(), 0, 0, source.width, source.height, srcReds, srcGreens, srcBlues,
 						ImageData.ALPHA_OPAQUE, null, 0, 0, 0,
 						newSource.data, newSource.depth, newSource.bytesPerLine, newSource.getByteOrder(), 0, 0, newSource.width, newSource.height, newReds, newGreens, newBlues,

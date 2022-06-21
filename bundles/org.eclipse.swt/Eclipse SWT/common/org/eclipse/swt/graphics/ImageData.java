@@ -1143,12 +1143,12 @@ public ImageData scaledTo(int width, int height) {
 		x, y, disposalMethod, delayTime);
 
 	/* Scale the image contents */
-	if (palette.isDirect) blit(BLIT_SRC,
+	if (palette.isDirect) blit(
 		this.data, this.depth, this.bytesPerLine, this.getByteOrder(), 0, 0, this.width, this.height, 0, 0, 0,
 		ALPHA_OPAQUE, null, 0, 0, 0,
 		dest.data, dest.depth, dest.bytesPerLine, dest.getByteOrder(), 0, 0, dest.width, dest.height, 0, 0, 0,
 		flipX, flipY);
-	else blit(BLIT_SRC,
+	else blit(
 		this.data, this.depth, this.bytesPerLine, this.getByteOrder(), 0, 0, this.width, this.height, null, null, null,
 		ALPHA_OPAQUE, null, 0, 0, 0,
 		dest.data, dest.depth, dest.bytesPerLine, dest.getByteOrder(), 0, 0, dest.width, dest.height, null, null, null,
@@ -1162,7 +1162,7 @@ public ImageData scaledTo(int width, int height) {
 		dest.maskData = new byte[destBpl * dest.height];
 		int srcBpl = (this.width + 7) / 8;
 		srcBpl = (srcBpl + (this.maskPad - 1)) / this.maskPad * this.maskPad;
-		blit(BLIT_SRC,
+		blit(
 			this.maskData, 1, srcBpl, MSB_FIRST, 0, 0, this.width, this.height, null, null, null,
 			ALPHA_OPAQUE, null, 0, 0, 0,
 			dest.maskData, 1, destBpl, MSB_FIRST, 0, 0, dest.width, dest.height, null, null, null,
@@ -1171,7 +1171,7 @@ public ImageData scaledTo(int width, int height) {
 		dest.alpha = this.alpha;
 	} else if (alphaData != null) {
 		dest.alphaData = new byte[dest.width * dest.height];
-		blit(BLIT_SRC,
+		blit(
 			this.alphaData, 8, this.width, MSB_FIRST, 0, 0, this.width, this.height, null, null, null,
 			ALPHA_OPAQUE, null, 0, 0, 0,
 			dest.alphaData, 8, dest.width, MSB_FIRST, 0, 0, dest.width, dest.height, null, null, null,
@@ -1700,14 +1700,6 @@ static byte[] convertPad(byte[] data, int width, int height, int depth, int pad,
 }
 
 /**
- * Blit operation bits to be OR'ed together to specify the desired operation.
- */
-static final int
-	BLIT_SRC = 1,     // copy source directly, else applies logic operations
-	BLIT_ALPHA = 2,   // enable alpha blending
-	BLIT_DITHER = 4;  // enable dithering in low color modes
-
-/**
  * Alpha mode, values 0 - 255 specify global alpha level
  */
 static final int
@@ -1753,8 +1745,6 @@ private static final int
  * data format, 0 may be specified for the masks.
  * </p>
  *
- * @param op the blitter operation: a combination of BLIT_xxx flags
- *        (see BLIT_xxx constants)
  * @param srcData the source byte array containing image data
  * @param srcDepth the source depth: one of 8, 16, 24, 32
  * @param srcStride the source number of bytes per line
@@ -1791,7 +1781,7 @@ private static final int
  * @param flipX if true the resulting image is flipped along the vertical axis
  * @param flipY if true the resulting image is flipped along the horizontal axis
  */
-static void blit(int op,
+static void blit(
 	byte[] srcData, int srcDepth, int srcStride, int srcOrder,
 	int srcX, int srcY, int srcWidth, int srcHeight,
 	int srcRedMask, int srcGreenMask, int srcBlueMask,
@@ -1864,36 +1854,9 @@ static void blit(int op,
 	final int dpryi = (flipY) ? -destStride : destStride;
 
 	/*** Prepare special processing data ***/
-	int apr;
-	if ((op & BLIT_ALPHA) != 0) {
-		switch (alphaMode) {
-			case ALPHA_MASK_UNPACKED:
-			case ALPHA_CHANNEL_SEPARATE:
-				if (alphaData == null) alphaMode = 0x10000;
-				apr = alphaY * alphaStride + alphaX;
-				break;
-			case ALPHA_MASK_PACKED:
-				if (alphaData == null) alphaMode = 0x10000;
-				alphaStride <<= 3;
-				apr = alphaY * alphaStride + alphaX;
-				break;
-			case ALPHA_MASK_INDEX:
-				//throw new IllegalArgumentException("Invalid alpha type");
-				return;
-			case ALPHA_MASK_RGB:
-				if (alphaData == null) alphaMode = 0x10000;
-				apr = 0;
-				break;
-			default:
-				alphaMode = (alphaMode << 16) / 255; // prescale
-			case ALPHA_CHANNEL_SOURCE:
-				apr = 0;
-				break;
-		}
-	} else {
-		alphaMode = 0x10000;
-		apr = 0;
-	}
+	int apr = 0;
+	alphaMode = 0x10000;
+	apr = 0;
 
 	/*** Blit ***/
 	int dp = dpr;
@@ -2209,8 +2172,6 @@ static void blit(int op,
  * performed.
  * </p>
  *
- * @param op the blitter operation: a combination of BLIT_xxx flags
- *        (see BLIT_xxx constants)
  * @param srcData the source byte array containing image data
  * @param srcDepth the source depth: one of 1, 2, 4, 8
  * @param srcStride the source number of bytes per line
@@ -2247,7 +2208,7 @@ static void blit(int op,
  * @param flipX if true the resulting image is flipped along the vertical axis
  * @param flipY if true the resulting image is flipped along the horizontal axis
  */
-static void blit(int op,
+static void blit(
 	byte[] srcData, int srcDepth, int srcStride, int srcOrder,
 	int srcX, int srcY, int srcWidth, int srcHeight,
 	byte[] srcReds, byte[] srcGreens, byte[] srcBlues,
@@ -2316,34 +2277,10 @@ static void blit(int op,
 
 	/*** Prepare special processing data ***/
 	int apr;
-	if ((op & BLIT_ALPHA) != 0) {
-		switch (alphaMode) {
-			case ALPHA_MASK_UNPACKED:
-			case ALPHA_CHANNEL_SEPARATE:
-				if (alphaData == null) alphaMode = 0x10000;
-				apr = alphaY * alphaStride + alphaX;
-				break;
-			case ALPHA_MASK_PACKED:
-				if (alphaData == null) alphaMode = 0x10000;
-				alphaStride <<= 3;
-				apr = alphaY * alphaStride + alphaX;
-				break;
-			case ALPHA_MASK_INDEX:
-			case ALPHA_MASK_RGB:
-				if (alphaData == null) alphaMode = 0x10000;
-				apr = 0;
-				break;
-			default:
-				alphaMode = (alphaMode << 16) / 255; // prescale
-			case ALPHA_CHANNEL_SOURCE:
-				apr = 0;
-				break;
-		}
-	} else {
-		alphaMode = 0x10000;
-		apr = 0;
-	}
-	final boolean ditherEnabled = (op & BLIT_DITHER) != 0;
+	alphaMode = 0x10000;
+	apr = 0;
+
+	final boolean ditherEnabled = false;
 
 	/*** Blit ***/
 	int dp = dpr;
@@ -2736,8 +2673,6 @@ static void blit(int op,
  * always be fully specified.
  * </p>
  *
- * @param op the blitter operation: a combination of BLIT_xxx flags
- *        (see BLIT_xxx constants)
  * @param srcData the source byte array containing image data
  * @param srcDepth the source depth: one of 1, 2, 4, 8
  * @param srcStride the source number of bytes per line
@@ -2774,7 +2709,7 @@ static void blit(int op,
  * @param flipX if true the resulting image is flipped along the vertical axis
  * @param flipY if true the resulting image is flipped along the horizontal axis
  */
-static void blit(int op,
+static void blit(
 	byte[] srcData, int srcDepth, int srcStride, int srcOrder,
 	int srcX, int srcY, int srcWidth, int srcHeight,
 	byte[] srcReds, byte[] srcGreens, byte[] srcBlues,
@@ -2787,7 +2722,7 @@ static void blit(int op,
 
 	/*** Fast blit (straight copy) ***/
 	if (srcX == 0 && srcY == 0 && destX == 0 && destY == 0 && destWidth == srcWidth && destHeight == srcHeight) {
-		if (destDepth == 24 && srcDepth == 8 && (op & BLIT_ALPHA) == 0 && destRedMask == 0xFF0000 && destGreenMask == 0xFF00 && destBlueMask == 0xFF) {
+		if (destDepth == 24 && srcDepth == 8 && destRedMask == 0xFF0000 && destGreenMask == 0xFF00 && destBlueMask == 0xFF) {
 			for (int y = 0, sp = 0, dp = 0, spad = srcStride - srcWidth, dpad = destStride - (destWidth * 3); y < destHeight; y++, sp += spad, dp += dpad) {
 				for (int x = 0; x < destWidth; x++) {
 					int index = srcData[sp++] & 0xff;
@@ -2798,7 +2733,7 @@ static void blit(int op,
 			}
 			return;
 		}
-		if (destDepth == 32 && destOrder == MSB_FIRST && srcDepth == 8 && (op & BLIT_ALPHA) == 0 && destRedMask == 0xFF0000 && destGreenMask == 0xFF00 && destBlueMask == 0xFF) {
+		if (destDepth == 32 && destOrder == MSB_FIRST && srcDepth == 8 && destRedMask == 0xFF0000 && destGreenMask == 0xFF00 && destBlueMask == 0xFF) {
 			for (int y = 0, sp = 0, dp = 0, spad = srcStride - srcWidth, dpad = destStride - (destWidth * 4); y < destHeight; y++, sp += spad, dp += dpad) {
 				for (int x = 0; x < destWidth; x++) {
 					int index = srcData[sp++] & 0xff;
@@ -2873,33 +2808,8 @@ static void blit(int op,
 
 	/*** Prepare special processing data ***/
 	int apr;
-	if ((op & BLIT_ALPHA) != 0) {
-		switch (alphaMode) {
-			case ALPHA_MASK_UNPACKED:
-			case ALPHA_CHANNEL_SEPARATE:
-				if (alphaData == null) alphaMode = 0x10000;
-				apr = alphaY * alphaStride + alphaX;
-				break;
-			case ALPHA_MASK_PACKED:
-				if (alphaData == null) alphaMode = 0x10000;
-				alphaStride <<= 3;
-				apr = alphaY * alphaStride + alphaX;
-				break;
-			case ALPHA_MASK_INDEX:
-			case ALPHA_MASK_RGB:
-				if (alphaData == null) alphaMode = 0x10000;
-				apr = 0;
-				break;
-			default:
-				alphaMode = (alphaMode << 16) / 255; // prescale
-			case ALPHA_CHANNEL_SOURCE:
-				apr = 0;
-				break;
-		}
-	} else {
-		alphaMode = 0x10000;
-		apr = 0;
-	}
+	alphaMode = 0x10000;
+	apr = 0;
 
 	/*** Comprehensive blit (apply transformations) ***/
 	final int destRedShift = getChannelShift(destRedMask);
@@ -3100,8 +3010,6 @@ static void blit(int op,
  * always be fully specified.
  * </p>
  *
- * @param op the blitter operation: a combination of BLIT_xxx flags
- *        (see BLIT_xxx constants)
  * @param srcData the source byte array containing image data
  * @param srcDepth the source depth: one of 8, 16, 24, 32
  * @param srcStride the source number of bytes per line
@@ -3138,7 +3046,7 @@ static void blit(int op,
  * @param flipX if true the resulting image is flipped along the vertical axis
  * @param flipY if true the resulting image is flipped along the horizontal axis
  */
-static void blit(int op,
+static void blit(
 	byte[] srcData, int srcDepth, int srcStride, int srcOrder,
 	int srcX, int srcY, int srcWidth, int srcHeight,
 	int srcRedMask, int srcGreenMask, int srcBlueMask,
@@ -3211,36 +3119,9 @@ static void blit(int op,
 
 	/*** Prepare special processing data ***/
 	int apr;
-	if ((op & BLIT_ALPHA) != 0) {
-		switch (alphaMode) {
-			case ALPHA_MASK_UNPACKED:
-			case ALPHA_CHANNEL_SEPARATE:
-				if (alphaData == null) alphaMode = 0x10000;
-				apr = alphaY * alphaStride + alphaX;
-				break;
-			case ALPHA_MASK_PACKED:
-				if (alphaData == null) alphaMode = 0x10000;
-				alphaStride <<= 3;
-				apr = alphaY * alphaStride + alphaX;
-				break;
-			case ALPHA_MASK_INDEX:
-				//throw new IllegalArgumentException("Invalid alpha type");
-				return;
-			case ALPHA_MASK_RGB:
-				if (alphaData == null) alphaMode = 0x10000;
-				apr = 0;
-				break;
-			default:
-				alphaMode = (alphaMode << 16) / 255; // prescale
-			case ALPHA_CHANNEL_SOURCE:
-				apr = 0;
-				break;
-		}
-	} else {
-		alphaMode = 0x10000;
-		apr = 0;
-	}
-	final boolean ditherEnabled = (op & BLIT_DITHER) != 0;
+	alphaMode = 0x10000;
+	apr = 0;
+	final boolean ditherEnabled = false;
 
 	/*** Comprehensive blit (apply transformations) ***/
 	final int srcRedShift = getChannelShift(srcRedMask);

@@ -390,7 +390,7 @@ public Cursor(Device device, ImageData source, int hotspotX, int hotspotY) {
 	byte[] data = new byte[source.width * source.height * 4];
 	PaletteData palette = source.palette;
 	if (palette.isDirect) {
-		ImageData.blit(ImageData.BLIT_SRC,
+		ImageData.blit(
 			source.data, source.depth, source.bytesPerLine, source.getByteOrder(), 0, 0, source.width, source.height, palette.redMask, palette.greenMask, palette.blueMask,
 			ImageData.ALPHA_OPAQUE, null, 0, 0, 0,
 			data, 32, source.width * 4, ImageData.MSB_FIRST, 0, 0, source.width, source.height, 0xFF0000, 0xFF00, 0xFF,
@@ -408,7 +408,7 @@ public Cursor(Device device, ImageData source, int hotspotX, int hotspotY) {
 			srcGreens[i] = (byte)rgb.green;
 			srcBlues[i] = (byte)rgb.blue;
 		}
-		ImageData.blit(ImageData.BLIT_SRC,
+		ImageData.blit(
 			source.data, source.depth, source.bytesPerLine, source.getByteOrder(), 0, 0, source.width, source.height, srcReds, srcGreens, srcBlues,
 			ImageData.ALPHA_OPAQUE, null, 0, 0, 0,
 			data, 32, source.width * 4, ImageData.MSB_FIRST, 0, 0, source.width, source.height, 0xFF0000, 0xFF00, 0xFF,

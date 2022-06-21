@@ -1723,7 +1723,7 @@ static long [] init(Device device, Image image, ImageData i) {
 	/* Windows does not support 2-bit images. Convert to 4-bit image. */
 	if (i.depth == 2) {
 		ImageData img = new ImageData(i.width, i.height, 4, i.palette);
-		ImageData.blit(ImageData.BLIT_SRC,
+		ImageData.blit(
 			i.data, i.depth, i.bytesPerLine, i.getByteOrder(), 0, 0, i.width, i.height, null, null, null,
 			ImageData.ALPHA_OPAQUE, null, 0, 0, 0,
 			img.data, img.depth, img.bytesPerLine, i.getByteOrder(), 0, 0, img.width, img.height, null, null, null,
@@ -1807,7 +1807,7 @@ static long [] init(Device device, Image image, ImageData i) {
 		}
 		if (newPalette != null) {
 			ImageData img = new ImageData(i.width, i.height, newDepth, newPalette);
-			ImageData.blit(ImageData.BLIT_SRC,
+			ImageData.blit(
 					i.data, i.depth, i.bytesPerLine, i.getByteOrder(), 0, 0, i.width, i.height, redMask, greenMask, blueMask,
 					ImageData.ALPHA_OPAQUE, null, 0, 0, 0,
 					img.data, img.depth, img.bytesPerLine, newOrder, 0, 0, img.width, img.height, newPalette.redMask, newPalette.greenMask, newPalette.blueMask,
@@ -1839,7 +1839,7 @@ static long [] init(Device device, Image image, ImageData i) {
 			srcBlues[j] = (byte)rgb.blue;
 		}
 		ImageData img = new ImageData(i.width, i.height, newDepth, newPalette);
-		ImageData.blit(ImageData.BLIT_SRC,
+		ImageData.blit(
 				i.data, i.depth, i.bytesPerLine, i.getByteOrder(), 0, 0, i.width, i.height, srcReds, srcGreens, srcBlues,
 				ImageData.ALPHA_OPAQUE, null, 0, 0, 0,
 				img.data, img.depth, img.bytesPerLine, newOrder, 0, 0, img.width, img.height, newPalette.redMask, newPalette.greenMask, newPalette.blueMask,

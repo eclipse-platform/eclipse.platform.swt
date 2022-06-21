@@ -1008,7 +1008,7 @@ private NSBitmapImageRep createRepresentation(ImageData imageData, AlphaInfo alp
 	int bpr = imageData.width * 4;
 	byte[] buffer = new byte[dataSize];
 	if (palette.isDirect) {
-		ImageData.blit(ImageData.BLIT_SRC,
+		ImageData.blit(
 			imageData.data, imageData.depth, imageData.bytesPerLine, imageData.getByteOrder(), 0, 0, imageData.width, imageData.height, palette.redMask, palette.greenMask, palette.blueMask,
 			ImageData.ALPHA_OPAQUE, null, 0, 0, 0,
 			buffer, 32, bpr, ImageData.MSB_FIRST, 0, 0, imageData.width, imageData.height, 0xFF0000, 0xFF00, 0xFF,
@@ -1026,7 +1026,7 @@ private NSBitmapImageRep createRepresentation(ImageData imageData, AlphaInfo alp
 			srcGreens[i] = (byte)rgb.green;
 			srcBlues[i] = (byte)rgb.blue;
 		}
-		ImageData.blit(ImageData.BLIT_SRC,
+		ImageData.blit(
 			imageData.data, imageData.depth, imageData.bytesPerLine, imageData.getByteOrder(), 0, 0, imageData.width, imageData.height, srcReds, srcGreens, srcBlues,
 			ImageData.ALPHA_OPAQUE, null, 0, 0, 0,
 			buffer, 32, bpr, ImageData.MSB_FIRST, 0, 0, imageData.width, imageData.height, 0xFF0000, 0xFF00, 0xFF,
