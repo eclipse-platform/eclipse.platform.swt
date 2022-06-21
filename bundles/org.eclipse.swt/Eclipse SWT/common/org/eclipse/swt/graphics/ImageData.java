@@ -1145,12 +1145,10 @@ public ImageData scaledTo(int width, int height) {
 	/* Scale the image contents */
 	if (palette.isDirect) blit(
 		this.data, this.depth, this.bytesPerLine, this.getByteOrder(), 0, 0, this.width, this.height, 0, 0, 0,
-		ALPHA_OPAQUE, null, 0, 0, 0,
 		dest.data, dest.depth, dest.bytesPerLine, dest.getByteOrder(), 0, 0, dest.width, dest.height, 0, 0, 0,
 		flipX, flipY);
 	else blit(
 		this.data, this.depth, this.bytesPerLine, this.getByteOrder(), 0, 0, this.width, this.height, null, null, null,
-		ALPHA_OPAQUE, null, 0, 0, 0,
 		dest.data, dest.depth, dest.bytesPerLine, dest.getByteOrder(), 0, 0, dest.width, dest.height, null, null, null,
 		flipX, flipY);
 
@@ -1164,7 +1162,6 @@ public ImageData scaledTo(int width, int height) {
 		srcBpl = (srcBpl + (this.maskPad - 1)) / this.maskPad * this.maskPad;
 		blit(
 			this.maskData, 1, srcBpl, MSB_FIRST, 0, 0, this.width, this.height, null, null, null,
-			ALPHA_OPAQUE, null, 0, 0, 0,
 			dest.maskData, 1, destBpl, MSB_FIRST, 0, 0, dest.width, dest.height, null, null, null,
 			flipX, flipY);
 	} else if (alpha != -1) {
@@ -1173,7 +1170,6 @@ public ImageData scaledTo(int width, int height) {
 		dest.alphaData = new byte[dest.width * dest.height];
 		blit(
 			this.alphaData, 8, this.width, MSB_FIRST, 0, 0, this.width, this.height, null, null, null,
-			ALPHA_OPAQUE, null, 0, 0, 0,
 			dest.alphaData, 8, dest.width, MSB_FIRST, 0, 0, dest.width, dest.height, null, null, null,
 			flipX, flipY);
 	}
@@ -1700,19 +1696,6 @@ static byte[] convertPad(byte[] data, int width, int height, int depth, int pad,
 }
 
 /**
- * Alpha mode, values 0 - 255 specify global alpha level
- */
-static final int
-	ALPHA_OPAQUE = 255,           // Fully opaque (ignores any alpha data)
-	ALPHA_TRANSPARENT = 0,        // Fully transparent (ignores any alpha data)
-	ALPHA_CHANNEL_SEPARATE = -1,  // Use alpha channel from separate alphaData
-	ALPHA_CHANNEL_SOURCE = -2,    // Use alpha channel embedded in sourceData
-	ALPHA_MASK_UNPACKED = -3,     // Use transparency mask formed by bytes in alphaData (non-zero is opaque)
-	ALPHA_MASK_PACKED = -4,       // Use transparency mask formed by packed bits in alphaData
-	ALPHA_MASK_INDEX = -5,        // Consider source palette indices transparent if in alphaData array
-	ALPHA_MASK_RGB = -6;          // Consider source RGBs transparent if in RGB888 format alphaData array
-
-/**
  * Byte and bit order constants.
  */
 static final int LSB_FIRST = 0;
@@ -1757,15 +1740,6 @@ private static final int
  * @param srcRedMask the source red channel mask
  * @param srcGreenMask the source green channel mask
  * @param srcBlueMask the source blue channel mask
- * @param alphaMode the alpha blending or mask mode, may be
- *        an integer 0-255 for global alpha; ignored if BLIT_ALPHA
- *        not specified in the blitter operations
- *        (see ALPHA_MODE_xxx constants)
- * @param alphaData the alpha blending or mask data, varies depending
- *        on the value of alphaMode and sometimes ignored
- * @param alphaStride the alpha data number of bytes per line
- * @param alphaX the top-left x-coord of the alpha blit region
- * @param alphaY the top-left y-coord of the alpha blit region
  * @param destData the destination byte array containing image data
  * @param destDepth the destination depth: one of 8, 16, 24, 32
  * @param destStride the destination number of bytes per line
@@ -1785,12 +1759,11 @@ static void blit(
 	byte[] srcData, int srcDepth, int srcStride, int srcOrder,
 	int srcX, int srcY, int srcWidth, int srcHeight,
 	int srcRedMask, int srcGreenMask, int srcBlueMask,
-	int alphaMode, byte[] alphaData, int alphaStride, int alphaX, int alphaY,
 	byte[] destData, int destDepth, int destStride, int destOrder,
 	int destX, int destY, int destWidth, int destHeight,
 	int destRedMask, int destGreenMask, int destBlueMask,
 	boolean flipX, boolean flipY) {
-	if ((destWidth <= 0) || (destHeight <= 0) || (alphaMode == ALPHA_TRANSPARENT)) return;
+	if ((destWidth <= 0) || (destHeight <= 0)) return;
 
 	// these should be supplied as params later
 	int srcAlphaMask = 0, destAlphaMask = 0;
@@ -1855,13 +1828,12 @@ static void blit(
 
 	/*** Prepare special processing data ***/
 	int apr = 0;
-	alphaMode = 0x10000;
 	apr = 0;
 
 	/*** Blit ***/
 	int dp = dpr;
 	int sp = spr;
-	if ((alphaMode == 0x10000) && (stype == dtype) &&
+	if ((stype == dtype) &&
 		(srcRedMask == destRedMask) && (srcGreenMask == destGreenMask) &&
 		(srcBlueMask == destBlueMask) && (srcAlphaMask == destAlphaMask)) {
 		/*** Fast blit (straight copy) ***/
@@ -1908,7 +1880,7 @@ static void blit(
 		return;
 	}
 	/*Fast 32 to 32 blit */
-	if (alphaMode == 0x10000 && stype == TYPE_GENERIC_32_MSB && dtype == TYPE_GENERIC_32_MSB) {
+	if (stype == TYPE_GENERIC_32_MSB && dtype == TYPE_GENERIC_32_MSB) {
 		if (srcRedMask == 0xFF00 && srcGreenMask == 0xff0000 && srcBlueMask == 0xff000000 && destRedMask == 0xFF0000 && destGreenMask == 0xff00 && destBlueMask == 0xff) {
 			for (int dy = destHeight, sfy = sfyi; dy > 0; --dy, sp = spr += (sfy >>> 16) * srcStride, sfy = (sfy & 0xffff) + sfyi, dp = dpr += dpryi) {
 				for (int dx = destWidth, sfx = sfxi; dx > 0; --dx, dp += dprxi, sfx = (sfx & 0xffff) + sfxi) {
@@ -1923,7 +1895,7 @@ static void blit(
 		}
 	}
 	/*Fast 24 to 32 blit */
-	if (alphaMode == 0x10000 && stype == TYPE_GENERIC_24 && dtype == TYPE_GENERIC_32_MSB) {
+	if (stype == TYPE_GENERIC_24 && dtype == TYPE_GENERIC_32_MSB) {
 		if (srcRedMask == 0xFF && srcGreenMask == 0xff00 && srcBlueMask == 0xff0000 && destRedMask == 0xFF0000 && destGreenMask == 0xff00 && destBlueMask == 0xff) {
 			for (int dy = destHeight, sfy = sfyi; dy > 0; --dy, sp = spr += (sfy >>> 16) * srcStride, sfy = (sfy & 0xffff) + sfyi, dp = dpr += dpryi) {
 				for (int dx = destWidth, sfx = sfxi; dx > 0; --dx, dp += dprxi, sfx = (sfx & 0xffff) + sfxi) {
@@ -1965,12 +1937,12 @@ static void blit(
 	final byte[] destAlphas = ANY_TO_EIGHT[destAlphaWidth];
 	final int destAlphaPreShift = 8 - destAlphaWidth;
 
-	int ap = apr, alpha = alphaMode;
+	int ap = apr, alpha = 0x10000;
 	int r = 0, g = 0, b = 0, a = 0;
 	int rq = 0, gq = 0, bq = 0, aq = 0;
 	for (int dy = destHeight, sfy = sfyi; dy > 0; --dy,
 			sp = spr += (sfy >>> 16) * srcStride,
-			ap = apr += (sfy >>> 16) * alphaStride,
+			ap = apr += (sfy >>> 16) * 0,
 			sfy = (sfy & 0xffff) + sfyi,
 			dp = dpr += dpryi) {
 		for (int dx = destWidth, sfx = sfxi; dx > 0; --dx,
@@ -2037,32 +2009,6 @@ static void blit(
 			}
 
 			/*** DO SPECIAL PROCESSING IF REQUIRED ***/
-			switch (alphaMode) {
-				case ALPHA_CHANNEL_SEPARATE:
-					alpha = ((alphaData[ap] & 0xff) << 16) / 255;
-					ap += (sfx >> 16);
-					break;
-				case ALPHA_CHANNEL_SOURCE:
-					alpha = (a << 16) / 255;
-					break;
-				case ALPHA_MASK_UNPACKED:
-					alpha = (alphaData[ap] != 0) ? 0x10000 : 0;
-					ap += (sfx >> 16);
-					break;
-				case ALPHA_MASK_PACKED:
-					alpha = (alphaData[ap >> 3] << ((ap & 7) + 9)) & 0x10000;
-					ap += (sfx >> 16);
-					break;
-				case ALPHA_MASK_RGB:
-					alpha = 0x10000;
-					for (int i = 0; i < alphaData.length; i += 3) {
-						if ((r == alphaData[i]) && (g == alphaData[i + 1]) && (b == alphaData[i + 2])) {
-							alpha = 0x0000;
-							break;
-						}
-					}
-					break;
-			}
 			if (alpha != 0x10000) {
 				if (alpha == 0x0000) continue;
 				switch (dtype) {
@@ -2184,15 +2130,6 @@ static void blit(
  * @param srcReds the source palette red component intensities
  * @param srcGreens the source palette green component intensities
  * @param srcBlues the source palette blue component intensities
- * @param alphaMode the alpha blending or mask mode, may be
- *        an integer 0-255 for global alpha; ignored if BLIT_ALPHA
- *        not specified in the blitter operations
- *        (see ALPHA_MODE_xxx constants)
- * @param alphaData the alpha blending or mask data, varies depending
- *        on the value of alphaMode and sometimes ignored
- * @param alphaStride the alpha data number of bytes per line
- * @param alphaX the top-left x-coord of the alpha blit region
- * @param alphaY the top-left y-coord of the alpha blit region
  * @param destData the destination byte array containing image data
  * @param destDepth the destination depth: one of 1, 2, 4, 8
  * @param destStride the destination number of bytes per line
@@ -2212,12 +2149,11 @@ static void blit(
 	byte[] srcData, int srcDepth, int srcStride, int srcOrder,
 	int srcX, int srcY, int srcWidth, int srcHeight,
 	byte[] srcReds, byte[] srcGreens, byte[] srcBlues,
-	int alphaMode, byte[] alphaData, int alphaStride, int alphaX, int alphaY,
 	byte[] destData, int destDepth, int destStride, int destOrder,
 	int destX, int destY, int destWidth, int destHeight,
 	byte[] destReds, byte[] destGreens, byte[] destBlues,
 	boolean flipX, boolean flipY) {
-	if ((destWidth <= 0) || (destHeight <= 0) || (alphaMode == ALPHA_TRANSPARENT)) return;
+	if ((destWidth <= 0) || (destHeight <= 0)) return;
 
 	/*** Prepare scaling data ***/
 	final int dwm1 = destWidth - 1;
@@ -2277,7 +2213,6 @@ static void blit(
 
 	/*** Prepare special processing data ***/
 	int apr;
-	alphaMode = 0x10000;
 	apr = 0;
 
 	final boolean ditherEnabled = false;
@@ -2290,56 +2225,24 @@ static void blit(
 	if ((destReds != null) && (destReds.length < destPaletteSize)) destPaletteSize = destReds.length;
 	byte[] paletteMapping = null;
 	boolean isExactPaletteMapping = true;
-	switch (alphaMode) {
-		case 0x10000:
-			/*** If the palettes and formats are equivalent use a one-to-one mapping ***/
-			if ((stype == dtype) &&
-				(srcReds == destReds) && (srcGreens == destGreens) && (srcBlues == destBlues)) {
-				paletteMapping = ONE_TO_ONE_MAPPING;
-				break;
-			/*** If palettes have not been supplied, supply a suitable mapping ***/
-			} else if ((srcReds == null) || (destReds == null)) {
-				if (srcDepth <= destDepth) {
-					paletteMapping = ONE_TO_ONE_MAPPING;
-				} else {
-					paletteMapping = new byte[1 << srcDepth];
-					int mask = (0xff << destDepth) >>> 8;
-					for (int i = 0; i < paletteMapping.length; ++i) paletteMapping[i] = (byte)(i & mask);
-				}
-				break;
-			}
-		case ALPHA_MASK_UNPACKED:
-		case ALPHA_MASK_PACKED:
-		case ALPHA_MASK_INDEX:
-		case ALPHA_MASK_RGB:
-			/*** Generate a palette mapping ***/
-			int srcPaletteSize = 1 << srcDepth;
-			paletteMapping = new byte[srcPaletteSize];
-			if ((srcReds != null) && (srcReds.length < srcPaletteSize)) srcPaletteSize = srcReds.length;
-			for (int i = 0, r, g, b, index; i < srcPaletteSize; ++i) {
-				r = srcReds[i] & 0xff;
-				g = srcGreens[i] & 0xff;
-				b = srcBlues[i] & 0xff;
-				index = 0;
-				int minDistance = 0x7fffffff;
-				for (int j = 0, dr, dg, db, distance; j < destPaletteSize; ++j) {
-					dr = (destReds[j] & 0xff) - r;
-					dg = (destGreens[j] & 0xff) - g;
-					db = (destBlues[j] & 0xff) - b;
-					distance = dr * dr + dg * dg + db * db;
-					if (distance < minDistance) {
-						index = j;
-						if (distance == 0) break;
-						minDistance = distance;
-					}
-				}
-				paletteMapping[i] = (byte)index;
-				if (minDistance != 0) isExactPaletteMapping = false;
-			}
-			break;
+
+	/*** If the palettes and formats are equivalent use a one-to-one mapping ***/
+	if ((stype == dtype) &&
+		(srcReds == destReds) && (srcGreens == destGreens) && (srcBlues == destBlues)) {
+		paletteMapping = ONE_TO_ONE_MAPPING;
+	/*** If palettes have not been supplied, supply a suitable mapping ***/
+	} else if ((srcReds == null) || (destReds == null)) {
+		if (srcDepth <= destDepth) {
+			paletteMapping = ONE_TO_ONE_MAPPING;
+		} else {
+			paletteMapping = new byte[1 << srcDepth];
+			int mask = (0xff << destDepth) >>> 8;
+			for (int i = 0; i < paletteMapping.length; ++i) paletteMapping[i] = (byte)(i & mask);
+		}
 	}
+
 	if ((paletteMapping != null) && (isExactPaletteMapping || ! ditherEnabled)) {
-		if ((stype == dtype) && (alphaMode == 0x10000)) {
+		if (stype == dtype) {
 			/*** Fast blit (copy w/ mapping) ***/
 			switch (stype) {
 				case TYPE_INDEX_8:
@@ -2429,35 +2332,6 @@ static void blit(
 						default:
 							return;
 					}
-					/*** APPLY MASK ***/
-					switch (alphaMode) {
-						case ALPHA_MASK_UNPACKED: {
-							final byte mask = alphaData[ap];
-							ap += (sfx >> 16);
-							if (mask == 0) continue;
-						} break;
-						case ALPHA_MASK_PACKED: {
-							final int mask = alphaData[ap >> 3] & (1 << (ap & 7));
-							ap += (sfx >> 16);
-							if (mask == 0) continue;
-						} break;
-						case ALPHA_MASK_INDEX: {
-							int i = 0;
-							while (i < alphaData.length) {
-								if (index == (alphaData[i] & 0xff)) break;
-							}
-							if (i < alphaData.length) continue;
-						} break;
-						case ALPHA_MASK_RGB: {
-							final byte r = srcReds[index], g = srcGreens[index], b = srcBlues[index];
-							int i = 0;
-							while (i < alphaData.length) {
-								if ((r == alphaData[i]) && (g == alphaData[i + 1]) && (b == alphaData[i + 2])) break;
-								i += 3;
-							}
-							if (i < alphaData.length) continue;
-						} break;
-					}
 					index = paletteMapping[index] & 0xff;
 
 					/*** WRITE NEXT PIXEL ***/
@@ -2489,7 +2363,7 @@ static void blit(
 	}
 
 	/*** Comprehensive blit (apply transformations) ***/
-	int alpha = alphaMode;
+	int alpha = 0x10000;
 	int index = 0;
 	int indexq = 0;
 	int lastindex = 0, lastr = -1, lastg = -1, lastb = -1;
@@ -2503,7 +2377,7 @@ static void blit(
 	}
 	for (int dy = destHeight, sfy = sfyi; dy > 0; --dy,
 			sp = spr += (sfy >>> 16) * srcStride,
-			ap = apr += (sfy >>> 16) * alphaStride,
+			ap = apr += (sfy >>> 16) * 0,
 			sfy = (sfy & 0xffff) + sfyi,
 			dp = dpr += dpryi) {
 		int lrerr = 0, lgerr = 0, lberr = 0;
@@ -2537,37 +2411,6 @@ static void blit(
 
 			/*** DO SPECIAL PROCESSING IF REQUIRED ***/
 			int r = srcReds[index] & 0xff, g = srcGreens[index] & 0xff, b = srcBlues[index] & 0xff;
-			switch (alphaMode) {
-				case ALPHA_CHANNEL_SEPARATE:
-					alpha = ((alphaData[ap] & 0xff) << 16) / 255;
-					ap += (sfx >> 16);
-					break;
-				case ALPHA_MASK_UNPACKED:
-					alpha = (alphaData[ap] != 0) ? 0x10000 : 0;
-					ap += (sfx >> 16);
-					break;
-				case ALPHA_MASK_PACKED:
-					alpha = (alphaData[ap >> 3] << ((ap & 7) + 9)) & 0x10000;
-					ap += (sfx >> 16);
-					break;
-				case ALPHA_MASK_INDEX: { // could speed up using binary search if we sorted the indices
-					int i = 0;
-					while (i < alphaData.length) {
-						if (index == (alphaData[i] & 0xff)) break;
-					}
-					if (i < alphaData.length) continue;
-				} break;
-				case ALPHA_MASK_RGB: {
-					int i = 0;
-					while (i < alphaData.length) {
-						if ((r == (alphaData[i] & 0xff)) &&
-							(g == (alphaData[i + 1] & 0xff)) &&
-							(b == (alphaData[i + 2] & 0xff))) break;
-						i += 3;
-					}
-					if (i < alphaData.length) continue;
-				} break;
-			}
 			if (alpha != 0x10000) {
 				if (alpha == 0x0000) continue;
 				switch (dtype) {
@@ -2685,15 +2528,6 @@ static void blit(
  * @param srcReds the source palette red component intensities
  * @param srcGreens the source palette green component intensities
  * @param srcBlues the source palette blue component intensities
- * @param alphaMode the alpha blending or mask mode, may be
- *        an integer 0-255 for global alpha; ignored if BLIT_ALPHA
- *        not specified in the blitter operations
- *        (see ALPHA_MODE_xxx constants)
- * @param alphaData the alpha blending or mask data, varies depending
- *        on the value of alphaMode and sometimes ignored
- * @param alphaStride the alpha data number of bytes per line
- * @param alphaX the top-left x-coord of the alpha blit region
- * @param alphaY the top-left y-coord of the alpha blit region
  * @param destData the destination byte array containing image data
  * @param destDepth the destination depth: one of 8, 16, 24, 32
  * @param destStride the destination number of bytes per line
@@ -2713,12 +2547,11 @@ static void blit(
 	byte[] srcData, int srcDepth, int srcStride, int srcOrder,
 	int srcX, int srcY, int srcWidth, int srcHeight,
 	byte[] srcReds, byte[] srcGreens, byte[] srcBlues,
-	int alphaMode, byte[] alphaData, int alphaStride, int alphaX, int alphaY,
 	byte[] destData, int destDepth, int destStride, int destOrder,
 	int destX, int destY, int destWidth, int destHeight,
 	int destRedMask, int destGreenMask, int destBlueMask,
 	boolean flipX, boolean flipY) {
-	if ((destWidth <= 0) || (destHeight <= 0) || (alphaMode == ALPHA_TRANSPARENT)) return;
+	if ((destWidth <= 0) || (destHeight <= 0)) return;
 
 	/*** Fast blit (straight copy) ***/
 	if (srcX == 0 && srcY == 0 && destX == 0 && destY == 0 && destWidth == srcWidth && destHeight == srcHeight) {
@@ -2808,7 +2641,6 @@ static void blit(
 
 	/*** Prepare special processing data ***/
 	int apr;
-	alphaMode = 0x10000;
 	apr = 0;
 
 	/*** Comprehensive blit (apply transformations) ***/
@@ -2831,12 +2663,12 @@ static void blit(
 
 	int dp = dpr;
 	int sp = spr;
-	int ap = apr, alpha = alphaMode;
+	int ap = apr, alpha = 0x10000;
 	int r = 0, g = 0, b = 0, a = 0, index = 0;
 	int rq = 0, gq = 0, bq = 0, aq = 0;
 	for (int dy = destHeight, sfy = sfyi; dy > 0; --dy,
 			sp = spr += (sfy >>> 16) * srcStride,
-			ap = apr += (sfy >>> 16) * alphaStride,
+			ap = apr += (sfy >>> 16) * 0,
 			sfy = (sfy & 0xffff) + sfyi,
 			dp = dpr += dpryi) {
 		for (int dx = destWidth, sfx = sfxi; dx > 0; --dx,
@@ -2871,37 +2703,6 @@ static void blit(
 			r = srcReds[index] & 0xff;
 			g = srcGreens[index] & 0xff;
 			b = srcBlues[index] & 0xff;
-			switch (alphaMode) {
-				case ALPHA_CHANNEL_SEPARATE:
-					alpha = ((alphaData[ap] & 0xff) << 16) / 255;
-					ap += (sfx >> 16);
-					break;
-				case ALPHA_MASK_UNPACKED:
-					alpha = (alphaData[ap] != 0) ? 0x10000 : 0;
-					ap += (sfx >> 16);
-					break;
-				case ALPHA_MASK_PACKED:
-					alpha = (alphaData[ap >> 3] << ((ap & 7) + 9)) & 0x10000;
-					ap += (sfx >> 16);
-					break;
-				case ALPHA_MASK_INDEX: { // could speed up using binary search if we sorted the indices
-					int i = 0;
-					while (i < alphaData.length) {
-						if (index == (alphaData[i] & 0xff)) break;
-					}
-					if (i < alphaData.length) continue;
-				} break;
-				case ALPHA_MASK_RGB: {
-					int i = 0;
-					while (i < alphaData.length) {
-						if ((r == (alphaData[i] & 0xff)) &&
-							(g == (alphaData[i + 1] & 0xff)) &&
-							(b == (alphaData[i + 2] & 0xff))) break;
-						i += 3;
-					}
-					if (i < alphaData.length) continue;
-				} break;
-			}
 			if (alpha != 0x10000) {
 				if (alpha == 0x0000) continue;
 				switch (dtype) {
@@ -3022,15 +2823,6 @@ static void blit(
  * @param srcRedMask the source red channel mask
  * @param srcGreenMask the source green channel mask
  * @param srcBlueMask the source blue channel mask
- * @param alphaMode the alpha blending or mask mode, may be
- *        an integer 0-255 for global alpha; ignored if BLIT_ALPHA
- *        not specified in the blitter operations
- *        (see ALPHA_MODE_xxx constants)
- * @param alphaData the alpha blending or mask data, varies depending
- *        on the value of alphaMode and sometimes ignored
- * @param alphaStride the alpha data number of bytes per line
- * @param alphaX the top-left x-coord of the alpha blit region
- * @param alphaY the top-left y-coord of the alpha blit region
  * @param destData the destination byte array containing image data
  * @param destDepth the destination depth: one of 1, 2, 4, 8
  * @param destStride the destination number of bytes per line
@@ -3050,12 +2842,11 @@ static void blit(
 	byte[] srcData, int srcDepth, int srcStride, int srcOrder,
 	int srcX, int srcY, int srcWidth, int srcHeight,
 	int srcRedMask, int srcGreenMask, int srcBlueMask,
-	int alphaMode, byte[] alphaData, int alphaStride, int alphaX, int alphaY,
 	byte[] destData, int destDepth, int destStride, int destOrder,
 	int destX, int destY, int destWidth, int destHeight,
 	byte[] destReds, byte[] destGreens, byte[] destBlues,
 	boolean flipX, boolean flipY) {
-	if ((destWidth <= 0) || (destHeight <= 0) || (alphaMode == ALPHA_TRANSPARENT)) return;
+	if ((destWidth <= 0) || (destHeight <= 0)) return;
 
 	// these should be supplied as params later
 	final int srcAlphaMask = 0;
@@ -3119,7 +2910,6 @@ static void blit(
 
 	/*** Prepare special processing data ***/
 	int apr;
-	alphaMode = 0x10000;
 	apr = 0;
 	final boolean ditherEnabled = false;
 
@@ -3135,7 +2925,7 @@ static void blit(
 
 	int dp = dpr;
 	int sp = spr;
-	int ap = apr, alpha = alphaMode;
+	int ap = apr, alpha = 0x10000;
 	int r = 0, g = 0, b = 0, a = 0;
 	int indexq = 0;
 	int lastindex = 0, lastr = -1, lastg = -1, lastb = -1;
@@ -3151,7 +2941,7 @@ static void blit(
 	}
 	for (int dy = destHeight, sfy = sfyi; dy > 0; --dy,
 			sp = spr += (sfy >>> 16) * srcStride,
-			ap = apr += (sfy >>> 16) * alphaStride,
+			ap = apr += (sfy >>> 16) * 0,
 			sfy = (sfy & 0xffff) + sfyi,
 			dp = dpr += dpryi) {
 		int lrerr = 0, lgerr = 0, lberr = 0;
@@ -3219,32 +3009,6 @@ static void blit(
 			}
 
 			/*** DO SPECIAL PROCESSING IF REQUIRED ***/
-			switch (alphaMode) {
-				case ALPHA_CHANNEL_SEPARATE:
-					alpha = ((alphaData[ap] & 0xff) << 16) / 255;
-					ap += (sfx >> 16);
-					break;
-				case ALPHA_CHANNEL_SOURCE:
-					alpha = (a << 16) / 255;
-					break;
-				case ALPHA_MASK_UNPACKED:
-					alpha = (alphaData[ap] != 0) ? 0x10000 : 0;
-					ap += (sfx >> 16);
-					break;
-				case ALPHA_MASK_PACKED:
-					alpha = (alphaData[ap >> 3] << ((ap & 7) + 9)) & 0x10000;
-					ap += (sfx >> 16);
-					break;
-				case ALPHA_MASK_RGB:
-					alpha = 0x10000;
-					for (int i = 0; i < alphaData.length; i += 3) {
-						if ((r == alphaData[i]) && (g == alphaData[i + 1]) && (b == alphaData[i + 2])) {
-							alpha = 0x0000;
-							break;
-						}
-					}
-					break;
-			}
 			if (alpha != 0x10000) {
 				if (alpha == 0x0000) continue;
 				switch (dtype) {

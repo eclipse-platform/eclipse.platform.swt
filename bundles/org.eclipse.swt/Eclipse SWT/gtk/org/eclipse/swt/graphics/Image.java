@@ -1293,7 +1293,6 @@ void init(ImageData image) {
 		if (palette.isDirect) {
 			ImageData.blit(
 				image.data, image.depth, image.bytesPerLine, image.getByteOrder(), 0, 0, imageDataWidth, imageDataHeight, palette.redMask, palette.greenMask, palette.blueMask,
-				ImageData.ALPHA_OPAQUE, null, 0, 0, 0,
 				buffer, destDepth, stride, destOrder, 0, 0, imageDataWidth, imageDataHeight, redMask, greenMask, blueMask,
 				false, false);
 		} else {
@@ -1311,7 +1310,6 @@ void init(ImageData image) {
 			}
 			ImageData.blit(
 				image.data, image.depth, image.bytesPerLine, image.getByteOrder(), 0, 0, imageDataWidth, imageDataHeight, srcReds, srcGreens, srcBlues,
-				ImageData.ALPHA_OPAQUE, null, 0, 0, 0,
 				buffer, destDepth, stride, destOrder, 0, 0, imageDataWidth, imageDataHeight, redMask, greenMask, blueMask,
 				false, false);
 		}

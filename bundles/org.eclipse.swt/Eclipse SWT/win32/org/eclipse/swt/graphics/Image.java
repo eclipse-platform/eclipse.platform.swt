@@ -1725,7 +1725,6 @@ static long [] init(Device device, Image image, ImageData i) {
 		ImageData img = new ImageData(i.width, i.height, 4, i.palette);
 		ImageData.blit(
 			i.data, i.depth, i.bytesPerLine, i.getByteOrder(), 0, 0, i.width, i.height, null, null, null,
-			ImageData.ALPHA_OPAQUE, null, 0, 0, 0,
 			img.data, img.depth, img.bytesPerLine, i.getByteOrder(), 0, 0, img.width, img.height, null, null, null,
 			false, false);
 		img.transparentPixel = i.transparentPixel;
@@ -1809,7 +1808,6 @@ static long [] init(Device device, Image image, ImageData i) {
 			ImageData img = new ImageData(i.width, i.height, newDepth, newPalette);
 			ImageData.blit(
 					i.data, i.depth, i.bytesPerLine, i.getByteOrder(), 0, 0, i.width, i.height, redMask, greenMask, blueMask,
-					ImageData.ALPHA_OPAQUE, null, 0, 0, 0,
 					img.data, img.depth, img.bytesPerLine, newOrder, 0, 0, img.width, img.height, newPalette.redMask, newPalette.greenMask, newPalette.blueMask,
 					false, false);
 			if (i.transparentPixel != -1) {
@@ -1841,7 +1839,6 @@ static long [] init(Device device, Image image, ImageData i) {
 		ImageData img = new ImageData(i.width, i.height, newDepth, newPalette);
 		ImageData.blit(
 				i.data, i.depth, i.bytesPerLine, i.getByteOrder(), 0, 0, i.width, i.height, srcReds, srcGreens, srcBlues,
-				ImageData.ALPHA_OPAQUE, null, 0, 0, 0,
 				img.data, img.depth, img.bytesPerLine, newOrder, 0, 0, img.width, img.height, newPalette.redMask, newPalette.greenMask, newPalette.blueMask,
 				false, false);
 
