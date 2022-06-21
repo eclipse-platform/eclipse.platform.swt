@@ -1937,7 +1937,7 @@ static void blit(
 	final byte[] destAlphas = ANY_TO_EIGHT[destAlphaWidth];
 	final int destAlphaPreShift = 8 - destAlphaWidth;
 
-	int ap = apr, alpha = 0x10000;
+	int ap = apr;
 	int r = 0, g = 0, b = 0, a = 0;
 	int rq = 0, gq = 0, bq = 0, aq = 0;
 	for (int dy = destHeight, sfy = sfyi; dy > 0; --dy,
@@ -2006,68 +2006,6 @@ static void blit(
 					b = srcBlues[(data & srcBlueMask) >>> srcBlueShift] & 0xff;
 					a = srcAlphas[(data & srcAlphaMask) >>> srcAlphaShift] & 0xff;
 				} break;
-			}
-
-			/*** DO SPECIAL PROCESSING IF REQUIRED ***/
-			if (alpha != 0x10000) {
-				if (alpha == 0x0000) continue;
-				switch (dtype) {
-					case TYPE_GENERIC_8: {
-						final int data = destData[dp] & 0xff;
-						rq = destReds[(data & destRedMask) >>> destRedShift] & 0xff;
-						gq = destGreens[(data & destGreenMask) >>> destGreenShift] & 0xff;
-						bq = destBlues[(data & destBlueMask) >>> destBlueShift] & 0xff;
-						aq = destAlphas[(data & destAlphaMask) >>> destAlphaShift] & 0xff;
-					} break;
-					case TYPE_GENERIC_16_MSB: {
-						final int data = ((destData[dp] & 0xff) << 8) | (destData[dp + 1] & 0xff);
-						rq = destReds[(data & destRedMask) >>> destRedShift] & 0xff;
-						gq = destGreens[(data & destGreenMask) >>> destGreenShift] & 0xff;
-						bq = destBlues[(data & destBlueMask) >>> destBlueShift] & 0xff;
-						aq = destAlphas[(data & destAlphaMask) >>> destAlphaShift] & 0xff;
-					} break;
-					case TYPE_GENERIC_16_LSB: {
-						final int data = ((destData[dp + 1] & 0xff) << 8) | (destData[dp] & 0xff);
-						rq = destReds[(data & destRedMask) >>> destRedShift] & 0xff;
-						gq = destGreens[(data & destGreenMask) >>> destGreenShift] & 0xff;
-						bq = destBlues[(data & destBlueMask) >>> destBlueShift] & 0xff;
-						aq = destAlphas[(data & destAlphaMask) >>> destAlphaShift] & 0xff;
-					} break;
-					case TYPE_GENERIC_24: {
-						final int data = (( ((destData[dp] & 0xff) << 8) |
-							(destData[dp + 1] & 0xff)) << 8) |
-							(destData[dp + 2] & 0xff);
-						rq = destReds[(data & destRedMask) >>> destRedShift] & 0xff;
-						gq = destGreens[(data & destGreenMask) >>> destGreenShift] & 0xff;
-						bq = destBlues[(data & destBlueMask) >>> destBlueShift] & 0xff;
-						aq = destAlphas[(data & destAlphaMask) >>> destAlphaShift] & 0xff;
-					} break;
-					case TYPE_GENERIC_32_MSB: {
-						final int data = (( (( ((destData[dp] & 0xff) << 8) |
-							(destData[dp + 1] & 0xff)) << 8) |
-							(destData[dp + 2] & 0xff)) << 8) |
-							(destData[dp + 3] & 0xff);
-						rq = destReds[(data & destRedMask) >>> destRedShift] & 0xff;
-						gq = destGreens[(data & destGreenMask) >>> destGreenShift] & 0xff;
-						bq = destBlues[(data & destBlueMask) >>> destBlueShift] & 0xff;
-						aq = destAlphas[(data & destAlphaMask) >>> destAlphaShift] & 0xff;
-					} break;
-					case TYPE_GENERIC_32_LSB: {
-						final int data = (( (( ((destData[dp + 3] & 0xff) << 8) |
-							(destData[dp + 2] & 0xff)) << 8) |
-							(destData[dp + 1] & 0xff)) << 8) |
-							(destData[dp] & 0xff);
-						rq = destReds[(data & destRedMask) >>> destRedShift] & 0xff;
-						gq = destGreens[(data & destGreenMask) >>> destGreenShift] & 0xff;
-						bq = destBlues[(data & destBlueMask) >>> destBlueShift] & 0xff;
-						aq = destAlphas[(data & destAlphaMask) >>> destAlphaShift] & 0xff;
-					} break;
-				}
-				// Perform alpha blending
-				a = aq + ((a - aq) * alpha >> 16);
-				r = rq + ((r - rq) * alpha >> 16);
-				g = gq + ((g - gq) * alpha >> 16);
-				b = bq + ((b - bq) * alpha >> 16);
 			}
 
 			/*** WRITE NEXT PIXEL ***/
@@ -2363,7 +2301,6 @@ static void blit(
 	}
 
 	/*** Comprehensive blit (apply transformations) ***/
-	int alpha = 0x10000;
 	int index = 0;
 	int indexq = 0;
 	int lastindex = 0, lastr = -1, lastg = -1, lastb = -1;
@@ -2411,34 +2348,6 @@ static void blit(
 
 			/*** DO SPECIAL PROCESSING IF REQUIRED ***/
 			int r = srcReds[index] & 0xff, g = srcGreens[index] & 0xff, b = srcBlues[index] & 0xff;
-			if (alpha != 0x10000) {
-				if (alpha == 0x0000) continue;
-				switch (dtype) {
-					case TYPE_INDEX_8:
-						indexq = destData[dp] & 0xff;
-						break;
-					case TYPE_INDEX_4:
-						if ((dp & 1) != 0) indexq = destData[dp >> 1] & 0x0f;
-						else indexq = (destData[dp >> 1] >>> 4) & 0x0f;
-						break;
-					case TYPE_INDEX_2:
-						indexq = (destData[dp >> 2] >>> (6 - (dp & 3) * 2)) & 0x03;
-						break;
-					case TYPE_INDEX_1_MSB:
-						indexq = (destData[dp >> 3] >>> (7 - (dp & 7))) & 0x01;
-						break;
-					case TYPE_INDEX_1_LSB:
-						indexq = (destData[dp >> 3] >>> (dp & 7)) & 0x01;
-						break;
-				}
-				// Perform alpha blending
-				final int rq = destReds[indexq] & 0xff;
-				final int gq = destGreens[indexq] & 0xff;
-				final int bq = destBlues[indexq] & 0xff;
-				r = rq + ((r - rq) * alpha >> 16);
-				g = gq + ((g - gq) * alpha >> 16);
-				b = bq + ((b - bq) * alpha >> 16);
-			}
 
 			/*** MAP COLOR TO THE PALETTE ***/
 			if (ditherEnabled) {
@@ -2663,7 +2572,7 @@ static void blit(
 
 	int dp = dpr;
 	int sp = spr;
-	int ap = apr, alpha = 0x10000;
+	int ap = apr;
 	int r = 0, g = 0, b = 0, a = 0, index = 0;
 	int rq = 0, gq = 0, bq = 0, aq = 0;
 	for (int dy = destHeight, sfy = sfyi; dy > 0; --dy,
@@ -2703,66 +2612,6 @@ static void blit(
 			r = srcReds[index] & 0xff;
 			g = srcGreens[index] & 0xff;
 			b = srcBlues[index] & 0xff;
-			if (alpha != 0x10000) {
-				if (alpha == 0x0000) continue;
-				switch (dtype) {
-					case TYPE_GENERIC_8: {
-						final int data = destData[dp] & 0xff;
-						rq = destReds[(data & destRedMask) >>> destRedShift] & 0xff;
-						gq = destGreens[(data & destGreenMask) >>> destGreenShift] & 0xff;
-						bq = destBlues[(data & destBlueMask) >>> destBlueShift] & 0xff;
-						aq = destAlphas[(data & destAlphaMask) >>> destAlphaShift] & 0xff;
-					} break;
-					case TYPE_GENERIC_16_MSB: {
-						final int data = ((destData[dp] & 0xff) << 8) | (destData[dp + 1] & 0xff);
-						rq = destReds[(data & destRedMask) >>> destRedShift] & 0xff;
-						gq = destGreens[(data & destGreenMask) >>> destGreenShift] & 0xff;
-						bq = destBlues[(data & destBlueMask) >>> destBlueShift] & 0xff;
-						aq = destAlphas[(data & destAlphaMask) >>> destAlphaShift] & 0xff;
-					} break;
-					case TYPE_GENERIC_16_LSB: {
-						final int data = ((destData[dp + 1] & 0xff) << 8) | (destData[dp] & 0xff);
-						rq = destReds[(data & destRedMask) >>> destRedShift] & 0xff;
-						gq = destGreens[(data & destGreenMask) >>> destGreenShift] & 0xff;
-						bq = destBlues[(data & destBlueMask) >>> destBlueShift] & 0xff;
-						aq = destAlphas[(data & destAlphaMask) >>> destAlphaShift] & 0xff;
-					} break;
-					case TYPE_GENERIC_24: {
-						final int data = (( ((destData[dp] & 0xff) << 8) |
-							(destData[dp + 1] & 0xff)) << 8) |
-							(destData[dp + 2] & 0xff);
-						rq = destReds[(data & destRedMask) >>> destRedShift] & 0xff;
-						gq = destGreens[(data & destGreenMask) >>> destGreenShift] & 0xff;
-						bq = destBlues[(data & destBlueMask) >>> destBlueShift] & 0xff;
-						aq = destAlphas[(data & destAlphaMask) >>> destAlphaShift] & 0xff;
-					} break;
-					case TYPE_GENERIC_32_MSB: {
-						final int data = (( (( ((destData[dp] & 0xff) << 8) |
-							(destData[dp + 1] & 0xff)) << 8) |
-							(destData[dp + 2] & 0xff)) << 8) |
-							(destData[dp + 3] & 0xff);
-						rq = destReds[(data & destRedMask) >>> destRedShift] & 0xff;
-						gq = destGreens[(data & destGreenMask) >>> destGreenShift] & 0xff;
-						bq = destBlues[(data & destBlueMask) >>> destBlueShift] & 0xff;
-						aq = destAlphas[(data & destAlphaMask) >>> destAlphaShift] & 0xff;
-					} break;
-					case TYPE_GENERIC_32_LSB: {
-						final int data = (( (( ((destData[dp + 3] & 0xff) << 8) |
-							(destData[dp + 2] & 0xff)) << 8) |
-							(destData[dp + 1] & 0xff)) << 8) |
-							(destData[dp] & 0xff);
-						rq = destReds[(data & destRedMask) >>> destRedShift] & 0xff;
-						gq = destGreens[(data & destGreenMask) >>> destGreenShift] & 0xff;
-						bq = destBlues[(data & destBlueMask) >>> destBlueShift] & 0xff;
-						aq = destAlphas[(data & destAlphaMask) >>> destAlphaShift] & 0xff;
-					} break;
-				}
-				// Perform alpha blending
-				a = aq + ((a - aq) * alpha >> 16);
-				r = rq + ((r - rq) * alpha >> 16);
-				g = gq + ((g - gq) * alpha >> 16);
-				b = bq + ((b - bq) * alpha >> 16);
-			}
 
 			/*** WRITE NEXT PIXEL ***/
 			final int data =
@@ -2925,7 +2774,7 @@ static void blit(
 
 	int dp = dpr;
 	int sp = spr;
-	int ap = apr, alpha = 0x10000;
+	int ap = apr;
 	int r = 0, g = 0, b = 0, a = 0;
 	int indexq = 0;
 	int lastindex = 0, lastr = -1, lastg = -1, lastb = -1;
@@ -3006,36 +2855,6 @@ static void blit(
 					b = srcBlues[(data & srcBlueMask) >>> srcBlueShift] & 0xff;
 					a = srcAlphas[(data & srcAlphaMask) >>> srcAlphaShift] & 0xff;
 				} break;
-			}
-
-			/*** DO SPECIAL PROCESSING IF REQUIRED ***/
-			if (alpha != 0x10000) {
-				if (alpha == 0x0000) continue;
-				switch (dtype) {
-					case TYPE_INDEX_8:
-						indexq = destData[dp] & 0xff;
-						break;
-					case TYPE_INDEX_4:
-						if ((dp & 1) != 0) indexq = destData[dp >> 1] & 0x0f;
-						else indexq = (destData[dp >> 1] >>> 4) & 0x0f;
-						break;
-					case TYPE_INDEX_2:
-						indexq = (destData[dp >> 2] >>> (6 - (dp & 3) * 2)) & 0x03;
-						break;
-					case TYPE_INDEX_1_MSB:
-						indexq = (destData[dp >> 3] >>> (7 - (dp & 7))) & 0x01;
-						break;
-					case TYPE_INDEX_1_LSB:
-						indexq = (destData[dp >> 3] >>> (dp & 7)) & 0x01;
-						break;
-				}
-				// Perform alpha blending
-				final int rq = destReds[indexq] & 0xff;
-				final int gq = destGreens[indexq] & 0xff;
-				final int bq = destBlues[indexq] & 0xff;
-				r = rq + ((r - rq) * alpha >> 16);
-				g = gq + ((g - gq) * alpha >> 16);
-				b = bq + ((b - bq) * alpha >> 16);
 			}
 
 			/*** MAP COLOR TO THE PALETTE ***/
