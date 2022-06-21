@@ -1724,8 +1724,8 @@ static long [] init(Device device, Image image, ImageData i) {
 	if (i.depth == 2) {
 		ImageData img = new ImageData(i.width, i.height, 4, i.palette);
 		ImageData.blit(
-			i.data, i.depth, i.bytesPerLine, i.getByteOrder(), 0, 0, i.width, i.height, null, null, null,
-			img.data, img.depth, img.bytesPerLine, i.getByteOrder(), 0, 0, img.width, img.height, null, null, null,
+			  i.data,   i.depth,   i.bytesPerLine, i.getByteOrder(),   i.width,   i.height, null, null, null,
+			img.data, img.depth, img.bytesPerLine, i.getByteOrder(), img.width, img.height, null, null, null,
 			false, false);
 		img.transparentPixel = i.transparentPixel;
 		img.maskPad = i.maskPad;
@@ -1807,8 +1807,8 @@ static long [] init(Device device, Image image, ImageData i) {
 		if (newPalette != null) {
 			ImageData img = new ImageData(i.width, i.height, newDepth, newPalette);
 			ImageData.blit(
-					i.data, i.depth, i.bytesPerLine, i.getByteOrder(), 0, 0, i.width, i.height, redMask, greenMask, blueMask,
-					img.data, img.depth, img.bytesPerLine, newOrder, 0, 0, img.width, img.height, newPalette.redMask, newPalette.greenMask, newPalette.blueMask,
+					  i.data,   i.depth,   i.bytesPerLine, i.getByteOrder(),   i.width,   i.height, redMask, greenMask, blueMask,
+					img.data, img.depth, img.bytesPerLine,         newOrder, img.width, img.height, newPalette.redMask, newPalette.greenMask, newPalette.blueMask,
 					false, false);
 			if (i.transparentPixel != -1) {
 				img.transparentPixel = newPalette.getPixel(palette.getRGB(i.transparentPixel));
@@ -1838,8 +1838,8 @@ static long [] init(Device device, Image image, ImageData i) {
 		}
 		ImageData img = new ImageData(i.width, i.height, newDepth, newPalette);
 		ImageData.blit(
-				i.data, i.depth, i.bytesPerLine, i.getByteOrder(), 0, 0, i.width, i.height, srcReds, srcGreens, srcBlues,
-				img.data, img.depth, img.bytesPerLine, newOrder, 0, 0, img.width, img.height, newPalette.redMask, newPalette.greenMask, newPalette.blueMask,
+				  i.data,   i.depth,   i.bytesPerLine, i.getByteOrder(),   i.width,   i.height, srcReds, srcGreens, srcBlues,
+				img.data, img.depth, img.bytesPerLine,         newOrder, img.width, img.height, newPalette.redMask, newPalette.greenMask, newPalette.blueMask,
 				false, false);
 
 		if (i.transparentPixel != -1) {

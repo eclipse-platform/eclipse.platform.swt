@@ -1144,12 +1144,12 @@ public ImageData scaledTo(int width, int height) {
 
 	/* Scale the image contents */
 	if (palette.isDirect) blit(
-		this.data, this.depth, this.bytesPerLine, this.getByteOrder(), 0, 0, this.width, this.height, 0, 0, 0,
-		dest.data, dest.depth, dest.bytesPerLine, dest.getByteOrder(), 0, 0, dest.width, dest.height, 0, 0, 0,
+		this.data, this.depth, this.bytesPerLine, this.getByteOrder(), this.width, this.height, 0, 0, 0,
+		dest.data, dest.depth, dest.bytesPerLine, dest.getByteOrder(), dest.width, dest.height, 0, 0, 0,
 		flipX, flipY);
 	else blit(
-		this.data, this.depth, this.bytesPerLine, this.getByteOrder(), 0, 0, this.width, this.height, null, null, null,
-		dest.data, dest.depth, dest.bytesPerLine, dest.getByteOrder(), 0, 0, dest.width, dest.height, null, null, null,
+		this.data, this.depth, this.bytesPerLine, this.getByteOrder(), this.width, this.height, null, null, null,
+		dest.data, dest.depth, dest.bytesPerLine, dest.getByteOrder(), dest.width, dest.height, null, null, null,
 		flipX, flipY);
 
 	/* Scale the image mask or alpha */
@@ -1161,16 +1161,16 @@ public ImageData scaledTo(int width, int height) {
 		int srcBpl = (this.width + 7) / 8;
 		srcBpl = (srcBpl + (this.maskPad - 1)) / this.maskPad * this.maskPad;
 		blit(
-			this.maskData, 1, srcBpl, MSB_FIRST, 0, 0, this.width, this.height, null, null, null,
-			dest.maskData, 1, destBpl, MSB_FIRST, 0, 0, dest.width, dest.height, null, null, null,
+			this.maskData, 1, srcBpl,  MSB_FIRST, this.width, this.height, null, null, null,
+			dest.maskData, 1, destBpl, MSB_FIRST, dest.width, dest.height, null, null, null,
 			flipX, flipY);
 	} else if (alpha != -1) {
 		dest.alpha = this.alpha;
 	} else if (alphaData != null) {
 		dest.alphaData = new byte[dest.width * dest.height];
 		blit(
-			this.alphaData, 8, this.width, MSB_FIRST, 0, 0, this.width, this.height, null, null, null,
-			dest.alphaData, 8, dest.width, MSB_FIRST, 0, 0, dest.width, dest.height, null, null, null,
+			this.alphaData, 8, this.width, MSB_FIRST, this.width, this.height, null, null, null,
+			dest.alphaData, 8, dest.width, MSB_FIRST, dest.width, dest.height, null, null, null,
 			flipX, flipY);
 	}
 	return dest;
@@ -1692,8 +1692,6 @@ private static final int
  * @param srcStride the source number of bytes per line
  * @param srcOrder the source byte ordering: one of MSB_FIRST or LSB_FIRST;
  *        ignored if srcDepth is not 16 or 32
- * @param srcX the top-left x-coord of the source blit region
- * @param srcY the top-left y-coord of the source blit region
  * @param srcWidth the width of the source blit region
  * @param srcHeight the height of the source blit region
  * @param srcRedMask the source red channel mask
@@ -1704,8 +1702,6 @@ private static final int
  * @param destStride the destination number of bytes per line
  * @param destOrder the destination byte ordering: one of MSB_FIRST or LSB_FIRST;
  *        ignored if destDepth is not 16 or 32
- * @param destX the top-left x-coord of the destination blit region
- * @param destY the top-left y-coord of the destination blit region
  * @param destWidth the width of the destination blit region
  * @param destHeight the height of the destination blit region
  * @param destRedMask the destination red channel mask
@@ -1716,10 +1712,10 @@ private static final int
  */
 static void blit(
 	byte[] srcData, int srcDepth, int srcStride, int srcOrder,
-	int srcX, int srcY, int srcWidth, int srcHeight,
+	int srcWidth, int srcHeight,
 	int srcRedMask, int srcGreenMask, int srcBlueMask,
 	byte[] destData, int destDepth, int destStride, int destOrder,
-	int destX, int destY, int destWidth, int destHeight,
+	int destWidth, int destHeight,
 	int destRedMask, int destGreenMask, int destBlueMask,
 	boolean flipX, boolean flipY) {
 	if ((destWidth <= 0) || (destHeight <= 0)) return;
@@ -1753,7 +1749,7 @@ static void blit(
 			//throw new IllegalArgumentException("Invalid source type");
 			return;
 	}
-	int spr = srcY * srcStride + srcX * sbpp;
+	int spr = 0;
 
 	/*** Prepare destination-related data ***/
 	final int dbpp, dtype;
@@ -1778,7 +1774,7 @@ static void blit(
 			//throw new IllegalArgumentException("Invalid destination type");
 			return;
 	}
-	int dpr = ((flipY) ? destY + dhm1 : destY) * destStride + ((flipX) ? destX + dwm1 : destX) * dbpp;
+	int dpr = ((flipY) ? dhm1 : 0) * destStride + ((flipX) ? dwm1 : 0) * dbpp;
 	final int dprxi = (flipX) ? -dbpp : dbpp;
 	final int dpryi = (flipY) ? -destStride : destStride;
 
@@ -1995,8 +1991,6 @@ static void blit(
  * @param srcStride the source number of bytes per line
  * @param srcOrder the source byte ordering: one of MSB_FIRST or LSB_FIRST;
  *        ignored if srcDepth is not 1
- * @param srcX the top-left x-coord of the source blit region
- * @param srcY the top-left y-coord of the source blit region
  * @param srcWidth the width of the source blit region
  * @param srcHeight the height of the source blit region
  * @param srcReds the source palette red component intensities
@@ -2007,8 +2001,6 @@ static void blit(
  * @param destStride the destination number of bytes per line
  * @param destOrder the destination byte ordering: one of MSB_FIRST or LSB_FIRST;
  *        ignored if destDepth is not 1
- * @param destX the top-left x-coord of the destination blit region
- * @param destY the top-left y-coord of the destination blit region
  * @param destWidth the width of the destination blit region
  * @param destHeight the height of the destination blit region
  * @param destReds the destination palette red component intensities
@@ -2019,10 +2011,10 @@ static void blit(
  */
 static void blit(
 	byte[] srcData, int srcDepth, int srcStride, int srcOrder,
-	int srcX, int srcY, int srcWidth, int srcHeight,
+	int srcWidth, int srcHeight,
 	byte[] srcReds, byte[] srcGreens, byte[] srcBlues,
 	byte[] destData, int destDepth, int destStride, int destOrder,
-	int destX, int destY, int destWidth, int destHeight,
+	int destWidth, int destHeight,
 	byte[] destReds, byte[] destGreens, byte[] destBlues,
 	boolean flipX, boolean flipY) {
 	if ((destWidth <= 0) || (destHeight <= 0)) return;
@@ -2055,7 +2047,7 @@ static void blit(
 			//throw new IllegalArgumentException("Invalid source type");
 			return;
 	}
-	int spr = srcY * srcStride + srcX;
+	int spr = 0;
 
 	/*** Prepare destination-related data ***/
 	final int dtype;
@@ -2079,7 +2071,7 @@ static void blit(
 			//throw new IllegalArgumentException("Invalid source type");
 			return;
 	}
-	int dpr = ((flipY) ? destY + dhm1 : destY) * destStride + ((flipX) ? destX + dwm1 : destX);
+	int dpr = ((flipY) ? dhm1 : 0) * destStride + ((flipX) ? dwm1 : 0);
 	final int dprxi = (flipX) ? -1 : 1;
 	final int dpryi = (flipY) ? -destStride : destStride;
 
@@ -2318,8 +2310,6 @@ static void blit(
  * @param srcStride the source number of bytes per line
  * @param srcOrder the source byte ordering: one of MSB_FIRST or LSB_FIRST;
  *        ignored if srcDepth is not 1
- * @param srcX the top-left x-coord of the source blit region
- * @param srcY the top-left y-coord of the source blit region
  * @param srcWidth the width of the source blit region
  * @param srcHeight the height of the source blit region
  * @param srcReds the source palette red component intensities
@@ -2330,8 +2320,6 @@ static void blit(
  * @param destStride the destination number of bytes per line
  * @param destOrder the destination byte ordering: one of MSB_FIRST or LSB_FIRST;
  *        ignored if destDepth is not 16 or 32
- * @param destX the top-left x-coord of the destination blit region
- * @param destY the top-left y-coord of the destination blit region
  * @param destWidth the width of the destination blit region
  * @param destHeight the height of the destination blit region
  * @param destRedMask the destination red channel mask
@@ -2342,16 +2330,16 @@ static void blit(
  */
 static void blit(
 	byte[] srcData, int srcDepth, int srcStride, int srcOrder,
-	int srcX, int srcY, int srcWidth, int srcHeight,
+	int srcWidth, int srcHeight,
 	byte[] srcReds, byte[] srcGreens, byte[] srcBlues,
 	byte[] destData, int destDepth, int destStride, int destOrder,
-	int destX, int destY, int destWidth, int destHeight,
+	int destWidth, int destHeight,
 	int destRedMask, int destGreenMask, int destBlueMask,
 	boolean flipX, boolean flipY) {
 	if ((destWidth <= 0) || (destHeight <= 0)) return;
 
 	/*** Fast blit (straight copy) ***/
-	if (srcX == 0 && srcY == 0 && destX == 0 && destY == 0 && destWidth == srcWidth && destHeight == srcHeight) {
+	if (destWidth == srcWidth && destHeight == srcHeight) {
 		if (destDepth == 24 && srcDepth == 8 && destRedMask == 0xFF0000 && destGreenMask == 0xFF00 && destBlueMask == 0xFF) {
 			for (int y = 0, sp = 0, dp = 0, spad = srcStride - srcWidth, dpad = destStride - (destWidth * 3); y < destHeight; y++, sp += spad, dp += dpad) {
 				for (int x = 0; x < destWidth; x++) {
@@ -2405,7 +2393,7 @@ static void blit(
 			//throw new IllegalArgumentException("Invalid source type");
 			return;
 	}
-	int spr = srcY * srcStride + srcX;
+	int spr = 0;
 
 	/*** Prepare destination-related data ***/
 	final int dbpp, dtype;
@@ -2430,7 +2418,7 @@ static void blit(
 			//throw new IllegalArgumentException("Invalid destination type");
 			return;
 	}
-	int dpr = ((flipY) ? destY + dhm1 : destY) * destStride + ((flipX) ? destX + dwm1 : destX) * dbpp;
+	int dpr = ((flipY) ? dhm1 : 0) * destStride + ((flipX) ? dwm1 : 0) * dbpp;
 	final int dprxi = (flipX) ? -dbpp : dbpp;
 	final int dpryi = (flipY) ? -destStride : destStride;
 
@@ -2536,8 +2524,6 @@ static void blit(
  * @param srcStride the source number of bytes per line
  * @param srcOrder the source byte ordering: one of MSB_FIRST or LSB_FIRST;
  *        ignored if srcDepth is not 16 or 32
- * @param srcX the top-left x-coord of the source blit region
- * @param srcY the top-left y-coord of the source blit region
  * @param srcWidth the width of the source blit region
  * @param srcHeight the height of the source blit region
  * @param srcRedMask the source red channel mask
@@ -2548,8 +2534,6 @@ static void blit(
  * @param destStride the destination number of bytes per line
  * @param destOrder the destination byte ordering: one of MSB_FIRST or LSB_FIRST;
  *        ignored if destDepth is not 1
- * @param destX the top-left x-coord of the destination blit region
- * @param destY the top-left y-coord of the destination blit region
  * @param destWidth the width of the destination blit region
  * @param destHeight the height of the destination blit region
  * @param destReds the destination palette red component intensities
@@ -2560,10 +2544,10 @@ static void blit(
  */
 static void blit(
 	byte[] srcData, int srcDepth, int srcStride, int srcOrder,
-	int srcX, int srcY, int srcWidth, int srcHeight,
+	int srcWidth, int srcHeight,
 	int srcRedMask, int srcGreenMask, int srcBlueMask,
 	byte[] destData, int destDepth, int destStride, int destOrder,
-	int destX, int destY, int destWidth, int destHeight,
+	int destWidth, int destHeight,
 	byte[] destReds, byte[] destGreens, byte[] destBlues,
 	boolean flipX, boolean flipY) {
 	if ((destWidth <= 0) || (destHeight <= 0)) return;
@@ -2597,7 +2581,7 @@ static void blit(
 			//throw new IllegalArgumentException("Invalid source type");
 			return;
 	}
-	int spr = srcY * srcStride + srcX * sbpp;
+	int spr = 0;
 
 	/*** Prepare destination-related data ***/
 	final int dtype;
@@ -2621,7 +2605,7 @@ static void blit(
 			//throw new IllegalArgumentException("Invalid source type");
 			return;
 	}
-	int dpr = ((flipY) ? destY + dhm1 : destY) * destStride + ((flipX) ? destX + dwm1 : destX);
+	int dpr = ((flipY) ? dhm1 : 0) * destStride + ((flipX) ? dwm1 : 0);
 	final int dprxi = (flipX) ? -1 : 1;
 	final int dpryi = (flipY) ? -destStride : destStride;
 

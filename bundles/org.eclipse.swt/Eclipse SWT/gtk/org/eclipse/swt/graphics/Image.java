@@ -1292,8 +1292,8 @@ void init(ImageData image) {
 		buffer = new byte[stride * imageDataHeight];
 		if (palette.isDirect) {
 			ImageData.blit(
-				image.data, image.depth, image.bytesPerLine, image.getByteOrder(), 0, 0, imageDataWidth, imageDataHeight, palette.redMask, palette.greenMask, palette.blueMask,
-				buffer, destDepth, stride, destOrder, 0, 0, imageDataWidth, imageDataHeight, redMask, greenMask, blueMask,
+				image.data, image.depth, image.bytesPerLine, image.getByteOrder(), imageDataWidth, imageDataHeight, palette.redMask, palette.greenMask, palette.blueMask,
+				buffer, destDepth, stride, destOrder, imageDataWidth, imageDataHeight, redMask, greenMask, blueMask,
 				false, false);
 		} else {
 			RGB[] rgbs = palette.getRGBs();
@@ -1309,8 +1309,8 @@ void init(ImageData image) {
 				srcBlues[i] = (byte)rgb.blue;
 			}
 			ImageData.blit(
-				image.data, image.depth, image.bytesPerLine, image.getByteOrder(), 0, 0, imageDataWidth, imageDataHeight, srcReds, srcGreens, srcBlues,
-				buffer, destDepth, stride, destOrder, 0, 0, imageDataWidth, imageDataHeight, redMask, greenMask, blueMask,
+				image.data, image.depth, image.bytesPerLine, image.getByteOrder(), imageDataWidth, imageDataHeight, srcReds, srcGreens, srcBlues,
+				buffer, destDepth, stride, destOrder, imageDataWidth, imageDataHeight, redMask, greenMask, blueMask,
 				false, false);
 		}
 	}
