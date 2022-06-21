@@ -1765,9 +1765,6 @@ static void blit(
 	boolean flipX, boolean flipY) {
 	if ((destWidth <= 0) || (destHeight <= 0)) return;
 
-	// these should be supplied as params later
-	int srcAlphaMask = 0, destAlphaMask = 0;
-
 	/*** Prepare scaling data ***/
 	final int dwm1 = destWidth - 1;
 	final int sfxi = (dwm1 != 0) ? (int)((((long)srcWidth << 16) - 1) / dwm1) : 0;
@@ -1830,8 +1827,9 @@ static void blit(
 	int dp = dpr;
 	int sp = spr;
 	if ((stype == dtype) &&
-		(srcRedMask == destRedMask) && (srcGreenMask == destGreenMask) &&
-		(srcBlueMask == destBlueMask) && (srcAlphaMask == destAlphaMask)) {
+		(srcRedMask == destRedMask) &&
+		(srcGreenMask == destGreenMask) &&
+		(srcBlueMask == destBlueMask)) {
 		/*** Fast blit (straight copy) ***/
 		switch (sbpp) {
 			case 1:
@@ -1913,8 +1911,6 @@ static void blit(
 	final byte[] srcGreens = ANY_TO_EIGHT[getChannelWidth(srcGreenMask, srcGreenShift)];
 	final int srcBlueShift = getChannelShift(srcBlueMask);
 	final byte[] srcBlues = ANY_TO_EIGHT[getChannelWidth(srcBlueMask, srcBlueShift)];
-	final int srcAlphaShift = getChannelShift(srcAlphaMask);
-	final byte[] srcAlphas = ANY_TO_EIGHT[getChannelWidth(srcAlphaMask, srcAlphaShift)];
 
 	final int destRedShift = getChannelShift(destRedMask);
 	final int destRedWidth = getChannelWidth(destRedMask, destRedShift);
@@ -1925,11 +1921,8 @@ static void blit(
 	final int destBlueShift = getChannelShift(destBlueMask);
 	final int destBlueWidth = getChannelWidth(destBlueMask, destBlueShift);
 	final int destBluePreShift = 8 - destBlueWidth;
-	final int destAlphaShift = getChannelShift(destAlphaMask);
-	final int destAlphaWidth = getChannelWidth(destAlphaMask, destAlphaShift);
-	final int destAlphaPreShift = 8 - destAlphaWidth;
 
-	int r = 0, g = 0, b = 0, a = 0;
+	int r = 0, g = 0, b = 0;
 	for (int dy = destHeight, sfy = sfyi; dy > 0; --dy,
 			sp = spr += (sfy >>> 16) * srcStride,
 			sfy = (sfy & 0xffff) + sfyi,
@@ -1945,7 +1938,6 @@ static void blit(
 					r = srcReds[(data & srcRedMask) >>> srcRedShift] & 0xff;
 					g = srcGreens[(data & srcGreenMask) >>> srcGreenShift] & 0xff;
 					b = srcBlues[(data & srcBlueMask) >>> srcBlueShift] & 0xff;
-					a = srcAlphas[(data & srcAlphaMask) >>> srcAlphaShift] & 0xff;
 				} break;
 				case TYPE_GENERIC_16_MSB: {
 					final int data = ((srcData[sp] & 0xff) << 8) | (srcData[sp + 1] & 0xff);
@@ -1953,7 +1945,6 @@ static void blit(
 					r = srcReds[(data & srcRedMask) >>> srcRedShift] & 0xff;
 					g = srcGreens[(data & srcGreenMask) >>> srcGreenShift] & 0xff;
 					b = srcBlues[(data & srcBlueMask) >>> srcBlueShift] & 0xff;
-					a = srcAlphas[(data & srcAlphaMask) >>> srcAlphaShift] & 0xff;
 				} break;
 				case TYPE_GENERIC_16_LSB: {
 					final int data = ((srcData[sp + 1] & 0xff) << 8) | (srcData[sp] & 0xff);
@@ -1961,7 +1952,6 @@ static void blit(
 					r = srcReds[(data & srcRedMask) >>> srcRedShift] & 0xff;
 					g = srcGreens[(data & srcGreenMask) >>> srcGreenShift] & 0xff;
 					b = srcBlues[(data & srcBlueMask) >>> srcBlueShift] & 0xff;
-					a = srcAlphas[(data & srcAlphaMask) >>> srcAlphaShift] & 0xff;
 				} break;
 				case TYPE_GENERIC_24: {
 					final int data = (( ((srcData[sp] & 0xff) << 8) |
@@ -1971,7 +1961,6 @@ static void blit(
 					r = srcReds[(data & srcRedMask) >>> srcRedShift] & 0xff;
 					g = srcGreens[(data & srcGreenMask) >>> srcGreenShift] & 0xff;
 					b = srcBlues[(data & srcBlueMask) >>> srcBlueShift] & 0xff;
-					a = srcAlphas[(data & srcAlphaMask) >>> srcAlphaShift] & 0xff;
 				} break;
 				case TYPE_GENERIC_32_MSB: {
 					final int data = (( (( ((srcData[sp] & 0xff) << 8) |
@@ -1982,7 +1971,6 @@ static void blit(
 					r = srcReds[(data & srcRedMask) >>> srcRedShift] & 0xff;
 					g = srcGreens[(data & srcGreenMask) >>> srcGreenShift] & 0xff;
 					b = srcBlues[(data & srcBlueMask) >>> srcBlueShift] & 0xff;
-					a = srcAlphas[(data & srcAlphaMask) >>> srcAlphaShift] & 0xff;
 				} break;
 				case TYPE_GENERIC_32_LSB: {
 					final int data = (( (( ((srcData[sp + 3] & 0xff) << 8) |
@@ -1993,7 +1981,6 @@ static void blit(
 					r = srcReds[(data & srcRedMask) >>> srcRedShift] & 0xff;
 					g = srcGreens[(data & srcGreenMask) >>> srcGreenShift] & 0xff;
 					b = srcBlues[(data & srcBlueMask) >>> srcBlueShift] & 0xff;
-					a = srcAlphas[(data & srcAlphaMask) >>> srcAlphaShift] & 0xff;
 				} break;
 			}
 
@@ -2001,8 +1988,7 @@ static void blit(
 			final int data =
 				(r >>> destRedPreShift << destRedShift) |
 				(g >>> destGreenPreShift << destGreenShift) |
-				(b >>> destBluePreShift << destBlueShift) |
-				(a >>> destAlphaPreShift << destAlphaShift);
+				(b >>> destBluePreShift << destBlueShift);
 			switch (dtype) {
 				case TYPE_GENERIC_8: {
 					destData[dp] = (byte) data;
@@ -2470,8 +2456,6 @@ static void blit(
 			return;
 		}
 	}
-	// these should be supplied as params later
-	final int destAlphaMask = 0;
 
 	/*** Prepare scaling data ***/
 	final int dwm1 = destWidth - 1;
@@ -2540,13 +2524,10 @@ static void blit(
 	final int destBlueShift = getChannelShift(destBlueMask);
 	final int destBlueWidth = getChannelWidth(destBlueMask, destBlueShift);
 	final int destBluePreShift = 8 - destBlueWidth;
-	final int destAlphaShift = getChannelShift(destAlphaMask);
-	final int destAlphaWidth = getChannelWidth(destAlphaMask, destAlphaShift);
-	final int destAlphaPreShift = 8 - destAlphaWidth;
 
 	int dp = dpr;
 	int sp = spr;
-	int r = 0, g = 0, b = 0, a = 0, index = 0;
+	int r = 0, g = 0, b = 0, index = 0;
 	for (int dy = destHeight, sfy = sfyi; dy > 0; --dy,
 			sp = spr += (sfy >>> 16) * srcStride,
 			sfy = (sfy & 0xffff) + sfyi,
@@ -2588,8 +2569,7 @@ static void blit(
 			final int data =
 				(r >>> destRedPreShift << destRedShift) |
 				(g >>> destGreenPreShift << destGreenShift) |
-				(b >>> destBluePreShift << destBlueShift) |
-				(a >>> destAlphaPreShift << destAlphaShift);
+				(b >>> destBluePreShift << destBlueShift);
 			switch (dtype) {
 				case TYPE_GENERIC_8: {
 					destData[dp] = (byte) data;
