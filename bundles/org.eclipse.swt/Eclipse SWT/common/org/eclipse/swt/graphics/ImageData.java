@@ -1826,10 +1826,6 @@ static void blit(
 	final int dprxi = (flipX) ? -dbpp : dbpp;
 	final int dpryi = (flipY) ? -destStride : destStride;
 
-	/*** Prepare special processing data ***/
-	int apr = 0;
-	apr = 0;
-
 	/*** Blit ***/
 	int dp = dpr;
 	int sp = spr;
@@ -1922,27 +1918,20 @@ static void blit(
 
 	final int destRedShift = getChannelShift(destRedMask);
 	final int destRedWidth = getChannelWidth(destRedMask, destRedShift);
-	final byte[] destReds = ANY_TO_EIGHT[destRedWidth];
 	final int destRedPreShift = 8 - destRedWidth;
 	final int destGreenShift = getChannelShift(destGreenMask);
 	final int destGreenWidth = getChannelWidth(destGreenMask, destGreenShift);
-	final byte[] destGreens = ANY_TO_EIGHT[destGreenWidth];
 	final int destGreenPreShift = 8 - destGreenWidth;
 	final int destBlueShift = getChannelShift(destBlueMask);
 	final int destBlueWidth = getChannelWidth(destBlueMask, destBlueShift);
-	final byte[] destBlues = ANY_TO_EIGHT[destBlueWidth];
 	final int destBluePreShift = 8 - destBlueWidth;
 	final int destAlphaShift = getChannelShift(destAlphaMask);
 	final int destAlphaWidth = getChannelWidth(destAlphaMask, destAlphaShift);
-	final byte[] destAlphas = ANY_TO_EIGHT[destAlphaWidth];
 	final int destAlphaPreShift = 8 - destAlphaWidth;
 
-	int ap = apr;
 	int r = 0, g = 0, b = 0, a = 0;
-	int rq = 0, gq = 0, bq = 0, aq = 0;
 	for (int dy = destHeight, sfy = sfyi; dy > 0; --dy,
 			sp = spr += (sfy >>> 16) * srcStride,
-			ap = apr += (sfy >>> 16) * 0,
 			sfy = (sfy & 0xffff) + sfyi,
 			dp = dpr += dpryi) {
 		for (int dx = destWidth, sfx = sfxi; dx > 0; --dx,
@@ -2149,16 +2138,11 @@ static void blit(
 	final int dprxi = (flipX) ? -1 : 1;
 	final int dpryi = (flipY) ? -destStride : destStride;
 
-	/*** Prepare special processing data ***/
-	int apr;
-	apr = 0;
-
 	final boolean ditherEnabled = false;
 
 	/*** Blit ***/
 	int dp = dpr;
 	int sp = spr;
-	int ap = apr;
 	int destPaletteSize = 1 << destDepth;
 	if ((destReds != null) && (destReds.length < destPaletteSize)) destPaletteSize = destReds.length;
 	byte[] paletteMapping = null;
@@ -2302,7 +2286,6 @@ static void blit(
 
 	/*** Comprehensive blit (apply transformations) ***/
 	int index = 0;
-	int indexq = 0;
 	int lastindex = 0, lastr = -1, lastg = -1, lastb = -1;
 	final int[] rerr, gerr, berr;
 	if (ditherEnabled) {
@@ -2314,7 +2297,6 @@ static void blit(
 	}
 	for (int dy = destHeight, sfy = sfyi; dy > 0; --dy,
 			sp = spr += (sfy >>> 16) * srcStride,
-			ap = apr += (sfy >>> 16) * 0,
 			sfy = (sfy & 0xffff) + sfyi,
 			dp = dpr += dpryi) {
 		int lrerr = 0, lgerr = 0, lberr = 0;
@@ -2548,36 +2530,25 @@ static void blit(
 	final int dprxi = (flipX) ? -dbpp : dbpp;
 	final int dpryi = (flipY) ? -destStride : destStride;
 
-	/*** Prepare special processing data ***/
-	int apr;
-	apr = 0;
-
 	/*** Comprehensive blit (apply transformations) ***/
 	final int destRedShift = getChannelShift(destRedMask);
 	final int destRedWidth = getChannelWidth(destRedMask, destRedShift);
-	final byte[] destReds = ANY_TO_EIGHT[destRedWidth];
 	final int destRedPreShift = 8 - destRedWidth;
 	final int destGreenShift = getChannelShift(destGreenMask);
 	final int destGreenWidth = getChannelWidth(destGreenMask, destGreenShift);
-	final byte[] destGreens = ANY_TO_EIGHT[destGreenWidth];
 	final int destGreenPreShift = 8 - destGreenWidth;
 	final int destBlueShift = getChannelShift(destBlueMask);
 	final int destBlueWidth = getChannelWidth(destBlueMask, destBlueShift);
-	final byte[] destBlues = ANY_TO_EIGHT[destBlueWidth];
 	final int destBluePreShift = 8 - destBlueWidth;
 	final int destAlphaShift = getChannelShift(destAlphaMask);
 	final int destAlphaWidth = getChannelWidth(destAlphaMask, destAlphaShift);
-	final byte[] destAlphas = ANY_TO_EIGHT[destAlphaWidth];
 	final int destAlphaPreShift = 8 - destAlphaWidth;
 
 	int dp = dpr;
 	int sp = spr;
-	int ap = apr;
 	int r = 0, g = 0, b = 0, a = 0, index = 0;
-	int rq = 0, gq = 0, bq = 0, aq = 0;
 	for (int dy = destHeight, sfy = sfyi; dy > 0; --dy,
 			sp = spr += (sfy >>> 16) * srcStride,
-			ap = apr += (sfy >>> 16) * 0,
 			sfy = (sfy & 0xffff) + sfyi,
 			dp = dpr += dpryi) {
 		for (int dx = destWidth, sfx = sfxi; dx > 0; --dx,
@@ -2697,9 +2668,6 @@ static void blit(
 	boolean flipX, boolean flipY) {
 	if ((destWidth <= 0) || (destHeight <= 0)) return;
 
-	// these should be supplied as params later
-	final int srcAlphaMask = 0;
-
 	/*** Prepare scaling data ***/
 	final int dwm1 = destWidth - 1;
 	final int sfxi = (dwm1 != 0) ? (int)((((long)srcWidth << 16) - 1) / dwm1) : 0;
@@ -2758,8 +2726,6 @@ static void blit(
 	final int dpryi = (flipY) ? -destStride : destStride;
 
 	/*** Prepare special processing data ***/
-	int apr;
-	apr = 0;
 	final boolean ditherEnabled = false;
 
 	/*** Comprehensive blit (apply transformations) ***/
@@ -2769,14 +2735,10 @@ static void blit(
 	final byte[] srcGreens = ANY_TO_EIGHT[getChannelWidth(srcGreenMask, srcGreenShift)];
 	final int srcBlueShift = getChannelShift(srcBlueMask);
 	final byte[] srcBlues = ANY_TO_EIGHT[getChannelWidth(srcBlueMask, srcBlueShift)];
-	final int srcAlphaShift = getChannelShift(srcAlphaMask);
-	final byte[] srcAlphas = ANY_TO_EIGHT[getChannelWidth(srcAlphaMask, srcAlphaShift)];
 
 	int dp = dpr;
 	int sp = spr;
-	int ap = apr;
-	int r = 0, g = 0, b = 0, a = 0;
-	int indexq = 0;
+	int r = 0, g = 0, b = 0;
 	int lastindex = 0, lastr = -1, lastg = -1, lastb = -1;
 	final int[] rerr, gerr, berr;
 	int destPaletteSize = 1 << destDepth;
@@ -2790,7 +2752,6 @@ static void blit(
 	}
 	for (int dy = destHeight, sfy = sfyi; dy > 0; --dy,
 			sp = spr += (sfy >>> 16) * srcStride,
-			ap = apr += (sfy >>> 16) * 0,
 			sfy = (sfy & 0xffff) + sfyi,
 			dp = dpr += dpryi) {
 		int lrerr = 0, lgerr = 0, lberr = 0;
@@ -2805,7 +2766,6 @@ static void blit(
 					r = srcReds[(data & srcRedMask) >>> srcRedShift] & 0xff;
 					g = srcGreens[(data & srcGreenMask) >>> srcGreenShift] & 0xff;
 					b = srcBlues[(data & srcBlueMask) >>> srcBlueShift] & 0xff;
-					a = srcAlphas[(data & srcAlphaMask) >>> srcAlphaShift] & 0xff;
 				} break;
 				case TYPE_GENERIC_16_MSB: {
 					final int data = ((srcData[sp] & 0xff) << 8) | (srcData[sp + 1] & 0xff);
@@ -2813,7 +2773,6 @@ static void blit(
 					r = srcReds[(data & srcRedMask) >>> srcRedShift] & 0xff;
 					g = srcGreens[(data & srcGreenMask) >>> srcGreenShift] & 0xff;
 					b = srcBlues[(data & srcBlueMask) >>> srcBlueShift] & 0xff;
-					a = srcAlphas[(data & srcAlphaMask) >>> srcAlphaShift] & 0xff;
 				} break;
 				case TYPE_GENERIC_16_LSB: {
 					final int data = ((srcData[sp + 1] & 0xff) << 8) | (srcData[sp] & 0xff);
@@ -2821,7 +2780,6 @@ static void blit(
 					r = srcReds[(data & srcRedMask) >>> srcRedShift] & 0xff;
 					g = srcGreens[(data & srcGreenMask) >>> srcGreenShift] & 0xff;
 					b = srcBlues[(data & srcBlueMask) >>> srcBlueShift] & 0xff;
-					a = srcAlphas[(data & srcAlphaMask) >>> srcAlphaShift] & 0xff;
 				} break;
 				case TYPE_GENERIC_24: {
 					final int data = (( ((srcData[sp] & 0xff) << 8) |
@@ -2831,7 +2789,6 @@ static void blit(
 					r = srcReds[(data & srcRedMask) >>> srcRedShift] & 0xff;
 					g = srcGreens[(data & srcGreenMask) >>> srcGreenShift] & 0xff;
 					b = srcBlues[(data & srcBlueMask) >>> srcBlueShift] & 0xff;
-					a = srcAlphas[(data & srcAlphaMask) >>> srcAlphaShift] & 0xff;
 				} break;
 				case TYPE_GENERIC_32_MSB: {
 					final int data = (( (( ((srcData[sp] & 0xff) << 8) |
@@ -2842,7 +2799,6 @@ static void blit(
 					r = srcReds[(data & srcRedMask) >>> srcRedShift] & 0xff;
 					g = srcGreens[(data & srcGreenMask) >>> srcGreenShift] & 0xff;
 					b = srcBlues[(data & srcBlueMask) >>> srcBlueShift] & 0xff;
-					a = srcAlphas[(data & srcAlphaMask) >>> srcAlphaShift] & 0xff;
 				} break;
 				case TYPE_GENERIC_32_LSB: {
 					final int data = (( (( ((srcData[sp + 3] & 0xff) << 8) |
@@ -2853,7 +2809,6 @@ static void blit(
 					r = srcReds[(data & srcRedMask) >>> srcRedShift] & 0xff;
 					g = srcGreens[(data & srcGreenMask) >>> srcGreenShift] & 0xff;
 					b = srcBlues[(data & srcBlueMask) >>> srcBlueShift] & 0xff;
-					a = srcAlphas[(data & srcAlphaMask) >>> srcAlphaShift] & 0xff;
 				} break;
 			}
 
