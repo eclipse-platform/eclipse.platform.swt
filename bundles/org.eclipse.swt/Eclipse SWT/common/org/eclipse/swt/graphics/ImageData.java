@@ -2263,12 +2263,6 @@ static void blit(
 		return;
 	}
 
-	/*** Prepare scaling data ***/
-	final int dwm1 = srcWidth - 1;
-	final int sfxi = (dwm1 != 0) ? (int)((((long)srcWidth << 16) - 1) / dwm1) : 0;
-	final int dhm1 = srcHeight - 1;
-	final int sfyi = (dhm1 != 0) ? (int)((((long)srcHeight << 16) - 1) / dhm1) : 0;
-
 	/*** Prepare source-related data ***/
 	final int stype;
 	switch (srcDepth) {
@@ -2332,35 +2326,25 @@ static void blit(
 	int dp = 0;
 	int sp = 0;
 	int r = 0, g = 0, b = 0, index = 0;
-	for (int dy = srcHeight, sfy = sfyi; dy > 0; --dy,
-			sp = spr += (sfy >>> 16) * srcStride,
-			sfy = (sfy & 0xffff) + sfyi,
-			dp = dpr += destStride) {
-		for (int dx = srcWidth, sfx = sfxi; dx > 0; --dx,
-				dp += dbpp,
-				sfx = (sfx & 0xffff) + sfxi) {
+	for (int dy = srcHeight; dy > 0; --dy, sp = spr += srcStride, dp = dpr += destStride) {
+		for (int dx = srcWidth; dx > 0; --dx, sp++, dp += dbpp) {
 			/*** READ NEXT PIXEL ***/
 			switch (stype) {
 				case TYPE_INDEX_8:
 					index = srcData[sp] & 0xff;
-					sp += (sfx >>> 16);
 					break;
 				case TYPE_INDEX_4:
 					if ((sp & 1) != 0) index = srcData[sp >> 1] & 0x0f;
 					else index = (srcData[sp >> 1] >>> 4) & 0x0f;
-					sp += (sfx >>> 16);
 					break;
 				case TYPE_INDEX_2:
 					index = (srcData[sp >> 2] >>> (6 - (sp & 3) * 2)) & 0x03;
-					sp += (sfx >>> 16);
 					break;
 				case TYPE_INDEX_1_MSB:
 					index = (srcData[sp >> 3] >>> (7 - (sp & 7))) & 0x01;
-					sp += (sfx >>> 16);
 					break;
 				case TYPE_INDEX_1_LSB:
 					index = (srcData[sp >> 3] >>> (sp & 7)) & 0x01;
-					sp += (sfx >>> 16);
 					break;
 			}
 
