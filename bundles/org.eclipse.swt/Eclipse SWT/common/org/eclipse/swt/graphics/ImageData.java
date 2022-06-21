@@ -2124,15 +2124,12 @@ static void blit(
 	final int dprxi = (flipX) ? -1 : 1;
 	final int dpryi = (flipY) ? -destStride : destStride;
 
-	final boolean ditherEnabled = false;
-
 	/*** Blit ***/
 	int dp = dpr;
 	int sp = spr;
 	int destPaletteSize = 1 << destDepth;
 	if ((destReds != null) && (destReds.length < destPaletteSize)) destPaletteSize = destReds.length;
 	byte[] paletteMapping = null;
-	boolean isExactPaletteMapping = true;
 
 	/*** If the palettes and formats are equivalent use a one-to-one mapping ***/
 	if ((stype == dtype) &&
@@ -2149,7 +2146,7 @@ static void blit(
 		}
 	}
 
-	if ((paletteMapping != null) && (isExactPaletteMapping || ! ditherEnabled)) {
+	if (paletteMapping != null) {
 		if (stype == dtype) {
 			/*** Fast blit (copy w/ mapping) ***/
 			switch (stype) {
@@ -2273,19 +2270,11 @@ static void blit(
 	/*** Comprehensive blit (apply transformations) ***/
 	int index = 0;
 	int lastindex = 0, lastr = -1, lastg = -1, lastb = -1;
-	final int[] rerr, gerr, berr;
-	if (ditherEnabled) {
-		rerr = new int[destWidth + 2];
-		gerr = new int[destWidth + 2];
-		berr = new int[destWidth + 2];
-	} else {
-		rerr = null; gerr = null; berr = null;
-	}
+
 	for (int dy = destHeight, sfy = sfyi; dy > 0; --dy,
 			sp = spr += (sfy >>> 16) * srcStride,
 			sfy = (sfy & 0xffff) + sfyi,
 			dp = dpr += dpryi) {
-		int lrerr = 0, lgerr = 0, lberr = 0;
 		for (int dx = destWidth, sfx = sfxi; dx > 0; --dx,
 				dp += dprxi,
 				sfx = (sfx & 0xffff) + sfxi) {
@@ -2316,20 +2305,6 @@ static void blit(
 
 			/*** DO SPECIAL PROCESSING IF REQUIRED ***/
 			int r = srcReds[index] & 0xff, g = srcGreens[index] & 0xff, b = srcBlues[index] & 0xff;
-
-			/*** MAP COLOR TO THE PALETTE ***/
-			if (ditherEnabled) {
-				// Floyd-Steinberg error diffusion
-				r += rerr[dx] >> 4;
-				if (r < 0) r = 0; else if (r > 255) r = 255;
-				g += gerr[dx] >> 4;
-				if (g < 0) g = 0; else if (g > 255) g = 255;
-				b += berr[dx] >> 4;
-				if (b < 0) b = 0; else if (b > 255) b = 255;
-				rerr[dx] = lrerr;
-				gerr[dx] = lgerr;
-				berr[dx] = lberr;
-			}
 			if (r != lastr || g != lastg || b != lastb) {
 				// moving the variable declarations out seems to make the JDK JIT happier...
 				for (int j = 0, dr, dg, db, distance, minDistance = 0x7fffffff; j < destPaletteSize; ++j) {
@@ -2344,20 +2319,6 @@ static void blit(
 					}
 				}
 				lastr = r; lastg = g; lastb = b;
-			}
-			if (ditherEnabled) {
-				// Floyd-Steinberg error diffusion, cont'd...
-				final int dxm1 = dx - 1, dxp1 = dx + 1;
-				int acc;
-				rerr[dxp1] += acc = (lrerr = r - (destReds[lastindex] & 0xff)) + lrerr + lrerr;
-				rerr[dx] += acc += lrerr + lrerr;
-				rerr[dxm1] += acc + lrerr + lrerr;
-				gerr[dxp1] += acc = (lgerr = g - (destGreens[lastindex] & 0xff)) + lgerr + lgerr;
-				gerr[dx] += acc += lgerr + lgerr;
-				gerr[dxm1] += acc + lgerr + lgerr;
-				berr[dxp1] += acc = (lberr = b - (destBlues[lastindex] & 0xff)) + lberr + lberr;
-				berr[dx] += acc += lberr + lberr;
-				berr[dxm1] += acc + lberr + lberr;
 			}
 
 			/*** WRITE NEXT PIXEL ***/
@@ -2705,9 +2666,6 @@ static void blit(
 	final int dprxi = (flipX) ? -1 : 1;
 	final int dpryi = (flipY) ? -destStride : destStride;
 
-	/*** Prepare special processing data ***/
-	final boolean ditherEnabled = false;
-
 	/*** Comprehensive blit (apply transformations) ***/
 	final int srcRedShift = getChannelShift(srcRedMask);
 	final byte[] srcReds = ANY_TO_EIGHT[getChannelWidth(srcRedMask, srcRedShift)];
@@ -2720,21 +2678,13 @@ static void blit(
 	int sp = spr;
 	int r = 0, g = 0, b = 0;
 	int lastindex = 0, lastr = -1, lastg = -1, lastb = -1;
-	final int[] rerr, gerr, berr;
+
 	int destPaletteSize = 1 << destDepth;
 	if ((destReds != null) && (destReds.length < destPaletteSize)) destPaletteSize = destReds.length;
-	if (ditherEnabled) {
-		rerr = new int[destWidth + 2];
-		gerr = new int[destWidth + 2];
-		berr = new int[destWidth + 2];
-	} else {
-		rerr = null; gerr = null; berr = null;
-	}
 	for (int dy = destHeight, sfy = sfyi; dy > 0; --dy,
 			sp = spr += (sfy >>> 16) * srcStride,
 			sfy = (sfy & 0xffff) + sfyi,
 			dp = dpr += dpryi) {
-		int lrerr = 0, lgerr = 0, lberr = 0;
 		for (int dx = destWidth, sfx = sfxi; dx > 0; --dx,
 				dp += dprxi,
 				sfx = (sfx & 0xffff) + sfxi) {
@@ -2793,18 +2743,6 @@ static void blit(
 			}
 
 			/*** MAP COLOR TO THE PALETTE ***/
-			if (ditherEnabled) {
-				// Floyd-Steinberg error diffusion
-				r += rerr[dx] >> 4;
-				if (r < 0) r = 0; else if (r > 255) r = 255;
-				g += gerr[dx] >> 4;
-				if (g < 0) g = 0; else if (g > 255) g = 255;
-				b += berr[dx] >> 4;
-				if (b < 0) b = 0; else if (b > 255) b = 255;
-				rerr[dx] = lrerr;
-				gerr[dx] = lgerr;
-				berr[dx] = lberr;
-			}
 			if (r != lastr || g != lastg || b != lastb) {
 				// moving the variable declarations out seems to make the JDK JIT happier...
 				for (int j = 0, dr, dg, db, distance, minDistance = 0x7fffffff; j < destPaletteSize; ++j) {
@@ -2819,20 +2757,6 @@ static void blit(
 					}
 				}
 				lastr = r; lastg = g; lastb = b;
-			}
-			if (ditherEnabled) {
-				// Floyd-Steinberg error diffusion, cont'd...
-				final int dxm1 = dx - 1, dxp1 = dx + 1;
-				int acc;
-				rerr[dxp1] += acc = (lrerr = r - (destReds[lastindex] & 0xff)) + lrerr + lrerr;
-				rerr[dx] += acc += lrerr + lrerr;
-				rerr[dxm1] += acc + lrerr + lrerr;
-				gerr[dxp1] += acc = (lgerr = g - (destGreens[lastindex] & 0xff)) + lgerr + lgerr;
-				gerr[dx] += acc += lgerr + lgerr;
-				gerr[dxm1] += acc + lgerr + lgerr;
-				berr[dxp1] += acc = (lberr = b - (destBlues[lastindex] & 0xff)) + lberr + lberr;
-				berr[dx] += acc += lberr + lberr;
-				berr[dxm1] += acc + lberr + lberr;
 			}
 
 			/*** WRITE NEXT PIXEL ***/
