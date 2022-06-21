@@ -391,8 +391,8 @@ public Cursor(Device device, ImageData source, int hotspotX, int hotspotY) {
 	PaletteData palette = source.palette;
 	if (palette.isDirect) {
 		ImageData.blit(
-			source.data, source.depth, source.bytesPerLine, source.getByteOrder(), 0, 0, source.width, source.height, palette.redMask, palette.greenMask, palette.blueMask,
-			data, 32, source.width * 4, ImageData.MSB_FIRST, 0, 0, source.width, source.height, 0xFF0000, 0xFF00, 0xFF,
+			source.data, source.depth, source.bytesPerLine, source.getByteOrder(), source.width, source.height, palette.redMask, palette.greenMask, palette.blueMask,
+			data, 32, source.width * 4, ImageData.MSB_FIRST, source.width, source.height, 0xFF0000, 0xFF00, 0xFF,
 			false, false);
 	} else {
 		RGB[] rgbs = palette.getRGBs();
@@ -408,8 +408,8 @@ public Cursor(Device device, ImageData source, int hotspotX, int hotspotY) {
 			srcBlues[i] = (byte)rgb.blue;
 		}
 		ImageData.blit(
-			source.data, source.depth, source.bytesPerLine, source.getByteOrder(), 0, 0, source.width, source.height, srcReds, srcGreens, srcBlues,
-			data, 32, source.width * 4, ImageData.MSB_FIRST, 0, 0, source.width, source.height, 0xFF0000, 0xFF00, 0xFF,
+			source.data, source.depth, source.bytesPerLine, source.getByteOrder(), source.width, source.height, srcReds, srcGreens, srcBlues,
+			data, 32, source.width * 4, ImageData.MSB_FIRST, source.width, source.height, 0xFF0000, 0xFF00, 0xFF,
 			false, false);
 	}
 	boolean hasAlpha = true;

@@ -260,8 +260,8 @@ public Cursor(Device device, ImageData source, int hotspotX, int hotspotY) {
 		ImageData img = new ImageData(source.width, source.height, 32, newPalette);
 		if (palette.isDirect) {
 			ImageData.blit(
-				source.data, source.depth, source.bytesPerLine, source.getByteOrder(), 0, 0, source.width, source.height, palette.redMask, palette.greenMask, palette.blueMask,
-				img.data, img.depth, img.bytesPerLine, img.getByteOrder(), 0, 0, img.width, img.height, newPalette.redMask, newPalette.greenMask, newPalette.blueMask,
+				source.data, source.depth, source.bytesPerLine, source.getByteOrder(), source.width, source.height,    palette.redMask,    palette.greenMask,    palette.blueMask,
+				   img.data,    img.depth,    img.bytesPerLine,    img.getByteOrder(),    img.width,    img.height, newPalette.redMask, newPalette.greenMask, newPalette.blueMask,
 				false, false);
 		} else {
 			RGB[] rgbs = palette.getRGBs();
@@ -277,8 +277,8 @@ public Cursor(Device device, ImageData source, int hotspotX, int hotspotY) {
 				srcBlues[i] = (byte)rgb.blue;
 			}
 			ImageData.blit(
-				source.data, source.depth, source.bytesPerLine, source.getByteOrder(), 0, 0, source.width, source.height, srcReds, srcGreens, srcBlues,
-				img.data, img.depth, img.bytesPerLine, img.getByteOrder(), 0, 0, img.width, img.height, newPalette.redMask, newPalette.greenMask, newPalette.blueMask,
+				source.data, source.depth, source.bytesPerLine, source.getByteOrder(), source.width, source.height, srcReds, srcGreens, srcBlues,
+				   img.data,    img.depth,    img.bytesPerLine,    img.getByteOrder(),    img.width,    img.height, newPalette.redMask, newPalette.greenMask, newPalette.blueMask,
 				false, false);
 		}
 		hBitmap = Image.createDIB(source.width, source.height, 32);
