@@ -408,9 +408,9 @@ public Cursor(Device device, ImageData source, int hotspotX, int hotspotY) {
 			srcBlues[i] = (byte)rgb.blue;
 		}
 		ImageData.blit(
-			source.data, source.depth, source.bytesPerLine, source.getByteOrder(), source.width, source.height, srcReds, srcGreens, srcBlues,
-			data, 32, source.width * 4, ImageData.MSB_FIRST, source.width, source.height, 0xFF0000, 0xFF00, 0xFF,
-			false, false);
+			source.width, source.height,
+			source.data, source.depth, source.bytesPerLine, source.getByteOrder(), srcReds, srcGreens, srcBlues,
+			data, 32, source.width * 4, ImageData.MSB_FIRST, 0xFF0000, 0xFF00, 0xFF);
 	}
 	boolean hasAlpha = true;
 	if (source.maskData != null || source.transparentPixel != -1) {

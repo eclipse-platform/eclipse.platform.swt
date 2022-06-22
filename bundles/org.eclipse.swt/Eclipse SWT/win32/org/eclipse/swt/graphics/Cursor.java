@@ -277,9 +277,9 @@ public Cursor(Device device, ImageData source, int hotspotX, int hotspotY) {
 				srcBlues[i] = (byte)rgb.blue;
 			}
 			ImageData.blit(
-				source.data, source.depth, source.bytesPerLine, source.getByteOrder(), source.width, source.height, srcReds, srcGreens, srcBlues,
-				   img.data,    img.depth,    img.bytesPerLine,    img.getByteOrder(),    img.width,    img.height, newPalette.redMask, newPalette.greenMask, newPalette.blueMask,
-				false, false);
+				source.width, source.height,
+				source.data, source.depth, source.bytesPerLine, source.getByteOrder(), srcReds, srcGreens, srcBlues,
+				   img.data,    img.depth,    img.bytesPerLine,    img.getByteOrder(), newPalette.redMask, newPalette.greenMask, newPalette.blueMask);
 		}
 		hBitmap = Image.createDIB(source.width, source.height, 32);
 		if (hBitmap == 0) SWT.error(SWT.ERROR_NO_HANDLES);

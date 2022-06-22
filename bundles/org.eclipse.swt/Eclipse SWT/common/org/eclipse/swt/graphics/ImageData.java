@@ -2227,55 +2227,46 @@ static void blit(
  * @param destStride the destination number of bytes per line
  * @param destOrder the destination byte ordering: one of MSB_FIRST or LSB_FIRST;
  *        ignored if destDepth is not 16 or 32
- * @param destWidth the width of the destination blit region
- * @param destHeight the height of the destination blit region
  * @param destRedMask the destination red channel mask
  * @param destGreenMask the destination green channel mask
  * @param destBlueMask the destination blue channel mask
- * @param flipX if true the resulting image is flipped along the vertical axis
- * @param flipY if true the resulting image is flipped along the horizontal axis
  */
 static void blit(
-	byte[] srcData, int srcDepth, int srcStride, int srcOrder,
 	int srcWidth, int srcHeight,
+	byte[] srcData, int srcDepth, int srcStride, int srcOrder,
 	byte[] srcReds, byte[] srcGreens, byte[] srcBlues,
 	byte[] destData, int destDepth, int destStride, int destOrder,
-	int destWidth, int destHeight,
-	int destRedMask, int destGreenMask, int destBlueMask,
-	boolean flipX, boolean flipY) {
-	if ((destWidth <= 0) || (destHeight <= 0)) return;
+	int destRedMask, int destGreenMask, int destBlueMask) {
 
 	/*** Fast blit (straight copy) ***/
-	if (destWidth == srcWidth && destHeight == srcHeight) {
-		if (destDepth == 24 && srcDepth == 8 && destRedMask == 0xFF0000 && destGreenMask == 0xFF00 && destBlueMask == 0xFF) {
-			for (int y = 0, sp = 0, dp = 0, spad = srcStride - srcWidth, dpad = destStride - (destWidth * 3); y < destHeight; y++, sp += spad, dp += dpad) {
-				for (int x = 0; x < destWidth; x++) {
-					int index = srcData[sp++] & 0xff;
-					destData[dp++] = srcReds[index];
-					destData[dp++] = srcGreens[index];
-					destData[dp++] = srcBlues[index];
-				}
+	if (destDepth == 24 && srcDepth == 8 && destRedMask == 0xFF0000 && destGreenMask == 0xFF00 && destBlueMask == 0xFF) {
+		for (int y = 0, sp = 0, dp = 0, spad = srcStride - srcWidth, dpad = destStride - (srcWidth * 3); y < srcHeight; y++, sp += spad, dp += dpad) {
+			for (int x = 0; x < srcWidth; x++) {
+				int index = srcData[sp++] & 0xff;
+				destData[dp++] = srcReds[index];
+				destData[dp++] = srcGreens[index];
+				destData[dp++] = srcBlues[index];
 			}
-			return;
 		}
-		if (destDepth == 32 && destOrder == MSB_FIRST && srcDepth == 8 && destRedMask == 0xFF0000 && destGreenMask == 0xFF00 && destBlueMask == 0xFF) {
-			for (int y = 0, sp = 0, dp = 0, spad = srcStride - srcWidth, dpad = destStride - (destWidth * 4); y < destHeight; y++, sp += spad, dp += dpad) {
-				for (int x = 0; x < destWidth; x++) {
-					int index = srcData[sp++] & 0xff;
-					dp++;
-					destData[dp++] = srcReds[index];
-					destData[dp++] = srcGreens[index];
-					destData[dp++] = srcBlues[index];
-				}
+		return;
+	}
+	if (destDepth == 32 && destOrder == MSB_FIRST && srcDepth == 8 && destRedMask == 0xFF0000 && destGreenMask == 0xFF00 && destBlueMask == 0xFF) {
+		for (int y = 0, sp = 0, dp = 0, spad = srcStride - srcWidth, dpad = destStride - (srcWidth * 4); y < srcHeight; y++, sp += spad, dp += dpad) {
+			for (int x = 0; x < srcWidth; x++) {
+				int index = srcData[sp++] & 0xff;
+				dp++;
+				destData[dp++] = srcReds[index];
+				destData[dp++] = srcGreens[index];
+				destData[dp++] = srcBlues[index];
 			}
-			return;
 		}
+		return;
 	}
 
 	/*** Prepare scaling data ***/
-	final int dwm1 = destWidth - 1;
+	final int dwm1 = srcWidth - 1;
 	final int sfxi = (dwm1 != 0) ? (int)((((long)srcWidth << 16) - 1) / dwm1) : 0;
-	final int dhm1 = destHeight - 1;
+	final int dhm1 = srcHeight - 1;
 	final int sfyi = (dhm1 != 0) ? (int)((((long)srcHeight << 16) - 1) / dhm1) : 0;
 
 	/*** Prepare source-related data ***/
@@ -2300,7 +2291,6 @@ static void blit(
 			//throw new IllegalArgumentException("Invalid source type");
 			return;
 	}
-	int spr = 0;
 
 	/*** Prepare destination-related data ***/
 	final int dbpp, dtype;
@@ -2325,9 +2315,6 @@ static void blit(
 			//throw new IllegalArgumentException("Invalid destination type");
 			return;
 	}
-	int dpr = ((flipY) ? dhm1 : 0) * destStride + ((flipX) ? dwm1 : 0) * dbpp;
-	final int dprxi = (flipX) ? -dbpp : dbpp;
-	final int dpryi = (flipY) ? -destStride : destStride;
 
 	/*** Comprehensive blit (apply transformations) ***/
 	final int destRedShift = getChannelShift(destRedMask);
@@ -2340,15 +2327,17 @@ static void blit(
 	final int destBlueWidth = getChannelWidth(destBlueMask, destBlueShift);
 	final int destBluePreShift = 8 - destBlueWidth;
 
-	int dp = dpr;
-	int sp = spr;
+	int spr = 0;
+	int dpr = 0;
+	int dp = 0;
+	int sp = 0;
 	int r = 0, g = 0, b = 0, index = 0;
-	for (int dy = destHeight, sfy = sfyi; dy > 0; --dy,
+	for (int dy = srcHeight, sfy = sfyi; dy > 0; --dy,
 			sp = spr += (sfy >>> 16) * srcStride,
 			sfy = (sfy & 0xffff) + sfyi,
-			dp = dpr += dpryi) {
-		for (int dx = destWidth, sfx = sfxi; dx > 0; --dx,
-				dp += dprxi,
+			dp = dpr += destStride) {
+		for (int dx = srcWidth, sfx = sfxi; dx > 0; --dx,
+				dp += dbpp,
 				sfx = (sfx & 0xffff) + sfxi) {
 			/*** READ NEXT PIXEL ***/
 			switch (stype) {
