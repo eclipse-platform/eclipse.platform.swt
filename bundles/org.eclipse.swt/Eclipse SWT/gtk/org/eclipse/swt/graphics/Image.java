@@ -1309,9 +1309,9 @@ void init(ImageData image) {
 				srcBlues[i] = (byte)rgb.blue;
 			}
 			ImageData.blit(
-				image.data, image.depth, image.bytesPerLine, image.getByteOrder(), imageDataWidth, imageDataHeight, srcReds, srcGreens, srcBlues,
-				buffer, destDepth, stride, destOrder, imageDataWidth, imageDataHeight, redMask, greenMask, blueMask,
-				false, false);
+				imageDataWidth, imageDataHeight,
+				image.data, image.depth, image.bytesPerLine, image.getByteOrder(), srcReds, srcGreens, srcBlues,
+				buffer, destDepth, stride, destOrder, redMask, greenMask, blueMask);
 		}
 	}
 	boolean isIcon = image.getTransparencyType() == SWT.TRANSPARENCY_MASK;

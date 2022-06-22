@@ -1838,9 +1838,9 @@ static long [] init(Device device, Image image, ImageData i) {
 		}
 		ImageData img = new ImageData(i.width, i.height, newDepth, newPalette);
 		ImageData.blit(
-				  i.data,   i.depth,   i.bytesPerLine, i.getByteOrder(),   i.width,   i.height, srcReds, srcGreens, srcBlues,
-				img.data, img.depth, img.bytesPerLine,         newOrder, img.width, img.height, newPalette.redMask, newPalette.greenMask, newPalette.blueMask,
-				false, false);
+				i.width,   i.height,
+				  i.data,   i.depth,   i.bytesPerLine, i.getByteOrder(), srcReds, srcGreens, srcBlues,
+				img.data, img.depth, img.bytesPerLine,         newOrder, newPalette.redMask, newPalette.greenMask, newPalette.blueMask);
 
 		if (i.transparentPixel != -1) {
 			img.transparentPixel = newPalette.getPixel(i.palette.getRGB(i.transparentPixel));
