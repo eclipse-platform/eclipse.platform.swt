@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2021 IBM Corporation and others.
+ * Copyright (c) 2000, 2022 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -4207,7 +4207,19 @@ void setDeferResize (boolean defer) {
 			if (hooks (SWT.MeasureItem) || hooks (SWT.EraseItem) || hooks (SWT.PaintItem)) {
 				if (--drawCount == 0 /*&& OS.IsWindowVisible (handle)*/) {
 					OS.SendMessage (handle, OS.LVM_SETBKCOLOR, 0, OS.CLR_NONE);
+					int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
 					OS.DefWindowProc (handle, OS.WM_SETREDRAW, 1, 0);
+					/*
+					 * Bug in native WM_SETREDRAW call which makes 'invisible' table as 'visible'
+					 * and where-in the table's state continue to be 'invisible' but table's style
+					 * changes from 'invisible' to 'visible'. For more details see:
+					 * (https://docs.microsoft.com/en-us/windows/win32/gdi/wm-setredraw), solution
+					 * is to explicitly identify such case where the table style differs from the
+					 * table's 'visible' state and then restore the table's visibility state.
+					 */
+					if (bits != OS.GetWindowLong (handle, OS.GWL_STYLE)) {
+						OS.SetWindowLong (handle, OS.GWL_STYLE, bits);
+					}
 					int flags = OS.RDW_ERASE | OS.RDW_FRAME | OS.RDW_INVALIDATE | OS.RDW_ALLCHILDREN;
 					OS.RedrawWindow (handle, null, 0, flags);
 				}
