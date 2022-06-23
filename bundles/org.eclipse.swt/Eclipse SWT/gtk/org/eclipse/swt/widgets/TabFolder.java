@@ -257,8 +257,6 @@ void createHandle (int index) {
 	GTK.gtk_notebook_set_show_tabs (handle, true);
 	GTK.gtk_notebook_set_scrollable (handle, true);
 
-	if(GTK.GTK4) setInitialBackgroundGTK4(handle, null);
-
 	if ((style & SWT.BOTTOM) != 0) {
 		GTK.gtk_notebook_set_tab_pos (handle, GTK.GTK_POS_BOTTOM);
 	}
@@ -787,21 +785,6 @@ void setBackgroundGdkRGBA (long context, long handle, GdkRGBA rgba) {
 
 		// Apply background color and any cached foreground color
 	String finalCss = display.gtk_css_create_css_color_string (cssBackground, cssForeground, SWT.BACKGROUND);
-	gtk_css_provider_load_from_css (context, finalCss);
-}
-
-void setInitialBackgroundGTK4 (long handle, GdkRGBA rgba) {
-
-	//Get the "stack" widget as child and gets its context
-	long child = GTK4.gtk_widget_get_first_child(handle);
-	child = GTK4.gtk_widget_get_next_sibling(child);
-	long context = GTK.gtk_widget_get_style_context(child);
-
-	// Form background string
-	String css = "stack {background-color: " + display.gtk_rgba_to_css_string (rgba) + ";}";
-
-	// Apply background color
-	String finalCss = display.gtk_css_create_css_color_string (css, null, SWT.BACKGROUND);
 	gtk_css_provider_load_from_css (context, finalCss);
 }
 
