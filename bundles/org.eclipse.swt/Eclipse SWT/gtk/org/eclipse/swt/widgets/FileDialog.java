@@ -479,8 +479,6 @@ void presetChooserDialog () {
 
 				if (fileName.length() > 0) {
 					GTK4.gtk_file_chooser_set_file (handle, file, 0);
-				} else {
-					GTK4.gtk_file_chooser_set_current_folder (handle, file, 0);
 				}
 			}
 
