@@ -3615,6 +3615,18 @@ long gtk_commit (long imcontext, long text) {
 
 @Override
 void gtk4_enter_event(long controller, double x, double y, long event) {
+	/*
+	 * Set tool tip for this shell, and also null tooltip for shell
+	 * if control being entered does not have a tooltip text set.
+	 */
+	byte [] buffer = null;
+	if (toolTipText != null && toolTipText.length() != 0) {
+		char [] chars = fixMnemonic (toolTipText, false, true);
+		buffer = Converter.wcsToMbcs (chars, true);
+	}
+	long toolHandle = getShell().handle;
+	GTK.gtk_widget_set_tooltip_text (toolHandle, buffer);
+
 	if (display.currentControl == this) return;
 
 	// Disconnect previous current Control and send MouseExit event to it
