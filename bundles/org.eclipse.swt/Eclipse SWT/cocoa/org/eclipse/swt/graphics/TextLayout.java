@@ -330,6 +330,14 @@ void computeRuns() {
 	textStorage.setAttributedString(attrStr);
 	attrStr.release();
 
+	String string = textStorage.string().getString();
+	int len = string.length();
+	char lastChar;
+	boolean trailingNewLine = false;
+	if (len > 0 && ((lastChar = string.charAt(len - 1)) == '\n' || lastChar == '\r')) {
+		trailingNewLine = true;
+	}
+
 	int numberOfLines;
 	layoutManager.glyphRangeForTextContainer(textContainer);
 	long numberOfGlyphs = layoutManager.numberOfGlyphs(), index;
@@ -340,9 +348,14 @@ void computeRuns() {
 		OS.memmove(lineRange, rangePtr, NSRange.sizeof);
 		index = lineRange.location + lineRange.length;
 	}
-	if (numberOfLines == 0) numberOfLines++;
-	int[] offsets = new int[numberOfLines + 1];
-	NSRect[] bounds = new NSRect[numberOfLines];
+	/*
+	 * Computation of numberOfLines and offsets doesn't take into account the
+	 * trailing new line. If there is a trailing new line, increment lineCount and
+	 * also set the line offset in offsets[] accordingly.
+	 */
+	int lineCount = (numberOfLines == 0 || trailingNewLine) ? numberOfLines + 1 : numberOfLines;
+	int[] offsets = new int[lineCount + 1];
+	NSRect[] bounds = new NSRect[lineCount];
 	for (numberOfLines = 0, index = 0; index < numberOfGlyphs; numberOfLines++){
 		bounds[numberOfLines] = layoutManager.lineFragmentUsedRectForGlyphAtIndex(index, rangePtr, true);
 		if (numberOfLines < bounds.length - 1) bounds[numberOfLines].height -= spacing;
@@ -357,7 +370,8 @@ void computeRuns() {
 		bounds[0].height = Math.max(layoutManager.defaultLineHeightForFont(nsFont), ascent + descent);
 	}
 	C.free(rangePtr);
-	offsets[numberOfLines] = (int)textStorage.length();
+	if (trailingNewLine) offsets[lineCount - 1] = (int)textStorage.length();
+	offsets[lineCount] = (int)textStorage.length();
 	this.lineOffsets = offsets;
 	this.lineBounds = bounds;
 }
