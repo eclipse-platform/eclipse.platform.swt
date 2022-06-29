@@ -1719,20 +1719,79 @@ static long createDIB(int width, int height, int depth) {
 	return OS.CreateDIBSection(0, bmi, OS.DIB_RGB_COLORS, pBits, 0, 0);
 }
 
+static ImageData indexToIndex(ImageData src, int newDepth) {
+	ImageData img = new ImageData(src.width, src.height, newDepth, src.palette);
+
+	ImageData.blit(
+		src.data, src.depth, src.bytesPerLine, src.getByteOrder(), src.width, src.height,
+		img.data, img.depth, img.bytesPerLine, src.getByteOrder(), img.width, img.height,
+		false, false);
+
+	img.transparentPixel = src.transparentPixel;
+	img.maskPad   = src.maskPad;
+	img.maskData  = src.maskData;
+	img.alpha     = src.alpha;
+	img.alphaData = src.alphaData;
+
+	return img;
+}
+
+static ImageData indexToDirect(ImageData src, int newDepth, PaletteData newPalette, int newByteOrder) {
+	ImageData img = new ImageData(src.width, src.height, newDepth, newPalette);
+
+	RGB[] rgbs = src.palette.getRGBs();
+	byte[] srcReds   = new byte[rgbs.length];
+	byte[] srcGreens = new byte[rgbs.length];
+	byte[] srcBlues  = new byte[rgbs.length];
+	for (int j = 0; j < rgbs.length; j++) {
+		RGB rgb = rgbs[j];
+		if (rgb == null) continue;
+		srcReds[j] = (byte)rgb.red;
+		srcGreens[j] = (byte)rgb.green;
+		srcBlues[j] = (byte)rgb.blue;
+	}
+
+	ImageData.blit(
+		src.width, src.height,
+		src.data, src.depth, src.bytesPerLine, src.getByteOrder(), srcReds, srcGreens, srcBlues,
+		img.data, img.depth, img.bytesPerLine,       newByteOrder, newPalette.redMask, newPalette.greenMask, newPalette.blueMask);
+
+	if (src.transparentPixel != -1) {
+		img.transparentPixel = newPalette.getPixel(src.palette.getRGB(src.transparentPixel));
+	}
+
+	img.maskPad   = src.maskPad;
+	img.maskData  = src.maskData;
+	img.alpha     = src.alpha;
+	img.alphaData = src.alphaData;
+
+	return img;
+}
+
+static ImageData directToDirect(ImageData src, int newDepth, PaletteData newPalette, int newByteOrder) {
+	ImageData img = new ImageData(src.width, src.height, newDepth, newPalette);
+
+	ImageData.blit(
+		src.data, src.depth, src.bytesPerLine, src.getByteOrder(), src.width, src.height, src.palette.redMask, src.palette.greenMask, src.palette.blueMask,
+		img.data, img.depth, img.bytesPerLine,       newByteOrder, img.width, img.height, img.palette.redMask, img.palette.greenMask, img.palette.blueMask,
+		false, false);
+
+	if (src.transparentPixel != -1) {
+		img.transparentPixel = img.palette.getPixel(src.palette.getRGB(src.transparentPixel));
+	}
+
+	img.maskPad   = src.maskPad;
+	img.maskData  = src.maskData;
+	img.alpha     = src.alpha;
+	img.alphaData = src.alphaData;
+
+	return img;
+}
+
 static long [] init(Device device, Image image, ImageData i) {
 	/* Windows does not support 2-bit images. Convert to 4-bit image. */
 	if (i.depth == 2) {
-		ImageData img = new ImageData(i.width, i.height, 4, i.palette);
-		ImageData.blit(
-			  i.data,   i.depth,   i.bytesPerLine, i.getByteOrder(),   i.width,   i.height,
-			img.data, img.depth, img.bytesPerLine, i.getByteOrder(), img.width, img.height,
-			false, false);
-		img.transparentPixel = i.transparentPixel;
-		img.maskPad = i.maskPad;
-		img.maskData = i.maskData;
-		img.alpha = i.alpha;
-		img.alphaData = i.alphaData;
-		i = img;
+		i = indexToIndex(i, 4);
 	}
 
 	boolean hasAlpha = i.alpha != -1 || i.alphaData != null;
@@ -1806,51 +1865,12 @@ static long [] init(Device device, Image image, ImageData i) {
 			}
 		}
 		if (newPalette != null) {
-			ImageData img = new ImageData(i.width, i.height, newDepth, newPalette);
-			ImageData.blit(
-					  i.data,   i.depth,   i.bytesPerLine, i.getByteOrder(),   i.width,   i.height, redMask, greenMask, blueMask,
-					img.data, img.depth, img.bytesPerLine,         newOrder, img.width, img.height, newPalette.redMask, newPalette.greenMask, newPalette.blueMask,
-					false, false);
-			if (i.transparentPixel != -1) {
-				img.transparentPixel = newPalette.getPixel(palette.getRGB(i.transparentPixel));
-			}
-			img.maskPad = i.maskPad;
-			img.maskData = i.maskData;
-			img.alpha = i.alpha;
-			img.alphaData = i.alphaData;
-			i = img;
+			i = directToDirect(i, newDepth, newPalette, newOrder);
 		}
 	}
 	else if (hasAlpha) {
-		int newDepth = 32;
 		PaletteData newPalette = new PaletteData(0xFF00, 0xFF0000, 0xFF000000);
-		int newOrder = ImageData.MSB_FIRST;
-		RGB[] rgbs = i.palette.getRGBs();
-		int length = rgbs.length;
-		byte[] srcReds = new byte[length];
-		byte[] srcGreens = new byte[length];
-		byte[] srcBlues = new byte[length];
-		for (int j = 0; j < rgbs.length; j++) {
-			RGB rgb = rgbs[j];
-			if (rgb == null) continue;
-			srcReds[j] = (byte)rgb.red;
-			srcGreens[j] = (byte)rgb.green;
-			srcBlues[j] = (byte)rgb.blue;
-		}
-		ImageData img = new ImageData(i.width, i.height, newDepth, newPalette);
-		ImageData.blit(
-				i.width,   i.height,
-				  i.data,   i.depth,   i.bytesPerLine, i.getByteOrder(), srcReds, srcGreens, srcBlues,
-				img.data, img.depth, img.bytesPerLine,         newOrder, newPalette.redMask, newPalette.greenMask, newPalette.blueMask);
-
-		if (i.transparentPixel != -1) {
-			img.transparentPixel = newPalette.getPixel(i.palette.getRGB(i.transparentPixel));
-		}
-		img.maskPad = i.maskPad;
-		img.maskData = i.maskData;
-		img.alpha = i.alpha;
-		img.alphaData = i.alphaData;
-		i = img;
+		i = indexToDirect(i, 32, newPalette, ImageData.MSB_FIRST);
 	}
 	if (i.alpha != -1) {
 		int alpha = i.alpha & 0xFF;
