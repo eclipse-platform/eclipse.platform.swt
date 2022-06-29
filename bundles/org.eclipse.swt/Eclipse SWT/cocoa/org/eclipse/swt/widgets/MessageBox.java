@@ -14,6 +14,8 @@
 package org.eclipse.swt.widgets;
 
 
+import java.util.*;
+
 import org.eclipse.swt.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.cocoa.*;
@@ -45,6 +47,7 @@ public  class MessageBox extends Dialog {
 	Callback callback_completion_handler;
 	String message = "";
 	int userResponse;
+	private Map<Integer, String> labels;
 
 /**
  * Constructs a new instance of this class given only its parent.
@@ -178,54 +181,54 @@ public int open () {
 	NSString title;
 	switch (bits) {
 		case SWT.OK:
-			title = NSString.stringWith(SWT.getMessage("SWT_OK"));
+			title = getLabelForButton(SWT.OK, "SWT_OK");
 			alert.addButtonWithTitle(title);
 			break;
 		case SWT.CANCEL:
-			title = NSString.stringWith(SWT.getMessage("SWT_Cancel"));
+			title = getLabelForButton(SWT.CANCEL, "SWT_Cancel");
 			alert.addButtonWithTitle(title);
 			break;
 		case SWT.OK | SWT.CANCEL:
-			title = NSString.stringWith(SWT.getMessage("SWT_OK"));
+			title = getLabelForButton(SWT.OK, "SWT_OK");
 			alert.addButtonWithTitle(title);
-			title = NSString.stringWith(SWT.getMessage("SWT_Cancel"));
+			title = getLabelForButton( SWT.CANCEL, "SWT_Cancel");
 			alert.addButtonWithTitle(title);
 			break;
 		case SWT.YES:
-			title = NSString.stringWith(SWT.getMessage("SWT_Yes"));
+			title = getLabelForButton(SWT.YES, "SWT_Yes");
 			alert.addButtonWithTitle(title);
 			break;
 		case SWT.NO:
-			title = NSString.stringWith(SWT.getMessage("SWT_No"));
+			title = getLabelForButton(SWT.NO, "SWT_No");
 			alert.addButtonWithTitle(title);
 			break;
 		case SWT.YES | SWT.NO:
-			title = NSString.stringWith(SWT.getMessage("SWT_Yes"));
+			title = getLabelForButton(SWT.YES, "SWT_Yes");
 			alert.addButtonWithTitle(title);
-			title = NSString.stringWith(SWT.getMessage("SWT_No"));
+			title = getLabelForButton(SWT.NO, "SWT_No");
 			alert.addButtonWithTitle(title);
 //			no.setKeyEquivalent(NSString.stringWith("\033"));
 			break;
 		case SWT.YES | SWT.NO | SWT.CANCEL:
-			title = NSString.stringWith(SWT.getMessage("SWT_Yes"));
+			title = getLabelForButton(SWT.YES, "SWT_Yes");
 			alert.addButtonWithTitle(title);
-			title = NSString.stringWith(SWT.getMessage("SWT_Cancel"));
+			title = getLabelForButton( SWT.CANCEL, "SWT_Cancel");
 			alert.addButtonWithTitle(title);
-			title = NSString.stringWith(SWT.getMessage("SWT_No"));
+			title = getLabelForButton(SWT.NO, "SWT_No");
 			alert.addButtonWithTitle(title);
 			break;
 		case SWT.RETRY | SWT.CANCEL:
-			title = NSString.stringWith(SWT.getMessage("SWT_Retry"));
+			title = getLabelForButton( SWT.RETRY, "SWT_Retry");
 			alert.addButtonWithTitle(title);
-			title = NSString.stringWith(SWT.getMessage("SWT_Cancel"));
+			title = getLabelForButton( SWT.CANCEL, "SWT_Cancel");
 			alert.addButtonWithTitle(title);
 			break;
 		case SWT.ABORT | SWT.RETRY | SWT.IGNORE:
-			title = NSString.stringWith(SWT.getMessage("SWT_Abort"));
+			title = getLabelForButton( SWT.ABORT, "SWT_Abort");
 			alert.addButtonWithTitle(title);
-			title = NSString.stringWith(SWT.getMessage("SWT_Ignore"));
+			title = getLabelForButton( SWT.IGNORE, "SWT_Ignore");
 			alert.addButtonWithTitle(title);
-			title = NSString.stringWith(SWT.getMessage("SWT_Retry"));
+			title = getLabelForButton( SWT.RETRY, "SWT_Retry");
 			alert.addButtonWithTitle(title);
 			break;
 	}
@@ -267,6 +270,13 @@ public int open () {
 	alert.release();
 	releaseHandler();
 	return userResponse;
+}
+
+private NSString getLabelForButton(int buttonId, String messageId) {
+	if (labels !=null && labels.containsKey(buttonId)) {
+		return NSString.stringWith(labels.get(buttonId));
+	}
+	return NSString.stringWith(SWT.getMessage(messageId));
 }
 
 long _completionHandler (long result) {
@@ -370,6 +380,29 @@ void releaseHandler () {
 public void setMessage (String string) {
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	message = string;
+}
+
+/**
+ * Set custom text for <code>MessageDialog</code>'s buttons:
+ *
+ * @param labels a <code>Map</code> where a valid 'key' is from below listed
+ *               styles:<ul>
+ * <li>SWT#OK</li>
+ * <li>SWT#CANCEL</li>
+ * <li>SWT#YES</li>
+ * <li>SWT#NO</li>
+ * <li>SWT#ABORT</li>
+ * <li>SWT#RETRY</li>
+ * <li>SWT#IGNORE</li>
+ * </ul>
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if labels is null</li>
+ * </ul>
+ * @since 3.121
+ */
+public void setButtonLabels(Map<Integer, String> labels) {
+	if (labels == null) error (SWT.ERROR_NULL_ARGUMENT);
+	this.labels = labels;
 }
 
 }
