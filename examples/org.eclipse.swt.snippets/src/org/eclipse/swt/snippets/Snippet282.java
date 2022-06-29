@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2016 IBM Corporation and others.
+ * Copyright (c) 2016, 2022 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -15,6 +15,9 @@ package org.eclipse.swt.snippets;
 
 /*
  * Copy/paste image to/from clipboard.
+ *
+ * Prints status to console when an image is pasted
+ * to verify that the snippet worked correctly.
  *
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
@@ -85,9 +88,11 @@ public class Snippet282 {
 				if (image != null) image.dispose();
 				image = new Image(display, imageData);
 				imageButton.setImage(image);
+				System.out.println("Image copied and pasted successfully");
 			} else {
 				imageButton.setText("No image");
 				imageButton.setImage(null);
+				System.out.println("Image not found, pasting failed");
 			}
 			String text = (String)clipboard.getContents(TextTransfer.getInstance());
 			if (text != null) {
