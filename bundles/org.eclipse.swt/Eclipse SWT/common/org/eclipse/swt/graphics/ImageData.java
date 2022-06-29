@@ -224,7 +224,6 @@ public final class ImageData implements Cloneable {
 			for (int v = 0, p = 0; v < 0x10000; v+= inc) data[p++] = (byte)(v >> 8);
 		}
 	}
-	static final byte[] ONE_TO_ONE_MAPPING = ANY_TO_EIGHT[8];
 
 	/**
 	 * Scaled 8x8 Bayer dither matrix.
@@ -2011,6 +2010,12 @@ static void blit(
 	boolean flipX, boolean flipY) {
 	if ((destWidth <= 0) || (destHeight <= 0)) return;
 
+	if (srcDepth > destDepth) {
+		// This case doesn't really make sense - what to do when source palette index
+		// doesn't fit into new bits-per-pixel? Therefore, not supported.
+		return;
+	}
+
 	/*** Prepare scaling data ***/
 	final int dwm1 = destWidth - 1;
 	final int sfxi = (dwm1 != 0) ? (int)((((long)srcWidth << 16) - 1) / dwm1) : 0;
@@ -2070,21 +2075,6 @@ static void blit(
 	/*** Blit ***/
 	int dp = dpr;
 	int sp = spr;
-	byte[] paletteMapping = null;
-
-	/*** If the palettes and formats are equivalent use a one-to-one mapping ***/
-	if (stype == dtype) {
-		paletteMapping = ONE_TO_ONE_MAPPING;
-	/*** If palettes have not been supplied, supply a suitable mapping ***/
-	} else {
-		if (srcDepth <= destDepth) {
-			paletteMapping = ONE_TO_ONE_MAPPING;
-		} else {
-			paletteMapping = new byte[1 << srcDepth];
-			int mask = (0xff << destDepth) >>> 8;
-			for (int i = 0; i < paletteMapping.length; ++i) paletteMapping[i] = (byte)(i & mask);
-		}
-	}
 
 	if (stype == dtype) {
 		/*** Fast blit (copy w/ mapping) ***/
@@ -2092,7 +2082,7 @@ static void blit(
 			case TYPE_INDEX_8:
 				for (int dy = destHeight, sfy = sfyi; dy > 0; --dy, sp = spr += (sfy >>> 16) * srcStride, sfy = (sfy & 0xffff) + sfyi, dp = dpr += dpryi) {
 					for (int dx = destWidth, sfx = sfxi; dx > 0; --dx, dp += dprxi, sfx = (sfx & 0xffff) + sfxi) {
-						destData[dp] = paletteMapping[srcData[sp] & 0xff];
+						destData[dp] = srcData[sp];
 						sp += (sfx >>> 16);
 					}
 				}
@@ -2101,7 +2091,7 @@ static void blit(
 				for (int dy = destHeight, sfy = sfyi; dy > 0; --dy, sp = spr += (sfy >>> 16) * srcStride, sfy = (sfy & 0xffff) + sfyi, dp = dpr += dpryi) {
 					for (int dx = destWidth, sfx = sfxi; dx > 0; --dx, dp += dprxi, sfx = (sfx & 0xffff) + sfxi) {
 						final int v;
-						if ((sp & 1) != 0) v = paletteMapping[srcData[sp >> 1] & 0x0f];
+						if ((sp & 1) != 0) v = srcData[sp >> 1] & 0x0f;
 						else v = (srcData[sp >> 1] >>> 4) & 0x0f;
 						sp += (sfx >>> 16);
 						if ((dp & 1) != 0) destData[dp >> 1] = (byte)((destData[dp >> 1] & 0xf0) | v);
@@ -2112,7 +2102,7 @@ static void blit(
 			case TYPE_INDEX_2:
 				for (int dy = destHeight, sfy = sfyi; dy > 0; --dy, sp = spr += (sfy >>> 16) * srcStride, sfy = (sfy & 0xffff) + sfyi, dp = dpr += dpryi) {
 					for (int dx = destWidth, sfx = sfxi; dx > 0; --dx, dp += dprxi, sfx = (sfx & 0xffff) + sfxi) {
-						final int index = paletteMapping[(srcData[sp >> 2] >>> (6 - (sp & 3) * 2)) & 0x03];
+						final int index = (srcData[sp >> 2] >>> (6 - (sp & 3) * 2)) & 0x03;
 						sp += (sfx >>> 16);
 						final int shift = 6 - (dp & 3) * 2;
 						destData[dp >> 2] = (byte)(destData[dp >> 2] & ~(0x03 << shift) | (index << shift));
@@ -2122,7 +2112,7 @@ static void blit(
 			case TYPE_INDEX_1_MSB:
 				for (int dy = destHeight, sfy = sfyi; dy > 0; --dy, sp = spr += (sfy >>> 16) * srcStride, sfy = (sfy & 0xffff) + sfyi, dp = dpr += dpryi) {
 					for (int dx = destWidth, sfx = sfxi; dx > 0; --dx, dp += dprxi, sfx = (sfx & 0xffff) + sfxi) {
-						final int index = paletteMapping[(srcData[sp >> 3] >>> (7 - (sp & 7))) & 0x01];
+						final int index = (srcData[sp >> 3] >>> (7 - (sp & 7))) & 0x01;
 						sp += (sfx >>> 16);
 						final int shift = 7 - (dp & 7);
 						destData[dp >> 3] = (byte)(destData[dp >> 3] & ~(0x01 << shift) | (index << shift));
@@ -2132,7 +2122,7 @@ static void blit(
 			case TYPE_INDEX_1_LSB:
 				for (int dy = destHeight, sfy = sfyi; dy > 0; --dy, sp = spr += (sfy >>> 16) * srcStride, sfy = (sfy & 0xffff) + sfyi, dp = dpr += dpryi) {
 					for (int dx = destWidth, sfx = sfxi; dx > 0; --dx, dp += dprxi, sfx = (sfx & 0xffff) + sfxi) {
-						final int index = paletteMapping[(srcData[sp >> 3] >>> (sp & 7)) & 0x01];
+						final int index = (srcData[sp >> 3] >>> (sp & 7)) & 0x01;
 						sp += (sfx >>> 16);
 						final int shift = dp & 7;
 						destData[dp >> 3] = (byte)(destData[dp >> 3] & ~(0x01 << shift) | (index << shift));
@@ -2176,7 +2166,7 @@ static void blit(
 					default:
 						return;
 				}
-				index = paletteMapping[index] & 0xff;
+				index = index & 0xff;
 
 				/*** WRITE NEXT PIXEL ***/
 				switch (dtype) {
