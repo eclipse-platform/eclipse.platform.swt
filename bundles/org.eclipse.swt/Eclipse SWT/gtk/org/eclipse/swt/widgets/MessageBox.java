@@ -14,6 +14,8 @@
 package org.eclipse.swt.widgets;
 
 
+import java.util.*;
+
 import org.eclipse.swt.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.gtk.*;
@@ -47,6 +49,7 @@ public class MessageBox extends Dialog {
 
 	String message = "";
 	long handle;
+	private Map<Integer, String> labels;
 
 /**
  * Constructs a new instance of this class given only its parent.
@@ -236,22 +239,29 @@ public int open() {
 
 private void createButtons (int alignment) {
 	if (alignment == SWT.LEFT) {
-		if ((style & SWT.OK) != 0) GTK.gtk_dialog_add_button(handle, Converter.wcsToMbcs (SWT.getMessage("SWT_OK"), true), SWT.OK);
-		if ((style & SWT.ABORT) != 0) GTK.gtk_dialog_add_button(handle, Converter.wcsToMbcs (SWT.getMessage("SWT_Abort"), true), SWT.ABORT);
-		if ((style & SWT.RETRY) != 0) GTK.gtk_dialog_add_button(handle, Converter.wcsToMbcs (SWT.getMessage("SWT_Retry"), true), SWT.RETRY);
-		if ((style & SWT.YES) != 0) GTK.gtk_dialog_add_button(handle, Converter.wcsToMbcs (SWT.getMessage("SWT_Yes"), true), SWT.YES);
-		if ((style & SWT.NO) != 0) GTK.gtk_dialog_add_button(handle, Converter.wcsToMbcs (SWT.getMessage("SWT_No"), true), SWT.NO);
-		if ((style & SWT.IGNORE) != 0) GTK.gtk_dialog_add_button(handle, Converter.wcsToMbcs (SWT.getMessage("SWT_Ignore"), true), SWT.IGNORE);
-		if ((style & SWT.CANCEL) != 0) GTK.gtk_dialog_add_button(handle, Converter.wcsToMbcs (SWT.getMessage("SWT_Cancel"), true), SWT.CANCEL);
+		if ((style & SWT.OK) != 0) GTK.gtk_dialog_add_button(handle, getLabelForButton(SWT.OK, "SWT_OK"), SWT.OK);
+		if ((style & SWT.ABORT) != 0) GTK.gtk_dialog_add_button(handle, getLabelForButton(SWT.ABORT, "SWT_Abort"), SWT.ABORT);
+		if ((style & SWT.RETRY) != 0) GTK.gtk_dialog_add_button(handle, getLabelForButton(SWT.RETRY, "SWT_Retry"), SWT.RETRY);
+		if ((style & SWT.YES) != 0) GTK.gtk_dialog_add_button(handle, getLabelForButton(SWT.YES, "SWT_Yes"), SWT.YES);
+		if ((style & SWT.NO) != 0) GTK.gtk_dialog_add_button(handle, getLabelForButton(SWT.NO, "SWT_No"), SWT.NO);
+		if ((style & SWT.IGNORE) != 0) GTK.gtk_dialog_add_button(handle, getLabelForButton(SWT.IGNORE, "SWT_Ignore"), SWT.IGNORE);
+		if ((style & SWT.CANCEL) != 0) GTK.gtk_dialog_add_button(handle, getLabelForButton(SWT.CANCEL, "SWT_Cancel"), SWT.CANCEL);
 	} else {
-		if ((style & SWT.CANCEL) != 0) GTK.gtk_dialog_add_button(handle, Converter.wcsToMbcs (SWT.getMessage("SWT_Cancel"), true), SWT.CANCEL);
-		if ((style & SWT.OK) != 0) GTK.gtk_dialog_add_button(handle, Converter.wcsToMbcs (SWT.getMessage("SWT_OK"), true), SWT.OK);
-		if ((style & SWT.NO) != 0) GTK.gtk_dialog_add_button(handle, Converter.wcsToMbcs (SWT.getMessage("SWT_No"), true), SWT.NO);
-		if ((style & SWT.YES) != 0) GTK.gtk_dialog_add_button(handle, Converter.wcsToMbcs (SWT.getMessage("SWT_Yes"), true), SWT.YES);
-		if ((style & SWT.IGNORE) != 0) GTK.gtk_dialog_add_button(handle, Converter.wcsToMbcs (SWT.getMessage("SWT_Ignore"), true), SWT.IGNORE);
-		if ((style & SWT.RETRY) != 0) GTK.gtk_dialog_add_button(handle, Converter.wcsToMbcs (SWT.getMessage("SWT_Retry"), true), SWT.RETRY);
-		if ((style & SWT.ABORT) != 0) GTK.gtk_dialog_add_button(handle, Converter.wcsToMbcs (SWT.getMessage("SWT_Abort"), true), SWT.ABORT);
+		if ((style & SWT.CANCEL) != 0) GTK.gtk_dialog_add_button(handle, getLabelForButton(SWT.CANCEL, "SWT_Cancel"), SWT.CANCEL);
+		if ((style & SWT.OK) != 0) GTK.gtk_dialog_add_button(handle, getLabelForButton(SWT.OK, "SWT_OK"), SWT.OK);
+		if ((style & SWT.NO) != 0) GTK.gtk_dialog_add_button(handle, getLabelForButton(SWT.NO, "SWT_No"), SWT.NO);
+		if ((style & SWT.YES) != 0) GTK.gtk_dialog_add_button(handle, getLabelForButton(SWT.YES, "SWT_Yes"), SWT.YES);
+		if ((style & SWT.IGNORE) != 0) GTK.gtk_dialog_add_button(handle, getLabelForButton(SWT.IGNORE, "SWT_Ignore"), SWT.IGNORE);
+		if ((style & SWT.RETRY) != 0) GTK.gtk_dialog_add_button(handle, getLabelForButton(SWT.RETRY, "SWT_Retry"), SWT.RETRY);
+		if ((style & SWT.ABORT) != 0) GTK.gtk_dialog_add_button(handle, getLabelForButton(SWT.ABORT, "SWT_Abort"), SWT.ABORT);
 	}
+}
+
+private byte[] getLabelForButton(int buttonId, String messageId) {
+	if (labels !=null && labels.containsKey(buttonId)) {
+		return Converter.wcsToMbcs (labels.get(buttonId), true);
+	}
+	return Converter.wcsToMbcs(SWT.getMessage(messageId), true);
 }
 
 private static int checkStyle (int style) {
@@ -262,5 +272,28 @@ private static int checkStyle (int style) {
 	if (bits == (SWT.RETRY | SWT.CANCEL) || bits == (SWT.ABORT | SWT.RETRY | SWT.IGNORE)) return style;
 	style = (style & ~mask) | SWT.OK;
 	return style;
+}
+
+/**
+ * Set custom text for <code>MessageDialog</code>'s buttons:
+ *
+ * @param labels a <code>Map</code> where a valid 'key' is from below listed
+ *               styles:<ul>
+ * <li>SWT#OK</li>
+ * <li>SWT#CANCEL</li>
+ * <li>SWT#YES</li>
+ * <li>SWT#NO</li>
+ * <li>SWT#ABORT</li>
+ * <li>SWT#RETRY</li>
+ * <li>SWT#IGNORE</li>
+ * </ul>
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if labels is null</li>
+ * </ul>
+ * @since 3.121
+ */
+public void setButtonLabels(Map<Integer, String> labels) {
+	if (labels == null) error (SWT.ERROR_NULL_ARGUMENT);
+	this.labels = labels;
 }
 }

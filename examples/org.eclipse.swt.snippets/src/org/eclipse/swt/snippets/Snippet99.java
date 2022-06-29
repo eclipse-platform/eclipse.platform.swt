@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2016 IBM Corporation and others.
+ * Copyright (c) 2000, 2022 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -12,6 +12,8 @@
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
 package org.eclipse.swt.snippets;
+
+import java.util.*;
 
 /*
  * Shell example snippet: prevent a shell from closing (prompt the user)
@@ -29,10 +31,10 @@ public static void main (String [] args) {
 	final Shell shell = new Shell (display);
 	shell.setText("Snippet 99");
 	shell.addListener (SWT.Close, event -> {
-		int style = SWT.APPLICATION_MODAL | SWT.YES | SWT.NO;
-		MessageBox messageBox = new MessageBox (shell, style);
-		messageBox.setText ("Information");
-		messageBox.setMessage ("Close the shell?");
+		MessageBox messageBox = new MessageBox(shell, SWT.ICON_QUESTION | SWT.YES | SWT.NO);
+		messageBox.setText("Information");
+		messageBox.setMessage("Close the shell?");
+		messageBox.setButtonLabels(Map.of(SWT.YES, "Close"));
 		event.doit = messageBox.open () == SWT.YES;
 	});
 	shell.pack ();
