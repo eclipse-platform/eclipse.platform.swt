@@ -4228,7 +4228,7 @@ void setDeferResize (boolean defer) {
 	}
 }
 
-void fixVisibility() {
+void fixVisibility () {
 	/*
 	 * Bug in native WM_SETREDRAW call which makes 'invisible' table as 'visible'
 	 * and where-in the table's state continue to be 'invisible' but table's style
@@ -4236,11 +4236,15 @@ void fixVisibility() {
 	 * (https://docs.microsoft.com/en-us/windows/win32/gdi/wm-setredraw), solution
 	 * is to explicitly identify such case where the table style differs from the
 	 * table's 'visible' state and then restore the table's visibility state.
+	 * Note: For empty tables we can ignore the required visibility state.
 	 */
-	boolean expectedVisibility = OS.IsWindowVisible (handle);
-	boolean currentVisibility = ((style & OS.WS_VISIBLE) != 0);
-	if (currentVisibility != expectedVisibility) {
-		OS.ShowWindow (handle, expectedVisibility ? OS.SW_SHOW : OS.SW_HIDE);
+	int itemCount = (int)OS.SendMessage (handle, OS.LVM_GETITEMCOUNT, 0, 0);
+	if (itemCount > 0) {
+		boolean expectedVisibility = OS.IsWindowVisible (handle);
+		boolean currentVisibility = ((style & OS.WS_VISIBLE) != 0);
+		if (currentVisibility != expectedVisibility) {
+			OS.ShowWindow (handle, expectedVisibility ? OS.SW_SHOW : OS.SW_HIDE);
+		}
 	}
 }
 
