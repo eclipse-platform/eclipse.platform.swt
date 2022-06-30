@@ -4239,7 +4239,8 @@ void fixVisibility () {
 	 * Note: For empty tables we can ignore the required visibility state.
 	 */
 	int itemCount = (int)OS.SendMessage (handle, OS.LVM_GETITEMCOUNT, 0, 0);
-	if (itemCount > 0) {
+	boolean isVirtual = (style & SWT.VIRTUAL) != 0;
+	if (isVirtual && itemCount > 0) {
 		boolean expectedVisibility = OS.IsWindowVisible (handle);
 		boolean currentVisibility = ((style & OS.WS_VISIBLE) != 0);
 		if (currentVisibility != expectedVisibility) {
