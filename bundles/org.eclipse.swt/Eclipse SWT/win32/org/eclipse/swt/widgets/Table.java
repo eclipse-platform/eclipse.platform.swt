@@ -4208,7 +4208,6 @@ void setDeferResize (boolean defer) {
 				if (--drawCount == 0 /*&& OS.IsWindowVisible (handle)*/) {
 					OS.SendMessage (handle, OS.LVM_SETBKCOLOR, 0, OS.CLR_NONE);
 					OS.DefWindowProc (handle, OS.WM_SETREDRAW, 1, 0);
-					fixVisibility();
 					int flags = OS.RDW_ERASE | OS.RDW_FRAME | OS.RDW_INVALIDATE | OS.RDW_ALLCHILDREN;
 					OS.RedrawWindow (handle, null, 0, flags);
 				}
@@ -4224,27 +4223,6 @@ void setDeferResize (boolean defer) {
 				}
 				setResizeChildren (true);
 			}
-		}
-	}
-}
-
-void fixVisibility () {
-	/*
-	 * Bug in native WM_SETREDRAW call which makes 'invisible' table as 'visible'
-	 * and where-in the table's state continue to be 'invisible' but table's style
-	 * changes from 'invisible' to 'visible'. For more details see:
-	 * (https://docs.microsoft.com/en-us/windows/win32/gdi/wm-setredraw), solution
-	 * is to explicitly identify such case where the table style differs from the
-	 * table's 'visible' state and then restore the table's visibility state.
-	 * Note: For empty tables we can ignore the required visibility state.
-	 */
-	int itemCount = (int)OS.SendMessage (handle, OS.LVM_GETITEMCOUNT, 0, 0);
-	boolean isVirtual = (style & SWT.VIRTUAL) != 0;
-	if (isVirtual && itemCount > 0) {
-		boolean expectedVisibility = OS.IsWindowVisible (handle);
-		boolean currentVisibility = ((style & OS.WS_VISIBLE) != 0);
-		if (currentVisibility != expectedVisibility) {
-			OS.ShowWindow (handle, expectedVisibility ? OS.SW_SHOW : OS.SW_HIDE);
 		}
 	}
 }
