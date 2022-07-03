@@ -33,10 +33,8 @@ import org.eclipse.swt.graphics.PaletteData;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.FillLayout;
-import org.eclipse.swt.widgets.Canvas;
-import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.*;
 
 public class SwtTestUtil {
 	/**
@@ -191,6 +189,34 @@ public static void debugDisplayImage(Image image) {
 	// Create a paint handler for the canvas
 	canvas.addPaintListener(e -> e.gc.drawImage(image, 10, 10));
 	SwtTestUtil.openShell(shell);
+	while (!shell.isDisposed()) {
+		if (!display.readAndDispatch())
+			display.sleep();
+	}
+}
+
+/**
+ * When debugging a test that draws to an Image it can be useful to see the
+ * image in a shell. Call this method with the image to open it.
+ *
+ * This method is blocking, so should not be called in committed code or else
+ * the test will hang.
+ *
+ * @param images to display
+ */
+public static void debugDisplayImages(Image[] images, int numColumns) {
+	Display display = (Display) images[0].getDevice();
+	Shell shell = new Shell(display);
+	shell.setLayout(new GridLayout(numColumns, false));
+
+	for (Image image : images) {
+		Label label = new Label(shell, 0);
+		label.setImage(image);
+	}
+
+	shell.pack();
+	SwtTestUtil.openShell(shell);
+
 	while (!shell.isDisposed()) {
 		if (!display.readAndDispatch())
 			display.sleep();
