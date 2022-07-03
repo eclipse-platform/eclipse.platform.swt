@@ -15,6 +15,7 @@
 package org.eclipse.swt.tests.junit;
 
 
+import static org.eclipse.swt.graphics.ImageDataTestHelper.*;
 import static org.eclipse.swt.tests.junit.SwtTestUtil.assertSWTProblem;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
@@ -25,11 +26,14 @@ import static org.junit.Assert.fail;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTException;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.ImageData;
+import org.eclipse.swt.graphics.ImageDataTestHelper;
 import org.eclipse.swt.graphics.PaletteData;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.Display;
@@ -42,10 +46,101 @@ import org.junit.Test;
  * @see org.eclipse.swt.graphics.ImageData
  */
 public class Test_org_eclipse_swt_graphics_ImageData {
+	static int[] indexedDepths = new int[]{1, 2, 4, 8};
+	static int[] directDepths  = new int[]{8, 16, 24, 32};
 
 @Before
 public void setUp() {
 	imageData = new ImageData(IMAGE_DIMENSION, IMAGE_DIMENSION, 32, new PaletteData(0xFF0000, 0xFF00, 0xFF));
+}
+
+/**
+ * Tests {@link ImageData#blit}:
+ * creates a random image and tests over all combinations of depth,format,scale
+ */
+@Test
+public void test_blit() {
+	List<BlitTestInfo> tests = new ArrayList<>();
+
+	// Compose a list of all supported formats
+	for (int iByteOrder = 0; iByteOrder < 2; iByteOrder++) {
+		int byteOrder = (iByteOrder == 0) ? MSB_FIRST : LSB_FIRST;
+
+		for (int scale = 1; scale < 3; scale++) {
+			for (int depth : indexedDepths) {
+				tests.add(new BlitTestInfo(depth, scale, byteOrder, false));
+			}
+
+			for (int depth : directDepths) {
+				tests.add(new BlitTestInfo(depth, scale, byteOrder, true));
+			}
+		}
+	}
+
+	// Test all combinations
+	for (BlitTestInfo dstInfo : tests)
+	{
+		for (BlitTestInfo srcInfo : tests)
+		{
+			if (srcInfo.isDirect && !dstInfo.isDirect) {
+				// (direct -> indexed) is not supported in SWT
+				continue;
+			}
+
+			if (!srcInfo.isDirect && dstInfo.isDirect && (srcInfo.scale != dstInfo.scale)) {
+				// (indexed -> direct) is only supported for equal sizes
+				continue;
+			}
+
+			if (!srcInfo.isDirect && !dstInfo.isDirect && (srcInfo.depth > dstInfo.depth)) {
+				// Indexed depth downgrade is not supported in SWT
+				continue;
+			}
+
+			try {
+				BlitTestInfo actual = ImageDataTestHelper.blit(srcInfo, dstInfo.depth, dstInfo.scale, dstInfo.byteOrder, dstInfo.isDirect);
+				ImageDataTestHelper.assertImageDataEqual(srcInfo.imageData, actual.imageData, dstInfo.imageData);
+			} catch (Error e) {
+				String error = "ImageData.blit() error with src=" + srcInfo + " dst=" + dstInfo;
+				throw new Error(error, e);
+			} catch (RuntimeException e) {
+				String error = "ImageData.blit() error with src=" + srcInfo + " dst=" + dstInfo;
+				throw new RuntimeException(error, e);
+			}
+		}
+	}
+}
+
+/**
+ * Tests {@link ImageData#blit}:
+ * Ensures that (MSB_FIRST, LSB_FIRST) round trip produces original.
+ */
+@Test
+public void test_blit_MsbLsb() {
+	List<BlitTestInfo> tests = new ArrayList<>();
+	{
+		for (int depth : indexedDepths) {
+			tests.add(new BlitTestInfo(depth, 1, MSB_FIRST, false));
+		}
+
+		for (int depth : directDepths) {
+			tests.add(new BlitTestInfo(depth, 1, MSB_FIRST, true));
+		}
+	}
+
+	for (BlitTestInfo src : tests) {
+		try {
+			BlitTestInfo lsb = ImageDataTestHelper.blit(src, src.depth, src.scale, LSB_FIRST, src.isDirect);
+			BlitTestInfo msb = ImageDataTestHelper.blit(lsb, lsb.depth, lsb.scale, MSB_FIRST, lsb.isDirect);
+			ImageDataTestHelper.assertImageDataEqual(src.imageData, msb.imageData, src.imageData);
+		} catch (Error e) {
+			String error = "ImageData.blit() error with src=" + src;
+			throw new Error(error, e);
+		} catch (RuntimeException e) {
+			String error = "ImageData.blit() error with src=" + src;
+			throw new RuntimeException(error, e);
+		}
+	}
 }
 
 @Test
