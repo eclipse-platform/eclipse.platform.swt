@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2015 IBM Corporation and others.
+ * Copyright (c) 2000, 2022 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -14,7 +14,10 @@
 package org.eclipse.swt.widgets;
 
 
+import java.util.*;
+
 import org.eclipse.swt.*;
+import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.win32.*;
 
 /**
@@ -42,6 +45,10 @@ import org.eclipse.swt.internal.win32.*;
  */
 public  class MessageBox extends Dialog {
 	String message = "";
+	private int buttonBits = 0;
+	private long cbtHook;
+	private LinkedList<Long> hwdButtons = new LinkedList<>();
+	private Map<Integer, String> labels;
 
 /**
  * Constructs a new instance of this class given only its parent.
@@ -99,6 +106,88 @@ public MessageBox (Shell parent) {
 public MessageBox (Shell parent, int style) {
 	super (parent, checkStyle (parent, checkStyle (style)));
 	checkSubclass ();
+	/* Create the callback hook */
+	int threadId = OS.GetCurrentThreadId ();
+	Callback cbtCallback = new Callback (this, "CBTProc", 3); //$NON-NLS-1$
+	cbtHook = OS.SetWindowsHookEx (OS.WH_CBT, cbtCallback.getAddress (), 0, threadId);
+}
+
+long CBTProc(long nCode, long wParam, long lParam) {
+	char[] buffer = new char[128];
+	int length = OS.GetClassName(wParam, buffer, buffer.length);
+	String className = new String(buffer, 0, length);
+	if (labels != null) {
+		switch ((int) nCode) {
+		/* Cache the button handles in the order of creation */
+		case OS.HCBT_CREATEWND: {
+			if (className.equals("Button")) { //$NON-NLS-1$
+				hwdButtons.add(wParam);
+			}
+			break;
+		}
+		/* The system is about to activate a window */
+		case OS.HCBT_ACTIVATE: {
+			if (className.equals("#32770")) { //$NON-NLS-1$
+				switch (buttonBits) {
+				case OS.MB_OKCANCEL:
+					if (labels.get(SWT.CANCEL) != null)
+						OS.SetWindowText(hwdButtons.get(1), new TCHAR(0, labels.get(SWT.CANCEL), true));
+				case OS.MB_OK:
+					if (labels.get(SWT.OK) != null)
+						OS.SetWindowText(hwdButtons.get(0), new TCHAR(0, labels.get(SWT.OK), true));
+					break;
+				case OS.MB_YESNOCANCEL:
+					if (labels.get(SWT.CANCEL) != null)
+						OS.SetWindowText(hwdButtons.get(2), new TCHAR(0, labels.get(SWT.CANCEL), true));
+				case OS.MB_YESNO:
+					if (labels.get(SWT.YES) != null)
+						OS.SetWindowText(hwdButtons.get(0), new TCHAR(0, labels.get(SWT.YES), true));
+					if (labels.get(SWT.NO) != null)
+						OS.SetWindowText(hwdButtons.get(1), new TCHAR(0, labels.get(SWT.NO), true));
+					break;
+				case OS.MB_RETRYCANCEL:
+					if (labels.get(SWT.RETRY) != null)
+						OS.SetWindowText(hwdButtons.get(0), new TCHAR(0, labels.get(SWT.RETRY), true));
+					if (labels.get(SWT.CANCEL) != null)
+						OS.SetWindowText(hwdButtons.get(1), new TCHAR(0, labels.get(SWT.CANCEL), true));
+					break;
+				case OS.MB_ABORTRETRYIGNORE:
+					if (labels.get(SWT.ABORT) != null)
+						OS.SetWindowText(hwdButtons.get(0), new TCHAR(0, labels.get(SWT.ABORT), true));
+					if (labels.get(SWT.RETRY) != null)
+						OS.SetWindowText(hwdButtons.get(1), new TCHAR(0, labels.get(SWT.RETRY), true));
+					if (labels.get(SWT.IGNORE) != null)
+						OS.SetWindowText(hwdButtons.get(2), new TCHAR(0, labels.get(SWT.IGNORE), true));
+					break;
+				default:
+					break;
+				}
+			}
+			break;
+		}
+		}
+	}
+	return OS.CallNextHookEx(cbtHook, (int) nCode, wParam, lParam);
+}
+
+/**
+ * Set custom text for <code>MessageDialog</code>'s buttons:
+ *
+ * @param labels a <code>Map</code> where a valid 'key' is from below listed
+ *               styles:<ul>
+ * <li>SWT#OK</li>
+ * <li>SWT#CANCEL</li>
+ * <li>SWT#YES</li>
+ * <li>SWT#NO</li>
+ * <li>SWT#ABORT</li>
+ * <li>SWT#RETRY</li>
+ * <li>SWT#IGNORE</li>
+ * </ul>
+ * @since 3.121
+ */
+public void setButtonLabels(Map<Integer, String> labels) {
+	if (labels == null) error (SWT.ERROR_NULL_ARGUMENT);
+	this.labels = labels;
 }
 
 static int checkStyle (int style) {
@@ -137,7 +226,6 @@ public String getMessage () {
 public int open () {
 
 	/* Compute the MessageBox style */
-	int buttonBits = 0;
 	if ((style & SWT.OK) == SWT.OK) buttonBits = OS.MB_OK;
 	if ((style & (SWT.OK | SWT.CANCEL)) == (SWT.OK | SWT.CANCEL)) buttonBits = OS.MB_OKCANCEL;
 	if ((style & (SWT.YES | SWT.NO)) == (SWT.YES | SWT.NO)) buttonBits = OS.MB_YESNO;

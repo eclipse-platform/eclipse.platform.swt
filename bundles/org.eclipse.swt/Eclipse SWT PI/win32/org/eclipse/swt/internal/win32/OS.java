@@ -557,6 +557,7 @@ public class OS extends C {
 	public static final int GW_HWNDPREV = 0x3;
 	public static final int GW_OWNER = 0x4;
 	public static final long HBMMENU_CALLBACK = -1;
+	public static final int HCBT_ACTIVATE = 5;
 	public static final int HCBT_CREATEWND = 3;
 	public static final int HCF_HIGHCONTRASTON = 0x1;
 	public static final int HDF_BITMAP = 0x2000;
