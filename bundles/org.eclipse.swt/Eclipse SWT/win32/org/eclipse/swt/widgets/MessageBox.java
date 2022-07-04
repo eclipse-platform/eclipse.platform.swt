@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2015 IBM Corporation and others.
+ * Copyright (c) 2000, 2022 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -14,7 +14,10 @@
 package org.eclipse.swt.widgets;
 
 
+import java.util.*;
+
 import org.eclipse.swt.*;
+import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.win32.*;
 
 /**
@@ -42,6 +45,8 @@ import org.eclipse.swt.internal.win32.*;
  */
 public  class MessageBox extends Dialog {
 	String message = "";
+	private long cbtHook;
+	private Map<Integer, String> labels;
 
 /**
  * Constructs a new instance of this class given only its parent.
@@ -99,6 +104,70 @@ public MessageBox (Shell parent) {
 public MessageBox (Shell parent, int style) {
 	super (parent, checkStyle (parent, checkStyle (style)));
 	checkSubclass ();
+}
+
+long CBTProc (long nCode, long wParam, long lParam) {
+	if (hasCustomLabels () && (int) nCode == OS.HCBT_ACTIVATE) {
+		/* The system is about to activate MessageBox window */
+		if((this.style & SWT.OK) != 0) {
+			setButtonText (wParam, SWT.OK, OS.IDOK);
+		}
+		if((this.style & SWT.CANCEL) != 0) {
+			setButtonText (wParam, SWT.CANCEL, OS.IDCANCEL);
+		}
+		if((this.style & SWT.YES) != 0) {
+			setButtonText (wParam, SWT.YES, OS.IDYES);
+		}
+		if((this.style & SWT.NO) != 0) {
+			setButtonText (wParam, SWT.NO, OS.IDNO);
+		}
+		if((this.style & SWT.ABORT) != 0) {
+			setButtonText (wParam, SWT.ABORT, OS.IDABORT);
+		}
+		if((this.style & SWT.RETRY) != 0) {
+			setButtonText (wParam, SWT.RETRY, OS.IDRETRY);
+		}
+		if((this.style & SWT.IGNORE) != 0) {
+			setButtonText (wParam, SWT.IGNORE, OS.IDIGNORE);
+		}
+	}
+	return OS.CallNextHookEx (cbtHook, (int) nCode, wParam, lParam);
+}
+
+boolean hasCustomLabels () {
+	return labels != null && labels.size () > 0;
+}
+
+void setButtonText (long wParam, int style, int id) {
+	if (labels.get (style) != null) {
+		long hwnd = OS.GetDlgItem (wParam, id);
+		if (hwnd != 0) {
+			OS.SetWindowText (hwnd, new TCHAR (0, labels.get (style), true));
+		}
+	}
+}
+
+/**
+ * Set custom text for <code>MessageDialog</code>'s buttons:
+ *
+ * @param labels a <code>Map</code> where a valid 'key' is from below listed
+ *               styles:<ul>
+ * <li>SWT#OK</li>
+ * <li>SWT#CANCEL</li>
+ * <li>SWT#YES</li>
+ * <li>SWT#NO</li>
+ * <li>SWT#ABORT</li>
+ * <li>SWT#RETRY</li>
+ * <li>SWT#IGNORE</li>
+ * </ul>
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if labels is null</li>
+ * </ul>
+ * @since 3.121
+ */
+public void setButtonLabels (Map<Integer, String> labels) {
+	if (labels == null) error (SWT.ERROR_NULL_ARGUMENT);
+	this.labels = labels;
 }
 
 static int checkStyle (int style) {
@@ -199,7 +268,17 @@ public int open () {
 	TCHAR buffer1 = new TCHAR (0, message, true);
 	TCHAR buffer2 = new TCHAR (0, title, true);
 	display.externalEventLoop = true;
+
+	Callback cbtCallback = null;
+	if (hasCustomLabels ()) {
+		cbtCallback = new Callback (this, "CBTProc", 3); //$NON-NLS-1$
+		cbtHook = OS.SetWindowsHookEx (OS.WH_CBT, cbtCallback.getAddress (), 0, OS.GetCurrentThreadId ());
+	}
 	int code = OS.MessageBox (hwndOwner, buffer1, buffer2, bits);
+	if (cbtHook != 0) OS.UnhookWindowsHookEx (cbtHook);
+	cbtHook = 0;
+	if (cbtCallback != null) cbtCallback.dispose();
+
 	display.externalEventLoop = false;
 	display.sendPostExternalEventDispatchEvent ();
 
