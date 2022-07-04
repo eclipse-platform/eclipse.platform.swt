@@ -557,6 +557,7 @@ public class OS extends C {
 	public static final int GW_HWNDPREV = 0x3;
 	public static final int GW_OWNER = 0x4;
 	public static final long HBMMENU_CALLBACK = -1;
+	public static final int HCBT_ACTIVATE = 5;
 	public static final int HCBT_CREATEWND = 3;
 	public static final int HCF_HIGHCONTRASTON = 0x1;
 	public static final int HDF_BITMAP = 0x2000;
@@ -647,7 +648,9 @@ public class OS extends C {
 	public static final int IDC_SIZEWE = 0x7f84;
 	public static final int IDC_UPARROW = 0x7f04;
 	public static final int IDC_WAIT = 0x7f02;
+	public static final int IDCANCEL = 0x2;
 	public static final int IDI_APPLICATION = 32512;
+	public static final int IDIGNORE = 0x5;
 	public static final int IDNO = 0x7;
 	public static final int IDOK = 0x1;
 	public static final int IDRETRY = 0x4;
