@@ -47,7 +47,6 @@ public  class MessageBox extends Dialog {
 	String message = "";
 	private int buttonBits = 0;
 	private long cbtHook;
-	private LinkedList<Long> hwdButtons = new LinkedList<>();
 	private Map<Integer, String> labels;
 
 /**
@@ -106,68 +105,48 @@ public MessageBox (Shell parent) {
 public MessageBox (Shell parent, int style) {
 	super (parent, checkStyle (parent, checkStyle (style)));
 	checkSubclass ();
-	/* Create the callback hook */
-	int threadId = OS.GetCurrentThreadId ();
-	Callback cbtCallback = new Callback (this, "CBTProc", 3); //$NON-NLS-1$
-	cbtHook = OS.SetWindowsHookEx (OS.WH_CBT, cbtCallback.getAddress (), 0, threadId);
 }
 
 long CBTProc(long nCode, long wParam, long lParam) {
-	char[] buffer = new char[128];
-	int length = OS.GetClassName(wParam, buffer, buffer.length);
-	String className = new String(buffer, 0, length);
-	if (labels != null) {
-		switch ((int) nCode) {
-		/* Cache the button handles in the order of creation */
-		case OS.HCBT_CREATEWND: {
-			if (className.equals("Button")) { //$NON-NLS-1$
-				hwdButtons.add(wParam);
-			}
+	if (labels != null && (int) nCode == OS.HCBT_ACTIVATE) {
+		/* The system is about to activate MessageBox window */
+		switch (buttonBits) {
+		case OS.MB_OKCANCEL:
+			setButtonText(wParam, SWT.CANCEL, OS.IDCANCEL);
+		case OS.MB_OK:
+			setButtonText(wParam, SWT.OK, OS.IDOK);
+			break;
+		case OS.MB_YESNOCANCEL:
+			setButtonText(wParam, SWT.CANCEL, OS.IDCANCEL);
+		case OS.MB_YESNO:
+			setButtonText(wParam, SWT.YES, OS.IDYES);
+			setButtonText(wParam, SWT.NO, OS.IDNO);
+			break;
+		case OS.MB_RETRYCANCEL:
+			setButtonText(wParam, SWT.RETRY, OS.IDRETRY);
+			setButtonText(wParam, SWT.CANCEL, OS.IDCANCEL);
+			break;
+		case OS.MB_ABORTRETRYIGNORE:
+			setButtonText(wParam, SWT.ABORT, OS.IDABORT);
+			setButtonText(wParam, SWT.RETRY, OS.IDRETRY);
+			setButtonText(wParam, SWT.IGNORE, OS.IDIGNORE);
+			break;
+		default:
 			break;
 		}
-		/* The system is about to activate a window */
-		case OS.HCBT_ACTIVATE: {
-			if (className.equals("#32770")) { //$NON-NLS-1$
-				switch (buttonBits) {
-				case OS.MB_OKCANCEL:
-					if (labels.get(SWT.CANCEL) != null)
-						OS.SetWindowText(hwdButtons.get(1), new TCHAR(0, labels.get(SWT.CANCEL), true));
-				case OS.MB_OK:
-					if (labels.get(SWT.OK) != null)
-						OS.SetWindowText(hwdButtons.get(0), new TCHAR(0, labels.get(SWT.OK), true));
-					break;
-				case OS.MB_YESNOCANCEL:
-					if (labels.get(SWT.CANCEL) != null)
-						OS.SetWindowText(hwdButtons.get(2), new TCHAR(0, labels.get(SWT.CANCEL), true));
-				case OS.MB_YESNO:
-					if (labels.get(SWT.YES) != null)
-						OS.SetWindowText(hwdButtons.get(0), new TCHAR(0, labels.get(SWT.YES), true));
-					if (labels.get(SWT.NO) != null)
-						OS.SetWindowText(hwdButtons.get(1), new TCHAR(0, labels.get(SWT.NO), true));
-					break;
-				case OS.MB_RETRYCANCEL:
-					if (labels.get(SWT.RETRY) != null)
-						OS.SetWindowText(hwdButtons.get(0), new TCHAR(0, labels.get(SWT.RETRY), true));
-					if (labels.get(SWT.CANCEL) != null)
-						OS.SetWindowText(hwdButtons.get(1), new TCHAR(0, labels.get(SWT.CANCEL), true));
-					break;
-				case OS.MB_ABORTRETRYIGNORE:
-					if (labels.get(SWT.ABORT) != null)
-						OS.SetWindowText(hwdButtons.get(0), new TCHAR(0, labels.get(SWT.ABORT), true));
-					if (labels.get(SWT.RETRY) != null)
-						OS.SetWindowText(hwdButtons.get(1), new TCHAR(0, labels.get(SWT.RETRY), true));
-					if (labels.get(SWT.IGNORE) != null)
-						OS.SetWindowText(hwdButtons.get(2), new TCHAR(0, labels.get(SWT.IGNORE), true));
-					break;
-				default:
-					break;
-				}
-			}
-			break;
-		}
-		}
+		/* Exit the CBT hook */
+		OS.UnhookWindowsHookEx(cbtHook);
 	}
 	return OS.CallNextHookEx(cbtHook, (int) nCode, wParam, lParam);
+}
+
+void setButtonText(long wParam, int style, int id) {
+	if (labels.get(style) != null) {
+		long hwdButton = OS.GetDlgItem(wParam, id);
+		if (hwdButton != 0) {
+			OS.SetWindowText(hwdButton, new TCHAR(0, labels.get(style), true));
+		}
+	}
 }
 
 /**
@@ -287,7 +266,13 @@ public int open () {
 	TCHAR buffer1 = new TCHAR (0, message, true);
 	TCHAR buffer2 = new TCHAR (0, title, true);
 	display.externalEventLoop = true;
+
+	/* Create the callback hook */
+	Callback cbtCallback = new Callback (this, "CBTProc", 3); //$NON-NLS-1$
+	cbtHook = OS.SetWindowsHookEx (OS.WH_CBT, cbtCallback.getAddress (), 0, OS.GetCurrentThreadId ());
+
 	int code = OS.MessageBox (hwndOwner, buffer1, buffer2, bits);
+	cbtCallback.dispose();
 	display.externalEventLoop = false;
 	display.sendPostExternalEventDispatchEvent ();
 
