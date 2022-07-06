@@ -268,11 +268,14 @@ public int open () {
 	display.externalEventLoop = true;
 
 	/* Create the callback hook */
-	Callback cbtCallback = new Callback (this, "CBTProc", 3); //$NON-NLS-1$
-	cbtHook = OS.SetWindowsHookEx (OS.WH_CBT, cbtCallback.getAddress (), 0, OS.GetCurrentThreadId ());
+	Callback cbtCallback = null;
+	if (labels != null) {
+		cbtCallback = new Callback (this, "CBTProc", 3); //$NON-NLS-1$
+		cbtHook = OS.SetWindowsHookEx (OS.WH_CBT, cbtCallback.getAddress (), 0, OS.GetCurrentThreadId ());
+	}
 
 	int code = OS.MessageBox (hwndOwner, buffer1, buffer2, bits);
-	cbtCallback.dispose();
+	if (cbtCallback != null) cbtCallback.dispose();
 	display.externalEventLoop = false;
 	display.sendPostExternalEventDispatchEvent ();
 
