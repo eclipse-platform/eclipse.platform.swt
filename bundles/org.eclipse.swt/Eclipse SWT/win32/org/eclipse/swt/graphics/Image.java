@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2020 IBM Corporation and others.
+ * Copyright (c) 2000, 2022 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -1797,8 +1797,9 @@ static long [] init(Device device, Image image, ImageData i) {
 					}
 					break;
 				case 32:
-					newDepth = 24;
-					newPalette = new PaletteData(0xFF, 0xFF00, 0xFF0000);
+					if (!(redMask == 0xFF00 && greenMask == 0xFF0000 && blueMask == 0xFF000000)) {
+						newPalette = new PaletteData(0xFF00, 0xFF0000, 0xFF000000);
+					}
 					break;
 				default:
 					SWT.error(SWT.ERROR_UNSUPPORTED_DEPTH);
