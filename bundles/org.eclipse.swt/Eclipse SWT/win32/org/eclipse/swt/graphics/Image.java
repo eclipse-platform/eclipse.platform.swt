@@ -1794,6 +1794,12 @@ static long [] init(Device device, Image image, ImageData i) {
 		i = indexToIndex(i, 4);
 	}
 
+	/* Windows does not support 16-bit palette images. Convert to RGB. */
+	if ((i.depth == 16) && !i.palette.isDirect) {
+		PaletteData newPalette = new PaletteData(0xFF, 0xFF00, 0xFF0000);
+		i = indexToDirect(i, 24, newPalette, ImageData.MSB_FIRST);
+	}
+
 	boolean hasAlpha = i.alpha != -1 || i.alphaData != null;
 
 	/*

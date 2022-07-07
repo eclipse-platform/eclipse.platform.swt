@@ -46,7 +46,7 @@ import org.junit.Test;
  * @see org.eclipse.swt.graphics.ImageData
  */
 public class Test_org_eclipse_swt_graphics_ImageData {
-	static int[] indexedDepths = new int[]{1, 2, 4, 8};
+	static int[] indexedDepths = new int[]{1, 2, 4, 8, 16};
 	static int[] directDepths  = new int[]{8, 16, 24, 32};
 
 @Before
