@@ -997,7 +997,7 @@ private NSBitmapImageRep createRepresentation(ImageData imageData, AlphaInfo alp
 	NSBitmapImageRep rep = (NSBitmapImageRep)new NSBitmapImageRep().alloc();
 
 	PaletteData palette = imageData.palette;
-	if (!(((imageData.depth == 1 || imageData.depth == 2 || imageData.depth == 4 || imageData.depth == 8) && !palette.isDirect) ||
+	if (!(((imageData.depth == 1 || imageData.depth == 2 || imageData.depth == 4 || imageData.depth == 8 || imageData.depth == 16) && !palette.isDirect) ||
 			((imageData.depth == 8) || (imageData.depth == 16 || imageData.depth == 24 || imageData.depth == 32) && palette.isDirect)))
 				SWT.error(SWT.ERROR_UNSUPPORTED_DEPTH);
 

@@ -1671,6 +1671,7 @@ private static final int
 	TYPE_GENERIC_32_MSB = 4,
 	TYPE_GENERIC_32_LSB = 5,
 	// palette indexed color formats
+	TYPE_INDEX_16_LSB = 11,
 	TYPE_INDEX_8 = 6,
 	TYPE_INDEX_4 = 7,
 	TYPE_INDEX_2 = 8,
@@ -2025,19 +2026,24 @@ static void blit(
 	/*** Prepare source-related data ***/
 	final int stype;
 	switch (srcDepth) {
+		case 16:
+			stype = TYPE_INDEX_16_LSB;
+			if ((srcStride % 2) != 0) {
+				// Such strides don't really make sense and are not expected to occur.
+				// Not supported at the moment.
+				return;
+			}
+			break;
 		case 8:
 			stype = TYPE_INDEX_8;
 			break;
 		case 4:
-			srcStride <<= 1;
 			stype = TYPE_INDEX_4;
 			break;
 		case 2:
-			srcStride <<= 2;
 			stype = TYPE_INDEX_2;
 			break;
 		case 1:
-			srcStride <<= 3;
 			stype = (srcOrder == MSB_FIRST) ? TYPE_INDEX_1_MSB : TYPE_INDEX_1_LSB;
 			break;
 		default:
@@ -2049,28 +2055,37 @@ static void blit(
 	/*** Prepare destination-related data ***/
 	final int dtype;
 	switch (destDepth) {
+		case 16:
+			dtype = TYPE_INDEX_16_LSB;
+			if ((destStride % 2) != 0) {
+				// Such strides don't really make sense and are not expected to occur.
+				// Not supported at the moment.
+				return;
+			}
+			break;
 		case 8:
 			dtype = TYPE_INDEX_8;
 			break;
 		case 4:
-			destStride <<= 1;
 			dtype = TYPE_INDEX_4;
 			break;
 		case 2:
-			destStride <<= 2;
 			dtype = TYPE_INDEX_2;
 			break;
 		case 1:
-			destStride <<= 3;
 			dtype = (destOrder == MSB_FIRST) ? TYPE_INDEX_1_MSB : TYPE_INDEX_1_LSB;
 			break;
 		default:
 			//throw new IllegalArgumentException("Invalid source type");
 			return;
 	}
-	int dpr = ((flipY) ? dhm1 : 0) * destStride + ((flipX) ? dwm1 : 0);
+
+	final int srcPixelsPerStride = srcStride * 8 / srcDepth;
+	final int dstPixelsPerStride = destStride * 8 / destDepth;
+
+	int dpr = ((flipY) ? dhm1 : 0) * dstPixelsPerStride + ((flipX) ? dwm1 : 0);
 	final int dprxi = (flipX) ? -1 : 1;
-	final int dpryi = (flipY) ? -destStride : destStride;
+	final int dpryi = (flipY) ? -dstPixelsPerStride : dstPixelsPerStride;
 
 	/*** Blit ***/
 	int dp = dpr;
@@ -2079,8 +2094,17 @@ static void blit(
 	if (stype == dtype) {
 		/*** Fast blit (copy w/ mapping) ***/
 		switch (stype) {
+			case TYPE_INDEX_16_LSB:
+				for (int dy = destHeight, sfy = sfyi; dy > 0; --dy, sp = spr += (sfy >>> 16) * srcPixelsPerStride, sfy = (sfy & 0xffff) + sfyi, dp = dpr += dpryi) {
+					for (int dx = destWidth, sfx = sfxi; dx > 0; --dx, dp += dprxi, sfx = (sfx & 0xffff) + sfxi) {
+						destData[2*dp] = srcData[2*sp];
+						destData[2*dp+1] = srcData[2*sp+1];
+						sp += (sfx >>> 16);
+					}
+				}
+				break;
 			case TYPE_INDEX_8:
-				for (int dy = destHeight, sfy = sfyi; dy > 0; --dy, sp = spr += (sfy >>> 16) * srcStride, sfy = (sfy & 0xffff) + sfyi, dp = dpr += dpryi) {
+				for (int dy = destHeight, sfy = sfyi; dy > 0; --dy, sp = spr += (sfy >>> 16) * srcPixelsPerStride, sfy = (sfy & 0xffff) + sfyi, dp = dpr += dpryi) {
 					for (int dx = destWidth, sfx = sfxi; dx > 0; --dx, dp += dprxi, sfx = (sfx & 0xffff) + sfxi) {
 						destData[dp] = srcData[sp];
 						sp += (sfx >>> 16);
@@ -2088,7 +2112,7 @@ static void blit(
 				}
 				break;
 			case TYPE_INDEX_4:
-				for (int dy = destHeight, sfy = sfyi; dy > 0; --dy, sp = spr += (sfy >>> 16) * srcStride, sfy = (sfy & 0xffff) + sfyi, dp = dpr += dpryi) {
+				for (int dy = destHeight, sfy = sfyi; dy > 0; --dy, sp = spr += (sfy >>> 16) * srcPixelsPerStride, sfy = (sfy & 0xffff) + sfyi, dp = dpr += dpryi) {
 					for (int dx = destWidth, sfx = sfxi; dx > 0; --dx, dp += dprxi, sfx = (sfx & 0xffff) + sfxi) {
 						final int v;
 						if ((sp & 1) != 0) v = srcData[sp >> 1] & 0x0f;
@@ -2100,7 +2124,7 @@ static void blit(
 				}
 				break;
 			case TYPE_INDEX_2:
-				for (int dy = destHeight, sfy = sfyi; dy > 0; --dy, sp = spr += (sfy >>> 16) * srcStride, sfy = (sfy & 0xffff) + sfyi, dp = dpr += dpryi) {
+				for (int dy = destHeight, sfy = sfyi; dy > 0; --dy, sp = spr += (sfy >>> 16) * srcPixelsPerStride, sfy = (sfy & 0xffff) + sfyi, dp = dpr += dpryi) {
 					for (int dx = destWidth, sfx = sfxi; dx > 0; --dx, dp += dprxi, sfx = (sfx & 0xffff) + sfxi) {
 						final int index = (srcData[sp >> 2] >>> (6 - (sp & 3) * 2)) & 0x03;
 						sp += (sfx >>> 16);
@@ -2110,7 +2134,7 @@ static void blit(
 				}
 				break;
 			case TYPE_INDEX_1_MSB:
-				for (int dy = destHeight, sfy = sfyi; dy > 0; --dy, sp = spr += (sfy >>> 16) * srcStride, sfy = (sfy & 0xffff) + sfyi, dp = dpr += dpryi) {
+				for (int dy = destHeight, sfy = sfyi; dy > 0; --dy, sp = spr += (sfy >>> 16) * srcPixelsPerStride, sfy = (sfy & 0xffff) + sfyi, dp = dpr += dpryi) {
 					for (int dx = destWidth, sfx = sfxi; dx > 0; --dx, dp += dprxi, sfx = (sfx & 0xffff) + sfxi) {
 						final int index = (srcData[sp >> 3] >>> (7 - (sp & 7))) & 0x01;
 						sp += (sfx >>> 16);
@@ -2120,7 +2144,7 @@ static void blit(
 				}
 				break;
 			case TYPE_INDEX_1_LSB:
-				for (int dy = destHeight, sfy = sfyi; dy > 0; --dy, sp = spr += (sfy >>> 16) * srcStride, sfy = (sfy & 0xffff) + sfyi, dp = dpr += dpryi) {
+				for (int dy = destHeight, sfy = sfyi; dy > 0; --dy, sp = spr += (sfy >>> 16) * srcPixelsPerStride, sfy = (sfy & 0xffff) + sfyi, dp = dpr += dpryi) {
 					for (int dx = destWidth, sfx = sfxi; dx > 0; --dx, dp += dprxi, sfx = (sfx & 0xffff) + sfxi) {
 						final int index = (srcData[sp >> 3] >>> (sp & 7)) & 0x01;
 						sp += (sfx >>> 16);
@@ -2133,43 +2157,45 @@ static void blit(
 	} else {
 		/*** Convert between indexed modes using mapping and mask ***/
 		for (int dy = destHeight, sfy = sfyi; dy > 0; --dy,
-				sp = spr += (sfy >>> 16) * srcStride,
+				sp = spr += (sfy >>> 16) * srcPixelsPerStride,
 				sfy = (sfy & 0xffff) + sfyi,
 				dp = dpr += dpryi) {
 			for (int dx = destWidth, sfx = sfxi; dx > 0; --dx,
 					dp += dprxi,
+					sp += (sfx >>> 16),
 					sfx = (sfx & 0xffff) + sfxi) {
 				int index;
 				/*** READ NEXT PIXEL ***/
 				switch (stype) {
+					case TYPE_INDEX_16_LSB:
+						index = (((srcData[2*sp+1] & 0xff) << 8) | (srcData[2*sp] & 0xff)) & 0xffff;
+						break;
 					case TYPE_INDEX_8:
 						index = srcData[sp] & 0xff;
-						sp += (sfx >>> 16);
 						break;
 					case TYPE_INDEX_4:
 						if ((sp & 1) != 0) index = srcData[sp >> 1] & 0x0f;
 						else index = (srcData[sp >> 1] >>> 4) & 0x0f;
-						sp += (sfx >>> 16);
 						break;
 					case TYPE_INDEX_2:
 						index = (srcData[sp >> 2] >>> (6 - (sp & 3) * 2)) & 0x03;
-						sp += (sfx >>> 16);
 						break;
 					case TYPE_INDEX_1_MSB:
 						index = (srcData[sp >> 3] >>> (7 - (sp & 7))) & 0x01;
-						sp += (sfx >>> 16);
 						break;
 					case TYPE_INDEX_1_LSB:
 						index = (srcData[sp >> 3] >>> (sp & 7)) & 0x01;
-						sp += (sfx >>> 16);
 						break;
 					default:
 						return;
 				}
-				index = index & 0xff;
 
 				/*** WRITE NEXT PIXEL ***/
 				switch (dtype) {
+					case TYPE_INDEX_16_LSB:
+						destData[2*dp]   = (byte) (index & 0xff);
+						destData[2*dp+1] = (byte) (index >>> 8);
+						break;
 					case TYPE_INDEX_8:
 						destData[dp] = (byte) index;
 						break;
@@ -2256,19 +2282,24 @@ static void blit(
 	/*** Prepare source-related data ***/
 	final int stype;
 	switch (srcDepth) {
+		case 16:
+			stype = TYPE_INDEX_16_LSB;
+			if ((srcStride % 2) != 0) {
+				// Such strides don't really make sense and are not expected to occur.
+				// Not supported at the moment.
+				return;
+			}
+			break;
 		case 8:
 			stype = TYPE_INDEX_8;
 			break;
 		case 4:
-			srcStride <<= 1;
 			stype = TYPE_INDEX_4;
 			break;
 		case 2:
-			srcStride <<= 2;
 			stype = TYPE_INDEX_2;
 			break;
 		case 1:
-			srcStride <<= 3;
 			stype = (srcOrder == MSB_FIRST) ? TYPE_INDEX_1_MSB : TYPE_INDEX_1_LSB;
 			break;
 		default:
@@ -2311,15 +2342,19 @@ static void blit(
 	final int destBlueWidth = getChannelWidth(destBlueMask, destBlueShift);
 	final int destBluePreShift = 8 - destBlueWidth;
 
+	final int srcPixelsPerStride = srcStride * 8 / srcDepth;
 	int spr = 0;
 	int dpr = 0;
 	int dp = 0;
 	int sp = 0;
 	int r = 0, g = 0, b = 0, index = 0;
-	for (int dy = srcHeight; dy > 0; --dy, sp = spr += srcStride, dp = dpr += destStride) {
+	for (int dy = srcHeight; dy > 0; --dy, sp = spr += srcPixelsPerStride, dp = dpr += destStride) {
 		for (int dx = srcWidth; dx > 0; --dx, sp++, dp += dbpp) {
 			/*** READ NEXT PIXEL ***/
 			switch (stype) {
+				case TYPE_INDEX_16_LSB:
+					index = (((srcData[2*sp+1] & 0xff) << 8) | (srcData[2*sp] & 0xff)) & 0xffff;
+					break;
 				case TYPE_INDEX_8:
 					index = srcData[sp] & 0xff;
 					break;
