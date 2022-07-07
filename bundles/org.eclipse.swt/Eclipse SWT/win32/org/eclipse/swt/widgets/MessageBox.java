@@ -45,7 +45,6 @@ import org.eclipse.swt.internal.win32.*;
  */
 public  class MessageBox extends Dialog {
 	String message = "";
-	private int buttonBits = 0;
 	private long cbtHook;
 	private Map<Integer, String> labels;
 
@@ -107,44 +106,43 @@ public MessageBox (Shell parent, int style) {
 	checkSubclass ();
 }
 
-long CBTProc(long nCode, long wParam, long lParam) {
-	if (labels != null && (int) nCode == OS.HCBT_ACTIVATE) {
+long CBTProc (long nCode, long wParam, long lParam) {
+	if (hasCustomLabels () && (int) nCode == OS.HCBT_ACTIVATE) {
 		/* The system is about to activate MessageBox window */
-		switch (buttonBits) {
-		case OS.MB_OKCANCEL:
-			setButtonText(wParam, SWT.CANCEL, OS.IDCANCEL);
-		case OS.MB_OK:
-			setButtonText(wParam, SWT.OK, OS.IDOK);
-			break;
-		case OS.MB_YESNOCANCEL:
-			setButtonText(wParam, SWT.CANCEL, OS.IDCANCEL);
-		case OS.MB_YESNO:
-			setButtonText(wParam, SWT.YES, OS.IDYES);
-			setButtonText(wParam, SWT.NO, OS.IDNO);
-			break;
-		case OS.MB_RETRYCANCEL:
-			setButtonText(wParam, SWT.RETRY, OS.IDRETRY);
-			setButtonText(wParam, SWT.CANCEL, OS.IDCANCEL);
-			break;
-		case OS.MB_ABORTRETRYIGNORE:
-			setButtonText(wParam, SWT.ABORT, OS.IDABORT);
-			setButtonText(wParam, SWT.RETRY, OS.IDRETRY);
-			setButtonText(wParam, SWT.IGNORE, OS.IDIGNORE);
-			break;
-		default:
-			break;
+		if((this.style & SWT.OK) != 0) {
+			setButtonText (wParam, SWT.OK, OS.IDOK);
 		}
-		/* Exit the CBT hook */
-		OS.UnhookWindowsHookEx(cbtHook);
+		if((this.style & SWT.CANCEL) != 0) {
+			setButtonText (wParam, SWT.CANCEL, OS.IDCANCEL);
+		}
+		if((this.style & SWT.YES) != 0) {
+			setButtonText (wParam, SWT.YES, OS.IDYES);
+		}
+		if((this.style & SWT.NO) != 0) {
+			setButtonText (wParam, SWT.NO, OS.IDNO);
+		}
+		if((this.style & SWT.ABORT) != 0) {
+			setButtonText (wParam, SWT.ABORT, OS.IDABORT);
+		}
+		if((this.style & SWT.RETRY) != 0) {
+			setButtonText (wParam, SWT.RETRY, OS.IDRETRY);
+		}
+		if((this.style & SWT.IGNORE) != 0) {
+			setButtonText (wParam, SWT.IGNORE, OS.IDIGNORE);
+		}
 	}
-	return OS.CallNextHookEx(cbtHook, (int) nCode, wParam, lParam);
+	return OS.CallNextHookEx (cbtHook, (int) nCode, wParam, lParam);
 }
 
-void setButtonText(long wParam, int style, int id) {
-	if (labels.get(style) != null) {
-		long hwdButton = OS.GetDlgItem(wParam, id);
-		if (hwdButton != 0) {
-			OS.SetWindowText(hwdButton, new TCHAR(0, labels.get(style), true));
+boolean hasCustomLabels () {
+	return labels != null && labels.size () > 0;
+}
+
+void setButtonText (long wParam, int style, int id) {
+	if (labels.get (style) != null) {
+		long hwnd = OS.GetDlgItem (wParam, id);
+		if (hwnd != 0) {
+			OS.SetWindowText (hwnd, new TCHAR (0, labels.get (style), true));
 		}
 	}
 }
@@ -162,9 +160,12 @@ void setButtonText(long wParam, int style, int id) {
  * <li>SWT#RETRY</li>
  * <li>SWT#IGNORE</li>
  * </ul>
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if labels is null</li>
+ * </ul>
  * @since 3.121
  */
-public void setButtonLabels(Map<Integer, String> labels) {
+public void setButtonLabels (Map<Integer, String> labels) {
 	if (labels == null) error (SWT.ERROR_NULL_ARGUMENT);
 	this.labels = labels;
 }
@@ -205,6 +206,7 @@ public String getMessage () {
 public int open () {
 
 	/* Compute the MessageBox style */
+	int buttonBits = 0;
 	if ((style & SWT.OK) == SWT.OK) buttonBits = OS.MB_OK;
 	if ((style & (SWT.OK | SWT.CANCEL)) == (SWT.OK | SWT.CANCEL)) buttonBits = OS.MB_OKCANCEL;
 	if ((style & (SWT.YES | SWT.NO)) == (SWT.YES | SWT.NO)) buttonBits = OS.MB_YESNO;
@@ -267,15 +269,16 @@ public int open () {
 	TCHAR buffer2 = new TCHAR (0, title, true);
 	display.externalEventLoop = true;
 
-	/* Create the callback hook */
 	Callback cbtCallback = null;
-	if (labels != null) {
+	if (hasCustomLabels ()) {
 		cbtCallback = new Callback (this, "CBTProc", 3); //$NON-NLS-1$
 		cbtHook = OS.SetWindowsHookEx (OS.WH_CBT, cbtCallback.getAddress (), 0, OS.GetCurrentThreadId ());
 	}
-
 	int code = OS.MessageBox (hwndOwner, buffer1, buffer2, bits);
+	if (cbtHook != 0) OS.UnhookWindowsHookEx (cbtHook);
+	cbtHook = 0;
 	if (cbtCallback != null) cbtCallback.dispose();
+
 	display.externalEventLoop = false;
 	display.sendPostExternalEventDispatchEvent ();
 
