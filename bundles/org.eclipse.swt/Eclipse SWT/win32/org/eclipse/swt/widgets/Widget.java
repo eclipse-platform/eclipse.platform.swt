@@ -1648,6 +1648,31 @@ LRESULT wmIMEChar (long hwnd, long wParam, long lParam) {
 	return LRESULT.ONE;
 }
 
+int mapVirtualKey (int virtualKey) {
+	if (('0' <= virtualKey) && (virtualKey <= '9')) {
+		// Some keyboard layouts have non-latin digits. For example,
+		// Devanagari and Bengali. Some keyboard layouts repurpose
+		// digit keys for something else. For example, French and
+		// Lithuanian. Yet still, applications expect to see digits
+		// in 'Event.keyCode' to be able to match these to hot keys.
+		// Note that on Windows, most native applications bind hot
+		// keys to virtual code of the key and not the character
+		// produced by it. For them, this problem doesn't even exist.
+		// Note that virtual key codes for 0...9 match corresponding
+		// chars.
+		return virtualKey;
+	} else if (('A' <= virtualKey) && (virtualKey <= 'Z')) {
+		// See above about digits. Also note that on Windows,
+		// 'MapVirtualKey()' is hardcoded to always return 'A'...'Z'
+		// for corresponding virtual key codes (undocumented but has
+		// been this way for ages). Note that virtual key codes for
+		// A...Z match corresponding chars.
+		return virtualKey;
+	} else {
+		return OS.MapVirtualKey (virtualKey, 2);
+	}
+}
+
 LRESULT wmKeyDown (long hwnd, long wParam, long lParam) {
 
 	/* Ignore repeating modifier keys by testing key down state */
@@ -1665,22 +1690,7 @@ LRESULT wmKeyDown (long hwnd, long wParam, long lParam) {
 	display.lastAscii = display.lastKey = 0;
 	display.lastVirtual = display.lastDead = false;
 
-	/* Map the virtual key */
-	int mapKey = OS.MapVirtualKey ((int)wParam, 2);
-	/*
-	* Feature in Windows.  For Devanagari and Bengali numbers,
-	* MapVirtualKey() returns the localized number instead of
-	* the ASCII equivalent.  For example, MapVirtualKey()
-	* maps VK_1 on the numbers keyboard to \u0967, which is
-	* the Devanagari digit '1', but not ASCII.
-	* The fix is to test for Devanagari and Bengali digits and
-	* map these explicitly.
-	*
-	* NOTE: VK_0 to VK_9 are the same as ASCII.
-	*/
-	if (('\u09e6' <= mapKey && mapKey <= '\u09ef') || ('\u0966' <= mapKey && mapKey <= '\u096f')) {
-		mapKey = (int)wParam;
-	}
+	int mapKey = mapVirtualKey ((int)wParam);
 
 	/*
 	* Dead keys are special keys that modify next keys pressed. For
@@ -2398,8 +2408,7 @@ LRESULT wmSysKeyDown (long hwnd, long wParam, long lParam) {
 	display.lastAscii = display.lastKey = 0;
 	display.lastVirtual = display.lastDead = false;
 
-	/* If are going to get a WM_SYSCHAR, ignore this message. */
-	int mapKey = OS.MapVirtualKey ((int)wParam, 2);
+	int mapKey = mapVirtualKey ((int)wParam);
 
 	// See corresponding code block in 'WM_KEYDOWN' for an explanation.
 	MSG msg = new MSG ();
