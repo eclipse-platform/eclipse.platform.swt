@@ -30,6 +30,12 @@ jobs:
       with:
        path: 'eclipse.platform.swt'
        fetch-depth: 0 # required for jgit timestamp provider to work
+    - name: checkout binaries
+      uses: actions/checkout@v3
+      with:
+       path: 'eclipse.platform.swt.binaries'
+       repository: 'eclipse-platform/eclipse.platform.swt.binaries'
+       fetch-depth: 0 # required for jgit timestamp provider to work
     - name: Install Linux requirements
       run: sudo apt-get update -qq && sudo apt-get install -qq -y webkit2gtk-driver
       if: ${{ matrix.config.native == 'gtk.linux.x86_64'}}
@@ -39,6 +45,18 @@ jobs:
         java-version: ${{ matrix.java }}
         distribution: 'temurin'
         cache: maven
+    - name: Build Binaries
+      uses: GabrielBB/xvfb-action@v1
+      with:
+       run: >- 
+        mvn --batch-mode
+        -Pbuild-individual-bundles
+        -DforceContextQualifier=zzz
+        -DskipJni
+        -DskipRust
+        -Dcompare-version-with-baselines.skip=true
+        install
+       working-directory: eclipse.platform.swt.binaries
     - name: Build with Maven
       uses: GabrielBB/xvfb-action@v1
       with:
