@@ -275,11 +275,16 @@ public void test_getSegmentsChars() {
 
 @Test
 public void test_getLineOffsets() {
+	/**
+	 * While computing lineCount, Mac doesn't consider the trailing '\n',
+	 * causing a different return value than other OS.
+	 * Test has been adapted to work on Mac as well.
+	 */
 	TextLayout layout = new TextLayout(display);
 	String text = "0123456\n890123\n";
 	layout.setText(text);
 	int[] offsets = layout.getLineOffsets();
-	int[] expected = {0, 8, 15, 15};
+	int[] expected = (SwtTestUtil.isCocoa) ? new int [] {0, 8, 15} : new int [] {0, 8, 15, 15} ;
 	assertArrayEquals(expected, offsets);
 	layout.setText("");
 	offsets = layout.getLineOffsets();
@@ -287,7 +292,7 @@ public void test_getLineOffsets() {
 	assertArrayEquals(expected, offsets);
 	layout.setText("\n");
 	offsets = layout.getLineOffsets();
-	expected = new int [] {0, 1, 1};
+	expected = (SwtTestUtil.isCocoa) ? new int [] {0, 1} : new int [] {0, 1, 1};
 	assertArrayEquals(expected, offsets);
 	layout.setText("WMWM");
 	int width = layout.getBounds().width;
