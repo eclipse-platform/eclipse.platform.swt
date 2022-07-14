@@ -89,7 +89,7 @@ public class SnippetExplorer {
 	 */
 	private static final int SHUTDOWN_GRACE_TIME_MS = 5000;
 	/** Link to online snippet source. Used if no local source is available. */
-	private static final String SNIPPET_SOURCE_LINK_TEMPLATE = "https://git.eclipse.org/c/platform/"
+	private static final String SNIPPET_SOURCE_LINK_TEMPLATE = "https://github.com/eclipse-platform/"
 			+ "eclipse.platform.swt.git/tree/examples/org.eclipse.swt.snippets/src/org/eclipse/swt/snippets/%s.java";
 
 	/**

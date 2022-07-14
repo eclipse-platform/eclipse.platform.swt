@@ -225,8 +225,7 @@ private void gtk_combo_box_insert(String string, int index) {
  *  https://raw.githubusercontent.com/gnome-design-team/gnome-mockups/master/theming/widgets/combobox-replacements.png     // mockup screen shot.
  *  - So probably this workaround should be removed in Gtk4 port. Feel free to validate via Bug489640_SlowCombo and Bug489640_SlowComboSingleItem test snippets.</p>
  *
- * <p>CSS note: Do not use the CSS 'appears-as-list' style as done in:
- *   https://git.eclipse.org/r/#/c/117681/6/bundles/org.eclipse.swt/Eclipse+SWT/gtk/org/eclipse/swt/widgets/Combo.java
+ * <p>CSS note: Do not use the CSS 'appears-as-list' style.
  *   It's a poorly working hack. If list has more than +-1000 entries, then we get visual cheese and jvm crashes. </p>
  */
 private void gtk_combo_box_toggle_wrap (boolean wrap) {
