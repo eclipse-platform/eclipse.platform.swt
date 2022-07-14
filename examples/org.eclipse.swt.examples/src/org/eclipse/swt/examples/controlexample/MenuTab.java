@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2016 IBM Corporation and others.
+ * Copyright (c) 2000, 2022 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -218,7 +218,7 @@ class MenuTab extends Tab {
 		closeAllButton.setText (ControlExample.getResourceString("Close_All_Shells"));
 
 		/* Add the listeners */
-		createButton.addSelectionListener(widgetSelectedAdapter(e -> createButtonSelected(e)));
+		createButton.addSelectionListener(widgetSelectedAdapter(this::createButtonSelected));
 		closeAllButton.addSelectionListener(widgetSelectedAdapter(e -> closeAllShells ()));
 		subMenuButton.addSelectionListener(widgetSelectedAdapter(e -> subSubMenuButton.setEnabled (subMenuButton.getSelection ())));
 

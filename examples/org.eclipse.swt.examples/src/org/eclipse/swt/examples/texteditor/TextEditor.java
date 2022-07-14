@@ -1,5 +1,5 @@
 /*****************************************************************************
- * Copyright (c) 2000, 2019 IBM Corporation and others.
+ * Copyright (c) 2000, 2022 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -852,7 +852,7 @@ public class TextEditor {
 			item.setSize(size);
 		}
 
-		coolBar.addControlListener(ControlListener.controlResizedAdapter(event -> handleResize(event)));
+		coolBar.addControlListener(ControlListener.controlResizedAdapter(this::handleResize));
 	}
 
 	void disposeRanges(StyleRange[] ranges) {
@@ -1099,11 +1099,11 @@ public class TextEditor {
 			updateStatusBar();
 			updateToolBar();
 		});
-		styledText.addListener(SWT.MouseUp, event -> handleMouseUp(event));
-		styledText.addListener(SWT.KeyDown, event -> handleKeyDown(event));
-		styledText.addVerifyListener(event -> handleVerifyText(event));
-		styledText.addModifyListener(event -> handleModify(event));
-		styledText.addPaintObjectListener(event -> handlePaintObject(event));
+		styledText.addListener(SWT.MouseUp, this::handleMouseUp);
+		styledText.addListener(SWT.KeyDown, this::handleKeyDown);
+		styledText.addVerifyListener(this::handleVerifyText);
+		styledText.addModifyListener(this::handleModify);
+		styledText.addPaintObjectListener(this::handlePaintObject);
 		styledText.addListener(SWT.Dispose, event -> {
 			StyleRange[] styles = styledText.getStyleRanges(0, styledText.getCharCount(), false);
 			for (StyleRange style : styles) {
@@ -1114,7 +1114,7 @@ public class TextEditor {
 				}
 			}
 		});
-		shell.addControlListener(ControlListener.controlResizedAdapter(event ->	handleResize(event)));
+		shell.addControlListener(ControlListener.controlResizedAdapter(this::handleResize));
 	}
 
 	Image loadImage(Display display, String fileName) {
