@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2016 IBM Corporation and others.
+ * Copyright (c) 2000, 2022 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -196,7 +196,7 @@ public CTable (Composite parent, int style) {
 	arrowBounds = getArrowDownImage ().getBounds ();
 	clientArea = getClientArea ();
 
-	Listener listener = event -> handleEvents (event);
+	Listener listener = this::handleEvents;
 	addListener (SWT.Paint, listener);
 	addListener (SWT.MouseDown, listener);
 	addListener (SWT.MouseUp, listener);

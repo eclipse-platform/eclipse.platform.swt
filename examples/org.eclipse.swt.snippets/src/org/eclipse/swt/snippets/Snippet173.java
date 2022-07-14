@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2016 IBM Corporation and others.
+ * Copyright (c) 2000, 2022 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -80,7 +80,7 @@ static void initialize(final Display display, Browser browser) {
 			boolean isOSX = SWT.getPlatform().equals ("cocoa");
 			if (!event.addressBar && !event.statusBar && !event.toolBar && (!event.menuBar || isOSX)) {
 				System.out.println("Popup blocked.");
-				event.display.asyncExec(() -> shell.close());
+				event.display.asyncExec(shell::close);
 				return;
 			}
 			if (event.location != null) shell.setLocation(event.location);

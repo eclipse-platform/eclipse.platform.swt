@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2017 IBM Corporation and others.
+ * Copyright (c) 2000, 2022 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -90,7 +90,7 @@ public Shell open(Display display) {
 	searchDialog = new SearchDialog(shell);
 	searchDialog.setSearchAreaNames(columnNames);
 	searchDialog.setSearchAreaLabel(resAddressBook.getString("Column"));
-	searchDialog.addFindListener(() -> findEntry());
+	searchDialog.addFindListener(this::findEntry);
 
 	table = new Table(shell, SWT.SINGLE | SWT.BORDER | SWT.FULL_SELECTION);
 	table.setHeaderVisible(true);

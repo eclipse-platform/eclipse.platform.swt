@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2013 IBM Corporation and others.
+ * Copyright (c) 2000, 2022 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -445,9 +445,9 @@ class DialogTab extends Tab {
 		effectsVisibleButton.setText("FontDialog.setEffectsVisible");
 
 		/* Add the listeners */
-		dialogCombo.addSelectionListener (widgetSelectedAdapter(event -> dialogSelected (event)));
-		createButton.addSelectionListener (widgetSelectedAdapter(event -> createButtonSelected (event)));
-		SelectionListener buttonStyleListener = widgetSelectedAdapter(event -> buttonStyleSelected (event));
+		dialogCombo.addSelectionListener (widgetSelectedAdapter(this::dialogSelected));
+		createButton.addSelectionListener (widgetSelectedAdapter(this::createButtonSelected));
+		SelectionListener buttonStyleListener = widgetSelectedAdapter(this::buttonStyleSelected);
 		okButton.addSelectionListener (buttonStyleListener);
 		cancelButton.addSelectionListener (buttonStyleListener);
 		yesButton.addSelectionListener (buttonStyleListener);

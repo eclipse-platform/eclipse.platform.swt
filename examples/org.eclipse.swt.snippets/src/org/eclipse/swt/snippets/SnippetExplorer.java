@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2019 Paul Pazderski and others.
+ * Copyright (c) 2019, 2022 Paul Pazderski and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -1024,7 +1024,7 @@ public class SnippetExplorer {
 				final Display d = Display.findDisplay(t);
 				if (d != null) {
 					d.asyncExec(
-							() -> Arrays.stream(d.getShells()).filter(s -> !s.isDisposed()).forEach(s -> s.close()));
+							() -> Arrays.stream(d.getShells()).filter(s -> !s.isDisposed()).forEach(Shell::close));
 				}
 			}
 			final long start = System.currentTimeMillis();
@@ -1044,7 +1044,7 @@ public class SnippetExplorer {
 						System.err.println("    " + t.getName() + " (ThreadId: " + t.getId() + ")");
 						final Display d = Display.findDisplay(t);
 						if (d != null && !d.isDisposed()) {
-							d.syncExec(() -> d.dispose());
+							d.syncExec(d::dispose);
 						}
 					}
 				}
