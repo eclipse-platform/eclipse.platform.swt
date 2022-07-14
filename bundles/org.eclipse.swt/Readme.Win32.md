@@ -25,8 +25,8 @@ libraries in the binary repository.
 * (Optionally) install CDT from marketplace if you want to work on C/Native parts of SWT.
 * (if not already installed) installed EGit integration.
 * Open the git perspective. Add the following two repositories, which can be found on: (use git protocol)
-	- http://git.eclipse.org/c/platform/eclipse.platform.swt.git/
-	- http://git.eclipse.org/c/platform/eclipse.platform.swt.binaries.git/
+	- https://github.com/eclipse-platform/eclipse.platform.swt
+	- https://github.com/eclipse-platform/eclipse.platform.swt.binaries
 * From swt repo, import most projects (except Cocoa/Gtk, root 'swt' project, once)
 * In org.eclipse.swt project, you need to copy .classpath_win32 to .classpath  & refresh/rebuild workspace.
   (This can be done via command line or by not-filtering *.resources in package view).
@@ -46,7 +46,7 @@ You need to install the following on your system:
   Either select the components "MSVC C++-x64/x86-Buildtools" and "Windows 10 SDK"
   or the workload "Desktop development with C++" which includes the required components and some more.
 * (Optional) Install Cygwin
-* Install Java 8 or 11. Oracle JDK or IBM JDK:  
+* Install Java 11. Oracle JDK or IBM JDK:  
   http://www.oracle.com/technetwork/java/javase/overview/java8-2100321.html  
   https://developer.ibm.com/javasdk/downloads/  
 

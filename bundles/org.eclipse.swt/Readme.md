@@ -25,7 +25,7 @@ Dependencies:
 
 * **SWT Binaries**  
   You also need to clone the binary Git repository:
-  https://git.eclipse.org/r/#/admin/projects/platform/eclipse.platform.swt.binaries  
+  https://github.com/eclipse-platform/eclipse.platform.swt.binaries/ 
   and import the project for your platform into your workspace.  
   
   Ensure that the fragment matching your windowingSystem.operatingSystem.cpuArchitecture  

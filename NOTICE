@@ -26,18 +26,17 @@ SPDX-License-Identifier: EPL-2.0
 
 The project maintains the following source code repositories:
 
-* http://git.eclipse.org/c/platform/eclipse.platform.common.git
-* http://git.eclipse.org/c/platform/eclipse.platform.debug.git
-* http://git.eclipse.org/c/platform/eclipse.platform.git
-* http://git.eclipse.org/c/platform/eclipse.platform.releng.aggregator.git
-* http://git.eclipse.org/c/platform/eclipse.platform.releng.buildtools.git
-* http://git.eclipse.org/c/platform/eclipse.platform.releng.git
-* http://git.eclipse.org/c/platform/eclipse.platform.resources.git
-* http://git.eclipse.org/c/platform/eclipse.platform.runtime.git
-* http://git.eclipse.org/c/platform/eclipse.platform.swt.git
-* http://git.eclipse.org/c/platform/eclipse.platform.swt.binaries.git
-* http://git.eclipse.org/c/platform/eclipse.platform.team.git
-* http://git.eclipse.org/c/platform/eclipse.platform.text.git
-* http://git.eclipse.org/c/platform/eclipse.platform.ua.git
-* http://git.eclipse.org/c/platform/eclipse.platform.ui.git
-* http://git.eclipse.org/c/platform/eclipse.platform.ui.tools.git
+* https://github.com/eclipse-platform/eclipse.platform.common.git
+* https://github.com/eclipse-platform/eclipse.platform.debug.git
+* https://github.com/eclipse-platform/eclipse.platform.git
+* https://github.com/eclipse-platform/eclipse.platform.releng.aggregator.git
+* https://github.com/eclipse-platform/eclipse.platform.releng.buildtools.git
+* https://github.com/eclipse-platform/eclipse.platform.releng.git
+* https://github.com/eclipse-platform/eclipse.platform.resources.git
+* https://github.com/eclipse-platform/eclipse.platform.swt.git
+* https://github.com/eclipse-platform/eclipse.platform.swt.binaries.git
+* https://github.com/eclipse-platform/eclipse.platform.team.git
+* https://github.com/eclipse-platform/eclipse.platform.text.git
+* https://github.com/eclipse-platform/eclipse.platform.ua.git
+* https://github.com/eclipse-platform/eclipse.platform.ui.git
+* https://github.com/eclipse-platform/eclipse.platform.ui.tools.git

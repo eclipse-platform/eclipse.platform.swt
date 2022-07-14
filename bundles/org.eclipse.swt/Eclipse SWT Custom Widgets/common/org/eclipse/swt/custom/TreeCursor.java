@@ -25,7 +25,7 @@ import org.eclipse.swt.widgets.*;
  * keyboard. It also provides a mechanism for selecting an individual cell in a tree.
  * <p>
  * For a detailed example of using a TreeCursor to navigate to a cell and then edit it see
- * http://git.eclipse.org/c/platform/eclipse.platform.swt.git/tree/examples/org.eclipse.swt.snippets/src/org/eclipse/swt/snippets/Snippet360.java .
+ * https://github.com/eclipse-platform/eclipse.platform.swt/tree/master/examples/org.eclipse.swt.snippets/src/org/eclipse/swt/snippets/Snippet360.java .
  *
  * <dl>
  * <dt><b>Styles:</b></dt>
