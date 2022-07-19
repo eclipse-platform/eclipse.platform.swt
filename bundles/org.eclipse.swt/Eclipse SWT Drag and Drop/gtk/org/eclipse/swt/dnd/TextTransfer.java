@@ -154,7 +154,7 @@ protected String[] getTypeNames() {
 		return new String[] {UTF8_STRING, COMPOUND_TEXT, STRING};
 	}
 	if(GTK.GTK4) {
-		return new String[] {STRING};
+		return new String[] {"text/plain", STRING};
 	}
 
 	return new String[] {UTF8_STRING, STRING};

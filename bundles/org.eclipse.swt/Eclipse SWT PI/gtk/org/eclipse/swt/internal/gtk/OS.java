@@ -1378,7 +1378,7 @@ public static final native void g_value_set_int64 (long value, long v);
 /** @param value cast=(GValue *)
  *  @param v_string cast =(const gchar *)
  * */
-public static final native void g_value_set_string (long value, long v_string);
+public static final native void g_value_set_string (long value, byte[] v_string);
 /** @param value cast=(GValue *) */
 public static final native long g_value_get_string (long value);
 /** @param value cast=(GValue *) */

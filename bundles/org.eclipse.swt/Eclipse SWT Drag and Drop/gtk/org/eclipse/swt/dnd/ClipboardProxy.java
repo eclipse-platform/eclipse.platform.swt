@@ -222,24 +222,43 @@ boolean setData(Clipboard owner, Object[] data, Transfer[] dataTypes, int clipbo
 
 private boolean setData_gtk4(Clipboard owner, Object[] data, Transfer[] dataTypes, int clipboards) {
 	boolean result = false;
+	long [] providers = new long[0];
 	for (int i = 0; i < dataTypes.length; i++) {
 		Transfer transfer = dataTypes[i];
 		String[] typeNames = transfer.getTypeNames();
-		if ((clipboards & DND.CLIPBOARD) != 0){
-			clipboardData = data;
-			clipboardDataTypes = dataTypes;
-			result = setContentFromType(Clipboard.GTKCLIPBOARD, typeNames[0], data[i]);
-			activeClipboard = owner;
+		//Build the GdkContentProvider for each and store in array
+		long provider = setProviderFromType(typeNames[0], data[i]);
+		if(provider != 0) {
+			long[] tmp = new long [providers.length + 1];
+			System.arraycopy(providers, 0, tmp, 0, providers.length);
+			tmp[providers.length] = provider;
+			providers = tmp;
 		}
+	}
+	//Build the GdkContentProvider Union
+	if (providers.length == 0) return false;
+	long union = GTK4.gdk_content_provider_new_union(providers, providers.length);
+
+	if ((clipboards & DND.CLIPBOARD) != 0){
+		clipboardData = data;
+		clipboardDataTypes = dataTypes;
+		result = GTK4.gdk_clipboard_set_content(Clipboard.GTKCLIPBOARD, union);
+		activeClipboard = owner;
 	}
 	return result;
 }
 
-private boolean setContentFromType(long clipboard, String string, Object data) {
+private long setProviderFromType(String string, Object data) {
+	long provider = 0;
+
 	if (data == null ) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	else {
-		if(string.equals("STRING") || string.equals("text/rtf")) {
-			GTK4.gdk_clipboard_set_text(clipboard, Converter.javaStringToCString((String)data));
+		if(string.equals("text/plain") || string.equals("text/rtf")) {
+			long value = OS.g_malloc (OS.GValue_sizeof());
+			C.memset (value, 0, OS.GValue_sizeof ());
+			OS.g_value_init(value, OS.G_TYPE_STRING());
+			OS.g_value_set_string(value, Converter.javaStringToCString((String)data));
+			provider = GTK4.gdk_content_provider_new_for_value(value);
 		}
 		if(string.equals("PIXBUF")) {
 			if(!(data instanceof ImageData)) DND.error(DND.ERROR_INVALID_DATA);
@@ -247,12 +266,11 @@ private boolean setContentFromType(long clipboard, String string, Object data) {
 			Image image = new Image(Display.getCurrent(), imgData);
 			long pixbuf = ImageList.createPixbuf(image);
 			if (pixbuf != 0) {
-				GTK4.gdk_clipboard_set(clipboard, GDK.GDK_TYPE_PIXBUF(), pixbuf);
+				provider = GTK4.gdk_content_provider_new_typed(GDK.GDK_TYPE_PIXBUF(), pixbuf);
 			}
 			image.dispose();
 		}
-		return true;
 	}
-	return false;
+	return provider;
 }
 }
