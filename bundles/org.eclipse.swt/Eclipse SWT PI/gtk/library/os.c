@@ -13010,10 +13010,14 @@ JNIEXPORT void JNICALL OS_NATIVE(g_1value_1set_1int64)
 
 #ifndef NO_g_1value_1set_1string
 JNIEXPORT void JNICALL OS_NATIVE(g_1value_1set_1string)
-	(JNIEnv *env, jclass that, jlong arg0, jlong arg1)
+	(JNIEnv *env, jclass that, jlong arg0, jbyteArray arg1)
 {
+	jbyte *lparg1=NULL;
 	OS_NATIVE_ENTER(env, that, g_1value_1set_1string_FUNC);
-	g_value_set_string((GValue *)arg0, (const gchar *)arg1);
+	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	g_value_set_string((GValue *)arg0, (const gchar *)lparg1);
+fail:
+	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
 	OS_NATIVE_EXIT(env, that, g_1value_1set_1string_FUNC);
 }
 #endif
