@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2021 IBM Corporation and others.
+ * Copyright (c) 2000, 2022 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -20,6 +20,8 @@ import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.ScrolledComposite;
+import org.eclipse.swt.events.ControlListener;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.graphics.Point;
@@ -63,7 +65,8 @@ public class ControlExample {
 	 */
 	public ControlExample(Composite parent) {
 		initResources();
-		tabFolder = new TabFolder (parent, SWT.NONE);
+		ScrolledComposite scrollComposite = new ScrolledComposite (parent, SWT.V_SCROLL | SWT.H_SCROLL);
+		tabFolder = new TabFolder (scrollComposite, SWT.NONE);
 		tabs = createTabs();
 		for (Tab tab : tabs) {
 			TabItem item = new TabItem (tabFolder, SWT.NONE);
@@ -71,7 +74,14 @@ public class ControlExample {
 			item.setControl (tab.createTabFolderPage (tabFolder));
 			item.setData (tab);
 		}
-
+		scrollComposite.setContent (tabFolder);
+		scrollComposite.setExpandVertical (true);
+		scrollComposite.setExpandHorizontal (true);
+		scrollComposite.setAlwaysShowScrollBars (true);
+		scrollComposite.addControlListener (ControlListener.controlResizedAdapter(e -> {
+			Rectangle r = scrollComposite.getClientArea ();
+			scrollComposite.setMinSize(tabFolder.computeSize (r.width, SWT.DEFAULT));
+		}));
 		/* Workaround: if the tab folder is wider than the screen,
 		 * Mac platforms clip instead of somehow scrolling the tab items.
 		 * We try to recover some width by using shorter tab names. */
