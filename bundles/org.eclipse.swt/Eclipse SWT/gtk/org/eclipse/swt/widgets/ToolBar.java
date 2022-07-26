@@ -633,7 +633,7 @@ int setBounds (int x, int y, int width, int height, boolean move, boolean resize
 @Override
 void setBackgroundGdkRGBA (long context, long handle, GdkRGBA rgba) {
 	// Form background string
-	String css = "toolbar {background-color: " + display.gtk_rgba_to_css_string(rgba) + "}";
+	String css = "toolbar {background-color: " + display.gtk_rgba_to_css_string(rgba) + ";}";
 
 	// Cache background color
 	this.cssBackground = css;
