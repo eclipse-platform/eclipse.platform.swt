@@ -178,7 +178,7 @@ public class OS extends C {
 	 * Custom message that will be sent when setTheme is called for example from Platform UI code.
 	 */
 	public static final long sel_appAppearanceChanged = OS.sel_registerName("appAppearanceChanged");
-	
+
 	/**
 	 * Experimental API for dark theme.
 	 * <p>
@@ -193,7 +193,7 @@ public class OS extends C {
 	 * On GTK, behavior may be different as the boolean flag doesn't force dark
 	 * theme instead it specify that dark theme is preferred.
 	 * </p>
-	 * 
+	 *
 	 * @param isDarkTheme <code>true</code> for dark theme
 	 */
 	public static void setTheme(boolean isDarkTheme) {
@@ -221,6 +221,15 @@ public class OS extends C {
 	public static boolean isBigSurOrLater () {
 		// See comment for OS.VERSION for an explanation
 		return OS.VERSION >= OS.VERSION(10, 16, 0);
+	}
+
+	/**
+	 * @return true for macOS Ventura or later, returns false for earlier
+	 * versions
+	 */
+	public static boolean isVenturaOrLater () {
+		// See comment for OS.VERSION for an explanation
+		return OS.VERSION >= OS.VERSION(13, 0, 0);
 	}
 
 /** JNI natives */

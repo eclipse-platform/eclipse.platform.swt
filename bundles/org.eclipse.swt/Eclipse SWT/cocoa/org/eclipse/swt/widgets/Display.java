@@ -891,15 +891,16 @@ static private void configureSystemOptions () {
 	 * internal data, which is unexpected to the macOS's menu tracking
 	 * loop.
 	 *
-	 * Both bugs are bugs of macOS itself. The workaround is to disable
-	 * the new macOS 12 behavior.
+	 * Both bugs are bugs of macOS itself but appears to have been fixed in
+	 * macOS 13 (Ventura). The workaround is to disable the new macOS 12
+	 * behavior.
 	 *
-	 * The condition should be for (macOS >= 12), but it's not possible
+	 * The condition should be for (macOS >= 12 and <13), but it's not possible
 	 * to reliably distinguish 11 from 12, see comment for OS.VERSION.
 	 * That's fine: older macOS don't know this setting and will not
 	 * check for it anyway.
 	 */
-	if (OS.isBigSurOrLater ()) {
+	if (OS.isBigSurOrLater() && !OS.isVenturaOrLater()) {
 		// The name of the option is misleading. What it really means
 		// is whether '-[NSMenuWindowManagerWindow _setVisible:]' shall
 		// save/restore current key window or not.
