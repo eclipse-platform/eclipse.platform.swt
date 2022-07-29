@@ -12,14 +12,20 @@
  *     Syntevo - initial API and implementation
  *******************************************************************************/
 
-package org.eclipse.swt.graphics;
-
-import org.eclipse.swt.tests.junit.SwtTestUtil;
-import org.eclipse.swt.widgets.Display;
-
-import java.util.Random;
+package org.eclipse.swt.tests.graphics;
 
 import static org.junit.Assert.assertArrayEquals;
+
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.Random;
+
+import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.ImageData;
+import org.eclipse.swt.graphics.PaletteData;
+import org.eclipse.swt.graphics.RGB;
+import org.eclipse.swt.tests.junit.SwtTestUtil;
+import org.eclipse.swt.widgets.Display;
 
 /**
  * Gives access to protected methods for JUnit test purposes
@@ -27,8 +33,8 @@ import static org.junit.Assert.assertArrayEquals;
 public class ImageDataTestHelper {
 	private static boolean TEST_BLIT_SHOW_IMAGES = false;
 
-	public static int LSB_FIRST = ImageData.LSB_FIRST;
-	public static int MSB_FIRST = ImageData.MSB_FIRST;
+	public static int LSB_FIRST = 0;
+	public static int MSB_FIRST = 1;
 
 	public static class BlitTestInfo {
 		public final int depth;
@@ -41,7 +47,7 @@ public class ImageDataTestHelper {
 		public final byte[] paletteG;
 		public final byte[] paletteB;
 
-		public BlitTestInfo(int depth, int scale, int byteOrder, boolean isDirect, ImageData imageData) {
+		public BlitTestInfo(int depth, int scale, int byteOrder, boolean isDirect, ImageData imageData) throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 			this.depth = depth;
 			this.scale = scale;
 			this.byteOrder = byteOrder;
@@ -70,7 +76,7 @@ public class ImageDataTestHelper {
 			}
 		}
 
-		public BlitTestInfo(int depth, int scale, int byteOrder, boolean isDirect) {
+		public BlitTestInfo(int depth, int scale, int byteOrder, boolean isDirect) throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 			this(depth, scale, byteOrder, isDirect, null);
 		}
 
@@ -110,7 +116,7 @@ public class ImageDataTestHelper {
 		}
 	}
 
-	public static ImageData makeTestImageData(int depth, int scale, int byteOrder, boolean isDirect, boolean isClean) {
+	public static ImageData makeTestImageData(int depth, int scale, int byteOrder, boolean isDirect, boolean isClean) throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 		// Use fixed seed to make test results reproducible
 		Random random = new Random(0);
 
@@ -151,7 +157,9 @@ public class ImageDataTestHelper {
 
 		// setPixel() only supports one of {MSB_FIRST, LSB_FIRST} for each format.
 		// If it's the other, convert.
-		int defaultByteOrderForDepth = imageData.getByteOrder();
+		Method method = ImageData.class.getDeclaredMethod("getByteOrder");
+		method.setAccessible(true);
+		int defaultByteOrderForDepth = (int) method.invoke(imageData);
 		if (defaultByteOrderForDepth != byteOrder) {
 			BlitTestInfo actualInfo = new BlitTestInfo(depth, scale, defaultByteOrderForDepth, isDirect, imageData);
 			imageData = blit(actualInfo, depth, scale, byteOrder, isDirect).imageData;
@@ -160,13 +168,19 @@ public class ImageDataTestHelper {
 		return imageData;
 	}
 
-	public static BlitTestInfo blit(BlitTestInfo srcInfo, int dstInfo_depth, int dstInfo_scale, int dstInfo_byteOrder, boolean dstInfo_isDirect) {
+	public static BlitTestInfo blit(BlitTestInfo srcInfo, int dstInfo_depth, int dstInfo_scale, int dstInfo_byteOrder, boolean dstInfo_isDirect) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException {
 		ImageData src = srcInfo.imageData;
 		ImageData dst = makeTestImageData(dstInfo_depth, dstInfo_scale, dstInfo_byteOrder, dstInfo_isDirect, true);
 
+
 		if (srcInfo.isDirect) {
 			if (dstInfo_isDirect) {
-				ImageData.blit(
+				Method blitMethod = ImageData.class.getDeclaredMethod("blit", byte[].class, int.class,
+						int.class, int.class, int.class, int.class, int.class, int.class, int.class, byte[].class,
+						int.class, int.class, int.class, int.class, int.class, int.class, int.class, int.class,
+						boolean.class, boolean.class);
+				blitMethod.setAccessible(true);
+				blitMethod.invoke(null,
 					src.data, src.depth, src.bytesPerLine, srcInfo.byteOrder, src.width, src.height, src.palette.redMask, src.palette.greenMask, src.palette.blueMask,
 					dst.data, dst.depth, dst.bytesPerLine, dstInfo_byteOrder, dst.width, dst.height, dst.palette.redMask, dst.palette.greenMask, dst.palette.blueMask,
 					false, false);
@@ -175,12 +189,20 @@ public class ImageDataTestHelper {
 			}
 		} else {
 			if (dstInfo_isDirect) {
-				ImageData.blit(
+				Method blitMethod = ImageData.class.getDeclaredMethod("blit", int.class, int.class, byte[].class,
+						int.class, int.class, int.class, byte[].class, byte[].class, byte[].class, byte[].class,
+						int.class, int.class, int.class, int.class, int.class, int.class);
+				blitMethod.setAccessible(true);
+				blitMethod.invoke(null,
 					src.width, src.height,
 					src.data, src.depth, src.bytesPerLine, srcInfo.byteOrder, srcInfo.paletteR, srcInfo.paletteG, srcInfo.paletteB,
 					dst.data, dst.depth, dst.bytesPerLine, dstInfo_byteOrder, dst.palette.redMask, dst.palette.greenMask, dst.palette.blueMask);
 			} else {
-				ImageData.blit(
+				Method blitMethod = ImageData.class.getDeclaredMethod("blit", byte[].class, int.class, int.class,
+						int.class, int.class, int.class, byte[].class, int.class, int.class, int.class, int.class,
+						int.class, boolean.class, boolean.class);
+				blitMethod.setAccessible(true);
+				blitMethod.invoke(null,
 					src.data, src.depth, src.bytesPerLine, srcInfo.byteOrder, src.width, src.height,
 					dst.data, dst.depth, dst.bytesPerLine, dstInfo_byteOrder, dst.width, dst.height,
 					false, false);
