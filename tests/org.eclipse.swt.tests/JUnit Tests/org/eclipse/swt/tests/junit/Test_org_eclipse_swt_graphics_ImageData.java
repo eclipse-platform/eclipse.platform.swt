@@ -15,8 +15,8 @@
 package org.eclipse.swt.tests.junit;
 
 
-import static org.eclipse.swt.graphics.ImageDataTestHelper.LSB_FIRST;
-import static org.eclipse.swt.graphics.ImageDataTestHelper.MSB_FIRST;
+import static org.eclipse.swt.tests.graphics.ImageDataTestHelper.LSB_FIRST;
+import static org.eclipse.swt.tests.graphics.ImageDataTestHelper.MSB_FIRST;
 import static org.eclipse.swt.tests.junit.SwtTestUtil.assertSWTProblem;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
@@ -27,6 +27,7 @@ import static org.junit.Assert.assertThrows;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,10 +35,10 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTException;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.ImageData;
-import org.eclipse.swt.graphics.ImageDataTestHelper;
-import org.eclipse.swt.graphics.ImageDataTestHelper.BlitTestInfo;
 import org.eclipse.swt.graphics.PaletteData;
 import org.eclipse.swt.graphics.RGB;
+import org.eclipse.swt.tests.graphics.ImageDataTestHelper;
+import org.eclipse.swt.tests.graphics.ImageDataTestHelper.BlitTestInfo;
 import org.eclipse.swt.widgets.Display;
 import org.junit.Before;
 import org.junit.Test;
@@ -59,9 +60,14 @@ public void setUp() {
 /**
  * Tests {@link ImageData#blit}:
  * creates a random image and tests over all combinations of depth,format,scale
+ * @throws InvocationTargetException
+ * @throws IllegalArgumentException
+ * @throws IllegalAccessException
+ * @throws SecurityException
+ * @throws NoSuchMethodException
  */
 @Test
-public void test_blit() {
+public void test_blit() throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 	List<BlitTestInfo> tests = new ArrayList<>();
 
 	// Compose a list of all supported formats
@@ -116,9 +122,14 @@ public void test_blit() {
 /**
  * Tests {@link ImageData#blit}:
  * Ensures that (MSB_FIRST, LSB_FIRST) round trip produces original.
+ * @throws InvocationTargetException
+ * @throws IllegalArgumentException
+ * @throws IllegalAccessException
+ * @throws SecurityException
+ * @throws NoSuchMethodException
  */
 @Test
-public void test_blit_MsbLsb() {
+public void test_blit_MsbLsb() throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 	List<BlitTestInfo> tests = new ArrayList<>();
 	{
 		for (int depth : indexedDepths) {
