@@ -15,6 +15,7 @@ package org.eclipse.swt.widgets;
 
 
 import java.util.*;
+import java.util.function.*;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
@@ -2555,6 +2556,31 @@ void notifyDisposalTracker() {
 	if (WidgetSpy.isEnabled) {
 		WidgetSpy.getInstance().widgetDisposed(this);
 	}
+}
+
+/**
+ * Run the given consumer with the given widget in the UI thread regardless of
+ * the caller thread. If the widget is null or disposed, the consumer will never
+ * be called. Runtime exceptions might or might not be propagated to the caller
+ * of this method depending of if the caller is already in the UI thread or an
+ * async operation is scheduled.
+ *
+ * @param <W>      The type of the widget to call
+ * @param widget   the widget that should be used as the running context and
+ *                 that will be passed to the consumer
+ * @param consumer the consumer to act on the widget, the thread in wich this is
+ *                 called is the UI thread of the widget
+ */
+static <W extends Widget> void runWith(W widget, Consumer<? super W> consumer) {
+	if (widget == null) {
+		return;
+	}
+	widget.getDisplay().execute(()->{
+		if (widget.isDisposed()) {
+			return;
+		}
+		consumer.accept(widget);
+	});
 }
 
 }
