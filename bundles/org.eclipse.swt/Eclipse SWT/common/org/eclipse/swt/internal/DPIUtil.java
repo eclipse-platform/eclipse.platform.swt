@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2022 IBM Corporation and others.
+ * Copyright (c) 2017, 2022 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -36,6 +36,7 @@ public class DPIUtil {
 	private static final int DPI_ZOOM_100 = 96;
 
 	private static int deviceZoom = 100;
+	private static int DEVICE_START_ZOOM = -1;
 	private static int nativeDeviceZoom = 100;
 
 	private static enum AutoScaleMethod { AUTO, NEAREST, SMOOTH }
@@ -428,11 +429,17 @@ public static int getDeviceZoom() {
 	return deviceZoom;
 }
 
+public static boolean equalsDeviceStartZoom(int zoom) {
+	return DEVICE_START_ZOOM == zoom;
+}
+
 public static void setDeviceZoom (int nativeDeviceZoom) {
 	DPIUtil.nativeDeviceZoom = nativeDeviceZoom;
 	int deviceZoom = getZoomForAutoscaleProperty (nativeDeviceZoom);
 
 	DPIUtil.deviceZoom = deviceZoom;
+	// Store the device start zoom for future reference.
+	if (DEVICE_START_ZOOM == -1) DEVICE_START_ZOOM = deviceZoom;
 	System.setProperty("org.eclipse.swt.internal.deviceZoom", Integer.toString(deviceZoom));
 	if (deviceZoom != 100 && autoScaleMethodSetting == AutoScaleMethod.AUTO) {
 		if (deviceZoom / 100 * 100 == deviceZoom || !"gtk".equals(SWT.getPlatform())) {
