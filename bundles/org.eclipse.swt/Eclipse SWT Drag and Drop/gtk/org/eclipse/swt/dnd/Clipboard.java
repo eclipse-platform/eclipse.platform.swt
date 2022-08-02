@@ -328,7 +328,7 @@ private Object getContents_gtk4(Transfer transfer, int clipboards) {
 	C.memset (value, 0, OS.GValue_sizeof ());
 
 	//Pasting of text (TextTransfer/RTFTransfer)
-	if(transfer.getTypeNames()[0].equals("STRING") || transfer.getTypeNames()[0].equals("text/rtf")) {
+	if(transfer.getTypeNames()[0].equals("text/plain") || transfer.getTypeNames()[0].equals("text/rtf")) {
 		OS.g_value_init(value, OS.G_TYPE_STRING());
 		if (!GTK4.gdk_content_provider_get_value (contents, value, null)) return null;
 		long cStr = OS.g_value_get_string(value);
@@ -344,7 +344,7 @@ private Object getContents_gtk4(Transfer transfer, int clipboards) {
 		if(transfer.getTypeNames()[0].equals("text/rtf") && !str.contains("{\\rtf1")) {
 			return null;
 		}
-		if(transfer.getTypeNames()[0].equals("STRING") && str.contains("{\\rtf1")){
+		if(transfer.getTypeNames()[0].equals("text/plain") && str.contains("{\\rtf1")){
 			return null;
 		}
 		return str;
