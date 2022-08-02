@@ -113,7 +113,6 @@ public abstract class Control extends Widget implements Drawable {
 	 * is currently pressed or released for DND.
 	 */
 	static boolean mouseDown;
-	boolean dragBegun;
 
 	/**
 	 * Flag to check the scale factor upon the first drawing of this Control.
@@ -2671,36 +2670,36 @@ boolean dragDetect (int button, int count, int stateMask, int x, int y) {
 }
 
 boolean dragDetect (int x, int y, boolean filter, boolean dragOnTimeout, boolean [] consume) {
-	boolean dragging = false;
 	/*
 	 * Feature in GTK: In order to support both X.11/Wayland, GTKGestures are used
 	 *  as of GTK3.14 in order to acquire mouse position offsets to decide on dragging.
 	 *  See Bug 503431.
 	 */
 	if (!OS.isX11()) { // Wayland
+		// Don't drag if mouse is not down. This condition is not as
+		// trivial as it seems, see Bug 541635 where drag is tested
+		// after drag already completed and mouse is released.
+		if (!mouseDown) {
+			return false;
+		}
+
 		double [] offsetX = new double[1];
 		double [] offsetY = new double [1];
 		double [] startX = new double[1];
 		double [] startY = new double [1];
-		if (GTK.gtk_gesture_drag_get_start_point(dragGesture, startX, startY)) {
-			GTK.gtk_gesture_drag_get_offset(dragGesture, offsetX, offsetY);
-			if (GTK3.gtk_drag_check_threshold(handle, (int)startX[0], (int) startY[0], (int) startX[0]
-					+ (int) offsetX[0], (int) startY[0] + (int) offsetY[0])) {
-				dragging = true;
-			}
-		} else {
+		if (!GTK.gtk_gesture_drag_get_start_point(dragGesture, startX, startY)) {
 			return false;
 		}
-		// Block until mouse was released or drag was detected, see Bug 515396.
-		while (true) {
-			if (!mouseDown) {
-				return false;
-			}
-			if (dragBegun) {
-				return true;
-			}
+
+		GTK.gtk_gesture_drag_get_offset(dragGesture, offsetX, offsetY);
+		if (GTK3.gtk_drag_check_threshold(handle, (int)startX[0], (int) startY[0], (int) startX[0]
+				+ (int) offsetX[0], (int) startY[0] + (int) offsetY[0])) {
+			return true;
 		}
+
+		return false;
 	} else {
+		boolean dragging = false;
 		boolean quit = false;
 		//428852 DND workaround for GTK3.
 		//Gtk3 no longer sends motion events on the same control during thread sleep
@@ -2801,8 +2800,8 @@ boolean dragDetect (int x, int y, boolean filter, boolean dragOnTimeout, boolean
 			}
 			gdk_event_free (eventPtr);
 		}
+		return dragging;
 	}
-	return dragging;
 }
 
 boolean filterKey (long event) {
@@ -3429,7 +3428,6 @@ void gtk_style_context_get_border (long context, int state, GtkBorder padding) {
 @Override
 void gtk_gesture_press_event (long gesture, int n_press, double x, double y, long event) {
 	mouseDown = true;
-	dragBegun = false;
 
 	int eventButton = GDK.gdk_button_event_get_button(event);
 	int eventTime = GDK.gdk_event_get_time(event);
@@ -3473,7 +3471,6 @@ long gtk_button_press_event (long widget, long event) {
 
 long gtk_button_press_event (long widget, long event, boolean sendMouseDown) {
 	mouseDown = true;
-	dragBegun = false;
 
 	double [] eventX = new double [1];
 	double [] eventY = new double [1];
@@ -4109,10 +4106,6 @@ long gtk_mnemonic_activate (long widget, long arg1) {
 
 @Override
 void gtk4_motion_event(long controller, double x, double y, long event) {
-	if (mouseDown) {
-		dragBegun = true;
-	}
-
 	if (this == display.currentControl && (hooks(SWT.MouseHover) || filters(SWT.MouseHover))) {
 		display.addMouseHoverTimeout(handle);
 	}
@@ -4143,9 +4136,6 @@ void gtk4_motion_event(long controller, double x, double y, long event) {
 @Override
 long gtk_motion_notify_event (long widget, long event) {
 	int result;
-	if (mouseDown) {
-		dragBegun = true;
-	}
 
 	double[] eventX = new double[1];
 	double[] eventY = new double[1];
