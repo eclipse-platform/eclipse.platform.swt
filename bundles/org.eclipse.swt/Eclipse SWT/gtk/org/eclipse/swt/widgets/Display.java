@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2021 IBM Corporation and others.
+ * Copyright (c) 2000, 2022 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -10,6 +10,7 @@
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
+ *     Christoph Läubrich - Issue #64 - Integration with java.util.concurrent framework
  *******************************************************************************/
 package org.eclipse.swt.widgets;
 
@@ -19,6 +20,7 @@ import java.lang.reflect.*;
 import java.net.*;
 import java.util.*;
 import java.util.Map.*;
+import java.util.concurrent.*;
 import java.util.function.*;
 import java.util.regex.*;
 import java.util.regex.Pattern;
@@ -111,7 +113,7 @@ import org.eclipse.swt.internal.gtk4.*;
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  * @noextend This class is not intended to be subclassed by clients.
  */
-public class Display extends Device {
+public class Display extends Device implements Executor {
 
 	static boolean strictChecks = System.getProperty("org.eclipse.swt.internal.gtk.enableStrictChecks") != null;
 
@@ -926,6 +928,49 @@ public void asyncExec (Runnable runnable) {
 			}
 		}
 		synchronizer.asyncExec (runnable);
+	}
+}
+
+/**
+ * Executes the given runnable in the user-interface thread of this Display.
+ * <ul>
+ * <li>If the calling thread is the user-interface thread of this display it is
+ * executed immediately and the method returns after the command has run, as with
+ * the method {@link Display#syncExec(Runnable)}.</li>
+ * <li>In all other cases the <code>run()</code> method of the runnable is
+ * asynchronously executed as with the method
+ * {@link Display#asyncExec(Runnable)} at the next reasonable opportunity. The
+ * caller of this method continues to run in parallel, and is not notified when
+ * the runnable has completed.</li>
+ * </ul>
+ * <p>
+ * This can be used in cases where one want to execute some piece of code that
+ * should be guaranteed to run in the user-interface thread regardless of the
+ * current thread.
+ * </p>
+ *
+ * <p>
+ * Note that at the time the runnable is invoked, widgets that have the receiver
+ * as their display may have been disposed. Therefore, it is advised to check
+ * for this case inside the runnable before accessing the widget.
+ * </p>
+ *
+ * @param runnable the runnable to execute in the user-interface thread, never
+ *                 <code>null</code>
+ * @throws RejectedExecutionException if this task cannot be accepted for
+ *                                    execution
+ * @throws NullPointerException       if runnable is null
+ */
+@Override
+public void execute(Runnable runnable) {
+	Objects.requireNonNull(runnable);
+	if (isDisposed()) {
+		throw new RejectedExecutionException(new SWTException (SWT.ERROR_WIDGET_DISPOSED, null));
+	}
+	if (thread == Thread.currentThread()) {
+		syncExec(runnable);
+	} else {
+		asyncExec(runnable);
 	}
 }
 
@@ -6198,4 +6243,5 @@ static int _getDeviceZoom (long monitor_num) {
 	dpi = dpi * scale;
 	return DPIUtil.mapDPIToZoom (dpi);
 }
+
 }
