@@ -24,7 +24,11 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.IOException;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTException;
@@ -156,6 +160,51 @@ public void test_asyncExecLjava_lang_Runnable() {
 	final Display display = new Display();
 	try {
 		display.asyncExec(() -> display.beep());
+	} finally {
+		display.dispose();
+	}
+}
+
+@Test
+public void test_Executor() throws InterruptedException {
+	final Display display = new Display();
+	try {
+		AtomicInteger integer = new AtomicInteger();
+		display.execute(() -> {
+			assertEquals(display, Display.getCurrent());
+			integer.set(1);
+		});
+		assertEquals(1, integer.get());
+		CountDownLatch latch = new CountDownLatch(1);
+		new Thread(() -> {
+			display.execute(() -> {
+				try {
+					assertEquals(display, Display.getCurrent());
+					integer.set(2);
+				} finally {
+					latch.countDown();
+				}
+			});
+		}).start();
+		while(!latch.await(10, TimeUnit.MILLISECONDS)) {
+			while(display.readAndDispatch ()) {
+				//dispatch
+			}
+		}
+		assertEquals(2, integer.get());
+		CompletableFuture<Void> future = CompletableFuture.supplyAsync(()->{
+			assertNull(Display.getCurrent());
+			return "Hello SWT from background thread";
+		}).thenRunAsync(()->{
+			assertEquals(display, Display.getCurrent());
+		}, Display.getDefault());
+		while(!future.isDone()) {
+			while(display.readAndDispatch ()) {
+				//dispatch
+			}
+		}
+		assertFalse(future.isCancelled());
+		assertFalse(future.isCompletedExceptionally());
 	} finally {
 		display.dispose();
 	}
