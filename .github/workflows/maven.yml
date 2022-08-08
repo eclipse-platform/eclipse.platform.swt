@@ -30,6 +30,12 @@ jobs:
       with:
        path: 'eclipse.platform.swt'
        fetch-depth: 0 # required for jgit timestamp provider to work
+    - name: checkout swt.binaries
+      uses: actions/checkout@v3
+      with:
+       path: eclipse.platform.swt.binaries
+       fetch-depth: 0 # required for jgit timestamp provider to work
+       repository: 'eclipse-platform/eclipse.platform.swt.binaries'
     - name: Install Linux requirements
       run: sudo apt-get update -qq && sudo apt-get install -qq -y webkit2gtk-driver
       if: ${{ matrix.config.native == 'gtk.linux.x86_64'}}
