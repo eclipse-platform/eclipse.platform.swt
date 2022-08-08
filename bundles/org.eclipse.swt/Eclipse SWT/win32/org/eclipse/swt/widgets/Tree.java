@@ -4190,15 +4190,21 @@ void setItemCount (int count, long hParent) {
 	boolean expanded = false;
 	TVITEM tvItem = new TVITEM ();
 	tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_PARAM;
-	if (!redraw && (style & SWT.VIRTUAL) != 0 && (hParent != OS.TVI_ROOT)) {
-		/*
-		* Bug in Windows.  Despite the fact that TVM_GETITEMSTATE claims
-		* to return only the bits specified by the stateMask, when called
-		* with TVIS_EXPANDED, the entire state is returned.  The fix is
-		* to explicitly check for the TVIS_EXPANDED bit.
-		*/
-		int state = (int)OS.SendMessage (handle, OS.TVM_GETITEMSTATE, hParent, OS.TVIS_EXPANDED);
-		expanded = (state & OS.TVIS_EXPANDED) != 0;
+	if (!redraw && (style & SWT.VIRTUAL) != 0) {
+		if (hParent == OS.TVI_ROOT) {
+			// Trying to call TVM_GETITEMSTATE with TVI_ROOT causes a crash.
+			// Assume that root item is always expanded.
+			expanded = true;
+		} else {
+			/*
+			 * Bug in Windows.  Despite the fact that TVM_GETITEMSTATE claims
+			 * to return only the bits specified by the stateMask, when called
+			 * with TVIS_EXPANDED, the entire state is returned.  The fix is
+			 * to explicitly check for the TVIS_EXPANDED bit.
+			 */
+			int state = (int)OS.SendMessage (handle, OS.TVM_GETITEMSTATE, hParent, OS.TVIS_EXPANDED);
+			expanded = (state & OS.TVIS_EXPANDED) != 0;
+		}
 	}
 
 	if (itemDeleteFrom != 0) {
@@ -4223,17 +4229,42 @@ void setItemCount (int count, long hParent) {
 		// Note: on Windows, insert complexity is O(pos), so for performance
 		// reasons, all items are inserted at minimum possible position, that
 		// is, all at the same position.
+		long rootItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_ROOT, 0);
+		int indexInsertAfter = (rootItem == 0) ? 0 : findIndex (rootItem, itemInsertAfter);
 
 		if ((style & SWT.VIRTUAL) != 0) {
 			for (int i = 0; i < numInserted; i++) {
+				// By inserting item in the middle, the relation of
+				// 'lastIndexOf' to 'hLastIndexOf' becomes invalid if
+				// 'hLastIndexOf' points after insertion point (because
+				// inserting means that all subsequent indices change).
+				// The solution is to adjust variables to unaffected values.
+				//
+				// Note that 'Tree.indexOf()' also gets called inside
+				// 'createItem()' below (via 'TVN_GETDISPINFO'). Therefore,
+				// merely invalidating variables would be a O(N*N) performance
+				// hit because it will need to walk entire list for every item
+				// inserted. On top of that, it will return wrong values via
+				// 'TVN_GETDISPINFO'.
+				//
+				// Also note that 'Tree.indexOf()' is optimized to look for an
+				// item just after cached one before resorting to walking
+				// entire list. This means that caching item just before the
+				// inserted one is efficient.
+				lastIndexOf = indexInsertAfter;
+				hLastIndexOf = itemInsertAfter;
+
 				/*
 				 * Bug 206806: Windows sends 'TVN_GETDISPINFO' when item is
 				 * being inserted. This causes 'SWT.SetData' to be sent to
-				 * user code. If it happens to query 'getItemCount()', it will
-				 * get wrong number of items because we're still inserting. The
-				 * workaround is to temporarily suppress 'SWT.SetData'. Note
+				 * user code, but user code will likely be confused by
+				 * inconsistent Tree state (because we're still inserting):
+				 * - 'getItemCount()' will be wrong
+				 * - 'Event.index' will be wrong
+				 * The workaround is to temporarily suppress 'SWT.SetData'. Note
 				 * that the boolean flag is misleadingly used for multiple
-				 * purposes.
+				 * purposes. What really happens is that 'TVN_GETDISPINFO' will
+				 * queue a repaint for item and early return.
 				 */
 				if (expanded) ignoreShrink = true;
 				createItem (null, hParent, itemInsertAfter, 0);
@@ -7359,6 +7390,9 @@ LRESULT wmNotifyChild (NMHDR hdr, long wParam, long lParam) {
 					OS.GetClientRect (handle, rect);
 					if (!OS.IntersectRect (rect, rect, itemRect)) break;
 					if (ignoreShrink) {
+						// The non-obvious result of this is that 'SWT.SetData'
+						// is prevented during 'Tree.setItemCount()'. See a
+						// code comment there.
 						OS.InvalidateRect (handle, rect, true);
 						break;
 					}
