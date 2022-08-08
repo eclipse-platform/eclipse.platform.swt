@@ -59,6 +59,7 @@ jobs:
         -Dmaven.test.failure.ignore=true
         -DskipNativeTests=false
         -DfailIfNoTests=false
+        -f .github/aggregator.pom
         clean verify
        working-directory: eclipse.platform.swt
     - name: Upload Test Results for ${{ matrix.config.name }} / Java-${{ matrix.java }}
