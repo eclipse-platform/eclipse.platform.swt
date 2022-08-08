@@ -60,7 +60,7 @@ jobs:
         -DskipNativeTests=false
         -DfailIfNoTests=false
         -f .github/aggregator.pom
-        clean verify
+        clean install
        working-directory: eclipse.platform.swt
     - name: Upload Test Results for ${{ matrix.config.name }} / Java-${{ matrix.java }}
       uses: actions/upload-artifact@v3
