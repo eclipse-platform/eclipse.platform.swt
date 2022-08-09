@@ -878,33 +878,6 @@ static private void configureSystemOptions () {
 	if (OS.isBigSurOrLater ()) {
 		configureSystemOption ("NSViewUsesAutomaticLayerBackingStores", false);
 	}
-
-	/*
-	 * Bug 578171: There is new code in macOS 12 that remembers which
-	 * Shell was active before menu popup was shown and tries to
-	 * re-activate after menu popup is closed. Unfortunately there is a
-	 * bug in this code: if window list changes, it activates a wrong
-	 * Shell.
-	 *
-	 * This is a bug on its own, but worse yet, this causes a JVM crash
-	 * because activating a new Shell causes menu bar to reset its
-	 * internal data, which is unexpected to the macOS's menu tracking
-	 * loop.
-	 *
-	 * Both bugs are bugs of macOS itself. The workaround is to disable
-	 * the new macOS 12 behavior.
-	 *
-	 * The condition should be for (macOS >= 12), but it's not possible
-	 * to reliably distinguish 11 from 12, see comment for OS.VERSION.
-	 * That's fine: older macOS don't know this setting and will not
-	 * check for it anyway.
-	 */
-	if (OS.isBigSurOrLater ()) {
-		// The name of the option is misleading. What it really means
-		// is whether '-[NSMenuWindowManagerWindow _setVisible:]' shall
-		// save/restore current key window or not.
-		configureSystemOption ("NSMenuWindowManagerWindowShouldSetVisible", true);
-	}
 }
 
 /**
@@ -4950,6 +4923,13 @@ void setDeviceZoom() {
 	DPIUtil.setDeviceZoom (getDeviceZoom());
 }
 
+static void cancelRootMenuTracking () {
+	long rootMenu = OS.AcquireRootMenu ();
+	if (rootMenu == 0) return; // Extra safety, not sure if it can happen
+	OS.CancelMenuTracking (rootMenu, true, 0);
+	OS.CFRelease (rootMenu);
+}
+
 void setMenuBar (Menu menu) {
 	// If passed a null menu bar don't clear out the menu bar, but switch back to the
 	// application menu bar instead, if it exists.  If the app menu bar is already active
@@ -4965,7 +4945,7 @@ void setMenuBar (Menu menu) {
 	* event loop. The fix is to use CancelMenuTracking() instead.
 	*/
 //	menubar.cancelTracking();
-	OS.CancelMenuTracking (OS.AcquireRootMenu (), true, 0);
+	cancelRootMenuTracking ();
 	long count = menubar.numberOfItems();
 	while (count > 1) {
 		menubar.removeItemAtIndex(count - 1);
