@@ -1616,10 +1616,10 @@ public ImageData getImageDataAtCurrentZoom() {
 			/* Construct and return the ImageData */
 			ImageData imageData = new ImageData(width, height, depth, palette, 4, data);
 			imageData.transparentPixel = this.transparentPixel;
-			if (isDib && depth == 32) {
+			if (depth == 32) {
 				byte straightData[] = new byte[imageSize];
 				byte alphaData[] = new byte[width * height];
-				boolean validAlpha = true;
+				boolean validAlpha = isDib;
 				for (int ap = 0, dp = 0; validAlpha && ap < alphaData.length; ap++, dp += 4) {
 					int b = data[dp    ] & 0xFF;
 					int g = data[dp + 1] & 0xFF;
