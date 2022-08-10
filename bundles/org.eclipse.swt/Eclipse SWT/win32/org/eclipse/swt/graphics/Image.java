@@ -1862,7 +1862,11 @@ static long [] init(Device device, Image image, ImageData i) {
 					}
 					break;
 				case 32:
-					if (!(redMask == 0xFF00 && greenMask == 0xFF0000 && blueMask == 0xFF000000)) {
+					if (i.getTransparencyType() != SWT.TRANSPARENCY_MASK) {
+						newDepth = 24;
+						newPalette = new PaletteData(0xFF, 0xFF00, 0xFF0000);
+					}
+					else if (!(redMask == 0xFF00 && greenMask == 0xFF0000 && blueMask == 0xFF000000)) {
 						newPalette = new PaletteData(0xFF00, 0xFF0000, 0xFF000000);
 					}
 					break;
