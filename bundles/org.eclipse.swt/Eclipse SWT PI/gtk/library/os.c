@@ -13762,6 +13762,18 @@ JNIEXPORT jlong JNICALL OS_NATIVE(pango_1attr_1foreground_1new)
 }
 #endif
 
+#ifndef NO_pango_1attr_1insert_1hyphens_1new
+JNIEXPORT jlong JNICALL OS_NATIVE(pango_1attr_1insert_1hyphens_1new)
+	(JNIEnv *env, jclass that, jboolean arg0)
+{
+	jlong rc = 0;
+	OS_NATIVE_ENTER(env, that, pango_1attr_1insert_1hyphens_1new_FUNC);
+	rc = (jlong)pango_attr_insert_hyphens_new(arg0);
+	OS_NATIVE_EXIT(env, that, pango_1attr_1insert_1hyphens_1new_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_pango_1attr_1iterator_1destroy
 JNIEXPORT void JNICALL OS_NATIVE(pango_1attr_1iterator_1destroy)
 	(JNIEnv *env, jclass that, jlong arg0)
@@ -14877,6 +14889,18 @@ JNIEXPORT void JNICALL OS_NATIVE(pango_1tab_1array_1set_1tab)
 	OS_NATIVE_ENTER(env, that, pango_1tab_1array_1set_1tab_FUNC);
 	pango_tab_array_set_tab((PangoTabArray *)arg0, (gint)arg1, (PangoTabAlign)arg2, (gint)arg3);
 	OS_NATIVE_EXIT(env, that, pango_1tab_1array_1set_1tab_FUNC);
+}
+#endif
+
+#ifndef NO_pango_1version
+JNIEXPORT jint JNICALL OS_NATIVE(pango_1version)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, pango_1version_FUNC);
+	rc = (jint)pango_version();
+	OS_NATIVE_EXIT(env, that, pango_1version_FUNC);
+	return rc;
 }
 #endif
 
