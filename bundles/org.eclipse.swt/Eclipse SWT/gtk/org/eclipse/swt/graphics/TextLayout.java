@@ -115,22 +115,10 @@ void computeRuns () {
 	String segmentsText = getSegmentsText();
 	byte[] buffer = Converter.wcsToMbcs(segmentsText, false);
 	OS.pango_layout_set_text (layout, buffer, buffer.length);
+	if (stylesCount == 2 && styles[0].style == null && ascentInPoints == -1 && descentInPoints == -1 && segments == null) return;
+	long ptr = OS.pango_layout_get_text(layout);
 	attrList = OS.pango_attr_list_new();
 	selAttrList = OS.pango_attr_list_new();
-	// pango_attr_insert_hyphens_new function is available only on Pango 1.44.0+
-	// pango_version (used for version check) encodes the version in an integer via
-	// the following formula:
-	// MAJOR*10000+MINOR*100+MICRO
-	if ((1 * 10000 + 44 * 100 + 0) <= OS.pango_version()) {
-		long hyphenAttr = OS.pango_attr_insert_hyphens_new(false);
-		OS.pango_attr_list_insert(attrList, hyphenAttr);
-		OS.pango_attr_list_insert(selAttrList, OS.pango_attribute_copy(hyphenAttr));
-	}
-	if (stylesCount == 2 && styles[0].style == null && ascentInPoints == -1 && descentInPoints == -1 && segments == null) {
-		OS.pango_layout_set_attributes(layout, attrList);
-		return;
-	}
-	long ptr = OS.pango_layout_get_text(layout);
 	PangoAttribute attribute = new PangoAttribute();
 	char[] chars = null;
 	int segementsLength = segmentsText.length();
