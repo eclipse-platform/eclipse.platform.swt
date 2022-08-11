@@ -6663,22 +6663,6 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(PathIsExe)
 }
 #endif
 
-#ifndef NO_PeekMessage
-JNIEXPORT jboolean JNICALL OS_NATIVE(PeekMessage)
-	(JNIEnv *env, jclass that, jobject arg0, jlong arg1, jint arg2, jint arg3, jint arg4)
-{
-	MSG _arg0, *lparg0=NULL;
-	jboolean rc = 0;
-	OS_NATIVE_ENTER(env, that, PeekMessage_FUNC);
-	if (arg0) if ((lparg0 = &_arg0) == NULL) goto fail;
-	rc = (jboolean)PeekMessage(lparg0, (HWND)arg1, arg2, arg3, arg4);
-fail:
-	if (arg0 && lparg0) setMSGFields(env, arg0, lparg0);
-	OS_NATIVE_EXIT(env, that, PeekMessage_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO_Pie
 JNIEXPORT jboolean JNICALL OS_NATIVE(Pie)
 	(JNIEnv *env, jclass that, jlong arg0, jint arg1, jint arg2, jint arg3, jint arg4, jint arg5, jint arg6, jint arg7, jint arg8)

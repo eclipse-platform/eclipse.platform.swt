@@ -520,7 +520,6 @@ typedef enum {
 	PSPropertyKeyFromString_FUNC,
 	PatBlt_FUNC,
 	PathIsExe_FUNC,
-	PeekMessage_FUNC,
 	Pie_FUNC,
 	Polygon_FUNC,
 	Polyline_FUNC,

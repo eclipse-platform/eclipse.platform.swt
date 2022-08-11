@@ -510,7 +510,6 @@ char * OS_nativeFunctionNames[] = {
 	"PSPropertyKeyFromString",
 	"PatBlt",
 	"PathIsExe",
-	"PeekMessage",
 	"Pie",
 	"Polygon",
 	"Polyline",
