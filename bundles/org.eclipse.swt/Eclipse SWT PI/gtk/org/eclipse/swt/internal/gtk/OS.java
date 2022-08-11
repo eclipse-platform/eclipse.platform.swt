@@ -1497,7 +1497,6 @@ public static final native void memmove(PangoLayoutRun dest, long src, long size
  * @param size cast=(size_t)
  */
 public static final native void memmove(PangoLogAttr dest, long src, long size);
-public static final native int pango_version();
 /** @param attribute cast=(const PangoAttribute *) */
 public static final native long pango_attribute_copy(long attribute);
 public static final native long pango_attr_background_new(short red, short green, short blue);
@@ -1535,7 +1534,6 @@ public static final native void pango_attr_iterator_destroy(long iterator);
 public static final native long pango_attr_list_new();
 /** @param list cast=(PangoAttrList *) */
 public static final native void pango_attr_list_unref(long list);
-public static final native long pango_attr_insert_hyphens_new(boolean hyphens);
 public static final native long pango_attr_strikethrough_color_new(short red, short green, short blue);
 public static final native long pango_attr_strikethrough_new(boolean strikethrough);
 public static final native long pango_attr_underline_color_new(short red, short green, short blue);
