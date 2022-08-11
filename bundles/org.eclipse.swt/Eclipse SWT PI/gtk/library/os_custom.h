@@ -51,12 +51,14 @@
 #define LIB_GLIB "libglib-2.0.so.0"
 #define LIB_ATK "libatk-1.0.so.0"
 #define LIB_FONTCONFIG "libfontconfig.so.1"
+#define LIB_PANGO "libpango-1.0.so.0"
 #endif
 
 /* Libraries for dynamic loaded functions */
 
 #define ubuntu_menu_proxy_get_LIB LIB_GTK
 #define FcConfigAppFontAddFile_LIB LIB_FONTCONFIG
+#define pango_attr_insert_hyphens_new_LIB LIB_PANGO
 
 /* Field accessors */
 #define G_OBJECT_CLASS_CONSTRUCTOR(arg0) (arg0)->constructor
