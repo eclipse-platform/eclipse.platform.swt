@@ -301,7 +301,7 @@ public void test_getLineOffsets() {
 		offsets = layout.getLineOffsets();
 		expected = new int [] {0, 1, 2, 3, 4};
 		assertArrayEquals(expected, offsets);
-		layout.setWidth(width / 2 );
+		layout.setWidth(width / 2 + 1);
 		offsets = layout.getLineOffsets();
 		expected = new int [] {0, 2, 4};
 		assertArrayEquals(expected, offsets);
