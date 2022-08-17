@@ -138,7 +138,7 @@ case $SWT_OS.$SWT_ARCH in
 			export CC=gcc
 		fi
 		if [ "${JAVA_HOME}" = "" ]; then
-			export JAVA_HOME=`readlink -f /usr/bin/java | sed "s:jre/bin/java::"`
+			export JAVA_HOME=`readlink -f /usr/bin/java | sed "s:jre/::" | sed "s:bin/java::"`
 		fi
 		if [ "${PKG_CONFIG_PATH}" = "" ]; then
 			export PKG_CONFIG_PATH="/usr/lib64/pkgconfig/"
