@@ -45,6 +45,7 @@ jobs:
         java-version: ${{ matrix.java }}
         distribution: 'temurin'
         cache: maven
+    - run: echo "::add-matcher::eclipse.platform.swt/.github/matcher.json"
     - name: Build with Maven
       uses: GabrielBB/xvfb-action@v1
       with:

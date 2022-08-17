@@ -1,0 +1,27 @@
+{
+  "problemMatcher": [
+    {
+      "owner": "api-problems",
+      "pattern": [
+        {
+          "regexp": "^\\[API\\s(\\w+)\\].*line\\s(\\d+):\\s(.+)\\(location:\\s(.+)\\)$",
+          "severity": 1,
+          "line": 2,
+          "message": 3,
+          "file": 4
+        }
+      ]
+    },
+    {
+      "owner": "baseline-problems",
+      "pattern": [
+        {
+          "regexp": "^\\[(\\w+)\\] MavenProject: .+ @ (.+): (baseline and build artifacts have same version but different contents)$",
+          "severity": 1,
+          "file": 2,
+          "message": 3
+        }
+      ]
+    }
+  ]
+}
