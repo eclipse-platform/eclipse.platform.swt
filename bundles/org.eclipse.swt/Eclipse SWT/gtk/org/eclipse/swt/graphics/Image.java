@@ -937,7 +937,7 @@ public boolean equals (Object object) {
  * color of the widget to paint the transparent pixels of the image.
  * Use this method to check which color will be used in these cases
  * in place of transparency. This value may be set with setBackground().
- * <p>
+ * </p>
  *
  * @return the background color of the image, or null if there is no transparency in the image
  *

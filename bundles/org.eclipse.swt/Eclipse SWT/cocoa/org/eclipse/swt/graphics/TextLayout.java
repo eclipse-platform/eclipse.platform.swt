@@ -1922,7 +1922,7 @@ public void setOrientation(int orientation) {
  * <p>
  * When segments characters are set, the segments are the offsets where
  * the characters are inserted in the text.
- * <p>
+ * </p>
  *
  * @param segments the text segments offset
  *

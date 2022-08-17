@@ -28,7 +28,6 @@ public interface StyledTextContent {
  * Called by StyledText to add itself as an Observer to content changes.
  * See TextChangeListener for a description of the listener methods that
  * are called when text changes occur.
- * <p>
  *
  * @param listener the listener
  * @exception IllegalArgumentException <ul>
@@ -39,7 +38,6 @@ public void addTextChangeListener(TextChangeListener listener);
 
 /**
  * Return the number of characters in the content.
- * <p>
  *
  * @return the number of characters in the content.
  */
@@ -47,7 +45,6 @@ public int getCharCount();
 
 /**
  * Return the line at the given line index without delimiters.
- * <p>
  *
  * @param lineIndex index of the line to return. Does not include
  *	delimiters of preceding lines. Index 0 is the first line of the
@@ -70,7 +67,6 @@ public String getLine(int lineIndex);
 
 /**
  * Return the line index at the given character offset.
- * <p>
  *
  * @param offset offset of the line to return. The first character of the
  * 	document is at offset 0.  An offset of {@link #getCharCount()} is valid
@@ -102,7 +98,6 @@ public int getLineAtOffset(int offset);
 /**
  * Return the number of lines.  Should answer 1 when no text is specified.
  * The  StyledText widget relies on this behavior for drawing the cursor.
- * <p>
  *
  * @return the number of lines.  For example:
  * <ul>
@@ -121,7 +116,6 @@ public int getLineCount();
  * and paste operations use this line delimiter.
  * Implementors may use System.lineSeparator() to return
  * the platform line delimiter.
- * <p>
  *
  * @return the line delimiter that should be used by the StyledText widget
  *	when inserting new lines.
@@ -150,7 +144,6 @@ public int getOffsetAtLine(int lineIndex);
 
 /**
  * Returns a string representing the content at the given range.
- * <p>
  *
  * @param start the start offset of the text to return. Offset 0 is the
  * 	first character of the document.
@@ -161,7 +154,6 @@ public String getTextRange(int start, int length);
 
 /**
  * Remove the specified text changed listener.
- * <p>
  *
  * @param listener the listener which should no longer be notified
  *
@@ -223,7 +215,6 @@ public void replaceTextRange(int start, int replaceLength, String text);
  * Implementors have to send a <code>TextChangedEvent</code> to the
  * textSet method of the TextChangeListeners that were added using
  * <code>addTextChangeListener</code>.
- * <p>
  *
  * @param text the new text
  * @see TextChangeListener

@@ -27,7 +27,6 @@ public class TextChangedEvent extends TypedEvent {
 
 /**
  * Create the TextChangedEvent to be used by the StyledTextContent implementor.
- * <p>
  *
  * @param source the object that will be sending the TextChangedEvent,
  * 	cannot be null

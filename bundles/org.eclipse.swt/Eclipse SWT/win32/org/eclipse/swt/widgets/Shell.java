@@ -968,7 +968,6 @@ public boolean getEnabled () {
 /**
  * Returns <code>true</code> if the receiver is currently
  * in fullscreen state, and false otherwise.
- * <p>
  *
  * @return the fullscreen state
  *
@@ -1169,7 +1168,7 @@ public Shell getShell () {
 /**
  * Returns an array containing all shells which are
  * descendants of the receiver.
- * <p>
+ * 
  * @return the dialog shells
  *
  * @exception SWTException <ul>
@@ -1207,7 +1206,6 @@ public Shell [] getShells () {
  * trim. This will return <code>null</code> if the platform does not support tool bars that
  * are not part of the content area of the shell, or if the Shell's style does not support
  * having a tool bar.
- * <p>
  *
  * @return a ToolBar object representing the Shell's tool bar, or <code>null</code>.
  *

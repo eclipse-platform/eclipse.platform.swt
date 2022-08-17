@@ -532,7 +532,6 @@ public boolean getChecked () {
 /**
  * Returns <code>true</code> if the receiver is expanded,
  * and false otherwise.
- * <p>
  *
  * @return the expanded state
  *
@@ -1111,7 +1110,6 @@ public void setBackground (int index, Color color) {
 
 /**
  * Sets the checked state of the receiver.
- * <p>
  *
  * @param checked the new checked state
  *
@@ -1131,7 +1129,6 @@ public void setChecked (boolean checked) {
 
 /**
  * Sets the expanded state of the receiver.
- * <p>
  *
  * @param expanded the new expanded state
  *

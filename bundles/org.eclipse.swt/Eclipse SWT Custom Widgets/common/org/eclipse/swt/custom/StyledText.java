@@ -4026,7 +4026,6 @@ public int getCharCount() {
  * Returns the line at the given line index without delimiters.
  * Index 0 is the first line of the content. When there are not
  * any lines, getLine(0) is a valid call that answers an empty string.
- * <p>
  *
  * @param lineIndex index of the line to return.
  * @return the line text without delimiters

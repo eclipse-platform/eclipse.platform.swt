@@ -179,7 +179,7 @@ Rectangle getBoundsInPixels () {
  * Returns the control that is used to fill the client area of
  * the tab folder when the user selects the tab item.  If no
  * control has been set, return <code>null</code>.
- * <p>
+ *
  * @return the control
  *
  * @exception SWTException <ul>
@@ -287,7 +287,7 @@ void releaseParent () {
 /**
  * Sets the control that is used to fill the client area of
  * the tab folder when the user selects the tab item.
- * <p>
+ *
  * @param control the new control (or null)
  *
  * @exception IllegalArgumentException <ul>
