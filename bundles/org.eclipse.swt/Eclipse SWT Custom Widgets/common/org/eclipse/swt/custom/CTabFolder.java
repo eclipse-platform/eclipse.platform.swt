@@ -1064,7 +1064,6 @@ public int getMinimumCharacters() {
 
 /**
  * Returns <code>true</code> if the receiver is maximized.
- * <p>
  *
  * @return the receiver's maximized state
  *

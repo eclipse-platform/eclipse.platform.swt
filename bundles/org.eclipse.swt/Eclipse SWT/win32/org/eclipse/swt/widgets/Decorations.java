@@ -573,7 +573,6 @@ public Image [] getImages () {
 /**
  * Returns <code>true</code> if the receiver is currently
  * maximized, and false otherwise.
- * <p>
  *
  * @return the maximized state
  *
@@ -609,7 +608,6 @@ public Menu getMenuBar () {
 /**
  * Returns <code>true</code> if the receiver is currently
  * minimized, and false otherwise.
- * <p>
  *
  * @return the minimized state
  *

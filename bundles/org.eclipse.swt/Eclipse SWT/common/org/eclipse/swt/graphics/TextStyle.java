@@ -146,7 +146,6 @@ public class TextStyle {
 	/**
 	 * the data. An user data field. It can be used to hold the HREF when the range
 	 * is used as a link or the embed object when the range is used with <code>GlyphMetrics</code>.
-	 * <p>
 	 *
 	 * @since 3.5
 	 */

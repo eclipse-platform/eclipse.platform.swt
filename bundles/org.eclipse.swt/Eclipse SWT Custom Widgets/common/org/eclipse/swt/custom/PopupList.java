@@ -93,9 +93,10 @@ private static int checkStyle (int style) {
 	int mask = SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT;
 	return style & mask;
 }
+
 /**
 * Gets the widget font.
-* <p>
+*
 * @return the widget font
 *
 * @exception SWTException <ul>
