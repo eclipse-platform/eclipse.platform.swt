@@ -274,7 +274,7 @@ public Image(Device device, Image srcImage, int flag) {
 	boolean hasAlpha = format == Cairo.CAIRO_FORMAT_ARGB32;
 	surface = Cairo.cairo_image_surface_create(format, width, height);
 	if (surface == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-	if (DPIUtil.useCairoAutoScale()) {
+	if (DPIUtil.getDeviceZoom() != currentDeviceZoom && DPIUtil.useCairoAutoScale()) {
 		double scaleFactor = DPIUtil.getDeviceZoom() / 100f;
 		Cairo.cairo_surface_set_device_scale(surface, scaleFactor, scaleFactor);
 	}
