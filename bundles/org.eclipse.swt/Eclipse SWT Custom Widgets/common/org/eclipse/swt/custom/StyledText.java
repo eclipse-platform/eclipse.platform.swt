@@ -28,6 +28,7 @@ import org.eclipse.swt.dnd.*;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.*;
+import org.eclipse.swt.internal.gtk.*;
 import org.eclipse.swt.printing.*;
 import org.eclipse.swt.widgets.*;
 
@@ -8486,12 +8487,26 @@ void scrollText(int srcY, int destY) {
 	}
 }
 void sendAccessibleTextCaretMoved() {
+	/* TODO: Accessible not working in GTK4
+	 * Reenable sendAccessibleTextCaretMoved and TextChanged
+	 * when Accessible is working in GTK4.
+	 * Disable this function running for now to prevent StyledText
+	 * console errors while porting.
+	 */
+	if(GTK.GTK4) return;
 	if (Arrays.stream(caretOffsets).noneMatch(caretOffset -> caretOffset == accCaretOffset)) {
 		accCaretOffset = caretOffsets[0];
 		getAccessible().textCaretMoved(caretOffsets[0]);
 	}
 }
 void sendAccessibleTextChanged(int start, int newCharCount, int replaceCharCount) {
+	/* TODO: Accessible not working in GTK4
+	 * Reenable sendAccessibleTextChanged and TextCaretMoved
+	 * when Accessible is working in GTK4.
+	 * Disable this function running for now to prevent StyledText
+	 * console errors while porting.
+	 */
+	if(GTK.GTK4) return;
 	Accessible accessible = getAccessible();
 	if (replaceCharCount != 0) {
 		accessible.textChanged(ACC.TEXT_DELETE, start, replaceCharCount);
