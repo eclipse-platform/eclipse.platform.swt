@@ -281,6 +281,20 @@ void set (int index, Image image) {
 	long surface = convertSurface(image);
 	int w = Cairo.cairo_image_surface_get_width(surface);
 	int h = Cairo.cairo_image_surface_get_height(surface);
+
+	/*SWT Issue 315:
+	 * if device scale returns something other than 1,
+	 * cairo_image_surface_get_width() and ...height() return the scaled
+	 * dimensions since its treating the pixels as display pixels instead of logical pixels
+	 * that surfaces use. This causes a second scaling to occur, which is incorrect.
+	 * Divide w and h by the device scale to return correct dimensions.
+	 */
+	double sx[] = new double[1];
+	double sy[] = new double[1];
+	Cairo.cairo_surface_get_device_scale(image.surface, sx, sy);
+	w /= (int)sx[0];
+	h /= (int)sy[0];
+
 	Rectangle bounds;
 	if (DPIUtil.useCairoAutoScale()) {
 		bounds = image.getBounds();
