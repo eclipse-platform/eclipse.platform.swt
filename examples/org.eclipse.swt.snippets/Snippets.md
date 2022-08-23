@@ -46,12 +46,7 @@ To contribute a new snippet, [create a snippet contribution as a pull request](h
 - [WebKit in a browser](https://github.com/eclipse-platform/eclipse.platform.swt/tree/master/examples/org.eclipse.swt.snippets/src/org/eclipse/swt/snippets/Snippet351.java) – [(preview)](https://github.com/eclipse-platform/eclipse.platform.swt/blob/master/examples/org.eclipse.swt.snippets/previews/Snippet351.png "Preview for Snippet 351")
 - [Resize the shell to the fit the html content after it's loaded](https://github.com/eclipse-platform/eclipse.platform.swt/tree/master/examples/org.eclipse.swt.snippets/src/org/eclipse/swt/snippets/Snippet372.java) – [(preview)](https://github.com/eclipse-platform/eclipse.platform.swt/blob/master/examples/org.eclipse.swt.snippets/previews/Snippet372.png "Preview for Snippet 372")
 - [Mozilla in a browser](https://github.com/eclipse-platform/eclipse.platform.swt/tree/master/examples/org.eclipse.swt.snippets/src/org/eclipse/swt/snippets/Snippet260.java?h=R4_7_maintenance)
-- [toggle a Mozilla Browser between Design mode and View mode](https://github.com/eclipse-platform/eclipse.platform.swt/tree/master/examples/org.eclipse.swt.snippets/src/org/eclipse/swt/snippets/Snippet267.java?h=R4_7_maintenance)
-- [implement a custom download handler for a Mozilla Browser](https://github.com/eclipse-platform/eclipse.platform.swt/tree/master/examples/org.eclipse.swt.snippets/src/org/eclipse/swt/snippets/Snippet277.java?h=R4_7_maintenance)
-- [show an HTML element-specific context menu in a Mozilla Browser](https://github.com/eclipse-platform/eclipse.platform.swt/tree/master/examples/org.eclipse.swt.snippets/src/org/eclipse/swt/snippets/Snippet306.java?h=R4_7_maintenance)
-- [examine request and response headers in a Mozilla Browser](https://github.com/eclipse-platform/eclipse.platform.swt/tree/master/examples/org.eclipse.swt.snippets/src/org/eclipse/swt/snippets/Snippet321.java?h=R4_7_maintenance)
-- [view DOM tree and edit node values in a Mozilla Browser](https://github.com/eclipse-platform/eclipse.platform.swt/tree/master/examples/org.eclipse.swt.snippets/src/org/eclipse/swt/snippets/Snippet323.java?h=R4_7_maintenance)
-- [zoom HTML page content in a Mozilla Browser](https://github.com/eclipse-platform/eclipse.platform.swt/tree/master/examples/org.eclipse.swt.snippets/src/org/eclipse/swt/snippets/Snippet329.java?h=R4_7_maintenance)
+
 
 ### **BusyIndicator**
 - [display busy cursor during long running task](https://github.com/eclipse-platform/eclipse.platform.swt/tree/master/examples/org.eclipse.swt.snippets/src/org/eclipse/swt/snippets/Snippet130.java) – [(preview)](https://github.com/eclipse-platform/eclipse.platform.swt/blob/master/examples/org.eclipse.swt.snippets/previews/Snippet130.png "Preview for Snippet 130")
