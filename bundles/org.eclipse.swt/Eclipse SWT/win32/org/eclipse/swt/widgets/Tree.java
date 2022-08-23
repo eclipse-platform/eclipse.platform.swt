@@ -2069,8 +2069,9 @@ void createItem (TreeItem item, long hParent, long hInsertAfter, long hItem) {
 				shrink = true;
 				length = Math.max (4, items.length * 3 / 2);
 			}
-
-			itemsGrowArray (length);
+			TreeItem [] newItems = new TreeItem [length];
+			System.arraycopy (items, 0, newItems, 0, items.length);
+			items = newItems;
 		}
 		lastID = id + 1;
 	}
@@ -3854,22 +3855,6 @@ boolean isUseWsBorder () {
 	return true;
 }
 
-int itemsGetFreeCapacity() {
-	int count = 0;
-	for (TreeItem item : items) {
-		if (item == null)
-			count++;
-	}
-
-	return count;
-}
-
-void itemsGrowArray (int newCapacity) {
-	TreeItem [] newItems = new TreeItem [newCapacity];
-	System.arraycopy (items, 0, newItems, 0, items.length);
-	items = newItems;
-}
-
 void redrawSelection () {
 	if ((style & SWT.SINGLE) != 0) {
 		long hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_CARET, 0);
@@ -4152,128 +4137,69 @@ public void setItemCount (int count) {
 }
 
 void setItemCount (int count, long hParent) {
-	// Investigate existing items and decide what to do
-	long itemInsertAfter = 0;
-	int  numInserted = 0;
-	long itemDeleteFrom = 0;
-	{
-		// Iterate to position #count and find prev/next items at this position
-		int itemCount = 0;
-		long itemPrev = OS.TVI_FIRST;
-		long itemNext = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_CHILD, hParent);
-		while (itemNext != 0 && itemCount < count)
-		{
-			itemPrev = itemNext;
-			itemNext = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_NEXT, itemNext);
-			itemCount++;
-		}
-
-		if ((itemCount == count) && (itemNext == 0)) {
-			// Exactly 'count' items, no need to do anything.
-			return;
-		} else if (itemCount == count) {
-			// Too many items, going to delete some
-			itemDeleteFrom = itemNext;
-		} else if (itemNext == 0) {
-			// Counted all items, and there is not enough, going to insert some.
-			itemInsertAfter = itemPrev;
-			numInserted = count - itemCount;
-		}
-	}
+	long hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_CHILD, hParent);
 
 	boolean redraw = false;
 	if (OS.SendMessage (handle, OS.TVM_GETCOUNT, 0, 0) == 0) {
 		redraw = getDrawing () && OS.IsWindowVisible (handle);
 		if (redraw) OS.DefWindowProc (handle, OS.WM_SETREDRAW, 0, 0);
 	}
-
+	int itemCount = 0;
+	while (hItem != 0 && itemCount < count) {
+		hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_NEXT, hItem);
+		itemCount++;
+	}
 	boolean expanded = false;
 	TVITEM tvItem = new TVITEM ();
 	tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_PARAM;
-	if (!redraw && (style & SWT.VIRTUAL) != 0) {
-		if (hParent == OS.TVI_ROOT) {
-			// Trying to call TVM_GETITEMSTATE with TVI_ROOT causes a crash.
-			// Assume that root item is always expanded.
-			expanded = true;
+	if (!redraw && (style & SWT.VIRTUAL) != 0 && (hParent != OS.TVI_ROOT)) {
+		/*
+		* Bug in Windows.  Despite the fact that TVM_GETITEMSTATE claims
+		* to return only the bits specified by the stateMask, when called
+		* with TVIS_EXPANDED, the entire state is returned.  The fix is
+		* to explicitly check for the TVIS_EXPANDED bit.
+		*/
+		int state = (int)OS.SendMessage (handle, OS.TVM_GETITEMSTATE, hParent, OS.TVIS_EXPANDED);
+		expanded = (state & OS.TVIS_EXPANDED) != 0;
+	}
+	while (hItem != 0) {
+		tvItem.hItem = hItem;
+		OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
+		hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_NEXT, hItem);
+		TreeItem item = tvItem.lParam != -1 ? items [(int)tvItem.lParam] : null;
+		if (item != null && !item.isDisposed ()) {
+			item.dispose ();
 		} else {
-			/*
-			 * Bug in Windows.  Despite the fact that TVM_GETITEMSTATE claims
-			 * to return only the bits specified by the stateMask, when called
-			 * with TVIS_EXPANDED, the entire state is returned.  The fix is
-			 * to explicitly check for the TVIS_EXPANDED bit.
-			 */
-			int state = (int)OS.SendMessage (handle, OS.TVM_GETITEMSTATE, hParent, OS.TVIS_EXPANDED);
-			expanded = (state & OS.TVIS_EXPANDED) != 0;
+			releaseItem (tvItem.hItem, tvItem, false);
+			destroyItem (null, tvItem.hItem);
 		}
 	}
-
-	if (itemDeleteFrom != 0) {
-		while (itemDeleteFrom != 0) {
-			tvItem.hItem = itemDeleteFrom;
-			OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
-			itemDeleteFrom = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_NEXT, itemDeleteFrom);
-			TreeItem item = tvItem.lParam != -1 ? items [(int)tvItem.lParam] : null;
-			if (item != null && !item.isDisposed ()) {
-				item.dispose ();
-			} else {
-				releaseItem (tvItem.hItem, tvItem, false);
-				destroyItem (null, tvItem.hItem);
-			}
+	if ((style & SWT.VIRTUAL) != 0) {
+		for (int i=itemCount; i<count; i++) {
+			/*
+			 * Bug 206806: Windows sends 'TVN_GETDISPINFO' when item is
+			 * being inserted. This causes 'SWT.SetData' to be sent to
+			 * user code, but user code will likely be confused by
+			 * inconsistent Tree state (because we're still inserting):
+			 * - 'getItemCount()' will be wrong
+			 * - 'Event.index' will be wrong
+			 * The workaround is to temporarily suppress 'SWT.SetData'. Note
+			 * that the boolean flag is misleadingly used for multiple
+			 * purposes. What really happens is that 'TVN_GETDISPINFO' will
+			 * queue a repaint for item and early return.
+			 */
+			if (expanded) ignoreShrink = true;
+			createItem (null, hParent, OS.TVI_LAST, 0);
+			if (expanded) ignoreShrink = false;
 		}
 	} else {
-		// For performance reasons, reserve the necessary space in items[]
-		int freeCapacity = itemsGetFreeCapacity();
-		if (numInserted > freeCapacity)
-			itemsGrowArray (items.length + numInserted - freeCapacity);
-
-		// Note: on Windows, insert complexity is O(pos), so for performance
-		// reasons, all items are inserted at minimum possible position, that
-		// is, all at the same position.
-		long rootItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_ROOT, 0);
-		int indexInsertAfter = (rootItem == 0) ? 0 : findIndex (rootItem, itemInsertAfter);
-
-		if ((style & SWT.VIRTUAL) != 0) {
-			for (int i = 0; i < numInserted; i++) {
-				// By inserting item in the middle, the relation of
-				// 'lastIndexOf' to 'hLastIndexOf' becomes invalid if
-				// 'hLastIndexOf' points after insertion point (because
-				// inserting means that all subsequent indices change).
-				// The solution is to adjust variables to unaffected values.
-				//
-				// Note that 'Tree.indexOf()' also gets called inside
-				// 'createItem()' below (via 'TVN_GETDISPINFO'). Therefore,
-				// merely invalidating variables would be a O(N*N) performance
-				// hit because it will need to walk entire list for every item
-				// inserted. On top of that, it will return wrong values via
-				// 'TVN_GETDISPINFO'.
-				//
-				// Also note that 'Tree.indexOf()' is optimized to look for an
-				// item just after cached one before resorting to walking
-				// entire list. This means that caching item just before the
-				// inserted one is efficient.
-				lastIndexOf = indexInsertAfter;
-				hLastIndexOf = itemInsertAfter;
-
-				/*
-				 * Bug 206806: Windows sends 'TVN_GETDISPINFO' when item is
-				 * being inserted. This causes 'SWT.SetData' to be sent to
-				 * user code, but user code will likely be confused by
-				 * inconsistent Tree state (because we're still inserting):
-				 * - 'getItemCount()' will be wrong
-				 * - 'Event.index' will be wrong
-				 * The workaround is to temporarily suppress 'SWT.SetData'. Note
-				 * that the boolean flag is misleadingly used for multiple
-				 * purposes. What really happens is that 'TVN_GETDISPINFO' will
-				 * queue a repaint for item and early return.
-				 */
-				if (expanded) ignoreShrink = true;
-				createItem (null, hParent, itemInsertAfter, 0);
-				if (expanded) ignoreShrink = false;
-			}
-		} else {
-			for (int i = 0; i < numInserted; i++) {
-				new TreeItem (this, SWT.NONE, hParent, itemInsertAfter, 0);
-			}
+		shrink = true;
+		int extra = Math.max (4, (count + 3) / 4 * 4);
+		TreeItem [] newItems = new TreeItem [items.length + extra];
+		System.arraycopy (items, 0, newItems, 0, items.length);
+		items = newItems;
+		for (int i=itemCount; i<count; i++) {
+			new TreeItem (this, SWT.NONE, hParent, OS.TVI_LAST, 0);
 		}
 	}
 	if (redraw) {
