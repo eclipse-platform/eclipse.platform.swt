@@ -4924,13 +4924,6 @@ void setDeviceZoom() {
 	DPIUtil.setDeviceZoom (getDeviceZoom());
 }
 
-static void cancelRootMenuTracking () {
-	long rootMenu = OS.AcquireRootMenu ();
-	if (rootMenu == 0) return; // Extra safety, not sure if it can happen
-	OS.CancelMenuTracking (rootMenu, true, 0);
-	OS.CFRelease (rootMenu);
-}
-
 void setMenuBar (Menu menu) {
 	// If passed a null menu bar don't clear out the menu bar, but switch back to the
 	// application menu bar instead, if it exists.  If the app menu bar is already active
@@ -4940,13 +4933,8 @@ void setMenuBar (Menu menu) {
 	menuBar = menu;
 	//remove all existing menu items except the application menu
 	NSMenu menubar = application.mainMenu();
-	/*
-	* For some reason, NSMenu.cancelTracking() does not dismisses
-	* the menu right away when the menu bar is set in a stacked
-	* event loop. The fix is to use CancelMenuTracking() instead.
-	*/
-//	menubar.cancelTracking();
-	cancelRootMenuTracking ();
+	// Cancel menu tracking (why is it needed?)
+	// menubar.cancelTracking();
 	long count = menubar.numberOfItems();
 	while (count > 1) {
 		menubar.removeItemAtIndex(count - 1);
