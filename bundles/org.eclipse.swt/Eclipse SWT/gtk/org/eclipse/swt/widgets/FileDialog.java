@@ -120,12 +120,16 @@ String computeResultChooserDialog () {
 			}
 		}
 
-		int listLength = OS.g_slist_length (list);
+		int listLength;
+		if(GTK.GTK4) listLength = OS.g_list_model_get_n_items(list);
+		else listLength = OS.g_slist_length (list);
 		fileNames = new String [listLength];
 		long current = list;
 		int writePos = 0;
 		for (int i = 0; i < listLength; i++) {
-			long name = OS.g_slist_data (current);
+			long name;
+			if(GTK.GTK4) name = OS.g_list_model_get_item(list, i);
+			else name = OS.g_slist_data (current);
 			long utf8Ptr = 0;
 			if (uriMode) {
 				if (GTK.GTK4) {
@@ -137,7 +141,6 @@ String computeResultChooserDialog () {
 				if (GTK.GTK4) {
 					name = OS.g_file_get_path(name);
 				}
-
 				utf8Ptr = OS.g_filename_to_utf8 (name, -1, null, null, null);
 				if (utf8Ptr == 0) utf8Ptr = OS.g_filename_display_name (name);
 			}
@@ -155,14 +158,15 @@ String computeResultChooserDialog () {
 					fileNames [writePos++] = fullPath.substring (fullPath.lastIndexOf (SEPARATOR) + 1);
 				}
 			}
-			current = OS.g_slist_next (current);
+			if(!GTK.GTK4) current = OS.g_slist_next (current);
 		}
 		if (writePos != 0 && writePos != listLength) {
 			String [] validFileNames = new String [writePos];
 			System.arraycopy (fileNames, 0, validFileNames, 0, writePos);
 			fileNames = validFileNames;
 		}
-		OS.g_slist_free (list);
+		if(GTK.GTK4) OS.g_object_unref(list);
+		else OS.g_slist_free (list);
 	} else {
 		long utf8Ptr = 0;
 		if (uriMode) {
