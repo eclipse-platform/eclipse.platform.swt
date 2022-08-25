@@ -1022,4 +1022,131 @@ public void test_emptinessChanged() {
 	assertEquals(2, count[NOT_EMPTY]);
 	assertEquals(2, count[EMPTY]);
 }
+
+private void testTreeRegularAndVirtual(Runnable runnable) {
+	runnable.run();
+
+	tree.dispose();
+	tree = new Tree(shell, SWT.VIRTUAL);
+	setWidget(tree);
+
+	runnable.run();
+}
+
+@Test
+public void test_setItemCount_itemOrderRoot() {
+	testTreeRegularAndVirtual(() -> {
+		// Test root items
+		{
+			Tree parent = tree;
+
+			// Create items
+			{
+				new TreeItem (parent, 0).setText ("0");
+				new TreeItem (parent, 0).setText ("2");
+				new TreeItem (parent, 0, 1).setText ("1");
+
+				parent.setItemCount (6);
+
+				parent.getItem (3).setText ("3");
+				parent.getItem (4).setText ("4");
+				parent.getItem (5).setText ("5");
+
+				new TreeItem (parent, 0).setText ("6");
+				new TreeItem (parent, 0).setText ("8");
+				new TreeItem (parent, 0, 7).setText ("7");
+
+				parent.setItemCount (12);
+
+				parent.getItem (9).setText ("9");
+				parent.getItem (10).setText ("10");
+				parent.getItem (11).setText ("11");
+			}
+
+			// Test items
+			TreeItem[] items = parent.getItems();
+			assertEquals(12, items.length);
+			for (int iItem = 0; iItem < items.length; iItem++) {
+				assertEquals(Integer.toString(iItem), items[iItem].getText());
+			}
+		}
+
+		// Test child items
+		{
+			TreeItem parent = tree.getItem(0);
+
+			// Create items
+			{
+				new TreeItem(parent, 0).setText("0");
+				new TreeItem(parent, 0).setText("2");
+				new TreeItem(parent, 0, 1).setText("1");
+
+				parent.setItemCount(6);
+
+				parent.getItem(3).setText("3");
+				parent.getItem(4).setText("4");
+				parent.getItem(5).setText("5");
+
+				new TreeItem(parent, 0).setText("6");
+				new TreeItem(parent, 0).setText("8");
+				new TreeItem(parent, 0, 7).setText("7");
+
+				parent.setItemCount(12);
+
+				parent.getItem(9).setText("9");
+				parent.getItem(10).setText("10");
+				parent.getItem(11).setText("11");
+			}
+
+			// Test items
+			TreeItem[] items = parent.getItems();
+			assertEquals(12, items.length);
+			for (int iItem = 0; iItem < items.length; iItem++) {
+				assertEquals(Integer.toString(iItem), items[iItem].getText());
+			}
+		}
+	});
+}
+
+@Test
+public void test_setItemCount_indexOf() {
+	testTreeRegularAndVirtual(() -> {
+		tree.setItemCount(10);
+		TreeItem item_0 = tree.getItem(0);
+		TreeItem item_2 = tree.getItem(2);
+
+		item_0.setItemCount(10);
+		item_0.setExpanded(true);
+		TreeItem item_0_4 = item_0.getItem(4);
+
+		// Issue 287
+		{
+			// Bug requires Tree to be visible
+			if (!shell.getVisible()) {
+				shell.setLayout(new FillLayout());
+				shell.pack();
+				shell.open();
+			} else {
+				tree.pack();
+			}
+			SwtTestUtil.processEvents();
+
+			tree.setItemCount(5);
+			tree.setItemCount(10);
+
+			// Bug requires 'TVN_GETDISPINFO' to be processed
+			SwtTestUtil.processEvents();
+
+			assertEquals(2, tree.indexOf(item_2));
+		}
+
+		// Issue 333
+		{
+			item_0.setItemCount(5);   // This causes cached index to be reset
+			item_0.indexOf(item_0_4); // This causes index to be cached again
+			item_0.setItemCount(10);  // This causes index to be recalculated
+			assertEquals(4, item_0.indexOf(item_0_4));
+		}
+	});
+}
 }
