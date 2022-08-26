@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-Name: %pluginName
 Bundle-Vendor: %providerName
 Bundle-SymbolicName: org.eclipse.swt.tools.spies;singleton:=true
-Bundle-Version: 3.108.400.qualifier
+Bundle-Version: 3.108.500.qualifier
 Bundle-ManifestVersion: 2
 Export-Package: org.eclipse.swt.tools.internal,
  org.eclipse.swt.tools.views
