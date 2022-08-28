@@ -267,7 +267,7 @@ boolean fillAccel (ACCEL accel) {
 				if (key == 0) return false;
 				vKey = OS.VkKeyScan ((short) key);
 				if (vKey == -1) {
-					if (key != (int)OS.CharUpper ((short) key)) {
+					if (key != (int)OS.CharUpper (OS.LOWORD (key))) {
 						fVirt = 0;
 					}
 				} else {
