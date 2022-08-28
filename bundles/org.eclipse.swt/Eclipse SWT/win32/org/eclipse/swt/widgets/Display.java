@@ -860,7 +860,7 @@ void clearModal (Shell shell) {
 }
 
 int controlKey (int key) {
-	int upper = (int)OS.CharUpper ((short) key);
+	int upper = (int)OS.CharUpper (OS.LOWORD (key));
 	if (64 <= upper && upper <= 95) return upper & 0xBF;
 	return key;
 }

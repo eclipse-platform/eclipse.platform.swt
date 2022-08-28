@@ -1784,7 +1784,7 @@ LRESULT wmKeyDown (long hwnd, long wParam, long lParam) {
 		* upper case values in WM_KEYDOWN despite the fact that the
 		* Shift was not pressed.
 		*/
-		display.lastKey = (int)OS.CharLower ((short) mapKey);
+		display.lastKey = (int)OS.CharLower (OS.LOWORD (mapKey));
 
 		/*
 		* Feature in Windows. The virtual key VK_CANCEL is treated
@@ -1843,7 +1843,7 @@ LRESULT wmKeyDown (long hwnd, long wParam, long lParam) {
 			display.lastAscii = display.shiftedKey ((int)wParam);
 			if (display.lastAscii == 0) display.lastAscii = mapKey;
 		} else {
-			display.lastAscii = (int)OS.CharLower ((short) mapKey);
+			display.lastAscii = (int)OS.CharLower (OS.LOWORD (mapKey));
 		}
 
 		/* Note that Ctrl+'@' is ASCII NUL and is delivered in WM_CHAR */
@@ -2464,7 +2464,7 @@ LRESULT wmSysKeyDown (long hwnd, long wParam, long lParam) {
 		* upper case values in WM_SYSKEYDOWN despite the fact that the
 		* Shift was not pressed.
 		*/
-		display.lastKey = (int)OS.CharLower ((short) mapKey);
+		display.lastKey = (int)OS.CharLower (OS.LOWORD (mapKey));
 		return null;
 	}
 
