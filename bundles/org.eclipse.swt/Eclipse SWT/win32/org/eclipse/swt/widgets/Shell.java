@@ -1168,7 +1168,7 @@ public Shell getShell () {
 /**
  * Returns an array containing all shells which are
  * descendants of the receiver.
- * 
+ *
  * @return the dialog shells
  *
  * @exception SWTException <ul>
