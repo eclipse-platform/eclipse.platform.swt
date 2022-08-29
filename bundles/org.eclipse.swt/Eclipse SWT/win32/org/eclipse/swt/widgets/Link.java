@@ -116,7 +116,7 @@ public Link(Composite parent, int style) {
 	this.getAccessible().addAccessibleListener(new AccessibleAdapter() {
 		@Override
 		public void getName(AccessibleEvent e) {
-			e.result = Link.this.getText();
+			e.result = text;
 		}
 	});
 }
