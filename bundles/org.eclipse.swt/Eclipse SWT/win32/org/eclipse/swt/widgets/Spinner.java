@@ -1254,7 +1254,7 @@ LRESULT wmIMEChar(long hwnd, long wParam, long lParam) {
 	Display display = this.display;
 	display.lastKey = 0;
 	display.lastAscii = (int)wParam;
-	display.lastVirtual = display.lastNull = display.lastDead = false;
+	display.lastVirtual = display.lastDead = false;
 	if (!sendKeyEvent (SWT.KeyDown, OS.WM_IME_CHAR, wParam, lParam)) {
 		return LRESULT.ZERO;
 	}

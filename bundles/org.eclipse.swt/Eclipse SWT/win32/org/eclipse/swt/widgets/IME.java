@@ -379,7 +379,7 @@ LRESULT WM_IME_COMPOSITION (long wParam, long lParam) {
 				if (event.doit) {
 					Display display = this.display;
 					display.lastKey = 0;
-					display.lastVirtual = display.lastNull = display.lastDead = false;
+					display.lastVirtual = display.lastDead = false;
 					length = chars.length ();
 					for (int i = 0; i < length; i++) {
 						char c = chars.charAt (i);

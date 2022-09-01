@@ -355,7 +355,7 @@ public class Display extends Device {
 	Point scrollRemainderEvt = new Point(0, 0);
 	Point scrollRemainderBar = new Point(0, 0);
 	int lastKey, lastMouse, lastAscii;
-	boolean lastVirtual, lastNull, lastDead;
+	boolean lastVirtual, lastDead;
 	byte [] keyboard = new byte [256];
 	boolean accelKeyHit, mnemonicKeyHit;
 	boolean lockActiveWindow, captureChanged, xMouse;
@@ -1279,7 +1279,7 @@ boolean filterMessage (MSG msg) {
 		if (control != null) {
 			if (translateAccelerator (msg, control) || translateMnemonic (msg, control) || translateTraversal (msg, control)) {
 				lastAscii = lastKey = 0;
-				lastVirtual = lastNull = lastDead = false;
+				lastVirtual = lastDead = false;
 				return true;
 			}
 		}
