@@ -4118,7 +4118,7 @@ boolean translateMnemonic (MSG msg) {
 	Decorations shell = menuShell ();
 	if (shell.isVisible () && shell.isEnabled ()) {
 		display.lastAscii = (int)msg.wParam;
-		display.lastNull = display.lastDead = false;
+		display.lastDead = false;
 		Event event = new Event ();
 		event.detail = SWT.TRAVERSE_MNEMONIC;
 		if (setKeyState (event, SWT.Traverse, msg.wParam, msg.lParam)) {
@@ -4231,7 +4231,7 @@ boolean translateTraversal (MSG msg) {
 	display.lastKey = lastKey;
 	display.lastAscii = lastAscii;
 	display.lastVirtual = lastVirtual;
-	display.lastNull = display.lastDead = false;
+	display.lastDead = false;
 	if (!setKeyState (event, SWT.Traverse, msg.wParam, msg.lParam)) return false;
 	Shell shell = getShell ();
 	Control control = this;

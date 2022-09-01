@@ -1480,11 +1480,9 @@ boolean setKeyState (Event event, int type, long wParam, long lParam) {
 	} else {
 		event.keyCode = display.lastKey;
 	}
-	if (display.lastAscii != 0 || display.lastNull) {
-		event.character = (char) display.lastAscii;
-	}
+	event.character = (char) display.lastAscii;
 	if (event.keyCode == 0 && event.character == 0) {
-		if (!display.lastNull) return false;
+		return false;
 	}
 	return setInputState (event, type);
 }
@@ -1593,7 +1591,6 @@ LRESULT wmCaptureChanged (long hwnd, long wParam, long lParam) {
 
 LRESULT wmChar (long hwnd, long wParam, long lParam) {
 	display.lastAscii = (int)wParam;
-	display.lastNull = wParam == 0;
 	if (!sendKeyEvent (SWT.KeyDown, OS.WM_CHAR, wParam, lParam)) {
 		return LRESULT.ONE;
 	}
@@ -1641,7 +1638,7 @@ LRESULT wmIMEChar (long hwnd, long wParam, long lParam) {
 	Display display = this.display;
 	display.lastKey = 0;
 	display.lastAscii = (int)wParam;
-	display.lastVirtual = display.lastNull = display.lastDead = false;
+	display.lastVirtual = display.lastDead = false;
 	if (!sendKeyEvent (SWT.KeyDown, OS.WM_IME_CHAR, wParam, lParam)) {
 		return LRESULT.ONE;
 	}
@@ -1666,7 +1663,7 @@ LRESULT wmKeyDown (long hwnd, long wParam, long lParam) {
 
 	/* Clear last key and last ascii because a new key has been typed */
 	display.lastAscii = display.lastKey = 0;
-	display.lastVirtual = display.lastNull = display.lastDead = false;
+	display.lastVirtual = display.lastDead = false;
 
 	/* Map the virtual key */
 	int mapKey = OS.MapVirtualKey ((int)wParam, 2);
@@ -1866,7 +1863,7 @@ LRESULT wmKeyUp (long hwnd, long wParam, long lParam) {
 	*/
 	if (!hooks (SWT.KeyUp) && !display.filters (SWT.KeyUp)) {
 		display.lastKey = display.lastAscii = 0;
-		display.lastVirtual = display.lastNull = display.lastDead = false;
+		display.lastVirtual = display.lastDead = false;
 		return null;
 	}
 
@@ -1905,7 +1902,7 @@ LRESULT wmKeyUp (long hwnd, long wParam, long lParam) {
 		if (wParam == OS.VK_CANCEL) display.lastVirtual = true;
 		if (display.lastKey == 0) {
 			display.lastAscii = 0;
-			display.lastNull = display.lastDead = false;
+			display.lastDead = false;
 			return null;
 		}
 	}
@@ -1915,7 +1912,7 @@ LRESULT wmKeyUp (long hwnd, long wParam, long lParam) {
 	}
 	// widget could be disposed at this point
 	display.lastKey = display.lastAscii = 0;
-	display.lastVirtual = display.lastNull = display.lastDead = false;
+	display.lastVirtual = display.lastDead = false;
 	return result;
 }
 
@@ -2359,7 +2356,6 @@ LRESULT wmSetFocus (long hwnd, long wParam, long lParam) {
 LRESULT wmSysChar (long hwnd, long wParam, long lParam) {
 	Display display = this.display;
 	display.lastAscii = (int)wParam;
-	display.lastNull = wParam == 0;
 
 	/* Do not issue a key down if a menu bar mnemonic was invoked */
 	if (!hooks (SWT.KeyDown) && !display.filters (SWT.KeyDown)) {
@@ -2420,7 +2416,7 @@ LRESULT wmSysKeyDown (long hwnd, long wParam, long lParam) {
 
 	/* Clear last key and last ascii because a new key has been typed */
 	display.lastAscii = display.lastKey = 0;
-	display.lastVirtual = display.lastNull = display.lastDead = false;
+	display.lastVirtual = display.lastDead = false;
 
 	/* If are going to get a WM_SYSCHAR, ignore this message. */
 	int mapKey = OS.MapVirtualKey ((int)wParam, 2);
