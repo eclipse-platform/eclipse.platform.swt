@@ -5776,6 +5776,25 @@ void saveResources () {
 	}
 }
 
+private void sendJDKInternalEvent(int eventType) {
+	sendJDKInternalEvent(eventType, 0);
+}
+/** does sent event with JDK time**/
+private void sendJDKInternalEvent(int eventType, int detail) {
+	if (eventTable == null || !eventTable.hooks (eventType)) {
+		return;
+	}
+	Event event = new Event ();
+	event.detail = detail;
+	event.display = this;
+	event.type = eventType;
+	// time is set for debugging purpose only:
+	event.time = (int) (System.nanoTime() / 1000_000L);
+	if (!filterEvent (event)) {
+		sendEvent (eventTable, event);
+	}
+}
+
 void sendEvent (int eventType, Event event) {
 	if (eventTable == null && filterTable == null) {
 		return;
@@ -5803,11 +5822,7 @@ void sendPreEvent (int eventType) {
 	if (eventType != SWT.PreEvent && eventType != SWT.PostEvent
 			&& eventType != SWT.PreExternalEventDispatch
 			&& eventType != SWT.PostExternalEventDispatch) {
-		if (eventTable != null && eventTable.hooks (SWT.PreEvent)) {
-			Event event = new Event ();
-			event.detail = eventType;
-			sendEvent (SWT.PreEvent, event);
-		}
+		sendJDKInternalEvent (SWT.PreEvent, eventType);
 	}
 }
 
@@ -5815,11 +5830,7 @@ void sendPostEvent (int eventType) {
 	if (eventType != SWT.PreEvent && eventType != SWT.PostEvent
 			&& eventType != SWT.PreExternalEventDispatch
 			&& eventType != SWT.PostExternalEventDispatch) {
-		if (eventTable != null && eventTable.hooks (SWT.PostEvent)) {
-			Event event = new Event ();
-			event.detail = eventType;
-			sendEvent (SWT.PostEvent, event);
-		}
+		sendJDKInternalEvent (SWT.PostEvent, eventType);
 	}
 }
 
@@ -5829,9 +5840,7 @@ void sendPostEvent (int eventType) {
  * @noreference This method is not intended to be referenced by clients.
  */
 public void sendPreExternalEventDispatchEvent () {
-	if (eventTable != null && eventTable.hooks (SWT.PreExternalEventDispatch)) {
-		sendEvent (SWT.PreExternalEventDispatch, null);
-	}
+	sendJDKInternalEvent (SWT.PreExternalEventDispatch);
 }
 
 /**
@@ -5840,9 +5849,7 @@ public void sendPreExternalEventDispatchEvent () {
  * @noreference This method is not intended to be referenced by clients.
  */
 public void sendPostExternalEventDispatchEvent () {
-	if (eventTable != null && eventTable.hooks (SWT.PostExternalEventDispatch)) {
-		sendEvent (SWT.PostExternalEventDispatch, null);
-	}
+	sendJDKInternalEvent (SWT.PostExternalEventDispatch);
 }
 
 void setCurrentCaret (Caret caret) {
