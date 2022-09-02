@@ -11,15 +11,27 @@
  * Contributors:
  *     Joerg Kubitz - initial API and implementation
  *******************************************************************************/
-package org.eclipse.swt.widgets;
+package org.eclipse.swt.tests.win32;
 
+import org.eclipse.swt.widgets.Display;
 import org.junit.Test;
 
 public class Test_org_eclipse_swt_widgets_Display {
 
+	private final class DisplayExtension extends Display {
+		@Override
+		public boolean isXMouseActive() {
+			return super.isXMouseActive();
+		}
+		@Override
+		protected void checkSubclass () {
+			//dont
+		}
+	}
+
 	@Test
 	public void test_isXMouseActive() {
-		Display display = new Display();
+		DisplayExtension display = new DisplayExtension();
 		try {
 			boolean xMouseActive = display.isXMouseActive();
 			System.out.println("org.eclipse.swt.widgets.Display.isXMouseActive(): " + xMouseActive);

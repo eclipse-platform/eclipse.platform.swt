@@ -2859,7 +2859,11 @@ public void internal_dispose_GC (long hDC, GCData data) {
 	OS.ReleaseDC (0, hDC);
 }
 
-boolean isXMouseActive () {
+/**
+ * Invokes platform specific functionality
+ * @noreference This method is not intended to be referenced by clients.
+ */
+protected boolean isXMouseActive () {
 	/*
 	* NOTE: X-Mouse is active when bit 1 of the UserPreferencesMask is set.
 	*/
