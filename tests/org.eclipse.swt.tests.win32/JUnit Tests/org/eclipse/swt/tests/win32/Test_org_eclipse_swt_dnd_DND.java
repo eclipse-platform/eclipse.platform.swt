@@ -155,13 +155,15 @@ public void testImageTransfer() throws InterruptedException {
 		boolean equals = (drag == drop);
 		if (!equals && drag != null && drop != null) {
 			equals = (drag.width == drop.width && drag.height == drop.height);
+			assertEquals("TransparencyType", drag.getTransparencyType(),drop.getTransparencyType());
 			if (equals) {
-				outer: for (int y = 0; y < drag.height; y++) {
+				 for (int y = 0; y < drag.height; y++) {
 					for (int x = 0; x < drag.width; x++) {
-						if (drag.getPixel(x, y) != drop.getPixel(x, y)) {
-							equals = false;
-							break outer;
-						}
+						String dragPixel = String.format("0x%08X", drag.getPixel(x, y));
+						String dropPixel = String.format("0x%08X", drop.getPixel(x, y));
+						//FIXME win32: dragged ALPHA=FF, dropped ALPHA=00, but other transparencyType => alpha stored in ImageData.alphaData
+						assertEquals("Drop received other pixel as we dragged. x=" + x + " y=" + y, dragPixel,
+								dropPixel);
 					}
 				}
 			}
