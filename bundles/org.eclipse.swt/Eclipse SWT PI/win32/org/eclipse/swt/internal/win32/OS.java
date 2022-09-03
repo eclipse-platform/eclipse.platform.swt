@@ -4272,6 +4272,7 @@ public static final native int SetCurrentProcessExplicitAppUserModelID (char[] A
 /** @param hCursor cast=(HCURSOR) */
 public static final native long SetCursor (long hCursor);
 public static final native boolean SetCursorPos (int X, int Y);
+/** @param hdc cast=(HDC) */
 public static final native int SetDCBrushColor (long hdc, int color);
 /**
  * @param hdc cast=(HDC)

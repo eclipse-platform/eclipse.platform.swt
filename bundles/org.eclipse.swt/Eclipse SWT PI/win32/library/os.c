@@ -8469,7 +8469,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(SetDCBrushColor)
 {
 	jint rc = 0;
 	OS_NATIVE_ENTER(env, that, SetDCBrushColor_FUNC);
-	rc = (jint)SetDCBrushColor(arg0, arg1);
+	rc = (jint)SetDCBrushColor((HDC)arg0, arg1);
 	OS_NATIVE_EXIT(env, that, SetDCBrushColor_FUNC);
 	return rc;
 }
