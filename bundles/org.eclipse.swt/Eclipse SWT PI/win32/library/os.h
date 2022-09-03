@@ -15,6 +15,12 @@
 #ifndef INC_os_H
 #define INC_os_H
 
+/*
+ * Windows headers will sometimes have warnings above level 2, just
+ * ignore all of them, we can't do anything about it anyway.
+ */
+#pragma warning(push, 2)
+
 #include <windows.h>
 #include <WindowsX.h>
 #include <commctrl.h>
@@ -35,6 +41,9 @@
 #include <uxtheme.h>
 #include <msctf.h>
 #include <intsafe.h>
+
+/* Restore warnings */
+#pragma warning(pop)
 
 /* Optional custom definitions to exclude some types */
 #include "defines.h"
