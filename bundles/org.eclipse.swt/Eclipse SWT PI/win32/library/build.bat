@@ -88,6 +88,7 @@ if %ERRORLEVEL% NEQ 0 (
     CALL :ECHO "         Refer steps for SWT Windows native setup: https://www.eclipse.org/swt/swt_win_native.php"
 )
 nmake -f make_win32.mak %1 %2 %3 %4 %5 %6 %7 %8 %9
+IF ERRORLEVEL 1 EXIT 1
 GOTO :EOF
 
 @rem Find Visual Studio
