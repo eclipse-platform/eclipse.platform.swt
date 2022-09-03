@@ -17,6 +17,9 @@
 JavaVM *JVM = NULL;
 
 JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *vm, void *reserved) {
+	/* Suppress warning about unreferenced parameter */
+	(void)reserved;
+
 	JVM = vm;
 	return JNI_VERSION_1_4;
 }

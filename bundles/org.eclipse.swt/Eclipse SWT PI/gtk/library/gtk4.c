@@ -24,6 +24,11 @@
 #define GTK4_NATIVE(func) Java_org_eclipse_swt_internal_gtk4_GTK4_##func
 #endif
 
+#ifdef _WIN32
+  /* Many methods don't use their 'env' and 'that' arguments */
+  #pragma warning (disable: 4100)
+#endif
+
 #ifndef NO_gdk_1clipboard_1get_1content
 JNIEXPORT jlong JNICALL GTK4_NATIVE(gdk_1clipboard_1get_1content)
 	(JNIEnv *env, jclass that, jlong arg0)

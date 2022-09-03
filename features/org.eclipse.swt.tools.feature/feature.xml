@@ -2,7 +2,7 @@
 <feature
       id="org.eclipse.swt.tools.feature"
       label="%featureName"
-      version="3.108.600.qualifier"
+      version="3.108.700.qualifier"
       provider-name="%providerName"
       license-feature="org.eclipse.license"
       license-feature-version="0.0.0">
