@@ -31,15 +31,6 @@ public class OS extends C {
 	*/
 	public static final boolean IsDBLocale;
 	/**
-	 * WARNING: This value can't be trusted since Win10. If the launcher's exe
-	 * doesn't have compatibility GUID in its manifest:<br>
-	 *   &lt;supportedOS Id="{8e0f7a12-bfb3-4fe8-b9a5-48fd50a15a9a}"/&gt;<br>
-	 * then '6.2.9200' will be returned (version number for Win8).
-	 * JDK11 has the compatibility GUID, but Eclipse's launcher doesn't!
-	 * This may cause different behavior in debugger and in released SWT.
-	 */
-	public static final int WIN32_VERSION;
-	/**
 	 * Always reports the correct build number, regardless of manifest and
 	 * compatibility GUIDs. Note that build number alone is sufficient to
 	 * identify Windows version.
@@ -62,10 +53,6 @@ public class OS extends C {
 	public static final int SM_IMMENABLED = 0x52;
 
 	static {
-		/* Get the Windows version */
-		int dwVersion = OS.GetVersion ();
-		WIN32_VERSION = VERSION (dwVersion & 0xff, (dwVersion >> 8) & 0xff);
-
 		/*
 		 * Starting with Windows 10, GetVersionEx() lies about version unless
 		 * application manifest has a proper entry. RtlGetVersion() always
@@ -3010,7 +2997,6 @@ public static final native boolean GetUpdateRect (long hWnd, RECT lpRect, boolea
  * @param hRgn cast=(HRGN)
  */
 public static final native int GetUpdateRgn (long hWnd, long hRgn, boolean bErase);
-public static final native int GetVersion ();
 /** @param hWnd cast=(HWND) */
 public static final native long GetWindow (long hWnd, int uCmd);
 /** @param hWnd cast=(HWND) */

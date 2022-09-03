@@ -723,19 +723,17 @@ void createHandle () {
 }
 
 void checkGesture () {
-	if (OS.WIN32_VERSION >= OS.VERSION (6, 1)) {
-		int value = OS.GetSystemMetrics (OS.SM_DIGITIZER);
-		if ((value & (OS.NID_READY | OS.NID_MULTI_INPUT)) != 0) {
-			/*
-			 * Feature in Windows 7: All gestures are enabled by default except GID_ROTATE.
-			 * Enable it explicitly by calling SetGestureConfig.
-			 */
-			GESTURECONFIG config = new GESTURECONFIG();
-			config.dwID = OS.GID_ROTATE;
-			config.dwWant = 1;
-			config.dwBlock = 0;
-			OS.SetGestureConfig (handle, 0, 1, config, GESTURECONFIG.sizeof);
-		}
+	int value = OS.GetSystemMetrics (OS.SM_DIGITIZER);
+	if ((value & (OS.NID_READY | OS.NID_MULTI_INPUT)) != 0) {
+		/*
+		 * Feature in Windows 7: All gestures are enabled by default except GID_ROTATE.
+		 * Enable it explicitly by calling SetGestureConfig.
+		 */
+		GESTURECONFIG config = new GESTURECONFIG();
+		config.dwID = OS.GID_ROTATE;
+		config.dwWant = 1;
+		config.dwBlock = 0;
+		OS.SetGestureConfig (handle, 0, 1, config, GESTURECONFIG.sizeof);
 	}
 }
 

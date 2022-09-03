@@ -263,7 +263,6 @@ char * OS_nativeFunctionNames[] = {
 	"GetTouchInputInfo",
 	"GetUpdateRect",
 	"GetUpdateRgn",
-	"GetVersion",
 	"GetWindow",
 	"GetWindowDC",
 	"GetWindowLong",

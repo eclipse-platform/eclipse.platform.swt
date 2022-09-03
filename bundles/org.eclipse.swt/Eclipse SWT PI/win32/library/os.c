@@ -3379,18 +3379,6 @@ JNIEXPORT jint JNICALL OS_NATIVE(GetUpdateRgn)
 }
 #endif
 
-#ifndef NO_GetVersion
-JNIEXPORT jint JNICALL OS_NATIVE(GetVersion)
-	(JNIEnv *env, jclass that)
-{
-	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, GetVersion_FUNC);
-	rc = (jint)GetVersion();
-	OS_NATIVE_EXIT(env, that, GetVersion_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO_GetWindow
 JNIEXPORT jlong JNICALL OS_NATIVE(GetWindow)
 	(JNIEnv *env, jclass that, jlong arg0, jint arg1)

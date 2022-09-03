@@ -1347,12 +1347,7 @@ LRESULT CDDS_POSTPAINT (NMTVCUSTOMDRAW nmcd, long wParam, long lParam) {
 						* NOTE: This problem only happens on Vista during
 						* WM_NOTIFY with NM_CUSTOMDRAW and CDDS_POSTPAINT.
 						*/
-						long hItem = 0;
-						if (OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
-							hItem = getBottomItem ();
-						} else {
-							hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_LASTVISIBLE, 0);
-						}
+						long hItem = getBottomItem ();
 						if (hItem != 0) {
 							RECT rect = new RECT ();
 							if (OS.TreeView_GetItemRect (handle, hItem, rect, false)) {
@@ -1403,12 +1398,7 @@ LRESULT CDDS_POSTPAINT (NMTVCUSTOMDRAW nmcd, long wParam, long lParam) {
 			* NOTE: This problem only happens on Vista during
 			* WM_NOTIFY with NM_CUSTOMDRAW and CDDS_POSTPAINT.
 			*/
-			long hItem = 0;
-			if (OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
-				hItem = getBottomItem ();
-			} else {
-				hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_LASTVISIBLE, 0);
-			}
+			long hItem = getBottomItem ();
 			if (hItem != 0) {
 				if (OS.TreeView_GetItemRect (handle, hItem, rect, false)) {
 					height = rect.bottom - rect.top;
@@ -7117,13 +7107,11 @@ LRESULT WM_SETCURSOR (long wParam, long lParam) {
 	* correct Windows 7 behavior but not correct for SWT. The fix
 	* is to always ensure a cursor is set.
 	*/
-	if (OS.WIN32_VERSION >= OS.VERSION (6, 1)) {
-		if (wParam == handle) {
-			int hitTest = (short) OS.LOWORD (lParam);
-			if (hitTest == OS.HTCLIENT) {
-				OS.SetCursor (OS.LoadCursor (0, OS.IDC_ARROW));
-				return LRESULT.ONE;
-			}
+	if (wParam == handle) {
+		int hitTest = (short) OS.LOWORD (lParam);
+		if (hitTest == OS.HTCLIENT) {
+			OS.SetCursor (OS.LoadCursor (0, OS.IDC_ARROW));
+			return LRESULT.ONE;
 		}
 	}
 	return null;

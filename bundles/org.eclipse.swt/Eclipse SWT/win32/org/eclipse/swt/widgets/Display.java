@@ -1695,11 +1695,7 @@ protected int getDeviceZoom() {
 	 * Win8.1 and above we should pick zoom for the primary monitor which always
 	 * reflects the latest OS zoom value, for more details refer bug 537273.
 	 */
-	if (OS.WIN32_VERSION >= OS.VERSION (6, 3)) {
-		return getPrimaryMonitor().getZoom();
-	}
-	/* Otherwise return Windows zoom level, as set during session login. */
-	return super.getDeviceZoom();
+	return getPrimaryMonitor().getZoom();
 }
 
 static boolean isValidClass (Class<?> clazz) {
@@ -2132,19 +2128,15 @@ Monitor getMonitor (long hmonitor) {
 	monitor.setBounds (DPIUtil.autoScaleDown (boundsInPixels));
 	Rectangle clientAreaInPixels = new Rectangle (lpmi.rcWork_left, lpmi.rcWork_top, lpmi.rcWork_right - lpmi.rcWork_left, lpmi.rcWork_bottom - lpmi.rcWork_top);
 	monitor.setClientArea (DPIUtil.autoScaleDown (clientAreaInPixels));
-	if (OS.WIN32_VERSION >= OS.VERSION (6, 3)) {
-		int [] dpiX = new int[1];
-		int [] dpiY = new int[1];
-		int result = OS.GetDpiForMonitor (monitor.handle, OS.MDT_EFFECTIVE_DPI, dpiX, dpiY);
-		result = (result == OS.S_OK) ? DPIUtil.mapDPIToZoom (dpiX[0]) : 100;
-		/*
-		 * Always return true monitor zoom value as fetched from native, else will lead
-		 * to scaling issue on OS Win8.1 and above, for more details refer bug 537614.
-		 */
-		monitor.zoom = result;
-	} else {
-		monitor.zoom = getDeviceZoom ();
-	}
+	int [] dpiX = new int[1];
+	int [] dpiY = new int[1];
+	int result = OS.GetDpiForMonitor (monitor.handle, OS.MDT_EFFECTIVE_DPI, dpiX, dpiY);
+	result = (result == OS.S_OK) ? DPIUtil.mapDPIToZoom (dpiX[0]) : 100;
+	/*
+	 * Always return true monitor zoom value as fetched from native, else will lead
+	 * to scaling issue on OS Win8.1 and above, for more details refer bug 537614.
+	 */
+	monitor.zoom = result;
 	return monitor;
 }
 
@@ -2541,16 +2533,14 @@ public Menu getSystemMenu () {
 public TaskBar getSystemTaskBar () {
 	checkDevice ();
 	if (taskBar != null) return taskBar;
-	if (OS.WIN32_VERSION >= OS.VERSION (6, 1)) {
-		try {
-			taskBar = new TaskBar (this, SWT.NONE);
-		} catch (SWTError e) {
-			if (e.code == SWT.ERROR_NOT_IMPLEMENTED) {
-				// Windows Server Core doesn't have a Taskbar
-				return null;
-			}
-			throw e;
+	try {
+		taskBar = new TaskBar (this, SWT.NONE);
+	} catch (SWTError e) {
+		if (e.code == SWT.ERROR_NOT_IMPLEMENTED) {
+			// Windows Server Core doesn't have a Taskbar
+			return null;
 		}
+		throw e;
 	}
 	return taskBar;
 }
@@ -2737,16 +2727,14 @@ protected void init () {
 	/* Set the application user model ID, if APP_NAME is non Default */
 	char [] appName = null;
 	if (APP_NAME != null && !"SWT".equalsIgnoreCase (APP_NAME)) {
-		if (OS.WIN32_VERSION >= OS.VERSION (6, 1)) {
-			int length = APP_NAME.length ();
-			appName = new char [length + 1];
-			APP_NAME.getChars (0, length, appName, 0);
-			long [] appID = new long [1];
-			if (OS.GetCurrentProcessExplicitAppUserModelID(appID) != 0) {
-				OS.SetCurrentProcessExplicitAppUserModelID (appName);
-			}
-			if (appID[0] != 0) OS.CoTaskMemFree(appID[0]);
+		int length = APP_NAME.length ();
+		appName = new char [length + 1];
+		APP_NAME.getChars (0, length, appName, 0);
+		long [] appID = new long [1];
+		if (OS.GetCurrentProcessExplicitAppUserModelID(appID) != 0) {
+			OS.SetCurrentProcessExplicitAppUserModelID (appName);
 		}
+		if (appID[0] != 0) OS.CoTaskMemFree(appID[0]);
 	}
 
 	/* Create the callbacks */
