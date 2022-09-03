@@ -50,13 +50,13 @@ WGL_OBJS   = wgl.obj wgl_structs.obj wgl_stats.obj
 #NATIVE_STATS = -DNATIVE_STATS
 
 #CFLAGS = $(cdebug) $(cflags) $(cvarsmt) $(CFLAGS) \
-CFLAGS = -O1 -DNDEBUG -DUNICODE -D_UNICODE /c $(cflags) $(cvarsmt) $(CFLAGS) \
+CFLAGS = -O1 /WX /W4 -DNDEBUG -DUNICODE -D_UNICODE /c $(cflags) $(cvarsmt) $(CFLAGS) \
 	-DSWT_VERSION=$(maj_ver)$(min_ver) -DSWT_REVISION=$(rev) $(NATIVE_STATS) -DUSE_ASSEMBLER \
 	/I"$(SWT_JAVA_HOME)\include" /I"$(SWT_JAVA_HOME)\include\win32" /I.
 
 RCFLAGS = $(rcflags) $(rcvars) $(RCFLAGS) -DSWT_FILE_VERSION=\"$(maj_ver).$(min_ver).$(rev).0\" -DSWT_COMMA_VERSION=$(comma_ver)
 ldebug = /RELEASE  /INCREMENTAL:NO /NOLOGO
-dlllflags = -dll
+dlllflags = -dll /WX
 guilibsmt = kernel32.lib  ws2_32.lib mswsock.lib advapi32.lib bufferoverflowu.lib user32.lib gdi32.lib comdlg32.lib winspool.lib
 olelibsmt = ole32.lib uuid.lib oleaut32.lib $(guilibsmt)
 
