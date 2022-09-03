@@ -13,7 +13,14 @@
  *******************************************************************************/
 
 #include "swt.h"
+
+/*
+ * External headers will sometimes have warnings above level 2, just
+ * ignore all of them, we can't do anything about it anyway.
+ */
+#pragma warning(push, 2)
 #include "jawt_md.h"
+#pragma warning(pop)
 
 #define SWT_AWT_NATIVE(func) Java_org_eclipse_swt_awt_SWT_1AWT_##func
 
