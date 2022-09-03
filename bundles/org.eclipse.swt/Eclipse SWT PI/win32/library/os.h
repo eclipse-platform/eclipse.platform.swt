@@ -41,6 +41,7 @@
 #include <uxtheme.h>
 #include <msctf.h>
 #include <intsafe.h>
+#include <dwmapi.h>
 
 /* Restore warnings */
 #pragma warning(pop)

@@ -2620,7 +2620,7 @@ public static final native int DrawThemeBackground (long hTheme, long hdc, int i
  * @param pRect flags=no_out
  */
 public static final native int DrawThemeText (long hTheme, long hdc, int iPartId, int iStateId, char[] pszText, int iCharCount, int dwTextFlags, int dwTextFlags2, RECT pRect);
-/** @param hwnd cast=(HDC) */
+/** @param hwnd cast=(HWND) */
 public static final native boolean DwmSetWindowAttribute (long hwnd, int dwAttribute, int[] pvAttribute, int cbAttribute);
 /** @param hdc cast=(HDC) */
 public static final native boolean Ellipse (long hdc, int nLeftRect, int nTopRect, int nRightRect, int nBottomRect);
