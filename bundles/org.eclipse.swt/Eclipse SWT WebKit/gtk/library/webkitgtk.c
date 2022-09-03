@@ -24,6 +24,11 @@
 #define WebKitGTK_NATIVE(func) Java_org_eclipse_swt_internal_webkit_WebKitGTK_##func
 #endif
 
+#ifdef _WIN32
+  /* Many methods don't use their 'env' and 'that' arguments */
+  #pragma warning (disable: 4100)
+#endif
+
 #ifndef NO_GdkRectangle_1sizeof
 JNIEXPORT jint JNICALL WebKitGTK_NATIVE(GdkRectangle_1sizeof)
 	(JNIEnv *env, jclass that)

@@ -15,7 +15,7 @@
  *
  * IBM
  * -  Binding to permit interfacing between Cairo and SWT
- * -  Copyright (C) 2005, 2021 IBM Corp.  All Rights Reserved.
+ * -  Copyright (C) 2005, 2022 IBM Corp.  All Rights Reserved.
  *
  * ***** END LICENSE BLOCK ***** */
 
@@ -28,6 +28,11 @@
 
 #ifndef Cairo_NATIVE
 #define Cairo_NATIVE(func) Java_org_eclipse_swt_internal_cairo_Cairo_##func
+#endif
+
+#ifdef _WIN32
+  /* Many methods don't use their 'env' and 'that' arguments */
+  #pragma warning (disable: 4100)
 #endif
 
 #ifndef NO_CAIRO_1VERSION_1ENCODE

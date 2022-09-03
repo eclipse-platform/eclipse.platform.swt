@@ -31,6 +31,9 @@ HRESULT DllGetVersion(DLLVERSIONINFO *dvi)
 HINSTANCE g_hInstance = NULL;
 BOOL WINAPI DllMain(HANDLE hInstDLL, DWORD dwReason, LPVOID lpvReserved)
 {
+	/* Suppress warnings about unreferenced parameters */
+	(void)lpvReserved;
+
 	if (dwReason == DLL_PROCESS_ATTACH) {
 		if (g_hInstance == NULL) g_hInstance = hInstDLL;
 	}
@@ -41,6 +44,10 @@ BOOL WINAPI DllMain(HANDLE hInstDLL, DWORD dwReason, LPVOID lpvReserved)
 JNIEXPORT jlong JNICALL OS_NATIVE(GetLibraryHandle)
 	(JNIEnv *env, jclass that)
 {
+	/* Suppress warnings about unreferenced parameters */
+	(void)env;
+	(void)that;
+
 	jlong rc;
 	OS_NATIVE_ENTER(env, that, GetLibraryHandle_FUNC)
 	rc = (jlong)g_hInstance;
@@ -149,6 +156,10 @@ TYPE_AllowDarkModeForWindowWithTelemetryId Locate_AllowDarkModeForWindowWithTele
 JNIEXPORT jboolean JNICALL OS_NATIVE(AllowDarkModeForWindow)
 (JNIEnv* env, jclass that, jlong arg0, jboolean arg1)
 {
+	/* Suppress warnings about unreferenced parameters */
+	(void)env;
+	(void)that;
+
 	/* Cache the search result for performance reasons */
 	static TYPE_AllowDarkModeForWindow fn_AllowDarkModeForWindow = 0;
 	static TYPE_AllowDarkModeForWindowWithTelemetryId fn_AllowDarkModeForWindowWithTelemetryId = 0;
@@ -235,6 +246,10 @@ TYPE_SetPreferredAppMode Locate_SetPreferredAppMode()
 JNIEXPORT jint JNICALL OS_NATIVE(SetPreferredAppMode)
 (JNIEnv* env, jclass that, jint arg0)
 {
+	/* Suppress warnings about unreferenced parameters */
+	(void)env;
+	(void)that;
+
 	/* Cache the search result for performance reasons */
 	static TYPE_SetPreferredAppMode fn_SetPreferredAppMode = 0;
 	static int isInitialized = 0;
@@ -269,6 +284,10 @@ jboolean isDarkThemeAvailable() {
 JNIEXPORT jboolean JNICALL OS_NATIVE(IsDarkModeAvailable)
 (JNIEnv* env, jclass that)
 {
+	/* Suppress warnings about unreferenced parameters */
+	(void)env;
+	(void)that;
+
 	/* Cache the search result for performance reasons */
 	static jboolean isAvailable = 0;
 	static int isInitialized = 0;

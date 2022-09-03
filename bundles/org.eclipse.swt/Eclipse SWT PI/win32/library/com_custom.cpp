@@ -263,6 +263,9 @@ public:
 	}
 
 	HRESULT GetTypeInfo(UINT iTInfo, LCID lcid, ITypeInfo **ppTInfo) override {
+    	/* Suppress warnings about unreferenced parameters */
+    	(void)lcid;
+
 		*ppTInfo = nullptr;
 		if (iTInfo != 0) {
 			return DISP_E_BADINDEX;
@@ -274,12 +277,20 @@ public:
 
 	HRESULT GetIDsOfNames(REFIID riid, LPOLESTR *rgszNames, UINT cNames,
 			LCID lcid, DISPID *rgDispId) override {
+    	/* Suppress warnings about unreferenced parameters */
+    	(void)lcid;
+    	(void)riid;
+
 		return pTypeInfo->GetIDsOfNames(rgszNames, cNames, rgDispId);
 	}
 
 	HRESULT Invoke(DISPID dispIdMember, REFIID riid, LCID lcid,
 			WORD wFlags, DISPPARAMS *pDispParams, VARIANT *pVarResult,
 			EXCEPINFO *pExcepInfo, UINT *puArgErr) override {
+    	/* Suppress warnings about unreferenced parameters */
+    	(void)lcid;
+    	(void)riid;
+
 		return pTypeInfo->Invoke(this, dispIdMember, wFlags, pDispParams,
 				pVarResult, pExcepInfo, puArgErr);
 	}
@@ -412,18 +423,29 @@ public:
 JNIEXPORT jlong JNICALL COM_NATIVE(CreateSwtWebView2Callback)
 	(JNIEnv *env, jclass that, jobject callback)
 {
+	/* Suppress warnings about unreferenced parameters */
+	(void)that;
+
 	return (jlong)SwtWebView2Callback::Create(env, callback);
 }
 
 JNIEXPORT jlong JNICALL COM_NATIVE(CreateSwtWebView2Host)
 	(JNIEnv *env, jclass that, jobject host)
 {
+	/* Suppress warnings about unreferenced parameters */
+	(void)that;
+
 	return (jlong)SwtWebView2Host::Create(env, host);
 }
 
 JNIEXPORT jlong JNICALL COM_NATIVE(CreateSwtWebView2Options)
 	(JNIEnv *env, jclass that, jobject host)
 {
+	/* Suppress warnings about unreferenced parameters */
+	(void)env;
+	(void)that;
+	(void)host;
+
 	return (jlong)SwtWebView2Options::Create();
 }
 

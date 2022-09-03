@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2020 IBM Corporation and others.
+ * Copyright (c) 2000, 2022 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -21,6 +21,11 @@
 
 #ifndef WGL_NATIVE
 #define WGL_NATIVE(func) Java_org_eclipse_swt_internal_opengl_win32_WGL_##func
+#endif
+
+#ifdef _WIN32
+  /* Many methods don't use their 'env' and 'that' arguments */
+  #pragma warning (disable: 4100)
 #endif
 
 #ifndef NO_ChoosePixelFormat

@@ -24,6 +24,11 @@
 #define GDK_NATIVE(func) Java_org_eclipse_swt_internal_gtk_GDK_##func
 #endif
 
+#ifdef _WIN32
+  /* Many methods don't use their 'env' and 'that' arguments */
+  #pragma warning (disable: 4100)
+#endif
+
 #ifndef NO_GDK_1EVENT_1TYPE
 JNIEXPORT jint JNICALL GDK_NATIVE(GDK_1EVENT_1TYPE)
 	(JNIEnv *env, jclass that, jlong arg0)
@@ -3153,6 +3158,11 @@ JNIEXPORT jlong JNICALL GDK_NATIVE(gdk_1x11_1window_1lookup_1for_1display)
 
 #ifndef GTK_NATIVE
 #define GTK_NATIVE(func) Java_org_eclipse_swt_internal_gtk_GTK_##func
+#endif
+
+#ifdef _WIN32
+  /* Many methods don't use their 'env' and 'that' arguments */
+  #pragma warning (disable: 4100)
 #endif
 
 #ifndef NO_GET_1FUNCTION_1POINTER_1gtk_1false
@@ -10039,6 +10049,11 @@ JNIEXPORT void JNICALL GTK_NATIVE(gtk_1window_1unmaximize)
 #define Graphene_NATIVE(func) Java_org_eclipse_swt_internal_gtk_Graphene_##func
 #endif
 
+#ifdef _WIN32
+  /* Many methods don't use their 'env' and 'that' arguments */
+  #pragma warning (disable: 4100)
+#endif
+
 #ifndef NO_graphene_1rect_1alloc
 JNIEXPORT jlong JNICALL Graphene_NATIVE(graphene_1rect_1alloc)
 	(JNIEnv *env, jclass that)
@@ -10075,6 +10090,11 @@ JNIEXPORT jlong JNICALL Graphene_NATIVE(graphene_1rect_1init)
 
 #ifndef OS_NATIVE
 #define OS_NATIVE(func) Java_org_eclipse_swt_internal_gtk_OS_##func
+#endif
+
+#ifdef _WIN32
+  /* Many methods don't use their 'env' and 'that' arguments */
+  #pragma warning (disable: 4100)
 #endif
 
 #ifndef NO_Call__JJII

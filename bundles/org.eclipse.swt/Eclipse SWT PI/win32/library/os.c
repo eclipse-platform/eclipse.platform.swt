@@ -23,6 +23,11 @@
 #define OS_NATIVE(func) Java_org_eclipse_swt_internal_win32_OS_##func
 #endif
 
+#ifdef _WIN32
+  /* Many methods don't use their 'env' and 'that' arguments */
+  #pragma warning (disable: 4100)
+#endif
+
 #ifndef NO_ACCEL_1sizeof
 JNIEXPORT jint JNICALL OS_NATIVE(ACCEL_1sizeof)
 	(JNIEnv *env, jclass that)

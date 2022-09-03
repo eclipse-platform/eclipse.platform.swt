@@ -24,6 +24,11 @@
 #define GTK3_NATIVE(func) Java_org_eclipse_swt_internal_gtk3_GTK3_##func
 #endif
 
+#ifdef _WIN32
+  /* Many methods don't use their 'env' and 'that' arguments */
+  #pragma warning (disable: 4100)
+#endif
+
 #ifndef NO_GTK_1IS_1MENU_1ITEM
 JNIEXPORT jboolean JNICALL GTK3_NATIVE(GTK_1IS_1MENU_1ITEM)
 	(JNIEnv *env, jclass that, jlong arg0)

@@ -28,6 +28,9 @@
 JNIEXPORT jlong JNICALL SWT_AWT_NATIVE(getAWTHandle)
 	(JNIEnv *env, jclass that, jobject canvas)
 {
+	/* Suppress warnings about unreferenced parameters */
+	(void)that;
+
 	JAWT awt;
 	JAWT_DrawingSurface* ds;
 	JAWT_DrawingSurfaceInfo* dsi;
@@ -58,6 +61,10 @@ JNIEXPORT jlong JNICALL SWT_AWT_NATIVE(getAWTHandle)
 JNIEXPORT jobject JNICALL SWT_AWT_NATIVE(initFrame)
 	(JNIEnv *env, jclass that, jlong handle, jstring className)
 {
+	/* Suppress warnings about unreferenced parameters */
+	(void)className;
+	(void)that;
+
 	jobject object;
 	jmethodID constructor;
 	
@@ -73,6 +80,9 @@ JNIEXPORT jobject JNICALL SWT_AWT_NATIVE(initFrame)
 JNIEXPORT void JNICALL SWT_AWT_NATIVE(synthesizeWindowActivation)
 (JNIEnv *env, jclass that, jobject frame, jboolean doActivate)
 {
+	/* Suppress warnings about unreferenced parameters */
+	(void)that;
+
 	jmethodID midInit;
     jclass cls = (*env)->FindClass(env, "sun/awt/windows/WEmbeddedFrame");
     if (NULL == cls) return;
