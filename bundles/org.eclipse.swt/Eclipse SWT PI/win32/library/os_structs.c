@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2021 IBM Corporation and others.
+ * Copyright (c) 2000, 2022 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -4252,11 +4252,11 @@ OSVERSIONINFOEX *getOSVERSIONINFOEXFields(JNIEnv *env, jobject lpObject, OSVERSI
 	jcharArray lpObject1 = (jcharArray)(*env)->GetObjectField(env, lpObject, OSVERSIONINFOEXFc.szCSDVersion);
 	(*env)->GetCharArrayRegion(env, lpObject1, 0, sizeof(lpStruct->szCSDVersion) / sizeof(jchar), (jchar *)lpStruct->szCSDVersion);
 	}
-	lpStruct->wServicePackMajor = (*env)->GetIntField(env, lpObject, OSVERSIONINFOEXFc.wServicePackMajor);
-	lpStruct->wServicePackMinor = (*env)->GetIntField(env, lpObject, OSVERSIONINFOEXFc.wServicePackMinor);
-	lpStruct->wSuiteMask = (*env)->GetIntField(env, lpObject, OSVERSIONINFOEXFc.wSuiteMask);
-	lpStruct->wProductType = (*env)->GetIntField(env, lpObject, OSVERSIONINFOEXFc.wProductType);
-	lpStruct->wReserved = (*env)->GetIntField(env, lpObject, OSVERSIONINFOEXFc.wReserved);
+	lpStruct->wServicePackMajor = (WORD)(*env)->GetIntField(env, lpObject, OSVERSIONINFOEXFc.wServicePackMajor);
+	lpStruct->wServicePackMinor = (WORD)(*env)->GetIntField(env, lpObject, OSVERSIONINFOEXFc.wServicePackMinor);
+	lpStruct->wSuiteMask = (WORD)(*env)->GetIntField(env, lpObject, OSVERSIONINFOEXFc.wSuiteMask);
+	lpStruct->wProductType = (BYTE)(*env)->GetIntField(env, lpObject, OSVERSIONINFOEXFc.wProductType);
+	lpStruct->wReserved = (BYTE)(*env)->GetIntField(env, lpObject, OSVERSIONINFOEXFc.wReserved);
 	return lpStruct;
 }
 

@@ -20,10 +20,15 @@ public class OSVERSIONINFOEX {
 	public int    dwBuildNumber;
 	public int    dwPlatformId;
 	public char[] szCSDVersion = new char[128];
+	/** @field cast=(WORD) */
 	public int    wServicePackMajor;
+	/** @field cast=(WORD) */
 	public int    wServicePackMinor;
+	/** @field cast=(WORD) */
 	public int    wSuiteMask;
+	/** @field cast=(BYTE) */
 	public int    wProductType;
+	/** @field cast=(BYTE) */
 	public int    wReserved;
 
 	public static final int sizeof = OS.OSVERSIONINFOEX_sizeof ();
