@@ -1516,7 +1516,7 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(DwmSetWindowAttribute)
 	jboolean rc = 0;
 	OS_NATIVE_ENTER(env, that, DwmSetWindowAttribute_FUNC);
 	if (arg2) if ((lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL)) == NULL) goto fail;
-	rc = (jboolean)DwmSetWindowAttribute((HDC)arg0, arg1, lparg2, arg3);
+	rc = (jboolean)DwmSetWindowAttribute((HWND)arg0, arg1, lparg2, arg3);
 fail:
 	if (arg2 && lparg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
 	OS_NATIVE_EXIT(env, that, DwmSetWindowAttribute_FUNC);
