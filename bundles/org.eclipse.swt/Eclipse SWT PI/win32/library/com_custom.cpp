@@ -211,6 +211,7 @@ public:
 		jclass cls = env->GetObjectClass(host);
 		jmethodID methodID = env->GetMethodID(cls, "CallJava", "(IJJ)J");
 		jobject object = env->NewGlobalRef(host);
+		ITypeInfo *pTypeInfo = nullptr;
 		if (object == nullptr) goto error;
 
 		// NB: CreateDispTypeInfo doesn't support parameters
@@ -221,7 +222,6 @@ public:
 			{L"CallJava", params, 1, 7, CC_STDCALL, ARRAYSIZE(params), DISPATCH_METHOD, VT_BSTR},
 		};
 		static INTERFACEDATA iface = {methods, 1};
-		ITypeInfo *pTypeInfo = nullptr;
 		HRESULT hr = CreateDispTypeInfo(&iface, LOCALE_NEUTRAL, &pTypeInfo);
 		if (hr != S_OK) goto error;
 
