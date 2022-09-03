@@ -6313,26 +6313,24 @@ LRESULT WM_HSCROLL (long wParam, long lParam) {
 		* of a table when scrolling, rather than just return
 		* the data for each column when asked.
 		*/
-		if (OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
-			RECT headerRect = new RECT (), rect = new RECT ();
-			OS.GetClientRect (handle, rect);
-			boolean [] visible = new boolean [columnCount];
-			for (int i=0; i<columnCount; i++) {
-				visible [i] = true;
-				headerRect.top = i;
-				headerRect.left = OS.LVIR_BOUNDS;
-				if (OS.SendMessage (handle, OS.LVM_GETSUBITEMRECT, 0, headerRect) != 0) {
-					headerRect.top = rect.top;
-					headerRect.bottom = rect.bottom;
-					visible [i] = OS.IntersectRect(headerRect, rect, headerRect);
-				}
+		RECT headerRect = new RECT (), rect = new RECT ();
+		OS.GetClientRect (handle, rect);
+		boolean [] visible = new boolean [columnCount];
+		for (int i=0; i<columnCount; i++) {
+			visible [i] = true;
+			headerRect.top = i;
+			headerRect.left = OS.LVIR_BOUNDS;
+			if (OS.SendMessage (handle, OS.LVM_GETSUBITEMRECT, 0, headerRect) != 0) {
+				headerRect.top = rect.top;
+				headerRect.bottom = rect.bottom;
+				visible [i] = OS.IntersectRect(headerRect, rect, headerRect);
 			}
-			try {
-				columnVisible = visible;
-				OS.UpdateWindow (handle);
-			} finally {
-				columnVisible = null;
-			}
+		}
+		try {
+			columnVisible = visible;
+			OS.UpdateWindow (handle);
+		} finally {
+			columnVisible = null;
 		}
 	}
 
@@ -6413,26 +6411,24 @@ LRESULT WM_VSCROLL (long wParam, long lParam) {
 		* of a table when scrolling, rather than just return
 		* the data for each column when asked.
 		*/
-		if (OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
-			RECT headerRect = new RECT (), rect = new RECT ();
-			OS.GetClientRect (handle, rect);
-			boolean [] visible = new boolean [columnCount];
-			for (int i=0; i<columnCount; i++) {
-				visible [i] = true;
-				headerRect.top = i;
-				headerRect.left = OS.LVIR_BOUNDS;
-				if (OS.SendMessage (handle, OS.LVM_GETSUBITEMRECT, 0, headerRect) != 0) {
-					headerRect.top = rect.top;
-					headerRect.bottom = rect.bottom;
-					visible [i] = OS.IntersectRect(headerRect, rect, headerRect);
-				}
+		RECT headerRect = new RECT (), rect = new RECT ();
+		OS.GetClientRect (handle, rect);
+		boolean [] visible = new boolean [columnCount];
+		for (int i=0; i<columnCount; i++) {
+			visible [i] = true;
+			headerRect.top = i;
+			headerRect.left = OS.LVIR_BOUNDS;
+			if (OS.SendMessage (handle, OS.LVM_GETSUBITEMRECT, 0, headerRect) != 0) {
+				headerRect.top = rect.top;
+				headerRect.bottom = rect.bottom;
+				visible [i] = OS.IntersectRect(headerRect, rect, headerRect);
 			}
-			try {
-				columnVisible = visible;
-				OS.UpdateWindow (handle);
-			} finally {
-				columnVisible = null;
-			}
+		}
+		try {
+			columnVisible = visible;
+			OS.UpdateWindow (handle);
+		} finally {
+			columnVisible = null;
 		}
 	}
 
@@ -6577,20 +6573,13 @@ LRESULT wmNotifyChild (NMHDR hdr, long wParam, long lParam) {
 				* can never be used from a LVN_GETDISPINFO handler. The fix is to
 				* InvalidateRect() passing the bounds for the entire item.
 				*/
-				if (OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
-					RECT rect = new RECT ();
-					rect.left = OS.LVIR_BOUNDS;
-					ignoreCustomDraw = true;
-					long code = OS.SendMessage (handle, OS. LVM_GETITEMRECT, plvfi.iItem, rect);
-					ignoreCustomDraw = false;
-					if (code != 0) OS.InvalidateRect (handle, rect, true);
-					break;
-				} else {
-					if ((style & SWT.VIRTUAL) != 0 && !item.cached) {
-						OS.SendMessage (handle, OS.LVM_REDRAWITEMS, plvfi.iItem, plvfi.iItem);
-						break;
-					}
-				}
+				RECT rect = new RECT ();
+				rect.left = OS.LVIR_BOUNDS;
+				ignoreCustomDraw = true;
+				long code = OS.SendMessage (handle, OS. LVM_GETITEMRECT, plvfi.iItem, rect);
+				ignoreCustomDraw = false;
+				if (code != 0) OS.InvalidateRect (handle, rect, true);
+				break;
 			}
 
 			/*

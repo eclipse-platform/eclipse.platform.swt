@@ -273,7 +273,6 @@ typedef enum {
 	GetTouchInputInfo_FUNC,
 	GetUpdateRect_FUNC,
 	GetUpdateRgn_FUNC,
-	GetVersion_FUNC,
 	GetWindow_FUNC,
 	GetWindowDC_FUNC,
 	GetWindowLong_FUNC,
