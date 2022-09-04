@@ -1814,6 +1814,7 @@ public class OS extends C {
 	public static final int WM_SYSCHAR = 0x106;
 	public static final int WM_SYSCOLORCHANGE = 0x15;
 	public static final int WM_SYSCOMMAND = 0x112;
+	public static final int WM_SYSDEADCHAR = 0x0107;
 	public static final int WM_SYSKEYDOWN = 0x104;
 	public static final int WM_SYSKEYUP = 0x105;
 	public static final int WM_TABLET_FLICK = 0x02C0 + 11;
