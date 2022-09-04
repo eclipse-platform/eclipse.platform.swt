@@ -1699,7 +1699,8 @@ LRESULT wmKeyDown (long hwnd, long wParam, long lParam) {
 	* character(s). Note that there might be multiple characters,
 	* for example, ^^ will produce nothing on first key and ^^ when
 	* second key is pressed. The most reliable way of detecting dead
-	* keys is by peeking for 'WM_DEADCHAR'.
+	* keys is by peeking for 'WM_DEADCHAR'. See similar code block
+	* below for a detailed explanation.
 	*/
 	MSG msg = new MSG ();
 	int flags = OS.PM_NOREMOVE | OS.PM_NOYIELD;
@@ -1708,6 +1709,41 @@ LRESULT wmKeyDown (long hwnd, long wParam, long lParam) {
 		display.lastVirtual = mapKey == 0;
 		display.lastKey = display.lastVirtual ? (int)wParam : mapKey;
 		return null;
+	}
+
+	/*
+	 * SWT is designed to deliver both 'WM_KEYDOWN' and 'WM_CHAR' in a
+	 * single 'SWT.KeyDown' event. However, 'WM_KEYDOWN' is followed by
+	 * 'WM_CHAR' only if pressed key types some character. For example,
+	 * A produces a character, while F1 does not.
+	 * Figuring if 'WM_KEYDOWN' is going to be followed up by 'WM_CHAR'
+	 * is hard in Windows:
+	 * 1) Everything depends on keyboard layout, and there are pretty
+	 *    exotic layouts out there.
+	 * 2) MapVirtualKey() API ignores modifier keys, and therefore
+	 *    can't be used if any modifier keys are present.
+	 * 3) ToUnicode() API is quite good, but it alters internal keyboard
+	 *    state for dead keys. For example, in German, pressing ^ and
+	 *    then E produces Ê. However, if ToUnicode() is called in
+	 *    between, it will produce E instead. The internal state is
+	 *    kept in kernel and I didn't find any reasonable ways of
+	 *    restoring it after calling ToUnicode().
+	 * 4) Win10 introduces new flag for ToUnicode() to preserve
+	 *    internal state, but SWT has to support earlier Windows at
+	 *    the moment.
+	 * The workaround is to peek for 'WM_CHAR'. This works because when
+	 * SWT calls 'TranslateMessage()', Windows posts corresponding
+	 * 'WM_CHAR' message(s). Only then SWT calls 'DispatchMessage()' to
+	 * actually handle 'WM_KEYDOWN'. So at this moment, if 'WM_CHAR' is
+	 * expected, it will already be present in the queue. One other
+	 * thing to notice is that 'GetMessage()' returns all sent/posted
+	 * messages before input events (see MSDN), so even if some app
+	 * sends 'WM_CHAR' to SWT window, it will be processed before
+	 * 'WM_KEYDOWN' even if key event occurred before.
+	 */
+	boolean isCharPending = false;
+	if (OS.PeekMessage (msg, hwnd, OS.WM_CHAR, OS.WM_CHAR, flags)) {
+		isCharPending = true;
 	}
 
 	/*
@@ -1735,11 +1771,6 @@ LRESULT wmKeyDown (long hwnd, long wParam, long lParam) {
 	* There is no way to map wParam=30 in WM_CHAR to the correct
 	* value.  Also, on international keyboards, the control key
 	* may be down when the user has not entered a control character.
-	*
-	* NOTE: On Windows 98, keypad keys are virtual despite the
-	* fact that a WM_CHAR is issued.  On Windows 2000 and XP,
-	* they are not virtual.  Therefore it is necessary to force
-	* numeric keypad keys to be virtual.
 	*/
 	display.lastVirtual = mapKey == 0 || display.numpadKey ((int)wParam) != 0;
 	if (display.lastVirtual) {
@@ -1763,15 +1794,6 @@ LRESULT wmKeyDown (long hwnd, long wParam, long lParam) {
 		* down.
 		*/
 		if (OS.VK_NUMPAD0 <= display.lastKey && display.lastKey <= OS.VK_DIVIDE) {
-			/*
-			* Feature in Windows.  Calling to ToAscii() or ToUnicode(), clears
-			* the accented state such that the next WM_CHAR loses the accent.
-			* This makes is critical that the accent key is detected.  Also,
-			* these functions clear the character that is entered using the
-			* special Windows keypad sequence when NumLock is down (ie. typing
-			* ALT+0231 should gives 'c' with a cedilla when NumLock is down).
-			*/
-			if (display.asciiKey (display.lastKey) != 0) return null;
 			display.lastAscii = display.numpadKey (display.lastKey);
 		}
 	} else {
@@ -1792,61 +1814,29 @@ LRESULT wmKeyDown (long hwnd, long wParam, long lParam) {
 		*/
 		if (wParam == OS.VK_CANCEL) display.lastVirtual = true;
 
-		/*
-		* Some key combinations map to Windows ASCII keys depending
-		* on the keyboard.  For example, Ctrl+Alt+Q maps to @ on a
-		* German keyboard.  If the current key combination is special,
-		* the correct character is placed in wParam for processing in
-		* WM_CHAR.  If this is the case, issue the key down event from
-		* inside WM_CHAR.
-		*/
-		int asciiKey = display.asciiKey ((int)wParam);
-		if (asciiKey != 0) {
+		if (OS.GetKeyState (OS.VK_CONTROL) < 0) {
 			/*
-			* When the user types Ctrl+Space, ToAscii () maps this to
-			* Space.  Normally, ToAscii () maps a key to a different
-			* key if both a WM_KEYDOWN and a WM_CHAR will be issued.
-			* To avoid the extra SWT.KeyDown, look for a space and
-			* issue the event from WM_CHAR.
-			*/
-			if (asciiKey == ' ') return null;
-			if (asciiKey != (int)wParam) return null;
-			/*
-			* Feature in Windows. The virtual key VK_CANCEL is treated
-			* as both a virtual key and ASCII key by Windows.  This
-			* means that a WM_CHAR with WPARAM=3 will be issued for
-			* this key. To avoid the extra SWT.KeyDown, look for
-			* VK_CANCEL and issue the event from WM_CHAR.
-			*/
-			if (wParam == OS.VK_CANCEL) return null;
+			 * Get the shifted state or convert to lower case if necessary.
+			 * If the user types Ctrl+A, LastAscii should be 'a', not 'A'.
+			 * If the user types Ctrl+Shift+A, LastAscii should be 'A'.
+			 * If the user types Ctrl+Shift+6, the value of LastAscii will
+			 * depend on the international keyboard.
+			 */
+			if (OS.GetKeyState (OS.VK_SHIFT) < 0) {
+				display.lastAscii = display.shiftedKey ((int)wParam);
+				if (display.lastAscii == 0) display.lastAscii = mapKey;
+			} else {
+				display.lastAscii = (int)OS.CharLower (OS.LOWORD (mapKey));
+			}
+
+			display.lastAscii = display.controlKey (display.lastAscii);
 		}
-
-		/*
-		* If the control key is not down at this point, then
-		* the key that was pressed was an accent key or a regular
-		* key such as 'A' or Shift+A.  In that case, issue the
-		* key event from WM_CHAR.
-		*/
-		if (OS.GetKeyState (OS.VK_CONTROL) >= 0) return null;
-
-		/*
-		* Get the shifted state or convert to lower case if necessary.
-		* If the user types Ctrl+A, LastAscii should be 'a', not 'A'.
-		* If the user types Ctrl+Shift+A, LastAscii should be 'A'.
-		* If the user types Ctrl+Shift+6, the value of LastAscii will
-		* depend on the international keyboard.
-		*/
-		if (OS.GetKeyState (OS.VK_SHIFT) < 0) {
-			display.lastAscii = display.shiftedKey ((int)wParam);
-			if (display.lastAscii == 0) display.lastAscii = mapKey;
-		} else {
-			display.lastAscii = (int)OS.CharLower (OS.LOWORD (mapKey));
-		}
-
-		/* Note that Ctrl+'@' is ASCII NUL and is delivered in WM_CHAR */
-		if (display.lastAscii == '@') return null;
-		display.lastAscii = display.controlKey (display.lastAscii);
 	}
+
+	if (isCharPending) {
+		return null;
+	}
+
 	if (!sendKeyEvent (SWT.KeyDown, OS.WM_KEYDOWN, wParam, lParam)) {
 		return LRESULT.ONE;
 	}
@@ -2421,6 +2411,12 @@ LRESULT wmSysKeyDown (long hwnd, long wParam, long lParam) {
 	}
 
 	// See corresponding code block in 'WM_KEYDOWN' for an explanation.
+	boolean isCharPending = false;
+	if (OS.PeekMessage (msg, hwnd, OS.WM_SYSCHAR, OS.WM_SYSCHAR, flags)) {
+		isCharPending = true;
+	}
+
+	// See corresponding code block in 'WM_KEYDOWN' for an explanation.
 	if (isDisposed ()) return LRESULT.ONE;
 
 	display.lastVirtual = mapKey == 0 || display.numpadKey ((int)wParam) != 0;
@@ -2435,24 +2431,7 @@ LRESULT wmSysKeyDown (long hwnd, long wParam, long lParam) {
 		*/
 		if (display.lastKey == OS.VK_DELETE) display.lastAscii = 0x7F;
 
-		/* When a keypad key is typed, a WM_SYSCHAR is not issued */
 		if (OS.VK_NUMPAD0 <= display.lastKey && display.lastKey <= OS.VK_DIVIDE) {
-			/*
-			* A WM_SYSCHAR will be issued for '*', '+', '-', '.' and '/'
-			* on the numeric keypad.  Avoid issuing the key event twice
-			* by checking for these keys.  Note that calling to ToAscii()
-			* or ToUnicode(), clear the character that is entered using
-			* the special Windows keypad sequence when NumLock is down
-			* (ie. typing ALT+0231 should gives 'c' with a cedilla when
-			* NumLock is down).  Do not call either of these from here.
-			*/
-			switch (display.lastKey) {
-				case OS.VK_MULTIPLY:
-				case OS.VK_ADD:
-				case OS.VK_SUBTRACT:
-				case OS.VK_DECIMAL:
-				case OS.VK_DIVIDE: return null;
-			}
 			display.lastAscii = display.numpadKey (display.lastKey);
 		}
 	} else {
@@ -2463,6 +2442,9 @@ LRESULT wmSysKeyDown (long hwnd, long wParam, long lParam) {
 		* Shift was not pressed.
 		*/
 		display.lastKey = (int)OS.CharLower (OS.LOWORD (mapKey));
+	}
+
+	if (isCharPending) {
 		return null;
 	}
 
