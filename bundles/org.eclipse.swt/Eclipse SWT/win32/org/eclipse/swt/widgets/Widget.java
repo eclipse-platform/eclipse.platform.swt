@@ -1683,22 +1683,14 @@ LRESULT wmKeyDown (long hwnd, long wParam, long lParam) {
 	}
 
 	/*
-	* Bug in Windows 95 and NT.  When the user types an accent key such
-	* as ^ to get an accented character on a German keyboard, the accent
-	* key should be ignored and the next key that the user types is the
-	* accented key.  The fix is to detect the accent key stroke (called
-	* a dead key) by testing the high bit of the value returned by
-	* MapVirtualKey().
-	*
-	* When the user types an accent key that does not correspond to a
-	* virtual key, MapVirtualKey() won't set the high bit to indicate
-	* a dead key.  This happens when an accent key, such as '^' is the
-	* result of a modifier such as Shift key and MapVirtualKey() always
-	* returns the unshifted key.  The fix is to peek for a WM_DEADCHAR
-	* and avoid issuing the event.
+	* Dead keys are special keys that modify next keys pressed. For
+	* example, in German, pressing ^ and then E produces Ê. SWT is
+	* designed to not report the dead key and only report the final
+	* character(s). Note that there might be multiple characters,
+	* for example, ^^ will produce nothing on first key and ^^ when
+	* second key is pressed. The most reliable way of detecting dead
+	* keys is by peeking for 'WM_DEADCHAR'.
 	*/
-	if ((mapKey & 0x80000000) != 0) return null;
-
 	MSG msg = new MSG ();
 	int flags = OS.PM_NOREMOVE | OS.PM_NOYIELD;
 	if (OS.PeekMessage (msg, hwnd, OS.WM_DEADCHAR, OS.WM_DEADCHAR, flags)) {
@@ -1709,15 +1701,13 @@ LRESULT wmKeyDown (long hwnd, long wParam, long lParam) {
 	}
 
 	/*
-	*  Bug in Windows.  Somehow, the widget is becoming disposed after
-	*  calling PeekMessage().  In rare circumstances, it seems that
-	*  PeekMessage() can allow SWT listeners to run that might contain
-	*  application code that disposes the widget.  It is not exactly
-	*  clear how this can happen.  PeekMessage() is only looking for
-	*  WM_DEADCHAR.  It is not dispatching any message that it finds
-	*  or removing any message from the queue.  Cross-thread messages
-	*  are disabled.  The fix is to check for a disposed widget and
-	*  return without calling the window proc.
+	* Bug 88281: Sometimes, 'PeekMessage()' could result in widget
+	* being disposed. Most likely this was due to 'WH_MSGFILTER' hook
+	* that previously incorrectly reacted to 'PM_NOREMOVE' as well
+	* as 'PM_REMOVE'. Some SWT hooks can do no-trivial things. I'm
+	* not sure if this can still happen now that hooks are fixed to
+	* only react to 'PM_REMOVE'. I'm also not 100% sure that hooks
+	* are the only way to trigger this problem.
 	*/
 	if (isDisposed ()) return LRESULT.ONE;
 
@@ -1869,16 +1859,6 @@ LRESULT wmKeyUp (long hwnd, long wParam, long lParam) {
 
 	/* Map the virtual key. */
 	int mapKey = OS.MapVirtualKey ((int)wParam, 2);
-
-	/*
-	* Bug in Windows 95 and NT.  When the user types an accent key such
-	* as ^ to get an accented character on a German keyboard, the accent
-	* key should be ignored and the next key that the user types is the
-	* accented key. The fix is to detect the accent key stroke (called
-	* a dead key) by testing the high bit of the value returned by
-	* MapVirtualKey ().
-	*/
-	if ((mapKey & 0x80000000) != 0) return null;
 
 	if (display.lastDead) return null;
 
@@ -2420,6 +2400,19 @@ LRESULT wmSysKeyDown (long hwnd, long wParam, long lParam) {
 
 	/* If are going to get a WM_SYSCHAR, ignore this message. */
 	int mapKey = OS.MapVirtualKey ((int)wParam, 2);
+
+	// See corresponding code block in 'WM_KEYDOWN' for an explanation.
+	MSG msg = new MSG ();
+	int flags = OS.PM_NOREMOVE | OS.PM_NOYIELD;
+	if (OS.PeekMessage (msg, hwnd, OS.WM_SYSDEADCHAR, OS.WM_SYSDEADCHAR, flags)) {
+		display.lastDead = true;
+		display.lastVirtual = mapKey == 0;
+		display.lastKey = display.lastVirtual ? (int)wParam : mapKey;
+		return null;
+	}
+
+	// See corresponding code block in 'WM_KEYDOWN' for an explanation.
+	if (isDisposed ()) return LRESULT.ONE;
 
 	display.lastVirtual = mapKey == 0 || display.numpadKey ((int)wParam) != 0;
 	if (display.lastVirtual) {
