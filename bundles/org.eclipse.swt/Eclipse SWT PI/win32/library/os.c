@@ -4661,6 +4661,22 @@ JNIEXPORT jlong JNICALL OS_NATIVE(LoadImage)
 }
 #endif
 
+#ifndef NO_LoadKeyboardLayout
+JNIEXPORT jlong JNICALL OS_NATIVE(LoadKeyboardLayout)
+	(JNIEnv *env, jclass that, jcharArray arg0, jlong arg1)
+{
+	jchar *lparg0=NULL;
+	jlong rc = 0;
+	OS_NATIVE_ENTER(env, that, LoadKeyboardLayout_FUNC);
+	if (arg0) if ((lparg0 = (*env)->GetCharArrayElements(env, arg0, NULL)) == NULL) goto fail;
+	rc = (jlong)LoadKeyboardLayout((LPCWSTR)lparg0, (UINT)arg1);
+fail:
+	if (arg0 && lparg0) (*env)->ReleaseCharArrayElements(env, arg0, lparg0, 0);
+	OS_NATIVE_EXIT(env, that, LoadKeyboardLayout_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_LocalFree
 JNIEXPORT jlong JNICALL OS_NATIVE(LocalFree)
 	(JNIEnv *env, jclass that, jlong arg0)
@@ -7063,6 +7079,18 @@ fail:
 }
 #endif
 
+#ifndef NO_RegisterHotKey
+JNIEXPORT jboolean JNICALL OS_NATIVE(RegisterHotKey)
+	(JNIEnv *env, jclass that, jlong arg0, jint arg1, jint arg2, jint arg3)
+{
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, RegisterHotKey_FUNC);
+	rc = (jboolean)RegisterHotKey((HWND)arg0, arg1, (UINT)arg2, (UINT)arg3);
+	OS_NATIVE_EXIT(env, that, RegisterHotKey_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_RegisterTouchWindow
 JNIEXPORT jboolean JNICALL OS_NATIVE(RegisterTouchWindow)
 	(JNIEnv *env, jclass that, jlong arg0, jint arg1)
@@ -9447,6 +9475,18 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(UnhookWindowsHookEx)
 }
 #endif
 
+#ifndef NO_UnloadKeyboardLayout
+JNIEXPORT jboolean JNICALL OS_NATIVE(UnloadKeyboardLayout)
+	(JNIEnv *env, jclass that, jlong arg0)
+{
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, UnloadKeyboardLayout_FUNC);
+	rc = (jboolean)UnloadKeyboardLayout((HKL)arg0);
+	OS_NATIVE_EXIT(env, that, UnloadKeyboardLayout_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_UnmapViewOfFile
 JNIEXPORT jboolean JNICALL OS_NATIVE(UnmapViewOfFile)
 	(JNIEnv *env, jclass that, jlong arg0)
@@ -9471,6 +9511,18 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(UnregisterClass)
 fail:
 	if (arg0 && lparg0) (*env)->ReleaseCharArrayElements(env, arg0, lparg0, JNI_ABORT);
 	OS_NATIVE_EXIT(env, that, UnregisterClass_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_UnregisterHotKey
+JNIEXPORT jboolean JNICALL OS_NATIVE(UnregisterHotKey)
+	(JNIEnv *env, jclass that, jlong arg0, jint arg1)
+{
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, UnregisterHotKey_FUNC);
+	rc = (jboolean)UnregisterHotKey((HWND)arg0, arg1);
+	OS_NATIVE_EXIT(env, that, UnregisterHotKey_FUNC);
 	return rc;
 }
 #endif

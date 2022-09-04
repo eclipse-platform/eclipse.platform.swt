@@ -206,6 +206,7 @@ public class Event {
 	 *
 	 * For debugging, see
 	 * <ul>
+	 *  <li>Unit tests {@link Test_org_eclipse_swt_events_KeyEvent}</li>
 	 *  <li>Files with names containing 'Issue0351_EventKeyCode'</li>
 	 * </ul>
 	 *

@@ -666,6 +666,7 @@ public class OS extends C {
 	public static final int KEY_WRITE = 0x20006;
 	public static final int KEYEVENTF_EXTENDEDKEY = 0x0001;
 	public static final int KEYEVENTF_KEYUP = 0x0002;
+	public static final int KEYEVENTF_SCANCODE = 0x0008;
 	public static final int L_MAX_URL_LENGTH = 2084;
 	public static final int LANG_JAPANESE = 0x11;
 	public static final int LANG_KOREAN = 0x12;
@@ -851,6 +852,8 @@ public class OS extends C {
 	public static final int MAX_LINKID_TEXT = 48;
 	public static final int MAX_PATH = 260;
 	public static final int MA_NOACTIVATE = 0x3;
+	public static final int MAPVK_VSC_TO_VK = 1;
+	public static final int MAPVK_VK_TO_CHAR = 2;
 	public static final int MB_ABORTRETRYIGNORE = 0x2;
 	public static final int MB_APPLMODAL = 0x0;
 	public static final int MB_ICONERROR = 0x10;
@@ -922,6 +925,9 @@ public class OS extends C {
 	public static final int MM_TEXT = 0x1;
 	public static final int MNC_CLOSE = 0x1;
 	public static final int MNS_CHECKORBMP = 0x4000000;
+	public static final int MOD_ALT     = 0x0001;
+	public static final int MOD_CONTROL = 0x0002;
+	public static final int MOD_SHIFT   = 0x0004;
 	public static final int MONITOR_DEFAULTTOPRIMARY = 0x1;
 	public static final int MONITOR_DEFAULTTONEAREST = 0x2;
 	public static final String MONTHCAL_CLASS = "SysMonthCal32"; //$NON-NLS-1$
@@ -3267,6 +3273,11 @@ public static final native int LoadIconMetric (long hinst, long pszName, int lim
  * @param lpszName cast=(LPWSTR)
  */
 public static final native long LoadImage (long hinst, long lpszName, int uType, int cxDesired, int cyDesired, int fuLoad);
+/**
+ * @param pwszKLID cast=(LPCWSTR)
+ * @param Flags cast=(UINT)
+ */
+public static final native long LoadKeyboardLayout(char [] pwszKLID, long Flags);
 /** @param hMem cast=(HLOCAL) */
 public static final native long LocalFree (long hMem);
 /** @param hdc cast=(HDC) */
@@ -3843,6 +3854,12 @@ public static final native int RegDeleteValue (long hKey, char[] lpValueName);
 public static final native int RegEnumKeyEx (long hKey, int dwIndex, char [] lpName, int [] lpcName, int [] lpReserved, char [] lpClass, int [] lpcClass, long lpftLastWriteTime);
 /** @param lpWndClass flags=no_out */
 public static final native int RegisterClass (WNDCLASS lpWndClass);
+/**
+ * @param hWnd cast=(HWND)
+ * @param fsModifiers cast=(UINT)
+ * @param vk cast=(UINT)
+ */
+public static final native boolean RegisterHotKey(long hWnd, int id, int fsModifiers, int vk);
 /**
  * @param hWnd cast=(HWND)
  * @param ulFlags cast=(ULONG)
@@ -4454,6 +4471,8 @@ public static final native boolean TranslateMessage (MSG lpmsg);
  * @param hdcSrc cast=(HDC)
  */
 public static final native boolean TransparentBlt (long hdcDest, int nXOriginDest, int nYOriginDest, int nWidthDest, int hHeightDest, long hdcSrc, int nXOriginSrc, int nYOriginSrc, int nWidthSrc, int nHeightSrc, int crTransparent);
+/** @param hkl cast=(HKL) */
+public static final native boolean UnloadKeyboardLayout (long hkl);
 /** @param hhk cast=(HHOOK) */
 public static final native boolean UnhookWindowsHookEx (long hhk);
 /**
@@ -4461,6 +4480,10 @@ public static final native boolean UnhookWindowsHookEx (long hhk);
  * @param hInstance cast=(HINSTANCE)
  */
 public static final native boolean UnregisterClass (char [] lpClassName, long hInstance);
+/**
+ * @param hWnd cast=(HWND)
+ */
+public static final native boolean UnregisterHotKey(long hWnd, int id);
 /** @param hwnd cast=(HWND) */
 public static final native boolean UnregisterTouchWindow (long hwnd);
 /** @param hWnd cast=(HWND) */
