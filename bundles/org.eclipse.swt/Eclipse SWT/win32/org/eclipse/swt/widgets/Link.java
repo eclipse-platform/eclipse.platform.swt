@@ -108,17 +108,6 @@ public class Link extends Control {
  */
 public Link(Composite parent, int style) {
 	super(parent, style);
-	/*
-	 * Accessible tool like JAWS by default only reads the hypertext link text and
-	 * not the non-link text. To make JAWS read the full text we need to tweak the
-	 * default behavior and explicitly return the full link text as below.
-	 */
-	this.getAccessible().addAccessibleListener(new AccessibleAdapter() {
-		@Override
-		public void getName(AccessibleEvent e) {
-			e.result = text;
-		}
-	});
 }
 
 /**
@@ -218,6 +207,17 @@ void createWidget () {
 	text = "";
 	ids = new String[0];
 	mnemonics = new char[0];
+	/*
+	 * Accessible tool like JAWS by default only reads the hypertext link text and
+	 * not the non-link text. To make JAWS read the full text we need to tweak the
+	 * default behavior and explicitly return the full link text as below.
+	 */
+	this.getAccessible().addAccessibleListener(new AccessibleAdapter() {
+		@Override
+		public void getName(AccessibleEvent e) {
+			e.result = text;
+		}
+	});
 }
 
 @Override
