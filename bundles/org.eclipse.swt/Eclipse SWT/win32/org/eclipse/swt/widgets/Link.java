@@ -106,8 +106,8 @@ public class Link extends Control {
  * @see Widget#checkSubclass
  * @see Widget#getStyle
  */
-public Link(Composite parent, int style) {
-	super(parent, style);
+public Link (Composite parent, int style) {
+	super (parent, style);
 }
 
 /**
