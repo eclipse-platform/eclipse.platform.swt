@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2016 IBM Corporation and others.
+ * Copyright (c) 2000, 2022 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -17,6 +17,7 @@ package org.eclipse.swt.widgets;
 import java.util.*;
 
 import org.eclipse.swt.*;
+import org.eclipse.swt.accessibility.*;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.*;
@@ -206,6 +207,17 @@ void createWidget () {
 	text = "";
 	ids = new String[0];
 	mnemonics = new char[0];
+	/*
+	 * Accessible tool like JAWS by default only reads the hypertext link text and
+	 * not the non-link text. To make JAWS read the full text we need to tweak the
+	 * default behavior and explicitly return the full link text as below.
+	 */
+	this.getAccessible().addAccessibleListener(new AccessibleAdapter() {
+		@Override
+		public void getName(AccessibleEvent e) {
+			e.result = text;
+		}
+	});
 }
 
 @Override
