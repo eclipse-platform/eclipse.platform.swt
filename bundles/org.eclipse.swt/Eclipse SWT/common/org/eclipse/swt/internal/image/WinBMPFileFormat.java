@@ -442,17 +442,17 @@ boolean isPaletteBMP(PaletteData pal, int depth) {
 			return true;
 	}
 }
-byte[] loadData(byte[] infoHeader) {
+byte[] loadData(int[] fileHeader, byte[] infoHeader) {
 	int width = (infoHeader[4] & 0xFF) | ((infoHeader[5] & 0xFF) << 8) | ((infoHeader[6] & 0xFF) << 16) | ((infoHeader[7] & 0xFF) << 24);
 	int height = (infoHeader[8] & 0xFF) | ((infoHeader[9] & 0xFF) << 8) | ((infoHeader[10] & 0xFF) << 16) | ((infoHeader[11] & 0xFF) << 24);
 	int bitCount = (infoHeader[14] & 0xFF) | ((infoHeader[15] & 0xFF) << 8);
 	int stride = (width * bitCount + 7) / 8;
 	stride = (stride + 3) / 4 * 4; // Round up to 4 byte multiple
-	byte[] data = loadData(infoHeader, stride);
+	byte[] data = loadData(fileHeader, infoHeader, stride);
 	flipScanLines(data, stride, height);
 	return data;
 }
-byte[] loadData(byte[] infoHeader, int stride) {
+byte[] loadData(int[] fileHeader, byte[] infoHeader, int stride) {
 	int height = (infoHeader[8] & 0xFF) | ((infoHeader[9] & 0xFF) << 8) | ((infoHeader[10] & 0xFF) << 16) | ((infoHeader[11] & 0xFF) << 24);
 	if (height < 0) height = -height;
 	int dataSize = height * stride;
@@ -467,6 +467,12 @@ byte[] loadData(byte[] infoHeader, int stride) {
 		}
 	} else {
 		int compressedSize = (infoHeader[20] & 0xFF) | ((infoHeader[21] & 0xFF) << 8) | ((infoHeader[22] & 0xFF) << 16) | ((infoHeader[23] & 0xFF) << 24);
+		if (compressedSize <= 0) {
+			// out-of-spec, use data from fileHeader instead ('file size' - 'offset of bitmap image data')
+			compressedSize = fileHeader[1] - fileHeader[4];
+		}
+		if (compressedSize <= 0)
+			SWT.error(SWT.ERROR_INVALID_IMAGE);
 		byte[] compressed = new byte[compressedSize];
 		try {
 			if (inputStream.read(compressed) != compressedSize)
@@ -516,7 +522,7 @@ ImageData[] loadFromByteStream() {
 			SWT.error(SWT.ERROR_IO, e);
 		}
 	}
-	byte[] data = loadData(infoHeader);
+	byte[] data = loadData(fileHeader, infoHeader);
 	this.importantColors = (infoHeader[36] & 0xFF) | ((infoHeader[37] & 0xFF) << 8) | ((infoHeader[38] & 0xFF) << 16) | ((infoHeader[39] & 0xFF) << 24);
 	int xPelsPerMeter = (infoHeader[24] & 0xFF) | ((infoHeader[25] & 0xFF) << 8) | ((infoHeader[26] & 0xFF) << 16) | ((infoHeader[27] & 0xFF) << 24);
 	int yPelsPerMeter = (infoHeader[28] & 0xFF) | ((infoHeader[29] & 0xFF) << 8) | ((infoHeader[30] & 0xFF) << 16) | ((infoHeader[31] & 0xFF) << 24);
