@@ -592,11 +592,13 @@ public void test_LocationListener_ProgressListener_noExtraEvents() {
 	shell.open();
 	browser.setText("Hello world");
 
+	// Wait for changed and completed events that are mandatory
+	waitForPassCondition(() -> changedCount.get() == 1 && completedCount.get() == 1);
 	// We have to wait to check that no extra events are fired.
 	// On Gtk, Quad Core, pcie this takes 80 ms. ~600ms for stability.
 	waitForMilliseconds(600);
 	boolean passed = changedCount.get() == 1 && completedCount.get() == 1;
-	String errorMsg = "\nIncorrect event sequences. Events missing or too many fired:"
+	String errorMsg = "\nIncorrect event sequences. Too many fired:"
 			+ "\nExpected one of each, but received:"
 			+ "\nChanged count: " + changedCount.get()
 			+ "\nCompleted count: " + completedCount.get();
