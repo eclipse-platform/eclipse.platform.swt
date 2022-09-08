@@ -199,7 +199,7 @@ public void test_setFocus() {
 			ccombo.setEnabled(true);
 			ccombo.setVisible(true);
 			ccombo.setFocus();
-			processEvents(0, null);
+			processEvents(100, () -> ccombo.isFocusControl());
 			assertTrue(ccombo.isFocusControl());
 			Control focusControl = ccombo.getDisplay().getFocusControl();
 			assertTrue(focusControl instanceof Text);
