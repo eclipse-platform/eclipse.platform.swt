@@ -41,7 +41,10 @@
 	static void *var = NULL; \
 	if (!initialized) { \
 		void* handle = 0; \
-		handle = dlopen("libwebkit2gtk-4.0.so.37", LOAD_FLAGS); /* webkit2 */ \
+		handle = dlopen("libwebkit2gtk-4.0.so.37", LOAD_FLAGS); /* webkit2/libsoup2 */ \
+		if (!handle) { \
+				handle = dlopen("libwebkit2gtk-4.1.so.0", LOAD_FLAGS); /* webkit2/libsoup3 */ \
+		} \
 		if (handle) { \
 			var = dlsym(handle, #name); \
 		} \
