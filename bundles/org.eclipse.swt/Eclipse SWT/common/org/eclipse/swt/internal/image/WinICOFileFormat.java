@@ -141,14 +141,14 @@ ImageData loadIcon(int[] iconHeader) {
 	WinBMPFileFormat bmpFormat = new WinBMPFileFormat();
 	bmpFormat.inputStream = inputStream;
 	PaletteData palette = bmpFormat.loadPalette(infoHeader);
-	byte[] shapeData = bmpFormat.loadData(infoHeader);
+	byte[] shapeData = bmpFormat.loadData(null, infoHeader);
 	int width = (infoHeader[4] & 0xFF) | ((infoHeader[5] & 0xFF) << 8) | ((infoHeader[6] & 0xFF) << 16) | ((infoHeader[7] & 0xFF) << 24);
 	int height = (infoHeader[8] & 0xFF) | ((infoHeader[9] & 0xFF) << 8) | ((infoHeader[10] & 0xFF) << 16) | ((infoHeader[11] & 0xFF) << 24);
 	if (height < 0) height = -height;
 	int depth = (infoHeader[14] & 0xFF) | ((infoHeader[15] & 0xFF) << 8);
 	infoHeader[14] = 1;
 	infoHeader[15] = 0;
-	byte[] maskData = bmpFormat.loadData(infoHeader);
+	byte[] maskData = bmpFormat.loadData(null, infoHeader);
 	maskData = convertPad(maskData, width, height, 1, 4, 2);
 	bitInvertData(maskData, 0, maskData.length);
 	return ImageData.internal_new(

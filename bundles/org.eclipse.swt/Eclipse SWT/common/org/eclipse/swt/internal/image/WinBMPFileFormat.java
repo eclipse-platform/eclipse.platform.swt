@@ -467,7 +467,7 @@ byte[] loadData(int[] fileHeader, byte[] infoHeader, int stride) {
 		}
 	} else {
 		int compressedSize = (infoHeader[20] & 0xFF) | ((infoHeader[21] & 0xFF) << 8) | ((infoHeader[22] & 0xFF) << 16) | ((infoHeader[23] & 0xFF) << 24);
-		if (compressedSize <= 0) {
+		if ((compressedSize <= 0) && (fileHeader != null)) {
 			// out-of-spec, use data from fileHeader instead ('file size' - 'offset of bitmap image data')
 			compressedSize = fileHeader[1] - fileHeader[4];
 		}
