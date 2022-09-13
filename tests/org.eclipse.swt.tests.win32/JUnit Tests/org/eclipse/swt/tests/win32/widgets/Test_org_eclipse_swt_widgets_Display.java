@@ -11,17 +11,25 @@
  * Contributors:
  *     Joerg Kubitz - initial API and implementation
  *******************************************************************************/
-package org.eclipse.swt.widgets;
+package org.eclipse.swt.tests.win32.widgets;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+
+import org.eclipse.swt.widgets.Display;
 import org.junit.Test;
 
 public class Test_org_eclipse_swt_widgets_Display {
 
 	@Test
-	public void test_isXMouseActive() {
+	public void test_isXMouseActive() throws NoSuchMethodException, SecurityException, IllegalAccessException,
+			IllegalArgumentException, InvocationTargetException {
 		Display display = new Display();
 		try {
-			boolean xMouseActive = display.isXMouseActive();
+			Method method = display.getClass().getDeclaredMethod("isXMouseActive");
+			method.setAccessible(true);
+
+			boolean xMouseActive = (boolean) method.invoke(display);
 			System.out.println("org.eclipse.swt.widgets.Display.isXMouseActive(): " + xMouseActive);
 		} finally {
 			display.dispose();
