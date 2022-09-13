@@ -42,7 +42,7 @@
 	if (!initialized) { \
 		void* handle = 0; \
 		char *gtk4 = getenv("SWT_GTK4"); \
-		if (gtk4 != NULL || strcmp(gtk4, "1") != 0) { \
+		if (gtk4 != NULL && strcmp(gtk4, "1") == 0) { \
 			handle = dlopen("libwebkit2gtk-5.0.so.0", LOAD_FLAGS); \
 		} else { \
 			handle = dlopen("libwebkit2gtk-4.0.so.37", LOAD_FLAGS); /* webkit2/libsoup2 */ \
