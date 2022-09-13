@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2003, 2021 IBM Corporation and others.
+ * Copyright (c) 2003, 2022 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -104,8 +104,7 @@ public Browser (Composite parent, int style) {
 	String errMsg = " because there is no underlying browser available.\n";
 	switch (SWT.getPlatform()) {
 	case "gtk":
-		errMsg = errMsg + "Please ensure that WebKit with its GTK 3.x bindings is installed (WebKit2 API level is preferred)."
-				+ " Additionally, please note that GTK4 does not currently have Browser support.\n";
+		errMsg = errMsg + "Please ensure that WebKit with its GTK 3.x/4.x bindings is installed.";
 		break;
 	case "cocoa":
 		errMsg = errMsg + "SWT failed to load the WebKit library.\n";

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2010, 2021 IBM Corporation and others.
+ * Copyright (c) 2010, 2022 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -19,7 +19,6 @@ class BrowserFactory {
 
 WebBrowser createWebBrowser (int style) {
 	if (OS.IsWin32) return null;
-	if (GTK.GTK4) return null;
 	boolean webkitInstalled = WebKit.IsInstalled ();
 	if (!webkitInstalled) return null;
 
