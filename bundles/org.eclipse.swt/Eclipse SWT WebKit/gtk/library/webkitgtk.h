@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2009, 2018 IBM Corporation and others. All rights reserved.
+ * Copyright (c) 2009, 2022 IBM Corporation and others. All rights reserved.
  * The contents of this file are made available under the terms
  * of the GNU Lesser General Public License (LGPL) Version 2.1 that
  * accompanies this distribution (lgpl-v21.txt).  The LGPL is also
@@ -41,12 +41,17 @@
 	static void *var = NULL; \
 	if (!initialized) { \
 		void* handle = 0; \
-		handle = dlopen("libwebkit2gtk-4.0.so.37", LOAD_FLAGS); /* webkit2/libsoup2 */ \
-		if (!handle) { \
+		char *gtk4 = getenv("SWT_GTK4"); \
+		if (gtk4 != NULL || strcmp(gtk4, "1") != 0) { \
+			handle = dlopen("libwebkit2gtk-5.0.so.0", LOAD_FLAGS); \
+		} else { \
+			handle = dlopen("libwebkit2gtk-4.0.so.37", LOAD_FLAGS); /* webkit2/libsoup2 */ \
+			if (!handle) { \
 				handle = dlopen("libwebkit2gtk-4.1.so.0", LOAD_FLAGS); /* webkit2/libsoup3 */ \
+			} \
 		} \
 		if (handle) { \
-			var = dlsym(handle, #name); \
+			var = dlsym(handle,	#name); \
 		} \
 		CHECK_DLERROR \
 		initialized = 1; \

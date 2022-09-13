@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2010, 2021 IBM Corporation and others.
+ * Copyright (c) 2010, 2022 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -29,6 +29,7 @@ import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.gtk.*;
 import org.eclipse.swt.internal.gtk3.*;
+import org.eclipse.swt.internal.gtk4.*;
 import org.eclipse.swt.internal.webkit.*;
 import org.eclipse.swt.internal.webkit.GdkRectangle;
 import org.eclipse.swt.layout.*;
@@ -344,7 +345,6 @@ static Browser FindBrowser (long webView) {
 }
 
 static boolean IsInstalled () {
-	if (GTK.GTK4) return false;
 	if (!WebKitGTK.LibraryLoaded) return false;
 	// TODO webkit_check_version() should take care of the following, but for some
 	// reason this symbol is missing from the latest build.  If it is present in
@@ -685,7 +685,12 @@ public void create (Composite parent, int style) {
 	}
 
 	// Webkit2 Signal Documentation: https://webkitgtk.org/reference/webkit2gtk/stable/WebKitWebView.html#WebKitWebView--title
-	GTK3.gtk_container_add (browser.handle, webView);
+	if (GTK.GTK4) {
+		OS.swt_fixed_add(browser.handle, webView);
+	} else {
+		GTK3.gtk_container_add (browser.handle, webView);
+	}
+
 	OS.g_signal_connect (webView, WebKitGTK.close, Proc2.getAddress (), CLOSE_WEB_VIEW);
 	OS.g_signal_connect (webView, WebKitGTK.ready_to_show, Proc2.getAddress (), WEB_VIEW_READY);
 	OS.g_signal_connect (webView, WebKitGTK.decide_policy, Proc4.getAddress (), DECIDE_POLICY);
@@ -713,18 +718,22 @@ public void create (Composite parent, int style) {
 	// Webview 'title' property
 	OS.g_signal_connect (webView, WebKitGTK.notify_title, 						Proc3.getAddress (), NOTIFY_TITLE);
 
-	OS.g_signal_connect (webView, OS.button_press_event, JSDOMEventProc.getAddress (), WIDGET_EVENT);
-	OS.g_signal_connect (webView, OS.button_release_event, JSDOMEventProc.getAddress (), WIDGET_EVENT);
-	OS.g_signal_connect (webView, OS.focus_in_event, JSDOMEventProc.getAddress (), 	WIDGET_EVENT);
-	OS.g_signal_connect (webView, OS.focus_out_event, JSDOMEventProc.getAddress (), WIDGET_EVENT);
+	if (!GTK.GTK4) {
+		OS.g_signal_connect (webView, OS.button_press_event, JSDOMEventProc.getAddress (), WIDGET_EVENT);
+		OS.g_signal_connect (webView, OS.button_release_event, JSDOMEventProc.getAddress (), WIDGET_EVENT);
+		OS.g_signal_connect (webView, OS.focus_in_event, JSDOMEventProc.getAddress (), 	WIDGET_EVENT);
+		OS.g_signal_connect (webView, OS.focus_out_event, JSDOMEventProc.getAddress (), WIDGET_EVENT);
+	}
 	// if connecting any other special gtk event to webkit, add SWT.* to w2_passThroughSwtEvents above.
 
 	this.pageId = WebKitGTK.webkit_web_view_get_page_id (webView);
 
-	OS.g_signal_connect (webView, OS.key_press_event, JSDOMEventProc.getAddress (),  	WIDGET_EVENT);
-	OS.g_signal_connect (webView, OS.key_release_event, JSDOMEventProc.getAddress (),	WIDGET_EVENT);
-	OS.g_signal_connect (webView, OS.scroll_event, JSDOMEventProc.getAddress (), 		WIDGET_EVENT);
-	OS.g_signal_connect (webView, OS.motion_notify_event, JSDOMEventProc.getAddress (), WIDGET_EVENT);
+	if (!GTK.GTK4) {
+		OS.g_signal_connect (webView, OS.key_press_event, JSDOMEventProc.getAddress (),  	WIDGET_EVENT);
+		OS.g_signal_connect (webView, OS.key_release_event, JSDOMEventProc.getAddress (),	WIDGET_EVENT);
+		OS.g_signal_connect (webView, OS.scroll_event, JSDOMEventProc.getAddress (), 		WIDGET_EVENT);
+		OS.g_signal_connect (webView, OS.motion_notify_event, JSDOMEventProc.getAddress (), WIDGET_EVENT);
+	}
 
 	byte[] utfBytes = Converter.wcsToMbcs ("UTF-8", true); // $NON-NLS-1$
 
@@ -1800,7 +1809,11 @@ void onDispose (Event e) {
 		// If you change dispose logic, to check that you haven't introduced memory leaks, test via:
 		// org.eclipse.swt.tests.junit.memoryleak.Test_Memory_Leak.test_Browser()
 		OS.g_object_ref (webView);
-		GTK3.gtk_container_remove (GTK.gtk_widget_get_parent (webView), webView);
+		if(GTK.GTK4) {
+			GTK.gtk_widget_unparent(webView);
+		} else {
+			GTK3.gtk_container_remove (GTK.gtk_widget_get_parent (webView), webView);
+		}
 		long webViewTempRef = webView;
 		Display.getDefault().asyncExec(() -> OS.g_object_unref(webViewTempRef));
 		webView = 0;
@@ -2335,7 +2348,11 @@ long webkit_load_changed (long web_view, int status, long user_data) {
 			if (firstLoad) {
 				GtkAllocation allocation = new GtkAllocation ();
 				GTK.gtk_widget_get_allocation(browser.handle, allocation);
-				GTK3.gtk_widget_size_allocate(browser.handle, allocation);
+				if (GTK.GTK4) {
+					GTK4.gtk_widget_size_allocate (browser.handle, allocation, -1);
+				} else {
+					GTK3.gtk_widget_size_allocate(browser.handle, allocation);
+				}
 				firstLoad = false;
 			}
 
