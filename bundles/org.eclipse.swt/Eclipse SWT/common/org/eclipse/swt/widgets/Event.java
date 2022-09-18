@@ -148,13 +148,20 @@ public class Event {
 	public char character;
 
 	/**
-	 * depending on the event, the key code of the key that was typed,
-	 * as defined by the key code constants in class <code>SWT</code>.
-	 * When the character field of the event is ambiguous, this field
-	 * contains the unaffected value of the original character.  For
-	 * example, typing Ctrl+M or Enter both result in the character '\r'
-	 * but the keyCode field will also contain '\r' when Enter was typed
-	 * and 'm' when Ctrl+M was typed.
+	 * character that is good for keyboard shortcut comparison. Unlike
+	 * {@link #character}, this tries to ignore modifier keys and deal
+	 * with non-latin keyboard layouts.
+	 * Examples:<br>
+	 * <table>
+	 *  <tr><th>Layout</th><th>US key label</th><th>character</th><th>keyCode</th></tr>
+	 *  <tr><td>Windows English US    </td><td>C      </td><td>'c' </td> <td>'c'</td></tr>
+	 *  <tr><td>Windows English US    </td><td>Shift+C</td><td>'C' </td> <td>'c'</td></tr>
+	 *  <tr><td>Windows English US    </td><td>Ctrl+C </td><td>0x03</td><td>'c'</td></tr>
+	 *  <tr><td>Windows English Dvorak</td><td>I      </td><td>'c' </td><td>'c'</td></tr>
+	 *  <tr><td>Windows Bulgarian     </td><td>Ъ      </td><td>'ъ' </td><td>'c'</td></tr>
+	 *  <tr><td>Windows French        </td><td>2      </td><td>'é' </td><td>'2'</td></tr>
+	 *  <tr><td>Windows French        </td><td>Shift+2</td><td>'2' </td><td>'2'</td></tr>
+	 * </table><br>
 	 *
 	 * @see org.eclipse.swt.SWT
 	 */
