@@ -58,6 +58,7 @@ public class OS extends C {
 	public static final int kAlertCautionIcon = ('c'<<24) + ('a'<<16) + ('u'<<8) + 't';
 	public static final int kAlertNoteIcon = ('n'<<24) + ('o'<<16) + ('t'<<8) + 'e';
 	public static final int kAlertStopIcon = ('s'<<24) + ('t'<<16) + ('o'<<8) + 'p';
+	public static final int cmdKey = 1 << 8;
 	public static final int shiftKey = 1 << 9;
 	public static final int kThemeMetricFocusRectOutset = 7;
 	public static final int kHIThemeOrientationNormal = 0;
