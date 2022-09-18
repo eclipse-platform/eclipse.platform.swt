@@ -1813,12 +1813,35 @@ private int calculateKeycode(Event event, NSEvent nsEvent) {
 	long [] actualStringLength = new long [1];
 	int [] deadKeyState = new int[1];
 
-	OS.UCKeyTranslate (keyLayout, nsKeyCode, keyAction, 0, keyboardType, 0, deadKeyState, maxStringLength, actualStringLength, unicodeString);
-	if (actualStringLength[0] < 1) {
-		// part of a multi-key key
-		return 0;
+	// Note that bit shift >> 8 in modifiers is needed according to docs
+	// of UCKeyTranslate().
+	final int [] modifierTests = new int[] {
+		// Many non-latin layouts have a latin plane on Cmd key in order
+		// to handle keyboard shortcuts. Furthermore, layouts such as
+		// 'Dvorak-QWERTY⌘' have different latin planes without Cmd (for
+		// typing) and with Cmd (for invoking shortcuts). In both cases,
+		// that's exactly what we want for 'Event.keyCode'.
+		OS.cmdKey >> 8,
+		// Fallback just in case. It's unknown if it's actually helpful
+		// in any layouts.
+		0,
+	};
+
+	for (int modifiers : modifierTests) {
+		OS.UCKeyTranslate (keyLayout, nsKeyCode, keyAction, modifiers, keyboardType, 0, deadKeyState, maxStringLength, actualStringLength, unicodeString);
+		if (actualStringLength[0] < 1) {
+			// part of a multi-key key
+			continue;
+		}
+
+		if (unicodeString[0] < 128) {
+			// Found something latin, use that
+			return unicodeString[0];
+		}
 	}
 
+	// If nothing worked, return values from the last tested modifiers
+	if (actualStringLength[0] < 1) return 0;
 	return unicodeString[0];
 }
 
