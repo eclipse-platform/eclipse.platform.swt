@@ -1,77 +1,23 @@
-# This workflow will build a Java project with Maven, and cache/restore any dependencies to improve the workflow execution time
-# For more information see: https://help.github.com/actions/language-and-framework-guides/building-and-testing-java-with-maven
-
-name: SWT Matrix Build
-concurrency: 
+name: TestTest
+concurrency:
     group: ${{ github.workflow }}-${{ github.ref }}
     cancel-in-progress: true
 
 on:
   push:
-    branches: [ master ]
+    branches: [ test_SyntevoAlex ]
   pull_request:
-    branches: [ master ]
+    branches: [ test_SyntevoAlex ]
+
+env:
+  GH_TOKEN: ${{secrets.GITHUB_TOKEN}}
 
 jobs:
   build:
-    runs-on: ${{ matrix.config.os }}
-    strategy:
-      fail-fast: false
-      matrix:
-        java: [ '11', '17' ]
-        config: 
-          - { name: Linux, os: ubuntu-latest, native: gtk.linux.x86_64, cp: .classpath_gtk }
-          - { name: Windows, os: windows-latest, native: win32.win32.x86_64, cp: .classpath_win32 }
-          - { name: MacOS, os: macos-latest, native: cocoa.macosx.x86_64, cp: .classpath_cocoa }
-    name: Verify ${{ matrix.config.name }} with Java-${{ matrix.java }}
+    runs-on: ubuntu-latest
+    name: Test
     steps:
-    - name: checkout swt
-      uses: actions/checkout@v3
-      with:
-       path: 'eclipse.platform.swt'
-       fetch-depth: 0 # required for jgit timestamp provider to work
-    - name: checkout swt.binaries
-      uses: actions/checkout@v3
-      with:
-       path: eclipse.platform.swt.binaries
-       fetch-depth: 0 # required for jgit timestamp provider to work
-       repository: 'eclipse-platform/eclipse.platform.swt.binaries'
-    - name: Install Linux requirements
-      run: sudo apt-get update -qq && sudo apt-get install -qq -y webkit2gtk-driver
-      if: ${{ matrix.config.native == 'gtk.linux.x86_64'}}
-    - name: Set up Java ${{ matrix.java }}
-      uses: actions/setup-java@v3
-      with:
-        java-version: ${{ matrix.java }}
-        distribution: 'temurin'
-        cache: maven
-    - name: Build swt.binaries fragments with Maven
-      uses: GabrielBB/xvfb-action@v1
-      with:
-       run: >- 
-        mvn --batch-mode -Pbuild-individual-bundles -DforceContextQualifier=zzz
-        -DskipJni -Dcompare-version-with-baselines.skip=true -Dmaven.compiler.failOnWarning=true install
-       working-directory: eclipse.platform.swt.binaries
-    - name: Build with Maven
-      uses: GabrielBB/xvfb-action@v1
-      with:
-       run: >- 
-        mvn --batch-mode -V -U
-        -Pbuild-individual-bundles
-        -Pbuild-individual-platform
-        -Dswt.build.platform_cp=${{ matrix.config.cp }}
-        -DforkCount=1
-        -Dcompare-version-with-baselines.skip=false
-        -Dmaven.compiler.failOnWarning=true
-        -Dmaven.test.failure.ignore=true
-        -DskipNativeTests=false
-        -DfailIfNoTests=false
-        clean install
-       working-directory: eclipse.platform.swt
-    - name: Upload Test Results for ${{ matrix.config.name }} / Java-${{ matrix.java }}
-      uses: actions/upload-artifact@v3
-      with:
-        name: test-results-${{ matrix.config.native }}-java${{ matrix.java }}
-        if-no-files-found: error
-        path: |
-          ${{ github.workspace }}/**/target/surefire-reports/*.xml
+      - name: Create Gist
+        shell: bash
+        run: |
+          gh gist create --desc "eclipse.platform.swt.tests" --public
