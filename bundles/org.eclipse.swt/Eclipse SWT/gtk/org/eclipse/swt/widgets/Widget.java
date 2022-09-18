@@ -1922,6 +1922,79 @@ boolean setInputState (Event event, int state) {
 	return true;
 }
 
+/**
+ * On Linux, the most common way to handle keyboard input is XKB.
+ * The rest of the description explains XKB and related GTK stuff.
+ *
+ * XKB uses the following definitions:
+ * <ul>
+ *  <li>"group" - that's how they call keyboard layouts</li>
+ *  <li>"keycode" - id of a physical key on a keyboard. For example,
+ *   AB01 refers to 2nd row from the bottom (B), 1st key (01) </li>
+ *  <li>"level" - Can be seen as a number that describes modifiers
+ *   pressed together with the key. For example, in English US,
+ *   pressing A would result in level 0, and pressing Shift+A would
+ *   result in level 1. The other common levels are used for AltGr
+ *   and Shift+AltGr, but a keyboard layout could have even more
+ *   exotic levels.</li>
+ *  <li>"modifiers" - a combination of modifier keys. Keyboard
+ *   layouts could define their own modifiers.</li>
+ *  <li>"keyval" - Can be seen as a final calculation of what was
+ *   produced by a key press (by taking keycode, group, level, and
+ *   other modifiers such as dead keys into account).
+ * </ul>
+ * Some examples:
+ * <table>
+ *  <tr><th>Layout</th><th>Key row</th><th>Key col</th><th>Keycode</th><th>Modifiers</th><th>Keyval</th><th>Character</th></tr>
+ *  <tr><td>English US    </td><td>1</td><td>10</td><td>FK09</td><td></td><td>F9</td><td></td></tr>
+ *  <tr><td>English US    </td><td>3</td><td>5</td><td>AD04</td><td></td><td>r</td><td>r</td></tr>
+ *  <tr><td>English US    </td><td>3</td><td>5</td><td>AD04</td><td>Shift</td><td>R</td><td>R</td></tr>
+ *  <tr><td>English US    </td><td>3</td><td>6</td><td>AD05</td><td></td><td>t</td><td>t</td></tr>
+ *  <tr><td>English Dvorak</td><td>3</td><td>5</td><td>AD04</td><td></td><td>p</td><td>p</td></tr>
+ *  <tr><td>English Dvorak</td><td>3</td><td>6</td><td>AD05</td><td></td><td>y</td><td>y</td></tr>
+ *  <tr><td>Bulgarian     </td><td>3</td><td>5</td><td>AD04</td><td></td><td>Cyrillic_i</td><td>и</td></tr>
+ *  <tr><td>Bulgarian     </td><td>3</td><td>6</td><td>AD05</td><td></td><td>Cyrillic_sha</td><td>ш</td></tr>
+ * </table><br>
+ *
+ * XKB doesn't do two-step keyboard layout translation like Windows.
+ * For this reason, binding keyboard shortcuts across keyboard layouts
+ * quickly becomes ugly. Further, each major UI library (such as Qt
+ * or GTK) and many major softwares (such as Firefox, LibreOffice)
+ * has its own approach. Usually developed through trial, error and
+ * pain.
+ *
+ * The common approach is to search all installed keyboard layouts
+ * and find some that is latin. Then invoke keyboard shortcut using
+ * that layout. That is, if current layout is Bulgarian:<br>
+ * <ul>
+ *  <li>notice that current layout is not latin</li>
+ *  <li>search installed layouts to find a latin one</li>
+ *  <li>map pressed key to a latin char using that layout</li>
+ *  <li>invoke keyboard shortcut</li>
+ * </ul>
+ *
+ * The details of how it's done differ across libraries and
+ * softwares. For example:
+ * <ul>
+ *  <li>If currently pressed key produces latin keyval, some are
+ *   happy with that and will not search for other layouts. Others
+ *   do search anyway. This often results in multiple keys invoking
+ *   the same shortcut (when there are multiple layouts with
+ *   desired latin key in different positions). One example of
+ *   affected software is 'gedit'.</li>
+ *  <li>When they do search, some search all layouts, others
+ *   search only the previous layouts (and insist that latin layout
+ *   is installed before non-latin), some search for a first match,
+ *   some search for the "most latin" layout, etc.</li>
+ * </ul>
+ * To my understanding, no matter which of these dark magics is
+ * chosen, this always results in ugly corner cases, band-aided
+ * with dirty workarounds which fix something while breaking
+ * something else.
+ *
+ * For an example of how other software deals with all that mess, see
+ * QXcbKeyboard::lookupLatinKeysym() in Qt.
+ */
 boolean setKeyState (Event javaEvent, long event) {
 	long string = 0;
 	int length = 0;

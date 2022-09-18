@@ -1370,6 +1370,61 @@ boolean setInputState (Event event, int type) {
 	return true;
 }
 
+/**
+ * On Windows, keyboard layout translates a key press twice:
+ * <ol>
+ * <li>First translation is made from "scan code" (can be thought of
+ * as geometrical location of key on keyboard) to "virtual key"
+ * (can be thought of as a key meaning on latin keyboard). This
+ * happens even for layouts that have no latin keys (Bulgarian,
+ * Hebrew, Japanese, etc).</li>
+ * <li>Second translation is made from "virtual key" to character(s).
+ * A virtual key can produce zero chars (dead keys), one char
+ * (usual keys), or more than one char (ligatures).</li>
+ * </ol>
+ *
+ * Such two-step translation allows to answer both which character
+ * to produce, and which keyboard shortcut to invoke in app.
+ *
+ * Let's see some examples:<br>
+ * <table>
+ *  <tr><th>Layout</th><th>Key row</th><th>Key col</th><th>Scan code</th><th>Virt key</th><th>Character</th></tr>
+ *  <tr><td>English US    </td><td>3</td><td>5</td><td>0x13</td><td>VK_R</td><td>r</td></tr>
+ *  <tr><td>English US    </td><td>3</td><td>6</td><td>0x14</td><td>VK_T</td><td>t</td></tr>
+ *  <tr><td>English Dvorak</td><td>3</td><td>5</td><td>0x13</td><td>VK_P</td><td>p</td></tr>
+ *  <tr><td>English Dvorak</td><td>3</td><td>6</td><td>0x14</td><td>VK_Y</td><td>y</td></tr>
+ *  <tr><td>Bulgarian     </td><td>3</td><td>5</td><td>0x13</td><td>VK_R</td><td>и</td></tr>
+ *  <tr><td>Bulgarian     </td><td>3</td><td>6</td><td>0x14</td><td>VK_T</td><td>ш</td></tr>
+ * </table><br>
+ * In these examples, it can be seen how
+ * <ul>
+ *  <li>Same physical key always has the same scan code</li>
+ *  <li>Same physical key can produce different characters (that's
+ *   what keyboard layouts are for)</li>
+ *  <li>Same physical key can produce different virtual keys
+ *   (see English US, Dvorak)</li>
+ *  <li>Same virtual key can produce different characters (see
+ *   English, Bulgarian). Bulgarian only has cyrillic characters
+ *   and no latin ones, but still has standard virtual keys.</li>
+ * </ul>
+ *
+ * Note that it's valid for a "latin" virtual key to produce some
+ * other latin character. For example, VK_C could produce latin J.
+ * This can be used in Dvorak-QWERTY keyboard layout that types
+ * Dvorak, but has QWERTY keyboard shortcuts.
+ * <br>
+ * Due to two-step translation, almost every common keyboard layout
+ * has virtual keys VK_A ... VK_Z mapped on it, even if layout
+ * doesn't type a single latin character. On Windows, keyboard
+ * shortcuts bind to virtual keys. Therefore:
+ * <ul>
+ * <li>In English US, Ctrl+C will be produced by Ctrl and key labeled 'C'.</li>
+ * <li>In Dvorak, Ctrl+C will be produced by Ctrl and key labeled 'C'.
+ *  Note that Dvorak 'C' is where English US 'I' is.</li>
+ * <li>In Bulgarian, Ctrl+C will be produced by Ctrl and key labeled 'Ъ'.
+ *  Because this is the key to which VK_C is mapped.</li>
+ * </ul>
+ */
 boolean setKeyState (Event event, int type, long wParam, long lParam) {
 
 	/*
