@@ -1790,6 +1790,38 @@ boolean setInputState (Event event, NSEvent nsEvent, int type) {
 	return true;
 }
 
+private int getKeyboardType(NSEvent nsEvent) {
+	long cgEvent = nsEvent.CGEvent();
+	return (int)OS.CGEventGetIntegerValueField(cgEvent, OS.kCGKeyboardEventKeyboardType);
+}
+
+private int calculateKeycode(Event event, NSEvent nsEvent) {
+	long keyLayout = Display.getCurrentKeyLayout();
+	if (keyLayout == 0) {
+		// KCHR keyboard layouts are no longer supported, so fall back to the basic but flawed
+		// method of determining which key was pressed.
+		NSString unmodifiedChars = nsEvent.charactersIgnoringModifiers ().lowercaseString();
+		if (unmodifiedChars.length() == 0) return 0;
+		return unmodifiedChars.characterAtIndex(0);
+	}
+
+	short nsKeyCode = nsEvent.keyCode ();
+	short keyAction = event.type == SWT.KeyDown ? OS.kUCKeyActionDown : OS.kUCKeyActionUp;
+	int keyboardType = getKeyboardType(nsEvent);
+	int maxStringLength = 256;
+	char [] unicodeString = new char [maxStringLength];
+	long [] actualStringLength = new long [1];
+	int [] deadKeyState = new int[1];
+
+	OS.UCKeyTranslate (keyLayout, nsKeyCode, keyAction, 0, keyboardType, 0, deadKeyState, maxStringLength, actualStringLength, unicodeString);
+	if (actualStringLength[0] < 1) {
+		// part of a multi-key key
+		return 0;
+	}
+
+	return unicodeString[0];
+}
+
 /**
  * For every key press, macOS reports these pieces of information:
  * <ul>
@@ -1894,37 +1926,7 @@ boolean setKeyState (Event event, int type, NSEvent nsEvent) {
 				if (chars != null && chars.length() > 0) event.character = (char)chars.characterAtIndex (0);
 			}
 			if (event.keyCode == 0) {
-				long uchrPtr = 0;
-				long currentKbd = OS.TISCopyCurrentKeyboardInputSource();
-				long uchrCFData = OS.TISGetInputSourceProperty(currentKbd, OS.kTISPropertyUnicodeKeyLayoutData());
-
-				if (uchrCFData != 0) {
-					uchrPtr = OS.CFDataGetBytePtr(uchrCFData);
-
-					if (uchrPtr != 0 && OS.CFDataGetLength(uchrCFData) > 0) {
-						long cgEvent = nsEvent.CGEvent();
-						long keyboardType = OS.CGEventGetIntegerValueField(cgEvent, OS.kCGKeyboardEventKeyboardType);
-
-						int maxStringLength = 256;
-						char [] output = new char [maxStringLength];
-						long [] actualStringLength = new long [1];
-						int [] deadKeyState = new int[1];
-						OS.UCKeyTranslate (uchrPtr, (short)keyCode, (short)(event.type == SWT.KeyDown ? OS.kUCKeyActionDown : OS.kUCKeyActionUp), 0, (int)keyboardType, 0, deadKeyState, maxStringLength, actualStringLength, output);
-						if (actualStringLength[0] < 1) {
-							// part of a multi-key key
-							event.keyCode = 0;
-						} else {
-							event.keyCode = output[0];
-						}
-					}
-				} else {
-					// KCHR keyboard layouts are no longer supported, so fall back to the basic but flawed
-					// method of determining which key was pressed.
-					NSString unmodifiedChars = nsEvent.charactersIgnoringModifiers ().lowercaseString();
-					if (unmodifiedChars.length() > 0) event.keyCode = (char)unmodifiedChars.characterAtIndex(0);
-				}
-
-				if (currentKbd != 0) OS.CFRelease(currentKbd);
+				event.keyCode = calculateKeycode(event, nsEvent);
 			}
 	}
 	if (event.keyCode == 0 && event.character == 0) {
