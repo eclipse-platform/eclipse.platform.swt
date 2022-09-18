@@ -8631,8 +8631,13 @@ void setClipboardContent(int start, int length, int clipboardType) throws SWTErr
 		RTFTransfer rtfTransfer = RTFTransfer.getInstance();
 		RTFWriter rtfWriter = new RTFWriter(this, start, length);
 		String rtfText = getPlatformDelimitedText(rtfWriter);
-		data = new Object[]{rtfText, plainText};
-		types = new Transfer[]{rtfTransfer, plainTextTransfer};
+
+		HTMLTransfer htmlTransfer = HTMLTransfer.getInstance();
+		HTMLWriter htmlWriter = new HTMLWriter(this, start, length);
+		String htmlText = getPlatformDelimitedText(htmlWriter);
+
+		data = new Object[]{rtfText, htmlText, plainText};
+		types = new Transfer[]{rtfTransfer, htmlTransfer, plainTextTransfer};
 	}
 	clipboard.setContents(data, types, clipboardType);
 }
