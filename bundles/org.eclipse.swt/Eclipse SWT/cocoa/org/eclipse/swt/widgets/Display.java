@@ -3389,6 +3389,17 @@ boolean isValidThread () {
 	return thread == Thread.currentThread ();
 }
 
+static long getCurrentKeyLayout () {
+	long currentKbd = OS.TISCopyCurrentKeyboardInputSource ();
+	long keyLayoutData = OS.TISGetInputSourceProperty (currentKbd, OS.kTISPropertyUnicodeKeyLayoutData());
+	if (currentKbd != 0) OS.CFRelease (currentKbd);
+	if (keyLayoutData == 0) return 0;
+	long keyLayout = OS.CFDataGetBytePtr (keyLayoutData);
+	if (keyLayout == 0) return 0;
+	if (OS.CFDataGetLength (keyLayoutData) == 0) return 0;
+	return keyLayout;
+}
+
 /**
  * Generate a low level system event.
  *
@@ -3467,21 +3478,15 @@ public boolean post(Event event) {
 			case SWT.KeyUp: {
 				short vKey = (short)Display.untranslateKey (event.keyCode);
 				if (vKey == 0) {
-					long uchrPtr = 0;
-					long currentKbd = OS.TISCopyCurrentKeyboardInputSource();
-					long uchrCFData = OS.TISGetInputSourceProperty(currentKbd, OS.kTISPropertyUnicodeKeyLayoutData());
-
-					if (uchrCFData == 0) return false;
-					uchrPtr = OS.CFDataGetBytePtr(uchrCFData);
-					if (uchrPtr == 0) return false;
-					if (OS.CFDataGetLength(uchrCFData) == 0) return false;
+					long keyLayout = getCurrentKeyLayout ();
+					if (keyLayout == 0) return false;
 					int maxStringLength = 256;
 					vKey = -1;
 					char [] output = new char [maxStringLength];
 					long [] actualStringLength = new long [1];
 					for (short i = 0 ; i <= 0x7F ; i++) {
 						deadKeyState[0] = 0;
-						OS.UCKeyTranslate (uchrPtr, i, (short)(type == SWT.KeyDown ? OS.kUCKeyActionDown : OS.kUCKeyActionUp), 0, OS.LMGetKbdType(), 0, deadKeyState, maxStringLength, actualStringLength, output);
+						OS.UCKeyTranslate (keyLayout, i, type == SWT.KeyDown ? OS.kUCKeyActionDown : OS.kUCKeyActionUp, 0, OS.LMGetKbdType(), 0, deadKeyState, maxStringLength, actualStringLength, output);
 						if (output[0] == event.character) {
 							vKey = i;
 							break;
@@ -3490,7 +3495,7 @@ public boolean post(Event event) {
 					if (vKey == -1) {
 						for (short i = 0 ; i <= 0x7F ; i++) {
 							deadKeyState[0] = 0;
-							OS.UCKeyTranslate (uchrPtr, i, (short)(type == SWT.KeyDown ? OS.kUCKeyActionDown : OS.kUCKeyActionUp), (OS.shiftKey >> 8) & 0xFF, OS.LMGetKbdType(), 0, deadKeyState, maxStringLength, actualStringLength, output);
+							OS.UCKeyTranslate (keyLayout, i, type == SWT.KeyDown ? OS.kUCKeyActionDown : OS.kUCKeyActionUp, (OS.shiftKey >> 8) & 0xFF, OS.LMGetKbdType(), 0, deadKeyState, maxStringLength, actualStringLength, output);
 							if (output[0] == event.character) {
 								vKey = i;
 								break;

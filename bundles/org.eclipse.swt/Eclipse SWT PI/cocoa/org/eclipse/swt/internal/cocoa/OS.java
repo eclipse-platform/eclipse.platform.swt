@@ -300,8 +300,8 @@ public static final native void GetThemeMetric(int themeConstant, int[] metric);
 */
 public static final native int HIThemeDrawFocusRect(CGRect inRect, boolean inHasFocus, long inContext, int inOrientation);
 
-public static final int kUCKeyActionDown = 0;
-public static final int kUCKeyActionUp = 1;
+public static final short kUCKeyActionDown = 0;
+public static final short kUCKeyActionUp = 1;
 /** @method flags=dynamic */
 public static final native byte LMGetKbdType();
 
