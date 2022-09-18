@@ -204,6 +204,11 @@ public class Event {
 	 * For detailed information, see {@link Widget#setKeyState} per
 	 * platform.
 	 *
+	 * For debugging, see
+	 * <ul>
+	 *  <li>Files with names containing 'Issue0351_EventKeyCode'</li>
+	 * </ul>
+	 *
 	 * @see org.eclipse.swt.SWT
 	 */
 	public int keyCode;
