@@ -1790,6 +1790,83 @@ boolean setInputState (Event event, NSEvent nsEvent, int type) {
 	return true;
 }
 
+/**
+ * For every key press, macOS reports these pieces of information:
+ * <ul>
+ *  <li>-[NSEvent keyCode] contains the physical key id, it doesn't
+ *   change across keyboard layouts.</li>
+ *  <li>-[NSEvent modifierFlags] is the modifiers (Cmd, Shift etc)</li>
+ *  <li>-[NSEvent characters] is the translated character with
+ *   keyboard layout, keyCode, modifiers taken into account</li>
+ *  <li>-[NSEvent charactersIgnoringModifiers] is similar to the
+ *   previous one, but ignores modifiers other than Shift</li>
+ * </ul>
+ * Let's see some examples: (chars=-[NSEvent characters],
+ * charsNoMods=-[NSEvent charactersIgnoringModifiers])<br>
+ * <table>
+ *  <tr><th>Layout    </th><th>US key label</th><th>keyCode</th><th>chars</th><th>charsNoMods</th></tr>
+ *  <tr><td>U.S.      </td><td>2           </td><td>0x13   </td><td>2   </td><td>2        </td></tr>
+ *  <tr><td>U.S.      </td><td>Cmd+2       </td><td>0x13   </td><td>2   </td><td>2        </td></tr>
+ *  <tr><td>U.S.      </td><td>Shift+2     </td><td>0x13   </td><td>@   </td><td>@        </td></tr>
+ *  <tr><td>U.S.      </td><td>V           </td><td>0x09   </td><td>v   </td><td>v        </td></tr>
+ *  <tr><td>U.S.      </td><td>Opt+V       </td><td>0x09   </td><td>√   </td><td>v        </td></tr>
+ *  <tr><td>U.S.      </td><td>Cmd+V       </td><td>0x09   </td><td>v   </td><td>v        </td></tr>
+ *  <tr><td>U.S.      </td><td>Ctrl+V      </td><td>0x09   </td><td>0x16</td><td>v        </td></tr>
+ *  <tr><td>U.S.      </td><td>Shift+V     </td><td>0x09   </td><td>V   </td><td>V        </td></tr>
+ *  <tr><td>U.S.      </td><td>Opt+Cmd+O   </td><td>0x1F   </td><td>ø   </td><td>o        </td></tr>
+ *  <tr><td>ABC-AZERTY</td><td>2           </td><td>0x13   </td><td>é   </td><td>é        </td></tr>
+ *  <tr><td>ABC-AZERTY</td><td>Cmd+2       </td><td>0x13   </td><td>é   </td><td>é        </td></tr>
+ *  <tr><td>ABC-AZERTY</td><td>Shift+2     </td><td>0x13   </td><td>2   </td><td>2        </td></tr>
+ *  <tr><td>Bulgarian </td><td>V           </td><td>0x09   </td><td>э   </td><td>э        </td></tr>
+ *  <tr><td>Bulgarian </td><td>Opt+V       </td><td>0x09   </td><td>v   </td><td>э        </td></tr>
+ *  <tr><td>Bulgarian </td><td>Cmd+V       </td><td>0x09   </td><td>v   </td><td>э        </td></tr>
+ *  <tr><td>Bulgarian </td><td>Ctrl+V      </td><td>0x09   </td><td>0x16</td><td>э        </td></tr>
+ *  <tr><td>Bulgarian </td><td>Shift+V     </td><td>0x09   </td><td>Э   </td><td>Э        </td></tr>
+ *  <tr><td>Bulgarian </td><td>Opt+Cmd+O   </td><td>0x1F   </td><td>o   </td><td>д        </td></tr>
+ *  <tr><td>Russian   </td><td>V           </td><td>0x09   </td><td>м   </td><td>м        </td></tr>
+ *  <tr><td>Russian   </td><td>Opt+V       </td><td>0x09   </td><td>µ   </td><td>м        </td></tr>
+ *  <tr><td>Russian   </td><td>Cmd+V       </td><td>0x09   </td><td>v   </td><td>м        </td></tr>
+ *  <tr><td>Russian   </td><td>Ctrl+V      </td><td>0x09   </td><td>0x16</td><td>м        </td></tr>
+ *  <tr><td>Russian   </td><td>Shift+V     </td><td>0x09   </td><td>М   </td><td>М        </td></tr>
+ * </table><br>
+ *
+ * Here, problems can be seen:
+ * <ul>
+ *  <li>In non-latin layouts such as Bulgarian, with Cmd and/or Opt
+ *   mods, -[NSEvent characters] contains a character good for
+ *   keyboard shortcuts, but without modifiers, it's not given
+ *   anywhere</li>
+ *  <li>In some non-latin layouts, Opt modifier results in good value
+ *   in -[NSEvent characters] (see Bulgarian), but in others, it
+ *   doesn't (see Russian)</li>
+ *  <li>In a lot of layouts, Shift+letter gives capital letter</li>
+ *  <li>In U.S. layout, Shift+2 doesn't give 2 anywhere</li>
+ *  <li>On the contrary, in layouts such as ABC-AZERTY (used in French),
+ *   digits keys don't give digits anywhere unless Shift is pressed</li>
+ *  <li>For Opt+Cmd+O, the good character is present, but in
+ *   U.S. it's reported in -[NSEvent charactersIgnoringModifiers]
+ *   while in Bulgarian it's reported in -[NSEvent characters]</li>
+ * </ul>
+ *
+ * macOS documentation, such as in -[NSResponder performKeyEquivalent:],
+ * suggests to use -[NSEvent charactersIgnoringModifiers], but clealry
+ * this isn't going to work.
+ *
+ * What macOS does itself in -[NSMenu performKeyEquivalent:] is a lot
+ * of undocumented magic, where it also maps physical keys to other
+ * layouts such as
+ * <ul>
+ *  <li>TISCopyCurrentASCIICapableKeyboardLayoutInputSource - a
+ *   documented API that returns "most-recently-used ASCII-capable
+ *   keyboard"</li>
+ *  <li>TSMDefaultAsciiCapableKeyboardLayoutCopy - a non documented
+ *   API whose meaning is hinted in documentation for previous API,
+ *   "default ASCII-capable keyboard layout (chosen by Setup Assistant)"</li>
+ * </ul>
+ *
+ * For an example of how other software deals with all that mess, see
+ * TISInputSourceWrapper::InitKeyEvent() in Firefox.
+ */
 boolean setKeyState (Event event, int type, NSEvent nsEvent) {
 	boolean isNull = false;
 	int keyCode = nsEvent.keyCode ();

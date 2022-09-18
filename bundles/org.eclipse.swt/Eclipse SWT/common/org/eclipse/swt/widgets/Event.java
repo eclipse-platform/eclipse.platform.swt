@@ -163,6 +163,47 @@ public class Event {
 	 *  <tr><td>Windows French        </td><td>Shift+2</td><td>'2' </td><td>'2'</td></tr>
 	 * </table><br>
 	 *
+	 * How it is done differs per platform, and on many platforms,
+	 * SWT resorts to various magic. To understand the problem,
+	 * consider the following questions about the well known
+	 * Ctrl+C shortcut:
+	 * <ul>
+	 *  <li>Which key invokes Ctrl+C in English? Well, that's easy, key
+	 *   C does it.</li>
+	 *  <li>Dvorak is basically an English layout, but with keys
+	 *   shuffled around. Where English has C, Dvorak has J. Where
+	 *   English has I, Dvorak has C. Which key invokes Ctrl+C in
+	 *   English-Dvorak? Well, both answers are kind of correct.
+	 *   There's a heated debate on the internet which answer is better:
+	 *   some argue that they like English shortcuts they learned
+	 *   before they decided to try Dvorak. Others argue that key
+	 *   labels shall match invoked shortcuts. The usually preferred
+	 *   answer is that if a key types C in Dvorak, then it shall
+	 *   invoke Ctrl+C. That is, the key that is labeled I in English.</li>
+	 *  <li>Which key invokes Ctrl+C in non-latin keyboard layouts?
+	 *   That's where it gets hard. Consider Hebrew, Cyrillic,
+	 *   Japanese. These layouts simply don't have latin C anywhere!</li>
+	 * </ul>
+	 * Approaching all 3 questions at once is non-trivial, and each OS
+	 * does it in a different way. In very simple words:
+	 * <ul>
+	 *  <li>Windows keyboard layouts have an additional invisible
+	 *   mapping of keys to keyboard shortcuts, completely independent
+	 *   from characters typed by these keys. Layouts also have the
+	 *   regular mapping of keys to produced characters. Both are
+	 *   edited in keyboard layout editors.</li>
+	 *  <li>macOS keyboard layouts have hidden Latin sub-layouts and
+	 *   switch to them when a modifier such as Cmd is pressed. This
+	 *   is easy to see in builtin on-screen keyboard. It's a lot more
+	 *   complicated with modifiers other than Cmd and Ctrl.</li>
+	 *  <li>Linux is worst. It lacks the information to map shortcuts
+	 *   on non-latin keyboards and resorts to inspecting other
+	 *   installed layouts to find something latin.</li>
+	 * </ul>
+	 *
+	 * For detailed information, see {@link Widget#setKeyState} per
+	 * platform.
+	 *
 	 * @see org.eclipse.swt.SWT
 	 */
 	public int keyCode;
