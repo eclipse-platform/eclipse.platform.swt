@@ -733,6 +733,62 @@ public void test_copy() {
 	clipboard.dispose();
 }
 
+private static StyleRange getRangeForText(String str, String subStr) {
+	int index = str.indexOf(subStr);
+	if (index != -1) {
+		return new StyleRange(index, subStr.length(), null, null);
+	}
+	return null;
+}
+
+@Test
+public void test_clipboardWithHtml() {
+	String content = "This is red, background yellow, bold, italic, underscore, big, small, super, sub.";
+	text.setText(content);
+
+	StyleRange range;
+	range = getRangeForText(content, "red");
+	range.foreground = new Color(0xff, 0x00, 0x00);
+	text.setStyleRange(range);
+
+	range = getRangeForText(content, "yellow");
+	range.background = new Color(0xff, 0xff, 0x00);
+	text.setStyleRange(range);
+
+	range = getRangeForText(content, "bold");
+	range.fontStyle = SWT.BOLD;
+	text.setStyleRange(range);
+
+	range = getRangeForText(content, "italic");
+	range.fontStyle = SWT.ITALIC;
+	text.setStyleRange(range);
+
+	range = getRangeForText(content, "underscore");
+	range.underlineStyle = SWT.UNDERLINE_SINGLE;
+	range.underline = true;
+	text.setStyleRange(range);
+
+	range = getRangeForText(content, "big");
+	Font font = new Font(Display.getCurrent(), "Arial", 16, 0);
+	range.font = font;
+	text.setStyleRange(range);
+
+	range = getRangeForText(content, "small");
+	font = new Font(Display.getCurrent(), "Arial", 8, SWT.NONE);
+	range.font = font;
+	text.setStyleRange(range);
+
+	range = getRangeForText(content, "super");
+	range.rise = 12;
+	text.setStyleRange(range);
+	range = getRangeForText(content, "sub");
+	range.rise = -12;
+	text.setStyleRange(range);
+
+	text.selectAll();
+	text.copy();
+}
+
 @Test
 public void test_cut() {
 	if (SwtTestUtil.isCocoa) {
