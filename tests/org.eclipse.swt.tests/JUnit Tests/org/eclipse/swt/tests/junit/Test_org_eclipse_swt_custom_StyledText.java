@@ -51,6 +51,7 @@ import org.eclipse.swt.custom.StyledTextContent;
 import org.eclipse.swt.custom.TextChangeListener;
 import org.eclipse.swt.custom.VerifyKeyListener;
 import org.eclipse.swt.dnd.Clipboard;
+import org.eclipse.swt.dnd.HTMLTransfer;
 import org.eclipse.swt.dnd.RTFTransfer;
 import org.eclipse.swt.dnd.TextTransfer;
 import org.eclipse.swt.dnd.Transfer;
@@ -731,6 +732,65 @@ public void test_copy() {
 
 	rtfCopy();
 	clipboard.dispose();
+}
+
+private static StyleRange getRangeForText(String str, String subStr) {
+	int index = str.indexOf(subStr);
+	if (index != -1) {
+		return new StyleRange(index, subStr.length(), null, null);
+	}
+	return null;
+}
+
+@Test
+public void test_clipboardWithHtml() {
+	String content = "This is red, background yellow, bold, italic, underscore, big, small, super, sub.";
+	text.setText(content);
+
+	StyleRange range;
+	range = getRangeForText(content, "red");
+	range.foreground = new Color(0xff, 0x00, 0x00);
+	text.setStyleRange(range);
+
+	range = getRangeForText(content, "yellow");
+	range.background = new Color(0xff, 0xff, 0x00);
+	text.setStyleRange(range);
+
+	range = getRangeForText(content, "bold");
+	range.fontStyle = SWT.BOLD;
+	text.setStyleRange(range);
+
+	range = getRangeForText(content, "italic");
+	range.fontStyle = SWT.ITALIC;
+	text.setStyleRange(range);
+
+	range = getRangeForText(content, "underscore");
+	range.underlineStyle = SWT.UNDERLINE_SINGLE;
+	range.underline = true;
+	text.setStyleRange(range);
+
+	range = getRangeForText(content, "big");
+	Font fontArial16 = new Font(Display.getCurrent(), "Arial", 16, 0);
+	range.font = fontArial16;
+	text.setStyleRange(range);
+
+	range = getRangeForText(content, "small");
+	Font fontArial8 = new Font(Display.getCurrent(), "Arial", 8, SWT.NONE);
+	range.font = fontArial8;
+	text.setStyleRange(range);
+
+	range = getRangeForText(content, "super");
+	range.rise = 12;
+	text.setStyleRange(range);
+	range = getRangeForText(content, "sub");
+	range.rise = -12;
+	text.setStyleRange(range);
+
+	text.selectAll();
+	text.copy();
+
+	fontArial16.dispose();
+	fontArial8.dispose();
 }
 
 @Test
@@ -5484,12 +5544,18 @@ protected void rtfCopy() {
 	text.addLineStyleListener(listener);
 	linesCalled[0] = 0;
 	text.copy();
-	assertEquals("not all lines tested for RTF copy", text.getLineCount(), linesCalled[0]);
+
+	// The listener is invoked twice for each line, once for RTF and once for HTML.
+	assertEquals("not all lines tested for RTF & HTML copy", 2 * text.getLineCount(), linesCalled[0]);
 
 	Clipboard clipboard = new Clipboard(text.getDisplay());
 	RTFTransfer rtfTranfer = RTFTransfer.getInstance();
 	String clipboardText = (String) clipboard.getContents(rtfTranfer);
 	assertTrue("RTF copy failed", clipboardText.length() > 0);
+
+	HTMLTransfer htmlTranfer = HTMLTransfer.getInstance();
+	clipboardText = (String) clipboard.getContents(htmlTranfer);
+	assertTrue("HTML copy failed", clipboardText.length() > 0);
 
 	clipboard.dispose();
 	text.removeLineStyleListener(listener);
