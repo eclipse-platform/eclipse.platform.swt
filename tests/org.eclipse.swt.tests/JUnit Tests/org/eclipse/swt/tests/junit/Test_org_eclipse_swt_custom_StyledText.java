@@ -770,13 +770,13 @@ public void test_clipboardWithHtml() {
 	text.setStyleRange(range);
 
 	range = getRangeForText(content, "big");
-	Font font = new Font(Display.getCurrent(), "Arial", 16, 0);
-	range.font = font;
+	Font fontArial16 = new Font(Display.getCurrent(), "Arial", 16, 0);
+	range.font = fontArial16;
 	text.setStyleRange(range);
 
 	range = getRangeForText(content, "small");
-	font = new Font(Display.getCurrent(), "Arial", 8, SWT.NONE);
-	range.font = font;
+	Font fontArial8 = new Font(Display.getCurrent(), "Arial", 8, SWT.NONE);
+	range.font = fontArial8;
 	text.setStyleRange(range);
 
 	range = getRangeForText(content, "super");
@@ -788,6 +788,9 @@ public void test_clipboardWithHtml() {
 
 	text.selectAll();
 	text.copy();
+
+	fontArial16.dispose();
+	fontArial8.dispose();
 }
 
 @Test
