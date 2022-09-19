@@ -51,6 +51,7 @@ import org.eclipse.swt.custom.StyledTextContent;
 import org.eclipse.swt.custom.TextChangeListener;
 import org.eclipse.swt.custom.VerifyKeyListener;
 import org.eclipse.swt.dnd.Clipboard;
+import org.eclipse.swt.dnd.HTMLTransfer;
 import org.eclipse.swt.dnd.RTFTransfer;
 import org.eclipse.swt.dnd.TextTransfer;
 import org.eclipse.swt.dnd.Transfer;
@@ -5540,12 +5541,18 @@ protected void rtfCopy() {
 	text.addLineStyleListener(listener);
 	linesCalled[0] = 0;
 	text.copy();
-	assertEquals("not all lines tested for RTF copy", text.getLineCount(), linesCalled[0]);
+
+	// The listener is invoked twice for each line, once for RTF and once for HTML.
+	assertEquals("not all lines tested for RTF & HTML copy", 2 * text.getLineCount(), linesCalled[0]);
 
 	Clipboard clipboard = new Clipboard(text.getDisplay());
 	RTFTransfer rtfTranfer = RTFTransfer.getInstance();
 	String clipboardText = (String) clipboard.getContents(rtfTranfer);
 	assertTrue("RTF copy failed", clipboardText.length() > 0);
+
+	HTMLTransfer htmlTranfer = HTMLTransfer.getInstance();
+	clipboardText = (String) clipboard.getContents(htmlTranfer);
+	assertTrue("HTML copy failed", clipboardText.length() > 0);
 
 	clipboard.dispose();
 	text.removeLineStyleListener(listener);
