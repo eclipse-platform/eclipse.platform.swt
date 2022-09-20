@@ -4869,6 +4869,29 @@ public void test_clickUpdatesCaretPosition() {
 }
 
 @Test
+public void test_getTextBoundsWithGlyphMetrics() {
+	text.setText("abcd");
+	text.setMargins(2, 0, 0, 0); // keep leftMargin as it affects behavior
+	text.setLineSpacing(0);
+	StyleRange range = new StyleRange(2, 1, null, null);
+	range.metrics = new GlyphMetrics(100, 0, 10);
+	text.setStyleRange(range);
+	Rectangle firstCharBounds = text.getTextBounds(0, 1);
+	assertEquals(text.getLineHeight(), firstCharBounds.height);
+}
+
+@Test
+public void test_showLocationAtOffset() {
+	text.setText("abcd");
+	text.setMargins(2, 0, 0, 0); // keep leftMargin as it affects behavior
+	text.setLineSpacing(0);
+	StyleRange range = new StyleRange(2, 1, null, null);
+	range.metrics = new GlyphMetrics(100, 0, 10);
+	text.setStyleRange(range);
+	text.setCaretOffset(0);
+	fail("getLocationAtOffset(0)=" + text.getLocationAtOffset(0));
+}
+@Test
 public void test_caretSizeAndPositionVariableGlyphMetrics() {
 	text.setText("abcd");
 	text.setMargins(2, 0, 0, 0); // keep leftMargin as it affects behavior
