@@ -5076,9 +5076,12 @@ boolean sendMouseEvent (int type, int button, int count, int detail, boolean sen
 	if (!OS.isX11()) {
 		if (type == SWT.MouseDown) {
 			// Delay MouseDown
-			dragDetectionQueue = new LinkedList<>();
-			dragDetectionQueue.add(event);
-			return true; // event never canceled as not yet sent.
+			if(event.data == null) {
+				dragDetectionQueue = new LinkedList<>();
+				dragDetectionQueue.add(event);
+				return true; // event never canceled as not yet sent.
+			}
+
 		} else {
 			if (dragDetectionQueue != null) {
 				switch (type) {
