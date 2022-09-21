@@ -350,14 +350,30 @@ public boolean execute (String fileName) {
 	return success;
 }
 
+
+
 /**
- * Returns the receiver's image data.  This is the icon
- * that is associated with the receiver in the operating
- * system.
+ * Returns the receiver's image data at 100% zoom level.
+ * This is the icon that is associated with the receiver
+ * in the operating system.
  *
  * @return the image data for the program, may be null
  */
 public ImageData getImageData () {
+  return getImageData (100);
+}
+
+/**
+ * Returns the receiver's image data based on the given zoom level.
+ * This is the icon that is associated with the receiver in the
+ * operating system.
+ *
+ * @param zoom
+ *            The zoom level in % of the standard resolution
+ *
+ * @return the image data for the program, may be null
+ */
+public ImageData getImageData (int zoom) {
 	int nIconIndex = 0;
 	String fileName = iconName;
 	int index = iconName.indexOf (',');
@@ -379,8 +395,7 @@ public ImageData getImageData () {
 	OS.ExtractIconEx (lpszFile, nIconIndex, phiconLarge, phiconSmall, 1);
 	if (phiconSmall [0] == 0) return null;
 	Image image = Image.win32_new (null, SWT.ICON, phiconSmall [0]);
-	/* Fetch the ImageData at 100% zoom and return */
-	ImageData imageData = image.getImageData ();
+  ImageData imageData = image.getImageData (zoom);
 	image.dispose ();
 	return imageData;
 }
