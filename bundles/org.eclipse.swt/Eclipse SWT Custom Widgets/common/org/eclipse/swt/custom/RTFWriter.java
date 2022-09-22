@@ -133,11 +133,11 @@ class RTFWriter extends TextWriter {
 	}
 
 	/**
-	 * Appends the specified line text to the RTF data.  Lines will be formatted
+	 * Appends the specified line text to the output data. Lines will be formatted
 	 * using the styles queried from the LineStyleListener, if set, or those set
 	 * directly in the widget.
 	 *
-	 * @param line line text to write as RTF. Must not contain line breaks
+	 * @param line line text to write. Must not contain line breaks
 	 *  Line breaks should be written using {@link #writeLineDelimiter(String)}
 	 * @param lineOffset offset of the line. 0 based from the start of the
 	 *  widget document. Any text occurring before the start offset or after the
@@ -170,7 +170,7 @@ class RTFWriter extends TextWriter {
 		} else {
 			verticalIndent = styledText.renderer.getLineVerticalIndent(lineIndex);
 			lineAlignment = styledText.renderer.getLineAlignment(lineIndex, styledText.alignment);
-			lineIndent =  styledText.renderer.getLineIndent(lineIndex, styledText.indent);
+			lineIndent = styledText.renderer.getLineIndent(lineIndex, styledText.indent);
 			lineJustify = styledText.renderer.getLineJustify(lineIndex, styledText.justify);
 			ranges = styledText.renderer.getRanges(lineOffset, line.length());
 			styles = styledText.renderer.getStyleRanges(lineOffset, line.length(), false);
@@ -189,7 +189,7 @@ class RTFWriter extends TextWriter {
 	}
 
 	/**
-	 * Appends the specified line delimiter to the RTF data.
+	 * Appends the specified line delimiter to the output data.
 	 *
 	 * @param lineDelimiter line delimiter to write as RTF.
 	 *
@@ -205,7 +205,7 @@ class RTFWriter extends TextWriter {
 	}
 
 	/**
-	 * Appends the specified line text to the RTF data.
+	 * Appends the specified line text to the output data.
 	 *
 	 * <p>Use the colors and font styles specified in {@code styles} and {@code lineBackground}.
 	 * Formatting is written to reflect the text rendering by the text widget.
@@ -231,24 +231,7 @@ class RTFWriter extends TextWriter {
 		}
 		int lineIndex = Math.max(0, writeOffset);
 
-		write("\\fi");
-		write(indent);
-		switch (alignment) {
-			case SWT.LEFT: write("\\ql"); break;
-			case SWT.CENTER: write("\\qc"); break;
-			case SWT.RIGHT: write("\\qr"); break;
-		}
-		if (justify) {
-			write("\\qj");
-		}
-		write(" ");
-
-		if (lineBackground != null) {
-			// Background colors are written using the {@code \chshdng0\chcbpat} tag (vs. the {@code \cb} tag).
-			write("{\\chshdng0\\chcbpat");
-			write(getColorIndex(lineBackground, DEFAULT_BACKGROUND));
-			write(" ");
-		}
+		String atLineEnd = writeLineStart(lineBackground, indent, verticalIndent, alignment, justify);
 
 		int endOffset = startOffset + super.getCharCount();
 		int lineEndOffset = Math.min(lineLength, endOffset - lineOffset);
@@ -280,56 +263,16 @@ class RTFWriter extends TextWriter {
 				lineIndex = start;
 			}
 			// write styled text
-			write("{\\cf");
-			write(getColorIndex(style.foreground, DEFAULT_FOREGROUND));
-			int colorIndex = getColorIndex(style.background, DEFAULT_BACKGROUND);
-			if (colorIndex != DEFAULT_BACKGROUND) {
-				write("\\chshdng0\\chcbpat");
-				write(colorIndex);
-			}
-			int fontStyle = style.fontStyle;
-			Font font = style.font;
-			if (font != null) {
-				int fontIndex = getFontIndex(font);
-				write("\\f");
-				write(fontIndex);
-				FontData fontData = font.getFontData()[0];
-				write("\\fs");
-				write(fontData.getHeight() * 2);
-				fontStyle = fontData.getStyle();
-			}
-			if ((fontStyle & SWT.BOLD) != 0) {
-				write("\\b");
-			}
-			if ((fontStyle & SWT.ITALIC) != 0) {
-				write("\\i");
-			}
-			if (style.underline) {
-				write("\\ul");
-			}
-			if (style.strikeout) {
-				write("\\strike");
-			}
-			write(" ");
+			String atSpanEnd = writeSpanStart(style);
 
 			// copy to end of style or end of write range or end of line
 			int copyEnd = Math.min(end, lineEndOffset);
 			// guard against invalid styles and let style processing continue
 			copyEnd = Math.max(copyEnd, lineIndex);
 			writeEscaped(line, lineIndex, copyEnd);
-			if ((fontStyle & SWT.BOLD) != 0) {
-				write("\\b0");
-			}
-			if ((style.fontStyle & SWT.ITALIC) != 0) {
-				write("\\i0");
-			}
-			if (style.underline) {
-				write("\\ul0");
-			}
-			if (style.strikeout) {
-				write("\\strike0");
-			}
-			write("}");
+
+			writeSpanEnd(atSpanEnd);
+
 			lineIndex = copyEnd;
 		}
 
@@ -337,9 +280,91 @@ class RTFWriter extends TextWriter {
 		if (lineIndex < lineEndOffset) {
 			writeEscaped(line, lineIndex, lineEndOffset);
 		}
-		if (lineBackground != null) {
-			write("}");
+
+		writeLineEnd(atLineEnd);
+	}
+
+	// Returns the text to append at the end of the line
+	String writeLineStart(Color lineBackground, int indent, int verticalIndent, int alignment, boolean justify) {
+		write("\\fi");
+		write(indent);
+		switch (alignment) {
+			case SWT.LEFT: write("\\ql"); break;
+			case SWT.CENTER: write("\\qc"); break;
+			case SWT.RIGHT: write("\\qr"); break;
 		}
+		if (justify) {
+			write("\\qj");
+		}
+		write(" ");
+
+		if (lineBackground != null) {
+			// Background colors are written using the {@code \chshdng0\chcbpat} tag (vs. the {@code \cb} tag).
+			write("{\\chshdng0\\chcbpat");
+			write(getColorIndex(lineBackground, DEFAULT_BACKGROUND));
+			write(" ");
+		}
+
+		return lineBackground == null ? "" : "}";
+	}
+
+	void writeLineEnd(String prepared) {
+		write(prepared);
+	}
+
+	// Returns the text to append at the end of the styled span
+	String writeSpanStart(StyleRange style) {
+		write("{\\cf");
+		write(getColorIndex(style.foreground, DEFAULT_FOREGROUND));
+		int colorIndex = getColorIndex(style.background, DEFAULT_BACKGROUND);
+		if (colorIndex != DEFAULT_BACKGROUND) {
+			write("\\chshdng0\\chcbpat");
+			write(colorIndex);
+		}
+		int fontStyle = style.fontStyle;
+		Font font = style.font;
+		if (font != null) {
+			int fontIndex = getFontIndex(font);
+			write("\\f");
+			write(fontIndex);
+			FontData fontData = font.getFontData()[0];
+			write("\\fs");
+			write(fontData.getHeight() * 2);
+			fontStyle = fontData.getStyle();
+		}
+		if ((fontStyle & SWT.BOLD) != 0) {
+			write("\\b");
+		}
+		if ((fontStyle & SWT.ITALIC) != 0) {
+			write("\\i");
+		}
+		if (style.underline) {
+			write("\\ul");
+		}
+		if (style.strikeout) {
+			write("\\strike");
+		}
+		write(" ");
+
+		StringBuilder toCloseSpan = new StringBuilder();
+		if ((fontStyle & SWT.BOLD) != 0) {
+			toCloseSpan.append("\\b0");
+		}
+		if ((style.fontStyle & SWT.ITALIC) != 0) {
+			toCloseSpan.append("\\i0");
+		}
+		if (style.underline) {
+			toCloseSpan.append("\\ul0");
+		}
+		if (style.strikeout) {
+			toCloseSpan.append("\\strike0");
+		}
+		toCloseSpan.append("}");
+		return toCloseSpan.toString();
+	}
+
+	void writeSpanEnd(String prepared) {
+		write(prepared);
 	}
 
 	// ==== Helper methods ====
@@ -358,7 +383,7 @@ class RTFWriter extends TextWriter {
 				// Fixes bug 21698.
 				result.append((char) ch);
 			}
-        });
+		});
         return result.toString();
 	}
 

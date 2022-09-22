@@ -177,7 +177,7 @@ class HTMLWriter extends TextWriter {
 		} else {
 			verticalIndent = styledText.renderer.getLineVerticalIndent(lineIndex);
 			lineAlignment = styledText.renderer.getLineAlignment(lineIndex, styledText.alignment);
-			lineIndent =  styledText.renderer.getLineIndent(lineIndex, styledText.indent);
+			lineIndent = styledText.renderer.getLineIndent(lineIndex, styledText.indent);
 			lineJustify = styledText.renderer.getLineJustify(lineIndex, styledText.justify);
 			ranges = styledText.renderer.getRanges(lineOffset, line.length());
 			styles = styledText.renderer.getStyleRanges(lineOffset, line.length(), false);
@@ -237,25 +237,7 @@ class HTMLWriter extends TextWriter {
 		}
 		int lineIndex = Math.max(0, writeOffset);
 
-		StringBuilder paragraphStyle = new StringBuilder();
-
-		appendAlignAndJustify(paragraphStyle, alignment, justify);
-
-		appendStyle(paragraphStyle, "background-color:", lineBackground, ";");
-
-		if (indent != 0) {
-			appendStyle(paragraphStyle, "text-indent:", indent, "px;");
-		}
-
-		if (verticalIndent != 0) {
-			appendStyle(paragraphStyle, "margin-top:", verticalIndent, "px;");
-		}
-
-		if (paragraphStyle.length() == 0) {
-			write("<p>");
-		} else {
-			write("<p style='" + paragraphStyle + "'>");
-		}
+		String atLineEnd = writeLineStart(lineBackground, indent, verticalIndent, alignment, justify);
 
 		int endOffset = startOffset + super.getCharCount();
 		int lineEndOffset = Math.min(lineLength, endOffset - lineOffset);
@@ -287,83 +269,7 @@ class HTMLWriter extends TextWriter {
 				lineIndex = start;
 			}
 			// write styled text
-			StringBuilder spanStyle = new StringBuilder();
-
-			appendStyle(spanStyle, "color:", style.foreground, ";");
-			appendStyle(spanStyle, "background-color:", style.background, ";");
-
-			appendFont(spanStyle, style.font, style.fontStyle);
-
-			if (style.rise != 0) {
-				appendStyle(spanStyle, "position:relative;bottom:", style.rise, "pt;");
-			}
-
-			String borderColor = style.borderColor != null ? " " + colorToHex(style.borderColor) : "";
-			switch (style.borderStyle) {
-				case SWT.BORDER: // intentional fall-trough
-					// In Eclipse the default border is solid
-				case SWT.BORDER_SOLID:
-					appendStyle(spanStyle, "border:solid 1pt", borderColor, ";");
-					break;
-				case SWT.BORDER_DASH:
-					appendStyle(spanStyle, "border:dashed 1pt", borderColor, ";");
-					break;
-				case SWT.BORDER_DOT:
-					appendStyle(spanStyle, "border:dotted 1pt", borderColor, ";");
-					break;
-				default:
-					break;
-			}
-
-			if (style.underline) {
-				appendStyle(spanStyle, "text-decoration:underline;");
-				appendStyle(spanStyle, "text-decoration-color:", style.underlineColor, ";");
-				switch (style.underlineStyle) {
-					case SWT.UNDERLINE_SINGLE:
-						appendStyle(spanStyle, "text-decoration-style:solid;");
-						break;
-					case SWT.UNDERLINE_DOUBLE:
-						appendStyle(spanStyle, "text-decoration-style:double;");
-						break;
-					case SWT.UNDERLINE_ERROR:
-						appendStyle(spanStyle, "text-decoration-style:wavy;");
-						break;
-					case SWT.UNDERLINE_SQUIGGLE:
-						appendStyle(spanStyle, "text-decoration-style:wavy;");
-						break;
-					case SWT.UNDERLINE_LINK:
-						appendStyle(spanStyle, "text-decoration-style:solid;");
-						if (style.underlineColor == null) {
-							// If the color of the link underline was not explicitly overridden, then is is blue.
-							appendStyle(spanStyle, "text-decoration-color:#0066cc;");
-						}
-						if (style.foreground == null) {
-							// If the color of the link text was not explicitly overridden, then is is blue.
-							appendStyle(spanStyle, "color:#0066cc;");
-						}
-						break;
-					default:
-						break;
-				}
-			}
-
-			// Both underline and line-through use text-decoration-color.
-			// If we want the underline color to be different than the strikeout color we need two spans.
-			StringBuilder spanStyle2;
-			if (style.strikeout) {
-				spanStyle2 = new StringBuilder();
-				appendStyle(spanStyle2, "text-decoration:line-through;");
-				appendStyle(spanStyle2, "text-decoration-color:", style.strikeoutColor, ";");
-			} else {
-				spanStyle2 = null;
-			}
-
-			if (spanStyle.length() != 0) {
-				write("<span style='" + spanStyle + "'>");
-			}
-			if (spanStyle2 != null) {
-				write("<span style='" + spanStyle2 + "'>");
-			}
+			String atSpanEnd = writeSpanStart(style);
 
 			// copy to end of style or end of write range or end of line
 			int copyEnd = Math.min(end, lineEndOffset);
@@ -371,12 +277,7 @@ class HTMLWriter extends TextWriter {
 			copyEnd = Math.max(copyEnd, lineIndex);
 			writeEscaped(line, lineIndex, copyEnd);
 
-			if (spanStyle2 != null) {
-				write("</span>");
-			}
-			if (spanStyle.length() != 0) {
-				write("</span>");
-			}
+			writeSpanEnd(atSpanEnd);
 
 			lineIndex = copyEnd;
 		}
@@ -385,7 +286,131 @@ class HTMLWriter extends TextWriter {
 		if (lineIndex < lineEndOffset) {
 			writeEscaped(line, lineIndex, lineEndOffset);
 		}
-		write("</p>");
+
+		writeLineEnd(atLineEnd);
+	}
+
+	// Returns the text to append at the end of the line
+	String writeLineStart(Color lineBackground, int indent, int verticalIndent, int alignment, boolean justify) {
+		StringBuilder paragraphStyle = new StringBuilder();
+
+		appendAlignAndJustify(paragraphStyle, alignment, justify);
+
+		appendStyle(paragraphStyle, "background-color:", lineBackground, ";");
+
+		if (indent != 0) {
+			appendStyle(paragraphStyle, "text-indent:", indent, "px;");
+		}
+
+		if (verticalIndent != 0) {
+			appendStyle(paragraphStyle, "margin-top:", verticalIndent, "px;");
+		}
+
+		if (paragraphStyle.length() == 0) {
+			write("<p>");
+		} else {
+			write("<p style='" + paragraphStyle + "'>");
+		}
+
+		return "</p>";
+	}
+
+	void writeLineEnd(String prepared) {
+		write(prepared);
+	}
+
+	// Returns the text to append at the end of the styled span
+	String writeSpanStart(StyleRange style) {
+		StringBuilder spanStyle = new StringBuilder();
+
+		appendStyle(spanStyle, "color:", style.foreground, ";");
+		appendStyle(spanStyle, "background-color:", style.background, ";");
+
+		appendFont(spanStyle, style.font, style.fontStyle);
+
+		if (style.rise != 0) {
+			appendStyle(spanStyle, "position:relative;bottom:", style.rise, "pt;");
+		}
+
+		String borderColor = style.borderColor != null ? " " + colorToHex(style.borderColor) : "";
+		switch (style.borderStyle) {
+			case SWT.BORDER: // intentional fall-trough
+				// In Eclipse the default border is solid
+			case SWT.BORDER_SOLID:
+				appendStyle(spanStyle, "border:solid 1pt", borderColor, ";");
+				break;
+			case SWT.BORDER_DASH:
+				appendStyle(spanStyle, "border:dashed 1pt", borderColor, ";");
+				break;
+			case SWT.BORDER_DOT:
+				appendStyle(spanStyle, "border:dotted 1pt", borderColor, ";");
+				break;
+			default:
+				break;
+		}
+
+		if (style.underline) {
+			appendStyle(spanStyle, "text-decoration:underline;");
+			appendStyle(spanStyle, "text-decoration-color:", style.underlineColor, ";");
+			switch (style.underlineStyle) {
+				case SWT.UNDERLINE_SINGLE:
+					appendStyle(spanStyle, "text-decoration-style:solid;");
+					break;
+				case SWT.UNDERLINE_DOUBLE:
+					appendStyle(spanStyle, "text-decoration-style:double;");
+					break;
+				case SWT.UNDERLINE_ERROR:
+					appendStyle(spanStyle, "text-decoration-style:wavy;");
+					break;
+				case SWT.UNDERLINE_SQUIGGLE:
+					appendStyle(spanStyle, "text-decoration-style:wavy;");
+					break;
+				case SWT.UNDERLINE_LINK:
+					appendStyle(spanStyle, "text-decoration-style:solid;");
+					if (style.underlineColor == null) {
+						// If the color of the link underline was not explicitly overridden, then is is blue.
+						appendStyle(spanStyle, "text-decoration-color:#0066cc;");
+					}
+					if (style.foreground == null) {
+						// If the color of the link text was not explicitly overridden, then is is blue.
+						appendStyle(spanStyle, "color:#0066cc;");
+					}
+					break;
+				default:
+					break;
+			}
+		}
+
+		// Both underline and line-through use text-decoration-color.
+		// If we want the underline color to be different than the strikeout color we need two spans.
+		StringBuilder spanStyle2;
+		if (style.strikeout) {
+			spanStyle2 = new StringBuilder();
+			appendStyle(spanStyle2, "text-decoration:line-through;");
+			appendStyle(spanStyle2, "text-decoration-color:", style.strikeoutColor, ";");
+		} else {
+			spanStyle2 = null;
+		}
+
+		if (spanStyle.length() != 0) {
+			write("<span style='" + spanStyle + "'>");
+		}
+		if (spanStyle2 != null) {
+			write("<span style='" + spanStyle2 + "'>");
+		}
+
+		StringBuilder toCloseSpan = new StringBuilder();
+		if (spanStyle2 != null) {
+			toCloseSpan.append("</span>");
+		}
+		if (spanStyle.length() != 0) {
+			toCloseSpan.append("</span>");
+		}
+		return toCloseSpan.toString();
+	}
+
+	void writeSpanEnd(String prepared) {
+		write(prepared);
 	}
 
 	// ==== Helper methods ====
