@@ -15,16 +15,16 @@ import org.eclipse.swt.graphics.*;
 
 /**
  * The <code>HTMLWriter</code> class is used to write widget content as
- * html. The implementation creates a very-very simple HTML, as compatible
+ * HTML. The implementation creates a very-very simple HTML, as compatible
  * as possible: simple styles, no JavaScript.
  *
- * <p>{@code toString()} is guaranteed to return a valid HTML string only after
+ * <p>{@code toString()} is guaranteed to return a valid formatted string only after
  * {@code close()} has been called.</p>
  *
  * <p>Whole and partial lines and line breaks can be written. Lines will be
  * formatted using the styles queried from the {@link LineStyleListener},
  * if set, or those set directly in the widget. All styles are applied to
- * the HTML stream like they are rendered by the widget. In addition, the
+ * the stream like they are rendered by the widget. In addition, the
  * widget font name and size is used for the whole text.</p>
  *
  * <p>How the concepts are mapped to HTML:</p>
@@ -55,9 +55,9 @@ class HTMLWriter extends TextWriter {
 	}
 
 	/**
-	 * Closes the HTML writer. Once closed no more content can be written.
+	 * Closes the writer. Once closed no more content can be written.
 	 *
-	 * <p><b>NOTE:</b> {@code toString()} does not return a valid HTML string until
+	 * <p><b>NOTE:</b> {@code toString()} does not return a valid formatted string until
 	 * {@code close()} has been called.</p>
 	 */
 	@Override
@@ -70,7 +70,7 @@ class HTMLWriter extends TextWriter {
 	}
 
 	/**
-	 * Appends the specified segment of "string" to the HTML data.
+	 * Appends the specified segment of "string" to the output data.
 	 * Copy from {@code start} up to, but excluding, {@code end}.
 	 *
 	 * @param string string to copy a segment from. Must not contain line breaks.
@@ -78,16 +78,15 @@ class HTMLWriter extends TextWriter {
 	 * @param start start offset of segment. 0 based.
 	 * @param end end offset of segment
 	 */
-	private void write(String string, int start, int end, boolean escape) {
+	void writeEscaped(String string, int start, int end) {
 		String textToWrite = string.substring(start, end);
-		write(escape ? textToHtml(textToWrite) : textToWrite);
+		write(escapeText(textToWrite));
 	}
 
 	/**
 	 * Writes the opening of the two {@code div}s that wrap the content.
 	 */
 	private void writeHeader() {
-
 		StringBuilder outerDivStyle = new StringBuilder();
 		StringBuilder innerDivStyle = new StringBuilder();
 
@@ -141,11 +140,11 @@ class HTMLWriter extends TextWriter {
 	}
 
 	/**
-	 * Appends the specified line text to the HTML data. Lines will be formatted
+	 * Appends the specified line text to the output data. Lines will be formatted
 	 * using the styles queried from the LineStyleListener, if set, or those set
 	 * directly in the widget.
 	 *
-	 * @param line line text to write as HTML. Must not contain line breaks
+	 * @param line line text to write. Must not contain line breaks
 	 *  Line breaks should be written using {@link #writeLineDelimiter(String)}
 	 * @param lineOffset offset of the line. 0 based from the start of the
 	 *  widget document. Any text occurring before the start offset or after the
@@ -159,13 +158,13 @@ class HTMLWriter extends TextWriter {
 			SWT.error(SWT.ERROR_IO);
 		}
 
+		int lineIndex = styledText.content.getLineAtOffset(lineOffset);
 		int lineAlignment;
 		int lineIndent;
 		boolean lineJustify;
 		int verticalIndent;
 		int[] ranges;
 		StyleRange[] styles;
-		Color lineBackground;
 
 		StyledTextEvent event = styledText.getLineStyleData(lineOffset, line);
 		if (event != null) {
@@ -175,26 +174,29 @@ class HTMLWriter extends TextWriter {
 			lineJustify = event.justify;
 			ranges = event.ranges;
 			styles = event.styles;
-			lineBackground = event.lineBackground;
 		} else {
-			int lineIndex = styledText.content.getLineAtOffset(lineOffset);
 			verticalIndent = styledText.renderer.getLineVerticalIndent(lineIndex);
 			lineAlignment = styledText.renderer.getLineAlignment(lineIndex, styledText.alignment);
 			lineIndent =  styledText.renderer.getLineIndent(lineIndex, styledText.indent);
 			lineJustify = styledText.renderer.getLineJustify(lineIndex, styledText.justify);
 			ranges = styledText.renderer.getRanges(lineOffset, line.length());
 			styles = styledText.renderer.getStyleRanges(lineOffset, line.length(), false);
-			lineBackground = styledText.renderer.getLineBackground(lineIndex, null);
 		}
+
 		if (styles == null) {
 			styles = new StyleRange[0];
 		}
+
+		event = styledText.getLineBackgroundData(lineOffset, line);
+		Color lineBackground = (event != null && event.lineBackground != null)
+				? event.lineBackground
+				: styledText.renderer.getLineBackground(lineIndex, null);
 
 		writeStyledLine(line, lineOffset, ranges, styles, lineBackground, lineIndent, verticalIndent, lineAlignment, lineJustify);
 	}
 
 	/**
-	 * Appends the specified line delimiter to the HTML data.
+	 * Appends the specified line delimiter to the output data.
 	 *
 	 * @param lineDelimiter line delimiter to write as RTF.
 	 *
@@ -205,13 +207,13 @@ class HTMLWriter extends TextWriter {
 		if (isClosed()) {
 			SWT.error(SWT.ERROR_IO);
 		}
-		write(lineDelimiter, 0, lineDelimiter.length(), false);
+		write(lineDelimiter);
 	}
 
 	/**
-	 * Appends the specified line text to the HTML data.
+	 * Appends the specified line text to the output data.
 	 *
-	 * <p>Use the colors and font styles specified in @{code styles} and {@code lineBackground}.
+	 * <p>Use the colors and font styles specified in {@code styles} and {@code lineBackground}.
 	 * Formatting is written to reflect the text rendering by the text widget.
 	 * Style background colors take precedence over the line background color.</p>
 	 *
@@ -226,8 +228,6 @@ class HTMLWriter extends TextWriter {
 	 */
 	private void writeStyledLine(String line, int lineOffset, int ranges[], StyleRange[] styles,
 			Color lineBackground, int indent, int verticalIndent, int alignment, boolean justify) {
-
-		// Code based on the one in {@link RTFWriter}. There might be an opportunity for reuse.
 
 		int lineLength = line.length();
 		int startOffset = getStart();
@@ -274,7 +274,7 @@ class HTMLWriter extends TextWriter {
 			if (end < writeOffset) {
 				continue;
 			}
-			// style starts beyond line end or HTML write end
+			// style starts beyond line end or write end
 			if (start >= lineEndOffset) {
 				break;
 			}
@@ -283,7 +283,7 @@ class HTMLWriter extends TextWriter {
 				// copy to start of style
 				// style starting beyond end of write range or end of line
 				// is guarded against above.
-				write(line, lineIndex, start, true);
+				writeEscaped(line, lineIndex, start);
 				lineIndex = start;
 			}
 			// write styled text
@@ -369,7 +369,7 @@ class HTMLWriter extends TextWriter {
 			int copyEnd = Math.min(end, lineEndOffset);
 			// guard against invalid styles and let style processing continue
 			copyEnd = Math.max(copyEnd, lineIndex);
-			write(line, lineIndex, copyEnd, true);
+			writeEscaped(line, lineIndex, copyEnd);
 
 			if (spanStyle2 != null) {
 				write("</span>");
@@ -383,9 +383,19 @@ class HTMLWriter extends TextWriter {
 
 		// write the unstyled text at the end of the line
 		if (lineIndex < lineEndOffset) {
-			write(line, lineIndex, lineEndOffset, true);
+			writeEscaped(line, lineIndex, lineEndOffset);
 		}
 		write("</p>");
+	}
+
+	// ==== Helper methods ====
+
+	private static String escapeText(String text) {
+		return text
+				.replaceAll("&", "&amp;")
+				.replaceAll("\"", "&quot;")
+				.replaceAll("<", "&lt;")
+				.replaceAll(">", "&gt;");
 	}
 
 	// TODO: do we also want support for alpha?
@@ -397,14 +407,6 @@ class HTMLWriter extends TextWriter {
 				color.getRed(),
 				color.getGreen(),
 				color.getBlue());
-	}
-
-	private static String textToHtml(String text) {
-		return text
-				.replaceAll("&", "&amp;")
-				.replaceAll("\"", "&quot;")
-				.replaceAll("<", "&lt;")
-				.replaceAll(">", "&gt;");
 	}
 
 	private static void appendStyle(StringBuilder buffer, String value) {
