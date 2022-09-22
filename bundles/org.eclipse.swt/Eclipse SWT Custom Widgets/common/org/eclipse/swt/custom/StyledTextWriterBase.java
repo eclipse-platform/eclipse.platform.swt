@@ -19,7 +19,7 @@ import org.eclipse.swt.graphics.*;
 /**
  * The base class encapsulating the logic used to write styled content as
  * a rich format (HTML, RTF, maybe more). It contains the common parts:
- * iterates on lines, then on each line iterates on plain text and StyleRange(s).
+ * iterates on lines, then on each line iterates on plain text and {@link StyleRange}(s).
  *
  * <p>{@code toString()} is guaranteed to return a valid formatted string only after
  * {@code close()} has been called.</p>

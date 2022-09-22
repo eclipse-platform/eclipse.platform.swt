@@ -191,6 +191,7 @@ class RTFWriter extends StyledTextWriterBase {
 
 	@Override
 	String escapeText(String string) {
+		// The resulting string is at least as long as the original.
 		StringBuilder result = new StringBuilder(string.length());
 		string.chars().forEach(ch -> {
 			if (ch > 0x7F) {
@@ -205,7 +206,7 @@ class RTFWriter extends StyledTextWriterBase {
 				result.append((char) ch);
 			}
 		});
-        return result.toString();
+		return result.toString();
 	}
 
 	/**

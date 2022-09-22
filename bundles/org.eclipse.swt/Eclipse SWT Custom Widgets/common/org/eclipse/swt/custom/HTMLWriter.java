@@ -225,12 +225,28 @@ class HTMLWriter extends StyledTextWriterBase {
 	// ==== Helper methods ====
 
 	@Override
-	String escapeText(String text) {
-		return text
-				.replaceAll("&", "&amp;")
-				.replaceAll("\"", "&quot;")
-				.replaceAll("<", "&lt;")
-				.replaceAll(">", "&gt;");
+	String escapeText(String string) {
+		// The resulting string is at least as long as the original.
+		StringBuilder result = new StringBuilder(string.length());
+		string.chars().forEach(ch -> {
+			switch (ch) {
+				case '&':
+					result.append("&amp;");
+					break;
+				case '"':
+					result.append("&quot;");
+					break;
+				case '<':
+					result.append("&lt;");
+					break;
+				case '>':
+					result.append("&gt;");
+					break;
+				default:
+					result.append((char) ch);
+			}
+		});
+		return result.toString();
 	}
 
 	// TODO: do we also want support for alpha?
