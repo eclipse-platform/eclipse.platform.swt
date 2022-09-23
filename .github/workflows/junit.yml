@@ -64,5 +64,5 @@ jobs:
         uses: andymckay/append-gist-action@1fbfbbce708a39bd45846f0955ed5521f2099c6d
         with:
           token: ${{ secrets.GIST_TOKEN }}
-          gistURL: https://gist.githubusercontent.com/eclipse-platform/eclipse.platform.swt/
-          file: test_results_badge.svg
+          gistURL: https://gist.githubusercontent.com/eclipse-releng-bot/78d110a601baa4ef777ccb472f584038
+          file: badge.svg
