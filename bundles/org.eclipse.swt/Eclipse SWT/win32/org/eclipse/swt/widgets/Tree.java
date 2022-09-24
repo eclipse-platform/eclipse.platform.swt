@@ -2101,13 +2101,26 @@ void createItem (TreeItem item, long hParent, long hInsertAfter, long hItem) {
 		item.handle = hNewItem;
 		items [id] = item;
 	}
-	if (hFirstItem == 0) {
-		if (hInsertAfter == OS.TVI_FIRST || hInsertAfter == OS.TVI_LAST) {
-			cachedFirstItem = cachedIndexItem = hFirstItem = hNewItem;
-			cachedItemCount = cachedIndex = 0;
-		}
+
+	// Adjust cached variables
+	if ((hInsertAfter == OS.TVI_FIRST || hInsertAfter == OS.TVI_LAST) && (hFirstItem == 0)) {
+		// Inserting the first subitem
+		cachedFirstItem = hNewItem;
+		cachedIndexItem = hNewItem;
+		cachedIndex     = 0;
+		cachedItemCount = 1;
+	} else if ((hInsertAfter == OS.TVI_FIRST) && (hFirstItem == cachedFirstItem)) {
+		// Inserting just before existing items
+		// For example, setItemCount() does that for performance reasons.
+		cachedFirstItem = hNewItem;
+		cachedIndexItem = hNewItem;
+		cachedIndex     = 0;
+		if (cachedItemCount != -1) cachedItemCount++;
+	} else if (hFirstItem == cachedFirstItem) {
+		// Inserting elsewhere, but cache is still valid
+		if (cachedItemCount != -1) cachedItemCount++;
 	}
-	if (hFirstItem == cachedFirstItem && cachedItemCount != -1) cachedItemCount++;
+
 	if (hItem == 0) {
 		/*
 		* Bug in Windows.  When a child item is added to a collapsed
@@ -4225,28 +4238,25 @@ void setItemCount (int count, long hParent) {
 		if (numInserted > freeCapacity)
 			itemsGrowArray (items.length + numInserted - freeCapacity);
 
+		// Adjust cached variables to insertion point.
+		// Tree#createItem() will adjust them further after each insert.
+		if (itemFirstChild != 0) {
+			cachedFirstItem = itemFirstChild;
+			cachedIndexItem = itemInsertAfter;
+			cachedIndex     = indexInsertAfter;
+			cachedItemCount = indexInsertAfter + 1;
+		} else {
+			cachedFirstItem = 0;
+			cachedIndexItem = 0;
+			cachedIndex     = 0;
+			cachedItemCount = 0;
+		}
+
 		// Note: on Windows, insert complexity is O(pos), so for performance
 		// reasons, all items are inserted at minimum possible position, that
 		// is, all at the same position.
 		if ((style & SWT.VIRTUAL) != 0) {
 			for (int i = 0; i < numInserted; i++) {
-				// By inserting item in the middle, the relation of
-				// 'lastIndexOf' to 'hLastIndexOf' becomes invalid if
-				// 'hLastIndexOf' points after insertion point (because
-				// inserting means that all subsequent indices change).
-				// The solution is to adjust variables.
-				if (itemFirstChild != 0) {
-					cachedFirstItem = itemFirstChild;
-					cachedIndexItem = itemInsertAfter;
-					cachedIndex = indexInsertAfter;
-				} else {
-					// There are no items whose indices are unaffected by
-					// inserting. For simplicity, reset cached index values.
-					cachedFirstItem = 0;
-					cachedIndexItem = 0;
-					cachedIndex = 0;
-				}
-
 				/*
 				 * Bug 206806: Windows sends 'TVN_GETDISPINFO' when item is
 				 * being inserted. This causes 'SWT.SetData' to be sent to

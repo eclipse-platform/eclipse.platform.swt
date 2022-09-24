@@ -1149,4 +1149,45 @@ public void test_setItemCount_indexOf() {
 		}
 	});
 }
+
+@Test
+public void test_setItemCount_itemCount() {
+	testTreeRegularAndVirtual(() -> {
+		// Test root items
+		tree.setItemCount(10);
+		assertEquals(10, tree.getItemCount());
+		tree.setItemCount(20);
+		assertEquals(20, tree.getItemCount());
+		tree.setItemCount(5);
+		assertEquals(5, tree.getItemCount());
+
+		// Test child items
+		TreeItem item_0 = tree.getItem(0);
+		item_0.setItemCount(10);
+		assertEquals(10, item_0.getItemCount());
+		item_0.setItemCount(20);
+		assertEquals(20, item_0.getItemCount());
+		item_0.setItemCount(5);
+		assertEquals(5, item_0.getItemCount());
+	});
+}
+
+@Test
+public void test_setItemCount_itemCount2() {
+	testTreeRegularAndVirtual(() -> {
+		// Test root items
+		tree.setItemCount(10);
+		tree.getItem(5).dispose();
+		new TreeItem(tree, 0, 0);
+		assertEquals(10, tree.getItemCount());
+
+		// Test child items
+		TreeItem item_0 = tree.getItem(0);
+		item_0.setItemCount(10);
+		item_0.getItem(5).dispose();
+		new TreeItem(item_0, 0, 0);
+		assertEquals(10, item_0.getItemCount());
+	});
+}
+
 }
