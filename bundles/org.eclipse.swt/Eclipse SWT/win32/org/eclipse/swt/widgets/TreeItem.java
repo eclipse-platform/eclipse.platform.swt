@@ -1029,7 +1029,7 @@ public void removeAll () {
 	/**
 	 * Performance optimization, switch off redraw for high amount of elements
 	 */
-	boolean disableRedraw = parent.itemCount > 30;
+	boolean disableRedraw = parent.cachedItemCount > 30;
 	if (disableRedraw) {
 		parent.setRedraw(false);
 	}
