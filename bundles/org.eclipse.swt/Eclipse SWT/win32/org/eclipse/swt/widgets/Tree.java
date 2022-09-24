@@ -87,8 +87,7 @@ public class Tree extends Composite {
 	RECT focusRect;
 	long hwndParent, hwndHeader, hAnchor, hInsert, hSelect;
 	int lastID;
-	long hFirstIndexOf, hLastIndexOf;
-	int lastIndexOf, itemCount, sortDirection;
+	int sortDirection;
 	boolean dragStarted, gestureCompleted, insertAfter, shrink, ignoreShrink;
 	boolean ignoreSelect, ignoreExpand, ignoreDeselect, ignoreResize;
 	boolean lockSelection, oldSelected, newSelected, ignoreColumnMove;
@@ -103,6 +102,13 @@ public class Tree extends Composite {
 	int lastTimerCount;
 	int headerBackground = -1;
 	int headerForeground = -1;
+
+	// Cached variables for fast item lookup
+	long cachedFirstItem;   // Used to figure when other cache variables need updating
+	long cachedIndexItem;   // Item for which #cachedIndex is saved
+	int cachedIndex;        // cached Tree#indexOf() or TreeItem#indexOf() of #cachedIndexItem
+	int cachedItemCount;    // cached Tree#getItemCount() or TreeItem#getItemCount()
+
 	static final boolean ENABLE_TVS_EX_FADEINOUTEXPANDOS = System.getProperty("org.eclipse.swt.internal.win32.enableFadeInOutExpandos") != null;
 	static final int TIMER_MAX_COUNT = 8;
 	static final int INSET = 3;
@@ -2097,11 +2103,11 @@ void createItem (TreeItem item, long hParent, long hInsertAfter, long hItem) {
 	}
 	if (hFirstItem == 0) {
 		if (hInsertAfter == OS.TVI_FIRST || hInsertAfter == OS.TVI_LAST) {
-			hFirstIndexOf = hLastIndexOf = hFirstItem = hNewItem;
-			itemCount = lastIndexOf = 0;
+			cachedFirstItem = cachedIndexItem = hFirstItem = hNewItem;
+			cachedItemCount = cachedIndex = 0;
 		}
 	}
-	if (hFirstItem == hFirstIndexOf && itemCount != -1) itemCount++;
+	if (hFirstItem == cachedFirstItem && cachedItemCount != -1) cachedItemCount++;
 	if (hItem == 0) {
 		/*
 		* Bug in Windows.  When a child item is added to a collapsed
@@ -2318,7 +2324,7 @@ void createWidget () {
 	super.createWidget ();
 	items = new TreeItem [4];
 	columns = new TreeColumn [4];
-	itemCount = -1;
+	cachedItemCount = -1;
 }
 
 private boolean customHeaderDrawing() {
@@ -2552,8 +2558,8 @@ void destroyItem (TreeColumn column) {
 }
 
 void destroyItem (TreeItem item, long hItem) {
-	hFirstIndexOf = hLastIndexOf = 0;
-	itemCount = -1;
+	cachedFirstItem = cachedIndexItem = 0;
+	cachedItemCount = -1;
 	/*
 	* Feature in Windows.  When an item is removed that is not
 	* visible in the tree because it belongs to a collapsed branch,
@@ -2771,39 +2777,39 @@ boolean findCell (int x, int y, TreeItem [] item, int [] index, RECT [] cellRect
 
 int findIndex (long hFirstItem, long hItem) {
 	if (hFirstItem == 0) return -1;
-	if (hFirstItem == hFirstIndexOf) {
-		if (hFirstIndexOf == hItem) {
-			hLastIndexOf = hFirstIndexOf;
-			return lastIndexOf = 0;
+	if (hFirstItem == cachedFirstItem) {
+		if (cachedFirstItem == hItem) {
+			cachedIndexItem = cachedFirstItem;
+			return cachedIndex = 0;
 		}
-		if (hLastIndexOf == hItem) return lastIndexOf;
-		long hPrevItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_PREVIOUS, hLastIndexOf);
+		if (cachedIndexItem == hItem) return cachedIndex;
+		long hPrevItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_PREVIOUS, cachedIndexItem);
 		if (hPrevItem == hItem) {
-			hLastIndexOf = hPrevItem;
-			return --lastIndexOf;
+			cachedIndexItem = hPrevItem;
+			return --cachedIndex;
 		}
-		long hNextItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_NEXT, hLastIndexOf);
+		long hNextItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_NEXT, cachedIndexItem);
 		if (hNextItem == hItem) {
-			hLastIndexOf = hNextItem;
-			return ++lastIndexOf;
+			cachedIndexItem = hNextItem;
+			return ++cachedIndex;
 		}
-		int previousIndex = lastIndexOf - 1;
+		int previousIndex = cachedIndex - 1;
 		while (hPrevItem != 0 && hPrevItem != hItem) {
 			hPrevItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_PREVIOUS, hPrevItem);
 			--previousIndex;
 		}
 		if (hPrevItem == hItem) {
-			hLastIndexOf = hPrevItem;
-			return lastIndexOf = previousIndex;
+			cachedIndexItem = hPrevItem;
+			return cachedIndex = previousIndex;
 		}
-		int nextIndex = lastIndexOf + 1;
+		int nextIndex = cachedIndex + 1;
 		while (hNextItem != 0 && hNextItem != hItem) {
 			hNextItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_NEXT, hNextItem);
 			nextIndex++;
 		}
 		if (hNextItem == hItem) {
-			hLastIndexOf = hNextItem;
-			return lastIndexOf = nextIndex;
+			cachedIndexItem = hNextItem;
+			return cachedIndex = nextIndex;
 		}
 		return -1;
 	}
@@ -2814,10 +2820,10 @@ int findIndex (long hFirstItem, long hItem) {
 		index++;
 	}
 	if (hNextItem == hItem) {
-		itemCount = -1;
-		hFirstIndexOf = hFirstItem;
-		hLastIndexOf = hNextItem;
-		return lastIndexOf = index;
+		cachedItemCount = -1;
+		cachedFirstItem = hFirstItem;
+		cachedIndexItem = hNextItem;
+		return cachedIndex = index;
 	}
 	return -1;
 }
@@ -2829,41 +2835,41 @@ Widget findItem (long hItem) {
 
 long findItem (long hFirstItem, int index) {
 	if (hFirstItem == 0) return 0;
-	if (hFirstItem == hFirstIndexOf) {
+	if (hFirstItem == cachedFirstItem) {
 		if (index == 0) {
-			lastIndexOf = 0;
-			return hLastIndexOf = hFirstIndexOf;
+			cachedIndex = 0;
+			return cachedIndexItem = cachedFirstItem;
 		}
-		if (lastIndexOf == index) return hLastIndexOf;
-		if (lastIndexOf - 1 == index) {
-			--lastIndexOf;
-			return hLastIndexOf = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_PREVIOUS, hLastIndexOf);
+		if (cachedIndex == index) return cachedIndexItem;
+		if (cachedIndex - 1 == index) {
+			--cachedIndex;
+			return cachedIndexItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_PREVIOUS, cachedIndexItem);
 		}
-		if (lastIndexOf + 1 == index) {
-			lastIndexOf++;
-			return hLastIndexOf = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_NEXT, hLastIndexOf);
+		if (cachedIndex + 1 == index) {
+			cachedIndex++;
+			return cachedIndexItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_NEXT, cachedIndexItem);
 		}
-		if (index < lastIndexOf) {
-			int previousIndex = lastIndexOf - 1;
-			long hPrevItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_PREVIOUS, hLastIndexOf);
+		if (index < cachedIndex) {
+			int previousIndex = cachedIndex - 1;
+			long hPrevItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_PREVIOUS, cachedIndexItem);
 			while (hPrevItem != 0 && index < previousIndex) {
 				hPrevItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_PREVIOUS, hPrevItem);
 				--previousIndex;
 			}
 			if (index == previousIndex) {
-				lastIndexOf = previousIndex;
-				return hLastIndexOf = hPrevItem;
+				cachedIndex = previousIndex;
+				return cachedIndexItem = hPrevItem;
 			}
 		} else {
-			int nextIndex = lastIndexOf + 1;
-			long hNextItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_NEXT, hLastIndexOf);
+			int nextIndex = cachedIndex + 1;
+			long hNextItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_NEXT, cachedIndexItem);
 			while (hNextItem != 0 && nextIndex < index) {
 				hNextItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_NEXT, hNextItem);
 				nextIndex++;
 			}
 			if (index == nextIndex) {
-				lastIndexOf = nextIndex;
-				return hLastIndexOf = hNextItem;
+				cachedIndex = nextIndex;
+				return cachedIndexItem = hNextItem;
 			}
 		}
 		return 0;
@@ -2875,10 +2881,10 @@ long findItem (long hFirstItem, int index) {
 		nextIndex++;
 	}
 	if (index == nextIndex) {
-		itemCount = -1;
-		lastIndexOf = nextIndex;
-		hFirstIndexOf = hFirstItem;
-		return hLastIndexOf = hNextItem;
+		cachedItemCount = -1;
+		cachedIndex = nextIndex;
+		cachedFirstItem = hFirstItem;
+		return cachedIndexItem = hNextItem;
 	}
 	return 0;
 }
@@ -3269,16 +3275,16 @@ public int getItemCount () {
 int getItemCount (long hItem) {
 	int count = 0;
 	long hFirstItem = hItem;
-	if (hItem == hFirstIndexOf) {
-		if (itemCount != -1) return itemCount;
-		hFirstItem = hLastIndexOf;
-		count = lastIndexOf;
+	if (hItem == cachedFirstItem) {
+		if (cachedItemCount != -1) return cachedItemCount;
+		hFirstItem = cachedIndexItem;
+		count = cachedIndex;
 	}
 	while (hFirstItem != 0) {
 		hFirstItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_NEXT, hFirstItem);
 		count++;
 	}
-	if (hItem == hFirstIndexOf) itemCount = count;
+	if (hItem == cachedFirstItem) cachedItemCount = count;
 	return count;
 }
 
@@ -3989,8 +3995,8 @@ void releaseWidget () {
  */
 public void removeAll () {
 	checkWidget ();
-	hFirstIndexOf = hLastIndexOf = 0;
-	itemCount = -1;
+	cachedFirstItem = cachedIndexItem = 0;
+	cachedItemCount = -1;
 	for (TreeItem item : items) {
 		if (item != null && !item.isDisposed ()) {
 			item.release (false);
@@ -4018,8 +4024,8 @@ public void removeAll () {
 			customDraw = false;
 		}
 	}
-	hAnchor = hInsert = hFirstIndexOf = hLastIndexOf = 0;
-	itemCount = -1;
+	hAnchor = hInsert = cachedFirstItem = cachedIndexItem = 0;
+	cachedItemCount = -1;
 	items = new TreeItem [4];
 	scrollWidth = 0;
 	setScrollWidth ();
@@ -4230,15 +4236,15 @@ void setItemCount (int count, long hParent) {
 				// inserting means that all subsequent indices change).
 				// The solution is to adjust variables.
 				if (itemFirstChild != 0) {
-					hFirstIndexOf = itemFirstChild;
-					hLastIndexOf  = itemInsertAfter;
-					lastIndexOf   = indexInsertAfter;
+					cachedFirstItem = itemFirstChild;
+					cachedIndexItem = itemInsertAfter;
+					cachedIndex = indexInsertAfter;
 				} else {
 					// There are no items whose indices are unaffected by
 					// inserting. For simplicity, reset cached index values.
-					hFirstIndexOf = 0;
-					hLastIndexOf  = 0;
-					lastIndexOf   = 0;
+					cachedFirstItem = 0;
+					cachedIndexItem = 0;
+					cachedIndex = 0;
 				}
 
 				/*
@@ -5515,7 +5521,7 @@ public void showSelection () {
 void sort (long hParent, boolean all) {
 	int itemCount = (int)OS.SendMessage (handle, OS.TVM_GETCOUNT, 0, 0);
 	if (itemCount == 0 || itemCount == 1) return;
-	hFirstIndexOf = hLastIndexOf = 0;
+	cachedFirstItem = cachedIndexItem = 0;
 	itemCount = -1;
 	if (sortDirection == SWT.UP || sortDirection == SWT.NONE) {
 		OS.SendMessage (handle, OS.TVM_SORTCHILDREN, all ? 1 : 0, hParent);
