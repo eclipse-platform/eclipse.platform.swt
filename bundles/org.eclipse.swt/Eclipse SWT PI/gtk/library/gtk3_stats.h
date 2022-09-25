@@ -123,6 +123,7 @@ typedef enum {
 	gtk_1image_1new_1from_1icon_1name_FUNC,
 	gtk_1image_1new_1from_1surface_FUNC,
 	gtk_1image_1set_1from_1icon_1name_FUNC,
+	gtk_1image_1set_1from_1pixbuf_FUNC,
 	gtk_1image_1set_1from_1surface_FUNC,
 	gtk_1init_1check_FUNC,
 	gtk_1label_1set_1line_1wrap_FUNC,
