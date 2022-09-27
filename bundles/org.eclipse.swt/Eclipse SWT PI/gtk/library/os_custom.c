@@ -2116,7 +2116,7 @@ jlong call_accessible_object_function (const char *method_name, const char *meth
 	}
 
 	// Get the JNIEnv pointer
-	if ((*JVM)->GetEnv(JVM, (void **)&env, JNI_VERSION_1_2)) {
+	if ((*JVM)->GetEnv(JVM, (void **)&env, JNI_VERSION_10)) {
 		g_critical("Error fetching the JNIEnv pointer\n");
 		return 0;
 	}

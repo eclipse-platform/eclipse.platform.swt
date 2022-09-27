@@ -1896,7 +1896,7 @@ jlong callback(int index, ...)
 	}
 #endif
 
-	(*JVM)->GetEnv(JVM, (void **)&env, JNI_VERSION_1_4);
+	(*JVM)->GetEnv(JVM, (void **)&env, JNI_VERSION_10);
 
 	if (env == NULL) {
 		(*JVM)->AttachCurrentThreadAsDaemon(JVM, (void **)&env, NULL);
