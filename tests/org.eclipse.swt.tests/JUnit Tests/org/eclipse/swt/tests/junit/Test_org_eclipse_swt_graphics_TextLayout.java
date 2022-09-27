@@ -27,6 +27,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.GC;
+import org.eclipse.swt.graphics.GlyphMetrics;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
@@ -1219,4 +1220,16 @@ public void test_Bug579335_win32_StyledText_LongLine() {
 			font.dispose();
 	}
 }
+
+@Test
+public void testGlyphMetricsHeightDoNotImpachHeightOfUnrelatedChar() {
+	TextLayout layout = new TextLayout(display);
+	layout.setText("abc");
+	int referenceHeightWithoutStyle = layout.getBounds(0, 1).height;
+	TextStyle style = new TextStyle();
+	style.metrics = new GlyphMetrics(100, 0, 5);
+	layout.setStyle(style, 2, 3);
+	assertEquals("glyphMetrics seem considered for bounds of unrelated char", referenceHeightWithoutStyle, layout.getBounds(0, 1).height);
+}
+
 }
