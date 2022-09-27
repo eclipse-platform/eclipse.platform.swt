@@ -13,7 +13,7 @@
 @rem ***************************************************************************
 
 @rem The original build.bat source is located in /org.eclipse.swt/Eclipse SWT PI/win32/library/build.bat. It is copied during various build(s).
-@rem Typically it's not ran directly, instead it is reached by build.xml's build_libraries target found in eclipse.platform.swt.binaries\bundles\org.eclipse.swt.win32.win32.x86*
+@rem Typically it's not run directly, instead it is reached by build.xml's build_libraries target found in eclipse.platform.swt.binaries\bundles\org.eclipse.swt.win32.win32.*
 
 @echo off
 echo
@@ -36,7 +36,7 @@ IF "%MSVC_HOME%"=="" CALL :ECHO "'MSVC_HOME' was not provided, auto-searching fo
 IF "%MSVC_HOME%"=="" CALL :FindVisualStudio "%SWT_BUILDDIR%\Microsoft\Visual Studio\$MSVC_VERSION$"
 @rem Bug 574007: Path used on Azure build machines
 IF "%MSVC_HOME%"=="" CALL :FindVisualStudio "%ProgramFiles(x86)%\Microsoft Visual Studio\$MSVC_VERSION$\BuildTools"
-@rem Bug 578519: Common installation paths; VisualStudio is installed in x64 ProgramFiles since VS2022
+@rem Bug 578519: Common installation paths; VisualStudio is installed in 64-bit ProgramFiles since VS2022
 IF "%MSVC_HOME%"=="" CALL :FindVisualStudio      "%ProgramFiles%\Microsoft Visual Studio\$MSVC_VERSION$\$MSVC_EDITION$"
 @rem Bug 578519: Common installation paths; VisualStudio is installed in x86 ProgramFiles before VS2022
 IF "%MSVC_HOME%"=="" CALL :FindVisualStudio "%ProgramFiles(x86)%\Microsoft Visual Studio\$MSVC_VERSION$\$MSVC_EDITION$"
@@ -59,25 +59,28 @@ IF "%SWT_JAVA_HOME%"=="" CALL :TryToUseJdk "%SWT_BUILDDIR%\Java\Oracle\jdk1.8.0-
 @rem Note that first found JDK wins, so sort them by order of preference.
 IF "%SWT_JAVA_HOME%"=="" CALL :TryToUseJdk "%ProgramFiles%\Java\jdk*"
 IF "%SWT_JAVA_HOME%"=="" CALL :TryToUseJdk "%ProgramFiles%\AdoptOpenJDK\jdk*"
+IF "%SWT_JAVA_HOME%"=="" CALL :TryToUseJdk "%JAVA_HOME%"
 @rem Report
 IF NOT EXIST "%SWT_JAVA_HOME%" (
-    CALL :ECHO "WARNING: x64 Java JDK not found. Please set SWT_JAVA_HOME to your JDK directory."
+    CALL :ECHO "WARNING: 64-bit Java JDK not found. Please set SWT_JAVA_HOME to your JDK directory."
     CALL :ECHO "         Refer steps for SWT Windows native setup: https://www.eclipse.org/swt/swt_win_native.php"
 ) ELSE (
-    CALL :ECHO "SWT_JAVA_HOME x64: %SWT_JAVA_HOME%"
+    CALL :ECHO "SWT_JAVA_HOME 64-bit: %SWT_JAVA_HOME%"
 )
 
-@rem -----------------------
-IF NOT "x.%1"=="x.x86_64" (
-	CALL :ECHO "ERROR: 32-bit builds are no longer supported."
+IF "x.%1"=="x.x86_64" (
+	set BUILD_ARCH=x64
+	IF "x.%OUTPUT_DIR%"=="x." set OUTPUT_DIR=..\..\..\org.eclipse.swt.win32.win32.x86_64
+) ELSE IF "x.%1"=="x.aarch64" (
+	set BUILD_ARCH=arm64
+	IF "x.%OUTPUT_DIR%"=="x." set OUTPUT_DIR=..\..\..\org.eclipse.swt.win32.win32.aarch64
+) ELSE (
+	CALL :ECHO "ERROR: %1 builds are no longer supported."
 	EXIT /B 1
 )
 
-set PROCESSOR_ARCHITECTURE=AMD64
-IF "x.%OUTPUT_DIR%"=="x." set OUTPUT_DIR=..\..\..\org.eclipse.swt.win32.win32.x86_64
-
 set CFLAGS=-DJNI64
-call "%MSVC_HOME%\VC\Auxiliary\Build\vcvarsall.bat" x64
+call "%MSVC_HOME%\VC\Auxiliary\Build\vcvarsall.bat" %BUILD_ARCH%
 shift
 
 @rem if call to vcvarsall.bat (which sets up environment) silently fails, then provide advice to user.
@@ -117,6 +120,7 @@ GOTO :EOF
 		CALL :FindVisualStudio3 "%~1" "%~2" "Community"
 		CALL :FindVisualStudio3 "%~1" "%~2" "Enterprise"
 		CALL :FindVisualStudio3 "%~1" "%~2" "Professional"
+		CALL :FindVisualStudio3 "%~1" "%~2" "Preview"
 	) ELSE (
 		CALL :FindVisualStudio3 "%~1" "%~2" "%MSVC_EDITION%"
 	)

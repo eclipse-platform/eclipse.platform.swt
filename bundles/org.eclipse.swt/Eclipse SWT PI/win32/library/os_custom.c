@@ -63,7 +63,7 @@ BOOL Validate_AllowDarkModeForWindow(const BYTE* functionPtr)
 	 * an ATOM value of 0xA91E which is unlikely to change
 	 */
 
-#ifdef _M_X64
+#if defined(_M_X64) || defined(_M_ARM64)
 	/* Win10 builds from 20236 */
 	if ((functionPtr[0x52] == 0xBA) &&                      // mov     edx,
 	    (*(const DWORD*)(functionPtr + 0x53) == 0xA91E))    //             0A91Eh
@@ -111,7 +111,7 @@ TYPE_AllowDarkModeForWindow Locate_AllowDarkModeForWindow()
 
 BOOL Validate_AllowDarkModeForWindowWithTelemetryId(const BYTE* functionPtr)
 {
-#ifdef _M_X64
+#if defined(_M_X64) || defined(_M_ARM64)
 	/* This function is rather long, but it uses an ATOM value of 0xA91E which is unlikely to change */
 
 	/* Win10 builds from 21301 */
@@ -198,7 +198,7 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(AllowDarkModeForWindow)
 
 BOOL Validate_SetPreferredAppMode(const BYTE* functionPtr)
 {
-#ifdef _M_X64
+#if defined(_M_X64) || defined(_M_ARM64)
 	/*
 	 * This function is very simple, so validate entire body.
 	 * The only thing we don't know is the variable address.
