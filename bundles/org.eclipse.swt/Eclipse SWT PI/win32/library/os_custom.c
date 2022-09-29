@@ -63,7 +63,7 @@ BOOL Validate_AllowDarkModeForWindow(const BYTE* functionPtr)
 	 * an ATOM value of 0xA91E which is unlikely to change
 	 */
 
-#if defined(_M_X64) || defined(_M_ARM64)
+#ifdef _M_X64
 	/* Win10 builds from 20236 */
 	if ((functionPtr[0x52] == 0xBA) &&                      // mov     edx,
 	    (*(const DWORD*)(functionPtr + 0x53) == 0xA91E))    //             0A91Eh
@@ -78,6 +78,10 @@ BOOL Validate_AllowDarkModeForWindow(const BYTE* functionPtr)
 		return TRUE;
 	}
 
+	return FALSE;
+#elif defined(_M_ARM64)
+	/* Not implemented yet */
+	functionPtr; /* to prevent: warning C4100: 'functionPtr': unreferenced formal parameter */
 	return FALSE;
 #else
 	#error Unsupported processor type
@@ -111,7 +115,7 @@ TYPE_AllowDarkModeForWindow Locate_AllowDarkModeForWindow()
 
 BOOL Validate_AllowDarkModeForWindowWithTelemetryId(const BYTE* functionPtr)
 {
-#if defined(_M_X64) || defined(_M_ARM64)
+#ifdef _M_X64
 	/* This function is rather long, but it uses an ATOM value of 0xA91E which is unlikely to change */
 
 	/* Win10 builds from 21301 */
@@ -121,6 +125,10 @@ BOOL Validate_AllowDarkModeForWindowWithTelemetryId(const BYTE* functionPtr)
 		return TRUE;
 	}
 
+	return FALSE;
+#elif defined(_M_ARM64)
+	/* Not implemented yet */
+	functionPtr; /* to prevent: warning C4100: 'functionPtr': unreferenced formal parameter */
 	return FALSE;
 #else
 	#error Unsupported processor type
@@ -198,7 +206,7 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(AllowDarkModeForWindow)
 
 BOOL Validate_SetPreferredAppMode(const BYTE* functionPtr)
 {
-#if defined(_M_X64) || defined(_M_ARM64)
+#ifdef _M_X64
 	/*
 	 * This function is very simple, so validate entire body.
 	 * The only thing we don't know is the variable address.
@@ -212,6 +220,10 @@ BOOL Validate_SetPreferredAppMode(const BYTE* functionPtr)
 		(functionPtr[0x00] == 0x8B) && (functionPtr[0x01] == 0x05) &&   // mov     eax,dword ptr [uxtheme!g_preferredAppMode]
 		(functionPtr[0x06] == 0x87) && (functionPtr[0x07] == 0x0D) &&   // xchg    ecx,dword ptr [uxtheme!g_preferredAppMode]
 		(functionPtr[0x0C] == 0xC3);                                    // ret
+#elif defined(_M_ARM64)
+	/* Not implemented yet */
+	functionPtr; /* to prevent: warning C4100: 'functionPtr': unreferenced formal parameter */
+	return FALSE;
 #else
 	#error Unsupported processor type
 #endif
