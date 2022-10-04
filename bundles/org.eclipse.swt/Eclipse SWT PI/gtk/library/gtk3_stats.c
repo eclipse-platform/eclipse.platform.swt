@@ -113,7 +113,6 @@ char * GTK3_nativeFunctionNames[] = {
 	"gtk_1image_1new_1from_1icon_1name",
 	"gtk_1image_1new_1from_1surface",
 	"gtk_1image_1set_1from_1icon_1name",
-	"gtk_1image_1set_1from_1pixbuf",
 	"gtk_1image_1set_1from_1surface",
 	"gtk_1init_1check",
 	"gtk_1label_1set_1line_1wrap",
