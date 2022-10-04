@@ -893,11 +893,6 @@ public class GTK3 {
 	 */
 	public static final native void gtk_image_set_from_surface(long image, long surface);
 	/**
-	 * @param image cast=(GtkImage *)
-	 * @param pixbuf cast=(GdkPixbuf *)
-	 */
-	public static final native void gtk_image_set_from_pixbuf(long image, long pixbuf);
-	/**
 	 * @param icon_name cast=(const gchar *)
 	 * @param size cast=(GtkIconSize)
 	 */

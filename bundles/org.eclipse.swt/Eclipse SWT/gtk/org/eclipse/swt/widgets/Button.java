@@ -1162,10 +1162,7 @@ private void _setImage (Image image) {
 			OS.g_object_unref(pixbuf);
 			GTK4.gtk_picture_set_paintable(imageHandle, texture);
 		} else {
-			ImageData imgData = image.getImageData();
-			long pixbuf = GDK.gdk_pixbuf_get_from_surface(image.surface, 0, 0, imgData.width, imgData.height);
-			GTK3.gtk_image_set_from_pixbuf(imageHandle, pixbuf);
-			OS.g_object_unref(pixbuf);
+			GTK3.gtk_image_set_from_surface(imageHandle, image.surface);
 		}
 	} else {
 		if (GTK.GTK4) {

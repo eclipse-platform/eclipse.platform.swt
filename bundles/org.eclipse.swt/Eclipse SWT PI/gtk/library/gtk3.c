@@ -1118,16 +1118,6 @@ fail:
 }
 #endif
 
-#ifndef NO_gtk_1image_1set_1from_1pixbuf
-JNIEXPORT void JNICALL GTK3_NATIVE(gtk_1image_1set_1from_1pixbuf)
-	(JNIEnv *env, jclass that, jlong arg0, jlong arg1)
-{
-	GTK3_NATIVE_ENTER(env, that, gtk_1image_1set_1from_1pixbuf_FUNC);
-	gtk_image_set_from_pixbuf((GtkImage *)arg0, (GdkPixbuf *)arg1);
-	GTK3_NATIVE_EXIT(env, that, gtk_1image_1set_1from_1pixbuf_FUNC);
-}
-#endif
-
 #ifndef NO_gtk_1image_1set_1from_1surface
 JNIEXPORT void JNICALL GTK3_NATIVE(gtk_1image_1set_1from_1surface)
 	(JNIEnv *env, jclass that, jlong arg0, jlong arg1)
