@@ -1253,7 +1253,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 /**
  * Copies the selected text to the <code>DND.CLIPBOARD</code> clipboard.
  * <p>
- * The text will be put on the clipboard in plain text format and RTF format.
+ * The text will be put on the clipboard in plain text, HTML, and RTF formats.
  * The <code>DND.CLIPBOARD</code> clipboard is used for data that is
  * transferred by keyboard accelerator (such as Ctrl+C/Ctrl+V) or
  * by menu action.
@@ -1270,7 +1270,7 @@ public void copy() {
 }
 /**
  * Copies the selected text to the specified clipboard.  The text will be put in the
- * clipboard in plain text format and RTF format.
+ * clipboard in plain text, HTML, and RTF formats.
  * <p>
  * The clipboardType is  one of the clipboard constants defined in class
  * <code>DND</code>.  The <code>DND.CLIPBOARD</code>  clipboard is
@@ -1624,7 +1624,7 @@ void createCaretBitmaps() {
 }
 /**
  * Moves the selected text to the clipboard.  The text will be put in the
- * clipboard in plain text format and RTF format.
+ * clipboard in plain text, HTML, and RTF formats.
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -8609,7 +8609,7 @@ void setCaretOffsets(int[] newOffsets, int alignment) {
 }
 /**
  * Copies the specified text range to the clipboard.  The text will be placed
- * in the clipboard in plain text format and RTF format.
+ * in the clipboard in plain text, HTML, and RTF formats.
  *
  * @param start start index of the text
  * @param length length of text to place in clipboard
