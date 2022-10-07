@@ -121,6 +121,13 @@ BOOL Validate_AllowDarkModeForWindowWithTelemetryId(const BYTE* functionPtr)
 		return TRUE;
 	}
 
+	/* Win11 builds from 22621 */
+	if ((functionPtr[0x15] == 0xBA) &&                      // mov      edx,
+		(*(const DWORD*)(functionPtr + 0x16) == 0xA91E))    //              0A91Eh
+	{
+		return TRUE;
+	}
+
 	return FALSE;
 #else
 	#error Unsupported processor type
