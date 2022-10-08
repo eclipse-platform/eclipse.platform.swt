@@ -137,13 +137,8 @@ public class Display extends Device {
 	boolean externalEventLoop; // events are dispatched outside SWT, e.g. TrackPopupMenu or DoDragDrop
 
 	/* Widget Table */
-	int freeSlot;
-	int [] indexTable;
-	Control lastControl, lastGetControl;
-	long lastHwnd, lastGetHwnd;
-	Control [] controlTable;
+	private Map<Long, Control> controlByHandle;
 	static final int GROW_SIZE = 1024;
-	static final int SWT_OBJECT_INDEX = OS.GlobalAddAtom (new TCHAR (0, "SWT_OBJECT_INDEX", true)); //$NON-NLS-1$
 
 	/* Startup info */
 	static STARTUPINFO lpStartupInfo;
@@ -601,25 +596,9 @@ void addBar (Menu menu) {
 	}
 	bars [index] = menu;
 }
-
 void addControl (long handle, Control control) {
 	if (handle == 0) return;
-	if (freeSlot == -1) {
-		int length = (freeSlot = indexTable.length) + GROW_SIZE;
-		int [] newIndexTable = new int [length];
-		Control [] newControlTable = new Control [length];
-		System.arraycopy (indexTable, 0, newIndexTable, 0, freeSlot);
-		System.arraycopy (controlTable, 0, newControlTable, 0, freeSlot);
-		for (int i=freeSlot; i<length-1; i++) newIndexTable [i] = i + 1;
-		newIndexTable [length - 1] = -1;
-		indexTable = newIndexTable;
-		controlTable = newControlTable;
-	}
-	OS.SetProp (handle, SWT_OBJECT_INDEX, freeSlot + 1);
-	int oldSlot = freeSlot;
-	freeSlot = indexTable [oldSlot];
-	indexTable [oldSlot] = -2;
-	controlTable [oldSlot] = control;
+	controlByHandle.put(handle, control);
 }
 
 void addSkinnableWidget (Widget widget) {
@@ -1598,19 +1577,8 @@ Rectangle getClientAreaInPixels () {
 }
 
 Control getControl (long handle) {
-	if (handle == 0) return null;
-	if (lastControl != null && lastHwnd == handle) {
-		return lastControl;
-	}
-	if (lastGetControl != null && lastGetHwnd == handle) {
-		return lastGetControl;
-	}
-	int index = (int)OS.GetProp (handle, SWT_OBJECT_INDEX) - 1;
-	if (0 <= index && index < controlTable.length) {
-		lastGetHwnd = handle;
-		return lastGetControl = controlTable [index];
-	}
-	return null;
+	Control control = controlByHandle.get(handle);
+	return control;
 }
 
 /**
@@ -2237,7 +2205,7 @@ public Shell [] getShells () {
 	checkDevice ();
 	int index = 0;
 	Shell [] result = new Shell [16];
-	for (Control control : controlTable) {
+	for (Control control : controlByHandle.values()) {
 		if (control instanceof Shell) {
 			int j = 0;
 			while (j < index) {
@@ -2720,7 +2688,9 @@ public long internal_new_GC (GCData data) {
  */
 @Override
 protected void init () {
-	this.synchronizer = new Synchronizer (this); // Field initialization happens after super constructor
+	// Field initialization happens after super constructor
+	controlByHandle = new HashMap<>();
+	this.synchronizer = new Synchronizer (this);
 	super.init ();
 	DPIUtil.setDeviceZoom (getDeviceZoom ());
 
@@ -2819,12 +2789,6 @@ protected void init () {
 
 	/* Initialize buffered painting */
 	OS.BufferedPaintInit ();
-
-	/* Initialize the Widget Table */
-	indexTable = new int [GROW_SIZE];
-	controlTable = new Control [GROW_SIZE];
-	for (int i=0; i<GROW_SIZE-1; i++) indexTable [i] = i + 1;
-	indexTable [GROW_SIZE - 1] = -1;
 }
 
 /**
@@ -3835,10 +3799,8 @@ void releaseDisplay () {
 	keys = null;
 	values = null;
 	bars = popups = null;
-	indexTable = null;
 	timerIds = null;
-	controlTable = null;
-	lastControl = lastGetControl = lastHittestControl = null;
+	lastHittestControl = null;
 	imageList = toolImageList = toolHotImageList = toolDisabledImageList = null;
 	timerList = null;
 	tableBuffer = null;
@@ -3999,16 +3961,7 @@ void removeBar (Menu menu) {
 }
 
 Control removeControl (long handle) {
-	if (handle == 0) return null;
-	lastControl = lastGetControl = null;
-	Control control = null;
-	int index = (int)OS.RemoveProp (handle, SWT_OBJECT_INDEX) - 1;
-	if (0 <= index && index < controlTable.length) {
-		control = controlTable [index];
-		controlTable [index] = null;
-		indexTable [index] = freeSlot;
-		freeSlot = index;
-	}
+	Control control = controlByHandle.remove(handle);
 	return control;
 }
 
@@ -5019,17 +4972,9 @@ void wakeThread () {
 }
 
 long windowProc (long hwnd, long msg, long wParam, long lParam) {
-	if (lastControl != null && lastHwnd == hwnd) {
-		return lastControl.windowProc (hwnd, (int)msg, wParam, lParam);
-	}
-	int index = (int)OS.GetProp (hwnd, SWT_OBJECT_INDEX) - 1;
-	if (0 <= index && index < controlTable.length) {
-		Control control = controlTable [index];
-		if (control != null) {
-			lastHwnd = hwnd;
-			lastControl = control;
-			return control.windowProc (hwnd, (int)msg, wParam, lParam);
-		}
+	Control control = getControl(hwnd);
+	if (control != null) {
+		return control.windowProc (hwnd, (int)msg, wParam, lParam);
 	}
 	return OS.DefWindowProc (hwnd, (int)msg, wParam, lParam);
 }
