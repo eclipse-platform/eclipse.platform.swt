@@ -98,7 +98,6 @@ public PrintDialog (Shell parent) {
 public PrintDialog (Shell parent, int style) {
 	super (parent, checkStyleBit (parent, style));
 	checkSubclass ();
-	if (OS.IsWin32) SWT.error (SWT.ERROR_NOT_IMPLEMENTED);
 }
 
 /**

@@ -53,7 +53,6 @@ public class GLCanvas extends Canvas {
  */
 public GLCanvas (Composite parent, int style, GLData data) {
 	super (parent, style);
-	if (OS.IsWin32) SWT.error (SWT.ERROR_NOT_IMPLEMENTED);
 	if (data == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 	int glxAttrib [] = new int [MAX_ATTRIBUTES];
 	int pos = 0;

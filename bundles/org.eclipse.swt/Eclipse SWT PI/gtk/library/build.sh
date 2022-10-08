@@ -81,10 +81,6 @@ if [ "${OS}" = "" ]; then
 	OS=`uname -s`
 fi
 case $OS in
-	"Windows_NT")
-		SWT_OS=win32
-		MAKEFILE=make_win32.mak
-		;;
 	*)
 		SWT_OS=`uname -s | tr -s '[:upper:]' '[:lower:]'`
 		MAKEFILE=make_linux.mak
