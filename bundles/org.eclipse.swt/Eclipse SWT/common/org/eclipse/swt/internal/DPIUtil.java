@@ -10,7 +10,7 @@
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
- *     Daniel Krügler - #420 - [High DPI] "swt.autoScale" should add new "half" option
+ *     Daniel Kruegler - #420 - [High DPI] "swt.autoScale" should add new "half" option
  *******************************************************************************/
 package org.eclipse.swt.internal;
 
