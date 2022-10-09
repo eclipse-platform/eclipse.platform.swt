@@ -104,6 +104,7 @@ public class Tree extends Composite {
 	int headerForeground = -1;
 
 	// Cached variables for fast item lookup
+	int[] cachedItemOrder;
 	long cachedFirstItem;   // Used to figure when other cache variables need updating
 	long cachedIndexItem;   // Item for which #cachedIndex is saved
 	int cachedIndex;        // cached Tree#indexOf() or TreeItem#indexOf() of #cachedIndexItem
@@ -435,8 +436,7 @@ LRESULT CDDS_ITEMPOSTPAINT (NMTVCUSTOMDRAW nmcd, long wParam, long lParam) {
 	if (hwndHeader != 0) {
 		OS.MapWindowPoints (hwndParent, handle, clientRect, 2);
 		if (columnCount != 0) {
-			order = new int [columnCount];
-			OS.SendMessage (hwndHeader, OS.HDM_GETORDERARRAY, columnCount, order);
+			order = getColumnOrderFromOS();
 		}
 	}
 	int sortIndex = -1, clrSortBk = -1;
@@ -912,7 +912,7 @@ LRESULT CDDS_ITEMPOSTPAINT (NMTVCUSTOMDRAW nmcd, long wParam, long lParam) {
 								OS.SetRect (focusRect, 0, nmcd.top, clientRect.right + 1, nmcd.bottom);
 								OS.DrawFocusRect (hDC, focusRect);
 							} else {
-								int index = (int)OS.SendMessage (hwndHeader, OS.HDM_ORDERTOINDEX, 0, 0);
+								int index = getFirstColumnIndex();
 								RECT focusRect = item.getBounds (index, true, false, false, false, false, hDC);
 								RECT clipRect = item.getBounds (index, true, false, false, false, true, hDC);
 								OS.IntersectClipRect (hDC, clipRect.left, clipRect.top, clipRect.right, clipRect.bottom);
@@ -926,6 +926,47 @@ LRESULT CDDS_ITEMPOSTPAINT (NMTVCUSTOMDRAW nmcd, long wParam, long lParam) {
 		}
 	}
 	return new LRESULT (OS.CDRF_DODEFAULT);
+}
+
+int getFirstColumnIndex() {
+	int index = getColumnIndex(0);
+	return index;
+}
+
+/**
+ * @return An index value for an item based on its order in the header control.
+ * Same as getColumnOrder()[order] - but cached.
+ * @see #setColumnOrder(int[])
+ * @see #getColumnOrder()
+ * */
+private int getColumnIndex(int order) {
+	if (order < 0 || order >= columnCount || columnCount == 1) {
+		return 0;
+	}
+	/*	returns getColumnIndexFromOS(order)*/
+	if (cachedItemOrder == null) {
+		getColumnOrder();
+	}
+	return cachedItemOrder[order];
+}
+
+/** for junit only
+ * @see #getColumnIndex**/
+@SuppressWarnings("unused")
+private int getColumnIndexFromOS(int order) {
+	if (hwndHeader==0) {
+		return 0;
+	}
+	return (int) OS.SendMessage(hwndHeader, OS.HDM_ORDERTOINDEX, order, 0);
+}
+
+/** @return The bounding rectangle for a given item in a header control.**/
+RECT getColumnRect(int index) {
+	RECT headerRectInOut = new RECT ();
+	if (OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, index, headerRectInOut) == 0) {
+		return null;
+	}
+	return headerRectInOut;
 }
 
 LRESULT CDDS_ITEMPREPAINT (NMTVCUSTOMDRAW nmcd, long wParam, long lParam) {
@@ -947,7 +988,7 @@ LRESULT CDDS_ITEMPREPAINT (NMTVCUSTOMDRAW nmcd, long wParam, long lParam) {
 	*/
 	if (item == null) return null;
 	long hDC = nmcd.hdc;
-	int index = hwndHeader != 0 ? (int)OS.SendMessage (hwndHeader, OS.HDM_ORDERTOINDEX, 0, 0) : 0;
+	int index = hwndHeader != 0 ? getFirstColumnIndex() : 0;
 	long hFont = item.fontHandle (index);
 	if (hFont != -1) OS.SelectObject (hDC, hFont);
 	if (ignoreCustomDraw || nmcd.left == nmcd.right) {
@@ -1379,7 +1420,7 @@ LRESULT CDDS_POSTPAINT (NMTVCUSTOMDRAW nmcd, long wParam, long lParam) {
 				HDITEM hdItem = new HDITEM ();
 				hdItem.mask = OS.HDI_WIDTH;
 				for (int i=0; i<columnCount; i++) {
-					int index = (int)OS.SendMessage (hwndHeader, OS.HDM_ORDERTOINDEX, i, 0);
+					int index = getColumnIndex(i);
 					OS.SendMessage (hwndHeader, OS.HDM_GETITEM, index, hdItem);
 					OS.SetRect (rect, x, nmcd.top, x + hdItem.cxy, nmcd.bottom);
 					OS.DrawEdge (hDC, rect, OS.BDR_SUNKENINNER, OS.BF_RIGHT);
@@ -1973,6 +2014,7 @@ void createItem (TreeColumn column, int index) {
 	}
 	System.arraycopy (columns, index, columns, index + 1, columnCount++ - index);
 	columns [index] = column;
+	cachedItemOrder = null; // conservative
 
 	/*
 	* Bug in Windows.  For some reason, when HDM_INSERTITEM
@@ -2440,8 +2482,7 @@ void destroyItem (TreeColumn column) {
 		if (columns [index] == column) break;
 		index++;
 	}
-	int [] oldOrder = new int [columnCount];
-	OS.SendMessage (hwndHeader, OS.HDM_GETORDERARRAY, columnCount, oldOrder);
+	int [] oldOrder = getColumnOrderFromOS();
 	int orderIndex = 0;
 	while (orderIndex < columnCount) {
 		if (oldOrder [orderIndex] == index) break;
@@ -2453,6 +2494,7 @@ void destroyItem (TreeColumn column) {
 		error (SWT.ERROR_ITEM_NOT_REMOVED);
 	}
 	System.arraycopy (columns, index + 1, columns, index, --columnCount - index);
+	cachedItemOrder = null; // conservative
 	columns [columnCount] = null;
 	for (TreeItem item : items) {
 		if (item != null) {
@@ -2546,8 +2588,7 @@ void destroyItem (TreeColumn column) {
 	updateImageList ();
 	updateScrollBar ();
 	if (columnCount != 0) {
-		int [] newOrder = new int [columnCount];
-		OS.SendMessage (hwndHeader, OS.HDM_GETORDERARRAY, columnCount, newOrder);
+		int [] newOrder = getColumnOrderFromOS();
 		TreeColumn [] newColumns = new TreeColumn [columnCount - orderIndex];
 		for (int i=orderIndex; i<newOrder.length; i++) {
 			newColumns [i - orderIndex] = columns [newOrder [i]];
@@ -2749,7 +2790,9 @@ boolean findCell (int x, int y, TreeItem [] item, int [] index, RECT [] cellRect
 		}
 		int count = Math.max (1, columnCount);
 		int [] order = new int [count];
-		if (hwndHeader != 0) OS.SendMessage (hwndHeader, OS.HDM_GETORDERARRAY, count, order);
+		if (hwndHeader != 0) {
+			order = getColumnOrderFromOS();
+		}
 		index [0] = 0;
 		boolean quit = false;
 		while (index [0] < count && !quit) {
@@ -3124,8 +3167,14 @@ public int getColumnCount () {
 public int[] getColumnOrder () {
 	checkWidget ();
 	if (columnCount == 0) return new int [0];
+	int[] order = getColumnOrderFromOS();
+	return order;
+}
+
+private int[] getColumnOrderFromOS() {
 	int [] order = new int [columnCount];
 	OS.SendMessage (hwndHeader, OS.HDM_GETORDERARRAY, columnCount, order);
+	cachedItemOrder = order.clone();
 	return order;
 }
 
@@ -3698,7 +3747,7 @@ int imageIndex (Image image, int index) {
 	}
 	int imageIndex = imageList.indexOf (image);
 	if (imageIndex == -1) imageIndex = imageList.add (image);
-	if (hwndHeader == 0 || OS.SendMessage (hwndHeader, OS.HDM_ORDERTOINDEX, 0, 0) == index) {
+	if (hwndHeader == 0 || getFirstColumnIndex() == index) {
 		/*
 		* Feature in Windows.  When setting the same image list multiple
 		* times, Windows does work making this operation slow.  The fix
@@ -4652,8 +4701,7 @@ public void setColumnOrder (int [] order) {
 		return;
 	}
 	if (order.length != columnCount) error (SWT.ERROR_INVALID_ARGUMENT);
-	int [] oldOrder = new int [columnCount];
-	OS.SendMessage (hwndHeader, OS.HDM_GETORDERARRAY, columnCount, oldOrder);
+	int [] oldOrder = getColumnOrderFromOS();
 	boolean reorder = false;
 	boolean [] seen = new boolean [columnCount];
 	for (int i=0; i<order.length; i++) {
@@ -4670,6 +4718,7 @@ public void setColumnOrder (int [] order) {
 			OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, i, oldRects [i]);
 		}
 		OS.SendMessage (hwndHeader, OS.HDM_SETORDERARRAY, order.length, order);
+		cachedItemOrder = order.clone();
 		OS.InvalidateRect (handle, null, true);
 		updateImageList ();
 		TreeColumn [] newColumns = new TreeColumn [columnCount];
@@ -5653,7 +5702,7 @@ void updateHeaderToolTips () {
 void updateImageList () {
 	if (imageList == null) return;
 	if (hwndHeader == 0) return;
-	int i = 0, index = (int)OS.SendMessage (hwndHeader, OS.HDM_ORDERTOINDEX, 0, 0);
+	int i = 0, index = getFirstColumnIndex();
 	while (i < items.length) {
 		TreeItem item = items [i];
 		if (item != null) {
@@ -7444,7 +7493,7 @@ LRESULT wmNotifyChild (NMHDR hdr, long wParam, long lParam) {
 			}
 			int index = 0;
 			if (hwndHeader != 0) {
-				index = (int)OS.SendMessage (hwndHeader, OS.HDM_ORDERTOINDEX, 0, 0);
+				index = getFirstColumnIndex();
 			}
 			if ((lptvdi.mask & OS.TVIF_TEXT) != 0) {
 				String string = null;
@@ -7938,6 +7987,7 @@ LRESULT wmNotifyHeader (NMHDR hdr, long wParam, long lParam) {
 					return LRESULT.ONE;
 				}
 				headerItemDragging = true;
+				cachedItemOrder = null; // dnd may change item order
 			}
 			break;
 		}
@@ -7949,8 +7999,7 @@ LRESULT wmNotifyHeader (NMHDR hdr, long wParam, long lParam) {
 				HDITEM pitem = new HDITEM ();
 				OS.MoveMemory (pitem, phdn.pitem, HDITEM.sizeof);
 				if ((pitem.mask & OS.HDI_ORDER) != 0 && pitem.iOrder != -1) {
-					int [] order = new int [columnCount];
-					OS.SendMessage (hwndHeader, OS.HDM_GETORDERARRAY, columnCount, order);
+					int [] order = getColumnOrderFromOS();
 					int index = 0;
 					while (index < order.length) {
 						if (order [index] == phdn.iItem) break;
@@ -8006,7 +8055,7 @@ LRESULT wmNotifyHeader (NMHDR hdr, long wParam, long lParam) {
 						int flags = OS.SW_INVALIDATE | OS.SW_ERASE;
 						OS.ScrollWindowEx (handle, deltaX, 0, rect, null, 0, null, flags);
 					}
-					if (OS.SendMessage (hwndHeader, OS.HDM_ORDERTOINDEX, phdn.iItem, 0) != 0) {
+					if (getColumnIndex(phdn.iItem) != 0) {
 						rect.left = headerRect.left;
 						rect.right = newX;
 						OS.InvalidateRect (handle, rect, true);
@@ -8034,8 +8083,7 @@ LRESULT wmNotifyHeader (NMHDR hdr, long wParam, long lParam) {
 						if (isDisposed ()) return LRESULT.ZERO;
 						TreeColumn [] newColumns = new TreeColumn [columnCount];
 						System.arraycopy (columns, 0, newColumns, 0, columnCount);
-						int [] order = new int [columnCount];
-						OS.SendMessage (hwndHeader, OS.HDM_GETORDERARRAY, columnCount, order);
+						int [] order = getColumnOrderFromOS();
 						boolean moved = false;
 						for (int i=0; i<columnCount; i++) {
 							TreeColumn nextColumn = newColumns [order [i]];
