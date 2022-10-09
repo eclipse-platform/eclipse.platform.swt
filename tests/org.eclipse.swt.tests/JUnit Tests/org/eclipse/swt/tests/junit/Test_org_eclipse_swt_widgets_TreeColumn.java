@@ -18,6 +18,9 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -205,6 +208,53 @@ public void test_setTextLjava_lang_String() {
 	}
 }
 
+@Test
+public void test_ColumnOrder() {
+	Tree tree = new Tree(shell, 0);
+	List<TreeColumn> treeColumns = new ArrayList<>();
+	try {
+		for (;treeColumns.size()<12;) { // create
+			int[] columnOrder = tree.getColumnOrder();
+			assertEquals(treeColumns.size(), columnOrder.length);
+			assertEquals(treeColumns.size(), tree.getColumnCount());
+			for (int i = 0; i < treeColumns.size(); i++) {
+				assertEquals(i, columnOrder[i]);
+			}
+			TreeColumn treeColumn = new TreeColumn(tree, SWT.NULL);
+			treeColumns.add(treeColumn);
+		}
+
+		{ // reverse order
+			int[] reversedColumnOrder = new int[treeColumns.size()];
+			for (int i = 0; i < treeColumns.size(); i++) {
+				reversedColumnOrder[i] = treeColumns.size() - i - 1;
+			}
+			tree.setColumnOrder(reversedColumnOrder);
+			reversedColumnOrder = null;
+			int[] columnOrder = tree.getColumnOrder();
+			assertEquals(treeColumns.size(), columnOrder.length);
+			assertEquals(treeColumns.size(), tree.getColumnCount());
+			for (int i = 0; i < treeColumns.size(); i++) {
+				assertEquals(treeColumns.size() - i - 1, columnOrder[i]);
+			}
+		}
+		for (;!treeColumns.isEmpty();) { // remove
+			TreeColumn treeColumn = treeColumns.get(treeColumns.size() / 2);
+			treeColumn.dispose();
+			treeColumns.remove(treeColumn);
+			int[] columnOrder = tree.getColumnOrder();
+			assertEquals(treeColumns.size(), columnOrder.length);
+			assertEquals(treeColumns.size(), tree.getColumnCount());
+			for (int i = 0; i < treeColumns.size(); i++) {
+				// still reversed
+				assertEquals(treeColumns.size() - i - 1, columnOrder[i]);
+			}
+		}
+	} finally {
+		treeColumns.forEach(TreeColumn::dispose);
+		tree.dispose();
+	}
+}
 /* custom */
 protected TreeColumn treeColumn;
 protected Tree tree;
