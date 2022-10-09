@@ -10,6 +10,7 @@
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
+ *     Daniel Krügler - #420 - [High DPI] "swt.autoScale" should add new "half" option
  *******************************************************************************/
 package org.eclipse.swt.internal;
 
@@ -54,6 +55,9 @@ public class DPIUtil {
 	 *     generally rounded down (e.g. at 150%, will use 100%), unless close to
 	 *     the next integer multiple (currently at 175%, will use 200%).</li>
 	 * <li><b>integer200</b>: like <b>integer</b>, but the maximal zoom level is 200%.</li>
+	 * <li><b>half</b>: deviceZoom depends on the current display resolution,
+	 *     but only uses integer multiples of 50%. The detected native zoom is
+	 *     rounded to the closest permissible value.</li>
 	 * <li><b>quarter</b>: deviceZoom depends on the current display resolution,
 	 *     but only uses integer multiples of 25%. The detected native zoom is
 	 *     rounded to the closest permissible value.</li>
@@ -456,8 +460,10 @@ public static int getZoomForAutoscaleProperty (int nativeDeviceZoom) {
 	if (autoScaleValue != null) {
 		if ("false".equalsIgnoreCase (autoScaleValue)) {
 			zoom = 100;
+		} else if ("half".equalsIgnoreCase (autoScaleValue)) {
+			zoom = Math.round (nativeDeviceZoom / 50f) * 50;
 		} else if ("quarter".equalsIgnoreCase (autoScaleValue)) {
-			zoom = (int) (Math.round (nativeDeviceZoom / 25f) * 25);
+			zoom = Math.round (nativeDeviceZoom / 25f) * 25;
 		} else if ("exact".equalsIgnoreCase (autoScaleValue)) {
 			zoom = nativeDeviceZoom;
 		} else {
