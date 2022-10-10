@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2011 IBM Corporation and others.
+ * Copyright (c) 2000, 2022 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -204,13 +204,15 @@ public class Event {
 	 * For detailed information, see {@link Widget#setKeyState} per
 	 * platform.
 	 *
-	 * For debugging, see
-	 * <ul>
-	 *  <li>Unit tests {@link Test_org_eclipse_swt_events_KeyEvent}</li>
-	 *  <li>Files with names containing 'Issue0351_EventKeyCode'</li>
-	 * </ul>
 	 *
 	 * @see org.eclipse.swt.SWT
+	 */
+	/*
+	 * For debugging, see
+	 * <ul>
+	 *  <li>Unit tests Test_org_eclipse_swt_events_KeyEvent</li>
+	 *  <li>Files with names containing 'Issue0351_EventKeyCode'</li>
+	 * </ul>
 	 */
 	public int keyCode;
 
