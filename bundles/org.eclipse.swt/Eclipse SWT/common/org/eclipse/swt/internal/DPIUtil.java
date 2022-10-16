@@ -461,9 +461,10 @@ public static int getZoomForAutoscaleProperty (int nativeDeviceZoom) {
 		if ("false".equalsIgnoreCase (autoScaleValue)) {
 			zoom = 100;
 		} else if ("half".equalsIgnoreCase (autoScaleValue)) {
-			// Math.round would round 125->150 and 175->200, 
-			// using truncation round 125->100 and 175->150
-			zoom = (nativeDeviceZoom / 50) * 50;
+			// Math.round rounds 125->150 and 175->200, 
+			// Math.rint rounds 125->100 and 175->200 matching
+			// "integer200"
+			zoom = (int) Math.rint(nativeDeviceZoom / 50d) * 50;
 		} else if ("quarter".equalsIgnoreCase (autoScaleValue)) {
 			zoom = Math.round(nativeDeviceZoom / 25f) * 25;
 		} else if ("exact".equalsIgnoreCase (autoScaleValue)) {
