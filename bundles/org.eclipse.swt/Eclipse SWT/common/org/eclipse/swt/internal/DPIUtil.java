@@ -55,9 +55,9 @@ public class DPIUtil {
 	 *     generally rounded down (e.g. at 150%, will use 100%), unless close to
 	 *     the next integer multiple (currently at 175%, will use 200%).</li>
 	 * <li><b>integer200</b>: like <b>integer</b>, but the maximal zoom level is 200%.</li>
-	 * <li><b>half</b>: deviceZoom depends on the current display resolution,
+	 * <li><b>half-even</b>: deviceZoom depends on the current display resolution,
 	 *     but only uses integer multiples of 50%. The detected native zoom is
-	 *     rounded to the closest permissible value.</li>
+	 *     rounded to the closest permissible value, with tie-breaker towards even.</li>
 	 * <li><b>quarter</b>: deviceZoom depends on the current display resolution,
 	 *     but only uses integer multiples of 25%. The detected native zoom is
 	 *     rounded to the closest permissible value.</li>
@@ -460,7 +460,7 @@ public static int getZoomForAutoscaleProperty (int nativeDeviceZoom) {
 	if (autoScaleValue != null) {
 		if ("false".equalsIgnoreCase (autoScaleValue)) {
 			zoom = 100;
-		} else if ("half".equalsIgnoreCase (autoScaleValue)) {
+		} else if ("half-even".equalsIgnoreCase (autoScaleValue)) {
 			// Math.round rounds 125->150 and 175->200, 
 			// Math.rint rounds 125->100 and 175->200 matching
 			// "integer200"
