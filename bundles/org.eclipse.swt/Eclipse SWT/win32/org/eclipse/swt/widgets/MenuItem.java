@@ -1079,7 +1079,7 @@ public void setToolTipText (String toolTip) {
 	}
 
 	if (toolTip == null || toolTip.trim().length() == 0
-			|| (itemToolTip != null && toolTip.equals(itemToolTip.getMessage()))) return;
+			|| (itemToolTip != null && !itemToolTip.isDisposed() && toolTip.equals(itemToolTip.getMessage()))) return;
 
 	if (itemToolTip != null) itemToolTip.dispose();
 	itemToolTip = new MenuItemToolTip (this.getParent().getShell());
