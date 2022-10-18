@@ -7165,6 +7165,34 @@ void paintObject(GC gc, int x, int y, int ascent, int descent, StyleRange style,
 	}
 }
 /**
+ * Detects if any of the content types in the clipboard are in a format
+ * that can be pasted into a {@code StyledText}.
+ *
+ * <p>The formats currently supported are plain text, HTML, and RTF.</p>
+ *
+ * @param clipboard the clipboard to check for supported types
+ * @return true if any of he types in clipboard can be pasted into a {@code StyledText}.
+ *
+ * @since 3.121
+ */
+public static boolean canPaste(Clipboard clipboard) {
+	TransferData[] types = clipboard.getAvailableTypes();
+	Transfer[] transfers = new Transfer[] {
+			TextTransfer.getInstance(),
+			HTMLTransfer.getInstance(),
+			RTFTransfer.getInstance()
+	};
+	for (TransferData type : types) {
+		for (Transfer transfer : transfers) {
+			if (transfer.isSupportedType(type)) {
+				System.out.printf("%s.isSupportedType(%s)", transfer, type);
+				return true;
+			}
+		}
+	}
+	return false;
+}
+/**
  * Replaces the selection with the text on the <code>DND.CLIPBOARD</code>
  * clipboard  or, if there is no selection,  inserts the text at the current
  * caret offset.   If the widget has the SWT.SINGLE style and the
