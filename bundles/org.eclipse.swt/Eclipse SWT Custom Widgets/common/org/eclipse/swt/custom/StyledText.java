@@ -7165,29 +7165,18 @@ void paintObject(GC gc, int x, int y, int ascent, int descent, StyleRange style,
 	}
 }
 /**
- * Detects if any of the content types in the clipboard are in a format
- * that can be pasted into a {@code StyledText}.
+ * Detects if the provided Clipboard content can be pasted into this widget.
  *
- * <p>The formats currently supported are plain text, HTML, and RTF.</p>
- *
- * @param clipboard the clipboard to check for paste
- * @return true if any of he types in clipboard can be pasted into a {@code StyledText}.
+ * @param clipboard the clipboard to check for paste support.
+ * @return true if any of the content in clipboard can be pasted.
  *
  * @since 3.121
  */
 public static boolean canPaste(Clipboard clipboard) {
-	TransferData[] types = clipboard.getAvailableTypes();
-	Transfer[] transfers = new Transfer[] {
-			TextTransfer.getInstance(),
-			HTMLTransfer.getInstance(),
-			RTFTransfer.getInstance()
-	};
-	for (TransferData type : types) {
-		for (Transfer transfer : transfers) {
-			if (transfer.isSupportedType(type)) {
-				System.out.printf("%s.isSupportedType(%s)", transfer, type);
-				return true;
-			}
+	Transfer textTransfer = TextTransfer.getInstance();
+	for (TransferData type : clipboard.getAvailableTypes()) {
+		if (textTransfer.isSupportedType(type)) {
+			return true;
 		}
 	}
 	return false;
