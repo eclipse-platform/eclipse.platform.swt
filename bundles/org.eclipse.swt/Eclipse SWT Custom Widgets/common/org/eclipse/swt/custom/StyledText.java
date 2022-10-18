@@ -7170,7 +7170,7 @@ void paintObject(GC gc, int x, int y, int ascent, int descent, StyleRange style,
  *
  * <p>The formats currently supported are plain text, HTML, and RTF.</p>
  *
- * @param clipboard the clipboard to check for supported types
+ * @param clipboard the clipboard to check for paste
  * @return true if any of he types in clipboard can be pasted into a {@code StyledText}.
  *
  * @since 3.121
