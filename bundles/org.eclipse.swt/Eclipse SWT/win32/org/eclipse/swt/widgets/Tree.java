@@ -436,7 +436,7 @@ LRESULT CDDS_ITEMPOSTPAINT (NMTVCUSTOMDRAW nmcd, long wParam, long lParam) {
 	if (hwndHeader != 0) {
 		OS.MapWindowPoints (hwndParent, handle, clientRect, 2);
 		if (columnCount != 0) {
-			order = getColumnOrderFromOS();
+			order = getColumnOrder();
 		}
 	}
 	int sortIndex = -1, clrSortBk = -1;
@@ -944,10 +944,7 @@ private int getColumnIndex(int order) {
 		return 0;
 	}
 	/*	returns getColumnIndexFromOS(order)*/
-	if (cachedItemOrder == null) {
-		getColumnOrder();
-	}
-	return cachedItemOrder[order];
+	return getColumnOrder()[order];
 }
 
 /** for junit only
@@ -2482,7 +2479,7 @@ void destroyItem (TreeColumn column) {
 		if (columns [index] == column) break;
 		index++;
 	}
-	int [] oldOrder = getColumnOrderFromOS();
+	int [] oldOrder = getColumnOrder();
 	int orderIndex = 0;
 	while (orderIndex < columnCount) {
 		if (oldOrder [orderIndex] == index) break;
@@ -2790,8 +2787,8 @@ boolean findCell (int x, int y, TreeItem [] item, int [] index, RECT [] cellRect
 		}
 		int count = Math.max (1, columnCount);
 		int [] order = new int [count];
-		if (hwndHeader != 0) {
-			order = getColumnOrderFromOS();
+		if (hwndHeader != 0 && columnCount !=0) {
+			order = getColumnOrder();
 		}
 		index [0] = 0;
 		boolean quit = false;
@@ -3166,12 +3163,15 @@ public int getColumnCount () {
  */
 public int[] getColumnOrder () {
 	checkWidget ();
-	if (columnCount == 0) return new int [0];
+	if (cachedItemOrder != null) {
+		return cachedItemOrder.clone();
+	}
 	int[] order = getColumnOrderFromOS();
 	return order;
 }
 
 private int[] getColumnOrderFromOS() {
+	if (columnCount == 0) return new int [0];
 	int [] order = new int [columnCount];
 	OS.SendMessage (hwndHeader, OS.HDM_GETORDERARRAY, columnCount, order);
 	cachedItemOrder = order.clone();
@@ -4701,7 +4701,7 @@ public void setColumnOrder (int [] order) {
 		return;
 	}
 	if (order.length != columnCount) error (SWT.ERROR_INVALID_ARGUMENT);
-	int [] oldOrder = getColumnOrderFromOS();
+	int [] oldOrder = getColumnOrder();
 	boolean reorder = false;
 	boolean [] seen = new boolean [columnCount];
 	for (int i=0; i<order.length; i++) {
@@ -7987,7 +7987,6 @@ LRESULT wmNotifyHeader (NMHDR hdr, long wParam, long lParam) {
 					return LRESULT.ONE;
 				}
 				headerItemDragging = true;
-				cachedItemOrder = null; // dnd may change item order
 			}
 			break;
 		}
@@ -7999,26 +7998,28 @@ LRESULT wmNotifyHeader (NMHDR hdr, long wParam, long lParam) {
 				HDITEM pitem = new HDITEM ();
 				OS.MoveMemory (pitem, phdn.pitem, HDITEM.sizeof);
 				if ((pitem.mask & OS.HDI_ORDER) != 0 && pitem.iOrder != -1) {
-					int [] order = getColumnOrderFromOS();
+					int [] oldOrder = getColumnOrder();
+					cachedItemOrder = null; // dnd may have changed item order
+					// but HDM_GETORDERARRAY still returns old order;
 					int index = 0;
-					while (index < order.length) {
-						if (order [index] == phdn.iItem) break;
+					while (index < oldOrder.length) {
+						if (oldOrder [index] == phdn.iItem) break;
 						index++;
 					}
-					if (index == order.length) index = 0;
+					if (index == oldOrder.length) index = 0;
 					if (index == pitem.iOrder) break;
 					int start = Math.min (index, pitem.iOrder);
 					int end = Math.max (index, pitem.iOrder);
 					RECT rect = new RECT (), headerRect = new RECT ();
 					OS.GetClientRect (handle, rect);
-					OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, order [start], headerRect);
+					OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, oldOrder [start], headerRect);
 					rect.left = Math.max (rect.left, headerRect.left);
-					OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, order [end], headerRect);
+					OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, oldOrder [end], headerRect);
 					rect.right = Math.min (rect.right, headerRect.right);
 					OS.InvalidateRect (handle, rect, true);
 					ignoreColumnMove = false;
 					for (int i=start; i<=end; i++) {
-						TreeColumn column = columns [order [i]];
+						TreeColumn column = columns [oldOrder [i]];
 						if (!column.isDisposed ()) {
 							column.postEvent (SWT.Move);
 						}
@@ -8071,6 +8072,9 @@ LRESULT wmNotifyHeader (NMHDR hdr, long wParam, long lParam) {
 			if (phdn.pitem != 0) {
 				HDITEM pitem = new HDITEM ();
 				OS.MoveMemory (pitem, phdn.pitem, HDITEM.sizeof);
+				if ((pitem.mask & OS.HDI_ORDER) != 0) {
+					cachedItemOrder = null;
+				}
 				if ((pitem.mask & OS.HDI_WIDTH) != 0) {
 					if (ignoreColumnMove) {
 						int flags = OS.RDW_UPDATENOW | OS.RDW_ALLCHILDREN;
@@ -8083,7 +8087,7 @@ LRESULT wmNotifyHeader (NMHDR hdr, long wParam, long lParam) {
 						if (isDisposed ()) return LRESULT.ZERO;
 						TreeColumn [] newColumns = new TreeColumn [columnCount];
 						System.arraycopy (columns, 0, newColumns, 0, columnCount);
-						int [] order = getColumnOrderFromOS();
+						int [] order = getColumnOrder();
 						boolean moved = false;
 						for (int i=0; i<columnCount; i++) {
 							TreeColumn nextColumn = newColumns [order [i]];
