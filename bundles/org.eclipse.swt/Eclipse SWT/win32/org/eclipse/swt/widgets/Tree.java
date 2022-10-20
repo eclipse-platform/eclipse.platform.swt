@@ -8056,7 +8056,7 @@ LRESULT wmNotifyHeader (NMHDR hdr, long wParam, long lParam) {
 						int flags = OS.SW_INVALIDATE | OS.SW_ERASE;
 						OS.ScrollWindowEx (handle, deltaX, 0, rect, null, 0, null, flags);
 					}
-					if (getColumnIndex(phdn.iItem) != 0) {
+					if (getFirstColumnIndex() != phdn.iItem) {
 						rect.left = headerRect.left;
 						rect.right = newX;
 						OS.InvalidateRect (handle, rect, true);
