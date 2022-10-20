@@ -52,6 +52,7 @@ import org.eclipse.swt.custom.TextChangeListener;
 import org.eclipse.swt.custom.VerifyKeyListener;
 import org.eclipse.swt.dnd.Clipboard;
 import org.eclipse.swt.dnd.HTMLTransfer;
+import org.eclipse.swt.dnd.ImageTransfer;
 import org.eclipse.swt.dnd.RTFTransfer;
 import org.eclipse.swt.dnd.TextTransfer;
 import org.eclipse.swt.dnd.Transfer;
@@ -64,6 +65,8 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.GlyphMetrics;
+import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.graphics.Rectangle;
@@ -2218,6 +2221,32 @@ public void test_invokeActionI() {
 	assertEquals("LineW", text.getText());
 
 	text.invokeAction(ST.TOGGLE_OVERWRITE);
+}
+
+@Test
+public void test_canPaste() {
+	Clipboard clipboard = new Clipboard(text.getDisplay());
+
+	// Put some plain text in the clipboard, supported for paste.
+	clipboard.setContents(
+			new String[] {"Line\n"},
+			new Transfer[] {TextTransfer.getInstance()});
+	assertTrue(StyledText.canPaste(clipboard));
+
+	// Put an image in the clipboard, not supported for paste into a StyledText
+	Image image = new Image(text.getDisplay(), 10, 10);
+	clipboard.setContents(
+			new ImageData[] {image.getImageData()},
+			new Transfer[] {ImageTransfer.getInstance()});
+	assertFalse(StyledText.canPaste(clipboard));
+
+	// Put some styled text. That helper method puts in the clipboard
+	// all the supported formats (plain text, RTF, and HTML).
+	rtfCopy();
+	assertTrue(StyledText.canPaste(clipboard));
+
+	clipboard.dispose();
+	image.dispose();
 }
 
 @Test

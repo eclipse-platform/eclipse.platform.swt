@@ -7165,6 +7165,23 @@ void paintObject(GC gc, int x, int y, int ascent, int descent, StyleRange style,
 	}
 }
 /**
+ * Detects if the provided Clipboard content can be pasted into this widget.
+ *
+ * @param clipboard the clipboard to check for paste support.
+ * @return true if any of the content in clipboard can be pasted.
+ *
+ * @since 3.121
+ */
+public static boolean canPaste(Clipboard clipboard) {
+	Transfer textTransfer = TextTransfer.getInstance();
+	for (TransferData type : clipboard.getAvailableTypes()) {
+		if (textTransfer.isSupportedType(type)) {
+			return true;
+		}
+	}
+	return false;
+}
+/**
  * Replaces the selection with the text on the <code>DND.CLIPBOARD</code>
  * clipboard  or, if there is no selection,  inserts the text at the current
  * caret offset.   If the widget has the SWT.SINGLE style and the
