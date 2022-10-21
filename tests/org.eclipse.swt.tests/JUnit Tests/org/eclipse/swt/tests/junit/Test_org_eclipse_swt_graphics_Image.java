@@ -85,6 +85,18 @@ ImageDataProvider imageDataProvider = zoom -> {
 	}
 	return new ImageData(getPath(fileName));
 };
+ImageDataProvider imageDataProvider1xOnly = zoom -> {
+	String fileName;
+	switch (zoom) {
+	case 100:
+		fileName = "collapseall.png";
+		break;
+	default:
+		return null;
+	}
+	return new ImageData(getPath(fileName));
+};
+
 @Before
 public void setUp() {
 	display = Display.getDefault();
@@ -803,12 +815,46 @@ public void test_getImageData() {
 
 @Test
 public void test_getImageData_100() {
-	getImageData_int(100);
+	int zoom = DPIUtil.getDeviceZoom();
+	try {
+		DPIUtil.setDeviceZoom(100);
+		getImageData_int(100);
+	} finally {
+		DPIUtil.setDeviceZoom(zoom);
+	}
+}
+
+@Test
+public void test_getImageData_125() {
+	int zoom = DPIUtil.getDeviceZoom();
+	try {
+		DPIUtil.setDeviceZoom(125);
+		getImageData_int(125);
+	} finally {
+		DPIUtil.setDeviceZoom(zoom);
+	}
+}
+
+@Test
+public void test_getImageData_150() {
+	int zoom = DPIUtil.getDeviceZoom();
+	try {
+		DPIUtil.setDeviceZoom(150);
+		getImageData_int(150);
+	} finally {
+		DPIUtil.setDeviceZoom(zoom);
+	}
 }
 
 @Test
 public void test_getImageData_200() {
-	getImageData_int(200);
+	int zoom = DPIUtil.getDeviceZoom();
+	try {
+		DPIUtil.setDeviceZoom(200);
+		getImageData_int(200);
+	} finally {
+		DPIUtil.setDeviceZoom(zoom);
+	}
 }
 
 void getImageData_int(int zoom) {
@@ -847,6 +893,14 @@ void getImageData_int(int zoom) {
 
 	// create image with ImageDataProvider
 	image = new Image(display, imageDataProvider);
+	imageDataAtZoom = image.getImageData(zoom);
+	boundsAtZoom = new Rectangle(0, 0, imageDataAtZoom.width, imageDataAtZoom.height);
+	bounds = image.getBounds();
+	image.dispose();
+	assertEquals(":d: Size of ImageData returned from Image.getImageData(int) method doesn't return matches with bounds in Pixel values.", scaleBounds(bounds, zoom, 100), boundsAtZoom);
+
+	// create image with ImageDataProvider that only has 1x data
+	image = new Image(display, imageDataProvider1xOnly);
 	imageDataAtZoom = image.getImageData(zoom);
 	boundsAtZoom = new Rectangle(0, 0, imageDataAtZoom.width, imageDataAtZoom.height);
 	bounds = image.getBounds();
