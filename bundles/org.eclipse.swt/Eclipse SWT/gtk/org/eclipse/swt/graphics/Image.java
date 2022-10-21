@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2018 IBM Corporation and others.
+ * Copyright (c) 2000, 2022 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -779,8 +779,8 @@ void createFromPixbuf(int type, long pixbuf) {
 
 	// Scale dimensions of Image object to 100% scale factor
 	double scaleFactor = DPIUtil.getDeviceZoom() / 100f;
-	this.width = pixbufWidth / (int) scaleFactor;
-	this.height = pixbufHeight / (int) scaleFactor;
+	this.width = (int) Math.round(pixbufWidth / scaleFactor);
+	this.height = (int) Math.round(pixbufHeight / scaleFactor);
 
 	int stride = GDK.gdk_pixbuf_get_rowstride(pixbuf);
 	long pixels = GDK.gdk_pixbuf_get_pixels(pixbuf);
@@ -1259,8 +1259,8 @@ void init(ImageData image) {
 
 	// Scale dimensions of Image object to 100% scale factor
 	double scaleFactor = DPIUtil.getDeviceZoom() / 100f;
-	this.width = imageDataWidth / (int) scaleFactor;
-	this.height = imageDataHeight / (int) scaleFactor;
+	this.width = (int) Math.round(imageDataWidth / scaleFactor);
+	this.height = (int) Math.round(imageDataHeight / scaleFactor);
 
 	boolean hasAlpha = image.transparentPixel != -1 || image.alpha != -1 || image.maskData != null || image.alphaData != null;
 	int format = hasAlpha ? Cairo.CAIRO_FORMAT_ARGB32 : Cairo.CAIRO_FORMAT_RGB24;
