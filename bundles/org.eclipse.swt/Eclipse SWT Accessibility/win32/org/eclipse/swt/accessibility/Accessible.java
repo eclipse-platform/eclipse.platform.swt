@@ -1960,6 +1960,7 @@ public class Accessible {
 
 	/* IAccessible::accDoDefaultAction([in] varChild) */
 	int accDoDefaultAction(long varChild) {
+		if (control != null && control.isDisposed()) return COM.CO_E_OBJNOTCONNECTED;
 		if (DEBUG) print(this + ".IAccessible::accDoDefaultAction");
 		if (accessibleActionListenersSize() > 0) {
 			VARIANT v = getVARIANT(varChild);
@@ -1977,6 +1978,7 @@ public class Accessible {
 
 	/* IAccessible::accHitTest([in] xLeft, [in] yTop, [out] pvarChild) */
 	int accHitTest(int xLeft, int yTop, long pvarChild) {
+		if (control != null && control.isDisposed()) return COM.CO_E_OBJNOTCONNECTED;
 		int osChild = ACC.CHILDID_NONE;
 		long osChildObject = 0;
 		if (iaccessible != null) {
@@ -2029,6 +2031,7 @@ public class Accessible {
 
 	/* IAccessible::accLocation([out] pxLeft, [out] pyTop, [out] pcxWidth, [out] pcyHeight, [in] varChild) */
 	int accLocation(long pxLeft, long pyTop, long pcxWidth, long pcyHeight, long varChild) {
+		if (control != null && control.isDisposed()) return COM.CO_E_OBJNOTCONNECTED;
 		VARIANT v = getVARIANT(varChild);
 		if (v.vt != COM.VT_I4) return COM.E_INVALIDARG;
 		int osLeft = 0, osTop = 0, osWidth = 0, osHeight = 0;
@@ -2070,6 +2073,7 @@ public class Accessible {
 
 	/* IAccessible::accNavigate([in] navDir, [in] varStart, [out] pvarEndUpAt) */
 	int accNavigate(int navDir, long varStart, long pvarEndUpAt) {
+		if (control != null && control.isDisposed()) return COM.CO_E_OBJNOTCONNECTED;
 		if (DEBUG) print(this + ".IAccessible::accNavigate");
 		/* MSAA: "The accNavigate method is deprecated and should not be used." */
 		int code = COM.DISP_E_MEMBERNOTFOUND;
@@ -2085,6 +2089,7 @@ public class Accessible {
 	// TODO: Consider supporting this in future.
 	/* IAccessible::accSelect([in] flagsSelect, [in] varChild) */
 	int accSelect(int flagsSelect, long varChild) {
+		if (control != null && control.isDisposed()) return COM.CO_E_OBJNOTCONNECTED;
 		int code = COM.DISP_E_MEMBERNOTFOUND;
 		if (iaccessible != null) {
 			/* Currently, we don't expose this as API. Forward to the proxy. */
@@ -2100,6 +2105,7 @@ public class Accessible {
 	 * must be incremented before returning.  The caller is responsible for releasing ppdispChild.
 	 */
 	int get_accChild(long varChild, long ppdispChild) {
+		if (control != null && control.isDisposed()) return COM.CO_E_OBJNOTCONNECTED;
 		VARIANT v = getVARIANT(varChild);
 		if (v.vt != COM.VT_I4) return COM.E_INVALIDARG;
 		if (v.lVal == COM.CHILDID_SELF) {
@@ -2184,6 +2190,7 @@ public class Accessible {
 
 	/* IAccessible::get_accChildCount([out] pcountChildren) */
 	int get_accChildCount(long pcountChildren) {
+		if (control != null && control.isDisposed()) return COM.CO_E_OBJNOTCONNECTED;
 		int osChildCount = 0;
 		if (iaccessible != null) {
 			/* Get the default child count from the OS. */
@@ -2213,6 +2220,7 @@ public class Accessible {
 
 	/* IAccessible::get_accDefaultAction([in] varChild, [out] pszDefaultAction) */
 	int get_accDefaultAction(long varChild, long pszDefaultAction) {
+		if (control != null && control.isDisposed()) return COM.CO_E_OBJNOTCONNECTED;
 		if (DEBUG) print(this + ".IAccessible::get_accDefaultAction");
 		VARIANT v = getVARIANT(varChild);
 		if (v.vt != COM.VT_I4) return COM.E_INVALIDARG;
@@ -2253,6 +2261,7 @@ public class Accessible {
 
 	/* IAccessible::get_accDescription([in] varChild, [out] pszDescription) */
 	int get_accDescription(long varChild, long pszDescription) {
+		if (control != null && control.isDisposed()) return COM.CO_E_OBJNOTCONNECTED;
 		/*
 		 * MSAA: "The accDescription property is not supported in the transition to
 		 * UI Automation. MSAA servers and applications should not use it."
@@ -2335,6 +2344,7 @@ public class Accessible {
 	 * must be incremented before returning.  The caller is responsible for releasing pvarChild.
 	 */
 	int get_accFocus(long pvarChild) {
+		if (control != null && control.isDisposed()) return COM.CO_E_OBJNOTCONNECTED;
 		int osChild = ACC.CHILDID_NONE;
 		if (iaccessible != null) {
 			/* Get the default focus child from the OS. */
@@ -2383,6 +2393,7 @@ public class Accessible {
 
 	/* IAccessible::get_accHelp([in] varChild, [out] pszHelp) */
 	int get_accHelp(long varChild, long pszHelp) {
+		if (control != null && control.isDisposed()) return COM.CO_E_OBJNOTCONNECTED;
 		if (DEBUG) print(this + ".IAccessible::get_accHelp");
 		VARIANT v = getVARIANT(varChild);
 		if (v.vt != COM.VT_I4) return COM.E_INVALIDARG;
@@ -2420,6 +2431,7 @@ public class Accessible {
 
 	/* IAccessible::get_accHelpTopic([out] pszHelpFile, [in] varChild, [out] pidTopic) */
 	int get_accHelpTopic(long pszHelpFile, long varChild, long pidTopic) {
+		if (control != null && control.isDisposed()) return COM.CO_E_OBJNOTCONNECTED;
 		if (DEBUG) print(this + ".IAccessible::get_accHelpTopic");
 		/* MSAA: "The accHelpTopic property is deprecated and should not be used." */
 		int code = COM.DISP_E_MEMBERNOTFOUND;
@@ -2434,6 +2446,7 @@ public class Accessible {
 
 	/* IAccessible::get_accKeyboardShortcut([in] varChild, [out] pszKeyboardShortcut) */
 	int get_accKeyboardShortcut(long varChild, long pszKeyboardShortcut) {
+		if (control != null && control.isDisposed()) return COM.CO_E_OBJNOTCONNECTED;
 		if (DEBUG) print(this + ".IAccessible::get_accKeyboardShortcut");
 		VARIANT v = getVARIANT(varChild);
 		if (v.vt != COM.VT_I4) return COM.E_INVALIDARG;
@@ -2530,6 +2543,7 @@ public class Accessible {
 	 * must be incremented before returning.  The caller is responsible for releasing ppdispParent.
 	 */
 	int get_accParent(long ppdispParent) {
+		if (control != null && control.isDisposed()) return COM.CO_E_OBJNOTCONNECTED;
 		int code = COM.DISP_E_MEMBERNOTFOUND;
 		if (iaccessible != null) {
 			/* Currently, we don't expose this as API. Forward to the proxy. */
@@ -2583,6 +2597,7 @@ public class Accessible {
 	 * must be incremented before returning.  The caller is responsible for releasing pvarChildren.
 	 */
 	int get_accSelection(long pvarChildren) {
+		if (control != null && control.isDisposed()) return COM.CO_E_OBJNOTCONNECTED;
 		if (DEBUG) print(this + ".IAccessible::get_accSelection");
 		int osChild = ACC.CHILDID_NONE;
 		long osChildObject = 0;
@@ -2752,6 +2767,7 @@ public class Accessible {
 
 	/* put_accValue([in] varChild, [in] szValue) */
 	int put_accValue(long varChild, long szValue) {
+		if (control != null && control.isDisposed()) return COM.CO_E_OBJNOTCONNECTED;
 		/* MSAA: this method is supported for some UI elements (usually edit controls). */
 		VARIANT v = getVARIANT(varChild);
 		if (v.vt != COM.VT_I4) return COM.E_INVALIDARG;
@@ -2799,6 +2815,7 @@ public class Accessible {
 	 * must be incremented before returning.  The caller is responsible for releasing rgvar.
 	 */
 	int Next(int celt, long rgvar, long pceltFetched) {
+		if (control != null && control.isDisposed()) return COM.CO_E_OBJNOTCONNECTED;
 		if (DEBUG) print(this + ".IEnumVARIANT::Next");
 		/* If there are no listeners, query the proxy for
 		 * its IEnumVariant, and get the Next items from it.
@@ -2867,6 +2884,7 @@ public class Accessible {
 
 	/* IEnumVARIANT::Skip([in] celt) over the specified number of elements in the enumeration sequence. */
 	int Skip(int celt) {
+		if (control != null && control.isDisposed()) return COM.CO_E_OBJNOTCONNECTED;
 		if (DEBUG) print(this + ".IEnumVARIANT::Skip");
 		/* If there are no listeners, query the proxy
 		 * for its IEnumVariant, and tell it to Skip.
@@ -2892,6 +2910,7 @@ public class Accessible {
 
 	/* IEnumVARIANT::Reset() the enumeration sequence to the beginning. */
 	int Reset() {
+		if (control != null && control.isDisposed()) return COM.CO_E_OBJNOTCONNECTED;
 		if (DEBUG) print(this + ".IEnumVARIANT::Reset");
 		/* If there are no listeners, query the proxy
 		 * for its IEnumVariant, and tell it to Reset.
@@ -2915,6 +2934,7 @@ public class Accessible {
 	 * must be incremented before returning.  The caller is responsible for releasing ppEnum.
 	 */
 	int Clone(long ppEnum) {
+		if (control != null && control.isDisposed()) return COM.CO_E_OBJNOTCONNECTED;
 		if (DEBUG) print(this + ".IEnumVARIANT::Clone");
 		/* If there are no listeners, query the proxy for
 		 * its IEnumVariant, and get the Clone from it.
@@ -2939,6 +2959,7 @@ public class Accessible {
 
 	/* IAccessible2::get_nRelations([out] pNRelations) */
 	int get_nRelations(long pNRelations) {
+		if (control != null && control.isDisposed()) return COM.CO_E_OBJNOTCONNECTED;
 		int count = getRelationCount();
 		if (DEBUG) print(this + ".IAccessible2::get_nRelations returning " + count + hresult(COM.S_OK));
 		OS.MoveMemory(pNRelations, new int [] { count }, 4);
@@ -2947,6 +2968,7 @@ public class Accessible {
 
 	/* IAccessible2::get_relation([in] relationIndex, [out] ppRelation) */
 	int get_relation(int relationIndex, long ppRelation) {
+		if (control != null && control.isDisposed()) return COM.CO_E_OBJNOTCONNECTED;
 		int i = -1;
 		for (int type = 0; type < MAX_RELATION_TYPES; type++) {
 			Relation relation = relations[type];
@@ -2964,6 +2986,7 @@ public class Accessible {
 
 	/* IAccessible2::get_relations([in] maxRelations, [out] ppRelations, [out] pNRelations) */
 	int get_relations(int maxRelations, long ppRelations, long pNRelations) {
+		if (control != null && control.isDisposed()) return COM.CO_E_OBJNOTCONNECTED;
 		int count = 0;
 		for (int type = 0; type < MAX_RELATION_TYPES; type++) {
 			if (count == maxRelations) break;
@@ -2981,6 +3004,7 @@ public class Accessible {
 
 	/* IAccessible2::get_role([out] pRole) */
 	int get_role(long pRole) {
+		if (control != null && control.isDisposed()) return COM.CO_E_OBJNOTCONNECTED;
 		int role = getRole();
 		if (role == 0) role = getDefaultRole();
 		if (DEBUG) print(this + ".IAccessible2::get_role() returning " + getRoleString(role) + hresult(COM.S_OK));
@@ -2990,6 +3014,7 @@ public class Accessible {
 
 	/* IAccessible2::scrollTo([in] scrollType) */
 	int scrollTo(int scrollType) {
+		if (control != null && control.isDisposed()) return COM.CO_E_OBJNOTCONNECTED;
 		if (DEBUG) print(this + ".IAccessible2::scrollTo");
 		if (scrollType < ACC.SCROLL_TYPE_LEFT_EDGE || scrollType > ACC.SCROLL_TYPE_ANYWHERE) return COM.E_INVALIDARG;
 		return COM.E_NOTIMPL;
@@ -2997,6 +3022,7 @@ public class Accessible {
 
 	/* IAccessible2::scrollToPoint([in] coordinateType, [in] x, [in] y) */
 	int scrollToPoint(int coordinateType, int x, int y) {
+		if (control != null && control.isDisposed()) return COM.CO_E_OBJNOTCONNECTED;
 		if (DEBUG) print(this + ".IAccessible2::scrollToPoint");
 		if (coordinateType != COM.IA2_COORDTYPE_SCREEN_RELATIVE) return COM.E_INVALIDARG;
 		return COM.E_NOTIMPL;
@@ -3037,6 +3063,7 @@ public class Accessible {
 
 	/* IAccessible2::get_states([out] pStates) */
 	int get_states(long pStates) {
+		if (control != null && control.isDisposed()) return COM.CO_E_OBJNOTCONNECTED;
 		AccessibleControlEvent event = new AccessibleControlEvent(this);
 		event.childID = ACC.CHILDID_SELF;
 		for (int i = 0; i < accessibleControlListenersSize(); i++) {
@@ -3066,6 +3093,7 @@ public class Accessible {
 
 	/* IAccessible2::get_extendedRole([out] pbstrExtendedRole) */
 	int get_extendedRole(long pbstrExtendedRole) {
+		if (control != null && control.isDisposed()) return COM.CO_E_OBJNOTCONNECTED;
 		/* This feature is not supported. */
 		setString(pbstrExtendedRole, null);
 		return COM.S_FALSE;
@@ -3073,6 +3101,7 @@ public class Accessible {
 
 	/* IAccessible2::get_localizedExtendedRole([out] pbstrLocalizedExtendedRole) */
 	int get_localizedExtendedRole(long pbstrLocalizedExtendedRole) {
+		if (control != null && control.isDisposed()) return COM.CO_E_OBJNOTCONNECTED;
 		/* This feature is not supported. */
 		setString(pbstrLocalizedExtendedRole, null);
 		return COM.S_FALSE;
@@ -3080,6 +3109,7 @@ public class Accessible {
 
 	/* IAccessible2::get_nExtendedStates([out] pNExtendedStates) */
 	int get_nExtendedStates(long pNExtendedStates) {
+		if (control != null && control.isDisposed()) return COM.CO_E_OBJNOTCONNECTED;
 		/* This feature is not supported. */
 		OS.MoveMemory(pNExtendedStates, new int [] { 0 }, 4);
 		return COM.S_OK;
@@ -3087,6 +3117,7 @@ public class Accessible {
 
 	/* IAccessible2::get_extendedStates([in] maxExtendedStates, [out] ppbstrExtendedStates, [out] pNExtendedStates) */
 	int get_extendedStates(int maxExtendedStates, long ppbstrExtendedStates, long pNExtendedStates) {
+		if (control != null && control.isDisposed()) return COM.CO_E_OBJNOTCONNECTED;
 		/* This feature is not supported. */
 		setString(ppbstrExtendedStates, null);
 		OS.MoveMemory(pNExtendedStates, new int [] { 0 }, 4);
@@ -3095,6 +3126,7 @@ public class Accessible {
 
 	/* IAccessible2::get_localizedExtendedStates([in] maxLocalizedExtendedStates, [out] ppbstrLocalizedExtendedStates, [out] pNLocalizedExtendedStates) */
 	int get_localizedExtendedStates(int maxLocalizedExtendedStates, long ppbstrLocalizedExtendedStates, long pNLocalizedExtendedStates) {
+		if (control != null && control.isDisposed()) return COM.CO_E_OBJNOTCONNECTED;
 		/* This feature is not supported. */
 		setString(ppbstrLocalizedExtendedStates, null);
 		OS.MoveMemory(pNLocalizedExtendedStates, new int [] { 0 }, 4);
@@ -3103,6 +3135,7 @@ public class Accessible {
 
 	/* IAccessible2::get_uniqueID([out] pUniqueID) */
 	int get_uniqueID(long pUniqueID) {
+		if (control != null && control.isDisposed()) return COM.CO_E_OBJNOTCONNECTED;
 		if (uniqueID == -1) uniqueID = UniqueID--;
 		if (DEBUG) print(this + ".IAccessible2::get_uniqueID returning " + uniqueID + hresult(COM.S_OK));
 		OS.MoveMemory(pUniqueID, new long [] { uniqueID }, 4);
@@ -3111,6 +3144,7 @@ public class Accessible {
 
 	/* IAccessible2::get_windowHandle([out] pWindowHandle) */
 	int get_windowHandle(long pWindowHandle) {
+		if (control != null && control.isDisposed()) return COM.CO_E_OBJNOTCONNECTED;
 		if (DEBUG) print(this + ".IAccessible2::get_windowHandle returning " + control.handle + hresult(COM.S_OK));
 		OS.MoveMemory(pWindowHandle, new long [] { control.handle }, C.PTR_SIZEOF);
 		return COM.S_OK;
@@ -3118,6 +3152,7 @@ public class Accessible {
 
 	/* IAccessible2::get_indexInParent([out] pIndexInParent) */
 	int get_indexInParent(long pIndexInParent) {
+		if (control != null && control.isDisposed()) return COM.CO_E_OBJNOTCONNECTED;
 		AccessibleControlEvent event = new AccessibleControlEvent(this);
 		event.childID = ACC.CHILDID_CHILD_INDEX;
 		event.detail = -1;
@@ -3178,6 +3213,7 @@ public class Accessible {
 
 	/* IAccessible2::get_locale([out] pLocale) */
 	int get_locale(long pLocale) {
+		if (control != null && control.isDisposed()) return COM.CO_E_OBJNOTCONNECTED;
 		/* Return the default locale for the JVM. */
 		Locale locale = Locale.getDefault();
 
@@ -3199,6 +3235,7 @@ public class Accessible {
 
 	/* IAccessible2::get_attributes([out] pbstrAttributes) */
 	int get_attributes(long pbstrAttributes) {
+		if (control != null && control.isDisposed()) return COM.CO_E_OBJNOTCONNECTED;
 		AccessibleAttributeEvent event = new AccessibleAttributeEvent(this);
 		for (int i = 0; i < accessibleAttributeListenersSize(); i++) {
 			AccessibleAttributeListener listener = accessibleAttributeListeners.get(i);
@@ -3235,6 +3272,7 @@ public class Accessible {
 
 	/* IAccessibleAction::get_nActions([out] pNActions) */
 	int get_nActions(long pNActions) {
+		if (control != null && control.isDisposed()) return COM.CO_E_OBJNOTCONNECTED;
 		AccessibleActionEvent event = new AccessibleActionEvent(this);
 		for (int i = 0; i < accessibleActionListenersSize(); i++) {
 			AccessibleActionListener listener = accessibleActionListeners.get(i);
@@ -3247,6 +3285,7 @@ public class Accessible {
 
 	/* IAccessibleAction::doAction([in] actionIndex) */
 	int doAction(int actionIndex) {
+		if (control != null && control.isDisposed()) return COM.CO_E_OBJNOTCONNECTED;
 		AccessibleActionEvent event = new AccessibleActionEvent(this);
 		event.index = actionIndex;
 		for (int i = 0; i < accessibleActionListenersSize(); i++) {
@@ -3260,6 +3299,7 @@ public class Accessible {
 
 	/* IAccessibleAction::get_description([in] actionIndex, [out] pbstrDescription) */
 	int get_description(int actionIndex, long pbstrDescription) {
+		if (control != null && control.isDisposed()) return COM.CO_E_OBJNOTCONNECTED;
 		AccessibleActionEvent event = new AccessibleActionEvent(this);
 		event.index = actionIndex;
 		for (int i = 0; i < accessibleActionListenersSize(); i++) {
@@ -3274,6 +3314,7 @@ public class Accessible {
 
 	/* IAccessibleAction::get_keyBinding([in] actionIndex, [in] nMaxBindings, [out] ppbstrKeyBindings, [out] pNBindings) */
 	int get_keyBinding(int actionIndex, int nMaxBindings, long ppbstrKeyBindings, long pNBindings) {
+		if (control != null && control.isDisposed()) return COM.CO_E_OBJNOTCONNECTED;
 		AccessibleActionEvent event = new AccessibleActionEvent(this);
 		event.index = actionIndex;
 		for (int i = 0; i < accessibleActionListenersSize(); i++) {
@@ -3306,6 +3347,7 @@ public class Accessible {
 
 	/* IAccessibleAction::get_name([in] actionIndex, [out] pbstrName) */
 	int get_name(int actionIndex, long pbstrName) {
+		if (control != null && control.isDisposed()) return COM.CO_E_OBJNOTCONNECTED;
 		AccessibleActionEvent event = new AccessibleActionEvent(this);
 		event.index = actionIndex;
 		event.localized = false;
@@ -3324,6 +3366,7 @@ public class Accessible {
 
 	/* IAccessibleAction::get_localizedName([in] actionIndex, [out] pbstrLocalizedName) */
 	int get_localizedName(int actionIndex, long pbstrLocalizedName) {
+		if (control != null && control.isDisposed()) return COM.CO_E_OBJNOTCONNECTED;
 		AccessibleActionEvent event = new AccessibleActionEvent(this);
 		event.index = actionIndex;
 		event.localized = true;
@@ -3342,6 +3385,7 @@ public class Accessible {
 
 	/* IAccessibleApplication::get_appName([out] pbstrName) */
 	int get_appName(long pbstrName) {
+		if (control != null && control.isDisposed()) return COM.CO_E_OBJNOTCONNECTED;
 		String appName = Display.getAppName();
 		if (DEBUG) print(this + ".IAccessibleApplication::get_appName() returning " + appName + hresult(appName == null || appName.length() == 0 ? COM.S_FALSE : COM.S_OK));
 		if (appName == null || appName.length() == 0) {
@@ -3354,6 +3398,7 @@ public class Accessible {
 
 	/* IAccessibleApplication::get_appVersion([out] pbstrVersion) */
 	int get_appVersion(long pbstrVersion) {
+		if (control != null && control.isDisposed()) return COM.CO_E_OBJNOTCONNECTED;
 		String appVersion = Display.getAppVersion();
 		if (DEBUG) print(this + ".IAccessibleApplication::get_appVersion() returning" + appVersion + hresult(appVersion == null || appVersion.length() == 0 ? COM.S_FALSE : COM.S_OK));
 		if (appVersion == null || appVersion.length() == 0) {
@@ -3366,6 +3411,7 @@ public class Accessible {
 
 	/* IAccessibleApplication::get_toolkitName([out] pbstrName) */
 	int get_toolkitName(long pbstrName) {
+		if (control != null && control.isDisposed()) return COM.CO_E_OBJNOTCONNECTED;
 		String toolkitName = "SWT";
 		if (DEBUG) print(this + ".IAccessibleApplication::get_toolkitName() returning" + toolkitName + hresult(COM.S_OK));
 		setString(pbstrName, toolkitName);
@@ -3374,6 +3420,7 @@ public class Accessible {
 
 	/* IAccessibleApplication::get_toolkitVersion([out] pbstrVersion) */
 	int get_toolkitVersion(long pbstrVersion) {
+		if (control != null && control.isDisposed()) return COM.CO_E_OBJNOTCONNECTED;
 		String toolkitVersion = "" + SWT.getVersion(); //$NON-NLS-1$
 		if (DEBUG) print(this + ".IAccessibleApplication::get_toolkitVersion() returning" + toolkitVersion + hresult(COM.S_OK));
 		setString(pbstrVersion, toolkitVersion);
@@ -3413,6 +3460,7 @@ public class Accessible {
 
 	/* IAccessibleEditableText::copyText([in] startOffset, [in] endOffset) */
 	int copyText(int startOffset, int endOffset) {
+		if (control != null && control.isDisposed()) return COM.CO_E_OBJNOTCONNECTED;
 		if (DEBUG) print(this + ".IAccessibleEditableText::copyText, start=" + startOffset + ", end=" + endOffset);
 		AccessibleEditableTextEvent event = new AccessibleEditableTextEvent(this);
 		event.start = startOffset == COM.IA2_TEXT_OFFSET_LENGTH ? getCharacterCount() : startOffset;
@@ -3427,6 +3475,7 @@ public class Accessible {
 
 	/* IAccessibleEditableText::deleteText([in] startOffset, [in] endOffset) */
 	int deleteText(int startOffset, int endOffset) {
+		if (control != null && control.isDisposed()) return COM.CO_E_OBJNOTCONNECTED;
 		if (DEBUG) print(this + ".IAccessibleEditableText::deleteText, start=" + startOffset + ", end=" + endOffset);
 		AccessibleEditableTextEvent event = new AccessibleEditableTextEvent(this);
 		event.start = startOffset == COM.IA2_TEXT_OFFSET_LENGTH ? getCharacterCount() : startOffset;
@@ -3442,6 +3491,7 @@ public class Accessible {
 
 	/* IAccessibleEditableText::insertText([in] offset, [in] pbstrText) */
 	int insertText(int offset, long pbstrText) {
+		if (control != null && control.isDisposed()) return COM.CO_E_OBJNOTCONNECTED;
 		if (DEBUG) print(this + ".IAccessibleEditableText::insertText, offset=" + offset + ", pbstrText=" + pbstrText);
 		AccessibleEditableTextEvent event = new AccessibleEditableTextEvent(this);
 		event.start = offset == COM.IA2_TEXT_OFFSET_LENGTH ? getCharacterCount() : offset;
@@ -3457,6 +3507,7 @@ public class Accessible {
 
 	/* IAccessibleEditableText::cutText([in] startOffset, [in] endOffset) */
 	int cutText(int startOffset, int endOffset) {
+		if (control != null && control.isDisposed()) return COM.CO_E_OBJNOTCONNECTED;
 		if (DEBUG) print(this + ".IAccessibleEditableText::cutText, start=" + startOffset + ", end=" + endOffset);
 		AccessibleEditableTextEvent event = new AccessibleEditableTextEvent(this);
 		event.start = startOffset == COM.IA2_TEXT_OFFSET_LENGTH ? getCharacterCount() : startOffset;
@@ -3471,6 +3522,7 @@ public class Accessible {
 
 	/* IAccessibleEditableText::pasteText([in] offset) */
 	int pasteText(int offset) {
+		if (control != null && control.isDisposed()) return COM.CO_E_OBJNOTCONNECTED;
 		if (DEBUG) print(this + ".IAccessibleEditableText::pasteText, offset=" + offset);
 		AccessibleEditableTextEvent event = new AccessibleEditableTextEvent(this);
 		event.start = offset == COM.IA2_TEXT_OFFSET_LENGTH ? getCharacterCount() : offset;
@@ -3485,6 +3537,7 @@ public class Accessible {
 
 	/* IAccessibleEditableText::replaceText([in] startOffset, [in] endOffset, [in] pbstrText) */
 	int replaceText(int startOffset, int endOffset, long pbstrText) {
+		if (control != null && control.isDisposed()) return COM.CO_E_OBJNOTCONNECTED;
 		if (DEBUG) print(this + ".IAccessibleEditableText::replaceText, start=" + startOffset + ", end=" + endOffset + ", pbstrText=" + pbstrText);
 		AccessibleEditableTextEvent event = new AccessibleEditableTextEvent(this);
 		event.start = startOffset == COM.IA2_TEXT_OFFSET_LENGTH ? getCharacterCount() : startOffset;
@@ -3500,6 +3553,7 @@ public class Accessible {
 
 	/* IAccessibleEditableText::setAttributes([in] startOffset, [in] endOffset, [in] pbstrAttributes) */
 	int setAttributes(int startOffset, int endOffset, long pbstrAttributes) {
+		if (control != null && control.isDisposed()) return COM.CO_E_OBJNOTCONNECTED;
 		if (DEBUG) print(this + ".IAccessibleEditableText::setAttributes, start=" + startOffset + ", end=" + endOffset + ", pbstrAttributes=" + pbstrAttributes);
 		AccessibleTextAttributeEvent event = new AccessibleTextAttributeEvent(this);
 		String string = getString(pbstrAttributes);
@@ -3608,6 +3662,7 @@ public class Accessible {
 
 	/* IAccessibleHyperlink::get_anchor([in] index, [out] pAnchor) */
 	int get_anchor(int index, long pAnchor) {
+		if (control != null && control.isDisposed()) return COM.CO_E_OBJNOTCONNECTED;
 		if (DEBUG) print(this + ".IAccessibleHyperlink::get_anchor");
 		AccessibleHyperlinkEvent event = new AccessibleHyperlinkEvent(this);
 		event.index = index;
@@ -3628,6 +3683,7 @@ public class Accessible {
 
 	/* IAccessibleHyperlink::get_anchorTarget([in] index, [out] pAnchorTarget) */
 	int get_anchorTarget(int index, long pAnchorTarget) {
+		if (control != null && control.isDisposed()) return COM.CO_E_OBJNOTCONNECTED;
 		if (DEBUG) print(this + ".IAccessibleHyperlink::get_anchorTarget");
 		AccessibleHyperlinkEvent event = new AccessibleHyperlinkEvent(this);
 		event.index = index;
@@ -3648,6 +3704,7 @@ public class Accessible {
 
 	/* IAccessibleHyperlink::get_startIndex([out] pIndex) */
 	int get_startIndex(long pIndex) {
+		if (control != null && control.isDisposed()) return COM.CO_E_OBJNOTCONNECTED;
 		if (DEBUG) print(this + ".IAccessibleHyperlink::get_startIndex");
 		AccessibleHyperlinkEvent event = new AccessibleHyperlinkEvent(this);
 		for (int i = 0; i < accessibleHyperlinkListenersSize(); i++) {
@@ -3660,6 +3717,7 @@ public class Accessible {
 
 	/* IAccessibleHyperlink::get_endIndex([out] pIndex) */
 	int get_endIndex(long pIndex) {
+		if (control != null && control.isDisposed()) return COM.CO_E_OBJNOTCONNECTED;
 		if (DEBUG) print(this + ".IAccessibleHyperlink::get_endIndex");
 		AccessibleHyperlinkEvent event = new AccessibleHyperlinkEvent(this);
 		for (int i = 0; i < accessibleHyperlinkListenersSize(); i++) {
@@ -3678,6 +3736,7 @@ public class Accessible {
 
 	/* IAccessibleHypertext::get_nHyperlinks([out] pHyperlinkCount) */
 	int get_nHyperlinks(long pHyperlinkCount) {
+		if (control != null && control.isDisposed()) return COM.CO_E_OBJNOTCONNECTED;
 		if (DEBUG) print(this + ".IAccessibleHypertext::get_nHyperlinks");
 		AccessibleTextEvent event = new AccessibleTextEvent(this);
 		for (int i = 0; i < accessibleTextExtendedListenersSize(); i++) {
@@ -3690,6 +3749,7 @@ public class Accessible {
 
 	/* IAccessibleHypertext::get_hyperlink([in] index, [out] ppHyperlink) */
 	int get_hyperlink(int index, long ppHyperlink) {
+		if (control != null && control.isDisposed()) return COM.CO_E_OBJNOTCONNECTED;
 		if (DEBUG) print(this + ".IAccessibleHypertext::get_hyperlink");
 		AccessibleTextEvent event = new AccessibleTextEvent(this);
 		event.index = index;
@@ -3709,6 +3769,7 @@ public class Accessible {
 
 	/* IAccessibleHypertext::get_hyperlinkIndex([in] charIndex, [out] pHyperlinkIndex) */
 	int get_hyperlinkIndex(int charIndex, long pHyperlinkIndex) {
+		if (control != null && control.isDisposed()) return COM.CO_E_OBJNOTCONNECTED;
 		if (DEBUG) print(this + ".IAccessibleHypertext::get_hyperlinkIndex");
 		AccessibleTextEvent event = new AccessibleTextEvent(this);
 		event.offset = charIndex;
@@ -3769,6 +3830,7 @@ public class Accessible {
 
 	/* IAccessibleTable2::get_cellAt([in] row, [in] column, [out] ppCell) */
 	int get_cellAt(int row, int column, long ppCell) {
+		if (control != null && control.isDisposed()) return COM.CO_E_OBJNOTCONNECTED;
 		AccessibleTableEvent event = new AccessibleTableEvent(this);
 		event.row = row;
 		event.column = column;
@@ -3786,6 +3848,7 @@ public class Accessible {
 
 	/* IAccessibleTable2::get_caption([out] ppAccessible) */
 	int get_caption(long ppAccessible) {
+		if (control != null && control.isDisposed()) return COM.CO_E_OBJNOTCONNECTED;
 		AccessibleTableEvent event = new AccessibleTableEvent(this);
 		for (int i = 0; i < accessibleTableListenersSize(); i++) {
 			AccessibleTableListener listener = accessibleTableListeners.get(i);
@@ -3804,6 +3867,7 @@ public class Accessible {
 
 	/* IAccessibleTable2::get_columnDescription([in] column, [out] pbstrDescription) */
 	int get_columnDescription(int column, long pbstrDescription) {
+		if (control != null && control.isDisposed()) return COM.CO_E_OBJNOTCONNECTED;
 		AccessibleTableEvent event = new AccessibleTableEvent(this);
 		event.column = column;
 		for (int i = 0; i < accessibleTableListenersSize(); i++) {
@@ -3818,6 +3882,7 @@ public class Accessible {
 
 	/* IAccessibleTable2::get_nColumns([out] pColumnCount) */
 	int get_nColumns(long pColumnCount) {
+		if (control != null && control.isDisposed()) return COM.CO_E_OBJNOTCONNECTED;
 		AccessibleTableEvent event = new AccessibleTableEvent(this);
 		for (int i = 0; i < accessibleTableListenersSize(); i++) {
 			AccessibleTableListener listener = accessibleTableListeners.get(i);
@@ -3830,6 +3895,7 @@ public class Accessible {
 
 	/* IAccessibleTable2::get_nRows([out] pRowCount) */
 	int get_nRows(long pRowCount) {
+		if (control != null && control.isDisposed()) return COM.CO_E_OBJNOTCONNECTED;
 		AccessibleTableEvent event = new AccessibleTableEvent(this);
 		for (int i = 0; i < accessibleTableListenersSize(); i++) {
 			AccessibleTableListener listener = accessibleTableListeners.get(i);
@@ -3842,6 +3908,7 @@ public class Accessible {
 
 	/* IAccessibleTable2::get_nSelectedCells([out] pCellCount) */
 	int get_nSelectedCells(long pCellCount) {
+		if (control != null && control.isDisposed()) return COM.CO_E_OBJNOTCONNECTED;
 		AccessibleTableEvent event = new AccessibleTableEvent(this);
 		for (int i = 0; i < accessibleTableListenersSize(); i++) {
 			AccessibleTableListener listener = accessibleTableListeners.get(i);
@@ -3854,6 +3921,7 @@ public class Accessible {
 
 	/* IAccessibleTable2::get_nSelectedColumns([out] pColumnCount) */
 	int get_nSelectedColumns(long pColumnCount) {
+		if (control != null && control.isDisposed()) return COM.CO_E_OBJNOTCONNECTED;
 		AccessibleTableEvent event = new AccessibleTableEvent(this);
 		for (int i = 0; i < accessibleTableListenersSize(); i++) {
 			AccessibleTableListener listener = accessibleTableListeners.get(i);
@@ -3866,6 +3934,7 @@ public class Accessible {
 
 	/* IAccessibleTable2::get_nSelectedRows([out] pRowCount) */
 	int get_nSelectedRows(long pRowCount) {
+		if (control != null && control.isDisposed()) return COM.CO_E_OBJNOTCONNECTED;
 		AccessibleTableEvent event = new AccessibleTableEvent(this);
 		for (int i = 0; i < accessibleTableListenersSize(); i++) {
 			AccessibleTableListener listener = accessibleTableListeners.get(i);
@@ -3878,6 +3947,7 @@ public class Accessible {
 
 	/* IAccessibleTable2::get_rowDescription([in] row, [out] pbstrDescription) */
 	int get_rowDescription(int row, long pbstrDescription) {
+		if (control != null && control.isDisposed()) return COM.CO_E_OBJNOTCONNECTED;
 		AccessibleTableEvent event = new AccessibleTableEvent(this);
 		event.row = row;
 		for (int i = 0; i < accessibleTableListenersSize(); i++) {
@@ -3892,6 +3962,7 @@ public class Accessible {
 
 	/* IAccessibleTable2::get_selectedCells([out] ppCells, [out] pNSelectedCells) */
 	int get_selectedCells(long ppCells, long pNSelectedCells) {
+		if (control != null && control.isDisposed()) return COM.CO_E_OBJNOTCONNECTED;
 		AccessibleTableEvent event = new AccessibleTableEvent(this);
 		for (int i = 0; i < accessibleTableListenersSize(); i++) {
 			AccessibleTableListener listener = accessibleTableListeners.get(i);
@@ -3921,6 +3992,7 @@ public class Accessible {
 
 	/* IAccessibleTable2::get_selectedColumns([out] ppSelectedColumns, [out] pNColumns) */
 	int get_selectedColumns(long ppSelectedColumns, long pNColumns) {
+		if (control != null && control.isDisposed()) return COM.CO_E_OBJNOTCONNECTED;
 		AccessibleTableEvent event = new AccessibleTableEvent(this);
 		for (int i = 0; i < accessibleTableListenersSize(); i++) {
 			AccessibleTableListener listener = accessibleTableListeners.get(i);
@@ -3942,6 +4014,7 @@ public class Accessible {
 
 	/* IAccessibleTable2::get_selectedRows([out] ppSelectedRows, [out] pNRows) */
 	int get_selectedRows(long ppSelectedRows, long pNRows) {
+		if (control != null && control.isDisposed()) return COM.CO_E_OBJNOTCONNECTED;
 		AccessibleTableEvent event = new AccessibleTableEvent(this);
 		for (int i = 0; i < accessibleTableListenersSize(); i++) {
 			AccessibleTableListener listener = accessibleTableListeners.get(i);
@@ -3963,6 +4036,7 @@ public class Accessible {
 
 	/* IAccessibleTable2::get_summary([out] ppAccessible) */
 	int get_summary(long ppAccessible) {
+		if (control != null && control.isDisposed()) return COM.CO_E_OBJNOTCONNECTED;
 		AccessibleTableEvent event = new AccessibleTableEvent(this);
 		for (int i = 0; i < accessibleTableListenersSize(); i++) {
 			AccessibleTableListener listener = accessibleTableListeners.get(i);
@@ -3981,6 +4055,7 @@ public class Accessible {
 
 	/* IAccessibleTable2::get_isColumnSelected([in] column, [out] pIsSelected) */
 	int get_isColumnSelected(int column, long pIsSelected) {
+		if (control != null && control.isDisposed()) return COM.CO_E_OBJNOTCONNECTED;
 		AccessibleTableEvent event = new AccessibleTableEvent(this);
 		event.column = column;
 		for (int i = 0; i < accessibleTableListenersSize(); i++) {
@@ -3994,6 +4069,7 @@ public class Accessible {
 
 	/* IAccessibleTable2::get_isRowSelected([in] row, [out] pIsSelected) */
 	int get_isRowSelected(int row, long pIsSelected) {
+		if (control != null && control.isDisposed()) return COM.CO_E_OBJNOTCONNECTED;
 		AccessibleTableEvent event = new AccessibleTableEvent(this);
 		event.row = row;
 		for (int i = 0; i < accessibleTableListenersSize(); i++) {
@@ -4007,6 +4083,7 @@ public class Accessible {
 
 	/* IAccessibleTable2::selectRow([in] row) */
 	int selectRow(int row) {
+		if (control != null && control.isDisposed()) return COM.CO_E_OBJNOTCONNECTED;
 		AccessibleTableEvent event = new AccessibleTableEvent(this);
 		event.row = row;
 		for (int i = 0; i < accessibleTableListenersSize(); i++) {
@@ -4020,6 +4097,7 @@ public class Accessible {
 
 	/* IAccessibleTable2::selectColumn([in] column) */
 	int selectColumn(int column) {
+		if (control != null && control.isDisposed()) return COM.CO_E_OBJNOTCONNECTED;
 		AccessibleTableEvent event = new AccessibleTableEvent(this);
 		event.column = column;
 		for (int i = 0; i < accessibleTableListenersSize(); i++) {
@@ -4033,6 +4111,7 @@ public class Accessible {
 
 	/* IAccessibleTable2::unselectRow([in] row) */
 	int unselectRow(int row) {
+		if (control != null && control.isDisposed()) return COM.CO_E_OBJNOTCONNECTED;
 		AccessibleTableEvent event = new AccessibleTableEvent(this);
 		event.row = row;
 		for (int i = 0; i < accessibleTableListenersSize(); i++) {
@@ -4046,6 +4125,7 @@ public class Accessible {
 
 	/* IAccessibleTable2::unselectColumn([in] column) */
 	int unselectColumn(int column) {
+		if (control != null && control.isDisposed()) return COM.CO_E_OBJNOTCONNECTED;
 		AccessibleTableEvent event = new AccessibleTableEvent(this);
 		event.column = column;
 		for (int i = 0; i < accessibleTableListenersSize(); i++) {
@@ -4059,6 +4139,7 @@ public class Accessible {
 
 	/* IAccessibleTable2::get_modelChange([out] pModelChange) */
 	int get_modelChange(long pModelChange) {
+		if (control != null && control.isDisposed()) return COM.CO_E_OBJNOTCONNECTED;
 		if (DEBUG) print(this + ".IAccessibleTable2::get_modelChange() returning " + (tableChange == null ? "null" : "tableChange=" + tableChange[0] + ", " + tableChange[1] + ", " + tableChange[2] + ", " + tableChange[3]));
 		if (tableChange == null) {
 			OS.MoveMemory(pModelChange, new long [] { 0 }, C.PTR_SIZEOF);
@@ -4070,6 +4151,7 @@ public class Accessible {
 
 	/* IAccessibleTableCell::get_columnExtent([out] pNColumnsSpanned) */
 	int get_columnExtent(long pNColumnsSpanned) {
+		if (control != null && control.isDisposed()) return COM.CO_E_OBJNOTCONNECTED;
 		AccessibleTableCellEvent event = new AccessibleTableCellEvent(this);
 		for (int i = 0; i < accessibleTableCellListenersSize(); i++) {
 			AccessibleTableCellListener listener = accessibleTableCellListeners.get(i);
@@ -4082,6 +4164,7 @@ public class Accessible {
 
 	/* IAccessibleTableCell::get_columnHeaderCells([out] ppCellAccessibles, [out] pNColumnHeaderCells) */
 	int get_columnHeaderCells(long ppCellAccessibles, long pNColumnHeaderCells) {
+		if (control != null && control.isDisposed()) return COM.CO_E_OBJNOTCONNECTED;
 		AccessibleTableCellEvent event = new AccessibleTableCellEvent(this);
 		for (int i = 0; i < accessibleTableCellListenersSize(); i++) {
 			AccessibleTableCellListener listener = accessibleTableCellListeners.get(i);
@@ -4111,6 +4194,7 @@ public class Accessible {
 
 	/* IAccessibleTableCell::get_columnIndex([out] pColumnIndex) */
 	int get_columnIndex(long pColumnIndex) {
+		if (control != null && control.isDisposed()) return COM.CO_E_OBJNOTCONNECTED;
 		AccessibleTableCellEvent event = new AccessibleTableCellEvent(this);
 		for (int i = 0; i < accessibleTableCellListenersSize(); i++) {
 			AccessibleTableCellListener listener = accessibleTableCellListeners.get(i);
@@ -4123,6 +4207,7 @@ public class Accessible {
 
 	/* IAccessibleTableCell::get_rowExtent([out] pNRowsSpanned) */
 	int get_rowExtent(long pNRowsSpanned) {
+		if (control != null && control.isDisposed()) return COM.CO_E_OBJNOTCONNECTED;
 		AccessibleTableCellEvent event = new AccessibleTableCellEvent(this);
 		for (int i = 0; i < accessibleTableCellListenersSize(); i++) {
 			AccessibleTableCellListener listener = accessibleTableCellListeners.get(i);
@@ -4135,6 +4220,7 @@ public class Accessible {
 
 	/* IAccessibleTableCell::get_rowHeaderCells([out] ppCellAccessibles, [out] pNRowHeaderCells) */
 	int get_rowHeaderCells(long ppCellAccessibles, long pNRowHeaderCells) {
+		if (control != null && control.isDisposed()) return COM.CO_E_OBJNOTCONNECTED;
 		AccessibleTableCellEvent event = new AccessibleTableCellEvent(this);
 		for (int i = 0; i < accessibleTableCellListenersSize(); i++) {
 			AccessibleTableCellListener listener = accessibleTableCellListeners.get(i);
@@ -4164,6 +4250,7 @@ public class Accessible {
 
 	/* IAccessibleTableCell::get_rowIndex([out] pRowIndex) */
 	int get_rowIndex(long pRowIndex) {
+		if (control != null && control.isDisposed()) return COM.CO_E_OBJNOTCONNECTED;
 		AccessibleTableCellEvent event = new AccessibleTableCellEvent(this);
 		for (int i = 0; i < accessibleTableCellListenersSize(); i++) {
 			AccessibleTableCellListener listener = accessibleTableCellListeners.get(i);
@@ -4176,6 +4263,7 @@ public class Accessible {
 
 	/* IAccessibleTableCell::get_isSelected([out] pIsSelected) */
 	int get_isSelected(long pIsSelected) {
+		if (control != null && control.isDisposed()) return COM.CO_E_OBJNOTCONNECTED;
 		AccessibleTableCellEvent event = new AccessibleTableCellEvent(this);
 		for (int i = 0; i < accessibleTableCellListenersSize(); i++) {
 			AccessibleTableCellListener listener = accessibleTableCellListeners.get(i);
@@ -4188,6 +4276,7 @@ public class Accessible {
 
 	/* IAccessibleTableCell::get_rowColumnExtents([out] pRow, [out] pColumn, [out] pRowExtents, [out] pColumnExtents, [out] pIsSelected) */
 	int get_rowColumnExtents(long pRow, long pColumn, long pRowExtents, long pColumnExtents, long pIsSelected) {
+		if (control != null && control.isDisposed()) return COM.CO_E_OBJNOTCONNECTED;
 		if (DEBUG) print(this + ".IAccessibleTableCell::get_rowColumnExtents");
 		// TODO: should we implement this? It is just a convenience function.
 		return COM.DISP_E_MEMBERNOTFOUND;
@@ -4205,6 +4294,7 @@ public class Accessible {
 
 	/* IAccessibleTableCell::get_table([out] ppTable) */
 	int get_table(long ppTable) {
+		if (control != null && control.isDisposed()) return COM.CO_E_OBJNOTCONNECTED;
 		AccessibleTableCellEvent event = new AccessibleTableCellEvent(this);
 		for (int i = 0; i < accessibleTableCellListenersSize(); i++) {
 			AccessibleTableCellListener listener = accessibleTableCellListeners.get(i);
@@ -4224,6 +4314,7 @@ public class Accessible {
 
 	/* IAccessibleText::addSelection([in] startOffset, [in] endOffset) */
 	int addSelection(int startOffset, int endOffset) {
+		if (control != null && control.isDisposed()) return COM.CO_E_OBJNOTCONNECTED;
 		if (DEBUG) print(this + ".IAccessibleText::addSelection(" + startOffset + ", " + endOffset + ")");
 		AccessibleTextEvent event = new AccessibleTextEvent(this);
 		event.start = startOffset == COM.IA2_TEXT_OFFSET_LENGTH ? getCharacterCount() : startOffset;
@@ -4238,6 +4329,7 @@ public class Accessible {
 
 	/* IAccessibleText::get_attributes([in] offset, [out] pStartOffset, [out] pEndOffset, [out] pbstrTextAttributes) */
 	int get_attributes(int offset, long pStartOffset, long pEndOffset, long pbstrTextAttributes) {
+		if (control != null && control.isDisposed()) return COM.CO_E_OBJNOTCONNECTED;
 		AccessibleTextAttributeEvent event = new AccessibleTextAttributeEvent(this);
 		event.offset = offset == COM.IA2_TEXT_OFFSET_LENGTH ? getCharacterCount() : offset;
 		for (int i = 0; i < accessibleAttributeListenersSize(); i++) {
@@ -4299,6 +4391,7 @@ public class Accessible {
 
 	/* IAccessibleText::get_caretOffset([out] pOffset) */
 	int get_caretOffset(long pOffset) {
+		if (control != null && control.isDisposed()) return COM.CO_E_OBJNOTCONNECTED;
 		int offset = getCaretOffset();
 		if (DEBUG) print(this + ".IAccessibleText::get_caretOffset returning " + offset + hresult(offset == -1 ? COM.S_FALSE : COM.S_OK));
 		OS.MoveMemory(pOffset, new int [] { offset }, 4);
@@ -4308,6 +4401,7 @@ public class Accessible {
 
 	/* IAccessibleText::get_characterExtents([in] offset, [in] coordType, [out] pX, [out] pY, [out] pWidth, [out] pHeight) */
 	int get_characterExtents(int offset, int coordType, long pX, long pY, long pWidth, long pHeight) {
+		if (control != null && control.isDisposed()) return COM.CO_E_OBJNOTCONNECTED;
 		int length = getCharacterCount();
 		AccessibleTextEvent event = new AccessibleTextEvent(this);
 		event.start = offset == COM.IA2_TEXT_OFFSET_LENGTH ? length : offset < 0 ? 0 : offset;
@@ -4328,6 +4422,7 @@ public class Accessible {
 
 	/* IAccessibleText::get_nSelections([out] pNSelections) */
 	int get_nSelections(long pNSelections) {
+		if (control != null && control.isDisposed()) return COM.CO_E_OBJNOTCONNECTED;
 		AccessibleTextEvent event = new AccessibleTextEvent(this);
 		event.count = -1;
 		for (int i = 0; i < accessibleTextExtendedListenersSize(); i++) {
@@ -4351,6 +4446,7 @@ public class Accessible {
 
 	/* IAccessibleText::get_offsetAtPoint([in] x, [in] y, [in] coordType, [out] pOffset) */
 	int get_offsetAtPoint(int x, int y, int coordType, long pOffset) {
+		if (control != null && control.isDisposed()) return COM.CO_E_OBJNOTCONNECTED;
 		AccessibleTextEvent event = new AccessibleTextEvent(this);
 		event.x = x;
 		event.y = y;
@@ -4371,6 +4467,7 @@ public class Accessible {
 
 	/* IAccessibleText::get_selection([in] selectionIndex, [out] pStartOffset, [out] pEndOffset) */
 	int get_selection(int selectionIndex, long pStartOffset, long pEndOffset) {
+		if (control != null && control.isDisposed()) return COM.CO_E_OBJNOTCONNECTED;
 		AccessibleTextEvent event = new AccessibleTextEvent(this);
 		event.index = selectionIndex;
 		event.start = -1;
@@ -4403,6 +4500,7 @@ public class Accessible {
 
 	/* IAccessibleText::get_text([in] startOffset, [in] endOffset, [out] pbstrText) */
 	int get_text(int startOffset, int endOffset, long pbstrText) {
+		if (control != null && control.isDisposed()) return COM.CO_E_OBJNOTCONNECTED;
 		AccessibleTextEvent event = new AccessibleTextEvent(this);
 		event.start = startOffset == COM.IA2_TEXT_OFFSET_LENGTH ? getCharacterCount() : startOffset;
 		event.end = endOffset == COM.IA2_TEXT_OFFSET_LENGTH ? getCharacterCount() : endOffset;
@@ -4439,6 +4537,7 @@ public class Accessible {
 
 	/* IAccessibleText::get_textBeforeOffset([in] offset, [in] boundaryType, [out] pStartOffset, [out] pEndOffset, [out] pbstrText) */
 	int get_textBeforeOffset(int offset, int boundaryType, long pStartOffset, long pEndOffset, long pbstrText) {
+		if (control != null && control.isDisposed()) return COM.CO_E_OBJNOTCONNECTED;
 		AccessibleTextEvent event = new AccessibleTextEvent(this);
 		int charCount = getCharacterCount();
 		event.start = offset == COM.IA2_TEXT_OFFSET_LENGTH ? charCount : offset == COM.IA2_TEXT_OFFSET_CARET ? getCaretOffset() : offset;
@@ -4492,6 +4591,7 @@ public class Accessible {
 
 	/* IAccessibleText::get_textAfterOffset([in] offset, [in] boundaryType, [out] pStartOffset, [out] pEndOffset, [out] pbstrText) */
 	int get_textAfterOffset(int offset, int boundaryType, long pStartOffset, long pEndOffset, long pbstrText) {
+		if (control != null && control.isDisposed()) return COM.CO_E_OBJNOTCONNECTED;
 		AccessibleTextEvent event = new AccessibleTextEvent(this);
 		int charCount = getCharacterCount();
 		event.start = offset == COM.IA2_TEXT_OFFSET_LENGTH ? charCount : offset == COM.IA2_TEXT_OFFSET_CARET ? getCaretOffset() : offset;
@@ -4545,6 +4645,7 @@ public class Accessible {
 
 	/* IAccessibleText::get_textAtOffset([in] offset, [in] boundaryType, [out] pStartOffset, [out] pEndOffset, [out] pbstrText) */
 	int get_textAtOffset(int offset, int boundaryType, long pStartOffset, long pEndOffset, long pbstrText) {
+		if (control != null && control.isDisposed()) return COM.CO_E_OBJNOTCONNECTED;
 		AccessibleTextEvent event = new AccessibleTextEvent(this);
 		int charCount = getCharacterCount();
 		event.start = offset == COM.IA2_TEXT_OFFSET_LENGTH ? charCount : offset == COM.IA2_TEXT_OFFSET_CARET ? getCaretOffset() : offset;
@@ -4605,6 +4706,7 @@ public class Accessible {
 
 	/* IAccessibleText::removeSelection([in] selectionIndex) */
 	int removeSelection(int selectionIndex) {
+		if (control != null && control.isDisposed()) return COM.CO_E_OBJNOTCONNECTED;
 		AccessibleTextEvent event = new AccessibleTextEvent(this);
 		event.index = selectionIndex;
 		for (int i = 0; i < accessibleTextExtendedListenersSize(); i++) {
@@ -4618,6 +4720,7 @@ public class Accessible {
 
 	/* IAccessibleText::setCaretOffset([in] offset) */
 	int setCaretOffset(int offset) {
+		if (control != null && control.isDisposed()) return COM.CO_E_OBJNOTCONNECTED;
 		AccessibleTextEvent event = new AccessibleTextEvent(this);
 		event.offset = offset == COM.IA2_TEXT_OFFSET_LENGTH ? getCharacterCount() : offset;
 		for (int i = 0; i < accessibleTextExtendedListenersSize(); i++) {
@@ -4631,6 +4734,7 @@ public class Accessible {
 
 	/* IAccessibleText::setSelection([in] selectionIndex, [in] startOffset, [in] endOffset) */
 	int setSelection(int selectionIndex, int startOffset, int endOffset) {
+		if (control != null && control.isDisposed()) return COM.CO_E_OBJNOTCONNECTED;
 		AccessibleTextEvent event = new AccessibleTextEvent(this);
 		event.index = selectionIndex;
 		event.start = startOffset == COM.IA2_TEXT_OFFSET_LENGTH ? getCharacterCount() : startOffset;
@@ -4646,6 +4750,7 @@ public class Accessible {
 
 	/* IAccessibleText::get_nCharacters([out] pNCharacters) */
 	int get_nCharacters(long pNCharacters) {
+		if (control != null && control.isDisposed()) return COM.CO_E_OBJNOTCONNECTED;
 		int count = getCharacterCount();
 		OS.MoveMemory(pNCharacters, new int [] { count }, 4);
 		if (DEBUG) print(this + ".IAccessibleText::get_nCharacters returning " + count);
@@ -4654,6 +4759,7 @@ public class Accessible {
 
 	/* IAccessibleText::scrollSubstringTo([in] startIndex, [in] endIndex, [in] scrollType) */
 	int scrollSubstringTo(int startIndex, int endIndex, int scrollType) {
+		if (control != null && control.isDisposed()) return COM.CO_E_OBJNOTCONNECTED;
 		if (DEBUG) print(this + ".IAccessibleText::scrollSubstringTo");
 		AccessibleTextEvent event = new AccessibleTextEvent(this);
 		event.start = startIndex;
@@ -4677,6 +4783,7 @@ public class Accessible {
 
 	/* IAccessibleText::scrollSubstringToPoint([in] startIndex, [in] endIndex, [in] coordinateType, [in] x, [in] y) */
 	int scrollSubstringToPoint(int startIndex, int endIndex, int coordinateType, int x, int y) {
+		if (control != null && control.isDisposed()) return COM.CO_E_OBJNOTCONNECTED;
 		if (DEBUG) print(this + ".IAccessibleText::scrollSubstringToPoint");
 		AccessibleTextEvent event = new AccessibleTextEvent(this);
 		event.start = startIndex;
@@ -4694,6 +4801,7 @@ public class Accessible {
 
 	/* IAccessibleText::get_newText([out] pNewText) */
 	int get_newText(long pNewText) {
+		if (control != null && control.isDisposed()) return COM.CO_E_OBJNOTCONNECTED;
 		if (DEBUG) print(this + ".IAccessibleText::get_newText");
 		String text = null;
 		int start = 0;
@@ -4712,6 +4820,7 @@ public class Accessible {
 
 	/* IAccessibleText::get_oldText([out] pOldText) */
 	int get_oldText(long pOldText) {
+		if (control != null && control.isDisposed()) return COM.CO_E_OBJNOTCONNECTED;
 		if (DEBUG) print(this + ".IAccessibleText::get_oldText");
 		String text = null;
 		int start = 0;
@@ -4730,6 +4839,7 @@ public class Accessible {
 
 	/* IAccessibleValue::get_currentValue([out] pCurrentValue) */
 	int get_currentValue(long pCurrentValue) {
+		if (control != null && control.isDisposed()) return COM.CO_E_OBJNOTCONNECTED;
 		AccessibleValueEvent event = new AccessibleValueEvent(this);
 		for (int i = 0; i < accessibleValueListenersSize(); i++) {
 			AccessibleValueListener listener = accessibleValueListeners.get(i);
@@ -4742,6 +4852,7 @@ public class Accessible {
 
 	/* IAccessibleValue::setCurrentValue([in] value) */
 	int setCurrentValue(long value) {
+		if (control != null && control.isDisposed()) return COM.CO_E_OBJNOTCONNECTED;
 		if (DEBUG) print(this + ".IAccessibleValue::setCurrentValue");
 		AccessibleValueEvent event = new AccessibleValueEvent(this);
 		event.value = getNumberVARIANT(value);
@@ -4755,6 +4866,7 @@ public class Accessible {
 
 	/* IAccessibleValue::get_maximumValue([out] pMaximumValue) */
 	int get_maximumValue(long pMaximumValue) {
+		if (control != null && control.isDisposed()) return COM.CO_E_OBJNOTCONNECTED;
 		AccessibleValueEvent event = new AccessibleValueEvent(this);
 		for (int i = 0; i < accessibleValueListenersSize(); i++) {
 			AccessibleValueListener listener = accessibleValueListeners.get(i);
@@ -4767,6 +4879,7 @@ public class Accessible {
 
 	/* IAccessibleValue::get_minimumValue([out] pMinimumValue) */
 	int get_minimumValue(long pMinimumValue) {
+		if (control != null && control.isDisposed()) return COM.CO_E_OBJNOTCONNECTED;
 		AccessibleValueEvent event = new AccessibleValueEvent(this);
 		for (int i = 0; i < accessibleValueListenersSize(); i++) {
 			AccessibleValueListener listener = accessibleValueListeners.get(i);
