@@ -6719,22 +6719,18 @@ void initializeAccessible() {
 	acc.addAccessibleControlListener(accControlAdapter);
 
 	addListener(SWT.FocusIn, event -> acc.setFocus(ACC.CHILDID_SELF));
-}
 
-@Override
-public void dispose() {
-	/*
-	 * Note: It is valid to attempt to dispose a widget more than once.
-	 * Added check for this.
-	 */
-	if (!isDisposed()) {
+	addListener(SWT.Dispose, event -> {
+		// Issue 448: A 3rd party program that uses Accessible may
+		// cache obtained connection and query it even after StyledText
+		// is disposed. Disconnect all listeners to avoid querying a
+		// disposed control.
 		acc.removeAccessibleControlListener(accControlAdapter);
 		acc.removeAccessibleAttributeListener(accAttributeAdapter);
 		acc.removeAccessibleEditableTextListener(accEditableTextListener);
 		acc.removeAccessibleTextListener(accTextExtendedAdapter);
 		acc.removeAccessibleListener(accAdapter);
-	}
-	super.dispose();
+	});
 }
 
 /*
