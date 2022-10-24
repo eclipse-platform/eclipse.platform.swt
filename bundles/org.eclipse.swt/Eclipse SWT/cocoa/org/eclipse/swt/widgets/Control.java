@@ -1444,7 +1444,7 @@ public boolean forceFocus () {
 	if (display.focusEvent == SWT.FocusOut) return false;
 	Decorations shell = menuShell ();
 	shell.setSavedFocus (this);
-	if (!isEnabled () || !isVisible () || !isActive ()) return false;
+	if (!isEnabled () || !isVisible () || !isActive () || display.getActiveShell() != getShell()) return false;
 	if (isFocusControl ()) return true;
 	shell.setSavedFocus (null);
 	NSView focusView = focusView ();
