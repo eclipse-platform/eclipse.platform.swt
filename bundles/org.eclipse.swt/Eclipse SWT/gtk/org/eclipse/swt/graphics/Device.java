@@ -20,7 +20,6 @@ import java.util.stream.*;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.internal.*;
-import org.eclipse.swt.internal.cairo.*;
 import org.eclipse.swt.internal.gtk.*;
 import org.eclipse.swt.internal.gtk3.*;
 import org.eclipse.swt.internal.gtk4.*;
@@ -697,18 +696,7 @@ protected void init () {
 	this.dpi = getDPI();
 	DPIUtil.setDeviceZoom (getDeviceZoom ());
 
-	double[] sx = new double[1];
-	double[] sy = new double[1];
-	long gdkResource;
-	long surface;
-	if (GTK.GTK4) {
-		surface = Cairo.cairo_image_surface_create(Cairo.CAIRO_FORMAT_RGB24, 10, 10);
-	} else {
-		gdkResource = GDK.gdk_get_default_root_window();
-		surface = GDK.gdk_window_create_similar_surface(gdkResource, Cairo.CAIRO_CONTENT_COLOR, 10, 10);
-	}
-	Cairo.cairo_surface_get_device_scale(surface, sx, sy);
-	DPIUtil.setUseCairoAutoScale((sx[0]*100) == DPIUtil.getDeviceZoom() || OS.isGNOME);
+	DPIUtil.setUseCairoAutoScale(true);
 
 	/* Initialize the system font slot */
 	long [] defaultFontArray = new long [1];
