@@ -12356,7 +12356,7 @@ fail:
 
 #ifndef NO_g_1signal_1handler_1disconnect
 JNIEXPORT void JNICALL OS_NATIVE(g_1signal_1handler_1disconnect)
-	(JNIEnv *env, jclass that, jlong arg0, jint arg1)
+	(JNIEnv *env, jclass that, jlong arg0, jlong arg1)
 {
 	OS_NATIVE_ENTER(env, that, g_1signal_1handler_1disconnect_FUNC);
 	g_signal_handler_disconnect((gpointer)arg0, (gulong)arg1);

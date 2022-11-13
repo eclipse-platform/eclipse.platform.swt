@@ -1247,7 +1247,7 @@ public static final native void g_signal_emit_by_name(long instance, byte[] deta
  * @param instance cast=(gpointer)
  * @param handler_id cast=(gulong)
  */
-public static final native void g_signal_handler_disconnect(long instance, int handler_id);
+public static final native void g_signal_handler_disconnect(long instance, long handler_id);
 /**
  * @param instance cast=(gpointer)
  * @param mask cast=(GSignalMatchType)
