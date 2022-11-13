@@ -89,6 +89,7 @@ public class SessionManagerDBus {
 
 	private ArrayList<IListener> listeners = new ArrayList<IListener>();
 	private Callback g_signal_callback;
+	private long g_signal_callbackid;
 	private ShutdownHook shutdownHook = new ShutdownHook(this);
 	private long sessionManagerProxy;
 	private long clientProxy;
@@ -195,6 +196,16 @@ public class SessionManagerDBus {
 		}
 
 		if (clientProxy != 0) {
+			// Issue #462: sometimes signal is called even after it was
+			// disposed. This crashes JVM. I understand that SWT is not
+			// the only owner of clientProxy, so it continues to handle
+			// signals even after SWT's reference is freed. The solution
+			// is to unsubscribe from the signal explicitly.
+			if (g_signal_callbackid != 0) {
+				OS.g_signal_handler_disconnect(clientProxy, g_signal_callbackid);
+				g_signal_callbackid = 0;
+			}
+
 			OS.g_object_unref(clientProxy);
 			clientProxy = 0;
 		}
@@ -554,9 +565,10 @@ public class SessionManagerDBus {
 			return false;
 		}
 
-		// The rest of the code makes this key call possible
+		// Finally, we're ready to connect 'g-signal'.
+		// The rest of the code merely prepares for this.
 		g_signal_callback = new Callback(this, "g_signal_handler", 5);	//$NON-NLS-1$
-		OS.g_signal_connect(
+		g_signal_callbackid = OS.g_signal_connect(
 				clientProxy,
 				Converter.javaStringToCString("g-signal"),	//$NON-NLS-1$
 				g_signal_callback.getAddress(),
