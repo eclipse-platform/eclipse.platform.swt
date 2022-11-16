@@ -294,7 +294,7 @@ public String open () {
 		char[] path = (filterPath.replace('/', '\\') + "\0").toCharArray();
 		if (COM.SHCreateItemFromParsingName(path, 0, COM.IID_IShellItem, ppv) == COM.S_OK) {
 			IShellItem psi = new IShellItem(ppv[0]);
-			fileDialog.SetDefaultFolder(psi);
+			fileDialog.SetFolder(psi);
 			psi.Release();
 		}
 	}
