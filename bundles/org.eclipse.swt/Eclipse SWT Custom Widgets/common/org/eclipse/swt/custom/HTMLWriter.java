@@ -37,8 +37,8 @@ class HTMLWriter extends StyledTextWriterBase {
 	@Override
 	public void close() {
 		if (!isClosed()) {
-			write("</div>\n");
-			write("</div>\n");
+			write("</div>");
+			write("</div>");
 			super.close();
 		}
 	}
@@ -52,29 +52,27 @@ class HTMLWriter extends StyledTextWriterBase {
 		appendStyle(innerDivStyle, "color:", styledText.getForeground(), ";");
 		appendStyle(innerDivStyle, "background-color:", styledText.getBackground(), ";");
 
-		appendStyle(outerDivStyle, "padding-left:", styledText.getLeftMargin(), "px;");
-		appendStyle(outerDivStyle, "padding-top:", styledText.getTopMargin(), "px;");
-		appendStyle(outerDivStyle, "padding-right:", styledText.getRightMargin(), "px;");
-		appendStyle(outerDivStyle, "padding-bottom:", styledText.getBottomMargin(), "px;");
+		appendStyle(outerDivStyle, "padding:"
+						+ styledText.getTopMargin() + "px "
+						+ styledText.getRightMargin() + "px "
+						+ styledText.getBottomMargin() + "px "
+						+ styledText.getLeftMargin() + "px;");
 
 		String language = appendFont(innerDivStyle, styledText.getFont(), 0);
 
-		// Using wrapIndent like this messes up the line background (if set).
-//		int wrapIndent = styledText.getWrapIndent();
-//		if (wrapIndent != 0) {
-//			appendStyle(globalStyle, "padding-left:", wrapIndent, "px;");
-//		}
-//		int indent = styledText.getIndent() - wrapIndent;
 		int indent = styledText.getIndent();
 		if (indent != 0) {
 			appendStyle(innerDivStyle, "text-indent:", indent, "px;");
 		}
 
-		// TODO?
-//		int lineSpacing = styledText.getLineSpacing();
-
-		if (!styledText.getWordWrap()) {
-			appendStyle(innerDivStyle, "white-space:nowrap;");
+		if (styledText.getWordWrap()) {
+			// Sequences of white space are preserved.
+			// Lines are broken at newline characters, at <br>, and as necessary to fill line boxes.
+			appendStyle(innerDivStyle, "white-space:pre-wrap;");
+		} else {
+			// Sequences of white space are preserved.
+			// Lines are only broken at newline characters in the source and at <br> elements.
+			appendStyle(innerDivStyle, "white-space:pre;");
 		}
 
 		appendAlignAndJustify(innerDivStyle, styledText.getAlignment(), styledText.getJustify());
@@ -83,17 +81,11 @@ class HTMLWriter extends StyledTextWriterBase {
 			appendStyle(innerDivStyle, "direction:rtl;");
 		}
 
-		// Do we have any use for these?
-//		Color selectionBackground = styledText.getSelectionBackground();
-//		Color selectionForeground = styledText.getSelectionForeground();
-//		int tabs = styledText.getTabs();
-//		boolean blockSelection = styledText.getBlockSelection();
-
-		write("<div style='" + outerDivStyle + "'>\n");
+		write("<div style='" + outerDivStyle + "'>");
 		if (language == null || language.isEmpty()) {
-			write("<div style='" + innerDivStyle + "'>\n");
+			write("<div style='" + innerDivStyle + "'>");
 		} else {
-			write("<div lang='" + language + "' style='" + innerDivStyle + "'>\n");
+			write("<div lang='" + language + "' style='" + innerDivStyle + "'>");
 		}
 	}
 
@@ -102,7 +94,7 @@ class HTMLWriter extends StyledTextWriterBase {
 		if (isClosed()) {
 			SWT.error(SWT.ERROR_IO);
 		}
-		write(lineDelimiter);
+		// We don't write the newline, otherwise it would be rendered because of the `white-space:pre;`.
 	}
 
 	@Override
@@ -117,8 +109,11 @@ class HTMLWriter extends StyledTextWriterBase {
 			appendStyle(paragraphStyle, "text-indent:", indent, "px;");
 		}
 
-		if (verticalIndent != 0) {
-			appendStyle(paragraphStyle, "margin-top:", verticalIndent, "px;");
+		if (verticalIndent == 0) {
+			appendStyle(paragraphStyle, "margin:0;");
+		} else {
+			// Set the margin-top to verticalIndent, everything else zero.
+			appendStyle(paragraphStyle, "margin:", verticalIndent, " 0 0 0;");
 		}
 
 		if (paragraphStyle.length() == 0) {
@@ -129,6 +124,11 @@ class HTMLWriter extends StyledTextWriterBase {
 
 		// This is what will be used to close the line
 		return "</p>";
+	}
+
+	@Override
+	void writeEmptyLine() {
+		write("<br>");
 	}
 
 	@Override

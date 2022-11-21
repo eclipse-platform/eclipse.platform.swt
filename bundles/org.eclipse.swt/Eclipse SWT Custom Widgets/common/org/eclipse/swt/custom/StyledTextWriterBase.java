@@ -149,6 +149,7 @@ abstract class StyledTextWriterBase extends TextWriter {
 		int endOffset = startOffset + super.getCharCount();
 		int lineEndOffset = Math.min(lineLength, endOffset - lineOffset);
 
+		int outTextLen = 0; // collect the length of the text we output (unescaped)
 		for (int i = 0; i < styles.length; i++) {
 			StyleRange style = styles[i];
 			int start, end;
@@ -173,6 +174,7 @@ abstract class StyledTextWriterBase extends TextWriter {
 				// style starting beyond end of write range or end of line
 				// is guarded against above.
 				writeEscaped(line, lineIndex, start);
+				outTextLen += start - lineIndex;
 				lineIndex = start;
 			}
 			// write styled text
@@ -183,6 +185,7 @@ abstract class StyledTextWriterBase extends TextWriter {
 			// guard against invalid styles and let style processing continue
 			copyEnd = Math.max(copyEnd, lineIndex);
 			writeEscaped(line, lineIndex, copyEnd);
+			outTextLen += copyEnd - lineIndex;
 
 			writeSpanEnd(atSpanEnd);
 
@@ -192,6 +195,11 @@ abstract class StyledTextWriterBase extends TextWriter {
 		// write the unstyled text at the end of the line
 		if (lineIndex < lineEndOffset) {
 			writeEscaped(line, lineIndex, lineEndOffset);
+			outTextLen += lineEndOffset - lineIndex;
+		}
+
+		if (outTextLen == 0) {
+			writeEmptyLine();
 		}
 
 		writeLineEnd(atLineEnd);
@@ -230,6 +238,13 @@ abstract class StyledTextWriterBase extends TextWriter {
 	void writeLineEnd(String prepared) {
 		write(prepared);
 	}
+
+	/**
+	 * Invoked at the end of each line, writeLineEnd, if there was no text output.
+	 *
+	 * <p>This is needed for HTML, which does not render empty paragraphs.</p>
+	 */
+	abstract void writeEmptyLine();
 
 	/**
 	 * Invoked at the beginning of each styled span fragment in the original widget.
