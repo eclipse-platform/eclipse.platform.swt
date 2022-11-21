@@ -136,6 +136,11 @@ class RTFWriter extends StyledTextWriterBase {
 	}
 
 	@Override
+	void writeEmptyLine() {
+		// Do nothing. RTF does not need special treatment for empty paragraph.
+	}
+
+	@Override
 	String writeSpanStart(StyleRange style) {
 		write("{\\cf");
 		write(getColorIndex(style.foreground, DEFAULT_FOREGROUND));
