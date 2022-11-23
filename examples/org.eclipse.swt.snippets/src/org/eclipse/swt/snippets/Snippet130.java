@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2016 IBM Corporation and others.
+ * Copyright (c) 2000, 2022 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -11,6 +11,7 @@
  * Contributors:
  *     IBM Corporation - initial API and implementation
  *     Lars Vogel <Lars.Vogel@vogella.com> - Bug 502845
+ *     Christoph Läubrich - modernize snippet
  *******************************************************************************/
 package org.eclipse.swt.snippets;
 
@@ -22,6 +23,9 @@ package org.eclipse.swt.snippets;
  */
 
 import static org.eclipse.swt.events.SelectionListener.*;
+
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.*;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.custom.*;
@@ -37,43 +41,27 @@ public class Snippet130 {
 		shell.setLayout(new GridLayout());
 		final Text text = new Text(shell, SWT.MULTI | SWT.BORDER | SWT.V_SCROLL);
 		text.setLayoutData(new GridData(GridData.FILL_BOTH));
-		final int[] nextId = new int[1];
+		AtomicInteger nextId = new AtomicInteger();
 		Button b = new Button(shell, SWT.PUSH);
 		b.setText("invoke long running job");
-		b.addSelectionListener(widgetSelectedAdapter(e-> {
-				Runnable longJob = new Runnable() {
-					boolean done = false;
-					int id;
-					@Override
-					public void run() {
-						Thread thread = new Thread(() -> {
-							id = nextId[0]++;
-							display.syncExec(() -> {
-								if (text.isDisposed()) return;
-								text.append("\nStart long running task "+id);
-							});
-							for (int i = 0; i < 100000; i++) {
-								if (display.isDisposed()) return;
-								System.out.println("do task that takes a long time in a separate thread "+id);
-							}
-							if (display.isDisposed()) return;
-							display.syncExec(() -> {
-								if (text.isDisposed()) return;
-								text.append("\nCompleted long running task "+id);
-							});
-							done = true;
-							display.wake();
-						});
-						thread.start();
-						while (!done && !shell.isDisposed()) {
-							if (!display.readAndDispatch())
-								display.sleep();
-						}
-					}
-				};
-				BusyIndicator.showWhile(display, longJob);
-			}));
-		shell.setSize(250, 150);
+		b.addSelectionListener(widgetSelectedAdapter(e -> {
+			int id = nextId.incrementAndGet();
+			text.append("\nStart long running task " + id);
+			BusyIndicator.execute(() -> {
+				for (int i = 0; i < 20; i++) {
+					if (display.isDisposed())
+						return;
+					TimeUnit.MILLISECONDS.sleep(500);
+					System.out.println("do task that takes a long time in a separate thread [id=" + id+"] iteration "+i);
+				}
+			}).thenRunAsync(() -> {
+				if (text.isDisposed())
+					return;
+				text.append("\nCompleted long running task " + id);
+			}, display);
+
+		}));
+		shell.setSize(500, 300);
 		shell.open();
 		while (!shell.isDisposed()) {
 			if (!display.readAndDispatch())
