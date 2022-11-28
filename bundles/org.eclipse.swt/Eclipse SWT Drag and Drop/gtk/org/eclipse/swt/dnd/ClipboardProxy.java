@@ -270,6 +270,14 @@ private long setProviderFromType(String string, Object data) {
 			}
 			image.dispose();
 		}
+		if(string.equals("text/html")) {
+			long value = OS.g_malloc (OS.GValue_sizeof());
+			C.memset (value, 0, OS.GValue_sizeof ());
+			OS.g_value_init(value, OS.G_TYPE_STRING());
+			OS.g_value_set_string(value, Converter.javaStringToCString((String)data));
+			provider = GTK4.gdk_content_provider_new_for_value(value);
+		}
+
 	}
 	return provider;
 }

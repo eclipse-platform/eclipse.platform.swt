@@ -349,6 +349,7 @@ private Object getContents_gtk4(Transfer transfer, int clipboards) {
 		}
 		return str;
 	}
+	//Pasting of Image
 	if(transfer.getTypeIds()[0] == (int)GDK.GDK_TYPE_PIXBUF()) {
 		ImageData imgData = null;
 		OS.g_value_init(value, GDK.GDK_TYPE_PIXBUF());
@@ -360,6 +361,22 @@ private Object getContents_gtk4(Transfer transfer, int clipboards) {
 			img.dispose();
 		}
 		return imgData;
+	}
+	//Pasting of HTML
+	if(transfer.getTypeNames()[0].equals("text/html")) {
+		OS.g_value_init(value, OS.G_TYPE_STRING());
+		if (!GTK4.gdk_content_provider_get_value (contents, value, null)) return null;
+		long cStr = OS.g_value_get_string(value);
+		long [] items_written = new long [1];
+		long utf16Ptr = OS.g_utf8_to_utf16(cStr, -1, null, items_written, null);
+		OS.g_free(cStr);
+		if (utf16Ptr == 0) return null;
+		int length = (int)items_written[0];
+		char[] buffer = new char[length];
+		C.memmove(buffer, utf16Ptr, length * 2);
+		OS.g_free(utf16Ptr);
+		String str = new String(buffer);
+		return str;
 	}
 	//TODO: [GTK4] Other cases
 	return null;
