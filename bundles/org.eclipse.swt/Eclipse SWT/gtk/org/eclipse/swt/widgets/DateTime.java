@@ -1828,6 +1828,10 @@ boolean onNumberKeyInput(int key) {
 		if ((style & SWT.TIME) != 0 && fieldName != Calendar.AM_PM && !Character.isDigit(newText)) {
 			return false;
 		}
+		// Only allow non-digit characters to modify AM/PM field
+		if(fieldName == Calendar.AM_PM && !Character.isAlphabetic(newText)) {
+			return false;
+		}
 		if (!Character.isAlphabetic(newText) && !Character.isDigit(newText)) {
 			return false;
 		}
@@ -1851,6 +1855,9 @@ boolean onNumberKeyInput(int key) {
 		typeBufferPos++;
 	}
 	StringBuilder newText = new StringBuilder(prefix);
+	if((style & SWT.TIME)!=0 && fieldName != Calendar.AM_PM){
+		typeBuffer = validateNewTimeValue(prefix.toString(), String.valueOf(keyToString(key)));
+	}
 	newText.append(typeBuffer);
 	newText.append(suffix);
 	setText(newText.toString());
@@ -1866,6 +1873,58 @@ boolean onNumberKeyInput(int key) {
 		}
 	}
 	return false;
+}
+
+private StringBuilder validateNewTimeValue(String prefix, String keyValue) {
+	if(typeBuffer.toString().isEmpty()) return typeBuffer;
+	int numSeparators = findNumTimeSeparators(prefix);
+	String fixedBuffer = "";
+	int val;
+	try{
+		val = Integer.parseInt(typeBuffer.toString());
+	}
+	catch(Exception e){
+		return typeBuffer;
+	}
+	if(numSeparators == 0) {
+		if (val > 23 || val <0) {
+			fixedBuffer = keyValue;
+		}
+	}
+	else if(numSeparators == 1 || numSeparators == 2) {
+		if (val > 59 || val <0) {
+			fixedBuffer = keyValue;
+		}
+	}
+	else {
+		return typeBuffer;
+	}
+	if (fixedBuffer.length() == 1) {
+		typeBufferPos = 1;
+	}
+	/* 	For typeBuffer containing 0, we need to trim
+	 *  the buffer to contain at max 2 0s.
+	 *  Reset the length if greater than 2.
+	 */
+	if(typeBuffer.length() > 2) {
+		fixedBuffer = typeBuffer.substring(2);
+		typeBufferPos = fixedBuffer.length();
+	}
+	return fixedBuffer.isEmpty() ? typeBuffer : new StringBuilder(fixedBuffer);
+}
+
+private int findNumTimeSeparators(String str) {
+	int numSeparators = 0;
+	if(str.isEmpty()) return 0;
+	char prev = str.charAt(0);
+	for(int i = 1; i < str.length(); i++) {
+		char c = str.charAt(i);
+		if (!Character.isDigit(c) && Character.isDigit(prev)) {
+			numSeparators++;
+		}
+		prev = c;
+	}
+	return numSeparators;
 }
 
 private char keyToString(int key) {
