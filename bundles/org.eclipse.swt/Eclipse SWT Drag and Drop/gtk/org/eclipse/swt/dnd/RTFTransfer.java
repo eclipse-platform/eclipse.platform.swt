@@ -118,7 +118,7 @@ protected String[] getTypeNames() {
 }
 
 boolean checkRTF(Object object) {
-	return (object != null && object instanceof String && ((String)object).length() > 0);
+	return (object instanceof String && !((String)object).isEmpty());
 }
 
 @Override

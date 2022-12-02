@@ -171,7 +171,7 @@ protected String[] getTypeNames(){
 }
 
 boolean checkImage(Object object) {
-	if (object == null || !(object instanceof ImageData)) return false;
+	if (!(object instanceof ImageData)) return false;
 	return true;
 }
 

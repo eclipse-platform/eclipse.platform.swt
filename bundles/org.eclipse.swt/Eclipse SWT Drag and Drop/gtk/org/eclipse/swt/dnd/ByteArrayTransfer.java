@@ -192,6 +192,6 @@ protected Object nativeToJava(TransferData transferData) {
 }
 
 boolean checkByteArray(Object object) {
-	return (object != null && object instanceof byte[] && ((byte[])object).length > 0);
+	return (object instanceof byte[] && ((byte[])object).length > 0);
 }
 }
