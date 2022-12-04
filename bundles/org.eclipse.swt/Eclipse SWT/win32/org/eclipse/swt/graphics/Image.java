@@ -994,7 +994,18 @@ long [] createGdipImage() {
 				if (pixels == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 				byte red = 0, green = 0, blue = 0;
 				if (hasAlpha) {
-					OS.MoveMemory(pixels, bm.bmBits, sizeInBytes);
+					byte[] data = new byte[sizeInBytes];
+					OS.MoveMemory(data, bm.bmBits, sizeInBytes);
+					// convert premultiplied alpha to straight alpha
+					for (int dp = 0; dp < sizeInBytes; dp += 4) {
+						int a = data[dp + 3] & 0xFF;
+						if (a != 0) {
+							data[dp    ] = (byte)((((data[dp    ] & 0xFF) * 0xFF) + a / 2) / a);
+							data[dp + 1] = (byte)((((data[dp + 1] & 0xFF) * 0xFF) + a / 2) / a);
+							data[dp + 2] = (byte)((((data[dp + 2] & 0xFF) * 0xFF) + a / 2) / a);
+						}
+					}
+					OS.MoveMemory(pixels, data, sizeInBytes);
 				}
 				else {
 					if (bm.bmBitsPixel <= 8)  {
@@ -1050,8 +1061,7 @@ long [] createGdipImage() {
 				OS.DeleteObject(srcHdc);
 				OS.DeleteObject(memHdc);
 				OS.DeleteObject(memDib);
-				int pixelFormat = hasAlpha ? Gdip.PixelFormat32bppPARGB : Gdip.PixelFormat32bppARGB;
-				return new long []{Gdip.Bitmap_new(imgWidth, imgHeight, dibBM.bmWidthBytes, pixelFormat, pixels), pixels};
+				return new long []{Gdip.Bitmap_new(imgWidth, imgHeight, dibBM.bmWidthBytes, Gdip.PixelFormat32bppARGB, pixels), pixels};
 			}
 			return new long []{Gdip.Bitmap_new(handle, 0), 0};
 		}
