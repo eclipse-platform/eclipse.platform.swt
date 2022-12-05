@@ -53,6 +53,8 @@ public class Pattern extends Resource {
 	 */
 	public long handle;
 
+	private Runnable bitmapDestructor;
+
 /**
  * Constructs a new Pattern given an image. Drawing with the resulting
  * pattern will cause the image to be tiled over the resulting area.
@@ -91,12 +93,17 @@ public Pattern(Device device, Image image) {
 	int width = Gdip.Image_GetWidth(img);
 	int height = Gdip.Image_GetHeight(img);
 	handle = Gdip.TextureBrush_new(img, Gdip.WrapModeTile, 0, 0, width, height);
-	Gdip.Bitmap_delete(img);
-	if (gdipImage[1] != 0) {
-		long hHeap = OS.GetProcessHeap ();
-		OS.HeapFree(hHeap, 0, gdipImage[1]);
+	bitmapDestructor = () -> {
+		Gdip.Bitmap_delete(img);
+		if (gdipImage[1] != 0) {
+			long hHeap = OS.GetProcessHeap ();
+			OS.HeapFree(hHeap, 0, gdipImage[1]);
+		}
+	};
+	if (handle == 0) {
+		bitmapDestructor.run();
+		SWT.error(SWT.ERROR_NO_HANDLES);
 	}
-	if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	init();
 }
 
@@ -235,6 +242,10 @@ void destroy() {
 			break;
 	}
 	handle = 0;
+	if (bitmapDestructor != null) {
+		bitmapDestructor.run();
+		bitmapDestructor = null;
+	}
 }
 
 /**
