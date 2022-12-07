@@ -98,7 +98,7 @@ spec:
 					wrap([$class: 'Xvnc', useXauthority: true]) {
 					    withEnv(["JAVA_HOME=${ tool 'openjdk-jdk17-latest' }"]) {
 					        dir ('eclipse.platform.swt.binaries') {
-					    	    sh '/opt/tools/apache-maven/latest/bin/mvn --batch-mode -Pbuild-individual-bundles -DforceContextQualifier=zzz -Dnative=gtk.linux.x86_64 -DskipJni -DskipRust -Dcompare-version-with-baselines.skip=true -Dmaven.compiler.failOnWarning=true install '
+					    	    sh '/opt/tools/apache-maven/latest/bin/mvn --batch-mode -Pbuild-individual-bundles -DforceContextQualifier=zzz -Dnative=gtk.linux.x86_64 -Dcompare-version-with-baselines.skip=true -Dmaven.compiler.failOnWarning=true install '
 					        }
 					        dir ('eclipse.platform.swt') {
 					    	    sh '/opt/tools/apache-maven/latest/bin/mvn --batch-mode -Pbuild-individual-bundles -DcheckAllWS=true -DforkCount=0 -Dcompare-version-with-baselines.skip=false -Dmaven.compiler.failOnWarning=true \
