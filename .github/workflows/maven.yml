@@ -53,7 +53,7 @@ jobs:
        run: >- 
         mvn --batch-mode -Pbuild-individual-bundles -DforceContextQualifier=zzz
         --global-toolchains ${{ github.workspace }}/eclipse.platform.swt/.github/toolchains.xml
-        -DskipJni -Dcompare-version-with-baselines.skip=true -Dmaven.compiler.failOnWarning=true install
+        -Dcompare-version-with-baselines.skip=true -Dmaven.compiler.failOnWarning=true install
        working-directory: eclipse.platform.swt.binaries
     - name: Build with Maven
       uses: GabrielBB/xvfb-action@v1
