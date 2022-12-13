@@ -30,34 +30,34 @@ public class CTabFolderRenderer {
 
 	protected CTabFolder parent;
 
-	int[] curve;
-	int[] topCurveHighlightStart;
-	int[] topCurveHighlightEnd;
-	int curveWidth = 0;
-	int curveIndent = 0;
-	int lastTabHeight = -1;
+	protected int[] curve;
+	protected int[] topCurveHighlightStart;
+	protected int[] topCurveHighlightEnd;
+	protected int curveWidth = 0;
+	protected int curveIndent = 0;
+	protected int lastTabHeight = -1;
 
-	Color fillColor;
+	protected Color fillColor;
 	/* Selected item appearance */
-	Color selectionHighlightGradientBegin = null;  //null == no highlight
+	protected Color selectionHighlightGradientBegin = null;  //null == no highlight
 	//Although we are given new colours all the time to show different states (active, etc),
 	//some of which may have a highlight and some not, we'd like to retain the highlight colours
 	//as a cache so that we can reuse them if we're again told to show the highlight.
 	//We are relying on the fact that only one tab state usually gets a highlight, so only
 	//a single cache is required. If that happens to not be true, cache simply becomes less effective,
 	//but we don't leak colours.
-	Color[] selectionHighlightGradientColorsCache = null;  //null is a legal value, check on access
+	protected Color[] selectionHighlightGradientColorsCache = null;  //null is a legal value, check on access
 	/* Colors for anti-aliasing */
-	Color selectedOuterColor = null;
-	Color selectedInnerColor = null;
-	Color tabAreaColor = null;
+	protected Color selectedOuterColor = null;
+	protected Color selectedInnerColor = null;
+	protected Color tabAreaColor = null;
 	/*
 	 * Border color that was used in computing the cached anti-alias Colors.
 	 * We have to recompute the colors if the border color changes
 	 */
-	Color lastBorderColor = null;
+	protected Color lastBorderColor = null;
 
-	private Font chevronFont = null;
+	protected Font chevronFont = null;
 
 	//TOP_LEFT_CORNER_HILITE is laid out in reverse (ie. top to bottom)
 	//so can fade in same direction as right swoop curve
@@ -623,7 +623,7 @@ public class CTabFolderRenderer {
 		}
 	}
 
-	void drawBackground(GC gc, Rectangle bounds, int state) {
+	protected void drawBackground(GC gc, Rectangle bounds, int state) {
 		boolean selected = (state & SWT.SELECTED) != 0;
 		Color defaultBackground = selected && parent.shouldHighlight() ? parent.selectionBackground : parent.getBackground();
 		Image image = selected ? parent.selectionBgImage : null;
@@ -634,7 +634,7 @@ public class CTabFolderRenderer {
 		drawBackground(gc, null, bounds.x, bounds.y, bounds.width, bounds.height, defaultBackground, image, colors, percents, vertical);
 	}
 
-	void drawBackground(GC gc, int[] shape, boolean selected) {
+	protected void drawBackground(GC gc, int[] shape, boolean selected) {
 		Color defaultBackground = selected && parent.shouldHighlight() ? parent.selectionBackground : parent.getBackground();
 		Image image = selected ? parent.selectionBgImage : null;
 		Color[] colors = selected && parent.shouldHighlight() ? parent.selectionGradientColors : parent.gradientColors;
@@ -656,7 +656,7 @@ public class CTabFolderRenderer {
 		drawBackground(gc, shape, x, y, width, height, defaultBackground, image, colors, percents, vertical);
 	}
 
-	void drawBackground(GC gc, int[] shape, int x, int y, int width, int height, Color defaultBackground, Image image, Color[] colors, int[] percents, boolean vertical) {
+	protected void drawBackground(GC gc, int[] shape, int x, int y, int width, int height, Color defaultBackground, Image image, Color[] colors, int[] percents, boolean vertical) {
 		Region clipping = null, region = null;
 		if (shape != null) {
 			clipping = new Region();
@@ -759,13 +759,13 @@ public class CTabFolderRenderer {
 	 * @param gc
 	 * @param shape
 	 */
-	void drawBorder(GC gc, int[] shape) {
+	protected void drawBorder(GC gc, int[] shape) {
 
 		gc.setForeground(parent.getDisplay().getSystemColor(BORDER1_COLOR));
 		gc.drawPolyline(shape);
 	}
 
-	void drawBody(GC gc, Rectangle bounds, int state) {
+	protected void drawBody(GC gc, Rectangle bounds, int state) {
 		Point size = new Point(bounds.width, bounds.height);
 		int selectedIndex = parent.selectedIndex;
 		int tabHeight = parent.tabHeight;
@@ -853,7 +853,7 @@ public class CTabFolderRenderer {
 		}
 	}
 
-	void drawClose(GC gc, Rectangle closeRect, int closeImageState) {
+	protected void drawClose(GC gc, Rectangle closeRect, int closeImageState) {
 		if (closeRect.width == 0 || closeRect.height == 0) return;
 
 		// draw X with length of this constant
@@ -886,7 +886,7 @@ public class CTabFolderRenderer {
 		gc.setForeground(originalForeground);
 	}
 
-	private void drawCloseLines(GC gc, int x, int y, int lineLength, boolean hot) {
+	protected void drawCloseLines(GC gc, int x, int y, int lineLength, boolean hot) {
 		if (hot) {
 			gc.setLineWidth(gc.getLineWidth() + 2);
 			gc.setForeground(getFillColor());
@@ -896,7 +896,7 @@ public class CTabFolderRenderer {
 		gc.drawLine(x, y + lineLength, x + lineLength, y);
 	}
 
-	void drawChevron(GC gc, Rectangle chevronRect, int chevronImageState) {
+	protected void drawChevron(GC gc, Rectangle chevronRect, int chevronImageState) {
 		if (chevronRect.width == 0 || chevronRect.height == 0) return;
 		// draw chevron (10x7)
 		Display display = parent.getDisplay();
@@ -934,12 +934,12 @@ public class CTabFolderRenderer {
 		}
 	}
 
-	private void drawRoundRectangle(GC gc, Rectangle chevronRect) {
+	protected void drawRoundRectangle(GC gc, Rectangle chevronRect) {
 		gc.fillRoundRectangle(chevronRect.x, chevronRect.y, chevronRect.width,     chevronRect.height,     6, 6);
 		gc.drawRoundRectangle(chevronRect.x, chevronRect.y, chevronRect.width - 1, chevronRect.height - 1, 6, 6);
 	}
 
-	private void drawChevronContent(GC gc, int x, int y, String chevronString) {
+	protected void drawChevronContent(GC gc, int x, int y, String chevronString) {
 		gc.drawLine(x,y,     x+2,y+2);
 		gc.drawLine(x+2,y+2, x,y+4);
 		gc.drawLine(x+1,y,   x+3,y+2);
@@ -956,7 +956,7 @@ public class CTabFolderRenderer {
 	 * Only for curved tabs, on top.
 	 * Do not draw if insufficient colors.
 	 */
-	void drawHighlight(GC gc, Rectangle bounds, int state, int rightEdge) {
+	protected void drawHighlight(GC gc, Rectangle bounds, int state, int rightEdge) {
 		//only draw for curvy tabs and only draw for top tabs
 		if(parent.simple || parent.onBottom)
 			return;
@@ -1048,7 +1048,7 @@ public class CTabFolderRenderer {
 	 *
 	 * @param gc
 	 */
-	void drawLeftUnselectedBorder(GC gc, Rectangle bounds, int state) {
+	protected void drawLeftUnselectedBorder(GC gc, Rectangle bounds, int state) {
 		int x = bounds.x;
 		int y = bounds.y;
 		int height = bounds.height;
@@ -1086,7 +1086,7 @@ public class CTabFolderRenderer {
 		drawBorder(gc, shape);
 	}
 
-	void drawMaximize(GC gc, Rectangle maxRect, int maxImageState) {
+	protected void drawMaximize(GC gc, Rectangle maxRect, int maxImageState) {
 		if (maxRect.width == 0 || maxRect.height == 0) return;
 		// 5x4 or 7x9
 		int x = maxRect.x + (maxRect.width - 10)/2;
@@ -1135,7 +1135,7 @@ public class CTabFolderRenderer {
 			}
 		}
 	}
-	void drawMinimize(GC gc, Rectangle minRect, int minImageState) {
+	protected void drawMinimize(GC gc, Rectangle minRect, int minImageState) {
 		if (minRect.width == 0 || minRect.height == 0) return;
 		// 5x4 or 9x3
 		int x = minRect.x + (minRect.width - 10)/2;
@@ -1187,7 +1187,7 @@ public class CTabFolderRenderer {
 	 *
 	 * @param gc
 	 */
-	void drawRightUnselectedBorder(GC gc, Rectangle bounds, int state) {
+	protected void drawRightUnselectedBorder(GC gc, Rectangle bounds, int state) {
 		int x = bounds.x;
 		int y = bounds.y;
 		int width = bounds.width;
@@ -1232,7 +1232,7 @@ public class CTabFolderRenderer {
 
 	}
 
-	void drawSelected(int itemIndex, GC gc, Rectangle bounds, int state ) {
+	protected void drawSelected(int itemIndex, GC gc, Rectangle bounds, int state ) {
 		CTabItem item = parent.items[itemIndex];
 		int x = bounds.x;
 		int y = bounds.y;
@@ -1446,7 +1446,7 @@ public class CTabFolderRenderer {
 		}
 	}
 
-	void drawTabArea(GC gc, Rectangle bounds, int state) {
+	protected void drawTabArea(GC gc, Rectangle bounds, int state) {
 		Point size = parent.getSize();
 		int[] shape = null;
 		Color borderColor = parent.getDisplay().getSystemColor(BORDER1_COLOR);
@@ -1574,7 +1574,7 @@ public class CTabFolderRenderer {
 		}
 	}
 
-	void drawUnselected(int index, GC gc, Rectangle bounds, int state) {
+	protected void drawUnselected(int index, GC gc, Rectangle bounds, int state) {
 		CTabItem item = parent.items[index];
 		int x = bounds.x;
 		int y = bounds.y;
@@ -1643,7 +1643,7 @@ public class CTabFolderRenderer {
 		}
 	}
 
-	void fillRegion(GC gc, Region region) {
+	protected void fillRegion(GC gc, Region region) {
 		// NOTE: region passed in to this function will be modified
 		Region clipping = new Region();
 		gc.getClipping(clipping);
@@ -1654,14 +1654,14 @@ public class CTabFolderRenderer {
 		clipping.dispose();
 	}
 
-	Color getFillColor() {
+	protected Color getFillColor() {
 		if (fillColor == null) {
 			fillColor = new Color(CLOSE_FILL);
 		}
 		return fillColor;
 	}
 
-	private Font getChevronFont(Display display) {
+	protected Font getChevronFont(Display display) {
 		if (chevronFont == null) {
 			Point dpi = display.getDPI();
 			int fontHeight = 72 * CHEVRON_FONT_HEIGHT / dpi.y;
@@ -1733,13 +1733,13 @@ public class CTabFolderRenderer {
 			createSelectionHighlightGradientColors(start);  //if no cache hit then compute new ones
 	}
 
-	String shortenText(GC gc, String text, int width) {
+	protected String shortenText(GC gc, String text, int width) {
 		return useEllipses()
 			? shortenText(gc, text, width, ELLIPSIS)
 			: shortenText(gc, text, width, ""); //$NON-NLS-1$
 	}
 
-	String shortenText(GC gc, String text, int width, String ellipses) {
+	protected String shortenText(GC gc, String text, int width, String ellipses) {
 		if (gc.textExtent(text, FLAGS).x <= width) return text;
 		int ellipseWidth = gc.textExtent(ellipses, FLAGS).x;
 		int length = text.length();
@@ -1758,7 +1758,7 @@ public class CTabFolderRenderer {
 		return end == 0 ? text.substring(0, 1) : text + ellipses;
 	}
 
-	void updateCurves () {
+	protected void updateCurves () {
 		//Temp fix for Bug 384743
 		if (this.getClass().getName().equals("org.eclipse.e4.ui.workbench.renderers.swt.CTabRendering")) return;
 		int tabHeight = parent.tabHeight;
