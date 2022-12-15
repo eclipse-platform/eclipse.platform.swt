@@ -1601,7 +1601,6 @@ long gtk_focus_in_event (long widget, long event) {
 	display.activePending = false;
 	if (!ignoreFocusIn) {
 		sendEvent (SWT.Activate);
-		restoreFocus();
 	} else {
 		ignoreFocusIn = false;
 	}
