@@ -4870,6 +4870,9 @@ public void test_clickUpdatesCaretPosition() {
 
 @Test
 public void test_caretSizeAndPositionVariableGlyphMetrics() {
+	// See https://github.com/eclipse-platform/eclipse.platform.swt/issues/294
+	assumeFalse("Test doesn't work on Linux docker image in jenkins PR validation build",
+			SwtTestUtil.isLinux && Boolean.parseBoolean(System.getenv("PR_VALIDATION_BUILD")));
 	text.setText("abcd");
 	text.setMargins(2, 0, 0, 0); // keep leftMargin as it affects behavior
 	text.setLineSpacing(0);
