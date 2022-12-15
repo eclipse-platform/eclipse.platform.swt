@@ -80,6 +80,7 @@ spec:
 	}
 	environment {
 		MAVEN_OPTS = "-Xmx4G"
+		PR_VALIDATION_BUILD = "true"
 	}
 	stages {
 		stage('Prepare environment') {
