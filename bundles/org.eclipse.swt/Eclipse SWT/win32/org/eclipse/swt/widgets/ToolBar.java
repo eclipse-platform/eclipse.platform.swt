@@ -737,26 +737,34 @@ void layoutItems () {
 	}
 	
 	/*
-	 * Feature in Windows. When a tool bar has style SWT.FLAT, SWT.HORIZONTAL and
-	 * contains both text and images, Window leaves too much padding around the button.
+	 * Feature in Windows. When a tool bar is not flagged TBSTYLE_LIST already (SWT.RIGHT)
+	 * and contains both text and images, but not text + image in a single item,
+	 * Window leaves too much padding around the button.
 	 * This affects every button in the tool bar and makes the preferred height too big.
-	 * The fix is to set the TBSTYLE_LIST when the tool bar contains both text and images.
+	 * The fix is to set the TBSTYLE_LIST, so that Windows can condense the unused space.
 	 */
 	if (OS.IsAppThemed()) {
-		if ((style & SWT.FLAT) != 0 && (style & SWT.HORIZONTAL) != 0) {
-			boolean hasText = false, hasImage = false;
+		if ((style & SWT.RIGHT) == 0 && (style & SWT.HORIZONTAL) != 0) {
+			boolean hasText = false, hasImage = false, hasTextAndImageInSingleItem = false;
 			for (ToolItem item : items) {
 				if (item != null) {
-					if (!hasText)
-						hasText = item.text.length() != 0;
-					if (!hasImage)
-						hasImage = item.image != null;
-					if (hasText && hasImage)
+					boolean itemHasText = false, itemHasImage = false;
+					itemHasText = item.text.length() != 0;
+					itemHasImage = item.image != null;
+					if (!hasText) {
+						hasText = itemHasText;
+					}
+					if (!hasImage) {
+						hasImage = itemHasImage;
+					}
+					if (itemHasText && itemHasImage) {
+						hasTextAndImageInSingleItem = true;
 						break;
+					}
 				}
 			}
 			int oldBits = OS.GetWindowLong(handle, OS.GWL_STYLE), newBits = oldBits;
-			if (hasText && hasImage) {
+			if (hasText && hasImage && !hasTextAndImageInSingleItem) {
 				newBits |= OS.TBSTYLE_LIST;
 			} else {
 				newBits &= ~OS.TBSTYLE_LIST;
