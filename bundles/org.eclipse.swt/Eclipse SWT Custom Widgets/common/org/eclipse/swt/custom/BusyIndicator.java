@@ -83,7 +83,7 @@ public class BusyIndicator {
 	 * @param action the action that should be executed and produces a result of the
 	 *               {@link CompletableFuture}
 	 *
-	 * @since 3.122
+	 * @since 3.123
 	 */
 	public static <E extends Exception> CompletableFuture<?> execute(SwtRunnable<E> action) {
 		return execute(action, ForkJoinPool.commonPool());
@@ -104,7 +104,7 @@ public class BusyIndicator {
 	 *                 {@link Display} will throw an
 	 *                 {@link IllegalArgumentException} as this will lead to a
 	 *                 blocking UI and violates the contract of this method
-	 * @since 3.122
+	 * @since 3.123
 	 */
 	public static <E extends Exception> CompletableFuture<?> execute(SwtRunnable<E> action, Executor executor) {
 		return compute(() -> {
@@ -126,7 +126,7 @@ public class BusyIndicator {
 	 * @param action the action that should be executed and produces a result of the
 	 *               {@link CompletableFuture}
 	 *
-	 * @since 3.122
+	 * @since 3.123
 	 */
 	public static <V, E extends Exception> CompletableFuture<V> compute(SwtCallable<V, E> action) {
 		return compute(action, ForkJoinPool.commonPool());
@@ -148,7 +148,7 @@ public class BusyIndicator {
 	 *                 {@link IllegalArgumentException} as this will lead to a
 	 *                 blocking UI and violates the contract of this method
 	 *
-	 * @since 3.122
+	 * @since 3.123
 	 */
 	public static <V, E extends Exception> CompletableFuture<V> compute(SwtCallable<V, E> action, Executor executor) {
 		Objects.requireNonNull(action);
