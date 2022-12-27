@@ -974,7 +974,7 @@
 			<arg line="rebase origin/${TAG}"/>
 		</exec>
 		<exec dir="${repo.src}" executable="git" failonerror="true">
-			<arg line="push origin ${TAG}"/>
+			<arg line="push origin HEAD:refs/heads/${TAG}"/>
 		</exec>
 		<exec dir="${repo.bin}" executable="git" failonerror="true">
 			<arg line="fetch"/>
@@ -986,7 +986,7 @@
 			<arg line="rebase origin/${TAG}"/>
 		</exec>
 		<exec dir="${repo.bin}" executable="git" failonerror="true">
-			<arg line="push origin ${TAG}"/>
+			<arg line="push origin HEAD:refs/heads/${TAG}"/>
 		</exec>
 		<exec dir="${repo.src}" executable="git" failonerror="true">
 			<arg line="push origin refs/tags/${swt_tag}"/>
