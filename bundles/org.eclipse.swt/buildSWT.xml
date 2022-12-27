@@ -31,7 +31,6 @@
 
 <project name="swtbuild" basedir=".">
 	
-	<property name="gitroot" value="git@github.com:eclipse-platform/"/>
 	<property name="TAG" value="master"/>
 	<property name="tmphome" value="../../../tmp"/>
 
@@ -48,42 +47,8 @@
 	<property name="file_src_pom" value="bundles/org.eclipse.swt/pom.xml"/>
 	<property name="file_bin_parent_pom" value="bundles/binaries-parent/pom.xml"/>
 	
-	<target name="init_keyfile">
-		<condition property="keyfile" value="C:\BUILD\ssh\swtbuild_dsa_private" else="/var/lib/hudson/.ssh/id_rsa">
-			<os family="windows"/>
-		</condition>
-	</target>
-
-	<target name="check_libraries" depends="get_version">
-		<antcall target="check_fragment_libraries">
-			<param name="library_count" value="3"/>
-			<param name="fragment" value="org.eclipse.swt.cocoa.macosx.aarch64"/>
-		</antcall>
-		<antcall target="check_fragment_libraries">
-			<param name="library_count" value="3"/>
-			<param name="fragment" value="org.eclipse.swt.cocoa.macosx.x86_64"/>
-		</antcall>
-		<antcall target="check_fragment_libraries">
-			<param name="library_count" value="7"/>
-			<param name="fragment" value="org.eclipse.swt.gtk.linux.aarch64"/>
-		</antcall>
-		<antcall target="check_fragment_libraries">
-			<param name="library_count" value="7"/>
-			<param name="fragment" value="org.eclipse.swt.gtk.linux.ppc64le"/>
-		</antcall>
-		<antcall target="check_fragment_libraries">
-			<param name="library_count" value="7"/>
-			<param name="fragment" value="org.eclipse.swt.gtk.linux.x86_64"/>
-		</antcall>
-		<antcall target="check_fragment_libraries">
-			<param name="library_count" value="4"/>
-			<param name="fragment" value="org.eclipse.swt.win32.win32.x86_64"/>
-		</antcall>
-	</target>
-
 	<target name="check_fragment_libraries" depends="get_version">
 		<echo>Checking ${fragment}</echo>
-		<property name="checkdir" value="~/build/check_libraries"/>
 		<property name="library_count" value="31"/>
 		<property name="fragment" value=""/>
 		<fileset id="match" dir="${repo.bin}/bundles/${fragment}" includes="**/org.eclipse.swt.gtk.linux.aarch64/**, **/org.eclipse.swt.gtk.linux.ppc64le/**, **/org.eclipse.swt.gtk.linux.x86_64/**, **/org.eclipse.swt.win32.win32.x86_64/**, **/org.eclipse.swt.cocoa.macosx.aarch64/**, **/org.eclipse.swt.cocoa.macosx.x86_64/**">
@@ -114,79 +79,6 @@
 		<echo>Success</echo>
 	</target>
 
-	<target name="check_machines" depends="init_keyfile">
-		<parallel>
-		<sshexec host="${m_linux_x86_64}"
-			username="swtbuild"
-			keyfile="${keyfile}"
-			failonerror="false"
-			trust="true"
-			outputproperty="m_linux_x86_64_output"
-			command="hostname"/>
-		<sshexec host="${m_linux_ppc64le}"
-			port="2256"
-			username="swtbuild"
-			keyfile="${keyfile}"
-			failonerror="false"
-			trust="true"
-			outputproperty="m_linux_ppc64le_output"
-			command="hostname"/>
-		<sshexec host="${m_linux_aarch64}"
-			port="2256"
-			username="swtbuild"
-			keyfile="${keyfile}"
-			failonerror="false"
-			trust="true"
-			outputproperty="m_linux_aarch64_output"
-			command="hostname"/>
-		<sshexec host="${m_mac}"
-			username="swtbuild"
-			keyfile="${keyfile}"
-			failonerror="false"
-			trust="true"
-			outputproperty="m_mac_output"
-			command="hostname"/>
-		</parallel>
-		<property name="success_msg" value="Success"/>
-		<property name="fail_msg" value="*** Fail ***"/>
-		<condition property="m_linux_x86_64_test" value="${success_msg}" else="${fail_msg}">
-			<and>
-				<length string="${m_linux_x86_64_output}" when="greater" length="0"/>
-				<matches pattern="x${m_linux_x86_64_output}*" string="x${m_linux_x86_64}"/>
-			</and>
-		</condition>
-		<condition property="m_linux_ppc64le_test" value="${success_msg}" else="${fail_msg}">
-			<and>
-				<length string="${m_linux_ppc64le_output}" when="greater" length="0"/>
-				<matches pattern="x${m_linux_ppc64le_output}*" string="x${m_linux_ppc64le}"/>
-			</and>
-		</condition>
-		<condition property="m_linux_aarch64_test" value="${success_msg}" else="${fail_msg}">
-			<and>
-				<length string="${m_linux_aarch64_output}" when="greater" length="0"/>
-				<matches pattern="x${m_linux_aarch64_output}*" string="x${m_linux_aarch64}"/>
-			</and>
-		</condition>
-		<condition property="m_mac_test" value="${success_msg}" else="${fail_msg}">
-			<and>
-				<length string="${m_mac_output}" when="greater" length="0"/>
-				<matches pattern="x${m_mac_output}*" string="x${m_mac}"/>
-			</and>
-		</condition>
-		<echo>-------------------------</echo>
-		<echo>Status:</echo>
-		<echo></echo>
-		<echo>${m_linux_x86_64} - ${m_linux_x86_64_test}</echo>
-		<echo>${m_linux_ppc64le} - ${m_linux_ppc64le_test}</echo>
-		<echo>${m_linux_aarch64} - ${m_linux_aarch64_test}</echo>
-		<echo>${m_mac} - ${m_mac_test}</echo>
-		<echo>-------------------------</echo>
-		<condition property="m_fail">
-			<matches pattern="Fail" string="${m_linux_x86_64_test} ${m_linux_ppc64le_test} ${m_linux_aarch64_test} ${m_mac_test}"/>
-		</condition>
-		<fail if="m_fail" message="Failed"/>
-	</target>
-
 	<target name="check_preprocessing">
 		<property name="projectDir" value="${repo.src}/bundles/org.eclipse.swt"/>
 		<fileset id="badfilesid" dir="${projectDir}" includes="**/*.java" excludes="**/.build64/**/*.java">
@@ -206,11 +98,6 @@
 	</target>
 
 	<!-- common build tasks -->
-	<target name="new_release">
-		<property name="natives_changed" value="true"/>
-		<property name="increment_version_target" value="increment_release_version"/>
-		<antcall target="new_build"/>
-	</target>
 
 	<target name="check_build_changed" depends="get_tag" unless="build_changed">
 		<!-- Check for changes -->
@@ -229,15 +116,6 @@
 		<echo>Has build changes: ${build_changed} checked against ${swt_tag}</echo>
 	</target>
 
-	<target name="new_build" depends="check_build_changed, check_natives_changed" if="build_changed">
-		<!-- Update the version files -->
-		<property name="increment_version_target" value="increment_version"/>
-		<antcall target="${increment_version_target}"/>
-
-		<!-- Commit the files -->
-		<antcall target="commit_sources"/>
-	</target>
-
 	<target name="commit_sources" depends="get_version" if="natives_changed">
 		<exec dir="${repo.src}" executable="git" failonerror="true">
 			<arg line="add '${file_library}' '${file_version}' '${file_make_common}' "/>
@@ -251,14 +129,6 @@
 	</target>
 	
 	<target name="increment_version" depends="get_version" if="natives_changed">
-		<antcall target="increment_version_impl"/>
-	</target>
-
-	<target name="increment_release_version" depends="get_new_release_version" if="natives_changed">
-		<antcall target="increment_version_impl"/>
-	</target>
-
-	<target name="increment_version_impl">
 		<echo>Incrementing version from ${swt_version} to ${new_version}...</echo>
 		<replace file="${repo.src}/${file_library}" token="MAJOR_VERSION = ${maj_ver}" value="MAJOR_VERSION = ${new_maj_ver}"/>
 		<replace file="${repo.src}/${file_library}" token="MINOR_VERSION = ${min_ver}" value="MINOR_VERSION = ${new_min_ver}"/>
@@ -342,64 +212,6 @@
 		<echo>Version=${swt_version}; New=${new_version}; New comma_ver=${new_comma_ver}</echo>
 	</target>
 
-	<target name="get_new_release_version" unless="min_ver">
-		<loadproperties srcFile="${repo.src}/${file_make_common}"/>
-		<script language="javascript">
-		<![CDATA[
-			rev = project.getProperty("rev");
-			min_ver = project.getProperty("min_ver");
-			maj_ver = project.getProperty("maj_ver");
-			new_rev = 1;
-			new_min_ver = parseInt(min_ver) + 2;
-			new_maj_ver = maj_ver;
-			if (new_min_ver >= 1000) {
-				new_min_ver = "000";
-				new_maj_ver = parseInt(new_maj_ver) + 1;
-			}
-			one = new_maj_ver;
-			two = new_min_ver;
-			three = new_rev;
-			four = 0;
-			project.setProperty("new_rev", new_rev);
-			project.setProperty("new_min_ver", new_min_ver);
-			project.setProperty("new_maj_ver", new_maj_ver);
-			project.setProperty("new_comma_ver", one + "," + two + "," + three + "," + four);
-   	 	]]>
-		</script>
-		<property name="swt_version" value="${maj_ver}${min_ver}r${rev}"/>
-		<property name="new_version" value="${new_maj_ver}${new_min_ver}r${new_rev}"/>
-		<echo>Version=${swt_version}; New=${new_version}; New comma_ver=${new_comma_ver}</echo>
-	</target>
-	
-	<target name="get_new_maintenance_release_version" unless="min_ver">
-			<loadproperties srcFile="${repo.src}/${file_make_common}"/>
-			<script language="javascript">
-			<![CDATA[
-				rev = project.getProperty("rev");
-				min_ver = project.getProperty("min_ver");
-				maj_ver = project.getProperty("maj_ver");
-				new_rev = 1;
-				new_min_ver = parseInt(min_ver) + 1;
-				new_maj_ver = maj_ver;
-				if (new_min_ver >= 1000) {
-					new_min_ver = "000";
-					new_maj_ver = parseInt(new_maj_ver) + 1;
-				}
-				one = new_maj_ver;
-				two = new_min_ver;
-				three = new_rev;
-				four = 0;
-				project.setProperty("new_rev", new_rev);
-				project.setProperty("new_min_ver", new_min_ver);
-				project.setProperty("new_maj_ver", new_maj_ver);
-				project.setProperty("new_comma_ver", one + "," + two + "," + three + "," + four);
-	   	 	]]>
-			</script>
-			<property name="swt_version" value="${maj_ver}${min_ver}r${rev}"/>
-			<property name="new_version" value="${new_maj_ver}${new_min_ver}r${new_rev}"/>
-			<echo>Version=${swt_version}; New=${new_version}; New comma_ver=${new_comma_ver}</echo>
-		</target>
-
 	<!-- Set natives_changed if there are changes in the C code -->
 	<target name="check_natives_changed" unless="natives_changed" depends="get_tag">
 		<exec dir="${repo.src}" executable="git" failonerror="true" outputproperty="diffs">
@@ -416,8 +228,6 @@
 
 	<!-- depends on 'get_new_tag' to define swt_new_tag, swt_version, maj_ver and min_ver -->
 	<target name="tag_projects" depends="get_new_tag">
-		<!-- These two lines perform the same check. check_libraries is slower because it checks each fragment separetely  -->
-		<!--antcall target="check_libraries"/-->
 		<antcall target="check_fragment_libraries"/>
 
 		<exec dir="${repo.src}" executable="git" failonerror="true">
@@ -583,7 +393,7 @@
 	</target>
 
 	<!-- Params: swt.ws, swt.os, swt.arch -->
-	<target name="build_libraries" depends="init_fragment,init_keyfile,get_version">
+	<target name="build_libraries" depends="init_fragment,get_version">
 		<property name="swt.arch" value=""/>
 		<property name="clean" value="clean"/>
 		<property name="targets" value="install"/>
@@ -592,75 +402,16 @@
 		<property name="build_dir" value="${basedir}/${fragment_dir}/tmpdir"/>
 		<delete dir="${build_dir}" quiet="true"/>
 		<antcall target="copy.library.src"/>
-		<condition property="build_task" value="build_local_win">
-			<and>
-				<not>
-					<isset property="machine"/>
-				</not>
-				<or>
-					<equals arg1="${swt.ws}" arg2="win32"/>
-				</or>
-			</and>
-		</condition>
-		<condition property="build_task" value="build_remote" else="build_local">
-			<isset property="machine"/>
-		</condition>
-		<condition property="port" value="22">
-			<not>
-				<isset property="port"/>
-			</not>
+		<condition property="build_task" value="build_local_win" else="build_local">
+			<equals arg1="${swt.ws}" arg2="win32"/>
 		</condition>
 		<antcall target="init_build"/>
 		<antcall target="${build_task}">
 			<param name="build_targets" value="${targets}"/>
 			<param name="build_machine" value="${machine}"/>
-			<param name="port" value="${port}"/>
-			<param name="keyfile" value="${keyfile}"/>
 		</antcall>
 		<delete dir="${build_dir}" quiet="true"/>
 		<antcall target="refresh_fragment"/>
-	</target>
-
-	<target name="build_remote" depends="init_keyfile">
-		<property name="libs" value="*"/>
-		<property name="exports" value=""/>
-
-		<condition property="remotebuilddir" value="c:/build" else="~/build/">
-			<equals arg1="${swt.os}" arg2="win32"/>
-		</condition>
-		<condition property="exit_cmd" value="exit;" else="">
-			<equals arg1="${swt.os}" arg2="win32"/>
-		</condition>
-		<condition property="build_cmd" value="unix2dos *; if cmd /c build.bat ${build_targets};" else="if sh build.sh ${build_targets};">
-			<equals arg1="${swt.os}" arg2="win32"/>
-		</condition>
-
-		<property name="remotetmpdir" value="${remotebuilddir}/${fragment}.${TAG}"/>
-		<property name="lib_output" value="${remotetmpdir}/libs"/>
-		<property name="zip_file" value="${fragment}.${TAG}.zip"/>
-		<zip destfile="${build_dir}/${zip_file}" basedir="${build_dir}" excludes="${zip_file}"/>
-		<scp file="${build_dir}/${zip_file}"
-			todir="swtbuild@${build_machine}:${remotebuilddir}"
-			port="${port}"
-			keyfile="${keyfile}"
-			trust="true"/>
-		<sshexec host="${build_machine}"
-			username="swtbuild"
-			port="${port}"
-			keyfile="${keyfile}"
-			trust="true"
-	 		command="rm -rf ${remotetmpdir}; mkdir ${remotetmpdir}; mkdir ${lib_output}; cd ${remotetmpdir}; unzip -aa ${remotebuilddir}/${zip_file}; ${exports} export MODEL=${swt.arch}; export OUTPUT_DIR=${lib_output}; ${build_cmd} then ${exit_cmd} cd; else ${exit_cmd} cd; rm -rf ${remotetmpdir}; rm ${remotebuilddir}/${zip_file}; exit 1; fi"/>
-		<scp file="swtbuild@${build_machine}:${lib_output}/${libs}"
-			todir="${output_dir}"
-			port="${port}"
-			keyfile="${keyfile}"
-			trust="true"/>
-		<sshexec host="${build_machine}"
-			username="swtbuild"
-			port="${port}"
-			keyfile="${keyfile}"
-			trust="true"
-	 		command="rm -rf ${remotetmpdir}; rm ${remotebuilddir}/${zip_file}"/>
 	</target>
 
 	<target name="build_local">
@@ -692,142 +443,13 @@
 		</exec>
 	</target>
 
-	<target name="check_repo">
-		<echo>Check ${repo}</echo>
-		 <condition property="${repo.exists}">
-		 	<available file="../../../../${TAG}/${repo}" type="dir"/>
-		 </condition>
-	</target>
-
-	<target name="init_repo" depends="check_repo" unless="${repo.exists}" >
-		<delete dir="../../../../${TAG}/${repo}" quiet="true"/>
-		<mkdir dir="../../../../${TAG}"/>
-		<exec dir="../../../../${TAG}" executable="git" failonerror="true">
-			<arg line="clone ${gitroot}/${repo}"/>
-		</exec>
-		<condition property="perform.checkout">
-			<not>
-				<equals arg1="${checkout_tag}" arg2="master"/>
-			</not>
-		</condition>
-		<antcall target="checkout_repo"/>
-	</target>
-
-	<target name="checkout_repo" if="perform.checkout">
-		<echo>Checking out ${repo}=${checkout_tag}</echo>
-		<exec dir="../../../../${TAG}/${repo}" executable="git" failonerror="true">
-			<arg line="checkout -b ${checkout_tag} origin/${checkout_tag}"/>
-		</exec>
-	</target>
-
-	<target name="pull_remote">
-		<antcall target="init_repo">
-			<param name="repo" value="eclipse.platform.swt"/>
-			<param name="repo.exists" value="repo.src.exists"/>
-			<param name="checkout_tag" value="${TAG}"/>
-		</antcall>
-		<exec dir="../../../../${TAG}/eclipse.platform.swt" executable="git"  failonerror="true" timeout="900000">
-			<arg line="fetch"/>
-		</exec>
-		<exec dir="../../../../${TAG}/eclipse.platform.swt" executable="git"  failonerror="true" timeout="900000">
-			<arg line="reset --hard origin/${TAG}"/>
-		</exec>
-		<exec dir="../../../../${TAG}/eclipse.platform.swt" executable="git"  failonerror="true" timeout="900000">
-			<arg line="clean -fd"/>
-		</exec>
-		<antcall target="init_repo">
-			<param name="repo" value="eclipse.platform.swt.binaries"/>
-			<param name="repo.exists" value="repo.bin.exists"/>
-			<param name="checkout_tag" value="${TAG}"/>
-		</antcall>
-		<exec dir="../../../../${TAG}/eclipse.platform.swt.binaries" executable="git" failonerror="true" timeout="900000">
-			<arg line="fetch"/>
-		</exec>
-		<exec dir="../../../../${TAG}/eclipse.platform.swt.binaries" executable="git" failonerror="true" timeout="900000">
-			<arg line="reset --hard origin/${TAG}"/>
-		</exec>
-		<exec dir="../../../../${TAG}/eclipse.platform.swt.binaries" executable="git" failonerror="true" timeout="900000">
-			<arg line="clean -fd"/>
-		</exec>
-	</target>
-
-	<target name="push_remote" depends="get_tag">
-		<exec dir="../../../../${TAG}/eclipse.platform.swt" executable="git" failonerror="true">
-			<arg line="fetch"/>
-		</exec>
-		<exec dir="../../../../${TAG}/eclipse.platform.swt" executable="git" failonerror="true">
-			<arg line="rebase origin/${TAG}"/>
-		</exec>
-		<exec dir="../../../../${TAG}/eclipse.platform.swt" executable="git" failonerror="true">
-			<arg line="push origin ${TAG}"/>
-		</exec>
-		<exec dir="../../../../${TAG}/eclipse.platform.swt.binaries" executable="git" failonerror="true">
-			<arg line="fetch"/>
-		</exec>
-		<exec dir="../../../../${TAG}/eclipse.platform.swt.binaries" executable="git" failonerror="true">
-			<arg line="rebase origin/${TAG}"/>
-		</exec>
-		<exec dir="../../../../${TAG}/eclipse.platform.swt.binaries" executable="git" failonerror="true">
-			<arg line="push origin ${TAG}"/>
-		</exec>
-		<exec dir="${repo.src}" executable="git" failonerror="true">
-			<arg line="push origin refs/tags/${swt_tag}"/>
-		</exec>
-		<exec dir="${repo.bin}" executable="git" failonerror="true">
-			<arg line="push origin refs/tags/${swt_tag}"/>
-		</exec>
-	</target>
-
-	<target name="push_integration">
-		<property name="TAG" value="master"/>
-		<!-- src -->
-		<exec dir="../../../../${TAG}/eclipse.platform.swt" executable="git" failonerror="true">
-			<arg line="checkout master"/>
-		</exec>
-		<exec dir="../../../../${TAG}/eclipse.platform.swt" executable="git" failonerror="true">
-			<arg line="reset --hard origin/${TAG}"/>
-		</exec>
-		<exec dir="../../../../${TAG}/eclipse.platform.swt" executable="git" failonerror="true">
-			<arg line="checkout integration"/>
-		</exec>
-		<exec dir="../../../../${TAG}/eclipse.platform.swt" executable="git" failonerror="true">
-			<arg line="merge master"/>
-		</exec>
-		<exec dir="../../../../${TAG}/eclipse.platform.swt" executable="git" failonerror="true">
-			<arg line="push origin integration"/>
-		</exec>
-		<exec dir="../../../../${TAG}/eclipse.platform.swt" executable="git" failonerror="true">
-			<arg line="checkout master"/>
-		</exec>
-		<!-- bin -->
-		<exec dir="../../../../${TAG}/eclipse.platform.swt.binaries" executable="git" failonerror="true">
-			<arg line="checkout master"/>
-		</exec>
-		<exec dir="../../../../${TAG}/eclipse.platform.swt.binaries" executable="git" failonerror="true">
-			<arg line="reset --hard origin/${TAG}"/>
-		</exec>
-		<exec dir="../../../../${TAG}/eclipse.platform.swt.binaries" executable="git" failonerror="true">
-			<arg line="checkout integration"/>
-		</exec>
-		<exec dir="../../../../${TAG}/eclipse.platform.swt.binaries" executable="git" failonerror="true">
-			<arg line="merge master"/>
-		</exec>
-		<exec dir="../../../../${TAG}/eclipse.platform.swt.binaries" executable="git" failonerror="true">
-			<arg line="push origin integration"/>
-		</exec>
-		<exec dir="../../../../${TAG}/eclipse.platform.swt.binaries" executable="git" failonerror="true">
-			<arg line="checkout master"/>
-		</exec>
-	</target>
-	
 	<!-- ******************************************************************************** -->
 	<!-- targets to run the builds on the Eclipse Foundation Hudson in master-slave setup -->
 	<!-- ******************************************************************************** -->
 	
 	<target name="new_build_with_create_file" depends="check_build_changed, check_natives_changed" if="build_changed">
 		<!-- Update the version files -->
-		<property name="increment_version_target" value="increment_version"/>
-		<antcall target="${increment_version_target}"/>
+		<antcall target="increment_version"/>
 
 		<!-- Commit the files -->
 		<antcall target="commit_sources"/>
@@ -863,63 +485,5 @@
 		<!-- create a zip of the native source files to be sent to the build machine -->
 		<zip destfile="${build_dir}/${zip_file}" basedir="${build_dir}" excludes="${zip_file}"/>
 	</target>
-	
-	<target name="build_libraries_slave" depends="init_fragment">
-		<property name="swt.arch" value=""/>
-		<property name="clean" value="clean"/>
-		<property name="targets" value="install"/>
-		<property name="libs" value="*"/>
-		<property name="src_zip_file" value="${fragment}.${TAG}.zip"/>
-		<property name="lib_zip_file" value="${fragment}.${TAG}.zip"/>
-		
-		<condition property="remotebuilddir" value="c:/build" else="build/">
-			<equals arg1="${swt.os}" arg2="win32"/>
-		</condition>	
-		<property name="remotetmpdir" value="${remotebuilddir}/${fragment}.${TAG}"/>
-		<property name="lib_output" value="${remotetmpdir}/libs"/>
-		<condition property="build_task" value="build_win_slave" else="build_remote_slave">
-			<equals arg1="${swt.ws}" arg2="win32"/>
-		</condition>
-			
-		<!-- This target doesn't copy the src zip, it expects that the zip file is already be copied to remotebuilddir -->
-		
-		<echo>${remotebuilddir}</echo>
-		<delete dir="${remotetmpdir}" quiet="false"/>
-		<mkdir dir="${remotetmpdir}"/>
-		<mkdir dir="${lib_output}"/>
-		<unzip src="${remotebuilddir}/${src_zip_file}" dest="${remotetmpdir}"/>
-		<delete file="${remotebuilddir}/${zip_file}"/>
-			
-		<antcall target="${build_task}">
-			<param name="build_targets" value="${targets}"/>
-		</antcall>
-		
-		<antcall target="build_gtk3"/>
-		
-		<zip destfile="${remotetmpdir}/${lib_zip_file}" basedir="${lib_output}" excludes="${zip_file}" compress="false"/>
-	</target>
-		
-	<target name="build_win_slave">
-		<echo>${remotetmpdir}</echo>
-		<pathconvert property="win_output_dir">
-			<path location="${lib_output}"></path>
-		</pathconvert>
-		<exec dir="${remotetmpdir}" executable="${remotetempdir}/build.bat" failonerror="true">
-			<env key="OUTPUT_DIR" value="${win_output_dir}"/>
-			<arg line="${build_targets}"/>
-			<arg line="${clean}"/>
-		</exec>
-	</target>
-		
-	<target name="build_remote_slave">
-		<echo>${remotetmpdir}</echo>
-		<exec dir="${remotetmpdir}" executable="sh" failonerror="true">
-			<arg line="build.sh"/>
-			<env key="GTK_VERSION" value="${gtk_version}"/>
-			<env key="MODEL" value="${swt.arch}"/>
-			<env key="OUTPUT_DIR" value="${lib_output}"/>
-			<arg line="${build_targets}"/>
-			<arg line="${clean}"/>
-		</exec>
-	</target>
+
 </project>
