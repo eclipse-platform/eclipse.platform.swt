@@ -1,6 +1,6 @@
 def nativeBuildAgent(String platform, Closure body) {
 	def final nativeBuildStageName = 'Build SWT-native binaries'
-	if(platform == 'gtk.linux.x86_64') {
+	if (platform == 'gtk.linux.x86_64') {
 		return podTemplate(yaml: '''
 apiVersion: v1
 kind: Pod
@@ -59,7 +59,7 @@ pipeline {
 	stages {
 		stage('Checkout swt git repos') {
 			steps {
-				dir ('eclipse.platform.swt') {
+				dir('eclipse.platform.swt') {
 					checkout scm
 					script {
 						def authorMail = sh(script: 'git log -1 --pretty=format:"%ce" HEAD', returnStdout: true)
@@ -75,7 +75,7 @@ pipeline {
 						git remote set-url --push origin git@github.com:eclipse-platform/eclipse.platform.swt.git
 					'''
 				}
-				dir ('eclipse.platform.swt.binaries') {
+				dir('eclipse.platform.swt.binaries') {
 					checkout([$class: 'GitSCM', branches: [[name: 'refs/heads/master']],
 						extensions: [[$class: 'CloneOption', timeout: 120, noTags: false ]],
 						userRemoteConfigs: [[url: 'https://github.com/eclipse-platform/eclipse.platform.swt.binaries.git']]
@@ -102,7 +102,7 @@ pipeline {
 			when {
 				anyOf {
 					expression { return params.forceNativeBuilds }
-					expression { return fileExists ('tmp/build_changed.txt') && fileExists ('tmp/natives_changed.txt') }
+					expression { return fileExists('tmp/build_changed.txt') && fileExists('tmp/natives_changed.txt') }
 				}
 			}
 			matrix {
@@ -151,7 +151,7 @@ pipeline {
 									}
 									// TODO: don't zip the sources and just (un)stash them unzipped! That safes the unzipping and removal of the the zip
 									withEnv(['MODEL=' + arch, "OUTPUT_DIR=${WORKSPACE}/libs", "SWT_JAVA_HOME=${WORKSPACE}/jdk.resources"]) {
-										if(isUnix()){
+										if (isUnix()){
 											sh '''
 												unzip -aa org.eclipse.swt.${PLATFORM}.master.zip
 												rm org.eclipse.swt.${PLATFORM}.master.zip
@@ -239,7 +239,7 @@ pipeline {
 		}
 		stage('Commit SWT-native binaries, if build') {
 			when {
-				expression { return params.forceNativeBuilds || fileExists ('tmp/build_changed.txt') }
+				expression { return params.forceNativeBuilds || fileExists('tmp/build_changed.txt') }
 			}
 			steps {
 				withAnt(installation: 'apache-ant-latest', jdk: 'openjdk-jdk11-latest') { // nashorn javascript-engine required in ant-scripts
@@ -276,14 +276,14 @@ pipeline {
 			}
 			steps {
 				xvnc(useXauthority: true) {
-					dir ('eclipse.platform.swt.binaries') {
+					dir('eclipse.platform.swt.binaries') {
 						sh '''
 							mvn install \
 								--batch-mode -Pbuild-individual-bundles -DforceContextQualifier=zzz \
 								-Dcompare-version-with-baselines.skip=true -Dmaven.compiler.failOnWarning=true
 						'''
 					}
-					dir ('eclipse.platform.swt') {
+					dir('eclipse.platform.swt') {
 						sh '''
 							mvn clean verify \
 								--batch-mode -DforkCount=0 \
@@ -304,13 +304,13 @@ pipeline {
 		}
 		stage('Push SWT-native binaries, if build') {
 			when {
-				expression { return params.forceNativeBuilds || fileExists ('tmp/build_changed.txt') }
+				expression { return params.forceNativeBuilds || fileExists('tmp/build_changed.txt') }
 			}
 			steps {
 				sshagent(['github-bot-ssh']) {
 					script {
 						def newSWTNativesTag = null;
-						dir ('eclipse.platform.swt.binaries') {
+						dir('eclipse.platform.swt.binaries') {
 							newSWTNativesTag = sh(script: 'git describe --abbrev=0 --tags --match v[0-9][0-9][0-9][0-9]*', returnStdout: true).strip()
 						}
 						echo "newSWTNativesTag: ${newSWTNativesTag}"
