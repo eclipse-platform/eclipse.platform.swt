@@ -89,8 +89,8 @@ spec:
 						checkout scm
 					}
 					dir ('eclipse.platform.swt.binaries') {
-						checkout([$class: 'GitSCM', branches: [[name: '*/master']],
-							extensions: [[$class: 'CloneOption', timeout: 120, depth: 1, shallow: true]],
+						checkout([$class: 'GitSCM', branches: [[name: 'refs/heads/master']],
+							extensions: [[$class: 'CloneOption', timeout: 120]],
 							userRemoteConfigs: [[url: 'https://github.com/eclipse-platform/eclipse.platform.swt.binaries.git']]
 						])
 					}
