@@ -34,7 +34,7 @@ import java.util.Random;
 import java.util.function.BooleanSupplier;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.BidiSegmentListener;
 import org.eclipse.swt.custom.CaretListener;
@@ -4879,6 +4879,10 @@ public void test_caretSizeAndPositionVariableGlyphMetrics() {
 	text.setCaretOffset(0);
 	assertEquals(text.getLineHeight(), text.getCaret().getSize().y);
 	// +5: caret takes 5 more pixels
+	System.out.println("text.getLineHeight(0):" + text.getLineHeight(0));
+	System.out.println("text.getCaret().getSize().y:" + text.getCaret().getSize().y);
+	System.out.println("text.getCaret().getBounds().y:" + text.getCaret().getBounds().y);
+	System.out.println("OS:" + Platform.getOS());
 	assertEquals(text.getLineHeight(0) - text.getCaret().getSize().y, text.getCaret().getBounds().y);
 	text.setCaretOffset(1);
 	assertEquals(text.getLineHeight(), text.getCaret().getSize().y);

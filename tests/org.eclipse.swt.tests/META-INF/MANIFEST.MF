@@ -13,3 +13,4 @@ Require-Bundle: org.junit;bundle-version="4.12.0",
 Eclipse-BundleShape: dir
 Bundle-RequiredExecutionEnvironment: JavaSE-11
 Automatic-Module-Name: org.eclipse.swt.tests
+Import-Package: org.eclipse.core.runtime
