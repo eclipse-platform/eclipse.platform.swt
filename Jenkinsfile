@@ -125,7 +125,8 @@ spec:
 				always {
 					junit 'eclipse.platform.swt/tests/*.test*/target/surefire-reports/*.xml'
 					archiveArtifacts artifacts: '**/*.log,**/*.html,**/target/*.jar,**/target/*.zip'
-					publishIssues issues:[scanForIssues(tool: java()), scanForIssues(tool: mavenConsole())]
+					discoverGitReferenceBuild referenceJob: 'eclipse.platform.swt/master'
+					recordIssues publishAllIssues: true, tools: [java(), mavenConsole(), javaDoc()]
 				}
 			}
 		}
