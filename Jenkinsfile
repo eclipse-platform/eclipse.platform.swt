@@ -316,27 +316,35 @@ pipeline {
 			}
 			steps {
 				sshagent(['github-bot-ssh']) {
-					withAnt(installation: 'apache-ant-latest', jdk: 'openjdk-jdk11-latest') { // nashorn javascript-engine required in ant-scripts
-						sh '''
+					script {
+						def newSWTNativesTag = null;
+						dir ('eclipse.platform.swt.binaries') {
+							newSWTNativesTag = sh(script: 'git describe --abbrev=0 --tags --match v[0-9][0-9][0-9][0-9]*', returnStdout: true).strip()
+						}
+						echo "newSWTNativesTag: ${newSWTNativesTag}"
+						sh """
 							# Check for the master-branch as late as possible to have as much of the same behaviour as possible
-							if [[ "${BRANCH_NAME}" == master ]] || [[ "${BRANCH_NAME}" =~ R[0-9]+_[0-9]+(_[0-9]+)?_maintenance ]]; then
+							if [[ '${BRANCH_NAME}' == master ]] || [[ '${BRANCH_NAME}' =~ R[0-9]+_[0-9]+(_[0-9]+)?_maintenance ]]; then
 								if [[ ${skipCommit} != true ]]; then
 									
+									#Don't rebase and just fail in case another commit has been pushed to the master/maintanance branch in the meantime
+									
 									pushd eclipse.platform.swt
-									git fetch origin refs/heads/${BRANCH_NAME}:refs/remotes/origin/${BRANCH_NAME}
+									git push origin HEAD:refs/heads/${BRANCH_NAME}
+									git push origin refs/tags/${newSWTNativesTag}
 									popd
 									
 									pushd eclipse.platform.swt.binaries
-									git fetch origin refs/heads/${BRANCH_NAME}:refs/remotes/origin/${BRANCH_NAME}
+									git push origin HEAD:refs/heads/${BRANCH_NAME}
+									git push origin refs/tags/${newSWTNativesTag}
 									popd
 									
-									ant -f eclipse.platform.swt/bundles/org.eclipse.swt/buildSWT.xml push_remote_from_workspace
 									exit 0
 								else
 									echo Committing is skipped
 								fi
 							else
-								echo Skip pushing changes of native-binaries for branch "${BRANCH_NAME}"
+								echo Skip pushing changes of native-binaries for branch '${BRANCH_NAME}'
 							fi
 							# The commits are not pushed. At least list them, so one can check if the result is as expected.
 							pushd eclipse.platform.swt
@@ -345,7 +353,7 @@ pipeline {
 							pushd eclipse.platform.swt.binaries
 							git log -n 2
 							popd
-						'''
+						"""
 					}
 				}
 			}
