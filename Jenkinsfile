@@ -29,10 +29,10 @@ spec:
     command: [ "uid_entrypoint", "cat" ]
     resources:
       requests:
-        memory: "4Gi"
+        memory: "2Gi"
         cpu: "1"
       limits:
-        memory: "4Gi"
+        memory: "2Gi"
         cpu: "1"
     volumeMounts:
     - name: "settings-xml"
