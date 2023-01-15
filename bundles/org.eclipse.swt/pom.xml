@@ -29,7 +29,7 @@
             forceContextQualifier gets updated during build input process using
             ant script <SWT source repo>/bundles/org.eclipse.swt/buildInternal.xml 
         -->
-        <forceContextQualifier>v20230109-1126</forceContextQualifier>
+        <forceContextQualifier>v20230115-2303</forceContextQualifier>
         <sonar.sources>Eclipse SWT Accessibility/cocoa,Eclipse SWT Accessibility/common,Eclipse SWT Accessibility/gtk,Eclipse SWT Accessibility/win32,Eclipse SWT AWT/cocoa,Eclipse SWT AWT/common,Eclipse SWT AWT/gtk,Eclipse SWT AWT/win32,Eclipse SWT Browser/cocoa,Eclipse SWT Browser/common,Eclipse SWT Browser/gtk,Eclipse SWT Browser/win32,Eclipse SWT Custom Widgets/common,Eclipse SWT Drag and Drop/cocoa,Eclipse SWT Drag and Drop/common,Eclipse SWT Drag and Drop/gtk,Eclipse SWT Drag and Drop/win32,Eclipse SWT OLE Win32/win32,Eclipse SWT OpenGL/cocoa,Eclipse SWT OpenGL/common,Eclipse SWT OpenGL/glx,Eclipse SWT OpenGL/gtk,Eclipse SWT OpenGL/win32,Eclipse SWT PI/cairo,Eclipse SWT PI/cocoa,Eclipse SWT PI/common,Eclipse SWT PI/gtk,Eclipse SWT PI/win32,Eclipse SWT Printing/cocoa,Eclipse SWT Printing/common,Eclipse SWT Printing/gtk,Eclipse SWT Printing/win32,Eclipse SWT Program/cocoa,Eclipse SWT Program/common,Eclipse SWT Program/gtk,Eclipse SWT Program/win32,Eclipse SWT WebKit/cocoa,Eclipse SWT WebKit/gtk,Eclipse SWT/cairo,Eclipse SWT/cocoa,Eclipse SWT/common,Eclipse SWT/emulated/bidi,Eclipse SWT/emulated/coolbar,Eclipse SWT/emulated/expand,Eclipse SWT/emulated/taskbar,Eclipse SWT/emulated/tooltip,Eclipse SWT/gtk,Eclipse SWT/win32</sonar.sources>
     </properties>
     
