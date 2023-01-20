@@ -74,7 +74,7 @@ spec:
     emptyDir: {}
   - name: tools
     persistentVolumeClaim:
-      claimName: tools-claim-jiro-platform
+      claimName: tools-claim-jiro-releng
 """
 		}
 	}
@@ -125,8 +125,10 @@ spec:
 				always {
 					junit 'eclipse.platform.swt/tests/*.test*/target/surefire-reports/*.xml'
 					archiveArtifacts artifacts: '**/*.log,**/*.html,**/target/*.jar,**/target/*.zip'
-					discoverGitReferenceBuild referenceJob: 'eclipse.platform.swt/master'
-					recordIssues publishAllIssues: true, tools: [java(), mavenConsole(), javaDoc()]
+					//TODO: re-enable this on releng Jenkins?!
+					// discoverGitReferenceBuild referenceJob: 'eclipse.platform.swt/master'
+					// recordIssues publishAllIssues: true, tools: [java(), mavenConsole(), javaDoc()]
+					publishIssues issues:[scanForIssues(tool: java()), scanForIssues(tool: mavenConsole())]
 				}
 			}
 		}
