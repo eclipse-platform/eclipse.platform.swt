@@ -2029,7 +2029,6 @@ long notifyState (long object, long arg0) {
  */
 public void open () {
 	checkWidget ();
-	bringToTop (false);
 	setVisible (true);
 	if (isDisposed ()) return;
 	/*
