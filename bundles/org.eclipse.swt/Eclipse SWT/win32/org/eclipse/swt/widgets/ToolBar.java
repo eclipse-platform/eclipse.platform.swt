@@ -735,7 +735,7 @@ void layoutItems () {
 			}
 		}
 	}
-	
+
 	/*
 	 * Feature in Windows. When a tool bar is not flagged TBSTYLE_LIST already (SWT.RIGHT)
 	 * and contains both text and images, but not text + image in a single item,
@@ -1691,7 +1691,6 @@ LRESULT wmNotifyChild (NMHDR hdr, long wParam, long lParam) {
 						RECT rect = new RECT (nmcd.left, nmcd.top, nmcd.right, nmcd.bottom);
 						OS.SetDCBrushColor (nmcd.hdc, child.background);
 						OS.FillRect (nmcd.hdc, rect, OS.GetStockObject (OS.DC_BRUSH));
-						result |= OS.TBCDRF_NOBACKGROUND;
 					}
 					return new LRESULT (result);
 				}
