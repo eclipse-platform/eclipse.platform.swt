@@ -2030,6 +2030,7 @@ long notifyState (long object, long arg0) {
 public void open () {
 	checkWidget ();
 	setVisible (true);
+	bringToTop (false);
 	if (isDisposed ()) return;
 	/*
 	 * When no widget has been given focus, or another push button has focus,

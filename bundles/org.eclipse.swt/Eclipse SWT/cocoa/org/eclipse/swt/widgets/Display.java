@@ -6946,4 +6946,7 @@ static long windowProc(long id, long sel, long arg0, long arg1, long arg2, long 
 	}
 }
 
+static boolean isActivateShellOnForceFocus() {
+	return "true".equals(System.getProperty("org.eclipse.swt.internal.activateShellOnForceFocus", "false")); //$NON-NLS-1$
+}
 }
