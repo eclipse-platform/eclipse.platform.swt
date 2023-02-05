@@ -769,7 +769,7 @@ boolean becomeFirstResponder (long id, long sel) {
 
 void calculateVisibleRegion (NSView view, long visibleRgn, boolean clipChildren) {
 	long tempRgn = OS.NewRgn ();
-	if (!view.isHiddenOrHasHiddenAncestor() && isDrawing()) {
+	if (!view.isHiddenOrHasHiddenAncestor() && isDrawing() && view.window() != null) {
 		long childRgn = OS.NewRgn ();
 		NSWindow window = view.window ();
 		NSView contentView = window.contentView();
