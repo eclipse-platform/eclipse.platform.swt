@@ -397,9 +397,19 @@ void createHandle (int index, boolean fixed, boolean scrolled) {
 					+ "refer to https://bugs.eclipse.org/bugs/show_bug.cgi?id=514487 for development status.").printStackTrace();
 			}
 		} else {
-			socketHandle = GTK.gtk_socket_new ();
-			if (socketHandle == 0) error (SWT.ERROR_NO_HANDLES);
-			GTK3.gtk_container_add (handle, socketHandle);
+			if (GTK.GTK4) {
+				// From Emmanuele Bassi:
+				// "[Embedding external windows is] not possible any more. Socket/plug were available only on X11,
+				// and foreign windowing system surfaces were a massive complication in the backend code."
+				if (Device.DEBUG) {
+					new SWTError (SWT.ERROR_INVALID_ARGUMENT, "SWT.EMBEDDED is not supported for GTK >= 4.")
+							.printStackTrace ();
+				}
+			} else {
+				socketHandle = GTK.gtk_socket_new ();
+				if (socketHandle == 0) error (SWT.ERROR_NO_HANDLES);
+				GTK3.gtk_container_add (handle, socketHandle);
+			}
 		}
 	}
 
