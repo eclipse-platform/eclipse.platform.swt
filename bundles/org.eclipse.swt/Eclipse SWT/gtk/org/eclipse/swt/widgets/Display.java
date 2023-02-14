@@ -1903,12 +1903,12 @@ public Control getCursorControl () {
 		}
 		handle = user_data [0];
 	} else {
-		/*
-		* Feature in GTK. gdk_window_at_pointer() will not return a window
-		* if the pointer is over a foreign embedded window. The fix is to use
-		* XQueryPointer to find the containing GDK window.
-		*/
-		if (!OS.isX11()) return null;
+		// Feature in GTK. The gdk_device_get_[surface/window]_at_position() functions will not return a
+		// surface/window if the pointer is over a foreign embedded window. The fix is to use XQueryPointer
+		// to find the containing GDK window (see bug 177368.)
+		// However embedding foreign windows is not supported by the Wayland backend for GTK3 and is not
+		// supported at all on GTK4, so skip the heuristic in these situations.
+		if (!OS.isX11() || GTK.GTK4) return null;
 		long gdkDisplay = GDK.gdk_display_get_default();
 		if (OS.isX11()) {
 			GDK.gdk_x11_display_error_trap_push(gdkDisplay);
