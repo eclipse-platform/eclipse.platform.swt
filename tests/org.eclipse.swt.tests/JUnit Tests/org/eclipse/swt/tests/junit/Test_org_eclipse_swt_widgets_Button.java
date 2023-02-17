@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2018 IBM Corporation and others.
+ * Copyright (c) 2000, 2023 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -163,7 +163,7 @@ public void test_setAlignmentI() {
 	button.setAlignment(SWT.UP); // bad value for push button
 	assertNotEquals(SWT.UP, button.getAlignment());
 
-
+	// Test setting the direction of the arrow icon for arrow icon buttons
 	Button arrowButton = new Button(shell, SWT.ARROW);
 	arrowButton.setAlignment(SWT.LEFT);
 	assertEquals(SWT.LEFT, arrowButton.getAlignment());
@@ -184,6 +184,28 @@ public void test_setAlignmentI() {
 	int alignment = 55; // some bogus number
 	button.setAlignment(alignment);
 	assertNotEquals(alignment, button.getAlignment());
+}
+
+@Test
+public void test_setOrientation() {
+	button.setOrientation (SWT.RIGHT_TO_LEFT);
+	assertEquals(SWT.RIGHT_TO_LEFT, button.getOrientation());
+
+	button.setOrientation (SWT.LEFT_TO_RIGHT);
+	assertEquals(SWT.LEFT_TO_RIGHT, button.getOrientation());
+
+	// Test setting the orientation of the arrow icon for arrow icon buttons
+	Button arrowButton = new Button(shell, SWT.ARROW | SWT.RIGHT);
+	arrowButton.setOrientation (SWT.LEFT_TO_RIGHT);
+	assertEquals(SWT.LEFT_TO_RIGHT, arrowButton.getOrientation());
+
+	arrowButton.setOrientation (SWT.RIGHT_TO_LEFT);
+	assertEquals(SWT.RIGHT_TO_LEFT, arrowButton.getOrientation());
+	arrowButton.dispose();
+
+	int alignment = 55; // some bogus number
+	button.setOrientation(alignment);
+	assertNotEquals(alignment, button.getOrientation());
 }
 
 @Test

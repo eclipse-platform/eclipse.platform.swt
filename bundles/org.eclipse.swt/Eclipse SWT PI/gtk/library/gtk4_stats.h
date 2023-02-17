@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2022 IBM Corporation and others.
+ * Copyright (c) 2000, 2023 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -99,6 +99,7 @@ typedef enum {
 	gtk_1im_1context_1filter_1keypress_FUNC,
 	gtk_1image_1clear_FUNC,
 	gtk_1image_1new_1from_1icon_1name_FUNC,
+	gtk_1image_1set_1from_1icon_1name_FUNC,
 	gtk_1image_1set_1from_1paintable_FUNC,
 	gtk_1init_1check_FUNC,
 	gtk_1keyval_1trigger_1new_FUNC,
