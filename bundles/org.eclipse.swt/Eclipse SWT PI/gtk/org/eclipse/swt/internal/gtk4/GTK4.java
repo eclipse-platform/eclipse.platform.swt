@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2021 Syntevo and others.
+ * Copyright (c) 2021, 2023 Syntevo and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -474,6 +474,11 @@ public class GTK4 {
 	public static final native void gtk_image_set_from_paintable(long image, long paintable);
 	/** @param icon_name cast=(const char *) */
 	public static final native long gtk_image_new_from_icon_name(byte[] icon_name);
+	/**
+	 * @param image cast=(GtkImage *)
+	 * @param icon_name cast=(const gchar *)
+	 */
+	public static final native void gtk_image_set_from_icon_name(long image, byte[] icon_name);
 	/** @param image cast=(GtkImage *) */
 	public static final native void gtk_image_clear(long image);
 

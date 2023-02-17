@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015, 2016 Red Hat Inc.
+ * Copyright (c) 2015, 2023 Red Hat Inc and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -16,6 +16,7 @@ package org.eclipse.swt.snippets;
 import java.util.concurrent.atomic.*;
 
 import org.eclipse.swt.*;
+import org.eclipse.swt.events.*;
 import org.eclipse.swt.layout.*;
 import org.eclipse.swt.widgets.*;
 
@@ -54,21 +55,21 @@ public class Snippet366 {
 		orientationGroup.setText ("Orientation group");
 
 		final AtomicInteger prevDir = new AtomicInteger (0);
-		final Button alignmentButton = new Button (orientationGroup, SWT.ARROW | SWT.RIGHT);
-		alignmentButton.addListener (SWT.MouseDown, event -> {
+		final Button orientationButton = new Button (orientationGroup, SWT.ARROW | SWT.RIGHT);
+		orientationButton.addSelectionListener (SelectionListener.widgetSelectedAdapter (event -> {
 			switch (prevDir.get ()) {
 				case 0:
-					alignmentButton.setOrientation (SWT.LEFT_TO_RIGHT);
+					orientationButton.setOrientation (SWT.LEFT_TO_RIGHT);
 					prevDir.set (1);
 					break;
 				case 1:
-					alignmentButton.setOrientation (SWT.RIGHT_TO_LEFT);
+					orientationButton.setOrientation (SWT.RIGHT_TO_LEFT);
 					prevDir.set (0);
 					break;
 				default:
 					break;
 			}
-		});
+		}));
 	}
 
 	private static void makeAlignGroup () {
@@ -78,7 +79,7 @@ public class Snippet366 {
 
 		final AtomicInteger prevDir = new AtomicInteger (0);
 		final Button alignmentButton = new Button (alignGroup, SWT.ARROW | SWT.UP);
-		alignmentButton.addListener (SWT.MouseDown, event -> {
+		alignmentButton.addSelectionListener (SelectionListener.widgetSelectedAdapter (event -> {
 			switch (prevDir.get ()) {
 				case 0:
 					alignmentButton.setAlignment (SWT.RIGHT);
@@ -98,7 +99,7 @@ public class Snippet366 {
 				default:
 					break;
 			}
-		});
+		}));
 	}
 
 	private static void makeArrowGroup () {
