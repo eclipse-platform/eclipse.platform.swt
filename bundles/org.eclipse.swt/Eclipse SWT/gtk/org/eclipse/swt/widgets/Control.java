@@ -2670,11 +2670,41 @@ boolean dragDetect (int button, int count, int stateMask, int x, int y) {
 }
 
 boolean dragDetect (int x, int y, boolean filter, boolean dragOnTimeout, boolean [] consume) {
-	/*
-	 * Feature in GTK: In order to support both X.11/Wayland, GTKGestures are used
-	 *  as of GTK3.14 in order to acquire mouse position offsets to decide on dragging.
-	 *  See Bug 503431.
-	 */
+	// Historically, SWT detected drag&drop on X11 this way:
+	//   1) on left mouse down event, begin a modal event loop
+	//      In GTK, this is `button-press-event` signal.
+	//      In SWT, this is `Control#gtk_button_press_event()`
+	//   2) In the loop, wait for mouse to move far enough to trigger drag&drop action
+	//   3) If drag&drop is not triggered within 500ms, or mouse button released, or Esc pressed,
+	//      and a few other conditions, consider it NOT drag&drop and a mere mouse click.
+	//
+	// However, on Wayland, it is no longer possible: as long as SWT does not
+	// return from `button-press-event` signal handler, it is not possible to
+	// receive ANY mouse events from `gdk_event_get()`. Not mouse movements,
+	// not even mouse up event. This causes SWT to pointlessly loop for 500ms
+	// after each mouse down.
+	//
+	// In Bug 503431, approach was changed to trigger drag&drop from MouseMove signal instead
+	//   In GTK, this is `motion-notify-event` signal.
+	//   In SWT, this is `Control#gtk_motion_notify_event()`
+	//
+	// Initially the new code was supposed to work on both X11 and Wayland, but unfortunately
+	// the new implementation had its problems:
+	// * Bug 503431 - `StyledText` wants to know if DND has started right after calling `dragDetect()`
+	//   This required the workaround where `MouseDown` event is not reported until DND decision is made.
+	// * Bug 503431 - multi-select `Tree`, `Table`, `List` drag&drop broken (only drags one item)
+	//   This is because GTK itself doesn't support multi-item DND.
+	// * Bug 503431 - various mistakes
+	//   For example, there was a `Callback` leak. It was fixed soon after.
+	// * Issue 400  - wrong mouse events reporting
+	//   This is what I'm fixing now.
+	//
+	// As a result, in Bug 510446, the new implementation was limited to Wayland only, so that more
+	// common back then X11 could continue to work without bugs.
+	//
+	// I hope that I fixed the last of the problems on Wayland now (2023-03-11),
+	// and X11 code could finally be thrown away. But I don't think I dare to try it right now.
+
 	if (OS.isWayland()) {
 		// Don't drag if mouse is not down. This condition is not as
 		// trivial as it seems, see Bug 541635 where drag is tested
@@ -3515,10 +3545,8 @@ long gtk_button_press_event (long widget, long event, boolean sendMouseDown) {
 			if (peekedEventType == GDK.GDK_3BUTTON_PRESS) display.clickCount = 3;
 			gdk_event_free (nextEvent);
 		}
-		/*
-		 * Feature in GTK: DND detection for X.11 & Wayland support is done through motion notify event
-		 * instead of mouse click event. See Bug 503431.
-		 */
+
+		// See comment in #dragDetect()
 		if (OS.isX11()) {
 			if ((state & DRAG_DETECT) != 0 && hooks (SWT.DragDetect)) {
 				if (eventButton[0] == 1) {
@@ -3539,10 +3567,8 @@ long gtk_button_press_event (long widget, long event, boolean sendMouseDown) {
 			}
 		}
 		if (isDisposed ()) return 1;
-		/*
-		 * Feature in GTK: DND detection for X.11 & Wayland support is done through motion notify event
-		 * instead of mouse click event. See Bug 503431.
-		 */
+
+		// See comment in #dragDetect()
 		if (OS.isX11()) {
 			if (dragging) {
 				Point scaledEvent = DPIUtil.autoScaleDown(new Point((int)eventX[0], (int) eventY[0]));
@@ -4145,10 +4171,7 @@ long gtk_motion_notify_event (long widget, long event) {
 	lastInput.y = (int)eventY[0];
 	if (containedInRegion(lastInput.x, lastInput.y)) return 0;
 
-	/*
-	 * Feature in GTK: DND detection for X.11 & Wayland support is done through motion notify event
-	 * instead of mouse click event. See Bug 503431.
-	 */
+	// See comment in #dragDetect()
 	if (OS.isWayland()) {
 		boolean dragging = false;
 		if ((state & DRAG_DETECT) != 0 && hooks (SWT.DragDetect)) {

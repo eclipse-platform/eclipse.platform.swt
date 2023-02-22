@@ -202,12 +202,12 @@ public DragSource(Control control, int style) {
 		}
 		control.setData(DND.DRAG_SOURCE_KEY, this);
 
+		// There's a native GTK snippet available, find 'Issue0400_WaylandDndEvents.cpp' in this repo.
+		// It may be helpful in understanding / debugging bugs.
 		OS.g_signal_connect(control.handle, OS.drag_begin, DragBegin.getAddress(), 0);
 		OS.g_signal_connect(control.handle, OS.drag_data_get, DragGetData.getAddress(), 0);
 		OS.g_signal_connect(control.handle, OS.drag_end, DragEnd.getAddress(), 0);
 		OS.g_signal_connect(control.handle, OS.drag_data_delete, DragDataDelete.getAddress(), 0);
-
-
 
 		controlListener = event -> {
 			if (event.type == SWT.Dispose) {
