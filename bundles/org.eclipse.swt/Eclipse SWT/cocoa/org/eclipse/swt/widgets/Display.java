@@ -103,6 +103,85 @@ import org.eclipse.swt.internal.cocoa.*;
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  * @noextend This class is not intended to be subclassed by clients.
  */
+/**
+ * Instances of this class are responsible for managing the
+ * connection between SWT and the underlying operating
+ * system. Their most important function is to implement
+ * the SWT event loop in terms of the platform event model.
+ * They also provide various methods for accessing information
+ * about the operating system, and have overall control over
+ * the operating system resources which SWT allocates.
+ * <p>
+ * Applications which are built with SWT will <em>almost always</em>
+ * require only a single display. In particular, some platforms
+ * which SWT supports will not allow more than one <em>active</em>
+ * display. In other words, some platforms do not support
+ * creating a new display if one already exists that has not been
+ * sent the <code>dispose()</code> message.
+ * <p>
+ * In SWT, the thread which creates a <code>Display</code>
+ * instance is distinguished as the <em>user-interface thread</em>
+ * for that display.
+ * </p>
+ * The user-interface thread for a particular display has the
+ * following special attributes:
+ * <ul>
+ * <li>
+ * The event loop for that display must be run from the thread.
+ * </li>
+ * <li>
+ * Some SWT API methods (notably, most of the public methods in
+ * <code>Widget</code> and its subclasses), may only be called
+ * from the thread. (To support multi-threaded user-interface
+ * applications, class <code>Display</code> provides inter-thread
+ * communication methods which allow threads other than the
+ * user-interface thread to request that it perform operations
+ * on their behalf.)
+ * </li>
+ * <li>
+ * The thread is not allowed to construct other
+ * <code>Display</code>s until that display has been disposed.
+ * (Note that, this is in addition to the restriction mentioned
+ * above concerning platform support for multiple displays. Thus,
+ * the only way to have multiple simultaneously active displays,
+ * even on platforms which support it, is to have multiple threads.)
+ * </li>
+ * </ul>
+ * <p>
+ * Enforcing these attributes allows SWT to be implemented directly
+ * on the underlying operating system's event model. This has
+ * numerous benefits including smaller footprint, better use of
+ * resources, safer memory management, clearer program logic,
+ * better performance, and fewer overall operating system threads
+ * required. The down side however, is that care must be taken
+ * (only) when constructing multi-threaded applications to use the
+ * inter-thread communication mechanisms which this class provides
+ * when required.
+ * </p><p>
+ * All SWT API methods which may only be called from the user-interface
+ * thread are distinguished in their documentation by indicating that
+ * they throw the "<code>ERROR_THREAD_INVALID_ACCESS</code>"
+ * SWT exception.
+ * </p>
+ * <dl>
+ * <dt><b>Styles:</b></dt>
+ * <dd>(none)</dd>
+ * <dt><b>Events:</b></dt>
+ * <dd>Close, Dispose, OpenDocument, Settings, Skin</dd>
+ * </dl>
+ * <p>
+ * IMPORTANT: This class is <em>not</em> intended to be subclassed.
+ * </p>
+ * @see #syncExec
+ * @see #asyncExec
+ * @see #wake
+ * @see #readAndDispatch
+ * @see #sleep
+ * @see Device#dispose
+ * @see <a href="http://www.eclipse.org/swt/snippets/#display">Display snippets</a>
+ * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
+ * @noextend This class is not intended to be subclassed by clients.
+ */
 @SuppressWarnings({"rawtypes", "unchecked"})
 public class Display extends Device implements Executor {
 
