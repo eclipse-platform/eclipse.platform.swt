@@ -12,9 +12,23 @@ If you only make changes in the Java part or need to configure SWT for running
 snippets, then you don't need to recompile the natives, instead, you can just
 use the pre-compiled libraries in the binary repository.
 
+* **Project Panama**
+
+In some areas SWT makes use of [Project Panama](https://openjdk.org/projects/panama/),
+to (re)generate the binding you need to download a suitable `jextract` (currently https://jdk.java.net/panama/17/)
+
 * **Natives Part**
 Make sure the binary project for your platform is imported and open in your
 workspace.
+
+## Generating Panama Bindings
+
+### OpenGL Bindings
+
+1. Install the opengl and freeglut headers, e.g. `sudo apt-get install libglu1-mesa-dev freeglut3-dev mesa-common-dev`
+2. go into folder `<your swt checkout>/org.eclipse.swt/Eclipse SWT OpenGL/gtk`
+3. run `jextract --source -l glut -l GLU -l GL -l GLX -I /usr/include/GL -t org.eclipse.swt.opengl.panama /usr/include/GL/glut.h`
+4. Open `org/eclipse/swt/opengl/panama/glut_h.java` and delete the package protected default contructor
 
 ## Building Natives
 

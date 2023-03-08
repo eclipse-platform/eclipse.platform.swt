@@ -19,9 +19,10 @@ Export-Package:
  org.eclipse.swt.internal.image;x-internal:=true,
  org.eclipse.swt.layout,
  org.eclipse.swt.opengl,
+ org.eclipse.swt.opengl.panama;x-internal:=true,
  org.eclipse.swt.printing,
  org.eclipse.swt.program,
  org.eclipse.swt.widgets
 Eclipse-ExtensibleAPI: true
-Bundle-RequiredExecutionEnvironment: JavaSE-11
+Bundle-RequiredExecutionEnvironment: JavaSE-17
 Automatic-Module-Name: org.eclipse.swt

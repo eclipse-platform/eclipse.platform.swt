@@ -248,6 +248,14 @@
             </message_arguments>
         </filter>
     </resource>
+    <resource path="Eclipse SWT OpenGL/gtk/org/eclipse/swt/opengl/GL.java" type="org.eclipse.swt.opengl.GL">
+        <filter id="576720909">
+            <message_arguments>
+                <message_argument value="glut_h"/>
+                <message_argument value="GL"/>
+            </message_arguments>
+        </filter>
+    </resource>
     <resource path="Eclipse SWT/common/org/eclipse/swt/events/ArmListener.java" type="org.eclipse.swt.events.ArmListener">
         <filter id="576720909">
             <message_arguments>

@@ -295,7 +295,10 @@
 		</xslt>
 		<ant antfile="${tmpdir}/copy.xml" target="copy_files"/>
 
-		<javac includeantruntime="false" srcdir="${buildDir}" encoding="utf8"></javac>
+		<javac includeantruntime="false" srcdir="${buildDir}" encoding="utf8" >
+			<compilerarg value="--version" />
+			<compilerarg value="--add-modules=jdk.incubator.foreign" />
+		</javac>
 	</target>
 
 	<!-- common build tasks -->
