@@ -698,6 +698,10 @@ public static int VERSION(int major, int minor, int micro) {
 	return (major << 16) + (minor << 8) + micro;
 }
 
+public static boolean isWayland () {
+	return !isX11 ();
+}
+
 public static boolean isX11 () {
 	return OS.GDK_WINDOWING_X11() && GDK.GDK_IS_X11_DISPLAY(GDK.gdk_display_get_default());
 }
