@@ -4907,6 +4907,12 @@ void flushQueueOnDnd() {
 }
 
 boolean sendDragEvent (int button, int stateMask, int x, int y, boolean isStateMask) {
+	if (OS.isWayland() && dragDetectionQueue != null) {
+		// Flush events used to detect drag&drop just before sending `DragDetect` event.
+		// This is to maintain the same order of events as on other platforms.
+		flushQueueOnDnd();
+	}
+
 	Event event = new Event ();
 	event.button = button;
 	Rectangle eventRect = new Rectangle (x, y, 0, 0);
@@ -5130,14 +5136,11 @@ boolean sendMouseEvent (int type, int button, int count, int detail, boolean sen
 				switch (type) {
 				case SWT.MouseMove:
 					if (dragDetect (event.x, event.y, false, true, null)) {
-						// Case where mouse motion triggered a DnD:
-						// Send only initial MouseDown but not the MouseMove events that were used
-						// to determine DnD threshold.
-						// This is to preserve backwards Cocoa/Win32 compatibility.
-						Event mouseDownEvent = dragDetectionQueue.getFirst();
-						mouseDownEvent.data = Boolean.valueOf(true); // force send MouseDown to avoid subsequent MouseMove before MouseDown.
-						dragDetectionQueue = null;
-						sendOrPost(SWT.MouseDown, mouseDownEvent);
+						// Note that if drag&drop is initiated, `dragDetect()` will no longer return true,
+						// because GTK considers gesture to be complete and inactive. In this case, code
+						// in #sendDragEvent() will flush the queue. This code path is used in the case when
+						// someone is listening to `DragDetect` but decided not to initiate drag&drop.
+						flushQueueOnDnd();
 					} else {
 						dragDetectionQueue.add(event);
 					}
