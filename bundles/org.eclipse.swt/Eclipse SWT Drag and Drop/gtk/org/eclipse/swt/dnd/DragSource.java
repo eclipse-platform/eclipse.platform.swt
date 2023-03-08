@@ -502,13 +502,6 @@ void dragEnd(long widget, long context){
 			long selection = GTK.gtk_tree_view_get_selection (widget);
 			GTK.gtk_tree_selection_set_select_function(selection,0,0,0);
 		}
-
-		/*
-		 * send a mouse Up signal for >GTK3.14 as Wayland (support as of 3.14)
-		 * does not trigger a MouseUp/Mouse_release_event on DragEnd.
-		 * See Bug 510446.
-		 */
-		control.notifyListeners(SWT.MouseUp, event);
 	}
 	moveData = false;
 }
