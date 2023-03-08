@@ -18,7 +18,7 @@
 
 	<target name="init">
 		<property name="plugin" value="org.eclipse.swt" />
-		<property name="version.suffix" value="3.122.100" />
+		<property name="version.suffix" value="3.123.100" />
 		<property name="full.name" value="${plugin}_${version.suffix}" />
 		<property name="temp.folder" value="${basedir}/temp.folder" />
 		<property name="plugin.destination" value="${basedir}" />
