@@ -391,7 +391,7 @@ void createHandle (int index, boolean fixed, boolean scrolled) {
 		}
 	}
 	if ((style & SWT.EMBEDDED) != 0) {
-		if (!OS.isX11()) {
+		if (OS.isWayland()) {
 			if (Device.DEBUG) {
 				new SWTError(SWT.ERROR_INVALID_ARGUMENT,"SWT.EMBEDDED is currently not yet supported in Wayland. \nPlease "
 					+ "refer to https://bugs.eclipse.org/bugs/show_bug.cgi?id=514487 for development status.").printStackTrace();

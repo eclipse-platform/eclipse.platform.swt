@@ -888,7 +888,7 @@ long gtk_menu_popped_up (long widget, long flipped_rect, long final_rect, long f
 	boolean flippedX = flipped_x == 1;
 	boolean flippedY = flipped_y == 1;
 	System.out.println("SWT_MENU_LOCATION_DEBUGGING enabled, printing positioning info for " + widget);
-	if (!OS.isX11()) System.out.println("Note: SWT is running on Wayland, coordinates will be parent-relative");
+	if (OS.isWayland()) System.out.println("Note: SWT is running on Wayland, coordinates will be parent-relative");
 	if (hasLocation) {
 		System.out.println("hasLocation is true and set coordinates are Point {" + this.x + ", " + this.y + "}");
 	} else {
@@ -1298,7 +1298,7 @@ void setOrientation (boolean create) {
  * @param eventPtr a pointer to the GdkEvent
  */
 void adjustParentWindowWayland (long eventPtr) {
-	if (!OS.isX11()) {
+	if (OS.isWayland()) {
 		long display = GDK.gdk_display_get_default ();
 		long pointer = GDK.gdk_get_pointer(display);
 		long deviceResource;

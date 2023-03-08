@@ -1396,7 +1396,7 @@ public void setRegion (Region region) {
 		 * This is a hack to force the outside pixels to be transparent on Wayland so that
 		 * Part-Drag on Eclipse does not cause black-out. See Bug 535083.
 		 */
-		if (!OS.isX11()) {
+		if (OS.isWayland()) {
 			double alpha = GTK.gtk_widget_get_opacity(topHandle);
 			if (alpha == 1) alpha = 0.99;
 			GTK.gtk_widget_set_opacity(topHandle, alpha);
@@ -2675,7 +2675,7 @@ boolean dragDetect (int x, int y, boolean filter, boolean dragOnTimeout, boolean
 	 *  as of GTK3.14 in order to acquire mouse position offsets to decide on dragging.
 	 *  See Bug 503431.
 	 */
-	if (!OS.isX11()) { // Wayland
+	if (OS.isWayland()) {
 		// Don't drag if mouse is not down. This condition is not as
 		// trivial as it seems, see Bug 541635 where drag is tested
 		// after drag already completed and mouse is released.
@@ -3519,7 +3519,7 @@ long gtk_button_press_event (long widget, long event, boolean sendMouseDown) {
 		 * Feature in GTK: DND detection for X.11 & Wayland support is done through motion notify event
 		 * instead of mouse click event. See Bug 503431.
 		 */
-		if (OS.isX11()) { // Wayland
+		if (OS.isX11()) {
 			if ((state & DRAG_DETECT) != 0 && hooks (SWT.DragDetect)) {
 				if (eventButton[0] == 1) {
 					boolean [] consume = new boolean [1];
@@ -3543,7 +3543,7 @@ long gtk_button_press_event (long widget, long event, boolean sendMouseDown) {
 		 * Feature in GTK: DND detection for X.11 & Wayland support is done through motion notify event
 		 * instead of mouse click event. See Bug 503431.
 		 */
-		if (OS.isX11()) { // Wayland
+		if (OS.isX11()) {
 			if (dragging) {
 				Point scaledEvent = DPIUtil.autoScaleDown(new Point((int)eventX[0], (int) eventY[0]));
 				sendDragEvent (eventButton[0], eventState[0], scaledEvent.x, scaledEvent.y, false);
@@ -4149,7 +4149,7 @@ long gtk_motion_notify_event (long widget, long event) {
 	 * Feature in GTK: DND detection for X.11 & Wayland support is done through motion notify event
 	 * instead of mouse click event. See Bug 503431.
 	 */
-	if (!OS.isX11()) { // Wayland
+	if (OS.isWayland()) {
 		boolean dragging = false;
 		if ((state & DRAG_DETECT) != 0 && hooks (SWT.DragDetect)) {
 				boolean [] consume = new boolean [1];
@@ -5005,7 +5005,7 @@ boolean sendMouseEvent (int type, int button, int count, int detail, boolean sen
 		 * event, similar to the way the caching logic does it when receiving a
 		 * MouseMove event. See bug 529126.
 		 */
-		if (!OS.isX11() && dragDetectionQueue != null) {
+		if (OS.isWayland() && dragDetectionQueue != null) {
 			/*
 			 * The first event in the queue will always be a MouseDown, as
 			 * the queue is only ever created if a MouseDown event is being cached.
@@ -5073,7 +5073,7 @@ boolean sendMouseEvent (int type, int button, int count, int detail, boolean sen
 	 *   On Wayland mouseMove is once again sent during DnD as per improved architecture.
 	 */
 	event.data = Boolean.valueOf(send);
-	if (!OS.isX11()) {
+	if (OS.isWayland()) {
 		if (type == SWT.MouseDown) {
 			// Delay MouseDown
 			dragDetectionQueue = new LinkedList<>();
@@ -6191,7 +6191,7 @@ void setZOrder (Control sibling, boolean above, boolean fixRelations, boolean fi
 				}
 			}
 			long redrawWindow = fixChildren ? parent.redrawWindow : 0;
-			if (!OS.isX11 () || (siblingWindow == 0 && (!above || redrawWindow == 0))) {
+			if (OS.isWayland () || (siblingWindow == 0 && (!above || redrawWindow == 0))) {
 				if (above) {
 					GDK.gdk_window_raise (window);
 					if (redrawWindow != 0) GDK.gdk_window_raise (redrawWindow);

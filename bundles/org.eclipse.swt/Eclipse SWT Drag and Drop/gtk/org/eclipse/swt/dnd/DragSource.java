@@ -470,10 +470,10 @@ void dragEnd(long widget, long context){
 		 * gdk_drag_context_get_dest_window() call. See Bug 503431.
 		 */
 		action = GDK.gdk_drag_context_get_selected_action(context);
-		if (OS.isX11()) { // Wayland
+		if (OS.isX11()) {
 			dest_window = GDK.gdk_drag_context_get_dest_window(context);
 		}
-		if (dest_window != 0 || !OS.isX11()) { // Wayland. NOTE: if dest_window is 0, drag was aborted
+		if (dest_window != 0 || OS.isWayland()) { // NOTE: if dest_window is 0, drag was aborted
 			if (moveData) {
 				operation = DND.DROP_MOVE;
 			} else {
@@ -489,7 +489,7 @@ void dragEnd(long widget, long context){
 	event.detail = operation;
 	notifyListeners(DND.DragEnd, event);
 
-	if (!OS.isX11()) { // Wayland
+	if (OS.isWayland()) {
 		/*
 		 * Feature in GTK: release events are not signaled during the dragEnd phrase of a Drag and Drop
 		 * in Wayland. In order to work with the current logic for DnD in multiselection
