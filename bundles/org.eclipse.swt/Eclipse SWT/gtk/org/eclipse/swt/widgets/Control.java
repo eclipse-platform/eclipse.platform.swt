@@ -4172,7 +4172,7 @@ long gtk_motion_notify_event (long widget, long event) {
 	if (containedInRegion(lastInput.x, lastInput.y)) return 0;
 
 	// See comment in #dragDetect()
-	if (OS.isWayland()) {
+	if ((dragDetectionQueue != null) && OS.isWayland()) {
 		boolean dragging = false;
 		if ((state & DRAG_DETECT) != 0 && hooks (SWT.DragDetect)) {
 				boolean [] consume = new boolean [1];
