@@ -3499,6 +3499,16 @@ long gtk_button_press_event (long widget, long event) {
 	return gtk_button_press_event (widget, event, true);
 }
 
+boolean wantDragDropDetection () {
+	// Drag&drop detection has its costs: when mouse button is pressed,
+	// mouse events are not reported until SWT can decide if drag&drop
+	// was triggered or not. For some applications, this could be a problem.
+	// Consider for example a graphical drawing application: it would expect
+	// to begin drawing as soon as mouse button is pressed.
+	// If app is interested in drag&drop, it will likely listen to `DragDetect`.
+	return hooks (SWT.DragDetect);
+}
+
 long gtk_button_press_event (long widget, long event, boolean sendMouseDown) {
 	mouseDown = true;
 
@@ -3548,7 +3558,7 @@ long gtk_button_press_event (long widget, long event, boolean sendMouseDown) {
 
 		// See comment in #dragDetect()
 		if (OS.isX11()) {
-			if ((state & DRAG_DETECT) != 0 && hooks (SWT.DragDetect)) {
+			if ((state & DRAG_DETECT) != 0 && wantDragDropDetection ()) {
 				if (eventButton[0] == 1) {
 					boolean [] consume = new boolean [1];
 					if (dragDetect ((int) eventX[0], (int) eventY[0], true, true, consume)) {
@@ -4174,7 +4184,7 @@ long gtk_motion_notify_event (long widget, long event) {
 	// See comment in #dragDetect()
 	if ((dragDetectionQueue != null) && OS.isWayland()) {
 		boolean dragging = false;
-		if ((state & DRAG_DETECT) != 0 && hooks (SWT.DragDetect)) {
+		if ((state & DRAG_DETECT) != 0 && wantDragDropDetection ()) {
 				boolean [] consume = new boolean [1];
 				if (dragDetect ((int) eventX[0], (int) eventY[0], true, true, consume)) {
 					dragging = true;
@@ -4885,6 +4895,17 @@ void restackWindow (long window, long sibling, boolean above) {
 	GDK.gdk_window_restack (window, sibling, above);
 }
 
+void flushQueueOnDnd() {
+	// Case where mouse motion triggered a DnD:
+	// Send only initial MouseDown but not the MouseMove events that were used
+	// to determine DnD threshold.
+	// This is to preserve backwards Cocoa/Win32 compatibility.
+	Event mouseDownEvent = dragDetectionQueue.getFirst();
+	mouseDownEvent.data = Boolean.valueOf(true); // force send MouseDown to avoid subsequent MouseMove before MouseDown.
+	dragDetectionQueue = null;
+	sendOrPost(SWT.MouseDown, mouseDownEvent);
+}
+
 boolean sendDragEvent (int button, int stateMask, int x, int y, boolean isStateMask) {
 	Event event = new Event ();
 	event.button = button;
@@ -5098,10 +5119,12 @@ boolean sendMouseEvent (int type, int button, int count, int detail, boolean sen
 	event.data = Boolean.valueOf(send);
 	if (OS.isWayland()) {
 		if (type == SWT.MouseDown) {
-			// Delay MouseDown
-			dragDetectionQueue = new LinkedList<>();
-			dragDetectionQueue.add(event);
-			return true; // event never canceled as not yet sent.
+			if (wantDragDropDetection ()) {
+				// Delay MouseDown
+				dragDetectionQueue = new LinkedList<>();
+				dragDetectionQueue.add(event);
+				return true; // event never canceled as not yet sent.
+			}
 		} else {
 			if (dragDetectionQueue != null) {
 				switch (type) {
