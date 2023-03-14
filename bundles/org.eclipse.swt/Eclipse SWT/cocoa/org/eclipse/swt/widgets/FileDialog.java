@@ -352,6 +352,7 @@ public String open () {
 	fullPath = null;
 	if ((style & SWT.SAVE) != 0) {
 		NSSavePanel savePanel = NSSavePanel.savePanel();
+		if (savePanel == null) return null;
 		panel = savePanel;
 		if (!overwrite) {
 			callback_overwrite_existing_file = new Callback(this, "_overwriteExistingFileCheck", 3);
@@ -363,6 +364,7 @@ public String open () {
 		}
 	} else {
 		NSOpenPanel openPanel = NSOpenPanel.openPanel();
+		if (openPanel == null) return null;
 		openPanel.setAllowsMultipleSelection((style & SWT.MULTI) != 0);
 		panel = openPanel;
 	}
