@@ -170,6 +170,8 @@ public DropTarget(Control control, int style) {
 		}
 		control.setData(DND.DROP_TARGET_KEY, this);
 
+		// There's a native GTK snippet available, find 'Issue0400_WaylandDndEvents.cpp' in this repo.
+		// It may be helpful in understanding / debugging bugs.
 		drag_motion_handler = OS.g_signal_connect(control.handle, OS.drag_motion, Drag_Motion.getAddress(), 0);
 		drag_leave_handler = OS.g_signal_connect(control.handle, OS.drag_leave, Drag_Leave.getAddress(), 0);
 		drag_data_received_handler = OS.g_signal_connect(control.handle, OS.drag_data_received, Drag_Data_Received.getAddress(), 0);

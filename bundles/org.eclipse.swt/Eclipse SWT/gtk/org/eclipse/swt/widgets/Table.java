@@ -1139,7 +1139,7 @@ void destroyItem (TableItem item) {
 @Override
 boolean dragDetect (int x, int y, boolean filter, boolean dragOnTimeout, boolean [] consume) {
 	boolean selected = false;
-	if (OS.isX11()) { // Wayland
+	if (OS.isX11()) {
 		if (filter) {
 			long [] path = new long [1];
 			if (GTK.gtk_tree_view_get_path_at_pos (handle, x, y, path, null, null, null)) {
@@ -2048,7 +2048,7 @@ long gtk_button_press_event (long widget, long event) {
 	 * selected, we can give the DnD handling to MOTION-NOTIFY. Seee Bug 503431
 	 */
 	if ((state & DRAG_DETECT) != 0 && hooks (SWT.DragDetect) &&
-			!OS.isX11() && eventType == GDK.GDK_BUTTON_PRESS) { // Wayland
+			OS.isWayland() && eventType == GDK.GDK_BUTTON_PRESS) {
 		// check to see if there is another event coming in that is not a double/triple click, this is to prevent Bug 514531
 		long nextEvent = GDK.gdk_event_peek();
 		if (nextEvent == 0) {
@@ -2259,7 +2259,7 @@ long gtk_button_release_event (long widget, long event) {
 	 * selected, we can give the DnD handling to MOTION-NOTIFY. On release, we can then re-enable the selection method
 	 * and also select the item in the tree by moving the selection logic to release instead. See Bug 503431.
 	 */
-	if ((state & DRAG_DETECT) != 0 && hooks (SWT.DragDetect) && !OS.isX11()) { // Wayland
+	if ((state & DRAG_DETECT) != 0 && hooks (SWT.DragDetect) && OS.isWayland()) {
 		long [] path = new long [1];
 		long selection = GTK.gtk_tree_view_get_selection (handle);
 		// free up the selection function on release.

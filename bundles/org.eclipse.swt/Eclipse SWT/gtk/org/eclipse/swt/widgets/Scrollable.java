@@ -43,7 +43,7 @@ public abstract class Scrollable extends Control {
 	ScrollBar horizontalBar, verticalBar;
 
 	/** See bug 484682 */
-	static final boolean RESIZE_ON_GETCLIENTAREA = !OS.isX11() || Boolean.getBoolean("org.eclipse.swt.resizeOnGetClientArea");
+	static final boolean RESIZE_ON_GETCLIENTAREA = OS.isWayland() || Boolean.getBoolean("org.eclipse.swt.resizeOnGetClientArea");
 
 /**
  * Prevents uninitialized instances from being created outside the package.
