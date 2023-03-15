@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2022 IBM Corporation and others. All rights reserved.
+ * Copyright (c) 2000, 2023 IBM Corporation and others. All rights reserved.
  * The contents of this file are made available under the terms
  * of the GNU Lesser General Public License (LGPL) Version 2.1 that
  * accompanies this distribution (lgpl-v21.txt).  The LGPL is also
@@ -237,9 +237,9 @@ char * GDK_nativeFunctionNames[] = {
 	"gdk_1x11_1window_1get_1xid",
 	"gdk_1x11_1window_1lookup_1for_1display",
 };
-#define NATIVE_FUNCTION_COUNT sizeof(GDK_nativeFunctionNames) / sizeof(char*)
-int GDK_nativeFunctionCount = NATIVE_FUNCTION_COUNT;
-int GDK_nativeFunctionCallCount[NATIVE_FUNCTION_COUNT];
+#define GDK_NATIVE_FUNCTION_COUNT sizeof(GDK_nativeFunctionNames) / sizeof(char*)
+int GDK_nativeFunctionCount = GDK_NATIVE_FUNCTION_COUNT;
+int GDK_nativeFunctionCallCount[GDK_NATIVE_FUNCTION_COUNT];
 
 #define STATS_NATIVE(func) Java_org_eclipse_swt_tools_internal_NativeStats_##func
 
@@ -817,9 +817,9 @@ char * GTK_nativeFunctionNames[] = {
 	"gtk_1window_1unfullscreen",
 	"gtk_1window_1unmaximize",
 };
-#define NATIVE_FUNCTION_COUNT sizeof(GTK_nativeFunctionNames) / sizeof(char*)
-int GTK_nativeFunctionCount = NATIVE_FUNCTION_COUNT;
-int GTK_nativeFunctionCallCount[NATIVE_FUNCTION_COUNT];
+#define GTK_NATIVE_FUNCTION_COUNT sizeof(GTK_nativeFunctionNames) / sizeof(char*)
+int GTK_nativeFunctionCount = GTK_NATIVE_FUNCTION_COUNT;
+int GTK_nativeFunctionCallCount[GTK_NATIVE_FUNCTION_COUNT];
 
 #define STATS_NATIVE(func) Java_org_eclipse_swt_tools_internal_NativeStats_##func
 
@@ -849,9 +849,9 @@ char * Graphene_nativeFunctionNames[] = {
 	"graphene_1rect_1free",
 	"graphene_1rect_1init",
 };
-#define NATIVE_FUNCTION_COUNT sizeof(Graphene_nativeFunctionNames) / sizeof(char*)
-int Graphene_nativeFunctionCount = NATIVE_FUNCTION_COUNT;
-int Graphene_nativeFunctionCallCount[NATIVE_FUNCTION_COUNT];
+#define Graphene_NATIVE_FUNCTION_COUNT sizeof(Graphene_nativeFunctionNames) / sizeof(char*)
+int Graphene_nativeFunctionCount = Graphene_NATIVE_FUNCTION_COUNT;
+int Graphene_nativeFunctionCallCount[Graphene_NATIVE_FUNCTION_COUNT];
 
 #define STATS_NATIVE(func) Java_org_eclipse_swt_tools_internal_NativeStats_##func
 
@@ -1273,9 +1273,9 @@ char * OS_nativeFunctionNames[] = {
 	"swt_1set_1lock_1functions",
 	"ubuntu_1menu_1proxy_1get",
 };
-#define NATIVE_FUNCTION_COUNT sizeof(OS_nativeFunctionNames) / sizeof(char*)
-int OS_nativeFunctionCount = NATIVE_FUNCTION_COUNT;
-int OS_nativeFunctionCallCount[NATIVE_FUNCTION_COUNT];
+#define OS_NATIVE_FUNCTION_COUNT sizeof(OS_nativeFunctionNames) / sizeof(char*)
+int OS_nativeFunctionCount = OS_NATIVE_FUNCTION_COUNT;
+int OS_nativeFunctionCallCount[OS_NATIVE_FUNCTION_COUNT];
 
 #define STATS_NATIVE(func) Java_org_eclipse_swt_tools_internal_NativeStats_##func
 

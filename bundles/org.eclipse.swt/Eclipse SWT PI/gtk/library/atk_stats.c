@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2020 IBM Corporation and others. All rights reserved.
+ * Copyright (c) 2000, 2023 IBM Corporation and others. All rights reserved.
  * The contents of this file are made available under the terms
  * of the GNU Lesser General Public License (LGPL) Version 2.1 that
  * accompanies this distribution (lgpl-v21.txt).  The LGPL is also
@@ -67,9 +67,9 @@ char * ATK_nativeFunctionNames[] = {
 	"memmove__Lorg_eclipse_swt_internal_accessibility_gtk_AtkTextRectangle_2JI",
 	"memmove__Lorg_eclipse_swt_internal_accessibility_gtk_AtkValueIface_2J",
 };
-#define NATIVE_FUNCTION_COUNT sizeof(ATK_nativeFunctionNames) / sizeof(char*)
-int ATK_nativeFunctionCount = NATIVE_FUNCTION_COUNT;
-int ATK_nativeFunctionCallCount[NATIVE_FUNCTION_COUNT];
+#define ATK_NATIVE_FUNCTION_COUNT sizeof(ATK_nativeFunctionNames) / sizeof(char*)
+int ATK_nativeFunctionCount = ATK_NATIVE_FUNCTION_COUNT;
+int ATK_nativeFunctionCallCount[ATK_NATIVE_FUNCTION_COUNT];
 
 #define STATS_NATIVE(func) Java_org_eclipse_swt_tools_internal_NativeStats_##func
 

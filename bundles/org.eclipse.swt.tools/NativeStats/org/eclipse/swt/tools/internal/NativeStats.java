@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2004, 2016 IBM Corporation and others.
+ * Copyright (c) 2004, 2023 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -18,7 +18,7 @@ import java.lang.reflect.*;
 import java.util.*;
 
 /**
- * Instructions on how to use the NativeStats tool with a standlaone SWT example:
+ * Instructions on how to use the NativeStats tool with a standalone SWT example:
  * 
  * 1) Compile the SWT native libraries defining the NATIVE_STATS flag (i.e. uncomment line in makefile).
  * 2) Add the following code around the sections of interest to dump the
@@ -39,9 +39,8 @@ public class NativeStats {
 	
 	Map<String, NativeFunction[]> snapshot;
 	
-	final static String[] classes = new String[]{"OS", "ATK", "GTK", "XPCOM", "COM", "AGL", "Gdip", "GLX", "Cairo", "WGL"};
+	final static String[] classes = new String[]{"OS", "ATK", "GDK", "GTK", "GTK3", "GTK4", "Graphene", "XPCOM", "COM", "AGL", "Gdip", "GLX", "Cairo", "WGL"};
 
-	
 	public static class NativeFunction implements Comparable<Object> {
 		String name;
 		int callCount;
@@ -184,9 +183,25 @@ public static final native int GLX_GetFunctionCount();
 public static final native String GLX_GetFunctionName(int index);
 public static final native int GLX_GetFunctionCallCount(int index);
 
+public static final native int GDK_GetFunctionCount();
+public static final native String GDK_GetFunctionName(int index);
+public static final native int GDK_GetFunctionCallCount(int index);
+
 public static final native int GTK_GetFunctionCount();
 public static final native String GTK_GetFunctionName(int index);
 public static final native int GTK_GetFunctionCallCount(int index);
+
+public static final native int GTK3_GetFunctionCount();
+public static final native String GTK3_GetFunctionName(int index);
+public static final native int GTK3_GetFunctionCallCount(int index);
+
+public static final native int GTK4_GetFunctionCount();
+public static final native String GTK4_GetFunctionName(int index);
+public static final native int GTK4_GetFunctionCallCount(int index);
+
+public static final native int Graphene_GetFunctionCount();
+public static final native String Graphene_GetFunctionName(int index);
+public static final native int Graphene_GetFunctionCallCount(int index);
 
 public static final native int XPCOM_GetFunctionCount();
 public static final native String XPCOM_GetFunctionName(int index);

@@ -74,7 +74,11 @@ ATKLIBS = `pkg-config --libs-only-L atk` -latk-1.0
 GLXLIBS = -lGL -lGLU -lm
 
 # Uncomment for Native Stats tool
-#NATIVE_STATS = -DNATIVE_STATS
+#SWT_NATIVE_STATS=1
+# Can be set via environment like: export SWT_NATIVE_STATS=1
+ifdef SWT_NATIVE_STATS
+NATIVE_STATS = -DNATIVE_STATS
+endif
 
 WEBKITLIBS = `pkg-config --libs-only-l gio-2.0`
 WEBKITCFLAGS = `pkg-config --cflags gio-2.0`

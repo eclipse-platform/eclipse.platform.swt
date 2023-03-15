@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2004, 2013 IBM Corporation and others.
+ * Copyright (c) 2004, 2023 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -122,15 +122,21 @@ void generateSourceFile(JNIClass clazz) {
 		if (progress != null) progress.step();
 	}
 	outputln("};");
-	output("#define NATIVE_FUNCTION_COUNT sizeof(");
+	output("#define ");
+	output(className);
+	output("_NATIVE_FUNCTION_COUNT sizeof(");
 	output(className);
 	outputln("_nativeFunctionNames) / sizeof(char*)");
 	output("int ");
 	output(className);
-	outputln("_nativeFunctionCount = NATIVE_FUNCTION_COUNT;");
+	output("_nativeFunctionCount = ");
+	output(className);
+	outputln("_NATIVE_FUNCTION_COUNT;");
 	output("int ");
 	output(className);
-	outputln("_nativeFunctionCallCount[NATIVE_FUNCTION_COUNT];");
+	output("_nativeFunctionCallCount[");
+	output(className);
+	outputln("_NATIVE_FUNCTION_COUNT];");
 	outputln();
 	generateStatsNatives(className);
 	outputln();

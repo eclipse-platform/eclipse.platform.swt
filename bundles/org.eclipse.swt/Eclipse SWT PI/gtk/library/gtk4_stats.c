@@ -156,9 +156,9 @@ char * GTK4_nativeFunctionNames[] = {
 	"gtk_1window_1set_1icon_1name",
 	"gtk_1window_1unminimize",
 };
-#define NATIVE_FUNCTION_COUNT sizeof(GTK4_nativeFunctionNames) / sizeof(char*)
-int GTK4_nativeFunctionCount = NATIVE_FUNCTION_COUNT;
-int GTK4_nativeFunctionCallCount[NATIVE_FUNCTION_COUNT];
+#define GTK4_NATIVE_FUNCTION_COUNT sizeof(GTK4_nativeFunctionNames) / sizeof(char*)
+int GTK4_nativeFunctionCount = GTK4_NATIVE_FUNCTION_COUNT;
+int GTK4_nativeFunctionCallCount[GTK4_NATIVE_FUNCTION_COUNT];
 
 #define STATS_NATIVE(func) Java_org_eclipse_swt_tools_internal_NativeStats_##func
 

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2022 IBM Corporation and others.
+ * Copyright (c) 2000, 2023 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -249,9 +249,9 @@ char * GTK3_nativeFunctionNames[] = {
 	"memmove__Lorg_eclipse_swt_internal_gtk3_GdkEventMotion_2JJ",
 	"memmove__Lorg_eclipse_swt_internal_gtk3_GdkEventWindowState_2JJ",
 };
-#define NATIVE_FUNCTION_COUNT sizeof(GTK3_nativeFunctionNames) / sizeof(char*)
-int GTK3_nativeFunctionCount = NATIVE_FUNCTION_COUNT;
-int GTK3_nativeFunctionCallCount[NATIVE_FUNCTION_COUNT];
+#define GTK3_NATIVE_FUNCTION_COUNT sizeof(GTK3_nativeFunctionNames) / sizeof(char*)
+int GTK3_nativeFunctionCount = GTK3_NATIVE_FUNCTION_COUNT;
+int GTK3_nativeFunctionCallCount[GTK3_NATIVE_FUNCTION_COUNT];
 
 #define STATS_NATIVE(func) Java_org_eclipse_swt_tools_internal_NativeStats_##func
 
