@@ -188,6 +188,15 @@ public void test_setAlignmentI() {
 
 @Test
 public void test_setOrientation() {
+	if (SwtTestUtil.isCocoa) {
+		// Button#setOrientation() does nothing on MacOS
+		if (SwtTestUtil.verbose) {
+			System.out.println(
+					"Excluded test_setOrientation(org.eclipse.swt.tests.junit.Test_org_eclipse_swt_widgets_Button).");
+		}
+		return;
+	}
+
 	button.setOrientation (SWT.RIGHT_TO_LEFT);
 	assertEquals(SWT.RIGHT_TO_LEFT, button.getOrientation());
 
