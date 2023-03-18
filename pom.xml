@@ -39,7 +39,6 @@
     <sonar.c.file.suffixes>-</sonar.c.file.suffixes>
     <sonar.cpp.file.suffixes>-</sonar.cpp.file.suffixes>
     <sonar.objc.file.suffixes>-</sonar.objc.file.suffixes>
-    <skipAPIDescription>true</skipAPIDescription>
     <skipAPIAnalysis>true</skipAPIAnalysis>
   </properties>
 
