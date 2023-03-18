@@ -13,6 +13,15 @@ on:
     branches: [ master ]
 
 jobs:
+  event_file:
+    name: "Event File"
+    runs-on: ubuntu-latest
+    steps:
+    - name: Upload
+      uses: actions/upload-artifact@v3
+      with:
+        name: Event File
+        path: ${{ github.event_path }}
   build:
     runs-on: ${{ matrix.config.os }}
     strategy:
@@ -66,16 +75,17 @@ jobs:
         -DforkCount=1
         -Dcompare-version-with-baselines.skip=false
         -Dmaven.compiler.failOnWarning=true
-        -Dmaven.test.failure.ignore=true
+        --fail-at-end
         -DskipNativeTests=false
         -DfailIfNoTests=false
         --global-toolchains ${{ github.workspace }}/eclipse.platform.swt/.github/toolchains.xml
         clean install
        working-directory: eclipse.platform.swt
     - name: Upload Test Results for ${{ matrix.config.name }} / Java-${{ matrix.java }}
+      if: always()
       uses: actions/upload-artifact@v3
       with:
         name: test-results-${{ matrix.config.native }}-java${{ matrix.java }}
-        if-no-files-found: error
+        if-no-files-found: warn
         path: |
           ${{ github.workspace }}/**/target/surefire-reports/*.xml
