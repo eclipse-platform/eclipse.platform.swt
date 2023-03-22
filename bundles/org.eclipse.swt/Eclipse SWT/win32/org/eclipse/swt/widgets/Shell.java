@@ -1928,16 +1928,38 @@ void setToolTipText (long hwnd, String text) {
 	lpti.uId = hwnd;
 	long hwndToolTip = toolTipHandle ();
 	maybeEnableDarkSystemTheme(hwndToolTip);
+
 	if (text == null) {
+		// Empty text, tool no longer needed, get rid of it
 		OS.SendMessage (hwndToolTip, OS.TTM_DELTOOL, 0, lpti);
-	} else if (OS.SendMessage (hwndToolTip, OS.TTM_GETTOOLINFO, 0, lpti) == 0) {
+		return;
+	}
+
+	if (OS.SendMessage (hwndToolTip, OS.TTM_GETTOOLINFO, 0, lpti) == 0) {
+		// Non-empty text again, create tool
 		lpti.uFlags = OS.TTF_IDISHWND | OS.TTF_SUBCLASS;
 		lpti.lpszText = OS.LPSTR_TEXTCALLBACK;
 		OS.SendMessage (hwndToolTip, OS.TTM_ADDTOOL, 0, lpti);
-	} else if (OS.SendMessage (hwndToolTip, OS.TTM_GETCURRENTTOOL, 0, lpti) != 0) {
-		if (lpti.uId == hwnd) {
-			OS.SendMessage (hwndToolTip, OS.TTM_UPDATE, 0, 0);
-		}
+		return;
+	}
+
+	// Previous `TTM_GETTOOLINFO` was sent to specific tool, which is likely set to `LPSTR_TEXTCALLBACK`.
+	// In this case, WINAPI will set `TOOLINFO.lpszText` to `LPSTR_TEXTCALLBACK` (numerically -1).
+	// Now we're sending `TTM_GETCURRENTTOOL`, which may be sent to a different tool.
+	// If it happens to have text other than `LPSTR_TEXTCALLBACK`, WINAPI will try to copy it for us.
+	// `TOOLINFO.lpszText` must be either NULL or point to valid buffer, or there will be a native crash.
+	// We only want to check visible, so set to NULL.
+	lpti.lpszText = 0;
+
+	// Updating invisible tooltip reportedly causes issues, see Bug 495473
+	boolean isCurrentlyVisible =
+		(OS.SendMessage (hwndToolTip, OS.TTM_GETCURRENTTOOL, 0, lpti) != 0) &&
+		(lpti.uId == hwnd);
+
+	if (isCurrentlyVisible) {
+		// Tool was already present and visible.
+		// Need to update it.
+		OS.SendMessage (hwndToolTip, OS.TTM_UPDATE, 0, 0);
 	}
 }
 
