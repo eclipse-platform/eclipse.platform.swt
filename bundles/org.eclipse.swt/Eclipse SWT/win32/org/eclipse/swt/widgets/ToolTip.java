@@ -418,7 +418,10 @@ public void setMessage (String string) {
 	checkWidget ();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	message = string;
-	updateMessage();
+
+	if (getVisible ()) {
+		OS.SendMessage (hwndToolTip (), OS.TTM_UPDATE, 0, 0);
+	}
 }
 
 /**
@@ -440,37 +443,6 @@ public void setText (String string) {
 	text = string;
 	//TODO - update when visible
 	//TODO - support text direction (?)
-}
-
-void updateMessage () {
-	long hwnd = hwndToolTip();
-	if (OS.SendMessage (hwnd, OS.TTM_GETCURRENTTOOL, 0, 0) != 0) {
-		TOOLINFO lpti = new TOOLINFO ();
-		lpti.cbSize = TOOLINFO.sizeof;
-		if (OS.SendMessage (hwnd, OS.TTM_GETCURRENTTOOL, 0, lpti) != 0) {
-			if (message != null && message.length() > 0) {
-				long hHeap = OS.GetProcessHeap ();
-				TCHAR buffer = new TCHAR (0, message, true);
-				int byteCount = buffer.length () * TCHAR.sizeof;
-				lpti.lpszText = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
-				OS.MoveMemory (lpti.lpszText, buffer, byteCount);
-				OS.SendMessage (hwnd, OS.TTM_UPDATETIPTEXT, 0, lpti);
-				OS.HeapFree(hHeap, 0, lpti.lpszText);
-			}
-			else {
-				/*
-				 * Bug 498895: When empty message string is set, then
-				 * underlying native tool-tip object goes into dirty state &
-				 * becomes unusable. Hence reset TOOLINFO#lpszText message
-				 * text field to -1 (which is the default initial value of
-				 * this field when fetch using TTM_GETCURRENTTOOL API call)
-				 * to set empty message string at native level successfully.
-				 */
-				lpti.lpszText =  -1;
-				OS.SendMessage (hwnd, OS.TTM_UPDATETIPTEXT, 0, lpti);
-			}
-		}
-	}
 }
 
 /**
@@ -522,6 +494,11 @@ public void setVisible (boolean visible) {
 			long lParam = OS.MAKELPARAM (nX, nY);
 			OS.SendMessage (hwndToolTip, OS.TTM_TRACKPOSITION, 0, lParam);
 
+			// Feature in Windows. If another tooltip is already active, sending
+			// `TTM_TRACKACTIVATE` is ignored and OLD tooltip remains active.
+			// The workaround is to explicitly deactivate previous tooltip.
+			OS.SendMessage (hwndToolTip, OS.TTM_TRACKACTIVATE, 0, 0);
+
 			/*
 			* Feature in Windows.  Windows will not show a tool tip
 			* if the cursor is outside the parent window (even on XP,
@@ -547,7 +524,6 @@ public void setVisible (boolean visible) {
 
 			int time = (int)OS.SendMessage (hwndToolTip, OS.TTM_GETDELAYTIME, OS.TTDT_AUTOPOP, 0);
 			OS.SetTimer (hwndToolTip, TIMER_ID, time, 0);
-			updateMessage();
 		} else {
 			OS.SendMessage (hwndToolTip, OS.TTM_TRACKACTIVATE, 0, lpti);
 			OS.SendMessage (hwndToolTip, OS.TTM_POP, 0, 0);
