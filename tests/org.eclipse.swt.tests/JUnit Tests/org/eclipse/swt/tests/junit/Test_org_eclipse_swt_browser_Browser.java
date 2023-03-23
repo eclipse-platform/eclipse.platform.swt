@@ -2245,6 +2245,60 @@ public void test_BrowserFunction_callback_with_javaReturningInt () {
 }
 
 
+@Test
+public void test_BrowserFunction_callback_with_javaReturningString () {
+	AtomicReference<String> returnString = new AtomicReference<>();
+
+	final String testString = "a\tcomplicated\"string\\\u00DF";
+	class JavascriptCallback extends BrowserFunction { // Note: Local class defined inside method.
+		JavascriptCallback(Browser browser, String name) {
+			super(browser, name);
+		}
+
+		@Override
+		public Object function(Object[] arguments) {
+			return testString;
+		}
+	}
+
+	class JavascriptCallback_javascriptReceivedJavaInt extends BrowserFunction { // Note: Local class defined inside method.
+		JavascriptCallback_javascriptReceivedJavaInt(Browser browser, String name) {
+			super(browser, name);
+		}
+
+		@Override
+		public Object function(Object[] arguments) {
+			returnString.set((String) arguments[0]);
+			return null;
+		}
+	}
+
+	String htmlWithScript = "<html><head>\n"
+			+ "<script language=\"JavaScript\">\n"
+			+ "function callCustomFunction() {\n"  // Define a javascript function.
+			+ "     document.body.style.backgroundColor = 'red'\n"
+			+ "     var retVal = jsCallbackToJava()\n"  // 2)
+			+ "		document.write(retVal)\n"        // This calls the javafunction that we registered. Set HTML body to return value.
+			+ "     jsSuccess(retVal)\n"				// 3)
+			+ "}"
+			+ "</script>\n"
+			+ "</head>\n"
+			+ "<body> If you see this, Javascript did not receive anything from Java. This page should just be '" + testString + "' </body>\n"
+			+ "</html>\n";
+	// 1)
+	browser.setText(htmlWithScript);
+	new JavascriptCallback(browser, "jsCallbackToJava");
+	new JavascriptCallback_javascriptReceivedJavaInt(browser, "jsSuccess");
+
+	browser.addProgressListener(callCustomFunctionUponLoad);
+
+	shell.open();
+	boolean passed = waitForPassCondition(() -> testString.equals(returnString.get()));
+	String message = "Java should have returned something back to Javascript. But something went wrong";
+	assertTrue(message, passed);
+}
+
+
 /**
  * Test that a callback works even after a new page is loaded.
  * I.e, BrowserFunctions should have to be re-initialized after a page load.
