@@ -147,6 +147,12 @@ abstract class StyledTextWriterBase extends TextWriter {
 		String atLineEnd = writeLineStart(lineBackground, indent, verticalIndent, alignment, justify);
 
 		int endOffset = startOffset + super.getCharCount();
+
+		// We are already at the end, should not write an empty paragraph
+		if (lineOffset >= endOffset) {
+			return;
+		}
+
 		int lineEndOffset = Math.min(lineLength, endOffset - lineOffset);
 
 		int outTextLen = 0; // collect the length of the text we output (unescaped)
