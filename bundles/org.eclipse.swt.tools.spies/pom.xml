@@ -19,6 +19,6 @@
   </parent>
   <groupId>org.eclipse.swt</groupId>
   <artifactId>org.eclipse.swt.tools.spies</artifactId>
-  <version>3.108.500-SNAPSHOT</version>
+  <version>3.109.0-SNAPSHOT</version>
   <packaging>eclipse-plugin</packaging>
 </project>
