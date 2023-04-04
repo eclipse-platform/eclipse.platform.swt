@@ -25,8 +25,6 @@
 		revision in the swp.map.
 		for Example: ant -f buildSWT.xml increment_version -Dnatives_changed=true
 
-	To build the libraries of a fragment, run
-		ant -f <fragment dir>/build.xml build_libraries
  -->
 
 <project name="swtbuild" basedir=".">
@@ -213,25 +211,6 @@
 		</exec>
 	</target>
 
-	<target name="init_fragment">
-		<condition property="m_fail">
-			<not><and>
-				<isset property="swt.ws"/>
-				<isset property="swt.os"/>
-			</and></not>
-		</condition>
-		<fail if="m_fail" message="Failed: ${swt.ws} and ${swt.os} not set"/>
-		<condition property="fragment" value="org.eclipse.swt.${swt.ws}.${swt.os}.${swt.arch}" else="org.eclipse.swt.${swt.ws}.${swt.os}">
-			<isset property="swt.arch"/>
-		</condition>
-		<property name="fragment_dir" value="${repo.bin}/binaries/${fragment}"/>
-		<script language="javascript">
-			<![CDATA[
-				project.setProperty("library_src", project.getProperty("src_" + project.getProperty("swt.ws")));
-			]]>
-		</script>
-	</target>
-	
 	<!-- Params: fragment, swt_version -->
 	<target name="commit_binaries" depends="get_version">
 		<!-- Get libraries to remove from repo -->
@@ -297,87 +276,6 @@
 		</exec>
 	</target>
 
-	<target name="init_build" if="eclipse.running">
-		<eclipse.refreshLocal resource="org.eclipse.swt" depth="infinite"/>
-		<eclipse.incrementalBuild project="org.eclipse.swt" kind="incr"/>
-	</target>
-
-	<target name="refresh_fragment" if="eclipse.running">
-		<echo>refreshing ${fragment}</echo>
-		<eclipse.refreshLocal resource="${fragment}" depth="infinite"/>
-	</target>
-
-	<target name="copy.library.src">
-		<script language="javascript">
-			<![CDATA[
-				var File = java.io.File;
-				var StreamTokenizer = java.io.StreamTokenizer;
-				var StringReader = java.io.StringReader;
-				task = project.createTask("copy");
-				projectDir = project.getProperty("project_dir");
-				task.setTodir(new File(project.getProperty("build_dir")));
-				tk = new StreamTokenizer(new StringReader(project.getProperty("library_src")));
-				while ((token = tk.nextToken()) != StreamTokenizer.TT_EOF) {
-					fileset = project.createDataType("fileset");
-					fileset.setDir(new File(projectDir + "/" + tk.sval + "/"));
-					task.addFileset(fileset);
-				}
-				task.execute();
-			]]>
-		</script>
-	</target>
-
-	<!-- Params: swt.ws, swt.os, swt.arch -->
-	<target name="build_libraries" depends="init_fragment,get_version">
-		<property name="swt.arch" value=""/>
-		<property name="clean" value="clean"/>
-		<property name="targets" value="install"/>
-		<property name="project_dir" value="${basedir}/${repo.src}"/>
-		<property name="output_dir" value="${basedir}/${fragment_dir}"/>
-		<property name="build_dir" value="${basedir}/${fragment_dir}/tmpdir"/>
-		<delete dir="${build_dir}" quiet="true"/>
-		<antcall target="copy.library.src"/>
-		<condition property="build_task" value="build_local_win" else="build_local">
-			<equals arg1="${swt.ws}" arg2="win32"/>
-		</condition>
-		<antcall target="init_build"/>
-		<antcall target="${build_task}">
-			<param name="build_targets" value="${targets}"/>
-			<param name="build_machine" value="${machine}"/>
-		</antcall>
-		<delete dir="${build_dir}" quiet="true"/>
-		<antcall target="refresh_fragment"/>
-	</target>
-
-	<target name="build_local">
-		<property name="gtk_version" value="3.0" />
-		<property name="SWT_JAVA_HOME" value="${java.home}"/><!-- Not overwritten if already set, e.g. as CLI argument -->
-		<echo>Compile SWT natives against headers and libraries from JDK: ${SWT_JAVA_HOME}</echo>
-		<exec dir="${build_dir}" executable="sh" failonerror="true">
-			<arg line="build.sh"/>
-			<env key="GTK_VERSION" value="${gtk_version}"/>
-			<env key="MODEL" value="${swt.arch}"/>
-			<env key="SWT_JAVA_HOME" value="${SWT_JAVA_HOME}"/>
-			<env key="OUTPUT_DIR" value="${output_dir}"/>
-			<arg line="${targets}"/>
-			<arg line="${clean}"/>
-		</exec>
-	</target>
-
-	<target name="build_local_win">
-		<pathconvert property="win_output_dir">
-			<path location="${output_dir}"></path>
-		</pathconvert>
-		<property name="SWT_JAVA_HOME" value="${java.home}"/><!-- Not overwritten if already set, e.g. as CLI argument -->
-		<echo>Compile SWT natives against headers and libraries from JDK: ${SWT_JAVA_HOME}</echo>
-		<exec dir="${build_dir}" executable="${build_dir}/build.bat" failonerror="true">
-			<env key="SWT_JAVA_HOME" value="${SWT_JAVA_HOME}"/>
-			<env key="OUTPUT_DIR" value="${win_output_dir}"/>
-			<arg line="${targets}"/>
-			<arg line="${clean}"/>
-		</exec>
-	</target>
-
 	<!-- ******************************************************************************** -->
 	<!-- targets to run the builds on the Eclipse Foundation Hudson in master-slave setup -->
 	<!-- ******************************************************************************** -->
@@ -400,21 +298,6 @@
 	<target name="create_file_if_property_exists" if="${property}">
 		<echo>"Creating file ${fileName}"</echo>
 		<echo file="${fileName}" append="false">true</echo>
-	</target>
-	
-	<target name="copy_library_src_and_create_zip" depends="init_fragment">
-		<property name="swt.arch" value=""/>
-		<property name="project_dir" value="${basedir}/${repo.src}"/>
-		<property name="output_dir" value="${basedir}/${fragment_dir}"/>
-		<property name="build_dir" value="${basedir}/${fragment_dir}/tmpdir"/>
-		<property name="zip_file" value="${fragment}.${TAG}.zip"/>
-		<delete dir="${build_dir}" quiet="true"/>
-		
-		<!-- copy the library source files -->
-		<antcall target="copy.library.src"/>
-		
-		<!-- create a zip of the native source files to be sent to the build machine -->
-		<zip destfile="${build_dir}/${zip_file}" basedir="${build_dir}" excludes="${zip_file}"/>
 	</target>
 
 </project>

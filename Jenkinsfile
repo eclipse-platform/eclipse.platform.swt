@@ -64,6 +64,10 @@ pipeline {
 	agent {
 		label 'centos-latest'
 	}
+	tools {
+		jdk 'openjdk-jdk17-latest'
+		maven 'apache-maven-latest'
+	}
 	environment {
 		MAVEN_OPTS = "-Xmx4G"
 		PR_VALIDATION_BUILD = "true"
@@ -129,16 +133,15 @@ pipeline {
 				stages {
 					stage("Collect SWT-native's sources") {
 						steps {
-							dir('eclipse.platform.swt/binaries'){
-								withAnt(installation: 'apache-ant-latest', jdk: 'openjdk-jdk11-latest') { // nashorn javascript-engine required in ant-scripts
-									sh '''
-										pfSpec=(${PLATFORM//"."/ })
-										ant -f binaries-parent/build.xml copy_library_src_and_create_zip -Dws=${pfSpec[0]} -Dos=${pfSpec[1]} -Darch=${pfSpec[2]}
-									'''
-								}
-								dir("org.eclipse.swt.${PLATFORM}/tmpdir") {
-									stash name:"swt.binaries.sources.${PLATFORM}", includes: "org.eclipse.swt.${PLATFORM}.master.zip"
-								}
+							dir('eclipse.platform.swt/bundles/org.eclipse.swt') {
+								sh '''
+									pfSpec=(${PLATFORM//"."/ })
+									java -Dws=${pfSpec[0]} -Darch=${pfSpec[2]} build-scripts/CollectSources.java -nativeSources \
+										"${WORKSPACE}/eclipse.platform.swt/binaries/org.eclipse.swt.${PLATFORM}/target/natives-build-temp"
+								'''
+							}
+							dir("eclipse.platform.swt/binaries/org.eclipse.swt.${PLATFORM}/target/natives-build-temp") {
+								stash(name:"swt.binaries.sources.${PLATFORM}")
 							}
 						}
 					}
@@ -163,24 +166,17 @@ pipeline {
 									dir('jdk.resources') {
 										unstash "jdk.resources.${os}.${arch}"
 									}
-									// TODO: don't zip the sources and just (un)stash them unzipped! That safes the unzipping and removal of the the zip
 									withEnv(['MODEL=' + arch, "OUTPUT_DIR=${WORKSPACE}/libs", "SWT_JAVA_HOME=${WORKSPACE}/jdk.resources"]) {
 										if (isUnix()){
 											sh '''
-												unzip -aa org.eclipse.swt.${PLATFORM}.master.zip
-												rm org.eclipse.swt.${PLATFORM}.master.zip
 												mkdir libs
-												
 												sh build.sh install
 												ls -1R libs
 											'''
 										} else {
 											withEnv(['PATH=C:\\tools\\cygwin\\bin;' + env.PATH]) {
 												bat '''
-													unzip org.eclipse.swt.%PLATFORM%.master.zip
-													rm org.eclipse.swt.%PLATFORM%.master.zip
 													mkdir libs
-													
 													cmd /c build.bat x86_64 all install
 													ls -1R libs
 												'''
@@ -277,11 +273,6 @@ pipeline {
 			}	
 		}
 		stage('Build') {
-			tools {
-				// Define tools only in this stage to not interfere with default environemts of SWT-natives build-agents
-				jdk 'openjdk-jdk17-latest'
-				maven 'apache-maven-latest'
-			}
 			steps {
 				xvnc(useXauthority: true) {
 					dir('eclipse.platform.swt') {
