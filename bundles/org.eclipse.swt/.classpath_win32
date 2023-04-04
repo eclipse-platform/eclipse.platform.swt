@@ -25,5 +25,6 @@
 	<classpathentry kind="src" path="Eclipse SWT Browser/win32"/>
 	<classpathentry kind="src" path="Eclipse SWT OpenGL/win32"/>
 	<classpathentry kind="src" path="Eclipse SWT OpenGL/common"/>
+	<classpathentry kind="src" output="bin_build" path="build-scripts"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

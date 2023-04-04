@@ -48,6 +48,9 @@
 					<exists>META-INF/MANIFEST.MF</exists>
 				</file>
 			</activation>
+			<properties>
+				<swtMainProject>${project.basedir}/../../bundles/org.eclipse.swt</swtMainProject>
+			</properties>
 			<build>
 				<plugins>
 					<plugin>
@@ -104,7 +107,7 @@
 								</goals>
 								<configuration>
 									<target> <!-- Read git qualifier of 'org.eclipse.swt' project. -->
-										<loadfile property="swtBuildQualifier" srcFile="../../bundles/org.eclipse.swt/target/swtBuildQualifier.txt"/>
+										<loadfile property="swtBuildQualifier" srcFile="${swtMainProject}/target/swtBuildQualifier.txt"/>
 									</target>
 									<exportAntProperties>true</exportAntProperties>
 								</configuration>
@@ -123,7 +126,7 @@
 								</configuration>
 							</execution>
 							<execution>
-								<id>natives</id>
+								<id>build-native-binaries</id>
 								<phase>process-resources</phase>
 								<goals>
 									<goal>run</goal>
@@ -131,11 +134,37 @@
 								<configuration>
 									<target>
 										<!-- See https://stackoverflow.com/a/53227117 and http://ant-contrib.sourceforge.net/tasks/tasks/index.html -->
-										<taskdef resource="net/sf/antcontrib/antlib.xml" />
-										<if>
-											<equals arg1="${native}" arg2="${ws}.${os}.${arch}" />
+										<taskdef resource="net/sf/antcontrib/antlib.xml"/>
+										<if><equals arg1="${native}" arg2="${ws}.${os}.${arch}"/>
 											<then>
-												<ant antfile="../binaries-parent/build.xml" target="build_libraries" />
+												<property name="build_dir" value="${project.build.directory}/natives-build-temp"/>
+												<exec executable="java" dir="${swtMainProject}" failonerror="true">
+													<arg line="-Dws=${ws} build-scripts/CollectSources.java -nativeSources '${build_dir}'"/>
+												</exec>
+												<property name="SWT_JAVA_HOME" value="${java.home}"/><!-- Not overwritten if already set, e.g. as CLI argument -->
+												<echo>Compile SWT natives against headers and libraries from JDK: ${SWT_JAVA_HOME}</echo>
+												<if><equals arg1="${ws}" arg2="win32" />
+													<then>
+														<exec dir="${build_dir}" executable="${build_dir}/build.bat" failonerror="true">
+															<env key="SWT_JAVA_HOME" value="${SWT_JAVA_HOME}"/>
+															<env key="OUTPUT_DIR" value="${project.basedir}"/>
+															<arg line="${targets}"/>
+															<arg line="clean"/>
+														</exec>
+													</then>
+													<else>
+														<property name="gtk_version" value="3.0" />
+														<exec dir="${build_dir}" executable="sh" failonerror="true">
+															<arg line="build.sh"/>
+															<env key="SWT_JAVA_HOME" value="${SWT_JAVA_HOME}"/>
+															<env key="OUTPUT_DIR" value="${project.basedir}"/>
+															<env key="GTK_VERSION" value="${gtk_version}"/>
+															<env key="MODEL" value="${arch}"/>
+															<arg line="${targets}"/>
+															<arg line="clean"/>
+														</exec>
+													</else>
+												</if>
 											</then>
 										</if>
 									</target>
@@ -157,18 +186,8 @@
 						</executions>
 						<dependencies>
 							<dependency>
-								<groupId>org.mozilla</groupId>
-								<artifactId>rhino-runtime</artifactId>
-								<version>1.7.14</version>
-							</dependency>
-							<dependency>
 								<groupId>org.apache.ant</groupId>
 								<artifactId>ant</artifactId>
-								<version>1.10.14</version>
-							</dependency>
-							<dependency>
-								<groupId>org.apache.ant</groupId>
-								<artifactId>ant-apache-bsf</artifactId>
 								<version>1.10.14</version>
 							</dependency>
 							<dependency>
