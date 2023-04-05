@@ -769,9 +769,9 @@ boolean becomeFirstResponder (long id, long sel) {
 
 void calculateVisibleRegion (NSView view, long visibleRgn, boolean clipChildren) {
 	long tempRgn = OS.NewRgn ();
-	if (!view.isHiddenOrHasHiddenAncestor() && isDrawing()) {
+	NSWindow window; // https://bugs.eclipse.org/bugs/show_bug.cgi?id=559198
+	if (!view.isHiddenOrHasHiddenAncestor() && isDrawing() && (window = view.window ()) != null) {
 		long childRgn = OS.NewRgn ();
-		NSWindow window = view.window ();
 		NSView contentView = window.contentView();
 		NSView frameView = contentView.superview();
 		NSRect bounds = contentView.visibleRect();
