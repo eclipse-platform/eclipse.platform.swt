@@ -30,6 +30,7 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Text;
 import org.junit.Before;
@@ -48,6 +49,11 @@ public void setUp() {
 	super.setUp();
 	ccombo = new CCombo(shell, 0);
 	setWidget(ccombo);
+}
+
+@Override
+protected Composite getElementExpectedToHaveFocusAfterSetFocusOnParent(Composite visibleChild) {
+	return visibleChild.getParent();
 }
 
 @Override
