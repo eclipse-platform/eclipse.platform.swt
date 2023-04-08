@@ -116,6 +116,34 @@ public void restore(CTabFolderEvent event);
 public void showList(CTabFolderEvent event);
 
 /**
+ * Sent when the tab items count changes
+ * 
+ * @param event from observed tab folder
+ * @since 3.124
+ */
+public default void itemsCount(CTabFolderEvent event) {
+	// do nothing by default
+}
+
+/**
+ * Static helper method to create a <code>CTabFolder2Listener</code> for the
+ * {@link #itemsCount(CTabFolderEvent e)}) method, given a lambda expression or
+ * a method reference.
+ *
+ * @param c the consumer of the event
+ * @return CTabFolder2Listener
+ * @since 3.124
+ */
+public static CTabFolder2Listener itemsCountAdapter(Consumer<CTabFolderEvent> c) {
+	return new CTabFolder2Adapter() {
+		@Override
+		public void itemsCount(CTabFolderEvent e) {
+			c.accept(e);
+		}
+	};
+}
+
+/**
  * Static helper method to create a <code>CTabFolder2Listener</code> for the
  * {@link #close(CTabFolderEvent e)}) method, given a lambda expression or a method reference.
  *

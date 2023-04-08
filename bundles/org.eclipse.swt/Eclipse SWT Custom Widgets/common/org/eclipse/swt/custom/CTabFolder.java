@@ -744,6 +744,14 @@ Image createButtonImage(Display display, int button) {
 	image = new Image(display, new AutoScaleImageDataProvider(display, imageData, DPIUtil.getDeviceZoom()));
 	return image;
 }
+
+private void notifyItemCountChange() {
+	CTabFolderEvent e = new CTabFolderEvent(this);
+	for (CTabFolder2Listener listener : folderListeners) {
+		listener.itemsCount(e);
+	}
+}
+
 void createItem (CTabItem item, int index) {
 	if (0 > index || index > getItemCount ())SWT.error (SWT.ERROR_INVALID_RANGE);
 	item.parent = this;
@@ -769,6 +777,7 @@ void createItem (CTabItem item, int index) {
 	} else {
 		updateFolder(REDRAW_TABS);
 	}
+	notifyItemCountChange();
 }
 void destroyItem (CTabItem item) {
 	if (inDispose) return;
@@ -789,6 +798,7 @@ void destroyItem (CTabItem item) {
 		updateButtons();
 		setButtonBounds();
 		redraw();
+		notifyItemCountChange();
 		return;
 	}
 
@@ -820,6 +830,7 @@ void destroyItem (CTabItem item) {
 
 	requestLayout();
 	updateFolder(UPDATE_TAB_HEIGHT | REDRAW_TABS);
+	notifyItemCountChange();
 }
 
 /**
@@ -1631,7 +1642,6 @@ void onKeyDown (Event event) {
 						Rectangle chevronRect = chevronItem.getBounds();
 						chevronRect = event.display.map(chevronTb, this, chevronRect);
 						CTabFolderEvent e = new CTabFolderEvent(this);
-						e.widget = this;
 						e.time = event.time;
 						e.x = chevronRect.x;
 						e.y = chevronRect.y;
@@ -1953,7 +1963,6 @@ void onMouse(Event event) {
 					redraw(item.closeRect.x, item.closeRect.y, item.closeRect.width, item.closeRect.height, false);
 					if (!selected) return;
 					CTabFolderEvent e = new CTabFolderEvent(this);
-					e.widget = this;
 					e.time = event.time;
 					e.item = item;
 					e.doit = true;
@@ -2016,7 +2025,6 @@ void onPageTraversal(Event event) {
 					Rectangle chevronRect = chevronItem.getBounds();
 					chevronRect = event.display.map(chevronTb, this, chevronRect);
 					CTabFolderEvent e = new CTabFolderEvent(this);
-					e.widget = this;
 					e.time = event.time;
 					e.x = chevronRect.x;
 					e.y = chevronRect.y;
@@ -2151,7 +2159,6 @@ void onSelection(Event event) {
 	}
 	if (event.widget == maxItem) {
 		CTabFolderEvent e = new CTabFolderEvent(this);
-		e.widget = CTabFolder.this;
 		e.time = event.time;
 		for (CTabFolder2Listener folderListener : folderListeners) {
 			if (maximized) {
@@ -2162,7 +2169,6 @@ void onSelection(Event event) {
 		}
 	} else if (event.widget == minItem) {
 		CTabFolderEvent e = new CTabFolderEvent(this);
-		e.widget = CTabFolder.this;
 		e.time = event.time;
 		for (CTabFolder2Listener folderListener : folderListeners) {
 			if (minimized) {
@@ -2175,7 +2181,6 @@ void onSelection(Event event) {
 		Rectangle chevronRect = chevronItem.getBounds();
 		chevronRect = event.display.map(chevronTb, this, chevronRect);
 		CTabFolderEvent e = new CTabFolderEvent(this);
-		e.widget = this;
 		e.time = event.time;
 		e.x = chevronRect.x;
 		e.y = chevronRect.y;

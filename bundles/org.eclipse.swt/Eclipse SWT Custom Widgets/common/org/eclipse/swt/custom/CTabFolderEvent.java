@@ -73,6 +73,7 @@ public class CTabFolderEvent extends TypedEvent {
  */
 CTabFolderEvent(Widget w) {
 	super(w);
+	this.widget = w;
 }
 
 /**
