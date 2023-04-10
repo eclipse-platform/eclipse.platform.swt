@@ -767,48 +767,64 @@ boolean becomeFirstResponder (long id, long sel) {
 	return super.becomeFirstResponder (id, sel);
 }
 
-void calculateVisibleRegion (NSView view, long visibleRgn, boolean clipChildren) {
+private void setEmptyRgn (long rgn) {
 	long tempRgn = OS.NewRgn ();
-	if (!view.isHiddenOrHasHiddenAncestor() && isDrawing()) {
-		long childRgn = OS.NewRgn ();
-		NSWindow window = view.window ();
-		NSView contentView = window.contentView();
-		NSView frameView = contentView.superview();
-		NSRect bounds = contentView.visibleRect();
-		bounds = contentView.convertRect_toView_(bounds, view);
-		short[] rect = new short[4];
-		OS.SetRect(rect, (short)bounds.x, (short)bounds.y, (short)(bounds.x + bounds.width), (short)(bounds.y + bounds.height));
-		OS.RectRgn(visibleRgn, rect);
-		NSView tempView = view, lastControl = null;
-		while (tempView.id != frameView.id) {
-			bounds = tempView.visibleRect();
-			bounds = tempView.convertRect_toView_(bounds, view);
-			OS.SetRect(rect, (short)bounds.x, (short)bounds.y, (short)(bounds.x + bounds.width), (short)(bounds.y + bounds.height));
-			OS.RectRgn(tempRgn, rect);
-			OS.SectRgn (tempRgn, visibleRgn, visibleRgn);
-			if (OS.EmptyRgn (visibleRgn)) break;
-			if (clipChildren || tempView.id != view.id) {
-				NSArray subviews = tempView.subviews();
-				long count = subviews.count();
-				for (int i = 0; i < count; i++) {
-					NSView child = new NSView (subviews.objectAtIndex(count - i - 1));
-					if (lastControl != null && child.id == lastControl.id) break;
-					if (child.isHidden()) continue;
-					bounds = child.visibleRect();
-					bounds = child.convertRect_toView_(bounds, view);
-					OS.SetRect(rect, (short)bounds.x, (short)bounds.y, (short)(bounds.x + bounds.width), (short)(bounds.y + bounds.height));
-					OS.RectRgn(tempRgn, rect);
-					OS.UnionRgn (tempRgn, childRgn, childRgn);
-				}
-			}
-			lastControl = tempView;
-			tempView = tempView.superview();
-		}
-		OS.DiffRgn (visibleRgn, childRgn, visibleRgn);
-		OS.DisposeRgn (childRgn);
-	} else {
-		OS.CopyRgn (tempRgn, visibleRgn);
+	OS.CopyRgn (tempRgn, rgn);
+	OS.DisposeRgn (tempRgn);
+}
+
+void calculateVisibleRegion (NSView view, long visibleRgn, boolean clipChildren) {
+	if (view.isHiddenOrHasHiddenAncestor() || !isDrawing()) {
+		setEmptyRgn (visibleRgn);
+		return;
 	}
+
+	NSWindow window = view.window ();
+	if (null == window) {
+		// Issue 472: this function may get called too early when
+		// creating a control, before `view` is connected to a `window`.
+		// See commit message for details.
+		// The workaround is to return empty visible region.
+		setEmptyRgn (visibleRgn);
+		return;
+	}
+
+	long tempRgn = OS.NewRgn ();
+	long childRgn = OS.NewRgn ();
+	NSView contentView = window.contentView();
+	NSView frameView = contentView.superview();
+	NSRect bounds = contentView.visibleRect();
+	bounds = contentView.convertRect_toView_(bounds, view);
+	short[] rect = new short[4];
+	OS.SetRect(rect, (short)bounds.x, (short)bounds.y, (short)(bounds.x + bounds.width), (short)(bounds.y + bounds.height));
+	OS.RectRgn(visibleRgn, rect);
+	NSView tempView = view, lastControl = null;
+	while (tempView.id != frameView.id) {
+		bounds = tempView.visibleRect();
+		bounds = tempView.convertRect_toView_(bounds, view);
+		OS.SetRect(rect, (short)bounds.x, (short)bounds.y, (short)(bounds.x + bounds.width), (short)(bounds.y + bounds.height));
+		OS.RectRgn(tempRgn, rect);
+		OS.SectRgn (tempRgn, visibleRgn, visibleRgn);
+		if (OS.EmptyRgn (visibleRgn)) break;
+		if (clipChildren || tempView.id != view.id) {
+			NSArray subviews = tempView.subviews();
+			long count = subviews.count();
+			for (int i = 0; i < count; i++) {
+				NSView child = new NSView (subviews.objectAtIndex(count - i - 1));
+				if (lastControl != null && child.id == lastControl.id) break;
+				if (child.isHidden()) continue;
+				bounds = child.visibleRect();
+				bounds = child.convertRect_toView_(bounds, view);
+				OS.SetRect(rect, (short)bounds.x, (short)bounds.y, (short)(bounds.x + bounds.width), (short)(bounds.y + bounds.height));
+				OS.RectRgn(tempRgn, rect);
+				OS.UnionRgn (tempRgn, childRgn, childRgn);
+			}
+		}
+		lastControl = tempView;
+		tempView = tempView.superview();
+	}
+	OS.DiffRgn (visibleRgn, childRgn, visibleRgn);
+	OS.DisposeRgn (childRgn);
 	OS.DisposeRgn (tempRgn);
 }
 
