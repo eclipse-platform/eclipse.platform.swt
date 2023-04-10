@@ -31,10 +31,7 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.Text;
-import org.eclipse.swt.widgets.Widget;
+import org.eclipse.swt.widgets.*;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -1668,5 +1665,32 @@ private Event keyEvent(int key, int type, Widget w) {
 	e.type = type;
 	e.widget = w;
 	return e;
+}
+
+/**
+ * Issue 472 - NPE on macOS when creating multiline Text inside Group
+ */
+@Test
+public void test_issue472() {
+	shell.open();
+
+	// On different macOS, different font height is needed to reproduce
+	for (int iFontHeight = 10; iFontHeight < 20; iFontHeight++)
+	{
+		Font font = new Font(shell.getDisplay(), "", iFontHeight, 0);
+
+		Group group = new Group(shell, SWT.NONE);
+		group.setText("Group");
+		group.setFont(font);
+
+		try {
+			Text text = new Text(group, SWT.MULTI | SWT.BORDER | SWT.READ_ONLY | SWT.WRAP);
+			text.dispose();
+		} catch (NullPointerException ex) {
+			throw new RuntimeException("NPE with font=" + iFontHeight, ex);
+		} finally {
+			font.dispose();
+		}
+	}
 }
 }
