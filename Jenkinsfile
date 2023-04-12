@@ -134,21 +134,8 @@ pipeline {
 									unstash "swt.binaries.sources.${PLATFORM}"
 									
 									def (ws, os, arch) = env.PLATFORM.split('\\.')
-									echo "OS: ${os}"
 									echo "ARCH: ${arch}"
-									def javaHome = env.JAVA_HOME
-									// Some of the native-build agents don't have their JAVA_HOME properly set. Actually that should be done in the agents
-									//TODO: ask the infra-team to fix the setup. This is a infra-setup detail and should not be handled in the pipeline.
-									if(os =='linux' && arch == 'aarch64'){
-										def armJDK = '/usr/lib/jvm/java-11-openjdk-arm64'
-										javaHome = fileExists(armJDK) ? armJDK : '/usr/lib/jvm/java-11-openjdk'
-									} else if (os =='linux' && arch == 'ppc64le') {
-										javaHome = '/usr/lib/jvm/java-11-openjdk-11.0.15.0.10-3.el8.ppc64le'
-									} else if (os =='linux' && arch == 'x86_64') {
-										javaHome = tool(type:'jdk', name:'temurin-jdk11-latest')
-									} else if(os == 'macosx') {
-										javaHome = tool(type:'jdk', name:'temurin-jdk11-latest')
-									}
+									def javaHome = tool(type:'jdk', name:'temurin-jdk11-latest')
 									echo 'JAVA_HOME: ' + javaHome
 									// TODO: don't zip the sources and just (un)stash them unzipped! That safes the unzipping and removal of the the zip
 									withEnv(['MODEL=' + arch, "OUTPUT_DIR=${WORKSPACE}/libs", 'JAVA_HOME=' + javaHome]) {
