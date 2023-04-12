@@ -32,6 +32,11 @@ spec:
 	}
 }
 
+/** Returns the download URL of the JDK against whoose C headers (in the 'include/' folder) and native libaries the SWT natives are compiled.*/
+def getNativeJdkUrl(String os, String arch){ // To update the used JDK version update the URL template below
+	return "https://download.eclipse.org/justj/jres/17/downloads/20230428_1804/org.eclipse.justj.openjdk.hotspot.jre.minimal.stripped-17.0.7-${os}-${arch}.tar.gz"
+}
+
 pipeline {
 	options {
 		skipDefaultCheckout() // Specialiced checkout is performed below
@@ -129,29 +134,23 @@ pipeline {
 						}
 						steps {
 							script {
+								def (ws, os, arch) = env.PLATFORM.split('\\.')
+								dir("jdk-download-${os}.${arch}") {
+									// Fetch the JDK, which provides the C header-files and shared native libaries, against which the natives are build.
+									sh "curl ${getNativeJdkUrl(os, arch)} | tar -xzf - include/ lib/"
+									stash name:"jdk.resources.${os}.${arch}", includes: "include/,lib/"
+									deleteDir()
+								}
 								nativeBuildAgent("${PLATFORM}") {
 									cleanWs() // Workspace is not cleaned up by default, so we do it explicitly
-									unstash "swt.binaries.sources.${PLATFORM}"
-									
-									def (ws, os, arch) = env.PLATFORM.split('\\.')
 									echo "OS: ${os}"
 									echo "ARCH: ${arch}"
-									def javaHome = env.JAVA_HOME
-									// Some of the native-build agents don't have their JAVA_HOME properly set. Actually that should be done in the agents
-									//TODO: ask the infra-team to fix the setup. This is a infra-setup detail and should not be handled in the pipeline.
-									if(os =='linux' && arch == 'aarch64'){
-										def armJDK = '/usr/lib/jvm/java-11-openjdk-arm64'
-										javaHome = fileExists(armJDK) ? armJDK : '/usr/lib/jvm/java-11-openjdk'
-									} else if (os =='linux' && arch == 'ppc64le') {
-										javaHome = '/usr/lib/jvm/java-11-openjdk-11.0.15.0.10-3.el8.ppc64le'
-									} else if (os =='linux' && arch == 'x86_64') {
-										javaHome = tool(type:'jdk', name:'temurin-jdk11-latest')
-									} else if(os == 'macosx') {
-										javaHome = tool(type:'jdk', name:'temurin-jdk11-latest')
+									unstash "swt.binaries.sources.${PLATFORM}"
+									dir('jdk.resources') {
+										unstash "jdk.resources.${os}.${arch}"
 									}
-									echo 'JAVA_HOME: ' + javaHome
 									// TODO: don't zip the sources and just (un)stash them unzipped! That safes the unzipping and removal of the the zip
-									withEnv(['MODEL=' + arch, "OUTPUT_DIR=${WORKSPACE}/libs", 'JAVA_HOME=' + javaHome]) {
+									withEnv(['MODEL=' + arch, "OUTPUT_DIR=${WORKSPACE}/libs", "SWT_JAVA_HOME=${WORKSPACE}/jdk.resources"]) {
 										if(isUnix()){
 											sh '''
 												unzip -aa org.eclipse.swt.${PLATFORM}.master.zip

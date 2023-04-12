@@ -25,7 +25,7 @@ You need to install the following on your system:
 * make
 * gcc
 * GTK+ development files (gtk3-devel)
-* Java 8 or 11 JDK
+* Java 17 JDK
 * (optional) Webkit for GTK development files (webkit2gtk3-devel)
 
 ### Building and Testing locally

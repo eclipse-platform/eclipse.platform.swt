@@ -14,6 +14,11 @@
 
 # Makefile for SWT libraries on Cocoa/Mac
 
+# assumes these variables are set in the environment from which make is run
+#	SWT_JAVA_HOME
+#	OUTPUT_DIR
+#	AWT_LIB_PATH (only if build jawt shall be build)
+
 include make_common.mak
 
 SWT_PREFIX=swt
@@ -32,7 +37,8 @@ AWT_OBJECTS   = swt_awt.o
 
 #SWT_DEBUG = -g
 CFLAGS = -c -xobjective-c -Wall $(ARCHS) -DSWT_VERSION=$(SWT_VERSION) $(NATIVE_STATS) $(SWT_DEBUG) -DUSE_ASSEMBLER -DCOCOA -DATOMIC \
-	$(CFLAGS_JAVA_VM) \
+	-I $(SWT_JAVA_HOME)/include \
+	-I $(SWT_JAVA_HOME)/include/darwin \
 	-I /System/Library/Frameworks/Cocoa.framework/Headers \
 	-I /System/Library/Frameworks/JavaScriptCore.framework/Headers
 LFLAGS = -bundle $(ARCHS) -framework Cocoa -framework WebKit -framework CoreServices -framework JavaScriptCore -framework Security -framework SecurityInterface
