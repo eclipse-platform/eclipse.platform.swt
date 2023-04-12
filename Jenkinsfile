@@ -325,7 +325,7 @@ pipeline {
 						sh """
 							# Check for the master-branch as late as possible to have as much of the same behaviour as possible
 							if [[ '${BRANCH_NAME}' == master ]] || [[ '${BRANCH_NAME}' =~ R[0-9]+_[0-9]+(_[0-9]+)?_maintenance ]]; then
-								if [[ ${skipCommit} != true ]]; then
+								if [[ ${params.skipCommit} != true ]]; then
 									
 									#Don't rebase and just fail in case another commit has been pushed to the master/maintanance branch in the meantime
 									
