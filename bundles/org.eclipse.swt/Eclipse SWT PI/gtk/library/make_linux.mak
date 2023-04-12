@@ -14,6 +14,10 @@
 
 # Makefile for creating SWT libraries for Linux GTK
 
+# assumes these variables are set in the environment from which make is run
+#	SWT_JAVA_HOME
+#	OUTPUT_DIR
+
 # SWT debug flags for various SWT components.
 #SWT_WEBKIT_DEBUG = -DWEBKIT_DEBUG
 
@@ -104,8 +108,8 @@ CFLAGS := $(CFLAGS) \
 		$(SWT_DEBUG) \
 		$(SWT_WEBKIT_DEBUG) \
 		-DLINUX -DGTK \
-		-I$(JAVA_HOME)/include \
-		-I$(JAVA_HOME)/include/linux \
+		-I$(SWT_JAVA_HOME)/include \
+		-I$(SWT_JAVA_HOME)/include/linux \
 		${SWT_PTR_CFLAGS}
 LFLAGS = -shared -fPIC ${SWT_LFLAGS}
 

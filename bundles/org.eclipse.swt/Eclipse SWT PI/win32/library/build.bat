@@ -48,21 +48,10 @@ IF NOT EXIST "%MSVC_HOME%" (
 	CALL :ECHO "MSVC_HOME: %MSVC_HOME%"
 )
 
-@rem Search for a usable JDK
-@rem -----------------------
-IF "%SWT_JAVA_HOME%"=="" CALL :ECHO "'SWT_JAVA_HOME' was not provided, auto-searching for JDK..."
-@rem Search for generic JDKs so that user can build with little configuration
-@rem Note that first found JDK wins, so sort them by order of preference.
-IF "%SWT_JAVA_HOME%"=="" CALL :TryToUseJdk "%ProgramFiles%\Java\jdk-11*"
-IF "%SWT_JAVA_HOME%"=="" CALL :TryToUseJdk "%ProgramFiles%\AdoptOpenJDK\jdk-11*"
-IF "%SWT_JAVA_HOME%"=="" CALL :TryToUseJdk "%ProgramFiles%\Java\jdk-17*"
-IF "%SWT_JAVA_HOME%"=="" CALL :TryToUseJdk "%ProgramFiles%\AdoptOpenJDK\jdk-17*"
-@rem Report
+@rem Check for a usable JDK
+IF "%SWT_JAVA_HOME%"=="" CALL :ECHO "'SWT_JAVA_HOME' was not provided"
 IF NOT EXIST "%SWT_JAVA_HOME%" (
-    CALL :ECHO "WARNING: x64 Java JDK not found. Please set SWT_JAVA_HOME to your JDK directory."
-    CALL :ECHO "         Refer steps for SWT Windows native setup: https://www.eclipse.org/swt/swt_win_native.php"
-) ELSE (
-    CALL :ECHO "SWT_JAVA_HOME x64: %SWT_JAVA_HOME%"
+    CALL :ECHO "WARNING: x64 Java JDK not found. Please set SWT_JAVA_HOME to the JDK directory containing the intended JDK native headers."
 )
 
 @rem -----------------------
@@ -150,25 +139,6 @@ GOTO :EOF
 	)
 	CALL :ECHO "-- VisualStudio '%TESTED_VS_PATH%' looks good, selecting it"
 	SET "MSVC_HOME=%TESTED_VS_PATH%"
-GOTO :EOF
-
-:TryToUseJdk
-	SET "TESTED_JDK_PATH_MASK=%~1"
-	@rem Loop over all directories matching mask.
-	@rem Note that directories are iterated in alphabetical order and *last* hit will
-	@rem be selected in hopes to select the highest available JDK version.
-	FOR /D %%I IN ("%TESTED_JDK_PATH_MASK%") DO (
-		IF NOT EXIST "%%~I" (
-			CALL :ECHO "-- JDK '%%~I' doesn't exist on disk"
-			GOTO :EOF
-		)
-		IF NOT EXIST "%%~I\include\jni.h" (
-			CALL :ECHO "-- JDK '%%~I' is bad: no jni.h"
-			GOTO :EOF
-		)
-		CALL :ECHO "-- JDK '%%~I' looks good, selecting it"
-		SET "SWT_JAVA_HOME=%%~I"
-	)
 GOTO :EOF
 
 @rem Regular ECHO has trouble with special characters such as ().
