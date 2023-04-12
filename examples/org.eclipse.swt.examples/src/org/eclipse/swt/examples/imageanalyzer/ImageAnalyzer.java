@@ -945,7 +945,7 @@ public class ImageAnalyzer {
 									imageData.width,
 									imageData.height);
 							} else {
-								yield();
+								Thread.yield();
 							}
 						}
 					}
