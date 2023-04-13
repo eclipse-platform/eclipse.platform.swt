@@ -123,7 +123,7 @@ pipeline {
 									'''
 								}
 								dir("org.eclipse.swt.${PLATFORM}/tmpdir") {
-									stash name:"swt.binaries.sources.${PLATFORM}",	includes: "org.eclipse.swt.${PLATFORM}.master.zip"
+									stash name:"swt.binaries.sources.${PLATFORM}", includes: "org.eclipse.swt.${PLATFORM}.master.zip"
 								}
 							}
 						}
@@ -157,13 +157,7 @@ pipeline {
 												rm org.eclipse.swt.${PLATFORM}.master.zip
 												mkdir libs
 												
-												#TODO: unify build script arguments?!
-												if [[ ${PLATFORM} == cocoa.macosx.* ]]; then
-													sw_vers -productVersion
-													sh build.sh install
-												elif [[ ${PLATFORM} == gtk.linux.* ]]; then
-													sh build.sh clean install
-												fi
+												sh build.sh install
 												ls -1R libs
 											'''
 										} else {
@@ -173,7 +167,6 @@ pipeline {
 													rm org.eclipse.swt.%PLATFORM%.master.zip
 													mkdir libs
 													
-													@rem rustup show
 													cmd /c build.bat x86_64 all install
 													ls -1R libs
 												'''

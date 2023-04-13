@@ -13,6 +13,8 @@
 #     IBM Corporation - initial API and implementation
 #*******************************************************************************
 
+sw_vers -productVersion
+
 cd `dirname $0`
 
 if [ "x${MODEL}" = "xx86_64" ]; then
