@@ -13,8 +13,6 @@
  *******************************************************************************/
 package org.eclipse.swt.graphics;
 
-import java.util.*;
-
 import org.eclipse.swt.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.cocoa.*;
@@ -76,7 +74,6 @@ public final class GC extends Resource {
 
 	Drawable drawable;
 	GCData data;
-	GCTextData.Cache textDataCache = new GCTextData.Cache(20);
 
 	CGPathElement element;
 	int count, typeCount;
@@ -110,88 +107,6 @@ public final class GC extends Resource {
 	static final float[] LINE_DASH_ZERO = new float[]{18, 6};
 	static final float[] LINE_DASHDOT_ZERO = new float[]{9, 6, 3, 6};
 	static final float[] LINE_DASHDOTDOT_ZERO = new float[]{9, 3, 3, 3, 3, 3};
-
-	/**
-	 * Instances of this class are descriptions of GCs for text drawing in terms of
-	 * platform-specific data fields. Can be cached to improve repeat render
-	 * performance.
-	 */
-	private static class GCTextData {
-		private NSPoint pt = new NSPoint();
-		private NSLayoutManager layoutManager;
-		private NSTextStorage textStorage;
-		private NSRange range;
-
-		/**
-		 * Simple {@link GCTextData} cache limited to a set number of items.
-		 */
-		private static class Cache {
-			private final int cacheSize;
-			private final Map<String, GCTextData> cache = new LinkedHashMap<String, GCTextData>() {
-				private static final long serialVersionUID = 1L;
-
-				@Override
-				protected boolean removeEldestEntry(Map.Entry<String, GCTextData> eldest) {
-					if (size() >= cacheSize) {
-						((GCTextData) eldest.getValue()).release();
-						return true;
-					}
-					return false;
-				};
-			};
-
-			public Cache(int cacheSize) {
-				this.cacheSize = cacheSize;
-			}
-
-			public void release() {
-				for (GCTextData data : cache.values()) {
-					data.release();
-				}
-				cache.clear();
-			}
-
-			public GCTextData get(String string) {
-				return cache.get(string);
-			}
-
-			public void put(String string, GCTextData data) {
-				cache.put(string, data);
-			}
-		}
-
-		public GCTextData(NSAttributedString attribStr) {
-			NSSize size = new NSSize();
-			size.width = OS.MAX_TEXT_CONTAINER_SIZE;
-			size.height = OS.MAX_TEXT_CONTAINER_SIZE;
-			NSTextStorage textStorage = (NSTextStorage) new NSTextStorage().alloc().init();
-			NSLayoutManager layoutManager = (NSLayoutManager) new NSLayoutManager().alloc().init();
-			layoutManager.setBackgroundLayoutEnabled(NSThread.isMainThread());
-			NSTextContainer textContainer = (NSTextContainer) new NSTextContainer().alloc();
-			textContainer = textContainer.initWithContainerSize(size);
-			textContainer.setLineFragmentPadding(0);
-			textStorage.addLayoutManager(layoutManager);
-			layoutManager.addTextContainer(textContainer);
-			layoutManager.release();
-			textContainer.release();
-			this.layoutManager = layoutManager;
-			this.textStorage = textStorage;
-			textStorage.setAttributedString(attribStr);
-			this.range = layoutManager.glyphRangeForTextContainer(textContainer);
-		}
-
-		public void release() {
-			if (textStorage != null) textStorage.release();
-			textStorage = null;
-			layoutManager = null;
-		}
-
-		public void draw(int x, int y) {
-			pt.x = x;
-			pt.y = y;
-			layoutManager.drawGlyphsForGlyphRange(range, pt);
-		}
-	}
 
 GC() {
 }
@@ -1000,7 +915,6 @@ void destroy() {
 	data.path = data.clipPath = data.visiblePath = null;
 	data.transform = data.inverseTransform = null;
 	data.fg = data.bg = null;
-	textDataCache.release();
 
 	/* Dispose the GC */
 	if (drawable != null) drawable.internal_dispose_GC(handle.id, data);
@@ -1790,63 +1704,39 @@ public void drawText (String string, int x, int y, int flags) {
 		}
 		handle.saveGraphicsState();
 		handle.setShouldAntialias(mode);
-		if (length == 1 && (flags & SWT.DRAW_TRANSPARENT) != 0) {
-			doFastDrawText(string, x, y);
-		} else {
-			doDrawText(string, x, y, flags);
+		if (data.textStorage == null) createLayout();
+		NSAttributedString attribStr = createString(string, flags, true);
+		data.textStorage.setAttributedString(attribStr);
+		attribStr.release();
+		NSPoint pt = new NSPoint();
+		pt.x = x;
+		pt.y = y;
+		NSRange range = data.layoutManager.glyphRangeForTextContainer(data.textContainer);
+		if ((flags & SWT.DRAW_TRANSPARENT) == 0) {
+			NSRect rect = data.layoutManager.usedRectForTextContainer(data.textContainer);
+			rect.x = x;
+			rect.y = y;
+			Pattern pattern = data.backgroundPattern;
+			if (pattern != null) setPatternPhase(pattern);
+			if (pattern != null && pattern.gradient != null) {
+				NSBezierPath path = NSBezierPath.bezierPathWithRect(rect);
+				fillPattern(path, pattern);
+			} else {
+				NSColor bg = data.bg;
+				if (bg == null) {
+					double /*float*/ [] color = data.background;
+					bg = data.bg = NSColor.colorWithDeviceRed(color[0], color[1], color[2], data.alpha / 255f);
+					bg.retain();
+				}
+				bg.setFill();
+				NSBezierPath.fillRect(rect);
+			}
 		}
+		data.layoutManager.drawGlyphsForGlyphRange(range, pt);
 		handle.restoreGraphicsState();
 	} finally {
 		uncheckGC(pool);
 	}
-}
-
-private void doFastDrawText(String string, int x, int y) {
-	GCTextData data = getTextData(string);
-	data.draw(x, y);
-}
-
-private GCTextData getTextData(String string) {
-	GCTextData data = (GCTextData) textDataCache.get(string);
-	if (data == null) {
-		NSAttributedString attribStr = createString(string, 0, true);
-		data = new GCTextData(attribStr);
-		attribStr.release();
-		textDataCache.put(string, data);
-	}
-	return data;
-}
-
-private void doDrawText(String string, int x, int y, int flags) {
-	if (data.textStorage == null) createLayout();
-	NSAttributedString attribStr = createString(string, flags, true);
-	data.textStorage.setAttributedString(attribStr);
-	attribStr.release();
-	NSPoint pt = new NSPoint();
-	pt.x = x;
-	pt.y = y;
-	NSRange range = data.layoutManager.glyphRangeForTextContainer(data.textContainer);
-	if ((flags & SWT.DRAW_TRANSPARENT) == 0) {
-		NSRect rect = data.layoutManager.usedRectForTextContainer(data.textContainer);
-		rect.x = x;
-		rect.y = y;
-		Pattern pattern = data.backgroundPattern;
-		if (pattern != null) setPatternPhase(pattern);
-		if (pattern != null && pattern.gradient != null) {
-			NSBezierPath path = NSBezierPath.bezierPathWithRect(rect);
-			fillPattern(path, pattern);
-		} else {
-			NSColor bg = data.bg;
-			if (bg == null) {
-				double [] color = data.background;
-				bg = data.bg = NSColor.colorWithDeviceRed(color[0], color[1], color[2], data.alpha / 255f);
-				bg.retain();
-			}
-			bg.setFill();
-			NSBezierPath.fillRect(rect);
-		}
-	}
-	data.layoutManager.drawGlyphsForGlyphRange(range, pt);
 }
 
 /**
