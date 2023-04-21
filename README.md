@@ -81,6 +81,8 @@ Contributing to SWT
 
 Thanks for your interest in this project.
 
+See https://github.com/eclipse-platform/.github/blob/main/CONTRIBUTING.md for contributing to Eclipse Platform in general.
+
 Developer resources:
 --------------------
 
