@@ -69,7 +69,6 @@ jobs:
       with:
        run: >- 
         mvn --batch-mode -V -U
-        -Pbuild-individual-bundles
         -Pbuild-individual-platform
         -Dswt.build.platform_cp=${{ matrix.config.cp }}
         -DforkCount=1
