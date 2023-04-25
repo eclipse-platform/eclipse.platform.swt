@@ -39,6 +39,7 @@ public static void main(String[] args) {
 	toggle.setText("Toggle Bar Colors");
 	new ToolItem(bar, SWT.SEPARATOR);
 	new ToolItem(bar, SWT.PUSH).setText("Push Button");
+	new ToolItem(bar, SWT.CHECK).setText("Check Button");
 	new ToolItem(bar, SWT.DROP_DOWN).setText("Drop Down");
 
 	toggle.addListener(SWT.Selection, event -> {
