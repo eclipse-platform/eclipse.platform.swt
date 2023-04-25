@@ -50,24 +50,20 @@ jobs:
     - name: Set up Java ${{ matrix.java }}
       uses: actions/setup-java@v3
       with:
-        java-version: |
-          8
-          11
-          ${{ matrix.java }}
+        java-version: ${{ matrix.java }}
         distribution: 'temurin'
         cache: maven
     - name: Build swt.binaries fragments with Maven
-      uses: GabrielBB/xvfb-action@v1
+      uses: coactions/setup-xvfb@v1
       with:
-       run: >- 
+       run: >-
         mvn --batch-mode -Pbuild-individual-bundles -DforceContextQualifier=zzz
-        --global-toolchains ${{ github.workspace }}/eclipse.platform.swt/.github/toolchains.xml
         -Dcompare-version-with-baselines.skip=true -Dmaven.compiler.failOnWarning=true install
        working-directory: eclipse.platform.swt.binaries
     - name: Build with Maven
       uses: coactions/setup-xvfb@v1
       with:
-       run: >- 
+       run: >-
         mvn --batch-mode -V -U
         -Pbuild-individual-platform
         -Dswt.build.platform_cp=${{ matrix.config.cp }}
@@ -77,7 +73,6 @@ jobs:
         --fail-at-end
         -DskipNativeTests=false
         -DfailIfNoTests=false
-        --global-toolchains ${{ github.workspace }}/eclipse.platform.swt/.github/toolchains.xml
         clean install
        working-directory: eclipse.platform.swt
     - name: Upload Test Results for ${{ matrix.config.name }} / Java-${{ matrix.java }}
