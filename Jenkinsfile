@@ -294,7 +294,7 @@ pipeline {
 					dir ('eclipse.platform.swt') {
 						sh '''
 							mvn clean verify \
-								--batch-mode -Pbuild-individual-bundles -DcheckAllWS=true -DforkCount=0 \
+								--batch-mode -DcheckAllWS=true -DforkCount=0 \
 								-Dcompare-version-with-baselines.skip=false -Dmaven.compiler.failOnWarning=true \
 								-Dmaven.test.failure.ignore=true -Dmaven.test.error.ignore=true
 						'''

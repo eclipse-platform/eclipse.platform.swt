@@ -65,11 +65,10 @@ jobs:
         -Dcompare-version-with-baselines.skip=true -Dmaven.compiler.failOnWarning=true install
        working-directory: eclipse.platform.swt.binaries
     - name: Build with Maven
-      uses: GabrielBB/xvfb-action@v1
+      uses: coactions/setup-xvfb@v1
       with:
        run: >- 
         mvn --batch-mode -V -U
-        -Pbuild-individual-bundles
         -Pbuild-individual-platform
         -Dswt.build.platform_cp=${{ matrix.config.cp }}
         -DforkCount=1

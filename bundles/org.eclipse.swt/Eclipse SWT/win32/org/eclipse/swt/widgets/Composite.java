@@ -1073,10 +1073,10 @@ public boolean setFocus () {
 	checkWidget ();
 	Control [] children = _getChildren ();
 	for (Control child : children) {
-		if (child.setRadioFocus (false)) return true;
+		if (child.getVisible() && child.setRadioFocus (false)) return true;
 	}
 	for (Control child : children) {
-		if (child.setFocus ()) return true;
+		if (child.getVisible() && child.setFocus ()) return true;
 	}
 	return super.setFocus ();
 }
