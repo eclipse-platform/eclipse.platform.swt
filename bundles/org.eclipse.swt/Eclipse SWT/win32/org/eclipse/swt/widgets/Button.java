@@ -1505,7 +1505,7 @@ LRESULT wmDrawChild (long wParam, long lParam) {
 		boolean pressed = ((struct.itemState & OS.ODS_SELECTED) != 0);
 		boolean enabled = getEnabled ();
 		int iStateId = getThemeStateId(style, pressed, enabled);
-		OS.DrawThemeBackground (display.hScrollBarTheme (), struct.hDC, OS.SBP_ARROWBTN, iStateId, rect, null);
+		OS.DrawThemeBackground (display.hScrollBarThemeAuto (), struct.hDC, OS.SBP_ARROWBTN, iStateId, rect, null);
 	} else {
 		int uState = OS.DFCS_SCROLLLEFT;
 		switch (style & (SWT.UP | SWT.DOWN | SWT.LEFT | SWT.RIGHT)) {

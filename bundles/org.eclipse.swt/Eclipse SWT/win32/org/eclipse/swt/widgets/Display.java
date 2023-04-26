@@ -151,7 +151,7 @@ public class Display extends Device implements Executor {
 	}
 
 	/* XP Themes */
-	long hButtonTheme, hButtonThemeDark, hEditTheme, hExplorerBarTheme, hScrollBarTheme, hTabTheme;
+	long hButtonTheme, hButtonThemeDark, hEditTheme, hExplorerBarTheme, hScrollBarTheme, hScrollBarThemeDark, hTabTheme;
 	static final char [] EXPLORER = new char [] {'E', 'X', 'P', 'L', 'O', 'R', 'E', 'R', 0};
 	static final char [] TREEVIEW = new char [] {'T', 'R', 'E', 'E', 'V', 'I', 'E', 'W', 0};
 	/* Emergency switch to be used in case of regressions. Not supposed to be changed when app is running. */
@@ -2649,6 +2649,20 @@ long hScrollBarTheme () {
 	return hScrollBarTheme = OS.OpenThemeData (hwndMessage, themeName);
 }
 
+long hScrollBarThemeDark () {
+	if (hScrollBarThemeDark != 0) return hScrollBarThemeDark;
+	final char[] themeName = "Darkmode_Explorer::SCROLLBAR\0".toCharArray();
+	return hScrollBarThemeDark = OS.OpenThemeData (hwndMessage, themeName);
+}
+
+long hScrollBarThemeAuto () {
+	if (useDarkModeExplorerTheme) {
+		return hScrollBarThemeDark ();
+	} else {
+		return hScrollBarTheme ();
+	}
+}
+
 long hTabTheme () {
 	if (hTabTheme != 0) return hTabTheme;
 	final char[] themeName = "TAB\0".toCharArray();
@@ -2675,6 +2689,10 @@ void resetThemes() {
 	if (hScrollBarTheme != 0) {
 		OS.CloseThemeData (hScrollBarTheme);
 		hScrollBarTheme = 0;
+	}
+	if (hScrollBarThemeDark != 0) {
+		OS.CloseThemeData (hScrollBarThemeDark);
+		hScrollBarThemeDark = 0;
 	}
 	if (hTabTheme != 0) {
 		OS.CloseThemeData (hTabTheme);
