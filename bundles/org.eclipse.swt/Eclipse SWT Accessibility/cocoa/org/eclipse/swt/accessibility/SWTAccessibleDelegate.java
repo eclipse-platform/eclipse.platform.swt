@@ -113,6 +113,7 @@ class SWTAccessibleDelegate extends NSObject {
 			return retainedAutoreleased(attributeNames);
 
 		attributeNames = accessible.internal_accessibilityAttributeNames(childID);
+		if (attributeNames == null) return null;
 		attributeNames.retain();
 		return retainedAutoreleased(attributeNames);
 	}
