@@ -123,15 +123,20 @@ public final class GC extends Resource {
 		private NSRange range;
 
 		/**
+		 * Key object to use for Cache consisting of text string, alpho, font and foreground color
+		 */
+		private static record Key(String string, int alpha, long font, double[] fgColor) {}
+
+		/**
 		 * Simple {@link GCTextData} cache limited to a set number of items.
 		 */
 		private static class Cache {
 			private final int cacheSize;
-			private final Map<String, GCTextData> cache = new LinkedHashMap<String, GCTextData>() {
+			private final Map<Key, GCTextData> cache = new LinkedHashMap<>() {
 				private static final long serialVersionUID = 1L;
 
 				@Override
-				protected boolean removeEldestEntry(Map.Entry<String, GCTextData> eldest) {
+				protected boolean removeEldestEntry(Map.Entry<Key, GCTextData> eldest) {
 					if (size() >= cacheSize) {
 						((GCTextData) eldest.getValue()).release();
 						return true;
@@ -151,12 +156,12 @@ public final class GC extends Resource {
 				cache.clear();
 			}
 
-			public GCTextData get(String string) {
-				return cache.get(string);
+			public GCTextData get(Key key) {
+				return cache.get(key);
 			}
 
-			public void put(String string, GCTextData data) {
-				cache.put(string, data);
+			public void put(Key key, GCTextData data) {
+				cache.put(key, data);
 			}
 		}
 
@@ -1807,14 +1812,20 @@ private void doFastDrawText(String string, int x, int y) {
 }
 
 private GCTextData getTextData(String string) {
-	GCTextData data = (GCTextData) textDataCache.get(string);
-	if (data == null) {
+	// Create a cache key from the string, alpha, font and foreground color
+	// This ensures that the same string with different attributes is drawn correctly
+	GCTextData.Key key = new GCTextData.Key(string, data.alpha,
+			(data.font == null || data.font.handle == null) ? 0 : data.font.handle.id,
+			data.foreground);
+
+	GCTextData gcData = textDataCache.get(key);
+	if (gcData == null) {
 		NSAttributedString attribStr = createString(string, 0, true);
-		data = new GCTextData(attribStr);
+		gcData = new GCTextData(attribStr);
 		attribStr.release();
-		textDataCache.put(string, data);
+		textDataCache.put(key, gcData);
 	}
-	return data;
+	return gcData;
 }
 
 private void doDrawText(String string, int x, int y, int flags) {
