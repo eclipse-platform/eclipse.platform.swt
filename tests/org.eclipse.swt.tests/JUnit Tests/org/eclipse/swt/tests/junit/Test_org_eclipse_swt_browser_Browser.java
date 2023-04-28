@@ -1586,7 +1586,13 @@ private void getText_helper(String testString, String expectedOutput) {
 			+ "Expected:"+testString+"\n"
 			+ "Actual:"+returnString.get()
 			: "Test timed out";
-	assertEquals(error_msg, expectedOutput.toLowerCase(Locale.ENGLISH), returnString.get().replace("\r", "").replace("\n", "").toLowerCase(Locale.ENGLISH));
+	assertEquals(error_msg, normalizeHtmlString(expectedOutput), normalizeHtmlString(returnString.get()));
+}
+
+private String normalizeHtmlString(String htmlString) {
+	return htmlString.replace("\r", "").replace("\n", "") // ignore OS-Specific newlines
+			.replace(";", "") // ignore semicolons potentially added on Windows when processing style properties
+			.toLowerCase(Locale.ENGLISH); // ignore capitalization
 }
 
 /**
