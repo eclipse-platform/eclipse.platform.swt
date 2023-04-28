@@ -1350,7 +1350,7 @@ LRESULT wmTimer (long wParam, long lParam) {
 	if (wParam == ID_TOOLTIP_TIMER) {
 		POINT pt = new POINT ();
 		OS.GetCursorPos (pt);
-		if (selectedMenuItem != null) {
+		if (selectedMenuItem != null && selectedMenuItem.parent != null) {
 			RECT rect = new RECT ();
 			boolean success = OS.GetMenuItemRect (0, selectedMenuItem.parent.handle, selectedMenuItem.index, rect);
 			if (!success) return null;
