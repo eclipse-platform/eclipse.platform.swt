@@ -5,7 +5,6 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" path="JNI Generation"/>
 	<classpathentry kind="src" path="Mac Generation"/>
-	<classpathentry kind="src" path="NativeStats"/>
 	<classpathentry kind="src" path="Icon Exe"/>
 	<classpathentry kind="src" path="JavadocBasher"/>
 	<classpathentry kind="output" path="bin"/>

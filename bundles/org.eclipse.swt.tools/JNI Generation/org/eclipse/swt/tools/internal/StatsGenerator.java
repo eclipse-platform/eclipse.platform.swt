@@ -43,8 +43,6 @@ public void generateIncludes() {
 public void generate(JNIClass clazz) {
 	if (header) {
 		generateHeaderFile(clazz);
-	} else {
-		generateSourceFile(clazz);
 	}
 }
 
@@ -67,25 +65,6 @@ void generateHeaderFile(JNIClass clazz){
 
 void generateNATIVEMacros(JNIClass clazz) {
 	String className = clazz.getSimpleName();
-	outputln("#ifdef NATIVE_STATS");
-	output("extern int ");
-	output(className);
-	outputln("_nativeFunctionCount;");
-	output("extern int ");
-	output(className);
-	outputln("_nativeFunctionCallCount[];");
-	output("extern char* ");
-	output(className);
-	outputln("_nativeFunctionNames[];");
-	output("#define ");
-	output(className);
-	output("_NATIVE_ENTER(env, that, func) ");
-	output(className);
-	outputln("_nativeFunctionCallCount[func]++;");
-	output("#define ");
-	output(className);
-	outputln("_NATIVE_EXIT(env, that, func) ");
-	outputln("#else");
 	output("#ifndef ");
 	output(className);
 	outputln("_NATIVE_ENTER");
@@ -100,41 +79,7 @@ void generateNATIVEMacros(JNIClass clazz) {
 	output(className);
 	outputln("_NATIVE_EXIT(env, that, func) ");
 	outputln("#endif");
-	outputln("#endif");
 	outputln();	
-}
-
-void generateSourceFile(JNIClass clazz) {
-	outputln("#ifdef NATIVE_STATS");
-	outputln();
-	JNIMethod[] methods = clazz.getDeclaredMethods();
-	String className = clazz.getSimpleName();
-	output("char * ");
-	output(className);
-	outputln("_nativeFunctionNames[] = {");
-	sort(methods);
-	for (JNIMethod method : methods) {
-		if ((method.getModifiers() & Modifier.NATIVE) == 0) continue;
-		String function = getFunctionName(method);
-		output("\t\"");
-		output(function);
-		outputln("\",");
-		if (progress != null) progress.step();
-	}
-	outputln("};");
-	output("#define NATIVE_FUNCTION_COUNT sizeof(");
-	output(className);
-	outputln("_nativeFunctionNames) / sizeof(char*)");
-	output("int ");
-	output(className);
-	outputln("_nativeFunctionCount = NATIVE_FUNCTION_COUNT;");
-	output("int ");
-	output(className);
-	outputln("_nativeFunctionCallCount[NATIVE_FUNCTION_COUNT];");
-	outputln();
-	generateStatsNatives(className);
-	outputln();
-	outputln("#endif");
 }
 
 void generateStatsNatives(String className) {
