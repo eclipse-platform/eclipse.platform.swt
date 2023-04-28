@@ -46,12 +46,9 @@ WGL_LIB    = $(WGL_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).dll
 WGL_LIBS   = opengl32.lib
 WGL_OBJS   = wgl.obj wgl_structs.obj wgl_stats.obj
 
-# Uncomment for Native Stats tool
-#NATIVE_STATS = -DNATIVE_STATS
-
 #CFLAGS = $(cdebug) $(cflags) $(cvarsmt) $(CFLAGS) \
 CFLAGS = -O1 /WX /W4 -DNDEBUG -DUNICODE -D_UNICODE /c $(cflags) $(cvarsmt) $(CFLAGS) \
-	-DSWT_VERSION=$(maj_ver)$(min_ver) -DSWT_REVISION=$(rev) $(NATIVE_STATS) -DUSE_ASSEMBLER \
+	-DSWT_VERSION=$(maj_ver)$(min_ver) -DSWT_REVISION=$(rev) -DUSE_ASSEMBLER \
 	/I"$(SWT_JAVA_HOME)\include" /I"$(SWT_JAVA_HOME)\include\win32" /I.
 
 RCFLAGS = $(rcflags) $(rcvars) $(RCFLAGS) -DSWT_FILE_VERSION=\"$(maj_ver).$(min_ver).$(rev).0\" -DSWT_COMMA_VERSION=$(comma_ver)
