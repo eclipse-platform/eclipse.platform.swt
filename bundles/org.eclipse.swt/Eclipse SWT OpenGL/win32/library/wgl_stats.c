@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2020 IBM Corporation and others.
+ * Copyright (c) 2000, 2023 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -18,41 +18,3 @@
 #include "swt.h"
 #include "wgl_stats.h"
 
-#ifdef NATIVE_STATS
-
-char * WGL_nativeFunctionNames[] = {
-	"ChoosePixelFormat",
-	"DescribePixelFormat",
-	"SetPixelFormat",
-	"SwapBuffers",
-	"wglCreateContext",
-	"wglDeleteContext",
-	"wglGetCurrentContext",
-	"wglMakeCurrent",
-	"wglShareLists",
-};
-#define NATIVE_FUNCTION_COUNT sizeof(WGL_nativeFunctionNames) / sizeof(char*)
-int WGL_nativeFunctionCount = NATIVE_FUNCTION_COUNT;
-int WGL_nativeFunctionCallCount[NATIVE_FUNCTION_COUNT];
-
-#define STATS_NATIVE(func) Java_org_eclipse_swt_tools_internal_NativeStats_##func
-
-JNIEXPORT jint JNICALL STATS_NATIVE(WGL_1GetFunctionCount)
-	(JNIEnv *env, jclass that)
-{
-	return WGL_nativeFunctionCount;
-}
-
-JNIEXPORT jstring JNICALL STATS_NATIVE(WGL_1GetFunctionName)
-	(JNIEnv *env, jclass that, jint index)
-{
-	return (*env)->NewStringUTF(env, WGL_nativeFunctionNames[index]);
-}
-
-JNIEXPORT jint JNICALL STATS_NATIVE(WGL_1GetFunctionCallCount)
-	(JNIEnv *env, jclass that, jint index)
-{
-	return WGL_nativeFunctionCallCount[index];
-}
-
-#endif
