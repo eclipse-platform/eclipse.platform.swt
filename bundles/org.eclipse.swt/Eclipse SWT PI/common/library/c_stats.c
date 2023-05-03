@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2019 IBM Corporation and others.
+ * Copyright (c) 2000, 2023 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -18,56 +18,3 @@
 #include "swt.h"
 #include "c_stats.h"
 
-#ifdef NATIVE_STATS
-
-char * C_nativeFunctionNames[] = {
-	"PTR_1sizeof",
-	"free",
-	"getenv",
-	"malloc",
-	"memmove__JJJ",
-	"memmove__J_3BJ",
-	"memmove__J_3CJ",
-	"memmove__J_3DJ",
-	"memmove__J_3FJ",
-	"memmove__J_3IJ",
-	"memmove__J_3JJ",
-	"memmove__J_3SJ",
-	"memmove___3BJJ",
-	"memmove___3B_3CJ",
-	"memmove___3CJJ",
-	"memmove___3DJJ",
-	"memmove___3FJJ",
-	"memmove___3IJJ",
-	"memmove___3I_3BJ",
-	"memmove___3JJJ",
-	"memmove___3SJJ",
-	"memset",
-	"setenv",
-	"strlen",
-};
-#define NATIVE_FUNCTION_COUNT sizeof(C_nativeFunctionNames) / sizeof(char*)
-int C_nativeFunctionCount = NATIVE_FUNCTION_COUNT;
-int C_nativeFunctionCallCount[NATIVE_FUNCTION_COUNT];
-
-#define STATS_NATIVE(func) Java_org_eclipse_swt_tools_internal_NativeStats_##func
-
-JNIEXPORT jint JNICALL STATS_NATIVE(C_1GetFunctionCount)
-	(JNIEnv *env, jclass that)
-{
-	return C_nativeFunctionCount;
-}
-
-JNIEXPORT jstring JNICALL STATS_NATIVE(C_1GetFunctionName)
-	(JNIEnv *env, jclass that, jint index)
-{
-	return (*env)->NewStringUTF(env, C_nativeFunctionNames[index]);
-}
-
-JNIEXPORT jint JNICALL STATS_NATIVE(C_1GetFunctionCallCount)
-	(JNIEnv *env, jclass that, jint index)
-{
-	return C_nativeFunctionCallCount[index];
-}
-
-#endif

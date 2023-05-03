@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2020 IBM Corporation and others.
+ * Copyright (c) 2000, 2023 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -18,43 +18,3 @@
 #include "swt.h"
 #include "glx_stats.h"
 
-#ifdef NATIVE_STATS
-
-char * GLX_nativeFunctionNames[] = {
-	"XVisualInfo_1sizeof",
-	"glGetIntegerv",
-	"glViewport",
-	"glXChooseVisual",
-	"glXCreateContext",
-	"glXDestroyContext",
-	"glXGetConfig",
-	"glXGetCurrentContext",
-	"glXMakeCurrent",
-	"glXSwapBuffers",
-	"memmove",
-};
-#define NATIVE_FUNCTION_COUNT sizeof(GLX_nativeFunctionNames) / sizeof(char*)
-int GLX_nativeFunctionCount = NATIVE_FUNCTION_COUNT;
-int GLX_nativeFunctionCallCount[NATIVE_FUNCTION_COUNT];
-
-#define STATS_NATIVE(func) Java_org_eclipse_swt_tools_internal_NativeStats_##func
-
-JNIEXPORT jint JNICALL STATS_NATIVE(GLX_1GetFunctionCount)
-	(JNIEnv *env, jclass that)
-{
-	return GLX_nativeFunctionCount;
-}
-
-JNIEXPORT jstring JNICALL STATS_NATIVE(GLX_1GetFunctionName)
-	(JNIEnv *env, jclass that, jint index)
-{
-	return (*env)->NewStringUTF(env, GLX_nativeFunctionNames[index]);
-}
-
-JNIEXPORT jint JNICALL STATS_NATIVE(GLX_1GetFunctionCallCount)
-	(JNIEnv *env, jclass that, jint index)
-{
-	return GLX_nativeFunctionCallCount[index];
-}
-
-#endif
