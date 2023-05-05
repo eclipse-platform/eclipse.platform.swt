@@ -222,9 +222,8 @@ static int callAndWait(long[] ppv, ToIntFunction<IUnknown> callable) {
 	ppv[0] = 0;
 	phr[0] = callable.applyAsInt(completion);
 	completion.Release();
-	Display display = Display.getCurrent();
 	while (phr[0] == COM.S_OK && ppv[0] == 0) {
-		if (!display.readAndDispatch()) display.sleep();
+		processNextOSMessage();
 	}
 	return phr[0];
 }
@@ -241,11 +240,31 @@ static int callAndWait(String[] pstr, ToIntFunction<IUnknown> callable) {
 	pstr[0] = null;
 	phr[0] = callable.applyAsInt(completion);
 	completion.Release();
-	Display display = Display.getCurrent();
 	while (phr[0] == COM.S_OK && pstr[0] == null) {
-		if (!display.readAndDispatch()) display.sleep();
+		processNextOSMessage();
 	}
 	return phr[0];
+}
+
+/**
+ * Processes a single OS message using {@link Display#readAndDispatch()}. This
+ * is required for processing the OS events during browser initialization, since
+ * Edge browser initialization happens asynchronously.
+ * <p>
+ * {@link Display#readAndDisplay()} also processes events scheduled for
+ * asynchronous execution via {@link Display#asyncExec(Runnable)}. This may
+ * include events such as the disposal of the browser's parent composite, which
+ * leads to a failure in browser initialization if processed in between the OS
+ * events for initialization. Thus, this method does not implement an ordinary
+ * readAndDispatch loop, but waits for an OS event to be processed.
+ */
+private static void processNextOSMessage() {
+	Display display = Display.getCurrent();
+	MSG msg = new MSG();
+	while (!OS.PeekMessage (msg, 0, 0, 0, OS.PM_NOREMOVE)) {
+		display.sleep();
+	}
+	display.readAndDispatch();
 }
 
 static ICoreWebView2CookieManager getCookieManager() {

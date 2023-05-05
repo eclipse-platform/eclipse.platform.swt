@@ -268,6 +268,17 @@ public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI() {
 	browser = createBrowser(null, SWT.NONE); // Should throw.
 }
 
+/**
+ * Regression test for issue #339: [Edge] No more handle exceptions from Edge browser
+ */
+@Test
+public void test_Constructor_asyncParentDisposal() {
+	Display.getCurrent().asyncExec(() -> {
+		shell.dispose();
+	});
+	Browser browser = createBrowser(shell, SWT.EDGE);
+	assertFalse(browser.isDisposed());
+}
 
 @Test
 public void test_evalute_Cookies () {
