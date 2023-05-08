@@ -28,7 +28,7 @@
 		<property name="destination" value="${fragmentdir}/target" />
 		<property name="javacVerbose" value="false" />
 		<property name="logExtension" value=".xml" />
-		<property name="javacRelease" value="11" />
+		<property name="javacRelease" value="17" />
 		<condition property="p2.publish.parts" value="true">
 			<istrue value="${p2.gathering}" />
 		</condition>
