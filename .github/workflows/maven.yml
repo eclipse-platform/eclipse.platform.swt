@@ -37,13 +37,8 @@ jobs:
     - name: checkout swt
       uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
       with:
-       path: 'eclipse.platform.swt'
        fetch-depth: 0 # required for jgit timestamp provider to work
-    - name: checkout swt.binaries
-      uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
-      with:
-       path: eclipse.platform.swt.binaries
-       repository: 'eclipse-platform/eclipse.platform.swt.binaries'
+       lfs: true
     - name: Install Linux requirements
       run: sudo apt-get update -qq && sudo apt-get install -qq -y webkit2gtk-driver
       if: ${{ matrix.config.native == 'gtk.linux.x86_64'}}
@@ -57,13 +52,6 @@ jobs:
       uses: stCarolas/setup-maven@v4.5
       with:
         maven-version: 3.9.2
-    - name: Build swt.binaries fragments with Maven
-      uses: coactions/setup-xvfb@b6b4fcfb9f5a895edadc3bc76318fae0ac17c8b3 # v1.0.1
-      with:
-       run: >-
-        mvn --batch-mode -Pbuild-individual-bundles -DforceContextQualifier=zzz
-        -Dcompare-version-with-baselines.skip=true -Dmaven.compiler.failOnWarning=true install
-       working-directory: eclipse.platform.swt.binaries
     - name: Build with Maven
       uses: coactions/setup-xvfb@b6b4fcfb9f5a895edadc3bc76318fae0ac17c8b3 # v1.0.1
       with:
@@ -76,7 +64,6 @@ jobs:
         -DskipNativeTests=false
         -DfailIfNoTests=false
         clean install
-       working-directory: eclipse.platform.swt
     - name: Performance tests
       if: contains(github.event.pull_request.labels.*.name, 'performance')
       uses: coactions/setup-xvfb@b6b4fcfb9f5a895edadc3bc76318fae0ac17c8b3 # v1.0.1
@@ -91,7 +78,6 @@ jobs:
         -DfailIfNoTests=true
         -Dtest=PerformanceTests
         integration-test
-       working-directory: eclipse.platform.swt/tests/org.eclipse.swt.tests
     - name: Upload Test Results for ${{ matrix.config.name }} / Java-${{ matrix.java }}
       if: always()
       uses: actions/upload-artifact@c7d193f32edcb7bfad88892161225aeda64e9392 # v4.0.0

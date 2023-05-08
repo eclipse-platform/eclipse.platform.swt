@@ -25,10 +25,7 @@ Dependencies:
 -------------
 
 * **SWT Binaries**  
-  You also need to clone the binary Git repository:
-  https://github.com/eclipse-platform/eclipse.platform.swt.binaries/ 
-  and import the project for your platform into your workspace.  
-  
+
   Ensure that the fragment matching your windowingSystem.operatingSystem.cpuArchitecture  
   (e.g. org.eclipse.swt.gtk.linux.x86_64) is open in your workspace.  
   The fragments provide the platform-specific native libraries.

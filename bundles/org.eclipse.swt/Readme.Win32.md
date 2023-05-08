@@ -26,11 +26,10 @@ libraries in the binary repository.
 * (if not already installed) installed EGit integration.
 * Open the git perspective. Add the following two repositories, which can be found on: (use git protocol)
 	- https://github.com/eclipse-platform/eclipse.platform.swt
-	- https://github.com/eclipse-platform/eclipse.platform.swt.binaries
 * From swt repo, import most projects (except Cocoa/Gtk, root 'swt' project, once)
 * In org.eclipse.swt project, you need to copy .classpath_win32 to .classpath  & refresh/rebuild workspace.
   (This can be done via command line or by not-filtering *.resources in package view).
-* From swt.binary repo, import the project that reflects your platform.
+* And import the project that reflects your platform.
 * In the snippet project, add the swt project as dependency to launch snippets.
 * You should be able to run snippets now. (e.g Snippet1).
 

@@ -21,7 +21,7 @@
 <project name="swtinternalbuild" basedir=".">
 	<import file="buildSWT.xml"/>
 	<property name="file_src_pom" value="bundles/org.eclipse.swt/pom.xml"/>
-	<property name="file_bin_parent_pom" value="bundles/binaries-parent/pom.xml"/>
+	<property name="file_bin_parent_pom" value="binaries/binaries-parent/pom.xml"/>
 	<property name="lib.dir" value="/var/lib/hudson/antlib"/>
 	
 	<!-- When there are build changes, generates the time-stamp qualifiers and updates the pom files in source and binaries repo -->
@@ -31,8 +31,7 @@
 	</target>
 	
 	<!--
-		Update forceContextQualifier property in <SWT source repo>/bundles/org.eclipse.swt/pom.xml and 
-		<SWT binaries repo>/bundles/binaries-parent/pom.xml
+		Update forceContextQualifier property in bundles/org.eclipse.swt/pom.xml and binaries/binaries-parent/pom.xml
 		
 		We match existing forceContextQualifier in the format vyyyyMMdd-HHmm and replace this with v${build.qualifier}
 		
