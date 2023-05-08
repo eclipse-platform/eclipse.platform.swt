@@ -234,43 +234,11 @@
 		<fail if="failbadfiles" message="There are files with the wrong long /*int*/ preprocessing."/>
 	</target>
 
-	<target name="check_compilation" depends="check_source_changed" if="source_changed">
-		<antcall target="check_compilation_all_platforms"/>
+	<target name="check_sources_and_update_sha1_file" depends="check_source_changed" if="source_changed">
+		<mkdir dir="${tmphome}"/>
+		<antcall target="check_preprocessing"/>
 		<antcall target="update_sha1_file"/>
 	</target>
-	
-	<target name="check_compilation_all_platforms">
-		<mkdir dir="${tmphome}"/>
-		<!-- <property name="tmpdir" value="${tmphome}/check.compile.${TAG}"/> -->
-		<property name="buildDir" value="${tmpdir}/build"/>
-		<property name="projectDir" value="${repo.src}/bundles/org.eclipse.swt"/>
-
-		<!-- 64 bit -->
-		<antcall target="build_classes">
-			<param name="cp" value=".classpath_cocoa"/>
-		</antcall>
-		<antcall target="build_classes">
-			<param name="cp" value=".classpath_gtk"/>
-		</antcall>
-		<antcall target="build_classes">
-			<param name="cp" value=".classpath_win32"/>
-		</antcall>
-		
-		<antcall target="check_preprocessing"/>
-	</target>
-	
-	<target name="check_compilation_one_platform">
-			<mkdir dir="${tmphome}"/>
-			<!-- <property name="tmpdir" value="${tmphome}/check.compile.${TAG}"/> -->
-			<property name="buildDir" value="${tmpdir}/build"/>
-			<property name="projectDir" value="${repo.src}/bundles/org.eclipse.swt"/>
-
-			<!-- 64 bit -->
-			<antcall target="build_classes">
-				<param name="cp" value="${platform_cp}"/>
-			</antcall>
-			<antcall target="check_preprocessing"/>
-		</target>
 	
 	<target name="update_sha1_file">
 		<!-- Update build.sha1 file -->
@@ -282,20 +250,6 @@
 		</propertyfile>
 
 		<delete dir="${tmpdir}" quiet="true"/>
-	</target>
-
-	<target name="build_classes">
-		<echo>Building ${cp}</echo>
-		<delete file="${tmpdir}/copy.xml"/>
-		<delete dir="${buildDir}"/>
-
-		<xslt style="${projectDir}/tasks/classpath.xls" in="${projectDir}/${cp}" out="${tmpdir}/copy.xml">
-			<param name="srcDir" expression="${projectDir}"/>
-			<param name="outputDir" expression="${buildDir}"/>
-		</xslt>
-		<ant antfile="${tmpdir}/copy.xml" target="copy_files"/>
-
-		<javac includeantruntime="false" srcdir="${buildDir}" encoding="utf8"></javac>
 	</target>
 
 	<!-- common build tasks -->
