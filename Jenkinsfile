@@ -1,3 +1,19 @@
+/*******************************************************************************
+ * Copyright (c) 2021, 2024 Red Hat Inc. and others.
+ *
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License 2.0
+ * which accompanies this distribution, and is available at
+ * https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ *
+ * Contributors:
+ *     Mickael Istria (Red Hat Inc.) - initial API and implementation
+ *     Hannes Wellmann - Build SWT-natives as part of master- and verification-builds
+ *     Hannes Wellmann - Move SWT native binaries in this repository using Git-LFS
+  *******************************************************************************/
+
 def nativeBuildAgent(String platform, Closure body) {
 	def final nativeBuildStageName = 'Build SWT-native binaries'
 	if (platform == 'gtk.linux.x86_64') {
@@ -71,16 +87,14 @@ pipeline {
 						}
 					}
 					sh '''
+						git version
+						git lfs version
+						git config --unset core.hooksPath # Jenkins disables hooks by default as security feature, but we need the hooks for LFS
+						git lfs update # Install Git LFS hooks in repository, which has been skipped due to the initially nulled hookspath
+						git lfs pull
 						git fetch --all --tags --quiet
 						git remote set-url --push origin git@github.com:eclipse-platform/eclipse.platform.swt.git
 					'''
-				}
-				dir('eclipse.platform.swt.binaries') {
-					checkout([$class: 'GitSCM', branches: [[name: 'refs/heads/master']],
-						extensions: [[$class: 'CloneOption', timeout: 120, noTags: false ]],
-						userRemoteConfigs: [[url: 'https://github.com/eclipse-platform/eclipse.platform.swt.binaries.git']]
-					])
-					sh 'git remote set-url --push origin git@github.com:eclipse-platform/eclipse.platform.swt.binaries.git'
 				}
 			}
 		}
@@ -115,7 +129,7 @@ pipeline {
 				stages {
 					stage("Collect SWT-native's sources") {
 						steps {
-							dir('eclipse.platform.swt.binaries/bundles'){
+							dir('eclipse.platform.swt/binaries'){
 								withAnt(installation: 'apache-ant-latest', jdk: 'openjdk-jdk11-latest') { // nashorn javascript-engine required in ant-scripts
 									sh '''
 										pfSpec=(${PLATFORM//"."/ })
@@ -205,7 +219,7 @@ pipeline {
 										fi
 									}
 									
-									binaryFragmentsRoot=${WORKSPACE}/eclipse.platform.swt.binaries/bundles
+									binaryFragmentsRoot=${WORKSPACE}/eclipse.platform.swt/binaries
 									
 									if [[ ${PLATFORM} == cocoa.macosx.* ]]; then
 										#TODO: Instead use (with adjusted URL): https://github.com/eclipse-cbi/org.eclipse.cbi/tree/main/maven-plugins/eclipse-winsigner-plugin
@@ -245,7 +259,7 @@ pipeline {
 				withAnt(installation: 'apache-ant-latest', jdk: 'openjdk-jdk11-latest') { // nashorn javascript-engine required in ant-scripts
 					//The maven build reads the git-history so we should have to commit the native-binaries before building
 					sh '''
-						pushd eclipse.platform.swt.binaries
+						pushd eclipse.platform.swt
 						git add --all *
 						echo "git status after add"
 						git status
@@ -259,11 +273,6 @@ pipeline {
 						git status
 						git log -p -2
 						popd
-						
-						pushd eclipse.platform.swt.binaries
-						git status
-						git log -p -1
-						popd
 					'''
 				}
 			}	
@@ -276,13 +285,6 @@ pipeline {
 			}
 			steps {
 				xvnc(useXauthority: true) {
-					dir('eclipse.platform.swt.binaries') {
-						sh '''
-							mvn install \
-								--batch-mode -Pbuild-individual-bundles -DforceContextQualifier=zzz \
-								-Dcompare-version-with-baselines.skip=true -Dmaven.compiler.failOnWarning=true
-						'''
-					}
 					dir('eclipse.platform.swt') {
 						sh '''
 							mvn clean verify \
@@ -310,7 +312,7 @@ pipeline {
 				sshagent(['github-bot-ssh']) {
 					script {
 						def newSWTNativesTag = null;
-						dir('eclipse.platform.swt.binaries') {
+						dir('eclipse.platform.swt') {
 							newSWTNativesTag = sh(script: 'git describe --abbrev=0 --tags --match v[0-9][0-9][0-9][0-9]*', returnStdout: true).strip()
 						}
 						echo "newSWTNativesTag: ${newSWTNativesTag}"
@@ -326,11 +328,6 @@ pipeline {
 									git push origin refs/tags/${newSWTNativesTag}
 									popd
 									
-									pushd eclipse.platform.swt.binaries
-									git push origin HEAD:refs/heads/${BRANCH_NAME}
-									git push origin refs/tags/${newSWTNativesTag}
-									popd
-									
 									exit 0
 								else
 									echo Committing is skipped
@@ -340,9 +337,6 @@ pipeline {
 							fi
 							# The commits are not pushed. At least list them, so one can check if the result is as expected.
 							pushd eclipse.platform.swt
-							git log -n 2
-							popd
-							pushd eclipse.platform.swt.binaries
 							git log -n 2
 							popd
 						"""

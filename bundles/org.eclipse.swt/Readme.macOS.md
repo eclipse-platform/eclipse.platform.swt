@@ -89,8 +89,8 @@ Compiling native libs
 
 This is done from within the binaries project.
 
-    cd <eclipse.platform.swt.binaries>/bundles/org.eclipse.swt.cocoa.macosx.x86_64
-    mvn clean package -Dnative=cocoa.macosx.x86_64 -Pbuild-individual-bundles
+    cd <eclipse.platform.swt>/binaries/org.eclipse.swt.cocoa.macosx.x86_64
+    mvn clean package -Dnative=cocoa.macosx.x86_64
 
 
 Happy development!

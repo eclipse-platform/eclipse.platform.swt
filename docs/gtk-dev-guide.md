@@ -96,12 +96,11 @@ In order to run snippets with the SWT source code, you will need to add the SWT 
 === Package Config ===
 * Go to https://raw.githubusercontent.com/TuononenP/pkg-config.p2/master/site.xml 
 
-**SWT source code and binary repositories**
+**SWT source code and binary repository**
 
-Check out the repositories holding the SWT sources and binaries. I usually do this from inside Eclipse, but you can also clone things from the command line. The URI's for the repositories are:
+Check out the repository holding the SWT sources and binaries. I usually do this from inside Eclipse, but you can also clone things from the command line. The URI for the repository is:
 
     git@github.com:eclipse-platform/eclipse.platform.swt.git
-    git@github.com:eclipse-platform/eclipse.platform.swt.binaries.git
 
 Subsequently import all projects from the SWT source repository.  
 From the binary repository, import only: <code>org.eclipse.swt.gtk.linux.x86_64</code>
@@ -170,7 +169,7 @@ Note, the script doesn't clean the binary repository. Consider using the followi
     #!/bin/bash
     echo "Clean up of bindings"
     set -x  # print info about every command that is executed.
-    cd ~/git/eclipse.platform.swt.binaries/bundles/org.eclipse.swt.gtk.linux.x86_64 && \
+    cd ~/git/eclipse.platform.swt/binaries/org.eclipse.swt.gtk.linux.x86_64 && \
     git clean -xdf && \
     git reset --hard && \
     echo "Rebuild of bindings"
