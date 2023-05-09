@@ -19,6 +19,7 @@ import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Caret;
+import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
@@ -44,10 +45,8 @@ public class Issue644_TableEditorWithCanvas {
 
 		Table table = new Table(shell, SWT.BORDER | SWT.MULTI);
 		table.setLinesVisible(true);
-		table.setHeaderVisible(true);
 		for (int i = 0; i < 1; i++) {
 			TableColumn column = new TableColumn(table, SWT.NONE);
-			column.setText("Column : " + i);
 			column.setWidth(200);
 		}
 
@@ -60,24 +59,13 @@ public class Issue644_TableEditorWithCanvas {
 		for (int i = 0; i < items.length; i++) {
 			// canvas
 			TableEditor editor = new TableEditor(table);
-			Canvas canvas = new Canvas(table, SWT.NONE);
-			Rectangle parentBounds = canvas.getBounds();
-			Rectangle caretBound = new Rectangle(parentBounds.x + 20, parentBounds.y, 5, 17);
-			Caret caret = new Caret(canvas, SWT.NONE);
-			caret.setBounds(caretBound);
-			canvas.setCaret(caret);
-			canvas.addListener(SWT.MouseDown, event -> {
-				canvas.setFocus();
-			});
+			Canvas canvas = createCanvas(table, "Canvas inside table");
 			editor.grabHorizontal = true;
 			editor.setEditor(canvas, items[i], 0);
 			// Create a paint handler for the canvas
-			canvas.addPaintListener(e -> {
-				e.gc.setForeground(e.display.getSystemColor(SWT.COLOR_RED));
-				e.gc.drawText("Drawn content", 10, 1);
-			});
 		}
 
+		createCanvas(shell, "Canvas outside table");
 		shell.pack();
 		shell.open();
 		while (!shell.isDisposed()) {
@@ -85,5 +73,22 @@ public class Issue644_TableEditorWithCanvas {
 				display.sleep();
 		}
 		display.dispose();
+	}
+
+	private static Canvas createCanvas(Composite table, String text) {
+		Canvas canvas = new Canvas(table, SWT.NONE);
+		Rectangle parentBounds = canvas.getBounds();
+		Rectangle caretBound = new Rectangle(parentBounds.x + 20, parentBounds.y, 5, 17);
+		Caret caret = new Caret(canvas, SWT.NONE);
+		caret.setBounds(caretBound);
+		canvas.setCaret(caret);
+		canvas.addListener(SWT.MouseDown, event -> {
+			canvas.setFocus();
+		});
+		canvas.addPaintListener(e -> {
+			e.gc.setForeground(e.display.getSystemColor(SWT.COLOR_RED));
+			e.gc.drawText(text, 10, 1);
+		});
+		return canvas;
 	}
 }

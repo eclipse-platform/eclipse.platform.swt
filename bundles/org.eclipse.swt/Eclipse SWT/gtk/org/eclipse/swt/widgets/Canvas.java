@@ -172,6 +172,11 @@ long gtk_commit (long imcontext, long text) {
 long gtk_draw (long widget, long cairo) {
 	if ((state & OBSCURED) != 0) return 0;
 	long result = super.gtk_draw (widget, cairo);
+	drawCaretInFocus(widget, cairo);
+	return result;
+}
+
+void drawCaretInFocus(long widget, long cairo) {
 	/*
 	 *  blink is needed to be checked as gtk_draw() signals sent from other parts of the canvas
 	 *  can interfere with the blinking state. This will ensure that we are only draw/redrawing the
@@ -183,7 +188,6 @@ long gtk_draw (long widget, long cairo) {
 		drawCaret(widget,cairo);
 		blink = false;
 	}
-	return result;
 }
 
 private void drawCaret(long widget, long cairo) {
@@ -223,7 +227,9 @@ private void drawCaret(long widget, long cairo) {
 
 		Cairo.cairo_fill(cairo);
 		Cairo.cairo_restore(cairo);
-		drawFlag = false;
+		if (caret.embeddedInto == null) {
+			drawFlag = false;
+		}
 	} else {
 		drawFlag = true;
 	}
