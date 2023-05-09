@@ -13,7 +13,11 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.gtk.snippets;
 
+import java.util.Arrays;
+import java.util.List;
+
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.custom.TableEditor;
 import org.eclipse.swt.graphics.Point;
@@ -23,6 +27,7 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Caret;
 import org.eclipse.swt.widgets.Combo;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Listener;
@@ -44,26 +49,17 @@ import org.eclipse.swt.widgets.Text;
  * Canvas has a caret and will be visible on single click on canvas.
  */
 public class Issue644_CompleteTableEditor {
+	static List<String> headerNames = Arrays.asList(
+			"StyledText", "Combo", "CCombo", "Button", "Canvas", "Text", "CheckBox");
+
 	public static void main(String[] args) {
 		Display display = new Display();
 		Shell shell = new Shell(display);
-		shell.setLayout(new FillLayout());
-		final Table table = new Table(shell, SWT.BORDER | SWT.MULTI);
-		table.setLinesVisible(true);
-		table.setHeaderVisible(true);
-		int numberOfColumns = 7;
-		int nunOfRows = 3;
-		for (int i = 0; i < numberOfColumns; i++) {
-			TableColumn column = new TableColumn(table, SWT.NONE);
-			populateColumnName(i, column);
-			column.setWidth(100);
-			column.setAlignment(SWT.CENTER);
-		}
-		for (int rowNum = 0; rowNum < nunOfRows; rowNum++) {
-			TableItem item = new TableItem(table, SWT.NONE);
-			// initial content to show
-			populateData(numberOfColumns, rowNum, item);
-		}
+		shell.setLayout(new FillLayout(SWT.VERTICAL));
+
+		// "Classic" table with editors created on demand
+		final Table table = createTable(shell);
+
 		TableEditor editor = new TableEditor(table);
 		editor.horizontalAlignment = SWT.CENTER;
 		editor.grabHorizontal = true;
@@ -91,6 +87,19 @@ public class Issue644_CompleteTableEditor {
 				rowNum++;
 			}
 		});
+
+		// "Unusual" table with all editors created immediately
+		Table table2 = createTable(shell);
+		TableItem[] items = table2.getItems();
+		for (int i = 0; i < items.length; i++) {
+			TableItem tableItem = items[i];
+			for (int columnNumber = 0; columnNumber < table2.getColumnCount(); columnNumber++) {
+				TableEditor ed = new TableEditor(table);
+				editor.horizontalAlignment = SWT.CENTER;
+				editor.grabHorizontal = true;
+				createEditor(table2, ed, tableItem, columnNumber);
+			}
+		}
 		shell.pack();
 		shell.open();
 		while (!shell.isDisposed()) {
@@ -100,51 +109,43 @@ public class Issue644_CompleteTableEditor {
 		display.dispose();
 	}
 
-	protected static void populateColumnName(int columnNum, TableColumn column) {
-		switch (columnNum) {
-		case 0:
-			column.setText("non-edit");
-			break;
-		case 1:
-			column.setText("styled text");
-			break;
-		case 2:
-			column.setText("combo button");
-			break;
-		case 3:
-			column.setText("button");
-			break;
-		case 4:
-			column.setText("canvas");
-			break;
-		case 5:
-			column.setText("normal text");
-			break;
-		case 6:
-			column.setText("check box");
-			break;
-		default:
-			break;
+	private static Table createTable(Shell shell) {
+		Table table = new Table(shell, SWT.BORDER | SWT.MULTI);
+		table.setLinesVisible(true);
+		table.setHeaderVisible(true);
+		int nunOfRows = 3;
+		for (String name : headerNames) {
+			TableColumn column = new TableColumn(table, SWT.NONE);
+			column.setText(name);
+			column.setWidth(100);
+			column.setAlignment(SWT.CENTER);
 		}
+		for (int rowNum = 0; rowNum < nunOfRows; rowNum++) {
+			TableItem item = new TableItem(table, SWT.NONE);
+			// initial content to show
+			populateData(rowNum, item);
+		}
+		return table;
 	}
 
-	private static void populateData(int numOfColumn, int rowNum, TableItem item) {
+	private static void populateData(int rowNum, TableItem item) {
 		item.setText(new String[] { "" + rowNum, "" + rowNum, "" + rowNum });
-		for (int columnNumber = 0; columnNumber < numOfColumn; columnNumber++) {
-			switch (columnNumber) {
-			case 0:
-				item.setText(columnNumber, "1234" + rowNum);
-				break;
-			case 1:
+		for (int columnNumber = 0; columnNumber < headerNames.size(); columnNumber++) {
+			String name = headerNames.get(columnNumber);
+			switch (name) {
+			case "StyledText":
 				item.setText(columnNumber, rowNum + " , " + columnNumber);
 				break;
-			case 2:
+			case "Combo":
 				item.setText(columnNumber, "Select");
 				break;
-			case 3:
+			case "CCombo":
+				item.setText(columnNumber, "Select");
+				break;
+			case "Button":
 				item.setText(columnNumber, "Click");
 				break;
-			case 5:
+			case "Text":
 				item.setText(columnNumber, Math.random() + "");
 				break;
 			default:
@@ -154,31 +155,41 @@ public class Issue644_CompleteTableEditor {
 	}
 
 	private static void createEditor(final Table table, TableEditor editor, final TableItem item, int columnNumber) {
-		switch (columnNumber) {
-		case 1:
-			createStyledText(table, editor, item, columnNumber);
+		String name = headerNames.get(columnNumber);
+		Control c = null;
+		switch (name) {
+		case "StyledText":
+			c = createStyledText(table, editor, item, columnNumber);
 			break;
-		case 2:
-			createCombo(table, editor, item, columnNumber);
+		case "Combo":
+			c = createCombo(table, editor, item, columnNumber);
 			break;
-		case 3:
-			createButton(table, editor, item, columnNumber);
+		case "CCombo":
+			c = createCCombo(table, editor, item, columnNumber);
 			break;
-		case 4:
-			createCanvas(table, editor, item, columnNumber);
+		case "Button":
+			c = createButton(table, editor, item, columnNumber);
 			break;
-		case 5:
-			createText(table, editor, item, columnNumber);
+		case "Canvas":
+			c = createCanvas(table, editor, item, columnNumber);
 			break;
-		case 6:
-			createCheckBox(table, editor, item, columnNumber);
+		case "Text":
+			c = createText(table, editor, item, columnNumber);
+			break;
+		case "CheckBox":
+			c = createCheckBox(table, editor, item, columnNumber);
 			break;
 		default:
 			break;
 		}
+		if(c != null) {
+			editor.grabHorizontal = true;
+			editor.setEditor(c, item, columnNumber);
+			c.setFocus();
+		}
 	}
 
-	private static void createCheckBox(Table table, TableEditor editor, TableItem item, int columnNumber) {
+	private static Control createCheckBox(Table table, TableEditor editor, TableItem item, int columnNumber) {
 		final Button button = new Button(table, SWT.CHECK);
 		Listener listener = e -> {
 			switch (e.type) {
@@ -191,12 +202,10 @@ public class Issue644_CompleteTableEditor {
 		if(item.getData() != null) {
 			button.setSelection((boolean)item.getData());
 		}
-		editor.setEditor(button, item, columnNumber);
-		button.setFocus();
-
+		return button;
 	}
 
-	private static void createText(Table table, TableEditor editor, TableItem item, int columnNumber) {
+	private static Control createText(Table table, TableEditor editor, TableItem item, int columnNumber) {
 		final Text text = new Text(table, SWT.NONE);
 		Listener listener = e -> {
 			switch (e.type) {
@@ -215,13 +224,11 @@ public class Issue644_CompleteTableEditor {
 		};
 		text.addListener(SWT.FocusOut, listener);
 		text.addListener(SWT.Traverse, listener);
-
-		editor.setEditor(text, item, columnNumber);
 		text.setText(item.getText(columnNumber));
-		text.setFocus();
+		return text;
 	}
 
-	private static void createCanvas(Table table, TableEditor editor, TableItem item, int columnNumber) {
+	private static Control createCanvas(Table table, TableEditor editor, TableItem item, int columnNumber) {
 		Canvas canvas = new Canvas(table, SWT.NONE);
 		Rectangle parentBounds = canvas.getBounds();
 		// make the caret little wider.
@@ -232,16 +239,15 @@ public class Issue644_CompleteTableEditor {
 		canvas.addListener(SWT.MouseDown, event -> {
 			canvas.setFocus();
 		});
-		editor.grabHorizontal = true;
-		editor.setEditor(canvas, item, columnNumber);
 		// Create a paint handler for the canvas
 		canvas.addPaintListener(e -> {
 			e.gc.setForeground(e.display.getSystemColor(SWT.COLOR_RED));
 			e.gc.drawText("Drawn content", 10, 1);
 		});
+		return canvas;
 	}
 
-	private static void createButton(Table table, TableEditor editor, TableItem item, int columnNumber) {
+	private static Control createButton(Table table, TableEditor editor, TableItem item, int columnNumber) {
 		final Button button = new Button(table, SWT.NONE);
 		Listener listener = e -> {
 			switch (e.type) {
@@ -253,11 +259,10 @@ public class Issue644_CompleteTableEditor {
 		};
 		button.addListener(SWT.Selection, listener);
 		button.setText("Click");
-		editor.setEditor(button, item, columnNumber);
-		button.setFocus();
+		return button;
 	}
 
-	private static void createCombo(Table table, TableEditor editor, TableItem item, int columnNumber) {
+	private static Control createCombo(Table table, TableEditor editor, TableItem item, int columnNumber) {
 		final Combo combo = new Combo(table, SWT.NONE);
 		Listener listener = e -> {
 			switch (e.type) {
@@ -270,12 +275,26 @@ public class Issue644_CompleteTableEditor {
 		combo.setText("select");
 		combo.add("item 1");
 		combo.add("item 2");
-
-		editor.setEditor(combo, item, columnNumber);
-		combo.setFocus();
+		return combo;
 	}
 
-	protected static void createStyledText(final Table table, TableEditor editor, final TableItem item,
+	private static Control createCCombo(Table table, TableEditor editor, TableItem item, int columnNumber) {
+		final CCombo combo = new CCombo(table, SWT.NONE);
+		Listener listener = e -> {
+			switch (e.type) {
+			case SWT.FocusOut:
+				item.setText(columnNumber, combo.getText());
+				break;
+			}
+		};
+		combo.addListener(SWT.FocusOut, listener);
+		combo.setText("select");
+		combo.add("item 1");
+		combo.add("item 2");
+		return combo;
+	}
+
+	protected static Control createStyledText(final Table table, TableEditor editor, final TableItem item,
 			int columnNumber) {
 		final StyledText text = new StyledText(table, SWT.NONE);
 		Listener listener = e -> {
@@ -295,9 +314,7 @@ public class Issue644_CompleteTableEditor {
 		};
 		text.addListener(SWT.FocusOut, listener);
 		text.addListener(SWT.Traverse, listener);
-
-		editor.setEditor(text, item, columnNumber);
 		text.setText(item.getText(columnNumber));
-		text.setFocus();
+		return text;
 	}
 }

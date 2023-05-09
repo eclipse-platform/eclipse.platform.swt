@@ -17,6 +17,7 @@ package org.eclipse.swt.widgets;
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.*;
+import org.eclipse.swt.internal.cairo.*;
 import org.eclipse.swt.internal.gtk.*;
 
 /**
@@ -39,6 +40,8 @@ import org.eclipse.swt.internal.gtk.*;
  */
 public class Caret extends Widget {
 	Canvas parent;
+	// Table or Tree the parent might be embedded into (also indirectly)
+	Composite embeddedInto;
 	int x, y, width, height;
 	boolean isVisible, isShowing;
 	int blinkRate;
@@ -79,6 +82,14 @@ public Caret (Canvas parent, int style) {
 	super (parent, style);
 	this.parent = parent;
 	createWidget (0);
+	Composite p = parent.getParent();
+	while (p != null) {
+		if (p instanceof Tree || p instanceof Table) {
+			embeddedInto = p;
+			break;
+		}
+		p = p.getParent();
+	}
 }
 
 boolean blinkCaret () {
@@ -101,8 +112,22 @@ void createWidget (int index) {
 boolean drawCaret () {
 	if (parent == null) return false;
 	if (parent.isDisposed ()) return false;
-	GTK.gtk_widget_queue_draw(parent.handle);
+	if (embeddedInto != null && !embeddedInto.isDisposed() && isFocusCaret()) {
+		// Draw differently if we are in the embedded cell editor
+		// See Table.setParentGdkResource() and Tree.setParentGdkResource()
+		drawInCellEditor(embeddedInto.paintWindow());
+	} else {
+		GTK.gtk_widget_queue_draw(parent.handle);
+	}
 	return true;
+}
+
+private void drawInCellEditor(long window) {
+	long cairo = GDK.gdk_cairo_create(window);
+	Point pt = display.map(parent, embeddedInto, new Point(0,0));
+	Cairo.cairo_translate (cairo, pt.x, pt.y);
+	parent.drawCaretInFocus(parent.handle, cairo);
+	Cairo.cairo_destroy(cairo);
 }
 
 /**
@@ -304,6 +329,7 @@ void releaseWidget () {
 	}
 	parent = null;
 	image = null;
+	embeddedInto = null;
 }
 
 /**

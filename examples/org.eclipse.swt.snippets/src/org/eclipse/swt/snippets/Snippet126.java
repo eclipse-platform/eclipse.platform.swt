@@ -32,7 +32,7 @@ public static void main(String[] args) {
 	shell.setLayout (new FillLayout ());
 	Table table = new Table (shell, SWT.BORDER | SWT.MULTI);
 	table.setLinesVisible (true);
-	for (int i=0; i<3; i++) {
+	for (int i=0; i < 4; i++) {
 		TableColumn column = new TableColumn(table, SWT.NONE);
 		column.setWidth (100);
 	}
@@ -48,17 +48,25 @@ public static void main(String[] args) {
 		combo.add("item 2");
 		editor.grabHorizontal = true;
 		editor.setEditor(combo, item, 0);
+
 		editor = new TableEditor (table);
 		Text text = new Text (table, SWT.NONE);
 		text.setText("Text");
 		editor.grabHorizontal = true;
 		editor.setEditor(text, item, 1);
+
+		editor = new TableEditor (table);
+		StyledText stext = new StyledText (table, SWT.NONE);
+		stext.setText("StyledText");
+		editor.grabHorizontal = true;
+		editor.setEditor(stext, item, 2);
+
 		editor = new TableEditor (table);
 		Button button = new Button (table, SWT.CHECK);
 		button.pack ();
 		editor.minimumWidth = button.getSize ().x;
 		editor.horizontalAlignment = SWT.LEFT;
-		editor.setEditor (button, item, 2);
+		editor.setEditor (button, item, 3);
 	}
 	shell.pack ();
 	shell.open ();
