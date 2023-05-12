@@ -14,6 +14,7 @@
 package org.eclipse.swt.graphics;
 
 
+import static org.eclipse.swt.tests.win32.SwtWin32TestUtil.assertImageDataEqualsIgnoringAlphaInData;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
@@ -172,6 +173,44 @@ public class ImageWin32Tests {
 			targetCanvasGc.dispose();
 			targetCanvas.dispose();
 		}
+	}
+
+	// On Windows, the first used Image constructor creates a DDB, while the second
+	// transforms it into a DIB, still pixel RGB and alpha values should be the same.
+	@Test
+	public void test_getImageData_fromImageForImageDataFromImage() {
+		int width = 10;
+		int height = 10;
+		Color color = new Color(0, 0xff, 0);
+		Image image = new Image(display, width, height);
+		fillImage(image, color);
+		ImageData imageData = image.getImageData();
+		ImageData recreatedImageData = new Image(display, imageData).getImageData();
+		assertImageDataEqualsIgnoringAlphaInData(imageData, recreatedImageData);
+		image.dispose();
+	}
+
+	// On Windows, the first used Image constructor creates a DDB, while the second
+	// transforms it into a DIB, still pixel RGB and alpha values should be the same.
+	@Test
+	public void test_getImageData_fromCopiedImage() {
+		int width = 10;
+		int height = 10;
+		Color color = new Color(0, 0xff, 0);
+		Image image = new Image(display, width, height);
+		fillImage(image, color);
+		ImageData imageData = image.getImageData();
+		ImageData copiedImageData = new Image(display, image, SWT.IMAGE_COPY).getImageData();
+		assertImageDataEqualsIgnoringAlphaInData(imageData, copiedImageData);
+		image.dispose();
+	}
+
+	private static void fillImage(Image image, Color fillColor) {
+		GC gc = new GC(image);
+		gc.setBackground(fillColor);
+		gc.setForeground(fillColor);
+		gc.fillRectangle(image.getBounds());
+		gc.dispose();
 	}
 
 }

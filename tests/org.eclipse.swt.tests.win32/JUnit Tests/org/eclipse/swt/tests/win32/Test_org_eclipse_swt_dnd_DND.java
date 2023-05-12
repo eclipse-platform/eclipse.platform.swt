@@ -13,6 +13,7 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.win32;
 
+import static org.eclipse.swt.tests.win32.SwtWin32TestUtil.assertImageDataEqualsIgnoringAlphaInData;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -144,7 +145,7 @@ public void testImageTransfer_fromImage() throws InterruptedException {
 	try {
 		final ImageData drag = image.getImageData();
 		final ImageData drop = testTransferRoundtrip(ImageTransfer.getInstance(), drag);
-		assertImageDataEqualsIgoringAlphaInData(drag, drop);
+		assertImageDataEqualsIgnoringAlphaInData(drag, drop);
 	} finally {
 		image.dispose();
 	}
@@ -159,7 +160,7 @@ public void testImageTransfer_fromCopiedImage() throws InterruptedException {
 	try {
 		final ImageData drag = new Image(shell.getDisplay(), image, SWT.IMAGE_COPY).getImageData();
 		final ImageData drop = testTransferRoundtrip(ImageTransfer.getInstance(), drag);
-		assertImageDataEqualsIgoringAlphaInData(drag, drop);
+		assertImageDataEqualsIgnoringAlphaInData(drag, drop);
 	} finally {
 		image.dispose();
 	}
@@ -176,7 +177,7 @@ public void testImageTransfer_fromImageData() throws InterruptedException {
 	}
 	final ImageData drag = imageData;
 	final ImageData drop = testTransferRoundtrip(ImageTransfer.getInstance(), drag);
-	assertImageDataEqualsIgoringAlphaInData(drag, drop);
+	assertImageDataEqualsIgnoringAlphaInData(drag, drop);
 }
 
 /**
@@ -190,7 +191,7 @@ public void testImageTransfer_fromImageDataFromImage() throws InterruptedExcepti
 		try {
 			final ImageData drag = imageFromImageData.getImageData();
 			final ImageData drop = testTransferRoundtrip(ImageTransfer.getInstance(), drag);
-			assertImageDataEqualsIgoringAlphaInData(drag, drop);
+			assertImageDataEqualsIgnoringAlphaInData(drag, drop);
 		} finally {
 			imageFromImageData.dispose();
 		}
@@ -250,47 +251,6 @@ private Image createTestImage() {
 		fail("test image could not be initialized: " + e);
 	}
 	return null;
-}
-
-/**
- * Asserts that both given ImageData are equal, i.e. that:
- * <ul>
- *   <li>depths are equal (considering 24/32 bit as equals since alpha data is stored separately)</li>
- *   <li>width and height are equal</li>
- *   <li>all pixel RGB values are equal</li>
- *   <li>all pixel alpha values in the alphaData are equal</li>
- * </ul>
- * In case any of these properties differ, the test will fail.
- *
- * @param expected the expected ImageData
- * @param actual the actual ImageData
- */
-// This method is necessary because ImageData has no custom equals method and the default one isn't sufficient.
-private void assertImageDataEqualsIgoringAlphaInData(final ImageData expected, final ImageData actual) {
-	assertNotNull(expected, "expected data must not be null");
-	assertNotNull(actual, "actual data must not be null");
-	if (expected == actual) {
-		return;
-	}
-	assertEquals(expected.height, actual.height, "height of expected image is different from actual image");
-	// Alpha values are taken from alpha data, so ignore whether data depth is 24 or 32 bits
-	int expectedNormalizedDepth = expected.depth == 32 ? 24 : expected.depth;
-	int actualNormalizedDepth = expected.depth == 32 ? 24 : expected.depth;
-	assertEquals(expectedNormalizedDepth, actualNormalizedDepth, "depth of image data to compare must be equal");
-	assertEquals(expected.width, actual.width, "width of expected image is different from actual image");
-
-	for (int y = 0; y < expected.height; y++) {
-		for (int x = 0; x < expected.width; x++) {
-			// FIXME win32: dragged ALPHA=FF, dropped ALPHA=00, but other transparencyType
-			// => alpha stored in ImageData.alphaData
-			String expectedPixel = String.format("0x%08X", expected.getPixel(x, y) >> (expected.depth == 32 ? 8 : 0));
-			String actualPixel = String.format("0x%08X", actual.getPixel(x, y) >> (actual.depth == 32 ? 8 : 0));
-			assertEquals(expectedPixel, actualPixel, "actual pixel at x=" + x + " y=" + y + " is different from expected pixel");
-			int expectedAlpha = expected.getAlpha(x, y);
-			int actualAlpha = actual.getAlpha(x, y);
-			assertEquals(expectedAlpha, actualAlpha, "actual pixel alpha at x=" + x + " y=" + y + " is different from expected pixel");
-		}
-	}
 }
 
 /**
