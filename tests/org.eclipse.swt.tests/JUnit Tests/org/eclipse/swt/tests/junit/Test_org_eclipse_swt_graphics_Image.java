@@ -678,13 +678,6 @@ public void test_getImageDataCurrentZoom() {
 }
 
 @Test
-public void test_getImageData() {
-	getImageData1();
-	getImageData2(24, new PaletteData(0xff0000, 0xff00, 0xff));
-	getImageData2(32, new PaletteData(0xff0000, 0xff00, 0xff));
-}
-
-@Test
 public void test_getImageData_changingImageDataDoesNotAffectImage() {
 	List<Image> images = List.of( //
 			new Image(display, imageFileNameProvider), //
@@ -920,11 +913,12 @@ public void test_toString() {
 /* custom */
 Display display;
 
-/** Test implementation **/
-
-void getImageData1() {
+@Test
+public void test_getImageData_fromFiles() {
+	int numFormats = SwtTestUtil.imageFormats.length;
 	String fileName = SwtTestUtil.imageFilenames[0];
-	for (String format : SwtTestUtil.imageFormats) {
+	for (int i=0; i<numFormats; i++) {
+		String format = SwtTestUtil.imageFormats[i];
 		try (InputStream stream = SwtTestUtil.class.getResourceAsStream(fileName + "." + format)) {
 			ImageData data1 = new ImageData(stream);
 			Image image = new Image(display, data1);
@@ -942,31 +936,53 @@ void getImageData1() {
  * Verify Image.getImageData returns pixels with the same RGB value as the
  * source image. This test only makes sense with depth of 24 and 32 bits.
  */
-void getImageData2(int depth, PaletteData palette) {
+@Test
+public void test_getImageData_fromImageForCustomImageData() {
 	int width = 10;
 	int height = 10;
 	Color color = new Color(0, 0xff, 0);
-	RGB colorRGB = color.getRGB();
+	PaletteData palette = new PaletteData(0xff0000, 0xff00, 0xff);
+	int[] depths = new int[] { 24, 32 };
+	for (int depth : depths) {
+		ImageData imageData = new ImageData(width, height, depth, palette);
+		Image image = new Image(display, imageData);
+		fillImage(image, color);
+		ImageData newData = image.getImageData();
+		assertAllPixelsHaveColor(newData, color);
+		image.dispose();
+	}
+}
 
-	ImageData imageData = new ImageData(width, height, depth, palette);
-	Image image = new Image(display, imageData);
+@Test
+public void test_getImageData_fromImage() {
+	int width = 10;
+	int height = 10;
+	Color color = new Color(0, 0xff, 0);
+	Image image = new Image(display, width, height);
+	fillImage(image, color);
+	ImageData imageData = image.getImageData();
+	assertAllPixelsHaveColor(imageData, color);
+	image.dispose();
+}
 
+private static void fillImage(Image image, Color fillColor) {
 	GC gc = new GC(image);
-	gc.setBackground(color);
-	gc.setForeground(color);
-	gc.fillRectangle(0, 0, 10, 10);
+	gc.setBackground(fillColor);
+	gc.setForeground(fillColor);
+	gc.fillRectangle(image.getBounds());
+	gc.dispose();
+}
 
-	ImageData newData = image.getImageData();
-	PaletteData newPalette = newData.palette;
-	for (int i = 0; i < width; i++) {
-		for (int j = 0; j < height; j++) {
-			int pixel = newData.getPixel(i, j);
+private static PaletteData assertAllPixelsHaveColor(ImageData imageData, Color expectedColor) {
+	PaletteData newPalette = imageData.palette;
+	for (int x = 0; x < imageData.width; x++) {
+		for (int y = 0; y < imageData.height; y++) {
+			int pixel = imageData.getPixel(x, y);
 			RGB rgb = newPalette.getRGB(pixel);
-			assertTrue("rgb.equals(colorRGB)", rgb.equals(colorRGB));
+			assertEquals("pixel at x=" + x + " y=" + y + " does not have expected color", expectedColor.getRGB(), rgb);
 		}
 	}
-	gc.dispose();
-	image.dispose();
+	return newPalette;
 }
 
 RGB getRealRGB(Color color) {
