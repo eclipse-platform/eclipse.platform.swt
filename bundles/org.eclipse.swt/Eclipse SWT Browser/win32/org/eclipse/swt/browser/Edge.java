@@ -596,6 +596,7 @@ void setupBrowser(int hr, long pv) {
 		error(SWT.ERROR_THREAD_INVALID_ACCESS, hr);
 		break;
 	default:
+		System.err.println("WebView instantiation failed with result: " + hr);
 		containingEnvironment.instances().remove(this);
 		error(SWT.ERROR_NO_HANDLES, hr);
 	}
