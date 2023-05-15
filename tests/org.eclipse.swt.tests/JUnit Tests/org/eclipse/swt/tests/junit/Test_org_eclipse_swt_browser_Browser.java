@@ -22,6 +22,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.junit.Assume.assumeFalse;
@@ -258,14 +259,13 @@ private Browser createBrowser(Shell s, int flags) {
  * Test that if Browser is constructed with the parent being "null", Browser throws an exception.
  */
 @Override
-@Test(expected = IllegalArgumentException.class)
 public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI() {
 	Browser browser = createBrowser(shell, SWT.NONE);
 	browser.dispose();
 	browser = createBrowser(shell, SWT.BORDER);
 	// System.out.println("Test_org_eclipse_swt_browser_Browser#test_Constructor*#getBrowserType(): " + browser.getBrowserType());
 	browser.dispose();
-	browser = createBrowser(null, SWT.NONE); // Should throw.
+	assertThrows(IllegalArgumentException.class, () -> createBrowser(null, SWT.NONE));
 }
 
 /**
@@ -529,6 +529,8 @@ public void test_LocationListener_changing() {
 }
 @Test
 public void test_LocationListener_changed() {
+	assumeFalse("behavior is not (yet) supported by Edge browser", isEdge);
+
 	AtomicBoolean changedFired = new AtomicBoolean(false);
 	browser.addLocationListener(changedAdapter(e ->	changedFired.set(true)));
 	shell.open();
@@ -538,6 +540,8 @@ public void test_LocationListener_changed() {
 }
 @Test
 public void test_LocationListener_changingAndOnlyThenChanged() {
+	assumeFalse("behavior is not (yet) supported by Edge browser", isEdge);
+
 	// Test proper order of events.
 	// Check that 'changed' is only fired after 'changing' has fired at least once.
 	AtomicBoolean changingFired = new AtomicBoolean(false);
@@ -581,6 +585,8 @@ public void test_LocationListener_changingAndOnlyThenChanged() {
 
 @Test
 public void test_LocationListener_then_ProgressListener() {
+	assumeFalse("behavior is not (yet) supported by Edge browser", isEdge);
+
 	AtomicBoolean locationChanged = new AtomicBoolean(false);
 	AtomicBoolean progressChanged = new AtomicBoolean(false);
 	AtomicBoolean progressChangedAfterLocationChanged = new AtomicBoolean(false);
@@ -674,6 +680,8 @@ public void test_LocationListener_ProgressListener_cancledLoad () {
 @Test
 /** Ensue that only one changed and one completed event are fired for url changes */
 public void test_LocationListener_ProgressListener_noExtraEvents() {
+	assumeFalse("behavior is not (yet) supported by Edge browser", isEdge);
+
 	AtomicInteger changedCount = new AtomicInteger(0);
 	AtomicInteger completedCount = new AtomicInteger(0);
 
@@ -780,6 +788,8 @@ public void test_OpenWindowListener_open_ChildPopup() {
 /** Validate event order : Child's visibility should come before progress completed event */
 @Test
 public void test_OpenWindow_Progress_Listener_ValidateEventOrder() {
+	assumeFalse("behavior is not (yet) supported by Edge browser", isEdge);
+
 	AtomicBoolean windowOpenFired = new AtomicBoolean(false);
 	AtomicBoolean childCompleted = new AtomicBoolean(false);
 	AtomicBoolean visibilityShowed = new AtomicBoolean(false);
@@ -1259,6 +1269,8 @@ public void test_VisibilityWindowListener_multiple_shells() {
  */
 @Test
 public void test_VisibilityWindowListener_eventSize() {
+	assumeFalse("behavior is not (yet) supported by Edge browser", isEdge);
+
 	shell.setSize(200,300);
 	AtomicBoolean childCompleted = new AtomicBoolean(false);
 	AtomicReference<Point> result = new AtomicReference<>(new Point(0,0));
@@ -1448,6 +1460,8 @@ public void test_setJavascriptEnabled_multipleInstances() {
 */
 @Test
 public void test_LocationListener_evaluateInCallback() {
+	assumeFalse("behavior is not (yet) supported by Edge browser", isEdge);
+
 	AtomicBoolean changingFinished = new AtomicBoolean(false);
 	AtomicBoolean changedFinished = new AtomicBoolean(false);
 	browser.addLocationListener(new LocationListener() {
@@ -1496,6 +1510,8 @@ public void test_LocationListener_evaluateInCallback() {
 /** Verify that evaluation works inside an OpenWindowListener */
 @Test
 public void test_OpenWindowListener_evaluateInCallback() {
+	assumeFalse("behavior is not (yet) supported by Edge browser", isEdge);
+
 	AtomicBoolean eventFired = new AtomicBoolean(false);
 	browser.addOpenWindowListener(event -> {
 		browser.evaluate("SWTopenListener = true");
