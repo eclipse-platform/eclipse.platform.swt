@@ -425,7 +425,7 @@ class WebViewProvider {
  * is required for processing the OS events during browser initialization, since
  * Edge browser initialization happens asynchronously.
  * <p>
- * {@link Display#readAndDisplay()} also processes events scheduled for
+ * {@link Display#readAndDispatch()} also processes events scheduled for
  * asynchronous execution via {@link Display#asyncExec(Runnable)}. This may
  * include events such as the disposal of the browser's parent composite, which
  * leads to a failure in browser initialization if processed in between the OS
