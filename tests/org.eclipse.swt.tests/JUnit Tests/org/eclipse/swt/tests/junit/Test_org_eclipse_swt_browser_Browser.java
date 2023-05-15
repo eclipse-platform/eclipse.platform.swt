@@ -81,6 +81,7 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.FixMethodOrder;
 import org.junit.Rule;
 import org.junit.Test;
@@ -144,19 +145,26 @@ public class Test_org_eclipse_swt_browser_Browser extends Test_org_eclipse_swt_w
 @Parameters(name = "browser flags: {0}")
 public static Collection<Object[]> browserFlagsToTest() {
 	List<Object[]> browserFlags = new ArrayList<>();
+	browserFlags.add(new Object[] {SWT.NONE});
 	if (SwtTestUtil.isWindows) {
-		// NOTE: This is currently disabled due to test issues in the CI
-		// Execute Edge tests first, because IE starts some OS timer that conflicts with Edge event handling
-		// browserFlags.add(0, new Object[] {SWT.EDGE});
+		// Execute IE tests after Edge, because IE starts some OS timer that conflicts with Edge event handling
 		browserFlags.add(new Object[] {SWT.IE});
-	} else {
-		browserFlags.add(new Object[] {SWT.NONE});
 	}
 	return browserFlags;
 }
 
 public Test_org_eclipse_swt_browser_Browser(int swtBrowserSettings) {
 	this.swtBrowserSettings = swtBrowserSettings;
+}
+
+@BeforeClass
+public static void setupEdgeEnvironment() {
+	// initialize Edge environment before any test runs to isolate environment setup
+	if (SwtTestUtil.isWindows) {
+		Shell shell = new Shell();
+		new Browser(shell, SWT.EDGE);
+		shell.dispose();
+	}
 }
 
 @Override
@@ -215,6 +223,7 @@ protected void afterDispose(Display display) {
 
 		if(!shell.isDisposed()) {
 			System.out.println("Not disposed shell: " + shell);
+			shell.dispose();
 			disposedShells ++;
 		}
 	}
@@ -238,6 +247,16 @@ protected void afterDispose(Display display) {
 		} else {
 			printThreadsInfo();
 		}
+	}
+	if (isEdge) {
+		// wait for and process pending events to properly cleanup Edge browser resources
+		do {
+			processUiEvents();
+			try {
+				Thread.sleep(100);
+			} catch (InterruptedException e) {
+			}
+		} while (Display.getCurrent().readAndDispatch());
 	}
 	if (SwtTestUtil.isGTK) {
 		int descriptorDiff = reportOpenedDescriptors();
@@ -285,6 +304,8 @@ private Browser createBrowser(Shell s, int flags) {
 	long maximumBrowserCreationMilliseconds = 10_000;
 	long createStartTime = System.currentTimeMillis();
 	Browser b = new Browser(s, flags);
+	// Wait for asynchronous initialization via getting URL
+	b.getUrl();
 	createdBroswers.add(b);
 	long createDuration = System.currentTimeMillis() - createStartTime;
 	assertTrue("creating browser took too long: " + createDuration + "ms", createDuration < maximumBrowserCreationMilliseconds);
@@ -722,14 +743,17 @@ public void test_LocationListener_ProgressListener_cancledLoad () {
 
 @Test
 public void test_LocationListener_LocationListener_ordered_changing () {
-	List<String> locations = new ArrayList<>();
-	browser.addLocationListener(changingAdapter(event -> locations.add(event.location)));
+	assumeFalse("Currently broken for Edge", isEdge);
+	List<String> locations = Collections.synchronizedList(new ArrayList<>());
+	browser.addLocationListener(changingAdapter(event -> {
+		locations.add(event.location);
+	}));
 	shell.open();
 	browser.setText("You should not see this message.");
 	String url = getValidUrl();
 	browser.setUrl(url);
-	waitForPassCondition(() -> locations.size() == 2);
-	assertTrue("Change of locations do not fire in order.", locations.get(0).equals("about:blank") && locations.get(1).contains("testWebsiteWithTitle.html"));
+	assertTrue("Change of locations do not fire in order: " + locations.toString(), waitForPassCondition(() -> locations.size() == 2));
+	assertTrue("Change of locations do not fire in order", locations.get(0).equals("about:blank") && locations.get(1).contains("testWebsiteWithTitle.html"));
 }
 
 private String getValidUrl() {
@@ -1942,6 +1966,7 @@ public void test_evaluate_null() {
 	// Boolen only used as dummy placeholder so the object is not null.
 	final AtomicReference<Object> returnValue = new AtomicReference<>(true);
 	browser.addProgressListener(completedAdapter(event -> {
+		returnValue.set(false);
 		Object evalResult = browser.evaluate("return null");
 		returnValue.set(evalResult);
 		if (debug_verbose_output)
@@ -1951,7 +1976,7 @@ public void test_evaluate_null() {
 	browser.setText("<html><body>HelloWorld</body></html>");
 	shell.open();
 	boolean passed = waitForPassCondition(() -> returnValue.get() == null);
-	assertTrue("Evaluate did not return a null. Timed out.", passed);
+	assertTrue("Evaluate did not return a null (current value: " + returnValue.get() + "). Timed out.", passed);
 }
 
 /**
@@ -2156,6 +2181,7 @@ ProgressListener callCustomFunctionUponLoad = completedAdapter(event ->	browser.
  */
 @Test
 public void test_BrowserFunction_callback () {
+	assumeFalse("Currently broken for Edge", isEdge);
 	AtomicBoolean javaCallbackExecuted = new AtomicBoolean(false);
 
 	class JavascriptCallback extends BrowserFunction { // Note: Local class defined inside method.
