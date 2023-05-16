@@ -8629,7 +8629,7 @@ void setClipboardContent(int start, int length, int clipboardType) throws SWTErr
 		String rtfText = getPlatformDelimitedText(rtfWriter);
 
 		HTMLTransfer htmlTransfer = HTMLTransfer.getInstance();
-		HTMLWriter htmlWriter = new HTMLWriter(this, start, length);
+		HTMLWriter htmlWriter = new HTMLWriter(this, start, length, content);
 		String htmlText = getPlatformDelimitedText(htmlWriter);
 
 		data = new Object[]{rtfText, htmlText, plainText};
