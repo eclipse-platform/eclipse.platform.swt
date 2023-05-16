@@ -21,24 +21,29 @@ import org.eclipse.swt.graphics.*;
  * <p>How the concepts are mapped to HTML:</p>
  * <ul>
  *   <li>The global {@link StyledText} properties (for example {@link StyledText#getBackground()}
- *       are written in a wrapping {@code <div>}.</p>
+ *       are written in a wrapping {@code <div>} or {@code <span>} (for line fragments).</p>
  *   <li>The line specific properties (for example {@link StyledText#getLineBackground(int)}
- *       are written the {@code <p>} elements.</li>
+ *       are written the {@code <p>} elements - if the copied range contains more then a line fragment.</li>
  *   <li>The {@link StyleRange} properties inside the line are written the {@code <span>} elements.</li>
  * </ul>
  */
 class HTMLWriter extends StyledTextWriterBase {
+	private String tag;
+	private boolean multiline;
 
-	public HTMLWriter(StyledText styledText, int start, int length) {
+	public HTMLWriter(StyledText styledText, int start, int length, StyledTextContent content) {
 		super(styledText, start, length);
+		String text = content.getTextRange(start, length);
+		multiline = text.contains("\n");
+		tag = multiline ? "div" : "span";
 		writeHeader();
 	}
 
 	@Override
 	public void close() {
 		if (!isClosed()) {
-			write("</div>");
-			write("</div>");
+			write("</"+ tag+">");
+			write("</"+ tag+">");
 			super.close();
 		}
 	}
@@ -81,11 +86,11 @@ class HTMLWriter extends StyledTextWriterBase {
 			appendStyle(innerDivStyle, "direction:rtl;");
 		}
 
-		write("<div style='" + outerDivStyle + "'>");
+		write("<"+ tag+" style='" + outerDivStyle + "'>");
 		if (language == null || language.isEmpty()) {
-			write("<div style='" + innerDivStyle + "'>");
+			write("<"+ tag+" style='" + innerDivStyle + "'>");
 		} else {
-			write("<div lang='" + language + "' style='" + innerDivStyle + "'>");
+			write("<"+ tag+" lang='" + language + "' style='" + innerDivStyle + "'>");
 		}
 	}
 
@@ -116,6 +121,9 @@ class HTMLWriter extends StyledTextWriterBase {
 			appendStyle(paragraphStyle, "margin:", verticalIndent, " 0 0 0;");
 		}
 
+		if (!multiline) {
+			return "";
+		}
 		if (paragraphStyle.length() == 0) {
 			write("<p>");
 		} else {
