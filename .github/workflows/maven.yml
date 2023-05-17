@@ -18,7 +18,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Upload
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@0b7f8abb1508181956e8e162db84b466c27e18ce # v3.1.2
       with:
         name: Event File
         path: ${{ github.event_path }}
@@ -35,12 +35,12 @@ jobs:
     name: Verify ${{ matrix.config.name }} with Java-${{ matrix.java }}
     steps:
     - name: checkout swt
-      uses: actions/checkout@v3
+      uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab # v3.5.2
       with:
        path: 'eclipse.platform.swt'
        fetch-depth: 0 # required for jgit timestamp provider to work
     - name: checkout swt.binaries
-      uses: actions/checkout@v3
+      uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab # v3.5.2
       with:
        path: eclipse.platform.swt.binaries
        repository: 'eclipse-platform/eclipse.platform.swt.binaries'
@@ -48,20 +48,20 @@ jobs:
       run: sudo apt-get update -qq && sudo apt-get install -qq -y webkit2gtk-driver
       if: ${{ matrix.config.native == 'gtk.linux.x86_64'}}
     - name: Set up Java ${{ matrix.java }}
-      uses: actions/setup-java@v3
+      uses: actions/setup-java@5ffc13f4174014e2d4d4572b3d74c3fa61aeb2c2 # v3.11.0
       with:
         java-version: ${{ matrix.java }}
         distribution: 'temurin'
         cache: maven
     - name: Build swt.binaries fragments with Maven
-      uses: coactions/setup-xvfb@v1
+      uses: coactions/setup-xvfb@b6b4fcfb9f5a895edadc3bc76318fae0ac17c8b3 # v1.0.1
       with:
        run: >-
         mvn --batch-mode -Pbuild-individual-bundles -DforceContextQualifier=zzz
         -Dcompare-version-with-baselines.skip=true -Dmaven.compiler.failOnWarning=true install
        working-directory: eclipse.platform.swt.binaries
     - name: Build with Maven
-      uses: coactions/setup-xvfb@v1
+      uses: coactions/setup-xvfb@b6b4fcfb9f5a895edadc3bc76318fae0ac17c8b3 # v1.0.1
       with:
        run: >-
         mvn --batch-mode -V -U
@@ -75,7 +75,7 @@ jobs:
        working-directory: eclipse.platform.swt
     - name: Upload Test Results for ${{ matrix.config.name }} / Java-${{ matrix.java }}
       if: always()
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@0b7f8abb1508181956e8e162db84b466c27e18ce # v3.1.2
       with:
         name: test-results-${{ matrix.config.native }}-java${{ matrix.java }}
         if-no-files-found: warn
