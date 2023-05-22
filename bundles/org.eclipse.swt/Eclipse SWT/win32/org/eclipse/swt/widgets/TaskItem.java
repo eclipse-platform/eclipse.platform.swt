@@ -90,6 +90,28 @@ protected void checkSubclass () {
 
 @Override
 void destroyWidget () {
+	if (null != parent.mTaskbarList3) { // extra safety just in case
+		// MSDN for 'ITaskbarList3::SetOverlayIcon' says:
+		//   Because a single overlay is applied to the taskbar button instead
+		//   of to the individual window thumbnails, this is a per-group
+		//   feature rather than per-window. Requests for overlay icons can
+		//   be received from individual windows in a taskbar group, but they
+		//   do not queue. The last overlay received is the overlay shown.
+		//   If the last overlay received is removed, the overlay that it
+		//   replaced is restored so long as it is still active. As an example,
+		//   windows 1, 2, and 3 set, in order, overlays A, B, and C.
+		//   Because overlay C was received last, it is shown on the taskbar button.
+		//   Window 2 calls SetOverlayIcon with a NULL value to remove overlay B.
+		//   Window 3 then does the same to remove overlay C.
+		//   Because window 1's overlay A is still active, that overlay is then
+		//   displayed on the taskbar button.
+		// This implies that Shell should pass NULL before closing.
+		//
+		// Issue #603: On Win11 the lack of this actually caused wrong overlay
+		// to show after closing Shell.
+		parent.mTaskbarList3.SetOverlayIcon(shell.handle, 0, 0);
+	}
+
 	parent.destroyItem (this);
 	releaseHandle ();
 }
