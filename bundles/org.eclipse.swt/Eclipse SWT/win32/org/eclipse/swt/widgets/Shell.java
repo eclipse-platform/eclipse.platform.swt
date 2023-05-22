@@ -2285,7 +2285,7 @@ long windowProc (long hwnd, int msg, long wParam, long lParam) {
 			if (display.taskBar != null) {
 				for (TaskItem item : display.taskBar.items) {
 					if (item != null && item.shell == this) {
-						item.recreate ();
+						item.onTaskbarButtonCreated();
 						break;
 					}
 				}

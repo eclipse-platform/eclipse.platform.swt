@@ -38,6 +38,7 @@ import org.eclipse.swt.internal.win32.*;
 public class TaskItem extends Item {
 	TaskBar parent;
 	Shell shell;
+	boolean hasTaskbarButton = false;
 	int progress, progressState = SWT.DEFAULT;
 	Image overlayImage;
 	String overlayText = "";
@@ -188,14 +189,25 @@ public int getProgressState () {
 	return progressState;
 }
 
-void recreate () {
-	if (showingText) {
-		if (overlayText.length () != 0) updateText ();
+void updateImageAndText () {
+	if (showingText && (overlayText.length () != 0)) {
+		updateText ();
+	} else if (overlayImage != null) {
+		updateImage ();
 	} else {
-		if (overlayImage != null) updateImage ();
+		parent.mTaskbarList3.SetOverlayIcon(shell.handle, 0, 0);
 	}
+}
+
+void updateAll () {
+	updateImageAndText ();
 	if (progress != 0) updateProgress ();
 	if (progressState != SWT.DEFAULT) updateProgressState ();
+}
+
+void onTaskbarButtonCreated () {
+	this.hasTaskbarButton = true;
+	updateAll ();
 }
 
 @Override
@@ -287,15 +299,14 @@ public void setOverlayImage (Image overlayImage) {
 	if (overlayImage != null && overlayImage.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
 	if (shell == null) return;
 	this.overlayImage = overlayImage;
-	if (overlayImage != null) {
-		updateImage ();
-	} else {
-		if (overlayText.length () != 0) {
-			updateText ();
-		} else {
-			parent.mTaskbarList3.SetOverlayIcon(shell.handle, 0, 0);
-		}
-	}
+	this.showingText = (this.overlayImage == null);
+
+	// MSDN for 'ITaskbarList3' says:
+	// TaskbarButtonCreated ... message must be received by your application before it calls any ITaskbarList3 method
+	// #updateAll() will be called later when message is received.
+	if (!hasTaskbarButton) return;
+
+	updateImageAndText ();
 }
 
 /**
@@ -329,15 +340,14 @@ public void setOverlayText (String overlayText) {
 	if (overlayText == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (shell == null) return;
 	this.overlayText = overlayText;
-	if (overlayText.length () != 0) {
-		updateText ();
-	} else {
-		if (overlayImage != null) {
-			updateImage ();
-		} else {
-			parent.mTaskbarList3.SetOverlayIcon(shell.handle, 0, 0);
-		}
-	}
+	this.showingText = (this.overlayText.length() != 0);
+
+	// MSDN for 'ITaskbarList3' says:
+	// TaskbarButtonCreated ... message must be received by your application before it calls any ITaskbarList3 method
+	// #updateAll() will be called later when message is received.
+	if (!hasTaskbarButton) return;
+
+	updateImageAndText ();
 }
 
 /**
@@ -371,6 +381,12 @@ public void setProgress (int progress) {
 	progress = Math.max (0, Math.min (progress, PROGRESS_MAX));
 	if (this.progress == progress) return;
 	this.progress = progress;
+
+	// MSDN for 'ITaskbarList3' says:
+	// TaskbarButtonCreated ... message must be received by your application before it calls any ITaskbarList3 method
+	// #updateAll() will be called later when message is received.
+	if (!hasTaskbarButton) return;
+
 	updateProgress ();
 }
 
@@ -414,6 +430,12 @@ public void setProgressState (int progressState) {
 	if (shell == null) return;
 	if (this.progressState == progressState) return;
 	this.progressState = progressState;
+
+	// MSDN for 'ITaskbarList3' says:
+	// TaskbarButtonCreated ... message must be received by your application before it calls any ITaskbarList3 method
+	// #updateAll() will be called later when message is received.
+	if (!hasTaskbarButton) return;
+
 	updateProgressState ();
 }
 
@@ -429,7 +451,6 @@ void setShell (Shell shell) {
 }
 
 void updateImage () {
-	showingText = false;
 	Image image2 = null;
 	long hIcon = 0;
 	switch (overlayImage.type) {
@@ -463,8 +484,7 @@ void updateProgressState () {
 	parent.mTaskbarList3.SetProgressState(shell.handle, tbpFlags);
 }
 
-void updateText () {
-	showingText = true;
+long renderTextIcon () {
 	/* Create resources */
 	int width = 16, height = 16;
 	long hdc = OS.GetDC (0);
@@ -547,6 +567,11 @@ void updateText () {
 	OS.DeleteObject (hBitmap);
 	OS.DeleteObject (hMask);
 
+	return hIcon;
+}
+
+void updateText () {
+	long hIcon = renderTextIcon();
 	parent.mTaskbarList3.SetOverlayIcon(shell.handle, hIcon, 0);
 	OS.DestroyIcon (hIcon);
 }
