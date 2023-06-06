@@ -369,9 +369,8 @@ void OleCreate(GUID appClsid, GUID fileClsid, char[] fileName, File file) {
 				OLE.error(OLE.ERROR_CANNOT_OPEN_FILE, result);
 			}
 			IStream stream = new IStream(address[0]);
-			try {
+			try (FileInputStream fileInput = new FileInputStream(file)){
 				// Copy over data in file to named stream
-				FileInputStream fileInput = new FileInputStream(file);
 				int increment = 1024*4;
 				byte[] buffer = new byte[increment];
 				int count = 0;
@@ -387,7 +386,6 @@ void OleCreate(GUID appClsid, GUID fileClsid, char[] fileName, File file) {
 						OLE.error(OLE.ERROR_CANNOT_OPEN_FILE, result);
 					}
 				}
-				fileInput.close();
 				stream.Commit(COM.STGC_DEFAULT);
 				stream.Release();
 			} catch (IOException err) {
@@ -1202,8 +1200,7 @@ private boolean saveFromContents(long address, File file) {
 	IStream tempContents = new IStream(address);
 	tempContents.AddRef();
 
-	try {
-		FileOutputStream writer = new FileOutputStream(file);
+	try (FileOutputStream writer = new FileOutputStream(file)){
 
 		int increment = 1024 * 4;
 		long pv = OS.CoTaskMemAlloc(increment);
@@ -1216,9 +1213,6 @@ private boolean saveFromContents(long address, File file) {
 			success = true;
 		}
 		OS.CoTaskMemFree(pv);
-
-		writer.close();
-
 	} catch (IOException err) {
 	}
 
@@ -1250,11 +1244,8 @@ private boolean saveFromOle10Native(long address, File file) {
 		OS.CoTaskMemFree(pv);
 
 		// open the file and write data into it
-		try {
-			FileOutputStream writer = new FileOutputStream(file);
+		try (FileOutputStream writer = new FileOutputStream(file)){
 			writer.write(buffer); // Note: if file does not exist, this will create the file
-			writer.close();
-
 			success = true;
 		} catch (IOException err) {
 		}
