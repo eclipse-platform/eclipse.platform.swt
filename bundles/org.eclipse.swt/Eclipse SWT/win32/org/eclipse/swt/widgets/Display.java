@@ -5194,4 +5194,7 @@ static char [] withCrLf (char [] string) {
 	return result;
 }
 
+static boolean isActivateShellOnForceFocus() {
+	return "true".equals(System.getProperty("org.eclipse.swt.internal.activateShellOnForceFocus", "false")); //$NON-NLS-1$
+}
 }

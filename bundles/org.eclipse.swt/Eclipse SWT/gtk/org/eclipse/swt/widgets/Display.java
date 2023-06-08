@@ -6244,4 +6244,7 @@ static int _getDeviceZoom (long monitor_num) {
 	return DPIUtil.mapDPIToZoom (dpi);
 }
 
+static boolean isActivateShellOnForceFocus() {
+	return "true".equals(System.getProperty("org.eclipse.swt.internal.activateShellOnForceFocus", "false")); //$NON-NLS-1$
+}
 }
