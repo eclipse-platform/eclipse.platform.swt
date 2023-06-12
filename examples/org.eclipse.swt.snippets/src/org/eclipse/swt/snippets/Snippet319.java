@@ -186,10 +186,8 @@ protected boolean validate(Object object) {
 /* shared methods for converting instances of MyType <-> byte[] */
 
 static byte[] convertToByteArray(MyType type) {
-	DataOutputStream dataOutStream = null;
-	try {
-		ByteArrayOutputStream byteOutStream = new ByteArrayOutputStream();
-		dataOutStream = new DataOutputStream(byteOutStream);
+	try (ByteArrayOutputStream byteOutStream = new ByteArrayOutputStream();
+		DataOutputStream dataOutStream = new DataOutputStream(byteOutStream)) {
 		byte[] bytes = type.name.getBytes();
 		dataOutStream.writeInt(bytes.length);
 		dataOutStream.write(bytes);
@@ -197,20 +195,11 @@ static byte[] convertToByteArray(MyType type) {
 		return byteOutStream.toByteArray();
 	} catch (IOException e) {
 		return null;
-	} finally {
-		if (dataOutStream != null) {
-			try {
-				dataOutStream.close();
-			} catch (IOException e) {}
-		}
 	}
 }
 
 static MyType restoreFromByteArray(byte[] bytes) {
-	DataInputStream dataInStream = null;
-	try {
-		ByteArrayInputStream byteInStream = new ByteArrayInputStream(bytes);
-		dataInStream = new DataInputStream(byteInStream);
+	try (DataInputStream dataInStream = new DataInputStream(new ByteArrayInputStream(bytes))) {
 		int size = dataInStream.readInt();
 		byte[] name = new byte[size];
 		dataInStream.read(name);
@@ -220,12 +209,6 @@ static MyType restoreFromByteArray(byte[] bytes) {
 		return result;
 	} catch (IOException ex) {
 		return null;
-	} finally {
-		if (dataInStream != null) {
-			try {
-				dataInStream.close();
-			} catch (IOException e) {}
-		}
 	}
 }
 
