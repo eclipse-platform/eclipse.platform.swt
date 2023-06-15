@@ -4870,9 +4870,6 @@ public void test_clickUpdatesCaretPosition() {
 
 @Test
 public void test_caretSizeAndPositionVariableGlyphMetrics() {
-	// See https://github.com/eclipse-platform/eclipse.platform.swt/issues/294
-	assumeFalse("Test doesn't work on Linux docker image in jenkins PR validation build",
-			SwtTestUtil.isLinux && Boolean.parseBoolean(System.getenv("PR_VALIDATION_BUILD")));
 	text.setText("abcd");
 	text.setMargins(2, 0, 0, 0); // keep leftMargin as it affects behavior
 	text.setLineSpacing(0);
@@ -4881,6 +4878,8 @@ public void test_caretSizeAndPositionVariableGlyphMetrics() {
 	text.setStyleRange(range);
 	text.setCaretOffset(0);
 	assertEquals(text.getLineHeight(), text.getCaret().getSize().y);
+	// See https://github.com/eclipse-platform/eclipse.platform.swt/issues/294
+	assumeFalse("Test fails on Linux: expected:<87> but was:<174>", SwtTestUtil.isLinux);
 	// +5: caret takes 5 more pixels
 	assertEquals(text.getLineHeight(0) - text.getCaret().getSize().y, text.getCaret().getBounds().y);
 	text.setCaretOffset(1);
