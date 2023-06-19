@@ -946,15 +946,25 @@ public void setSelectorEnum(String selectorEnumName) {
 }
 
 Document getDocument(String xmlPath) {
-	try {
-		InputStream is = null;
-		if (xmlPath.indexOf(File.separatorChar) == -1) is = getClass().getResourceAsStream(xmlPath);
-		if (is == null) is = new BufferedInputStream(new FileInputStream(xmlPath));
-		if (is != null) return DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(new InputSource(is));
+	try (InputStream is = createInputStream(xmlPath))  {
+		if (is != null) {
+			return DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(new InputSource(is));
+		}
 	} catch (Exception e) {
-//		e.printStackTrace();
+		//ignored
 	}
 	return null;
+}
+
+private InputStream createInputStream(String xmlPath) throws FileNotFoundException {
+	InputStream is = null;
+	if (xmlPath.indexOf(File.separatorChar) == -1) {
+		is = getClass().getResourceAsStream(xmlPath); // null if noresource is found
+	}
+	if (is == null) {
+		is = new BufferedInputStream(new FileInputStream(xmlPath));
+	}
+	return is;
 }
 
 public String[] getExtraAttributeNames(Node node) {

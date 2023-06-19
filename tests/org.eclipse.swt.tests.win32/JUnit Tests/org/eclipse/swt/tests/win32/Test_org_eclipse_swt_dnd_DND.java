@@ -39,6 +39,7 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.ImageData;
+import org.eclipse.swt.graphics.PaletteData;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Display;
@@ -135,40 +136,64 @@ public void testHtmlTransfer() throws InterruptedException {
 }
 
 /**
- * DnD an image using the {@link ImageTransfer}.
+ * DnD ImageData retrieved from an image (created as DDB) using the {@link ImageTransfer}.
  */
 @Test
-public void testImageTransfer() throws InterruptedException {
-	final Image image =  new Image(shell.getDisplay(), 16, 16);
+public void testImageTransfer_fromImage() throws InterruptedException {
+	final Image image = createTestImage();
 	try {
-		Color color = shell.getDisplay().getSystemColor(SWT.COLOR_DARK_BLUE);
-		GC gc = new GC(image);
-		gc.setBackground(color);
-		gc.fillRectangle(image.getBounds());
-		gc.dispose();
-
 		final ImageData drag = image.getImageData();
-		final ImageData drop;
+		final ImageData drop = testTransferRoundtrip(ImageTransfer.getInstance(), drag);
+		assertImageDataEqualsIgoringAlphaInData(drag, drop);
+	} finally {
+		image.dispose();
+	}
+}
 
-		drop = testTransferRoundtrip(ImageTransfer.getInstance(), drag);
-		// ImageData has no custom equals method and the default one isn't sufficient
-		boolean equals = (drag == drop);
-		if (!equals && drag != null && drop != null) {
-			equals = (drag.width == drop.width && drag.height == drop.height);
-			assertEquals("TransparencyType", drag.getTransparencyType(),drop.getTransparencyType());
-			if (equals) {
-				 for (int y = 0; y < drag.height; y++) {
-					for (int x = 0; x < drag.width; x++) {
-						String dragPixel = String.format("0x%08X", drag.getPixel(x, y));
-						String dropPixel = String.format("0x%08X", drop.getPixel(x, y));
-						//FIXME win32: dragged ALPHA=FF, dropped ALPHA=00, but other transparencyType => alpha stored in ImageData.alphaData
-						assertEquals("Drop received other pixel as we dragged. x=" + x + " y=" + y, dragPixel,
-								dropPixel);
-					}
-				}
-			}
+/**
+ * DnD ImageData created from image copy using the {@link ImageTransfer}.
+ */
+@Test
+public void testImageTransfer_fromCopiedImage() throws InterruptedException {
+	final Image image = createTestImage();
+	try {
+		final ImageData drag = new Image(shell.getDisplay(), image, SWT.IMAGE_COPY).getImageData();
+		final ImageData drop = testTransferRoundtrip(ImageTransfer.getInstance(), drag);
+		assertImageDataEqualsIgoringAlphaInData(drag, drop);
+	} finally {
+		image.dispose();
+	}
+}
+
+/**
+ * DnD manually created ImageData using the {@link ImageTransfer}.
+ */
+@Test
+public void testImageTransfer_fromImageData() throws InterruptedException {
+	final ImageData imageData = new ImageData(16, 16, 32, new PaletteData(0xFF00, 0xFF0000, 0xFF000000));
+	for (int i = 0; i < imageData.data.length; i++) {
+		imageData.data[i] = (byte) (i % 3 == 0 ? 128 : 0);
+	}
+	final ImageData drag = imageData;
+	final ImageData drop = testTransferRoundtrip(ImageTransfer.getInstance(), drag);
+	assertImageDataEqualsIgoringAlphaInData(drag, drop);
+}
+
+/**
+ * DnD ImageData created from image data using the {@link ImageTransfer}.
+ */
+@Test
+public void testImageTransfer_fromImageDataFromImage() throws InterruptedException {
+	final Image image = createTestImage();
+	try {
+		Image imageFromImageData = new Image(shell.getDisplay(), image.getImageData());
+		try {
+			final ImageData drag = imageFromImageData.getImageData();
+			final ImageData drop = testTransferRoundtrip(ImageTransfer.getInstance(), drag);
+			assertImageDataEqualsIgoringAlphaInData(drag, drop);
+		} finally {
+			imageFromImageData.dispose();
 		}
-		assertTrue("Drop received other data as we dragged.", equals);
 	} finally {
 		image.dispose();
 	}
@@ -208,6 +233,65 @@ public void testUrlTransfer() throws InterruptedException {
 
 	drop = testTransferRoundtrip(URLTransfer.getInstance(), drag);
 	assertEquals("Drop received other data as we dragged.", drag, drop);
+}
+
+/**
+ * Creates a DDB test image with a uniform color applied to all pixels.
+ */
+private Image createTestImage() {
+	final Image image = new Image(shell.getDisplay(), 16, 16);
+	try {
+		Color color = shell.getDisplay().getSystemColor(SWT.COLOR_DARK_BLUE);
+		GC gc = new GC(image);
+		gc.setBackground(color);
+		gc.fillRectangle(image.getBounds());
+		gc.dispose();
+	} catch (Exception e) {
+		image.dispose();
+		fail("test image could not be initialized: " + e);
+	}
+	return image;
+}
+
+/**
+ * Asserts that both given ImageData are equal, i.e. that:
+ * <ul>
+ *   <li>depths are equal (considering 24/32 bit as equals since alpha data is stored separately)</li>
+ *   <li>width and height are equal</li>
+ *   <li>all pixel RGB values are equal</li>
+ *   <li>all pixel alpha values in the alphaData are equal</li>
+ * </ul>
+ * In case any of these properties differ, the test will fail.
+ *
+ * @param expected the expected ImageData
+ * @param actual the actual ImageData
+ */
+// This method is necessary because ImageData has no custom equals method and the default one isn't sufficient.
+private void assertImageDataEqualsIgoringAlphaInData(final ImageData expected, final ImageData actual) {
+	assertNotNull("expected data must not be null", expected);
+	assertNotNull("actual data must not be null", actual);
+	if (expected == actual) {
+		return;
+	}
+	assertEquals("height of expected image is different from actual image", expected.height, actual.height);
+	// Alpha values are taken from alpha data, so ignore whether data depth is 24 or 32 bits
+	int expectedNormalizedDepth = expected.depth == 32 ? 24 : expected.depth;
+	int actualNormalizedDepth = expected.depth == 32 ? 24 : expected.depth;
+	assertEquals("depth of image data to compare must be equal", expectedNormalizedDepth, actualNormalizedDepth);
+	assertEquals("width of expected image is different from actual image", expected.width, actual.width);
+
+	for (int y = 0; y < expected.height; y++) {
+		for (int x = 0; x < expected.width; x++) {
+			// FIXME win32: dragged ALPHA=FF, dropped ALPHA=00, but other transparencyType
+			// => alpha stored in ImageData.alphaData
+			String expectedPixel = String.format("0x%08X", expected.getPixel(x, y) >> (expected.depth == 32 ? 8 : 0));
+			String actualPixel = String.format("0x%08X", actual.getPixel(x, y) >> (actual.depth == 32 ? 8 : 0));
+			assertEquals("actual pixel at x=" + x + " y=" + y + " is different from expected pixel", expectedPixel, actualPixel);
+			int expectedAlpha = expected.getAlpha(x, y);
+			int actualAlpha = actual.getAlpha(x, y);
+			assertEquals("actual pixel alpha at x=" + x + " y=" + y + " is different from expected pixel", expectedAlpha, actualAlpha);
+		}
+	}
 }
 
 /**

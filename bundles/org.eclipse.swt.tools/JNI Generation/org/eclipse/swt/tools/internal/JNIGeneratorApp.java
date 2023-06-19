@@ -286,7 +286,7 @@ String[] getClassNames() {
 					String name = entry.getName();
 					if (name.startsWith(pkgZipPath) && name.indexOf('/', pkgZipPath.length() + 1) == -1 && name.endsWith(".class")) {
 						String className = name.substring(pkgZipPath.length() + 1, name.length() - 6);
-						className.replace('/', '.');
+						className= className.replace('/', '.');
 						classes.add(className);
 					}
 				}

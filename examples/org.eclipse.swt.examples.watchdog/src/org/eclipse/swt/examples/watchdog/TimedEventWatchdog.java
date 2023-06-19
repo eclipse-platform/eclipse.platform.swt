@@ -22,6 +22,9 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Synchronizer;
 
 import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -109,7 +112,7 @@ class TimedEventWatchdog implements Listener {
 		public long startTime = -1;
 	}
 
-	private static final SimpleDateFormat TIME_FORMAT = new SimpleDateFormat("HH:mm:ss.SSS");
+	private static final DateTimeFormatter TIME_FORMAT = DateTimeFormatter.ofPattern("HH:mm:ss.SSS").withZone(ZoneId.systemDefault());
 
 	private static final String EVENT_STR_FORMAT =
 			"Event #%1$d-#%2$d: %3$dms from %4$s [depth = %5$d, max = %6$d]";
@@ -276,12 +279,12 @@ class TimedEventWatchdog implements Listener {
 		if (trace != null) {
 			String msg = String.format(EVENT_STR_FORMAT, event.startingSequenceNumber,
 					event.endingSequenceNumber, event.duration,
-					TIME_FORMAT.format(new Date(event.start)), event.depth, event.maxDepth);
+					TIME_FORMAT.format(Instant.ofEpochMilli(event.start)), event.depth, event.maxDepth);
 
 			StringBuilder str = new StringBuilder(msg);
 
 			str.append('\n');
-			str.append('\t').append("Trace ").append(TIME_FORMAT.format(trace.captureTime));
+			str.append('\t').append("Trace ").append(TIME_FORMAT.format(trace.captureTime.toInstant()));
 
 			// Calculate when the stack trace happened relative to the start of the dispatch.
 			double deltaTimeFromEventStart = trace.captureTime.getTime() - event.start;
