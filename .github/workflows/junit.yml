@@ -38,7 +38,7 @@ jobs:
            done
 
       - name: Publish Unit Test Results
-        uses: EnricoMi/publish-unit-test-result-action@4e7013f9576bd22ffdae979dc6e68cb9ec2aeece # v2.7.0
+        uses: EnricoMi/publish-unit-test-result-action@f0b5d2433f350eff587831d4ad22cb15aab75866 # v2.8.0
         id: test-results
         with:
           commit: ${{ github.event.workflow_run.head_sha }}
@@ -72,7 +72,7 @@ jobs:
 
       - name: Upload badge to Gist
         if: github.ref == 'refs/heads/master'
-        uses: andymckay/append-gist-action@1fbfbbce708a39bd45846f0955ed5521f2099c6d
+        uses: andymckay/append-gist-action@6e8d64427fe47cbacf4ab6b890411f1d67c07f3e
         with:
           token: ${{ secrets.GIST_TOKEN }}
           gistURL: https://gist.githubusercontent.com/eclipse-releng-bot/78d110a601baa4ef777ccb472f584038
