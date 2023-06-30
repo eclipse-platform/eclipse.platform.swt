@@ -1,1 +1,2 @@
 Bug 510973 - Missing source bundle for org.eclipse.swt.tools
+Bug 527899 [9] Implement JEP 280: Indify String Concatenation
