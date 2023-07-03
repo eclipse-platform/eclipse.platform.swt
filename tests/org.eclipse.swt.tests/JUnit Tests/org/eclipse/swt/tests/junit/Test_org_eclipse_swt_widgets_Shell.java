@@ -19,6 +19,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
@@ -38,6 +39,7 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Text;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -921,4 +923,52 @@ public void test_bug558652_scrollBarNPE() {
 	}
 }
 
+@Test
+public void test_Issue450_NoShellActivateOnSetFocus() {
+	Display display = shell.getDisplay();
+	final int timeout = 1000;
+
+	// First shell
+	final Shell shell1 = new Shell(shell);
+	final Text text11 = new Text(shell1, SWT.BORDER | SWT.SINGLE);
+	final Text text12 = new Text(shell1, SWT.BORDER | SWT.SINGLE);
+
+	// Second shell
+	final Shell shell2 = new Shell(shell);
+	final Text text21 = new Text(shell2, SWT.BORDER | SWT.SINGLE);
+	final Text text22 = new Text(shell2, SWT.BORDER | SWT.SINGLE);
+
+	// System.out.println("open 1st shell");
+	assertTrue(SwtTestUtil.waitEvent(shell1::open, shell1, SWT.Activate, timeout));
+	assertSame("expecting the 1st shell to be activated", display.getActiveShell(), shell1);
+	assertTrue("expecting the 1st text field to be focused in the 1st shell", text11.isFocusControl());
+
+	// System.out.println("open 2nd shell");
+	assertTrue(SwtTestUtil.waitEvent(shell2::open, shell2, SWT.Activate, timeout));
+	assertSame("expecting the 2nd shell to be activated", display.getActiveShell(), shell2);
+	assertTrue("expecting the 1st text field in 2nd shell to be focused", text21.isFocusControl());
+
+	// System.out.println("setting focus to 2nd text field in 1st (unactivated) shell");
+	text12.setFocus();
+	assertSame("expecting the 2nd shell to remain activated", display.getActiveShell(), shell2);
+
+	// System.out.println("activating 1st shell");
+	// Fails here? Check Bug 575712 that only occurs on Ubuntu, and only Ubuntu 21.04+
+	assertTrue(SwtTestUtil.waitEvent(shell1::setActive, shell1, SWT.Activate, timeout));
+	assertSame("expecting the 1st shell to be activated", display.getActiveShell(), shell1);
+	assertTrue("expecting the the 1st shell to have remembered the previous setFocus and with the shell activation setting it to the 2nd text field", text12.isFocusControl());
+
+	// System.out.println("disposing 1st shell");
+	assertTrue(SwtTestUtil.waitEvent(shell1::dispose, shell2, SWT.Activate, timeout));
+	assertSame("expecting the 2nd shell to be activated after the 1st, active has been disposed", display.getActiveShell(), shell2);
+	assertTrue("expecting the 1st text field in the 2nd shell to still have the focus because it hasn't been changed", text21.isFocusControl());
+
+	// System.out.println("setting the focus to the 2nd text field");
+	text22.setFocus();
+	assertSame("expecting the 2nd shell to remain activated", display.getActiveShell(), shell2);
+	assertTrue("expecting the 2nd text field to have received the focus", text22.isFocusControl());
+
+	// System.out.println("disposing the 2nd shell, too");
+	shell2.dispose();
+}
 }

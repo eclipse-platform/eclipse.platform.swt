@@ -1,2 +1,3 @@
 # To force a version qualifier update add the bug here
 Bug 510796 - Comparator errors in I20170120-2000
+Bug 527899 [9] Implement JEP 280: Indify String Concatenation

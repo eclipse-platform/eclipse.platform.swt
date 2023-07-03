@@ -1144,17 +1144,19 @@ void menuDidClose(long id, long sel, long menu) {
 
 @Override
 void mouseDown(long id, long sel, long theEvent) {
+	// If the control is diposed in below 'super.mouseDown()', both fields
+	// 'view' and 'display' will be nulled. Hence keep their references:
+	final Display display = this.display;
+	final NSView view = this.view;
+
+	display.sendPreExternalEventDispatchEvent();
 	// If this is a combo box with an editor field and the control is disposed
 	// while the view's cell editor is open we crash while tearing down the
 	// popup window. Fix is to retain the view before letting Cocoa track
 	// the mouse events.
-
-	display.sendPreExternalEventDispatchEvent();
-	// 'view' will be cleared if disposed during the mouseDown so cache it.
-	NSView viewCopy = view;
-	viewCopy.retain();
+	view.retain();
 	super.mouseDown(id, sel, theEvent);
-	viewCopy.release();
+	view.release();
 	display.sendPostExternalEventDispatchEvent();
 }
 

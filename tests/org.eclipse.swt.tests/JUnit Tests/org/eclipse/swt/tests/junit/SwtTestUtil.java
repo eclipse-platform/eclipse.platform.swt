@@ -23,8 +23,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTError;
 import org.eclipse.swt.SWTException;
-import org.eclipse.swt.events.PaintEvent;
-import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
@@ -151,23 +149,10 @@ public static boolean isBidi() {
 public static void openShell(Shell shell) {
 	if (shell != null && !shell.getVisible()) {
 		if (isGTK) {
-			AtomicBoolean paintRequested = new AtomicBoolean(false);
-			shell.addPaintListener(new PaintListener() {
-				@Override
-				public void paintControl(PaintEvent e) {
-					paintRequested.set(true);
-					shell.removePaintListener(this);
-				}
-			});
-			shell.open();
-			long start = System.currentTimeMillis();
-			while (!paintRequested.get() && System.currentTimeMillis() - 1000 < start) {
-				processEvents();
-			}
+			waitEvent(() -> shell.open(), shell, SWT.Paint, 1000);
 		} else {
 			shell.open();
 		}
-
 	}
 }
 
@@ -345,6 +330,38 @@ public static void processEvents() {
 		while (display.readAndDispatch()) {
 		}
 	}
+}
+
+/**
+ * Wait until specified control receives specified event.
+ *
+ * @param trigger       may be null. Code that is expected to send event to be waited
+ * @param control       control expected to receive the event
+ * @param swtEvent      event, such as SWT.Paint
+ * @param timeoutMsec   how long to wait for event
+ * @return <code>true</code> if event was received
+ */
+public static boolean waitEvent(Runnable trigger, Control control, int swtEvent, int timeoutMsec) {
+	AtomicBoolean eventReceived = new AtomicBoolean(false);
+	Listener listener = event -> {
+		eventReceived.set(true);
+	};
+
+	control.addListener(swtEvent, listener);
+	try {
+		if (trigger != null)
+			trigger.run();
+
+		long start = System.currentTimeMillis();
+		while (!eventReceived.get()) {
+			if (System.currentTimeMillis() - start > timeoutMsec) return false;
+			processEvents();
+		}
+	} finally {
+		control.removeListener(swtEvent, listener);
+	}
+
+	return true;
 }
 
 /**
