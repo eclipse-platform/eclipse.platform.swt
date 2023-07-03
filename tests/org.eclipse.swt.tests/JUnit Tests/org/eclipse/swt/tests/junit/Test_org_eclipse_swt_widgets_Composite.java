@@ -42,6 +42,8 @@ import org.junit.Test;
  */
 public class Test_org_eclipse_swt_widgets_Composite extends Test_org_eclipse_swt_widgets_Scrollable {
 
+private static final int TIMEOUT_FOR_SHELL_TO_BECOME_ACTIVE = 3000;
+
 Composite composite;
 
 @Override
@@ -131,9 +133,7 @@ public void test_setFocus_toChild_afterOpen() throws InterruptedException {
 		return;
 	}
 	Text focusChild = new Text(composite, SWT.NONE);
-	shell.open();
-	// Wait for the shell to become active
-	processEvents(500, () -> shell.getDisplay().getActiveShell() == shell);
+	openShellAndWaitToBecomeActive();
 	assertEquals(shell, shell.getDisplay().getActiveShell());
 	composite.setFocus();
 	assertTrue("First child widget should have focus", focusChild.isFocusControl());
@@ -150,9 +150,7 @@ public void test_setFocus_toChild_beforeOpen() throws InterruptedException {
 	}
 	Text focusChild = new Text(composite, SWT.NONE);
 	composite.setFocus();
-	shell.open();
-	// Wait for the shell to become active
-	processEvents(500, () -> shell.getDisplay().getActiveShell() == shell);
+	openShellAndWaitToBecomeActive();
 	assertEquals(shell, shell.getDisplay().getActiveShell());
 	assertTrue("First child widget should have focus", focusChild.isFocusControl());
 }
@@ -168,9 +166,7 @@ public void test_setFocus_withInvisibleChild() throws InterruptedException {
 		}
 	};
 	invisibleChildWidget.setVisible(false);
-	shell.open();
-	// Wait for the shell to become active
-	processEvents(500, () -> shell.getDisplay().getActiveShell() == shell);
+	openShellAndWaitToBecomeActive();
 	assertEquals(shell, shell.getDisplay().getActiveShell());
 
 	composite.setFocus();
@@ -189,14 +185,17 @@ public void test_setFocus_withVisibleAndInvisibleChild() throws InterruptedExcep
 	};
 	invisibleChildWidget.setVisible(false);
 	Composite visibleChildWidget = new Composite(composite, SWT.NONE);
-	shell.open();
-	// Wait for the shell to become active
-	processEvents(500, () -> shell.getDisplay().getActiveShell() == shell);
+	openShellAndWaitToBecomeActive();
 	assertEquals(shell, shell.getDisplay().getActiveShell());
 
 	composite.setFocus();
 	assertFalse("Composite should not try to set focus on invisible child", wasSetFocusCalledOnInvisibleChildWidget.get());
 	assertTrue("Visible child widget should have focus", getElementExpectedToHaveFocusAfterSetFocusOnParent(visibleChildWidget).isFocusControl());
+}
+
+private void openShellAndWaitToBecomeActive() throws InterruptedException {
+	shell.open();
+	processEvents(TIMEOUT_FOR_SHELL_TO_BECOME_ACTIVE, () -> shell.getDisplay().getActiveShell() == shell);
 }
 
 @Test
