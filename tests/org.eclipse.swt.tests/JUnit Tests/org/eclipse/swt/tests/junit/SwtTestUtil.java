@@ -397,9 +397,25 @@ public static boolean waitEvent(Runnable trigger, Control control, int swtEvent,
  */
 public static void waitShellActivate(Runnable trigger, Shell shell) {
 	final int timeout = 3000;
+	final long timeBeg = System.currentTimeMillis();
 	// Issue #726: On GTK, 'Display.getActiveShell()' reports incorrect Shell.
 	// The workaround is to wait until 'SWT.Activate' is received.
-	assertTrue(waitEvent(trigger, shell, SWT.Activate, timeout));
+	if (waitEvent(trigger, shell, SWT.Activate, timeout)) return;
+
+	// On macOS test machines, things are sometimes much slower for some reason.
+	if (isCocoa) {
+		final int timeout2 = 30000 - timeout;
+		assertTrue(timeout2 > 0);
+
+		if (waitEvent(null, shell, SWT.Activate, timeout2)) {
+			// Measure how long it takes, but still fail the test, so that it's noticed.
+			// Then either investigate or increase first timeout.
+			final long elapsed = System.currentTimeMillis() - timeBeg;
+			fail("It took " + elapsed + "ms for Shell to activate, see Issue #724");
+		}
+	}
+
+	fail("Shell did not become active");
 }
 
 /**
