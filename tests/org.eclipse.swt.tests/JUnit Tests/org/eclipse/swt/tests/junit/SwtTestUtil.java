@@ -19,6 +19,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.BooleanSupplier;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTError;
@@ -332,10 +333,30 @@ public static void processEvents() {
 	}
 }
 
+public static void processEvents(int timeoutMs, BooleanSupplier breakCondition) throws InterruptedException {
+	if (breakCondition == null) {
+		breakCondition = () -> false;
+	}
+	long targetTimestamp = System.currentTimeMillis() + timeoutMs;
+	Display display = Display.getCurrent();
+	while (!breakCondition.getAsBoolean()) {
+		if (!display.readAndDispatch()) {
+			if (System.currentTimeMillis() < targetTimestamp) {
+				Thread.sleep(50);
+			} else {
+				return;
+			}
+		}
+	}
+}
+
 /**
  * Wait until specified control receives specified event.
  *
- * @param trigger       may be null. Code that is expected to send event to be waited
+ * @param trigger       may be null. Code that is expected to send event.
+ *                      Note that if you trigger it outside, then event may
+ *                      arrive *before* you call this function, and it will
+ *                      fail to receive event.
  * @param control       control expected to receive the event
  * @param swtEvent      event, such as SWT.Paint
  * @param timeoutMsec   how long to wait for event
@@ -362,6 +383,23 @@ public static boolean waitEvent(Runnable trigger, Control control, int swtEvent,
 	}
 
 	return true;
+}
+
+/**
+ * Wait until specified Shell becomes active, or internal timeout elapses.
+ *
+ * @param trigger       may be null. Code that causes Shell to become active.
+ *                      Note that if you trigger it outside, then event may
+ *                      arrive *before* you call this function, and it will
+ *                      fail to receive event.
+ * @param shell         the Shell to wait for
+ * @return <code>true</code> if Shell became active within timeout
+ */
+public static void waitShellActivate(Runnable trigger, Shell shell) {
+	final int timeout = 3000;
+	// Issue #726: On GTK, 'Display.getActiveShell()' reports incorrect Shell.
+	// The workaround is to wait until 'SWT.Activate' is received.
+	assertTrue(waitEvent(trigger, shell, SWT.Activate, timeout));
 }
 
 /**

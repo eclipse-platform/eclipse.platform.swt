@@ -532,9 +532,7 @@ public void test_isFocusControl() throws InterruptedException {
 		}
 		return;
 	}
-	shell.open();
-	// Wait for the shell to become active
-	processEvents(500, () -> shell.getDisplay().getActiveShell() == shell);
+	SwtTestUtil.waitShellActivate(shell::open, shell);
 	assertEquals(shell, shell.getDisplay().getActiveShell());
 	assertEquals("Unexpected focus", control.forceFocus(), control.isFocusControl());
 }

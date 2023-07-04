@@ -5329,14 +5329,14 @@ public void test_setStyleRanges_render() throws InterruptedException {
 	text.setText("abc");
 	text.setMargins(0, 0, 0, 0);
 	text.pack();
-	processEvents(1000, () -> hasPixel(text, text.getBackground()) && !hasPixel(text, text.getDisplay().getSystemColor(SWT.COLOR_RED)));
+	SwtTestUtil.processEvents(1000, () -> hasPixel(text, text.getBackground()) && !hasPixel(text, text.getDisplay().getSystemColor(SWT.COLOR_RED)));
 	assertTrue(hasPixel(text, text.getBackground()));
 	assertFalse(hasPixel(text, text.getDisplay().getSystemColor(SWT.COLOR_RED)));
 	text.setStyleRanges(new StyleRange[] {
 			new StyleRange(0, 1, null, text.getDisplay().getSystemColor(SWT.COLOR_RED)),
 			new StyleRange(2, 1, null, text.getDisplay().getSystemColor(SWT.COLOR_RED)),
 	});
-	processEvents(100, () ->
+	SwtTestUtil.processEvents(100, () ->
 		hasPixel(text, text.getBackground()) &&
 		hasPixel(text, text.getDisplay().getSystemColor(SWT.COLOR_RED)));
 	assertTrue(hasPixel(text, text.getBackground()));
@@ -5344,7 +5344,7 @@ public void test_setStyleRanges_render() throws InterruptedException {
 	text.replaceStyleRanges(0, 3, new StyleRange[] {
 			new StyleRange(0, 3, null, text.getDisplay().getSystemColor(SWT.COLOR_RED)),
 	});
-	processEvents(1000, () -> !hasPixel(text, text.getBackground()) && hasPixel(text, text.getDisplay().getSystemColor(SWT.COLOR_RED)));
+	SwtTestUtil.processEvents(1000, () -> !hasPixel(text, text.getBackground()) && hasPixel(text, text.getDisplay().getSystemColor(SWT.COLOR_RED)));
 	assertFalse(hasPixel(text, text.getBackground()));
 	assertTrue(hasPixel(text, text.getDisplay().getSystemColor(SWT.COLOR_RED)));
 }
@@ -5441,7 +5441,7 @@ private void testLineStyleListener(String content, LineStyleListener listener, B
 		text.setText(content);
 		text.setMargins(0, 0, 0, 0);
 		text.pack();
-		processEvents(1000, evaluation);
+		SwtTestUtil.processEvents(1000, evaluation);
 		assertTrue("Text not styled correctly.", evaluation.getAsBoolean());
 	} finally {
 		text.removeLineStyleListener(listener);
@@ -5456,7 +5456,7 @@ public void test_variableToFixedLineHeight() throws InterruptedException {
 	text.setText("\nabc\n\nd");
 	text.setMargins(0, 0, 0, 0);
 	text.setSize(100, 100);
-	processEvents(1000, () -> Boolean.FALSE);
+	SwtTestUtil.processEvents(1000, null);
 	StyleRange range = new StyleRange();
 	range.start = 1;
 	range.length = 1;
@@ -5466,7 +5466,7 @@ public void test_variableToFixedLineHeight() throws InterruptedException {
 	text.setStyleRange(range);
 	// move to variable height and paint with red to check later whether
 	// redraw was done properly
-	processEvents(100, null);
+	SwtTestUtil.processEvents(100, null);
 	range = new StyleRange();
 	range.start = 1;
 	range.length = 1;
@@ -5475,7 +5475,7 @@ public void test_variableToFixedLineHeight() throws InterruptedException {
 	text.replaceStyleRanges(0, text.getCharCount(), new StyleRange[] {range});
 	// changing to fixed line height here should redraw widget until
 	// the bottom and clear the area (no more red)
-	processEvents(3000, () -> !hasPixel(text, colorForVariableHeight));
+	SwtTestUtil.processEvents(3000, () -> !hasPixel(text, colorForVariableHeight));
 	assertFalse(hasPixel(text, colorForVariableHeight));
 }
 
@@ -5593,7 +5593,7 @@ public void test_GlyphMetricsOnTab_Bug549110() throws InterruptedException {
 	text.setText("ab\tcde");
 	text.setMargins(0, 0, 0, 0);
 	text.pack();
-	processEvents(1000,
+	SwtTestUtil.processEvents(1000,
 			() -> hasPixel(text, text.getBackground())
 					&& !hasPixel(text, getColor(RED))
 					&& !hasPixel(text, getColor(BLUE)));
@@ -5609,7 +5609,7 @@ public void test_GlyphMetricsOnTab_Bug549110() throws InterruptedException {
 	tabStyle.metrics = new GlyphMetrics(0, 0, 100);
 	text.replaceStyleRanges(0, text.getText().length(), new StyleRange[] { styleR, tabStyle, styleB });
 	text.pack();
-	processEvents(1000, () -> hasPixel(text, getColor(RED)) && hasPixel(text, getColor(BLUE)));
+	SwtTestUtil.processEvents(1000, () -> hasPixel(text, getColor(RED)) && hasPixel(text, getColor(BLUE)));
 	assertTrue("Wrong style before tab", hasPixel(text, getColor(RED)));
 	assertTrue("Wrong style after tab", hasPixel(text, getColor(BLUE)));
 }
@@ -5709,20 +5709,20 @@ public void test_bug551335_lostStyles() throws InterruptedException {
 	for (StyleRange s : styles) {
 		text.setStyleRange(s);
 	}
-	processEvents(1000, testAllLinesStyled);
+	SwtTestUtil.processEvents(1000, testAllLinesStyled);
 	assertTrue(testAllLinesStyled.getAsBoolean());
 
 	text.setStyleRange(null); // reset style
-	processEvents(1000, testUnstyledText);
+	SwtTestUtil.processEvents(1000, testUnstyledText);
 	assertTrue(testUnstyledText.getAsBoolean());
 
 	// 2. apply styles as array
 	text.setStyleRanges(styles);
-	processEvents(1000, testAllLinesStyled);
+	SwtTestUtil.processEvents(1000, testAllLinesStyled);
 	assertTrue(testAllLinesStyled.getAsBoolean());
 
 	text.setStyleRange(null); // reset style
-	processEvents(1000, testUnstyledText);
+	SwtTestUtil.processEvents(1000, testUnstyledText);
 	assertTrue(testUnstyledText.getAsBoolean());
 
 	// 3. apply styles using ranges
@@ -5734,11 +5734,11 @@ public void test_bug551335_lostStyles() throws InterruptedException {
 		styles[i] = style;
 	}
 	text.setStyleRanges(ranges, styles);
-	processEvents(1000, testAllLinesStyled);
+	SwtTestUtil.processEvents(1000, testAllLinesStyled);
 	assertTrue(testAllLinesStyled.getAsBoolean());
 
 	text.setStyleRange(null); // reset style
-	processEvents(1000, testUnstyledText);
+	SwtTestUtil.processEvents(1000, testUnstyledText);
 	assertTrue(testUnstyledText.getAsBoolean());
 }
 
