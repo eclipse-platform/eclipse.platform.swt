@@ -924,9 +924,8 @@ public void test_bug558652_scrollBarNPE() {
 }
 
 @Test
-public void test_Issue450_NoShellActivateOnSetFocus() {
+public void test_Issue450_NoShellActivateOnSetFocus() throws InterruptedException {
 	Display display = shell.getDisplay();
-	final int timeout = 1000;
 
 	// First shell
 	final Shell shell1 = new Shell(shell);
@@ -939,12 +938,12 @@ public void test_Issue450_NoShellActivateOnSetFocus() {
 	final Text text22 = new Text(shell2, SWT.BORDER | SWT.SINGLE);
 
 	// System.out.println("open 1st shell");
-	assertTrue(SwtTestUtil.waitEvent(shell1::open, shell1, SWT.Activate, timeout));
+	SwtTestUtil.waitShellActivate(shell1::open, shell1);
 	assertSame("expecting the 1st shell to be activated", display.getActiveShell(), shell1);
 	assertTrue("expecting the 1st text field to be focused in the 1st shell", text11.isFocusControl());
 
 	// System.out.println("open 2nd shell");
-	assertTrue(SwtTestUtil.waitEvent(shell2::open, shell2, SWT.Activate, timeout));
+	SwtTestUtil.waitShellActivate(shell2::open, shell2);
 	assertSame("expecting the 2nd shell to be activated", display.getActiveShell(), shell2);
 	assertTrue("expecting the 1st text field in 2nd shell to be focused", text21.isFocusControl());
 
@@ -954,12 +953,12 @@ public void test_Issue450_NoShellActivateOnSetFocus() {
 
 	// System.out.println("activating 1st shell");
 	// Fails here? Check Bug 575712 that only occurs on Ubuntu, and only Ubuntu 21.04+
-	assertTrue(SwtTestUtil.waitEvent(shell1::setActive, shell1, SWT.Activate, timeout));
+	SwtTestUtil.waitShellActivate(shell1::setActive, shell1);
 	assertSame("expecting the 1st shell to be activated", display.getActiveShell(), shell1);
 	assertTrue("expecting the the 1st shell to have remembered the previous setFocus and with the shell activation setting it to the 2nd text field", text12.isFocusControl());
 
 	// System.out.println("disposing 1st shell");
-	assertTrue(SwtTestUtil.waitEvent(shell1::dispose, shell2, SWT.Activate, timeout));
+	SwtTestUtil.waitShellActivate(shell1::dispose, shell2);
 	assertSame("expecting the 2nd shell to be activated after the 1st, active has been disposed", display.getActiveShell(), shell2);
 	assertTrue("expecting the 1st text field in the 2nd shell to still have the focus because it hasn't been changed", text21.isFocusControl());
 

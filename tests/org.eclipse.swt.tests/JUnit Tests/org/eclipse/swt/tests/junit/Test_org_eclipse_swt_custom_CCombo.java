@@ -197,7 +197,7 @@ public void test_setFocus() {
 		assertFalse("Expect false wehn not visible and not enabled", ccombo.setFocus());
 		ccombo.setEnabled(true);
 		ccombo.setVisible(true);
-		processEvents(0, null);
+		SwtTestUtil.processEvents();
 		if(ccombo.isFocusControl())
 			assertTrue("Set focus error", ccombo.setFocus());
 
@@ -205,7 +205,7 @@ public void test_setFocus() {
 			ccombo.setEnabled(true);
 			ccombo.setVisible(true);
 			ccombo.setFocus();
-			processEvents(100, () -> ccombo.isFocusControl());
+			SwtTestUtil.processEvents(100, () -> ccombo.isFocusControl());
 			assertTrue(ccombo.isFocusControl());
 			Control focusControl = ccombo.getDisplay().getFocusControl();
 			assertTrue(focusControl instanceof Text);
