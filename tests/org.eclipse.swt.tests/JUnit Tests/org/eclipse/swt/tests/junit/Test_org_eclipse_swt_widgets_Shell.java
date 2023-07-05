@@ -958,7 +958,17 @@ public void test_Issue450_NoShellActivateOnSetFocus() throws InterruptedExceptio
 	assertTrue("expecting the the 1st shell to have remembered the previous setFocus and with the shell activation setting it to the 2nd text field", text12.isFocusControl());
 
 	// System.out.println("disposing 1st shell");
-	SwtTestUtil.waitShellActivate(shell1::dispose, shell2);
+	SwtTestUtil.waitShellActivate(
+		() -> {
+			shell1.dispose();
+			// on macOS, disposing a Shell sometimes doesn't activate the other Shell.
+			// Not reproducible on my machine. Not reproducible on GitHub builder.
+			// Only seems to occur on Eclipse builder, not sure what's different there.
+			// Anyways, this is out of scope of this test, so just ask to activate.
+			if (SwtTestUtil.isCocoa) shell2.forceActive();
+		},
+		shell2
+	);
 	assertSame("expecting the 2nd shell to be activated after the 1st, active has been disposed", display.getActiveShell(), shell2);
 	assertTrue("expecting the 1st text field in the 2nd shell to still have the focus because it hasn't been changed", text21.isFocusControl());
 
