@@ -617,7 +617,7 @@ public void test_Bug381668() throws InterruptedException {
 	shell.open();
 	shell.forceActive();
 	t.forceFocus();
-	processEvents(3000, () -> t.isFocusControl());
+	SwtTestUtil.processEvents(3000, () -> t.isFocusControl());
 	assertTrue(t.isFocusControl());
 	t.addFocusListener(new FocusAdapter() {
 		@Override

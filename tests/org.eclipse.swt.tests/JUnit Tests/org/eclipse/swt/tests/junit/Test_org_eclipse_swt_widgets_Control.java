@@ -524,17 +524,15 @@ public void test_isEnabled() {
 }
 @Test
 public void test_isFocusControl() throws InterruptedException {
-	assertFalse(control.isFocusControl());
-	if (SwtTestUtil.isCocoa||SwtTestUtil.isGTK) {
-		//TODO Fix Cocoa failure.
-		if (SwtTestUtil.verbose) {
-			System.out.println("Excluded test_isFocusControl(org.eclipse.swt.tests.junit.Test_org_eclipse_swt_widgets_Control)");
-		}
+	if (shell.getVisible()) {
+		// Some tests, such as `Test_org_eclipse_swt_widgets_Text`, show their
+		// Shell in `setUp()`. This makes this test fail because it shows
+		// already shown Shell and then expects focus to change.
 		return;
 	}
-	shell.open();
-	// Wait for the shell to become active
-	processEvents(500, () -> shell.getDisplay().getActiveShell() == shell);
+
+	assertFalse(control.isFocusControl());
+	SwtTestUtil.waitShellActivate(shell::open, shell);
 	assertEquals(shell, shell.getDisplay().getActiveShell());
 	assertEquals("Unexpected focus", control.forceFocus(), control.isFocusControl());
 }

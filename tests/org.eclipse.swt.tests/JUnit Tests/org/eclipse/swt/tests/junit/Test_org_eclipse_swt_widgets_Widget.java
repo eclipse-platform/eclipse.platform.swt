@@ -21,7 +21,6 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.lang.reflect.Field;
-import java.util.function.BooleanSupplier;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.DisposeListener;
@@ -233,22 +232,6 @@ protected String getClassName() {
 	if(index != -1)
 		clazz = clazz.substring(index+1);
 	return clazz;
-}
-
-protected void processEvents(int timeoutMs, BooleanSupplier breakCondition) throws InterruptedException {
-	if (breakCondition == null) {
-		breakCondition = () -> false;
-	}
-	long targetTimestamp = System.currentTimeMillis() + timeoutMs;
-	while (!breakCondition.getAsBoolean()) {
-		if (!shell.getDisplay().readAndDispatch()) {
-			if (System.currentTimeMillis() < targetTimestamp) {
-				Thread.sleep(50);
-			} else {
-				return;
-			}
-		}
-	}
 }
 
 /**

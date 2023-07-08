@@ -1461,6 +1461,7 @@ public boolean forceFocus () {
 	Decorations shell = menuShell ();
 	shell.setSavedFocus (this);
 	if (!isEnabled () || !isVisible () || !isActive ()) return false;
+	if (display.getActiveShell() != shell && !Display.isActivateShellOnForceFocus()) return false;
 	if (isFocusControl ()) return true;
 	shell.setSavedFocus (null);
 	NSView focusView = focusView ();
