@@ -396,26 +396,29 @@ public static boolean waitEvent(Runnable trigger, Control control, int swtEvent,
  * @return <code>true</code> if Shell became active within timeout
  */
 public static void waitShellActivate(Runnable trigger, Shell shell) {
-	final int timeout = 3000;
-	final long timeBeg = System.currentTimeMillis();
+	final int timeout = 1000;
+
+	Runnable trigger2 = () -> {
+		if (isCocoa) {
+			// Issue #731: if another app gains focus during entire JUnit session,
+			// newly opened Shells do not activate. The workaround is to activate
+			// explicitly.
+			shell.forceActive();
+		}
+
+		trigger.run();
+	};
+
 	// Issue #726: On GTK, 'Display.getActiveShell()' reports incorrect Shell.
 	// The workaround is to wait until 'SWT.Activate' is received.
-	if (waitEvent(trigger, shell, SWT.Activate, timeout)) return;
+	if (waitEvent(trigger2, shell, SWT.Activate, timeout)) return;
 
-	// On macOS test machines, things are sometimes much slower for some reason.
-	if (isCocoa) {
-		final int timeout2 = 30000 - timeout;
-		assertTrue(timeout2 > 0);
-
-		if (waitEvent(null, shell, SWT.Activate, timeout2)) {
-			// Measure how long it takes, but still fail the test, so that it's noticed.
-			// Then either investigate or increase first timeout.
-			final long elapsed = System.currentTimeMillis() - timeBeg;
-			fail("It took " + elapsed + "ms for Shell to activate, see Issue #724");
-		}
+	// Something went wrong? Get more info to diagnose
+	if (shell == shell.getDisplay().getActiveShell()) {
+		fail("SWT.Activate was not received but Shell is (incorrectly?) reported active");
+	} else {
+		fail("Shell did not activate, Shell=<" + shell.getDisplay().getActiveShell() + "> is active");
 	}
-
-	fail("Shell did not become active");
 }
 
 /**
