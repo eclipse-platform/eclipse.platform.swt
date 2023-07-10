@@ -924,7 +924,7 @@ public void test_bug558652_scrollBarNPE() {
 }
 
 @Test
-public void test_Issue450_NoShellActivateOnSetFocus() throws InterruptedException {
+public void test_Issue450_NoShellActivateOnSetFocus() {
 	Display display = shell.getDisplay();
 
 	// First shell

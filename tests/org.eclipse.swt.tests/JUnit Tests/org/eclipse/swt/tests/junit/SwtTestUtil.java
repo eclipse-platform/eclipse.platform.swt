@@ -14,6 +14,8 @@
 package org.eclipse.swt.tests.junit;
 
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -271,7 +273,7 @@ public static void dumpShellState(PrintStream out) {
 	out.println("Display.getFocusControl() and its parents: ");
 	Control focusControl = display.getFocusControl();
 	if (focusControl == null) {
-		System.out.println("  <null>");
+		out.println("  <null>");
 	} else {
 		StringBuilder indent = new StringBuilder();
 		do {
@@ -447,9 +449,9 @@ public static boolean waitEvent(Runnable trigger, Control control, int swtEvent,
  * @return <code>true</code> if Shell became active within timeout
  */
 public static void waitShellActivate(Runnable trigger, Shell shell) {
-	final int timeout = 1000;
+	final int timeoutInMsec = 1000;
 
-	Runnable trigger2 = () -> {
+	Runnable triggerWithEnforcedShellActivationOnMacOs = () -> {
 		if (isCocoa) {
 			// Issue #731: if another app gains focus during entire JUnit session,
 			// newly opened Shells do not activate. The workaround is to activate
@@ -462,16 +464,13 @@ public static void waitShellActivate(Runnable trigger, Shell shell) {
 
 	// Issue #726: On GTK, 'Display.getActiveShell()' reports incorrect Shell.
 	// The workaround is to wait until 'SWT.Activate' is received.
-	if (waitEvent(trigger2, shell, SWT.Activate, timeout)) return;
+	if (waitEvent(triggerWithEnforcedShellActivationOnMacOs, shell, SWT.Activate, timeoutInMsec)) return;
 
 	// Something went wrong? Get more info to diagnose
 	Screenshots.takeScreenshot(SwtTestUtil.class, "waitShellActivate-" + System.currentTimeMillis());
 	dumpShellState(System.out);
-	if (shell == shell.getDisplay().getActiveShell()) {
-		fail("SWT.Activate was not received but Shell is (incorrectly?) reported active");
-	} else {
-		fail("Shell did not activate, Shell=<" + shell.getDisplay().getActiveShell() + "> is active");
-	}
+	assertThat("Shell did not activate", shell.getDisplay().getActiveShell(), is(shell));
+	fail("SWT.Activate was not received but Shell is (incorrectly?) reported active");
 }
 
 /**
