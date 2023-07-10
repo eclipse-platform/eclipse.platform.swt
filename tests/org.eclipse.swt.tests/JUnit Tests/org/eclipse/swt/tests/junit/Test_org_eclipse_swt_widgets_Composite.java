@@ -121,7 +121,7 @@ public void test_setVisibility_and_sizing() {
 }
 
 @Test
-public void test_setFocus_toChild_afterOpen() throws InterruptedException {
+public void test_setFocus_toChild_afterOpen() {
 	if (SwtTestUtil.isCocoa) {
 		//TODO Fix Cocoa failure.
 		if (SwtTestUtil.verbose) {
@@ -136,7 +136,7 @@ public void test_setFocus_toChild_afterOpen() throws InterruptedException {
 }
 
 @Test
-public void test_setFocus_toChild_beforeOpen() throws InterruptedException {
+public void test_setFocus_toChild_beforeOpen() {
 	if (SwtTestUtil.isCocoa) {
 		//TODO Fix Cocoa failure.
 		if (SwtTestUtil.verbose) {
@@ -151,7 +151,7 @@ public void test_setFocus_toChild_beforeOpen() throws InterruptedException {
 }
 
 @Test
-public void test_setFocus_withInvisibleChild() throws InterruptedException {
+public void test_setFocus_withInvisibleChild() {
 	final AtomicReference<Boolean> wasSetFocusCalledOnInvisibleChildWidget = new AtomicReference<>(false);
 	Composite invisibleChildWidget = new Composite(composite, SWT.NONE) {
 		@Override
@@ -168,7 +168,7 @@ public void test_setFocus_withInvisibleChild() throws InterruptedException {
 }
 
 @Test
-public void test_setFocus_withVisibleAndInvisibleChild() throws InterruptedException {
+public void test_setFocus_withVisibleAndInvisibleChild() {
 	final AtomicReference<Boolean> wasSetFocusCalledOnInvisibleChildWidget = new AtomicReference<>(false);
 	Composite invisibleChildWidget = new Composite(composite, SWT.NONE) {
 		@Override

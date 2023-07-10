@@ -523,7 +523,7 @@ public void test_isEnabled() {
 	assertFalse(control.isEnabled());
 }
 @Test
-public void test_isFocusControl() throws InterruptedException {
+public void test_isFocusControl() {
 	if (shell.getVisible()) {
 		// Some tests, such as `Test_org_eclipse_swt_widgets_Text`, show their
 		// Shell in `setUp()`. This makes this test fail because it shows
@@ -1073,21 +1073,12 @@ protected void consistencyEvent(final int paramA, final int paramB,
 						Assert.assertTrue(test,
 							ConsistencyUtility.postShellIconify(display, pt[1], paramA));
 						if(control instanceof Shell) {
-							display.syncExec(new Runnable() {
-								@Override
-								public void run() {
-									((Shell)control).setMinimized(false);
-								}});
+							display.syncExec(() -> ((Shell)control).setMinimized(false));
 						} else
 							fail("Iconifying a non shell control");
 						break;
 				}
-				display.asyncExec(new Runnable() {
-					@Override
-					public void run() {
-						shell.dispose();
-					}
-				});
+				display.asyncExec(() -> shell.dispose());
 			}
 		}.start();
 
