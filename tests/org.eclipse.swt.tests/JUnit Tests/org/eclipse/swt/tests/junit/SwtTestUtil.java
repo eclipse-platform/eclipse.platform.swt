@@ -18,6 +18,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.io.PrintStream;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.BooleanSupplier;
 
@@ -33,7 +34,13 @@ import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.widgets.Canvas;
+import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.test.Screenshots;
 
 public class SwtTestUtil {
 	/**
@@ -258,6 +265,50 @@ public static void debugDisplayDifferences(Image expected, Image actual) {
 
 }
 
+public static void dumpShellState(PrintStream out) {
+	final Display display = Display.getCurrent();
+
+	out.println("Display.getFocusControl() and its parents: ");
+	Control focusControl = display.getFocusControl();
+	if (focusControl == null) {
+		System.out.println("  <null>");
+	} else {
+		StringBuilder indent = new StringBuilder();
+		do {
+			Rectangle bounds = focusControl.getBounds();
+
+			out.format(
+				"  %08X Rect=[%4d,%4d - %4dx%4d] %s%s%n",
+				focusControl.hashCode(),
+				bounds.x, bounds.y, bounds.width, bounds.height,
+				indent,
+				focusControl
+			);
+
+			focusControl = focusControl.getParent();
+			indent.append("  ");
+		} while (focusControl != null);
+	}
+
+	out.println("Display.getShells(): ");
+	final Shell[] shells = display.getShells();
+	if (shells.length == 0) {
+		out.println("  <none>");
+	} else {
+		for (Shell shell : shells) {
+			Rectangle bounds = shell.getBounds();
+
+			out.format(
+				"  %08X Active=%c Visible=%c Rect=[%4d,%4d - %4dx%4d] Title=%s%n",
+				shell.hashCode(),
+				(display.getActiveShell() == shell) ? 'Y' : 'N',
+				shell.isVisible() ? 'Y' : 'N',
+				bounds.x, bounds.y, bounds.width, bounds.height,
+				shell.getText()
+			);
+		}
+	}
+}
 
 public static Image createImage(int[][] pixels, int startColumn, int numColumns) {
 	int width = pixels.length;
@@ -414,6 +465,8 @@ public static void waitShellActivate(Runnable trigger, Shell shell) {
 	if (waitEvent(trigger2, shell, SWT.Activate, timeout)) return;
 
 	// Something went wrong? Get more info to diagnose
+	Screenshots.takeScreenshot(SwtTestUtil.class, "waitShellActivate-" + System.currentTimeMillis());
+	dumpShellState(System.out);
 	if (shell == shell.getDisplay().getActiveShell()) {
 		fail("SWT.Activate was not received but Shell is (incorrectly?) reported active");
 	} else {
