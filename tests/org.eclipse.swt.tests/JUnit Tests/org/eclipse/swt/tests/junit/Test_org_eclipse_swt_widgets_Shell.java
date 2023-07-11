@@ -13,15 +13,6 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -40,9 +31,11 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
-import org.junit.Assert;
+import org.eclipse.test.Screenshots;
 import org.junit.Before;
 import org.junit.Test;
+
+import static org.junit.Assert.*;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.widgets.Shell
@@ -699,7 +692,7 @@ public void test_setBounds() throws Exception {
 			}
 		}
 		if (log.length() > 0) {
-			Assert.fail(log.toString());
+			fail(log.toString());
 		}
 	}
 }
@@ -979,5 +972,11 @@ public void test_Issue450_NoShellActivateOnSetFocus() throws InterruptedExceptio
 
 	// System.out.println("disposing the 2nd shell, too");
 	shell2.dispose();
+}
+
+@Test
+public void test_Screenshot() {
+	Screenshots.takeScreenshot(Test_org_eclipse_swt_widgets_Shell.class, "testScreenshot");
+	fail("TESTING");
 }
 }
