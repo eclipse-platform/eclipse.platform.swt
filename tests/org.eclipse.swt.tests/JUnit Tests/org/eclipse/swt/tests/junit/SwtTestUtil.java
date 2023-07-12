@@ -449,17 +449,16 @@ public static boolean waitEvent(Runnable trigger, Control control, int swtEvent,
  * @return <code>true</code> if Shell became active within timeout
  */
 public static void waitShellActivate(Runnable trigger, Shell shell) {
-	final int timeoutInMsec = 1000;
+	final int timeoutInMsec = 3000;
 
 	Runnable triggerWithEnforcedShellActivationOnMacOs = () -> {
+		trigger.run();
 		if (isCocoa) {
 			// Issue #731: if another app gains focus during entire JUnit session,
 			// newly opened Shells do not activate. The workaround is to activate
 			// explicitly.
 			shell.forceActive();
 		}
-
-		trigger.run();
 	};
 
 	// Issue #726: On GTK, 'Display.getActiveShell()' reports incorrect Shell.
