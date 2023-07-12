@@ -474,6 +474,19 @@ public static void waitShellActivate(Runnable trigger, Shell shell) {
 }
 
 /**
+ * Opens the given shell and sets it active. Asserts that the shell is active
+ * afterwards. I.e., the test calling this method will fail otherwise.
+ *
+ * @param shell the shell to open and activate
+ */
+public static void openAndActivate(Shell shell) {
+	shell.open();
+	assertThat("Shell has not become visible while opening", shell.isVisible(), is(true));
+	shell.setActive();
+	assertThat("Shell has not become active", shell.getDisplay().getActiveShell(), is(shell));
+}
+
+/**
  * Check if widget contains the given color.
  *
  * @param control       widget to check

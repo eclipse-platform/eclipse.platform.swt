@@ -13,6 +13,7 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
+import static org.eclipse.swt.tests.junit.SwtTestUtil.openAndActivate;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -532,8 +533,7 @@ public void test_isFocusControl() {
 	}
 
 	assertFalse(control.isFocusControl());
-	SwtTestUtil.waitShellActivate(shell::open, shell);
-	assertEquals(shell, shell.getDisplay().getActiveShell());
+	openAndActivate(shell);
 	assertEquals("Unexpected focus", control.forceFocus(), control.isFocusControl());
 }
 @Test
