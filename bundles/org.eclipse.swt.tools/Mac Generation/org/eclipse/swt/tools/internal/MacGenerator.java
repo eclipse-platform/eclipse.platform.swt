@@ -17,8 +17,6 @@ import java.io.*;
 import java.util.*;
 import java.util.Map.*;
 
-import javax.xml.parsers.*;
-
 import org.w3c.dom.*;
 import org.xml.sax.*;
 
@@ -948,7 +946,9 @@ public void setSelectorEnum(String selectorEnumName) {
 Document getDocument(String xmlPath) {
 	try (InputStream is = createInputStream(xmlPath))  {
 		if (is != null) {
-			return DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(new InputSource(is));
+			@SuppressWarnings("restriction")
+			Document d = org.eclipse.core.internal.runtime.XmlProcessorFactory.parseWithErrorOnDOCTYPE(new InputSource(is));
+			return d;
 		}
 	} catch (Exception e) {
 		//ignored
