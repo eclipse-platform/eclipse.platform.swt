@@ -14,6 +14,7 @@
 package org.eclipse.swt.tests.junit;
 
 
+import static org.eclipse.swt.tests.junit.SwtTestUtil.waitForShellToBeShown;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -130,7 +131,7 @@ public void test_setFocus_toChild_afterOpen() {
 		return;
 	}
 	Text focusChild = new Text(composite, SWT.NONE);
-	SwtTestUtil.waitShellActivate(shell::open, shell);
+	waitForShellToBeShown(shell::open, shell);
 	composite.setFocus();
 	assertTrue("First child widget should have focus", focusChild.isFocusControl());
 }
@@ -146,7 +147,7 @@ public void test_setFocus_toChild_beforeOpen() {
 	}
 	Text focusChild = new Text(composite, SWT.NONE);
 	composite.setFocus();
-	SwtTestUtil.waitShellActivate(shell::open, shell);
+	waitForShellToBeShown(shell::open, shell);
 	assertTrue("First child widget should have focus", focusChild.isFocusControl());
 }
 
@@ -161,7 +162,7 @@ public void test_setFocus_withInvisibleChild() {
 		}
 	};
 	invisibleChildWidget.setVisible(false);
-	SwtTestUtil.waitShellActivate(shell::open, shell);
+	waitForShellToBeShown(shell::open, shell);
 
 	composite.setFocus();
 	assertFalse("Composite should not try to set focus on invisible child", wasSetFocusCalledOnInvisibleChildWidget.get());
@@ -179,7 +180,7 @@ public void test_setFocus_withVisibleAndInvisibleChild() {
 	};
 	invisibleChildWidget.setVisible(false);
 	Composite visibleChildWidget = new Composite(composite, SWT.NONE);
-	SwtTestUtil.waitShellActivate(shell::open, shell);
+	waitForShellToBeShown(shell::open, shell);
 
 	composite.setFocus();
 	assertFalse("Composite should not try to set focus on invisible child", wasSetFocusCalledOnInvisibleChildWidget.get());

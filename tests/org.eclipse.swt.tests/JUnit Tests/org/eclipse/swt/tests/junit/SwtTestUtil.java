@@ -474,6 +474,22 @@ public static void waitShellActivate(Runnable trigger, Shell shell) {
 }
 
 /**
+ * Executes the given {@linkplain Runnable} and waits until the given shell
+ * becomes shown. To this end, the method asserts that the given
+ * {@linkplain Runnable} triggers the {@linkplain SWT#Show} event within a
+ * reasonable amount of time. Otherwise, the test calling this method will fail.
+ *
+ * @param trigger        code to executed that is expected to cause given shell
+ *                       to become shown
+ * @param shellToBeShown the shell to wait for being shown
+ */
+public static void waitForShellToBeShown(Runnable trigger, Shell shellToBeShown) {
+	final int timeoutInMsec = 3000;
+	boolean showEventReceived = waitEvent(trigger, shellToBeShown, SWT.Show, timeoutInMsec);
+	assertThat("SWT.Show event was not received", showEventReceived, is(true));
+}
+
+/**
  * Check if widget contains the given color.
  *
  * @param control       widget to check
