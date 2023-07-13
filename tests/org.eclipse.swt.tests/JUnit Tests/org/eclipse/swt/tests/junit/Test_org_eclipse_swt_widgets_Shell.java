@@ -957,7 +957,8 @@ public void test_Issue450_NoShellActivateOnSetFocus() {
 	assertSame("expecting the 2nd shell to remain activated", display.getActiveShell(), shell2);
 
 	// System.out.println("activating 1st shell");
-	// Fails here? Check Bug 575712 that only occurs on Ubuntu, and only Ubuntu 21.04+
+	// Fails here for Linux (21.04+ or Manjaro starting ~July 2023)? Check Bug 575712
+	// workaround: set env-var GDK_BACKEND=x11
 	SwtTestUtil.waitShellActivate(shell1::setActive, shell1);
 	assertSame("expecting the 1st shell to be activated", display.getActiveShell(), shell1);
 	assertTrue("expecting the the 1st shell to have remembered the previous setFocus and with the shell activation setting it to the 2nd text field", text12.isFocusControl());
