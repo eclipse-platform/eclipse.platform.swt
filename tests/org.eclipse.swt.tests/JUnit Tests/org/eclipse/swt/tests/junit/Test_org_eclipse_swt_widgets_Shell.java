@@ -35,6 +35,7 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.graphics.Region;
 import org.eclipse.swt.layout.FillLayout;
+import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
@@ -929,11 +930,15 @@ public void test_Issue450_NoShellActivateOnSetFocus() {
 
 	// First shell
 	final Shell shell1 = new Shell(shell);
+	shell1.setText("shell1");
+	shell1.setLayout(new GridLayout()); // without layout the text controls will have zero size
 	final Text text11 = new Text(shell1, SWT.BORDER | SWT.SINGLE);
 	final Text text12 = new Text(shell1, SWT.BORDER | SWT.SINGLE);
 
 	// Second shell
 	final Shell shell2 = new Shell(shell);
+	shell2.setText("shell2");
+	shell2.setLayout(new GridLayout()); // without layout the text controls will have zero size
 	final Text text21 = new Text(shell2, SWT.BORDER | SWT.SINGLE);
 	final Text text22 = new Text(shell2, SWT.BORDER | SWT.SINGLE);
 
