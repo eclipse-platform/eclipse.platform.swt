@@ -1026,4 +1026,11 @@ private String[] splitString(String text) {
 	} while (pos != -1);
 	return lines;
 }
+@Override
+public void setForeground(Color color) {
+	if (color == null) {
+		return;
+	}
+	super.setForeground(color);
+}
 }
