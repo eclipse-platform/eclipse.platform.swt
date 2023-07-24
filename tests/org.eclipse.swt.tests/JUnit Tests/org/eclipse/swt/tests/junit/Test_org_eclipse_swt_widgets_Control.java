@@ -523,18 +523,16 @@ public void test_isEnabled() {
 	assertFalse(control.isEnabled());
 }
 @Test
-public void test_isFocusControl() throws InterruptedException {
-	assertFalse(control.isFocusControl());
-	if (SwtTestUtil.isCocoa||SwtTestUtil.isGTK) {
-		//TODO Fix Cocoa failure.
-		if (SwtTestUtil.verbose) {
-			System.out.println("Excluded test_isFocusControl(org.eclipse.swt.tests.junit.Test_org_eclipse_swt_widgets_Control)");
-		}
+public void test_isFocusControl() {
+	if (shell.getVisible()) {
+		// Some tests, such as `Test_org_eclipse_swt_widgets_Text`, show their
+		// Shell in `setUp()`. This makes this test fail because it shows
+		// already shown Shell and then expects focus to change.
 		return;
 	}
-	shell.open();
-	// Wait for the shell to become active
-	processEvents(500, () -> shell.getDisplay().getActiveShell() == shell);
+
+	assertFalse(control.isFocusControl());
+	SwtTestUtil.waitShellActivate(shell::open, shell);
 	assertEquals(shell, shell.getDisplay().getActiveShell());
 	assertEquals("Unexpected focus", control.forceFocus(), control.isFocusControl());
 }
@@ -1075,21 +1073,12 @@ protected void consistencyEvent(final int paramA, final int paramB,
 						Assert.assertTrue(test,
 							ConsistencyUtility.postShellIconify(display, pt[1], paramA));
 						if(control instanceof Shell) {
-							display.syncExec(new Runnable() {
-								@Override
-								public void run() {
-									((Shell)control).setMinimized(false);
-								}});
+							display.syncExec(() -> ((Shell)control).setMinimized(false));
 						} else
 							fail("Iconifying a non shell control");
 						break;
 				}
-				display.asyncExec(new Runnable() {
-					@Override
-					public void run() {
-						shell.dispose();
-					}
-				});
+				display.asyncExec(() -> shell.dispose());
 			}
 		}.start();
 

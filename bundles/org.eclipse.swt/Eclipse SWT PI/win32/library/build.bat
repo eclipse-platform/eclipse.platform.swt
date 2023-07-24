@@ -70,12 +70,17 @@ shift
 @rem if call to vcvarsall.bat (which sets up environment) silently fails, then provide advice to user.
 WHERE cl
 if %ERRORLEVEL% NEQ 0 (
-    CALL :ECHO "WARNING: cl (Microsoft C compiler) not found on path. Please install Microsoft Visual Studio."
+    CALL :ECHO "ERROR: cl (Microsoft C compiler) not found on path. Please install Microsoft Visual Studio."
     CALL :ECHO "         If already installed, try launching eclipse from the 'Developer Command Prompt for VS'"
     CALL :ECHO "         Refer steps for SWT Windows native setup: https://www.eclipse.org/swt/swt_win_native.php"
+    CALL :ECHO "ERROR: exit 1"	
+    EXIT 1
 )
 nmake -f make_win32.mak %1 %2 %3 %4 %5 %6 %7 %8 %9
-IF ERRORLEVEL 1 EXIT 1
+IF ERRORLEVEL 1 (	
+    CALL :ECHO "ERROR: exit 1"	
+    EXIT 1
+)
 GOTO :EOF
 
 @rem Find Visual Studio
