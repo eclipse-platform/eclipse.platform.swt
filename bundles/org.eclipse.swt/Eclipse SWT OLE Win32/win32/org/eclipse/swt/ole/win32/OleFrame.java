@@ -567,10 +567,12 @@ private void onDispose(Event e) {
 	removeListener(SWT.Move, listener);
 }
 void onFocusIn(Event e) {
-	if (lastActivatedMenuHandle != newMenuHandle)
+	if (lastActivatedMenuHandle != newMenuHandle && currentdoc != null) {
 		currentdoc.doVerb(OLE.OLEIVERB_SHOW);
-	if (OS.GetMenu(shellHandle) != newMenuHandle)
+	}
+	if (OS.GetMenu(shellHandle) != newMenuHandle) {
 		OS.SetMenu(shellHandle, newMenuHandle);
+	}
 }
 void onFocusOut(Event e) {
 	Control control = getDisplay().getFocusControl();
