@@ -588,8 +588,9 @@ void createHandle () {
 	widget.setDataSource (widget);
 	widget.setDelegate (widget);
 	widget.setColumnAutoresizingStyle (OS.NSTableViewNoColumnAutoresizing);
-	NSSize spacing = new NSSize();
-	spacing.width = spacing.height = CELL_GAP;
+	NSSize spacing = widget.intercellSpacing();
+	spacing.height = CELL_GAP;
+	//spacing.width = CELL_GAP;  //spacing.width value is too small;so retaining the default value back.
 	widget.setIntercellSpacing(spacing);
 	widget.setDoubleAction (OS.sel_sendDoubleSelection);
 
