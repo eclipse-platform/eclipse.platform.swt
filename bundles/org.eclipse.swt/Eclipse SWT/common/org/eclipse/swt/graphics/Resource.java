@@ -168,8 +168,16 @@ void initNonDisposeTracking() {
 	// Avoid performance costs of having '.finalize()' when not tracking.
 	if (nonDisposedReporter == null) return;
 
-	// Capture a stack trace to help investigating the leak
-	Error error = new Error("SWT Resource was not properly disposed"); //$NON-NLS-1$
+	// Capture a stack trace to help investigating the possible memory leak.
+	// NOTICE: this Error will also be shown if an SWTException/SWTError occurs during
+	// the initialization of the resource (i.e. in the constructor or in an
+	// init-method), but in such cases it is not necessarily a memory leak.
+	// The reason for this is that the ResourceTracker is initialized in the constructor
+	// and if an error occurs in the constructor of a subclass then the object will be
+	// eligible for garbage collection without ever having been disposed (because it
+	// was never fully initialized in the first place).
+	Error error = new Error("SWT Resource was not properly disposed. If no Exception/Error "
+			+ "was thrown during the initialization of the resource then this MIGHT be a memory leak.");
 
 	// Allocate a helper class with '.finalize()' in it, it will do the actual
 	// work of detecting and reporting errors. This works because Resource
