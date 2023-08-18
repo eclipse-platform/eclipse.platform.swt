@@ -109,6 +109,9 @@ public class Tree extends Composite {
 	static final int TEXT_GAP = 2;
 	static final int CELL_GAP = 1;
 
+	/* Vertical cell padding for tree item */
+	static final int VERTICAL_CELL_PADDING= 8;
+
 /**
  * Constructs a new instance of this class given its parent
  * and a style value describing its behavior and appearance.
@@ -3170,7 +3173,7 @@ void setItemHeight (Image image, NSFont font, boolean set) {
 	if (font == null) font = getFont ().handle;
 	double ascent = font.ascender ();
 	double descent = -font.descender () + font.leading ();
-	int height = (int)Math.ceil (ascent + descent) + 1;
+	int height = (int)Math.ceil (ascent + descent) + VERTICAL_CELL_PADDING;
 	Rectangle bounds = image != null ? image.getBounds () : imageBounds;
 	if (bounds != null) {
 		imageBounds = bounds;

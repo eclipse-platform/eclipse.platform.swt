@@ -50,6 +50,9 @@ public class List extends Scrollable {
 
 	static final int CELL_GAP = 1;
 
+	/* Vertical cell padding for list item */
+	static final int VERTICAL_CELL_PADDING= 8;
+
 /**
  * Constructs a new instance of this class given its parent
  * and a style value describing its behavior and appearance.
@@ -1179,7 +1182,7 @@ void setFont (NSFont font) {
 	super.setFont (font);
 	double ascent = font.ascender ();
 	double descent = -font.descender () + font.leading ();
-	((NSTableView)view).setRowHeight ((int)Math.ceil (ascent + descent) + 1);
+	((NSTableView)view).setRowHeight ((int)Math.ceil (ascent + descent) + VERTICAL_CELL_PADDING);
 	setScrollWidth();
 }
 
