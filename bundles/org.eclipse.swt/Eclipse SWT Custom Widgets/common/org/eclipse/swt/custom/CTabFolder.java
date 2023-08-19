@@ -196,6 +196,7 @@ public class CTabFolder extends Composite {
 	int[] gradientPercents;
 	boolean gradientVertical;
 	boolean showUnselectedImage = true;
+	boolean showSelectedImage = true;
 
 	// close, min/max and chevron buttons
 	boolean showClose = false;
@@ -1365,6 +1366,18 @@ public boolean getUnselectedCloseVisible() {
 public boolean getUnselectedImageVisible() {
 	checkWidget();
 	return showUnselectedImage;
+}
+/**
+ * Returns <code>true</code> if an image appears
+ * in selected tabs.
+ *
+ * @return <code>true</code> if an image appears in selected tabs
+ *
+ * @since 3.125
+ */
+public boolean getSelectedImageVisible() {
+	checkWidget();
+	return showSelectedImage;
 }
 /**
  * Return the index of the specified tab or -1 if the tab is not
@@ -3691,6 +3704,25 @@ public void setUnselectedImageVisible(boolean visible) {
 	if (showUnselectedImage == visible) return;
 	// display image on unselected items
 	showUnselectedImage = visible;
+	updateFolder(REDRAW);
+}
+/**
+ * Specify whether the image appears on selected tabs.
+ *
+ * @param visible <code>true</code> makes the image appear
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @since 3.125
+ */
+public void setSelectedImageVisible(boolean visible) {
+	checkWidget();
+	if (showSelectedImage == visible) return;
+	// display image on selected items
+	showSelectedImage = visible;
 	updateFolder(REDRAW);
 }
 /**

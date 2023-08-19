@@ -468,6 +468,18 @@ public void test_iconWrappedOnNextLine() {
 	}
 }
 
+@Test
+public void test_selectedImageVisible() {
+	createTabFolder(null);
+
+	ctabFolder.setSelectedImageVisible(true);
+	assertTrue(ctabFolder.getSelectedImageVisible());
+
+	ctabFolder.setSelectedImageVisible(false);
+	assertFalse(ctabFolder.getSelectedImageVisible());
+
+}
+
 private void processEvents() {
 	Display display = shell.getDisplay();
 
