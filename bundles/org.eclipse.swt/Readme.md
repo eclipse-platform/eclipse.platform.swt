@@ -10,7 +10,8 @@ To compile this project, you need to set the classpath specific for your operati
 For this, rename one of the following files to `.classpath`:
 
 * .classpath_win32 - Windows
-* .classpath_cocoa - Mac OS X
+* .classpath_cocoa_x86_64 - macOS Intel
+* .classpath_cocoa_aarch64 - macOS Silicon
 * .classpath_gtk - Linux and all Unix variants
 
 Similar class paths renaming should be done for ./examples/org.eclipse.swt.snippets/

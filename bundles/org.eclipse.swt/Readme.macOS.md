@@ -3,7 +3,8 @@ macOS Development for org.eclipse.swt
 
 Please follow the following pattern for macOS development:
 
-* Copy `.classpath_cocoa` to `.classpath`
+* If on macOS Intel copy `.classpath_cocoa_x86_64` to `.classpath`
+* If on macOS Silicon copy `.classpath_cocoa_aarch64` to `.classpath`
 * Update `.bridgesupport` files when necessary, i.e. consuming new api in newer macOS versions
 * Generate native and Java code using `MacGenerator`
 
