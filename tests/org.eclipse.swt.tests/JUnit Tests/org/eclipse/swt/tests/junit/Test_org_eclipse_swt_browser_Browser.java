@@ -962,6 +962,7 @@ public void test_setText() {
 
 @Test
 public void test_setUrl_local() {
+	assumeFalse("Test fails on Mac, see https://github.com/eclipse-platform/eclipse.platform.swt/issues/722", SwtTestUtil.isCocoa);
 	String expectedTitle = "Website Title";
 	Runnable browserSetFunc = () -> {
 
