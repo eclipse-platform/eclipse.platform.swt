@@ -3580,6 +3580,9 @@ public int getInterpolation() {
 public LineAttributes getLineAttributes () {
 	LineAttributes attributes = getLineAttributesInPixels();
 	attributes.width = DPIUtil.autoScaleDown(drawable, attributes.width);
+	if(attributes.dash != null) {
+		attributes.dash = DPIUtil.autoScaleDown(drawable, attributes.dash);
+	}
 	return attributes;
 }
 
@@ -3628,7 +3631,7 @@ public int[] getLineDash() {
 	if (data.lineDashes == null) return null;
 	int[] lineDashes = new int[data.lineDashes.length];
 	for (int i = 0; i < lineDashes.length; i++) {
-		lineDashes[i] = (int)data.lineDashes[i];
+		lineDashes[i] = DPIUtil.autoScaleDown(drawable, (int)data.lineDashes[i]);
 	}
 	return lineDashes;
 }
@@ -4579,7 +4582,9 @@ void setLineAttributesInPixels (LineAttributes attributes) {
 		}
 		if (changed) {
 			float[] newDashes = new float[dashes.length];
-			System.arraycopy(dashes, 0, newDashes, 0, dashes.length);
+			for (int i = 0; i < newDashes.length; i++) {
+				newDashes[i] = DPIUtil.autoScaleUp(drawable, dashes[i]);
+			}
 			dashes = newDashes;
 			mask |= LINE_STYLE;
 		} else {
@@ -4665,16 +4670,14 @@ public void setLineDash(int[] dashes) {
 	float[] lineDashes = data.lineDashes;
 	if (dashes != null && dashes.length > 0) {
 		boolean changed = data.lineStyle != SWT.LINE_CUSTOM || lineDashes == null || lineDashes.length != dashes.length;
+		float[] newDashes = new float[dashes.length];
 		for (int i = 0; i < dashes.length; i++) {
-			int dash = dashes[i];
-			if (dash <= 0) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-			if (!changed && lineDashes[i] != dash) changed = true;
+			if (dashes[i] <= 0) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+			newDashes[i] = DPIUtil.autoScaleUp(drawable, (float) dashes[i]);
+			if (!changed && lineDashes[i] != newDashes[i]) changed = true;
 		}
 		if (!changed) return;
-		data.lineDashes = new float[dashes.length];
-		for (int i = 0; i < dashes.length; i++) {
-			data.lineDashes[i] = dashes[i];
-		}
+		data.lineDashes = newDashes;
 		data.lineStyle = SWT.LINE_CUSTOM;
 	} else {
 		if (data.lineStyle == SWT.LINE_SOLID && (lineDashes == null || lineDashes.length == 0)) return;
