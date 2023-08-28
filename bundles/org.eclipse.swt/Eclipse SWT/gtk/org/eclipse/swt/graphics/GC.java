@@ -379,23 +379,28 @@ void checkGC (int mask) {
 		Cairo.cairo_set_miter_limit(cairo, data.lineMiterLimit);
 	}
 	if ((state & DRAW_OFFSET) != 0) {
-		data.cairoXoffset = data.cairoYoffset = 0;
-		double[] matrix = new double[6];
-		Cairo.cairo_get_matrix(cairo, matrix);
-		double[] dx = new double[]{1};
-		double[] dy = new double[]{1};
-		Cairo.cairo_user_to_device_distance(cairo, dx, dy);
-		double scaling = dx[0];
-		if (scaling < 0) scaling = -scaling;
-		double strokeWidth = data.lineWidth * scaling;
-		if (strokeWidth == 0 || ((int)strokeWidth % 2) == 1) {
-			data.cairoXoffset = 0.5 / scaling;
-		}
-		scaling = dy[0];
-		if (scaling < 0) scaling = -scaling;
-		strokeWidth = data.lineWidth * scaling;
-		if (strokeWidth == 0 || ((int)strokeWidth % 2) == 1) {
-			data.cairoYoffset = 0.5 / scaling;
+		int effectiveLineWidth = data.lineWidth < 1 ? 1 : Math.round(data.lineWidth);
+		if (effectiveLineWidth % 2 == 1) {
+			// In case the effective line width is odd, shift coordinates by (0.5, 0.5).
+			// I.e., a line starting at (0,0) will effectively start in the pixel right
+			// below that coordinate with its center at (0.5, 0.5).
+			double[] offsetX = new double[] { 0.5 };
+			double[] offsetY = new double[] { 0.5 };
+			// The offset will be applied to the coordinate system of the GC; so transform
+			// it from the drawing coordinate system to the coordinate system of the GC by
+			// applying the inverse transformation as the one applied to the GC and correct
+			// it by the line width.
+			double[] matrix = new double[6];
+			Cairo.cairo_get_matrix(cairo, matrix);
+			double[] inverseMatrix = Arrays.copyOf(matrix, 6);
+			Cairo.cairo_matrix_invert(inverseMatrix);
+			Cairo.cairo_set_matrix(cairo, inverseMatrix);
+			Cairo.cairo_user_to_device_distance(cairo, offsetX, offsetY);
+			Cairo.cairo_set_matrix(cairo, matrix);
+			data.cairoXoffset = Math.abs(offsetX[0]);
+			data.cairoYoffset = Math.abs(offsetY[0]);
+		} else {
+			data.cairoXoffset = data.cairoYoffset = 0;
 		}
 	}
 }

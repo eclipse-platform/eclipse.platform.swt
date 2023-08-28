@@ -469,23 +469,24 @@ NSAutoreleasePool checkGC (int mask) {
 		path.setLineCapStyle(capStyle);
 	}
 	if ((state & DRAW_OFFSET) != 0) {
-		data.drawXOffset = data.drawYOffset = 0;
-		NSSize size = new NSSize();
-		size.width = size.height = 1;
-		if (data.transform != null) {
-			size = data.transform.transformSize(size);
-		}
-		double scaling = size.width;
-		if (scaling < 0) scaling = -scaling;
-		double strokeWidth = data.lineWidth * scaling;
-		if (strokeWidth == 0 || ((int)strokeWidth % 2) == 1) {
-			data.drawXOffset = 0.5f / scaling;
-		}
-		scaling = size.height;
-		if (scaling < 0) scaling = -scaling;
-		strokeWidth = data.lineWidth * scaling;
-		if (strokeWidth == 0 || ((int)strokeWidth % 2) == 1) {
-			data.drawYOffset = 0.5f / scaling;
+		int effectiveLineWidth = data.lineWidth < 1 ? 1 : Math.round(data.lineWidth);
+		if (effectiveLineWidth % 2 == 1) {
+			NSSize offset = new NSSize();
+			// In case the effective line width is odd, shift coordinates by (0.5, 0.5).
+			// I.e., a line starting at (0,0) will effectively start in the pixel right
+			// below that coordinate with its center at (0.5, 0.5).
+			offset.width = offset.height = 0.5f;
+			// The offset will be applied to the coordinate system of the GC; so transform
+			// it from the drawing coordinate system to the coordinate system of the GC by
+			// applying the inverse transformation as the one applied to the GC and correct
+			// it by the line width.
+			if (data.inverseTransform != null) {
+				offset = data.inverseTransform.transformSize(offset);
+			}
+			data.drawXOffset = Math.abs(offset.width);
+			data.drawYOffset = Math.abs(offset.height);
+		} else {
+			data.drawXOffset = data.drawYOffset = 0;
 		}
 	}
 	return pool;
