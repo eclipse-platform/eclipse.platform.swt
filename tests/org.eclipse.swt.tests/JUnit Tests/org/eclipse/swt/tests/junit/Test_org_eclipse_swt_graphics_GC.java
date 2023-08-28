@@ -15,6 +15,9 @@
 package org.eclipse.swt.tests.junit;
 
 import static org.eclipse.swt.tests.junit.SwtTestUtil.assertSWTProblem;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -35,6 +38,7 @@ import org.eclipse.swt.graphics.PaletteData;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.graphics.Transform;
 import org.eclipse.swt.internal.DPIUtil;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Display;
@@ -731,6 +735,35 @@ public void test_bug493455_drawImageAlpha_srcPos() {
 		}
 	}
 
+}
+
+/**
+ * @see <a href="https://github.com/eclipse-platform/eclipse.platform.swt/issues/788">Issue 788</a>
+ */
+@Test
+public void test_drawLine_noSingularitiesIn45DregreeRotation() {
+	int imageSize = 3;
+	int centerPixel = imageSize / 2;
+	Image image = new Image(Display.getDefault(), imageSize, imageSize);
+	GC gc = new GC(image);
+	Transform rotation = new Transform(gc.getDevice());
+	gc.getTransform(rotation);
+
+	try {
+		// Rotate 45° around image center
+		rotation.translate(centerPixel, centerPixel);
+		rotation.rotate(45);
+		rotation.translate(- centerPixel, - centerPixel);
+		gc.setTransform(rotation);
+		gc.drawLine(centerPixel, centerPixel, centerPixel + 1, centerPixel);
+
+		assertThat("line is not drawn with 45 degree rotation",
+				image.getImageData().getPixel(centerPixel, centerPixel), not(is(-1)));
+	} finally {
+		rotation.dispose();
+		gc.dispose();
+		image.dispose();
+	}
 }
 
 /* custom */
