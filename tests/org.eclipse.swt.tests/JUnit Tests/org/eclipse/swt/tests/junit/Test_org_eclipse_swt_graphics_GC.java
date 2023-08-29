@@ -15,6 +15,7 @@
 package org.eclipse.swt.tests.junit;
 
 import static org.eclipse.swt.tests.junit.SwtTestUtil.assertSWTProblem;
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
@@ -29,6 +30,7 @@ import org.eclipse.swt.graphics.FontMetrics;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.ImageData;
+import org.eclipse.swt.graphics.LineAttributes;
 import org.eclipse.swt.graphics.PaletteData;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.RGB;
@@ -585,6 +587,32 @@ public void test_setForegroundLorg_eclipse_swt_graphics_Color() {
 }
 
 @Test
+public void test_setLineAttributes$I() {
+	int width = 1;
+	int cap = 3;
+	int join = 2;
+	int style = 6;
+	float[] dashes = new float[] { 1.2f, 3.3f };
+	float dashOffset = 3.3f;
+	float miterLimit = 2.6f;
+	gc.setLineAttributes(new LineAttributes(width, cap, join, style, dashes, dashOffset, miterLimit));
+	assertEquals("unexpected line width", width, gc.getLineWidth());
+	assertEquals("unexpected line cap", cap, gc.getLineCap());
+	assertEquals("unexpected line join", join, gc.getLineJoin());
+	assertEquals("unexpected line style", style, gc.getLineStyle());
+	assertEquals("actual line attributes differ from the ones that have been set",
+			new LineAttributes(width, cap, join, style, dashes, dashOffset, miterLimit), gc.getLineAttributes());
+
+	gc.setLineAttributes(new LineAttributes(1));
+	assertEquals(new LineAttributes(1), gc.getLineAttributes());
+}
+
+@Test
+public void test_setLineAttributes$I_withDeviceScaling() {
+	executeWithNonDefaultDeviceZoom(() -> test_setLineAttributes$I());
+}
+
+@Test
 public void test_setLineStyleI() {
 	gc.setLineStyle(SWT.LINE_SOLID);
 	assertEquals(SWT.LINE_SOLID, gc.getLineStyle());
@@ -604,6 +632,25 @@ public void test_setLineWidthI() {
 	assertEquals(10, gc.getLineWidth());
 	gc.setLineWidth(0);
 	assertEquals(0, gc.getLineWidth());
+}
+
+@Test
+public void test_setLineWidthI_withDeviceScaling() {
+	executeWithNonDefaultDeviceZoom(() -> test_setLineWidthI());
+}
+
+@Test
+public void test_setLineDash$I() {
+	int[] dashes = new int[] { 5, 1, 3 };
+	gc.setLineDash(dashes);
+	assertArrayEquals(dashes, gc.getLineDash());
+	gc.setLineDash(null);
+	assertEquals(null, gc.getLineDash());
+}
+
+@Test
+public void test_setLineDash$I_withDeviceScaling() {
+	executeWithNonDefaultDeviceZoom(() -> test_setLineDash$I());
 }
 
 @Test
@@ -713,5 +760,15 @@ RGB getRealRGB(Color color) {
 	colorImage.dispose();
 	pixel = imageData.getPixel(0, 0);
 	return palette.getRGB(pixel);
+}
+
+private void executeWithNonDefaultDeviceZoom(Runnable executable) {
+	int previousDeviceZoom = DPIUtil.getDeviceZoom();
+	DPIUtil.setDeviceZoom(150);
+	try {
+		executable.run();
+	} finally {
+		DPIUtil.setDeviceZoom(previousDeviceZoom);
+	}
 }
 }
