@@ -989,6 +989,7 @@ public void test_setUrl_local() {
 /** This test requires working Internet connection */
 @Test
 public void test_setUrl_remote() {
+	assumeFalse("Test fails on Mac, see https://github.com/eclipse-platform/eclipse.platform.swt/issues/722", SwtTestUtil.isCocoa);
 
 	// This test sometimes times out if build server has a bad connection. Thus for this test we have a longer timeout.
 	secondsToWaitTillFail = 35;
