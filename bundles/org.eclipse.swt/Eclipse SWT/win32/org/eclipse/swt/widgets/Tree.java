@@ -5608,7 +5608,7 @@ String toolTipText (NMTTDISPINFO hdr) {
 			}
 			//TEMPORARY CODE
 			if (isCustomToolTip ()) text = " ";
-			if (text != null) return text;
+			if (text != null) return text.replace("&", "&&");
 		}
 	}
 	return super.toolTipText (hdr);
