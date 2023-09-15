@@ -5748,6 +5748,7 @@ void applicationWillFinishLaunching (long id, long sel, long notification) {
 		NSString match = NSString.stringWith("%@");
 		appitem.setTitle(name);
 		NSMenu sm = appitem.submenu();
+		sm.setTitle(name);
 		NSArray ia = sm.itemArray();
 		for(int i = 0; i < ia.count(); i++) {
 			NSMenuItem ni = new NSMenuItem(ia.objectAtIndex(i));
