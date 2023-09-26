@@ -19,6 +19,6 @@
   </parent>
   <groupId>org.eclipse.swt</groupId>
   <artifactId>org.eclipse.swt.tools</artifactId>
-  <version>3.110.100-SNAPSHOT</version>
+  <version>3.110.200-SNAPSHOT</version>
   <packaging>eclipse-plugin</packaging>
 </project>
