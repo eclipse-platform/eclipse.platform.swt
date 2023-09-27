@@ -219,15 +219,11 @@ class TimedEventWatchdog implements Listener {
 		StackNode s = depth < stack.length ? stack[depth] : null;
 		if (s != null) {
 			int duration = (int) (getTimestamp() - s.startTime);
-			LongEventInfo info = null;
 
 			if (duration >= threshold_ms) {
-				if (info == null) {
-					info = new LongEventInfo(s.startingSequenceNumber,
-							dispatchSequenceNumber, s.startTime, duration, depth,
-							maxRecursiveDepth);
-				}
-
+				LongEventInfo info = new LongEventInfo(s.startingSequenceNumber,
+						dispatchSequenceNumber, s.startTime, duration, depth,
+						maxRecursiveDepth);
 				onLongEvent(info);
 			}
 		}
