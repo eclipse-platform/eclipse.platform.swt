@@ -24,8 +24,7 @@ public class LONG {
 	@Override
 	public boolean equals (Object object) {
 		if (object == this) return true;
-		if (!(object instanceof LONG)) return false;
-		LONG obj = (LONG)object;
+		if (!(object instanceof LONG obj)) return false;
 		return obj.value == this.value;
 	}
 

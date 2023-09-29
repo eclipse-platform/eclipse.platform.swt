@@ -232,8 +232,7 @@ void destroy() {
 @Override
 public boolean equals(Object object) {
 	if (object == this) return true;
-	if (!(object instanceof Font)) return false;
-	Font font = (Font)object;
+	if (!(object instanceof Font font)) return false;
 	return handle == font.handle;
 }
 

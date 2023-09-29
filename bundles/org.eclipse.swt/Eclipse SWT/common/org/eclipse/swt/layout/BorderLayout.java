@@ -396,8 +396,7 @@ public class BorderLayout extends Layout {
 
 	private <C extends Control> Entry<C, BorderData> borderDataControl(C control, boolean flushCache) {
 		Object layoutData = control.getLayoutData();
-		if (layoutData instanceof BorderData) {
-			BorderData borderData = (BorderData) layoutData;
+		if (layoutData instanceof BorderData borderData) {
 			if (flushCache) {
 				borderData.flushCache(control);
 			}

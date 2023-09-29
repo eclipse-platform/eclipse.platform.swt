@@ -394,8 +394,7 @@ public String getName () {
 @Override
 public boolean equals(Object other) {
 	if (this == other) return true;
-	if (other instanceof Program) {
-		final Program program = (Program) other;
+	if (other instanceof final Program program) {
 		return name.equals(program.name) && identifier.equals(program.identifier);
 	}
 	return false;

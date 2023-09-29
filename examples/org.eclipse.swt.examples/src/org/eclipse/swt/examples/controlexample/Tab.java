@@ -336,17 +336,14 @@ abstract class Tab {
 		});
 		Control [] children = styleGroup.getChildren ();
 		for (Control child : children) {
-			if (child instanceof Button) {
-				Button button = (Button) child;
+			if (child instanceof Button button) {
 				button.addSelectionListener (selectionListener);
 			} else {
-				if (child instanceof Composite) {
+				if (child instanceof Composite composite) {
 					/* Look down one more level of children in the style group. */
-					Composite composite = (Composite) child;
 					Control [] grandchildren = composite.getChildren ();
 					for (Control grandchild : grandchildren) {
-						if (grandchild instanceof Button) {
-							Button button = (Button) grandchild;
+						if (grandchild instanceof Button button) {
 							button.addSelectionListener (selectionListener);
 						}
 					}

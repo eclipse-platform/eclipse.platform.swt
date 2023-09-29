@@ -467,8 +467,7 @@ void destroy() {
 @Override
 public boolean equals (Object object) {
 	if (object == this) return true;
-	if (!(object instanceof Cursor)) return false;
-	Cursor cursor = (Cursor) object;
+	if (!(object instanceof Cursor cursor)) return false;
 	return device == cursor.device && handle == cursor.handle;
 }
 

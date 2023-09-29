@@ -204,8 +204,7 @@ public float[] getHSB() {
 @Override
 public boolean equals(Object object) {
 	if (object == this) return true;
-	if (!(object instanceof RGB)) return false;
-	RGB rgb = (RGB)object;
+	if (!(object instanceof RGB rgb)) return false;
 	return (rgb.red == this.red) && (rgb.green == this.green) && (rgb.blue == this.blue);
 }
 

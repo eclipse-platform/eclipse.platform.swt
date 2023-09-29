@@ -149,8 +149,7 @@ public void unhook (int eventType, SWTEventListener listener) {
 	if (types == null) return;
 	for (int i=0; i<types.length; i++) {
 		if (types [i] == eventType) {
-			if (listeners [i] instanceof TypedListener) {
-				TypedListener typedListener = (TypedListener) listeners [i];
+			if (listeners [i] instanceof TypedListener typedListener) {
 				if (typedListener.getEventListener () == listener) {
 					remove (i);
 					return;

@@ -175,8 +175,7 @@ static int checkStyle (Composite parent, int style, boolean internal) {
 	 * conditions hold, turn off the SMOOTH flag.
 	 */
 	if ((style & SWT.SMOOTH) != 0) {
-		if (parent instanceof Shell) {
-			Shell s = (Shell)parent;
+		if (parent instanceof Shell s) {
 			if (s.window.toolbar() != null) newStyle &= ~SWT.SMOOTH;
 		} else {
 			newStyle &= ~SWT.SMOOTH;

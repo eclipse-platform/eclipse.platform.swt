@@ -109,8 +109,7 @@ public StyleRange(int start, int length, Color foreground, Color background, int
 @Override
 public boolean equals(Object object) {
 	if (object == this) return true;
-	if (object instanceof StyleRange) {
-		StyleRange style = (StyleRange)object;
+	if (object instanceof StyleRange style) {
 		if (start != style.start) return false;
 		if (length != style.length) return false;
 		return similarTo(style);

@@ -76,8 +76,7 @@ public static FontMetrics cocoa_new (int ascent, int descent, double averageChar
 @Override
 public boolean equals (Object object) {
 	if (object == this) return true;
-	if (!(object instanceof FontMetrics)) return false;
-	FontMetrics metrics = (FontMetrics)object;
+	if (!(object instanceof FontMetrics metrics)) return false;
 	return ascent == metrics.ascent && descent == metrics.descent && leading == metrics.leading &&
 		height == metrics.height && (Double.compare (averageCharWidth, metrics.averageCharWidth) == 0);
 }
