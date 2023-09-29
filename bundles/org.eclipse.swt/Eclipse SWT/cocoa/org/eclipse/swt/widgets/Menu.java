@@ -790,8 +790,7 @@ public boolean isVisible () {
 @Override
 void menu_willHighlightItem(long id, long sel, long menu, long itemID) {
 	Widget widget = display.getWidget(itemID);
-	if (widget instanceof MenuItem) {
-		MenuItem item = (MenuItem)widget;
+	if (widget instanceof MenuItem item) {
 		item.sendEvent (SWT.Arm);
 	}
 }

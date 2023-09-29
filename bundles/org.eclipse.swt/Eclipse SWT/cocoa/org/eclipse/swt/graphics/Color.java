@@ -328,8 +328,7 @@ public Device getDevice() {
 @Override
 public boolean equals(Object object) {
 	if (object == this) return true;
-	if (!(object instanceof Color)) return false;
-	Color color = (Color)object;
+	if (!(object instanceof Color color)) return false;
 	if (isDisposed() || color.isDisposed()) return false;
 	double [] rgbColor = color.handle;
 	if (handle == rgbColor) return true;

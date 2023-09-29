@@ -79,8 +79,7 @@ public Point (int x, int y) {
 @Override
 public boolean equals (Object object) {
 	if (object == this) return true;
-	if (!(object instanceof Point)) return false;
-	Point p = (Point)object;
+	if (!(object instanceof Point p)) return false;
 	return (p.x == this.x) && (p.y == this.y);
 }
 

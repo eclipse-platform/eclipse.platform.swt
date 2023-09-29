@@ -201,11 +201,10 @@ static boolean isLoadable () {
 	Attributes attributes = null;
 	try {
 		URLConnection connection = url.openConnection();
-		if (!(connection instanceof JarURLConnection)) {
+		if (!(connection instanceof JarURLConnection jc)) {
 			/* should never happen for a "jar:" url */
 			return false;
 		}
-		JarURLConnection jc = (JarURLConnection) connection;
 		attributes = jc.getMainAttributes();
 	} catch (IOException e) {
 		/* should never happen for a valid SWT jar with the expected manifest values */

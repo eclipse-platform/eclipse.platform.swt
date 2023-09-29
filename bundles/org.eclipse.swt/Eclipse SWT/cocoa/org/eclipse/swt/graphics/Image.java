@@ -1115,8 +1115,7 @@ void destroy() {
 @Override
 public boolean equals (Object object) {
 	if (object == this) return true;
-	if (!(object instanceof Image)) return false;
-	Image image = (Image)object;
+	if (!(object instanceof Image image)) return false;
 	if (device != image.device || alphaInfo_100.transparentPixel != image.alphaInfo_100.transparentPixel) return false;
 	if (imageDataProvider != null && image.imageDataProvider != null) {
 		return styleFlag == image.styleFlag && imageDataProvider.equals (image.imageDataProvider);

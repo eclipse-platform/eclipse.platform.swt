@@ -170,8 +170,7 @@ public ScrolledComposite(Composite parent, int style) {
 		if (event.type == SWT.FocusIn) {
 			if (!showNextFocusedControl) {
 				showNextFocusedControl = true;
-			} else if (event.widget instanceof Control) {
-				Control control = (Control) event.widget;
+			} else if (event.widget instanceof Control control) {
 				if (contains(control)) showControl(control);
 			}
 		} else {

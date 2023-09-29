@@ -1749,8 +1749,7 @@ NSObject convertToJS (Object value) {
 	if (value instanceof Number) {
 		return NSNumber.numberWithDouble (((Number)value).doubleValue ());
 	}
-	if (value instanceof Object[]) {
-		Object[] arrayValue = (Object[]) value;
+	if (value instanceof Object[] arrayValue) {
 		int length = arrayValue.length;
 		NSMutableArray array = NSMutableArray.arrayWithCapacity (length);
 		for (int i = 0; i < length; i++) {
@@ -1778,8 +1777,7 @@ NSObject callJava (long index, long token, long args, long arg1) {
 			if (function != null && tokenString.getString ().equals (function.token)) {
 				try {
 					Object temp = convertToJava (args);
-					if (temp instanceof Object[]) {
-						Object[] arguments = (Object[])temp;
+					if (temp instanceof Object[] arguments) {
 						try {
 							returnValue = function.function (arguments);
 						} catch (Exception e) {

@@ -116,8 +116,7 @@ void addRelation (Control control) {
 	if (textView != null) {
 		NSObject accessibleElement = control.focusView();
 
-		if (accessibleElement instanceof NSControl) {
-			NSControl viewAsControl = (NSControl)accessibleElement;
+		if (accessibleElement instanceof NSControl viewAsControl) {
 			if (viewAsControl.cell() != null) accessibleElement = viewAsControl.cell();
 		}
 

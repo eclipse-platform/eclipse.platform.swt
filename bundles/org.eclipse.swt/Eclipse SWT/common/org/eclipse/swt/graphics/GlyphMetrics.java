@@ -99,8 +99,7 @@ int getWidthInPixels() {
 @Override
 public boolean equals (Object object) {
 	if (object == this) return true;
-	if (!(object instanceof GlyphMetrics)) return false;
-	GlyphMetrics metrics = (GlyphMetrics)object;
+	if (!(object instanceof GlyphMetrics metrics)) return false;
 	return metrics.ascent == ascent && metrics.descent == descent && metrics.width == width;
 }
 

@@ -3340,8 +3340,7 @@ void removeRelation () {
 	if (!isDescribedByLabel()) return;
 	NSObject accessibleElement = focusView();
 
-	if (accessibleElement instanceof NSControl) {
-		NSControl viewAsControl = (NSControl) accessibleElement;
+	if (accessibleElement instanceof NSControl viewAsControl) {
 		if (viewAsControl.cell() != null) accessibleElement = viewAsControl.cell();
 	}
 

@@ -136,8 +136,7 @@ public LineAttributes(float width, int cap, int join, int style, float[] dash, f
 @Override
 public boolean equals (Object object) {
 	if (object == this) return true;
-	if (!(object instanceof LineAttributes)) return false;
-	LineAttributes p = (LineAttributes)object;
+	if (!(object instanceof LineAttributes p)) return false;
 	if (p.width != width) return false;
 	if (p.cap != cap) return false;
 	if (p.join != join) return false;

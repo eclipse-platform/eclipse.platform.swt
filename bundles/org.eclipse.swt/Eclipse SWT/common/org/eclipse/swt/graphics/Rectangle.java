@@ -157,8 +157,7 @@ public boolean contains (Point pt) {
 @Override
 public boolean equals (Object object) {
 	if (object == this) return true;
-	if (!(object instanceof Rectangle)) return false;
-	Rectangle r = (Rectangle)object;
+	if (!(object instanceof Rectangle r)) return false;
 	return (r.x == this.x) && (r.y == this.y) && (r.width == this.width) && (r.height == this.height);
 }
 

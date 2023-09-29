@@ -225,8 +225,7 @@ public FontData(String name, int height, int style) {
 @Override
 public boolean equals (Object object) {
 	if (object == this) return true;
-	if (!(object instanceof FontData)) return false;
-	FontData data = (FontData)object;
+	if (!(object instanceof FontData data)) return false;
 	return name.equals(data.name) && height == data.height && style == data.style;
 }
 

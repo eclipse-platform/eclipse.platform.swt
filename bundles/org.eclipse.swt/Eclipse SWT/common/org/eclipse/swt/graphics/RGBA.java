@@ -126,8 +126,7 @@ public float[] getHSBA() {
 @Override
 public boolean equals(Object object) {
 	if (object == this) return true;
-	if (!(object instanceof RGBA)) return false;
-	RGBA rgba = (RGBA)object;
+	if (!(object instanceof RGBA rgba)) return false;
 	return (rgba.rgb.red == this.rgb.red) && (rgba.rgb.green == this.rgb.green) && (rgba.rgb.blue == this.rgb.blue)
 			&& (rgba.alpha == this.alpha);
 }

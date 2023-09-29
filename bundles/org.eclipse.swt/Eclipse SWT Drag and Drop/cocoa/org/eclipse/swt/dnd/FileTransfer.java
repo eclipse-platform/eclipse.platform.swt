@@ -118,8 +118,7 @@ protected String[] getTypeNames(){
 }
 
 boolean checkFile(Object object) {
-	if (object == null || !(object instanceof String[]) || ((String[])object).length == 0) return false;
-	String[] strings = (String[])object;
+	if (object == null || !(object instanceof String[] strings) || ((String[])object).length == 0) return false;
 	for (int i = 0; i < strings.length; i++) {
 		if (strings[i] == null || strings[i].length() == 0) return false;
 	}

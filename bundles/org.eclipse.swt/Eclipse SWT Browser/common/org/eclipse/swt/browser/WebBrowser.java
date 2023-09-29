@@ -187,8 +187,7 @@ public class EvaluateFunction extends BrowserFunction {
 	}
 	@Override
 	public Object function (Object[] arguments) {
-		if (arguments[0] instanceof String) {
-			String string = (String)arguments[0];
+		if (arguments[0] instanceof String string) {
 			if (string.startsWith (ERROR_ID)) {
 				String errorString = ExtractError (string);
 				if (errorString.length () > 0) {

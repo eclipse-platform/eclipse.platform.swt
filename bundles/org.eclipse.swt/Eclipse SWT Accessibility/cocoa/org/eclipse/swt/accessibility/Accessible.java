@@ -1702,8 +1702,7 @@ public class Accessible {
 				}
 
 				if (ts.data != null) {
-					if (ts.data instanceof URL) {
-						URL dataAsURL = (URL)ts.data;
+					if (ts.data instanceof URL dataAsURL) {
 						NSURL linkURL = NSURL.URLWithString(NSString.stringWith(dataAsURL.toExternalForm()));
 						attribString.addAttribute(OS.NSAccessibilityLinkTextAttribute, linkURL, attributeRange);
 					}
@@ -2121,8 +2120,7 @@ public class Accessible {
 				NSMutableArray childArray = NSMutableArray.arrayWithCapacity(childCount);
 				for (int i = 0; i < childCount; i++) {
 					Object child = children[i];
-					if (child instanceof Accessible) {
-						Accessible accessible = (Accessible)child;
+					if (child instanceof Accessible accessible) {
 						if (accessible.delegate != null) {
 							childArray.addObject(accessible.delegate);
 						} else {
