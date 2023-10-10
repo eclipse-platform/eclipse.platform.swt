@@ -23,6 +23,7 @@ import static org.junit.Assert.fail;
 import java.util.Arrays;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
@@ -1180,4 +1181,66 @@ public void test_bug23406_longLines() {
 	check(bestProgramInThai, 1000);
 }
 
+@Test
+public void test_Bug579335_win32_StyledText_LongLine() {
+	if (!SwtTestUtil.isWindows) {
+		// TODO This test was written for the platform specific parts of TextLayout and
+		// on Linux (and possibly mac)
+		// the size of images needed to run the tests causes failures.
+		if (SwtTestUtil.verbose) {
+			System.out.println(
+					"Excluded test_Bug579335_win32_StyledText_LongLine(org.eclipse.swt.tests.junit.Test_org_eclipse_swt_graphics_TextLayout).");
+		}
+		return;
+	}
+
+	Font font = null;
+	Image image = null;
+	TextLayout layout = null;
+
+	try {
+		font = new Font(display, SwtTestUtil.testFontName, 16, SWT.NORMAL);
+
+		layout = new TextLayout(display);
+		layout.setFont(font);
+		layout.setText("a".repeat(33000));
+		Color red = display.getSystemColor(SWT.COLOR_RED);
+		Color white = display.getSystemColor(SWT.COLOR_WHITE);
+		Color green = display.getSystemColor(SWT.COLOR_GREEN);
+		TextStyle redStyle = new TextStyle(font, red, white);
+		TextStyle greenStyle = new TextStyle(font, green, white);
+
+		image = draw(layout, SWT.DEFAULT);
+
+		layout.setStyle(redStyle, 7, 7);
+		layout.setStyle(greenStyle, 8, 8 + 32909 - 1);
+
+		image = draw(layout, SWT.DEFAULT);
+
+		// reset for next test
+		image.dispose();
+		layout.setStyle(null, 0, 33000 - 1);
+
+		layout.setStyle(greenStyle, 2, 2 + 16000 - 1);
+		image = draw(layout, SWT.DEFAULT);
+
+		// reset for next test
+		image.dispose();
+		layout.setStyle(null, 0, 33000 - 1);
+
+		layout.setStyle(redStyle, 0, 0 + 1 - 1);
+		layout.setStyle(greenStyle, 1, 1 + 32916 - 1);
+		image = draw(layout, SWT.DEFAULT);
+
+//		 SwtTestUtil.debugDisplayImage(image);
+	} finally {
+
+		if (layout != null)
+			layout.dispose();
+		if (image != null)
+			image.dispose();
+		if (font != null)
+			font.dispose();
+	}
+}
 }
