@@ -35,12 +35,12 @@ jobs:
     name: Verify ${{ matrix.config.name }} with Java-${{ matrix.java }}
     steps:
     - name: checkout swt
-      uses: actions/checkout@8ade135a41bc03ea155e62e844d188df1ea18608 # v4.1.0
+      uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
       with:
        path: 'eclipse.platform.swt'
        fetch-depth: 0 # required for jgit timestamp provider to work
     - name: checkout swt.binaries
-      uses: actions/checkout@8ade135a41bc03ea155e62e844d188df1ea18608 # v4.1.0
+      uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
       with:
        path: eclipse.platform.swt.binaries
        repository: 'eclipse-platform/eclipse.platform.swt.binaries'
