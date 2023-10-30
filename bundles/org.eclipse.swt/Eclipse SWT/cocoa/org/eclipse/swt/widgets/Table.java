@@ -651,6 +651,9 @@ void createItem (TableColumn column, int index) {
 	display.addWidget (headerCell, column);
 	column.nsColumn = nsColumn;
 	nsColumn.setWidth(0);
+	nsColumn.setMinWidth(2);
+	/* Maintaining the minimum width at the lowest value of 2, which guarantees the visibility of the drag cursor
+	and the possibility of table columns re-collapsing */
 	System.arraycopy (columns, index, columns, index + 1, columnCount++ - index);
 	columns [index] = column;
 	for (int i = 0; i < itemCount; i++) {
