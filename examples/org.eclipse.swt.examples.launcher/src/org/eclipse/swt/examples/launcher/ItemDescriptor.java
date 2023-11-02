@@ -14,8 +14,9 @@
 package org.eclipse.swt.examples.launcher;
 
 
-import org.eclipse.core.runtime.*;
-import org.eclipse.swt.graphics.*;
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IConfigurationElement;
+import org.eclipse.swt.graphics.Image;
 
 /**
  * ItemDescriptor collects information about a launch item.
@@ -95,7 +96,7 @@ class ItemDescriptor {
 	/**
 	 * Returns an icon for this descriptor
 	 * 
-	 * @returns an icon, null if the item is a folder
+	 * @return an icon, null if the item is a folder
 	 */
 	public Image getIcon() {
 		return icon;

@@ -565,7 +565,7 @@ void presetChooserDialog () {
  *
  * @param extension file extension as a string
  *
- * @returns true if the extension contains any of the glob pattern wildcards
+ * @return true if the extension contains any of the glob pattern wildcards
  */
 private boolean isGlobPattern (String extension) {
 	if (extension.contains ("*") ||
