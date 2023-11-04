@@ -14,11 +14,11 @@
  *******************************************************************************/
 package org.eclipse.swt.tools.views;
 
-import javax.annotation.*;
-
 import org.eclipse.e4.ui.di.*;
 import org.eclipse.swt.tools.internal.*;
 import org.eclipse.swt.widgets.*;
+
+import jakarta.annotation.*;
 
 /**
  * Sleak view to trace native handler allocation
