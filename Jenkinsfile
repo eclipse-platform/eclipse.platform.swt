@@ -92,7 +92,7 @@ pipeline {
 						git config --global user.email 'eclipse-releng-bot@eclipse.org'
 						git config --global user.name 'Eclipse Releng Bot'
 						
-						ant -f eclipse.platform.swt/bundles/org.eclipse.swt/buildSWT.xml check_sources_and_update_sha1_file -DTAG=HEAD
+						ant -f eclipse.platform.swt/bundles/org.eclipse.swt/buildSWT.xml check_preprocessing
 						ant -f eclipse.platform.swt/bundles/org.eclipse.swt/buildSWT.xml new_build_with_create_file -DTAG=HEAD
 					'''
 				}
