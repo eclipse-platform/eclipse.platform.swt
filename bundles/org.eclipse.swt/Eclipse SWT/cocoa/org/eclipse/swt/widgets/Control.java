@@ -2199,10 +2199,10 @@ public long internal_new_GC (GCData data) {
 			graphicsContext = NSGraphicsContext.graphicsContextWithBitmapImageRep(rep);
 			rep.release();
 		}
-		NSGraphicsContext flippedContext = NSGraphicsContext.graphicsContextWithGraphicsPort(graphicsContext.graphicsPort(), true);
-		graphicsContext = flippedContext;
+		boolean flip = OS.VERSION < OS.VERSION(14, 0, 0); // https://github.com/eclipse-platform/eclipse.platform.swt/issues/772
+		graphicsContext = NSGraphicsContext.graphicsContextWithGraphicsPort(graphicsContext.graphicsPort(), flip);
 		if (data != null) {
-			data.flippedContext = flippedContext;
+			data.context = graphicsContext;
 			data.state &= ~VISIBLE_REGION;
 			data.visibleRgn = getVisibleRegion();
 			display.addContext (data);

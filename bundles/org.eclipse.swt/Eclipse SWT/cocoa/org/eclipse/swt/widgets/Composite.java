@@ -336,12 +336,12 @@ public void drawBackground(GC gc, int x, int y, int width, int height, int offse
 		GCData data = gc.getGCData();
 		if (data.image != null) imgHeight =  data.image.getBounds().height;
 		NSGraphicsContext context = gc.handle;
-		if (data.flippedContext != null) {
+		if (data.context != null) {
 			NSGraphicsContext.static_saveGraphicsState();
 			NSGraphicsContext.setCurrentContext(context);
 		}
 		control.fillBackground (view, context, rect, imgHeight, data.view, offsetX, offsetY);
-		if (data.flippedContext != null) {
+		if (data.context != null) {
 			NSGraphicsContext.static_restoreGraphicsState();
 		}
 	} else {
