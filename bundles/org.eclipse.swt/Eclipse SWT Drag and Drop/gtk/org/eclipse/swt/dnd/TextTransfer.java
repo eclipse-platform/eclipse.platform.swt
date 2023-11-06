@@ -35,6 +35,7 @@ import org.eclipse.swt.internal.gtk.*;
  * </p>
  *
  * @see Transfer
+ * @since 3.124
  */
 public class TextTransfer extends ByteArrayTransfer {
 
@@ -42,9 +43,11 @@ public class TextTransfer extends ByteArrayTransfer {
 	private static final String COMPOUND_TEXT = "COMPOUND_TEXT"; //$NON-NLS-1$
 	private static final String UTF8_STRING = "UTF8_STRING"; //$NON-NLS-1$
 	private static final String STRING = "STRING"; //$NON-NLS-1$
+	private static final String TEXT_PLAIN_UTF8 = "text/plain;charset=utf-8";
 	private static final int COMPOUND_TEXT_ID = GTK.GTK4 ? 0 : registerType(COMPOUND_TEXT);
 	private static final int UTF8_STRING_ID = GTK.GTK4 ? 0 : registerType(UTF8_STRING);
 	private static final int STRING_ID = GTK.GTK4 ? 0 : registerType(STRING);
+	private static final int TEXT_PLAIN_UTF8_ID = GTK.GTK4 ? 0 : registerType(TEXT_PLAIN_UTF8);
 
 private TextTransfer() {}
 
@@ -145,7 +148,7 @@ protected int[] getTypeIds() {
 	if(GTK.GTK4) {
 		return new int[] {(int) OS.G_TYPE_STRING()};
 	}
-	return new int[] {UTF8_STRING_ID, STRING_ID};
+	return new int[] {UTF8_STRING_ID, STRING_ID, TEXT_PLAIN_UTF8_ID};
 }
 
 @Override
@@ -157,7 +160,7 @@ protected String[] getTypeNames() {
 		return new String[] {"text/plain", STRING};
 	}
 
-	return new String[] {UTF8_STRING, STRING};
+	return new String[] {UTF8_STRING, STRING, TEXT_PLAIN_UTF8};
 }
 
 boolean checkText(Object object) {
