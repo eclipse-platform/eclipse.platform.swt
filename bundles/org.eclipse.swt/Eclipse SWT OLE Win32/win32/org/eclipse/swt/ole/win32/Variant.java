@@ -23,7 +23,6 @@ import org.eclipse.swt.internal.win32.*;
  *
  * <p>It is used within the OleAutomation object for getting a property, setting a property or invoking
  * a method on an OLE Control or OLE Document.
- *
  */
 public final class Variant {
 	/**
@@ -115,7 +114,6 @@ public Variant() {
  * Create a Variant object which represents a Java float as a VT_R4.
  *
  * @param val the Java float value that this Variant represents
- *
  */
 public Variant(float val) {
 	type = COM.VT_R4;
@@ -136,7 +134,6 @@ public Variant(double val) {
  * Create a Variant object which represents a Java int as a VT_I4.
  *
  * @param val the Java int value that this Variant represents
- *
  */
  public Variant(int val) {
 	type = COM.VT_I4;
@@ -152,7 +149,6 @@ public Variant(double val) {
  *
  * @param ptr a pointer to the data being transferred.
  * @param byRefType the type of the data being transferred such as OLE.VT_BSTR | OLE.VT_BYREF
- *
  */
 public Variant(long ptr, short byRefType) {
 	type = byRefType;
@@ -162,7 +158,6 @@ public Variant(long ptr, short byRefType) {
  * Create a Variant object which represents an IDispatch interface as a VT_Dispatch.
  *
  * @param automation the OleAutomation object that this Variant represents
- *
  */
 public Variant(OleAutomation automation) {
 	type = COM.VT_DISPATCH;
@@ -176,7 +171,6 @@ public Variant(OleAutomation automation) {
  * @since 2.0
  *
  * @param idispatch the IDispatch object that this Variant represents
- *
  */
 public Variant(IDispatch idispatch) {
 	type = COM.VT_DISPATCH;
@@ -189,7 +183,6 @@ public Variant(IDispatch idispatch) {
  * this Variant.
  *
  * @param unknown the IUnknown object that this Variant represents
- *
  */
 public Variant(IUnknown unknown) {
 	type = COM.VT_UNKNOWN;
@@ -210,7 +203,6 @@ public Variant(IUnknown unknown) {
  * Create a Variant object which represents a Java String as a VT_BSTR.
  *
  * @param string the Java String value that this Variant represents
- *
  */
 public Variant(String string) {
 	type = COM.VT_BSTR;
@@ -220,7 +212,6 @@ public Variant(String string) {
  * Create a Variant object which represents a Java short as a VT_I2.
  *
  * @param val the Java short value that this Variant represents
- *
  */
 public Variant(short val) {
 	type = COM.VT_I2;
@@ -230,7 +221,6 @@ public Variant(short val) {
  * Create a Variant object which represents a Java boolean as a VT_BOOL.
  *
  * @param val the Java boolean value that this Variant represents
- *
  */
 public Variant(boolean val) {
 	type = COM.VT_BOOL;
@@ -355,7 +345,6 @@ public IDispatch getDispatch() {
  * @exception SWTException <ul>
  *     <li>ERROR_CANNOT_CHANGE_VARIANT_TYPE when type of Variant can not be coerced into a boolean</li>
  * </ul>
- *
  */
 public boolean getBoolean() {
 	if (type == COM.VT_EMPTY) {
@@ -389,7 +378,6 @@ public boolean getBoolean() {
  * <p>If this Variant does not contain a reference to data, zero is returned.
  *
  * @return a pointer to the referenced data represented by this Variant or 0
- *
  */
 public long getByRef() {
 	if (type == COM.VT_EMPTY) {

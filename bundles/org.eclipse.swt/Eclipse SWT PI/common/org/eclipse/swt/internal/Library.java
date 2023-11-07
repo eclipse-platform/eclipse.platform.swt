@@ -116,9 +116,6 @@ static int parseVersion(String version) {
 /**
  * Returns the Java version number as an integer.
  *
- * @param major
- * @param minor
- * @param micro
  * @return the version
  */
 public static int JAVA_VERSION (int major, int minor, int micro) {
@@ -128,8 +125,6 @@ public static int JAVA_VERSION (int major, int minor, int micro) {
 /**
  * Returns the SWT version number as an integer.
  *
- * @param major
- * @param minor
  * @return the version
  */
 public static int SWT_VERSION (int major, int minor) {

@@ -17,7 +17,6 @@ package org.eclipse.swt;
  * A method that returns no result and may throw a checked exception of the given
  * type.
  * @since 3.123
- *
  */
 @FunctionalInterface
 public interface SwtRunnable<E extends Exception> {

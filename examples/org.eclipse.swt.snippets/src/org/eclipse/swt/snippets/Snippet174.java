@@ -39,7 +39,6 @@ import org.eclipse.swt.widgets.*;
  * @deprecated 
  * This snippet is being deprecated as the org.eclipse.swt.opengl plugin it needs
  * is not available anymore.
- *
  */
 @Deprecated
 public class Snippet174 {

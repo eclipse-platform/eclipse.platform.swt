@@ -152,7 +152,6 @@ static void cairo_region_get_rectangles(long region, long [] rectangles, int[] n
  * </ul>
  *
  * @since 3.0
- *
  */
 public void add (int[] pointArray) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);

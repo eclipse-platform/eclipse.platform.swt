@@ -2059,7 +2059,6 @@ public void insert (String string) {
  * @param iter the GtkTextIter representing the insertion/selection point
  * @param scrollTo the GtkTextIter representing the point to be scrolled to (can be null)
  * @param insert true if insertion is being performed, false if selection
- *
  */
 private void scrollIfNotVisible(byte [] iter, byte [] scrollTo, boolean insert) {
 	GdkRectangle rect = new GdkRectangle ();

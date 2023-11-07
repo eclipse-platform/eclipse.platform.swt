@@ -99,7 +99,6 @@ public class GDBus {
 		 *		(args) -> {
 		 *			return new Object[] {true}; // You should 'g_variant_unref(result)' on client side.
 		 *		})
-		 *
 		 */
 		public GDBusMethod(String name, String [][] inputArgs, String [][] outputArgs, Function<Object[], Object[]> userFunction) {
 			this.name = name;
@@ -292,7 +291,6 @@ public class GDBus {
 	 * @param gvar_parameters	 GVariant
 	 * @param invocation     GDBusMethodInvocation
 	 * @param user_data      gpointer
-	 * @return
 	 */
 	@SuppressWarnings("unused") // Callback only called directly by JNI.
 	private static long handleMethod (

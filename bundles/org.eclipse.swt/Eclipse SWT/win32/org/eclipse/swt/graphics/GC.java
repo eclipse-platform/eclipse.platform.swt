@@ -604,7 +604,6 @@ static long createGdipFont(long hDC, long hFont, long graphics, long fontCollect
  * The returned brush has to be disposed by the caller.
  *
  * @param brush Brush with pattern
- * @param alpha
  * @return new brush with transparency
  * @exception SWTError <ul>
  *    <li>ERROR_CANNOT_BE_ZERO - if the image in the brush is null</li>

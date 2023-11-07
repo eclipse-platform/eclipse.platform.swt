@@ -10235,10 +10235,7 @@ void setStyleRanges(int start, int length, int[] ranges, StyleRange[] styles, bo
 /**
  *
  * @param referenceRanges former ranges, sorted by order and without overlapping, typically returned {@link #getRanges(int, int)}
- * @param referenceStyles
  * @param newRanges former ranges, sorted by order and without overlapping
- * @param newStyles
- * @return
  */
 private SortedSet<Integer> computeModifiedLines(int[] referenceRanges, StyleRange[] referenceStyles, int[] newRanges, StyleRange[] newStyles) {
 	if (referenceStyles == null) {
@@ -10329,9 +10326,6 @@ private boolean isInRange(int[] ranges, int styleIndex, int offset) {
 
 /**
  * The offset on which the range ends (excluded)
- * @param ranges
- * @param styleIndex
- * @return
  */
 private int endRangeOffset(int[] ranges, int styleIndex) {
 	if (styleIndex < 0 || 2 * styleIndex > ranges.length) {

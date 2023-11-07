@@ -25,7 +25,6 @@ import org.eclipse.swt.internal.*;
  * <p>After the drop has completed successfully or has been aborted, the application which defines the
  * <code>DragSource</code> is required to take the appropriate cleanup action.  In the case of a successful
  * <b>move</b> operation, the application must remove the data that was transferred.</p>
- *
  */
 public interface DragSourceListener extends SWTEventListener {
 

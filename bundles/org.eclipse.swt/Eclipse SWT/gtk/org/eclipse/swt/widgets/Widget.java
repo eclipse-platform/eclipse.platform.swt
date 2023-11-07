@@ -2570,7 +2570,6 @@ void gtk_widget_get_preferred_size (long widget, GtkRequisition requisition){
  * Retrieves the amount of space around the outside of the container.
  * On GTK3: this is done using gtk_container_get_border_width.
  * On GTK4: this is done by returning the max margin on any side.
- * @param handle
  * @return amount of space around the outside of the container.
  */
 int gtk_container_get_border_width_or_margin (long handle) {
@@ -2586,8 +2585,6 @@ int gtk_container_get_border_width_or_margin (long handle) {
 }
 /**
  * Sets the border width of the container to all sides of the container.
- * @param handle
- * @param border_width
  */
 void gtk_container_set_border_width (long handle, int border_width) {
 	if (GTK.GTK4) {

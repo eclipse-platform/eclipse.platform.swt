@@ -241,7 +241,6 @@ void recreateCanvas() {
 
 /**
  * Creates the control panel
- * @param parent
  */
 void createControlPanel(Composite parent) {
 	Group group;

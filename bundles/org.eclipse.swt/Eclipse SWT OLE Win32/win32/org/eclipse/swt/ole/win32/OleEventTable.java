@@ -19,7 +19,6 @@ package org.eclipse.swt.ole.win32;
 * look up mechanism that maps an event type
 * to a listener.  Multiple listeners for the
 * same event type are supported.
-*
 */
 
 class OleEventTable {

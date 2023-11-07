@@ -87,7 +87,6 @@ public class TableEditor extends ControlEditor {
 * Creates a TableEditor for the specified Table.
 *
 * @param table the Table Control above which this editor will be displayed
-*
 */
 public TableEditor (Table table) {
 	super(table);

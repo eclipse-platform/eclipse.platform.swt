@@ -240,7 +240,6 @@ protected String getClassName() {
  * called for headless tests!
  * @param shell The shell to render.
  * @param durationMs duration in milliseconds. Method exits after duration.
- * @throws InterruptedException
  */
 protected void render(Shell shell, int durationMs) throws InterruptedException {
 	long timestamp = System.currentTimeMillis();

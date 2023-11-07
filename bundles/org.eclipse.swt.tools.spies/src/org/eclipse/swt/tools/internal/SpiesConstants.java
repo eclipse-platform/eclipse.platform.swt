@@ -13,7 +13,6 @@ package org.eclipse.swt.tools.internal;
 
 /**
  * Interface containing constants for the Spies plug-in.
- * 
  */
 
 public interface SpiesConstants {
