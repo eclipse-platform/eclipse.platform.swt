@@ -169,6 +169,9 @@ boolean setData(Clipboard owner, Object[] data, Transfer[] dataTypes, int clipbo
 				System.arraycopy(entries, 0, tmp, 0, entries.length);
 				tmp[entries.length] = entry;
 				entries = tmp;
+				TransferData tdata = new TransferData();
+				tdata.type = typeIds[j];
+				transfer.javaToNative(data[i], tdata);
 			}
 		}
 
