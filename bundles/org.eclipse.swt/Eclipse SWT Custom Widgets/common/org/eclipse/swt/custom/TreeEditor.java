@@ -87,7 +87,6 @@ public class TreeEditor extends ControlEditor {
 * Creates a TreeEditor for the specified Tree.
 *
 * @param tree the Tree Control above which this editor will be displayed
-*
 */
 public TreeEditor (Tree tree) {
 	super(tree);

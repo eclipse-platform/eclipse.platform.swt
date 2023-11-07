@@ -30,7 +30,6 @@ import org.junit.Test;
 
 /**
  * Automated Test Suite for class {@link BorderLayout}
- *
  */
 public class Test_org_eclipse_swt_layout_BorderLayout {
 

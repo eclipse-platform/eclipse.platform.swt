@@ -108,7 +108,6 @@ void setClientArea (Rectangle rect) {
  * @return the receiver's hash
  *
  * @see #equals(Object)
- *
  */
 @Override
 public int hashCode () {

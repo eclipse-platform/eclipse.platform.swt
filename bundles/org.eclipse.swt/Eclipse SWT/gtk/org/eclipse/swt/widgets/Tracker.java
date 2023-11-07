@@ -337,8 +337,6 @@ Rectangle [] computeProportions (Rectangle [] rects) {
  * - Rectangles can have absolute coords [Tracker(Display)] or relative to parent [Tracker(Composite)]
  * - This method is called a lot, optimize your code.
  * - Note, region != rectangle. A region can have a non-squared form, e.g an 'L' shape.
- *
- * @param rects
  */
 void drawRectangles (Rectangle [] rects) {
 	long gdkResource = 0;

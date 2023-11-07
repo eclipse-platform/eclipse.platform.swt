@@ -83,7 +83,6 @@ public class ImageLoader {
 	 * the background pixel for the logical screen (this
 	 * corresponds to the GIF89a Background Color Index value).
 	 * The default is -1 which means 'unspecified background'
-	 *
 	 */
 	public int backgroundPixel;
 
@@ -170,7 +169,6 @@ public ImageData[] load(InputStream stream) {
 /**
  * Return true if the image is an interlaced PNG file.
  * This is used to check whether ImageLoaderEvent should be fired when loading images.
- * @param imageAsByteArray
  * @return true iff 29th byte of PNG files is not zero
  */
 boolean isInterlacedPNG(byte [] imageAsByteArray) {
@@ -315,8 +313,6 @@ public ImageData[] load(String filename) {
 /**
  * Load GdkPixbuf directly using gdk_pixbuf_new_from_file,
  * without FileInputStream.
- * @param filename
- * @return
  */
 ImageData[] loadFromFile(String filename) {
 	long pixbuf = gdk_pixbuf_new_from_file(filename);
@@ -363,7 +359,6 @@ int getImageFormat(long loader) {
 
 /**
  * Convert GdkPixbuf pointer to Java object ImageData
- * @param pixbuf
  * @return ImageData with pixbuf data
  */
 static ImageData pixbufToImageData(long pixbuf) {
@@ -426,8 +421,6 @@ static ImageData pixbufToImageData(long pixbuf) {
 
 /**
  * Returns GdkPixbuf pointer by loading an image from filename (Java string)
- * @param filename
- * @return
  */
 static long gdk_pixbuf_new_from_file(String filename) {
 	int length = filename.length ();

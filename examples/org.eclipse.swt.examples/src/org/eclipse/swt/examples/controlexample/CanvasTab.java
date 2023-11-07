@@ -251,8 +251,6 @@ class CanvasTab extends Tab {
 
 	/**
 	 * Scrolls the canvas horizontally.
-	 *
-	 * @param scrollBar
 	 */
 	void scrollHorizontal (ScrollBar scrollBar) {
 		Rectangle bounds = canvas.getClientArea();
@@ -266,8 +264,6 @@ class CanvasTab extends Tab {
 
 	/**
 	 * Scrolls the canvas vertically.
-	 *
-	 * @param scrollBar
 	 */
 	void scrollVertical (ScrollBar scrollBar) {
 		Rectangle bounds = canvas.getClientArea();

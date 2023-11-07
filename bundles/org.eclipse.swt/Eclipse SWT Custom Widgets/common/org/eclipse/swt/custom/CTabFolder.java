@@ -872,7 +872,6 @@ ToolBar getChevron() {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- *
  */
 /*public*/ boolean getChevronVisible() {
 	checkWidget();
@@ -4176,7 +4175,6 @@ int getWrappedHeight (Point size) {
  *    <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
  *    <li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
  * </ul>
- *
  */
 /*public*/ void setChevronVisible(boolean visible) {
 	checkWidget();

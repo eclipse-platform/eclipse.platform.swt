@@ -22,7 +22,6 @@ import org.eclipse.swt.graphics.*;
 /**
  * Abstract factory class for loading/unloading images from files or streams
  * in various image file formats.
- *
  */
 public abstract class FileFormat {
 	static final String FORMAT_PACKAGE = "org.eclipse.swt.internal.image"; //$NON-NLS-1$

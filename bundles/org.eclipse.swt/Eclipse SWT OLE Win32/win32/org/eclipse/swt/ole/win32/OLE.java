@@ -25,7 +25,6 @@ import org.eclipse.swt.internal.win32.*;
  * OLE contains all the constants used to create an ActiveX Control or an OLE Document.
  *
  * <p>Definitions for these constants can be found in MSDN.
- *
  */
 public class OLE extends SWT {
 

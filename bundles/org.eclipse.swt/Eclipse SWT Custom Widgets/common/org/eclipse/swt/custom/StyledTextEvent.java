@@ -16,9 +16,6 @@ package org.eclipse.swt.custom;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
 
-/**
- *
- */
 class StyledTextEvent extends Event {
 	// used by LineStyleEvent
 	int[] ranges;
