@@ -38,6 +38,12 @@
         <value>remoteURI</value>
       </detail>
     </annotation>
+    <configSections
+        name="branch">
+      <properties
+          key="autoSetupRebase"
+          value="always"/>
+    </configSections>
     <description>Platform SWT</description>
   </setupTask>
   <setupTask
@@ -75,6 +81,12 @@
         <value>remoteURI</value>
       </detail>
     </annotation>
+    <configSections
+        name="branch">
+      <properties
+          key="autoSetupRebase"
+          value="always"/>
+    </configSections>
     <description>Platform SWT</description>
   </setupTask>
   <setupTask
@@ -252,6 +264,12 @@
           <value>remoteURI</value>
         </detail>
       </annotation>
+      <configSections
+          name="branch">
+        <properties
+            key="autoSetupRebase"
+            value="always"/>
+      </configSections>
       <description>SWT Website</description>
     </setupTask>
     <setupTask
