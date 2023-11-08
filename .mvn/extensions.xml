@@ -4,6 +4,6 @@
 	<extension>
 		<groupId>org.eclipse.tycho</groupId>
 		<artifactId>tycho-build</artifactId>
-		<version>4.0.3</version>
+		<version>4.0.4</version>
 	</extension>
 </extensions>
