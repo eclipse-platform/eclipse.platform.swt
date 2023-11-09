@@ -133,7 +133,6 @@ private byte[] encodeTextAsRFC1341(String text) {
     return rfc1341Text.getBytes(StandardCharsets.UTF_8);
 }
 
-
 /**
  * This implementation of <code>nativeToJava</code> converts a platform specific
  * representation of plain text to a java <code>String</code>.
