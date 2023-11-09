@@ -13,10 +13,15 @@
  *******************************************************************************/
 package org.eclipse.swt.internal;
 
-import java.io.*;
-import java.net.*;
-import java.nio.file.*;
-import java.util.jar.*;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.JarURLConnection;
+import java.net.URL;
+import java.net.URLConnection;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
+import java.util.jar.Attributes;
 
 public class Library {
 
@@ -35,7 +40,7 @@ public class Library {
 	/**
 	 * SWT revision number (must be >= 0)
 	 */
-	static int REVISION = 3;
+	static int REVISION = 4;
 
 	/**
 	 * The JAVA and SWT versions
