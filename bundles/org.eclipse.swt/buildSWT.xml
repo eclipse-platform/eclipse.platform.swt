@@ -291,19 +291,39 @@
 		</exec>
 		<script language="javascript">
 			<![CDATA[
-				tags = project.getProperty("tags");
-				swt_version = project.getProperty("swt_version");
-				if (!tags.match(swt_version)) {
-					project.setProperty("swt_new_tag", swt_version);
-				} else {
-					for (i=97; i<123; i++) {
-						t = swt_version + String.fromCharCode(i);
-						if (!tags.match(t)) {
-							project.setProperty("swt_new_tag", t);
-							break;
-						}
-					}
-				}
+		    tags = project.getProperty("tags");
+		    swt_version = project.getProperty("swt_version");
+		    if (!tags.match(swt_version)) {
+		        project.setProperty("swt_new_tag", swt_version);
+		    } else {
+		        var suffix = 'a';
+		        while (true) {
+		            var t = swt_version + suffix;
+		            if (!tags.match(t)) {
+		                project.setProperty("swt_new_tag", t);
+		                break;
+		            }
+		            // Increment the suffix alphabetically, e.g., 'a' to 'b', ..., 'z' to 'aa', 'ab', etc.
+		            var i = suffix.length - 1;
+		            while (i >= 0) {
+		                if (suffix[i] === 'z') {
+		                    suffix = suffix.substring(0, i) + 'a' + (suffix.length > i + 1 ? suffix.substring(i + 1) : '');
+		                    if (i === 0) {
+		                        suffix = 'a' + suffix;
+		                    }
+		                    i--;
+		                } else {
+		                    suffix = suffix.substring(0, i) + String.fromCharCode(suffix.charCodeAt(i) + 1) + (suffix.length > i + 1 ? suffix.substring(i + 1) : '');
+		                    break;
+		                }
+		            }
+		            // Break out of the loop if the suffix has reached a predefined limit to prevent an infinite loop.
+					// 10 should be equal to 26 bit
+		            if (suffix.length > 10) {
+		                break;
+		            }
+		        }
+		    }
 	   	 	]]>
 		</script>
 		<fail message="Unable to determine new tag">
