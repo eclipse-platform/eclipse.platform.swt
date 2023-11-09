@@ -291,19 +291,27 @@
 		</exec>
 		<script language="javascript">
 			<![CDATA[
-				tags = project.getProperty("tags");
-				swt_version = project.getProperty("swt_version");
-				if (!tags.match(swt_version)) {
-					project.setProperty("swt_new_tag", swt_version);
-				} else {
-					for (i=97; i<123; i++) {
-						t = swt_version + String.fromCharCode(i);
-						if (!tags.match(t)) {
-							project.setProperty("swt_new_tag", t);
-							break;
-						}
-					}
-				}
+	        tags = project.getProperty("tags");
+	        swt_version = project.getProperty("swt_version");
+	        if (!tags.match(swt_version)) {
+	            project.setProperty("swt_new_tag", swt_version);
+	        } else {
+	            var found = false;
+	            var suffix = 'a';
+	            while (!found) {
+	                var t = swt_version + suffix;
+	                if (!tags.match(t)) {
+	                    project.setProperty("swt_new_tag", t);
+	                    found = true;
+	                } else {
+	                    if (suffix === 'z') {
+	                        suffix = 'a'; // Reset to 'a' after 'z'
+	                    } else {
+	                        suffix = String.fromCharCode(suffix.charCodeAt(0) + 1);
+	                    }
+	                }
+	            }
+	        }
 	   	 	]]>
 		</script>
 		<fail message="Unable to determine new tag">
