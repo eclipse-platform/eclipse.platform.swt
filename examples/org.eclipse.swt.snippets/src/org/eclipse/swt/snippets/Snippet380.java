@@ -23,6 +23,7 @@ import org.eclipse.swt.widgets.*;
 
 /**
  * This shows the usage of the display in the executor framework in conjunction with a CompletableFuture
+ *
  */
 public class Snippet380 {
 	public static void main(String[] args) {

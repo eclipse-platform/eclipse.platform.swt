@@ -60,6 +60,11 @@ public void setUp() {
 /**
  * Tests {@link ImageData#blit}:
  * creates a random image and tests over all combinations of depth,format,scale
+ * @throws InvocationTargetException
+ * @throws IllegalArgumentException
+ * @throws IllegalAccessException
+ * @throws SecurityException
+ * @throws NoSuchMethodException
  */
 @Test
 public void test_blit() throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
@@ -117,6 +122,11 @@ public void test_blit() throws NoSuchMethodException, SecurityException, Illegal
 /**
  * Tests {@link ImageData#blit}:
  * Ensures that (MSB_FIRST, LSB_FIRST) round trip produces original.
+ * @throws InvocationTargetException
+ * @throws IllegalArgumentException
+ * @throws IllegalAccessException
+ * @throws SecurityException
+ * @throws NoSuchMethodException
  */
 @Test
 public void test_blit_MsbLsb() throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {

@@ -118,6 +118,7 @@ public class ControlEditor {
 * Creates a ControlEditor for the specified Composite.
 *
 * @param parent the Composite above which this editor will be displayed
+*
 */
 public ControlEditor (Composite parent) {
 	this.parent = parent;

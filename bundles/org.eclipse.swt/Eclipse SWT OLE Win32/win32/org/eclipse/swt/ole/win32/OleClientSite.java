@@ -660,6 +660,7 @@ public int doVerb(int verb) {
  * @param out the return value of the command
  *
  * @return an HRESULT value; OLE.S_OK is returned if successful
+ *
  */
 public int exec(int cmdID, int options, Variant in, Variant out) {
 

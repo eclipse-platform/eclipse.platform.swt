@@ -195,6 +195,7 @@ public TableCursor(Table parent, int style) {
  * @see SelectionListener
  * @see SelectionEvent
  * @see #removeSelectionListener(SelectionListener)
+ *
  */
 public void addSelectionListener(SelectionListener listener) {
 	checkWidget();
@@ -625,6 +626,7 @@ public void setForeground (Color color) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
+ *
  */
 public void setSelection(int row, int column) {
 	checkWidget();
@@ -647,6 +649,7 @@ public void setSelection(int row, int column) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
+ *
  */
 public void setSelection(TableItem row, int column) {
 	checkWidget();

@@ -248,6 +248,7 @@ public class GradientDialog extends Dialog {
 
 	/**
 	 * Sets the first RGB.
+	 * @param rgb
 	 */
 	public void setFirstRGB(RGB rgb) {
 		this.rgb1 = rgb;
@@ -262,6 +263,7 @@ public class GradientDialog extends Dialog {
 
 	/**
 	 * Sets the second RGB.
+	 * @param rgb
 	 */
 	public void setSecondRGB(RGB rgb) {
 		this.rgb2 = rgb;

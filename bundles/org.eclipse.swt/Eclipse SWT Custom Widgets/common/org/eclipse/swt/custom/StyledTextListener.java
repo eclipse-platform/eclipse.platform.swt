@@ -18,6 +18,8 @@ import org.eclipse.swt.internal.*;
 import org.eclipse.swt.widgets.*;
 
 class StyledTextListener extends TypedListener {
+/**
+ */
 StyledTextListener(SWTEventListener listener) {
 	super(listener);
 }

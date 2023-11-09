@@ -52,11 +52,13 @@ public static void addLanguageListener (Control control, Runnable runnable) {
 }
 /*
  * Not implemented.
+ *
  */
 public static void drawGlyphs(GC gc, char[] renderBuffer, int[] renderDx, int x, int y) {
 }
 /*
  * Bidi not supported on emulated platforms.
+ *
  */
 public static boolean isBidiPlatform() {
 	return false;
@@ -75,11 +77,13 @@ public static int getFontBidiAttributes(GC gc) {
 }
 /*
  *  Not implemented.
+ *
  */
 public static void getOrderInfo(GC gc, String text, int[] order, byte[] classBuffer, int flags, int [] offsets) {
 }
 /*
  *  Not implemented. Returns null.
+ *
  */
 public static char[] getRenderInfo(GC gc, String text, int[] order, byte[] classBuffer, int[] dx, int flags, int[] offsets) {
 	return null;

@@ -22,6 +22,7 @@ import org.eclipse.swt.internal.cocoa.*;
  * Not used on other platforms
  *
  * @since 3.110
+ *
  */
 public class ImageUtil {
 	/**

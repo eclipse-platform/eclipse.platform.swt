@@ -84,6 +84,7 @@ public class BorderLayout extends Layout {
 	 * placed along the left and right edges of the layout.
 	 *
 	 * The default value is 0.
+	 *
 	 */
 	public int marginWidth = 0;
 	/**
@@ -91,6 +92,7 @@ public class BorderLayout extends Layout {
 	 * placed along the top and bottom edges of the layout.
 	 *
 	 * The default value is 0.
+	 *
 	 */
 	public int marginHeight = 0;
 	/**
@@ -98,6 +100,7 @@ public class BorderLayout extends Layout {
 	 * neighboring regions.
 	 *
 	 * The default value is 0.
+	 *
 	 */
 	public int spacing = 0;
 	/**
@@ -105,6 +108,7 @@ public class BorderLayout extends Layout {
 	 * and its neighboring control inside a region.
 	 *
 	 * The default value is 0.
+	 *
 	 */
 	public int controlSpacing = 0;
 	/**
@@ -121,6 +125,7 @@ public class BorderLayout extends Layout {
 	 * controls, valid values range between [0 ... 1]
 	 *
 	 * The default value is 0.5 (equal distribution of available space)
+	 *
 	 */
 	public double heightDistributionFactor = 0.5;
 

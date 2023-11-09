@@ -1393,6 +1393,7 @@ public boolean getVisible () {
  * </ul>
  *
  * @since 3.0
+ *
  */
 @Override
 public Region getRegion () {

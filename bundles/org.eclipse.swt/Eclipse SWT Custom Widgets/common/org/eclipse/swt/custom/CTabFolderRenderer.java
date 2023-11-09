@@ -755,6 +755,9 @@ public class CTabFolderRenderer {
 
 	/*
 	 * Draw the border of the tab
+	 *
+	 * @param gc
+	 * @param shape
 	 */
 	void drawBorder(GC gc, int[] shape) {
 
@@ -1042,6 +1045,8 @@ public class CTabFolderRenderer {
 
 	/*
 	 * Draw the unselected border for the receiver on the left.
+	 *
+	 * @param gc
 	 */
 	void drawLeftUnselectedBorder(GC gc, Rectangle bounds, int state) {
 		int x = bounds.x;
@@ -1179,6 +1184,8 @@ public class CTabFolderRenderer {
 
 	/*
 	 * Draw the unselected border for the receiver on the right.
+	 *
+	 * @param gc
 	 */
 	void drawRightUnselectedBorder(GC gc, Rectangle bounds, int state) {
 		int x = bounds.x;

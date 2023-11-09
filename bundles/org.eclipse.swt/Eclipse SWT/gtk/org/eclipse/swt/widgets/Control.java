@@ -293,6 +293,7 @@ long eventSurface () {
 /**
  * GdkEventType constants different on GTK4 and GTK3.
  * This checks for GTK versions and return the correct constants defined in GDK.java
+ * @param eventType
  * @return constant defined
  */
 static int fixGdkEventTypeValues(int eventType) {

@@ -35,6 +35,7 @@ import org.eclipse.swt.widgets.*;
  * @see DragSourceEffect
  * @see DragSourceEvent
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
+ *
  */
 public class ListDragSourceEffect extends DragSourceEffect {
 	Image dragSourceImage = null;
