@@ -13,8 +13,6 @@
  *******************************************************************************/
 package org.eclipse.swt.dnd;
 
-import java.nio.charset.*;
-
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.gtk.*;
 
@@ -111,28 +109,7 @@ public void javaToNative (Object object, TransferData transferData) {
 		transferData.pValue = string_target;
 		transferData.result = 1;
 	}
-    if (transferData.type == TEXT_PLAIN_UTF8_ID) {
-        // Convert the text into RFC-1341 format
-        byte[] rfc1341Data = encodeTextAsRFC1341(string);
-        transferData.format = 8; // Format for UTF-8
-        transferData.length = rfc1341Data.length;
-        transferData.pValue = OS.g_malloc(rfc1341Data.length);
-        if (transferData.pValue != 0) {
-            C.memmove(transferData.pValue, rfc1341Data, rfc1341Data.length);
-            transferData.result = 1;
-        }
-    }
 }
-
-// New method to encode text as RFC-1341
-private byte[] encodeTextAsRFC1341(String text) {
-    // Implement encoding logic here, e.g., adding MIME headers and encoding text
-    // This is a simplified example; actual encoding depends on RFC-1341 standards
-//    String rfc1341Text = "Content-Type: " + TEXTPLAINUTF8 + "\r\n\r\n" + text;
-    String rfc1341Text = text;
-    return rfc1341Text.getBytes(StandardCharsets.UTF_8);
-}
-
 
 /**
  * This implementation of <code>nativeToJava</code> converts a platform specific
