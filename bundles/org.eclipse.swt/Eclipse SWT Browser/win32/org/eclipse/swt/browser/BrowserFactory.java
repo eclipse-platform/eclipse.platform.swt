@@ -13,6 +13,8 @@
  *******************************************************************************/
 package org.eclipse.swt.browser;
 
+import java.lang.reflect.*;
+
 import org.eclipse.swt.*;
 
 class BrowserFactory {
@@ -40,12 +42,14 @@ private WebBrowser createChromium() {
 	if (chromiumClass == null) {
 		try {
 			chromiumClass = Class.forName ("org.eclipse.swt.browser.ChromiumImpl"); //$NON-NLS-1$
-			return (WebBrowser) chromiumClass.newInstance();
+			return (WebBrowser) chromiumClass.getConstructor().newInstance(chromiumClass);
 		} catch (ClassNotFoundException e) {
 			/* chromium fragments missing */
 			System.err.println ("SWT.CHROMIUM style was used but chromium.swt fragment/jar is missing from classpath."); //$NON-NLS-1$
 		} catch (NoClassDefFoundError | InstantiationException | IllegalAccessException  e) {
 			/* second attempt, do not print */
+		} catch (IllegalArgumentException | InvocationTargetException | NoSuchMethodException e) {
+			System.err.println ("SWT.CHROMIUM style was used but contructor not found:"+ e.getMessage()); //$NON-NLS-1$
 		} catch (UnsatisfiedLinkError e) {
 			System.err.println ("SWT.CHROMIUM style was used but chromium.swt " + SWT.getPlatform() +  " (or CEF binaries) fragment/jar is missing."); //$NON-NLS-1$
 		} catch (SWTError e) {
