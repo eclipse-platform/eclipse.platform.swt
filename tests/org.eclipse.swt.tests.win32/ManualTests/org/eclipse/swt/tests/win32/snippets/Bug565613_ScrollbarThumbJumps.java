@@ -13,11 +13,15 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.win32.snippets;
 
-import org.eclipse.swt.*;
-import org.eclipse.swt.custom.StyledText;
-import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.layout.*;
-import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.ScrollBar;
+import org.eclipse.swt.widgets.Shell;
 
 public class Bug565613_ScrollbarThumbJumps {
 	public static void main(String[] args) {

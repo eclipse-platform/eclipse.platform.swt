@@ -41,19 +41,16 @@ public class AdvancedGraphics {
 
 	private static final ResourceBundle RESOURCE_BUNDLE = ResourceBundle.getBundle("examples_graphics");
 
-	static Image loadImage (Device device, Class<AdvancedGraphics> clazz, String string) {
-		InputStream stream = clazz.getResourceAsStream (string);
-		if (stream == null) return null;
-		Image image = null;
-		try {
-			image = new Image (device, stream);
+	static Image loadImage(Device device, Class<AdvancedGraphics> clazz, String string) {
+		try (InputStream stream = clazz.getResourceAsStream(string)) {
+			if (stream == null)
+				return null;
+			Image image = new Image(device, stream);
+			return image;
 		} catch (SWTException ex) {
-		} finally {
-			try {
-				stream.close ();
-			} catch (IOException ex) {}
+		} catch (IOException ex) {
 		}
-		return image;
+		return null;
 	}
 
 	public Shell open(final Display display) {
