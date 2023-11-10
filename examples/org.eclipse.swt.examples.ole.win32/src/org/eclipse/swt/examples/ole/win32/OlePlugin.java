@@ -172,22 +172,14 @@ public class OlePlugin extends AbstractUIPlugin {
 	 * @return the image, or null if not found
 	 */
 	private static Image getImageFromPlugin(Bundle bundle, String iconPath) {
-		InputStream is = null;
-		try {
-			URL installUrl = bundle.getEntry("/");
-			URL url = new URL(installUrl, iconPath);
-			is = url.openConnection().getInputStream();
+		URL installUrl = bundle.getEntry("/");
+		try (InputStream is = new URL(installUrl, iconPath).openConnection().getInputStream()) {
 			ImageData source = new ImageData(is);
 			ImageData mask = source.getTransparencyMask();
 			Image image = new Image(null, source, mask);
 			return image;
 		} catch (Throwable ex) {
 			return null;
-		} finally {
-			try {
-				if (is != null) is.close();
-			} catch (IOException e) {
-			}
 		}
 	}
 }

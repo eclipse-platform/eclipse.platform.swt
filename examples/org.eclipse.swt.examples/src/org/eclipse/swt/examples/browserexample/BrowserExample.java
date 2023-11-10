@@ -339,18 +339,15 @@ public class BrowserExample {
 		throw new RuntimeException(error);
 	}
 
-	public static void main(String [] args) {
+	public static void main(String [] args) throws IOException {
 		Display display = new Display();
 		Shell shell = new Shell(display);
 		shell.setLayout(new FillLayout());
 		shell.setText(getResourceString("window.title"));
-		InputStream stream = BrowserExample.class.getResourceAsStream(iconLocation);
-		Image icon = new Image(display, stream);
-		shell.setImage(icon);
-		try {
-			stream.close();
-		} catch (IOException e) {
-			e.printStackTrace();
+		Image icon;
+		try (InputStream stream = BrowserExample.class.getResourceAsStream(iconLocation)) {
+			icon = new Image(display, stream);
+			shell.setImage(icon);
 		}
 		BrowserExample app = new BrowserExample(shell, true);
 		app.setShellDecoration(icon, true);
