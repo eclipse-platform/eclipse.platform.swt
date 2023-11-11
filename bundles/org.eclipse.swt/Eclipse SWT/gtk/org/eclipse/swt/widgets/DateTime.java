@@ -269,9 +269,6 @@ protected void checkSubclass () {
  * is at the longest length possible. i.e. Assume DATE/HOUR field to be double digit,
  * MONTH field for SWT.DATE | SWT.LONG is the longest text.
  *
- * @param wHint
- * @param hHint
- * @param changed
  * @return text entry size to hold the longest possible formatted text.
  */
 Point computeMaxTextSize (int wHint, int hHint, boolean changed) {
@@ -1322,8 +1319,6 @@ public void removeSelectionListener (SelectionListener listener) {
 
 /**
  * selects the first occurrence of the given field
- *
- * @param field
  */
 void selectField(Field field) {
 	AttributedCharacterIterator iterator = dateFormat.formatToCharacterIterator(calendar.getTime());
@@ -1340,10 +1335,6 @@ void selectField(Field field) {
 
 /**
  * Selects the given field at the given start/end coordinates
- *
- * @param field
- * @param start
- * @param end
  */
 void selectField(FieldPosition fieldPosition) {
 	boolean sameField = isSameField(fieldPosition, currentField);
@@ -2352,9 +2343,6 @@ void releaseWidget () {
 
 /**
  * Returns a field with updated positionla data
- *
- * @param field
- * @return
  */
 private FieldPosition updateField(FieldPosition field) {
 	AttributedCharacterIterator iterator = dateFormat.formatToCharacterIterator(calendar.getTime());
@@ -2400,7 +2388,6 @@ private FieldPosition getNextField(FieldPosition field) {
 
 /**
  *
- * @param field
  * @return the next field of the given one
  */
 private FieldPosition getPreviousField(FieldPosition field) {
@@ -2488,7 +2475,6 @@ private static boolean isSameField(FieldPosition p1, FieldPosition p2) {
 /**
  * Extracts the calendarfield for the given fieldposition
  *
- * @param fieldPosition
  * @return the {@link Calendar} field or -1 if this is not a valid Fieldposition
  */
 private static int getCalendarField(FieldPosition fieldPosition) {
@@ -2502,7 +2488,6 @@ private static int getCalendarField(FieldPosition fieldPosition) {
 /**
  * Extracts the calendarfield transforming HOUR1 types to HOUR0
  *
- * @param field
  * @return the calendarfield coresponding to the {@link Field}
  */
 private static int getCalendarField(Field field) {

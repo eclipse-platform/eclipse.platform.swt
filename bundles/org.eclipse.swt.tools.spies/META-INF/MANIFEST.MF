@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-Name: %pluginName
 Bundle-Vendor: %providerName
 Bundle-SymbolicName: org.eclipse.swt.tools.spies;singleton:=true
-Bundle-Version: 3.109.100.qualifier
+Bundle-Version: 3.109.200.qualifier
 Bundle-ManifestVersion: 2
 Export-Package: org.eclipse.swt.tools.internal,
  org.eclipse.swt.tools.views
@@ -16,4 +16,4 @@ Require-Bundle: org.eclipse.core.runtime;bundle-version="3.29.0",
  org.eclipse.ui;bundle-version="3.113.0",
  org.eclipse.e4.ui.di;bundle-version="1.2.600"
 Automatic-Module-Name: org.eclipse.swt.tools.spies
-Import-Package: javax.annotation;version="1.2.0"
+Import-Package: jakarta.annotation;version="[2.1.0,3.0.0)"

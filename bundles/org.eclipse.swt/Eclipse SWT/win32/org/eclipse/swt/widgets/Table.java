@@ -4604,7 +4604,6 @@ void setItemHeight (boolean fixScroll) {
 	* visible and are shown afterwards.  The fix is to
 	* save the top index, scroll to the top of the table
 	* and then restore the original top index.
-	*
 	*/
 	int topIndex = getTopIndex ();
 	if (fixScroll && topIndex != 0) {

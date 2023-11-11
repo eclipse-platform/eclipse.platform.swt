@@ -1,3 +1,5 @@
 bin/
 *.log
 target/
+.polyglot.*
+pom.tycho

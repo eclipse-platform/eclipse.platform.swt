@@ -3506,7 +3506,6 @@ static long getCurrentKeyLayout () {
  * </ul>
  *
  * @since 3.0
- *
  */
 public boolean post(Event event) {
 	synchronized (Device.class) {

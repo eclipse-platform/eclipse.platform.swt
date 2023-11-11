@@ -944,13 +944,11 @@ public class GTK extends OS {
 	/**
 	 * @param label cast=(GtkLabel *)
 	 * @param xalign cast=(gfloat)
-	 *
 	 */
 	public static final native void gtk_label_set_xalign(long label, float xalign);
 	/**
 	* @param label cast=(GtkLabel *)
 	* @param yalign cast=(gfloat)
-	*
 	*/
 	public static final native void gtk_label_set_yalign(long label, float yalign);
 

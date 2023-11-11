@@ -1163,7 +1163,6 @@ public Point getMinimumSize () {
  * </ul>
  *
  * @since 3.0
- *
  */
 @Override
 public Region getRegion () {

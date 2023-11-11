@@ -1141,7 +1141,6 @@ public boolean getModified () {
  * </ul>
  *
  * @since 3.0
- *
  */
 @Override
 public Region getRegion () {
@@ -2323,7 +2322,6 @@ int widgetStyle () {
 	*
 	* 	WS_OVERLAPPED = 0
 	* 	WS_CAPTION = WS_BORDER | WS_DLGFRAME
-	*
 	*/
 	return bits | OS.WS_OVERLAPPED | OS.WS_CAPTION;
 }

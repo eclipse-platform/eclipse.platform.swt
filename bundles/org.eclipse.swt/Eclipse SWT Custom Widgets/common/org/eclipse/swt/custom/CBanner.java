@@ -100,7 +100,6 @@ public class CBanner extends Composite {
  * @exception SWTException <ul>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
  * </ul>
- *
  */
 public CBanner(Composite parent, int style) {
 	super(parent, checkStyle(style));

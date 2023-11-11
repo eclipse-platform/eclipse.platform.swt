@@ -30,7 +30,6 @@ public class BenchmarkSwtMultithreading {
 	 * see https://github.com/eclipse-platform/eclipse.platform.swt/issues/74
 	 *
 	 * @param args ignored
-	 * @throws InterruptedException
 	 */
 	public static void main(String[] args) throws InterruptedException {
 		final Display display = new Display();

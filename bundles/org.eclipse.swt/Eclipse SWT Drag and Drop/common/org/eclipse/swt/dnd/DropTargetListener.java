@@ -34,7 +34,6 @@ import org.eclipse.swt.internal.*;
  * operation that is performed but the data type is fixed.</p>
  *
  * @see DropTargetEvent
- *
  */
 public interface DropTargetListener extends SWTEventListener {
 

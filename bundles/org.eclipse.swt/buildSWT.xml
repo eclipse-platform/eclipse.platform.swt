@@ -34,8 +34,6 @@
 	<property name="gitroot" value="git@github.com:eclipse-platform/"/>
 	<property name="TAG" value="master"/>
 	<property name="tmphome" value="../../../tmp"/>
-	<property name="tmpdir" value="${tmphome}/check.compile.${TAG}"/>
-	<property name="tmp_sha1_file" value="${tmphome}/build.sha1"/>
 
 	<property name="repo.src" value="../../../eclipse.platform.swt"/>
 	<property name="repo.bin" value="../../../eclipse.platform.swt.binaries"/>
@@ -189,33 +187,6 @@
 		<fail if="m_fail" message="Failed"/>
 	</target>
 
-	<target name="check_source_sha1_file" unless="source_changed">
-		<condition property="source_changed">
-			<not>
-				<available file="${tmp_sha1_file}" type="file"/>
-			</not>
-		</condition>
-	</target>
-
-	<target name="check_source_changed" depends="check_source_sha1_file" unless="source_changed">
-		<loadproperties srcfile="${tmp_sha1_file}"/>
-
-		<!-- Check for changes -->
-		<exec dir="${repo.src}" executable="git" failonerror="true" outputproperty="diffs">
-			<arg line="diff ${SHA1}"/>
-		</exec>
-		<condition property="source_changed">
-			<or>
-				<length string="${SHA1}" trim="true" when="equal" length="0"/>
-				<length string="${diffs}" trim="true" when="greater" length="0"/>
-			</or>
-		</condition>
-		<echo>Has source changes: ${source_changed}, compared against:</echo>
-		<exec dir="${repo.src}" executable="git" failonerror="true">
-			<arg line="log -1 ${SHA1}"/>
-		</exec>
-	</target>
-
 	<target name="check_preprocessing">
 		<property name="projectDir" value="${repo.src}/bundles/org.eclipse.swt"/>
 		<fileset id="badfilesid" dir="${projectDir}" includes="**/*.java" excludes="**/.build64/**/*.java">
@@ -232,24 +203,6 @@
 			<length string="${badfiles}" trim="true" when="greater" length="0"/>
 		</condition>
 		<fail if="failbadfiles" message="There are files with the wrong long /*int*/ preprocessing."/>
-	</target>
-
-	<target name="check_sources_and_update_sha1_file" depends="check_source_changed" if="source_changed">
-		<mkdir dir="${tmphome}"/>
-		<antcall target="check_preprocessing"/>
-		<antcall target="update_sha1_file"/>
-	</target>
-	
-	<target name="update_sha1_file">
-		<!-- Update build.sha1 file -->
-		<exec dir="${repo.src}" executable="git" failonerror="true" outputproperty="HEAD_TAG">
-			<arg line="rev-list ${TAG} -1"/>
-		</exec>
-		<propertyfile file="${tmp_sha1_file}">
-			<entry key="SHA1" value="${HEAD_TAG}"/>
-		</propertyfile>
-
-		<delete dir="${tmpdir}" quiet="true"/>
 	</target>
 
 	<!-- common build tasks -->
@@ -475,33 +428,6 @@
 		</exec>
 	</target>
 
-	<target name="check_sha1_file" unless="natives_changed">
-		<condition property="natives_changed">
-			<not>
-				<available file="${sha1_file}" type="file"/>
-			</not>
-		</condition>
-	</target>
-
-	<target name="check_sha1_changed" depends="check_sha1_file" unless="natives_changed">
-		<loadproperties srcfile="${sha1_file}"/>
-
-		<!-- Check for changes -->
-		<exec dir="${repo.src}" executable="git" failonerror="true" outputproperty="diffs">
-			<arg line="diff ${SHA1} ${library_src}"/>
-		</exec>
-		<condition property="natives_changed">
-			<or>
-				<length string="${SHA1}" trim="true" when="equal" length="0"/>
-				<length string="${diffs}" trim="true" when="greater" length="0"/>
-			</or>
-		</condition>
-		<echo>Has native changes: ${natives_changed}, compared against:</echo>
-		<exec dir="${repo.src}" executable="git" failonerror="true">
-			<arg line="log -1 ${SHA1}"/>
-		</exec>
-	</target>
-
 	<target name="init_fragment">
 		<condition property="m_fail">
 			<not><and>
@@ -514,7 +440,6 @@
 			<isset property="swt.arch"/>
 		</condition>
 		<property name="fragment_dir" value="${repo.bin}/bundles/${fragment}"/>
-		<property name="sha1_file" value="${fragment_dir}/build.sha1"/>
 		<script language="javascript">
 			<![CDATA[
 				project.setProperty("library_src", project.getProperty("src_" + project.getProperty("swt.ws")));
@@ -522,29 +447,6 @@
 		</script>
 	</target>
 	
-	<target name="update_sha1_file_in_fragment">
-		<!-- Update build.sha1 file -->
-		<exec dir="${repo.src}" executable="git" failonerror="true" outputproperty="HEAD_TAG">
-			<arg line="rev-list ${TAG} -1"/>
-		</exec>
-		<echo file="${fragment_dir}/build.sha1" append="false">SHA1=${HEAD_TAG}</echo>
-	</target>
-
-	<!-- Params: swt.ws, swt.os, swt.arch
-	Note that the build.sha1 file is updated even if the libraries are not built to ensure there is a change
-	in the GIT repo (see bug#407624).
-	-->
-	<target name="build_fragment" depends="init_fragment,check_sha1_changed">
-		<!-- Build natives -->
-		<antcall target="build_fragment_libraries"/>
-
-		<!-- Update build.sha1 file -->
-		<antcall target="update_sha1_file_in_fragment"/>
-	</target>
-	<target name="build_fragment_libraries" if="natives_changed">
-		<antcall target="build_libraries"/>
-	</target>
-
 	<target name="commit_poms_and_binaries">
 		<antcall target="commit_poms"/>
 		<property name="commit_pom_changes" value="true"/>
@@ -582,7 +484,6 @@
 		<!-- Get list of files to commit -->
 		<fileset id="addid" dir="${repo.bin}">
 			<include name="bundles/*/*${swt_version}*"/>
-			<include name="bundles/*/build.sha1"/>
 			<exclude name="**/.git/**"/>
 			<exclude name="**/tmpdir/**"/>
 		</fileset>
@@ -932,6 +833,7 @@
 		<antcall target="commit_sources"/>
 		
 		<!-- Create tmp files if the properties are set -->
+		<mkdir dir="${tmphome}"/>
 		<antcall target="create_file_if_property_exists">
 			<param name="property" value="${build_changed}"/>
 			<param name="fileName" value="${tmphome}/build_changed.txt"/>
@@ -947,7 +849,7 @@
 		<echo file="${fileName}" append="false">true</echo>
 	</target>
 	
-	<target name="copy_library_src_and_create_zip" depends="init_fragment,check_sha1_changed" if="natives_changed">
+	<target name="copy_library_src_and_create_zip" depends="init_fragment">
 		<property name="swt.arch" value=""/>
 		<property name="project_dir" value="${basedir}/${repo.src}"/>
 		<property name="output_dir" value="${basedir}/${fragment_dir}"/>

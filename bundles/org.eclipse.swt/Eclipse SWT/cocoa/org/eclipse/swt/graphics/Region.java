@@ -207,7 +207,6 @@ static long polyRgn(int[] pointArray, int count) {
  * </ul>
  *
  * @since 3.0
- *
  */
 public void add (int[] pointArray) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);

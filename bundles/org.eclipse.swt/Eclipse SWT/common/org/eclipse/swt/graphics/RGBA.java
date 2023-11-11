@@ -89,7 +89,6 @@ public RGBA(int red, int green, int blue, int alpha) {
 *    the saturation or brightness is not between 0 and 1 or if the alpha
 *    is not between 0 and 255</li>
 * </ul>
-*
 */
 public RGBA(float hue, float saturation, float brightness, float alpha) {
 	if ((alpha > 255) || (alpha < 0)) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
