@@ -1190,4 +1190,76 @@ public void test_setItemCount_itemCount2() {
 	});
 }
 
+private long measureGetItemNanos(int childCount) {
+	tree.setItemCount(1);
+	TreeItem parent = tree.getItem(0);
+	parent.setItemCount(childCount);
+	// warmup
+	for (int i = 0; i < 10000; i++) {
+		System.nanoTime();
+		assertNotNull(parent.getItem(childCount - 1));
+	}
+
+	long start = System.nanoTime();
+	for (int i = 0; i < 10000; i++) {
+		parent.getItem(childCount - 1);
+	}
+	long stop = System.nanoTime();
+	long elapsed = stop-start;
+	return elapsed;
+}
+
+/**
+ * Execution time of <code> TreeItem.getItem(int index)</code> should not depend on <code>index</code>
+ * @see https://github.com/eclipse-platform/eclipse.platform.swt/issues/882
+*/
+@Test
+public void test_getItemNoGrowth() {
+	// This test takes 1 second on MacOS
+	testTreeRegularAndVirtual(() -> {
+		measureGetItemNanos(1000); // warmup
+		double elapsed_100 = measureGetItemNanos(100);
+		double elapsed_100000 = measureGetItemNanos(100000);
+		double ratio = elapsed_100000 / elapsed_100;
+		System.out.printf("Time for 100 elements: %f ns\nTime for 100000 elements: %f ns\nRatio: %f\n",elapsed_100, elapsed_100000, ratio);
+		assertTrue("",  (elapsed_100000 <= 100 && elapsed_100 <= 100) || ratio < 10);
+	});
+}
+
+private long measureGetItemCountNanos(int childCount) {
+	tree.setItemCount(1);
+	TreeItem parent = tree.getItem(0);
+	parent.setItemCount(childCount);
+	// warmup
+	for (int i = 0; i < 10000; i++) {
+		System.nanoTime();
+		assertNotNull(parent.getItemCount());
+	}
+
+	long start = System.nanoTime();
+	for (int i = 0; i < 10000; i++) {
+		parent.getItemCount();
+	}
+	long stop = System.nanoTime();
+	long elapsed = stop-start;
+	return elapsed;
+}
+
+/**
+ * Execution time of <code> TreeItem.getItemCount()</code> should not depend on child count.
+ * @see https://github.com/eclipse-platform/eclipse.platform.swt/issues/882
+*/
+@Test
+public void test_getItemCountNoGrowth() {
+	// This test takes 1 second on MacOS
+	testTreeRegularAndVirtual(() -> {
+		measureGetItemNanos(1000); // warmup
+		double elapsed_100 = measureGetItemCountNanos(100);
+		double elapsed_100000 = measureGetItemCountNanos(100000);
+		double ratio = elapsed_100000 / elapsed_100;
+		System.out.printf("Time for 100 elements: %f ns\nTime for 100000 elements: %f ns\nRatio: %f\n",elapsed_100, elapsed_100000, ratio);
+		assertTrue("",  (elapsed_100000 <= 100 && elapsed_100 <= 100) || ratio < 10);
+	});
+}
+
 }
