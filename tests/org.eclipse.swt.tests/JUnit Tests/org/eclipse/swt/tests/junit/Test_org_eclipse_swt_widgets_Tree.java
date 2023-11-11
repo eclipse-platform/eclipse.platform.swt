@@ -1222,7 +1222,7 @@ public void test_getItemNoGrowth() {
 		double elapsed_100000 = measureGetItemNanos(100000);
 		double ratio = elapsed_100000 / elapsed_100;
 		System.out.printf("Time for 100 elements: %f ns\nTime for 100000 elements: %f ns\nRatio: %f\n",elapsed_100, elapsed_100000, ratio);
-		assertTrue("",  (elapsed_100000 <= 100 && elapsed_100 <= 100) || ratio < 10);
+		assertTrue("Execution time should not grow with index",  (elapsed_100000 <= 100 && elapsed_100 <= 100) || ratio < 10);
 	});
 }
 
@@ -1258,7 +1258,7 @@ public void test_getItemCountNoGrowth() {
 		double elapsed_100000 = measureGetItemCountNanos(100000);
 		double ratio = elapsed_100000 / elapsed_100;
 		System.out.printf("Time for 100 elements: %f ns\nTime for 100000 elements: %f ns\nRatio: %f\n",elapsed_100, elapsed_100000, ratio);
-		assertTrue("",  (elapsed_100000 <= 100 && elapsed_100 <= 100) || ratio < 10);
+		assertTrue("Execution time should not grow with child count",  (elapsed_100000 <= 100 && elapsed_100 <= 100) || ratio < 10);
 	});
 }
 
