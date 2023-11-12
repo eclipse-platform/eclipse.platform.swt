@@ -14,6 +14,8 @@
 package org.eclipse.swt.widgets;
 
 
+import java.util.*;
+
 import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
@@ -111,7 +113,7 @@ public class Tree extends Composite {
 
 	private long headerCSSProvider;
 
-	private TreeItemCache itemCache = null;
+	private final WeakHashMap<TreeItem, TreeItemCache> itemCache = new WeakHashMap<>();
 
 	static final int ID_COLUMN = 0;
 	static final int CHECKED_COLUMN = 1;
@@ -4350,9 +4352,6 @@ public void dispose() {
 }
 
 TreeItemCache getItemCache(TreeItem treeItem) {
-	if (itemCache == null || itemCache.owner != treeItem) {
-		itemCache = new TreeItemCache(treeItem);
-	}
-	return itemCache;
+	return itemCache.computeIfAbsent(treeItem, TreeItemCache::new);
 }
 }
