@@ -794,12 +794,8 @@ public int getItemCount () {
 public TreeItem getItem (int index) {
 	checkWidget();
 	if (index < 0) error (SWT.ERROR_INVALID_RANGE);
-	// It may seem that requesting GTK for an item by index is quicker,
-	// but it has O(N) execution time and cache of all children amortizes that.
-	// This avoids quadratic execution time on traversals
-	TreeItem[] items = getCache().getItems();
-	if (index >= items.length)  error (SWT.ERROR_INVALID_RANGE);
-	return items[index];
+	if (index >= getCache().getItemCount())  error (SWT.ERROR_INVALID_RANGE);
+	return getCache().getItem(index);
 }
 
 /**

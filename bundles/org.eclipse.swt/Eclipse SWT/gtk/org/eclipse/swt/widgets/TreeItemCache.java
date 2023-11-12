@@ -21,7 +21,8 @@ import org.eclipse.swt.internal.gtk.*;
  * @since 3.125**/
 class TreeItemCache {
 	final TreeItem owner;
-	private TreeItem[] children;
+	private TreeItem[] allChildren;
+	private final ArrayList<TreeItem> sparseChildren = new ArrayList<>();
 	private int itemCount = -1;
 
 	TreeItemCache(TreeItem owner) {
@@ -35,16 +36,34 @@ class TreeItemCache {
 		return itemCount;
 	}
 
-	TreeItem[] getItems() {
-		if (children == null) {
-			children = owner.parent.getItems(owner.handle);
-			itemCount = children.length;
+	TreeItem getItem(int index) {
+		if (sparseChildren.size() > index && sparseChildren.get(index) != null) {
+			return sparseChildren.get(index);
+		} else {
+			int newSize = Math.max(index + 1, itemCount);
+			int extraSize = newSize - sparseChildren.size();
+			if (extraSize > 0) {
+				sparseChildren.addAll(Collections.nCopies(extraSize, null));
+			}
+			TreeItem result = owner.parent._getItem(owner.handle, index);
+			sparseChildren.set(index, result);
+			return result;
 		}
-		return children;
+	}
+
+	TreeItem[] getItems() {
+		if (allChildren == null) {
+			allChildren = owner.parent.getItems(owner.handle);
+			sparseChildren.clear();
+			sparseChildren.addAll(Arrays.asList(allChildren));
+			itemCount = allChildren.length;
+		}
+		return allChildren;
 	}
 
 	public void reset() {
 		itemCount = -1;
-		children = null;
+		allChildren = null;
+		sparseChildren.clear();
 	}
 }

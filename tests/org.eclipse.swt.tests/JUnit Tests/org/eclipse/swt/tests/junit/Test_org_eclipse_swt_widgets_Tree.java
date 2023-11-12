@@ -1261,7 +1261,6 @@ void depthFirstTraverse(TreeItem parent) {
  */
 private double measureNanos(Runnable operation) {
 	// warmup and calibration - we measure, how many iterations we can approximately do in a second
-
 	long warmupStop = System.nanoTime() + TimeUnit.SECONDS.toNanos(1);
 	long iterationCount = 0;
 	while (System.nanoTime() < warmupStop) {
