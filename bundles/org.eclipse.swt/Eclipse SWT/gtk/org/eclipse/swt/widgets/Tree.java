@@ -111,6 +111,8 @@ public class Tree extends Composite {
 
 	private long headerCSSProvider;
 
+	private TreeItemCache itemCache = null;
+
 	static final int ID_COLUMN = 0;
 	static final int CHECKED_COLUMN = 1;
 	static final int GRAYED_COLUMN = 2;
@@ -4345,5 +4347,12 @@ public void dispose() {
 		OS.g_object_unref(headerCSSProvider);
 		headerCSSProvider = 0;
 	}
+}
+
+TreeItemCache getItemCache(TreeItem treeItem) {
+	if (itemCache == null || itemCache.owner != treeItem) {
+		itemCache = new TreeItemCache(treeItem);
+	}
+	return itemCache;
 }
 }

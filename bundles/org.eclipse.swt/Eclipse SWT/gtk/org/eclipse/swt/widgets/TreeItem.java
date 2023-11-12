@@ -45,7 +45,6 @@ public class TreeItem extends Item {
 	Font[] cellFont;
 	String [] strings;
 	boolean cached, grayed, isExpanded, updated, settingData;
-	int itemCountCache = -1;
 	static final int EXPANDER_EXTRA_PADDING = 4;
 
 /**
@@ -167,7 +166,9 @@ TreeItem (Tree parent, long parentIter, int style, int index, boolean create) {
 	this.parent = parent;
 	if (create) {
 		parent.createItem (this, parentIter, index);
-		resetParentCache();
+		if (parentIter != 0) {
+			parent._getItem(parentIter).resetCache();
+		}
 	} else {
 		handle = OS.g_malloc (GTK.GtkTreeIter_sizeof ());
 		GTK.gtk_tree_model_iter_nth_child (parent.modelHandle, handle, parentIter, index);
@@ -770,7 +771,7 @@ Rectangle getImageBoundsInPixels (int index) {
 public int getItemCount () {
 	checkWidget();
 	if (!parent.checkData (this)) error (SWT.ERROR_WIDGET_DISPOSED);
-	return getItemCountImpl();
+	return getCache().getItemCount();
 }
 
 /**
@@ -793,9 +794,12 @@ public int getItemCount () {
 public TreeItem getItem (int index) {
 	checkWidget();
 	if (index < 0) error (SWT.ERROR_INVALID_RANGE);
-	int itemCount = getItemCountImpl();
-	if (index >= itemCount)  error (SWT.ERROR_INVALID_RANGE);
-	return  parent._getItem (handle, index);
+	// It may seem that requesting GTK for an item by index is quicker,
+	// but it has O(N) execution time and cache of all children amortizes that.
+	// This avoids quadratic execution time on traversals
+	TreeItem[] items = getCache().getItems();
+	if (index >= items.length)  error (SWT.ERROR_INVALID_RANGE);
+	return items[index];
 }
 
 /**
@@ -1100,7 +1104,7 @@ public void dispose () {
  */
 public void removeAll () {
 	checkWidget ();
-	itemCountCache = 0;
+	resetCache();
 	long modelHandle = parent.modelHandle;
 	int length = GTK.gtk_tree_model_iter_n_children (modelHandle, handle);
 	if (length == 0) return;
@@ -1631,7 +1635,7 @@ public void setImage (Image [] images) {
 public void setItemCount (int count) {
 	checkWidget ();
 	count = Math.max (0, count);
-	itemCountCache = count;
+	resetCache();
 	parent.setItemCount (handle, count);
 }
 
@@ -1712,18 +1716,13 @@ public void setText (String [] strings) {
 	}
 }
 
-private void resetParentCache() {
-	TreeItem parentItem = getParentItem();
-	if (parentItem != null) {
-		parentItem.itemCountCache = -1;
-	}
+private void resetCache() {
+	getCache().reset();
 }
 
-private int getItemCountImpl() {
-	if (itemCountCache < 0) {
-		itemCountCache = GTK.gtk_tree_model_iter_n_children (parent.modelHandle, handle); 
-	}
-	return itemCountCache;
+private TreeItemCache getCache() {
+	return parent.getItemCache(this);
 }
+
 
 }
