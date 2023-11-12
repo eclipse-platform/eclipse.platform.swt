@@ -23,6 +23,8 @@ import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
+import java.util.function.IntFunction;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.TreeListener;
@@ -1190,23 +1192,11 @@ public void test_setItemCount_itemCount2() {
 	});
 }
 
-private long measureGetItemNanos(int childCount) {
+private double measureGetItemNanos(int childCount) {
 	tree.setItemCount(1);
 	TreeItem parent = tree.getItem(0);
 	parent.setItemCount(childCount);
-	// warmup
-	for (int i = 0; i < 10000; i++) {
-		System.nanoTime();
-		assertNotNull(parent.getItem(childCount - 1));
-	}
-
-	long start = System.nanoTime();
-	for (int i = 0; i < 10000; i++) {
-		parent.getItem(childCount - 1);
-	}
-	long stop = System.nanoTime();
-	long elapsed = stop-start;
-	return elapsed;
+	return measureNanos(() -> parent.getItem(childCount - 1));
 }
 
 /**
@@ -1217,32 +1207,15 @@ private long measureGetItemNanos(int childCount) {
 public void test_getItemNoGrowth() {
 	// This test takes 1 second on MacOS
 	testTreeRegularAndVirtual(() -> {
-		measureGetItemNanos(1000); // warmup
-		double elapsed_100 = measureGetItemNanos(100);
-		double elapsed_100000 = measureGetItemNanos(100000);
-		double ratio = elapsed_100000 / elapsed_100;
-		System.out.printf("Time for 100 elements: %f ns\nTime for 100000 elements: %f ns\nRatio: %f\n",elapsed_100, elapsed_100000, ratio);
-		assertTrue("Execution time should not grow with index",  (elapsed_100000 <= 100 && elapsed_100 <= 100) || ratio < 10);
+		assertConstant("getItem() execution time", this::measureGetItemNanos);
 	});
 }
 
-private long measureGetItemCountNanos(int childCount) {
+private double measureGetItemCountNanos(int childCount) {
 	tree.setItemCount(1);
 	TreeItem parent = tree.getItem(0);
 	parent.setItemCount(childCount);
-	// warmup
-	for (int i = 0; i < 10000; i++) {
-		System.nanoTime();
-		assertNotNull(parent.getItemCount());
-	}
-
-	long start = System.nanoTime();
-	for (int i = 0; i < 10000; i++) {
-		parent.getItemCount();
-	}
-	long stop = System.nanoTime();
-	long elapsed = stop-start;
-	return elapsed;
+	return measureNanos(parent::getItemCount);
 }
 
 /**
@@ -1253,12 +1226,88 @@ private long measureGetItemCountNanos(int childCount) {
 public void test_getItemCountNoGrowth() {
 	// This test takes 1 second on MacOS
 	testTreeRegularAndVirtual(() -> {
-		measureGetItemNanos(1000); // warmup
-		double elapsed_100 = measureGetItemCountNanos(100);
-		double elapsed_100000 = measureGetItemCountNanos(100000);
-		double ratio = elapsed_100000 / elapsed_100;
-		System.out.printf("Time for 100 elements: %f ns\nTime for 100000 elements: %f ns\nRatio: %f\n",elapsed_100, elapsed_100000, ratio);
-		assertTrue("Execution time should not grow with child count",  (elapsed_100000 <= 100 && elapsed_100 <= 100) || ratio < 10);
+		assertConstant("itemCount execution time", this::measureGetItemCountNanos);
+	});
+}
+
+
+void buildBinaryTree(TreeItem parent, int totalChildCount) {
+	if (totalChildCount <= 0) {
+		return;
+	}
+	int leftCount = totalChildCount / 2;
+	int rightCount = totalChildCount - leftCount;
+	if (leftCount > 1) {
+		buildBinaryTree(new TreeItem(parent, SWT.NONE), leftCount - 1);
+	}
+	if (rightCount > 1) {
+		buildBinaryTree(new TreeItem(parent, SWT.NONE), rightCount - 1);
+	}
+}
+
+void depthFirstTraverse(TreeItem parent) {
+	int count = parent.getItemCount();
+	if (count <= 0) {
+		return;
+	}
+	for (int i = 0; i < count ; i++) {
+		depthFirstTraverse(parent.getItem(i));
+	}
+}
+
+/**
+ * Measures time required to do one operation
+ * @return nanoseconds
+ */
+private double measureNanos(Runnable operation) {
+	// warmup and calibration - we measure, how many iterations we can approximately do in a second
+
+	long warmupStop = System.nanoTime() + TimeUnit.SECONDS.toNanos(1);
+	long iterationCount = 0;
+	while (System.nanoTime() < warmupStop) {
+		System.nanoTime();
+		operation.run();
+		iterationCount++;
+	}
+
+	long start = System.nanoTime();
+	for (int i = 0; i < iterationCount; i++) {
+		operation.run();
+	}
+	long stop = System.nanoTime();
+	long elapsed = stop-start;
+	return ((double)elapsed) / iterationCount;
+}
+
+private double measureDepthFirstTraverse(int totalChildCount) {
+	TreeItem root = new TreeItem(tree, SWT.NONE);
+	buildBinaryTree(root, totalChildCount - 1);
+	return measureNanos(() -> depthFirstTraverse(root));
+}
+
+private void assertConstant(String message, IntFunction<Double> function) {
+	function.apply(1000); // warmmup
+	double elapsed_100 = function.apply(100);
+	double elapsed_100000 = function.apply(100000);
+	double ratio = elapsed_100000 / elapsed_100;
+	String error = String.format( "%s should be constant. But:\nTime for 100 elements: %f ns\nTime for 100000 elements: %f ns\nRatio: %f\n", message, elapsed_100, elapsed_100000, ratio);
+	assertTrue(error,  (elapsed_100000 <= 100 && elapsed_100 <= 100) || ratio < 10);
+}
+
+private void assertLinear(String message, IntFunction<Double> function) {
+	function.apply(1000); // warmmup
+	double elapsed_100 = function.apply(100);
+	double elapsed_100000 = function.apply(100000);
+	double ratio = elapsed_100000 / elapsed_100;
+	String error = String.format( "%s should be linear. But:\nTime for 100 elements: %f ns\nTime for 100000 elements: %f ns\nRatio: %f\n", message, elapsed_100, elapsed_100000, ratio);
+	assertTrue(error,  (elapsed_100000 <= 100 && elapsed_100 <= 100) || ratio < 10000);
+}
+
+@Test
+public void test_depthFirstTraversalLinearGrowth() {
+	// This test takes 1 second on MacOS
+	testTreeRegularAndVirtual(() -> {
+		assertLinear("Depth first traversal", this::measureDepthFirstTraverse);
 	});
 }
 
