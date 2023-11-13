@@ -21,7 +21,9 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Deque;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.function.IntFunction;
@@ -1246,13 +1248,23 @@ void buildBinaryTree(TreeItem parent, int totalChildCount) {
 
 void depthFirstTraverse(TreeItem parent) {
 	int count = parent.getItemCount();
-	if (count <= 0) {
-		return;
-	}
 	for (int i = 0; i < count ; i++) {
 		depthFirstTraverse(parent.getItem(i));
 	}
 }
+
+private void breadthFirstTraverse(TreeItem parent) {
+	Deque<TreeItem> queue = new ArrayDeque<>();
+	queue.add(parent);
+	while (!queue.isEmpty()) {
+		parent = queue.removeFirst();
+		int count = parent.getItemCount();
+		for (int i = 0; i < count ; i++) {
+			queue.add(parent.getItem(i));
+		}
+	}
+}
+
 
 /**
  * Measures time required to do one operation
@@ -1340,6 +1352,19 @@ private double measureWideDepthFirstTraverse(int totalChildCount) {
 public void test_wideDepthFirstTraversalLinearGrowth() {
 	testTreeRegularAndVirtual(() -> {
 		assertLinear("Depth first traversal", this::measureWideDepthFirstTraverse);
+	});
+}
+
+private double measureWideBreadthFirstTraverse(int totalChildCount) {
+	TreeItem root = new TreeItem(tree, SWT.NONE);
+	buildWideTree(root, totalChildCount - 1);
+	return measureNanos(() -> breadthFirstTraverse(root));
+}
+
+@Test
+public void test_wideBreadthFirstTraversalLinearGrowth() {
+	testTreeRegularAndVirtual(() -> {
+		assertLinear("Depth first traversal", this::measureWideBreadthFirstTraverse);
 	});
 }
 
