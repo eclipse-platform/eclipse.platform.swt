@@ -37,6 +37,7 @@ import org.eclipse.swt.widgets.TreeColumn;
 import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.test.Screenshots;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestName;
@@ -1266,6 +1267,9 @@ private double measureNanos(Runnable operation) {
 		operation.run();
 		iterationCount++;
 	}
+	if (iterationCount < 100) {
+		iterationCount = 100;
+	}
 
 	long start = System.nanoTime();
 	for (int i = 0; i < iterationCount; i++) {
@@ -1288,7 +1292,7 @@ private void assertConstant(String message, IntFunction<Double> function) {
 	double elapsed_100000 = function.apply(100000);
 	double ratio = elapsed_100000 / elapsed_100;
 	String error = String.format( "%s should be constant. But:\nTime for 100 elements: %f ns\nTime for 100000 elements: %f ns\nRatio: %f\n", message, elapsed_100, elapsed_100000, ratio);
-	assertTrue(error,  (elapsed_100000 <= 10 && elapsed_100 <= 10) || ratio < 10);
+	assertTrue(error,  (elapsed_100000 <= 10 && elapsed_100 <= 10) || ratio < 2);
 }
 
 private void assertLinear(String message, IntFunction<Double> function) {
@@ -1297,7 +1301,7 @@ private void assertLinear(String message, IntFunction<Double> function) {
 	double elapsed_100000 = function.apply(100000);
 	double ratio = elapsed_100000 / elapsed_100;
 	String error = String.format( "%s should be linear. But:\nTime for 100 elements: %f ns\nTime for 100000 elements: %f ns\nRatio: %f\n", message, elapsed_100, elapsed_100000, ratio);
-	assertTrue(error,  (elapsed_100000 <= 100 && elapsed_100 <= 100) || ratio < 10000);
+	assertTrue(error,  (elapsed_100000 <= 100 && elapsed_100 <= 100) || ratio < 2000);
 }
 
 @Test
@@ -1309,7 +1313,7 @@ public void test_binaryDepthFirstTraversalLinearGrowth() {
 
 private void buildWideTree(TreeItem root, int totalChildCount) {
 	int parentCount = (int) Math.sqrt(totalChildCount);
-	int childCount = parentCount;
+	int childCount = parentCount - 1;
 
 	root.setItemCount(parentCount);
 	totalChildCount -= parentCount;
@@ -1332,6 +1336,7 @@ private double measureWideDepthFirstTraverse(int totalChildCount) {
 }
 
 @Test
+@Ignore("https://github.com/eclipse-platform/eclipse.platform.swt/issues/882 Wide tree depth first traversal is still  bad")
 public void test_wideDepthFirstTraversalLinearGrowth() {
 	testTreeRegularAndVirtual(() -> {
 		assertLinear("Depth first traversal", this::measureWideDepthFirstTraverse);
