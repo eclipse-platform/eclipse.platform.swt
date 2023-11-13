@@ -1205,7 +1205,6 @@ private double measureGetItemNanos(int childCount) {
 */
 @Test
 public void test_getItemNoGrowth() {
-	// This test takes 1 second on MacOS
 	testTreeRegularAndVirtual(() -> {
 		assertConstant("getItem() execution time", this::measureGetItemNanos);
 	});
@@ -1224,7 +1223,6 @@ private double measureGetItemCountNanos(int childCount) {
 */
 @Test
 public void test_getItemCountNoGrowth() {
-	// This test takes 1 second on MacOS
 	testTreeRegularAndVirtual(() -> {
 		assertConstant("itemCount execution time", this::measureGetItemCountNanos);
 	});
@@ -1304,7 +1302,6 @@ private void assertLinear(String message, IntFunction<Double> function) {
 
 @Test
 public void test_depthFirstTraversalLinearGrowth() {
-	// This test takes 1 second on MacOS
 	testTreeRegularAndVirtual(() -> {
 		assertLinear("Depth first traversal", this::measureDepthFirstTraverse);
 	});
