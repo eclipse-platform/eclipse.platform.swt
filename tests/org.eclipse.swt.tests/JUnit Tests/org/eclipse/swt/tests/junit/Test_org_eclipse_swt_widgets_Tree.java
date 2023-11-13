@@ -1290,7 +1290,7 @@ private void assertConstant(String message, IntFunction<Double> function) {
 	double elapsed_100000 = function.apply(100000);
 	double ratio = elapsed_100000 / elapsed_100;
 	String error = String.format( "%s should be constant. But:\nTime for 100 elements: %f ns\nTime for 100000 elements: %f ns\nRatio: %f\n", message, elapsed_100, elapsed_100000, ratio);
-	assertTrue(error,  (elapsed_100000 <= 100 && elapsed_100 <= 100) || ratio < 10);
+	assertTrue(error,  (elapsed_100000 <= 10 && elapsed_100 <= 10) || ratio < 10);
 }
 
 private void assertLinear(String message, IntFunction<Double> function) {
