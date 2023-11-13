@@ -1276,7 +1276,7 @@ private double measureNanos(Runnable operation) {
 	return ((double)elapsed) / iterationCount;
 }
 
-private double measureDepthFirstTraverse(int totalChildCount) {
+private double measureBinaryDepthFirstTraverse(int totalChildCount) {
 	TreeItem root = new TreeItem(tree, SWT.NONE);
 	buildBinaryTree(root, totalChildCount - 1);
 	return measureNanos(() -> depthFirstTraverse(root));
@@ -1301,9 +1301,40 @@ private void assertLinear(String message, IntFunction<Double> function) {
 }
 
 @Test
-public void test_depthFirstTraversalLinearGrowth() {
+public void test_binaryDepthFirstTraversalLinearGrowth() {
 	testTreeRegularAndVirtual(() -> {
-		assertLinear("Depth first traversal", this::measureDepthFirstTraverse);
+		assertLinear("Depth first traversal", this::measureBinaryDepthFirstTraverse);
+	});
+}
+
+private void buildWideTree(TreeItem root, int totalChildCount) {
+	int parentCount = (int) Math.sqrt(totalChildCount);
+	int childCount = parentCount;
+
+	root.setItemCount(parentCount);
+	totalChildCount -= parentCount;
+	for (TreeItem parent: root.getItems()) {
+		parent.setItemCount(childCount);
+		totalChildCount -= childCount;
+	}
+	if (totalChildCount > 0) {
+		TreeItem parent = new TreeItem(root, SWT.NONE);
+		if (totalChildCount > 1) {
+			parent.setItemCount(totalChildCount - 1);
+		}
+	}
+}
+
+private double measureWideDepthFirstTraverse(int totalChildCount) {
+	TreeItem root = new TreeItem(tree, SWT.NONE);
+	buildWideTree(root, totalChildCount - 1);
+	return measureNanos(() -> depthFirstTraverse(root));
+}
+
+@Test
+public void test_wideDepthFirstTraversalLinearGrowth() {
+	testTreeRegularAndVirtual(() -> {
+		assertLinear("Depth first traversal", this::measureWideDepthFirstTraverse);
 	});
 }
 
