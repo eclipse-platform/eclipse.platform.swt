@@ -70,7 +70,7 @@ public class TreeItem extends Item {
  * @see Widget#getStyle
  */
 public TreeItem (Tree parent, int style) {
-	this (checkNull (parent), 0, style, -1, true);
+	this (checkNull (parent), 0, style, -1, 0);
 }
 
 /**
@@ -103,7 +103,7 @@ public TreeItem (Tree parent, int style) {
  * @see Tree#setRedraw
  */
 public TreeItem (Tree parent, int style, int index) {
-	this (checkNull (parent), 0, style, checkIndex (index), true);
+	this (checkNull (parent), 0, style, checkIndex (index), 0);
 }
 
 /**
@@ -129,7 +129,7 @@ public TreeItem (Tree parent, int style, int index) {
  * @see Widget#getStyle
  */
 public TreeItem (TreeItem parentItem, int style) {
-	this (checkNull (parentItem).parent, parentItem.handle, style, -1, true);
+	this (checkNull (parentItem).parent, parentItem.handle, style, -1, 0);
 }
 
 /**
@@ -158,17 +158,19 @@ public TreeItem (TreeItem parentItem, int style) {
  * @see Tree#setRedraw
  */
 public TreeItem (TreeItem parentItem, int style, int index) {
-	this (checkNull (parentItem).parent, parentItem.handle, style, checkIndex (index), true);
+	this (checkNull (parentItem).parent, parentItem.handle, style, checkIndex (index), 0);
 }
 
-TreeItem (Tree parent, long parentIter, int style, int index, boolean create) {
+TreeItem (Tree parent, long parentIter, int style, int index, long iter) {
 	super (parent, style);
 	this.parent = parent;
-	if (create) {
+	if (iter == 0) {
 		parent.createItem (this, parentIter, index);
 	} else {
+		assert handle == 0;
 		handle = OS.g_malloc (GTK.GtkTreeIter_sizeof ());
-		GTK.gtk_tree_model_iter_nth_child (parent.modelHandle, handle, parentIter, index);
+		if (handle == 0) error(SWT.ERROR_NO_HANDLES);
+		C.memmove(handle, iter, GTK.GtkTreeIter_sizeof ());
 	}
 }
 
