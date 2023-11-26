@@ -77,6 +77,21 @@ jobs:
         -DfailIfNoTests=false
         clean install
        working-directory: eclipse.platform.swt
+    - name: Performance tests
+      if: contains(github.event.pull_request.labels.*.name, 'performance')
+      uses: coactions/setup-xvfb@b6b4fcfb9f5a895edadc3bc76318fae0ac17c8b3 # v1.0.1
+      with:
+       run: >-
+        mvn --batch-mode -V -U
+        -DforkCount=1
+        -Dcompare-version-with-baselines.skip=true
+        -Dmaven.compiler.failOnWarning=true
+        --fail-at-end
+        -DskipNativeTests=true
+        -DfailIfNoTests=true
+        -Dtest=PerformanceTests
+        integration-test
+       working-directory: eclipse.platform.swt/tests/org.eclipse.swt.tests
     - name: Upload Test Results for ${{ matrix.config.name }} / Java-${{ matrix.java }}
       if: always()
       uses: actions/upload-artifact@a8a3f3ad30e3422c9c7b888a15615d19a852ae32 # v3.1.3
