@@ -18,6 +18,7 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.internal.Platform;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -39,6 +40,7 @@ import org.eclipse.swt.widgets.Tree;
 import org.eclipse.test.performance.Dimension;
 import org.eclipse.test.performance.Performance;
 import org.eclipse.test.performance.PerformanceMeter;
+import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -70,6 +72,7 @@ public void setUp() {
  */
 @Test
 public void test_createComposites() {
+	Assume.assumeFalse("https://github.com/eclipse-platform/eclipse.platform.swt/issues/912 Very slow on Mac OS", Platform.PLATFORM.equalsIgnoreCase("cocoa"));
 	PerformanceMeter meter = createMeter("Create composites");
 	int samples;
 
