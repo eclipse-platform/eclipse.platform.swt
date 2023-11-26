@@ -794,9 +794,14 @@ public TreeItem getItem (int index) {
 	checkWidget();
 	if (index < 0) error (SWT.ERROR_INVALID_RANGE);
 	if (!parent.checkData (this)) error (SWT.ERROR_WIDGET_DISPOSED);
-	int itemCount = GTK.gtk_tree_model_iter_n_children (parent.modelHandle, handle);
-	if (index >= itemCount)  error (SWT.ERROR_INVALID_RANGE);
-	return  parent._getItem (handle, index);
+
+	long iter = OS.g_malloc (GTK.GtkTreeIter_sizeof ());
+	try {
+		if (!GTK.gtk_tree_model_iter_nth_child (parent.modelHandle, iter, handle, index)) error (SWT.ERROR_INVALID_RANGE);
+		return parent._getItem (handle, iter, index);
+	} finally {
+		OS.g_free (iter);
+	}
 }
 
 /**

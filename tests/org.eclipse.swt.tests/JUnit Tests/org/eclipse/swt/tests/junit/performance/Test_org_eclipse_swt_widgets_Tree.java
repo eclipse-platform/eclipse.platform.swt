@@ -211,6 +211,18 @@ public class Test_org_eclipse_swt_widgets_Tree {
 	}
 
 	@Test
+	public void dispose() {
+		assertMaximumDegree(1.2, n -> {
+			Tree tree = buildSubject(n, this::initializeItem);
+			breadthFirstTraverse(tree, item -> {
+				item.setExpanded(true);
+			});
+			return measureNanos(() -> tree.dispose());
+		});
+	}
+
+
+	@Test
 	public void getForeground() {
 		assertMaximumDegree(1.2, n -> {
 			Tree tree = buildSubject(n, this::initializeItem);
