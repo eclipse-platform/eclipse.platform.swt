@@ -1174,6 +1174,15 @@ public void test_setTextILjava_lang_String(){
 
 }
 
+@Test
+public void test_removeAll() {
+	TreeItem item = new TreeItem(treeItem, SWT.NONE);
+	assertEquals(1, treeItem.getItemCount());
+	treeItem.removeAll();
+	assertEquals(0, treeItem.getItemCount());
+	assertTrue(item.isDisposed());
+}
+
 /* custom */
 TreeItem treeItem;
 Tree tree;

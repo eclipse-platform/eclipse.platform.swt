@@ -181,6 +181,7 @@ void _addListener (int eventType, Listener listener) {
 }
 
 TreeItem _getItem (long iter) {
+	if (iter == 0) return null;
 	int id = getId (iter, true);
 	if (items [id] != null) return items [id];
 	long path = GTK.gtk_tree_model_get_path (modelHandle, iter);
@@ -193,7 +194,7 @@ TreeItem _getItem (long iter) {
 		parentIter = OS.g_malloc (GTK.GtkTreeIter_sizeof ());
 		GTK.gtk_tree_model_get_iter (modelHandle, parentIter, path);
 	}
-	items [id] = new TreeItem (this, parentIter, SWT.NONE, indices [indices.length -1], iter);
+	items [id] = new TreeItem (this, _getItem(parentIter), SWT.NONE, indices [indices.length -1], iter);
 	GTK.gtk_tree_path_free (path);
 	if (parentIter != 0) OS.g_free (parentIter);
 	return items [id];
@@ -202,7 +203,7 @@ TreeItem _getItem (long iter) {
 TreeItem _getItem (long parentIter, long iter, int index) {
 	int id = getId (iter, true);
 	if (items [id] != null) return items [id];
-	return items [id] = new TreeItem (this, parentIter, SWT.NONE, index, iter);
+	return items [id] = new TreeItem (this, _getItem(parentIter), SWT.NONE, index, iter);
 }
 
 void reallocateIds(int newSize) {
@@ -3524,7 +3525,7 @@ void setItemCount (long parentIter, int count) {
 		OS.g_free (iters);
 	} else {
 		for (int i=itemCount; i<count; i++) {
-			new TreeItem (this, parentIter, SWT.NONE, itemCount, 0);
+			new TreeItem (this, _getItem(parentIter), SWT.NONE, itemCount, 0);
 		}
 	}
 	if (!isVirtual) setRedraw (true);
