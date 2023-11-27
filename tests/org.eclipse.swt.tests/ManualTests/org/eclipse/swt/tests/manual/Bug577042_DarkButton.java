@@ -20,13 +20,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.widgets.Button;
-import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Listener;
-import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.*;
 
 public class Bug577042_DarkButton {
 	enum Colors {
@@ -79,52 +73,76 @@ public class Bug577042_DarkButton {
 			"3) Bug 577042: Colored buttons have thick light frame around them\n" +
 			"4) Bug 577042: On Windows 11, rounded corners are broken\n" +
 			"5) Bug 577042: Support native dark theme for Button (currently only PUSH and TOGGLE)\n" +
+			"6) Issue 848: in Default theme, press Alt. Some buttons will disappear\n" +
 			"NOTE: Click PUSH button to make it default (there could only be one default button)"
 		);
 		coloredControls.add(hint);
 
-		for (Themes theme : Themes.values())
-		for (Colors color : Colors.values())
+		// Test buttons
 		{
-			display.setData("org.eclipse.swt.internal.win32.useDarkModeExplorerTheme", theme == Themes.Dark);
+			Composite parent1 = new Composite(shell, 0);
+			parent1.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+			parent1.setLayout(new GridLayout(6, true));
+			coloredControls.add(parent1);
 
-			Label label = new Label(shell, 0);
-			label.setText("Theme:" + theme.name() + " Color:" + color.name());
-			coloredControls.add(label);
+			TabFolder tabFolder = new TabFolder(shell, 0);
+			coloredControls.add(tabFolder);
 
-			Composite composite = new Composite(shell, 0);
-			composite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-			composite.setLayout(new GridLayout(4, true));
-			coloredControls.add(composite);
+			Composite parent2 = new Composite(tabFolder, 0);
+			parent2.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+			parent2.setLayout(new GridLayout(6, true));
+			coloredControls.add(parent2);
 
-			Button button;
-			button = new Button(composite, SWT.PUSH);
-			button.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-			button.setText("This is a button");
-			final Button defaultButton = button;
-			button.addListener(SWT.Selection, e -> shell.setDefaultButton(defaultButton));
-			otherControls.add(button);
-			setColors(button, color);
+			TabItem tabItem = new TabItem(tabFolder, 0);
+			tabItem.setText("TabFolder - doesn't support theming, please ignore light frame");
+			tabItem.setControl(parent2);
 
-			button = new Button(composite, SWT.TOGGLE);
-			button.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-			button.setText("This is a toggle");
-			otherControls.add(button);
-			setColors(button, color);
+			Composite[] parents = new Composite[] {parent1, parent2};
 
-			button = new Button(composite, SWT.CHECK);
-			button.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-			button.setText("This is a checkbox");
-			otherControls.add(button);
-			setColors(button, color);
+			for (Composite parent : parents)
+			for (Themes theme : Themes.values())
+			for (Colors color : Colors.values())
+			{
+				display.setData("org.eclipse.swt.internal.win32.useDarkModeExplorerTheme", theme == Themes.Dark);
 
-			button = new Button(composite, SWT.RADIO);
-			button.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-			button.setText("This is a radio");
-			otherControls.add(button);
-			setColors(button, color);
+				Label label1 = new Label(parent, 0);
+				label1.setText("Theme:" + theme.name());
+				coloredControls.add(label1);
+
+				Label label2 = new Label(parent, 0);
+				label2.setText("Color:" + color.name());
+				coloredControls.add(label2);
+
+				Button button;
+				button = new Button(parent, SWT.PUSH);
+				button.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+				button.setText("&Push");
+				final Button defaultButton = button;
+				button.addListener(SWT.Selection, e -> shell.setDefaultButton(defaultButton));
+				otherControls.add(button);
+				setColors(button, color);
+
+				button = new Button(parent, SWT.TOGGLE);
+				button.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+				button.setText("&Toggle");
+				otherControls.add(button);
+				setColors(button, color);
+
+				button = new Button(parent, SWT.CHECK);
+				button.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+				button.setText("&Check");
+				otherControls.add(button);
+				setColors(button, color);
+
+				button = new Button(parent, SWT.RADIO);
+				button.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+				button.setText("&Radio");
+				otherControls.add(button);
+				setColors(button, color);
+			}
 		}
 
+		// Color selector
 		{
 			Composite composite = new Composite(shell, 0);
 			composite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));

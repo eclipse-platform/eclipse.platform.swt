@@ -1107,7 +1107,24 @@ LRESULT wmColorChild (long wParam, long lParam) {
 		// Button has "transparent" portions which need to be filled with
 		// parent's (and not Button's) background. For example, SWT.PUSH
 		// button ~2px transparent area around the button.
-		return parent.wmColorChild(wParam, lParam);
+
+		// Issue 848: Control.wmColorChild() contains a hack that paints entire
+		// rectangle if THEME_BACKGROUND is set. This causes problems when
+		// Windows sends WM_CTLCOLORBTN without repainting entire button -
+		// in this case, button "disappears" until painted again.
+		// It for example happens when all of:
+		// * Button is inside TabFolder
+		// * no background colors are set
+		// * alt key is pressed
+		// The workaround is to temporarily disable parent's 'THEME_BACKGROUND'
+		// to disable this hack.
+		final int oldFlag = parent.state & THEME_BACKGROUND;
+		try {
+			parent.state &= ~THEME_BACKGROUND;
+			return parent.wmColorChild(wParam, lParam);
+		} finally {
+			parent.state |= oldFlag;
+		}
 	}
 }
 
