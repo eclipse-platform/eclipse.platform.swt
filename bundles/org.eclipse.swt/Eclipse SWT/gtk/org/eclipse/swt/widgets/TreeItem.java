@@ -45,6 +45,7 @@ public class TreeItem extends Item {
 	Font[] cellFont;
 	String [] strings;
 	boolean cached, grayed, isExpanded, updated, settingData;
+	private TreeItem [] itemCache;
 	static final int EXPANDER_EXTRA_PADDING = 4;
 
 /**
@@ -70,7 +71,7 @@ public class TreeItem extends Item {
  * @see Widget#getStyle
  */
 public TreeItem (Tree parent, int style) {
-	this (checkNull (parent), 0, style, -1, true);
+	this (checkNull (parent), null, style, -1, 0);
 }
 
 /**
@@ -103,7 +104,7 @@ public TreeItem (Tree parent, int style) {
  * @see Tree#setRedraw
  */
 public TreeItem (Tree parent, int style, int index) {
-	this (checkNull (parent), 0, style, checkIndex (index), true);
+	this (checkNull (parent), null, style, checkIndex (index), 0);
 }
 
 /**
@@ -129,7 +130,7 @@ public TreeItem (Tree parent, int style, int index) {
  * @see Widget#getStyle
  */
 public TreeItem (TreeItem parentItem, int style) {
-	this (checkNull (parentItem).parent, parentItem.handle, style, -1, true);
+	this (checkNull (parentItem).parent, parentItem, style, -1, 0);
 }
 
 /**
@@ -158,17 +159,21 @@ public TreeItem (TreeItem parentItem, int style) {
  * @see Tree#setRedraw
  */
 public TreeItem (TreeItem parentItem, int style, int index) {
-	this (checkNull (parentItem).parent, parentItem.handle, style, checkIndex (index), true);
+	this (checkNull (parentItem).parent, parentItem, style, checkIndex (index), 0);
 }
 
-TreeItem (Tree parent, long parentIter, int style, int index, boolean create) {
+TreeItem (Tree parent, TreeItem parentItem, int style, int index, long iter) {
 	super (parent, style);
 	this.parent = parent;
-	if (create) {
+	long parentIter = parentItem != null ? parentItem.handle : 0;
+	if (iter == 0) {
+		if (parentItem != null) parentItem.itemCache = null;
 		parent.createItem (this, parentIter, index);
 	} else {
+		assert handle == 0;
 		handle = OS.g_malloc (GTK.GtkTreeIter_sizeof ());
-		GTK.gtk_tree_model_iter_nth_child (parent.modelHandle, handle, parentIter, index);
+		if (handle == 0) error(SWT.ERROR_NO_HANDLES);
+		C.memmove(handle, iter, GTK.GtkTreeIter_sizeof ());
 	}
 }
 
@@ -347,6 +352,10 @@ public void clearAll (boolean all) {
 
 @Override
 void destroyWidget () {
+	TreeItem parentItem = getParentItem ();
+	if (parentItem != null) {
+		parentItem.itemCache = null;
+	}
 	parent.releaseItem (this, false);
 	parent.destroyItem (this);
 	releaseHandle ();
@@ -768,6 +777,7 @@ Rectangle getImageBoundsInPixels (int index) {
 public int getItemCount () {
 	checkWidget();
 	if (!parent.checkData (this)) error (SWT.ERROR_WIDGET_DISPOSED);
+	if (itemCache != null) return itemCache.length;
 	return GTK.gtk_tree_model_iter_n_children (parent.modelHandle, handle);
 }
 
@@ -792,9 +802,18 @@ public TreeItem getItem (int index) {
 	checkWidget();
 	if (index < 0) error (SWT.ERROR_INVALID_RANGE);
 	if (!parent.checkData (this)) error (SWT.ERROR_WIDGET_DISPOSED);
-	int itemCount = GTK.gtk_tree_model_iter_n_children (parent.modelHandle, handle);
-	if (index >= itemCount)  error (SWT.ERROR_INVALID_RANGE);
-	return  parent._getItem (handle, index);
+
+	if (itemCache != null) {
+		if (itemCache.length <= index) error (SWT.ERROR_INVALID_RANGE);
+		return itemCache [index];
+	}
+	long iter = OS.g_malloc (GTK.GtkTreeIter_sizeof ());
+	try {
+		if (!GTK.gtk_tree_model_iter_nth_child (parent.modelHandle, iter, handle, index)) error (SWT.ERROR_INVALID_RANGE);
+		return parent._getItem (handle, iter, index);
+	} finally {
+		OS.g_free (iter);
+	}
 }
 
 /**
@@ -816,7 +835,8 @@ public TreeItem getItem (int index) {
 public TreeItem [] getItems () {
 	checkWidget();
 	if (!parent.checkData (this)) error (SWT.ERROR_WIDGET_DISPOSED);
-	return parent.getItems (handle);
+	if (itemCache != null) return itemCache;
+	return itemCache = parent.getItems (handle);
 }
 
 @Override
@@ -1628,6 +1648,7 @@ public void setImage (Image [] images) {
  */
 public void setItemCount (int count) {
 	checkWidget ();
+	itemCache = null;
 	count = Math.max (0, count);
 	parent.setItemCount (handle, count);
 }
