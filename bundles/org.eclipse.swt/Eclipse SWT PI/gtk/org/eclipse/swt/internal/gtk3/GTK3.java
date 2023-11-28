@@ -917,11 +917,6 @@ public class GTK3 {
 
 	/* GtkStyleContext */
 	/**
-	 * @method flags=ignore_deprecations
-	 * @param context cast=(GtkStyleContext *)
-	 */
-	public static final native void gtk_style_context_invalidate(long context);
-	/**
 	 * @param screen cast=(GdkScreen *)
 	 * @param provider cast=(GtkStyleProvider *)
 	 * @param priority cast=(guint)
