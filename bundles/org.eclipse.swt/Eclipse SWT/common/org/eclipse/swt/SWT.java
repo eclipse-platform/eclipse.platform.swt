@@ -260,7 +260,11 @@ public class SWT {
 	/**
 	 * The dispose event type (value is 12).<br>
 	 * <br>
-	 * Note: {@link Display} still runs {@link Display#readAndDispatch}
+	 * Note: This event is sent to indicate the beginning of the
+	 * disposing process. For a {@link Composite} this event is
+	 * sent before it is sent to its children, before any child
+	 * has been disposed.
+	 * {@link Display} still runs {@link Display#readAndDispatch}
 	 * after sending this event. If you want to dispose any resources,
 	 * this might cause problems. Use {@link Display#disposeExec}
 	 * instead.
