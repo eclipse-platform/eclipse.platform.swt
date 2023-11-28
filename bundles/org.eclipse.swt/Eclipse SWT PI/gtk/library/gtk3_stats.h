@@ -165,7 +165,6 @@ typedef enum {
 	gtk_1style_1context_1get_1font_FUNC,
 	gtk_1style_1context_1get_1padding_FUNC,
 	gtk_1style_1context_1get_1parent_FUNC,
-	gtk_1style_1context_1invalidate_FUNC,
 	gtk_1target_1list_1new_FUNC,
 	gtk_1target_1list_1unref_FUNC,
 	gtk_1text_1view_1get_1window_FUNC,
