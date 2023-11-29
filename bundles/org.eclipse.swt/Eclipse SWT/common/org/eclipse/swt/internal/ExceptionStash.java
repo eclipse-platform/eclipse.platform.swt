@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2021 Syntevo and others.
+ * Copyright (c) 2021, 2023 Syntevo and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -59,12 +59,12 @@ public void stash(Throwable throwable) {
 	try {
 		Display display = Display.getCurrent ();
 		if (display != null) {
-			if (throwable instanceof RuntimeException) {
-				display.getRuntimeExceptionHandler().accept((RuntimeException)throwable);
+			if (throwable instanceof RuntimeException runtimeEx) {
+				display.getRuntimeExceptionHandler().accept(runtimeEx);
 				/* If handler doesn't throw then the exception is fully handled */
 				return;
-			} else if (throwable instanceof Error) {
-				display.getErrorHandler().accept((Error)throwable);
+			} else if (throwable instanceof Error er) {
+				display.getErrorHandler().accept(er);
 				/* If handler doesn't throw then the exception is fully handled */
 				return;
 			}
@@ -88,10 +88,10 @@ public void close() {
 	Throwable throwable = storedThrowable;
 	storedThrowable = null;
 
-	if (throwable instanceof RuntimeException) {
-		throw (RuntimeException)throwable;
-	} else if (throwable instanceof Error) {
-		throw (Error)throwable;
+	if (throwable instanceof RuntimeException runtimeEx) {
+		throw runtimeEx;
+	} else if (throwable instanceof Error er) {
+		throw er;
 	}
 }
 
