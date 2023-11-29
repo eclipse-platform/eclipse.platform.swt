@@ -41,8 +41,8 @@ pipeline {
 	options {
 		skipDefaultCheckout() // Specialiced checkout is performed below
 		timestamps()
-		timeout(time: 180, unit: 'MINUTES')
-		buildDiscarder(logRotator(numToKeepStr:'5'))
+		timeout(time: 240, unit: 'MINUTES')
+		buildDiscarder(logRotator(numToKeepStr:'10'))
 		disableConcurrentBuilds(abortPrevious: true)
 	}
 	agent {
@@ -77,7 +77,7 @@ pipeline {
 				}
 				dir ('eclipse.platform.swt.binaries') {
 					checkout([$class: 'GitSCM', branches: [[name: 'refs/heads/master']],
-						extensions: [[$class: 'CloneOption', timeout: 120, noTags: false ]],
+						extensions: [[$class: 'CloneOption', timeout: 180, noTags: false ]],
 						userRemoteConfigs: [[url: 'https://github.com/eclipse-platform/eclipse.platform.swt.binaries.git']]
 					])
 					sh 'git remote set-url --push origin git@github.com:eclipse-platform/eclipse.platform.swt.binaries.git'
@@ -130,7 +130,7 @@ pipeline {
 					}
 					stage('Build SWT-natives') {
 						options {
-							timeout(time: 120, unit: 'MINUTES') // Some build agents are rare and it might take awhile until they are available.
+							timeout(time: 240, unit: 'MINUTES') // Some build agents are rare and it might take awhile until they are available.
 						}
 						steps {
 							script {
