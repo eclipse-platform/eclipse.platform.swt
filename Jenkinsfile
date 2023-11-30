@@ -53,7 +53,7 @@ pipeline {
 		PR_VALIDATION_BUILD = "true"
 	}
 	parameters {
-		booleanParam(name: 'forceNativeBuilds', defaultValue: false, description: 'Forces to run the native builds of swt\'s binaries. Useful in debugging.')
+		booleanParam(name: 'forceNativeBuilds', defaultValue: false, description: 'Forces to run the native builds of swt\'s binaries. Will push the built binaries to the master branch, unless \'skipCommit\' is set. Useful in debugging.')
 		booleanParam(name: 'skipCommit', defaultValue: false, description: 'Stops committing to swt and swt binaries repo at the end. Useful in debugging.')
 	}
 	stages {
@@ -64,7 +64,7 @@ pipeline {
 					script {
 						def authorMail = sh(script: 'git log -1 --pretty=format:"%ce" HEAD', returnStdout: true)
 						echo 'HEAD commit author: ' + authorMail
-						if ('eclipse-releng-bot@eclipse.org'.equals(authorMail)) {
+						if ('eclipse-releng-bot@eclipse.org'.equals(authorMail) && !params.forceNativeBuilds) {
 							// Prevent endless build-loops due to self triggering because of a previous automated build of SWT-natives and the associated updates.
 							currentBuild.result = 'ABORTED'
 							error('Abort build only triggered by automated SWT-natives update.')
