@@ -1190,4 +1190,36 @@ public void test_setItemCount_itemCount2() {
 	});
 }
 
+@Test
+public void test_persistExpandStatusForInvisibleItems() throws InterruptedException {
+	tree.dispose();
+	tree = new Tree(shell, SWT.VIRTUAL);
+	setWidget(tree);
+	shell.setLayout(new FillLayout());
+	SwtTestUtil.openShell(shell);
+	int itemCount[] = new int[] {1};
+	List<TreeItem> dataRequests = new ArrayList<>();
+	tree.addListener(SWT.SetData, event -> {
+		TreeItem item = (TreeItem) event.item;
+		dataRequests.add(item);
+		item.setText("item"+itemCount[0]++);
+		item.setItemCount(1);
+	});
+	TreeItem item1 = new TreeItem(tree, SWT.NONE);
+	TreeItem item2 = item1.getItem(0);
+	TreeItem item3 = item2.getItem(0);
+	assertTrue(dataRequests.remove(item1));
+	assertTrue(dataRequests.remove(item2));
+	assertTrue(dataRequests.isEmpty());
+	item2.setExpanded(true);
+	assertTrue(dataRequests.isEmpty());
+	item1.setExpanded(true);
+	// Item 3 is now visible and should request data
+	SwtTestUtil.processEvents(10000, () -> !dataRequests.isEmpty());
+	assertFalse(dataRequests.isEmpty());
+	assertTrue(item1.getExpanded());
+	assertTrue(item2.getExpanded());
+	assertFalse(item3.getExpanded());
+}
+
 }
