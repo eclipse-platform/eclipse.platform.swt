@@ -251,6 +251,12 @@ void clearSizeCache(boolean changed) {
 			OS.SendMessage (handle, OS.TB_GETITEMRECT, count - 1, rect);
 			width = Math.max (width, rect.right);
 			height = Math.max (height, rect.bottom);
+			// If a Separator has a control, its height might exceed the height of the Items
+			for (ToolItem item: items) {
+				if (item != null && item.getControl() != null) {
+					height = Math.max (height, item.getControl().getBoundsInPixels().height);
+				}
+			}
 		}
 		OS.SetWindowPos (handle, 0, 0, 0, oldWidth, oldHeight, flags);
 		if (redraw) OS.ValidateRect (handle, null);
