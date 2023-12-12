@@ -2463,16 +2463,11 @@ static void jpeg_calc_output_dimensions (jpeg_decompress_struct cinfo)
 	/* Report number of components in selected colorspace. */
 	/* Probably this should be in the color conversion module... */
 	cinfo.out_color_components = switch (cinfo.out_color_space) {
-	case JCS_GRAYSCALE:
-		yield 1;
-	case JCS_RGB:
-	case JCS_YCbCr:
-		yield 3;
-	case JCS_CMYK:
-	case JCS_YCCK:
-		yield 4;
-	default:			/* else must be same colorspace as in file */
-		yield cinfo.num_components;
+
+	case JCS_GRAYSCALE -> 1;
+	case JCS_RGB,JCS_YCbCr -> 3;
+	case JCS_CMYK,JCS_YCCK-> 4;
+	default->cinfo.num_components;/* else must be same colorspace as in file */
 	};
 	cinfo.output_components = (cinfo.quantize_colors ? 1 : cinfo.out_color_components);
 

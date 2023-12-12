@@ -236,13 +236,12 @@ void writeTransparency() {
 void writeImageData() throws IOException {
 
 	ByteArrayOutputStream baos = new ByteArrayOutputStream(1024);
-	OutputStream os = null;
-	os = switch (loader.compression) {
-	case 0 -> new DeflaterOutputStream(baos, new Deflater(NO_COMPRESSION));
-	case 1 -> new DeflaterOutputStream(baos, new Deflater(BEST_SPEED));
-	case 3 -> new DeflaterOutputStream(baos, new Deflater(BEST_COMPRESSION));
-	default -> new DeflaterOutputStream(baos, new Deflater(DEFAULT_COMPRESSION));
-	};
+	OutputStream os = new DeflaterOutputStream(baos, new Deflater(switch (loader.compression) {
+	case 0 -> NO_COMPRESSION;
+	case 1 -> BEST_SPEED;
+	case 3 -> BEST_COMPRESSION;
+	default -> DEFAULT_COMPRESSION;
+	}));
 
 	if (colorType == 3) {
 

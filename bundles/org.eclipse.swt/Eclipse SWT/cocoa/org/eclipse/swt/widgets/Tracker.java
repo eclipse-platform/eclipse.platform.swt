@@ -249,18 +249,14 @@ Point adjustResizeCursor (boolean movePointer) {
 	* the appropriate resize cursor.
 	*/
 	if (clientCursor == null) {
-		Cursor newCursor = null;
-		newCursor = switch (cursorOrientation) {
-		case SWT.UP -> new Cursor(display, SWT.CURSOR_SIZENS);
-		case SWT.DOWN -> new Cursor(display, SWT.CURSOR_SIZENS);
-		case SWT.LEFT -> new Cursor(display, SWT.CURSOR_SIZEWE);
-		case SWT.RIGHT -> new Cursor(display, SWT.CURSOR_SIZEWE);
-		case SWT.LEFT | SWT.UP -> new Cursor(display, SWT.CURSOR_SIZENWSE);
-		case SWT.RIGHT | SWT.DOWN -> new Cursor(display, SWT.CURSOR_SIZENWSE);
-		case SWT.LEFT | SWT.DOWN -> new Cursor(display, SWT.CURSOR_SIZENESW);
-		case SWT.RIGHT | SWT.UP -> new Cursor(display, SWT.CURSOR_SIZENESW);
-		default -> new Cursor(display, SWT.CURSOR_SIZEALL);
-		};
+		Cursor newCursor = new Cursor(display, switch (cursorOrientation) {
+		  case SWT.UP, SWT.DOWN -> SWT.CURSOR_SIZENS;
+		  case SWT.LEFT, SWT.RIGHT -> SWT.CURSOR_SIZEWE;
+		  case (SWT.LEFT | SWT.UP ), (SWT.RIGHT | SWT.DOWN)-> SWT.CURSOR_SIZENWSE;
+		  case (SWT.LEFT | SWT.DOWN), (SWT.RIGHT | SWT.UP) -> SWT.CURSOR_SIZENESW;
+		  default -> SWT.CURSOR_SIZEALL;
+
+		});
 		display.lockCursor = false;
 		newCursor.handle.set();
 		display.lockCursor = true;

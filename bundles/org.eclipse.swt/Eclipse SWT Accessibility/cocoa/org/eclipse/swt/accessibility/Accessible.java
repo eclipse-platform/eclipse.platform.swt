@@ -1670,8 +1670,7 @@ public class Accessible {
 				if (ts.underline) {
 					int style = ts.underlineStyle;
 					NSString attribute = OS.NSAccessibilityUnderlineTextAttribute;
-					NSNumber styleObj = null;
-					styleObj = switch (style) {
+					NSNumber styleObj = switch (style) {
 					case SWT.UNDERLINE_SINGLE -> NSNumber.numberWithInt(OS.kAXUnderlineStyleSingle);
 					case SWT.UNDERLINE_DOUBLE -> NSNumber.numberWithInt(OS.kAXUnderlineStyleDouble);
 					case SWT.UNDERLINE_SQUIGGLE -> {
@@ -1715,9 +1714,8 @@ public class Accessible {
 
 		if (docAttributes.indent != Integer.MAX_VALUE) {
 			NSMutableDictionary paragraphDict = NSMutableDictionary.dictionaryWithCapacity(3);
-			int osAlignment = 0;
 			// FIXME: Doesn't account for right-to-left text?
-			osAlignment = switch (docAttributes.alignment) {
+			int osAlignment = switch (docAttributes.alignment) {
 			case SWT.CENTER -> OS.NSTextAlignmentCenter;
 			case SWT.RIGHT -> OS.NSTextAlignmentRight;
 			case SWT.LEFT -> OS.NSTextAlignmentLeft;
