@@ -533,29 +533,29 @@ String getName () {
 @Override
 public String toString () {
 	String hAlign = "";
-	switch (horizontalAlignment) {
-		case SWT.FILL: hAlign = "SWT.FILL"; break;
-		case SWT.BEGINNING: hAlign = "SWT.BEGINNING"; break;
-		case SWT.LEFT: hAlign = "SWT.LEFT"; break;
-		case SWT.END: hAlign = "SWT.END"; break;
-		case END: hAlign = "GridData.END"; break;
-		case SWT.RIGHT: hAlign = "SWT.RIGHT"; break;
-		case SWT.CENTER: hAlign = "SWT.CENTER"; break;
-		case CENTER: hAlign = "GridData.CENTER"; break;
-		default: hAlign = "Undefined "+horizontalAlignment; break;
-	}
+	hAlign = switch (horizontalAlignment) {
+	case SWT.FILL -> "SWT.FILL";
+	case SWT.BEGINNING -> "SWT.BEGINNING";
+	case SWT.LEFT -> "SWT.LEFT";
+	case SWT.END -> "SWT.END";
+	case END -> "GridData.END";
+	case SWT.RIGHT -> "SWT.RIGHT";
+	case SWT.CENTER -> "SWT.CENTER";
+	case CENTER -> "GridData.CENTER";
+	default -> "Undefined "+horizontalAlignment;
+	};
 	String vAlign = "";
-	switch (verticalAlignment) {
-		case SWT.FILL: vAlign = "SWT.FILL"; break;
-		case SWT.BEGINNING: vAlign = "SWT.BEGINNING"; break;
-		case SWT.TOP: vAlign = "SWT.TOP"; break;
-		case SWT.END: vAlign = "SWT.END"; break;
-		case END: vAlign = "GridData.END"; break;
-		case SWT.BOTTOM: vAlign = "SWT.BOTTOM"; break;
-		case SWT.CENTER: vAlign = "SWT.CENTER"; break;
-		case CENTER: vAlign = "GridData.CENTER"; break;
-		default: vAlign = "Undefined "+verticalAlignment; break;
-	}
+	vAlign = switch (verticalAlignment) {
+	case SWT.FILL -> "SWT.FILL";
+	case SWT.BEGINNING -> "SWT.BEGINNING";
+	case SWT.TOP -> "SWT.TOP";
+	case SWT.END -> "SWT.END";
+	case END -> "GridData.END";
+	case SWT.BOTTOM -> "SWT.BOTTOM";
+	case SWT.CENTER -> "SWT.CENTER";
+	case CENTER -> "GridData.CENTER";
+	default -> "Undefined "+verticalAlignment;
+	};
 	String string = getName()+" {";
 	string += "horizontalAlignment="+hAlign+" ";
 	if (horizontalIndent != 0) string += "horizontalIndent="+horizontalIndent+" ";

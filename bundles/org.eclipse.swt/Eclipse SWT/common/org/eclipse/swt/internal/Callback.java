@@ -122,15 +122,14 @@ public Callback (Object object, String method, int argCount, boolean isArrayBase
 	if (isArrayBased) {
 		signature = SIGNATURE_N;
 	} else {
-		switch (argCount) {
-			case 0: signature = SIGNATURE_0; break; //$NON-NLS-1$
-			case 1: signature = SIGNATURE_1; break; //$NON-NLS-1$
-			case 2: signature = SIGNATURE_2; break; //$NON-NLS-1$
-			case 3: signature = SIGNATURE_3; break; //$NON-NLS-1$
-			case 4: signature = SIGNATURE_4; break; //$NON-NLS-1$
-			default:
-				signature = getSignature(argCount);
-		}
+		signature = switch (argCount) {
+		case 0 -> SIGNATURE_0;
+		case 1 -> SIGNATURE_1;
+		case 2 -> SIGNATURE_2;
+		case 3 -> SIGNATURE_3;
+		case 4 -> SIGNATURE_4;
+		default -> getSignature(argCount);
+		};
 	}
 
 	/* Bind the address */

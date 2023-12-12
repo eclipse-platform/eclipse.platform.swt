@@ -237,20 +237,12 @@ void writeImageData() throws IOException {
 
 	ByteArrayOutputStream baos = new ByteArrayOutputStream(1024);
 	OutputStream os = null;
-	switch (loader.compression) {
-	case 0:
-		os = new DeflaterOutputStream(baos, new Deflater(NO_COMPRESSION));
-		break;
-	case 1:
-		os = new DeflaterOutputStream(baos, new Deflater(BEST_SPEED));
-		break;
-	case 3:
-		os = new DeflaterOutputStream(baos, new Deflater(BEST_COMPRESSION));
-		break;
-	default:
-		os = new DeflaterOutputStream(baos, new Deflater(DEFAULT_COMPRESSION));
-		break;
-	}
+	os = switch (loader.compression) {
+	case 0 -> new DeflaterOutputStream(baos, new Deflater(NO_COMPRESSION));
+	case 1 -> new DeflaterOutputStream(baos, new Deflater(BEST_SPEED));
+	case 3 -> new DeflaterOutputStream(baos, new Deflater(BEST_COMPRESSION));
+	default -> new DeflaterOutputStream(baos, new Deflater(DEFAULT_COMPRESSION));
+	};
 
 	if (colorType == 3) {
 

@@ -94,20 +94,14 @@ public final class BorderData {
 	}
 
 	static String getRegionString(int region) {
-		switch (region) {
-		case SWT.TOP:
-			return "SWT.TOP";
-		case SWT.RIGHT:
-			return "SWT.RIGHT";
-		case SWT.BOTTOM:
-			return "SWT.BOTTOM";
-		case SWT.LEFT:
-			return "SWT.LEFT";
-		case SWT.CENTER:
-			return "SWT.CENTER";
-		default:
-			return "SWT.NONE";
-		}
+		return switch (region) {
+		case SWT.TOP -> "SWT.TOP";
+		case SWT.RIGHT -> "SWT.RIGHT";
+		case SWT.BOTTOM -> "SWT.BOTTOM";
+		case SWT.LEFT -> "SWT.LEFT";
+		case SWT.CENTER -> "SWT.CENTER";
+		default -> "SWT.NONE";
+		};
 	}
 
 	/**
@@ -116,16 +110,10 @@ public final class BorderData {
 	 *         range
 	 */
 	int getRegion() {
-		switch (region) {
-		case TOP:
-		case BOTTOM:
-		case CENTER:
-		case RIGHT:
-		case LEFT:
-			return region;
-		case SWT.NONE:
-		default:
-			return SWT.NONE;
-		}
+		return switch (region) {
+		case TOP, BOTTOM, CENTER, RIGHT, LEFT -> region;
+		case SWT.NONE -> SWT.NONE;
+		default -> SWT.NONE;
+		};
 	}
 }

@@ -41,26 +41,13 @@ int getChunkType() {
 }
 
 void validateLength(PngIhdrChunk header, PngPlteChunk paletteChunk) {
-	boolean valid;
-	switch (header.getColorType()) {
-		case PngIhdrChunk.COLOR_TYPE_RGB:
-			// Three 2-byte values (RGB)
-			valid = getLength() == 6;
-			break;
-		case PngIhdrChunk.COLOR_TYPE_PALETTE:
-			// Three 2-byte values (RGB)
-			valid = getLength() <= paletteChunk.getLength();
-			break;
-		case PngIhdrChunk.COLOR_TYPE_GRAYSCALE:
-			// One 2-byte value
-			valid = getLength() == 2;
-			break;
-		// Cannot use both Alpha and tRNS
-		case PngIhdrChunk.COLOR_TYPE_RGB_WITH_ALPHA:
-		case PngIhdrChunk.COLOR_TYPE_GRAYSCALE_WITH_ALPHA:
-		default:
-			valid = false;
-	}
+	boolean valid = switch (header.getColorType()) {
+	case PngIhdrChunk.COLOR_TYPE_RGB -> /* Three 2-byte values (RGB) */ getLength() == 6;
+	case PngIhdrChunk.COLOR_TYPE_PALETTE -> /* Three 2-byte values (RGB) */ getLength() <= paletteChunk.getLength();
+	case PngIhdrChunk.COLOR_TYPE_GRAYSCALE -> /* One 2-byte value */ getLength() == 2;
+	case PngIhdrChunk.COLOR_TYPE_RGB_WITH_ALPHA, PngIhdrChunk.COLOR_TYPE_GRAYSCALE_WITH_ALPHA -> false;
+	default -> false;
+	};
 	if (!valid) {
 		SWT.error(SWT.ERROR_INVALID_IMAGE);
 	}
