@@ -231,14 +231,12 @@ private static ImageData autoScaleImageData (Device device, final ImageData imag
 	int height = imageData.height;
 	int scaledWidth = Math.round ((float) width * scaleFactor);
 	int scaledHeight = Math.round ((float) height * scaleFactor);
-	switch (autoScaleMethod) {
-	case SMOOTH:
+	return switch (autoScaleMethod) {
+	case SMOOTH -> {
 		Image original = new Image (device, (ImageDataProvider) zoom -> imageData);
-
 		/* Create a 24 bit image data with alpha channel */
 		final ImageData resultData = new ImageData (scaledWidth, scaledHeight, 24, new PaletteData (0xFF, 0xFF00, 0xFF0000));
 		resultData.alphaData = new byte [scaledWidth * scaledHeight];
-
 		Image resultImage = new Image (device, (ImageDataProvider) zoom -> resultData);
 		GC gc = new GC (resultImage);
 		gc.setAntialias (SWT.ON);
@@ -251,11 +249,10 @@ private static ImageData autoScaleImageData (Device device, final ImageData imag
 		original.dispose ();
 		ImageData result = resultImage.getImageData (DPIUtil.getDeviceZoom ());
 		resultImage.dispose ();
-		return result;
-	case NEAREST:
-	default:
-		return imageData.scaledTo (scaledWidth, scaledHeight);
+		yield result;
 	}
+	default -> imageData.scaledTo (scaledWidth, scaledHeight);
+	};
 }
 
 /**
@@ -461,7 +458,7 @@ public static int getZoomForAutoscaleProperty (int nativeDeviceZoom) {
 		if ("false".equalsIgnoreCase (autoScaleValue)) {
 			zoom = 100;
 		} else if ("half".equalsIgnoreCase (autoScaleValue)) {
-			// Math.round rounds 125->150 and 175->200, 
+			// Math.round rounds 125->150 and 175->200,
 			// Math.rint rounds 125->100 and 175->200 matching
 			// "integer200"
 			zoom = (int) Math.rint(nativeDeviceZoom / 50d) * 50;

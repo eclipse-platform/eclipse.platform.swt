@@ -270,33 +270,33 @@ void validate(PngFileReadState readState, PngIhdrChunk headerChunk) {
 }
 
 String getColorTypeString() {
-	switch (colorType) {
-		case COLOR_TYPE_GRAYSCALE: 				return "Grayscale";
-		case COLOR_TYPE_RGB: 					return "RGB";
-		case COLOR_TYPE_PALETTE:				return "Palette";
-		case COLOR_TYPE_GRAYSCALE_WITH_ALPHA:	return "Grayscale with Alpha";
-		case COLOR_TYPE_RGB_WITH_ALPHA:			return "RGB with Alpha";
-		default:								return "Unknown - " + colorType;
-	}
+	return switch (colorType) {
+	case COLOR_TYPE_GRAYSCALE -> "Grayscale";
+	case COLOR_TYPE_RGB -> "RGB";
+	case COLOR_TYPE_PALETTE -> "Palette";
+	case COLOR_TYPE_GRAYSCALE_WITH_ALPHA -> "Grayscale with Alpha";
+	case COLOR_TYPE_RGB_WITH_ALPHA -> "RGB with Alpha";
+	default -> "Unknown - " + colorType;
+	};
 }
 
 String getFilterMethodString() {
-	switch (filterMethod) {
-		case FILTER_NONE:		return "None";
-		case FILTER_SUB:		return "Sub";
-		case FILTER_UP:			return "Up";
-		case FILTER_AVERAGE:	return "Average";
-		case FILTER_PAETH:		return "Paeth";
-		default:				return "Unknown";
-	}
+	return switch (filterMethod) {
+	case FILTER_NONE -> "None";
+	case FILTER_SUB -> "Sub";
+	case FILTER_UP -> "Up";
+	case FILTER_AVERAGE -> "Average";
+	case FILTER_PAETH -> "Paeth";
+	default -> "Unknown";
+	};
 }
 
 String getInterlaceMethodString() {
-	switch (interlaceMethod) {
-		case INTERLACE_METHOD_NONE: 	return "Not Interlaced";
-		case INTERLACE_METHOD_ADAM7:	return "Interlaced - ADAM7";
-		default:				return "Unknown";
-	}
+	return switch (interlaceMethod) {
+	case INTERLACE_METHOD_NONE -> "Not Interlaced";
+	case INTERLACE_METHOD_ADAM7 -> "Interlaced - ADAM7";
+	default -> "Unknown";
+	};
 }
 
 @Override
@@ -331,20 +331,16 @@ boolean getCanHavePalette() {
  * and bit depth.
  */
 int getBitsPerPixel() {
-	switch (colorType) {
-		case COLOR_TYPE_RGB_WITH_ALPHA:
-			return 4 * bitDepth;
-		case COLOR_TYPE_RGB:
-			return 3 * bitDepth;
-		case COLOR_TYPE_GRAYSCALE_WITH_ALPHA:
-			return 2 * bitDepth;
-		case COLOR_TYPE_GRAYSCALE:
-		case COLOR_TYPE_PALETTE:
-			return bitDepth;
-		default:
-			SWT.error(SWT.ERROR_INVALID_IMAGE);
-			return 0;
+	return switch (colorType) {
+	case COLOR_TYPE_RGB_WITH_ALPHA -> 4 * bitDepth;
+	case COLOR_TYPE_RGB -> 3 * bitDepth;
+	case COLOR_TYPE_GRAYSCALE_WITH_ALPHA -> 2 * bitDepth;
+	case COLOR_TYPE_GRAYSCALE, COLOR_TYPE_PALETTE -> bitDepth;
+	default -> {
+		SWT.error(SWT.ERROR_INVALID_IMAGE);
+		yield 0;
 	}
+	};
 }
 
 /**
@@ -352,18 +348,14 @@ int getBitsPerPixel() {
  * and bit depth.
  */
 int getSwtBitsPerPixel() {
-	switch (colorType) {
-		case COLOR_TYPE_RGB_WITH_ALPHA:
-		case COLOR_TYPE_RGB:
-		case COLOR_TYPE_GRAYSCALE_WITH_ALPHA:
-			return 24;
-		case COLOR_TYPE_GRAYSCALE:
-		case COLOR_TYPE_PALETTE:
-			return Math.min(bitDepth, 8);
-		default:
-			SWT.error(SWT.ERROR_INVALID_IMAGE);
-			return 0;
+	return switch (colorType) {
+	case COLOR_TYPE_RGB_WITH_ALPHA, COLOR_TYPE_RGB, COLOR_TYPE_GRAYSCALE_WITH_ALPHA -> 24;
+	case COLOR_TYPE_GRAYSCALE, COLOR_TYPE_PALETTE -> Math.min(bitDepth, 8);
+	default -> {
+		SWT.error(SWT.ERROR_INVALID_IMAGE);
+		yield 0;
 	}
+	};
 }
 
 int getFilterByteOffset() {
@@ -372,15 +364,10 @@ int getFilterByteOffset() {
 }
 
 boolean usesDirectColor() {
-	switch (colorType) {
-		case COLOR_TYPE_GRAYSCALE:
-		case COLOR_TYPE_GRAYSCALE_WITH_ALPHA:
-		case COLOR_TYPE_RGB:
-		case COLOR_TYPE_RGB_WITH_ALPHA:
-			return true;
-		default:
-			return false;
-	}
+	return switch (colorType) {
+	case COLOR_TYPE_GRAYSCALE, COLOR_TYPE_GRAYSCALE_WITH_ALPHA, COLOR_TYPE_RGB, COLOR_TYPE_RGB_WITH_ALPHA -> true;
+	default -> false;
+	};
 }
 
 PaletteData createGrayscalePalette() {
@@ -397,16 +384,11 @@ PaletteData createGrayscalePalette() {
 }
 
 PaletteData getPaletteData() {
-	switch (colorType) {
-		case COLOR_TYPE_GRAYSCALE:
-			return createGrayscalePalette();
-		case COLOR_TYPE_GRAYSCALE_WITH_ALPHA:
-		case COLOR_TYPE_RGB:
-		case COLOR_TYPE_RGB_WITH_ALPHA:
-			return new PaletteData(0xFF0000, 0xFF00, 0xFF);
-		default:
-			return null;
-	}
+	return switch (colorType) {
+	case COLOR_TYPE_GRAYSCALE -> createGrayscalePalette();
+	case COLOR_TYPE_GRAYSCALE_WITH_ALPHA, COLOR_TYPE_RGB, COLOR_TYPE_RGB_WITH_ALPHA -> new PaletteData(0xFF0000, 0xFF00, 0xFF);
+	default -> null;
+	};
 }
 
 

@@ -1670,21 +1670,15 @@ public class Accessible {
 				if (ts.underline) {
 					int style = ts.underlineStyle;
 					NSString attribute = OS.NSAccessibilityUnderlineTextAttribute;
-					NSNumber styleObj = null;
-					switch (style) {
-					case SWT.UNDERLINE_SINGLE:
-						styleObj = NSNumber.numberWithInt(OS.kAXUnderlineStyleSingle);
-						break;
-					case SWT.UNDERLINE_DOUBLE:
-						styleObj = NSNumber.numberWithInt(OS.kAXUnderlineStyleDouble);
-						break;
-					case SWT.UNDERLINE_SQUIGGLE:
+					NSNumber styleObj = switch (style) {
+					case SWT.UNDERLINE_SINGLE -> NSNumber.numberWithInt(OS.kAXUnderlineStyleSingle);
+					case SWT.UNDERLINE_DOUBLE -> NSNumber.numberWithInt(OS.kAXUnderlineStyleDouble);
+					case SWT.UNDERLINE_SQUIGGLE -> {
 						attribute = OS.NSAccessibilityMisspelledTextAttribute;
-						styleObj = NSNumber.numberWithBool(true);
-						break;
-					default:
-						styleObj = NSNumber.numberWithInt(OS.kAXUnderlineStyleNone);
+						yield NSNumber.numberWithBool(true);
 					}
+					default -> NSNumber.numberWithInt(OS.kAXUnderlineStyleNone);
+					};
 
 					attribString.addAttribute(attribute, styleObj, attributeRange);
 				}
@@ -1720,20 +1714,13 @@ public class Accessible {
 
 		if (docAttributes.indent != Integer.MAX_VALUE) {
 			NSMutableDictionary paragraphDict = NSMutableDictionary.dictionaryWithCapacity(3);
-			int osAlignment = 0;
 			// FIXME: Doesn't account for right-to-left text?
-			switch (docAttributes.alignment) {
-			case SWT.CENTER:
-				osAlignment = OS.NSTextAlignmentCenter;
-				break;
-			case SWT.RIGHT:
-				osAlignment = OS.NSTextAlignmentRight;
-				break;
-			case SWT.LEFT:
-			default:
-				osAlignment = OS.NSTextAlignmentLeft;
-				break;
-			}
+			int osAlignment = switch (docAttributes.alignment) {
+			case SWT.CENTER -> OS.NSTextAlignmentCenter;
+			case SWT.RIGHT -> OS.NSTextAlignmentRight;
+			case SWT.LEFT -> OS.NSTextAlignmentLeft;
+			default -> OS.NSTextAlignmentLeft;
+			};
 			paragraphDict.setValue(NSNumber.numberWithInt(osAlignment), NSString.stringWith("AXTextAlignment"));
 			range.location = 0;
 			attribString.addAttribute(NSString.stringWith("AXParagraphStyle"), paragraphDict, range);

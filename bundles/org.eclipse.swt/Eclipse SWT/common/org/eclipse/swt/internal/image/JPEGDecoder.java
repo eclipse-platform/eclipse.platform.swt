@@ -2462,22 +2462,13 @@ static void jpeg_calc_output_dimensions (jpeg_decompress_struct cinfo)
 
 	/* Report number of components in selected colorspace. */
 	/* Probably this should be in the color conversion module... */
-	switch (cinfo.out_color_space) {
-		case JCS_GRAYSCALE:
-			cinfo.out_color_components = 1;
-			break;
-		case JCS_RGB:
-		case JCS_YCbCr:
-			cinfo.out_color_components = 3;
-			break;
-		case JCS_CMYK:
-		case JCS_YCCK:
-			cinfo.out_color_components = 4;
-			break;
-		default:			/* else must be same colorspace as in file */
-			cinfo.out_color_components = cinfo.num_components;
-			break;
-	}
+	cinfo.out_color_components = switch (cinfo.out_color_space) {
+
+	case JCS_GRAYSCALE -> 1;
+	case JCS_RGB,JCS_YCbCr -> 3;
+	case JCS_CMYK,JCS_YCCK-> 4;
+	default->cinfo.num_components;/* else must be same colorspace as in file */
+	};
 	cinfo.output_components = (cinfo.quantize_colors ? 1 : cinfo.out_color_components);
 
 	/* See if upsampler will want to emit more than one row at a time */
@@ -4189,19 +4180,12 @@ static void process_data_context_main (jpeg_decompress_struct cinfo,
 
 	/* Read input data if we haven't filled the main buffer yet */
 	if (! main.buffer_full) {
-		int result;
-		switch (cinfo.coef.decompress_data) {
-			case DECOMPRESS_DATA:
-				result = decompress_data(cinfo, main.xbuffer[main.whichptr], main.xbuffer_offset[main.whichptr]);
-				break;
-			case DECOMPRESS_SMOOTH_DATA:
-				result = decompress_smooth_data(cinfo, main.xbuffer[main.whichptr], main.xbuffer_offset[main.whichptr]);
-				break;
-			case DECOMPRESS_ONEPASS:
-				result = decompress_onepass(cinfo, main.xbuffer[main.whichptr], main.xbuffer_offset[main.whichptr]);
-				break;
-			default: result = 0;
-		}
+		int result = switch (cinfo.coef.decompress_data) {
+		case DECOMPRESS_DATA -> decompress_data(cinfo, main.xbuffer[main.whichptr], main.xbuffer_offset[main.whichptr]);
+		case DECOMPRESS_SMOOTH_DATA -> decompress_smooth_data(cinfo, main.xbuffer[main.whichptr], main.xbuffer_offset[main.whichptr]);
+		case DECOMPRESS_ONEPASS -> decompress_onepass(cinfo, main.xbuffer[main.whichptr], main.xbuffer_offset[main.whichptr]);
+		default -> 0;
+		};
 		if (result == 0)
 			return;			/* suspension forced, can do nothing more */
 		main.buffer_full = true;	/* OK, we have an iMCU row to work with */
@@ -4259,19 +4243,12 @@ static void process_data_simple_main (jpeg_decompress_struct cinfo, byte[][] out
 
 	/* Read input data if we haven't filled the main buffer yet */
 	if (! main.buffer_full) {
-		int result;
-		switch (cinfo.coef.decompress_data) {
-			case DECOMPRESS_DATA:
-				result = decompress_data(cinfo, main.buffer, main.buffer_offset);
-				break;
-			case DECOMPRESS_SMOOTH_DATA:
-				result = decompress_smooth_data(cinfo, main.buffer, main.buffer_offset);
-				break;
-			case DECOMPRESS_ONEPASS:
-				result = decompress_onepass(cinfo, main.buffer, main.buffer_offset);
-				break;
-			default: result = 0;
-		}
+		int result = switch (cinfo.coef.decompress_data) {
+		case DECOMPRESS_DATA -> decompress_data(cinfo, main.buffer, main.buffer_offset);
+		case DECOMPRESS_SMOOTH_DATA -> decompress_smooth_data(cinfo, main.buffer, main.buffer_offset);
+		case DECOMPRESS_ONEPASS -> decompress_onepass(cinfo, main.buffer, main.buffer_offset);
+		default -> 0;
+		};
 		if (result == 0)
 			return;			/* suspension forced, can do nothing more */
 		main.buffer_full = true;	/* OK, we have an iMCU row to work with */
@@ -6147,18 +6124,11 @@ static void default_decompress_parms (jpeg_decompress_struct cinfo) {
 			if (cinfo.saw_JFIF_marker) {
 				cinfo.jpeg_color_space = JCS_YCbCr; /* JFIF implies YCbCr */
 			} else if (cinfo.saw_Adobe_marker) {
-				switch (cinfo.Adobe_transform) {
-					case 0:
-						cinfo.jpeg_color_space = JCS_RGB;
-						break;
-					case 1:
-						cinfo.jpeg_color_space = JCS_YCbCr;
-						break;
-					default:
-//						WARNMS1(cinfo, JWRN_ADOBE_XFORM, cinfo.Adobe_transform);
-						cinfo.jpeg_color_space = JCS_YCbCr; /* assume it's YCbCr */
-					break;
-				}
+				cinfo.jpeg_color_space = switch (cinfo.Adobe_transform) {
+				case 0 -> JCS_RGB;
+				case 1 -> JCS_YCbCr;
+				default -> /*						WARNMS1(cinfo, JWRN_ADOBE_XFORM, cinfo.Adobe_transform); */ JCS_YCbCr; /* assume it's YCbCr */
+				};
 			} else {
 				/* Saw no special markers, try to guess from the component IDs */
 				int cid0 = cinfo.comp_info[0].component_id;
@@ -6180,18 +6150,11 @@ static void default_decompress_parms (jpeg_decompress_struct cinfo) {
 
 		case 4:
 			if (cinfo.saw_Adobe_marker) {
-				switch (cinfo.Adobe_transform) {
-					case 0:
-						cinfo.jpeg_color_space = JCS_CMYK;
-						break;
-					case 2:
-						cinfo.jpeg_color_space = JCS_YCCK;
-						break;
-					default:
-//						WARNMS1(cinfo, JWRN_ADOBE_XFORM, cinfo.Adobe_transform);
-						cinfo.jpeg_color_space = JCS_YCCK; /* assume it's YCCK */
-						break;
-				}
+				cinfo.jpeg_color_space = switch (cinfo.Adobe_transform) {
+				case 0 -> JCS_CMYK;
+				case 2 -> JCS_YCCK;
+				default -> /*						WARNMS1(cinfo, JWRN_ADOBE_XFORM, cinfo.Adobe_transform); */ JCS_YCCK; /* assume it's YCCK */
+				};
 			} else {
 				/* No special markers, assume straight CMYK. */
 				cinfo.jpeg_color_space = JCS_CMYK;

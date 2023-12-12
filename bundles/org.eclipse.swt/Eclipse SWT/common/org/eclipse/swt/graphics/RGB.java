@@ -114,39 +114,43 @@ public RGB(float hue, float saturation, float brightness) {
 		float p = brightness * (1 - saturation);
 		float q = brightness * (1 - saturation * f);
 		float t = brightness * (1 - saturation * (1 - f));
-		switch(i) {
-			case 0:
-				r = brightness;
-				g = t;
-				b = p;
-				break;
-			case 1:
-				r = q;
-				g = brightness;
-				b = p;
-				break;
-			case 2:
-				r = p;
-				g = brightness;
-				b = t;
-				break;
-			case 3:
-				r = p;
-				g = q;
-				b = brightness;
-				break;
-			case 4:
-				r = t;
-				g = p;
-				b = brightness;
-				break;
-			case 5:
-			default:
-				r = brightness;
-				g = p;
-				b = q;
-				break;
+		b = switch (i) {
+		case 0 -> {
+			r = brightness;
+			g = t;
+			yield p;
 		}
+		case 1 -> {
+			r = q;
+			g = brightness;
+			yield p;
+		}
+		case 2 -> {
+			r = p;
+			g = brightness;
+			yield t;
+		}
+		case 3 -> {
+			r = p;
+			g = q;
+			yield brightness;
+		}
+		case 4 -> {
+			r = t;
+			g = p;
+			yield brightness;
+		}
+		case 5 -> {
+			r = brightness;
+			g = p;
+			yield q;
+		}
+		default -> {
+			r = brightness;
+			g = p;
+			yield q;
+		}
+		};
 	}
 	red = (int)(r * 255 + 0.5);
 	green = (int)(g * 255 + 0.5);

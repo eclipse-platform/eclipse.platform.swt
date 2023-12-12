@@ -308,20 +308,14 @@ static PngChunk readNextFromStream(LEDataInputStream stream) {
 		result = stream.read(chunk, 0, chunkLength);
 		if (result != chunkLength) return null;
 
-		switch (tempChunk.getChunkType()) {
-			case CHUNK_IHDR:
-				return new PngIhdrChunk(chunk);
-			case CHUNK_PLTE:
-				return new PngPlteChunk(chunk);
-			case CHUNK_IDAT:
-				return new PngIdatChunk(chunk);
-			case CHUNK_IEND:
-				return new PngIendChunk(chunk);
-			case CHUNK_tRNS:
-				return new PngTrnsChunk(chunk);
-			default:
-				return new PngChunk(chunk);
-		}
+		return switch (tempChunk.getChunkType()) {
+		case CHUNK_IHDR -> new PngIhdrChunk(chunk);
+		case CHUNK_PLTE -> new PngPlteChunk(chunk);
+		case CHUNK_IDAT -> new PngIdatChunk(chunk);
+		case CHUNK_IEND -> new PngIendChunk(chunk);
+		case CHUNK_tRNS -> new PngTrnsChunk(chunk);
+		default -> new PngChunk(chunk);
+		};
 	} catch (IOException e) {
 		return null;
 	}
