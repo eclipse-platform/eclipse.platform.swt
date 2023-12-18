@@ -5926,18 +5926,16 @@ void handlePaint(Event event) {
 	if (event.width == 0 || event.height == 0) return;
 	if (clientAreaWidth == 0 || clientAreaHeight == 0) return;
 
-	int startLine = getLineIndex(event.y);
-	int y = getLinePixel(startLine);
-	int endY = event.y + event.height;
+	final int endY = event.y + event.height;
 	GC gc = event.gc;
 	Color background = getBackground();
 	Color foreground = getForeground();
 	if (endY > 0) {
-		int lineCount = isSingleLine() ? 1 : content.getLineCount();
-		int x = leftMargin - horizontalScrollOffset;
-		for (int i = startLine; y < endY && i < lineCount; i++) {
-			y += renderer.drawLine(i, x, y, gc, background, foreground);
-		}
+		final int startLine = getLineIndex(event.y);
+		final int endLine = isSingleLine() ? 1 : content.getLineCount();
+		final int x = leftMargin - horizontalScrollOffset;
+		int y = getLinePixel(startLine);
+		y += renderer.drawLines(startLine, endLine, x, y, endY, gc, background, foreground);
 		if (y < endY) {
 			gc.setBackground(background);
 			drawBackground(gc, 0, y, clientAreaWidth, endY - y);
