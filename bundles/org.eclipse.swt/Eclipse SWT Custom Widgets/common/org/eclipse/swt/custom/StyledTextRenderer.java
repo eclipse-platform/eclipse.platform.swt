@@ -471,10 +471,48 @@ private LineDrawInfo makeLineDrawInfo(int lineIndex) {
 }
 
 int drawLines(int startLine, int endLine, int begX, int begY, int endY, GC gc, Color widgetBackground, Color widgetForeground) {
-	final boolean drawBackBeforeFore = false;
+	// When fixed line metrics is in effect, tall unicode characters
+	// will not always fit line's height. In this case, they will
+	// draw out of line's bounds. To prevent them from being clipped
+	// by next line's background, paint entire background before any
+	// foreground.
+	// I considered to make this mode default, but was worried about
+	// potential regressions in various legacy code. For example, it
+	// could change something about line heights/colors during
+	// painting. While this doesn't sound like a good thing to do, yet
+	// still, I'd rather stay safe.
+	final boolean drawBackBeforeFore = (fixedLineMetrics != null);
 
 	if (drawBackBeforeFore) {
-		return 0;
+		// Cache drawing information
+		final List<LineDrawInfo> drawInfos = new ArrayList<>();
+		int y = begY;
+		for (int iLine = startLine; y < endY && iLine < endLine; iLine++) {
+			LineDrawInfo lineInfo = makeLineDrawInfo(iLine);
+			drawInfos.add(lineInfo);
+			y += lineInfo.height;
+		}
+
+		// Draw background
+		y = begY;
+		for (LineDrawInfo lineInfo : drawInfos) {
+			drawLineBackground(lineInfo, y, gc, widgetBackground);
+			y += lineInfo.height;
+		}
+
+		// Draw foreground
+		y = begY;
+		for (LineDrawInfo lineInfo : drawInfos) {
+			drawLineForeground(lineInfo, begX, y, gc, widgetForeground);
+			y += lineInfo.height;
+		}
+
+		// cleanup
+		for (LineDrawInfo lineInfo : drawInfos) {
+			disposeTextLayout(lineInfo.layout);
+		}
+
+		return y - begY;
 	}
 
 	int y = begY;
