@@ -362,8 +362,7 @@ public class CTabFolderRenderer {
 
 					if (parent.showClose || item.showClose) {
 						if ((state & SWT.SELECTED) != 0 || parent.showUnselectedClose) {
-							if (((state & SWT.SELECTED) != 0 && parent.showSelectedImage)
-									|| ((state & SWT.SELECTED) == 0 && parent.showUnselectedImage)) {
+							if (!applyLargeTextPadding(parent)) {
 								if (width > 0) width += INTERNAL_SPACING;
 							} else {
 								if (width > 0) width -= INTERNAL_SPACING;
@@ -389,16 +388,19 @@ public class CTabFolderRenderer {
 	 */
 	private int getTextPadding(CTabItem item, int state) {
 		CTabFolder parent = item.getParent();
-		Image image = item.getImage();
 		String text = item.getText();
 
 		if (text != null && parent.getMinimumCharacters() != 0) {
-			if (image == null || image.isDisposed() || ((state & SWT.SELECTED) != 0 && !parent.showSelectedImage)
-					|| ((state & SWT.SELECTED) == 0 && !parent.showUnselectedImage))
+			if (applyLargeTextPadding(parent)) {
 				return TABS_WITHOUT_ICONS_PADDING;
+			}
 		}
 
 		return 0;
+	}
+
+	private boolean applyLargeTextPadding(CTabFolder tabFolder) {
+		return !tabFolder.showSelectedImage && !tabFolder.showUnselectedImage;
 	}
 
 	/**
