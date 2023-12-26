@@ -54,6 +54,8 @@ public final class TextLayout extends Resource {
 	int wrapWidth;
 	int orientation;
 	private double defaultTabWidth;
+	private FontMetrics fixedLineMetrics;
+	private double fixedLineMetricsDy;
 
 	int[] lineOffsets;
 	NSRect[] lineBounds;
@@ -349,6 +351,16 @@ void computeRuns() {
 		OS.memmove(lineRange, rangePtr, NSRange.sizeof);
 		offsets[numberOfLines] = (int)lineRange.location;
 		index = lineRange.location + lineRange.length;
+		if (fixedLineMetrics != null) {
+			// Preserve baseline location for best visual results
+			final int lineOffset = untranslateOffset(offsets[numberOfLines]);
+			final double realHeight = bounds[numberOfLines].height;
+			final double realDescent = layoutManager.typesetter().baselineOffsetInLayoutManager(layoutManager, lineOffset);
+			final double realAscent = realHeight - realDescent;
+			final double wantAscent = fixedLineMetrics.ascent;
+			fixedLineMetricsDy = wantAscent - realAscent;
+			bounds[numberOfLines].height = fixedLineMetrics.height;
+		}
 	}
 	if (numberOfLines == 0) {
 		Font font = this.font != null ? this.font : device.systemFont;
@@ -484,6 +496,7 @@ public void draw(GC gc, int x, int y, int selectionStart, int selectionEnd, Colo
 					fixRect(rect);
 					rect.x += pt.x;
 					rect.y += pt.y;
+					if (fixedLineMetrics != null) rect.height = fixedLineMetrics.height;
 					rect.height = Math.max(rect.height, ascent + descent);
 					path.appendBezierPathWithRect(rect);
 				}
@@ -515,9 +528,13 @@ public void draw(GC gc, int x, int y, int selectionStart, int selectionEnd, Colo
 					layoutManager.addTemporaryAttribute(OS.NSForegroundColorAttributeName, gc.data.fg, range);
 				}
 			}
+			NSPoint ptGlyphs = new NSPoint();
+			ptGlyphs.x = pt.x;
+			ptGlyphs.y = pt.y;
+			if (fixedLineMetrics != null) ptGlyphs.y += fixedLineMetricsDy;
 			range.location = 0;
 			range.length = numberOfGlyphs;
-			layoutManager.drawGlyphsForGlyphRange(range, pt);
+			layoutManager.drawGlyphsForGlyphRange(range, ptGlyphs);
 			if (!defaultFg) {
 				range.location = 0;
 				range.length = length;
@@ -754,6 +771,7 @@ public Rectangle getBounds() {
 			NSFont nsFont = font.handle;
 			rect.height = layoutManager.defaultLineHeightForFont(nsFont);
 		}
+		if (fixedLineMetrics != null) rect.height = fixedLineMetrics.height;
 		rect.height = Math.max(rect.height, ascent + descent) + spacing;
 		return new Rectangle(0, 0, (int)Math.ceil(rect.width), (int)Math.ceil(rect.height) + getVerticalIndent());
 	} finally {
@@ -804,6 +822,7 @@ public Rectangle getBounds(int start, int end) {
 			top = Math.min(top, (int)rect.y);
 			bottom = Math.max(bottom, (int)Math.ceil(rect.y + rect.height));
 		}
+		if (fixedLineMetrics != null) bottom = top + fixedLineMetrics.height;
 		return new Rectangle(left, top, right - left, bottom - top + getVerticalIndent());
 	} finally {
 		if (pool != null) pool.release();
@@ -1043,6 +1062,7 @@ public FontMetrics getLineMetrics (int lineIndex) {
 		computeRuns();
 		int lineCount = getLineCount();
 		if (!(0 <= lineIndex && lineIndex < lineCount)) SWT.error(SWT.ERROR_INVALID_RANGE);
+		if (fixedLineMetrics != null) return fixedLineMetrics.makeCopy();
 		int length = text.length();
 		if (length == 0) {
 			Font font = this.font != null ? this.font : device.systemFont;
@@ -1798,8 +1818,12 @@ public void setDescent (int descent) {
  * @since 3.125
  */
 public void setFixedLineMetrics (FontMetrics metrics) {
-	if (metrics == null) return;
-	SWT.error(SWT.ERROR_NOT_IMPLEMENTED);
+	if (metrics == null) {
+		fixedLineMetrics = null;
+		return;
+	}
+
+	fixedLineMetrics = metrics.makeCopy();
 }
 
 /**
