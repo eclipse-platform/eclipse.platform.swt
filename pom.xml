@@ -63,21 +63,6 @@
           <url>https://repo.eclipse.org/content/repositories/eclipse/</url>
         </repository>
       </repositories>
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>org.eclipse.tycho</groupId>
-            <artifactId>target-platform-configuration</artifactId>
-            <configuration>
-              <dependency-resolution>
-                <profileProperties>
-                  <org.eclipse.swt.buildtime>true</org.eclipse.swt.buildtime>
-                </profileProperties>
-              </dependency-resolution>
-            </configuration>
-          </plugin>
-        </plugins>
-      </build>
     </profile>
     <profile>
       <id>mac</id>
@@ -224,7 +209,6 @@
   <modules>
     <module>bundles</module>
     <module>binaries</module>
-    <module>local-build/org.eclipse.swt.fragments.localbuild</module>
     <module>examples/org.eclipse.swt.examples</module>
     <module>examples/org.eclipse.swt.examples.browser.demos</module>
     <module>examples/org.eclipse.swt.examples.launcher</module>

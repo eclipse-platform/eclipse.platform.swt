@@ -97,12 +97,6 @@
 						<artifactId>target-platform-configuration</artifactId>
 						<configuration>
 							<executionEnvironment>JavaSE-${maven.compiler.release}</executionEnvironment>
-							<dependency-resolution>
-								<profileProperties>
-									<!-- set property so that the filter condition on the p2 dependencies from org.eclipse.swt to the fragments does not match -->
-									<org.eclipse.swt.buildtime>true</org.eclipse.swt.buildtime>
-								</profileProperties>
-							</dependency-resolution>
 						</configuration>
 					</plugin>
 					<plugin>

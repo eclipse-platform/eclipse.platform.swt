@@ -1,8 +1,0 @@
-Manifest-Version: 1.0
-Bundle-Name: %pluginName
-Bundle-Vendor: %providerName
-Bundle-SymbolicName: org.eclipse.swt.fragments.localbuild
-Bundle-Version: 3.105.0.qualifier
-Bundle-ManifestVersion: 2
-Bundle-Localization: plugin
-Automatic-Module-Name: org.eclipse.swt.fragments.localbuild
