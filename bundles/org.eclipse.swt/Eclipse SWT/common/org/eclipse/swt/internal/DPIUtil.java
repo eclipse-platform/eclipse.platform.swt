@@ -14,6 +14,8 @@
  *******************************************************************************/
 package org.eclipse.swt.internal;
 
+import java.util.function.*;
+
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 
@@ -270,12 +272,19 @@ public static Rectangle autoScaleBounds (Rectangle rect, int targetZoom, int cur
 }
 
 /**
- * Auto-scale up ImageData
+ * Auto-scale ImageData to device zoom that are at given zoom factor.
+ */
+public static ImageData autoScaleImageData (Device device, final ImageData imageData, int imageDataZoomFactor) {
+	if (deviceZoom == imageDataZoomFactor || imageData == null || (device != null && !device.isAutoScalable())) return imageData;
+	float scaleFactor = (float) deviceZoom / imageDataZoomFactor;
+	return autoScaleImageData(device, imageData, scaleFactor);
+}
+
+/**
+ * Auto-scale up ImageData to device zoom that is at 100%.
  */
 public static ImageData autoScaleUp (Device device, final ImageData imageData) {
-	if (deviceZoom == 100 || imageData == null || (device != null && !device.isAutoScalable())) return imageData;
-	float scaleFactor = deviceZoom / 100f;
-	return autoScaleImageData(device, imageData, scaleFactor);
+	return autoScaleImageData(device, imageData, 100);
 }
 
 public static int[] autoScaleUp(int[] pointArray) {
@@ -395,34 +404,79 @@ public static int mapDPIToZoom (int dpi) {
 	int roundedZoom = (int) Math.round (zoom);
 	return roundedZoom;
 }
+
 /**
- * Gets Image data at specified zoom level, if image is missing then
- * fall-back to 100% image. If provider or fall-back image is not available,
- * throw error.
+ * Represents an element, such as some image data, at a specific zoom level.
+ *
+ * @param <T> type of the element to be presented, e.g., {@link ImageData}
  */
-public static ImageData validateAndGetImageDataAtZoom (ImageDataProvider provider, int zoom, boolean[] found) {
-	if (provider == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
-	ImageData data = provider.getImageData (zoom);
-	found [0] = (data != null);
-	/* If image is null when (zoom != 100%), fall-back to image at 100% zoom */
-	if (zoom != 100 && !found [0]) data = provider.getImageData (100);
-	if (data == null) SWT.error (SWT.ERROR_INVALID_ARGUMENT, null, ": ImageDataProvider [" + provider + "] returns null ImageData at 100% zoom.");
-	return data;
+public record ElementAtZoom<T>(T element, int zoom) {
+};
+
+/**
+ * Gets ImageData that are appropriate for the specified zoom level together
+ * with the zoom level at which the image data are. If there is an image at the
+ * specified zoom level, it is returned. Otherwise the next larger image at 150%
+ * and 200% is returned, if existing. If none of these is found, the 100% image
+ * is returned as a fallback. If provider or fallback image is not available, an
+ * error is thrown.
+ */
+public static ElementAtZoom<ImageData> validateAndGetImageDataAtZoom(ImageDataProvider provider, int zoom) {
+	if (provider == null) {
+		SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	}
+	ElementAtZoom<ImageData> imageDataAtZoom = getElementAtZoom(z -> provider.getImageData(z), zoom);
+	if (imageDataAtZoom == null) {
+		SWT.error(SWT.ERROR_INVALID_ARGUMENT, null,
+				": ImageDataProvider [" + provider + "] returns null ImageData at 100% zoom.");
+	}
+	return imageDataAtZoom;
 }
 
 /**
- * Gets Image file path at specified zoom level, if image is missing then
- * fall-back to 100% image. If provider or fall-back image is not available,
- * throw error.
+ * Gets the image file path that are appropriate for the specified zoom level
+ * together with the zoom level at which the image data are. If there is an
+ * image at the specified zoom level, it is returned. Otherwise the next larger
+ * image at 150% and 200% is returned, if existing. If none of these is found,
+ * the 100% image is returned as a fallback. If provider or fallback image is
+ * not available, an error is thrown.
  */
-public static String validateAndGetImagePathAtZoom (ImageFileNameProvider provider, int zoom, boolean[] found) {
-	if (provider == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
-	String filename = provider.getImagePath (zoom);
-	found [0] = (filename != null);
-	/* If image is null when (zoom != 100%), fall-back to image at 100% zoom */
-	if (zoom != 100 && !found [0]) filename = provider.getImagePath (100);
-	if (filename == null) SWT.error (SWT.ERROR_INVALID_ARGUMENT, null, ": ImageFileNameProvider [" + provider + "] returns null filename at 100% zoom.");
-	return filename;
+public static ElementAtZoom<String> validateAndGetImagePathAtZoom(ImageFileNameProvider provider, int zoom) {
+	if (provider == null) {
+		SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	}
+	ElementAtZoom<String> imagePathAtZoom = getElementAtZoom(z -> provider.getImagePath(z), zoom);
+	if (imagePathAtZoom == null) {
+		SWT.error(SWT.ERROR_INVALID_ARGUMENT, null,
+				": ImageFileNameProvider [" + provider + "] returns null filename at 100% zoom.");
+	}
+	return imagePathAtZoom;
+}
+
+private static <T> ElementAtZoom<T> getElementAtZoom(Function<Integer, T> elementForZoomProvider, int zoom) {
+	T dataAtOriginalZoom = elementForZoomProvider.apply(zoom);
+	if (dataAtOriginalZoom != null) {
+		return new ElementAtZoom<>(dataAtOriginalZoom, zoom);
+	}
+	if (zoom > 100 && zoom <= 150) {
+		T dataAt150Percent = elementForZoomProvider.apply(150);
+		if (dataAt150Percent != null) {
+			return new ElementAtZoom<>(dataAt150Percent, 150);
+		}
+	}
+	if (zoom > 100) {
+		T dataAt200Percent = elementForZoomProvider.apply(200);
+		if (dataAt200Percent != null) {
+			return new ElementAtZoom<>(dataAt200Percent, 200);
+		}
+	}
+	if (zoom != 100) {
+		T dataAt100Percent = elementForZoomProvider.apply(100);
+		if (dataAt100Percent != null) {
+			return new ElementAtZoom<>(dataAt100Percent, 100);
+		}
+	}
+	return null;
 }
 
 public static int getDeviceZoom() {
