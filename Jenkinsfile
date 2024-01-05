@@ -53,6 +53,18 @@ def getNativeJdkUrl(String os, String arch){ // To update the used JDK version u
 	return "https://download.eclipse.org/justj/jres/17/downloads/20230428_1804/org.eclipse.justj.openjdk.hotspot.jre.minimal.stripped-17.0.7-${os}-${arch}.tar.gz"
 }
 
+def getLatestGitTag() {
+	return sh(script: 'git describe --abbrev=0 --tags --match v[0-9][0-9][0-9][0-9]*', returnStdout: true).strip()
+}
+
+def getSWTVersions() { // must be called from the repository root
+	def props = readProperties(file: 'bundles/org.eclipse.swt/Eclipse SWT/common/library/make_common.mak')
+	props['new_rev'] = props['rev'].toInteger() + 1
+	props['swt_version'] = props['maj_ver'] + props['min_ver'] + 'r' + props['rev']
+	props['new_version'] = props['maj_ver'] + props['min_ver'] + 'r' + props['new_rev']
+	return props
+}
+
 pipeline {
 	options {
 		skipDefaultCheckout() // Specialiced checkout is performed below
@@ -104,15 +116,57 @@ pipeline {
 		}
 		stage('Check if SWT-binaries build is needed') {
 			steps {
-				withAnt(installation: 'apache-ant-latest', jdk: 'openjdk-jdk11-latest') { // nashorn javascript-engine required in ant-scripts
+				dir('eclipse.platform.swt') {
 					sh'''
 						java -version
 						git config --global user.email 'eclipse-releng-bot@eclipse.org'
 						git config --global user.name 'Eclipse Releng Bot'
-						
-						ant -f eclipse.platform.swt/bundles/org.eclipse.swt/buildSWT.xml check_preprocessing
-						ant -f eclipse.platform.swt/bundles/org.eclipse.swt/buildSWT.xml new_build_with_create_file -DTAG=HEAD
 					'''
+					script {
+						def swtTag = getLatestGitTag()
+						echo "Current tag=${swtTag}."
+						boolean nativesChanged = false
+						dir('bundles/org.eclipse.swt') {
+							// Check preprocessing is completed
+							sh '''
+								if grep -R --include='*.java' --line-number --fixed-strings -e 'int /*long*/' -e 'float /*double*/' -e 'int[] /*long[]*/' -e 'float[] /*double[]*/' .; then
+									echo There are files with the wrong long /*int*/ preprocessing.
+									exit 1
+								fi
+							'''
+							def sourceFoldersProps = readProperties(file: 'nativeSourceFolders.properties')
+							def sources = sourceFoldersProps.collectEntries{ k, src -> [ k, src.split(',').collect{ f -> '\'' + f + '\''}.join(' ') ] }
+							def diff = sh(script: "git diff HEAD ${swtTag} ${sources.values().join(' ')}", returnStdout: true)
+							nativesChanged = !diff.strip().isEmpty()
+							echo "Natives changed since ${swtTag}: ${nativesChanged}"
+						}
+						if (nativesChanged) {
+							def swtVersions = getSWTVersions()
+							withEnv(['swt_version='+swtVersions['swt_version'], 'new_version='+swtVersions['new_version'], 'rev='+swtVersions['rev'], 'new_rev='+swtVersions['new_rev'],
+									'comma_ver='+swtVersions['comma_ver'], "new_comma_ver=${swtVersions['maj_ver']},${swtVersions['min_ver']},${swtVersions['new_rev']},0" ]) {
+								sh '''
+									# Delete native binaries to be replaced by subsequent binaries build
+									rm -f binaries/org.eclipse.swt.gtk.*/lib*-${swt_version}.so
+									rm -f binaries/org.eclipse.swt.win32.*/*-${swt_version}.dll
+									rm -f binaries/org.eclipse.swt.cocoa.*/lib*-${swt_version}.jnilib
+	
+									echo "Incrementing version from ${swt_version} to ${new_version}; new comma_ver=${new_comma_ver}"
+									
+									libraryFile='bundles/org.eclipse.swt/Eclipse SWT PI/common/org/eclipse/swt/internal/Library.java'
+									sed -i -e "s/REVISION = ${rev}/REVISION = ${new_rev}/g" "$libraryFile"
+									
+									commonMakeFile='bundles/org.eclipse.swt/Eclipse SWT/common/library/make_common.mak'
+									sed -i -e "s/rev=${rev}/rev=${new_rev}/g" "$commonMakeFile"
+									sed -i -e "s/comma_ver=${comma_ver}/comma_ver=${new_comma_ver}/g" "$commonMakeFile"
+	
+									git add "${libraryFile}" "${commonMakeFile}"
+									git status
+									
+									mkdir ../tmp; echo 'true' > '../tmp/natives_changed.txt'
+								'''
+							}
+						}
+					}
 				}
 			}
 		}
@@ -252,22 +306,35 @@ pipeline {
 				expression { return params.forceNativeBuilds || fileExists('tmp/natives_changed.txt') }
 			}
 			steps {
-				withAnt(installation: 'apache-ant-latest', jdk: 'openjdk-jdk11-latest') { // nashorn javascript-engine required in ant-scripts
-					//The maven build reads the git-history so we should have to commit the native-binaries before building
+				dir('eclipse.platform.swt') {
+					script {
+						def swt_version = getSWTVersions()['swt_version'] // versions are read from updated file
+						sh """
+							find binaries -name "*${swt_version}*" -type f -exec chmod 755 {} +
+							
+							git add --all *
+							git status						
+							git commit -m 'v${swt_version}'
+						"""
+						try {
+							sh "git tag v${swt_version}"
+						} catch (ex) { // May fail in case this is a forced native re-build without revision increment
+							def tagged = ('a'..'z').any{ suffix ->
+								try {
+									sh "git tag v${swt_version + suffix}"
+									return true
+								}catch (ex1) {
+									return false
+								}
+							}
+							if(!tagged) {
+								fail "Fail to create tag for v${swt_version}"
+							}
+						}
+					}
 					sh '''
-						pushd eclipse.platform.swt
-						git add --all *
-						echo "git status after add"
-						git status
-						popd
-
-						ant -f eclipse.platform.swt/bundles/org.eclipse.swt/buildSWT.xml commit_binaries
-						ant -f eclipse.platform.swt/bundles/org.eclipse.swt/buildSWT.xml tag_projects
-	
-						pushd eclipse.platform.swt
 						git status
 						git log -p -2
-						popd
 					'''
 				}
 			}	
@@ -300,23 +367,15 @@ pipeline {
 			}
 			steps {
 				sshagent(['github-bot-ssh']) {
-					script {
-						def newSWTNativesTag = null;
-						dir('eclipse.platform.swt') {
-							newSWTNativesTag = sh(script: 'git describe --abbrev=0 --tags --match v[0-9][0-9][0-9][0-9]*', returnStdout: true).strip()
-						}
-						echo "newSWTNativesTag: ${newSWTNativesTag}"
+					dir('eclipse.platform.swt') {
 						sh """
 							# Check for the master-branch as late as possible to have as much of the same behaviour as possible
 							if [[ '${BRANCH_NAME}' == master ]] || [[ '${BRANCH_NAME}' =~ R[0-9]+_[0-9]+(_[0-9]+)?_maintenance ]]; then
 								if [[ ${params.skipCommit} != true ]]; then
 									
-									#Don't rebase and just fail in case another commit has been pushed to the master/maintanance branch in the meantime
-									
-									pushd eclipse.platform.swt
+									# Don't rebase and just fail in case another commit has been pushed to the master/maintanance branch in the meantime
 									git push origin HEAD:refs/heads/${BRANCH_NAME}
-									git push origin refs/tags/${newSWTNativesTag}
-									popd
+									git push origin refs/tags/${getLatestGitTag()}
 									
 									exit 0
 								else
@@ -326,9 +385,7 @@ pipeline {
 								echo Skip pushing changes of native-binaries for branch '${BRANCH_NAME}'
 							fi
 							# The commits are not pushed. At least list them, so one can check if the result is as expected.
-							pushd eclipse.platform.swt
 							git log -n 2
-							popd
 						"""
 					}
 				}
