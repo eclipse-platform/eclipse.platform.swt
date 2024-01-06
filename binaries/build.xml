@@ -6,6 +6,6 @@
 	<property name="swt.arch" value="${arch}" />
 	
 	<property name="plugindir" value="../../bundles/org.eclipse.swt"/>
-	<import file="${plugindir}/buildFragment.xml"/>
-	<import file="${plugindir}/buildSWT.xml"/>
+	<import file="../bundles/org.eclipse.swt/buildFragment.xml"/>
+	<import file="../bundles/org.eclipse.swt/buildSWT.xml"/>
 </project>
