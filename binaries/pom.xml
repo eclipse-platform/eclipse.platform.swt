@@ -22,9 +22,19 @@
 		<version>4.31.0-SNAPSHOT</version>
 	</parent>
 
-	<groupId>eclipse.platform.swt.binaries</groupId>
+	<groupId>org.eclipse.swt</groupId>
 	<artifactId>eclipse.platform.swt.binaries</artifactId>
 	<packaging>pom</packaging>
+
+	<properties>
+		<!-- 
+			forceContextQualifier gets updated during build input process using
+			ant script <SWT source repo>/bundles/org.eclipse.swt/buildInternal.xml 
+		-->
+		<forceContextQualifier>v20240102-1528</forceContextQualifier>
+		<buildid>${buildId}</buildid>
+		<maven.compiler.release>17</maven.compiler.release>
+	</properties>
 
 	<modules>
 		<module>org.eclipse.swt.cocoa.macosx.x86_64</module>
@@ -35,4 +45,137 @@
 		<module>org.eclipse.swt.win32.win32.x86_64</module>
 	</modules>
 
+	<profiles>
+		<profile>
+			<id>build-natitve-fragment</id>
+			<activation>
+				<file><!-- Only build the native fragment projects in this directory -->
+					<exists>META-INF/MANIFEST.MF</exists>
+				</file>
+			</activation>
+			<build>
+				<plugins>
+					<plugin>
+						<artifactId>maven-clean-plugin</artifactId>
+						<configuration>
+							<filesets>
+								<fileset>
+									<directory>src</directory>
+									<includes>
+										<include>**/*</include>
+									</includes>
+									<followSymlinks>false</followSymlinks>
+								</fileset>
+							</filesets>
+						</configuration>
+					</plugin>
+					<plugin>
+						<groupId>org.eclipse.tycho</groupId>
+						<artifactId>target-platform-configuration</artifactId>
+						<configuration>
+							<executionEnvironment>JavaSE-${maven.compiler.release}</executionEnvironment>
+							<dependency-resolution>
+								<profileProperties>
+									<!-- set property so that the filter condition on the p2 dependencies from org.eclipse.swt to the fragments does not match -->
+									<org.eclipse.swt.buildtime>true</org.eclipse.swt.buildtime>
+								</profileProperties>
+							</dependency-resolution>
+							<environments>
+								<environment>
+									<os>${os}</os>
+									<ws>${ws}</ws>
+									<arch>${arch}</arch>
+								</environment>
+							</environments>
+						</configuration>
+					</plugin>
+					<plugin>
+						<groupId>org.eclipse.tycho</groupId>
+						<artifactId>tycho-packaging-plugin</artifactId>
+						<configuration>
+							<forceContextQualifier>${forceContextQualifier}</forceContextQualifier>
+						</configuration>
+					</plugin>
+					<plugin>
+						<artifactId>maven-antrun-plugin</artifactId>
+						<executions>
+							<execution>
+								<id>normal</id>
+								<phase>initialize</phase>
+								<goals>
+									<goal>run</goal>
+								</goals>
+								<configuration>
+									<target>
+										<property name="copy.src.dir" value="src" />
+										<ant antfile="../build.xml" target="copy.${ws}.src" />
+									</target>
+								</configuration>
+							</execution>
+							<execution>
+								<id>natives</id>
+								<phase>process-resources</phase>
+								<goals>
+									<goal>run</goal>
+								</goals>
+								<configuration>
+									<target>
+										<!-- See https://stackoverflow.com/a/53227117 and http://ant-contrib.sourceforge.net/tasks/tasks/index.html -->
+										<taskdef resource="net/sf/antcontrib/antlib.xml" />
+										<if>
+											<equals arg1="${native}" arg2="${ws}.${os}.${arch}" />
+											<then>
+												<ant antfile="../build.xml" target="build_libraries" />
+											</then>
+										</if>
+									</target>
+								</configuration>
+							</execution>
+							<execution>
+								<id>swtdownload</id>
+								<phase>package</phase>
+								<goals>
+									<goal>run</goal>
+								</goals>
+								<configuration>
+									<target>
+										<property name="eclipse.version" value="${releaseNumberSDK}" />
+										<ant antfile="../build.xml" target="swtdownload" />
+									</target>
+								</configuration>
+							</execution>
+						</executions>
+						<dependencies>
+							<dependency>
+								<groupId>org.mozilla</groupId>
+								<artifactId>rhino-runtime</artifactId>
+								<version>1.7.14</version>
+							</dependency>
+							<dependency>
+								<groupId>org.apache.ant</groupId>
+								<artifactId>ant</artifactId>
+								<version>1.10.14</version>
+							</dependency>
+							<dependency>
+								<groupId>org.apache.ant</groupId>
+								<artifactId>ant-apache-bsf</artifactId>
+								<version>1.10.14</version>
+							</dependency>
+							<dependency>
+								<groupId>ant-contrib</groupId>
+								<artifactId>ant-contrib</artifactId>
+								<version>1.0b3</version>
+								<exclusions>
+									<exclusion>
+										<groupId>ant</groupId>
+										<artifactId>ant</artifactId>
+									</exclusion>
+								</exclusions>
+							</dependency>
+						</dependencies>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
 </project>
