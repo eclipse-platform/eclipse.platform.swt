@@ -6203,7 +6203,27 @@ long getWindowPointerPosition(long window, int[] x, int[] y, int[] mask) {
 	}
 
 	long pointer = GDK.gdk_get_pointer(display);
-	return GDK.gdk_window_get_device_position(window, pointer, x, y, mask);
+	if (OS.isWayland()) {
+		// Read the current mask value, but not the position. The position is not reliable on Wayland because
+		// the origin of the coordinates returned may change depending on the currently focused window.
+		// For instance, if a popup window is currently focused and this method is called with a window outside
+		// of the popup window, the returned coordinates are in relation to the root coordinate system of the
+		// popup (possibly negative values). See also issue GH-177.
+		GDK.gdk_window_get_device_position(window, pointer, null, null, mask);
+		var windowAtPosition = GDK.gdk_device_get_window_at_position(pointer, x, y);
+		if (windowAtPosition != 0 && windowAtPosition != window) {
+			int[] origin_x = new int[1], origin_y = new int[1];
+			GDK.gdk_window_get_origin(windowAtPosition, origin_x, origin_y);
+			x[0] += origin_x[0];
+			y[0] += origin_y[0];
+			GDK.gdk_window_get_origin(window, origin_x, origin_y);
+			x[0] -= origin_x[0];
+			y[0] -= origin_y[0];
+		}
+		return windowAtPosition;
+	} else {
+		return GDK.gdk_window_get_device_position(window, pointer, x, y, mask);
+	}
 }
 
 /**
