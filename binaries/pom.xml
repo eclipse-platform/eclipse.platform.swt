@@ -27,11 +27,6 @@
 	<packaging>pom</packaging>
 
 	<properties>
-		<!-- 
-			forceContextQualifier gets updated during build input process using
-			ant script <SWT source repo>/bundles/org.eclipse.swt/buildInternal.xml 
-		-->
-		<forceContextQualifier>v20240110-1244</forceContextQualifier>
 		<buildid>${buildId}</buildid>
 		<maven.compiler.release>17</maven.compiler.release>
 	</properties>
@@ -92,13 +87,35 @@
 					<plugin>
 						<groupId>org.eclipse.tycho</groupId>
 						<artifactId>tycho-packaging-plugin</artifactId>
-						<configuration>
-							<forceContextQualifier>${forceContextQualifier}</forceContextQualifier>
-						</configuration>
+						<executions>
+							<execution>
+								<id>default-build-qualifier</id>
+								<phase>initialize</phase> <!-- Postpone default-build-qualifier execution from packaging's default-bindings until the qualifier was read below.-->
+								<goals>
+									<goal>build-qualifier</goal>
+								</goals>
+								<configuration>
+									<forceContextQualifier>${swtBuildQualifier}</forceContextQualifier>
+								</configuration>
+							</execution>
+						</executions>
 					</plugin>
 					<plugin>
 						<artifactId>maven-antrun-plugin</artifactId>
 						<executions>
+							<execution>
+								<id>read-build-qualifier</id>
+								<phase>validate</phase>
+								<goals>
+									<goal>run</goal>
+								</goals>
+								<configuration>
+									<target> <!-- Read git qualifier of 'org.eclipse.swt' project. -->
+										<loadfile property="swtBuildQualifier" srcFile="../../bundles/org.eclipse.swt/target/swtBuildQualifier.txt"/>
+									</target>
+									<exportAntProperties>true</exportAntProperties>
+								</configuration>
+							</execution>
 							<execution>
 								<id>normal</id>
 								<phase>initialize</phase>
