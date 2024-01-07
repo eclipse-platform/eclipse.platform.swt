@@ -116,7 +116,7 @@ pipeline {
 			when {
 				anyOf {
 					expression { return params.forceNativeBuilds }
-					expression { return fileExists('tmp/build_changed.txt') && fileExists('tmp/natives_changed.txt') }
+					expression { return fileExists('tmp/natives_changed.txt') }
 				}
 			}
 			matrix {
@@ -253,7 +253,7 @@ pipeline {
 		}
 		stage('Commit SWT-native binaries, if build') {
 			when {
-				expression { return params.forceNativeBuilds || fileExists('tmp/build_changed.txt') }
+				expression { return params.forceNativeBuilds || fileExists('tmp/natives_changed.txt') }
 			}
 			steps {
 				withAnt(installation: 'apache-ant-latest', jdk: 'openjdk-jdk11-latest') { // nashorn javascript-engine required in ant-scripts
@@ -265,8 +265,7 @@ pipeline {
 						git status
 						popd
 
-						ant -f eclipse.platform.swt/bundles/org.eclipse.swt/buildInternal.xml write_qualifier -Dlib.dir=${WORKSPACE} -Dbuild_changed=true
-						ant -f eclipse.platform.swt/bundles/org.eclipse.swt/buildSWT.xml commit_poms_and_binaries
+						ant -f eclipse.platform.swt/bundles/org.eclipse.swt/buildSWT.xml commit_binaries
 						ant -f eclipse.platform.swt/bundles/org.eclipse.swt/buildSWT.xml tag_projects
 	
 						pushd eclipse.platform.swt
@@ -306,7 +305,7 @@ pipeline {
 		}
 		stage('Push SWT-native binaries, if build') {
 			when {
-				expression { return params.forceNativeBuilds || fileExists('tmp/build_changed.txt') }
+				expression { return params.forceNativeBuilds || fileExists('tmp/natives_changed.txt') }
 			}
 			steps {
 				sshagent(['github-bot-ssh']) {
