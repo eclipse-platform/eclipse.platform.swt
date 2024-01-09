@@ -133,7 +133,7 @@ pipeline {
 								withAnt(installation: 'apache-ant-latest', jdk: 'openjdk-jdk11-latest') { // nashorn javascript-engine required in ant-scripts
 									sh '''
 										pfSpec=(${PLATFORM//"."/ })
-										ant -f build.xml copy_library_src_and_create_zip -Dws=${pfSpec[0]} -Dos=${pfSpec[1]} -Darch=${pfSpec[2]}
+										ant -f binaries-parent/build.xml copy_library_src_and_create_zip -Dws=${pfSpec[0]} -Dos=${pfSpec[1]} -Darch=${pfSpec[2]}
 									'''
 								}
 								dir("org.eclipse.swt.${PLATFORM}/tmpdir") {

@@ -108,7 +108,7 @@
 								<configuration>
 									<target>
 										<property name="copy.src.dir" value="src" />
-										<ant antfile="../build.xml" target="copy.${ws}.src" />
+										<ant antfile="../binaries-parent/build.xml" target="copy.${ws}.src" />
 									</target>
 								</configuration>
 							</execution>
@@ -125,7 +125,7 @@
 										<if>
 											<equals arg1="${native}" arg2="${ws}.${os}.${arch}" />
 											<then>
-												<ant antfile="../build.xml" target="build_libraries" />
+												<ant antfile="../binaries-parent/build.xml" target="build_libraries" />
 											</then>
 										</if>
 									</target>
@@ -140,7 +140,7 @@
 								<configuration>
 									<target>
 										<property name="eclipse.version" value="${releaseNumberSDK}" />
-										<ant antfile="../build.xml" target="swtdownload" />
+										<ant antfile="../binaries-parent/build.xml" target="swtdownload" />
 									</target>
 								</configuration>
 							</execution>
