@@ -45,9 +45,9 @@
 		if (gtk4 != NULL && strcmp(gtk4, "1") == 0) { \
 			handle = dlopen("libwebkit2gtk-5.0.so.0", LOAD_FLAGS); \
 		} else { \
-			handle = dlopen("libwebkit2gtk-4.0.so.37", LOAD_FLAGS); /* webkit2/libsoup2 */ \
+			handle = dlopen("libwebkit2gtk-4.1.so.0", LOAD_FLAGS); /* webkit2/libsoup3 */ \
 			if (!handle) { \
-				handle = dlopen("libwebkit2gtk-4.1.so.0", LOAD_FLAGS); /* webkit2/libsoup3 */ \
+				handle = dlopen("libwebkit2gtk-4.0.so.37", LOAD_FLAGS); /* webkit2/libsoup2 */ \
 			} \
 		} \
 		if (handle) { \
