@@ -171,15 +171,39 @@
 								</configuration>
 							</execution>
 							<execution>
-								<id>swtdownload</id>
+								<id>package-swt-download-zip</id>
 								<phase>package</phase>
 								<goals>
 									<goal>run</goal>
 								</goals>
 								<configuration>
 									<target>
-										<property name="eclipse.version" value="${releaseNumberSDK}" />
-										<ant antfile="../binaries-parent/build.xml" target="swtdownload" />
+										<property name="temp.folder" value="${project.build.directory}/swtdownload-temp" />
+										<mkdir dir="${temp.folder}/swtdownload/" />
+										<!-- Prepare translationfiles for inclusion -->
+										<copy todir="${temp.folder}/@dot.src" failonerror="true" overwrite="true">
+											<fileset dir="${swtMainProject}/Eclipse SWT/common/" includes="**/*._properties"/>
+											<mapper type="glob" from="*._properties" to="*.properties" />
+										</copy>
+										<!-- Prepare nested swt.jar and src.jar -->
+										<property name="mavenBuiltJarName" value="${project.build.directory}/org.eclipse.swt.${ws}.${os}.${arch}-${project.version}" />
+										<copy file="${mavenBuiltJarName}.jar" tofile="${temp.folder}/swtdownload/swt.jar"/>
+										<jar jarfile="${temp.folder}/swtdownload/swt.jar" update="true" basedir="${temp.folder}/@dot.src">
+											<manifest>
+												<attribute name="Eclipse-Version" value="${releaseNumberSDK}"/>
+											</manifest>
+										</jar>
+										<zip zipfile="${temp.folder}/swtdownload/src.zip" duplicate="preserve">
+											<zipfileset src="${mavenBuiltJarName}-sources.jar" includes="**/*.sh" filemode="755"/>
+											<zipfileset src="${mavenBuiltJarName}-sources.jar" excludes="META-INF/**,OSGI-INF/**" />
+											<fileset dir="${temp.folder}/@dot.src"/>
+										</zip>
+										<!--Assemple nested SWT-zip -->
+										<zip zipfile="${project.build.directory}/swt-${buildid}-${ws}-${os}-${arch}.zip">
+											<fileset dir="${temp.folder}/swtdownload/" />
+											<fileset dir="${swtMainProject}/build/" />
+											<fileset dir="." includes="about.html,about_files/" />
+										</zip>
 									</target>
 								</configuration>
 							</execution>
