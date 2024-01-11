@@ -15,81 +15,7 @@
 
 <project name="org.eclipse.swt.fragment" default="" basedir=".">
 
-	<target name="init">
-		<property name="compilerArg" value="" />
-		<condition property="fragment" value="org.eclipse.swt.${swt.ws}.${swt.os}.${swt.arch}" else="org.eclipse.swt.${swt.ws}.${swt.os}">
-			<isset property="swt.arch"/>
-		</condition>
-		<property name="fragmentdir" value="${basedir}" />
-		<property name="temp.folder" value="${fragmentdir}/temp.folder" />
-		<property name="plugin.destination" value="${fragmentdir}" />
-		<property name="build.result.folder" value="${fragmentdir}" />
-		<property name="destination" value="${fragmentdir}/target" />
-		<property name="javacVerbose" value="false" />
-		<property name="logExtension" value=".xml" />
-		<property name="javacRelease" value="17" />
-		<condition property="p2.publish.parts" value="true">
-			<istrue value="${p2.gathering}" />
-		</condition>
-		<mkdir dir="target"/>
-	</target>
-
-	<target name="@dot" depends="init" unless="@dot" description="Create jar: @dot.">
-		<property name="destdir" value="${temp.folder}/@dot.bin" />
-		<property name="debug" value="true" />
-		<property name="swtbasename" value="swt" />
-		<property name="jar.filename" value="${swtbasename}.jar" />
-		<delete dir="${temp.folder}/@dot.bin" />
-		<mkdir dir="${temp.folder}/@dot.bin" />
-		<antcall target="copy.${swt.ws}.src"/>
-		<javac destdir="${temp.folder}/@dot.bin" verbose="${javacVerbose}" debug="${debug}" failonerror="yes" release="${javacRelease}" encoding="UTF-8" includeantruntime="false">
-			<src path="${temp.folder}/@dot.src/"/>
-			<classpath path="${dotcp}" />
-			<compilerarg line="-log '${temp.folder}'/@dot.bin${logExtension}" compiler="org.eclipse.jdt.core.JDTCompilerAdapter" />
-			<compilerarg line="${compilerArg}" compiler="org.eclipse.jdt.core.JDTCompilerAdapter" />
-		</javac>
-		<copy todir="${temp.folder}/@dot.bin">
-			<fileset dir="${temp.folder}/@dot.src/" excludes="**/*.java,**/package.htm*,**/library/" />
-		</copy>
-		<mkdir dir="${build.result.folder}/@dot" />
-		<copy todir="${build.result.folder}/@dot" failonerror="true">
-			<fileset dir="${temp.folder}/@dot.bin" />
-		</copy>
-		<condition property="arch" value="${swt.arch}" else="">
-			<isset property="swt.arch"/>
-		</condition>
-		<jar jarfile="${build.result.folder}/${jar.filename}" basedir="${temp.folder}/@dot.bin">
-			<manifest>
-				<attribute name="SWT-OS" value="${swt.os}"/>
-				<attribute name="SWT-WS" value="${swt.ws}"/>
-				<attribute name="SWT-Arch" value="${arch}"/>
-				<attribute name="Eclipse-Version" value="${eclipse.version}"/>
-			</manifest>
-		</jar>
-	</target>
-
-	<target name="build.jars" depends="init">
-		<available property="@dot" file="${build.result.folder}/@dot" />
-		<antcall target="@dot" />
-	</target>
-
-	<target name="src.zip" depends="init" unless="src.zip">
-		<mkdir dir="${build.result.folder}/" />
-		<antcall target="copy.${swt.ws}.src"/>
-		<zip zipfile="${build.result.folder}/src.zip">
-			<fileset dir="${temp.folder}/@dot.src" includes="**/*.java"/>
-			<fileset dir="${temp.folder}/@dot.src" includes="**/*.properties"/>
-			<fileset    dir="${temp.folder}/@dot.src/library/" excludes="**/*.sh"/>
-			<zipfileset dir="${temp.folder}/@dot.src/library/" includes="**/*.sh" filemode="755"/>
-			<fileset dir="${temp.folder}/@dot.src" includes="**/version.txt"/>
-			<fileset dir="${fragmentdir}" includes="about.html,about_files/"/>
-		</zip>
-		<delete dir="${temp.folder}/@dot.src"/>
-	</target>
-
 	<target name="copy.cocoa.src">
-		<property name="copy.src.dir" value="${temp.folder}/@dot.src"/>
-		<delete dir="${copy.src.dir}" quiet="true"/>
 		<copy todir="${copy.src.dir}" failonerror="true" overwrite="true">
 			<fileset dir="${plugindir}/Eclipse SWT/cocoa/"/>
 			<fileset dir="${plugindir}/Eclipse SWT/common/" excludes="**/*._properties"/>
@@ -116,12 +42,9 @@
 			<fileset dir="${plugindir}/Eclipse SWT Program/cocoa/"/>
 			<fileset dir="${plugindir}/Eclipse SWT Program/common/"/>
 		</copy>
-		<antcall target="copy.translationfiles"/>
 	</target>
 
 	<target name="copy.gtk.src">
-		<property name="copy.src.dir" value="${temp.folder}/@dot.src"/>
-		<delete dir="${copy.src.dir}" quiet="true"/>
 		<copy todir="${copy.src.dir}" failonerror="true" overwrite="true">
 			<fileset dir="${plugindir}/Eclipse SWT/cairo/"/>
 			<fileset dir="${plugindir}/Eclipse SWT/common/" excludes="**/*._properties"/>
@@ -150,12 +73,9 @@
 			<fileset dir="${plugindir}/Eclipse SWT Program/gtk/"/>
 			<fileset dir="${plugindir}/Eclipse SWT WebKit/gtk/"/>
 		</copy>
-		<antcall target="copy.translationfiles"/>
 	</target>
 
 	<target name="copy.win32.src">
-		<property name="copy.src.dir" value="${temp.folder}/@dot.src"/>
-		<delete dir="${copy.src.dir}" quiet="true"/>
 		<copy todir="${copy.src.dir}" failonerror="true" overwrite="true">
 			<fileset dir="${plugindir}/Eclipse SWT/common/" excludes="**/*._properties"/>
 			<fileset dir="${plugindir}/Eclipse SWT/win32/"/>
@@ -178,45 +98,6 @@
 			<fileset dir="${plugindir}/Eclipse SWT Program/common/"/>
 			<fileset dir="${plugindir}/Eclipse SWT Program/win32/"/>
 		</copy>
-		<antcall target="copy.translationfiles"/>
-	</target>
-
-	<target name="copy.translationfiles" if="includetranslationfiles">
-		<copy todir="${copy.src.dir}" failonerror="true" overwrite="true">
-			<fileset dir="${plugindir}/Eclipse SWT/common/" includes="**/*._properties"/>
-			<mapper type="glob" from="*._properties" to="*.properties" />
-		</copy>
-	</target>
-
-	<target name="build.sources" depends="init">
-		<available property="src.zip" file="${build.result.folder}/src.zip" />
-		<antcall target="src.zip" />
-	</target>
-
-	<target name="swtdownload" depends="init">
-		<delete dir="${temp.folder}" />
-		<delete dir="${build.result.folder}/@dot" />
-		<mkdir dir="${temp.folder}/swtdownload/" />
-		<property name="includetranslationfiles" value="true" />
-		<property name="swtbasename" value="swt" />
-		<antcall target="build.jars" />
-		<jar jarfile="${build.result.folder}/${swtbasename}.jar" basedir="${fragmentdir}" update="true" includes="swt*.dll,libswt*.so,libswt*.sl,libswt*.a,libswt*.jnilib,libXm.so.2,WebView2Loader.dll" />
-		<move file="${build.result.folder}/${swtbasename}.jar" todir="${temp.folder}/swtdownload" />
-		<delete dir="${build.result.folder}/@dot" />
-		<antcall target="build.sources" />
-		<move file="${build.result.folder}/src.zip" todir="${temp.folder}/swtdownload" />
-		<copy file="${plugindir}/build/.project" todir="${temp.folder}/swtdownload" />
-		<copy file="${plugindir}/build/.classpath" todir="${temp.folder}/swtdownload" />
-		<copy todir="${temp.folder}/swtdownload">
-			<fileset dir="${fragmentdir}" includes="about.html,about_files/" />
-		</copy>
-		<condition property="zipfilename" value="${swtbasename}-${buildid}-${swt.ws}-${swt.os}-${swt.arch}.zip" else="swt-${buildid}-${swt.ws}-${swt.os}.zip">
-			<isset property="swt.arch"/>
-		</condition>
-		<zip zipfile="${destination}/${zipfilename}">
-			<zipfileset dir="${temp.folder}/swtdownload/" />
-		</zip>
-		<delete dir="${temp.folder}" />
 	</target>
 
 </project>

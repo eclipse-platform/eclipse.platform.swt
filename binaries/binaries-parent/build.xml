@@ -1,11 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project name="org.eclipse.swt.${ws}.${os}.${arch}" default="build.jars" basedir=".">
+<project name="org.eclipse.swt.${ws}.${os}.${arch}" basedir=".">
 
-	<property name="swt.ws" value="${ws}" />
-	<property name="swt.os" value="${os}" />
-	<property name="swt.arch" value="${arch}" />
-	
 	<property name="plugindir" value="../../bundles/org.eclipse.swt"/>
 	<import file="${plugindir}/buildFragment.xml"/>
-	<import file="${plugindir}/buildSWT.xml"/>
 </project>
