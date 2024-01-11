@@ -14,9 +14,16 @@
 import java.io.*;
 import java.nio.file.*;
 import java.util.*;
+import java.util.stream.*;
+
+import javax.xml.parsers.*;
+
+import org.w3c.dom.*;
+import org.w3c.dom.Node;
+import org.xml.sax.*;
 
 /**
- * Script to collect the SWT native sources for the specified native fragment.
+ * Script to collect the SWT sources for the specified native fragment.
  * <p>
  * In order to be able to launch this directly as source script <b>only
  * reference standard java classes!</b>
@@ -46,6 +53,9 @@ public class CollectSources {
 		case "-nativeSources":
 			collectNativeSources(env);
 			break;
+		case "-javaSources":
+			collectJavaSources(env);
+			break;
 		default:
 			throw new IllegalArgumentException("Unexpected value: " + args[0]);
 		}
@@ -53,17 +63,17 @@ public class CollectSources {
 
 	private static void collectNativeSources(ScriptEnvironment env) throws IOException {
 		Path props = env.swtProjectRoot.resolve("nativeSourceFolders.properties");
-		Map<String, String> sources = loadProperty(props);
+		Map<String, String> sources = loadProperties(props);
 
 		String commonSources = sources.get("src_common");
 		String nativeSources = sources.get("src_" + env.ws);
 		List<String> allSources = Arrays.asList((commonSources + "," + nativeSources).split(","));
 		System.out.println("Copy " + allSources.size() + " java source folders for " + env.ws + "." + env.arch);
-		copySubDirectories(env.swtProjectRoot, allSources, env.targetDirectory);
+		copySubDirectories(env.swtProjectRoot, allSources, env.targetDirectory, Set.of());
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	private static Map<String, String> loadProperty(Path path) throws IOException {
+	private static Map<String, String> loadProperties(Path path) throws IOException {
 		try (InputStream in = Files.newInputStream(path)) {
 			Properties props = new Properties();
 			props.load(in);
@@ -71,11 +81,61 @@ public class CollectSources {
 		}
 	}
 
-	private static void copySubDirectories(Path root, Collection<String> allSources, Path target) throws IOException {
+	private static void collectJavaSources(ScriptEnvironment env) throws Exception {
+		Path classpathFile = env.swtProjectRoot.resolve(".classpath_" + env.ws + "_" + env.arch);
+		if (!Files.isRegularFile(classpathFile)) { // prefer more specific
+			classpathFile = env.swtProjectRoot.resolve(".classpath_" + env.ws);
+		}
+		Set<String> srcClassPaths = readNativeJavaSourcesFromClasspath(classpathFile);
+		Set<String> excludedExtensions = Set.of("_properties", "extras", "bridgesupport");
+		System.out.println("Copy " + srcClassPaths.size() + " native source folders for" + env.ws + "." + env.arch);
+		copySubDirectories(env.swtProjectRoot, srcClassPaths, env.targetDirectory, excludedExtensions);
+	}
+
+	private static Set<String> readNativeJavaSourcesFromClasspath(Path classpathFile)
+			throws IOException, SAXException, ParserConfigurationException {
+		Element root = parseXMLFile(classpathFile);
+		Set<String> srcPaths = new HashSet<>();
+		if ("classpath".equals(root.getTagName())) {
+			for (Node child : children(root)) {
+				if (child instanceof Element classpathentry && "classpathentry".equals(classpathentry.getTagName())
+						&& getAttributeValue(classpathentry, "kind").equals("src")
+						&& getAttributeValue(classpathentry, "output").isBlank()) {
+					srcPaths.add(getAttributeValue(classpathentry, "path"));
+				}
+			}
+		}
+		return srcPaths;
+	}
+
+	private static Element parseXMLFile(Path classpathFile)
+			throws IOException, SAXException, ParserConfigurationException {
+		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+		factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+		try (InputStream in = Files.newInputStream(classpathFile)) {
+			return factory.newDocumentBuilder().parse(in).getDocumentElement();
+		}
+	}
+
+	private static Iterable<Node> children(Node node) {
+		NodeList children = node.getChildNodes();
+		return () -> IntStream.range(0, children.getLength()).mapToObj(children::item).iterator();
+	}
+
+	private static String getAttributeValue(Element classpathentry, String attributeName) {
+		Attr attribute = classpathentry.getAttributeNode(attributeName);
+		return attribute != null ? attribute.getValue() : "";
+	}
+
+	private static void copySubDirectories(Path root, Collection<String> allSources, Path target,
+			Set<String> excludedExtensions) throws IOException {
 		System.out.println("from " + root + "\nto " + target);
 		for (String srcPath : allSources) {
 			Path srcFolder = root.resolve(srcPath);
-			try (var files = Files.walk(srcFolder).filter(Files::isRegularFile)) {
+			try (var files = Files.walk(srcFolder).filter(Files::isRegularFile).filter(f -> {
+				String filename = f.getFileName().toString();
+				return !excludedExtensions.contains(filename.substring(filename.lastIndexOf('.') + 1));
+			})) {
 				for (Path sourceFile : (Iterable<Path>) files::iterator) {
 					Path targetFile = target.resolve(srcFolder.relativize(sourceFile));
 					Files.createDirectories(targetFile.getParent());

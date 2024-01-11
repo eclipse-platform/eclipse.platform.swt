@@ -113,15 +113,16 @@
 								</configuration>
 							</execution>
 							<execution>
-								<id>normal</id>
-								<phase>initialize</phase>
+								<id>collect-java-sources</id>
+								<phase>generate-sources</phase>
 								<goals>
 									<goal>run</goal>
 								</goals>
 								<configuration>
 									<target>
-										<property name="copy.src.dir" value="src" />
-										<ant antfile="../binaries-parent/build.xml" target="copy.${ws}.src" />
+										<exec executable="java" dir="${swtMainProject}" failonerror="true">
+											<arg line="-Dws=${ws} -Darch=${arch} build-scripts/CollectSources.java -javaSources '${project.basedir}/src' "/>
+										</exec>
 									</target>
 								</configuration>
 							</execution>
