@@ -75,13 +75,6 @@
 									<org.eclipse.swt.buildtime>true</org.eclipse.swt.buildtime>
 								</profileProperties>
 							</dependency-resolution>
-							<environments>
-								<environment>
-									<os>${os}</os>
-									<ws>${ws}</ws>
-									<arch>${arch}</arch>
-								</environment>
-							</environments>
 						</configuration>
 					</plugin>
 					<plugin>
