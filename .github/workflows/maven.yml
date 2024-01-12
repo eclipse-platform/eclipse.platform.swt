@@ -78,6 +78,7 @@ jobs:
         -DfailIfNoTests=true
         -Dtest=PerformanceTests
         integration-test
+       working-directory: tests/org.eclipse.swt.tests
     - name: Upload Test Results for ${{ matrix.config.name }} / Java-${{ matrix.java }}
       if: always()
       uses: actions/upload-artifact@c7d193f32edcb7bfad88892161225aeda64e9392 # v4.0.0
