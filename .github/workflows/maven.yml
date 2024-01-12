@@ -38,10 +38,16 @@ jobs:
       uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
       with:
        fetch-depth: 0 # required for jgit timestamp provider to work
-       lfs: true
+       lfs: false # lfs-pull is not necessary, the natives are re-build in each run
     - name: Install Linux requirements
-      run: sudo apt-get update -qq && sudo apt-get install -qq -y webkit2gtk-driver
+      run: |
+        sudo apt-get update -qq 
+        sudo apt-get install -qq -y libgtk-3-dev freeglut3-dev webkit2gtk-driver
       if: ${{ matrix.config.native == 'gtk.linux.x86_64'}}
+    - name: Pull large static Windows binaries
+      run: |
+        git lfs pull --include='/binaries/org.eclipse.swt.win32.win32.x86_64/WebView2Loader.dll'
+      if: ${{ matrix.config.native == 'win32.win32.x86_64'}}
     - name: Set up Java ${{ matrix.java }}
       uses: actions/setup-java@387ac29b308b003ca37ba93a6cab5eb57c8f5f93 # v4.0.0
       with:
@@ -58,6 +64,7 @@ jobs:
        run: >-
         mvn --batch-mode -V -U
         -DforkCount=1
+        -Dnative=${{ matrix.config.native }}
         -Dcompare-version-with-baselines.skip=true
         -Dtycho.baseline.replace=none
         -Dmaven.compiler.failOnWarning=true

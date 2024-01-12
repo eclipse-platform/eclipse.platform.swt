@@ -68,7 +68,7 @@ public class CollectSources {
 		String commonSources = sources.get("src_common");
 		String nativeSources = sources.get("src_" + env.ws);
 		List<String> allSources = Arrays.asList((commonSources + "," + nativeSources).split(","));
-		System.out.println("Copy " + allSources.size() + " java source folders for " + env.ws + "." + env.arch);
+		System.out.println("Copy " + allSources.size() + " native source folders for " + env.ws + "." + env.arch);
 		copySubDirectories(env.swtProjectRoot, allSources, env.targetDirectory, Set.of());
 	}
 
@@ -88,7 +88,7 @@ public class CollectSources {
 		}
 		Set<String> srcClassPaths = readNativeJavaSourcesFromClasspath(classpathFile);
 		Set<String> excludedExtensions = Set.of("_properties", "extras", "bridgesupport");
-		System.out.println("Copy " + srcClassPaths.size() + " native source folders for" + env.ws + "." + env.arch);
+		System.out.println("Copy " + srcClassPaths.size() + " java source folders for" + env.ws + "." + env.arch);
 		copySubDirectories(env.swtProjectRoot, srcClassPaths, env.targetDirectory, excludedExtensions);
 	}
 
