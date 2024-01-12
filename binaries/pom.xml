@@ -140,7 +140,7 @@
 											<then>
 												<property name="build_dir" value="${project.build.directory}/natives-build-temp"/>
 												<exec executable="${java.home}/bin/java" dir="${swtMainProject}" failonerror="true">
-													<arg line="-Dws=${ws} build-scripts/CollectSources.java -nativeSources '${build_dir}'"/>
+													<arg line="-Dws=${ws} -Darch=${arch} build-scripts/CollectSources.java -nativeSources '${build_dir}'"/>
 												</exec>
 												<property name="SWT_JAVA_HOME" value="${java.home}"/><!-- Not overwritten if already set, e.g. as CLI argument -->
 												<echo>Compile SWT natives against headers and libraries from JDK: ${SWT_JAVA_HOME}</echo>
