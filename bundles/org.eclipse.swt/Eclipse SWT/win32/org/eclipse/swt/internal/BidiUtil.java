@@ -86,7 +86,6 @@ public class BidiUtil {
  * the keyboard changes (via Alt-Shift on Win platforms).  Do this by creating a
  * window proc for the Control so that the window messages for the Control can be
  * monitored.
- * <p>
  *
  * @param hwnd the handle of the Control that is listening for keyboard language
  *  changes
@@ -116,7 +115,6 @@ static long EnumSystemLanguageGroupsProc(long lpLangGrpId, long lpLangGrpIdStrin
 }
 /**
  * Wraps the ExtTextOut function.
- * <p>
  *
  * @param gc the gc to use for rendering
  * @param renderBuffer the glyphs to render as an array of characters
@@ -139,7 +137,6 @@ public static void drawGlyphs(GC gc, char[] renderBuffer, int[] renderDx, int x,
 /**
  * Return ordering and rendering information for the given text.  Wraps the GetFontLanguageInfo
  * and GetCharacterPlacement functions.
- * <p>
  *
  * @param gc the GC to use for measuring of this line, input parameter
  * @param text text that bidi data should be calculated for, input parameter
@@ -269,7 +266,6 @@ public static char[] getRenderInfo(GC gc, String text, int[] order, byte[] class
  * information (e.g., glyphs, glyph distances).  Use this method when you only need
  * ordering information.  Doing so will improve performance.  Wraps the
  * GetFontLanguageInfo and GetCharacterPlacement functions.
- * <p>
  *
  * @param gc the GC to use for measuring of this line, input parameter
  * @param text text that bidi data should be calculated for, input parameter
@@ -351,7 +347,6 @@ public static void getOrderInfo(GC gc, String text, int[] order, byte[] classBuf
 }
 /**
  * Return bidi attribute information for the font in the specified gc.
- * <p>
  *
  * @param gc the gc to query
  * @return bitwise OR of the REORDER, LIGATE and GLYPHSHAPE flags
@@ -373,7 +368,6 @@ public static int getFontBidiAttributes(GC gc) {
 }
 /**
  * Return the active keyboard language type.
- * <p>
  *
  * @return an integer representing the active keyboard language (KEYBOARD_BIDI,
  *  KEYBOARD_NON_BIDI)
@@ -384,7 +378,6 @@ public static int getKeyboardLanguage() {
 }
 /**
  * Return the languages that are installed for the keyboard.
- * <p>
  *
  * @return integer array with an entry for each installed language
  */
@@ -403,7 +396,6 @@ static boolean isBidiLang(long lang) {
 /**
  * Return whether or not the platform supports a bidi language.  Determine this
  * by looking at the languages that are installed.
- * <p>
  *
  * @return true if bidi is supported, false otherwise. Always
  * 	false on Windows CE.
@@ -431,7 +423,6 @@ public static boolean isBidiPlatform() {
 /**
  * Return whether or not the keyboard supports input of a bidi language.  Determine this
  * by looking at the languages that are installed for the keyboard.
- * <p>
  *
  * @return true if bidi is supported, false otherwise.
  */
@@ -445,7 +436,6 @@ public static boolean isKeyboardBidi() {
 }
 /**
  * Removes the specified language listener.
- * <p>
  *
  * @param hwnd the handle of the Control that is listening for keyboard language changes
  */
@@ -461,7 +451,6 @@ public static void removeLanguageListener (Control control) {
  * Determine the base direction for the given text. The direction is derived
  * from the first strong bidirectional RIGHT_TO_LEFT character. Or if that does
  * not exist from the first strong LEFT_TO_RIGHT character
- * <p>
  *
  * @param text Text base direction should be resolved for.
  * @return SWT#LEFT_RIGHT or SWT#RIGHT_TO_LEFT if the text contains strong
@@ -531,7 +520,6 @@ static int getStrongDirection(byte directionality) {
  * Switch the keyboard language to the specified language type.  We do
  * not distinguish between multiple bidi or multiple non-bidi languages, so
  * set the keyboard to the first language of the given type.
- * <p>
  *
  * @param language integer representing language. One of
  * 	KEYBOARD_BIDI, KEYBOARD_NON_BIDI.
@@ -549,7 +537,6 @@ public static void setKeyboardLanguage(int language) {
 /**
  * Sets the orientation (writing order) of the specified control. Text will
  * be right aligned for right to left writing order.
- * <p>
  *
  * @param hwnd the handle of the Control to change the orientation of
  * @param orientation one of SWT.RIGHT_TO_LEFT or SWT.LEFT_TO_RIGHT
