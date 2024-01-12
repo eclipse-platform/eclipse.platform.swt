@@ -98,7 +98,7 @@ public static int pow2(int n) {
  * underlying platform supports this.
  * <p>
  * The new process inherits the environment of the caller.
- * <p>
+ * </p>
  *
  * @param prog array containing the program to execute and its arguments
  * @param envp

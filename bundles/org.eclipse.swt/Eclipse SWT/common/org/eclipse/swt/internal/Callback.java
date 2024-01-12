@@ -148,15 +148,17 @@ public Callback (Object object, String method, int argCount, boolean isArrayBase
  * This constructor is used if you need to use a different return/argument type, e.g double. See Bug 510538 </p>
  *
  * <p> Note:
+ * </p>
  * <ul>
  * <li> Array support is not implemented/supported by this constructor. Use other constructors.</li>
  * <li> If the object is an instance of <code>Class</code> it is assumed that
  * the method is a static method on that class. </li>
  * <li> Note, long types are converted to ints on 32 bit system automatically to account for smaller pointers.
  * This means if you use 'long', you need to cast int next to it. like: <code> long &#47;*int*&#47;</code> </li>
- * </ul></p>
+ * </ul>
  *
- * <p>The following types are supported: <br>
+ * <p>The following types are supported:
+ * </p>
  * <ul>
  * <li>void (for return values only) </li>
  * <li>int</li>
