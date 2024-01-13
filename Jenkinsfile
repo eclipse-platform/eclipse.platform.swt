@@ -64,6 +64,10 @@ pipeline {
 	agent {
 		label 'centos-latest'
 	}
+	tools {
+		jdk 'openjdk-jdk17-latest'
+		maven 'apache-maven-latest'
+	}
 	environment {
 		MAVEN_OPTS = "-Xmx4G"
 		PR_VALIDATION_BUILD = "true"
@@ -277,11 +281,6 @@ pipeline {
 			}	
 		}
 		stage('Build') {
-			tools {
-				// Define tools only in this stage to not interfere with default environemts of SWT-natives build-agents
-				jdk 'openjdk-jdk17-latest'
-				maven 'apache-maven-latest'
-			}
 			steps {
 				xvnc(useXauthority: true) {
 					dir('eclipse.platform.swt') {
