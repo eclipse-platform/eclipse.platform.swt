@@ -11,6 +11,7 @@
 # Contributors:
 #     IBM Corporation - initial API and implementation
 #*******************************************************************************
+# Dummy change
 
 maj_ver=4
 min_ver=964
