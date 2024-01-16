@@ -47,14 +47,6 @@
     <description>Platform SWT</description>
   </setupTask>
   <setupTask
-      xsi:type="setup:CompoundTask"
-      name="org.eclipse.egit.ui">
-    <setupTask
-        xsi:type="setup:PreferenceTask"
-        key="/instance/org.eclipse.egit.ui/auto_lfs_config"
-        value="true"/>
-  </setupTask>
-  <setupTask
       xsi:type="setup:ResourceCopyTask"
       excludedTriggers="BOOTSTRAP"
       filter="(osgi.ws=cocoa)"
@@ -164,17 +156,9 @@
   </setupTask>
   <setupTask
       xsi:type="setup.p2:P2Task"
-      label="SWT Tools and Git LFS">
+      label="SWT Tools">
     <requirement
         name="org.eclipse.swt.tools.feature.feature.group"/>
-    <requirement
-        name="org.eclipse.platform.feature.group"/>
-    <requirement
-        name="org.eclipse.jdt.feature.group"/>
-    <requirement
-        name="org.eclipse.pde.feature.group"/>
-    <requirement
-        name="org.eclipse.jgit.lfs"/>
     <repository
         url="${eclipse.latest.p2}"/>
   </setupTask>
