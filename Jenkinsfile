@@ -347,6 +347,7 @@ pipeline {
 							mvn clean verify \
 								--batch-mode -DforkCount=0 \
 								-Dcompare-version-with-baselines.skip=false -Dmaven.compiler.failOnWarning=true \
+								-Dorg.eclipse.swt.tests.junit.disable.test_isLocal=true \
 								-Dmaven.test.failure.ignore=true -Dmaven.test.error.ignore=true
 						'''
 					}
