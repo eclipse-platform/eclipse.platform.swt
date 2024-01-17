@@ -19,17 +19,18 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.SWTError;
-import org.eclipse.swt.SWTException;
-import org.junit.Test;
-
 import java.nio.file.Paths;
 import java.security.CodeSigner;
 import java.security.cert.Certificate;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.SWTError;
+import org.eclipse.swt.SWTException;
+import org.junit.Assume;
+import org.junit.Test;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.SWT
@@ -166,9 +167,7 @@ private List<String> signersFromClass(Class<?> classValue) {
 @Test
 public void test_isLocal() {
 	// If you change default to NO, make sure that this test runs on GitHub
-	if (Boolean.getBoolean("org.eclipse.swt.tests.junit.disable.test_isLocal")) {
-		return;
-	}
+	Assume.assumeFalse(Boolean.getBoolean("org.eclipse.swt.tests.junit.disable.test_isLocal"));
 
 	String swtPath = pathFromClass(SWT.class);
 	String tstPath = pathFromClass(Test_org_eclipse_swt_SWT.class);

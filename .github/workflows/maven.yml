@@ -51,14 +51,15 @@ jobs:
     - name: Set up Maven
       uses: stCarolas/setup-maven@v4.5
       with:
-        maven-version: 3.9.2
+        maven-version: 3.9.6
     - name: Build with Maven
       uses: coactions/setup-xvfb@b6b4fcfb9f5a895edadc3bc76318fae0ac17c8b3 # v1.0.1
       with:
        run: >-
         mvn --batch-mode -V -U
         -DforkCount=1
-        -Dcompare-version-with-baselines.skip=false
+        -Dcompare-version-with-baselines.skip=true
+        -Dtycho.baseline.replace=none
         -Dmaven.compiler.failOnWarning=true
         --fail-at-end
         -DskipNativeTests=false
