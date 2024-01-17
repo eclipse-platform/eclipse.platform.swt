@@ -312,7 +312,7 @@ pipeline {
 					junit 'eclipse.platform.swt/tests/*.test*/target/surefire-reports/*.xml'
 					archiveArtifacts artifacts: '**/*.log,**/*.html,**/target/*.jar,**/target/*.zip'
 					discoverGitReferenceBuild referenceJob: 'eclipse.platform.swt/master'
-					recordIssues publishAllIssues: true, tools: [java(), mavenConsole(), javaDoc()]
+					recordIssues publishAllIssues: true, tools: [eclipse(pattern: '**/target/compilelogs/*.xml'), mavenConsole(), javaDoc()]
 				}
 			}
 		}
