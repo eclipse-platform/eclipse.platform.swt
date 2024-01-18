@@ -12,6 +12,7 @@
  *     Mickael Istria (Red Hat Inc.) - initial API and implementation
  *     Hannes Wellmann - Build SWT-natives as part of master- and verification-builds
  *     Hannes Wellmann - Move SWT native binaries in this repository using Git-LFS
+ *     Hannes Wellmann - Streamline entire SWT build and replace ANT-scripts by Maven, Jenkins-Pipeline and single-source Java scripts
   *******************************************************************************/
 
 def nativeBuildAgent(String platform, Closure body) {
@@ -64,6 +65,8 @@ def getSWTVersions() { // must be called from the repository root
 	props['new_version'] = props['maj_ver'] + props['min_ver'] + 'r' + props['new_rev']
 	return props
 }
+
+boolean NATIVES_CHANGED = false
 
 pipeline {
 	options {
@@ -127,7 +130,7 @@ pipeline {
 						echo "Current tag=${swtTag}."
 						boolean nativesChanged = false
 						dir('bundles/org.eclipse.swt') {
-							// Check preprocessing is completed
+							// Verify preprocessing is completed
 							sh '''
 								if grep -R --include='*.java' --line-number --fixed-strings -e 'int /*long*/' -e 'float /*double*/' -e 'int[] /*long[]*/' -e 'float[] /*double[]*/' .; then
 									echo There are files with the wrong long /*int*/ preprocessing.
@@ -140,7 +143,8 @@ pipeline {
 							nativesChanged = !diff.strip().isEmpty()
 							echo "Natives changed since ${swtTag}: ${nativesChanged}"
 						}
-						if (nativesChanged) {
+						if (nativesChanged || params.forceNativeBuilds) {
+							NATIVES_CHANGED = true
 							def swtVersions = getSWTVersions()
 							withEnv(['swt_version='+swtVersions['swt_version'], 'new_version='+swtVersions['new_version'], 'rev='+swtVersions['rev'], 'new_rev='+swtVersions['new_rev'],
 									'comma_ver='+swtVersions['comma_ver'], "new_comma_ver=${swtVersions['maj_ver']},${swtVersions['min_ver']},${swtVersions['new_rev']},0" ]) {
@@ -158,11 +162,6 @@ pipeline {
 									commonMakeFile='bundles/org.eclipse.swt/Eclipse SWT/common/library/make_common.mak'
 									sed -i -e "s/rev=${rev}/rev=${new_rev}/g" "$commonMakeFile"
 									sed -i -e "s/comma_ver=${comma_ver}/comma_ver=${new_comma_ver}/g" "$commonMakeFile"
-	
-									git add "${libraryFile}" "${commonMakeFile}"
-									git status
-									
-									mkdir ../tmp; echo 'true' > '../tmp/natives_changed.txt'
 								'''
 							}
 						}
@@ -172,10 +171,7 @@ pipeline {
 		}
 		stage('Build SWT-binaries, if needed') {
 			when {
-				anyOf {
-					expression { return params.forceNativeBuilds }
-					expression { return fileExists('tmp/natives_changed.txt') }
-				}
+				expression { NATIVES_CHANGED }
 			}
 			matrix {
 				axes {
@@ -214,8 +210,7 @@ pipeline {
 								}
 								nativeBuildAgent("${PLATFORM}") {
 									cleanWs() // Workspace is not cleaned up by default, so we do it explicitly
-									echo "OS: ${os}"
-									echo "ARCH: ${arch}"
+									echo "OS: ${os}, ARCH: ${arch}"
 									unstash "swt.binaries.sources.${PLATFORM}"
 									dir('jdk.resources') {
 										unstash "jdk.resources.${os}.${arch}"
@@ -248,52 +243,27 @@ pipeline {
 						steps {
 							dir("libs/${PLATFORM}") {
 								unstash "swt.binaries.${PLATFORM}"
-								
-								sh '''#!/bin/bash -x
-									fn-sign-files()
-									{
-										extension=$1
-										signingServiceAddress=$2
+								sh '''
+									if [[ ${PLATFORM} == cocoa.macosx.* ]]; then
+										binariesExtension='jnilib'
+										signerUrl='https://cbi.eclipse.org/macos/codesign/sign'
+									elif [[ ${PLATFORM} == gtk.linux.* ]]; then
+										binariesExtension='so'
+									elif [[ ${PLATFORM} == win32.win32.* ]]; then
+										binariesExtension='dll'
+										signerUrl='https://cbi.eclipse.org/authenticode/sign'
+									fi
+									if [[ -n "$signerUrl" ]]; then
+										echo "Sign ${PLATFORM} libraries"
 										if [[ "${BRANCH_NAME}" == master ]] || [[ "${BRANCH_NAME}" =~ R[0-9]+_[0-9]+(_[0-9]+)?_maintenance ]]; then
-											for filename in $(ls *.${extension})
-											do
-												mv ${filename} unsigned-${filename}
-												curl -f -o ${filename} -F file=@unsigned-${filename} $signingServiceAddress
-												if [[ $? != 0 ]]; then
-													echo "Signing of ${filename} failed"
-													exit 1
-												else
-													rm unsigned-${filename}
-												fi
+											for file in *.${binariesExtension}; do
+												mv $file unsigned-$file
+												curl --fail --form "file=@unsigned-$file" --output "$file" "$signerUrl"
+												rm unsigned-$file
 											done
 										fi
-									}
-									
-									binaryFragmentsRoot=${WORKSPACE}/eclipse.platform.swt/binaries
-									
-									if [[ ${PLATFORM} == cocoa.macosx.* ]]; then
-										#TODO: Instead use (with adjusted URL): https://github.com/eclipse-cbi/org.eclipse.cbi/tree/main/maven-plugins/eclipse-winsigner-plugin
-										# The mac-signer mojo only works for Mac-applications and not for jnilib files, but the winsigner-plugin with adjusted URL seems to do what we want.
-										echo "Sign ${PLATFORM} libraries"
-										fn-sign-files jnilib https://cbi.eclipse.org/macos/codesign/sign
-		
-										cp *.jnilib ${binaryFragmentsRoot}/org.eclipse.swt.${PLATFORM}/
-									
-									elif [[ ${PLATFORM} == gtk.linux.* ]]; then
-										#TODO: can the webkit handling be removed?!
-										#echo "Removing existing webkitextensions"
-										#rm -r ${binaryFragmentsRoot}/org.eclipse.swt.${PLATFORM}/webkit*/
-										#cp -r webkitextensions* ${binaryFragmentsRoot}/org.eclipse.swt.${PLATFORM}/
-										
-										cp *.so ${binaryFragmentsRoot}/org.eclipse.swt.${PLATFORM}/
-									
-									elif [[ ${PLATFORM} == win32.win32.* ]]; then
-										#TODO: Instead use: https://github.com/eclipse-cbi/org.eclipse.cbi/tree/main/maven-plugins/eclipse-winsigner-plugin
-										echo "Sign ${PLATFORM} libraries"
-										fn-sign-files dll https://cbi.eclipse.org/authenticode/sign
-										
-										cp *.dll ${binaryFragmentsRoot}/org.eclipse.swt.${PLATFORM}/
 									fi
+									cp *.$binariesExtension "${WORKSPACE}/eclipse.platform.swt/binaries/org.eclipse.swt.${PLATFORM}/"
 								'''
 							}
 						}
@@ -303,39 +273,23 @@ pipeline {
 		}
 		stage('Commit SWT-native binaries, if build') {
 			when {
-				expression { return params.forceNativeBuilds || fileExists('tmp/natives_changed.txt') }
+				expression { NATIVES_CHANGED }
 			}
 			steps {
 				dir('eclipse.platform.swt') {
-					script {
-						def swt_version = getSWTVersions()['swt_version'] // versions are read from updated file
-						sh """
+					withEnv(["swt_version=${getSWTVersions()['swt_version']}"]) { // versions are read from updated file
+						sh '''
 							find binaries -name "*${swt_version}*" -type f -exec chmod 755 {} +
 							
 							git add --all *
-							git status						
-							git commit -m 'v${swt_version}'
-						"""
-						try {
-							sh "git tag v${swt_version}"
-						} catch (ex) { // May fail in case this is a forced native re-build without revision increment
-							def tagged = ('a'..'z').any{ suffix ->
-								try {
-									sh "git tag v${swt_version + suffix}"
-									return true
-								}catch (ex1) {
-									return false
-								}
-							}
-							if(!tagged) {
-								fail "Fail to create tag for v${swt_version}"
-							}
-						}
+							git status
+							git commit -m "v${swt_version}"
+							git tag "v${swt_version}"
+							
+							git status
+							git log --patch -2
+						'''
 					}
-					sh '''
-						git status
-						git log -p -2
-					'''
 				}
 			}	
 		}
@@ -364,7 +318,7 @@ pipeline {
 		}
 		stage('Push SWT-native binaries, if build') {
 			when {
-				expression { return params.forceNativeBuilds || fileExists('tmp/natives_changed.txt') }
+				expression { NATIVES_CHANGED }
 			}
 			steps {
 				sshagent(['github-bot-ssh']) {
@@ -385,8 +339,6 @@ pipeline {
 							else
 								echo Skip pushing changes of native-binaries for branch '${BRANCH_NAME}'
 							fi
-							# The commits are not pushed. At least list them, so one can check if the result is as expected.
-							git log -n 2
 						"""
 					}
 				}
