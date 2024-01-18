@@ -242,7 +242,7 @@ int calculateWidth (int index, GC gc) {
 //	NSSize size = cell.cellSize ();
 
 	int width = (int)Math.ceil (size.width);
-	if (OS.isBigSurOrLater() && !OS.IS_X86_64) width += Tree.TEXT_GAP; // To fix truncation
+	if (OS.isBigSurOrLater()) width += Tree.TEXT_GAP; // To fix truncation
 	boolean sendMeasure = true;
 	if ((parent.style & SWT.VIRTUAL) != 0) {
 		sendMeasure = cached;
