@@ -2972,19 +2972,17 @@ boolean setItemSize(GC gc) {
 	for (int i = 0; i < items.length; i++) {
 		CTabItem tab = items[i];
 		int width = widths[i];
-		if (tab.height != tabHeight || tab.width != width) {
-			changed = true;
-			tab.shortenedText = null;
-			tab.shortenedTextWidth = 0;
-			tab.height = tabHeight;
-			tab.width = width;
-			tab.closeRect.width = tab.closeRect.height = 0;
-			if (showClose || tab.showClose) {
-				if (i == selectedIndex || showUnselectedClose) {
-					Point closeSize = renderer.computeSize(CTabFolderRenderer.PART_CLOSE_BUTTON, SWT.NONE, gc, SWT.DEFAULT, SWT.DEFAULT);
-					tab.closeRect.width = closeSize.x;
-					tab.closeRect.height = closeSize.y;
-				}
+		changed = true;
+		tab.shortenedText = null;
+		tab.shortenedTextWidth = 0;
+		tab.height = tabHeight;
+		tab.width = width;
+		tab.closeRect.width = tab.closeRect.height = 0;
+		if (showClose || tab.showClose) {
+			if (i == selectedIndex || showUnselectedClose) {
+				Point closeSize = renderer.computeSize(CTabFolderRenderer.PART_CLOSE_BUTTON, SWT.NONE, gc, SWT.DEFAULT, SWT.DEFAULT);
+				tab.closeRect.width = closeSize.x;
+				tab.closeRect.height = closeSize.y;
 			}
 		}
 	}
