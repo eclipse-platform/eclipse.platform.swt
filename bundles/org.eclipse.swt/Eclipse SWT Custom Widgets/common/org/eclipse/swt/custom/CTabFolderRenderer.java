@@ -360,15 +360,13 @@ public class CTabFolderRenderer {
 
 					width += getTextPadding(item, state) * 2;
 
-					if (parent.showClose || item.showClose) {
-						if ((state & SWT.SELECTED) != 0 || parent.showUnselectedClose) {
-							if (!applyLargeTextPadding(parent)) {
-								if (width > 0) width += INTERNAL_SPACING;
-							} else {
-								if (width > 0) width -= INTERNAL_SPACING;
-							}
-							width += computeSize(PART_CLOSE_BUTTON, SWT.NONE, gc, SWT.DEFAULT, SWT.DEFAULT).x;
+					if (shouldDrawCloseIcon(item)) {
+						if (!applyLargeTextPadding(parent)) {
+							if (width > 0) width += INTERNAL_SPACING;
+						} else {
+							if (width > 0) width -= INTERNAL_SPACING;
 						}
+						width += computeSize(PART_CLOSE_BUTTON, SWT.NONE, gc, SWT.DEFAULT, SWT.DEFAULT).x;
 					}
 				}
 				break;
@@ -377,6 +375,13 @@ public class CTabFolderRenderer {
 		width = trim.width;
 		height = trim.height;
 		return new Point(width, height);
+	}
+
+	private boolean shouldDrawCloseIcon(CTabItem item) {
+		CTabFolder folder = item.getParent();
+		boolean showClose = folder.showClose || item.showClose;
+		boolean isSelectedOrShowCloseForUnselected = (item.state & SWT.SELECTED) != 0 || folder.showUnselectedClose;
+		return showClose && isSelectedOrShowCloseForUnselected;
 	}
 
 	/**
@@ -1416,7 +1421,7 @@ public class CTabFolderRenderer {
 			// draw Image
 			Rectangle trim = computeTrim(itemIndex, SWT.NONE, 0, 0, 0, 0);
 			int xDraw = x - trim.x;
-			if (parent.single && (parent.showClose || item.showClose)) xDraw += item.closeRect.width;
+			if (parent.single && shouldDrawCloseIcon(item)) xDraw += item.closeRect.width;
 			Image image = item.getImage();
 			if (image != null && !image.isDisposed() && parent.showSelectedImage) {
 				Rectangle imageBounds = image.getBounds();
@@ -1469,7 +1474,7 @@ public class CTabFolderRenderer {
 					gc.setBackground(orginalBackground);
 				}
 			}
-			if (parent.showClose || item.showClose) drawClose(gc, item.closeRect, item.closeImageState);
+			if (shouldDrawCloseIcon(item)) drawClose(gc, item.closeRect, item.closeImageState);
 		}
 	}
 
@@ -1631,7 +1636,7 @@ public class CTabFolderRenderer {
 				Rectangle imageBounds = image.getBounds();
 				// only draw image if it won't overlap with close button
 				int maxImageWidth = x + width - xDraw - (trim.width + trim.x);
-				if (parent.showUnselectedClose && (parent.showClose || item.showClose)) {
+				if (shouldDrawCloseIcon(item)) {
 					maxImageWidth -= item.closeRect.width + INTERNAL_SPACING;
 				}
 				if (imageBounds.width < maxImageWidth) {
@@ -1649,7 +1654,7 @@ public class CTabFolderRenderer {
 			// draw Text
 			xDraw += getTextPadding(item, state);
 			int textWidth = x + width - xDraw - (trim.width + trim.x);
-			if (parent.showUnselectedClose && (parent.showClose || item.showClose)) {
+			if (shouldDrawCloseIcon(item)) {
 				textWidth -= item.closeRect.width + INTERNAL_SPACING;
 			}
 			if (textWidth > 0) {
@@ -1667,7 +1672,7 @@ public class CTabFolderRenderer {
 				gc.setFont(gcFont);
 			}
 			// draw close
-			if (parent.showUnselectedClose && (parent.showClose || item.showClose)) drawClose(gc, item.closeRect, item.closeImageState);
+			if (shouldDrawCloseIcon(item)) drawClose(gc, item.closeRect, item.closeImageState);
 		}
 	}
 
