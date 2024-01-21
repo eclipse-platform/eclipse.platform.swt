@@ -153,7 +153,7 @@ pipeline {
 									rm -f binaries/org.eclipse.swt.gtk.*/lib*-${swt_version}.so
 									rm -f binaries/org.eclipse.swt.win32.*/*-${swt_version}.dll
 									rm -f binaries/org.eclipse.swt.cocoa.*/lib*-${swt_version}.jnilib
-	
+									
 									echo "Incrementing version from ${swt_version} to ${new_version}; new comma_ver=${new_comma_ver}"
 									
 									libraryFile='bundles/org.eclipse.swt/Eclipse SWT PI/common/org/eclipse/swt/internal/Library.java'
@@ -226,11 +226,11 @@ pipeline {
 											withEnv(['PATH=C:\\tools\\cygwin\\bin;' + env.PATH]) {
 												bat '''
 													mkdir libs
-													cmd /c build.bat x86_64 all install
+													cmd /c build.bat install
 													ls -1R libs
 												'''
 											}
-										} 
+										}
 									}
 									dir('libs') {
 										stash "swt.binaries.${PLATFORM}"
@@ -291,7 +291,7 @@ pipeline {
 						'''
 					}
 				}
-			}	
+			}
 		}
 		stage('Build') {
 			steps {

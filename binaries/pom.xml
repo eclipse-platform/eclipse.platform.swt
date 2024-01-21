@@ -149,8 +149,7 @@
 														<exec dir="${build_dir}" executable="${build_dir}/build.bat" failonerror="true">
 															<env key="SWT_JAVA_HOME" value="${SWT_JAVA_HOME}"/>
 															<env key="OUTPUT_DIR" value="${project.basedir}"/>
-															<arg line="${targets}"/>
-															<arg line="clean"/>
+															<arg line="install clean"/>
 														</exec>
 													</then>
 													<else>
@@ -161,8 +160,7 @@
 															<env key="OUTPUT_DIR" value="${project.basedir}"/>
 															<env key="GTK_VERSION" value="${gtk_version}"/>
 															<env key="MODEL" value="${arch}"/>
-															<arg line="${targets}"/>
-															<arg line="clean"/>
+															<arg line="install clean"/>
 														</exec>
 													</else>
 												</if>
