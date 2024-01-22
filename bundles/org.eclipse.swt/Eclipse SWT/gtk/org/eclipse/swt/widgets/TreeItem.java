@@ -42,7 +42,7 @@ import org.eclipse.swt.internal.gtk3.*;
 public class TreeItem extends Item {
 	Tree parent;
 	Font font;
-	Font[] cellFont;
+	Font [] cellFont;
 	String [] strings;
 	boolean cached, grayed, isExpanded, updated, settingData;
 	static final int EXPANDER_EXTRA_PADDING = 4;
@@ -51,7 +51,7 @@ public class TreeItem extends Item {
  * Constructs <code>TreeItem</code> and <em>inserts</em> it into <code>Tree</code>.
  * Item is inserted as last direct child of the tree.
  * <p>
- * The fastest way to insert many items is documented in {@link TreeItem#TreeItem(Tree,int,int)}
+ * The fastest way to insert many items is documented in {@link TreeItem#TreeItem (Tree,int,int)}
  * and {@link TreeItem#setItemCount}
  *
  * @param parent a tree control which will be the parent of the new instance (cannot be null)
@@ -110,7 +110,7 @@ public TreeItem (Tree parent, int style, int index) {
  * Constructs <code>TreeItem</code> and <em>inserts</em> it into <code>Tree</code>.
  * Item is inserted as last direct child of the specified <code>TreeItem</code>.
  * <p>
- * The fastest way to insert many items is documented in {@link TreeItem#TreeItem(Tree,int,int)}
+ * The fastest way to insert many items is documented in {@link TreeItem#TreeItem (Tree,int,int)}
  * and {@link TreeItem#setItemCount}
  *
  * @param parentItem a tree control which will be the parent of the new instance (cannot be null)
@@ -136,7 +136,7 @@ public TreeItem (TreeItem parentItem, int style) {
  * Constructs <code>TreeItem</code> and <em>inserts</em> it into <code>Tree</code>.
  * Item is inserted as <code>index</code> direct child of the specified <code>TreeItem</code>.
  * <p>
- * The fastest way to insert many items is documented in {@link TreeItem#TreeItem(Tree,int,int)}
+ * The fastest way to insert many items is documented in {@link TreeItem#TreeItem (Tree,int,int)}
  * and {@link TreeItem#setItemCount}
  *
  * @param parentItem a tree control which will be the parent of the new instance (cannot be null)
@@ -169,8 +169,8 @@ TreeItem (Tree parent, long parentIter, int style, int index, long iter) {
 	} else {
 		assert handle == 0;
 		handle = OS.g_malloc (GTK.GtkTreeIter_sizeof ());
-		if (handle == 0) error(SWT.ERROR_NO_HANDLES);
-		C.memmove(handle, iter, GTK.GtkTreeIter_sizeof ());
+		if (handle == 0) error (SWT.ERROR_NO_HANDLES);
+		C.memmove (handle, iter, GTK.GtkTreeIter_sizeof ());
 	}
 }
 
@@ -199,9 +199,9 @@ Color _getBackground () {
 	GTK.gtk_tree_model_get (parent.modelHandle, handle, Tree.BACKGROUND_COLUMN, ptr, -1);
 	if (ptr [0] == 0) return parent.getBackground ();
 	GdkRGBA gdkRGBA = new GdkRGBA ();
-	OS.memmove(gdkRGBA, ptr [0], GdkRGBA.sizeof);
+	OS.memmove (gdkRGBA, ptr [0], GdkRGBA.sizeof);
 	GDK.gdk_rgba_free (ptr [0]);
-	return Color.gtk_new(display, gdkRGBA);
+	return Color.gtk_new (display, gdkRGBA);
 }
 
 Color _getBackground (int index) {
@@ -212,9 +212,9 @@ Color _getBackground (int index) {
 	GTK.gtk_tree_model_get (parent.modelHandle, handle, modelIndex + Tree.CELL_BACKGROUND, ptr, -1);
 	if (ptr [0] == 0) return _getBackground ();
 	GdkRGBA gdkRGBA = new GdkRGBA ();
-	OS.memmove(gdkRGBA, ptr [0], GdkRGBA.sizeof);
+	OS.memmove (gdkRGBA, ptr [0], GdkRGBA.sizeof);
 	GDK.gdk_rgba_free (ptr [0]);
-	return Color.gtk_new(display, gdkRGBA);
+	return Color.gtk_new (display, gdkRGBA);
 }
 
 boolean _getChecked () {
@@ -228,9 +228,9 @@ Color _getForeground () {
 	GTK.gtk_tree_model_get (parent.modelHandle, handle, Tree.FOREGROUND_COLUMN, ptr, -1);
 	if (ptr [0] == 0) return parent.getForeground ();
 	GdkRGBA gdkRGBA = new GdkRGBA ();
-	OS.memmove(gdkRGBA, ptr [0], GdkRGBA.sizeof);
+	OS.memmove (gdkRGBA, ptr [0], GdkRGBA.sizeof);
 	GDK.gdk_rgba_free (ptr [0]);
-	return Color.gtk_new(display, gdkRGBA);
+	return Color.gtk_new (display, gdkRGBA);
 }
 
 Color _getForeground (int index) {
@@ -241,25 +241,25 @@ Color _getForeground (int index) {
 	GTK.gtk_tree_model_get (parent.modelHandle, handle, modelIndex + Tree.CELL_FOREGROUND, ptr, -1);
 	if (ptr [0] == 0) return _getForeground ();
 	GdkRGBA gdkRGBA = new GdkRGBA ();
-	OS.memmove(gdkRGBA, ptr [0], GdkRGBA.sizeof);
+	OS.memmove (gdkRGBA, ptr [0], GdkRGBA.sizeof);
 	GDK.gdk_rgba_free (ptr [0]);
-	return Color.gtk_new(display, gdkRGBA);
+	return Color.gtk_new (display, gdkRGBA);
 }
 
-Image _getImage(int index) {
-	int count = Math.max(1, parent.getColumnCount());
+Image _getImage (int index) {
+	int count = Math.max (1, parent.getColumnCount ());
 	if (0 > index || index > count - 1) return null;
 
-	long[] surfaceHandle = new long[1];
-	int modelIndex = parent.columnCount == 0 ? Tree.FIRST_COLUMN : parent.columns[index].modelIndex;
+	long [] surfaceHandle = new long [1];
+	int modelIndex = parent.columnCount == 0 ? Tree.FIRST_COLUMN : parent.columns [index].modelIndex;
 	GTK.gtk_tree_model_get (parent.modelHandle, handle, modelIndex + Tree.CELL_SURFACE, surfaceHandle, -1);
-	if (surfaceHandle[0] == 0) return null;
+	if (surfaceHandle [0] == 0) return null;
 
-	int imageIndex = parent.imageList.indexOf(surfaceHandle[0]);
+	int imageIndex = parent.imageList.indexOf (surfaceHandle [0]);
 	if (imageIndex == -1) {
 		return null;
 	} else {
-		return parent.imageList.get(imageIndex);
+		return parent.imageList.get (imageIndex);
 	}
 }
 
@@ -271,7 +271,7 @@ String _getText (int index) {
 	GTK.gtk_tree_model_get (parent.modelHandle, handle, modelIndex + Tree.CELL_TEXT, ptr, -1);
 	if (ptr [0] == 0) return ""; //$NON-NLS-1$
 	int length = C.strlen (ptr [0]);
-	byte[] buffer = new byte [length];
+	byte [] buffer = new byte [length];
 	C.memmove (buffer, ptr [0], length);
 	OS.g_free (ptr [0]);
 	return new String (Converter.mbcsToWcs (buffer));
@@ -412,7 +412,7 @@ public Rectangle getBounds (int index) {
 
 Rectangle getBoundsInPixels (int index) {
 	// TODO fully test on early and later versions of GTK
-	checkWidget();
+	checkWidget ();
 	if (!parent.checkData (this)) error (SWT.ERROR_WIDGET_DISPOSED);
 	long parentHandle = parent.handle;
 	long column = 0;
@@ -491,13 +491,13 @@ Rectangle getBoundsInPixels () {
 
 	int horizontalSeparator;
 	if (GTK.GTK4) {
-		long separator = GTK.gtk_separator_new(GTK.GTK_ORIENTATION_HORIZONTAL);
+		long separator = GTK.gtk_separator_new (GTK.GTK_ORIENTATION_HORIZONTAL);
 		GtkAllocation allocation = new GtkAllocation ();
-		GTK.gtk_widget_get_allocation(separator, allocation);
+		GTK.gtk_widget_get_allocation (separator, allocation);
 		horizontalSeparator = allocation.height;
 	} else {
 		GTK3.gtk_widget_style_get (parentHandle, OS.horizontal_separator, buffer, 0);
-		horizontalSeparator = buffer[0];
+		horizontalSeparator = buffer [0];
 	}
 	rect.x += horizontalSeparator;
 
@@ -526,7 +526,7 @@ Rectangle getBoundsInPixels () {
  * </ul>
  */
 public boolean getChecked () {
-	checkWidget();
+	checkWidget ();
 	if (!parent.checkData (this)) error (SWT.ERROR_WIDGET_DISPOSED);
 	if ((parent.style & SWT.CHECK) == 0) return false;
 	return _getChecked ();
@@ -544,7 +544,7 @@ public boolean getChecked () {
  * </ul>
  */
 public boolean getExpanded () {
-	checkWidget();
+	checkWidget ();
 	long path = GTK.gtk_tree_model_get_path (parent.modelHandle, handle);
 	boolean answer = GTK.gtk_tree_view_row_expanded (parent.handle, path);
 	GTK.gtk_tree_path_free (path);
@@ -694,7 +694,7 @@ public Image getImage (int index) {
  */
 public Rectangle getImageBounds (int index) {
 	checkWidget ();
-	return DPIUtil.autoScaleDown(getImageBoundsInPixels(index));
+	return DPIUtil.autoScaleDown (getImageBoundsInPixels (index));
 }
 
 Rectangle getImageBoundsInPixels (int index) {
@@ -751,7 +751,7 @@ Rectangle getImageBoundsInPixels (int index) {
 	 * "main-widget" have separate GdkWindows.
 	 */
 	if (parent!= null && parent.getHeaderVisible () && GTK.GTK4) {
-		r.y += parent.getHeaderHeight();
+		r.y += parent.getHeaderHeight ();
 	}
 	return r;
 }
@@ -768,7 +768,7 @@ Rectangle getImageBoundsInPixels (int index) {
  * </ul>
  */
 public int getItemCount () {
-	checkWidget();
+	checkWidget ();
 	if (!parent.checkData (this)) error (SWT.ERROR_WIDGET_DISPOSED);
 	return GTK.gtk_tree_model_iter_n_children (parent.modelHandle, handle);
 }
@@ -791,7 +791,7 @@ public int getItemCount () {
  * @since 3.1
  */
 public TreeItem getItem (int index) {
-	checkWidget();
+	checkWidget ();
 	if (index < 0) error (SWT.ERROR_INVALID_RANGE);
 	if (!parent.checkData (this)) error (SWT.ERROR_WIDGET_DISPOSED);
 
@@ -821,7 +821,7 @@ public TreeItem getItem (int index) {
  * </ul>
  */
 public TreeItem [] getItems () {
-	checkWidget();
+	checkWidget ();
 	if (!parent.checkData (this)) error (SWT.ERROR_WIDGET_DISPOSED);
 	return parent.getItems (handle);
 }
@@ -862,7 +862,7 @@ public Tree getParent () {
  * </ul>
  */
 public TreeItem getParentItem () {
-	checkWidget();
+	checkWidget ();
 	long path = GTK.gtk_tree_model_get_path (parent.modelHandle, handle);
 	TreeItem item = null;
 	int depth = GTK.gtk_tree_path_get_depth (path);
@@ -928,7 +928,7 @@ public String getText (int index) {
  */
 public Rectangle getTextBounds (int index) {
 	checkWidget ();
-	return DPIUtil.autoScaleDown(getTextBoundsInPixels(index));
+	return DPIUtil.autoScaleDown (getTextBoundsInPixels (index));
 }
 
 Rectangle getTextBoundsInPixels (int index) {
@@ -971,13 +971,13 @@ Rectangle getTextBoundsInPixels (int index) {
 
 	int horizontalSeparator;
 	if (GTK.GTK4) {
-		long separator = GTK.gtk_separator_new(GTK.GTK_ORIENTATION_HORIZONTAL);
+		long separator = GTK.gtk_separator_new (GTK.GTK_ORIENTATION_HORIZONTAL);
 		GtkAllocation allocation = new GtkAllocation ();
-		GTK.gtk_widget_get_allocation(separator, allocation);
+		GTK.gtk_widget_get_allocation (separator, allocation);
 		horizontalSeparator = allocation.height;
 	} else {
 		GTK3.gtk_widget_style_get (parentHandle, OS.horizontal_separator, buffer, 0);
-		horizontalSeparator = buffer[0];
+		horizontalSeparator = buffer [0];
 	}
 	rect.x += horizontalSeparator;
 	gtk_tree_view_column_cell_get_position (column, textRenderer, x, null);
@@ -988,10 +988,10 @@ Rectangle getTextBoundsInPixels (int index) {
 	 * NOTE: this change has been ported to Tables since Tables/Trees both use the
 	 * same underlying GTK structure.
 	 */
-	Image image = _getImage(index);
+	Image image = _getImage (index);
 	int imageWidth = 0;
 	if (image != null) {
-		if (DPIUtil.useCairoAutoScale()) {
+		if (DPIUtil.useCairoAutoScale ()) {
 			imageWidth = image.getBounds ().width;
 		} else {
 			imageWidth = image.getBoundsInPixels ().width;
@@ -1032,16 +1032,16 @@ Rectangle getTextBoundsInPixels (int index) {
  * @since 3.1
  */
 public int indexOf (TreeItem item) {
-	checkWidget();
+	checkWidget ();
 	if (item == null) error (SWT.ERROR_NULL_ARGUMENT);
-	if (item.isDisposed()) error (SWT.ERROR_INVALID_ARGUMENT);
+	if (item.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
 	int index = -1;
 	boolean isParent = false;
 	long currentPath = GTK.gtk_tree_model_get_path (parent.modelHandle, handle);
 	long parentPath = GTK.gtk_tree_model_get_path (parent.modelHandle, item.handle);
 	int depth = GTK.gtk_tree_path_get_depth (parentPath);
-	if (depth > 1 && GTK.gtk_tree_path_up(parentPath)) {
-		if (GTK.gtk_tree_path_compare(currentPath, parentPath) == 0) isParent = true;
+	if (depth > 1 && GTK.gtk_tree_path_up (parentPath)) {
+		if (GTK.gtk_tree_path_compare (currentPath, parentPath) == 0) isParent = true;
 	}
 	GTK.gtk_tree_path_free (currentPath);
 	GTK.gtk_tree_path_free (parentPath);
@@ -1050,9 +1050,9 @@ public int indexOf (TreeItem item) {
 	if (depth > 1) {
 		long indices = GTK.gtk_tree_path_get_indices (path);
 		if (indices != 0) {
-			int[] temp = new int[depth];
+			int [] temp = new int [depth];
 			C.memmove (temp, indices, 4 * temp.length);
-			index = temp[temp.length - 1];
+			index = temp [temp.length - 1];
 		}
 	}
 	GTK.gtk_tree_path_free (path);
@@ -1087,11 +1087,11 @@ void releaseWidget () {
 public void dispose () {
 	// Workaround to Bug489751, avoid selecting next node when selected node is disposed.
 	Tree tmpParent = null;
-	if (parent != null && parent.getItemCount() > 0 && parent.getSelectionCount() == 0) {
+	if (parent != null && parent.getItemCount () > 0 && parent.getSelectionCount () == 0) {
 		tmpParent = parent;
 	}
-	super.dispose();
-	if (tmpParent != null && !tmpParent.isDisposed()) tmpParent.deselectAll();
+	super.dispose ();
+	if (tmpParent != null && !tmpParent.isDisposed ()) tmpParent.deselectAll ();
 }
 
 /**
@@ -1224,7 +1224,7 @@ public void setBackground (int index, Color color) {
  * </ul>
  */
 public void setChecked (boolean checked) {
-	checkWidget();
+	checkWidget ();
 	if ((parent.style & SWT.CHECK) == 0) return;
 	if (_getChecked () == checked) return;
 	GTK.gtk_tree_store_set (parent.modelHandle, handle, Tree.CHECKED_COLUMN, checked, -1);
@@ -1248,7 +1248,7 @@ public void setChecked (boolean checked) {
  * </ul>
  */
 public void setExpanded (boolean expanded) {
-	checkWidget();
+	checkWidget ();
 	long path = GTK.gtk_tree_model_get_path (parent.modelHandle, handle);
 	if (expanded != GTK.gtk_tree_view_row_expanded (parent.handle, path)) {
 		if (expanded) {
@@ -1462,7 +1462,7 @@ public void setForeground (int index, Color color){
  * </ul>
  */
 public void setGrayed (boolean grayed) {
-	checkWidget();
+	checkWidget ();
 	if ((parent.style & SWT.CHECK) == 0) return;
 	if (this.grayed == grayed) return;
 	this.grayed = grayed;
@@ -1492,31 +1492,31 @@ public void setGrayed (boolean grayed) {
  *
  * @since 3.1
  */
-public void setImage(int index, Image image) {
+public void setImage (int index, Image image) {
 	checkWidget ();
-	if (image != null && image.isDisposed()) {
-		error(SWT.ERROR_INVALID_ARGUMENT);
+	if (image != null && image.isDisposed ()) {
+		error (SWT.ERROR_INVALID_ARGUMENT);
 	}
 	if (image != null && image.type == SWT.ICON) {
-		if (image.equals(_getImage(index))) return;
+		if (image.equals (_getImage (index))) return;
 	}
-	int count = Math.max(1, parent.getColumnCount());
+	int count = Math.max (1, parent.getColumnCount ());
 	if (0 > index || index > count - 1) return;
 
 	long pixbuf = 0, surface = 0;
 	if (image != null) {
 		ImageList imageList = parent.imageList;
-		if (imageList == null) imageList = parent.imageList = new ImageList();
-		int imageIndex = imageList.indexOf(image);
+		if (imageList == null) imageList = parent.imageList = new ImageList ();
+		int imageIndex = imageList.indexOf (image);
 		// When we create a blank image surface gets created with dimensions 0, 0.
         // This call recreates the surface with correct dimensions
-		long tempSurface = ImageList.convertSurface(image);
-		Cairo.cairo_surface_destroy(tempSurface);
+		long tempSurface = ImageList.convertSurface (image);
+		Cairo.cairo_surface_destroy (tempSurface);
 		if (imageIndex == -1) {
-			imageIndex = imageList.add(image);
+			imageIndex = imageList.add (image);
 		}
-		surface = imageList.getSurface(imageIndex);
-		pixbuf = ImageList.createPixbuf(surface);
+		surface = imageList.getSurface (imageIndex);
+		pixbuf = ImageList.createPixbuf (surface);
 	}
 
 	int modelIndex = parent.columnCount == 0 ? Tree.FIRST_COLUMN : parent.columns [index].modelIndex;
@@ -1529,7 +1529,7 @@ public void setImage(int index, Image image) {
 	if (!parent.pixbufSizeSet) {
 		if (image != null) {
 			int iWidth, iHeight;
-			if (DPIUtil.useCairoAutoScale()) {
+			if (DPIUtil.useCairoAutoScale ()) {
 				iWidth = image.getBounds ().width;
 				iHeight = image.getBounds ().height;
 			} else {
@@ -1556,7 +1556,7 @@ public void setImage(int index, Image image) {
 					 * supposed to be rendered in. See bug 513761.
 					 */
 					boolean check = modelIndex == Tree.FIRST_COLUMN && (parent.style & SWT.CHECK) != 0;
-					parent.createRenderers(column, modelIndex, check, parent.style);
+					parent.createRenderers (column, modelIndex, check, parent.style);
 				}
 			}
 		}
@@ -1564,23 +1564,23 @@ public void setImage(int index, Image image) {
 		/*
 		 * Bug 483112: We check to see if the cached value is greater than the size of the pixbufRenderer.
 		 * If it is, then we change the size of the pixbufRenderer accordingly.
-		 * Bug 489025: There is a corner case where the below is triggered when current(Width|Height) is -1,
+		 * Bug 489025: There is a corner case where the below is triggered when current (Width|Height) is -1,
 		 * which results in icons being set to 0. Fix is to compare only positive sizes.
 		 */
-		if (parent.pixbufWidth > Math.max(currentWidth [0], 0) || parent.pixbufHeight > Math.max(currentHeight [0], 0)) {
+		if (parent.pixbufWidth > Math.max (currentWidth [0], 0) || parent.pixbufHeight > Math.max (currentHeight [0], 0)) {
 			GTK.gtk_cell_renderer_set_fixed_size (pixbufRenderer, parent.pixbufWidth, parent.pixbufHeight);
 		}
 	}
 
-	GTK.gtk_tree_store_set(parent.modelHandle, handle, modelIndex + Tree.CELL_PIXBUF, pixbuf, -1);
+	GTK.gtk_tree_store_set (parent.modelHandle, handle, modelIndex + Tree.CELL_PIXBUF, pixbuf, -1);
 	/*
-	 * Bug 573633: gtk_tree_store_set() will reference the handle. So we unref the pixbuf here,
+	 * Bug 573633: gtk_tree_store_set () will reference the handle. So we unref the pixbuf here,
 	 * and leave the destruction of the handle to be done later on by the GTK+ tree.
 	 */
 	if (pixbuf != 0) {
-		OS.g_object_unref(pixbuf);
+		OS.g_object_unref (pixbuf);
 	}
-	GTK.gtk_tree_store_set(parent.modelHandle, handle, modelIndex + Tree.CELL_SURFACE, surface, -1);
+	GTK.gtk_tree_store_set (parent.modelHandle, handle, modelIndex + Tree.CELL_SURFACE, surface, -1);
 	cached = true;
 	updated = true;
 }
@@ -1673,10 +1673,10 @@ public void setText (int index, String string) {
 		if (string.equals (strings [index])) return;
 		strings [index] = string;
 	}
-	if ((string != null) && (string.length() > TEXT_LIMIT)) {
-		string = string.substring(0, TEXT_LIMIT - ELLIPSIS.length()) + ELLIPSIS;
+	if ((string != null) && (string.length () > TEXT_LIMIT)) {
+		string = string.substring (0, TEXT_LIMIT - ELLIPSIS.length ()) + ELLIPSIS;
 	}
-	byte[] buffer = Converter.wcsToMbcs (string, true);
+	byte [] buffer = Converter.wcsToMbcs (string, true);
 	int modelIndex = parent.columnCount == 0 ? Tree.FIRST_COLUMN : parent.columns [index].modelIndex;
 	GTK.gtk_tree_store_set (parent.modelHandle, handle, modelIndex + Tree.CELL_TEXT, buffer, -1);
 	cached = true;
