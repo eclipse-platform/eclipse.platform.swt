@@ -2558,7 +2558,7 @@ public class SWT {
 	 * @deprecated Support for Chromium was limited to ancient and full of CVEs version of Chromium.
 	 * See <a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=572010">bug report</a> for details
 	 */
-	@Deprecated
+	@Deprecated(forRemoval = true, since = "2024-03")
 	public static final int CHROMIUM = 1 << 17;
 
 	/**
