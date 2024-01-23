@@ -17,15 +17,8 @@ import org.eclipse.swt.*;
 
 class BrowserFactory {
 
-private Class<?> chromiumClass;
-
 WebBrowser createWebBrowser (int style) {
 	// This function can't throw, otherwise the Browser will be left in inconsistent state.
-	WebBrowser browser = null;
-	if ((style & SWT.CHROMIUM) != 0) {
-		browser = createChromium();
-		if (browser != null) return browser;
-	}
 	if ((style & SWT.EDGE) != 0) {
 		try {
 			return new Edge();
@@ -34,25 +27,5 @@ WebBrowser createWebBrowser (int style) {
 		}
 	}
 	return new IE ();
-}
-
-private WebBrowser createChromium() {
-	if (chromiumClass == null) {
-		try {
-			chromiumClass = Class.forName ("org.eclipse.swt.browser.ChromiumImpl"); //$NON-NLS-1$
-			return (WebBrowser) chromiumClass.newInstance();
-		} catch (ClassNotFoundException e) {
-			/* chromium fragments missing */
-			System.err.println ("SWT.CHROMIUM style was used but chromium.swt fragment/jar is missing from classpath."); //$NON-NLS-1$
-		} catch (NoClassDefFoundError | InstantiationException | IllegalAccessException  e) {
-			/* second attempt, do not print */
-		} catch (UnsatisfiedLinkError e) {
-			System.err.println ("SWT.CHROMIUM style was used but chromium.swt " + SWT.getPlatform() +  " (or CEF binaries) fragment/jar is missing."); //$NON-NLS-1$
-		} catch (SWTError e) {
-			// a more specific error determined by the implementation.
-			System.err.println (e.getMessage()); //$NON-NLS-1$
-		}
-	}
-	return null;
 }
 }
