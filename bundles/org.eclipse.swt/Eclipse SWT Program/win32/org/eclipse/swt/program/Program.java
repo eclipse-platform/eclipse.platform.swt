@@ -19,7 +19,9 @@ import java.util.stream.*;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.win32.*;
+import org.eclipse.swt.widgets.*;
 
 /**
  * Instances of this class represent programs and
@@ -372,6 +374,7 @@ public ImageData getImageData () {
  *            The zoom level in % of the standard resolution
  *
  * @return the image data for the program, may be null
+ * @since 3.125
  */
 public ImageData getImageData (int zoom) {
 	int nIconIndex = 0;
@@ -395,7 +398,10 @@ public ImageData getImageData (int zoom) {
 	OS.ExtractIconEx (lpszFile, nIconIndex, phiconLarge, phiconSmall, 1);
 	if (phiconSmall [0] == 0) return null;
 	Image image = Image.win32_new (null, SWT.ICON, phiconSmall [0]);
-  ImageData imageData = image.getImageData (zoom);
+	// Windows API returns image data according to primary monitor zoom factor
+	// rather than at original scaling
+	int nativeZoomFactor = 100 * Display.getCurrent().getPrimaryMonitor().getZoom() / DPIUtil.getDeviceZoom();
+	ImageData imageData = image.getImageData (100 * zoom / nativeZoomFactor);
 	image.dispose ();
 	return imageData;
 }

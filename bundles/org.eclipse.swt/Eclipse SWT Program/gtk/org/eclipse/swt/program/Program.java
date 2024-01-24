@@ -141,6 +141,7 @@ public ImageData getImageData() {
  *            The zoom level in % of the standard resolution
  *
  * @return the image data for the program, may be null
+ * @since 3.125
  */
 public ImageData getImageData(int zoom) {
 	if (iconPath == null) return null;
