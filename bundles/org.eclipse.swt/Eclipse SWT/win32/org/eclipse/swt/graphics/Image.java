@@ -1430,6 +1430,7 @@ public ImageData getImageDataAtCurrentZoom() {
 
 			/* Do the mask */
 			byte [] maskData = null;
+			byte [] alphaData = null;
 			if (info.hbmColor == 0) {
 				/* Do the bottom half of the mask */
 				maskData = new byte[imageSize];
@@ -1459,7 +1460,9 @@ public ImageData getImageDataAtCurrentZoom() {
 				maskData = new byte[imageSize];
 				OS.GetDIBits(hBitmapDC, info.hbmMask, 0, height, maskData, bmi, OS.DIB_RGB_COLORS);
 				/* Loop to invert the mask */
+				boolean hasMaskData = false;
 				for (int i = 0; i < maskData.length; i++) {
+					hasMaskData |= maskData[i] != 0;
 					maskData[i] ^= -1;
 				}
 				/* Make sure mask scanlinePad is 2 */
@@ -1470,6 +1473,21 @@ public ImageData getImageDataAtCurrentZoom() {
 					if (calcBpl == bpl) break;
 				}
 				maskData = ImageData.convertPad(maskData, width, height, 1, maskPad, 2);
+				// For missing mask data, see https://github.com/eclipse-platform/eclipse.platform.swt/issues/715
+				if (!hasMaskData && depth == 32) {
+					alphaData = new byte[width * height];
+					boolean hasAlphaData = false;
+					for (int pixelIndex = 0; pixelIndex < alphaData.length; pixelIndex++) {
+						alphaData[pixelIndex] = data[pixelIndex * 4 + 3];
+						hasAlphaData |= alphaData[pixelIndex] != -1;
+					}
+					// In case there is alpha data, replace the empty mask data with proper alpha data
+					if (hasAlphaData) {
+						maskData = null;
+					} else {
+						alphaData = null;
+					}
+				}
 			}
 			/* Clean up */
 			OS.SelectObject(hBitmapDC, hOldBitmap);
@@ -1482,6 +1500,7 @@ public ImageData getImageDataAtCurrentZoom() {
 			if (info.hbmMask != 0) OS.DeleteObject(info.hbmMask);
 			/* Construct and return the ImageData */
 			ImageData imageData = new ImageData(width, height, depth, palette, 4, data);
+			imageData.alphaData = alphaData;
 			imageData.maskData = maskData;
 			imageData.maskPad = 2;
 			return imageData;
