@@ -294,6 +294,7 @@ void handleResponse (long response) {
 
 	filterIndex = popup != null ? (int)popup.indexOfSelectedItem() : -1;
 
+	fullPath = null;
 	if (response == OS.NSFileHandlingPanelOKButton) {
 		NSString filename = panel.filename();
 		if ((style & SWT.SAVE) != 0) {
@@ -334,6 +335,10 @@ void handleResponse (long response) {
 		}
 	}
 	releaseHandles();
+
+	if (response != OS.NSFileHandlingPanelOKButton && response != OS.NSFileHandlingPanelCancelButton) {
+		throw new SWTException(SWT.ERROR_INVALID_RETURN_VALUE);
+	}
 }
 
 /**
@@ -349,6 +354,32 @@ void handleResponse (long response) {
  * </ul>
  */
 public String open () {
+	try {
+		return openDialog().orElse(null);
+	} catch (SWTException e) {
+		if (e.code == SWT.ERROR_INVALID_RETURN_VALUE) {
+			return null;
+		}
+		throw e;
+	}
+}
+
+/**
+ * Makes the dialog visible and brings it to the front of the display.
+ * Equal to {@link FileDialog#open()} but also exposes for state information like user cancellation.
+ *
+ * @return an Optional that either contains the absolute path of the first selected file
+ *         or is empty in case the dialog was canceled
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the dialog has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the dialog</li>
+ *    <li>ERROR_INVALID_RETURN_VALUE - if the dialog was not cancelled and did not return a valid path</li>
+ * </ul>
+ *
+ * @since 3.126
+ */
+public Optional<String> openDialog () {
 	fullPath = null;
 	if ((style & SWT.SAVE) != 0) {
 		NSSavePanel savePanel = NSSavePanel.savePanel();
@@ -443,7 +474,7 @@ public String open () {
 		long response = panel.runModal();
 		handleResponse(response);
 	}
-	return fullPath;
+	return Optional.ofNullable(fullPath);
 }
 
 long panel_shouldEnableURL (long id, long sel, long arg0, long arg1) {
