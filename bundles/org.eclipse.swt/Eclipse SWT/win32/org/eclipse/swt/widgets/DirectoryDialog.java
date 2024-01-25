@@ -15,6 +15,8 @@
 package org.eclipse.swt.widgets;
 
 
+import java.util.*;
+
 import org.eclipse.swt.*;
 import org.eclipse.swt.internal.ole.win32.*;
 import org.eclipse.swt.internal.win32.*;
@@ -122,10 +124,37 @@ public String getMessage () {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the dialog</li>
  * </ul>
  */
-public String open() {
+public String open () {
+	try {
+		return openDialog().orElse(null);
+	} catch (SWTException e) {
+		if (e.code == SWT.ERROR_INVALID_RETURN_VALUE) {
+			return null;
+		}
+		throw e;
+	}
+}
+
+/**
+ * Makes the dialog visible and brings it to the front of the display.
+ * Equal to {@link DirectoryDialog#open()} but also exposes for state information like user cancellation.
+ *
+ * @return an Optional that either contains the absolute path of the selected directory
+ *         or is empty in case the dialog was canceled
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the dialog has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the dialog</li>
+ *    <li>ERROR_INVALID_RETURN_VALUE - if the dialog was not cancelled and did not return a valid path</li>
+ * </ul>
+ *
+ * @since 3.126
+ */
+public Optional<String> openDialog () {
 	this.directoryPath = null;
 
 	long [] ppv = new long [1];
+	int hr = COM.E_FAIL;
 	if (COM.CoCreateInstance(COM.CLSID_FileOpenDialog, 0, COM.CLSCTX_INPROC_SERVER, COM.IID_IFileOpenDialog, ppv) == OS.S_OK) {
 		IFileDialog fileDialog = new IFileDialog(ppv[0]);
 
@@ -162,7 +191,8 @@ public String open() {
 		Display display = parent.getDisplay();
 		long hwndOwner = parent.handle;
 		display.externalEventLoop = true;
-		if (fileDialog.Show(hwndOwner) == OS.S_OK) {
+		hr = fileDialog.Show(hwndOwner);
+		if (hr == OS.S_OK) {
 			if (fileDialog.GetResult(ppv) == OS.S_OK) {
 				IShellItem psi = new IShellItem(ppv[0]);
 				if (psi.GetDisplayName(OS.SIGDN_FILESYSPATH, ppv) == OS.S_OK) {
@@ -182,7 +212,12 @@ public String open() {
 		fileDialog.Release();
 	}
 
-	return directoryPath;
+	if (hr == COM.S_OK) {
+		return Optional.ofNullable(directoryPath);
+	} else if (hr == OS.HRESULT_FROM_WIN32(OS.ERROR_CANCELED)) {
+		return Optional.empty();
+	}
+	throw new SWTException(SWT.ERROR_INVALID_RETURN_VALUE);
 }
 
 /**

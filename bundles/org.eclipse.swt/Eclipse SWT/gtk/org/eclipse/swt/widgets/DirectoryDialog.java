@@ -15,6 +15,7 @@ package org.eclipse.swt.widgets;
 
 
 import java.io.*;
+import java.util.*;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.internal.*;
@@ -122,17 +123,45 @@ public String getMessage () {
  * </ul>
  */
 public String open () {
-		return openNativeChooserDialog();
+	try {
+		return openDialog().orElse(null);
+	} catch (SWTException e) {
+		if (e.code == SWT.ERROR_INVALID_RETURN_VALUE) {
+			return null;
+		}
+		throw e;
+	}
 }
+
+/**
+ * Makes the dialog visible and brings it to the front of the display.
+ * Equal to {@link DirectoryDialog#open()} but also exposes for state information like user cancellation.
+ *
+ * @return an Optional that either contains the absolute path of the selected directory
+ *         or is empty in case the dialog was canceled
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the dialog has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the dialog</li>
+ *    <li>ERROR_INVALID_RETURN_VALUE - if the dialog was not cancelled and did not return a valid path</li>
+ * </ul>
+ *
+ * @since 3.126
+ */
+public Optional<String> openDialog () {
+	return openNativeChooserDialog();
+}
+
 /**
  * Open the file chooser dialog using the GtkFileChooserNative API (GTK3.20+) for running applications
  * without direct filesystem access (such as Flatpak). API for GtkFileChoosernative does not
  * give access to any GtkWindow or GtkWidget for the dialog, thus this method omits calls that
  * requires such access. These are be handled by the GtkNativeDialog API.
  *
- * @return a string describing the absolute path of the first selected file, or null
+ * @return an Optional that contains a string describing the absolute path of the selected directory
+ *         or is empty if the dialog is canceled
  */
-String openNativeChooserDialog () {
+Optional<String> openNativeChooserDialog () {
 	byte [] titleBytes = Converter.wcsToMbcs (title, true);
 	long shellHandle = parent.topHandle ();
 	Display display = parent != null ? parent.getDisplay (): Display.getCurrent ();
@@ -168,7 +197,7 @@ String openNativeChooserDialog () {
 
 	GTK3setNativeDialogMessage(handle, message);
 
-	String answer = null;
+	String selectedPath = null;
 	display.addIdleProc ();
 	int signalId = 0;
 	long hookId = 0;
@@ -213,14 +242,22 @@ String openNativeChooserDialog () {
 					char [] chars = new char [clength];
 					C.memmove (chars, utf16Ptr, clength * 2);
 					OS.g_free (utf16Ptr);
-					answer = new String (chars);
-					filterPath = answer;
+					selectedPath = new String (chars);
+					filterPath = selectedPath;
 				}
 			}
 		}
 	}
+	
+	Optional<String> result = Optional.empty();
+	if (response == GTK.GTK_RESPONSE_ACCEPT) {
+		result = Optional.ofNullable(selectedPath);
+	}
 	display.removeIdleProc ();
-	return answer;
+	if (result.isPresent() || response == GTK.GTK_RESPONSE_CANCEL) {
+		return result;
+	}
+	throw new SWTException(SWT.ERROR_INVALID_RETURN_VALUE);
 }
 
 

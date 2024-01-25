@@ -14,6 +14,8 @@
 package org.eclipse.swt.widgets;
 
 
+import java.util.*;
+
 import org.eclipse.swt.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.cocoa.*;
@@ -139,11 +141,16 @@ void handleResponse (long response) {
 	}
 	Display display = parent != null ? parent.getDisplay() : Display.getCurrent();
 	display.setModalDialog(null);
+	directoryPath = null;
 	if (response  == OS.NSFileHandlingPanelOKButton) {
 		NSString filename = panel.filename();
 		directoryPath = filterPath = filename.getString();
 	}
 	releaseHandles();
+
+	if (response != OS.NSFileHandlingPanelOKButton && response != OS.NSFileHandlingPanelCancelButton) {
+		throw new SWTException(SWT.ERROR_INVALID_RETURN_VALUE);
+	}
 }
 
 /**
@@ -159,6 +166,32 @@ void handleResponse (long response) {
  * </ul>
  */
 public String open () {
+	try {
+		return openDialog().orElse(null);
+	} catch (SWTException e) {
+		if (e.code == SWT.ERROR_INVALID_RETURN_VALUE) {
+			return null;
+		}
+		throw e;
+	}
+}
+
+/**
+ * Makes the dialog visible and brings it to the front of the display.
+ * Equal to {@link DirectoryDialog#open()} but also exposes for state information like user cancellation.
+ *
+ * @return an Optional that either contains the absolute path of the selected directory
+ *         or is empty in case the dialog was canceled
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the dialog has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the dialog</li>
+ *    <li>ERROR_INVALID_RETURN_VALUE - if the dialog was not cancelled and did not return a valid path</li>
+ * </ul>
+ *
+ * @since 3.126
+ */
+public Optional<String> openDialog () {
 	directoryPath = null;
 	panel = NSOpenPanel.openPanel();
 	if (panel == null) {
@@ -202,7 +235,7 @@ public String open () {
 	}
 
 //	options.optionFlags = OS.kNavSupportPackages | OS.kNavAllowOpenPackages | OS.kNavAllowInvisibleFiles;
-	return directoryPath;
+	return Optional.ofNullable(directoryPath);
 }
 
 void releaseHandles () {

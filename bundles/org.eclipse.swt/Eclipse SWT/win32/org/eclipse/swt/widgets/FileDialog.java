@@ -14,6 +14,7 @@
 package org.eclipse.swt.widgets;
 
 import java.nio.file.*;
+import java.util.*;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.internal.ole.win32.*;
@@ -216,6 +217,32 @@ static Path getItemPath (IShellItem psi) {
  * </ul>
  */
 public String open () {
+	try {
+		return openDialog().orElse(null);
+	} catch (SWTException e) {
+		if (e.code == SWT.ERROR_INVALID_RETURN_VALUE) {
+			return null;
+		}
+		throw e;
+	}
+}
+
+/**
+ * Makes the dialog visible and brings it to the front of the display.
+ * Equal to {@link FileDialog#open()} but also exposes for state information like user cancellation.
+ *
+ * @return an Optional that either contains the absolute path of the first selected file
+ *         or is empty in case the dialog was canceled
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the dialog has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the dialog</li>
+ *    <li>ERROR_INVALID_RETURN_VALUE - if the dialog was not cancelled and did not return a valid path</li>
+ * </ul>
+ *
+ * @since 3.126
+ */
+public Optional<String> openDialog () {
 	/* Create Common Item Dialog */
 	long[] ppv = new long[1];
 	int hr;
@@ -385,8 +412,12 @@ public String open () {
 
 	fileDialog.Release();
 
-	/* Answer the full path or null */
-	return fullPath;
+	if (hr == COM.S_OK) {
+		return Optional.ofNullable(fullPath);
+	} else if (hr == OS.HRESULT_FROM_WIN32(OS.ERROR_CANCELED)) {
+		return Optional.empty();
+	}
+	throw new SWTException(SWT.ERROR_INVALID_RETURN_VALUE);
 }
 
 /**
