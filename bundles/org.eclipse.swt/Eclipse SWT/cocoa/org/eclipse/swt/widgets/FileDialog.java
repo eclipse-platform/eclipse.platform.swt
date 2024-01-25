@@ -58,6 +58,7 @@ public class FileDialog extends Dialog {
 	long methodImpl_overwriteExistingFileCheck = 0;
 	long method_performKeyEquivalent = 0;
 	long methodImpl_performKeyEquivalent = 0;
+	boolean canceled;
 	static final char EXTENSION_SEPARATOR = ';';
 	private String selectedExtension;
 	boolean overwrite = (OS.VERSION >= OS.VERSION(10, 15, 0)) ? true : false;
@@ -333,6 +334,7 @@ void handleResponse (long response) {
 			}
 		}
 	}
+	canceled = response == OS.NSFileHandlingPanelCancelButton;
 	releaseHandles();
 }
 
@@ -444,6 +446,14 @@ public String open () {
 		handleResponse(response);
 	}
 	return fullPath;
+}
+
+/**
+ * {@return whether the dialog has been canceled when last opened or has not been opened at all}
+ * @since 3.125
+ */
+public boolean wasCanceled() {
+	return canceled;
 }
 
 long panel_shouldEnableURL (long id, long sel, long arg0, long arg1) {

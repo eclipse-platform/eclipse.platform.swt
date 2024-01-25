@@ -46,6 +46,7 @@ public class FileDialog extends Dialog {
 	String filterPath = "", fileName = "";
 	int filterIndex = 0;
 	boolean overwrite = false;
+	boolean canceled;
 	static final String DEFAULT_FILTER = "*.*";
 	static final String LONG_PATH_PREFIX = "\\\\?\\";
 
@@ -322,6 +323,7 @@ public String open () {
 	display.externalEventLoop = true;
 	display.sendPreExternalEventDispatchEvent();
 	hr = fileDialog.Show(parent.handle);
+	canceled = hr == OS.HRESULT_FROM_WIN32(OS.ERROR_CANCELED);
 	display.externalEventLoop = false;
 	display.sendPostExternalEventDispatchEvent();
 
@@ -387,6 +389,14 @@ public String open () {
 
 	/* Answer the full path or null */
 	return fullPath;
+}
+
+/**
+ * {@return whether the dialog has been canceled when last opened or has not been opened at all}
+ * @since 3.125
+ */
+public boolean wasCanceled() {
+	return canceled;
 }
 
 /**

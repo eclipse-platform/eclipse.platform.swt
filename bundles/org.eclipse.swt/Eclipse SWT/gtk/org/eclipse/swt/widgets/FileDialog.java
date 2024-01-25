@@ -53,6 +53,7 @@ public class FileDialog extends Dialog {
 	boolean overwrite = false;
 	boolean uriMode;
 	long handle;
+	boolean canceled;
 	static final char SEPARATOR = File.separatorChar;
 	static final char EXTENSION_SEPARATOR = ';';
 	static final char FILE_EXTENSION_SEPARATOR = '.';
@@ -374,6 +375,7 @@ String openNativeChooserDialog () {
 		display.externalEventLoop = false;
 		display.sendPostExternalEventDispatchEvent ();
 	}
+	canceled = response == GTK.GTK_RESPONSE_CANCEL;
 
 	if ((style & SWT.RIGHT_TO_LEFT) != 0) {
 		OS.g_signal_remove_emission_hook (signalId, hookId);
@@ -383,6 +385,14 @@ String openNativeChooserDialog () {
 	}
 	display.removeIdleProc ();
 	return answer;
+}
+
+/**
+ * {@return whether the dialog has been canceled when last opened or has not been opened at all}
+ * @since 3.125
+ */
+public boolean wasCanceled() {
+	return canceled;
 }
 
 void presetChooserDialog () {
