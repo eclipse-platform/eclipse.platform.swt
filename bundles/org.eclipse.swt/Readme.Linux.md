@@ -30,11 +30,10 @@ You need to install the following on your system:
 
 ### Building and Testing locally
 
-Import and build the SWT project `bundles/org.eclipse.swt` in Eclipse. See the
-platform independent Readme for how to set the .classpath. This will populate
-the `bundles/org.eclipse.swt/bin/library` with the native code and build files.
+Import and build the SWT project `bundles/org.eclipse.swt` and `binaries/org.eclipse.swt.gtk.linux.${arch}` in Eclipse.
 
-To build SWT natives run the `build.sh` script in `./bin/library` directory. To
+To build SWT natives run the `Build-SWT-native-binaries-for-running-platform` Maven launch configuration.
+Alternatively run the `build.sh` script in `binaries/org.eclipse.swt.gtk.linux.${arch}/bin/library` directory. To
 use the locally build natives run the build script with the 'install' argument
 (`./build.sh install`) or --help to see more options.
 
