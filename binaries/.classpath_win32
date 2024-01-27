@@ -4,11 +4,7 @@
 	<classpathentry kind="src" path="Eclipse SWT/win32"/>
 	<classpathentry kind="src" path="Eclipse SWT/common"/>
 	<classpathentry kind="src" path="Eclipse SWT PI/common"/>
-	<classpathentry kind="src" path="Eclipse SWT PI/win32">
-		<attributes>
-			<attribute value="org.eclipse.swt.win32.win32.x86_64" name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY"/>
-		</attributes>
-	</classpathentry>
+	<classpathentry kind="src" path="Eclipse SWT PI/win32"/>
 	<classpathentry kind="src" path="Eclipse SWT OLE Win32/win32"/>
 	<classpathentry kind="src" path="Eclipse SWT Accessibility/win32"/>
 	<classpathentry kind="src" path="Eclipse SWT Accessibility/common"/>
@@ -25,6 +21,5 @@
 	<classpathentry kind="src" path="Eclipse SWT Browser/win32"/>
 	<classpathentry kind="src" path="Eclipse SWT OpenGL/win32"/>
 	<classpathentry kind="src" path="Eclipse SWT OpenGL/common"/>
-	<classpathentry kind="src" output="bin_build" path="build-scripts"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

@@ -31,7 +31,7 @@ import org.xml.sax.*;
  */
 public class CollectSources {
 
-	private record ScriptEnvironment(Path swtProjectRoot, Path targetDirectory, String ws, String arch) {
+	private record ScriptEnvironment(Path swtProjectRoot, Path binariesRoot, Path targetDirectory, String ws) {
 		private static ScriptEnvironment read(String[] args) {
 			if (args.length != 2) {
 				throw new IllegalArgumentException("task and target directory must be defined as only argument");
@@ -40,10 +40,10 @@ public class CollectSources {
 			if (!swtProjectRoot.endsWith(Path.of("bundles/org.eclipse.swt"))) { // Consistency check
 				throw new IllegalStateException("Sript must be excuted from org.eclipse.swt project");
 			}
+			Path binariesRoot = swtProjectRoot.getParent().getParent().resolve("binaries").toAbsolutePath();
 			Path targetDirectory = Path.of(args[1]);
 			String ws = System.getProperty("ws");
-			String arch = System.getProperty("arch");
-			return new ScriptEnvironment(swtProjectRoot, targetDirectory, ws, arch);
+			return new ScriptEnvironment(swtProjectRoot, binariesRoot, targetDirectory, ws);
 		}
 	}
 
@@ -68,7 +68,7 @@ public class CollectSources {
 		String commonSources = sources.get("src_common");
 		String nativeSources = sources.get("src_" + env.ws);
 		List<String> allSources = Arrays.asList((commonSources + "," + nativeSources).split(","));
-		System.out.println("Copy " + allSources.size() + " native source folders for " + env.ws + "." + env.arch);
+		System.out.println("Copy " + allSources.size() + " native source folders for " + env.ws);
 		copySubDirectories(env.swtProjectRoot, allSources, env.targetDirectory, Set.of());
 	}
 
@@ -82,13 +82,10 @@ public class CollectSources {
 	}
 
 	private static void collectJavaSources(ScriptEnvironment env) throws Exception {
-		Path classpathFile = env.swtProjectRoot.resolve(".classpath_" + env.ws + "_" + env.arch);
-		if (!Files.isRegularFile(classpathFile)) { // prefer more specific
-			classpathFile = env.swtProjectRoot.resolve(".classpath_" + env.ws);
-		}
+		Path classpathFile = env.binariesRoot.resolve(".classpath_" + env.ws);
 		Set<String> srcClassPaths = readNativeJavaSourcesFromClasspath(classpathFile);
 		Set<String> excludedExtensions = Set.of("_properties", "extras", "bridgesupport");
-		System.out.println("Copy " + srcClassPaths.size() + " java source folders for" + env.ws + "." + env.arch);
+		System.out.println("Copy " + srcClassPaths.size() + " java source folders for " + env.ws);
 		copySubDirectories(env.swtProjectRoot, srcClassPaths, env.targetDirectory, excludedExtensions);
 	}
 

@@ -49,18 +49,6 @@
   <setupTask
       xsi:type="setup:ResourceCopyTask"
       excludedTriggers="BOOTSTRAP"
-      filter="(osgi.ws=cocoa)"
-      sourceURL="${github.clone.platform.swt.location|uri}/bundles/org.eclipse.swt/.classpath_${osgi.ws}_${osgi.arch}"
-      targetURL="${github.clone.platform.swt.location|uri}/bundles/org.eclipse.swt/.classpath"/>
-  <setupTask
-      xsi:type="setup:ResourceCopyTask"
-      excludedTriggers="BOOTSTRAP"
-      filter="(|(osgi.ws=win32)(osgi.ws=gtk))"
-      sourceURL="${github.clone.platform.swt.location|uri}/bundles/org.eclipse.swt/.classpath_${osgi.ws}"
-      targetURL="${github.clone.platform.swt.location|uri}/bundles/org.eclipse.swt/.classpath"/>
-  <setupTask
-      xsi:type="setup:ResourceCopyTask"
-      excludedTriggers="BOOTSTRAP"
       sourceURL="${github.clone.platform.swt.location|uri}/examples/org.eclipse.swt.snippets/.classpath_${osgi.ws}"
       targetURL="${github.clone.platform.swt.location|uri}/examples/org.eclipse.swt.snippets/.classpath"/>
   <setupTask

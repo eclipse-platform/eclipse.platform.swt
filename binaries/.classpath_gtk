@@ -5,13 +5,9 @@
 	<classpathentry kind="src" path="Eclipse SWT/cairo"/>
 	<classpathentry kind="src" path="Eclipse SWT/emulated/bidi"/>
 	<classpathentry kind="src" path="Eclipse SWT/emulated/coolbar"/>
-    <classpathentry kind="src" path="Eclipse SWT/emulated/taskbar"/>
+	<classpathentry kind="src" path="Eclipse SWT/emulated/taskbar"/>
 	<classpathentry kind="src" path="Eclipse SWT/common"/>
-	<classpathentry kind="src" path="Eclipse SWT PI/gtk">
-		<attributes>
-			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="org.eclipse.swt.gtk.linux.x86_64"/>
-		</attributes>
-	</classpathentry>
+	<classpathentry kind="src" path="Eclipse SWT PI/gtk"/>
 	<classpathentry kind="src" path="Eclipse SWT PI/cairo"/>
 	<classpathentry kind="src" path="Eclipse SWT PI/common"/>
 	<classpathentry kind="src" path="Eclipse SWT Accessibility/gtk"/>
@@ -31,6 +27,5 @@
 	<classpathentry kind="src" path="Eclipse SWT OpenGL/glx"/>
 	<classpathentry kind="src" path="Eclipse SWT OpenGL/common"/>
 	<classpathentry kind="src" path="Eclipse SWT WebKit/gtk"/>
-	<classpathentry kind="src" output="bin_build" path="build-scripts"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
