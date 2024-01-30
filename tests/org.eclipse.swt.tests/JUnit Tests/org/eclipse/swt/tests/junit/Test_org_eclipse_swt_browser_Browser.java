@@ -281,6 +281,20 @@ public void test_Constructor_asyncParentDisposal() {
 }
 
 @Test
+public void test_Constructor_multipleInstantiationsInDifferentShells() {
+	final int numberOfBrowsers = 5;
+	for (int i = 0; i < numberOfBrowsers; i++) {
+		Shell browserShell = new Shell(Display.getCurrent());
+		Browser browser = createBrowser(browserShell, SWT.EDGE);
+		assertFalse(browser.isDisposed());
+		browser.dispose();
+		assertTrue(browser.isDisposed());
+		browserShell.dispose();
+		assertTrue(browserShell.isDisposed());
+	}
+}
+
+@Test
 public void test_evalute_Cookies () {
 	final AtomicBoolean loaded = new AtomicBoolean(false);
 	browser.addProgressListener(ProgressListener.completedAdapter(event -> loaded.set(true)));
