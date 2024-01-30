@@ -1196,6 +1196,7 @@ public class OS extends C {
 	public static final int SET_FEATURE_ON_PROCESS = 0x2;
 	public static final int SHADEBLENDCAPS = 120;
 	public static final int SHGFI_ICON = 0x000000100;
+	public static final int SHGFI_LARGEICON= 0x0;
 	public static final int SHGFI_SMALLICON= 0x1;
 	public static final int SHGFI_USEFILEATTRIBUTES = 0x000000010;
 	public static final int SIGDN_FILESYSPATH = 0x80058000;

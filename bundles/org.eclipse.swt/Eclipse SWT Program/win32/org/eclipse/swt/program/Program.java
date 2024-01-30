@@ -20,6 +20,7 @@ import java.util.stream.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.*;
+import org.eclipse.swt.internal.DPIUtil.*;
 import org.eclipse.swt.internal.win32.*;
 import org.eclipse.swt.widgets.*;
 
@@ -382,20 +383,50 @@ public ImageData getImageData () {
 public ImageData getImageData (int zoom) {
 	// Windows API returns image data according to primary monitor zoom factor
 	// rather than at original scaling
-	int nativeZoomFactor = 100 * Display.getCurrent().getPrimaryMonitor().getZoom() / DPIUtil.getDeviceZoom();
+	int primaryMonitorZoom = Display.getCurrent().getPrimaryMonitor().getZoom();
+	int nativeZoomFactor = 100 * primaryMonitorZoom / DPIUtil.getDeviceZoom();
 	int imageZoomFactor = 100 * zoom / nativeZoomFactor;
+	// Use small icon if expected icon size is less than 150% of delivered icon size
+	// and use large icon if it is more than 150% of the delivered icon size
+	boolean useLargeIcon = 100 * zoom /  primaryMonitorZoom > 200;
+	ElementAtZoom<Image> zoomedIcon = null;
 	if (extension != null) {
-		SHFILEINFO shfi = new SHFILEINFO ();
-		int flags = OS.SHGFI_ICON | OS.SHGFI_SMALLICON | OS.SHGFI_USEFILEATTRIBUTES;
-		TCHAR pszPath = new TCHAR (0, extension, true);
-		OS.SHGetFileInfo (pszPath.chars, OS.FILE_ATTRIBUTE_NORMAL, shfi, SHFILEINFO.sizeof, flags);
+		zoomedIcon = loadIconForFileExtension(useLargeIcon);
+	}
+	if (zoomedIcon == null) {
+		zoomedIcon = loadIconForFile(useLargeIcon);
+	}
+	if (zoomedIcon != null) {
+		Image image = zoomedIcon.element();
+		ImageData imageData = image.getImageData (imageZoomFactor * 100 / zoomedIcon.zoom());
+		image.dispose ();
+		return imageData;
+	}
+	return null;
+}
+
+private ElementAtZoom<Image> loadIconForFileExtension(boolean useLargeIconIfAvailable) {
+	SHFILEINFO shfi = new SHFILEINFO ();
+	TCHAR pszPath = new TCHAR (0, extension, true);
+	int flags = OS.SHGFI_ICON | OS.SHGFI_USEFILEATTRIBUTES;
+	int iconZoom = 100;
+	if (useLargeIconIfAvailable) {
+		OS.SHGetFileInfo (pszPath.chars, OS.FILE_ATTRIBUTE_NORMAL, shfi, SHFILEINFO.sizeof, flags | OS.SHGFI_LARGEICON);
 		if (shfi.hIcon != 0) {
-			Image image = Image.win32_new (null, SWT.ICON, shfi.hIcon);
-			ImageData imageData = image.getImageData (imageZoomFactor);
-			image.dispose ();
-			return imageData;
+			iconZoom = 200;
 		}
 	}
+	if (shfi.hIcon == 0) {
+		OS.SHGetFileInfo (pszPath.chars, OS.FILE_ATTRIBUTE_NORMAL, shfi, SHFILEINFO.sizeof, flags | OS.SHGFI_SMALLICON);
+	}
+	if (shfi.hIcon != 0) {
+		Image image = Image.win32_new (null, SWT.ICON, shfi.hIcon);
+		return new ElementAtZoom<>(image, iconZoom);
+	}
+	return null;
+}
+
+private ElementAtZoom<Image> loadIconForFile(boolean useLargeIconIfAvailable) {
 	int nIconIndex = 0;
 	String fileName = iconName;
 	int index = iconName.indexOf (',');
@@ -414,12 +445,16 @@ public ImageData getImageData (int zoom) {
 	}
 	TCHAR lpszFile = new TCHAR (0, fileName, true);
 	long [] phiconSmall = new long[1], phiconLarge = null;
+	if (useLargeIconIfAvailable) {
+		phiconLarge = new long[1];
+	}
 	OS.ExtractIconEx (lpszFile, nIconIndex, phiconLarge, phiconSmall, 1);
-	if (phiconSmall [0] == 0) return null;
-	Image image = Image.win32_new (null, SWT.ICON, phiconSmall [0]);
-	ImageData imageData = image.getImageData (imageZoomFactor);
-	image.dispose ();
-	return imageData;
+	if (useLargeIconIfAvailable && phiconLarge[0] != 0) {
+		return new ElementAtZoom<>(Image.win32_new (null, SWT.ICON, phiconLarge[0]), 200);
+	} else if (phiconSmall[0] != 0) {
+		return new ElementAtZoom<>(Image.win32_new (null, SWT.ICON, phiconSmall[0]), 100);
+	}
+	return null;
 }
 
 /**
