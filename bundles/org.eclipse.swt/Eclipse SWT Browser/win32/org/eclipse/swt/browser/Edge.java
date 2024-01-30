@@ -359,7 +359,15 @@ public void create(Composite parent, int style) {
 	if (hr == COM.S_OK) environment2 = new ICoreWebView2Environment2(ppv[0]);
 
 	hr = callAndWait(ppv, completion -> environment.CreateCoreWebView2Controller(browser.handle, completion));
-	if (hr != COM.S_OK) error(SWT.ERROR_NO_HANDLES, hr);
+	switch (hr) {
+	case COM.S_OK:
+		break;
+	case COM.E_WRONG_THREAD:
+		error(SWT.ERROR_THREAD_INVALID_ACCESS, hr);
+		break;
+	default:
+		error(SWT.ERROR_NO_HANDLES, hr);
+	}
 	controller = new ICoreWebView2Controller(ppv[0]);
 
 	controller.get_CoreWebView2(ppv);
