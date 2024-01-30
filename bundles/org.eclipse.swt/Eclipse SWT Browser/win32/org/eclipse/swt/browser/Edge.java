@@ -221,10 +221,12 @@ static int callAndWait(long[] ppv, ToIntFunction<IUnknown> callable) {
 	});
 	ppv[0] = 0;
 	phr[0] = callable.applyAsInt(completion);
-	completion.Release();
+	// "completion" callback may be called asynchronously,
+	// so keep processing next OS message that may call it
 	while (phr[0] == COM.S_OK && ppv[0] == 0) {
 		processNextOSMessage();
 	}
+	completion.Release();
 	return phr[0];
 }
 
@@ -239,10 +241,12 @@ static int callAndWait(String[] pstr, ToIntFunction<IUnknown> callable) {
 	});
 	pstr[0] = null;
 	phr[0] = callable.applyAsInt(completion);
-	completion.Release();
+	// "completion" callback may be called asynchronously,
+	// so keep processing next OS message that may call it
 	while (phr[0] == COM.S_OK && pstr[0] == null) {
 		processNextOSMessage();
 	}
+	completion.Release();
 	return phr[0];
 }
 
