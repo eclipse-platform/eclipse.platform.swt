@@ -186,6 +186,7 @@ public class COM extends OS {
 	public static final int E_NOTIMPL = -2147467263;
 	public static final int E_NOTSUPPORTED = 0x80040100;
 	public static final int E_OUTOFMEMORY = -2147024882;
+	public static final int E_WRONG_THREAD = 0x802a000c;
 	public static final int GMEM_FIXED = 0;
 	public static final int GMEM_ZEROINIT = 64;
 	public static final int GUIDKIND_DEFAULT_SOURCE_DISP_IID = 1;
