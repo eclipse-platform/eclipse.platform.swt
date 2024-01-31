@@ -44,15 +44,21 @@ class Edge extends WebBrowser {
 	static final String LANGUAGE_PROP = "org.eclipse.swt.browser.EdgeLanguage";
 	static final String VERSIONT_PROP = "org.eclipse.swt.browser.EdgeVersion";
 
-	static String DataDir;
-	static ICoreWebView2Environment Environment;
-	static ArrayList<Edge> Instances = new ArrayList<>();
+	private record WebViewEnvironment(ICoreWebView2Environment environment, ArrayList<Edge> instances) {
+		public WebViewEnvironment(ICoreWebView2Environment environment) {
+			this (environment, new ArrayList<>());
+		}
+	}
+
+	private static Map<Display, WebViewEnvironment> webViewEnvironments = new HashMap<>();
 
 	ICoreWebView2 webView;
 	ICoreWebView2_2 webView_2;
 	ICoreWebView2Controller controller;
 	ICoreWebView2Settings settings;
 	ICoreWebView2Environment2 environment2;
+
+	WebViewEnvironment containingEnvironment;
 
 	static boolean inCallback;
 	boolean inNewWindow;
@@ -272,10 +278,14 @@ private static void processNextOSMessage() {
 }
 
 static ICoreWebView2CookieManager getCookieManager() {
-	if (Instances.isEmpty()) {
+	WebViewEnvironment environmentWrapper = webViewEnvironments.get(Display.getCurrent());
+	if (environmentWrapper == null) {
+		SWT.error(SWT.ERROR_INVALID_ARGUMENT, null, " [WebView2: environment not initialized for current display]");
+	}
+	if (environmentWrapper.instances().isEmpty()) {
 		SWT.error(SWT.ERROR_NOT_IMPLEMENTED, null, " [WebView2: cookie access requires a Browser instance]");
 	}
-	Edge instance = Instances.get(0);
+	Edge instance = environmentWrapper.instances().get(0);
 	if (instance.webView_2 == null) {
 		SWT.error(SWT.ERROR_NOT_IMPLEMENTED, null, " [WebView2 version 88+ is required to access cookies]");
 	}
@@ -296,9 +306,10 @@ void checkDeadlock() {
 	}
 }
 
-ICoreWebView2Environment createEnvironment() {
-	if (Environment != null) return Environment;
+WebViewEnvironment createEnvironment() {
 	Display display = Display.getCurrent();
+	WebViewEnvironment existingEnvironment = webViewEnvironments.get(display);
+	if (existingEnvironment != null) return existingEnvironment;
 
 	// Gather customization properties
 	String browserDir = System.getProperty(BROWSER_DIR_PROP);
@@ -336,33 +347,38 @@ ICoreWebView2Environment createEnvironment() {
 		SWT.error(SWT.ERROR_NOT_IMPLEMENTED, null, " [WebView2 runtime not found]");
 	}
 	if (hr != COM.S_OK) error(SWT.ERROR_NO_HANDLES, hr);
-	Environment = new ICoreWebView2Environment(ppv[0]);
-	DataDir = dataDir;
+	ICoreWebView2Environment environment = new ICoreWebView2Environment(ppv[0]);
+	WebViewEnvironment environmentWrapper = new WebViewEnvironment(environment);
 
 	// Save Edge version for reporting
 	long[] ppVersion = new long[1];
-	Environment.get_BrowserVersionString(ppVersion);
+	environment.get_BrowserVersionString(ppVersion);
 	String version = wstrToString(ppVersion[0], true);
 	System.setProperty(VERSIONT_PROP, version);
 
 	// Destroy the environment on app exit.
 	display.disposeExec(() -> {
-		Environment.Release();
-		Environment = null;
+		for (Edge instance : environmentWrapper.instances()) {
+			instance.browserDispose(null);
+		}
+		environment.Release();
+		webViewEnvironments.remove(display);
 	});
-	return Environment;
+
+	webViewEnvironments.put(display, environmentWrapper);
+	return environmentWrapper;
 }
 
 @Override
 public void create(Composite parent, int style) {
 	checkDeadlock();
-	ICoreWebView2Environment environment = createEnvironment();
+	containingEnvironment = createEnvironment();
 
 	long[] ppv = new long[1];
-	int hr = environment.QueryInterface(COM.IID_ICoreWebView2Environment2, ppv);
+	int hr = containingEnvironment.environment().QueryInterface(COM.IID_ICoreWebView2Environment2, ppv);
 	if (hr == COM.S_OK) environment2 = new ICoreWebView2Environment2(ppv[0]);
 
-	hr = callAndWait(ppv, completion -> environment.CreateCoreWebView2Controller(browser.handle, completion));
+	hr = callAndWait(ppv, completion -> containingEnvironment.environment().CreateCoreWebView2Controller(browser.handle, completion));
 	switch (hr) {
 	case COM.S_OK:
 		break;
@@ -426,11 +442,11 @@ public void create(Composite parent, int style) {
 	browser.addListener(SWT.Resize, this::browserResize);
 	browser.addListener(SWT.Move, this::browserMove);
 
-	Instances.add(this);
+	containingEnvironment.instances().add(this);
 }
 
 void browserDispose(Event event) {
-	Instances.remove(this);
+	containingEnvironment.instances.remove(this);
 
 	if (webView_2 != null) webView_2.Release();
 	if (environment2 != null) environment2.Release();
