@@ -24,7 +24,6 @@
   <version>3.107.300-SNAPSHOT</version>
   <packaging>eclipse-test-plugin</packaging>
   <properties>
-    <code.ignoredWarnings>${tests.ignoredWarnings}</code.ignoredWarnings>
     <tycho.testArgLine></tycho.testArgLine>
     <test>AllTests</test>
   </properties>
