@@ -2729,6 +2729,8 @@ public void setForeground (Color color) {
 	// To apply the new foreground color the image must be recreated with new foreground color.
 	// redraw() alone would only redraw the cached image with old color.
 	updateChevronImage(true);
+	updateMaxImage();
+	updateMinImage();
 	redraw();
 }
 /**
@@ -4260,5 +4262,25 @@ public void setHighlightEnabled(boolean enabled) {
 public boolean getHighlightEnabled() {
 	checkWidget();
 	return highlightEnabled;
+}
+/**
+ * Update the cached minimize button image when color is changed.
+ */
+private void updateMinImage() {
+	if (showMin && minMaxTb != null && minItem != null)	{
+		if (minImage != null) minImage.dispose();
+		minImage = createButtonImage(getDisplay(), CTabFolderRenderer.PART_MIN_BUTTON);
+		minItem.setImage(minImage);
+	}
+}
+/**
+ * Update the cached maximize button image when color is changed.
+ */
+private void updateMaxImage() {
+	if (showMax && minMaxTb != null && maxItem != null)	{
+		if (maxImage != null) maxImage.dispose();
+		maxImage = createButtonImage(getDisplay(), CTabFolderRenderer.PART_MAX_BUTTON);
+		maxItem.setImage(maxImage);
+	}
 }
 }
