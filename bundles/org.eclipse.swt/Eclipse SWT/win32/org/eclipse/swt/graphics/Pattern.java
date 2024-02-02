@@ -13,10 +13,13 @@
  *******************************************************************************/
 package org.eclipse.swt.graphics;
 
+import java.util.*;
+
 import org.eclipse.swt.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.gdip.*;
 import org.eclipse.swt.internal.win32.*;
+import org.eclipse.swt.widgets.*;
 
 /**
  * Instances of this class represent patterns to use while drawing. Patterns
@@ -187,10 +190,64 @@ public Pattern(Device device, float x1, float y1, float x2, float y2, Color colo
  */
 public Pattern(Device device, float x1, float y1, float x2, float y2, Color color1, int alpha1, Color color2, int alpha2) {
 	super(device);
-	x1 = DPIUtil.autoScaleUp(x1);
-	y1 = DPIUtil.autoScaleUp(y1);
-	x2 = DPIUtil.autoScaleUp(x2);
-	y2 = DPIUtil.autoScaleUp(y2);
+	this.x1 = x1;
+	this.x2 = x2;
+	this.y1 = y1;
+	this.y2 = y2;
+	this.color1 = color1;
+	this.color2 = color2;
+	this.alpha1 = alpha1;
+	this.alpha2 = alpha2;
+	initializeSize(null);
+}
+
+private Pattern(Shell shell, float x1, float y1, float x2, float y2, Color color1, int alpha1, Color color2, int alpha2) {
+	super(shell.getDisplay());
+	this.x1 = x1;
+	this.x2 = x2;
+	this.y1 = y1;
+	this.y2 = y2;
+	this.color1 = color1;
+	this.color2 = color2;
+	this.alpha1 = alpha1;
+	this.alpha2 = alpha2;
+	initializeSize(shell);
+}
+
+private HashMap<Integer, Pattern> scaledpattern = new HashMap<>();
+
+Pattern getScaledPattern(Shell shell) {
+	if(shell.getCurrentDeviceZoom() == this.device.getDeviceZoom()) {
+		return this;
+	}
+	if(this.scaledpattern.get(shell.getCurrentDeviceZoom()) == null) {
+		Pattern p = new Pattern(shell, x1, y1, x2, y2, color1, alpha1, color2, alpha2);
+		this.scaledpattern.put(shell.getCurrentDeviceZoom(), p);
+	}
+	return this.scaledpattern.get(shell.getCurrentDeviceZoom());
+}
+
+private float x1, y1, x2, y2;
+private Color color1, color2;
+private int alpha1, alpha2;
+
+//void initializeSize(float x1, float y1, float x2, float y2, Color color1, int alpha1, Color color2, int alpha2) {
+/**
+ * @since 3.125
+ */
+public void initializeSize(Shell shell) {
+	float x1, y1, x2, y2;
+	if(shell != null) {
+		x1 = DPIUtil.autoScaleUp(this.x1, shell);
+		y1 = DPIUtil.autoScaleUp(this.y1, shell);
+		x2 = DPIUtil.autoScaleUp(this.x2, shell);
+		y2 = DPIUtil.autoScaleUp(this.y2, shell);
+	} else {
+		x1 = DPIUtil.autoScaleUp(this.x1);
+		y1 = DPIUtil.autoScaleUp(this.y1);
+		x2 = DPIUtil.autoScaleUp(this.x2);
+		y2 = DPIUtil.autoScaleUp(this.y2);
+	}
 	if (color1 == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (color1.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	if (color2 == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
@@ -224,8 +281,11 @@ public Pattern(Device device, float x1, float y1, float x2, float y2, Color colo
 	init();
 }
 
+
+
 @Override
 void destroy() {
+	this.scaledpattern.values().forEach(Pattern::destroy);
 	int type = Gdip.Brush_GetType(handle);
 	switch (type) {
 		case Gdip.BrushTypeSolidColor:

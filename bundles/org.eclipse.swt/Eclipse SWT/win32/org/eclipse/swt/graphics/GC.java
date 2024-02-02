@@ -195,7 +195,7 @@ void checkGC(int mask) {
 			if (data.gdipFgBrush != 0) Gdip.SolidBrush_delete(data.gdipFgBrush);
 			data.gdipFgBrush = 0;
 			long brush;
-			Pattern pattern = data.foregroundPattern;
+			Pattern pattern = data.foregroundPattern.getScaledPattern(data.shell);
 			if (pattern != null) {
 				if(data.alpha == 0xFF) {
 					brush = pattern.handle;
@@ -286,7 +286,7 @@ void checkGC(int mask) {
 		if ((state & BACKGROUND) != 0) {
 			if (data.gdipBgBrush != 0) Gdip.SolidBrush_delete(data.gdipBgBrush);
 			data.gdipBgBrush = 0;
-			Pattern pattern = data.backgroundPattern;
+			Pattern pattern = data.backgroundPattern.getScaledPattern(data.shell);
 			if (pattern != null) {
 				if(data.alpha == 0xFF) {
 					data.gdipBrush = pattern.handle;
@@ -922,8 +922,8 @@ void drawFocusInPixels (int x, int y, int width, int height) {
  * </ul>
  */
 public void drawImage (Image image, int x, int y) {
-	x = DPIUtil.autoScaleUp(drawable, x);
-	y = DPIUtil.autoScaleUp(drawable, y);
+	x = DPIUtil.autoScaleUp(drawable, x, data.shell);
+	y = DPIUtil.autoScaleUp(drawable, y, data.shell);
 	drawImageInPixels(image, x, y);
 }
 
@@ -2997,10 +2997,10 @@ void fillPolygonInPixels (int[] pointArray) {
  * @see #drawRectangle(int, int, int, int)
  */
 public void fillRectangle (int x, int y, int width, int height) {
-	x = DPIUtil.autoScaleUp (drawable, x);
-	y = DPIUtil.autoScaleUp (drawable, y);
-	width = DPIUtil.autoScaleUp (drawable, width);
-	height = DPIUtil.autoScaleUp (drawable, height);
+	x = DPIUtil.autoScaleUp (drawable, x, data.shell);
+	y = DPIUtil.autoScaleUp (drawable, y, data.shell);
+	width = DPIUtil.autoScaleUp (drawable, width, data.shell);
+	height = DPIUtil.autoScaleUp (drawable, height, data.shell);
 	fillRectangleInPixels(x, y, width, height);
 }
 
@@ -4897,7 +4897,7 @@ public void setTransform(Transform transform) {
 	initGdip();
 	long identity = identity();
 	if (transform != null) {
-		Gdip.Matrix_Multiply(identity, transform.handle, Gdip.MatrixOrderPrepend);
+		Gdip.Matrix_Multiply(identity, transform.getHandle(data.shell), Gdip.MatrixOrderPrepend);
 	}
 	Gdip.Graphics_SetTransform(data.gdipGraphics, identity);
 	Gdip.Matrix_delete(identity);

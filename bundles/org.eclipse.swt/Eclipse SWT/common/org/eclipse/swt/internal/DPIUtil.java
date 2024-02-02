@@ -16,6 +16,7 @@ package org.eclipse.swt.internal;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.widgets.*;
 
 /**
  * This class hold common constants and utility functions w.r.t. to SWT high DPI
@@ -165,12 +166,23 @@ public static float autoScaleDown (float size) {
 	return (size / scaleFactor);
 }
 
+public static float autoScaleDown (float size, Shell shell) {
+	if (shell.getCurrentDeviceZoom() == 100 || size == SWT.DEFAULT) return size;
+	float scaleFactor = getScalingFactor (shell);
+	return (size / scaleFactor);
+}
+
 /**
  * Auto-scale down float dimensions if enabled for Drawable class.
  */
 public static float autoScaleDown (Drawable drawable, float size) {
 	if (drawable != null && !drawable.isAutoScalable ()) return size;
 	return autoScaleDown (size);
+}
+
+public static float autoScaleDown (Drawable drawable, float size, Shell shell) {
+	if (drawable != null && !drawable.isAutoScalable ()) return size;
+	return autoScaleDown (size, shell);
 }
 
 /**
@@ -302,6 +314,12 @@ public static int autoScaleUp (int size) {
 	return Math.round (size * scaleFactor);
 }
 
+public static int autoScaleUp (int size, Shell shell) {
+	if (shell.getCurrentDeviceZoom() == 100 || size == SWT.DEFAULT) return size;
+	float scaleFactor = getScalingFactor (shell);
+	return Math.round (size * scaleFactor);
+}
+
 /**
  * Auto-scale up int dimensions using Native DPI
  */
@@ -319,9 +337,20 @@ public static int autoScaleUp (Drawable drawable, int size) {
 	return autoScaleUp (size);
 }
 
+public static int autoScaleUp (Drawable drawable, int size, Shell shell) {
+	if (drawable != null && !drawable.isAutoScalable ()) return size;
+	return autoScaleUp (size, shell);
+}
+
 public static float autoScaleUp(float size) {
 	if (deviceZoom == 100 || size == SWT.DEFAULT) return size;
 	float scaleFactor = getScalingFactor ();
+	return (size * scaleFactor);
+}
+
+public static float autoScaleUp(float size, Shell shell) {
+	if (deviceZoom == 100 || size == SWT.DEFAULT) return size;
+	float scaleFactor = getScalingFactor(shell);
 	return (size * scaleFactor);
 }
 
@@ -383,6 +412,13 @@ private static float getScalingFactor () {
 		return 1;
 	}
 	return deviceZoom / 100f;
+}
+
+private static float getScalingFactor (Shell shell) {
+	if (useCairoAutoScale) {
+		return 1;
+	}
+	return shell.getCurrentDeviceZoom() / 100f;
 }
 
 /**

@@ -113,6 +113,7 @@ Control () {
 public Control (Composite parent, int style) {
 	super (parent, style);
 	this.parent = parent;
+	this.setCurrentDeviceZoom(getShell().getCurrentDeviceZoom());
 	createWidget ();
 }
 
@@ -3697,6 +3698,16 @@ public void setRedraw (boolean redraw) {
 }
 
 /**
+ * @since 3.125
+ */
+@Override
+public void sendEvent(int eventType, Event event, boolean send) {
+	if(event != null && event.gc != null && event.gc.getGCData() != null)
+		event.gc.getGCData().shell = getShell();
+	super.sendEvent(eventType, event, send);
+}
+
+/**
  * Sets the shape of the control to the region specified
  * by the argument.  When the argument is null, the
  * default shape of the control is restored.
@@ -4918,7 +4929,7 @@ LRESULT WM_DPICHANGED (long wParam, long lParam) {
 	// Map DPI to Zoom and compare
 	int nativeZoom = DPIUtil.mapDPIToZoom (OS.HIWORD (wParam));
 	int newSWTZoom = DPIUtil.getZoomForAutoscaleProperty (nativeZoom);
-	int oldSWTZoom = DPIUtil.getDeviceZoom();
+	int oldSWTZoom = getCurrentDeviceZoom();
 
 	// Throw the DPI change event if zoom value changes
 	if (newSWTZoom != oldSWTZoom) {
@@ -4928,7 +4939,11 @@ LRESULT WM_DPICHANGED (long wParam, long lParam) {
 		event.detail = newSWTZoom;
 		event.doit = true;
 		notifyListeners(SWT.ZoomChanged, event);
-		return LRESULT.ZERO;
+
+		// update it
+		DPIUtil.setDeviceZoom (nativeZoom);
+
+		setCurrentDeviceZoom(newSWTZoom);
 	}
 	return LRESULT.ONE;
 }

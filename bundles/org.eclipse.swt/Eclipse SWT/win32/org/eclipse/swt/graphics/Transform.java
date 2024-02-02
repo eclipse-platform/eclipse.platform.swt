@@ -16,6 +16,7 @@ package org.eclipse.swt.graphics;
 import org.eclipse.swt.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.gdip.*;
+import org.eclipse.swt.widgets.*;
 
 /**
  * Instances of this class represent transformation matrices for
@@ -147,7 +148,7 @@ public Transform(Device device, float[] elements) {
 public Transform (Device device, float m11, float m12, float m21, float m22, float dx, float dy) {
 	super(device);
 	this.device.checkGDIP();
-	handle = Gdip.Matrix_new(m11, m12, m21, m22, 
+	handle = Gdip.Matrix_new(m11, m12, m21, m22,
 	        DPIUtil.autoScaleUp(this.device, dx), DPIUtil.autoScaleUp(this.device, dy));
 	if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	init();
@@ -318,8 +319,17 @@ public void scale(float scaleX, float scaleY) {
 public void setElements(float m11, float m12, float m21, float m22, float dx, float dy) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	Drawable drawable = getDevice();
-	Gdip.Matrix_SetElements(handle, m11, m12, m21, m22, 
+	Gdip.Matrix_SetElements(handle, m11, m12, m21, m22,
 	        DPIUtil.autoScaleUp(drawable, dx), DPIUtil.autoScaleUp(drawable, dy));
+}
+
+/**
+ * @since 3.125
+ */
+public long getHandle(Shell shell) {
+	if (shell.getCurrentDeviceZoom() != shell.getDisplay().getPrimaryMonitor().getZoom())
+		scale(shell.getCurrentDeviceZoom()/shell.getDisplay().getPrimaryMonitor().getZoom(), shell.getCurrentDeviceZoom()/shell.getDisplay().getPrimaryMonitor().getZoom());
+	return handle;
 }
 
 /**
