@@ -21,6 +21,7 @@ import java.net.*;
 import java.util.*;
 import java.util.Map.*;
 import java.util.concurrent.*;
+import java.util.concurrent.atomic.*;
 import java.util.function.*;
 import java.util.regex.*;
 import java.util.regex.Pattern;
@@ -5989,22 +5990,21 @@ public void syncExec (Runnable runnable) {
  */
 public <T, E extends Exception> T syncCall(SwtCallable<T, E> callable) throws E {
 	Objects.nonNull(callable);
-	@SuppressWarnings("unchecked")
-	T[] t = (T[]) new Object[1];
-	Object[] ex = new Object[1];
+	AtomicReference<T> result = new AtomicReference<>();
+	AtomicReference<Exception> ex = new AtomicReference<>();
 	syncExec(() -> {
 		try {
-			t[0] = callable.call();
+			result.setPlain(callable.call());
 		} catch (Exception e) {
-			ex[0] = e;
+			ex.setPlain(e);
 		}
 	});
-	if (ex[0] != null) {
+	if (ex.getPlain() != null) {
 		@SuppressWarnings("unchecked")
-		E e = (E) ex[0];
+		E e = (E) ex.getPlain();
 		throw e;
 	}
-	return t[0];
+	return result.getPlain();
 }
 
 static int translateKey (int key) {

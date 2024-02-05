@@ -120,7 +120,6 @@ import org.eclipse.swt.internal.cocoa.*;
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  * @noextend This class is not intended to be subclassed by clients.
  */
-@SuppressWarnings({"rawtypes", "unchecked"})
 public class Shell extends Decorations {
 	NSWindow window;
 	SWTWindowDelegate windowDelegate;
@@ -135,7 +134,7 @@ public class Shell extends Decorations {
 	NSRect currentFrame;
 	NSRect fullScreenFrame;
 	ToolBar toolBar;
-	Map windowEmbedCounts;
+	Map<NSWindow, Integer> windowEmbedCounts;
 	MenuItem escMenuItem;
 
 	static int DEFAULT_CLIENT_WIDTH = -1;
@@ -501,8 +500,8 @@ void attachObserversToWindow(NSWindow newWindow) {
 	display.addWidget (hostWindow, this);
 	hostWindowClass = newHostWindowClass;
 
-	if (windowEmbedCounts == null) windowEmbedCounts = new HashMap();
-	Integer embedCount = (Integer) windowEmbedCounts.get(hostWindow);
+	if (windowEmbedCounts == null) windowEmbedCounts = new HashMap<>();
+	Integer embedCount = windowEmbedCounts.get(hostWindow);
 	if (embedCount == null) {
 		embedCount = Integer.valueOf(0);
 	}

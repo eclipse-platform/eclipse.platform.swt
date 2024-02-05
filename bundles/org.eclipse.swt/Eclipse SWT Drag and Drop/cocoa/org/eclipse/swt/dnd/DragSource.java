@@ -101,7 +101,6 @@ import org.eclipse.swt.widgets.*;
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  * @noextend This class is not intended to be subclassed by clients.
  */
-@SuppressWarnings({"rawtypes"})
 public class DragSource extends Widget {
 
 	// TODO: These should either move out of Display or be accessible to this class.
@@ -118,7 +117,7 @@ public class DragSource extends Widget {
 	static {
 		String className = "SWTDragSourceDelegate";
 
-		Class clazz = DragSource.class;
+		Class<?> clazz = DragSource.class;
 
 		dragSource2Args = new Callback(clazz, "dragSourceProc", 2);
 		proc2 = dragSource2Args.getAddress();

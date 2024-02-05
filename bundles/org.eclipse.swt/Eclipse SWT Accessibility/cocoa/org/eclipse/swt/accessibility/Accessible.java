@@ -45,7 +45,6 @@ import org.eclipse.swt.widgets.*;
  *
  * @since 2.0
  */
-@SuppressWarnings({"rawtypes", "unchecked"})
 public class Accessible {
 
 	static boolean DEBUG = false;
@@ -87,7 +86,7 @@ public class Accessible {
 	Control control;
 	int currentRole = -1;
 
-	Map /*<Integer, SWTAccessibleDelegate>*/ childToIdMap = new HashMap();
+	Map<Integer, SWTAccessibleDelegate> childToIdMap = new HashMap<>();
 	SWTAccessibleDelegate delegate;
 
 	int index = -1;
@@ -3099,10 +3098,7 @@ public class Accessible {
 		relations = null;
 
 		if (childToIdMap != null) {
-			Collection delegates = childToIdMap.values();
-			Iterator iter = delegates.iterator();
-			while (iter.hasNext()) {
-				SWTAccessibleDelegate childDelegate = (SWTAccessibleDelegate)iter.next();
+			for (SWTAccessibleDelegate childDelegate : childToIdMap.values()) {
 				childDelegate.internal_dispose_SWTAccessibleDelegate();
 				childDelegate.release();
 			}

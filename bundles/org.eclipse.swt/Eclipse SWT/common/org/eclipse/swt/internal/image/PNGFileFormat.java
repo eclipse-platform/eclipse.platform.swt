@@ -310,30 +310,25 @@ void setImageDataValues(byte[] data, ImageData imageData) {
  * Read the image data from the data stream. This must handle
  * decoding the data, filtering, and interlacing.
  */
-@SuppressWarnings("resource")
 void readPixelData(PngIdatChunk chunk, PngChunkReader chunkReader) throws IOException {
-	InputStream stream = new PngInputStream(chunk, chunkReader);
 	//TEMPORARY CODE
 	boolean use3_2 = System.getProperty("org.eclipse.swt.internal.image.PNGFileFormat_3.2") != null;
-	InputStream inflaterStream = use3_2 ? null : new BufferedInputStream(new InflaterInputStream(stream));
-	if (inflaterStream != null) {
-		stream = inflaterStream;
-	} else {
-		stream = new PngDecodingDataStream(stream);
+	try (InputStream pngStream = new PngInputStream(chunk, chunkReader);
+			InputStream stream = use3_2 ? new PngDecodingDataStream(pngStream)
+					: new BufferedInputStream(new InflaterInputStream(pngStream));) {
+		int interlaceMethod = headerChunk.getInterlaceMethod();
+		if (interlaceMethod == PngIhdrChunk.INTERLACE_METHOD_NONE) {
+			readNonInterlacedImage(stream);
+		} else {
+			readInterlacedImage(stream);
+		}
+		/*
+		* InflaterInputStream does not consume all bytes in the stream
+		* when it is closed. This may leave unread IDAT chunks. The fix
+		* is to read all available bytes before closing it.
+		*/
+		while (stream.available() > 0) stream.read();
 	}
-	int interlaceMethod = headerChunk.getInterlaceMethod();
-	if (interlaceMethod == PngIhdrChunk.INTERLACE_METHOD_NONE) {
-		readNonInterlacedImage(stream);
-	} else {
-		readInterlacedImage(stream);
-	}
-	/*
-	* InflaterInputStream does not consume all bytes in the stream
-	* when it is closed. This may leave unread IDAT chunks. The fix
-	* is to read all available bytes before closing it.
-	*/
-	while (stream.available() > 0) stream.read();
-	stream.close();
 }
 /**
  * Answer the number of bytes in a word-aligned row of pixel data.
