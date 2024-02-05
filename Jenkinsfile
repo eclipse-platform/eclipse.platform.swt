@@ -300,7 +300,7 @@ pipeline {
 						sh '''
 							mvn clean verify \
 								--batch-mode --threads 1C -DforkCount=0 \
-								-Dcompare-version-with-baselines.skip=false -Dmaven.compiler.failOnWarning=true \
+								-Dcompare-version-with-baselines.skip=false \
 								-Dorg.eclipse.swt.tests.junit.disable.test_isLocal=true \
 								-Dmaven.test.failure.ignore=true -Dmaven.test.error.ignore=true
 						'''
@@ -312,7 +312,8 @@ pipeline {
 					junit 'eclipse.platform.swt/tests/*.test*/target/surefire-reports/*.xml'
 					archiveArtifacts artifacts: '**/*.log,**/*.html,**/target/*.jar,**/target/*.zip'
 					discoverGitReferenceBuild referenceJob: 'eclipse.platform.swt/master'
-					recordIssues publishAllIssues: true, tools: [eclipse(pattern: '**/target/compilelogs/*.xml'), mavenConsole(), javaDoc()]
+					recordIssues publishAllIssues: true, tools: [eclipse(name: 'Compiler and API Tools', pattern: '**/target/compilelogs/*.xml'), javaDoc()], qualityGates: [[threshold: 1, type: 'DELTA', unstable: true]]
+					recordIssues publishAllIssues: true, tool: mavenConsole(), qualityGates: [[threshold: 1, type: 'DELTA_ERROR', unstable: true]]
 				}
 			}
 		}
