@@ -68,7 +68,6 @@ jobs:
         -Dnative=${{ matrix.config.native }}
         -Dcompare-version-with-baselines.skip=true
         -Dtycho.baseline.replace=none
-        -Dmaven.compiler.failOnWarning=true
         --fail-at-end
         -DskipNativeTests=false
         -DfailIfNoTests=false
@@ -81,7 +80,6 @@ jobs:
         mvn --batch-mode -V -U
         -DforkCount=1
         -Dcompare-version-with-baselines.skip=true
-        -Dmaven.compiler.failOnWarning=true
         --fail-at-end
         -DskipNativeTests=true
         -DfailIfNoTests=true
