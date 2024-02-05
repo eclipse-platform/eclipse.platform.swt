@@ -8,7 +8,11 @@
     <classpathentry kind="src" path="Eclipse SWT/emulated/expand"/>
     <classpathentry kind="src" path="Eclipse SWT/emulated/tooltip"/>
     <classpathentry kind="src" path="Eclipse SWT PI/common"/>
-    <classpathentry kind="src" path="Eclipse SWT PI/cocoa"/>
+    <classpathentry kind="src" path="Eclipse SWT PI/cocoa">
+        <attributes>
+            <attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="org.eclipse.swt.${target.ws}.${target.os}.${target.arch}"/>
+        </attributes>
+    </classpathentry>
     <classpathentry kind="src" path="Eclipse SWT Accessibility/common"/>
     <classpathentry kind="src" path="Eclipse SWT Accessibility/cocoa"/>
     <classpathentry kind="src" path="Eclipse SWT AWT/common"/>
