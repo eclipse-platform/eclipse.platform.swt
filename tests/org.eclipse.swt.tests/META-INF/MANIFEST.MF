@@ -4,7 +4,6 @@ Bundle-Name: Eclipse SWT Tests
 Bundle-SymbolicName: org.eclipse.swt.tests
 Bundle-Version: 3.107.300.qualifier
 Bundle-Vendor: Eclipse.org
-Bundle-Localization: plugin
 Export-Package: org.eclipse.swt.tests.junit,
  org.eclipse.swt.tests.junit.performance
 Require-Bundle: org.junit;bundle-version="4.12.0",

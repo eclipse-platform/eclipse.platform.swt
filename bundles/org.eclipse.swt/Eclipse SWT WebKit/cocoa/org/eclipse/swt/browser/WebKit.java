@@ -23,7 +23,6 @@ import org.eclipse.swt.internal.cocoa.*;
 import org.eclipse.swt.layout.*;
 import org.eclipse.swt.widgets.*;
 
-@SuppressWarnings({"rawtypes"})
 class WebKit extends WebBrowser {
 	WebView webView;
 	WebPreferences preferences;
@@ -121,7 +120,7 @@ class WebKit extends WebBrowser {
 @Override
 public void create (Composite parent, int style) {
 	if (delegateClass == 0) {
-		Class webKitClass = this.getClass();
+		Class<?> webKitClass = this.getClass();
 		Callback3 = new Callback(webKitClass, "browserProc", 3); //$NON-NLS-1$
 		long proc3 = Callback3.getAddress();
 		Callback4 = new Callback(webKitClass, "browserProc", 4); //$NON-NLS-1$

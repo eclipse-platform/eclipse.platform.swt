@@ -14,9 +14,9 @@
  *******************************************************************************/
 package org.eclipse.swt.internal;
 
-import org.eclipse.swt.internal.gtk.OS;
+import java.util.*;
 
-import java.util.ArrayList;
+import org.eclipse.swt.internal.gtk.*;
 
 /**
  * Communicates with session manager to receive logoff/shutdown events.
@@ -59,6 +59,7 @@ public class SessionManagerDBus {
 			this.parent = parent;
 		}
 
+		@Override
 		public void run() {
 			parent.stop();
 		}
@@ -87,7 +88,7 @@ public class SessionManagerDBus {
 		}
 	}
 
-	private ArrayList<IListener> listeners = new ArrayList<IListener>();
+	private List<IListener> listeners = new ArrayList<>();
 	private Callback g_signal_callback;
 	private long g_signal_callbackid;
 	private ShutdownHook shutdownHook = new ShutdownHook(this);
