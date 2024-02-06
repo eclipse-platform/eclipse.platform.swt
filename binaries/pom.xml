@@ -113,20 +113,6 @@
 								</configuration>
 							</execution>
 							<execution>
-								<id>collect-java-sources</id>
-								<phase>generate-sources</phase>
-								<goals>
-									<goal>run</goal>
-								</goals>
-								<configuration>
-									<target>
-										<exec executable="${java.home}/bin/java" dir="${swtMainProject}" failonerror="true">
-											<arg line="-Dws=${ws} -Darch=${arch} build-scripts/CollectSources.java -javaSources '${project.basedir}/src' "/>
-										</exec>
-									</target>
-								</configuration>
-							</execution>
-							<execution>
 								<id>build-native-binaries</id>
 								<phase>process-resources</phase>
 								<goals>

@@ -11,16 +11,17 @@
  * Contributors:
  *     Hannes Wellmann - initial API and implementation
  *******************************************************************************/
-import java.io.*;
-import java.nio.file.*;
-import java.util.*;
-import java.util.stream.*;
-
-import javax.xml.parsers.*;
-
-import org.w3c.dom.*;
-import org.w3c.dom.Node;
-import org.xml.sax.*;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Set;
 
 /**
  * Script to collect the SWT sources for the specified native fragment.
@@ -38,7 +39,7 @@ public class CollectSources {
 			}
 			Path swtProjectRoot = Path.of("").toAbsolutePath();
 			if (!swtProjectRoot.endsWith(Path.of("bundles/org.eclipse.swt"))) { // Consistency check
-				throw new IllegalStateException("Sript must be excuted from org.eclipse.swt project");
+				throw new IllegalStateException("Script must be executed from org.eclipse.swt project");
 			}
 			Path binariesRoot = swtProjectRoot.getParent().getParent().resolve("binaries").toAbsolutePath();
 			Path targetDirectory = Path.of(args[1]);
@@ -52,9 +53,6 @@ public class CollectSources {
 		switch (args[0]) {
 		case "-nativeSources":
 			collectNativeSources(env);
-			break;
-		case "-javaSources":
-			collectJavaSources(env);
 			break;
 		default:
 			throw new IllegalArgumentException("Unexpected value: " + args[0]);
@@ -79,49 +77,6 @@ public class CollectSources {
 			props.load(in);
 			return (Map) props;
 		}
-	}
-
-	private static void collectJavaSources(ScriptEnvironment env) throws Exception {
-		Path classpathFile = env.binariesRoot.resolve(".classpath_" + env.ws);
-		Set<String> srcClassPaths = readNativeJavaSourcesFromClasspath(classpathFile);
-		Set<String> excludedExtensions = Set.of("_properties", "extras", "bridgesupport");
-		System.out.println("Copy " + srcClassPaths.size() + " java source folders for " + env.ws);
-		copySubDirectories(env.swtProjectRoot, srcClassPaths, env.targetDirectory, excludedExtensions);
-	}
-
-	private static Set<String> readNativeJavaSourcesFromClasspath(Path classpathFile)
-			throws IOException, SAXException, ParserConfigurationException {
-		Element root = parseXMLFile(classpathFile);
-		Set<String> srcPaths = new HashSet<>();
-		if ("classpath".equals(root.getTagName())) {
-			for (Node child : children(root)) {
-				if (child instanceof Element classpathentry && "classpathentry".equals(classpathentry.getTagName())
-						&& getAttributeValue(classpathentry, "kind").equals("src")
-						&& getAttributeValue(classpathentry, "output").isBlank()) {
-					srcPaths.add(getAttributeValue(classpathentry, "path"));
-				}
-			}
-		}
-		return srcPaths;
-	}
-
-	private static Element parseXMLFile(Path classpathFile)
-			throws IOException, SAXException, ParserConfigurationException {
-		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-		factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
-		try (InputStream in = Files.newInputStream(classpathFile)) {
-			return factory.newDocumentBuilder().parse(in).getDocumentElement();
-		}
-	}
-
-	private static Iterable<Node> children(Node node) {
-		NodeList children = node.getChildNodes();
-		return () -> IntStream.range(0, children.getLength()).mapToObj(children::item).iterator();
-	}
-
-	private static String getAttributeValue(Element classpathentry, String attributeName) {
-		Attr attribute = classpathentry.getAttributeNode(attributeName);
-		return attribute != null ? attribute.getValue() : "";
 	}
 
 	private static void copySubDirectories(Path root, Collection<String> allSources, Path target,
