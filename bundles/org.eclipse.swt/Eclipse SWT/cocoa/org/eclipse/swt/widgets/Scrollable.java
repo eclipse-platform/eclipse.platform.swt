@@ -14,6 +14,7 @@
 package org.eclipse.swt.widgets;
 
 
+import org.eclipse.pde.api.tools.annotations.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.cocoa.*;
@@ -33,8 +34,8 @@ import org.eclipse.swt.internal.cocoa.*;
  * </p>
  *
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
- * @noextend This class is not intended to be subclassed by clients.
  */
+@NoExtend("This class is not intended to be subclassed by clients.")
 public abstract class Scrollable extends Control {
 	NSScrollView scrollView;
 	ScrollBar horizontalBar, verticalBar;

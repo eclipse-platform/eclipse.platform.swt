@@ -17,6 +17,7 @@ package org.eclipse.swt.accessibility;
 import java.util.*;
 import java.util.List;
 
+import org.eclipse.pde.api.tools.annotations.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.internal.gtk.*;
 import org.eclipse.swt.internal.gtk3.*;
@@ -533,9 +534,8 @@ public class Accessible {
 	 * available on all platforms, and should never be called from
 	 * application code.
 	 * </p>
-	 *
-	 * @noreference This method is not intended to be referenced by clients.
 	 */
+	@NoReference("This method is not intended to be referenced by clients.")
 	public void internal_dispose_Accessible() {
 		release ();
 	}
@@ -552,9 +552,8 @@ public class Accessible {
 	 *
 	 * @param control the control to get the accessible object for
 	 * @return the platform specific accessible object
-	 *
-	 * @noreference This method is not intended to be referenced by clients.
 	 */
+	@NoReference("This method is not intended to be referenced by clients.")
 	public static Accessible internal_new_Accessible (Control control) {
 		return new Accessible (control);
 	}

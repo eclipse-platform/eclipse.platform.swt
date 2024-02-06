@@ -15,6 +15,7 @@ package org.eclipse.swt.widgets;
 
 import java.util.*;
 
+import org.eclipse.pde.api.tools.annotations.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.internal.*;
@@ -1461,10 +1462,9 @@ public void removeListener (int eventType, Listener listener) {
  *
  * @see Listener
  * @see #addListener
- *
- * @noreference This method is not intended to be referenced by clients.
- * @nooverride This method is not intended to be re-implemented or extended by clients.
  */
+@NoReference("This method is not intended to be referenced by clients.")
+@NoOverride("This method is not intended to be re-implemented or extended by clients.")
 protected void removeListener (int eventType, EventListener handler) {
 	checkWidget();
 	if (handler == null) error (SWT.ERROR_NULL_ARGUMENT);

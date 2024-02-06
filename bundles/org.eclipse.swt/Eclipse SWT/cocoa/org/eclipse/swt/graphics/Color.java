@@ -14,6 +14,7 @@
 package org.eclipse.swt.graphics;
 
 
+import org.eclipse.pde.api.tools.annotations.*;
 import org.eclipse.swt.*;
 
 /**
@@ -44,8 +45,8 @@ public final class Color extends Resource {
 	 * platforms and should never be accessed from application code.
 	 * </p>
 	 *
-	 * @noreference This field is not intended to be referenced by clients.
 	 */
+	@NoReference("This field is not intended to be referenced by clients.")
 	public double [] handle;
 
 Color() {
@@ -455,8 +456,8 @@ public RGBA getRGBA () {
  * @param device the device on which to allocate the color
  * @param handle the handle for the color
  *
- * @noreference This method is not intended to be referenced by clients.
  */
+@NoReference("This method is not intended to be referenced by clients.")
 public static Color cocoa_new(Device device, double [] handle) {
 	double [] rgbColor = handle;
 	Color color = new Color(device);
@@ -478,8 +479,8 @@ public static Color cocoa_new(Device device, double [] handle) {
  * @param handle the handle for the color
  * @param alpha the int for the alpha content in the color(Currently SWT honors extreme values for alpha ie. 0 or 255)
  *
- * @noreference This method is not intended to be referenced by clients.
- */
+	 */
+	@NoReference("This method is not intended to be referenced by clients.")
 public static Color cocoa_new(Device device, double [] handle, int alpha) {
 	double [] rgbColor = handle;
 	Color color = new Color(device);

@@ -14,6 +14,7 @@
 package org.eclipse.swt.printing;
 
 
+import org.eclipse.pde.api.tools.annotations.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.internal.win32.*;
 import org.eclipse.swt.widgets.*;
@@ -29,8 +30,8 @@ import org.eclipse.swt.widgets.*;
  * @see <a href="http://www.eclipse.org/swt/snippets/#printing">Printing snippets</a>
  * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Example: ControlExample, Dialog tab</a>
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
- * @noextend This class is not intended to be subclassed by clients.
  */
+@NoExtend("This class is not intended to be subclassed by clients.")
 public class PrintDialog extends Dialog {
 	static final TCHAR DialogClass = new TCHAR (0, "#32770", true);
 	PrinterData printerData = new PrinterData();

@@ -13,8 +13,9 @@
  *******************************************************************************/
 package org.eclipse.swt.graphics;
 
+import org.eclipse.pde.api.tools.annotations.*;
 import org.eclipse.swt.*;
-import org.eclipse.swt.internal.ExceptionStash;
+import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.cocoa.*;
 
 /**
@@ -244,7 +245,7 @@ public void dispose () {
 			}
 
 			destroy ();
-			disposed = true;			
+			disposed = true;
 			if (tracking) {
 				synchronized (trackingLock) {
 					printErrors ();
@@ -630,9 +631,9 @@ protected void init () {
  * @param data the platform specific GC data
  * @return the platform specific GC handle
  *
- * @noreference This method is not intended to be referenced by clients.
  */
 @Override
+@NoReference("This method is not intended to be referenced by clients.")
 public abstract long internal_new_GC (GCData data);
 
 /**
@@ -648,8 +649,8 @@ public abstract long internal_new_GC (GCData data);
  * @param hDC the platform specific GC handle
  * @param data the platform specific GC data
  *
- * @noreference This method is not intended to be referenced by clients.
  */
+	@NoReference("This method is not intended to be referenced by clients.")
 @Override
 public abstract void internal_dispose_GC (long hDC, GCData data);
 
@@ -816,10 +817,10 @@ public void setWarnings (boolean warnings) {
  * Gets the scaling factor from the device and calculates the zoom level.
  * @return zoom in percentage
  *
- * @noreference This method is not intended to be referenced by clients.
- * @nooverride This method is not intended to be re-implemented or extended by clients.
  * @since 3.105
  */
+@NoReference("This method is not intended to be referenced by clients.")
+@NoOverride("This method is not intended to be re-implemented or extended by clients.")
 protected int getDeviceZoom () {
 	NSScreen mainScreen = NSScreen.mainScreen();
 	int scaleFactor = mainScreen != null ? (int) mainScreen.backingScaleFactor() : 1;

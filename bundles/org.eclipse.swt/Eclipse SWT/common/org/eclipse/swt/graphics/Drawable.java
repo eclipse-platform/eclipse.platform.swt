@@ -13,6 +13,7 @@
  *******************************************************************************/
 package org.eclipse.swt.graphics;
 
+import org.eclipse.pde.api.tools.annotations.*;
 
 /**
  * Implementers of <code>Drawable</code> can have a graphics context (GC)
@@ -45,9 +46,8 @@ public interface Drawable {
  * @param data the platform specific GC data
  * @return the platform specific GC handle
  *
- * @noreference This method is not intended to be referenced by clients.
  */
-
+@NoReference("This method is not intended to be referenced by clients.")
 long  internal_new_GC (GCData data);
 
 /**
@@ -63,8 +63,8 @@ long  internal_new_GC (GCData data);
  * @param handle the platform specific GC handle
  * @param data the platform specific GC data
  *
- * @noreference This method is not intended to be referenced by clients.
  */
+	@NoReference("This method is not intended to be referenced by clients.")
 void internal_dispose_GC (long  handle, GCData data);
 
 /**
@@ -75,8 +75,8 @@ void internal_dispose_GC (long  handle, GCData data);
  *
  * @return <code>true</code> if auto-scaling is enabled for this drawable
  *
- * @noreference This method is not intended to be referenced by clients.
  */
+	@NoReference("This method is not intended to be referenced by clients.")
 default boolean isAutoScalable () {
 	return true;
 }

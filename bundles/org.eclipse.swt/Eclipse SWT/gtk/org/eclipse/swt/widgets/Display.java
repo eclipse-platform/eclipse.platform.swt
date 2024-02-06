@@ -26,6 +26,7 @@ import java.util.function.*;
 import java.util.regex.*;
 import java.util.regex.Pattern;
 
+import org.eclipse.pde.api.tools.annotations.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.*;
@@ -112,8 +113,8 @@ import org.eclipse.swt.internal.gtk4.*;
  * @see Device#dispose
  * @see <a href="http://www.eclipse.org/swt/snippets/#display">Display snippets</a>
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
- * @noextend This class is not intended to be subclassed by clients.
  */
+@NoExtend("This class is not intended to be subclassed by clients.")
 public class Display extends Device implements Executor {
 
 	static boolean strictChecks = System.getProperty("org.eclipse.swt.internal.gtk.enableStrictChecks") != null;
@@ -1617,9 +1618,8 @@ long eventProc (long event, long data) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
  * </ul>
- *
- * @noreference This method is not intended to be referenced by clients.
  */
+@NoReference("This method is not intended to be referenced by clients.")
 public Widget findWidget (long handle) {
 	checkDevice ();
 	return getWidget (handle);
@@ -1645,10 +1645,9 @@ public Widget findWidget (long handle) {
  *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  *
- * @noreference This method is not intended to be referenced by clients.
- *
  * @since 3.1
  */
+@NoReference("This method is not intended to be referenced by clients.")
 public Widget findWidget (long handle, long id) {
 	checkDevice ();
 	return null;
@@ -1669,10 +1668,9 @@ public Widget findWidget (long handle, long id) {
  *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  *
- * @noreference This method is not intended to be referenced by clients.
- *
  * @since 3.3
  */
+@NoReference("This method is not intended to be referenced by clients.")
 public Widget findWidget (Widget widget, long id) {
 	checkDevice ();
 	return null;
@@ -3829,9 +3827,8 @@ void initializeSessionManager() {
  *
  * @param errorPtr pointer to the GError
  * @return a String representing the error message that was set
- *
- * @noreference This method is not intended to be referenced by clients.
  */
+@NoReference("This method is not intended to be referenced by clients.")
 public static String extractFreeGError(long errorPtr) {
 	long errorMessageC = OS.g_error_get_message(errorPtr);
 	String errorMessageStr = Converter.cCharPtrToJavaString(errorMessageC, false);
@@ -3860,10 +3857,9 @@ void releaseSessionManager() {
  *
  * @param hDC the platform specific GC handle
  * @param data the platform specific GC data
- *
- * @noreference This method is not intended to be referenced by clients.
  */
 @Override
+@NoReference("This method is not intended to be referenced by clients.")
 public void internal_dispose_GC (long hDC, GCData data) {
 	Cairo.cairo_destroy (hDC);
 }
@@ -3887,10 +3883,9 @@ public void internal_dispose_GC (long hDC, GCData data) {
  * @exception SWTError <ul>
  *    <li>ERROR_NO_HANDLES if a handle could not be obtained for gc creation</li>
  * </ul>
- *
- * @noreference This method is not intended to be referenced by clients.
  */
 @Override
+@NoReference("This method is not intended to be referenced by clients.")
 public long internal_new_GC (GCData data) {
 	if (isDisposed()) error(SWT.ERROR_DEVICE_DISPOSED);
 	long gc = 0;
@@ -5876,18 +5871,16 @@ void sendPostEvent (int eventType) {
 
 /**
  * Sends a SWT.PreExternalEventDispatch event.
- *
- * @noreference This method is not intended to be referenced by clients.
  */
+@NoReference("This method is not intended to be referenced by clients.")
 public void sendPreExternalEventDispatchEvent () {
 	sendJDKInternalEvent (SWT.PreExternalEventDispatch);
 }
 
 /**
  * Sends a SWT.PostExternalEventDispatch event.
- *
- * @noreference This method is not intended to be referenced by clients.
  */
+@NoReference("This method is not intended to be referenced by clients.")
 public void sendPostExternalEventDispatchEvent () {
 	sendJDKInternalEvent (SWT.PostExternalEventDispatch);
 }

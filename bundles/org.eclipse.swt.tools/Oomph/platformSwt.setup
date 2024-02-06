@@ -58,6 +58,8 @@
         activeRepositoryList="${eclipse.target.platform}">
       <requirement
           name="*"/>
+      <requirement
+          name="org.eclipse.pde.api.tools.annotations"/>
       <sourceLocator
           rootFolder="${github.clone.platform.swt.location}"
           locateNestedProjects="true">

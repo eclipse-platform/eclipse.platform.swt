@@ -14,6 +14,7 @@
 package org.eclipse.swt.graphics;
 
 
+import org.eclipse.pde.api.tools.annotations.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.internal.gtk.*;
 
@@ -27,8 +28,8 @@ import org.eclipse.swt.internal.gtk.*;
  * platforms, and should never be called from application code.
  * </p>
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
- * @noreference This class is not intended to be referenced by clients
  */
+@NoReference("This class is not intended to be referenced by clients")
 public final class GCData {
 	public Device device;
 	public int style, state = -1;
@@ -40,9 +41,8 @@ public final class GCData {
 	 * within the packages provided by SWT. It is not available on all
 	 * platforms and should never be accessed from application code.
 	 * </p>
-	 *
-	 * @noreference This field is not intended to be referenced by clients.
 	 */
+	@NoReference("This field is not intended to be referenced by clients.")
 	public GdkRGBA foregroundRGBA, backgroundRGBA;
 
 	public Font font;

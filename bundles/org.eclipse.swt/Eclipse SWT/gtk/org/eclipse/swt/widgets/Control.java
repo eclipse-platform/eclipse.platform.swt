@@ -18,6 +18,7 @@ package org.eclipse.swt.widgets;
 import java.lang.reflect.*;
 import java.util.*;
 
+import org.eclipse.pde.api.tools.annotations.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.accessibility.*;
 import org.eclipse.swt.events.*;
@@ -49,8 +50,8 @@ import org.eclipse.swt.internal.gtk4.*;
  * @see <a href="http://www.eclipse.org/swt/snippets/#control">Control snippets</a>
  * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Example: ControlExample</a>
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
- * @noextend This class is not intended to be subclassed by clients.
  */
+@NoExtend("This class is not intended to be subclassed by clients.")
 public abstract class Control extends Widget implements Drawable {
 
 	// allows to disable context menu entry for "insert emoji"
@@ -4430,10 +4431,9 @@ long gtk_unrealize (long widget) {
  *
  * @param data the platform specific GC data
  * @return the platform specific GC handle
- *
- * @noreference This method is not intended to be referenced by clients.
  */
 @Override
+@NoReference("This method is not intended to be referenced by clients.")
 public long internal_new_GC (GCData data) {
 	checkWidget ();
 	long gdkResource = GTK.GTK4 ? paintSurface () : paintWindow ();
@@ -4487,10 +4487,9 @@ long imHandle () {
  *
  * @param hDC the platform specific GC handle
  * @param data the platform specific GC data
- *
- * @noreference This method is not intended to be referenced by clients.
  */
 @Override
+@NoReference("This method is not intended to be referenced by clients.")
 public void internal_dispose_GC (long hDC, GCData data) {
 	checkWidget ();
 	Cairo.cairo_destroy (hDC);

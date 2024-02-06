@@ -13,6 +13,7 @@
  *******************************************************************************/
 package org.eclipse.swt.ole.win32;
 
+import org.eclipse.pde.api.tools.annotations.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.ole.win32.*;
@@ -69,10 +70,9 @@ public final class Variant {
  * @param pVarDest destination pointer to a variant
  * @param varSrc source <code>Variant</code>
  *
- * @noreference This method is not intended to be referenced by clients.
- *
  * @since 3.3
  */
+@NoReference("This method is not intended to be referenced by clients.")
 public static void win32_copy (long pVarDest, Variant varSrc) {
 	varSrc.getData (pVarDest);
 }
@@ -92,10 +92,9 @@ public static void win32_copy (long pVarDest, Variant varSrc) {
  *
  * @return a new <code>Variant</code>
  *
- * @noreference This method is not intended to be referenced by clients.
- *
  * @since 3.3
  */
+@NoReference("This method is not intended to be referenced by clients.")
 public static Variant win32_new (long pVariant) {
 	Variant variant = new Variant ();
 	variant.setData (pVariant);

@@ -14,6 +14,7 @@
 package org.eclipse.swt.graphics;
 
 
+import org.eclipse.pde.api.tools.annotations.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.gdip.*;
@@ -731,10 +732,9 @@ protected void init () {
  *
  * @param data the platform specific GC data
  * @return the platform specific GC handle
- *
- * @noreference This method is not intended to be referenced by clients.
  */
 @Override
+@NoReference("This method is not intended to be referenced by clients.")
 public abstract long internal_new_GC (GCData data);
 
 /**
@@ -749,10 +749,9 @@ public abstract long internal_new_GC (GCData data);
  *
  * @param hDC the platform specific GC handle
  * @param data the platform specific GC data
- *
- * @noreference This method is not intended to be referenced by clients.
  */
 @Override
+@NoReference("This method is not intended to be referenced by clients.")
 public abstract void /*long*/ internal_dispose_GC (long hDC, GCData data);
 
 /**
@@ -939,10 +938,10 @@ void setEnableAutoScaling(boolean value) {
  * Gets the scaling factor from the device and calculates the zoom level.
  * @return zoom in percentage
  *
- * @noreference This method is not intended to be referenced by clients.
- * @nooverride This method is not intended to be re-implemented or extended by clients.
  * @since 3.105
  */
+@NoReference("This method is not intended to be referenced by clients.")
+@NoOverride("This method is not intended to be re-implemented or extended by clients.")
 protected int getDeviceZoom () {
 	return DPIUtil.mapDPIToZoom ( _getDPIx ());
 }

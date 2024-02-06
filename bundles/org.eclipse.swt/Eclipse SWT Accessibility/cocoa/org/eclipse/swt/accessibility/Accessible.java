@@ -17,6 +17,7 @@ import java.net.*;
 import java.util.*;
 import java.util.List;
 
+import org.eclipse.pde.api.tools.annotations.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.cocoa.*;
@@ -138,9 +139,8 @@ public class Accessible {
 	 *
 	 * @param control the control to get the accessible object for
 	 * @return the platform specific accessible object
-	 *
-	 * @noreference This method is not intended to be referenced by clients.
 	 */
+	@NoReference("This method is not intended to be referenced by clients.")
 	public static Accessible internal_new_Accessible(Control control) {
 		return new Accessible(control);
 	}
@@ -787,9 +787,8 @@ public class Accessible {
 	 * within the packages provided by SWT. It is not available on all
 	 * platforms and should never be accessed from application code.
 	 * </p>
-	 *
-	 * @noreference This method is not intended to be referenced by clients.
 	 */
+	@NoReference("This method is not intended to be referenced by clients.")
 	public id internal_accessibilityActionDescription(NSString action, int childID) {
 		NSString returnValue = NSString.string();
 		String actionName = action.getString();
@@ -832,9 +831,8 @@ public class Accessible {
 	 * within the packages provided by SWT. It is not available on all
 	 * platforms and should never be accessed from application code.
 	 * </p>
-	 *
-	 * @noreference This method is not intended to be referenced by clients.
 	 */
+	@NoReference("This method is not intended to be referenced by clients.")
 	public NSArray internal_accessibilityActionNames(int childID) {
 		if (accessibleActionListenersSize() > 0) {
 			AccessibleActionEvent event = new AccessibleActionEvent(this);
@@ -917,9 +915,8 @@ public class Accessible {
 	 * within the packages provided by SWT. It is not available on all
 	 * platforms and should never be accessed from application code.
 	 * </p>
-	 *
-	 * @noreference This method is not intended to be referenced by clients.
 	 */
+	@NoReference("This method is not intended to be referenced by clients.")
 	public boolean internal_accessibilityIsAttributeSettable(NSString attribute, int childID) {
 		if (accessibleTextExtendedListenersSize() > 0) {
 			if (attribute.isEqualToString(OS.NSAccessibilitySelectedTextRangeAttribute)) return true;
@@ -942,9 +939,8 @@ public class Accessible {
 	 * within the packages provided by SWT. It is not available on all
 	 * platforms and should never be accessed from application code.
 	 * </p>
-	 *
-	 * @noreference This method is not intended to be referenced by clients.
 	 */
+	@NoReference("This method is not intended to be referenced by clients.")
 	public NSArray internal_accessibilityAttributeNames(int childID) {
 		// The supported attribute set depends on the role played by the control.
 		// We may need to add or remove from the base set as needed.
@@ -1224,9 +1220,8 @@ public class Accessible {
 	 * within the packages provided by SWT. It is not available on all
 	 * platforms and should never be accessed from application code.
 	 * </p>
-	 *
-	 * @noreference This method is not intended to be referenced by clients.
 	 */
+	@NoReference("This method is not intended to be referenced by clients.")
 	public id internal_accessibilityAttributeValue(NSString attribute, int childID) {
 		if (attribute.isEqualToString(OS.NSAccessibilityRoleAttribute)) return getRoleAttribute(childID);
 		if (attribute.isEqualToString(OS.NSAccessibilitySubroleAttribute)) return getSubroleAttribute(childID);
@@ -1283,9 +1278,8 @@ public class Accessible {
 	 * within the packages provided by SWT. It is not available on all
 	 * platforms and should never be accessed from application code.
 	 * </p>
-	 *
-	 * @noreference This method is not intended to be referenced by clients.
 	 */
+	@NoReference("This method is not intended to be referenced by clients.")
 	public id internal_accessibilityAttributeValue_forParameter(NSString attribute, id parameter, int childID) {
 		if (attribute.isEqualToString(OS.NSAccessibilityStringForRangeParameterizedAttribute)) return getStringForRangeParameterizedAttribute(parameter, childID);
 		if (attribute.isEqualToString(OS.NSAccessibilityRangeForLineParameterizedAttribute)) return getRangeForLineParameterizedAttribute(parameter, childID);
@@ -1310,9 +1304,8 @@ public class Accessible {
 	 * within the packages provided by SWT. It is not available on all
 	 * platforms and should never be accessed from application code.
 	 * </p>
-	 *
-	 * @noreference This method is not intended to be referenced by clients.
 	 */
+	@NoReference("This method is not intended to be referenced by clients.")
 	public id internal_accessibilityFocusedUIElement(int childID) {
 		AccessibleControlEvent event = new AccessibleControlEvent(this);
 		event.childID = ACC.CHILDID_MULTIPLE; // set to invalid value, to test if the application sets it in getFocus()
@@ -1350,9 +1343,8 @@ public class Accessible {
 	 * within the packages provided by SWT. It is not available on all
 	 * platforms and should never be accessed from application code.
 	 * </p>
-	 *
-	 * @noreference This method is not intended to be referenced by clients.
 	 */
+	@NoReference("This method is not intended to be referenced by clients.")
 	public id internal_accessibilityHitTest(NSPoint point, int childID) {
 		AccessibleControlEvent event = new AccessibleControlEvent(this);
 		event.x = (int) point.x;
@@ -1391,9 +1383,8 @@ public class Accessible {
 	 * within the packages provided by SWT. It is not available on all
 	 * platforms and should never be accessed from application code.
 	 * </p>
-	 *
-	 * @noreference This method is not intended to be referenced by clients.
 	 */
+	@NoReference("This method is not intended to be referenced by clients.")
 	public boolean internal_accessibilityIsIgnored(int childID) {
 		AccessibleControlEvent event = new AccessibleControlEvent(this);
 		event.childID = childID;
@@ -1420,9 +1411,8 @@ public class Accessible {
 	 * within the packages provided by SWT. It is not available on all
 	 * platforms and should never be accessed from application code.
 	 * </p>
-	 *
-	 * @noreference This method is not intended to be referenced by clients.
 	 */
+	@NoReference("This method is not intended to be referenced by clients.")
 	public NSArray internal_accessibilityParameterizedAttributeNames(int childID) {
 		AccessibleControlEvent event = new AccessibleControlEvent(this);
 		event.childID = childID;
@@ -1481,9 +1471,8 @@ public class Accessible {
 	 * within the packages provided by SWT. It is not available on all
 	 * platforms and should never be accessed from application code.
 	 * </p>
-	 *
-	 * @noreference This method is not intended to be referenced by clients.
 	 */
+	@NoReference("This method is not intended to be referenced by clients.")
 	public boolean internal_accessibilityPerformAction(NSString action, int childID) {
 		String actionName = action.getString();
 		if (accessibleActionListenersSize() > 0) {
@@ -1526,9 +1515,8 @@ public class Accessible {
 	 * within the packages provided by SWT. It is not available on all
 	 * platforms and should never be accessed from application code.
 	 * </p>
-	 *
-	 * @noreference This method is not intended to be referenced by clients.
 	 */
+	@NoReference("This method is not intended to be referenced by clients.")
 	public void internal_accessibilitySetValue_forAttribute(id value, NSString attribute, int childId) {
 		if (attribute.isEqualToString(OS.NSAccessibilitySelectedTextRangeAttribute)) setSelectedTextRangeAttribute(value, childId);
 		if (attribute.isEqualToString(OS.NSAccessibilitySelectedTextAttribute)) setSelectedTextAttribute(value, childId);
@@ -1586,9 +1574,8 @@ public class Accessible {
 	 * available on all platforms, and should never be called from
 	 * application code.
 	 * </p>
-	 *
-	 * @noreference This method is not intended to be referenced by clients.
 	 */
+	@NoReference("This method is not intended to be referenced by clients.")
 	public void internal_dispose_Accessible() {
 		release(true);
 	}
@@ -3556,9 +3543,8 @@ public class Accessible {
 	 * within the packages provided by SWT. It is not available on all
 	 * platforms and should never be accessed from application code.
 	 * </p>
-	 *
-	 * @noreference This method is not intended to be referenced by clients.
 	 */
+	@NoReference("This method is not intended to be referenced by clients.")
 	public long internal_addRelationAttributes(long defaultAttributes) {
 		NSArray attributes = new NSArray(defaultAttributes);
 		NSMutableArray returnArray = NSMutableArray.arrayWithCapacity(attributes.count());

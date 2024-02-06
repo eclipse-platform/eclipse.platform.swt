@@ -15,6 +15,7 @@ package org.eclipse.swt.ole.win32;
 
 import java.io.*;
 
+import org.eclipse.pde.api.tools.annotations.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.*;
@@ -299,9 +300,8 @@ public OleClientSite(Composite parent, int style, String progId) {
  *     <li>ERROR_CANNOT_CREATE_OBJECT when failed to create OLE Object
  *     <li>ERROR_CANNOT_OPEN_FILE when failed to open file
  * </ul>
- *
- * @noreference This method is not intended to be referenced by clients.
  */
+@NoReference("This method is not intended to be referenced by clients.")
 public OleClientSite(Composite parent, int style, String progId, File file) {
 	this(parent, style);
 	try {

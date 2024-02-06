@@ -14,6 +14,7 @@
 package org.eclipse.swt.widgets;
 
 
+import org.eclipse.pde.api.tools.annotations.*;
 import org.eclipse.swt.*;
 
 /**
@@ -31,8 +32,8 @@ import org.eclipse.swt.*;
  *
  * @since 3.6
  *
- * @noextend This class is not intended to be subclassed by clients.
  */
+@NoExtend("This class is not intended to be subclassed by clients.")
 public class TaskBar extends Widget {
 	int itemCount;
 	TaskItem [] items = new TaskItem [4];

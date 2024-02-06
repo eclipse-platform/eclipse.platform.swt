@@ -14,6 +14,7 @@
 package org.eclipse.swt.printing;
 
 
+import org.eclipse.pde.api.tools.annotations.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.win32.*;
@@ -50,9 +51,8 @@ public final class Printer extends Device {
 	 * within the packages provided by SWT. It is not available on all
 	 * platforms and should never be accessed from application code.
 	 * </p>
-	 *
-	 * @noreference This field is not intended to be referenced by clients.
 	 */
+	@NoReference("This field is not intended to be referenced by clients.")
 	public long handle;
 
 	/**
@@ -280,10 +280,9 @@ protected void create(DeviceData deviceData) {
  *
  * @param data the platform specific GC data
  * @return the platform specific GC handle
- *
- * @noreference This method is not intended to be referenced by clients.
  */
 @Override
+@NoReference("This method is not intended to be referenced by clients.")
 public long internal_new_GC(GCData data) {
 	if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	if (data != null) {
@@ -313,18 +312,15 @@ public long internal_new_GC(GCData data) {
  *
  * @param hDC the platform specific GC handle
  * @param data the platform specific GC data
- *
- * @noreference This method is not intended to be referenced by clients.
  */
 @Override
+@NoReference("This method is not intended to be referenced by clients.")
 public void internal_dispose_GC(long hDC, GCData data) {
 	if (data != null) isGCCreated = false;
 }
 
-/**
- * @noreference This method is not intended to be referenced by clients.
- */
 @Override
+@NoReference("This method is not intended to be referenced by clients.")
 public boolean isAutoScalable() {
 	return false;
 }

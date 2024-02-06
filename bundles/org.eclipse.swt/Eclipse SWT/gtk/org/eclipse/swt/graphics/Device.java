@@ -18,6 +18,7 @@ import java.io.*;
 import java.util.function.*;
 import java.util.stream.*;
 
+import org.eclipse.pde.api.tools.annotations.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.gtk.*;
@@ -34,9 +35,9 @@ import org.eclipse.swt.internal.gtk4.*;
  */
 public abstract class Device implements Drawable {
 	/**
-	 * @noreference This field is not intended to be referenced by clients.
 	 * @since 3.105
 	 */
+	@NoReference("This field is not intended to be referenced by clients.")
 	protected static final int CHANGE_SCALEFACTOR = 1;
 	/* Settings callbacks */
 	long gsettingsProc;
@@ -54,8 +55,8 @@ public abstract class Device implements Drawable {
 	 * platforms and should never be accessed from application code.
 	 * </p>
 	 *
-	 * @noreference This field is not intended to be referenced by clients.
 	 */
+	@NoReference("This field is not intended to be referenced by clients.")
 	protected long xDisplay;
 	long shellHandle;
 
@@ -836,10 +837,9 @@ private void overrideThemeValues () {
  *
  * @param data the platform specific GC data
  * @return the platform specific GC handle
- *
- * @noreference This method is not intended to be referenced by clients.
  */
 @Override
+@NoReference("This method is not intended to be referenced by clients.")
 public abstract long internal_new_GC (GCData data);
 
 /**
@@ -854,10 +854,9 @@ public abstract long internal_new_GC (GCData data);
  *
  * @param hDC the platform specific GC handle
  * @param data the platform specific GC data
- *
- * @noreference This method is not intended to be referenced by clients.
  */
 @Override
+@NoReference("This method is not intended to be referenced by clients.")
 public abstract void internal_dispose_GC (long hDC, GCData data);
 
 /**
@@ -1084,10 +1083,10 @@ static long XIOErrorProc (long xDisplay) {
  * Gets the scaling factor from the device and calculates the zoom level.
  * @return zoom in percentage
  *
- * @noreference This method is not intended to be referenced by clients.
- * @nooverride This method is not intended to be re-implemented or extended by clients.
  * @since 3.105
  */
+@NoReference("This method is not intended to be referenced by clients.")
+@NoOverride("This method is not intended to be re-implemented or extended by clients.")
 protected int getDeviceZoom() {
 	/*
 	 * We can hard-code 96 as gdk_screen_get_resolution will always return -1

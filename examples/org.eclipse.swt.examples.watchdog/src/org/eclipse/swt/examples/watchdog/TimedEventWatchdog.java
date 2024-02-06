@@ -40,8 +40,6 @@ class TimedEventWatchdog implements Listener {
 	 * recursively before the first event finished. If events are invoked recursively and any event
 	 * is longer than a watchdog's threshold, each enclosing event will also be longer than the
 	 * threshold and will be reported as the stack unwinds.
-	 *
-	 * @noextend This class is not intended to be subclassed by clients.
 	 */
 	private static class LongEventInfo {
 		/**

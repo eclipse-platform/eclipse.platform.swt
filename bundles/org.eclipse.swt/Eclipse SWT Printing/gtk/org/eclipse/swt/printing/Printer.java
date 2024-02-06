@@ -14,6 +14,7 @@
 package org.eclipse.swt.printing;
 
 
+import org.eclipse.pde.api.tools.annotations.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.*;
@@ -367,10 +368,9 @@ static byte [] restoreBytes(String key, boolean nullTerminate) {
  *
  * @param data the platform specific GC data
  * @return the platform specific GC handle
- *
- * @noreference This method is not intended to be referenced by clients.
  */
 @Override
+@NoReference("This method is not intended to be referenced by clients.")
 public long internal_new_GC(GCData data) {
 	long drawable = 0;
 	long gc = cairo;
@@ -416,18 +416,15 @@ public long internal_new_GC(GCData data) {
  *
  * @param hDC the platform specific GC handle
  * @param data the platform specific GC data
- *
- * @noreference This method is not intended to be referenced by clients.
  */
 @Override
+@NoReference("This method is not intended to be referenced by clients.")
 public void internal_dispose_GC(long hDC, GCData data) {
 	if (data != null) isGCCreated = false;
 }
 
-/**
- * @noreference This method is not intended to be referenced by clients.
- */
 @Override
+@NoReference("This method is not intended to be referenced by clients.")
 public boolean isAutoScalable() {
 	return false;
 }

@@ -14,6 +14,7 @@
 package org.eclipse.swt.widgets;
 
 
+import org.eclipse.pde.api.tools.annotations.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 
@@ -31,8 +32,8 @@ import org.eclipse.swt.graphics.*;
  *
  * @since 3.6
  *
- * @noextend This class is not intended to be subclassed by clients.
  */
+@NoExtend("This class is not intended to be subclassed by clients.")
 public class TaskItem extends Item {
 	TaskBar parent;
 	Shell shell;

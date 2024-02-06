@@ -13,6 +13,7 @@
  *******************************************************************************/
 package org.eclipse.swt.printing;
 
+import org.eclipse.pde.api.tools.annotations.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.cocoa.*;
@@ -298,10 +299,9 @@ protected void destroy() {
  *
  * @param data the platform specific GC data
  * @return the platform specific GC handle
- *
- * @noreference This method is not intended to be referenced by clients.
  */
 @Override
+@NoReference("This method is not intended to be referenced by clients.")
 public long internal_new_GC(GCData data) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	NSAutoreleasePool pool = null;
@@ -363,18 +363,15 @@ protected void init () {
  *
  * @param hDC the platform specific GC handle
  * @param data the platform specific GC data
- *
- * @noreference This method is not intended to be referenced by clients.
  */
 @Override
+@NoReference("This method is not intended to be referenced by clients.")
 public void internal_dispose_GC(long hDC, GCData data) {
 	if (data != null) isGCCreated = false;
 }
 
-/**
- * @noreference This method is not intended to be referenced by clients.
- */
 @Override
+@NoReference("This method is not intended to be referenced by clients.")
 public boolean isAutoScalable() {
 	return false;
 }
