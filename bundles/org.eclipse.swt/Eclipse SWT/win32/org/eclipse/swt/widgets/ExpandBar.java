@@ -137,7 +137,7 @@ static int checkStyle (int style) {
 			long hDC = OS.GetDC (handle);
 			long hTheme = 0;
 			if (isAppThemed ()) {
-				hTheme = display.hExplorerBarTheme ();
+				hTheme = display.hExplorerBarTheme (getZoom());
 			}
 			long hCurrentFont = 0, oldFont = 0;
 			if (hTheme == 0) {
@@ -247,13 +247,13 @@ void drawThemeBackground (long hDC, long hwnd, RECT rect) {
 	RECT rect2 = new RECT ();
 	OS.GetClientRect (handle, rect2);
 	OS.MapWindowPoints (handle, hwnd, rect2, 2);
-	OS.DrawThemeBackground (display.hExplorerBarTheme (), hDC, OS.EBP_NORMALGROUPBACKGROUND, 0, rect2, null);
+	OS.DrawThemeBackground (display.hExplorerBarTheme (getZoom()), hDC, OS.EBP_NORMALGROUPBACKGROUND, 0, rect2, null);
 }
 
 void drawWidget (GC gc, RECT clipRect) {
 	long hTheme = 0;
 	if (isAppThemed ()) {
-		hTheme = display.hExplorerBarTheme ();
+		hTheme = display.hExplorerBarTheme (getZoom());
 	}
 	if (hTheme != 0) {
 		RECT rect = new RECT ();

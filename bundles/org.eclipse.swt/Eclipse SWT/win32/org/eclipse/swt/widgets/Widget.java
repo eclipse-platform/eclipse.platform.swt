@@ -2350,7 +2350,7 @@ LRESULT wmPrint (long hwnd, long wParam, long lParam) {
 				rect.left = rect.top = 0;
 				int border = getSystemMetrics (OS.SM_CXEDGE);
 				OS.ExcludeClipRect (wParam, border, border, rect.right - border, rect.bottom - border);
-				OS.DrawThemeBackground (display.hEditTheme (), wParam, OS.EP_EDITTEXT, OS.ETS_NORMAL, rect, null);
+				OS.DrawThemeBackground (display.hEditTheme (getZoom()), wParam, OS.EP_EDITTEXT, OS.ETS_NORMAL, rect, null);
 				return new LRESULT (code);
 			}
 		}
