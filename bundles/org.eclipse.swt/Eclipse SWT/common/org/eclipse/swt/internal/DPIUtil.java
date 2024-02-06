@@ -422,6 +422,17 @@ public static int mapDPIToZoom (int dpi) {
 }
 
 /**
+ * Compute the DPI value value based on the zoom.
+ *
+ * @return zoom
+ */
+public static int mapZoomToDPI (int dpi) {
+	double zoom = (double) dpi / 100 * DPI_ZOOM_100;
+	int roundedZoom = (int) Math.round (zoom);
+	return roundedZoom;
+}
+
+/**
  * Represents an element, such as some image data, at a specific zoom level.
  *
  * @param <T> type of the element to be presented, e.g., {@link ImageData}
@@ -493,6 +504,10 @@ private static <T> ElementAtZoom<T> getElementAtZoom(Function<Integer, T> elemen
 		}
 	}
 	return null;
+}
+
+public static int getNativeDeviceZoom() {
+	return nativeDeviceZoom;
 }
 
 public static int getDeviceZoom() {

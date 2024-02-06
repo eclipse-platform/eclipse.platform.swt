@@ -37,7 +37,8 @@ public abstract class Device implements Drawable {
 	Object [] objects;
 	Object trackingLock;
 
-	/* System Font */
+	/* Fonts */
+	private SWTFontRegistry fontRegistry;
 	Font systemFont;
 
 	/* Font Enumeration */
@@ -905,6 +906,9 @@ protected void release () {
 		fontCollection = 0;
 		Gdip.GdiplusShutdown (gdipToken[0]);
 	}
+	if (fontRegistry != null) {
+		fontRegistry.dispose();
+	}
 	gdipToken = null;
 	scripts = null;
 	logFonts = null;
@@ -947,4 +951,44 @@ protected int getDeviceZoom () {
 	return DPIUtil.mapDPIToZoom ( _getDPIx ());
 }
 
+Font getFont(FontData fontData, int deviceZoom) {
+	return getFontRegistry().getFont(fontData, deviceZoom);
+}
+
+/**
+ * Returns the font registry.
+ *
+ * (Warning: This method is platform dependent)
+ * <p>
+ * <b>IMPORTANT:</b> This method is <em>not</em> part of the SWT
+ * public API. It is marked public only so that it can be shared
+ * within the packages provided by SWT. It is not available on all
+ * platforms and should never be accessed from application code.
+ * </p>
+ *
+ * @noreference This method is not intended to be referenced by clients.
+ */
+protected SWTFontRegistry getFontRegistry() {
+	if (fontRegistry == null) {
+		fontRegistry = newFontRegistry();
+	}
+	return fontRegistry;
+}
+
+/**
+ * Creates and returns a new font registry.
+ *
+ * (Warning: This method is platform dependent)
+ * <p>
+ * <b>IMPORTANT:</b> This method is <em>not</em> part of the SWT
+ * public API. It is marked public only so that it can be shared
+ * within the packages provided by SWT. It is not available on all
+ * platforms and should never be accessed from application code.
+ * </p>
+ *
+ * @noreference This method is not intended to be referenced by clients.
+ */
+protected SWTFontRegistry newFontRegistry() {
+	return new DefaultSWTFontRegistry(this);
+}
 }

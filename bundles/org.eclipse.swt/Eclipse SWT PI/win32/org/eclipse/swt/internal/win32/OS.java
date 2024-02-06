@@ -39,6 +39,7 @@ public class OS extends C {
 	/**
 	 * Values taken from https://en.wikipedia.org/wiki/List_of_Microsoft_Windows_versions
 	 */
+	public static final int WIN32_BUILD_WIN10_1607 = 14393; // "Windows 10 August 2016 Update"
 	public static final int WIN32_BUILD_WIN10_1809 = 17763; // "Windows 10 October 2018 Update"
 	public static final int WIN32_BUILD_WIN10_2004 = 19041; // "Windows 10 May 2020 Update"
 	public static final int WIN32_BUILD_WIN11_21H2 = 22000; // Initial Windows 11 release
@@ -4436,6 +4437,7 @@ public static final native boolean SystemParametersInfo (int uiAction, int uiPar
 public static final native boolean SystemParametersInfo (int uiAction, int uiParam, RECT pvParam, int fWinIni);
 public static final native boolean SystemParametersInfo (int uiAction, int uiParam, NONCLIENTMETRICS pvParam, int fWinIni);
 public static final native boolean SystemParametersInfo (int uiAction, int uiParam, int [] pvParam, int fWinIni);
+public static final native boolean SystemParametersInfoForDpi (int uiAction, int uiParam, NONCLIENTMETRICS pvParam, int fWinIni, int dpi);
 /**
  * @param lpKeyState cast=(PBYTE)
  * @param pwszBuff cast=(LPWSTR)

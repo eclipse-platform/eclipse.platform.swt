@@ -9128,6 +9128,22 @@ fail:
 }
 #endif
 
+#ifndef NO_SystemParametersInfoForDpi
+JNIEXPORT jboolean JNICALL OS_NATIVE(SystemParametersInfoForDpi)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jobject arg2, jint arg3, jint arg4)
+{
+	NONCLIENTMETRICS _arg2, *lparg2=NULL;
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, SystemParametersInfoForDpi_FUNC);
+	if (arg2) if ((lparg2 = getNONCLIENTMETRICSFields(env, arg2, &_arg2)) == NULL) goto fail;
+	rc = (jboolean)SystemParametersInfoForDpi(arg0, arg1, lparg2, arg3, arg4);
+fail:
+	if (arg2 && lparg2) setNONCLIENTMETRICSFields(env, arg2, lparg2);
+	OS_NATIVE_EXIT(env, that, SystemParametersInfoForDpi_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_TBBUTTONINFO_1sizeof
 JNIEXPORT jint JNICALL OS_NATIVE(TBBUTTONINFO_1sizeof)
 	(JNIEnv *env, jclass that)

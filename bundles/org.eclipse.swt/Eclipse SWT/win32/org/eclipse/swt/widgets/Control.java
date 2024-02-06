@@ -711,8 +711,8 @@ int defaultBackground () {
 	return OS.GetSysColor (OS.COLOR_BTNFACE);
 }
 
-long defaultFont () {
-	return display.getSystemFont ().handle;
+long defaultFont() {
+	return display.getSystemFont(getCurrentDeviceZoom()).handle;
 }
 
 int defaultForeground () {
@@ -1304,7 +1304,7 @@ public Font getFont () {
 	if (font != null) return font;
 	long hFont = OS.SendMessage (handle, OS.WM_GETFONT, 0, 0);
 	if (hFont == 0) hFont = defaultFont ();
-	return Font.win32_new (display, hFont);
+	return Font.win32_new (display, hFont, getShell().getNativeDeviceZoom());
 }
 
 /**
@@ -3309,7 +3309,7 @@ public void setCursor (Cursor cursor) {
 }
 
 void setDefaultFont () {
-	long hFont = display.getSystemFont ().handle;
+	long hFont = display.getSystemFont (getCurrentDeviceZoom()).handle;
 	OS.SendMessage (handle, OS.WM_SETFONT, hFont, 0);
 }
 
