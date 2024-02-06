@@ -4263,14 +4263,14 @@ void setCheckboxImageList (int width, int height, boolean fixScroll) {
 		 * artifacts, limit the rectangle to actual checkbox bitmap size.
 		 */
 		SIZE size = new SIZE();
-		OS.GetThemePartSize(display.hButtonTheme(), memDC, OS.BP_CHECKBOX, 0, null, OS.TS_TRUE, size);
+		OS.GetThemePartSize(display.hButtonTheme(getZoom()), memDC, OS.BP_CHECKBOX, 0, null, OS.TS_TRUE, size);
 		itemWidth = Math.min (size.cx, itemWidth);
 		itemHeight = Math.min (size.cy, itemHeight);
 	}
 	int left = (width - itemWidth) / 2, top = (height - itemHeight) / 2;
 	OS.SetRect (rect, left, top, left + itemWidth, top + itemHeight);
 	if (OS.IsAppThemed ()) {
-		long hTheme = display.hButtonTheme ();
+		long hTheme = display.hButtonTheme(getZoom());
 		OS.DrawThemeBackground (hTheme, memDC, OS.BP_CHECKBOX, OS.CBS_UNCHECKEDNORMAL, rect, null);
 		rect.left += width;  rect.right += width;
 		OS.DrawThemeBackground (hTheme, memDC, OS.BP_CHECKBOX, OS.CBS_CHECKEDNORMAL, rect, null);
