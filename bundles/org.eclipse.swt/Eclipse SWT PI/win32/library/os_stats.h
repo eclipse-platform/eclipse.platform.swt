@@ -680,6 +680,7 @@ typedef enum {
 	SystemParametersInfo__IILorg_eclipse_swt_internal_win32_NONCLIENTMETRICS_2I_FUNC,
 	SystemParametersInfo__IILorg_eclipse_swt_internal_win32_RECT_2I_FUNC,
 	SystemParametersInfo__II_3II_FUNC,
+	SystemParametersInfoForDpi_FUNC,
 	TBBUTTONINFO_1sizeof_FUNC,
 	TBBUTTON_1sizeof_FUNC,
 	TCHITTESTINFO_1sizeof_FUNC,

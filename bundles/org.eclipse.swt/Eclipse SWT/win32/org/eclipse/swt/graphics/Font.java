@@ -15,6 +15,7 @@ package org.eclipse.swt.graphics;
 
 
 import org.eclipse.swt.*;
+import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.win32.*;
 
 /**
@@ -49,11 +50,17 @@ public final class Font extends Resource {
 	 */
 	public long handle;
 
+	/**
+	 * The zoom in % of the standard resolution used for conversion of point height to pixel height
+	 * (Warning: This field is platform dependent)
+	 */
+	private int zoom;
 /**
  * Prevents uninitialized instances from being created outside the package.
  */
 Font(Device device) {
 	super(device);
+	this.zoom = extractZoom(this.device);
 }
 
 /**
@@ -78,6 +85,14 @@ Font(Device device) {
  */
 public Font(Device device, FontData fd) {
 	super(device);
+	this.zoom = extractZoom(this.device);
+	init(fd);
+	init();
+}
+
+private Font(Device device, FontData fd, int zoom) {
+	super(device);
+	this.zoom = zoom;
 	init(fd);
 	init();
 }
@@ -114,6 +129,7 @@ public Font(Device device, FontData[] fds) {
 	for (FontData fd : fds) {
 		if (fd == null) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
+	this.zoom = extractZoom(this.device);
 	init(fds[0]);
 	init();
 }
@@ -145,6 +161,7 @@ public Font(Device device, FontData[] fds) {
 public Font(Device device, String name, int height, int style) {
 	super(device);
 	if (name == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	this.zoom = extractZoom(this.device);
 	init(new FontData (name, height, style));
 	init();
 }
@@ -152,6 +169,7 @@ public Font(Device device, String name, int height, int style) {
 /*public*/ Font(Device device, String name, float height, int style) {
 	super(device);
 	if (name == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	this.zoom = extractZoom(this.device);
 	init(new FontData (name, height, style));
 	init();
 }
@@ -195,7 +213,8 @@ public FontData[] getFontData() {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	LOGFONT logFont = new LOGFONT ();
 	OS.GetObject(handle, LOGFONT.sizeof, logFont);
-	return new FontData[] {FontData.win32_new(logFont, device.computePoints(logFont, handle))};
+	float heightInPoints = device.computePoints(logFont, handle, DPIUtil.mapZoomToDPI(zoom));
+	return new FontData[] {FontData.win32_new(logFont, heightInPoints)};
 }
 
 /**
@@ -218,6 +237,13 @@ void init (FontData fd) {
 	LOGFONT logFont = fd.data;
 	int lfHeight = logFont.lfHeight;
 	logFont.lfHeight = device.computePixels(fd.height);
+
+	int primaryZoom = extractZoom(device);
+	if (zoom != primaryZoom) {
+		float scaleFactor = 1f * zoom / primaryZoom;
+		logFont.lfHeight *= scaleFactor;
+	}
+
 	handle = OS.CreateFontIndirect(logFont);
 	logFont.lfHeight = lfHeight;
 	if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
@@ -250,6 +276,13 @@ public String toString () {
 	return "Font {" + handle + "}";
 }
 
+private static int extractZoom(Device device) {
+	if (device == null) {
+		return DPIUtil.getNativeDeviceZoom();
+	}
+	return DPIUtil.mapDPIToZoom(device._getDPIx());
+}
+
 /**
  * Invokes platform specific functionality to allocate a new font.
  * <p>
@@ -268,6 +301,7 @@ public String toString () {
  */
 public static Font win32_new(Device device, long handle) {
 	Font font = new Font(device);
+	font.zoom = extractZoom(font.device);
 	font.handle = handle;
 	/*
 	 * When created this way, Font doesn't own its .handle, and
@@ -278,4 +312,75 @@ public static Font win32_new(Device device, long handle) {
 	return font;
 }
 
+/**
+ * Invokes platform specific functionality to allocate a new font.
+ * <p>
+ * <b>IMPORTANT:</b> This method is <em>not</em> part of the public
+ * API for <code>Font</code>. It is marked public only so that it
+ * can be shared within the packages provided by SWT. It is not
+ * available on all platforms, and should never be called from
+ * application code.
+ * </p>
+ *
+ * @param device the device on which to allocate the font
+ * @param handle the handle for the font
+ * @param zoom zoom in % of the standard resolution
+ * @return a new font object containing the specified device and handle
+ *
+ * @noreference This method is not intended to be referenced by clients.
+ * @since 3.126
+ */
+public static Font win32_new(Device device, long handle, int zoom) {
+	Font font = win32_new(device, handle);
+	font.zoom = zoom;
+	return font;
+}
+
+/**
+ * Invokes platform specific private constructor to allocate a new font.
+ * <p>
+ * <b>IMPORTANT:</b> This method is <em>not</em> part of the public
+ * API for <code>Font</code>. It is marked public only so that it
+ * can be shared within the packages provided by SWT. It is not
+ * available on all platforms, and should never be called from
+ * application code.
+ * </p>
+ *
+ * @param device the device on which to allocate the font
+ * @param fontData font data to create the font for
+ * @param zoom zoom in % of the standard resolution
+ * @return a new font object using the specified font data with the
+ * specified zoom as factor for the font data
+ *
+ * @noreference This method is not intended to be referenced by clients.
+ * @since 3.126
+ */
+public static Font win32_new(Device device, FontData fontData, int zoom) {
+	return new Font(device, fontData, zoom);
+}
+
+/**
+ * Used to receive a font for the given zoom in the context
+ * of the current configuration of SWT at runtime.
+ * <p>
+ * <b>IMPORTANT:</b> This method is <em>not</em> part of the public
+ * API for <code>Font</code>. It is marked public only so that it
+ * can be shared within the packages provided by SWT. It is not
+ * available on all platforms, and should never be called from
+ * application code.
+ * </p>
+ *
+ * @param font font to create a font for the given target zoom
+ * @param targetZoom zoom in % of the standard resolution
+ * @return a font matching the specified font and zoom in %
+ *
+ * @noreference This method is not intended to be referenced by clients.
+ * @since 3.126
+ */
+public static Font win32_new(Font font, int targetZoom) {
+	if (targetZoom == font.zoom) {
+		return font;
+	}
+	return SWTFontProvider.getFont(font.getDevice(), font.getFontData()[0], targetZoom);
+}
 }
