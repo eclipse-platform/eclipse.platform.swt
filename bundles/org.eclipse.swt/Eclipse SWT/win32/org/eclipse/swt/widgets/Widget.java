@@ -51,6 +51,8 @@ import org.eclipse.swt.internal.win32.*;
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
 public abstract class Widget {
+
+	private int currentDeviceZoom;
 	int style, state;
 	Display display;
 	EventTable eventTable;
@@ -166,6 +168,7 @@ public Widget (Widget parent, int style) {
 	checkSubclass ();
 	checkParent (parent);
 	this.style = style;
+	this.currentDeviceZoom = parent != null ? parent.getCurrentDeviceZoom() : DPIUtil.getDeviceZoom();
 	display = parent.display;
 	reskinWidget ();
 	notifyCreationTracker();
@@ -2631,4 +2634,24 @@ void notifyDisposalTracker() {
 	}
 }
 
+
+/**
+ * The current DPI zoom level the widget is scaled for
+ * (Warning: This field is platform dependent)
+ * <p>
+ * <b>IMPORTANT:</b> This field is <em>not</em> part of the SWT
+ * public API. It is marked public only so that it can be shared
+ * within the packages provided by SWT. It is not available on all
+ * platforms and should never be accessed from application code.
+ * </p>
+ *
+ * @noreference This field is not intended to be referenced by clients.
+ */
+public int getCurrentDeviceZoom() {
+	return currentDeviceZoom;
+}
+
+void setCurrentDeviceZoom(int currentDeviceZoom) {
+	this.currentDeviceZoom = currentDeviceZoom;
+}
 }
