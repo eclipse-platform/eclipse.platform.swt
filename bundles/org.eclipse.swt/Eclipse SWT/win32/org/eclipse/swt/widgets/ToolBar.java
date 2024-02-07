@@ -60,6 +60,7 @@ public class ToolBar extends Composite {
 		WNDCLASS lpWndClass = new WNDCLASS ();
 		OS.GetClassInfo (0, ToolBarClass, lpWndClass);
 		ToolBarProc = lpWndClass.lpfnWndProc;
+		DPIZoomChangeRegistry.registerHandler(ToolBar::handleDPIChange, ToolBar.class);
 	}
 
 	/*
@@ -1736,4 +1737,79 @@ LRESULT wmNotifyChild (NMHDR hdr, long wParam, long lParam) {
 	return super.wmNotifyChild (hdr, wParam, lParam);
 }
 
+private static void handleDPIChange(Widget widget, int newZoom, float scalingFactor) {
+	if (!(widget instanceof ToolBar toolBar)) {
+		return;
+	}
+	ToolItem[] toolItems = toolBar._getItems ();
+	// Only Items with SWT.Sepreator Style have an own width assigned to them
+	var seperatorWidth  =  new int[toolItems.length];
+	var enabledState = new boolean[toolItems.length];
+	var selectedState = new boolean[toolItems.length];
+	for (int i = 0; i < toolItems.length; i++) {
+		ToolItem item = toolItems[i];
+		if((item.style & SWT.SEPARATOR) != 0) {
+			// Take note of widths, so we can re-apply them later
+			seperatorWidth[i] = item.getWidth();
+		}
+		// Remember states of ToolItem to apply them later
+		enabledState[i] = item.getEnabled();
+		selectedState[i] = item.getSelection();
+
+	}
+	for (ToolItem item : toolItems) {
+		toolBar.destroyItem(item);
+		// Resize after, as zoom update changes references to imageLists
+		DPIZoomChangeRegistry.applyChange(item, newZoom, scalingFactor);
+	}
+
+	for (int i = 0; i < toolItems.length; i++) {
+		ToolItem toolItem = toolItems[i];
+
+		toolBar.createItem(toolItem, i);
+		String currentText =  toolItem.getText();
+		toolItem.setText(" ");
+		toolItem.setText(currentText);
+
+		// Refresh images (upscaling already performed by toolItem)
+		Image image = toolItem.getImage();
+		toolItem.setImage(null);
+		toolItem.setImage(image);
+
+		Image hotImage = toolItem.getHotImage();
+		toolItem.setHotImage(null);
+		toolItem.setHotImage(hotImage);
+
+		Image disabledImage = toolItem.getDisabledImage();
+		toolItem.setDisabledImage(null);
+		toolItem.setDisabledImage(disabledImage);
+
+		var content = toolItem.getControl();
+		toolItem.setControl(null);
+		toolItem.setControl(content);
+
+		// In SWT, Width can only be set for Separators
+		if ((toolItem.style & SWT.SEPARATOR) != 0) {
+			var width = (int)((float)(seperatorWidth[i]) * scalingFactor);
+			toolItem.setWidth(width);
+			toolItem.resizeControl();
+		}
+
+		toolItem.setEnabled(enabledState[i]);
+		toolItem.setSelection(selectedState[i]);
+	}
+
+	// Force a refresh of the toolbar by resetting the Font
+	toolBar.setDropDownItems(false);
+	long hFont = OS.SendMessage(toolBar.handle, OS.WM_GETFONT, 0, 0);
+	OS.SendMessage(toolBar.handle, OS.WM_SETFONT, hFont, 0);
+	if((toolBar.style & SWT.VERTICAL) != 0) {
+		// Reset row count to prevent wrapping of buttons
+		toolBar.setRowCount((int)OS.SendMessage (toolBar.handle, OS.TB_BUTTONCOUNT, 0, 0));
+	}
+	toolBar.setDropDownItems(true);
+	toolBar.layout(true);
+	toolBar.sendResize();
+	toolBar.redraw();
+}
 }

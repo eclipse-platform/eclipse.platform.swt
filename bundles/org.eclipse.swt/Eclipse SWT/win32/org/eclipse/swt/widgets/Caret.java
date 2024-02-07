@@ -49,6 +49,10 @@ public class Caret extends Widget {
 	Font font;
 	LOGFONT oldFont;
 
+static {
+	DPIZoomChangeRegistry.registerHandler(Caret::handleDPIChange, Caret.class);
+}
+	
 /**
  * Constructs a new instance of this class given its parent
  * and a style value describing its behavior and appearance.
@@ -148,7 +152,8 @@ public Font getFont () {
 	checkWidget();
 	if (font == null) {
 		long hFont = defaultFont ();
-		return Font.win32_new (display, hFont);
+		final Font newFont = Font.win32_new (display, hFont, getCurrentDeviceZoom());
+		return newFont;
 	}
 	return font;
 }
@@ -470,7 +475,7 @@ public void setFont (Font font) {
 	if (font != null && font.isDisposed ()) {
 		error (SWT.ERROR_INVALID_ARGUMENT);
 	}
-	this.font = font;
+	this.font = font == null ? null : font.scaleFor(getCurrentDeviceZoom());
 	if (hasFocus ()) setIMEFont ();
 }
 
@@ -647,4 +652,19 @@ public void setVisible (boolean visible) {
 	}
 }
 
+private static void handleDPIChange(Widget widget, int newZoom, float scalingFactor) {
+	if (!(widget instanceof Caret caret)) {
+		return;
+	}
+
+	Image image = caret.getImage();
+	if (image != null) {
+		image.handleDPIChange(newZoom);
+		caret.setImage(image);
+	}
+
+	if (caret.font != null) {
+		caret.setFont(caret.font);
+	}
+}
 }

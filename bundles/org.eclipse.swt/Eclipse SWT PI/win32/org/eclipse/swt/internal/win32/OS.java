@@ -2976,6 +2976,7 @@ public static final native long GetSysColorBrush (int nIndex);
 /** @param hWnd cast=(HWND) */
 public static final native long GetSystemMenu (long hWnd, boolean bRevert);
 public static final native int GetSystemMetrics (int nIndex);
+public static final native int GetSystemMetricsForDpi (int nIndex, int dpi);
 /** @param hDC cast=(HDC) */
 public static final native int GetTextColor (long hDC);
 /**

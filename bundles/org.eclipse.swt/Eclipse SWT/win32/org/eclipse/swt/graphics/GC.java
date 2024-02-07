@@ -968,6 +968,7 @@ public void drawImage (Image image, int srcX, int srcY, int srcWidth, int srcHei
 	}
 	if (image == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 	if (image.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	image.handleDPIChange(DPIUtil.getDeviceZoom());
 
 	Rectangle src = DPIUtil.autoScaleUp(drawable, new Rectangle(srcX, srcY, srcWidth, srcHeight));
 	Rectangle dest = DPIUtil.autoScaleUp(drawable, new Rectangle(destX, destY, destWidth, destHeight));
@@ -994,8 +995,7 @@ public void drawImage (Image image, int srcX, int srcY, int srcWidth, int srcHei
 
 void drawImage(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, int destX, int destY, int destWidth, int destHeight, boolean simple) {
 	/* Refresh Image as per zoom level, if required. */
-	srcImage.refreshImageForZoom ();
-
+	srcImage.handleDPIChange(DPIUtil.getDeviceZoom());
 	if (data.gdipGraphics != 0) {
 		//TODO - cache bitmap
 		long [] gdipImage = srcImage.createGdipImage();
@@ -4385,7 +4385,7 @@ public void setFillRule(int rule) {
 public void setFont (Font font) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (font != null && font.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	data.font = font != null ? font : data.device.systemFont;
+	data.font = font != null ? font.scaleFor(DPIUtil.getDeviceZoom()) : data.device.systemFont;
 	data.state &= ~FONT;
 }
 

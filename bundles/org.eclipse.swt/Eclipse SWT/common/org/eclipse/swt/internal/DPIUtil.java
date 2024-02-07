@@ -108,10 +108,10 @@ public class DPIUtil {
 		}
 
 		String updateOnRuntimeValue = System.getProperty (SWT_AUTOSCALE_UPDATE_ON_RUNTIME, "false");
-			if (Boolean.TRUE.toString().equalsIgnoreCase(updateOnRuntimeValue)) {
-				autoScaleOnRuntime = true;
-			}
+		if (Boolean.TRUE.toString().equalsIgnoreCase(updateOnRuntimeValue)) {
+			autoScaleOnRuntime = true;
 		}
+	}
 
 /**
  * Auto-scale down ImageData
@@ -328,6 +328,14 @@ public static int autoScaleUp (int size) {
 }
 
 /**
+ * Auto-scale up int dimensions to match the given zoom level
+ */
+public static int autoScaleUp (int size, int shellDeviceZoom) {
+	float scaleFactor = getScalingFactor (shellDeviceZoom);
+	return Math.round (size * scaleFactor);
+}
+
+/**
  * Auto-scale up int dimensions using Native DPI
  */
 public static int autoScaleUpUsingNativeDPI (int size) {
@@ -404,10 +412,18 @@ public static Rectangle autoScaleUp (Drawable drawable, Rectangle rect) {
  * @return float scaling factor
  */
 private static float getScalingFactor () {
+	return getScalingFactor(deviceZoom);
+}
+
+/**
+ * Returns scaling factor from the given device zoom
+ * @return float scaling factor
+ */
+private static float getScalingFactor (int shellDeviceZoom) {
 	if (useCairoAutoScale) {
 		return 1;
 	}
-	return deviceZoom / 100f;
+	return shellDeviceZoom / 100f;
 }
 
 /**
@@ -424,12 +440,12 @@ public static int mapDPIToZoom (int dpi) {
 /**
  * Compute the DPI value value based on the zoom.
  *
- * @return zoom
+ * @return DPI
  */
-public static int mapZoomToDPI (int dpi) {
-	double zoom = (double) dpi / 100 * DPI_ZOOM_100;
-	int roundedZoom = (int) Math.round (zoom);
-	return roundedZoom;
+public static int mapZoomToDPI (int zoom) {
+	double dpi = (double) zoom / 100 * DPI_ZOOM_100;
+	int roundedDpi = (int) Math.round (dpi);
+	return roundedDpi;
 }
 
 /**

@@ -147,6 +147,7 @@ public class Shell extends Decorations {
 		WNDCLASS lpWndClass = new WNDCLASS ();
 		OS.GetClassInfo (0, DialogClass, lpWndClass);
 		DialogProc = lpWndClass.lpfnWndProc;
+		DPIZoomChangeRegistry.registerHandler(Shell::handleDPIChange, Shell.class);
 	}
 
 /**
@@ -298,8 +299,23 @@ Shell (Display display, Shell parent, int style, long handle, boolean embedded) 
 	if (handle != 0 && !embedded) {
 		state |= FOREIGN_HANDLE;
 	}
+
+	int [] dpiX = new int [1];
+	int [] dpiY = new int [1];
+	int shellDeviceZoom;
+	if (parent != null) {
+		shellDeviceZoom = parent.getCurrentDeviceZoom();
+	} else {
+		Monitor monitor = getMonitor();
+		OS.GetDpiForMonitor (monitor.handle, 0, dpiX, dpiY);
+		shellDeviceZoom = DPIUtil.mapDPIToZoom(dpiX[0]);
+	}
+	this.setCurrentDeviceZoom(shellDeviceZoom);
+
 	reskinWidget();
 	createWidget ();
+
+	addListener(SWT.ZoomChanged, this::handleZoomEvent);
 }
 
 /**
@@ -2627,5 +2643,19 @@ LRESULT WM_WINDOWPOSCHANGING (long wParam, long lParam) {
 		OS.MoveMemory (lParam, lpwp, WINDOWPOS.sizeof);
 	}
 	return result;
+}
+
+private void handleZoomEvent(Event event) {
+	if (DPIUtil.autoScaleOnRuntime) {
+		float scalingFactor = 1f * event.detail / getCurrentDeviceZoom();
+		DPIZoomChangeRegistry.applyChange(this, event.detail, scalingFactor);
+	}
+}
+
+private static void handleDPIChange(Widget widget, int newZoom, float scalingFactor) {
+	if (!(widget instanceof Shell shell)) {
+		return;
+	}
+	shell.layout (null, SWT.DEFER | SWT.ALL | SWT.CHANGED);
 }
 }

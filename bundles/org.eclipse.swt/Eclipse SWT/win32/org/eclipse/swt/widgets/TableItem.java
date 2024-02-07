@@ -46,6 +46,10 @@ public class TableItem extends Item {
 	int imageIndent, background = -1, foreground = -1;
 	int [] cellBackground, cellForeground;
 
+	static {
+		DPIZoomChangeRegistry.registerHandler(TableItem::handleDPIChange, TableItem.class);
+	}
+
 /**
  * Constructs a new instance of this class given its parent
  * (which must be a <code>Table</code>) and a style value
@@ -866,9 +870,10 @@ public void setFont (Font font){
 		error (SWT.ERROR_INVALID_ARGUMENT);
 	}
 	Font oldFont = this.font;
-	if (oldFont == font) return;
-	this.font = font;
-	if (oldFont != null && oldFont.equals (font)) return;
+	Font newFont = (font == null ? font : font.scaleFor(getCurrentDeviceZoom()));
+	if (oldFont == newFont) return;
+	this.font = newFont;
+	if (oldFont != null && oldFont.equals (newFont)) return;
 	if (font != null) parent.setCustomDraw (true);
 	if ((parent.style & SWT.VIRTUAL) != 0) cached = true;
 	/*
@@ -1266,4 +1271,28 @@ public void setText (String string) {
 	setText (0, string);
 }
 
+private static void handleDPIChange(Widget widget, int newZoom, float scalingFactor) {
+	if (!(widget instanceof TableItem tableItem)) {
+		return;
+	}
+	Image[] images = tableItem.images;
+	if (images != null) {
+		for (Image innerImage : images) {
+			if (innerImage != null) {
+				innerImage.handleDPIChange(newZoom);
+			}
+		}
+	}
+	Font font = tableItem.font;
+	if (font != null) {
+		tableItem.setFont(tableItem.font);
+	}
+	Font[] cellFonts = tableItem.cellFont;
+	if (cellFonts != null) {
+		for (int index = 0; index < cellFonts.length; index++) {
+			Font cellFont = cellFonts[index];
+			cellFonts[index] = cellFont == null ? null : cellFont.scaleFor(newZoom);
+		}
+	}
+}
 }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2022 IBM Corporation and others.
+ * Copyright (c) 2000, 2023 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -3254,6 +3254,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(GetSystemMetrics)
 	OS_NATIVE_ENTER(env, that, GetSystemMetrics_FUNC);
 	rc = (jint)GetSystemMetrics(arg0);
 	OS_NATIVE_EXIT(env, that, GetSystemMetrics_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_GetSystemMetricsForDpi
+JNIEXPORT jint JNICALL OS_NATIVE(GetSystemMetricsForDpi)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, GetSystemMetricsForDpi_FUNC);
+	rc = (jint)GetSystemMetricsForDpi(arg0, arg1);
+	OS_NATIVE_EXIT(env, that, GetSystemMetricsForDpi_FUNC);
 	return rc;
 }
 #endif

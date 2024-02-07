@@ -75,6 +75,8 @@ public class Button extends Control {
 		WNDCLASS lpWndClass = new WNDCLASS ();
 		OS.GetClassInfo (0, ButtonClass, lpWndClass);
 		ButtonProc = lpWndClass.lpfnWndProc;
+
+		DPIZoomChangeRegistry.registerHandler(Button::handleDPIChange, Button.class);
 	}
 
 /**
@@ -1543,4 +1545,15 @@ LRESULT wmDrawChild (long wParam, long lParam) {
 	return null;
 }
 
+private static void handleDPIChange(Widget widget, int newZoom, float scalingFactor) {
+	if (!(widget instanceof Button button)) {
+		return;
+	}
+	// Refresh the image
+	if (button.image != null) {
+		button.image.handleDPIChange(newZoom);
+		button._setImage(button.image);
+		button.updateImageList();
+	}
+}
 }

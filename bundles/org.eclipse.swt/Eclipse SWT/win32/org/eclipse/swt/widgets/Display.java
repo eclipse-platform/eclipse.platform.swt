@@ -21,6 +21,7 @@ import java.util.concurrent.atomic.*;
 import java.util.function.*;
 
 import org.eclipse.swt.*;
+import org.eclipse.swt.custom.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.ole.win32.*;
@@ -538,6 +539,10 @@ public class Display extends Device implements Executor {
 			}
 			setDevice (device);
 		};
+	}
+
+	static {
+		CommonWidgetsDPIChangeHandlers.registerCommonHandlers();
 	}
 
 

@@ -50,6 +50,10 @@ public class ToolItem extends Item {
 	short cx;
 	int foreground = -1, background = -1;
 
+	static {
+		DPIZoomChangeRegistry.registerHandler(ToolItem::handleDPIChange, ToolItem.class);
+	}
+
 /**
  * Constructs a new instance of this class given its parent
  * (which must be a <code>ToolBar</code>) and a style value
@@ -1103,7 +1107,7 @@ void updateImages (boolean enabled) {
 	ImageList hotImageList = parent.getHotImageList ();
 	ImageList disabledImageList = parent.getDisabledImageList();
 	if (info.iImage == OS.I_IMAGENONE) {
-		Rectangle bounds = image.getBoundsInPixels ();
+		Rectangle bounds = image.getBounds(getParent().getCurrentDeviceZoom());
 		int listStyle = parent.style & SWT.RIGHT_TO_LEFT;
 		if (imageList == null) {
 			imageList = display.getImageListToolBar (listStyle, bounds.width, bounds.height);
@@ -1167,7 +1171,9 @@ void updateImages (boolean enabled) {
 		if ((style & (SWT.CHECK | SWT.RADIO)) != 0) {
 			if (!enabled) image2 = hot = disabled;
 		}
-		if (imageList != null) imageList.put (info.iImage, image2);
+		if (imageList != null) {
+			imageList.put (info.iImage, image2);
+		}
 		if (hotImageList != null) {
 			hotImageList.put (info.iImage, hot != null ? hot : image2);
 		}
@@ -1213,4 +1219,38 @@ LRESULT wmCommandChild (long wParam, long lParam) {
 	return null;
 }
 
+private static void handleDPIChange(Widget widget, int newZoom, float scalingFactor) {
+	if (!(widget instanceof ToolItem item)) {
+		return;
+	}
+	Image image = item.getImage();
+	if (image != null) {
+		ToolBar parent = item.getParent();
+		Display display = item.getDisplay();
+		int listStyle = parent.style & SWT.RIGHT_TO_LEFT;
+
+		Rectangle bounds = image.getBounds(newZoom);
+		if (parent.getImageList() == null) {
+			parent.setImageList (display.getImageListToolBar (listStyle, bounds.width, bounds.height));
+		}
+		if (parent.getDisabledImageList() == null) {
+			parent.setDisabledImageList (display.getImageListToolBarDisabled (listStyle, bounds.width, bounds.height));
+		}
+		if (parent.getHotImageList() == null) {
+			parent.setHotImageList (display.getImageListToolBarHot (listStyle, bounds.width, bounds.height));
+		}
+		image.handleDPIChange(newZoom);
+
+		Image disabledImage = item.getDisabledImage();
+		if (disabledImage != null && !disabledImage.isDisposed()) {
+			disabledImage.handleDPIChange(newZoom);
+		}
+
+		Image hotImage = item.getHotImage();
+		if (hotImage != null) {
+			hotImage.handleDPIChange(newZoom);
+		}
+	}
+	item.setWidthInPixels(0);
+}
 }

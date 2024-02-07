@@ -60,6 +60,10 @@ public class TreeItem extends Item {
 	int background = -1, foreground = -1;
 	int [] cellBackground, cellForeground;
 
+	static {
+		DPIZoomChangeRegistry.registerHandler(TreeItem::handleDPIChange, TreeItem.class);
+	}
+
 /**
  * Constructs <code>TreeItem</code> and <em>inserts</em> it into <code>Tree</code>.
  * Item is inserted as last direct child of the tree.
@@ -1385,7 +1389,7 @@ public void setFont (Font font){
 	}
 	Font oldFont = this.font;
 	if (oldFont == font) return;
-	this.font = font;
+	this.font = (font == null ? font : font.scaleFor(getCurrentDeviceZoom()));
 	if (oldFont != null && oldFont.equals (font)) return;
 	if (font != null) parent.customDraw = true;
 	if ((parent.style & SWT.VIRTUAL) != 0) cached = true;
@@ -1439,7 +1443,7 @@ public void setFont (int index, Font font) {
 	}
 	Font oldFont = cellFont [index];
 	if (oldFont == font) return;
-	cellFont [index] = font;
+	cellFont [index] = font == null ? font : font.scaleFor(getCurrentDeviceZoom());
 	if (oldFont != null && oldFont.equals (font)) return;
 	if (font != null) parent.customDraw = true;
 	if ((parent.style & SWT.VIRTUAL) != 0) cached = true;
@@ -1811,4 +1815,31 @@ String getNameText () {
 	return super.getNameText ();
 }
 
+private static void handleDPIChange(Widget widget, int newZoom, float scalingFactor) {
+	if (!(widget instanceof TreeItem treeItem)) {
+		return;
+	}
+	Image[] images = treeItem.images;
+	if (images != null) {
+		for (Image innerImage : images) {
+			if (innerImage != null) {
+				innerImage.handleDPIChange(newZoom);
+			}
+		}
+	}
+	Font font = treeItem.font;
+	if (font != null) {
+		treeItem.setFont(font.scaleFor(newZoom));
+	}
+	Font[] cellFonts = treeItem.cellFont;
+	if (cellFonts != null) {
+		for (int index = 0; index < cellFonts.length; index++) {
+			Font cellFont = cellFonts[index];
+			cellFonts[index] = cellFont == null ? null : cellFont.scaleFor(newZoom);
+		}
+	}
+	for (TreeItem item : treeItem.getItems()) {
+		DPIZoomChangeRegistry.applyChange(item, newZoom, scalingFactor);
+	}
+}
 }

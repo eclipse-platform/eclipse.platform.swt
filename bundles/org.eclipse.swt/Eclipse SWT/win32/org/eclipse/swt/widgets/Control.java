@@ -23,6 +23,7 @@ import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.gdip.*;
+import org.eclipse.swt.internal.ole.win32.*;
 import org.eclipse.swt.internal.win32.*;
 
 /**
@@ -49,6 +50,10 @@ import org.eclipse.swt.internal.win32.*;
  * @noextend This class is not intended to be subclassed by clients.
  */
 public abstract class Control extends Widget implements Drawable {
+
+	static {
+		DPIZoomChangeRegistry.registerHandler(Control::handleDPIChange, Control.class);
+	}
 
 	/**
 	 * the handle to the OS resource
@@ -3408,6 +3413,16 @@ public boolean setFocus () {
  */
 public void setFont (Font font) {
 	checkWidget ();
+	if (font != null) {
+		if (font.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
+		_setFont(font.scaleFor(getCurrentDeviceZoom()));
+	} else {
+		_setFont(font);
+	}
+}
+
+private void _setFont (Font font) {
+	checkWidget ();
 	long hFont = 0;
 	if (font != null) {
 		if (font.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
@@ -4675,6 +4690,13 @@ public boolean setParent (Composite parent) {
 	long topHandle = topHandle ();
 	if (OS.SetParent (topHandle, parent.handle) == 0) return false;
 	this.parent = parent;
+	// If parent changed, zoom level might need to be adjusted
+	if (parent.getCurrentDeviceZoom() != getCurrentDeviceZoom()) {
+		int oldZoom = getCurrentDeviceZoom();
+		int newZoom = parent.getCurrentDeviceZoom();
+		float scalingFactor = 1f * newZoom / oldZoom;
+		DPIZoomChangeRegistry.applyChange(this, newZoom, scalingFactor);
+	}
 	int flags = OS.SWP_NOSIZE | OS.SWP_NOMOVE | OS.SWP_NOACTIVATE;
 	OS.SetWindowPos (topHandle, OS.HWND_BOTTOM, 0, 0, 0, 0, flags);
 	reskin (SWT.ALL);
@@ -4869,7 +4891,7 @@ LRESULT WM_DPICHANGED (long wParam, long lParam) {
 	// Map DPI to Zoom and compare
 	int nativeZoom = DPIUtil.mapDPIToZoom (OS.HIWORD (wParam));
 	int newSWTZoom = DPIUtil.getZoomForAutoscaleProperty (nativeZoom);
-	int oldSWTZoom = DPIUtil.getDeviceZoom();
+	int oldSWTZoom = getShell().getCurrentDeviceZoom();
 
 	// Throw the DPI change event if zoom value changes
 	if (newSWTZoom != oldSWTZoom) {
@@ -4878,7 +4900,18 @@ LRESULT WM_DPICHANGED (long wParam, long lParam) {
 		event.widget = this;
 		event.detail = newSWTZoom;
 		event.doit = true;
+
+		if (DPIUtil.autoScaleOnRuntime) {
+			DPIUtil.setDeviceZoom (nativeZoom);
+		}
+
 		notifyListeners(SWT.ZoomChanged, event);
+
+		if (DPIUtil.autoScaleOnRuntime) {
+			RECT rect = new RECT ();
+			COM.MoveMemory(rect, lParam, RECT.sizeof);
+			this.setBoundsInPixels(rect.left, rect.top, rect.right - rect.left, rect.bottom-rect.top);
+		}
 		return LRESULT.ZERO;
 	}
 	return LRESULT.ONE;
@@ -5757,5 +5790,37 @@ LRESULT wmScrollChild (long wParam, long lParam) {
 	return null;
 }
 
+
+private static void handleDPIChange(Widget widget, int newZoom, float scalingFactor) {
+	if (!(widget instanceof Control control)) {
+		return;
+	}
+	resizeFont(control, newZoom);
+
+	Image image = control.getBackgroundImage();
+	if (image != null) {
+		if (image.isDisposed()) {
+			control.setBackgroundImage(null);
+		} else {
+			image.handleDPIChange(newZoom);
+			control.setBackgroundImage(image);
+		}
+	}
+}
+
+private static void resizeFont(Control control, int newZoom) {
+	Display display = control.getDisplay();
+	Font font = control.font;
+	if (font == null) {
+		long currentFontHandle = OS.SendMessage (control.handle, OS.WM_GETFONT, 0, 0);
+		if (currentFontHandle != 0) {
+			Font newFont  = display.getSystemFont(control.getCurrentDeviceZoom());
+			long newFontHandle = newFont.handle;
+			OS.SendMessage(control.handle, OS.WM_SETFONT, newFontHandle, 1);
+		}
+	} else {
+		control.setFont(font.scaleFor(newZoom));
+	}
+}
 }
 

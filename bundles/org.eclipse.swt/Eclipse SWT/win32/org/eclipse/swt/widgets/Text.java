@@ -79,6 +79,9 @@ public class Text extends Scrollable {
 	static final int IDI_SEARCH_DARKTHEME = 103;
 	static final int IDI_CANCEL_DARKTHEME = 104;
 
+	// Icon Size at default (100) zoom level
+	static int ICON_SIZE_AT_100;
+
 	/**
 	* The maximum number of characters that can be entered
 	* into a text widget.
@@ -112,6 +115,12 @@ public class Text extends Scrollable {
 		WNDCLASS lpWndClass = new WNDCLASS ();
 		OS.GetClassInfo (0, EditClass, lpWndClass);
 		EditProc = lpWndClass.lpfnWndProc;
+		if (OS.WIN32_BUILD >= OS.WIN32_BUILD_WIN10_1607) {
+			ICON_SIZE_AT_100 = OS.GetSystemMetricsForDpi(OS.SM_CXSMICON, 100);
+		} else {
+			ICON_SIZE_AT_100 = 16;
+		}
+		DPIZoomChangeRegistry.registerHandler(Text::handleDPIChange, Text.class);
 	}
 
 /**
@@ -336,6 +345,10 @@ void createHandle () {
 			state |= THEME_BACKGROUND;
 		}
 	}
+	addIcons();
+}
+
+private void addIcons() {
 	if ((style & SWT.SEARCH) != 0) {
 		if (display.hIconSearch == 0) {
 			long [] phicon = new long [1];
@@ -3166,4 +3179,11 @@ LRESULT wmKeyDown (long hwnd, long wParam, long lParam) {
 	return result;
 }
 
+private static void handleDPIChange(Widget widget, int newZoom, float scalingFactor) {
+	if (!(widget instanceof Text text)) {
+		return;
+	}
+	text.addIcons();
+	text.setMargins();
+}
 }

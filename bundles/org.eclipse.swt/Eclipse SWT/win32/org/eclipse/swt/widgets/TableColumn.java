@@ -44,6 +44,10 @@ public class TableColumn extends Item {
 	String toolTipText;
 	int id;
 
+	static {
+		DPIZoomChangeRegistry.registerHandler(TableColumn::handleDPIChange, TableColumn.class);
+	}
+
 /**
  * Constructs a new instance of this class given its parent
  * (which must be a <code>Table</code>) and a style value
@@ -883,4 +887,16 @@ void updateToolTip (int index) {
 	}
 }
 
+private static void handleDPIChange(Widget widget, int newZoom, float scalingFactor) {
+	if (!(widget instanceof TableColumn tableColumn)) {
+		return;
+	}
+	final int newColumnWidth = Math.round(tableColumn.getWidthInPixels() * scalingFactor);
+	tableColumn.setWidthInPixels(newColumnWidth);
+	Image image = tableColumn.getImage();
+	if (image != null) {
+		image.handleDPIChange(newZoom);
+		tableColumn.setImage(image);
+	}
+}
 }

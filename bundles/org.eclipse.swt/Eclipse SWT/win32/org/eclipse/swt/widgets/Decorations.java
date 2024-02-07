@@ -112,6 +112,10 @@ public class Decorations extends Canvas {
 	int oldWidth = OS.CW_USEDEFAULT, oldHeight = OS.CW_USEDEFAULT;
 	RECT maxRect = new RECT();
 
+	static {
+		DPIZoomChangeRegistry.registerHandler(Decorations::handleDPIChange, Decorations.class);
+	}
+
 /**
  * Prevents uninitialized instances from being created outside the package.
  */
@@ -895,7 +899,7 @@ void setImages (Image image, Image [] images) {
 				System.arraycopy (images, 0, bestImages, 0, images.length);
 				datas = new ImageData [images.length];
 				for (int i=0; i<datas.length; i++) {
-					datas [i] = images [i].getImageData (DPIUtil.getDeviceZoom ());
+					datas [i] = images [i].getImageData (getCurrentDeviceZoom());
 				}
 				images = bestImages;
 				sort (images, datas, OS.GetSystemMetrics (OS.SM_CXSMICON), OS.GetSystemMetrics (OS.SM_CYSMICON), depth);
@@ -1684,4 +1688,30 @@ LRESULT WM_WINDOWPOSCHANGING (long wParam, long lParam) {
 	return result;
 }
 
+private static void handleDPIChange(Widget widget, int newZoom, float scalingFactor) {
+	if (!(widget instanceof Decorations decorations)) {
+		return;
+	}
+
+	Image image = decorations.getImage();
+	if (image != null) {
+		image.handleDPIChange(newZoom);
+		decorations.setImage(image);
+	}
+
+	Image[] images = decorations.getImages();
+	if (images != null) {
+		for(Image subImage : images) {
+			if (subImage != null) {
+				subImage.handleDPIChange(newZoom);
+			}
+		}
+		decorations.setImages(images);
+	}
+
+	Menu menuBar = decorations.getMenuBar();
+	if (menuBar != null) {
+		DPIZoomChangeRegistry.applyChange(menuBar, newZoom, scalingFactor);
+	}
+}
 }
