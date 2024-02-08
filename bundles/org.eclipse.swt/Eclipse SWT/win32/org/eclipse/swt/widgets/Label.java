@@ -147,7 +147,7 @@ static int checkStyle (int style) {
 		return new Point (width, height);
 	}
 	if (isImageMode) {
-		Rectangle rect = image.getBoundsInPixels();
+		Rectangle rect = DPIUtil.autoScaleBounds(image.getBounds(), this.getZoom(), 100);
 		width += rect.width;
 		height += rect.height;
 	} else {
@@ -553,7 +553,7 @@ void wmDrawChildImage(DRAWITEMSTRUCT struct) {
 	int height = struct.bottom - struct.top;
 	if (width == 0 || height == 0) return;
 
-	Rectangle imageRect = image.getBoundsInPixels ();
+	Rectangle imageRect = DPIUtil.autoScaleBounds(image.getBounds(), getZoom(), 100);
 
 	int x = 0;
 	if ((style & SWT.CENTER) != 0) {
