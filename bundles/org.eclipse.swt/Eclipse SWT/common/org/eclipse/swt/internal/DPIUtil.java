@@ -277,7 +277,7 @@ private static ImageData autoScaleImageData (Device device, final ImageData imag
  * Returns a new rectangle as per the scaleFactor.
  */
 public static Rectangle autoScaleBounds (Rectangle rect, int targetZoom, int currentZoom) {
-	if (deviceZoom == 100 || rect == null || targetZoom == currentZoom) return rect;
+	if (rect == null || targetZoom == currentZoom) return rect;
 	float scaleFactor = ((float)targetZoom) / (float)currentZoom;
 	Rectangle returnRect = new Rectangle (0,0,0,0);
 	returnRect.x = Math.round (rect.x * scaleFactor);
