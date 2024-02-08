@@ -1161,7 +1161,7 @@ static long create32bitDIB (long hBitmap, int alpha, byte [] alphaData, int tran
 
 static Image createIcon (Image image) {
 	Device device = image.getDevice ();
-	ImageData data = image.getImageData (DPIUtil.getDeviceZoom ());
+	ImageData data = image.getImageData (image.getCurrentDeviceZoom());
 	if (data.alpha == -1 && data.alphaData == null) {
 		ImageData mask = data.getTransparencyMask ();
 		return new Image (device, data, mask);
@@ -2464,7 +2464,7 @@ Font getSystemFont (int deviceZoom) {
 		this.systemFont = systemFont;
 		if (systemFont != null) {
 			this.lfSystemFont = systemFont.getFontData()[0].data;
-	}
+		}
 	}
 
 	return systemFont;
