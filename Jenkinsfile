@@ -177,7 +177,7 @@ pipeline {
 				axes {
 					axis {
 						name 'PLATFORM'
-						values 'cocoa.macosx.aarch64' , 'cocoa.macosx.x86_64', 'gtk.linux.aarch64', 'gtk.linux.ppc64le', 'gtk.linux.x86_64', 'win32.win32.x86_64'
+						values 'cocoa.macosx.aarch64' , 'cocoa.macosx.x86_64', 'gtk.linux.aarch64', 'gtk.linux.ppc64le', 'gtk.linux.x86_64', 'win32.win32.aarch64', 'win32.win32.x86_64'
 					}
 				}
 				stages {
@@ -204,6 +204,15 @@ pipeline {
 								def (ws, os, arch) = env.PLATFORM.split('\\.')
 								dir("jdk-download-${os}.${arch}") {
 									// Fetch the JDK, which provides the C header-files and shared native libaries, against which the natives are build.
+									if('win32'.equals(os) && 'aarch64'.equals(arch)) {
+										// Temporary workaround until there are official Temurin GA releases for Windows on ARM that can be consumed through JustJ
+										sh '''
+											curl -L 'https://github.com/adoptium/temurin17-binaries/releases/download/jdk17u-2024-02-07-14-14-beta/OpenJDK17U-jdk_aarch64_windows_hotspot_2024-02-07-14-14.zip' > jdk.zip
+											unzip jdk.zip jdk-17.0.11+1/include/** jdk-17.0.11+1/lib/**
+											mv jdk-17.0.11+1/include/ .
+											mv jdk-17.0.11+1/lib/ .
+										'''
+									} else
 									sh "curl ${getNativeJdkUrl(os, arch)} | tar -xzf - include/ lib/"
 									stash name:"jdk.resources.${os}.${arch}", includes: "include/,lib/"
 									deleteDir()
