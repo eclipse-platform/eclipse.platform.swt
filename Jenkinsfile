@@ -51,6 +51,18 @@ spec:
 
 /** Returns the download URL of the JDK against whoose C headers (in the 'include/' folder) and native libaries the SWT natives are compiled.*/
 def getNativeJdkUrl(String os, String arch){ // To update the used JDK version update the URL template below
+	if('win32'.equals(os) && 'aarch64'.equals(arch)) {
+		// Temporary workaround until there are official Temurin GA releases for Windows on ARM that can be consumed through JustJ
+		dir("${WORKSPACE}/repackage-win32.aarch64-jdk") {
+			sh """
+				curl -L 'https://github.com/adoptium/temurin17-binaries/releases/download/jdk17u-2024-02-07-14-14-beta/OpenJDK17U-jdk_aarch64_windows_hotspot_2024-02-07-14-14.zip' > jdk.zip
+				unzip -q jdk.zip jdk-17.0.11+1/include/** jdk-17.0.11+1/lib/**
+				cd jdk-17.0.11+1
+				tar -czf ../jdk.tar.gz include/ lib/
+			"""
+		}
+		return "file://${WORKSPACE}/repackage-win32.aarch64-jdk/jdk.tar.gz"
+	}
 	return "https://download.eclipse.org/justj/jres/17/downloads/20230428_1804/org.eclipse.justj.openjdk.hotspot.jre.minimal.stripped-17.0.7-${os}-${arch}.tar.gz"
 }
 
@@ -177,7 +189,7 @@ pipeline {
 				axes {
 					axis {
 						name 'PLATFORM'
-						values 'cocoa.macosx.aarch64' , 'cocoa.macosx.x86_64', 'gtk.linux.aarch64', 'gtk.linux.ppc64le', 'gtk.linux.x86_64', 'win32.win32.x86_64'
+						values 'cocoa.macosx.aarch64' , 'cocoa.macosx.x86_64', 'gtk.linux.aarch64', 'gtk.linux.ppc64le', 'gtk.linux.x86_64', 'win32.win32.aarch64', 'win32.win32.x86_64'
 					}
 				}
 				stages {
