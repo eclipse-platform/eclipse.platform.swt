@@ -248,7 +248,6 @@ To contribute a new snippet, [create a snippet contribution as a pull request](h
 ### **OLE and ActiveX**
 - [get events from IE control](https://github.com/eclipse-platform/eclipse.platform.swt/tree/master/examples/org.eclipse.swt.snippets/src/org/eclipse/swt/snippets/Snippet123.java) – [(preview)](https://github.com/eclipse-platform/eclipse.platform.swt/blob/master/examples/org.eclipse.swt.snippets/previews/Snippet123.png "Preview for Snippet 123")
 - [browse the typelibinfo for a program id](https://github.com/eclipse-platform/eclipse.platform.swt/tree/master/examples/org.eclipse.swt.snippets/src/org/eclipse/swt/snippets/Snippet81.java)
-- [embed Word in an applet](https://github.com/eclipse-platform/eclipse.platform.swt/tree/master/examples/org.eclipse.swt.snippets/src/org/eclipse/swt/snippets/Snippet157.java)
 - [reading and writing to a SAFEARRAY](https://github.com/eclipse-platform/eclipse.platform.swt/tree/master/examples/org.eclipse.swt.snippets/src/org/eclipse/swt/snippets/Snippet186.java)
 - [execute a script function that exists on a web page](https://github.com/eclipse-platform/eclipse.platform.swt/tree/master/examples/org.eclipse.swt.snippets/src/org/eclipse/swt/snippets/Snippet187.java) – [(preview)](https://github.com/eclipse-platform/eclipse.platform.swt/blob/master/examples/org.eclipse.swt.snippets/previews/Snippet187.png "Preview for Snippet 187")
 - [listen for Excel AppEvents](https://github.com/eclipse-platform/eclipse.platform.swt/tree/master/examples/org.eclipse.swt.snippets/src/org/eclipse/swt/snippets/Snippet199.java)

@@ -64,6 +64,8 @@ public final class TextLayout extends Resource {
 	IMLangFontLink2 mLangFontLink2;
 	int verticalIndentInPoints;
 
+	private MetricsAdapter metricsAdapter = new MetricsAdapter();
+
 	static final char LTR_MARK = '\u200E', RTL_MARK = '\u200F';
 	static final int SCRIPT_VISATTR_SIZEOF = 2;
 	static final int GOFFSET_SIZEOF = 8;
@@ -184,6 +186,100 @@ public final class TextLayout extends Resource {
 		return "StyleItem {" + start + ", " + style + "}";
 	}
 	}
+
+private static class MetricsAdapter {
+	private TEXTMETRIC wantMetricsInPixels;
+
+	// Optimization: produce less GC garbage in frequent calls
+	TEXTMETRIC realMetricsInPixels = new TEXTMETRIC();
+
+	public boolean isFixedMetrics() {
+		return (wantMetricsInPixels != null);
+	}
+
+	public void setFixedLineMetrics(FontMetrics metrics) {
+		if (metrics == null) {
+			wantMetricsInPixels = null;
+			return;
+		}
+
+		TEXTMETRIC result = new TEXTMETRIC();
+		result.tmAscent          = metrics.handle.tmAscent;
+		result.tmDescent         = metrics.handle.tmDescent;
+		result.tmHeight          = metrics.handle.tmHeight;
+		result.tmInternalLeading = metrics.handle.tmInternalLeading;
+		result.tmAveCharWidth    = 0;
+
+		wantMetricsInPixels = result;
+	}
+
+	public int calcYAdjust(TEXTMETRIC realMetricsInPixels) {
+		// Adjust text position so that baseline is preserved:
+		// * Taller characters may go out of line bounds.
+		// * Shorter characters will fit and also stay on baseline.
+		//
+		// Note that without fixed line metrics mode, SWT doesn't
+		// align baseline. When different scripts are mixed, this
+		// causes baseline to "jump" up and down. I believe that
+		// this is an oversight.
+		return (wantMetricsInPixels.tmAscent - realMetricsInPixels.tmAscent);
+	}
+
+	public int calcYAdjust(long hdc) {
+		OS.GetTextMetrics(hdc, realMetricsInPixels);
+		return calcYAdjust(realMetricsInPixels);
+	}
+
+	public boolean GetTextMetrics(long hdc, TEXTMETRIC lptm) {
+		// Even in fixed mode, still call original to get `tmAveCharWidth` etc.
+		boolean ret = OS.GetTextMetrics(hdc, lptm);
+		if (!ret) return false;
+
+		if (isFixedMetrics()) {
+			// Force desired line metrics
+			lptm.tmAscent          = wantMetricsInPixels.tmAscent;
+			lptm.tmDescent         = wantMetricsInPixels.tmDescent;
+			lptm.tmHeight          = wantMetricsInPixels.tmHeight;
+			lptm.tmInternalLeading = wantMetricsInPixels.tmInternalLeading;
+		}
+
+		return ret;
+	}
+
+	public int GetOutlineTextMetrics(long hdc, int cbData, OUTLINETEXTMETRIC lpOTM) {
+		// Even in fixed mode, still call original to get `tmAveCharWidth` etc.
+		int ret = OS.GetOutlineTextMetrics(hdc, cbData, lpOTM);
+		if (0 == ret) return 0;
+
+		if (isFixedMetrics()) {
+			TEXTMETRIC lptm = lpOTM.otmTextMetrics;
+
+			final int yAdjust = calcYAdjust(lptm);
+
+			// Force desired line metrics
+			lptm.tmAscent          = wantMetricsInPixels.tmAscent;
+			lptm.tmDescent         = wantMetricsInPixels.tmDescent;
+			lptm.tmHeight          = wantMetricsInPixels.tmHeight;
+			lptm.tmInternalLeading = wantMetricsInPixels.tmInternalLeading;
+
+			// Also adjust underline/strikeout positions in the same
+			// way as text position will be adjusted when painting it
+			lpOTM.otmsUnderscorePosition += yAdjust;
+			lpOTM.otmsStrikeoutPosition  += yAdjust;
+		}
+
+		return ret;
+	}
+
+	public int ScriptTextOut(long hdc, long psc, int x, int y, int fuOptions, RECT lprc, SCRIPT_ANALYSIS psa, long pwcReserved, int iReserved, long pwGlyphs, int cGlyphs, long piAdvance, long piJustify, long pGoffset) {
+		if (isFixedMetrics()) {
+			final int yAdjust = calcYAdjust(hdc);
+			y += yAdjust;
+		}
+
+		return OS.ScriptTextOut(hdc, psc, x, y, fuOptions, lprc, psa, pwcReserved, iReserved, pwGlyphs, cGlyphs, piAdvance, piJustify, pGoffset);
+	}
+}
 
 /**
  * Constructs a new instance of this class on the given device.
@@ -440,7 +536,7 @@ void computeRuns (GC gc) {
 			if (lineRunCount == 1 && (i == allRuns.length - 1 || !run.softBreak)) {
 				TEXTMETRIC lptm = new TEXTMETRIC();
 				OS.SelectObject(srcHdc, getItemFont(run));
-				OS.GetTextMetrics(srcHdc, lptm);
+				metricsAdapter.GetTextMetrics(srcHdc, lptm);
 				run.ascentInPoints = DPIUtil.autoScaleDown(getDevice(), lptm.tmAscent);
 				run.descentInPoints = DPIUtil.autoScaleDown(getDevice(), lptm.tmDescent);
 				ascentInPoints = Math.max(ascentInPoints, run.ascentInPoints);
@@ -1067,11 +1163,11 @@ RECT drawRunText(long hdc, StyleItem run, RECT rect, int baselineInPixels, int c
 		}
 	}
 	OS.SetTextColor(hdc, color);
-	OS.ScriptTextOut(hdc, run.psc, x, y, 0, null, run.analysis , 0, 0, run.glyphs, run.glyphCount, run.advances, run.justify, run.goffsets);
+	metricsAdapter.ScriptTextOut(hdc, run.psc, x, y, 0, null, run.analysis , 0, 0, run.glyphs, run.glyphCount, run.advances, run.justify, run.goffsets);
 	if (partialSelection) {
 		getPartialSelection(run, selectionStart, selectionEnd, rect);
 		OS.SetTextColor(hdc, selectionColor);
-		OS.ScriptTextOut(hdc, run.psc, x, y, OS.ETO_CLIPPED, rect, run.analysis , 0, 0, run.glyphs, run.glyphCount, run.advances, run.justify, run.goffsets);
+		metricsAdapter.ScriptTextOut(hdc, run.psc, x, y, OS.ETO_CLIPPED, rect, run.analysis , 0, 0, run.glyphs, run.glyphCount, run.advances, run.justify, run.goffsets);
 	}
 	return fullSelection || partialSelection ? rect : null;
 }
@@ -1081,8 +1177,14 @@ RECT drawRunTextGDIP(long graphics, StyleItem run, RECT rect, long gdipFont, int
 	boolean hasSelection = selectionStart <= selectionEnd && selectionStart != -1 && selectionEnd != -1;
 	boolean fullSelection = hasSelection && selectionStart <= run.start && selectionEnd >= end;
 	boolean partialSelection = hasSelection && !fullSelection && !(selectionStart > end || run.start > selectionEnd);
+
+	// Note from a passerby: it seems that 'Graphics::DrawDriverString'
+	// puts baseline at requested position. This is different from GDI
+	// rendering (such as ScriptTextOut()) which put top of the character
+	// at requested position.
 	int drawY = rect.top + baselineInPixels;
 	if (run.style != null && run.style.rise != 0) drawY -= DPIUtil.autoScaleUp(getDevice(), run.style.rise);
+
 	int drawX = rect.left;
 	long brush = color;
 	if (fullSelection) {
@@ -1998,7 +2100,7 @@ public FontMetrics getLineMetrics (int lineIndex) {
 	long srcHdc = OS.CreateCompatibleDC(hDC);
 	TEXTMETRIC lptm = new TEXTMETRIC();
 	OS.SelectObject(srcHdc, font != null ? font.handle : device.systemFont.handle);
-	OS.GetTextMetrics(srcHdc, lptm);
+	metricsAdapter.GetTextMetrics(srcHdc, lptm);
 	OS.DeleteDC(srcHdc);
 	device.internal_dispose_GC(hDC, null);
 
@@ -3079,6 +3181,39 @@ public void setDescent (int descent) {
 }
 
 /**
+ * Forces line heights in receiver to obey provided value. This is
+ * useful with texts that contain glyphs from different scripts,
+ * such as mixing latin glyphs with hieroglyphs or emojis.
+ * <p>
+ * Text lines with different metrics will be forced to fit. This means
+ * painting text in such a way that its baseline is where specified by
+ * given 'metrics'. This can sometimes introduce small visual artifacs,
+ * such as taller lines overpainting or being clipped by content above
+ * and below.
+ * </p>
+ * The possible ways to set FontMetrics include:
+ * <ul>
+ * <li>Obtaining 'FontMetrics' via {@link GC#getFontMetrics}. Note that
+ * this will only obtain metrics for currently selected font and will not
+ * account for font fallbacks (for example, with a latin font selected,
+ * painting hieroglyphs usually involves a fallback font).</li>
+ * <li>Obtaining 'FontMetrics' via a temporary 'TextLayout'. This would
+ * involve setting a desired text sample to 'TextLayout', then measuring
+ * it with {@link TextLayout#getLineMetrics(int)}. This approach will also
+ * take fallback fonts into account.</li>
+ * </ul>
+ *
+ * NOTE: Does not currently support (as in, undefined behavior) multi-line
+ * layouts, including those caused by word wrapping. StyledText uses one
+ * TextLayout per line and is only affected by word wrap restriction.
+ *
+ * @since 3.125
+ */
+public void setFixedLineMetrics (FontMetrics metrics) {
+	metricsAdapter.setFixedLineMetrics(metrics);
+}
+
+/**
  * Sets the default font which will be used by the receiver
  * to draw and measure text. If the
  * argument is null, then a default font appropriate
@@ -3764,7 +3899,7 @@ void shape (final long hdc, final StyleItem run) {
 		OUTLINETEXTMETRIC lotm = null;
 		if (style.underline || style.strikeout) {
 			lotm = new OUTLINETEXTMETRIC();
-			if (OS.GetOutlineTextMetrics(hdc, OUTLINETEXTMETRIC.sizeof, lotm) == 0) {
+			if (metricsAdapter.GetOutlineTextMetrics(hdc, OUTLINETEXTMETRIC.sizeof, lotm) == 0) {
 				lotm = null;
 			}
 		}
@@ -3785,7 +3920,7 @@ void shape (final long hdc, final StyleItem run) {
 				lptm = lotm.otmTextMetrics;
 			} else {
 				lptm = new TEXTMETRIC();
-				OS.GetTextMetrics(hdc, lptm);
+				metricsAdapter.GetTextMetrics(hdc, lptm);
 			}
 			run.ascentInPoints = DPIUtil.autoScaleDown(getDevice(), lptm.tmAscent);
 			run.descentInPoints = DPIUtil.autoScaleDown(getDevice(), lptm.tmDescent);
@@ -3806,7 +3941,7 @@ void shape (final long hdc, final StyleItem run) {
 		run.descentInPoints -= style.rise;
 	} else {
 		TEXTMETRIC lptm = new TEXTMETRIC();
-		OS.GetTextMetrics(hdc, lptm);
+		metricsAdapter.GetTextMetrics(hdc, lptm);
 		run.ascentInPoints = DPIUtil.autoScaleDown(getDevice(), lptm.tmAscent);
 		run.descentInPoints = DPIUtil.autoScaleDown(getDevice(), lptm.tmDescent);
 		run.leadingInPoints = DPIUtil.autoScaleDown(getDevice(), lptm.tmInternalLeading);

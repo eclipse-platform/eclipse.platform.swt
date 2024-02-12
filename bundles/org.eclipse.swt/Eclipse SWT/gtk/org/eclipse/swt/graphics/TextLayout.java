@@ -63,7 +63,159 @@ public final class TextLayout extends Resource {
 	long layout, context, attrList, selAttrList;
 	int[] invalidOffsets;
 	int verticalIndentInPoints;
+	MetricsAdapter metricsAdapter = new MetricsAdapter();
 	static final char LTR_MARK = '\u200E', RTL_MARK = '\u200F', ZWS = '\u200B', ZWNBS = '\uFEFF';
+
+/**
+ * Adapts necessary Pango APIs to enforce fixed line metrics (when set)
+ */
+private static class MetricsAdapter {
+	private FontMetrics lineMetricsInPixels;
+
+	/**
+	 * Calculates Y offset from line metrics configured in
+	 * {@link #lineMetricsInPixels} to real text position for painting.
+	 */
+	private int wantToRealInPango(PangoRectangle realMetrics) {
+		int wantHeightInPixels = lineMetricsInPixels.getHeight();
+		int realHeightInPixels = OS.PANGO_PIXELS(realMetrics.height);
+		if (realHeightInPixels == wantHeightInPixels) {
+			return 0;
+		}
+
+		// The idea is to preserve baseline location, this looks best.
+		// This is the behavior documented in `TextLayout#setFixedLineMetrics()`.
+		int wantAboveInPango = OS.PANGO_SCALE * lineMetricsInPixels.getAscent();
+		int realAboveInPango = -realMetrics.y;
+		return wantAboveInPango - realAboveInPango;
+	}
+
+	private int wantToRealInPango(long line) {
+		PangoRectangle rect = new PangoRectangle();
+		// Pango caches result, so the API is very cheap to call multiple times
+		OS.pango_layout_line_get_extents(line, null, rect);
+		return wantToRealInPango(rect);
+	}
+
+	public boolean isFixedMetrics() {
+		return (lineMetricsInPixels != null);
+	}
+
+	public FontMetrics getFixedLineMetrics(Device device) {
+		if (lineMetricsInPixels == null) {
+			return null;
+		}
+
+		FontMetrics result = new FontMetrics();
+		result.ascentInPoints = DPIUtil.autoScaleDown(device, lineMetricsInPixels.ascentInPoints);
+		result.descentInPoints = DPIUtil.autoScaleDown(device, lineMetricsInPixels.descentInPoints);
+		result.averageCharWidthInPoints = DPIUtil.autoScaleDown(device, lineMetricsInPixels.averageCharWidthInPoints);
+
+		return result;
+	}
+
+	public void setFixedLineMetrics(Device device, FontMetrics metrics) {
+		if (metrics == null) {
+			lineMetricsInPixels = null;
+			return;
+		}
+
+		FontMetrics result = new FontMetrics();
+		result.ascentInPoints = DPIUtil.autoScaleUp(device, metrics.ascentInPoints);
+		result.descentInPoints = DPIUtil.autoScaleUp(device, metrics.descentInPoints);
+		result.averageCharWidthInPoints = DPIUtil.autoScaleUp(device, metrics.averageCharWidthInPoints);
+
+		lineMetricsInPixels = result;
+	}
+
+	private void validateLayout (long layout) {
+		// Pango caches result, so the API is very cheap to call multiple times
+		if (OS.pango_layout_get_line_count(layout) > 1) {
+			// Multi-line layouts (including word wrapping) are not yet supported.
+			// Note that `StyledText` uses separate `TextLayout` for every line.
+			SWT.error (SWT.ERROR_INVALID_ARGUMENT);
+		}
+	}
+
+	public long gdk_pango_layout_get_clip_region (long layout, int x_origin, int y_origin, int[] index_ranges, int n_ranges) {
+		// In order to get proper text clip, adjust Y in the same way
+		// as in pango_cairo_show_layout()
+		int yAdjustInPixels = 0;
+		if (isFixedMetrics()) {
+			validateLayout(layout);
+			long line0 = OS.pango_layout_get_line(layout, 0);
+			yAdjustInPixels = OS.PANGO_PIXELS(wantToRealInPango(line0));
+		}
+
+		long rgn = GDK.gdk_pango_layout_get_clip_region(layout, x_origin, y_origin + yAdjustInPixels, index_ranges, n_ranges);
+
+		// Adjust region via intersecting with desired region
+		if (isFixedMetrics()) {
+			cairo_rectangle_int_t wantRect = new cairo_rectangle_int_t();
+			// Use real x,width with desired y,height
+			Cairo.cairo_region_get_extents(rgn, wantRect);
+			wantRect.y = y_origin;
+			wantRect.height = lineMetricsInPixels.getHeight();
+
+			long limitRgn = Cairo.cairo_region_create_rectangle(wantRect);
+			Cairo.cairo_region_intersect(rgn, limitRgn);
+			Cairo.cairo_region_destroy(limitRgn);
+		}
+
+		return rgn;
+	}
+
+	public void pango_cairo_show_layout (long cairo, long layout, double x, double y) {
+		int yAdjustInPixels = 0;
+		if (isFixedMetrics()) {
+			validateLayout(layout);
+			long line0 = OS.pango_layout_get_line(layout, 0);
+			yAdjustInPixels = OS.PANGO_PIXELS(wantToRealInPango(line0));
+		}
+
+		Cairo.cairo_move_to(cairo, x, y + yAdjustInPixels);
+		OS.pango_cairo_show_layout (cairo, layout);
+	}
+
+	public void pango_layout_get_size (long layout, int[] width, int[] height) {
+		OS.pango_layout_get_size(layout, width, height);
+
+		if (isFixedMetrics()) {
+			validateLayout(layout);
+			height[0] = lineMetricsInPixels.getHeight();
+		}
+	}
+
+	public void pango_layout_iter_get_line_extents (long iter, PangoRectangle ink_rect, PangoRectangle logical_rect) {
+		OS.pango_layout_iter_get_line_extents(iter, ink_rect, logical_rect);
+
+		if (isFixedMetrics()) {
+			if (ink_rect != null) {
+				// SWT doesn't use that, so I didn't implement
+				SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+			}
+
+			if (logical_rect != null) {
+				logical_rect.height = OS.PANGO_SCALE * lineMetricsInPixels.getHeight();
+			}
+		}
+	}
+
+	public void pango_layout_line_get_extents (long line, PangoRectangle ink_rect, PangoRectangle logical_rect) {
+		OS.pango_layout_line_get_extents(line, ink_rect, logical_rect);
+
+		if (isFixedMetrics()) {
+			if (ink_rect != null) {
+				// SWT doesn't use that, so I didn't implement
+				SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+			}
+
+			if (logical_rect != null) {
+				logical_rect.height = OS.PANGO_SCALE * lineMetricsInPixels.getHeight();
+			}
+		}
+	}
+}
 
 /**
  * Constructs a new instance of this class on the given device.
@@ -137,7 +289,12 @@ void computeRuns () {
 	int nSegments = segementsLength - text.length();
 	int offsetCount = nSegments;
 	int[] lineOffsets = null;
-	if ((ascentInPoints != -1  || descentInPoints != -1) && segementsLength > 0) {
+
+	// Set minimum line ascent/descent. Feature in Pango: glyphs affected
+	// by `pango_attr_shape_new()` become invisible. Workaround: insert
+	// additional control characters and shape these instead.
+	boolean useMinAscentDescent = !metricsAdapter.isFixedMetrics() && (ascentInPoints != -1 || descentInPoints != -1);
+	if (useMinAscentDescent && segementsLength > 0) {
 		PangoRectangle rect = new PangoRectangle();
 		if (ascentInPoints != -1) rect.y =  -(DPIUtil.autoScaleUp(getDevice(), ascentInPoints)  * OS.PANGO_SCALE);
 		rect.height = DPIUtil.autoScaleUp(getDevice(), (Math.max(0, ascentInPoints) + Math.max(0, descentInPoints))) * OS.PANGO_SCALE;
@@ -502,7 +659,7 @@ void drawInPixels(GC gc, int x, int y, int selectionStart, int selectionEnd, Col
 		int lineIndex = 0;
 		do {
 			int lineEnd;
-			OS.pango_layout_iter_get_line_extents(iter, null, rect);
+			metricsAdapter.pango_layout_iter_get_line_extents(iter, null, rect);
 			if (OS.pango_layout_iter_next_line(iter)) {
 				int bytePos = OS.pango_layout_iter_get_index(iter);
 				lineEnd = (int)OS.g_utf16_pointer_to_offset(ptr, ptr + bytePos);
@@ -547,8 +704,7 @@ void drawInPixels(GC gc, int x, int y, int selectionStart, int selectionEnd, Col
 			Cairo.cairo_scale(cairo, -1,  1);
 			Cairo.cairo_translate(cairo, -2 * x - width(), 0);
 		}
-		Cairo.cairo_move_to(cairo, x, y);
-		OS.pango_cairo_show_layout(cairo, layout);
+		metricsAdapter.pango_cairo_show_layout(cairo, layout, x, y);
 		drawBorder(gc, x, y, null);
 		if ((data.style & SWT.MIRRORED) != 0) {
 			Cairo.cairo_restore(cairo);
@@ -601,12 +757,11 @@ void drawWithCairo(GC gc, int x, int y, int start, int end, boolean fullSelectio
 	long cairo = data.cairo;
 	Cairo.cairo_save(cairo);
 	if (!fullSelection) {
-		Cairo.cairo_move_to(cairo, x, y);
-		OS.pango_cairo_show_layout(cairo, layout);
+		metricsAdapter.pango_cairo_show_layout(cairo, layout, x, y);
 		drawBorder(gc, x, y, null);
 	}
 	int[] ranges = new int[]{start, end};
-	long rgn = GDK.gdk_pango_layout_get_clip_region(layout, x, y, ranges, ranges.length / 2);
+	long rgn = metricsAdapter.gdk_pango_layout_get_clip_region(layout, x, y, ranges, ranges.length / 2);
 	if (rgn != 0) {
 		GDK.gdk_cairo_region(cairo, rgn);
 		Cairo.cairo_clip(cairo);
@@ -615,9 +770,8 @@ void drawWithCairo(GC gc, int x, int y, int start, int end, boolean fullSelectio
 		Cairo.cairo_region_destroy(rgn);
 	}
 	Cairo.cairo_set_source_rgba(cairo, fg.red, fg.green, fg.blue, fg.alpha);
-	Cairo.cairo_move_to(cairo, x, y);
 	OS.pango_layout_set_attributes(layout, selAttrList);
-	OS.pango_cairo_show_layout(cairo, layout);
+	metricsAdapter.pango_cairo_show_layout(cairo, layout, x, y);
 	OS.pango_layout_set_attributes(layout, attrList);
 	drawBorder(gc, x, y, fg);
 	Cairo.cairo_restore(cairo);
@@ -643,7 +797,7 @@ void drawBorder(GC gc, int x, int y, GdkRGBA selectionColor) {
 			int byteStart = (int)(OS.g_utf16_offset_to_pointer(ptr, start) - ptr);
 			int byteEnd = (int)(OS.g_utf16_offset_to_pointer(ptr, end + 1) - ptr);
 			int[] ranges = new int[]{byteStart, byteEnd};
-			long rgn = GDK.gdk_pango_layout_get_clip_region(layout, x, y, ranges, ranges.length / 2);
+			long rgn = metricsAdapter.gdk_pango_layout_get_clip_region(layout, x, y, ranges, ranges.length / 2);
 			if (rgn != 0) {
 				int[] nRects = new int[1];
 				long [] rects = new long [1];
@@ -761,7 +915,7 @@ Rectangle getBoundsInPixels(int spacingInPixels) {
 	checkLayout();
 	computeRuns();
 	int[] w = new int[1], h = new int[1];
-	OS.pango_layout_get_size(layout, w, h);
+	metricsAdapter.pango_layout_get_size(layout, w, h);
 	int wrapWidth = OS.pango_layout_get_width(layout);
 	w[0] = wrapWidth != -1 ? wrapWidth : w[0] + OS.pango_layout_get_indent(layout);
 	int width = OS.PANGO_PIXELS(w[0]);
@@ -809,7 +963,7 @@ Rectangle getBoundsInPixels(int start, int end) {
 	byteStart = Math.min(byteStart, strlen);
 	byteEnd = Math.min(byteEnd, strlen);
 	int[] ranges = new int[]{byteStart, byteEnd};
-	long clipRegion = GDK.gdk_pango_layout_get_clip_region(layout, 0, 0, ranges, 1);
+	long clipRegion = metricsAdapter.gdk_pango_layout_get_clip_region(layout, 0, 0, ranges, 1);
 	if (clipRegion == 0) return new Rectangle(0, 0, 0, 0);
 	cairo_rectangle_int_t rect = new cairo_rectangle_int_t();
 
@@ -825,7 +979,7 @@ Rectangle getBoundsInPixels(int start, int end) {
 	if (linesRegion == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	int lineEnd = 0;
 	do {
-		OS.pango_layout_iter_get_line_extents(iter, null, pangoRect);
+		metricsAdapter.pango_layout_iter_get_line_extents(iter, null, pangoRect);
 		if (OS.pango_layout_iter_next_line(iter)) {
 			lineEnd = OS.pango_layout_iter_get_index(iter) - 1;
 		} else {
@@ -996,7 +1150,7 @@ Rectangle getLineBoundsInPixels(int lineIndex) {
 private Rectangle getLineBoundsInPixels(int lineIndex, long iter) {
 	if (iter == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	PangoRectangle rect = new PangoRectangle();
-	OS.pango_layout_iter_get_line_extents(iter, null, rect);
+	metricsAdapter.pango_layout_iter_get_line_extents(iter, null, rect);
 	int x = OS.PANGO_PIXELS(rect.x);
 	int y = OS.PANGO_PIXELS(rect.y);
 	int width = OS.PANGO_PIXELS(rect.width);
@@ -1073,6 +1227,10 @@ public int getLineIndex(int offset) {
  * </ul>
  */
 public FontMetrics getLineMetrics (int lineIndex) {
+	if (metricsAdapter.isFixedMetrics()) {
+		return metricsAdapter.getFixedLineMetrics(getDevice());
+	}
+
 	checkLayout ();
 	computeRuns();
 	int lineCount = OS.pango_layout_get_line_count(layout);
@@ -1092,7 +1250,7 @@ public FontMetrics getLineMetrics (int lineIndex) {
 		OS.pango_font_metrics_unref(metrics);
 	} else {
 		PangoRectangle rect = new PangoRectangle();
-		OS.pango_layout_line_get_extents(OS.pango_layout_get_line(layout, lineIndex), null, rect);
+		metricsAdapter.pango_layout_line_get_extents(OS.pango_layout_get_line(layout, lineIndex), null, rect);
 		ascentInPoints = DPIUtil.autoScaleDown(getDevice(), OS.PANGO_PIXELS(-rect.y));
 		heightInPoints = DPIUtil.autoScaleDown(getDevice(), OS.PANGO_PIXELS(rect.height));
 	}
@@ -1346,7 +1504,7 @@ int getOffsetInPixels(int x, int y, int[] trailing) {
 	if (iter == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	PangoRectangle rect = new PangoRectangle();
 	do {
-		OS.pango_layout_iter_get_line_extents(iter, null, rect);
+		metricsAdapter.pango_layout_iter_get_line_extents(iter, null, rect);
 		rect.y = OS.PANGO_PIXELS(rect.y);
 		rect.height = OS.PANGO_PIXELS(rect.height);
 		if (rect.y <= y && y < rect.y + rect.height) {
@@ -1796,6 +1954,39 @@ public void setDescent (int descent) {
 	if (this.descentInPoints == descent) return;
 	freeRuns();
 	this.descentInPoints = descent;
+}
+
+/**
+ * Forces line heights in receiver to obey provided value. This is
+ * useful with texts that contain glyphs from different scripts,
+ * such as mixing latin glyphs with hieroglyphs or emojis.
+ * <p>
+ * Text lines with different metrics will be forced to fit. This means
+ * painting text in such a way that its baseline is where specified by
+ * given 'metrics'. This can sometimes introduce small visual artifacs,
+ * such as taller lines overpainting or being clipped by content above
+ * and below.
+ * </p>
+ * The possible ways to set FontMetrics include:
+ * <ul>
+ * <li>Obtaining 'FontMetrics' via {@link GC#getFontMetrics}. Note that
+ * this will only obtain metrics for currently selected font and will not
+ * account for font fallbacks (for example, with a latin font selected,
+ * painting hieroglyphs usually involves a fallback font).</li>
+ * <li>Obtaining 'FontMetrics' via a temporary 'TextLayout'. This would
+ * involve setting a desired text sample to 'TextLayout', then measuring
+ * it with {@link org.eclipse.swt.graphics.TextLayout#getLineMetrics(int)}. This approach will also
+ * take fallback fonts into account.</li>
+ * </ul>
+ *
+ * NOTE: Does not currently support (as in, undefined behavior) multi-line
+ * layouts, including those caused by word wrapping. StyledText uses one
+ * TextLayout per line and is only affected by word wrap restriction.
+ *
+ * @since 3.125
+ */
+public void setFixedLineMetrics (FontMetrics metrics) {
+	metricsAdapter.setFixedLineMetrics(getDevice(), metrics);
 }
 
 /**

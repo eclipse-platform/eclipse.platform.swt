@@ -31,11 +31,10 @@ import org.eclipse.swt.widgets.*;
  * and column objects and a header as its children, and identifies which cell the mouse is
  * over.
  */
-@SuppressWarnings({"rawtypes", "unchecked"})
 class TableAccessibleDelegate {
 
-	Map /*<Integer, AccessibleTableColumn>*/ childColumnToIdMap = new HashMap();
-	Map /*<Integer, AccessibleTableRow>*/ childRowToIdMap = new HashMap();
+	Map<Integer, AccessibleTableColumn> childColumnToIdMap = new HashMap<>();
+	Map<Integer, AccessibleTableRow> childRowToIdMap = new HashMap<>();
 	Accessible tableAccessible;
 	AccessibleTableHeader headerAccessible;
 
@@ -59,15 +58,10 @@ class TableAccessibleDelegate {
 				Accessible[] children = new Accessible[childCount];
 				int childIndex = 0;
 
-				Iterator iter = childRowToIdMap.values().iterator();
-				while (iter.hasNext()) {
-					AccessibleTableRow row = (AccessibleTableRow)iter.next();
+				for (AccessibleTableRow row : childRowToIdMap.values()) {
 					children[childIndex++] = row;
 				}
-
-				iter = childColumnToIdMap.values().iterator();
-				while (iter.hasNext()) {
-					AccessibleTableColumn col = (AccessibleTableColumn)iter.next();
+				for (AccessibleTableColumn col : childColumnToIdMap.values()) {
 					children[childIndex++] = col;
 				}
 
@@ -83,10 +77,7 @@ class TableAccessibleDelegate {
 				Monitor primaryMonitor = Display.getCurrent().getPrimaryMonitor();
 				testPoint.y = primaryMonitor.getBounds().height - e.y;
 
-				Iterator iter = childRowToIdMap.values().iterator();
-
-				while (iter.hasNext()) {
-					AccessibleTableRow row = (AccessibleTableRow) iter.next();
+				for (AccessibleTableRow row : childRowToIdMap.values()) {
 					NSValue locationValue = new NSValue(row.getPositionAttribute(ACC.CHILDID_SELF).id);
 					NSPoint location = locationValue.pointValue();
 
@@ -172,7 +163,7 @@ class TableAccessibleDelegate {
 				int columnCount = childColumnToIdMap.size() > 0 ? childColumnToIdMap.size() : 1;
 				Accessible[] accessibles = new Accessible[columnCount];
 				for (int i = 0; i < columnCount; i++) {
-					accessibles[i] = (Accessible) childColumnToIdMap.get(Integer.valueOf(i));
+					accessibles[i] = childColumnToIdMap.get(i);
 				}
 				e.accessibles = accessibles;
 			}
@@ -218,7 +209,7 @@ class TableAccessibleDelegate {
 				int columnCount = childRowToIdMap.size() > 0 ? childRowToIdMap.size() : 1;
 				Accessible[] accessibles = new Accessible[columnCount];
 				for (int i = 0; i < columnCount; i++) {
-					accessibles[i] = (Accessible) childRowToIdMap.get(Integer.valueOf(i));
+					accessibles[i] = childRowToIdMap.get(i);
 				}
 				e.accessibles = accessibles;
 			}
@@ -232,11 +223,11 @@ class TableAccessibleDelegate {
 		}
 
 		/* Check cache for childID, if found, return corresponding osChildID. */
-		AccessibleTableColumn childRef = (AccessibleTableColumn) childColumnToIdMap.get(Integer.valueOf(childID));
+		AccessibleTableColumn childRef = childColumnToIdMap.get(childID);
 
 		if (childRef == null) {
 			childRef = new AccessibleTableColumn(tableAccessible, childID);
-			childColumnToIdMap.put(Integer.valueOf(childID), childRef);
+			childColumnToIdMap.put(childID, childRef);
 		}
 
 		return childRef;
@@ -248,7 +239,7 @@ class TableAccessibleDelegate {
 		}
 
 		/* Check cache for childID, if found, return corresponding osChildID. */
-		AccessibleTableRow childRef = (AccessibleTableRow) childRowToIdMap.get(Integer.valueOf(childID));
+		AccessibleTableRow childRef = childRowToIdMap.get(childID);
 
 		if (childRef == null) {
 			childRef = new AccessibleTableRow(tableAccessible, childID);
@@ -265,10 +256,8 @@ class TableAccessibleDelegate {
 
 	void release() {
 		if (childRowToIdMap != null) {
-			Collection delegates = childRowToIdMap.values();
-			Iterator iter = delegates.iterator();
-			while (iter.hasNext()) {
-				SWTAccessibleDelegate childDelegate = ((Accessible)iter.next()).delegate;
+			for (AccessibleTableRow delegate : childRowToIdMap.values()) {
+				SWTAccessibleDelegate childDelegate = delegate.delegate;
 				if (childDelegate != null) {
 					childDelegate.internal_dispose_SWTAccessibleDelegate();
 					childDelegate.release();
@@ -280,10 +269,8 @@ class TableAccessibleDelegate {
 		}
 
 		if (childColumnToIdMap != null) {
-			Collection delegates = childColumnToIdMap.values();
-			Iterator iter = delegates.iterator();
-			while (iter.hasNext()) {
-				SWTAccessibleDelegate childDelegate = ((Accessible)iter.next()).delegate;
+			for (AccessibleTableColumn delegate : childColumnToIdMap.values()) {
+				SWTAccessibleDelegate childDelegate = delegate.delegate;
 				if (childDelegate != null) {
 					childDelegate.internal_dispose_SWTAccessibleDelegate();
 					childDelegate.release();
@@ -297,7 +284,7 @@ class TableAccessibleDelegate {
 
 	void reset() {
 		release();
-		childColumnToIdMap = new HashMap();
-		childRowToIdMap = new HashMap();
+		childColumnToIdMap = new HashMap<>();
+		childRowToIdMap = new HashMap<>();
 	}
 }

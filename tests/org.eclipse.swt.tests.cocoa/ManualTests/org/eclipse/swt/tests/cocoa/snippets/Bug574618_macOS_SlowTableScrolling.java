@@ -14,12 +14,23 @@
 
 package org.eclipse.swt.tests.cocoa.snippets;
 
+import java.util.ArrayList;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.layout.*;
-import org.eclipse.swt.widgets.*;
-
-import java.util.ArrayList;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Table;
+import org.eclipse.swt.widgets.TableColumn;
+import org.eclipse.swt.widgets.TableItem;
+import org.eclipse.swt.widgets.Tree;
+import org.eclipse.swt.widgets.TreeItem;
 
 public class Bug574618_macOS_SlowTableScrolling {
 	static final boolean USE_PAINTITEM   = true;    // Do realistic painting in SWT.PaintItem
@@ -208,7 +219,7 @@ public class Bug574618_macOS_SlowTableScrolling {
 	}
 
 	static class CellRanges {
-		private ArrayList<Point> cells = new ArrayList<Point> ();
+		private ArrayList<Point> cells = new ArrayList<> ();
 
 		private static class Range {
 			public int rowBeg;
@@ -245,10 +256,10 @@ public class Bug574618_macOS_SlowTableScrolling {
 				return "";
 
 			// Move away duplicates
-			ArrayList<Point> cells = new ArrayList<Point>();
+			ArrayList<Point> cells = new ArrayList<>();
 			String duplicatesList = "";
 			{
-				ArrayList<Point> duplicateCells = new ArrayList<Point>();
+				ArrayList<Point> duplicateCells = new ArrayList<>();
 				cells.add (a_cells.get(0));
 				for (int i = 1; i < a_cells.size(); i++) {
 					Point prevCell = a_cells.get(i-1);
@@ -265,7 +276,7 @@ public class Bug574618_macOS_SlowTableScrolling {
 			}
 
 			// Compress columns
-			ArrayList<Range> ranges1 = new ArrayList<Range>();
+			ArrayList<Range> ranges1 = new ArrayList<>();
 			{
 				Range curRange = null;
 				for (Point curItem : cells) {
@@ -288,7 +299,7 @@ public class Bug574618_macOS_SlowTableScrolling {
 			}
 
 			// Compress rows
-			ArrayList<Range> ranges2 = new ArrayList<Range>();
+			ArrayList<Range> ranges2 = new ArrayList<>();
 			{
 				ranges1.sort ((lhs, rhs) -> {
 					if (lhs.colBeg != rhs.colBeg)

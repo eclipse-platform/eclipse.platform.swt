@@ -36,6 +36,9 @@ class StyledTextRenderer {
 	StyledTextLineSpacingProvider lineSpacingProvider;
 	boolean lineSpacingComputing;
 
+	/* Custom line metrics */
+	private FontMetrics fixedLineMetrics;
+
 	/* Font info */
 	Font regularFont, boldFont, italicFont, boldItalicFont;
 	int tabWidth;
@@ -180,6 +183,11 @@ class StyledTextRenderer {
 			}
 		}
 	}
+
+	private record LineDrawInfo(int index, TextLayout layout, String text, int offset, int height) {
+
+	}
+
 	static int cap (TextLayout layout, int offset) {
 		if (layout == null) return offset;
 		return Math.min (layout.getText().length() -1, Math.max (0, offset));
@@ -449,32 +457,101 @@ void drawBullet(Bullet bullet, GC gc, int paintX, int paintY, int index, int lin
 	layout.draw(gc, x, paintY);
 	layout.dispose();
 }
-int drawLine(int lineIndex, int paintX, int paintY, GC gc, Color widgetBackground, Color widgetForeground) {
+
+/**
+ * Caches draw-related info that may be expensive to calculate twice when
+ * drawing first background and then foreground.
+ */
+private LineDrawInfo makeLineDrawInfo(int lineIndex) {
 	TextLayout layout = getTextLayout(lineIndex);
-	String line = content.getLine(lineIndex);
-	int lineOffset = content.getOffsetAtLine(lineIndex);
-	int lineLength = line.length();
-	Rectangle client = styledText.getClientArea();
-	Color lineBackground = getLineBackground(lineIndex, null);
-	StyledTextEvent event = styledText.getLineBackgroundData(lineOffset, line);
-	if (event != null && event.lineBackground != null) lineBackground = event.lineBackground;
+	String text = content.getLine(lineIndex);
+	int offset = content.getOffsetAtLine(lineIndex);
 	int height = layout.getBounds().height;
-	int verticalIndent = layout.getVerticalIndent();
+	return new LineDrawInfo(lineIndex, layout, text, offset, height);
+}
+
+int drawLines(int startLine, int endLine, int begX, int begY, int endY, GC gc, Color widgetBackground, Color widgetForeground) {
+	// When fixed line metrics is in effect, tall unicode characters
+	// will not always fit line's height. In this case, they will
+	// draw out of line's bounds. To prevent them from being clipped
+	// by next line's background, paint entire background before any
+	// foreground.
+	// I considered to make this mode default, but was worried about
+	// potential regressions in various legacy code. For example, it
+	// could change something about line heights/colors during
+	// painting. While this doesn't sound like a good thing to do, yet
+	// still, I'd rather stay safe.
+	final boolean drawBackBeforeFore = (fixedLineMetrics != null);
+
+	if (drawBackBeforeFore) {
+		// Cache drawing information
+		final List<LineDrawInfo> drawInfos = new ArrayList<>();
+		int y = begY;
+		for (int iLine = startLine; y < endY && iLine < endLine; iLine++) {
+			LineDrawInfo lineInfo = makeLineDrawInfo(iLine);
+			drawInfos.add(lineInfo);
+			y += lineInfo.height;
+		}
+
+		// Draw background
+		y = begY;
+		for (LineDrawInfo lineInfo : drawInfos) {
+			drawLineBackground(lineInfo, y, gc, widgetBackground);
+			y += lineInfo.height;
+		}
+
+		// Draw foreground
+		y = begY;
+		for (LineDrawInfo lineInfo : drawInfos) {
+			drawLineForeground(lineInfo, begX, y, gc, widgetForeground);
+			y += lineInfo.height;
+		}
+
+		// cleanup
+		for (LineDrawInfo lineInfo : drawInfos) {
+			disposeTextLayout(lineInfo.layout);
+		}
+
+		return y - begY;
+	}
+
+	int y = begY;
+	for (int iLine = startLine; y < endY && iLine < endLine; iLine++) {
+		LineDrawInfo lineInfo = makeLineDrawInfo(iLine);
+		drawLineBackground(lineInfo, y, gc, widgetBackground);
+		drawLineForeground(lineInfo, begX, y, gc, widgetForeground);
+		disposeTextLayout(lineInfo.layout);
+		y += lineInfo.height;
+	}
+	return y - begY;
+}
+
+private void drawLineBackground(LineDrawInfo lineInfo, int paintY, GC gc, Color widgetBackground) {
+	Rectangle client = styledText.getClientArea();
+	Color lineBackground = getLineBackground(lineInfo.index, null);
+	StyledTextEvent event = styledText.getLineBackgroundData(lineInfo.offset, lineInfo.text);
+	if (event != null && event.lineBackground != null) lineBackground = event.lineBackground;
+	int verticalIndent = lineInfo.layout.getVerticalIndent();
+
 	if (lineBackground != null) {
 		if (verticalIndent > 0) {
 			gc.setBackground(widgetBackground);
 			gc.fillRectangle(client.x, paintY, client.width, verticalIndent);
 		}
 		gc.setBackground(lineBackground);
-		gc.fillRectangle(client.x, paintY + verticalIndent, client.width, height - verticalIndent);
+		gc.fillRectangle(client.x, paintY + verticalIndent, client.width, lineInfo.height - verticalIndent);
 	} else {
 		gc.setBackground(widgetBackground);
-		styledText.drawBackground(gc, client.x, paintY, client.width, height);
+		styledText.drawBackground(gc, client.x, paintY, client.width, lineInfo.height);
 	}
+}
+
+private void drawLineForeground(LineDrawInfo lineInfo, int paintX, int paintY, GC gc, Color widgetForeground) {
+	int lineLength = lineInfo.text.length();
 	gc.setForeground(widgetForeground);
-	Point[] selection = intersectingRelativeNonEmptySelections(lineOffset, lineOffset + lineLength);
+	Point[] selection = intersectingRelativeNonEmptySelections(lineInfo.offset, lineInfo.offset + lineLength);
 	if (styledText.getBlockSelection() || selection.length == 0) {
-		layout.draw(gc, paintX, paintY);
+		lineInfo.layout.draw(gc, paintX, paintY);
 	} else {
 		Color selectionFg = styledText.getSelectionForeground();
 		Color selectionBg = styledText.getSelectionBackground();
@@ -487,7 +564,7 @@ int drawLine(int lineIndex, int paintX, int paintY, GC gc, Color widgetBackgroun
 				flags |= SWT.LAST_LINE_SELECTION;
 			}
 			// TODO calling draw multiple times here prints line multiple times, overriding some colors
-			layout.draw(gc, paintX, paintY, start, end - 1, selectionFg, selectionBg, flags);
+			lineInfo.layout.draw(gc, paintX, paintY, start, end - 1, selectionFg, selectionBg, flags);
 		}
 	}
 
@@ -496,7 +573,7 @@ int drawLine(int lineIndex, int paintX, int paintY, GC gc, Color widgetBackgroun
 	int bulletIndex = -1;
 	if (bullets != null) {
 		if (bulletsIndices != null) {
-			int index = lineIndex - topIndex;
+			int index = lineInfo.index - topIndex;
 			if (0 <= index && index < CACHE_SIZE) {
 				bullet = bullets[index];
 				bulletIndex = bulletsIndices[index];
@@ -504,40 +581,39 @@ int drawLine(int lineIndex, int paintX, int paintY, GC gc, Color widgetBackgroun
 		} else {
 			for (Bullet b : bullets) {
 				bullet = b;
-				bulletIndex = bullet.indexOf(lineIndex);
+				bulletIndex = bullet.indexOf(lineInfo.index);
 				if (bulletIndex != -1) break;
 			}
 		}
 	}
 	if (bulletIndex != -1 && bullet != null) {
-		FontMetrics metrics = layout.getLineMetrics(0);
+		FontMetrics metrics = lineInfo.layout.getLineMetrics(0);
 		int lineAscent = metrics.getAscent() + metrics.getLeading();
 		if (bullet.type == ST.BULLET_CUSTOM) {
-			bullet.style.start = lineOffset;
+			bullet.style.start = lineInfo.offset;
 			styledText.paintObject(gc, paintX, paintY, lineAscent, metrics.getDescent(), bullet.style, bullet, bulletIndex);
 		} else {
 			drawBullet(bullet, gc, paintX, paintY, bulletIndex, lineAscent, metrics.getDescent());
 		}
 	}
-	TextStyle[] styles = layout.getStyles();
+	TextStyle[] styles = lineInfo.layout.getStyles();
 	int[] ranges = null;
 	for (int i = 0; i < styles.length; i++) {
 		if (styles[i].metrics != null) {
-			if (ranges == null) ranges = layout.getRanges();
+			if (ranges == null) ranges = lineInfo.layout.getRanges();
 			int start = ranges[i << 1];
 			int length = ranges[(i << 1) + 1] - start + 1;
-			Point point = layout.getLocation(start, false);
-			FontMetrics metrics = layout.getLineMetrics(layout.getLineIndex(start));
+			Point point = lineInfo.layout.getLocation(start, false);
+			FontMetrics metrics = lineInfo.layout.getLineMetrics(lineInfo.layout.getLineIndex(start));
 			StyleRange style = (StyleRange)((StyleRange)styles[i]).clone();
-			style.start = start + lineOffset;
+			style.start = start + lineInfo.offset;
 			style.length = length;
 			int lineAscent = metrics.getAscent() + metrics.getLeading();
 			styledText.paintObject(gc, point.x + paintX, point.y + paintY, lineAscent, metrics.getDescent(), style, null, 0);
 		}
 	}
-	disposeTextLayout(layout);
-	return height;
 }
+
 private Point[] intersectingRelativeNonEmptySelections(int fromOffset, int toOffset) {
 	int[] selectionRanges = styledText.getSelectionRanges();
 	int lineLength = toOffset - fromOffset;
@@ -1193,6 +1269,7 @@ TextLayout getTextLayout(int lineIndex, int orientation, int width, int lineSpac
 	layout.setFont(regularFont);
 	layout.setAscent(ascent);
 	layout.setDescent(descent);
+	layout.setFixedLineMetrics(fixedLineMetrics);
 	layout.setText(line);
 	layout.setOrientation(orientation);
 	layout.setSegments(segments);
@@ -1378,6 +1455,16 @@ void setContent(StyledTextContent content) {
 	maxWidthLineIndex = -1;
 	reset(0, lineCount);
 }
+
+/**
+ * See {@link TextLayout#setFixedLineMetrics}
+ *
+ * @since 3.125
+ */
+public void setFixedLineMetrics(FontMetrics metrics) {
+	fixedLineMetrics = metrics;
+}
+
 void setFont(Font font, int tabs) {
 	TextLayout layout = new TextLayout(device);
 	layout.setFont(regularFont);

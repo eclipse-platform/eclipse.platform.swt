@@ -13,7 +13,7 @@
 @rem ***************************************************************************
 
 @rem The original build.bat source is located in /org.eclipse.swt/Eclipse SWT PI/win32/library/build.bat. It is copied during various build(s).
-@rem Typically it's not ran directly, instead it is reached by build.xml's build_libraries target found in eclipse.platform.swt.binaries\bundles\org.eclipse.swt.win32.win32.x86*
+@rem Typically it's not ran directly, instead it is reached by build.xml's build_libraries target found in eclipse.platform.swt\bundles\org.eclipse.swt.win32.win32.x86*
 
 @echo off
 echo
@@ -55,17 +55,11 @@ IF NOT EXIST "%SWT_JAVA_HOME%" (
 )
 
 @rem -----------------------
-IF NOT "x.%1"=="x.x86_64" (
-	CALL :ECHO "ERROR: 32-bit builds are no longer supported."
-	EXIT /B 1
-)
-
 set PROCESSOR_ARCHITECTURE=AMD64
 IF "x.%OUTPUT_DIR%"=="x." set OUTPUT_DIR=..\..\..\org.eclipse.swt.win32.win32.x86_64
 
 set CFLAGS=-DJNI64
 call "%MSVC_HOME%\VC\Auxiliary\Build\vcvarsall.bat" x64
-shift
 
 @rem if call to vcvarsall.bat (which sets up environment) silently fails, then provide advice to user.
 WHERE cl

@@ -14,6 +14,7 @@
 package org.eclipse.swt.dnd;
 
 import java.util.*;
+import java.util.List;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
@@ -77,7 +78,6 @@ import org.eclipse.swt.widgets.*;
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  * @noextend This class is not intended to be subclassed by clients.
  */
-@SuppressWarnings({"rawtypes", "unchecked"})
 public class DropTarget extends Widget {
 
 	static Callback dropTarget2Args, dropTarget3Args, dropTarget6Args;
@@ -85,7 +85,7 @@ public class DropTarget extends Widget {
 	static final String LOCK_CURSOR = "org.eclipse.swt.internal.lockCursor"; //$NON-NLS-1$
 
 	static {
-		Class clazz = DropTarget.class;
+		Class<?> clazz = DropTarget.class;
 
 		dropTarget2Args = new Callback(clazz, "dropTargetProc", 2);
 		proc2Args = dropTarget2Args.getAddress();
@@ -916,7 +916,7 @@ public void setTransfer(Transfer... transferAgents){
 
 	// Register the types as valid drop types in Cocoa.
 	// Accumulate all of the transfer types into a list.
-	ArrayList typeStrings = new ArrayList();
+	List<String> typeStrings = new ArrayList<>();
 
 	for (int i = 0; i < this.transferAgents.length; i++) {
 		String[] types = transferAgents[i].getTypeNames();

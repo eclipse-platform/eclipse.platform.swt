@@ -3,8 +3,6 @@ macOS Development for org.eclipse.swt
 
 Please follow the following pattern for macOS development:
 
-* If on macOS Intel copy `.classpath_cocoa_x86_64` to `.classpath`
-* If on macOS Silicon copy `.classpath_cocoa_aarch64` to `.classpath`
 * Update `.bridgesupport` files when necessary, i.e. consuming new api in newer macOS versions
 * Generate native and Java code using `MacGenerator`
 
@@ -89,8 +87,8 @@ Compiling native libs
 
 This is done from within the binaries project.
 
-    cd <eclipse.platform.swt.binaries>/bundles/org.eclipse.swt.cocoa.macosx.x86_64
-    mvn clean package -Dnative=cocoa.macosx.x86_64 -Pbuild-individual-bundles
+    cd <eclipse.platform.swt>/binaries/org.eclipse.swt.cocoa.macosx.x86_64
+    mvn clean package -Dnative=cocoa.macosx.x86_64
 
 
 Happy development!

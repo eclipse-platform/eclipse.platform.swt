@@ -127,7 +127,7 @@ if grep --quiet '\-\-print-outputdir-and-exit' build.sh ; then
 	fi
 else
 	# 2.2 Try to guess the output directory.
-	SO_OUTPUT_DIR="$HOME/git/eclipse.platform.swt.binaries/bundles/org.eclipse.swt.gtk.$(uname -s | tr '[:upper:]' '[:lower:]').$(uname -i)"
+	SO_OUTPUT_DIR="$HOME/git/eclipse.platform.swt/binaries/org.eclipse.swt.gtk.$(uname -s | tr '[:upper:]' '[:lower:]').$(uname -i)"
 fi
 
 

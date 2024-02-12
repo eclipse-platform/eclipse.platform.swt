@@ -14,6 +14,8 @@
 package org.eclipse.swt.widgets;
 
 
+import java.util.*;
+
 import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
@@ -197,16 +199,10 @@ TreeItem _getItem (long iter) {
 	return items [id];
 }
 
-TreeItem _getItem (long parentIter, int index) {
-	long iter = OS.g_malloc (GTK.GtkTreeIter_sizeof ());
-	try {
-		GTK.gtk_tree_model_iter_nth_child (modelHandle, iter, parentIter, index);
-		int id = getId (iter, true);
-		if (items [id] != null) return items [id];
-		return items [id] = new TreeItem (this, parentIter, SWT.NONE, index, iter);
-	} finally {
-		OS.g_free (iter);
-	}
+TreeItem _getItem (long parentIter, long iter, int index) {
+	int id = getId (iter, true);
+	if (items [id] != null) return items [id];
+	return items [id] = new TreeItem (this, parentIter, SWT.NONE, index, iter);
 }
 
 void reallocateIds(int newSize) {
@@ -1748,10 +1744,14 @@ public boolean getHeaderVisible () {
  */
 public TreeItem getItem (int index) {
 	checkWidget();
-	if (!(0 <= index && index < GTK.gtk_tree_model_iter_n_children (modelHandle, 0)))  {
-		error (SWT.ERROR_INVALID_RANGE);
+	if (index < 0) error (SWT.ERROR_INVALID_RANGE);
+	long iter = OS.g_malloc (GTK.GtkTreeIter_sizeof ());
+	try {
+		if (!GTK.gtk_tree_model_iter_nth_child (modelHandle, iter, 0, index)) error (SWT.ERROR_INVALID_RANGE);
+		return _getItem (0, iter, index);
+	} finally {
+		OS.g_free (iter);
 	}
-	return _getItem (0, index);
 }
 
 /**
@@ -1927,26 +1927,18 @@ public TreeItem [] getItems () {
 }
 
 TreeItem [] getItems (long parent) {
-	int length = GTK.gtk_tree_model_iter_n_children (modelHandle, parent);
-	TreeItem[] result = new TreeItem [length];
-	if (length == 0) return result;
-	if ((style & SWT.VIRTUAL) != 0) {
-		for (int i=0; i<length; i++) {
-			result [i] = _getItem (parent, i);
-		}
-	} else {
-		int i = 0;
-		int[] index = new int [1];
-		long iter = OS.g_malloc (GTK.GtkTreeIter_sizeof ());
+	ArrayList<TreeItem> result = new ArrayList<> ();
+	long iter = OS.g_malloc (GTK.GtkTreeIter_sizeof ());
+	try {
 		boolean valid = GTK.gtk_tree_model_iter_children (modelHandle, iter, parent);
 		while (valid) {
-			GTK.gtk_tree_model_get (modelHandle, iter, ID_COLUMN, index, -1);
-			result [i++] = items [index [0]];
+			result.add (_getItem (parent, iter, result.size ()));
 			valid = GTK.gtk_tree_model_iter_next (modelHandle, iter);
 		}
+	} finally {
 		OS.g_free (iter);
 	}
-	return result;
+	return result.toArray (new TreeItem [result.size ()]);
 }
 
 /**

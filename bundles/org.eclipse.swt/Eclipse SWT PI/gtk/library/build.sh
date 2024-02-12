@@ -197,7 +197,7 @@ fi
 
 # Configure OUTPUT_DIR
 if [ "x${OUTPUT_DIR}" = "x" ]; then
-	OUTPUT_DIR=../../../../../eclipse.platform.swt.binaries/bundles/org.eclipse.swt.gtk.${SWT_OS}.${SWT_ARCH}
+	OUTPUT_DIR=../../../../../eclipse.platform.swt/bundles/org.eclipse.swt.gtk.${SWT_OS}.${SWT_ARCH}
 	if [ -d "$OUTPUT_DIR" ]; then
 		export OUTPUT_DIR
 	fi
@@ -211,8 +211,6 @@ for i in "$@"; do  # loop over all input paramaters
 		func_echo_error "ERROR: 'install' was passed in as paramater, but OUTPUT_DIR :"
 		func_echo_error "(${OUTPUT_DIR}) "
 		func_echo_error "is not a valid directory."
-		func_echo_error "1) Maybe you forgot to checkout SWT binaries? See: https://github.com/eclipse-platform/eclipse.platform.swt.binaries/"
-		func_echo_error "2) SWT and SWT binary git repos have to be in the same folder, (usually ~/git/...). Maybe you put them in different folders?"
 		func_echo_error "Exit with failure"
 		exit 1
 		fi

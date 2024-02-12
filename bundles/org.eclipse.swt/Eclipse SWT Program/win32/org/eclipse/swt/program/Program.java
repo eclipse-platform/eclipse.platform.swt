@@ -19,7 +19,9 @@ import java.util.stream.*;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.win32.*;
+import org.eclipse.swt.widgets.*;
 
 /**
  * Instances of this class represent programs and
@@ -33,7 +35,6 @@ public final class Program {
 	String name;
 	String command;
 	String iconName;
-	String extension;
 	static final String [] ARGUMENTS = new String [] {"%1", "%l", "%L"}; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 
 /**
@@ -100,7 +101,6 @@ public static Program findProgram (String extension) {
 		program.name = name;
 		program.command = command;
 		program.iconName = iconName;
-		program.extension = extension;
 	}
 	return program;
 }
@@ -182,7 +182,7 @@ static String getKeyValue (String string, boolean expand) {
 	return result;
 }
 
-static Program getProgram (String key, String extension) {
+static Program getProgram (String key) {
 
 	/* Name */
 	String name = getKeyValue (key, false);
@@ -208,7 +208,6 @@ static Program getProgram (String key, String extension) {
 	program.name = name;
 	program.command = command;
 	program.iconName = iconName;
-	program.extension = extension;
 	return program;
 }
 
@@ -234,7 +233,7 @@ public static Program [] getPrograms () {
 	//map paths to programs in parallel which takes now ~ 4/5 of time:
 	ConcurrentHashMap<String, Program> programs = new ConcurrentHashMap<>(paths.size());
 	paths.stream().parallel().forEach(path -> {
-		Program program = getProgram(path, null); // getProgram takes most time
+		Program program = getProgram(path); // getProgram takes most time
 		if (program != null) {
 			programs.put(path, program);
 		}
@@ -353,27 +352,31 @@ public boolean execute (String fileName) {
 	return success;
 }
 
+
+
 /**
- * Returns the receiver's image data.  This is the icon
- * that is associated with the receiver in the operating
- * system.
+ * Returns the receiver's image data at 100% zoom level.
+ * This is the icon that is associated with the receiver
+ * in the operating system.
  *
  * @return the image data for the program, may be null
  */
 public ImageData getImageData () {
-	if (extension != null) {
-		SHFILEINFO shfi = new SHFILEINFO ();
-		int flags = OS.SHGFI_ICON | OS.SHGFI_SMALLICON | OS.SHGFI_USEFILEATTRIBUTES;
-		TCHAR pszPath = new TCHAR (0, extension, true);
-		OS.SHGetFileInfo (pszPath.chars, OS.FILE_ATTRIBUTE_NORMAL, shfi, SHFILEINFO.sizeof, flags);
-		if (shfi.hIcon != 0) {
-			Image image = Image.win32_new (null, SWT.ICON, shfi.hIcon);
-			/* Fetch the ImageData at 100% zoom and return */
-			ImageData imageData = image.getImageData ();
-			image.dispose ();
-			return imageData;
-		}
-	}
+  return getImageData (100);
+}
+
+/**
+ * Returns the receiver's image data based on the given zoom level.
+ * This is the icon that is associated with the receiver in the
+ * operating system.
+ *
+ * @param zoom
+ *            The zoom level in % of the standard resolution
+ *
+ * @return the image data for the program, may be null
+ * @since 3.125
+ */
+public ImageData getImageData (int zoom) {
 	int nIconIndex = 0;
 	String fileName = iconName;
 	int index = iconName.indexOf (',');
@@ -395,8 +398,10 @@ public ImageData getImageData () {
 	OS.ExtractIconEx (lpszFile, nIconIndex, phiconLarge, phiconSmall, 1);
 	if (phiconSmall [0] == 0) return null;
 	Image image = Image.win32_new (null, SWT.ICON, phiconSmall [0]);
-	/* Fetch the ImageData at 100% zoom and return */
-	ImageData imageData = image.getImageData ();
+	// Windows API returns image data according to primary monitor zoom factor
+	// rather than at original scaling
+	int nativeZoomFactor = 100 * Display.getCurrent().getPrimaryMonitor().getZoom() / DPIUtil.getDeviceZoom();
+	ImageData imageData = image.getImageData (100 * zoom / nativeZoomFactor);
 	image.dispose ();
 	return imageData;
 }

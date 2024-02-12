@@ -299,7 +299,15 @@ int computeLeftMargin () {
 		if (newFont != 0) OS.SelectObject (hDC, oldFont);
 		OS.ReleaseDC (handle, hDC);
 		OS.GetClientRect (handle, rect);
-		margin = Math.max (MARGIN, (rect.right - rect.left - margin) / 2);
+		if ((style & SWT.LEFT) != 0) {
+			margin = MARGIN;
+		}
+		else if ((style & SWT.RIGHT) != 0) {
+			margin = Math.max (MARGIN, (rect.right - rect.left - margin - MARGIN));
+		}
+		else {
+			margin = Math.max (MARGIN, (rect.right - rect.left - margin) / 2);
+		}
 	}
 	return margin;
 }

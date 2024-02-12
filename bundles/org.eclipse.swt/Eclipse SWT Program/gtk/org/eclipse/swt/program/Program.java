@@ -17,7 +17,6 @@ import java.io.*;
 import java.nio.file.*;
 import java.nio.file.Path;
 import java.util.*;
-import java.util.List;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
@@ -121,13 +120,30 @@ public static Program findProgram(String extension) {
 }
 
 /**
- * Returns the receiver's image data.  This is the icon
- * that is associated with the receiver in the operating
- * system.
+ * Returns the receiver's image data at 100% zoom level.
+ * This is the icon that is associated with the receiver
+ * in the operating system.
  *
  * @return the image data for the program, may be null
  */
 public ImageData getImageData() {
+  return getImageData(100);
+}
+
+
+
+/**
+ * Returns the receiver's image data based on the given zoom level.
+ * This is the icon that is associated with the receiver in the
+ * operating system.
+ *
+ * @param zoom
+ *            The zoom level in % of the standard resolution
+ *
+ * @return the image data for the program, may be null
+ * @since 3.125
+ */
+public ImageData getImageData(int zoom) {
 	if (iconPath == null) return null;
 	ImageData data = null;
 

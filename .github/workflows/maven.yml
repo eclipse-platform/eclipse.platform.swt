@@ -18,7 +18,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Upload
-      uses: actions/upload-artifact@c7d193f32edcb7bfad88892161225aeda64e9392 # v4.0.0
+      uses: actions/upload-artifact@5d5d22a31266ced268874388b861e4b58bb5c2f3 # v4.3.1
       with:
         name: Event File
         path: ${{ github.event_path }}
@@ -37,16 +37,17 @@ jobs:
     - name: checkout swt
       uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
       with:
-       path: 'eclipse.platform.swt'
        fetch-depth: 0 # required for jgit timestamp provider to work
-    - name: checkout swt.binaries
-      uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
-      with:
-       path: eclipse.platform.swt.binaries
-       repository: 'eclipse-platform/eclipse.platform.swt.binaries'
+       lfs: false # lfs-pull is not necessary, the natives are re-build in each run
     - name: Install Linux requirements
-      run: sudo apt-get update -qq && sudo apt-get install -qq -y webkit2gtk-driver
+      run: |
+        sudo apt-get update -qq 
+        sudo apt-get install -qq -y libgtk-3-dev freeglut3-dev webkit2gtk-driver
       if: ${{ matrix.config.native == 'gtk.linux.x86_64'}}
+    - name: Pull large static Windows binaries
+      run: |
+        git lfs pull --include='/binaries/org.eclipse.swt.win32.win32.x86_64/WebView2Loader.dll'
+      if: ${{ matrix.config.native == 'win32.win32.x86_64'}}
     - name: Set up Java ${{ matrix.java }}
       uses: actions/setup-java@387ac29b308b003ca37ba93a6cab5eb57c8f5f93 # v4.0.0
       with:
@@ -56,27 +57,21 @@ jobs:
     - name: Set up Maven
       uses: stCarolas/setup-maven@v4.5
       with:
-        maven-version: 3.9.2
-    - name: Build swt.binaries fragments with Maven
-      uses: coactions/setup-xvfb@b6b4fcfb9f5a895edadc3bc76318fae0ac17c8b3 # v1.0.1
-      with:
-       run: >-
-        mvn --batch-mode -Pbuild-individual-bundles -DforceContextQualifier=zzz
-        -Dcompare-version-with-baselines.skip=true -Dmaven.compiler.failOnWarning=true install
-       working-directory: eclipse.platform.swt.binaries
+        maven-version: 3.9.6
     - name: Build with Maven
       uses: coactions/setup-xvfb@b6b4fcfb9f5a895edadc3bc76318fae0ac17c8b3 # v1.0.1
       with:
        run: >-
         mvn --batch-mode -V -U
+        --threads 1C
         -DforkCount=1
-        -Dcompare-version-with-baselines.skip=false
-        -Dmaven.compiler.failOnWarning=true
+        -Dnative=${{ matrix.config.native }}
+        -Dcompare-version-with-baselines.skip=true
+        -Dtycho.baseline.replace=none
         --fail-at-end
         -DskipNativeTests=false
         -DfailIfNoTests=false
-        clean install
-       working-directory: eclipse.platform.swt
+        clean verify
     - name: Performance tests
       if: contains(github.event.pull_request.labels.*.name, 'performance')
       uses: coactions/setup-xvfb@b6b4fcfb9f5a895edadc3bc76318fae0ac17c8b3 # v1.0.1
@@ -85,16 +80,15 @@ jobs:
         mvn --batch-mode -V -U
         -DforkCount=1
         -Dcompare-version-with-baselines.skip=true
-        -Dmaven.compiler.failOnWarning=true
         --fail-at-end
         -DskipNativeTests=true
         -DfailIfNoTests=true
         -Dtest=PerformanceTests
         integration-test
-       working-directory: eclipse.platform.swt/tests/org.eclipse.swt.tests
+       working-directory: tests/org.eclipse.swt.tests
     - name: Upload Test Results for ${{ matrix.config.name }} / Java-${{ matrix.java }}
       if: always()
-      uses: actions/upload-artifact@c7d193f32edcb7bfad88892161225aeda64e9392 # v4.0.0
+      uses: actions/upload-artifact@5d5d22a31266ced268874388b861e4b58bb5c2f3 # v4.3.1
       with:
         name: test-results-${{ matrix.config.native }}-java${{ matrix.java }}
         if-no-files-found: warn

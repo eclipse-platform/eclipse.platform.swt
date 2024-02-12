@@ -333,14 +333,30 @@ public boolean execute (String fileName) {
 	}
 }
 
+
 /**
- * Returns the receiver's image data.  This is the icon
- * that is associated with the receiver in the operating
- * system.
+ * Returns the receiver's image data at 100% zoom level.  
+ * This is the icon that is associated with the receiver 
+ * in the operating system.
  *
  * @return the image data for the program, may be null
  */
 public ImageData getImageData () {
+  return getImageData (100);
+}
+
+/**
+ * Returns the receiver's image data based on the given zoom level.  
+ * This is the icon that is associated with the receiver in the 
+ * operating system.
+ * 
+ * @param zoom
+ *            The zoom level in % of the standard resolution
+ * 
+ * @return the image data for the program, may be null
+ * @since 3.125
+ */
+public ImageData getImageData (int zoom) {
 	NSAutoreleasePool pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
 	try {
 		NSWorkspace workspace = NSWorkspace.sharedWorkspace();
@@ -358,7 +374,7 @@ public ImageData getImageData () {
 				nsImage.setSize(size);
 				nsImage.retain();
 				Image image = Image.cocoa_new(Display.getCurrent(), SWT.BITMAP, nsImage);
-				ImageData imageData = image.getImageData();
+				ImageData imageData = image.getImageData(zoom);
 				image.dispose();
 				return imageData;
 			}

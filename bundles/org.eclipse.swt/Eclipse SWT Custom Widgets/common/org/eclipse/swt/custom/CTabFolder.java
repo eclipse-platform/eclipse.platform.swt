@@ -2729,6 +2729,8 @@ public void setForeground (Color color) {
 	// To apply the new foreground color the image must be recreated with new foreground color.
 	// redraw() alone would only redraw the cached image with old color.
 	updateChevronImage(true);
+	updateMaxImage();
+	updateMinImage();
 	redraw();
 }
 /**
@@ -2972,19 +2974,17 @@ boolean setItemSize(GC gc) {
 	for (int i = 0; i < items.length; i++) {
 		CTabItem tab = items[i];
 		int width = widths[i];
-		if (tab.height != tabHeight || tab.width != width) {
-			changed = true;
-			tab.shortenedText = null;
-			tab.shortenedTextWidth = 0;
-			tab.height = tabHeight;
-			tab.width = width;
-			tab.closeRect.width = tab.closeRect.height = 0;
-			if (showClose || tab.showClose) {
-				if (i == selectedIndex || showUnselectedClose) {
-					Point closeSize = renderer.computeSize(CTabFolderRenderer.PART_CLOSE_BUTTON, SWT.NONE, gc, SWT.DEFAULT, SWT.DEFAULT);
-					tab.closeRect.width = closeSize.x;
-					tab.closeRect.height = closeSize.y;
-				}
+		changed = true;
+		tab.shortenedText = null;
+		tab.shortenedTextWidth = 0;
+		tab.height = tabHeight;
+		tab.width = width;
+		tab.closeRect.width = tab.closeRect.height = 0;
+		if (showClose || tab.showClose) {
+			if (i == selectedIndex || showUnselectedClose) {
+				Point closeSize = renderer.computeSize(CTabFolderRenderer.PART_CLOSE_BUTTON, SWT.NONE, gc, SWT.DEFAULT, SWT.DEFAULT);
+				tab.closeRect.width = closeSize.x;
+				tab.closeRect.height = closeSize.y;
 			}
 		}
 	}
@@ -4262,5 +4262,25 @@ public void setHighlightEnabled(boolean enabled) {
 public boolean getHighlightEnabled() {
 	checkWidget();
 	return highlightEnabled;
+}
+/**
+ * Update the cached minimize button image when color is changed.
+ */
+private void updateMinImage() {
+	if (showMin && minMaxTb != null && minItem != null)	{
+		if (minImage != null) minImage.dispose();
+		minImage = createButtonImage(getDisplay(), CTabFolderRenderer.PART_MIN_BUTTON);
+		minItem.setImage(minImage);
+	}
+}
+/**
+ * Update the cached maximize button image when color is changed.
+ */
+private void updateMaxImage() {
+	if (showMax && minMaxTb != null && maxItem != null)	{
+		if (maxImage != null) maxImage.dispose();
+		maxImage = createButtonImage(getDisplay(), CTabFolderRenderer.PART_MAX_BUTTON);
+		maxItem.setImage(maxImage);
+	}
 }
 }

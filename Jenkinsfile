@@ -1,6 +1,23 @@
+/*******************************************************************************
+ * Copyright (c) 2021, 2024 Red Hat Inc. and others.
+ *
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License 2.0
+ * which accompanies this distribution, and is available at
+ * https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ *
+ * Contributors:
+ *     Mickael Istria (Red Hat Inc.) - initial API and implementation
+ *     Hannes Wellmann - Build SWT-natives as part of master- and verification-builds
+ *     Hannes Wellmann - Move SWT native binaries in this repository using Git-LFS
+ *     Hannes Wellmann - Streamline entire SWT build and replace ANT-scripts by Maven, Jenkins-Pipeline and single-source Java scripts
+  *******************************************************************************/
+
 def nativeBuildAgent(String platform, Closure body) {
 	def final nativeBuildStageName = 'Build SWT-native binaries'
-	if(platform == 'gtk.linux.x86_64') {
+	if (platform == 'gtk.linux.x86_64') {
 		return podTemplate(yaml: '''
 apiVersion: v1
 kind: Pod
@@ -37,6 +54,20 @@ def getNativeJdkUrl(String os, String arch){ // To update the used JDK version u
 	return "https://download.eclipse.org/justj/jres/17/downloads/20230428_1804/org.eclipse.justj.openjdk.hotspot.jre.minimal.stripped-17.0.7-${os}-${arch}.tar.gz"
 }
 
+def getLatestGitTag() {
+	return sh(script: 'git describe --abbrev=0 --tags --match v[0-9][0-9][0-9][0-9]*', returnStdout: true).strip()
+}
+
+def getSWTVersions() { // must be called from the repository root
+	def props = readProperties(file: 'bundles/org.eclipse.swt/Eclipse SWT/common/library/make_common.mak')
+	props['new_rev'] = props['rev'].toInteger() + 1
+	props['swt_version'] = props['maj_ver'] + props['min_ver'] + 'r' + props['rev']
+	props['new_version'] = props['maj_ver'] + props['min_ver'] + 'r' + props['new_rev']
+	return props
+}
+
+boolean NATIVES_CHANGED = false
+
 pipeline {
 	options {
 		skipDefaultCheckout() // Specialiced checkout is performed below
@@ -47,6 +78,10 @@ pipeline {
 	}
 	agent {
 		label 'centos-latest'
+	}
+	tools {
+		jdk 'openjdk-jdk17-latest'
+		maven 'apache-maven-latest'
 	}
 	environment {
 		MAVEN_OPTS = "-Xmx4G"
@@ -59,7 +94,7 @@ pipeline {
 	stages {
 		stage('Checkout swt git repos') {
 			steps {
-				dir ('eclipse.platform.swt') {
+				dir('eclipse.platform.swt') {
 					checkout scm
 					script {
 						def authorMail = sh(script: 'git log -1 --pretty=format:"%ce" HEAD', returnStdout: true)
@@ -71,39 +106,72 @@ pipeline {
 						}
 					}
 					sh '''
+						git version
+						git lfs version
+						git config --unset core.hooksPath # Jenkins disables hooks by default as security feature, but we need the hooks for LFS
+						git lfs update # Install Git LFS hooks in repository, which has been skipped due to the initially nulled hookspath
+						git lfs pull
 						git fetch --all --tags --quiet
 						git remote set-url --push origin git@github.com:eclipse-platform/eclipse.platform.swt.git
 					'''
-				}
-				dir ('eclipse.platform.swt.binaries') {
-					checkout([$class: 'GitSCM', branches: [[name: 'refs/heads/master']],
-						extensions: [[$class: 'CloneOption', timeout: 120, noTags: false ]],
-						userRemoteConfigs: [[url: 'https://github.com/eclipse-platform/eclipse.platform.swt.binaries.git']]
-					])
-					sh 'git remote set-url --push origin git@github.com:eclipse-platform/eclipse.platform.swt.binaries.git'
 				}
 			}
 		}
 		stage('Check if SWT-binaries build is needed') {
 			steps {
-				withAnt(installation: 'apache-ant-latest', jdk: 'openjdk-jdk11-latest') { // nashorn javascript-engine required in ant-scripts
+				dir('eclipse.platform.swt') {
 					sh'''
 						java -version
 						git config --global user.email 'eclipse-releng-bot@eclipse.org'
 						git config --global user.name 'Eclipse Releng Bot'
-						
-						ant -f eclipse.platform.swt/bundles/org.eclipse.swt/buildSWT.xml check_preprocessing
-						ant -f eclipse.platform.swt/bundles/org.eclipse.swt/buildSWT.xml new_build_with_create_file -DTAG=HEAD
 					'''
+					script {
+						def swtTag = getLatestGitTag()
+						echo "Current tag=${swtTag}."
+						boolean nativesChanged = false
+						dir('bundles/org.eclipse.swt') {
+							// Verify preprocessing is completed
+							sh '''
+								if grep -R --include='*.java' --line-number --fixed-strings -e 'int /*long*/' -e 'float /*double*/' -e 'int[] /*long[]*/' -e 'float[] /*double[]*/' .; then
+									echo There are files with the wrong long /*int*/ preprocessing.
+									exit 1
+								fi
+							'''
+							def sourceFoldersProps = readProperties(file: 'nativeSourceFolders.properties')
+							def sources = sourceFoldersProps.collectEntries{ k, src -> [ k, src.split(',').collect{ f -> '\'' + f + '\''}.join(' ') ] }
+							def diff = sh(script: "git diff HEAD ${swtTag} ${sources.values().join(' ')}", returnStdout: true)
+							nativesChanged = !diff.strip().isEmpty()
+							echo "Natives changed since ${swtTag}: ${nativesChanged}"
+						}
+						if (nativesChanged || params.forceNativeBuilds) {
+							NATIVES_CHANGED = true
+							def swtVersions = getSWTVersions()
+							withEnv(['swt_version='+swtVersions['swt_version'], 'new_version='+swtVersions['new_version'], 'rev='+swtVersions['rev'], 'new_rev='+swtVersions['new_rev'],
+									'comma_ver='+swtVersions['comma_ver'], "new_comma_ver=${swtVersions['maj_ver']},${swtVersions['min_ver']},${swtVersions['new_rev']},0" ]) {
+								sh '''
+									# Delete native binaries to be replaced by subsequent binaries build
+									rm -f binaries/org.eclipse.swt.gtk.*/lib*-${swt_version}.so
+									rm -f binaries/org.eclipse.swt.win32.*/*-${swt_version}.dll
+									rm -f binaries/org.eclipse.swt.cocoa.*/lib*-${swt_version}.jnilib
+									
+									echo "Incrementing version from ${swt_version} to ${new_version}; new comma_ver=${new_comma_ver}"
+									
+									libraryFile='bundles/org.eclipse.swt/Eclipse SWT PI/common/org/eclipse/swt/internal/Library.java'
+									sed -i -e "s/REVISION = ${rev}/REVISION = ${new_rev}/g" "$libraryFile"
+									
+									commonMakeFile='bundles/org.eclipse.swt/Eclipse SWT/common/library/make_common.mak'
+									sed -i -e "s/rev=${rev}/rev=${new_rev}/g" "$commonMakeFile"
+									sed -i -e "s/comma_ver=${comma_ver}/comma_ver=${new_comma_ver}/g" "$commonMakeFile"
+								'''
+							}
+						}
+					}
 				}
 			}
 		}
 		stage('Build SWT-binaries, if needed') {
 			when {
-				anyOf {
-					expression { return params.forceNativeBuilds }
-					expression { return fileExists ('tmp/build_changed.txt') && fileExists ('tmp/natives_changed.txt') }
-				}
+				expression { NATIVES_CHANGED }
 			}
 			matrix {
 				axes {
@@ -115,16 +183,15 @@ pipeline {
 				stages {
 					stage("Collect SWT-native's sources") {
 						steps {
-							dir('eclipse.platform.swt.binaries/bundles'){
-								withAnt(installation: 'apache-ant-latest', jdk: 'openjdk-jdk11-latest') { // nashorn javascript-engine required in ant-scripts
-									sh '''
-										pfSpec=(${PLATFORM//"."/ })
-										ant -f binaries-parent/build.xml copy_library_src_and_create_zip -Dws=${pfSpec[0]} -Dos=${pfSpec[1]} -Darch=${pfSpec[2]}
-									'''
-								}
-								dir("org.eclipse.swt.${PLATFORM}/tmpdir") {
-									stash name:"swt.binaries.sources.${PLATFORM}", includes: "org.eclipse.swt.${PLATFORM}.master.zip"
-								}
+							dir('eclipse.platform.swt/bundles/org.eclipse.swt') {
+								sh '''
+									pfSpec=(${PLATFORM//"."/ })
+									java -Dws=${pfSpec[0]} -Darch=${pfSpec[2]} build-scripts/CollectSources.java -nativeSources \
+										"${WORKSPACE}/eclipse.platform.swt/binaries/org.eclipse.swt.${PLATFORM}/target/natives-build-temp"
+								'''
+							}
+							dir("eclipse.platform.swt/binaries/org.eclipse.swt.${PLATFORM}/target/natives-build-temp") {
+								stash(name:"swt.binaries.sources.${PLATFORM}")
 							}
 						}
 					}
@@ -143,35 +210,27 @@ pipeline {
 								}
 								nativeBuildAgent("${PLATFORM}") {
 									cleanWs() // Workspace is not cleaned up by default, so we do it explicitly
-									echo "OS: ${os}"
-									echo "ARCH: ${arch}"
+									echo "OS: ${os}, ARCH: ${arch}"
 									unstash "swt.binaries.sources.${PLATFORM}"
 									dir('jdk.resources') {
 										unstash "jdk.resources.${os}.${arch}"
 									}
-									// TODO: don't zip the sources and just (un)stash them unzipped! That safes the unzipping and removal of the the zip
 									withEnv(['MODEL=' + arch, "OUTPUT_DIR=${WORKSPACE}/libs", "SWT_JAVA_HOME=${WORKSPACE}/jdk.resources"]) {
-										if(isUnix()){
+										if (isUnix()){
 											sh '''
-												unzip -aa org.eclipse.swt.${PLATFORM}.master.zip
-												rm org.eclipse.swt.${PLATFORM}.master.zip
 												mkdir libs
-												
 												sh build.sh install
 												ls -1R libs
 											'''
 										} else {
 											withEnv(['PATH=C:\\tools\\cygwin\\bin;' + env.PATH]) {
 												bat '''
-													unzip org.eclipse.swt.%PLATFORM%.master.zip
-													rm org.eclipse.swt.%PLATFORM%.master.zip
 													mkdir libs
-													
-													cmd /c build.bat x86_64 all install
+													cmd /c build.bat install
 													ls -1R libs
 												'''
 											}
-										} 
+										}
 									}
 									dir('libs') {
 										stash "swt.binaries.${PLATFORM}"
@@ -184,52 +243,27 @@ pipeline {
 						steps {
 							dir("libs/${PLATFORM}") {
 								unstash "swt.binaries.${PLATFORM}"
-								
-								sh '''#!/bin/bash -x
-									fn-sign-files()
-									{
-										extension=$1
-										signingServiceAddress=$2
+								sh '''
+									if [[ ${PLATFORM} == cocoa.macosx.* ]]; then
+										binariesExtension='jnilib'
+										signerUrl='https://cbi.eclipse.org/macos/codesign/sign'
+									elif [[ ${PLATFORM} == gtk.linux.* ]]; then
+										binariesExtension='so'
+									elif [[ ${PLATFORM} == win32.win32.* ]]; then
+										binariesExtension='dll'
+										signerUrl='https://cbi.eclipse.org/authenticode/sign'
+									fi
+									if [[ -n "$signerUrl" ]]; then
+										echo "Sign ${PLATFORM} libraries"
 										if [[ "${BRANCH_NAME}" == master ]] || [[ "${BRANCH_NAME}" =~ R[0-9]+_[0-9]+(_[0-9]+)?_maintenance ]]; then
-											for filename in $(ls *.${extension})
-											do
-												mv ${filename} unsigned-${filename}
-												curl -f -o ${filename} -F file=@unsigned-${filename} $signingServiceAddress
-												if [[ $? != 0 ]]; then
-													echo "Signing of ${filename} failed"
-													exit 1
-												else
-													rm unsigned-${filename}
-												fi
+											for file in *.${binariesExtension}; do
+												mv $file unsigned-$file
+												curl --fail --form "file=@unsigned-$file" --output "$file" "$signerUrl"
+												rm unsigned-$file
 											done
 										fi
-									}
-									
-									binaryFragmentsRoot=${WORKSPACE}/eclipse.platform.swt.binaries/bundles
-									
-									if [[ ${PLATFORM} == cocoa.macosx.* ]]; then
-										#TODO: Instead use (with adjusted URL): https://github.com/eclipse-cbi/org.eclipse.cbi/tree/main/maven-plugins/eclipse-winsigner-plugin
-										# The mac-signer mojo only works for Mac-applications and not for jnilib files, but the winsigner-plugin with adjusted URL seems to do what we want.
-										echo "Sign ${PLATFORM} libraries"
-										fn-sign-files jnilib https://cbi.eclipse.org/macos/codesign/sign
-		
-										cp *.jnilib ${binaryFragmentsRoot}/org.eclipse.swt.${PLATFORM}/
-									
-									elif [[ ${PLATFORM} == gtk.linux.* ]]; then
-										#TODO: can the webkit handling be removed?!
-										#echo "Removing existing webkitextensions"
-										#rm -r ${binaryFragmentsRoot}/org.eclipse.swt.${PLATFORM}/webkit*/
-										#cp -r webkitextensions* ${binaryFragmentsRoot}/org.eclipse.swt.${PLATFORM}/
-										
-										cp *.so ${binaryFragmentsRoot}/org.eclipse.swt.${PLATFORM}/
-									
-									elif [[ ${PLATFORM} == win32.win32.* ]]; then
-										#TODO: Instead use: https://github.com/eclipse-cbi/org.eclipse.cbi/tree/main/maven-plugins/eclipse-winsigner-plugin
-										echo "Sign ${PLATFORM} libraries"
-										fn-sign-files dll https://cbi.eclipse.org/authenticode/sign
-										
-										cp *.dll ${binaryFragmentsRoot}/org.eclipse.swt.${PLATFORM}/
 									fi
+									cp *.$binariesExtension "${WORKSPACE}/eclipse.platform.swt/binaries/org.eclipse.swt.${PLATFORM}/"
 								'''
 							}
 						}
@@ -239,55 +273,35 @@ pipeline {
 		}
 		stage('Commit SWT-native binaries, if build') {
 			when {
-				expression { return params.forceNativeBuilds || fileExists ('tmp/build_changed.txt') }
+				expression { NATIVES_CHANGED }
 			}
 			steps {
-				withAnt(installation: 'apache-ant-latest', jdk: 'openjdk-jdk11-latest') { // nashorn javascript-engine required in ant-scripts
-					//The maven build reads the git-history so we should have to commit the native-binaries before building
-					sh '''
-						pushd eclipse.platform.swt.binaries
-						git add --all *
-						echo "git status after add"
-						git status
-						popd
-
-						ant -f eclipse.platform.swt/bundles/org.eclipse.swt/buildInternal.xml write_qualifier -Dlib.dir=${WORKSPACE} -Dbuild_changed=true
-						ant -f eclipse.platform.swt/bundles/org.eclipse.swt/buildSWT.xml commit_poms_and_binaries
-						ant -f eclipse.platform.swt/bundles/org.eclipse.swt/buildSWT.xml tag_projects
-	
-						pushd eclipse.platform.swt
-						git status
-						git log -p -2
-						popd
-						
-						pushd eclipse.platform.swt.binaries
-						git status
-						git log -p -1
-						popd
-					'''
-				}
-			}	
-		}
-		stage('Build') {
-			tools {
-				// Define tools only in this stage to not interfere with default environemts of SWT-natives build-agents
-				jdk 'openjdk-jdk17-latest'
-				maven 'apache-maven-latest'
-			}
-			steps {
-				xvnc(useXauthority: true) {
-					dir ('eclipse.platform.swt.binaries') {
+				dir('eclipse.platform.swt') {
+					withEnv(["swt_version=${getSWTVersions()['swt_version']}"]) { // versions are read from updated file
 						sh '''
-							mvn install \
-								--batch-mode -Pbuild-individual-bundles -DforceContextQualifier=zzz \
-								-Dcompare-version-with-baselines.skip=true -Dmaven.compiler.failOnWarning=true
+							find binaries -name "*${swt_version}*" -type f -exec chmod 755 {} +
+							
+							git add --all *
+							git status
+							git commit -m "v${swt_version}"
+							git tag "v${swt_version}"
+							
+							git status
+							git log --patch -2
 						'''
 					}
-					dir ('eclipse.platform.swt') {
+				}
+			}
+		}
+		stage('Build') {
+			steps {
+				xvnc(useXauthority: true) {
+					dir('eclipse.platform.swt') {
 						sh '''
 							mvn clean verify \
-								--batch-mode -DforkCount=0 \
-								-Dcompare-version-with-baselines.skip=false -Dmaven.compiler.failOnWarning=true \
+								--batch-mode --threads 1C -DforkCount=0 \
+								-Dcompare-version-with-baselines.skip=false \
+								-Dorg.eclipse.swt.tests.junit.disable.test_isLocal=true \
 								-Dmaven.test.failure.ignore=true -Dmaven.test.error.ignore=true
 						'''
 					}
@@ -298,38 +312,26 @@ pipeline {
 					junit 'eclipse.platform.swt/tests/*.test*/target/surefire-reports/*.xml'
 					archiveArtifacts artifacts: '**/*.log,**/*.html,**/target/*.jar,**/target/*.zip'
 					discoverGitReferenceBuild referenceJob: 'eclipse.platform.swt/master'
-					recordIssues publishAllIssues: true, tools: [java(), mavenConsole(), javaDoc()]
+					recordIssues publishAllIssues: true, tools: [eclipse(name: 'Compiler and API Tools', pattern: '**/target/compilelogs/*.xml'), javaDoc()], qualityGates: [[threshold: 1, type: 'DELTA', unstable: true]]
+					recordIssues publishAllIssues: true, tool: mavenConsole(), qualityGates: [[threshold: 1, type: 'DELTA_ERROR', unstable: true]]
 				}
 			}
 		}
 		stage('Push SWT-native binaries, if build') {
 			when {
-				expression { return params.forceNativeBuilds || fileExists ('tmp/build_changed.txt') }
+				expression { NATIVES_CHANGED }
 			}
 			steps {
 				sshagent(['github-bot-ssh']) {
-					script {
-						def newSWTNativesTag = null;
-						dir ('eclipse.platform.swt.binaries') {
-							newSWTNativesTag = sh(script: 'git describe --abbrev=0 --tags --match v[0-9][0-9][0-9][0-9]*', returnStdout: true).strip()
-						}
-						echo "newSWTNativesTag: ${newSWTNativesTag}"
+					dir('eclipse.platform.swt') {
 						sh """
 							# Check for the master-branch as late as possible to have as much of the same behaviour as possible
 							if [[ '${BRANCH_NAME}' == master ]] || [[ '${BRANCH_NAME}' =~ R[0-9]+_[0-9]+(_[0-9]+)?_maintenance ]]; then
 								if [[ ${params.skipCommit} != true ]]; then
 									
-									#Don't rebase and just fail in case another commit has been pushed to the master/maintanance branch in the meantime
-									
-									pushd eclipse.platform.swt
+									# Don't rebase and just fail in case another commit has been pushed to the master/maintanance branch in the meantime
 									git push origin HEAD:refs/heads/${BRANCH_NAME}
-									git push origin refs/tags/${newSWTNativesTag}
-									popd
-									
-									pushd eclipse.platform.swt.binaries
-									git push origin HEAD:refs/heads/${BRANCH_NAME}
-									git push origin refs/tags/${newSWTNativesTag}
-									popd
+									git push origin refs/tags/${getLatestGitTag()}
 									
 									exit 0
 								else
@@ -338,13 +340,6 @@ pipeline {
 							else
 								echo Skip pushing changes of native-binaries for branch '${BRANCH_NAME}'
 							fi
-							# The commits are not pushed. At least list them, so one can check if the result is as expected.
-							pushd eclipse.platform.swt
-							git log -n 2
-							popd
-							pushd eclipse.platform.swt.binaries
-							git log -n 2
-							popd
 						"""
 					}
 				}

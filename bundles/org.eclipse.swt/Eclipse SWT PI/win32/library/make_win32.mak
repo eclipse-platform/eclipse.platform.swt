@@ -113,7 +113,7 @@ swt_awt.res:
 swt_wgl.res:
 	rc $(RCFLAGS) -DSWT_ORG_FILENAME=\"$(WGL_LIB)\" -r -fo swt_wgl.res swt_wgl.rc
 
-install:
+install: all
 	copy *.dll "$(OUTPUT_DIR)"
 
 clean:

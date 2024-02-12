@@ -31,6 +31,19 @@ public final class FontMetrics {
 FontMetrics() {
 }
 
+/**
+ * Convenience method to make a copy of receiver.
+ */
+FontMetrics makeCopy () {
+	FontMetrics fontMetrics = new FontMetrics();
+	fontMetrics.ascent = this.ascent;
+	fontMetrics.descent = this.descent;
+	fontMetrics.averageCharWidth = this.averageCharWidth;
+	fontMetrics.leading = this.leading;
+	fontMetrics.height = this.height;
+	return fontMetrics;
+}
+
 public static FontMetrics cocoa_new (int ascent, int descent, int averageCharWidth, int leading, int height) {
 	FontMetrics fontMetrics = new FontMetrics();
 	fontMetrics.ascent = ascent;

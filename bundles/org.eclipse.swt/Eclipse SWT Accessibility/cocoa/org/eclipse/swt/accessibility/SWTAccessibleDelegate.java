@@ -18,7 +18,6 @@ import org.eclipse.swt.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.cocoa.*;
 
-@SuppressWarnings("rawtypes")
 class SWTAccessibleDelegate extends NSObject {
 
 	/**
@@ -42,7 +41,7 @@ class SWTAccessibleDelegate extends NSObject {
 	NSArray actionNames = null;
 
 	static {
-		Class clazz = SWTAccessibleDelegate.class;
+		Class<?> clazz = SWTAccessibleDelegate.class;
 
 		accessible2Args = new Callback(clazz, "accessibleProc", 2);
 		proc2Args = accessible2Args.getAddress();

@@ -1144,7 +1144,7 @@ void menuDidClose(long id, long sel, long menu) {
 
 @Override
 void mouseDown(long id, long sel, long theEvent) {
-	// If the control is diposed in below 'super.mouseDown()', both fields
+	// If the control is disposed in below 'super.mouseDown()', both fields
 	// 'view' and 'display' will be nulled. Hence keep their references:
 	final Display display = this.display;
 	final NSView view = this.view;

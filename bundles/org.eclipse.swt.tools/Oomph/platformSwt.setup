@@ -49,75 +49,10 @@
   <setupTask
       xsi:type="setup:ResourceCopyTask"
       excludedTriggers="BOOTSTRAP"
-      filter="(osgi.ws=cocoa)"
-      sourceURL="${github.clone.platform.swt.location|uri}/bundles/org.eclipse.swt/.classpath_${osgi.ws}_${osgi.arch}"
-      targetURL="${github.clone.platform.swt.location|uri}/bundles/org.eclipse.swt/.classpath"/>
-  <setupTask
-      xsi:type="setup:ResourceCopyTask"
-      excludedTriggers="BOOTSTRAP"
-      filter="(|(osgi.ws=win32)(osgi.ws=gtk))"
-      sourceURL="${github.clone.platform.swt.location|uri}/bundles/org.eclipse.swt/.classpath_${osgi.ws}"
-      targetURL="${github.clone.platform.swt.location|uri}/bundles/org.eclipse.swt/.classpath"/>
-  <setupTask
-      xsi:type="setup.workingsets:WorkingSetTask"/>
-  <setupTask
-      xsi:type="git:GitCloneTask"
-      id="github.clone.platform.swt.binaries"
-      remoteURI="eclipse-platform/eclipse.platform.swt.binaries"
-      pushURI=""
-      restrictToCheckoutBranch="true">
-    <annotation
-        source="http://www.eclipse.org/oomph/setup/InducedChoices">
-      <detail
-          key="inherit">
-        <value>github.remoteURIs</value>
-      </detail>
-      <detail
-          key="label">
-        <value>Platform SWT Github Repository</value>
-      </detail>
-      <detail
-          key="target">
-        <value>remoteURI</value>
-      </detail>
-    </annotation>
-    <configSections
-        name="branch">
-      <properties
-          key="autoSetupRebase"
-          value="always"/>
-    </configSections>
-    <description>Platform SWT</description>
-  </setupTask>
-  <setupTask
-      xsi:type="setup:ResourceCopyTask"
-      excludedTriggers="BOOTSTRAP"
       sourceURL="${github.clone.platform.swt.location|uri}/examples/org.eclipse.swt.snippets/.classpath_${osgi.ws}"
       targetURL="${github.clone.platform.swt.location|uri}/examples/org.eclipse.swt.snippets/.classpath"/>
   <setupTask
       xsi:type="setup.targlets:TargletTask">
-    <targlet
-        name="SWT Binaries"
-        activeRepositoryList="${eclipse.target.platform}">
-      <requirement
-          name="*"/>
-      <sourceLocator
-          rootFolder="${github.clone.platform.swt.binaries.location}"
-          locateNestedProjects="true">
-        <predicate
-            xsi:type="predicates:OrPredicate">
-          <operand
-              xsi:type="predicates:NotPredicate">
-            <operand
-                xsi:type="predicates:NamePredicate"
-                pattern=".*(cocoa|gtk|win32)(\.(macosx|aix|hpux|linux|solaris|win32)(\.(x86_64|ppc64|ia64|aarch64|arm|ppc64|ppc64le|s390|s390x|x86|sparcv9))?)?"/>
-          </operand>
-          <operand
-              xsi:type="predicates:NamePredicate"
-              pattern=".*\.${osgi.ws}(\.${osgi.os}(\.${osgi.arch})?)?"/>
-        </predicate>
-      </sourceLocator>
-    </targlet>
     <targlet
         name="SWT"
         activeRepositoryList="${eclipse.target.platform}">
@@ -134,6 +69,9 @@
                 xsi:type="predicates:OrPredicate">
               <operand
                   xsi:type="predicates:NamePredicate"
+                  pattern=".*(cocoa|gtk|win32)(\.(macosx|aix|hpux|linux|solaris|win32)(\.(x86_64|ppc64|ia64|aarch64|arm|ppc64|ppc64le|s390|s390x|x86|sparcv9))?)?"/>
+              <operand
+                  xsi:type="predicates:NamePredicate"
                   pattern="org\.eclipse\.swt\.opengl\.examples">
                 <annotation
                     source="http://www.eclipse.org/oomph/base/Warning">
@@ -143,26 +81,11 @@
                   </detail>
                 </annotation>
               </operand>
-              <operand
-                  xsi:type="predicates:NamePredicate"
-                  pattern="org\.eclipse\.swt\.tests\.cocoa"/>
-              <operand
-                  xsi:type="predicates:NamePredicate"
-                  pattern="org\.eclipse\.swt\.tests\.win32"/>
-              <operand
-                  xsi:type="predicates:NamePredicate"
-                  pattern="org\.eclipse\.swt\.tests\.gtk"/>
-              <operand
-                  xsi:type="predicates:NamePredicate"
-                  pattern="org\.eclipse\.swt\.examples\.ole\.win32"/>
             </operand>
           </operand>
           <operand
               xsi:type="predicates:NamePredicate"
-              pattern="org\.eclipse\.swt\.tests\.${osgi.ws}"/>
-          <operand
-              xsi:type="predicates:NamePredicate"
-              pattern="org\.eclipse\.swt\.examples\.ole\.${osgi.ws}"/>
+              pattern=".*\.${osgi.ws}(\.${osgi.os}(\.${osgi.arch})?)?"/>
         </predicate>
       </sourceLocator>
     </targlet>
@@ -218,27 +141,12 @@
             excludedWorkingSet="//'workingsets.platform.swt'/@workingSets[name='SWT%20Examples'] //'workingsets.platform.swt'/@workingSets[name='SWT%20Tests'] //'workingsets.platform.swt'/@workingSets[name='SWT%20Tools']"/>
       </predicate>
     </workingSet>
-    <workingSet
-        name="SWT Binaries">
-      <predicate
-          xsi:type="predicates:AndPredicate">
-        <operand
-            xsi:type="predicates:LocationPredicate"
-            pattern="\Q${github.clone.platform.swt.binaries.location|path}/\E.*"/>
-      </predicate>
-    </workingSet>
   </setupTask>
   <setupTask
       xsi:type="setup.p2:P2Task"
       label="SWT Tools">
     <requirement
         name="org.eclipse.swt.tools.feature.feature.group"/>
-    <requirement
-        name="org.eclipse.platform.feature.group"/>
-    <requirement
-        name="org.eclipse.jdt.feature.group"/>
-    <requirement
-        name="org.eclipse.pde.feature.group"/>
     <repository
         url="${eclipse.latest.p2}"/>
   </setupTask>

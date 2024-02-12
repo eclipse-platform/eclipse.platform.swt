@@ -281,6 +281,81 @@ public void test_Constructor_asyncParentDisposal() {
 }
 
 @Test
+public void test_Constructor_multipleInstantiationsInDifferentShells() {
+	final int numberOfBrowsers = 5;
+	for (int i = 0; i < numberOfBrowsers; i++) {
+		Shell browserShell = new Shell(Display.getCurrent());
+		Browser browser = createBrowser(browserShell, SWT.EDGE);
+		assertFalse(browser.isDisposed());
+		browser.dispose();
+		assertTrue(browser.isDisposed());
+		browserShell.dispose();
+		assertTrue(browserShell.isDisposed());
+	}
+}
+
+private class EdgeBrowserApplication extends Thread {
+	private volatile boolean shouldClose;
+	private volatile boolean isRunning;
+	private volatile boolean isDisposed;
+
+	@Override
+	public void run() {
+		Display threadDisplay = new Display();
+		Shell browserShell = new Shell(threadDisplay);
+		Browser browser = createBrowser(browserShell, SWT.EDGE);
+		browserShell.setVisible(true);
+		isDisposed = browser.isDisposed();
+		isRunning = true;
+
+		while (!shouldClose) {
+			synchronized (this) {
+				try {
+					wait();
+				} catch (InterruptedException e) {
+					shouldClose = true;
+				}
+			}
+		}
+
+		browser.dispose();
+		browserShell.dispose();
+		threadDisplay.dispose();
+		isDisposed = browser.isDisposed();
+		isRunning = false;
+	}
+
+	public void close() {
+		shouldClose = true;
+		synchronized (this) {
+			notifyAll();
+		}
+		waitForPassCondition(() -> !isRunning);
+	}
+}
+
+@Test
+public void test_Constructor_multipleInstantiationsInDifferentThreads() {
+	assumeTrue("test case is only relevant on Windows", SwtTestUtil.isWindows);
+
+	int numberOfApplication = 5;
+	List<EdgeBrowserApplication> browserApplications = new ArrayList<>();
+	for (int i = 0; i < numberOfApplication; i++) {
+		EdgeBrowserApplication application = new EdgeBrowserApplication();
+		browserApplications.add(application);
+		application.start();
+	}
+	for (EdgeBrowserApplication application : browserApplications) {
+		waitForPassCondition(() -> application.isRunning);
+		assertFalse(application.isDisposed);
+	}
+	for (EdgeBrowserApplication application : browserApplications) {
+		application.close();
+		assertTrue(application.isDisposed);
+	}
+}
+
+@Test
 public void test_evalute_Cookies () {
 	final AtomicBoolean loaded = new AtomicBoolean(false);
 	browser.addProgressListener(ProgressListener.completedAdapter(event -> loaded.set(true)));
