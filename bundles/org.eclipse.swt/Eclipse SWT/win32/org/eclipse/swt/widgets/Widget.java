@@ -54,7 +54,7 @@ public abstract class Widget {
 	 *
 	 * @since 3.125
 	 */
-	private int currentDeviceZoom = 125;
+	private int currentDeviceZoom;
 	int style, state;
 	Display display;
 	EventTable eventTable;
@@ -135,6 +135,7 @@ public abstract class Widget {
  */
 Widget () {
 	notifyCreationTracker();
+	this.currentDeviceZoom = DPIUtil.getDeviceZoom();
 }
 
 /**

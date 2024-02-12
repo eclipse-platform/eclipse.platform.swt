@@ -725,8 +725,11 @@ public Image(Device device, ImageDataProvider imageDataProvider) {
  * @return true if image is refreshed
  */
 boolean refreshImageForZoom () {
+	return refreshImageForZoom(DPIUtil.getDeviceZoom());
+}
+
+boolean refreshImageForZoom (int deviceZoomLevel) {
 	boolean refreshed = false;
-	int deviceZoomLevel = DPIUtil.getDeviceZoom();
 	if (imageFileNameProvider != null) {
 		if (deviceZoomLevel != currentDeviceZoom) {
 			ElementAtZoom<String> filename = DPIUtil.validateAndGetImagePathAtZoom (imageFileNameProvider, deviceZoomLevel);

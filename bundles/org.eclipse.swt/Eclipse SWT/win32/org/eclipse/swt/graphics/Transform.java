@@ -13,6 +13,8 @@
  *******************************************************************************/
 package org.eclipse.swt.graphics;
 
+import java.util.*;
+
 import org.eclipse.swt.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.gdip.*;
@@ -148,8 +150,7 @@ public Transform(Device device, float[] elements) {
 public Transform (Device device, float m11, float m12, float m21, float m22, float dx, float dy) {
 	super(device);
 	this.device.checkGDIP();
-	handle = Gdip.Matrix_new(m11, m12, m21, m22,
-	        DPIUtil.autoScaleUp(this.device, dx), DPIUtil.autoScaleUp(this.device, dy));
+	handle = Gdip.Matrix_new(m11, m12, m21, m22, dx, dy);
 	if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	init();
 }
@@ -162,7 +163,7 @@ static float[] checkTransform(float[] elements) {
 
 @Override
 void destroy() {
-	Gdip.Matrix_delete(handle);
+	handleMap.values().forEach(handle  -> Gdip.Matrix_delete(handle));
 	handle = 0;
 }
 
@@ -185,9 +186,6 @@ public void getElements(float[] elements) {
 	if (elements == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (elements.length < 6) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	Gdip.Matrix_GetElements(handle, elements);
-	Drawable drawable = getDevice();
-	elements[4] = DPIUtil.autoScaleDown(drawable, elements[4]);
-	elements[5] = DPIUtil.autoScaleDown(drawable, elements[5]);
 }
 
 /**
@@ -318,18 +316,28 @@ public void scale(float scaleX, float scaleY) {
  */
 public void setElements(float m11, float m12, float m21, float m22, float dx, float dy) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	Drawable drawable = getDevice();
-	Gdip.Matrix_SetElements(handle, m11, m12, m21, m22,
-	        DPIUtil.autoScaleUp(drawable, dx), DPIUtil.autoScaleUp(drawable, dy));
+	Gdip.Matrix_SetElements(handle, m11, m12, m21, m22, dx, dy);
 }
+
+private HashMap<Integer, Long> handleMap = new HashMap<>();
 
 /**
  * @since 3.125
  */
 public long getHandle(Shell shell) {
-	if (shell.getCurrentDeviceZoom() != shell.getDisplay().getPrimaryMonitor().getZoom())
-		scale(shell.getCurrentDeviceZoom()/shell.getDisplay().getPrimaryMonitor().getZoom(), shell.getCurrentDeviceZoom()/shell.getDisplay().getPrimaryMonitor().getZoom());
-	return handle;
+	if(shell.getCurrentDeviceZoom() == this.device.getDeviceZoom()) {
+		return this.handle;
+	}
+	if(this.handleMap.get(shell.getCurrentDeviceZoom()) == null) {
+		float[] elements = new float[6];
+		getElements(elements);
+		elements[4] = DPIUtil.autoScaleUp(shell.getDisplay(), elements[4], shell);
+		elements[5] = DPIUtil.autoScaleUp(shell.getDisplay(), elements[5], shell);
+		// that is not sufficient, we are now changing the matrix, so each time we call get handle it would get bigger, so we again need to store that probably per DPI level and manage that
+		setElements(elements[0], elements[1], elements[2], elements[3], elements[4], elements[5]);
+		handleMap.put(shell.getCurrentDeviceZoom(), handle);
+	}
+	return this.handleMap.get(shell.getCurrentDeviceZoom());
 }
 
 /**
@@ -391,8 +399,7 @@ public void transform(float[] pointArray) {
  */
 public void translate(float offsetX, float offsetY) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	Drawable drawable = getDevice();
-	Gdip.Matrix_Translate(handle, DPIUtil.autoScaleUp(drawable, offsetX), DPIUtil.autoScaleUp(drawable, offsetY), Gdip.MatrixOrderPrepend);
+	Gdip.Matrix_Translate(handle, offsetX, offsetY, Gdip.MatrixOrderPrepend);
 }
 
 /**

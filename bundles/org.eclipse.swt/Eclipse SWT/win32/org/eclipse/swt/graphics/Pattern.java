@@ -88,6 +88,7 @@ public class Pattern extends Resource {
  */
 public Pattern(Device device, Image image) {
 	super(device);
+	isImagePattern = true;
 	if (image == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (image.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	this.device.checkGDIP();
@@ -198,6 +199,7 @@ public Pattern(Device device, float x1, float y1, float x2, float y2, Color colo
 	this.color2 = color2;
 	this.alpha1 = alpha1;
 	this.alpha2 = alpha2;
+	this.isImagePattern = false;
 	initializeSize(null);
 }
 
@@ -211,13 +213,14 @@ private Pattern(Shell shell, float x1, float y1, float x2, float y2, Color color
 	this.color2 = color2;
 	this.alpha1 = alpha1;
 	this.alpha2 = alpha2;
+	this.isImagePattern = false;
 	initializeSize(shell);
 }
 
 private HashMap<Integer, Pattern> scaledpattern = new HashMap<>();
 
 Pattern getScaledPattern(Shell shell) {
-	if(shell.getCurrentDeviceZoom() == this.device.getDeviceZoom()) {
+	if(shell.getCurrentDeviceZoom() == this.device.getDeviceZoom() || this.isImagePattern) {
 		return this;
 	}
 	if(this.scaledpattern.get(shell.getCurrentDeviceZoom()) == null) {
@@ -230,6 +233,7 @@ Pattern getScaledPattern(Shell shell) {
 private float x1, y1, x2, y2;
 private Color color1, color2;
 private int alpha1, alpha2;
+private final boolean isImagePattern;
 
 //void initializeSize(float x1, float y1, float x2, float y2, Color color1, int alpha1, Color color2, int alpha2) {
 /**

@@ -382,8 +382,8 @@ public void close() {
  */
 public boolean contains (float x, float y, GC gc, boolean outline) {
 	Drawable drawable = getDevice();
-	x = DPIUtil.autoScaleUp(drawable, x);
-	y = DPIUtil.autoScaleUp(drawable, y);
+	x = DPIUtil.autoScaleUp(drawable, x, gc.data.shell);
+	y = DPIUtil.autoScaleUp(drawable, y, gc.data.shell);
 	return containsInPixels(x, y, gc, outline);
 }
 

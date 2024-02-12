@@ -212,7 +212,7 @@ void destroyScrollBar (int type) {
  */
 public Rectangle getClientArea () {
 	checkWidget ();
-	return DPIUtil.autoScaleDown(getClientAreaInPixels());
+	return DPIUtil.autoScaleDown(getClientAreaInPixels(), getShell());
 }
 
 Rectangle getClientAreaInPixels () {
