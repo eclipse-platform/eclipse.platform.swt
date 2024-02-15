@@ -79,6 +79,13 @@ BOOL Validate_AllowDarkModeForWindow(const BYTE* functionPtr)
 	}
 
 	return FALSE;
+#elif defined(_M_ARM64)
+	if (*(const DWORD*)(&functionPtr[0x18]) == 0xD29523C1) // mov x1,#0xA91E
+	{
+		return TRUE;
+	}
+
+	return FALSE;
 #else
 	#error Unsupported processor type
 #endif
@@ -124,6 +131,13 @@ BOOL Validate_AllowDarkModeForWindowWithTelemetryId(const BYTE* functionPtr)
 	/* Win11 builds from 22621 */
 	if ((functionPtr[0x15] == 0xBA) &&                      // mov      edx,
 		(*(const DWORD*)(functionPtr + 0x16) == 0xA91E))    //              0A91Eh
+	{
+		return TRUE;
+	}
+
+	return FALSE;
+#elif defined(_M_ARM64)
+	if (*(const DWORD*)(&functionPtr[0x18]) == 0xD29523C1) // mov x1,#0xA91E
 	{
 		return TRUE;
 	}
@@ -219,6 +233,13 @@ BOOL Validate_SetPreferredAppMode(const BYTE* functionPtr)
 		(functionPtr[0x00] == 0x8B) && (functionPtr[0x01] == 0x05) &&   // mov     eax,dword ptr [uxtheme!g_preferredAppMode]
 		(functionPtr[0x06] == 0x87) && (functionPtr[0x07] == 0x0D) &&   // xchg    ecx,dword ptr [uxtheme!g_preferredAppMode]
 		(functionPtr[0x0C] == 0xC3);                                    // ret
+#elif defined(_M_ARM64)
+	if (*(const DWORD*)(&functionPtr[0x1C]) == 0x912F6100) // add x0,x8,#0xBD8
+	{
+		return TRUE;
+	}
+
+	return FALSE;
 #else
 	#error Unsupported processor type
 #endif
