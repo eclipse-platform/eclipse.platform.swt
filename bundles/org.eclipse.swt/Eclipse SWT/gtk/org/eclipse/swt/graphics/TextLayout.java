@@ -1975,7 +1975,7 @@ public void setDescent (int descent) {
  * painting hieroglyphs usually involves a fallback font).</li>
  * <li>Obtaining 'FontMetrics' via a temporary 'TextLayout'. This would
  * involve setting a desired text sample to 'TextLayout', then measuring
- * it with {@link org.eclipse.swt.graphics.TextLayout#getLineMetrics(int)}. This approach will also
+ * it with {@link TextLayout#getLineMetrics(int)}. This approach will also
  * take fallback fonts into account.</li>
  * </ul>
  *
