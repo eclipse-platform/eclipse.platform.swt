@@ -2825,7 +2825,8 @@ void setItemHeight (Image image, NSFont font, boolean set) {
 	if (font == null) font = getFont ().handle;
 	double ascent = font.ascender ();
 	double descent = -font.descender () + font.leading ();
-	int height = (int)Math.ceil (ascent + descent) + VERTICAL_CELL_PADDING;
+	// If small fonts are set with -Dorg.eclipse.swt.internal.carbon.smallFonts then use smaller vertical padding
+    int height = (int)Math.ceil (ascent + descent) + (display.smallFonts ? 1 : VERTICAL_CELL_PADDING);
 	Rectangle bounds = image != null ? image.getBounds () : imageBounds;
 	if (bounds != null) {
 		imageBounds = bounds;

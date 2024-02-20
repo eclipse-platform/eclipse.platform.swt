@@ -1182,7 +1182,8 @@ void setFont (NSFont font) {
 	super.setFont (font);
 	double ascent = font.ascender ();
 	double descent = -font.descender () + font.leading ();
-	((NSTableView)view).setRowHeight ((int)Math.ceil (ascent + descent) + VERTICAL_CELL_PADDING);
+	// If small fonts are set with -Dorg.eclipse.swt.internal.carbon.smallFonts then use smaller vertical padding
+	((NSTableView)view).setRowHeight ((int)Math.ceil (ascent + descent) + (display.smallFonts ? 1 : VERTICAL_CELL_PADDING));
 	setScrollWidth();
 }
 
