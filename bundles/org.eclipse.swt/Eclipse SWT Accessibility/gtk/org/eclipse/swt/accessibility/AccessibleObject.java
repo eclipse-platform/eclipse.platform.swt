@@ -2879,37 +2879,37 @@ class AccessibleObject {
 						long attrPtr;
 						attrPtr = OS.g_malloc(AtkAttribute.sizeof);
 						attr.name = OS.g_strdup (ATK.atk_text_attribute_get_name(ATK.ATK_TEXT_ATTR_FAMILY_NAME));
-						attr.value = OS.g_strdup (OS.pango_font_description_get_family (font.handle));
+						attr.value = OS.g_strdup (font.handle.getFamily());
 						ATK.memmove(attrPtr, attr, AtkAttribute.sizeof);
 						result = OS.g_slist_append(result, attrPtr);
 
 						attrPtr = OS.g_malloc(AtkAttribute.sizeof);
 						attr.name = OS.g_strdup (ATK.atk_text_attribute_get_name(ATK.ATK_TEXT_ATTR_SIZE));
-						attr.value = getStringPtr (String.valueOf (OS.pango_font_description_get_size(font.handle) / OS.PANGO_SCALE));
+						attr.value = getStringPtr (String.valueOf (font.handle.getHeight()));
 						ATK.memmove(attrPtr, attr, AtkAttribute.sizeof);
 						result = OS.g_slist_append(result, attrPtr);
 
 						attrPtr = OS.g_malloc(AtkAttribute.sizeof);
 						attr.name = OS.g_strdup (ATK.atk_text_attribute_get_name(ATK.ATK_TEXT_ATTR_STYLE));
-						attr.value = OS.g_strdup (ATK.atk_text_attribute_get_value(ATK.ATK_TEXT_ATTR_STYLE, OS.pango_font_description_get_style(font.handle)));
+						attr.value = OS.g_strdup (ATK.atk_text_attribute_get_value(ATK.ATK_TEXT_ATTR_STYLE, font.handle.getStyle()));
 						ATK.memmove(attrPtr, attr, AtkAttribute.sizeof);
 						result = OS.g_slist_append(result, attrPtr);
 
 						attrPtr = OS.g_malloc(AtkAttribute.sizeof);
 						attr.name = OS.g_strdup (ATK.atk_text_attribute_get_name(ATK.ATK_TEXT_ATTR_VARIANT));
-						attr.value = OS.g_strdup (ATK.atk_text_attribute_get_value(ATK.ATK_TEXT_ATTR_VARIANT, OS.pango_font_description_get_variant(font.handle)));
+						attr.value = OS.g_strdup (ATK.atk_text_attribute_get_value(ATK.ATK_TEXT_ATTR_VARIANT, font.handle.getVariant()));
 						ATK.memmove(attrPtr, attr, AtkAttribute.sizeof);
 						result = OS.g_slist_append(result, attrPtr);
 
 						attrPtr = OS.g_malloc(AtkAttribute.sizeof);
 						attr.name = OS.g_strdup (ATK.atk_text_attribute_get_name(ATK.ATK_TEXT_ATTR_STRETCH));
-						attr.value = OS.g_strdup (ATK.atk_text_attribute_get_value(ATK.ATK_TEXT_ATTR_STRETCH, OS.pango_font_description_get_stretch(font.handle)));
+						attr.value = OS.g_strdup (ATK.atk_text_attribute_get_value(ATK.ATK_TEXT_ATTR_STRETCH, font.handle.getStretch()));
 						ATK.memmove(attrPtr, attr, AtkAttribute.sizeof);
 						result = OS.g_slist_append(result, attrPtr);
 
 						attrPtr = OS.g_malloc(AtkAttribute.sizeof);
 						attr.name = OS.g_strdup (ATK.atk_text_attribute_get_name(ATK.ATK_TEXT_ATTR_WEIGHT));
-						attr.value = getStringPtr (String.valueOf (OS.pango_font_description_get_weight(font.handle)));
+						attr.value = getStringPtr (String.valueOf (font.handle.getWeight()));
 						ATK.memmove(attrPtr, attr, AtkAttribute.sizeof);
 						result = OS.g_slist_append(result, attrPtr);
 					}
