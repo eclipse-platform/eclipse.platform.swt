@@ -84,6 +84,11 @@ public class List extends Scrollable {
  */
 public List (Composite parent, int style) {
 	super (parent, checkStyle (style));
+
+    // Have to initialize item height here by calling setFont() in case option set for smaller item height
+	if(display.smallItemHeight) {
+		setFont((Font)null);
+	}
 }
 
 @Override
@@ -1182,7 +1187,8 @@ void setFont (NSFont font) {
 	super.setFont (font);
 	double ascent = font.ascender ();
 	double descent = -font.descender () + font.leading ();
-	((NSTableView)view).setRowHeight ((int)Math.ceil (ascent + descent) + VERTICAL_CELL_PADDING);
+    // If small item height is set with option then use smaller vertical padding
+	((NSTableView)view).setRowHeight ((int)Math.ceil (ascent + descent) + (display.smallItemHeight ? 1 : VERTICAL_CELL_PADDING));
 	setScrollWidth();
 }
 

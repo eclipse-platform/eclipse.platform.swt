@@ -132,6 +132,11 @@ public class Table extends Composite {
  */
 public Table (Composite parent, int style) {
 	super (parent, checkStyle (style));
+
+	// Have to initialize item height here in case option set for smaller item height
+	if(display.smallItemHeight) {
+		setItemHeight(null, null, true);
+	}
 }
 
 @Override
@@ -2825,7 +2830,8 @@ void setItemHeight (Image image, NSFont font, boolean set) {
 	if (font == null) font = getFont ().handle;
 	double ascent = font.ascender ();
 	double descent = -font.descender () + font.leading ();
-	int height = (int)Math.ceil (ascent + descent) + VERTICAL_CELL_PADDING;
+    // If small item height is set with option then use smaller vertical padding
+    int height = (int)Math.ceil (ascent + descent) + (display.smallItemHeight ? 1 : VERTICAL_CELL_PADDING);
 	Rectangle bounds = image != null ? image.getBounds () : imageBounds;
 	if (bounds != null) {
 		imageBounds = bounds;
