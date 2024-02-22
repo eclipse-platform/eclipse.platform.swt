@@ -8622,16 +8622,29 @@ void setClipboardContent(int start, int length, int clipboardType) throws SWTErr
 		data = new Object[]{plainText};
 		types = new Transfer[]{plainTextTransfer};
 	} else {
-		RTFTransfer rtfTransfer = RTFTransfer.getInstance();
-		RTFWriter rtfWriter = new RTFWriter(this, start, length);
-		String rtfText = getPlatformDelimitedText(rtfWriter);
+		try {
+			RTFTransfer rtfTransfer = RTFTransfer.getInstance();
+			RTFWriter rtfWriter = new RTFWriter(this, start, length);
+			String rtfText = getPlatformDelimitedText(rtfWriter);
 
-		HTMLTransfer htmlTransfer = HTMLTransfer.getInstance();
-		HTMLWriter htmlWriter = new HTMLWriter(this, start, length, content);
-		String htmlText = getPlatformDelimitedText(htmlWriter);
-
-		data = new Object[]{rtfText, htmlText, plainText};
-		types = new Transfer[]{rtfTransfer, htmlTransfer, plainTextTransfer};
+			HTMLTransfer htmlTransfer = HTMLTransfer.getInstance();
+			HTMLWriter htmlWriter = new HTMLWriter(this, start, length, content);
+			String htmlText = getPlatformDelimitedText(htmlWriter);
+			htmlText = "" +htmlText; //cause extra memory pressure to fail fast instead of failing in HTMLTransfer.javaToNative()
+			data = new Object[]{rtfText, htmlText, plainText};
+			types = new Transfer[]{rtfTransfer, htmlTransfer, plainTextTransfer};
+		} catch (OutOfMemoryError oome) {
+			// Adding RTF and HTML text may increase size by factor > 15
+			// fall back: copy plain text
+			data = new Object[] { plainText };
+			types = new Transfer[] { plainTextTransfer };
+			clipboard.setContents(data, types, clipboardType);
+			OutOfMemoryError customOome = new OutOfMemoryError(
+					"Out of Memory: Copied only plain text (" + plainText.lines().count() + " lines).");
+			customOome.initCause(oome);
+			// Still throw as it is likely that other threads silently failed too, but at least copied text is not lost
+			throw customOome;
+		}
 	}
 	clipboard.setContents(data, types, clipboardType);
 }
