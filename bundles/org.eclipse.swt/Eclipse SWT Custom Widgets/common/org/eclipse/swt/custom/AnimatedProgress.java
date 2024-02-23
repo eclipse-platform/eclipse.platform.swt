@@ -195,9 +195,7 @@ public synchronized void start() {
 	final Runnable [] timer = new Runnable [1];
 	timer [0] = () -> {
 		if (!active) return;
-		GC gc = new GC(AnimatedProgress.this);
-		paintStripes(gc);
-		gc.dispose();
+		GC.drawOn(AnimatedProgress.this, gc -> paintStripes(gc));
 		display.timerExec (SLEEP, timer [0]);
 	};
 	display.timerExec (SLEEP, timer [0]);
