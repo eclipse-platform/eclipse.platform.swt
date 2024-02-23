@@ -1500,10 +1500,11 @@ void setFont(Font font, int tabs) {
 	tabWidth = layout.getBounds().width;
 	layout.dispose();
 	if (styledText != null) {
-		GC gc = new GC(styledText);
-		averageCharWidth = (int) gc.getFontMetrics().getAverageCharacterWidth();
-		fixedPitch = gc.stringExtent("l").x == gc.stringExtent("W").x; //$NON-NLS-1$ //$NON-NLS-2$
-		gc.dispose();
+		try (AutoDisposableGC autoGC = GC.create(styledText)) {
+			GC gc = autoGC.gc();
+			averageCharWidth = (int) gc.getFontMetrics().getAverageCharacterWidth();
+			fixedPitch = gc.stringExtent("l").x == gc.stringExtent("W").x; //$NON-NLS-1$ //$NON-NLS-2$
+		}
 	}
 }
 void setLineAlignment(int startLine, int count, int alignment) {
