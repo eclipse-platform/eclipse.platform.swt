@@ -190,6 +190,20 @@ public GC(Drawable drawable, int style) {
 	init();
 }
 
+/**
+ * Creates a new {@link AutoDisposableGC} that draws on the given drawable.
+ * The returned object is {@link AutoCloseable} and disposes the underlying
+ * GC when closed, so it can be used in a try-with-resources statement.
+ *
+ * @param drawable the drawable to draw on
+ * @return an AutoCloseable wrapper around a new GC for the drawable
+ *
+ * @since 3.135
+ */
+public static AutoDisposableGC create(Drawable drawable) {
+	return new AutoDisposableGC(new GC(drawable));
+}
+
 private float calculateTransformationScale() {
 	if (currentTransform == null) {
 		return 1.0f;
