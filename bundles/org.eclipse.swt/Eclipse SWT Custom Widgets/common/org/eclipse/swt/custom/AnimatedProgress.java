@@ -209,9 +209,10 @@ public synchronized void start() {
 	final Runnable [] timer = new Runnable [1];
 	timer [0] = () -> {
 		if (!active) return;
-		GC gc = new GC(AnimatedProgress.this);
-		paintStripes(gc);
-		gc.dispose();
+		try (AutoDisposableGC autoGC = GC.create(AnimatedProgress.this)) {
+			GC gc = autoGC.gc();
+			paintStripes(gc);
+		}
 		display.timerExec (SLEEP, timer [0]);
 	};
 	display.timerExec (SLEEP, timer [0]);
