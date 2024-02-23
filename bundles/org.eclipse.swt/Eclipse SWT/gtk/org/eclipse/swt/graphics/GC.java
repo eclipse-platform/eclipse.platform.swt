@@ -60,7 +60,8 @@ import org.eclipse.swt.internal.gtk.*;
  * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Examples: GraphicsExample, PaintExample</a>
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
-public final class GC extends Resource {
+public sealed class GC extends Resource permits AutoDisposableGC {
+
 	/**
 	 * the handle to the OS device context
 	 * (Warning: This field is platform dependent)
@@ -126,7 +127,9 @@ GC() {
  * foreground color, background color and font in the GC
  * to match those in the drawable.
  * <p>
- * You must dispose the graphics context when it is no longer required.
+ * You must dispose the graphics context when it is no longer required or
+ * create a safe context via {@link #create(Drawable)} which takes over
+ * disposal when called in a try-with-resources statement.
  * </p>
  * @param drawable the drawable to draw on
  * @exception IllegalArgumentException <ul>
@@ -153,7 +156,9 @@ public GC(Drawable drawable) {
  * foreground color, background color and font in the GC
  * to match those in the drawable.
  * <p>
- * You must dispose the graphics context when it is no longer required.
+ * You must dispose the graphics context when it is no longer required or
+ * create a safe context via {@link #create(Drawable)} which takes over
+ * disposal when called in a try-with-resources statement.
  * </p>
  *
  * @param drawable the drawable to draw on
@@ -188,6 +193,19 @@ public GC(Drawable drawable, int style) {
 	long gdkGC = drawable.internal_new_GC(data);
 	init(drawable, data, gdkGC);
 	init();
+}
+
+/**
+ * Creates an AutoCloseable instance of the GC class which has been configured
+ * to draw on the specified drawable. GC.dispose() will be called automatically
+ * in the close() method if called in a try-with-resources statement.
+ *
+ * @since 3.133
+ * @param drawable the drawable to draw on
+ * @return AutoDisposableGC
+ */
+public static AutoDisposableGC create(Drawable drawable) {
+	return new AutoDisposableGC(drawable, SWT.NONE);
 }
 
 /**

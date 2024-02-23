@@ -1,5 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <component id="org.eclipse.swt.win32.win32.aarch64" version="2">
+    <resource path="Eclipse SWT/cocoa/org/eclipse/swt/graphics/GC.java" type="org.eclipse.swt.graphics.GC">
+        <filter comment="Bogus problem" id="336658481">
+            <message_arguments>
+                <message_argument value="org.eclipse.swt.graphics.GC"/>
+                <message_argument value="handle"/>
+            </message_arguments>
+        </filter>
+    </resource>
     <resource path="Eclipse SWT OLE Win32/win32/org/eclipse/swt/ole/win32/OleAutomation.java" type="org.eclipse.swt.ole.win32.OleAutomation">
         <filter id="338944126">
             <message_arguments>

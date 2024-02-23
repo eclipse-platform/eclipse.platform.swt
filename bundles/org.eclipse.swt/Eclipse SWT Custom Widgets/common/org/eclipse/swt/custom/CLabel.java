@@ -270,16 +270,17 @@ private Point getTotalSize(Image image, String text) {
 		size.y += r.height;
 	}
 
-	GC gc = new GC(this);
-	if (text != null && text.length() > 0) {
-		Point e = gc.textExtent(text, DRAW_FLAGS);
-		size.x += e.x;
-		size.y = Math.max(size.y, e.y);
-		if (image != null) size.x += GAP;
-	} else {
-		size.y = Math.max(size.y, gc.getFontMetrics().getHeight());
+	try (var gc = GC.create(this)) {
+		if (text != null && text.length() > 0) {
+			Point e = gc.textExtent(text, DRAW_FLAGS);
+			size.x += e.x;
+			size.y = Math.max(size.y, e.y);
+			if (image != null)
+				size.x += GAP;
+		} else {
+			size.y = Math.max(size.y, gc.getFontMetrics().getHeight());
+		}
 	}
-	gc.dispose();
 
 	return size;
 }
