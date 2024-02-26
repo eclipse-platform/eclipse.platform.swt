@@ -335,8 +335,8 @@ public boolean execute (String fileName) {
 
 
 /**
- * Returns the receiver's image data at 100% zoom level.  
- * This is the icon that is associated with the receiver 
+ * Returns the receiver's image data at 100% zoom level.
+ * This is the icon that is associated with the receiver
  * in the operating system.
  *
  * @return the image data for the program, may be null
@@ -346,13 +346,13 @@ public ImageData getImageData () {
 }
 
 /**
- * Returns the receiver's image data based on the given zoom level.  
- * This is the icon that is associated with the receiver in the 
+ * Returns the receiver's image data based on the given zoom level.
+ * This is the icon that is associated with the receiver in the
  * operating system.
- * 
+ *
  * @param zoom
  *            The zoom level in % of the standard resolution
- * 
+ *
  * @return the image data for the program, may be null
  * @since 3.125
  */
