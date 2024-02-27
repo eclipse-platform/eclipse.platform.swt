@@ -379,33 +379,23 @@ void checkGC (int mask) {
 		Cairo.cairo_set_miter_limit(cairo, data.lineMiterLimit);
 	}
 	if ((state & DRAW_OFFSET) != 0) {
-		boolean isAntiAliasingActive = getAntialias() != SWT.OFF;
-		int effectiveLineWidth = data.lineWidth < 1 ? 1 : Math.round(data.lineWidth);
-		if (isAntiAliasingActive || effectiveLineWidth % 2 == 1) {
-			double[] offsetX = new double[]{1};
-			double[] offsetY = new double[]{1};
-			// In case the effective line width is odd or anti-aliasing is used, add (0.5, 0.5) to coordinates in
-			// the coordinate system in which drawings are performed.
-			// I.e., a line starting at (0,0) will effectively start in pixel right below
-			// that coordinate with its center at (0.5, 0.5).
-			offsetX[0] = offsetY[0] = 0.5f;
-			if (!isAntiAliasingActive) {
-				offsetX[0] /= effectiveLineWidth;
-				offsetY[0] /= effectiveLineWidth;
-			}
-			// The offset will be applied to the coordinate system of the GC; so transform
-			// it from the drawing coordinate system to the coordinate system of the GC by
-			// applying the inverse transformation as the one applied to the GC and correct
-			// it by the line width.
-			double[] matrix = new double[6];
-			Cairo.cairo_get_matrix(cairo, matrix);
-			double[] inverseMatrix = Arrays.copyOf(matrix, 6);
-			Cairo.cairo_matrix_invert(inverseMatrix);
-			Cairo.cairo_set_matrix(cairo, inverseMatrix);
-			Cairo.cairo_user_to_device_distance(cairo, offsetX, offsetY);
-			Cairo.cairo_set_matrix(cairo, matrix);
-			data.cairoXoffset = Math.abs(offsetX[0]);
-			data.cairoYoffset = Math.abs(offsetY[0]);
+		data.cairoXoffset = data.cairoYoffset = 0;
+		double[] matrix = new double[6];
+		Cairo.cairo_get_matrix(cairo, matrix);
+		double[] dx = new double[]{1};
+		double[] dy = new double[]{1};
+		Cairo.cairo_user_to_device_distance(cairo, dx, dy);
+		double scaling = dx[0];
+		if (scaling < 0) scaling = -scaling;
+		double strokeWidth = data.lineWidth * scaling;
+		if (strokeWidth == 0 || ((int)strokeWidth % 2) == 1) {
+			data.cairoXoffset = 0.5 / scaling;
+		}
+		scaling = dy[0];
+		if (scaling < 0) scaling = -scaling;
+		strokeWidth = data.lineWidth * scaling;
+		if (strokeWidth == 0 || ((int)strokeWidth % 2) == 1) {
+			data.cairoYoffset = 0.5 / scaling;
 		}
 	}
 }
