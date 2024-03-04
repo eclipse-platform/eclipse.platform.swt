@@ -96,6 +96,7 @@ public class Tree extends Composite {
 
 	/* Used to control drop feedback when DND.FEEDBACK_EXPAND and DND.FEEDBACK_SCROLL is set/not set */
 	boolean shouldExpand = true, shouldScroll = true;
+	boolean keyDown;
 
 	final int nativeItemHeight;
 
@@ -2108,7 +2109,9 @@ boolean isTrim (NSView view) {
 @Override
 void keyDown(long id, long sel, long theEvent) {
 	ignoreSelect = preventSelect = false;
+	keyDown = true;
 	super.keyDown(id, sel, theEvent);
+	keyDown = false;
 }
 
 @Override
@@ -2463,6 +2466,9 @@ void outlineViewSelectionDidChange (long id, long sel, long notification) {
 
 @Override
 void outlineViewSelectionIsChanging (long id, long sel, long notification) {
+	if (keyDown) {
+		return;
+	}
 	didSelect = true;
 	sendSelection ();
 }
