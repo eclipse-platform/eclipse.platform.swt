@@ -3477,9 +3477,11 @@ void tableViewSelectionDidChange (long id, long sel, long aNotification) {
 
 @Override
 void tableViewSelectionIsChanging (long id, long sel, long aNotification) {
-	if (keyDown) {
-		return;
-	}
+	// tableViewSelectionIsChanging is called when pressing ARROW_DOWN, ARROW_UP key
+	// (based on docu https://developer.apple.com/documentation/appkit/nstableviewdelegate/1530812-tableviewselectionischanging?language=objc
+	//  it shouldn't, but is the case in Sonoma 14.4)
+	// sendSelection would then gather the "old" incorrect selected row, therefore don't call it on keyDown
+	if (keyDown) return;
 	didSelect = true;
 	sendSelection();
 }
