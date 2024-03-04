@@ -3477,9 +3477,9 @@ void tableViewSelectionDidChange (long id, long sel, long aNotification) {
 
 @Override
 void tableViewSelectionIsChanging (long id, long sel, long aNotification) {
-	if (keyDown) {
-		return;
-	}
+	// tableViewSelectionIsChanging is called when pressing ARROW_DOWN, ARROW_UP key
+	// don't run sendSelection because it would then gather the "old" incorrect selected row
+	if (keyDown) return;
 	didSelect = true;
 	sendSelection();
 }

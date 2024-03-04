@@ -97,7 +97,6 @@ public class Tree extends Composite {
 	/* Used to control drop feedback when DND.FEEDBACK_EXPAND and DND.FEEDBACK_SCROLL is set/not set */
 	boolean shouldExpand = true, shouldScroll = true;
 	boolean keyDown;
-
 	final int nativeItemHeight;
 
 	static int NEXT_ID;
@@ -2466,9 +2465,9 @@ void outlineViewSelectionDidChange (long id, long sel, long notification) {
 
 @Override
 void outlineViewSelectionIsChanging (long id, long sel, long notification) {
-	if (keyDown) {
-		return;
-	}
+	// outlineViewSelectionIsChanging is called when pressing ARROW_DOWN, ARROW_UP key
+	// don't run sendSelection because it would then gather the "old" incorrect selected row
+	if (keyDown) return;
 	didSelect = true;
 	sendSelection ();
 }
