@@ -52,7 +52,7 @@ public class Caret extends Widget {
 static {
 	DPIZoomChangeRegistry.registerHandler(Caret::handleDPIChange, Caret.class);
 }
-	
+
 /**
  * Constructs a new instance of this class given its parent
  * and a style value describing its behavior and appearance.
@@ -475,7 +475,8 @@ public void setFont (Font font) {
 	if (font != null && font.isDisposed ()) {
 		error (SWT.ERROR_INVALID_ARGUMENT);
 	}
-	this.font = font == null ? null : font.scaleFor(getCurrentDeviceZoom());
+	Shell shell = parent.getShell();
+	this.font = font == null ? null : font.scaleFor(shell.getNativeDeviceZoom());
 	if (hasFocus ()) setIMEFont ();
 }
 

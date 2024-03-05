@@ -3638,7 +3638,7 @@ public class Accessible {
 			if (attributes.length > 0) {
 				event.attributes = attributes;
 				if (fontData != null) {
-					style.font = new Font(control.getDisplay(), fontData).scaleFor(control.getCurrentDeviceZoom());
+					style.font = new Font(control.getDisplay(), fontData).scaleFor(control.getShell().getNativeDeviceZoom());
 				}
 				if (!style.equals(new TextStyle())) event.textStyle = style;
 			}

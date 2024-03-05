@@ -717,7 +717,7 @@ int defaultBackground () {
 }
 
 long defaultFont() {
-	return display.getSystemFont(getCurrentDeviceZoom()).handle;
+	return display.getSystemFont(getShell().getNativeDeviceZoom()).handle;
 }
 
 int defaultForeground () {
@@ -3314,7 +3314,7 @@ public void setCursor (Cursor cursor) {
 }
 
 void setDefaultFont () {
-	long hFont = display.getSystemFont (getCurrentDeviceZoom()).handle;
+	long hFont = display.getSystemFont (getShell().getNativeDeviceZoom()).handle;
 	OS.SendMessage (handle, OS.WM_SETFONT, hFont, 0);
 }
 
@@ -3415,7 +3415,7 @@ public void setFont (Font font) {
 	checkWidget ();
 	if (font != null) {
 		if (font.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
-		_setFont(font.scaleFor(getCurrentDeviceZoom()));
+		_setFont(font.scaleFor(getShell().getNativeDeviceZoom()));
 	} else {
 		_setFont(font);
 	}
@@ -4903,6 +4903,7 @@ LRESULT WM_DPICHANGED (long wParam, long lParam) {
 
 		if (DPIUtil.autoScaleOnRuntime) {
 			DPIUtil.setDeviceZoom (nativeZoom);
+			getShell().setNativeDeviceZoom(nativeZoom);
 		}
 
 		notifyListeners(SWT.ZoomChanged, event);
@@ -5795,7 +5796,7 @@ private static void handleDPIChange(Widget widget, int newZoom, float scalingFac
 	if (!(widget instanceof Control control)) {
 		return;
 	}
-	resizeFont(control, newZoom);
+	resizeFont(control, control.getShell().getNativeDeviceZoom());
 
 	Image image = control.getBackgroundImage();
 	if (image != null) {
@@ -5814,7 +5815,7 @@ private static void resizeFont(Control control, int newZoom) {
 	if (font == null) {
 		long currentFontHandle = OS.SendMessage (control.handle, OS.WM_GETFONT, 0, 0);
 		if (currentFontHandle != 0) {
-			Font newFont  = display.getSystemFont(control.getCurrentDeviceZoom());
+			Font newFont  = display.getSystemFont(newZoom);
 			long newFontHandle = newFont.handle;
 			OS.SendMessage(control.handle, OS.WM_SETFONT, newFontHandle, 1);
 		}

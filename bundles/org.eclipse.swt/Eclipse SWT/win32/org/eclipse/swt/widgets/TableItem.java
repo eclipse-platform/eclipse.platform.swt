@@ -870,7 +870,8 @@ public void setFont (Font font){
 		error (SWT.ERROR_INVALID_ARGUMENT);
 	}
 	Font oldFont = this.font;
-	Font newFont = (font == null ? font : font.scaleFor(getCurrentDeviceZoom()));
+	Shell shell = parent.getShell();
+	Font newFont = (font == null ? font : font.scaleFor(shell.getNativeDeviceZoom()));
 	if (oldFont == newFont) return;
 	this.font = newFont;
 	if (oldFont != null && oldFont.equals (newFont)) return;
@@ -1289,9 +1290,10 @@ private static void handleDPIChange(Widget widget, int newZoom, float scalingFac
 	}
 	Font[] cellFonts = tableItem.cellFont;
 	if (cellFonts != null) {
+		Shell shell = tableItem.parent.getShell();
 		for (int index = 0; index < cellFonts.length; index++) {
 			Font cellFont = cellFonts[index];
-			cellFonts[index] = cellFont == null ? null : cellFont.scaleFor(newZoom);
+			cellFonts[index] = cellFont == null ? null : cellFont.scaleFor(shell.getNativeDeviceZoom());
 		}
 	}
 }

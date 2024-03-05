@@ -1389,7 +1389,8 @@ public void setFont (Font font){
 	}
 	Font oldFont = this.font;
 	if (oldFont == font) return;
-	this.font = (font == null ? font : font.scaleFor(getCurrentDeviceZoom()));
+	Shell shell = parent.getShell();
+	this.font = (font == null ? font : font.scaleFor(shell.getNativeDeviceZoom()));
 	if (oldFont != null && oldFont.equals (font)) return;
 	if (font != null) parent.customDraw = true;
 	if ((parent.style & SWT.VIRTUAL) != 0) cached = true;
@@ -1443,7 +1444,8 @@ public void setFont (int index, Font font) {
 	}
 	Font oldFont = cellFont [index];
 	if (oldFont == font) return;
-	cellFont [index] = font == null ? font : font.scaleFor(getCurrentDeviceZoom());
+	Shell shell = parent.getShell();
+	cellFont [index] = font == null ? font : font.scaleFor(shell.getNativeDeviceZoom());
 	if (oldFont != null && oldFont.equals (font)) return;
 	if (font != null) parent.customDraw = true;
 	if ((parent.style & SWT.VIRTUAL) != 0) cached = true;
@@ -1829,13 +1831,14 @@ private static void handleDPIChange(Widget widget, int newZoom, float scalingFac
 	}
 	Font font = treeItem.font;
 	if (font != null) {
-		treeItem.setFont(font.scaleFor(newZoom));
+		treeItem.setFont(font);
 	}
 	Font[] cellFonts = treeItem.cellFont;
 	if (cellFonts != null) {
+		Shell shell = treeItem.parent.getShell();
 		for (int index = 0; index < cellFonts.length; index++) {
 			Font cellFont = cellFonts[index];
-			cellFonts[index] = cellFont == null ? null : cellFont.scaleFor(newZoom);
+			cellFonts[index] = cellFont == null ? null : cellFont.scaleFor(shell.getNativeDeviceZoom());
 		}
 	}
 	for (TreeItem item : treeItem.getItems()) {
