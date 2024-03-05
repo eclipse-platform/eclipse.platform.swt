@@ -214,13 +214,13 @@ public FontData[] getFontData() {
 	LOGFONT logFont = new LOGFONT ();
 	OS.GetObject(handle, LOGFONT.sizeof, logFont);
 	float heightInPoints = device.computePoints(logFont, handle);
-	int primaryZoom = device.getDeviceZoom();
+	int primaryZoom = DPIUtil.mapDPIToZoom (device._getDPIx());
 	float zoomFactor;
 	if (zoomLevel != primaryZoom) {
 		// as Device::computePoints will always return point on the basis of the
 		// primary monitor zoom, a custom zoomFactor must be calculated if the font
 		// is used for a different zoom level
-		zoomFactor = 1.0f * device.getDeviceZoom() / zoomLevel;
+		zoomFactor = 1.0f * primaryZoom / zoomLevel;
 	} else {
 		zoomFactor = 1.0f;
 	}
@@ -309,7 +309,7 @@ private static int extractZoomLevel(Device device) {
 	if (device == null) {
 		DPIUtil.getNativeDeviceZoom();
 	}
-	return device.getDeviceZoom();
+	return DPIUtil.mapDPIToZoom (device._getDPIx());
 }
 
 /**
