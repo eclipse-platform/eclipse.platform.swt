@@ -759,6 +759,13 @@ void drawRect (long id, long sel, NSRect rect) {
 	if (!isDrawing()) return;
 	Display display = this.display;
 	NSView view = new NSView(id);
+
+	/*
+	* Since macOS 14 the clipsToBounds property of NSView has to be set to true
+	* See https://developer.apple.com/documentation/macos-release-notes/appkit-release-notes-for-macos-14
+	*/
+	OS.objc_msgSend(id, OS.sel_setClipsToBounds_, true);
+
 	display.isPainting.addObject(view);
 	NSGraphicsContext context = NSGraphicsContext.currentContext();
 	context.saveGraphicsState();
