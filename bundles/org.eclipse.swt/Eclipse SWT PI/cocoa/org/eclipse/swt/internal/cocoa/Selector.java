@@ -82,6 +82,9 @@ public enum Selector {
 	/** 11.0 selector */
 	, sel_setStyle("setStyle:")
 
+	/** 14.0 selector */
+	, sel_setClipsToBounds_("setClipsToBounds:")
+
 	, sel_awtAppDelegate("awtAppDelegate")
 
 	  /** This section is auto generated */
