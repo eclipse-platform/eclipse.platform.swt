@@ -374,7 +374,7 @@ LRESULT WM_VSCROLL (long wParam, long lParam) {
 }
 
 LRESULT wmScrollWheel (boolean update, long wParam, long lParam, boolean horzWheel) {
-	LRESULT result = super.WM_MOUSEWHEEL (wParam, lParam);
+	LRESULT result = horzWheel ? super.WM_MOUSEHWHEEL(wParam, lParam) : super.WM_MOUSEWHEEL(wParam, lParam);
 	if (result != null) return result;
 	/*
 	* Translate WM_MOUSEWHEEL and WM_MOUSEHWHEEL to WM_VSCROLL or WM_HSCROLL.
