@@ -71,7 +71,7 @@ jobs:
         --fail-at-end
         -DskipNativeTests=false
         -DfailIfNoTests=false
-        clean verify
+        clean install
     - name: Performance tests
       if: contains(github.event.pull_request.labels.*.name, 'performance')
       uses: coactions/setup-xvfb@b6b4fcfb9f5a895edadc3bc76318fae0ac17c8b3 # v1.0.1
