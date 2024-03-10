@@ -1,0 +1,1 @@
+https://github.com/eclipse-platform/eclipse.platform.swt/issues/1093
