@@ -51,6 +51,13 @@
 					<addSourceFolders>true</addSourceFolders>
 				</configuration>
 			</plugin>
+			<plugin>
+				<groupId>org.eclipse.tycho</groupId>
+				<artifactId>tycho-packaging-plugin</artifactId>
+				<configuration>
+					<timestampProvider>fragment-host</timestampProvider>
+				</configuration>
+			</plugin>
 		</plugins>
 	</build>
 
@@ -65,20 +72,6 @@
 			<build>
 				<plugins>
 					<plugin>
-						<artifactId>maven-clean-plugin</artifactId>
-						<configuration>
-							<filesets>
-								<fileset>
-									<directory>src</directory>
-									<includes>
-										<include>**/*</include>
-									</includes>
-									<followSymlinks>false</followSymlinks>
-								</fileset>
-							</filesets>
-						</configuration>
-					</plugin>
-					<plugin>
 						<groupId>org.eclipse.tycho</groupId>
 						<artifactId>target-platform-configuration</artifactId>
 						<configuration>
@@ -92,37 +85,8 @@
 						</configuration>
 					</plugin>
 					<plugin>
-						<groupId>org.eclipse.tycho</groupId>
-						<artifactId>tycho-packaging-plugin</artifactId>
-						<executions>
-							<execution>
-								<id>default-build-qualifier</id>
-								<phase>initialize</phase> <!-- Postpone default-build-qualifier execution from packaging's default-bindings until the qualifier was read below.-->
-								<goals>
-									<goal>build-qualifier</goal>
-								</goals>
-								<configuration>
-									<forceContextQualifier>${swtBuildQualifier}</forceContextQualifier>
-								</configuration>
-							</execution>
-						</executions>
-					</plugin>
-					<plugin>
 						<artifactId>maven-antrun-plugin</artifactId>
 						<executions>
-							<execution>
-								<id>read-build-qualifier</id>
-								<phase>validate</phase>
-								<goals>
-									<goal>run</goal>
-								</goals>
-								<configuration>
-									<target> <!-- Read git qualifier of 'org.eclipse.swt' project. -->
-										<loadfile property="swtBuildQualifier" srcFile="${swtMainProject}/target/swtBuildQualifier.txt"/>
-									</target>
-									<exportAntProperties>true</exportAntProperties>
-								</configuration>
-							</execution>
 							<execution>
 								<id>build-native-binaries</id>
 								<phase>process-resources</phase>
