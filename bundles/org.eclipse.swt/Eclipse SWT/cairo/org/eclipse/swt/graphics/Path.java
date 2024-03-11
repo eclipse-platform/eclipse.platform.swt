@@ -50,7 +50,6 @@ public class Path extends Resource {
 	 * platforms and should never be accessed from application code.
 	 * </p>
 	 *
-	 * @noreference This field is not intended to be referenced by clients.
 	 */
 	public long handle;
 

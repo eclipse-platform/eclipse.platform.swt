@@ -2387,6 +2387,7 @@ String gtk_widget_class_get_css_name(long handle) {
  * if it did not already exist.
  *
  * @return the default display
+ * @noreference This method is not intended to be referenced by clients.
  */
 public static Display getDefault () {
 	synchronized (Device.class) {
