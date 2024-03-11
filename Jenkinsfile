@@ -150,9 +150,9 @@ pipeline {
 									'comma_ver='+swtVersions['comma_ver'], "new_comma_ver=${swtVersions['maj_ver']},${swtVersions['min_ver']},${swtVersions['new_rev']},0" ]) {
 								sh '''
 									# Delete native binaries to be replaced by subsequent binaries build
-									rm -f binaries/org.eclipse.swt.gtk.*/lib*-${swt_version}.so
-									rm -f binaries/org.eclipse.swt.win32.*/*-${swt_version}.dll
-									rm -f binaries/org.eclipse.swt.cocoa.*/lib*-${swt_version}.jnilib
+									rm binaries/org.eclipse.swt.gtk.*/libswt-*.so
+									rm binaries/org.eclipse.swt.win32.*/swt-*.dll
+									rm binaries/org.eclipse.swt.cocoa.*/libswt-*.jnilib
 									
 									echo "Incrementing version from ${swt_version} to ${new_version}; new comma_ver=${new_comma_ver}"
 									
