@@ -5639,7 +5639,7 @@ String toolTipText (NMTTDISPINFO hdr) {
 		if (findCell (pt.x, pt.y, item, index, cellRect, itemRect)) {
 			String text = null;
 			if (index [0] == 0) {
-				text = item [0].text;
+				text = item [0].text.replace("&", "&&");
 			} else {
 				String[] strings = item [0].strings;
 				if (strings != null) text = strings [index [0]];
