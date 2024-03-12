@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2019 IBM Corporation and others.
+ * Copyright (c) 2000, 2023 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -37,6 +37,7 @@ import org.eclipse.swt.graphics.Region;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Shell;
@@ -998,5 +999,32 @@ public void test_Issue450_NoShellActivateOnSetFocus() {
 			System.getProperties().remove(key);
 		}
 	}
+}
+
+@Test
+public void test_Issue828_CheckShellBounds() {
+	Composite composite = new Composite(shell, SWT.NONE);
+	shell.setLayout(new FillLayout());
+	shell.setSize(400, 500);
+	shell.open();
+
+	// Shell should match the expected size of (400, 500)
+	Rectangle shellBounds = shell.getBounds();
+	assertEquals("shell width doesn't match expectation", shellBounds.width, 400);
+	assertEquals("shell height doesn't match expectation", shellBounds.height, 500);
+
+	Point shellSize = shell.getSize();
+	assertEquals("shell width doesn't match expectation", shellSize.x, 400);
+	assertEquals("shell height doesn't match expectation", shellSize.y, 500);
+
+	// Usable client area should be smaller (due to window decorations)
+	Rectangle shellClientArea = shell.getClientArea();
+	assertTrue("client area wider larger than expected", shellClientArea.width < 400);
+	assertTrue("client area higher larger than expected", shellClientArea.height < 500);
+
+	// The composite should take up the whole client area
+	Rectangle compositeBounds = composite.getBounds();
+	assertEquals("composite wider larger than expected", shellClientArea.width, compositeBounds.width);
+	assertEquals("composite higher larger than expected", shellClientArea.height, compositeBounds.height);
 }
 }
