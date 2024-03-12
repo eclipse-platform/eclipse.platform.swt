@@ -299,7 +299,7 @@ pipeline {
 					dir('eclipse.platform.swt') {
 						sh '''
 							mvn clean verify \
-								--batch-mode --threads 1C -DforkCount=0 \
+								--batch-mode --threads 1C -V -U -e -DforkCount=0 \
 								-Dcompare-version-with-baselines.skip=false \
 								-Dorg.eclipse.swt.tests.junit.disable.test_isLocal=true \
 								-Dmaven.test.failure.ignore=true -Dmaven.test.error.ignore=true

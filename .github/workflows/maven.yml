@@ -62,7 +62,7 @@ jobs:
       uses: coactions/setup-xvfb@b6b4fcfb9f5a895edadc3bc76318fae0ac17c8b3 # v1.0.1
       with:
        run: >-
-        mvn --batch-mode -V -U
+        mvn --batch-mode -V -U -e
         --threads 1C
         -DforkCount=1
         -Dnative=${{ matrix.config.native }}
@@ -77,7 +77,7 @@ jobs:
       uses: coactions/setup-xvfb@b6b4fcfb9f5a895edadc3bc76318fae0ac17c8b3 # v1.0.1
       with:
        run: >-
-        mvn --batch-mode -V -U
+        mvn --batch-mode -V -U -e
         -DforkCount=1
         -Dcompare-version-with-baselines.skip=true
         --fail-at-end
