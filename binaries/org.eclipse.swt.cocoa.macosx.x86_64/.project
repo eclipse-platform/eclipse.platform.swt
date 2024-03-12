@@ -38,6 +38,11 @@
 			<locationURI>PARENT-1-PROJECT_LOC/.classpath_cocoa</locationURI>
 		</link>
 		<link>
+			<name>.settings/.api_filters</name>
+			<type>1</type>
+			<locationURI>PROJECT_LOC/.settings/.api_filters</locationURI>
+		</link>
+		<link>
 			<name>.settings</name>
 			<type>2</type>
 			<locationURI>PARENT-1-PROJECT_LOC/.settings</locationURI>

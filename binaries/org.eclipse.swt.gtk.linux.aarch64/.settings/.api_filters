@@ -1,13 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<component id="org.eclipse.swt.cocoa.macosx.aarch64" version="2">
-    <resource path="Eclipse SWT/cocoa/org/eclipse/swt/widgets/Display.java" type="org.eclipse.swt.widgets.Display">
-        <filter id="336744520">
-            <message_arguments>
-                <message_argument value="@noextend"/>
-                <message_argument value="org.eclipse.swt.widgets.Display"/>
-            </message_arguments>
-        </filter>
-    </resource>
+<component id="org.eclipse.swt.gtk.linux.aarch64" version="2">
     <resource path="Eclipse SWT/common/org/eclipse/swt/widgets/TypedListener.java" type="org.eclipse.swt.widgets.TypedListener">
         <filter comment="Class declared as internal in its JavaDoc since ever." id="336744520">
             <message_arguments>
