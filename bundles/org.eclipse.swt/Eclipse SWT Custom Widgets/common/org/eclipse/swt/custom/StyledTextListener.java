@@ -13,12 +13,13 @@
  *******************************************************************************/
 package org.eclipse.swt.custom;
 
+import java.util.*;
+
 import org.eclipse.swt.events.*;
-import org.eclipse.swt.internal.*;
 import org.eclipse.swt.widgets.*;
 
 class StyledTextListener extends TypedListener {
-StyledTextListener(SWTEventListener listener) {
+StyledTextListener(EventListener listener) {
 	super(listener);
 }
 /**

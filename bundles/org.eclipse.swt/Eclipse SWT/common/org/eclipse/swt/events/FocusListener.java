@@ -15,9 +15,8 @@
 package org.eclipse.swt.events;
 
 
+import java.util.*;
 import java.util.function.*;
-
-import org.eclipse.swt.internal.*;
 
 /**
  * Classes which implement this interface provide methods
@@ -35,7 +34,7 @@ import org.eclipse.swt.internal.*;
  * @see FocusAdapter
  * @see FocusEvent
  */
-public interface FocusListener extends SWTEventListener {
+public interface FocusListener extends EventListener {
 
 /**
  * Sent when a control gets focus.
