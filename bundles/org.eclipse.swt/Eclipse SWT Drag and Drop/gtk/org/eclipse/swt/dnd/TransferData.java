@@ -13,6 +13,7 @@
  *******************************************************************************/
 package org.eclipse.swt.dnd;
 
+import org.eclipse.pde.api.tools.annotations.*;
 
 /**
  * The <code>TransferData</code> class is a platform specific data structure for
@@ -40,9 +41,8 @@ public class TransferData {
 	 * within the packages provided by SWT. It is not available on all
 	 * platforms and should never be accessed from application code.
 	 * </p>
-	 *
-	 * @noreference This field is not intended to be referenced by clients.
 	 */
+	@NoReference("This field is not intended to be referenced by clients.")
 	public long type;
 
 	/**
@@ -56,9 +56,8 @@ public class TransferData {
 	 * </p>
 	 *
 	 * @see TransferData#format for the size of one unit
-	 *
-	 * @noreference This field is not intended to be referenced by clients.
 	 */
+	@NoReference("This field is not intended to be referenced by clients.")
 	public int length;
 
 	/**
@@ -72,9 +71,8 @@ public class TransferData {
 	 * </p>
 	 *
 	 * This is most commonly 8 bits.
-	 *
-	 * @noreference This field is not intended to be referenced by clients.
 	 */
+	@NoReference("This field is not intended to be referenced by clients.")
 	public int format;
 
 	/**
@@ -86,9 +84,8 @@ public class TransferData {
 	 * within the packages provided by SWT. It is not available on all
 	 * platforms and should never be accessed from application code.
 	 * </p>
-	 *
-	 * @noreference This field is not intended to be referenced by clients.
 	 */
+	@NoReference("This field is not intended to be referenced by clients.")
 	public long pValue;
 
 	/**
@@ -103,9 +100,8 @@ public class TransferData {
 	 * </p>
 	 * <p>The value of result is 1 if the conversion was successful.
 	 * The value of result is 0 if the conversion failed.</p>
-	 *
-	 * @noreference This field is not intended to be referenced by clients.
 	 */
+	@NoReference("This field is not intended to be referenced by clients.")
 	public int result;
 
 }

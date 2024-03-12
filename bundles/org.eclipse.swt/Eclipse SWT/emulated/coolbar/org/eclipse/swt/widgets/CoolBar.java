@@ -14,6 +14,7 @@
 package org.eclipse.swt.widgets;
 
 
+import org.eclipse.pde.api.tools.annotations.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 
@@ -43,8 +44,8 @@ import org.eclipse.swt.graphics.*;
  * @see <a href="http://www.eclipse.org/swt/snippets/#coolbar">CoolBar snippets</a>
  * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Example: ControlExample</a>
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
- * @noextend This class is not intended to be subclassed by clients.
  */
+@NoExtend("This class is not intended to be subclassed by clients.")
 public class CoolBar extends Composite {
 	CoolItem[][] items = new CoolItem[0][0];
 	CoolItem[] originalItems = new CoolItem[0];

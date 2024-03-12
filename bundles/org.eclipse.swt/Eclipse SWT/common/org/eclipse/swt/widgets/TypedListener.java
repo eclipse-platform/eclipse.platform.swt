@@ -16,6 +16,7 @@ package org.eclipse.swt.widgets;
 
 import java.util.*;
 
+import org.eclipse.pde.api.tools.annotations.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
 
@@ -32,10 +33,10 @@ import org.eclipse.swt.events.*;
  *
  * @see Listener
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
- * @noreference This class is not intended to be referenced by clients.
- * @noextend This class is not intended to be subclassed by clients.
- * @noinstantiate This class is not intended to be instantiated by clients.
  */
+@NoReference("This class is not intended to be referenced by clients.")
+@NoExtend("This class is not intended to be subclassed by clients.")
+@NoInstantiate("This class is not intended to be instantiated by clients.")
 public class TypedListener implements Listener {
 
 	/**
@@ -53,9 +54,8 @@ public class TypedListener implements Listener {
  * </p>
  *
  * @param listener the event listener to store in the receiver
- *
- * @noreference This method is not intended to be referenced by clients.
  */
+@NoReference("This method is not intended to be referenced by clients.")
 public TypedListener (EventListener listener) {
 	eventListener = listener;
 }
@@ -70,9 +70,8 @@ public TypedListener (EventListener listener) {
  * </p>
  *
  * @return the receiver's event listener
- *
- * @noreference This method is not intended to be referenced by clients.
  */
+@NoReference("This method is not intended to be referenced by clients.")
 public EventListener getEventListener () {
 	return eventListener;
 }
@@ -86,10 +85,9 @@ public EventListener getEventListener () {
  * referenced from application code.
  * </p>
  * @param e the event to handle
- *
- * @noreference This method is not intended to be referenced by clients.
  */
 @Override
+@NoReference("This method is not intended to be referenced by clients.")
 public void handleEvent (Event e) {
 	switch (e.type) {
 		case SWT.Activate: {

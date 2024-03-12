@@ -13,6 +13,7 @@
  *******************************************************************************/
 package org.eclipse.swt.graphics;
 
+import org.eclipse.pde.api.tools.annotations.*;
 
 /**
  * Instances of this class provide measurement information
@@ -64,8 +65,8 @@ public static FontMetrics cocoa_new (int ascent, int descent, int averageCharWid
  * application code.
  * </p>
  *
- * @noreference This method is not intended to be referenced by clients.
  */
+@NoReference("This method is not intended to be referenced by clients.")
 public static FontMetrics cocoa_new (int ascent, int descent, double averageCharWidth, int leading, int height) {
 	FontMetrics fontMetrics = new FontMetrics();
 	fontMetrics.ascent = ascent;

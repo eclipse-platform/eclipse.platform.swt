@@ -14,6 +14,7 @@
 package org.eclipse.swt.widgets;
 
 
+import org.eclipse.pde.api.tools.annotations.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
@@ -38,8 +39,8 @@ import org.eclipse.swt.internal.gtk4.*;
  *
  * @see <a href="http://www.eclipse.org/swt/snippets/#table">Table, TableItem, TableColumn snippets</a>
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
- * @noextend This class is not intended to be subclassed by clients.
  */
+@NoExtend("This class is not intended to be subclassed by clients.")
 public class TableColumn extends Item {
 	long headerButtonCSSProvider = 0;
 	long labelHandle, imageHandle, buttonHandle;

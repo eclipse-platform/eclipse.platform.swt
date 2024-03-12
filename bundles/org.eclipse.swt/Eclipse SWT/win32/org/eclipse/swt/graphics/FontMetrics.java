@@ -14,6 +14,7 @@
 package org.eclipse.swt.graphics;
 
 
+import org.eclipse.pde.api.tools.annotations.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.win32.*;
 
@@ -39,8 +40,8 @@ public final class FontMetrics {
 	 * platforms and should never be accessed from application code.
 	 * </p>
 	 *
-	 * @noreference This field is not intended to be referenced by clients.
 	 */
+	@NoReference("This field is not intended to be referenced by clients.")
 	public TEXTMETRIC handle;
 
 /**
@@ -206,8 +207,8 @@ public int hashCode() {
  * @param handle the <code>TEXTMETRIC</code> containing information about a font
  * @return a new font metrics object containing the specified <code>TEXTMETRIC</code>
  *
- * @noreference This method is not intended to be referenced by clients.
  */
+	@NoReference("This method is not intended to be referenced by clients.")
 public static FontMetrics win32_new(TEXTMETRIC handle) {
 	FontMetrics fontMetrics = new FontMetrics();
 	fontMetrics.handle = handle;

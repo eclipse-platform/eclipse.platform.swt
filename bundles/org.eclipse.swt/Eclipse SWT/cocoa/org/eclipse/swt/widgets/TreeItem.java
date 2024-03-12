@@ -14,6 +14,7 @@
 package org.eclipse.swt.widgets;
 
 
+import org.eclipse.pde.api.tools.annotations.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.cocoa.*;
@@ -34,8 +35,8 @@ import org.eclipse.swt.internal.cocoa.*;
  *
  * @see <a href="http://www.eclipse.org/swt/snippets/#tree">Tree, TreeItem, TreeColumn snippets</a>
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
- * @noextend This class is not intended to be subclassed by clients.
  */
+@NoExtend("This class is not intended to be subclassed by clients.")
 public class TreeItem extends Item {
 	Tree parent;
 	TreeItem parentItem;
@@ -59,8 +60,8 @@ public class TreeItem extends Item {
 	 * platforms and should never be accessed from application code.
 	 * </p>
 	 *
-	 * @noreference This field is not intended to be referenced by clients.
 	 */
+	@NoReference("This field is not intended to be referenced by clients.")
 	public SWTTreeItem handle;
 
 /**

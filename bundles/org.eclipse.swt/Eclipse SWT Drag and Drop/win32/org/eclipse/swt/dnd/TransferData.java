@@ -13,6 +13,7 @@
  *******************************************************************************/
 package org.eclipse.swt.dnd;
 
+import org.eclipse.pde.api.tools.annotations.*;
 import org.eclipse.swt.internal.ole.win32.*;
 
 /**
@@ -41,9 +42,8 @@ public class TransferData {
 	 * within the packages provided by SWT. It is not available on all
 	 * platforms and should never be accessed from application code.
 	 * </p>
-	 *
-	 * @noreference This field is not intended to be referenced by clients.
 	 */
+	@NoReference("This field is not intended to be referenced by clients.")
 	public int type;
 
 	/**
@@ -57,9 +57,8 @@ public class TransferData {
 	 * within the packages provided by SWT. It is not available on all
 	 * platforms and should never be accessed from application code.
 	 * </p>
-	 *
-	 * @noreference This field is not intended to be referenced by clients.
 	 */
+	@NoReference("This field is not intended to be referenced by clients.")
 	public FORMATETC formatetc;
 
 	/**
@@ -72,9 +71,8 @@ public class TransferData {
 	 * within the packages provided by SWT. It is not available on all
 	 * platforms and should never be accessed from application code.
 	 * </p>
-	 *
-	 * @noreference This field is not intended to be referenced by clients.
 	 */
+	@NoReference("This field is not intended to be referenced by clients.")
 	public STGMEDIUM stgmedium;
 
 	/**
@@ -89,9 +87,8 @@ public class TransferData {
 	 * </p>
 	 * <p>The value of result is 1 if the conversion was successful.
 	 * The value of result is 0 if the conversion failed.</p>
-	 *
-	 * @noreference This field is not intended to be referenced by clients.
 	 */
+	@NoReference("This field is not intended to be referenced by clients.")
 	public int result = COM.E_FAIL;
 
 	/**
@@ -104,9 +101,8 @@ public class TransferData {
 	 * within the packages provided by SWT. It is not available on all
 	 * platforms and should never be accessed from application code.
 	 * </p>
-	 *
-	 * @noreference This field is not intended to be referenced by clients.
 	 */
+	@NoReference("This field is not intended to be referenced by clients.")
 	public long pIDataObject;
 
 	static boolean sameType(TransferData data1, TransferData data2) {

@@ -14,6 +14,7 @@
 package org.eclipse.swt.graphics;
 
 
+import org.eclipse.pde.api.tools.annotations.*;
 import org.eclipse.swt.*;
 
 /**
@@ -44,9 +45,8 @@ public final class Color extends Resource {
 	 * within the packages provided by SWT. It is not available on all
 	 * platforms and should never be accessed from application code.
 	 * </p>
-	 *
-	 * @noreference This field is not intended to be referenced by clients.
 	 */
+	@NoReference("This field is not intended to be referenced by clients.")
 	public int handle;
 	int alpha = 255;
 
@@ -517,9 +517,8 @@ public String toString () {
  * @param device the device on which to allocate the color
  * @param handle the handle for the color
  * @return a new color object containing the specified device and handle
- *
- * @noreference This method is not intended to be referenced by clients.
  */
+@NoReference("This method is not intended to be referenced by clients.")
 public static Color win32_new(Device device, int handle) {
 	return win32_new(device, handle, 255);
 }
@@ -538,9 +537,8 @@ public static Color win32_new(Device device, int handle) {
  * @param handle the handle for the color
  * @param alpha the int for the alpha content in the color
  * @return a new color object containing the specified device and handle
- *
- * @noreference This method is not intended to be referenced by clients.
  */
+@NoReference("This method is not intended to be referenced by clients.")
 public static Color win32_new(Device device, int handle, int alpha) {
 	Color color = new Color(device);
 	color.handle = handle;

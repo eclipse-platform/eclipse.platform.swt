@@ -14,6 +14,7 @@
 package org.eclipse.swt.graphics;
 
 
+import org.eclipse.pde.api.tools.annotations.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.gtk.*;
@@ -56,8 +57,8 @@ public final class Cursor extends Resource {
 	 * platforms and should never be accessed from application code.
 	 * </p>
 	 *
-	 * @noreference This field is not intended to be referenced by clients.
 	 */
+	@NoReference("This field is not intended to be referenced by clients.")
 	public long handle;
 
 Cursor (Device device) {
@@ -460,8 +461,8 @@ public boolean equals(Object object) {
  * @param device the device on which to allocate the color
  * @param handle the handle for the cursor
  *
- * @noreference This method is not intended to be referenced by clients.
  */
+@NoReference("This method is not intended to be referenced by clients.")
 public static Cursor gtk_new(Device device, long handle) {
 	Cursor cursor = new Cursor(device);
 	cursor.handle = handle;

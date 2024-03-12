@@ -14,6 +14,7 @@
 package org.eclipse.swt.graphics;
 
 
+import org.eclipse.pde.api.tools.annotations.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.cocoa.*;
@@ -42,8 +43,8 @@ public final class Region extends Resource {
 	 * platforms and should never be accessed from application code.
 	 * </p>
 	 *
-	 * @noreference This field is not intended to be referenced by clients.
 	 */
+	@NoReference("This field is not intended to be referenced by clients.")
 	public long handle;
 
 /**
@@ -119,8 +120,8 @@ Region(Device device, long handle) {
  * @param handle the handle for the region
  * @return a new region object containing the specified device and handle
  *
- * @noreference This method is not intended to be referenced by clients.
  */
+	@NoReference("This method is not intended to be referenced by clients.")
 public static Region cocoa_new(Device device, long handle) {
 	return new Region(device, handle);
 }

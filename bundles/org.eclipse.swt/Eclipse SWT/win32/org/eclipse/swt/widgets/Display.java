@@ -20,6 +20,7 @@ import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
 import java.util.function.*;
 
+import org.eclipse.pde.api.tools.annotations.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.*;
@@ -103,8 +104,8 @@ import org.eclipse.swt.internal.win32.*;
  * @see Device#dispose
  * @see <a href="http://www.eclipse.org/swt/snippets/#display">Display snippets</a>
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
- * @noextend This class is not intended to be subclassed by clients.
  */
+@NoExtend("This class is not intended to be subclassed by clients.")
 public class Display extends Device implements Executor {
 
 	/**
@@ -116,9 +117,8 @@ public class Display extends Device implements Executor {
 	 * within the packages provided by SWT. It is not available on all
 	 * platforms and should never be accessed from application code.
 	 * </p>
-	 *
-	 * @noreference This field is not intended to be referenced by clients.
 	 */
+	@NoReference("This field is not intended to be referenced by clients.")
 	public MSG msg = new MSG ();
 
 	static String APP_NAME = "SWT"; //$NON-NLS-1$
@@ -1341,9 +1341,8 @@ Control findControl (long handle) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
  * </ul>
- *
- * @noreference This method is not intended to be referenced by clients.
  */
+@NoReference("This method is not intended to be referenced by clients.")
 public Widget findWidget (long handle) {
 	checkDevice ();
 	return getControl (handle);
@@ -1369,10 +1368,9 @@ public Widget findWidget (long handle) {
  *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  *
- * @noreference This method is not intended to be referenced by clients.
- *
  * @since 3.1
  */
+@NoReference("This method is not intended to be referenced by clients.")
 public Widget findWidget (long handle, long id) {
 	checkDevice ();
 	Control control = getControl (handle);
@@ -1394,10 +1392,9 @@ public Widget findWidget (long handle, long id) {
  *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  *
- * @noreference This method is not intended to be referenced by clients.
- *
  * @since 3.3
  */
+@NoReference("This method is not intended to be referenced by clients.")
 public Widget findWidget (Widget widget, long id) {
 	checkDevice ();
 	if (widget instanceof Control) {
@@ -2720,10 +2717,9 @@ void resetThemes() {
  * @exception SWTError <ul>
  *    <li>ERROR_NO_HANDLES if a handle could not be obtained for gc creation</li>
  * </ul>
- *
- * @noreference This method is not intended to be referenced by clients.
  */
 @Override
+@NoReference("This method is not intended to be referenced by clients.")
 public long internal_new_GC (GCData data) {
 	if (isDisposed()) error(SWT.ERROR_DEVICE_DISPOSED);
 	long hDC = OS.GetDC (0);
@@ -2867,10 +2863,9 @@ protected void init () {
  *
  * @param hDC the platform specific GC handle
  * @param data the platform specific GC data
- *
- * @noreference This method is not intended to be referenced by clients.
  */
 @Override
+@NoReference("This method is not intended to be referenced by clients.")
 public void internal_dispose_GC (long hDC, GCData data) {
 	OS.ReleaseDC (0, hDC);
 }
@@ -4295,18 +4290,16 @@ void sendPostEvent (int eventType) {
 
 /**
  * Sends a SWT.PreExternalEventDispatch event.
- *
- * @noreference This method is not intended to be referenced by clients.
  */
+@NoReference("This method is not intended to be referenced by clients.")
 public void sendPreExternalEventDispatchEvent () {
 	sendJDKInternalEvent (SWT.PreExternalEventDispatch);
 }
 
 /**
  * Sends a SWT.PostExternalEventDispatch event.
- *
- * @noreference This method is not intended to be referenced by clients.
  */
+@NoReference("This method is not intended to be referenced by clients.")
 public void sendPostExternalEventDispatchEvent () {
 	sendJDKInternalEvent (SWT.PostExternalEventDispatch);
 }

@@ -20,6 +20,7 @@ import java.text.AttributedCharacterIterator.*;
 import java.text.DateFormat.*;
 import java.util.*;
 
+import org.eclipse.pde.api.tools.annotations.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.accessibility.*;
 import org.eclipse.swt.events.*;
@@ -61,8 +62,8 @@ import org.eclipse.swt.internal.gtk4.*;
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  *
  * @since 3.3
- * @noextend This class is not intended to be subclassed by clients.
  */
+@NoExtend("This class is not intended to be subclassed by clients.")
 public class DateTime extends Composite {
 	int day, month, year, hours, minutes, seconds;
 

@@ -16,6 +16,7 @@ package org.eclipse.swt.graphics;
 
 import java.io.*;
 
+import org.eclipse.pde.api.tools.annotations.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.internal.*;
 
@@ -509,8 +510,8 @@ void setAllFields(int width, int height, int depth, int scanlinePad,
  * This method is for internal use, and is not described further.
  * </p>
  *
- * @noreference This method is not intended to be referenced by clients.
  */
+	@NoReference("This method is not intended to be referenced by clients.")
 public static ImageData internal_new(
 	int width, int height, int depth, PaletteData palette,
 	int scanlinePad, byte[] data, int maskPad, byte[] maskData,

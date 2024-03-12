@@ -16,6 +16,7 @@ package org.eclipse.swt.graphics;
 
 import java.io.*;
 
+import org.eclipse.pde.api.tools.annotations.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.DPIUtil.*;
@@ -83,9 +84,8 @@ public final class Image extends Resource implements Drawable {
 	 * within the packages provided by SWT. It is not available on all
 	 * platforms and should never be accessed from application code.
 	 * </p>
-	 *
-	 * @noreference This field is not intended to be referenced by clients.
 	 */
+	@NoReference("This field is not intended to be referenced by clients.")
 	public int type;
 
 	/**
@@ -97,9 +97,8 @@ public final class Image extends Resource implements Drawable {
 	 * within the packages provided by SWT. It is not available on all
 	 * platforms and should never be accessed from application code.
 	 * </p>
-	 *
-	 * @noreference This field is not intended to be referenced by clients.
 	 */
+	@NoReference("This field is not intended to be referenced by clients.")
 	public long mask;
 
 	/**
@@ -111,9 +110,8 @@ public final class Image extends Resource implements Drawable {
 	 * within the packages provided by SWT. It is not available on all
 	 * platforms and should never be accessed from application code.
 	 * </p>
-	 *
-	 * @noreference This field is not intended to be referenced by clients.
 	 */
+	@NoReference("This field is not intended to be referenced by clients.")
 	public long surface;
 
 	/**
@@ -669,9 +667,8 @@ public Image(Device device, ImageDataProvider imageDataProvider) {
  * within the packages provided by SWT. It is not available on all
  * platforms and should never be used from application code.
  * </p>
- *
- * @noreference This function is not intended to be referenced by clients.
  */
+@NoReference("This function is not intended to be referenced by clients.")
 public boolean internal_gtk_refreshImageForZoom() {
 	return refreshImageForZoom();
 }
@@ -1129,9 +1126,8 @@ public ImageData getImageData (int zoom) {
  * @param type the type of the image (<code>SWT.BITMAP</code> or <code>SWT.ICON</code>)
  * @param imageHandle the OS handle for the image
  * @param mask the OS handle for the image mask
- *
- * @noreference This method is not intended to be referenced by clients.
  */
+@NoReference("This method is not intended to be referenced by clients.")
 public static Image gtk_new(Device device, int type, long imageHandle, long mask) {
 	Image image = new Image(device);
 	image.type = type;
@@ -1153,9 +1149,8 @@ public static Image gtk_new(Device device, int type, long imageHandle, long mask
  * @param device the device on which to allocate the color
  * @param type the type of the image (<code>SWT.BITMAP</code> or <code>SWT.ICON</code>)
  * @param pixbuf an GdkPixbuf
- *
- * @noreference This method is not intended to be referenced by clients.
  */
+@NoReference("This method is not intended to be referenced by clients.")
 public static Image gtk_new_from_pixbuf(Device device, int type, long pixbuf) {
 	Image image = new Image(device);
 	image.createFromPixbuf(type, pixbuf);
@@ -1371,10 +1366,9 @@ void init(ImageData image) {
  *
  * @param data the platform specific GC data
  * @return the platform specific GC handle
- *
- * @noreference This method is not intended to be referenced by clients.
  */
 @Override
+@NoReference("This method is not intended to be referenced by clients.")
 public long internal_new_GC (GCData data) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (type != SWT.BITMAP || memGC != null) {
@@ -1411,10 +1405,9 @@ public long internal_new_GC (GCData data) {
  *
  * @param hDC the platform specific GC handle
  * @param data the platform specific GC data
- *
- * @noreference This method is not intended to be referenced by clients.
  */
 @Override
+@NoReference("This method is not intended to be referenced by clients.")
 public void internal_dispose_GC (long hDC, GCData data) {
 	Cairo.cairo_destroy(hDC);
 }

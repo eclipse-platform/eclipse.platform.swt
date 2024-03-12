@@ -15,6 +15,7 @@
 package org.eclipse.swt.graphics;
 
 
+import org.eclipse.pde.api.tools.annotations.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.cocoa.*;
@@ -96,8 +97,8 @@ public final class Cursor extends Resource {
 	 * platforms and should never be accessed from application code.
 	 * </p>
 	 *
-	 * @noreference This field is not intended to be referenced by clients.
 	 */
+	@NoReference("This field is not intended to be referenced by clients.")
 	public NSCursor handle;
 
 	/**
@@ -526,8 +527,8 @@ public String toString () {
  * @param device the device on which to allocate the color
  * @param handle the handle for the cursor
  *
- * @noreference This method is not intended to be referenced by clients.
  */
+@NoReference("This method is not intended to be referenced by clients.")
 public static Cursor cocoa_new(Device device, NSCursor handle) {
 	Cursor cursor = new Cursor(device);
 	cursor.handle = handle;

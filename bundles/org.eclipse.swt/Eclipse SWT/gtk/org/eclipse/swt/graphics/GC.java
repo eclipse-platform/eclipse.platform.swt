@@ -15,6 +15,7 @@ package org.eclipse.swt.graphics;
 
 import java.util.*;
 
+import org.eclipse.pde.api.tools.annotations.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.cairo.*;
@@ -70,9 +71,8 @@ public final class GC extends Resource {
 	 * within the packages provided by SWT. It is not available on all
 	 * platforms and should never be accessed from application code.
 	 * </p>
-	 *
-	 * @noreference This field is not intended to be referenced by clients.
 	 */
+	@NoReference("This field is not intended to be referenced by clients.")
 	public long handle;
 
 	Drawable drawable;
@@ -249,9 +249,8 @@ void cairoClipRegion (long cairo) {
  * @param data the data for the receiver.
  *
  * @return a new <code>GC</code>
- *
- * @noreference This method is not intended to be referenced by clients.
  */
+@NoReference("This method is not intended to be referenced by clients.")
 public static GC gtk_new(long handle, GCData data) {
 	GC gc = new GC();
 	gc.device = data.device;
@@ -273,9 +272,8 @@ public static GC gtk_new(long handle, GCData data) {
  * @param data the data for the receiver.
  *
  * @return a new <code>GC</code>
- *
- * @noreference This method is not intended to be referenced by clients.
  */
+@NoReference("This method is not intended to be referenced by clients.")
 public static GC gtk_new(Drawable drawable, GCData data) {
 	GC gc = new GC();
 	long gdkGC = drawable.internal_new_GC(data);
@@ -2302,10 +2300,9 @@ public Pattern getForegroundPattern() {
  *
  * @see GCData
  *
- * @noreference This method is not intended to be referenced by clients.
- *
  * @since 3.2
  */
+@NoReference("This method is not intended to be referenced by clients.")
 public GCData getGCData() {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	return data;

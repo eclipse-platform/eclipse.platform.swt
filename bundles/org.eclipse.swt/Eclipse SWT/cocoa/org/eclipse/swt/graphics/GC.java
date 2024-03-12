@@ -15,6 +15,7 @@ package org.eclipse.swt.graphics;
 
 import java.util.*;
 
+import org.eclipse.pde.api.tools.annotations.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.cocoa.*;
@@ -70,8 +71,8 @@ public final class GC extends Resource {
 	 * platforms and should never be accessed from application code.
 	 * </p>
 	 *
-	 * @noreference This field is not intended to be referenced by clients.
 	 */
+	@NoReference("This field is not intended to be referenced by clients.")
 	public NSGraphicsContext handle;
 
 	Drawable drawable;
@@ -296,8 +297,8 @@ static int checkStyle (int style) {
  *
  * @return a new <code>GC</code>
  *
- * @noreference This method is not intended to be referenced by clients.
  */
+@NoReference("This method is not intended to be referenced by clients.")
 public static GC cocoa_new(Drawable drawable, GCData data) {
 	GC gc = new GC();
 	long context = drawable.internal_new_GC(data);
@@ -2784,10 +2785,9 @@ public Pattern getForegroundPattern() {
  *
  * @see GCData
  *
- * @noreference This method is not intended to be referenced by clients.
- *
  * @since 3.2
  */
+@NoReference("This method is not intended to be referenced by clients.")
 public GCData getGCData() {
 	if (handle == null) SWT.error(SWT.ERROR_WIDGET_DISPOSED);
 	NSAutoreleasePool pool = checkGC(TRANSFORM | CLIPPING);

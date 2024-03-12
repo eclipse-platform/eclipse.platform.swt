@@ -14,10 +14,11 @@
 package org.eclipse.swt.widgets;
 
 
-import org.eclipse.swt.internal.cocoa.*;
+import org.eclipse.pde.api.tools.annotations.*;
 import org.eclipse.swt.*;
-import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.events.*;
+import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.internal.cocoa.*;
 
 /**
  * Instances of this class represent a selectable user interface object
@@ -36,8 +37,8 @@ import org.eclipse.swt.events.*;
  * </p>
  *
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
- * @noextend This class is not intended to be subclassed by clients.
  */
+@NoExtend("This class is not intended to be subclassed by clients.")
 public class MenuItem extends Item {
 	NSMenuItem nsItem;
 	Menu parent, menu;

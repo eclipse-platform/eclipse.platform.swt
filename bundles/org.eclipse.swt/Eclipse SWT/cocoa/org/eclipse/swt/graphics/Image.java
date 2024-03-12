@@ -16,6 +16,7 @@ package org.eclipse.swt.graphics;
 
 import java.io.*;
 
+import org.eclipse.pde.api.tools.annotations.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.cocoa.*;
@@ -83,8 +84,8 @@ public final class Image extends Resource implements Drawable {
 	 * platforms and should never be accessed from application code.
 	 * </p>
 	 *
-	 * @noreference This field is not intended to be referenced by clients.
 	 */
+	@NoReference("This field is not intended to be referenced by clients.")
 	public int type;
 
 	/**
@@ -97,8 +98,8 @@ public final class Image extends Resource implements Drawable {
 	 * platforms and should never be accessed from application code.
 	 * </p>
 	 *
-	 * @noreference This field is not intended to be referenced by clients.
 	 */
+	@NoReference("This field is not intended to be referenced by clients.")
 	public NSImage handle;
 
 	/**
@@ -931,8 +932,8 @@ ImageData _getImageData (NSBitmapImageRep imageRep, AlphaInfo info) {
  * @param type the type of the image (<code>SWT.BITMAP</code> or <code>SWT.ICON</code>)
  * @param nsImage the OS data for the image
  *
- * @noreference This method is not intended to be referenced by clients.
  */
+	@NoReference("This method is not intended to be referenced by clients.")
 public static Image cocoa_new(Device device, int type, NSImage nsImage) {
 	Image image = new Image(device);
 	image.type = type;
@@ -1513,8 +1514,8 @@ void initNative(String filename) {
  * @param data the platform specific GC data
  * @return the platform specific GC handle
  *
- * @noreference This method is not intended to be referenced by clients.
  */
+	@NoReference("This method is not intended to be referenced by clients.")
 @Override
 public long internal_new_GC (GCData data) {
 	if (handle == null) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
@@ -1574,8 +1575,8 @@ public long internal_new_GC (GCData data) {
  * @param hDC the platform specific GC handle
  * @param data the platform specific GC data
  *
- * @noreference This method is not intended to be referenced by clients.
  */
+	@NoReference("This method is not intended to be referenced by clients.")
 @Override
 public void internal_dispose_GC (long hDC, GCData data) {
 	long context = hDC;

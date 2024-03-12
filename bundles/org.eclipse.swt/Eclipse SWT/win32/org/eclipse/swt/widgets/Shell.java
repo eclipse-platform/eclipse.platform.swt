@@ -14,6 +14,7 @@
 package org.eclipse.swt.widgets;
 
 
+import org.eclipse.pde.api.tools.annotations.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
@@ -118,8 +119,8 @@ import org.eclipse.swt.internal.win32.*;
  * @see <a href="http://www.eclipse.org/swt/snippets/#shell">Shell snippets</a>
  * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Example: ControlExample</a>
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
- * @noextend This class is not intended to be subclassed by clients.
  */
+@NoExtend("This class is not intended to be subclassed by clients.")
 public class Shell extends Decorations {
 	Menu activeMenu;
 	ToolTip [] toolTips;
@@ -395,9 +396,8 @@ public Shell (Shell parent, int style) {
  * @param display the display for the shell
  * @param handle the handle for the shell
  * @return a new shell object containing the specified display and handle
- *
- * @noreference This method is not intended to be referenced by clients.
  */
+@NoReference("This method is not intended to be referenced by clients.")
 public static Shell win32_new (Display display, long handle) {
 	return new Shell (display, null, SWT.NO_TRIM, handle, true);
 }
@@ -417,10 +417,9 @@ public static Shell win32_new (Display display, long handle) {
  * @param handle the handle for the shell
  * @return a new shell object containing the specified display and handle
  *
- * @noreference This method is not intended to be referenced by clients.
- *
  * @since 3.3
  */
+@NoReference("This method is not intended to be referenced by clients.")
 public static Shell internal_new (Display display, long handle) {
 	return new Shell (display, null, SWT.NO_TRIM, handle, false);
 }

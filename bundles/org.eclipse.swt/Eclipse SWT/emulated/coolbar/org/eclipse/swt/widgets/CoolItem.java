@@ -14,6 +14,7 @@
 package org.eclipse.swt.widgets;
 
 
+import org.eclipse.pde.api.tools.annotations.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
@@ -33,8 +34,8 @@ import org.eclipse.swt.graphics.*;
  * </p>
  *
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
- * @noextend This class is not intended to be subclassed by clients.
  */
+@NoExtend("This class is not intended to be subclassed by clients.")
 public class CoolItem extends Item {
 	Control control;
 	CoolBar parent;

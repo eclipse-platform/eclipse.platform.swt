@@ -13,6 +13,7 @@
  *******************************************************************************/
 package org.eclipse.swt.browser;
 
+import org.eclipse.pde.api.tools.annotations.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.widgets.*;
 
@@ -39,9 +40,8 @@ import org.eclipse.swt.widgets.*;
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  *
  * @since 3.0
- * @noextend This class is not intended to be subclassed by clients.
  */
-
+@NoExtend("This class is not intended to be subclassed by clients.")
 public class Browser extends Composite {
 	WebBrowser webBrowser;
 	int userStyle;

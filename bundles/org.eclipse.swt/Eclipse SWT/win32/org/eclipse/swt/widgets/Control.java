@@ -17,6 +17,7 @@ package org.eclipse.swt.widgets;
 
 import java.util.*;
 
+import org.eclipse.pde.api.tools.annotations.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.accessibility.*;
 import org.eclipse.swt.events.*;
@@ -46,8 +47,8 @@ import org.eclipse.swt.internal.win32.*;
  * @see <a href="http://www.eclipse.org/swt/snippets/#control">Control snippets</a>
  * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Example: ControlExample</a>
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
- * @noextend This class is not intended to be subclassed by clients.
  */
+@NoExtend("This class is not intended to be subclassed by clients.")
 public abstract class Control extends Widget implements Drawable {
 
 	/**
@@ -59,9 +60,8 @@ public abstract class Control extends Widget implements Drawable {
 	 * within the packages provided by SWT. It is not available on all
 	 * platforms and should never be accessed from application code.
 	 * </p>
-	 *
-	 * @noreference This field is not intended to be referenced by clients.
 	 */
+	@NoReference("This field is not intended to be referenced by clients.")
 	public long handle;
 	Composite parent;
 	Cursor cursor;
@@ -1757,10 +1757,9 @@ boolean hasFocus () {
  *
  * @param data the platform specific GC data
  * @return the platform specific GC handle
- *
- * @noreference This method is not intended to be referenced by clients.
  */
 @Override
+@NoReference("This method is not intended to be referenced by clients.")
 public long internal_new_GC (GCData data) {
 	checkWidget();
 	long hwnd = handle;
@@ -1810,10 +1809,9 @@ public long internal_new_GC (GCData data) {
  *
  * @param hDC the platform specific GC handle
  * @param data the platform specific GC data
- *
- * @noreference This method is not intended to be referenced by clients.
  */
 @Override
+@NoReference("This method is not intended to be referenced by clients.")
 public void internal_dispose_GC (long hDC, GCData data) {
 	checkWidget ();
 	long hwnd = handle;

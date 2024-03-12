@@ -14,6 +14,7 @@
 package org.eclipse.swt.graphics;
 
 
+import org.eclipse.pde.api.tools.annotations.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.internal.gtk.*;
 
@@ -44,9 +45,8 @@ public final class Color extends Resource {
 	 * within the packages provided by SWT. It is not available on all
 	 * platforms and should never be accessed from application code.
 	 * </p>
-	 *
-	 * @noreference This field is not intended to be referenced by clients.
 	 */
+	@NoReference("This field is not intended to be referenced by clients.")
 	public GdkRGBA handle;
 	int alpha = 0;
 
@@ -471,9 +471,8 @@ public RGBA getRGBA () {
  *
  * @param device the device on which to allocate the color
  * @param gdkRGBA the handle for the color
- *
- * @noreference This method is not intended to be referenced by clients.
  */
+@NoReference("This method is not intended to be referenced by clients.")
 public static Color gtk_new(Device device, GdkRGBA gdkRGBA) {
 	Color color = new Color(device);
 	color.handle = gdkRGBA;
@@ -494,9 +493,8 @@ public static Color gtk_new(Device device, GdkRGBA gdkRGBA) {
  * @param device the device on which to allocate the color
  * @param gdkRGBA the handle for the color
  * @param alpha the int for the alpha content in the color(Currently SWT honors extreme values for alpha ie. 0 or 255)
- *
- * @noreference This method is not intended to be referenced by clients.
  */
+@NoReference("This method is not intended to be referenced by clients.")
 public static Color gtk_new(Device device, GdkRGBA gdkRGBA, int alpha) {
 	Color color = new Color(device);
 	color.handle = gdkRGBA;
