@@ -13,7 +13,7 @@
  *******************************************************************************/
 package org.eclipse.swt.accessibility;
 
-import org.eclipse.swt.internal.SWTEventListener;
+import java.util.*;
 
 /**
  * Classes which implement this interface provide methods
@@ -30,7 +30,7 @@ import org.eclipse.swt.internal.SWTEventListener;
  *
  * @since 3.6
  */
-public interface AccessibleActionListener extends SWTEventListener {
+public interface AccessibleActionListener extends EventListener {
 	/**
 	 * Returns the number of accessible actions available in this object.
 	 * <p>

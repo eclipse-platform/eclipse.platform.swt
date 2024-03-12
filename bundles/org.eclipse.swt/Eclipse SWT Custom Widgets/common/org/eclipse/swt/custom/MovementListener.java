@@ -13,7 +13,7 @@
  *******************************************************************************/
 package org.eclipse.swt.custom;
 
-import org.eclipse.swt.internal.SWTEventListener;
+import java.util.*;
 
 /**
  * This listener is invoked when a new offset is required based on the current
@@ -27,7 +27,7 @@ import org.eclipse.swt.internal.SWTEventListener;
  *
  * @since 3.3
  */
-public interface MovementListener extends SWTEventListener {
+public interface MovementListener extends EventListener {
 /**
  * This method is called when a new offset is required based on the current
  * offset and a movement type.

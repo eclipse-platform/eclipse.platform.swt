@@ -14,6 +14,8 @@
 package org.eclipse.swt.widgets;
 
 
+import java.util.*;
+
 import org.eclipse.swt.*;
 import org.eclipse.swt.internal.*;
 
@@ -145,7 +147,7 @@ public void unhook (int eventType, Listener listener) {
 	}
 }
 
-public void unhook (int eventType, SWTEventListener listener) {
+public void unhook (int eventType, EventListener listener) {
 	if (types == null) return;
 	for (int i=0; i<types.length; i++) {
 		if (types [i] == eventType) {
