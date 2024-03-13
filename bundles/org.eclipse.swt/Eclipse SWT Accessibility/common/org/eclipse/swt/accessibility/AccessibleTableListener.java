@@ -13,7 +13,7 @@
  *******************************************************************************/
 package org.eclipse.swt.accessibility;
 
-import java.util.*;
+import org.eclipse.swt.internal.*;
 
 /**
  * Classes which implement this interface provide methods
@@ -35,7 +35,7 @@ import java.util.*;
  *
  * @since 3.6
  */
-public interface AccessibleTableListener extends EventListener {
+public interface AccessibleTableListener extends SWTEventListener {
 	/**
 	 * Deselects one column, leaving other selected columns selected (if any).
 	 *

@@ -13,7 +13,7 @@
  *******************************************************************************/
 package org.eclipse.swt.browser;
 
-import java.util.*;
+import org.eclipse.swt.internal.*;
 
 /**
  * This listener interface may be implemented in order to receive
@@ -26,7 +26,7 @@ import java.util.*;
  * @since 3.0
  */
 @FunctionalInterface
-public interface StatusTextListener extends EventListener {
+public interface StatusTextListener extends SWTEventListener {
 
 /**
  * This method is called when the status text is changed. The

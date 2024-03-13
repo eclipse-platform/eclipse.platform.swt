@@ -15,7 +15,7 @@
 package org.eclipse.swt.events;
 
 
-import java.util.*;
+import org.eclipse.swt.internal.*;
 
 /**
  * Classes which implement this interface provide a method
@@ -33,7 +33,7 @@ import java.util.*;
  * @see HelpEvent
  */
 @FunctionalInterface
-public interface HelpListener extends EventListener {
+public interface HelpListener extends SWTEventListener {
 
 /**
  * Sent when help is requested for a control, typically

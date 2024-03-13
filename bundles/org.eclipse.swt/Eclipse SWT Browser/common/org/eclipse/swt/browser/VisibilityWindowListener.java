@@ -13,8 +13,9 @@
  *******************************************************************************/
 package org.eclipse.swt.browser;
 
-import java.util.*;
 import java.util.function.*;
+
+import org.eclipse.swt.internal.*;
 
 /**
  * This listener interface may be implemented in order to receive
@@ -28,7 +29,7 @@ import java.util.function.*;
  *
  * @since 3.0
  */
-public interface VisibilityWindowListener extends EventListener {
+public interface VisibilityWindowListener extends SWTEventListener {
 
 /**
  * This method is called when the window hosting a <code>Browser</code>

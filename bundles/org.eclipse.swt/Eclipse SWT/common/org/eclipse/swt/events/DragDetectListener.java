@@ -15,7 +15,7 @@
 package org.eclipse.swt.events;
 
 
-import java.util.*;
+import org.eclipse.swt.internal.*;
 
 /**
  * Classes which implement this interface provide methods that deal with the
@@ -33,7 +33,7 @@ import java.util.*;
  * @since 3.3
  */
 @FunctionalInterface
-public interface DragDetectListener extends EventListener {
+public interface DragDetectListener extends SWTEventListener {
 
 /**
  * Sent when a drag gesture is detected.

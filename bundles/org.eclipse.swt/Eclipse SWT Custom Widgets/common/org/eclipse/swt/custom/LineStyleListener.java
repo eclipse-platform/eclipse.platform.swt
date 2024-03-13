@@ -13,7 +13,7 @@
  *******************************************************************************/
 package org.eclipse.swt.custom;
 
-import java.util.*;
+import org.eclipse.swt.internal.*;
 
 /**
  * Classes which implement this interface provide a method
@@ -24,7 +24,7 @@ import java.util.*;
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
 @FunctionalInterface
-public interface LineStyleListener extends EventListener {
+public interface LineStyleListener extends SWTEventListener {
 
 /**
  * This method is called when a line is about to be drawn in order to get the

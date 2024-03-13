@@ -14,7 +14,7 @@
 package org.eclipse.swt.custom;
 
 
-import java.util.*;
+import org.eclipse.swt.internal.SWTEventListener;
 
 /**
  * The StyledText widget implements this listener to receive
@@ -29,7 +29,7 @@ import java.util.*;
  * below. If the entire text is replaced the textSet method
  * should be called instead.
  */
-public interface TextChangeListener extends EventListener {
+public interface TextChangeListener extends SWTEventListener {
 
 /**
  * This method is called when the content is about to be changed.

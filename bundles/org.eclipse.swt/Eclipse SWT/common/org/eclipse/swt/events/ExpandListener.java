@@ -14,8 +14,9 @@
 package org.eclipse.swt.events;
 
 
-import java.util.*;
 import java.util.function.*;
+
+import org.eclipse.swt.internal.*;
 
 /**
  * Classes which implement this interface provide methods
@@ -35,7 +36,7 @@ import java.util.function.*;
  *
  * @since 3.2
  */
-public interface ExpandListener extends EventListener {
+public interface ExpandListener extends SWTEventListener {
 
 /**
  * Sent when an item is collapsed.

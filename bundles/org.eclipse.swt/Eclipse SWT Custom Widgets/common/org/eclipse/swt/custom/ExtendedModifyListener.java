@@ -13,7 +13,7 @@
  *******************************************************************************/
 package org.eclipse.swt.custom;
 
-import java.util.*;
+import org.eclipse.swt.internal.*;
 
 /**
  * Classes which implement this interface provide a method
@@ -24,7 +24,7 @@ import java.util.*;
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
 @FunctionalInterface
-public interface ExtendedModifyListener extends EventListener {
+public interface ExtendedModifyListener extends SWTEventListener {
 
 /**
  * This method is called after a text change occurs.
