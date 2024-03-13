@@ -13,7 +13,7 @@
  *******************************************************************************/
 package org.eclipse.swt.dnd;
 
-import java.util.*;
+import org.eclipse.swt.internal.*;
 
 /**
  * The <code>DropTargetListener</code> class provides event notification to the application
@@ -35,7 +35,7 @@ import java.util.*;
  *
  * @see DropTargetEvent
  */
-public interface DropTargetListener extends EventListener {
+public interface DropTargetListener extends SWTEventListener {
 
 /**
  * The cursor has entered the drop target boundaries.

@@ -14,8 +14,9 @@
 package org.eclipse.swt.accessibility;
 
 
-import java.util.*;
 import java.util.function.*;
+
+import org.eclipse.swt.internal.*;
 
 /**
  * Classes that implement this interface provide methods
@@ -40,7 +41,7 @@ import java.util.function.*;
  *
  * @since 2.0
  */
-public interface AccessibleListener extends EventListener {
+public interface AccessibleListener extends SWTEventListener {
 
 	/**
 	 * Sent when an accessibility client requests the name

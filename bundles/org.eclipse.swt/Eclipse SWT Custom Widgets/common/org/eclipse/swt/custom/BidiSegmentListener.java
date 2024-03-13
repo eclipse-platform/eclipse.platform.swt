@@ -13,7 +13,7 @@
  *******************************************************************************/
 package org.eclipse.swt.custom;
 
-import java.util.*;
+import org.eclipse.swt.internal.*;
 
 /**
  * This listener interface may be implemented in order to receive
@@ -21,7 +21,7 @@ import java.util.*;
  * @see BidiSegmentEvent
  */
 @FunctionalInterface
-public interface BidiSegmentListener extends EventListener {
+public interface BidiSegmentListener extends SWTEventListener {
 
 /**
  * This method is called when a line needs to be reordered for
