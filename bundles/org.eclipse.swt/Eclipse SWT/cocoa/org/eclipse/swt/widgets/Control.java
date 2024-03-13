@@ -353,11 +353,7 @@ void accessibilitySetValue_forAttribute(long id, long sel, long arg0, long arg1)
  * @see #removeControlListener
  */
 public void addControlListener(ControlListener listener) {
-	checkWidget();
-	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
-	TypedListener typedListener = new TypedListener (listener);
-	addListener (SWT.Resize,typedListener);
-	addListener (SWT.Move,typedListener);
+	addTypedListener(listener, SWT.Resize, SWT.Move);
 }
 
 /**
@@ -382,10 +378,7 @@ public void addControlListener(ControlListener listener) {
  * @since 3.3
  */
 public void addDragDetectListener (DragDetectListener listener) {
-	checkWidget ();
-	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
-	TypedListener typedListener = new TypedListener (listener);
-	addListener (SWT.DragDetect,typedListener);
+	addTypedListener(listener, SWT.DragDetect);
 }
 
 /**
@@ -408,11 +401,7 @@ public void addDragDetectListener (DragDetectListener listener) {
  * @see #removeFocusListener
  */
 public void addFocusListener(FocusListener listener) {
-	checkWidget();
-	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
-	TypedListener typedListener = new TypedListener (listener);
-	addListener(SWT.FocusIn,typedListener);
-	addListener(SWT.FocusOut,typedListener);
+	addTypedListener(listener, SWT.FocusIn, SWT.FocusOut);
 }
 
 /**
@@ -448,10 +437,7 @@ public void addFocusListener(FocusListener listener) {
  * @since 3.7
  */
 public void addGestureListener (GestureListener listener) {
-	checkWidget();
-	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
-	TypedListener typedListener = new TypedListener (listener);
-	addListener (SWT.Gesture, typedListener);
+	addTypedListener(listener, SWT.Gesture);
 }
 
 /**
@@ -474,10 +460,7 @@ public void addGestureListener (GestureListener listener) {
  * @see #removeHelpListener
  */
 public void addHelpListener (HelpListener listener) {
-	checkWidget();
-	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
-	TypedListener typedListener = new TypedListener (listener);
-	addListener (SWT.Help, typedListener);
+	addTypedListener(listener, SWT.Help);
 }
 
 /**
@@ -511,11 +494,7 @@ public void addHelpListener (HelpListener listener) {
  * @see #removeKeyListener
  */
 public void addKeyListener(KeyListener listener) {
-	checkWidget();
-	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
-	TypedListener typedListener = new TypedListener (listener);
-	addListener(SWT.KeyUp,typedListener);
-	addListener(SWT.KeyDown,typedListener);
+	addTypedListener(listener, SWT.KeyUp, SWT.KeyDown);
 }
 
 /**
@@ -540,10 +519,7 @@ public void addKeyListener(KeyListener listener) {
  * @since 3.3
  */
 public void addMenuDetectListener (MenuDetectListener listener) {
-	checkWidget ();
-	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
-	TypedListener typedListener = new TypedListener (listener);
-	addListener (SWT.MenuDetect, typedListener);
+	addTypedListener(listener, SWT.MenuDetect);
 }
 
 /**
@@ -566,12 +542,7 @@ public void addMenuDetectListener (MenuDetectListener listener) {
  * @see #removeMouseListener
  */
 public void addMouseListener(MouseListener listener) {
-	checkWidget();
-	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
-	TypedListener typedListener = new TypedListener (listener);
-	addListener(SWT.MouseDown,typedListener);
-	addListener(SWT.MouseUp,typedListener);
-	addListener(SWT.MouseDoubleClick,typedListener);
+	addTypedListener(listener, SWT.MouseDown, SWT.MouseUp, SWT.MouseDoubleClick);
 }
 
 /**
@@ -594,12 +565,7 @@ public void addMouseListener(MouseListener listener) {
  * @see #removeMouseTrackListener
  */
 public void addMouseTrackListener (MouseTrackListener listener) {
-	checkWidget();
-	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
-	TypedListener typedListener = new TypedListener (listener);
-	addListener (SWT.MouseEnter,typedListener);
-	addListener (SWT.MouseExit,typedListener);
-	addListener (SWT.MouseHover,typedListener);
+	addTypedListener(listener, SWT.MouseEnter, SWT.MouseExit, SWT.MouseHover);
 }
 
 /**
@@ -622,10 +588,7 @@ public void addMouseTrackListener (MouseTrackListener listener) {
  * @see #removeMouseMoveListener
  */
 public void addMouseMoveListener(MouseMoveListener listener) {
-	checkWidget();
-	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
-	TypedListener typedListener = new TypedListener (listener);
-	addListener(SWT.MouseMove,typedListener);
+	addTypedListener(listener, SWT.MouseMove);
 }
 
 /**
@@ -650,10 +613,7 @@ public void addMouseMoveListener(MouseMoveListener listener) {
  * @since 3.3
  */
 public void addMouseWheelListener (MouseWheelListener listener) {
-	checkWidget ();
-	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
-	TypedListener typedListener = new TypedListener (listener);
-	addListener (SWT.MouseWheel, typedListener);
+	addTypedListener(listener, SWT.MouseWheel);
 }
 
 void addRelation (Control control) {
@@ -679,10 +639,7 @@ void addRelation (Control control) {
  * @see #removePaintListener
  */
 public void addPaintListener(PaintListener listener) {
-	checkWidget();
-	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
-	TypedListener typedListener = new TypedListener (listener);
-	addListener(SWT.Paint,typedListener);
+	addTypedListener(listener, SWT.Paint);
 }
 
 static final double SYNTHETIC_BOLD = -2.5;
@@ -729,10 +686,7 @@ void addTraits(NSMutableDictionary dict, Font font) {
  * @since 3.7
  */
 public void addTouchListener (TouchListener listener) {
-	checkWidget();
-	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
-	TypedListener typedListener = new TypedListener (listener);
-	addListener (SWT.Touch,typedListener);
+	addTypedListener(listener, SWT.Touch);
 }
 
 /**
@@ -755,10 +709,7 @@ public void addTouchListener (TouchListener listener) {
  * @see #removeTraverseListener
  */
 public void addTraverseListener (TraverseListener listener) {
-	checkWidget();
-	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
-	TypedListener typedListener = new TypedListener (listener);
-	addListener (SWT.Traverse,typedListener);
+	addTypedListener(listener, SWT.Traverse);
 }
 
 @Override

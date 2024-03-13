@@ -463,14 +463,7 @@ static int checkStyle (Shell parent, int style) {
  * @see #removeShellListener
  */
 public void addShellListener (ShellListener listener) {
-	checkWidget ();
-	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
-	TypedListener typedListener = new TypedListener (listener);
-	addListener (SWT.Close,typedListener);
-	addListener (SWT.Iconify,typedListener);
-	addListener (SWT.Deiconify,typedListener);
-	addListener (SWT.Activate, typedListener);
-	addListener (SWT.Deactivate, typedListener);
+	addTypedListener(listener, SWT.Close, SWT.Iconify, SWT.Deiconify, SWT.Activate, SWT.Deactivate);
 }
 
 long balloonTipHandle () {

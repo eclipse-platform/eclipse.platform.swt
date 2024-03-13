@@ -266,10 +266,7 @@ protected void addTypedListener (EventListener listener, int... eventTypes) {
  * @see #removeDisposeListener
  */
 public void addDisposeListener (DisposeListener listener) {
-	checkWidget();
-	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
-	TypedListener typedListener = new TypedListener (listener);
-	addListener (SWT.Dispose, typedListener);
+	addTypedListener(listener, SWT.Dispose);
 }
 
 long callWindowProc (long hwnd, int msg, long wParam, long lParam) {

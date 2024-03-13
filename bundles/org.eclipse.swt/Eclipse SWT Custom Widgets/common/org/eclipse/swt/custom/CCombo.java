@@ -301,10 +301,7 @@ public void add (String string, int index) {
  * @see #removeModifyListener
  */
 public void addModifyListener (ModifyListener listener) {
-	checkWidget();
-	if (listener == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
-	TypedListener typedListener = new TypedListener (listener);
-	addListener (SWT.Modify, typedListener);
+	addTypedListener(listener, SWT.Modify);
 }
 /**
  * Adds the listener to the collection of listeners who will
@@ -331,11 +328,7 @@ public void addModifyListener (ModifyListener listener) {
  * @see SelectionEvent
  */
 public void addSelectionListener(SelectionListener listener) {
-	checkWidget();
-	if (listener == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
-	TypedListener typedListener = new TypedListener (listener);
-	addListener (SWT.Selection,typedListener);
-	addListener (SWT.DefaultSelection,typedListener);
+	addTypedListener(listener, SWT.Selection, SWT.DefaultSelection);
 }
 /**
  * Adds the listener to the collection of listeners who will
@@ -359,11 +352,9 @@ public void addSelectionListener(SelectionListener listener) {
  * @since 3.3
  */
 public void addVerifyListener (VerifyListener listener) {
-	checkWidget();
-	if (listener == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
-	TypedListener typedListener = new TypedListener (listener);
-	addListener (SWT.Verify,typedListener);
+	addTypedListener(listener, SWT.Verify);
 }
+
 void arrowEvent (Event event) {
 	switch (event.type) {
 		case SWT.FocusIn: {
@@ -1451,7 +1442,7 @@ public void removeAll () {
 public void removeModifyListener (ModifyListener listener) {
 	checkWidget();
 	if (listener == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
-	removeListener(SWT.Modify, listener);
+	removeTypedListener(SWT.Modify, listener);
 }
 /**
  * Removes the listener from the collection of listeners who will
@@ -1473,8 +1464,8 @@ public void removeModifyListener (ModifyListener listener) {
 public void removeSelectionListener (SelectionListener listener) {
 	checkWidget();
 	if (listener == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
-	removeListener(SWT.Selection, listener);
-	removeListener(SWT.DefaultSelection,listener);
+	removeTypedListener(SWT.Selection, listener);
+	removeTypedListener(SWT.DefaultSelection, listener);
 }
 /**
  * Removes the listener from the collection of listeners who will
@@ -1498,7 +1489,7 @@ public void removeSelectionListener (SelectionListener listener) {
 public void removeVerifyListener (VerifyListener listener) {
 	checkWidget();
 	if (listener == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
-	removeListener(SWT.Verify, listener);
+	removeTypedListener(SWT.Verify, listener);
 }
 /**
  * Selects the item at the given zero-relative index in the receiver's

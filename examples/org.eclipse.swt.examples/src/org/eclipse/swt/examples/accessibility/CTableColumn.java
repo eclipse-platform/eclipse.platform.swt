@@ -31,7 +31,6 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Item;
-import org.eclipse.swt.widgets.TypedListener;
 import org.eclipse.swt.widgets.Widget;
 
 /**
@@ -161,11 +160,7 @@ public CTableColumn (CTable parent, int style, int index) {
  * @see #removeControlListener
  */
 public void addControlListener (ControlListener listener) {
-	checkWidget ();
-	if (listener == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
-	TypedListener typedListener = new TypedListener (listener);
-	addListener (SWT.Resize, typedListener);
-	addListener (SWT.Move, typedListener);
+	addTypedListener(listener, SWT.Resize, SWT.Move);
 }
 /**
  * Adds the listener to the collection of listeners who will
@@ -192,11 +187,7 @@ public void addControlListener (ControlListener listener) {
  * @see SelectionEvent
  */
 public void addSelectionListener (SelectionListener listener) {
-	checkWidget ();
-	if (listener == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
-	TypedListener typedListener = new TypedListener (listener);
-	addListener (SWT.Selection, typedListener);
-	addListener (SWT.DefaultSelection, typedListener);
+	addTypedListener(listener, SWT.Selection, SWT.DefaultSelection);
 }
 static CTable checkNull (CTable table) {
 	if (table == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
@@ -554,8 +545,8 @@ void paint (GC gc) {
 public void removeControlListener (ControlListener listener) {
 	checkWidget ();
 	if (listener == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
-	removeListener (SWT.Move, listener);
-	removeListener (SWT.Resize, listener);
+	removeTypedListener(SWT.Move, listener);
+	removeTypedListener(SWT.Resize, listener);
 }
 /**
  * Removes the listener from the collection of listeners who will
@@ -577,8 +568,8 @@ public void removeControlListener (ControlListener listener) {
 public void removeSelectionListener (SelectionListener listener) {
 	checkWidget ();
 	if (listener == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
-	removeListener (SWT.Selection, listener);
-	removeListener (SWT.DefaultSelection, listener);
+	removeTypedListener(SWT.Selection, listener);
+	removeTypedListener(SWT.DefaultSelection, listener);
 }
 /**
  * Controls how text and images will be displayed in the receiver.

@@ -197,12 +197,7 @@ public TableCursor(Table parent, int style) {
  * @see #removeSelectionListener(SelectionListener)
  */
 public void addSelectionListener(SelectionListener listener) {
-	checkWidget();
-	if (listener == null)
-		SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	TypedListener typedListener = new TypedListener(listener);
-	addListener(SWT.Selection, typedListener);
-	addListener(SWT.DefaultSelection, typedListener);
+	addTypedListener(listener, SWT.Selection, SWT.DefaultSelection);
 }
 
 void onDispose(Event event) {
@@ -502,8 +497,8 @@ public void removeSelectionListener(SelectionListener listener) {
 	if (listener == null) {
 		SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	}
-	removeListener(SWT.Selection, listener);
-	removeListener(SWT.DefaultSelection, listener);
+	removeTypedListener(SWT.Selection, listener);
+	removeTypedListener(SWT.DefaultSelection, listener);
 }
 
 void _resize() {

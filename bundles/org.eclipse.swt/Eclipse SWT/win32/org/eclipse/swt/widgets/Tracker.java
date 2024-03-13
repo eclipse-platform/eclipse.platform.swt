@@ -165,11 +165,7 @@ public Tracker (Display display, int style) {
  * @see #removeControlListener
  */
 public void addControlListener (ControlListener listener) {
-	checkWidget ();
-	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
-	TypedListener typedListener = new TypedListener (listener);
-	addListener (SWT.Resize, typedListener);
-	addListener (SWT.Move, typedListener);
+	addTypedListener(listener, SWT.Resize, SWT.Move);
 }
 
 /**
@@ -192,11 +188,7 @@ public void addControlListener (ControlListener listener) {
  * @see #removeKeyListener
  */
 public void addKeyListener (KeyListener listener) {
-	checkWidget ();
-	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
-	TypedListener typedListener = new TypedListener (listener);
-	addListener (SWT.KeyUp,typedListener);
-	addListener (SWT.KeyDown,typedListener);
+	addTypedListener(listener, SWT.KeyUp, SWT.KeyDown);
 }
 
 Point adjustMoveCursor () {

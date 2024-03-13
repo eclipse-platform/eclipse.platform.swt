@@ -531,10 +531,7 @@ void _addListener (int eventType, Listener listener) {
  * @see #removeDisposeListener
  */
 public void addDisposeListener (DisposeListener listener) {
-	checkWidget();
-	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
-	TypedListener typedListener = new TypedListener (listener);
-	addListener (SWT.Dispose, typedListener);
+	addTypedListener(listener, SWT.Dispose);
 }
 
 boolean canBecomeKeyView(long id, long sel) {

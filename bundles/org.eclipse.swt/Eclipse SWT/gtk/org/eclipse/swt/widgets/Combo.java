@@ -269,10 +269,7 @@ private void gtk_combo_box_toggle_wrap (boolean wrap) {
  * @see #removeModifyListener
  */
 public void addModifyListener (ModifyListener listener) {
-	checkWidget();
-	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
-	TypedListener typedListener = new TypedListener (listener);
-	addListener (SWT.Modify, typedListener);
+	addTypedListener(listener, SWT.Modify);
 }
 
 /**
@@ -310,9 +307,7 @@ public void addModifyListener (ModifyListener listener) {
  * @since 3.103
  */
 public void addSegmentListener (SegmentListener listener) {
-	checkWidget ();
-	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
-	addListener (SWT.Segments, new TypedListener (listener));
+	addTypedListener(listener, SWT.Segments);
 }
 
 /**
@@ -340,11 +335,7 @@ public void addSegmentListener (SegmentListener listener) {
  * @see SelectionEvent
  */
 public void addSelectionListener(SelectionListener listener) {
-	checkWidget();
-	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
-	TypedListener typedListener = new TypedListener (listener);
-	addListener (SWT.Selection,typedListener);
-	addListener (SWT.DefaultSelection,typedListener);
+	addTypedListener(listener, SWT.Selection, SWT.DefaultSelection);
 }
 
 /**
@@ -369,10 +360,7 @@ public void addSelectionListener(SelectionListener listener) {
  * @since 3.1
  */
 public void addVerifyListener (VerifyListener listener) {
-	checkWidget ();
-	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
-	TypedListener typedListener = new TypedListener (listener);
-	addListener (SWT.Verify, typedListener);
+	addTypedListener(listener, SWT.Verify);
 }
 
 static int checkStyle (int style) {

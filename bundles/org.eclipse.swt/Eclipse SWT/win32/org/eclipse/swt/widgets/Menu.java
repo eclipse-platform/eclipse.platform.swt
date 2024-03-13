@@ -274,10 +274,7 @@ void _setVisible (boolean visible) {
  * @see #removeHelpListener
  */
 public void addHelpListener (HelpListener listener) {
-	checkWidget ();
-	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
-	TypedListener typedListener = new TypedListener (listener);
-	addListener (SWT.Help, typedListener);
+	addTypedListener(listener, SWT.Help);
 }
 
 /**
@@ -300,11 +297,7 @@ public void addHelpListener (HelpListener listener) {
  * @see #removeMenuListener
  */
 public void addMenuListener (MenuListener listener) {
-	checkWidget ();
-	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
-	TypedListener typedListener = new TypedListener (listener);
-	addListener (SWT.Hide,typedListener);
-	addListener (SWT.Show,typedListener);
+	addTypedListener(listener, SWT.Hide, SWT.Show);
 }
 
 static Control checkNull (Control control) {
