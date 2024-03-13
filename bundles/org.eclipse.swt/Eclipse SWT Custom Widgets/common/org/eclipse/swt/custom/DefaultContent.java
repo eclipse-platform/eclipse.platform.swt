@@ -749,6 +749,7 @@ public String getTextRange(int start, int length) {
  * </ul>
  */
 @Override
+@SuppressWarnings("removal")
 public void removeTextChangeListener(TextChangeListener listener){
 	if (listener == null) error(SWT.ERROR_NULL_ARGUMENT);
 	for (int i = 0; i < textListeners.size(); i++) {

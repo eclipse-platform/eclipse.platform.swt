@@ -147,6 +147,7 @@ public void unhook (int eventType, Listener listener) {
 	}
 }
 
+@SuppressWarnings("removal")
 public void unhook (int eventType, EventListener listener) {
 	if (types == null) return;
 	for (int i=0; i<types.length; i++) {
