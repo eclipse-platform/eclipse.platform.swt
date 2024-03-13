@@ -51,19 +51,30 @@ public final class GCData {
 	public int fillRule = SWT.FILL_EVEN_ODD;
 	public Image image;
 
+	/** @noreference This field is not intended to be referenced by clients. */
 	public NSTextStorage textStorage;
+	/** @noreference This field is not intended to be referenced by clients. */
 	public NSLayoutManager layoutManager;
+	/** @noreference This field is not intended to be referenced by clients. */
 	public NSTextContainer textContainer;
+	/** @noreference This field is not intended to be referenced by clients. */
 	public NSColor fg, bg;
 	public double drawXOffset, drawYOffset;
+	/** @noreference This field is not intended to be referenced by clients. */
 	public NSRect paintRect;
+	/** @noreference This field is not intended to be referenced by clients. */
 	public NSBezierPath path;
+	/** @noreference This field is not intended to be referenced by clients. */
 	public NSAffineTransform transform, inverseTransform;
+	/** @noreference This field is not intended to be referenced by clients. */
 	public NSBezierPath clipPath, visiblePath;
 	public long visibleRgn;
+	/** @noreference This field is not intended to be referenced by clients. */
 	public NSView view;
+	/** @noreference This field is not intended to be referenced by clients. */
 	public NSSize size;
 	public Thread thread;
+	/** @noreference This field is not intended to be referenced by clients. */
 	public NSGraphicsContext flippedContext;
 	public boolean restoreContext;
 }

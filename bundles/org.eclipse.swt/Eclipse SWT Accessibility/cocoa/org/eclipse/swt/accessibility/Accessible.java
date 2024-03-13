@@ -789,6 +789,7 @@ public class Accessible {
 	 * </p>
 	 *
 	 * @noreference This method is not intended to be referenced by clients.
+	 * @nooverride This method is not intended to be re-implemented or extended by clients.
 	 */
 	public id internal_accessibilityActionDescription(NSString action, int childID) {
 		NSString returnValue = NSString.string();
@@ -834,6 +835,7 @@ public class Accessible {
 	 * </p>
 	 *
 	 * @noreference This method is not intended to be referenced by clients.
+	 * @nooverride This method is not intended to be re-implemented or extended by clients.
 	 */
 	public NSArray internal_accessibilityActionNames(int childID) {
 		if (accessibleActionListenersSize() > 0) {
@@ -919,6 +921,7 @@ public class Accessible {
 	 * </p>
 	 *
 	 * @noreference This method is not intended to be referenced by clients.
+	 * @nooverride This method is not intended to be re-implemented or extended by clients.
 	 */
 	public boolean internal_accessibilityIsAttributeSettable(NSString attribute, int childID) {
 		if (accessibleTextExtendedListenersSize() > 0) {
@@ -944,6 +947,7 @@ public class Accessible {
 	 * </p>
 	 *
 	 * @noreference This method is not intended to be referenced by clients.
+	 * @nooverride This method is not intended to be re-implemented or extended by clients.
 	 */
 	public NSArray internal_accessibilityAttributeNames(int childID) {
 		// The supported attribute set depends on the role played by the control.
@@ -1226,6 +1230,7 @@ public class Accessible {
 	 * </p>
 	 *
 	 * @noreference This method is not intended to be referenced by clients.
+	 * @nooverride This method is not intended to be re-implemented or extended by clients.
 	 */
 	public id internal_accessibilityAttributeValue(NSString attribute, int childID) {
 		if (attribute.isEqualToString(OS.NSAccessibilityRoleAttribute)) return getRoleAttribute(childID);
@@ -1285,6 +1290,7 @@ public class Accessible {
 	 * </p>
 	 *
 	 * @noreference This method is not intended to be referenced by clients.
+	 * @nooverride This method is not intended to be re-implemented or extended by clients.
 	 */
 	public id internal_accessibilityAttributeValue_forParameter(NSString attribute, id parameter, int childID) {
 		if (attribute.isEqualToString(OS.NSAccessibilityStringForRangeParameterizedAttribute)) return getStringForRangeParameterizedAttribute(parameter, childID);
@@ -1312,6 +1318,7 @@ public class Accessible {
 	 * </p>
 	 *
 	 * @noreference This method is not intended to be referenced by clients.
+	 * @nooverride This method is not intended to be re-implemented or extended by clients.
 	 */
 	public id internal_accessibilityFocusedUIElement(int childID) {
 		AccessibleControlEvent event = new AccessibleControlEvent(this);
@@ -1352,6 +1359,7 @@ public class Accessible {
 	 * </p>
 	 *
 	 * @noreference This method is not intended to be referenced by clients.
+	 * @nooverride This method is not intended to be re-implemented or extended by clients.
 	 */
 	public id internal_accessibilityHitTest(NSPoint point, int childID) {
 		AccessibleControlEvent event = new AccessibleControlEvent(this);
@@ -1422,6 +1430,7 @@ public class Accessible {
 	 * </p>
 	 *
 	 * @noreference This method is not intended to be referenced by clients.
+	 * @nooverride This method is not intended to be re-implemented or extended by clients.
 	 */
 	public NSArray internal_accessibilityParameterizedAttributeNames(int childID) {
 		AccessibleControlEvent event = new AccessibleControlEvent(this);
@@ -1483,6 +1492,7 @@ public class Accessible {
 	 * </p>
 	 *
 	 * @noreference This method is not intended to be referenced by clients.
+	 * @nooverride This method is not intended to be re-implemented or extended by clients.
 	 */
 	public boolean internal_accessibilityPerformAction(NSString action, int childID) {
 		String actionName = action.getString();
@@ -1528,6 +1538,7 @@ public class Accessible {
 	 * </p>
 	 *
 	 * @noreference This method is not intended to be referenced by clients.
+	 * @nooverride This method is not intended to be re-implemented or extended by clients.
 	 */
 	public void internal_accessibilitySetValue_forAttribute(id value, NSString attribute, int childId) {
 		if (attribute.isEqualToString(OS.NSAccessibilitySelectedTextRangeAttribute)) setSelectedTextRangeAttribute(value, childId);
