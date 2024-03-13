@@ -148,11 +148,7 @@ public TreeColumn (Tree parent, int style, int index) {
  * @see #removeControlListener
  */
 public void addControlListener(ControlListener listener) {
-	checkWidget ();
-	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
-	TypedListener typedListener = new TypedListener (listener);
-	addListener (SWT.Resize,typedListener);
-	addListener (SWT.Move,typedListener);
+	addTypedListener(listener, SWT.Resize, SWT.Move);
 }
 
 /**
@@ -180,11 +176,7 @@ public void addControlListener(ControlListener listener) {
  * @see SelectionEvent
  */
 public void addSelectionListener (SelectionListener listener) {
-	checkWidget ();
-	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
-	TypedListener typedListener = new TypedListener (listener);
-	addListener (SWT.Selection,typedListener);
-	addListener (SWT.DefaultSelection,typedListener);
+	addTypedListener(listener, SWT.Selection, SWT.DefaultSelection);
 }
 
 static int checkStyle (int style) {

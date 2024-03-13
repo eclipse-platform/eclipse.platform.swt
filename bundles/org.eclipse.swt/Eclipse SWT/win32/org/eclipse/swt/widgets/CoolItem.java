@@ -148,11 +148,7 @@ public CoolItem (CoolBar parent, int style, int index) {
  * @since 2.0
  */
 public void addSelectionListener(SelectionListener listener) {
-	checkWidget();
-	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
-	TypedListener typedListener = new TypedListener (listener);
-	addListener (SWT.Selection,typedListener);
-	addListener (SWT.DefaultSelection,typedListener);
+	addTypedListener(listener, SWT.Selection, SWT.DefaultSelection);
 }
 
 @Override

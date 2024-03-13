@@ -137,11 +137,7 @@ public ExpandBar (Composite parent, int style) {
  * @see #removeExpandListener
  */
 public void addExpandListener (ExpandListener listener) {
-	checkWidget ();
-	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
-	TypedListener typedListener = new TypedListener (listener);
-	addListener (SWT.Expand, typedListener);
-	addListener (SWT.Collapse, typedListener);
+	addTypedListener(listener, SWT.Expand, SWT.Collapse);
 }
 
 static int checkStyle (int style) {

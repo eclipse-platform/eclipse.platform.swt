@@ -886,9 +886,7 @@ public void addLineStyleListener(LineStyleListener listener) {
  * </ul>
  */
 public void addModifyListener(ModifyListener modifyListener) {
-	checkWidget();
-	if (modifyListener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	addListener(SWT.Modify, new TypedListener(modifyListener));
+	addTypedListener(modifyListener, SWT.Modify);
 }
 /**
  * Adds a paint object listener. A paint object event is sent by the widget when an object
@@ -940,9 +938,7 @@ public void addPaintObjectListener(PaintObjectListener listener) {
  * @see SelectionEvent
  */
 public void addSelectionListener(SelectionListener listener) {
-	checkWidget();
-	if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	addListener(SWT.Selection, new TypedListener(listener));
+	addTypedListener(listener, SWT.Selection);
 }
 /**
  * Adds a verify key listener. A VerifyKey event is sent by the widget when a key
@@ -979,9 +975,7 @@ public void addVerifyKeyListener(VerifyKeyListener listener) {
  * </ul>
  */
 public void addVerifyListener(VerifyListener verifyListener) {
-	checkWidget();
-	if (verifyListener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	addListener(SWT.Verify, new TypedListener(verifyListener));
+	addTypedListener(verifyListener, SWT.Verify);
 }
 /**
  * Adds a word movement listener. A movement event is sent when the boundary
@@ -7486,7 +7480,7 @@ public void redrawRange(int start, int length, boolean clearBackground) {
 public void removeBidiSegmentListener(BidiSegmentListener listener) {
 	checkWidget();
 	if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	removeListener(ST.LineGetSegments, listener);
+	removeTypedListener(ST.LineGetSegments, listener);
 	resetCache(0, content.getLineCount());
 	setCaretLocations();
 	super.redraw();
@@ -7509,7 +7503,7 @@ public void removeBidiSegmentListener(BidiSegmentListener listener) {
 public void removeCaretListener(CaretListener listener) {
 	checkWidget();
 	if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	removeListener(ST.CaretMoved, listener);
+	removeTypedListener(ST.CaretMoved, listener);
 }
 /**
  * Removes the specified extended modify listener.
@@ -7527,7 +7521,7 @@ public void removeCaretListener(CaretListener listener) {
 public void removeExtendedModifyListener(ExtendedModifyListener extendedModifyListener) {
 	checkWidget();
 	if (extendedModifyListener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	removeListener(ST.ExtendedModify, extendedModifyListener);
+	removeTypedListener(ST.ExtendedModify, extendedModifyListener);
 }
 /**
  * Removes the specified line background listener.
@@ -7545,7 +7539,7 @@ public void removeExtendedModifyListener(ExtendedModifyListener extendedModifyLi
 public void removeLineBackgroundListener(LineBackgroundListener listener) {
 	checkWidget();
 	if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	removeListener(ST.LineGetBackground, listener);
+	removeTypedListener(ST.LineGetBackground, listener);
 }
 /**
  * Removes the specified line style listener.
@@ -7563,7 +7557,7 @@ public void removeLineBackgroundListener(LineBackgroundListener listener) {
 public void removeLineStyleListener(LineStyleListener listener) {
 	checkWidget();
 	if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	removeListener(ST.LineGetStyle, listener);
+	removeTypedListener(ST.LineGetStyle, listener);
 	setCaretLocations();
 }
 /**
@@ -7582,7 +7576,7 @@ public void removeLineStyleListener(LineStyleListener listener) {
 public void removeModifyListener(ModifyListener modifyListener) {
 	checkWidget();
 	if (modifyListener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	removeListener(SWT.Modify, modifyListener);
+	removeTypedListener(SWT.Modify, modifyListener);
 }
 /**
  * Removes the specified listener.
@@ -7601,7 +7595,7 @@ public void removeModifyListener(ModifyListener modifyListener) {
 public void removePaintObjectListener(PaintObjectListener listener) {
 	checkWidget();
 	if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	removeListener(ST.PaintObject, listener);
+	removeTypedListener(ST.PaintObject, listener);
 }
 /**
  * Removes the listener from the collection of listeners who will
@@ -7623,7 +7617,7 @@ public void removePaintObjectListener(PaintObjectListener listener) {
 public void removeSelectionListener(SelectionListener listener) {
 	checkWidget();
 	if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	removeListener(SWT.Selection, listener);
+	removeTypedListener(SWT.Selection, listener);
 }
 /**
  * Removes the specified verify listener.
@@ -7641,7 +7635,7 @@ public void removeSelectionListener(SelectionListener listener) {
 public void removeVerifyListener(VerifyListener verifyListener) {
 	checkWidget();
 	if (verifyListener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	removeListener(SWT.Verify, verifyListener);
+	removeTypedListener(SWT.Verify, verifyListener);
 }
 /**
  * Removes the specified key verify listener.
@@ -7658,7 +7652,7 @@ public void removeVerifyListener(VerifyListener verifyListener) {
  */
 public void removeVerifyKeyListener(VerifyKeyListener listener) {
 	if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	removeListener(ST.VerifyKey, listener);
+	removeTypedListener(ST.VerifyKey, listener);
 }
 /**
  * Removes the specified word movement listener.
@@ -7683,8 +7677,8 @@ public void removeVerifyKeyListener(VerifyKeyListener listener) {
 public void removeWordMovementListener(MovementListener listener) {
 	checkWidget();
 	if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	removeListener(ST.WordNext, listener);
-	removeListener(ST.WordPrevious, listener);
+	removeTypedListener(ST.WordNext, listener);
+	removeTypedListener(ST.WordPrevious, listener);
 }
 /**
  * Replaces the styles in the given range with new styles.  This method

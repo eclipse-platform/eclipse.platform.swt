@@ -129,10 +129,7 @@ public Spinner (Composite parent, int style) {
  * @see #removeModifyListener
  */
 public void addModifyListener (ModifyListener listener) {
-	checkWidget ();
-	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
-	TypedListener typedListener = new TypedListener (listener);
-	addListener (SWT.Modify, typedListener);
+	addTypedListener(listener, SWT.Modify);
 }
 
 /**
@@ -160,11 +157,7 @@ public void addModifyListener (ModifyListener listener) {
  * @see SelectionEvent
  */
 public void addSelectionListener(SelectionListener listener) {
-	checkWidget ();
-	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
-	TypedListener typedListener = new TypedListener(listener);
-	addListener(SWT.Selection,typedListener);
-	addListener(SWT.DefaultSelection,typedListener);
+	addTypedListener(listener, SWT.Selection, SWT.DefaultSelection);
 }
 
 /**
@@ -187,10 +180,7 @@ public void addSelectionListener(SelectionListener listener) {
  * @see #removeVerifyListener
  */
 void addVerifyListener (VerifyListener listener) {
-	checkWidget();
-	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
-	TypedListener typedListener = new TypedListener (listener);
-	addListener (SWT.Verify, typedListener);
+	addTypedListener(listener, SWT.Verify);
 }
 
 static int checkStyle (int style) {

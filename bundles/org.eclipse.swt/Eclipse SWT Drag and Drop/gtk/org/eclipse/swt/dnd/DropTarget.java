@@ -546,21 +546,7 @@ public Control getControl () {
  * @since 3.4
  */
 public DropTargetListener[] getDropListeners() {
-	Listener[] listeners = getListeners(DND.DragEnter);
-	int length = listeners.length;
-	DropTargetListener[] dropListeners = new DropTargetListener[length];
-	int count = 0;
-	for (int i = 0; i < length; i++) {
-		Listener listener = listeners[i];
-		if (listener instanceof DNDListener) {
-			dropListeners[count] = (DropTargetListener) ((DNDListener) listener).getEventListener();
-			count++;
-		}
-	}
-	if (count == length) return dropListeners;
-	DropTargetListener[] result = new DropTargetListener[count];
-	System.arraycopy(dropListeners, 0, result, 0, count);
-	return result;
+	return getTypedListeners(DND.DragEnter, DropTargetListener.class).toArray(DropTargetListener[]::new);
 }
 
 /**
@@ -663,12 +649,12 @@ int osOpToOp(int osOperation){
  */
 public void removeDropListener(DropTargetListener listener) {
 	if (listener == null) DND.error (SWT.ERROR_NULL_ARGUMENT);
-	removeListener (DND.DragEnter, listener);
-	removeListener (DND.DragLeave, listener);
-	removeListener (DND.DragOver, listener);
-	removeListener (DND.DragOperationChanged, listener);
-	removeListener (DND.Drop, listener);
-	removeListener (DND.DropAccept, listener);
+	removeTypedListener(DND.DragEnter, listener);
+	removeTypedListener(DND.DragLeave, listener);
+	removeTypedListener(DND.DragOver, listener);
+	removeTypedListener(DND.DragOperationChanged, listener);
+	removeTypedListener(DND.Drop, listener);
+	removeTypedListener(DND.DropAccept, listener);
 }
 
 /**

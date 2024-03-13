@@ -159,10 +159,7 @@ MenuItem (Menu parent, Menu menu, int style, int index) {
  * @see #removeArmListener
  */
 public void addArmListener (ArmListener listener) {
-	checkWidget ();
-	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
-	TypedListener typedListener = new TypedListener (listener);
-	addListener (SWT.Arm, typedListener);
+	addTypedListener(listener, SWT.Arm);
 }
 
 /**
@@ -185,10 +182,7 @@ public void addArmListener (ArmListener listener) {
  * @see #removeHelpListener
  */
 public void addHelpListener (HelpListener listener) {
-	checkWidget ();
-	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
-	TypedListener typedListener = new TypedListener (listener);
-	addListener (SWT.Help, typedListener);
+	addTypedListener(listener, SWT.Help);
 }
 
 /**
@@ -222,11 +216,7 @@ public void addHelpListener (HelpListener listener) {
  * @see SelectionEvent
  */
 public void addSelectionListener (SelectionListener listener) {
-	checkWidget ();
-	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
-	TypedListener typedListener = new TypedListener(listener);
-	addListener (SWT.Selection,typedListener);
-	addListener (SWT.DefaultSelection,typedListener);
+	addTypedListener(listener, SWT.Selection, SWT.DefaultSelection);
 }
 
 @Override

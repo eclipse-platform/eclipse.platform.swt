@@ -577,21 +577,7 @@ public Control getControl () {
  * @since 3.4
  */
 public DragSourceListener[] getDragListeners() {
-	Listener[] listeners = getListeners(DND.DragStart);
-	int length = listeners.length;
-	DragSourceListener[] dragListeners = new DragSourceListener[length];
-	int count = 0;
-	for (int i = 0; i < length; i++) {
-		Listener listener = listeners[i];
-		if (listener instanceof DNDListener) {
-			dragListeners[count] = (DragSourceListener) ((DNDListener) listener).getEventListener();
-			count++;
-		}
-	}
-	if (count == length) return dragListeners;
-	DragSourceListener[] result = new DragSourceListener[count];
-	System.arraycopy(dragListeners, 0, result, 0, count);
-	return result;
+	return getTypedListeners(DND.DragStart, DragSourceListener.class).toArray(DragSourceListener[]::new);
 }
 
 /**
@@ -677,9 +663,9 @@ int osOpToOp(int osOperation){
  */
 public void removeDragListener(DragSourceListener listener) {
 	if (listener == null) DND.error (SWT.ERROR_NULL_ARGUMENT);
-	removeListener (DND.DragStart, listener);
-	removeListener (DND.DragSetData, listener);
-	removeListener (DND.DragEnd, listener);
+	removeTypedListener(DND.DragStart, listener);
+	removeTypedListener(DND.DragSetData, listener);
+	removeTypedListener(DND.DragEnd, listener);
 }
 
 /**

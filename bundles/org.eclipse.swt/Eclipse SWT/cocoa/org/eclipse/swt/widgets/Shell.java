@@ -478,14 +478,7 @@ boolean accessibilityIsIgnored(long id, long sel) {
  * @see #removeShellListener
  */
 public void addShellListener(ShellListener listener) {
-	checkWidget();
-	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
-	TypedListener typedListener = new TypedListener (listener);
-	addListener(SWT.Activate,typedListener);
-	addListener(SWT.Close,typedListener);
-	addListener(SWT.Deactivate,typedListener);
-	addListener(SWT.Iconify,typedListener);
-	addListener(SWT.Deiconify,typedListener);
+	addTypedListener(listener, SWT.Activate, SWT.Close, SWT.Deactivate, SWT.Iconify, SWT.Deiconify);
 }
 
 void attachObserversToWindow(NSWindow newWindow) {
