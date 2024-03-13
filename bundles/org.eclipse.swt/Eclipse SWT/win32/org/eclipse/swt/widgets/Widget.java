@@ -256,6 +256,7 @@ protected void addTypedListener (EventListener listener, int... eventTypes) {
 	if (listener == null) {
 		SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	}
+	@SuppressWarnings("removal")
 	TypedListener typedListener = new TypedListener(listener);
 	for (int eventType : eventTypes) {
 		_addListener(eventType, typedListener);
@@ -668,6 +669,7 @@ public Listener[] getListeners (int eventType) {
  *
  * @since 3.126
  */
+@SuppressWarnings("removal")
 public <L extends EventListener> Stream<L> getTypedListeners (int eventType, Class<L> listenerType) {
 	return Arrays.stream(getListeners(eventType)) //
 			.filter(TypedListener.class::isInstance).map(l -> ((TypedListener) l).eventListener)

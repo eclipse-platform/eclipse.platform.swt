@@ -36,7 +36,13 @@ import org.eclipse.swt.internal.*;
  * @noreference This class is not intended to be referenced by clients.
  * @noextend This class is not intended to be subclassed by clients.
  * @noinstantiate This class is not intended to be instantiated by clients.
+ * @deprecated This class will become 'strongly' internal. For custom widgets
+ *             {@link Widget#addTypedListener(EventListener, int...)},
+ *             {@link Widget#getTypedListeners(int, Class)} or
+ *             {@link Widget#removeTypedListener(int, EventListener)} can
+ *             probably be used instead.
  */
+@Deprecated(forRemoval = true, since = "3.129.0 (removal in 2027-03 or later)")
 public class TypedListener implements Listener {
 
 	/**

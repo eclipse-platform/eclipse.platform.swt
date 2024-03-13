@@ -17,6 +17,7 @@ import org.eclipse.swt.events.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.widgets.*;
 
+@SuppressWarnings("removal")
 class StyledTextListener extends TypedListener {
 StyledTextListener(SWTEventListener listener) {
 	super(listener);
