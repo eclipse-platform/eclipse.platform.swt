@@ -14,9 +14,11 @@
 package org.eclipse.swt.widgets;
 
 
-import org.eclipse.swt.internal.SWTEventListener;
+import java.util.*;
+
 import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
+import org.eclipse.swt.internal.*;
 
 /**
  * Instances of this class are <em>internal SWT implementation</em>
@@ -40,7 +42,7 @@ public class TypedListener implements Listener {
 	/**
 	 * The receiver's event listener
 	 */
-	protected SWTEventListener eventListener;
+	protected EventListener eventListener;
 
 /**
  * Constructs a new instance of this class for the given event listener.
@@ -59,6 +61,10 @@ public TypedListener (SWTEventListener listener) {
 	eventListener = listener;
 }
 
+TypedListener (EventListener listener) {
+	eventListener = listener;
+}
+
 /**
  * Returns the receiver's event listener.
  * <p>
@@ -73,7 +79,11 @@ public TypedListener (SWTEventListener listener) {
  * @noreference This method is not intended to be referenced by clients.
  */
 public SWTEventListener getEventListener () {
-	return eventListener;
+	// At the moment all typed listeners implement SWTEventListener but that interface is intended to be removed in the future and then they will only implement EventListener.
+	// This method should not be called for typed listeners listeners that only implement EventListener.
+	// This is only relevant for custom typed listeners that implement EventListener directly before SWTEventListener is eventually removed.
+	// But then the new Widget.getTypedListener() method can be used.
+	return (SWTEventListener) eventListener;
 }
 
 /**

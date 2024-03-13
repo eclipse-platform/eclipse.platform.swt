@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2011 IBM Corporation and others.
+ * Copyright (c) 2000, 2024 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -13,6 +13,8 @@
  *******************************************************************************/
 package org.eclipse.swt.widgets;
 
+
+import java.util.*;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.internal.*;
@@ -145,12 +147,12 @@ public void unhook (int eventType, Listener listener) {
 	}
 }
 
-public void unhook (int eventType, SWTEventListener listener) {
+public void unhook (int eventType, EventListener listener) {
 	if (types == null) return;
 	for (int i=0; i<types.length; i++) {
 		if (types [i] == eventType) {
 			if (listeners [i] instanceof TypedListener typedListener) {
-				if (typedListener.getEventListener () == listener) {
+				if (typedListener.eventListener == listener) {
 					remove (i);
 					return;
 				}
