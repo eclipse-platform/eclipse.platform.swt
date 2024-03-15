@@ -166,8 +166,8 @@ public class Display extends Device implements Executor {
 	NSFont textViewFont, tableViewFont, outlineViewFont, datePickerFont;
 	NSFont boxFont, tabViewFont, progressIndicatorFont;
 
-	/* Option for smaller padding on table/tree/list item (row) height */
-	boolean smallItemHeight;
+	/* Option for native table/tree/list item (row) height */
+	boolean enforceNativeItemHeightMinimum;
 
 	Shell [] modalShells;
 	Dialog modalDialog;
@@ -2408,10 +2408,9 @@ protected void init () {
 	setDeviceZoom ();
 
 	/*
-	 * If this property exists then use smaller padding for item heights in Table, Tree and List controls
-	 * TODO: this is initialized here, could this be put in a better place? And use a better property name?
+	 * If this property exists then enforce native item heights in Table, Tree and List controls
 	 */
-	smallItemHeight = System.getProperty("org.eclipse.swt.internal.cocoa.smallItemHeight") != null;
+	enforceNativeItemHeightMinimum = System.getProperty("org.eclipse.swt.internal.cocoa.enforceNativeItemHeightMinimum") != null;
 
 	/*
 	 * Create an application delegate for app-level notifications.  The AWT may have already set a delegate;

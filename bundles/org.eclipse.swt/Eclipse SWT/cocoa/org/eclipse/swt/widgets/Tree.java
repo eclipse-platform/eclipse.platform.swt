@@ -97,6 +97,8 @@ public class Tree extends Composite {
 	/* Used to control drop feedback when DND.FEEDBACK_EXPAND and DND.FEEDBACK_SCROLL is set/not set */
 	boolean shouldExpand = true, shouldScroll = true;
 
+	final int nativeItemHeight;
+
 	static int NEXT_ID;
 
 	/*
@@ -108,9 +110,6 @@ public class Tree extends Composite {
 	static final int IMAGE_GAP = 3;
 	static final int TEXT_GAP = 2;
 	static final int CELL_GAP = 1;
-
-	/* Vertical cell padding for tree item */
-	static final int VERTICAL_CELL_PADDING= 8;
 
 /**
  * Constructs a new instance of this class given its parent
@@ -147,11 +146,8 @@ public class Tree extends Composite {
  */
 public Tree (Composite parent, int style) {
 	super (parent, checkStyle (style));
-
-	// Have to initialize item height here in case option set for smaller item height
-	if(display.smallItemHeight) {
-		setItemHeight(null, null, true);
-	}
+	nativeItemHeight = (int)((NSTableView)view).rowHeight();
+	setItemHeight(null, null, true);
 }
 
 @Override
@@ -3178,8 +3174,10 @@ void setItemHeight (Image image, NSFont font, boolean set) {
 	if (font == null) font = getFont ().handle;
 	double ascent = font.ascender ();
 	double descent = -font.descender () + font.leading ();
-	// If small item height is set with option then use smaller vertical padding
-	int height = (int)Math.ceil (ascent + descent) + (display.smallItemHeight ? 1 : VERTICAL_CELL_PADDING);
+	int height = (int)Math.ceil (ascent + descent) + 1;
+	if(display.enforceNativeItemHeightMinimum) {
+        height = Math.max (height, nativeItemHeight);
+    }
 	Rectangle bounds = image != null ? image.getBounds () : imageBounds;
 	if (bounds != null) {
 		imageBounds = bounds;
