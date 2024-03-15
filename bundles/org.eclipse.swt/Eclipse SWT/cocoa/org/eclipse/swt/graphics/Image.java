@@ -1532,10 +1532,10 @@ public long internal_new_GC (GCData data) {
 			imageRep.setAlpha(false);
 			context = NSGraphicsContext.graphicsContextWithBitmapImageRep(imageRep);
 		}
-		NSGraphicsContext flippedContext = NSGraphicsContext.graphicsContextWithGraphicsPort(context.graphicsPort(), true);
-		context = flippedContext;
+		boolean flip = OS.VERSION < OS.VERSION(14, 0, 0); // https://github.com/eclipse-platform/eclipse.platform.swt/issues/772
+		context = NSGraphicsContext.graphicsContextWithGraphicsPort(context.graphicsPort(), flip);
 		context.retain();
-		if (data != null) data.flippedContext = flippedContext;
+		if (data != null) data.context = context;
 		NSGraphicsContext.static_saveGraphicsState();
 		NSGraphicsContext.setCurrentContext(context);
 		NSAffineTransform transform = NSAffineTransform.transform();

@@ -331,7 +331,7 @@ long applierFunc(long info, long elementPtr) {
 NSAutoreleasePool checkGC (int mask) {
 	NSAutoreleasePool pool = null;
 	if (!NSThread.isMainThread()) pool = (NSAutoreleasePool) new NSAutoreleasePool().alloc().init();
-	if (data.flippedContext != null && !handle.isEqual(NSGraphicsContext.currentContext())) {
+	if (data.context != null && !handle.isEqual(NSGraphicsContext.currentContext())) {
 		data.restoreContext = true;
 		NSGraphicsContext.static_saveGraphicsState();
 		NSGraphicsContext.setCurrentContext(handle);
@@ -4166,7 +4166,7 @@ public String toString () {
 }
 
 void uncheckGC(NSAutoreleasePool pool) {
-	if (data.flippedContext != null && data.restoreContext) {
+	if (data.context != null && data.restoreContext) {
 		NSGraphicsContext.static_restoreGraphicsState();
 		data.restoreContext = false;
 	}

@@ -4377,8 +4377,8 @@ boolean runAWTInvokeLater() {
 boolean runContexts () {
 	if (contexts != null) {
 		for (int i = 0; i < contexts.length; i++) {
-			if (contexts[i] != null && contexts[i].flippedContext != null) {
-				contexts[i].flippedContext.flushGraphics();
+			if (contexts[i] != null && contexts[i].context != null) {
+				contexts[i].context.flushGraphics();
 			}
 		}
 	}
