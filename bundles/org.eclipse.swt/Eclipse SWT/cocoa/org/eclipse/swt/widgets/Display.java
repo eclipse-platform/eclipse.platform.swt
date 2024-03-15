@@ -166,6 +166,8 @@ public class Display extends Device implements Executor {
 	NSFont textViewFont, tableViewFont, outlineViewFont, datePickerFont;
 	NSFont boxFont, tabViewFont, progressIndicatorFont;
 
+	boolean useNativeItemHeight;
+
 	Shell [] modalShells;
 	Dialog modalDialog;
 	NSPanel modalPanel;
@@ -2404,6 +2406,8 @@ protected void init () {
 	initFonts ();
 	setDeviceZoom ();
 
+	useNativeItemHeight = initUseNativeItemHeight();
+
 	/*
 	 * Create an application delegate for app-level notifications.  The AWT may have already set a delegate;
 	 * if so, hold on to it so messages can be forwarded to it.
@@ -2500,6 +2504,19 @@ protected void init () {
 
 	isPainting = (NSMutableArray)new NSMutableArray().alloc();
 	isPainting = isPainting.initWithCapacity(12);
+}
+
+/**
+ * Checks if the native item height should be enforced as a minimum (which is true by default).
+ * 
+ * Newer version of macOS may use a default item height in Table, Tree and List
+ * controls that is larger than what is traditionally expected.
+ * 
+ * Enforcing the default height as a minimum may break existing assumptions and
+ * render UI elements with a padding that may be considered too large.
+ */
+private boolean initUseNativeItemHeight() {
+	return Boolean.parseBoolean(System.getProperty("org.eclipse.swt.internal.cocoa.useNativeItemHeight", "true"));
 }
 
 private static NSString getAwtRunLoopMode() {
