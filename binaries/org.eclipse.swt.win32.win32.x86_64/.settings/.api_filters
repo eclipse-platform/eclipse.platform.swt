@@ -1,128 +1,111 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <component id="org.eclipse.swt.win32.win32.x86_64" version="2">
     <resource path="Eclipse SWT OLE Win32/win32/org/eclipse/swt/ole/win32/OleAutomation.java" type="org.eclipse.swt.ole.win32.OleAutomation">
-        <filter id="643842064">
+        <filter id="338944126">
             <message_arguments>
-                <message_argument value="TYPEATTR"/>
-                <message_argument value="OleAutomation"/>
+                <message_argument value="org.eclipse.swt.ole.win32.OleAutomation"/>
                 <message_argument value="getTypeInfoAttributes()"/>
             </message_arguments>
         </filter>
     </resource>
     <resource path="Eclipse SWT OLE Win32/win32/org/eclipse/swt/ole/win32/OleClientSite.java" type="org.eclipse.swt.ole.win32.OleClientSite">
-        <filter id="627060751">
+        <filter id="338940029">
             <message_arguments>
-                <message_argument value="GUID"/>
-                <message_argument value="OleClientSite"/>
+                <message_argument value="org.eclipse.swt.ole.win32.OleClientSite"/>
                 <message_argument value="appClsid"/>
             </message_arguments>
         </filter>
-        <filter id="627060751">
+        <filter id="338940029">
             <message_arguments>
-                <message_argument value="IOleCommandTarget"/>
-                <message_argument value="OleClientSite"/>
-                <message_argument value="objIOleCommandTarget"/>
-            </message_arguments>
-        </filter>
-        <filter id="627060751">
-            <message_arguments>
-                <message_argument value="IOleDocumentView"/>
-                <message_argument value="OleClientSite"/>
+                <message_argument value="org.eclipse.swt.ole.win32.OleClientSite"/>
                 <message_argument value="objDocumentView"/>
             </message_arguments>
         </filter>
-        <filter id="627060751">
+        <filter id="338940029">
             <message_arguments>
-                <message_argument value="IOleInPlaceObject"/>
-                <message_argument value="OleClientSite"/>
+                <message_argument value="org.eclipse.swt.ole.win32.OleClientSite"/>
+                <message_argument value="objIOleCommandTarget"/>
+            </message_arguments>
+        </filter>
+        <filter id="338940029">
+            <message_arguments>
+                <message_argument value="org.eclipse.swt.ole.win32.OleClientSite"/>
                 <message_argument value="objIOleInPlaceObject"/>
             </message_arguments>
         </filter>
-        <filter id="627060751">
+        <filter id="338940029">
             <message_arguments>
-                <message_argument value="IOleObject"/>
-                <message_argument value="OleClientSite"/>
+                <message_argument value="org.eclipse.swt.ole.win32.OleClientSite"/>
                 <message_argument value="objIOleObject"/>
             </message_arguments>
         </filter>
-        <filter id="627060751">
+        <filter id="338940029">
             <message_arguments>
-                <message_argument value="IStorage"/>
-                <message_argument value="OleClientSite"/>
-                <message_argument value="tempStorage"/>
-            </message_arguments>
-        </filter>
-        <filter id="627060751">
-            <message_arguments>
-                <message_argument value="IUnknown"/>
-                <message_argument value="OleClientSite"/>
+                <message_argument value="org.eclipse.swt.ole.win32.OleClientSite"/>
                 <message_argument value="objIUnknown"/>
             </message_arguments>
         </filter>
-        <filter id="627060751">
+        <filter id="338940029">
             <message_arguments>
-                <message_argument value="IViewObject2"/>
-                <message_argument value="OleClientSite"/>
+                <message_argument value="org.eclipse.swt.ole.win32.OleClientSite"/>
                 <message_argument value="objIViewObject2"/>
             </message_arguments>
         </filter>
-        <filter id="643842064">
+        <filter id="338940029">
             <message_arguments>
-                <message_argument value="GUID"/>
-                <message_argument value="OleClientSite"/>
-                <message_argument value="getClassID(String)"/>
+                <message_argument value="org.eclipse.swt.ole.win32.OleClientSite"/>
+                <message_argument value="tempStorage"/>
             </message_arguments>
         </filter>
-        <filter id="643842064">
+        <filter id="338944126">
             <message_arguments>
-                <message_argument value="IStorage"/>
-                <message_argument value="OleClientSite"/>
+                <message_argument value="org.eclipse.swt.ole.win32.OleClientSite"/>
                 <message_argument value="createTempStorage()"/>
+            </message_arguments>
+        </filter>
+        <filter id="338944126">
+            <message_arguments>
+                <message_argument value="org.eclipse.swt.ole.win32.OleClientSite"/>
+                <message_argument value="getClassID(String)"/>
             </message_arguments>
         </filter>
     </resource>
     <resource path="Eclipse SWT OLE Win32/win32/org/eclipse/swt/ole/win32/OleControlSite.java" type="org.eclipse.swt.ole.win32.OleControlSite">
-        <filter id="643846161">
+        <filter id="338944126">
             <message_arguments>
-                <message_argument value="GUID"/>
-                <message_argument value="OleControlSite"/>
+                <message_argument value="org.eclipse.swt.ole.win32.OleControlSite"/>
                 <message_argument value="getLicenseInfo(GUID)"/>
             </message_arguments>
         </filter>
-        <filter id="643846161">
+        <filter id="338944126">
             <message_arguments>
-                <message_argument value="GUID"/>
-                <message_argument value="OleControlSite"/>
+                <message_argument value="org.eclipse.swt.ole.win32.OleControlSite"/>
                 <message_argument value="removeEventListener(OleAutomation, GUID, int, OleListener)"/>
             </message_arguments>
         </filter>
     </resource>
     <resource path="Eclipse SWT OLE Win32/win32/org/eclipse/swt/ole/win32/Variant.java" type="org.eclipse.swt.ole.win32.Variant">
-        <filter id="643842064">
+        <filter id="338944126">
             <message_arguments>
-                <message_argument value="IDispatch"/>
-                <message_argument value="Variant"/>
+                <message_argument value="org.eclipse.swt.ole.win32.Variant"/>
                 <message_argument value="getDispatch()"/>
             </message_arguments>
         </filter>
-        <filter id="643842064">
+        <filter id="338944126">
             <message_arguments>
-                <message_argument value="IUnknown"/>
-                <message_argument value="Variant"/>
+                <message_argument value="org.eclipse.swt.ole.win32.Variant"/>
                 <message_argument value="getUnknown()"/>
             </message_arguments>
         </filter>
-        <filter id="643850349">
+        <filter id="338948223">
             <message_arguments>
-                <message_argument value="IDispatch"/>
-                <message_argument value="Variant"/>
+                <message_argument value="org.eclipse.swt.ole.win32.Variant"/>
                 <message_argument value="Variant(IDispatch)"/>
             </message_arguments>
         </filter>
-        <filter id="643850349">
+        <filter id="338948223">
             <message_arguments>
-                <message_argument value="IUnknown"/>
-                <message_argument value="Variant"/>
+                <message_argument value="org.eclipse.swt.ole.win32.Variant"/>
                 <message_argument value="Variant(IUnknown)"/>
             </message_arguments>
         </filter>

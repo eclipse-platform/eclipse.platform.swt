@@ -171,6 +171,7 @@ public Variant(OleAutomation automation) {
  * @since 2.0
  *
  * @param idispatch the IDispatch object that this Variant represents
+ * @noreference This constructor is not intended to be referenced by clients.
  */
 public Variant(IDispatch idispatch) {
 	type = COM.VT_DISPATCH;
@@ -183,6 +184,7 @@ public Variant(IDispatch idispatch) {
  * this Variant.
  *
  * @param unknown the IUnknown object that this Variant represents
+ * @noreference This constructor is not intended to be referenced by clients.
  */
 public Variant(IUnknown unknown) {
 	type = COM.VT_UNKNOWN;
@@ -305,6 +307,7 @@ public OleAutomation getAutomation() {
  * @exception SWTException <ul>
  *     <li>ERROR_CANNOT_CHANGE_VARIANT_TYPE when type of Variant can not be coerced into an IDispatch object</li>
  * </ul>
+ * @noreference This method is not intended to be referenced by clients.
  */
 public IDispatch getDispatch() {
 	if (type == COM.VT_EMPTY) {
@@ -801,6 +804,7 @@ public short getType() {
  *     <li>ERROR_CANNOT_CHANGE_VARIANT_TYPE when type of Variant can not be coerced into
  *			an IUnknown object</li>
  * </ul>
+ * @noreference This method is not intended to be referenced by clients.
  */
 public IUnknown getUnknown() {
 	if (type == COM.VT_EMPTY) {
