@@ -86,15 +86,14 @@ public class Table extends Composite {
 	boolean shouldScroll = true;
 	boolean keyDown;
 
+	final int nativeItemHeight;
+
 	static int NEXT_ID;
 
 	static final int FIRST_COLUMN_MINIMUM_WIDTH = 5;
 	static final int IMAGE_GAP = 3;
 	static final int TEXT_GAP = 2;
 	static final int CELL_GAP = 1;
-
-	/* Vertical cell padding for table item */
-	static final int VERTICAL_CELL_PADDING= 8;
 
 /**
  * Constructs a new instance of this class given its parent
@@ -132,6 +131,9 @@ public class Table extends Composite {
  */
 public Table (Composite parent, int style) {
 	super (parent, checkStyle (style));
+
+	this.nativeItemHeight = (int)((NSTableView)view).rowHeight();
+	setItemHeight(null, null, true);
 }
 
 @Override
@@ -2825,7 +2827,10 @@ void setItemHeight (Image image, NSFont font, boolean set) {
 	if (font == null) font = getFont ().handle;
 	double ascent = font.ascender ();
 	double descent = -font.descender () + font.leading ();
-	int height = (int)Math.ceil (ascent + descent) + VERTICAL_CELL_PADDING;
+	int height = (int)Math.ceil (ascent + descent) + 1;
+	if (display.useNativeItemHeight) {
+		height = Math.max (height, nativeItemHeight);
+	}
 	Rectangle bounds = image != null ? image.getBounds () : imageBounds;
 	if (bounds != null) {
 		imageBounds = bounds;
