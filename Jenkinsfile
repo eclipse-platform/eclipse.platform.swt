@@ -223,13 +223,10 @@ pipeline {
 												ls -1R libs
 											'''
 										} else {
-											withEnv(['PATH=C:\\tools\\cygwin\\bin;' + env.PATH]) {
-												bat '''
-													mkdir libs
-													cmd /c build.bat install
-													ls -1R libs
-												'''
-											}
+											bat '''
+												mkdir libs
+												cmd /c build.bat install
+											'''
 										}
 									}
 									dir('libs') {
