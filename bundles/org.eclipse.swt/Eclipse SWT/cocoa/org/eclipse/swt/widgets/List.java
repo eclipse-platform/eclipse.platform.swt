@@ -46,12 +46,11 @@ public class List extends Scrollable {
 	int itemCount;
 	boolean ignoreSelect, didSelect, rowsChanged, mouseIsDown;
 
+	final int nativeItemHeight;
+
 	static int NEXT_ID;
 
 	static final int CELL_GAP = 1;
-
-	/* Vertical cell padding for list item */
-	static final int VERTICAL_CELL_PADDING= 8;
 
 /**
  * Constructs a new instance of this class given its parent
@@ -84,6 +83,9 @@ public class List extends Scrollable {
  */
 public List (Composite parent, int style) {
 	super (parent, checkStyle (style));
+
+	this.nativeItemHeight = (int)((NSTableView)view).rowHeight();
+	setFont(getFont()); // update height
 }
 
 @Override
@@ -1178,7 +1180,11 @@ void setFont (NSFont font) {
 	super.setFont (font);
 	double ascent = font.ascender ();
 	double descent = -font.descender () + font.leading ();
-	((NSTableView)view).setRowHeight ((int)Math.ceil (ascent + descent) + VERTICAL_CELL_PADDING);
+	int height = (int)Math.ceil (ascent + descent) + 1;
+	if (display.useNativeItemHeight) {
+		height = Math.max (height, nativeItemHeight);
+	}
+	((NSTableView)view).setRowHeight (height);
 	setScrollWidth();
 }
 
