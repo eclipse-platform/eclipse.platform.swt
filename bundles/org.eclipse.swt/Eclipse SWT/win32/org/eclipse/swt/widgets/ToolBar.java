@@ -1737,7 +1737,7 @@ LRESULT wmNotifyChild (NMHDR hdr, long wParam, long lParam) {
 	return super.wmNotifyChild (hdr, wParam, lParam);
 }
 
-private static void handleDPIChange(Widget widget, int newZoom, float scalingFactor) {
+private static void handleDPIChange(Widget widget, int newZoomFactor, float scalingFactor) {
 	if (!(widget instanceof ToolBar toolBar)) {
 		return;
 	}
@@ -1760,7 +1760,7 @@ private static void handleDPIChange(Widget widget, int newZoom, float scalingFac
 	for (ToolItem item : toolItems) {
 		toolBar.destroyItem(item);
 		// Resize after, as zoom update changes references to imageLists
-		DPIZoomChangeRegistry.applyChange(item, newZoom, scalingFactor);
+		DPIZoomChangeRegistry.applyChange(item, newZoomFactor, scalingFactor);
 	}
 
 	for (int i = 0; i < toolItems.length; i++) {

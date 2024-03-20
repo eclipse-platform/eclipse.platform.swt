@@ -1970,12 +1970,12 @@ public String toString() {
 	return super.toString() + " [layout=" + layout + "]";
 }
 
-private static void handleDPIChange(Widget widget, int newZoom, float scalingFactor) {
+private static void handleDPIChange(Widget widget, int newZoomFactor, float scalingFactor) {
 	if (!(widget instanceof Composite composite)) {
 		return;
 	}
 	for (Control child : composite.getChildren()) {
-		DPIZoomChangeRegistry.applyChange(child, newZoom, scalingFactor);
+		DPIZoomChangeRegistry.applyChange(child, newZoomFactor, scalingFactor);
 	}
 	composite.redrawInPixels (null, true);
 }

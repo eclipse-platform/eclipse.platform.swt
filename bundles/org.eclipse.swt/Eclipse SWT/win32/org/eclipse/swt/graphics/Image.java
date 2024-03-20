@@ -114,14 +114,14 @@ public final class Image extends Resource implements Drawable {
 	GC memGC;
 
 	/**
-	 * Base image data at zoom stored in baseDataZoom
+	 * Base image data at zoom factor stored in baseDataZoomFactor
 	 */
-	private ImageData dataAtBaseZoom;
+	private ImageData dataAtBaseZoomFactor;
 
 	/**
-	 * Zoom level for image data stored in <em>dataAtBaseZoom</em>
+	 * Zoom level for image data stored in <em>dataAtBaseZoomFactor</em>
 	 */
-	private int dataBaseZoom;
+	private int dataBaseZoomFactor;
 
 	/**
 	 * ImageFileNameProvider to provide file names at various Zoom levels
@@ -259,8 +259,8 @@ public Image(Device device, Image srcImage, int flag) {
 	this.imageFileNameProvider = srcImage.imageFileNameProvider;
 	this.styleFlag = srcImage.styleFlag | flag;
 	this.currentDeviceZoom = srcImage.currentDeviceZoom;
-	this.dataAtBaseZoom = srcImage.dataAtBaseZoom;
-	this.dataBaseZoom = srcImage.dataBaseZoom;
+	this.dataAtBaseZoomFactor = srcImage.dataAtBaseZoomFactor;
+	this.dataBaseZoomFactor = srcImage.dataBaseZoomFactor;
 	switch (flag) {
 		case SWT.IMAGE_COPY: {
 			switch (type) {
@@ -497,9 +497,9 @@ public Image(Device device, ImageData data) {
 	super(device);
 	if (data == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	currentDeviceZoom = DPIUtil.getDeviceZoom ();
-	this.dataAtBaseZoom = data;
-	this.dataBaseZoom = 100;
-	data = DPIUtil.autoScaleUp(device, this.dataAtBaseZoom);
+	this.dataAtBaseZoomFactor = data;
+	this.dataBaseZoomFactor = 100;
+	data = DPIUtil.autoScaleUp(device, this.dataAtBaseZoomFactor);
 	init(data);
 	init();
 }
@@ -542,8 +542,8 @@ public Image(Device device, ImageData source, ImageData mask) {
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
 	currentDeviceZoom = DPIUtil.getDeviceZoom ();
-	this.dataAtBaseZoom =  applyMask(source, ImageData.convertMask(mask));
-	this.dataBaseZoom = 100;
+	this.dataAtBaseZoomFactor =  applyMask(source, ImageData.convertMask(mask));
+	this.dataBaseZoomFactor = 100;
 	source = DPIUtil.autoScaleUp(device, source);
 	mask = DPIUtil.autoScaleUp(device, mask);
 	mask = ImageData.convertMask(mask);
@@ -607,9 +607,9 @@ public Image(Device device, ImageData source, ImageData mask) {
 public Image (Device device, InputStream stream) {
 	super(device);
 	currentDeviceZoom = DPIUtil.getDeviceZoom ();
-	this.dataAtBaseZoom = new ImageData (stream);
-	this.dataBaseZoom = 100;
-	ImageData data = DPIUtil.autoScaleUp(device, this.dataAtBaseZoom);
+	this.dataAtBaseZoomFactor = new ImageData (stream);
+	this.dataBaseZoomFactor = 100;
+	ImageData data = DPIUtil.autoScaleUp(device, this.dataAtBaseZoomFactor);
 	init(data);
 	init();
 }
@@ -650,9 +650,9 @@ public Image (Device device, String filename) {
 	super(device);
 	if (filename == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	currentDeviceZoom = DPIUtil.getDeviceZoom ();
-	this.dataAtBaseZoom = new ImageData(filename);
-	this.dataBaseZoom = 100;
-	ImageData data = DPIUtil.autoScaleUp(device, this.dataAtBaseZoom);
+	this.dataAtBaseZoomFactor = new ImageData(filename);
+	this.dataBaseZoomFactor = 100;
+	ImageData data = DPIUtil.autoScaleUp(device, this.dataAtBaseZoomFactor);
 	init(data);
 	init();
 }
@@ -783,12 +783,12 @@ public boolean handleDPIChange (int deviceZoomLevel) {
 		}
 	} else {
 		if (deviceZoomLevel != currentDeviceZoom) {
-			if (this.dataAtBaseZoom == null && memGC == null) {
+			if (this.dataAtBaseZoomFactor == null && memGC == null) {
 				// Cache data at base zoom before refresh.
-				this.dataAtBaseZoom = getImageData(currentDeviceZoom);
-				this.dataBaseZoom = this.currentDeviceZoom;
+				this.dataAtBaseZoomFactor = getImageData(currentDeviceZoom);
+				this.dataBaseZoomFactor = this.currentDeviceZoom;
 			}
-			if (this.dataAtBaseZoom != null) {
+			if (this.dataAtBaseZoomFactor != null) {
 				ImageData resizedData = getImageData(deviceZoomLevel);
 				destroy ();
 				init(resizedData);
@@ -1392,8 +1392,8 @@ public ImageData getImageData (int zoom) {
 		ElementAtZoom<String> fileName = DPIUtil.validateAndGetImagePathAtZoom (imageFileNameProvider, zoom);
 		return DPIUtil.autoScaleImageData (device, new ImageData (fileName.element()), zoom, fileName.zoom());
 	}
-	else if (this.dataAtBaseZoom != null) {
-		return DPIUtil.autoScaleImageData(device, this.dataAtBaseZoom, zoom, this.dataBaseZoom);
+	else if (this.dataAtBaseZoomFactor != null) {
+		return DPIUtil.autoScaleImageData(device, this.dataAtBaseZoomFactor, zoom, this.dataBaseZoomFactor);
 	} else {
 		return DPIUtil.autoScaleImageData (device, getImageDataAtCurrentZoom (), zoom, currentDeviceZoom);
 	}

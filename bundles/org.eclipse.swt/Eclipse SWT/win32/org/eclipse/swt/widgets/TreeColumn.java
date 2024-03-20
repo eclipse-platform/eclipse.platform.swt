@@ -760,14 +760,14 @@ void updateToolTip (int index) {
 	}
 }
 
-private static void handleDPIChange(Widget widget, int newZoom, float scalingFactor) {
+private static void handleDPIChange(Widget widget, int newZoomFactor, float scalingFactor) {
 	if (!(widget instanceof TreeColumn treeColumn)) {
 		return;
 	}
 	treeColumn.setWidth(Math.round(treeColumn.getWidth() * scalingFactor));
 	Image image = treeColumn.image;
 	if (image != null) {
-		image.handleDPIChange(newZoom);
+		image.handleDPIChange(newZoomFactor);
 		treeColumn.setImage (image);
 	}
 }

@@ -1200,7 +1200,7 @@ LRESULT wmNotifyChild (NMHDR hdr, long wParam, long lParam) {
 	return super.wmNotifyChild (hdr, wParam, lParam);
 }
 
-private static void handleDPIChange(Widget widget, int newZoom, float scalingFactor) {
+private static void handleDPIChange(Widget widget, int newZoomFactor, float scalingFactor) {
 	if (!(widget instanceof CoolBar coolBar)) {
 		return;
 	}
@@ -1222,7 +1222,7 @@ private static void handleDPIChange(Widget widget, int newZoom, float scalingFac
 
 		Control control = item.control;
 		if (control != null) {
-			DPIZoomChangeRegistry.applyChange(control, newZoom, scalingFactor);
+			DPIZoomChangeRegistry.applyChange(control, newZoomFactor, scalingFactor);
 			item.setControl(control);
 		}
 

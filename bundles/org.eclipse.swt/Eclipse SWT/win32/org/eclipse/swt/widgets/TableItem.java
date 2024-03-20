@@ -871,7 +871,7 @@ public void setFont (Font font){
 	}
 	Font oldFont = this.font;
 	Shell shell = parent.getShell();
-	Font newFont = (font == null ? font : font.scaleFor(shell.getNativeDeviceZoom()));
+	Font newFont = (font == null ? font : font.scaleFor(shell.getNativeZoomFactor()));
 	if (oldFont == newFont) return;
 	this.font = newFont;
 	if (oldFont != null && oldFont.equals (newFont)) return;
@@ -1272,7 +1272,7 @@ public void setText (String string) {
 	setText (0, string);
 }
 
-private static void handleDPIChange(Widget widget, int newZoom, float scalingFactor) {
+private static void handleDPIChange(Widget widget, int newZoomFactor, float scalingFactor) {
 	if (!(widget instanceof TableItem tableItem)) {
 		return;
 	}
@@ -1280,7 +1280,7 @@ private static void handleDPIChange(Widget widget, int newZoom, float scalingFac
 	if (images != null) {
 		for (Image innerImage : images) {
 			if (innerImage != null) {
-				innerImage.handleDPIChange(newZoom);
+				innerImage.handleDPIChange(newZoomFactor);
 			}
 		}
 	}
@@ -1293,7 +1293,7 @@ private static void handleDPIChange(Widget widget, int newZoom, float scalingFac
 		Shell shell = tableItem.parent.getShell();
 		for (int index = 0; index < cellFonts.length; index++) {
 			Font cellFont = cellFonts[index];
-			cellFonts[index] = cellFont == null ? null : cellFont.scaleFor(shell.getNativeDeviceZoom());
+			cellFonts[index] = cellFont == null ? null : cellFont.scaleFor(shell.getNativeZoomFactor());
 		}
 	}
 }

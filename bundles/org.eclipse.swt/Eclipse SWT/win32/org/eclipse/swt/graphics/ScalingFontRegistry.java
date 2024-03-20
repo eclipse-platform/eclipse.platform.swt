@@ -38,14 +38,14 @@ public class ScalingFontRegistry implements SWTFontRegistry {
 
 		ScaledFontContainer(Font baseFont) {
 			this.baseFont = baseFont;
-			scaledFonts.put(baseFont.zoomLevel, baseFont);
+			scaledFonts.put(baseFont.zoomFactor, baseFont);
 		}
 
-		private Font getScaledFont(int targetDeviceZoom) {
-			if (scaledFonts.containsKey(targetDeviceZoom)) {
-				Font font = scaledFonts.get(targetDeviceZoom);
+		private Font getScaledFont(int targetZoomFactor) {
+			if (scaledFonts.containsKey(targetZoomFactor)) {
+				Font font = scaledFonts.get(targetZoomFactor);
 				if (font.isDisposed()) {
-					scaledFonts.remove(targetDeviceZoom);
+					scaledFonts.remove(targetZoomFactor);
 					return null;
 				}
 				return font;
@@ -53,16 +53,16 @@ public class ScalingFontRegistry implements SWTFontRegistry {
 			return null;
 		}
 
-		private Font scaleFont(int deviceZoom) {
+		private Font scaleFont(int zoomFactor) {
 			FontData fontData = baseFont.getFontData()[0];
-			fontData.data.lfHeight = computePixels(deviceZoom, fontData);
-			Font scaledFont = Font.win32_new(display, fontData, deviceZoom);
-			addScaledFont(deviceZoom, scaledFont);
+			fontData.data.lfHeight = computePixels(zoomFactor, fontData);
+			Font scaledFont = Font.win32_new(display, fontData, zoomFactor);
+			addScaledFont(zoomFactor, scaledFont);
 			return scaledFont;
 		}
 
-		private void addScaledFont(int targetDeviceZoom, Font scaledFont) {
-			scaledFonts.put(targetDeviceZoom, scaledFont);
+		private void addScaledFont(int targetZoomFactor, Font scaledFont) {
+			scaledFonts.put(targetZoomFactor, scaledFont);
 		}
 	}
 
@@ -76,24 +76,24 @@ public class ScalingFontRegistry implements SWTFontRegistry {
 	}
 
 	@Override
-	public Font getSystemFont(int deviceZoom) {
+	public Font getSystemFont(int zoomFactor) {
 		ScaledFontContainer container = getOrCreateBaseSystemFontContainer(display);
 
-		Font systemFont = container.getScaledFont(deviceZoom);
+		Font systemFont = container.getScaledFont(zoomFactor);
 		if (systemFont != null) {
 			return systemFont;
 		}
-		long systemFontHandle = createSystemFont(display, deviceZoom);
-		systemFont = Font.win32_new(display, systemFontHandle, deviceZoom);
-		container.addScaledFont(deviceZoom, systemFont);
+		long systemFontHandle = createSystemFont(display, zoomFactor);
+		systemFont = Font.win32_new(display, systemFontHandle, zoomFactor);
+		container.addScaledFont(zoomFactor, systemFont);
 		return systemFont;
 	}
 
 	private ScaledFontContainer getOrCreateBaseSystemFontContainer(Display display) {
 		ScaledFontContainer systemFontContainer = fontKeyMap.get(KEY_SYSTEM_FONTS);
 		if (systemFontContainer == null) {
-			int targetDeviceZoom = display.getPrimaryMonitor().getZoom();
-			long systemFontHandle = createSystemFont(display, targetDeviceZoom);
+			int targetZoomFactor = display.getPrimaryMonitor().getZoom();
+			long systemFontHandle = createSystemFont(display, targetZoomFactor);
 			Font systemFont = Font.win32_new(display, systemFontHandle);
 			systemFontContainer = new ScaledFontContainer(systemFont);
 			fontHandleMap.put(systemFont.handle, systemFontContainer);
@@ -102,11 +102,11 @@ public class ScalingFontRegistry implements SWTFontRegistry {
 		return systemFontContainer;
 	}
 
-	private long createSystemFont(Display display, int targetDeviceZoom) {
+	private long createSystemFont(Display display, int targetZoomFactor) {
 		long hFont = 0;
 		NONCLIENTMETRICS info = new NONCLIENTMETRICS();
 		info.cbSize = NONCLIENTMETRICS.sizeof;
-		if (fetchSystemParametersInfo(info, targetDeviceZoom)) {
+		if (fetchSystemParametersInfo(info, targetZoomFactor)) {
 			LOGFONT logFont = info.lfMessageFont;
 			hFont = OS.CreateFontIndirect(logFont);
 		}
@@ -117,17 +117,17 @@ public class ScalingFontRegistry implements SWTFontRegistry {
 		return hFont;
 	}
 
-	private static boolean fetchSystemParametersInfo(NONCLIENTMETRICS info, int targetDeviceZoom) {
+	private static boolean fetchSystemParametersInfo(NONCLIENTMETRICS info, int targetZoomFactor) {
 		if (OS.WIN32_BUILD >= OS.WIN32_BUILD_WIN10_1607) {
 			return OS.SystemParametersInfoForDpi(OS.SPI_GETNONCLIENTMETRICS, NONCLIENTMETRICS.sizeof, info, 0,
-					DPIUtil.mapZoomToDPI(targetDeviceZoom));
+					DPIUtil.mapZoomToDPI(targetZoomFactor));
 		} else {
 			return OS.SystemParametersInfo(OS.SPI_GETNONCLIENTMETRICS, 0, info, 0);
 		}
 	}
 
 	@Override
-	public Font getFont(FontData fontData, int deviceZoom) {
+	public Font getFont(FontData fontData, int zoomFactor) {
 		if (!DPIUtil.autoScaleOnRuntime) {
 			return null;
 		}
@@ -135,13 +135,13 @@ public class ScalingFontRegistry implements SWTFontRegistry {
 		if (fontKeyMap.containsKey(fontData)) {
 			container = fontKeyMap.get(fontData);
 		} else {
-			int calculatedZoomLevel = computeZoomLevel(fontData);
-			Font newFont = Font.win32_new(display, fontData, calculatedZoomLevel);
+			int calculatedZoomFactor = computeZoomFactor(fontData);
+			Font newFont = Font.win32_new(display, fontData, calculatedZoomFactor);
 			container = new ScaledFontContainer(newFont);
 			fontHandleMap.put(newFont.handle, container);
 			fontKeyMap.put(fontData, container);
 		}
-		return getOrCreateFont(container, deviceZoom);
+		return getOrCreateFont(container, zoomFactor);
 	}
 
 	@Override
@@ -149,17 +149,17 @@ public class ScalingFontRegistry implements SWTFontRegistry {
 
 	}
 
-	private Font getOrCreateFont(ScaledFontContainer container, int deviceZoom) {
-		Font scaledFont = container.getScaledFont(deviceZoom);
+	private Font getOrCreateFont(ScaledFontContainer container, int zoomFactor) {
+		Font scaledFont = container.getScaledFont(zoomFactor);
 		if (scaledFont == null) {
-			scaledFont = container.scaleFont(deviceZoom);
+			scaledFont = container.scaleFont(zoomFactor);
 			fontHandleMap.put(scaledFont.handle, container);
 			fontKeyMap.put(scaledFont.getFontData()[0], container);
 		}
 		return scaledFont;
 	}
 
-	private int computeZoomLevel(FontData fontData) {
+	private int computeZoomFactor(FontData fontData) {
 		long hDC = display.internal_new_GC(null);
 		int pixelsAtPrimaryMonitorZoom = -(int) (0.5f + (fontData.height * OS.GetDeviceCaps(hDC, OS.LOGPIXELSY) / 72f));
 		display.internal_dispose_GC(hDC, null);
@@ -167,14 +167,14 @@ public class ScalingFontRegistry implements SWTFontRegistry {
 		return value;
 	}
 
-	private int computePixels(int deviceZoom, FontData fontData) {
+	private int computePixels(int zoomFactor, FontData fontData) {
 		long hDC = display.internal_new_GC(null);
 		int adjustedLogFontHeight = -(int) (0.5f + (fontData.height * OS.GetDeviceCaps(hDC, OS.LOGPIXELSY) / 72f));
 		display.internal_dispose_GC(hDC, null);
 
-		int primaryZoom = display.getPrimaryMonitor().getZoom();
-		if (deviceZoom != primaryZoom) {
-			adjustedLogFontHeight *= (1f * deviceZoom / primaryZoom);
+		int primaryZoomFactor = display.getPrimaryMonitor().getZoom();
+		if (zoomFactor != primaryZoomFactor) {
+			adjustedLogFontHeight *= (1f * zoomFactor / primaryZoomFactor);
 		}
 		return adjustedLogFontHeight;
 	}

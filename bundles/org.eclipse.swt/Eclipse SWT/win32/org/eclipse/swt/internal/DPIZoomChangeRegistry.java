@@ -43,15 +43,15 @@ public class DPIZoomChangeRegistry {
 		return true;
 	}
 
-	public static <E> void applyChange(Widget widget, int newZoom, float scalingFactor) {
+	public static <E> void applyChange(Widget widget, int newZoomFactor, float scalingFactor) {
 		if (isDPIZoomChangeApplicable(widget)) {
-			int currentDeviceZoom = widget.getCurrentDeviceZoom();
-			if (currentDeviceZoom != newZoom) {
+			int zoomFactor = widget.getZoomFactor();
+			if (zoomFactor != newZoomFactor) {
 				for (Entry<Class<? extends Widget>, DPIZoomChangeHandler> entry : dpiZoomChangeHandlers.entrySet()) {
 					Class<? extends Widget> clazz = entry.getKey();
 					DPIZoomChangeHandler handler = entry.getValue();
 					if (clazz.isInstance(widget)) {
-						handler.handleDPIChange(widget, newZoom, scalingFactor);
+						handler.handleDPIChange(widget, newZoomFactor, scalingFactor);
 					}
 				}
 			}

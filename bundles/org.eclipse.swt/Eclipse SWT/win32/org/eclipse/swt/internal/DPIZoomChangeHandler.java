@@ -17,5 +17,5 @@ import org.eclipse.swt.widgets.*;
 
 @FunctionalInterface
 public interface DPIZoomChangeHandler {
-	public void handleDPIChange(Widget widget, int newZoom, float scalingFactor);
+	public void handleDPIChange(Widget widget, int newZoomFactor, float scalingFactor);
 }

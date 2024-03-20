@@ -152,7 +152,7 @@ public Font getFont () {
 	checkWidget();
 	if (font == null) {
 		long hFont = defaultFont ();
-		final Font newFont = Font.win32_new (display, hFont, getCurrentDeviceZoom());
+		final Font newFont = Font.win32_new (display, hFont, getZoomFactor());
 		return newFont;
 	}
 	return font;
@@ -476,7 +476,7 @@ public void setFont (Font font) {
 		error (SWT.ERROR_INVALID_ARGUMENT);
 	}
 	Shell shell = parent.getShell();
-	this.font = font == null ? null : font.scaleFor(shell.getNativeDeviceZoom());
+	this.font = font == null ? null : font.scaleFor(shell.getNativeZoomFactor());
 	if (hasFocus ()) setIMEFont ();
 }
 
@@ -653,14 +653,14 @@ public void setVisible (boolean visible) {
 	}
 }
 
-private static void handleDPIChange(Widget widget, int newZoom, float scalingFactor) {
+private static void handleDPIChange(Widget widget, int newZoomFactor, float scalingFactor) {
 	if (!(widget instanceof Caret caret)) {
 		return;
 	}
 
 	Image image = caret.getImage();
 	if (image != null) {
-		image.handleDPIChange(newZoom);
+		image.handleDPIChange(newZoomFactor);
 		caret.setImage(image);
 	}
 

@@ -899,7 +899,7 @@ void setImages (Image image, Image [] images) {
 				System.arraycopy (images, 0, bestImages, 0, images.length);
 				datas = new ImageData [images.length];
 				for (int i=0; i<datas.length; i++) {
-					datas [i] = images [i].getImageData (getCurrentDeviceZoom());
+					datas [i] = images [i].getImageData (getZoomFactor());
 				}
 				images = bestImages;
 				sort (images, datas, OS.GetSystemMetrics (OS.SM_CXSMICON), OS.GetSystemMetrics (OS.SM_CYSMICON), depth);
@@ -1688,14 +1688,14 @@ LRESULT WM_WINDOWPOSCHANGING (long wParam, long lParam) {
 	return result;
 }
 
-private static void handleDPIChange(Widget widget, int newZoom, float scalingFactor) {
+private static void handleDPIChange(Widget widget, int newZoomFactor, float scalingFactor) {
 	if (!(widget instanceof Decorations decorations)) {
 		return;
 	}
 
 	Image image = decorations.getImage();
 	if (image != null) {
-		image.handleDPIChange(newZoom);
+		image.handleDPIChange(newZoomFactor);
 		decorations.setImage(image);
 	}
 
@@ -1703,7 +1703,7 @@ private static void handleDPIChange(Widget widget, int newZoom, float scalingFac
 	if (images != null) {
 		for(Image subImage : images) {
 			if (subImage != null) {
-				subImage.handleDPIChange(newZoom);
+				subImage.handleDPIChange(newZoomFactor);
 			}
 		}
 		decorations.setImages(images);
@@ -1711,7 +1711,7 @@ private static void handleDPIChange(Widget widget, int newZoom, float scalingFac
 
 	Menu menuBar = decorations.getMenuBar();
 	if (menuBar != null) {
-		DPIZoomChangeRegistry.applyChange(menuBar, newZoom, scalingFactor);
+		DPIZoomChangeRegistry.applyChange(menuBar, newZoomFactor, scalingFactor);
 	}
 }
 }

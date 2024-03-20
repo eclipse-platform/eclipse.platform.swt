@@ -27,7 +27,7 @@ class DefaultSWTFontRegistry implements SWTFontRegistry {
 	}
 
 	@Override
-	public Font getSystemFont(int deviceZoom) {
+	public Font getSystemFont(int zoomFactor) {
 		if (fontsMap.containsKey(KEY_SYSTEM_FONTS)) {
 			return fontsMap.get(KEY_SYSTEM_FONTS);
 		}
@@ -46,7 +46,7 @@ class DefaultSWTFontRegistry implements SWTFontRegistry {
 	}
 
 	@Override
-	public Font getFont(FontData fontData, int deviceZoom) {
+	public Font getFont(FontData fontData, int zoomFactor) {
 		if (fontsMap.containsKey(fontData)) {
 			Font font = fontsMap.get(fontData);
 			if (font.isDisposed()) {

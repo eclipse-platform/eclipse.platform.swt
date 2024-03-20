@@ -951,8 +951,8 @@ protected int getDeviceZoom () {
 	return DPIUtil.mapDPIToZoom ( _getDPIx ());
 }
 
-Font getFont(FontData fontData, int deviceZoom) {
-	return getFontRegistry().getFont(fontData, deviceZoom);
+Font getFont(FontData fontData, int zoomFactor) {
+	return getFontRegistry().getFont(fontData, zoomFactor);
 }
 
 /**

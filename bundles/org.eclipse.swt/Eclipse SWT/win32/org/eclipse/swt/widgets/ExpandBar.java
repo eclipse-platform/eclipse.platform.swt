@@ -871,12 +871,12 @@ LRESULT wmScroll (ScrollBar bar, boolean update, long hwnd, int msg, long wParam
 	return result;
 }
 
-private static void handleDPIChange(Widget widget, int newZoom, float scalingFactor) {
+private static void handleDPIChange(Widget widget, int newZoomFactor, float scalingFactor) {
 	if (!(widget instanceof ExpandBar expandBar)) {
 		return;
 	}
 	for (ExpandItem item : expandBar.getItems()) {
-		DPIZoomChangeRegistry.applyChange(item, newZoom, scalingFactor);
+		DPIZoomChangeRegistry.applyChange(item, newZoomFactor, scalingFactor);
 	}
 	expandBar.redraw();
 }

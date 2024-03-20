@@ -455,7 +455,7 @@ int imageIndex (Image image) {
 	 */
 	if (image == null) return -1;
 	if (imageList == null) {
-		Rectangle bounds = image.getBounds (this.getCurrentDeviceZoom());
+		Rectangle bounds = image.getBounds (this.getZoomFactor());
 		imageList = display.getImageList (style & SWT.RIGHT_TO_LEFT, bounds.width, bounds.height);
 		int index = imageList.add (image);
 		long hImageList = imageList.getHandle ();
@@ -1127,7 +1127,7 @@ LRESULT wmNotifyChild (NMHDR hdr, long wParam, long lParam) {
 	return super.wmNotifyChild (hdr, wParam, lParam);
 }
 
-private static void handleDPIChange(Widget widget, int newZoom, float scalingFactor) {
+private static void handleDPIChange(Widget widget, int newZoomFactor, float scalingFactor) {
 	if (!(widget instanceof TabFolder tabFolder)) {
 		return;
 	}
@@ -1137,7 +1137,7 @@ private static void handleDPIChange(Widget widget, int newZoom, float scalingFac
 		tabFolder.imageList = null;
 	}
 	for (int i = 0; i < tabFolder.getItemCount(); i++) {
-		DPIZoomChangeRegistry.applyChange(tabFolder.items[i], newZoom, scalingFactor);
+		DPIZoomChangeRegistry.applyChange(tabFolder.items[i], newZoomFactor, scalingFactor);
 	}
 	tabFolder.layout(true, true);
 }

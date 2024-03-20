@@ -525,7 +525,7 @@ public void setText (String string) {
 	redraw (true);
 }
 
-private static void handleDPIChange(Widget widget, int newZoom, float scalingFactor) {
+private static void handleDPIChange(Widget widget, int newZoomFactor, float scalingFactor) {
 	if (!(widget instanceof ExpandItem item)) {
 		return;
 	}
