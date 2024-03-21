@@ -178,7 +178,7 @@ public FontData open () {
 	if (fontData != null) {
 		Font font = new Font(display, fontData);
 
-		long fontName = OS.pango_font_description_to_string(font.handle);
+		long fontName = font.handle.getFontName();
 		int length = C.strlen(fontName);
 		byte[] buffer = new byte[length + 1];
 		C.memmove(buffer, fontName, length);
