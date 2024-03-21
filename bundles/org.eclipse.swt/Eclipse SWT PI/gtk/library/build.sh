@@ -197,7 +197,7 @@ fi
 
 # Configure OUTPUT_DIR
 if [ "x${OUTPUT_DIR}" = "x" ]; then
-	OUTPUT_DIR=../../../../../eclipse.platform.swt/bundles/org.eclipse.swt.gtk.${SWT_OS}.${SWT_ARCH}
+	OUTPUT_DIR=../../../../../eclipse.platform.swt/binaries/org.eclipse.swt.gtk.${SWT_OS}.${SWT_ARCH}
 	if [ -d "$OUTPUT_DIR" ]; then
 		export OUTPUT_DIR
 	fi
