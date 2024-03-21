@@ -84,6 +84,7 @@ public class List extends Scrollable {
  */
 public List (Composite parent, int style) {
 	super (parent, checkStyle (style));
+	System.out.println(parent);
 }
 
 @Override
