@@ -35,6 +35,7 @@ public final class Program {
 	String name;
 	String command;
 	String iconName;
+	String extension;
 	static final String [] ARGUMENTS = new String [] {"%1", "%l", "%L"}; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 
 /**
@@ -101,6 +102,7 @@ public static Program findProgram (String extension) {
 		program.name = name;
 		program.command = command;
 		program.iconName = iconName;
+		program.extension = extension;
 	}
 	return program;
 }
@@ -182,7 +184,7 @@ static String getKeyValue (String string, boolean expand) {
 	return result;
 }
 
-static Program getProgram (String key) {
+static Program getProgram (String key, String extension) {
 
 	/* Name */
 	String name = getKeyValue (key, false);
@@ -208,6 +210,7 @@ static Program getProgram (String key) {
 	program.name = name;
 	program.command = command;
 	program.iconName = iconName;
+	program.extension = extension;
 	return program;
 }
 
@@ -233,7 +236,7 @@ public static Program [] getPrograms () {
 	//map paths to programs in parallel which takes now ~ 4/5 of time:
 	ConcurrentHashMap<String, Program> programs = new ConcurrentHashMap<>(paths.size());
 	paths.stream().parallel().forEach(path -> {
-		Program program = getProgram(path); // getProgram takes most time
+		Program program = getProgram(path, null); // getProgram takes most time
 		if (program != null) {
 			programs.put(path, program);
 		}
@@ -396,8 +399,22 @@ public ImageData getImageData (int zoom) {
 	TCHAR lpszFile = new TCHAR (0, fileName, true);
 	long [] phiconSmall = new long[1], phiconLarge = null;
 	OS.ExtractIconEx (lpszFile, nIconIndex, phiconLarge, phiconSmall, 1);
-	if (phiconSmall [0] == 0) return null;
-	Image image = Image.win32_new (null, SWT.ICON, phiconSmall [0]);
+
+	long hIcon = phiconSmall [0];
+
+	if (hIcon == 0) {
+		SHFILEINFO shfi = new SHFILEINFO ();
+		int flags = OS.SHGFI_ICON | OS.SHGFI_SMALLICON | OS.SHGFI_USEFILEATTRIBUTES;
+		TCHAR pszPath = new TCHAR (0, extension, true);
+		OS.SHGetFileInfo (pszPath.chars, OS.FILE_ATTRIBUTE_NORMAL, shfi, SHFILEINFO.sizeof, flags);
+
+		hIcon = shfi.hIcon;
+
+		if (hIcon == 0) return null;
+	}
+
+
+	Image image = Image.win32_new (null, SWT.ICON, hIcon);
 	// Windows API returns image data according to primary monitor zoom factor
 	// rather than at original scaling
 	int nativeZoomFactor = 100 * Display.getCurrent().getPrimaryMonitor().getZoom() / DPIUtil.getDeviceZoom();
