@@ -20,6 +20,7 @@ import java.util.stream.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.*;
+import org.eclipse.swt.internal.DPIUtil.*;
 import org.eclipse.swt.internal.win32.*;
 import org.eclipse.swt.widgets.*;
 
@@ -377,6 +378,24 @@ public ImageData getImageData () {
  * @since 3.125
  */
 public ImageData getImageData (int zoom) {
+	int primaryMonitorZoom = Display.getCurrent().getPrimaryMonitor().getZoom();
+	// Windows API returns image data according to primary monitor zoom factor
+	// so only use larger icons if the required zoom exceed primary monitor zoom
+	boolean useLargeIcon = zoom > primaryMonitorZoom;
+	ElementAtZoom<Image> zoomedIcon = loadIcon(useLargeIcon);
+	if (zoomedIcon == null) {
+		return null;
+	}
+	// Windows API returns image data according to primary monitor zoom factor
+	// rather than at original scaling
+	int nativeZoomFactor = zoomedIcon.zoom() * primaryMonitorZoom / DPIUtil.getDeviceZoom();
+	Image image = zoomedIcon.element();
+	ImageData imageData = image.getImageData (100 * zoom / nativeZoomFactor);
+	image.dispose ();
+	return imageData;
+}
+
+private ElementAtZoom<Image> loadIcon(boolean useLargeIconIfAvailable) {
 	int nIconIndex = 0;
 	String fileName = iconName;
 	int index = iconName.indexOf (',');
@@ -395,15 +414,16 @@ public ImageData getImageData (int zoom) {
 	}
 	TCHAR lpszFile = new TCHAR (0, fileName, true);
 	long [] phiconSmall = new long[1], phiconLarge = null;
+	if (useLargeIconIfAvailable) {
+		phiconLarge = new long[1];
+	}
 	OS.ExtractIconEx (lpszFile, nIconIndex, phiconLarge, phiconSmall, 1);
-	if (phiconSmall [0] == 0) return null;
-	Image image = Image.win32_new (null, SWT.ICON, phiconSmall [0]);
-	// Windows API returns image data according to primary monitor zoom factor
-	// rather than at original scaling
-	int nativeZoomFactor = 100 * Display.getCurrent().getPrimaryMonitor().getZoom() / DPIUtil.getDeviceZoom();
-	ImageData imageData = image.getImageData (100 * zoom / nativeZoomFactor);
-	image.dispose ();
-	return imageData;
+	if (useLargeIconIfAvailable && phiconLarge[0] != 0) {
+		return new ElementAtZoom<>(Image.win32_new (null, SWT.ICON, phiconLarge[0]), 200);
+	} else if (phiconSmall[0] != 0) {
+		return new ElementAtZoom<>(Image.win32_new (null, SWT.ICON, phiconSmall[0]), 100);
+	}
+	return null;
 }
 
 /**
