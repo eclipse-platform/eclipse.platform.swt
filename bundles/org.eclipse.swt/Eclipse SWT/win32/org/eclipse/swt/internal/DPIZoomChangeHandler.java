@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2024 Yatta Solutions and others.
+ * Copyright (c) 2024 Yatta Solutions and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0

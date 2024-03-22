@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2024 Yatta Solutions and others.
+ * Copyright (c) 2024 Yatta Solutions and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -28,25 +28,25 @@ package org.eclipse.swt.graphics;
 public interface SWTFontRegistry {
 
 	/**
-	 * Returns a system font optimally suited for the specified zoom level.
+	 * Returns a system font optimally suited for the specified zoom factor.
 	 *
-     * @param zoomFactor zoom level to determine the appropriate system font
-     * @return the system font best suited for the specified zoom level
+	 * @param zoomFactor zoom factor (in percent) to determine the appropriate system font
+	 * @return the system font best suited for the specified zoom factor
 	 */
 	Font getSystemFont(int zoomFactor);
 
 	/**
-     * Provides a font optimally suited for the specified zoom level. Fonts created in this manner
-     * are managed by the font registry and should not be disposed of externally.
-     *
-     * @param fontData the data used to create the font
-     * @param zoomFactor zoom level to determine the appropriate font
-     * @return the font best suited for the specified zoom level
-     */
+	 * Provides a font optimally suited for the specified zoom factor. Fonts created in this manner
+	 * are managed by the font registry and should not be disposed of externally.
+	 *
+	 * @param fontData the data used to create the font
+	 * @param zoomFactor zoom factor (in percent) to determine the appropriate font
+	 * @return the font best suited for the specified zoom factor
+	 */
 	Font getFont(FontData fontData, int zoomFactor);
 
 	/**
-     * Disposes of all fonts managed by the font registry.
+	 * Disposes of all fonts managed by the font registry.
 	 */
 	void dispose();
 }

@@ -5221,7 +5221,7 @@ static boolean isActivateShellOnForceFocus() {
 @Override
 protected SWTFontRegistry newFontRegistry() {
 	if (DPIUtil.autoScaleOnRuntime) {
-		return new ScalingFontRegistry(this);
+		return new ScalingSWTFontRegistry(this);
 	} else {
 		return super.newFontRegistry();
 	}

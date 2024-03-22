@@ -330,8 +330,8 @@ public static int autoScaleUp (int size) {
 /**
  * Auto-scale up int dimensions to match the given zoom level
  */
-public static int autoScaleUp (int size, int shellDeviceZoom) {
-	float scaleFactor = getScalingFactor (shellDeviceZoom);
+public static int autoScaleUp (int size, int zoom) {
+	float scaleFactor = getScalingFactor (zoom);
 	return Math.round (size * scaleFactor);
 }
 

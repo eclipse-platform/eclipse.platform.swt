@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2024 Yatta Solutions and others.
+ * Copyright (c) 2024 Yatta Solutions and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -20,7 +20,6 @@ import org.eclipse.swt.widgets.*;
 
 public class DPIZoomChangeRegistry {
 
-	private static Set<Class<? extends Widget>> blacklist = new HashSet<>();
 	private static Map<Class<? extends Widget>, DPIZoomChangeHandler> dpiZoomChangeHandlers =  new TreeMap<>(
 			(o1, o2) -> {
 	            if(o1.isAssignableFrom(o2)) {
@@ -32,28 +31,16 @@ public class DPIZoomChangeRegistry {
 	            return o1.getName().compareTo(o2.getName());
 	        });
 
-	public static void unregisterForOnZoomChange(Class<? extends Widget> classToRegister) {
-		blacklist.add(classToRegister);
-	}
-
-	private static boolean isDPIZoomChangeApplicable(Widget widget) {
-		if (blacklist.contains(widget.getClass())) {
-			return false;
-		}
-		return true;
-	}
-
 	public static <E> void applyChange(Widget widget, int newZoomFactor, float scalingFactor) {
-		if (isDPIZoomChangeApplicable(widget)) {
-			int zoomFactor = widget.getZoomFactor();
-			if (zoomFactor != newZoomFactor) {
-				for (Entry<Class<? extends Widget>, DPIZoomChangeHandler> entry : dpiZoomChangeHandlers.entrySet()) {
-					Class<? extends Widget> clazz = entry.getKey();
-					DPIZoomChangeHandler handler = entry.getValue();
-					if (clazz.isInstance(widget)) {
-						handler.handleDPIChange(widget, newZoomFactor, scalingFactor);
-					}
-				}
+		int zoomFactor = widget.getZoomFactor();
+		if (zoomFactor == newZoomFactor) {
+		   return;
+		}
+		for (Entry<Class<? extends Widget>, DPIZoomChangeHandler> entry : dpiZoomChangeHandlers.entrySet()) {
+			Class<? extends Widget> clazz = entry.getKey();
+			DPIZoomChangeHandler handler = entry.getValue();
+			if (clazz.isInstance(widget)) {
+				handler.handleDPIChange(widget, newZoomFactor, scalingFactor);
 			}
 		}
 	}

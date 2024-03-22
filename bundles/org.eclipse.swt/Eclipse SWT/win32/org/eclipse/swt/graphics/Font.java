@@ -215,15 +215,10 @@ public FontData[] getFontData() {
 	OS.GetObject(handle, LOGFONT.sizeof, logFont);
 	float heightInPoints = device.computePoints(logFont, handle);
 	int primaryZoom = DPIUtil.mapDPIToZoom (device._getDPIx());
-	float adjustedZoomFactor;
-	if (zoomFactor != primaryZoom) {
-		// as Device::computePoints will always return point on the basis of the
-		// primary monitor zoom, a custom zoomFactor must be calculated if the font
-		// is used for a different zoom level
-		adjustedZoomFactor = 1.0f * primaryZoom / zoomFactor;
-	} else {
-		adjustedZoomFactor = 1.0f;
-	}
+	// as Device::computePoints will always return point on the basis of the
+	// primary monitor zoom, a custom zoomFactor must be calculated if the font
+	// is used for a different zoom level
+	float adjustedZoomFactor = 1.0f * primaryZoom / zoomFactor;
 	return new FontData[] {FontData.win32_new(logFont, heightInPoints * adjustedZoomFactor)};
 }
 

@@ -968,7 +968,6 @@ public void drawImage (Image image, int srcX, int srcY, int srcWidth, int srcHei
 	}
 	if (image == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 	if (image.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	image.handleDPIChange(DPIUtil.getDeviceZoom());
 
 	Rectangle src = DPIUtil.autoScaleUp(drawable, new Rectangle(srcX, srcY, srcWidth, srcHeight));
 	Rectangle dest = DPIUtil.autoScaleUp(drawable, new Rectangle(destX, destY, destWidth, destHeight));
@@ -979,7 +978,7 @@ public void drawImage (Image image, int srcX, int srcY, int srcWidth, int srcHei
 		 * the coordinates may be slightly off. The workaround is to restrict
 		 * coordinates to the allowed bounds.
 		 */
-		Rectangle b = image.getBoundsInPixels();
+		Rectangle b = image.getBounds(deviceZoom);
 		int errX = src.x + src.width - b.width;
 		int errY = src.y + src.height - b.height;
 		if (errX != 0 || errY != 0) {

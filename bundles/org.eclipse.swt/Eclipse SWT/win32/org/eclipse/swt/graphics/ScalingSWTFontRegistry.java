@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2024 Yatta Solutions and others.
+ * Copyright (c) 2024 Yatta Solutions and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -31,7 +31,7 @@ import org.eclipse.swt.widgets.*;
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  * @noreference This class is not intended to be referenced by clients
  */
-public class ScalingFontRegistry implements SWTFontRegistry {
+public class ScalingSWTFontRegistry implements SWTFontRegistry {
 	private class ScaledFontContainer {
 		private Font baseFont;
 		private Map<Integer, Font> scaledFonts = new HashMap<>();
@@ -71,7 +71,7 @@ public class ScalingFontRegistry implements SWTFontRegistry {
 	private Map<FontData, ScaledFontContainer> fontKeyMap = new HashMap<>();
 	private Display display;
 
-	public ScalingFontRegistry(Display display) {
+	public ScalingSWTFontRegistry(Display display) {
 		this.display = display;
 	}
 
@@ -83,7 +83,7 @@ public class ScalingFontRegistry implements SWTFontRegistry {
 		if (systemFont != null) {
 			return systemFont;
 		}
-		long systemFontHandle = createSystemFont(display, zoomFactor);
+		long systemFontHandle = createSystemFont(zoomFactor);
 		systemFont = Font.win32_new(display, systemFontHandle, zoomFactor);
 		container.addScaledFont(zoomFactor, systemFont);
 		return systemFont;
@@ -93,7 +93,7 @@ public class ScalingFontRegistry implements SWTFontRegistry {
 		ScaledFontContainer systemFontContainer = fontKeyMap.get(KEY_SYSTEM_FONTS);
 		if (systemFontContainer == null) {
 			int targetZoomFactor = display.getPrimaryMonitor().getZoom();
-			long systemFontHandle = createSystemFont(display, targetZoomFactor);
+			long systemFontHandle = createSystemFont(targetZoomFactor);
 			Font systemFont = Font.win32_new(display, systemFontHandle);
 			systemFontContainer = new ScaledFontContainer(systemFont);
 			fontHandleMap.put(systemFont.handle, systemFontContainer);
@@ -102,7 +102,7 @@ public class ScalingFontRegistry implements SWTFontRegistry {
 		return systemFontContainer;
 	}
 
-	private long createSystemFont(Display display, int targetZoomFactor) {
+	private long createSystemFont(int targetZoomFactor) {
 		long hFont = 0;
 		NONCLIENTMETRICS info = new NONCLIENTMETRICS();
 		info.cbSize = NONCLIENTMETRICS.sizeof;
@@ -128,9 +128,6 @@ public class ScalingFontRegistry implements SWTFontRegistry {
 
 	@Override
 	public Font getFont(FontData fontData, int zoomFactor) {
-		if (!DPIUtil.autoScaleOnRuntime) {
-			return null;
-		}
 		ScaledFontContainer container;
 		if (fontKeyMap.containsKey(fontData)) {
 			container = fontKeyMap.get(fontData);
@@ -146,7 +143,17 @@ public class ScalingFontRegistry implements SWTFontRegistry {
 
 	@Override
 	public void dispose() {
-
+		for (Entry<FontData, ScaledFontContainer> fontContainerEntry : fontKeyMap.entrySet()) {
+			if (KEY_SYSTEM_FONTS.equals(fontContainerEntry.getKey())) {
+				// do not dispose the system fonts here, they are not tied to the display of this registry
+				continue;
+			}
+			ScaledFontContainer scaledFontContainer = fontContainerEntry.getValue();
+			for (Font font : scaledFontContainer.scaledFonts.values()) {
+				font.dispose();
+			}
+		}
+		fontKeyMap.clear();
 	}
 
 	private Font getOrCreateFont(ScaledFontContainer container, int zoomFactor) {
@@ -160,18 +167,13 @@ public class ScalingFontRegistry implements SWTFontRegistry {
 	}
 
 	private int computeZoomFactor(FontData fontData) {
-		long hDC = display.internal_new_GC(null);
-		int pixelsAtPrimaryMonitorZoom = -(int) (0.5f + (fontData.height * OS.GetDeviceCaps(hDC, OS.LOGPIXELSY) / 72f));
-		display.internal_dispose_GC(hDC, null);
+		int pixelsAtPrimaryMonitorZoom = ((Device) display).computePixels(fontData.height);
 		int value = display.getPrimaryMonitor().getZoom() * fontData.data.lfHeight / pixelsAtPrimaryMonitorZoom;
 		return value;
 	}
 
 	private int computePixels(int zoomFactor, FontData fontData) {
-		long hDC = display.internal_new_GC(null);
-		int adjustedLogFontHeight = -(int) (0.5f + (fontData.height * OS.GetDeviceCaps(hDC, OS.LOGPIXELSY) / 72f));
-		display.internal_dispose_GC(hDC, null);
-
+		int adjustedLogFontHeight = ((Device) display).computePixels(fontData.height);
 		int primaryZoomFactor = display.getPrimaryMonitor().getZoom();
 		if (zoomFactor != primaryZoomFactor) {
 			adjustedLogFontHeight *= (1f * zoomFactor / primaryZoomFactor);

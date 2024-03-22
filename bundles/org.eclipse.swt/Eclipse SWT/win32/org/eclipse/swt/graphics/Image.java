@@ -542,7 +542,7 @@ public Image(Device device, ImageData source, ImageData mask) {
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
 	currentDeviceZoom = DPIUtil.getDeviceZoom ();
-	this.dataAtBaseZoomFactor =  applyMask(source, ImageData.convertMask(mask));
+	this.dataAtBaseZoomFactor = applyMask(source, ImageData.convertMask(mask));
 	this.dataBaseZoomFactor = 100;
 	source = DPIUtil.autoScaleUp(device, source);
 	mask = DPIUtil.autoScaleUp(device, mask);
@@ -1276,6 +1276,7 @@ public Rectangle getBounds() {
  * @noreference This method is not intended to be referenced by clients.
  */
 public Rectangle getBounds(int zoom) {
+	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	// Read the bounds in pixels from native layer.
 	Rectangle bounds = getBoundsInPixelsFromNative();
 	if (bounds != null && zoom != currentDeviceZoom) {

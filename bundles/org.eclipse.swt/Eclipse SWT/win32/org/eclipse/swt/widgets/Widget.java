@@ -2638,15 +2638,16 @@ void notifyDisposalTracker() {
 
 /**
  * The current DPI zoom level the widget is scaled for
- * (Warning: This field is platform dependent)
+ * (Warning: This method is platform dependent)
  * <p>
- * <b>IMPORTANT:</b> This field is <em>not</em> part of the SWT
- * public API. It is marked public only so that it can be shared
- * within the packages provided by SWT. It is not available on all
- * platforms and should never be accessed from application code.
+ * <b>IMPORTANT:</b> This method is <em>not</em> part of the public
+ * API for <code>Color</code>. It is marked public only so that it
+ * can be shared within the packages provided by SWT. It is not
+ * available on all platforms, and should never be called from
+ * application code.
  * </p>
  *
- * @noreference This field is not intended to be referenced by clients.
+ * @noreference This method is not intended to be referenced by clients.
  */
 public int getZoomFactor() {
 	return zoomFactor;

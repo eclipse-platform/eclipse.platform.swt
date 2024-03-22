@@ -3413,16 +3413,11 @@ public boolean setFocus () {
  */
 public void setFont (Font font) {
 	checkWidget ();
-	if (font != null) {
-		if (font.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
-		_setFont(font.scaleFor(getShell().getNativeZoomFactor()));
-	} else {
-		_setFont(font);
+	Font newFont = font;
+	if (newFont != null) {
+		if (newFont.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
+		newFont = newFont.scaleFor(getShell().getNativeZoomFactor());
 	}
-}
-
-private void _setFont (Font font) {
-	checkWidget ();
 	long hFont = 0;
 	if (font != null) {
 		if (font.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);

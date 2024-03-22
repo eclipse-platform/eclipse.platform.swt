@@ -301,17 +301,13 @@ Shell (Display display, Shell parent, int style, long handle, boolean embedded) 
 		state |= FOREIGN_HANDLE;
 	}
 
-	int [] dpiX = new int [1];
-	int [] dpiY = new int [1];
 	int shellZoomFactor;
 	int shellNativeZoomFactor;
 	if (parent != null) {
 		shellZoomFactor = parent.getZoomFactor();
 		shellNativeZoomFactor = parent.getNativeZoomFactor();
 	} else {
-		Monitor monitor = getMonitor();
-		OS.GetDpiForMonitor (monitor.handle, 0, dpiX, dpiY);
-		int mappedDPIZoom = DPIUtil.mapDPIToZoom(dpiX[0]);
+		int mappedDPIZoom = getMonitor().getZoom();
 		shellZoomFactor = DPIUtil.getZoomForAutoscaleProperty(mappedDPIZoom);
 		shellNativeZoomFactor = mappedDPIZoom;
 	}
@@ -2653,15 +2649,16 @@ LRESULT WM_WINDOWPOSCHANGING (long wParam, long lParam) {
 
 /**
  * The native DPI zoom level the shell is scaled for
- * (Warning: This field is platform dependent)
+ * (Warning: This method is platform dependent)
  * <p>
- * <b>IMPORTANT:</b> This field is <em>not</em> part of the SWT
- * public API. It is marked public only so that it can be shared
- * within the packages provided by SWT. It is not available on all
- * platforms and should never be accessed from application code.
+ * <b>IMPORTANT:</b> This method is <em>not</em> part of the public
+ * API for <code>Color</code>. It is marked public only so that it
+ * can be shared within the packages provided by SWT. It is not
+ * available on all platforms, and should never be called from
+ * application code.
  * </p>
  *
- * @noreference This field is not intended to be referenced by clients.
+ * @noreference This method is not intended to be referenced by clients.
  */
 public int getNativeZoomFactor() {
 	return nativeZoomFactor;
