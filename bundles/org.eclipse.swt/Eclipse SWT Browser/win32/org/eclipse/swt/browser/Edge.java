@@ -32,7 +32,7 @@ class Edge extends WebBrowser {
 	}
 
 	// WebView2Loader.dll compatible version. This is NOT the minimal required version.
-	static final String SDK_TARGET_VERSION = "89.0.721.0";
+	static final String SDK_TARGET_VERSION = "99.0.1150.38";
 
 	// Display.getData() keys
 	static final String APPLOCAL_DIR_KEY = "org.eclipse.swt.internal.win32.appLocalDir";
