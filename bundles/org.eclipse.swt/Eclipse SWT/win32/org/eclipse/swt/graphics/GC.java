@@ -114,7 +114,8 @@ GC() {
  * foreground color, background color and font in the GC
  * to match those in the drawable.
  * <p>
- * You must dispose the graphics context when it is no longer required.
+ * You must dispose the graphics context when it is no longer required
+ * or better use {@link #drawOn(Drawable, GCRunnable)} which takes care of disposing the GC.
  * </p>
  * @param drawable the drawable to draw on
  * @exception IllegalArgumentException <ul>
@@ -175,6 +176,22 @@ public GC(Drawable drawable, int style) {
 	this.device = data.device = device;
 	init (drawable, data, hDC);
 	init();
+}
+
+/**
+ * creates a GC on the Drawable, calls run on the GCRunnable and disposes the GC in a finally block
+ * @param <E>
+ * @param drawable
+ * @param runnable
+ * @throws E
+ */
+public static <E extends Exception> void drawOn(Drawable drawable, GCRunnable<E> runnable) throws E {
+	GC gc = new GC(drawable);
+	try {
+		runnable.run(gc);
+	} finally {
+		gc.dispose();
+	}
 }
 
 static int checkStyle(int style) {

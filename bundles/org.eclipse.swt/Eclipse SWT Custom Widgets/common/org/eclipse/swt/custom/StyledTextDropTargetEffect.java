@@ -161,19 +161,19 @@ public class StyledTextDropTargetEffect extends DropTargetEffect {
 					 pt.y >= scrollY && pt.y <= (scrollY + SCROLL_TOLERANCE))) {
 					if (System.currentTimeMillis() >= scrollBeginTime) {
 						Rectangle area = text.getClientArea();
-						GC gc = new GC(text);
-						FontMetrics fm = gc.getFontMetrics();
-						gc.dispose();
-						double charWidth = fm.getAverageCharacterWidth();
-						int scrollAmount = (int) (10*charWidth);
-						if (pt.x < area.x + 3*charWidth) {
-							int leftPixel = text.getHorizontalPixel();
-							text.setHorizontalPixel(leftPixel - scrollAmount);
-						}
-						if (pt.x > area.width - 3*charWidth) {
-							int leftPixel = text.getHorizontalPixel();
-							text.setHorizontalPixel(leftPixel + scrollAmount);
-						}
+						GC.drawOn(text, gc->{
+							FontMetrics fm = gc.getFontMetrics();
+							double charWidth = fm.getAverageCharacterWidth();
+							int scrollAmount = (int) (10*charWidth);
+							if (pt.x < area.x + 3*charWidth) {
+								int leftPixel = text.getHorizontalPixel();
+								text.setHorizontalPixel(leftPixel - scrollAmount);
+							}
+							if (pt.x > area.width - 3*charWidth) {
+								int leftPixel = text.getHorizontalPixel();
+								text.setHorizontalPixel(leftPixel + scrollAmount);
+							}
+						});
 						int lineHeight = text.getLineHeight();
 						if (pt.y < area.y + lineHeight) {
 							int topPixel = text.getTopPixel();
