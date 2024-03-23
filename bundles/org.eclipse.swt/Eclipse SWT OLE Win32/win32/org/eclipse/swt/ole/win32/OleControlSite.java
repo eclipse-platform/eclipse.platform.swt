@@ -574,6 +574,10 @@ public Color getForeground () {
 
 	return super.getForeground();
 }
+/**
+ * @noreference This method is not intended to be referenced by clients.
+ * @nooverride This method is not intended to be re-implemented or extended by clients.
+ */
 protected long getLicenseInfo(GUID clsid) {
 	long[] ppvObject = new long[1];
 	if (COM.CoGetClassObject(clsid, COM.CLSCTX_INPROC_HANDLER
@@ -841,6 +845,8 @@ public void removeEventListener(int eventID, OleListener listener) {
  * @exception IllegalArgumentException <ul>
  *	    <li>ERROR_NULL_ARGUMENT when listener is null</li>
  * </ul>
+ * @noreference This method is not intended to be referenced by clients.
+ * @nooverride This method is not intended to be re-implemented or extended by clients.
  */
 @Deprecated
 public void removeEventListener(OleAutomation automation, GUID guid, int eventID, OleListener listener) {
