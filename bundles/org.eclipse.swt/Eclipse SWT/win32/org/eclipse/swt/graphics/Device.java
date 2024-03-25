@@ -265,6 +265,15 @@ int computePixels(float height) {
 }
 
 float computePoints(LOGFONT logFont, long hFont) {
+	return computePoints(logFont, hFont, -1);
+}
+
+float computePoints(LOGFONT logFont, long hFont, int currentFontZoomFactor) {
+	float fontDPI = DPIUtil.mapZoomToDPI(currentFontZoomFactor);
+	return computePoints(logFont, hFont, fontDPI);
+}
+
+private float computePoints(LOGFONT logFont, long hFont, float currentFontDPI) {
 	long hDC = internal_new_GC (null);
 	int logPixelsY = OS.GetDeviceCaps(hDC, OS.LOGPIXELSY);
 	int pixels = 0;
@@ -285,7 +294,14 @@ float computePoints(LOGFONT logFont, long hFont) {
 		pixels = -logFont.lfHeight;
 	}
 	internal_dispose_GC (hDC, null);
-	return pixels * 72f / logPixelsY;
+	float adjustedZoomFactor = 1.0f;
+	if (currentFontDPI > 0) {
+		// as Device::computePoints will always return point on the basis of the
+		// primary monitor zoom, a custom zoomFactor must be calculated if the font
+		// is used for a different zoom level
+		adjustedZoomFactor *= logPixelsY / currentFontDPI;
+	}
+	return adjustedZoomFactor * pixels * 72f / logPixelsY;
 }
 
 /**

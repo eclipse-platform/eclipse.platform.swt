@@ -14,6 +14,7 @@
 package org.eclipse.swt.graphics;
 
 import java.util.*;
+import java.util.Map.*;
 
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.win32.*;
@@ -33,6 +34,8 @@ import org.eclipse.swt.widgets.*;
  */
 public class ScalingSWTFontRegistry implements SWTFontRegistry {
 	private class ScaledFontContainer {
+		// the first (unknown) font to be requested as scaled variant
+		// usually it is scaled to the primary monitor zoom, but that is not guaranteed
 		private Font baseFont;
 		private Map<Integer, Font> scaledFonts = new HashMap<>();
 

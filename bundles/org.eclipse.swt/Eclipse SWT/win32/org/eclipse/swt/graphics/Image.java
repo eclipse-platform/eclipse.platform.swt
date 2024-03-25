@@ -114,14 +114,10 @@ public final class Image extends Resource implements Drawable {
 	GC memGC;
 
 	/**
-	 * Base image data at zoom factor stored in baseDataZoomFactor
+	 * Base image data at given zoom factor. It will be used for scaled variants
+	 * of this image
 	 */
-	private ImageData dataAtBaseZoomFactor;
-
-	/**
-	 * Zoom level for image data stored in <em>dataAtBaseZoomFactor</em>
-	 */
-	private int dataBaseZoomFactor;
+	private ElementAtZoom<ImageData> dataAtBaseZoomFactor;
 
 	/**
 	 * ImageFileNameProvider to provide file names at various Zoom levels
@@ -260,7 +256,6 @@ public Image(Device device, Image srcImage, int flag) {
 	this.styleFlag = srcImage.styleFlag | flag;
 	this.currentDeviceZoom = srcImage.currentDeviceZoom;
 	this.dataAtBaseZoomFactor = srcImage.dataAtBaseZoomFactor;
-	this.dataBaseZoomFactor = srcImage.dataBaseZoomFactor;
 	switch (flag) {
 		case SWT.IMAGE_COPY: {
 			switch (type) {
@@ -497,8 +492,7 @@ public Image(Device device, ImageData data) {
 	super(device);
 	if (data == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	currentDeviceZoom = DPIUtil.getDeviceZoom ();
-	this.dataAtBaseZoomFactor = data;
-	this.dataBaseZoomFactor = 100;
+	this.dataAtBaseZoomFactor = new ElementAtZoom<>(data, 100);
 	data = DPIUtil.autoScaleUp(device, this.dataAtBaseZoomFactor);
 	init(data);
 	init();
@@ -542,8 +536,7 @@ public Image(Device device, ImageData source, ImageData mask) {
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
 	currentDeviceZoom = DPIUtil.getDeviceZoom ();
-	this.dataAtBaseZoomFactor = applyMask(source, ImageData.convertMask(mask));
-	this.dataBaseZoomFactor = 100;
+	this.dataAtBaseZoomFactor = new ElementAtZoom<>(applyMask(source, ImageData.convertMask(mask)), 100);
 	source = DPIUtil.autoScaleUp(device, source);
 	mask = DPIUtil.autoScaleUp(device, mask);
 	mask = ImageData.convertMask(mask);
@@ -607,8 +600,7 @@ public Image(Device device, ImageData source, ImageData mask) {
 public Image (Device device, InputStream stream) {
 	super(device);
 	currentDeviceZoom = DPIUtil.getDeviceZoom ();
-	this.dataAtBaseZoomFactor = new ImageData (stream);
-	this.dataBaseZoomFactor = 100;
+	this.dataAtBaseZoomFactor =  new ElementAtZoom<>(new ImageData (stream), 100);
 	ImageData data = DPIUtil.autoScaleUp(device, this.dataAtBaseZoomFactor);
 	init(data);
 	init();
@@ -650,8 +642,7 @@ public Image (Device device, String filename) {
 	super(device);
 	if (filename == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	currentDeviceZoom = DPIUtil.getDeviceZoom ();
-	this.dataAtBaseZoomFactor = new ImageData(filename);
-	this.dataBaseZoomFactor = 100;
+	this.dataAtBaseZoomFactor = new ElementAtZoom<>(new ImageData (filename), 100);
 	ImageData data = DPIUtil.autoScaleUp(device, this.dataAtBaseZoomFactor);
 	init(data);
 	init();
@@ -781,21 +772,14 @@ public boolean handleDPIChange (int deviceZoomLevel) {
 			refreshed = true;
 			currentDeviceZoom = deviceZoomLevel;
 		}
-	} else {
+	} else if (this.dataAtBaseZoomFactor != null) { // Resizing is only possible with a cached base image
 		if (deviceZoomLevel != currentDeviceZoom) {
-			if (this.dataAtBaseZoomFactor == null && memGC == null) {
-				// Cache data at base zoom before refresh.
-				this.dataAtBaseZoomFactor = getImageData(currentDeviceZoom);
-				this.dataBaseZoomFactor = this.currentDeviceZoom;
-			}
-			if (this.dataAtBaseZoomFactor != null) {
-				ImageData resizedData = getImageData(deviceZoomLevel);
-				destroy ();
-				init(resizedData);
-				init();
-				refreshed = true;
-				currentDeviceZoom = deviceZoomLevel;
-			}
+			ImageData resizedData = getImageData(deviceZoomLevel);
+			destroy ();
+			init(resizedData);
+			init();
+			refreshed = true;
+			currentDeviceZoom = deviceZoomLevel;
 		}
 	}
 	if (refreshed) {
@@ -1393,8 +1377,18 @@ public ImageData getImageData (int zoom) {
 		ElementAtZoom<String> fileName = DPIUtil.validateAndGetImagePathAtZoom (imageFileNameProvider, zoom);
 		return DPIUtil.autoScaleImageData (device, new ImageData (fileName.element()), zoom, fileName.zoom());
 	}
-	else if (this.dataAtBaseZoomFactor != null) {
-		return DPIUtil.autoScaleImageData(device, this.dataAtBaseZoomFactor, zoom, this.dataBaseZoomFactor);
+
+	// if a GC is initialized with an Image (memGC != null), the image data must not be resized, because it would
+	// be a destructive operation. Therefor, always the current image data must be returned
+	if (memGC != null) {
+		return getImageDataAtCurrentZoom();
+	}
+	if (this.dataAtBaseZoomFactor == null) {
+		// Cache data at base zoom before refresh.
+		this.dataAtBaseZoomFactor = new ElementAtZoom<>(getImageData(this.currentDeviceZoom), this.currentDeviceZoom);
+	}
+	if (this.dataAtBaseZoomFactor != null) {
+		return DPIUtil.autoScaleImageData(device, this.dataAtBaseZoomFactor, zoom);
 	} else {
 		return DPIUtil.autoScaleImageData (device, getImageDataAtCurrentZoom (), zoom, currentDeviceZoom);
 	}

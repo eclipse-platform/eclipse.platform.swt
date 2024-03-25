@@ -107,10 +107,8 @@ public class DPIUtil {
 			}
 		}
 
-		String updateOnRuntimeValue = System.getProperty (SWT_AUTOSCALE_UPDATE_ON_RUNTIME, "false");
-		if (Boolean.TRUE.toString().equalsIgnoreCase(updateOnRuntimeValue)) {
-			autoScaleOnRuntime = true;
-		}
+		String updateOnRuntimeValue = System.getProperty (SWT_AUTOSCALE_UPDATE_ON_RUNTIME);
+		autoScaleOnRuntime = Boolean.parseBoolean(updateOnRuntimeValue);
 	}
 
 /**
@@ -243,6 +241,11 @@ public static ImageData autoScaleImageData (Device device, final ImageData image
 	return autoScaleImageData(device, imageData, scaleFactor);
 }
 
+
+public static ImageData autoScaleImageData (Device device, final ElementAtZoom<ImageData> elementAtZoom, int targetZoom) {
+	return autoScaleImageData(device, elementAtZoom.element(), targetZoom, elementAtZoom.zoom());
+}
+
 private static ImageData autoScaleImageData (Device device, final ImageData imageData, float scaleFactor) {
 	// Guards are already implemented in callers: if (deviceZoom == 100 || imageData == null || scaleFactor == 1.0f) return imageData;
 	int width = imageData.width;
@@ -301,6 +304,10 @@ public static ImageData autoScaleImageData (Device device, final ImageData image
  */
 public static ImageData autoScaleUp (Device device, final ImageData imageData) {
 	return autoScaleImageData(device, imageData, 100);
+}
+
+public static ImageData autoScaleUp (Device device, final ElementAtZoom<ImageData> elementAtZoom) {
+	return autoScaleImageData(device, elementAtZoom.element(), elementAtZoom.zoom());
 }
 
 public static int[] autoScaleUp(int[] pointArray) {
