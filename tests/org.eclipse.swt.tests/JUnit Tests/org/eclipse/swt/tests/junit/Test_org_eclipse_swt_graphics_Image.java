@@ -1177,4 +1177,23 @@ public void test_bug566545_efficientGrayscaleImage() {
 	outImageDirect.dispose();
 }
 
+@Test
+public void test_updateWidthHeightAfterDPIChange() {
+	int deviceZoom = DPIUtil.getDeviceZoom();
+	try {
+		Rectangle imageSize = new Rectangle(0, 0, 16, 16);
+		Image baseImage = new Image(display, imageSize.width, imageSize.height);
+		GC gc = new GC(display);
+		gc.drawImage(baseImage, 10, 10);
+		assertEquals("Base image size differs unexpectedly", imageSize, baseImage.getBounds());
+
+		DPIUtil.setDeviceZoom(deviceZoom * 2);
+		gc.drawImage(baseImage, 10, 10);
+		assertEquals("Image size at 100% must always stay the same despite the zoom factor", imageSize, baseImage.getBounds());
+		gc.dispose();
+		baseImage.dispose();
+	} finally {
+		DPIUtil.setDeviceZoom(deviceZoom);
+	}
+}
 }

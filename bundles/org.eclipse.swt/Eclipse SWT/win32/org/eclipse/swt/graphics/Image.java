@@ -745,7 +745,7 @@ boolean refreshImageForZoom () {
 				init ();
 				refreshed = true;
 			}
-			currentDeviceZoom = deviceZoomLevel;
+			setCurrentDeviceZoom(deviceZoomLevel);
 		}
 	} else if (imageDataProvider != null) {
 		if (deviceZoomLevel != currentDeviceZoom) {
@@ -756,7 +756,7 @@ boolean refreshImageForZoom () {
 			init(resizedData);
 			init();
 			refreshed = true;
-			currentDeviceZoom = deviceZoomLevel;
+			setCurrentDeviceZoom(deviceZoomLevel);
 		}
 	} else {
 		if (deviceZoomLevel != currentDeviceZoom) {
@@ -766,7 +766,7 @@ boolean refreshImageForZoom () {
 			init(resizedData);
 			init();
 			refreshed = true;
-			currentDeviceZoom = deviceZoomLevel;
+			setCurrentDeviceZoom(deviceZoomLevel);
 		}
 	}
 	return refreshed;
@@ -2198,6 +2198,15 @@ public void setBackground(Color color) {
 
 	/* Release the HDC for the device */
 	device.internal_dispose_GC(hDC, null);
+}
+
+private void setCurrentDeviceZoom(int newZoomFactor) {
+	if (this.currentDeviceZoom != newZoomFactor) {
+		this.currentDeviceZoom = newZoomFactor;
+		// width and height are tied to the current device zoom
+		// they must be reset the the zoom factor changes
+		width = height = -1;
+	}
 }
 
 /**
