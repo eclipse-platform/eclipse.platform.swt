@@ -64,7 +64,7 @@
 
 	<profiles>
 		<profile>
-			<id>build-natitve-fragment</id>
+			<id>build-native-fragment</id>
 			<activation>
 				<file><!-- Only build the native fragment projects in this directory -->
 					<exists>META-INF/MANIFEST.MF</exists>
