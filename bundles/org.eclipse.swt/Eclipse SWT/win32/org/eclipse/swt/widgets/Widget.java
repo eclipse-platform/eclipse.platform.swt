@@ -51,6 +51,8 @@ import org.eclipse.swt.internal.win32.*;
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
 public abstract class Widget {
+
+	private int zoom;
 	int style, state;
 	Display display;
 	EventTable eventTable;
@@ -124,6 +126,7 @@ public abstract class Widget {
 		icce.dwSize = INITCOMMONCONTROLSEX.sizeof;
 		icce.dwICC = 0xffff;
 		OS.InitCommonControlsEx (icce);
+		DPIZoomChangeRegistry.registerHandler(Widget::handleDPIChange, Widget.class);
 	}
 
 /**
@@ -166,6 +169,7 @@ public Widget (Widget parent, int style) {
 	checkSubclass ();
 	checkParent (parent);
 	this.style = style;
+	this.zoom = parent != null ? parent.getZoom() : DPIUtil.getDeviceZoom();
 	display = parent.display;
 	reskinWidget ();
 	notifyCreationTracker();
@@ -2631,4 +2635,29 @@ void notifyDisposalTracker() {
 	}
 }
 
+
+/**
+ * The current DPI zoom level the widget is scaled for
+ * (Warning: This method is platform dependent)
+ * <p>
+ * <b>IMPORTANT:</b> This method is <em>not</em> part of the public
+ * API for <code>Color</code>. It is marked public only so that it
+ * can be shared within the packages provided by SWT. It is not
+ * available on all platforms, and should never be called from
+ * application code.
+ * </p>
+ *
+ * @noreference This method is not intended to be referenced by clients.
+ */
+public int getZoom() {
+	return zoom;
+}
+
+void setZoom(int zoom) {
+	this.zoom = zoom;
+}
+
+private static void handleDPIChange(Widget widget, int newZoom, float scalingFactor) {
+	widget.setZoom(newZoom);
+}
 }

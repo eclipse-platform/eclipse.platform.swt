@@ -44,6 +44,7 @@ public class DPIUtil {
 	private static enum AutoScaleMethod { AUTO, NEAREST, SMOOTH }
 	private static AutoScaleMethod autoScaleMethodSetting = AutoScaleMethod.AUTO;
 	private static AutoScaleMethod autoScaleMethod = AutoScaleMethod.NEAREST;
+	public static boolean autoScaleOnRuntime = false;
 
 	private static String autoScaleValue;
 	private static boolean useCairoAutoScale = false;
@@ -84,6 +85,16 @@ public class DPIUtil {
 	 * <a href="https://bugs.eclipse.org/493455">bug 493455</a>.
 	 */
 	private static final String SWT_AUTOSCALE_METHOD = "swt.autoScale.method";
+
+	/**
+	 * System property to enable to scale the applicaiton on runtime
+	 * when a DPI change is detected.
+	 * <ul>
+	 * <li>"true": the application is scaled on DPI changes</li>
+	 * <li>"false": the application will remain in its initial scaling</li>
+	 * </ul>
+	 */
+	private static final String SWT_AUTOSCALE_UPDATE_ON_RUNTIME = "swt.autoScale.updateOnRuntime";
 	static {
 		autoScaleValue = System.getProperty (SWT_AUTOSCALE);
 
@@ -95,6 +106,9 @@ public class DPIUtil {
 				autoScaleMethod = autoScaleMethodSetting = AutoScaleMethod.SMOOTH;
 			}
 		}
+
+		String updateOnRuntimeValue = System.getProperty (SWT_AUTOSCALE_UPDATE_ON_RUNTIME);
+		autoScaleOnRuntime = Boolean.parseBoolean(updateOnRuntimeValue);
 	}
 
 /**
@@ -227,6 +241,11 @@ public static ImageData autoScaleImageData (Device device, final ImageData image
 	return autoScaleImageData(device, imageData, scaleFactor);
 }
 
+
+public static ImageData autoScaleImageData (Device device, final ElementAtZoom<ImageData> elementAtZoom, int targetZoom) {
+	return autoScaleImageData(device, elementAtZoom.element(), targetZoom, elementAtZoom.zoom());
+}
+
 private static ImageData autoScaleImageData (Device device, final ImageData imageData, float scaleFactor) {
 	// Guards are already implemented in callers: if (deviceZoom == 100 || imageData == null || scaleFactor == 1.0f) return imageData;
 	int width = imageData.width;
@@ -261,7 +280,7 @@ private static ImageData autoScaleImageData (Device device, final ImageData imag
  * Returns a new rectangle as per the scaleFactor.
  */
 public static Rectangle autoScaleBounds (Rectangle rect, int targetZoom, int currentZoom) {
-	if (deviceZoom == 100 || rect == null || targetZoom == currentZoom) return rect;
+	if (rect == null || targetZoom == currentZoom) return rect;
 	float scaleFactor = ((float)targetZoom) / (float)currentZoom;
 	Rectangle returnRect = new Rectangle (0,0,0,0);
 	returnRect.x = Math.round (rect.x * scaleFactor);
@@ -287,6 +306,10 @@ public static ImageData autoScaleUp (Device device, final ImageData imageData) {
 	return autoScaleImageData(device, imageData, 100);
 }
 
+public static ImageData autoScaleUp (Device device, final ElementAtZoom<ImageData> elementAtZoom) {
+	return autoScaleImageData(device, elementAtZoom.element(), elementAtZoom.zoom());
+}
+
 public static int[] autoScaleUp(int[] pointArray) {
 	if (deviceZoom == 100 || pointArray == null) return pointArray;
 	float scaleFactor = getScalingFactor ();
@@ -308,6 +331,14 @@ public static int[] autoScaleUp(Drawable drawable, int[] pointArray) {
 public static int autoScaleUp (int size) {
 	if (deviceZoom == 100 || size == SWT.DEFAULT) return size;
 	float scaleFactor = getScalingFactor ();
+	return Math.round (size * scaleFactor);
+}
+
+/**
+ * Auto-scale up int dimensions to match the given zoom level
+ */
+public static int autoScaleUp (int size, int zoom) {
+	float scaleFactor = getScalingFactor (zoom);
 	return Math.round (size * scaleFactor);
 }
 
@@ -388,10 +419,18 @@ public static Rectangle autoScaleUp (Drawable drawable, Rectangle rect) {
  * @return float scaling factor
  */
 private static float getScalingFactor () {
+	return getScalingFactor(deviceZoom);
+}
+
+/**
+ * Returns scaling factor from the given device zoom
+ * @return float scaling factor
+ */
+private static float getScalingFactor (int shellDeviceZoom) {
 	if (useCairoAutoScale) {
 		return 1;
 	}
-	return deviceZoom / 100f;
+	return shellDeviceZoom / 100f;
 }
 
 /**
@@ -403,6 +442,17 @@ public static int mapDPIToZoom (int dpi) {
 	double zoom = (double) dpi * 100 / DPI_ZOOM_100;
 	int roundedZoom = (int) Math.round (zoom);
 	return roundedZoom;
+}
+
+/**
+ * Compute the DPI value value based on the zoom.
+ *
+ * @return DPI
+ */
+public static int mapZoomToDPI (int zoom) {
+	double dpi = (double) zoom / 100 * DPI_ZOOM_100;
+	int roundedDpi = (int) Math.round (dpi);
+	return roundedDpi;
 }
 
 /**
@@ -477,6 +527,10 @@ private static <T> ElementAtZoom<T> getElementAtZoom(Function<Integer, T> elemen
 		}
 	}
 	return null;
+}
+
+public static int getNativeDeviceZoom() {
+	return nativeDeviceZoom;
 }
 
 public static int getDeviceZoom() {

@@ -15,6 +15,7 @@ package org.eclipse.swt.graphics;
 
 
 import java.io.*;
+import java.util.*;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.internal.*;
@@ -111,6 +112,12 @@ public final class Image extends Resource implements Drawable {
 	 * the GC which is drawing on the image
 	 */
 	GC memGC;
+
+	/**
+	 * Base image data at given zoom in % of the standard resolution. It will be used for 
+	 * scaled variants of this image
+	 */
+	private ElementAtZoom<ImageData> dataAtBaseZoom;
 
 	/**
 	 * ImageFileNameProvider to provide file names at various Zoom levels
@@ -248,6 +255,7 @@ public Image(Device device, Image srcImage, int flag) {
 	this.imageFileNameProvider = srcImage.imageFileNameProvider;
 	this.styleFlag = srcImage.styleFlag | flag;
 	this.currentDeviceZoom = srcImage.currentDeviceZoom;
+	this.dataAtBaseZoom = srcImage.dataAtBaseZoom;
 	switch (flag) {
 		case SWT.IMAGE_COPY: {
 			switch (type) {
@@ -285,7 +293,7 @@ public Image(Device device, Image srcImage, int flag) {
 			break;
 		}
 		case SWT.IMAGE_DISABLE: {
-			ImageData data = srcImage.getImageDataAtCurrentZoom();
+			ImageData data = srcImage.getImageData(srcImage.currentDeviceZoom);
 			PaletteData palette = data.palette;
 			RGB[] rgbs = new RGB[3];
 			rgbs[0] = device.getSystemColor(SWT.COLOR_BLACK).getRGB();
@@ -344,7 +352,7 @@ public Image(Device device, Image srcImage, int flag) {
 			break;
 		}
 		case SWT.IMAGE_GRAY: {
-			ImageData data = srcImage.getImageDataAtCurrentZoom();
+			ImageData data = srcImage.getImageData(srcImage.currentDeviceZoom);
 			PaletteData palette = data.palette;
 			ImageData newData = data;
 			if (!palette.isDirect) {
@@ -484,7 +492,8 @@ public Image(Device device, ImageData data) {
 	super(device);
 	if (data == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	currentDeviceZoom = DPIUtil.getDeviceZoom ();
-	data = DPIUtil.autoScaleUp (device, data);
+	this.dataAtBaseZoom = new ElementAtZoom<>(data, 100);
+	data = DPIUtil.autoScaleUp(device, this.dataAtBaseZoom);
 	init(data);
 	init();
 }
@@ -527,6 +536,7 @@ public Image(Device device, ImageData source, ImageData mask) {
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
 	currentDeviceZoom = DPIUtil.getDeviceZoom ();
+	this.dataAtBaseZoom = new ElementAtZoom<>(applyMask(source, ImageData.convertMask(mask)), 100);
 	source = DPIUtil.autoScaleUp(device, source);
 	mask = DPIUtil.autoScaleUp(device, mask);
 	mask = ImageData.convertMask(mask);
@@ -590,7 +600,8 @@ public Image(Device device, ImageData source, ImageData mask) {
 public Image (Device device, InputStream stream) {
 	super(device);
 	currentDeviceZoom = DPIUtil.getDeviceZoom ();
-	ImageData data = DPIUtil.autoScaleUp(device, new ImageData(stream));
+	this.dataAtBaseZoom =  new ElementAtZoom<>(new ImageData (stream), 100);
+	ImageData data = DPIUtil.autoScaleUp(device, this.dataAtBaseZoom);
 	init(data);
 	init();
 }
@@ -631,7 +642,8 @@ public Image (Device device, String filename) {
 	super(device);
 	if (filename == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	currentDeviceZoom = DPIUtil.getDeviceZoom ();
-	ImageData data = DPIUtil.autoScaleUp(device, new ImageData(filename));
+	this.dataAtBaseZoom = new ElementAtZoom<>(new ImageData (filename), 100);
+	ImageData data = DPIUtil.autoScaleUp(device, this.dataAtBaseZoom);
 	init(data);
 	init();
 }
@@ -720,13 +732,15 @@ public Image(Device device, ImageDataProvider imageDataProvider) {
 }
 
 /**
- * Refresh the Image based on the zoom level, if required.
+ * Update zoom and refresh the Image based on the zoom level, if required.
+ *
+ * @param deviceZoomLevel zoom level the image shall be scaled for
  *
  * @return true if image is refreshed
+ * @noreference This method is not intended to be referenced by clients.
  */
-boolean refreshImageForZoom () {
+public boolean handleDPIChange (int deviceZoomLevel) {
 	boolean refreshed = false;
-	int deviceZoomLevel = DPIUtil.getDeviceZoom();
 	if (imageFileNameProvider != null) {
 		if (deviceZoomLevel != currentDeviceZoom) {
 			ElementAtZoom<String> filename = DPIUtil.validateAndGetImagePathAtZoom (imageFileNameProvider, deviceZoomLevel);
@@ -758,16 +772,19 @@ boolean refreshImageForZoom () {
 			refreshed = true;
 			setCurrentDeviceZoom(deviceZoomLevel);
 		}
-	} else {
+	} else if (this.dataAtBaseZoom != null) { // Resizing is only possible with a cached base image
 		if (deviceZoomLevel != currentDeviceZoom) {
-			ImageData data = getImageDataAtCurrentZoom();
+			ImageData resizedData = getImageData(deviceZoomLevel);
 			destroy ();
-			ImageData resizedData = DPIUtil.autoScaleImageData(device, data, deviceZoomLevel, currentDeviceZoom);
 			init(resizedData);
 			init();
 			refreshed = true;
 			setCurrentDeviceZoom(deviceZoomLevel);
 		}
+	}
+	if (refreshed) {
+		// Reset cached width and height to -1, if the image is changed
+		width = height = -1;
 	}
 	return refreshed;
 }
@@ -1134,7 +1151,7 @@ public boolean equals (Object object) {
 	if (object == this) return true;
 	if (!(object instanceof Image)) return false;
 	Image image = (Image) object;
-	if (device != image.device || transparentPixel != image.transparentPixel) return false;
+	if (device != image.device || transparentPixel != image.transparentPixel || currentDeviceZoom != image.currentDeviceZoom) return false;
 	if (imageDataProvider != null && image.imageDataProvider != null) {
 		return (styleFlag == image.styleFlag) && imageDataProvider.equals (image.imageDataProvider);
 	} else if (imageFileNameProvider != null && image.imageFileNameProvider != null) {
@@ -1227,8 +1244,25 @@ public Rectangle getBounds() {
 	return getBounds (100);
 }
 
-Rectangle getBounds(int zoom) {
-	Rectangle bounds = getBoundsInPixels();
+/**
+ * Returns the bounds of the receiver scaled to the specified zoom level.
+ * The rectangle will always have x and y values of 0, and the width and
+ * height of the image scaled to the given zoom level.
+ *
+ * @param zoom zoom level the image bounds shall be scaled for
+ *
+ * @return a rectangle specifying the image's bounds in pixel for the given zoom level.
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_INVALID_IMAGE - if the image is not a bitmap or an icon</li>
+ * </ul>
+ * @noreference This method is not intended to be referenced by clients.
+ */
+public Rectangle getBounds(int zoom) {
+	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	// Read the bounds in pixels from native layer.
+	Rectangle bounds = getBoundsInPixelsFromNative();
 	if (bounds != null && zoom != currentDeviceZoom) {
 		bounds = DPIUtil.autoScaleBounds(bounds, zoom, currentDeviceZoom);
 	}
@@ -1256,6 +1290,10 @@ public Rectangle getBoundsInPixels() {
 	if (width != -1 && height != -1) {
 		return new Rectangle(0, 0, width, height);
 	}
+	return getBoundsInPixelsFromNative();
+}
+
+Rectangle getBoundsInPixelsFromNative() {
 	switch (type) {
 		case SWT.BITMAP:
 			BITMAP bm = new BITMAP();
@@ -1338,6 +1376,19 @@ public ImageData getImageData (int zoom) {
 	} else if (imageFileNameProvider != null) {
 		ElementAtZoom<String> fileName = DPIUtil.validateAndGetImagePathAtZoom (imageFileNameProvider, zoom);
 		return DPIUtil.autoScaleImageData (device, new ImageData (fileName.element()), zoom, fileName.zoom());
+	}
+
+	// if a GC is initialized with an Image (memGC != null), the image data must not be resized, because it would
+	// be a destructive operation. Therefor, always the current image data must be returned
+	if (memGC != null) {
+		return getImageDataAtCurrentZoom();
+	}
+	if (this.dataAtBaseZoom == null) {
+		// Cache data at base zoom before refresh.
+		this.dataAtBaseZoom = new ElementAtZoom<>(getImageData(this.currentDeviceZoom), this.currentDeviceZoom);
+	}
+	if (this.dataAtBaseZoom != null) {
+		return DPIUtil.autoScaleImageData(device, this.dataAtBaseZoom, zoom);
 	} else {
 		return DPIUtil.autoScaleImageData (device, getImageDataAtCurrentZoom (), zoom, currentDeviceZoom);
 	}
@@ -1635,7 +1686,7 @@ public int hashCode () {
 	if (imageDataProvider != null) {
 		return imageDataProvider.hashCode();
 	} else if (imageFileNameProvider != null) {
-		return imageFileNameProvider.hashCode();
+		return Objects.hash(imageFileNameProvider, styleFlag, transparentPixel, currentDeviceZoom);
 	} else {
 		return (int)handle;
 	}
@@ -1978,6 +2029,11 @@ static long [] init(Device device, Image image, ImageData i) {
 }
 
 static long [] init(Device device, Image image, ImageData source, ImageData mask) {
+	ImageData imageData = applyMask(source, mask);
+	return init(device, image, imageData);
+}
+
+static ImageData applyMask(ImageData source, ImageData mask) {
 	/* Create a temporary image and locate the black pixel */
 	ImageData imageData;
 	int blackIndex = 0;
@@ -2048,8 +2104,9 @@ static long [] init(Device device, Image image, ImageData source, ImageData mask
 	}
 	imageData.maskPad = mask.scanlinePad;
 	imageData.maskData = mask.data;
-	return init(device, image, imageData);
+	return imageData;
 }
+
 void init(ImageData i) {
 	if (i == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	init(device, this, i);
@@ -2097,7 +2154,7 @@ public long internal_new_GC (GCData data) {
 		}
 		data.device = device;
 		data.image = this;
-		data.font = device.systemFont;
+		data.font = device.getSystemFont().scaleFor(getCurrentDeviceZoom());
 	}
 	return imageDC;
 }
@@ -2219,6 +2276,22 @@ private void setCurrentDeviceZoom(int newZoomFactor) {
 public String toString () {
 	if (isDisposed()) return "Image {*DISPOSED*}";
 	return "Image {" + handle + "}";
+}
+
+/**
+ * The current DPI zoom level the image is scaled for
+ * (Warning: This field is platform dependent)
+ * <p>
+ * <b>IMPORTANT:</b> This field is <em>not</em> part of the SWT
+ * public API. It is marked public only so that it can be shared
+ * within the packages provided by SWT. It is not available on all
+ * platforms and should never be accessed from application code.
+ * </p>
+ *
+ * @noreference This field is not intended to be referenced by clients.
+ */
+public int getCurrentDeviceZoom() {
+	return currentDeviceZoom;
 }
 
 /**

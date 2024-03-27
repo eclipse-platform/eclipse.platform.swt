@@ -58,6 +58,7 @@ public class CoolBar extends Composite {
 		WNDCLASS lpWndClass = new WNDCLASS ();
 		OS.GetClassInfo (0, ReBarClass, lpWndClass);
 		ReBarProc = lpWndClass.lpfnWndProc;
+		DPIZoomChangeRegistry.registerHandler(CoolBar::handleDPIChange, CoolBar.class);
 	}
 	static final int SEPARATOR_WIDTH = 2;
 	static final int MAX_WIDTH = 0x7FFF;
@@ -1197,5 +1198,48 @@ LRESULT wmNotifyChild (NMHDR hdr, long wParam, long lParam) {
 		}
 	}
 	return super.wmNotifyChild (hdr, wParam, lParam);
+}
+
+private static void handleDPIChange(Widget widget, int newZoom, float scalingFactor) {
+	if (!(widget instanceof CoolBar coolBar)) {
+		return;
+	}
+	var sizes = coolBar.getItemSizesInPixels();
+	var scaledSizes = new Point[sizes.length];
+	var prefSizes = new Point[sizes.length];
+	var minSizes = new Point[sizes.length];
+	var indices = coolBar.getWrapIndices();
+	var itemOrder = coolBar.getItemOrder();
+
+	var items = coolBar.getItems();
+	for (int index = 0; index < sizes.length; index++) {
+		minSizes[index] = items[index].getMinimumSizeInPixels();
+		prefSizes[index] = items[index].getPreferredSizeInPixels();
+	}
+
+	for (int index = 0; index < sizes.length; index++) {
+		var item = items[index];
+
+		Control control = item.control;
+		if (control != null) {
+			DPIZoomChangeRegistry.applyChange(control, newZoom, scalingFactor);
+			item.setControl(control);
+		}
+
+		var preferredControlSize =  item.getControl().computeSizeInPixels(SWT.DEFAULT, SWT.DEFAULT, true);
+		var controlWidth = preferredControlSize.x;
+		var controlHeight = preferredControlSize.y;
+		if (((coolBar.style & SWT.VERTICAL) != 0)) {
+			scaledSizes[index] = new Point(Math.round((sizes[index].x)*scalingFactor), Math.max(Math.round((sizes[index].y)*scalingFactor),0));
+			item.setMinimumSizeInPixels(Math.round(minSizes[index].x*scalingFactor), Math.max(Math.round((minSizes[index].y)*scalingFactor),controlWidth));
+			item.setPreferredSizeInPixels(Math.round(prefSizes[index].x*scalingFactor), Math.max(Math.round((prefSizes[index].y)*scalingFactor),controlWidth));
+		} else {
+			scaledSizes[index] = new Point(Math.round((sizes[index].x)*scalingFactor),Math.max(Math.round((sizes[index].y)*scalingFactor),0));
+			item.setMinimumSizeInPixels(Math.round(minSizes[index].x*scalingFactor), controlHeight);
+			item.setPreferredSizeInPixels(Math.round(prefSizes[index].x*scalingFactor), controlHeight);
+		}
+	}
+	coolBar.setItemLayoutInPixels(itemOrder, indices, scaledSizes);
+	coolBar.updateLayout(true);
 }
 }

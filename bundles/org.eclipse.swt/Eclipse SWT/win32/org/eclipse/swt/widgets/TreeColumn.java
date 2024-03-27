@@ -46,6 +46,10 @@ public class TreeColumn extends Item {
 	String toolTipText;
 	int id;
 
+	static {
+		DPIZoomChangeRegistry.registerHandler(TreeColumn::handleDPIChange, TreeColumn.class);
+	}
+
 /**
  * Constructs a new instance of this class given its parent
  * (which must be a <code>Tree</code>) and a style value
@@ -753,6 +757,18 @@ void updateToolTip (int index) {
 			lpti.bottom = rect.bottom;
 			OS.SendMessage (hwndHeaderToolTip, OS.TTM_NEWTOOLRECT, 0, lpti);
 		}
+	}
+}
+
+private static void handleDPIChange(Widget widget, int newZoom, float scalingFactor) {
+	if (!(widget instanceof TreeColumn treeColumn)) {
+		return;
+	}
+	treeColumn.setWidth(Math.round(treeColumn.getWidth() * scalingFactor));
+	Image image = treeColumn.image;
+	if (image != null) {
+		image.handleDPIChange(newZoom);
+		treeColumn.setImage (image);
 	}
 }
 }

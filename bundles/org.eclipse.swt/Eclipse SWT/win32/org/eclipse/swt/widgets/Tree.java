@@ -120,6 +120,8 @@ public class Tree extends Composite {
 	static final int INCREMENT = 5;
 	static final int EXPLORER_EXTRA = 2;
 	static final int DRAG_IMAGE_SIZE = 301;
+	// The default Indent at 100 dpi
+	static final int DEFAULT_INDENT = 16;
 	static final long TreeProc;
 	static final TCHAR TreeClass = new TCHAR (0, OS.WC_TREEVIEW, true);
 	static final long HeaderProc;
@@ -130,6 +132,7 @@ public class Tree extends Composite {
 		TreeProc = lpWndClass.lpfnWndProc;
 		OS.GetClassInfo (0, HeaderClass, lpWndClass);
 		HeaderProc = lpWndClass.lpfnWndProc;
+		DPIZoomChangeRegistry.registerHandler(Tree::handleDPIChange, Tree.class);
 	}
 
 /**
@@ -314,7 +317,10 @@ void _setBackgroundPixel (int newPixel) {
 		}
 
 		/* Set the checkbox image list */
-		if ((style & SWT.CHECK) != 0) setCheckboxImageList ();
+		if ((style & SWT.CHECK) != 0) {
+			setCheckboxImageList ();
+		}
+		updateImageList();
 	}
 }
 
@@ -1906,8 +1912,7 @@ void createHandle () {
 	 * scale with DPI resulting in distorted glyph image
 	 * at higher DPI settings.
 	 */
-	int indent = DPIUtil.autoScaleUpUsingNativeDPI(16);
-	OS.SendMessage(handle, OS.TVM_SETINDENT, indent, 0);
+	calculateAndApplyIndentSize();
 
 	createdAsRTL = (style & SWT.RIGHT_TO_LEFT) != 0;
 }
@@ -3734,7 +3739,7 @@ boolean hitTestSelection (long hItem, int x, int y) {
 int imageIndex (Image image, int index) {
 	if (image == null) return OS.I_IMAGENONE;
 	if (imageList == null) {
-		Rectangle bounds = image.getBoundsInPixels ();
+		Rectangle bounds = image.getBounds (getZoom());
 		imageList = display.getImageList (style & SWT.RIGHT_TO_LEFT, bounds.width, bounds.height);
 	}
 	int imageIndex = imageList.indexOf (image);
@@ -3758,7 +3763,7 @@ int imageIndex (Image image, int index) {
 int imageIndexHeader (Image image) {
 	if (image == null) return OS.I_IMAGENONE;
 	if (headerImageList == null) {
-		Rectangle bounds = image.getBoundsInPixels ();
+		Rectangle bounds = image.getBounds (getZoom());
 		headerImageList = display.getImageList (style & SWT.RIGHT_TO_LEFT, bounds.width, bounds.height);
 		int index = headerImageList.indexOf (image);
 		if (index == -1) index = headerImageList.add (image);
@@ -5358,6 +5363,15 @@ public void setTopItem (TreeItem item) {
 		}
 	}
 	updateScrollBar ();
+}
+
+/**
+ * Set indent for Tree;
+ * In a Tree without imageList, the indent also controls the chevron (glyph) size.
+ */
+private void calculateAndApplyIndentSize() {
+	int indent = DPIUtil.autoScaleUpUsingNativeDPI(DEFAULT_INDENT);
+	OS.SendMessage(handle, OS.TVM_SETINDENT, indent, 0);
 }
 
 void showItem (long hItem) {
@@ -7526,7 +7540,7 @@ LRESULT wmNotifyChild (NMHDR hdr, long wParam, long lParam) {
 		}
 		case OS.NM_CUSTOMDRAW: {
 			if (hdr.hwndFrom == hwndHeader) break;
-			if (hooks (SWT.MeasureItem)) {
+			if  (hooks (SWT.MeasureItem)) {
 				if (hwndHeader == 0) createParent ();
 			}
 			if (!customDraw && findImageControl () == null) {
@@ -7912,9 +7926,9 @@ LRESULT wmNotifyHeader (NMHDR hdr, long wParam, long lParam) {
 							GCData data = new GCData();
 							data.device = display;
 							GC gc = GC.win32_new (nmcd.hdc, data);
-							int y = Math.max (0, (nmcd.bottom - columns[i].image.getBoundsInPixels().height) / 2);
+							int y = Math.max (0, (nmcd.bottom - columns[i].image.getBounds(getZoom()).height) / 2);
 							gc.drawImage (columns[i].image, DPIUtil.autoScaleDown(x), DPIUtil.autoScaleDown(y));
-							x += columns[i].image.getBoundsInPixels().width + 12;
+							x += columns[i].image.getBounds(getZoom()).width + 12;
 							gc.dispose ();
 						}
 
@@ -8248,4 +8262,38 @@ LRESULT wmNotifyToolTip (NMTTCUSTOMDRAW nmcd, long lParam) {
 	return null;
 }
 
+private static void handleDPIChange(Widget widget, int newZoom, float scalingFactor) {
+	if (!(widget instanceof Tree tree)) {
+		return;
+	}
+	Display display = tree.getDisplay();
+	// Reset ImageList
+	if (tree.headerImageList != null) {
+		display.releaseImageList(tree.headerImageList);
+		tree.headerImageList = null;
+	}
+	if (tree.imageList != null) {
+		display.releaseImageList(tree.imageList);
+		// Reset the Imagelist of the OS as well; Will be recalculated when updating items
+		OS.SendMessage (tree.handle, OS.TVM_SETIMAGELIST, 0, 0);
+		tree.imageList = null;
+	}
+
+	if (tree.hooks(SWT.MeasureItem)) {
+		// with the measure item hook, the height must be programmatically recalculated
+		var itemHeight = tree.getItemHeightInPixels();
+		tree.setItemHeight(Math.round(itemHeight * scalingFactor));
+	}
+	for (TreeColumn treeColumn : tree.getColumns()) {
+		DPIZoomChangeRegistry.applyChange(treeColumn, newZoom, scalingFactor);
+	}
+	for (TreeItem item : tree.getItems()) {
+		DPIZoomChangeRegistry.applyChange(item, newZoom, scalingFactor);
+	}
+
+	tree.updateOrientation();
+	tree.setScrollWidth();
+	// Reset of CheckBox Size required (if SWT.Check is not set, this is a no-op)
+	tree.setCheckboxImageList();
+}
 }

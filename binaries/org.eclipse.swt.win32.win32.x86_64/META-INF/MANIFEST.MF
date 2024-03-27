@@ -14,7 +14,7 @@ Export-Package:
  org.eclipse.swt.custom,
  org.eclipse.swt.dnd,
  org.eclipse.swt.events,
- org.eclipse.swt.graphics,
+ org.eclipse.swt.graphics; x-friends:="org.eclipse.swt.tests.win32",
  org.eclipse.swt.layout,
  org.eclipse.swt.opengl,
  org.eclipse.swt.printing,

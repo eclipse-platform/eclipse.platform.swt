@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2022 IBM Corporation and others.
+ * Copyright (c) 2000, 2023 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -3254,6 +3254,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(GetSystemMetrics)
 	OS_NATIVE_ENTER(env, that, GetSystemMetrics_FUNC);
 	rc = (jint)GetSystemMetrics(arg0);
 	OS_NATIVE_EXIT(env, that, GetSystemMetrics_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_GetSystemMetricsForDpi
+JNIEXPORT jint JNICALL OS_NATIVE(GetSystemMetricsForDpi)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, GetSystemMetricsForDpi_FUNC);
+	rc = (jint)GetSystemMetricsForDpi(arg0, arg1);
+	OS_NATIVE_EXIT(env, that, GetSystemMetricsForDpi_FUNC);
 	return rc;
 }
 #endif
@@ -9124,6 +9136,22 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(SystemParametersInfo__II_3II)
 fail:
 	if (arg2 && lparg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
 	OS_NATIVE_EXIT(env, that, SystemParametersInfo__II_3II_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_SystemParametersInfoForDpi
+JNIEXPORT jboolean JNICALL OS_NATIVE(SystemParametersInfoForDpi)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jobject arg2, jint arg3, jint arg4)
+{
+	NONCLIENTMETRICS _arg2, *lparg2=NULL;
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, SystemParametersInfoForDpi_FUNC);
+	if (arg2) if ((lparg2 = getNONCLIENTMETRICSFields(env, arg2, &_arg2)) == NULL) goto fail;
+	rc = (jboolean)SystemParametersInfoForDpi(arg0, arg1, lparg2, arg3, arg4);
+fail:
+	if (arg2 && lparg2) setNONCLIENTMETRICSFields(env, arg2, lparg2);
+	OS_NATIVE_EXIT(env, that, SystemParametersInfoForDpi_FUNC);
 	return rc;
 }
 #endif

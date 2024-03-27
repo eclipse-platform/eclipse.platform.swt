@@ -21,6 +21,7 @@ import java.util.concurrent.atomic.*;
 import java.util.function.*;
 
 import org.eclipse.swt.*;
+import org.eclipse.swt.custom.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.ole.win32.*;
@@ -379,7 +380,9 @@ public class Display extends Device implements Executor {
 	long hwndMessage, messageProc;
 
 	/* System Resources */
+	@Deprecated(since = "3.126.0")
 	LOGFONT lfSystemFont;
+	@Deprecated(since = "3.126.0")
 	Font systemFont;
 	Image errorImage, infoImage, questionImage, warningIcon;
 	Cursor [] cursors = new Cursor [SWT.CURSOR_HAND + 1];
@@ -537,6 +540,11 @@ public class Display extends Device implements Executor {
 			setDevice (device);
 		};
 	}
+
+	static {
+		CommonWidgetsDPIChangeHandlers.registerCommonHandlers();
+	}
+
 
 /*
 * TEMPORARY CODE.
@@ -1153,7 +1161,7 @@ static long create32bitDIB (long hBitmap, int alpha, byte [] alphaData, int tran
 
 static Image createIcon (Image image) {
 	Device device = image.getDevice ();
-	ImageData data = image.getImageData (DPIUtil.getDeviceZoom ());
+	ImageData data = image.getImageData (image.getCurrentDeviceZoom());
 	if (data.alpha == -1 && data.alphaData == null) {
 		ImageData mask = data.getTransparencyMask ();
 		return new Image (device, data, mask);
@@ -2445,19 +2453,21 @@ public Cursor getSystemCursor (int id) {
  */
 @Override
 public Font getSystemFont () {
+	return getSystemFont(getPrimaryMonitor().getZoom());
+}
+
+Font getSystemFont (int zoom) {
 	checkDevice ();
-	if (systemFont != null) return systemFont;
-	long hFont = 0;
-	NONCLIENTMETRICS info = new NONCLIENTMETRICS ();
-	info.cbSize = NONCLIENTMETRICS.sizeof;
-	if (OS.SystemParametersInfo (OS.SPI_GETNONCLIENTMETRICS, 0, info, 0)) {
-		LOGFONT logFont = info.lfMessageFont;
-		hFont = OS.CreateFontIndirect (logFont);
-		lfSystemFont = hFont != 0 ? logFont : null;
+	Font systemFont = this.getFontRegistry().getSystemFont(zoom);
+	if (this.systemFont == null) {
+		// fill the deprecated fields for backwards compatibility
+		this.systemFont = systemFont;
+		if (systemFont != null) {
+			this.lfSystemFont = systemFont.getFontData()[0].data;
+		}
 	}
-	if (hFont == 0) hFont = OS.GetStockObject (OS.DEFAULT_GUI_FONT);
-	if (hFont == 0) hFont = OS.GetStockObject (OS.SYSTEM_FONT);
-	return systemFont = Font.win32_new (this, hFont);
+
+	return systemFont;
 }
 
 /**
@@ -3817,10 +3827,8 @@ void releaseDisplay () {
 	windowProc = 0;
 
 	/* Release the System fonts */
-	if (systemFont != null) systemFont.dispose ();
 	systemFont = null;
 	lfSystemFont = null;
-
 	/* Release the System Images */
 	if (errorImage != null) errorImage.dispose ();
 	if (infoImage != null) infoImage.dispose ();
@@ -5196,4 +5204,27 @@ static char [] withCrLf (char [] string) {
 static boolean isActivateShellOnForceFocus() {
 	return "true".equals(System.getProperty("org.eclipse.swt.internal.activateShellOnForceFocus", "true")); //$NON-NLS-1$
 }
+
+/**
+ * Creates and returns a new font registry.
+ *
+ * (Warning: This method is platform dependent)
+ * <p>
+ * <b>IMPORTANT:</b> This method is <em>not</em> part of the SWT
+ * public API. It is marked public only so that it can be shared
+ * within the packages provided by SWT. It is not available on all
+ * platforms and should never be accessed from application code.
+ * </p>
+ *
+ * @noreference This method is not intended to be referenced by clients.
+ */
+@Override
+protected SWTFontRegistry newFontRegistry() {
+	if (DPIUtil.autoScaleOnRuntime) {
+		return new ScalingSWTFontRegistry(this);
+	} else {
+		return super.newFontRegistry();
+	}
+}
+
 }

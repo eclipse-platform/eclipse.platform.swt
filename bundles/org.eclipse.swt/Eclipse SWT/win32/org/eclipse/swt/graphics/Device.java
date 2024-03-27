@@ -37,7 +37,8 @@ public abstract class Device implements Drawable {
 	Object [] objects;
 	Object trackingLock;
 
-	/* System Font */
+	/* Fonts */
+	private SWTFontRegistry fontRegistry;
 	Font systemFont;
 
 	/* Font Enumeration */
@@ -264,6 +265,10 @@ int computePixels(float height) {
 }
 
 float computePoints(LOGFONT logFont, long hFont) {
+	return computePoints(logFont, hFont, -1);
+}
+
+float computePoints(LOGFONT logFont, long hFont, int currentFontDPI) {
 	long hDC = internal_new_GC (null);
 	int logPixelsY = OS.GetDeviceCaps(hDC, OS.LOGPIXELSY);
 	int pixels = 0;
@@ -284,7 +289,14 @@ float computePoints(LOGFONT logFont, long hFont) {
 		pixels = -logFont.lfHeight;
 	}
 	internal_dispose_GC (hDC, null);
-	return pixels * 72f / logPixelsY;
+	float adjustedZoomFactor = 1.0f;
+	if (currentFontDPI > 0) {
+		// as Device::computePoints will always return point on the basis of the
+		// primary monitor zoom, a custom zoomFactor must be calculated if the font
+		// is used for a different zoom level
+		adjustedZoomFactor *= (float) logPixelsY / (float) currentFontDPI;
+	}
+	return adjustedZoomFactor * pixels * 72f / logPixelsY;
 }
 
 /**
@@ -905,6 +917,9 @@ protected void release () {
 		fontCollection = 0;
 		Gdip.GdiplusShutdown (gdipToken[0]);
 	}
+	if (fontRegistry != null) {
+		fontRegistry.dispose();
+	}
 	gdipToken = null;
 	scripts = null;
 	logFonts = null;
@@ -947,4 +962,50 @@ protected int getDeviceZoom () {
 	return DPIUtil.mapDPIToZoom ( _getDPIx ());
 }
 
+/**
+ * Used to receive a font based on the given font data and zoom
+ * factor from the currently configured font factory. The font
+ * factory is defined via {@link #newFontRegistry()} and can be
+ * overwritten.
+ */
+Font getFont(FontData fontData, int zoom) {
+	return getFontRegistry().getFont(fontData, zoom);
+}
+
+/**
+ * Returns the font registry.
+ *
+ * (Warning: This method is platform dependent)
+ * <p>
+ * <b>IMPORTANT:</b> This method is <em>not</em> part of the SWT
+ * public API. It is marked public only so that it can be shared
+ * within the packages provided by SWT. It is not available on all
+ * platforms and should never be accessed from application code.
+ * </p>
+ *
+ * @noreference This method is not intended to be referenced by clients.
+ */
+protected SWTFontRegistry getFontRegistry() {
+	if (fontRegistry == null) {
+		fontRegistry = newFontRegistry();
+	}
+	return fontRegistry;
+}
+
+/**
+ * Creates and returns a new font registry.
+ *
+ * (Warning: This method is platform dependent)
+ * <p>
+ * <b>IMPORTANT:</b> This method is <em>not</em> part of the SWT
+ * public API. It is marked public only so that it can be shared
+ * within the packages provided by SWT. It is not available on all
+ * platforms and should never be accessed from application code.
+ * </p>
+ *
+ * @noreference This method is not intended to be referenced by clients.
+ */
+protected SWTFontRegistry newFontRegistry() {
+	return new DefaultSWTFontRegistry(this);
+}
 }
