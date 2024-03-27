@@ -1217,7 +1217,7 @@ private static final class MenuItemToolTip extends ToolTip {
 
 }
 
-private static void handleDPIChange(Widget widget, int newZoomFactor, float scalingFactor) {
+private static void handleDPIChange(Widget widget, int newZoom, float scalingFactor) {
 	if (!(widget instanceof MenuItem menuItem)) {
 		return;
 	}
@@ -1225,14 +1225,14 @@ private static void handleDPIChange(Widget widget, int newZoomFactor, float scal
 	Image menuItemImage = menuItem.getImage();
 	if (menuItemImage != null) {
 		Image currentImage = menuItemImage;
-		currentImage.handleDPIChange(newZoomFactor);
+		currentImage.handleDPIChange(newZoom);
 		menuItem.image = null;
 		menuItem.setImage (currentImage);
 	}
 	// Refresh the sub menu
 	Menu subMenu = menuItem.getMenu();
 	if (subMenu != null) {
-		DPIZoomChangeRegistry.applyChange(subMenu, newZoomFactor, scalingFactor);
+		DPIZoomChangeRegistry.applyChange(subMenu, newZoom, scalingFactor);
 	}
 }
 }

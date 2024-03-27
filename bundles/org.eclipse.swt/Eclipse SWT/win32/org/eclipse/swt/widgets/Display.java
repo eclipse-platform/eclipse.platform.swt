@@ -2456,9 +2456,9 @@ public Font getSystemFont () {
 	return getSystemFont(getPrimaryMonitor().getZoom());
 }
 
-Font getSystemFont (int zoomFactor) {
+Font getSystemFont (int zoom) {
 	checkDevice ();
-	Font systemFont = this.getFontRegistry().getSystemFont(zoomFactor);
+	Font systemFont = this.getFontRegistry().getSystemFont(zoom);
 	if (this.systemFont == null) {
 		// fill the deprecated fields for backwards compatibility
 		this.systemFont = systemFont;

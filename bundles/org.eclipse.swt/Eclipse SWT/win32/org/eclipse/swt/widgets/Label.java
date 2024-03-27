@@ -147,7 +147,7 @@ static int checkStyle (int style) {
 		return new Point (width, height);
 	}
 	if (isImageMode) {
-		Rectangle rect = image.getBounds(getZoomFactor());
+		Rectangle rect = image.getBounds(getZoom());
 		width += rect.width;
 		height += rect.height;
 	} else {
@@ -553,7 +553,7 @@ void wmDrawChildImage(DRAWITEMSTRUCT struct) {
 	int height = struct.bottom - struct.top;
 	if (width == 0 || height == 0) return;
 
-	Rectangle imageRect = image.getBounds(getZoomFactor());
+	Rectangle imageRect = image.getBounds(getZoom());
 
 	int x = 0;
 	if ((style & SWT.CENTER) != 0) {
@@ -620,13 +620,13 @@ LRESULT wmDrawChild (long wParam, long lParam) {
 	return null;
 }
 
-private static void handleDPIChange(Widget widget, int newZoomFactor, float scalingFactor) {
+private static void handleDPIChange(Widget widget, int newZoom, float scalingFactor) {
 	if (!(widget instanceof Label label)) {
 		return;
 	}
 	Image image = label.getImage();
 	if (image != null) {
-		image.handleDPIChange(newZoomFactor);
+		image.handleDPIChange(newZoom);
 		label.setImage(image);
 	}
 }

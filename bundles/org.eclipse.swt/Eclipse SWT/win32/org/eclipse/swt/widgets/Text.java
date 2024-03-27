@@ -3171,7 +3171,7 @@ LRESULT wmKeyDown (long hwnd, long wParam, long lParam) {
 	return result;
 }
 
-private static void handleDPIChange(Widget widget, int newZoomFactor, float scalingFactor) {
+private static void handleDPIChange(Widget widget, int newZoom, float scalingFactor) {
 	if (!(widget instanceof Text text)) {
 		return;
 	}

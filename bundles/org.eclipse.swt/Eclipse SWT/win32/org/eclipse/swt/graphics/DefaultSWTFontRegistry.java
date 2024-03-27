@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2024 Yatta Solutions and others.
+ * Copyright (c) 2024 Yatta Solutions
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -17,7 +17,7 @@ import java.util.*;
 
 import org.eclipse.swt.internal.win32.*;
 
-class DefaultSWTFontRegistry implements SWTFontRegistry {
+final class DefaultSWTFontRegistry implements SWTFontRegistry {
 	private static FontData KEY_SYSTEM_FONTS = new FontData();
 	private Map<FontData, Font> fontsMap = new HashMap<>();
 	private Device device;
@@ -27,7 +27,7 @@ class DefaultSWTFontRegistry implements SWTFontRegistry {
 	}
 
 	@Override
-	public Font getSystemFont(int zoomFactor) {
+	public Font getSystemFont(int zoom) {
 		if (fontsMap.containsKey(KEY_SYSTEM_FONTS)) {
 			return fontsMap.get(KEY_SYSTEM_FONTS);
 		}
@@ -46,7 +46,7 @@ class DefaultSWTFontRegistry implements SWTFontRegistry {
 	}
 
 	@Override
-	public Font getFont(FontData fontData, int zoomFactor) {
+	public Font getFont(FontData fontData, int zoom) {
 		if (fontsMap.containsKey(fontData)) {
 			Font font = fontsMap.get(fontData);
 			if (font.isDisposed()) {

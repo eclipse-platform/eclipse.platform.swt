@@ -125,7 +125,7 @@ public class Shell extends Decorations {
 	ToolTip [] toolTips;
 	long hwndMDIClient, lpstrTip, toolTipHandle, balloonTipHandle, menuItemToolTipHandle;
 	int minWidth = SWT.DEFAULT, minHeight = SWT.DEFAULT, maxWidth = SWT.DEFAULT, maxHeight = SWT.DEFAULT;
-	private int nativeZoomFactor;
+	private int nativeZoom;
 	long [] brushes;
 	boolean showWithParent, fullScreen, wasMaximized, modified, center;
 	String toolTitle, balloonTitle;
@@ -301,18 +301,18 @@ Shell (Display display, Shell parent, int style, long handle, boolean embedded) 
 		state |= FOREIGN_HANDLE;
 	}
 
-	int shellZoomFactor;
-	int shellNativeZoomFactor;
+	int shellZoom;
+	int shellNativeZoom;
 	if (parent != null) {
-		shellZoomFactor = parent.getZoomFactor();
-		shellNativeZoomFactor = parent.getNativeZoomFactor();
+		shellZoom = parent.getZoom();
+		shellNativeZoom = parent.getNativeZoom();
 	} else {
 		int mappedDPIZoom = getMonitor().getZoom();
-		shellZoomFactor = DPIUtil.getZoomForAutoscaleProperty(mappedDPIZoom);
-		shellNativeZoomFactor = mappedDPIZoom;
+		shellZoom = DPIUtil.getZoomForAutoscaleProperty(mappedDPIZoom);
+		shellNativeZoom = mappedDPIZoom;
 	}
-	this.setZoomFactor(shellZoomFactor);
-	this.setNativeZoomFactor(shellNativeZoomFactor);
+	this.setZoom(shellZoom);
+	this.setNativeZoom(shellNativeZoom);
 
 	reskinWidget();
 	createWidget ();
@@ -2648,7 +2648,7 @@ LRESULT WM_WINDOWPOSCHANGING (long wParam, long lParam) {
 }
 
 /**
- * The native DPI zoom level the shell is scaled for
+ * The native zoom in % of the standard resolution the shell is scaled for
  * (Warning: This method is platform dependent)
  * <p>
  * <b>IMPORTANT:</b> This method is <em>not</em> part of the public
@@ -2660,22 +2660,22 @@ LRESULT WM_WINDOWPOSCHANGING (long wParam, long lParam) {
  *
  * @noreference This method is not intended to be referenced by clients.
  */
-public int getNativeZoomFactor() {
-	return nativeZoomFactor;
+public int getNativeZoom() {
+	return nativeZoom;
 }
 
-void setNativeZoomFactor(int nativeZoomFactor) {
-	this.nativeZoomFactor = nativeZoomFactor;
+void setNativeZoom(int nativeZoom) {
+	this.nativeZoom = nativeZoom;
 }
 
 private void handleZoomEvent(Event event) {
 	if (DPIUtil.autoScaleOnRuntime) {
-		float scalingFactor = 1f * event.detail / getZoomFactor();
+		float scalingFactor = 1f * event.detail / getZoom();
 		DPIZoomChangeRegistry.applyChange(this, event.detail, scalingFactor);
 	}
 }
 
-private static void handleDPIChange(Widget widget, int newZoomFactor, float scalingFactor) {
+private static void handleDPIChange(Widget widget, int newZoom, float scalingFactor) {
 	if (!(widget instanceof Shell shell)) {
 		return;
 	}

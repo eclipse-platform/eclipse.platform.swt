@@ -717,7 +717,7 @@ int defaultBackground () {
 }
 
 long defaultFont() {
-	return display.getSystemFont(getShell().getNativeZoomFactor()).handle;
+	return display.getSystemFont(getShell().getNativeZoom()).handle;
 }
 
 int defaultForeground () {
@@ -1309,7 +1309,7 @@ public Font getFont () {
 	if (font != null) return font;
 	long hFont = OS.SendMessage (handle, OS.WM_GETFONT, 0, 0);
 	if (hFont == 0) hFont = defaultFont ();
-	return Font.win32_new (display, hFont, getShell().getNativeZoomFactor());
+	return Font.win32_new (display, hFont, getShell().getNativeZoom());
 }
 
 /**
@@ -3314,7 +3314,7 @@ public void setCursor (Cursor cursor) {
 }
 
 void setDefaultFont () {
-	long hFont = display.getSystemFont (getShell().getNativeZoomFactor()).handle;
+	long hFont = display.getSystemFont (getShell().getNativeZoom()).handle;
 	OS.SendMessage (handle, OS.WM_SETFONT, hFont, 0);
 }
 
@@ -3416,7 +3416,7 @@ public void setFont (Font font) {
 	Font newFont = font;
 	if (newFont != null) {
 		if (newFont.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
-		newFont = newFont.scaleFor(getShell().getNativeZoomFactor());
+		newFont = newFont.scaleFor(getShell().getNativeZoom());
 	}
 	long hFont = 0;
 	if (font != null) {
@@ -4686,9 +4686,9 @@ public boolean setParent (Composite parent) {
 	if (OS.SetParent (topHandle, parent.handle) == 0) return false;
 	this.parent = parent;
 	// If parent changed, zoom level might need to be adjusted
-	if (parent.getZoomFactor() != getZoomFactor()) {
-		int oldZoom = getZoomFactor();
-		int newZoom = parent.getZoomFactor();
+	if (parent.getZoom() != getZoom()) {
+		int oldZoom = getZoom();
+		int newZoom = parent.getZoom();
 		float scalingFactor = 1f * newZoom / oldZoom;
 		DPIZoomChangeRegistry.applyChange(this, newZoom, scalingFactor);
 	}
@@ -4886,7 +4886,7 @@ LRESULT WM_DPICHANGED (long wParam, long lParam) {
 	// Map DPI to Zoom and compare
 	int nativeZoom = DPIUtil.mapDPIToZoom (OS.HIWORD (wParam));
 	int newSWTZoom = DPIUtil.getZoomForAutoscaleProperty (nativeZoom);
-	int oldSWTZoom = getShell().getZoomFactor();
+	int oldSWTZoom = getShell().getZoom();
 
 	// Throw the DPI change event if zoom value changes
 	if (newSWTZoom != oldSWTZoom) {
@@ -4898,7 +4898,7 @@ LRESULT WM_DPICHANGED (long wParam, long lParam) {
 
 		if (DPIUtil.autoScaleOnRuntime) {
 			DPIUtil.setDeviceZoom (nativeZoom);
-			getShell().setNativeZoomFactor(nativeZoom);
+			getShell().setNativeZoom(nativeZoom);
 		}
 
 		notifyListeners(SWT.ZoomChanged, event);
@@ -5787,18 +5787,18 @@ LRESULT wmScrollChild (long wParam, long lParam) {
 }
 
 
-private static void handleDPIChange(Widget widget, int newZoomFactor, float scalingFactor) {
+private static void handleDPIChange(Widget widget, int newZoom, float scalingFactor) {
 	if (!(widget instanceof Control control)) {
 		return;
 	}
-	resizeFont(control, control.getShell().getNativeZoomFactor());
+	resizeFont(control, control.getShell().getNativeZoom());
 
 	Image image = control.getBackgroundImage();
 	if (image != null) {
 		if (image.isDisposed()) {
 			control.setBackgroundImage(null);
 		} else {
-			image.handleDPIChange(newZoomFactor);
+			image.handleDPIChange(newZoom);
 			control.setBackgroundImage(image);
 		}
 	}

@@ -268,12 +268,7 @@ float computePoints(LOGFONT logFont, long hFont) {
 	return computePoints(logFont, hFont, -1);
 }
 
-float computePoints(LOGFONT logFont, long hFont, int currentFontZoomFactor) {
-	float fontDPI = DPIUtil.mapZoomToDPI(currentFontZoomFactor);
-	return computePoints(logFont, hFont, fontDPI);
-}
-
-private float computePoints(LOGFONT logFont, long hFont, float currentFontDPI) {
+float computePoints(LOGFONT logFont, long hFont, int currentFontDPI) {
 	long hDC = internal_new_GC (null);
 	int logPixelsY = OS.GetDeviceCaps(hDC, OS.LOGPIXELSY);
 	int pixels = 0;
@@ -967,8 +962,14 @@ protected int getDeviceZoom () {
 	return DPIUtil.mapDPIToZoom ( _getDPIx ());
 }
 
-Font getFont(FontData fontData, int zoomFactor) {
-	return getFontRegistry().getFont(fontData, zoomFactor);
+/**
+ * Used to receive a font based on the given font data and zoom
+ * factor from the currently configured font factory. The font
+ * factory is defined via {@link #newFontRegistry()} and can be
+ * overwritten.
+ */
+Font getFont(FontData fontData, int zoom) {
+	return getFontRegistry().getFont(fontData, zoom);
 }
 
 /**

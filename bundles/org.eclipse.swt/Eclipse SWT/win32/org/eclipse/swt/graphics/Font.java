@@ -51,16 +51,16 @@ public final class Font extends Resource {
 	public long handle;
 
 	/**
-	 * the zoom level to pixel height the OS font resource is scaled to
+	 * The zoom in % of the standard resolution used for conversion of point height to pixel height
 	 * (Warning: This field is platform dependent)
 	 */
-	int zoomFactor;
+	int zoom;
 /**
  * Prevents uninitialized instances from being created outside the package.
  */
 Font(Device device) {
 	super(device);
-	this.zoomFactor = extractZoomFactor(this.device);
+	this.zoom = extractZoom(this.device);
 }
 
 /**
@@ -85,14 +85,14 @@ Font(Device device) {
  */
 public Font(Device device, FontData fd) {
 	super(device);
-	this.zoomFactor = extractZoomFactor(this.device);
+	this.zoom = extractZoom(this.device);
 	init(fd);
 	init();
 }
 
-private Font(Device device, FontData fd, int zoomFactor) {
+private Font(Device device, FontData fd, int zoom) {
 	super(device);
-	this.zoomFactor = zoomFactor;
+	this.zoom = zoom;
 	init(fd);
 	init();
 }
@@ -129,7 +129,7 @@ public Font(Device device, FontData[] fds) {
 	for (FontData fd : fds) {
 		if (fd == null) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
-	this.zoomFactor = extractZoomFactor(this.device);
+	this.zoom = extractZoom(this.device);
 	init(fds[0]);
 	init();
 }
@@ -161,7 +161,7 @@ public Font(Device device, FontData[] fds) {
 public Font(Device device, String name, int height, int style) {
 	super(device);
 	if (name == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	this.zoomFactor = extractZoomFactor(this.device);
+	this.zoom = extractZoom(this.device);
 	init(new FontData (name, height, style));
 	init();
 }
@@ -169,7 +169,7 @@ public Font(Device device, String name, int height, int style) {
 /*public*/ Font(Device device, String name, float height, int style) {
 	super(device);
 	if (name == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	this.zoomFactor = extractZoomFactor(this.device);
+	this.zoom = extractZoom(this.device);
 	init(new FontData (name, height, style));
 	init();
 }
@@ -213,7 +213,7 @@ public FontData[] getFontData() {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	LOGFONT logFont = new LOGFONT ();
 	OS.GetObject(handle, LOGFONT.sizeof, logFont);
-	float heightInPoints = device.computePoints(logFont, handle, zoomFactor);
+	float heightInPoints = device.computePoints(logFont, handle, DPIUtil.mapZoomToDPI(zoom));
 	return new FontData[] {FontData.win32_new(logFont, heightInPoints)};
 }
 
@@ -238,9 +238,9 @@ void init (FontData fd) {
 	int lfHeight = logFont.lfHeight;
 	logFont.lfHeight = device.computePixels(fd.height);
 
-	int primaryZoomFactor = DPIUtil.mapDPIToZoom (device._getDPIx());
-	if (zoomFactor != primaryZoomFactor) {
-		float scaleFactor = 1f * zoomFactor / primaryZoomFactor;
+	int primaryZoom = DPIUtil.mapDPIToZoom (device._getDPIx());
+	if (zoom != primaryZoom) {
+		float scaleFactor = 1f * zoom / primaryZoom;
 		logFont.lfHeight *= scaleFactor;
 	}
 
@@ -277,25 +277,30 @@ public String toString () {
 }
 
 /**
- * the handle to the OS font resource
- * (Warning: This field is platform dependent)
+ * Used to receive a font for the given zoom in the context
+ * of the current configuration of SWT at runtime.
+ * (Warning: This method is platform dependent)
  * <p>
- * <b>IMPORTANT:</b> This field is <em>not</em> part of the SWT
+ * <b>IMPORTANT:</b> This method is <em>not</em> part of the SWT
  * public API. It is marked public only so that it can be shared
  * within the packages provided by SWT. It is not available on all
  * platforms and should never be accessed from application code.
  * </p>
  *
- * @noreference This field is not intended to be referenced by clients.
+ * @param targetZoom The zoom in % of the standard resolution
+ * the font shall be used for
+ * @return font to be used in an environment with the given zoom
+ *
+ * @noreference This method is not intended to be referenced by clients.
  */
-public Font scaleFor(int targetZoomFactor) {
-	if (targetZoomFactor == zoomFactor) {
+public Font scaleFor(int targetZoom) {
+	if (targetZoom == zoom) {
 		return this;
 	}
-	return getDevice().getFont(getFontData()[0], targetZoomFactor);
+	return getDevice().getFont(getFontData()[0], targetZoom);
 }
 
-private static int extractZoomFactor(Device device) {
+private static int extractZoom(Device device) {
 	if (device == null) {
 		DPIUtil.getNativeDeviceZoom();
 	}
@@ -320,7 +325,7 @@ private static int extractZoomFactor(Device device) {
  */
 public static Font win32_new(Device device, long handle) {
 	Font font = new Font(device);
-	font.zoomFactor = extractZoomFactor(font.device);
+	font.zoom = extractZoom(font.device);
 	font.handle = handle;
 	/*
 	 * When created this way, Font doesn't own its .handle, and
@@ -343,15 +348,15 @@ public static Font win32_new(Device device, long handle) {
  *
  * @param device the device on which to allocate the font
  * @param handle the handle for the font
- * @param zoomFactor the zoom factor
+ * @param zoom zoom in % of the standard resolution
  * @return a new font object containing the specified device and handle
  *
  * @noreference This method is not intended to be referenced by clients.
- * @since 3.125
+ * @since 3.126
  */
-public static Font win32_new(Device device, long handle, int zoomFactor) {
+public static Font win32_new(Device device, long handle, int zoom) {
 	Font font = win32_new(device, handle);
-	font.zoomFactor = zoomFactor;
+	font.zoom = zoom;
 	return font;
 }
 
@@ -367,13 +372,13 @@ public static Font win32_new(Device device, long handle, int zoomFactor) {
  *
  * @param device the device on which to allocate the font
  * @param fontData font data to create the font for
- * @param zoomFactor the zoom factor
+ * @param zoom zoom in % of the standard resolution
  * @return a new font object containing the specified device and handle
  *
  * @noreference This method is not intended to be referenced by clients.
- * @since 3.125
+ * @since 3.126
  */
-public static Font win32_new(Device device, FontData fontData, int zoomFactor) {
-	return new Font(device, fontData, zoomFactor);
+public static Font win32_new(Device device, FontData fontData, int zoom) {
+	return new Font(device, fontData, zoom);
 }
 }

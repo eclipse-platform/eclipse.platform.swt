@@ -7329,7 +7329,7 @@ LRESULT wmNotifyToolTip (NMTTCUSTOMDRAW nmcd, long lParam) {
 	return null;
 }
 
-private static void handleDPIChange(Widget widget, int newZoomFactor, float scalingFactor) {
+private static void handleDPIChange(Widget widget, int newZoom, float scalingFactor) {
 	if (!(widget instanceof Table table)) {
 		return;
 	}
@@ -7355,10 +7355,10 @@ private static void handleDPIChange(Widget widget, int newZoomFactor, float scal
 	}
 
 	for (TableItem item : table.getItems()) {
-		DPIZoomChangeRegistry.applyChange(item, newZoomFactor, scalingFactor);
+		DPIZoomChangeRegistry.applyChange(item, newZoom, scalingFactor);
 	}
 	for (TableColumn tableColumn : table.getColumns()) {
-		DPIZoomChangeRegistry.applyChange(tableColumn, newZoomFactor, scalingFactor);
+		DPIZoomChangeRegistry.applyChange(tableColumn, newZoom, scalingFactor);
 	}
 
 	if (table.getColumns().length == 0 && scrollWidth != 0) {

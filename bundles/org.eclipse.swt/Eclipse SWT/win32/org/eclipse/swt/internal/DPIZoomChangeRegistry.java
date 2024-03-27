@@ -31,16 +31,16 @@ public class DPIZoomChangeRegistry {
 	            return o1.getName().compareTo(o2.getName());
 	        });
 
-	public static <E> void applyChange(Widget widget, int newZoomFactor, float scalingFactor) {
-		int zoomFactor = widget.getZoomFactor();
-		if (zoomFactor == newZoomFactor) {
+	public static <E> void applyChange(Widget widget, int newZoom, float scalingFactor) {
+		int zoom = widget.getZoom();
+		if (zoom == newZoom) {
 		   return;
 		}
 		for (Entry<Class<? extends Widget>, DPIZoomChangeHandler> entry : dpiZoomChangeHandlers.entrySet()) {
 			Class<? extends Widget> clazz = entry.getKey();
 			DPIZoomChangeHandler handler = entry.getValue();
 			if (clazz.isInstance(widget)) {
-				handler.handleDPIChange(widget, newZoomFactor, scalingFactor);
+				handler.handleDPIChange(widget, newZoom, scalingFactor);
 			}
 		}
 	}

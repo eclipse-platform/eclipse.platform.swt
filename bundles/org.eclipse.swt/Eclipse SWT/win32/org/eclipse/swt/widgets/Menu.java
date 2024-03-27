@@ -1367,12 +1367,12 @@ LRESULT wmTimer (long wParam, long lParam) {
 	return null;
 }
 
-private static void handleDPIChange(Widget widget, int newZoomFactor, float scalingFactor) {
+private static void handleDPIChange(Widget widget, int newZoom, float scalingFactor) {
 	if (!(widget instanceof Menu menu)) {
 		return;
 	}
 	for (MenuItem item : menu.getItems()) {
-		DPIZoomChangeRegistry.applyChange(item, newZoomFactor, scalingFactor);
+		DPIZoomChangeRegistry.applyChange(item, newZoom, scalingFactor);
 	}
 }
 }

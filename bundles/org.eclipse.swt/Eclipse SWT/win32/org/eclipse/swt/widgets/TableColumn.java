@@ -887,7 +887,7 @@ void updateToolTip (int index) {
 	}
 }
 
-private static void handleDPIChange(Widget widget, int newZoomFactor, float scalingFactor) {
+private static void handleDPIChange(Widget widget, int newZoom, float scalingFactor) {
 	if (!(widget instanceof TableColumn tableColumn)) {
 		return;
 	}
@@ -895,7 +895,7 @@ private static void handleDPIChange(Widget widget, int newZoomFactor, float scal
 	tableColumn.setWidthInPixels(newColumnWidth);
 	Image image = tableColumn.getImage();
 	if (image != null) {
-		image.handleDPIChange(newZoomFactor);
+		image.handleDPIChange(newZoom);
 		tableColumn.setImage(image);
 	}
 }

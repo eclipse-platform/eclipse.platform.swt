@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2024 Yatta Solutions and others.
+ * Copyright (c) 2024 Yatta Solutions
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -32,7 +32,7 @@ import org.eclipse.swt.widgets.*;
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  * @noreference This class is not intended to be referenced by clients
  */
-public class ScalingSWTFontRegistry implements SWTFontRegistry {
+public final class ScalingSWTFontRegistry implements SWTFontRegistry {
 	private class ScaledFontContainer {
 		// the first (unknown) font to be requested as scaled variant
 		// usually it is scaled to the primary monitor zoom, but that is not guaranteed
@@ -41,14 +41,14 @@ public class ScalingSWTFontRegistry implements SWTFontRegistry {
 
 		ScaledFontContainer(Font baseFont) {
 			this.baseFont = baseFont;
-			scaledFonts.put(baseFont.zoomFactor, baseFont);
+			scaledFonts.put(baseFont.zoom, baseFont);
 		}
 
-		private Font getScaledFont(int targetZoomFactor) {
-			if (scaledFonts.containsKey(targetZoomFactor)) {
-				Font font = scaledFonts.get(targetZoomFactor);
+		private Font getScaledFont(int targetZoom) {
+			if (scaledFonts.containsKey(targetZoom)) {
+				Font font = scaledFonts.get(targetZoom);
 				if (font.isDisposed()) {
-					scaledFonts.remove(targetZoomFactor);
+					scaledFonts.remove(targetZoom);
 					return null;
 				}
 				return font;
@@ -56,16 +56,16 @@ public class ScalingSWTFontRegistry implements SWTFontRegistry {
 			return null;
 		}
 
-		private Font scaleFont(int zoomFactor) {
+		private Font scaleFont(int zoom) {
 			FontData fontData = baseFont.getFontData()[0];
-			fontData.data.lfHeight = computePixels(zoomFactor, fontData);
-			Font scaledFont = Font.win32_new(display, fontData, zoomFactor);
-			addScaledFont(zoomFactor, scaledFont);
+			fontData.data.lfHeight = computePixels(zoom, fontData);
+			Font scaledFont = Font.win32_new(display, fontData, zoom);
+			addScaledFont(zoom, scaledFont);
 			return scaledFont;
 		}
 
-		private void addScaledFont(int targetZoomFactor, Font scaledFont) {
-			scaledFonts.put(targetZoomFactor, scaledFont);
+		private void addScaledFont(int targetZoom, Font scaledFont) {
+			scaledFonts.put(targetZoom, scaledFont);
 		}
 	}
 
@@ -79,24 +79,24 @@ public class ScalingSWTFontRegistry implements SWTFontRegistry {
 	}
 
 	@Override
-	public Font getSystemFont(int zoomFactor) {
+	public Font getSystemFont(int zoom) {
 		ScaledFontContainer container = getOrCreateBaseSystemFontContainer(display);
 
-		Font systemFont = container.getScaledFont(zoomFactor);
+		Font systemFont = container.getScaledFont(zoom);
 		if (systemFont != null) {
 			return systemFont;
 		}
-		long systemFontHandle = createSystemFont(zoomFactor);
-		systemFont = Font.win32_new(display, systemFontHandle, zoomFactor);
-		container.addScaledFont(zoomFactor, systemFont);
+		long systemFontHandle = createSystemFont(zoom);
+		systemFont = Font.win32_new(display, systemFontHandle, zoom);
+		container.addScaledFont(zoom, systemFont);
 		return systemFont;
 	}
 
 	private ScaledFontContainer getOrCreateBaseSystemFontContainer(Display display) {
 		ScaledFontContainer systemFontContainer = fontKeyMap.get(KEY_SYSTEM_FONTS);
 		if (systemFontContainer == null) {
-			int targetZoomFactor = display.getPrimaryMonitor().getZoom();
-			long systemFontHandle = createSystemFont(targetZoomFactor);
+			int targetZoom = display.getPrimaryMonitor().getZoom();
+			long systemFontHandle = createSystemFont(targetZoom);
 			Font systemFont = Font.win32_new(display, systemFontHandle);
 			systemFontContainer = new ScaledFontContainer(systemFont);
 			fontHandleMap.put(systemFont.handle, systemFontContainer);
@@ -105,11 +105,11 @@ public class ScalingSWTFontRegistry implements SWTFontRegistry {
 		return systemFontContainer;
 	}
 
-	private long createSystemFont(int targetZoomFactor) {
+	private long createSystemFont(int targetZoom) {
 		long hFont = 0;
 		NONCLIENTMETRICS info = new NONCLIENTMETRICS();
 		info.cbSize = NONCLIENTMETRICS.sizeof;
-		if (fetchSystemParametersInfo(info, targetZoomFactor)) {
+		if (fetchSystemParametersInfo(info, targetZoom)) {
 			LOGFONT logFont = info.lfMessageFont;
 			hFont = OS.CreateFontIndirect(logFont);
 		}
@@ -120,28 +120,28 @@ public class ScalingSWTFontRegistry implements SWTFontRegistry {
 		return hFont;
 	}
 
-	private static boolean fetchSystemParametersInfo(NONCLIENTMETRICS info, int targetZoomFactor) {
+	private static boolean fetchSystemParametersInfo(NONCLIENTMETRICS info, int targetZoom) {
 		if (OS.WIN32_BUILD >= OS.WIN32_BUILD_WIN10_1607) {
 			return OS.SystemParametersInfoForDpi(OS.SPI_GETNONCLIENTMETRICS, NONCLIENTMETRICS.sizeof, info, 0,
-					DPIUtil.mapZoomToDPI(targetZoomFactor));
+					DPIUtil.mapZoomToDPI(targetZoom));
 		} else {
 			return OS.SystemParametersInfo(OS.SPI_GETNONCLIENTMETRICS, 0, info, 0);
 		}
 	}
 
 	@Override
-	public Font getFont(FontData fontData, int zoomFactor) {
+	public Font getFont(FontData fontData, int zoom) {
 		ScaledFontContainer container;
 		if (fontKeyMap.containsKey(fontData)) {
 			container = fontKeyMap.get(fontData);
 		} else {
-			int calculatedZoomFactor = computeZoomFactor(fontData);
-			Font newFont = Font.win32_new(display, fontData, calculatedZoomFactor);
+			int calculatedZoom = computeZoom(fontData);
+			Font newFont = Font.win32_new(display, fontData, calculatedZoom);
 			container = new ScaledFontContainer(newFont);
 			fontHandleMap.put(newFont.handle, container);
 			fontKeyMap.put(fontData, container);
 		}
-		return getOrCreateFont(container, zoomFactor);
+		return getOrCreateFont(container, zoom);
 	}
 
 	@Override
@@ -159,27 +159,27 @@ public class ScalingSWTFontRegistry implements SWTFontRegistry {
 		fontKeyMap.clear();
 	}
 
-	private Font getOrCreateFont(ScaledFontContainer container, int zoomFactor) {
-		Font scaledFont = container.getScaledFont(zoomFactor);
+	private Font getOrCreateFont(ScaledFontContainer container, int zoom) {
+		Font scaledFont = container.getScaledFont(zoom);
 		if (scaledFont == null) {
-			scaledFont = container.scaleFont(zoomFactor);
+			scaledFont = container.scaleFont(zoom);
 			fontHandleMap.put(scaledFont.handle, container);
 			fontKeyMap.put(scaledFont.getFontData()[0], container);
 		}
 		return scaledFont;
 	}
 
-	private int computeZoomFactor(FontData fontData) {
+	private int computeZoom(FontData fontData) {
 		int pixelsAtPrimaryMonitorZoom = ((Device) display).computePixels(fontData.height);
 		int value = display.getPrimaryMonitor().getZoom() * fontData.data.lfHeight / pixelsAtPrimaryMonitorZoom;
 		return value;
 	}
 
-	private int computePixels(int zoomFactor, FontData fontData) {
+	private int computePixels(int zoom, FontData fontData) {
 		int adjustedLogFontHeight = ((Device) display).computePixels(fontData.height);
-		int primaryZoomFactor = display.getPrimaryMonitor().getZoom();
-		if (zoomFactor != primaryZoomFactor) {
-			adjustedLogFontHeight *= (1f * zoomFactor / primaryZoomFactor);
+		int primaryZoom = display.getPrimaryMonitor().getZoom();
+		if (zoom != primaryZoom) {
+			adjustedLogFontHeight *= (1f * zoom / primaryZoom);
 		}
 		return adjustedLogFontHeight;
 	}

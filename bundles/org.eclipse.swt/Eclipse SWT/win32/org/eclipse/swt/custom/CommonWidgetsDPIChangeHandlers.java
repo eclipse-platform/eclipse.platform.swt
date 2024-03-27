@@ -35,14 +35,14 @@ public class CommonWidgetsDPIChangeHandlers {
 		DPIZoomChangeRegistry.registerHandler(CommonWidgetsDPIChangeHandlers::handleItemDPIChange, Item.class);
 	}
 
-	private static void handleItemDPIChange(Widget widget, int newZoomFactor, float scalingFactor) {
+	private static void handleItemDPIChange(Widget widget, int newZoom, float scalingFactor) {
 		if (!(widget instanceof Item item)) {
 			return;
 		}
 		// Refresh the image
 		Image image = item.getImage();
 		if (image != null) {
-			image.handleDPIChange(newZoomFactor);
+			image.handleDPIChange(newZoom);
 			item.setImage(image);
 		}
 	}

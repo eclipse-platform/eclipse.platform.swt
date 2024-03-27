@@ -52,7 +52,7 @@ import org.eclipse.swt.internal.win32.*;
  */
 public abstract class Widget {
 
-	private int zoomFactor;
+	private int zoom;
 	int style, state;
 	Display display;
 	EventTable eventTable;
@@ -169,7 +169,7 @@ public Widget (Widget parent, int style) {
 	checkSubclass ();
 	checkParent (parent);
 	this.style = style;
-	this.zoomFactor = parent != null ? parent.getZoomFactor() : DPIUtil.getDeviceZoom();
+	this.zoom = parent != null ? parent.getZoom() : DPIUtil.getDeviceZoom();
 	display = parent.display;
 	reskinWidget ();
 	notifyCreationTracker();
@@ -2649,15 +2649,15 @@ void notifyDisposalTracker() {
  *
  * @noreference This method is not intended to be referenced by clients.
  */
-public int getZoomFactor() {
-	return zoomFactor;
+public int getZoom() {
+	return zoom;
 }
 
-void setZoomFactor(int zoomFactor) {
-	this.zoomFactor = zoomFactor;
+void setZoom(int zoom) {
+	this.zoom = zoom;
 }
 
-private static void handleDPIChange(Widget widget, int newZoomFactor, float scalingFactor) {
-	widget.setZoomFactor(newZoomFactor);
+private static void handleDPIChange(Widget widget, int newZoom, float scalingFactor) {
+	widget.setZoom(newZoom);
 }
 }
