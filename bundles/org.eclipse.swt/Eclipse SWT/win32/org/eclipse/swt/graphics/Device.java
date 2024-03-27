@@ -294,7 +294,7 @@ float computePoints(LOGFONT logFont, long hFont, int currentFontDPI) {
 		// as Device::computePoints will always return point on the basis of the
 		// primary monitor zoom, a custom zoomFactor must be calculated if the font
 		// is used for a different zoom level
-		adjustedZoomFactor *= logPixelsY / currentFontDPI;
+		adjustedZoomFactor *= (float) logPixelsY / (float) currentFontDPI;
 	}
 	return adjustedZoomFactor * pixels * 72f / logPixelsY;
 }
