@@ -147,6 +147,8 @@ public class WebKitGTK extends C {
 
 	public static final byte[] enable_webgl = ascii("enable-webgl"); // $NON-NLS-1$
 
+	public static final byte[] hardware_acceleration_policy = ascii("hardware-acceleration-policy"); // $NON-NLS-1$
+
 	public static final byte[] enable_back_forward_navigation_gestures = ascii("enable-back-forward-navigation-gestures"); // $NON-NLS-1$
 
 	// Since 2.14
