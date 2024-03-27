@@ -380,9 +380,9 @@ public class Display extends Device implements Executor {
 	long hwndMessage, messageProc;
 
 	/* System Resources */
-	@Deprecated(since = "3.125.0")
+	@Deprecated(since = "3.126.0")
 	LOGFONT lfSystemFont;
-	@Deprecated(since = "3.125.0")
+	@Deprecated(since = "3.126.0")
 	Font systemFont;
 	Image errorImage, infoImage, questionImage, warningIcon;
 	Cursor [] cursors = new Cursor [SWT.CURSOR_HAND + 1];
