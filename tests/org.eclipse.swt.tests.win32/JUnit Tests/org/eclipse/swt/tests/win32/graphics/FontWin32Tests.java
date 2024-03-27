@@ -34,9 +34,11 @@ public class FontWin32Tests {
 	private static String TEST_FONT = "Helvetica";
 	@Test
 	public void fontsAreNotScaledWithoutAutoscale() {
+		Display display = Display.getDefault();
+		display.dispose();
 		DPIUtil.autoScaleOnRuntime = false;
+		display = new Display();
 		int nativeZoom = DPIUtil.getNativeDeviceZoom();
-		Display display = new Display();
 		Font font = new Font(display, TEST_FONT, 10, SWT.NORMAL);
 		try {
 			Font scaledFont = font.scaleFor(nativeZoom);
@@ -54,9 +56,11 @@ public class FontWin32Tests {
 
 	@Test
 	public void fontsAreScaledWithAutoscale() {
+		Display display = Display.getDefault();
+		display.dispose();
 		DPIUtil.autoScaleOnRuntime = true;
+		display = new Display();
 		int nativeZoom = DPIUtil.getNativeDeviceZoom();
-		Display display = new Display();
 		Font font = new Font(display, TEST_FONT, 10, SWT.NORMAL);
 		try {
 			Font scaledFont = font.scaleFor(nativeZoom);
