@@ -60,7 +60,22 @@ import org.eclipse.swt.internal.gtk.*;
  * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Examples: GraphicsExample, PaintExample</a>
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
-public final class GC extends Resource {
+public sealed class GC extends Resource {
+
+	public static final class Closeable extends GC implements AutoCloseable {
+		Closeable(Drawable drawable, int style) {
+			super(drawable, style);
+		}
+		@Override
+		public void close() {
+			dispose();
+		}
+	}
+
+	public static GC.Closeable create(Drawable drawable) {
+		return new Closeable(drawable, SWT.NONE);
+	}
+
 	/**
 	 * the handle to the OS device context
 	 * (Warning: This field is platform dependent)

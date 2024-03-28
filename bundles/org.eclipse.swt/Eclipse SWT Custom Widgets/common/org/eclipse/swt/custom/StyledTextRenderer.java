@@ -1500,7 +1500,7 @@ void setFont(Font font, int tabs) {
 	tabWidth = layout.getBounds().width;
 	layout.dispose();
 	if (styledText != null) {
-		try(var gc = GC.create(styledText)) {
+		try (var gc = GC.create(styledText)) {
 			averageCharWidth = (int) gc.getFontMetrics().getAverageCharacterWidth();
 			fixedPitch = gc.stringExtent("l").x == gc.stringExtent("W").x; //$NON-NLS-1$ //$NON-NLS-2$
 		}

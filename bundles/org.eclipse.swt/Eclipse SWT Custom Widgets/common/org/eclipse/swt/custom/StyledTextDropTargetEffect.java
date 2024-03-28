@@ -161,31 +161,30 @@ public class StyledTextDropTargetEffect extends DropTargetEffect {
 					 pt.y >= scrollY && pt.y <= (scrollY + SCROLL_TOLERANCE))) {
 					if (System.currentTimeMillis() >= scrollBeginTime) {
 						Rectangle area = text.getClientArea();
-						try(var gc = GC.create(text)) {
-							FontMetrics fm = gc.getFontMetrics();
-
-							double charWidth = fm.getAverageCharacterWidth();
-							int scrollAmount = (int) (10*charWidth);
-							if (pt.x < area.x + 3*charWidth) {
-								int leftPixel = text.getHorizontalPixel();
-								text.setHorizontalPixel(leftPixel - scrollAmount);
-							}
-							if (pt.x > area.width - 3*charWidth) {
-								int leftPixel = text.getHorizontalPixel();
-								text.setHorizontalPixel(leftPixel + scrollAmount);
-							}
-							int lineHeight = text.getLineHeight();
-							if (pt.y < area.y + lineHeight) {
-								int topPixel = text.getTopPixel();
-								text.setTopPixel(topPixel - lineHeight);
-							}
-							if (pt.y > area.height - lineHeight) {
-								int topPixel = text.getTopPixel();
-								text.setTopPixel(topPixel + lineHeight);
-							}
-							scrollBeginTime = 0;
-							scrollX = scrollY = -1;
+						GC gc = new GC(text);
+						FontMetrics fm = gc.getFontMetrics();
+						gc.dispose();
+						double charWidth = fm.getAverageCharacterWidth();
+						int scrollAmount = (int) (10*charWidth);
+						if (pt.x < area.x + 3*charWidth) {
+							int leftPixel = text.getHorizontalPixel();
+							text.setHorizontalPixel(leftPixel - scrollAmount);
 						}
+						if (pt.x > area.width - 3*charWidth) {
+							int leftPixel = text.getHorizontalPixel();
+							text.setHorizontalPixel(leftPixel + scrollAmount);
+						}
+						int lineHeight = text.getLineHeight();
+						if (pt.y < area.y + lineHeight) {
+							int topPixel = text.getTopPixel();
+							text.setTopPixel(topPixel - lineHeight);
+						}
+						if (pt.y > area.height - lineHeight) {
+							int topPixel = text.getTopPixel();
+							text.setTopPixel(topPixel + lineHeight);
+						}
+						scrollBeginTime = 0;
+						scrollX = scrollY = -1;
 					}
 				} else {
 					scrollBeginTime = System.currentTimeMillis() + SCROLL_HYSTERESIS;

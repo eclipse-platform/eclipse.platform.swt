@@ -32,55 +32,56 @@ protected Point computeSize(Composite composite, int wHint, int hHint, boolean f
 	int tabW = 0;
 	int selectedIndex = folder.selectedIndex;
 	if (selectedIndex == -1) selectedIndex = 0;
-	int width = 0, wrapHeight = 0;
-	try(var gc = GC.create(folder)) {
-		for (int i = 0; i < items.length; i++) {
-			if (folder.single) {
-				tabW = Math.max(tabW, renderer.computeSize(i, SWT.SELECTED, gc, SWT.DEFAULT, SWT.DEFAULT).x);
-			} else {
-				int state = 0;
-				if (i == selectedIndex) state |= SWT.SELECTED;
-				tabW += renderer.computeSize(i, state, gc, SWT.DEFAULT, SWT.DEFAULT).x;
-			}
-		}
-
-		boolean leftControl = false, rightControl = false;
-		if (wHint == SWT.DEFAULT) {
-			for (int i = 0; i < folder.controls.length; i++) {
-				Control control = folder.controls[i];
-				if (!control.isDisposed() && control.getVisible()) {
-					if ((folder.controlAlignments[i] & SWT.LEAD) != 0) {
-						leftControl = true;
-					} else {
-						rightControl = true;
-					}
-					width += control.computeSize(SWT.DEFAULT, SWT.DEFAULT).x;
-				}
-			}
+	GC gc = new GC(folder);
+	for (int i = 0; i < items.length; i++) {
+		if (folder.single) {
+			tabW = Math.max(tabW, renderer.computeSize(i, SWT.SELECTED, gc, SWT.DEFAULT, SWT.DEFAULT).x);
 		} else {
-			Point size = new Point (wHint, hHint);
-			boolean[][] positions = new boolean[1][];
-			Rectangle[] rects = folder.computeControlBounds(size, positions);
-			int minY = Integer.MAX_VALUE, maxY = 0;
-			for (int i = 0; i < rects.length; i++) {
-				if (positions[0][i]) {
-					minY = Math.min(minY, rects[i].y);
-					maxY = Math.max(maxY, rects[i].y + rects[i].height);
-					wrapHeight = maxY - minY;
+			int state = 0;
+			if (i == selectedIndex) state |= SWT.SELECTED;
+			tabW += renderer.computeSize(i, state, gc, SWT.DEFAULT, SWT.DEFAULT).x;
+		}
+	}
+
+	int width = 0, wrapHeight = 0;
+	boolean leftControl = false, rightControl = false;
+	if (wHint == SWT.DEFAULT) {
+		for (int i = 0; i < folder.controls.length; i++) {
+			Control control = folder.controls[i];
+			if (!control.isDisposed() && control.getVisible()) {
+				if ((folder.controlAlignments[i] & SWT.LEAD) != 0) {
+					leftControl = true;
 				} else {
-					if ((folder.controlAlignments[i] & SWT.LEAD) != 0) {
-						leftControl = true;
-					} else {
-						rightControl = true;
-					}
-					width += rects[i].width;
+					rightControl = true;
 				}
+				width += control.computeSize(SWT.DEFAULT, SWT.DEFAULT).x;
 			}
 		}
-		if (leftControl) width += CTabFolder.SPACING * 2;
-		if (rightControl) width += CTabFolder.SPACING * 2;
-		tabW += width;
+	} else {
+		Point size = new Point (wHint, hHint);
+		boolean[][] positions = new boolean[1][];
+		Rectangle[] rects = folder.computeControlBounds(size, positions);
+		int minY = Integer.MAX_VALUE, maxY = 0;
+		for (int i = 0; i < rects.length; i++) {
+			if (positions[0][i]) {
+				minY = Math.min(minY, rects[i].y);
+				maxY = Math.max(maxY, rects[i].y + rects[i].height);
+				wrapHeight = maxY - minY;
+			} else {
+				if ((folder.controlAlignments[i] & SWT.LEAD) != 0) {
+					leftControl = true;
+				} else {
+					rightControl = true;
+				}
+				width += rects[i].width;
+			}
+		}
 	}
+	if (leftControl) width += CTabFolder.SPACING * 2;
+	if (rightControl) width += CTabFolder.SPACING * 2;
+	tabW += width;
+
+	gc.dispose();
 
 	int controlW = 0;
 	int controlH = 0;

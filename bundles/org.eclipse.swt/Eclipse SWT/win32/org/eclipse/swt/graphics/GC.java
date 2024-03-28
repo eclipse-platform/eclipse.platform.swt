@@ -63,7 +63,7 @@ import org.eclipse.swt.internal.win32.*;
  * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Examples: GraphicsExample, PaintExample</a>
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
-public sealed class GC extends Resource permits GC.Closeable {
+public sealed class GC extends Resource {
 
 	public static final class Closeable extends GC implements AutoCloseable {
 		Closeable(Drawable drawable, int style) {
