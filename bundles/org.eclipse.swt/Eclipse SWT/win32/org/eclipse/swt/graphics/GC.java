@@ -63,7 +63,21 @@ import org.eclipse.swt.internal.win32.*;
  * @see <a href="http://www.eclipse.org/swt/examples.php">SWT Examples: GraphicsExample, PaintExample</a>
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
-public final class GC extends Resource {
+public sealed class GC extends Resource permits GC.Closeable {
+
+	public static final class Closeable extends GC implements AutoCloseable {
+		Closeable(Drawable drawable, int style) {
+			super(drawable, style);
+		}
+		@Override
+		public void close() {
+			dispose();
+		}
+	}
+
+	public static GC.Closeable create(Drawable drawable) {
+		return new Closeable(drawable, SWT.NONE);
+	}
 
 	/**
 	 * the handle to the OS device context
@@ -121,8 +135,7 @@ GC() {
  * foreground color, background color and font in the GC
  * to match those in the drawable.
  * <p>
- * You must dispose the graphics context when it is no longer required
- * or better use {@link #drawOn(Drawable, GCRunnable)} which takes care of disposing the GC.
+ * You must dispose the graphics context when it is no longer required.
  * </p>
  * @param drawable the drawable to draw on
  * @exception IllegalArgumentException <ul>
@@ -184,22 +197,6 @@ public GC(Drawable drawable, int style) {
 	this.device = data.device = device;
 	init (drawable, data, hDC);
 	init();
-}
-
-/**
- * creates a GC on the Drawable, calls run on the GCRunnable and disposes the GC in a finally block
- * @param <E>
- * @param drawable
- * @param runnable
- * @throws E
- */
-public static <E extends Exception> void drawOn(Drawable drawable, GCRunnable<E> runnable) throws E {
-	GC gc = new GC(drawable);
-	try {
-		runnable.run(gc);
-	} finally {
-		gc.dispose();
-	}
 }
 
 static int checkStyle(int style) {

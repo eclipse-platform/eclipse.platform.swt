@@ -270,7 +270,7 @@ private Point getTotalSize(Image image, String text) {
 		size.y += r.height;
 	}
 
-	GC.drawOn(this, gc -> {
+	try(var gc = GC.create(this)) {
 		if (text != null && text.length() > 0) {
 			Point e = gc.textExtent(text, DRAW_FLAGS);
 			size.x += e.x;
@@ -279,7 +279,7 @@ private Point getTotalSize(Image image, String text) {
 		} else {
 			size.y = Math.max(size.y, gc.getFontMetrics().getHeight());
 		}
-	});
+	}
 
 	return size;
 }

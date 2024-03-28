@@ -161,8 +161,9 @@ public class StyledTextDropTargetEffect extends DropTargetEffect {
 					 pt.y >= scrollY && pt.y <= (scrollY + SCROLL_TOLERANCE))) {
 					if (System.currentTimeMillis() >= scrollBeginTime) {
 						Rectangle area = text.getClientArea();
-						GC.drawOn(text, gc->{
+						try(var gc = GC.create(text)) {
 							FontMetrics fm = gc.getFontMetrics();
+
 							double charWidth = fm.getAverageCharacterWidth();
 							int scrollAmount = (int) (10*charWidth);
 							if (pt.x < area.x + 3*charWidth) {
@@ -173,18 +174,18 @@ public class StyledTextDropTargetEffect extends DropTargetEffect {
 								int leftPixel = text.getHorizontalPixel();
 								text.setHorizontalPixel(leftPixel + scrollAmount);
 							}
-						});
-						int lineHeight = text.getLineHeight();
-						if (pt.y < area.y + lineHeight) {
-							int topPixel = text.getTopPixel();
-							text.setTopPixel(topPixel - lineHeight);
+							int lineHeight = text.getLineHeight();
+							if (pt.y < area.y + lineHeight) {
+								int topPixel = text.getTopPixel();
+								text.setTopPixel(topPixel - lineHeight);
+							}
+							if (pt.y > area.height - lineHeight) {
+								int topPixel = text.getTopPixel();
+								text.setTopPixel(topPixel + lineHeight);
+							}
+							scrollBeginTime = 0;
+							scrollX = scrollY = -1;
 						}
-						if (pt.y > area.height - lineHeight) {
-							int topPixel = text.getTopPixel();
-							text.setTopPixel(topPixel + lineHeight);
-						}
-						scrollBeginTime = 0;
-						scrollX = scrollY = -1;
 					}
 				} else {
 					scrollBeginTime = System.currentTimeMillis() + SCROLL_HYSTERESIS;
