@@ -1,5 +1,5 @@
 @rem ***************************************************************************
-@rem Copyright (c) 2000, 2021 IBM Corporation and others.
+@rem Copyright (c) 2000, 2024 IBM Corporation and others.
 @rem
 @rem This program and the accompanying materials
 @rem are made available under the terms of the Eclipse Public License 2.0
@@ -18,10 +18,6 @@
 echo
 echo INFO Starting build of binaries. Detailed system setup instructions can be found in /Readme.Win32.md
 
-@rem SWT_BUILDDIR defaults to "W:" on the SWT Windows native build infrastructure machine.
-IF "x.%SWT_BUILDDIR%"=="x." set "SWT_BUILDDIR=W:"
-echo SWT build dir: %SWT_BUILDDIR%
-
 @rem Specify VisualStudio Edition: 'Community', 'Enterprise', 'Professional' etc.
 IF "x.%MSVC_EDITION%"=="x." set "MSVC_EDITION=auto"
 
@@ -31,13 +27,8 @@ IF "x.%MSVC_VERSION%"=="x." set "MSVC_VERSION=auto"
 @rem Search for a usable Visual Studio
 @rem ---------------------------------
 IF "%MSVC_HOME%"=="" CALL :ECHO "'MSVC_HOME' was not provided, auto-searching for Visual Studio..."
-@rem Bug 572308: Path used on older SWT build machines
-IF "%MSVC_HOME%"=="" CALL :FindVisualStudio "%SWT_BUILDDIR%\Microsoft\Visual Studio\$MSVC_VERSION$"
-@rem Bug 574007: Path used on Azure build machines
-IF "%MSVC_HOME%"=="" CALL :FindVisualStudio "%ProgramFiles(x86)%\Microsoft Visual Studio\$MSVC_VERSION$\BuildTools"
 @rem Bug 578519: Common installation paths; VisualStudio is installed in x64 ProgramFiles since VS2022
-IF "%MSVC_HOME%"=="" CALL :FindVisualStudio      "%ProgramFiles%\Microsoft Visual Studio\$MSVC_VERSION$\$MSVC_EDITION$"
-@rem Bug 578519: Common installation paths; VisualStudio is installed in x86 ProgramFiles before VS2022
+IF "%MSVC_HOME%"=="" CALL :FindVisualStudio "%ProgramFiles%\Microsoft Visual Studio\$MSVC_VERSION$\$MSVC_EDITION$"
 IF "%MSVC_HOME%"=="" CALL :FindVisualStudio "%ProgramFiles(x86)%\Microsoft Visual Studio\$MSVC_VERSION$\$MSVC_EDITION$"
 @rem Report
 IF NOT EXIST "%MSVC_HOME%" (
@@ -108,9 +99,6 @@ GOTO :EOF
 @rem Find Visual Studio
 @rem %1 = path template with '$MSVC_VERSION$' and '$MSVC_EDITION$' tokens
 :FindVisualStudio
-	@rem Early return if already found
-	IF NOT "%MSVC_HOME%"=="" GOTO :EOF
-
 	IF "%MSVC_VERSION%"=="auto" (
 		CALL :FindVisualStudio2 "%~1" "2022"
 		CALL :FindVisualStudio2 "%~1" "2019"
@@ -124,9 +112,6 @@ GOTO :EOF
 @rem %1 = path template with '$MSVC_VERSION$' and '$MSVC_EDITION$' tokens
 @rem %2 = value for '$MSVC_VERSION$'
 :FindVisualStudio2
-	@rem Early return if already found
-	IF NOT "%MSVC_HOME%"=="" GOTO :EOF
-
 	IF "%MSVC_EDITION%"=="auto" (
 		CALL :FindVisualStudio3 "%~1" "%~2" "Community"
 		CALL :FindVisualStudio3 "%~1" "%~2" "Enterprise"
