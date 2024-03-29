@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2022 IBM Corporation and others. All rights reserved.
+ * Copyright (c) 2000, 2024 IBM Corporation and others. All rights reserved.
  * The contents of this file are made available under the terms
  * of the GNU Lesser General Public License (LGPL) Version 2.1 that
  * accompanies this distribution (lgpl-v21.txt).  The LGPL is also
@@ -4944,15 +4944,7 @@ JNIEXPORT void JNICALL GTK_NATIVE(gtk_1gesture_1drag_1get_1offset)
 	GTK_NATIVE_ENTER(env, that, gtk_1gesture_1drag_1get_1offset_FUNC);
 	if (arg1) if ((lparg1 = (*env)->GetDoubleArrayElements(env, arg1, NULL)) == NULL) goto fail;
 	if (arg2) if ((lparg2 = (*env)->GetDoubleArrayElements(env, arg2, NULL)) == NULL) goto fail;
-/*
-	gtk_gesture_drag_get_offset(arg0, lparg1, lparg2);
-*/
-	{
-		GTK_LOAD_FUNCTION(fp, gtk_gesture_drag_get_offset)
-		if (fp) {
-			((void (CALLING_CONVENTION*)(jlong, jdouble *, jdouble *))fp)(arg0, lparg1, lparg2);
-		}
-	}
+	gtk_gesture_drag_get_offset((GtkGestureDrag *)arg0, (gdouble *)lparg1, (gdouble *)lparg2);
 fail:
 	if (arg2 && lparg2) (*env)->ReleaseDoubleArrayElements(env, arg2, lparg2, 0);
 	if (arg1 && lparg1) (*env)->ReleaseDoubleArrayElements(env, arg1, lparg1, 0);
@@ -4970,15 +4962,7 @@ JNIEXPORT jboolean JNICALL GTK_NATIVE(gtk_1gesture_1drag_1get_1start_1point)
 	GTK_NATIVE_ENTER(env, that, gtk_1gesture_1drag_1get_1start_1point_FUNC);
 	if (arg1) if ((lparg1 = (*env)->GetDoubleArrayElements(env, arg1, NULL)) == NULL) goto fail;
 	if (arg2) if ((lparg2 = (*env)->GetDoubleArrayElements(env, arg2, NULL)) == NULL) goto fail;
-/*
-	rc = (jboolean)gtk_gesture_drag_get_start_point(arg0, lparg1, lparg2);
-*/
-	{
-		GTK_LOAD_FUNCTION(fp, gtk_gesture_drag_get_start_point)
-		if (fp) {
-			rc = (jboolean)((jboolean (CALLING_CONVENTION*)(jlong, jdouble *, jdouble *))fp)(arg0, lparg1, lparg2);
-		}
-	}
+	rc = (jboolean)gtk_gesture_drag_get_start_point((GtkGestureDrag *)arg0, (gdouble *)lparg1, (gdouble *)lparg2);
 fail:
 	if (arg2 && lparg2) (*env)->ReleaseDoubleArrayElements(env, arg2, lparg2, 0);
 	if (arg1 && lparg1) (*env)->ReleaseDoubleArrayElements(env, arg1, lparg1, 0);
@@ -4993,15 +4977,7 @@ JNIEXPORT jlong JNICALL GTK_NATIVE(gtk_1gesture_1drag_1new)
 {
 	jlong rc = 0;
 	GTK_NATIVE_ENTER(env, that, gtk_1gesture_1drag_1new_FUNC);
-/*
 	rc = (jlong)gtk_gesture_drag_new((GtkWidget *)arg0);
-*/
-	{
-		GTK_LOAD_FUNCTION(fp, gtk_gesture_drag_new)
-		if (fp) {
-			rc = (jlong)((jlong (CALLING_CONVENTION*)(GtkWidget *))fp)((GtkWidget *)arg0);
-		}
-	}
 	GTK_NATIVE_EXIT(env, that, gtk_1gesture_1drag_1new_FUNC);
 	return rc;
 }
@@ -5013,15 +4989,7 @@ JNIEXPORT jlong JNICALL GTK_NATIVE(gtk_1gesture_1get_1last_1updated_1sequence)
 {
 	jlong rc = 0;
 	GTK_NATIVE_ENTER(env, that, gtk_1gesture_1get_1last_1updated_1sequence_FUNC);
-/*
-	rc = (jlong)gtk_gesture_get_last_updated_sequence(arg0);
-*/
-	{
-		GTK_LOAD_FUNCTION(fp, gtk_gesture_get_last_updated_sequence)
-		if (fp) {
-			rc = (jlong)((jlong (CALLING_CONVENTION*)(jlong))fp)(arg0);
-		}
-	}
+	rc = (jlong)gtk_gesture_get_last_updated_sequence((GtkGesture *)arg0);
 	GTK_NATIVE_EXIT(env, that, gtk_1gesture_1get_1last_1updated_1sequence_FUNC);
 	return rc;
 }
@@ -5037,15 +5005,7 @@ JNIEXPORT jboolean JNICALL GTK_NATIVE(gtk_1gesture_1get_1point)
 	GTK_NATIVE_ENTER(env, that, gtk_1gesture_1get_1point_FUNC);
 	if (arg2) if ((lparg2 = (*env)->GetDoubleArrayElements(env, arg2, NULL)) == NULL) goto fail;
 	if (arg3) if ((lparg3 = (*env)->GetDoubleArrayElements(env, arg3, NULL)) == NULL) goto fail;
-/*
-	rc = (jboolean)gtk_gesture_get_point(arg0, arg1, lparg2, lparg3);
-*/
-	{
-		GTK_LOAD_FUNCTION(fp, gtk_gesture_get_point)
-		if (fp) {
-			rc = (jboolean)((jboolean (CALLING_CONVENTION*)(jlong, jlong, jdouble *, jdouble *))fp)(arg0, arg1, lparg2, lparg3);
-		}
-	}
+	rc = (jboolean)gtk_gesture_get_point((GtkGesture *)arg0, (GdkEventSequence *)arg1, (gdouble *)lparg2, (gdouble *)lparg3);
 fail:
 	if (arg3 && lparg3) (*env)->ReleaseDoubleArrayElements(env, arg3, lparg3, 0);
 	if (arg2 && lparg2) (*env)->ReleaseDoubleArrayElements(env, arg2, lparg2, 0);
@@ -5060,15 +5020,7 @@ JNIEXPORT jboolean JNICALL GTK_NATIVE(gtk_1gesture_1is_1recognized)
 {
 	jboolean rc = 0;
 	GTK_NATIVE_ENTER(env, that, gtk_1gesture_1is_1recognized_FUNC);
-/*
-	rc = (jboolean)gtk_gesture_is_recognized(arg0);
-*/
-	{
-		GTK_LOAD_FUNCTION(fp, gtk_gesture_is_recognized)
-		if (fp) {
-			rc = (jboolean)((jboolean (CALLING_CONVENTION*)(jlong))fp)(arg0);
-		}
-	}
+	rc = (jboolean)gtk_gesture_is_recognized((GtkGesture *)arg0);
 	GTK_NATIVE_EXIT(env, that, gtk_1gesture_1is_1recognized_FUNC);
 	return rc;
 }
@@ -5080,15 +5032,7 @@ JNIEXPORT jdouble JNICALL GTK_NATIVE(gtk_1gesture_1rotate_1get_1angle_1delta)
 {
 	jdouble rc = 0;
 	GTK_NATIVE_ENTER(env, that, gtk_1gesture_1rotate_1get_1angle_1delta_FUNC);
-/*
-	rc = (jdouble)gtk_gesture_rotate_get_angle_delta(arg0);
-*/
-	{
-		GTK_LOAD_FUNCTION(fp, gtk_gesture_rotate_get_angle_delta)
-		if (fp) {
-			rc = (jdouble)((jdouble (CALLING_CONVENTION*)(jlong))fp)(arg0);
-		}
-	}
+	rc = (jdouble)gtk_gesture_rotate_get_angle_delta((GtkGestureRotate *)arg0);
 	GTK_NATIVE_EXIT(env, that, gtk_1gesture_1rotate_1get_1angle_1delta_FUNC);
 	return rc;
 }
@@ -5100,15 +5044,7 @@ JNIEXPORT jlong JNICALL GTK_NATIVE(gtk_1gesture_1rotate_1new)
 {
 	jlong rc = 0;
 	GTK_NATIVE_ENTER(env, that, gtk_1gesture_1rotate_1new_FUNC);
-/*
-	rc = (jlong)gtk_gesture_rotate_new(arg0);
-*/
-	{
-		GTK_LOAD_FUNCTION(fp, gtk_gesture_rotate_new)
-		if (fp) {
-			rc = (jlong)((jlong (CALLING_CONVENTION*)(jlong))fp)(arg0);
-		}
-	}
+	rc = (jlong)gtk_gesture_rotate_new((GtkWidget *)arg0);
 	GTK_NATIVE_EXIT(env, that, gtk_1gesture_1rotate_1new_FUNC);
 	return rc;
 }
@@ -5131,15 +5067,7 @@ JNIEXPORT void JNICALL GTK_NATIVE(gtk_1gesture_1single_1set_1button)
 	(JNIEnv *env, jclass that, jlong arg0, jint arg1)
 {
 	GTK_NATIVE_ENTER(env, that, gtk_1gesture_1single_1set_1button_FUNC);
-/*
-	gtk_gesture_single_set_button(arg0, arg1);
-*/
-	{
-		GTK_LOAD_FUNCTION(fp, gtk_gesture_single_set_button)
-		if (fp) {
-			((void (CALLING_CONVENTION*)(jlong, jint))fp)(arg0, arg1);
-		}
-	}
+	gtk_gesture_single_set_button((GtkGestureSingle *)arg0, (guint)arg1);
 	GTK_NATIVE_EXIT(env, that, gtk_1gesture_1single_1set_1button_FUNC);
 }
 #endif
@@ -5154,15 +5082,7 @@ JNIEXPORT jboolean JNICALL GTK_NATIVE(gtk_1gesture_1swipe_1get_1velocity)
 	GTK_NATIVE_ENTER(env, that, gtk_1gesture_1swipe_1get_1velocity_FUNC);
 	if (arg1) if ((lparg1 = (*env)->GetDoubleArrayElements(env, arg1, NULL)) == NULL) goto fail;
 	if (arg2) if ((lparg2 = (*env)->GetDoubleArrayElements(env, arg2, NULL)) == NULL) goto fail;
-/*
-	rc = (jboolean)gtk_gesture_swipe_get_velocity(arg0, lparg1, lparg2);
-*/
-	{
-		GTK_LOAD_FUNCTION(fp, gtk_gesture_swipe_get_velocity)
-		if (fp) {
-			rc = (jboolean)((jboolean (CALLING_CONVENTION*)(jlong, jdouble *, jdouble *))fp)(arg0, lparg1, lparg2);
-		}
-	}
+	rc = (jboolean)gtk_gesture_swipe_get_velocity((GtkGestureSwipe *)arg0, (gdouble *)lparg1, (gdouble *)lparg2);
 fail:
 	if (arg2 && lparg2) (*env)->ReleaseDoubleArrayElements(env, arg2, lparg2, 0);
 	if (arg1 && lparg1) (*env)->ReleaseDoubleArrayElements(env, arg1, lparg1, 0);
@@ -5177,15 +5097,7 @@ JNIEXPORT jdouble JNICALL GTK_NATIVE(gtk_1gesture_1zoom_1get_1scale_1delta)
 {
 	jdouble rc = 0;
 	GTK_NATIVE_ENTER(env, that, gtk_1gesture_1zoom_1get_1scale_1delta_FUNC);
-/*
-	rc = (jdouble)gtk_gesture_zoom_get_scale_delta(arg0);
-*/
-	{
-		GTK_LOAD_FUNCTION(fp, gtk_gesture_zoom_get_scale_delta)
-		if (fp) {
-			rc = (jdouble)((jdouble (CALLING_CONVENTION*)(jlong))fp)(arg0);
-		}
-	}
+	rc = (jdouble)gtk_gesture_zoom_get_scale_delta((GtkGestureZoom *)arg0);
 	GTK_NATIVE_EXIT(env, that, gtk_1gesture_1zoom_1get_1scale_1delta_FUNC);
 	return rc;
 }
@@ -5197,15 +5109,7 @@ JNIEXPORT jlong JNICALL GTK_NATIVE(gtk_1gesture_1zoom_1new)
 {
 	jlong rc = 0;
 	GTK_NATIVE_ENTER(env, that, gtk_1gesture_1zoom_1new_FUNC);
-/*
-	rc = (jlong)gtk_gesture_zoom_new(arg0);
-*/
-	{
-		GTK_LOAD_FUNCTION(fp, gtk_gesture_zoom_new)
-		if (fp) {
-			rc = (jlong)((jlong (CALLING_CONVENTION*)(jlong))fp)(arg0);
-		}
-	}
+	rc = (jlong)gtk_gesture_zoom_new((GtkWidget *)arg0);
 	GTK_NATIVE_EXIT(env, that, gtk_1gesture_1zoom_1new_FUNC);
 	return rc;
 }
