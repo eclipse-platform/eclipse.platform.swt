@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2018 Red Hat Inc. and others. All rights reserved.
+ * Copyright (c) 2018, 20224 Red Hat Inc. and others. All rights reserved.
  * The contents of this file are made available under the terms
  * of the GNU Lesser General Public License (LGPL) Version 2.1 that
  * accompanies this distribution (lgpl-v21.txt).  The LGPL is also
@@ -733,7 +733,10 @@ public class GTK extends OS {
 	public static final native long gtk_event_controller_get_widget(long controller);
 
 	/* GtkGestureSingle */
-	/** @method flags=dynamic */
+	/**
+	 * @param gesture cast=(GtkGestureSingle *)
+	 * @param button cast=(guint)
+	 */
 	public static final native void gtk_gesture_single_set_button(long gesture, int button);
 	/** @param gesture cast=(GtkGestureSingle *) */
 	public static final native int gtk_gesture_single_get_current_button(long gesture);
@@ -764,50 +767,56 @@ public class GTK extends OS {
 	public static final native void gtk_file_filter_set_name(long filter, byte[] name);
 
 	/**
-	 * @method flags=dynamic
+	 * @param gesture cast=(GtkGestureDrag *)
+	 * @param x cast=(gdouble *)
+	 * @param y cast=(gdouble *)
 	 */
 	public static final native boolean gtk_gesture_drag_get_start_point(long gesture, double[] x, double [] y);
 	/**
-	 * @method flags=dynamic
+	 * @param gesture cast=(GtkGesture *)
 	 */
 	public static final native boolean gtk_gesture_is_recognized(long gesture);
 	/**
-	 * @method flags=dynamic
 	 * @param widget cast=(GtkWidget *)
 	 */
 	public static final native long gtk_gesture_drag_new(long widget);
 	/**
-	 * @method flags=dynamic
+	 * @param gesture cast=(GtkGesture *)
 	 */
 	public static final native long gtk_gesture_get_last_updated_sequence(long gesture);
 	/**
-	 * @method flags=dynamic
+	 * @param gesture cast=(GtkGesture *)
+	 * @param sequence cast=(GdkEventSequence *)
+	 * @param x cast=(gdouble *)
+	 * @param y cast=(gdouble *)
 	 */
 	public static final native boolean gtk_gesture_get_point(long gesture, long sequence, double[] x, double [] y);
 	/**
-	 * @method flags=dynamic
+	 * @param gesture cast=(GtkGestureSwipe *)
+	 * @param velocity_x cast=(gdouble *)
+	 * @param velocity_y cast=(gdouble *)
 	 */
 	public static final native boolean gtk_gesture_swipe_get_velocity(long gesture, double [] velocity_x, double[] velocity_y);
 	/**
-	 * @method flags=dynamic
+	 * @param gesture cast=(GtkGestureDrag *)
+	 * @param x cast=(gdouble *)
+	 * @param y cast=(gdouble *)
 	 */
 	public static final native void gtk_gesture_drag_get_offset(long gesture, double[] x, double[] y);
 	/**
-	 * @method flags=dynamic
+	 * @param gesture cast=(GtkGestureRotate *)
 	 */
-
 	public static final native double gtk_gesture_rotate_get_angle_delta(long gesture);
 	/**
-	 * @method flags=dynamic
+	 * @param widget cast=(GtkWidget *)
 	 */
-
 	public static final native long gtk_gesture_rotate_new(long widget);
 	/**
-	 * @method flags=dynamic
+	 * @param widget cast=(GtkWidget *)
 	 */
 	public static final native long gtk_gesture_zoom_new(long widget);
 	/**
-	 * @method flags=dynamic
+	 * @param gesture cast=(GtkGestureZoom *)
 	 */
 	public static final native double gtk_gesture_zoom_get_scale_delta(long gesture);
 
