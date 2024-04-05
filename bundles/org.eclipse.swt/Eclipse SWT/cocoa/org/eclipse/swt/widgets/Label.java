@@ -299,7 +299,9 @@ void drawBackground (long id, NSGraphicsContext context, NSRect rect) {
 
 @Override
 long imageView() {
-	return imageView.id;
+	//This function is modified to include a check for SWT Separator NSBox to handle cases where the image view is not present.
+	if (imageView != null) return imageView.id;
+	return 0L;
 };
 
 @Override
