@@ -479,20 +479,45 @@ void addToolTip (ToolTip toolTip) {
 	toolTips = newToolTips;
 }
 
-void adjustTrim () {
+/**
+ * Resize the shell based on the trim width and height. Trim width and height
+ * adjustments are read from '$HOME/.swt/trims.prefs' for each trim style. If
+ * such a file does not exist then the trim values are queried from GTK.
+ *
+ * Note that we are trying to resize the shell which is already open. Shell
+ * already has width and height, Which is either set by setSize()/setBounds() or
+ * size is calculated based on layout and content of the shell. Without setting
+ * bounds/layout shell won't display content which is created on it.
+ *
+ * @param widthHint  Current width of the shell that is already open.
+ * @param heightHint Current height of the shell that is already open.
+ */
+void adjustTrim (int widthHint, int heightHint) {
 	if (display.ignoreTrim) return;
 	GtkAllocation allocation = new GtkAllocation ();
 	GTK.gtk_widget_get_allocation (shellHandle, allocation);
 	int width = allocation.width;
 	int height = allocation.height;
-	GdkRectangle rect = new GdkRectangle ();
 
+	//Ask Gtk for actual window frame extents
+	GdkRectangle rect = new GdkRectangle ();
 	if (!GTK.GTK4) {
 		long window = gtk_widget_get_window (shellHandle);
 		GDK.gdk_window_get_frame_extents (window, rect);
+
+		// Gtk returns default window dimensions as {0,0,1,1} if the window is not
+		// ready. If GTK returns window dimensions we can use it, if not, we will use
+		// "requested" shell size as returned by gtk_window_resize() in setVisible().
+		// See https://github.com/eclipse-platform/eclipse.platform.swt/issues/1161
+		if (rect.width > 1 || rect.height > 1) {
+			widthHint = rect.width;
+			heightHint = rect.height;
+		}
 	}
-	int trimWidth = Math.max (0, rect.width - width);
-	int trimHeight = Math.max (0, rect.height - height);
+
+
+	int trimWidth = Math.max (0, widthHint - width);
+	int trimHeight = Math.max (0, heightHint - height);
 	/*
 	* Bug in GTK.  gdk_window_get_frame_extents() fails for various window
 	* managers, causing a large incorrect value to be returned as the trim.
@@ -2936,6 +2961,8 @@ public void setVisible (boolean visible) {
 			GTK.gtk_widget_show (shellHandle);
 			GTK3.gtk_window_resize(shellHandle, init_width[0], init_height[0]);
 			resizeBounds (init_width[0], init_height[0], false);
+			oldWidth = init_width[0];
+			oldHeight = init_height[0];
 		} else {
 			GTK.gtk_widget_show (shellHandle);
 		}
@@ -2975,7 +3002,7 @@ public void setVisible (boolean visible) {
 			if (!iconic) {
 				update (true, true);
 				if (isDisposed ()) return;
-				adjustTrim ();
+				adjustTrim (oldWidth, oldHeight);
 			}
 		}
 		mapped = true;
