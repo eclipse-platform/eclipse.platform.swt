@@ -185,9 +185,10 @@ protected void checkSubclass () {
  */
 public Point computeSize (int wHint, int hHint) {
 	checkWidget ();
-	wHint = (wHint != SWT.DEFAULT ? DPIUtil.autoScaleUp(wHint) : wHint);
-	hHint = (hHint != SWT.DEFAULT ? DPIUtil.autoScaleUp(hHint) : hHint);
-	return DPIUtil.autoScaleDown(computeSizeInPixels(wHint, hHint));
+	int zoom = getZoom();
+	wHint = (wHint != SWT.DEFAULT ? DPIUtil.autoScaleUp(wHint, zoom) : wHint);
+	hHint = (hHint != SWT.DEFAULT ? DPIUtil.autoScaleUp(hHint, zoom) : hHint);
+	return DPIUtil.scaleDown(computeSizeInPixels(wHint, hHint), zoom);
 }
 Point computeSizeInPixels (int wHint, int hHint) {
 	int index = parent.indexOf (this);
@@ -222,7 +223,7 @@ void destroyWidget () {
  */
 public Rectangle getBounds () {
 	checkWidget ();
-	return DPIUtil.autoScaleDown(getBoundsInPixels());
+	return DPIUtil.scaleDown(getBoundsInPixels(), getZoom());
 }
 
 Rectangle getBoundsInPixels () {
@@ -382,7 +383,7 @@ public void setControl (Control control) {
  */
 public Point getPreferredSize () {
 	checkWidget ();
-	return DPIUtil.autoScaleDown(getPreferredSizeInPixels());
+	return DPIUtil.scaleDown(getPreferredSizeInPixels(), getZoom());
 }
 
 Point getPreferredSizeInPixels () {
@@ -413,7 +414,8 @@ Point getPreferredSizeInPixels () {
  */
 public void setPreferredSize (int width, int height) {
 	checkWidget ();
-	setPreferredSizeInPixels(DPIUtil.autoScaleUp(width), DPIUtil.autoScaleUp(height));
+	int zoom = getZoom();
+	setPreferredSizeInPixels(DPIUtil.autoScaleUp(width, zoom), DPIUtil.autoScaleUp(height, zoom));
 }
 
 void setPreferredSizeInPixels (int width, int height) {
@@ -462,7 +464,7 @@ void setPreferredSizeInPixels (int width, int height) {
 public void setPreferredSize (Point size) {
 	checkWidget ();
 	if (size == null) error(SWT.ERROR_NULL_ARGUMENT);
-	size = DPIUtil.autoScaleUp(size);
+	size = DPIUtil.autoScaleUp(size, getZoom());
 	setPreferredSizeInPixels(size.x, size.y);
 }
 
@@ -481,7 +483,7 @@ public void setPreferredSize (Point size) {
  */
 public Point getSize () {
 	checkWidget ();
-	return DPIUtil.autoScaleDown(getSizeInPixels());
+	return DPIUtil.scaleDown(getSizeInPixels(), getZoom());
 }
 
 Point getSizeInPixels() {
@@ -523,7 +525,8 @@ Point getSizeInPixels() {
  */
 public void setSize (int width, int height) {
 	checkWidget ();
-	setSizeInPixels(DPIUtil.autoScaleUp(width), DPIUtil.autoScaleUp(height));
+	int zoom = getZoom();
+	setSizeInPixels(DPIUtil.autoScaleUp(width, zoom), DPIUtil.autoScaleUp(height, zoom));
 }
 
 void setSizeInPixels (int width, int height) {
@@ -589,7 +592,7 @@ void setSizeInPixels (int width, int height) {
 public void setSize (Point size) {
 	checkWidget ();
 	if (size == null) error(SWT.ERROR_NULL_ARGUMENT);
-	size = DPIUtil.autoScaleUp(size);
+	size = DPIUtil.autoScaleUp(size, getZoom());
 	setSizeInPixels(size.x, size.y);
 }
 
@@ -608,7 +611,7 @@ public void setSize (Point size) {
  */
 public Point getMinimumSize () {
 	checkWidget ();
-	return DPIUtil.autoScaleDown(getMinimumSizeInPixels());
+	return DPIUtil.scaleDown(getMinimumSizeInPixels(), getZoom());
 }
 
 Point getMinimumSizeInPixels () {
@@ -641,7 +644,8 @@ Point getMinimumSizeInPixels () {
  */
 public void setMinimumSize (int width, int height) {
 	checkWidget ();
-	setMinimumSizeInPixels(DPIUtil.autoScaleUp(width), DPIUtil.autoScaleUp(height));
+	int zoom = getZoom();
+	setMinimumSizeInPixels(DPIUtil.autoScaleUp(width, zoom), DPIUtil.autoScaleUp(height, zoom));
 }
 
 void setMinimumSizeInPixels (int width, int height) {
@@ -691,7 +695,7 @@ void setMinimumSizeInPixels (int width, int height) {
 public void setMinimumSize (Point size) {
 	checkWidget ();
 	if (size == null) error (SWT.ERROR_NULL_ARGUMENT);
-	size = DPIUtil.autoScaleUp(size);
+	size = DPIUtil.autoScaleUp(size, getZoom());
 	setMinimumSizeInPixels(size.x, size.y);
 }
 

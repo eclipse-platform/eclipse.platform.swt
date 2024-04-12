@@ -2334,7 +2334,7 @@ int getFocusIndex () {
  */
 public int getGridLineWidth () {
 	checkWidget ();
-	return DPIUtil.autoScaleDown(getGridLineWidthInPixels());
+	return DPIUtil.scaleDown(getGridLineWidthInPixels(), getZoom());
 }
 
 int getGridLineWidthInPixels () {
@@ -2395,7 +2395,7 @@ private int getHeaderForegroundPixel() {
  */
 public int getHeaderHeight () {
 	checkWidget ();
-	return DPIUtil.autoScaleDown(getHeaderHeightInPixels ());
+	return DPIUtil.scaleDown(getHeaderHeightInPixels (), getZoom());
 }
 
 int getHeaderHeightInPixels () {
@@ -2476,7 +2476,7 @@ public TableItem getItem (int index) {
 public TableItem getItem (Point point) {
 	checkWidget ();
 	if (point == null) error (SWT.ERROR_NULL_ARGUMENT);
-	return getItemInPixels (DPIUtil.autoScaleUp(point));
+	return getItemInPixels (DPIUtil.autoScaleUp(point, getZoom()));
 }
 
 TableItem getItemInPixels (Point point) {
@@ -2576,7 +2576,7 @@ public int getItemCount () {
  */
 public int getItemHeight () {
 	checkWidget ();
-	return DPIUtil.autoScaleDown(getItemHeightInPixels());
+	return DPIUtil.scaleDown(getItemHeightInPixels(), getZoom());
 }
 
 int getItemHeightInPixels () {
@@ -3486,7 +3486,7 @@ void sendEraseItemEvent (TableItem item, NMLVCUSTOMDRAW nmcd, long lParam, Event
 	if (drawBackground) event.detail |= SWT.BACKGROUND;
 	Rectangle boundsInPixels = new Rectangle (cellRect.left, cellRect.top, cellRect.right - cellRect.left, cellRect.bottom - cellRect.top);
 	event.setBoundsInPixels (boundsInPixels);
-	gc.setClipping (DPIUtil.autoScaleDown(boundsInPixels));
+	gc.setClipping (DPIUtil.scaleDown(boundsInPixels, getZoom()));
 	sendEvent (SWT.EraseItem, event);
 	event.gc = null;
 	int clrSelectionText = data.foreground;
@@ -3930,7 +3930,7 @@ void sendPaintItemEvent (TableItem item, NMLVCUSTOMDRAW nmcd) {
 	RECT cellRect = item.getBounds ((int)nmcd.dwItemSpec, nmcd.iSubItem, true, true, true, true, hDC);
 	int cellWidth = cellRect.right - cellRect.left;
 	int cellHeight = cellRect.bottom - cellRect.top;
-	gc.setClipping (DPIUtil.autoScaleDown(new Rectangle (cellRect.left, cellRect.top, cellWidth, cellHeight)));
+	gc.setClipping (DPIUtil.scaleDown(new Rectangle (cellRect.left, cellRect.top, cellWidth, cellHeight), getZoom()));
 	sendEvent (SWT.PaintItem, event);
 	if (data.focusDrawn) focusRect = null;
 	event.gc = null;
@@ -6966,7 +6966,8 @@ LRESULT wmNotifyHeader (NMHDR hdr, long wParam, long lParam) {
 							data.device = display;
 							GC gc = createNewGC(nmcd.hdc, data);
 							int y = Math.max (0, (nmcd.bottom - columns[i].image.getBoundsInPixels().height) / 2);
-							gc.drawImage (columns[i].image, DPIUtil.autoScaleDown(x), DPIUtil.autoScaleDown(y));
+							int zoom = getZoom();
+							gc.drawImage (columns[i].image, DPIUtil.scaleDown(x, zoom), DPIUtil.scaleDown(y, zoom));
 							x += columns[i].image.getBoundsInPixels().width + 12;
 							gc.dispose ();
 						}
@@ -7295,8 +7296,9 @@ LRESULT wmNotifyToolTip (NMTTCUSTOMDRAW nmcd, long lParam) {
 						RECT imageRect = item.getBounds (pinfo.iItem, pinfo.iSubItem, false, true, false, false, hDC);
 						Point size = imageList == null ? new Point (rect.width, rect.height) : imageList.getImageSize ();
 						int y = imageRect.top + Math.max (0, (imageRect.bottom - imageRect.top - size.y) / 2);
-						rect = DPIUtil.autoScaleDown(rect);
-						gc.drawImage (image, rect.x, rect.y, rect.width, rect.height, DPIUtil.autoScaleDown(x), DPIUtil.autoScaleDown(y), DPIUtil.autoScaleDown(size.x), DPIUtil.autoScaleDown(size.y));
+						int zoom = getZoom();
+						rect = DPIUtil.scaleDown(rect, zoom);
+						gc.drawImage (image, rect.x, rect.y, rect.width, rect.height, DPIUtil.scaleDown(x, zoom), DPIUtil.scaleDown(y, zoom), DPIUtil.scaleDown(size.x, zoom), DPIUtil.scaleDown(size.y, zoom));
 						x += size.x + INSET + (pinfo.iSubItem == 0 ? -2 : 4);
 					} else {
 						x += INSET + 2;
