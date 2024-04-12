@@ -1056,7 +1056,7 @@ public boolean getMaximized () {
  */
 public Point getMaximumSize () {
 	checkWidget ();
-	return DPIUtil.autoScaleDown(getMaximumSizeInPixels());
+	return DPIUtil.scaleDown(getMaximumSizeInPixels(), getZoom());
 }
 
 Point getMaximumSizeInPixels () {
@@ -1097,7 +1097,7 @@ Point getMaximumSizeInPixels () {
  */
 public Point getMinimumSize () {
 	checkWidget ();
-	return DPIUtil.autoScaleDown(getMinimumSizeInPixels());
+	return DPIUtil.scaleDown(getMinimumSizeInPixels(), getZoom());
 }
 
 Point getMinimumSizeInPixels () {
@@ -1738,7 +1738,8 @@ public void setImeInputMode (int mode) {
  */
 public void setMaximumSize (int width, int height) {
 	checkWidget ();
-	setMaximumSizeInPixels(DPIUtil.autoScaleUp(width), DPIUtil.autoScaleUp(height));
+	int zoom = getZoom();
+	setMaximumSizeInPixels(DPIUtil.autoScaleUp(width, zoom), DPIUtil.autoScaleUp(height, zoom));
 }
 
 /**
@@ -1766,7 +1767,7 @@ public void setMaximumSize (int width, int height) {
 public void setMaximumSize (Point size) {
 	checkWidget ();
 	if (size == null) error (SWT.ERROR_NULL_ARGUMENT);
-	size = DPIUtil.autoScaleUp(size);
+	size = DPIUtil.autoScaleUp(size, getZoom());
 	setMaximumSizeInPixels(size.x, size.y);
 }
 
@@ -1812,7 +1813,8 @@ void setMaximumSizeInPixels (int width, int height) {
  */
 public void setMinimumSize (int width, int height) {
 	checkWidget ();
-	setMinimumSizeInPixels(DPIUtil.autoScaleUp(width), DPIUtil.autoScaleUp(height));
+	int zoom = getZoom();
+	setMinimumSizeInPixels(DPIUtil.autoScaleUp(width, zoom), DPIUtil.autoScaleUp(height, zoom));
 }
 
 void setMinimumSizeInPixels (int width, int height) {
@@ -1860,7 +1862,7 @@ void setMinimumSizeInPixels (int width, int height) {
 public void setMinimumSize (Point size) {
 	checkWidget ();
 	if (size == null) error (SWT.ERROR_NULL_ARGUMENT);
-	size = DPIUtil.autoScaleUp(size);
+	size = DPIUtil.autoScaleUp(size, getZoom());
 	setMinimumSizeInPixels(size.x, size.y);
 }
 

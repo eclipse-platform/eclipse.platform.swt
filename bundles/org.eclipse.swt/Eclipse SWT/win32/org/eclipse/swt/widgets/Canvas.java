@@ -103,10 +103,11 @@ public Canvas (Composite parent, int style) {
  * @since 3.2
  */
 public void drawBackground (GC gc, int x, int y, int width, int height) {
-	x = DPIUtil.autoScaleUp(x);
-	y = DPIUtil.autoScaleUp(y);
-	width = DPIUtil.autoScaleUp(width);
-	height = DPIUtil.autoScaleUp(height);
+	int zoom = getZoom();
+	x = DPIUtil.autoScaleUp(x, zoom);
+	y = DPIUtil.autoScaleUp(y, zoom);
+	width = DPIUtil.autoScaleUp(width, zoom);
+	height = DPIUtil.autoScaleUp(height, zoom);
 	drawBackgroundInPixels(gc, x, y, width, height, 0, 0);
 }
 
@@ -199,12 +200,13 @@ void reskinChildren (int flags) {
  */
 public void scroll (int destX, int destY, int x, int y, int width, int height, boolean all) {
 	checkWidget ();
-	destX = DPIUtil.autoScaleUp(destX);
-	destY = DPIUtil.autoScaleUp(destY);
-	x = DPIUtil.autoScaleUp(x);
-	y = DPIUtil.autoScaleUp(y);
-	width = DPIUtil.autoScaleUp(width);
-	height = DPIUtil.autoScaleUp(height);
+	int zoom = getZoom();
+	destX = DPIUtil.autoScaleUp(destX, zoom);
+	destY = DPIUtil.autoScaleUp(destY, zoom);
+	x = DPIUtil.autoScaleUp(x, zoom);
+	y = DPIUtil.autoScaleUp(y, zoom);
+	width = DPIUtil.autoScaleUp(width, zoom);
+	height = DPIUtil.autoScaleUp(height, zoom);
 	scrollInPixels(destX, destY, x, y, width, height, all);
 }
 

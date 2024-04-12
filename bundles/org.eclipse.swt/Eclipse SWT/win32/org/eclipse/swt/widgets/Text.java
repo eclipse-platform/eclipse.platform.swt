@@ -1012,7 +1012,7 @@ public int getCaretLineNumber () {
  */
 public Point getCaretLocation () {
 	checkWidget ();
-	return DPIUtil.autoScaleDown(getCaretLocationInPixels());
+	return DPIUtil.scaleDown(getCaretLocationInPixels(), getZoom());
 }
 
 Point getCaretLocationInPixels () {
@@ -1237,7 +1237,7 @@ public String getLineDelimiter () {
  */
 public int getLineHeight () {
 	checkWidget ();
-	return DPIUtil.autoScaleDown(getLineHeightInPixels ());
+	return DPIUtil.scaleDown(getLineHeightInPixels (), getZoom());
 }
 
 int getLineHeightInPixels () {
@@ -1580,7 +1580,7 @@ public int getTopIndex () {
  */
 public int getTopPixel () {
 	checkWidget ();
-	return DPIUtil.autoScaleDown(getTopPixelInPixels());
+	return DPIUtil.scaleDown(getTopPixelInPixels(), getZoom());
 }
 
 int getTopPixelInPixels () {

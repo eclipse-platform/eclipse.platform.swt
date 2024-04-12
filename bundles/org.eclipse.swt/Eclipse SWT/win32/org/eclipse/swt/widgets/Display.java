@@ -2944,8 +2944,9 @@ boolean isValidThread () {
 public Point map (Control from, Control to, Point point) {
 	checkDevice ();
 	if (point == null) error (SWT.ERROR_NULL_ARGUMENT);
-	point = DPIUtil.autoScaleUp(point);
-	return DPIUtil.autoScaleDown(mapInPixels(from, to, point));
+	int zoom = getZoomLevelForMapping(from, to);
+	point = DPIUtil.autoScaleUp(point, zoom);
+	return DPIUtil.scaleDown(mapInPixels(from, to, point), zoom);
 }
 
 Point mapInPixels (Control from, Control to, Point point) {
@@ -2990,9 +2991,10 @@ Point mapInPixels (Control from, Control to, Point point) {
  */
 public Point map (Control from, Control to, int x, int y) {
 	checkDevice ();
-	x = DPIUtil.autoScaleUp(x);
-	y = DPIUtil.autoScaleUp(y);
-	return DPIUtil.autoScaleDown(mapInPixels(from, to, x, y));
+	int zoom = getZoomLevelForMapping(from, to);
+	x = DPIUtil.autoScaleUp(x, zoom);
+	y = DPIUtil.autoScaleUp(y, zoom);
+	return DPIUtil.scaleDown(mapInPixels(from, to, x, y), zoom);
 }
 
 Point mapInPixels (Control from, Control to, int x, int y) {
@@ -3006,6 +3008,15 @@ Point mapInPixels (Control from, Control to, int x, int y) {
 	point.y = y;
 	OS.MapWindowPoints (hwndFrom, hwndTo, point, 1);
 	return new Point (point.x, point.y);
+}
+
+private int getZoomLevelForMapping(Control from, Control to) {
+	if (from != null && from.isDisposed()) error (SWT.ERROR_INVALID_ARGUMENT);
+	if (to != null && to.isDisposed()) error (SWT.ERROR_INVALID_ARGUMENT);
+	if (to != null) {
+		return to.getZoom();
+	}
+	return from.getZoom();
 }
 
 /**
@@ -3047,8 +3058,9 @@ Point mapInPixels (Control from, Control to, int x, int y) {
 public Rectangle map (Control from, Control to, Rectangle rectangle) {
 	checkDevice ();
 	if (rectangle == null) error (SWT.ERROR_NULL_ARGUMENT);
-	rectangle = DPIUtil.autoScaleUp(rectangle);
-	return DPIUtil.autoScaleDown(mapInPixels(from, to, rectangle));
+	int zoom = getZoomLevelForMapping(from, to);
+	rectangle = DPIUtil.autoScaleUp(rectangle, zoom);
+	return DPIUtil.scaleDown(mapInPixels(from, to, rectangle), zoom);
 }
 
 Rectangle mapInPixels (Control from, Control to, Rectangle rectangle) {
@@ -3095,11 +3107,12 @@ Rectangle mapInPixels (Control from, Control to, Rectangle rectangle) {
  */
 public Rectangle map (Control from, Control to, int x, int y, int width, int height) {
 	checkDevice ();
-	x = DPIUtil.autoScaleUp(x);
-	y = DPIUtil.autoScaleUp(y);
-	width = DPIUtil.autoScaleUp(width);
-	height = DPIUtil.autoScaleUp(height);
-	return DPIUtil.autoScaleDown(mapInPixels(from, to, x, y, width, height));
+	int zoom = getZoomLevelForMapping(from, to);
+	x = DPIUtil.autoScaleUp(x, zoom);
+	y = DPIUtil.autoScaleUp(y, zoom);
+	width = DPIUtil.autoScaleUp(width, zoom);
+	height = DPIUtil.autoScaleUp(height, zoom);
+	return DPIUtil.scaleDown(mapInPixels(from, to, x, y, width, height), zoom);
 }
 
 Rectangle mapInPixels (Control from, Control to, int x, int y, int width, int height) {

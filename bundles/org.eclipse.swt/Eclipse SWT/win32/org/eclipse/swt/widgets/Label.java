@@ -553,7 +553,8 @@ void wmDrawChildImage(DRAWITEMSTRUCT struct) {
 	int height = struct.bottom - struct.top;
 	if (width == 0 || height == 0) return;
 
-	Rectangle imageRect = DPIUtil.autoScaleBounds(image.getBounds(), getZoom(), 100);
+	int zoom = getZoom();
+	Rectangle imageRect = DPIUtil.autoScaleBounds(image.getBounds(), zoom, 100);
 
 	int x = 0;
 	if ((style & SWT.CENTER) != 0) {
@@ -566,7 +567,7 @@ void wmDrawChildImage(DRAWITEMSTRUCT struct) {
 	data.device = display;
 	GC gc = createNewGC(struct.hDC, data);
 	Image image = getEnabled () ? this.image : new Image (display, this.image, SWT.IMAGE_DISABLE);
-	gc.drawImage (image, DPIUtil.autoScaleDown(x), DPIUtil.autoScaleDown(Math.max (0, (height - imageRect.height) / 2)));
+	gc.drawImage (image, DPIUtil.scaleDown(x, zoom), DPIUtil.scaleDown(Math.max (0, (height - imageRect.height) / 2), zoom));
 	if (image != this.image) image.dispose ();
 	gc.dispose ();
 }
