@@ -1742,6 +1742,7 @@ public long internal_new_GC (GCData data) {
 			}
 		}
 		data.device = display;
+		data.nativeZoom = nativeZoom;
 		int foreground = getForegroundPixel ();
 		if (foreground != OS.GetTextColor (hDC)) data.foreground = foreground;
 		Control control = findBackgroundControl ();

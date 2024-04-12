@@ -807,7 +807,7 @@ LRESULT WM_PRINTCLIENT (long wParam, long lParam) {
 	GCData data = new GCData ();
 	data.device = display;
 	data.foreground = getForegroundPixel ();
-	GC gc = GC.win32_new (wParam, data);
+	GC gc = createNewGC(wParam, data);
 	drawWidget (gc, rect);
 	gc.dispose ();
 	return result;

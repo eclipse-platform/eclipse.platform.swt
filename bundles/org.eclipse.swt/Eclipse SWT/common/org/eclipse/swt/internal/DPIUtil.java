@@ -665,6 +665,10 @@ public static boolean isAutoScaleOnRuntimeActive() {
 	return autoScaleOnRuntime;
 }
 
+static boolean setAutoScaleOnRuntimeActive(boolean value) {
+	return autoScaleOnRuntime = value;
+}
+
 /**
  * AutoScale ImageDataProvider.
  */

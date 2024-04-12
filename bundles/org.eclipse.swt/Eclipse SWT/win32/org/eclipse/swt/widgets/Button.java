@@ -1375,7 +1375,7 @@ LRESULT wmNotifyChild (NMHDR hdr, long wParam, long lParam) {
 						if (image != null) {
 							GCData data = new GCData();
 							data.device = display;
-							GC gc = GC.win32_new (nmcd.hdc, data);
+							GC gc = createNewGC(nmcd.hdc, data);
 
 							int margin = computeLeftMargin();
 							Rectangle imageBounds = DPIUtil.autoScaleBounds(image.getBounds(), this.getZoom(), 100);
