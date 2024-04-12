@@ -1533,7 +1533,7 @@ LRESULT WM_PAINT (long wParam, long lParam) {
 					OS.SetRect (rect, ps.left, ps.top, ps.right, ps.bottom);
 					drawBackground (phdc [0], rect);
 				}
-				GC gc = GC.win32_new (phdc [0], data);
+				GC gc = createNewGC(phdc [0], data);
 				Event event = new Event ();
 				event.gc = gc;
 				event.setBoundsInPixels(new Rectangle(ps.left, ps.top, width, height));
@@ -1697,7 +1697,7 @@ LRESULT WM_PRINTCLIENT (long wParam, long lParam) {
 			data.background = control.getBackgroundPixel ();
 			data.font = Font.win32_new(display, OS.SendMessage (handle, OS.WM_GETFONT, 0, 0));
 			data.uiState = (int)OS.SendMessage (handle, OS.WM_QUERYUISTATE, 0, 0);
-			GC gc = GC.win32_new (wParam, data);
+			GC gc = createNewGC(wParam, data);
 			Event event = new Event ();
 			event.gc = gc;
 			event.setBoundsInPixels(new Rectangle(rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top));

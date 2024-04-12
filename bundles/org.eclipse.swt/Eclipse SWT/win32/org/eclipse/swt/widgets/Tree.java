@@ -527,7 +527,7 @@ LRESULT CDDS_ITEMPOSTPAINT (NMTVCUSTOMDRAW nmcd, long wParam, long lParam) {
 								if (!ignoreDrawForeground) {
 									GCData data = new GCData();
 									data.device = display;
-									GC gc = GC.win32_new (hDC, data);
+									GC gc = createNewGC(hDC, data);
 									RECT iconRect = item.getBounds (index, false, true, false, false, true, hDC); // Pixels
 									gc.setClipping (DPIUtil.autoScaleDown(new Rectangle(iconRect.left, iconRect.top, iconRect.right - iconRect.left, iconRect.bottom - iconRect.top)));
 									gc.drawImage (image, 0, 0, bounds.width, bounds.height, DPIUtil.autoScaleDown(iconRect.left), DPIUtil.autoScaleDown(iconRect.top), size.x, size.y);
@@ -625,7 +625,7 @@ LRESULT CDDS_ITEMPOSTPAINT (NMTVCUSTOMDRAW nmcd, long wParam, long lParam) {
 						}
 						data.font = item.getFont (index);
 						data.uiState = (int)OS.SendMessage (handle, OS.WM_QUERYUISTATE, 0, 0);
-						GC gc = GC.win32_new (hDC, data);
+						GC gc = createNewGC(hDC, data);
 						Event event = new Event ();
 						event.item = item;
 						event.index = index;
@@ -768,7 +768,7 @@ LRESULT CDDS_ITEMPOSTPAINT (NMTVCUSTOMDRAW nmcd, long wParam, long lParam) {
 							int x1 = Math.max (rect.left, rect.left - inset + 1);
 							GCData data = new GCData();
 							data.device = display;
-							GC gc = GC.win32_new (hDC, data);
+							GC gc = createNewGC(hDC, data);
 							gc.setClipping (DPIUtil.autoScaleDown(new Rectangle(x1, rect.top, rect.right - x1, rect.bottom - rect.top)));
 							gc.drawImage (image, 0, 0, bounds.width, bounds.height, DPIUtil.autoScaleDown(x1), DPIUtil.autoScaleDown(y1), size.x, size.y);
 							OS.SelectClipRgn (hDC, 0);
@@ -841,7 +841,7 @@ LRESULT CDDS_ITEMPOSTPAINT (NMTVCUSTOMDRAW nmcd, long wParam, long lParam) {
 					if (clrTextBk != -1) data.background = clrTextBk;
 				}
 				data.uiState = (int)OS.SendMessage (handle, OS.WM_QUERYUISTATE, 0, 0);
-				GC gc = GC.win32_new (hDC, data);
+				GC gc = createNewGC(hDC, data);
 				Event event = new Event ();
 				event.item = item;
 				event.index = index;
@@ -1063,7 +1063,7 @@ LRESULT CDDS_ITEMPREPAINT (NMTVCUSTOMDRAW nmcd, long wParam, long lParam) {
 			}
 			data.uiState = (int)OS.SendMessage (handle, OS.WM_QUERYUISTATE, 0, 0);
 			data.font = item.getFont (index);
-			GC gc = GC.win32_new (hDC, data);
+			GC gc = createNewGC(hDC, data);
 			Event event = new Event ();
 			event.index = index;
 			event.item = item;
@@ -4523,7 +4523,7 @@ Event sendEraseItemEvent (TreeItem item, NMTTCUSTOMDRAW nmcd, int column, RECT c
 	data.background = OS.GetBkColor (nmcd.hdc);
 	data.font = item.getFont (column);
 	data.uiState = (int)OS.SendMessage (handle, OS.WM_QUERYUISTATE, 0, 0);
-	GC gc = GC.win32_new (nmcd.hdc, data);
+	GC gc = createNewGC(nmcd.hdc, data);
 	Event event = new Event ();
 	event.item = item;
 	event.index = column;
@@ -4545,7 +4545,7 @@ Event sendMeasureItemEvent (TreeItem item, int index, long hDC, int detail) {
 	GCData data = new GCData ();
 	data.device = display;
 	data.font = item.getFont (index);
-	GC gc = GC.win32_new (hDC, data);
+	GC gc = createNewGC(hDC, data);
 	Event event = new Event ();
 	event.item = item;
 	event.gc = gc;
@@ -4579,7 +4579,7 @@ Event sendPaintItemEvent (TreeItem item, NMTTCUSTOMDRAW nmcd, int column, RECT i
 	data.foreground = OS.GetTextColor (nmcd.hdc);
 	data.background = OS.GetBkColor (nmcd.hdc);
 	data.uiState = (int)OS.SendMessage (handle, OS.WM_QUERYUISTATE, 0, 0);
-	GC gc = GC.win32_new (nmcd.hdc, data);
+	GC gc = createNewGC(nmcd.hdc, data);
 	Event event = new Event ();
 	event.item = item;
 	event.index = column;
@@ -7925,7 +7925,7 @@ LRESULT wmNotifyHeader (NMHDR hdr, long wParam, long lParam) {
 						if (columns[i].image != null) {
 							GCData data = new GCData();
 							data.device = display;
-							GC gc = GC.win32_new (nmcd.hdc, data);
+							GC gc = createNewGC(nmcd.hdc, data);
 							Rectangle imageBounds = DPIUtil.autoScaleBounds(columns[i].image.getBounds(), this.getZoom(), 100);
 							int y = Math.max (0, (nmcd.bottom - imageBounds.height) / 2);
 							gc.drawImage (columns[i].image, DPIUtil.autoScaleDown(x), DPIUtil.autoScaleDown(y));
@@ -8214,7 +8214,7 @@ LRESULT wmNotifyToolTip (NMTTCUSTOMDRAW nmcd, long lParam) {
 							data.foreground = OS.GetTextColor (nmcd.hdc);
 							data.background = OS.GetBkColor (nmcd.hdc);
 							data.font = Font.win32_new (display, hFont);
-							GC gc = GC.win32_new (nmcd.hdc, data);
+							GC gc = createNewGC(nmcd.hdc, data);
 							int x = cellRect [0].left + INSET;
 							if (index [0] != 0) x -= gridWidth;
 							Image image = item [0].getImage (index [0]);

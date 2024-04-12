@@ -2154,6 +2154,7 @@ public long internal_new_GC (GCData data) {
 			data.style |= SWT.LEFT_TO_RIGHT;
 		}
 		data.device = device;
+		data.nativeZoom = currentNativeZoom;
 		data.image = this;
 		data.font = Font.win32_new(device.getSystemFont(), DPIUtil.getNativeDeviceZoom());
 	}

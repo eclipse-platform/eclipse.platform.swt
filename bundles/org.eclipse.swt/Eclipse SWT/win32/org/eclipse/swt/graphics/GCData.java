@@ -47,6 +47,7 @@ public final class GCData {
 	public float[] lineDashes;
 	public float lineMiterLimit = 10;
 	public int alpha = 0xFF;
+	public int nativeZoom;
 
 	public Image image;
 	public PAINTSTRUCT ps;

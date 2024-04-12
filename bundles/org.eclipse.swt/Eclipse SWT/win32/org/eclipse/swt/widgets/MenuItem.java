@@ -1126,7 +1126,7 @@ LRESULT wmDrawChild (long wParam, long lParam) {
 	if (image != null) {
 		GCData data = new GCData();
 		data.device = display;
-		GC gc = GC.win32_new (struct.hDC, data);
+		GC gc = createNewGC(struct.hDC, data);
 		/*
 		* Bug in Windows.  When a bitmap is included in the
 		* menu bar, the HDC seems to already include the left
