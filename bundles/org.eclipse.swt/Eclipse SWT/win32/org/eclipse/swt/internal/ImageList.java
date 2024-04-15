@@ -22,17 +22,19 @@ public class ImageList {
 	long handle;
 	int style, refCount;
 	Image [] images;
+	private final int zoom;
 
-public ImageList (int style) {
-	this (style, 32, 32);
+public ImageList (int style, int zoom) {
+	this (style, 32, 32, zoom);
 }
 
-public ImageList (int style, int width, int height) {
+public ImageList (int style, int width, int height, int zoom) {
 	this.style = style;
 	int flags = OS.ILC_MASK | OS.ILC_COLOR32;
 	if ((style & SWT.RIGHT_TO_LEFT) != 0) flags |= OS.ILC_MIRROR;
 	handle = OS.ImageList_Create (width, height, flags, 16, 16);
 	images = new Image [4];
+	this.zoom = zoom;
 }
 
 public int add (Image image) {
@@ -46,7 +48,7 @@ public int add (Image image) {
 		index++;
 	}
 	if (count == 0) {
-		Rectangle rect = image.getBoundsInPixels();
+		Rectangle rect = DPIUtil.autoScaleBounds(image.getBounds(), zoom, 100);
 		OS.ImageList_SetIconSize (handle, rect.width, rect.height);
 	}
 	set (index, image, count);
@@ -360,7 +362,7 @@ public int removeRef() {
 }
 
 void set (int index, Image image, int count) {
-	long hImage = image.handle;
+	long hImage = Image.win32_getHandle(image, zoom);
 	int [] cx = new int [1], cy = new int [1];
 	OS.ImageList_GetIconSize (handle, cx, cy);
 	switch (image.type) {
@@ -369,7 +371,7 @@ void set (int index, Image image, int count) {
 			* Note that the image size has to match the image list icon size.
 			*/
 			long hBitmap = 0, hMask = 0;
-			ImageData data = image.getImageDataAtCurrentZoom();
+			ImageData data = image.getImageData(zoom);
 			switch (data.getTransparencyType ()) {
 				case SWT.TRANSPARENCY_ALPHA:
 					/*

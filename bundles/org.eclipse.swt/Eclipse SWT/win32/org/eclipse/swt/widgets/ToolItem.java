@@ -1110,13 +1110,13 @@ void updateImages (boolean enabled) {
 		Rectangle bounds = DPIUtil.autoScaleBounds(image.getBounds(), getParent().getZoom(), 100);
 		int listStyle = parent.style & SWT.RIGHT_TO_LEFT;
 		if (imageList == null) {
-			imageList = display.getImageListToolBar (listStyle, bounds.width, bounds.height);
+			imageList = display.getImageListToolBar (listStyle, bounds.width, bounds.height, getZoom());
 		}
 		if (disabledImageList == null) {
-			disabledImageList = display.getImageListToolBarDisabled (listStyle, bounds.width, bounds.height);
+			disabledImageList = display.getImageListToolBarDisabled (listStyle, bounds.width, bounds.height, getZoom());
 		}
 		if (hotImageList == null) {
-			hotImageList = display.getImageListToolBarHot (listStyle, bounds.width, bounds.height);
+			hotImageList = display.getImageListToolBarHot (listStyle, bounds.width, bounds.height, getZoom());
 		}
 		Image disabled = disabledImage;
 		if (disabledImage == null) {
@@ -1231,24 +1231,13 @@ private static void handleDPIChange(Widget widget, int newZoom, float scalingFac
 
 		Rectangle bounds = DPIUtil.autoScaleBounds(image.getBounds(), newZoom, 100);
 		if (parent.getImageList() == null) {
-			parent.setImageList (display.getImageListToolBar (listStyle, bounds.width, bounds.height));
+			parent.setImageList (display.getImageListToolBar (listStyle, bounds.width, bounds.height, item.getZoom()));
 		}
 		if (parent.getDisabledImageList() == null) {
-			parent.setDisabledImageList (display.getImageListToolBarDisabled (listStyle, bounds.width, bounds.height));
+			parent.setDisabledImageList (display.getImageListToolBarDisabled (listStyle, bounds.width, bounds.height, item.getZoom()));
 		}
 		if (parent.getHotImageList() == null) {
-			parent.setHotImageList (display.getImageListToolBarHot (listStyle, bounds.width, bounds.height));
-		}
-		Image.win32_new(image, newZoom);
-
-		Image disabledImage = item.getDisabledImage();
-		if (disabledImage != null && !disabledImage.isDisposed()) {
-			Image.win32_new(disabledImage, newZoom);
-		}
-
-		Image hotImage = item.getHotImage();
-		if (hotImage != null) {
-			Image.win32_new(hotImage, newZoom);
+			parent.setHotImageList (display.getImageListToolBarHot (listStyle, bounds.width, bounds.height, item.getZoom()));
 		}
 	}
 	item.setWidthInPixels(0);

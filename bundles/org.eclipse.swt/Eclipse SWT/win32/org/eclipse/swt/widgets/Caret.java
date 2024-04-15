@@ -353,7 +353,7 @@ void resize () {
 	resized = false;
 	long hwnd = parent.handle;
 	OS.DestroyCaret ();
-	long hBitmap = image != null ? image.handle : 0;
+	long hBitmap = image != null ? Image.win32_getHandle(image, getZoom()) : 0;
 	int width = this.width;
 	if (image == null && width == 0) {
 		int [] buffer = new int [1];
@@ -441,7 +441,7 @@ void setBoundsInPixels (Rectangle rect) {
 void setFocus () {
 	long hwnd = parent.handle;
 	long hBitmap = 0;
-	if (image != null) hBitmap = image.handle;
+	if (image != null) hBitmap = Image.win32_getHandle(image, getZoom());
 	int width = this.width;
 	if (image == null && width == 0) {
 		int [] buffer = new int [1];
@@ -661,7 +661,7 @@ private static void handleDPIChange(Widget widget, int newZoom, float scalingFac
 
 	Image image = caret.getImage();
 	if (image != null) {
-		caret.setImage(Image.win32_new(image, newZoom));
+		caret.setImage(image);
 	}
 
 	if (caret.font != null) {

@@ -126,7 +126,7 @@ void _setImage (Image image) {
 	if (imageList != null) imageList.dispose ();
 	imageList = null;
 	if (image != null) {
-		imageList = new ImageList (style & SWT.RIGHT_TO_LEFT);
+		imageList = new ImageList (style & SWT.RIGHT_TO_LEFT, getZoom());
 		if (OS.IsWindowEnabled (handle)) {
 			imageList.add (image);
 		} else {
@@ -1021,7 +1021,7 @@ void updateImageList () {
 		BUTTON_IMAGELIST buttonImageList = new BUTTON_IMAGELIST ();
 		OS.SendMessage (handle, OS.BCM_GETIMAGELIST, 0, buttonImageList);
 		if (imageList != null) imageList.dispose ();
-		imageList = new ImageList (style & SWT.RIGHT_TO_LEFT);
+		imageList = new ImageList (style & SWT.RIGHT_TO_LEFT, getZoom());
 		if (OS.IsWindowEnabled (handle)) {
 			imageList.add (image);
 		} else {
@@ -1553,7 +1553,7 @@ private static void handleDPIChange(Widget widget, int newZoom, float scalingFac
 	}
 	// Refresh the image
 	if (button.image != null) {
-		button._setImage(Image.win32_new(button.image, newZoom));
+		button._setImage(button.image);
 		button.updateImageList();
 	}
 }
