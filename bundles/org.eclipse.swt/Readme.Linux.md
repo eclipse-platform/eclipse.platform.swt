@@ -4,40 +4,24 @@ The SWT Linux port is based on the GTK.
 
 The natives are build using make and (by default) gcc.
 
-# Development overview
-SWT is made up of 2 parts, Java and the natives (written in C).
-
-* **Java Part**
-If you only make changes in the Java part or need to configure SWT for running
-snippets, then you don't need to recompile the natives, instead, you can just
-use the pre-compiled libraries in the binary repository.
-
-* **Natives Part**
-Make sure the binary project for your platform is imported and open in your
-workspace.
-
 ## Building Natives
 
-### Building 64bit natives for GTK3
+### Building 64bit natives for GTK
 
 You need to install the following on your system:
 
 * make
 * gcc
-* GTK+ development files (gtk3-devel)
-* Java 17 JDK
+* GTK3/GTK4 development files (see https://www.gtk.org/docs/installations/linux/)
+* Java 17 JDK (https://adoptium.net/marketplace/?version=17)
 * (optional) Webkit for GTK development files (webkit2gtk3-devel)
 
 ### Building and Testing locally
 
 Import and build the SWT project `bundles/org.eclipse.swt` and `binaries/org.eclipse.swt.gtk.linux.${arch}` in Eclipse.
 
-To build SWT natives run the `Build-SWT-native-binaries-for-running-platform` Maven launch configuration.
-Alternatively run the `build.sh` script in `binaries/org.eclipse.swt.gtk.linux.${arch}/bin/library` directory. To
-use the locally build natives run the build script with the 'install' argument
-(`./build.sh install`) or --help to see more options.
+See **Building and Testing locally** in [Readme.md](Readme.md) for further instructions.
 
-You can find additional information on GTK SWT development can be found in
-Eclipse Wiki.
+Additional information on GTK SWT development can be found in Eclipse Wiki:
 
 https://wiki.eclipse.org/SWT/Devel/Gtk/Dev_guide
