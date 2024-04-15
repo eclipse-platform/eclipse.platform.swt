@@ -712,7 +712,7 @@ private void logUnlessEquals(Appendable log, String message, Rectangle expected,
 	}
 }
 
-//TODO This test was not hooked for running with the runTest override. It fails on GTK/Cocoa. Investigate.
+@Test
 public void a_test_setRegion() {
 	Region region = new Region();
 	region.add(new Rectangle(10, 20, 100, 200));
@@ -727,7 +727,7 @@ public void a_test_setRegion() {
 	Shell shell2 = new Shell(display, SWT.NO_TRIM);
 	assertNull(":d:", shell2.getRegion());
 	shell2.setRegion(region);
-	assertEquals(":e:", region.handle, shell2.getRegion().handle);
+	assertEquals(":e:", region, shell2.getRegion());
 	region.dispose();
 	assertTrue(":f:", shell2.getRegion().isDisposed());
 	shell2.setRegion(null);
