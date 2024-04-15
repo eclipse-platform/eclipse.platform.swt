@@ -3493,7 +3493,7 @@ public FontMetrics getFontMetrics() {
 	checkGC(FONT);
 	TEXTMETRIC lptm = new TEXTMETRIC();
 	OS.GetTextMetrics(handle, lptm);
-	return FontMetrics.win32_new(lptm);
+	return FontMetrics.win32_new(lptm, data.nativeZoom);
 }
 
 /**
