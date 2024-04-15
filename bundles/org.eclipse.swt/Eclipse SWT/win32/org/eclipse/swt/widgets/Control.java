@@ -3690,7 +3690,7 @@ public void setRegion (Region region) {
 	long hRegion = 0;
 	if (region != null) {
 		hRegion = OS.CreateRectRgn (0, 0, 0, 0);
-		OS.CombineRgn (hRegion, region.handle, hRegion, OS.RGN_OR);
+		OS.CombineRgn (hRegion, Region.win32_getHandle(region, getZoom()), hRegion, OS.RGN_OR);
 	}
 	OS.SetWindowRgn (handle, hRegion, true);
 	this.region = region;
@@ -5814,6 +5814,9 @@ private static void handleDPIChange(Widget widget, int newZoom, float scalingFac
 		} else {
 			control.setBackgroundImage(image);
 		}
+	}
+	if (control.getRegion() != null) {
+		control.setRegion(control.getRegion());
 	}
 }
 
