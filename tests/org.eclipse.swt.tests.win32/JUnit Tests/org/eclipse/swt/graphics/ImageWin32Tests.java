@@ -37,19 +37,15 @@ public class ImageWin32Tests {
 	}
 
 	@Test
-	public void imageMustBeRescaledOnZoomChange() {
+	public void testImageShouldHaveDimesionAsPerZoomLevel() {
 		int zoom = DPIUtil.getDeviceZoom();
+		int scalingFactor = 2;
 		Image image = new Image(display, 10, 10);
-
 		try {
 			ImageData baseImageData = image.getImageData(zoom);
 			assertEquals("Width should equal the initial width on the same zoom", 10, baseImageData.width);
-			Image scaledImage = Image.win32_new(image, zoom);
-			ImageData scaledImageData = scaledImage.getImageData(zoom*2);
+			ImageData scaledImageData = image.getImageData(zoom * scalingFactor);
 			assertEquals("Width should be doubled on doubled zoom", 10*2, scaledImageData.width);
-			scaledImage = Image.win32_new(image, zoom*2);
-			baseImageData = scaledImage.getImageData(zoom);
-			assertEquals("Width of ImageData must not be affected by a zoom change", 10, baseImageData.width);
 		} finally {
 			image.dispose();
 		}

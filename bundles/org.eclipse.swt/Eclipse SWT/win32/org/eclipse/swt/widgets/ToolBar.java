@@ -1265,9 +1265,9 @@ void updateOrientation () {
 	super.updateOrientation ();
 	if (imageList != null) {
 		Point size = imageList.getImageSize ();
-		ImageList newImageList = display.getImageListToolBar (style & SWT.RIGHT_TO_LEFT, size.x, size.y);
-		ImageList newHotImageList = display.getImageListToolBarHot (style & SWT.RIGHT_TO_LEFT, size.x, size.y);
-		ImageList newDisabledImageList = display.getImageListToolBarDisabled (style & SWT.RIGHT_TO_LEFT, size.x, size.y);
+		ImageList newImageList = display.getImageListToolBar (style & SWT.RIGHT_TO_LEFT, size.x, size.y, getZoom());
+		ImageList newHotImageList = display.getImageListToolBarHot (style & SWT.RIGHT_TO_LEFT, size.x, size.y, getZoom());
+		ImageList newDisabledImageList = display.getImageListToolBarDisabled (style & SWT.RIGHT_TO_LEFT, size.x, size.y, getZoom());
 		TBBUTTONINFO info = new TBBUTTONINFO ();
 		info.cbSize = TBBUTTONINFO.sizeof;
 		info.dwMask = OS.TBIF_IMAGE;

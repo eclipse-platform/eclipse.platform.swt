@@ -40,7 +40,7 @@ public class CommonWidgetsDPIChangeHandlers {
 		// Refresh the image
 		Image image = item.getImage();
 		if (image != null) {
-			item.setImage(Image.win32_new(image, newZoom));
+			item.setImage(image);
 		}
 	}
 }

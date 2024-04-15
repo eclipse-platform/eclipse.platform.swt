@@ -1821,14 +1821,6 @@ private static void handleDPIChange(Widget widget, int newZoom, float scalingFac
 	if (!(widget instanceof TreeItem treeItem)) {
 		return;
 	}
-	Image[] images = treeItem.images;
-	if (images != null) {
-		for (Image innerImage : images) {
-			if (innerImage != null) {
-				Image.win32_new(innerImage, newZoom);
-			}
-		}
-	}
 	Font font = treeItem.font;
 	if (font != null) {
 		treeItem.setFont(font);

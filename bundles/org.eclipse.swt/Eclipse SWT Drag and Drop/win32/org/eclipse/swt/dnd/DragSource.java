@@ -491,7 +491,7 @@ private void drag(Event dragEvent) {
 	hwndDrag = 0;
 	topControl = null;
 	if (image != null) {
-		imagelist = new ImageList(SWT.NONE);
+		imagelist = new ImageList(SWT.NONE, DPIUtil.getZoomForAutoscaleProperty(nativeZoom));
 		imagelist.add(image);
 		topControl = control.getShell();
 		/*

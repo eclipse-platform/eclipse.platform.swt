@@ -1276,14 +1276,6 @@ private static void handleDPIChange(Widget widget, int newZoom, float scalingFac
 	if (!(widget instanceof TableItem tableItem)) {
 		return;
 	}
-	Image[] images = tableItem.images;
-	if (images != null) {
-		for (Image innerImage : images) {
-			if (innerImage != null) {
-				Image.win32_new(innerImage, newZoom);
-			}
-		}
-	}
 	Font font = tableItem.font;
 	if (font != null) {
 		tableItem.setFont(tableItem.font);

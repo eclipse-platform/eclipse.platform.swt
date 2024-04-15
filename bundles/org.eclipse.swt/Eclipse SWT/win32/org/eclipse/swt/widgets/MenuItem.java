@@ -785,7 +785,7 @@ public void setImage (Image image) {
 	} else {
 		if (OS.IsAppThemed ()) {
 			if (hBitmap != 0) OS.DeleteObject (hBitmap);
-			info.hbmpItem = hBitmap = image != null ? Display.create32bitDIB (image) : 0;
+			info.hbmpItem = hBitmap = image != null ? Display.create32bitDIB (image, getZoom()) : 0;
 		} else {
 			info.hbmpItem = image != null ? OS.HBMMENU_CALLBACK : 0;
 		}
@@ -1227,7 +1227,7 @@ private static void handleDPIChange(Widget widget, int newZoom, float scalingFac
 	if (menuItemImage != null) {
 		Image currentImage = menuItemImage;
 		menuItem.image = null;
-		menuItem.setImage (Image.win32_new(currentImage, newZoom));
+		menuItem.setImage (currentImage);
 	}
 	// Refresh the sub menu
 	Menu subMenu = menuItem.getMenu();

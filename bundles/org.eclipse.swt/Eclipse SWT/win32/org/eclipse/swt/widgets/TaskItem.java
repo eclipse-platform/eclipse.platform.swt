@@ -462,12 +462,9 @@ public void setProgressState (int progressState) {
 
 void setShell (Shell shell) {
 	this.shell = shell;
-	shell.addListener (SWT.Dispose, new Listener () {
-		@Override
-		public void handleEvent (Event event) {
-			if (isDisposed ()) return;
-			dispose ();
-		}
+	shell.addListener (SWT.Dispose, event -> {
+		if (isDisposed ()) return;
+		dispose ();
 	});
 }
 
@@ -477,10 +474,10 @@ void updateImage () {
 	switch (overlayImage.type) {
 		case SWT.BITMAP:
 			image2 = Display.createIcon (overlayImage);
-			hIcon = image2.handle;
+			hIcon = Image.win32_getHandle(image2, getZoom());
 			break;
 		case SWT.ICON:
-			hIcon = overlayImage.handle;
+			hIcon = Image.win32_getHandle(overlayImage, getZoom());
 			break;
 	}
 	parent.mTaskbarList3.SetOverlayIcon(shell.handle, hIcon, 0);

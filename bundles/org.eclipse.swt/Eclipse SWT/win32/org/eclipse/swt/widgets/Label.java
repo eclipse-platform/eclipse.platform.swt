@@ -627,7 +627,7 @@ private static void handleDPIChange(Widget widget, int newZoom, float scalingFac
 	}
 	Image image = label.getImage();
 	if (image != null) {
-		label.setImage(Image.win32_new(image, newZoom));
+		label.setImage(image);
 	}
 }
 }
