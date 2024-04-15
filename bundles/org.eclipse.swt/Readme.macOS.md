@@ -82,13 +82,19 @@ More information on how to use the generator is available [here](https://www.ecl
 this information into this readme.
 
 
-Compiling native libs
----------------------
+## Building Natives
 
-This is done from within the binaries project.
+### Building 64bit natives for Cocoa
 
-    cd <eclipse.platform.swt>/binaries/org.eclipse.swt.cocoa.macosx.x86_64
-    mvn clean package -Dnative=cocoa.macosx.x86_64
+You need to install the following on your system:
 
+* XCode Command Line Tools (already present in XCode)
+* Java 17 JDK (https://adoptium.net/marketplace/?version=17)
+
+### Building and Testing locally
+
+Import and build the SWT project `bundles/org.eclipse.swt` and `binaries/org.eclipse.swt.cocoa.macosx.${arch}` in Eclipse.
+
+See **Building and Testing locally** in [Readme.md](Readme.md) for further instructions.
 
 Happy development!
