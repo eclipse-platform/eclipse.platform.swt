@@ -210,27 +210,6 @@ public int hashCode() {
  * </p>
  *
  * @param handle the <code>TEXTMETRIC</code> containing information about a font
- * @return a new font metrics object containing the specified <code>TEXTMETRIC</code>
- *
- * @noreference This method is not intended to be referenced by clients.
- */
-public static FontMetrics win32_new(TEXTMETRIC handle) {
-	FontMetrics fontMetrics = new FontMetrics();
-	fontMetrics.handle = handle;
-	return fontMetrics;
-}
-
-/**
- * Invokes platform specific functionality to allocate a new font metrics.
- * <p>
- * <b>IMPORTANT:</b> This method is <em>not</em> part of the public
- * API for <code>FontMetrics</code>. It is marked public only so that
- * it can be shared within the packages provided by SWT. It is not
- * available on all platforms, and should never be called from
- * application code.
- * </p>
- *
- * @param handle the <code>TEXTMETRIC</code> containing information about a font
  * @param nativeZoom the native zoom of the monitor for which Font Metrics is created
  * @return a new font metrics object containing the specified <code>TEXTMETRIC</code>
  *
