@@ -581,7 +581,7 @@ public int getLineCount(){
  */
 @Override
 public int getLineAtOffset(int charPosition){
-	if ((charPosition > getCharCount()) || (charPosition < 0)) error(SWT.ERROR_INVALID_ARGUMENT);
+	int charCount = getCharCount();	if ((charPosition > charCount) || (charPosition < 0)) SWT.error(SWT.ERROR_INVALID_ARGUMENT, null, ". charPosition=" + charPosition + " charCount=" + charCount);
 	int position;
 	if (charPosition < gapStart) {
 		// position is before the gap

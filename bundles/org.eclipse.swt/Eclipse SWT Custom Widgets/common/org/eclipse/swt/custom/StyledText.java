@@ -6032,7 +6032,13 @@ void handleResize(Event event) {
 void handleTextChanged(TextChangedEvent event) {
 	int offset = ime.getCompositionOffset();
 	if (offset != -1 && lastTextChangeStart < offset) {
-		ime.setCompositionOffset(offset + lastTextChangeNewCharCount - lastTextChangeReplaceCharCount);
+		// updating the compositionOffset of the ongoing IME if last IMEs text is deleted meanwhile
+		// for example 1.insert IME text 2.open IME menu 3. ctrl+backspace => 4. commit IME would result in IllegalArgumentException
+		int compositionOffset = ime.getCaretOffset() + lastTextChangeNewCharCount - lastTextChangeReplaceCharCount;
+		// workaround: while ongoing IME non-ime text is deleted it may result in too big compositionOffset
+		// for example 1.insert IME text 2.insert space 3.open IME menu 4. ctrl+backspace twice => 5. commit IME would result in IllegalArgumentException
+		compositionOffset= Math.min(compositionOffset, getCharCount());
+		ime.setCompositionOffset(compositionOffset);
 	}
 	int firstLine = content.getLineAtOffset(lastTextChangeStart);
 	resetCache(firstLine, 0);
