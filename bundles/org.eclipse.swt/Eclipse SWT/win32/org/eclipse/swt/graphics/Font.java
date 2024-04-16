@@ -54,7 +54,7 @@ public final class Font extends Resource {
 	 * The zoom in % of the standard resolution used for conversion of point height to pixel height
 	 * (Warning: This field is platform dependent)
 	 */
-	private int zoom;
+	int zoom;
 /**
  * Prevents uninitialized instances from being created outside the package.
  */

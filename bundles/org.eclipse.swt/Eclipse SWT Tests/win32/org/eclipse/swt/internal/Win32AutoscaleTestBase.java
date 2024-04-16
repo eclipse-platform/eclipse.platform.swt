@@ -18,7 +18,7 @@ import org.eclipse.swt.widgets.*;
 import org.junit.*;
 
 public abstract class Win32AutoscaleTestBase {
-	private Display display;
+	protected Display display;
 	protected Shell shell;
 	private boolean autoScaleOnRuntime;
 
