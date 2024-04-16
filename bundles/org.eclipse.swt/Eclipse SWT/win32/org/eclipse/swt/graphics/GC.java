@@ -198,9 +198,9 @@ void checkGC(int mask) {
 			Pattern pattern = data.foregroundPattern;
 			if (pattern != null) {
 				if(data.alpha == 0xFF) {
-					brush = pattern.handle;
+					brush = pattern.getHandle(getZoom());
 				} else {
-					brush = data.gdipFgPatternBrushAlpha != 0 ? Gdip.Brush_Clone(data.gdipFgPatternBrushAlpha) : createAlphaTextureBrush(pattern.handle, data.alpha);
+					brush = data.gdipFgPatternBrushAlpha != 0 ? Gdip.Brush_Clone(data.gdipFgPatternBrushAlpha) : createAlphaTextureBrush(pattern.getHandle(getZoom()), data.alpha);
 					data.gdipFgPatternBrushAlpha = brush;
 				}
 				if ((data.style & SWT.MIRRORED) != 0) {
@@ -289,9 +289,9 @@ void checkGC(int mask) {
 			Pattern pattern = data.backgroundPattern;
 			if (pattern != null) {
 				if(data.alpha == 0xFF) {
-					data.gdipBrush = pattern.handle;
+					data.gdipBrush = pattern.getHandle(getZoom());
 				} else {
-					long brush = data.gdipBgPatternBrushAlpha != 0 ? Gdip.Brush_Clone(data.gdipBgPatternBrushAlpha) : createAlphaTextureBrush(pattern.handle, data.alpha);
+					long brush = data.gdipBgPatternBrushAlpha != 0 ? Gdip.Brush_Clone(data.gdipBgPatternBrushAlpha) : createAlphaTextureBrush(pattern.getHandle(getZoom()), data.alpha);
 					data.gdipBrush = data.gdipBgBrush /*= data.gdipBgPatternBrushAlpha */ = brush;
 				}
 				if ((data.style & SWT.MIRRORED) != 0) {
@@ -3440,7 +3440,7 @@ public void getClipping (Region region) {
 }
 
 long getFgBrush() {
-	return data.foregroundPattern != null ? data.foregroundPattern.handle : data.gdipFgBrush;
+	return data.foregroundPattern != null ? data.foregroundPattern.getHandle(getZoom()) : data.gdipFgBrush;
 }
 
 /**

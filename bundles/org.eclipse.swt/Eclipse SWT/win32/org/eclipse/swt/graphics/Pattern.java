@@ -13,6 +13,8 @@
  *******************************************************************************/
 package org.eclipse.swt.graphics;
 
+import java.util.*;
+
 import org.eclipse.swt.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.gdip.*;
@@ -39,21 +41,17 @@ import org.eclipse.swt.internal.win32.*;
  */
 public class Pattern extends Resource {
 
-	/**
-	 * the OS resource for the Pattern
-	 * (Warning: This field is platform dependent)
-	 * <p>
-	 * <b>IMPORTANT:</b> This field is <em>not</em> part of the SWT
-	 * public API. It is marked public only so that it can be shared
-	 * within the packages provided by SWT. It is not available on all
-	 * platforms and should never be accessed from application code.
-	 * </p>
-	 *
-	 * @noreference This field is not intended to be referenced by clients.
-	 */
-	public long handle;
+	private int initialZoom;
 
 	private Runnable bitmapDestructor;
+
+	// These are the possible fields with which a pattern can be initialized from the appropriate constructors.
+	private final Image image;
+	private float baseX1, baseY1, baseX2, baseY2;
+	private Color color1, color2;
+	private int alpha1, alpha2;
+
+	private final Map<Integer, Long> zoomLevelToHandle = new HashMap<>();
 
 /**
  * Constructs a new Pattern given an image. Drawing with the resulting
@@ -88,22 +86,9 @@ public Pattern(Device device, Image image) {
 	if (image == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (image.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	this.device.checkGDIP();
-	long[] gdipImage = image.createGdipImage();
-	long img = gdipImage[0];
-	int width = Gdip.Image_GetWidth(img);
-	int height = Gdip.Image_GetHeight(img);
-	handle = Gdip.TextureBrush_new(img, Gdip.WrapModeTile, 0, 0, width, height);
-	bitmapDestructor = () -> {
-		Gdip.Bitmap_delete(img);
-		if (gdipImage[1] != 0) {
-			long hHeap = OS.GetProcessHeap ();
-			OS.HeapFree(hHeap, 0, gdipImage[1]);
-		}
-	};
-	if (handle == 0) {
-		bitmapDestructor.run();
-		SWT.error(SWT.ERROR_NO_HANDLES);
-	}
+	this.image = image;
+	initialZoom = DPIUtil.getDeviceZoom();
+	setImageHandle(image, initialZoom);
 	init();
 }
 
@@ -187,10 +172,36 @@ public Pattern(Device device, float x1, float y1, float x2, float y2, Color colo
  */
 public Pattern(Device device, float x1, float y1, float x2, float y2, Color color1, int alpha1, Color color2, int alpha2) {
 	super(device);
-	x1 = DPIUtil.autoScaleUp(x1);
-	y1 = DPIUtil.autoScaleUp(y1);
-	x2 = DPIUtil.autoScaleUp(x2);
-	y2 = DPIUtil.autoScaleUp(y2);
+	this.baseX1 = x1;
+	this.baseX2 = x2;
+	this.baseY1 = y1;
+	this.baseY2 = y2;
+	this.color1 = color1;
+	this.color2 = color2;
+	this.alpha1 = alpha1;
+	this.alpha2 = alpha2;
+	this.image = null;
+	initialZoom = DPIUtil.getDeviceZoom();
+	initializeSize(initialZoom);
+}
+
+long getHandle(int zoom) {
+	if (!this.zoomLevelToHandle.containsKey(zoom)) {
+		if (isImagePattern()) {
+			setImageHandle(image, zoom);
+		} else {
+			initializeSize(zoom);
+		}
+	}
+	return this.zoomLevelToHandle.get(zoom);
+}
+
+private void initializeSize(int zoom) {
+	long handle;
+	float x1 = DPIUtil.autoScaleUp(this.baseX1, zoom);
+	float y1 = DPIUtil.autoScaleUp(this.baseY1, zoom);
+	float x2 = DPIUtil.autoScaleUp(this.baseX2, zoom);
+	float y2 = DPIUtil.autoScaleUp(this.baseY2, zoom);
 	if (color1 == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (color1.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	if (color2 == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
@@ -221,27 +232,51 @@ public Pattern(Device device, float x1, float y1, float x2, float y2, Color colo
 			Gdip.LinearGradientBrush_SetInterpolationColors(handle, new int [] {foreColor, midColor, backColor}, new float[]{0, 0.5f, 1}, 3);
 		}
 	}
+	this.zoomLevelToHandle.put(zoom, handle);
 	init();
+}
+
+void setImageHandle(Image image, int zoom) {
+	long[] gdipImage = image.createGdipImage(zoom);
+	long img = gdipImage[0];
+	int width = Gdip.Image_GetWidth(img);
+	int height = Gdip.Image_GetHeight(img);
+	long handle = Gdip.TextureBrush_new(img, Gdip.WrapModeTile, 0, 0, width, height);
+	bitmapDestructor = () -> {
+		Gdip.Bitmap_delete(img);
+		if (gdipImage[1] != 0) {
+			long hHeap = OS.GetProcessHeap ();
+			OS.HeapFree(hHeap, 0, gdipImage[1]);
+		}
+	};
+	if (handle == 0) {
+		bitmapDestructor.run();
+		SWT.error(SWT.ERROR_NO_HANDLES);
+	} else {
+		zoomLevelToHandle.put(zoom, handle);
+	}
 }
 
 @Override
 void destroy() {
-	int type = Gdip.Brush_GetType(handle);
-	switch (type) {
-		case Gdip.BrushTypeSolidColor:
-			Gdip.SolidBrush_delete(handle);
-			break;
-		case Gdip.BrushTypeHatchFill:
-			Gdip.HatchBrush_delete(handle);
-			break;
-		case Gdip.BrushTypeLinearGradient:
-			Gdip.LinearGradientBrush_delete(handle);
-			break;
-		case Gdip.BrushTypeTextureFill:
-			Gdip.TextureBrush_delete(handle);
-			break;
+	for (long handle: zoomLevelToHandle.values()) {
+		int type = Gdip.Brush_GetType(handle);
+		switch (type) {
+			case Gdip.BrushTypeSolidColor:
+				Gdip.SolidBrush_delete(handle);
+				break;
+			case Gdip.BrushTypeHatchFill:
+				Gdip.HatchBrush_delete(handle);
+				break;
+			case Gdip.BrushTypeLinearGradient:
+				Gdip.LinearGradientBrush_delete(handle);
+				break;
+			case Gdip.BrushTypeTextureFill:
+				Gdip.TextureBrush_delete(handle);
+				break;
+		}
 	}
-	handle = 0;
+	zoomLevelToHandle.clear();
 	if (bitmapDestructor != null) {
 		bitmapDestructor.run();
 		bitmapDestructor = null;
@@ -260,7 +295,7 @@ void destroy() {
  */
 @Override
 public boolean isDisposed() {
-	return handle == 0;
+	return zoomLevelToHandle.isEmpty();
 }
 
 /**
@@ -272,7 +307,11 @@ public boolean isDisposed() {
 @Override
 public String toString() {
 	if (isDisposed()) return "Pattern {*DISPOSED*}";
-	return "Pattern {" + handle + "}";
+	return "Pattern {" + zoomLevelToHandle + "}";
+}
+
+private boolean isImagePattern() {
+	return image != null;
 }
 
 }
