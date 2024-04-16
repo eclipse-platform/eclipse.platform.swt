@@ -3790,10 +3790,10 @@ public void getTransform(Transform transform) {
 	if (transform.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	long gdipGraphics = data.gdipGraphics;
 	if (gdipGraphics != 0) {
-		Gdip.Graphics_GetTransform(gdipGraphics, transform.handle);
+		Gdip.Graphics_GetTransform(gdipGraphics, transform.getHandle(getZoom()));
 		long identity = identity();
 		Gdip.Matrix_Invert(identity);
-		Gdip.Matrix_Multiply(transform.handle, identity, Gdip.MatrixOrderAppend);
+		Gdip.Matrix_Multiply(transform.getHandle(getZoom()), identity, Gdip.MatrixOrderAppend);
 		Gdip.Matrix_delete(identity);
 	} else {
 		transform.setElements(1, 0, 0, 1, 0, 0);
@@ -4928,7 +4928,7 @@ public void setTransform(Transform transform) {
 	initGdip();
 	long identity = identity();
 	if (transform != null) {
-		Gdip.Matrix_Multiply(identity, transform.handle, Gdip.MatrixOrderPrepend);
+		Gdip.Matrix_Multiply(identity, transform.getHandle(getZoom()), Gdip.MatrixOrderPrepend);
 	}
 	Gdip.Graphics_SetTransform(data.gdipGraphics, identity);
 	Gdip.Matrix_delete(identity);
