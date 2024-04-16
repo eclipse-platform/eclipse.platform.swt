@@ -1292,7 +1292,7 @@ TextLayout getTextLayout(int lineIndex, int orientation, int width, int lineSpac
 	if (styledText != null && styledText.ime != null) {
 		IME ime = styledText.ime;
 		int compositionOffset = ime.getCompositionOffset();
-		if (compositionOffset != -1) {
+		if (compositionOffset != -1 && compositionOffset <= content.getCharCount()) {
 			int commitCount = ime.getCommitCount();
 			int compositionLength = ime.getText().length();
 			if (compositionLength != commitCount) {
