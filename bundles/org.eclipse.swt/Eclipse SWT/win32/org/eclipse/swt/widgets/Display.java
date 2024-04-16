@@ -2153,6 +2153,10 @@ Monitor getMonitor (long hmonitor) {
 	int [] dpiY = new int[1];
 	int result = OS.GetDpiForMonitor (monitor.handle, OS.MDT_EFFECTIVE_DPI, dpiX, dpiY);
 	result = (result == OS.S_OK) ? DPIUtil.mapDPIToZoom (dpiX[0]) : 100;
+	if (result == 0) {
+		System.err.println("***WARNING: GetDpiForMonitor: SWT could not get valid monitor scaling factor.");
+		result = 100;
+	}
 	/*
 	 * Always return true monitor zoom value as fetched from native, else will lead
 	 * to scaling issue on OS Win8.1 and above, for more details refer bug 537614.
