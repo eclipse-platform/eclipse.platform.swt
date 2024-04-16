@@ -1746,12 +1746,13 @@ void drawOvalInPixels (int x, int y, int width, int height) {
 public void drawPath (Path path) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (path == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	if (path.handle == 0) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	long pathHandle = path.getHandle(getZoom());
+	if (pathHandle == 0) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	initGdip();
 	checkGC(DRAW);
 	long gdipGraphics = data.gdipGraphics;
 	Gdip.Graphics_TranslateTransform(gdipGraphics, data.gdipXOffset, data.gdipYOffset, Gdip.MatrixOrderPrepend);
-	Gdip.Graphics_DrawPath(gdipGraphics, data.gdipPen, path.handle);
+	Gdip.Graphics_DrawPath(gdipGraphics, data.gdipPen, pathHandle);
 	Gdip.Graphics_TranslateTransform(gdipGraphics, -data.gdipXOffset, -data.gdipYOffset, Gdip.MatrixOrderPrepend);
 }
 
@@ -2930,12 +2931,13 @@ void fillOvalInPixels (int x, int y, int width, int height) {
 public void fillPath (Path path) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (path == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	if (path.handle == 0) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	final long pathHandle = path.getHandle(getZoom());
+	if (pathHandle == 0) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	initGdip();
 	checkGC(FILL);
 	int mode = OS.GetPolyFillMode(handle) == OS.WINDING ? Gdip.FillModeWinding : Gdip.FillModeAlternate;
-	Gdip.GraphicsPath_SetFillMode(path.handle, mode);
-	Gdip.Graphics_FillPath(data.gdipGraphics, data.gdipBrush, path.handle);
+	Gdip.GraphicsPath_SetFillMode(pathHandle, mode);
+	Gdip.Graphics_FillPath(data.gdipGraphics, data.gdipBrush, pathHandle);
 }
 
 /**
@@ -4323,8 +4325,9 @@ public void setClipping (Path path) {
 	if (path != null) {
 		initGdip();
 		int mode = OS.GetPolyFillMode(handle) == OS.WINDING ? Gdip.FillModeWinding : Gdip.FillModeAlternate;
-		Gdip.GraphicsPath_SetFillMode(path.handle, mode);
-		Gdip.Graphics_SetClipPath(data.gdipGraphics, path.handle);
+		final long pathHandle = path.getHandle(getZoom());
+		Gdip.GraphicsPath_SetFillMode(pathHandle, mode);
+		Gdip.Graphics_SetClipPath(data.gdipGraphics, pathHandle);
 	}
 }
 
