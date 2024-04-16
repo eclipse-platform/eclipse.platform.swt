@@ -28,7 +28,7 @@ public final class Monitor {
 	long handle;
 	int x, y, width, height;
 	int clientX, clientY, clientWidth, clientHeight;
-	int zoom;
+	int zoom = 100;
 
 /**
  * Prevents uninitialized instances from being created outside the package.
