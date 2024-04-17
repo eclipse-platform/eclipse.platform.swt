@@ -72,7 +72,7 @@ jobs:
 
       - name: Upload badge to Gist
         if: github.ref == 'refs/heads/master'
-        uses: andymckay/append-gist-action@6e8d64427fe47cbacf4ab6b890411f1d67c07f3e
+        uses: andymckay/append-gist-action@ab30bf28df67017c7ad696500b218558c7c04db3
         with:
           token: ${{ secrets.GIST_TOKEN }}
           gistURL: https://gist.githubusercontent.com/eclipse-releng-bot/78d110a601baa4ef777ccb472f584038
