@@ -48,6 +48,10 @@ public class MenuItem extends Item {
 	final static int MARGIN_WIDTH = 1;
 	final static int MARGIN_HEIGHT = 1;
 
+	static {
+		DPIZoomChangeRegistry.registerHandler(MenuItem::handleDPIChange, MenuItem.class);
+	}
+
 /**
  * Constructs a new instance of this class given its parent
  * (which must be a <code>Menu</code>) and a style value
@@ -1213,4 +1217,21 @@ private static final class MenuItemToolTip extends ToolTip {
 
 }
 
+private static void handleDPIChange(Widget widget, int newZoom, float scalingFactor) {
+	if (!(widget instanceof MenuItem menuItem)) {
+		return;
+	}
+	// Refresh the image
+	Image menuItemImage = menuItem.getImage();
+	if (menuItemImage != null) {
+		Image currentImage = menuItemImage;
+		menuItem.image = null;
+		menuItem.setImage (Image.win32_new(currentImage, newZoom));
+	}
+	// Refresh the sub menu
+	Menu subMenu = menuItem.getMenu();
+	if (subMenu != null) {
+		DPIZoomChangeRegistry.applyChange(subMenu, newZoom, scalingFactor);
+	}
+}
 }

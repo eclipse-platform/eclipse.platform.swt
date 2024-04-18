@@ -69,6 +69,10 @@ public class Menu extends Widget {
 	/* Timer ID for MenuItem ToolTip */
 	static final int ID_TOOLTIP_TIMER = 110;
 
+	static {
+		DPIZoomChangeRegistry.registerHandler(Menu::handleDPIChange, Menu.class);
+	}
+
 /**
  * Constructs a new instance of this class given its parent,
  * and sets the style for the instance so that the instance
@@ -1361,5 +1365,14 @@ LRESULT wmTimer (long wParam, long lParam) {
 	}
 
 	return null;
+}
+
+private static void handleDPIChange(Widget widget, int newZoom, float scalingFactor) {
+	if (!(widget instanceof Menu menu)) {
+		return;
+	}
+	for (MenuItem item : menu.getItems()) {
+		DPIZoomChangeRegistry.applyChange(item, newZoom, scalingFactor);
+	}
 }
 }

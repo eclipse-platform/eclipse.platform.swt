@@ -90,6 +90,7 @@ public class TabFolder extends Composite {
 		lpWndClass.hInstance = OS.GetModuleHandle (null);
 		lpWndClass.style &= ~(OS.CS_HREDRAW | OS.CS_VREDRAW | OS.CS_GLOBALCLASS);
 		OS.RegisterClass (TabFolderClass, lpWndClass);
+		DPIZoomChangeRegistry.registerHandler(TabFolder::handleDPIChange, TabFolder.class);
 	}
 
 /**
@@ -1126,4 +1127,18 @@ LRESULT wmNotifyChild (NMHDR hdr, long wParam, long lParam) {
 	return super.wmNotifyChild (hdr, wParam, lParam);
 }
 
+private static void handleDPIChange(Widget widget, int newZoom, float scalingFactor) {
+	if (!(widget instanceof TabFolder tabFolder)) {
+		return;
+	}
+	Display display = tabFolder.getDisplay();
+	if (tabFolder.imageList != null) {
+		display.releaseImageList (tabFolder.imageList);
+		tabFolder.imageList = null;
+	}
+	for (int i = 0; i < tabFolder.getItemCount(); i++) {
+		DPIZoomChangeRegistry.applyChange(tabFolder.items[i], newZoom, scalingFactor);
+	}
+	tabFolder.layout(true, true);
+}
 }

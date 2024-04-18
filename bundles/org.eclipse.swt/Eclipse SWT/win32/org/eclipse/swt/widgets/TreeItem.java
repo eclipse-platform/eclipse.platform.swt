@@ -60,6 +60,10 @@ public class TreeItem extends Item {
 	int background = -1, foreground = -1;
 	int [] cellBackground, cellForeground;
 
+	static {
+		DPIZoomChangeRegistry.registerHandler(TreeItem::handleDPIChange, TreeItem.class);
+	}
+
 /**
  * Constructs <code>TreeItem</code> and <em>inserts</em> it into <code>Tree</code>.
  * Item is inserted as last direct child of the tree.
@@ -1385,7 +1389,8 @@ public void setFont (Font font){
 	}
 	Font oldFont = this.font;
 	if (oldFont == font) return;
-	this.font = font;
+	Shell shell = parent.getShell();
+	this.font = (font == null ? font : Font.win32_new(font, shell.getNativeZoom()));
 	if (oldFont != null && oldFont.equals (font)) return;
 	if (font != null) parent.customDraw = true;
 	if ((parent.style & SWT.VIRTUAL) != 0) cached = true;
@@ -1439,7 +1444,8 @@ public void setFont (int index, Font font) {
 	}
 	Font oldFont = cellFont [index];
 	if (oldFont == font) return;
-	cellFont [index] = font;
+	Shell shell = parent.getShell();
+	cellFont [index] = font == null ? font : Font.win32_new(font, shell.getNativeZoom());
 	if (oldFont != null && oldFont.equals (font)) return;
 	if (font != null) parent.customDraw = true;
 	if ((parent.style & SWT.VIRTUAL) != 0) cached = true;
@@ -1811,4 +1817,32 @@ String getNameText () {
 	return super.getNameText ();
 }
 
+private static void handleDPIChange(Widget widget, int newZoom, float scalingFactor) {
+	if (!(widget instanceof TreeItem treeItem)) {
+		return;
+	}
+	Image[] images = treeItem.images;
+	if (images != null) {
+		for (Image innerImage : images) {
+			if (innerImage != null) {
+				Image.win32_new(innerImage, newZoom);
+			}
+		}
+	}
+	Font font = treeItem.font;
+	if (font != null) {
+		treeItem.setFont(font);
+	}
+	Font[] cellFonts = treeItem.cellFont;
+	if (cellFonts != null) {
+		Shell shell = treeItem.parent.getShell();
+		for (int index = 0; index < cellFonts.length; index++) {
+			Font cellFont = cellFonts[index];
+			cellFonts[index] = cellFont == null ? null : Font.win32_new(cellFont, shell.getNativeZoom());
+		}
+	}
+	for (TreeItem item : treeItem.getItems()) {
+		DPIZoomChangeRegistry.applyChange(item, newZoom, scalingFactor);
+	}
+}
 }
