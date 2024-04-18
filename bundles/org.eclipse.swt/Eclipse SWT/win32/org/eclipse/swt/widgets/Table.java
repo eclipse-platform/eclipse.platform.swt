@@ -113,6 +113,7 @@ public class Table extends Composite {
 		TableProc = lpWndClass.lpfnWndProc;
 		OS.GetClassInfo (0, HeaderClass, lpWndClass);
 		HeaderProc = lpWndClass.lpfnWndProc;
+		DPIZoomChangeRegistry.registerHandler(Table::handleDPIChange, Table.class);
 	}
 
 /**
@@ -7326,5 +7327,45 @@ LRESULT wmNotifyToolTip (NMTTCUSTOMDRAW nmcd, long lParam) {
 		}
 	}
 	return null;
+}
+
+private static void handleDPIChange(Widget widget, int newZoom, float scalingFactor) {
+	if (!(widget instanceof Table table)) {
+		return;
+	}
+	table.settingItemHeight = true;
+	var scrollWidth = 0;
+	// Request ScrollWidth
+	if (table.getColumns().length == 0) {
+		scrollWidth = Math.round(OS.SendMessage (table.handle, OS.LVM_GETCOLUMNWIDTH, 0, 0)*scalingFactor);
+	}
+
+	Display display = table.getDisplay();
+	ImageList headerImageList = table.headerImageList;
+	// Reset ImageList
+	if (headerImageList != null) {
+		display.releaseImageList(headerImageList);
+		table.headerImageList = null;
+	}
+
+	ImageList imageList = table.imageList;
+	if (imageList != null) {
+		display.releaseImageList(imageList);
+		table.imageList = null;
+	}
+
+	for (TableItem item : table.getItems()) {
+		DPIZoomChangeRegistry.applyChange(item, newZoom, scalingFactor);
+	}
+	for (TableColumn tableColumn : table.getColumns()) {
+		DPIZoomChangeRegistry.applyChange(tableColumn, newZoom, scalingFactor);
+	}
+
+	if (table.getColumns().length == 0 && scrollWidth != 0) {
+		// Update scrollbar width if no columns are available
+		 table.setScrollWidth(scrollWidth);
+	}
+	 table.fixCheckboxImageListColor (true);
+	 table.settingItemHeight = false;
 }
 }

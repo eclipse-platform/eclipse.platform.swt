@@ -980,7 +980,7 @@ public void drawImage (Image image, int srcX, int srcY, int srcWidth, int srcHei
 		 * the coordinates may be slightly off. The workaround is to restrict
 		 * coordinates to the allowed bounds.
 		 */
-		Rectangle b = image.getBoundsInPixels();
+		Rectangle b = image.getBounds(deviceZoom);
 		int errX = src.x + src.width - b.width;
 		int errY = src.y + src.height - b.height;
 		if (errX != 0 || errY != 0) {
@@ -996,8 +996,7 @@ public void drawImage (Image image, int srcX, int srcY, int srcWidth, int srcHei
 
 void drawImage(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, int destX, int destY, int destWidth, int destHeight, boolean simple) {
 	/* Refresh Image as per zoom level, if required. */
-	srcImage.refreshImageForZoom ();
-
+	srcImage.handleDPIChange(DPIUtil.getDeviceZoom());
 	if (data.gdipGraphics != 0) {
 		//TODO - cache bitmap
 		long [] gdipImage = srcImage.createGdipImage();
@@ -4387,7 +4386,7 @@ public void setFillRule(int rule) {
 public void setFont (Font font) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (font != null && font.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	data.font = font != null ? font : data.device.systemFont;
+	data.font = font != null ? Font.win32_new(font, DPIUtil.getNativeDeviceZoom()) : data.device.systemFont;
 	data.state &= ~FONT;
 }
 

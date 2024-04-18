@@ -540,6 +540,10 @@ public class Display extends Device implements Executor {
 		};
 	}
 
+	static {
+		CommonWidgetsDPIChangeHandlers.registerCommonHandlers();
+	}
+
 
 /*
 * TEMPORARY CODE.

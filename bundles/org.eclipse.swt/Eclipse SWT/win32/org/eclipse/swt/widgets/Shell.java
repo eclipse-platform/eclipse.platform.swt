@@ -125,6 +125,7 @@ public class Shell extends Decorations {
 	ToolTip [] toolTips;
 	long hwndMDIClient, lpstrTip, toolTipHandle, balloonTipHandle, menuItemToolTipHandle;
 	int minWidth = SWT.DEFAULT, minHeight = SWT.DEFAULT, maxWidth = SWT.DEFAULT, maxHeight = SWT.DEFAULT;
+	private int nativeZoom;
 	long [] brushes;
 	boolean showWithParent, fullScreen, wasMaximized, modified, center;
 	String toolTitle, balloonTitle;
@@ -147,6 +148,7 @@ public class Shell extends Decorations {
 		WNDCLASS lpWndClass = new WNDCLASS ();
 		OS.GetClassInfo (0, DialogClass, lpWndClass);
 		DialogProc = lpWndClass.lpfnWndProc;
+		DPIZoomChangeRegistry.registerHandler(Shell::handleDPIChange, Shell.class);
 	}
 
 /**
@@ -298,8 +300,27 @@ Shell (Display display, Shell parent, int style, long handle, boolean embedded) 
 	if (handle != 0 && !embedded) {
 		state |= FOREIGN_HANDLE;
 	}
+
+	int shellZoom;
+	int shellNativeZoom;
+	if (parent != null) {
+		shellZoom = parent.getZoom();
+		shellNativeZoom = parent.getNativeZoom();
+	} else {
+		int mappedDPIZoom = getMonitor().getZoom();
+		shellZoom = DPIUtil.getZoomForAutoscaleProperty(mappedDPIZoom);
+		shellNativeZoom = mappedDPIZoom;
+	}
+	this.setZoom(shellZoom);
+	this.setNativeZoom(shellNativeZoom);
+
 	reskinWidget();
 	createWidget ();
+
+
+	if (DPIUtil.isAutoScaleOnRuntimeActive()) {
+		addListener(SWT.ZoomChanged, this::handleZoomEvent);
+	}
 }
 
 /**
@@ -2627,5 +2648,28 @@ LRESULT WM_WINDOWPOSCHANGING (long wParam, long lParam) {
 		OS.MoveMemory (lParam, lpwp, WINDOWPOS.sizeof);
 	}
 	return result;
+}
+
+/**
+ * The native zoom in % of the standard resolution the shell is scaled for
+ */
+int getNativeZoom() {
+	return nativeZoom;
+}
+
+void setNativeZoom(int nativeZoom) {
+	this.nativeZoom = nativeZoom;
+}
+
+private void handleZoomEvent(Event event) {
+	float scalingFactor = 1f * event.detail / getZoom();
+	DPIZoomChangeRegistry.applyChange(this, event.detail, scalingFactor);
+}
+
+private static void handleDPIChange(Widget widget, int newZoom, float scalingFactor) {
+	if (!(widget instanceof Shell shell)) {
+		return;
+	}
+	shell.layout (null, SWT.DEFER | SWT.ALL | SWT.CHANGED);
 }
 }

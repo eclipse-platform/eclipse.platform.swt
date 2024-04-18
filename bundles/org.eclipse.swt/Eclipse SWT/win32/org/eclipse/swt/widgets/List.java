@@ -50,6 +50,7 @@ public class List extends Scrollable {
 		WNDCLASS lpWndClass = new WNDCLASS ();
 		OS.GetClassInfo (0, ListClass, lpWndClass);
 		ListProc = lpWndClass.lpfnWndProc;
+		DPIZoomChangeRegistry.registerHandler(List::handleDPIChange, List.class);
 	}
 
 /**
@@ -1268,6 +1269,9 @@ public void setItems (String... items) {
 	if (index < items.length) error (SWT.ERROR_ITEM_NOT_ADDED);
 }
 
+/**
+ * Calculates the scroll width depending on the item with the highest width
+ */
 void setScrollWidth () {
 	int newWidth = 0;
 	RECT rect = new RECT ();
@@ -1847,6 +1851,13 @@ LRESULT wmCommandChild (long wParam, long lParam) {
 	return super.wmCommandChild (wParam, lParam);
 }
 
-
-
+private static void handleDPIChange(Widget widget, int newZoom, float scalingFactor) {
+	if (!(widget instanceof List list)) {
+		return;
+	}
+	if((list.style & SWT.H_SCROLL) != 0) {
+		// Recalculate the Scroll width, as length of items has changed
+		list.setScrollWidth();
+	}
+}
 }

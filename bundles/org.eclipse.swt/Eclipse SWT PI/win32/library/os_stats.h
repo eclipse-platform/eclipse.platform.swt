@@ -257,6 +257,7 @@ typedef enum {
 	GetSysColorBrush_FUNC,
 	GetSystemMenu_FUNC,
 	GetSystemMetrics_FUNC,
+	GetSystemMetricsForDpi_FUNC,
 	GetTextColor_FUNC,
 	GetTextExtentPoint32_FUNC,
 	GetTextMetrics_FUNC,
