@@ -303,6 +303,11 @@ public ScrollBar getHorizontalBar () {
  */
 public int getScrollbarsMode () {
 	checkWidget();
+	if (!GTK.GTK4) {
+		if (OS.GTK_OVERLAY_SCROLLING_DISABLED) {
+			return SWT.NONE;
+		}
+	}
 	if (GTK.gtk_scrolled_window_get_overlay_scrolling(scrolledHandle)) {
 		return SWT.SCROLLBAR_OVERLAY;
 	}
