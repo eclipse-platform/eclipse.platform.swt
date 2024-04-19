@@ -6878,6 +6878,16 @@ JNIEXPORT void JNICALL GTK_NATIVE(gtk_1scrolled_1window_1set_1hadjustment)
 }
 #endif
 
+#ifndef NO_gtk_1scrolled_1window_1set_1overlay_1scrolling
+JNIEXPORT void JNICALL GTK_NATIVE(gtk_1scrolled_1window_1set_1overlay_1scrolling)
+	(JNIEnv *env, jclass that, jlong arg0, jboolean arg1)
+{
+	GTK_NATIVE_ENTER(env, that, gtk_1scrolled_1window_1set_1overlay_1scrolling_FUNC);
+	gtk_scrolled_window_set_overlay_scrolling((GtkScrolledWindow *)arg0, arg1);
+	GTK_NATIVE_EXIT(env, that, gtk_1scrolled_1window_1set_1overlay_1scrolling_FUNC);
+}
+#endif
+
 #ifndef NO_gtk_1scrolled_1window_1set_1policy
 JNIEXPORT void JNICALL GTK_NATIVE(gtk_1scrolled_1window_1set_1policy)
 	(JNIEnv *env, jclass that, jlong arg0, jint arg1, jint arg2)

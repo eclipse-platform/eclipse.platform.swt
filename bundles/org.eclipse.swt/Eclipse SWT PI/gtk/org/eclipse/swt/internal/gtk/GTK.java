@@ -1469,6 +1469,8 @@ public class GTK extends OS {
 	public static final native void gtk_scrolled_window_set_policy(long scrolled_window, int hscrollbar_policy, int vscrollbar_policy);
 	/** @param scrolled_window cast=(GtkScrolledWindow *) */
 	public static final native boolean gtk_scrolled_window_get_overlay_scrolling(long scrolled_window);
+	/** @param scrolled_window cast=(GtkScrolledWindow *) */
+	public static final native void gtk_scrolled_window_set_overlay_scrolling(long scrolled_window, boolean overlay_scrolling);
 	/**
 	 * @param scrolled_window cast=(GtkScrolledWindow *)
 	 * @param adjustment cast=(GtkAdjustment *)
