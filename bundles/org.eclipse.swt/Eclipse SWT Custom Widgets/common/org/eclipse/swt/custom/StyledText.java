@@ -19,6 +19,7 @@ package org.eclipse.swt.custom;
 
 
 import java.util.*;
+import java.util.function.*;
 import java.util.stream.*;
 
 import org.eclipse.swt.*;
@@ -10857,6 +10858,27 @@ void updateSelection(int startOffset, int replacedLength, int newLength) {
 		}).flatMapToInt(p -> IntStream.of(p.x, p.y - p.x))
 		.toArray(), true, false);
 	setCaretLocations();
+}
+
+/**
+ * The method accepts a StyledText and a callback which takes
+ * all the carets of the StyledText as the argument and executes it.
+ * The caret is refreshed after the execution of the callback.
+ *
+ * @param styledText the StyledText to get the carets from
+ * @param caretUpdater the callback which works with the carets
+ *
+ * @noreference This method is not intended to be referenced by clients.
+ */
+public static void updateAndRefreshCarets(StyledText styledText, Consumer<Caret> caretUpdater) {
+	caretUpdater.accept(styledText.getCaret());
+	caretUpdater.accept(styledText.defaultCaret);
+	for (Caret caret : styledText.carets) {
+		caretUpdater.accept(caret);
+	}
+	styledText.updateCaretVisibility();
+	styledText.setCaretLocations();
+
 }
 
 }

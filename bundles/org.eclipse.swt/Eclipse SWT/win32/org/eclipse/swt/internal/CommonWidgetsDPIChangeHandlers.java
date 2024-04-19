@@ -13,6 +13,7 @@
  *******************************************************************************/
 package org.eclipse.swt.internal;
 
+import org.eclipse.swt.custom.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
 
@@ -31,6 +32,7 @@ public class CommonWidgetsDPIChangeHandlers {
 
 	public static void registerCommonHandlers() {
 		DPIZoomChangeRegistry.registerHandler(CommonWidgetsDPIChangeHandlers::handleItemDPIChange, Item.class);
+		DPIZoomChangeRegistry.registerHandler(CommonWidgetsDPIChangeHandlers::handleStyledTextDPIChange, StyledText.class);
 	}
 
 	private static void handleItemDPIChange(Widget widget, int newZoom, float scalingFactor) {
@@ -42,5 +44,16 @@ public class CommonWidgetsDPIChangeHandlers {
 		if (image != null) {
 			item.setImage(image);
 		}
+	}
+
+	private static void handleStyledTextDPIChange(Widget widget, int newZoom, float scalingFactor) {
+		if (!(widget instanceof StyledText styledText)) {
+			return;
+		}
+
+		StyledText.updateAndRefreshCarets(styledText, caretToRefresh -> {
+			DPIZoomChangeRegistry.applyChange(caretToRefresh, newZoom, scalingFactor);
+			Caret.win32_setHeight(caretToRefresh, styledText.getLineHeight());
+		});
 	}
 }

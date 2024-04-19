@@ -127,15 +127,15 @@ public Rectangle getBounds () {
 Rectangle getBoundsInPixels () {
 	if (image != null) {
 		Rectangle rect = image.getBoundsInPixels ();
-		return new Rectangle (x, y, rect.width, rect.height);
+		return new Rectangle (getXInPixels(), getYInPixels(), rect.width, rect.height);
 	}
 	if (width == 0) {
 		int [] buffer = new int [1];
 		if (OS.SystemParametersInfo (OS.SPI_GETCARETWIDTH, 0, buffer, 0)) {
-			return new Rectangle (x, y, buffer [0], height);
+			return new Rectangle (getXInPixels(), getYInPixels(), buffer [0], getHeightInPixels());
 		}
 	}
-	return new Rectangle (x, y, width, height);
+	return new Rectangle (getXInPixels(), getYInPixels(), getWidthInPixels(), getHeightInPixels());
 }
 
 /**
@@ -185,10 +185,6 @@ public Image getImage () {
  */
 public Point getLocation () {
 	checkWidget();
-	return DPIUtil.scaleDown(getLocationInPixels(), getZoom());
-}
-
-Point getLocationInPixels () {
 	return new Point (x, y);
 }
 
@@ -230,10 +226,26 @@ Point getSizeInPixels () {
 	if (width == 0) {
 		int [] buffer = new int [1];
 		if (OS.SystemParametersInfo (OS.SPI_GETCARETWIDTH, 0, buffer, 0)) {
-			return new Point (buffer [0], height);
+			return new Point (buffer [0], getHeightInPixels());
 		}
 	}
-	return new Point (width, height);
+	return new Point (getWidthInPixels(), getHeightInPixels());
+}
+
+private int getWidthInPixels() {
+	return DPIUtil.autoScaleUp(width, getZoom());
+}
+
+private int getHeightInPixels() {
+	return DPIUtil.autoScaleUp(height, getZoom());
+}
+
+private int getXInPixels() {
+	return DPIUtil.autoScaleUp(x, getZoom());
+}
+
+private int getYInPixels() {
+	return DPIUtil.autoScaleUp(y, getZoom());
 }
 
 /**
@@ -293,7 +305,7 @@ void killFocus () {
 void move () {
 	moved = false;
 	setCurrentCaret(this);
-	if (!OS.SetCaretPos (x, y)) return;
+	if (!OS.SetCaretPos (getXInPixels(), getYInPixels())) return;
 	resizeIME ();
 }
 
@@ -354,15 +366,15 @@ void resize () {
 	long hwnd = parent.handle;
 	OS.DestroyCaret ();
 	long hBitmap = image != null ? Image.win32_getHandle(image, getZoom()) : 0;
-	int width = this.width;
-	if (image == null && width == 0) {
+	int widthInPixels = this.getWidthInPixels();
+	if (image == null && widthInPixels == 0) {
 		int [] buffer = new int [1];
 		if (OS.SystemParametersInfo (OS.SPI_GETCARETWIDTH, 0, buffer, 0)) {
-			width = buffer [0];
+			widthInPixels = buffer [0];
 		}
 	}
-	OS.CreateCaret (hwnd, hBitmap, width, height);
-	OS.SetCaretPos (x, y);
+	OS.CreateCaret (hwnd, hBitmap, widthInPixels, getHeightInPixels());
+	OS.SetCaretPos (getXInPixels(), getYInPixels());
 	OS.ShowCaret (hwnd);
 	move ();
 }
@@ -395,11 +407,6 @@ void restoreIMEFont () {
  */
 public void setBounds (int x, int y, int width, int height) {
 	checkWidget();
-	int zoom = getZoom();
-	setBoundsInPixels(DPIUtil.autoScaleUp(x, zoom), DPIUtil.autoScaleUp(y, zoom), DPIUtil.autoScaleUp(width, zoom), DPIUtil.autoScaleUp(height, zoom));
-}
-
-void setBoundsInPixels (int x, int y, int width, int height) {
 	boolean samePosition = this.x == x && this.y == y;
 	boolean sameExtent = this.width == width && this.height == height;
 	if (samePosition && sameExtent && isCurrentCaret()) return;
@@ -431,25 +438,21 @@ void setBoundsInPixels (int x, int y, int width, int height) {
  */
 public void setBounds (Rectangle rect) {
 	if (rect == null) error (SWT.ERROR_NULL_ARGUMENT);
-	setBoundsInPixels(DPIUtil.autoScaleUp(rect, getZoom()));
-}
-
-void setBoundsInPixels (Rectangle rect) {
-	setBoundsInPixels (rect.x, rect.y, rect.width, rect.height);
+	setBounds(rect.x, rect.y, rect.width, rect.height);
 }
 
 void setFocus () {
 	long hwnd = parent.handle;
 	long hBitmap = 0;
 	if (image != null) hBitmap = Image.win32_getHandle(image, getZoom());
-	int width = this.width;
-	if (image == null && width == 0) {
+	int widthInPixels = this.getWidthInPixels();
+	if (image == null && widthInPixels == 0) {
 		int [] buffer = new int [1];
 		if (OS.SystemParametersInfo (OS.SPI_GETCARETWIDTH, 0, buffer, 0)) {
-			width = buffer [0];
+			widthInPixels = buffer [0];
 		}
 	}
-	OS.CreateCaret (hwnd, hBitmap, width, height);
+	OS.CreateCaret (hwnd, hBitmap, widthInPixels, getHeightInPixels());
 	move ();
 	setIMEFont ();
 	if (isVisible) OS.ShowCaret (hwnd);
@@ -539,11 +542,6 @@ void setIMEFont () {
  */
 public void setLocation (int x, int y) {
 	checkWidget();
-	int zoom = getZoom();
-	setLocationInPixels(DPIUtil.autoScaleUp(x, zoom), DPIUtil.autoScaleUp(y, zoom));
-}
-
-void setLocationInPixels (int x, int y) {
 	if (this.x == x && this.y == y && isCurrentCaret())  return;
 	this.x = x;  this.y = y;
 	moved = true;
@@ -573,8 +571,7 @@ private void setCurrentCaret(Caret caret) {
 public void setLocation (Point location) {
 	checkWidget();
 	if (location == null) error (SWT.ERROR_NULL_ARGUMENT);
-	location = DPIUtil.autoScaleUp(location, getZoom());
-	setLocationInPixels(location.x, location.y);
+	setLocation(location.x, location.y);
 }
 
 /**
@@ -590,12 +587,9 @@ public void setLocation (Point location) {
  */
 public void setSize (int width, int height) {
 	checkWidget();
-	setSizeInPixels(DPIUtil.autoScaleUp(width, getZoom()), DPIUtil.autoScaleUp(height, getZoom()));
-}
-
-void setSizeInPixels (int width, int height) {
 	if (this.width == width && this.height == height && isCurrentCaret()) return;
-	this.width = width;  this.height = height;
+	this.width = width;
+	this.height = height;
 	resized = true;
 	if (isVisible && hasFocus ()) resize ();
 }
@@ -616,8 +610,7 @@ void setSizeInPixels (int width, int height) {
 public void setSize (Point size) {
 	checkWidget();
 	if (size == null) error (SWT.ERROR_NULL_ARGUMENT);
-	size = DPIUtil.autoScaleUp(size, getZoom());
-	setSizeInPixels(size.x, size.y);
+	setSize(size.x, size.y);
 }
 
 /**
@@ -654,6 +647,28 @@ public void setVisible (boolean visible) {
 	}
 }
 
+/**
+ * <b>IMPORTANT:</b> This method is not part of the public
+ * API for Image. It is marked public only so that it
+ * can be shared within the packages provided by SWT. It is not
+ * available on all platforms, and should never be called from
+ * application code.
+ *
+ * Sets the height o the caret in points.
+ *
+ * @param caret the caret to set the height of
+ * @param height the height of caret to be set in points.
+ *
+ * @noreference This method is not intended to be referenced by clients.
+ */
+public static void win32_setHeight(Caret caret, int height) {
+	caret.checkWidget();
+	if(caret.height == height && caret.isCurrentCaret()) return;
+	caret.height = height;
+	caret.resized = true;
+	if(caret.isVisible && caret.hasFocus()) caret.resize();
+}
+
 private static void handleDPIChange(Widget widget, int newZoom, float scalingFactor) {
 	if (!(widget instanceof Caret caret)) {
 		return;
@@ -669,3 +684,4 @@ private static void handleDPIChange(Widget widget, int newZoom, float scalingFac
 	}
 }
 }
+
