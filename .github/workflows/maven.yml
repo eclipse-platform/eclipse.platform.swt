@@ -18,7 +18,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Upload
-      uses: actions/upload-artifact@5d5d22a31266ced268874388b861e4b58bb5c2f3 # v4.3.1
+      uses: actions/upload-artifact@1746f4ab65b179e0ea60a494b83293b640dd5bba # v4.3.2
       with:
         name: Event File
         path: ${{ github.event_path }}
@@ -89,7 +89,7 @@ jobs:
        working-directory: tests/org.eclipse.swt.tests
     - name: Upload Test Results for ${{ matrix.config.name }} / Java-${{ matrix.java }}
       if: always()
-      uses: actions/upload-artifact@5d5d22a31266ced268874388b861e4b58bb5c2f3 # v4.3.1
+      uses: actions/upload-artifact@1746f4ab65b179e0ea60a494b83293b640dd5bba # v4.3.2
       with:
         name: test-results-${{ matrix.config.native }}-java${{ matrix.java }}
         if-no-files-found: warn
