@@ -426,6 +426,9 @@ public void create(Composite parent, int style) {
 	handler = newCallback(this::handleMoveFocusRequested);
 	controller.add_MoveFocusRequested(handler, token);
 	handler.Release();
+	handler = newCallback(this::handleGotFocus);
+	controller.add_GotFocus(handler, token);
+	handler.Release();
 	if (webView_2 != null) {
 		handler = newCallback(this::handleDOMContentLoaded);
 		webView_2.add_DOMContentLoaded(handler, token);
@@ -783,6 +786,11 @@ int handleNewWindowRequested(long pView, long pArgs) {
 			inNewWindow = false;
 		}
 	});
+	return COM.S_OK;
+}
+
+int handleGotFocus(long pView, long pArg) {
+	this.browser.forceFocus();
 	return COM.S_OK;
 }
 
