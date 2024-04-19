@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2023 IBM Corporation and others. All rights reserved.
+ * Copyright (c) 2000, 2024 IBM Corporation and others. All rights reserved.
  * The contents of this file are made available under the terms
  * of the GNU Lesser General Public License (LGPL) Version 2.1 that
  * accompanies this distribution (lgpl-v21.txt).  The LGPL is also
@@ -553,6 +553,7 @@ typedef enum {
 	gtk_1scrolled_1window_1get_1vadjustment_FUNC,
 	gtk_1scrolled_1window_1get_1vscrollbar_FUNC,
 	gtk_1scrolled_1window_1set_1hadjustment_FUNC,
+	gtk_1scrolled_1window_1set_1overlay_1scrolling_FUNC,
 	gtk_1scrolled_1window_1set_1policy_FUNC,
 	gtk_1scrolled_1window_1set_1vadjustment_FUNC,
 	gtk_1search_1entry_1new_FUNC,

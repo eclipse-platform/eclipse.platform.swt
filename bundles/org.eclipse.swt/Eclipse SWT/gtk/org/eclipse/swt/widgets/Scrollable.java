@@ -314,6 +314,31 @@ public int getScrollbarsMode () {
 	return SWT.NONE;
 }
 /**
+ * Sets the mode of the receiver's scrollbars. This will be
+ * <em>bitwise</em> OR of one or more of the constants defined in class
+ * <code>SWT</code>.<br>
+ * <ul>
+ * <li><code>SWT.SCROLLBAR_OVERLAY</code> - if receiver
+ * uses overlay scrollbars</li>
+ * <li><code>SWT.NONE</code> - otherwise</li>
+ * </ul>
+ *
+ * @exception SWTException <ul>
+ * <li>ERROR_WIDGET_DISPOSED - if the receiver has been
+ * disposed</li>
+ * <li>ERROR_THREAD_INVALID_ACCESS - if not called from the
+ * thread that created the receiver</li>
+ * </ul>
+ *
+ * @see SWT#SCROLLBAR_OVERLAY
+ * @since 3.126
+ */
+public void setScrollbarsMode (int mode) {
+	checkWidget();
+	boolean overlayScrolling = (mode & SWT.SCROLLBAR_OVERLAY) != 0;
+	GTK.gtk_scrolled_window_set_overlay_scrolling(scrolledHandle, overlayScrolling);
+}
+/**
  * Returns the receiver's vertical scroll bar if it has
  * one, and null if it does not.
  *
