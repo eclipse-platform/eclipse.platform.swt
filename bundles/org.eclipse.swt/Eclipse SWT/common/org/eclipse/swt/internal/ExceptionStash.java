@@ -80,7 +80,7 @@ public void stash(Throwable throwable) {
 	} else {
 		storedThrowable = throwable;
 	}
-};
+}
 
 public void close() {
 	if (storedThrowable == null) return;
