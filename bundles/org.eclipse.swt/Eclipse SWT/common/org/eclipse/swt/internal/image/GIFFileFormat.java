@@ -303,7 +303,7 @@ public final class GIFFileFormat extends FileFormat {
 				blockData[8] == '2' &&
 				blockData[9] == '.' &&
 				blockData[10] == '0';
-			if (netscape && authentic && data[0] == 01) { //$NON-NLS-1$ //$NON-NLS-2$
+			if (netscape && authentic && data[0] == 01) {
 				repeatCount = (data[1] & 0xFF) | ((data[2] & 0xFF) << 8);
 				loader.repeatCount = repeatCount;
 			}

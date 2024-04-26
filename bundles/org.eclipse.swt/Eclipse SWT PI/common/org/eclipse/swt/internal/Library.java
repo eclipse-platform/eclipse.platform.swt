@@ -58,7 +58,7 @@ public class Library {
 	static final String SWT_LIB_DIR;
 
 static {
-	DELIMITER = System.lineSeparator(); //$NON-NLS-1$
+	DELIMITER = System.lineSeparator();
 	SEPARATOR = File.separator;
 	USER_HOME = System.getProperty ("user.home");
 	SWT_LIB_DIR = ".swt" + SEPARATOR + "lib" + SEPARATOR + os() + SEPARATOR + arch(); //$NON-NLS-1$ $NON-NLS-2$
@@ -295,7 +295,7 @@ public static void loadLibrary (String name, boolean mapName) {
 	StringBuilder message = new StringBuilder();
 
 	/* Try loading library from swt library path */
-	String path = System.getProperty (SWT_LIB_PATH); //$NON-NLS-1$
+	String path = System.getProperty (SWT_LIB_PATH);
 	if (path != null) {
 		path = new File (path).getAbsolutePath ();
 		for (int i = 0; i < candidates; i++) {
