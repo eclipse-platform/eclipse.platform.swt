@@ -301,7 +301,7 @@ public static void error (int code, int hresult) {
 		case ERROR_CANNOT_CREATE_OBJECT : {
 			String msg = ERROR_CANNOT_CREATE_OBJECT_MSG;
 			if (hresult != 0) msg += " result = "+hresult;//$NON-NLS-1$
-			throw new SWTException (code, msg);//$NON-NLS-1$
+			throw new SWTException (code, msg);
 		}
 		case ERROR_CANNOT_OPEN_FILE : {
 			String msg = ERROR_CANNOT_OPEN_FILE_MSG;

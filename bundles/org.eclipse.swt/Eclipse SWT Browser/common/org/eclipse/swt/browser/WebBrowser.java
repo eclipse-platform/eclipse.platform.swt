@@ -338,8 +338,8 @@ public void createFunction (BrowserFunction function) {
 
 	String javaCallDeclaration = getJavaCallDeclaration();
 
-	StringBuilder buffer = new StringBuilder (); //$NON-NLS-1$
-	buffer.append (javaCallDeclaration); //$NON-NLS-1$
+	StringBuilder buffer = new StringBuilder ();
+	buffer.append (javaCallDeclaration);
 	if (function.top) {
 		buffer.append (functionBuffer.toString ());
 	}
