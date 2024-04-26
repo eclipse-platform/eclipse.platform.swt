@@ -127,7 +127,7 @@ public class Accessible {
 		/* CreateStdAccessibleObject([in] hwnd, [in] idObject, [in] riidInterface, [out] ppvObject).
 		 * AddRef has already been called on ppvObject by the callee and must be released by the caller.
 		 */
-		int result = (int)COM.CreateStdAccessibleObject(control.handle, OS.OBJID_CLIENT, COM.IIDIAccessible, ppvObject);
+		int result = COM.CreateStdAccessibleObject(control.handle, OS.OBJID_CLIENT, COM.IIDIAccessible, ppvObject);
 		/* The object needs to be checked, because if the CreateStdAccessibleObject()
 		 * symbol is not found, the return value is S_OK.
 		 */
@@ -2917,7 +2917,7 @@ public class Accessible {
 		 */
 		if (iaccessible != null && accessibleControlListenersSize() == 0) {
 			long[] ppvObject = new long[1];
-			int code = (int)iaccessible.QueryInterface(COM.IIDIEnumVARIANT, ppvObject);
+			int code = iaccessible.QueryInterface(COM.IIDIEnumVARIANT, ppvObject);
 			if (code != COM.S_OK) return code;
 			IEnumVARIANT ienumvariant = new IEnumVARIANT(ppvObject[0]);
 			code = ienumvariant.Reset();
