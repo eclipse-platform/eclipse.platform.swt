@@ -586,7 +586,7 @@ long handleCallJava(int index, long bstrToken, long bstrArgsJson) {
 	if (function != null && token.equals (function.token)) {
 		try {
 			String argsJson = bstrToString(bstrArgsJson);
-			Object args = (Object[]) JSON.parse(argsJson.toCharArray());
+			Object args = JSON.parse(argsJson.toCharArray());
 			result = function.function ((Object[]) args);
 		} catch (Throwable e) {
 			result = WebBrowser.CreateErrorString(e.getLocalizedMessage());

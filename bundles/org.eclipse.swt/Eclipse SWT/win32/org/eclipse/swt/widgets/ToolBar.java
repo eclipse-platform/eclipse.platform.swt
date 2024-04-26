@@ -1790,7 +1790,7 @@ private static void handleDPIChange(Widget widget, int newZoom, float scalingFac
 
 		// In SWT, Width can only be set for Separators
 		if ((toolItem.style & SWT.SEPARATOR) != 0) {
-			var width = (int)((float)(seperatorWidth[i]) * scalingFactor);
+			var width = (int)((seperatorWidth[i]) * scalingFactor);
 			toolItem.setWidth(width);
 			toolItem.resizeControl();
 		}

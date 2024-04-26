@@ -250,8 +250,8 @@ private static ImageData autoScaleImageData (Device device, final ImageData imag
 	// Guards are already implemented in callers: if (deviceZoom == 100 || imageData == null || scaleFactor == 1.0f) return imageData;
 	int width = imageData.width;
 	int height = imageData.height;
-	int scaledWidth = Math.round ((float) width * scaleFactor);
-	int scaledHeight = Math.round ((float) height * scaleFactor);
+	int scaledWidth = Math.round (width * scaleFactor);
+	int scaledHeight = Math.round (height * scaleFactor);
 	return switch (autoScaleMethod) {
 	case SMOOTH -> {
 		Image original = new Image (device, (ImageDataProvider) zoom -> imageData);
@@ -265,7 +265,7 @@ private static ImageData autoScaleImageData (Device device, final ImageData imag
 				/* E.g. destWidth here is effectively DPIUtil.autoScaleDown (scaledWidth), but avoiding rounding errors.
 				 * Nevertheless, we still have some rounding errors due to the point-based API GC#drawImage(..).
 				 */
-				0, 0, Math.round (DPIUtil.autoScaleDown ((float) width * scaleFactor)), Math.round (DPIUtil.autoScaleDown ((float) height * scaleFactor)));
+				0, 0, Math.round (DPIUtil.autoScaleDown (width * scaleFactor)), Math.round (DPIUtil.autoScaleDown (height * scaleFactor)));
 		gc.dispose ();
 		original.dispose ();
 		ImageData result = resultImage.getImageData (DPIUtil.getDeviceZoom ());
@@ -461,7 +461,7 @@ public static int mapZoomToDPI (int zoom) {
  * @param <T> type of the element to be presented, e.g., {@link ImageData}
  */
 public record ElementAtZoom<T>(T element, int zoom) {
-};
+}
 
 /**
  * Gets ImageData that are appropriate for the specified zoom level together
