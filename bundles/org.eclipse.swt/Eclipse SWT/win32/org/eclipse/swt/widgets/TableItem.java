@@ -936,7 +936,7 @@ public void setFont (int index, Font font) {
 	}
 	Font oldFont = cellFont [index];
 	if (oldFont == font) return;
-	cellFont [index] = font;
+	cellFont [index] = font == null ? font : Font.win32_new(font, nativeZoom);
 	if (oldFont != null && oldFont.equals (font)) return;
 	if (font != null) parent.setCustomDraw (true);
 	if ((parent.style & SWT.VIRTUAL) != 0) cached = true;
