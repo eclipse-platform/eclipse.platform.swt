@@ -15,34 +15,15 @@ package org.eclipse.swt.graphics;
 
 import static org.junit.Assert.assertEquals;
 
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.*;
 
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.internal.DPITestUtil;
-import org.eclipse.swt.internal.DPIUtil;
-import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.Shell;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.eclipse.swt.*;
+import org.eclipse.swt.internal.*;
+import org.eclipse.swt.widgets.*;
+import org.junit.*;
 
-public class GCWin32Tests {
-	private Display display;
-	private boolean autoScaleOnRuntime;
-
-	@Before
-	public void setUp() {
-		autoScaleOnRuntime = DPIUtil.isAutoScaleOnRuntimeActive();
-		DPITestUtil.setAutoScaleOnRunTime(true);
-		display = Display.getDefault();
-	}
-
-	@After
-	public void tearDown() {
-		DPITestUtil.setAutoScaleOnRunTime(autoScaleOnRuntime);
-	}
+public class GCWin32Tests extends Win32AutoscaleTestBase {
 
 	@Test
 	public void gcZoomLevelMustChangeOnShellZoomChange() {
@@ -50,7 +31,6 @@ public class GCWin32Tests {
 		CompletableFuture<Integer> scaledGcNativeZoom = new CompletableFuture<>();
 		int zoom = DPIUtil.getDeviceZoom();
 		AtomicBoolean isScaled = new AtomicBoolean(false);
-		Shell shell = new Shell(display);
 		shell.addListener(SWT.Paint, event -> {
 			if (isScaled.get()) {
 				scaledGcNativeZoom.complete(event.gc.getGCData().nativeZoom);
@@ -79,7 +59,6 @@ public class GCWin32Tests {
 	public void drawnElementsShouldScaleUpToTheRightZoomLevel() {
 		int zoom = DPIUtil.getDeviceZoom();
 		int scalingFactor = 2;
-		Shell shell = new Shell(display);
 		GC gc = GC.win32_new(shell, new GCData());
 		gc.getGCData().nativeZoom = zoom * scalingFactor;
 		gc.getGCData().lineWidth = 10;
