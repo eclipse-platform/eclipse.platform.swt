@@ -6,4 +6,7 @@ public class DPITestUtil {
 		DPIUtil.setAutoScaleOnRuntimeActive(value);
 	}
 
+	public static boolean isAutoScaleOnRuntimeActive() {
+		return DPIUtil.isAutoScaleOnRuntimeActive();
+	}
 }
