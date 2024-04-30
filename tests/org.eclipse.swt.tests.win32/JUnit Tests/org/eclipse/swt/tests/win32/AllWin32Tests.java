@@ -15,20 +15,15 @@
 package org.eclipse.swt.tests.win32;
 
 import org.eclipse.swt.graphics.ImageWin32Tests;
-import org.eclipse.swt.internal.DefaultSWTFontRegistryTests;
-import org.eclipse.swt.internal.ScalingSWTFontRegistryTests;
 import org.eclipse.swt.tests.win32.widgets.TestTreeColumn;
 import org.eclipse.swt.tests.win32.widgets.Test_org_eclipse_swt_widgets_Display;
 import org.junit.runner.JUnitCore;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 
-
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
-	DefaultSWTFontRegistryTests.class,
 	ImageWin32Tests.class,
-	ScalingSWTFontRegistryTests.class,
 	Test_org_eclipse_swt_dnd_DND.class,
 	Test_org_eclipse_swt_events_KeyEvent.class,
 	Test_org_eclipse_swt_widgets_Display.class,
