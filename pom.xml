@@ -100,12 +100,7 @@
                 <environment>
                   <os>macosx</os>
                   <ws>cocoa</ws>
-                  <arch>x86_64</arch>
-                </environment>
-                <environment>
-                  <os>macosx</os>
-                  <ws>cocoa</ws>
-                  <arch>aarch64</arch>
+                  <arch>${os.arch}</arch>
                 </environment>
               </environments>
             </configuration>
