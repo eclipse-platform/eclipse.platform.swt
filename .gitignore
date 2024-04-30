@@ -1,4 +1,5 @@
 bin/
+bin_test/
 *.log
 target/
 /.project

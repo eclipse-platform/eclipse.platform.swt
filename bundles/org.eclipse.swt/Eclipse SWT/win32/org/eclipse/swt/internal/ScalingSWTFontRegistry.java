@@ -26,11 +26,8 @@ import org.eclipse.swt.internal.win32.*;
  * As this class is only intended to be used internally via {@code SWTFontProvider},
  * it should neither be instantiated nor referenced in a client application.
  * The behavior can change any time in a future release.
- *
- * @noreference This class is not intended to be referenced by clients.
- * @noinstantiate This class is not intended to be instantiated by clients.
  */
-public final class ScalingSWTFontRegistry implements SWTFontRegistry {
+final class ScalingSWTFontRegistry implements SWTFontRegistry {
 	private class ScaledFontContainer {
 		// the first (unknown) font to be requested as scaled variant
 		// usually it is scaled to the primary monitor zoom, but that is not guaranteed
@@ -72,7 +69,7 @@ public final class ScalingSWTFontRegistry implements SWTFontRegistry {
 	private Map<FontData, ScaledFontContainer> fontKeyMap = new HashMap<>();
 	private Device device;
 
-	public ScalingSWTFontRegistry(Device device) {
+	ScalingSWTFontRegistry(Device device) {
 		this.device = device;
 	}
 

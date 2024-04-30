@@ -25,16 +25,13 @@ import org.eclipse.swt.internal.win32.*;
  * As this class is only intended to be used internally via {@code SWTFontProvider},
  * it should neither be instantiated nor referenced in a client application.
  * The behavior can change any time in a future release.
- *
- * @noreference This class is not intended to be referenced by clients.
- * @noinstantiate This class is not intended to be instantiated by clients.
  */
-public final class DefaultSWTFontRegistry implements SWTFontRegistry {
+final class DefaultSWTFontRegistry implements SWTFontRegistry {
 	private static FontData KEY_SYSTEM_FONTS = new FontData();
 	private Map<FontData, Font> fontsMap = new HashMap<>();
 	private Device device;
 
-	public DefaultSWTFontRegistry(Device device) {
+	DefaultSWTFontRegistry(Device device) {
 		this.device = device;
 	}
 

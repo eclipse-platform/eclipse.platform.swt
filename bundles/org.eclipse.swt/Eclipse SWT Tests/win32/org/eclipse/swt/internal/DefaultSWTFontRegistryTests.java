@@ -22,12 +22,18 @@ import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.widgets.Display;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 public class DefaultSWTFontRegistryTests {
 	private static String TEST_FONT = "Helvetica";
 	private Display display;
 	private SWTFontRegistry fontRegistry;
+
+	@BeforeClass
+	public static void assumeIsFittingPlatform() {
+		PlatformSpecificExecution.assumeIsFittingPlatform();
+	}
 
 	@Before
 	public void setUp() {
