@@ -2650,4 +2650,14 @@ void setZoom(int zoom) {
 private static void handleDPIChange(Widget widget, int newZoom, float scalingFactor) {
 	widget.setZoom(newZoom);
 }
+
+int getSystemMetrics(int nIndex) {
+	if (OS.WIN32_BUILD >= OS.WIN32_BUILD_WIN10_1607) {
+		return OS.GetSystemMetricsForDpi(nIndex, DPIUtil.mapZoomToDPI(getZoom()));
+	}  else {
+		return OS.GetSystemMetrics(nIndex);
+	}
+}
+
+
 }
