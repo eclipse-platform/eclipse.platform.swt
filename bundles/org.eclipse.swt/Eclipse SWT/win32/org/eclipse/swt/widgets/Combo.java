@@ -655,8 +655,8 @@ public void clearSelection () {
 		width += pcbi.itemLeft + (pcbi.buttonRight - pcbi.buttonLeft);
 		height = (pcbi.buttonBottom - pcbi.buttonTop) + pcbi.buttonTop * 2;
 	} else {
-		int border = OS.GetSystemMetrics (OS.SM_CXEDGE);
-		width += OS.GetSystemMetrics (OS.SM_CXVSCROLL) + border * 2;
+		int border = OS.GetSystemMetricsForDpi(OS.SM_CXEDGE, getCurrentDeviceZoom());
+		width += OS.GetSystemMetricsForDpi(OS.SM_CXVSCROLL, getCurrentDeviceZoom()) + border * 2;
 		int textHeight = (int)OS.SendMessage (handle, OS.CB_GETITEMHEIGHT, -1, 0);
 		if ((style & SWT.DROP_DOWN) != 0) {
 			height = textHeight + 6;
@@ -665,7 +665,7 @@ public void clearSelection () {
 		}
 	}
 	if ((style & SWT.SIMPLE) != 0 && (style & SWT.H_SCROLL) != 0) {
-		height += OS.GetSystemMetrics (OS.SM_CYHSCROLL);
+		height += OS.GetSystemMetricsForDpi(OS.SM_CYHSCROLL, getCurrentDeviceZoom());
 	}
 	return new Point (width, height);
 }
