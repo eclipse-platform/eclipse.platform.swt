@@ -32,7 +32,7 @@ import java.util.Set;
  */
 public class CollectSources {
 
-	private record ScriptEnvironment(Path swtProjectRoot, Path binariesRoot, Path targetDirectory, String ws) {
+	private record ScriptEnvironment(Path swtProjectRoot, Path targetDirectory, String ws) {
 		private static ScriptEnvironment read(String[] args) {
 			if (args.length != 2) {
 				throw new IllegalArgumentException("task and target directory must be defined as only argument");
@@ -41,10 +41,9 @@ public class CollectSources {
 			if (!swtProjectRoot.endsWith(Path.of("bundles/org.eclipse.swt"))) { // Consistency check
 				throw new IllegalStateException("Script must be executed from org.eclipse.swt project");
 			}
-			Path binariesRoot = swtProjectRoot.getParent().getParent().resolve("binaries").toAbsolutePath();
-			Path targetDirectory = Path.of(args[1]);
+			Path targetDirectory = Path.of(args[1]).toAbsolutePath();
 			String ws = System.getProperty("ws");
-			return new ScriptEnvironment(swtProjectRoot, binariesRoot, targetDirectory, ws);
+			return new ScriptEnvironment(swtProjectRoot, targetDirectory, ws);
 		}
 	}
 
