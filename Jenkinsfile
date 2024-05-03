@@ -104,7 +104,7 @@ pipeline {
 		booleanParam(name: 'skipCommit', defaultValue: false, description: 'Stops committing to swt and swt binaries repo at the end. Useful in debugging.')
 	}
 	stages {
-		stage('Checkout swt git repos') {
+		stage('Checkout SCM') {
 			steps {
 				dir('eclipse.platform.swt') {
 					checkout scm
@@ -176,6 +176,15 @@ pipeline {
 									sed -i -e "s/comma_ver=${comma_ver}/comma_ver=${new_comma_ver}/g" "$commonMakeFile"
 								'''
 							}
+							// Collect SWT-native's sources
+							dir('bundles/org.eclipse.swt') {
+								for (ws in ['cocoa', 'gtk', 'win32']) {
+									sh "java -Dws=${ws} build-scripts/CollectSources.java -nativeSources 'target/natives-build-temp/${ws}'"
+									dir("target/natives-build-temp/${ws}") {
+										stash(name:"swt.binaries.sources.${ws}")
+									}
+								}
+							}
 						}
 					}
 				}
@@ -193,20 +202,6 @@ pipeline {
 					}
 				}
 				stages {
-					stage("Collect SWT-native's sources") {
-						steps {
-							dir('eclipse.platform.swt/bundles/org.eclipse.swt') {
-								sh '''
-									pfSpec=(${PLATFORM//"."/ })
-									java -Dws=${pfSpec[0]} -Darch=${pfSpec[2]} build-scripts/CollectSources.java -nativeSources \
-										"${WORKSPACE}/eclipse.platform.swt/binaries/org.eclipse.swt.${PLATFORM}/target/natives-build-temp"
-								'''
-							}
-							dir("eclipse.platform.swt/binaries/org.eclipse.swt.${PLATFORM}/target/natives-build-temp") {
-								stash(name:"swt.binaries.sources.${PLATFORM}")
-							}
-						}
-					}
 					stage('Build SWT-natives') {
 						options {
 							timeout(time: 120, unit: 'MINUTES') // Some build agents are rare and it might take awhile until they are available.
@@ -223,7 +218,7 @@ pipeline {
 								nativeBuildAgent("${PLATFORM}") {
 									cleanWs() // Workspace is not cleaned up by default, so we do it explicitly
 									echo "OS: ${os}, ARCH: ${arch}"
-									unstash "swt.binaries.sources.${PLATFORM}"
+									unstash "swt.binaries.sources.${ws}"
 									dir('jdk.resources') {
 										unstash "jdk.resources.${os}.${arch}"
 									}
