@@ -199,10 +199,10 @@ Rectangle getBounds () {
 	if ((style & SWT.HORIZONTAL) != 0) {
 		y = rect.bottom - rect.top;
 		width = rect.right - rect.left;
-		height = OS.GetSystemMetrics (OS.SM_CYHSCROLL);
+		height = getSystemMetrics (OS.SM_CYHSCROLL);
 	} else {
 		x = rect.right - rect.left;
-		width = OS.GetSystemMetrics (OS.SM_CXVSCROLL);
+		width = getSystemMetrics (OS.SM_CXVSCROLL);
 		height = rect.bottom - rect.top;
 	}
 	return new Rectangle (x, y, width, height);
@@ -365,9 +365,9 @@ Point getSizeInPixels () {
 	int width, height;
 	if ((style & SWT.HORIZONTAL) != 0) {
 		width = rect.right - rect.left;
-		height = OS.GetSystemMetrics (OS.SM_CYHSCROLL);
+		height = getSystemMetrics (OS.SM_CYHSCROLL);
 	} else {
-		width = OS.GetSystemMetrics (OS.SM_CXVSCROLL);
+		width = getSystemMetrics (OS.SM_CXVSCROLL);
 		height = rect.bottom - rect.top;
 	}
 	return new Point (width, height);
@@ -468,7 +468,7 @@ Rectangle getThumbTrackBoundsInPixels () {
 	int x = 0, y = 0, width, height;
 	if ((style & SWT.HORIZONTAL) != 0) {
 		OS.GetScrollBarInfo(parent.handle, OS.OBJID_HSCROLL, info);
-		int size = OS.GetSystemMetrics (OS.SM_CYHSCROLL);
+		int size = getSystemMetrics (OS.SM_CYHSCROLL);
 		y = info.rcScrollBar.top;
 		width = info.rcScrollBar.right - info.rcScrollBar.left;
 		height = size;
@@ -481,7 +481,7 @@ Rectangle getThumbTrackBoundsInPixels () {
 		}
 	} else {
 		OS.GetScrollBarInfo(parent.handle, OS.OBJID_VSCROLL, info);
-		int size = OS.GetSystemMetrics (OS.SM_CYVSCROLL);
+		int size = getSystemMetrics (OS.SM_CYVSCROLL);
 		x = info.rcScrollBar.left;
 		width = size;
 		height = info.rcScrollBar.bottom - info.rcScrollBar.top;

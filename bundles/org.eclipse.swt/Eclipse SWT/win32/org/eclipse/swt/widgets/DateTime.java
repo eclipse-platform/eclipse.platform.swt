@@ -238,7 +238,7 @@ protected void checkSubclass () {
 			width = size.cx;
 			height = size.cy;
 			// TODO: Can maybe use DTM_GETDATETIMEPICKERINFO for this
-			int upDownHeight = OS.GetSystemMetrics (OS.SM_CYVSCROLL) + 7;
+			int upDownHeight = getSystemMetrics (OS.SM_CYVSCROLL) + 7;
 			height = Math.max (height, upDownHeight);
 		}
 	}

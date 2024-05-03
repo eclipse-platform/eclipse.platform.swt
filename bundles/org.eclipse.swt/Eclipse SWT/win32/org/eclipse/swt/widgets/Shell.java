@@ -1068,12 +1068,12 @@ Point getMaximumSizeInPixels () {
 	int width = Math.min (Integer.MAX_VALUE, maxWidth);
 	int trim = SWT.TITLE | SWT.CLOSE | SWT.MIN | SWT.MAX;
 	if ((style & SWT.NO_TRIM) == 0 && (style & trim) != 0) {
-		width = Math.min (width, OS.GetSystemMetrics (OS.SM_CXMAXTRACK));
+		width = Math.min (width, getSystemMetrics (OS.SM_CXMAXTRACK));
 	}
 	int height = Math.min (Integer.MAX_VALUE, maxHeight);
 	if ((style & SWT.NO_TRIM) == 0 && (style & trim) != 0) {
 		if ((style & SWT.RESIZE) != 0) {
-			height = Math.min (height, OS.GetSystemMetrics (OS.SM_CYMAXTRACK));
+			height = Math.min (height, getSystemMetrics (OS.SM_CYMAXTRACK));
 		} else {
 			RECT rect = new RECT ();
 			int bits1 = OS.GetWindowLong (handle, OS.GWL_STYLE);
@@ -1109,12 +1109,12 @@ Point getMinimumSizeInPixels () {
 	int width = Math.max (0, minWidth);
 	int trim = SWT.TITLE | SWT.CLOSE | SWT.MIN | SWT.MAX;
 	if ((style & SWT.NO_TRIM) == 0 && (style & trim) != 0) {
-		width = Math.max (width, OS.GetSystemMetrics (OS.SM_CXMINTRACK));
+		width = Math.max (width, getSystemMetrics (OS.SM_CXMINTRACK));
 	}
 	int height = Math.max (0, minHeight);
 	if ((style & SWT.NO_TRIM) == 0 && (style & trim) != 0) {
 		if ((style & SWT.RESIZE) != 0) {
-			height = Math.max (height, OS.GetSystemMetrics (OS.SM_CYMINTRACK));
+			height = Math.max (height, getSystemMetrics (OS.SM_CYMINTRACK));
 		} else {
 			RECT rect = new RECT ();
 			int bits1 = OS.GetWindowLong (handle, OS.GWL_STYLE);
@@ -1779,9 +1779,9 @@ void setMaximumSizeInPixels (int width, int height) {
 	int widthLimit = 0, heightLimit = 0;
 	int trim = SWT.TITLE | SWT.CLOSE | SWT.MIN | SWT.MAX;
 	if ((style & SWT.NO_TRIM) == 0 && (style & trim) != 0) {
-		widthLimit = OS.GetSystemMetrics (OS.SM_CXMAXTRACK);
+		widthLimit = getSystemMetrics (OS.SM_CXMAXTRACK);
 		if ((style & SWT.RESIZE) != 0) {
-			heightLimit = OS.GetSystemMetrics (OS.SM_CYMAXTRACK);
+			heightLimit = getSystemMetrics (OS.SM_CYMAXTRACK);
 		} else {
 			RECT rect = new RECT ();
 			int bits1 = OS.GetWindowLong (handle, OS.GWL_STYLE);
@@ -1824,9 +1824,9 @@ void setMinimumSizeInPixels (int width, int height) {
 	int widthLimit = 0, heightLimit = 0;
 	int trim = SWT.TITLE | SWT.CLOSE | SWT.MIN | SWT.MAX;
 	if ((style & SWT.NO_TRIM) == 0 && (style & trim) != 0) {
-		widthLimit = OS.GetSystemMetrics (OS.SM_CXMINTRACK);
+		widthLimit = getSystemMetrics (OS.SM_CXMINTRACK);
 		if ((style & SWT.RESIZE) != 0) {
-			heightLimit = OS.GetSystemMetrics (OS.SM_CYMINTRACK);
+			heightLimit = getSystemMetrics (OS.SM_CYMINTRACK);
 		} else {
 			RECT rect = new RECT ();
 			int bits1 = OS.GetWindowLong (handle, OS.GWL_STYLE);
@@ -2631,12 +2631,12 @@ LRESULT WM_WINDOWPOSCHANGING (long wParam, long lParam) {
 		lpwp.cx = Math.max (lpwp.cx, minWidth);
 		int trim = SWT.TITLE | SWT.CLOSE | SWT.MIN | SWT.MAX;
 		if ((style & SWT.NO_TRIM) == 0 && (style & trim) != 0) {
-			lpwp.cx = Math.max (lpwp.cx, OS.GetSystemMetrics (OS.SM_CXMINTRACK));
+			lpwp.cx = Math.max (lpwp.cx, getSystemMetrics (OS.SM_CXMINTRACK));
 		}
 		lpwp.cy = Math.max (lpwp.cy, minHeight);
 		if ((style & SWT.NO_TRIM) == 0 && (style & trim) != 0) {
 			if ((style & SWT.RESIZE) != 0) {
-				lpwp.cy = Math.max (lpwp.cy, OS.GetSystemMetrics (OS.SM_CYMINTRACK));
+				lpwp.cy = Math.max (lpwp.cy, getSystemMetrics (OS.SM_CYMINTRACK));
 			} else {
 				RECT rect = new RECT ();
 				int bits1 = OS.GetWindowLong (handle, OS.GWL_STYLE);

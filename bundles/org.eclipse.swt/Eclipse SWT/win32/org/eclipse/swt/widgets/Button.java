@@ -63,7 +63,7 @@ public class Button extends Control {
 	static {
 		long hBitmap = OS.LoadBitmap (0, OS.OBM_CHECKBOXES);
 		if (hBitmap == 0) {
-			CHECK_WIDTH = OS.GetSystemMetrics (OS.SM_CXVSCROLL);
+			CHECK_WIDTH =  OS.GetSystemMetrics (OS.SM_CXVSCROLL);
 			CHECK_HEIGHT = OS.GetSystemMetrics (OS.SM_CYVSCROLL);
 		} else {
 			BITMAP bitmap = new BITMAP ();
@@ -315,11 +315,11 @@ int computeLeftMargin () {
 	int width = 0, height = 0, border = getBorderWidthInPixels ();
 	if ((style & SWT.ARROW) != 0) {
 		if ((style & (SWT.UP | SWT.DOWN)) != 0) {
-			width += OS.GetSystemMetrics (OS.SM_CXVSCROLL);
-			height += OS.GetSystemMetrics (OS.SM_CYVSCROLL);
+			width += getSystemMetrics (OS.SM_CXVSCROLL);
+			height += getSystemMetrics (OS.SM_CYVSCROLL);
 		} else {
-			width += OS.GetSystemMetrics (OS.SM_CXHSCROLL);
-			height += OS.GetSystemMetrics (OS.SM_CYHSCROLL);
+			width += getSystemMetrics (OS.SM_CXHSCROLL);
+			height += getSystemMetrics (OS.SM_CYHSCROLL);
 		}
 	} else {
 		if ((style & SWT.COMMAND) != 0) {

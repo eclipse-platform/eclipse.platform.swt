@@ -150,13 +150,13 @@ static int checkStyle (int style) {
 	RECT rect = new RECT ();
 	OS.SendMessage (handle, OS.TBM_GETTHUMBRECT, 0, rect);
 	if ((style & SWT.HORIZONTAL) != 0) {
-		width += OS.GetSystemMetrics (OS.SM_CXHSCROLL) * 10;
-		int scrollY = OS.GetSystemMetrics (OS.SM_CYHSCROLL);
+		width += getSystemMetrics (OS.SM_CXHSCROLL) * 10;
+		int scrollY = getSystemMetrics (OS.SM_CYHSCROLL);
 		height += (rect.top * 2) + scrollY + (scrollY / 3);
 	} else {
-		int scrollX = OS.GetSystemMetrics (OS.SM_CXVSCROLL);
+		int scrollX = getSystemMetrics (OS.SM_CXVSCROLL);
 		width += (rect.left * 2) + scrollX + (scrollX / 3);
-		height += OS.GetSystemMetrics (OS.SM_CYVSCROLL) * 10;
+		height += getSystemMetrics (OS.SM_CYVSCROLL) * 10;
 	}
 	if (wHint != SWT.DEFAULT) width = wHint + (border * 2);
 	if (hHint != SWT.DEFAULT) height = hHint + (border * 2);
