@@ -254,6 +254,7 @@ Optional<String> openNativeChooserDialog () {
 		result = Optional.ofNullable(selectedPath);
 	}
 	display.removeIdleProc ();
+	OS.g_object_unref(handle);
 	if (result.isPresent() || response == GTK.GTK_RESPONSE_CANCEL) {
 		return result;
 	}
