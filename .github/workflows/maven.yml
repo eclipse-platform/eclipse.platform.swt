@@ -60,7 +60,7 @@ jobs:
       with:
         maven-version: 3.9.6
     - name: Build with Maven
-      uses: coactions/setup-xvfb@b6b4fcfb9f5a895edadc3bc76318fae0ac17c8b3 # v1.0.1
+      uses: coactions/setup-xvfb@90473c3ebc69533a1a6e0505c36511b69c8c3135 # v1.0.1
       with:
        run: >-
         mvn --batch-mode -V -U -e
@@ -76,7 +76,7 @@ jobs:
         clean install
     - name: Performance tests
       if: contains(github.event.pull_request.labels.*.name, 'performance')
-      uses: coactions/setup-xvfb@b6b4fcfb9f5a895edadc3bc76318fae0ac17c8b3 # v1.0.1
+      uses: coactions/setup-xvfb@90473c3ebc69533a1a6e0505c36511b69c8c3135 # v1.0.1
       with:
        run: >-
         mvn --batch-mode -V -U -e
