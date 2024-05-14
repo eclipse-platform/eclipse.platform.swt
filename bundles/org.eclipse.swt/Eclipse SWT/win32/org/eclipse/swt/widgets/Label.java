@@ -135,7 +135,7 @@ static int checkStyle (int style) {
 	checkWidget ();
 	int width = 0, height = 0, border = getBorderWidthInPixels ();
 	if ((style & SWT.SEPARATOR) != 0) {
-		int lineWidth = OS.GetSystemMetrics (OS.SM_CXBORDER);
+		int lineWidth = getSystemMetrics (OS.SM_CXBORDER);
 		if ((style & SWT.HORIZONTAL) != 0) {
 			width = DEFAULT_WIDTH;  height = lineWidth * 2;
 		} else {
@@ -535,7 +535,7 @@ void wmDrawChildSeparator(DRAWITEMSTRUCT struct) {
 	if ((style & SWT.SHADOW_NONE) != 0) return;
 
 	RECT rect = new RECT ();
-	int lineWidth = OS.GetSystemMetrics (OS.SM_CXBORDER);
+	int lineWidth = getSystemMetrics (OS.SM_CXBORDER);
 	int flags = (style & SWT.SHADOW_IN) != 0 ? OS.EDGE_SUNKEN : OS.EDGE_ETCHED;
 	if ((style & SWT.HORIZONTAL) != 0) {
 		int bottom = struct.top + Math.max (lineWidth * 2, (struct.bottom - struct.top) / 2);

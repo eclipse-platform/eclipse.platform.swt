@@ -789,8 +789,8 @@ public void clearSelection () {
 
 		// When WS_BORDER is used instead of WS_EX_CLIENTEDGE, compensate the size difference
 		if (isUseWsBorder ()) {
-			int dx = OS.GetSystemMetrics (OS.SM_CXEDGE) - OS.GetSystemMetrics (OS.SM_CXBORDER);
-			int dy = OS.GetSystemMetrics (OS.SM_CYEDGE) - OS.GetSystemMetrics (OS.SM_CYBORDER);
+			int dx = getSystemMetrics (OS.SM_CXEDGE) - getSystemMetrics (OS.SM_CXBORDER);
+			int dy = getSystemMetrics (OS.SM_CYEDGE) - getSystemMetrics (OS.SM_CYBORDER);
 			rect.x -= dx;
 			rect.y -= dy;
 			rect.width += 2*dx;
@@ -969,15 +969,6 @@ void fixAlignment () {
 
 @Override int getBorderWidthInPixels () {
 	checkWidget ();
-	/*
-	* Feature in Windows 2000 and XP.  Despite the fact that WS_BORDER
-	* is set when the edit control is created, the style bit is cleared.
-	* The fix is to avoid the check for WS_BORDER and use the SWT widget
-	* style bits instead.
-	*/
-//	if ((style & SWT.BORDER) != 0 && (style & SWT.FLAT) != 0) {
-//		return OS.GetSystemMetrics (OS.SM_CXBORDER);
-//	}
 	return super.getBorderWidthInPixels ();
 }
 
@@ -2095,7 +2086,7 @@ void setMargins () {
 		if ((style & SWT.ICON_SEARCH) != 0) flags |= fLeading;
 		if ((style & SWT.ICON_CANCEL) != 0) flags |= fTrailing;
 		if (flags != 0) {
-			int iconWidth = OS.GetSystemMetrics (OS.SM_CXSMICON);
+			int iconWidth = getSystemMetrics (OS.SM_CXSMICON);
 			OS.SendMessage (handle, OS.EM_SETMARGINS, flags, OS.MAKELPARAM(iconWidth, iconWidth));
 		}
 	}
@@ -2958,7 +2949,7 @@ LRESULT WM_SIZE(long wParam, long lParam) {
 		long hwndTrailing = OS.GetDlgItem (handle, rtl ? SWT.ICON_SEARCH : SWT.ICON_CANCEL);
 		int width = OS.LOWORD (lParam);
 		int height = OS.HIWORD (lParam);
-		int iconWidth = OS.GetSystemMetrics (OS.SM_CXSMICON);
+		int iconWidth = getSystemMetrics (OS.SM_CXSMICON);
 		int flags = OS.SWP_NOZORDER | OS.SWP_NOACTIVATE | OS.SWP_NOCOPYBITS;
 		if (hwndLeading != 0) OS.SetWindowPos (hwndLeading, 0, 0, 0, iconWidth, height, flags);
 		if (hwndTrailing != 0) OS.SetWindowPos (hwndTrailing, 0, width - iconWidth, 0, iconWidth, height, flags);
