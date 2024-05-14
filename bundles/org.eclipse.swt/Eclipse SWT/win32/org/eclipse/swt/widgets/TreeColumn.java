@@ -392,7 +392,7 @@ public void pack () {
 		if (hwndHeader != 0) {
 			margin = (int)OS.SendMessage (hwndHeader, OS.HDM_GETBITMAPMARGIN, 0, 0);
 		} else {
-			margin = OS.GetSystemMetrics (OS.SM_CXEDGE) * 3;
+			margin = getSystemMetrics (OS.SM_CXEDGE) * 3;
 		}
 		headerWidth += margin * 2;
 	}
