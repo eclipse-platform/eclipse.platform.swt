@@ -52,7 +52,19 @@ import org.eclipse.swt.internal.win32.*;
  */
 public abstract class Widget {
 
-	private int zoom;
+	/**
+	 * the native zoom of the monitor in percent
+	 * (Warning: This field is platform dependent)
+	 * <p>
+	 * <b>IMPORTANT:</b> This field is <em>not</em> part of the SWT
+	 * public API. It is marked public only so that it can be shared
+	 * within the packages provided by SWT. It is not available on all
+	 * platforms and should never be accessed from application code.
+	 * </p>
+	 *
+	 * @noreference This field is not intended to be referenced by clients.
+	 */
+	protected int nativeZoom;
 	int style, state;
 	Display display;
 	EventTable eventTable;
@@ -169,7 +181,7 @@ public Widget (Widget parent, int style) {
 	checkSubclass ();
 	checkParent (parent);
 	this.style = style;
-	this.zoom = parent != null ? parent.getZoom() : DPIUtil.getDeviceZoom();
+	this.nativeZoom = parent != null ? parent.nativeZoom : DPIUtil.getNativeDeviceZoom();
 	display = parent.display;
 	reskinWidget ();
 	notifyCreationTracker();
@@ -2635,19 +2647,11 @@ void notifyDisposalTracker() {
 	}
 }
 
-
-/**
- * The current DPI zoom level the widget is scaled for
- */
 int getZoom() {
-	return zoom;
-}
-
-void setZoom(int zoom) {
-	this.zoom = zoom;
+	return DPIUtil.getZoomForAutoscaleProperty(nativeZoom);
 }
 
 private static void handleDPIChange(Widget widget, int newZoom, float scalingFactor) {
-	widget.setZoom(newZoom);
+	widget.nativeZoom = newZoom;
 }
 }

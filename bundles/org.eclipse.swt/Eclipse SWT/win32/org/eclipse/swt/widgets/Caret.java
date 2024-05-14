@@ -475,7 +475,7 @@ public void setFont (Font font) {
 		error (SWT.ERROR_INVALID_ARGUMENT);
 	}
 	Shell shell = parent.getShell();
-	this.font = font == null ? null : Font.win32_new(font, shell.getNativeZoom());
+	this.font = font == null ? null : Font.win32_new(font, shell.nativeZoom);
 	if (hasFocus ()) setIMEFont ();
 }
 
