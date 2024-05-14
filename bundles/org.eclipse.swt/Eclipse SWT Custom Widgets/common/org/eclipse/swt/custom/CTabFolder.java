@@ -768,7 +768,6 @@ void createItem (CTabItem item, int index) {
 	priority = newPriority;
 
 	if (items.length == 1) {
-		setSelection(0);
 		updateFolder(UPDATE_TAB_HEIGHT | REDRAW);
 	} else {
 		updateFolder(REDRAW_TABS);
