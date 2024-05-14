@@ -871,7 +871,7 @@ public void setFont (Font font){
 	}
 	Font oldFont = this.font;
 	Shell shell = parent.getShell();
-	Font newFont = (font == null ? font : Font.win32_new(font, shell.getNativeZoom()));
+	Font newFont = (font == null ? font : Font.win32_new(font, shell.nativeZoom));
 	if (oldFont == newFont) return;
 	this.font = newFont;
 	if (oldFont != null && oldFont.equals (newFont)) return;
@@ -1293,7 +1293,7 @@ private static void handleDPIChange(Widget widget, int newZoom, float scalingFac
 		Shell shell = tableItem.parent.getShell();
 		for (int index = 0; index < cellFonts.length; index++) {
 			Font cellFont = cellFonts[index];
-			cellFonts[index] = cellFont == null ? null : Font.win32_new(cellFont, shell.getNativeZoom());
+			cellFonts[index] = cellFont == null ? null : Font.win32_new(cellFont, shell.nativeZoom);
 		}
 	}
 }
