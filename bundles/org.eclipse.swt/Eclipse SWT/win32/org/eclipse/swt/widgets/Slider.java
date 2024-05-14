@@ -181,11 +181,11 @@ static int checkStyle (int style) {
 	int border = getBorderWidthInPixels ();
 	int width = border * 2, height = border * 2;
 	if ((style & SWT.HORIZONTAL) != 0) {
-		width += OS.GetSystemMetrics (OS.SM_CXHSCROLL) * 10;
-		height += OS.GetSystemMetrics (OS.SM_CYHSCROLL);
+		width += getSystemMetrics (OS.SM_CXHSCROLL) * 10;
+		height += getSystemMetrics (OS.SM_CYHSCROLL);
 	} else {
-		width += OS.GetSystemMetrics (OS.SM_CXVSCROLL);
-		height += OS.GetSystemMetrics (OS.SM_CYVSCROLL) * 10;
+		width += getSystemMetrics (OS.SM_CXVSCROLL);
+		height += getSystemMetrics (OS.SM_CYVSCROLL) * 10;
 	}
 	if (wHint != SWT.DEFAULT) width = wHint + (border * 2);
 	if (hHint != SWT.DEFAULT) height = hHint + (border * 2);

@@ -2332,7 +2332,7 @@ LRESULT wmPrint (long hwnd, long wParam, long lParam) {
 				rect.right -= rect.left;
 				rect.bottom -= rect.top;
 				rect.left = rect.top = 0;
-				int border = OS.GetSystemMetrics (OS.SM_CXEDGE);
+				int border = getSystemMetrics (OS.SM_CXEDGE);
 				OS.ExcludeClipRect (wParam, border, border, rect.right - border, rect.bottom - border);
 				OS.DrawThemeBackground (display.hEditTheme (), wParam, OS.EP_EDITTEXT, OS.ETS_NORMAL, rect, null);
 				return new LRESULT (code);
@@ -2650,4 +2650,16 @@ void setZoom(int zoom) {
 private static void handleDPIChange(Widget widget, int newZoom, float scalingFactor) {
 	widget.setZoom(newZoom);
 }
+
+int getSystemMetrics(int nIndex) {
+	/*
+	 * DPI dependent metrics were introduced after 2016 version of windows 10
+	 */
+	if (OS.WIN32_BUILD >= OS.WIN32_BUILD_WIN10_1607) {
+		return OS.GetSystemMetricsForDpi(nIndex, DPIUtil.mapZoomToDPI(getZoom()));
+	}
+	return OS.GetSystemMetrics(nIndex);
+}
+
+
 }

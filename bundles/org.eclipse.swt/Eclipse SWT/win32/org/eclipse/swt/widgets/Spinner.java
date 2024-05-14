@@ -296,7 +296,7 @@ void addVerifyListener (VerifyListener listener) {
 		height = hHint;
 	else {
 		int borderAdjustment = (style & SWT.BORDER) != 0 ? -1 : 3;
-		int upDownHeight = OS.GetSystemMetrics (OS.SM_CYVSCROLL);
+		int upDownHeight = getSystemMetrics (OS.SM_CYVSCROLL);
 		height = Math.max(height, upDownHeight + borderAdjustment);
 	}
 
@@ -339,7 +339,7 @@ void addVerifyListener (VerifyListener listener) {
 		width += 2;
 		height += 2;
 	}
-	width += OS.GetSystemMetrics (OS.SM_CXVSCROLL);
+	width += getSystemMetrics (OS.SM_CXVSCROLL);
 	return new Rectangle (x, y, width, height);
 }
 
@@ -1216,7 +1216,7 @@ LRESULT WM_SIZE (long wParam, long lParam) {
 	LRESULT result = super.WM_SIZE (wParam, lParam);
 	if (isDisposed ()) return result;
 	int width = OS.LOWORD (lParam), height = OS.HIWORD (lParam);
-	int upDownWidth = OS.GetSystemMetrics (OS.SM_CXVSCROLL) - 1;
+	int upDownWidth = getSystemMetrics (OS.SM_CXVSCROLL) - 1;
 	int textWidth = width - upDownWidth;
 
 	/*
@@ -1226,7 +1226,7 @@ LRESULT WM_SIZE (long wParam, long lParam) {
 	 */
 	int borderAdjustment = 0;
 	if (((style & SWT.BORDER) != 0) && !display.useWsBorderText) {
-		borderAdjustment = OS.GetSystemMetrics (OS.SM_CYEDGE) - OS.GetSystemMetrics (OS.SM_CYBORDER);
+		borderAdjustment = getSystemMetrics (OS.SM_CYEDGE) - getSystemMetrics (OS.SM_CYBORDER);
 		/* There is an unexplained 1px additional offset in Windows */
 		borderAdjustment++;
 	}

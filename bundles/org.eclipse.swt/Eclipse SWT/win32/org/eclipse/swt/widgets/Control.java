@@ -679,7 +679,7 @@ void createHandle () {
 }
 
 void checkGesture () {
-	int value = OS.GetSystemMetrics (OS.SM_DIGITIZER);
+	int value =getSystemMetrics (OS.SM_DIGITIZER);
 	if ((value & (OS.NID_READY | OS.NID_MULTI_INPUT)) != 0) {
 		/*
 		 * Feature in Windows 7: All gestures are enabled by default except GID_ROTATE.
@@ -1159,8 +1159,8 @@ public int getBorderWidth () {
 int getBorderWidthInPixels () {
 	long borderHandle = borderHandle ();
 	int bits1 = OS.GetWindowLong (borderHandle, OS.GWL_EXSTYLE);
-	if ((bits1 & OS.WS_EX_CLIENTEDGE) != 0) return OS.GetSystemMetrics (OS.SM_CXEDGE);
-	if ((bits1 & OS.WS_EX_STATICEDGE) != 0) return OS.GetSystemMetrics (OS.SM_CXBORDER);
+	if ((bits1 & OS.WS_EX_CLIENTEDGE) != 0) return getSystemMetrics (OS.SM_CXEDGE);
+	if ((bits1 & OS.WS_EX_STATICEDGE) != 0) return getSystemMetrics (OS.SM_CXBORDER);
 	int bits2 = OS.GetWindowLong (borderHandle, OS.GWL_STYLE);
 
 	if ((bits2 & OS.WS_BORDER) != 0) {
@@ -1170,9 +1170,9 @@ int getBorderWidthInPixels () {
 		 * saves screen space, but could break some layouts.
 		 */
 		if (isUseWsBorder ())
-			return OS.GetSystemMetrics (OS.SM_CXEDGE);
+			return getSystemMetrics (OS.SM_CXEDGE);
 
-		return OS.GetSystemMetrics (OS.SM_CXBORDER);
+		return getSystemMetrics (OS.SM_CXBORDER);
 	}
 
 	return 0;
@@ -2281,10 +2281,10 @@ void printWidget (long hwnd, long hdc, GC gc) {
 			hwndInsertAfter = OS.HWND_TOP;
 		}
 		if (fixPrintWindow) {
-			int x = OS.GetSystemMetrics (OS.SM_XVIRTUALSCREEN);
-			int y = OS.GetSystemMetrics (OS.SM_YVIRTUALSCREEN);
-			int width = OS.GetSystemMetrics (OS.SM_CXVIRTUALSCREEN);
-			int height = OS.GetSystemMetrics (OS.SM_CYVIRTUALSCREEN);
+			int x =getSystemMetrics (OS.SM_XVIRTUALSCREEN);
+			int y =getSystemMetrics (OS.SM_YVIRTUALSCREEN);
+			int width =getSystemMetrics (OS.SM_CXVIRTUALSCREEN);
+			int height =getSystemMetrics (OS.SM_CYVIRTUALSCREEN);
 			int flags = OS.SWP_NOSIZE | OS.SWP_NOZORDER | OS.SWP_NOACTIVATE | OS.SWP_DRAWFRAME;
 			if ((bits1 & OS.WS_VISIBLE) != 0) {
 				OS.DefWindowProc (hwnd, OS.WM_SETREDRAW, 0, 0);
