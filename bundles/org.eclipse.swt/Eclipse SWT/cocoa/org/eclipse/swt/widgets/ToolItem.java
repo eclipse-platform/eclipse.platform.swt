@@ -523,7 +523,9 @@ void drawWidget (long id, NSGraphicsContext context, NSRect rect) {
 			NSAffineTransform transform = NSAffineTransform.transform();
 			transform.translateXBy((int)bounds.width - ARROW_WIDTH - INSET, (int)(bounds.height - ARROW_WIDTH / 2) / 2);
 			transform.concat();
-			NSColor color = isEnabled() ? NSColor.blackColor() : NSColor.disabledControlTextColor();
+			var foreground = getForeground();
+			var enabledColor = NSColor.colorWithDeviceRed(foreground.getRed(), foreground.getGreen(), foreground.getBlue(),1.0f);
+			NSColor color = isEnabled() ? enabledColor : NSColor.disabledControlTextColor();
 			color.set();
 			path.fill();
 			context.restoreGraphicsState();
