@@ -2101,6 +2101,11 @@ boolean setMarkedText_selectedRange (long id, long sel, long string, long range)
 void setNeedsDisplay (long id, long sel, boolean flag) {
 	if (flag && !isDrawing()) return;
 	NSView view = new NSView(id);
+	/*
+	* Since macOS 14 the clipsToBounds property of NSView has to be set to true
+	* See https://developer.apple.com/documentation/macos-release-notes/appkit-release-notes-for-macos-14
+	*/
+	OS.objc_msgSend(id, OS.sel_setClipsToBounds_, true);
 	if (flag && display.isPainting.containsObject(view)) {
 		NSMutableArray needsDisplay = display.needsDisplay;
 		if (needsDisplay == null) {
@@ -2121,6 +2126,11 @@ void setNeedsDisplayInRect (long id, long sel, long arg0) {
 	NSRect rect = new NSRect();
 	OS.memmove(rect, arg0, NSRect.sizeof);
 	NSView view = new NSView(id);
+	/*
+	* Since macOS 14 the clipsToBounds property of NSView has to be set to true
+	* See https://developer.apple.com/documentation/macos-release-notes/appkit-release-notes-for-macos-14
+	*/
+	OS.objc_msgSend(id, OS.sel_setClipsToBounds_, true);
 	if (display.isPainting.containsObject(view)) {
 		NSMutableArray needsDisplayInRect = display.needsDisplayInRect;
 		if (needsDisplayInRect == null) {
