@@ -234,9 +234,17 @@ BOOL Validate_SetPreferredAppMode(const BYTE* functionPtr)
 		(functionPtr[0x06] == 0x87) && (functionPtr[0x07] == 0x0D) &&   // xchg    ecx,dword ptr [uxtheme!g_preferredAppMode]
 		(functionPtr[0x0C] == 0xC3);                                    // ret
 #elif defined(_M_ARM64)
-	if (*(const DWORD*)(&functionPtr[0x1C]) == 0x912F6100) // add x0,x8,#0xBD8
+	const DWORD ldr = *(const DWORD*)(&functionPtr[0x14]);
+	const DWORD add = *(const DWORD*)(&functionPtr[0x1C]);
+
+	if ((ldr & 0xFFC003FF) == 0xB9400113 &&                   // ldr, w19,[x8, arg0]
+		*(const DWORD*)(&functionPtr[0x18]) == 0x2A0003E1 &&  // mov w1,w0
+		(add & 0xFFC003FF) == 0x91000100 &&                   // add x0,x8,arg1
+		*(const DWORD*)(&functionPtr[0x24]) == 0x2A1303E0)    // mov w0,w19
 	{
-		return TRUE;
+		const DWORD arg0 = ((ldr & 0x003FFC00) >> 10) * 4;
+		const DWORD arg1 = ((add & 0x003FFC00) >> 10);
+		return arg0 == arg1;
 	}
 
 	return FALSE;
