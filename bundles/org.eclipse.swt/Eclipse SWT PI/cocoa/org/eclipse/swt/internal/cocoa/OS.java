@@ -156,8 +156,9 @@ public class OS extends C {
 	public static final long sel_setStyle = Selector.sel_setStyle.value;
 	public static final int NSTableViewStylePlain = 4;
 
-    /** 14.0 selector */
-    public static final long sel_setClipsToBounds_ = Selector.sel_setClipsToBounds_.value;
+	/** 14.0 selectors */
+	public static final long sel_setClipsToBounds_ = Selector.sel_setClipsToBounds_.value;
+	public static final long sel_applicationSupportsSecureRestorableState_ = Selector.sel_applicationSupportsSecureRestorableState_.value;
 
 	/* AWT application delegate. Remove these when JavaRuntimeSupport.framework has bridgesupport generated for it. */
 	public static final long class_JRSAppKitAWT = objc_getClass("JRSAppKitAWT");
