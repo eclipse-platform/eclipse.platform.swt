@@ -1052,7 +1052,6 @@ void createDisplay (DeviceData data) {
 		OS.class_addMethod(cls, OS.sel_application_openUrls_, appProc4, "@:@@");
 		OS.class_addMethod(cls, OS.sel_applicationShouldHandleReopen_hasVisibleWindows_, appProc4, "@:@B");
 		OS.class_addMethod(cls, OS.sel_applicationShouldTerminate_, appProc3, "@:@");
-		OS.class_addMethod(cls, OS.sel_applicationSupportsSecureRestorableState_, appProc3, "@:@");
 		OS.objc_registerClassPair(cls);
 	}
 
@@ -5902,9 +5901,6 @@ static long applicationProc(long id, long sel, long arg0) {
 				}
 			}
 			return 0;
-		}
-		case sel_applicationSupportsSecureRestorableState_: {
-			return 1;
 		}
 		default: {
 			return 0;
