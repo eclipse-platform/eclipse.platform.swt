@@ -7,6 +7,13 @@ assignees: ''
 
 ---
 
+> [!IMPORTANT]
+> If you are reporting a **crash on Linux**, please check if `webkit` is mentioned in the crash file.
+> If yes, please try to set `WEBKIT_DISABLE_COMPOSITING_MODE=1` and/or `WEBKIT_DISABLE_DMABUF_RENDERER=1` environment variables.
+> If they prevent crashes, don't report the bug please, it is already known as https://github.com/eclipse-platform/eclipse.platform.swt/issues/843
+>
+
+
 **Describe the bug**
 A clear and concise description of what the bug is.
 
