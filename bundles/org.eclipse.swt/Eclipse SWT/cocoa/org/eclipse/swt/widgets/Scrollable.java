@@ -270,6 +270,7 @@ public int getScrollbarsMode () {
  * </ul>
  *
  * @see SWT#SCROLLBAR_OVERLAY
+ *
  * @since 3.126
  */
 public void setScrollbarsMode (int mode) {
