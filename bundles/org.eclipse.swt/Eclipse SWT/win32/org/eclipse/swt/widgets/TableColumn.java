@@ -439,8 +439,8 @@ public void pack () {
 				Event event = parent.sendMeasureItemEvent (item, i, index, hDC);
 				if (hFont != -1) hFont = OS.SelectObject (hDC, hFont);
 				if (isDisposed () || parent.isDisposed ()) break;
-				Rectangle bounds = event.getBoundsInPixels();
-				columnWidth = Math.max (columnWidth, bounds.x + bounds.width - headerRect.left);
+				Rectangle bounds = event.getBounds();
+				columnWidth = Math.max (columnWidth, DPIUtil.autoScaleUp(bounds.x + bounds.width, getZoom()) - headerRect.left);
 			}
 		}
 		if (newFont != 0) OS.SelectObject (hDC, oldFont);

@@ -358,8 +358,8 @@ public void pack () {
 				int detail = (tvItem.state & OS.TVIS_SELECTED) != 0 ? SWT.SELECTED : 0;
 				Event event = parent.sendMeasureItemEvent (item, index, hDC, detail);
 				if (isDisposed () || parent.isDisposed ()) break;
-				Rectangle bounds = event.getBoundsInPixels();
-				itemRight = bounds.x + bounds.width;
+				Rectangle bounds = event.getBounds();
+				itemRight = DPIUtil.autoScaleUp(bounds.x + bounds.width, getZoom());
 			} else {
 				long hFont = item.fontHandle (index);
 				if (hFont != -1) hFont = OS.SelectObject (hDC, hFont);

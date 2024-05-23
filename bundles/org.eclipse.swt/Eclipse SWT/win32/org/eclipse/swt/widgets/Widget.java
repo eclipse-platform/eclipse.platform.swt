@@ -1149,7 +1149,8 @@ void reskinWidget() {
 boolean sendDragEvent (int button, int x, int y) {
 	Event event = new Event ();
 	event.button = button;
-	event.setLocationInPixels(x, y); // In Pixels
+	int zoom = getZoom();
+	event.setLocation(DPIUtil.scaleDown(x, zoom), DPIUtil.scaleDown(y, zoom));
 	setInputState (event, SWT.DragDetect);
 	postEvent (SWT.DragDetect, event);
 	if (isDisposed ()) return false;
@@ -1159,7 +1160,8 @@ boolean sendDragEvent (int button, int x, int y) {
 boolean sendDragEvent (int button, int stateMask, int x, int y) {
 	Event event = new Event ();
 	event.button = button;
-	event.setLocationInPixels(x, y);
+	int zoom = getZoom();
+	event.setLocation(DPIUtil.scaleDown(x, zoom), DPIUtil.scaleDown(y, zoom));
 	event.stateMask = stateMask;
 	postEvent (SWT.DragDetect, event);
 	if (isDisposed ()) return false;
@@ -1235,7 +1237,8 @@ boolean sendMouseEvent (int type, int button, int count, int detail, boolean sen
 	event.button = button;
 	event.detail = detail;
 	event.count = count;
-	event.setLocationInPixels(OS.GET_X_LPARAM (lParam), OS.GET_Y_LPARAM (lParam));
+	int zoom = getZoom();
+	event.setLocation(DPIUtil.scaleDown(OS.GET_X_LPARAM (lParam), zoom), DPIUtil.scaleDown(OS.GET_Y_LPARAM (lParam), zoom));
 	setInputState (event, type);
 	mapEvent (hwnd, event);
 	if (send) {
@@ -1649,7 +1652,8 @@ boolean showMenu (int x, int y) {
 
 boolean showMenu (int x, int y, int detail) {
 	Event event = new Event ();
-	event.setLocationInPixels(x, y);
+	int zoom = getZoom();
+	event.setLocation(DPIUtil.scaleDown(x, zoom), DPIUtil.scaleDown(y, zoom));
 	event.detail = detail;
 	if (event.detail == SWT.MENU_KEYBOARD) {
 		updateMenuLocation (event);
@@ -1660,8 +1664,8 @@ boolean showMenu (int x, int y, int detail) {
 	if (!event.doit) return true;
 	Menu menu = getMenu ();
 	if (menu != null && !menu.isDisposed ()) {
-		Point loc = event.getLocationInPixels(); // In Pixels
-		if (x != loc.x || y != loc.y) {
+		Point locInPixels = DPIUtil.autoScaleUp(event.getLocation(), zoom); // In Pixels
+		if (x != locInPixels.x || y != locInPixels.y) {
 			menu.setLocation (event.getLocation());
 		}
 		menu.setVisible (true);
@@ -2314,7 +2318,7 @@ LRESULT wmPaint (long hwnd, long wParam, long lParam) {
 			OS.SetMetaRgn (hDC);
 			Event event = new Event ();
 			event.gc = gc;
-			event.setBoundsInPixels(new Rectangle(rect.left, rect.top, width, height));
+			event.setBounds(DPIUtil.scaleDown(new Rectangle(rect.left, rect.top, width, height), getZoom()));
 			sendEvent (SWT.Paint, event);
 			// widget could be disposed at this point
 			event.gc = null;

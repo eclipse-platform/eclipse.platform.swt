@@ -789,7 +789,7 @@ LRESULT WM_PAINT (long wParam, long lParam) {
 			if (hooks (SWT.Paint) || filters (SWT.Paint)) {
 				Event event = new Event ();
 				event.gc = gc;
-				event.setBoundsInPixels(new Rectangle(rect.left, rect.top, width, height));
+				event.setBounds(DPIUtil.scaleDown(new Rectangle(rect.left, rect.top, width, height), getZoom()));
 				sendEvent (SWT.Paint, event);
 				event.gc = null;
 			}

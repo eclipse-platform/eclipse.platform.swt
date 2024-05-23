@@ -16,6 +16,7 @@ package org.eclipse.swt.widgets;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.ole.win32.*;
 import org.eclipse.swt.internal.win32.*;
 
@@ -566,7 +567,8 @@ LRESULT WM_LBUTTONDOWN (long wParam, long lParam) {
 			if (OS.ImmGetCompositionString (hIMC, OS.GCS_COMPSTR, (char [])null, 0) > 0) {
 				Event event = new Event ();
 				event.detail = SWT.COMPOSITION_OFFSET;
-				event.setLocationInPixels(OS.GET_X_LPARAM (lParam), OS.GET_Y_LPARAM (lParam));
+				int zoom = getZoom();
+				event.setLocation(DPIUtil.scaleDown(OS.GET_X_LPARAM (lParam), zoom), DPIUtil.scaleDown(OS.GET_Y_LPARAM (lParam), zoom));
 				sendEvent (SWT.ImeComposition, event);
 				int offset = event.index;
 				int length = text.length();
