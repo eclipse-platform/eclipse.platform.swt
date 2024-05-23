@@ -8280,11 +8280,12 @@ private static void handleDPIChange(Widget widget, int newZoom, float scalingFac
 		tree.imageList = null;
 	}
 
-	if (tree.hooks(SWT.MeasureItem)) {
-		// with the measure item hook, the height must be programmatically recalculated
-		var itemHeight = tree.getItemHeightInPixels();
-		tree.setItemHeight(Math.round(itemHeight * scalingFactor));
-	}
+	// if the item height was set at least once programmatically with TVM_SETITEMHEIGHT,
+	// the item height of the tree is not managed by the OS anymore e.g. when the zoom
+	// on the monitor is changed, the height of the item will stay at the fixed size.
+	// Resetting it will re-enable the default behavior again
+	tree.setItemHeight(-1);
+
 	for (TreeColumn treeColumn : tree.getColumns()) {
 		DPIZoomChangeRegistry.applyChange(treeColumn, newZoom, scalingFactor);
 	}
