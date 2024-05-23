@@ -43,6 +43,7 @@ import org.eclipse.swt.widgets.Shell;
  * Actual results: Only the top-left canvas is green, the rest of the canvases are red.
  * Further notes: The clipping of {@link GC#getClipping()} is shown below each colored canvas.
  */
+@SuppressWarnings("restriction")
 public class Bug421127_Clipping_is_wrong {
 
 	public static void main (String [] args) {

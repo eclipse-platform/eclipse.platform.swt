@@ -50,6 +50,7 @@ import org.junit.Test;
  *
  * @see org.eclipse.swt.graphics.Image
  */
+@SuppressWarnings("restriction")
 public class Test_org_eclipse_swt_graphics_Image {
 ImageFileNameProvider imageFileNameProvider = zoom -> {
 	String fileName;

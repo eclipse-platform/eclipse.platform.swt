@@ -29,7 +29,7 @@ import org.eclipse.swt.widgets.*;
 
 public class Snippet375 {
 
-	public static void main(String[] args) throws Exception {
+	public static void main(String[] args) {
 		final Display display = new Display();
 		final Shell shell = new Shell(display);
 		shell.setText("Snippet 375");

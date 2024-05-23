@@ -23,6 +23,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 
+@SuppressWarnings("restriction")
 public class Bug546274_StyledTextVMCrash {
 	private static class MyStyledText extends StyledText {
 		int 	cairoCacheSize = 16;	// see MAX_FREED_POOL_SIZE in cairo

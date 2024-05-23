@@ -15,7 +15,7 @@ package org.eclipse.swt.tests.win32;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.internal.win32.OS;
-import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.widgets.Event;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -24,6 +24,7 @@ import org.junit.Test;
  *
  * @see org.eclipse.swt.events.KeyEvent
  */
+@SuppressWarnings("restriction")
 public class Test_org_eclipse_swt_events_KeyEvent extends KeyboardLayoutTest {
 	// Windows layouts suitable for 'LoadKeyboardLayout()', obtained from 'GetKeyboardLayoutName()'
 	static char[] LAYOUT_BENGALI        = "00020445\0".toCharArray();

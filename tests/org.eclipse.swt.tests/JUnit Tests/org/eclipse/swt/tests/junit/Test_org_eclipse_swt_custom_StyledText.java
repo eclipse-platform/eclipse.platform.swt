@@ -88,6 +88,7 @@ import org.junit.rules.TestWatcher;
  *
  * @see org.eclipse.swt.custom.StyledText
  */
+@SuppressWarnings("restriction")
 public class Test_org_eclipse_swt_custom_StyledText extends Test_org_eclipse_swt_widgets_Canvas {
 
 StyledText text;

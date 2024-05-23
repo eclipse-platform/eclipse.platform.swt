@@ -46,6 +46,7 @@ import org.eclipse.swt.widgets.Shell;
  *      "https://github.com/eclipse-platform/eclipse.platform.swt/issues/445">Issue
  *      #445</a> for details.
  */
+@SuppressWarnings("restriction")
 public class Issue0445_HiDPISmoothScaling {
 
 	public static void main(String[] args) {

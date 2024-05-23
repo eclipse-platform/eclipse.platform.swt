@@ -48,6 +48,7 @@ import org.junit.runners.MethodSorters;
  * Just start and see if the JVM crashes.
  */
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
+@SuppressWarnings("restriction")
 public class Bug567422_DNDCrash {
 
 	enum TestMode {

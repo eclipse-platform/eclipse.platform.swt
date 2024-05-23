@@ -27,6 +27,7 @@ import org.eclipse.swt.widgets.ScrollBar;
 import org.eclipse.swt.widgets.Scrollable;
 import org.eclipse.swt.widgets.Shell;
 
+@SuppressWarnings("restriction")
 public class Bug565426_SmoothScrolling {
 	static void simulateScroll(Scrollable control, boolean vertical, int wheelDelta) {
 		long wParam = wheelDelta << 16;

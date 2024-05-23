@@ -80,6 +80,7 @@ public class Snippet288 {
 		display.dispose ();
 	}
 
+	@SuppressWarnings("unused")
 	private static void loadAllImages(String directory, String[] filenames) throws SWTException {
 		int numItems = filenames.length;
 		loader = new ImageLoader[numItems];

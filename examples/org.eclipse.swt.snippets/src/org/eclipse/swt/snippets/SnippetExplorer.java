@@ -157,7 +157,7 @@ public class SnippetExplorer {
 	 *
 	 * @param args does not parse any arguments
 	 */
-	public static void main(String[] args) throws Exception {
+	public static void main(String[] args) {
 		final String os = System.getProperty("os.name");
 		multiDisplaySupport = (os != null && os.toLowerCase().contains("windows"));
 		if (canRunCommand("java")) {

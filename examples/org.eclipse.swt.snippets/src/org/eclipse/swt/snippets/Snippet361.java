@@ -109,6 +109,8 @@ public class Snippet361 {
 		composite.setLayoutData(data);
 		Frame frame = SWT_AWT.new_Frame(composite);
 		canvas = new Canvas() {
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public void paint (Graphics g) {
 				if (image != null) {
