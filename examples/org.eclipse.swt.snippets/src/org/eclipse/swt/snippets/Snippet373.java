@@ -77,7 +77,9 @@ public class Snippet373 {
 		Shell shell = new Shell(display);
 		shell.setText("Snippet 373");
 		shell.setImage(eclipse);
-		shell.setText("DynamicDPI @ " + DPIUtil.getDeviceZoom());
+		@SuppressWarnings("restriction")
+		int deviceZoom = DPIUtil.getDeviceZoom();
+		shell.setText("DynamicDPI @ " + deviceZoom);
 		shell.setLayout(new RowLayout(SWT.VERTICAL));
 		shell.setLocation(100, 100);
 		shell.setSize(500, 600);

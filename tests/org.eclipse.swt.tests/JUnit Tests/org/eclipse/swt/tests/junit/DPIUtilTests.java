@@ -30,6 +30,7 @@ import org.junit.Test;
  *
  * @see org.eclipse.swt.internal.DPIUtil
  */
+@SuppressWarnings("restriction")
 public class DPIUtilTests {
 
 	private int deviceZoom;

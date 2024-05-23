@@ -21,15 +21,14 @@ package org.eclipse.swt.snippets;
  *
  * @since 3.0
  */
-import java.awt.Frame;
+import java.awt.*;
 import java.awt.Canvas;
-import java.awt.Graphics;
-import java.awt.Dimension;
 
 import org.eclipse.swt.*;
-import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.awt.*;
 import org.eclipse.swt.layout.*;
-import org.eclipse.swt.awt.SWT_AWT;
+import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.widgets.Composite;
 
 public class Snippet155 {
 
@@ -43,6 +42,8 @@ public class Snippet155 {
 		/* Draw an X using AWT */
 		Frame frame = SWT_AWT.new_Frame(composite);
 		Canvas canvas = new Canvas() {
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public void paint (Graphics g) {
 				Dimension d = getSize();

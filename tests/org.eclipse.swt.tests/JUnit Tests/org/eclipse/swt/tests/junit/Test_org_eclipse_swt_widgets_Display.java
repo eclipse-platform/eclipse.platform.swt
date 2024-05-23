@@ -56,6 +56,7 @@ import org.junit.rules.TestName;
  *
  * @see org.eclipse.swt.widgets.Display
  */
+@SuppressWarnings("restriction")
 public class Test_org_eclipse_swt_widgets_Display {
 
 private static boolean isRunningOnEclipseOrgHudson =

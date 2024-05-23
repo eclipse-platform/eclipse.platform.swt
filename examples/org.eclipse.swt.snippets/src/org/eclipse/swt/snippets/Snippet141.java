@@ -56,6 +56,7 @@ public class Snippet141 {
 				if (imageDataArray.length > 1) {
 					animateThread = new Thread("Animation") {
 						@Override
+						@SuppressWarnings("unused")
 						public void run() {
 							/* Create an off-screen image to draw on, and fill it with the shell background. */
 							Image offScreenImage = new Image(display, loader.logicalScreenWidth, loader.logicalScreenHeight);

@@ -34,6 +34,7 @@ import org.eclipse.swt.layout.*;
 import org.eclipse.swt.ole.win32.*;
 import org.eclipse.swt.widgets.*;
 
+@SuppressWarnings("restriction")
 public class Snippet123 {
 
 public static void main(String[] args) {
@@ -107,6 +108,7 @@ public static void main(String[] args) {
 }
 // EventDispatch implements a simple IDispatch interface which will be called
 // when the event is fired.
+@SuppressWarnings("restriction")
 class EventDispatch {
 	private COMObject iDispatch;
 	private int refCount = 0;

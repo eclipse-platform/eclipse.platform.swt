@@ -162,6 +162,8 @@ public static void main(String[] args) {
 		}
 	});
 	Frame frame = new Frame() {
+		private static final long serialVersionUID = 1L;
+
 		@Override
 		public void paint(Graphics g) {
 			Insets insets = getInsets();

@@ -26,6 +26,7 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 
+@SuppressWarnings("restriction")
 public class Bug547109_JvmCrashNativeLibraryLoad {
 	private static final String ARG_NO_UI = "-noUI";
 	private static final int EXIT_CODE_GOOD = 0;

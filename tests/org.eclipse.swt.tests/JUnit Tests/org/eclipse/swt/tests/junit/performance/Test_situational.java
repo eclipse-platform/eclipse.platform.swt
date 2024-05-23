@@ -49,6 +49,7 @@ import org.junit.Test;
  *
  * @see org.eclipse.swt.graphics.Color
  */
+@SuppressWarnings("restriction")
 public class Test_situational extends SwtPerformanceTestCase {
 
 @Before

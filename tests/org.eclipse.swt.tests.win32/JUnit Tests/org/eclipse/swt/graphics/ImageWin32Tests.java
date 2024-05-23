@@ -27,6 +27,7 @@ import org.junit.Test;
  *
  * @see org.eclipse.swt.graphics.Image
  */
+@SuppressWarnings("restriction")
 public class ImageWin32Tests {
 	private Display display;
 

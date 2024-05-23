@@ -28,6 +28,7 @@ import org.junit.Test;
  *
  *  We care about Ascii, UTF-8 (as it's used by glib/gtk much) and UTF-16LE (as it's used by java/intel/amd architecture).
  */
+@SuppressWarnings("restriction")
 public class Test_GtkConverter {
 
 	static final String emptyStr = "";

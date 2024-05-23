@@ -13,23 +13,27 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.win32;
 
+import static org.junit.Assert.fail;
+
+import java.util.ArrayList;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.internal.win32.INPUT;
 import org.eclipse.swt.internal.win32.KEYBDINPUT;
 import org.eclipse.swt.internal.win32.OS;
-import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.Shell;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.rules.TestName;
 
-import java.util.ArrayList;
-
-import static org.junit.Assert.fail;
-
 /**
  * Supporting code for testing keyboard layouts
  */
+@SuppressWarnings("restriction")
 public class KeyboardLayoutTest {
 	public boolean dumpEvents = false;  // Can be enabled in debugger
 

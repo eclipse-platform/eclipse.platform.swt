@@ -44,6 +44,7 @@ import org.eclipse.swt.widgets.MenuItem;
 public class Snippet135 {
 
 	static class FileTableModel extends AbstractTableModel {
+		private static final long serialVersionUID = 1L;
 		File[] files;
 		String[] columnsName = {"Name", "Size", "Date Modified"};
 
