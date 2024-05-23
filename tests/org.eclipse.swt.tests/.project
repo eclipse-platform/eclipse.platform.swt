@@ -35,4 +35,17 @@
 			</matcher>
 		</filter>
 	</filteredResources>
+	<linkedResources>
+		<link>
+			<name>.settings/org.eclipse.jdt.core.prefs</name>
+			<type>1</type>
+			<locationURI>SHARED_SETTINGS/org.eclipse.jdt.core.prefs</locationURI>
+		</link>
+	</linkedResources>
+	<variableList>
+		<variable>
+			<name>SHARED_SETTINGS</name>
+			<value>$%7BPARENT-2-PROJECT_LOC%7D/examples/.settings_shared</value>
+		</variable>
+	</variableList>
 </projectDescription>
