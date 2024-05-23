@@ -777,8 +777,9 @@ void destroyWidget () {
 public boolean dragDetect (Event event) {
 	checkWidget ();
 	if (event == null) error (SWT.ERROR_NULL_ARGUMENT);
-	Point loc = event.getLocationInPixels();
-	return dragDetect (event.button, event.count, event.stateMask, loc.x, loc.y);
+	Point loc = event.getLocation();
+	int zoom = getZoom();
+	return dragDetect (event.button, event.count, event.stateMask, DPIUtil.autoScaleUp(loc.x, zoom), DPIUtil.autoScaleUp(loc.y, zoom));
 }
 
 /**
@@ -1972,11 +1973,12 @@ boolean isUseWsBorder () {
 void mapEvent (long hwnd, Event event) {
 	if (hwnd != handle) {
 		POINT point = new POINT ();
-		Point loc = event.getLocationInPixels();
-		point.x = loc.x;
-		point.y = loc.y;
+		Point loc = event.getLocation();
+		int zoom = getZoom();
+		point.x = DPIUtil.autoScaleUp(loc.x, zoom);
+		point.y = DPIUtil.autoScaleUp(loc.y, zoom);
 		OS.MapWindowPoints (hwnd, handle, point, 1);
-		event.setLocationInPixels(point.x, point.y);
+		event.setLocation(DPIUtil.scaleDown(point.x, zoom), DPIUtil.scaleDown(point.y, zoom));
 	}
 }
 
@@ -2934,7 +2936,8 @@ boolean sendGestureEvent (GESTUREINFO gi) {
 	int type = 0;
 	Point globalPt = new Point(gi.x, gi.y);
 	Point point = toControlInPixels(globalPt.x, globalPt.y);
-	event.setLocationInPixels(point.x, point.y);
+	int zoom = getZoom();
+	event.setLocation(DPIUtil.scaleDown(point.x, zoom), DPIUtil.scaleDown(point.y, zoom));
 	switch (gi.dwID) {
 		case OS.GID_ZOOM:
 			type = SWT.Gesture;
@@ -3014,7 +3017,8 @@ void sendTouchEvent (TOUCHINPUT touchInput []) {
 	POINT pt = new POINT ();
 	OS.GetCursorPos (pt);
 	OS.ScreenToClient (handle, pt);
-	event.setLocationInPixels(pt.x, pt.y);
+	int zoom = getZoom();
+	event.setLocation(DPIUtil.scaleDown(pt.x, zoom), DPIUtil.scaleDown(pt.y, zoom));
 	Touch [] touches = new Touch [touchInput.length];
 	Monitor monitor = getMonitor ();
 	for (int i = 0; i < touchInput.length; i++) {
@@ -5606,7 +5610,8 @@ LRESULT WM_TABLET_FLICK (long wParam, long lParam) {
 			event.yDirection = 1;
 			break;
 	}
-	event.setLocationInPixels(fPoint.x, fPoint.y);
+	int zoom = getZoom();
+	event.setLocation(DPIUtil.scaleDown(fPoint.x, zoom), DPIUtil.scaleDown(fPoint.y, zoom));
 	event.type = SWT.Gesture;
 	event.detail = SWT.GESTURE_SWIPE;
 	setInputState (event, SWT.Gesture);

@@ -3581,7 +3581,7 @@ public boolean post (Event event) {
 					int y = OS.GetSystemMetrics (OS.SM_YVIRTUALSCREEN);
 					int width = OS.GetSystemMetrics (OS.SM_CXVIRTUALSCREEN);
 					int height = OS.GetSystemMetrics (OS.SM_CYVIRTUALSCREEN);
-					Point loc = event.getLocationInPixels();
+					Point loc = DPIUtil.autoScaleUp(event.getLocation(), getDeviceZoom());
 					inputs.dx = ((loc.x - x) * 65535 + width - 2) / (width - 1);
 					inputs.dy = ((loc.y - y) * 65535 + height - 2) / (height - 1);
 				} else {

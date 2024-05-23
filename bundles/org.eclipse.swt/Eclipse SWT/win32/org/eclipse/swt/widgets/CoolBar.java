@@ -1173,10 +1173,11 @@ LRESULT wmNotifyChild (NMHDR hdr, long wParam, long lParam) {
 			if (item != null) {
 				Event event = new Event();
 				event.detail = SWT.ARROW;
+				int zoom = getZoom();
 				if ((style & SWT.VERTICAL) != 0) {
-					event.setLocationInPixels(lpnm.right, lpnm.top);
+					event.setLocation(DPIUtil.scaleDown(lpnm.right, zoom), DPIUtil.scaleDown(lpnm.top, zoom));
 				} else {
-					event.setLocationInPixels(lpnm.left, lpnm.bottom);
+					event.setLocation(DPIUtil.scaleDown(lpnm.left, zoom), DPIUtil.scaleDown(lpnm.bottom, zoom));
 				}
 				item.sendSelectionEvent(SWT.Selection, event, false);
 			}

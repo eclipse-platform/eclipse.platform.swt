@@ -2832,7 +2832,7 @@ boolean hitTestSelection (int index, int x, int y) {
 		long hFont = item.fontHandle (0);
 		if (hFont != -1) hFont = OS.SelectObject (hDC, hFont);
 		Event event = sendMeasureItemEvent (item, index, 0, hDC);
-		if (event.getBoundsInPixels ().contains (x, y)) result = true;
+		if (DPIUtil.autoScaleUp(event.getBounds(), getZoom()).contains (x, y)) result = true;
 		if (hFont != -1) hFont = OS.SelectObject (hDC, hFont);
 		if (newFont != 0) OS.SelectObject (hDC, oldFont);
 		OS.ReleaseDC (handle, hDC);
@@ -3484,9 +3484,9 @@ void sendEraseItemEvent (TableItem item, NMLVCUSTOMDRAW nmcd, long lParam, Event
 	if (drawHot) event.detail |= SWT.HOT;
 	if (drawSelected) event.detail |= SWT.SELECTED;
 	if (drawBackground) event.detail |= SWT.BACKGROUND;
-	Rectangle boundsInPixels = new Rectangle (cellRect.left, cellRect.top, cellRect.right - cellRect.left, cellRect.bottom - cellRect.top);
-	event.setBoundsInPixels (boundsInPixels);
-	gc.setClipping (DPIUtil.scaleDown(boundsInPixels, getZoom()));
+	Rectangle bounds = DPIUtil.scaleDown(new Rectangle (cellRect.left, cellRect.top, cellRect.right - cellRect.left, cellRect.bottom - cellRect.top), getZoom());
+	event.setBounds (bounds);
+	gc.setClipping (bounds);
 	sendEvent (SWT.EraseItem, event);
 	event.gc = null;
 	int clrSelectionText = data.foreground;
@@ -3530,8 +3530,8 @@ void sendEraseItemEvent (TableItem item, NMLVCUSTOMDRAW nmcd, long lParam, Event
 		RECT textRect = item.getBounds ((int)nmcd.dwItemSpec, nmcd.iSubItem, true, false, fullText, false, hDC);
 		if ((style & SWT.FULL_SELECTION) == 0) {
 			if (measureEvent != null) {
-				Rectangle boundInPixels = measureEvent.getBoundsInPixels();
-				textRect.right = Math.min (cellRect.right, boundInPixels.x + boundInPixels.width);
+				Rectangle boundsInPixels = DPIUtil.autoScaleUp(measureEvent.getBounds(), getZoom());
+				textRect.right = Math.min (cellRect.right, boundsInPixels.x + boundsInPixels.width);
 			}
 			if (!ignoreDrawFocus) {
 				nmcd.uItemState &= ~OS.CDIS_FOCUS;
@@ -3605,7 +3605,7 @@ Event sendEraseItemEvent (TableItem item, NMTTCUSTOMDRAW nmcd, int column, RECT 
 	event.index = column;
 	event.gc = gc;
 	event.detail |= SWT.FOREGROUND;
-	event.setBoundsInPixels(new Rectangle(cellRect.left, cellRect.top, cellRect.right - cellRect.left, cellRect.bottom - cellRect.top));
+	event.setBounds(DPIUtil.scaleDown(new Rectangle(cellRect.left, cellRect.top, cellRect.right - cellRect.left, cellRect.bottom - cellRect.top), getZoom()));
 	//gc.setClipping (event.x, event.y, event.width, event.height);
 	sendEvent (SWT.EraseItem, event);
 	event.gc = null;
@@ -3626,7 +3626,7 @@ Event sendMeasureItemEvent (TableItem item, int row, int column, long hDC) {
 	event.item = item;
 	event.gc = gc;
 	event.index = column;
-	event.setBoundsInPixels(new Rectangle(itemRect.left, itemRect.top, itemRect.right - itemRect.left, itemRect.bottom - itemRect.top));
+	event.setBounds(DPIUtil.scaleDown(new Rectangle(itemRect.left, itemRect.top, itemRect.right - itemRect.left, itemRect.bottom - itemRect.top), getZoom()));
 	boolean drawSelected = false;
 	if (OS.IsWindowEnabled (handle)) {
 		LVITEM lvItem = new LVITEM ();
@@ -3649,7 +3649,7 @@ Event sendMeasureItemEvent (TableItem item, int row, int column, long hDC) {
 	gc.dispose ();
 	OS.RestoreDC (hDC, nSavedDC);
 	if (!isDisposed () && !item.isDisposed ()) {
-		Rectangle boundsInPixels = event.getBoundsInPixels();
+		Rectangle boundsInPixels = DPIUtil.autoScaleUp(event.getBounds(), getZoom());
 		if (columnCount == 0) {
 			int width = (int)OS.SendMessage (handle, OS.LVM_GETCOLUMNWIDTH, 0, 0);
 			if (boundsInPixels.x + boundsInPixels.width > width) setScrollWidth (boundsInPixels.x + boundsInPixels.width);
@@ -3926,7 +3926,7 @@ void sendPaintItemEvent (TableItem item, NMLVCUSTOMDRAW nmcd) {
 	if (drawHot) event.detail |= SWT.HOT;
 	if (drawSelected) event.detail |= SWT.SELECTED;
 	if (drawBackground) event.detail |= SWT.BACKGROUND;
-	event.setBoundsInPixels(new Rectangle(itemRect.left, itemRect.top, itemRect.right - itemRect.left, itemRect.bottom - itemRect.top));
+	event.setBounds(DPIUtil.scaleDown(new Rectangle(itemRect.left, itemRect.top, itemRect.right - itemRect.left, itemRect.bottom - itemRect.top), getZoom()));
 	RECT cellRect = item.getBounds ((int)nmcd.dwItemSpec, nmcd.iSubItem, true, true, true, true, hDC);
 	int cellWidth = cellRect.right - cellRect.left;
 	int cellHeight = cellRect.bottom - cellRect.top;
@@ -3954,7 +3954,7 @@ Event sendPaintItemEvent (TableItem item, NMTTCUSTOMDRAW nmcd, int column, RECT 
 	event.index = column;
 	event.gc = gc;
 	event.detail |= SWT.FOREGROUND;
-	event.setBoundsInPixels(new Rectangle(itemRect.left, itemRect.top, itemRect.right - itemRect.left, itemRect.bottom - itemRect.top));
+	event.setBounds(DPIUtil.scaleDown(new Rectangle(itemRect.left, itemRect.top, itemRect.right - itemRect.left, itemRect.bottom - itemRect.top), getZoom()));
 	//gc.setClipping (cellRect.left, cellRect.top, cellWidth, cellHeight);
 	sendEvent (SWT.PaintItem, event);
 	event.gc = null;
@@ -5540,7 +5540,8 @@ void updateMenuLocation (Event event) {
 		y = Math.min (y, clientArea.y + clientArea.height);
 	}
 	Point pt = toDisplayInPixels (x, y);
-	event.setLocationInPixels(pt.x, pt.y);
+	int zoom = getZoom();
+	event.setLocation(DPIUtil.scaleDown(pt.x, zoom), DPIUtil.scaleDown(pt.y, zoom));
 }
 
 void updateMoveable () {
@@ -7185,7 +7186,7 @@ LRESULT wmNotifyToolTip (NMHDR hdr, long wParam, long lParam) {
 					Event event = sendMeasureItemEvent (item, pinfo.iItem, pinfo.iSubItem, hDC);
 					if (!isDisposed () && !item.isDisposed ()) {
 						RECT itemRect = new RECT ();
-						Rectangle boundsInPixels = event.getBoundsInPixels();
+						Rectangle boundsInPixels = DPIUtil.autoScaleUp(event.getBounds(), getZoom());
 						OS.SetRect (itemRect, boundsInPixels.x, boundsInPixels.y, boundsInPixels.x + boundsInPixels.width, boundsInPixels.y + boundsInPixels.height);
 						if (hdr.code == OS.TTN_SHOW) {
 							RECT toolRect = toolTipRect (itemRect);
