@@ -11,9 +11,10 @@
  * Contributors:
  *     Yatta Solutions - initial API and implementation
  *******************************************************************************/
-package org.eclipse.swt.internal;
+package org.eclipse.swt.custom;
 
 import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.internal.*;
 import org.eclipse.swt.widgets.*;
 
 /**
@@ -31,6 +32,7 @@ public class CommonWidgetsDPIChangeHandlers {
 
 	public static void registerCommonHandlers() {
 		DPIZoomChangeRegistry.registerHandler(CommonWidgetsDPIChangeHandlers::handleItemDPIChange, Item.class);
+		DPIZoomChangeRegistry.registerHandler(CommonWidgetsDPIChangeHandlers::handleCComboDPIChange, CCombo.class);
 	}
 
 	private static void handleItemDPIChange(Widget widget, int newZoom, float scalingFactor) {
@@ -42,5 +44,16 @@ public class CommonWidgetsDPIChangeHandlers {
 		if (image != null) {
 			item.setImage(Image.win32_new(image, newZoom));
 		}
+	}
+
+	private static void handleCComboDPIChange(Widget widget, int newZoom, float scalingFactor) {
+		if (!(widget instanceof CCombo)) {
+			return;
+		}
+		CCombo combo = (CCombo) widget;
+
+		DPIZoomChangeRegistry.applyChange(combo.text, newZoom, scalingFactor);
+		DPIZoomChangeRegistry.applyChange(combo.list, newZoom, scalingFactor);
+		DPIZoomChangeRegistry.applyChange(combo.arrow, newZoom, scalingFactor);
 	}
 }
