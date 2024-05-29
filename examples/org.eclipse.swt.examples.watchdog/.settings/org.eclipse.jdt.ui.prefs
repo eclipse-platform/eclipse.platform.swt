@@ -1,0 +1,6 @@
+eclipse.preferences.version=1
+editor_save_participant_org.eclipse.jdt.ui.postsavelistener.cleanup=true
+formatter_profile=org.eclipse.jdt.ui.default.eclipse_profile
+formatter_settings_version=23
+sp_cleanup.format_source_code=true
+sp_cleanup.format_source_code_changes_only=true

@@ -25,4 +25,16 @@
 		<nature>org.eclipse.jdt.core.javanature</nature>
 		<nature>org.eclipse.pde.PluginNature</nature>
 	</natures>
+	<linkedResources>
+		<link>
+			<name>.settings/org.eclipse.jdt.core.prefs</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/.settings_global/org.eclipse.jdt.core.prefs</locationURI>
+		</link>
+		<link>
+			<name>.settings/org.eclipse.jdt.ui.prefs</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/.settings_global/org.eclipse.jdt.ui.prefs</locationURI>
+		</link>
+	</linkedResources>
 </projectDescription>
