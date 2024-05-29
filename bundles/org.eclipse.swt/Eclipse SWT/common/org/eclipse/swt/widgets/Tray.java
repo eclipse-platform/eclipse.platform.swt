@@ -43,6 +43,7 @@ public class Tray extends Widget {
 
 Tray (Display display, int style) {
 	this.display = display;
+	this.nativeZoom = display.getDeviceZoom();
 	reskinWidget ();
 }
 
