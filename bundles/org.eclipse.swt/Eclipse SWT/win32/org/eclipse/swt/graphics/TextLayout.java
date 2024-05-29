@@ -1830,7 +1830,7 @@ Rectangle getBoundsInPixels (int start, int end) {
 			int cx = 0;
 			if (run.style != null && run.style.metrics != null) {
 				GlyphMetrics metrics = run.style.metrics;
-				cx = metrics.getWidthInPixels() * (start - run.start);
+				cx = DPIUtil.autoScaleUp(getDevice(), metrics.width) * (start - run.start);
 			} else if (!run.tab) {
 				int iX = ScriptCPtoX(start - run.start, false, run);
 				cx = isRTL ? run.width - iX : iX;
@@ -1845,7 +1845,7 @@ Rectangle getBoundsInPixels (int start, int end) {
 			int cx = run.width;
 			if (run.style != null && run.style.metrics != null) {
 				GlyphMetrics metrics = run.style.metrics;
-				cx = metrics.getWidthInPixels() * (end - run.start + 1);
+				cx = DPIUtil.autoScaleUp(getDevice(), metrics.width) * (end - run.start + 1);
 			} else if (!run.tab) {
 				int iX = ScriptCPtoX(end - run.start, true, run);
 				cx = isRTL ? run.width - iX : iX;
@@ -2214,7 +2214,7 @@ Point getLocationInPixels (int offset, boolean trailing) {
 			int width;
 			if (run.style != null && run.style.metrics != null) {
 				GlyphMetrics metrics = run.style.metrics;
-				width = metrics.getWidthInPixels() * (offset - run.start + (trailing ? 1 : 0));
+				width = DPIUtil.autoScaleUp(getDevice(), metrics.width) * (offset - run.start + (trailing ? 1 : 0));
 			} else if (run.tab) {
 				width = (trailing || (offset == length)) ? run.width : 0;
 			} else {
@@ -2435,11 +2435,12 @@ int getOffsetInPixels (int x, int y, int[] trailing) {
 			int xRun = x - run.x;
 			if (run.style != null && run.style.metrics != null) {
 				GlyphMetrics metrics = run.style.metrics;
-				if (metrics.getWidthInPixels() > 0) {
+				if (metrics.width > 0) {
+					final int metricsWidthInPixels = DPIUtil.autoScaleUp(getDevice(), metrics.width);
 					if (trailing != null) {
-						trailing[0] = (xRun % metrics.getWidthInPixels() < metrics.getWidthInPixels() / 2) ? 0 : 1;
+						trailing[0] = (xRun % metricsWidthInPixels < metricsWidthInPixels / 2) ? 0 : 1;
 					}
-					return untranslateOffset(run.start + xRun / metrics.getWidthInPixels());
+					return untranslateOffset(run.start + xRun / metricsWidthInPixels);
 				}
 			}
 			if (run.tab) {
@@ -3910,7 +3911,7 @@ void shape (final long hdc, final StyleItem run) {
 			 *  equals zero for FFFC (possibly other unicode code points), the fix
 			 *  is to make sure the glyph is at least one pixel wide.
 			 */
-			run.width = metrics.getWidthInPixels() * Math.max (1, run.glyphCount);
+			run.width = DPIUtil.autoScaleUp(getDevice(), metrics.width) * Math.max (1, run.glyphCount);
 			run.ascentInPoints = metrics.ascent;
 			run.descentInPoints = metrics.descent;
 			run.leadingInPoints = 0;
