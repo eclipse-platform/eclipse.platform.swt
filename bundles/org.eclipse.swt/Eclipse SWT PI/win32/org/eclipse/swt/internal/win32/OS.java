@@ -497,6 +497,9 @@ public class OS extends C {
 	public static final int FR_PRIVATE = 0x10;
 	public static final int FSHIFT = 0x4;
 	public static final int FVIRTKEY = 0x1;
+	public static final int GA_PARENT = 0x1;
+	public static final int GA_ROOT = 0x2;
+	public static final int GA_ROOTOWNER = 0x3;
 	public static final int GCP_REORDER = 0x0002;
 	public static final int GCP_GLYPHSHAPE = 0x0010;
 	public static final int GCP_CLASSIN = 0x00080000;
@@ -2709,6 +2712,8 @@ public static final native int FillRect (long hDC, RECT lprc, long hbr);
 public static final native int GdiSetBatchLimit (int dwLimit);
 public static final native int GetACP ();
 public static final native long GetActiveWindow ();
+/** @param hWnd cast=(HWND) */
+public static final native long GetAncestor (long hWnd, int gaFlags);
 /** @param hDC cast=(HDC) */
 public static final native int GetBkColor (long hDC);
 public static final native long GetCapture ();
