@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2023 IBM Corporation and others.
+ * Copyright (c) 2000, 2024 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -2018,6 +2018,18 @@ JNIEXPORT jlong JNICALL OS_NATIVE(GetActiveWindow)
 	OS_NATIVE_ENTER(env, that, GetActiveWindow_FUNC);
 	rc = (jlong)GetActiveWindow();
 	OS_NATIVE_EXIT(env, that, GetActiveWindow_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_GetAncestor
+JNIEXPORT jlong JNICALL OS_NATIVE(GetAncestor)
+	(JNIEnv *env, jclass that, jlong arg0, jint arg1)
+{
+	jlong rc = 0;
+	OS_NATIVE_ENTER(env, that, GetAncestor_FUNC);
+	rc = (jlong)GetAncestor((HWND)arg0, arg1);
+	OS_NATIVE_EXIT(env, that, GetAncestor_FUNC);
 	return rc;
 }
 #endif
