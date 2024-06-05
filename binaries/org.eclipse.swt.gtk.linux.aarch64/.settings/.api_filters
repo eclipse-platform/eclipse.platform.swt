@@ -448,14 +448,6 @@
             </message_arguments>
         </filter>
     </resource>
-    <resource path="Eclipse SWT/common/org/eclipse/swt/widgets/TypedListener.java" type="org.eclipse.swt.widgets.TypedListener">
-        <filter comment="Class declared as internal in its JavaDoc since ever." id="336744520">
-            <message_arguments>
-                <message_argument value="@noextend"/>
-                <message_argument value="org.eclipse.swt.widgets.TypedListener"/>
-            </message_arguments>
-        </filter>
-    </resource>
     <resource path="Eclipse SWT/gtk/org/eclipse/swt/widgets/Composite.java" type="org.eclipse.swt.widgets.Composite">
         <filter id="576778288">
             <message_arguments>
