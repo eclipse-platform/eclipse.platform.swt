@@ -44,6 +44,17 @@ public class Snippet130 {
 		AtomicInteger nextId = new AtomicInteger();
 		Button b = new Button(shell, SWT.PUSH);
 		b.setText("invoke long running job");
+		Button b2 = new Button(shell, SWT.PUSH);
+		b2.setText("wait for predefined future");
+		CompletableFuture<String> future = CompletableFuture.supplyAsync(()->{
+			try {
+				TimeUnit.SECONDS.sleep(30);
+				System.out.println("Future is done!");
+			} catch (InterruptedException e) {
+				return "Task is interrupted";
+			}
+			return "Text computed in the background";
+		});
 		b.addSelectionListener(widgetSelectedAdapter(e -> {
 			int id = nextId.incrementAndGet();
 			text.append("\nStart long running task " + id);
@@ -60,6 +71,16 @@ public class Snippet130 {
 				text.append("\nCompleted long running task " + id);
 			}, display);
 
+		}));
+		b2.addSelectionListener(widgetSelectedAdapter(e -> {
+			text.append("\nWaiting for Background Work to complete...");
+			b2.setEnabled(false);
+			BusyIndicator.showWhile(future);
+			if (text.isDisposed() || b2.isDisposed()) {
+				return;
+			}
+			b2.setEnabled(true);
+			text.append("\nBackground work has completed");
 		}));
 		shell.setSize(500, 300);
 		shell.open();

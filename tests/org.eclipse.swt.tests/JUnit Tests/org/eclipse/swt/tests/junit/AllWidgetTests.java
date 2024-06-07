@@ -50,7 +50,8 @@ import org.junit.runners.Suite;
 		Test_org_eclipse_swt_custom_StyledText_multiCaretsSelections.class,
 		Test_org_eclipse_swt_custom_StyledTextLineSpacingProvider.class,
 		Test_org_eclipse_swt_custom_CTabFolder.class, Test_org_eclipse_swt_widgets_Spinner.class,
-		Test_org_eclipse_swt_widgets_ScrolledComposite.class})
+		Test_org_eclipse_swt_widgets_ScrolledComposite.class,
+		Test_org_eclipse_swt_custom_BusyIndicator.class})
 public class AllWidgetTests {
 	public static void main(String[] args) {
 		JUnitCore.main(AllWidgetTests.class.getName());

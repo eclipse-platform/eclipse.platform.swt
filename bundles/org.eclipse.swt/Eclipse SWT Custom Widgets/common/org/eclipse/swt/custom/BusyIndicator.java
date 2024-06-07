@@ -71,6 +71,81 @@ public class BusyIndicator {
 	}
 
 	/**
+	 * If called from a {@link Display} thread, waits for the given
+	 * <code>Future</code> to complete and provides busy feedback using the busy
+	 * indicator. While waiting for completion, pending UI events are processed to
+	 * prevent UI freeze.
+	 *
+	 * If there is no {@link Display} for the current thread, the
+	 * {@link Future#get()} will be executed ignoring any {@link ExecutionException}
+	 * and no busy feedback will be displayed.
+	 *
+	 * @param future the {@link Future} for which busy feedback is to be shown.
+	 * @since 3.127
+	 * @implNote In some cases completion is detected by a regular timed wakeup of
+	 *           the {@link Display} thread,for minimal latency pass a
+	 *           {@link CompletableFuture} or trigger {@link Display#wake()} as an
+	 *           external event.
+	 */
+	public static void showWhile(Future<?> future) {
+		if (future == null) {
+			SWT.error(SWT.ERROR_NULL_ARGUMENT);
+		}
+		if (!future.isDone()) {
+			Display display = Display.getCurrent();
+			if (display == null || display.isDisposed()) {
+				try {
+					future.get();
+				} catch (InterruptedException e) {
+					Thread.currentThread().interrupt();
+				} catch (ExecutionException e) {
+					// ignore caller might want to handle this...
+				} catch (CancellationException e) {
+					// ignore but caller might want to check afterwards
+				}
+			} else {
+				Integer busyId = setBusyCursor(display);
+				try {
+					if (future instanceof CompletionStage<?> stage) {
+						// let us wake up from sleep once the future is done
+						stage.handle((nil1, nil2) -> {
+							if (!display.isDisposed()) {
+								try {
+									display.wake();
+								} catch (SWTException e) {
+									// ignore then, this can happen due to the async nature between our check for
+									// disposed and the actual call to wake the display can be disposed
+								}
+							}
+							return null;
+						});
+					} else {
+						// for plain features we need to use a workaround, we install a timer every
+						// few ms, that should be short enough to not be noticeable by the user and long
+						// enough to not burn more CPU time than necessary
+						int wakeTime = 10;
+						display.timerExec(wakeTime, new Runnable() {
+							@Override
+							public void run() {
+								if (!future.isDone() && !display.isDisposed()) {
+									display.timerExec(wakeTime, this);
+								}
+							}
+						});
+					}
+					while (!future.isDone() && !display.isDisposed()) {
+						if (!display.readAndDispatch()) {
+							display.sleep();
+						}
+					}
+				} finally {
+					clearBusyCursor(display, busyId);
+				}
+			}
+		}
+	}
+
+	/**
 	 * If called from a {@link Display} thread use the given {@link SwtRunnable} to
 	 * produces a {@link CompletableFuture} providing busy feedback using the busy
 	 * indicator while execution is running. If called from a non {@link Display}
@@ -184,6 +259,9 @@ public class BusyIndicator {
 	}
 
 	private static void clearBusyCursor(Display display, Integer busyId) {
+		if (display.isDisposed()) {
+			return;
+		}
 		Shell[] shells = display.getShells();
 		for (Shell shell : shells) {
 			Integer id = (Integer) shell.getData(BUSYID_NAME);
