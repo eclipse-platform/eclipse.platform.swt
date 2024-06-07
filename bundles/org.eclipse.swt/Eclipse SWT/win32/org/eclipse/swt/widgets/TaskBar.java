@@ -65,6 +65,7 @@ public class TaskBar extends Widget {
 
 TaskBar (Display display, int style) {
 	this.display = display;
+	this.nativeZoom = display.getDeviceZoom();
 	createHandle ();
 	reskinWidget ();
 }
@@ -166,14 +167,14 @@ IShellLink createShellLink (MenuItem item) {
 				ImageData data;
 				if (item.hBitmap != 0) {
 					Image image2 = Image.win32_new (display, SWT.BITMAP, item.hBitmap);
-					data = image2.getImageData (DPIUtil.getDeviceZoom ());
+					data = image2.getImageData (getZoom());
 					/*
 					 * image2 instance doesn't own the handle and shall not be disposed. Make it
 					 * appear disposed to cause leak trackers to ignore it.
 					 */
 					image2.handle = 0;
 				} else {
-					data = image.getImageData (DPIUtil.getDeviceZoom ());
+					data = image.getImageData (getZoom());
 				}
 				ImageLoader loader = new ImageLoader ();
 				loader.data = new ImageData [] {data};
