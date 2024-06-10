@@ -1703,9 +1703,12 @@ private static void handleDPIChange(Widget widget, int newZoom, float scalingFac
 		decorations.setImages(images);
 	}
 
-	Menu menuBar = decorations.getMenuBar();
-	if (menuBar != null) {
-		DPIZoomChangeRegistry.applyChange(menuBar, newZoom, scalingFactor);
+	DPIZoomChangeRegistry.applyChange(decorations.getMenuBar(), newZoom, scalingFactor);
+
+	if (decorations.menus != null) {
+		for (Menu menu : decorations.menus) {
+			DPIZoomChangeRegistry.applyChange(menu, newZoom, scalingFactor);
+		}
 	}
 }
 }

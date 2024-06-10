@@ -44,6 +44,9 @@ public class DPIZoomChangeRegistry {
 	 * @param scalingFactor factor as division between new zoom and old zoom, e.g. 1.5 for a scaling from 100% to 150%
 	 */
 	public static void applyChange(Widget widget, int newZoom, float scalingFactor) {
+		if (widget == null) {
+			return;
+		}
 		for (Entry<Class<? extends Widget>, DPIZoomChangeHandler> entry : dpiZoomChangeHandlers.entrySet()) {
 			Class<? extends Widget> clazz = entry.getKey();
 			DPIZoomChangeHandler handler = entry.getValue();
