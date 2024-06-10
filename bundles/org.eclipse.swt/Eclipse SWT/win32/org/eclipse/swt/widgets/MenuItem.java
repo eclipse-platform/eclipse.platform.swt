@@ -280,6 +280,7 @@ boolean fillAccel (ACCEL accel) {
 }
 
 void fixMenus (Decorations newParent) {
+	this.nativeZoom = newParent.nativeZoom;
 	if (menu != null && !menu.isDisposed() && !newParent.isDisposed()) menu.fixMenus (newParent);
 }
 

@@ -430,6 +430,7 @@ void fixMenus (Decorations newParent) {
 	parent.removeMenu (this);
 	newParent.addMenu (this);
 	this.parent = newParent;
+	this.nativeZoom = newParent.nativeZoom;
 }
 
 /**
