@@ -5,6 +5,7 @@ target/
 /.project
 .polyglot.*
 pom.tycho
+.DS_Store
 
 /binaries/org.eclipse.swt.*/src/
 tmpdir/
