@@ -40,7 +40,7 @@ public static void main(String args[]) {
 	display = new Display();
 	EventQueue.invokeLater(() -> {
 		JFrame mainFrame = new JFrame("Main Window");
-		mainFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		mainFrame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 		mainFrame.addWindowListener(new Snippet337.CloseListener());
 		JPanel mainPanel = new JPanel();
 		mainPanel.setLayout(new FlowLayout());

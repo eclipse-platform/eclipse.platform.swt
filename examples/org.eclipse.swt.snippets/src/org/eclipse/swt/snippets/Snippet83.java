@@ -24,9 +24,11 @@ package org.eclipse.swt.snippets;
 import org.eclipse.swt.*;
 import org.eclipse.swt.dnd.*;
 import org.eclipse.swt.internal.ole.win32.*;
+import org.eclipse.swt.internal.win32.*;
 import org.eclipse.swt.layout.*;
 import org.eclipse.swt.widgets.*;
 
+@SuppressWarnings("restriction")
 public class Snippet83 extends ByteArrayTransfer {
 
 private static Snippet83 _instance = new Snippet83();
@@ -112,7 +114,7 @@ static String getNameFromId(int id) {
 	String name = null;
 	int maxSize = 128;
 	char [] buffer = new char [maxSize];
-	int size = COM.GetClipboardFormatName(id, buffer, maxSize);
+	int size = OS.GetClipboardFormatName(id, buffer, maxSize);
 	if (size != 0) {
 		name = new String (buffer, 0, size);
 	} else {
