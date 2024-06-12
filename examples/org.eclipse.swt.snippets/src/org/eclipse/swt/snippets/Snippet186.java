@@ -25,11 +25,13 @@ package org.eclipse.swt.snippets;
  * http://www.eclipse.org/swt/snippets/
  */
 import org.eclipse.swt.*;
+import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.win32.*;
 import org.eclipse.swt.layout.*;
 import org.eclipse.swt.ole.win32.*;
 import org.eclipse.swt.widgets.*;
 
+@SuppressWarnings("restriction")
 public class Snippet186 {
 
 static int CodePage = OS.GetACP();
@@ -144,7 +146,7 @@ static String readSafeArray(Variant variantByRef) {
 		OS.MoveMemory(vt_type, pVariant[0], 2);
 		if (vt_type[0] == (short)(OLE.VT_ARRAY | OLE.VT_UI1)) {
 			long /*int*/ [] pSafearray = new long /*int*/[1];
-			OS.MoveMemory(pSafearray, pVariant[0] + 8, OS.PTR_SIZEOF);
+			OS.MoveMemory(pSafearray, pVariant[0] + 8, C.PTR_SIZEOF);
 			SAFEARRAY safeArray = new SAFEARRAY();
 			OS.MoveMemory(safeArray, pSafearray[0], SAFEARRAY.sizeof);
 			for (int i = 0; i < safeArray.cDims; i++) {
@@ -195,7 +197,7 @@ static Variant writeSafeArray (String string) {
 	long /*int*/ pVariant = OS.GlobalAlloc(OS.GMEM_FIXED | OS.GMEM_ZEROINIT, Variant.sizeof);
 	short vt = (short)(OLE.VT_ARRAY | OLE.VT_UI1);
 	OS.MoveMemory(pVariant, new short[] {vt}, 2);
-	OS.MoveMemory(pVariant + 8, new long /*int*/[]{pSafeArray}, OS.PTR_SIZEOF);
+	OS.MoveMemory(pVariant + 8, new long /*int*/[]{pSafeArray}, C.PTR_SIZEOF);
 	// Create a by ref variant
 	Variant variantByRef = new Variant(pVariant, (short)(OLE.VT_BYREF | OLE.VT_VARIANT));
 	return variantByRef;

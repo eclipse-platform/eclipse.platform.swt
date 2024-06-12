@@ -26,6 +26,7 @@ import org.eclipse.swt.internal.ole.win32.*;
 import org.eclipse.swt.ole.win32.*;
 import org.eclipse.swt.widgets.*;
 
+@SuppressWarnings("restriction")
 public class Snippet81 {
 
 public static void main(String[] args) {
