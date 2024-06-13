@@ -36,7 +36,7 @@ jobs:
     name: Verify ${{ matrix.config.name }} with Java-${{ matrix.java }}
     steps:
     - name: checkout swt
-      uses: actions/checkout@a5ac7e51b41094c92402da3b24376905380afc29 # v4.1.6
+      uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
       with:
        fetch-depth: 0 # required for jgit timestamp provider to work
        lfs: false # lfs-pull is not necessary, the natives are re-build in each run
