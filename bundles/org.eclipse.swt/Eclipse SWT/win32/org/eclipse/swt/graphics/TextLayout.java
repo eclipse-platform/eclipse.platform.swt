@@ -60,8 +60,8 @@ public final class TextLayout extends Resource {
 
 	StyleItem[] allRuns;
 	StyleItem[][] runs;
-	int[] lineOffset, lineY;	// In Points
-	int[] lineWidth;	// In pixels
+	int[] lineOffset, lineY;
+	int[] lineWidthInPixels;
 	IMLangFontLink2 mLangFontLink2;
 	int verticalIndentInPoints;
 
@@ -532,7 +532,7 @@ void computeRuns (GC gc) {
 	runs = new StyleItem[lineCount][];
 	lineOffset = new int[lineCount + 1];
 	lineY = new int[lineCount + 1];
-	this.lineWidth = new int[lineCount];
+	this.lineWidthInPixels = new int[lineCount];
 	int lineRunCount = 0, line = 0;
 	int ascentInPoints = Math.max(0, ascent);
 	int descentInPoints = Math.max(0, descent);
@@ -583,7 +583,7 @@ void computeRuns (GC gc) {
 				}
 				lineWidth = newLineWidth;
 			}
-			this.lineWidth[line] = lineWidth;
+			this.lineWidthInPixels[line] = lineWidth;
 
 			StyleItem lastRun = runs[line][lineRunCount - 1];
 			int lastOffset = lastRun.start + lastRun.length;
@@ -622,7 +622,7 @@ void destroy () {
 	runs = null;
 	lineOffset = null;
 	lineY = null;
-	lineWidth = null;
+	lineWidthInPixels = null;
 	segments = null;
 	segmentsChars = null;
 	if (mLangFontLink2 != null) {
@@ -867,15 +867,15 @@ void drawInPixels (GC gc, int x, int y, int selectionStart, int selectionEnd, Co
 					width = lineHeight / 3;
 				}
 				if (gdip) {
-					Gdip.Graphics_FillRectangle(gdipGraphics, gdipSelBackground, drawX + lineWidth[line], drawY, width, lineHeight);
+					Gdip.Graphics_FillRectangle(gdipGraphics, gdipSelBackground, drawX + lineWidthInPixels[line], drawY, width, lineHeight);
 				} else {
 					OS.SelectObject(hdc, selBackground);
-					OS.PatBlt(hdc, drawX + lineWidth[line], drawY, width, lineHeight, OS.PATCOPY);
+					OS.PatBlt(hdc, drawX + lineWidthInPixels[line], drawY, width, lineHeight, OS.PATCOPY);
 				}
 			}
 		}
 		if (drawX > clip.x + clip.width) continue;
-		if (drawX + lineWidth[line] < clip.x) continue;
+		if (drawX + lineWidthInPixels[line] < clip.x) continue;
 
 		//Draw the background of the runs in the line
 		int alignmentX = drawX;
@@ -1789,7 +1789,7 @@ public Rectangle getBounds () {
 		width = wrapWidth;
 	} else {
 		for (int line=0; line<runs.length; line++) {
-			width = Math.max(width, DPIUtil.scaleDown(lineWidth[line], getZoom()) + getLineIndent(line));
+			width = Math.max(width, DPIUtil.scaleDown(lineWidthInPixels[line], getZoom()) + getLineIndent(line));
 		}
 	}
 	return new Rectangle (0, 0, width, lineY[lineY.length - 1] + getScaledVerticalIndent());
@@ -2024,7 +2024,7 @@ Rectangle getLineBoundsInPixels(int lineIndex) {
 	if (!(0 <= lineIndex && lineIndex < runs.length)) SWT.error(SWT.ERROR_INVALID_RANGE);
 	int x = getLineIndentInPixel(lineIndex);
 	int y = DPIUtil.autoScaleUp(getDevice(), lineY[lineIndex], getZoom());
-	int width = lineWidth[lineIndex];
+	int width = lineWidthInPixels[lineIndex];
 	int height = DPIUtil.autoScaleUp(getDevice(), lineY[lineIndex + 1] - lineY[lineIndex] - lineSpacingInPoints, getZoom());
 	return new Rectangle (x, y, width, height);
 }
@@ -2069,7 +2069,7 @@ int getLineIndentInPixel (int lineIndex) {
 			}
 		}
 		if (partialLine) {
-			int lineWidth = this.lineWidth[lineIndex] + lineIndent;
+			int lineWidth = this.lineWidthInPixels[lineIndex] + lineIndent;
 			switch (alignment) {
 				case SWT.CENTER: lineIndent += (DPIUtil.autoScaleUp(wrapWidth, getZoom()) - lineWidth) / 2; break;
 				case SWT.RIGHT: lineIndent += DPIUtil.autoScaleUp(wrapWidth, getZoom()) - lineWidth; break;
@@ -2207,7 +2207,7 @@ Point getLocationInPixels (int offset, boolean trailing) {
 	}
 	line = Math.min(line, runs.length - 1);
 	if (offset == length) {
-		return new Point(getLineIndentInPixel(line) + lineWidth[line], DPIUtil.autoScaleUp(getDevice(), lineY[line], getZoom()));
+		return new Point(getLineIndentInPixel(line) + lineWidthInPixels[line], DPIUtil.autoScaleUp(getDevice(), lineY[line], getZoom()));
 	}
 	/* For trailing use the low surrogate and for lead use the high surrogate */
 	char ch = segmentsText.charAt(offset);
@@ -2448,7 +2448,7 @@ int getOffsetInPixels (int x, int y, int[] trailing) {
 	line = Math.min(line, runs.length - 1);
 	StyleItem[] lineRuns = runs[line];
 	int lineIndent = getLineIndentInPixel(line);
-	if (x >= lineIndent + lineWidth[line]) x = lineIndent + lineWidth[line] - 1;
+	if (x >= lineIndent + lineWidthInPixels[line]) x = lineIndent + lineWidthInPixels[line] - 1;
 	if (x < lineIndent) x = lineIndent;
 	int low = -1;
 	int high = lineRuns.length;
