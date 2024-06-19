@@ -23,8 +23,11 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
@@ -765,6 +768,27 @@ public void test_drawLine_noSingularitiesIn45DregreeRotation() {
 		gc.dispose();
 		image.dispose();
 	}
+}
+
+/**
+ * @see <a href="https://github.com/eclipse-platform/eclipse.platform.swt/issues/1288">Issue 1288</a>
+ */
+@Test
+public void test_bug1288_createGCFromImageFromNonDisplayThread() throws InterruptedException {
+	AtomicReference<Exception> exceptionReference = new AtomicReference<>();
+	Thread thread = new Thread(() -> {
+		try {
+			Image image = new Image(null, 100, 100);
+			GC gc = new GC(image);
+			gc.dispose();
+			image.dispose();
+		} catch(Exception e) {
+			exceptionReference.set(e);
+		}
+	});
+	thread.start();
+	thread.join();
+	assertNull("Creating a GC from an Image without a device threw an exception", exceptionReference.get());
 }
 
 /* custom */
