@@ -1026,7 +1026,7 @@ protected void consistencyEvent(final int paramA, final int paramB,
 		shell.pack();
 		shell.open();
 		if(control instanceof Shell) {
-			((Shell)control).pack();
+			control.pack();
 			((Shell)control).open();
 		}
 		final Point[] pt = determineLocations(paramA, paramB, paramC, paramD, method);

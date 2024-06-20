@@ -88,7 +88,7 @@ public void generate(JNIMethod method) {
 		ASTParameter param = (ASTParameter)p;
 		//wrap cast with parentheses
 		param.setCast(param.getCast());
-		data = ((AbstractItem)param).flatten();
+		data = param.flatten();
 		if (data != null && data.length() != 0) {
 			tags.add("@param " + param.getName() + " " + data);
 		}
