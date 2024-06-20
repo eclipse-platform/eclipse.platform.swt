@@ -17,8 +17,6 @@ import org.eclipse.swt.*;
 import org.eclipse.swt.accessibility.*;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.internal.*;
-import org.eclipse.swt.internal.DPIUtil.*;
 import org.eclipse.swt.widgets.*;
 
 /**
@@ -720,24 +718,25 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 	return trim;
 }
 Image createButtonImage(Display display, int button) {
-	GC tempGC = new GC (this);
-	Point size = renderer.computeSize(button, SWT.NONE, tempGC, SWT.DEFAULT, SWT.DEFAULT);
-	tempGC.dispose();
+	return new Image(display, (ImageDataProvider) zoom -> {
+		GC tempGC = new GC (CTabFolder.this);
+		Point size = renderer.computeSize(button, SWT.NONE, tempGC, SWT.DEFAULT, SWT.DEFAULT);
+		tempGC.dispose();
 
-	Rectangle trim = renderer.computeTrim(button, SWT.NONE, 0, 0, 0, 0);
-	Image image = new Image (display, size.x - trim.width, size.y - trim.height);
-	GC gc = new GC (image);
-	Color transColor = renderer.parent.getBackground();
-	gc.setBackground(transColor);
-	gc.fillRectangle(image.getBounds());
-	renderer.draw(button, SWT.NONE, new Rectangle(trim.x, trim.y, size.x, size.y), gc);
-	gc.dispose ();
+		Rectangle trim = renderer.computeTrim(button, SWT.NONE, 0, 0, 0, 0);
+		Image image = new Image (display, size.x - trim.width, size.y - trim.height);
+		GC gc = new GC (image);
+		Color transColor = renderer.parent.getBackground();
+		gc.setBackground(transColor);
+		gc.fillRectangle(image.getBounds());
+		renderer.draw(button, SWT.NONE, new Rectangle(trim.x, trim.y, size.x, size.y), gc);
+		gc.dispose ();
 
-	final ImageData imageData = image.getImageData (DPIUtil.getDeviceZoom ());
-	imageData.transparentPixel = imageData.palette.getPixel(transColor.getRGB());
-	image.dispose();
-	image = new Image(display, new AutoScaleImageDataProvider(display, imageData, DPIUtil.getDeviceZoom()));
-	return image;
+		final ImageData imageData = image.getImageData (zoom);
+		imageData.transparentPixel = imageData.palette.getPixel(transColor.getRGB());
+		image.dispose();
+		return imageData;
+	});
 }
 
 private void notifyItemCountChange() {
