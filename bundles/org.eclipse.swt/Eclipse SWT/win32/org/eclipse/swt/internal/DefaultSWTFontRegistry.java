@@ -51,6 +51,7 @@ final class DefaultSWTFontRegistry implements SWTFontRegistry {
 		if (hFont == 0) hFont = OS.GetStockObject (OS.SYSTEM_FONT);
 		Font font = Font.win32_new(device, hFont);
 		registerFont(KEY_SYSTEM_FONTS, font);
+		registerFont(font.getFontData()[0], font);
 		return font;
 	}
 

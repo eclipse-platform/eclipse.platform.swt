@@ -4423,7 +4423,7 @@ public void setFillRule(int rule) {
 public void setFont (Font font) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (font != null && font.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	data.font = font != null ? Font.win32_new(font, data.nativeZoom) : data.device.systemFont;
+	data.font = font != null ? SWTFontProvider.getFont(device, font.getFontData()[0], data.nativeZoom) : SWTFontProvider.getSystemFont(device, data.nativeZoom);
 	data.state &= ~FONT;
 }
 
