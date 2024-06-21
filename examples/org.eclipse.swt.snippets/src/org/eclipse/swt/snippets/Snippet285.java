@@ -74,25 +74,43 @@ public class Snippet285 {
 		Region region = new Region(display);
 		loadPath(region, data.points, data.types);
 		shell.setRegion(region);
-		Listener listener = event -> {
-			switch (event.type) {
-				case SWT.MouseDown: {
+		Listener listener = new Listener() {
+			/** The x/y of the MouseDown, relative to top-left of the shell. */
+			int startX;
+			int startY;
+
+			@Override
+			public void handleEvent(Event e) {
+				if (e.type == SWT.KeyDown && e.character == SWT.ESC) {
 					shell.dispose();
-					break;
 				}
-				case SWT.Paint: {
-					GC gc = event.gc;
+				if (e.type == SWT.MouseDown && e.button == 1) {
+					Point p = shell.toDisplay(e.x, e.y);
+					Point loc = shell.getLocation();
+					startX = p.x - loc.x;
+					startY = p.y - loc.y;
+				}
+				if (e.type == SWT.MouseMove && (e.stateMask & SWT.BUTTON1) != 0) {
+					Point p = shell.toDisplay(e.x, e.y);
+					p.x -= startX;
+					p.y -= startY;
+					shell.setLocation(p);
+				}
+				if (e.type == SWT.Paint) {
+					GC gc = e.gc;
 					Rectangle rect = shell.getClientArea();
 					Pattern pattern = new Pattern(display, rect.x, rect.y + rect.height, rect.x + rect.width, rect.y,
 							display.getSystemColor(SWT.COLOR_BLUE), display.getSystemColor(SWT.COLOR_WHITE));
 					gc.setBackgroundPattern(pattern);
 					gc.fillRectangle(rect);
 					pattern.dispose();
-					break;
 				}
 			}
 		};
+
+		shell.addListener(SWT.KeyDown, listener);
 		shell.addListener(SWT.MouseDown, listener);
+		shell.addListener(SWT.MouseMove, listener);
 		shell.addListener(SWT.Paint, listener);
 		shell.open();
 		while (!shell.isDisposed()) {
