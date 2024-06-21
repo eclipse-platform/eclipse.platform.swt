@@ -96,7 +96,6 @@ pipeline {
 		maven 'apache-maven-latest'
 	}
 	environment {
-		MAVEN_OPTS = "-Xmx4G"
 		PR_VALIDATION_BUILD = "true"
 	}
 	parameters {
