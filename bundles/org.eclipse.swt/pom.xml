@@ -21,7 +21,7 @@
     </parent>
     <groupId>org.eclipse.swt</groupId>
     <artifactId>org.eclipse.swt</artifactId>
-    <version>3.126.100-SNAPSHOT</version>
+    <version>3.127.0-SNAPSHOT</version>
     <packaging>eclipse-plugin</packaging>
 
     <properties>
