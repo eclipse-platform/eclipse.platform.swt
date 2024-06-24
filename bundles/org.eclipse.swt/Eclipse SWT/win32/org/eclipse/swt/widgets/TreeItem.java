@@ -1388,9 +1388,10 @@ public void setFont (Font font){
 		error (SWT.ERROR_INVALID_ARGUMENT);
 	}
 	Font oldFont = this.font;
-	if (oldFont == font) return;
 	Shell shell = parent.getShell();
-	this.font = (font == null ? font : Font.win32_new(font, shell.nativeZoom));
+	Font newFont = (font == null ? font : Font.win32_new(font, shell.nativeZoom));
+	if (oldFont == newFont) return;
+	this.font = newFont;
 	if (oldFont != null && oldFont.equals (font)) return;
 	if (font != null) parent.customDraw = true;
 	if ((parent.style & SWT.VIRTUAL) != 0) cached = true;
