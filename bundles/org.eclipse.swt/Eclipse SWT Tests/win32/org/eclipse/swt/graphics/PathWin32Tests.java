@@ -17,10 +17,14 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.*;
 
+import org.eclipse.swt.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.gdip.*;
 import org.junit.*;
 
+/**
+ * @since 3.127
+ */
 public class PathWin32Tests extends Win32AutoscaleTestBase {
 
 	int zoom = 100;

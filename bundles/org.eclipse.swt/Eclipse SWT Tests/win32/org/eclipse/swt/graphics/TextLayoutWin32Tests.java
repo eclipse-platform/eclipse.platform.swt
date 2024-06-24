@@ -15,9 +15,13 @@ package org.eclipse.swt.graphics;
 
 import static org.junit.Assert.assertEquals;
 
+import org.eclipse.swt.*;
 import org.eclipse.swt.internal.*;
 import org.junit.*;
 
+/**
+ * @since 3.127
+ */
 public class TextLayoutWin32Tests extends Win32AutoscaleTestBase {
 	final static String text = "This is a text for testing.";
 

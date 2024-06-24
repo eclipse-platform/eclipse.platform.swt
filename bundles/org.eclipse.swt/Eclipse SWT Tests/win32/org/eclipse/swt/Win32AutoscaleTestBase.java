@@ -11,12 +11,15 @@
  * Contributors:
  *     Yatta Solutions - initial API and implementation
  *******************************************************************************/
-package org.eclipse.swt.internal;
+package org.eclipse.swt;
 
-import org.eclipse.swt.*;
+import org.eclipse.swt.internal.*;
 import org.eclipse.swt.widgets.*;
 import org.junit.*;
 
+/**
+ * @since 3.127
+ */
 public abstract class Win32AutoscaleTestBase {
 	protected Display display;
 	protected Shell shell;

@@ -23,6 +23,9 @@ import org.eclipse.swt.internal.*;
 import org.eclipse.swt.widgets.*;
 import org.junit.*;
 
+/**
+ * @since 3.127
+ */
 public class GCWin32Tests extends Win32AutoscaleTestBase {
 
 	@Test

@@ -6,6 +6,9 @@ import org.eclipse.swt.*;
 import org.eclipse.swt.internal.*;
 import org.junit.*;
 
+/**
+ * @since 3.127
+ */
 public class WidgetWin32Tests extends Win32AutoscaleTestBase {
 
 	@Test
