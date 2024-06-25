@@ -27,7 +27,7 @@ import org.junit.*;
  *
  * @see org.eclipse.swt.widgets.Control
  */
-public class ControlWin32Tests extends Win32AutoscaleTestBase {
+class ControlWin32Tests extends Win32AutoscaleTestBase {
 
 	@Test
 	public void testScaleFontCorrectlyInAutoScaleSzenario() {

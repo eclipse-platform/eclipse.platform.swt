@@ -21,7 +21,7 @@ import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.gdip.*;
 import org.junit.*;
 
-public class TransformWin32Tests extends Win32AutoscaleTestBase {
+class TransformWin32Tests extends Win32AutoscaleTestBase {
 
 	@Test
 	public void testShouldHaveDifferentHandlesAtDifferentZoomLevels() {

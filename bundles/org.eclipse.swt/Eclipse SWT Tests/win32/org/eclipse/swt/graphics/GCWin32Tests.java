@@ -23,7 +23,7 @@ import org.eclipse.swt.internal.*;
 import org.eclipse.swt.widgets.*;
 import org.junit.*;
 
-public class GCWin32Tests extends Win32AutoscaleTestBase {
+class GCWin32Tests extends Win32AutoscaleTestBase {
 
 	@Test
 	public void gcZoomLevelMustChangeOnShellZoomChange() {

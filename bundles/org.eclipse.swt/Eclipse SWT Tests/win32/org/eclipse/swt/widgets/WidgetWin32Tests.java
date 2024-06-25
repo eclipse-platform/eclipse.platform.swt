@@ -6,7 +6,7 @@ import org.eclipse.swt.*;
 import org.eclipse.swt.internal.*;
 import org.junit.*;
 
-public class WidgetWin32Tests extends Win32AutoscaleTestBase {
+class WidgetWin32Tests extends Win32AutoscaleTestBase {
 
 	@Test
 	public void testWidgetZoomShouldChangeOnZoomLevelChange() {
