@@ -88,12 +88,14 @@ public class DPIUtil {
 	private static final String SWT_AUTOSCALE_METHOD = "swt.autoScale.method";
 
 	/**
-	 * System property to enable to scale the applicaiton on runtime
+	 * System property to enable to scale the application on runtime
 	 * when a DPI change is detected.
 	 * <ul>
 	 * <li>"true": the application is scaled on DPI changes</li>
 	 * <li>"false": the application will remain in its initial scaling</li>
 	 * </ul>
+	 * <b>Important:</b> This flag is only parsed and used on Win32. Setting it to
+	 * true on GTK or cocoa will be ignored.
 	 */
 	private static final String SWT_AUTOSCALE_UPDATE_ON_RUNTIME = "swt.autoScale.updateOnRuntime";
 	static {
@@ -108,8 +110,10 @@ public class DPIUtil {
 			}
 		}
 
-		String updateOnRuntimeValue = System.getProperty (SWT_AUTOSCALE_UPDATE_ON_RUNTIME);
-		autoScaleOnRuntime = Boolean.parseBoolean(updateOnRuntimeValue);
+		if ("win32".equals(SWT.getPlatform())) {
+			String updateOnRuntimeValue = System.getProperty (SWT_AUTOSCALE_UPDATE_ON_RUNTIME);
+			autoScaleOnRuntime = Boolean.parseBoolean(updateOnRuntimeValue);
+		}
 	}
 
 /**
