@@ -407,12 +407,6 @@ public Color getBackground (int index) {
  */
 public Rectangle getBounds (int index) {
 	checkWidget ();
-	return DPIUtil.autoScaleDown (getBoundsInPixels (index));
-}
-
-Rectangle getBoundsInPixels (int index) {
-	// TODO fully test on early and later versions of GTK
-	checkWidget();
 	if (!parent.checkData (this)) error (SWT.ERROR_WIDGET_DISPOSED);
 	long parentHandle = parent.handle;
 	long column = 0;
@@ -453,11 +447,6 @@ Rectangle getBoundsInPixels (int index) {
  * </ul>
  */
 public Rectangle getBounds () {
-	checkWidget ();
-	return DPIUtil.autoScaleDown (getBoundsInPixels ());
-}
-
-Rectangle getBoundsInPixels () {
 	// TODO fully test on early and later versions of GTK
 	// shifted a bit too far right on later versions of GTK - however, old Tree also had this problem
 	checkWidget ();
@@ -693,11 +682,6 @@ public Image getImage (int index) {
  * @since 3.1
  */
 public Rectangle getImageBounds (int index) {
-	checkWidget ();
-	return DPIUtil.autoScaleDown(getImageBoundsInPixels(index));
-}
-
-Rectangle getImageBoundsInPixels (int index) {
 	// TODO fully test on early and later versions of GTK
 	checkWidget ();
 	if (!parent.checkData (this)) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -928,11 +912,6 @@ public String getText (int index) {
  */
 public Rectangle getTextBounds (int index) {
 	checkWidget ();
-	return DPIUtil.autoScaleDown(getTextBoundsInPixels(index));
-}
-
-Rectangle getTextBoundsInPixels (int index) {
-	checkWidget ();
 	if (!parent.checkData (this)) error (SWT.ERROR_WIDGET_DISPOSED);
 	int count = Math.max (1, parent.getColumnCount ());
 	if (0 > index || index > count - 1) return new Rectangle (0, 0, 0, 0);
@@ -991,11 +970,7 @@ Rectangle getTextBoundsInPixels (int index) {
 	Image image = _getImage(index);
 	int imageWidth = 0;
 	if (image != null) {
-		if (DPIUtil.useCairoAutoScale()) {
-			imageWidth = image.getBounds ().width;
-		} else {
-			imageWidth = image.getBoundsInPixels ().width;
-		}
+		imageWidth = image.getBounds().width;
 	}
 	if (x [0] < imageWidth) {
 		rect.x += imageWidth;
@@ -1529,13 +1504,9 @@ public void setImage(int index, Image image) {
 	if (!parent.pixbufSizeSet) {
 		if (image != null) {
 			int iWidth, iHeight;
-			if (DPIUtil.useCairoAutoScale()) {
-				iWidth = image.getBounds ().width;
-				iHeight = image.getBounds ().height;
-			} else {
-				iWidth = image.getBoundsInPixels ().width;
-				iHeight = image.getBoundsInPixels ().height;
-			}
+			iWidth = image.getBounds().width;
+			iHeight = image.getBounds().height;
+
 			if (iWidth > currentWidth [0] || iHeight > currentHeight [0]) {
 				GTK.gtk_cell_renderer_set_fixed_size (pixbufRenderer, iWidth, iHeight);
 				parent.pixbufSizeSet = true;

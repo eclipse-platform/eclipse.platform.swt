@@ -552,7 +552,7 @@ void adjustTrim (int widthHint, int heightHint) {
 	} else {
 		trimStyle = Display.TRIM_NONE;
 	}
-	Rectangle bounds = getBoundsInPixels();
+	Rectangle bounds = getBounds();
 	int widthAdjustment = display.trimWidths[trimStyle] - trimWidth;
 	int heightAdjustment = display.trimHeights[trimStyle] - trimHeight;
 	if (widthAdjustment == 0 && heightAdjustment == 0) return;
@@ -659,11 +659,11 @@ void bringToTop (boolean force) {
 
 void center () {
 	if (parent == null) return;
-	Rectangle rect = getBoundsInPixels ();
-	Rectangle parentRect = display.mapInPixels (parent, null, parent.getClientAreaInPixels());
+	Rectangle rect = getBounds();
+	Rectangle parentRect = display.map(parent, null, parent.getClientArea());
 	int x = Math.max (parentRect.x, parentRect.x + (parentRect.width - rect.width) / 2);
 	int y = Math.max (parentRect.y, parentRect.y + (parentRect.height - rect.height) / 2);
-	Rectangle monitorRect = DPIUtil.autoScaleUp(parent.getMonitor ().getClientArea());
+	Rectangle monitorRect = parent.getMonitor ().getClientArea();
 	if (x + rect.width > monitorRect.x + monitorRect.width) {
 		x = Math.max (monitorRect.x, monitorRect.x + monitorRect.width - rect.width);
 	} else {
@@ -674,7 +674,7 @@ void center () {
 	} else {
 		y = Math.max (y, monitorRect.y);
 	}
-	setLocationInPixels (x, y);
+	setLocation(x, y);
 }
 
 @Override
@@ -713,9 +713,9 @@ void closeWidget () {
 }
 
 @Override
-Rectangle computeTrimInPixels (int x, int y, int width, int height) {
+public Rectangle computeTrim(int x, int y, int width, int height) {
 	checkWidget();
-	Rectangle trim = super.computeTrimInPixels (x, y, width, height);
+	Rectangle trim = super.computeTrim(x, y, width, height);
 	int border = 0;
 	if ((style & (SWT.NO_TRIM | SWT.BORDER | SWT.SHELL_TRIM)) == 0 || isCustomResize()) {
 		border = gtk_container_get_border_width_or_margin (shellHandle);
@@ -1257,12 +1257,12 @@ public boolean getFullScreen () {
 }
 
 @Override
-Point getLocationInPixels () {
+public Point getLocation() {
 	checkWidget ();
 	// Bug in GTK: when shell is moved and then hidden, its location does not get updated.
 	// Move it before getting its location.
 	if (!getVisible() && moved) {
-		setLocationInPixels(oldX, oldY);
+		setLocation(oldX, oldY);
 	}
 	int [] x = new int [1], y = new int [1];
 	if (GTK.GTK4) {
@@ -1296,11 +1296,6 @@ public boolean getMaximized () {
  */
 public Point getMinimumSize () {
 	checkWidget ();
-	return DPIUtil.autoScaleDown (getMinimumSizeInPixels ());
-}
-
-Point getMinimumSizeInPixels () {
-	checkWidget ();
 	int width = Math.max (1, geometry.getMinWidth() + trimWidth ());
 	int height = Math.max (1, geometry.getMinHeight() + trimHeight ());
 	return new Point (width, height);
@@ -1323,12 +1318,6 @@ Point getMinimumSizeInPixels () {
  */
 public Point getMaximumSize () {
 	checkWidget ();
-	return DPIUtil.autoScaleDown (getMaximumSizeInPixels ());
-}
-
-Point getMaximumSizeInPixels () {
-	checkWidget ();
-
 	int width = Math.min (Integer.MAX_VALUE, geometry.getMaxWidth() + trimWidth ());
 	int height = Math.min (Integer.MAX_VALUE, geometry.getMaxHeight() + trimHeight ());
 	return new Point (width, height);
@@ -1380,7 +1369,7 @@ public boolean getModified () {
 }
 
 @Override
-Point getSizeInPixels () {
+public Point getSize() {
 	checkWidget ();
 	GtkAllocation allocation = new GtkAllocation ();
 	GTK.gtk_widget_get_allocation (vboxHandle, allocation);
@@ -2319,7 +2308,7 @@ int setBounds (int x, int y, int width, int height, boolean move, boolean resize
 	* anything different from the current bounds.
 	*/
 	if (getMaximized ()) {
-		Rectangle rect = getBoundsInPixels ();
+		Rectangle rect = getBounds();
 		boolean sameOrigin = !move || (rect.x == x && rect.y == y);
 		boolean sameExtent = !resize || (rect.width == width && rect.height == height);
 		if (sameOrigin && sameExtent) return 0;
@@ -2434,7 +2423,7 @@ public void setEnabled (boolean enabled) {
 			long parentHandle = shellHandle;
 			GTK.gtk_widget_realize (parentHandle);
 			long window = gtk_widget_get_window (parentHandle);
-			Rectangle rect = getBoundsInPixels ();
+			Rectangle rect = getBounds();
 			GdkWindowAttr attributes = new GdkWindowAttr ();
 			attributes.width = rect.width;
 			attributes.height = rect.height;
@@ -2660,11 +2649,6 @@ public void setMinimized (boolean minimized) {
  */
 public void setMinimumSize (int width, int height) {
 	checkWidget ();
-	setMinimumSize (new Point (width, height));
-}
-
-void setMinimumSizeInPixels (int width, int height) {
-	checkWidget ();
 	geometry.setMinWidth(Math.max (width, trimWidth ()) - trimWidth ());
 	geometry.setMinHeight(Math.max (height, trimHeight ()) - trimHeight ());
 
@@ -2699,13 +2683,8 @@ void setMinimumSizeInPixels (int width, int height) {
  */
 public void setMinimumSize (Point size) {
 	checkWidget ();
-	setMinimumSizeInPixels (DPIUtil.autoScaleUp (size));
-}
-
-void setMinimumSizeInPixels (Point size) {
-	checkWidget ();
 	if (size == null) error (SWT.ERROR_NULL_ARGUMENT);
-	setMinimumSizeInPixels (size.x, size.y);
+	setMinimumSize(size.x, size.y);
 }
 
 /**
@@ -2728,9 +2707,15 @@ void setMinimumSizeInPixels (Point size) {
  *
  * @since 3.116
  */
-public void setMaximumSize (int width, int height) {
+public void setMaximumSize(int width, int height) {
 	checkWidget ();
-	setMaximumSize (new Point (width, height));
+	geometry.setMaxWidth(Math.max (width, trimWidth ()) - trimWidth ());
+	geometry.setMaxHeight(Math.max (height, trimHeight ()) - trimHeight ());
+	int hint = GDK.GDK_HINT_MAX_SIZE;
+	if (geometry.getMinWidth() > 0 || geometry.getMinHeight() > 0) {
+		hint = hint | GDK.GDK_HINT_MIN_SIZE;
+	}
+	GTK3.gtk_window_set_geometry_hints (shellHandle, 0, (GdkGeometry) geometry, hint);
 }
 
 /**
@@ -2757,24 +2742,8 @@ public void setMaximumSize (int width, int height) {
  */
 public void setMaximumSize (Point size) {
 	checkWidget ();
-	setMaximumSizeInPixels (DPIUtil.autoScaleUp (size));
-}
-
-void setMaximumSizeInPixels (Point size) {
-	checkWidget ();
 	if (size == null) error (SWT.ERROR_NULL_ARGUMENT);
-	setMaximumSizeInPixels (size.x, size.y);
-}
-
-void setMaximumSizeInPixels (int width, int height) {
-	checkWidget ();
-	geometry.setMaxWidth(Math.max (width, trimWidth ()) - trimWidth ());
-	geometry.setMaxHeight(Math.max (height, trimHeight ()) - trimHeight ());
-	int hint = GDK.GDK_HINT_MAX_SIZE;
-	if (geometry.getMinWidth() > 0 || geometry.getMinHeight() > 0) {
-		hint = hint | GDK.GDK_HINT_MIN_SIZE;
-	}
-	GTK3.gtk_window_set_geometry_hints (shellHandle, 0, (GdkGeometry) geometry, hint);
+	setMaximumSize(size.x, size.y);
 }
 
 /**
@@ -2858,7 +2827,7 @@ static Region mirrorRegion (Region region) {
 	int [] nRects = new int [1];
 	long [] rects = new long [1];
 	gdk_region_get_rectangles (rgn, rects, nRects);
-	Rectangle bounds = DPIUtil.autoScaleUp(region.getBounds ());
+	Rectangle bounds = region.getBounds ();
 	cairo_rectangle_int_t rect = new cairo_rectangle_int_t();
 	for (int i = 0; i < nRects [0]; i++) {
 		Cairo.memmove (rect, rects[0] + (i * GdkRectangle.sizeof), GdkRectangle.sizeof);
@@ -2900,7 +2869,7 @@ public void setVisible (boolean visible) {
 	checkWidget();
 
 	if (moved) { //fix shell location if it was moved.
-		setLocationInPixels(oldX, oldY);
+		setLocation(oldX, oldY);
 	}
 	int mask = SWT.PRIMARY_MODAL | SWT.APPLICATION_MODAL | SWT.SYSTEM_MODAL;
 	if ((style & mask) != 0) {
@@ -3013,7 +2982,7 @@ public void setVisible (boolean visible) {
 		opened = true;
 		if (!moved) {
 			moved = true;
-			Point location = getLocationInPixels();
+			Point location = getLocation();
 			oldX = location.x;
 			oldY = location.y;
 			sendEvent (SWT.Move);
@@ -3021,7 +2990,7 @@ public void setVisible (boolean visible) {
 		}
 		if (!resized) {
 			resized = true;
-			Point size = getSizeInPixels ();
+			Point size = getSize();
 			oldWidth = size.x - trimWidth ();
 			oldHeight = size.y - trimHeight ();
 			sendEvent (SWT.Resize);
@@ -3379,7 +3348,7 @@ public void forceActive () {
 }
 
 @Override
-Rectangle getBoundsInPixels () {
+public Rectangle getBounds() {
 	checkWidget ();
 	int [] x = new int [1], y = new int [1];
 	if ((state & Widget.DISPOSE_SENT) == 0) {
@@ -3464,7 +3433,7 @@ Point getWindowOrigin () {
 		 * window trims etc. from the window manager. That's why getLocation ()
 		 * is not safe to use for coordinate mappings after the shell has been made visible.
 		 */
-		return getLocationInPixels ();
+		return getLocation();
 	}
 	return super.getWindowOrigin( );
 }
@@ -3472,7 +3441,7 @@ Point getWindowOrigin () {
 @Override
 Point getSurfaceOrigin () {
 	if (!mapped) {
-		return getLocationInPixels ();
+		return getLocation();
 	}
 	return super.getSurfaceOrigin( );
 }

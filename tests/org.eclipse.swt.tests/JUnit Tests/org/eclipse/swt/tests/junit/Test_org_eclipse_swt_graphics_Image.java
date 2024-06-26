@@ -827,6 +827,14 @@ public void test_getImageData_100() {
 
 @Test
 public void test_getImageData_125() {
+	if (SwtTestUtil.isGTK) {
+		//Removing this test case as this is no more valid in non-cairo scale path(#1304)
+		if (SwtTestUtil.verbose) {
+			System.out.println("Excluded test_getImageData_125(org.eclipse.swt.tests.junit.Test_org_eclipse_swt_graphics_Image)");
+		}
+		return;
+	}
+
 	int zoom = DPIUtil.getDeviceZoom();
 	try {
 		DPIUtil.setDeviceZoom(125);
@@ -838,6 +846,14 @@ public void test_getImageData_125() {
 
 @Test
 public void test_getImageData_150() {
+	if (SwtTestUtil.isGTK) {
+		//Removing this test case as this is no more valid in non-cairo scale path(#1304)
+		if (SwtTestUtil.verbose) {
+			System.out.println("Excluded test_getImageData_125(org.eclipse.swt.tests.junit.Test_org_eclipse_swt_graphics_Image)");
+		}
+		return;
+	}
+
 	int zoom = DPIUtil.getDeviceZoom();
 	try {
 		DPIUtil.setDeviceZoom(150);
@@ -849,6 +865,14 @@ public void test_getImageData_150() {
 
 @Test
 public void test_getImageData_200() {
+	if (SwtTestUtil.isGTK) {
+		//Removing this test case as this is no more valid in non-cairo scale path(#1304)
+		if (SwtTestUtil.verbose) {
+			System.out.println("Excluded test_getImageData_125(org.eclipse.swt.tests.junit.Test_org_eclipse_swt_graphics_Image)");
+		}
+		return;
+	}
+
 	int zoom = DPIUtil.getDeviceZoom();
 	try {
 		DPIUtil.setDeviceZoom(200);

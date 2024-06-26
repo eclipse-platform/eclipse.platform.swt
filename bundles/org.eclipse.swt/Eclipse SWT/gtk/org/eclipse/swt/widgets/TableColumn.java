@@ -319,11 +319,6 @@ public String getToolTipText () {
  */
 public int getWidth () {
 	checkWidget ();
-	return DPIUtil.autoScaleDown(getWidthInPixels());
-}
-
-int getWidthInPixels () {
-	checkWidget();
 	if (!GTK.gtk_tree_view_column_get_visible (handle)) {
 		return 0;
 	}
@@ -507,7 +502,7 @@ public void pack () {
 		}
 		OS.g_free (iter);
 	}
-	setWidthInPixels(width);
+	setWidth(width);
 }
 
 @Override
@@ -760,11 +755,6 @@ public void setToolTipText(String string) {
  */
 public void setWidth (int width) {
 	checkWidget ();
-	setWidthInPixels (DPIUtil.autoScaleUp (width));
-}
-
-void setWidthInPixels (int width) {
-	checkWidget();
 	if (width < 0) return;
 	if (width == lastWidth) return;
 	if (width > 0) {

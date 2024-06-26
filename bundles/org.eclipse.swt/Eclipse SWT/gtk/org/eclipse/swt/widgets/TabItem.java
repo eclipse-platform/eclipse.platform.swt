@@ -160,11 +160,6 @@ void destroyWidget () {
  */
 public Rectangle getBounds () {
 	checkWidget ();
-	return DPIUtil.autoScaleDown (getBoundsInPixels ());
-}
-
-Rectangle getBoundsInPixels () {
-	checkWidget();
 	GtkAllocation allocation = new GtkAllocation ();
 	GTK.gtk_widget_get_allocation (handle, allocation);
 	int x = allocation.x;
@@ -339,7 +334,7 @@ public void setControl(Control control) {
 			}
 		}
 		if (newControl != null) {
-			newControl.setBoundsInPixels (parent.getClientAreaInPixels ());
+			newControl.setBounds(parent.getClientArea());
 			newControl.setVisible (true);
 		}
 

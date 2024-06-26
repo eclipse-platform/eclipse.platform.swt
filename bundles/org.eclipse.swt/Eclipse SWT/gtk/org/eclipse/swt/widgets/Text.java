@@ -622,7 +622,7 @@ public void clearSelection () {
 }
 
 @Override
-Point computeSizeInPixels (int wHint, int hHint, boolean changed) {
+public Point computeSize(int wHint, int hHint, boolean changed) {
 	checkWidget ();
 	if (wHint != SWT.DEFAULT && wHint < 0) wHint = 0;
 	if (hHint != SWT.DEFAULT && hHint < 0) hHint = 0;
@@ -669,14 +669,14 @@ Point computeSizeInPixels (int wHint, int hHint, boolean changed) {
 	if (height == 0) height = DEFAULT_HEIGHT;
 	width = wHint == SWT.DEFAULT ? width : wHint;
 	height = hHint == SWT.DEFAULT ? height : hHint;
-	Rectangle trim = computeTrimInPixels (0, 0, width, height);
+	Rectangle trim = computeTrim(0, 0, width, height);
 	return new Point (trim.width, trim.height);
 }
 
 @Override
-Rectangle computeTrimInPixels (int x, int y, int width, int height) {
+public Rectangle computeTrim(int x, int y, int width, int height) {
 	checkWidget ();
-	Rectangle trim = super.computeTrimInPixels (x, y, width, height);
+	Rectangle trim = super.computeTrim(x, y, width, height);
 	int xborder = 0, yborder = 0;
 	if ((style & SWT.SINGLE) != 0) {
 		GtkBorder tmp = new GtkBorder();
@@ -905,9 +905,9 @@ void fixIM () {
 }
 
 @Override
-int getBorderWidthInPixels () {
+public int getBorderWidth() {
 	checkWidget();
-	if ((style & SWT.MULTI) != 0) return super.getBorderWidthInPixels ();
+	if ((style & SWT.MULTI) != 0) return super.getBorderWidth();
 	if ((this.style & SWT.BORDER) != 0) {
 		return getThickness (handle).x;
 	}
@@ -949,11 +949,6 @@ public int getCaretLineNumber () {
  */
 public Point getCaretLocation () {
 	checkWidget ();
-	return DPIUtil.autoScaleDown(getCaretLocationInPixels());
-}
-
-Point getCaretLocationInPixels () {
-	checkWidget ();
 	if ((style & SWT.SINGLE) != 0) {
 		int index = GTK.gtk_editable_get_position (handle);
 		index = GTK3.gtk_entry_text_index_to_layout_index (handle, index);
@@ -962,7 +957,7 @@ Point getCaretLocationInPixels () {
 		long layout = GTK3.gtk_entry_get_layout (handle);
 		PangoRectangle pos = new PangoRectangle ();
 		OS.pango_layout_index_to_pos (layout, index, pos);
-		int x = offset_x [0] + OS.PANGO_PIXELS (pos.x) - getBorderWidthInPixels ();
+		int x = offset_x [0] + OS.PANGO_PIXELS (pos.x) - getBorderWidth();
 		int y = offset_y [0] + OS.PANGO_PIXELS (pos.y);
 		return new Point (x, y);
 	} else {
@@ -1532,11 +1527,6 @@ public int getTopIndex () {
  * </ul>
  */
 public int getTopPixel () {
-	checkWidget ();
-	return DPIUtil.autoScaleDown(getTopPixelInPixels());
-}
-
-int getTopPixelInPixels () {
 	checkWidget ();
 	if ((style & SWT.SINGLE) != 0) return 0;
 	byte [] position = new byte [ITER_SIZEOF];

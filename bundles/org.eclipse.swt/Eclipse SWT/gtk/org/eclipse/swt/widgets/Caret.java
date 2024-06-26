@@ -16,7 +16,6 @@ package org.eclipse.swt.widgets;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.cairo.*;
 import org.eclipse.swt.internal.gtk.*;
 
@@ -143,13 +142,8 @@ private void drawInCellEditor(long window) {
  */
 public Rectangle getBounds () {
 	checkWidget();
-	return DPIUtil.autoScaleDown(getBoundsInPixels());
-}
-
-Rectangle getBoundsInPixels () {
-	checkWidget();
 	if (image != null) {
-		Rectangle rect = image.getBoundsInPixels ();
+		Rectangle rect = image.getBounds ();
 		return new Rectangle (x, y, rect.width, rect.height);
 	} else {
 		if (width == 0) {
@@ -203,11 +197,6 @@ public Image getImage () {
  */
 public Point getLocation () {
 	checkWidget();
-	return DPIUtil.autoScaleDown(getLocationInPixels());
-}
-
-Point getLocationInPixels () {
-	checkWidget();
 	return new Point (x, y);
 }
 
@@ -238,13 +227,8 @@ public Canvas getParent () {
  */
 public Point getSize () {
 	checkWidget();
-	return DPIUtil.autoScaleDown(getSizeInPixels());
-}
-
-Point getSizeInPixels () {
-	checkWidget();
 	if (image != null) {
-		Rectangle rect = image.getBoundsInPixels ();
+		Rectangle rect = image.getBounds();
 		return new Point (rect.width, rect.height);
 	} else {
 		if (width == 0) {
@@ -350,11 +334,6 @@ void releaseWidget () {
  */
 public void setBounds (int x, int y, int width, int height) {
 	checkWidget();
-	setBounds (new Rectangle (x, y, width, height));
-}
-
-void setBoundsInPixels (int x, int y, int width, int height) {
-	checkWidget();
 	if (this.x == x && this.y == y && this.width == width && this.height == height) return;
 	boolean isFocus = isFocusCaret ();
 	if (isFocus && isVisible) hideCaret ();
@@ -379,14 +358,8 @@ void setBoundsInPixels (int x, int y, int width, int height) {
  */
 public void setBounds (Rectangle rect) {
 	checkWidget();
-	rect = DPIUtil.autoScaleUp(rect);
-	setBoundsInPixels(rect);
-}
-
-void setBoundsInPixels (Rectangle rect) {
-	checkWidget();
 	if (rect == null) error (SWT.ERROR_NULL_ARGUMENT);
-	setBoundsInPixels (rect.x, rect.y, rect.width, rect.height);
+	setBounds(rect.x, rect.y, rect.width, rect.height);
 }
 
 void setFocus () {
@@ -459,12 +432,7 @@ public void setImage (Image image) {
  */
 public void setLocation (int x, int y) {
 	checkWidget();
-	setLocation (new Point (x, y));
-}
-
-void setLocationInPixels (int x, int y) {
-	checkWidget();
-	setBoundsInPixels (x, y, width, height);
+	setBounds(x, y, width, height);
 }
 
 /**
@@ -481,13 +449,8 @@ void setLocationInPixels (int x, int y) {
  */
 public void setLocation (Point location) {
 	checkWidget();
-	setLocationInPixels (DPIUtil.autoScaleUp (location));
-}
-
-void setLocationInPixels (Point location) {
-	checkWidget();
 	if (location == null) error (SWT.ERROR_NULL_ARGUMENT);
-	setLocationInPixels (location.x, location.y);
+	setLocation(location.x, location.y);
 }
 
 /**
@@ -503,12 +466,7 @@ void setLocationInPixels (Point location) {
  */
 public void setSize (int width, int height) {
 	checkWidget();
-	setSize (new Point (width,height));
-}
-
-void setSizeInPixels (int width, int height) {
-	checkWidget();
-	setBoundsInPixels (x, y, width, height);
+	setSize(new Point (width,height));
 }
 
 /**
@@ -526,13 +484,8 @@ void setSizeInPixels (int width, int height) {
  */
 public void setSize (Point size) {
 	checkWidget();
-	setSizeInPixels(DPIUtil.autoScaleUp (size));
-}
-
-void setSizeInPixels (Point size) {
-	checkWidget();
 	if (size == null) error (SWT.ERROR_NULL_ARGUMENT);
-	setSizeInPixels (size.x, size.y);
+	setSize(size.x, size.y);
 }
 
 /**

@@ -343,7 +343,7 @@ void checkGC (int mask) {
 		Cairo.cairo_set_line_join(cairo, join_style);
 	}
 	if ((state & LINE_WIDTH) != 0) {
-		Cairo.cairo_set_line_width(cairo, data.lineWidth == 0 ? DPIUtil.autoScaleUp(drawable, 1) : data.lineWidth);
+		Cairo.cairo_set_line_width(cairo, data.lineWidth == 0 ? 1 : data.lineWidth);
 		switch (data.lineStyle) {
 			case SWT.LINE_DOT:
 			case SWT.LINE_DASH:
@@ -467,10 +467,6 @@ public void copyArea(Image image, int x, int y) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (image == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (image.type != SWT.BITMAP || image.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	Point loc = DPIUtil.autoScaleUp(drawable, new Point(x, y));
-	copyAreaInPixels(image, loc.x, loc.y);
-}
-void copyAreaInPixels(Image image, int x, int y) {
 	long cairo = Cairo.cairo_create(image.surface);
 	if (cairo == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	Cairo.cairo_translate(cairo, -x, -y);
@@ -507,13 +503,7 @@ void copyAreaInPixels(Image image, int x, int y) {
  */
 public void copyArea(int srcX, int srcY, int width, int height, int destX, int destY) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	Rectangle src = DPIUtil.autoScaleUp(drawable, new Rectangle(srcX, srcY, width, height));
-	Point dest = DPIUtil.autoScaleUp(drawable, new Point(destX, destY));
-	copyAreaInPixels(src.x, src.y, src.width, src.height, dest.x, dest.y);
-}
-
-void copyAreaInPixels(int srcX, int srcY, int width, int height, int destX, int destY) {
-	copyAreaInPixels(srcX, srcY, width, height, destX, destY, true);
+	copyArea(srcX, srcY, width, height, destX, destY, true);
 }
 /**
  * Copies a rectangular area of the receiver at the source
@@ -535,11 +525,6 @@ void copyAreaInPixels(int srcX, int srcY, int width, int height, int destX, int 
  */
 public void copyArea(int srcX, int srcY, int width, int height, int destX, int destY, boolean paint) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	Rectangle srcLoc = DPIUtil.autoScaleUp(drawable, new Rectangle(srcX, srcY, width, height));
-	Point destLoc = DPIUtil.autoScaleUp(drawable, new Point(destX, destY));
-	copyAreaInPixels(srcLoc.x, srcLoc.y, srcLoc.width, srcLoc.height, destLoc.x, destLoc.y, paint);
-}
-void copyAreaInPixels(int srcX, int srcY, int width, int height, int destX, int destY, boolean paint) {
 	if (width <= 0 || height <= 0) return;
 	int deltaX = destX - srcX, deltaY = destY - srcY;
 	if (deltaX == 0 && deltaY == 0) return;
@@ -720,10 +705,6 @@ void destroy() {
  */
 public void drawArc(int x, int y, int width, int height, int startAngle, int arcAngle) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	Rectangle loc = DPIUtil.autoScaleUp(drawable, new Rectangle(x, y, width, height));
-	drawArcInPixels(loc.x, loc.y, loc.width, loc.height, startAngle, arcAngle);
-}
-void drawArcInPixels(int x, int y, int width, int height, int startAngle, int arcAngle) {
 	checkGC(DRAW);
 	if (width < 0) {
 		x = x + width;
@@ -775,10 +756,6 @@ void drawArcInPixels(int x, int y, int width, int height, int startAngle, int ar
  */
 public void drawFocus(int x, int y, int width, int height) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	Rectangle loc = DPIUtil.autoScaleUp(drawable, new Rectangle(x, y, width, height));
-	drawFocusInPixels(loc.x, loc.y, loc.width, loc.height);
-}
-void drawFocusInPixels(int x, int y, int width, int height) {
 	long cairo = data.cairo;
 	checkGC(FOREGROUND);
 	long  context = GTK.gtk_widget_get_style_context(data.device.shellHandle);
@@ -808,10 +785,6 @@ public void drawImage(Image image, int x, int y) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (image == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (image.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	Point loc = DPIUtil.autoScaleUp(drawable, new Point(x, y));
-	drawImageInPixels(image, loc.x, loc.y);
-}
-void drawImageInPixels(Image image, int x, int y) {
 	drawImage(image, 0, 0, -1, -1, x, y, -1, -1, true);
 }
 
@@ -855,8 +828,7 @@ public void drawImage(Image image, int srcX, int srcY, int srcWidth, int srcHeig
 	}
 	if (image == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (image.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	Rectangle destRect = DPIUtil.autoScaleUp(drawable, new Rectangle(destX, destY, destWidth, destHeight));
-	drawImage(image, srcX, srcY, srcWidth, srcHeight, destRect.x, destRect.y, destRect.width, destRect.height, false);
+	drawImage(image, srcX, srcY, srcWidth, srcHeight, destX, destY, destWidth, destHeight, false);
 }
 void drawImage(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, int destX, int destY, int destWidth, int destHeight, boolean simple) {
 	/* Refresh Image as per zoom level, if required. */
@@ -933,11 +905,6 @@ void drawImage(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, 
  */
 public void drawLine(int x1, int y1, int x2, int y2) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	Point loc1 = DPIUtil.autoScaleUp(drawable, new Point(x1, y1));
-	Point loc2 = DPIUtil.autoScaleUp(drawable, new Point(x2, y2));
-	drawLineInPixels(loc1.x, loc1.y, loc2.x, loc2.y);
-}
-void drawLineInPixels(int x1, int y1, int x2, int y2) {
 	checkGC(DRAW);
 	long cairo = data.cairo;
 	double xOffset = data.cairoXoffset, yOffset = data.cairoYoffset;
@@ -972,10 +939,6 @@ void drawLineInPixels(int x1, int y1, int x2, int y2) {
  */
 public void drawOval(int x, int y, int width, int height) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	Rectangle rect = DPIUtil.autoScaleUp(drawable, new Rectangle(x, y, width, height));
-	drawOvalInPixels(rect.x, rect.y, rect.width, rect.height);
-}
-void drawOvalInPixels(int x, int y, int width, int height) {
 	checkGC(DRAW);
 	if (width < 0) {
 		x = x + width;
@@ -1059,10 +1022,6 @@ public void drawPath(Path path) {
  */
 public void drawPoint (int x, int y) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	Point loc = DPIUtil.autoScaleUp(drawable, new Point(x, y));
-	drawPointInPixels(loc.x, loc.y);
-}
-void drawPointInPixels (int x, int y) {
 	checkGC(DRAW);
 	long cairo = data.cairo;
 	Cairo.cairo_rectangle(cairo, x, y, 1, 1);
@@ -1089,10 +1048,6 @@ void drawPointInPixels (int x, int y) {
 public void drawPolygon(int[] pointArray) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (pointArray == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	int [] scaledPointArray = DPIUtil.autoScaleUp(drawable, pointArray);
-	drawPolygonInPixels(scaledPointArray);
-}
-void drawPolygonInPixels(int[] pointArray) {
 	checkGC(DRAW);
 	long cairo = data.cairo;
 	drawPolyline(cairo, pointArray, true);
@@ -1119,10 +1074,6 @@ void drawPolygonInPixels(int[] pointArray) {
 public void drawPolyline(int[] pointArray) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (pointArray == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	int [] scaledPointArray = DPIUtil.autoScaleUp(drawable, pointArray);
-	drawPolylineInPixels(scaledPointArray);
-}
-void drawPolylineInPixels(int[] pointArray) {
 	checkGC(DRAW);
 	long cairo = data.cairo;
 	drawPolyline(cairo, pointArray, false);
@@ -1157,9 +1108,6 @@ void drawPolyline(long cairo, int[] pointArray, boolean close) {
  */
 public void drawRectangle(int x, int y, int width, int height) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	drawRectangle(new Rectangle(x, y, width, height));
-}
-void drawRectangleInPixels(int x, int y, int width, int height) {
 	checkGC(DRAW);
 	if (width < 0) {
 		x = x + width;
@@ -1193,10 +1141,7 @@ void drawRectangleInPixels(int x, int y, int width, int height) {
  */
 public void drawRectangle(Rectangle rect) {
 	if (rect == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	drawRectangleInPixels(DPIUtil.autoScaleUp(drawable, rect));
-}
-void drawRectangleInPixels(Rectangle rect) {
-	drawRectangleInPixels (rect.x, rect.y, rect.width, rect.height);
+	drawRectangle (rect.x, rect.y, rect.width, rect.height);
 }
 /**
  * Draws the outline of the round-cornered rectangle specified by
@@ -1221,11 +1166,6 @@ void drawRectangleInPixels(Rectangle rect) {
  */
 public void drawRoundRectangle(int x, int y, int width, int height, int arcWidth, int arcHeight) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	Rectangle rect = DPIUtil.autoScaleUp(drawable, new Rectangle(x, y, width, height));
-	Point arcSize = DPIUtil.autoScaleUp(drawable, new Point(arcWidth, arcHeight));
-	drawRoundRectangleInPixels(rect.x, rect.y, rect.width, rect.height, arcSize.x, arcSize.y);
-}
-void drawRoundRectangleInPixels(int x, int y, int width, int height, int arcWidth, int arcHeight) {
 	checkGC(DRAW);
 	int nx = x;
 	int ny = y;
@@ -1294,9 +1234,6 @@ public void drawString (String string, int x, int y) {
 	drawString (string, x, y, false);
 }
 
-void drawStringInPixels (String string, int x, int y) {
-	drawStringInPixels(string, x, y, false);
-}
 /**
  * Draws the given string, using the receiver's current font and
  * foreground color. No tab expansion or carriage return processing
@@ -1327,12 +1264,7 @@ void drawStringInPixels (String string, int x, int y) {
 public void drawString(String string, int x, int y, boolean isTransparent) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (string == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	Point loc = DPIUtil.autoScaleUp(drawable, new Point(x, y));
-	drawStringInPixels(string, loc.x, loc.y, isTransparent);
-}
-
-void drawStringInPixels(String string, int x, int y, boolean isTransparent) {
-	drawTextInPixels(string, x, y, isTransparent ? SWT.DRAW_TRANSPARENT : 0);
+	drawText(string, x, y, isTransparent ? SWT.DRAW_TRANSPARENT : 0);
 }
 
 /**
@@ -1360,9 +1292,6 @@ void drawStringInPixels(String string, int x, int y, boolean isTransparent) {
 public void drawText(String string, int x, int y) {
 	drawText(string, x, y, SWT.DRAW_DELIMITER | SWT.DRAW_TAB);
 }
-void drawTextInPixels(String string, int x, int y) {
-	drawTextInPixels(string, x, y, SWT.DRAW_DELIMITER | SWT.DRAW_TAB);
-}
 
 /**
  * Draws the given string, using the receiver's current font and
@@ -1389,13 +1318,9 @@ void drawTextInPixels(String string, int x, int y) {
  * </ul>
  */
 public void drawText(String string, int x, int y, boolean isTransparent) {
-	Point loc = DPIUtil.autoScaleUp(drawable, new Point (x, y));
-	drawTextInPixels(string, loc.x, loc.y, isTransparent);
-}
-void drawTextInPixels(String string, int x, int y, boolean isTransparent) {
 	int flags = SWT.DRAW_DELIMITER | SWT.DRAW_TAB;
 	if (isTransparent) flags |= SWT.DRAW_TRANSPARENT;
-	drawTextInPixels(string, x, y, flags);
+	drawText(string, x, y, flags);
 }
 
 /**
@@ -1438,10 +1363,6 @@ void drawTextInPixels(String string, int x, int y, boolean isTransparent) {
  * </ul>
  */
 public void drawText (String string, int x, int y, int flags) {
-	Point loc = DPIUtil.autoScaleUp(drawable, new Point (x, y));
-	drawTextInPixels(string, loc.x, loc.y, flags);
-}
-void drawTextInPixels (String string, int x, int y, int flags) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (string == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (string.length() == 0) return;
@@ -1524,10 +1445,6 @@ public boolean equals(Object object) {
  */
 public void fillArc(int x, int y, int width, int height, int startAngle, int arcAngle) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	Rectangle rect = DPIUtil.autoScaleUp(drawable, new Rectangle(x, y, width, height));
-	fillArcInPixels(rect.x, rect.y, rect.width, rect.height, startAngle, arcAngle);
-}
-void fillArcInPixels(int x, int y, int width, int height, int startAngle, int arcAngle) {
 	checkGC(FILL);
 	if (width < 0) {
 		x = x + width;
@@ -1583,11 +1500,6 @@ void fillArcInPixels(int x, int y, int width, int height, int startAngle, int ar
  */
 public void fillGradientRectangle(int x, int y, int width, int height, boolean vertical) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	Rectangle rect = DPIUtil.autoScaleUp(drawable, new Rectangle(x, y, width, height));
-	fillGradientRectangleInPixels(rect.x, rect.y, rect.width, rect.height, vertical);
-}
-
-void fillGradientRectangleInPixels(int x, int y, int width, int height, boolean vertical) {
 	if ((width == 0) || (height == 0)) return;
 
 	/* Rewrite this to use GdkPixbuf */
@@ -1615,22 +1527,14 @@ void fillGradientRectangleInPixels(int x, int y, int width, int height, boolean 
 	long cairo = data.cairo;
 	long pattern;
 
-	if (DPIUtil.useCairoAutoScale() ) {
-		/*
-		 * Here the co-ordinates passed are in points for GTK3.
-		 * That means the user is expecting surface to be at
-		 * device scale equal to current scale factor. So need
-		 * to set the device scale to current scale factor
-		 */
-		long surface = Cairo.cairo_get_target(cairo);
-		if (surface != 0) {
-			float scaleFactor = DPIUtil.getDeviceZoom() / 100f;
-			Cairo.cairo_surface_set_device_scale(surface, scaleFactor, scaleFactor);
-		}
+	long surface = Cairo.cairo_get_target(cairo);
+	if (surface != 0) {
+		float scaleFactor = DPIUtil.getDeviceZoom() / 100f;
+		Cairo.cairo_surface_set_device_scale(surface, scaleFactor, scaleFactor);
 	}
 
 	if (fromRGB.equals(toRGB)) {
-		fillRectangleInPixels(x, y, width, height);
+		fillRectangle(x, y, width, height);
 		return;
 	}
 
@@ -1669,10 +1573,6 @@ void fillGradientRectangleInPixels(int x, int y, int width, int height, boolean 
  */
 public void fillOval(int x, int y, int width, int height) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	Rectangle rect = DPIUtil.autoScaleUp(drawable, new Rectangle(x, y, width, height));
-	fillOvalInPixels(rect.x, rect.y, rect.width, rect.height);
-}
-void fillOvalInPixels(int x, int y, int width, int height) {
 	checkGC(FILL);
 	if (width < 0) {
 		x = x + width;
@@ -1754,10 +1654,6 @@ public void fillPath (Path path) {
 public void fillPolygon(int[] pointArray) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (pointArray == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	int [] scaledPointArray = DPIUtil.autoScaleUp(drawable, pointArray);
-	fillPolygonInPixels(scaledPointArray);
-}
-void fillPolygonInPixels(int[] pointArray) {
 	checkGC(FILL);
 	long cairo = data.cairo;
 	drawPolyline(cairo, pointArray, true);
@@ -1781,9 +1677,6 @@ void fillPolygonInPixels(int[] pointArray) {
  */
 public void fillRectangle(int x, int y, int width, int height) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	fillRectangle(new Rectangle(x, y, width, height));
-}
-void fillRectangleInPixels(int x, int y, int width, int height) {
 	checkGC(FILL);
 	if (width < 0) {
 		x = x + width;
@@ -1820,10 +1713,7 @@ void fillRectangleInPixels(int x, int y, int width, int height) {
 public void fillRectangle(Rectangle rect) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (rect == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	fillRectangleInPixels(DPIUtil.autoScaleUp(drawable, rect));
-}
-void fillRectangleInPixels(Rectangle rect) {
-	fillRectangleInPixels(rect.x, rect.y, rect.width, rect.height);
+	fillRectangle(rect.x, rect.y, rect.width, rect.height);
 }
 
 /**
@@ -1845,11 +1735,6 @@ void fillRectangleInPixels(Rectangle rect) {
  */
 public void fillRoundRectangle(int x, int y, int width, int height, int arcWidth, int arcHeight) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	Rectangle rect = DPIUtil.autoScaleUp(drawable, new Rectangle(x, y, width, height));
-	Point arcSize = DPIUtil.autoScaleUp(drawable, new Point(arcWidth, arcHeight));
-	fillRoundRectangleInPixels(rect.x, rect.y, rect.width, rect.height, arcSize.x, arcSize.y);
-}
-void fillRoundRectangleInPixels(int x, int y, int width, int height, int arcWidth, int arcHeight) {
 	checkGC(FILL);
 	int nx = x;
 	int ny = y;
@@ -1922,7 +1807,7 @@ int fixMnemonic (char [] buffer) {
 public int getAdvanceWidth(char ch) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	//BOGUS
-	return stringExtentInPixels(new String(new char[]{ch})).x;
+	return stringExtent(new String(new char[]{ch})).x;
 }
 
 /**
@@ -2053,7 +1938,7 @@ public Pattern getBackgroundPattern() {
 public int getCharWidth(char ch) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	//BOGUS
-	return stringExtentInPixels(new String(new char[]{ch})).x;
+	return stringExtent(new String(new char[]{ch})).x;
 }
 
 /**
@@ -2070,9 +1955,6 @@ public int getCharWidth(char ch) {
  */
 public Rectangle getClipping() {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	return DPIUtil.autoScaleDown(drawable, getClippingInPixels());
-}
-Rectangle getClippingInPixels() {
 	/* Calculate visible bounds in device space */
 	int x = 0, y = 0, width = 0, height = 0;
 	int[] w = new int[1], h = new int[1];
@@ -2247,11 +2129,11 @@ public FontMetrics getFontMetrics() {
 	FontMetrics fm = new FontMetrics();
 	int ascent = OS.pango_font_metrics_get_ascent(metrics);
 	int descent = OS.pango_font_metrics_get_descent(metrics);
-	int ascentInPoints = DPIUtil.autoScaleDown(drawable, OS.PANGO_PIXELS(ascent));
+	int ascentInPoints = OS.PANGO_PIXELS(ascent);
 	fm.ascentInPoints = ascentInPoints;
-	int heightInPoints = DPIUtil.autoScaleDown(drawable, OS.PANGO_PIXELS(ascent + descent));
+	int heightInPoints = OS.PANGO_PIXELS(ascent + descent);
 	fm.descentInPoints = heightInPoints - ascentInPoints;
-	fm.averageCharWidthInPoints = DPIUtil.autoScaleDown(drawable, OS.PANGO_PIXELS(OS.pango_font_metrics_get_approximate_char_width(metrics)));
+	fm.averageCharWidthInPoints = OS.PANGO_PIXELS(OS.pango_font_metrics_get_approximate_char_width(metrics));
 	OS.pango_font_metrics_unref(metrics);
 	return fm;
 }
@@ -2347,11 +2229,6 @@ public int getInterpolation() {
  */
 public LineAttributes getLineAttributes() {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	LineAttributes attributes = getLineAttributesInPixels();
-	attributes.width = DPIUtil.autoScaleDown(drawable, attributes.width);
-	return attributes;
-}
-LineAttributes getLineAttributesInPixels() {
 	float[] dashes = null;
 	if (data.lineDashes != null) {
 		dashes = new float[data.lineDashes.length];
@@ -2449,9 +2326,6 @@ public int getLineStyle() {
  */
 public int getLineWidth() {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	return (int)DPIUtil.autoScaleDown(drawable, data.lineWidth);
-}
-int getLineWidthInPixels() {
 	return (int)data.lineWidth;
 }
 
@@ -3108,9 +2982,6 @@ void setClipping(long clipRgn) {
  */
 public void setClipping(int x, int y, int width, int height) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	setClippingInPixels(DPIUtil.autoScaleUp(drawable, x), DPIUtil.autoScaleUp(drawable, y), DPIUtil.autoScaleUp(drawable, width), DPIUtil.autoScaleUp(drawable, height));
-}
-void setClippingInPixels(int x, int y, int width, int height) {
 	if (width < 0) {
 		x = x + width;
 		width = -width;
@@ -3186,13 +3057,10 @@ public void setClipping(Path path) {
  */
 public void setClipping(Rectangle rect) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	setClippingInPixels(DPIUtil.autoScaleUp(drawable, rect));
-}
-void setClippingInPixels(Rectangle rect) {
 	if (rect == null) {
 		resetClipping();
 	} else {
-		setClippingInPixels(rect.x, rect.y, rect.width, rect.height);
+		setClipping(rect.x, rect.y, rect.width, rect.height);
 	}
 }
 
@@ -3411,10 +3279,7 @@ public void setInterpolation(int interpolation) {
 public void setLineAttributes(LineAttributes attributes) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (attributes == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	attributes.width = DPIUtil.autoScaleUp(drawable, attributes.width);
-	setLineAttributesInPixels(attributes);
-}
-void setLineAttributesInPixels(LineAttributes attributes) {
+	attributes.width = attributes.width;
 	int mask = 0;
 	float lineWidth = attributes.width;
 	if (lineWidth != data.lineWidth) {
@@ -3665,9 +3530,6 @@ public void setLineStyle(int lineStyle) {
  */
 public void setLineWidth(int lineWidth) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	setLineWidthInPixels(DPIUtil.autoScaleUp(drawable, lineWidth));
-}
-void setLineWidthInPixels(int lineWidth) {
 	if (data.lineWidth == lineWidth) return;
 	data.lineWidth = lineWidth;
 	data.state &= ~(LINE_WIDTH | DRAW_OFFSET);
@@ -3849,10 +3711,7 @@ public void setXORMode(boolean xor) {
  * </ul>
  */
 public Point stringExtent(String string) {
-	return DPIUtil.autoScaleDown(drawable, stringExtentInPixels(string));
-}
-Point stringExtentInPixels(String string) {
-	return textExtentInPixels(string, 0);
+	return textExtent(string, 0);
 }
 
 /**
@@ -3875,11 +3734,7 @@ Point stringExtentInPixels(String string) {
  * </ul>
  */
 public Point textExtent(String string) {
-	return DPIUtil.autoScaleDown(drawable, textExtentInPixels(string));
-}
-
-Point textExtentInPixels(String string) {
-	return textExtentInPixels(string, SWT.DRAW_DELIMITER | SWT.DRAW_TAB);
+	return textExtent(string, SWT.DRAW_DELIMITER | SWT.DRAW_TAB);
 }
 
 /**
@@ -3916,9 +3771,6 @@ Point textExtentInPixels(String string) {
 public Point textExtent(String string, int flags) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (string == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	return DPIUtil.autoScaleDown(drawable, textExtentInPixels(string, flags));
-}
-Point textExtentInPixels(String string, int flags) {
 	setString(string, flags);
 	checkGC(FONT);
 	if (data.stringWidth == -1) {

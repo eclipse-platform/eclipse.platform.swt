@@ -17,7 +17,6 @@ package org.eclipse.swt.widgets;
 import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.gtk.*;
 import org.eclipse.swt.internal.gtk3.*;
 import org.eclipse.swt.internal.gtk4.*;
@@ -290,11 +289,6 @@ public int getSelection () {
  */
 public Point getSize () {
 	checkWidget ();
-	return DPIUtil.autoScaleDown (getSizeInPixels ());
-}
-
-Point getSizeInPixels () {
-	checkWidget ();
 	if (handle == 0) return new Point (0,0);
 	GtkRequisition requisition = new GtkRequisition ();
 	gtk_widget_get_preferred_size (handle, requisition);
@@ -333,12 +327,6 @@ public int getThumb () {
  */
 public Rectangle getThumbBounds() {
 	checkWidget();
-	return DPIUtil.autoScaleDown(getThumbBoundsInPixels());
-}
-
-Rectangle getThumbBoundsInPixels() {
-	checkWidget();
-
 	int[] slider_start = new int[1], slider_end = new int[1];
 	long rangeHandle = GTK.GTK4 ? GTK4.gtk_widget_get_first_child(handle) : handle;
 	GTK.gtk_range_get_slider_range(rangeHandle, slider_start, slider_end);
@@ -402,11 +390,6 @@ Rectangle getThumbBoundsInPixels() {
  */
 public Rectangle getThumbTrackBounds () {
 	checkWidget ();
-	return DPIUtil.autoScaleDown(getThumbTrackBoundsInPixels());
-}
-
-Rectangle getThumbTrackBoundsInPixels () {
-	checkWidget();
 	int x = 0, y = 0, width, height;
 
 	/*

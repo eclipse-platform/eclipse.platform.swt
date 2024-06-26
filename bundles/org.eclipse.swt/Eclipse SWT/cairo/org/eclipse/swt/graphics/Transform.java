@@ -147,7 +147,7 @@ public Transform (Device device, float m11, float m12, float m21, float m22, flo
 	super(device);
 	handle = new double[6];
 	if (handle == null) SWT.error(SWT.ERROR_NO_HANDLES);
-	Cairo.cairo_matrix_init(handle, m11, m12, m21, m22, DPIUtil.autoScaleUp(dx), DPIUtil.autoScaleUp(dy));
+	Cairo.cairo_matrix_init(handle, m11, m12, m21, m22, dx, dy);
 	init();
 }
 
@@ -320,7 +320,7 @@ public void scale(float scaleX, float scaleY) {
  */
 public void setElements(float m11, float m12, float m21, float m22, float dx, float dy) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	Cairo.cairo_matrix_init(handle, m11, m12, m21, m22, DPIUtil.autoScaleUp(dx), DPIUtil.autoScaleUp(dy));
+	Cairo.cairo_matrix_init(handle, m11, m12, m21, m22, dx, dy);
 }
 
 /**
@@ -362,8 +362,8 @@ public void transform(float[] pointArray) {
 	double[] dx = new double[1], dy = new double[1];
 	int length = pointArray.length / 2;
 	for (int i = 0, j = 0; i < length; i++, j += 2) {
-		dx[0] = DPIUtil.autoScaleUp(pointArray[j]);
-		dy[0] = DPIUtil.autoScaleUp(pointArray[j + 1]);
+		dx[0] = pointArray[j];
+		dy[0] = pointArray[j + 1];
 		Cairo.cairo_matrix_transform_point(handle, dx, dy);
 		pointArray[j] = DPIUtil.autoScaleDown((float)dx[0]);
 		pointArray[j + 1] = DPIUtil.autoScaleDown((float)dy[0]);
@@ -383,7 +383,7 @@ public void transform(float[] pointArray) {
  */
 public void translate(float offsetX, float offsetY) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	Cairo.cairo_matrix_translate(handle, DPIUtil.autoScaleUp(offsetX), DPIUtil.autoScaleUp(offsetY));
+	Cairo.cairo_matrix_translate(handle, offsetX, offsetY);
 }
 
 /**

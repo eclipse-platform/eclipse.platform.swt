@@ -232,15 +232,8 @@ public boolean getExpanded() {
  */
 public int getHeaderHeight () {
 	checkWidget ();
-	return DPIUtil.autoScaleDown (getHeaderHeightInPixels ());
-}
-
-int getHeaderHeightInPixels() {
-	checkWidget();
-
 	GtkAllocation allocation = new GtkAllocation();
 	GTK.gtk_widget_get_allocation(GTK.gtk_expander_get_label_widget(handle), allocation);
-
 	return allocation.height;
 }
 
@@ -256,7 +249,7 @@ int getHeaderHeightInPixels() {
  */
 public int getHeight() {
 	checkWidget();
-	return DPIUtil.autoScaleDown(height);
+	return height;
 }
 
 /**
@@ -506,11 +499,6 @@ void setForegroundRGBA (GdkRGBA rgba) {
  * </ul>
  */
 public void setHeight (int height) {
-	checkWidget ();
-	setHeightInPixels(DPIUtil.autoScaleUp(height));
-}
-
-void setHeightInPixels (int height) {
 	checkWidget ();
 	if (height < 0) return;
 	this.height = height;

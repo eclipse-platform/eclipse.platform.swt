@@ -219,14 +219,6 @@ public Path (Device device, PathData data) {
 public void addArc(float x, float y, float width, float height, float startAngle, float arcAngle) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (width == 0 || height == 0 || arcAngle == 0) return;
-	x = DPIUtil.autoScaleUp(x);
-	y = DPIUtil.autoScaleUp(y);
-	width = DPIUtil.autoScaleUp(width);
-	height = DPIUtil.autoScaleUp(height);
-	addArcInPixels(x, y, width, height, startAngle, arcAngle);
-}
-
-void addArcInPixels(float x, float y, float width, float height, float startAngle, float arcAngle) {
 	moved = true;
 	if (width == height) {
 		float angle = -startAngle * (float)Math.PI / 180;
@@ -292,14 +284,6 @@ public void addPath(Path path) {
  */
 public void addRectangle(float x, float y, float width, float height) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	x = DPIUtil.autoScaleUp(x);
-	y = DPIUtil.autoScaleUp(y);
-	width = DPIUtil.autoScaleUp(width);
-	height = DPIUtil.autoScaleUp(height);
-	addRectangleInPixels(x, y, width, height);
-}
-
-void addRectangleInPixels(float x, float y, float width, float height) {
 	moved = false;
 	Cairo.cairo_rectangle(handle, x, y, width, height);
 	closed = true;
@@ -326,19 +310,14 @@ public void addString(String string, float x, float y, Font font) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (font == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (font.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	x = DPIUtil.autoScaleUp(x);
-	y = DPIUtil.autoScaleUp(y);
 	// Scale up the font
 	FontData fd = font.getFontData()[0];
-	fd.setHeight(DPIUtil.autoScaleUp(fd.getHeight()));
+	fd.setHeight(fd.getHeight());
 	Font scaledFont = new Font(font.getDevice(), fd);
-	addStringInPixels(string, x, y, scaledFont);
-	scaledFont.dispose(); // Dispose the scaled up font
-}
-void addStringInPixels(String string, float x, float y, Font font) {
 	moved = false;
 	GC.addCairoString(handle, string, x, y, font);
 	closed = true;
+	scaledFont.dispose(); // Dispose the scaled up font
 }
 
 /**
@@ -384,11 +363,6 @@ public boolean contains(float x, float y, GC gc, boolean outline) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (gc == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (gc.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	x = DPIUtil.autoScaleUp(x);
-	y = DPIUtil.autoScaleUp(y);
-	return containsInPixels(x, y, gc, outline);
-}
-boolean containsInPixels(float x, float y, GC gc, boolean outline) {
 	//TODO - see Windows
 	gc.initCairo();
 	gc.checkGC(GC.LINE_CAP | GC.LINE_JOIN | GC.LINE_STYLE | GC.LINE_WIDTH);
@@ -423,15 +397,6 @@ boolean containsInPixels(float x, float y, GC gc, boolean outline) {
  */
 public void cubicTo(float cx1, float cy1, float cx2, float cy2, float x, float y) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	cx1 = DPIUtil.autoScaleUp(cx1);
-	cy1 = DPIUtil.autoScaleUp(cy1);
-	cx2 = DPIUtil.autoScaleUp(cx2);
-	cy2 = DPIUtil.autoScaleUp(cy2);
-	x = DPIUtil.autoScaleUp(x);
-	y = DPIUtil.autoScaleUp(y);
-	cubicToInPixels(cx1, cy1, cx2, cy2, x, y);
-}
-void cubicToInPixels(float cx1, float cy1, float cx2, float cy2, float x, float y) {
 	if (!moved) {
 		double[] currentX = new double[1], currentY = new double[1];
 		Cairo.cairo_get_current_point(handle, currentX, currentY);
@@ -647,11 +612,6 @@ PathData getPathDataInPixels() {
  */
 public void lineTo(float x, float y) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	x = DPIUtil.autoScaleUp(x);
-	y = DPIUtil.autoScaleUp(y);
-	lineToInPixels(x, y);
-}
-void lineToInPixels(float x, float y) {
 	if (!moved) {
 		double[] currentX = new double[1], currentY = new double[1];
 		Cairo.cairo_get_current_point(handle, currentX, currentY);
@@ -676,11 +636,6 @@ void lineToInPixels(float x, float y) {
  */
 public void moveTo(float x, float y) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	x = DPIUtil.autoScaleUp(x);
-	y = DPIUtil.autoScaleUp(y);
-	moveToInPixels(x, y);
-}
-void moveToInPixels(float x, float y) {
 	/*
 	* Bug in Cairo.  If cairo_move_to() is not called at the
 	* begining of a subpath, the first cairo_line_to() or
@@ -707,13 +662,6 @@ void moveToInPixels(float x, float y) {
  */
 public void quadTo(float cx, float cy, float x, float y) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	x = DPIUtil.autoScaleUp(x);
-	y = DPIUtil.autoScaleUp(y);
-	cx = DPIUtil.autoScaleUp(cx);
-	cy = DPIUtil.autoScaleUp(cy);
-	quadToInPixels(cx, cy, x, y);
-}
-void quadToInPixels(float cx, float cy, float x, float y) {
 	double[] currentX = new double[1], currentY = new double[1];
 	Cairo.cairo_get_current_point(handle, currentX, currentY);
 	if (!moved) {

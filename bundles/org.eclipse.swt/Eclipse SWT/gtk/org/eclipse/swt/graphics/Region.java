@@ -15,7 +15,6 @@ package org.eclipse.swt.graphics;
 
 
 import org.eclipse.swt.*;
-import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.cairo.*;
 import org.eclipse.swt.internal.gtk.*;
 
@@ -156,9 +155,6 @@ static void cairo_region_get_rectangles(long region, long [] rectangles, int[] n
 public void add (int[] pointArray) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (pointArray == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	addInPixels(DPIUtil.autoScaleUp(pointArray));
-}
-void addInPixels (int[] pointArray) {
 	/*
 	* Bug in GTK. If gdk_region_polygon() is called with one point,
 	* it segment faults. The fix is to make sure that it is called
@@ -187,10 +183,7 @@ void addInPixels (int[] pointArray) {
 public void add(Rectangle rect) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (rect == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	addInPixels(DPIUtil.autoScaleUp(rect));
-}
-void addInPixels(Rectangle rect) {
-	addInPixels (rect.x, rect.y, rect.width, rect.height);
+	add(rect.x, rect.y, rect.width, rect.height);
 }
 
 /**
@@ -214,9 +207,6 @@ void addInPixels(Rectangle rect) {
 public void add(int x, int y, int width, int height) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (width < 0 || height < 0) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	add(new Rectangle(x, y, width, height));
-}
-void addInPixels(int x, int y, int width, int height) {
 	cairo_rectangle_int_t rect = new cairo_rectangle_int_t();
 	rect.x = x;
 	rect.y = y;
@@ -262,9 +252,6 @@ public void add(Region region) {
  */
 public boolean contains(int x, int y) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	return contains(new Point(x, y));
-}
-boolean containsInPixels(int x, int y) {
 	return Cairo.cairo_region_contains_point(handle, x, y);
 }
 
@@ -285,11 +272,8 @@ boolean containsInPixels(int x, int y) {
  */
 public boolean contains(Point pt) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	return containsInPixels(DPIUtil.autoScaleUp(pt));
-}
-boolean containsInPixels(Point pt) {
 	if (pt == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	return containsInPixels(pt.x, pt.y);
+	return contains(pt.x, pt.y);
 }
 
 @Override
@@ -331,9 +315,6 @@ public boolean equals(Object object) {
  */
 public Rectangle getBounds() {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	return DPIUtil.autoScaleDown(getBoundsInPixels());
-}
-Rectangle getBoundsInPixels() {
 	cairo_rectangle_int_t rect = new cairo_rectangle_int_t();
 	Cairo.cairo_region_get_extents(handle, rect);
 	return new Rectangle(rect.x, rect.y, rect.width, rect.height);
@@ -393,11 +374,7 @@ public int hashCode() {
 public void intersect(Rectangle rect) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (rect == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	intersectInPixels(DPIUtil.autoScaleUp(rect));
-}
-
-void intersectInPixels(Rectangle rect) {
-	intersectInPixels (rect.x, rect.y, rect.width, rect.height);
+	intersect(rect.x, rect.y, rect.width, rect.height);
 }
 
 /**
@@ -421,10 +398,6 @@ void intersectInPixels(Rectangle rect) {
 public void intersect(int x, int y, int width, int height) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (width < 0 || height < 0) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	intersect(new Rectangle(x, y, width, height));
-}
-
-void intersectInPixels(int x, int y, int width, int height) {
 	cairo_rectangle_int_t rect = new cairo_rectangle_int_t();
 	rect.x = x;
 	rect.y = y;
@@ -478,10 +451,6 @@ public void intersect(Region region) {
  */
 public boolean intersects (int x, int y, int width, int height) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	return intersects(new Rectangle(x, y, width, height));
-}
-
-boolean intersectsInPixels (int x, int y, int width, int height) {
 	cairo_rectangle_int_t rect = new cairo_rectangle_int_t();
 	rect.x = x;
 	rect.y = y;
@@ -509,11 +478,7 @@ boolean intersectsInPixels (int x, int y, int width, int height) {
 public boolean intersects(Rectangle rect) {
 	if (rect == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	return intersectsInPixels(DPIUtil.autoScaleUp(rect));
-}
-
-boolean intersectsInPixels(Rectangle rect) {
-	return intersectsInPixels(rect.x, rect.y, rect.width, rect.height);
+	return intersects(rect.x, rect.y, rect.width, rect.height);
 }
 
 /**
@@ -565,10 +530,6 @@ public boolean isEmpty() {
 public void subtract (int[] pointArray) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (pointArray == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	subtractInPixels(DPIUtil.autoScaleUp(pointArray));
-}
-
-void subtractInPixels (int[] pointArray) {
 	/*
 	* Bug in GTK. If gdk_region_polygon() is called with one point,
 	* it segment faults. The fix is to make sure that it is called
@@ -598,11 +559,7 @@ void subtractInPixels (int[] pointArray) {
 public void subtract(Rectangle rect) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (rect == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	subtractInPixels(DPIUtil.autoScaleUp(rect));
-}
-
-void subtractInPixels(Rectangle rect) {
-	subtractInPixels (rect.x, rect.y, rect.width, rect.height);
+	subtract(rect.x, rect.y, rect.width, rect.height);
 }
 
 /**
@@ -626,10 +583,6 @@ void subtractInPixels(Rectangle rect) {
 public void subtract(int x, int y, int width, int height) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (width < 0 || height < 0) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	subtract(new Rectangle(x, y, width, height));
-}
-
-void subtractInPixels(int x, int y, int width, int height) {
 	cairo_rectangle_int_t rect = new cairo_rectangle_int_t ();
 	rect.x = x;
 	rect.y = y;
@@ -682,10 +635,6 @@ public void translate (int x, int y) {
 	translate(new Point(x, y));
 }
 
-void translateInPixels (int x, int y) {
-	Cairo.cairo_region_translate (handle, x, y);
-}
-
 /**
  * Translate all of the polygons the receiver maintains to describe
  * its area by the specified point.
@@ -704,8 +653,7 @@ void translateInPixels (int x, int y) {
 public void translate (Point pt) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (pt == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	pt = DPIUtil.autoScaleUp(pt);
-	translateInPixels(pt.x, pt.y);
+	Cairo.cairo_region_translate (handle, pt.x, pt.y);
 }
 
 /**

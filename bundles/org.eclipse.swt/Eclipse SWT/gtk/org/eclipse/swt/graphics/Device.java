@@ -346,10 +346,6 @@ protected void destroy () {
  */
 public Rectangle getBounds () {
 	checkDevice ();
-	return DPIUtil.autoScaleDown (getBoundsInPixels ());
-}
-
-private Rectangle getBoundsInPixels () {
 	return new Rectangle(0, 0, 0, 0);
 }
 
