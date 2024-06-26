@@ -10,7 +10,9 @@
  *******************************************************************************/
 package org.eclipse.swt.internal;
 
-public class DPITestUtil {
+public final class DPITestUtil {
+	private DPITestUtil() {
+	}
 
 	public static void setAutoScaleOnRunTime(boolean value) {
 		DPIUtil.setAutoScaleOnRuntimeActive(value);
