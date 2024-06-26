@@ -13,15 +13,14 @@
  *******************************************************************************/
 package org.eclipse.swt.graphics;
 
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.gdip.*;
-import org.junit.*;
+import org.junit.jupiter.api.*;
 
-public class TransformWin32Tests extends Win32AutoscaleTestBase {
+class TransformWin32Tests extends Win32AutoscaleTestBase {
 
 	@Test
 	public void testShouldHaveDifferentHandlesAtDifferentZoomLevels() {

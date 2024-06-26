@@ -19,9 +19,9 @@ import java.util.*;
 
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.gdip.*;
-import org.junit.*;
+import org.junit.jupiter.api.*;
 
-public class PathWin32Tests extends Win32AutoscaleTestBase {
+class PathWin32Tests extends Win32AutoscaleTestBase {
 
 	int zoom = 100;
 	int scaledZoom = 200;
