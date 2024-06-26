@@ -792,7 +792,7 @@ boolean setEventData(long context, int x, int y, int time, DNDEvent event) {
 		long window = GTK3.gtk_widget_get_window (control.handle);
 		GDK.gdk_window_get_origin(window, origin_x, origin_y);
 	}
-	Point coordinates = DPIUtil.autoScaleDown(new Point(origin_x[0] + x, origin_y[0] + y));
+	Point coordinates = new Point(origin_x[0] + x, origin_y[0] + y);
 
 	event.widget = this;
 	event.x = coordinates.x;

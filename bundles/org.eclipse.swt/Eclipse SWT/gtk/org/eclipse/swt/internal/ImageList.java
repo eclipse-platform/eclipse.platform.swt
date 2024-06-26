@@ -34,24 +34,18 @@ public static long convertSurface(Image image) {
 	int type = Cairo.cairo_surface_get_type(newSurface);
 	if (type != Cairo.CAIRO_SURFACE_TYPE_IMAGE) {
 		Rectangle bounds;
-		if (DPIUtil.useCairoAutoScale()) {
-			bounds = image.getBounds();
-		} else {
-			bounds = image.getBoundsInPixels();
-		}
+		bounds = image.getBounds();
 		int format = Cairo.cairo_surface_get_content(newSurface) == Cairo.CAIRO_CONTENT_COLOR ? Cairo.CAIRO_FORMAT_RGB24 : Cairo.CAIRO_FORMAT_ARGB32;
 		newSurface = Cairo.cairo_image_surface_create(format, bounds.width, bounds.height);
 		if (newSurface == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 		//retain device scale set in the original surface
-		if (DPIUtil.useCairoAutoScale()) {
-			double sx[] = new double[1];
-			double sy[] = new double[1];
-			Cairo.cairo_surface_get_device_scale(image.surface, sx, sy);
-			if (sx[0] == 0 || sy[0] == 0){
-				sx[0] = sy[0] = DPIUtil.getDeviceZoom() / 100f;
-			}
-			Cairo.cairo_surface_set_device_scale(newSurface, sx[0], sy[0]);
+		double sx[] = new double[1];
+		double sy[] = new double[1];
+		Cairo.cairo_surface_get_device_scale(image.surface, sx, sy);
+		if (sx[0] == 0 || sy[0] == 0){
+			sx[0] = sy[0] = DPIUtil.getDeviceZoom() / 100f;
 		}
+		Cairo.cairo_surface_set_device_scale(newSurface, sx[0], sy[0]);
 		long cairo = Cairo.cairo_create(newSurface);
 		if (cairo == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 		Cairo.cairo_set_operator(cairo, Cairo.CAIRO_OPERATOR_SOURCE);
@@ -296,11 +290,7 @@ void set (int index, Image image) {
 	h /= (int)sy[0];
 
 	Rectangle bounds;
-	if (DPIUtil.useCairoAutoScale()) {
-		bounds = image.getBounds();
-	} else {
-		bounds = image.getBoundsInPixels();
-	}
+	bounds = image.getBounds();
 	if (w == 0) {
 		w = bounds.width;
 	}
@@ -335,25 +325,8 @@ long scaleSurface(Image image, int width, int height) {
 	if (cairo == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 
 	Rectangle bounds;
-	if (DPIUtil.useCairoAutoScale()) {
-		int w = Cairo.cairo_image_surface_get_width(image.surface);
-		int h = Cairo.cairo_image_surface_get_height(image.surface);
-		if ((w == 0) && (h == 0)) {
-			bounds = image.getBounds();
-		} else {
-			bounds = new Rectangle(0, 0, w, h);
-		}
+	bounds = image.getBounds();
 
-		double sx[] = new double[1];
-		double sy[] = new double[1];
-		Cairo.cairo_surface_get_device_scale(image.surface, sx, sy);
-		if (sx[0] == 0 || sy[0] == 0){
-			sx[0] = sy[0] = DPIUtil.getDeviceZoom() / 100f;
-		}
-		Cairo.cairo_surface_set_device_scale(scaledSurface, sx[0], sy[0]);
-	} else {
-		bounds = image.getBoundsInPixels();
-	}
 	double scaleX = (double) width / (double) bounds.width;
 	double scaleY = (double) height / (double) bounds.height;
 	Cairo.cairo_scale(cairo, scaleX, scaleY);

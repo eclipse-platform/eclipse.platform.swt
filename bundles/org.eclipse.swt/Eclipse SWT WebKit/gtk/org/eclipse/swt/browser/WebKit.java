@@ -1817,7 +1817,7 @@ void onDispose (Event e) {
 }
 
 void onResize (Event e) {
-	Rectangle rect = DPIUtil.autoScaleUp(browser.getClientArea ());
+	Rectangle rect = browser.getClientArea ();
 	if (webView == 0)
 		return;
 	GTK.gtk_widget_set_size_request (webView, rect.width, rect.height);
