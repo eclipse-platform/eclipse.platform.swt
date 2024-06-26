@@ -13,34 +13,28 @@
  *******************************************************************************/
 package org.eclipse.swt.internal;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.Font;
-import org.eclipse.swt.graphics.FontData;
-import org.eclipse.swt.widgets.Display;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.eclipse.swt.*;
+import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.widgets.*;
+import org.junit.jupiter.api.*;
 
-public class ScalingSWTFontRegistryTests {
+class ScalingSWTFontRegistryTests {
 	private static String TEST_FONT = "Helvetica";
 	private SWTFontRegistry fontRegistry;
 
-	@BeforeClass
+	@BeforeAll
 	public static void assumeIsFittingPlatform() {
 		PlatformSpecificExecution.assumeIsFittingPlatform();
 	}
 
-	@Before
+	@BeforeEach
 	public void setUp() {
 		this.fontRegistry = new ScalingSWTFontRegistry(Display.getDefault());
 	}
 
-	@After
+	@AfterEach
 	public void tearDown() {
 		if (this.fontRegistry != null) {
 			this.fontRegistry.dispose();

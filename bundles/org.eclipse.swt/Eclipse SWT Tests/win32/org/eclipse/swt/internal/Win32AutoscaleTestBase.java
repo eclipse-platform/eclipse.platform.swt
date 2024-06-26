@@ -15,19 +15,19 @@ package org.eclipse.swt.internal;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.widgets.*;
-import org.junit.*;
+import org.junit.jupiter.api.*;
 
 public abstract class Win32AutoscaleTestBase {
 	protected Display display;
 	protected Shell shell;
 	private boolean autoScaleOnRuntime;
 
-	@BeforeClass
+	@BeforeAll
 	public static void assumeIsFittingPlatform() {
 		PlatformSpecificExecution.assumeIsFittingPlatform();
 	}
 
-	@Before
+	@BeforeEach
 	public void setUpTest() {
 		autoScaleOnRuntime = DPITestUtil.isAutoScaleOnRuntimeActive();
 		display = Display.getDefault();
@@ -35,7 +35,7 @@ public abstract class Win32AutoscaleTestBase {
 		shell = new Shell(display);
 	}
 
-	@After
+	@AfterEach
 	public void tearDownTest() {
 		if (shell != null) {
 			shell.dispose();

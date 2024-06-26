@@ -4,9 +4,9 @@ import static org.junit.Assert.assertEquals;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.internal.*;
-import org.junit.*;
+import org.junit.jupiter.api.*;
 
-public class WidgetWin32Tests extends Win32AutoscaleTestBase {
+class WidgetWin32Tests extends Win32AutoscaleTestBase {
 
 	@Test
 	public void testWidgetZoomShouldChangeOnZoomLevelChange() {

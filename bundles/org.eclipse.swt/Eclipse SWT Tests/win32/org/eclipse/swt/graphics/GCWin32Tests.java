@@ -21,9 +21,9 @@ import java.util.concurrent.atomic.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.widgets.*;
-import org.junit.*;
+import org.junit.jupiter.api.*;
 
-public class GCWin32Tests extends Win32AutoscaleTestBase {
+class GCWin32Tests extends Win32AutoscaleTestBase {
 
 	@Test
 	public void gcZoomLevelMustChangeOnShellZoomChange() {
