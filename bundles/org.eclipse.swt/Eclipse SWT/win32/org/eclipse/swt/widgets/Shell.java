@@ -1567,6 +1567,49 @@ public void setAlpha (int alpha) {
 }
 
 @Override
+public Rectangle getBounds() {
+	Rectangle boundsInPixels = getBoundsInPixels();
+	Rectangle bounds = DPIUtil.scaleDown(boundsInPixels, getZoom());
+	Point pointWithMonitorOffset = display.translateLocationInPointInDisplayCoordinateSystem(boundsInPixels.x, boundsInPixels.y);
+	bounds.x = pointWithMonitorOffset.x;
+	bounds.y = pointWithMonitorOffset.y;
+	return bounds;
+}
+
+@Override
+public Point getLocation() {
+	Point locationInPixels = getLocationInPixels();
+	return display.translateLocationInPointInDisplayCoordinateSystem(locationInPixels.x, locationInPixels.y);
+}
+
+@Override
+public void setLocation(Point location) {
+	if (location == null) error (SWT.ERROR_NULL_ARGUMENT);
+	setLocation(location.x, location.y);
+}
+
+@Override
+public void setLocation(int x, int y) {
+	Point location = display.translateLocationInPixelsInDisplayCoordinateSystem(x, y);
+	setLocationInPixels(location.x, location.y);
+}
+
+@Override
+public void setBounds(Rectangle rect) {
+	if (rect == null) error (SWT.ERROR_NULL_ARGUMENT);
+	setBounds(rect.x, rect.y, rect.width, rect.height);
+}
+
+@Override
+public void setBounds(int x, int y, int width, int height) {
+	Point topLeft = display.translateLocationInPixelsInDisplayCoordinateSystem(x, y);
+	final int zoom = getZoom();
+	int widthInPixels = DPIUtil.scaleUp(width, zoom);
+	int heightInPixels = DPIUtil.scaleUp(height, zoom);
+	setBoundsInPixels(topLeft.x, topLeft.y, widthInPixels, heightInPixels);
+}
+
+@Override
 void setBoundsInPixels (int x, int y, int width, int height, int flags, boolean defer) {
 	if (fullScreen) setFullScreen (false);
 	/*
