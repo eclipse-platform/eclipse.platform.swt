@@ -2146,18 +2146,25 @@ Monitor getMonitor (long hmonitor) {
 	OS.GetMonitorInfo (hmonitor, lpmi);
 	Monitor monitor = new Monitor ();
 	monitor.handle = hmonitor;
-	Rectangle boundsInPixels = new Rectangle (lpmi.rcMonitor_left, lpmi.rcMonitor_top, lpmi.rcMonitor_right - lpmi.rcMonitor_left,lpmi.rcMonitor_bottom - lpmi.rcMonitor_top);
-	monitor.setBounds (DPIUtil.autoScaleDown (boundsInPixels));
-	Rectangle clientAreaInPixels = new Rectangle (lpmi.rcWork_left, lpmi.rcWork_top, lpmi.rcWork_right - lpmi.rcWork_left, lpmi.rcWork_bottom - lpmi.rcWork_top);
-	monitor.setClientArea (DPIUtil.autoScaleDown (clientAreaInPixels));
+	Rectangle boundsInPixels = new Rectangle(lpmi.rcMonitor_left, lpmi.rcMonitor_top, lpmi.rcMonitor_right - lpmi.rcMonitor_left,lpmi.rcMonitor_bottom - lpmi.rcMonitor_top);
+	Rectangle clientAreaInPixels = new Rectangle(lpmi.rcWork_left, lpmi.rcWork_top, lpmi.rcWork_right - lpmi.rcWork_left, lpmi.rcWork_bottom - lpmi.rcWork_top);
 	int [] dpiX = new int[1];
 	int [] dpiY = new int[1];
 	int result = OS.GetDpiForMonitor (monitor.handle, OS.MDT_EFFECTIVE_DPI, dpiX, dpiY);
 	result = (result == OS.S_OK) ? DPIUtil.mapDPIToZoom (dpiX[0]) : 100;
+
+	int autoscaleZoom;
+	if (DPIUtil.isAutoScaleOnRuntimeActive()) {
+		autoscaleZoom = DPIUtil.getZoomForAutoscaleProperty(result);
+	} else {
+		autoscaleZoom = DPIUtil.getDeviceZoom();
+	}
 	if (result == 0) {
 		System.err.println("***WARNING: GetDpiForMonitor: SWT could not get valid monitor scaling factor.");
 		result = 100;
 	}
+	monitor.setBounds(DPIUtil.scaleDown(boundsInPixels, autoscaleZoom));
+	monitor.setClientArea(DPIUtil.scaleDown(clientAreaInPixels, autoscaleZoom));
 	/*
 	 * Always return true monitor zoom value as fetched from native, else will lead
 	 * to scaling issue on OS Win8.1 and above, for more details refer bug 537614.
