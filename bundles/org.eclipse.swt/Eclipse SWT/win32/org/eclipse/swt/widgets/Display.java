@@ -5229,4 +5229,15 @@ static char [] withCrLf (char [] string) {
 static boolean isActivateShellOnForceFocus() {
 	return "true".equals(System.getProperty("org.eclipse.swt.internal.activateShellOnForceFocus", "true")); //$NON-NLS-1$
 }
+
+Monitor getContainingMonitor(int x, int y) {
+	Monitor[] monitors = getMonitors();
+	for (Monitor current : monitors) {
+		Rectangle clientArea = current.getClientArea();
+		if (clientArea.contains(x, y)) {
+			return current;
+		}
+	}
+	return getPrimaryMonitor();
+}
 }

@@ -1571,6 +1571,40 @@ public void setAlpha (int alpha) {
 	}
 }
 
+private void updateNativeZoomBeforePositionChange(int x, int y) {
+	if (DPIUtil.isAutoScaleOnRuntimeActive()) {
+		Monitor monitor = display.getContainingMonitor(x, y);
+		this.nativeZoom = monitor.zoom;
+		System.out.println("Update shell zoom (" + handle + ") " + monitor.zoom);
+	}
+}
+
+@Override
+public void setLocation(Point location) {
+	if (location == null) error (SWT.ERROR_NULL_ARGUMENT);
+	updateNativeZoomBeforePositionChange(location.x, location.y);
+	super.setLocation(location);
+}
+
+@Override
+public void setLocation(int x, int y) {
+	updateNativeZoomBeforePositionChange(x, y);
+	super.setLocation(x, y);
+}
+
+@Override
+public void setBounds(Rectangle rect) {
+	if (rect == null) error (SWT.ERROR_NULL_ARGUMENT);
+	updateNativeZoomBeforePositionChange(rect.x, rect.y);
+	super.setBounds(rect);
+}
+
+@Override
+public void setBounds(int x, int y, int width, int height) {
+	updateNativeZoomBeforePositionChange(x, y);
+	super.setBounds(x, y, width, height);
+}
+
 @Override
 void setBoundsInPixels (int x, int y, int width, int height, int flags, boolean defer) {
 	if (fullScreen) setFullScreen (false);
