@@ -33,6 +33,7 @@ public class CommonWidgetsDPIChangeHandlers {
 	public static void registerCommonHandlers() {
 		DPIZoomChangeRegistry.registerHandler(CommonWidgetsDPIChangeHandlers::handleItemDPIChange, Item.class);
 		DPIZoomChangeRegistry.registerHandler(CommonWidgetsDPIChangeHandlers::handleStyledTextDPIChange, StyledText.class);
+		DPIZoomChangeRegistry.registerHandler(CommonWidgetsDPIChangeHandlers::handleCComboDPIChange, CCombo.class);
 	}
 
 	private static void handleItemDPIChange(Widget widget, int newZoom, float scalingFactor) {
@@ -51,9 +52,16 @@ public class CommonWidgetsDPIChangeHandlers {
 			return;
 		}
 
+
 		StyledText.updateAndRefreshCarets(styledText, caretToRefresh -> {
 			DPIZoomChangeRegistry.applyChange(caretToRefresh, newZoom, scalingFactor);
 			Caret.win32_setHeight(caretToRefresh, styledText.getLineHeight());
 		});
+	}
+	private static void handleCComboDPIChange(Widget widget, int newZoom, float scalingFactor) {
+		if (!(widget instanceof CCombo combo)) {
+			return;
+		}
+		CCombo.updateAndRefreshChildren(combo, childWidget -> DPIZoomChangeRegistry.applyChange(childWidget, newZoom, scalingFactor));
 	}
 }

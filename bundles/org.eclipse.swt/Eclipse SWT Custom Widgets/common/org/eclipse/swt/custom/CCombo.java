@@ -2025,4 +2025,20 @@ public boolean traverse(int event){
 	}
 	return super.traverse(event);
 }
+
+/**
+ * The method accepts a combo and a callback which takes
+ * all the child of the CCombo as the argument and executes it.
+ * All children are refreshed after the execution of the callback.
+ *
+ * @noreference This method is not intended to be referenced by clients.
+ * @param combo the Combo to get the children widget from
+ * @param childUpdater the callback which works with the child widgets
+ */
+public static void updateAndRefreshChildren(CCombo combo, Consumer<Widget> childUpdater) {
+	childUpdater.accept(combo.text);
+	childUpdater.accept(combo.list);
+	childUpdater.accept(combo.arrow);
+	childUpdater.accept(combo.popup);
+}
 }
