@@ -21,6 +21,7 @@ import java.util.List;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.internal.*;
 import org.eclipse.swt.widgets.*;
 
 /**
@@ -304,7 +305,7 @@ void calculate(int startLine, int lineCount) {
 		LineSizeInfo line = getLineSize(i);
 		if (line.needsRecalculateSize()) {
 			TextLayout layout = getTextLayout(i);
-			Rectangle rect = layout.getBounds();
+			Rectangle rect = getBoundsWithoutLineVerticalIndentScaling(layout,i);
 			line.width = rect.width + hTrim;
 			line.height = rect.height;
 			averageLineHeight += (line.height - Math.round(averageLineHeight)) / ++linesInAverageLineHeight;
@@ -315,6 +316,15 @@ void calculate(int startLine, int lineCount) {
 			maxWidthLineIndex = i;
 		}
 	}
+}
+private Rectangle getBoundsWithoutLineVerticalIndentScaling(TextLayout layout,int lineIndex) {
+	int lineVerticalIndent = getLineVerticalIndent(lineIndex);
+	Rectangle rect = layout.getBounds();
+	if (lineVerticalIndent>0) {
+		rect.height -= DPIUtil.autoScaleUp(styledText, lineVerticalIndent);
+		rect.height += lineVerticalIndent;
+	}
+	return rect;
 }
 LineSizeInfo getLineSize(int i) {
 	if (lineSizes[i] == null) {
@@ -466,7 +476,7 @@ private LineDrawInfo makeLineDrawInfo(int lineIndex) {
 	TextLayout layout = getTextLayout(lineIndex);
 	String text = content.getLine(lineIndex);
 	int offset = content.getOffsetAtLine(lineIndex);
-	int height = layout.getBounds().height;
+	int height = getBoundsWithoutLineVerticalIndentScaling(layout,lineIndex).height;
 	return new LineDrawInfo(lineIndex, layout, text, offset, height);
 }
 
