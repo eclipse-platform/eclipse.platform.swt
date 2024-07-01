@@ -206,7 +206,7 @@ static void addCairoString(long cairo, String string, float x, float y, Font fon
 	long layout = OS.pango_cairo_create_layout(cairo);
 	if (layout == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	OS.pango_layout_set_text(layout, buffer, -1);
-	OS.pango_layout_set_font_description(layout, font.handle);
+	OS.pango_layout_set_font_description(layout, font.handle.pointer);
 	double[] currentX = new double[1], currentY = new double[1];
 	Cairo.cairo_get_current_point(cairo, currentX, currentY);
 	if (currentX[0] != x || currentY[0] != y) {
@@ -321,7 +321,7 @@ void checkGC (int mask) {
 	if ((state & FONT) != 0) {
 		if (data.layout != 0) {
 			Font font = data.font;
-			OS.pango_layout_set_font_description(data.layout, font.handle);
+			OS.pango_layout_set_font_description(data.layout, font.handle.pointer);
 		}
 	}
 	if ((state & LINE_CAP) != 0) {
@@ -2242,8 +2242,7 @@ public FontMetrics getFontMetrics() {
 	checkGC(FONT);
 	Font font = data.font;
 	long context = data.context;
-	long lang = OS.pango_context_get_language(context);
-	long metrics = OS.pango_context_get_metrics(context, font.handle, lang);
+	long metrics = font.handle.getMetrics(context);
 	FontMetrics fm = new FontMetrics();
 	int ascent = OS.pango_font_metrics_get_ascent(metrics);
 	int descent = OS.pango_font_metrics_get_descent(metrics);
@@ -2917,7 +2916,7 @@ public void setBackgroundPattern(Pattern pattern) {
 
 static void setCairoFont(long cairo, Font font) {
 	if (font == null || font.isDisposed()) return;
-	setCairoFont(cairo, font.handle);
+	setCairoFont(cairo, font.handle.pointer);
 }
 
 static void setCairoFont(long cairo, long font) {
