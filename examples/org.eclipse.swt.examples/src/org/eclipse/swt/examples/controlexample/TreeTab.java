@@ -17,6 +17,7 @@ package org.eclipse.swt.examples.controlexample;
 import static org.eclipse.swt.events.SelectionListener.widgetSelectedAdapter;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.TreeEditor;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
@@ -30,9 +31,11 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Item;
+import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.TableItem;
+import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeColumn;
 import org.eclipse.swt.widgets.TreeItem;
@@ -51,7 +54,7 @@ class TreeTab extends ScrollableTab {
 	Button noScrollButton, checkButton, fullSelectionButton;
 
 	/* Other widgets added to the "Other" group */
-	Button multipleColumns, moveableColumns, resizableColumns, headerVisibleButton, sortIndicatorButton, headerImagesButton, subImagesButton, linesVisibleButton;
+	Button multipleColumns, moveableColumns, resizableColumns, headerVisibleButton, sortIndicatorButton, headerImagesButton, subImagesButton, linesVisibleButton, editableButton;
 
 	/* Controls and resources added to the "Colors and Fonts" group */
 	static final int ITEM_FOREGROUND_COLOR = 3;
@@ -248,6 +251,8 @@ class TreeTab extends ScrollableTab {
 		headerImagesButton.setText (ControlExample.getResourceString("Header_Images"));
 		subImagesButton = new Button (otherGroup, SWT.CHECK);
 		subImagesButton.setText (ControlExample.getResourceString("Sub_Images"));
+		editableButton = new Button(otherGroup, SWT.CHECK);
+		editableButton.setText("Editable");
 
 		/* Add the listeners */
 		linesVisibleButton.addSelectionListener (widgetSelectedAdapter(event -> setWidgetLinesVisible ()));
@@ -258,6 +263,108 @@ class TreeTab extends ScrollableTab {
 		resizableColumns.addSelectionListener (widgetSelectedAdapter(event -> setColumnsResizable ()));
 		headerImagesButton.addSelectionListener (widgetSelectedAdapter(event -> recreateExampleWidgets ()));
 		subImagesButton.addSelectionListener (widgetSelectedAdapter(event -> recreateExampleWidgets ()));
+		editableButton.addSelectionListener(widgetSelectedAdapter(event -> makeTreeContentEditable()));
+	}
+
+	/**
+	 * Make Tree Editable
+	 */
+	void makeTreeContentEditable() {
+		// Tree 1
+		final TreeEditor editor = new TreeEditor(tree1);
+		editor.horizontalAlignment = SWT.LEFT;
+		editor.grabHorizontal = true;
+		// Add double click listener to the tree
+		tree1.addListener(SWT.MouseDoubleClick, new Listener() {
+			@Override
+			public void handleEvent(Event event) {
+				if (editableButton.getSelection()) {
+					Point point = new Point(event.x, event.y);
+					TreeItem item = tree1.getItem(point);
+					if (item != null) {
+						// Get the item text
+						final String oldText = item.getText();
+
+						// Create a text field to edit the item text
+						final Text text = new Text(tree1, SWT.NONE);
+						text.setText(oldText);
+						text.selectAll();
+						text.setFocus();
+
+						// Add a focus out listener to commit changes on focus lost
+						text.addListener(SWT.FocusOut, new Listener() {
+							@Override
+							public void handleEvent(Event e) {
+								item.setText(text.getText());
+								text.dispose(); // Dispose the text field after editing
+							}
+						});
+
+						// Add a key listener to commit changes on Enter key pressed
+						text.addListener(SWT.KeyDown, new Listener() {
+							@Override
+							public void handleEvent(Event e) {
+								if (e.keyCode == SWT.CR || e.keyCode == SWT.KEYPAD_CR) {
+									item.setText(text.getText());
+									text.dispose(); // Dispose the text field after editing
+								}
+							}
+						});
+
+						// Edit the text field on double click
+						editor.setEditor(text, item);
+					}
+				}
+			}
+		});
+
+		// Tree 2
+		final TreeEditor editor2 = new TreeEditor(tree2);
+		editor2.horizontalAlignment = SWT.LEFT;
+		editor2.grabHorizontal = true;
+		// Add double click listener to the tree
+		tree2.addListener(SWT.MouseDoubleClick, new Listener() {
+			@Override
+			public void handleEvent(Event event) {
+				if (editableButton.getSelection()) {
+					Point point = new Point(event.x, event.y);
+					TreeItem item = tree2.getItem(point);
+					if (item != null) {
+						// Get the item text
+						final String oldText = item.getText();
+
+						// Create a text field to edit the item text
+						final Text text = new Text(tree2, SWT.NONE);
+						text.setText(oldText);
+						text.selectAll();
+						text.setFocus();
+
+						// Add a focus out listener to commit changes on focus lost
+						text.addListener(SWT.FocusOut, new Listener() {
+							@Override
+							public void handleEvent(Event e) {
+								item.setText(text.getText());
+								text.dispose(); // Dispose the text field after editing
+							}
+						});
+
+						// Add a key listener to commit changes on Enter key pressed
+						text.addListener(SWT.KeyDown, new Listener() {
+							@Override
+							public void handleEvent(Event e) {
+								if (e.keyCode == SWT.CR || e.keyCode == SWT.KEYPAD_CR) {
+									item.setText(text.getText());
+									text.dispose(); // Dispose the text field after editing
+								}
+							}
+						});
+
+						// Edit the text field on double click
+						editor.setEditor(text, item);
+					}
+				}
+			}
+		});
 	}
 
 	/**

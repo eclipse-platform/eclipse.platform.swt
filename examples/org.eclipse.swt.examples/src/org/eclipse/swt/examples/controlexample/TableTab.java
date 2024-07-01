@@ -17,6 +17,9 @@ package org.eclipse.swt.examples.controlexample;
 import static org.eclipse.swt.events.SelectionListener.widgetSelectedAdapter;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.TableEditor;
+import org.eclipse.swt.events.MouseAdapter;
+import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
@@ -24,17 +27,21 @@ import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.RGB;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Item;
+import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
+import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.Widget;
 
 class TableTab extends ScrollableTab {
@@ -49,7 +56,8 @@ class TableTab extends ScrollableTab {
 	Button noScrollButton, checkButton, fullSelectionButton, hideSelectionButton;
 
 	/* Other widgets added to the "Other" group */
-	Button multipleColumns, moveableColumns, resizableColumns, headerVisibleButton, sortIndicatorButton, headerImagesButton, linesVisibleButton, subImagesButton;
+	Button multipleColumns, moveableColumns, resizableColumns, headerVisibleButton, sortIndicatorButton,
+			headerImagesButton, linesVisibleButton, subImagesButton, editableButton;
 
 	/* Controls and resources added to the "Colors and Fonts" group */
 	static final int ITEM_FOREGROUND_COLOR = 3;
@@ -60,8 +68,11 @@ class TableTab extends ScrollableTab {
 	static final int CELL_FONT = 8;
 	static final int HEADER_FOREGROUND_COLOR = 9;
 	static final int HEADER_BACKGROUND_COLOR = 10;
-	Color itemForegroundColor, itemBackgroundColor, cellForegroundColor, cellBackgroundColor, headerForegroundColor, headerBackgroundColor;
+	Color itemForegroundColor, itemBackgroundColor, cellForegroundColor, cellBackgroundColor, headerForegroundColor,
+			headerBackgroundColor;
 	Font itemFont, cellFont;
+
+	static int column = -1;
 
 	static String [] columnTitles	= {ControlExample.getResourceString("TableTitle_0"),
 									   ControlExample.getResourceString("TableTitle_1"),
@@ -248,6 +259,8 @@ class TableTab extends ScrollableTab {
 		headerImagesButton.setText (ControlExample.getResourceString("Header_Images"));
 		subImagesButton = new Button (otherGroup, SWT.CHECK);
 		subImagesButton.setText (ControlExample.getResourceString("Sub_Images"));
+		editableButton = new Button(otherGroup, SWT.CHECK);
+		editableButton.setText("Editable");
 
 		/* Add the listeners */
 		linesVisibleButton.addSelectionListener (widgetSelectedAdapter(event -> setWidgetLinesVisible ()));
@@ -258,6 +271,75 @@ class TableTab extends ScrollableTab {
 		resizableColumns.addSelectionListener (widgetSelectedAdapter(event -> setColumnsResizable ()));
 		headerImagesButton.addSelectionListener (widgetSelectedAdapter(event -> recreateExampleWidgets ()));
 		subImagesButton.addSelectionListener (widgetSelectedAdapter(event -> recreateExampleWidgets ()));
+		editableButton.addSelectionListener(widgetSelectedAdapter(event -> makeTableContentEditable()));
+	}
+
+	/**
+	 * Make Tree Editable
+	 */
+	void makeTableContentEditable() {
+		// Create a Text editor
+		final TableEditor editor = new TableEditor(table1);
+		editor.horizontalAlignment = SWT.LEFT;
+		editor.grabHorizontal = true;
+		// Listener to activate editor
+		table1.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseDoubleClick(MouseEvent event) {
+				if (editableButton.getSelection()) {
+					Control oldEditor = editor.getEditor();
+					if (oldEditor != null)
+						oldEditor.dispose();
+
+					Point point = new Point(event.x, event.y);
+					final TableItem item = table1.getItem(point);
+					if (item == null)
+						return;
+
+					for (int i = 0; i < table1.getColumnCount(); i++) {
+						Rectangle rect = item.getBounds(i);
+						if (rect.contains(point)) {
+							column = i;
+							break;
+						}
+					}
+
+					if (column == -1)
+						return;
+
+					final Text newEditor = new Text(table1, SWT.NONE);
+					newEditor.setText(item.getText(column));
+					newEditor.addModifyListener(e -> {
+						Text text = (Text) editor.getEditor();
+						item.setText(column, text.getText());
+					});
+					newEditor.selectAll();
+					newEditor.setFocus();
+
+					// Add a focus out listener to commit changes on focus lost
+					newEditor.addListener(SWT.FocusOut, new Listener() {
+						@Override
+						public void handleEvent(Event e) {
+							item.setText(newEditor.getText());
+							newEditor.dispose(); // Dispose the text field after editing
+						}
+					});
+
+					// Add a key listener to commit changes on Enter key pressed
+					newEditor.addListener(SWT.KeyDown, new Listener() {
+						@Override
+						public void handleEvent(Event e) {
+							if (e.keyCode == SWT.CR || e.keyCode == SWT.KEYPAD_CR) {
+								item.setText(newEditor.getText());
+								newEditor.dispose(); // Dispose the text field after editing
+							}
+						}
+					});
+
+					editor.setEditor(newEditor, item, column);
+				}
+			}
+		});
 	}
 
 	/**
