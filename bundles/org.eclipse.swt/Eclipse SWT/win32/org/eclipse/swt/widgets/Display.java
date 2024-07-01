@@ -2146,10 +2146,6 @@ Monitor getMonitor (long hmonitor) {
 	OS.GetMonitorInfo (hmonitor, lpmi);
 	Monitor monitor = new Monitor ();
 	monitor.handle = hmonitor;
-	Rectangle boundsInPixels = new Rectangle (lpmi.rcMonitor_left, lpmi.rcMonitor_top, lpmi.rcMonitor_right - lpmi.rcMonitor_left,lpmi.rcMonitor_bottom - lpmi.rcMonitor_top);
-	monitor.setBounds (DPIUtil.autoScaleDown (boundsInPixels));
-	Rectangle clientAreaInPixels = new Rectangle (lpmi.rcWork_left, lpmi.rcWork_top, lpmi.rcWork_right - lpmi.rcWork_left, lpmi.rcWork_bottom - lpmi.rcWork_top);
-	monitor.setClientArea (DPIUtil.autoScaleDown (clientAreaInPixels));
 	int [] dpiX = new int[1];
 	int [] dpiY = new int[1];
 	int result = OS.GetDpiForMonitor (monitor.handle, OS.MDT_EFFECTIVE_DPI, dpiX, dpiY);
@@ -2163,6 +2159,19 @@ Monitor getMonitor (long hmonitor) {
 	 * to scaling issue on OS Win8.1 and above, for more details refer bug 537614.
 	 */
 	monitor.zoom = result;
+
+	// Calculate bounds and client area of the monitor
+	Rectangle boundsInPixels = new Rectangle(lpmi.rcMonitor_left, lpmi.rcMonitor_top, lpmi.rcMonitor_right - lpmi.rcMonitor_left,lpmi.rcMonitor_bottom - lpmi.rcMonitor_top);
+	Rectangle clientAreaInPixels = new Rectangle(lpmi.rcWork_left, lpmi.rcWork_top, lpmi.rcWork_right - lpmi.rcWork_left, lpmi.rcWork_bottom - lpmi.rcWork_top);
+	int autoscaleZoom;
+	if (DPIUtil.isAutoScaleOnRuntimeActive()) {
+		autoscaleZoom = DPIUtil.getZoomForAutoscaleProperty(result);
+	} else {
+		autoscaleZoom = DPIUtil.getDeviceZoom();
+	}
+	monitor.setBounds(DPIUtil.scaleDown(boundsInPixels, autoscaleZoom));
+	monitor.setClientArea(DPIUtil.scaleDown(clientAreaInPixels, autoscaleZoom));
+
 	return monitor;
 }
 
