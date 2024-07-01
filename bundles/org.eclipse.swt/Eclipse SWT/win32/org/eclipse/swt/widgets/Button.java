@@ -54,7 +54,7 @@ public class Button extends Control {
 	ImageList imageList;
 	boolean ignoreMouse, grayed, useDarkModeExplorerTheme;
 	static final int MARGIN = 4;
-	private final int checkWidth, checkHeight;
+	private int checkWidth, checkHeight;
 	static final int ICON_WIDTH = 128, ICON_HEIGHT = 128;
 	static /*final*/ boolean COMMAND_LINK = false;
 	static final char[] STRING_WITH_ZERO_CHAR = new char[] {'0'};
@@ -108,16 +108,29 @@ public class Button extends Control {
  */
 public Button (Composite parent, int style) {
 	super (parent, checkStyle (style));
-	long hBitmap = OS.LoadBitmap (0, OS.OBM_CHECKBOXES);
+	refreshCheckSize(this.nativeZoom);
+}
+
+/**
+ * Refresh the checkWidth and checkHeight Size whenever there is a dpi change or
+ * when button is created. Factor is calculated by identifying the zoom change
+ * e.g. 100 -> 200 should be scaled down to half (currentZoom / primaryZoom)
+ *
+ * @param currentZoom
+ */
+private void refreshCheckSize(int currentZoom) {
+	long hBitmap = OS.LoadBitmap(0, OS.OBM_CHECKBOXES);
 	if (hBitmap == 0) {
 		checkWidth = getSystemMetrics(OS.SM_CXVSCROLL);
-		checkHeight = getSystemMetrics (OS.SM_CYVSCROLL);
+		checkHeight = getSystemMetrics(OS.SM_CYVSCROLL);
 	} else {
-		BITMAP bitmap = new BITMAP ();
-		OS.GetObject (hBitmap, BITMAP.sizeof, bitmap);
-		OS.DeleteObject (hBitmap);
-		checkWidth = bitmap.bmWidth / 4;
-		checkHeight =  bitmap.bmHeight / 3;
+		int primaryZoom = display.getPrimaryMonitor().getZoom();
+		float factor = (float) currentZoom / primaryZoom;
+		BITMAP bitmap = new BITMAP();
+		OS.GetObject(hBitmap, BITMAP.sizeof, bitmap);
+		OS.DeleteObject(hBitmap);
+		checkWidth = (int) ((bitmap.bmWidth / 4) * factor);
+		checkHeight = (int) ((bitmap.bmHeight / 3) * factor);
 	}
 }
 
@@ -1551,6 +1564,8 @@ private static void handleDPIChange(Widget widget, int newZoom, float scalingFac
 	if (!(widget instanceof Button button)) {
 		return;
 	}
+	//Refresh the CheckSize
+	button.refreshCheckSize(newZoom);
 	// Refresh the image
 	if (button.image != null) {
 		button._setImage(button.image);
