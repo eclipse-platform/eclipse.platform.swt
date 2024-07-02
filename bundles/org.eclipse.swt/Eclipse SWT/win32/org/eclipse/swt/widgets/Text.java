@@ -337,24 +337,7 @@ void createHandle () {
 			state |= THEME_BACKGROUND;
 		}
 	}
-	addIcons();
-}
-
-private void addIcons() {
 	if ((style & SWT.SEARCH) != 0) {
-		if (display.hIconSearch == 0) {
-			long [] phicon = new long [1];
-
-			int searchIconResource = display.textUseDarkthemeIcons ? IDI_SEARCH_DARKTHEME : IDI_SEARCH;
-			int hresult = OS.LoadIconMetric (OS.GetLibraryHandle (), searchIconResource, OS.LIM_SMALL, phicon);
-			if (hresult != OS.S_OK) error (SWT.ERROR_NO_HANDLES);
-			display.hIconSearch = phicon [0];
-
-			int cancelIconResource = display.textUseDarkthemeIcons ? IDI_CANCEL_DARKTHEME : IDI_CANCEL;
-			hresult = OS.LoadIconMetric (OS.GetLibraryHandle (), cancelIconResource, OS.LIM_SMALL, phicon);
-			if (hresult != OS.S_OK) error (SWT.ERROR_NO_HANDLES);
-			display.hIconCancel = phicon [0];
-		}
 		if ((style & SWT.ICON_SEARCH) != 0) {
 			long hwndSearch = OS.CreateWindowEx (
 				0,
@@ -2770,7 +2753,10 @@ LRESULT WM_DRAWITEM (long wParam, long lParam) {
 		int state = OS.GetKeyState (OS.VK_LBUTTON) < 0 ? OS.PBS_PRESSED : OS.PBS_HOT;
 		OS.DrawThemeBackground (display.hButtonThemeAuto (), struct.hDC, OS.BP_PUSHBUTTON, state, rect, null);
 	}
-	long hIcon = (struct.CtlID == SWT.ICON_SEARCH) ? display.hIconSearch : display.hIconCancel;
+	int width = rect.right - rect.left;
+	int height = rect.bottom - rect.top;
+	int size = Math.min(width, height);
+	long hIcon = (struct.CtlID == SWT.ICON_SEARCH) ? display.getTextSearchIcon(size) : display.getTextCancelIcon(size);
 	int y = (rect.bottom - rect.right) / 2;
 	OS.DrawIconEx (struct.hDC, 0, y, hIcon, 0, 0, 0, 0, OS.DI_NORMAL);
 	return LRESULT.ONE;
@@ -3167,7 +3153,6 @@ private static void handleDPIChange(Widget widget, int newZoom, float scalingFac
 	if (!(widget instanceof Text text)) {
 		return;
 	}
-	text.addIcons();
 	text.setMargins();
 }
 }

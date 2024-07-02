@@ -271,8 +271,8 @@ public class Display extends Device implements Executor {
 	boolean textUseDarkthemeIcons = false;
 
 	/* Custom icons */
-	long hIconSearch;
-	long hIconCancel;
+	private HashMap<Integer, Long> sizeToSearchIconHandle = new HashMap<>();
+	private HashMap<Integer, Long> sizeToCancelIconHandle = new HashMap<>();
 
 	/* Focus */
 	int focusEvent;
@@ -1186,6 +1186,26 @@ static Image createIcon (Image image) {
 	OS.DeleteObject (hBitmap);
 	OS.DeleteObject (hMask);
 	return Image.win32_new (device, SWT.ICON, hIcon);
+}
+
+long getTextSearchIcon(int size) {
+	if (!sizeToSearchIconHandle.containsKey(size)) {
+		int searchIconResource = textUseDarkthemeIcons ? Text.IDI_SEARCH_DARKTHEME : Text.IDI_SEARCH;
+	    long iconHandle = OS.LoadImage (OS.GetLibraryHandle (), searchIconResource, OS.IMAGE_ICON, size, size, 0);
+	    if (iconHandle == 0) error(SWT.ERROR_NO_HANDLES);
+	    sizeToSearchIconHandle.put(size, iconHandle);
+	}
+    return sizeToSearchIconHandle.get(size);
+}
+
+long getTextCancelIcon(int size) {
+	if (!sizeToCancelIconHandle.containsKey(size)) {
+		int searchIconResource = textUseDarkthemeIcons ? Text.IDI_CANCEL_DARKTHEME : Text.IDI_CANCEL;
+	    long iconHandle = OS.LoadImage (OS.GetLibraryHandle (), searchIconResource, OS.IMAGE_ICON, size, size, 0);
+	    if (iconHandle == 0) error(SWT.ERROR_NO_HANDLES);
+	    sizeToCancelIconHandle.put(size, iconHandle);
+	}
+    return sizeToCancelIconHandle.get(size);
 }
 
 static void deregister (Display display) {
@@ -3795,8 +3815,10 @@ void releaseDisplay () {
 	}
 
 	/* Free custom icons */
-	if (hIconSearch != 0) OS.DestroyIcon (hIconSearch);
-	if (hIconCancel != 0) OS.DestroyIcon (hIconCancel);
+	sizeToSearchIconHandle.values().forEach(handle -> OS.DestroyIcon(handle));
+	sizeToCancelIconHandle.values().forEach(handle -> OS.DestroyIcon(handle));
+	sizeToSearchIconHandle.clear();
+	sizeToCancelIconHandle.clear();
 
 	/* Release XP Themes */
 	resetThemes();
