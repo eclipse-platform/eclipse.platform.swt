@@ -37,8 +37,9 @@ public static void main (String[] args) {
 	Button button1 = new Button (shell, SWT.PUSH);
 	button1.setText ("&Typical button");
 
-	Button button2 = new Button (shell, SWT.PUSH);
+	Button button2 = new Button (shell, SWT.RADIO);
 	button2.setImage (image);
+	button2.setText("text");
 	button2.getAccessible ().addAccessibleListener (new AccessibleAdapter() {
 		@Override
 		public void getName (AccessibleEvent e) {
