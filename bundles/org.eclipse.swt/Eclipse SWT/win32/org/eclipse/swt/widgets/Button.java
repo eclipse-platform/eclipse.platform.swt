@@ -361,10 +361,10 @@ int computeLeftMargin () {
 					Rectangle rect = DPIUtil.scaleBounds(image.getBounds(), this.getZoom(), 100);
 					width = rect.width;
 					if (hasText && text.length () != 0) {
-						width += MARGIN * 2;
+						width += DPIUtil.scaleUp(MARGIN * 2, getZoom());;
 					}
 					height = rect.height;
-					extra = MARGIN * 2;
+					extra = DPIUtil.scaleUp(MARGIN * 2, getZoom());;
 				}
 			}
 			if (hasText) {
@@ -378,7 +378,7 @@ int computeLeftMargin () {
 				if (length == 0) {
 					height = Math.max (height, lptm.tmHeight);
 				} else {
-					extra = Math.max (MARGIN * 2, lptm.tmAveCharWidth);
+					extra = Math.max (DPIUtil.scaleUp(MARGIN * 2, getZoom()), lptm.tmAveCharWidth);
 					char [] buffer = text.toCharArray ();
 					RECT rect = new RECT ();
 					int flags = OS.DT_CALCRECT | OS.DT_SINGLELINE;
