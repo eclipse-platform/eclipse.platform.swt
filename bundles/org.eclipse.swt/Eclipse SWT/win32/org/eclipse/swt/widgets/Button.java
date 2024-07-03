@@ -365,7 +365,7 @@ int computeLeftMargin () {
 				if (length == 0) {
 					height = Math.max (height, lptm.tmHeight);
 				} else {
-					extra = Math.max (MARGIN * 2, lptm.tmAveCharWidth);
+					extra = Math.max (DPIUtil.autoScaleUp(MARGIN * 2, getZoom()), lptm.tmAveCharWidth);
 					char [] buffer = text.toCharArray ();
 					RECT rect = new RECT ();
 					int flags = OS.DT_CALCRECT | OS.DT_SINGLELINE;
