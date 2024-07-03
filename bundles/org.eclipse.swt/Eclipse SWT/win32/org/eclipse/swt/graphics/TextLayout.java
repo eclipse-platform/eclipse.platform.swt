@@ -42,8 +42,8 @@ import org.eclipse.swt.internal.win32.*;
  */
 public final class TextLayout extends Resource {
 	Font font;
-	String text, segmentsText;
-	int lineSpacingInPoints;
+	String text, segmentsText, originalText;
+	int lineSpacingInPoints, previousCountNextLine, previousEnd;
 	int ascent, descent;
 	int alignment;
 	int wrapWidth;
@@ -310,6 +310,8 @@ public TextLayout (Device device) {
 	styles[1] = new StyleItem();
 	stylesCount = 2;
 	text = ""; //$NON-NLS-1$
+	previousCountNextLine = 0;
+	previousEnd = -1;
 	long[] ppv = new long[1];
 	OS.OleInitialize(0);
 	if (COM.CoCreateInstance(COM.CLSID_CMultiLanguage, 0, COM.CLSCTX_INPROC_SERVER, COM.IID_IMLangFontLink2, ppv) == OS.S_OK) {
@@ -2952,15 +2954,11 @@ StyleItem[] merge (long items, int itemCount) {
 			linkBefore = false;
 		}
 		char ch = segmentsText.charAt(start);
-		switch (ch) {
-			case '\r':
-			case '\n':
-				item.lineBreak = true;
-				break;
-			case '\t':
-				item.tab = true;
-				break;
+		if (ch == '\r' && start + 1 < end) {
+			ch = segmentsText.charAt(start + 1);
 		}
+		item.lineBreak = ch == '\n';
+		item.tab = ch == '\t';
 		if (itemLimit == -1) {
 			nextItemIndex = itemIndex + 1;
 			OS.MoveMemory(scriptItem, items + nextItemIndex * SCRIPT_ITEM.sizeof, SCRIPT_ITEM.sizeof);
@@ -3451,6 +3449,28 @@ public void setStyle (TextStyle style, int start, int end) {
 	int length = text.length();
 	if (length == 0) return;
 	if (start > end) return;
+	int countNextLine = 0, noStyleCountNextLine = 0, loop = 0;
+	if (previousEnd < 0)
+		loop = previousEnd+1;
+	else
+		loop = previousEnd;
+	for (int i = loop; i < end; i++) {
+		if (originalText.charAt(i) == '\r' && originalText.charAt(i+1) =='\n')
+		{
+			countNextLine++;
+			if (i < start)
+				noStyleCountNextLine++;
+		}
+	}
+	previousCountNextLine = previousCountNextLine + countNextLine;
+	if (start == 0 || previousEnd < 0)	{
+		start = start - noStyleCountNextLine;
+	}
+	else {
+		start = start - previousCountNextLine;
+	}
+	previousEnd = end;
+	end = end - previousCountNextLine;
 	start = Math.min(Math.max(0, start), length - 1);
 	end = Math.min(Math.max(0, end), length - 1);
 	int low = -1;
@@ -3564,6 +3584,13 @@ public void setTabs (int[] tabs) {
  */
 public void setText (String text) {
 	checkLayout();
+
+	this.originalText = text;
+	String[] strings = text.split("\r");
+	text = "";
+	for (int i = 0; i < strings.length; i++)
+		text += strings[i];
+
 	if (text == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (text.equals(this.text)) return;
 	freeRuns();
