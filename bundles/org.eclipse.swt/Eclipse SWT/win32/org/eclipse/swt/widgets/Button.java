@@ -148,7 +148,7 @@ void _setImage (Image image) {
 			imageList.add (disabledImage);
 		}
 		BUTTON_IMAGELIST buttonImageList = new BUTTON_IMAGELIST ();
-		buttonImageList.himl = imageList.getHandle ();
+		buttonImageList.himl = imageList.getHandle(getZoom());
 		int oldBits = OS.GetWindowLong (handle, OS.GWL_STYLE), newBits = oldBits;
 		newBits &= ~(OS.BS_LEFT | OS.BS_CENTER | OS.BS_RIGHT);
 		if ((style & SWT.LEFT) != 0) newBits |= OS.BS_LEFT;
@@ -189,7 +189,7 @@ void _setText (String text) {
 	if ((style & SWT.RIGHT) != 0) newBits |= OS.BS_RIGHT;
 	if (imageList != null) {
 		BUTTON_IMAGELIST buttonImageList = new BUTTON_IMAGELIST ();
-		buttonImageList.himl = imageList.getHandle ();
+		buttonImageList.himl = imageList.getHandle(getZoom());
 		if (text.length () == 0) {
 			if ((style & SWT.LEFT) != 0) buttonImageList.uAlign = OS.BUTTON_IMAGELIST_ALIGN_LEFT;
 			if ((style & SWT.CENTER) != 0) buttonImageList.uAlign = OS.BUTTON_IMAGELIST_ALIGN_CENTER;
@@ -779,7 +779,7 @@ public void setAlignment (int alignment) {
 	if ((style & SWT.RIGHT) != 0) newBits |= OS.BS_RIGHT;
 	if (imageList != null) {
 		BUTTON_IMAGELIST buttonImageList = new BUTTON_IMAGELIST ();
-		buttonImageList.himl = imageList.getHandle ();
+		buttonImageList.himl = imageList.getHandle(getZoom());
 		if (text.length () == 0) {
 			if ((style & SWT.LEFT) != 0) buttonImageList.uAlign = OS.BUTTON_IMAGELIST_ALIGN_LEFT;
 			if ((style & SWT.CENTER) != 0) buttonImageList.uAlign = OS.BUTTON_IMAGELIST_ALIGN_CENTER;
@@ -1042,7 +1042,7 @@ void updateImageList () {
 			disabledImage = new Image (display, image, SWT.IMAGE_DISABLE);
 			imageList.add (disabledImage);
 		}
-		buttonImageList.himl = imageList.getHandle ();
+		buttonImageList.himl = imageList.getHandle(getZoom());
 		OS.SendMessage (handle, OS.BCM_SETIMAGELIST, 0, buttonImageList);
 		/*
 		* Bug in Windows.  Under certain cirumstances yet to be

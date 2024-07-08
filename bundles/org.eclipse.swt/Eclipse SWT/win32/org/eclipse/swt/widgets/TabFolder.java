@@ -458,7 +458,7 @@ int imageIndex (Image image) {
 		Rectangle bounds = DPIUtil.scaleBounds(image.getBounds(), this.getZoom(), 100);
 		imageList = display.getImageList (style & SWT.RIGHT_TO_LEFT, bounds.width, bounds.height, this.getZoom());
 		int index = imageList.add (image);
-		long hImageList = imageList.getHandle ();
+		long hImageList = imageList.getHandle(getZoom());
 		OS.SendMessage (handle, OS.TCM_SETIMAGELIST, 0, hImageList);
 		return index;
 	}
@@ -840,7 +840,7 @@ void updateOrientation () {
 		Point size = imageList.getImageSize ();
 		display.releaseImageList (imageList);
 		imageList = display.getImageList (style & SWT.RIGHT_TO_LEFT, size.x, size.y, this.getZoom());
-		long hImageList = imageList.getHandle ();
+		long hImageList = imageList.getHandle(getZoom());
 		OS.SendMessage (handle, OS.TCM_SETIMAGELIST, 0, hImageList);
 		TCITEM tcItem = new TCITEM ();
 		tcItem.mask = OS.TCIF_IMAGE;
