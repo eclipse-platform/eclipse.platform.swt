@@ -3751,7 +3751,7 @@ int imageIndex (Image image, int index) {
 		* times, Windows does work making this operation slow.  The fix
 		* is to test for the same image list before setting the new one.
 		*/
-		long hImageList = imageList.getHandle ();
+		long hImageList = imageList.getHandle(getZoom());
 		long hOldImageList = OS.SendMessage (handle, OS.TVM_GETIMAGELIST, OS.TVSIL_NORMAL, 0);
 		if (hOldImageList != hImageList) {
 			OS.SendMessage (handle, OS.TVM_SETIMAGELIST, OS.TVSIL_NORMAL, hImageList);
@@ -3768,7 +3768,7 @@ int imageIndexHeader (Image image) {
 		headerImageList = display.getImageList (style & SWT.RIGHT_TO_LEFT, bounds.width, bounds.height, getZoom());
 		int index = headerImageList.indexOf (image);
 		if (index == -1) index = headerImageList.add (image);
-		long hImageList = headerImageList.getHandle ();
+		long hImageList = headerImageList.getHandle(getZoom());
 		if (hwndHeader != 0) {
 			OS.SendMessage (hwndHeader, OS.HDM_SETIMAGELIST, 0, hImageList);
 		}
@@ -5729,7 +5729,7 @@ void updateImageList () {
 	* times, Windows does work making this operation slow.  The fix
 	* is to test for the same image list before setting the new one.
 	*/
-	long hImageList = i == items.length ? 0 : imageList.getHandle ();
+	long hImageList = i == items.length ? 0 : imageList.getHandle(getZoom());
 	long hOldImageList = OS.SendMessage (handle, OS.TVM_GETIMAGELIST, OS.TVSIL_NORMAL, 0);
 	if (hImageList != hOldImageList) {
 		OS.SendMessage (handle, OS.TVM_SETIMAGELIST, OS.TVSIL_NORMAL, hImageList);
@@ -5803,7 +5803,7 @@ void updateOrientation () {
 				}
 			}
 		}
-		long hImageList = imageList.getHandle ();
+		long hImageList = imageList.getHandle(getZoom());
 		OS.SendMessage (handle, OS.TVM_SETIMAGELIST, OS.TVSIL_NORMAL, hImageList);
 	}
 	if (hwndHeader != 0) {
@@ -5831,7 +5831,7 @@ void updateOrientation () {
 					}
 				}
 			}
-			long hImageListHeader = headerImageList.getHandle ();
+			long hImageListHeader = headerImageList.getHandle(getZoom());
 			OS.SendMessage (hwndHeader, OS.HDM_SETIMAGELIST, 0, hImageListHeader);
 		}
 	}

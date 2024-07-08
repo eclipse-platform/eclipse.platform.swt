@@ -14,6 +14,8 @@
 package org.eclipse.swt.internal;
 
 
+import java.util.*;
+
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.win32.*;
@@ -23,6 +25,10 @@ public class ImageList {
 	int style, refCount;
 	Image [] images;
 	private final int zoom;
+	private int width, height;
+	private int flags;
+
+	private HashMap<Integer, Long> zoomToHandle = new HashMap<>();
 
 public ImageList (int style, int zoom) {
 	this (style, 32, 32, zoom);
@@ -30,9 +36,12 @@ public ImageList (int style, int zoom) {
 
 public ImageList (int style, int width, int height, int zoom) {
 	this.style = style;
-	int flags = OS.ILC_MASK | OS.ILC_COLOR32;
-	if ((style & SWT.RIGHT_TO_LEFT) != 0) flags |= OS.ILC_MIRROR;
-	handle = OS.ImageList_Create (width, height, flags, 16, 16);
+	this.flags = OS.ILC_MASK | OS.ILC_COLOR32;
+	if ((style & SWT.RIGHT_TO_LEFT) != 0) this.flags |= OS.ILC_MIRROR;
+	this.height = height;
+	this.width = width;
+	handle = OS.ImageList_Create (width, height, this.flags, 16, 16);
+	zoomToHandle.put(zoom, handle);
 	images = new Image [4];
 	this.zoom = zoom;
 }
@@ -51,7 +60,7 @@ public int add (Image image) {
 		Rectangle rect = DPIUtil.scaleBounds(image.getBounds(), zoom, 100);
 		OS.ImageList_SetIconSize (handle, rect.width, rect.height);
 	}
-	set (index, image, count);
+	setForAllHandles(index, image, count);
 	if (index == images.length) {
 		Image [] newImages = new Image [images.length + 4];
 		System.arraycopy (images, 0, newImages, 0, images.length);
@@ -320,8 +329,22 @@ public int getStyle () {
 	return style;
 }
 
-public long getHandle () {
-	return handle;
+public long getHandle(int targetZoom) {
+	if (!zoomToHandle.containsKey(targetZoom)) {
+		int scaledWidth = DPIUtil.scaleUp(DPIUtil.scaleDown(width, this.zoom), targetZoom);
+		int scaledHeight = DPIUtil.scaleUp(DPIUtil.scaleDown(height, this.zoom), targetZoom);
+		long handle = OS.ImageList_Create(scaledWidth, scaledHeight, flags, 16, 16);
+		int count = OS.ImageList_GetImageCount(handle);
+		for (int i = 0; i < images.length; i++) {
+			Image image = images[i];
+			if (image != null) {
+				set(i, image, count, handle, targetZoom);
+				count++;
+			}
+		}
+		zoomToHandle.put(targetZoom, handle);
+	}
+	return zoomToHandle.get(targetZoom);
 }
 
 public Point getImageSize() {
@@ -345,14 +368,14 @@ public void put (int index, Image image) {
 	if ((0 <= index && index < images.length) && (images [index] == image)) return;
 	int count = OS.ImageList_GetImageCount (handle);
 	if (!(0 <= index && index < count)) return;
-	if (image != null) set(index, image, count);
+	if (image != null) setForAllHandles(index, image, count);
 	images [index] = image;
 }
 
 public void remove (int index) {
 	int count = OS.ImageList_GetImageCount (handle);
 	if (!(0 <= index && index < count)) return;
-	OS.ImageList_Remove (handle, index);
+	zoomToHandle.values().forEach(handle -> OS.ImageList_Remove (handle, index));
 	System.arraycopy (images, index + 1, images, index, --count - index);
 	images [index] = null;
 }
@@ -361,7 +384,11 @@ public int removeRef() {
 	return --refCount;
 }
 
-void set (int index, Image image, int count) {
+private void setForAllHandles(int index, Image image, int count) {
+	zoomToHandle.forEach((zoom, handle) -> set(index, image, count, handle, zoom));
+}
+
+void set (int index, Image image, int count, long handle, int zoom) {
 	long hImage = Image.win32_getHandle(image, zoom);
 	int [] cx = new int [1], cy = new int [1];
 	OS.ImageList_GetIconSize (handle, cx, cy);
@@ -444,5 +471,4 @@ public int size () {
 	}
 	return result;
 }
-
 }

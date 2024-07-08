@@ -2853,7 +2853,7 @@ int imageIndex (Image image, int column) {
 		imageList = display.getImageList (style & SWT.RIGHT_TO_LEFT, bounds.width, bounds.height, getZoom());
 		int index = imageList.indexOf (image);
 		if (index == -1) index = imageList.add (image);
-		long hImageList = imageList.getHandle ();
+		long hImageList = imageList.getHandle(getZoom());
 		/*
 		* Bug in Windows.  Making any change to an item that
 		* changes the item height of a table while the table
@@ -2870,7 +2870,7 @@ int imageIndex (Image image, int column) {
 		}
 		OS.SendMessage (handle, OS.LVM_SETIMAGELIST, OS.LVSIL_SMALL, hImageList);
 		if (headerImageList != null) {
-			long hHeaderImageList = headerImageList.getHandle ();
+			long hHeaderImageList = headerImageList.getHandle(getZoom());
 			OS.SendMessage (hwndHeader, OS.HDM_SETIMAGELIST, 0, hHeaderImageList);
 		}
 		fixCheckboxImageList (false);
@@ -2893,7 +2893,7 @@ int imageIndexHeader (Image image) {
 		headerImageList = display.getImageList (style & SWT.RIGHT_TO_LEFT, bounds.width, bounds.height, getZoom());
 		int index = headerImageList.indexOf (image);
 		if (index == -1) index = headerImageList.add (image);
-		long hImageList = headerImageList.getHandle ();
+		long hImageList = headerImageList.getHandle(getZoom());
 		OS.SendMessage (hwndHeader, OS.HDM_SETIMAGELIST, 0, hImageList);
 		return index;
 	}
@@ -5126,7 +5126,7 @@ void setTableEmpty () {
 		OS.SendMessage (handle, OS.LVM_SETIMAGELIST, OS.LVSIL_SMALL, hImageList);
 		OS.SendMessage (handle, OS.LVM_SETIMAGELIST, OS.LVSIL_SMALL, 0);
 		if (headerImageList != null) {
-			long hHeaderImageList = headerImageList.getHandle ();
+			long hHeaderImageList = headerImageList.getHandle(getZoom());
 			long hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
 			OS.SendMessage (hwndHeader, OS.HDM_SETIMAGELIST, 0, hHeaderImageList);
 		}
@@ -5590,7 +5590,7 @@ void updateOrientation () {
 				}
 			}
 		}
-		long hImageList = imageList.getHandle ();
+		long hImageList = imageList.getHandle(getZoom());
 		OS.SendMessage (handle, OS.LVM_SETIMAGELIST, OS.LVSIL_SMALL, hImageList);
 	}
 	if (hwndHeader != 0) {
@@ -5618,7 +5618,7 @@ void updateOrientation () {
 					}
 				}
 			}
-			long hHeaderImageList = headerImageList.getHandle ();
+			long hHeaderImageList = headerImageList.getHandle(getZoom());
 			OS.SendMessage (hwndHeader, OS.HDM_SETIMAGELIST, 0, hHeaderImageList);
 		}
 	}
