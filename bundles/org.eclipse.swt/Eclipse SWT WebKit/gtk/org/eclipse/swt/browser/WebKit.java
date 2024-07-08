@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2010, 2022 IBM Corporation and others.
+ * Copyright (c) 2010, 2024 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -282,14 +282,7 @@ class WebKit extends WebBrowser {
 
 	private static String getInternalErrorMsg () {
 		String reportErrMsg = "Please report this issue *with steps to reproduce* via:\n"
-				+ " https://bugs.eclipse.org/bugs/enter_bug.cgi?"
-				+ "alias=&assigned_to=platform-swt-inbox%40eclipse.org&attach_text=&blocked=&bug_file_loc=http%3A%2F%2F&bug_severity=normal"
-				+ "&bug_status=NEW&comment=&component=SWT&contenttypeentry=&contenttypemethod=autodetect&contenttypeselection=text%2Fplain"
-				+ "&data=&defined_groups=1&dependson=&description=&flag_type-1=X&flag_type-11=X&flag_type-12=X&flag_type-13=X&flag_type-14=X"
-				+ "&flag_type-15=X&flag_type-16=X&flag_type-2=X&flag_type-4=X&flag_type-6=X&flag_type-7=X&flag_type-8=X&form_name=enter_bug"
-				+ "&keywords=&maketemplate=Remember%20values%20as%20bookmarkable%20template&op_sys=Linux&product=Platform&qa_contact="
-				+ "&rep_platform=PC&requestee_type-1=&requestee_type-2=&short_desc=webkit2_BrowserProblem";
-
+				+ " https://github.com/eclipse-platform/eclipse.platform.swt/issues/new?assignees=&labels=&projects=&template=bug_report.md&title=";
 		return reportErrMsg + "\nFor bug report, please atatch this stack trace:\n" + getStackTrace();
 	}
 
