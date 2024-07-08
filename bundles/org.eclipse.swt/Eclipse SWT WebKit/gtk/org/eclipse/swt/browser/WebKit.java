@@ -283,7 +283,7 @@ class WebKit extends WebBrowser {
 	private static String getInternalErrorMsg () {
 		String reportErrMsg = "Please report this issue *with steps to reproduce* via:\n"
 				+ " https://github.com/eclipse-platform/eclipse.platform.swt/issues/new?assignees=&labels=&projects=&template=bug_report.md&title=";
-		return reportErrMsg + "\nFor bug report, please atatch this stack trace:\n" + getStackTrace();
+		return reportErrMsg + "\nFor bug report, please attach this stack trace:\n" + getStackTrace();
 	}
 
 
