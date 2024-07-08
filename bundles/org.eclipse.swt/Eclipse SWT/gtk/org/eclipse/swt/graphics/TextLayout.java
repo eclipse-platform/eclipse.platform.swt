@@ -644,6 +644,7 @@ void drawInPixels(GC gc, int x, int y, int selectionStart, int selectionEnd, Col
 	boolean hasSelection = selectionStart <= selectionEnd && selectionStart != -1 && selectionEnd != -1;
 	GCData data = gc.data;
 	long cairo = data.cairo;
+	boolean extent = false;
 	if ((flags & (SWT.FULL_SELECTION | SWT.DELIMITER_SELECTION)) != 0 && (hasSelection || (flags & SWT.LAST_LINE_SELECTION) != 0)) {
 		long [] attrs = new long [1];
 		int[] nAttrs = new int[1];
@@ -666,7 +667,6 @@ void drawInPixels(GC gc, int x, int y, int selectionStart, int selectionEnd, Col
 			} else {
 				lineEnd = (int)OS.g_utf16_strlen(ptr, -1);
 			}
-			boolean extent = false;
 			if (lineIndex == lineCount - 1 && (flags & SWT.LAST_LINE_SELECTION) != 0) {
 				extent = true;
 			} else {
@@ -687,6 +687,7 @@ void drawInPixels(GC gc, int x, int y, int selectionStart, int selectionEnd, Col
 				if (ascentInPoints != -1 && descentInPoints != -1) {
 					height = Math.max (height, DPIUtil.autoScaleUp(getDevice(), ascentInPoints + descentInPoints));
 				}
+				height += getSpacingInPixels();
 				int width = (flags & SWT.FULL_SELECTION) != 0 ? 0x7fff : height / 3;
 				Cairo.cairo_rectangle(cairo, lineX, lineY, width, height);
 				Cairo.cairo_fill(cairo);
@@ -717,6 +718,7 @@ void drawInPixels(GC gc, int x, int y, int selectionStart, int selectionEnd, Col
 		selectionEnd = translateOffset(selectionEnd);
 		if (selectionForeground == null) selectionForeground = device.getSystemColor(SWT.COLOR_LIST_SELECTION_TEXT);
 		if (selectionBackground == null) selectionBackground = device.getSystemColor(SWT.COLOR_LIST_SELECTION);
+		int yExtent = extent ? getSpacingInPixels() : 0;
 		boolean fullSelection = selectionStart == 0 && selectionEnd == length - 1;
 		if (fullSelection) {
 			long ptr = OS.pango_layout_get_text(layout);
@@ -725,7 +727,7 @@ void drawInPixels(GC gc, int x, int y, int selectionStart, int selectionEnd, Col
 				Cairo.cairo_scale(cairo, -1,  1);
 				Cairo.cairo_translate(cairo, -2 * x - width(), 0);
 			}
-			drawWithCairo(gc, x, y, 0, C.strlen(ptr), fullSelection, selectionForeground.handle,
+			drawWithCairo(gc, x, y, 0, C.strlen(ptr), yExtent, fullSelection, selectionForeground.handle,
 					selectionBackground.handle);
 			if ((data.style & SWT.MIRRORED) != 0) {
 				Cairo.cairo_restore(cairo);
@@ -742,7 +744,7 @@ void drawInPixels(GC gc, int x, int y, int selectionStart, int selectionEnd, Col
 				Cairo.cairo_scale(cairo, -1,  1);
 				Cairo.cairo_translate(cairo, -2 * x - width(), 0);
 			}
-			drawWithCairo(gc, x, y, byteSelStart, byteSelEnd, fullSelection, selectionForeground.handle,
+			drawWithCairo(gc, x, y, byteSelStart, byteSelEnd, yExtent, fullSelection, selectionForeground.handle,
 					selectionBackground.handle);
 			if ((data.style & SWT.MIRRORED) != 0) {
 				Cairo.cairo_restore(cairo);
@@ -752,7 +754,7 @@ void drawInPixels(GC gc, int x, int y, int selectionStart, int selectionEnd, Col
 	Cairo.cairo_new_path(cairo);
 }
 
-void drawWithCairo(GC gc, int x, int y, int start, int end, boolean fullSelection, GdkRGBA fg, GdkRGBA bg) {
+void drawWithCairo(GC gc, int x, int y, int start, int end, int yExtent, boolean fullSelection, GdkRGBA fg, GdkRGBA bg) {
 	GCData data = gc.data;
 	long cairo = data.cairo;
 	Cairo.cairo_save(cairo);
@@ -763,6 +765,14 @@ void drawWithCairo(GC gc, int x, int y, int start, int end, boolean fullSelectio
 	int[] ranges = new int[]{start, end};
 	long rgn = metricsAdapter.gdk_pango_layout_get_clip_region(layout, x, y, ranges, ranges.length / 2);
 	if (rgn != 0) {
+		if (yExtent > 0) {
+			cairo_rectangle_int_t rect = new cairo_rectangle_int_t();
+			Cairo.cairo_region_get_extents(rgn, rect);
+			rect.height += yExtent;
+			long extendRgn = Cairo.cairo_region_create_rectangle(rect);
+			Cairo.cairo_region_union(rgn, extendRgn);
+			Cairo.cairo_region_destroy(extendRgn);
+		}
 		GDK.gdk_cairo_region(cairo, rgn);
 		Cairo.cairo_clip(cairo);
 		Cairo.cairo_set_source_rgba(cairo, bg.red, bg.green, bg.blue, bg.alpha);

@@ -842,10 +842,10 @@ void drawInPixels (GC gc, int x, int y, int selectionStart, int selectionEnd, Co
 		int drawY = y + DPIUtil.scaleUp(getDevice(), lineY[line], getZoom(gc));
 		StyleItem[] lineRuns = runs[line];
 		int lineHeight = DPIUtil.scaleUp(getDevice(), lineY[line+1] - lineY[line] - lineSpacingInPoints, getZoom(gc));
-
+		int lineHeightWithSpacing = DPIUtil.scaleUp(getDevice(), lineY[line+1] - lineY[line], getZoom(gc));
 		//Draw last line selection
+		boolean extents = false;
 		if ((flags & (SWT.FULL_SELECTION | SWT.DELIMITER_SELECTION)) != 0 && (hasSelection || (flags & SWT.LAST_LINE_SELECTION) != 0)) {
-			boolean extents = false;
 			if (line == runs.length - 1 && (flags & SWT.LAST_LINE_SELECTION) != 0) {
 				extents = true;
 			} else {
@@ -864,13 +864,13 @@ void drawInPixels (GC gc, int x, int y, int selectionStart, int selectionEnd, Co
 				if ((flags & SWT.FULL_SELECTION) != 0) {
 					width = 0x6FFFFFF;
 				} else {
-					width = lineHeight / 3;
+					width = lineHeightWithSpacing / 3;
 				}
 				if (gdip) {
-					Gdip.Graphics_FillRectangle(gdipGraphics, gdipSelBackground, drawX + lineWidthInPixels[line], drawY, width, lineHeight);
+					Gdip.Graphics_FillRectangle(gdipGraphics, gdipSelBackground, drawX + lineWidthInPixels[line], drawY, width, lineHeightWithSpacing);
 				} else {
 					OS.SelectObject(hdc, selBackground);
-					OS.PatBlt(hdc, drawX + lineWidthInPixels[line], drawY, width, lineHeight, OS.PATCOPY);
+					OS.PatBlt(hdc, drawX + lineWidthInPixels[line], drawY, width, lineHeightWithSpacing, OS.PATCOPY);
 				}
 			}
 		}
@@ -884,7 +884,11 @@ void drawInPixels (GC gc, int x, int y, int selectionStart, int selectionEnd, Co
 			if (drawX > clip.x + clip.width) break;
 			if (drawX + run.width >= clip.x) {
 				if (!run.lineBreak || run.softBreak) {
-					OS.SetRect(rect, drawX, drawY, drawX + run.width, drawY + lineHeight);
+					if (extents) {
+						OS.SetRect(rect, drawX, drawY, drawX + run.width, drawY + lineHeightWithSpacing);
+					}else {
+						OS.SetRect(rect, drawX, drawY, drawX + run.width, drawY + lineHeight);
+					}
 					if (gdip) {
 						drawRunBackgroundGDIP(run, gdipGraphics, rect, selectionStart, selectionEnd, alpha, gdipSelBackground, hasSelection);
 					} else {
