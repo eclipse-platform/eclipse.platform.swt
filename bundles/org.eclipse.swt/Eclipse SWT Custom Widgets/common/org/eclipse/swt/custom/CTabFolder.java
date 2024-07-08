@@ -828,6 +828,10 @@ void destroyItem (CTabItem item) {
 	notifyItemCountChange();
 }
 
+private void requestLayout() {
+	throw new UnsupportedOperationException("Not implemented yet");
+}
+
 /**
  * Returns <code>true</code> if the receiver's border is visible.
  *

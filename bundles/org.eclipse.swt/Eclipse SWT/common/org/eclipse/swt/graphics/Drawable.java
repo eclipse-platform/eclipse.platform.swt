@@ -1,17 +1,16 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2016 IBM Corporation and others.
- *
- * This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License 2.0
+ * Copyright (c) 2000, 2004 IBM Corporation and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
- * https://www.eclipse.org/legal/epl-2.0/
- *
- * SPDX-License-Identifier: EPL-2.0
+ * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
 package org.eclipse.swt.graphics;
+
+import org.eclipse.swt.internal.swing.CGC;
 
 
 /**
@@ -20,7 +19,7 @@ package org.eclipse.swt.graphics;
  * their associated GC. SWT images, and device objects such as the Display
  * device and the Printer device, are drawables.
  * <p>
- * <b>IMPORTANT:</b> This interface is <em>not</em> part of the SWT
+ * <b>IMPORTANT:</b> This class is <em>not</em> part of the SWT
  * public API. It is marked public only so that it can be shared
  * within the packages provided by SWT. It should never be
  * referenced from application code.
@@ -44,11 +43,9 @@ public interface Drawable {
  *
  * @param data the platform specific GC data
  * @return the platform specific GC handle
- *
- * @noreference This method is not intended to be referenced by clients.
  */
 
-long  internal_new_GC (GCData data);
+public CGC /*long*/ internal_new_GC (GCData data);
 
 /**
  * Invokes platform specific functionality to dispose a GC handle.
@@ -62,10 +59,8 @@ long  internal_new_GC (GCData data);
  *
  * @param handle the platform specific GC handle
  * @param data the platform specific GC data
- *
- * @noreference This method is not intended to be referenced by clients.
  */
-void internal_dispose_GC (long  handle, GCData data);
+public void internal_dispose_GC (CGC handle, GCData data);
 
 /**
  * Returns <code>true</code> iff coordinates can be auto-scaled on this
@@ -80,5 +75,4 @@ void internal_dispose_GC (long  handle, GCData data);
 default boolean isAutoScalable () {
 	return true;
 }
-
 }

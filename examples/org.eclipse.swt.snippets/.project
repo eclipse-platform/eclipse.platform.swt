@@ -27,6 +27,11 @@
 	</natures>
 	<linkedResources>
 		<link>
+			<name>.classpath</name>
+			<type>1</type>
+			<locationURI>PROJECT_LOC/.classpath_swing</locationURI>
+		</link>
+		<link>
 			<name>.settings/org.eclipse.jdt.core.prefs</name>
 			<type>1</type>
 			<locationURI>SHARED_SETTINGS/org.eclipse.jdt.core.prefs</locationURI>

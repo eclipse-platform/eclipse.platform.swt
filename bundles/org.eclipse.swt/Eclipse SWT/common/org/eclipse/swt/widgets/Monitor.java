@@ -1,34 +1,30 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2016 IBM Corporation and others.
- *
- * This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License 2.0
+ * Copyright (c) 2000, 2003 IBM Corporation and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
- * https://www.eclipse.org/legal/epl-2.0/
- *
- * SPDX-License-Identifier: EPL-2.0
+ * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
 package org.eclipse.swt.widgets;
 
-import org.eclipse.swt.graphics.*;
+import java.awt.*;
+
+import org.eclipse.swt.graphics.Rectangle;
 
 /**
  * Instances of this class are descriptions of monitors.
  *
  * @see Display
- * @see <a href="http://www.eclipse.org/swt/snippets/#monitor">Monitor snippets</a>
- * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  *
  * @since 3.0
  */
 public final class Monitor {
-	long handle;
+  GraphicsConfiguration handle;
 	int x, y, width, height;
 	int clientX, clientY, clientWidth, clientHeight;
-	int zoom = 100;
 
 /**
  * Prevents uninitialized instances from being created outside the package.
@@ -49,14 +45,14 @@ Monitor () {
 @Override
 public boolean equals (Object object) {
 	if (object == this) return true;
-	if (!(object instanceof Monitor monitor)) return false;
-	return handle == monitor.handle;
+	if (!(object instanceof Monitor)) return false;
+	Monitor monitor = (Monitor) object;
+	return handle.equals(monitor.handle);
 }
 
 /**
  * Returns a rectangle describing the receiver's size and location
- * relative to its device. Note that on multi-monitor systems the
- * origin can be negative.
+ * relative to its device.
  *
  * @return the receiver's bounding rectangle
  */
@@ -75,31 +71,6 @@ public Rectangle getClientArea () {
 }
 
 /**
- * Returns the zoom value for the monitor
- *
- * @return monitor's zoom value
- *
- * @since 3.107
- */
-public int getZoom () {
-	return zoom;
-}
-
-void setBounds (Rectangle rect) {
-	x = rect.x;
-	y = rect.y;
-	width = rect.width;
-	height = rect.height;
-}
-
-void setClientArea (Rectangle rect) {
-	clientX = rect.x;
-	clientY = rect.y;
-	clientWidth = rect.width;
-	clientHeight = rect.height;
-}
-
-/**
  * Returns an integer hash code for the receiver. Any two
  * objects that return <code>true</code> when passed to
  * <code>equals</code> must return the same value for this
@@ -111,7 +82,7 @@ void setClientArea (Rectangle rect) {
  */
 @Override
 public int hashCode () {
-	return (int)handle;
+	return handle.hashCode();
 }
 
 }

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-17"/>
+	<classpathentry kind="src" path="Eclipse SWT/swing"/>
+	<classpathentry kind="src" path="Eclipse SWT/common"/>
+	<classpathentry kind="src" path="Eclipse SWT PI/common"/>
+	<classpathentry kind="src" path="Eclipse SWT PI/swing">
+		<attributes>
+			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="org.eclipse.swt.${target.ws}.${target.os}.${target.arch}"/>
+		</attributes>
+	</classpathentry>
+	<!--classpathentry kind="src" path="Eclipse SWT OLE Win32/swing"/-->
+	<classpathentry kind="src" path="Eclipse SWT Accessibility/swing"/>
+	<classpathentry kind="src" path="Eclipse SWT Accessibility/common"/>
+	<classpathentry kind="src" path="Eclipse SWT AWT/swing"/>
+	<classpathentry kind="src" path="Eclipse SWT AWT/common"/>
+	<classpathentry kind="src" path="Eclipse SWT Drag and Drop/swing"/>
+	<classpathentry kind="src" path="Eclipse SWT Drag and Drop/common"/>
+	<classpathentry kind="src" path="Eclipse SWT Printing/swing"/>
+	<classpathentry kind="src" path="Eclipse SWT Printing/common"/>
+	<classpathentry kind="src" path="Eclipse SWT Program/swing"/>
+	<classpathentry kind="src" path="Eclipse SWT Program/common"/>
+	<classpathentry kind="src" path="Eclipse SWT Custom Widgets/common"/>
+	<classpathentry kind="src" path="Eclipse SWT Browser/common"/>
+	<classpathentry kind="src" path="Eclipse SWT Browser/swing"/>
+	<!--classpathentry kind="src" path="Eclipse SWT OpenGL/swing"/-->
+	<classpathentry kind="src" path="Eclipse SWT OpenGL/common"/>
+	<!--classpathentry kind="src" output="bin_test" path="Eclipse SWT Tests/swing">
+		<attributes>
+			<attribute name="test" value="true"/>
+		</attributes>
+	</classpathentry-->
+	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/5"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>

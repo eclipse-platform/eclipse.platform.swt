@@ -1,0 +1,29 @@
+Manifest-Version: 1.0
+Fragment-Host: org.eclipse.swt;bundle-version="[3.127.0,4.0.0)"
+Bundle-Name: %fragmentName
+Bundle-Vendor: %providerName
+Bundle-SymbolicName: org.eclipse.swt.swing; singleton:=true
+Bundle-Version: 3.127.0.qualifier
+Bundle-ManifestVersion: 2
+Bundle-Localization: fragment
+Export-Package: 
+ org.eclipse.swt,
+ org.eclipse.swt.accessibility,
+ org.eclipse.swt.awt,
+ org.eclipse.swt.browser,
+ org.eclipse.swt.custom,
+ org.eclipse.swt.dnd,
+ org.eclipse.swt.events,
+ org.eclipse.swt.graphics,
+ org.eclipse.swt.layout,
+ org.eclipse.swt.opengl,
+ org.eclipse.swt.printing,
+ org.eclipse.swt.program,
+ org.eclipse.swt.widgets,
+ org.eclipse.swt.internal; x-friends:="org.eclipse.ui",
+ org.eclipse.swt.internal.image; x-internal:=true
+Eclipse-PlatformFilter: (& (osgi.ws=win32) (osgi.os=win32) (osgi.arch=x86_64))
+SWT-WS: swing
+SWT-OS: win32
+SWT-Arch: x86_64
+Automatic-Module-Name: org.eclipse.swt.swing
