@@ -4892,7 +4892,7 @@ public Rectangle getTextBounds(int start, int end) {
 	Rectangle rect;
 	int y = getLinePixel(lineStart);
 	int height = 0;
-	int left = 0x7fffffff, right = 0;
+	int left = Integer.MAX_VALUE, right = 0;
 	for (int i = lineStart; i <= lineEnd; i++) {
 		int lineOffset = content.getOffsetAtLine(i);
 		TextLayout layout = renderer.getTextLayout(i);
@@ -4917,6 +4917,9 @@ public Rectangle getTextBounds(int start, int end) {
 			height += renderer.getLineHeight();
 		}
 		renderer.disposeTextLayout(layout);
+	}
+	if (left == Integer.MAX_VALUE) {
+		left = 0;
 	}
 	rect = new Rectangle (left, y, right-left, height);
 	rect.x += leftMargin - horizontalScrollOffset;

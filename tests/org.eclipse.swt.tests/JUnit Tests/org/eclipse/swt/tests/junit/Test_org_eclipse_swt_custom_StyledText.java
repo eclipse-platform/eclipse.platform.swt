@@ -181,6 +181,30 @@ public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI(){
 }
 
 @Test
+public void test_getTextBounds() {
+	StyledText text = new StyledText(shell,SWT.BORDER);
+	try {
+		text.setText("\r\n\r\ntext");
+		int firstLineOffset = text.getOffsetAtLine(0);
+		Rectangle r = text.getTextBounds(firstLineOffset, firstLineOffset);
+		assertEquals(0,r.x);
+		assertEquals(0,r.y);
+		assertEquals(0,r.width);
+		assertTrue(r.height > 0);
+
+		text.setText("\r\n\r\ntext");
+		int thirdLineOffset = text.getOffsetAtLine(2);
+		r = text.getTextBounds(thirdLineOffset, thirdLineOffset);
+		assertEquals(0, r.x);
+		assertTrue(r.y > 0);
+		assertTrue(r.width > 0);
+		assertTrue(r.height > 0);
+	}finally {
+		text.dispose();
+	}
+}
+
+@Test
 public void test_addExtendedModifyListenerLorg_eclipse_swt_custom_ExtendedModifyListener() {
 	final String line = "Line1";
 	ExtendedModifyListener listener = event -> {
