@@ -15,7 +15,7 @@
  *     Hannes Wellmann - Streamline entire SWT build and replace ANT-scripts by Maven, Jenkins-Pipeline and single-source Java scripts
   *******************************************************************************/
 
-def nativeBuildAgent(String platform, Closure body) {
+def runOnNativeBuildAgent(String platform, Closure body) {
 	def final nativeBuildStageName = 'Build SWT-native binaries'
 	if (platform == 'gtk.linux.x86_64') {
 		return podTemplate(yaml: '''
@@ -45,7 +45,7 @@ spec:
       claimName: tools-claim-jiro-releng
 ''') { node(POD_LABEL) { stage(nativeBuildStageName) { container('swtbuild') { body() } } } }
 	} else {
-		return node('swt.natives-' + platform) { stage(nativeBuildStageName) { body() } }
+		return node('native.builder-' + platform) { stage(nativeBuildStageName) { body() } }
 	}
 }
 
@@ -214,7 +214,7 @@ pipeline {
 									stash name:"jdk.resources.${os}.${arch}", includes: "include/,lib/"
 									deleteDir()
 								}
-								nativeBuildAgent("${PLATFORM}") {
+								runOnNativeBuildAgent("${PLATFORM}") {
 									cleanWs() // Workspace is not cleaned up by default, so we do it explicitly
 									echo "OS: ${os}, ARCH: ${arch}"
 									unstash "swt.binaries.sources.${ws}"
