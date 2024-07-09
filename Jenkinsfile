@@ -18,12 +18,18 @@
 def runOnNativeBuildAgent(String platform, Closure body) {
 	def final nativeBuildStageName = 'Build SWT-native binaries'
 	if (platform == 'gtk.linux.x86_64') {
-		return podTemplate(containers: [
-			containerTemplate(name: 'swtbuild', image: 'eclipse/platformreleng-centos-swt-build:8',
+		return podTemplate(inheritFrom: 'centos-8', containers: [
+			containerTemplate(name: 'swtbuild',
 				resourceRequestCpu:'1000m', resourceRequestMemory:'512Mi',
 				resourceLimitCpu:'2000m', resourceLimitMemory:'4096Mi'
 			)
-		]) { node(POD_LABEL) { stage(nativeBuildStageName) { container('swtbuild') { body() } } } }
+		]) { node(POD_LABEL) { stage(nativeBuildStageName) { container('swtbuild') {
+			sh '''
+				sudo apt-get update -qq 
+				sudo apt-get install -qq -y libgtk-3-dev freeglut3-dev webkit2gtk-driver
+			'''
+			body()
+		} } } }
 	} else {
 		// See the Definition of the eclipse.platform Jenkins instance in
 		// https://github.com/eclipse-cbi/jiro/tree/master/instances/eclipse.platform
