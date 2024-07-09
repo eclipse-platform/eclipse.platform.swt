@@ -45,7 +45,7 @@ spec:
       claimName: tools-claim-jiro-releng
 ''') { node(POD_LABEL) { stage(nativeBuildStageName) { container('swtbuild') { body() } } } }
 	} else {
-		return node('swt.natives-' + platform) { stage(nativeBuildStageName) { body() } }
+		return node('native.builder-' + platform) { stage(nativeBuildStageName) { body() } }
 	}
 }
 
