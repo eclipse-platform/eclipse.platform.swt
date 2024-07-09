@@ -18,33 +18,15 @@
 def runOnNativeBuildAgent(String platform, Closure body) {
 	def final nativeBuildStageName = 'Build SWT-native binaries'
 	if (platform == 'gtk.linux.x86_64') {
-		return podTemplate(yaml: '''
-apiVersion: v1
-kind: Pod
-spec:
-  containers:
-  - name: "swtbuild"
-    image: "eclipse/platformreleng-centos-swt-build:8"
-    imagePullPolicy: "Always"
-    resources:
-      limits:
-        memory: "4096Mi"
-        cpu: "2000m"
-      requests:
-        memory: "512Mi"
-        cpu: "1000m"
-    command:
-    - cat
-    tty: true
-    volumeMounts:
-    - name: tools
-      mountPath: /opt/tools
-  volumes:
-  - name: tools
-    persistentVolumeClaim:
-      claimName: tools-claim-jiro-releng
-''') { node(POD_LABEL) { stage(nativeBuildStageName) { container('swtbuild') { body() } } } }
+		return podTemplate(containers: [
+			containerTemplate(name: 'swtbuild', image: 'eclipse/platformreleng-centos-swt-build:8',
+				resourceRequestCpu:'1000m', resourceRequestMemory:'512Mi',
+				resourceLimitCpu:'2000m', resourceLimitMemory:'4096Mi'
+			)
+		]) { node(POD_LABEL) { stage(nativeBuildStageName) { container('swtbuild') { body() } } } }
 	} else {
+		// See the Definition of the eclipse.platform Jenkins instance in
+		// https://github.com/eclipse-cbi/jiro/tree/master/instances/eclipse.platform
 		return node('native.builder-' + platform) { stage(nativeBuildStageName) { body() } }
 	}
 }
