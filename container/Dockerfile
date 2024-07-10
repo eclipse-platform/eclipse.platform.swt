@@ -1,4 +1,4 @@
-FROM eclipsecbi/fedora-gtk3-mutter:40-gtk3.24@sha256:11636c07d2bf59322f9fc89b54bf2984c8ee30de7ffdf3ea266454a11372a83b
+FROM eclipsecbi/fedora-gtk3-mutter:40-gtk3.24@sha256:4dfd3aeb52828d9157592f7b39d6755246c1283ae5541bea36b9f0046ef686f6
 
 # Back to root for install
 USER 0
