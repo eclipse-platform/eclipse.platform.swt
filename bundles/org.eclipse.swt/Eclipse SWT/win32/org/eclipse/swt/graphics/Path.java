@@ -206,10 +206,10 @@ private Path(Device device, PathData data, int zoom) {
 public void addArc (float x, float y, float width, float height, float startAngle, float arcAngle) {
 	if (width == 0 || height == 0 || arcAngle == 0) return;
 	Drawable drawable = getDevice();
-	x = DPIUtil.autoScaleUp(drawable, x, initialZoom);
-	y = DPIUtil.autoScaleUp(drawable, y, initialZoom);
-	width = DPIUtil.autoScaleUp(drawable, width, initialZoom);
-	height = DPIUtil.autoScaleUp(drawable, height, initialZoom);
+	x = DPIUtil.scaleUp(drawable, x, initialZoom);
+	y = DPIUtil.scaleUp(drawable, y, initialZoom);
+	width = DPIUtil.scaleUp(drawable, width, initialZoom);
+	height = DPIUtil.scaleUp(drawable, height, initialZoom);
 	addArcInPixels(x, y, width, height, startAngle, arcAngle);
 }
 
@@ -309,8 +309,8 @@ void addRectangleInPixels(float x, float y, float width, float height) {
  */
 public void addString (String string, float x, float y, Font font) {
 	Drawable drawable = getDevice();
-	x = DPIUtil.autoScaleUp(drawable, x, initialZoom);
-	y = DPIUtil.autoScaleUp(drawable, y, initialZoom);
+	x = DPIUtil.scaleUp(drawable, x, initialZoom);
+	y = DPIUtil.scaleUp(drawable, y, initialZoom);
 	addStringInPixels(string, x, y, font);
 }
 void addStringInPixels(String string, float x, float y, Font font) {
@@ -381,8 +381,8 @@ public void close() {
  */
 public boolean contains (float x, float y, GC gc, boolean outline) {
 	Drawable drawable = getDevice();
-	x = DPIUtil.autoScaleUp(drawable, x, initialZoom);
-	y = DPIUtil.autoScaleUp(drawable, y, initialZoom);
+	x = DPIUtil.scaleUp(drawable, x, initialZoom);
+	y = DPIUtil.scaleUp(drawable, y, initialZoom);
 	return containsInPixels(x, y, gc, outline);
 }
 boolean containsInPixels(float x, float y, GC gc, boolean outline) {
@@ -417,12 +417,12 @@ boolean containsInPixels(float x, float y, GC gc, boolean outline) {
  */
 public void cubicTo (float cx1, float cy1, float cx2, float cy2, float x, float y) {
 	Drawable drawable = getDevice();
-	cx1 = DPIUtil.autoScaleUp(drawable, cx1, initialZoom);
-	cy1 = DPIUtil.autoScaleUp(drawable, cy1, initialZoom);
-	cx2 = DPIUtil.autoScaleUp(drawable, cx2, initialZoom);
-	cy2 = DPIUtil.autoScaleUp(drawable, cy2, initialZoom);
-	x = DPIUtil.autoScaleUp(drawable, x, initialZoom);
-	y = DPIUtil.autoScaleUp(drawable, y, initialZoom);
+	cx1 = DPIUtil.scaleUp(drawable, cx1, initialZoom);
+	cy1 = DPIUtil.scaleUp(drawable, cy1, initialZoom);
+	cx2 = DPIUtil.scaleUp(drawable, cx2, initialZoom);
+	cy2 = DPIUtil.scaleUp(drawable, cy2, initialZoom);
+	x = DPIUtil.scaleUp(drawable, x, initialZoom);
+	y = DPIUtil.scaleUp(drawable, y, initialZoom);
 	cubicToInPixels(cx1, cy1, cx2, cy2, x, y);
 }
 
@@ -575,7 +575,7 @@ PathData getPathDataInPixels() {
  */
 public void lineTo (float x, float y) {
 	Drawable drawable = getDevice();
-	lineToInPixels(DPIUtil.autoScaleUp(drawable, x, initialZoom), DPIUtil.autoScaleUp(drawable, y, initialZoom));
+	lineToInPixels(DPIUtil.scaleUp(drawable, x, initialZoom), DPIUtil.scaleUp(drawable, y, initialZoom));
 }
 
 void lineToInPixels(float x, float y) {
@@ -640,7 +640,7 @@ public boolean isDisposed() {
  */
 public void moveTo (float x, float y) {
 	Drawable drawable = getDevice();
-	moveToInPixels(DPIUtil.autoScaleUp(drawable, x, initialZoom), DPIUtil.autoScaleUp(drawable, y, initialZoom));
+	moveToInPixels(DPIUtil.scaleUp(drawable, x, initialZoom), DPIUtil.scaleUp(drawable, y, initialZoom));
 }
 
 void moveToInPixels(float x, float y) {
@@ -664,10 +664,10 @@ void moveToInPixels(float x, float y) {
  */
 public void quadTo (float cx, float cy, float x, float y) {
 	Drawable drawable = getDevice();
-	cx = DPIUtil.autoScaleUp(drawable, cx, initialZoom);
-	cy = DPIUtil.autoScaleUp(drawable, cy, initialZoom);
-	x = DPIUtil.autoScaleUp(drawable, x, initialZoom);
-	y = DPIUtil.autoScaleUp(drawable, y, initialZoom);
+	cx = DPIUtil.scaleUp(drawable, cx, initialZoom);
+	cy = DPIUtil.scaleUp(drawable, cy, initialZoom);
+	x = DPIUtil.scaleUp(drawable, x, initialZoom);
+	y = DPIUtil.scaleUp(drawable, y, initialZoom);
 	quadToInPixels(cx, cy, x, y);
 }
 

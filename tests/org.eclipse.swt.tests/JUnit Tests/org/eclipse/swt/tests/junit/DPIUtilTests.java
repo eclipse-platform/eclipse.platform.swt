@@ -202,17 +202,17 @@ public class DPIUtilTests {
 		assertArrayEquals(String.format("Scaling up int array to device zoom (%d) to 100 with device failed",
 				DPIUtil.getDeviceZoom()), valueAt200, scaledValue);
 
-		scaledValue = DPIUtil.autoScaleUp(valueAt100, 200);
+		scaledValue = DPIUtil.scaleUp(valueAt100, 200);
 		assertArrayEquals("Scaling up int array to 200 failed", valueAt200, scaledValue);
-		scaledValue = DPIUtil.autoScaleUp((Device) null, valueAt100, 200);
+		scaledValue = DPIUtil.scaleUp((Device) null, valueAt100, 200);
 		assertArrayEquals("Scaling up int array to 200 with device failed", valueAt200, scaledValue);
-		scaledValue = DPIUtil.autoScaleUp(valueAt100, 150);
+		scaledValue = DPIUtil.scaleUp(valueAt100, 150);
 		assertArrayEquals("Scaling up int array to 150 failed", valueAt150, scaledValue);
-		scaledValue = DPIUtil.autoScaleUp((Device) null, valueAt100, 150);
+		scaledValue = DPIUtil.scaleUp((Device) null, valueAt100, 150);
 		assertArrayEquals("Scaling up int array to 150 with device failed", valueAt150, scaledValue);
-		scaledValue = DPIUtil.autoScaleUp(valueAt100, 100);
+		scaledValue = DPIUtil.scaleUp(valueAt100, 100);
 		assertSame("Scaling up int array without zoom change failed", valueAt100, scaledValue);
-		scaledValue = DPIUtil.autoScaleUp((Device) null, valueAt100, 100);
+		scaledValue = DPIUtil.scaleUp((Device) null, valueAt100, 100);
 		assertSame("Scaling up int array without zoom change with device failed", valueAt100, scaledValue);
 	}
 
@@ -229,17 +229,17 @@ public class DPIUtilTests {
 		assertEquals(String.format("Scaling up integer to device zoom (%d) to 100 with device failed",
 				DPIUtil.getDeviceZoom()), valueAt200, scaledValue);
 
-		scaledValue = DPIUtil.autoScaleUp(valueAt100, 200);
+		scaledValue = DPIUtil.scaleUp(valueAt100, 200);
 		assertEquals("Scaling up integer to 200 failed", valueAt200, scaledValue);
-		scaledValue = DPIUtil.autoScaleUp((Device) null, valueAt100, 200);
+		scaledValue = DPIUtil.scaleUp((Device) null, valueAt100, 200);
 		assertEquals("Scaling up integer to 200 with device failed", valueAt200, scaledValue);
-		scaledValue = DPIUtil.autoScaleUp(valueAt100, 150);
+		scaledValue = DPIUtil.scaleUp(valueAt100, 150);
 		assertEquals("Scaling up integer to 150 failed", valueAt150, scaledValue);
-		scaledValue = DPIUtil.autoScaleUp((Device) null, valueAt100, 150);
+		scaledValue = DPIUtil.scaleUp((Device) null, valueAt100, 150);
 		assertEquals("Scaling up integer to 150 with device failed", valueAt150, scaledValue);
-		scaledValue = DPIUtil.autoScaleUp(valueAt100, 100);
+		scaledValue = DPIUtil.scaleUp(valueAt100, 100);
 		assertSame("Scaling up integer without zoom change failed", valueAt100, scaledValue);
-		scaledValue = DPIUtil.autoScaleUp((Device) null, valueAt100, 100);
+		scaledValue = DPIUtil.scaleUp((Device) null, valueAt100, 100);
 		assertSame("Scaling up integer without zoom change with device failed", valueAt100, scaledValue);
 	}
 
@@ -256,17 +256,17 @@ public class DPIUtilTests {
 		assertEquals(String.format("Scaling up integer to device zoom (%d) to 100 with device failed",
 				DPIUtil.getDeviceZoom()), valueAt200, scaledValue, 0.001f);
 
-		scaledValue = DPIUtil.autoScaleUp(valueAt100, 200);
+		scaledValue = DPIUtil.scaleUp(valueAt100, 200);
 		assertEquals("Scaling up integer to 200 failed", valueAt200, scaledValue, 0.001f);
-		scaledValue = DPIUtil.autoScaleUp((Device) null, valueAt100, 200);
+		scaledValue = DPIUtil.scaleUp((Device) null, valueAt100, 200);
 		assertEquals("Scaling up integer to 200 with device failed", valueAt200, scaledValue, 0.001f);
-		scaledValue = DPIUtil.autoScaleUp(valueAt100, 150);
+		scaledValue = DPIUtil.scaleUp(valueAt100, 150);
 		assertEquals("Scaling up integer to 150 failed", valueAt150, scaledValue, 0.001f);
-		scaledValue = DPIUtil.autoScaleUp((Device) null, valueAt100, 150);
+		scaledValue = DPIUtil.scaleUp((Device) null, valueAt100, 150);
 		assertEquals("Scaling up integer to 150 with device failed", valueAt150, scaledValue, 0.001f);
-		scaledValue = DPIUtil.autoScaleUp(valueAt100, 100);
+		scaledValue = DPIUtil.scaleUp(valueAt100, 100);
 		assertEquals("Scaling up integer without zoom change failed", valueAt100, scaledValue, 0.001f);
-		scaledValue = DPIUtil.autoScaleUp((Device) null, valueAt100, 100);
+		scaledValue = DPIUtil.scaleUp((Device) null, valueAt100, 100);
 		assertEquals("Scaling up integer without zoom change with device failed", valueAt100, scaledValue, 0.001f);
 	}
 
@@ -283,17 +283,17 @@ public class DPIUtilTests {
 		assertEquals(String.format("Scaling up Point to device zoom (%d) to 100 with device failed",
 				DPIUtil.getDeviceZoom()), valueAt200, scaledValue);
 
-		scaledValue = DPIUtil.autoScaleUp(valueAt100, 200);
+		scaledValue = DPIUtil.scaleUp(valueAt100, 200);
 		assertEquals("Scaling up Point to 200 failed", valueAt200, scaledValue);
-		scaledValue = DPIUtil.autoScaleUp((Device) null, valueAt100, 200);
+		scaledValue = DPIUtil.scaleUp((Device) null, valueAt100, 200);
 		assertEquals("Scaling up Point to 200 with device failed", valueAt200, scaledValue);
-		scaledValue = DPIUtil.autoScaleUp(valueAt100, 150);
+		scaledValue = DPIUtil.scaleUp(valueAt100, 150);
 		assertEquals("Scaling up Point to 150 failed", valueAt150, scaledValue);
-		scaledValue = DPIUtil.autoScaleUp((Device) null, valueAt100, 150);
+		scaledValue = DPIUtil.scaleUp((Device) null, valueAt100, 150);
 		assertEquals("Scaling up Point to 150 with device failed", valueAt150, scaledValue);
-		scaledValue = DPIUtil.autoScaleUp(valueAt100, 100);
+		scaledValue = DPIUtil.scaleUp(valueAt100, 100);
 		assertSame("Scaling up Point without zoom change failed", valueAt100, scaledValue);
-		scaledValue = DPIUtil.autoScaleUp((Device) null, valueAt100, 100);
+		scaledValue = DPIUtil.scaleUp((Device) null, valueAt100, 100);
 		assertSame("Scaling up Point without zoom change with device failed", valueAt100, scaledValue);
 	}
 
@@ -311,17 +311,17 @@ public class DPIUtilTests {
 		assertEquals(String.format("Scaling up Rectangle to device zoom (%d) to 100 with device failed",
 				DPIUtil.getDeviceZoom()), valueAt200, scaledValue);
 
-		scaledValue = DPIUtil.autoScaleUp(valueAt100, 200);
+		scaledValue = DPIUtil.scaleUp(valueAt100, 200);
 		assertEquals("Scaling up Rectangle to 200 failed", valueAt200, scaledValue);
-		scaledValue = DPIUtil.autoScaleUp((Device) null, valueAt100, 200);
+		scaledValue = DPIUtil.scaleUp((Device) null, valueAt100, 200);
 		assertEquals("Scaling up Rectangle to 200 with device failed", valueAt200, scaledValue);
-		scaledValue = DPIUtil.autoScaleUp(valueAt100, 150);
+		scaledValue = DPIUtil.scaleUp(valueAt100, 150);
 		assertEquals("Scaling up Rectangle to 150 failed", valueAt150, scaledValue);
-		scaledValue = DPIUtil.autoScaleUp((Device) null, valueAt100, 150);
+		scaledValue = DPIUtil.scaleUp((Device) null, valueAt100, 150);
 		assertEquals("Scaling up Rectangle to 150 with device failed", valueAt150, scaledValue);
-		scaledValue = DPIUtil.autoScaleUp(valueAt100, 100);
+		scaledValue = DPIUtil.scaleUp(valueAt100, 100);
 		assertSame("Scaling up Rectangle without zoom change failed", valueAt100, scaledValue);
-		scaledValue = DPIUtil.autoScaleUp((Device) null, valueAt100, 100);
+		scaledValue = DPIUtil.scaleUp((Device) null, valueAt100, 100);
 		assertSame("Scaling up Rectangle without zoom change with device failed", valueAt100, scaledValue);
 	}
 }

@@ -296,7 +296,7 @@ int computeLeftMargin () {
 	if ((style & (SWT.PUSH | SWT.TOGGLE)) == 0) return MARGIN;
 	int margin = 0;
 	if (image != null && text.length () != 0) {
-		Rectangle bounds = DPIUtil.autoScaleBounds(image.getBounds(), this.getZoom(), 100);
+		Rectangle bounds = DPIUtil.scaleBounds(image.getBounds(), this.getZoom(), 100);
 		margin += bounds.width + MARGIN * 2;
 		long oldFont = 0;
 		long hDC = OS.GetDC (handle);
@@ -358,7 +358,7 @@ int computeLeftMargin () {
 			boolean hasImage = image != null, hasText = true;
 			if (hasImage) {
 				if (image != null) {
-					Rectangle rect = DPIUtil.autoScaleBounds(image.getBounds(), this.getZoom(), 100);
+					Rectangle rect = DPIUtil.scaleBounds(image.getBounds(), this.getZoom(), 100);
 					width = rect.width;
 					if (hasText && text.length () != 0) {
 						width += MARGIN * 2;
@@ -1391,7 +1391,7 @@ LRESULT wmNotifyChild (NMHDR hdr, long wParam, long lParam) {
 							GC gc = createNewGC(nmcd.hdc, data);
 
 							int margin = computeLeftMargin();
-							Rectangle imageBounds = DPIUtil.autoScaleBounds(image.getBounds(), this.getZoom(), 100);
+							Rectangle imageBounds = DPIUtil.scaleBounds(image.getBounds(), this.getZoom(), 100);
 							int imageWidth = imageBounds.width;
 							left += (imageWidth + (isRadioOrCheck() ? 2 * MARGIN : MARGIN)); // for SWT.RIGHT_TO_LEFT right and left are inverted
 

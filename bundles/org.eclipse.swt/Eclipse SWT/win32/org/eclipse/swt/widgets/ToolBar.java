@@ -568,7 +568,7 @@ public ToolItem getItem (int index) {
 public ToolItem getItem (Point point) {
 	checkWidget ();
 	if (point == null) error (SWT.ERROR_NULL_ARGUMENT);
-	return getItemInPixels(DPIUtil.autoScaleUp(point, getZoom()));
+	return getItemInPixels(DPIUtil.scaleUp(point, getZoom()));
 }
 
 ToolItem getItemInPixels (Point point) {

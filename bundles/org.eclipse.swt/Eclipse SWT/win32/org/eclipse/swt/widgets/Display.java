@@ -2966,7 +2966,7 @@ public Point map (Control from, Control to, Point point) {
 	checkDevice ();
 	if (point == null) error (SWT.ERROR_NULL_ARGUMENT);
 	int zoom = getZoomLevelForMapping(from, to);
-	point = DPIUtil.autoScaleUp(point, zoom);
+	point = DPIUtil.scaleUp(point, zoom);
 	return DPIUtil.scaleDown(mapInPixels(from, to, point), zoom);
 }
 
@@ -3013,8 +3013,8 @@ Point mapInPixels (Control from, Control to, Point point) {
 public Point map (Control from, Control to, int x, int y) {
 	checkDevice ();
 	int zoom = getZoomLevelForMapping(from, to);
-	x = DPIUtil.autoScaleUp(x, zoom);
-	y = DPIUtil.autoScaleUp(y, zoom);
+	x = DPIUtil.scaleUp(x, zoom);
+	y = DPIUtil.scaleUp(y, zoom);
 	return DPIUtil.scaleDown(mapInPixels(from, to, x, y), zoom);
 }
 
@@ -3080,7 +3080,7 @@ public Rectangle map (Control from, Control to, Rectangle rectangle) {
 	checkDevice ();
 	if (rectangle == null) error (SWT.ERROR_NULL_ARGUMENT);
 	int zoom = getZoomLevelForMapping(from, to);
-	rectangle = DPIUtil.autoScaleUp(rectangle, zoom);
+	rectangle = DPIUtil.scaleUp(rectangle, zoom);
 	return DPIUtil.scaleDown(mapInPixels(from, to, rectangle), zoom);
 }
 
@@ -3129,10 +3129,10 @@ Rectangle mapInPixels (Control from, Control to, Rectangle rectangle) {
 public Rectangle map (Control from, Control to, int x, int y, int width, int height) {
 	checkDevice ();
 	int zoom = getZoomLevelForMapping(from, to);
-	x = DPIUtil.autoScaleUp(x, zoom);
-	y = DPIUtil.autoScaleUp(y, zoom);
-	width = DPIUtil.autoScaleUp(width, zoom);
-	height = DPIUtil.autoScaleUp(height, zoom);
+	x = DPIUtil.scaleUp(x, zoom);
+	y = DPIUtil.scaleUp(y, zoom);
+	width = DPIUtil.scaleUp(width, zoom);
+	height = DPIUtil.scaleUp(height, zoom);
 	return DPIUtil.scaleDown(mapInPixels(from, to, x, y, width, height), zoom);
 }
 
@@ -3601,7 +3601,7 @@ public boolean post (Event event) {
 					int y = OS.GetSystemMetrics (OS.SM_YVIRTUALSCREEN);
 					int width = OS.GetSystemMetrics (OS.SM_CXVIRTUALSCREEN);
 					int height = OS.GetSystemMetrics (OS.SM_CYVIRTUALSCREEN);
-					Point loc = DPIUtil.autoScaleUp(event.getLocation(), getDeviceZoom());
+					Point loc = DPIUtil.scaleUp(event.getLocation(), getDeviceZoom());
 					inputs.dx = ((loc.x - x) * 65535 + width - 2) / (width - 1);
 					inputs.dy = ((loc.y - y) * 65535 + height - 2) / (height - 1);
 				} else {

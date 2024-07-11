@@ -615,8 +615,8 @@ public Point computeSize (int wHint, int hHint) {
 public Point computeSize (int wHint, int hHint, boolean changed){
 	checkWidget ();
 	int zoom = getZoom();
-	wHint = (wHint != SWT.DEFAULT ? DPIUtil.autoScaleUp(wHint, zoom) : wHint);
-	hHint = (hHint != SWT.DEFAULT ? DPIUtil.autoScaleUp(hHint, zoom) : hHint);
+	wHint = (wHint != SWT.DEFAULT ? DPIUtil.scaleUp(wHint, zoom) : wHint);
+	hHint = (hHint != SWT.DEFAULT ? DPIUtil.scaleUp(hHint, zoom) : hHint);
 	return DPIUtil.scaleDown(computeSizeInPixels(wHint, hHint, changed), zoom);
 }
 
@@ -779,7 +779,7 @@ public boolean dragDetect (Event event) {
 	if (event == null) error (SWT.ERROR_NULL_ARGUMENT);
 	Point loc = event.getLocation();
 	int zoom = getZoom();
-	return dragDetect (event.button, event.count, event.stateMask, DPIUtil.autoScaleUp(loc.x, zoom), DPIUtil.autoScaleUp(loc.y, zoom));
+	return dragDetect (event.button, event.count, event.stateMask, DPIUtil.scaleUp(loc.x, zoom), DPIUtil.scaleUp(loc.y, zoom));
 }
 
 /**
@@ -822,7 +822,7 @@ public boolean dragDetect (MouseEvent event) {
 	checkWidget ();
 	if (event == null) error (SWT.ERROR_NULL_ARGUMENT);
 	int zoom = getZoom();
-	return dragDetect (event.button, event.count, event.stateMask, DPIUtil.autoScaleUp(event.x, zoom), DPIUtil.autoScaleUp(event.y, zoom)); // To Pixels
+	return dragDetect (event.button, event.count, event.stateMask, DPIUtil.scaleUp(event.x, zoom), DPIUtil.scaleUp(event.y, zoom)); // To Pixels
 }
 
 boolean dragDetect (int button, int count, int stateMask, int x, int y) {
@@ -1975,8 +1975,8 @@ void mapEvent (long hwnd, Event event) {
 		POINT point = new POINT ();
 		Point loc = event.getLocation();
 		int zoom = getZoom();
-		point.x = DPIUtil.autoScaleUp(loc.x, zoom);
-		point.y = DPIUtil.autoScaleUp(loc.y, zoom);
+		point.x = DPIUtil.scaleUp(loc.x, zoom);
+		point.y = DPIUtil.scaleUp(loc.y, zoom);
 		OS.MapWindowPoints (hwnd, handle, point, 1);
 		event.setLocation(DPIUtil.scaleDown(point.x, zoom), DPIUtil.scaleDown(point.y, zoom));
 	}
@@ -2431,10 +2431,10 @@ public void redraw () {
 public void redraw (int x, int y, int width, int height, boolean all) {
 	checkWidget ();
 	int zoom = getZoom();
-	x = DPIUtil.autoScaleUp(x, zoom);
-	y = DPIUtil.autoScaleUp(y, zoom);
-	width = DPIUtil.autoScaleUp(width, zoom);
-	height = DPIUtil.autoScaleUp(height, zoom);
+	x = DPIUtil.scaleUp(x, zoom);
+	y = DPIUtil.scaleUp(y, zoom);
+	width = DPIUtil.scaleUp(width, zoom);
+	height = DPIUtil.scaleUp(height, zoom);
 	if (width <= 0 || height <= 0) return;
 
 	RECT rect = new RECT ();
@@ -3167,10 +3167,10 @@ void setBackgroundPixel (int pixel) {
 public void setBounds(int x, int y, int width, int height) {
 	checkWidget ();
 	int zoom = getZoom();
-	x = DPIUtil.autoScaleUp(x, zoom);
-	y = DPIUtil.autoScaleUp(y, zoom);
-	width = DPIUtil.autoScaleUp(width, zoom);
-	height = DPIUtil.autoScaleUp(height, zoom);
+	x = DPIUtil.scaleUp(x, zoom);
+	y = DPIUtil.scaleUp(y, zoom);
+	width = DPIUtil.scaleUp(width, zoom);
+	height = DPIUtil.scaleUp(height, zoom);
 	setBoundsInPixels(x, y, width, height);
 }
 
@@ -3248,7 +3248,7 @@ void setBoundsInPixels (int x, int y, int width, int height, int flags, boolean 
 public void setBounds (Rectangle rect) {
 	checkWidget ();
 	if (rect == null) error (SWT.ERROR_NULL_ARGUMENT);
-	setBoundsInPixels(DPIUtil.autoScaleUp(rect, getZoom()));
+	setBoundsInPixels(DPIUtil.scaleUp(rect, getZoom()));
 }
 
 void setBoundsInPixels (Rectangle rect) {
@@ -3503,8 +3503,8 @@ public void setLayoutData (Object layoutData) {
 public void setLocation (int x, int y) {
 	checkWidget ();
 	int zoom = getZoom();
-	x = DPIUtil.autoScaleUp(x, zoom);
-	y = DPIUtil.autoScaleUp(y, zoom);
+	x = DPIUtil.scaleUp(x, zoom);
+	y = DPIUtil.scaleUp(y, zoom);
 	setLocationInPixels(x, y);
 }
 
@@ -3530,7 +3530,7 @@ void setLocationInPixels (int x, int y) {
 public void setLocation (Point location) {
 	checkWidget ();
 	if (location == null) error (SWT.ERROR_NULL_ARGUMENT);
-	location = DPIUtil.autoScaleUp(location, getZoom());
+	location = DPIUtil.scaleUp(location, getZoom());
 	setLocationInPixels(location.x, location.y);
 }
 
@@ -3720,8 +3720,8 @@ public void setRegion (Region region) {
 public void setSize (int width, int height) {
 	checkWidget ();
 	int zoom = getZoom();
-	width = DPIUtil.autoScaleUp(width, zoom);
-	height = DPIUtil.autoScaleUp(height, zoom);
+	width = DPIUtil.scaleUp(width, zoom);
+	height = DPIUtil.scaleUp(height, zoom);
 	setSizeInPixels(width, height);
 }
 
@@ -3756,7 +3756,7 @@ void setSizeInPixels (int width, int height) {
 public void setSize (Point size) {
 	checkWidget ();
 	if (size == null) error (SWT.ERROR_NULL_ARGUMENT);
-	size = DPIUtil.autoScaleUp(size, getZoom());
+	size = DPIUtil.scaleUp(size, getZoom());
 	setSizeInPixels(size.x, size.y);
 }
 
@@ -3970,7 +3970,7 @@ void subclass () {
 public Point toControl (int x, int y) {
 	checkWidget ();
 	int zoom = getZoom();
-	return DPIUtil.scaleDown(toControlInPixels(DPIUtil.autoScaleUp(x, zoom), DPIUtil.autoScaleUp(y, zoom)), zoom);
+	return DPIUtil.scaleDown(toControlInPixels(DPIUtil.scaleUp(x, zoom), DPIUtil.scaleUp(y, zoom)), zoom);
 }
 
 Point toControlInPixels (int x, int y) {
@@ -4004,7 +4004,7 @@ public Point toControl (Point point) {
 	checkWidget ();
 	if (point == null) error (SWT.ERROR_NULL_ARGUMENT);
 	int zoom = getZoom();
-	point = DPIUtil.autoScaleUp(point, zoom);
+	point = DPIUtil.scaleUp(point, zoom);
 	return DPIUtil.scaleDown(toControlInPixels(point.x, point.y), zoom);
 }
 
@@ -4031,7 +4031,7 @@ public Point toControl (Point point) {
 public Point toDisplay (int x, int y) {
 	checkWidget ();
 	int zoom = getZoom();
-	return DPIUtil.scaleDown(toDisplayInPixels(DPIUtil.autoScaleUp(x, zoom), DPIUtil.autoScaleUp(y, zoom)), zoom);
+	return DPIUtil.scaleDown(toDisplayInPixels(DPIUtil.scaleUp(x, zoom), DPIUtil.scaleUp(y, zoom)), zoom);
 }
 
 Point toDisplayInPixels (int x, int y) {
@@ -4065,7 +4065,7 @@ public Point toDisplay (Point point) {
 	checkWidget ();
 	if (point == null) error (SWT.ERROR_NULL_ARGUMENT);
 	int zoom = getZoom();
-	point = DPIUtil.autoScaleUp(point, zoom);
+	point = DPIUtil.scaleUp(point, zoom);
 	return DPIUtil.scaleDown(toDisplayInPixels(point.x, point.y), zoom);
 }
 

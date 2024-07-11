@@ -1080,7 +1080,7 @@ public void setToolTipText (String string) {
  */
 public void setWidth (int width) {
 	checkWidget();
-	setWidthInPixels(DPIUtil.autoScaleUp(width, getZoom()));
+	setWidthInPixels(DPIUtil.scaleUp(width, getZoom()));
 }
 
 void setWidthInPixels (int width) {
@@ -1107,7 +1107,7 @@ void updateImages (boolean enabled) {
 	ImageList hotImageList = parent.getHotImageList ();
 	ImageList disabledImageList = parent.getDisabledImageList();
 	if (info.iImage == OS.I_IMAGENONE) {
-		Rectangle bounds = DPIUtil.autoScaleBounds(image.getBounds(), getParent().getZoom(), 100);
+		Rectangle bounds = DPIUtil.scaleBounds(image.getBounds(), getParent().getZoom(), 100);
 		int listStyle = parent.style & SWT.RIGHT_TO_LEFT;
 		if (imageList == null) {
 			imageList = display.getImageListToolBar (listStyle, bounds.width, bounds.height, getZoom());
@@ -1229,7 +1229,7 @@ private static void handleDPIChange(Widget widget, int newZoom, float scalingFac
 		Display display = item.getDisplay();
 		int listStyle = parent.style & SWT.RIGHT_TO_LEFT;
 
-		Rectangle bounds = DPIUtil.autoScaleBounds(image.getBounds(), newZoom, 100);
+		Rectangle bounds = DPIUtil.scaleBounds(image.getBounds(), newZoom, 100);
 		if (parent.getImageList() == null) {
 			parent.setImageList (display.getImageListToolBar (listStyle, bounds.width, bounds.height, item.getZoom()));
 		}
