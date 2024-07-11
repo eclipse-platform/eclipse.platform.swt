@@ -379,10 +379,10 @@ void computeRuns (GC gc) {
 	}
 	SCRIPT_LOGATTR logAttr = new SCRIPT_LOGATTR();
 	SCRIPT_PROPERTIES properties = new SCRIPT_PROPERTIES();
-	int wrapIndentInPixels = DPIUtil.autoScaleUp(wrapIndent, getZoom(gc));
-	int indentInPixels = DPIUtil.autoScaleUp(indent, getZoom(gc));
-	int wrapWidthInPixels = DPIUtil.autoScaleUp(wrapWidth, getZoom(gc));
-	int[] tabsInPixels = DPIUtil.autoScaleUp(tabs, getZoom(gc));
+	int wrapIndentInPixels = DPIUtil.scaleUp(wrapIndent, getZoom(gc));
+	int indentInPixels = DPIUtil.scaleUp(indent, getZoom(gc));
+	int wrapWidthInPixels = DPIUtil.scaleUp(wrapWidth, getZoom(gc));
+	int[] tabsInPixels = DPIUtil.scaleUp(tabs, getZoom(gc));
 	int lineWidth = indentInPixels, lineStart = 0, lineCount = 1;
 	for (int i=0; i<allRuns.length - 1; i++) {
 		StyleItem run = allRuns[i];
@@ -705,7 +705,7 @@ long createGdipBrush(Color color, int alpha) {
  */
 public void draw (GC gc, int x, int y) {
 	checkLayout();
-	drawInPixels(gc, DPIUtil.autoScaleUp(getDevice(), x, getZoom(gc)), DPIUtil.autoScaleUp(getDevice(), y, getZoom(gc)));
+	drawInPixels(gc, DPIUtil.scaleUp(getDevice(), x, getZoom(gc)), DPIUtil.scaleUp(getDevice(), y, getZoom(gc)));
 }
 
 /**
@@ -729,7 +729,7 @@ public void draw (GC gc, int x, int y) {
  */
 public void draw (GC gc, int x, int y, int selectionStart, int selectionEnd, Color selectionForeground, Color selectionBackground) {
 	checkLayout();
-	drawInPixels(gc, DPIUtil.autoScaleUp(getDevice(), x, getZoom(gc)), DPIUtil.autoScaleUp(getDevice(), y, getZoom(gc)), selectionStart, selectionEnd, selectionForeground, selectionBackground);
+	drawInPixels(gc, DPIUtil.scaleUp(getDevice(), x, getZoom(gc)), DPIUtil.scaleUp(getDevice(), y, getZoom(gc)), selectionStart, selectionEnd, selectionForeground, selectionBackground);
 }
 
 void drawInPixels (GC gc, int x, int y, int selectionStart, int selectionEnd, Color selectionForeground, Color selectionBackground) {
@@ -765,7 +765,7 @@ void drawInPixels (GC gc, int x, int y, int selectionStart, int selectionEnd, Co
  */
 public void draw (GC gc, int x, int y, int selectionStart, int selectionEnd, Color selectionForeground, Color selectionBackground, int flags) {
 	checkLayout();
-	drawInPixels(gc, DPIUtil.autoScaleUp(getDevice(), x, getZoom(gc)), DPIUtil.autoScaleUp(getDevice(), y, getZoom(gc)), selectionStart, selectionEnd, selectionForeground, selectionBackground, flags);
+	drawInPixels(gc, DPIUtil.scaleUp(getDevice(), x, getZoom(gc)), DPIUtil.scaleUp(getDevice(), y, getZoom(gc)), selectionStart, selectionEnd, selectionForeground, selectionBackground, flags);
 }
 
 private int getNativeZoom(GC gc) {
@@ -839,9 +839,9 @@ void drawInPixels (GC gc, int x, int y, int selectionStart, int selectionEnd, Co
 	OS.SetBkMode(hdc, OS.TRANSPARENT);
 	for (int line=0; line<runs.length; line++) {
 		int drawX = x + getLineIndentInPixel(line);
-		int drawY = y + DPIUtil.autoScaleUp(getDevice(), lineY[line], getZoom(gc));
+		int drawY = y + DPIUtil.scaleUp(getDevice(), lineY[line], getZoom(gc));
 		StyleItem[] lineRuns = runs[line];
-		int lineHeight = DPIUtil.autoScaleUp(getDevice(), lineY[line+1] - lineY[line] - lineSpacingInPoints, getZoom(gc));
+		int lineHeight = DPIUtil.scaleUp(getDevice(), lineY[line+1] - lineY[line] - lineSpacingInPoints, getZoom(gc));
 
 		//Draw last line selection
 		if ((flags & (SWT.FULL_SELECTION | SWT.DELIMITER_SELECTION)) != 0 && (hasSelection || (flags & SWT.LAST_LINE_SELECTION) != 0)) {
@@ -896,10 +896,10 @@ void drawInPixels (GC gc, int x, int y, int selectionStart, int selectionEnd, Co
 		}
 
 		//Draw the text, underline, strikeout, and border of the runs in the line
-		int baselineInPixels = Math.max(0, DPIUtil.autoScaleUp(getDevice(), ascent, getZoom(gc)));
+		int baselineInPixels = Math.max(0, DPIUtil.scaleUp(getDevice(), ascent, getZoom(gc)));
 		int lineUnderlinePos = 0;
 		for (StyleItem run : lineRuns) {
-			baselineInPixels = Math.max(baselineInPixels, DPIUtil.autoScaleUp(getDevice(), run.ascentInPoints, getZoom(gc)));
+			baselineInPixels = Math.max(baselineInPixels, DPIUtil.scaleUp(getDevice(), run.ascentInPoints, getZoom(gc)));
 			lineUnderlinePos = Math.min(lineUnderlinePos, run.underlinePos);
 		}
 		RECT borderClip = null, underlineClip = null, strikeoutClip = null, pRect = null;
@@ -1179,7 +1179,7 @@ RECT drawRunText(GC gc, long hdc, StyleItem run, RECT rect, int baselineInPixels
 	boolean partialSelection = hasSelection && !fullSelection && !(selectionStart > end || run.start > selectionEnd);
 	int offset = (orientation & SWT.RIGHT_TO_LEFT) != 0 ? -1 : 0;
 	int x = rect.left + offset;
-	int y = rect.top + (baselineInPixels - DPIUtil.autoScaleUp(getDevice(), run.ascentInPoints, getZoom(gc)));
+	int y = rect.top + (baselineInPixels - DPIUtil.scaleUp(getDevice(), run.ascentInPoints, getZoom(gc)));
 	long hFont = getItemFont(run, gc);
 	OS.SelectObject(hdc, hFont);
 	if (fullSelection) {
@@ -1210,7 +1210,7 @@ RECT drawRunTextGDIP(GC gc, long graphics, StyleItem run, RECT rect, long gdipFo
 	// rendering (such as ScriptTextOut()) which put top of the character
 	// at requested position.
 	int drawY = rect.top + baselineInPixels;
-	if (run.style != null && run.style.rise != 0) drawY -= DPIUtil.autoScaleUp(getDevice(), run.style.rise, getZoom(gc));
+	if (run.style != null && run.style.rise != 0) drawY -= DPIUtil.scaleUp(getDevice(), run.style.rise, getZoom(gc));
 
 	int drawX = rect.left;
 	long brush = color;
@@ -1362,7 +1362,7 @@ RECT drawStrikeout(GC gc, long hdc, int x, int baselineInPixels, StyleItem[] lin
 			}
 		}
 		RECT rect = new RECT();
-		int riseInPixels = DPIUtil.autoScaleUp(getDevice(), style.rise, getZoom(gc));
+		int riseInPixels = DPIUtil.scaleUp(getDevice(), style.rise, getZoom(gc));
 		OS.SetRect(rect, x + left, baselineInPixels - run.strikeoutPos - riseInPixels, x + run.x + run.width, baselineInPixels - run.strikeoutPos + run.strikeoutThickness - riseInPixels);
 		long brush = OS.CreateSolidBrush(color);
 		OS.FillRect(hdc, rect, brush);
@@ -1412,7 +1412,7 @@ RECT drawStrikeoutGDIP(GC gc, long graphics, int x, int baselineInPixels, StyleI
 				}
 			}
 		}
-		int riseInPixels = DPIUtil.autoScaleUp(getDevice(), style.rise, getZoom(gc));
+		int riseInPixels = DPIUtil.scaleUp(getDevice(), style.rise, getZoom(gc));
 		if (clipRect != null) {
 			int gstate = Gdip.Graphics_Save(graphics);
 			if (clipRect.left == -1) clipRect.left = 0;
@@ -1470,7 +1470,7 @@ RECT drawUnderline(GC gc, long hdc, int x, int baselineInPixels, int lineUnderli
 			}
 		}
 		RECT rect = new RECT();
-		int riseInPixels = DPIUtil.autoScaleUp(getDevice(), style.rise, getZoom(gc));
+		int riseInPixels = DPIUtil.scaleUp(getDevice(), style.rise, getZoom(gc));
 		OS.SetRect(rect, x + left, baselineInPixels - lineUnderlinePos - riseInPixels, x + run.x + run.width, baselineInPixels - lineUnderlinePos + run.underlineThickness - riseInPixels);
 		if (clipRect != null) {
 			if (clipRect.left == -1) clipRect.left = 0;
@@ -1546,7 +1546,7 @@ RECT drawUnderline(GC gc, long hdc, int x, int baselineInPixels, int lineUnderli
 				int penStyle = style.underlineStyle == UNDERLINE_IME_DASH ? OS.PS_DASH : OS.PS_DOT;
 				long pen = OS.CreatePen(penStyle, 1, color);
 				long oldPen = OS.SelectObject(hdc, pen);
-				int descentInPixels = DPIUtil.autoScaleUp(getDevice(), run.descentInPoints, getZoom(gc));
+				int descentInPixels = DPIUtil.scaleUp(getDevice(), run.descentInPoints, getZoom(gc));
 				OS.SetRect(rect, rect.left, baselineInPixels + descentInPixels, rect.right, baselineInPixels + descentInPixels + run.underlineThickness);
 				OS.MoveToEx(hdc, rect.left, rect.top, 0);
 				OS.LineTo(hdc, rect.right, rect.top);
@@ -1602,7 +1602,7 @@ RECT drawUnderlineGDIP (GC gc, long graphics, int x, int baselineInPixels, int l
 			}
 		}
 		RECT rect = new RECT();
-		int riseInPixels = DPIUtil.autoScaleUp(getDevice(), style.rise, getZoom(gc));
+		int riseInPixels = DPIUtil.scaleUp(getDevice(), style.rise, getZoom(gc));
 		OS.SetRect(rect, x + left, baselineInPixels - lineUnderlinePos - riseInPixels, x + run.x + run.width, baselineInPixels - lineUnderlinePos + run.underlineThickness - riseInPixels);
 		Rect gdipRect = null;
 		if (clipRect != null) {
@@ -1698,7 +1698,7 @@ RECT drawUnderlineGDIP (GC gc, long graphics, int x, int baselineInPixels, int l
 					gstate = Gdip.Graphics_Save(graphics);
 					Gdip.Graphics_SetClip(graphics, gdipRect, Gdip.CombineModeExclude);
 				}
-				int descentInPixels = DPIUtil.autoScaleUp(getDevice(), run.descentInPoints, getZoom(gc));
+				int descentInPixels = DPIUtil.scaleUp(getDevice(), run.descentInPoints, getZoom(gc));
 				Gdip.Graphics_DrawLine(graphics, pen, rect.left, baselineInPixels + descentInPixels, run.width - run.length, baselineInPixels + descentInPixels);
 				if (gdipRect != null) {
 					Gdip.Graphics_Restore(graphics, gstate);
@@ -1857,7 +1857,7 @@ Rectangle getBoundsInPixels (int start, int end) {
 			int cx = 0;
 			if (run.style != null && run.style.metrics != null) {
 				GlyphMetrics metrics = run.style.metrics;
-				cx = DPIUtil.autoScaleUp(getDevice(), metrics.width, nativeZoom) * (start - run.start);
+				cx = DPIUtil.scaleUp(getDevice(), metrics.width, nativeZoom) * (start - run.start);
 			} else if (!run.tab) {
 				int iX = ScriptCPtoX(start - run.start, false, run);
 				cx = isRTL ? run.width - iX : iX;
@@ -1872,7 +1872,7 @@ Rectangle getBoundsInPixels (int start, int end) {
 			int cx = run.width;
 			if (run.style != null && run.style.metrics != null) {
 				GlyphMetrics metrics = run.style.metrics;
-				cx = DPIUtil.autoScaleUp(getDevice(), metrics.width, nativeZoom) * (end - run.start + 1);
+				cx = DPIUtil.scaleUp(getDevice(), metrics.width, nativeZoom) * (end - run.start + 1);
 			} else if (!run.tab) {
 				int iX = ScriptCPtoX(end - run.start, true, run);
 				cx = isRTL ? run.width - iX : iX;
@@ -1889,8 +1889,8 @@ Rectangle getBoundsInPixels (int start, int end) {
 		}
 		left = Math.min(left, runLead);
 		right = Math.max(right, runTrail);
-		top = Math.min(top, DPIUtil.autoScaleUp(lineY[lineIndex], getZoom(null)));
-		bottom = Math.max(bottom, DPIUtil.autoScaleUp(lineY[lineIndex + 1] - lineSpacingInPoints, getZoom(null)));
+		top = Math.min(top, DPIUtil.scaleUp(lineY[lineIndex], getZoom(null)));
+		bottom = Math.max(bottom, DPIUtil.scaleUp(lineY[lineIndex + 1] - lineSpacingInPoints, getZoom(null)));
 	}
 	return new Rectangle(left, top, right - left, bottom - top + getScaledVerticalIndent());
 }
@@ -2023,9 +2023,9 @@ Rectangle getLineBoundsInPixels(int lineIndex) {
 	computeRuns(null);
 	if (!(0 <= lineIndex && lineIndex < runs.length)) SWT.error(SWT.ERROR_INVALID_RANGE);
 	int x = getLineIndentInPixel(lineIndex);
-	int y = DPIUtil.autoScaleUp(getDevice(), lineY[lineIndex], getZoom());
+	int y = DPIUtil.scaleUp(getDevice(), lineY[lineIndex], getZoom());
 	int width = lineWidthInPixels[lineIndex];
-	int height = DPIUtil.autoScaleUp(getDevice(), lineY[lineIndex + 1] - lineY[lineIndex] - lineSpacingInPoints, getZoom());
+	int height = DPIUtil.scaleUp(getDevice(), lineY[lineIndex + 1] - lineY[lineIndex] - lineSpacingInPoints, getZoom());
 	return new Rectangle (x, y, width, height);
 }
 
@@ -2050,14 +2050,14 @@ int getLineIndent(int lineIndex) {
 }
 
 int getLineIndentInPixel (int lineIndex) {
-	int lineIndent = DPIUtil.autoScaleUp(wrapIndent, getZoom());
+	int lineIndent = DPIUtil.scaleUp(wrapIndent, getZoom());
 	if (lineIndex == 0) {
-		lineIndent = DPIUtil.autoScaleUp(indent, getZoom());
+		lineIndent = DPIUtil.scaleUp(indent, getZoom());
 	} else {
 		StyleItem[] previousLine = runs[lineIndex - 1];
 		StyleItem previousRun = previousLine[previousLine.length - 1];
 		if (previousRun.lineBreak && !previousRun.softBreak) {
-			lineIndent = DPIUtil.autoScaleUp(indent, getZoom());
+			lineIndent = DPIUtil.scaleUp(indent, getZoom());
 		}
 	}
 	if (wrapWidth != -1) {
@@ -2071,8 +2071,8 @@ int getLineIndentInPixel (int lineIndex) {
 		if (partialLine) {
 			int lineWidth = this.lineWidthInPixels[lineIndex] + lineIndent;
 			switch (alignment) {
-				case SWT.CENTER: lineIndent += (DPIUtil.autoScaleUp(wrapWidth, getZoom()) - lineWidth) / 2; break;
-				case SWT.RIGHT: lineIndent += DPIUtil.autoScaleUp(wrapWidth, getZoom()) - lineWidth; break;
+				case SWT.CENTER: lineIndent += (DPIUtil.scaleUp(wrapWidth, getZoom()) - lineWidth) / 2; break;
+				case SWT.RIGHT: lineIndent += DPIUtil.scaleUp(wrapWidth, getZoom()) - lineWidth; break;
 			}
 		}
 	}
@@ -2145,10 +2145,10 @@ public FontMetrics getLineMetrics (int lineIndex) {
 			descentInPoints = Math.max(descentInPoints, run.descentInPoints);
 		}
 	}
-	lptm.tmAscent = DPIUtil.autoScaleUp(getDevice(), ascentInPoints, getZoom());
-	lptm.tmDescent = DPIUtil.autoScaleUp(getDevice(), descentInPoints, getZoom());
-	lptm.tmHeight = DPIUtil.autoScaleUp(getDevice(), ascentInPoints + descentInPoints, getZoom());
-	lptm.tmInternalLeading = DPIUtil.autoScaleUp(getDevice(), leadingInPoints, getZoom());
+	lptm.tmAscent = DPIUtil.scaleUp(getDevice(), ascentInPoints, getZoom());
+	lptm.tmDescent = DPIUtil.scaleUp(getDevice(), descentInPoints, getZoom());
+	lptm.tmHeight = DPIUtil.scaleUp(getDevice(), ascentInPoints + descentInPoints, getZoom());
+	lptm.tmInternalLeading = DPIUtil.scaleUp(getDevice(), leadingInPoints, getZoom());
 	lptm.tmAveCharWidth = 0;
 	return FontMetrics.win32_new(lptm, nativeZoom);
 }
@@ -2207,7 +2207,7 @@ Point getLocationInPixels (int offset, boolean trailing) {
 	}
 	line = Math.min(line, runs.length - 1);
 	if (offset == length) {
-		return new Point(getLineIndentInPixel(line) + lineWidthInPixels[line], DPIUtil.autoScaleUp(getDevice(), lineY[line], getZoom()));
+		return new Point(getLineIndentInPixel(line) + lineWidthInPixels[line], DPIUtil.scaleUp(getDevice(), lineY[line], getZoom()));
 	}
 	/* For trailing use the low surrogate and for lead use the high surrogate */
 	char ch = segmentsText.charAt(offset);
@@ -2243,7 +2243,7 @@ Point getLocationInPixels (int offset, boolean trailing) {
 			int width;
 			if (run.style != null && run.style.metrics != null) {
 				GlyphMetrics metrics = run.style.metrics;
-				width = DPIUtil.autoScaleUp(getDevice(), metrics.width, nativeZoom) * (offset - run.start + (trailing ? 1 : 0));
+				width = DPIUtil.scaleUp(getDevice(), metrics.width, nativeZoom) * (offset - run.start + (trailing ? 1 : 0));
 			} else if (run.tab) {
 				width = (trailing || (offset == length)) ? run.width : 0;
 			} else {
@@ -2251,7 +2251,7 @@ Point getLocationInPixels (int offset, boolean trailing) {
 				final int iX = ScriptCPtoX(runOffset, trailing, run);
 				width = (orientation & SWT.RIGHT_TO_LEFT) != 0 ? run.width - iX : iX;
 			}
-			return new Point(run.x + width, DPIUtil.autoScaleUp(getDevice(), lineY[line], getZoom()) + getScaledVerticalIndent());
+			return new Point(run.x + width, DPIUtil.scaleUp(getDevice(), lineY[line], getZoom()) + getScaledVerticalIndent());
 		}
 	}
 	return new Point(0, 0);
@@ -2402,7 +2402,7 @@ int _getOffset(int offset, int movement, boolean forward) {
  */
 public int getOffset (Point point, int[] trailing) {
 	checkLayout();
-	if (point == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);	return getOffsetInPixels(DPIUtil.autoScaleUp(getDevice(), point, getZoom()), trailing);
+	if (point == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);	return getOffsetInPixels(DPIUtil.scaleUp(getDevice(), point, getZoom()), trailing);
 }
 
 int getOffsetInPixels (Point point, int[] trailing) {
@@ -2434,7 +2434,7 @@ int getOffsetInPixels (Point point, int[] trailing) {
  */
 public int getOffset (int x, int y, int[] trailing) {
 	checkLayout();
-	return getOffsetInPixels(DPIUtil.autoScaleUp(getDevice(), x, getZoom()), DPIUtil.autoScaleUp(getDevice(), y, getZoom()), trailing);
+	return getOffsetInPixels(DPIUtil.scaleUp(getDevice(), x, getZoom()), DPIUtil.scaleUp(getDevice(), y, getZoom()), trailing);
 }
 
 int getOffsetInPixels (int x, int y, int[] trailing) {
@@ -2443,7 +2443,7 @@ int getOffsetInPixels (int x, int y, int[] trailing) {
 	int line;
 	int lineCount = runs.length;
 	for (line=0; line<lineCount; line++) {
-		if (DPIUtil.autoScaleUp(getDevice(), lineY[line + 1], getZoom()) > y) break;
+		if (DPIUtil.scaleUp(getDevice(), lineY[line + 1], getZoom()) > y) break;
 	}
 	line = Math.min(line, runs.length - 1);
 	StyleItem[] lineRuns = runs[line];
@@ -2465,7 +2465,7 @@ int getOffsetInPixels (int x, int y, int[] trailing) {
 			if (run.style != null && run.style.metrics != null) {
 				GlyphMetrics metrics = run.style.metrics;
 				if (metrics.width > 0) {
-					final int metricsWidthInPixels = DPIUtil.autoScaleUp(getDevice(), metrics.width, nativeZoom);
+					final int metricsWidthInPixels = DPIUtil.scaleUp(getDevice(), metrics.width, nativeZoom);
 					if (trailing != null) {
 						trailing[0] = (xRun % metricsWidthInPixels < metricsWidthInPixels / 2) ? 0 : 1;
 					}
@@ -2702,7 +2702,7 @@ private int getScaledVerticalIndent() {
 	if (verticalIndentInPoints == 0) {
 		return verticalIndentInPoints;
 	}
-	return DPIUtil.autoScaleUp(getDevice(), verticalIndentInPoints, getZoom());
+	return DPIUtil.scaleUp(getDevice(), verticalIndentInPoints, getZoom());
 }
 
 /**
@@ -3911,7 +3911,7 @@ void shape (GC  gc, final long hdc, final StyleItem run) {
 			 *  equals zero for FFFC (possibly other unicode code points), the fix
 			 *  is to make sure the glyph is at least one pixel wide.
 			 */
-			run.width = DPIUtil.autoScaleUp(getDevice(), metrics.width, nativeZoom) * Math.max (1, run.glyphCount);
+			run.width = DPIUtil.scaleUp(getDevice(), metrics.width, nativeZoom) * Math.max (1, run.glyphCount);
 			run.ascentInPoints = metrics.ascent;
 			run.descentInPoints = metrics.descent;
 			run.leadingInPoints = 0;
@@ -3935,7 +3935,7 @@ void shape (GC  gc, final long hdc, final StyleItem run) {
 		} else {
 			run.underlinePos = 1;
 			run.underlineThickness = 1;
-			run.strikeoutPos = DPIUtil.autoScaleUp(getDevice(), run.ascentInPoints, getZoom(gc)) / 2;
+			run.strikeoutPos = DPIUtil.scaleUp(getDevice(), run.ascentInPoints, getZoom(gc)) / 2;
 			run.strikeoutThickness = 1;
 		}
 		run.ascentInPoints += style.rise;

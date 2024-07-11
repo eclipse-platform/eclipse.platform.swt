@@ -191,7 +191,7 @@ public void add (Region region) {
  */
 public boolean contains (int x, int y) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	return containsInPixels(DPIUtil.autoScaleUp(x, initialZoom), DPIUtil.autoScaleUp(y, initialZoom));
+	return containsInPixels(DPIUtil.scaleUp(x, initialZoom), DPIUtil.scaleUp(y, initialZoom));
 }
 
 boolean containsInPixels (int x, int y) {
@@ -216,7 +216,7 @@ boolean containsInPixels (int x, int y) {
 public boolean contains (Point pt) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (pt == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	Point p = DPIUtil.autoScaleUp(pt, initialZoom);
+	Point p = DPIUtil.scaleUp(pt, initialZoom);
 	return containsInPixels(p.x, p.y);
 }
 
@@ -375,7 +375,7 @@ public void intersect (Region region) {
  */
 public boolean intersects (int x, int y, int width, int height) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	return 	intersectsInPixels(DPIUtil.autoScaleUp(x, initialZoom), DPIUtil.autoScaleUp(y, initialZoom), DPIUtil.autoScaleUp(width, initialZoom), DPIUtil.autoScaleUp(height, initialZoom));
+	return 	intersectsInPixels(DPIUtil.scaleUp(x, initialZoom), DPIUtil.scaleUp(y, initialZoom), DPIUtil.scaleUp(width, initialZoom), DPIUtil.scaleUp(height, initialZoom));
 }
 
 boolean intersectsInPixels (int x, int y, int width, int height) {
@@ -404,7 +404,7 @@ boolean intersectsInPixels (int x, int y, int width, int height) {
 public boolean intersects (Rectangle rect) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (rect == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	Rectangle r = DPIUtil.autoScaleUp(rect, initialZoom);
+	Rectangle r = DPIUtil.scaleUp(rect, initialZoom);
 	return intersectsInPixels(r.x, r.y, r.width, r.height);
 }
 
@@ -705,7 +705,7 @@ private class OperationWithRectangle extends Operation {
 	}
 
 	private Rectangle getScaledRectangle(int zoom) {
-		return DPIUtil.autoScaleUp(data, zoom);
+		return DPIUtil.scaleUp(data, zoom);
 	}
 
 }
@@ -754,7 +754,7 @@ private class OperationWithArray extends Operation {
 	}
 
 	private int[] getScaledPoints(int zoom) {
-		return DPIUtil.autoScaleUp(data, zoom);
+		return DPIUtil.scaleUp(data, zoom);
 	}
 }
 
@@ -784,7 +784,7 @@ private class OperationWithPoint extends Operation {
 
 	@Override
 	void translate(long handle, int zoom) {
-		Point pt = DPIUtil.autoScaleUp((Point) data, zoom);
+		Point pt = DPIUtil.scaleUp((Point) data, zoom);
 		OS.OffsetRgn (handle, pt.x, pt.y);
 	}
 

@@ -292,7 +292,7 @@ LRESULT WM_LBUTTONDOWN (long wParam, long lParam) {
 	if (isDisposed ()) return LRESULT.ZERO;
 
 	/* Draw the banding rectangle */
-	Rectangle boundsInPixels = DPIUtil.autoScaleUp(event.getBounds(), getZoom());
+	Rectangle boundsInPixels = DPIUtil.scaleUp(event.getBounds(), getZoom());
 	if (event.doit) {
 		dragging = true;
 		lastX = boundsInPixels.x;
@@ -377,8 +377,8 @@ LRESULT WM_MOUSEMOVE (long wParam, long lParam) {
 	if (isDisposed ()) return LRESULT.ZERO;
 	if (event.doit) {
 		Rectangle bounds = event.getBounds();
-		lastX = DPIUtil.autoScaleUp(bounds.x, zoom);
-		lastY = DPIUtil.autoScaleUp(bounds.y, zoom);
+		lastX = DPIUtil.scaleUp(bounds.x, zoom);
+		lastY = DPIUtil.scaleUp(bounds.y, zoom);
 	}
 	int flags = OS.RDW_UPDATENOW | OS.RDW_ALLCHILDREN;
 	OS.RedrawWindow (hwndTrack, null, 0, flags);

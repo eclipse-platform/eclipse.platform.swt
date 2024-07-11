@@ -462,7 +462,7 @@ public Image(Device device, Rectangle bounds) {
 	super(device);
 	if (bounds == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	initialNativeZoom = DPIUtil.getNativeDeviceZoom();
-	bounds = DPIUtil.autoScaleUp (bounds, getZoom());
+	bounds = DPIUtil.scaleUp (bounds, getZoom());
 	init(bounds.width, bounds.height);
 	init();
 }
@@ -1270,7 +1270,7 @@ Rectangle getBounds(int zoom) {
 	// Read the bounds in pixels from native layer.
 	Rectangle bounds = getBoundsInPixelsFromNative();
 	if (bounds != null && zoom != getZoom()) {
-		bounds = DPIUtil.autoScaleBounds(bounds, zoom, getZoom());
+		bounds = DPIUtil.scaleBounds(bounds, zoom, getZoom());
 	}
 	return bounds;
 }

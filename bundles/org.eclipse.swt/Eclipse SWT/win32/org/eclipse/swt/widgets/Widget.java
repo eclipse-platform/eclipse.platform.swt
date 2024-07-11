@@ -1664,7 +1664,7 @@ boolean showMenu (int x, int y, int detail) {
 	if (!event.doit) return true;
 	Menu menu = getMenu ();
 	if (menu != null && !menu.isDisposed ()) {
-		Point locInPixels = DPIUtil.autoScaleUp(event.getLocation(), zoom); // In Pixels
+		Point locInPixels = DPIUtil.scaleUp(event.getLocation(), zoom); // In Pixels
 		if (x != locInPixels.x || y != locInPixels.y) {
 			menu.setLocation (event.getLocation());
 		}

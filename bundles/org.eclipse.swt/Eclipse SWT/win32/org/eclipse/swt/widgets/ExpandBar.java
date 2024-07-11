@@ -561,7 +561,7 @@ void setScrollbar () {
  */
 public void setSpacing (int spacing) {
 	checkWidget ();
-	setSpacingInPixels(DPIUtil.autoScaleUp(spacing, getZoom()));
+	setSpacingInPixels(DPIUtil.scaleUp(spacing, getZoom()));
 }
 
 void setSpacingInPixels (int spacing) {
