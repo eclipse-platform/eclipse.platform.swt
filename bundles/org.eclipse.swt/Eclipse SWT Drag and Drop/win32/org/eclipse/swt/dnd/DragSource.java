@@ -530,9 +530,10 @@ private void drag(Event dragEvent) {
 		*/
 		int flags = OS.RDW_UPDATENOW | OS.RDW_ALLCHILDREN;
 		OS.RedrawWindow (topControl.handle, null, 0, flags);
+		int zoom = DPIUtil.getZoomForAutoscaleProperty(nativeZoom);
 		POINT pt = new POINT ();
-		pt.x = DPIUtil.autoScaleUp(dragEvent.x);// To Pixels
-		pt.y = DPIUtil.autoScaleUp(dragEvent.y);// To Pixels
+		pt.x = DPIUtil.scaleUp(dragEvent.x, zoom);// To Pixels
+		pt.y = DPIUtil.scaleUp(dragEvent.y, zoom);// To Pixels
 		OS.MapWindowPoints (control.handle, 0, pt, 1);
 		RECT rect = new RECT ();
 		OS.GetWindowRect (hwndDrag, rect);

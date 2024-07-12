@@ -204,8 +204,9 @@ Image (Device device) {
 public Image(Device device, int width, int height) {
 	super(device);
 	initialNativeZoom = DPIUtil.getNativeDeviceZoom();
-	width = DPIUtil.autoScaleUp (width);
-	height = DPIUtil.autoScaleUp (height);
+	final int zoom = getZoom();
+	width = DPIUtil.scaleUp (width, zoom);
+	height = DPIUtil.scaleUp (height, zoom);
 	init(width, height);
 	init();
 }

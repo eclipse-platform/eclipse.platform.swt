@@ -64,7 +64,7 @@ public abstract class Widget {
 	 *
 	 * @noreference This field is not intended to be referenced by clients.
 	 */
-	protected int nativeZoom;
+	public int nativeZoom;
 	int style, state;
 	Display display;
 	EventTable eventTable;

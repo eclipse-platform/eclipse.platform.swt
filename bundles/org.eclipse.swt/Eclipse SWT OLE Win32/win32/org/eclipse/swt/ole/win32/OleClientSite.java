@@ -810,7 +810,7 @@ protected int GetWindow(long phwnd) {
 	return COM.S_OK;
 }
 RECT getRect() {
-	Rectangle area = DPIUtil.autoScaleUp(getClientArea()); // To Pixels
+	Rectangle area = DPIUtil.scaleUp(getClientArea(), DPIUtil.getZoomForAutoscaleProperty(nativeZoom)); // To Pixels
 	RECT rect = new RECT();
 	rect.left   = area.x;
 	rect.top    = area.y;
@@ -987,14 +987,14 @@ private int OnInPlaceDeactivate() {
 	return COM.S_OK;
 }
 private int OnPosRectChange(long lprcPosRect) {
-	Point size = DPIUtil.autoScaleUp(getSize()); // To Pixels
+	Point size = DPIUtil.scaleUp(getSize(), DPIUtil.getZoomForAutoscaleProperty(nativeZoom)); // To Pixels
 	setExtent(size.x, size.y);
 	return COM.S_OK;
 }
 private void onPaint(Event e) {
 	if (state == STATE_RUNNING || state == STATE_INPLACEACTIVE) {
 		SIZE size = getExtent();
-		Rectangle area = DPIUtil.autoScaleUp(getClientArea()); // To Pixels
+		Rectangle area = DPIUtil.scaleUp(getClientArea(), DPIUtil.getZoomForAutoscaleProperty(nativeZoom)); // To Pixels
 		RECT rect = new RECT();
 		if (getProgramID().startsWith("Excel.Sheet")) { //$NON-NLS-1$
 			rect.left = area.x; rect.right = area.x + (area.height * size.cx / size.cy);
@@ -1369,11 +1369,12 @@ void setBorderSpace(RECT newBorderwidth) {
 	setBounds();
 }
 void setBounds() {
-	Rectangle area = DPIUtil.autoScaleUp(frame.getClientArea()); // To Pixels
-	setBounds(DPIUtil.autoScaleDown(borderWidths.left),
-			  DPIUtil.autoScaleDown(borderWidths.top),
-			  DPIUtil.autoScaleDown(area.width - borderWidths.left - borderWidths.right),
-			  DPIUtil.autoScaleDown(area.height - borderWidths.top - borderWidths.bottom));
+	int zoom = DPIUtil.getZoomForAutoscaleProperty(nativeZoom);
+	Rectangle area = DPIUtil.scaleDown(frame.getClientArea(), zoom); // To Pixels
+	setBounds(DPIUtil.scaleDown(borderWidths.left, zoom),
+			  DPIUtil.scaleDown(borderWidths.top, zoom),
+			  DPIUtil.scaleDown(area.width - borderWidths.left - borderWidths.right, zoom),
+			  DPIUtil.scaleDown(area.height - borderWidths.top - borderWidths.bottom, zoom));
 	setObjectRects();
 }
 private void setExtent(int width, int height){
