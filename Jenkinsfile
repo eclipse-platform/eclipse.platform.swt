@@ -87,7 +87,7 @@ pipeline {
 		PR_VALIDATION_BUILD = "true"
 	}
 	parameters {
-		booleanParam(name: 'forceNativeBuilds', defaultValue: false, description: 'Forces to run the native builds of swt\'s binaries. Will push the built binaries to the master branch, unless \'skipCommit\' is set. Useful in debugging.')
+		booleanParam(name: 'forceNativeBuilds', defaultValue: true, description: 'Forces to run the native builds of swt\'s binaries. Will push the built binaries to the master branch, unless \'skipCommit\' is set. Useful in debugging.')
 		booleanParam(name: 'skipCommit', defaultValue: false, description: 'Stops committing to swt and swt binaries repo at the end. Useful in debugging.')
 	}
 	stages {
@@ -185,7 +185,7 @@ pipeline {
 				axes {
 					axis {
 						name 'PLATFORM'
-						values 'cocoa.macosx.aarch64' , 'cocoa.macosx.x86_64', 'gtk.linux.aarch64', 'gtk.linux.ppc64le', 'gtk.linux.x86_64', 'win32.win32.aarch64', 'win32.win32.x86_64'
+						values 'cocoa.macosx.aarch64' , 'cocoa.macosx.x86_64', 'gtk.linux.aarch64', 'gtk.linux.ppc64le', 'gtk.linux.x86_64', 'win32.win32.x86_64'
 					}
 				}
 				stages {
