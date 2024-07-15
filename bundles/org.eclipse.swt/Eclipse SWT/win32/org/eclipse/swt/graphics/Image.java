@@ -732,7 +732,7 @@ public Image(Device device, ImageDataProvider imageDataProvider) {
 	this.imageDataProvider = imageDataProvider;
 	initialNativeZoom = DPIUtil.getNativeDeviceZoom();
 	ElementAtZoom<ImageData> data =  DPIUtil.validateAndGetImageDataAtZoom(imageDataProvider, getZoom());
-	ImageData resizedData = DPIUtil.autoScaleImageData(device, data.element(), getZoom(), data.zoom());
+	ImageData resizedData = DPIUtil.scaleImageData(device, data.element(), getZoom(), data.zoom());
 	init (resizedData, getZoom());
 	init();
 }
@@ -769,13 +769,13 @@ public static Long win32_getHandle (Image image, int zoom) {
 			if (handle == 0) image.init(new ImageData (imageCandidate.element()), zoom);
 			image.init();
 		} else {
-			ImageData resizedData = DPIUtil.autoScaleImageData (image.device, new ImageData (imageCandidate.element()), zoom, imageCandidate.zoom());
+			ImageData resizedData = DPIUtil.scaleImageData (image.device, new ImageData (imageCandidate.element()), zoom, imageCandidate.zoom());
 			image.init(resizedData, zoom);
 			image.init ();
 		}
 	} else if (image.imageDataProvider != null) {
 		ElementAtZoom<ImageData> imageCandidate = DPIUtil.validateAndGetImageDataAtZoom (image.imageDataProvider, zoom);
-		ImageData resizedData = DPIUtil.autoScaleImageData (image.device, imageCandidate.element(), zoom, imageCandidate.zoom());
+		ImageData resizedData = DPIUtil.scaleImageData (image.device, imageCandidate.element(), zoom, imageCandidate.zoom());
 		image.init(resizedData, zoom);
 		image.init();
 	} else {
@@ -1378,10 +1378,10 @@ public ImageData getImageData (int zoom) {
 		return getImageDataAtCurrentZoom();
 	} else if (imageDataProvider != null) {
 		ElementAtZoom<ImageData> data = DPIUtil.validateAndGetImageDataAtZoom (imageDataProvider, zoom);
-		return DPIUtil.autoScaleImageData (device, data.element(), zoom, data.zoom());
+		return DPIUtil.scaleImageData (device, data.element(), zoom, data.zoom());
 	} else if (imageFileNameProvider != null) {
 		ElementAtZoom<String> fileName = DPIUtil.validateAndGetImagePathAtZoom (imageFileNameProvider, zoom);
-		return DPIUtil.autoScaleImageData (device, new ImageData (fileName.element()), zoom, fileName.zoom());
+		return DPIUtil.scaleImageData (device, new ImageData (fileName.element()), zoom, fileName.zoom());
 	}
 
 	// if a GC is initialized with an Image (memGC != null), the image data must not be resized, because it would
@@ -1394,9 +1394,9 @@ public ImageData getImageData (int zoom) {
 		this.dataAtBaseZoom = new ElementAtZoom<>(getImageData(currentZoom), currentZoom);
 	}
 	if (this.dataAtBaseZoom != null) {
-		return DPIUtil.autoScaleImageData(device, this.dataAtBaseZoom, zoom);
+		return DPIUtil.scaleImageData(device, this.dataAtBaseZoom, zoom);
 	} else {
-		return DPIUtil.autoScaleImageData (device, getImageDataAtCurrentZoom (), zoom, currentZoom);
+		return DPIUtil.scaleImageData (device, getImageDataAtCurrentZoom (), zoom, currentZoom);
 	}
 }
 
