@@ -282,15 +282,15 @@ public static Rectangle scaleDown(Drawable drawable, Rectangle rect, int zoom) {
 /**
  * Auto-scale image with ImageData
  */
-public static ImageData autoScaleImageData (Device device, final ImageData imageData, int targetZoom, int currentZoom) {
+public static ImageData scaleImageData (Device device, final ImageData imageData, int targetZoom, int currentZoom) {
 	if (imageData == null || targetZoom == currentZoom || (device != null && !device.isAutoScalable())) return imageData;
 	float scaleFactor = (float) targetZoom / (float) currentZoom;
 	return autoScaleImageData(device, imageData, scaleFactor);
 }
 
 
-public static ImageData autoScaleImageData (Device device, final ElementAtZoom<ImageData> elementAtZoom, int targetZoom) {
-	return autoScaleImageData(device, elementAtZoom.element(), targetZoom, elementAtZoom.zoom());
+public static ImageData scaleImageData (Device device, final ElementAtZoom<ImageData> elementAtZoom, int targetZoom) {
+	return scaleImageData(device, elementAtZoom.element(), targetZoom, elementAtZoom.zoom());
 }
 
 private static ImageData autoScaleImageData (Device device, final ImageData imageData, float scaleFactor) {
@@ -687,7 +687,7 @@ public static final class AutoScaleImageDataProvider implements ImageDataProvide
 	}
 	@Override
 	public ImageData getImageData(int zoom) {
-		return DPIUtil.autoScaleImageData(device, imageData, zoom, currentZoom);
+		return DPIUtil.scaleImageData(device, imageData, zoom, currentZoom);
 	}
 }
 }

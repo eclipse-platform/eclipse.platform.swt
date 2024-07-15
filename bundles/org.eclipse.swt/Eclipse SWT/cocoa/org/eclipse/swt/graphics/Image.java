@@ -1329,7 +1329,7 @@ public ImageData getImageData(int zoom) {
 	} finally {
 		if (pool != null) pool.release();
 	}
-	return DPIUtil.autoScaleImageData (device, getImageData(100), zoom, 100);
+	return DPIUtil.scaleImageData (device, getImageData(100), zoom, 100);
 }
 
 /** Returns the best available representation. May be 100% or 200% iff there is an image provider. */
