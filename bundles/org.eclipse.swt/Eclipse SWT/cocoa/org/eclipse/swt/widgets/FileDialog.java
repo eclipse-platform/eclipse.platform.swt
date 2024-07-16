@@ -383,7 +383,7 @@ public Optional<String> openDialog () {
 	fullPath = null;
 	if ((style & SWT.SAVE) != 0) {
 		NSSavePanel savePanel = NSSavePanel.savePanel();
-		if (savePanel == null) return null;
+		if (savePanel == null) error(SWT.ERROR_INVALID_RETURN_VALUE);
 		panel = savePanel;
 		if (!overwrite) {
 			callback_overwrite_existing_file = new Callback(this, "_overwriteExistingFileCheck", 3);
@@ -395,7 +395,7 @@ public Optional<String> openDialog () {
 		}
 	} else {
 		NSOpenPanel openPanel = NSOpenPanel.openPanel();
-		if (openPanel == null) return null;
+		if (openPanel == null) error(SWT.ERROR_INVALID_RETURN_VALUE);
 		openPanel.setAllowsMultipleSelection((style & SWT.MULTI) != 0);
 		panel = openPanel;
 	}
