@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2023 IBM Corporation and others.
+ * Copyright (c) 2000, 2024 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -83,6 +83,9 @@ typedef enum {
 	gtk_1file_1chooser_1set_1file_FUNC,
 	gtk_1frame_1set_1child_FUNC,
 	gtk_1gesture_1click_1new_FUNC,
+	gtk_1gesture_1drag_1new_FUNC,
+	gtk_1gesture_1rotate_1new_FUNC,
+	gtk_1gesture_1zoom_1new_FUNC,
 	gtk_1hsv_1to_1rgb_FUNC,
 	gtk_1icon_1paintable_1get_1file_FUNC,
 	gtk_1icon_1theme_1get_1for_1display_FUNC,

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2023 IBM Corporation and others.
+ * Copyright (c) 2000, 2024 IBM Corporation and others.
  *
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -722,6 +722,42 @@ JNIEXPORT jlong JNICALL GTK4_NATIVE(gtk_1gesture_1click_1new)
 	GTK4_NATIVE_ENTER(env, that, gtk_1gesture_1click_1new_FUNC);
 	rc = (jlong)gtk_gesture_click_new();
 	GTK4_NATIVE_EXIT(env, that, gtk_1gesture_1click_1new_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_gtk_1gesture_1drag_1new
+JNIEXPORT jlong JNICALL GTK4_NATIVE(gtk_1gesture_1drag_1new)
+	(JNIEnv *env, jclass that)
+{
+	jlong rc = 0;
+	GTK4_NATIVE_ENTER(env, that, gtk_1gesture_1drag_1new_FUNC);
+	rc = (jlong)gtk_gesture_drag_new();
+	GTK4_NATIVE_EXIT(env, that, gtk_1gesture_1drag_1new_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_gtk_1gesture_1rotate_1new
+JNIEXPORT jlong JNICALL GTK4_NATIVE(gtk_1gesture_1rotate_1new)
+	(JNIEnv *env, jclass that)
+{
+	jlong rc = 0;
+	GTK4_NATIVE_ENTER(env, that, gtk_1gesture_1rotate_1new_FUNC);
+	rc = (jlong)gtk_gesture_rotate_new();
+	GTK4_NATIVE_EXIT(env, that, gtk_1gesture_1rotate_1new_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_gtk_1gesture_1zoom_1new
+JNIEXPORT jlong JNICALL GTK4_NATIVE(gtk_1gesture_1zoom_1new)
+	(JNIEnv *env, jclass that)
+{
+	jlong rc = 0;
+	GTK4_NATIVE_ENTER(env, that, gtk_1gesture_1zoom_1new_FUNC);
+	rc = (jlong)gtk_gesture_zoom_new();
+	GTK4_NATIVE_EXIT(env, that, gtk_1gesture_1zoom_1new_FUNC);
 	return rc;
 }
 #endif
