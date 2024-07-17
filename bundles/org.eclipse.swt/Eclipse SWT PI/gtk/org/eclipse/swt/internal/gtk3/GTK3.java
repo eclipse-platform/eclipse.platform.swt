@@ -1065,6 +1065,18 @@ public class GTK3 {
 	 * @param size cast=(size_t)
 	 */
 	public static final native void memmove(long dest, GtkTargetEntry src, long size);
+	/**
+	 * @param widget cast=(GtkWidget *)
+	 */
+	public static final native long gtk_gesture_rotate_new(long widget);
+	/**
+	 * @param widget cast=(GtkWidget *)
+	 */
+	public static final native long gtk_gesture_zoom_new(long widget);
+	/**
+	 * @param widget cast=(GtkWidget *)
+	 */
+	public static final native long gtk_gesture_drag_new(long widget);
 
 	/* Sizeof */
 	public static final native int GtkTargetEntry_sizeof();
@@ -1077,4 +1089,5 @@ public class GTK3 {
 	public static final native int GdkEventWindowState_sizeof();
 	public static final native int GdkGeometry_sizeof();
 	public static final native int GdkWindowAttr_sizeof();
+	
 }
