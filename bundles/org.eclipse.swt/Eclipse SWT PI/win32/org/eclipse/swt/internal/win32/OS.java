@@ -3317,6 +3317,8 @@ public static final native int MessageBox (long hWnd, char [] lpText, char [] lp
 public static final native boolean ModifyWorldTransform(long hdc, float [] lpXform, int iMode);
 /** @param hwnd cast=(HWND) */
 public static final native long MonitorFromWindow (long hwnd, int dwFlags);
+/** @param lprc flags=no_out */
+public static final native long MonitorFromRect(RECT lprc, int dwFlags);
 /**
  * @param Destination cast=(PVOID),flags=no_in critical
  * @param SourcePtr cast=(CONST VOID *)
@@ -3772,6 +3774,11 @@ public static final native boolean OpenClipboard (long hWndNewOwner);
  * @param pszClassList cast=(LPCWSTR),flags=no_out
  */
 public static final native long OpenThemeData (long hwnd, char[] pszClassList);
+/**
+ * @param hwnd cast=(HWND)
+ * @param pszClassList cast=(LPCWSTR),flags=no_out
+ */
+public static final native long OpenThemeDataForDpi (long hwnd, char[] pszClassList, int dpi);
 /** @param hdc cast=(HDC) */
 public static final native boolean PatBlt (long hdc, int x1, int x2, int w, int h, int rop);
 /** @param szfile cast=(LPCWSTR) */
