@@ -582,6 +582,29 @@ public Display () {
  */
 public Display (DeviceData data) {
 	super (data);
+	initializeProperDPIAwareness();
+}
+
+private void initializeProperDPIAwareness() {
+	if (!DPIUtil.isAutoScaleOnRuntimeActive()) {
+		return;
+	}
+	// Auto scaling on runtime requires DPI awareness mode "Per Monitor V2"
+	boolean perMonitorV2Available = OS.WIN32_BUILD > OS.WIN32_BUILD_WIN10_1809;
+	if (!perMonitorV2Available) {
+		System.err.println(
+				"***WARNING: rescaling at runtime is activated but the OS version does not support required DPI awareness mode PerMonitorV2.");
+		return;
+	}
+
+	boolean alreadyUsesPerMonitorV2 = OS.GetThreadDpiAwarenessContext() == OS.DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2;
+	if (alreadyUsesPerMonitorV2) {
+		return;
+	}
+	long setDpiAwarenessResult = OS.SetThreadDpiAwarenessContext(OS.DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2);
+	if (setDpiAwarenessResult == 0L) {
+		System.err.println("***WARNING: setting DPI awareness to PerMonitorV2 failed.");
+	}
 }
 
 Control _getFocusControl () {
