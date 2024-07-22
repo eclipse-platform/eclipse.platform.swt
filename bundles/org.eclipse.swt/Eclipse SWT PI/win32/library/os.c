@@ -3368,6 +3368,18 @@ fail:
 }
 #endif
 
+#ifndef NO_GetThreadDpiAwarenessContext
+JNIEXPORT jlong JNICALL OS_NATIVE(GetThreadDpiAwarenessContext)
+	(JNIEnv *env, jclass that)
+{
+	jlong rc = 0;
+	OS_NATIVE_ENTER(env, that, GetThreadDpiAwarenessContext_FUNC);
+	rc = (jlong)GetThreadDpiAwarenessContext();
+	OS_NATIVE_EXIT(env, that, GetThreadDpiAwarenessContext_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_GetTouchInputInfo
 JNIEXPORT jboolean JNICALL OS_NATIVE(GetTouchInputInfo)
 	(JNIEnv *env, jclass that, jlong arg0, jint arg1, jlong arg2, jint arg3)
@@ -8843,6 +8855,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(SetTextColor)
 	OS_NATIVE_ENTER(env, that, SetTextColor_FUNC);
 	rc = (jint)SetTextColor((HDC)arg0, (COLORREF)arg1);
 	OS_NATIVE_EXIT(env, that, SetTextColor_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_SetThreadDpiAwarenessContext
+JNIEXPORT jlong JNICALL OS_NATIVE(SetThreadDpiAwarenessContext)
+	(JNIEnv *env, jclass that, jlong arg0)
+{
+	jlong rc = 0;
+	OS_NATIVE_ENTER(env, that, SetThreadDpiAwarenessContext_FUNC);
+	rc = (jlong)SetThreadDpiAwarenessContext((DPI_AWARENESS_CONTEXT)arg0);
+	OS_NATIVE_EXIT(env, that, SetThreadDpiAwarenessContext_FUNC);
 	return rc;
 }
 #endif
