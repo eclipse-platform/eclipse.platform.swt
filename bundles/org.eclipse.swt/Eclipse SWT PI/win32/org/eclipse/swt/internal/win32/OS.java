@@ -369,6 +369,10 @@ public class OS extends C {
 	public static final short DMDUP_SIMPLEX = 1;
 	public static final short DMDUP_VERTICAL = 2;
 	public static final short DMDUP_HORIZONTAL = 3;
+	public static final int DPI_AWARENESS_CONTEXT_UNAWARE = 16;
+	public static final int DPI_AWARENESS_CONTEXT_SYSTEM_AWARE = 17;
+	public static final int DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE = 18;
+	public static final int DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2 = 34;
 	public static final int DSTINVERT = 0x550009;
 	public static final int DT_BOTTOM = 0x8;
 	public static final int DT_CALCRECT = 0x400;
@@ -4345,6 +4349,9 @@ public static final native int SetPixel (long hdc, int X, int Y, int crColor);
 /** @param hdc cast=(HDC) */
 public static final native int SetPolyFillMode (long hdc, int iPolyFillMode);
 public static final native boolean SetProcessDPIAware ();
+/** @param dpiContext cast=(DPI_AWARENESS_CONTEXT) */
+public static final native long SetThreadDpiAwarenessContext (long dpiContext);
+public static final native long GetThreadDpiAwarenessContext ();
 /** @method flags=no_gen */
 public static final native int SetPreferredAppMode(int mode);
 /** @param lprc flags=no_in */
