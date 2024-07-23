@@ -110,10 +110,8 @@ public class DPIUtil {
 			}
 		}
 
-		if ("win32".equals(SWT.getPlatform())) {
-			String updateOnRuntimeValue = System.getProperty (SWT_AUTOSCALE_UPDATE_ON_RUNTIME);
-			autoScaleOnRuntime = Boolean.parseBoolean(updateOnRuntimeValue);
-		}
+		String updateOnRuntimeValue = System.getProperty (SWT_AUTOSCALE_UPDATE_ON_RUNTIME);
+		autoScaleOnRuntime = Boolean.parseBoolean(updateOnRuntimeValue);
 	}
 
 /**
@@ -667,10 +665,6 @@ public static int getZoomForAutoscaleProperty (int nativeDeviceZoom) {
 
 public static boolean isAutoScaleOnRuntimeActive() {
 	return autoScaleOnRuntime;
-}
-
-static boolean setAutoScaleOnRuntimeActive(boolean value) {
-	return autoScaleOnRuntime = value;
 }
 
 /**

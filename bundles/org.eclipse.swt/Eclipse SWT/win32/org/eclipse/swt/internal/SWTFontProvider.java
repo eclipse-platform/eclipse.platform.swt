@@ -16,6 +16,7 @@ package org.eclipse.swt.internal;
 import java.util.*;
 
 import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.widgets.*;
 
 /**
  * This internal class is used to provide and cache fonts scaled for different zoom levels in the win32
@@ -47,7 +48,7 @@ public class SWTFontProvider {
 	}
 
 	private static SWTFontRegistry newFontRegistry(Device device) {
-		if (DPIUtil.isAutoScaleOnRuntimeActive()) {
+		if (device instanceof Display display && display.isRescalingAtRuntime()) {
 			return new ScalingSWTFontRegistry(device);
 		}
 		return new DefaultSWTFontRegistry(device);

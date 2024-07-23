@@ -138,6 +138,7 @@ public class Display extends Device implements Executor {
 	EventTable eventTable, filterTable;
 	boolean useOwnDC;
 	boolean externalEventLoop; // events are dispatched outside SWT, e.g. TrackPopupMenu or DoDragDrop
+	private boolean rescalingAtRuntime;
 
 	/* Widget Table */
 	private Map<Long, Control> controlByHandle;
@@ -582,28 +583,8 @@ public Display () {
  */
 public Display (DeviceData data) {
 	super (data);
-	initializeProperDPIAwareness();
-}
-
-private void initializeProperDPIAwareness() {
-	if (!DPIUtil.isAutoScaleOnRuntimeActive()) {
-		return;
-	}
-	// Auto scaling on runtime requires DPI awareness mode "Per Monitor V2"
-	boolean perMonitorV2Available = OS.WIN32_BUILD > OS.WIN32_BUILD_WIN10_1809;
-	if (!perMonitorV2Available) {
-		System.err.println(
-				"***WARNING: rescaling at runtime is activated but the OS version does not support required DPI awareness mode PerMonitorV2.");
-		return;
-	}
-
-	boolean alreadyUsesPerMonitorV2 = OS.GetThreadDpiAwarenessContext() == OS.DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2;
-	if (alreadyUsesPerMonitorV2) {
-		return;
-	}
-	long setDpiAwarenessResult = OS.SetThreadDpiAwarenessContext(OS.DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2);
-	if (setDpiAwarenessResult == 0L) {
-		System.err.println("***WARNING: setting DPI awareness to PerMonitorV2 failed.");
+	if (DPIUtil.isAutoScaleOnRuntimeActive()) {
+		setRescalingAtRuntime(true);
 	}
 }
 
@@ -5267,4 +5248,62 @@ static char [] withCrLf (char [] string) {
 static boolean isActivateShellOnForceFocus() {
 	return "true".equals(System.getProperty("org.eclipse.swt.internal.activateShellOnForceFocus", "true")); //$NON-NLS-1$
 }
+
+/**
+ * {@return whether rescaling of shells at runtime when the DPI scaling of a
+ * shell's monitor changes is activated for this device}
+ * <p>
+ * <b>Note:</b> This functionality is only available on Windows. Calling this
+ * method on other operating system will always return false.
+ *
+ * @since 3.127
+ */
+public boolean isRescalingAtRuntime() {
+	return rescalingAtRuntime;
+}
+
+/**
+ * Activates or deactivates rescaling of shells at runtime whenever the DPI
+ * scaling of the shell's monitor changes. This is only safe to call as long as
+ * no shell has been created for this display. When changing the value after a
+ * shell has been created for this display, the effect is undefined.
+ * <p>
+ * <b>Note:</b> This functionality is only available on Windows. Calling this
+ * method on other operating system will have no effect.
+ *
+ * @param activate whether rescaling shall be activated or deactivated
+ * @since 3.127
+ */
+public void setRescalingAtRuntime(boolean activate) {
+	rescalingAtRuntime = activate;
+	// dispose a existing font registry for the default display
+	SWTFontProvider.disposeFontRegistry(this);
+	setProperDPIAwareness();
+}
+
+private void setProperDPIAwareness() {
+	long desiredDpiAwareness = OS.DPI_AWARENESS_CONTEXT_SYSTEM_AWARE;
+	if (OS.WIN32_BUILD < OS.WIN32_BUILD_WIN10_1607) {
+		System.err.println("***WARNING: the OS version does not support setting DPI awareness.");
+		return;
+	}
+	if (rescalingAtRuntime) {
+		desiredDpiAwareness = OS.DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2;
+		// Auto scaling on runtime requires DPI awareness mode "Per Monitor V2"
+		boolean perMonitorV2Available = OS.WIN32_BUILD >= OS.WIN32_BUILD_WIN10_1809;
+		if (!perMonitorV2Available) {
+			System.err.println(
+					"***WARNING: rescaling at runtime is activated but the OS version does not support required DPI awareness mode PerMonitorV2.");
+			return;
+		}
+	}
+	if (desiredDpiAwareness == OS.GetThreadDpiAwarenessContext()) {
+		return;
+	}
+	long setDpiAwarenessResult = OS.SetThreadDpiAwarenessContext(desiredDpiAwareness);
+	if (setDpiAwarenessResult == 0L) {
+		System.err.println("***WARNING: setting DPI awareness failed.");
+	}
+}
+
 }

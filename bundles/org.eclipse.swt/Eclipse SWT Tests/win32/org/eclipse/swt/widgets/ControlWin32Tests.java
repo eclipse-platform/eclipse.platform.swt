@@ -30,7 +30,7 @@ class ControlWin32Tests extends Win32AutoscaleTestBase {
 
 	@Test
 	public void testScaleFontCorrectlyInAutoScaleSzenario() {
-		assertTrue("Autoscale property is not set to true", DPITestUtil.isAutoScaleOnRuntimeActive());
+		assertTrue("Autoscale property is not set to true", display.isRescalingAtRuntime());
 
 		int scalingFactor = 2;
 		Control control = new Composite(shell, SWT.NONE);
@@ -54,8 +54,8 @@ class ControlWin32Tests extends Win32AutoscaleTestBase {
 
 	@Test
 	public void testDoNotScaleFontCorrectlyInNoAutoScaleSzenario() {
-		autoScaleOnRuntime(false);
-		assertFalse("Autoscale property is not set to false", DPITestUtil.isAutoScaleOnRuntimeActive());
+		display.setRescalingAtRuntime(false);
+		assertFalse("Autoscale property is not set to false", display.isRescalingAtRuntime());
 
 		int scalingFactor = 2;
 		Control control = new Composite(shell, SWT.NONE);
