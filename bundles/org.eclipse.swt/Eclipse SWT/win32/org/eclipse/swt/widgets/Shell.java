@@ -313,7 +313,7 @@ Shell (Display display, Shell parent, int style, long handle, boolean embedded) 
 	createWidget ();
 
 
-	if (DPIUtil.isAutoScaleOnRuntimeActive()) {
+	if (getDisplay().isRescalingAtRuntime()) {
 		addListener(SWT.ZoomChanged, this::handleZoomEvent);
 	}
 }

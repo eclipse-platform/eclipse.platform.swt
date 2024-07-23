@@ -6832,4 +6832,33 @@ static long windowProc(long id, long sel, long arg0, long arg1, long arg2, long 
 static boolean isActivateShellOnForceFocus() {
 	return "true".equals(System.getProperty("org.eclipse.swt.internal.activateShellOnForceFocus", "true")); //$NON-NLS-1$
 }
+
+/**
+ * {@return whether rescaling of shells at runtime when the DPI scaling of a
+ * shell's monitor changes is activated for this device}
+ * <p>
+ * <b>Note:</b> This functionality is only available on Windows. Calling this
+ * method on other operating system will always return false.
+ *
+ * @since 3.127
+ */
+public boolean isRescalingAtRuntime() {
+	return false;
+}
+
+/**
+ * Activates or deactivates rescaling of shells at runtime whenever the DPI
+ * scaling of the shell's monitor changes. This is only safe to call as long as
+ * no shell has been created for this display. When changing the value after a
+ * shell has been created for this display, the effect is undefined.
+ * <p>
+ * <b>Note:</b> This functionality is only available on Windows. Calling this
+ * method on other operating system will have no effect.
+ *
+ * @param activate whether rescaling shall be activated or deactivated
+ * @since 3.127
+ */
+public void setRescalingAtRuntime(boolean activate) {
+	// not implemented for Cocoa
+}
 }

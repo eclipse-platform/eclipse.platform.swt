@@ -4910,13 +4910,13 @@ LRESULT WM_DPICHANGED (long wParam, long lParam) {
 		event.detail = newNativeZoom;
 		event.doit = true;
 
-		if (DPIUtil.isAutoScaleOnRuntimeActive()) {
+		if (getDisplay().isRescalingAtRuntime()) {
 			DPIUtil.setDeviceZoom (newNativeZoom);
 		}
 
 		notifyListeners(SWT.ZoomChanged, event);
 
-		if (DPIUtil.isAutoScaleOnRuntimeActive()) {
+		if (getDisplay().isRescalingAtRuntime()) {
 			RECT rect = new RECT ();
 			COM.MoveMemory(rect, lParam, RECT.sizeof);
 			this.setBoundsInPixels(rect.left, rect.top, rect.right - rect.left, rect.bottom-rect.top);
