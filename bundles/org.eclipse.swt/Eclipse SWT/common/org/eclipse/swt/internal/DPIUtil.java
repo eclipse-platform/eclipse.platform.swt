@@ -394,15 +394,6 @@ public static int scaleUp(int size, int zoom) {
 }
 
 /**
- * Auto-scale up int dimensions using Native DPI
- */
-public static int autoScaleUpUsingNativeDPI (int size) {
-	if (nativeDeviceZoom == 100 || size == SWT.DEFAULT) return size;
-	float nativeScaleFactor = nativeDeviceZoom / 100f;
-	return Math.round (size * nativeScaleFactor);
-}
-
-/**
  * Auto-scale up int dimensions if enabled for Drawable class.
  */
 public static int autoScaleUp(Drawable drawable, int size) {

@@ -1314,7 +1314,7 @@ private int getCheckboxTextOffset(long hdc) {
 		OS.GetThemePartSize(display.hButtonTheme(), hdc, OS.BP_CHECKBOX, OS.CBS_UNCHECKEDNORMAL, null, OS.TS_TRUE, size);
 		result += size.cx;
 	} else {
-		result += DPIUtil.autoScaleUpUsingNativeDPI(13);
+		result += DPIUtil.scaleUp(13, nativeZoom);
 	}
 
 	// Windows uses half width of '0' as checkbox-to-text distance.
