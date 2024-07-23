@@ -56,9 +56,6 @@ public abstract class Device implements Drawable {
 
 	volatile boolean disposed;
 
-	/* Auto-Scaling*/
-	boolean enableAutoScaling = true;
-
 	/*
 	* TEMPORARY CODE. When a graphics object is
 	* created and the device parameter is null,
@@ -937,14 +934,6 @@ protected void release () {
  */
 public void setWarnings (boolean warnings) {
 	checkDevice ();
-}
-
-boolean getEnableAutoScaling() {
-	return enableAutoScaling;
-}
-
-void setEnableAutoScaling(boolean value) {
-	enableAutoScaling = value;
 }
 
 /**
