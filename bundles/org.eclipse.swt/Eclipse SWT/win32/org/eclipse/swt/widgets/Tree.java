@@ -5371,7 +5371,7 @@ public void setTopItem (TreeItem item) {
  * In a Tree without imageList, the indent also controls the chevron (glyph) size.
  */
 private void calculateAndApplyIndentSize() {
-	int indent = DPIUtil.autoScaleUpUsingNativeDPI(DEFAULT_INDENT);
+	int indent = DPIUtil.scaleUp(DEFAULT_INDENT, nativeZoom);
 	OS.SendMessage(handle, OS.TVM_SETINDENT, indent, 0);
 }
 
@@ -8297,6 +8297,7 @@ private static void handleDPIChange(Widget widget, int newZoom, float scalingFac
 		DPIZoomChangeRegistry.applyChange(item, newZoom, scalingFactor);
 	}
 
+	tree.calculateAndApplyIndentSize();
 	tree.updateOrientation();
 	tree.setScrollWidth();
 	// Reset of CheckBox Size required (if SWT.Check is not set, this is a no-op)
