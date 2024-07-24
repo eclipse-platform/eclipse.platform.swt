@@ -6290,10 +6290,12 @@ public boolean isRescalingAtRuntime() {
  * method on other operating system will have no effect.
  *
  * @param activate whether rescaling shall be activated or deactivated
+ * @return whether activating or deactivating the rescaling was successful
  * @since 3.127
  */
-public void setRescalingAtRuntime(boolean activate) {
+public boolean setRescalingAtRuntime(boolean activate) {
 	// not implemented for GTK
+	return false;
 }
 
 }
