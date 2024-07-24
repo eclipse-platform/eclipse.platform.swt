@@ -5272,38 +5272,42 @@ public boolean isRescalingAtRuntime() {
  * method on other operating system will have no effect.
  *
  * @param activate whether rescaling shall be activated or deactivated
+ * @return whether activating or deactivating the rescaling was successful
  * @since 3.127
  */
-public void setRescalingAtRuntime(boolean activate) {
-	rescalingAtRuntime = activate;
-	// dispose a existing font registry for the default display
-	SWTFontProvider.disposeFontRegistry(this);
-	setProperDPIAwareness();
+public boolean setRescalingAtRuntime(boolean activate) {
+	int desiredApiAwareness = activate ? OS.DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2 : OS.DPI_AWARENESS_CONTEXT_SYSTEM_AWARE;
+	if (setDPIAwareness(desiredApiAwareness)) {
+		rescalingAtRuntime = activate;
+		// dispose a existing font registry for the default display
+		SWTFontProvider.disposeFontRegistry(this);
+		return true;
+	}
+	return false;
 }
 
-private void setProperDPIAwareness() {
-	long desiredDpiAwareness = OS.DPI_AWARENESS_CONTEXT_SYSTEM_AWARE;
+private boolean setDPIAwareness(int desiredDpiAwareness) {
 	if (OS.WIN32_BUILD < OS.WIN32_BUILD_WIN10_1607) {
 		System.err.println("***WARNING: the OS version does not support setting DPI awareness.");
-		return;
-	}
-	if (rescalingAtRuntime) {
-		desiredDpiAwareness = OS.DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2;
-		// Auto scaling on runtime requires DPI awareness mode "Per Monitor V2"
-		boolean perMonitorV2Available = OS.WIN32_BUILD >= OS.WIN32_BUILD_WIN10_1809;
-		if (!perMonitorV2Available) {
-			System.err.println(
-					"***WARNING: rescaling at runtime is activated but the OS version does not support required DPI awareness mode PerMonitorV2.");
-			return;
-		}
+		return false;
 	}
 	if (desiredDpiAwareness == OS.GetThreadDpiAwarenessContext()) {
-		return;
+		return true;
+	}
+	if (desiredDpiAwareness == OS.DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2) {
+		// "Per Monitor V2" only available in more recent Windows version
+		boolean perMonitorV2Available = OS.WIN32_BUILD >= OS.WIN32_BUILD_WIN10_1809;
+		if (!perMonitorV2Available) {
+			System.err.println("***WARNING: the OS version does not support DPI awareness mode PerMonitorV2.");
+			return false;
+		}
 	}
 	long setDpiAwarenessResult = OS.SetThreadDpiAwarenessContext(desiredDpiAwareness);
 	if (setDpiAwarenessResult == 0L) {
 		System.err.println("***WARNING: setting DPI awareness failed.");
+		return false;
 	}
+	return true;
 }
 
 }
