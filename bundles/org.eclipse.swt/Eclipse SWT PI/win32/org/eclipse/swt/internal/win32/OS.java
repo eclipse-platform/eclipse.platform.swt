@@ -1362,6 +1362,7 @@ public class OS extends C {
 	public static final int TBS_DOWNISLEFT = 0x0400;
 	public static final int TBS_HORZ = 0x0;
 	public static final int TBS_VERT = 0x2;
+	public static final int TB_ADDBUTTONS = 0x444;
 	public static final int TB_ADDSTRING = 0x44d;
 	public static final int TB_AUTOSIZE = 0x421;
 	public static final int TB_BUTTONCOUNT = 0x418;
