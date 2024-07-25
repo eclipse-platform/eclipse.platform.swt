@@ -13,7 +13,6 @@
  *******************************************************************************/
 package org.eclipse.swt.internal;
 
-import org.eclipse.swt.*;
 import org.eclipse.swt.widgets.*;
 import org.junit.jupiter.api.*;
 
@@ -42,11 +41,7 @@ public abstract class Win32AutoscaleTestBase {
 	}
 
 	protected void changeDPIZoom (int nativeZoom) {
-		Event event = new Event();
-		event.type = SWT.ZoomChanged;
-		event.widget = shell;
-		event.detail = nativeZoom;
-		event.doit = true;
-		shell.notifyListeners(SWT.ZoomChanged, event);
+		float scalingFactor = 1f * DPIUtil.getZoomForAutoscaleProperty(nativeZoom) / DPIUtil.getZoomForAutoscaleProperty(shell.nativeZoom);
+		DPIZoomChangeRegistry.applyChange(shell, nativeZoom, scalingFactor);
 	}
 }

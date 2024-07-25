@@ -311,11 +311,6 @@ Shell (Display display, Shell parent, int style, long handle, boolean embedded) 
 
 	reskinWidget();
 	createWidget ();
-
-
-	if (getDisplay().isRescalingAtRuntime()) {
-		addListener(SWT.ZoomChanged, this::handleZoomEvent);
-	}
 }
 
 /**
@@ -2645,12 +2640,6 @@ LRESULT WM_WINDOWPOSCHANGING (long wParam, long lParam) {
 		OS.MoveMemory (lParam, lpwp, WINDOWPOS.sizeof);
 	}
 	return result;
-}
-
-private void handleZoomEvent(Event event) {
-	int newNativeZoom = event.detail;
-	float scalingFactor = 1f * DPIUtil.getZoomForAutoscaleProperty(newNativeZoom) / getZoom();
-	DPIZoomChangeRegistry.applyChange(this, newNativeZoom, scalingFactor);
 }
 
 private static void handleDPIChange(Widget widget, int newZoom, float scalingFactor) {
