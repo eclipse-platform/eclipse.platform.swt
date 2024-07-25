@@ -20,7 +20,6 @@ import java.util.concurrent.atomic.*;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.internal.*;
-import org.eclipse.swt.widgets.*;
 import org.junit.jupiter.api.*;
 
 class GCWin32Tests extends Win32AutoscaleTestBase {
@@ -43,11 +42,7 @@ class GCWin32Tests extends Win32AutoscaleTestBase {
 		assertEquals("GCData must have a zoom level equal to the actual zoom level of the widget/shell", DPIUtil.getNativeDeviceZoom(), (int) gcNativeZoom.join());
 
 		int newSWTZoom = zoom * 2;
-		Event swtEvent = new Event();
-		swtEvent.type = SWT.ZoomChanged;
-		swtEvent.widget = shell;
-		swtEvent.detail = newSWTZoom;
-		shell.notifyListeners(SWT.ZoomChanged, swtEvent);
+		changeDPIZoom(newSWTZoom);
 		isScaled.set(true);
 		shell.setVisible(false);
 		shell.setVisible(true);
