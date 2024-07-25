@@ -25,8 +25,8 @@ public class ImageList {
 	int style, refCount;
 	Image [] images;
 	private final int zoom;
-	private int width, height;
-	private int flags;
+	private final int width, height;
+	private final int flags;
 
 	private HashMap<Integer, Long> zoomToHandle = new HashMap<>();
 
@@ -36,8 +36,9 @@ public ImageList (int style, int zoom) {
 
 public ImageList (int style, int width, int height, int zoom) {
 	this.style = style;
-	this.flags = OS.ILC_MASK | OS.ILC_COLOR32;
-	if ((style & SWT.RIGHT_TO_LEFT) != 0) this.flags |= OS.ILC_MIRROR;
+	int listFlags = OS.ILC_MASK | OS.ILC_COLOR32;
+	if ((style & SWT.RIGHT_TO_LEFT) != 0) listFlags |= OS.ILC_MIRROR;
+	this.flags = listFlags;
 	this.height = height;
 	this.width = width;
 	handle = OS.ImageList_Create (width, height, this.flags, 16, 16);
