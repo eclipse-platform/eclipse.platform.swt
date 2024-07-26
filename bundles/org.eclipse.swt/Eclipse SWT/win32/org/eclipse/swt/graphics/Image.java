@@ -297,124 +297,13 @@ public Image(Device device, Image srcImage, int flag) {
 		}
 		case SWT.IMAGE_DISABLE: {
 			ImageData data = srcImage.getImageData(srcImage.getZoom());
-			PaletteData palette = data.palette;
-			RGB[] rgbs = new RGB[3];
-			rgbs[0] = device.getSystemColor(SWT.COLOR_BLACK).getRGB();
-			rgbs[1] = device.getSystemColor(SWT.COLOR_WIDGET_NORMAL_SHADOW).getRGB();
-			rgbs[2] = device.getSystemColor(SWT.COLOR_WIDGET_BACKGROUND).getRGB();
-			ImageData newData = new ImageData(rect.width, rect.height, 8, new PaletteData(rgbs));
-			newData.alpha = data.alpha;
-			newData.alphaData = data.alphaData;
-			newData.maskData = data.maskData;
-			newData.maskPad = data.maskPad;
-			if (data.transparentPixel != -1) newData.transparentPixel = 0;
-
-			/* Convert the pixels. */
-			int[] scanline = new int[rect.width];
-			int[] maskScanline = null;
-			ImageData mask = null;
-			if (data.maskData != null) mask = data.getTransparencyMask();
-			if (mask != null) maskScanline = new int[rect.width];
-			int redMask = palette.redMask;
-			int greenMask = palette.greenMask;
-			int blueMask = palette.blueMask;
-			int redShift = palette.redShift;
-			int greenShift = palette.greenShift;
-			int blueShift = palette.blueShift;
-			for (int y=0; y<rect.height; y++) {
-				int offset = y * newData.bytesPerLine;
-				data.getPixels(0, y, rect.width, scanline, 0);
-				if (mask != null) mask.getPixels(0, y, rect.width, maskScanline, 0);
-				for (int x=0; x<rect.width; x++) {
-					int pixel = scanline[x];
-					if (!((data.transparentPixel != -1 && pixel == data.transparentPixel) || (mask != null && maskScanline[x] == 0))) {
-						int red, green, blue;
-						if (palette.isDirect) {
-							red = pixel & redMask;
-							red = (redShift < 0) ? red >>> -redShift : red << redShift;
-							green = pixel & greenMask;
-							green = (greenShift < 0) ? green >>> -greenShift : green << greenShift;
-							blue = pixel & blueMask;
-							blue = (blueShift < 0) ? blue >>> -blueShift : blue << blueShift;
-						} else {
-							red = palette.colors[pixel].red;
-							green = palette.colors[pixel].green;
-							blue = palette.colors[pixel].blue;
-						}
-						int intensity = red * red + green * green + blue * blue;
-						if (intensity < 98304) {
-							newData.data[offset] = (byte)1;
-						} else {
-							newData.data[offset] = (byte)2;
-						}
-					}
-					offset++;
-				}
-			}
+			ImageData newData = applyDisableImageData(data, rect.height, rect.width);
 			init (newData, getZoom());
 			break;
 		}
 		case SWT.IMAGE_GRAY: {
 			ImageData data = srcImage.getImageData(srcImage.getZoom());
-			PaletteData palette = data.palette;
-			ImageData newData = data;
-			if (!palette.isDirect) {
-				/* Convert the palette entries to gray. */
-				RGB [] rgbs = palette.getRGBs();
-				for (int i=0; i<rgbs.length; i++) {
-					if (data.transparentPixel != i) {
-						RGB color = rgbs [i];
-						int red = color.red;
-						int green = color.green;
-						int blue = color.blue;
-						int intensity = (red+red+green+green+green+green+green+blue) >> 3;
-						color.red = color.green = color.blue = intensity;
-					}
-				}
-				newData.palette = new PaletteData(rgbs);
-			} else {
-				/* Create a 8 bit depth image data with a gray palette. */
-				RGB[] rgbs = new RGB[256];
-				for (int i=0; i<rgbs.length; i++) {
-					rgbs[i] = new RGB(i, i, i);
-				}
-				newData = new ImageData(rect.width, rect.height, 8, new PaletteData(rgbs));
-				newData.alpha = data.alpha;
-				newData.alphaData = data.alphaData;
-				newData.maskData = data.maskData;
-				newData.maskPad = data.maskPad;
-				if (data.transparentPixel != -1) newData.transparentPixel = 254;
-
-				/* Convert the pixels. */
-				int[] scanline = new int[rect.width];
-				int redMask = palette.redMask;
-				int greenMask = palette.greenMask;
-				int blueMask = palette.blueMask;
-				int redShift = palette.redShift;
-				int greenShift = palette.greenShift;
-				int blueShift = palette.blueShift;
-				for (int y=0; y<rect.height; y++) {
-					int offset = y * newData.bytesPerLine;
-					data.getPixels(0, y, rect.width, scanline, 0);
-					for (int x=0; x<rect.width; x++) {
-						int pixel = scanline[x];
-						if (pixel != data.transparentPixel) {
-							int red = pixel & redMask;
-							red = (redShift < 0) ? red >>> -redShift : red << redShift;
-							int green = pixel & greenMask;
-							green = (greenShift < 0) ? green >>> -greenShift : green << greenShift;
-							int blue = pixel & blueMask;
-							blue = (blueShift < 0) ? blue >>> -blueShift : blue << blueShift;
-							int intensity = (red+red+green+green+green+green+green+blue) >> 3;
-							if (newData.transparentPixel == intensity) intensity = 255;
-							newData.data[offset] = (byte)intensity;
-						} else {
-							newData.data[offset] = (byte)254;
-						}
-						offset++;
-					}
-				}
-			}
+			ImageData newData = applyGrayImageData(data, rect.height, rect.width);
 			init (newData, getZoom());
 			break;
 		}
@@ -738,6 +627,150 @@ public Image(Device device, ImageDataProvider imageDataProvider) {
 	init();
 }
 
+private ImageData adaptImageDataIfDisabledOrGray(ImageData data) {
+	ImageData returnImageData = null;
+	switch (this.styleFlag) {
+		case SWT.IMAGE_DISABLE: {
+			ImageData newData = applyDisableImageData(data, data.height, data.width);
+			returnImageData = newData;
+			break;
+		}
+		case SWT.IMAGE_GRAY: {
+			ImageData newData = applyGrayImageData(data, data.height, data.width);
+			returnImageData = newData;
+			break;
+		}
+		default: {
+			returnImageData = data;
+			break;
+		}
+	}
+
+	return returnImageData;
+}
+
+private ImageData applyDisableImageData(ImageData data, int height, int width) {
+	PaletteData palette = data.palette;
+	RGB[] rgbs = new RGB[3];
+	rgbs[0] = this.device.getSystemColor(SWT.COLOR_BLACK).getRGB();
+	rgbs[1] = this.device.getSystemColor(SWT.COLOR_WIDGET_NORMAL_SHADOW).getRGB();
+	rgbs[2] = this.device.getSystemColor(SWT.COLOR_WIDGET_BACKGROUND).getRGB();
+	ImageData newData = new ImageData(width, height, 8, new PaletteData(rgbs));
+	newData.alpha = data.alpha;
+	newData.alphaData = data.alphaData;
+	newData.maskData = data.maskData;
+	newData.maskPad = data.maskPad;
+	if (data.transparentPixel != -1) newData.transparentPixel = 0;
+
+	/* Convert the pixels. */
+	int[] scanline = new int[width];
+	int[] maskScanline = null;
+	ImageData mask = null;
+	if (data.maskData != null) mask = data.getTransparencyMask();
+	if (mask != null) maskScanline = new int[width];
+	int redMask = palette.redMask;
+	int greenMask = palette.greenMask;
+	int blueMask = palette.blueMask;
+	int redShift = palette.redShift;
+	int greenShift = palette.greenShift;
+	int blueShift = palette.blueShift;
+	for (int y=0; y<height; y++) {
+		int offset = y * newData.bytesPerLine;
+		data.getPixels(0, y, width, scanline, 0);
+		if (mask != null) mask.getPixels(0, y, width, maskScanline, 0);
+		for (int x=0; x<width; x++) {
+			int pixel = scanline[x];
+			if (!((data.transparentPixel != -1 && pixel == data.transparentPixel) || (mask != null && maskScanline[x] == 0))) {
+				int red, green, blue;
+				if (palette.isDirect) {
+					red = pixel & redMask;
+					red = (redShift < 0) ? red >>> -redShift : red << redShift;
+					green = pixel & greenMask;
+					green = (greenShift < 0) ? green >>> -greenShift : green << greenShift;
+					blue = pixel & blueMask;
+					blue = (blueShift < 0) ? blue >>> -blueShift : blue << blueShift;
+				} else {
+					red = palette.colors[pixel].red;
+					green = palette.colors[pixel].green;
+					blue = palette.colors[pixel].blue;
+				}
+				int intensity = red * red + green * green + blue * blue;
+				if (intensity < 98304) {
+					newData.data[offset] = (byte)1;
+				} else {
+					newData.data[offset] = (byte)2;
+				}
+			}
+			offset++;
+		}
+	}
+	return newData;
+}
+
+private ImageData applyGrayImageData(ImageData data, int pHeight, int pWidth) {
+	PaletteData palette = data.palette;
+	ImageData newData = data;
+	if (!palette.isDirect) {
+		/* Convert the palette entries to gray. */
+		RGB [] rgbs = palette.getRGBs();
+		for (int i=0; i<rgbs.length; i++) {
+			if (data.transparentPixel != i) {
+				RGB color = rgbs [i];
+				int red = color.red;
+				int green = color.green;
+				int blue = color.blue;
+				int intensity = (red+red+green+green+green+green+green+blue) >> 3;
+				color.red = color.green = color.blue = intensity;
+			}
+		}
+		newData.palette = new PaletteData(rgbs);
+	} else {
+		/* Create a 8 bit depth image data with a gray palette. */
+		RGB[] rgbs = new RGB[256];
+		for (int i=0; i<rgbs.length; i++) {
+			rgbs[i] = new RGB(i, i, i);
+		}
+		newData = new ImageData(pWidth, pHeight, 8, new PaletteData(rgbs));
+		newData.alpha = data.alpha;
+		newData.alphaData = data.alphaData;
+		newData.maskData = data.maskData;
+		newData.maskPad = data.maskPad;
+		if (data.transparentPixel != -1) newData.transparentPixel = 254;
+
+		/* Convert the pixels. */
+		int[] scanline = new int[pWidth];
+		int redMask = palette.redMask;
+		int greenMask = palette.greenMask;
+		int blueMask = palette.blueMask;
+		int redShift = palette.redShift;
+		int greenShift = palette.greenShift;
+		int blueShift = palette.blueShift;
+		for (int y=0; y<pHeight; y++) {
+			int offset = y * newData.bytesPerLine;
+			data.getPixels(0, y, pWidth, scanline, 0);
+			for (int x=0; x<pWidth; x++) {
+				int pixel = scanline[x];
+				if (pixel != data.transparentPixel) {
+					int red = pixel & redMask;
+					red = (redShift < 0) ? red >>> -redShift : red << redShift;
+					int green = pixel & greenMask;
+					green = (greenShift < 0) ? green >>> -greenShift : green << greenShift;
+					int blue = pixel & blueMask;
+					blue = (blueShift < 0) ? blue >>> -blueShift : blue << blueShift;
+					int intensity = (red+red+green+green+green+green+green+blue) >> 3;
+					if (newData.transparentPixel == intensity) intensity = 255;
+					newData.data[offset] = (byte)intensity;
+				} else {
+					newData.data[offset] = (byte)254;
+				}
+				offset++;
+			}
+		}
+	}
+	return newData;
+}
+
+
 /**
  * <b>IMPORTANT:</b> This method is not part of the public
  * API for Image. It is marked public only so that it
@@ -764,20 +797,22 @@ public static Long win32_getHandle (Image image, int zoom) {
 
 	if (image.imageFileNameProvider != null) {
 		ElementAtZoom<String> imageCandidate = DPIUtil.validateAndGetImagePathAtZoom (image.imageFileNameProvider, zoom);
+		ImageData imageData = new ImageData (imageCandidate.element());
 		if (imageCandidate.zoom() == zoom) {
 			/* Release current native resources */
 			long handle = image.initNative(imageCandidate.element(), zoom);
-			if (handle == 0) image.init(new ImageData (imageCandidate.element()), zoom);
+			if (handle == 0) image.init(imageData, zoom);
 			image.init();
 		} else {
-			ImageData resizedData = DPIUtil.scaleImageData (image.device, new ImageData (imageCandidate.element()), zoom, imageCandidate.zoom());
-			image.init(resizedData, zoom);
-			image.init ();
+			ImageData resizedData = DPIUtil.scaleImageData(image.device, imageData, zoom, imageCandidate.zoom());
+			ImageData newData = image.adaptImageDataIfDisabledOrGray(resizedData);
+			image.init(newData, zoom);
 		}
 	} else if (image.imageDataProvider != null) {
 		ElementAtZoom<ImageData> imageCandidate = DPIUtil.validateAndGetImageDataAtZoom (image.imageDataProvider, zoom);
 		ImageData resizedData = DPIUtil.scaleImageData (image.device, imageCandidate.element(), zoom, imageCandidate.zoom());
-		image.init(resizedData, zoom);
+		ImageData newData = image.adaptImageDataIfDisabledOrGray(resizedData);
+		image.init(newData, zoom);
 		image.init();
 	} else {
 		if (image.dataAtBaseZoom == null && image.memGC == null) {
@@ -786,7 +821,8 @@ public static Long win32_getHandle (Image image, int zoom) {
 		}
 		if (image.dataAtBaseZoom != null) {
 			ImageData resizedData = image.getImageData(zoom);
-			image.init(resizedData, zoom);
+			ImageData newData = image.adaptImageDataIfDisabledOrGray(resizedData);
+			image.init(newData, zoom);
 			image.init();
 		}
 	}
@@ -944,7 +980,9 @@ long initNative(String filename, int zoom) {
 									ImageData img = new ImageData(width, height, depth, paletteData, scanlinePad, data);
 									img.transparentPixel = transparentPixel;
 									img.alphaData = alphaData;
-									init(img, zoom);
+
+									ImageData newData = adaptImageDataIfDisabledOrGray(img);
+									init(newData, zoom);
 									handle = zoomLevelToHandle.get(zoom);
 								}
 								Gdip.Bitmap_UnlockBits(bitmap, lockedBitmapData);
