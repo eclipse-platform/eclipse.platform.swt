@@ -14,6 +14,8 @@
 package org.eclipse.swt.widgets;
 
 
+import java.util.*;
+
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.*;
@@ -1752,10 +1754,14 @@ private static void handleDPIChange(Widget widget, int newZoom, float scalingFac
 	var seperatorWidth = new int[toolItems.length];
 	int itemCount = toolItems.length;
 
+	record ToolItemData(ToolItem toolItem, TBBUTTON button) {
+	}
+
 	// Remove and re-add all button the let Windows resize the tool bar
-	ToolItem[] items = new ToolItem[itemCount];
-	TBBUTTON[] buttondata = new TBBUTTON[itemCount];
+	Stack<ToolItemData> buttondata = new Stack<>();
 	for (int i = itemCount - 1; i >= 0; i--) {
+		TBBUTTON lpButton = new TBBUTTON ();
+		OS.SendMessage (toolBar.handle, OS.TB_GETBUTTON, i, lpButton);
 		ToolItem item = toolItems[i];
 		if ((item.style & SWT.SEPARATOR) != 0 && item.getControl() != null) {
 			// Take note of widths of separators with control, so they can be resized
@@ -1763,26 +1769,15 @@ private static void handleDPIChange(Widget widget, int newZoom, float scalingFac
 			seperatorWidth[i] = item.getWidth();
 		}
 		DPIZoomChangeRegistry.applyChange(item, newZoom, scalingFactor);
-
-		TBBUTTON lpButton = new TBBUTTON ();
-		OS.SendMessage (toolBar.handle, OS.TB_GETBUTTON, i, lpButton);
-		buttondata[lpButton.idCommand] = lpButton;
-		items[lpButton.idCommand] = item;
+		buttondata.push(new ToolItemData(item, lpButton));
 		OS.SendMessage(toolBar.handle, OS.TB_DELETEBUTTON, i, 0);
 	}
-
-	// Refresh the image lists so the image list for the correct zoom is used
-	toolBar.setImageList(toolBar.getImageList());
-	toolBar.setDisabledImageList(toolBar.getDisabledImageList());
-	toolBar.setHotImageList(toolBar.getHotImageList());
-
 	OS.SendMessage(toolBar.handle, OS.TB_BUTTONSTRUCTSIZE, TBBUTTON.sizeof, 0);
-	for (int i = 0; i < buttondata.length; i++) {
-		TBBUTTON button = buttondata[i];
-		if (button != null) {
-			OS.SendMessage(toolBar.handle, OS.TB_ADDBUTTONS, 1, button);
-			ToolItem item = items[i];
-
+	while (!buttondata.isEmpty()) {
+		ToolItemData itemData = buttondata.pop();
+		OS.SendMessage(toolBar.handle, OS.TB_ADDBUTTONS, 1, itemData.button);
+		ToolItem item = itemData.toolItem;
+		if (item != null) {
 			// The text is not retained correctly, so we need to reset it
 			String text = item.getText();
 			if (text != null) {
@@ -1791,8 +1786,6 @@ private static void handleDPIChange(Widget widget, int newZoom, float scalingFac
 			}
 		}
 	}
-	OS.SendMessage(toolBar.handle, OS.TB_AUTOSIZE, 0, 0);
-
 	for (int i = 0; i < itemCount; i++) {
 		ToolItem item = toolItems[i];
 		// If the separator is used with a control, we must reset the size to the cached value,
@@ -1801,6 +1794,12 @@ private static void handleDPIChange(Widget widget, int newZoom, float scalingFac
 			item.setWidth(seperatorWidth[i]);
 		}
 	}
+
+	// Refresh the image lists so the image list for the correct zoom is used
+	toolBar.setImageList(toolBar.getImageList());
+	toolBar.setDisabledImageList(toolBar.getDisabledImageList());
+	toolBar.setHotImageList(toolBar.getHotImageList());
+	OS.SendMessage(toolBar.handle, OS.TB_AUTOSIZE, 0, 0);
 	toolBar.layout(true);
 }
 }
