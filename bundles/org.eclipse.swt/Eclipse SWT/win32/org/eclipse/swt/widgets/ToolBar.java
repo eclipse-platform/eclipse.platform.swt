@@ -1754,6 +1754,10 @@ private static void handleDPIChange(Widget widget, int newZoom, float scalingFac
 	var seperatorWidth = new int[toolItems.length];
 	int itemCount = toolItems.length;
 
+	if (itemCount == 0) {
+		return;
+	}
+
 	record ToolItemData(ToolItem toolItem, TBBUTTON button) {
 	}
 
