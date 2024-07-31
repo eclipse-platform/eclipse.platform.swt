@@ -341,7 +341,7 @@ void createHandle () {
 		if ((style & SWT.ICON_SEARCH) != 0) {
 			long hwndSearch = OS.CreateWindowEx (
 				0,
-				Label.LabelClass,
+				new TCHAR (0, "STATIC", true),
 				null,
 				OS.WS_CHILD | OS.WS_VISIBLE | OS.WS_CLIPSIBLINGS | OS.SS_OWNERDRAW,
 				0, 0, 0, 0,
@@ -355,7 +355,7 @@ void createHandle () {
 			state |= TRACK_MOUSE;
 			long hwndCancel = OS.CreateWindowEx (
 				0,
-				Label.LabelClass, null,
+				new TCHAR (0, "STATIC", true), null,
 				OS.WS_CHILD | OS.WS_CLIPSIBLINGS | OS.SS_OWNERDRAW,
 				0, 0, 0, 0,
 				handle,
