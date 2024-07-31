@@ -560,13 +560,13 @@ void onPaint(PaintEvent event) {
 
 	int imageY = 0, midPoint = 0, lineY = 0;
 	if (imageHeight > textHeight ) {
-		if (topMargin == DEFAULT_MARGIN && bottomMargin == DEFAULT_MARGIN) imageY = rect.y + (rect.height - imageHeight) / 2;
+		if (topMargin == DEFAULT_MARGIN && bottomMargin == DEFAULT_MARGIN) imageY = 0;
 		else imageY = topMargin;
 		midPoint = imageY + imageHeight/2;
 		lineY = midPoint - textHeight / 2;
 	}
 	else {
-		if (topMargin == DEFAULT_MARGIN && bottomMargin == DEFAULT_MARGIN) lineY = rect.y + (rect.height - textHeight) / 2;
+		if (topMargin == DEFAULT_MARGIN && bottomMargin == DEFAULT_MARGIN) lineY = (textHeight - imageHeight)/2 ;
 		else lineY = topMargin;
 		midPoint = lineY + textHeight/2;
 		imageY = midPoint - imageHeight / 2;
@@ -583,6 +583,13 @@ void onPaint(PaintEvent event) {
 	// draw the text
 	// we draw the label at the top.
 	lineY = 0;
+
+	if(textHeight  < imageHeight ) {
+
+		lineY = (imageHeight - textHeight )/2;
+
+	}
+
 	if (lines != null) {
 		gc.setForeground(getForeground());
 		for (String line : lines) {
