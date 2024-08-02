@@ -753,6 +753,18 @@ public void test_LocationListener_ProgressListener_cancledLoad () {
 	 */
 }
 
+@Test
+public void test_LocationListener_LocationListener_ordered_changing () {
+	List<String> locations = new ArrayList<>();
+	browser.addLocationListener(changingAdapter(event -> locations.add(event.location)));
+	shell.open();
+	browser.setText("You should not see this message.");
+	String url = getValidUrl();
+	browser.setUrl(url);
+	waitForPassCondition(() -> locations.size() == 2);
+	assertTrue("Change of locations do not fire in order.", browser.isLocationForCustomText(locations.get(0)) && locations.get(1).contains("testWebsiteWithTitle.html"));
+}
+
 
 @Test
 /** Ensue that only one changed and one completed event are fired for url changes */
@@ -1238,18 +1250,9 @@ private void validateTitleChanged(String expectedTitle, Runnable browserSetFunc)
 	browserSetFunc.run();
 	shell.open();
 
-	boolean passed = waitForPassCondition(() -> actualTitle.get().equals(expectedTitle));
-	String errMsg = "";
-	if (!passed) {
-		if (actualTitle.get().length() == 0) {
-			errMsg = "Test timed out. TitleListener not fired";
-		} else {
-			errMsg = "\nExpected title and actual title do not match."
-					+ "\nExpected: " + expectedTitle
-					+ "\nActual: " + actualTitle;
-		}
-	}
-	assertTrue(errMsg + testLog.toString(), passed);
+	waitForPassCondition(() -> actualTitle.get().equals(expectedTitle));
+	assertTrue("Test timed out. TitleListener not fired", actualTitle.get().length() != 0);
+	assertEquals(testLog.toString(), expectedTitle, actualTitle.get());
 }
 
 @Test
