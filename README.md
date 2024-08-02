@@ -99,7 +99,7 @@ Contributor License Agreement:
 
 Before your contribution can be accepted by the project, you need to create and electronically sign the Eclipse Foundation Contributor License Agreement (CLA).
 
-- <http://www.eclipse.org/legal/CLA.php>
+- <https://www.eclipse.org/legal/eca/>
 
 Contact:
 --------
