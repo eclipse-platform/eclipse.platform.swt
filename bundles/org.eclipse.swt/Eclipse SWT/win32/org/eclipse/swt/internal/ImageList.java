@@ -334,18 +334,29 @@ public long getHandle(int targetZoom) {
 	if (!zoomToHandle.containsKey(targetZoom)) {
 		int scaledWidth = DPIUtil.scaleUp(DPIUtil.scaleDown(width, this.zoom), targetZoom);
 		int scaledHeight = DPIUtil.scaleUp(DPIUtil.scaleDown(height, this.zoom), targetZoom);
-		long handle = OS.ImageList_Create(scaledWidth, scaledHeight, flags, 16, 16);
-		int count = OS.ImageList_GetImageCount(handle);
-		for (int i = 0; i < images.length; i++) {
+		long newImageListHandle = OS.ImageList_Create(scaledWidth, scaledHeight, flags, 16, 16);
+		int count = OS.ImageList_GetImageCount (handle);
+		for (int i = 0; i < count; i++) {
 			Image image = images[i];
 			if (image != null) {
-				set(i, image, count, handle, targetZoom);
-				count++;
+				set(i, image, i, newImageListHandle, targetZoom);
+			} else {
+				addPlaceholderImageToImageList(newImageListHandle, scaledWidth, scaledHeight);
 			}
 		}
-		zoomToHandle.put(targetZoom, handle);
+		zoomToHandle.put(targetZoom, newImageListHandle);
 	}
 	return zoomToHandle.get(targetZoom);
+}
+
+private void addPlaceholderImageToImageList(long imageListHandle, int bitmapWidth, int bitmapHeight) {
+	long hDC = OS.GetDC (0);
+	if (hDC == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+	long placeholderBitmapHandle = OS.CreateCompatibleBitmap(hDC, bitmapWidth, bitmapHeight);
+	if (placeholderBitmapHandle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+	OS.ImageList_Add(imageListHandle, placeholderBitmapHandle, placeholderBitmapHandle);
+	OS.DeleteObject(placeholderBitmapHandle);
+	OS.ReleaseDC(0, hDC);
 }
 
 public Point getImageSize() {
@@ -389,10 +400,10 @@ private void setForAllHandles(int index, Image image, int count) {
 	zoomToHandle.forEach((zoom, handle) -> set(index, image, count, handle, zoom));
 }
 
-void set (int index, Image image, int count, long handle, int zoom) {
+void set (int index, Image image, int count, long listHandle, int zoom) {
 	long hImage = Image.win32_getHandle(image, zoom);
 	int [] cx = new int [1], cy = new int [1];
-	OS.ImageList_GetIconSize (handle, cx, cy);
+	OS.ImageList_GetIconSize (listHandle, cx, cy);
 	switch (image.type) {
 		case SWT.BITMAP: {
 			/*
@@ -443,10 +454,10 @@ void set (int index, Image image, int count, long handle, int zoom) {
 					break;
 			}
 			if (index == count) {
-				OS.ImageList_Add (handle, hBitmap, hMask);
+				OS.ImageList_Add (listHandle, hBitmap, hMask);
 			} else {
 				/* Note that the mask must always be replaced even for TRANSPARENCY_NONE */
-				OS.ImageList_Replace (handle, index, hBitmap, hMask);
+				OS.ImageList_Replace (listHandle, index, hBitmap, hMask);
 			}
 			if (hMask != 0) OS.DeleteObject (hMask);
 			if (hBitmap != hImage) OS.DeleteObject (hBitmap);
@@ -454,7 +465,7 @@ void set (int index, Image image, int count, long handle, int zoom) {
 		}
 		case SWT.ICON: {
 			long hIcon = copyIcon (hImage, cx [0], cy [0]);
-			OS.ImageList_ReplaceIcon (handle, index == count ? -1 : index, hIcon);
+			OS.ImageList_ReplaceIcon (listHandle, index == count ? -1 : index, hIcon);
 			OS.DestroyIcon (hIcon);
 			break;
 		}
