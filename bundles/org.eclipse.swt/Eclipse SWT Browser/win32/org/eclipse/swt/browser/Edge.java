@@ -20,6 +20,7 @@ import java.nio.file.*;
 import java.nio.file.Path;
 import java.time.*;
 import java.util.*;
+import java.util.concurrent.*;
 import java.util.function.*;
 
 import org.eclipse.swt.*;
@@ -61,13 +62,10 @@ class Edge extends WebBrowser {
 	}
 
 	private static Map<Display, WebViewEnvironment> webViewEnvironments = new HashMap<>();
-
-	ICoreWebView2 webView;
-	ICoreWebView2_2 webView_2;
-	ICoreWebView2_11 webView_11;
 	ICoreWebView2Controller controller;
 	ICoreWebView2Settings settings;
 	ICoreWebView2Environment2 environment2;
+	private final WebViewProvider webViewProvider = new WebViewProvider();
 
 	WebViewEnvironment containingEnvironment;
 
@@ -75,7 +73,6 @@ class Edge extends WebBrowser {
 	boolean inNewWindow;
 	HashMap<Long, LocationEvent> navigations = new HashMap<>();
 	private boolean ignoreFocus;
-
 	private String lastCustomText;
 
 	static {
@@ -282,6 +279,93 @@ static int callAndWait(String[] pstr, ToIntFunction<IUnknown> callable) {
 	return phr[0];
 }
 
+class WebViewProvider {
+
+	private CompletableFuture<ICoreWebView2> webViewFuture = new CompletableFuture<>();
+	private CompletableFuture<ICoreWebView2_2> webView_2Future = new CompletableFuture<>();
+	private CompletableFuture<ICoreWebView2_11> webView_11Future = new CompletableFuture<>();
+
+	private CompletableFuture<Void> lastWebViewTask = webViewFuture.thenRun(() -> {});
+
+	ICoreWebView2 initializeWebView(ICoreWebView2Controller controller) {
+		long[] ppv = new long[1];
+		controller.get_CoreWebView2(ppv);
+		final ICoreWebView2 webView = new ICoreWebView2(ppv[0]);
+		initializeWebView_2(webView);
+		initializeWebView_11(webView);
+		webViewFuture.complete(webView);
+		return webView;
+	}
+
+	private void initializeWebView_2(ICoreWebView2 webView) {
+		long[] ppv = new long[1];
+		int hr = webView.QueryInterface(COM.IID_ICoreWebView2_2, ppv);
+		if (hr == COM.S_OK) {
+			webView_2Future.complete(new ICoreWebView2_2(ppv[0]));
+		} else {
+			webView_2Future.cancel(true);
+		}
+	}
+
+	private void initializeWebView_11(ICoreWebView2 webView) {
+		long[] ppv = new long[1];
+		int hr = webView.QueryInterface(COM.IID_ICoreWebView2_11, ppv);
+		if (hr == COM.S_OK) {
+			webView_11Future.complete(new ICoreWebView2_11(ppv[0]));
+		} else {
+			webView_11Future.cancel(true);
+		}
+	}
+
+	ICoreWebView2 getWebView(boolean waitForPendingWebviewTasksToFinish) {
+		if(waitForPendingWebviewTasksToFinish) {
+			waitForFutureToFinish(lastWebViewTask);
+		}
+		return webViewFuture.join();
+	}
+
+	ICoreWebView2_2 getWebView_2(boolean waitForPendingWebviewTasksToFinish) {
+		if(waitForPendingWebviewTasksToFinish) {
+			waitForFutureToFinish(lastWebViewTask);
+		}
+		return webView_2Future.join();
+	}
+
+	boolean isWebView_2Available() {
+		waitForFutureToFinish(webView_2Future);
+		return !webView_2Future.isCancelled();
+	}
+
+	ICoreWebView2_11 getWebView_11(boolean waitForPendingWebviewTasksToFinish) {
+		if(waitForPendingWebviewTasksToFinish) {
+			waitForFutureToFinish(lastWebViewTask);
+		}
+		return webView_11Future.join();
+	}
+
+	boolean isWebView_11Available() {
+		waitForFutureToFinish(webView_11Future);
+		return webView_11Future.isCancelled();
+	}
+
+	/*
+	 * Schedule a given runnable in a queue to execute when the webView is free and
+	 * has finished all the pending tasks queued before it.
+	 */
+	void scheduleWebViewTask(Runnable action) {
+		lastWebViewTask = lastWebViewTask.thenRun(() -> {
+			action.run();
+		});
+	}
+
+	private <T> void waitForFutureToFinish(CompletableFuture<T> future) {
+		while(!future.isDone()) {
+			processNextOSMessage();
+		}
+	}
+
+}
+
 /**
  * Processes a single OS message using {@link Display#readAndDispatch()}. This
  * is required for processing the OS events during browser initialization, since
@@ -312,12 +396,12 @@ static ICoreWebView2CookieManager getCookieManager() {
 		SWT.error(SWT.ERROR_NOT_IMPLEMENTED, null, " [WebView2: cookie access requires a Browser instance]");
 	}
 	Edge instance = environmentWrapper.instances().get(0);
-	if (instance.webView_2 == null) {
+	if (!instance.webViewProvider.isWebView_2Available()) {
 		SWT.error(SWT.ERROR_NOT_IMPLEMENTED, null, " [WebView2 version 88+ is required to access cookies]");
 	}
 
 	long[] ppv = new long[1];
-	int hr = instance.webView_2.get_CookieManager(ppv);
+	int hr = instance.webViewProvider.getWebView_2(true).get_CookieManager(ppv);
 	if (hr != COM.S_OK) error(SWT.ERROR_NO_HANDLES, hr);
 	return new ICoreWebView2CookieManager(ppv[0]);
 }
@@ -397,14 +481,26 @@ WebViewEnvironment createEnvironment() {
 
 @Override
 public void create(Composite parent, int style) {
-	checkDeadlock();
 	containingEnvironment = createEnvironment();
-
 	long[] ppv = new long[1];
 	int hr = containingEnvironment.environment().QueryInterface(COM.IID_ICoreWebView2Environment2, ppv);
 	if (hr == COM.S_OK) environment2 = new ICoreWebView2Environment2(ppv[0]);
+	// The webview calls are queued to be executed when it is done executing the current task.
+	IUnknown setupBrowserCallback = newCallback((result, pv) -> {
+		if ((int)result == COM.S_OK) {
+			new IUnknown(pv).AddRef();
+		}
+		setupBrowser((int)result, pv);
+		return COM.S_OK;
+	});
+	containingEnvironment.environment().CreateCoreWebView2Controller(browser.handle, setupBrowserCallback);
+}
 
-	hr = callAndWait(ppv, completion -> containingEnvironment.environment().CreateCoreWebView2Controller(browser.handle, completion));
+void setupBrowser(int hr, long pv) {
+	if(browser.isDisposed()) {
+		browserDispose(new Event());
+		return;
+	}
 	switch (hr) {
 	case COM.S_OK:
 		break;
@@ -414,16 +510,11 @@ public void create(Composite parent, int style) {
 	default:
 		error(SWT.ERROR_NO_HANDLES, hr);
 	}
+	long[] ppv = new long[] {pv};
 	controller = new ICoreWebView2Controller(ppv[0]);
-
-	controller.get_CoreWebView2(ppv);
-	webView = new ICoreWebView2(ppv[0]);
+	final ICoreWebView2 webView = webViewProvider.initializeWebView(controller);
 	webView.get_Settings(ppv);
 	settings = new ICoreWebView2Settings(ppv[0]);
-	hr = webView.QueryInterface(COM.IID_ICoreWebView2_2, ppv);
-	if (hr == COM.S_OK) webView_2 = new ICoreWebView2_2(ppv[0]);
-	hr = webView.QueryInterface(COM.IID_ICoreWebView2_11, ppv);
-	if (hr == COM.S_OK) webView_11 = new ICoreWebView2_11(ppv[0]);
 
 	long[] token = new long[1];
 	IUnknown handler;
@@ -460,14 +551,14 @@ public void create(Composite parent, int style) {
 	handler = newCallback(this::handleAcceleratorKeyPressed);
 	controller.add_AcceleratorKeyPressed(handler, token);
 	handler.Release();
-	if (webView_2 != null) {
+	if (webViewProvider.isWebView_2Available()) {
 		handler = newCallback(this::handleDOMContentLoaded);
-		webView_2.add_DOMContentLoaded(handler, token);
+		webViewProvider.getWebView_2(false).add_DOMContentLoaded(handler, token);
 		handler.Release();
 	}
-	if (webView_11 != null) {
+	if (webViewProvider.isWebView_11Available()) {
 		handler = newCallback(this::handleContextMenuRequested);
-		webView_11.add_ContextMenuRequested(handler, token);
+		webViewProvider.getWebView_11(false).add_ContextMenuRequested(handler, token);
 		handler.Release();
 	}
 
@@ -482,34 +573,39 @@ public void create(Composite parent, int style) {
 	browser.addListener(SWT.Move, this::browserMove);
 
 	containingEnvironment.instances().add(this);
+	// Sometimes when the shell of the browser is opened before the browser is
+	// initialized, nothing is drawn on the shell. We need browserResize to force
+	// the shell to draw itself again.
+	browserResize(new Event());
 }
 
 void browserDispose(Event event) {
 	containingEnvironment.instances.remove(this);
-
-	if (webView_2 != null) webView_2.Release();
-	if (environment2 != null) environment2.Release();
-	settings.Release();
-	webView.Release();
-	webView_2 = null;
-	environment2 = null;
-	settings = null;
-	webView = null;
-
-	// Bug in WebView2. Closing the controller from an event handler results
-	// in a crash. The fix is to delay the closure with asyncExec.
-	if (inCallback) {
-		ICoreWebView2Controller controller1 = controller;
-		controller.put_IsVisible(false);
-		browser.getDisplay().asyncExec(() -> {
-			controller1.Close();
-			controller1.Release();
-		});
-	} else {
-		controller.Close();
-		controller.Release();
-	}
-	controller = null;
+	webViewProvider.scheduleWebViewTask(() -> {
+		webViewProvider.getWebView(false).Release();
+		if (environment2 != null) environment2.Release();
+		if (settings != null) settings.Release();
+		if (webViewProvider.isWebView_2Available()) webViewProvider.getWebView_2(false).Release();
+		if (webViewProvider.isWebView_11Available()) webViewProvider.getWebView_11(false).Release();
+		if(controller != null) {
+			// Bug in WebView2. Closing the controller from an event handler results
+			// in a crash. The fix is to delay the closure with asyncExec.
+			if (inCallback) {
+				ICoreWebView2Controller controller1 = controller;
+				controller.put_IsVisible(false);
+				browser.getDisplay().asyncExec(() -> {
+					controller1.Close();
+					controller1.Release();
+				});
+			} else {
+				controller.Close();
+				controller.Release();
+			}
+			controller = null;
+		}
+		environment2 = null;
+		settings = null;
+	});
 }
 
 void browserFocusIn(Event event) {
@@ -531,15 +627,13 @@ void browserResize(Event event) {
 
 @Override
 public Object evaluate(String script) throws SWTException {
-	checkDeadlock();
-
 	// Feature in WebView2. ExecuteScript works regardless of IsScriptEnabled setting.
 	// Disallow programmatic execution manually.
 	if (!jsEnabled) return null;
 
 	String script2 = "(function() {try { " + script + " } catch (e) { return '" + ERROR_ID + "' + e.message; } })();\0";
 	String[] pJson = new String[1];
-	int hr = callAndWait(pJson, completion -> webView.ExecuteScript(script2.toCharArray(), completion));
+	int hr = callAndWait(pJson, completion -> webViewProvider.getWebView(true).ExecuteScript(script2.toCharArray(), completion));
 	if (hr != COM.S_OK) error(SWT.ERROR_FAILED_EVALUATE, hr);
 
 	Object data = JSON.parse(pJson[0]);
@@ -555,9 +649,8 @@ public boolean execute(String script) {
 	// Feature in WebView2. ExecuteScript works regardless of IsScriptEnabled setting.
 	// Disallow programmatic execution manually.
 	if (!jsEnabled) return false;
-
 	IUnknown completion = newCallback((long result, long json) -> COM.S_OK);
-	int hr = webView.ExecuteScript(stringToWstr(script), completion);
+	int hr = webViewProvider.getWebView(true).ExecuteScript(stringToWstr(script), completion);
 	completion.Release();
 	return hr == COM.S_OK;
 }
@@ -582,7 +675,7 @@ public String getText() {
 @Override
 public String getUrl() {
 	long ppsz[] = new long[1];
-	webView.get_Source(ppsz);
+	webViewProvider.getWebView(true).get_Source(ppsz);
 	return getExposedUrl(wstrToString(ppsz[0], true));
 }
 
@@ -607,7 +700,7 @@ int handleCloseRequested(long pView, long pArgs) {
 
 int handleDocumentTitleChanged(long pView, long pArgs) {
 	long[] ppsz = new long[1];
-	webView.get_DocumentTitle(ppsz);
+	webViewProvider.getWebView(false).get_DocumentTitle(ppsz);
 	String title = wstrToString(ppsz[0], true);
 	browser.getDisplay().asyncExec(() -> {
 		if (browser.isDisposed()) return;
@@ -725,7 +818,7 @@ int handleDOMContentLoaded(long pView, long pArgs) {
 				sendProgressCompleted();
 				return COM.S_OK;
 			});
-			webView.ExecuteScript(
+			webViewProvider.getWebView(true).ExecuteScript(
 					stringToWstr("document.open(); document.write('" + escapeForSingleQuotedJSString(lastCustomText) + "'); document.close();"),
 					postExecute);
 			postExecute.Release();
@@ -790,7 +883,7 @@ int handleNavigationCompleted(long pView, long pArgs, boolean top) {
 		// handleNavigationStarted() always stores the event, so this should never happen
 		return COM.S_OK;
 	}
-	if (webView_2 == null && startEvent.top) {
+	if (!webViewProvider.isWebView_2Available() && startEvent.top) {
 		// If DOMContentLoaded (part of ICoreWebView2_2 interface) isn't available, fire
 		// ProgressListener.completed from here.
 		sendProgressCompleted();
@@ -856,7 +949,7 @@ int handleNewWindowRequested(long pView, long pArgs) {
 			WindowEvent openEvent = new WindowEvent(browser);
 			openEvent.display = browser.getDisplay();
 			openEvent.widget = browser;
-			openEvent.required = false;
+			openEvent.required = true;
 			for (OpenWindowListener openListener : openWindowListeners) {
 				openListener.open(openEvent);
 				if (browser.isDisposed()) return;
@@ -864,8 +957,8 @@ int handleNewWindowRequested(long pView, long pArgs) {
 			if (openEvent.browser != null && !openEvent.browser.isDisposed()) {
 				WebBrowser other = openEvent.browser.webBrowser;
 				args.put_Handled(true);
-				if (other instanceof Edge) {
-					args.put_NewWindow(((Edge)other).webView.getAddress());
+				if (other instanceof Edge otherEdge) {
+					args.put_NewWindow(otherEdge.webViewProvider.getWebView(true).getAddress());
 
 					// Send show event to the other browser.
 					WindowEvent showEvent = new WindowEvent (other.browser);
@@ -980,37 +1073,37 @@ int handleMoveFocusRequested(long pView, long pArgs) {
 @Override
 public boolean isBackEnabled() {
 	int[] pval = new int[1];
-	webView.get_CanGoBack(pval);
+	webViewProvider.getWebView(true).get_CanGoBack(pval);
 	return pval[0] != 0;
 }
 
 @Override
 public boolean isForwardEnabled() {
 	int[] pval = new int[1];
-	webView.get_CanGoForward(pval);
+	webViewProvider.getWebView(true).get_CanGoForward(pval);
 	return pval[0] != 0;
 }
 
 @Override
 public boolean back() {
 	// Feature in WebView2. GoBack returns S_OK even when CanGoBack is FALSE.
-	return isBackEnabled() && webView.GoBack() == COM.S_OK;
+	return isBackEnabled() && webViewProvider.getWebView(true).GoBack() == COM.S_OK;
 }
 
 @Override
 public boolean forward() {
 	// Feature in WebView2. GoForward returns S_OK even when CanGoForward is FALSE.
-	return isForwardEnabled() && webView.GoForward() == COM.S_OK;
+	return isForwardEnabled() && webViewProvider.getWebView(true).GoForward() == COM.S_OK;
 }
 
 @Override
 public void refresh() {
-	webView.Reload();
+	webViewProvider.scheduleWebViewTask(() -> webViewProvider.getWebView(false).Reload());
 }
 
 @Override
 public void stop() {
-	webView.Stop();
+	webViewProvider.scheduleWebViewTask(() -> webViewProvider.getWebView(false).Stop());
 }
 
 private boolean isLocationForCustomText(String location) {
@@ -1038,7 +1131,7 @@ private boolean setWebpageData(String url, String postData, String[] headers, St
 		this.lastCustomText = html;
 	}
 	if (postData != null || headers != null) {
-		if (environment2 == null || webView_2 == null) {
+		if (environment2 == null || !webViewProvider.isWebView_2Available()) {
 			SWT.error(SWT.ERROR_NOT_IMPLEMENTED, null, " [WebView2 version 88+ is required to set postData and headers]");
 		}
 		long[] ppRequest = new long[1];
@@ -1063,12 +1156,14 @@ private boolean setWebpageData(String url, String postData, String[] headers, St
 		if (stream != null) stream.Release();
 		if (hr != COM.S_OK) error(SWT.ERROR_NO_HANDLES, hr);
 		IUnknown request = new IUnknown(ppRequest[0]);
-		hr = webView_2.NavigateWithWebResourceRequest(request);
-		request.Release();
+		webViewProvider.scheduleWebViewTask(() -> {
+			webViewProvider.getWebView_2(false).NavigateWithWebResourceRequest(request);
+			request.Release();
+		});;
 	} else {
-		hr = webView.Navigate(pszUrl);
+		webViewProvider.scheduleWebViewTask(() -> webViewProvider.getWebView(false).Navigate(pszUrl));;
 	}
-	return hr == COM.S_OK;
+	return true;
 }
 
 @Override
