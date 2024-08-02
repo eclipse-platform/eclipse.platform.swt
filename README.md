@@ -113,7 +113,7 @@ Search for bugs:
 
 SWT used to track ongoing development and issues in Bugzilla .
 
-- <https://bugs.eclipse.org/bugs/buglist.cgi?product=Platform&component=SWT>
+- <https://bugs.eclipse.org/bugs/buglist.cgi?component=SWT&product=Platform>
 
 Create a new bug:
 -----------------
