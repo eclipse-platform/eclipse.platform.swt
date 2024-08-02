@@ -17,6 +17,7 @@ import java.net.*;
 import java.nio.charset.*;
 import java.time.*;
 import java.util.*;
+import java.util.concurrent.*;
 import java.util.function.*;
 
 import org.eclipse.swt.*;
@@ -63,8 +64,9 @@ class Edge extends WebBrowser {
 	static boolean inCallback;
 	boolean inNewWindow;
 	HashMap<Long, LocationEvent> navigations = new HashMap<>();
-
 	private String html;
+	private boolean asyncExecution;
+	private CompletableFuture<Boolean> initializationProcessFinished = new CompletableFuture<>();
 
 	static {
 		NativeClearSessions = () -> {
@@ -303,9 +305,13 @@ void checkDeadlock() {
 	// and JavaScript callbacks are serialized. An event handler waiting
 	// for a completion of another handler will deadlock. Detect this
 	// situation and throw an exception instead.
-	if (inCallback || inNewWindow) {
+	if (leadsToDeadlock()) {
 		SWT.error(SWT.ERROR_FAILED_EVALUATE, null, " [WebView2: deadlock detected]");
 	}
+}
+
+boolean leadsToDeadlock() {
+	return inCallback || inNewWindow;
 }
 
 WebViewEnvironment createEnvironment() {
@@ -373,14 +379,30 @@ WebViewEnvironment createEnvironment() {
 
 @Override
 public void create(Composite parent, int style) {
-	checkDeadlock();
 	containingEnvironment = createEnvironment();
 
 	long[] ppv = new long[1];
 	int hr = containingEnvironment.environment().QueryInterface(COM.IID_ICoreWebView2Environment2, ppv);
 	if (hr == COM.S_OK) environment2 = new ICoreWebView2Environment2(ppv[0]);
 
+	// If leads to deadlock then execute asynchronously and move on.
+	// The webview calls are queued to be executed when it is done executing the current task.
+	if (leadsToDeadlock() && !asyncExecution) {
+		asyncExecution = true;
+		browser.getDisplay().asyncExec(() -> setupBrowser());
+	} else {
+		setupBrowser();
+	}
+}
+
+void setupBrowser() {
+	int hr;
+	long[] ppv = new long[1];
 	hr = callAndWait(ppv, completion -> containingEnvironment.environment().CreateCoreWebView2Controller(browser.handle, completion));
+	if(browser.isDisposed()) {
+		browserDispose(new Event());
+		return;
+	}
 	switch (hr) {
 	case COM.S_OK:
 		break;
@@ -450,34 +472,40 @@ public void create(Composite parent, int style) {
 	browser.addListener(SWT.Move, this::browserMove);
 
 	containingEnvironment.instances().add(this);
+	initializationProcessFinished.complete(true);
+	asyncExecution = false;
 }
 
 void browserDispose(Event event) {
+	initializationProcessFinished.cancel(true);
 	containingEnvironment.instances.remove(this);
 
+	// Check for null before releasing
 	if (webView_2 != null) webView_2.Release();
 	if (environment2 != null) environment2.Release();
-	settings.Release();
-	webView.Release();
+	if (settings != null) settings.Release();
+	if (webView != null) webView.Release();
 	webView_2 = null;
 	environment2 = null;
 	settings = null;
 	webView = null;
 
-	// Bug in WebView2. Closing the controller from an event handler results
-	// in a crash. The fix is to delay the closure with asyncExec.
-	if (inCallback) {
-		ICoreWebView2Controller controller1 = controller;
-		controller.put_IsVisible(false);
-		browser.getDisplay().asyncExec(() -> {
-			controller1.Close();
-			controller1.Release();
-		});
-	} else {
-		controller.Close();
-		controller.Release();
+	if(controller != null) {
+		// Bug in WebView2. Closing the controller from an event handler results
+		// in a crash. The fix is to delay the closure with asyncExec.
+		if (inCallback) {
+			ICoreWebView2Controller controller1 = controller;
+			controller.put_IsVisible(false);
+			browser.getDisplay().asyncExec(() -> {
+				controller1.Close();
+				controller1.Release();
+			});
+		} else {
+			controller.Close();
+			controller.Release();
+		}
+		controller = null;
 	}
-	controller = null;
 }
 
 void browserFocusIn(Event event) {
@@ -869,6 +897,17 @@ public boolean setText(String html, boolean trusted) {
 }
 
 private boolean setWebpageData(String url, String postData, String[] headers, String html) {
+	// If the create() method hasn't finished executing, queue the call to wait for the browser to finish initializing
+	if (!initializationProcessFinished.isDone()) {
+		final String fUrl = url;
+		browser.getDisplay().asyncExec(() -> {
+			if (waitForInitialization()) {
+				setWebpageData(fUrl, postData, headers, html);
+				browserResize(new Event());
+			}
+		});
+		return true;
+	}
 	// Feature in WebView2. Partial URLs like "www.example.com" are not accepted.
 	// Prepend the protocol if it's missing.
 	if (!url.matches("[a-z][a-z0-9+.-]*:.*")) {
@@ -909,6 +948,17 @@ private boolean setWebpageData(String url, String postData, String[] headers, St
 		hr = webView.Navigate(pszUrl);
 	}
 	return hr == COM.S_OK;
+}
+
+private boolean waitForInitialization() {
+	try {
+		initializationProcessFinished.get(10, TimeUnit.SECONDS);
+	} catch (InterruptedException | ExecutionException | TimeoutException e) {
+		SWT.error(SWT.ERROR_FAILED_EXEC, e);
+	} catch (CancellationException e) {
+		return false;
+	}
+	return true;
 }
 
 @Override
