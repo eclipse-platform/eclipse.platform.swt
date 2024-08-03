@@ -108,13 +108,6 @@ Contact the project developers via the project's "dev" list.
 
 - <https://accounts.eclipse.org/mailing-list/platform-dev>
 
-Search for bugs:
-----------------
-
-Github is used to track current issues
-
-- <https://github.com/issues?user=eclipse-platform>
-
 Create a new bug:
 -----------------
 
