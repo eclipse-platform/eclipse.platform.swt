@@ -111,9 +111,9 @@ Contact the project developers via the project's "dev" list.
 Search for bugs:
 ----------------
 
-SWT used to track ongoing development and issues in Bugzilla .
+Github is used to track current issues
 
-- <https://bugs.eclipse.org/bugs/buglist.cgi?component=SWT&product=Platform>
+- <https://github.com/issues?user=eclipse-platform>
 
 Create a new bug:
 -----------------
