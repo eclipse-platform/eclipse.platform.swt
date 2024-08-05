@@ -52,7 +52,7 @@ public abstract class Widget {
 	protected int style;
 	int state;
 	Display display;
-	EventTable eventTable;
+	protected EventTable eventTable;
 	Object data;
 
 	long jniRef;
