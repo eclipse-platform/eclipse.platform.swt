@@ -41,6 +41,7 @@ public abstract class Win32AutoscaleTestBase {
 	}
 
 	protected void changeDPIZoom (int nativeZoom) {
+		DPIUtil.setDeviceZoom(nativeZoom);
 		float scalingFactor = 1f * DPIUtil.getZoomForAutoscaleProperty(nativeZoom) / DPIUtil.getZoomForAutoscaleProperty(shell.nativeZoom);
 		DPIZoomChangeRegistry.applyChange(shell, nativeZoom, scalingFactor);
 	}

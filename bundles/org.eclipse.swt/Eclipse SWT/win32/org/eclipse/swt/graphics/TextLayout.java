@@ -1792,7 +1792,7 @@ public Rectangle getBounds () {
 			width = Math.max(width, DPIUtil.scaleDown(lineWidthInPixels[line], getZoom()) + getLineIndent(line));
 		}
 	}
-	return new Rectangle (0, 0, width, lineY[lineY.length - 1] + getScaledVerticalIndent());
+	return new Rectangle (0, 0, width, lineY[lineY.length - 1] + getVerticalIndent());
 }
 
 /**
