@@ -114,4 +114,36 @@ protected void checkSubclass() {
 	// TODO: implement correctly
 }
 
+
+/**
+ * Sets the receiver's list to be the given array of items.
+ *
+ * @param items the array of items
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the items array is null</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if an item in the items array is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
+@Override
+public void setItems (String... items) {
+	checkWidget();
+	if (items == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
+	for (int i=0; i<items.length; i++) {
+		if (items [i] == null) SWT.error (SWT.ERROR_INVALID_ARGUMENT);
+	}
+	removeAll();
+	if (items.length == 0) return;
+//	ignoreSelection = true;
+	for (int i= 0; i < items.length; i++) {
+		add(items[i]);
+	}
+//	ignoreSelection = false;
+}
+
+
 }
