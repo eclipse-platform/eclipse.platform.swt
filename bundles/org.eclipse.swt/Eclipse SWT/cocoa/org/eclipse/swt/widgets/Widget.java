@@ -49,7 +49,8 @@ import org.eclipse.swt.internal.cocoa.*;
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
 public abstract class Widget {
-	int style, state;
+	protected int style;
+	int state;
 	Display display;
 	EventTable eventTable;
 	Object data;
@@ -870,7 +871,7 @@ NSRect expansionFrameWithFrame_inView(long id, long sel, NSRect cellRect, long v
 	return result;
 }
 
-boolean filters (int eventType) {
+protected boolean filters (int eventType) {
 	return display.filters (eventType);
 }
 
@@ -1097,7 +1098,7 @@ long hitTestForEvent (long id, long sel, long event, NSRect rect, long controlVi
 	return 0;
 }
 
-boolean hooks (int eventType) {
+protected boolean hooks (int eventType) {
 	if (eventTable == null) return false;
 	return eventTable.hooks (eventType);
 }
@@ -1657,11 +1658,11 @@ void sendEvent (Event event) {
 	display.sendEvent (eventTable, event);
 }
 
-void sendEvent (int eventType) {
+protected void sendEvent (int eventType) {
 	sendEvent (eventType, null, true);
 }
 
-void sendEvent (int eventType, Event event) {
+protected void sendEvent (int eventType, Event event) {
 	sendEvent (eventType, event, true);
 }
 
