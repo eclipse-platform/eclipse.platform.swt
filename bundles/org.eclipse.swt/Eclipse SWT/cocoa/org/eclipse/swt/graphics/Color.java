@@ -552,4 +552,11 @@ public String toString () {
 	return "Color {" + getRed() + ", " + getGreen() + ", " + getBlue() + ", " + getAlpha() + "}";
 }
 
+public int getIntRGB() {
+	int red = (int) (handle[0] * 255f);
+	int green = (int) (handle[0] * 255f);
+	int blue = (int) (handle[0] * 255f);
+	return (red & 0xFF) | ((green & 0xFF) << 8) | ((blue & 0xFF) << 16);
+}
+
 }

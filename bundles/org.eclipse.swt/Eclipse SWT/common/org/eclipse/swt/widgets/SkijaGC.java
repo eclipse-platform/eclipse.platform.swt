@@ -38,7 +38,7 @@ public class SkijaGC extends GC {
 		Canvas c = surface.getCanvas();
 
 		Paint p = new Paint();
-		p.setColor(getForeground().handle);
+		p.setColor(getForeground().getIntRGB());
 		c.drawLine(x1, y1, x2, y2, p);
 
 		super.drawLine(x1, y1, x2, y2);
