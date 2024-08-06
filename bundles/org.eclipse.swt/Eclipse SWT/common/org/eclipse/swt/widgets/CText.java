@@ -440,7 +440,8 @@ public class CText extends StyledText {
 
 	@Override
 	public Color getForeground() {
-		return new Color(0, 0, 255);
+		return super.getForeground();
+//		return new Color(0, 0, 255);
 	}
 
 	/**
@@ -506,5 +507,52 @@ public class CText extends StyledText {
 		if (listener == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 		eventTable.unhook (SWT.Segments, listener);
 	}
+
+	@Override
+	protected void handlePaint(Event event) {
+
+		StyledTextContent content = getContent();
+
+		GC gc = event.gc;
+
+		gc.setBackground(new Color(255, 255, 255, 128));
+		gc.fillRectangle(event.x, event.y, event.width - 1 , event.height -1);
+
+
+		Rectangle visibleArea = getVisibleArea();
+		System.out.println(visibleArea.x + ", " + visibleArea.y);
+		int y = event.y;
+		for (int i = 0; i < content.getLineCount(); i++) {
+			int offset = content.getOffsetAtLine(i);
+			System.out.println(event.x - visibleArea.x);
+			gc.drawString(content.getLine(i)	, event.x - visibleArea.x, y - visibleArea.y);
+			y += 16;
+		}
+		gc.setForeground(getForeground());
+		gc.drawRectangle(event.x, event.y, event.width - 1 , event.height -1);
+
+
+
+//		super.handlePaint(event);
+	}
+
+    private Rectangle getVisibleArea() {
+        // Get the client area (the visible part of the widget)
+        Rectangle clientArea = getClientArea();
+
+        // Get the scroll bars
+        ScrollBar horizontalBar = getHorizontalBar();
+        ScrollBar verticalBar = getVerticalBar();
+
+        // Get the current scroll positions
+        int hOffset = (horizontalBar != null) ? horizontalBar.getSelection() : 0;
+        int vOffset = (verticalBar != null) ? verticalBar.getSelection() : 0;
+
+        // Translate the client area coordinates by the scroll bar offsets
+        clientArea.x += hOffset;
+        clientArea.y += vOffset;
+
+        return clientArea;
+    }
 
 }

@@ -104,35 +104,7 @@ public class Text extends CText {
 	 */
 	public Text(Composite parent, int style) {
 		super(parent, style);
-//		if ((style & SWT.SEARCH) != 0) {
-//			/*
-//			 * Ensure that SWT.ICON_CANCEL and ICON_SEARCH are set. NOTE: ICON_CANCEL has
-//			 * the same value as H_SCROLL and ICON_SEARCH has the same value as V_SCROLL so
-//			 * it is necessary to first clear these bits to avoid a scroll bar and then
-//			 * reset the bit using the original style supplied by the programmer.
-//			 */
-//			NSSearchFieldCell cell = new NSSearchFieldCell(((NSSearchField) view).cell());
-//			if ((style & SWT.ICON_CANCEL) != 0) {
-//				this.style |= SWT.ICON_CANCEL;
-//				NSButtonCell cancelCell = cell.cancelButtonCell();
-//				targetCancel = cancelCell.target();
-//				actionCancel = cancelCell.action();
-//				cancelCell.setTarget(view);
-//				cancelCell.setAction(OS.sel_sendCancelSelection);
-//			} else {
-//				cell.setCancelButtonCell(null);
-//			}
-//			if ((style & SWT.ICON_SEARCH) != 0) {
-//				this.style |= SWT.ICON_SEARCH;
-//				NSButtonCell searchCell = cell.searchButtonCell();
-//				targetSearch = searchCell.target();
-//				actionSearch = searchCell.action();
-//				searchCell.setTarget(view);
-//				searchCell.setAction(OS.sel_sendSearchSelection);
-//			} else {
-//				cell.setSearchButtonCell(null);
-//			}
-//		}
+
 	}
 
 }

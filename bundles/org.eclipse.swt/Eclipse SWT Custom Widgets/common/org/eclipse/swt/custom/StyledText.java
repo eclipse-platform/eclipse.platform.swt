@@ -5922,7 +5922,7 @@ void handleMouseUp(Event event) {
  *
  * @param event paint event
  */
-void handlePaint(Event event) {
+protected void handlePaint(Event event) {
 	if (event.width == 0 || event.height == 0) return;
 	if (clientAreaWidth == 0 || clientAreaHeight == 0) return;
 
