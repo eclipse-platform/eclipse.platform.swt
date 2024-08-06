@@ -47,7 +47,7 @@ import org.eclipse.swt.internal.*;
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  * @noextend This class is not intended to be subclassed by clients.
  */
-public class Button extends Canvas {
+public class Button extends Scrollable {
 	String text = "", message = "";
 	Image image, disabledImage;
 	ImageList imageList;
@@ -58,6 +58,8 @@ public class Button extends Canvas {
 	static final char[] STRING_WITH_ZERO_CHAR = new char[] {'0'};
 	private int width;
 	private int height;
+
+	Listener listener;
 /**
  * Constructs a new instance of this class given its parent
  * and a style value describing its behavior and appearance.
@@ -98,35 +100,104 @@ public class Button extends Canvas {
  */
 public Button (Composite parent, int style) {
 	super (parent, checkStyle (style));
-	refreshCheckSize(this.nativeZoom);
-	addPaintListener(this::onPaint);
 
-	// TODO (visjee) listeners should work on "this" and not on "parent"
-	parent.addListener(SWT.MouseDown, this::onMouseDown);
-	parent.addListener(SWT.MouseUp, this::onMouseUp);
+	listener = event -> {
+		switch (event.type) {
+		case SWT.Dispose:
+			onDispose(event);
+			break;
+		case SWT.MouseDown:
+			onMouseDown(event);
+			break;
+		case SWT.MouseUp:
+			onMouseUp(event);
+			break;
+		case SWT.Paint:
+			onPaint(event);
+			break;
+		case SWT.Resize:
+			onResize();
+			break;
+		case SWT.KeyDown:
+			onKeyDown(event);
+			break;
+		case SWT.FocusIn:
+			onFocus();
+			break;
+		case SWT.FocusOut:
+			onFocus();
+			break;
+		case SWT.Traverse:
+			onTraverse(event);
+			break;
+		case SWT.Selection:
+			onSelection(event);
+			break;
+		}
+	};
+	addListener(SWT.Dispose, listener);
+	addListener(SWT.MouseDown, listener);
+	addListener(SWT.MouseUp, listener);
+	addListener(SWT.Paint, listener);
+	addListener(SWT.Resize, listener);
+	addListener(SWT.KeyDown, listener);
+	addListener(SWT.FocusIn, listener);
+	addListener(SWT.FocusOut, listener);
+	addListener(SWT.Traverse, listener);
+	addListener(SWT.Selection, listener);
+
+}
+
+@Override
+void sendSelectionEvent(int type) {
+	System.out.println("YAAAAAY! " + new Throwable().getStackTrace()[0]);
+	super.sendSelectionEvent(type);
+}
+
+private void onSelection(Event event) {
+	System.out.println("WARN: Not implemented yet: " + new Throwable().getStackTrace()[0]);
+
+}
+
+private void onTraverse(Event event) {
+	System.out.println("WARN: Not implemented yet: " + new Throwable().getStackTrace()[0]);
+}
+
+private void onFocus() {
+	System.out.println("WARN: Not implemented yet: " + new Throwable().getStackTrace()[0]);
+
+}
+
+private void onKeyDown(Event event) {
+	System.out.println("WARN: Not implemented yet: " + new Throwable().getStackTrace()[0]);
+
+}
+
+private void onResize() {
+	System.out.println("WARN: Not implemented yet: " + new Throwable().getStackTrace()[0]);
+
+}
+
+private void onPaint(Event event) {
+	System.out.println("Paint: GC=" + event.gc);
+	GC gc = event.gc;
+
+	doPaint(gc, getBackground(), getForeground());
+}
+
+private void onDispose(Event event) {
+	System.out.println("WARN: Not implemented yet: " + new Throwable().getStackTrace()[0]);
 
 }
 
 private void onMouseDown(Event e) {
-	System.out.println("CButton.onMouseDown()");
-
 	GC gc = (e.gc != null) ? e.gc : new GC(this);
-
-	// invert colors
+	// switch fg and bg colors
 	doPaint(gc, getForeground(), getBackground());
 }
 
 private void onMouseUp(Event e) {
-	System.out.println("CButton.onMouseUp()");
-
 	GC gc = (e.gc != null) ? e.gc : new GC(this);
-	doPaint(gc, getBackground(), getForeground());
-}
-
-private void onPaint(PaintEvent evt) {
-	System.out.println(evt);
-	GC gc = evt.gc;
-
 	doPaint(gc, getBackground(), getForeground());
 }
 
@@ -137,9 +208,11 @@ private void doPaint(GC gc, Color bgColor, Color fgColor) {
 
 	// draw border
 	gc.setForeground(fgColor);
-	gc.drawRectangle(getBounds());
+	gc.drawRectangle(getClientArea());
+
 
 	// draw text
+	// TODO (visjee) the text should be centered both vertically and horizontally
 	gc.drawText(getText(), 0, 0);
 }
 
@@ -153,17 +226,8 @@ public Color getForeground() {
 	return new Color(255, 0, 0); // red
 }
 
-public static Color invertColor(Color color) {
-	int red = 255 - color.getRed();
-	int green = 255 - color.getGreen();
-	int blue = 255 - color.getBlue();
-
-	return new Color(red, green, blue);
-}
-
 private void refreshCheckSize(int nativeZoom) {
 	System.out.println("WARN: Not implemented yet: " + new Throwable().getStackTrace()[0]);
-
 }
 
 @Override
@@ -320,13 +384,13 @@ public void addSelectionListener (SelectionListener listener) {
 	addTypedListener(listener, SWT.Selection, SWT.DefaultSelection);
 }
 
-@Override
-long callWindowProc (long hwnd, int msg, long wParam, long lParam) {
-	if (handle == 0) return 0;
-//	return OS.CallWindowProc (ButtonProc, hwnd, msg, wParam, lParam);
-	System.out.println("WARN: Not implemented yet: " + new Throwable().getStackTrace()[0]);
-	return -1;
-}
+//@Override
+//long callWindowProc (long hwnd, int msg, long wParam, long lParam) {
+//	if (handle == 0) return 0;
+////	return OS.CallWindowProc (ButtonProc, hwnd, msg, wParam, lParam);
+//	System.out.println("WARN: Not implemented yet: " + new Throwable().getStackTrace()[0]);
+//	return -1;
+//}
 
 static int checkStyle (int style) {
 	style = checkBits (style, SWT.PUSH, SWT.ARROW, SWT.CHECK, SWT.RADIO, SWT.TOGGLE, COMMAND_LINK ? SWT.COMMAND : 0);
@@ -387,73 +451,6 @@ int computeLeftMargin () {
 		System.out.println("WARN: Not implemented yet: " + new Throwable().getStackTrace()[0]);
 	}
 	return margin;
-}
-
-@Override
-void createHandle () {
-	/*
-	* Feature in Windows.  When a button is created,
-	* it clears the UI state for all controls in the
-	* shell by sending WM_CHANGEUISTATE with UIS_SET,
-	* UISF_HIDEACCEL and UISF_HIDEFOCUS to the parent.
-	* This is undocumented and unexpected.  The fix
-	* is to ignore the WM_CHANGEUISTATE, when sent
-	* from CreateWindowEx().
-	*/
-	parent.state |= IGNORE_WM_CHANGEUISTATE;
-	super.createHandle ();
-	parent.state &= ~IGNORE_WM_CHANGEUISTATE;
-
-//	if (OS.IsAppThemed ()) {
-//		/* Set the theme background.
-//		*
-//		* NOTE: On Vista this causes problems when the tab
-//		* key is pressed for push buttons so disable the
-//		* theme background drawing for these widgets for
-//		* now.
-//		*/
-//		if ((style & (SWT.PUSH | SWT.TOGGLE)) == 0) {
-//			state |= THEME_BACKGROUND;
-//		}
-//
-//		/*
-//		* Bug in Windows.  For some reason, the HBRUSH that
-//		* is returned from WM_CTRLCOLOR is misaligned when
-//		* the button uses it to draw.  If the brush is a solid
-//		* color, this does not matter.  However, if the brush
-//		* contains an image, the image is misaligned.  The
-//		* fix is to draw the background in WM_CTRLCOLOR.
-//		*
-//		* NOTE: For comctl32.dll 6.0 with themes disabled,
-//		* drawing in WM_ERASEBKGND will draw on top of the
-//		* text of the control.
-//		*/
-//		if ((style & SWT.RADIO) != 0) {
-//			state |= DRAW_BACKGROUND;
-//		}
-//
-//		useDarkModeExplorerTheme = display.useDarkModeExplorerTheme;
-//		maybeEnableDarkSystemTheme();
-//	}
-
-	System.out.println("WARN: Not implemented yet: " + new Throwable().getStackTrace()[0]);
-	// create a random handle just so the button is not "disposed"
-//	handle = new Random().nextLong();
-}
-
-@Override
-int defaultBackground () {
-//	if ((style & (SWT.PUSH | SWT.TOGGLE)) != 0) {
-//		return OS.GetSysColor (OS.COLOR_BTNFACE);
-//	}
-	return super.defaultBackground ();
-}
-
-@Override
-int defaultForeground () {
-//	return OS.GetSysColor (OS.COLOR_BTNTEXT);
-	System.out.println("WARN: Not implemented yet: " + new Throwable().getStackTrace()[0]);
-	return -1;
 }
 
 @Override
@@ -649,9 +646,11 @@ boolean mnemonicHit (char ch) {
 
 @Override
 boolean mnemonicMatch (char key) {
-	char mnemonic = findMnemonic (getText ());
-	if (mnemonic == '\0') return false;
-	return Character.toUpperCase (key) == Character.toUpperCase (mnemonic);
+//	char mnemonic = findMnemonic (getText ());
+//	if (mnemonic == '\0') return false;
+//	return Character.toUpperCase (key) == Character.toUpperCase (mnemonic);
+	System.out.println("WARN: Not implemented yet: " + new Throwable().getStackTrace()[0]);
+	return false;
 }
 
 @Override
@@ -688,11 +687,6 @@ public void removeSelectionListener (SelectionListener listener) {
 	if (eventTable == null) return;
 	eventTable.unhook (SWT.Selection, listener);
 	eventTable.unhook (SWT.DefaultSelection,listener);
-}
-
-@Override
-int resolveTextDirection() {
-	return (style & SWT.ARROW) != 0 ? SWT.NONE : BidiUtil.resolveTextDirection(text);
 }
 
 void selectRadio () {
@@ -893,12 +887,6 @@ public void setGrayed (boolean grayed) {
 }
 
 @Override
-boolean setRadioFocus (boolean tabbing) {
-	if ((style & SWT.RADIO) == 0 || !getSelection ()) return false;
-	return tabbing ? setTabItemFocus () : setFocus ();
-}
-
-@Override
 boolean setRadioSelection (boolean value) {
 	if ((style & SWT.RADIO) == 0) return false;
 	if (getSelection () != value) {
@@ -977,444 +965,14 @@ public void setText (String string) {
 	_setText (string);
 }
 
-@Override
-boolean updateTextDirection(int textDirection) {
-	if (super.updateTextDirection(textDirection)) {
-// TODO: Keep for now, to follow up
-//		int flags = SWT.RIGHT_TO_LEFT | SWT.LEFT_TO_RIGHT;
-//		style &= ~SWT.MIRRORED;
-//		style &= ~flags;
-//		style |= textDirection & flags;
-//		updateOrientation ();
-//		checkMirrored ();
-		return true;
-	}
-	return false;
-}
-
 void updateImageList () {
-	if (imageList != null) {
-//		BUTTON_IMAGELIST buttonImageList = new BUTTON_IMAGELIST ();
-//		OS.SendMessage (handle, OS.BCM_GETIMAGELIST, 0, buttonImageList);
-//		if (imageList != null) imageList.dispose ();
-//		imageList = new ImageList (style & SWT.RIGHT_TO_LEFT, getZoom());
-//		if (OS.IsWindowEnabled (handle)) {
-//			imageList.add (image);
-//		} else {
-//			if (disabledImage != null) disabledImage.dispose ();
-//			disabledImage = new Image (display, image, SWT.IMAGE_DISABLE);
-//			imageList.add (disabledImage);
-//		}
-//		buttonImageList.himl = imageList.getHandle(getZoom());
-//		OS.SendMessage (handle, OS.BCM_SETIMAGELIST, 0, buttonImageList);
-//		/*
-//		* Bug in Windows.  Under certain cirumstances yet to be
-//		* isolated, BCM_SETIMAGELIST does not redraw the control
-//		* when an image is set.  The fix is to force a redraw.
-//		*/
-//		OS.InvalidateRect (handle, null, true);
-		System.out.println("WARN: Not implemented yet: " + new Throwable().getStackTrace()[0]);
-	}
+	System.out.println("WARN: Not implemented yet: " + new Throwable().getStackTrace()[0]);
 }
 
-@Override
-void updateOrientation () {
-	super.updateOrientation ();
-	updateImageList ();
-}
 
 void updateSelection (int flags) {
-//	if (flags != OS.SendMessage (handle, OS.BM_GETCHECK, 0, 0)) {
-//		/*
-//		* Feature in Windows. When BM_SETCHECK is used
-//		* to set the checked state of a radio or check
-//		* button, it sets the WS_TABSTOP style.  This
-//		* is undocumented and unwanted.  The fix is
-//		* to save and restore the window style bits.
-//		*/
-//		int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
-//		if ((style & SWT.CHECK) != 0) {
-//			if (flags == OS.BST_INDETERMINATE) {
-//				bits &= ~OS.BS_CHECKBOX;
-//				bits |= OS.BS_3STATE;
-//			} else {
-//				bits |= OS.BS_CHECKBOX;
-//				bits &= ~OS.BS_3STATE;
-//			}
-//			if (bits != OS.GetWindowLong (handle, OS.GWL_STYLE)) {
-//				OS.SetWindowLong (handle, OS.GWL_STYLE, bits);
-//			}
-//		}
-//		OS.SendMessage (handle, OS.BM_SETCHECK, flags, 0);
-//		if (bits != OS.GetWindowLong (handle, OS.GWL_STYLE)) {
-//			OS.SetWindowLong (handle, OS.GWL_STYLE, bits);
-//		}
-//	}
 	System.out.println("WARN: Not implemented yet: " + new Throwable().getStackTrace()[0]);
 }
-
-@Override
-int widgetStyle () {
-	int bits = super.widgetStyle ();
-//	if ((style & SWT.FLAT) != 0) bits |= OS.BS_FLAT;
-//	if ((style & SWT.ARROW) != 0) return bits | OS.BS_OWNERDRAW;
-//	if ((style & SWT.LEFT) != 0) bits |= OS.BS_LEFT;
-//	if ((style & SWT.CENTER) != 0) bits |= OS.BS_CENTER;
-//	if ((style & SWT.RIGHT) != 0) bits |= OS.BS_RIGHT;
-//	if ((style & SWT.WRAP) != 0) bits |= OS.BS_MULTILINE;
-//	if ((style & SWT.PUSH) != 0) return bits | OS.BS_PUSHBUTTON | OS.WS_TABSTOP;
-//	if ((style & SWT.CHECK) != 0) return bits | OS.BS_CHECKBOX | OS.WS_TABSTOP;
-//	if ((style & SWT.RADIO) != 0) return bits | OS.BS_RADIOBUTTON;
-//	if ((style & SWT.TOGGLE) != 0) return bits | OS.BS_PUSHLIKE | OS.BS_CHECKBOX | OS.WS_TABSTOP;
-//	if ((style & SWT.COMMAND) != 0) return bits | OS.BS_COMMANDLINK | OS.WS_TABSTOP;
-//	return bits | OS.BS_PUSHBUTTON | OS.WS_TABSTOP;
-	System.out.println("WARN: Not implemented yet: " + new Throwable().getStackTrace()[0]);
-	return bits;
-}
-
-//@Override
-//TCHAR windowClass () {
-//	System.out.println("WARN: Not implemented yet: " + new Throwable().getStackTrace()[0]);
-//	return null;
-//}
-//
-//@Override
-//long windowProc () {
-//	return ButtonProc;
-//}
-//
-//@Override
-//LRESULT wmColorChild (long wParam, long lParam) {
-//	if (isRadioOrCheck()) {
-//		// In order to match old SWT behavior and SWT behavior on other
-//		// platforms, Radio and Check have their own background instead
-//		// of showing parent's background.
-//		return super.wmColorChild(wParam, lParam);
-//	} else {
-//		// Button has "transparent" portions which need to be filled with
-//		// parent's (and not Button's) background. For example, SWT.PUSH
-//		// button ~2px transparent area around the button.
-//
-//		// Issue 848: Control.wmColorChild() contains a hack that paints entire
-//		// rectangle if THEME_BACKGROUND is set. This causes problems when
-//		// Windows sends WM_CTLCOLORBTN without repainting entire button -
-//		// in this case, button "disappears" until painted again.
-//		// It for example happens when all of:
-//		// * Button is inside TabFolder
-//		// * no background colors are set
-//		// * alt key is pressed
-//		// The workaround is to temporarily disable parent's 'THEME_BACKGROUND'
-//		// to disable this hack.
-//		final int oldFlag = parent.state & THEME_BACKGROUND;
-//		try {
-//			parent.state &= ~THEME_BACKGROUND;
-//			return parent.wmColorChild(wParam, lParam);
-//		} finally {
-//			parent.state |= oldFlag;
-//		}
-//	}
-//}
-//
-//@Override
-//LRESULT WM_GETDLGCODE (long wParam, long lParam) {
-//	LRESULT result = super.WM_GETDLGCODE (wParam, lParam);
-//	if (result != null) return result;
-//	if ((style & SWT.ARROW) != 0) {
-//		return new LRESULT (OS.DLGC_STATIC);
-//	}
-//	return result;
-//}
-//
-//@Override
-//LRESULT WM_GETOBJECT (long wParam, long lParam) {
-//	/*
-//	* Ensure that there is an accessible object created for this
-//	* control because support for radio button position in group
-//	* accessibility is implemented in the accessibility package.
-//	*/
-//	if ((style & SWT.RADIO) != 0) {
-//		if (accessible == null) accessible = new_Accessible (this);
-//	}
-//	return super.WM_GETOBJECT (wParam, lParam);
-//}
-//
-//@Override
-//LRESULT WM_KILLFOCUS (long wParam, long lParam) {
-//	LRESULT result = super.WM_KILLFOCUS (wParam, lParam);
-//	if ((style & SWT.PUSH) != 0 && getDefault ()) {
-//		menuShell ().setDefaultButton (null, false);
-//	}
-//	return result;
-//}
-//
-//@Override
-//LRESULT WM_LBUTTONDOWN (long wParam, long lParam) {
-//	if (ignoreMouse) return null;
-//	return super.WM_LBUTTONDOWN (wParam, lParam);
-//}
-//
-//@Override
-//LRESULT WM_LBUTTONUP (long wParam, long lParam) {
-//	if (ignoreMouse) return null;
-//	return super.WM_LBUTTONUP (wParam, lParam);
-//}
-//
-//@Override
-//LRESULT WM_SETFOCUS (long wParam, long lParam) {
-//	/*
-//	* Feature in Windows. When Windows sets focus to
-//	* a radio button, it sets the WS_TABSTOP style.
-//	* This is undocumented and unwanted.  The fix is
-//	* to save and restore the window style bits.
-//	*/
-//	int bits = 0;
-//	if ((style & SWT.RADIO) != 0) {
-//		bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
-//	}
-//	LRESULT result = super.WM_SETFOCUS (wParam, lParam);
-//	if ((style & SWT.RADIO) != 0) {
-//		OS.SetWindowLong (handle, OS.GWL_STYLE, bits);
-//	}
-//	if ((style & SWT.PUSH) != 0) {
-//		menuShell ().setDefaultButton (this, false);
-//	}
-//	return result;
-//}
-//
-//@Override
-//LRESULT WM_SIZE (long wParam, long lParam) {
-//	LRESULT result = super.WM_SIZE (wParam, lParam);
-//	if (result != null) return result;
-//	if ((style & (SWT.PUSH | SWT.TOGGLE)) != 0) {
-//		if (imageList != null && text.length () != 0) {
-//			BUTTON_IMAGELIST buttonImageList = new BUTTON_IMAGELIST ();
-//			OS.SendMessage (handle, OS.BCM_GETIMAGELIST, 0, buttonImageList);
-//			buttonImageList.uAlign = OS.BUTTON_IMAGELIST_ALIGN_LEFT;
-//			buttonImageList.margin_left = computeLeftMargin ();
-//			buttonImageList.margin_right = MARGIN;
-//			OS.SendMessage (handle, OS.BCM_SETIMAGELIST, 0, buttonImageList);
-//		}
-//	}
-//	return result;
-//}
-//
-//@Override
-//LRESULT WM_SYSCOLORCHANGE (long wParam, long lParam) {
-//	LRESULT result = super.WM_SYSCOLORCHANGE (wParam, lParam);
-//	if (result != null) return result;
-//	return result;
-//}
-//
-//@Override
-//LRESULT WM_UPDATEUISTATE (long wParam, long lParam) {
-//	LRESULT result = super.WM_UPDATEUISTATE (wParam, lParam);
-//	if (result != null) return result;
-//	/*
-//	* Feature in Windows.  When WM_UPDATEUISTATE is sent to
-//	* a button, it sends WM_CTLCOLORBTN to get the foreground
-//	* and background.  If drawing happens in WM_CTLCOLORBTN,
-//	* it will overwrite the contents of the control.  The
-//	* fix is draw the button without drawing the background
-//	* and avoid the button window proc.
-//	*
-//	* NOTE:  This only happens for radio, check and toggle
-//	* buttons.
-//	*/
-//	if ((style & (SWT.RADIO | SWT.CHECK | SWT.TOGGLE)) != 0) {
-//		boolean redraw = findImageControl () != null;
-//		if (!redraw) {
-//			if ((state & THEME_BACKGROUND) != 0) {
-//				if (OS.IsAppThemed ()) {
-//					redraw = findThemeControl () != null;
-//				}
-//			}
-//			if (!redraw) redraw = findBackgroundControl () != null;
-//		}
-//		if (redraw) {
-//			OS.InvalidateRect (handle, null, false);
-//			long code = OS.DefWindowProc (handle, OS.WM_UPDATEUISTATE, wParam, lParam);
-//			return new LRESULT (code);
-//		}
-//	}
-//	/*
-//	* Feature in Windows.  Push and toggle buttons draw directly
-//	* in WM_UPDATEUISTATE rather than damaging and drawing later
-//	* in WM_PAINT.  This means that clients who hook WM_PAINT
-//	* expecting to get all the drawing will not.  The fix is to
-//	* redraw the control when paint events are hooked.
-//	*/
-//	if ((style & (SWT.PUSH | SWT.TOGGLE)) != 0) {
-//		if (hooks (SWT.Paint) || filters (SWT.Paint) || customDrawing()) {
-//			OS.InvalidateRect (handle, null, true);
-//		}
-//	}
-//	return result;
-//}
-//
-//@Override
-//LRESULT wmCommandChild (long wParam, long lParam) {
-//	int code = OS.HIWORD (wParam);
-//	switch (code) {
-//		case OS.BN_CLICKED:
-//		case OS.BN_DOUBLECLICKED:
-//			if ((style & (SWT.CHECK | SWT.TOGGLE)) != 0) {
-//				setSelection (!getSelection ());
-//			} else {
-//				if ((style & SWT.RADIO) != 0) {
-//					if ((parent.getStyle () & SWT.NO_RADIO_GROUP) != 0) {
-//						setSelection (!getSelection ());
-//					} else {
-//						selectRadio ();
-//					}
-//				}
-//			}
-//			sendSelectionEvent (SWT.Selection);
-//	}
-//	return super.wmCommandChild (wParam, lParam);
-//}
-//
-//@Override
-//LRESULT wmNotifyChild (NMHDR hdr, long wParam, long lParam) {
-//	switch (hdr.code) {
-//		case OS.NM_CUSTOMDRAW:
-//			// this message will not appear for owner-draw buttons (currently the ARROW button).
-//
-//			NMCUSTOMDRAW nmcd = new NMCUSTOMDRAW ();
-//			OS.MoveMemory (nmcd, lParam, NMCUSTOMDRAW.sizeof);
-//
-//			switch (nmcd.dwDrawStage) {
-//				case OS.CDDS_PREPAINT: {
-//					// buttons are ignoring SetBkColor, SetBkMode and SetTextColor
-//					if (customBackgroundDrawing()) {
-//						int pixel = background;
-//						if ((nmcd.uItemState & OS.CDIS_SELECTED) != 0) {
-//							pixel = getDifferentColor(background);
-//						} else if ((nmcd.uItemState & OS.CDIS_HOT) != 0) {
-//							pixel = getSlightlyDifferentColor(background);
-//						}
-//						if ((style & SWT.TOGGLE) != 0 && isChecked()) {
-//							pixel = getDifferentColor(background);
-//						}
-//
-//						long brush = OS.CreateSolidBrush(pixel);
-//
-//						int inset = 2;
-//						int radius = 3;
-//						if (useDarkModeExplorerTheme && (OS.WIN32_BUILD >= OS.WIN32_BUILD_WIN11_21H2)) {
-//							// On Win11, Light theme and Dark theme images have different sizes
-//							inset = 1;
-//							radius = 4;
-//						}
-//
-//						int l = nmcd.left + inset;
-//						int t = nmcd.top + inset;
-//						int r = nmcd.right - inset;
-//						int b = nmcd.bottom - inset;
-//
-//						if (OS.WIN32_BUILD >= OS.WIN32_BUILD_WIN11_21H2) {
-//							// 'RoundRect' has left/top pixel reserved for border
-//							l += 1;
-//							t += 1;
-//
-//							// Win11 has buttons with rounded corners
-//							OS.SaveDC(nmcd.hdc);
-//							OS.SelectObject(nmcd.hdc, brush);
-//							OS.SelectObject(nmcd.hdc, OS.GetStockObject(OS.NULL_PEN));
-//							OS.RoundRect(nmcd.hdc, l, t, r, b, radius, radius);
-//							OS.RestoreDC(nmcd.hdc, -1);
-//						} else {
-//							RECT rect = new RECT (l, t, r, b);
-//							OS.FillRect(nmcd.hdc, rect, brush);
-//						}
-//
-//						OS.DeleteObject(brush);
-//					}
-//					if (customForegroundDrawing()) {
-//						int radioOrCheckTextPadding = getCheckboxTextOffset(nmcd.hdc);
-//						int border = isRadioOrCheck() ? 0 : 3;
-//						int left = nmcd.left + border;
-//						int right = nmcd.right - border;
-//						if (image != null) {
-//							GCData data = new GCData();
-//							data.device = display;
-//							GC gc = createNewGC(nmcd.hdc, data);
-//
-//							int margin = computeLeftMargin();
-//							Rectangle imageBounds = DPIUtil.scaleBounds(image.getBounds(), this.getZoom(), 100);
-//							int imageWidth = imageBounds.width;
-//							left += (imageWidth + (isRadioOrCheck() ? 2 * MARGIN : MARGIN)); // for SWT.RIGHT_TO_LEFT right and left are inverted
-//
-//							int x = margin + (isRadioOrCheck() ? radioOrCheckTextPadding : 3);
-//							int y = Math.max (0, (nmcd.bottom - imageBounds.height) / 2);
-//							int zoom = getZoom();
-//							gc.drawImage (image, DPIUtil.scaleDown(x, zoom), DPIUtil.scaleDown(y, zoom));
-//							gc.dispose ();
-//						}
-//
-//						left += isRadioOrCheck() ? radioOrCheckTextPadding : 0;
-//						RECT textRect = new RECT ();
-//						OS.SetRect (textRect, left, nmcd.top + border, right, nmcd.bottom - border);
-//
-//						// draw text
-//						char [] buffer = text.toCharArray ();
-//						int flags = 0;
-//						if ((style & SWT.WRAP) != 0) {
-//							flags |= OS.DT_WORDBREAK;
-//							if (!isRadioOrCheck() && image != null) {
-//								textRect.right -= MARGIN;
-//							}
-//						} else {
-//							flags |= OS.DT_SINGLELINE; // TODO: this always draws the prefix
-//						}
-//						OS.DrawText(nmcd.hdc, buffer, buffer.length, textRect, flags | OS.DT_CALCRECT);
-//						OS.OffsetRect(textRect, 0, Math.max(0, (nmcd.bottom  - textRect.bottom - border) / 2));
-//						if (image != null) {
-//							// The default button with an image doesn't respect the text alignment. So we do the same for styled buttons.
-//							flags |= OS.DT_LEFT;
-//							if (!isRadioOrCheck()) {
-//								OS.OffsetRect(textRect, Math.max(MARGIN, (right - textRect.right) / 2 + 1), 0);
-//							}
-//						} else if ((style & SWT.LEFT) != 0) {
-//							flags |= OS.DT_LEFT;
-//						} else if ((style & SWT.RIGHT) != 0) {
-//							flags |= OS.DT_RIGHT;
-//							OS.OffsetRect(textRect, right - textRect.right, 0);
-//						} else {
-//							flags |= OS.DT_CENTER;
-//							OS.OffsetRect(textRect, (right - textRect.right) / 2, 0);
-//						}
-//						OS.SetBkMode(nmcd.hdc, OS.TRANSPARENT);
-//						OS.SetTextColor(nmcd.hdc, foreground);
-//						OS.DrawText(nmcd.hdc, buffer, buffer.length, textRect, flags);
-//
-//						// draw focus rect
-//						if ((nmcd.uItemState & OS.CDIS_FOCUS) != 0) {
-//							RECT focusRect = new RECT ();
-//							if (isRadioOrCheck()) {
-//								if (text.length() > 0) {
-//									OS.SetRect(focusRect, textRect.left-1, textRect.top, Math.min(nmcd.right, textRect.right+1), Math.min(nmcd.bottom, textRect.bottom+1));
-//								} else {
-//									/*
-//									 * With custom foreground, draw focus rectangle for CheckBox
-//									 * and Radio buttons considering the native text padding
-//									 * value(which is DPI aware). See bug 508141 for details.
-//									 */
-//									OS.SetRect (focusRect, nmcd.left+1+radioOrCheckTextPadding, nmcd.top, nmcd.right-2, nmcd.bottom-1);
-//								}
-//							} else {
-//								OS.SetRect (focusRect, nmcd.left+4, nmcd.top+4, nmcd.right-4, nmcd.bottom-4);
-//							}
-//							OS.DrawFocusRect(nmcd.hdc, focusRect);
-//						}
-//						return new LRESULT (OS.CDRF_SKIPDEFAULT);
-//					}
-//					return new LRESULT (OS.CDRF_DODEFAULT);
-//				}
-//			}
-//			break;
-//	}
-//	return super.wmNotifyChild (hdr, wParam, lParam);
-//}
 
 private boolean isChecked() {
 	System.out.println("WARN: Not implemented yet: " + new Throwable().getStackTrace()[0]);
@@ -1487,32 +1045,5 @@ static int getThemeStateId(int style, boolean pressed, boolean enabled) {
 	System.out.println("WARN: Not implemented yet: " + new Throwable().getStackTrace()[0]);
 	return -1;
 }
-//
-//@Override
-//LRESULT wmDrawChild (long wParam, long lParam) {
-//	if ((style & SWT.ARROW) == 0) return super.wmDrawChild (wParam, lParam);
-//	DRAWITEMSTRUCT struct = new DRAWITEMSTRUCT ();
-//	OS.MoveMemory (struct, lParam, DRAWITEMSTRUCT.sizeof);
-//	RECT rect = new RECT ();
-//	OS.SetRect (rect, struct.left, struct.top, struct.right, struct.bottom);
-//	if (OS.IsAppThemed ()) {
-//		boolean pressed = ((struct.itemState & OS.ODS_SELECTED) != 0);
-//		boolean enabled = getEnabled ();
-//		int iStateId = getThemeStateId(style, pressed, enabled);
-//		OS.DrawThemeBackground (display.hScrollBarThemeAuto (), struct.hDC, OS.SBP_ARROWBTN, iStateId, rect, null);
-//	} else {
-//		int uState = OS.DFCS_SCROLLLEFT;
-//		switch (style & (SWT.UP | SWT.DOWN | SWT.LEFT | SWT.RIGHT)) {
-//			case SWT.UP: uState = OS.DFCS_SCROLLUP; break;
-//			case SWT.DOWN: uState = OS.DFCS_SCROLLDOWN; break;
-//			case SWT.LEFT: uState = OS.DFCS_SCROLLLEFT; break;
-//			case SWT.RIGHT: uState = OS.DFCS_SCROLLRIGHT; break;
-//		}
-//		if (!getEnabled ()) uState |= OS.DFCS_INACTIVE;
-//		if ((style & SWT.FLAT) == SWT.FLAT) uState |= OS.DFCS_FLAT;
-//		if ((struct.itemState & OS.ODS_SELECTED) != 0) uState |= OS.DFCS_PUSHED;
-//		OS.DrawFrameControl (struct.hDC, rect, OS.DFC_SCROLL, uState);
-//	}
-//	return null;
-//}
+
 }
