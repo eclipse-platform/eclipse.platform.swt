@@ -47,7 +47,7 @@ import org.eclipse.swt.internal.*;
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  * @noextend This class is not intended to be subclassed by clients.
  */
-public class Button extends Scrollable {
+public class Button extends Canvas {
 	String text = "", message = "";
 	Image image, disabledImage;
 	ImageList imageList;
