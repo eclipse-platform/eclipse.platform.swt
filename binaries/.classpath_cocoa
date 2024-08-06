@@ -29,5 +29,8 @@
     <classpathentry kind="src" path="Eclipse SWT WebKit/cocoa"/>
     <classpathentry kind="src" path="Eclipse SWT OpenGL/cocoa"/>
     <classpathentry kind="src" path="Eclipse SWT OpenGL/common"/>
+    <classpathentry kind="lib" path="lib/skija-shared-0.116.2.jar"/>
+    <classpathentry kind="lib" path="lib/skija-macos-arm64-0.116.2.jar"/>
+    <classpathentry kind="lib" path="lib/types-0.1.1.jar"/>
     <classpathentry kind="output" path="bin"/>
 </classpath>
