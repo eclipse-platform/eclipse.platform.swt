@@ -297,9 +297,9 @@ public class CText extends StyledText {
 	 */
 	public void setEchoChar(char echo) {
 		checkWidget();
-		if ((style & SWT.MULTI) != 0)
+		if ((getStyle() & SWT.MULTI) != 0)
 			return;
-		if ((style & SWT.PASSWORD) == 0) {
+		if ((getStyle() & SWT.PASSWORD) == 0) {
 			Point selection = getSelection();
 			char[] text = getTextChars();
 			echoCharacter = echo;
@@ -327,7 +327,7 @@ public class CText extends StyledText {
 	void setEditText(char[] text) {
 		char[] buffer;
 		int length = Math.min(text.length, textLimit);
-		if ((style & SWT.PASSWORD) == 0 && echoCharacter != '\0') {
+		if ((getStyle() & SWT.PASSWORD) == 0 && echoCharacter != '\0') {
 			hiddenText = new char[length];
 			buffer = new char[length];
 			for (int i = 0; i < length; i++) {
