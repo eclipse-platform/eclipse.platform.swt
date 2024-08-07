@@ -437,7 +437,10 @@ void onPaint(PaintEvent event) {
 		}
 	}
 
-	GC gc = event.gc;
+//	GC gc = event.gc;
+	GC gc = new SkijaGC(event.gc);
+
+
 	String[] lines = text == null ? null : splitString(text);
 
 	// shorten the text
@@ -608,6 +611,11 @@ void onPaint(PaintEvent event) {
 			lineY += lineHeight;
 		}
 	}
+
+	if( gc instanceof SkijaGC sgc) {
+		sgc.commit();
+	}
+
 }
 /**
  * Paint the Label's border.

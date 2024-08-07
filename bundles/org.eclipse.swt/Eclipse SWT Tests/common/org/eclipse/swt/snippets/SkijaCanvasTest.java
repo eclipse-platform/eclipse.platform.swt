@@ -25,6 +25,8 @@ public class SkijaCanvasTest {
 		skijaGC.drawLine(0, 0,  200 , 200);
 
 
+		skijaGC.commit();
+
 
 		shell.open();
 		while (!shell.isDisposed()) {
