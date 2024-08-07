@@ -36,7 +36,6 @@ public class SkijaGC extends GC {
 		this.innerGC = innerGC;
 	}
 
-
 	private String[] splitString(String text) {
 		String[] lines = new String[1];
 		int start = 0, pos;
@@ -160,7 +159,6 @@ public class SkijaGC extends GC {
 		ImageInfo imageInfo = new ImageInfo(width, height, ColorType.BGRA_8888,
 				ColorAlphaType.PREMUL);
 
-
 		return io.github.humbleui.skija.Image.makeRasterFromBytes(imageInfo,
 				imageData.data, imageData.bytesPerLine);
 	}
@@ -199,6 +197,8 @@ public class SkijaGC extends GC {
 
 	@Override
 	public void drawText(String string, int x, int y, boolean isTransparent) {
+		System.out.println("WARN: Not implemented yet: "
+				+ new Throwable().getStackTrace()[0]);
 	}
 
 	@Override
@@ -246,103 +246,147 @@ public class SkijaGC extends GC {
 	@Override
 	public void drawArc(int x, int y, int width, int height, int startAngle,
 			int arcAngle) {
-		super.drawArc(x, y, width, height, startAngle, arcAngle);
+		System.out.println("WARN: Not implemented yet: "
+				+ new Throwable().getStackTrace()[0]);
 	}
 
 	@Override
 	public void drawFocus(int x, int y, int width, int height) {
-		super.drawFocus(x, y, width, height);
+		System.out.println("WARN: Not implemented yet: "
+				+ new Throwable().getStackTrace()[0]);
 	}
 
 	void drawIcon(Image srcImage, int srcX, int srcY, int srcWidth,
 			int srcHeight, int destX, int destY, int destWidth, int destHeight,
 			boolean simple) {
+		System.out.println("WARN: Not implemented yet: "
+				+ new Throwable().getStackTrace()[0]);
 	}
 
 	void drawBitmap(Image srcImage, int srcX, int srcY, int srcWidth,
 			int srcHeight, int destX, int destY, int destWidth, int destHeight,
 			boolean simple) {
+		System.out.println("WARN: Not implemented yet: "
+				+ new Throwable().getStackTrace()[0]);
 	}
 
 	void drawBitmapAlpha(Image srcImage, int srcX, int srcY, int srcWidth,
 			int srcHeight, int destX, int destY, int destWidth, int destHeight,
 			boolean simple) {
+		System.out.println("WARN: Not implemented yet: "
+				+ new Throwable().getStackTrace()[0]);
 	}
 
 	void drawBitmapTransparentByClipping(long srcHdc, long maskHdc, int srcX,
 			int srcY, int srcWidth, int srcHeight, int destX, int destY,
 			int destWidth, int destHeight, boolean simple, int imgWidth,
 			int imgHeight) {
+		System.out.println("WARN: Not implemented yet: "
+				+ new Throwable().getStackTrace()[0]);
 	}
 
 	@Override
 	public void drawOval(int x, int y, int width, int height) {
+		System.out.println("WARN: Not implemented yet: "
+				+ new Throwable().getStackTrace()[0]);
 	}
 
 	@Override
 	public void drawPath(Path path) {
+		System.out.println("WARN: Not implemented yet: "
+				+ new Throwable().getStackTrace()[0]);
 	}
 	@Override
 	public void drawPoint(int x, int y) {
+		System.out.println("WARN: Not implemented yet: "
+				+ new Throwable().getStackTrace()[0]);
 	}
 
 	@Override
 	public void drawPolygon(int[] pointArray) {
+		System.out.println("WARN: Not implemented yet: "
+				+ new Throwable().getStackTrace()[0]);
 	}
 
 	@Override
 	public void drawPolyline(int[] pointArray) {
+		System.out.println("WARN: Not implemented yet: "
+				+ new Throwable().getStackTrace()[0]);
 	}
 
 	@Override
 	public void drawRectangle(int x, int y, int width, int height) {
+		System.out.println("WARN: Not implemented yet: "
+				+ new Throwable().getStackTrace()[0]);
 	}
 
 	@Override
 	public void drawRectangle(Rectangle rect) {
+		System.out.println("WARN: Not implemented yet: "
+				+ new Throwable().getStackTrace()[0]);
 	}
 
 	@Override
 	public void drawRoundRectangle(int x, int y, int width, int height,
 			int arcWidth, int arcHeight) {
+		System.out.println("WARN: Not implemented yet: "
+				+ new Throwable().getStackTrace()[0]);
 	}
 
 	@Override
 	public void drawString(String string, int x, int y) {
+		System.out.println("WARN: Not implemented yet: "
+				+ new Throwable().getStackTrace()[0]);
 	}
 
 	@Override
 	public void drawString(String string, int x, int y, boolean isTransparent) {
+		System.out.println("WARN: Not implemented yet: "
+				+ new Throwable().getStackTrace()[0]);
 	}
 
 	@Override
 	public void fillArc(int x, int y, int width, int height, int startAngle,
 			int arcAngle) {
+		System.out.println("WARN: Not implemented yet: "
+				+ new Throwable().getStackTrace()[0]);
 	}
 
 	@Override
 	public void fillGradientRectangle(int x, int y, int width, int height,
 			boolean vertical) {
+		System.out.println("WARN: Not implemented yet: "
+				+ new Throwable().getStackTrace()[0]);
 	}
 
 	@Override
 	public void fillOval(int x, int y, int width, int height) {
+		System.out.println("WARN: Not implemented yet: "
+				+ new Throwable().getStackTrace()[0]);
 	}
 
 	@Override
 	public void fillPath(Path path) {
+		System.out.println("WARN: Not implemented yet: "
+				+ new Throwable().getStackTrace()[0]);
 	}
 
 	@Override
 	public void fillPolygon(int[] pointArray) {
+		System.out.println("WARN: Not implemented yet: "
+				+ new Throwable().getStackTrace()[0]);
 	}
 
 	@Override
 	public void fillRectangle(int x, int y, int width, int height) {
+		System.out.println("WARN: Not implemented yet: "
+				+ new Throwable().getStackTrace()[0]);
 	}
 
 	@Override
 	public void fillRoundRectangle(int x, int y, int width, int height,
 			int arcWidth, int arcHeight) {
+		System.out.println("WARN: Not implemented yet: "
+				+ new Throwable().getStackTrace()[0]);
 	}
 }
