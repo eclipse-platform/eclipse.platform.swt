@@ -77,16 +77,7 @@ public class SkijaGC implements IGraphicsContext {
 
 	public void commit() {
 
-		if (this.background != null) {
 
-			Surface bgSurface = Surface
-					.makeRaster(ImageInfo.makeN32Premul(r.width, r.height));
-			//
-			//
-			Canvas bgc = bgSurface.getCanvas();
-			Paint bgPaint = new Paint().setColor(getBackground().getIntRGB());
-			bgc.drawRect(Rect.makeWH(r.width, r.height), bgPaint);
-			bgPaint.close();
 //		if (this.background != null) {
 //
 //			Surface bgSurface = Surface
