@@ -36,9 +36,14 @@ public static void main(String[] args) {
 	Shell shell = new Shell(display);
 	shell.setText("Snippet 206");
 	shell.setLayout (new GridLayout());
-	Button button = new Button(shell, SWT.PUSH);
+	var button = new CButton(shell, SWT.PUSH);
 
-	button.addSelectionListener(widgetSelectedAdapter(e -> System.out.println("Received evt: " + e )));
+//	button.addSelectionListener(widgetSelectedAdapter(e -> System.out.println("Received evt: " + e )));
+//	button.addSelectionListener(widgetSelectedAdapter(__ -> System.out.println("Another click")));
+	button.addListener(SWT.Selection, event -> System.out.println("Click!!!"));
+
+	// When the shell is active and the user presses ENTER, the button is pressed
+//	shell.setDefaultButton(button);
 
 	button.setImage(image);
 	button.setText("Button hola");
