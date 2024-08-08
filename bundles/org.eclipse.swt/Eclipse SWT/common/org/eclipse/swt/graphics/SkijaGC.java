@@ -84,7 +84,7 @@ public class SkijaGC implements IGraphicsContext {
 			//
 			//
 			Canvas bgc = bgSurface.getCanvas();
-			Paint bgPaint = new Paint().setColor(getBackground().handle);
+			Paint bgPaint = new Paint().setColor(getBackground().getIntRGB());
 			bgc.drawRect(Rect.makeWH(r.width, r.height), bgPaint);
 			bgPaint.close();
 
