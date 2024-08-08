@@ -108,13 +108,6 @@ Contact the project developers via the project's "dev" list.
 
 - <https://accounts.eclipse.org/mailing-list/platform-dev>
 
-Search for bugs:
-----------------
-
-SWT used to track ongoing development and issues in Bugzilla .
-
-- <https://bugs.eclipse.org/bugs/buglist.cgi?product=Platform&component=SWT>
-
 Create a new bug:
 -----------------
 
