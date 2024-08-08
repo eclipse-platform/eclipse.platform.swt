@@ -92,15 +92,20 @@ public class CButton extends Canvas {
 	}
 
 	private void onMouseUp(MouseEvent e) {
-		notifyListeners(SWT.Selection, new Event());
+		notifyListenersOfSelectionEvent();
 	}
 
 	private void onKeyReleased(KeyEvent e) {
-		System.out.println("Key: " + e.keyCode + " - " + e.character);
+		// FIXME (visjee) Is this a good practice?
+		// When pressing ENTER, post a "selection" event too (just like with the mouse)
+		if (e.keyCode == SWT.CR || e.keyCode == SWT.KEYPAD_CR) {
+			notifyListenersOfSelectionEvent();
+		}
 
-		int oneOf = e.keyCode & SWT.CR & SWT.LF & SWT.DEL & SWT.ESC & SWT.TAB;
-		System.out.println("Is one of: " + oneOf);
+		notifyListeners(SWT.KeyUp, new Event());
+	}
 
+	private void notifyListenersOfSelectionEvent() {
 		notifyListeners(SWT.Selection, new Event());
 	}
 }
