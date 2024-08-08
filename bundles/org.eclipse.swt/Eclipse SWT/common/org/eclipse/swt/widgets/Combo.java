@@ -17,6 +17,7 @@ package org.eclipse.swt.widgets;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.custom.*;
+import org.eclipse.swt.events.*;
 
 /**
  * Instances of this class are controls that allow the user
@@ -145,5 +146,13 @@ public void setItems (String... items) {
 //	ignoreSelection = false;
 }
 
+public void addSegmentListener(SegmentListener listener) {
+	System.out.println("WARN: Not implemented yet: " + new Throwable().getStackTrace()[0]);
+}
+
+public int getCaretPosition() {
+	System.out.println("WARN: Not implemented yet: " + new Throwable().getStackTrace()[0]);
+	return -1;
+}
 
 }
