@@ -891,8 +891,13 @@ private static void handleDPIChange(Widget widget, int newZoom, float scalingFac
 	if (!(widget instanceof TableColumn tableColumn)) {
 		return;
 	}
+	Table table = tableColumn.getParent();
+	boolean ignoreColumnResize = table.ignoreColumnResize;
+	table.ignoreColumnResize = true;
 	final int newColumnWidth = Math.round(tableColumn.getWidthInPixels() * scalingFactor);
 	tableColumn.setWidthInPixels(newColumnWidth);
+	table.ignoreColumnResize = ignoreColumnResize;
+
 	Image image = tableColumn.getImage();
 	if (image != null) {
 		tableColumn.setImage(image);
